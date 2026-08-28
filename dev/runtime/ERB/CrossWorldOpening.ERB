@@ -1,41 +1,31 @@
-; ERA CrossWorld DEV BASE 0.3 - opening sequence
+; ERA CrossWorld DEV BASE 0.3 - smooth opening sequence
 
 @CW_PLAY_OPENING
-CW_OPENING_SKIP = 0
+#DIM CW_OPENING_FRAME
 
-CALL CW_OPENING_FRAME_01
+CW_OPENING_SKIP = 0
+CALL CW_SETUP_OPENING_STARS
+
+FOR CW_OPENING_FRAME,0,32
+    CALL CW_RENDER_STAR_FRAME,CW_OPENING_FRAME
+    IF CW_OPENING_SKIP
+        RETURN
+    ENDIF
+NEXT
+
+CALL CW_RENDER_CONVERGENCE_CORE
 IF CW_OPENING_SKIP
     RETURN
 ENDIF
-CALL CW_OPENING_FRAME_02
+CALL CW_RENDER_CONVERGENCE_BURST
 IF CW_OPENING_SKIP
     RETURN
 ENDIF
-CALL CW_OPENING_FRAME_03
+CALL CW_RENDER_WORLD_REVEAL
 IF CW_OPENING_SKIP
     RETURN
 ENDIF
-CALL CW_OPENING_FRAME_04
-IF CW_OPENING_SKIP
-    RETURN
-ENDIF
-CALL CW_OPENING_FRAME_05
-IF CW_OPENING_SKIP
-    RETURN
-ENDIF
-CALL CW_OPENING_FRAME_06
-IF CW_OPENING_SKIP
-    RETURN
-ENDIF
-CALL CW_OPENING_FRAME_07
-IF CW_OPENING_SKIP
-    RETURN
-ENDIF
-CALL CW_OPENING_FRAME_08
-IF CW_OPENING_SKIP
-    RETURN
-ENDIF
-CALL CW_OPENING_FRAME_09
+CALL CW_RENDER_TITLE_REVEAL
 RETURN
 
 
@@ -46,165 +36,178 @@ ENDIF
 RETURN
 
 
-@CW_OPENING_WAIT
+@CW_SETUP_OPENING_STARS
+CW_OPENING_STAR_START_X:0 = 3
+CW_OPENING_STAR_START_Y:0 = 1
+CW_OPENING_STAR_START_X:1 = 14
+CW_OPENING_STAR_START_Y:1 = 10
+CW_OPENING_STAR_START_X:2 = 22
+CW_OPENING_STAR_START_Y:2 = 3
+CW_OPENING_STAR_START_X:3 = 62
+CW_OPENING_STAR_START_Y:3 = 2
+CW_OPENING_STAR_START_X:4 = 70
+CW_OPENING_STAR_START_Y:4 = 11
+CW_OPENING_STAR_START_X:5 = 53
+CW_OPENING_STAR_START_Y:5 = 9
+CW_OPENING_STAR_START_X:6 = 8
+CW_OPENING_STAR_START_Y:6 = 7
+CW_OPENING_STAR_START_X:7 = 66
+CW_OPENING_STAR_START_Y:7 = 6
+CW_OPENING_STAR_START_X:8 = 28
+CW_OPENING_STAR_START_Y:8 = 11
+CW_OPENING_STAR_START_X:9 = 46
+CW_OPENING_STAR_START_Y:9 = 1
+CW_OPENING_STAR_START_X:10 = 18
+CW_OPENING_STAR_START_Y:10 = 6
+CW_OPENING_STAR_START_X:11 = 57
+CW_OPENING_STAR_START_Y:11 = 4
+CW_OPENING_STAR_START_X:12 = 35
+CW_OPENING_STAR_START_Y:12 = 0
+CW_OPENING_STAR_START_X:13 = 40
+CW_OPENING_STAR_START_Y:13 = 12
+RETURN
+
+
+@CW_RENDER_STAR_FRAME,ARG:0
+#DIM CW_OPENING_ROW
+#DIM CW_OPENING_COLUMN
+#DIM CW_OPENING_STAR
+#DIMS CW_OPENING_LINE
+#DIMS CW_OPENING_PIXEL
+
+FOR CW_OPENING_STAR,0,14
+    CW_OPENING_STAR_X:CW_OPENING_STAR = CW_OPENING_STAR_START_X:CW_OPENING_STAR + ((36 - CW_OPENING_STAR_START_X:CW_OPENING_STAR) * ARG:0 / 31)
+    CW_OPENING_STAR_Y:CW_OPENING_STAR = CW_OPENING_STAR_START_Y:CW_OPENING_STAR + ((6 - CW_OPENING_STAR_START_Y:CW_OPENING_STAR) * ARG:0 / 31)
+NEXT
+
+CALL CW_CLEAR_SCREEN
 PRINTL
-PRINTL                         [0] 오프닝 스킵
-TONEINPUT 300,9,0,""
+
+FOR CW_OPENING_ROW,0,13
+    CW_OPENING_LINE = ""
+    FOR CW_OPENING_COLUMN,0,73
+        CW_OPENING_PIXEL = " "
+        FOR CW_OPENING_STAR,0,14
+            IF CW_OPENING_STAR_X:CW_OPENING_STAR == CW_OPENING_COLUMN && CW_OPENING_STAR_Y:CW_OPENING_STAR == CW_OPENING_ROW
+                IF ARG:0 >= 27
+                    CW_OPENING_PIXEL = "O"
+                ELSEIF CW_OPENING_STAR % 4 == 0
+                    CW_OPENING_PIXEL = "*"
+                ELSEIF CW_OPENING_STAR % 4 == 1
+                    CW_OPENING_PIXEL = "+"
+                ELSEIF CW_OPENING_STAR % 4 == 2
+                    CW_OPENING_PIXEL = "."
+                ELSE
+                    CW_OPENING_PIXEL = "o"
+                ENDIF
+            ENDIF
+        NEXT
+        CW_OPENING_LINE = CW_OPENING_LINE + CW_OPENING_PIXEL
+    NEXT
+    PRINTFORML %CW_OPENING_LINE%
+NEXT
+
+PRINTL                              [0] SKIP
+TONEINPUT 60,9,0,""
 IF RESULT == 0
     CW_OPENING_SKIP = 1
 ENDIF
 RETURN
 
 
-@CW_OPENING_FRAME_01
+@CW_OPENING_PHASE_WAIT,ARG:0
+PRINTL
+PRINTL                              [0] SKIP
+TONEINPUT ARG:0,9,0,""
+IF RESULT == 0
+    CW_OPENING_SKIP = 1
+ENDIF
+RETURN
+
+
+@CW_RENDER_CONVERGENCE_CORE
 CALL CW_CLEAR_SCREEN
 PRINTL
 PRINTL
 PRINTL
 PRINTL
-PRINTL                              .
+PRINTL                                  |
+PRINTL                              --  O  --
+PRINTL                                  |
 PRINTL
 PRINTL
-PRINTL
-CALL CW_OPENING_WAIT
+CALL CW_OPENING_PHASE_WAIT,70
 RETURN
 
 
-@CW_OPENING_FRAME_02
+@CW_RENDER_CONVERGENCE_BURST
 CALL CW_CLEAR_SCREEN
 PRINTL
-PRINTL        *                                                   .
 PRINTL
-PRINTL                              +
+PRINTL                               .  |  .
+PRINTL                            *  -- O --  *
+PRINTL                         +  ---  OOO  ---  +
+PRINTL                            *  -- O --  *
+PRINTL                               .  |  .
 PRINTL
-PRINTL                  .                              o
-PRINTL
-PRINTL     +                                                        *
-PRINTL                                      .
-CALL CW_OPENING_WAIT
+CALL CW_OPENING_PHASE_WAIT,70
 RETURN
 
 
-@CW_OPENING_FRAME_03
+@CW_RENDER_WORLD_REVEAL
 CALL CW_CLEAR_SCREEN
 PRINTL
-PRINTL             *                                         .
-PRINTL
-PRINTL                          +
-PRINTL
-PRINTL                     .                     o
-PRINTL
-PRINTL          +                                             *
-PRINTL                                  .
-CALL CW_OPENING_WAIT
+PRINTL                         OOOOOOOOOOOOOOOOO
+PRINTL                     OOOOOOOOOOOOOOOOOOOOOOOOO
+PRINTL                  OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+PRINTL                OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+PRINTL                         ______|^|______
+PRINTL                  ^^^^^^|      | |      |^^^^^^
+PRINTL             ^^^^^^^^^^^|______|_|______|^^^^^^^^^^^
+PRINTL        =========================================================
+CALL CW_OPENING_PHASE_WAIT,90
 RETURN
 
 
-@CW_OPENING_FRAME_04
-CALL CW_CLEAR_SCREEN
-PRINTL
-PRINTL                  *                               .
-PRINTL
-PRINTL                            +
-PRINTL
-PRINTL                         .             o
-PRINTL
-PRINTL               +                               *
-PRINTL                                .
-CALL CW_OPENING_WAIT
-RETURN
-
-
-@CW_OPENING_FRAME_05
-CALL CW_CLEAR_SCREEN
-PRINTL
-PRINTL                       *                     .
-PRINTL
-PRINTL                              +
-PRINTL
-PRINTL                            .     o
-PRINTL
-PRINTL                     +                     *
-PRINTL                               .
-CALL CW_OPENING_WAIT
-RETURN
-
-
-@CW_OPENING_FRAME_06
-CALL CW_CLEAR_SCREEN
-PRINTL
-PRINTL                            \   |   /
-PRINTL                         *   \  |  /   *
-PRINTL                           .  \ | /  .
-PRINTL                     + ------- O ------- +
-PRINTL                           .  / | \  .
-PRINTL                         *   /  |  \   *
-PRINTL                            /   |   \
-CALL CW_OPENING_WAIT
-RETURN
-
-
-@CW_OPENING_FRAME_07
-CALL CW_CLEAR_SCREEN
-PRINTL
-PRINTL                              \ | /
-PRINTL                           --- O ---
-PRINTL                              /|\
-PRINTL
-PRINTL                         .-''''''''-.
-PRINTL                       .'            '.
-PRINTL                      /                \
-CALL CW_OPENING_WAIT
-RETURN
-
-
-@CW_OPENING_FRAME_08
-CALL CW_CLEAR_SCREEN
-PRINTL
-PRINTL                         .-''''''''''''-.
-PRINTL                       .'                '.
-PRINTL                      /        .           \
-PRINTL             /\      |       / \          |      /\
-PRINTL        /\__/  \_____|______/___\_________|_____/  \__/\
-PRINTL       /                    /  |  \                     \
-PRINTL      /____________________/___|___\_____________________\
-CALL CW_OPENING_WAIT
-RETURN
-
-
-@CW_OPENING_FRAME_09
+@CW_RENDER_TITLE_REVEAL
 CALL CW_CLEAR_SCREEN
 CALL CW_RENDER_WORLD_LANDSCAPE
 PRINTL
 CALL CW_RENDER_CROSSWORLD_LOGO
-PRINTL
-PRINTL                         [0] 오프닝 스킵
-TONEINPUT 450,9,0,""
+CALL CW_OPENING_PHASE_WAIT,120
 RETURN
 
 
 @CW_RENDER_WORLD_LANDSCAPE
-PRINTL                          .-''''''''''''-.
-PRINTL                       .-'                '-.
-PRINTL                     .'         .            '.
-PRINTL                    /          / \             \
-PRINTL        /\         /          /   \             \         /\
-PRINTL    /\_/  \__/\___/__________/_____|\____________\___/\__/  \_/\
-PRINTL   /                         /|  ^  |\                          \
-PRINTL  /____/\____/\____________/ | /_\ | \____________/\____/\____\
-PRINTL                         |   |[___]|   |
-PRINTL                    _____|___||_|_||___|_____
-PRINTL             ~~~~~~/_________________________\~~~~~~
-PRINTL       ~~~~~~~~~~~~    THE CROSSING HORIZON    ~~~~~~~~~~~~
+PRINTL                          OOOOOOOOOOOOOOOOO
+PRINTL                      OOOOOOOOOOOOOOOOOOOOOOO
+PRINTL                   OOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+PRINTL                 OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+PRINTL                OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+PRINTL                 OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+PRINTL                   OOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+PRINTL                       OOOOOOOOOOOOOOOOOOOOO
+PRINTL
+PRINTL       ^^^^      ^^^^^^^^             ^^^^^^^^      ^^^^
+PRINTL    ^^^^^^^^^  ^^^^^^^^^^^^         ^^^^^^^^^^^^  ^^^^^^^^^
+PRINTL  ^^^^^^^^^^^^^^^^^^^^^^^^^^   ^   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+PRINTL ===========================|  ^  |===========================
+PRINTL                         ___|  |  |___
+PRINTL                    ____|   | /|/ |   |____
+PRINTL               ____|____|___|_|||_|___|____|____
+PRINTL =================================================================
+PRINTL ~~~~~~~~  ~~~~~~~~  ~~~~~~~~  ~~~~~~~~  ~~~~~~~~  ~~~~~~~~
 RETURN
 
 
 @CW_RENDER_CROSSWORLD_LOGO
 SETCOLORBYNAME yellow
-PRINTL   CCCC  RRRR   OOO   SSSS  SSSS  W   W  OOO   RRRR  L      DDDD
-PRINTL  C      R   R O   O S     S     W   W O   O R   R L      D   D
-PRINTL  C      RRRR  O   O  SSS   SSS  W W W O   O RRRR  L      D   D
-PRINTL  C      R R   O   O     S     S WW WW O   O R R   L      D   D
-PRINTL   CCCC  R  RR  OOO  SSSS  SSSS  W   W  OOO  R  RR LLLLL  DDDD
+PRINTL      #####  ####    ###   ####   ####   #   #   ###   ####   #      ####
+PRINTL      #      #   #  #   #  #      #      #   #  #   #  #   #  #      #   #
+PRINTL      #      #   #  #   #  #      #      #   #  #   #  #   #  #      #   #
+PRINTL      #      ####   #   #   ###    ###   # # #  #   #  ####   #      #   #
+PRINTL      #      # #    #   #      #      #  # # #  #   #  # #    #      #   #
+PRINTL      #      #  #   #   #      #      #  ## ##  #   #  #  #   #      #   #
+PRINTL      #####  #   #   ###   ####   ####    # #    ###   #   #  #####  ####
 RESETCOLOR
 RETURN
