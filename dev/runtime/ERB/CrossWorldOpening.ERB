@@ -1,10 +1,10 @@
-; ERA CrossWorld DEV BASE 0.3 REV4 - verified formatted-string renderer
+; ERA CrossWorld DEV BASE 0.3 REV5 - gap-based star renderer
 
 @CW_PLAY_OPENING
 #DIM CW_OPENING_FRAME
 
 CW_OPENING_SKIP = 0
-CALL CW_VERIFY_STRING_OUTPUT
+CALL CW_VERIFY_SPACE_OUTPUT
 CALL CW_VERIFY_COORDINATE_FRAME
 CALL CW_SETUP_OPENING_STARS
 
@@ -38,23 +38,16 @@ ENDIF
 RETURN
 
 
-@CW_VERIFY_STRING_OUTPUT
+@CW_VERIFY_SPACE_OUTPUT
 #DIMS CW_TEST_CHAR
 CALL CW_CLEAR_SCREEN
-PRINTL                         STRING OUTPUT CHECK
+PRINTL                         SPACE OUTPUT CHECK
 PRINTL
 CW_TEST_CHAR = "*"
 PRINTFORM %CW_TEST_CHAR%
-CW_TEST_CHAR = "+"
-PRINTFORM %CW_TEST_CHAR%
-CW_TEST_CHAR = "."
-PRINTFORM %CW_TEST_CHAR%
-CW_TEST_CHAR = "o"
-PRINTFORM %CW_TEST_CHAR%
-CW_TEST_CHAR = "O"
-PRINTFORML %CW_TEST_CHAR%
+PRINTFORML %CW_TEST_CHAR,6%
 PRINTL
-PRINTL                         Expected: *+.oO
+PRINTL                         Expected: *     *
 PRINTL                         Press any key to continue.
 WAIT
 RETURN
@@ -63,25 +56,38 @@ RETURN
 @CW_VERIFY_COORDINATE_FRAME
 #DIM CW_TEST_ROW
 #DIM CW_TEST_COLUMN
+#DIM CW_TEST_LAST_COLUMN
+#DIM CW_TEST_GAP
+#DIM CW_TEST_HAS_MARK
 #DIMS CW_TEST_CHAR
 CALL CW_CLEAR_SCREEN
 PRINTL                    COORDINATE FRAME CHECK
 PRINTL
 FOR CW_TEST_ROW,0,9
+    CW_TEST_LAST_COLUMN = -1
     FOR CW_TEST_COLUMN,0,40
-        CW_TEST_CHAR = " "
+        CW_TEST_HAS_MARK = 0
         IF CW_TEST_COLUMN == 10 && CW_TEST_ROW == 1
             CW_TEST_CHAR = "*"
+            CW_TEST_HAS_MARK = 1
         ELSEIF CW_TEST_COLUMN == 30 && CW_TEST_ROW == 3
             CW_TEST_CHAR = "O"
+            CW_TEST_HAS_MARK = 1
         ELSEIF CW_TEST_COLUMN == 5 && CW_TEST_ROW == 6
             CW_TEST_CHAR = "+"
+            CW_TEST_HAS_MARK = 1
         ELSEIF CW_TEST_COLUMN == 36 && CW_TEST_ROW == 6
             CW_TEST_CHAR = "."
+            CW_TEST_HAS_MARK = 1
         ELSEIF CW_TEST_COLUMN == 24 && CW_TEST_ROW == 8
             CW_TEST_CHAR = "o"
+            CW_TEST_HAS_MARK = 1
         ENDIF
-        PRINTFORM %CW_TEST_CHAR%
+        IF CW_TEST_HAS_MARK
+            CW_TEST_GAP = CW_TEST_COLUMN - CW_TEST_LAST_COLUMN
+            PRINTFORM %CW_TEST_CHAR,CW_TEST_GAP%
+            CW_TEST_LAST_COLUMN = CW_TEST_COLUMN
+        ENDIF
     NEXT
     PRINTL
 NEXT
@@ -126,6 +132,9 @@ RETURN
 #DIM CW_OPENING_ROW
 #DIM CW_OPENING_COLUMN
 #DIM CW_OPENING_STAR
+#DIM CW_OPENING_LAST_COLUMN
+#DIM CW_OPENING_GAP
+#DIM CW_OPENING_HAS_STAR
 #DIMS CW_OPENING_PIXEL
 
 FOR CW_OPENING_STAR,0,14
@@ -137,8 +146,9 @@ CALL CW_CLEAR_SCREEN
 PRINTL
 
 FOR CW_OPENING_ROW,0,24
+    CW_OPENING_LAST_COLUMN = -1
     FOR CW_OPENING_COLUMN,0,144
-        CW_OPENING_PIXEL = " "
+        CW_OPENING_HAS_STAR = 0
         FOR CW_OPENING_STAR,0,14
             IF CW_OPENING_STAR_X:CW_OPENING_STAR == CW_OPENING_COLUMN && CW_OPENING_STAR_Y:CW_OPENING_STAR == CW_OPENING_ROW
                 IF ARG:0 >= 27
@@ -152,9 +162,14 @@ FOR CW_OPENING_ROW,0,24
                 ELSE
                     CW_OPENING_PIXEL = "o"
                 ENDIF
+                CW_OPENING_HAS_STAR = 1
             ENDIF
         NEXT
-        PRINTFORM %CW_OPENING_PIXEL%
+        IF CW_OPENING_HAS_STAR
+            CW_OPENING_GAP = CW_OPENING_COLUMN - CW_OPENING_LAST_COLUMN
+            PRINTFORM %CW_OPENING_PIXEL,CW_OPENING_GAP%
+            CW_OPENING_LAST_COLUMN = CW_OPENING_COLUMN
+        ENDIF
     NEXT
     PRINTL
 NEXT
@@ -239,29 +254,29 @@ PRINTL                                   .----                                  
 PRINTL                                .---                                                                    ---.
 PRINTL                              .--                                                                        --.
 PRINTL                            .-                                                                            -.
-PRINTL                           .                                                                                .
-PRINTL                           .                 .       .                     .       .                        .
-PRINTL                           .            .                 .           .                 .                   .
-PRINTL                            -.                                                                            .-
-PRINTL                              --.                                                                        .--
-PRINTL                                ---.                                                                  .---
-PRINTL                                   ----.                                                          .----
-PRINTL                                        ------.                                              .------
-PRINTL                                               -------.                              .-------
+PRINTL                           .          .:             .                         o                              .
+PRINTL                           .                     .         *        .                        :                 .
+PRINTL                           .       o                                    .             .                       .
+PRINTL                            -.                 .          :                       *                         .-
+PRINTL                              --.                                  .                         o            .--
+PRINTL                                ---.                         .             .                    |^|   .---
+PRINTL                                   ----.                 o                         .         ___| |___.
+PRINTL                                        ------.                .                         |     |     |
+PRINTL                                               -------.               .            _____|  [] |_____|-------
 PRINTL
-PRINTL       ^^          ^^^^^              ^^^^             ^^^^^^^^              ^^^              ^^^^^          ^^
-PRINTL    ^^^^^^^     ^^^^^^^^^         ^^^^^^^^^^         ^^^^^^^^^^^^^         ^^^^^^^^^^         ^^^^^^^^^     ^^^^^^^
-PRINTL  ^^^^^^^^^^^ ^^^^^^^^^^^^^    ^^^^^^^^^^^^^^^^^   ^^^^^^^^^^^^^^^^^^^   ^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^ ^^^^^^^^^^^
-PRINTL ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^          |^|          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-PRINTL ===================================================   ___| |___   ===================================================
-PRINTL                         |^|              |^|       |  |       |  |       |^|              |^|
-PRINTL                      ___| |___        ___| |_______|__|   |   |__|_______| |___        ___| |___
-PRINTL                     |   | |   |      |   | |   []    |  /| | |/  |    []   | |   |      |   | |   |
-PRINTL                     |   |_|   |______|   |_|__________|   | | |   |__________|_|   |______|   |_|   |
-PRINTL                     |          []   |          []    |___|_|_|___|    []          |   []          |
-PRINTL                  ___|_______________|________________|   _____   |________________|_______________|___
-PRINTL                 |        []                 []       |  |  _  |  |       []                 []        |
-PRINTL                 |____________________________________|__|_| |_|__|____________________________________|
+PRINTL          ^^                 ^^^^          ..^^^^..                 ..^^..             ^^^^^                 ^^
+PRINTL      ..^^^^^..         ..^^^^^^^^..    ^^^^    ^^^^^           ^^^^    ^^^^       ..^^^^^^^^..        ..^^^^^..
+PRINTL   ^^^^      ^^^^^   ^^^^          ^^^^^          ^^^^^.. ..^^^^          ^^^^^..^^^          ^^^^^..^^^      ^^^^
+PRINTL ^^              ^^^^                                  ^^^                 |^|                                  ^^^
+PRINTL ----------------------------..______________________________        ___| |___        ______________________________..---------------------------
+PRINTL                         |^|              |^|              |      |       |      |              |^|              |^|
+PRINTL                      ___| |___        ___| |______________|______|   |   |______|______________| |___        ___| |___
+PRINTL                     |   | |   |      |   | |      []      |      |  /| | |/      |      []      | |   |      |   | |   |
+PRINTL                     |   |_|   |______|   |_|______________|      |   | | |       |______________|_|   |______|   |_|   |
+PRINTL                     |     []          |       []          |______|___|_|_|_______|          []       |          []     |
+PRINTL                  ___|_________________|___________________|          _____          |___________________|_________________|___
+PRINTL                 |      []                  []             |        |  _  |         |             []                  []      |
+PRINTL                 |_________________________________________________|_________|_________________________________________________|
 PRINTL ________________________________________________________________________________________________________________________________________________
 PRINTL ================================================================================================================================================
 PRINTL ~~~~~~   ~~~~~~~~~   ~~~~~~   ~~~~~~~~~   ~~~~~~   ~~~~~~~~~   ~~~~~~   ~~~~~~~~~   ~~~~~~   ~~~~~~~~~   ~~~~~~   ~~~~~~~~~   ~~~~~~
@@ -279,6 +294,6 @@ PRINTL     ##             ##     ##    ##       ##          ###          ###  ##
 PRINTL     ###            ##      ##   ##       ##           ##           ##  ## ## ## ##  ##       ##  ##      ##   ##          ##        ##
 PRINTL      ###           ##       ##  ###     ###          ###          ###  ###   ###  ###     ###  ##       ##  ##          ##       ##
 PRINTL        #########   ##        ##  #########   #########    #########    ##     ##   #########   ##        ##  ##########  #########
-PRINTL          =======   ==        ==    =======     =======      =======     ==     ==     =======    ==        ==  ==========  =======
+PRINTL                                             C  R  O  S  S  W  O  R  L  D
 RESETCOLOR
 RETURN
