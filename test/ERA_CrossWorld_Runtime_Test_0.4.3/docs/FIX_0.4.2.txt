@@ -1,0 +1,23 @@
+﻿ERA CrossWorld Runtime Test 0.4.2
+
+Observed in 0.4.1:
+MSB4803:
+"ResolveComReference" task is not supported on the .NET Core version of MSBuild.
+
+Cause:
+- Emuera normal Release configuration includes WMPLib COMReference.
+- dotnet build uses .NET MSBuild, which cannot execute ResolveComReference.
+
+Confirmed in the exact Emuera.csproj:
+- Configurations include Debug / Release / Debug-NAudio / Release-NAudio.
+- If Configuration contains "NAudio":
+  - Runtime/Utils/Sound.WMP.cs is removed.
+  - NAudio packages are referenced.
+- Otherwise:
+  - WMPLib COMReference is included.
+
+Fix:
+- Build CrossWorld plugin using:
+  Release-NAudio / x64
+
+No Visual Studio installation is required for this workaround.

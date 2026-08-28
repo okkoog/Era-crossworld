@@ -1,0 +1,308 @@
+﻿; ============================================================================
+; ERA CrossWorld Runtime Test 0.3.2
+;
+; 1) Save/Load persistence of 50,000 integer cells
+; 2) DataTable 10,000-row create / serialize / restore
+; ============================================================================
+
+@SYSTEM_TITLE
+$CWRT3_MENU
+DRAWLINE
+SETCOLORBYNAME yellow
+PRINTL ERA CrossWorld Runtime Test 0.3.2
+RESETCOLOR
+PRINTFORML Client area : {CLIENTWIDTH()} x {CLIENTHEIGHT()} px
+PRINTFORML Memory      : {GETMEMORYUSAGE()/1024/1024} MB
+DRAWLINE
+PRINTL [1] SAVE/LOAD Roundtrip (10,000 NPC / 50,000 saved integers)
+PRINTL [2] DataTable 10,000 rows + XML roundtrip
+PRINTL [3] Check save slot 90
+PRINTL [9] Exit
+ONEINPUT
+
+SELECTCASE RESULT
+CASE 1
+    CALL CWRT3_SAVELOAD_TEST
+    GOTO CWRT3_MENU
+CASE 2
+    CALL CWRT3_DATATABLE_TEST
+    GOTO CWRT3_MENU
+CASE 3
+    CALL CWRT3_CHECK_SLOT
+    GOTO CWRT3_MENU
+CASE 9
+    PRINTL
+    PRINTL 아무 키/클릭으로 종료한다.
+    QUIT
+CASEELSE
+    GOTO CWRT3_MENU
+ENDSELECT
+
+
+@CWRT3_SAVELOAD_TEST
+#DIM CWRT3_IDX
+#DIM CWRT3_CHECKSUM
+#DIM CWRT3_AFTER_CHECKSUM
+#DIM CWRT3_SAVE_START_MS
+#DIM CWRT3_SAVE_END_MS
+#DIM CWRT3_LOAD_RESULT
+
+DRAWLINE
+SETCOLORBYNAME yellow
+PRINTL [SAVE / LOAD ROUNDTRIP]
+RESETCOLOR
+PRINTL 10,000 NPC × 5 정수 상태 = 50,000개 저장 셀을 만든다.
+PRINTL 테스트용 save slot 90을 덮어쓴다.
+PRINTL 시작하려면 아무 키/클릭.
+WAIT
+
+; ------------------------------------------------------------
+; Build deterministic state.
+; ------------------------------------------------------------
+CWRT3_CHECKSUM = 0
+FOR CWRT3_IDX,0,10000
+    CWRT3_NPC_HOME:CWRT3_IDX = CWRT3_IDX % 64
+    CWRT3_NPC_WORK:CWRT3_IDX = 100 + (CWRT3_IDX % 128)
+    CWRT3_NPC_LOCATION:CWRT3_IDX = 2000 + (CWRT3_IDX % 256)
+    CWRT3_NPC_ACTIVITY:CWRT3_IDX = (CWRT3_IDX * 7 + 13) % 10000
+    CWRT3_NPC_RELATION:CWRT3_IDX = (CWRT3_IDX * 11 + 3) % 1000
+
+    CWRT3_CHECKSUM += CWRT3_NPC_HOME:CWRT3_IDX
+    CWRT3_CHECKSUM += CWRT3_NPC_WORK:CWRT3_IDX
+    CWRT3_CHECKSUM += CWRT3_NPC_LOCATION:CWRT3_IDX
+    CWRT3_CHECKSUM += CWRT3_NPC_ACTIVITY:CWRT3_IDX
+    CWRT3_CHECKSUM += CWRT3_NPC_RELATION:CWRT3_IDX
+NEXT
+
+CWRT3_SAVE_MARKER = 13579
+CWRT3_BASELINE_CHECKSUM = CWRT3_CHECKSUM
+CWRT3_ROUNDTRIP_START_MS = GETMILLISECOND()
+
+PRINTFORML Baseline checksum : {CWRT3_BASELINE_CHECKSUM}
+PRINTFORML Marker            : {CWRT3_SAVE_MARKER}
+
+; ------------------------------------------------------------
+; Save.
+; ------------------------------------------------------------
+CWRT3_SAVE_START_MS = GETMILLISECOND()
+SAVEDATA 90,"CrossWorld Runtime Test 0.3 - 10000 NPC"
+CWRT3_SAVE_END_MS = GETMILLISECOND()
+
+PRINTFORML SAVE time         : {CWRT3_SAVE_END_MS-CWRT3_SAVE_START_MS} ms
+
+CHKDATA 90
+CWRT3_LOAD_RESULT = RESULT:0
+PRINTFORML CHKDATA result    : {CWRT3_LOAD_RESULT}
+
+IF CWRT3_LOAD_RESULT != 0
+    SETCOLORBYNAME red
+    PRINTL [FAIL] 저장 직후 slot 90이 로드 가능 상태가 아니다.
+    RESETCOLOR
+    PRINTFORML Message: %RESULTS:0%
+    PRINTL 아무 키/클릭으로 메뉴로 돌아간다.
+    WAIT
+    RETURN
+ENDIF
+
+; ------------------------------------------------------------
+; Deliberately destroy every saved array and marker.
+; ------------------------------------------------------------
+VARSET CWRT3_NPC_HOME,999999
+VARSET CWRT3_NPC_WORK,999999
+VARSET CWRT3_NPC_LOCATION,999999
+VARSET CWRT3_NPC_ACTIVITY,999999
+VARSET CWRT3_NPC_RELATION,999999
+CWRT3_SAVE_MARKER = 24680
+
+PRINTFORML Corrupted marker  : {CWRT3_SAVE_MARKER}
+PRINTL 이제 방금 저장한 slot 90을 즉시 다시 로드한다.
+
+; LOADDATA does NOT resume at the next ERB line.
+; After loading, Emuera calls @EVENTLOAD.  Verification is performed there.
+LOADDATA 90
+RETURN
+
+
+
+; ============================================================================
+; Called automatically by Emuera immediately after LOADDATA.
+; If EVENTLOAD does not exist, Emuera tries @SHOW_SHOP instead.
+; ============================================================================
+@EVENTLOAD
+#ONLY
+CALL CWRT3_VERIFY_AFTER_LOAD
+BEGIN TITLE
+RETURN
+
+
+@CWRT3_VERIFY_AFTER_LOAD
+#DIM CWRT3_VERIFY_IDX
+#DIM CWRT3_VERIFY_CHECKSUM
+
+DRAWLINE
+SETCOLORBYNAME yellow
+PRINTL [EVENTLOAD / AFTER LOAD VERIFY]
+RESETCOLOR
+
+CWRT3_VERIFY_CHECKSUM = 0
+FOR CWRT3_VERIFY_IDX,0,10000
+    CWRT3_VERIFY_CHECKSUM += CWRT3_NPC_HOME:CWRT3_VERIFY_IDX
+    CWRT3_VERIFY_CHECKSUM += CWRT3_NPC_WORK:CWRT3_VERIFY_IDX
+    CWRT3_VERIFY_CHECKSUM += CWRT3_NPC_LOCATION:CWRT3_VERIFY_IDX
+    CWRT3_VERIFY_CHECKSUM += CWRT3_NPC_ACTIVITY:CWRT3_VERIFY_IDX
+    CWRT3_VERIFY_CHECKSUM += CWRT3_NPC_RELATION:CWRT3_VERIFY_IDX
+NEXT
+
+PRINTFORML Restored marker   : {CWRT3_SAVE_MARKER}
+PRINTFORML Restored checksum : {CWRT3_VERIFY_CHECKSUM}
+PRINTFORML Expected checksum : {CWRT3_BASELINE_CHECKSUM}
+PRINTFORML Total roundtrip   : {GETMILLISECOND()-CWRT3_ROUNDTRIP_START_MS} ms
+PRINTFORML LASTLOAD_NO       : {LASTLOAD_NO}
+PRINTFORML LASTLOAD_VERSION  : {LASTLOAD_VERSION}
+
+IF CWRT3_SAVE_MARKER == 13579 && CWRT3_VERIFY_CHECKSUM == CWRT3_BASELINE_CHECKSUM
+    SETCOLORBYNAME lime
+    PRINTL [PASS] 50,000 saved integer cells restored correctly.
+    RESETCOLOR
+ELSE
+    SETCOLORBYNAME red
+    PRINTL [FAIL] saved state did not restore exactly.
+    RESETCOLOR
+ENDIF
+
+PRINTL
+PRINTL 아무 키/클릭 후 테스트 메뉴로 돌아간다.
+WAIT
+RETURN
+
+
+@CWRT3_CHECK_SLOT
+#DIM CWRT3_SLOT_STATUS
+
+DRAWLINE
+SETCOLORBYNAME yellow
+PRINTL [SAVE SLOT 90 CHECK]
+RESETCOLOR
+
+CHKDATA 90
+CWRT3_SLOT_STATUS = RESULT:0
+
+PRINTFORML CHKDATA result : {CWRT3_SLOT_STATUS}
+PRINTFORML Message        : %RESULTS:0%
+
+IF CWRT3_SLOT_STATUS == 0
+    SETCOLORBYNAME lime
+    PRINTL [PASS] slot 90 is loadable.
+    RESETCOLOR
+ELSE
+    SETCOLORBYNAME red
+    PRINTL [INFO] slot 90 is not currently loadable.
+    RESETCOLOR
+ENDIF
+
+PRINTL 아무 키/클릭으로 메뉴로 돌아간다.
+WAIT
+RETURN
+
+
+@CWRT3_DATATABLE_TEST
+#DIM CWRT3_DB_IDX
+#DIM CWRT3_DB_CREATE_START
+#DIM CWRT3_DB_CREATE_END
+#DIM CWRT3_DB_XML_START
+#DIM CWRT3_DB_XML_END
+#DIM CWRT3_DB_RESTORE_START
+#DIM CWRT3_DB_RESTORE_END
+#DIM CWRT3_DB_ROWS
+#DIM CWRT3_DB_RESTORED_ROWS
+#DIM CWRT3_DB_SAMPLE_LOCATION
+#DIM CWRT3_DB_SAMPLE_ACTIVITY
+#DIMS CWRT3_DB_SCHEMA
+#DIMS CWRT3_DB_DATA
+
+DRAWLINE
+SETCOLORBYNAME yellow
+PRINTL [DATATABLE 10,000 ROW TEST]
+RESETCOLOR
+PRINTL 10,000행 DataTable 생성 → XML 직렬화 → 테이블 해제 → XML 복원.
+PRINTL watchdog 오탐 방지를 위해 2,000행마다 AWAIT을 한 번 실행한다.
+PRINTL 시작하려면 아무 키/클릭.
+WAIT
+
+IF DT_EXIST("cwrt3_npc_db")
+    DT_RELEASE "cwrt3_npc_db"
+ENDIF
+
+CWRT3_DB_CREATE_START = GETMILLISECOND()
+
+DT_CREATE "cwrt3_npc_db"
+DT_COLUMN_ADD "cwrt3_npc_db","name"
+DT_COLUMN_ADD "cwrt3_npc_db","location","int16"
+DT_COLUMN_ADD "cwrt3_npc_db","activity","int16"
+
+FOR CWRT3_DB_IDX,0,10000
+    DT_ROW_ADD "cwrt3_npc_db","name","NPC","location",(CWRT3_DB_IDX % 4000),"activity",(CWRT3_DB_IDX % 1000)
+
+    IF CWRT3_DB_IDX > 0 && CWRT3_DB_IDX % 2000 == 0
+        AWAIT
+    ENDIF
+NEXT
+
+CWRT3_DB_CREATE_END = GETMILLISECOND()
+CWRT3_DB_ROWS = DT_ROW_LENGTH("cwrt3_npc_db")
+
+PRINTFORML Created rows       : {CWRT3_DB_ROWS}
+PRINTFORML Create time        : {CWRT3_DB_CREATE_END-CWRT3_DB_CREATE_START} ms
+
+CWRT3_DB_SAMPLE_LOCATION = DT_CELL_GET("cwrt3_npc_db",5000,"location")
+CWRT3_DB_SAMPLE_ACTIVITY = DT_CELL_GET("cwrt3_npc_db",5000,"activity")
+PRINTFORML Sample row 5000    : location={CWRT3_DB_SAMPLE_LOCATION}, activity={CWRT3_DB_SAMPLE_ACTIVITY}
+
+; ------------------------------------------------------------
+; Serialize.
+; Official form: data '= DT_TOXML("db", schema)
+; ------------------------------------------------------------
+CWRT3_DB_XML_START = GETMILLISECOND()
+CWRT3_DB_DATA '= DT_TOXML("cwrt3_npc_db",CWRT3_DB_SCHEMA)
+CWRT3_DB_XML_END = GETMILLISECOND()
+
+PRINTFORML XML data chars     : {STRLENSU(CWRT3_DB_DATA)}
+PRINTFORML XML schema chars   : {STRLENSU(CWRT3_DB_SCHEMA)}
+PRINTFORML Serialize time     : {CWRT3_DB_XML_END-CWRT3_DB_XML_START} ms
+
+DT_RELEASE "cwrt3_npc_db"
+
+; ------------------------------------------------------------
+; Restore.
+; ------------------------------------------------------------
+CWRT3_DB_RESTORE_START = GETMILLISECOND()
+DT_FROMXML "cwrt3_npc_db",CWRT3_DB_SCHEMA,CWRT3_DB_DATA
+CWRT3_DB_RESTORE_END = GETMILLISECOND()
+
+CWRT3_DB_RESTORED_ROWS = DT_ROW_LENGTH("cwrt3_npc_db")
+CWRT3_DB_SAMPLE_LOCATION = DT_CELL_GET("cwrt3_npc_db",5000,"location")
+CWRT3_DB_SAMPLE_ACTIVITY = DT_CELL_GET("cwrt3_npc_db",5000,"activity")
+
+PRINTL
+SETCOLORBYNAME yellow
+PRINTL [AFTER XML RESTORE]
+RESETCOLOR
+PRINTFORML Restored rows      : {CWRT3_DB_RESTORED_ROWS}
+PRINTFORML Restore time       : {CWRT3_DB_RESTORE_END-CWRT3_DB_RESTORE_START} ms
+PRINTFORML Sample row 5000    : location={CWRT3_DB_SAMPLE_LOCATION}, activity={CWRT3_DB_SAMPLE_ACTIVITY}
+
+IF CWRT3_DB_RESTORED_ROWS == 10000 && CWRT3_DB_SAMPLE_LOCATION == 1000 && CWRT3_DB_SAMPLE_ACTIVITY == 0
+    SETCOLORBYNAME lime
+    PRINTL [PASS] DataTable 10,000 rows restored correctly.
+    RESETCOLOR
+ELSE
+    SETCOLORBYNAME red
+    PRINTL [FAIL] DataTable restore verification failed.
+    RESETCOLOR
+ENDIF
+
+DT_RELEASE "cwrt3_npc_db"
+
+PRINTL 아무 키/클릭으로 메뉴로 돌아간다.
+WAIT
+RETURN

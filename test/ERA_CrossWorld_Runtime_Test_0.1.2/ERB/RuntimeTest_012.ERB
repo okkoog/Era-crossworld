@@ -1,0 +1,135 @@
+﻿; ============================================================================
+; ERA CrossWorld Runtime Test 0.1.2
+; 0.1 계열 최종 확인:
+; - ONEINPUT 기반 키보드/클릭
+; - 표시폭 보정 ASCII 지도
+; - fullwidth 박스문자 지도
+; ============================================================================
+
+@SYSTEM_TITLE
+$MENU
+DRAWLINE
+SETCOLORBYNAME yellow
+PRINTL ERA CrossWorld Runtime Test 0.1.2
+RESETCOLOR
+PRINTFORML Client area : {CLIENTWIDTH()} x {CLIENTHEIGHT()} px
+PRINTL 0.1.1 측정: buffer 100 maps = 213ms / forced 20 frames = 425ms
+DRAWLINE
+PRINTL 숫자키는 Enter 없이 한 번만 누른다.
+PRINTL [1] 키보드 ONEINPUT 전용검사
+PRINTL [2] 클릭 ONEINPUT 전용검사
+PRINTL [3] 표시폭 보정 ASCII 지도
+PRINTL [4] Fullwidth 박스문자 지도
+PRINTL [9] 종료
+ONEINPUT
+
+SELECTCASE RESULT
+CASE 1
+    CALL TEST_KEYBOARD
+    GOTO MENU
+CASE 2
+    CALL TEST_CLICK
+    GOTO MENU
+CASE 3
+    CALL TEST_WIDTH_AWARE_MAP
+    GOTO MENU
+CASE 4
+    CALL TEST_FULLWIDTH_BOX
+    GOTO MENU
+CASE 9
+    PRINTL
+    PRINTL 아무 키/클릭으로 종료한다.
+    QUIT
+CASEELSE
+    SETCOLORBYNAME red
+    PRINTFORML [FAIL] 예상하지 않은 입력값: {RESULT}
+    RESETCOLOR
+    GOTO MENU
+ENDSELECT
+
+
+@TEST_KEYBOARD
+DRAWLINE
+SETCOLORBYNAME yellow
+PRINTL [KEYBOARD ONEINPUT TEST]
+RESETCOLOR
+PRINTL 마우스를 사용하지 말고 키보드 숫자 7을 한 번만 누른다.
+PRINTL Enter는 누르지 않는다.
+ONEINPUT
+IF RESULT == 7
+    SETCOLORBYNAME lime
+    PRINTL [PASS] 키보드 ONEINPUT 정상.
+    RESETCOLOR
+ELSE
+    SETCOLORBYNAME red
+    PRINTFORML [FAIL] RESULT={RESULT}
+    RESETCOLOR
+ENDIF
+PRINTL 아무 키/클릭으로 메뉴로 돌아간다.
+WAIT
+RETURN
+
+
+@TEST_CLICK
+DRAWLINE
+SETCOLORBYNAME yellow
+PRINTL [CLICK BUTTON TEST]
+RESETCOLOR
+PRINTL 아래 [8] 버튼을 마우스로 클릭한다. 키보드는 사용하지 않는다.
+PRINTL [8] 클릭 테스트
+ONEINPUT
+IF RESULT == 8
+    SETCOLORBYNAME lime
+    PRINTL [PASS] 클릭 버튼 정상.
+    RESETCOLOR
+ELSE
+    SETCOLORBYNAME red
+    PRINTFORML [FAIL] RESULT={RESULT}
+    RESETCOLOR
+ENDIF
+PRINTL 아무 키/클릭으로 메뉴로 돌아간다.
+WAIT
+RETURN
+
+
+@TEST_WIDTH_AWARE_MAP
+DRAWLINE
+SETCOLORBYNAME yellow
+PRINTL [DISPLAY-WIDTH-AWARE ASCII MAP]
+RESETCOLOR
+PRINTL 한글/일본어를 2칸으로 계산해 패딩한 지도다.
+PRINTL 모든 세로 | 경계가 행마다 정확히 같은 위치에 있어야 한다.
+PRINTL
+PRINTL +--------------------------+----------------------------------+----------------------------------+
+PRINTL | HOME / 집                | MAIN ROAD                        | SHOP / 상점가                    |
+PRINTL | PARK / 공원              | ========== @ ==========          | CAFE / 카페                      |
+PRINTL | CLINIC / 병원            | STATION / 역                     | SCHOOL / 학교                    |
+PRINTL +--------------------------+----------------------------------+----------------------------------+
+PRINTL | OFFICE / 업무지구        | CENTRAL PLAZA / 중앙광장         | GYM / 체육관                     |
+PRINTL | HARBOR / 항구            | LIBRARY / 도서관                 | PARK / 공원                      |
+PRINTL |                          | @ player                         |                                  |
+PRINTL +--------------------------+----------------------------------+----------------------------------+
+PRINTL
+PRINTFORML Logical display width = 98 half-width cells
+PRINTL 아무 키/클릭으로 메뉴로 돌아간다.
+WAIT
+RETURN
+
+
+@TEST_FULLWIDTH_BOX
+DRAWLINE
+SETCOLORBYNAME yellow
+PRINTL [FULLWIDTH BOX-DRAWING TEST]
+RESETCOLOR
+PRINTL 0.1.1 결과대로 ─/│/모서리를 2칸 문자로 취급한 작은 지도다.
+PRINTL 모서리와 세로선이 연결되는지 확인한다.
+PRINTL
+PRINTL ┌────────────────────┐
+PRINTL │집 / HOME                               │
+PRINTL │駅 / STATION                            │
+PRINTL │학교 / SCHOOL                           │
+PRINTL └────────────────────┘
+PRINTL
+PRINTL 아무 키/클릭으로 메뉴로 돌아간다.
+WAIT
+RETURN

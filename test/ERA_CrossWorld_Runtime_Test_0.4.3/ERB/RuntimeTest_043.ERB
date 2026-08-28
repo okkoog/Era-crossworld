@@ -1,0 +1,215 @@
+﻿; ============================================================================
+; ERA CrossWorld Runtime Test 0.4.3
+; C# CALLSHARP bridge validation
+; ============================================================================
+
+@SYSTEM_TITLE
+$CWRT4_MENU
+DRAWLINE
+SETCOLORBYNAME yellow
+PRINTL ERA CrossWorld Runtime Test 0.4.3
+RESETCOLOR
+PRINTFORML Client area : {CLIENTWIDTH()} x {CLIENTHEIGHT()} px
+PRINTL 0.4.2 결과: CALLSHARP/reference PASS, PluginManager.Print PASS
+DRAWLINE
+PRINTL [1] CALLSHARP basic call + int/string reference return
+PRINTL [2] C# -> Emuera PluginManager.Print API
+PRINTL [3] C# direct access to built-in GLOBAL:0
+PRINTL [4] C# direct access to ERB-created DataTable
+PRINTL [5] C# 10,000,000-iteration compute benchmark
+PRINTL [9] Exit
+ONEINPUT
+
+SELECTCASE RESULT
+CASE 1
+    CALL CWRT4_TEST_PING
+    GOTO CWRT4_MENU
+CASE 2
+    CALL CWRT4_TEST_PRINT
+    GOTO CWRT4_MENU
+CASE 3
+    CALL CWRT4_TEST_GLOBAL
+    GOTO CWRT4_MENU
+CASE 4
+    CALL CWRT4_TEST_DATATABLE
+    GOTO CWRT4_MENU
+CASE 5
+    CALL CWRT4_TEST_COMPUTE
+    GOTO CWRT4_MENU
+CASE 9
+    PRINTL 아무 키/클릭으로 종료한다.
+    QUIT
+CASEELSE
+    GOTO CWRT4_MENU
+ENDSELECT
+
+
+@CWRT4_TEST_PING
+#DIM CWRT4_OUT_INT
+#DIMS CWRT4_OUT_STR
+
+DRAWLINE
+SETCOLORBYNAME yellow
+PRINTL [CALLSHARP PING / REFERENCE TEST]
+RESETCOLOR
+
+CWRT4_OUT_INT = 0
+CWRT4_OUT_STR = "before"
+
+PRINTFORML Before: int={CWRT4_OUT_INT}, str=%CWRT4_OUT_STR%
+CALLSHARP CWRT4Ping(CWRT4_OUT_INT,CWRT4_OUT_STR)
+PRINTFORML After : int={CWRT4_OUT_INT}, str=%CWRT4_OUT_STR%
+
+IF CWRT4_OUT_INT == 424242 && CWRT4_OUT_STR == "CrossWorld C# plugin OK"
+    SETCOLORBYNAME lime
+    PRINTL [PASS] ERB -> C# call and reference return both work.
+    RESETCOLOR
+ELSE
+    SETCOLORBYNAME red
+    PRINTL [FAIL] returned values do not match.
+    RESETCOLOR
+ENDIF
+
+PRINTL 아무 키/클릭으로 메뉴로 돌아간다.
+WAIT
+RETURN
+
+
+@CWRT4_TEST_PRINT
+DRAWLINE
+SETCOLORBYNAME yellow
+PRINTL [PLUGIN API PRINT TEST]
+RESETCOLOR
+PRINTL 아래 줄은 C# PluginManager.Print가 직접 출력한다.
+
+CALLSHARP CWRT4Print()
+
+PRINTL
+PRINTL 문장이 보이면 PluginManager API 접근 성공.
+PRINTL 아무 키/클릭으로 메뉴로 돌아간다.
+WAIT
+RETURN
+
+
+@CWRT4_TEST_GLOBAL
+#DIM CWRT4_BEFORE
+#DIM CWRT4_AFTER
+
+DRAWLINE
+SETCOLORBYNAME yellow
+PRINTL [DIRECT BUILT-IN GLOBAL ACCESS TEST]
+RESETCOLOR
+
+GLOBAL:0 = 12345
+CWRT4_BEFORE = 0
+CWRT4_AFTER = 0
+
+PRINTFORML ERB sets GLOBAL:0 = {GLOBAL:0}
+CALLSHARP CWRT4GlobalVar(CWRT4_BEFORE,CWRT4_AFTER)
+
+PRINTFORML Plugin reported before = {CWRT4_BEFORE}
+PRINTFORML Plugin reported after  = {CWRT4_AFTER}
+PRINTFORML ERB now sees GLOBAL:0  = {GLOBAL:0}
+
+IF CWRT4_BEFORE == 12345 && CWRT4_AFTER == 13345 && GLOBAL:0 == 13345
+    SETCOLORBYNAME lime
+    PRINTL [PASS] C# directly read and modified Emuera GLOBAL:0.
+    RESETCOLOR
+ELSE
+    SETCOLORBYNAME red
+    PRINTL [FAIL] GLOBAL bridge mismatch.
+    RESETCOLOR
+ENDIF
+
+PRINTL 아무 키/클릭으로 메뉴로 돌아간다.
+WAIT
+RETURN
+
+
+@CWRT4_TEST_DATATABLE
+#DIM CWRT4_DB_BEFORE
+#DIM CWRT4_DB_AFTER
+#DIM CWRT4_DB_ERB_VALUE
+
+DRAWLINE
+SETCOLORBYNAME yellow
+PRINTL [DIRECT DATATABLE ACCESS TEST]
+RESETCOLOR
+
+IF DT_EXIST("cwrt4_db")
+    DT_RELEASE "cwrt4_db"
+ENDIF
+
+DT_CREATE "cwrt4_db"
+DT_COLUMN_ADD "cwrt4_db","name"
+DT_COLUMN_ADD "cwrt4_db","value","int32"
+DT_ROW_ADD "cwrt4_db","name","CrossWorld","value",500
+
+CWRT4_DB_BEFORE = 0
+CWRT4_DB_AFTER = 0
+
+PRINTFORML ERB DataTable value before C# = {DT_CELL_GET("cwrt4_db",0,"value")}
+
+CALLSHARP CWRT4DataTable(CWRT4_DB_BEFORE,CWRT4_DB_AFTER)
+
+CWRT4_DB_ERB_VALUE = DT_CELL_GET("cwrt4_db",0,"value")
+
+PRINTFORML Plugin reported before = {CWRT4_DB_BEFORE}
+PRINTFORML Plugin reported after  = {CWRT4_DB_AFTER}
+PRINTFORML ERB DataTable now sees = {CWRT4_DB_ERB_VALUE}
+
+IF CWRT4_DB_BEFORE == 500 && CWRT4_DB_AFTER == 1500 && CWRT4_DB_ERB_VALUE == 1500
+    SETCOLORBYNAME lime
+    PRINTL [PASS] C# directly modified an ERB-created DataTable.
+    RESETCOLOR
+ELSE
+    SETCOLORBYNAME red
+    PRINTL [FAIL] DataTable bridge mismatch.
+    RESETCOLOR
+ENDIF
+
+DT_RELEASE "cwrt4_db"
+
+PRINTL 아무 키/클릭으로 메뉴로 돌아간다.
+WAIT
+RETURN
+
+
+@CWRT4_TEST_COMPUTE
+#DIM CWRT4_ITERATIONS
+#DIM CWRT4_CHECKSUM
+#DIM CWRT4_START_MS
+#DIM CWRT4_END_MS
+
+DRAWLINE
+SETCOLORBYNAME yellow
+PRINTL [C# COMPUTE BENCHMARK]
+RESETCOLOR
+
+CWRT4_ITERATIONS = 10000000
+CWRT4_CHECKSUM = 0
+
+PRINTFORML C#에서 {CWRT4_ITERATIONS}회 정수 계산을 실행한다.
+PRINTL 시작하려면 아무 키/클릭.
+WAIT
+
+CWRT4_START_MS = GETMILLISECOND()
+CALLSHARP CWRT4Compute(CWRT4_ITERATIONS,CWRT4_CHECKSUM)
+CWRT4_END_MS = GETMILLISECOND()
+
+PRINTFORML Time     : {CWRT4_END_MS-CWRT4_START_MS} ms
+PRINTFORML Checksum : {CWRT4_CHECKSUM}
+
+IF CWRT4_CHECKSUM == 342050000
+    SETCOLORBYNAME lime
+    PRINTL [PASS] C# compute result matches expected checksum.
+    RESETCOLOR
+ELSE
+    SETCOLORBYNAME red
+    PRINTL [FAIL] C# compute checksum mismatch.
+    RESETCOLOR
+ENDIF
+
+PRINTL 아무 키/클릭으로 메뉴로 돌아간다.
+WAIT
+RETURN

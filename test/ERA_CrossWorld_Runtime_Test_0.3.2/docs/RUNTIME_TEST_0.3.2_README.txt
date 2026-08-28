@@ -1,0 +1,55 @@
+﻿ERA CrossWorld Runtime Test 0.3.2
+==================================
+
+목표 A — SAVE / LOAD
+- ERH에서 #DIM SAVEDATA로 10,000칸 정수 배열 5개를 정의.
+- 총 50,000개의 NPC 상태값을 채운 뒤 slot 90에 저장.
+- 저장 후 배열 5개와 마커를 고의로 전부 훼손.
+- LOADDATA 90으로 복원.
+- 전체 체크섬 + 마커가 정확히 원래 값으로 돌아오는지 확인.
+- SAVE 시간과 save→corrupt→load 전체 roundtrip 시간을 표시.
+- save 파일은 sav 폴더에 생성된다.
+
+목표 B — DataTable
+- 10,000행, 사용자 컬럼 3개(name/location/activity) 생성.
+- 2,000행마다 AWAIT 실행: watchdog 경고 방지.
+- DT_TOXML로 schema/data XML 직렬화.
+- 원 테이블 해제.
+- DT_FROMXML로 복원.
+- 행 수 및 row 5000 샘플 값을 검증.
+
+실행 순서
+1. [1] SAVE/LOAD Roundtrip
+   -> 마지막에 [PASS] 확인.
+2. [3] Check save slot 90
+   -> CHKDATA result 0 확인.
+3. [2] DataTable
+   -> 마지막에 [PASS] 확인.
+
+주의
+- slot 90은 테스트 전용으로 덮어쓴다.
+- DataTable 생성 시간에는 watchdog 방지를 위한 AWAIT 5회가 포함될 수 있다.
+- DataTable XML은 이번 단계에서는 메모리 직렬화만 검증한다.
+- C# CALLSHARP는 다음 Runtime Test 0.4에서 별도로 검증한다.
+
+0.3.1 수정
+- 0.3에서 SAVEDATA/CHKDATA 자체는 성공했으나 LOADDATA 직후
+  Emuera가 @SHOW_SHOP을 찾으며 종료하던 문제를 수정.
+- 원인: LOADDATA는 호출한 다음 줄로 복귀하지 않는다.
+- Emuera는 로드 직후 @EVENTLOAD를 호출하며, EVENTLOAD가 없으면
+  @SHOW_SHOP으로 전환한다.
+- @EVENTLOAD #ONLY 추가.
+- 복원 검증은 @CWRT3_VERIFY_AFTER_LOAD에서 수행.
+- 검증 후 BEGIN TITLE로 Runtime Test 메뉴에 복귀.
+
+0.3.2 수정
+- DataTable 10,000행 생성/샘플 조회까지 정상 성공한 뒤
+  XML 문자열 길이 출력에서 STRLEN을 함수처럼 사용해 오류가 발생하던 문제 수정.
+- 배포본 샘플에서 실제 사용하는 STRLENSU(...)로 교체.
+- DataTable 생성/직렬화/복원 로직 자체는 변경하지 않음.
+
+0.3.1 실측 결과
+- SAVE/LOAD 50,000 integer cells: PASS
+- SAVE time: 26 ms
+- Total roundtrip: 92 ms
+- DataTable 10,000 rows create: 113 ms

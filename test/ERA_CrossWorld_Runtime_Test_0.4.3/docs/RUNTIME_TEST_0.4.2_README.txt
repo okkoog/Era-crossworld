@@ -1,0 +1,47 @@
+﻿ERA CrossWorld Runtime Test 0.4.2
+====================================
+
+0.4 실패 원인
+- 0.4는 배포된 Emuera EXE를 C# compile reference로 직접 사용했다.
+- 공식 EmueraPluginExample은 이 방식을 사용하지 않는다.
+- 공식 예제 소스는 플러그인이 Emuera solution/project를 참조해야 한다고 명시한다.
+- 공식 csproj도 <ProjectReference Include="..\Emuera\Emuera.csproj" />를 사용한다.
+
+0.4.1 수정
+- 현재 실행창에 표시되는 소스 commit:
+  25c23dc8f425347738783e5ef322561d48c9f155
+- 이 커밋이 EvilMask/Emuera.EM 공식 저장소에 실제 존재함을 확인.
+- BUILD_PLUGIN.bat이 동일 commit의 공식 source archive를 engine_src에 자동 다운로드.
+- plugin project가 그 source의 Emuera.csproj를 ProjectReference.
+- 따라서 현재 런타임과 최대한 동일한 Plugin API 정의를 대상으로 컴파일.
+
+인터넷 사용
+- 첫 BUILD_PLUGIN.bat 실행 때에만 GitLab에서 공식 Emuera source ZIP을 다운로드한다.
+- 이후 engine_src에 소스가 남아 있으면 다시 다운로드하지 않는다.
+
+실행 방법
+1. BUILD_AND_RUN_TEST.bat 실행.
+2. 최초 실행 시 공식 Emuera source 다운로드/압축 해제/빌드가 진행됨.
+3. 빌드 성공 시 plugins/CrossWorld.RuntimeTest.Plugin.dll 생성.
+4. 이후 Emuera가 실행됨.
+
+테스트
+[1] ERB -> C# + 참조 인수 왕복
+[2] C# PluginManager.Print
+[3] C#에서 ERB 전역변수 직접 수정
+[4] C# 10,000,000회 계산
+    expected checksum = 342050000
+
+주의
+- engine_src는 테스트를 위한 빌드 의존성이다. 최종 게임 배포에 소스 전체를 넣을 필요는 없다.
+- 최종적으로는 빌드된 CrossWorld 전용 DLL만 plugins에 넣어 배포할 수 있다.
+
+0.4.2 수정
+- 0.4.1의 ProjectReference 방식 자체는 맞았지만,
+  일반 Release 구성으로 Emuera.csproj를 빌드하면서 WMPLib COMReference가 활성화되어
+  dotnet MSBuild의 MSB4803 ResolveComReference 오류가 발생했다.
+- Emuera.csproj에는 공식적으로 Debug-NAudio / Release-NAudio 구성이 존재한다.
+- NAudio 구성에서는 Sound.WMP.cs를 제거하고 NAudio 패키지를 사용하므로
+  WMPLib COMReference 분기를 타지 않는다.
+- BUILD_PLUGIN.bat의 빌드 구성을 Release-NAudio / x64로 변경했다.
+- Visual Studio / .NET Framework MSBuild 추가 설치는 요구하지 않는다.
