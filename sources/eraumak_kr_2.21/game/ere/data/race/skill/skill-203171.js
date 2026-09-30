@@ -1,0 +1,76 @@
+const UmaSkill = require('#/data/race/model/uma-skill');
+
+module.exports = new UmaSkill(
+  203171,
+  '일장일이',
+  '레이스 중반이 다가왔을 때 속도를 약간 떨어뜨리고 그 후 레이스 종반이 시작될 때 많이 앞으로 나간다',
+  20317,
+  2,
+  17,
+  508,
+  [() => true, () => true],
+  [
+    (args) => args.distance_type === 3 && args.phase_laterhalf_random === 0,
+    (args) =>
+      args.is_activate_other_skill_detail === 1 &&
+      args.phase_firsthalf_random === 2,
+  ],
+  [1.2, 2.4],
+  [500, 500],
+  [
+    UmaSkill.ability_time_usage_enum.normal,
+    UmaSkill.ability_time_usage_enum.normal,
+  ],
+  [
+    [
+      UmaSkill.ability_type_enum.CurrentSpeed,
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+    ],
+    [
+      UmaSkill.ability_type_enum.CurrentSpeedWithNaturalDeceleration,
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+    ],
+  ],
+  [
+    [
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+    [
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+  ],
+  [
+    [-0.15, 0, 0],
+    [0.45, 0, 0],
+  ],
+  [
+    [
+      UmaSkill.target_type_enum.Self,
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+    ],
+    [
+      UmaSkill.target_type_enum.Self,
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+    ],
+  ],
+  [
+    [0, 0, 0],
+    [0, 0, 0],
+  ],
+  [3, 0],
+  [60, 0],
+  1,
+  160,
+  true,
+  false,
+  [4],
+  [UmaSkill.ability_tag_enum.currentSpeed],
+);

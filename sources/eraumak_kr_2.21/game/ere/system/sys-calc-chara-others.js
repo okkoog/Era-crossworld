@@ -1,0 +1,421 @@
+const era = require('#/era-electron');
+
+const { sys_check_yandere } = require('#/system/chara/sys-calc-cheat');
+const { sys_change_pressure } = require('#/system/sys-calc-base-cflag');
+const {
+  sys_check_hide_relation_and_love,
+  sys_check_limit_relation_and_love,
+  sys_check_remote,
+} = require('#/system/sys-calc-chara-param');
+const sys_filter_chara = require('#/system/sys-filter-chara');
+
+const CustomizedCheck = require('#/event/check/check-common');
+const { get_custom_check } = require('#/event/check/check-factory');
+const { get_custom_mec } = require('#/event/mec/mec-factory');
+
+const { get_chara_talk } = require('#/utils/chara-talk-factory');
+const { get_random_entry } = require('#/utils/list-utils');
+const { get_random_value } = require('#/utils/value-utils');
+
+const { attr_change_colors, palam_colors } = require('#/data/color-const');
+const { love_colors, relation_colors } = require('#/data/const.json');
+const CharaInmon = require('#/data/ero/chara-inmon');
+const { plugin_enum } = require('#/data/ero/plugin/plugin-const');
+const MyEduMarks = require('#/data/event/edu-event-marks/edu-event-marks-0');
+const recruit_flags = require('#/data/event/recruit-flags');
+const {
+  get_love_border,
+  get_love_mark,
+  get_relation_mark,
+} = require('#/data/info-generator');
+const LoveLimitStatus = require('#/data/love-limit-status');
+
+/**
+ * @param {number} lover
+ * @param {number} new_love
+ */
+async function punish_unfaithful(lover, new_love) {
+  const punish_option = era.get('flag:불충실패널티') === 1,
+    me = get_chara_talk(0),
+    temp_chara_list = sys_filter_chara(
+      'cflag',
+      '모집상태',
+      recruit_flags.yes,
+    ).filter((cid) => {
+      return (
+        cid > 0 &&
+        cid !== lover &&
+        era.get(`love:${cid}`) >= 75 &&
+        era.get(`cflag:${cid}:성장단계`) >= 2
+      );
+    });
+  for (const cid of temp_chara_list) {
+    const is_aware =
+      era.get(`cflag:${cid}:위치`) === era.get('cflag:0:위치') &&
+      get_custom_mec(cid).is_anger_for_unfaithful([lover]) &&
+      sys_check_yandere(cid, (y) => punish_option || y > 0);
+    get_custom_check(cid).check_after_betrayed([lover], is_aware);
+    if (is_aware) {
+      era.print([
+        me.get_colored_name(),
+        '의 배신에 ',
+        get_chara_talk(cid).get_colored_name(),
+        '은(는) 극도로 분노했다……',
+      ]);
+      sys_change_pressure(cid, get_random_value(1000, 2000));
+      like_chara(
+        cid,
+        0,
+        -get_random_value(
+          100,
+          200 +
+            8 * (new_love - 75) +
+            8 * (era.get(`love:${cid}`) - 75) +
+            100 * era.get(`talent:${cid}:얀데레`),
+        ),
+      );
+    }
+  }
+  if (temp_chara_list.length > 0) {
+    await era.waitAnyKey();
+  }
+}
+
+/**
+ * @param {number} target the id of the character whose relation will be changed
+ * @param {number} aim the id of the character that the target will change the relation between them
+ * @param {number} val change value of relation
+ * @param {boolean} [shown=true] if shown
+ * @param {number} [extra_love=0]
+ * @returns {boolean} if any output
+ */
+function like_chara(target, aim, val, shown = true, extra_love = 0) {
+  if (!target) {
+    // 玩家对所有马娘好感默认最大
+    return false;
+  }
+  const inmon = CharaInmon.get(target);
+  let relation = era.get(`relation:${target}:${aim}`);
+  let love = 0;
+  let coff = 100;
+  if (relation === undefined) {
+    relation = 75;
+  }
+  if (val > 0) {
+    coff +=
+      100 * inmon.on(plugin_enum.rel_gu) - 50 * inmon.on(plugin_enum.rel_gd);
+    if (era.get(`status:${target}:생일`) > 0) {
+      coff *= 2;
+    }
+  } else if (val < 0) {
+    coff +=
+      100 * inmon.on(plugin_enum.rel_lu) - 50 * inmon.on(plugin_enum.rel_ld);
+  }
+  if (!aim) {
+    if (val > 0) {
+      coff +=
+        era.get('flag:호감상승보너스') -
+        25 * sys_check_remote(target) -
+        50 * (era.get(`status:${target}:혐오약`) > 0) +
+        get_custom_mec(target).get_relation_buff();
+    } else if (val < 0) {
+      coff +=
+        -era.get('flag:호감상승보너스') +
+        50 * sys_check_remote(target) +
+        50 * (era.get(`status:${target}:혐오약`) > 0);
+    }
+  }
+  if (coff >= 0) {
+    val *= coff / 100;
+  }
+  if (val > 0) {
+    val = Math.floor(
+      Math.max(val + 3 * era.get(`talent:${target}:자신감`), 1),
+    );
+    let shield = 0;
+    if (!aim) {
+      if (relation > 525) {
+        love = Math.floor(val / 10);
+      } else if (relation > 375) {
+        love = Math.floor(val / 15);
+      } else if (relation > 225) {
+        love = Math.floor(val / 20);
+      }
+    }
+    if (relation + val > 600) {
+      shield = relation + val - 600;
+      val = 600 - relation;
+    }
+    if (!aim) {
+      let temp = Math.floor(era.get(`cflag:${target}:호감방패`));
+      if (shield > 0) {
+        const love = era.get(`love:${target}`);
+        if (love > 50) {
+          shield *= (love - 50) / 50;
+        }
+        while (shield >= temp) {
+          shield -= temp;
+          temp = Math.floor(era.add(`cflag:${target}:호감방패`, 1));
+        }
+        era.add(`cflag:${target}:호감방패`, shield / temp);
+      } else if (val < 0) {
+        temp += val;
+        if (temp >= 0) {
+          era.set(`cflag:${target}:호감방패`, temp);
+        } else {
+          val = Math.ceil(temp);
+        }
+      }
+    }
+  } else if (val < 0) {
+    val = Math.floor(Math.min(val, -1));
+    if (relation + val < -200) {
+      val = -200 - relation;
+    }
+  }
+  love = Math.max(love, extra_love);
+  let ret = false;
+  if (val !== 0) {
+    const _new = era.set(`relation:${target}:${aim}`, relation + val);
+    if (shown) {
+      const mark = get_relation_mark(target, _new);
+      ret = true;
+      era.print([
+        get_chara_talk(target).get_colored_name(),
+        '의 ',
+        get_chara_talk(aim).get_colored_name(),
+        '에 대한 호감도 ',
+        val > 0
+          ? {
+              color: attr_change_colors.up,
+              content: '상승 ',
+            }
+          : {
+              color: attr_change_colors.down,
+              content: '하락 ',
+            },
+        {
+          content: `${mark === '?' ? '?' : val > 0 ? val : -val}!현재값：`,
+        },
+        {
+          content: `${mark} (${mark === '?' ? '?' : _new})`,
+          color: relation_colors[mark],
+        },
+      ]);
+    }
+  }
+  if (love > 0 && love_uma(target, love, shown)) {
+    ret = true;
+  }
+  return ret;
+}
+
+/**
+ * @param {number} cid
+ * @param {number} val
+ * @param {boolean} [shown=true]
+ * @returns {boolean}
+ */
+function love_uma(cid, val, shown = true) {
+  const love = era.get(`love:${cid}`);
+  if (
+    cid === 0 ||
+    val === 0 ||
+    (love === 0 &&
+      !era.get('flag:후손애정제한') &&
+      era.get(`cflag:${cid}:부계캐릭`) >= 0) ||
+    era.get(`status:${cid}:혐오약`) > 0 ||
+    !LoveLimitStatus.get(cid).is_empty()
+  ) {
+    return false;
+  }
+  const inmon = CharaInmon.get(cid);
+  const coff =
+    100 +
+    era.get('flag:애정상승보너스') +
+    50 * era.get(`status:${cid}:애정억제`) +
+    get_custom_mec(cid).get_love_buff() +
+    100 * inmon.on(plugin_enum.love_up) -
+    80 * inmon.on(plugin_enum.love_d1) -
+    100 * inmon.on(plugin_enum.love_d2);
+  if (isNaN(val)) {
+    era.logger.error(`角色 ${cid} 非有效爱慕值!`);
+    return false;
+  }
+  val = Math.floor((val * coff) / 100);
+  if (val > 6) {
+    val = 6;
+  }
+  const force_limit = get_custom_mec(cid).get_love_limit();
+  const border = force_limit || Math.max(get_love_border(cid), 50);
+  const love_limit = !era.get('flag:턴당애정도패널티');
+  if ((love_limit || force_limit) && love + val >= border) {
+    val = border - 1 - love;
+  }
+  if (love + val > 100) {
+    val = 100 - love;
+  }
+  if (val === 0) {
+    return false;
+  }
+  let new_val = era.add(`love:${cid}`, val);
+  let printed_new_val = new_val;
+  let hide = sys_check_limit_relation_and_love(cid);
+  if (hide && love < 24) {
+    hide = false;
+    printed_new_val = Math.min(printed_new_val, 24);
+  }
+  shown &&= !hide;
+  print_change(cid, love, printed_new_val, shown);
+  if (
+    love < 50 &&
+    new_val >= 50 &&
+    era.get(`cflag:${cid}:종족`) > 0 &&
+    sys_check_yandere(cid, (y) => y === 1, inmon)
+  ) {
+    era.set(`status:${cid}:애정억제`, 1);
+  }
+  if (
+    love_limit &&
+    (new_val === 49 || new_val === 74 || new_val === 89 || new_val === 99) &&
+    era.get(`cflag:${cid}:호감거절`) !== new_val
+  ) {
+    if ((sys_check_hide_relation_and_love(cid) & 0b1) === 0 && shown) {
+      era.print([
+        get_chara_talk(cid).get_colored_name(),
+        '와의 관계가 한 단계 더 나아갈 수 있을 것 같다...',
+      ]);
+    }
+    get_custom_check(cid).check_love_events();
+  }
+  return shown;
+}
+
+/**
+ * @param {number} _from
+ * @param {number} _to
+ * @returns {string}
+ */
+function get_callname(_from, _to) {
+  const callname = era.get(`callname:${_from}:${_to}`);
+  if (Array.isArray(callname)) {
+    return get_random_entry(callname);
+  }
+  if (callname === '-') {
+    return era.get(`static:${_to}:callname`);
+  }
+  return callname;
+}
+
+/**
+ * @param {number} cid
+ * @param {number} old_val
+ * @param {number} new_val
+ * @param {boolean} [shown=true]
+ * @returns {boolean|undefined}
+ */
+function print_change(cid, old_val, new_val, shown = true) {
+  if (shown && old_val !== new_val) {
+    const mark = [get_love_mark(old_val, cid), get_love_mark(new_val, cid)];
+    era.print([
+      get_chara_talk(cid).get_colored_name(),
+      '의 ',
+      get_chara_talk(0).get_colored_name(),
+      '에 대한 애정도 ',
+      { content: ' 상승 ', color: love_colors[mark[0]] },
+      {
+        content: mark[1] === '?' ? '?' : new_val - old_val,
+        color: palam_colors.notifications[1],
+      },
+      '!현재값:',
+      {
+        content: `${mark[1]} (${mark[1] === '?' ? '?' : new_val})`,
+        color: love_colors[mark[1]],
+      },
+    ]);
+    return true;
+  }
+}
+
+CustomizedCheck.like_chara = like_chara;
+CustomizedCheck.love_uma = love_uma;
+
+module.exports = {
+  sys_change_status_by_base(cid) {
+    if (!era.get(`base:${cid}:체력`)) {
+      era.set(`status:${cid}:숙면`, 1);
+    }
+  },
+  sys_get_callname: get_callname,
+  /**
+   * @param {number} _from
+   * @param {number} _to
+   */
+  sys_get_colored_callname(_from, _to) {
+    return {
+      color: get_chara_talk(_to < 0 ? _from : _to).color,
+      content: get_callname(_from, _to),
+      fontWeight: 'bold',
+    };
+  },
+  sys_get_colored_full_callname(_from, _to) {
+    const chara = get_chara_talk(_to < 0 ? _from : _to);
+    let content;
+    if (_from === _to) {
+      content = '자신';
+    } else {
+      content = get_callname(_from, _to);
+      if (content !== chara.actual_name) {
+        content = `${content} (${chara.actual_name})`;
+      }
+    }
+    return {
+      color: chara.color,
+      content,
+      fontWeight: 'bold',
+    };
+  },
+  sys_like_chara: like_chara,
+  sys_love_uma: love_uma,
+  /**
+   * @param {number} cid
+   * @returns {Promise<boolean>}
+   */
+  async sys_love_uma_in_event(cid) {
+    if (era.get('flag:턴당애정도패널티') > 0 || cid === 0) {
+      return false;
+    }
+    const new_val = era.add(`love:${cid}`, 1);
+    if (
+      typeof era.get(`callname:${cid}:0`) === 'string' &&
+      era.get(`callname:${cid}:0`).startsWith('트레이너')
+    ) {
+      get_custom_mec(cid).set_callname();
+    }
+    if (
+      new_val === 50 &&
+      era.get(`cflag:${cid}:종족`) &&
+      sys_check_yandere(cid, (y) => y === 1)
+    ) {
+      era.set(`status:${cid}:애정억제`, 1);
+    }
+    if (era.get(`status:${cid}:애정억제`) > 0 && new_val >= 75) {
+      era.set(`status:${cid}:애정억제`, 0);
+    }
+    if (
+      sys_check_hide_relation_and_love(cid) ||
+      sys_check_limit_relation_and_love(cid)
+    ) {
+      return false;
+    }
+    era.println();
+    print_change(cid, new_val - 1, new_val);
+    era.set(`cflag:${cid}:호감거절`, 0);
+    const my_marks = new MyEduMarks();
+    my_marks.pity = (my_marks.pity || []).filter((e) => e !== cid);
+    await get_chara_talk(0).say_and_wait('이제 돌이킬 수 없다...', true);
+    new_val >= 75 && (await punish_unfaithful(cid, new_val));
+    return true;
+  },
+  sys_punish_unfaithful: punish_unfaithful,
+};

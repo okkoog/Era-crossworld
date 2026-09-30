@@ -1,0 +1,25 @@
+const era = require('#/era-electron');
+
+const sys_personal_achievement = require('#/system/global/sys-calc-personal-achievement');
+
+const CustomizedInit = require('#/event/init/customized-init');
+
+const MayLifeMarks = require('#/data/event/life-event-marks/life-event-marks-343');
+const { attr_names } = require('#/data/train-const');
+
+module.exports = class extends CustomizedInit {
+  init(is_reset) {
+    if (!is_reset) {
+      if (sys_personal_achievement.get(343)) {
+        new MayLifeMarks().who_am_i = 2;
+        era.set('callname:343:-2', era.get('callname:343:-1'));
+      } else {
+        era.set(
+          'callname:343:-2',
+          `사타케${era.get('cflag:343:성별') === 1 ? ' 선생님' : ' 씨'}`,
+        );
+      }
+      attr_names.forEach((e) => era.set(`base:343:${e}`, 800));
+    }
+  }
+};

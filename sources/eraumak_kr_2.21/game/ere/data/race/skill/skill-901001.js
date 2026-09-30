@@ -1,0 +1,87 @@
+const UmaSkill = require('#/data/race/model/uma-skill');
+
+module.exports = new UmaSkill(
+  901001,
+  'Never Say Never',
+  '남은 거리 300m 지점에서 전방에 있으면 속도가 아주 조금 상승하며, 더트 레이스에서 선두와 가까우면 추가로 아주 조금 앞으로 나간다',
+  90100,
+  1,
+  16,
+  180,
+  [() => true, () => true],
+  [
+    (args) =>
+      args.remain_distance >= 299 &&
+      args.remain_distance <= 301 &&
+      args.order_rate >= 20 &&
+      args.order_rate <= 40 &&
+      args.distance_diff_top <= 5 &&
+      args.ground_type === 2,
+    (args) =>
+      args.remain_distance >= 299 &&
+      args.remain_distance <= 301 &&
+      args.order_rate >= 20 &&
+      args.order_rate <= 40,
+  ],
+  [3, 3],
+  [500, 500],
+  [
+    UmaSkill.ability_time_usage_enum.normal,
+    UmaSkill.ability_time_usage_enum.normal,
+  ],
+  [
+    [
+      UmaSkill.ability_type_enum.TargetSpeed,
+      UmaSkill.ability_type_enum.CurrentSpeedWithNaturalDeceleration,
+      UmaSkill.ability_type_enum.no,
+    ],
+    [
+      UmaSkill.ability_type_enum.TargetSpeed,
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+    ],
+  ],
+  [
+    [
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+    [
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+  ],
+  [
+    [0.05, 0.05, 0],
+    [0.05, 0, 0],
+  ],
+  [
+    [
+      UmaSkill.target_type_enum.Self,
+      UmaSkill.target_type_enum.Self,
+      UmaSkill.target_type_enum.no,
+    ],
+    [
+      UmaSkill.target_type_enum.Self,
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+    ],
+  ],
+  [
+    [0, 0, 0],
+    [0, 0, 0],
+  ],
+  [1, 3],
+  [7, 7],
+  1,
+  200,
+  false,
+  true,
+  [1],
+  [
+    UmaSkill.ability_tag_enum.currentSpeed,
+    UmaSkill.ability_tag_enum.targetSpeed,
+  ],
+);

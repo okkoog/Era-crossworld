@@ -1,0 +1,81 @@
+const UmaSkill = require('#/data/race/model/uma-skill');
+
+module.exports = new UmaSkill(
+  600012,
+  '진심을 담아',
+  '레이스 최종반이 시작될 때 라스트 스퍼트가 한창이면 속도와 가속도가 상승하고 치고 나간다. 트레이너에 대한 애정이 클수록 효과가 커진다',
+  60001,
+  2,
+  UmaSkill.get_skill_color(
+    UmaSkill.skill_name_enum.speed,
+    UmaSkill.skill_border_enum.advanced,
+  ),
+  506,
+  [() => true, () => true],
+  [
+    (args) => args.is_lastspurt === 1 && args.phase_firsthalf_random === 3,
+    () => false,
+  ],
+  [3, 0],
+  [500, 0],
+  [
+    UmaSkill.ability_time_usage_enum.normal,
+    UmaSkill.ability_time_usage_enum.normal,
+  ],
+  [
+    [
+      UmaSkill.ability_type_enum.TargetSpeed,
+      UmaSkill.ability_type_enum.Accel,
+      UmaSkill.ability_type_enum.LaneMoveSpeed,
+    ],
+    [
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+    ],
+  ],
+  [
+    [
+      UmaSkill.ability_usage_enum.MultiplyLove,
+      UmaSkill.ability_usage_enum.MultiplyLove,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+    [
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+  ],
+  [
+    [0.1, 0.2, 0.1],
+    [0, 0, 0],
+  ],
+  [
+    [
+      UmaSkill.target_type_enum.Self,
+      UmaSkill.target_type_enum.Self,
+      UmaSkill.target_type_enum.Self,
+    ],
+    [
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+    ],
+  ],
+  [
+    [0, 0, 0],
+    [0, 0, 0],
+  ],
+  [0, 0],
+  [0, 0],
+  1,
+  160,
+  false,
+  false,
+  [],
+  [
+    UmaSkill.ability_tag_enum.targetSpeed,
+    UmaSkill.ability_tag_enum.laneMove,
+    UmaSkill.ability_tag_enum.accel,
+  ],
+);

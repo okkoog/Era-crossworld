@@ -1,0 +1,76 @@
+const UmaSkill = require('#/data/race/model/uma-skill');
+
+module.exports = new UmaSkill(
+  201471,
+  '시야 양호! 이상 없음!',
+  '좌우로 이동하면 상황을 파악해서 시야가 다소 넓어진다',
+  20147,
+  2,
+  17,
+  334,
+  [() => true, () => true],
+  [
+    (args) =>
+      (args.running_style === 4 && args.is_move_lane === 1) ||
+      (args.running_style === 4 && args.is_move_lane === 2),
+    () => false,
+  ],
+  [3, 0],
+  [500, 0],
+  [
+    UmaSkill.ability_time_usage_enum.normal,
+    UmaSkill.ability_time_usage_enum.normal,
+  ],
+  [
+    [
+      UmaSkill.ability_type_enum.VisibleDistance,
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+    ],
+    [
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+    ],
+  ],
+  [
+    [
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+    [
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+  ],
+  [
+    [10, 0, 0],
+    [0, 0, 0],
+  ],
+  [
+    [
+      UmaSkill.target_type_enum.Self,
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+    ],
+    [
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+    ],
+  ],
+  [
+    [0, 0, 0],
+    [0, 0, 0],
+  ],
+  [3, 0],
+  [40, 0],
+  1,
+  110,
+  false,
+  false,
+  [9],
+  [UmaSkill.ability_tag_enum.visible],
+);

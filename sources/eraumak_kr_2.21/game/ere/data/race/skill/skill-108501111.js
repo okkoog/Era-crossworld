@@ -1,0 +1,80 @@
+const UmaSkill = require('#/data/race/model/uma-skill');
+
+module.exports = new UmaSkill(
+  108501111,
+  '화려하여라',
+  '최종 코너에서 중위권 그룹 이후라면 앞뒤로 3명씩 속도를 약간 떨어뜨리고 자신의 속도가 많이 상승한다',
+  10850111,
+  1,
+  19,
+  633,
+  [() => true, () => true],
+  [
+    (args) =>
+      args.running_style === 3 &&
+      args.order_rate >= 40 &&
+      args.is_finalcorner_random === 1,
+    () => false,
+  ],
+  [1.8, 0],
+  [500, 0],
+  [
+    UmaSkill.ability_time_usage_enum.normal,
+    UmaSkill.ability_time_usage_enum.normal,
+  ],
+  [
+    [
+      UmaSkill.ability_type_enum.TargetSpeed,
+      UmaSkill.ability_type_enum.CurrentSpeed,
+      UmaSkill.ability_type_enum.CurrentSpeed,
+    ],
+    [
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+    ],
+  ],
+  [
+    [
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+    [
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+  ],
+  [
+    [0.45, -0.15, -0.15],
+    [0, 0, 0],
+  ],
+  [
+    [
+      UmaSkill.target_type_enum.Self,
+      UmaSkill.target_type_enum.SelfInfront,
+      UmaSkill.target_type_enum.SelfBehind,
+    ],
+    [
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+    ],
+  ],
+  [
+    [0, 3, 3],
+    [0, 0, 0],
+  ],
+  [1, 0],
+  [60, 0],
+  1,
+  0,
+  false,
+  false,
+  [8],
+  [
+    UmaSkill.ability_tag_enum.currentSpeed,
+    UmaSkill.ability_tag_enum.targetSpeed,
+  ],
+);

@@ -1,0 +1,79 @@
+const UmaSkill = require('#/data/race/model/uma-skill');
+
+module.exports = new UmaSkill(
+  100611,
+  'Pride of KING',
+  '레이스를 침착하게 진행하면 남은 거리가 200m고 중위권 그룹에 있을 때 실력을 발휘해 속도가 많이 상승한다',
+  10061,
+  1,
+  18,
+  340,
+  [() => true, () => true],
+  [
+    (args) =>
+      args.temptation_count === 0 &&
+      args.remain_distance <= 201 &&
+      args.remain_distance >= 199 &&
+      args.order >= 4 &&
+      args.order_rate <= 70,
+    () => false,
+  ],
+  [5, 0],
+  [500, 0],
+  [
+    UmaSkill.ability_time_usage_enum.normal,
+    UmaSkill.ability_time_usage_enum.normal,
+  ],
+  [
+    [
+      UmaSkill.ability_type_enum.TargetSpeed,
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+    ],
+    [
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+    ],
+  ],
+  [
+    [
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+    [
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+  ],
+  [
+    [0.45, 0, 0],
+    [0, 0, 0],
+  ],
+  [
+    [
+      UmaSkill.target_type_enum.Self,
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+    ],
+    [
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+    ],
+  ],
+  [
+    [0, 0, 0],
+    [0, 0, 0],
+  ],
+  [1, 0],
+  [60, 0],
+  0,
+  0,
+  false,
+  false,
+  [],
+  [UmaSkill.ability_tag_enum.targetSpeed],
+);

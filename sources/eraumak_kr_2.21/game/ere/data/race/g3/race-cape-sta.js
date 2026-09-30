@@ -1,0 +1,21 @@
+// GENERATED START
+const RaceInfo = require('#/data/race/model/race-info');
+
+module.exports = new RaceInfo(
+  'Capella Stakes',
+  '카펠라 스테이크스',
+  RaceInfo.class_enum.G3,
+  RaceInfo.track_enum.nakayama,
+  RaceInfo.ground_enum.mud,
+  1200,
+  RaceInfo.distance_enum.short,
+  RaceInfo.rotation_enum.right,
+  16,
+  [],
+  RaceInfo.limit_enum.post3,
+  46,
+  0,
+  1187,
+  10508,
+);
+// GENERATED END
