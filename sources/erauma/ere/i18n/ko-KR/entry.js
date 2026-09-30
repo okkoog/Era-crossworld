@@ -808,6 +808,7 @@ module.exports = class extends require('#/i18n/ja-JP/entry') {
   tb_talent = new (require('#/i18n/ko-KR/table/talent'))();
 
   race = new (require('#/i18n/ko-KR/race/races'))();
+  clothe = new (require('#/i18n/ko-KR/race/clothes'))();
   inherit_shop = new (require('#/i18n/ko-KR/race/inherit'))();
   gene = new (require('#/i18n/ko-KR/race/genes'))();
   gene_desc = new (require('#/i18n/ko-KR/race/gene-desc'))();
