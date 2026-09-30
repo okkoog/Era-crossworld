@@ -3,12 +3,26 @@
 #DIMS MESSAGE
 #DIMS INPUT_TEXT
 CALLSHARP EraUmaBridge("game","",STATE,MESSAGE)
-WHILE STATE == 1
-    INPUTS
-    INPUT_TEXT = %RESULTS%
-    CALLSHARP EraUmaBridge("resume",INPUT_TEXT,STATE,MESSAGE)
+WHILE STATE == 1 || STATE == 3 || STATE == 4
+    IF STATE == 3
+        AWAIT 50
+        CALLSHARP EraUmaBridge("tick","",STATE,MESSAGE)
+    ELSEIF STATE == 4
+        TINPUTS 50,"",0,""
+        IF ISTIMEOUT
+            CALLSHARP EraUmaBridge("tick","",STATE,MESSAGE)
+        ELSE
+            INPUT_TEXT = %RESULTS%
+            CALLSHARP EraUmaBridge("resume",INPUT_TEXT,STATE,MESSAGE)
+        ENDIF
+    ELSE
+        INPUTS
+        INPUT_TEXT = %RESULTS%
+        CALLSHARP EraUmaBridge("resume",INPUT_TEXT,STATE,MESSAGE)
+    ENDIF
 WEND
 PRINTFORML %MESSAGE%
 PRINTL Session ended. Press any key to exit.
 WAIT
+CALLSHARP EraUmaBridge("exit","",STATE,MESSAGE)
 QUIT

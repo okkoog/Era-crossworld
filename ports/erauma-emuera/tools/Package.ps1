@@ -1,0 +1,143 @@
+param(
+    [string]$OutputRoot,
+    [string]$RuntimePath,
+    [string]$PackageName,
+    [string]$NuGetRoot
+)
+$ErrorActionPreference='Stop'
+Set-StrictMode -Version Latest
+$portPath=Split-Path $PSScriptRoot
+$repoPath=(Resolve-Path (Join-Path $portPath '..\..')).Path
+if (!$OutputRoot) { $OutputRoot=Join-Path $repoPath '..\..\outputs' }
+if (!$RuntimePath) { $RuntimePath=Join-Path $portPath 'artifacts\runtime-Game' }
+if (!$PackageName) { $PackageName='erauma-emuera-portable-'+(Get-Date -Format 'yyyyMMdd-HHmmss')+'-'+[guid]::NewGuid().ToString('N').Substring(0,8) }
+if ($PackageName -notmatch '^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$') { throw 'PackageName must be a simple folder name.' }
+if (!$NuGetRoot) {
+    $NuGetRoot=$env:NUGET_PACKAGES
+    if (!$NuGetRoot) { $NuGetRoot=Join-Path $env:USERPROFILE '.nuget\packages' }
+}
+$RuntimePath=(Resolve-Path -LiteralPath $RuntimePath).Path
+$OutputRoot=[IO.Path]::GetFullPath($OutputRoot)
+$packageRoot=Join-Path $OutputRoot $PackageName
+$archivePath=Join-Path $OutputRoot ($PackageName+'.zip')
+if ((Test-Path -LiteralPath $packageRoot) -or (Test-Path -LiteralPath $archivePath)) { throw 'Output already exists. Choose a fresh PackageName; existing files are never removed.' }
+
+$reference=Join-Path $repoPath 'test\ERA_CrossWorld_Runtime_Test_0.4.3'
+$referenceExe=Join-Path $reference 'Emuera.NET 1824+v24+EMv18+EEv56.exe'
+$runtimeExe=Join-Path $RuntimePath 'Emuera.exe'
+$referenceHash=(Get-FileHash -LiteralPath $referenceExe -Algorithm SHA256).Hash
+if ((Get-FileHash -LiteralPath $runtimeExe -Algorithm SHA256).Hash -ne $referenceHash) { throw 'Emuera.exe differs from the exact bundled CrossWorld runtime.' }
+if ([IO.File]::ReadAllText((Join-Path $RuntimePath 'ERB\Probe.ERB')) -cne [IO.File]::ReadAllText((Join-Path $portPath 'bootstrap\Game.ERB'))) { throw 'Package requires Build.ps1 -Mode Game, not an automatic verification bootstrap.' }
+$pluginFiles=@('EraUma.Plugin.dll','EraUma.Compatibility.dll','Jint.dll','Acornima.dll')
+foreach ($pluginFile in $pluginFiles) {
+    $builtFile=Join-Path $portPath ('plugin\bin\Release\net10.0-windows\'+$pluginFile)
+    $runtimeFile=Join-Path $RuntimePath ('Plugins\'+$pluginFile)
+    if ((Get-FileHash -LiteralPath $builtFile -Algorithm SHA256).Hash -ne (Get-FileHash -LiteralPath $runtimeFile -Algorithm SHA256).Hash) { throw "Stale runtime DLL: $pluginFile. Run Build.ps1 -Mode Game again." }
+}
+$lock=Get-Content -LiteralPath (Join-Path $portPath 'compatibility\packages.lock.json') -Raw | ConvertFrom-Json
+if ($lock.dependencies.'net10.0'.Jint.resolved -ne '4.16.4' -or $lock.dependencies.'net10.0'.Acornima.resolved -ne '1.7.0') { throw 'Update the packaging licenses and notices when NuGet versions change.' }
+$packageSpecs=@(@{id='jint';version='4.16.4';license='BSD-2-Clause'},@{id='acornima';version='1.7.0';license='BSD-3-Clause'})
+foreach ($spec in $packageSpecs) {
+    [xml]$nuspec=Get-Content -LiteralPath (Join-Path $NuGetRoot ($spec.id+'\'+$spec.version+'\'+$spec.id+'.nuspec')) -Raw
+    if ($nuspec.package.metadata.version -ne $spec.version -or $nuspec.package.metadata.license.InnerText -ne $spec.license) { throw "Unexpected NuGet metadata for $($spec.id)." }
+}
+if (!(Test-Path -LiteralPath (Join-Path $portPath 'artifacts\kojo'))) { throw 'Compile kojo using tools/build-kojo.cjs first.' }
+
+New-Item -ItemType Directory -Path $packageRoot | Out-Null
+$exclusions=[Collections.Generic.List[string]]::new()
+function Copy-PackageFile([string]$Source,[string]$Destination) {
+    $item=Get-Item -LiteralPath $Source -Force
+    if ($item.PSIsContainer) { throw "Expected a file: $Source" }
+    if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Links are not copied: $Source" }
+    $target=Join-Path $packageRoot $Destination
+    [IO.Directory]::CreateDirectory((Split-Path $target)) | Out-Null
+    [IO.File]::Copy($item.FullName,$target,$false)
+}
+function Copy-PackageTree([string]$Source,[string]$Destination,[string[]]$Extensions=@()) {
+    $sourceRoot=(Resolve-Path -LiteralPath $Source).Path.TrimEnd('\','/')
+    if ((Get-Item -LiteralPath $sourceRoot -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Links are not copied: $Source" }
+    foreach ($item in Get-ChildItem -LiteralPath $sourceRoot -Force -Recurse) {
+        $relative=$item.FullName.Substring($sourceRoot.Length+1).Replace('\','/')
+        if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Links are not copied: $($item.FullName)" }
+        if ($item.PSIsContainer) { continue }
+        if ($relative -match '(^|/)(\.git|node_modules|bin|obj|artifacts|results|sav|saves)(/|$)' -or $item.Name -match '^\.env($|\.)|\.sav$') {
+            $exclusions.Add(($Destination+'/'+$relative).Replace('\','/'))
+            continue
+        }
+        if ($Extensions.Count -gt 0 -and $item.Extension.ToLowerInvariant() -notin $Extensions -and $item.Name -ne 'packages.lock.json') { continue }
+        Copy-PackageFile $item.FullName (Join-Path $Destination $relative)
+    }
+}
+
+# Runtime allowlist: user saves, reports and automatic-test checkpoints never enter the package.
+Copy-PackageFile $runtimeExe 'Emuera.exe'
+Copy-PackageTree (Join-Path $RuntimePath 'CSV') 'CSV'
+Copy-PackageTree (Join-Path $RuntimePath 'ERB') 'ERB'
+foreach ($pluginFile in $pluginFiles) { Copy-PackageFile (Join-Path $RuntimePath ('Plugins\'+$pluginFile)) ('Plugins\'+$pluginFile) }
+Copy-PackageFile (Join-Path $RuntimePath 'pluginsAware.txt') 'pluginsAware.txt'
+Copy-PackageTree (Join-Path $repoPath 'sources\erauma\ere') 'game\erauma\ere'
+Copy-PackageFile (Join-Path $repoPath 'sources\erauma\build\static.json') 'game\erauma\build\static.json'
+Copy-PackageFile (Join-Path $repoPath 'sources\erauma\LICENSE') 'game\erauma\LICENSE'
+Copy-PackageFile (Join-Path $repoPath 'sources\erauma\package.json') 'game\erauma\package.json'
+Copy-PackageTree (Join-Path $portPath 'third_party\ere') 'game\engine'
+Copy-PackageTree (Join-Path $portPath 'artifacts\kojo') 'game\kojo'
+foreach ($sourceFolder in @('compatibility','plugin','bootstrap','tests','tools')) {
+    Copy-PackageTree (Join-Path $portPath $sourceFolder) ('adapter-source\'+$sourceFolder) @('.cs','.js','.csproj','.erb','.ps1','.cjs','.py','.md')
+}
+Copy-PackageFile (Join-Path $portPath 'README.md') 'adapter-source\README.md'
+Copy-PackageTree (Join-Path $portPath 'packaging') 'adapter-source\packaging'
+foreach ($document in @('ERAUMA_ENGINE_DEPENDENCIES.md','ERAUMA_COMPATIBILITY_API.md','ERAUMA_PORTING_STATUS.md','ERAUMA_KNOWN_ISSUES.md','API_USAGE.md')) {
+    Copy-PackageFile (Join-Path $portPath ('docs\'+$document)) ('docs\'+$document)
+    Copy-PackageFile (Join-Path $portPath ('docs\'+$document)) ('adapter-source\docs\'+$document)
+}
+Copy-PackageTree (Join-Path $reference 'LICENSE') 'licenses\Emuera'
+Copy-PackageTree (Join-Path $portPath 'packaging\licenses') 'licenses'
+foreach ($spec in $packageSpecs) {
+    Copy-PackageFile (Join-Path $NuGetRoot ($spec.id+'\'+$spec.version+'\'+$spec.id+'.nuspec')) ('licenses\'+$spec.id+'-'+$spec.version+'.nuspec')
+}
+Copy-PackageFile (Join-Path $portPath 'packaging\README_PORTABLE.md') 'README.md'
+Copy-PackageFile (Join-Path $portPath 'packaging\THIRD_PARTY_NOTICES.md') 'THIRD_PARTY_NOTICES.md'
+$paths=@{source='game/erauma';engine='game/engine';kojo='game/kojo'}
+[IO.File]::WriteAllText((Join-Path $packageRoot 'game-paths.json'),($paths | ConvertTo-Json),[Text.UTF8Encoding]::new($false))
+
+$manifestFiles=@(Get-ChildItem -LiteralPath $packageRoot -Recurse -File -Force | Sort-Object FullName | ForEach-Object {
+    @{path=$_.FullName.Substring($packageRoot.Length+1).Replace('\','/');bytes=$_.Length;sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash}
+})
+$commit=git -C $repoPath rev-parse HEAD
+if ($LASTEXITCODE -ne 0) { throw 'Could not record repository commit.' }
+$manifest=@{
+    format='erauma-emuera-package-v1';createdUtc=[DateTime]::UtcNow.ToString('o');repositoryCommit=$commit.Trim()
+    sourceStatus='Package reflects current local files; file hashes are authoritative, including uncommitted adapter changes.'
+    requirements=@('Windows x64','.NET 10 Windows Desktop Runtime');gameExecutionNeedsNode=$false;gameExecutionNeedsElectron=$false
+    paths=$paths;runtimeExeSha256=$referenceHash;nuget=@{Jint='4.16.4';Acornima='1.7.0'}
+    excludedPolicy=@('User saves and sav-game/','Verification results/ and checkpoints','All .env files','Git metadata','node_modules/','build bin/ and obj/','Original Electron engine/common/res submodules and optional multimedia','Verification probe.js and automatic ERB')
+    excludedFiles=@($exclusions | Sort-Object -Unique);files=$manifestFiles
+}
+[IO.File]::WriteAllText((Join-Path $packageRoot 'package-manifest.json'),($manifest | ConvertTo-Json -Depth 8),[Text.UTF8Encoding]::new($false))
+$manifestItem=Get-Item -LiteralPath (Join-Path $packageRoot 'package-manifest.json')
+$zipFiles=@($manifestFiles)+@(@{path='package-manifest.json';bytes=$manifestItem.Length;sha256=(Get-FileHash -LiteralPath $manifestItem.FullName -Algorithm SHA256).Hash})
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+[IO.Compression.ZipFile]::CreateFromDirectory($packageRoot,$archivePath,[IO.Compression.CompressionLevel]::Optimal,$true)
+$zip=[IO.Compression.ZipFile]::OpenRead($archivePath)
+try {
+    $entries=@($zip.Entries | Where-Object {$_.Name})
+    if ($entries.Count -ne $zipFiles.Count) { throw 'ZIP file count differs from the staged package.' }
+    foreach ($file in $zipFiles) {
+        $entry=$zip.GetEntry($PackageName+'/'+$file.path)
+        if (!$entry -or $entry.Length -ne $file.bytes) { throw "ZIP entry differs: $($file.path)" }
+        $stream=$entry.Open()
+        $sha=[Security.Cryptography.SHA256]::Create()
+        try { $zipFileHash=[BitConverter]::ToString($sha.ComputeHash($stream)).Replace('-','') }
+        finally { $stream.Dispose();$sha.Dispose() }
+        if ($zipFileHash -ne $file.sha256) { throw "ZIP hash differs: $($file.path)" }
+    }
+} finally { $zip.Dispose() }
+foreach ($value in $paths.Values) {
+    if ([IO.Path]::IsPathRooted($value) -or !(Test-Path -LiteralPath (Join-Path $packageRoot $value))) { throw "Not a portable game path: $value" }
+}
+$report=@{
+    packageDirectory=$packageRoot;archive=$archivePath;sha256=(Get-FileHash -LiteralPath $archivePath -Algorithm SHA256).Hash
+    files=$zipFiles.Count;bytes=(Get-Item -LiteralPath $archivePath).Length;runtimeExeSha256=$referenceHash
+    allZipEntryHashesVerified=$true;relativeGamePathsVerified=$true
+}
+$report | ConvertTo-Json

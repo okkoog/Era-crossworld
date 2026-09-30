@@ -2,8 +2,62 @@ using EraUma.Compatibility;
 using System.Diagnostics;
 using System.Text.Json;
 var directory=Path.Combine(Path.GetTempPath(),"erauma-probe-"+Guid.NewGuid());
+if(args.Length>=3&&args[0]=="--driver"){Driver.Run(args[1],args[2],args.Length>3?args[3]:null);return;}
+if(args.Length>=6&&args[0]=="--scenario"){
+    Console.WriteLine(VerificationScenario.Run(args[1],args[2],args[3],args[4],args[5],args.Length>6&&args[6]=="restore"));return;
+}
 long global=7; var timer=Stopwatch.StartNew();
 var session=new Session(directory,()=>global,x=>global=x,args.Length>0 && (args[0]=="--game" || args[0]=="--play"));
+if(args.Length>=3&&args[0]=="--api"){
+    session.LoadGame(args[1],args[2],start:false);
+    session.Start("era.print('first');era.printMultiColumns([{type:'text',content:'second'},{type:'button',content:'old',accelerator:8}]);await era.clear(1);");
+    Check(session.State=="done"&&session.EvaluateJson("era.getLineCount()")=="1","partial clear counts a multi-column row as one logical line");
+    Check(session.Drain().Last().Text=="first","partial clear retains preceding text");
+    session.Start("era.replaceText('replacement');await era.clear(0);");
+    Check(session.EvaluateJson("era.getLineCount()")=="1"&&session.Drain().Last().Text=="replacement","replace updates final row; clear zero retains it");
+    session.Execute("var selection=-1,freeText=null;");
+    session.Start("era.printButton('allowed',4);selection=await era.input();era.print('next');freeText=await era.input();");
+    session.Drain();session.Resume("9");
+    Check(session.State=="input"&&session.EvaluateJson("selection")=="-1","reject absent button value");
+    session.Resume("4");
+    Check(session.State=="input"&&!session.Drain().Any(e=>e.Kind=="button"),"previous buttons disabled at next input boundary");
+    session.Resume("Trainer");
+    Check(session.State=="done"&&session.EvaluateJson("freeText")=="\"Trainer\"","string input after button input");
+    session.Start("var name=await era.input({rule:'[A-Z]{2}'});");session.Resume("xABx");
+    Check(session.State=="input","regular expression anchored like original renderer");
+    session.Resume("AB");Check(session.State=="done","valid regular expression input resumes");
+    session.Start("await era.clear();era.allowWait=false;await era.waitAnyKey();");
+    Check(session.State=="done"&&session.EvaluateJson("era.getLineCount()")=="0","empty waitAnyKey and full clear semantics");
+    session.Start("era.print('top');era.setToBottom();await era.clear(1);");
+    Check(session.EvaluateJson("era.getLineCount()")=="1"&&session.Drain().Last().Text=="top","setToBottom adds a logical row");
+    session.Execute("var obsolete=false,replaced=false;");
+    session.Start("era.input({any:true,useRule:false,hideInput:true}).then(()=>obsolete=true);await era.delay(5);await era.input({any:true,useRule:false});replaced=true;");
+    session.Resume("");
+    Check(session.State=="done"&&session.EvaluateJson("[obsolete,replaced]")=="[false,true]","new input replaces non-awaited input like Electron");
+    session.Execute("var timerSelection=-1,timerCancelled=false;");
+    session.Start("await era.clear();era.printButton('early',1);setTimeout(()=>era.printButton('late',3),10000);const cancelled=setTimeout(()=>timerCancelled=true,10000);clearTimeout(cancelled);timerSelection=await era.input();");
+    session.Drain();session.AdvanceTimers(9000);
+    Check(session.State=="input"&&session.HasTimers&&!session.Drain().Any(e=>e.Kind=="button"&&e.Button==3),"timer keeps delayed choice hidden");
+    session.AdvanceTimers(1100);
+    var timerFrame=session.Drain();
+    Check(timerFrame.Any(e=>e.Kind=="button"&&e.Button==3)&&!session.HasTimers,"timer adds choice while input is pending");
+    Check(timerFrame.Any(e=>e.Kind=="button"&&e.Button==1),"timer redraw preserves previously active choices in the same native input generation");
+    session.Resume("3");
+    Check(session.State=="done"&&session.EvaluateJson("[timerSelection,timerCancelled]")=="[3,false]","late choice accepted and cancelled callback not run");
+    session.Execute("var loaded=true;");session.Start("loaded=await era.loadData(49);await era.clear();era.print('still running');");
+    Check(session.State=="done"&&session.EvaluateJson("loaded")=="false"&&session.Drain().Any(e=>e.Kind=="diagnostic"),"load error returns false and diagnostics survive redraw");
+    Directory.CreateDirectory(Path.Combine(directory,"sav"));
+    foreach(var invalid in new[]{"not JSON","{\"code\":-1,\"version\":999999}","{\"version\":1}"}) {
+        File.WriteAllText(Path.Combine(directory,"sav","save49.sav"),invalid);
+        session.Start("loaded=await era.loadData(49);era.print('recovered');");
+        Check(session.State=="done"&&session.EvaluateJson("loaded")=="false","corrupt, foreign or obsolete save is rejected without stopping the game: "+session.Error);
+    }
+    session.Start("await era.proxyKojo({}).missing();era.print('continued');");
+    Check(session.State=="done"&&session.Diagnostics.Count>=2,"missing kojo reports diagnostic without changing control flow");
+    session.Start("await era.clear();era.notify('notice retained');era.print('temporary');await era.clear();");
+    Check(session.State=="done"&&session.EvaluateJson("era.getLineCount()")=="0"&&session.Drain().Any(e=>e.Text.Contains("notice retained")),"notifications survive redraw without changing logical line count");
+    Console.WriteLine(JsonSerializer.Serialize(new{elapsedMs=timer.ElapsedMilliseconds,scope="original API screen and input regressions"}));return;
+}
 if(args.Length>=3 && args[0]=="--play")
 {
     session.LoadGame(args[1],args[2]);

@@ -2,6 +2,19 @@
 // Deliberately small probe API. Unsupported game APIs throw; they are not silent no-ops.
 var __state = 'idle', __error = '', __pending = null, __inputRule = null, __values = Object.create(null);
 var __exitRequested = false;
+var __inputConfig={};
+var __timers=new Map(),__timerId=0;
+function setTimeout(callback,milliseconds=0,...args){
+  if(typeof callback!=='function')throw Error('Timer callback must be a function');
+  const id=++__timerId,delay=Number(milliseconds);
+  __timers.set(id,{due:__now()+(Number.isFinite(delay)?Math.max(0,delay):0),callback,args});
+  return id;
+}
+function clearTimeout(id){__timers.delete(id);}
+function __pumpTimers(){
+  const due=[...__timers.entries()].filter(([,timer])=>timer.due<=__now()).sort((a,b)=>a[1].due-b[1].due||a[0]-b[0]);
+  for(const [id,timer] of due){if(__timers.delete(id))timer.callback(...timer.args);}
+}
 function __text(value) {
   if (Array.isArray(value)) return value.map(__text).join('');
   if (value && typeof value === 'object') {
@@ -36,8 +49,10 @@ const __api = {
     if (!config.disabled) __emit('button',__text(content),accelerator);
   },
   input(config={}) {
-    if (__pending) throw new Error('Concurrent input is not supported');
-    __inputRule=config.useRule && config.rule ? new RegExp(config.rule) : null;
+    // Electron directs input to the newest inputKey. Older non-awaited promises stay unresolved.
+    if (__pending&&!config.game) throw new Error('Concurrent input is not supported');
+    __inputConfig=config;
+    __inputRule=config.useRule!==false && config.rule ? new RegExp('^'+config.rule+'$') : null;
     __state='input';
     return new Promise(resolve => { __pending=resolve; });
   },
@@ -66,9 +81,14 @@ function __start(fn) {
 }
 function __resume(text) {
   if(!__pending) throw new Error('No pending input');
+  if(__inputConfig.game&&!__inputConfig.any&&text===''){
+    if(__inputConfig.options?.length===1)text=String(__inputConfig.options[0]);
+    else {__emit('line','Enter a value or choose a button.',0);return;}
+  }
   if(__inputRule && !__inputRule.test(text)){__emit('line','Input does not match the required pattern.',0);return;}
+  if(__inputConfig.game && !__inputRule && __inputConfig.useRule!==false && __inputConfig.options?.length && !__inputConfig.options.includes(Number(text))){__emit('line','Choose an enabled button value.',0);return;}
   __inputRule=null;
   const resolve=__pending; __pending=null; __state='running';
   const number=Number(text);
-  resolve(text.trim()!=='' && Number.isFinite(number) ? number : text);
+  resolve(__inputConfig.game ? (Number.isNaN(number)?text:number) : (text.trim()!=='' && Number.isFinite(number) ? number : text));
 }

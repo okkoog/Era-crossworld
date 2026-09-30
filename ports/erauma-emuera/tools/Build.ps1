@@ -7,7 +7,7 @@ $portPath=Split-Path $PSScriptRoot
 $repoPath=(Resolve-Path (Join-Path $portPath '..\..')).Path
 $enginePath=(Resolve-Path $EngineSource).Path
 $expectedCommit='25c23dc8f425347738783e5ef322561d48c9f155'
-$actualCommit=git -C $enginePath rev-parse HEAD
+$actualCommit=git -c "safe.directory=$enginePath" -C $enginePath rev-parse HEAD
 if ($LASTEXITCODE -ne 0 -or $actualCommit -ne $expectedCommit) { throw "Expected Emuera source commit $expectedCommit" }
 dotnet build (Join-Path $enginePath 'Emuera\Emuera.csproj') -c Release-NAudio -p:Platform=x64 --nologo -v:q
 if($LASTEXITCODE -ne 0){throw 'Engine build failed'}
@@ -30,9 +30,10 @@ if($Mode -in @('Game','GameAutomatic','PlayAutomatic')){
         ConvertTo-Json | Set-Content "$runtimePath\game-paths.json" -Encoding utf8
 }
 if($Mode -eq 'Interactive'){
-    $erb=$erb.Replace('    INPUT_TEXT = 5',"    INPUTS`n    INPUT_TEXT = %RESULTS%")
-    $erb=$erb.Replace('QUIT',"PRINTL Press any key to exit.`nWAIT`nQUIT")
+    $erb=[IO.File]::ReadAllText("$portPath\bootstrap\InteractiveProbe.ERB")
+    Copy-Item "$portPath\bootstrap\interactive.js" -Destination "$runtimePath\probe.js"
 }
+[IO.File]::WriteAllText("$runtimePath\verification-mode.txt",$Mode)
 [IO.File]::WriteAllText("$runtimePath\ERB\Probe.ERB",$erb,[Text.UTF8Encoding]::new($true))
 [IO.File]::WriteAllText("$runtimePath\pluginsAware.txt",'Compatibility plugin knowingly packaged for this test.')
 Write-Output "Built: $runtimePath\Emuera.exe ($Mode)"
