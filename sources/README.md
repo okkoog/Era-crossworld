@@ -5,9 +5,7 @@
 | 원본 ZIP | 저장 경로 | 파일 수 | 압축 해제 바이트 | 제외 파일 수 |
 |---|---|---:|---:|---:|
 | `erauma-master.zip` | `sources/erauma/` | 4649 | 70184905 | 0 |
-| `ShinEraTensei.zip` | `sources/ShinEraTensei/` | 3743 | 39352382 | 0 |
 | `4. eramegaten_p_(2026) (AI) 0926 2차 수정 (2).zip` | `sources/eramegaten_p_2026/` | 11950 | 290690363 | 0 |
-
 | `resources.zip` | `sources/eramegaten_p_2026/Data/resources/` | 6888 | 296603727 | 0 |
 
 ## 보존 방법
