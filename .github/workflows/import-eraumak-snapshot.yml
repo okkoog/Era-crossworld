@@ -1,0 +1,46 @@
+name: Import EraUmaK snapshot
+
+on:
+  push:
+    paths:
+      - '.github/workflows/import-eraumak-snapshot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Crossworld
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clone public EraUmaK repository
+        run: |
+          rm -rf /tmp/eraumak
+          git clone --depth 1 https://gitlab.com/umaerak/eraumak.git /tmp/eraumak
+          SRC_COMMIT="$(git -C /tmp/eraumak rev-parse HEAD)"
+          rm -rf /tmp/eraumak/.git
+          rm -rf sources/eraumak_kr_2.21
+          mkdir -p sources/eraumak_kr_2.21
+          cp -a /tmp/eraumak/. sources/eraumak_kr_2.21/
+          {
+            echo "Imported from: https://gitlab.com/umaerak/eraumak"
+            echo "Source commit: $SRC_COMMIT"
+            echo "Import purpose: preserve the extracted Korean EraUmaK translation snapshot for analysis."
+          } > sources/eraumak_kr_2.21/IMPORT_SOURCE.txt
+
+      - name: Commit imported snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sources/eraumak_kr_2.21
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Preserve extracted EraUmaK Korean translation snapshot"
+          git push
