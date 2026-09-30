@@ -516,6 +516,284 @@ module.exports = class extends require('#/i18n/ja-JP/entry') {
     '과(와) 교체된다.',
   ];
 
+
+  // Stage 3: race / outing / shop / save-load UI.
+  get_ui_reg_header = (chara) => [chara, '의 다음 레이스를 등록한다'];
+  ui_reg_race_template = '%NAME% (%COUNTRY%) %GRAND% %MARK%';
+  ui_grand_live_mark = '🎤';
+  ui_reg_registered = '[▲등록됨]';
+  get_ui_reg_tip_1_before_begin = (chara) => [
+    chara,
+    '은(는) 메이크 데뷔를 치러야 다른 레이스에 출주할 수 있다',
+  ];
+  get_ui_reg_tip_1_after_begin = (chara) => [
+    chara,
+    '은(는) 빨간색으로 표시된 레이스를 신경 쓰고 있다',
+  ];
+  ui_reg_tip_2 = '끝에 별표(*)가 붙은 레이스에서는 특별한 일이 일어날 수 있다';
+  ui_reg_tip_3 = '끝에 🎤가 붙은 레이스는 큰 무대다. 출주하면 명성을 더 얻기 쉽다';
+  ui_reg_tip_4 =
+    '(FR) 등의 표시는 해외 레이스다. 2주 전에 등록하고 2주 전에 원정을 떠나야 한다';
+  ui_reg_race_filter_template = '불리한 레이스 제외 [%STATUS%]';
+  ui_reg_race_more_info = '상세 정보 표시 [%STATUS%]';
+
+  get_ui_race_select_contestants = (race) => [
+    '다음 팀원이 ',
+    race,
+    '에 등록돼 있다. 출주를 취소시킬까?',
+  ];
+  ui_race_select_contestant_template = '%NAME% [%STATUS%]';
+  ui_race_select_selected = '출주';
+  ui_race_select_prevent = '출주 취소';
+  ui_race_select_done = '출주 명단 확정';
+  get_ui_race_your_tp = (you) => [you, '의 기력'];
+  ui_race_prev_template = '이전\n%NAME%';
+  ui_race_next_template = '다음\n%NAME%';
+  ui_race_item_prev_template = '이전 %NAME%';
+  ui_race_item_next_template = '다음 %NAME%';
+  get_ui_race_preview_contestant_entry = (score, motivation, pop, pop_mark) => [
+    score,
+    { isDivider: true },
+    ...motivation,
+    { isDivider: true },
+    ' 인기 ',
+    pop,
+    '위 ',
+    pop_mark,
+  ];
+  ui_race_preview_contestant_attr = '%ATTR% (%RANK%)';
+  ui_race_preview_contestant_style = '출주 각질';
+  get_ui_race_preview_contestant_adapt = (name, adapt) => [name, ' ', adapt];
+  ui_race_preview_contestant_tip =
+    '* 출주마는 게이트 번호가 빠른 순서. 팀원은 초록색, 강적은 빨간색';
+  ui_race_bt_go = '출주!';
+  ui_race_bt_chart = '코스 데이터';
+  ui_race_bt_item = '성인용품 장착';
+  get_ui_race_preview_equip_item = (chara) => [chara, '에게 성인용품 장착:'];
+  ui_race_preview_equip_item_part_template = '%NAME%의 %PART%에 성인용품 장착';
+  get_ui_race_preview_item_stg_template = '남은 수량 %COUNT%개';
+  ui_race_preview_equip_item_v_tip = '아직 처녀다!';
+  ui_race_preview_equip_item_a_cond =
+    '필요: 애널 횟수 %REQUIRE% 이상(현재: %CURRENT%)';
+  ui_race_start_event = '누구에게 레이스 전 한마디를 건넬까?';
+  ui_race_speed_1 = '1배속으로 보기';
+  ui_race_speed_2 = '2배속으로 보기';
+  ui_race_speed_4 = '4배속으로 보기';
+  ui_race_few_contestants = '출주마 표시 줄이기';
+  ui_race_skip_race = '결과 보기';
+  ui_race_timer_template = '타이머: %TIMER%';
+  ui_race_progress = '경과';
+  ui_race_contestant_no = '번호';
+  ui_race_contestant_name = '이름';
+  ui_race_contestant_style = '각질';
+  ui_race_contestant_total_time = '기록';
+  ui_race_contestant_speed = '속도';
+  ui_race_contestant_loc = '상대 위치';
+  ui_race_contestant_rank = '순위';
+  ui_race_contestant_progress_template =
+    '%LOCATION% (%LANE% %SLOPE% %BLOCKED% %TEMPTATION%)';
+  ui_race_start = '게이트 인!';
+  ui_race_bad_start = '출발 지연!';
+  ui_race_reporter = '실황';
+  ui_race_result_summary = '게시판';
+  get_ui_race_result_summary_header = (track, race) => [track, ' ', race];
+  ui_race_result_location = '상대 위치 집계';
+  ui_race_result_location_header = '선두와의 상대 위치 그래프';
+  ui_race_result_speed = '속도 집계';
+  ui_race_result_speed_header = '속도 그래프';
+  ui_race_result_endurance = '지구력 집계';
+  ui_race_result_endurance_header = '지구력 그래프';
+  ui_race_result_skills = '발동 스킬 집계';
+  ui_race_result_log = '레이스 로그';
+  get_ui_race_result = (chara, race, rank) => [
+    chara,
+    '은(는) ',
+    race,
+    '에서 ',
+    rank,
+    '!',
+  ];
+  ui_race_end_event = '누구를 축하하거나 위로할까?';
+  ui_race_event_chara_template = '%NAME% (%RANK%)';
+  ui_race_event_end = '종료';
+  ui_race_event_tip = '* 버튼이 빨간 캐릭터에게는 전용 이벤트가 있다';
+  get_ui_race_honour_reward = (you, up_info) => [
+    '팀의 활약으로 세간의 ',
+    you,
+    '에 대한 평가가 ',
+    up_info,
+    '했다!',
+  ];
+  get_ui_race_honour_pregnant_punish = (you, down_info) => [
+    '팀은 활약했지만 현역 트레이너의 사생아 스캔들로 세간의 ',
+    you,
+    '에 대한 평가가 ',
+    down_info,
+    '했다!',
+  ];
+  get_ui_race_honour_hentai_punish = (you, down_info) => [
+    '팀의 변태 행위로 세간의 ',
+    you,
+    '에 대한 평가가 ',
+    down_info,
+    '했다!',
+  ];
+  get_ui_race_honour_lose_punish = (you, down_info) => [
+    '팀의 패배로 세간의 ',
+    you,
+    '에 대한 평가가 ',
+    down_info,
+    '했다!',
+  ];
+  get_ui_race_money_reward = (money) => [
+    '레이스 상금 배당 ',
+    money,
+    ' 우마코인을 받았다',
+  ];
+
+  get_ui_out_confirm = (chara) => [chara, '과(와) 어디로 갈까?'];
+  ui_out_self_confirm = '혼자 어디로 갈까?';
+  get_ui_bt_talk_with_npc_template = '%NAME%에게 말 걸기';
+  ui_deep_interact_with_npc_template =
+    '아직 그 정도로 가까운 사이는 아니다(필요: 호감 %R_REQUIRE% 이상, 현재 %R_CURRENT%; 또는 연모 %L_REQUIRE% 이상, 현재 %L_CURRENT%)';
+  get_ui_out_bye = (chara, you) => [
+    '【',
+    chara,
+    '에게 작별을 고하고 ',
+    you,
+    '은(는) 떠났다】',
+  ];
+  ui_moon_well_close_tip = '비탕은 현재 영업하지 않는다';
+  ui_mejiro_city_alone_tip = '메지로 시티는 혼자 오는 손님을 반기지 않는다';
+  ui_mejiro_city_love_tip_template =
+    '아직 그 정도로 가까운 사이는 아니다(필요: %REQUIRE% 이상, 현재 %CURRENT%)';
+
+  ui_select_action_atrium = '중정에서 무엇을 할까?';
+  ui_action_atrium_tree_hollow = '마른 나무의 구멍 살펴보기';
+  ui_action_atrium_date = '데이트';
+  ui_select_action_river = '강변에서 무엇을 할까?';
+  ui_action_river_fish = '낚시';
+  ui_action_river_walk = '산책';
+  ui_select_action_shopping = '상점가에서 무엇을 할까?';
+  ui_action_shopping_arcade = '게임센터로';
+  ui_action_shopping_drawing = '제비뽑기';
+  ui_action_shopping_ktv = '노래방';
+  ui_action_shopping_movie = '영화';
+  ui_action_shopping_ero_item = '성인용품점 들여다보기';
+  ui_select_action_station = '역에서 무엇을 할까?';
+  ui_action_station_restaurant = '식사';
+  ui_action_station_date = '데이트';
+  ui_action_station_shopping = '백화점 둘러보기';
+
+  ui_race_report_header = '출주 예정';
+
+  ui_shop_limited_item_entry_template = '%ITEM%(한정)';
+  ui_shop_hold = '보유';
+  ui_shop_max = '최대';
+  ui_shop_buy_template = '구매(%PRICE% 우마코인)';
+  ui_shop_tip = '* 아이템을 누르면 설명 표시\n** 「한정」 아이템은 1개만 보유 가능';
+  get_ui_shop_bargain = (item, discount) => [
+    '*** 이번 주 특가! ',
+    item,
+    ' ',
+    discount,
+    '!',
+  ];
+  ui_shop_30_off = '30%off';
+  ui_shop_50_off = '50%off';
+  ui_shop_acc_switch_template = '단축키 숨기기 [%STATUS%]';
+  get_ui_shop_buy = (item, count) => [item, ' ', count, '개 구매'];
+
+  get_ui_take_care = (chara) => [chara, '에게 누구를 돌봐 달라고 할까?'];
+  get_ui_take_care_change_confirm = (chara, curr) => [
+    chara,
+    '은(는) 현재 ',
+    curr,
+    '을(를) 돌보고 있다. 상대를 바꿀까?',
+  ];
+  ui_take_care_aim_continue_template = '%NAME%(돌봄 중)';
+  ui_take_care_aim_taken_template = '%NAME%(%TEACHER%이(가) 돌봄 중)';
+  ui_take_care_bt_cancel = '돌봄 중단';
+  ui_take_care_bt_keep = '그대로 유지';
+  get_ui_take_care_continue = (chara, curr) => [
+    chara,
+    '은(는) 계속 ',
+    curr,
+    '을(를) 돌본다',
+  ];
+  get_ui_take_care_cancel = (chara, prev) => [
+    chara,
+    '은(는) 더 이상 ',
+    prev,
+    '을(를) 돌보지 않는다',
+  ];
+  get_ui_take_care_change = (chara, next) => [
+    chara,
+    '은(는) 앞으로 ',
+    next,
+    '을(를) 돌본다',
+  ];
+
+  ui_storage_have_items =
+    '현재 보유 아이템(버튼을 눌러 사용하거나 설명 확인):';
+  ui_storage_no_items = '보유한 아이템이 없다';
+  ui_storage_select_header_template = '%ITEM%을(를) 사용할 상대 선택';
+  ui_storage_no_targets_template = '%ITEM%을(를) 사용할 수 있는 상대가 없다';
+
+  ui_bt_self_info = '내 정보';
+  ui_bt_chara_info = '상대 정보';
+
+  ui_wur_sleep = '가만히 즐긴다';
+  ui_wur_wake = '잠에서 깬다';
+
+  ui_sex_bt_setting = '설정';
+  ui_sex_bt_touch = '신체 접촉';
+  ui_sex_bt_stain = '오염 확인';
+  ui_sex_bt_turn_around = '방향 전환';
+
+  bs_info_template = '어두컴컴한 방……%DURABILITY%……';
+  bs_no_one_info_template = '어두컴컴하고 아무도 없는 방……%DURABILITY%……';
+  ui_bs_durability_0 = '하지만 거의 무방비다';
+  ui_bs_durability_1 = '하지만 약간 손보면 될 것 같다';
+  ui_bs_durability_2 = '문은 쉽게 열리지 않을 것 같다';
+  ui_bs_durability_3 = '성가신 장애물이 여럿 있다';
+  ui_bs_durability_4 = '시설이 모두 견고하다';
+  ui_bs_durability_5 = '어떤 저항도 여기서는 통하지 않는다';
+
+  ui_bs_flatter = '아첨하며 시간을 번다';
+  ui_bs_unlock = '탈출을 시도한다';
+  ui_bs_relax = '그냥 앉아 있는다';
+  ui_bs_sleep = '조금 잔다';
+  ui_bs_eat = '조금 먹는다';
+  ui_bs_sex = '밤의 권유';
+  ui_bs_strike = '뒤에서 기습한다';
+  ui_bs_battle = '정면으로 저항한다';
+  ui_bs_release = '풀어 달라고 부탁한다';
+  ui_bs_clock = '시간을 묻는다';
+  ui_bs_guide = '탈출 가이드';
+
+  ui_save_game_header = '어느 슬롯에 저장할까?';
+  ui_auto_save_template = '%NAME%(자동 저장)';
+  ui_empty_save = '빈 슬롯';
+  ui_save_rename = '이름 변경';
+  ui_save_name_save = '이 이야기에 이름 붙이기';
+  ui_save_remove_save = '이 이야기의 이름 지우기';
+  ui_save_name_save_header = '저장 이름 입력:';
+  ui_save_name_save_confirm_template = '이 이야기의 이름을 [%NAME%](으)로 할까?';
+  ui_save_name_save_result_template = '이 이야기의 이름을 [%NAME%](으)로 정했다';
+  ui_save_name_remove_confirm_template = '[%NAME%] 이름을 지울까?';
+  ui_save_name_remove_result = '이름을 지웠다. 다음 저장부터 기본 이름을 사용한다';
+  ui_save_override_confirm_template = '%NO%번 슬롯을 덮어쓸까?';
+  ui_save_save_result_template = '%NO%번 슬롯에 저장했다';
+  ui_save_rename_confirm_template = '%NO%번 슬롯의 이름을 [%NAME%](으)로 바꿀까?';
+  ui_save_rename_result_template = '%NO%번 슬롯 이름 변경 완료';
+  ui_save_rename_cancel_template = '%NO%번 슬롯 이름 변경 취소';
+
+  ui_load_game_header = '어느 슬롯에서 불러올까?';
+  ui_load_remove = '삭제';
+  ui_load_fail_template = '%NO%번 슬롯을 불러오지 못했다';
+  ui_load_remove_success_template = '%NO%번 슬롯을 삭제했다';
+
   new_game = new (require('#/i18n/ko-KR/new-game'))();
   location = new (require('#/i18n/ko-KR/location'))();
   vehicle = new (require('#/i18n/ko-KR/vehicle'))();
