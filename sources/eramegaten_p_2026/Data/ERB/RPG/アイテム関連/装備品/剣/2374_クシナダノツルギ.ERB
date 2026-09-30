@@ -1,0 +1,192 @@
+﻿;======================================================
+;装備品のデータ：クシナダノツルギ
+;======================================================
+;コドクノマレビトルート：串蛇ルートクリア報酬
+;本来はたぶん『アマノオハバリ』って名前なのだが、eraten実装シナリオでは「アマノオハバリ」を経由してないので……
+;======================================================
+;基本性能は串蛇のLVに依存し、串蛇のLv（か、Lv5）相当の性能になる
+;Lv5ではアタックナイフ相当の性能
+;======================================================
+
+@基本能力修正_2374,ARG,ARG:1 = -1
+#DIM KUSHI_NO
+#DIM KUSHI_Lv
+#DIM SPEC
+
+	;BASE:LVは補正しない
+	SIF !ARG
+		RETURN 0
+	KUSHI_NO = GETCHARA([[キャラ:쿠시나다]])
+	IF 0
+	;イベント中は限界突破
+	ELSEIF イベントフラグ:41:0 == 5 && イベントフラグ:41:1 == 10 && イベントフラグ:41:12 == 3
+		KUSHI_Lv = 200
+	;串蛇がいない場合、またはLvが5未満の場合
+	ELSEIF KUSHI_NO < 1 || BASE:KUSHI_NO:LV < 5
+		;Lv5の性能で固定
+		KUSHI_Lv = 5
+	ELSE
+		;串蛇のLvは80がマックス
+		KUSHI_Lv = MIN(BASE:KUSHI_NO:LV,80)
+	ENDIF
+
+	;最終的には全能力＋３
+	SPEC = 3 * KUSHI_Lv / 80
+	RETURN SPEC
+
+@戦闘能力修正_2374,ARG,ARG:1 = -1
+#DIM KUSHI_NO
+#DIM KUSHI_Lv
+#DIM SPEC
+	KUSHI_NO = GETCHARA([[キャラ:쿠시나다]])
+	IF 0
+	;イベント中は限界突破
+	ELSEIF イベントフラグ:41:0 == 5 && イベントフラグ:41:1 == 10 && イベントフラグ:41:12 == 3
+		KUSHI_Lv = 200
+	;串蛇がいない場合、またはLvが5未満の場合
+	ELSEIF KUSHI_NO < 1 || BASE:KUSHI_NO:LV < 5
+		;Lv5の性能で固定
+		KUSHI_Lv = 5
+	ELSE
+		;串蛇のLvは80がマックス
+		KUSHI_Lv = MIN(BASE:KUSHI_NO:LV,80)
+	ENDIF
+
+	SELECTCASE ARG
+		;공격
+		CASE 0
+			SPEC = 26 + (180 * KUSHI_Lv) / 80
+			RETURN SPEC
+		;명중
+		CASE 1
+			SPEC = 20 + (140 * KUSHI_Lv) / 80
+			RETURN SPEC
+		;방어
+		CASE 2
+			RETURN 0
+		;회피
+		CASE 3
+			RETURN 0
+		;魔法攻撃
+		CASE 4
+			SPEC = 21 + (140 * KUSHI_Lv) / 80
+			RETURN SPEC
+		;마법효과
+		CASE 5
+			SPEC = 6 + (100 * KUSHI_Lv) / 80
+			RETURN SPEC
+	ENDSELECT
+	RETURN 0
+
+@防御相性_2374,ARG,ARG:1 = -1
+#DIM KUSHI_NO
+	KUSHI_NO = GETCHARA([[キャラ:쿠시나다]])
+	SELECTCASE GET_TYPE(ARG)
+		CASE "파마"
+			;串蛇がいる場合
+			SIF KUSHI_NO > 0
+				RETURN 0
+		CASE "주살"
+			;串蛇がいる場合
+			SIF KUSHI_NO > 0
+				RETURN 0
+	ENDSELECT
+	RETURN 100
+
+@バステ耐性_2374,ARG,ARG:1 = -1
+#DIM KUSHI_NO
+	KUSHI_NO = GETCHARA([[キャラ:쿠시나다]])
+	SELECTCASE ARG
+		CASE GET_STATE_NUM("DYING")
+			;串蛇がいる場合
+			SIF KUSHI_NO > 0
+				RETURN -100
+	ENDSELECT
+	RETURN 0
+
+;破魔相性で射程Sで単体攻撃
+@攻撃相性_2374, ARG = -1
+	RETURN 10
+
+@最低攻撃回数_2374, ARG = -1
+	RETURN 1
+
+@最大攻撃回数_2374, ARG = -1
+	RETURN 1
+
+@射程_2374, ARG = -1
+	RETURN 1
+
+@攻撃範囲_2374, ARG = -1
+	RETURN 1
+
+@装備箇所_2374
+	RETURN GET_EQUIPNUM("검")
+
+@条件つき装備追加スキル_2374
+	RETURN 1
+
+@装備追加スキル_2374,ARG,ARG:1 = -1
+#DIM KUSHI_NO
+	KUSHI_NO = GETCHARA([[キャラ:쿠시나다]])
+	SIF ARG:1 == -1
+		RETURN 0
+	SELECTCASE ARG
+		CASE 0
+			;串蛇がいる場合、かつ装備者がサマナーLv5なら追加スキル
+			SIF KUSHI_NO > 0 && TALENT:(ARG:1):서머너 >= 5
+				RETURN [[스킬:나와라나의모든중마]]
+	ENDSELECT
+
+	RETURN 0
+
+;-----------------------------
+;- ショップ
+;-----------------------------
+@購入条件_2374
+	;不可
+	RETURN 0
+
+@必要レベル_2374
+	RETURN 1
+
+@必要素質_2374
+	RESULTS = 서머너
+	RESULTS:1 = OR
+	RETURN 1
+
+@装備条件_2374,ARG
+	;サマナーでなければダメ
+	;SIF TALENT:ARG:서머너 < 1
+	;	RETURN 0
+	;MASTERだったらイイヨ！
+	SIF (NO:ARG == [[キャラ:더미아나타]] || NO:ARG == [[キャラ:당신]])
+		RETURN 1
+
+	RETURN 0
+
+@装備条件説明_2374
+	;PRINTL 装備条件：サマナー『MASTER』専用
+	PRINTL 装備条件：『MASTER』専用
+
+@装備解説_2374
+#DIM KUSHI_NO
+	KUSHI_NO = GETCHARA([[キャラ:쿠시나다]])
+	PRINTFORML 쿠시나다히메가 아마노오하바리로 악마변신하고 다시 그 몸을 변형시킨 검.
+	PRINTFORML 순간적이기는 하나 쥐고 있는 자에게 원격지에서 방대한 MAG를 공급할 수 있다.
+	PRINTFORML 쿠시나다히메와 영적으로 이어져 있어 쿠시나다히메의 성장에 따라 성능이 강화된다.
+	PRINTFORML 　
+	PRINTFORML %CALLNAME:MASTER%専用
+	;串蛇がいる場合
+	IF KUSHI_NO > 0
+		PRINTFORML 破魔・呪殺無効　DYING無効
+		PRINTFORML 스킬 추가:〈나와라나의모든중마〉
+	ENDIF
+	RETURN 0
+@引継ぎ可不可_2374
+	RETURN 1
+
+@剣タイプ_2374
+	;1 = 刀　2 =레이피어　3 = 弓　　　　4 = 검　5 = 槍　　　6 = 斧、鈍器
+	;7 = 채찍　8 =投具　　　9 = 杖、祭具　10= 棍　11= 拳闘具
+	RETURN 4

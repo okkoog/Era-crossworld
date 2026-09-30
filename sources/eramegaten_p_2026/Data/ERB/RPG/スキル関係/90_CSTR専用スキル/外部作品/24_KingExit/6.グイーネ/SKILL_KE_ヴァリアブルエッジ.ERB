@@ -1,0 +1,127 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_KE_ヴァリアブルエッジ, ARG
+RESULTS = 배리어블 에지
+
+;　명중
+@SKILL_HITRATE_KE_ヴァリアブルエッジ, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_KE_ヴァリアブルエッジ, ARG
+RETURN 130
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_KE_ヴァリアブルエッジ, ARG
+RETURN 10
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_KE_ヴァリアブルエッジ, ARG
+RETURN 3
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_KE_ヴァリアブルエッジ, ARG
+RETURN 3
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_KE_ヴァリアブルエッジ, ARG
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 80
+	RETURN 1
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_KE_ヴァリアブルエッジ, ARG
+IF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 80
+	RESULTS = %" 80ＴＰ"%
+	RETURN 0
+ENDIF
+RETURN 15
+
+;　相性
+@SKILL_TYPE_KE_ヴァリアブルエッジ, ARG
+SIF ARG < 0
+	RETURN 1
+CALLFORM 攻撃相性_{EQUIP:ARG:검},ARG
+RETURN RESULT
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_KE_ヴァリアブルエッジ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_KE_ヴァリアブルエッジ, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_KE_ヴァリアブルエッジ, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_KE_ヴァリアブルエッジ, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_KE_ヴァリアブルエッジ, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_KE_ヴァリアブルエッジ, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_KE_ヴァリアブルエッジ, ARG = -1
+RETURN 30
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_KE_ヴァリアブルエッジ
+RETURN 0
+
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_KE_ヴァリアブルエッジ, ARG = -1, ARG:1 = -1
+RETURN 4
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_KE_ヴァリアブルエッジ, ARG, ARG:1, SKILL_NUM
+#LOCALSIZE 4
+#DIM SKILL_NUM
+
+;Fゲージ再回収できる様に起動前にTP100消費。
+CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", 80, "-="
+
+CALL ATTACK_SINGLE, ARG, POS(ARG:1), SKILL_NUM
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_KE_ヴァリアブルエッジ, ARG
+PRINTL 
+PRINTL 적에게 달려들어 강력한 공격을 때려박는다.
+PRINTL 적 단체에 장비한 무기 속성으로 대위력의 연속 공격을 가한다.
+PRINTL 
+PRINTL 구세주 구이네의 스킬(CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_KE_ヴァリアブルエッジ, ARG
+;ゲージが100のときのみ
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 80
+	RETURN 0
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_KE_ヴァリアブルエッジ, ARG
+RESULTS:0 = 적 단체에 장비한 무기 속성으로 대위력의 연속 공격을 가한다.
+RESULTS:1 = TP消費 80
+SIF ARG >= 0 && GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 80
+	RESULTS:1 = %RESULTS:1%(不足)

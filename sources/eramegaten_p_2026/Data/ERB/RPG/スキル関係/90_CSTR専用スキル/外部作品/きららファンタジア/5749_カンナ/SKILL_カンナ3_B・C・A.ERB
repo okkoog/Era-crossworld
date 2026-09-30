@@ -1,0 +1,81 @@
+﻿
+;スキル名
+@SKILL_NAME_B・C・A,ARG
+RESULTS = B・C・A
+
+;　명중
+@SKILL_HITRATE_B・C・A, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_B・C・A, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_B・C・A,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_B・C・A,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_B・C・A, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_B・C・A,ARG
+RETURN 45
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_B・C・A
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_B・C・A,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_B・C・A,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+@SKILL_RANK_B・C・A, ARG = -1
+RETURN 12
+
+;　사거리
+@SKILL_RANGE_B・C・A,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_B・C・A,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_B・C・A,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_B・C・A,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL SKILL_SET_全体HPバリア, ARG, 200 * GET_BASEHEAL_IN_CALC(MAXBASE:ARG:마법효과, MAXBASE:ARG:마법위력) / 100, "B・C・A"
+CALL SKILLGAGE_D_SET,ARG,PU_SKILLNUM_GET(ARG,"B・C・A"),4
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_B・C・A,ARG
+PRINTL 아군 전체에 데미지를 흡수하는 배리어를 부여합니다.
+PRINTL 방지할 수 있는 데미지량은 마법 효과와 마법 위력에 의존한다.
+PRINTL 이 스킬은 사용 후 3턴 동안 사용할 수 없다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_B・C・A,ARG
+RESULTS = 필요 턴수:%TOFULL(TOSTR(PU_SKILLGAGE_D_GET(ARG,"B・C・A")))%
+SIF PU_SKILLGAGE_D_GET(ARG,"B・C・A") != 0
+	RETURN 0
+RETURN 1

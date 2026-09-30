@@ -1,0 +1,565 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:11_アイコン描画.ERB
+;	Facility	:アイコンを描画するための関数群
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/05/28		P(bazzile)				処理変更にあわせて新設
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;===============================================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name						Explanation
+;
+;	・ PRINT_FACE_BY_CHARA				キャラ登録番号からアイコンを出力する。
+;	・ PRINT_FACE_BY_CSV				CSVキャラ番号(NO)からアイコンを出力する。
+;	・ GET_FACE_BY_CHARA				キャラ登録番号からアイコン出力に使用する文字列を取得する
+;	・ GET_FACE_BY_CSV					CSVキャラ番号からアイコン出力に使用する文字列を取得する
+;	・ GET_FACE_BY_CHARA_AS_HTML		GET_FACE_BY_CHARA_AS_HTML
+;	・ GET_FACE_BY_CSV_AS_HTML			CSVキャラ番号からHTML用のアイコン出力の文字列を取得する。
+;	・ CREATE_DIVIDED_FACE				分割スプライトを登録する
+;===============================================================================
+
+;================================================
+;キャラ登録番号からアイコンを出力する。
+;================================================
+@PRINT_FACE_BY_CHARA, L_CHARA, L_CHARA_NO = -1, L_SPRITENAME, L_HEIGHT = 600, SHOW_SITUATION = "基本", SHOW_SITUATION:1
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_CHARA_NO
+#DIMS DYNAMIC L_SPRITENAME
+#DIM DYNAMIC L_HEIGHT			;高さを指定する。フェイスアイコン想定なのでそのまま横幅にもなる
+#DIMS DYNAMIC SHOW_SITUATION, 2	;基本(状況に応じて通常と悪魔変身が使いわけられる)/通常形態/악마변신/調教	;基本(状況に応じて通常と悪魔変身が使いわけられる)/通常形態/악마변신/調教
+HTML_PRINT GET_FACE_BY_CHARA_AS_HTML(L_CHARA, L_HEIGHT, SHOW_SITUATION, SHOW_SITUATION:1, L_CHARA_NO, L_SPRITENAME)
+FOR LCOUNT, 0, L_HEIGHT / 100 - 1
+	PRINTL 
+NEXT
+SIF L_HEIGHT % 100
+	PRINTL 
+RETURN 1
+
+;================================================
+;CSVキャラ番号(NO)からアイコンを出力する。
+;================================================
+@PRINT_FACE_BY_CSV,  L_CHARA_NO, L_SPRITENAME, L_HEIGHT = 600
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA_NO			;CSVキャラ番号
+#DIMS DYNAMIC L_SPRITENAME		;デフォルトはFACE_0だが他のアドレスを使いたい場合は"FACE_1"や"FACE_EX_0"等といった形で指定する
+#DIM DYNAMIC L_HEIGHT			;アイコンのサイズ。
+HTML_PRINT GET_FACE_BY_CSV_AS_HTML(L_CHARA_NO, L_SPRITENAME, L_HEIGHT)
+FOR LCOUNT, 0, L_HEIGHT / 100 - 1
+	PRINTL 
+NEXT
+SIF L_HEIGHT % 100
+	PRINTL 
+RETURN 1
+
+;================================================
+;モブ画像のアイコンを出力する
+;================================================
+@PRINT_FACE_MOB, L_MOBNAME, L_NO = 0, L_HEIGHT = 600
+#FUNCTIONS
+#DIMS DYNAMIC L_MOBNAME
+#DIM DYNAMIC L_NO
+#DIM DYNAMIC L_HEIGHT
+HTML_PRINT GET_MOB_FACE_AS_HTML(L_MOBNAME, L_NO, L_HEIGHT)
+
+;================================================
+;キャラ登録番号からアイコン出力に使用する文字列を取得する
+;ex:"キャラ名_FACE_0"等　基本的にはもともとのファイル名と一致するが、
+;随時ファイルから画像を取り込む都合上、この関数を通過せずに直接アドレスを指定しても画像を取れないことに注意されたし
+;================================================
+@GET_FACE_BY_CHARA, L_CHARA, SHOW_SITUATION = "基本", SHOW_SITUATION:1
+#FUNCTIONS
+#DIMS DYNAMIC L_RESULTS
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA			;キャラ登録番号
+#DIM DYNAMIC IMG_NO				;画像に使うNO　他のCSVの画像を使う場合があるのでNOを直接扱わない
+#DIMS DYNAMIC SHOW_SITUATION,2	;基本(状況に応じて通常と悪魔変身が使いわけられる)/通常形態/악마변신/調教  :1 = セットパターン用に送るシチュエーション
+#DIM DYNAMIC TEMP_GID
+
+;--------------------------------------------------------
+;基本設定の確認
+;--------------------------------------------------------
+;調教で不使用
+IF SHOW_SITUATION == "調教" && G_OPT_NOT_USE_ICON_AT_TRAIN
+	RETURNF ""
+ENDIF
+
+;全キャラ鬼アイコン
+SIF G_OPT_USE_ICON == "사용안함"
+	RETURNF "BLANK"
+SIF G_OPT_USE_ICON == "鬼アイコン"
+	RETURNF GET_ONI_MARK_BY_CHARA(L_CHARA)
+
+IF CFLAG:L_CHARA:유저지정아이콘번호 > 0
+	L_RESULTS '= ""
+	TEMP_GID = USER_SELECT_GIDNUM_START + CFLAG:L_CHARA:유저지정아이콘번호
+	IF SPRITECREATED(@"キャラ指定追加アイコン_{CFLAG:L_CHARA:유저지정아이콘번호}")
+		L_RESULTS = キャラ指定追加アイコン_{CFLAG:L_CHARA:유저지정아이콘번호}
+	ELSE
+		GDISPOSE TEMP_GID
+		IF GCREATEFROMFILE(TEMP_GID,  @"01_キャラ指定追加アイコン\\%TOSTR(CFLAG:L_CHARA:유저지정아이콘번호,"000")%.png")
+			SPRITECREATE @"キャラ指定追加アイコン_{CFLAG:L_CHARA:유저지정아이콘번호}", TEMP_GID, 0, 0, MIN(GHEIGHT(TEMP_GID), GWIDTH(TEMP_GID)), MIN(GHEIGHT(TEMP_GID), GWIDTH(TEMP_GID))
+			L_RESULTS = キャラ指定追加アイコン_{CFLAG:L_CHARA:유저지정아이콘번호}
+		ENDIF
+	ENDIF
+	SIF L_RESULTS != ""
+		RETURNF L_RESULTS
+ENDIF
+
+;--------------------------------------------------------
+;CSV的な番号の確認
+;--------------------------------------------------------
+L_RESULTS = 
+IMG_NO = GET_ICON_CSVNO(NO:L_CHARA)
+;--------------------------------------------------------
+;リソース作成チェック
+;--------------------------------------------------------
+CALLF 顔グラ追加_F, IMG_NO
+SIF CFLAG:L_CHARA:초기링크악마 > 0
+	CALLF 顔グラ追加_F, GET_ICON_CSVNO(CFLAG:L_CHARA:초기링크악마)
+SIF TFLAG:대화형캐릭터 > 0
+	CALLF 顔グラ追加_F, GET_ICON_CSVNO(NO:(TFLAG:대화형캐릭터))
+SIF CSTR:L_CHARA:랜덤캐릭터아이콘파일명 != ""
+	CALLF ランダムキャラ_顔グラ追加_F, CSTR:L_CHARA:랜덤캐릭터아이콘파일명
+;--------------------------------------------------------
+;ナビの指定
+;--------------------------------------------------------
+IF GROUPMATCH(SHOW_SITUATION, "KOJO_BATTLE_NAVI_0", "KOJO_BATTLE_NAVI_1")
+	;ナビは口上からの指定をまずチェックする
+	L_RESULTS = 
+	SIF SHOW_SITUATION == "KOJO_BATTLE_NAVI_0"
+		L_RESULTS '= TSTR:전투구상캐릭터화상어드레스
+	SIF SHOW_SITUATION == "KOJO_BATTLE_NAVI_1"
+		L_RESULTS '= TSTR:대화형캐릭터화상어드레스
+	;直指定ならここで終わる
+	SIF L_RESULTS != ""
+		RETURNF L_RESULTS
+	;ナビは基本アイコンとして扱う
+	SHOW_SITUATION = 通常形態
+ENDIF
+
+;--------------------------------------------------------
+;エディット機能を使っている場合
+;--------------------------------------------------------
+SELECTCASE SHOW_SITUATION
+	CASE "通常形態"
+		SIF モブ画像_設定確認(L_CHARA, "基本")
+			RETURNF モブ画像_取得(L_CHARA, "基本")
+	CASE "悪魔変身"
+		SIF モブ画像_設定確認(L_CHARA, "悪魔変身")
+			RETURNF モブ画像_取得(L_CHARA, "悪魔変身")
+	CASE "調教"
+		SIF モブ画像_設定確認(L_CHARA, "調教")
+			RETURNF モブ画像_取得(L_CHARA, "調教")
+	CASEELSE
+		IF CFLAG:L_CHARA:악마변신 && SHOW_SITUATION:1 != "通常形態"
+			SIF モブ画像_設定確認(L_CHARA, "悪魔変身")
+				RETURNF モブ画像_取得(L_CHARA, "悪魔変身")
+		ELSE
+			SIF モブ画像_設定確認(L_CHARA, "基本")
+				RETURNF モブ画像_取得(L_CHARA, "基本")
+		ENDIF
+ENDSELECT
+
+;アイコンがない場合は変数にデフォ値登録を試みる
+IF !GETBIT(C_TRYED_SET_FACE:L_CHARA:0, 0)
+	IF CSTR:L_CHARA:基本アイコンファイルネーム == ""
+		CALLF SET_DEFAULT_FACE_F, L_CHARA
+	ELSE
+		IF !SPRITECREATED(CSTR:L_CHARA:基本アイコンファイルネーム)
+			CSTR:L_CHARA:基本アイコンファイルネーム '= ""
+			CALLF SET_DEFAULT_FACE_F, L_CHARA
+		ENDIF
+	ENDIF
+	SETBIT C_TRYED_SET_FACE:L_CHARA:0, 0
+ENDIF
+
+IF CFLAG:L_CHARA:초기링크악마 > 0
+	;アイコンがない場合は変数にデフォ値登録を試みる
+	IF !GETBIT(C_TRYED_SET_FACE:L_CHARA:0, 1)
+		IF CSTR:L_CHARA:悪魔変身アイコンファイルネーム == ""
+			CALLF SET_DEFAULT_FACE_F, L_CHARA, "変身形態"
+		ELSE
+			IF !SPRITECREATED(CSTR:L_CHARA:悪魔変身アイコンファイルネーム)
+				CSTR:L_CHARA:悪魔変身アイコンファイルネーム '= ""
+				CALLF SET_DEFAULT_FACE_F, L_CHARA, "変身形態"
+			ENDIF
+		ENDIF
+		SETBIT C_TRYED_SET_FACE:L_CHARA:0, 1
+	ENDIF
+ENDIF
+;--------------------------------------------------------
+;아이콘패턴(システムによる指定セットを確認)
+;--------------------------------------------------------
+RESULT = 0
+L_RESULTS = 
+;アイコンパターンがある場合はそれで上書きする
+;NOがずれてるとCHARA変数で落とされる不具合を誘発するので本来の番号を使ってないパターンでは弾く
+IF IMG_NO == NO:L_CHARA
+	RESULTS_F '= ""
+	IF CSTR:L_CHARA:구상아이콘패턴 != ""
+		IF EXISTFUNCTION(@"FACE_PATTERN%口上関数末尾文字(L_CHARA)%")
+			CALLFORMF FACE_PATTERN%口上関数末尾文字(L_CHARA)%, L_CHARA, CSTR:L_CHARA:구상아이콘패턴, SHOW_SITUATION, SHOW_SITUATION:1
+			L_RESULTS '= RESULTS_F
+		ENDIF
+	ENDIF
+	IF CSTR:L_CHARA:아이콘패턴 != "" && L_RESULTS == ""
+		IF EXISTFUNCTION(@"FACE_PATTERN_CHARA_{IMG_NO}")
+			CALLFORMF FACE_PATTERN_CHARA_{IMG_NO}, L_CHARA, CSTR:L_CHARA:아이콘패턴, SHOW_SITUATION, SHOW_SITUATION:1
+			L_RESULTS '= RESULTS_F
+		ENDIF
+	ENDIF
+ENDIF
+
+;--------------------------------------------------------
+;キャラが持つフラグを確認
+;--------------------------------------------------------
+IF L_RESULTS == ""
+	SELECTCASE SHOW_SITUATION
+		CASE "通常形態"
+			L_RESULTS '= CSTR:L_CHARA:基本アイコンファイルネーム
+		CASE "悪魔変身"
+			IF CFLAG:L_CHARA:링크캐릭터실제가입시간0 > 0
+				SELECTCASE G_OPT_USE_LINK_DEVIL_ICON
+					;常にリンク
+					CASE "リンク優先"
+						L_RESULTS '= GET_FACE_BY_CHARA(FINDCHARA_LINK(L_CHARA), SHOW_SITUATION)
+					;リンク不使用
+					CASE "リンク不使用"
+						L_RESULTS '= CSTR:L_CHARA:悪魔変身アイコンファイルネーム
+					;折衷
+					CASE "固有優先使用"
+						IF CSTR:L_CHARA:悪魔変身アイコンファイルネーム == ""
+							L_RESULTS '= GET_FACE_BY_CHARA(FINDCHARA_LINK(L_CHARA), SHOW_SITUATION)
+						ELSE
+							L_RESULTS '= CSTR:L_CHARA:悪魔変身アイコンファイルネーム
+						ENDIF
+				ENDSELECT
+			ELSE
+				L_RESULTS '= CSTR:L_CHARA:悪魔変身アイコンファイルネーム
+			ENDIF
+		CASE "調教"
+			L_RESULTS '= CSTR:L_CHARA:調教アイコンファイルネーム
+		CASEELSE
+			IF CFLAG:L_CHARA:악마변신 && SHOW_SITUATION:1 != "通常形態"
+				IF CFLAG:L_CHARA:링크캐릭터실제가입시간0 > 0
+					SELECTCASE G_OPT_USE_LINK_DEVIL_ICON
+						;常にリンク
+						CASE "リンク優先"
+							L_RESULTS '= GET_FACE_BY_CHARA(FINDCHARA_LINK(L_CHARA), SHOW_SITUATION)
+						;リンク不使用
+						CASE "リンク不使用"
+							L_RESULTS '= CSTR:L_CHARA:悪魔変身アイコンファイルネーム
+						;折衷
+						CASE "固有優先使用"
+							IF CSTR:L_CHARA:悪魔変身アイコンファイルネーム == ""
+								L_RESULTS '= GET_FACE_BY_CHARA(FINDCHARA_LINK(L_CHARA), SHOW_SITUATION)
+							ELSE
+								L_RESULTS '= CSTR:L_CHARA:悪魔変身アイコンファイルネーム
+							ENDIF
+					ENDSELECT
+				ELSE
+					L_RESULTS '= CSTR:L_CHARA:悪魔変身アイコンファイルネーム
+				ENDIF
+			ELSE
+				L_RESULTS '= CSTR:L_CHARA:基本アイコンファイルネーム
+			ENDIF
+	ENDSELECT
+ENDIF
+;主に悪魔変身でアイコンが存在しない場合の振り替えチェック
+IF !SPRITECREATED(L_RESULTS)
+	IF SPRITECREATED(CSTR:L_CHARA:基本アイコンファイルネーム)
+		L_RESULTS '= CSTR:L_CHARA:基本アイコンファイルネーム
+	ELSE
+		L_RESULTS '= ""
+	ENDIF
+ENDIF
+;リソースがヒットした場合
+IF L_RESULTS != ""
+	RETURNF L_RESULTS
+ELSE
+	;--------------------------------------------------------
+	;アイコンが存在しなかった場合は設定に応じて鬼か種族を出す
+	;--------------------------------------------------------
+	;独自のリソースがない場合
+	;種族アイコン設定
+	IF G_OPT_REPLACE_ICON == "種族アイコン"
+		RETURNF GET_RACE_ICON_ADDRESS_BY_CHARA(L_CHARA)
+	;鬼アイコン設定
+	ELSE
+		RETURNF GET_ONI_MARK_BY_CHARA(L_CHARA)
+	ENDIF
+ENDIF
+
+;================================================
+;CSVキャラ番号からアイコン出力に使用する文字列を取得する
+;指定はほぼキャラ登録番号版と変わらないが、FACE_0以外を使う場合は指定が必要なのに注意
+;================================================
+@GET_FACE_BY_CSV, IMG_NO, L_SPRITENAME = ""
+#FUNCTIONS
+#DIM DYNAMIC IMG_NO
+#DIMS DYNAMIC L_SPRITENAME, 2	;スプライト名称。原則的にはファイル名から名前部分を抜いたもの
+#DIMS DYNAMIC L_RESULTS
+;全キャラ鬼アイコン
+SIF G_OPT_USE_ICON == "사용안함"
+	RETURNF "BLANK"
+SIF G_OPT_USE_ICON == "鬼アイコン"
+	RETURNF GET_ONI_MARK("正常")
+
+;共用対象等の差し替え
+IMG_NO = GET_ICON_CSVNO(IMG_NO)
+
+IF L_SPRITENAME == ""
+	IF CSVCSTR(IMG_NO, GETNUM(CSTR, "基本アイコンファイルネーム")) != ""
+		L_SPRITENAME:1 '= CSVCSTR(IMG_NO, GETNUM(CSTR, "基本アイコンファイルネーム"))
+	ELSE
+		L_SPRITENAME:1 '= GET_識別名(IMG_NO) + "_" + "FACE_0"
+	ENDIF
+ELSE
+	L_SPRITENAME:1 '= GET_識別名(IMG_NO) + "_" + L_SPRITENAME
+ENDIF
+DEBUGPRINTFORML L_SPRITENAME = %L_SPRITENAME%
+;リソース作成チェック
+;GLOBALを利用して判定を1回に減らす
+IF INRANGE(IMG_NO, 0, CSVCHARANUM) && !IS_TRYMAKE_FACE:IMG_NO
+	CALLF 顔グラ追加_F, IMG_NO
+ENDIF
+IF SPRITECREATED(L_SPRITENAME:1)
+	IF L_SPRITENAME == ""
+		IF EXISTFUNCTION(@"DEFINE_FACE_PATTERN_CHARA_{IMG_NO}")
+			VARSET RESULTS_F, "", 0, 3
+			CALLFORMF DEFINE_FACE_PATTERN_CHARA_{IMG_NO}, -1, 0
+			SIF RESULTS_F:1 != ""
+				L_SPRITENAME:1 '= RESULTS_F:1
+			VARSET RESULTS_F, "", 0, 3
+		ENDIF
+	ENDIF
+	RETURNF L_SPRITENAME:1
+ELSE
+	;独自のリソースがない場合
+	;種族アイコン設定
+	IF G_OPT_REPLACE_ICON == "種族アイコン"
+		RETURNF GET_RACE_ICON_ADDRESS_BY_CSV(GET_RACE(CSVABL(IMG_NO, GETNUM(ABL, "종족"))))
+	;鬼アイコン設定
+	ELSE
+		RETURNF GET_ONI_MARK("正常")
+	ENDIF
+ENDIF
+
+;================================================
+;キャラ登録番号からHTML用のアイコン出力の文字列を取得する。
+;TRYを通過する関係で、RESULTSに戻す
+;================================================
+@GET_FACE_BY_CHARA_AS_HTML, L_CHARA, L_HEIGHT = 600, SHOW_SITUATION = "基本", SHOW_SITUATION:1, L_CHARA_NO = -1, L_SPRITENAME
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_HEIGHT			;高さを指定する。フェイスアイコン想定なのでそのまま横幅にもなる
+#DIMS DYNAMIC SHOW_SITUATION, 2	;基本(状況に応じて通常と悪魔変身が使いわけ
+#DIM DYNAMIC L_CHARA_NO				;L_CHARAが指定されたなかった→GETCHARAで取れてなかったときに使うNO
+#DIMS DYNAMIC L_SPRITENAME			;上記の場合によるスプライト指定
+IF L_CHARA < 0 && L_CHARA_NO >= 0
+	RESULTS_F '= ""
+	RETURNF GET_FACE_BY_CSV_AS_HTML(L_CHARA_NO, L_SPRITENAME, L_HEIGHT)
+ELSE
+	RESULTS_F '= GET_FACE_BY_CHARA(L_CHARA, SHOW_SITUATION, SHOW_SITUATION:1)
+	RETURNF @"<img src = '%RESULTS_F%' height = '{L_HEIGHT}'>"
+ENDIF
+;================================================
+;CSVキャラ番号からHTML用のアイコン出力の文字列を取得する。
+;================================================
+@GET_FACE_BY_CSV_AS_HTML, L_CHARA_NO, L_SPRITENAME="FACE_0", L_HEIGHT = 600
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA_NO
+#DIM DYNAMIC L_HEIGHT
+#DIMS DYNAMIC L_SPRITENAME
+#DIMS DYNAMIC L_RESULTS
+RESULT_F = 0
+;全キャラ鬼アイコン
+IF G_OPT_USE_ICON == "使用"
+	;リソース作成チェック
+	;GLOBALを利用して判定を1回に減らす
+	IF INRANGE(L_CHARA_NO, 0, CSVCHARANUM) && !IS_TRYMAKE_FACE:L_CHARA_NO
+		CALLF 顔グラ追加_F, L_CHARA_NO
+	ENDIF
+	SIF SPRITECREATED(GET_識別名(L_CHARA_NO) + "_" + L_SPRITENAME)
+		RESULT_F = 1
+ENDIF
+RESULTS_F '= GET_FACE_BY_CSV(L_CHARA_NO, L_SPRITENAME)
+RETURNF @"<img src = '%RESULTS_F%' height = '{L_HEIGHT}'>"
+
+
+;================================================
+;HTML用のタグをつけたモブ画像のアイコン出力の文字列を取得する。
+;================================================
+@GET_MOB_FACE_AS_HTML, L_MOBNAME, L_NO = 0, L_HEIGHT = 600
+#FUNCTIONS
+#DIMS DYNAMIC L_MOBNAME
+#DIM DYNAMIC L_NO
+#DIM DYNAMIC L_HEIGHT
+#DIM DYNAMIC GID
+RESULTS_F '= GET_MOB_FACE(L_MOBNAME, L_NO)
+RETURNF @"<img src = '%RESULTS_F%' height = '{L_HEIGHT}'>"
+
+;================================================
+;モブ画像のアイコン出力の文字列を取得する。
+;================================================
+@GET_MOB_FACE, L_MOBNAME, L_NO = 0
+#FUNCTIONS
+#DIMS DYNAMIC L_MOBNAME
+#DIM DYNAMIC L_NO
+#DIM DYNAMIC L_HEIGHT
+#DIM DYNAMIC GID
+#DIMS DYNAMIC L_SPRITENAME
+#DIMS DYNAMIC L_RESULTS
+L_SPRITENAME '= "モブ_" + L_MOBNAME + "_" + TOSTR(L_NO)
+IF !SPRITECREATED(L_SPRITENAME)
+	GID = FINDELEMENT(USED_TEMP_GID, 0) + TEMP_GID_START
+	IF GCREATEFROMFILE(GID, "12_モブ画像" + "\\" + L_MOBNAME + "\\" + L_SPRITENAME + ".png")
+		USED_TEMP_GID:FINDELEMENT(USED_TEMP_GID, 0) = 1
+		SPRITECREATE L_SPRITENAME, GID, 0, 0, GWIDTH(GID), GHEIGHT(GID)
+	ELSE
+		RETURNF "画像がありません"
+	ENDIF
+ENDIF
+RETURNF L_SPRITENAME
+
+@PRINT_TALK_BY_CHARA, L_CHARA, L_CHARA_NO = -1, L_SPRITENAME, L_TALK, SHOW_SITUATION:1, L_NAME = "指定なし", L_HEIGHT = 600, SHOW_SITUATION = "基本", IS_GET
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_CHARA_NO
+#DIMS DYNAMIC L_NAME
+#DIM DYNAMIC L_HEIGHT
+#DIMS DYNAMIC L_SPRITENAME
+#DIM DYNAMIC IS_GET
+#DIMS DYNAMIC SHOW_SITUATION, 2
+#DIMS DYNAMIC L_TALK
+#DIMS DYNAMIC L_FACE
+IF L_CHARA < 0 && L_CHARA_NO >= 0
+	CALL PRINT_TALK_BY_CSV, L_CHARA_NO, L_SPRITENAME, L_TALK, L_NAME, L_HEIGHT, IS_GET
+ELSE
+	SIF L_NAME == "指定なし"
+		L_NAME '= CALLNAME:L_CHARA
+	L_FACE '= GET_FACE_BY_CHARA_AS_HTML(L_CHARA, L_HEIGHT, SHOW_SITUATION, SHOW_SITUATION:1, , L_SPRITENAME)
+	CALL PRINT_TALK, L_FACE, L_TALK, L_NAME, L_HEIGHT, IS_GET
+ENDIF
+
+@PRINT_TALK_BY_CSV, L_CHARA_NO, L_SPRITENAME, L_TALK, L_NAME, L_HEIGHT = 600, IS_GET
+#DIM DYNAMIC L_CHARA_NO
+#DIMS DYNAMIC L_SPRITENAME
+#DIM DYNAMIC L_HEIGHT
+#DIM DYNAMIC IS_GET
+#DIMS DYNAMIC L_TALK
+#DIMS DYNAMIC L_NAME
+#DIMS DYNAMIC L_FACE
+SIF L_NAME == "指定なし"
+	L_NAME '= CSVCALLNAME(L_CHARA_NO)
+L_FACE '= GET_FACE_BY_CSV_AS_HTML(L_CHARA_NO, L_SPRITENAME, L_HEIGHT)
+CALL PRINT_TALK, L_FACE, L_TALK, L_NAME, L_HEIGHT, IS_GET
+
+@PRINT_TALK_BY_ADDRESS, L_NAME, L_SPRITENAME = "BLANK_IMG", L_TALK, L_HEIGHT = 600, IS_GET
+#DIMS DYNAMIC L_SPRITENAME
+#DIM DYNAMIC L_HEIGHT
+#DIM DYNAMIC IS_GET
+#DIMS DYNAMIC L_TALK
+#DIMS DYNAMIC L_NAME
+#DIMS DYNAMIC L_FACE
+L_FACE '= @"<img src = '%L_SPRITENAME%' height = '{L_HEIGHT}'>"
+CALL PRINT_TALK, L_FACE, L_TALK, L_NAME, L_HEIGHT, IS_GET
+
+@PRINT_TALK, L_FACE, L_TALK, L_NAME, L_HEIGHT, IS_GET
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC L_FACE
+#DIM DYNAMIC L_HEIGHT
+#DIMS DYNAMIC L_TALK
+#DIMS DYNAMIC L_NAME
+#DIMS DYNAMIC SPLIT_TALK, 6
+#DIMS DYNAMIC SHOWLINE
+#DIM DYNAMIC IS_GET
+SIF G_OPT_USE_ICON == "鬼アイコン"
+	L_FACE '= "<img src = '正常_FACE'>"
+SIF G_OPT_USE_ICON == "사용안함"
+	L_FACE '= "<img src = 'BLANK'>"
+{
+SHOWLINE += 
+				@"<div xpos = '0' ypos = '0'
+				  border_width = '2px' width = '{L_HEIGHT + 100}' height = '{L_HEIGHT + 100}'
+				  padding = '50'>"
+				   + L_FACE
+				+ "</div>"
+}
+IF L_NAME != ""
+	{
+	SHOWLINE += 
+					@"<div xpos = '50' ypos = '-40'
+					  width = '{L_HEIGHT}' height = '75'
+					  background_color = '%TOSTR_HTML(GETBGCOLOR())%'>"
+					+ "</div>"
+	}
+	{
+	SHOWLINE += 
+					@"<div xpos = '{50 + (L_HEIGHT - STRLENS(L_NAME) * 50 * 75 / 100) / 2}' ypos = '-40'>"
+					+ "<font size = '75'>" + L_NAME + "</font>"
+					+ "</div>"
+	}
+ENDIF
+SPLIT L_TALK, "_", SPLIT_TALK
+VARS TEMP_TALK
+FOR LCOUNT, 0, L_HEIGHT / 100 + ((L_HEIGHT % 100) > 0)
+	SIF LCOUNT
+		TEMP_TALK += "<br>"
+	TEMP_TALK += SPLIT_TALK:LCOUNT
+NEXT
+VARI L_WIDTH = 3600
+FOR LCOUNT, 0, 6
+	L_WIDTH = MAX(L_WIDTH, STRLENS(SPLIT_TALK:LCOUNT) * 50)
+NEXT
+{
+SHOWLINE += 
+				@"<div xpos = '{L_HEIGHT + 100}' ypos = '0'
+				  border_width = '2px' width = '{L_WIDTH}' height = '{L_HEIGHT + 100}'
+				  padding = '50'>"
+				   + TEMP_TALK
+				+ "</div>"
+}
+IF IS_GET
+	RESULTS '= SHOWLINE
+ELSE
+	HTML_PRINT SHOWLINE
+	FOR LCOUNT, 0, L_HEIGHT / 100 + ((L_HEIGHT % 100) > 0)
+		PRINTL 
+	NEXT
+ENDIF
+
+@GET_TALK_BY_CHARA, L_CHARA, L_CHARA_NO = -1, L_SPRITENAME, L_TALK, SHOW_SITUATION:1, L_NAME = "指定なし", L_HEIGHT = 600, SHOW_SITUATION = "基本"
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_CHARA_NO
+#DIMS DYNAMIC L_NAME
+#DIMS DYNAMIC L_SPRITENAME
+#DIM DYNAMIC L_HEIGHT
+#DIMS DYNAMIC SHOW_SITUATION, 2
+#DIMS DYNAMIC L_TALK
+#DIMS DYNAMIC L_FACE
+CALL PRINT_TALK_BY_CHARA, L_CHARA, L_CHARA_NO, L_SPRITENAME, L_TALK, SHOW_SITUATION:1, L_NAME, L_HEIGHT, SHOW_SITUATION, 1
+
+@GET_TALK_BY_CSV, L_CHARA_NO, L_SPRITENAME, L_TALK, L_NAME, L_HEIGHT = 600
+#DIM DYNAMIC L_CHARA_NO
+#DIMS DYNAMIC L_SPRITENAME
+#DIM DYNAMIC L_HEIGHT
+#DIMS DYNAMIC L_TALK
+#DIMS DYNAMIC L_NAME
+#DIMS DYNAMIC L_FACE
+CALL PRINT_TALK_BY_CSV, L_CHARA_NO, L_SPRITENAME, L_TALK, L_NAME, L_HEIGHT, 1
+
+@GET_TALK_BY_ADDRESS, L_NAME, L_SPRITENAME = "BLANK_IMG", L_TALK, L_HEIGHT = 600
+#DIMS DYNAMIC L_SPRITENAME
+#DIM DYNAMIC L_HEIGHT
+#DIMS DYNAMIC L_TALK
+#DIMS DYNAMIC L_NAME
+#DIMS DYNAMIC L_FACE
+CALL PRINT_TALK_BY_ADDRESS, L_NAME, L_SPRITENAME, L_TALK, L_HEIGHT, 1
+

@@ -1,0 +1,6696 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:STSTEM_DUNGEON.ERB
+;	Facility	:ダンジョンＲＰＧモジュール
+;
+;	Licence		:。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX			N鳥					新規作成
+;	002		2011/01/15			P					ダンジョン内調教においてASSIを排除する条件を追加
+;	003		2011/01/21			P					トリッシュを調整
+;	004		2011/01/27			旅人				キャプス・ロック実装
+;	005		2011/02/04			P					トリッシュの価格調整・チュートリアルの条件にガンスリンガー所持を加える
+;	006		2011/02/05			Rsp暇人				性格変化酒の解決処理を追加
+;	007		2011/02/06			P					ガリバーマジックを主人が死亡・
+;	008		2011/02/24			P					デバッグフラグがONのとき、ハニービーを常に使用可能なように変更
+;	009		2011/02/27			P					ATTACK開始時に会話不能・先制攻撃キャンセル・逃走不能のフラグを0にするように
+;	010		2011/03/04			P					SHOPダンジョンにコインによる購入処理を追加。また少しアイテム表示の字数を増やし、最大個数判定関数がない場合も落ちないように変更
+;													金を取得する宝ばこがBIT演算に対応していなかったのを修正
+;	011		2011/03/06			P					ダンジョンSHOPでスキルカードを扱う場合字数の問題で【スキル名】だけ扱うように
+;	012		2011/03/08			P					DDMのバグを修正
+;	013		2011/03/18			P					探索中でも方法によって、自宅サーバー所属の仲魔を送還できていたのを修正
+;	014		2011/03/28			P					ダークゾーン・@DUNGEON_WORPの仕様を一部変更。COMP使用不能の処理を追加
+;	015		2011/04/27			Ｎ鳥				探索開始時に衣装を設定、探索終了時に保存するように変更
+;	016		2011/05/02			P					汎用的配置関数を作成
+;	017		2011/05/02			P					汎用的配置関数の共通配置数関数を製作
+;	018		2011/05/08			Ｎ鳥				ＣＯＭＰ合体を基本機能に
+;	019		2011/05/10			P					ダンジョン内のANALYZEをTAからSAVESTR:10000~に変更
+;	019		2011/05/23			P					一時アナライズをダンジョンサイズ互換処理のあとに移動
+;	020		2011/06/20			P					ダークゾーン内のアナライズの視界を自分のマスだけに戻し、そのかわり壁にぶつかった際に壁のアナライズをとるように
+;	021		2011/11/06			旅人				統合整備(タイル文字の共通化)
+;	022		2012/01/02			Ｎ鳥				魔法の箱追加
+;	023		2012/01/18			P					COMPからマントラDL出来るように変更
+;	024		2012/02/17			ネトリス			素質『발정가능』を持っていると魅了状態時に10％の確率で発情
+;													欲情が10000以上になる、または5000以上で素質『발정가능』があると発情
+;													発情状態の時に30％の確率でHAPPYに
+;													気力0と発情しているときは、ステート経過ターンが増えない、以上を追加
+;	025		2012/02/28			ネトリス			性欲処理を使えるようにしました
+;	026		2012/12/02			ネトリス			性欲処理周りを『CFLAG:던전내발정용욕정치』を参照するように変更などなど
+;													『CFLAG:던전내발정용욕정치』に上限を設定、発情すると膣内とヴァギナに『汚れ:愛液』がつくように
+;	027		2012/12/27			P					ダンジョン内でマントラを取得しようとする際にポジションに空きがあるとエラーがでていたのを修正
+;	028		2013/12/02			ひみつ				ダンジョンリストの表示方法を変更。自動効果以外の装備スキルも機能するように変更。
+;													スキル属性表示の適用範囲拡大。スキル属性表示にキャラ情報を渡すように
+;	029		2014/01/03			銃Ｐ				ターミナルからベルベットルームとマントラに行ける様に加筆
+;	030		2015/01/13			Ｊ( 'ー`)し			マージ時に生じていたターミナル不具合を修正
+;	031		2015/01/18			Ｊ( 'ー`)し			ターミナルでメニューが余剰に表示される不具合を修正
+;	032		2015/09/19			54-762				ＭＡＧ消費処理から種族：人間を除外されるよう処置
+;	032		2015/12/11			JK好き				エストマ等が画面に表示されるように修正
+;	033		2016/05/02			ネトリス			休憩を追加
+;	034		2016/05/02			（U´・ω・｀）		日記帳exeに基づくフィルタリング機能の追加
+;	035		2016/07/29			（U´・ω・｀）		ランランダンジョンのための記述を追加
+;	036		2016/07/30			（U´・ω・｀）		オートフィルタの確認が個人的にうざかったので除去
+;													あとランランダンジョンの記述を修正
+;	037		2016/08/01			（U´・ω・｀）		ランランダンジョンのフラグ管理修正×２
+;	038		2016/08/07			（U´・ω・｀）		WORP,FORCEMOVE時のランランダンジョンの移動中断処理を実装
+;	039		2016/09/25			多治見国々			ダンジョンの推奨レベルの表示をオプションでも選択できるように
+;	040		2017/06/23			kuni				キャラ表示でINPUT_CHARA_LISTを使用するように変更
+;	041		2018/06/09			名無				一日に複数回探索、結界石消費でダンジョン内調教できるように
+;	042		2018/08/25			名無				저주의레드카펫
+;	043		2018/09/05			名無				関数DUNGEON_TRAP_BADSTATEを追加
+;	044		2018/11/08			JK好き				エストマ時にパーティ人数を参照して平均Lvを計算するように変更ついでにエストマとキャプスロックの判定が同居するように変更
+;	045		2019/11/21			JK好き				異能者デビルシフターが変身悪魔変更できない様に修正　CASTING_CHANGE_LINK_F()を使用
+;	046		2020/02/20			JK好き				自動レベルアップ使用時はＣＯＭＰから成長比率設定が出来るように追加
+;	047		2020/05/13			JK好き				@COMMAND_MAGIC_FIELDに特技と魔法を切り替えられるボタンを追加
+;	048		2020/06/28			JK好き				膣内が精液で汚れている場合は10％の確率でヴァギナに汚れが付くを1％に変更
+;	049		2020/08/19			JK好き				ダンジョン推奨レベルの表示のズレを修正
+;	050		2020/08/22			春眠				ターミナルから喰人のスキルセット・ステータスセットが行えるようについでにサンヒターのUIをちょっと変更
+;	051		2020/08/22			Jガン				扉、→等色固定のマスの色を変えやすいように
+;	052		2020/09/23			Jガン				ダンジョンでの買い物のエラーの修正
+;	053		2020/10/14			Jガン				エネミーエンカウントの無限ループ対策
+;	LNKUI	2021/02/11			Rsp暇人 			ダンジョン探索中、COMP（またはMENU)画面からリンケージ一覧を呼び出せるように
+;	054		2021/04/11			Jガン				3D時のダンジョンの処理を追加
+;													ウパニシャッド処理追加
+;	055		2021/04/22			JK好き				結界石によるダンジョン内調教であなたを選択できる問題を修正
+;	056		2021/07/24			っとっとき			ダンジョン探索モード設定オプションの追加
+;	057		2021/11/06			Schrott				東方EXにて、ミタマコイコイと同時に発動できる、御霊招来CSTR専用スキルを追加。
+;	058		2021/12/12			ロッド@カヤノソト	地形自動生成やF.O.E.の配置と制御に関する処理を追加
+;	059		2022/01/04			ロッド@カヤノソト	地形自動生成やF.O.E.に関する処理について、一部のダンジョンにおいてのみ実行されるように機能を隔離しました。※「FLAG:지형자동생성・FOE플래그」が1(ON)の場合のみ有効
+;	060		2021/12/30			JK好き				@ENEMY_TABLE 御霊招来でエラー落ちする場合がある問題を修正
+;	061		2022/03/07			JK好き				@SHOW_DUNGEONLIST及び@FILTER_DUNGEONLIST ダンジョンを128個まで表示できるように修正、ボタンの番号を変更
+;	062		2022/06/07			Collared			UI整理プロジェクトにより配置変更 & ショップコマンド番号の呼び出しに
+;	063		2022/07/17			ロッド@カヤノソト	デバッグモードでは出現条件を満たしていないダンジョンに突入できるが、「ダンジョン108：ランダム依頼のダンジョン」は対象外に変更(依頼を受注していない状態だとフラグの問題でバグるため)
+;	064		2022/07/24			NEO					@AFTER_EXPLORATION：ダンジョン脱出時（探索終了後）に発生するイベント……を呼び出すように
+;	065		2022/09/10			kamedakeisuke		マップでのスキル仕様処理にAion式召喚術を追加（したつもりだけど自信がない）
+;	066		2022/09/17			kamedakeisuke		Aion式召喚術まわりの仕様を追加
+;	067		2022/09/26			P					デビルシフター・喰奴の自動変身のための処理を追加
+;	069		2022/02/20			P					ガリバーマジックを説明文にあわせて主人のHP回復に変更
+;													ターミナルでの仲魔入れ替えを主人以外のサマナーレベルも見るように
+;													悪魔変身とリンク変更の処理を新記述に合わせて変更
+;	070		2022/03/01			P					ダンジョンの移動を一部リファクタリング
+;													探索時のコマンドメニューにオプションを追加し、移動に関係するオプションを設定できるように変更
+;													3D設定をコメンドメニューから外し、オプション設定に
+;													新規オプションとして、ダッシュ移動・Enter直進・マップクリック移動を追加
+;													可読性確保のために一部の旧移動処理をまとめてコメントアウトし、ファイル下部に移動
+;													押し倒しイベントの発生優先度を変更、イベント・戦闘がおきていない戦闘のときのみ発生するように
+;	071		2022/03/10			P					可読性確保のためにコメントアウトによる過去コードを排除。ここまでの変更履歴を参照する場合は資料フォルダのファイルを参照してください
+;	072		2022/03/14			P					ダンジョン移動時に自動探索を追加
+;													FPSモードでのオプションのボタンの生成のミスを修正
+;	073		2023/03/20			P					フィールド回復のスキル表示の処理を変更し、ツールチップを追加
+;	074		2023/04/11			P					FPSモードで探索中のムフフ展開をクリックで選択できなくなってしまっていたのを修正
+;	075		2023/04/28			P					能力値強化を選んだ際の表示の異常を修正
+;	076		2023/05/04			P					ダンジョン選択時に一時的、あるいは判断しづらい理由で選択不能になっている項目を理由とともに表示するように変更
+;	077		2023/05/14			P					ダンジョン選択時にエラーが出るのを避けるためにエスケープ処理を追加
+;													コンティニュー用のデータ作成処理を追加
+;	078		2023/05/14			P					コンティニュー用のデータ作成処理を戦闘毎に変更し、移動中の負荷になるのを防ぐように
+;	079		2023/06/07			P					自動移動中はMAPのボタン作成をしないように変更
+;													ターミナルにダンジョンごとの固有イベントの呼び出し処理を追加
+;	080		2023/06/08			P					エンカウント率変動処理を変更
+;													エストマ等の探索系のスキルの効果がきれた際に続けて使用するか選べるように
+;	081		2023/06/20			P					エンカウント率がスタックして大量に連続エンカウントする問題に対処
+;	082		2023/06/22			P(bazzile)			レベルアップ時インターフェース設定にランダムを含まない自動設定を追加_
+;	083		2023/07/01			P					ダンジョン脱出時に未遭遇歩数のリセット処理を追加
+;													使用アイテムの範囲指定を定数化
+;	084		2023/07/05			P					リフトマとライトマの効果がネストのミスにより正しく終了しない場合がある不具合を修正
+;	085		2023/08/06			P					性欲処理のシチュエーションの記録変数が維持されない不具合を修正
+;	086		2023/08/26			P					ランランダンジョンの移動停止をオミットしていた不具合を修正(正確にはダッシュ機能のものを援用する形に)
+;													マウス移動・ダッシュ移動の際にランランダンジョンの効果が発生するように
+;	087		2023/08/26			P					マップの端の列・行の中同士で移動しようとすると落ちる不具合を修正
+;	088		2023/09/13			P					シェイキングの処理を調整し、復活後もセーブだけは取っておくように変更
+;	089		2023/10/22			P					ダンジョン内での能力強化でマスターを選択できない不具合を修正。また死亡している味方を強化できないように変更
+;	090		2023/10/28			P					突入ダンジョンの選択時に推奨レベルの表示がオフだとボタンが生成されない不具合を修正
+;	091		2024/03/21			P					INPUT_CHARA_LIST関数の仕様変更に対応
+;	092		2024/03/26			P					一時探索経路履歴表示機能を追加
+;													FLOORにループ属性を追加できるように処理を追加
+;													自動探索のルーチンで踏み残しがでないように処理を追加
+;	093		2024/04/05			P					ユーザーによるマッピング機能を追加
+;													判定用にタイルの内容差し替え前のデータを返せるように仕様を追加
+;													EVENT_ENTER_DUNGEON関数にループ処理を追加
+;	094		2024/04/07			P					経路探索時に画面端に到達すると関数を打ち切ってしまっていた不具合を修正
+;	095		2024/04/08			P					デバッグモード時に探索画面にエンカウントのONOFFを切り替えるボタンを追加
+;	096		2024/04/08			P					自動探索で[0/0]が常に侵入できない座標として扱われていた不具合を修正
+;													経路の探査数が多すぎて落ちる不具合に対処
+;													マッパーとマッパーと同様の効果を持つ遁甲羅盤を追加
+;	097		2024/04/23			P					宝箱習得関数の文字列での呼び出し版となるGETS_TRESUREを追加
+;													FLAG:チュートリアル進行中の管理を追加
+;	098		2024/05/08			P					探索中の魔法使用のリスト抽出方法を変更
+;													なんらかの事情でおもち帰り用トリッシュがこの場に居ない状態で生成されていた場合、テイクアウト時にフラグを外すように修正
+;	099		2024/05/30			P					ダンジョン探索終了時処理を共通関数化
+;	100		2024/06/06			P					ランランダンジョンの切り替えがソフトなしでも実行できる不具合を修正
+;	101		2024/06/12			P					エンディング呼び出しをフラグをたてて上流で行うように変更
+;	102		2024/06/24			P					ENEMYSETの呼び出しが異常だった不具合を修正
+;	103		2024/07/20			P					3D表示ONだとFPSモードの操作が正しく受け付けられていなかった不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2024/05/12			P					戦闘中以外は無条件で控え悪魔の召喚ができるように変更
+;	002		2024/05/30			P(bazzile)			指定地点以外に突入できてしまう不具合を修正
+;	003		2024/06/06			P(bazzile)			探索不能条件の判定を変更
+;													ダンジョン脱出時の終了処理の共通化をさらにすすめる
+;	004		2024/06/25			P(bazzile)			結界石に調教と休憩をオミット
+;	005		2024/07/23			一ノ瀬				ダンジョンのフロア表示をHTML_PRINTに（これによって画像表示可能に）
+;	006		2024/07/26			P(bazzile)			チュートリアルの条件から難度を撤廃	
+;	007		2024/08/18			P(bazzile)			ダンジョン出現時に色変え処理を追加
+;													探索中にスキルカードの抽出をできるように変更
+;	008		2024/08/30			P(bazzile)			ダンジョン名の取得関数を追加し、式中関数からダンジョン名をとれるように
+;	009		2025/01/05			P(bazzile)			ランダムエンカウントの際に列ごとに敵がまとまるように配置調整をいれるように変更
+;	010		2025/01/07			P(bazzile)			敵とエンカウントした際の表示を変更
+;													敵を探すコマンドHUNTを追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=====================================================================
+;ダンジョンＲＰＧモジュール
+;=====================================================================
+
+
+@SHOPCOMABLE_101
+#DIM LCOUNT
+SIF !IS_USEABLE_SHOPCOM
+	RETURN 0
+RESULT:1 = 1
+RESULTS = 탐색
+IF FLAG:지정던전 >= 0
+	SIF FLAG:던전재진입금지
+		RETURN 0
+ENDIF
+;あなたが臨月だと不可
+SIF (TALENT:MASTER:임신 && CFLAG:MASTER:출산예정일 - 2 <= DAY)
+	RETURN 0
+;あなた育児中だと不可
+SIF TALENT:MASTER:육아중
+	RETURN 0
+;パーティに一人以上いるなら
+LOCAL = 0
+FOR LCOUNT, 0, CHARANUM
+	SIF CFLAG:LCOUNT:PT플래그 == 2
+		LOCAL += 1
+NEXT
+IF LOCAL > 0
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+@SHOP_COM_101, ARG
+#DIM DYNAMIC LCOUNT, 3
+CALL SHOW_DUNGEONLIST
+SIF RESULT == -1
+	RETURN 0
+IF RESULT == [[ダンジョン:시아크]]
+	FLAG:현던전 = [[ダンジョン:시아크]]
+ELSE
+	;---- EDIT P 000 ADD START -------------------------
+	;ダンジョンが指定された際に探索済み回数を増やす
+	SIF FLAG:지정던전 == -1
+		FLAG:던전탐색완료++
+	;---- EDIT P 000 ADD END ---------------------------
+	FLAG:지정던전 = RESULT
+	FLAG:현던전 = FLAG:지정던전
+ENDIF
+FLAG:MAG소비율 = 100
+FLAG:월령진행률 = 100
+FLAG:탈출 = 0
+;シェイキングの使用履歴を戻す
+USE_CONTINUE = 0
+CALL STARTUP_RPG_SHOPCOM
+;---- EDIT 093 ADD START -------------------------
+TEMP_SHOW_LAST_FLOOR = -1
+;---- EDIT 093 ADD END ---------------------------
+;-- ダンジョン32:이상한던전 --------
+;地形自動生成やF.O.E.制御関係のフラグやパラメータをクリアする。	※誤って値が残り続けることでの事故防止のため、ここでの初期化自体は常に行うようにする。
+FLAG:지형자동생성・FOE플래그 = 0		;地形の自動生成およびF.O.E.を利用するを利用しない	※補足：地形の自動生成およびF.O.E.を利用するダンジョンの場合、この後の「START_DUNGEON_{FLAG:현던전}」の関数内でフラグをONに設定します。
+CALL CD_CLEAR_PARAMETERS				;地形自動生成・F.O.E.制御用の各種パラメータをクリアする
+CALL CD_CREAR_TIME_AND_TURN, 0			;ダンジョン内の経過時間・経過ターン数カウントをクリアする
+;-- ダンジョン32:이상한던전 --------
+;エストマの効果リセット挟みませてもらいます
+CALL ENCOUNTER_CHANGER
+;スタート地点を呼び出し(現M、現X、現Yにそれぞれ代入)
+CALLFORM START_DUNGEON_{FLAG:현던전}
+
+VARI TERMINAL_LIST, 100
+VARS TERMINAL_NAME, 100
+CALL SET_VAR_TERMINAL_MAP, TERMINAL_LIST, TERMINAL_NAME, 1
+SIF RESULT
+	CALL SELECT_START_TERMINAL, TERMINAL_LIST, TERMINAL_NAME
+;現在のフロアデータを読み込み
+CALL MAKE_FLOOR, FLAG:현던전
+CALL AUTOMAP
+;-- タルタロスにF.O.E.『刈り取るもの』を追加するパッチ --------
+;ダンジョン内の経過時間・経過ターン数カウントの初期設定を行う
+IF FLAG:지형자동생성・FOE플래그 == 1
+	CALL CD_CREAR_TIME_AND_TURN, 1
+ENDIF
+;-- タルタロスにF.O.E.『刈り取るもの』を追加するパッチ --------
+;ダンジョン開始時のイベント
+TRYCALLFORM EVENT_DUNGEON_START_{FLAG:현던전}
+
+;-- ダンジョン32:이상한던전 --------
+;ダンジョン開始時のイベントで「FLAG:탈출 = 1」に設定している場合、ダンジョンを開始せずキャンセルする。
+;　※ダンジョンイベント内でやっぱりダンジョン突入をやめるという処理を可能とするための処理。不思議なダンジョン系に限らず共通処理として用意しています。
+IF FLAG:탈출 == 1
+	FLAG:현던전 = 0
+	FLAG:탈출 = 0	;脱出フラグをデフォルトに戻す
+	RETURN 0		;ダンジョン突入をキャンセルする
+ENDIF
+;-- ダンジョン32:이상한던전 --------
+
+;---- EDIT 041 MOD START   -------------------------
+;FLAG:던전탐색완료 += 1
+;---- EDIT 041 MOD END   -------------------------
+FLAG:중단세이브대기상태 = 1;EDIT 078 ADD
+
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+;---- EDIT 015 ADD START -------------------------
+;探索に参加可能なキャラの衣装を設定、PALAM・SOURCE・EXを初期化
+FOR LOCAL , 0 , CHARANUM
+	SIF GET_VALUE_TALENT_JOINABLE(LOCAL) == 0
+		CONTINUE
+	SIF (ABL:LOCAL:종족 == 0 || CFLAG:LOCAL:소속ＣＯＭＰ == -1) && CFLAG:LOCAL:PT플래그 == 1
+		CONTINUE
+	CALL CLOTHES_TRAIN,LOCAL,1
+	VARSET PALAM:LOCAL:0 , 0
+	VARSET SOURCE:LOCAL:0 , 0
+	VARSET EX:LOCAL:0 , 0
+NEXT
+;---- EDIT 015 ADD END   -------------------------
+CALL DUNGEON_ATTACK
+;---- EDIT 015 ADD START -------------------------
+CALL FINALIZE_DUNGEON
+
+;---- EDIT P 008 ADD START -------------------------
+@GET_DUNGEON_NAME, L_NUM = -1, IS_RENAME
+#FUNCTIONS
+#DIM DYNAMIC L_NUM
+#DIM DYNAMIC IS_RENAME
+SIF L_NUM == -1
+	L_NUM = FLAG:현던전
+RESULTS_F '= "", ""
+IF EXISTFUNCTION(@"GET_DUNGEON_NAME_{L_NUM}")
+	CALLFORMF GET_DUNGEON_NAME_{L_NUM}
+	SIF IS_RENAME && RESULTS_F:1 != ""
+		RETURNF RESULTS_F:1
+	RETURNF RESULTS_F
+ELSE
+	RETURNF "名称未定義"
+ENDIF
+;---- EDIT P 008 ADD END ---------------------------
+
+@FINALIZE_DUNGEON
+#DIM LCOUNT
+;探索に参加可能なキャラの衣装を保存
+FOR LCOUNT , 0 , CHARANUM
+	SIF !IS_JOINABLE_BATTLE(LCOUNT)
+		CONTINUE
+	CALL CLOTHES_TRAIN,LCOUNT,1
+NEXT
+;連続戦闘補正
+COUNT_CONTINUE_BATTLE = 0
+;---- EDIT 102 MOD START -------------------------
+;---- EDIT 015 ADD END   -------------------------
+;---- EDIT 002 ADD START -------------------------
+IF !FLAG:전생리스타트예약
+	;ここに来れないASSI及び健在でないASSIを排除する
+	IF FLAG:던전내조교 == 1
+		FLAG:던전내조교조수대피 = ASSI
+		SIF ASSI >= 0 && ABL:ASSI:종족 == 0 && CFLAG:ASSI:PT플래그 == 1
+			ASSI = -1
+		SIF ASSI >= 0 && GET_STATE(CFLAG:ASSI:상태이상) != "GOOD"
+			ASSI = -1
+		;ダンジョン内調教というかイベント調教は手番の枠外にする
+		;逆に恒常的に利用できるシステムを作るなら手番を消費するようにすべき
+		CALL SHOP_COM_201, , "調教手番消費なし"
+		RETURN 1
+	ENDIF
+		;BEGIN TRAIN
+	;---- EDIT 099 MOD START -------------------------
+ENDIF
+SETANIMETIMER 0
+
+FLAG:현던전 = 0
+FLAG:탈출 = 0
+FLAG:중단세이브대기상태 = 0;EDIT 078 ADD
+FLAG:미조우걸음수 = 0;EDIT 
+FLAG:SHOP커맨드 = 0
+FLAG:소마기프트 = 0
+FLAG:보옥륜기프트 = 0
+FLAG:TALK실행자선택불능 = 0
+FLAG:첫탐색종료 = 1
+;---- EDIT 092 ADD START -------------------------
+VARSET 一時探索経路履歴
+;---- EDIT 092 ADD END ---------------------------
+FOR LCOUNT,0,CHARANUM
+	CALL TRANS_DEVIL , LCOUNT, 0, "変身解除"
+NEXT
+RETURN 0
+;---- EDIT 102 MOD END ---------------------------
+;BEGIN TURNEND
+;RESTART
+;---- EDIT 076 MOD START -------------------------
+;---- EDIT 099 MOD END ---------------------------
+;=====================================================================
+;攻略可能ダンジョンを表示
+;=====================================================================
+@SHOW_DUNGEONLIST
+#LOCALSIZE 300
+#DIM CNT_SHOW_ABLE
+#DIM SHOW_ABLE, DUNGEONNUM
+#DIM SELECT_NOT_ABLE, DUNGEONNUM
+#DIMS SHOW_LINE
+#DIMS SELECT_NOT_ABLE_REASON, DUNGEONNUM
+VARSET SHOW_ABLE, -1
+VARSET SELECT_NOT_ABLE, 0
+VARSET SELECT_NOT_ABLE_REASON
+CNT_SHOW_ABLE = 1
+
+;---- EDIT 000 XXX START -------------------------
+;一周目の一日目のみチュートリアルが出現する
+IF FLAG:주회횟수 == 0 && DAY == 1 && !FLAG:첫탐색종료
+	PRINTW 던전탐색 및 전투에 관한 튜토리얼을 받을 수 있습니다
+	PRINTW 던전은 하츠다이쉘터를 사용합니다
+	PRINTW 튜토리얼을 받지 않고 하츠다이쉘터를 클리어했을때와 진행상의 변화는 없지만 얻는 경험치와 아이템 등에 차이가 있습니다。
+	PRINTW ShinEraTensei의 전투시스템은 다소 복잡하므로、RPG에 자신이 없을 경우 튜토리얼을 받아보시는 것을 권장합니다
+	PRINTL 튜토리얼을 받으시겠습니까？
+	CALL INPUT_YN
+	IF RESULT == 0
+		PRINTW 그럼、튜토리얼을 시작하겠습니다
+		PRINTL 
+		CUSTOMDRAWLINE =
+		WAIT
+		FLAG:튜토리얼진행중 = 1
+		RETURN [[ダンジョン:하츠다이쉘터]]
+	ENDIF
+;---- EDIT 000 XXX END ---------------------------
+ELSE
+	;---- EDIT P 002 MOD START -------------------------
+	DRAWLINE
+	IF FLAG:지정던전 == -1
+		PRINTFORML 탐색할 장소를 선택해주세요。
+		PRINTFORML 이 턴 동안、돌입조건이 충족되는 한 자유롭게 재돌입할 수 있지만
+		PRINTFORML 다음 턴이 될 때까지 탐색장소를 변경할 수 없습니다。
+	ELSE
+		IF FLAG:튜토리얼진행중
+			PRINTFORML 지정한 탐색지점에 재돌입할 수 있습니다。
+			PRINTFORML 턴 동안、처음 돌입하기로 선택한 던전은 자유롭게 재돌입할 수 있지만
+			PRINTFORML 다음 턴이 될 때까지 탐색장소를 변경할 수 없습니다。(하츠다이쉘터에 다시 가면 적이 나타나 전투할 수 있습니다)
+		ELSE
+			;---- EDIT P 003 MOD START -------------------------
+			RESULT = 0
+			TRYCALLFORM PREREQUISITE_DUNGEON_{FLAG:지정던전}
+			SELECTCASE RESULT
+				CASE 1
+					PRINTFORML 지정한 탐색지점에 재돌입할 수 있습니다。
+				CASE 0
+					PRINTFORML 재돌입이 불가능한 탐색지점입니다。
+				CASE -1
+					PRINTFORML 돌입조건:%RESULTS%
+			ENDSELECT
+			;---- EDIT P 003 MOD END ---------------------------
+		ENDIF
+	ENDIF
+	;---- EDIT P 002 MOD END ---------------------------
+ENDIF
+DRAWLINE
+FOR LOCAL,FLAG:지정던전 == -1 ? 1 # FLAG:지정던전 , FLAG:지정던전 == -1 ? DUNGEONNUM # FLAG:지정던전 + 1
+	SIF COUNT_SPLIT(DUNGEON_IS_FILTERED, "/", TOSTR(LOCAL))
+		CONTINUE
+	SIF LOCAL == [[ダンジョン:시아크]]
+		CONTINUE
+	RESULTS = 
+	;---- EDIT P 003 MOD START -------------------------
+	TRYCCALLFORM PREREQUISITE_DUNGEON_{LOCAL}
+		IF RESULT || LOCAL == FLAG:지정던전 || (FLAG:DEBUG && LOCAL != 108)
+			;ダンジョンの出現条件を満たしている、もしくはデバッグモードの場合、ダンジョンを出現させる
+			;※「ダンジョン108：ランダム依頼のダンジョン」はデバッグモードでも無条件で出現させることはできない。
+			SHOW_ABLE:CNT_SHOW_ABLE = LOCAL
+			SELECT_NOT_ABLE:CNT_SHOW_ABLE = RESULT > 0 ? 0 # 1
+			IF RESULT == 0
+				SELECT_NOT_ABLE_REASON:CNT_SHOW_ABLE '= "　　　" + "再突入不能"
+			ELSE
+				SELECT_NOT_ABLE_REASON:CNT_SHOW_ABLE '= "　　　突入条件:" + RESULTS
+			ENDIF
+			CNT_SHOW_ABLE ++
+		ENDIF
+	CATCH
+	ENDCATCH
+	;---- EDIT P 003 MOD END ---------------------------	
+NEXT
+CNT_SHOW_ABLE = 0
+$SHOW_LIST
+FOR LOCAL, CNT_SHOW_ABLE * リスト表示数(), (CNT_SHOW_ABLE + 1) * リスト表示数()
+	SIF LOCAL == 0 || LOCAL == 99
+		CONTINUE
+	SIF SHOW_ABLE:LOCAL == -1
+		BREAK
+	;---- EDIT P 008 MOD START -------------------------
+	;---- EDIT 090 MOD START -------------------------
+	;CALLFORM GET_DUNGEON_NAME_{SHOW_ABLE:LOCAL}
+	SHOW_LINE = [{SHOW_ABLE:LOCAL,3}] %GET_DUNGEON_NAME_KR(SHOW_ABLE:LOCAL),34,LEFT%
+	;---- EDIT P 008 MOD END ---------------------------
+	SHOW_LINE = <button value = '{SHOW_ABLE:LOCAL}'>%SHOW_LINE%</button>
+	IF IS_DEBUG || FLAG:던전의권장레벨표시설정
+		;PRINTFORM [{SHOW_ABLE:LOCAL,2}] %RESULTS,34,LEFT%
+		TRYCCALLFORM GET_DUNGEON_LV_{SHOW_ABLE:LOCAL}
+			SHOW_LINE += @"　(권장LV:{RESULT, 2}\@ FLAG:DEBUG ?　최저LV:{RESULT:1, 2}　최고LV:{RESULT:2, 2}　보스LV:{RESULT:3, 2}#\@)"
+			;PRINTFORMLC 　(推奨LV:{RESULT, 2}\@ FLAG:DEBUG ?　最低LV:{RESULT:1, 2}　最高LV:{RESULT:2, 2}　ボスLV:{RESULT:3, 2}#\@)
+		CATCH
+			SHOW_LINE += @"　(권장LV:??\@ FLAG:DEBUG ?　최저LV:{RESULT:1, 2}　최고LV:{RESULT:2, 2}　보스LV:{RESULT:3, 2}#\@)"
+		ENDCATCH
+	ENDIF
+	;---- EDIT 090 MOD END ---------------------------
+	;---- EDIT P 003 MOD START -------------------------
+	;---- EDIT P 007 MOD START -------------------------
+	SIF ANNOUNCE_DUNGEON_APPEARED:(SHOW_ABLE:LOCAL) == 2
+		ANNOUNCE_DUNGEON_APPEARED:(SHOW_ABLE:LOCAL) = 3
+	IF SELECT_NOT_ABLE:LOCAL
+		SHOW_LINE '= SET_COLOR_TAG(SHOW_LINE + HTML_ESCAPE(SELECT_NOT_ABLE_REASON:LOCAL), "gray")
+	ELSE
+		SIF ANNOUNCE_DUNGEON_APPEARED:(SHOW_ABLE:LOCAL) == 3 && !SELECT_NOT_ABLE:LOCAL
+			SHOW_LINE '= SET_COLOR_TAG(SHOW_LINE, "p-green")
+	ENDIF
+	;---- EDIT P 003 MOD END ---------------------------
+	;---- EDIT P 007 MOD END ---------------------------
+	HTML_PRINT SHOW_LINE
+NEXT
+PRINTFORM \@ LINEISEMPTY() ? # \n \@
+IF FLAG:DEBUG
+	PRINTL [998] 샘플던전
+ENDIF
+;---- EDIT 000 ADD START -------------------------
+CALL PREREQUISITE_DUNGEON_[[ダンジョン:시아크]]
+IF RESULT
+	SHOW_ABLE:[[ダンジョン:시아크]] = 1
+	SHOW_LINE = [{[[ダンジョン:시아크]],3}] %"시아크",34,LEFT%
+	SHOW_LINE '= SET_BUTTON_TAG(SHOW_LINE, "[[ダンジョン:시아크]]")
+	SIF IS_DEBUG || FLAG:던전의권장레벨표시설정
+		SHOW_LINE += " " * 19
+	SHOW_LINE += "突入回数無消費"
+	DRAWLINE
+	HTML_PRINT SHOW_LINE
+ENDIF
+IF COUNT_DUNGEON_CHANGEABLE_NUM() > 0 && FLAG:지정던전 >= 0
+	DRAWLINE
+	PRINTFORML [999] 탐색위치변경(나머지:{COUNT_DUNGEON_CHANGEABLE_NUM()}회)
+ENDIF
+;---- EDIT 000 ADD END ---------------------------
+DRAWLINE
+PRINTLC [1002] 필터링 설정
+PRINTLC [1010] 자동 필터링
+PRINTL [1011] 필터 전체 해제
+DRAWLINE
+PRINTL [1000] 돌아간다
+PRINTFORMLC \@ CNT_SHOW_ABLE > 0 ? [1001] 이전페이지 # %" " * 16%\@
+PRINTFORMLC \@ CNT_SHOW_ABLE < 5 && SHOW_ABLE:((CNT_SHOW_ABLE+1) * リスト表示数()) >= 0 ? [1003] 다음페이지 # %" " * 16%\@
+$INPUT_LOOP
+INPUT
+CLEARLINE 1
+IF RESULT == 999 && COUNT_DUNGEON_CHANGEABLE_NUM() > 0 && FLAG:지정던전 >= 0
+	;ダンジョンの指定を解除
+	FLAG:지정던전 = -1
+	PRINTW 검색대상 지정을 해제했습니다。재설정 해주세요。
+	RESTART
+;---- EDIT 000 XXX END ---------------------------
+ELSEIF RESULT == 1000
+	RETURN -1
+ELSEIF RESULT == 1001 && CNT_SHOW_ABLE > 0
+	CNT_SHOW_ABLE -= 1
+	GOTO SHOW_LIST
+ELSEIF RESULT == 1002
+	CALL FILTER_DUNGEONLIST
+	RESTART
+ELSEIF RESULT == 1010
+	CALL DIARY_DUNGEON_FILTER_MAIN
+	PRINTW 일기장exe상에서 클리어된 것으로 간주되는 던전을 필터링했습니다
+	PRINTL 
+	RESTART
+ELSEIF RESULT == 1011
+	;CALL DIARY_DUNGEON_FILTER_ALLOFF
+	DUNGEON_IS_FILTERED = 
+	PRINTW 던전필터를 모두 해제했습니다
+	PRINTL 
+	RESTART
+ELSEIF RESULT == 1003 && CNT_SHOW_ABLE < 5 && LOCAL:((CNT_SHOW_ABLE + 1) * リスト表示数()) >= 0
+	CNT_SHOW_ABLE += 1
+	GOTO SHOW_LIST
+ELSEIF RESULT == 998
+	RETURN 0
+ELSE
+	LOCAL = RESULT
+	RESULT = 0
+	;---- EDIT P 002 MOD START -------------------------
+	IF IS_DEBUG && LOCAL != [[ダンジョン:랜덤의뢰]]
+		TRYCCALLFORM PREREQUISITE_DUNGEON_{LOCAL}
+			SIF RESULT <= 0
+				PRINTFORMW 입장조건을 달성하지 못하고 진입합니다
+			RETURN LOCAL
+		CATCH
+		ENDCATCH
+	ELSEIF (FLAG:지정던전 >= 0 && LOCAL != FLAG:지정던전) && LOCAL != [[ダンジョン:시아크]]
+		REUSELASTLINE 
+		GOTO INPUT_LOOP
+	ELSE
+		TRYCCALLFORM PREREQUISITE_DUNGEON_{LOCAL}
+			SIF RESULT <= 0
+				GOTO INPUT_LOOP
+			RETURN LOCAL
+		CATCH
+			REUSELASTLINE 
+			GOTO INPUT_LOOP
+		ENDCATCH
+	ENDIF
+	;---- EDIT P 002 MOD END ---------------------------
+ENDIF
+
+;=====================================================================
+;行先の変更可能回数
+;=====================================================================
+@COUNT_DUNGEON_CHANGEABLE_NUM
+#FUNCTION
+#DIM L_RESULT
+L_RESULT = 1
+L_RESULT -= FLAG:던전탐색완료
+SIF ADD_DUNGEON_CHANGEABLE_1
+	L_RESULT += 1
+SIF ADD_DUNGEON_CHANGEABLE_2
+	L_RESULT += 1
+RETURNF L_RESULT
+
+;---- EDIT 076 MOD END ---------------------------
+;=====================================================================
+;攻略可能ダンジョンのリストをフィルタリングする
+;=====================================================================
+@FILTER_DUNGEONLIST
+#DIM L_LINE
+L_LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - L_LINE
+DRAWLINE
+PRINTL 설정을 바꿀 던전을 선택해주세요
+DRAWLINE
+FOR LOCAL,0,DUNGEONNUM
+	TRYCCALLFORM PREREQUISITE_DUNGEON_{LOCAL}
+		IF RESULT || FLAG:DEBUG
+			SIF COUNT_SPLIT(DUNGEON_IS_FILTERED, "/", TOSTR(LOCAL))
+				SETCOLOR 0x990000
+			IF GET_DUNGEON_NAME(LOCAL) != "名称未定義"
+				PRINTFORMLC [{LOCAL, 2}] %GET_DUNGEON_NAME_KR(LOCAL), 20, LEFT%
+			ENDIF
+			RESETCOLOR
+		ENDIF
+	CATCH
+	ENDCATCH
+NEXT
+PRINTFORM \@ LINEISEMPTY() ? # \n \@
+PRINTL [1000] 돌아간다
+$INPUT_LOOP
+INPUT
+IF RESULT == 1000
+	RETURN
+ELSEIF INRANGE(RESULT, 0, DUNGEONNUM)
+	LOCAL = RESULT
+	TRYCCALLFORM PREREQUISITE_DUNGEON_{LOCAL}
+		IF RESULT || FLAG:DEBUG
+			IF GET_DUNGEON_NAME(LOCAL) != "名称未定義"
+				IF COUNT_SPLIT(DUNGEON_IS_FILTERED, "/", TOSTR(LOCAL))
+					DUNGEON_IS_FILTERED = %DEL_SPLIT(DUNGEON_IS_FILTERED, "/", TOSTR(LOCAL))%
+				ELSE
+					DUNGEON_IS_FILTERED = %ADD_SPLIT(DUNGEON_IS_FILTERED, "/", TOSTR(LOCAL))%
+				ENDIF
+			ENDIF
+		ENDIF
+	CATCH
+	ENDCATCH
+ELSE
+ENDIF
+GOTO START
+;---- EDIT 093 ADD START -------------------------
+;=====================================================================
+;現在のダンジョンの現在のフロアのANALYZE情報獲得
+;引数はＸ・Ｙ
+;描画速度改善用
+;=====================================================================
+@GET_FLOOR_ANALYZE_T, ARG, ARG:1
+#FUNCTION
+RETURNF DPOINT("GET" , , ARG , ARG:1 , FLAG:현M , @"ダンジョン%TOSTR(FLAG:현던전 , "00")%") % 100
+
+;=====================================================================
+;現在のダンジョンの現在のフロアのユーザーカラー情報獲得
+;引数はＸ・Ｙ
+;描画速度改善用
+;=====================================================================
+@GET_FLOOR_USER_COLOR_T, ARG, ARG:1
+#FUNCTION
+RETURNF DPOINT("GET" , , ARG , ARG:1 , FLAG:현M , @"ダンジョン%TOSTR(FLAG:현던전 , "00")%") % (100 * 100) / 100
+
+;=====================================================================
+;現在のダンジョンの現在のフロアのユーザーカラー情報獲得
+;引数はＸ・Ｙ
+;描画速度改善用
+;=====================================================================
+@GET_FLOOR_USER_OBJECT_T, ARG, ARG:1
+#FUNCTION
+RETURNF DPOINT("GET" , , ARG , ARG:1 , FLAG:현M , @"ダンジョン%TOSTR(FLAG:현던전 , "00")%") / (100 * 100)
+
+;=====================================================================
+;フロアのANALYZE情報設置
+;ARGは代入する数値
+;FLOORのアナライズ情報は下2桁で
+;1 = 視界に入ったことがある
+;2 = 実際に踏んだことがある
+;以降の引数はそれぞれ、ダンジョン・階層・Ｘ・Ｙを示す
+;=====================================================================
+@SET_FLOOR_ANALYZE, ARG, ARG:1, ARG:2, ARG:3, ARG:4
+#LOCALSIZE 1
+;現在のFLOORのANALYZE情報も同時に更新
+LOCAL = DPOINT("GET" ,  , ARG:3 , ARG:4 , ARG:2 , @"ダンジョン%TOSTR(ARG:1 , "00")%") / 100 * 100 + ARG
+CALLF DPOINT("SET" , LOCAL , ARG:3 , ARG:4 , ARG:2 , @"ダンジョン%TOSTR(ARG:1 , "00")%")
+RETURN 0
+
+;=====================================================================
+;フロアのユーザーカラー情報設置
+;ARGは代入する数値
+;以降の引数はそれぞれ、ダンジョン・階層・Ｘ・Ｙを示す
+;=====================================================================
+@SET_FLOOR_USER_COLOR, ARG, ARG:1, ARG:2, ARG:3, ARG:4
+#LOCALSIZE 1
+;現在のFLOORのANALYZE情報も同時に更新
+LOCAL = 0
+LOCAL += DPOINT("GET" ,  , ARG:3 , ARG:4 , ARG:2 , @"ダンジョン%TOSTR(ARG:1 , "00")%") % 100
+LOCAL += ARG * 100
+LOCAL += DPOINT("GET" ,  , ARG:3 , ARG:4 , ARG:2 , @"ダンジョン%TOSTR(ARG:1 , "00")%") / (100 * 100) * (100 * 100)
+CALLF DPOINT("SET" , LOCAL , ARG:3 , ARG:4 , ARG:2 , @"ダンジョン%TOSTR(ARG:1 , "00")%")
+RETURN 0
+
+;=====================================================================
+;フロアのユーザーオブジェクト情報設置
+;ARGは代入する数値
+;以降の引数はそれぞれ、ダンジョン・階層・Ｘ・Ｙを示す
+;=====================================================================
+@SET_FLOOR_USER_OBJECT, ARG, ARG:1, ARG:2, ARG:3, ARG:4
+#LOCALSIZE 1
+;現在のFLOORのANALYZE情報も同時に更新
+LOCAL = 0
+LOCAL += DPOINT("GET" ,  , ARG:3 , ARG:4 , ARG:2 , @"ダンジョン%TOSTR(ARG:1 , "00")%") % 100
+LOCAL += DPOINT("GET" ,  , ARG:3 , ARG:4 , ARG:2 , @"ダンジョン%TOSTR(ARG:1 , "00")%") % (100 * 100) / 100 * 100
+LOCAL += ARG * 100 * 100
+CALLF DPOINT("SET" , LOCAL , ARG:3 , ARG:4 , ARG:2 , @"ダンジョン%TOSTR(ARG:1 , "00")%")
+RETURN 0
+;---- EDIT 093 ADD END ---------------------------
+;=====================================================================
+;フロアデータ作成処理
+;引数はダンジョン番号
+;=====================================================================
+@MAKE_FLOOR, ARG
+;---- EDIT 092 ADD START -------------------------
+;X/Y軸のループの設定　各FLOORデータ定義関数でセットする
+FLOOR_IS_LOOP_X = 0
+FLOOR_IS_LOOP_Y = 0
+;---- EDIT 092 ADD END ---------------------------
+;ダンジョンごとのフロアデータを取りに行く
+CALLFORM MAKE_FLOOR_{ARG}
+SIF D3D_WORP == 0
+	CALL D3D_AUTOFLIP
+D3D_WORP = 0
+;---- D3D 054 END   (ADD) ------------------------------
+;=====================================================================
+;FLOOR_ANALYZE
+;フロア全体や部屋をまとめてアナライズする
+;ボス部屋などを使う際にどうぞ
+;ARG M　ARG:1 X始点 ARG:2 X終点 Y始点 Y終点
+;=====================================================================
+@FLOOR_ANALYZE, ARG = -1, ARG:1 = -1, ARG:2 = -1, ARG:3 = -1, ARG:4 = -1
+#LOCALSIZE 2
+ARG = ARG == -1 ? FLAG:현M # ARG
+ARG:1 = ARG:1 == -1 ? 0 # ARG:1
+ARG:2 = ARG:2 == -1 ? FLAG:최대X # ARG:2
+ARG:3 = ARG:3 == -1 ? 0 # ARG:3
+ARG:4 = ARG:4 == -1 ? FLAG:최대Y # ARG:4
+FOR LOCAL:1, ARG:3, ARG:4
+	FOR LOCAL, ARG:1, ARG:2
+		CALL SET_FLOOR_ANALYZE, 2, FLAG:현던전, ARG, LOCAL, LOCAL:1
+	NEXT
+NEXT
+;=====================================================================
+;現在のフロアを描画
+;=====================================================================
+@SHOW_FLOOR, IMG_ADDRESS, IMG_SIZE, SHOW_MODE, ARG
+#LOCALSIZE 2
+#LOCALSSIZE 1
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC TEMP
+#DIMS DYNAMIC IMG_ADDRESS
+#DIM DYNAMIC IMG_SIZE
+#DIMS DYNAMIC SHOW_MODE
+#DIM DYNAMIC 改行フラグ, 1
+#DIM DYNAMIC L_HEIGHT
+#DIM DYNAMIC L_X
+#DIM DYNAMIC L_Y
+#DIM DYNAMIC CONVERTED_X
+#DIM DYNAMIC CONVERTED_Y
+#DIM DYNAMIC START_X
+#DIM DYNAMIC END_X
+#DIM DYNAMIC START_Y, 2
+#DIM DYNAMIC END_Y, 2
+#DIM DYNAMIC SIDE_LINENUM
+;描画速度を考慮してユーザー設定はマップ切り替わりの時に一回だけまとめてとる形にする
+IF IMG_ADDRESS == "" && DUNGEON_ENABLE_MANUAL_MAPPING == 1
+	IF TEMP_SHOW_LAST_FLOOR != FLAG:현M
+		TEMP_SHOW_LAST_FLOOR = FLAG:현M
+		FOR L_Y, 0, FLAG:최대Y
+			FOR L_X, 0, FLAG:최대X
+				TEMP_USER_COLOR:L_X:L_Y = GET_FLOOR_USER_COLOR_T(L_X, L_Y)
+				TEMP_USER_OBJECT:L_X:L_Y = GET_FLOOR_USER_OBJECT_T(L_X, L_Y)
+			NEXT
+		NEXT
+	ENDIF
+ENDIF
+SIF !MAXARRAY(DUNGEON_USER_TILE_COLOR)
+	CALL SET_DEFAULT_USER_TILE_COLOR
+SIF MATCH(DUNGEON_USER_TILE_OBJECT, "") == VARSIZE("DUNGEON_USER_TILE_OBJECT")
+	CALL SET_DEFAULT_USER_TILE_OBJECT
+
+;CUSTOMDRAWLINE =
+PRINTSL GETLINESTR("=")
+CALLFORM FLOORNAME_{FLAG:현던전}
+;ALIGNMENT RIGHT
+;IF FLAG:커스텀게임화면
+;	PRINTFORML   ￥{MONEY,9}    ＣＯＭＰ容量： {NUM_NAKAMA() + ソフト容量()}/{FLAG:소프트용량}使用中
+;	PRINTFORM MAG:{GET_CHARA_STOCK_MAG(MASTER),9}    
+;ELSE
+PRINTFORM   ￥{MONEY,8 + FLAG:커스텀게임화면 > 0}    ＣＯＭＰ용량： {NUM_NAKAMA()}/{GET_STOCKSIZE()}사용중
+SIF IS_DEBUG
+	PRINTFORM   [M:{FLAG:현M} X:{FLAG:현X} Y:{FLAG:현Y}]
+PRINTL 
+PRINTFORM MAG:{GET_CHARA_STOCK_MAG(MASTER),8}    
+;ENDIF
+IF FLAG:월령 != 0 && FLAG:월령 != 8
+	PRINTFORM {FLAG:월령}/8 \@ FLAG:월령벡터 == 0 ? ＹＯＵＮＧ # ＯＬＤ \@ ＭＯＯＮ
+ELSE
+	PRINTFORM \@ FLAG:월령 == 8 ? ＦＵＬＬ ＭＯＯＮ # ＮＥＷ ＭＯＯＮ\@
+ENDIF
+PRINTL 
+;---- D3D 054 START (ADD) ------------------------------
+IF D3D_ACTIVE
+; && EQUIP:MASTER:モノスコープ
+	ALIGNMENT LEFT
+	CALL D3D_SHOW_GRAPHIC
+	TRYGOTO D3D_SHOW_FLOOR_FINISH
+ENDIF
+;---- D3D 054 END   (ADD) ------------------------------
+;ALIGNMENT CENTER
+L_HEIGHT = IMG_SIZE ? IMG_SIZE # FLAG:최대Y
+SIF IMG_ADDRESS != ""
+	L_HEIGHT = MAX(L_HEIGHT, 18)
+IF L_HEIGHT < 18
+	FOR LOCAL , 0 , (18 - L_HEIGHT)/2
+		PRINTL
+	NEXT
+ENDIF
+;IF FLAG:최대Y < 18
+;	FOR LOCAL , 0 , (18 - FLAG:최대Y)/2
+;		PRINTL
+;	NEXT
+;ENDIF
+;---- EDIT 070 MOD START GET_SHOW_TILE関数を経由する形に変更。マップクリック設定時にボタンを作るように変更-------------------------
+;---- EDIT 092 MOD START -------------------------
+;---- EDIT 093 MOD START -------------------------
+SIDE_LINENUM = 0
+IF IMG_ADDRESS == ""
+	$SHOW_DUNGEON
+	CALLF DPOINT( , , 0 , 0 , FLAG:현M , @"ダンジョン%TOSTR(FLAG:현던전,"00")%")
+	IF FLOOR_IS_LOOP_X
+		START_X = FLAG:현X - MIN(FLAG:최대X / 2, 15)
+		END_X = FLAG:현X + MIN(FLAG:최대X / 2, 15)
+	ELSE
+		START_X = MAX(0, FLAG:현X - 15 - MAX(0, ((FLAG:현X+15)-FLAG:최대X)))
+		END_X = MIN(FLAG:현X+15+MAX(0, 15-FLAG:현X), FLAG:최대X)
+	ENDIF
+	IF FLOOR_IS_LOOP_Y
+		START_Y = FLAG:현Y - MIN(FLAG:최대Y / 2, 9)
+		END_Y = FLAG:현Y + MIN(FLAG:최대Y / 2, 9)
+	ELSE
+		START_Y = MAX(0, FLAG:현Y - 9 - MAX(0, ((FLAG:현Y+9)-FLAG:최대Y)))
+		END_Y = MIN(FLAG:현Y+9+MAX(0, 9-FLAG:현Y), FLAG:최대Y)
+	ENDIF
+	TEMP = MAX(12 - (END_Y - START_Y), 0)
+	START_Y:1 = START_Y - TEMP / 2
+	END_Y:1 = END_Y + TEMP / 2 + TEMP % 2
+	FOR L_Y, START_Y:1, END_Y:1
+;---- EDIT P-005 MOD START：フロア描画処理のHTML_PRINT化 ---------------------------
+		;表示行を宣言
+		VARS SHOW_LINE
+		;最初に表示幅から計算した数のスペースを打ち込んでCENTER化する
+		IF DUNGEON_ENABLE_MANUAL_MAPPING == 1
+			SHOW_LINE '= " " * ((LINELENS - (END_X - START_X))/2 - 15)
+		ELSE
+			SHOW_LINE '= " " * ((LINELENS - (END_X - START_X))/2)
+		ENDIF
+		IF INRANGE(L_Y, START_Y, END_Y -1)
+			CONVERTED_Y = CONVERT_OUTRANGE_COORD_Y(L_Y)
+			FOR L_X, START_X, END_X
+				CONVERTED_X = CONVERT_OUTRANGE_COORD_X(L_X)
+				CALL GET_SHOW_TILE, CONVERTED_X, CONVERTED_Y
+				IF DUNGEON_ENABLE_MANUAL_MAPPING > 0 && TEMP_USER_COLOR:CONVERTED_X:CONVERTED_Y > 0 && RESULTS != "　"
+					SETCOLOR DUNGEON_USER_TILE_COLOR:(TEMP_USER_COLOR:CONVERTED_X:CONVERTED_Y)
+				ELSE
+					SETCOLOR RESULT
+				ENDIF
+				SIF DUNGEON_ENABLE_MANUAL_MAPPING == 1 && TEMP_USER_OBJECT:CONVERTED_X:CONVERTED_Y > 0 && RESULTS != "　" && RESULTS != "＠"
+					RESULTS '= DUNGEON_USER_TILE_OBJECT:(TEMP_USER_OBJECT:CONVERTED_X:CONVERTED_Y)
+				IF SHOW_MODE == "SETCOLOR" && RESULTS != "　"
+					;PRINTBUTTON RESULTS, @"SETCOLOR/{CONVERTED_X}/{CONVERTED_Y}"
+					SHOW_LINE += SET_BUTTON_TAG(SET_COLOR_TAG(RESULTS , TOSTR(GETCOLOR())) , @"SETCOLOR/{CONVERTED_X}/{CONVERTED_Y}" )
+				ELSEIF SHOW_MODE == "SETOBJECT" && RESULTS != "　"
+					;PRINTBUTTON RESULTS, @"SETOBJECT/{CONVERTED_X}/{CONVERTED_Y}"
+					SHOW_LINE += SET_BUTTON_TAG(SET_COLOR_TAG(RESULTS , TOSTR(GETCOLOR())) , @"SETOBJECT/{CONVERTED_X}/{CONVERTED_Y}" )
+				ELSEIF DUNGEON_COMMAND_MOUSE_WALK && RESULTS != "　" && !DUNGEON_MOVE_CONTINUE;EDIT MOD 079
+					;PRINTBUTTON RESULTS, @"MOUSE/{CONVERTED_X}/{CONVERTED_Y}"
+					SHOW_LINE += SET_BUTTON_TAG(SET_COLOR_TAG(RESULTS , TOSTR(GETCOLOR())) , @"MOUSE/{CONVERTED_X}/{CONVERTED_Y}" )
+				ELSE
+					;PRINTFORM %RESULTS%
+					SHOW_LINE += SET_COLOR_TAG(RESULTS , TOSTR(GETCOLOR()))
+				ENDIF
+				RESETCOLOR
+			NEXT
+		ELSE
+			;PRINTFORM %" " * (END_X - START_X) * 2%
+			SHOW_LINE += " " * (END_X - START_X) * 2
+		ENDIF
+		HTML_PRINT SHOW_LINE , -1
+		IF DUNGEON_ENABLE_MANUAL_MAPPING == 1
+			PRINTFORM 　　　
+			;SHOW_LINE += " " * 6
+			IF SIDE_LINENUM < 11
+				IF SHOW_MODE == "SETCOLOR" && ARG == SIDE_LINENUM
+					CALL PRINT_COLOR, "【", COLOR("yellow")
+				ELSE
+					PRINT  [
+				ENDIF
+				SETCOLOR DUNGEON_USER_TILE_COLOR:SIDE_LINENUM
+				PRINTBUTTON "■", @"MAPPING_USER_COLOR/{SIDE_LINENUM}"
+				RESETCOLOR
+				IF SHOW_MODE == "SETCOLOR" && ARG == SIDE_LINENUM
+					CALL PRINT_COLOR, "】", COLOR("yellow")
+				ELSE
+					PRINT ] 
+				ENDIF
+				PRINTFORM %" " * 2%
+
+				FOR LCOUNT, 0, 3
+					IF SIDE_LINENUM == 0 && LCOUNT > 0
+						PRINTFORM %" " * 6%
+					ELSE
+						TEMP = SIDE_LINENUM + LCOUNT * 11 - LCOUNT
+						IF SHOW_MODE == "SETOBJECT" && ARG == TEMP
+							CALL PRINT_COLOR, "【", COLOR("yellow")
+						ELSE
+							PRINT  [
+						ENDIF
+						IF TEMP == 0
+							SETCOLOR GETBGCOLOR()
+							PRINTBUTTON "■", @"MAPPING_USER_OBJECT/{TEMP}"
+						ELSE 
+							SIF SHOW_MODE == "SETOBJECT" && ARG == TEMP 
+								SETCOLOR COLOR("yellow")
+							PRINTBUTTON DUNGEON_USER_TILE_OBJECT:TEMP, @"MAPPING_USER_OBJECT/{TEMP}"
+						ENDIF
+						RESETCOLOR
+						IF SHOW_MODE == "SETOBJECT" && ARG == TEMP 
+							CALL PRINT_COLOR, "】", COLOR("yellow")
+						ELSE
+							PRINT ] 
+						ENDIF	
+					ENDIF
+				NEXT
+			ELSE
+				PRINTFORM %" " * (6 + 2 + 6 * 3)%
+			ENDIF
+		ENDIF
+		PRINTL 
+		;HTML_PRINT SHOW_LINE
+		SIDE_LINENUM++
+	NEXT
+ELSE
+	IF AUTO_SPLIT(IMG_ADDRESS, "/", 0) == "TRYCALL"
+		TRYCALLFORM %AUTO_SPLIT(IMG_ADDRESS, "/", 1)%
+	ELSE
+		CALL PRINT_EVENT_PICTURE, IMG_ADDRESS, L_HEIGHT, "CENTER"
+		SIF RESULT == 0
+			GOTO SHOW_DUNGEON
+	ENDIF
+ENDIF
+;---- EDIT 093 MOD END ---------------------------
+;---- EDIT 092 MOD END ---------------------------
+;IF IMG_ADDRESS == ""
+;	$SHOW_DUNGEON
+;	CALLF DPOINT( , , 0 , 0 , FLAG:현M , @"ダンジョン%TOSTR(FLAG:현던전,"00")%")
+;	FOR LOCAL:1, MAX(0, FLAG:현Y - 9 - MAX(0, ((FLAG:현Y+9)-FLAG:최대Y))), MIN(FLAG:현Y+9+MAX(0, 9-FLAG:현Y), FLAG:최대Y)
+;		FOR LOCAL, MAX(0, FLAG:현X - 15 - MAX(0, ((FLAG:현X+15)-FLAG:최대X))), MIN(FLAG:현X+15+MAX(0, 15-FLAG:현X), FLAG:최대X)
+;			CALL GET_SHOW_TILE, LOCAL, LOCAL:1
+;			SETCOLOR RESULT
+;			IF DUNGEON_COMMAND_MOUSE_WALK && RESULTS != "　" && !DUNGEON_MOVE_CONTINUE;EDIT MOD 079
+;				PRINTBUTTON RESULTS, @"MOUSE/{LOCAL}/{LOCAL:1}"
+;			ELSE
+;				PRINTFORM %RESULTS%
+;			ENDIF
+;			RESETCOLOR
+;		NEXT
+;		PRINTL
+;	NEXT
+;ELSE
+;	IF AUTO_SPLIT(IMG_ADDRESS, "/", 0) == "TRYCALL"
+;		TRYCALLFORM %AUTO_SPLIT(IMG_ADDRESS, "/", 1)%
+;	ELSE
+;		CALL PRINT_EVENT_PICTURE, IMG_ADDRESS, L_HEIGHT, "CENTER"
+;		SIF RESULT == 0
+;		GOTO SHOW_DUNGEON
+;	ENDIF
+;ENDIF
+;---- EDIT 070 MOD END -------------------------
+ALIGNMENT LEFT
+
+IF L_HEIGHT < 18
+	FOR LOCAL , 0 , (18 - L_HEIGHT+1)/2
+		PRINTL
+	NEXT
+ENDIF
+;IF FLAG:최대Y < 18
+;	FOR LOCAL , 0 , (18 - FLAG:최대Y+1)/2
+;		PRINTL
+;	NEXT
+;ENDIF
+$D3D_SHOW_FLOOR_FINISH
+
+;改行 ;改行フラグ
+;改行フラグ = 0
+;LOCALS = 
+
+IF SOFT_ON("에너미소나")
+	CALL SET_ENCOUNT_RATE
+	PRINTFORM 조우률：{FLAG:인카운트율, 3}％   
+	;改行フラグ = 1
+ENDIF
+IF SOFT_ON("캡스・락")
+	IF IS_DISABLE_CAPSLOCK
+		SETCOLOR COLOR("gray")
+		PRINTBUTTON "[CAPS-LOCK:OFF]", "CAPS-LOCK"
+	ELSE
+		PRINTBUTTON "[CAPS-LOCK:ON]", "CAPS-LOCK"
+	ENDIF
+	PRINT 　　 
+	;改行フラグ = 1
+ENDIF
+RESETCOLOR
+IF SOFT_ON("에너미호이호이")
+	IF IS_DISABLE_ENEMYHOIHOI
+		SETCOLOR COLOR("gray")
+		PRINTBUTTON "[E-HOIHOI:OFF]", "E-HOIHOI"
+	ELSE
+		PRINTBUTTON "[E-HOIHOI:ON]", "E-HOIHOI"
+	ENDIF
+	PRINT 　　 
+ENDIF
+RESETCOLOR
+IF SOFT_ON("에너미바이바이")
+	IF IS_DISABLE_ENEMYBYEBYE
+		SETCOLOR COLOR("gray")
+		PRINTBUTTON "[E-BYEBYE:OFF]", "E-BYEBYE"
+	ELSE
+		PRINTBUTTON "[E-BYEBYE:ON]", "E-BYEBYE"
+	ENDIF
+	PRINT 　　 
+ENDIF
+RESETCOLOR
+IF SOFT_ON("런런던전")
+	IF !FLAG:런런던전
+		SETCOLOR COLOR("gray")
+		PRINTBUTTON "[RUNRUN:OFF]", "RUNRUN"
+	ELSE
+		PRINTBUTTON "[RUNRUN:ON]", "RUNRUN"
+	ENDIF
+	PRINT 　　 
+ENDIF
+RESETCOLOR
+IF FLAG:에스트마 || FLAG:라이트마 || FLAG:리프트마 || FLAG:맵퍼
+	SIF FLAG:에스트마
+		PRINT 에스트마 
+	SIF FLAG:라이트마
+		PRINT 라이트마 
+	SIF FLAG:리프트마
+		PRINT 리프트마 
+	SIF FLAG:맵퍼
+		PRINT 맵퍼 
+	PRINT 효과중   
+	;改行フラグ = 1
+ENDIF
+;---- EDIT 095 ADD START -------------------------
+IF IS_DEBUG
+	IF FLAG:인카운트하지않는다
+		SETCOLOR COLOR("aqua")
+		PRINTBUTTON "[ENCOUNT:OFF]", "DEBUG_ENCOUNT"
+	ELSE
+		PRINTBUTTON "[ENCOUNT:ON]", "DEBUG_ENCOUNT"
+	ENDIF
+	RESETCOLOR
+ENDIF
+;---- EDIT 095 ADD END ---------------------------
+SIF !LINEISEMPTY()
+	PRINTL 
+;CHK:改行
+;SIF 改行フラグ
+;	PRINTL 
+;-------------------------------------------------
+;座標 X/Yで表示されるタイルを取得する
+;戻り値値　RESULT = タイルカラー、RESULTS = タイル
+;-------------------------------------------------
+@GET_SHOW_TILE, L_X, L_Y
+#DIMS DYNAMIC L_MASTER
+#DIM L_X
+#DIM L_Y
+RESULT = GETDEFCOLOR()
+IF FLAG:현X == L_X && FLAG:현Y == L_Y
+	RESULT = 0x33ffcc
+	;回転する＠マーク
+	;SHOW_FLOOR側でHTML_PRINTする準備が整うまではコメントアウトします
+	SELECTCASE ABL:MASTER:속성LC
+		CASE 1
+			L_MASTER = <div xpos='{-100}' ypos='-25'><img src='＠時計回り' width='100' height='100'></div>
+		CASE 2
+			L_MASTER = <div xpos='{-100}' ypos='-25'><img src='＠中庸' width='100' height='100'></div>
+		CASE 3
+			L_MASTER = <div xpos='{-100}' ypos='-25'><img src='＠反時計回り' width='100' height='100'></div>
+	ENDSELECT
+	;RESULTS = ＠
+	;RETURN RESULT
+ENDIF
+
+IF DA:(FLAG:현X):(FLAG:현Y) % 10 == -1 && !(SOFT_ON("다크스캐너") || SOFT_ON("허니・비")) && FLAG:라이트마 == 0
+	RESULT = 0x333344
+	IF ABS(L_X-FLAG:현X)+ABS(L_Y-FLAG:현Y) > 1
+		RESULTS = ？
+		RESULTS += L_MASTER
+		RETURN RESULT
+	ENDIF
+ENDIF
+IF DPOINT( , , L_X , L_Y) > 0
+	CALL DG_GET_TILE(L_X, L_Y, FLAG:현M, FLAG:현던전)
+	RESULTS += L_MASTER
+	RESULT = GETCOLOR()
+	RESETCOLOR
+	RETURN RESULT
+ELSE
+	RESULTS = 　
+	RESULTS += L_MASTER
+	RETURN RESULT
+ENDIF
+
+@GET_TILE_VAR_DASH, L_X, L_Y
+#DIM L_X
+#DIM L_Y
+;値域外なら壁
+;---- EDIT 087 MOD START -------------------------
+SIF !INRANGE(L_X, 0, FLAG:최대X - 1)
+	RETURN 0
+SIF !INRANGE(L_Y, 0, FLAG:최대Y - 1)
+	RETURN 0
+;---- EDIT 087 MOD END ---------------------------
+CALL GET_SHOW_TILE, L_X, L_Y
+;床に見えるものは床
+SIF GROUPMATCH(RESULTS:1, "□", "＠")
+	RETURN 1
+;ここまできたら普通に中身を返す
+RETURN DA:L_X:L_Y
+;---- EDIT 070 ADD END ---------------------------
+;=====================================================================
+;ダンジョンでのコマンドを表示して設定
+;=====================================================================
+@SHOW_DUNGEON_COMMAND
+#DIM CONST COMMANDLENS = 20
+;PRINTL ＣＯＭＭＡＮＤ                [10]ＩＴＥＭ     [14]ＣＯＭＰ    　[l]ＬＯＧ
+;PRINTL         [8]↑                 [11]ＭＡＧＩＣ   [15]ＦＯＲＭ    　
+;PRINTL [4]← [5]調べる [6]→         [12]ＥＸＴＲＡ   [16]ＳＴＡＴＵＳ  [r][*]%ハート%ＲＵＮ
+;PRINTL         [2]↓                 [13]ＥＱＵＩＰ   [17]ＭＡＧ
+SELECTCASE FLAG:던전내조작설정
+	CASE 0
+		PRINT ＣＯＭＭＡＮＤ                
+		PRINTBUTTON TOALIGNMENT("[i]ＩＴＥＭ", COMMANDLENS, "LEFT"), "i"
+		IF NUM_SUMMONER(1)
+			PRINTBUTTON TOALIGNMENT("[c]ＣＯＭＰ", COMMANDLENS, "LEFT"), "c"
+		ELSE
+			PRINTBUTTON TOALIGNMENT("[c]ＭＥＮＵ", COMMANDLENS, "LEFT"), "c"
+		ENDIF
+		PRINTBUTTON TOALIGNMENT("[L]ＬＯＧ", COMMANDLENS, "LEFT"), "L"
+		IF SOFT_ON("런런던전")
+			IF IS_ENABLE_RUNRUN()
+				PRINTBUTTON TOALIGNMENT("[R]ＲＵＮ ＯＮ", COMMANDLENS, "LEFT"),"R"
+			ELSE
+				PRINTBUTTON TOALIGNMENT("[R]ＲＵＮ ＯＦＦ", COMMANDLENS, "LEFT"),"R"
+			ENDIF
+		ENDIF
+		PRINTL
+		IF D3D_ACTIVE
+			PRINTBUTTON "[7]←","7"
+			PRINT    
+			PRINTBUTTON "[8]↑","8"
+			PRINT    
+			PRINTBUTTON "[9]→","9"
+			PRINT          
+		ELSE
+			PRINT         
+			PRINTBUTTON "[8]↑","8"
+			PRINT                  
+		ENDIF
+		PRINTBUTTON TOALIGNMENT("[s]ＳＫＩＬＬ", COMMANDLENS, "LEFT"),"s"
+		PRINTBUTTON TOALIGNMENT("[f]ＦＯＲＭ", COMMANDLENS, "LEFT"),"f"
+		IF CAN_SEE_MAP()
+			PRINTBUTTON TOALIGNMENT("[n]ＭＡＰ", COMMANDLENS, "LEFT"),"n"
+		ELSE
+			PRINTFORM %" " * COMMANDLENS%
+		ENDIF
+		SIF SOFT_ON("에너미서치") || IS_DEBUG
+			PRINTBUTTON TOALIGNMENT("[H]ＨＵＮＴ", COMMANDLENS, "LEFT"),"H"
+		PRINTL
+		IF D3D_ACTIVE
+			PRINTBUTTON "[4]＜","4"
+		ELSE
+			PRINTBUTTON "[4]←","4"
+		ENDIF
+		PRINT  
+		PRINTBUTTON "[5]조  사","5"
+		PRINT  
+		IF D3D_ACTIVE
+			PRINTBUTTON "[6]＞","6"
+		ELSE
+			PRINTBUTTON "[6]→","6"
+		ENDIF
+		PRINT          
+		PRINTBUTTON TOALIGNMENT("[E]ＥＱＵＩＰ", COMMANDLENS, "LEFT"),"E"
+		PRINTBUTTON TOALIGNMENT("[S]ＳＴＡＴＵＳ", COMMANDLENS, "LEFT"), "S"
+		PRINTBUTTON TOALIGNMENT("[a]ＡＵＴＯ ＲＵＮ", COMMANDLENS, "LEFT"),"a"
+		SIF FLAG:무후후전개
+			PRINTBUTTON TOALIGNMENT("[*]" + ハート(), COMMANDLENS, "LEFT"), "*"
+		PRINTL
+		IF D3D_ACTIVE
+			PRINT       
+			PRINTBUTTON "[2]Ｖ","2"
+			PRINTBUTTON "[0]↓","0"
+			PRINT               
+		ELSE
+			PRINT         
+			PRINTBUTTON "[2]↓","2"
+			PRINT                  
+		ENDIF
+		PRINTBUTTON TOALIGNMENT("[r]ＲＥＣＯＶＥＲ", COMMANDLENS, "LEFT"),"r"
+		PRINTBUTTON TOALIGNMENT("[M]ＭＡＧ", COMMANDLENS, "LEFT"),"M"
+		PRINTBUTTON TOALIGNMENT("[o]ＯＰＴＩＯＮ", COMMANDLENS, "LEFT"),"o"
+		PRINTL
+		;CUSTOMDRAWLINE =
+		PRINTSL GETLINESTR("=")
+		PRINTL
+	CASE 1
+		PRINT ＣＯＭＭＡＮＤ                
+		PRINTBUTTON TOALIGNMENT("[1]ＩＴＥＭ", COMMANDLENS, "LEFT"), "1"
+		;PRINT       
+		IF NUM_SUMMONER(1)
+			PRINTBUTTON TOALIGNMENT("[5]ＣＯＭＰ", COMMANDLENS, "LEFT"), "5"
+		ELSE
+			PRINTBUTTON TOALIGNMENT("[5]ＭＥＮＵ", COMMANDLENS, "LEFT"), "5"
+		ENDIF
+		PRINTBUTTON TOALIGNMENT("[+]ＬＯＧ", COMMANDLENS, "LEFT"), "+"
+		IF SOFT_ON("런런던전")
+			IF IS_ENABLE_RUNRUN()
+				PRINTBUTTON TOALIGNMENT("[R]ＲＵＮ ＯＮ", COMMANDLENS, "LEFT"),"R"
+			ELSE
+				PRINTBUTTON TOALIGNMENT("[R]ＲＵＮ ＯＦＦ", COMMANDLENS, "LEFT"),"R"
+			ENDIF
+		ENDIF
+		PRINTL
+		IF D3D_ACTIVE
+			PRINTBUTTON "[q]←","q"
+			PRINT    
+			PRINTBUTTON "[w]↑","w"
+			PRINT    
+			PRINTBUTTON "[e]→","e"
+			PRINT          
+		ELSE
+			PRINT         
+			PRINTBUTTON "[w]↑","w"
+			PRINT                  
+		ENDIF
+		PRINTBUTTON TOALIGNMENT("[2]ＳＫＩＬＬ", COMMANDLENS, "LEFT"),"2"
+		PRINTBUTTON TOALIGNMENT("[6]ＦＯＲＭ", COMMANDLENS, "LEFT"),"6"
+		IF CAN_SEE_MAP()
+			PRINTBUTTON TOALIGNMENT("[n]ＭＡＰ", COMMANDLENS, "LEFT"),"n"
+		ELSE
+			PRINTFORM %" " * COMMANDLENS%
+		ENDIF
+		SIF SOFT_ON("에너미서치") || IS_DEBUG
+			PRINTBUTTON TOALIGNMENT("[H]ＨＵＮＴ", COMMANDLENS, "LEFT"),"H"
+		PRINTL
+		IF D3D_ACTIVE
+			PRINTBUTTON "[a]＜","a"
+		ELSE
+			PRINTBUTTON "[a]←","a"
+		ENDIF
+		PRINT  
+		PRINTBUTTON "[f]조  사","f"
+		PRINT  
+		IF D3D_ACTIVE
+			PRINTBUTTON "[d]＞","d"
+		ELSE
+			PRINTBUTTON "[d]→","d"
+		ENDIF
+		PRINT          
+		PRINTBUTTON TOALIGNMENT("[3]ＥＱＵＩＰ", COMMANDLENS, "LEFT"),"3"
+		PRINTBUTTON TOALIGNMENT("[7]ＳＴＡＴＵＳ　", COMMANDLENS, "LEFT"),"7"
+		PRINTBUTTON TOALIGNMENT("[-]ＡＵＴＯ ＲＵＮ", COMMANDLENS, "LEFT"),"-"
+		SIF FLAG:무후후전개
+			PRINTBUTTON TOALIGNMENT("[9]" + ハート(), COMMANDLENS, "LEFT") , "9"
+		PRINTL
+		IF D3D_ACTIVE
+			PRINT       
+			PRINTBUTTON "[s]Ｖ","s"
+			PRINTBUTTON "[x]↓","x"
+			PRINT               
+		ELSE
+			PRINT         
+			PRINTBUTTON "[s]↓","s"
+			PRINT                  
+		ENDIF
+		PRINTBUTTON TOALIGNMENT("[4]ＲＥＣＯＶＥＲ", COMMANDLENS, "LEFT"),"4"
+		PRINTBUTTON TOALIGNMENT("[8]ＭＡＧ", COMMANDLENS, "LEFT"),"8"
+		PRINTBUTTON TOALIGNMENT("[o]ＯＰＴＩＯＮ", COMMANDLENS, "LEFT"),"o"
+		PRINTL
+		;CUSTOMDRAWLINE =
+		PRINTSL GETLINESTR("=")
+		PRINTL
+	CASEELSE
+		FLAG:던전내조작설정 = 0
+		CALL SHOW_DUNGEON_COMMAND
+ENDSELECT
+
+;---- EDIT 070 ADD START -------------------------
+;=====================================================================
+;ダンジョン内操作の違いによる文字列変換関数
+;ARGS = 変換対象
+;ARG  = 変換オプションの指定(省略でフラグから取得)
+;=====================================================================
+@CONVERT_DUNGEON_COMMAND, ARGS, ARG = -1
+#FUNCTIONS
+ARG = ARG == -1 ?  FLAG:던전내조작설정 # ARG
+IF ARG == 1
+	SELECTCASE ARGS
+		CASE "w"
+			RETURNF "8"
+		CASE "a"
+			RETURNF "4"
+		CASE "f"
+			RETURNF "5"
+		CASE "d"
+			RETURNF "6"
+		CASE "s"
+			RETURNF "2"
+		CASE "q"
+			SIF D3D_ACTIVE
+				RETURNF "7"
+		CASE "e"
+			SIF D3D_ACTIVE
+				RETURNF "9"
+		CASE "x"
+			SIF D3D_ACTIVE
+				RETURNF "0"
+		CASE "1"
+			RETURNF "i"
+		CASE "2"
+			RETURNF "s"
+		CASE "3"
+			RETURNF "E"
+		CASE "4"
+			RETURNF "r"
+		CASE "5"
+			RETURNF "c"
+		CASE "6"
+			RETURNF "f"
+		CASE "7"
+			RETURNF "S"
+		CASE "8"
+			RETURNF "M"
+		;---- EDIT 074 ADD START -------------------------
+		CASE "9"
+			RETURNF "*"
+		;---- EDIT 074 ADD END ---------------------------
+		CASE "+"
+			RETURNF "L"
+		CASE "-"
+			RETURNF "a"
+		CASE "*"
+			RETURNF "*"
+		CASE "R"
+			RETURNF "R"
+		CASE "o"
+			RETURNF "o"
+	ENDSELECT
+ENDIF
+RETURNF ARGS
+;---- EDIT 070 ADD END ---------------------------
+;2023/03/01以前の処理はコメントアウトしファイル下部に移動
+;=====================================================================
+;ダンジョン攻略のメイン処理
+;=====================================================================
+@DUNGEON_ATTACK
+#DIM LCOUNT, 2
+#DIM L_LINE
+#DIM L_CNT
+#DIM L_RESULT
+#DIM L_X
+#DIM L_Y
+#DIM TEMP, 2
+#DIM CAN_ENTER_TILE_DASH_NUM, 2, 2;現在と一つ前の座標の両サイドが床だったかどうかを入れる変数。通路かどうかの判定などに使う
+#DIM IS_DASH_MODE
+#DIM IS_ENTER
+#DIMS STOCK_MOUSE
+#DIM DUNGEON_TILE_SEARCH_ROUTE, 1000
+#DIM DYNAMIC D3D_TOWALK;WALK_DUNGEON 関数などへ渡すべき数値を保存するDYNAMIC変数
+#DIM DYNAMIC D3D_LOCALCOORD,2;一時的に座標値を保存するDYNAMIC変数
+#LOCALSIZE 1
+
+SIF !INRANGE(FLAG:던전내조작설정, 0, 1)
+	FLAG:던전내조작설정 = 0
+;終了条件が満たされるまで処理を繰り返す
+DUNGEON_MOVE_CONTINUE = 0;EDIT ADD 079
+WHILE 1 == 1
+	;人間タンポポ用のセット措置
+	SETANIMETIMER 100
+
+	IS_AUTO_PIROT = 0
+	DUNGEON_CNT_MOVE = 0
+	FLAG:윈도우메시지스킵 = 0
+	CALL REFRESH_FORMATION
+	$PRINT
+	;---- EDIT 102 ADD START -------------------------
+	SIF FLAG:전생리스타트예약
+		BREAK
+	;---- EDIT 102 ADD END ---------------------------
+	SIF FLAG:던전내조교 == 1
+		BREAK
+	;脱出フラグ立ってたら終わり
+	IF FLAG:탈출
+		TRYCALLFORM EVENT_DUNGEON_END_{FLAG:현던전}
+		FLAG:탈출스킬금지 = 0
+		;-- タルタロスにF.O.E.『刈り取るもの』を追加するパッチ --------
+		;地形自動生成やF.O.E.制御関係のフラグやパラメータをクリアする。	※誤って値が残り続けることでの事故防止のため、ここでの初期化自体は常に行うようにする。
+		FLAG:지형자동생성・FOE플래그 = 0		;地形の自動生成およびF.O.E.を利用しない		※補足：地形の自動生成およびF.O.E.を利用するダンジョンの場合、この後の「START_DUNGEON_{FLAG:현던전}」の関数内でフラグをONに設定します。
+		CALL CD_CLEAR_PARAMETERS				;地形自動生成・F.O.E.制御用の各種パラメータをクリアする
+		CALL CD_CREAR_TIME_AND_TURN, 0			;ダンジョン内の経過時間・経過ターン数カウントをクリアする
+		;-- タルタロスにF.O.E.『刈り取るもの』を追加するパッチ --------
+		BREAK
+	ENDIF
+	REDRAW 0
+	;---- 067 自動悪魔変身 START (ADD) ------------------------------
+	CALL AUTO_TRANSFORM
+	;---- 067 自動悪魔変身 START (END) ------------------------------
+
+	;遭遇率を読みこみ
+	;CALLFORM ENCOUNT_RATE_{FLAG:현던전}
+	;FLAG:인카운트율 = FLAG:인카운트율 * (100 + FLAG:エンカウント率補正) / 100
+	;ダンジョンを描画
+	CALL SHOW_FLOOR
+	;現パーティ描画
+	CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+	FLAG:커맨드표시행수 = LINECOUNT
+	FLAG:PT표시행수 = LINECOUNT - 13
+	;コマンド表示
+	CALL SHOW_DUNGEON_COMMAND
+;---- EDIT 070 ADD START -------------------------
+	L_LINE = LINECOUNT
+	;入力待ち
+	$INPUT_LOOP
+	;---- EDIT 088 MOD START -------------------------
+	;---- EDIT 078 MOD START -------------------------
+	;入力が出来る段階で復帰用データを作る
+	;ここでセーブデータのみにフラグをいれておくことでロードで判別できるようになる
+	;初期状態が0で、DAY0と一致してしまうのでずらして登録する
+	;探索開始と戦闘開始時にフラグをたてておいて、処理軽減のために移動毎のセーブを省く。
+	IF FLAG:중단세이브대기상태
+		FLAG:중단세이브대기상태 = 0
+		;TEMP = USE_CONTINUE_DAY
+		;USE_CONTINUE_DAY = DAY + 1
+		IF !HAVE_INSTALLSOFT("쉐이킹")
+			TEMP:1 = 1
+			CALL GETS_INSTALLSOFT, "쉐이킹"
+		ELSE
+			TEMP:1 = 0
+		ENDIF
+		SAVEDATA SAVEDATA_NUM_FOR_CONTINUE, DISP_SAVETEXT()
+		;USE_CONTINUE_DAY = TEMP
+		SIF TEMP:1
+			HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("쉐이킹") = 0
+	ENDIF
+	;---- EDIT 078 MOD END ---------------------------
+	;---- EDIT 088 MOD END ---------------------------
+	CLEARLINE LINECOUNT - L_LINE
+	ONEINPUTS
+	CLEARLINE LINECOUNT - L_LINE
+	IS_ENTER = 0
+	;ボタンを変換する
+	;FPSモードの入力をデフォルトモードに変換する
+	RESULTS = %CONVERT_DUNGEON_COMMAND(RESULTS)%
+	IF !D3D_ACTIVE
+		;マウス入力
+		SIF (RESULTS == "" && STOCK_MOUSE != "") && DUNGEON_COMMAND_ENTER_WALK
+			RESULTS = %STOCK_MOUSE%
+		IF STRCOUNT(RESULTS, "MOUSE") || RESULTS == "a"
+			STOCK_MOUSE = %RESULTS%
+			IF RESULTS == "a"
+				$AUTO_RUN
+				CALL MAKE_ROUTE_AUTO_PILOT, "自動探索", DUNGEON_TILE_SEARCH_ROUTE	
+				IS_AUTORUN_SEARCHING = 0
+				IS_AUTO_PIROT = 1
+			ELSE
+				;---- EDIT 092 ADD START -------------------------
+				;自分がいるますをクリックした場合は調べるに飛ばす
+				IF TOINT(AUTO_SPLIT(RESULTS, "/", 1)) == FLAG:현X && TOINT(AUTO_SPLIT(RESULTS, "/", 2)) == FLAG:현Y
+					RESULTS = 5
+					GOTO D3D_SKIPNEWINPUT
+				ELSE
+					CALL MAKE_ROUTE_AUTO_PILOT, RESULTS, DUNGEON_TILE_SEARCH_ROUTE
+					IS_AUTORUN_SEARCHING = 0
+				ENDIF
+				;---- EDIT 092 ADD END ---------------------------
+			ENDIF
+			SIF !RESULT
+				RESTART
+			LCOUNT = 0
+			;---- EDIT 096 MOD START -------------------------
+			WHILE LCOUNT < VARSIZE("DUNGEON_TILE_SEARCH_ROUTE") && DUNGEON_TILE_SEARCH_ROUTE:LCOUNT >= 0
+			;---- EDIT 096 MOD END ---------------------------
+				;---- EDIT 092 MOD START -------------------------
+				;ワープなどで座標がすっ飛んだ場合を考慮して隣接マス以外に行こうとしてるなら終わる
+				IF ABS(DUNGEON_TILE_SEARCH_ROUTE:LCOUNT / 1000 - FLAG:현X) > 1
+					IF FLOOR_IS_LOOP_X
+						;ループ時は端から端に行くときは通す
+						SIF ABS(DUNGEON_TILE_SEARCH_ROUTE:LCOUNT / 1000 - FLAG:현X) != (FLAG:최대X - 1)
+							BREAK
+					ELSE
+						BREAK
+					ENDIF
+				ENDIF
+				IF ABS(DUNGEON_TILE_SEARCH_ROUTE:LCOUNT % 1000 - FLAG:현Y) > 1
+					IF FLOOR_IS_LOOP_Y
+						SIF ABS(DUNGEON_TILE_SEARCH_ROUTE:LCOUNT % 1000 - FLAG:현Y) != (FLAG:최대Y -1)
+							BREAK
+					ELSE
+						BREAK
+					ENDIF
+				ENDIF
+				IF (DUNGEON_TILE_SEARCH_ROUTE:LCOUNT / 1000 - FLAG:현X < 0)
+					;端から端の場合は判定が逆転する
+					IF ABS(DUNGEON_TILE_SEARCH_ROUTE:LCOUNT / 1000 - FLAG:현X) == (FLAG:최대X - 1)
+						L_RESULT = 6
+					ELSE
+						L_RESULT = 4
+					ENDIF
+				ELSEIF DUNGEON_TILE_SEARCH_ROUTE:LCOUNT / 1000 - FLAG:현X > 0
+					IF ABS(DUNGEON_TILE_SEARCH_ROUTE:LCOUNT / 1000 - FLAG:현X) == (FLAG:최대X - 1)
+						L_RESULT = 4
+					ELSE
+						L_RESULT = 6
+					ENDIF
+				ELSEIF DUNGEON_TILE_SEARCH_ROUTE:LCOUNT % 1000 - FLAG:현Y < 0
+					IF ABS(DUNGEON_TILE_SEARCH_ROUTE:LCOUNT % 1000 - FLAG:현Y) == (FLAG:최대Y - 1)
+						L_RESULT = 2
+					ELSE
+						L_RESULT = 8
+					ENDIF
+				ELSEIF DUNGEON_TILE_SEARCH_ROUTE:LCOUNT % 1000 - FLAG:현Y > 0
+					IF ABS(DUNGEON_TILE_SEARCH_ROUTE:LCOUNT % 1000 - FLAG:현Y) == (FLAG:최대Y - 1)
+						L_RESULT = 8
+					ELSE
+						L_RESULT = 2
+					ENDIF
+				ELSE
+					;扉対策で座標の変動がなかった場合は一回飛ばす
+					LCOUNT++
+					CONTINUE
+				ENDIF
+				;---- EDIT 092 MOD END ---------------------------
+				DUNGEON_STOP_MOVE = 0
+				DUNGEON_MOVE_CONTINUE = 1
+				;---- EDIT 086 MOD START -------------------------
+				CALL WALK_DUNGEON, L_RESULT
+				;---- EDIT 086 MOD START -------------------------
+				SIF !CAN_CONTINUE_MOVE(RESULT)
+					BREAK
+				LCOUNT++
+				;AUTO_RUNでは無事に移動が終わった場合はルートを再検索しにいく
+				SIF DUNGEON_TILE_SEARCH_ROUTE:LCOUNT == -1 && STOCK_MOUSE == "a"
+					GOTO AUTO_RUN
+			WEND
+			RESTART
+		;---- EDIT 093 ADD START -------------------------
+		ELSEIF STRCOUNT(RESULTS, "MAPPING_USER_COLOR")
+			CALL MAPPING_USER, TOINT(AUTO_SPLIT(RESULTS, "/", 1)), "COLOR"
+			GOTO PRINT
+		ELSEIF STRCOUNT(RESULTS, "MAPPING_USER_OBJECT")
+			CALL MAPPING_USER, TOINT(AUTO_SPLIT(RESULTS, "/", 1)), "OBJECT"
+			GOTO PRINT
+		;---- EDIT 093 ADD END ---------------------------
+		ELSE
+			STOCK_MOUSE = 
+			;Enter直進機能
+			IF DUNGEON_COMMAND_ENTER_WALK
+				IF RESULTS == "" && DUNGEON_COMMAND_ENTER_STOCK_WALK
+					IS_ENTER = 1
+					;目の前が壁かどうかを確認
+					SELECTCASE DUNGEON_COMMAND_ENTER_STOCK_WALK
+						CASE 8
+							CALL GET_TILE_VAR_DASH, FLAG:현X, FLAG:현Y -1
+						CASE 4
+							CALL GET_TILE_VAR_DASH, FLAG:현X - 1, FLAG:현Y
+						CASE 2
+							CALL GET_TILE_VAR_DASH, FLAG:현X, FLAG:현Y + 1
+						CASE 6
+							CALL GET_TILE_VAR_DASH, FLAG:현X + 1, FLAG:현Y
+					ENDSELECT
+					;正面が壁なら両サイドを確認し、どちらかのみが開いているならその方向に
+					;両方が埋まってるなら折り返す
+					IF !RESULT
+						SELECTCASE DUNGEON_COMMAND_ENTER_STOCK_WALK
+							CASE 8, 2
+								CALL GET_TILE_VAR_DASH, FLAG:현X - 1, FLAG:현Y 
+								L_RESULT = RESULT
+								CALL GET_TILE_VAR_DASH, FLAG:현X + 1, FLAG:현Y
+								IF !L_RESULT && !RESULT
+									IF DUNGEON_COMMAND_ENTER_STOCK_WALK == 8
+										RESULTS = 2
+									ELSE
+										RESULTS = 8
+									ENDIF
+								ELSEIF !L_RESULT && RESULT
+									RESULTS = 6
+								ELSEIF L_RESULT && !RESULT
+									RESULTS = 4
+								ENDIF
+							CASE 4, 6
+								CALL GET_TILE_VAR_DASH, FLAG:현X, FLAG:현Y - 1
+								L_RESULT = RESULT
+								CALL GET_TILE_VAR_DASH, FLAG:현X, FLAG:현Y + 1
+								IF !L_RESULT && !RESULT
+									IF DUNGEON_COMMAND_ENTER_STOCK_WALK == 4
+										RESULTS = 6
+									ELSE
+										RESULTS = 4
+									ENDIF
+								ELSEIF !L_RESULT && RESULT
+									RESULTS = 2
+								ELSEIF L_RESULT && !RESULT
+									RESULTS = 8
+								ENDIF
+						ENDSELECT
+					ELSE
+						RESULTS = %TOSTR(DUNGEON_COMMAND_ENTER_STOCK_WALK)%
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+	;---- EDIT 070 ADD END ---------------------------
+	;---- D3D 054 START (ADD) ------------------------------
+	;---- EDIT 103 MOD END ---------------------------
+	IF D3D_ACTIVE
+	; && EQUIP:MASTER:モノスコープ
+		SELECTCASE RESULTS
+			CASE "8","7","9","0"
+				IF RESULTS == "8" || RESULTS == "w"
+					SELECTCASE D3D_PLAYER_DIRECTION
+						CASE 0
+							D3D_TOWALK = 8
+						CASE 1
+							D3D_TOWALK = 6
+						CASE 2
+							D3D_TOWALK = 2
+						CASE 3
+							D3D_TOWALK = 4
+					ENDSELECT
+					CALL D3D_GET_FRONT_COORD(FLAG:현X,FLAG:현Y)
+				ELSEIF RESULTS == "7" || RESULTS == "q"
+					SELECTCASE D3D_PLAYER_DIRECTION
+						CASE 0
+							D3D_TOWALK = 4
+						CASE 1
+							D3D_TOWALK = 8
+						CASE 2
+							D3D_TOWALK = 6
+						CASE 3
+							D3D_TOWALK = 2
+					ENDSELECT
+					CALL D3D_GET_LEFT_COORD(FLAG:현X,FLAG:현Y)
+				ELSEIF RESULTS == "9" || RESULTS == "e"
+					SELECTCASE D3D_PLAYER_DIRECTION
+						CASE 0
+							D3D_TOWALK = 6
+						CASE 1
+							D3D_TOWALK = 2
+						CASE 2
+							D3D_TOWALK = 4
+						CASE 3
+							D3D_TOWALK = 8
+					ENDSELECT
+					CALL D3D_GET_RIGHT_COORD(FLAG:현X,FLAG:현Y)
+				ELSEIF RESULTS == "0" || RESULTS == "x"
+					SELECTCASE D3D_PLAYER_DIRECTION
+						CASE 0
+							D3D_TOWALK = 2
+						CASE 1
+							D3D_TOWALK = 4
+						CASE 2
+							D3D_TOWALK = 8
+						CASE 3
+							D3D_TOWALK = 6
+					ENDSELECT
+					CALL D3D_GET_BEHIND_COORD(FLAG:현X,FLAG:현Y)
+				ENDIF
+				D3D_LOCALCOORD:0 = RESULT:0,RESULT:1
+				DEBUGPRINTFORML D3D_LOCALCOORD:0 = {RESULT:0},{RESULT:1}
+				SIF FLOOR_IS_LOOP_X
+					D3D_LOCALCOORD:0 = CONVERT_OUTRANGE_COORD_X(D3D_LOCALCOORD:0)
+				SIF FLOOR_IS_LOOP_Y
+					D3D_LOCALCOORD:1 = CONVERT_OUTRANGE_COORD_Y(D3D_LOCALCOORD:1)
+				;ここから一般化コードにしてもいいかな
+				FOR LCOUNT, 0, 1 + IS_ENABLE_RUNRUN()
+					DEBUGPRINTFORML D3D_IS_MAPRANGE({D3D_TOWALK}) = {D3D_IS_MAPRANGE(D3D_TOWALK)}
+					IF D3D_IS_MAPRANGE(D3D_TOWALK) != 1
+						CLEARLINE 1
+						GOTO PRINT
+					ENDIF
+					CALL CAN_DASH_CONTINUE_MOVE, D3D_TOWALK, LCOUNT
+					SIF !RESULT
+						BREAK
+					D3D_TOWALK = RESULT
+					DUNGEON_COMMAND_ENTER_STOCK_WALK = D3D_TOWALK
+					DUNGEON_MOVE_CONTINUE = 0
+					CALL WALK_DUNGEON, D3D_TOWALK
+					SIF !CAN_CONTINUE_MOVE(RESULT)
+						BREAK
+				NEXT
+			CASE "4"
+				CALL D3D_CHANGE_DIRECTION(-1)
+				CLEARLINE 1
+				GOTO PRINT
+			CASE "6"
+				CALL D3D_CHANGE_DIRECTION(1)
+				CLEARLINE 1
+				GOTO PRINT
+			CASE "2"
+				CALL D3D_CHANGE_DIRECTION(2)
+				CLEARLINE 1
+				GOTO PRINT
+			CASEELSE
+				GOTO D3D_SKIPNEWINPUT
+		ENDSELECT
+		RESTART
+	ENDIF
+	$D3D_SKIPNEWINPUT
+	;---- D3D 054 END   (ADD) --------------------------------
+	;---- EDIT 070 MOD START -------------------------
+	;---- EDIT 103 MOD END ---------------------------
+	SELECTCASE RESULTS
+		CASE "5"
+			SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 100
+				CASE -9
+					CALL DUNGEON_TERMINAL
+				CASE -19
+					CALL FOUNTAIN_OF_TRISH
+				CASE -29
+					CALL DUNGEON_ELEVATOR
+				CASEELSE
+					CALLFORM EVENT_CHECK_DUNGEON_{FLAG:현던전}
+			ENDSELECT
+			;-- ダンジョン32:이상한던전 --------
+			;「5」キーを押下してその場で待機の場合も敵シンボルが動く
+			IF FLAG:지형자동생성・FOE플래그 == 1
+				CALL SEF_SYMBOL_CHARA_ACTION
+			ENDIF
+		CASE "2", "4", "8", "6"
+			L_RESULT = TOINT(RESULTS)
+			;ダッシュモードの取得
+			;まずは0に、設定が0ならこのまま落ちる
+			IS_DASH_MODE = 0
+			;ALT/無変換/マウスサイドボタンが押されている
+			IF GETKEY(0x12) || GETKEY(0x1D) || GETKEY(0x05) || (DUNGEON_COMMAND_ENTER_STOCK_ALT && IS_ENTER)
+				DUNGEON_COMMAND_ENTER_STOCK_ALT = 1
+				;1は通常使用モード
+				SIF DUNGEON_COMMAND_DASH_MODE == 1
+					IS_DASH_MODE = 1
+			ELSE
+				DUNGEON_COMMAND_ENTER_STOCK_ALT = 0
+				;2は反転モード
+				SIF DUNGEON_COMMAND_DASH_MODE == 2
+					IS_DASH_MODE = 1
+			ENDIF
+			;ダッシュ
+			IF IS_DASH_MODE
+				CLEARLINE LINECOUNT - L_LINE
+				L_CNT = 0
+				WHILE 1
+					CALL CAN_DASH_CONTINUE_MOVE, L_RESULT, L_CNT
+					SIF !RESULT
+						BREAK
+					;移動方向が変わってる可能性があるので戻り値で上書き
+					L_RESULT = RESULT
+					DUNGEON_COMMAND_ENTER_STOCK_WALK = L_RESULT
+					DUNGEON_MOVE_CONTINUE = 1
+					CALL WALK_DUNGEON, L_RESULT
+					SIF !CAN_CONTINUE_MOVE(RESULT)
+						BREAK
+					L_CNT++
+				WEND
+			ELSE
+				FOR LCOUNT, 0, 1 + IS_ENABLE_RUNRUN()
+					DUNGEON_COMMAND_ENTER_STOCK_WALK = L_RESULT
+					DUNGEON_MOVE_CONTINUE = 0
+					;---- EDIT 086 MOD START -------------------------
+					CALL CAN_DASH_CONTINUE_MOVE, L_RESULT, LCOUNT
+					SIF !RESULT
+						BREAK
+					L_RESULT = RESULT
+					CALL WALK_DUNGEON, L_RESULT
+					SIF !CAN_CONTINUE_MOVE(RESULT)
+						BREAK
+					;---- EDIT 086 MOD END ---------------------------
+				NEXT
+			ENDIF
+			;-- ダンジョン32:이상한던전 --------
+		CASE "c"
+			CALL COMMAND_COMP_FIELD
+		CASE "i"
+			CALL COMMAND_ITEM_FIELD
+		CASE "s"
+			CALL COMMAND_SKILL_FIELD_LIST
+		CASE "0", "U", "V", "W", "X", "Y", "Z"
+			IF RESULTS == "0"
+				ONEINPUTS
+				LOCAL = TOINT(RESULTS)
+			ELSE
+				SELECTCASE RESULTS
+					CASE "U"
+						LOCAL = 1
+					CASE "V"
+						LOCAL = 2
+					CASE "W"
+						LOCAL = 3
+					CASE "X"
+						LOCAL = 4
+					CASE "Y"
+						LOCAL = 5
+					CASE "Z"
+						LOCAL = 6
+				ENDSELECT
+			ENDIF
+			IF RANGE(LOCAL, 1, 6) && POS(LOCAL) >= 0
+				CALL COMMAND_SKILL_FIELD, POS(LOCAL), 1
+			ELSE
+				CLEARLINE 2
+			ENDIF
+		CASE "E"
+			CALL EQUIPMENT
+		CASE "f"
+			CALL FORM_INPUT
+		CASE "S"
+			CALL SHOP_COM_301
+		CASE "M"
+			CALL SWITCH_MAG
+		CASE "n"
+			SIF CAN_SEE_MAP()
+				CALL HONEY_BEE
+		CASE "*"
+			CALL DUNGEON_MUFUFU
+		CASE "r"
+			CALL AUTO_RECOVER
+		CASE "R"
+			CALL DUNGEON_RUNRUN
+		CASE "L"
+			CALL MESSAGE_WINDOW_LOG(, , , , , 1)
+		CASE "o"
+			CALL SET_OPT_DUNGEON_COMMAND
+		CASE "H"
+			IF SOFT_ON("에너미서치") || IS_DEBUG
+				VARI STOCK_MOON = FLAG:월령
+				VARI TEMP_COUNT
+				IS_ENEMY_HUNT = 1
+				WHILE 1
+					TEMP_COUNT++
+					CLEARLINE LINECOUNT - FLAG:커맨드표시행수
+					CALL MESSAGE_WINDOW, , @"%CALLNAME:MASTER%는 적을 찾기 시작했다" + "…" * (TEMP_COUNT % 4), , "NOWAIT/NOANIME", , , 4
+					TWAIT 100, 1
+					CALL WALK_DUNGEON, 0
+					SIF RESULT
+						BREAK
+					;月齢の進み具合で中断を判断する
+					IF ABS(STOCK_MOON - FLAG:월령) >= 2 || (STOCK_MOON != 0 && FLAG:월령 == 0) || (STOCK_MOON != 8 && FLAG:월령 == 8)
+						CALL MESSAGE_WINDOW_D, , @"그러나、적을 찾을 수 없었다…", , "NOANIME"
+						BREAK
+					ENDIF
+				WEND
+				IS_ENEMY_HUNT = 0
+			ENDIF
+		CASE "CAPS-LOCK"
+			IS_DISABLE_CAPSLOCK = !IS_DISABLE_CAPSLOCK
+		CASE "E-HOIHOI"
+			IS_DISABLE_ENEMYHOIHOI = !IS_DISABLE_ENEMYHOIHOI
+		CASE "E-BYEBYE"
+			IS_DISABLE_ENEMYBYEBYE = !IS_DISABLE_ENEMYBYEBYE
+		CASE "RUNRUN"
+			CALL DUNGEON_RUNRUN
+		;---- EDIT 095 ADD START -------------------------
+		CASE "DEBUG_ENCOUNT"
+			FLAG:인카운트하지않는다 = !FLAG:인카운트하지않는다
+		;---- EDIT 095 ADD END ---------------------------
+		CASEELSE
+			GOTO INPUT_LOOP
+	ENDSELECT
+WEND
+;---- EDIT 070 MOD END ---------------------------
+@CAN_DASH_CONTINUE_MOVE, ARG, ARG:1
+#DIM CAN_ENTER_TILE_DASH_NUM, 2, 2
+;両サイドのタイルの種類を確認しておく
+SELECTCASE ARG
+	CASE 8, 2
+		CALL GET_TILE_VAR_DASH, FLAG:현X - 1, FLAG:현Y 
+		CAN_ENTER_TILE_DASH_NUM:0:0 = RESULT
+		CALL GET_TILE_VAR_DASH, FLAG:현X + 1, FLAG:현Y
+		CAN_ENTER_TILE_DASH_NUM:0:1 = RESULT
+	CASE 4, 6
+		CALL GET_TILE_VAR_DASH, FLAG:현X, FLAG:현Y - 1
+		CAN_ENTER_TILE_DASH_NUM:0:0 = RESULT
+		CALL GET_TILE_VAR_DASH, FLAG:현X, FLAG:현Y + 1
+		CAN_ENTER_TILE_DASH_NUM:0:1 = RESULT
+ENDSELECT
+IF ARG:1
+	;前回の両サイドが壁で、目の前に壁があるなら角での経路変更のチェック
+	IF !CAN_ENTER_TILE_DASH_NUM:1:0 && !CAN_ENTER_TILE_DASH_NUM:1:1
+		SELECTCASE ARG
+			CASE 8
+				CALL GET_TILE_VAR_DASH, FLAG:현X, FLAG:현Y -1
+			CASE 4
+				CALL GET_TILE_VAR_DASH, FLAG:현X - 1, FLAG:현Y
+			CASE 2
+				CALL GET_TILE_VAR_DASH, FLAG:현X, FLAG:현Y + 1
+			CASE 6
+				CALL GET_TILE_VAR_DASH, FLAG:현X + 1, FLAG:현Y
+		ENDSELECT
+		IF !RESULT
+			IF !CAN_ENTER_TILE_DASH_NUM:0:0 && CAN_ENTER_TILE_DASH_NUM:0:1 == 1
+				SELECTCASE ARG
+					CASE 8, 2
+						ARG = 6
+					CASE 4, 6
+						ARG = 2
+				ENDSELECT
+				;ダッシュの継続のために両サイドが壁状態だったと情報を変える
+				CAN_ENTER_TILE_DASH_NUM:0:1 = 0
+			ENDIF
+			IF CAN_ENTER_TILE_DASH_NUM:0:0 == 1 && !CAN_ENTER_TILE_DASH_NUM:0:1
+				SELECTCASE ARG
+					CASE 8, 2
+						ARG = 4
+					CASE 4, 6
+						ARG = 8
+				ENDSELECT
+				CAN_ENTER_TILE_DASH_NUM:0:0 = 0
+			ENDIF
+		ENDIF
+	ENDIF
+	;正面を確認し、床でないなら終わる
+	SELECTCASE ARG
+		CASE 8
+			CALL GET_TILE_VAR_DASH, FLAG:현X, FLAG:현Y -1
+		CASE 4
+			CALL GET_TILE_VAR_DASH, FLAG:현X - 1, FLAG:현Y
+		CASE 2
+			CALL GET_TILE_VAR_DASH, FLAG:현X, FLAG:현Y + 1
+		CASE 6
+			CALL GET_TILE_VAR_DASH, FLAG:현X + 1, FLAG:현Y
+	ENDSELECT
+	SIF RESULT != 1
+		RETURN 0
+	;両サイドが壁のときはストップ判定をしない
+	IF !(!CAN_ENTER_TILE_DASH_NUM:0:0 && !CAN_ENTER_TILE_DASH_NUM:0:1)
+		;両サイドが壁から通路になってたら止まる
+		SIF CAN_ENTER_TILE_DASH_NUM:0:0 && !CAN_ENTER_TILE_DASH_NUM:1:0
+			RETURN 0
+		SIF CAN_ENTER_TILE_DASH_NUM:0:1 && !CAN_ENTER_TILE_DASH_NUM:1:1
+			RETURN 0
+		;両サイドがイベントマスなら止まる
+		SIF CAN_ENTER_TILE_DASH_NUM:0:0 > 1
+			RETURN 0
+		SIF CAN_ENTER_TILE_DASH_NUM:0:1 > 1
+			RETURN 0
+		;正面の両サイドを確認して両方壁のときにそのまま進むと通路に入ってしまうので止まる
+		SELECTCASE ARG
+			CASE 8, 2
+				CALL GET_TILE_VAR_DASH, FLAG:현X - 1, FLAG:현Y + (ARG == 8 ? -1 # 1)
+				IF !RESULT
+					CALL GET_TILE_VAR_DASH, FLAG:현X + 1, FLAG:현Y + (ARG == 8 ? -1 # 1)
+					SIF !RESULT
+						RETURN 0
+				ENDIF
+			CASE 4, 6
+				CALL GET_TILE_VAR_DASH, FLAG:현X + (ARG == 4 ? -1 # 1), FLAG:현Y - 1
+				IF !RESULT
+					CALL GET_TILE_VAR_DASH, FLAG:현X + (ARG == 4 ? -1 # 1), FLAG:현Y + 1
+					SIF !RESULT
+						RETURN 0
+				ENDIF
+		ENDSELECT
+	ENDIF
+ENDIF
+;履歴に入れる
+CAN_ENTER_TILE_DASH_NUM:1:0 = CAN_ENTER_TILE_DASH_NUM:0:0
+CAN_ENTER_TILE_DASH_NUM:1:1 = CAN_ENTER_TILE_DASH_NUM:0:1
+RETURN ARG
+;---- EDIT 070 ADD START -------------------------
+;--------------------------------------------------------
+;マップクリックから最短経路を作成する
+;アルゴリズムは幅優先探索
+;--------------------------------------------------------
+@MAKE_ROUTE_AUTO_PILOT, ARGS, DUNGEON_TILE_SEARCH_ROUTE
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_RESULT
+#DIM DYNAMIC L_DIRECTION
+#DIM DYNAMIC L_X, 2
+#DIM DYNAMIC L_Y, 2
+#DIM DYNAMIC DUNGEON_TILE_SEARCH_TASK, 10000
+#DIM REF DUNGEON_TILE_SEARCH_ROUTE
+#DIM DYNAMIC DUNGEON_TILE_SEARCH_PRIORITY, 100, 200
+#DIM DYNAMIC DUNGEON_TILE_SEARCH_PREV_ROUTE, 100, 200
+#DIM DYNAMIC IS_EXTRA_AUTORUN
+$START
+IF ARGS == "自動探索"
+	IS_AUTORUN_SEARCHING = 1
+	GOLE_X = -1
+	GOLE_Y = -1
+ELSE
+	IS_AUTORUN_SEARCHING = 0
+	GOLE_X = TOINT(AUTO_SPLIT(ARGS, "/", 1))
+	GOLE_Y = TOINT(AUTO_SPLIT(ARGS, "/", 2))
+	;自分のいる座標を選んでいたら終わる
+	SIF FLAG:현X == GOLE_X && FLAG:현Y == GOLE_Y
+		RETURN 0
+	;侵入可能かどうかを確かめる
+	TRYCCALLFORM JUDGE_CAN_ENTER_{FLAG:현던전}, GOLE_X, GOLE_Y, 0, 0, DUNGEON_TILE_SEARCH_TASK
+	CATCH
+		CALL CAN_ENTER, GOLE_X, GOLE_Y
+	ENDCATCH
+	SIF !RESULT
+		RETURN 0
+ENDIF
+VARSET DUNGEON_TILE_SEARCH_PRIORITY:LCOUNT:0
+VARSET DUNGEON_TILE_SEARCH_PREV_ROUTE:LCOUNT:0, -1
+
+VARSET DUNGEON_TILE_SEARCH_ROUTE, -1
+VARSET DUNGEON_TILE_SEARCH_TASK, -1
+;初動に追加
+DUNGEON_TILE_SEARCH_PRIORITY:(FLAG:현X):(FLAG:현Y) = 1
+DUNGEON_TILE_SEARCH_TASK:0 = FLAG:현X * 1000 + FLAG:현Y
+LCOUNT = 0
+;---- EDIT 092 MOD START -------------------------
+;---- EDIT 096 MOD START -------------------------
+WHILE DUNGEON_TILE_SEARCH_TASK:LCOUNT >= 0 && (LCOUNT < VARSIZE("DUNGEON_TILE_SEARCH_ROUTE"))
+;---- EDIT 096 MOD END ---------------------------
+	FOR LCOUNT:1, 0, 4
+		SELECTCASE LCOUNT:1
+			CASE 0
+				L_DIRECTION = 2
+				L_X = DUNGEON_TILE_SEARCH_TASK:LCOUNT / 1000
+				L_Y = DUNGEON_TILE_SEARCH_TASK:LCOUNT % 1000 - 1
+			CASE 1
+				L_DIRECTION = 4
+				L_X = DUNGEON_TILE_SEARCH_TASK:LCOUNT / 1000 - 1
+				L_Y = DUNGEON_TILE_SEARCH_TASK:LCOUNT % 1000
+			CASE 2
+				L_DIRECTION = 8
+				L_X = DUNGEON_TILE_SEARCH_TASK:LCOUNT / 1000
+				L_Y = DUNGEON_TILE_SEARCH_TASK:LCOUNT % 1000 + 1
+			CASE 3
+				L_DIRECTION = 6
+				L_X = DUNGEON_TILE_SEARCH_TASK:LCOUNT / 1000 + 1
+				L_Y = DUNGEON_TILE_SEARCH_TASK:LCOUNT % 1000
+		ENDSELECT
+		IF FLOOR_IS_LOOP_X
+			L_X = CONVERT_OUTRANGE_COORD_X(L_X)
+		ELSE
+			;---- EDIT 094 MOD START -------------------------
+			SIF !INRANGE(L_X, 0, FLAG:최대X-1)
+				CONTINUE
+			;---- EDIT 094 MOD END ---------------------------
+		ENDIF
+		IF FLOOR_IS_LOOP_Y
+			L_Y = CONVERT_OUTRANGE_COORD_Y(L_Y)
+		ELSE
+			;---- EDIT 094 MOD START -------------------------
+			SIF !INRANGE(L_Y, 0, FLAG:최대Y-1)
+				CONTINUE
+			;---- EDIT 094 MOD END ---------------------------
+		ENDIF
+		;十字ドアに対応するために前のタイルとあわせて３つが一直線であるかをみる
+		IF DA:(DUNGEON_TILE_SEARCH_TASK:LCOUNT / 1000):(DUNGEON_TILE_SEARCH_TASK:LCOUNT % 1000) == 2
+			IF DUNGEON_TILE_SEARCH_TASK:LCOUNT / 1000 == DUNGEON_TILE_SEARCH_PREV_ROUTE:(DUNGEON_TILE_SEARCH_TASK:LCOUNT / 1000):(DUNGEON_TILE_SEARCH_TASK:LCOUNT % 1000) / 1000
+				SIF L_X != DUNGEON_TILE_SEARCH_TASK:LCOUNT / 1000
+					CONTINUE
+			ENDIF
+			IF DUNGEON_TILE_SEARCH_TASK:LCOUNT % 1000 == DUNGEON_TILE_SEARCH_PREV_ROUTE:(DUNGEON_TILE_SEARCH_TASK:LCOUNT / 1000):(DUNGEON_TILE_SEARCH_TASK:LCOUNT % 1000) % 1000
+				SIF L_Y != DUNGEON_TILE_SEARCH_TASK:LCOUNT % 1000
+					CONTINUE
+			ENDIF
+		ENDIF
+
+		;すでに優先度が設定されていたら落ちる
+		SIF DUNGEON_TILE_SEARCH_PRIORITY:L_X:L_Y
+			CONTINUE
+		;アナライズされていない
+		SIF !GET_FLOOR_ANALYZE_T(L_X, L_Y)
+			CONTINUE
+		;ダークゾーン
+		SIF DA:L_X:L_Y % 10 == -1 && !SOFT_ON("다크스캐너") && FLAG:라이트마 == 0
+			CONTINUE
+		;自動探索の場合、壁に見えてるタイルは壁扱いで通ろうとしない
+		IF ARGS == "自動探索"
+			CALL GET_SHOW_TILE, L_X, L_Y
+			;---- EDIT 092 ADD START -------------------------
+			SIF RESULTS:1 == "■"
+				CONTINUE
+			;---- EDIT 092 ADD START -------------------------
+		ENDIF
+		;侵入可能かどうかを確かめる
+		TRYCCALLFORM JUDGE_CAN_ENTER_{FLAG:현던전}, L_X, L_Y, L_DIRECTION, LCOUNT, DUNGEON_TILE_SEARCH_TASK
+		CATCH
+			CALL CAN_ENTER, L_X, L_Y
+		ENDCATCH
+		SIF !RESULT
+			CONTINUE
+		DUNGEON_TILE_SEARCH_PRIORITY:L_X:L_Y = DUNGEON_TILE_SEARCH_PRIORITY:(DUNGEON_TILE_SEARCH_TASK:LCOUNT / 1000):(DUNGEON_TILE_SEARCH_TASK:LCOUNT % 1000) + 1
+		DUNGEON_TILE_SEARCH_PREV_ROUTE:L_X:L_Y = DUNGEON_TILE_SEARCH_TASK:LCOUNT
+		;---- EDIT 096 MOD START -------------------------
+		DUNGEON_TILE_SEARCH_TASK:FINDELEMENT(DUNGEON_TILE_SEARCH_TASK, -1) = L_X * 1000 + L_Y
+		;---- EDIT 096 MOD END ---------------------------
+		IF ARGS == "自動探索"
+			RESULT = 0
+			;実際に踏んだことがない何らかのイベントマスはゴール地点になる
+			IF DA:L_X:L_Y != 1 && DPOINT( , , L_X , L_Y) < 2
+				RESULT = 1
+			ELSE
+				;追加版でも実際に踏んでるかどうかを見る
+				IF IS_EXTRA_AUTORUN
+					RESULT = 一時探索経路履歴:(FLAG:현M):L_X:L_Y == 0
+				ELSE
+					;---- EDIT 092 ADD START -------------------------
+					;探索先が突入可能地点ならそこをゴール地点にする
+					IF GET_FLOOR_ANALYZE_T(L_X, L_Y) < 2
+						RESULT = 1
+					ELSE
+						;移動先で未アナライズ領域をアナライズできたらそこをゴール地点に設定する
+						CALL AUTOMAP, "経路探索", L_X, L_Y
+					ENDIF
+					;---- EDIT 092 ADD END ---------------------------
+				ENDIF
+			ENDIF
+			IF RESULT
+				GOLE_X = L_X
+				GOLE_Y = L_Y
+				BREAK
+			ENDIF
+		ELSE
+			;SIF (L_X == GOLE_X) && (L_Y == GOLE_Y)
+			;	BREAK
+			SIF GOLE_X >= 0 && GOLE_Y >= 0 && DUNGEON_TILE_SEARCH_PRIORITY:GOLE_X:GOLE_Y > 0
+				BREAK
+		ENDIF
+	NEXT
+	;SIF (L_X == GOLE_X) && (L_Y == GOLE_Y)
+	SIF GOLE_X >= 0 && GOLE_Y >= 0 && DUNGEON_TILE_SEARCH_PRIORITY:GOLE_X:GOLE_Y > 0
+		BREAK
+	LCOUNT++
+WEND
+;---- EDIT 096 MOD START -------------------------
+IF GOLE_X >= 0 && GOLE_Y >= 0 && DUNGEON_TILE_SEARCH_PREV_ROUTE:GOLE_X:GOLE_Y > 0
+;---- EDIT 096 MOD END ---------------------------
+	L_X = GOLE_X
+	L_Y = GOLE_Y
+	WHILE DUNGEON_TILE_SEARCH_PRIORITY:L_X:L_Y > 1
+		DUNGEON_TILE_SEARCH_ROUTE:(DUNGEON_TILE_SEARCH_PRIORITY:L_X:L_Y - 2) = L_X * 1000 + L_Y
+		L_X:1 = DUNGEON_TILE_SEARCH_PREV_ROUTE:L_X:L_Y / 1000
+		L_Y:1 = DUNGEON_TILE_SEARCH_PREV_ROUTE:L_X:L_Y % 1000
+		L_X = L_X:1
+		L_Y = L_Y:1
+	WEND
+	GOLE_X = -1
+	GOLE_Y = -1
+	RETURN 1
+ELSE
+	GOLE_X = -1
+	GOLE_Y = -1
+	IF ARGS == "自動探索"
+		IF DUNGEON_ENABLE_EXTRA_AUTORUN && !IS_EXTRA_AUTORUN
+			IS_EXTRA_AUTORUN = 1
+			GOTO START
+		ELSE
+			PRINTFORMW 자동 탐색할 수 있는 장소가 없습니다。
+		ENDIF
+	ELSE
+		PRINTFORMW 경로가 없습니다
+	ENDIF
+	RETURN 0
+ENDIF
+;---- EDIT 092 MOD END ---------------------------
+;---- EDIT 070 ADD END ---------------------------
+;---- EDIT 070 ADD START -------------------------
+;=====================================================================
+;ダンジョン攻略のオプション設定
+;移動時に関わるものをここに集約
+;=====================================================================
+@SET_OPT_DUNGEON_COMMAND
+#DIM LCOUNT, 2
+#DIM STOCK_REDRAW
+#DIM L_LINE
+#DIM DUN_OPTNUM
+#DIMS CONST DUN_OPT_NAME = "던전내조작설정", "메시지 윈도우 설정", "오토리커버 설정", "대시 기능 설정", "ＥＮＴＥＲ직진기능", "맵 클릭 이동","３Ｄ표시","탐색별 경로 표시", "오토런 확장", "맵핑 기능"
+#DIMS DUN_OPT_SELECT, 11
+#DIM DUN_OPT_FLAGNUM, 11
+DUN_OPTNUM = VARSIZE("DUN_OPT_NAME")
+L_LINE = LINECOUNT
+STOCK_REDRAW = CURRENTREDRAW()
+REDRAW 1
+$START
+CLEARLINE LINECOUNT - L_LINE
+FOR LCOUNT, 0, DUN_OPTNUM
+	SELECTCASE DUN_OPT_NAME:LCOUNT
+		CASE "던전내조작설정"
+			DUN_OPT_SELECT:LCOUNT = 디폴트/ＦＰＳ
+			DUN_OPT_FLAGNUM:LCOUNT = FLAG:던전내조작설정
+		CASE "오토리커버 설정"
+		CASE "메시지 윈도우 설정"
+		CASE "대시 기능 설정"
+			DUN_OPT_SELECT:LCOUNT = 비사용/사용/반전
+			DUN_OPT_FLAGNUM:LCOUNT = DUNGEON_COMMAND_DASH_MODE
+		CASE "ＥＮＴＥＲ직진기능"
+			DUN_OPT_SELECT:LCOUNT = 비사용/사용
+			DUN_OPT_FLAGNUM:LCOUNT = DUNGEON_COMMAND_ENTER_WALK
+		CASE "맵 클릭 이동"
+			DUN_OPT_SELECT:LCOUNT = 비사용/사용
+			DUN_OPT_FLAGNUM:LCOUNT = DUNGEON_COMMAND_MOUSE_WALK
+		CASE "３Ｄ표시"
+			DUN_OPT_SELECT:LCOUNT = 비사용/사용
+			DUN_OPT_FLAGNUM:LCOUNT = D3D_ACTIVE
+		;---- EDIT 092 ADD START -------------------------
+		CASE "탐색별 경로 표시"
+			DUN_OPT_SELECT:LCOUNT = 비사용/사용/색깔만
+			DUN_OPT_FLAGNUM:LCOUNT = DUNGEON_SHOW_TEMP_EXPLORED_ROUTE
+		CASE "오토런 확장"
+			DUN_OPT_SELECT:LCOUNT = 비사용/사용
+			DUN_OPT_FLAGNUM:LCOUNT = DUNGEON_ENABLE_EXTRA_AUTORUN
+		;---- EDIT 092 ADD END ---------------------------
+		CASE "맵핑 기능"
+			DUN_OPT_SELECT:LCOUNT = 비사용/사용/세트제한사용
+			DUN_OPT_FLAGNUM:LCOUNT = DUNGEON_ENABLE_MANUAL_MAPPING
+		CASEELSE
+	ENDSELECT
+NEXT
+DRAWLINE
+PRINTFORML 던전탐색 입력 옵션
+DRAWLINE
+FOR LCOUNT, 0, DUN_OPTNUM
+	SIF DUN_OPT_NAME:LCOUNT == ""
+		CONTINUE
+	PRINTBUTTON @"[{LCOUNT}]" + DUN_OPT_NAME:LCOUNT, LCOUNT
+	PRINTFORM %" " * (30 - STRLENS(DUN_OPT_NAME:LCOUNT))%
+	FOR LCOUNT:1, 0, STRCOUNT(DUN_OPT_SELECT:LCOUNT, "/") + 1
+		SIF AUTO_SPLIT(DUN_OPT_SELECT:LCOUNT, "/", LCOUNT:1) == ""
+			CONTINUE
+		CALL PRINT_COLOR, @"%"[" + AUTO_SPLIT(DUN_OPT_SELECT:LCOUNT, "/", LCOUNT:1) + "]", 14, LEFT%", DUN_OPT_FLAGNUM:LCOUNT == LCOUNT:1 ? COLOR("aqua") # GETDEFCOLOR()
+	NEXT
+	PRINTL 
+NEXT
+DRAWLINE
+PRINTL [99] 돌아간다
+INPUT
+SIF RESULT == 99
+	RETURN 0
+SIF !INRANGE(RESULT, 0, VARSIZE("DUN_OPT_NAME") - 1)
+	GOTO START
+;---- EDIT 092 ADD START -------------------------
+SELECTCASE DUN_OPT_NAME:RESULT
+	CASE "던전내조작설정"
+		CALL DUNGEON_COMMAND_CONFIG
+	CASE "메시지 윈도우 설정"
+		CALL MESSAGE_WINDOW_CONFIG
+	CASE "오토리커버 설정"
+		CALL AUTO_RECOVER_SETTING
+	CASE "대시 기능 설정"
+		DRAWLINE
+		PRINTL 대시 기능 설정
+		DRAWLINE
+		PRINTFORML 대시는 벽이나 이벤트에 부딪히거나、통로의 출입구에 서는 등의 상황이 될 때까지 직진하는 이동 방법입니다。
+		PRINTFORML 사용할 경우、통상으로는 [ALT]키를 누른 상태에서、이동 버튼을 누르면 실행할 수 있습니다。
+		PRINTFORML 옵션에서 반전을 지정한 경우에는 [ALT]키를 누르고 있는 동안은 통상 이동、그렇지 않은 경우에는 대시 이동이 됩니다。
+		PRINTFORML 
+		PRINTFORML 사양상、숫자 버튼과 [ALT]의 동시 입력이 기능하지 않으므로、디폴트 조작이면서 키보드・텐키 조작인 경우에는 [무변환]키를 눌러 주세요。
+		PRINTFORML 또한、[ALT][무변환] 외에 마우스 확장 버튼1(통상은 사이드 버튼)에도 대응하고 있습니다。
+		PRINTL 
+		PRINTL [0] 사용한다　　　　　　(ALT 시에 실행)
+		PRINTL [1] 반전시켜 사용한다 　(비 ALT 시에 실행)
+		PRINTL [2] 사용하지 않는다
+		PRINTL [9] 돌아간다
+		CALL INPUTINT, 0, 1, 2, 9
+		SELECTCASE RESULT
+			CASE 0
+				PRINTW 대시 기능을 통상 모드로 사용합니다。
+				DUNGEON_COMMAND_DASH_MODE = 1
+			CASE 1
+				PRINTW 대시 기능을 반전 모드로 사용합니다。
+				DUNGEON_COMMAND_DASH_MODE = 2
+			CASE 2
+				PRINTW 대시 기능을 사용하지 않습니다。
+				DUNGEON_COMMAND_DASH_MODE = 0
+			CASE 9
+				REDRAW STOCK_REDRAW
+				RETURN 0
+		ENDSELECT
+		SAVEGLOBAL
+	CASE "ＥＮＴＥＲ직진기능"
+		DRAWLINE
+		PRINTL ＥＮＴＥＲ직진기능 설정
+		DRAWLINE
+		PRINTFORML EnterKey를 눌렀을 때 이전에 이동한 방향으로 진행하도록 하는 기능입니다。
+		PRINTFORML 또한、이 입력으로 벽에 다다른 경우、모퉁이라면 자동으로 꺾고、막다른 길이라면 되돌아갑니다。
+		PRINTFORML 추가로 맵 클릭 이동이 중단된 직후에는 이전과 같은 좌표를 목표로 이동합니다。
+		PRINTL 
+		PRINTL [0] 사용한다
+		PRINTL [1] 사용하지 않는다
+		PRINTL [9] 돌아간다
+		CALL INPUTINT, 0, 1, 9
+		SELECTCASE RESULT
+			CASE 0
+				PRINTW ＥＮＴＥＲ직진기능을 사용합니다。
+			CASE 1
+				PRINTW ＥＮＴＥＲ직진기능을 사용하지 않습니다。
+			CASE 9
+				REDRAW STOCK_REDRAW
+				RETURN 0
+		ENDSELECT
+		DUNGEON_COMMAND_ENTER_WALK = !RESULT
+		SAVEGLOBAL
+	CASE "맵 클릭 이동"
+		DRAWLINE
+		PRINTL 맵 클릭 이동 설정
+		DRAWLINE
+		PRINTFORML 표시 맵을 버튼화하여、클릭한 장소를 향해 자동으로 이동하는 설정입니다。
+		PRINTFORML 이동 중 전투가 발생하거나、이벤트가 발생한 경우에는 이동이 멈춥니다。
+		PRINTL 
+		PRINTL [0] 사용한다
+		PRINTL [1] 사용하지 않는다
+		PRINTL [9] 돌아간다
+		CALL INPUTINT, 0, 1, 9
+		SELECTCASE RESULT
+			CASE 0
+				PRINTW 맵 클릭 이동을 사용합니다。
+			CASE 1
+				PRINTW 맵 클릭 이동을 사용하지 않습니다。
+			CASE 9
+				REDRAW STOCK_REDRAW
+				RETURN 0
+		ENDSELECT
+		DUNGEON_COMMAND_MOUSE_WALK = !RESULT
+		SAVEGLOBAL
+	CASE "３Ｄ표시"
+		D3D_ACTIVE = !D3D_ACTIVE
+		PRINTFORMW \@D3D_ACTIVE ? 3D표시 모드를 ON으로 합니다 # 3D표시 모드를 OFF로 합니다\@
+	CASE "탐색별 경로 표시"
+		DRAWLINE
+		PRINTL 탐색별 경로 표시
+		DRAWLINE
+		PRINTFORML 탐색마다 한 번 지나간 통로・문을 착색한 뒤 타일을 교체하여、시각적으로 확인할 수 있도록 합니다。
+		PRINTFORML 주로 매핑이 끝난 맵을 다시 탐색할 때 길을 잃기 어렵게 하기 위한 기능입니다。
+		PRINTFORML 
+		PRINTFORML 사용할 경우、□을 %UNICODE(0x303C)%로 교체하지만、기종 의존 문자를 이용하게 되므로 표시에 문제가 생기는 경우에는
+		PRINTFORML 기종 의존 문자를 사용하지 않는 옵션을 선택할 수도 있습니다。
+		PRINTL 
+		PRINTL [0] 사용한다
+		PRINTL [1] 기종 의존 문자를 쓰지 않고 사용한다
+		PRINTL [2] 사용하지 않는다
+		PRINTL [9] 돌아간다
+		CALL INPUTINT, 0, 1, 2, 9
+		SELECTCASE RESULT
+			CASE 0
+				PRINTW 경로 표시 기능을 사용합니다。
+				DUNGEON_SHOW_TEMP_EXPLORED_ROUTE = 1
+			CASE 1
+				PRINTW 기종 의존 문자를 피해서 경로 표시 기능을 사용합니다。
+				DUNGEON_SHOW_TEMP_EXPLORED_ROUTE = 2
+			CASE 2
+				PRINTW 경로 표시 기능을 사용하지 않습니다。
+				DUNGEON_SHOW_TEMP_EXPLORED_ROUTE = 0
+			CASE 9
+				REDRAW STOCK_REDRAW
+				RETURN 0
+		ENDSELECT
+		SAVEGLOBAL
+	CASE "오토런 확장"
+		DRAWLINE
+		PRINTL 오토런 확장
+		DRAWLINE
+		PRINTFORML 통상의 오토런은 애널라이즈되지 않은 장소를 전부 채우도록 경로를 탐색하지만
+		PRINTFORML 이 옵션을 ON으로 설정했을 경우는 경로탐색이 끝났을 경우、이번 탐색에서 방문하지 않은 모든 장소를 방문하도록 경로를 탐색합니다。
+		PRINTFORML 이를 통해、애널라이즈가 종료된 던전에서도 오토런을 사용 할 수 있게 됩니다。
+		PRINTL 
+		PRINTL [0] 사용한다
+		PRINTL [1] 사용하지 않는다
+		PRINTL [9] 돌아간다
+		CALL INPUTINT, 0, 1, 9
+		SELECTCASE RESULT
+			CASE 0
+				PRINTW 오토런의 확장기능을 사용합니다。
+				DUNGEON_ENABLE_EXTRA_AUTORUN = 1
+			CASE 1
+				PRINTW 오토런의 확장기능을 사용하지 않습니다。
+				DUNGEON_ENABLE_EXTRA_AUTORUN = 0
+			CASE 9
+				REDRAW STOCK_REDRAW
+				RETURN 0
+		ENDSELECT
+		SAVEGLOBAL
+	CASE "맵핑 기능"
+		DRAWLINE
+		PRINTL 맵핑 기능
+		DRAWLINE
+		PRINTFORML 던전 맵에 원하는 대로 색을 입히고 오브젝트를 배치할 수 있게 됩니다
+		PRINTFORML 통상으로는 탐색 화면과 맵 확인 화면 양쪽에 표시되는 팔레트를 이용해 세트하지만
+		PRINTFORML 옵션으로 탐색 화면에 팔레트가 출력되지 않도록 선택할 수 있습니다。
+		PRINTL 
+		PRINTL [0] 사용한다
+		PRINTL [1] 맵 확인중에만 세트 가능한 형태로 사용한다。
+		PRINTL [2] 사용하지 않는다
+		PRINTL [9] 돌아간다
+		CALL INPUTINT, 0, 1, 2, 9
+		SELECTCASE RESULT
+			CASE 0
+				PRINTW 맵핑 기능을 사용합니다。
+				DUNGEON_ENABLE_MANUAL_MAPPING = 1
+			CASE 1
+				PRINTW 맵핑 기능을 제한상태로 사용합니다。
+				DUNGEON_ENABLE_MANUAL_MAPPING = 2
+			CASE 2
+				PRINTW 맵핑 기능을 사용하지 않습니다。
+				DUNGEON_ENABLE_MANUAL_MAPPING = 0
+			CASE 9
+				REDRAW STOCK_REDRAW
+				RETURN 0
+		ENDSELECT
+		SAVEGLOBAL
+ENDSELECT
+;---- EDIT 092 ADD END ---------------------------
+GOTO START
+;---- EDIT 070 ADD END -------------------------
+;=====================================================================
+;隊列変更入力
+;=====================================================================
+
+@FORM_INPUT
+DRAWLINE
+PRINTL [0] 전후 전환 [1] 포지션변경 [1000] 돌아간다
+$INPUT_LOOP_FORM
+INPUT
+IF RESULT == 0
+	CALL CHANGE_POS,1,6
+	CALL CHANGE_POS,2,5
+	CALL CHANGE_POS,3,4
+ELSEIF RESULT == 1
+	CALL SETUP_FORMATION
+ELSEIF RESULT == 1000
+	RETURN 0
+ELSE
+	GOTO INPUT_LOOP_FORM
+ENDIF
+
+RETURN 1
+
+;---- EDIT 070 MOD START -------------------------
+;=====================================================================
+;歩いて移動
+;L_DIRECTION = 8/4/6/2の方向キー　引数なしで来た場合は事前に代入された座標に飛ぶ
+;IS_DOOR_WALK = DOOR関数で再帰が発生するので表示面の調整用に判別させる
+;=====================================================================
+@WALK_DUNGEON, L_DIRECTION = -1, IS_DOOR_WALK
+#DIM LCOUNT
+#DIM DYNAMIC L_DIRECTION
+#DIM DYNAMIC STCOK_LINE
+#DIM DYNAMIC IS_DOOR_WALK
+#DIM DYNAMIC IS_LINECHANGE
+#DIM CHARA
+#DIM DYNAMIC L_X
+#DIM DYNAMIC L_Y
+#DIM DYNAMIC IS_ENCOUNT
+#DIM DYNAMIC IS_ELIMINATE_ENCOUNT
+#DIM ENCOUNT_RATE
+#DIM SUM_PARTY_LV
+#DIM DYNAMIC L_ENEMY
+#DIM STOCK_REDRAW
+#DIM DYNAMIC STOCK_TILE
+STOCK_REDRAW = CURRENTREDRAW()
+DUNGEON_STOP_MOVE = 0
+;移動予定先の座標を取る
+L_X = FLAG:현X
+L_Y = FLAG:현Y
+SELECTCASE L_DIRECTION
+	CASE 8
+		L_Y--
+	CASE 4
+		L_X--
+	CASE 6
+		L_X++
+	CASE 2
+		L_Y++
+	;エネミーサーチの場合
+	CASE 0
+	CASE -1
+	CASEELSE
+		THROW @WALK_DUNGEON関数の引数に異常な値【{L_DIRECTION}】が代入されています！
+ENDSELECT
+;---- EDIT 092 ADD START -------------------------
+;座標が範囲外なら終わる
+;ループする場合は座標を変えて上下左右をつなげる
+IF FLOOR_IS_LOOP_X
+	L_X = CONVERT_OUTRANGE_COORD_X(L_X)
+ELSE
+	SIF !INRANGE(L_X, 0, FLAG:최대X-1)
+		RETURN -1
+ENDIF
+IF FLOOR_IS_LOOP_Y
+	L_Y = CONVERT_OUTRANGE_COORD_Y(L_Y)
+ELSE
+	SIF !INRANGE(L_Y, 0, FLAG:최대Y-1)
+		RETURN -1
+ENDIF
+;---- EDIT 092 ADD END ---------------------------
+;アナライズ
+CALL SET_FLOOR_ANALYZE(2, FLAG:현던전, FLAG:현M, L_X, L_Y)
+;---- EDIT 092 ADD START -------------------------
+一時探索経路履歴:(FLAG:현M):L_X:L_Y = 1
+;---- EDIT 092 ADD END ---------------------------
+IF L_DIRECTION != 0
+	;侵入時イベントのチェック
+	TRYCCALLFORM DUNGEON_BEFORE_ENTER_EVENT_{FLAG:현던전}, L_X, L_Y, L_DIRECTION
+	CATCH
+		CALLFORM CAN_ENTER_{FLAG:현던전}, L_X, L_Y
+	ENDCATCH
+	SIF !RESULT
+		RETURN -1
+ENDIF
+;移動
+FLAG:현X = L_X
+FLAG:현Y = L_Y
+
+;ＭＡＧ消費
+CALL CONSUME_MAG
+
+;ガリバーマジック
+SIF SOFT_ON("걸리버・매직")
+	CALL VAR_HP,MASTER,1,"회복"
+CALL AUTOMAP
+;毒などのチェック
+FOR LCOUNT,1,7
+	CHARA = POS(LCOUNT)
+	SIF CHARA < 0
+		CONTINUE
+	IF CFLAG:CHARA:상태이상 > 0
+		;気力0と発情しているときは、ステート経過ターンが増えない
+		SIF !(FLAG:무후후전개 && (BASE:CHARA:기력 == 0 || 위험일(CHARA) >= 2))
+			CFLAG:CHARA:상태이상경과턴수 += FLAG:미조우걸음수/2
+		;バッドステータス・セービング
+		CALL BADSTATUS_SAVING,CHARA
+		;毒ならダメージ
+		SIF CFLAG:CHARA:상태이상 == GET_STATE_NUM("POISON") && FLAG:미조우걸음수 % 4 == 0
+			CALL VAR_HP,CHARA,-MAX(MAXBASE:CHARA:ＭＰ/16,1),"食いしばり無効ダメージ"
+		;麻痺ならMP減少
+		SIF CFLAG:CHARA:상태이상 == GET_STATE_NUM("PALYZE") && FLAG:미조우걸음수 % 4 == 0
+			CALL VAR_MP,CHARA,-MAX(MAXBASE:CHARA:ＭＰ/16,1),"ダメージ"
+		CFLAG:CHARA:상태이상경과턴수 -= FLAG:미조우걸음수/2
+	ENDIF
+NEXT
+
+IF L_DIRECTION
+	;LOCAL = 0
+	STCOK_LINE = LINECOUNT
+	IS_ELIMINATE_ENCOUNT = 0
+	STOCK_TILE = DA:(FLAG:현X):(FLAG:현Y)
+	;移動後のダンジョンイベント呼び出し
+	SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 100
+		CASE -9
+			CALL DUNGEON_TERMINAL
+		CASE -19
+			CALL FOUNTAIN_OF_TRISH
+		CASE -29
+			CALL DUNGEON_ELEVATOR
+		CASEELSE
+			;---- EDIT 093 ADD START -------------------------
+			$EVENT_LOOP
+			CALLFORM EVENT_ENTER_DUNGEON_{FLAG:현던전}, L_DIRECTION
+			IF RESULT == 2
+				L_DIRECTION = RESULT:1
+				GOTO EVENT_LOOP
+			ENDIF
+			;---- EDIT 093 ADD END ---------------------------
+	ENDSELECT
+	SIF RESULT || FLAG:탈출
+		IS_ELIMINATE_ENCOUNT = 1
+	IS_ENCOUNT = 0
+	IS_LINECHANGE = STCOK_LINE != LINECOUNT
+	;---- EDIT 086 MOD START -------------------------
+	;ランランダンジョンがONのとき偶数回の表示を飛ばす
+	IF DUNGEON_MOVE_CONTINUE && !(IS_ENABLE_RUNRUN() && DUNGEON_CNT_MOVE % 2 == 0) && !IS_ELIMINATE_ENCOUNT
+		REDRAW 0
+		;---- EDIT 096 MOD START -------------------------
+		CALL SHOW_PICTURE, "WALK"
+		;---- EDIT 096 MOD END ---------------------------
+		CALL SHOW_DUNGEON_COMMAND
+		TWAIT 100, 1
+		REDRAW STOCK_REDRAW
+	ENDIF
+	;---- EDIT 096 ADD START -------------------------
+	SIF IS_DOOR_WALK
+		CLEARLINE LINECOUNT - STCOK_LINE
+	;---- EDIT 096 ADD END ---------------------------
+	DUNGEON_CNT_MOVE++
+ENDIF
+;---- EDIT 086 MOD END ---------------------------
+;遭遇チェック
+IF !IS_ELIMINATE_ENCOUNT && !FLAG:저주의레드카펫
+	IF !FLAG:인카운트하지않는다
+		;-- ダンジョン32:이상한던전 --------
+		;遭遇チェックのタイミングで敵シンボルの移動などの処理を行う
+		IF FLAG:지형자동생성・FOE플래그 == 1
+			CALL SEF_SYMBOL_CHARA_ACTION
+		ENDIF
+		;---- EDIT 080 MOD START -------------------------
+		;エンカウント率の取得
+		CALL SET_ENCOUNT_RATE
+		$ENCOUNT_START
+		RESULT = 0, 0
+		CALLFORM CHECK_ENCOUNT_{FLAG:현던전}
+		;RESULT:1が真ならエストマ禁止にしておく
+		VARI DISABLE_ESTOMA = RESULT:1
+		IF RESULT
+			;エンカウントチェックで直接配置されているかどうかを取る
+			VARI IS_NORMAL_ENCOUNT = 1
+			FOR LCOUNT, 7, 17
+				SIF POS(LCOUNT) < 0
+					CONTINUE
+				IS_NORMAL_ENCOUNT = 0
+				RESULT = 1
+				BREAK
+			NEXT
+			;通常エンカウントの場合、汎用のテーブル生成処理から呼び出す
+			SIF IS_NORMAL_ENCOUNT
+				CALL ENEMY_TABLE
+			IF RESULT == -1
+				FLAG:미조우걸음수 = 0
+			;---- EDIT 080 MOD END ---------------------------
+			ELSEIF RESULT == 1
+				FLAG:미조우걸음수 = 0
+				;敵が配置されていることを確認する(エストマで全部除外されている場合がある)
+				FOR LCOUNT, 7, 17
+					SIF POS(LCOUNT) < 0
+						CONTINUE
+					;悪魔に遭遇したなら移動停止フラグを立てる
+					IS_ENCOUNT = 1
+					VARI TEMP
+					TEMP = (8 + 12) * GETCONFIG("フォントサイズ")
+					;画面表示
+					HTML_PRINT_ISLAND  @"<div xpos = '0' ypos = '0' width = '{CLIENTWIDTH()}px' height = '{CLIENTHEIGHT() - TEMP}px' display = 'absolute-lefttop' background_color = '%TOSTR_HTML(GETBGCOLOR())%'>" + "</div>"
+					TWAIT 200, 1
+					{
+					HTML_PRINT_ISLAND  
+								@"<b>" + @"<font face = '' size = '300' color = '%TOSTR_HTML(COLOR("p-red"))%'>" +
+								@"<div xpos = '{CLIENTWIDTH() / 2 - GETCONFIG("フォントサイズ") * 3 * 5 / 2}px' ypos = '{(CLIENTHEIGHT() - TEMP) / 2 - GETCONFIG("フォントサイズ") * 3 * 1}px' display = 'absolute-lefttop'>" +  
+								@"ENCOUNT" + 
+								@"</div>" +
+								@"<div xpos = '{CLIENTWIDTH() / 2 - GETCONFIG("フォントサイズ") * 3 * 5 / 2}px' ypos = '{(CLIENTHEIGHT() - TEMP) / 2 - GETCONFIG("フォントサイズ") * 3 * 0 + 20}px' display = 'absolute-lefttop'>" +
+								@"      ENEMY!!" + 
+								@"</fontsize>" + "</b>" + "</div>"
+					}
+					WAIT
+					HTML_PRINT_ISLAND_CLEAR
+
+					;連戦判定
+					VARI RATE_CONTINUE
+					CONTINUE_BATTLE_NUM = 0
+					COUNT_CONTINUE_BATTLED = 0
+					IF (SOFT_ON("에너미호이호이") || FLAG:리베라마) && IS_NORMAL_ENCOUNT
+						SIF SOFT_ON("에너미호이호이") && !IS_DISABLE_ENEMYHOIHOI
+							RATE_CONTINUE += 50 + COUNT_CONTINUE_BATTLE * 5
+						SIF FLAG:리베라마
+							RATE_CONTINUE += 50 + COUNT_CONTINUE_BATTLE * 5
+					ELSE
+						COUNT_CONTINUE_BATTLE = 0
+					ENDIF
+					WHILE CONTINUE_BATTLE_NUM < 8
+						SIF RATE_CONTINUE <= RAND:100
+							BREAK
+						RATE_CONTINUE /= 2
+						CONTINUE_BATTLE_NUM++
+					WEND
+
+					FOR LCOUNT, 0, 1 + CONTINUE_BATTLE_NUM
+						;連戦なので再配置
+						IF LCOUNT
+							CALL ENEMY_TABLE
+							SIF RESULT <= 0
+								CONTINUE
+							HTML_PRINT_ISLAND  @"<div xpos = '0' ypos = '0' width = '{CLIENTWIDTH()}px' height = '{CLIENTHEIGHT()}px' display = 'absolute-lefttop' background_color = '%TOSTR_HTML(GETBGCOLOR())%'>" + "</div>"
+							TWAIT 200, 1
+								;画面表示
+								{
+								HTML_PRINT_ISLAND  @"<div xpos = '{CLIENTWIDTH() / 2 - GETCONFIG("フォントサイズ") * 3 * 5 / 2}px' ypos = '{CLIENTHEIGHT() / 2 - GETCONFIG("フォントサイズ") * 3 * 1}px' display = 'absolute-lefttop'>" + 
+											@"<b>" + @"<font size = '300' color = '%TOSTR_HTML(COLOR("p-red"))%'>" + 
+											@"ATTACKED" + 
+											@"</fontsize>" + "</b>" + "</div>" +
+											@"<div xpos = '{CLIENTWIDTH() / 2 - GETCONFIG("フォントサイズ") * 3 * 5 / 2}px' ypos = '{CLIENTHEIGHT() / 2 - GETCONFIG("フォントサイズ") * 3 * 0 + 20}px' display = 'absolute-lefttop'>" +
+											@"<b>" + @"<font size = '300' color = '%TOSTR_HTML(COLOR("p-red"))%'>" + 
+											@"      BY" + 
+											@"</fontsize>" + "</b>" + "</div>" + 
+											@"<div xpos = '{CLIENTWIDTH() / 2 - GETCONFIG("フォントサイズ") * 3 * 5 / 2}px' ypos = '{CLIENTHEIGHT() / 2 - GETCONFIG("フォントサイズ") * 3 * -1 + 20}px' display = 'absolute-lefttop'>" +
+											@"<b>" + @"<font size = '300' color = '%TOSTR_HTML(COLOR("p-red"))%'>" + 
+											@"        NEW ENEMY!!" + 
+											@"</fontsize>" + "</b>" + "</div>"
+								}
+								FORCEWAIT
+								HTML_PRINT_ISLAND_CLEAR
+								COUNT_CONTINUE_BATTLED++
+							;連戦が発生した場合、以降の発生率強化のためのフラグを立てる
+							SIF LCOUNT == 1
+								COUNT_CONTINUE_BATTLE++
+						ENDIF
+						CALL BATTLE_START
+					NEXT
+					CONTINUE_BATTLE_NUM = 0
+					COUNT_CONTINUE_BATTLED = 0
+					BREAK
+				NEXT
+			ENDIF
+		ENDIF
+		;---- EDIT 081 DEL START -------------------------
+		;---- EDIT 080 MOD START -------------------------
+		;エンカウント率が100を超えてる場合は再チェック
+		;FLAG:인카운트율 -= 100
+		;SIF FLAG:인카운트율 > 0
+		;	GOTO ENCOUNT_START
+		;---- EDIT 080 MOD END ---------------------------
+		;---- EDIT 081 DEL END ---------------------------
+	ENDIF
+
+	;エンカウントしなかった場合 = 完全に何も起きなかった場合のみムフフの判定にいく
+	;要するにイベント関係と排他
+	IF FLAG:무후후전개 && !IS_ENCOUNT && L_DIRECTION != 0
+		FOR LCOUNT, 1 , 7
+			CHARA = POS(LCOUNT)
+			SIF CHARA < 0
+				CONTINUE
+			SIF !INPUTABLEF_CHARA(CHARA)
+				CONTINUE
+			;一歩ごとに体力が5回復する（最大値は気力の現在値）
+			SIF BASE:CHARA:체력 < BASE:CHARA:기력
+				BASE:CHARA:체력 = MIN(BASE:CHARA:체력 + 5, BASE:CHARA:기력, MAXBASE:CHARA:체력)
+			
+			;CFLAG:ダンジョン内発情用欲情値が15000以下の場合
+			IF CFLAG:CHARA:던전내발정용욕정치 < 15000
+				;精液の箇所ひとつに付き欲情が精液中毒ＬＶ分増える
+				CFLAG:CHARA:던전내발정용욕정치 += GET_STAIN("질내" , "精液" , CHARA) * ABL:CHARA:정액중독
+				CFLAG:CHARA:던전내발정용욕정치 += GET_STAIN("바기나" , "精液" , CHARA) * ABL:CHARA:정액중독
+				CFLAG:CHARA:던전내발정용욕정치 += GET_STAIN("입" , "精液" , CHARA) * ABL:CHARA:정액중독
+				CFLAG:CHARA:던전내발정용욕정치 += GET_STAIN("손" , "精液" , CHARA) * ABL:CHARA:정액중독
+				CFLAG:CHARA:던전내발정용욕정치 += GET_STAIN("가슴" , "精液" , CHARA) * ABL:CHARA:정액중독
+				CFLAG:CHARA:던전내발정용욕정치 += GET_STAIN("애널" , "精液" , CHARA) * ABL:CHARA:정액중독
+				CFLAG:CHARA:던전내발정용욕정치 += GET_STAIN("머리카락" , "精液" , CHARA) * ABL:CHARA:정액중독
+
+				;アソコと乳首が露出していると露出癖ＬＶ分欲情が増える
+				SIF TEQUIP:CHARA:유두노출 == -1
+					CFLAG:CHARA:던전내발정용욕정치 += ABL:CHARA:노출증
+				SIF TEQUIP:CHARA:음순노출 == -1
+					CFLAG:CHARA:던전내발정용욕정치 += ABL:CHARA:노출증
+
+				SIF 위험일(CHARA) == 2
+					CFLAG:CHARA:던전내발정용욕정치 += 2 * ABL:CHARA:욕망
+				;CFLAG:ダンジョン内発情用欲情値の上限は15000
+				SIF CFLAG:CHARA:던전내발정용욕정치 > 15000
+					CFLAG:CHARA:던전내발정용욕정치 = 15000
+			ENDIF
+			
+			;膣内が精液で汚れている場合は1％の確率でヴァギナに汚れが付く
+			IF GET_STAIN("질내" , "精液" , CHARA) && GET_STAIN("바기나" , "精液" , CHARA) == 0 && RAND:100 < 1
+				SETCOLOR COLOR("pink")
+				PRINTFORMW %CALLNAME:CHARA%의 안에 쏟아진 정액이 흘러내렸다…
+				RESETCOLOR
+				CALL SET_STAIN("바기나" , "精液" , CHARA)
+				;三分の一の確立で膣内の汚れ消去
+				SIF RAND:3 == 0
+					STAIN:CHARA:질내 = 0
+			ENDIF
+		
+			;欲情一定値以下で発情終了
+			IF  CFLAG:CHARA:던전내발정용욕정치 < 2000 && CFLAG:CHARA:던전내발정
+				CFLAG:CHARA:던전내발정 = 0
+				PRINTFORMW %CALLNAME:CHARA%은(는) 진정했다
+			ENDIF
+
+			;欲情が10000以上になると発情
+			IF (!TALENT:CHARA:남자 || TALENT:CHARA:오토코노코) && !CFLAG:CHARA:던전내발정 && CFLAG:CHARA:던전내발정용욕정치 >= 10000
+				CFLAG:CHARA:던전내발정 = 1
+				CALL SET_STAIN("질내" , "愛液" , CHARA)
+				CALL SET_STAIN("바기나" , "愛液" , CHARA)
+				SETCOLOR COLOR("pink")
+				PRINTFORMW %CALLNAME:CHARA%은(는) 머릿속이 분홍빛으로 물들었다
+				RESETCOLOR
+			;発情状態の時に30％の確率でHAPPYになる
+			ELSEIF RAND:100 < 30 && CFLAG:CHARA:던전내발정 && CFLAG:CHARA:상태이상 != GET_STATE_NUM("HAPPY")
+				CFLAG:CHARA:상태이상 = GET_STATE_NUM("HAPPY")
+			ENDIF
+			;素質『발정가능』を持っていると魅了状態時に10％の確率で発情する
+			IF TALENT:CHARA:남자 == 0 && CFLAG:CHARA:상태이상 == GET_STATE_NUM("CHARM") && TALENT:CHARA:발정가능 && CFLAG:CHARA:던전내발정 == 0 && RAND:100 < 10
+				CFLAG:CHARA:던전내발정 = 1
+				CALL SET_STAIN("질내" , "愛液" , CHARA)
+				CALL SET_STAIN("바기나" , "愛液" , CHARA)
+				SETCOLOR COLOR("pink")
+				PRINTFORMW %CALLNAME:CHARA%은(는) 머릿속이 분홍빛으로 물들었다
+				RESETCOLOR
+			ENDIF
+
+			;あなた押し倒されイベント　仲魔が発情状態の時に指定確率であなたを押し倒す
+			;設定と条件に該当したら FLAG:밀려넘어짐이벤트, 40 を立てて本処理を実行
+			;↓はテスト用、これにすると押し倒し祭り
+			;IF GETBIT(FLAG:밀려넘어짐이벤트,0) && RAND:100 < FLAG:밀려넘어짐이벤트발생률 && CFLAG:CHARA:던전내발정 == 0
+			IF GETBIT(FLAG:밀려넘어짐이벤트,0) && RAND:100 < FLAG:밀려넘어짐이벤트발생률 && CFLAG:CHARA:던전내발정
+				CLEARBIT FLAG:밀려넘어짐이벤트, 40
+				;女 → 男
+				IF     GETBIT(FLAG:밀려넘어짐이벤트,1)  && CHARA != MASTER && TALENT:CHARA:남자 == 0 && TALENT:CHARA:후타나리 == 0 &&TALENT:CHARA:처녀 == 0 && TALENT:CHARA:재생처녀 == 0 && TALENT:(MASTER):남자 == 1 && TALENT:(MASTER):오토코노코 == 0
+					SETBIT FLAG:밀려넘어짐이벤트, 40
+				;双女→ 男
+				ELSEIF GETBIT(FLAG:밀려넘어짐이벤트,2)  && CHARA != MASTER && TALENT:CHARA:남자 == 0 && TALENT:CHARA:후타나리 == 1 && TALENT:CHARA:처녀 == 0 && TALENT:CHARA:재생처녀 == 0 && TALENT:(MASTER):남자 == 1 && TALENT:(MASTER):오토코노코 == 0
+					SETBIT FLAG:밀려넘어짐이벤트, 40
+				;男 → 男
+				ELSEIF GETBIT(FLAG:밀려넘어짐이벤트,3)  && CHARA != MASTER && TALENT:CHARA:남자 == 1 && TALENT:CHARA:오토코노코 == 0 && TALENT:(MASTER):남자 == 1 && TALENT:(MASTER):오토코노코 == 0
+					SETBIT FLAG:밀려넘어짐이벤트, 40
+				;男娘→ 男 
+				ELSEIF GETBIT(FLAG:밀려넘어짐이벤트,4)  && CHARA != MASTER && TALENT:CHARA:남자 == 1 && TALENT:CHARA:오토코노코 == 1 && TALENT:(MASTER):남자 == 1 && TALENT:(MASTER):오토코노코 == 0
+					SETBIT FLAG:밀려넘어짐이벤트, 40
+				;女 → 女
+				ELSEIF GETBIT(FLAG:밀려넘어짐이벤트,5)  && CHARA != MASTER && TALENT:CHARA:남자 == 0 && TALENT:CHARA:후타나리 == 0 && TALENT:CHARA:처녀 == 0 && TALENT:CHARA:재생처녀 == 0 && TALENT:(MASTER):남자 == 0 && TALENT:(MASTER):후타나리 == 0 &&TALENT:(MASTER):처녀 == 0 && TALENT:(MASTER):재생처녀 == 0
+					SETBIT FLAG:밀려넘어짐이벤트, 40
+				;双女→ 女
+				ELSEIF GETBIT(FLAG:밀려넘어짐이벤트,6)  && CHARA != MASTER && TALENT:CHARA:남자 == 0 && TALENT:CHARA:후타나리 == 1 && TALENT:CHARA:처녀 == 0 && TALENT:CHARA:재생처녀 == 0 && TALENT:(MASTER):남자 == 0 && TALENT:(MASTER):후타나리 == 0 &&TALENT:(MASTER):처녀 == 0 && TALENT:(MASTER):재생처녀 == 0
+					SETBIT FLAG:밀려넘어짐이벤트, 40
+				;男 → 女
+				ELSEIF GETBIT(FLAG:밀려넘어짐이벤트,7)  && CHARA != MASTER && TALENT:CHARA:남자 == 1 && TALENT:CHARA:오토코노코 == 0 && TALENT:(MASTER):남자 == 0 && TALENT:(MASTER):후타나리 == 0 &&TALENT:(MASTER):처녀 == 0 && TALENT:(MASTER):재생처녀 == 0
+					SETBIT FLAG:밀려넘어짐이벤트, 40
+				;男娘→ 女
+				ELSEIF GETBIT(FLAG:밀려넘어짐이벤트,8)  && CHARA != MASTER && TALENT:CHARA:남자 == 1 && TALENT:CHARA:오토코노코 == 1 && TALENT:(MASTER):남자 == 0 && TALENT:(MASTER):후타나리 == 0 &&TALENT:(MASTER):처녀 == 0 && TALENT:(MASTER):재생처녀 == 0
+					SETBIT FLAG:밀려넘어짐이벤트, 40
+				;女 →男娘
+				ELSEIF GETBIT(FLAG:밀려넘어짐이벤트,9)  && CHARA != MASTER && TALENT:CHARA:남자 == 0 && TALENT:CHARA:후타나리 == 0 && TALENT:CHARA:처녀 == 0 && TALENT:CHARA:재생처녀 == 0 && TALENT:(MASTER):남자 == 1 && TALENT:(MASTER):오토코노코 == 1
+					SETBIT FLAG:밀려넘어짐이벤트, 40
+				;双女→男娘
+				ELSEIF GETBIT(FLAG:밀려넘어짐이벤트,10) && CHARA != MASTER && TALENT:CHARA:남자 == 0 && TALENT:CHARA:후타나리 == 1 && TALENT:CHARA:처녀 == 0 && TALENT:CHARA:재생처녀 == 0 && TALENT:(MASTER):남자 == 1 && TALENT:(MASTER):오토코노코 == 1
+					SETBIT FLAG:밀려넘어짐이벤트, 40
+				;男 →男娘 
+				ELSEIF GETBIT(FLAG:밀려넘어짐이벤트,11) && CHARA != MASTER && TALENT:CHARA:남자 == 1 && TALENT:CHARA:오토코노코 == 0 && TALENT:(MASTER):남자 == 1 && TALENT:(MASTER):오토코노코 == 1
+					SETBIT FLAG:밀려넘어짐이벤트, 40
+				;男娘→男娘
+				ELSEIF GETBIT(FLAG:밀려넘어짐이벤트,12) && CHARA != MASTER && TALENT:CHARA:남자 == 1 && TALENT:CHARA:오토코노코 == 1 && TALENT:(MASTER):남자 == 1 && TALENT:(MASTER):오토코노코 == 1
+					SETBIT FLAG:밀려넘어짐이벤트, 40
+				;女 →双女 
+				ELSEIF GETBIT(FLAG:밀려넘어짐이벤트,13) && CHARA != MASTER && TALENT:CHARA:남자 == 0 && TALENT:CHARA:후타나리 == 0 && TALENT:CHARA:처녀 == 0 && TALENT:CHARA:재생처녀 == 0 && TALENT:(MASTER):남자 == 0 && TALENT:(MASTER):후타나리 == 1 &&TALENT:(MASTER):처녀 == 0 && TALENT:(MASTER):재생처녀 == 0
+					SETBIT FLAG:밀려넘어짐이벤트, 40
+				;双女→双女
+				ELSEIF GETBIT(FLAG:밀려넘어짐이벤트,14) && CHARA != MASTER && TALENT:CHARA:남자 == 0 && TALENT:CHARA:후타나리 == 1 && TALENT:CHARA:처녀 == 0 && TALENT:CHARA:재생처녀 == 0 && TALENT:(MASTER):남자 == 0 && TALENT:(MASTER):후타나리 == 1 &&TALENT:(MASTER):처녀 == 0 && TALENT:(MASTER):재생처녀 == 0
+					SETBIT FLAG:밀려넘어짐이벤트, 40
+				;男 →双女 
+				ELSEIF GETBIT(FLAG:밀려넘어짐이벤트,15) && CHARA != MASTER && TALENT:CHARA:남자 == 1 && TALENT:CHARA:오토코노코 == 0 && TALENT:(MASTER):남자 == 0 && TALENT:(MASTER):후타나리 == 1 &&TALENT:(MASTER):처녀 == 0 && TALENT:(MASTER):재생처녀 == 0
+					SETBIT FLAG:밀려넘어짐이벤트, 40
+				;男娘→双女
+				ELSEIF GETBIT(FLAG:밀려넘어짐이벤트,16) && CHARA != MASTER && TALENT:CHARA:남자 == 1 && TALENT:CHARA:오토코노코 == 1 && TALENT:(MASTER):남자 == 0 && TALENT:(MASTER):후타나리 == 1 &&TALENT:(MASTER):처녀 == 0 && TALENT:(MASTER):재생처녀 == 0
+					SETBIT FLAG:밀려넘어짐이벤트, 40
+				ELSE
+					CLEARBIT FLAG:밀려넘어짐이벤트, 40
+				ENDIF
+				IF GETBIT(FLAG:밀려넘어짐이벤트, 40)
+					SETCOLOR COLOR("pink")
+					PRINTFORMW 욕정을 참지 못하게 된 %CALLNAME:CHARA%은(는) %CALLNAME:MASTER%을(를) 밀어 넘어뜨렸다！
+					RESETCOLOR
+					PRINTL 
+					PRINTFORMW %CALLNAME:MASTER%의 제지는 정욕에 칠해진 %CALLNAME:CHARA%에게는 교성으로 닿아,
+					PRINTFORMW 억지로 주어지는 쾌감에 %CALLNAME:MASTER%의 신체가 튈 때마다 조금씩 달콤한 울림을 띠어 간다…
+					CALL 性欲処理, CHARA , MASTER ,  1
+				ENDIF
+			ENDIF
+		NEXT
+	ENDIF
+ENDIF
+CALL MOVE_MOON
+CALL AUTOMAP
+SIF L_DIRECTION == 0
+	RETURN IS_ENCOUNT
+IF STOCK_TILE != 2
+	;何かしらイベントがあったら移動停止
+	SIF IS_ELIMINATE_ENCOUNT
+		DUNGEON_STOP_MOVE = 1
+	;イベント前後で行数が変わっていたらイベントがあったことが確定する
+	SIF IS_LINECHANGE
+		DUNGEON_STOP_MOVE = 1
+	;エンカウントがあった場合は足を止める
+	SIF IS_ENCOUNT
+		DUNGEON_STOP_MOVE = 1
+ENDIF
+RETURN 1
+;---- EDIT 070 MOD END -------------------------
+;---- EDIT 080 ADD START -------------------------
+;=====================================================================
+;エンカウント率のセット関数
+;=====================================================================
+@SET_ENCOUNT_RATE
+FLAG:인카운트율 = 0
+SIF FLAG:인카운트하지않는다
+	RETURN 0
+TRYCCALLFORM ENCOUNT_RATE_{FLAG:현던전}
+CATCH
+	RETURN 0
+ENDCATCH
+SIF FLAG:리베라마 != 0
+	FLAG:인카운트율 *= 2
+SIF FLAG:디스가이즈굿즈
+	FLAG:인카운트율 /= 2
+SIF SOFT_ON("에너미호이호이") && !IS_DISABLE_ENEMYHOIHOI
+	FLAG:인카운트율 *= 2
+SIF SOFT_ON("에너미바이바이") && !IS_DISABLE_ENEMYBYEBYE
+	FLAG:인카운트율 /= 2
+;---- EDIT 080 ADD END ---------------------------
+
+;=====================================================================
+;移動が継続可能かどうかの判定
+;ARG = WALK_DUNGEON関数の戻り値
+;=====================================================================
+@CAN_CONTINUE_MOVE, ARG
+#FUNCTION
+SIF ARG == -1
+	RETURNF 0
+SIF DUNGEON_STOP_MOVE
+	RETURNF 0
+RETURNF 1
+;=====================================================================
+;런런던전
+;=====================================================================
+@DUNGEON_RUNRUN
+;---- EDIT 100 MOD START -------------------------
+IF SOFT_ON("런런던전")
+	INVERTBIT FLAG:런런던전,0
+	RETURN 1
+ENDIF
+;---- EDIT 100 MOD END ---------------------------
+;---- EDIT 092 MOD START -------------------------
+;=====================================================================
+;オートマッピング登録処理
+;ARGS 経路探索をするときの指定
+;=====================================================================
+@AUTOMAP, ARGS, L_X = -1, L_Y = -1
+#DIM DYNAMIC L_X, 2
+#DIM DYNAMIC L_Y, 2
+L_X = L_X == -1 ? FLAG:현X # L_X
+L_Y = L_Y == -1 ? FLAG:현Y # L_Y
+SIF DA:L_X:L_Y == -1 && !SOFT_ON("다크스캐너") && !FLAG:라이트마
+	GOTO DARK
+CALLF DPOINT( , , 0 , 0 , FLAG:현M , @"ダンジョン%TOSTR(FLAG:현던전,"00")%")
+;マッパーの視界は壁を貫通するので単純に距離と最低限の条件だけみればいい
+IF FLAG:맵퍼 || SOFT_ON("네오・클리어")
+	FOR LOCAL, L_X - 3, L_X + 4
+		L_X:1 = CONVERT_OUTRANGE_COORD_X(LOCAL)
+		SIF !INRANGE(L_X:1, 0, FLAG:최대X - 1)
+			CONTINUE
+		FOR LOCAL:1, L_Y - 3, L_Y + 4
+			L_Y:1 = CONVERT_OUTRANGE_COORD_Y(LOCAL:1)
+			SIF !INRANGE(L_Y:1, 0, FLAG:최대Y - 1)
+				CONTINUE
+			SIF GET_FLOOR_ANALYZE_T(L_X:1, L_Y:1) > 0
+				CONTINUE
+			IF ABS(L_X - LOCAL:1) + ABS(L_Y - LOCAL:1) >= 2
+				CALL CAN_SEE_THROUGH, L_X:1, L_Y:1
+				SIF RESULT == 0
+					CONTINUE
+			ENDIF
+			SIF ARGS == "経路探索"
+				RETURN 1
+			CALL SET_FLOOR_ANALYZE, 1, FLAG:현던전, FLAG:현M, L_X:1, L_Y:1
+		NEXT
+	NEXT
+ELSE
+	FOR LOCAL,0,5
+		IF !FLOOR_IS_LOOP_X
+			SIF (L_X+LOCAL-2) < 0 || (L_X+LOCAL-2) >= FLAG:최대X
+				CONTINUE
+		ENDIF
+		FOR LOCAL:1,0,5
+			IF !FLOOR_IS_LOOP_Y
+				SIF (L_Y+LOCAL:1-2) < 0 || (L_Y+LOCAL:1-2) >= FLAG:최대Y
+					CONTINUE
+			ENDIF
+			;IF DPOINT( , , CONVERT_OUTRANGE_COORD_X(L_X+LOCAL-2) , CONVERT_OUTRANGE_COORD_Y(L_Y+LOCAL:1-2)) == 0
+			IF GET_FLOOR_ANALYZE_T(CONVERT_OUTRANGE_COORD_X(L_X+LOCAL-2), CONVERT_OUTRANGE_COORD_Y(L_Y+LOCAL:1-2)) == 0
+				SELECTCASE LOCAL
+					CASE 0
+						SELECTCASE LOCAL:1
+							CASE 0
+								L_X:1 = CONVERT_OUTRANGE_COORD_X(L_X - 1)
+								L_Y:1 = CONVERT_OUTRANGE_COORD_Y(L_Y - 1)
+							CASE 1,2,3
+								L_X:1 = CONVERT_OUTRANGE_COORD_X(L_X - 1)
+								L_Y:1 = CONVERT_OUTRANGE_COORD_Y(L_Y)
+							CASE 4
+								L_X:1 = CONVERT_OUTRANGE_COORD_X(L_X - 1)
+								L_Y:1 = CONVERT_OUTRANGE_COORD_Y(L_Y + 1)
+						ENDSELECT
+					CASE 1,2,3
+						SELECTCASE LOCAL:1
+							CASE 0
+								L_X:1 = CONVERT_OUTRANGE_COORD_X(L_X)
+								L_Y:1 = CONVERT_OUTRANGE_COORD_Y(L_Y - 1)
+							CASE 4
+								L_X:1 = CONVERT_OUTRANGE_COORD_X(L_X)
+								L_Y:1 = CONVERT_OUTRANGE_COORD_Y(L_Y + 1)
+						ENDSELECT
+					CASE 4
+						SELECTCASE LOCAL:1
+							CASE 0
+								L_X:1 = CONVERT_OUTRANGE_COORD_X(L_X + 1)
+								L_Y:1 = CONVERT_OUTRANGE_COORD_Y(L_Y - 1)
+							CASE 1,2,3
+								L_X:1 = CONVERT_OUTRANGE_COORD_X(L_X + 1)
+								L_Y:1 = CONVERT_OUTRANGE_COORD_Y(L_Y)
+							CASE 4
+								L_X:1 = CONVERT_OUTRANGE_COORD_X(L_X + 1)
+								L_Y:1 = CONVERT_OUTRANGE_COORD_Y(L_Y + 1)
+						ENDSELECT
+				ENDSELECT
+				;自身のマスと周囲４マスは常に視界が通る扱い
+				IF !(INRANGE(LOCAL, 1, 3) && INRANGE(LOCAL:1, 1, 3))
+					CALL CAN_SEE_THROUGH, L_X:1, L_Y:1
+					SIF RESULT == 0
+						CONTINUE
+				ENDIF
+				SIF ARGS == "経路探索"
+					RETURN 1
+				CALL SET_FLOOR_ANALYZE(1, FLAG:현던전, FLAG:현M, CONVERT_OUTRANGE_COORD_X(L_X+LOCAL-2), CONVERT_OUTRANGE_COORD_Y(L_Y+LOCAL:1-2))
+				;SELECTCASE LOCAL
+				;	CASE 0
+				;		SELECTCASE LOCAL:1
+				;			CASE 0
+				;				CALL CAN_SEE_THROUGH, CONVERT_OUTRANGE_COORD_X(L_X-1), CONVERT_OUTRANGE_COORD_X(L_Y-1)
+				;				SIF RESULT == 0
+				;					CONTINUE
+				;			CASE 1,2,3
+				;				CALL CAN_SEE_THROUGH, CONVERT_OUTRANGE_COORD_X(L_X-1), CONVERT_OUTRANGE_COORD_X(L_Y)
+				;				SIF RESULT == 0
+				;					CONTINUE
+				;			CASE 4
+				;				CALL CAN_SEE_THROUGH, CONVERT_OUTRANGE_COORD_X(L_X-1), CONVERT_OUTRANGE_COORD_X(L_Y+1)
+				;				SIF RESULT == 0
+				;					CONTINUE
+				;		ENDSELECT
+				;	CASE 1,2,3
+				;		SELECTCASE LOCAL:1
+				;			CASE 0
+				;				CALL CAN_SEE_THROUGH, CONVERT_OUTRANGE_COORD_X(L_X), CONVERT_OUTRANGE_COORD_X(L_Y-1)
+				;				SIF RESULT == 0
+				;					CONTINUE
+				;			CASE 4
+				;				CALL CAN_SEE_THROUGH, CONVERT_OUTRANGE_COORD_X(L_X), CONVERT_OUTRANGE_COORD_X(L_Y+1)
+				;				SIF RESULT == 0
+				;					CONTINUE
+				;		ENDSELECT
+				;	CASE 4
+				;		SELECTCASE LOCAL:1
+				;			CASE 0
+				;				CALL CAN_SEE_THROUGH, CONVERT_OUTRANGE_COORD_X(L_X+1), CONVERT_OUTRANGE_COORD_X(L_Y-1)
+				;				SIF RESULT == 0
+				;					CONTINUE
+				;			CASE 1,2,3
+				;				CALL CAN_SEE_THROUGH, CONVERT_OUTRANGE_COORD_X(L_X+1), CONVERT_OUTRANGE_COORD_X(L_Y)
+				;				SIF RESULT == 0
+				;					CONTINUE
+				;			CASE 4
+				;				CALL CAN_SEE_THROUGH, CONVERT_OUTRANGE_COORD_X(L_X+1), CONVERT_OUTRANGE_COORD_X(L_Y+1)
+				;				SIF RESULT == 0
+				;					CONTINUE
+				;		ENDSELECT
+				;	
+				;ENDSELECT
+				;SIF ARGS == "経路探索"
+				;	RETURN 1
+				;CALLF DPOINT( "=" , 1)
+			ENDIF	
+		NEXT
+	NEXT
+ENDIF
+$DARK
+SIF ARGS == "経路探索"
+	RETURN 0
+CALL SET_FLOOR_ANALYZE(2, FLAG:현던전, FLAG:현M, L_X, L_Y)
+;---- EDIT 096 ADD START -------------------------
+一時探索経路履歴:(FLAG:현M):L_X:L_Y = 1
+;---- EDIT 096 ADD END ---------------------------
+;CALLF DPOINT( "=" , 2 , L_X , L_Y)
+;---- EDIT 092 MOD END ---------------------------
+;=====================================================================
+;タイルの向こう側を透過出来るかの処理
+;=====================================================================
+@CAN_SEE_THROUGH,ARG,ARG:1
+TRYCCALLFORM CAN_SEE_THROUGH_{FLAG:현던전}_{DA:ARG:(ARG:1)%10},DA:ARG:(ARG:1),ARG,ARG:1
+	RETURN RESULT
+CATCH
+	SIF (DA:ARG:(ARG:1) % 10 == 0 || DA:ARG:(ARG:1) % 10 == 2) && !(FLAG:맵퍼 || SOFT_ON("네오・클리어"))
+		RETURN 0
+	SIF DA:ARG:(ARG:1) == -1 && !SOFT_ON("다크스캐너") && !FLAG:라이트마
+		RETURN 0
+ENDCATCH
+RETURN 1
+
+;=====================================================================
+;COMP起動
+;=====================================================================
+@COMMAND_COMP_FIELD
+;---- EDIT P 001 MOD START -------------------------
+;SIF NUM_SUMMONER(1)
+	PRINTL [0] 소환
+;---- EDIT P 001 MOD END ---------------------------
+PRINTL [1] 송환
+PRINTL [2] 동료마 삭제
+;---- EDIT P 007 MOD START -------------------------
+IF NUM_SUMMONER()
+	PRINTL [3] ２신합체
+	PRINTL [4] 스킬카드 추출
+ENDIF
+IF CAN_SEE_MAP()
+	IF IS_DEBUG
+		PRINTL [5] 맵 이동
+	ELSE
+		PRINTL [5] 맵 표시
+	ENDIF
+ENDIF
+;---- EDIT P 007 MOD END ---------------------------
+SIF SOFT_ON("ＤＤＭ")
+	PRINTL [7] ＤＤＭ
+PRINTL [8] 능력치 강화
+SIF SOFT_ON("삼히타")
+	PRINTL [9] 만트라 취득
+PRINTFORML \@(SOFT_ON("백어퍼") || IS_DEBUG) ? [10] 세이브 # [10] 중단세이브\@
+PRINTL [11] 로드
+PRINTL [12] 오토리커버
+
+;ゴリ押しでマガタマチェック
+LOCAL:1 = 0
+FOR LOCAL, 1, 7
+	SIF POS(LOCAL) < 0
+		CONTINUE
+	SIF !TALENT:POS(LOCAL):인수라
+		CONTINUE
+	;行動可能なキャラでないとダメ
+	CALL INPUTABLE_CHARA, POS(LOCAL)
+	SIF !RESULT
+		CONTINUE
+	LOCAL:1 = 1
+	BREAK
+NEXT
+SIF LOCAL:1
+	PRINTL [13] 마가타마(플러그인) 변경
+SIF SOFT_ON("우파니샤드");054
+	PRINTL [14] 식노스킬 변경
+;---- EDIT 082 MOD START -------------------------
+SIF GROUPMATCH(FLAG:레벨업시인터페이스설정, 3, 4)
+	PRINTL [20] 성장비율설정
+;---- EDIT 082 MOD END ---------------------------
+;---- EDIT LINKUI ADD START ---------------------------
+PRINTL [30] 링케이지목록
+;---- EDIT LINKUI ADD END ---------------------------
+PRINTL [99] 옵션
+PRINTL [100] 돌아간다
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT == 0 && NUM_SUMMONER(1)
+
+	$CHOOSE_COMPANION_LOOP
+	CALL CHOOSE_COMPANION,"RPG/探索中"
+	IF RESULT == 1000
+		RESTART
+	ELSE
+		LOCAL = RESULT	
+		CALL SHOW_NOW_FORMATION_P,0,2, 3
+		PRINTL [0] ＣＡＮＣＥＬ [2000]ＡＬＬ ＣＡＮＣＥＬ
+		PRINTL 어디에 불러낼까？
+		$INPUT_SUMMON_POSITION_LOOP
+		INPUT
+		LOCAL:1 = RESULT
+		IF RESULT == 0
+			GOTO CHOOSE_COMPANION_LOOP
+		ELSEIF RESULT == 2000
+			RETURN 0
+		ELSEIF RESULT > 0 && RESULT < 7
+			;---- EDIT 013 ADD START -------------------------
+			IF POS(LOCAL:1) > 0 && CFLAG:POS(LOCAL:1):소속ＣＯＭＰ == -1 && FLAG:SHOP커맨드 == [[ショップ:탐색]] && !(LOCAL:1 < 4 && POS(LOCAL:1+3) == -1)
+				PRINTFORML %조사처리(CALLNAME:POS(LOCAL:1),"은")% 자택서버에 등록된 악마입니다
+				PRINTL 던전내에서는 자택서버에 등록된 악마를 파티에서 제외할 수 없습니다
+				PRINTW 다른 포지션을 선택해 소환해주세요
+				CLEARLINE 3
+				GOTO INPUT_SUMMON_POSITION_LOOP
+			ENDIF
+			;---- EDIT 013 ADD END   -------------------------
+			CALL INSERT_POSITION,LOCAL:1,LOCAL
+			IF RESULT > -1
+				SELECTCASE FLAG:SHOP커맨드
+					CASE [[ショップ:탐색]],[[ショップ:콜로세움참가]],[[ショップ:이벤트]],[[ショップ:의뢰청부]]
+						IF CFLAG:(LOCAL):PT플래그 > 0 && ABL:(LOCAL):종족 != 0
+							CALL CONTROL_MAG, MASTER, -MAXBASE:LOCAL:￥
+						ENDIF
+				ENDSELECT
+			ENDIF
+			
+			
+			GOTO CHOOSE_COMPANION_LOOP
+		ELSE
+			GOTO INPUT_SUMMON_POSITION_LOOP
+		ENDIF
+	ENDIF
+ELSEIF RESULT == 1
+	CALL SETUP_REMOVE
+ELSEIF RESULT == 2
+	CALL SETUP_PARTING
+ELSEIF RESULT == 3 && NUM_SUMMONER()
+	IS_IN_FUSION = 1
+	CALL FUSION_NORMAL,2,1
+	IS_IN_FUSION = 0
+;---- EDIT P 007 ADD START -------------------------
+ELSEIF RESULT == 4 && NUM_SUMMONER()
+	VARI START_LINE_MAKE_SKILLCARD = LINECOUNT
+	$START_MAKE_SKILLCARD
+	CLEARLINE LINECOUNT - START_LINE_MAKE_SKILLCARD
+	{
+	CALL INPUT_CHARA_LIST
+		, "PROPSET_MAKE_SKILLCARD"
+		, "스킬카드를 추출할 동료마를 선택해주세요(소비충성도+500의 충성도가 필요)"
+		, "CASTING_DUNGEON_MAKE_SKILL_CARD" 
+		, "SHOW_ADD_UP_FUNCTION"
+		, "SHOW_ADD_DOWN_FUNCTION"
+		, "ADD_SELECT_FUNCTION"
+		, "L_CANCELS"
+		, "MAKE_SKILLCARD_CUSTOM_TITLE"
+		, "MAKE_SKILLCARD_COLOR"
+		, -1
+	}
+	IF RESULT != 1000
+		U = RESULT
+		IF  GET_CHARA_LOYALTY(U) < GET_LOYALTY_FOR_MAKE_SKILLCARD(U, "必要")
+			PRINTW 충성도가 부족합니다。
+		ELSE
+			MAG_ENHANCE_LINE = LINECOUNT + GET_HEIGHTLENS() - 2
+			CALL MAG_MAKE_SKILLCARD, U, CFLAG:U:악마변신
+		ENDIF
+		GOTO START_MAKE_SKILLCARD
+	ENDIF
+;---- EDIT P 007 ADD END ---------------------------
+ELSEIF RESULT == 5 && CAN_SEE_MAP()
+	CALL HONEY_BEE
+ELSEIF RESULT == 7 && SOFT_ON("ＤＤＭ")
+	CALL COMP_DDM
+ELSEIF RESULT == 8
+	$MAG_LOOP
+	CALL SHOW_NOW_FORMATION_P,0,2
+	PRINTL [0] ＣＡＮＣＥＬ [2000]ＡＬＬ ＣＡＮＣＥＬ
+	PRINTL 누구를 강화할까？
+	$INPUT_MAG_LOOP
+	INPUT
+	IF RESULT == 0
+		RESTART
+	ELSEIF RESULT == 2000
+		RETURN 0
+	;---- EDIT 089 MOD START -------------------------
+	ELSEIF !INRANGE(RESULT, 1, 6) || POS(RESULT) < 0 || IS_BADSTATE(POS(RESULT), "DYING")
+	;ELSEIF RESULT < 1 || RESULT > 6  || POS(RESULT) < 1
+	;---- EDIT 089 MOD END ---------------------------
+		GOTO INPUT_MAG_LOOP
+	ENDIF
+	;---- EDIT 075 MOD START -------------------------
+	;LOCAL:1 = CFLAG:POS(RESULT):능력강화횟수/3 + 1
+	;SELECTCASE FLAG:전투난이도
+	;	CASE 1 TO 3
+	;		LOCAL:10 = 250
+	;	CASE 4,5,6
+	;		LOCAL:10 = 100
+	;ENDSELECT
+	;SIF POS(RESULT) == 0
+	;	LOCAL:10 *= 100
+	;IF GET_CHARA_STOCK_MAG(POS(RESULT)) < LOCAL:10*LOCAL:1*(LOCAL:1+1)
+	IF GET_CHARA_STOCK_MAG(POS(RESULT)) < MAG_CALC_ENHANCE_BASE(POS(RESULT))
+		PRINTW ＭＡＧ가 부족합니다
+		CLEARLINE 2
+		GOTO INPUT_MAG_LOOP
+	ENDIF
+	U = POS(RESULT)
+	MAG_ENHANCE_LINE = -1
+	CALL ENHANCE_BASE,POS(RESULT)
+	GOTO MAG_LOOP
+	;---- EDIT 075 MOD END ---------------------------が	
+ELSEIF RESULT == 9 && SOFT_ON("삼히타")
+	CALL KARMAN
+ELSEIF RESULT == 10
+	IF SOFT_ON("백어퍼") || IS_DEBUG
+		CALL TITLE_SAVEGAME
+	ELSE
+		PRINTFORML 중단세이브를 기록하고、게임을 종료해도 괜찮으시겠습니까？
+		CALL INPUT_YN
+		IF !RESULT
+			LOADGLOBAL
+			;GLOBALが0のとき、ここで初生成を行い
+			;以降はデータ呼び出し時に生成をする
+			SIF GLOBAL == 0
+				GLOBAL = RAND:10000 + 1
+			FLAG:임시세이브관리 = GLOBAL
+			GLOBAL:1 = GLOBAL:1 % 10 + 10
+			SAVEGLOBAL
+			SAVEDATA 400, DISP_SAVETEXT()
+			PRINTW 수고 많으셨습니다。Emuera를 종료합니다。
+			PRINTW 또한、중단세이브는 로드하면 삭제되므로 주의해주세요。
+			PRINTW 쉬는 동안 악마에게 몸을 빼앗기지 않도록 주의하세요……
+			QUIT
+		ELSE
+			PRINTW 그럼、게임을 재개합니다
+		ENDIF
+	ENDIF
+ELSEIF RESULT == 11
+	CALL TITLE_LOADGAME
+ELSEIF RESULT == 12
+	CALL AUTO_RECOVER
+ELSEIF RESULT == 13
+	LOCAL:1 = 0
+	FOR LOCAL, 1, 7
+		SIF POS(LOCAL) < 0
+			CONTINUE
+		SIF !TALENT:POS(LOCAL):인수라
+			CONTINUE
+		;行動可能なキャラでないとダメ
+		CALL INPUTABLE_CHARA, POS(LOCAL)
+		SIF !RESULT
+			CONTINUE
+		LOCAL:1 = 1
+		BREAK
+	NEXT
+	IF !LOCAL:1
+		PRINTFORMW 플러그인을 변경할 수 있는 캐릭터가 없습니다
+		RESTART
+	ENDIF
+	LOCAL:2 = LINECOUNT
+	$MAGATAMA_LOOP
+	CLEARLINE LINECOUNT - LOCAL:2
+	CALL SHOW_NOW_FORMATION_P,0,2
+	PRINTL [0] ＣＡＮＣＥＬ [2000]ＡＬＬ ＣＡＮＣＥＬ
+	PRINTL 누구의 플러그인을 변경할까？
+	CALL INPUTINT(0,1,2,3,4,5,6,2000)
+	IF RESULT == 0
+		RESTART
+	ELSEIF RESULT == 2000
+		RETURN 0
+	ELSE
+		LOCAL = POS(RESULT)
+		SIF LOCAL < 0
+			GOTO MAGATAMA_LOOP
+		IF !TALENT:LOCAL:인수라
+			GOTO MAGATAMA_LOOP
+		ENDIF
+		CALL INPUTABLE_CHARA, LOCAL
+		IF !RESULT
+			PRINTFORMW %조사처리(CALLNAME:LOCAL,"은")% 변경할 수 있는 상태가 아닙니다
+			GOTO MAGATAMA_LOOP
+		ENDIF
+		CALL CHANGE_PLUGIN_SOFT, LOCAL
+		GOTO MAGATAMA_LOOP
+	ENDIF
+ELSEIF RESULT == 14 && SOFT_ON("우파니샤드");054
+	CALL SET_KARMANS_SKILL
+;---- EDIT 082 MOD START -------------------------
+ELSEIF RESULT == 20 && GROUPMATCH(FLAG:레벨업시인터페이스설정, 3, 4)
+		SWAP LOCAL,FLAG:SHOP커맨드
+		FLAG:SHOP커맨드 = 40032
+		CALL LVUP_AUTOIF2_SETUP
+		SWAP LOCAL,FLAG:SHOP커맨드
+;---- EDIT 082 MOD END ---------------------------
+;---- EDIT LINKUI ADD START ---------------------------
+ELSEIF RESULT == 30
+	CALL SHOW_LINKAGE
+;---- EDIT LINKUI ADD END ---------------------------
+ELSEIF RESULT == 99
+	CALL SHOP_COM_400
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+CALL REFRESH_FORMATION
+RESTART
+
+@PROPSET_MAKE_SKILLCARD
+RESULTS '= "NO_RACE_NAME_LOYALTY_NEEDLOYALTY"
+
+@SET_VAR_INFO_DATA_NEEDLOYALTY_HEADER
+#DIMS DYNAMIC TEMPS
+INFO_HEADER += TOALIGNMENT("소비충성도", 10, "CENTER")
+
+@GET_VAR_INFO_DATA_NEEDLOYALTY, ARG
+RESULTS = {GET_LOYALTY_FOR_MAKE_SKILLCARD(ARG, "消費"), 10}
+
+@MAKE_SKILLCARD_COLOR, ARG
+SIF GET_CHARA_LOYALTY(ARG) < GET_LOYALTY_FOR_MAKE_SKILLCARD(ARG)
+	RETURN COLOR("gray")
+RETURN 0
+;================================================================
+;合体の悪魔を選択する際のポップアップ
+;================================================================
+@MAKE_SKILLCARD_CUSTOM_TITLE, ARG, ARGS
+#DIMS L_RESULTS
+#DIM LCOUNT
+L_RESULTS = □소지스킬
+L_RESULTS += UNICODE(0x000D)
+FOR LCOUNT, 1, CHARA_SKILLCOUNT(ARG) + 1
+	L_RESULTS += @"[{LCOUNT, 2}] " 
+	IF ABL:ARG:@"스킬{LCOUNT}"
+		CALL GET_SKILL_PROP, "SKILL_NAME", ABL:ARG:@"스킬{LCOUNT}", ARG
+		L_RESULTS += RESULTS
+	ELSE
+		L_RESULTS += "EMPTY"
+	ENDIF
+	L_RESULTS += UNICODE(0x000D)
+NEXT
+RESULTS '= L_RESULTS
+RETURN 0
+
+
+;---- EDIT P 007 ADD START -------------------------
+@CASTING_DUNGEON_MAKE_SKILL_CARD, L_CHARA
+#DIM DYNAMIC L_CHARA
+SIF !IS_JOINABLE_BATTLE(L_CHARA)
+	RETURN 0
+SIF !GET_ROLE_PROP("CAN_MAKE_SKILLCARD", L_CHARA)
+	RETURN 0
+RETURN 1
+;---- EDIT P 007 ADD END ---------------------------
+
+;=====================================================================
+;アイテム使用
+;=====================================================================
+@COMMAND_ITEM_FIELD
+#DIMS DYNAMIC TEMPS
+#DIMS DYNAMIC SHOW_LINE
+#DIMS DYNAMIC L_COLOR
+#DIM DYNAMIC SHOW_NUM
+#DIM CONST SHOW_LENS = 40
+#DIMS DYNAMIC L_TITLE
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_ITEMNO
+#DIM DYNAMIC L_SKILLNO
+#DIM DYNAMIC STOCK_ITEMNO
+SHOW_NUM = MIN(LINELENS() / 36, 5)
+DRAWLINE
+PRINTL [1]아이템사용
+PRINTL [2]소지품확인
+PRINTL
+PRINTL [0]돌아간다
+
+CALL INPUTINT(0,1,2)
+SELECTCASE RESULT
+	CASE 0
+		RETURN 0
+	CASE 2
+		CALL SHOP_COM_112
+		RESTART
+ENDSELECT
+
+$ITEM_LIST
+;---- EDIT 080 MOD START -------------------------
+SHOW_LINE = 
+LCOUNT = 0
+;FOR LOCAL,1001,2000 EDIT MOD 083
+FOR LOCAL, MIN_USEITEMNUM, MAX_USEITEMNUM
+	CALL GET_SKILL_PROP, "SKILL_ACTIONABLE_FIELD", CONVERT_USEITEMNUM_TO_SKILLNUM(LOCAL), -1
+	SIF RESULT == 0 || !IS_HAVE_USEITEM(LOCAL)
+	;非戦闘時に使えないor一個も持っていない場合無視
+		CONTINUE
+	;条件次第で使えなくなっている場合はグレー表示
+	IF RESULT == -1
+		L_COLOR = gray
+		L_TITLE = %RESULTS%
+	ELSE
+		L_COLOR = デフォルト
+		CALL GET_SKILL_EXPLAIN_TOOLTIP, CONVERT_USEITEMNUM_TO_SKILLNUM(LOCAL)
+		L_TITLE = %RESULTS%
+	ENDIF
+	TEMPS = [{LOCAL, 4}] %ITEMNAME:LOCAL,20,LEFT% 
+	CALL GET_ITEMMAX, LOCAL
+	SIF RESULT == 999
+		RESULT = 99
+	TEMPS += @"{ITEM:LOCAL, 2}/{RESULT, 2}개"
+	TEMPS = %TEMPS, SHOW_LENS, LEFT%
+	TEMPS = %SET_BUTTON_TAG(TEMPS, TOSTR(LOCAL), L_TITLE)%
+	TEMPS = %SET_COLOR_TAG(TEMPS, L_COLOR)%
+	SHOW_LINE += TEMPS
+	IF LCOUNT % SHOW_NUM == SHOW_NUM -1
+		HTML_PRINT SHOW_LINE
+		SHOW_LINE = 
+	ENDIF
+	LCOUNT++
+NEXT
+SIF SHOW_LINE != ""
+	HTML_PRINT SHOW_LINE
+;PRINTL
+;---- EDIT 080 MOD END ---------------------------
+DRAWLINE
+PRINTL [0] 돌아간다    [2000]메뉴에서 나간다
+
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 0 || RESULT == 2000
+	;連続使用に関わるので寝かせとく
+	LOCAL:3 = 0
+	LOCAL:2 = 0
+	IF RESULT == 0
+		RESTART
+	ELSE
+		RETURN 0
+	ENDIF
+ELSEIF RESULT >= 2000
+	GOTO INPUT_LOOP
+ELSE
+	VARI L_TARGET
+	;1~6を選ぶことで単体アイテムは連続使用できる
+	IF RESULT > 0 && RESULT < 7 && LOCAL:3 >= 3000 && (LOCAL:2 < 7 && LOCAL:2 > 0)
+		SIF POS(RESULT) == -1
+			GOTO INPUT_LOOP
+		L_TARGET = RESULT
+		CALL GET_SKILL_PROP, "SKILL_ACTIONABLE_FIELD", LOCAL:3, -1
+		SIF RESULT == 0 || ITEM:STOCK_ITEMNO < 1
+			GOTO INPUT_LOOP
+		L_ITEMNO = STOCK_ITEMNO
+	ELSE
+		L_ITEMNO = RESULT
+		L_SKILLNO = CONVERT_USEITEMNUM_TO_SKILLNUM(RESULT)
+		STOCK_ITEMNO = L_ITEMNO
+		CALL GET_SKILL_PROP, "SKILL_ACTIONABLE_FIELD", L_SKILLNO, -1
+		SIF RESULT <= 0 || ITEM:L_ITEMNO < 1;EDIT 080 MOD
+			GOTO INPUT_LOOP
+		SIF FLAG:스킬속성표시설정 == 1
+			CALL SKILL_EXPLAIN_PERFORMANCE, L_SKILLNO, MASTER
+		CALL GET_SKILL_PROP, "SKILL_EXPLAIN", L_SKILLNO, -1
+
+		CALL SELECT_SKILL_TARGET,L_SKILLNO,MASTER
+		SIF RESULT == -1
+			RESTART
+		L_TARGET = RESULT
+		IF RESULT == 19
+			PRINTL [1] 사용한다 [0] 그만둔다
+			$INPUT_LOOP1
+			INPUT
+			IF RESULT == 1
+			ELSEIF RESULT == 0
+				RESTART
+			ELSE
+				GOTO INPUT_LOOP1
+			ENDIF
+		ENDIF
+	ENDIF
+	CALLFORM ACTION_FIELD, L_SKILLNO, 0, L_TARGET
+	SIF FLAG:탈출
+		RETURN 1
+	;回復アイテムを使うことが多いだろうのでここでステ確認できるように
+	CALL SHOW_NOW_FORMATION_P, 0, 2
+	GOTO ITEM_LIST
+ENDIF
+
+CALL FIGHT_IT_OUT
+SIF FLAG:패배플래그 == 1
+	CALL DEADEND
+SIF FLAG:탈출
+	RETURN 1
+
+;---- EDIT 091 MOD START -------------------------
+;=====================================================================
+;魔法・特技使用
+;=====================================================================
+@COMMAND_SKILL_FIELD_LIST,ARG
+#DIMS DYNAMIC L_MESSAGE
+L_MESSAGE = 누구의 스킬을 사용할까？
+
+{
+CALL INPUT_CHARA_LIST
+	, "FUNC_PROPSET_LIST_BATTLE"
+	, L_MESSAGE
+	, "CASTING_COMMAND_SKILL_FIELD_LIST" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+;---- EDIT 091 MOD END ---------------------------
+IF RESULT == 1000
+	RETURN 0
+ENDIF
+CALL COMMAND_SKILL_FIELD, RESULT
+IF RESULT == 0
+	RESTART
+ELSEIF RESULT == -1
+	RESTART
+ELSE
+	RETURN 1
+ENDIF
+
+@CASTING_COMMAND_SKILL_FIELD_LIST(ARG:0)
+;---- EDIT 098 MOD START -------------------------
+SIF !IS_COMP内効果有効(ARG:0)
+	RETURN 0
+;PTに居ないキャラはCOMP使える人間が居ないと無理
+SIF CFLAG:(ARG:0):PT플래그 < 2 && !NUM_SUMMONER(1)
+	RETURN 0
+RETURN 1
+
+
+@COMMAND_SKILL_FIELD, CHARA, IS_DIRECT
+#DIM DYNAMIC CHARA
+#DIM DYNAMIC IS_DIRECT
+#DIM DYNAMIC LINE, 2
+#DIMS DYNAMIC SHOW_LINE
+#DIM DYNAMIC SKILL, 42
+#DIMS DYNAMIC TEMPS
+#DIM DYNAMIC CAN_TRANS
+#DIM DYNAMIC CAN_LINK
+#DIM DYNAMIC TEMP
+$SKILLSTART
+VARSET SKILL
+CALL INPUTABLE_CHARA, CHARA
+IF !RESULT
+	PRINTFORMW %조사처리(NAME:CHARA,"는")% 스킬을 사용할 수 있는 상태가 아니다。
+	CLEARLINE 2
+	RETURN -1
+ENDIF
+
+U = CHARA
+LOCAL:1 = 0
+IF GET_ROLE_PROP("CAN_USE_SKILL", CHARA)
+	FOR LOCAL, 1, 42
+		LOCAL = LOCAL == FLAG:이능자스킬수 + 1 ? 21 # LOCAL
+		;スキル番号
+		LOCAL:1 = ABL:CHARA:@"\@ LOCAL > 20 ? 장비 # \@스킬{LOCAL > 20 ? LOCAL - 20 # LOCAL}"
+		SIF !LOCAL:1 && LOCAL > 20
+			BREAK
+		SIF !LOCAL:1
+			CONTINUE
+		CALL GET_SKILL_PROP, "SKILL_ACTIONABLE_FIELD", LOCAL:1, CHARA
+		SIF !RESULT	;非戦闘時に使えない場合無視
+			CONTINUE
+		SKILL:LOCAL = LOCAL:1
+	NEXT
+ENDIF
+CAN_TRANS = 0
+IF GET_ROLE_PROP("CAN_USE_TRANS", CHARA)
+	SKILL:0 = 1
+	CAN_TRANS = 49
+ENDIF
+CAN_LINK = 0
+;CSN_USE_LINKは文字列でリンク変更可能タイミングを返す
+RESULTS_F:2 = 
+IF GET_ROLE_PROP("CAN_USE_LINK", CHARA)
+	IF STRCOUNT(RESULTS_F:2, "探索中")
+		SKILL:0 = 1
+		CAN_LINK = 50
+	ENDIF
+ENDIF
+;---- EDIT 069 MOD END ---------------------------
+SIF TALENT:CHARA:페르소나구사자 && EQUIP:CHARA:소지페르소나1
+	SKILL:0 = 1
+IF MATCH(SKILL, 0) == VARSIZE("SKILL")
+	PRINTFORMW %조사처리(NAME:CHARA,"는")% 사용할 수 있는 스킬을 습득하지 않았다。
+	CLEARLINE 2
+	RETURN -1
+ENDIF
+LINE = LINECOUNT
+
+$PRINT_SKILLLIST
+CLEARLINE LINECOUNT - LINE
+CALL SHOW_NOW_FORMATION_P, 0, 2, , "셋업"
+PRINTFORML %CALLNAME:CHARA%
+IF FLAG:커스텀게임화면
+	PRINTFORML ＨＰ[{BASE:CHARA:ＨＰ,5}/{MAXBASE:CHARA:ＨＰ,5}]
+	PRINTFORML ＭＰ[{BASE:CHARA:ＭＰ,5}/{MAXBASE:CHARA:ＭＰ,5}]
+ELSE
+	PRINTFORML ＨＰ[{BASE:CHARA:ＨＰ,4}/{MAXBASE:CHARA:ＨＰ,4}]
+	PRINTFORML ＭＰ[{BASE:CHARA:ＭＰ,4}/{MAXBASE:CHARA:ＭＰ,4}]
+ENDIF
+DRAWLINE
+;---- EDIT 073 MOD START -------------------------
+LOCAL:2 = 0	;スキル数カウント用
+SHOW_LINE = 
+FOR LOCAL, 1, 42
+	SIF !SKILL:LOCAL
+		CONTINUE
+	CALL GET_SKILL_PROP, "SKILL_NAME", SKILL:LOCAL, CHARA
+	TEMPS = [{LOCAL, 2}] %RESULTS, GETBIT (FLAG:커스텀게임화면,1) ? 38 # 20, LEFT%
+	CALL GET_SKILL_COST, SKILL:LOCAL, CHARA
+	TEMPS = %TEMPS%%RESULTS%　　
+	;---- EDIT 080 MOD START -------------------------
+	CALL CHECK_ACTIONABLE, CHARA, SKILL:LOCAL
+	IF RESULT
+		CALL GET_SKILL_EXPLAIN_TOOLTIP, SKILL:LOCAL, CHARA
+		TEMPS = <button value = '{LOCAL}' title = '%RESULTS%'>%TEMPS%</button>
+	ELSE
+		TEMPS = <button value = '{LOCAL}' title = '%RESULTS%'>%TEMPS%</button>
+		TEMPS = %SET_COLOR_TAG(TEMPS, "gray")%
+	ENDIF
+	;---- EDIT 080 MOD END ---------------------------
+	SHOW_LINE += TEMPS
+	IF LOCAL:2 % 2 == 1
+		HTML_PRINT SHOW_LINE
+		SHOW_LINE = 
+	ENDIF
+	LOCAL:2++
+NEXT
+SIF SHOW_LINE != ""
+	HTML_PRINT SHOW_LINE
+;---- EDIT 073 MOD END ---------------------------
+PRINTL 
+IF CAN_TRANS
+	DRAWLINE
+	CALL SKILL_NAME_2310, CHARA
+	PRINTFORM [{CAN_TRANS, 2}] %RESULTS,20,LEFT%
+ENDIF
+
+;---- EDIT 069 MOD START -------------------------
+IF CAN_LINK 
+	SIF !CAN_TRANS
+		DRAWLINE
+	CALL SKILL_NAME_2311, CHARA
+	PRINTFORM [{CAN_LINK, 2}] %RESULTS,20,LEFT%
+ENDIF
+SIF !LINEISEMPTY()
+	PRINTL 
+;---- EDIT 069 MOD END ---------------------------
+IF TALENT:CHARA:페르소나구사자 && EQUIP:CHARA:소지페르소나1
+	LOCAL:1 = GETCOLOR()
+	DRAWLINE
+	PRINTL Ｐ-ＣＨＡＮＧＥ
+	FOR LOCAL, 0, 4
+		LOCALS = 소지페르소나{LOCAL}
+		SIF (LOCAL == 0 && !EQUIP:CHARA:장비페르소나) || (LOCAL > 0 && EQUIP:CHARA:장비페르소나 == EQUIP:CHARA:LOCALS)
+			SETCOLOR 0x66FFFF
+		IF LOCAL == 0
+			IF ABL:CHARA:초기페르소나
+				PRINTFORMD [{FLAG:스킬수 + 1, 2}] 
+				PRINTFORM %CSVCALLNAME(ABL:CHARA:초기페르소나, 0)%　
+			ENDIF
+		ELSE
+			IF EQUIP:CHARA:LOCALS
+				PRINTFORMD [{FLAG:스킬수+1 + LOCAL, 2}] 
+				;新ペルソナ処理
+				IF BATTLE_SETTING_IS_PERSONA_NEW_FUNCTION()
+				
+				;旧ペルソナ処理
+				ELSE
+					PRINTFORM %CSVCALLNAME(DITEMTYPE:(EQUIP:CHARA:LOCALS):페르소나("NO"), 0)%　
+				ENDIF
+			ENDIF
+		ENDIF
+		SETCOLOR LOCAL:1
+	NEXT
+	PRINTL 
+ENDIF
+DRAWLINE
+PRINTFORML [0] 돌아간다\@ IS_DIRECT == 1? # %" " * 12%[2000] 메뉴에서 나간다 \@
+
+LINE:1 = LINECOUNT
+$INPUT_LOOP
+CLEARLINE LINECOUNT - LINE:1
+INPUT
+IF !RESULT
+	RETURN IS_DIRECT != 0
+ELSEIF RESULT == 2000 && !IS_DIRECT
+	RETURN 1
+;---- EDIT 069 MOD START -------------------------
+;悪魔変身及びリンク悪魔変更
+ELSEIF RESULT == CAN_TRANS
+	CALLFORM ACTION_2310, CHARA
+	RESTART
+ELSEIF RESULT == CAN_LINK
+	CALLFORM ACTION_2311, CHARA
+	RESTART
+;---- EDIT 069 MOD END ---------------------------
+ELSEIF INRANGE(RESULT, FLAG:스킬수 + 1, FLAG:스킬수 + 4) && TALENT:CHARA:페르소나구사자
+	IF RESULT == FLAG:스킬수 + 1
+		SIF !ABL:CHARA:초기페르소나
+			GOTO INPUT_LOOP
+		EQUIP:CHARA:장비페르소나 = 0
+	ELSE
+		LOCALS = 소지페르소나{RESULT - FLAG:스킬수 - 1}
+		SIF !EQUIP:CHARA:LOCALS
+			GOTO INPUT_LOOP
+		EQUIP:CHARA:장비페르소나 = EQUIP:CHARA:LOCALS
+	ENDIF
+	CALL SYNC_STATUS(CHARA)
+	RESTART
+ELSEIF INRANGE(RESULT, 1, 42) && SKILL:RESULT
+	;ここはあまり自信が無いのでアレしてたらごめんなさい
+	LOCAL = SKILL:RESULT	;選択スキル
+	LOCAL:1 = 0				;GOTOフラグ
+	CALL GET_SKILL_PROP, "SKILL_ACTIONABLE_FIELD", LOCAL, CHARA
+	LOCAL:1 |= !RESULT			;非戦闘時に使えない場合無視
+	CALL CHECK_ACTIONABLE, CHARA, LOCAL
+	SIF LOCAL:1 || !RESULT		;使用不能なら無視
+		GOTO INPUT_LOOP
+	
+	SIF FLAG:스킬속성표시설정
+		CALL SKILL_EXPLAIN_PERFORMANCE, LOCAL, CHARA
+	CALL GET_SKILL_PROP, "SKILL_EXPLAIN", LOCAL, CHARA
+	CALL SELECT_SKILL_TARGET, LOCAL, CHARA
+	SIF RESULT < 0
+		RESTART
+	LOCAL:1 = RESULT	;타겟
+	IF RESULT == 19
+		CALL INPUT_YN, "사용한다", "그만둔다"
+		SIF RESULT
+			RESTART
+	ENDIF
+	CALL ACTION_FIELD, LOCAL, CHARA, LOCAL:1
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+CALL FIGHT_IT_OUT
+SIF FLAG:패배플래그 == 1
+	CALL DEADEND
+SIF FLAG:탈출
+	RETURN 1
+;リカームドラなどで行動不能になった場合、終了
+CALL INPUTABLE_CHARA, CHARA
+SIF !RESULT
+	RETURN 1
+DRAWLINE
+GOTO PRINT_SKILLLIST
+
+;=====================================================================
+;ムフフ展開時用コマンド
+;=====================================================================
+@DUNGEON_MUFUFU,ARG
+#DIM L_RESULT
+DRAWLINE
+PRINTL [1]갈아입기
+PRINTL [2]성욕처리
+PRINTL [100]돌아간다
+CALL INPUTINT , 1, 2, 100
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT == 1
+	CALL SHOW_NOW_FORMATION_P, 0 , 2
+	PRINTL [9] 돌아간다
+	$LOOP_KIGAE
+	CALL INPUTINT , 1 , 2 , 3 , 4 , 5 , 6, 9
+	LOCAL = POS(RESULT)
+	IF RESULT == 9
+		RETURN 0
+	ELSEIF LOCAL == -1
+		CLEARLINE 1
+		GOTO LOOP_KIGAE
+	ELSEIF GET_VALUE_TALENT_JOINABLE(LOCAL) == 1
+		PRINTW 거절당했다
+		CLEARLINE 1
+		GOTO LOOP_KIGAE
+	ENDIF
+	CALL ACTIONABLE_CHARA,LOCAL
+	IF RESULT == 0
+		PRINTW 옷을 갈아입힐 수 있는 상태가 아니다
+		CLEARLINE 1
+		GOTO LOOP_KIGAE
+	ENDIF
+	CALL CLOTHES_CHANGE,LOCAL , 1
+	
+	RESTART
+ELSEIF RESULT == 2
+	CALL SHOW_NOW_FORMATION_P, 0 , 2
+	PRINTL [9] 돌아간다
+	$LOOP_SELECT
+	CALL INPUTINT , 1 , 2 , 3 , 4 , 5 , 6, 9
+	LOCAL = POS(RESULT)
+	IF RESULT == 9
+		RETURN 0
+	ELSEIF LOCAL == -1
+		CLEARLINE 1
+		GOTO LOOP_SELECT
+	ELSE
+		CALL ACTIONABLE_CHARA,LOCAL
+		IF RESULT == 0
+			PRINTW 그런 일을 할 수 있는 상태가 아니다
+			CLEARLINE 2
+			GOTO LOOP_SELECT
+		ENDIF
+		IF GET_VALUE_TALENT_JOINABLE(LOCAL) == 1 && LOCAL != MASTER
+			IF 위험일(LOCAL) == 2
+				PRINTW 참으려 하는 것 같다…
+			ELSE
+				PRINTW 거부당했다
+			ENDIF
+			CLEARLINE 2
+			GOTO LOOP_SELECT
+		;体力が最低でも100ないとダメ
+		ELSEIF BASE:LOCAL:체력 < 100
+			PRINTW 지쳐있다
+			CLEARLINE 2
+			GOTO LOOP_SELECT
+		ENDIF
+	ENDIF
+	;プレイ選択
+	PRINTL 어떻게 하겠습니까？
+	PRINTL 
+	PRINTFORM %CALLNAME:LOCAL%　　
+	SELECTCASE 위험일(LOCAL)
+	CASE 1
+		SETCOLOR 0xCC33FF
+			CALL HEARTB
+		PRINTFORM 위험일
+			CALL HEARTB
+		RESETCOLOR
+	CASE 2
+		SETCOLOR 0xCC33FF
+			CALL HEARTB
+		PRINTFORM 발정중
+			CALL HEARTB
+		RESETCOLOR
+	CASE 3,-2
+		SETCOLOR 0xCC33FF
+			CALL HEARTB
+		PRINTFORM 만월발정중
+			CALL HEARTB
+		RESETCOLOR
+	ENDSELECT
+	PRINTL 
+	$LOOP_SEIYOKUSYORI
+	CALL INPUT_SELECT,1,"동료마와 섹스한다",2,"동료마에게 봉사하도록 시킨다",3,"그 장소에서 자위한다",4,"그늘에서 자위하고 온다",5,"불결을 털어낸다",6,"그만둔다"
+	
+	;---- EDIT 085 MOD START -------------------------
+	L_RESULT = RESULT
+	;RESULT:1 = RESULT
+	;---- EDIT 085 MOD END ---------------------------
+	LOCAL:1 = -1
+	SELECTCASE RESULT
+		CASE 1 , 2
+			
+			CALL SHOW_NOW_FORMATION_P, 0 , 2
+			$LOOP_SELECT_2
+			CALL INPUTINT , 1 , 2 , 3 , 4 , 5 , 6
+			LOCAL:1 = POS(RESULT)
+			IF GROUPMATCH(LOCAL:1 , -1 , LOCAL)
+				CLEARLINE 1
+				GOTO LOOP_SELECT
+			ELSE
+				;女は売却出来ないと無理だが、男だと誘う側が見た目女なら飛びつく
+				IF CFLAG:(LOCAL:1):매각가능 == 0 && !(!IS_LOOKSLIKE_MALE(LOCAL) && IS_MALE(LOCAL:1)) && LOCAL:1 != MASTER
+					IF 위험일(LOCAL:1) == 2
+						PRINTW 참으려 하는 것 같다…
+					ELSE
+						PRINTW 거부당했다
+					ENDIF
+					CLEARLINE 2
+					GOTO LOOP_SELECT_2
+				;二人とも見た目男の場合、抱く側にＢＬ耐性無いと駄目
+				ELSEIF GROUPMATCH ( 1 , IS_LOOKSLIKE_MALE(LOCAL) , IS_LOOKSLIKE_MALE(LOCAL:1) ) == 2 && ABL:LOCAL:ＢＬ끼 == 0
+					PRINTW 남자끼리 하는 취향은 없는 것 같다…
+					CLEARLINE 2
+					GOTO LOOP_SELECT_2
+					
+				;体力が最低でも100ないとダメ
+				ELSEIF BASE:(LOCAL:1):체력 < 100
+					PRINTW 지쳐있다
+					CLEARLINE 2
+					GOTO LOOP_SELECT_2
+				ENDIF
+			ENDIF
+			IF L_RESULT == 1
+				PRINTFORML %조사처리(CALLNAME:LOCAL,"는")% %조사처리(CALLNAME:(LOCAL:1),"를")% 끌어안았다
+			ELSE
+				PRINTFORML %조사처리(CALLNAME:(LOCAL:1),"는")% %CALLNAME:LOCAL%에게 봉사하기 시작했다…
+			ENDIF
+		CASE 3
+			;PRINTFORML %CALLNAME:LOCAL%はその場で自分の体をまさぐり始めた…
+		CASE 4
+			PRINTFORML %조사처리(CALLNAME:LOCAL,"는")% 안절부절하면서 그 자리를 떠났다
+		CASE 5
+			PRINTFORML %조사처리(CALLNAME:LOCAL,"는")% 몸의 불결을 털어냈다
+		CASE 6
+			RETURN 0
+	ENDSELECT
+	;---- EDIT 085 MOD START -------------------------
+	CALL 性欲処理, LOCAL , LOCAL:1 ,  L_RESULT
+	;CALL 性欲処理, LOCAL , LOCAL:1 ,  RESULT:1
+	;---- EDIT 085 MOD END ---------------------------	
+	RESTART
+;휴식
+;---- EDIT 004 DEL START -------------------------
+;アイテム:結界石を一つ消費して体力･気力を回復する
+;アイテム:結界石を一つ消費してパーティメンツの一人にダンジョン内調教を開始する。調教難易度がイージーならMAG消費率０の場所でも代替可能とする。ハードは選択不可。
+;---- EDIT 004 DEL END ---------------------------
+;---- EDIT 041 ADD END   -------------------------
+ENDIF
+
+
+;---- EDIT 016 ADD START -------------------------
+;=====================================================================
+;汎用敵配置処理
+;	#ダンジョン毎に定義が必要な関数(実際動かしてるところはエコービルなどをみてください)
+;		@CLASS_NUM_X 			敵の出てくる種族数。1~3くらいを推奨す
+;		@CLASS_NUM_COMMON,ARG	敵の種類数の基本的な数値を返す
+;		@ENEMY_NUM_X,ARG		敵の総数。種族数も送るので1~10の間で設定を
+;						 	 	なお、1~10の間に自動的に丸めるので設定段階では10超えてもいいです
+;		@ENEMY_NUM_COMMON,ARG	敵の総数の基本的な数値を返す
+;		@ENEMY_X				敵の内容、RESULTが敵のキャラ番号、RESULT:1が敵のLVとなります
+;		@ENEMYSET_X				上記のセット版、RESULT:偶数、RESULT:奇数が番号/LVとなります。組み合わせを固定で組みたい場合はこちら
+;		@SET_ENEMY_STATUS_X		敵ステータスの特別変化。ダンジョン毎に能力をある程度変える場合はここでどうぞ
+;=====================================================================
+@ENEMY_TABLE, DISABLE_ESTOMA = 0
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC DISABLE_ESTOMA;エストマを適用させない場合。ミタマには適用させない
+#DIM DYNAMIC L_POS, 17
+#DIM DYNAMIC CLASS_NUM, 1
+#DIM DYNAMIC ENEMY_NUM, 1
+#DIM DYNAMIC MAXENEMY, 1
+#DIM DYNAMIC MINENEMY, 1
+#DIM DYNAMIC ENEMY, 10
+#DIM DYNAMIC ENEMYLV, 10
+#DIM DYNAMIC ENEMY_SETNUM,10
+VARSET RESULT
+VARSET ENEMY, -1
+;最初に種族数を取得
+TRYCCALLFORM CLASS_NUM_{FLAG:현던전}
+	CLASS_NUM = RESULT
+CATCH
+	;一応、定義ファイルがない場合、デフォルトの数値を代入
+	SELECTCASE RAND:100
+		CASE IS < 40
+			CLASS_NUM = 1
+		CASE IS < 80
+			CLASS_NUM = 2
+		CASEELSE
+			CLASS_NUM = 3
+	ENDSELECT
+ENDCATCH
+
+;敵の総数を取得
+TRYCCALLFORM ENEMY_NUM_{FLAG:현던전}, CLASS_NUM
+	ENEMY_NUM = LIMIT(RESULT, CLASS_NUM, 10)
+CATCH
+	ENEMY_NUM = LIMIT(RESULT, CLASS_NUM*2, CLASS_NUM*4)
+ENDCATCH
+;組み合わせ配置なら、それに
+;---- EDIT 102 MOD START -------------------------
+RESULT = 0
+TRYCALLFORM ENEMYSET_{FLAG:현던전}, CLASS_NUM, ENEMY_NUM
+IF RESULT
+;---- EDIT 102 MOD END ---------------------------
+	FOR LCOUNT, 0, CLASS_NUM+1
+		ENEMY:LCOUNT = RESULT:(LCOUNT*2)
+		ENEMYLV:LCOUNT = RESULT:(LCOUNT*2+1)
+	NEXT
+ELSE
+	;組み合わせがランダムならこっち
+;---- EDIT 053 MOD --- COUNT_LOOPを使って無限ループ対策、1000回繰り返すと出るように
+	VARI COUNT_LOOP
+	WHILE LCOUNT < CLASS_NUM && COUNT_LOOP < 1000
+		CALLFORM ENEMY_{FLAG:현던전}, CLASS_NUM
+		;ランダムテーブルが存在しない場合
+		SIF RESULT < 0
+			RETURN -1
+		;同一の敵が来ないようにする
+		SIF MATCH(ENEMY, RESULT)
+			CONTINUE
+		ENEMY:LCOUNT = RESULT
+		ENEMYLV:LCOUNT = RESULT:1
+		LCOUNT += 1
+		COUNT_LOOP ++
+	WEND
+ENDIF
+;LOCAL:7~16に7~16を入れる
+FOR LCOUNT, 7, 17
+	L_POS:LCOUNT = LCOUNT
+NEXT
+;前列と後列にわけてシャッフル
+FOR LCOUNT, 7, 12
+	SWAP L_POS:LCOUNT, L_POS:RAND(7, 12)
+NEXT
+FOR LCOUNT, 12, 17
+	SWAP L_POS:LCOUNT, L_POS:RAND(12, 17)
+NEXT
+
+;配置が1種族だった場合は調整
+IF CLASS_NUM == 1
+	;1列で収まらない場合は2列に直す
+	IF ENEMY_NUM > 5
+		ENEMY_SETNUM:0 = 5
+		ENEMY_SETNUM:1 = ENEMY_NUM - 5
+		ENEMY:1 = ENEMY:0 
+		ENEMYLV:1 = ENEMYLV:1
+		CLASS_NUM = 2
+	ELSE
+		ENEMY_SETNUM:0 = ENEMY_NUM
+	ENDIF
+ELSE
+	;各悪魔のセット数を決める
+	;まず最低数1をセット
+	FOR LCOUNT, 0, CLASS_NUM
+		ENEMY_SETNUM:LCOUNT = 1
+	NEXT
+	;総配置数に届くまでランダムに加算する
+	VARI TEMP
+	WHILE SUMARRAY(ENEMY_SETNUM) < ENEMY_NUM
+		TEMP = RAND(0, CLASS_NUM)
+		;1列の数をこえないように調整
+		SIF ENEMY_SETNUM:TEMP < 5
+			ENEMY_SETNUM:TEMP += 1
+	WEND
+ENDIF
+;最初に前列を配置するためにソート
+ARRAYSORT ENEMY_SETNUM, BACK
+
+;実際の配置
+VARI IS_ENEMY_SET = 0
+VARI L_CLASS
+;最初に前列を埋める
+FOR LCOUNT, 7, 12
+	CALL SET_ENEMY, L_POS:LCOUNT, ENEMY:0, ENEMYLV:0, 0, 0, !DISABLE_ESTOMA
+	ENEMY_SETNUM:0 -= 1
+	SIF ENEMY_SETNUM:0 == 0
+		BREAK
+NEXT
+;前列が埋まってる後列を埋めた後、前列から残りを埋める
+FOR L_CLASS, 1, CLASS_NUM
+	FOR LCOUNT, 12, 17
+		SIF POS(L_POS:LCOUNT - 5) < 0
+			CONTINUE
+		SIF POS(L_POS:LCOUNT) >= 0
+			CONTINUE
+		CALL SET_ENEMY, L_POS:LCOUNT, ENEMY:L_CLASS, ENEMYLV:L_CLASS, 0, 0, !DISABLE_ESTOMA
+		ENEMY_SETNUM:L_CLASS -= 1
+		SIF ENEMY_SETNUM:L_CLASS == 0
+			BREAK
+	NEXT
+	IF ENEMY_SETNUM:L_CLASS > 0
+		FOR LCOUNT, 7, 17
+			SIF POS(L_POS:LCOUNT) >= 0
+				CONTINUE
+			CALL SET_ENEMY, L_POS:LCOUNT, ENEMY:L_CLASS, ENEMYLV:L_CLASS, 0, 0, !DISABLE_ESTOMA
+			ENEMY_SETNUM:L_CLASS -= 1
+			SIF ENEMY_SETNUM:L_CLASS == 0
+				BREAK
+		NEXT
+	ENDIF
+NEXT
+FOR LCOUNT, 7, 17
+	SIF POS(LCOUNT) < 0
+		CONTINUE
+	;ここでステータス変化させる場合の関数を呼ぶ
+	TRYCALLFORM SET_ENEMY_STATUS_{FLAG:현던전}, POS(LCOUNT)
+	IS_ENEMY_SET = 1
+NEXT
+;敵が配置されなかった場合は落とす
+SIF !IS_ENEMY_SET
+	RETURN 0
+;미타마코이코이 配置数が10未満のときでないと判定しない
+IF SOFT_ON("미타마코이코이") && (10 > LOCAL) && (RAND:100 < GET_SUMMONER_MLV() - 2)
+	CALLFORM ENEMY_{FLAG:현던전}, CLASS_NUM
+	FOR LOCAL:1,7,17
+		SIF POS(LOCAL:1) >= 0
+			CONTINUE
+		;CALL SET_ENEMY, LOCAL:1, 1301 + RAND:4, ENEMYLV:(RAND:CLASS_NUM), 0, 0, 1
+		CALL ENEMY_MITAMA_SET, LOCAL:1, ENEMYLV:(RAND:CLASS_NUM), -1, 1
+		BREAK
+	NEXT
+ENDIF
+
+;東方MODEX虹追加分。
+;ミタマコイコイは戦闘開始時、空きがある場合、サマナーレベル-2%の確率で1匹だけ御霊が追加で配置される機能。
+;豪徳寺ミケのスキルは一律2％で同様の処理を行う様に。
+FOR LOCAL:1,1,7
+	LOCALS = 포지션{LOCAL:1}
+	IF FLAG:LOCALS > -1 && GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) != "DYING" && HAVE_PU_SKILL(POS(LOCAL:1),"招符「弾災招福」")
+		IF RAND:100 < 2
+				CALLFORM ENEMY_{FLAG:현던전}, CLASS_NUM
+			FOR LOCAL:1,7,17
+				SIF POS(LOCAL:1) >= 0
+					CONTINUE
+				CALL SET_ENEMY, LOCAL:1, 1301 + RAND:4, ENEMYLV:(RAND:CLASS_NUM), 0, 0, 1
+				BREAK
+			NEXT
+		ENDIF
+	ENDIF
+NEXT
+
+IF SOFT_ON("미타마코이코이") && 10 > LOCAL && GET_SUMMONER_MLV() > 2 && RAND:100 < GET_SUMMONER_MLV() - 2
+	CALLFORM ENEMY_{FLAG:현던전}, CLASS_NUM
+	FOR LOCAL:1,7,17
+		SIF POS(LOCAL:1) >= 0
+			CONTINUE
+		CALL SET_ENEMY, LOCAL:1, 1301 + RAND:4, ENEMYLV:(RAND:CLASS_NUM), 0, 0, 1
+		BREAK
+	NEXT
+ENDIF
+RETURN 1
+
+;---- EDIT 016 ADD END   -------------------------
+;---- EDIT 017 ADD START -------------------------
+@CLASS_NUM_COMMON, ARGS
+#FUNCTION
+SELECTCASE ARGS
+	CASE "初級"
+		SELECTCASE RAND:100
+			CASE IS < 40
+				RETURNF 1
+			CASE IS < 95
+				RETURNF 2
+			CASEELSE
+				RETURNF 3
+		ENDSELECT
+	CASE "中級"
+		SELECTCASE RAND:100
+			CASE IS < 40
+				RETURNF 1
+			CASE IS < 90
+				RETURNF 2
+			CASEELSE
+				RETURNF 3
+		ENDSELECT
+	CASE "上級"
+		SELECTCASE RAND:100
+			CASE IS < 35
+				RETURNF 1
+			CASE IS < 90
+				RETURNF 2
+			CASEELSE
+				RETURNF 3
+		ENDSELECT
+	CASE "最上級"
+		SELECTCASE RAND:100
+			CASE IS < 30
+				RETURNF 1
+			CASE IS < 90
+				RETURNF 2
+			CASEELSE
+				RETURNF 3
+		ENDSELECT
+ENDSELECT
+@ENEMY_NUM_COMMON, ARGS, ARG
+#FUNCTION
+SELECTCASE ARGS
+	CASE "初級"
+		RETURNF RAND(ARG, ARG*2+1)
+	CASE "中級"
+		RETURNF RAND(ARG, ARG*3+1)
+	CASE "上級"
+		RETURNF RAND(ARG, ARG*4+1)
+	CASE "最上級"
+		RETURNF RAND(ARG*2, ARG*4+1)
+ENDSELECT
+;---- EDIT 017 ADD END   -------------------------
+;=====================================================================
+;宝箱発見処理
+;=====================================================================
+@GET_TREASURE,ARG,ARG:1,ARG:2,ARG:3,ARG:4 = -1
+PRINTL 상자가 놓여있다。 
+CALL INPUT_YN,"연다","열지않는다"
+
+IF RESULT == 0
+	CALL CHECK_ITEMMAX,ARG
+	IF RESULT == 0
+		PRINTFORMW %ITEMNAME:ARG%를 {ARG:1}개 손에 넣었다
+		CALL GET_ITEM,ARG,ARG:1
+		DA:(FLAG:현X):(FLAG:현Y) = 1
+		IF ARG:4 >= 0
+			SETBIT ダンジョンフラグ:(ARG:2):(ARG:3), ARG:4
+		ELSE
+			ダンジョンフラグ:(ARG:2):(ARG:3) = 1
+		ENDIF
+		RETURN 1
+	ELSE
+		PRINTFORMW %ITEMNAME:ARG%를 {ARG:1}개 발견했지만 다 들 수 없었다
+		RETURN 0
+	ENDIF
+ELSEIF RESULT == 1
+	RETURN 0
+ENDIF
+;---- EDIT 097 ADD START -------------------------
+;=====================================================================
+;宝箱発見処理
+;=====================================================================
+@GETS_TREASURE,ARGS,ARG,ARG:1,ARG:2,ARG:3 = -1
+CALL GET_TREASURE, GETNUM(ITEM, ARGS),ARG,ARG:1,ARG:2,ARG:3
+RETURN RESULT
+;---- EDIT 097 ADD END ---------------------------
+;=====================================================================
+;お金発見処理
+;=====================================================================
+@GET_TREASURE_MONEY,ARG,ARG:1,ARG:2,ARG:3,ARG:4 = -1
+PRINTL 상자가 놓여있다。 
+CALL INPUT_YN,"연다","열지않는다"
+
+IF RESULT == 0
+	IF ARG == 0
+		PRINTFORMW ￥{ARG:1} 손에 넣었다
+		MONEY += ARG:1
+		DA:(FLAG:현X):(FLAG:현Y) = 1
+		IF ARG:4 >= 0
+			SETBIT ダンジョンフラグ:(ARG:2):(ARG:3), ARG:4
+		ELSE
+			ダンジョンフラグ:(ARG:2):(ARG:3) = 1
+		ENDIF
+		RETURN 1
+	ELSE
+		PRINTFORMW {ARG:1} 마카를 손에 넣었다
+		MONEY:1 += ARG:1
+		DA:(FLAG:현X):(FLAG:현Y) = 1
+		IF ARG:4 >= 0
+			SETBIT ダンジョンフラグ:(ARG:2):(ARG:3), ARG:4
+		ELSE
+			ダンジョンフラグ:(ARG:2):(ARG:3) = 1
+		ENDIF
+		RETURN 1
+	ENDIF
+ELSEIF RESULT == 1
+	RETURN 0
+ENDIF
+
+
+;=====================================================================
+;魔法の箱
+;=====================================================================
+@MAGIC_BOX, 月齢条件 , 当たりアイテム, 外れアイテム, ARG:1 , ARG:2, ARG:3, ARG:4 = -1
+#DIM 月齢条件
+#DIM 当たりアイテム
+#DIM 外れアイテム
+#LOCALSIZE 1
+PRINTL 마법의 상자가 있다 
+CALL INPUT_YN,"연다","열지않는다"
+IF FLAG:월령 != 月齢条件
+	SWAP 当たりアイテム , 外れアイテム
+ENDIF
+IF RESULT == 0
+	CALL CHECK_ITEMMAX, 当たりアイテム
+	IF RESULT == 0
+		PRINTFORMW %ITEMNAME:当たりアイテム%를 {ARG:1}개 손에 넣었다
+		CALL GET_ITEM, 当たりアイテム, ARG:1
+		DA:(FLAG:현X):(FLAG:현Y) = 1
+		IF ARG:4 >= 0
+			SETBIT ダンジョンフラグ:(ARG:2):(ARG:3), ARG:4
+		ELSE
+			ダンジョンフラグ:(ARG:2):(ARG:3) = 1
+		ENDIF
+		RETURN 1
+	ELSE
+		PRINTFORMW %ITEMNAME:当たりアイテム%를 {ARG:1}개 발견했지만 다 들 수 없었다
+		RETURN 0
+	ENDIF
+ELSEIF RESULT == 1
+	RETURN 0
+ENDIF
+
+;=====================================================================
+;ＭＡＧ発見処理
+;=====================================================================
+@GET_TREASURE_MAG,ARG,ARG:1,ARG:2,ARG:3,ARG:4 = -1
+PRINTL 상자가 놓여있다。 
+CALL INPUT_YN,"연다","열지않는다"
+
+IF RESULT == 0
+	PRINTFORMW {ARG:1}ＭＡＧ 손에 넣었다
+	CALL CONTROL_MAG,MASTER,ARG:1
+	DA:(FLAG:현X):(FLAG:현Y) = 1
+	IF ARG:4 >= 0
+		SETBIT ダンジョンフラグ:(ARG:2):(ARG:3), ARG:4
+	ELSE
+		ダンジョンフラグ:(ARG:2):(ARG:3) = 1
+	ENDIF
+	RETURN 1
+ELSEIF RESULT == 1
+	RETURN 0
+ENDIF
+
+
+;=====================================================================
+;罠箱発見処理
+;=====================================================================
+@GET_TREASURE_TRAP,ARGS,ARG,ARG:1 = 0,ARG:2,ARG:3,ARG:4 = -1
+;ARGS = 罠の種類
+;ARG ダメージ量or確率
+;ARG:1 バッドステータスの相性
+
+PRINTL 상자가 놓여있다。 
+CALL INPUT_YN,"연다","열지않는다"
+
+IF RESULT == 0
+	PRINTFORMW 함정이다！
+	DA:(FLAG:현X):(FLAG:현Y) = 1
+	IF ARG:4 >= 0
+		SETBIT ダンジョンフラグ:(ARG:2):(ARG:3), ARG:4
+	ELSE
+		ダンジョンフラグ:(ARG:2):(ARG:3) = 1
+	ENDIF
+	LOCAL:1 = 0
+	SELECTCASE ARGS
+		CASE "ＨＰ"
+			FOR LOCAL,1,7
+				IF POS(LOCAL) > -1 && GET_STATE(CFLAG:(POS(LOCAL)):상태이상) != "DYING"
+					IF RAND:2 && RAND:200 < MAXBASE:(POS(LOCAL)):지혜
+						CONTINUE
+					ELSEIF RAND:200 < MAXBASE:(POS(LOCAL)):운
+						CONTINUE
+					ENDIF
+					PRINTFORML [{LOCAL}] %CALLNAME:POS(LOCAL)%　>>>>>>　{MAXBASE:(POS(LOCAL)):ＨＰ*ARG/100}데미지
+					CALL VAR_HP,POS(LOCAL),-MAXBASE:(POS(LOCAL)):ＨＰ*ARG/100
+					LOCAL:1 += 1
+				ENDIF
+			NEXT
+			PRINTFORMW \@LOCAL:1 > 0 ? %CALLNAME:MASTER% 일행은 데미지를 입었다 # %CALLNAME:MASTER% 일행은 어떻게든 함정을 회피했다\@
+		CASE "ＭＰ"
+			FOR LOCAL,1,7
+				IF POS(LOCAL) > -1 && GET_STATE(CFLAG:(POS(LOCAL)):상태이상) != "DYING"
+					IF RAND:2 && RAND:200 < MAXBASE:(POS(LOCAL)):지혜
+						CONTINUE
+					ELSEIF RAND:200 < MAXBASE:(POS(LOCAL)):운
+						CONTINUE
+					ENDIF
+					PRINTFORML [{LOCAL}] %CALLNAME:POS(LOCAL)%　>>>>>>　{MAXBASE:(POS(LOCAL)):ＭＰ*ARG/100} MP 데미지
+					CALL VAR_MP,POS(LOCAL),-MAXBASE:(POS(LOCAL)):ＭＰ*ARG/100
+					LOCAL:1 += 1
+				ENDIF
+			NEXT
+			PRINTFORMW \@LOCAL:1 > 0 ? %CALLNAME:MASTER% 일행은 마력을 빼앗겼다 # %CALLNAME:MASTER% 일행은 어떻게든 함정을 회피했다\@
+		CASEELSE
+			SIF GETNUM(BASE,ARGS) == -1 || GET_STATE_NUM(ARGS) < 0 || GET_STATE_NUM(ARGS) > BADSTATENUM
+				RETURN 1
+			LOCAL:1 = RAND:2
+			FOR LOCAL,1,7
+				IF POS(LOCAL) > -1 && CFLAG:(POS(LOCAL)):상태이상 < GET_STATE_NUM(ARGS)
+					PRINTFORM [{LOCAL}] %CALLNAME:POS(LOCAL)%　>>>>>>　
+					IF MAXBASE:POS(LOCAL):GET_TYPE(ARG:1) <= 0 || MAXBASE:POS(LOCAL):GET_TYPE(ARG:1) == 999 || MAXBASE:(POS(LOCAL)):ARGS == -100
+						PRINTFORML BLOCK
+					ELSEIF LOCAL:1 && RAND:200 < MAXBASE:(POS(LOCAL)):지혜 || LOCAL:1 == 0 & RAND:200 < MAXBASE:(POS(LOCAL)):운
+						PRINTFORML MISS!
+					ELSEIF RAND:100 < ARG * MAXBASE:(POS(LOCAL)):GET_TYPE(ARG:1) * (100 + MAXBASE:(POS(LOCAL)):ARGS) / 10000
+						CFLAG:(POS(LOCAL)):상태이상 = GET_STATE_NUM(ARGS)
+						PRINTFORML %ARGS%
+					ELSE
+						PRINTFORML MISS
+					ENDIF
+				ENDIF
+			NEXT
+			
+	ENDSELECT
+	RETURN 1
+ELSEIF RESULT == 1
+	RETURN 0
+ENDIF
+
+;=====================================================================
+;出口処理
+;=====================================================================
+@DUNGEON_EXIT
+PRINTL 출구가 있다。밖으로 나갑니까？ 
+CALL INPUT_YN,"Yes","No"
+
+IF RESULT == 0
+	FLAG:탈출 = 1
+	RETURN 999
+ELSEIF RESULT == 1
+	RETURN 0
+ENDIF
+
+;=====================================================================
+;昇り階段処理
+;=====================================================================
+@DUNGEON_UPSTAIRS,ARG,ARG:1,ARG:2
+PRINTL 올라가는 계단이 있다。올라갑니까？ 
+CALL INPUT_YN,"Yes","No"
+
+IF RESULT == 0
+	FLAG:현M = ARG
+	FLAG:현X = ARG:1
+	FLAG:현Y = ARG:2
+	;エストマの効果リセット挟みませてもらいます
+	;CALL ENCOUNTER_CHANGER
+	;-- タルタロスにF.O.E.『刈り取るもの』を追加するパッチ --------
+	;地形自動生成・F.O.E.制御を利用している場合はフロア移動時にクリアを行う
+	IF FLAG:지형자동생성・FOE플래그 == 1
+		CALL CD_CLEAR_PARAMETERS		;地形自動生成・F.O.E.制御用の各種パラメータをクリアする
+		CALL CD_CREAR_TIME_AND_TURN, 2	;現在フロアの経過時間・経過ターン数カウントをクリア
+	ENDIF
+	;-- タルタロスにF.O.E.『刈り取るもの』を追加するパッチ --------
+	;現在のフロアデータを読み込み
+	CALL MAKE_FLOOR, FLAG:현던전
+	CALL AUTOMAP
+	RETURN 1
+ELSEIF RESULT == 1
+	RETURN 0
+ENDIF
+
+;=====================================================================
+;昇り階段処理ID版
+;=====================================================================
+@DUNGEON_UPSTAIRS_ID,ARG,ARG:1
+PRINTL 올라가는 계단이 있다。올라갑니까？ 
+CALL INPUT_YN,"Yes","No"
+
+IF RESULT == 0
+	FLAG:현M = ARG
+	;エストマの効果リセット挟みませてもらいます
+	;CALL ENCOUNTER_CHANGER
+	;-- タルタロスにF.O.E.『刈り取るもの』を追加するパッチ --------
+	;地形自動生成・F.O.E.制御を利用している場合はフロア移動時にクリアを行う
+	IF FLAG:지형자동생성・FOE플래그 == 1
+		CALL CD_CLEAR_PARAMETERS		;地形自動生成・F.O.E.制御用の各種パラメータをクリアする
+		CALL CD_CREAR_TIME_AND_TURN, 2	;現在フロアの経過時間・経過ターン数カウントをクリア
+	ENDIF
+	;-- タルタロスにF.O.E.『刈り取るもの』を追加するパッチ --------
+	;現在のフロアデータを読み込み
+	CALL MAKE_FLOOR, FLAG:현던전
+	;座標移動
+	FLAG:현X = SEARCH_ID(ARG:1) /100
+	FLAG:현Y = SEARCH_ID(ARG:1) %100
+	CALL AUTOMAP
+	RETURN 1
+ELSEIF RESULT == 1
+	RETURN 0
+ENDIF
+
+;=====================================================================
+;下り階段処理
+;=====================================================================
+@DUNGEON_DOWNSTAIRS,ARG,ARG:1,ARG:2
+PRINTL 내려가는 계단이 있다。내려갑니까？ 
+CALL INPUT_YN,"Yes","No"
+
+IF RESULT == 0
+	FLAG:현M = ARG
+	FLAG:현X = ARG:1
+	FLAG:현Y = ARG:2
+	;エストマの効果リセット挟みませてもらいます
+	;CALL ENCOUNTER_CHANGER
+	;-- タルタロスにF.O.E.『刈り取るもの』を追加するパッチ --------
+	;地形自動生成・F.O.E.制御を利用している場合はフロア移動時にクリアを行う
+	IF FLAG:지형자동생성・FOE플래그 == 1
+		CALL CD_CLEAR_PARAMETERS		;地形自動生成・F.O.E.制御用の各種パラメータをクリアする
+		CALL CD_CREAR_TIME_AND_TURN, 2	;現在フロアの経過時間・経過ターン数カウントをクリア
+	ENDIF
+	;-- タルタロスにF.O.E.『刈り取るもの』を追加するパッチ --------
+	;現在のフロアデータを読み込み
+	CALL MAKE_FLOOR, FLAG:현던전
+	CALL AUTOMAP
+	RETURN 1
+ELSEIF RESULT == 1
+	RETURN 0
+ENDIF
+
+;=====================================================================
+;下り階段処理ID版
+;=====================================================================
+@DUNGEON_DOWNSTAIRS_ID,ARG,ARG:1
+PRINTL 내려가는 계단이 있다。내려갑니까？ 
+CALL INPUT_YN,"Yes","No"
+
+IF RESULT == 0
+	FLAG:현M = ARG
+	;エストマの効果リセット挟みませてもらいます
+	;CALL ENCOUNTER_CHANGER
+	;-- タルタロスにF.O.E.『刈り取るもの』を追加するパッチ --------
+	;地形自動生成・F.O.E.制御を利用している場合はフロア移動時にクリアを行う
+	IF FLAG:지형자동생성・FOE플래그 == 1
+		CALL CD_CLEAR_PARAMETERS		;地形自動生成・F.O.E.制御用の各種パラメータをクリアする
+		CALL CD_CREAR_TIME_AND_TURN, 2	;現在フロアの経過時間・経過ターン数カウントをクリア
+	ENDIF
+	;-- タルタロスにF.O.E.『刈り取るもの』を追加するパッチ --------
+	;現在のフロアデータを読み込み
+	CALL MAKE_FLOOR, FLAG:현던전
+	;座標移動
+	FLAG:현X = SEARCH_ID(ARG:1) /100
+	FLAG:현Y = SEARCH_ID(ARG:1) %100
+	CALL AUTOMAP
+	RETURN 1
+ELSEIF RESULT == 1
+	RETURN 0
+ENDIF
+
+;=====================================================================
+;特定のマップの特定の座標へ移動
+;=====================================================================
+@DUNGEON_WORP,ARG,ARG:1,ARG:2
+;---- D3D 054 START (ADD) ------------------------------
+SIF FLAG:현M == ARG
+	D3D_WORP = 1
+;---- D3D 054 END   (ADD) ------------------------------
+FLAG:현M = ARG
+FLAG:현X = ARG:1
+FLAG:현Y = ARG:2
+;現在のフロアデータを読み込み
+CALL MAKE_FLOOR, FLAG:현던전
+CALL AUTOMAP
+;ランランダンジョン用のRUN中断フラグ立て
+SIF IS_ENABLE_RUNRUN() == 1
+	SETBIT FLAG:RUN중단,0
+;移動後のダンジョンイベント呼び出し
+CALLFORM EVENT_ENTER_DUNGEON_{FLAG:현던전},0
+
+;=====================================================================
+;特定のマップの特定の座標へ移動_ID
+;=====================================================================
+@DUNGEON_WORP_ID,ARG,ARG:1,ARG:2 = 0
+;---- D3D 054 START (ADD) ------------------------------
+SIF FLAG:현M == ARG
+	D3D_WORP = 1
+;---- D3D 054 END   (ADD) ------------------------------
+FLAG:현M = ARG
+;ランランダンジョン用のRUN中断フラグ立て
+SIF IS_ENABLE_RUNRUN() == 1
+	SETBIT FLAG:RUN중단,0
+;現在のフロアデータを読み込み
+CALL MAKE_FLOOR, FLAG:현던전
+;座標移動
+FLAG:현X = SEARCH_ID(ARG:1) / 100
+FLAG:현Y = SEARCH_ID(ARG:1) % 100
+SIF FLAG:현X < 0 || FLAG:현Y < 0
+	THROW ワープ先に指定したIDが存在しません。
+CALL AUTOMAP
+;ARG:2 == 1 でなければ移動後のダンジョンイベント呼び出し
+SIF ARG:2 == 0
+	CALLFORM EVENT_ENTER_DUNGEON_{FLAG:현던전},0
+RETURN 1
+
+;=====================================================================
+;@DUNGEON_TERMINAL
+;ダンジョン内ターミナル処理
+;　LOCAL:0 = 繰り返し用変数
+;　LOCAL:1 = 実行可否真偽値　[3]自室に戻る 
+;　LOCAL:2 = 実行可否真偽値　[4]仲間入れ替え
+;　LOCAL:3 = 実行可否真偽値　[5]벨벳룸
+;　LOCAL:4 = 実行可否真偽値　[6]マントラ取得
+;=====================================================================
+@DUNGEON_TERMINAL
+#DIM DYNAMIC LCOUNT, 2
+#DIMS DYNAMIC L_CHOICE, 100
+#DIM DYNAMIC L_INPUTABLE, 100
+#DIM CONST L_CHOICELENS = 36
+#DIM DYNAMIC TERMINAL_LIST, 100
+#DIMS DYNAMIC TERMINAL_NAME, 100
+#DIM DYNAMIC L_LINE
+#DIM DYNAMIC IS_EXIST_TERMINAL_LIST
+;ターミナルの到達記録
+SETBIT REACHED_TERMINAL:(FLAG:현던전):(FLAG:현M), -(DA:(FLAG:현X):(FLAG:현Y) / 100)
+
+;---- EDIT 079 ADD START -------------------------
+;ターミナルの突入時のイベント
+TRYCALLFORM DUNGEON_ENTER_TERMINAL_{FLAG:현던전}
+;---- EDIT 079 ADD END ---------------------------
+CALL MESSAGE_WINDOW_D, "", @"여기는 %GET_DUNGEON_NAME_KR()% 터미널입니다/용건을 말씀해 주십시오"
+CLEARLINE LINECOUNT - FLAG:커맨드표시행수
+$START_2
+CALL SET_VAR_TERMINAL_MAP, TERMINAL_LIST, TERMINAL_NAME
+IS_EXIST_TERMINAL_LIST = RESULT
+L_LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - L_LINE
+VARSET L_CHOICE
+VARSET L_INPUTABLE
+L_CHOICE:0 '= "아무것도안한다"
+L_INPUTABLE:0 = 1
+L_CHOICE:1 '= "세이브"
+L_INPUTABLE:1 = 1
+L_CHOICE:2 '= "インストールソフト変更"
+L_INPUTABLE:2 = 1
+L_CHOICE:3 '= "仲間入れ替え"
+L_INPUTABLE:3 = 1
+
+IF TERMINAL_LIST:0 >= 0 && IS_EXIST_TERMINAL_LIST
+	L_CHOICE:4 '= "ターミナル間移動"
+	L_INPUTABLE:4 = 1
+ENDIF
+
+L_CHOICE:5 '= "青い蝶"
+IF イベントフラグ:[[이벤트:페르소나]]:2
+	FOR LCOUNT, 1 , 7
+		SIF POS(LCOUNT) < 0
+			CONTINUE
+		SIF CSTR:POS(LCOUNT):롤 != "페르소나구사자"
+			CONTINUE
+		L_INPUTABLE:5 = 1
+		BREAK
+	NEXT
+ENDIF
+
+L_CHOICE:6 '= "カルマ端末"
+IF FLAG:만트라개방도
+	FOR LCOUNT, 1 , 7
+		SIF POS(LCOUNT) < 0
+			CONTINUE
+		SIF !GET_ROLE_PROP("ROLE_CAN_USE_MANTRA", POS(LCOUNT))
+			CONTINUE
+		L_INPUTABLE:6 = 1
+		BREAK
+	NEXT
+ENDIF
+
+L_CHOICE:9 '= "自室に戻る"
+SIF !FLAG:탈출스킬금지
+	L_INPUTABLE:9 = 1
+
+VARS SHOW_LINE, 4
+VARSET SHOW_LINE
+VARI LINE_CNT = 0
+VARI L_NUM
+FOR LCOUNT:1, 0, 2
+	LINE_CNT = 0
+	FOR LCOUNT, 0, 4
+		L_NUM = LCOUNT:1 * 4 + LCOUNT + 1
+		SIF !L_INPUTABLE:L_NUM
+			CONTINUE
+		SHOW_LINE:LINE_CNT += SET_BUTTON_TAG(TOALIGNMENT(@"[{L_NUM}] " + L_CHOICE:L_NUM, L_CHOICELENS, "LEFT"), TOSTR(L_NUM))
+		LINE_CNT++
+	NEXT
+	FOR LCOUNT, LINE_CNT, 4
+		SHOW_LINE:LCOUNT += " " * L_CHOICELENS
+	NEXT
+NEXT
+
+FOR LCOUNT, 0, 4
+	HTML_PRINT SHOW_LINE:LCOUNT
+NEXT
+DRAWLINE
+PRINTFORM %"[0] 아무것도안한다", L_CHOICELENS, LEFT%
+CALL PRINT_COLOR, "[9] 自室に戻る", FLAG:탈출스킬금지 ? COLOR("gray") # COLOR("DEF"), "L"
+CALL INPUT_ARRAY, L_INPUTABLE
+
+SELECTCASE RESULT
+	CASE 0
+		RETURN 1
+	CASE 1
+		CALL TITLE_SAVEGAME
+	CASE 2
+		CALL SETUP_SOFT
+	CASE 3
+		CALL RECONSTRUCTION
+	CASE 4
+		CALL TRANSFER_TERMINAL, TERMINAL_LIST, TERMINAL_NAME
+		SIF RESULT
+			GOTO START_2
+	CASE 5
+		CALL VELVET_ROOM
+;---- EDIT 050 MOD START   -----------------------
+	CASE 6
+		CALL KARMA_TERMINAL
+;---- EDIT 050 MOD END   -------------------------	
+	CASE 9
+		CALL MESSAGE_WINDOW_D, "", @"전송을 개시합니다"
+		CALL MESSAGE_WINDOW_D, "", @"＞%CALLNAME:MASTER% 일행은 자실로 귀환했다"
+		FLAG:탈출 = 1
+		RETURN 1
+ENDSELECT
+GOTO START
+
+;=====================================================================
+;@SET_VAR_TERMINAL_MAP
+;ダンジョン内のターミナル間ワープの指定リストをとるための関数
+;=====================================================================
+@SET_VAR_TERMINAL_MAP, TERMINAL_LIST, TERMINAL_NAME, IS_START
+#DIM REF TERMINAL_LIST
+#DIMS REF TERMINAL_NAME
+#DIM DYNAMIC IS_START
+#DIM DYNAMIC L_NUM
+#DIM DYNAMIC LCOUNT, 2
+L_NUM = 0
+VARSET RESULT, 0, 0, 100
+VARSET RESULTS, "", 0, 100
+TRYCCALLFORM TERMINAL_MAP_{FLAG:현던전}, IS_START
+	VARSET TERMINAL_LIST, -1
+	;リストを詰めつつ、到達判定
+	FOR LCOUNT, 0, 100
+		SIF !RESULT:LCOUNT
+			CONTINUE
+		FOR LCOUNT:1, 0, RESULT:LCOUNT
+			SIF !GETBIT(REACHED_TERMINAL:(FLAG:현던전):LCOUNT, LCOUNT:1)
+				CONTINUE
+			SIF FLAG:현M == LCOUNT && DA:(FLAG:현X):(FLAG:현Y) / 100 * -1 == LCOUNT:1
+				CONTINUE
+			TERMINAL_LIST:L_NUM = LCOUNT + LCOUNT:1 * 100
+			IF LCOUNT:1
+				TERMINAL_NAME:L_NUM '= RESULTS:(LCOUNT + (LCOUNT:1 + 1) * 100)
+			ELSE
+				TERMINAL_NAME:L_NUM '= RESULTS:LCOUNT
+			ENDIF
+			L_NUM++
+		NEXT
+	NEXT
+	RETURN TERMINAL_LIST:0 >= 0
+CATCH
+	RETURN 0
+ENDCATCH
+
+;=====================================================================
+;@SELECT_START_TERMINAL
+;ダンジョン突入時にターミナルのリストある場合に選択させる関数
+;=====================================================================
+@SELECT_START_TERMINAL, TERMINAL_LIST, TERMINAL_NAME
+#DIM REF TERMINAL_LIST
+#DIMS REF TERMINAL_NAME
+#DIM DYNAMIC IS_START
+#DIM DYNAMIC L_NUM
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_INPUTABLE, 100
+PRINTFORMW 시작 지점을 선택해 주십시오
+DRAWLINE
+IF RESULTS:100 == ""
+	PRINTFORML [ 0] 入口
+ELSE
+	PRINTFORML [ 0] %RESULTS:100%
+ENDIF
+L_INPUTABLE:0 = 1
+FOR LCOUNT, 0, 99
+	SIF TERMINAL_LIST:LCOUNT < 0
+		BREAK
+	PRINTFORML [{LCOUNT + 1, 2}] %TERMINAL_NAME:LCOUNT%
+	L_INPUTABLE:(LCOUNT + 1) = 1
+NEXT
+CALL INPUT_ARRAY, L_INPUTABLE
+IF RESULT == 0
+	RETURN 0
+ELSE
+	IF TERMINAL_LIST:(RESULT - 1) >= 100
+		CALL DUNGEON_WORP_ID, TERMINAL_LIST:(RESULT - 1) % 100, -(TERMINAL_LIST:(RESULT - 1) / 100 * 100 + 9), 1
+	ELSE
+		CALL DUNGEON_WORP_ID, TERMINAL_LIST:(RESULT - 1), -9, 1
+	ENDIF
+ENDIF
+
+;=====================================================================
+;@TRANSFER_TERMINAL
+;ダンジョン内でターミナル間の転送を行う関数
+;=====================================================================
+@TRANSFER_TERMINAL, TERMINAL_LIST, TERMINAL_NAME
+#DIM REF TERMINAL_LIST
+#DIMS REF TERMINAL_NAME
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_NUM
+#DIM DYNAMIC L_LINE
+#DIMS DYNAMIC SHOW_LINE
+#DIM DYNAMIC L_INPUTABLE, 50
+CLEARLINE LINECOUNT - FLAG:커맨드표시행수
+L_LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - L_LINE
+FOR LCOUNT:1, 0, 4
+	VARSET SHOW_LINE
+	FOR LCOUNT, 0, 5
+		L_NUM = LCOUNT:1 + LCOUNT * 4
+		IF TERMINAL_LIST:L_NUM >= 0
+			SHOW_LINE += SET_BUTTON_TAG(TOALIGNMENT(@"[{L_NUM + 1, 2}] " + TERMINAL_NAME:L_NUM, 30, "LEFT"), TOSTR(L_NUM + 1))
+			L_INPUTABLE:(L_NUM + 1) = 1
+		ELSE
+			SHOW_LINE += " " * 30
+		ENDIF
+	NEXT
+	HTML_PRINT SHOW_LINE
+NEXT
+DRAWLINE
+PRINTL [ 0] 돌아간다
+L_INPUTABLE:0 = 1
+CALL INPUT_ARRAY, L_INPUTABLE
+IF RESULT == 0
+	RETURN 0
+ELSE
+	IF TERMINAL_LIST:(RESULT - 1) >= 100
+		CALL DUNGEON_WORP_ID, TERMINAL_LIST:(RESULT - 1) % 100, -(TERMINAL_LIST:(RESULT - 1) / 100 * 100 + 9), 1
+	ELSE
+		CALL DUNGEON_WORP_ID, TERMINAL_LIST:(RESULT - 1), -9, 1
+	ENDIF
+	CALL MESSAGE_WINDOW_D, "", @"전송을 개시합니다"
+	CLEARLINE LINECOUNT - FLAG:커맨드표시행수
+	RETURN 1
+ENDIF
+;=====================================================================
+;エレベーター
+;=====================================================================
+@DUNGEON_ELEVATOR, ARG = -29
+CUSTOMDRAWLINE =
+PRINTL ＞엘리베이터가 있다。
+VARSET RESULT, -1
+VARSET RESULTS
+LOCAL:1 = FLAG:현M
+CALLFORM DUNGEON_ELEVATOR_{FLAG:현던전}, ARG
+LOCAL:2 = RESULT
+FOR LOCAL, 0, 25
+	IF RESULT:LOCAL >= 0 && RESULT:LOCAL != LOCAL:1
+		PRINTFORM [{LOCAL}] 
+		IF !STRLENS(RESULTS:LOCAL)
+			FLAG:현M = RESULT:LOCAL
+			CALLFORM FLOORNAME_{FLAG:현던전}
+			RESULT = LOCAL:2
+		ELSE
+			PRINTFORML %RESULTS:LOCAL%
+		ENDIF
+	ENDIF
+NEXT
+FLAG:현M = LOCAL:1
+ARRAYSHIFT RESULT, 1, 0
+PRINTL [100] 타지 않는다
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 1
+ELSEIF RESULT < 0 || RESULT >= VARSIZE("RESULT")
+	GOTO INPUT_LOOP
+ELSEIF RESULT:(RESULT+1) >= 0 && RESULT:LOCAL != LOCAL:1
+	CALL DUNGEON_WORP_ID, RESULT:(RESULT+1), ARG, 1
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+;=====================================================================
+;トリッシュの泉
+;メインはアガスティアの木サービスのほう
+;セーブポイント欲しいって意見があったけど、デザイン上、基本的にはD内セーブもできないほうがいいよなぁとおもうので
+;折衷案として有料セーブポイントをつくることに
+;価格はARGが初回で、セーブした回数だけARG:1が加算されていく
+;1回目だけは安くつかえるけど、次からすげーぼったくられるとかそういうのをできるように
+;
+;新版
+;価格は主人のレベルと同じレベルのフラットステータスの悪魔を基準とし
+;その悪魔の最大ＨＰ分回復で,売却基本額の1/12,最大ＭＰ分回復で、1/2,ステータスはそれに＋α
+;セーブは基本金額の1/2
+;これに調教補正をかけていく
+;ただし、両方共、一回のダンジョンアタック内で複数回利用する場合、価格が上昇していく
+;
+;回復の泉サービスはどーかなーとおもったけど、ぼったくっとけばいいかなぁと
+;記憶の泉の妖精にしてもよかったんだけど、うーん
+;価格はHP5、MP1につき1魔貨、状態異常は死亡が20、毒なんかが5
+;それにレベル補正が主人のレベル/4+1だけかかる
+;また、状態異常はさらに対象自身のレベル/8+1の補正がかかる
+;主人のレベル5で、MP100回復なら、200魔貨
+;主人のレベル20で、MP300回復なら、1800魔貨
+;主人のレベル40で、MP600回復なら、6600魔貨
+;ダンジョン内収入減ってるし、これ使って黒字でメリットってのは考えにくいというか、普通利用したくない金額にはなってるとは思う
+;ただ、長いダンジョン突貫とか、ボス戦強行突破する際においてあると金で色々解決できる的なそういう手段にしたい感じ
+;
+;性的なサービスはトリッシュを金で買う
+;不在フラグたてて、ダンジョン内でトリッシュ調教
+;陥落度に応じて、値引きが発生する…みたいなのを考えてるけど
+;トリッシュに払う礼金と、割引率で悩む。あと、奴隷として獲得できちゃうかどうか
+;てか、トリッシュの衣装ってそういうお店って感じだよねあれ
+;=====================================================================
+@FOUNTAIN_OF_TRISH
+#DIM 基本価格, 1
+#DIM 価格補正, 1
+#DIM トリッシュ, 1
+#LOCALSIZE 10
+;基本価格は悪魔の基礎売却額と同じ
+基本価格 = BASE:MASTER:LV * (5 + BASE:MASTER:LV / 2) * 5 / 4
+;利用回数に応じて増加
+FOR LOCAL, 1, FLAG:트리슈의샘이용횟수
+	基本価格 = 基本価格 * 150 / 100
+NEXT
+CUSTOMDRAWLINE = 
+IF FLAG:트리슈조교 == -1
+	PRINTW ＞회복의 샘이다
+	PRINTW ＞샘에는 아무도 없고、간판이 세워져 있다
+	PRINTW ＞「일신상의 사정에 의해、휴업 중」
+	PRINTW ＞「후임이 올 때까지 wait!」
+	RETURN 0
+ELSEIF FLAG:트리슈조교 == -2
+	PRINTW ＞회복의 샘이다
+	PRINTL 
+	PRINTL 회복엘프:
+	PRINTW 「여기는、회복의 샘입니~다」
+ELSEIF FLAG:트리슈의샘이용횟수
+	PRINTW ＞회복의 샘이다
+	PRINTL 
+	PRINTL 트리슈:
+	PRINTW 「문 밖은 Dangerous! 주의 일초 부상 일생!」
+	PRINTW 「그러니까、내가 여기에 있는 거야」
+	PRINTW 「인색하게 굴지 말고、팍팍 Recover and Save!」
+ELSE
+	PRINTW ＞샘이 있고、그곳에 요정 같은 것이 있다…
+	PRINTL 
+	PRINTL 요정:
+	PRINTW 「살아가는 세상은 Give and take!」
+	PRINTW 「랄까 Oh! 혹시 처음 온 사람?」
+	PRINTW 「그렇다면、자기소개. 나는 트리슈」
+	PRINTW 「이 회복의 샘을 지키는 요정」
+	PRINTW 「너희들의 상처 입은 몸을 치료해 줄게」
+	PRINTW 「아、이 아가스티아 나무로 부업도 시작했거든」
+	PRINTW 「너희들의 소중한 Memory의 Save도 해줄게」
+	PRINTW 「물론 공짜는 아니야. 살아가는 세상은 Give and take!」
+	PRINTW 「돈에 따라서 뭐든지 Recover and Save!」
+	FLAG:트리슈의샘이용횟수 = 1
+ENDIF
+IF FLAG:트리슈조교 == -2
+	PRINTL 「뭘 하시겠습니까~?」
+ELSE
+	PRINTL 「그래서、무슨 용무야?」
+ENDIF
+$START
+PRINTL [0] 회복한다
+PRINTL [1] 세이브한다
+PRINTL [2] 성적인 서비스
+トリッシュ = GETCHARA([[キャラ:트리슈_샘]])
+SIF トリッシュ > -1 && 陥落(トリッシュ) >= 2
+	PRINTL [3] 트리슈를 테이크아웃한다
+PRINTL [9] 딱히 없다
+IF FLAG:트리슈조교 != -2
+	;---- EDIT 003 ADD START -------------------------
+	;価格を大幅改訂
+	;トリッシュの状態による補正
+	価格補正 = 10000
+	IF トリッシュ >= 0
+		価格補正 -= 陥落(トリッシュ) * 1000
+		価格補正 -= MARK:トリッシュ:굴복각인 * 500
+		価格補正 -= MARK:トリッシュ:고통각인 * 250
+		価格補正 -= MARK:トリッシュ:쾌락각인 * 250
+		価格補正 -= MIN(2000, TALENT:MASTER:수수께끼의매력 * 500 + ABL:トリッシュ:순종 * 30, ABL:トリッシュ:욕망 * 30, ABL:トリッシュ:봉사정신 * 50, ABL:トリッシュ:노출증 * 30, ABL:トリッシュ:마조끼 * 50, ABL:トリッシュ:정액중독 * 50, ABL:トリッシュ:섹스중독 * 50)
+		LOCAL:4 = (EXP:トリッシュ:절정경험 + EXP:トリッシュ:고통쾌락경험 * 5 + EXP:トリッシュ:가학쾌락경험 * 5 + EXP:トリッシュ:애정경험 * 10 + EXP:トリッシュ:봉사쾌락경험 * 5 + EXP:トリッシュ:정액경험 * 3) / 500
+		WHILE LOCAL:4 > 0
+			TIMES 価格補正,0.99
+			LOCAL:4--
+		WEND
+		価格補正 = MAX(2500, 価格補正) * MAX(MARK:トリッシュ:반발각인 * 3, 1)
+	ELSE
+		CALL ADD_NEW_COMPANION, [[キャラ:트리슈_샘]], 200
+		トリッシュ = GETCHARA([[キャラ:트리슈_샘]])
+		SIF BASE:トリッシュ:LV < 15
+			BASE:トリッシュ:LV = 15
+		CFLAG:トリッシュ:이자리에없는플래그 = 1
+	ENDIF
+	;---- EDIT 003 ADD END   -------------------------
+ELSE
+	価格補正 = 5000
+ENDIF
+CALL INPUTINT(0, 1, 2, (トリッシュ > -1 && 陥落(トリッシュ) >= 2) * 3, 9)
+IF RESULT == 0
+	;ＨＰ/ＭＰの価格決定 
+	;ＭＰの価格決定 
+	VARSET LOCAL
+	FOR LOCAL, 0, CHARANUM
+		;HPの合計量を記録
+		LOCAL:1 += MAXBASE:LOCAL:ＨＰ - BASE:LOCAL:ＨＰ
+		;MPの合計量を記録
+		LOCAL:2 += MAXBASE:LOCAL:ＭＰ - BASE:LOCAL:ＭＰ
+		SIF GET_STATE(CFLAG:LOCAL:상태이상) == "DYING"
+			LOCAL:3 += 50 * BASE:LOCAL:LV / 8 + 1
+		SIF GET_STATE(CFLAG:LOCAL:상태이상) == "STONE"
+			LOCAL:3 += 25 * BASE:LOCAL:LV / 8 + 1
+		SIF GET_STATE(CFLAG:LOCAL:상태이상) == "FLY"
+			LOCAL:3 += 15 * BASE:LOCAL:LV / 8 + 1
+		SIF GET_STATE(CFLAG:LOCAL:상태이상) == "CURSE"
+			LOCAL:3 += 15 * BASE:LOCAL:LV / 8 + 1
+		SIF GET_STATE(CFLAG:LOCAL:상태이상) == "CHARM"
+			LOCAL:3 += 10 * BASE:LOCAL:LV / 8 + 1
+		SIF GET_STATE(CFLAG:LOCAL:상태이상) == "POISON"
+			LOCAL:3 += 10 * BASE:LOCAL:LV / 8 + 1
+		SIF GET_STATE(CFLAG:LOCAL:상태이상) == "PALYZE"
+			LOCAL:3 += 10 * BASE:LOCAL:LV / 8 + 1
+		SIF GET_STATE(CFLAG:LOCAL:상태이상) == "SLEEP"
+			LOCAL:3 += 5 * BASE:LOCAL:LV / 8 + 1
+		SIF GET_STATE(CFLAG:LOCAL:상태이상) == "PANIC"
+			LOCAL:3 += 5 * BASE:LOCAL:LV / 8 + 1
+		SIF GET_STATE(CFLAG:LOCAL:상태이상) == "HAPPY"
+			LOCAL:3 += 5 * BASE:LOCAL:LV / 8 + 1
+	NEXT
+	LOCAL:4 = 0
+	;フラットの場合のステ
+	LOCAL:5 = (18 + BASE:MASTER:LV * 3 / 2) / 6
+	;HPはフラットステ悪魔全快で基準値の1/12
+	LOCAL:4 += LOCAL:1 * 100 / ((BASE:MASTER:LV + LOCAL:5*9 + 5) * (100+BASE:MASTER:LV*3) / 100) / 12
+	;MPはフラットステ悪魔全快で基準値の1/2
+	LOCAL:4 += LOCAL:2 * 100 / (((BASE:MASTER:LV+LOCAL:5/2+LOCAL:5*3/2)*2 + 5) * (100+BASE:MASTER:LV) /100) / 2
+	;状態異常は100%で基準値の1倍
+	LOCAL:4 += LOCAL:3
+	LOCAL:5 = 基本価格 * LOCAL:4 * 価格補正 / 10000 / 100
+	IF LOCAL:1 + LOCAL:2 + LOCAL:3 == 0
+		IF FLAG:트리슈조교 == -2
+			PRINTL 회복엘프
+			PRINTW 「모두 건강합니~다」
+		ELSE
+			PRINTL 트리슈:
+			PRINTW 「좋~아、그럼 아픈 거 아픈 거ォ~♪」
+			PRINTW 「…랄까、모두 건강하잖아!」
+			PRINTW 「이래선、회복할 수 없잖아ァ~!!」
+		ENDIF
+	ELSE
+		IF FLAG:트리슈조교 == -2
+			PRINTL 회복엘프:
+			PRINTW 「지금 회복 시세라면… 어~ 그러니까…」
+			PRINTFORML 「{LOCAL:5} 마카가 드는데、들어가시겠습니까~?」
+		ELSE
+			PRINTL 트리슈:
+			PRINTW 「OK! 그럼、지금 회복 시세라면… 흠흠…」
+			PRINTFORML 「{LOCAL:5} 마카 드는데 회복할래?」
+		ENDIF
+		CALL INPUT_YN
+		IF RESULT == 0
+			IF MONEY:1 >= LOCAL:5
+				IF FLAG:트리슈조교 == -2
+					PRINTL 회복엘프:
+					PRINTW 「네~에、그럼 편히 쉬세요~」
+				ELSE
+					PRINTL 트리슈:
+					PRINTW 「그럼、간다ァ~♪」
+					PRINTW 「아픈 거 아픈 거 날아가라ァ~!」
+					PRINTW 「피로로로~♪」
+				ENDIF
+				PRINTL 
+				PRINTFORMW %CALLNAME:MASTER% 일행은 회복되었다
+				MONEY:1 -= LOCAL:5
+				FOR LOCAL, 0, CHARANUM
+					CALL HEALTH_CHARA, LOCAL
+				NEXT
+				FLAG:트리슈의샘이용횟수 += 1
+			ELSE
+				IF FLAG:트리슈조교 == -2
+					PRINTL 회복엘프:
+					PRINTW 「어머~. 돈이 부족한 것 같네요~」
+				ELSE
+					PRINTL 트리슈:
+					PRINTW 「좋~아、그럼 아픈 거 아픈 거ォ~♪」
+					PRINTW 「…랄까、돈이 부족하잖아!」
+					PRINTW 「다시 벌어 와!!」
+				ENDIF
+			ENDIF
+		ELSE
+			IF FLAG:트리슈조교 == -2
+				PRINTL 회복엘프:
+				PRINTW 「그~런가요~」
+				PRINTW 「들어가고 싶어지면 언제든지 오세요~」	
+			ELSE
+				PRINTL 트리슈:
+				PRINTW 「쳇、괜히 오기나 부리고. 죽어버려도 난 몰라」
+				PRINTW 「그보다、죽어버려라 구두쇠!」
+			ENDIF
+		ENDIF
+	ENDIF
+ELSEIF RESULT == 1
+	;---- EDIT 003 ADD START -------------------------
+	;式変更
+	LOCAL:1 = MAX(基本価格 * 価格補正 / 10000 / 2, 100)
+	IF FLAG:트리슈조교 == -2
+		PRINTL 회복엘프:
+		PRINTW 「지금 세이브 시세라면… 어~ 그러니까…」
+		PRINTFORML 「{LOCAL:1} 마카가 드는데、세이브하시겠습니까~?」
+	ELSE
+		PRINTL 트리슈:
+		PRINTW 「OK! 그럼、지금 세이브 시세라면… 흠흠…」
+		PRINTFORML 「{LOCAL:1} 마카 드는데 세이브할래?」
+	ENDIF
+	;---- EDIT 003 ADD END   -------------------------
+	CALL INPUT_YN
+	IF RESULT == 0
+		IF MONEY:1 >= LOCAL:1
+			IF FLAG:트리슈조교 == -2
+				PRINTL 회복엘프:
+				PRINTW 「그럼、이 나무에 말을 걸어주세요~」
+				PRINTW 「괜찮아요. 아무도 안 보고 있고、부끄러울 것도 없으니까요~」
+			ELSE
+				PRINTL 트리슈:
+				PRINTW 「OK、그럼、이 아가스티아 나무에 말을 거는 거야」
+				PRINTW 「그리고 Memory를 Save!」
+			ENDIF
+			MONEY:1 -= LOCAL:1
+			FLAG:트리슈의샘이용횟수 += 1
+			CALL TITLE_SAVEGAME
+		ELSE
+			IF FLAG:트리슈조교 == -2
+				PRINTL 회복엘프:
+				PRINTW 「어머~. 돈이 부족한 것 같네요~」
+			ELSE
+				PRINTL 트리슈:
+				PRINTW 「좋~아、그럼 이 아가스티아 나무에에~」
+				PRINTW 「…랄까、돈이 부족하잖아!」
+				PRINTW 「다시 벌어 와!!」
+			ENDIF
+		ENDIF
+	ELSE
+		IF FLAG:트리슈조교 == -2
+			PRINTL 회복엘프:
+			PRINTW 「그~런가요~」
+			PRINTW 「이용하고 싶어지면 언제든지 오세요~」	
+		ELSE
+			PRINTL 트리슈:
+			PRINTW 「쳇、괜히 오기나 부리고. 죽어버려도 난 몰라」
+			PRINTW 「그보다、죽어버려라 구두쇠!」
+		ENDIF
+	ENDIF
+ELSEIF RESULT == 2
+	IF FLAG:트리슈조교 == -2
+		PRINTL 회복엘프:
+		PRINTW 「어 그러니까、저희는 그런 거 안 하는데요~」
+		PRINTW 「그보다、이거 성희롱 아닌가요~?」
+		PRINTW 「고소해 버릴 거예요~?」	
+		GOTO START
+	ENDIF
+	IF FLAG:트리슈조교
+		PRINTL 트리슈:
+		PRINTW 「Powerful하네」
+		PRINTW 「하지만、나는 Tired!」
+		PRINTW 「다음에、또、서비스해 줄게」
+		PRINTL 「그래서、다른 용무는 있어?」
+		GOTO START
+	ENDIF
+	PRINTL 트리슈:
+	PRINTW 「나랑 좋은 일 하고 싶어?」
+	IF FLAG:트리슈조교 == -3
+		PRINTW 「그렇다면 대금은 LOVE로 충분해!」
+		BASE:トリッシュ:ＭＡＧ = MAXBASE:MASTER:ＭＡＧ / 50
+	ELSE
+		PRINTW 「이 세상은 전부、Give and take!」
+		PRINTW 「네가 나한테 뭔가 받고 싶다면、어떻게 해야 하는지 알겠지?」
+		$HOW_MUCH
+		PRINTW 「그럼、How much?」
+		CALL INPUT_MANY(0, MONEY:1)
+		LOCAL:1 = RESULT
+		;---- EDIT 003 ADD START -------------------------
+		;忠誠度を記録する形に変更と式変更
+		SELECTCASE LOCAL:1 * 10000 / 価格補正
+			CASE IS < 100
+				PRINTL 트리슈:
+				PRINTW 「Really!? 겨우 그것뿐!?」
+				PRINTW 「인색하게 굴기는! 그걸로 날 상대할 수 있을 거라 생각했어!?」
+				PRINTW 「한번 죽고、다시 벌어 와!」
+				GOTO START
+			CASE IS < 500
+				PRINTW 「으~음、뭐 턱걸이로 합격이려나」
+				PRINTW 「하지만、더 잔뜩 내는 편이 분명 Happy해질 수 있어」
+				PRINTL 「어차피、돈은 세상 돌고 도는 법、인색하게 굴지 말고 좋은 맛 좀 보자!」
+				CALL INPUT_YN("상관없이 낸다", "금액을 바꾼다")
+				IF RESULT == 0
+					PRINTL 트리슈:
+					PRINTW 「쳇、알았어」
+					PRINTW 「그럼、조금만 take해 줄게」
+					PRINTW 「마음껏、즐겨보라고」
+				ELSE
+					PRINTL 트리슈:
+					GOTO HOW_MUCH
+				ENDIF
+				BASE:トリッシュ:ＭＡＧ = GET_CHARA_MAXMAG(MASTER) / 200
+				TALENT:トリッシュ:반항적 = 1
+				TALENT:トリッシュ:솔직함 = 0
+				TALENT:トリッシュ:건방짐 = 1 
+				TALENT:トリッシュ:프라이드낮음 = 0
+				TALENT:トリッシュ:일선을넘지않음 = 1
+				TALENT:トリッシュ:무관심 = 1
+				TALENT:トリッシュ:호기심 = 0
+				TALENT:トリッシュ:남성혐오 = 1
+				TALENT:トリッシュ:여성혐오 = 1
+				TALENT:トリッシュ:억압 = 1
+				TALENT:トリッシュ:해방 = 0
+				TALENT:トリッシュ:약점 = 0
+				TALENT:トリッシュ:망신 = 0
+				TALENT:トリッシュ:헌신적 = 0
+				TALENT:トリッシュ:불결무시 = 0
+				TALENT:トリッシュ:쾌감에솔직 = 0
+			CASE  IS < 1000
+				PRINTL 트리슈:
+				PRINTW 「저기、한 번만 더」
+				PRINTW 「그렇게 하면、나도 잔뜩 받아서 Happy!」
+				PRINTW 「그리고、내가 힘낼 테니까、너도 Happy!」
+				PRINTW 「즉、둘 다 Happy!」
+				PRINTW 「조금만 더 보태는 것만으로、이렇게 좋은 일은 없다고 생각해」
+				CALL INPUT_YN("상관없이 낸다", "금액을 바꾼다")
+				IF RESULT == 0
+					PRINTL 트리슈:
+					PRINTW 「으~음、알았어」
+					PRINTL 「제대로 Give 받았으니까
+					PRINTW 　책임지고、내가 Happy하게 해줄게」
+				ELSE
+					PRINTL 트리슈:
+					GOTO HOW_MUCH
+				ENDIF
+				BASE:トリッシュ:ＭＡＧ = GET_CHARA_MAXMAG(MASTER) / 100
+				BASE:トリッシュ:충성도 = MIN(500, GET_CHARA_LOYALTY(トリッシュ))
+				TALENT:トリッシュ:반항적 = 0
+				TALENT:トリッシュ:솔직함 = 0
+				TALENT:トリッシュ:건방짐 = 1 
+				TALENT:トリッシュ:프라이드낮음 = 0
+				TALENT:トリッシュ:일선을넘지않음 = 0
+				TALENT:トリッシュ:무관심 = 1
+				TALENT:トリッシュ:호기심 = 0
+				TALENT:トリッシュ:남성혐오 = 0
+				TALENT:トリッシュ:여성혐오 = 0
+				TALENT:トリッシュ:억압 = 0
+				TALENT:トリッシュ:해방 = 0
+				TALENT:トリッシュ:약점 = 0
+				TALENT:トリッシュ:망신 = 0
+				TALENT:トリッシュ:헌신적 = 0
+				TALENT:トリッシュ:불결무시 = 0
+				TALENT:トリッシュ:쾌감에솔직 = 0
+			CASE  IS < 3000
+				PRINTL 트리슈:
+				PRINTW 「이렇게나 주다니 Excellent!」
+				PRINTW 「나도 널 위해서 힘내지 않으면 안 되겠네」
+				PRINTW 「자자、빨리 지불을 끝내버리자고!」
+				CALL INPUT_YN("지불한다", "역시 그만둔다")
+				IF RESULT == 0
+					PRINTL 트리슈:
+					PRINTW 「그럼、내가 널 Paradice로 데려가 줄게!」
+				ELSE
+					PRINTL 트리슈:
+					PRINTW 「Oh…、값 깎으려는 생각은 그만두자고」
+					PRINTW 「얼마를 내도 후회하지 않을 만큼 잘해줄 테니까」
+					GOTO HOW_MUCH
+				ENDIF
+				TALENT:トリッシュ:반항적 = 0
+				TALENT:トリッシュ:솔직함 = 1
+				TALENT:トリッシュ:건방짐 = 0 
+				TALENT:トリッシュ:프라이드낮음 = 0
+				TALENT:トリッシュ:일선을넘지않음 = 0
+				TALENT:トリッシュ:무관심 = 0
+				TALENT:トリッシュ:호기심 = 0
+				TALENT:トリッシュ:남성혐오 = 0
+				TALENT:トリッシュ:여성혐오 = 0
+				TALENT:トリッシュ:억압 = 0
+				TALENT:トリッシュ:해방 = 0
+				TALENT:トリッシュ:약점 = 0
+				TALENT:トリッシュ:망신 = 0
+				TALENT:トリッシュ:헌신적 = 1
+				TALENT:トリッシュ:불결무시 = 0
+				TALENT:トリッシュ:쾌감에솔직 = 0
+			CASE  IS < 10000
+				PRINTL 트리슈:
+				PRINTW 「Oh… 사랑해…」
+				PRINTW 「그러니까 말이야 얼른 이대로 날 엉망진창으로 만들어 줄래?」
+				PRINTL 
+				PRINTFORMW ＞트리슈는 눈동자를 적시며 %CALLNAME:MASTER%을(를) 바라보고 있다
+				CALL INPUT_YN("엉망진창으로 만든다", "다시 생각한다")
+				IF RESULT == 0
+					PRINTL 트리슈:
+					PRINTW 「아아…、이대로 둘이서 Paradice로 가자…」
+				ELSE
+					PRINTL 트리슈:
+					PRINTW 「어…、날 농락한 거야?」
+					PRINTW 「농담이지? 네가 그런 식으로 날 배신할 리 없다고 믿고 있어」
+					GOTO HOW_MUCH
+				ENDIF
+				BASE:トリッシュ:ＭＡＧ = GET_CHARA_MAXMAG(MASTER) / 50
+				BASE:トリッシュ:충성도 = MIN(2000, GET_CHARA_LOYALTY(トリッシュ))
+				TALENT:トリッシュ:반항적 = 0
+				TALENT:トリッシュ:솔직함 = 1
+				TALENT:トリッシュ:건방짐 = 0 
+				TALENT:トリッシュ:프라이드낮음 = 1
+				TALENT:トリッシュ:일선을넘지않음 = 0
+				TALENT:トリッシュ:무관심 = 0
+				TALENT:トリッシュ:호기심 = 0
+				TALENT:トリッシュ:남성혐오 = 0
+				TALENT:トリッシュ:여성혐오 = 0
+				TALENT:トリッシュ:억압 = 0
+				TALENT:トリッシュ:해방 = 1
+				TALENT:トリッシュ:약점 = 0
+				TALENT:トリッシュ:망신 = 0
+				TALENT:トリッシュ:헌신적 = 1
+				TALENT:トリッシュ:불결무시 = 1
+				TALENT:トリッシュ:쾌감에솔직 = 1
+			CASEELSE
+				PRINTL 트리슈:
+				PRINTW 「……!」
+				PRINTW 「아아、이제 참을 수 없어!」
+				PRINTW 「너의 Love에 지지 않을、나의 Love를 보여줄게!」
+				PRINTL 
+				PRINTW ＞트리슈에게 밀쳐 넘어뜨려졌다!
+				PRINTL 
+				BASE:トリッシュ:ＭＡＧ = GET_CHARA_MAXMAG(MASTER) / 25
+				BASE:トリッシュ:충성도 = MIN(5000, GET_CHARA_LOYALTY(トリッシュ))
+
+				CALL ADD_RELATION, トリッシュ, MASTER,200
+
+				TALENT:トリッシュ:반항적 = 0
+				TALENT:トリッシュ:솔직함 = 1
+				TALENT:トリッシュ:건방짐 = 0 
+				TALENT:トリッシュ:프라이드낮음 = 1
+				TALENT:トリッシュ:일선을넘지않음 = 0
+				TALENT:トリッシュ:무관심 = 0
+				TALENT:トリッシュ:호기심 = 1
+				TALENT:トリッシュ:남성혐오 = 0
+				TALENT:トリッシュ:여성혐오 = 0
+				TALENT:トリッシュ:억압 = 0
+				TALENT:トリッシュ:해방 = 1
+				TALENT:トリッシュ:약점 = 1
+				TALENT:トリッシュ:망신 = 1
+				TALENT:トリッシュ:헌신적 = 1
+				TALENT:トリッシュ:불결무시 = 1
+				TALENT:トリッシュ:쾌감에솔직 = 1
+		ENDSELECT
+		;---- EDIT 003 ADD END   -------------------------
+		MONEY:1 -= LOCAL:1
+	ENDIF
+	;助手は使えない
+	ASSI = -1
+	TARGET = トリッシュ
+	BASE:トリッシュ:체력 = MAXBASE:トリッシュ:체력
+	BASE:トリッシュ:기력 = MAXBASE:トリッシュ:기력
+	CFLAG:トリッシュ:스트레스치 = 0
+	CFLAG:トリッシュ:자궁내피임결계 = 1
+	CFLAG:トリッシュ:이자리에없는플래그 = 1
+	FLAG:트리슈조교 = 1
+	FLAG:던전내조교 = 1
+	RETURN 1
+;---- EDIT 003 ADD START -------------------------
+;take outの位置を変更
+ELSEIF RESULT == 3 && トリッシュ > -1 && 陥落(トリッシュ) >= 2
+	PRINTL 트리슈:
+	PRINTW 「어、날 take out하고 싶다고?」
+	PRINTW 「난 이 샘의 요정이라서、제대로 요정계로 돌아가야 한다고」
+	PRINTW 「……진심이야?」
+	PRINTW 「그렇다면…… 나도 솔직히 말해서 요정계 따윈 아무래도 좋았어」
+	PRINTW 「그런 것보다、무엇보다、네 곁에서、너랑 enjoy하는 편이 소중해!」
+	PRINTW 「그러니까、삼가 날 너에게 give!」
+	PRINTW 「앞으로도 잘 부탁해!」
+	TALENT:トリッシュ:반항적 = 1
+	TALENT:トリッシュ:솔직함 = 0
+	TALENT:トリッシュ:건방짐 = 1 
+	TALENT:トリッシュ:프라이드낮음 = 0
+	TALENT:トリッシュ:일선을넘지않음 = 0
+	TALENT:トリッシュ:무관심 = 0
+	TALENT:トリッシュ:호기심 = 0
+	TALENT:トリッシュ:남성혐오 = 0
+	TALENT:トリッシュ:여성혐오 = 0
+	TALENT:トリッシュ:억압 = 0
+	TALENT:トリッシュ:해방 = 0
+	TALENT:トリッシュ:약점 = 0
+	TALENT:トリッシュ:망신 = 0
+	TALENT:トリッシュ:헌신적 = 0
+	TALENT:トリッシュ:불결무시 = 0
+	TALENT:トリッシュ:쾌감에솔직 = 0
+	PRINTL 
+	PRINTW ＞트리슈를 얻었다
+	;---- EDIT 098 MOD START -------------------------
+	IF GETCHARA([[キャラ:트리슈]]) == -1
+		NO:(トリッシュ) = [[キャラ:트리슈]]
+		CFLAG:トリッシュ:이자리에없는플래그 = 0
+	ELSE
+		CFLAG:GETCHARA([[キャラ:트리슈]]):이자리에없는플래그 = 0
+		CALL キャラ削除((トリッシュ))
+	ENDIF
+	;---- EDIT 098 MOD END ---------------------------
+	FLAG:트리슈조교 = -1
+	RETURN 0
+;---- EDIT 003 ADD END   -------------------------
+ELSEIF RESULT == 9
+	IF FLAG:트리슈조교 == -2
+		PRINTL 회복엘프:
+		PRINTW 「또 와주세요~」	
+	ELSE
+		PRINTL 트리슈:
+		PRINTW 「그럼、또 와!」
+		PRINTW 「기다리고 있을 테니까. Bye-bye!」
+	ENDIF
+	RETURN 1
+ENDIF
+PRINTL 
+IF FLAG:트리슈조교 == -2
+	PRINTL 회복엘프:
+	PRINTL 「뭘 하시겠습니까~?」
+ELSE
+	PRINTL 트리슈:
+	PRINTL 「그래서、다른 용무는 있어?」
+ENDIF
+GOTO START
+;=====================================================================
+;ショップ
+;書式はARGが1の時は魔貨払い、0の時は\払いで
+;以降はアイテム名・価格の順番で書いていく
+;CALL DUNGEON_SHOP(1, "마석", 500)
+;これなら、魔石を500魔貨で売ってる店になります
+;価格が0の時はITEM.CSVの値段にします
+;=====================================================================
+@DUNGEON_SHOP(ARG, ARGS:1 = "", ARG:1 = 0, ARGS:2 = "", ARG:2 = 0, ARGS:3 = "", ARG:3 = 0, ARGS:4 = "", ARG:4 = 0, ARGS:5 = "", ARG:5 = 0, ARGS:6 = "", ARG:6 = 0, ARGS:7 = "", ARG:7 = 0, ARGS:8 = "", ARG:8 = 0, ARGS:9 = "", ARG:9 = 0, ARGS:10 = "", ARG:10 = 0, ARGS:11 = "", ARG:11 = 0, ARGS:12 = "", ARG:12 = 0, ARGS:13 = "", ARG:13 = 0, ARGS:14 = "", ARG:14 = 0, ARGS:15 = "", ARG:15 = 0, ARGS:16 = "", ARG:16 = 0, ARGS:17 = "", ARG:17 = 0, ARGS:18 = "", ARG:18 = 0, ARGS:19 = "", ARG:19 = 0)
+#DIM PRICE, 20
+#DIMS BUYITEM, 1
+#DIMS BUYITEMNAME, 1
+#LOCALSIZE 2
+#LOCALSSIZE 5
+IF ARG == 3
+	LOCALS = コイン
+ELSEIF ARG == 1
+	LOCALS = 魔貨
+ELSE
+	LOCALS = ￥
+ENDIF
+DRAWLINE
+PRINTFORML 무엇을 구입하시겠습니까？		所持%LOCALS% {MONEY:ARG}
+DRAWLINE
+;---- EDIT 052 ADD START 存在しないアイテム名はリストに出ないように-------------------------
+LOCAL = 0
+LOCAL:1 = 0
+WHILE 1
+	PRICE:(LOCAL+1) = ARG:(LOCAL+1) ? ARG:(LOCAL+1) # ITEMPRICE:(GETNUM(ITEM, ARGS:(LOCAL+1)))
+	LOCALS:1 = {PRICE:(LOCAL+1),5}%LOCALS%
+	IF GETNUM(ITEM, ARGS:(LOCAL+1)) >= 10000 && GETNUM(ITEM, ARGS:(LOCAL+1)) <= 15000
+		CALL GET_SKILL_PROP, "SKILL_NAME", GETNUM(ITEM, ARGS:(LOCAL+1)) - 10000
+		BUYITEMNAME = 【%RESULTS%】
+	ELSE
+		BUYITEMNAME = %ARGS:(LOCAL+1)%
+	ENDIF
+	IF GETNUM(ITEM, ARGS:(LOCAL+1)) >= 0
+		PRINTFORM [{LOCAL,2}] %BUYITEMNAME, 24, LEFT% %@"{PRICE:(LOCAL+1),5}%LOCALS%", 9%　　
+		LOCAL:1++
+	ELSE
+		PRICE:(LOCAL+1) = 0
+	ENDIF
+	LOCAL += 1
+	SIF !(LOCAL:1 & 1)
+		PRINTL 
+	SIF STRLENS(ARGS:(LOCAL+1)) == 0
+		BREAK
+WEND
+SIF LOCAL:1 & 1
+	PRINTL 
+;---- EDIT 052 ADD END   -------------------------
+$INPUT_LOOP
+DRAWLINE
+PRINTFORML [100] 돌아간다
+INPUT
+IF RESULT == 100
+	RETURN -1
+ELSEIF RESULT < 0 || RESULT > 19 || PRICE:(RESULT+1) == 0
+	GOTO INPUT_LOOP
+ELSE
+	CALL DUNGEON_BUY, GETNUM(ITEM, ARGS:(RESULT+1)), PRICE:(RESULT + 1), ARG
+	RESTART
+ENDIF
+
+
+;ARGはアイテム番号、ARG:1は価格、ARG:2は1で魔貨払い
+@DUNGEON_BUY, ARG, ARG:1, ARG:2
+SELECTCASE ARG
+	CASE MIN_EQUIPNUM TO MAX_EQUIPNUM - 1
+		IF ARG < 5500
+			CALL 装備説明, ARG
+			LOCAL = 999
+		ELSE
+			CALLFORM 装備解説_{ARG}
+			LOCAL = 999
+		ENDIF
+	CASE MIN_USEITEMNUM TO MAX_USEITEMNUM - 1
+		RESULT = 999
+		CALL GET_ITEMMAX, ARG
+		LOCAL = RESULT
+		PRINTFORML %ITEMNAME:ARG,20,LEFT%   所持数：{ITEM:ARG}/{LOCAL}
+		SIF FLAG:스킬속성표시설정 == 1
+			CALL SKILL_EXPLAIN_PERFORMANCE, ARG + 2000, -1
+		CALL GET_SKILL_PROP, "SKILL_EXPLAIN", ARG+2000, -1
+		DRAWLINE
+	CASEELSE
+		TRYCALLFORM アイテム解説_{ARG}
+		LOCAL = 999
+ENDSELECT
+IF ITEM:ARG >= LOCAL
+	PRINTW 더 이상 가질 수 없습니다
+ELSE
+	IF MONEY:(ARG:2) < ARG:1
+		PRINTW 돈이 부족합니다
+	ELSE
+		PRINTFORML 몇 개 구입하시겠습니까？ (현재 {ITEM:ARG}개 소지)
+		CALL INPUT_MANY(0, MIN(MONEY:(ARG:2)/ARG:1, LOCAL - ITEM:ARG))
+		IF RESULT
+			MONEY:(ARG:2) -= (RESULT * ARG:1)
+			IF RESULT == 1
+				PRINTFORMW ＜%ITEMNAME:ARG%을 구입했습니다＞
+			ELSE
+				PRINTFORMW ＜%ITEMNAME:ARG%를 {RESULT}개 구입했습니다＞
+			ENDIF
+			CALL GET_ITEM, ARG, RESULT
+		ENDIF
+	ENDIF
+ENDIF
+RETURN 0
+;文字列版
+@DUNGEON_SHOPS(ARG, ARGS)
+#DIM PRICE, 20
+#DIMS BUYITEM, 1
+#DIMS BUYITEMNAME, 1
+#DIMS ITEMLIST , 20
+#DIMS PRELIST , 40
+#LOCALSIZE 2
+#LOCALSSIZE 5
+VARSET PRICE , 0
+VARSET ITEMLIST , ""
+SPLIT ARGS , "," , PRELIST
+FOR LOCAL , 0 , 20
+	SIF PRELIST:(LOCAL*2) == ""
+		BREAK
+	ITEMLIST:LOCAL = %PRELIST:(LOCAL*2)%
+	PRICE:LOCAL = TOINT(PRELIST:(LOCAL*2+1)) != 0 ? TOINT(PRELIST:(LOCAL*2+1)) # ITEMPRICE:(ITEMLIST:LOCAL)
+NEXT
+IF ARG == 3
+	LOCALS = コイン
+ELSEIF ARG == 1
+	LOCALS = 魔貨
+ELSE
+	LOCALS = ￥
+ENDIF
+DRAWLINE
+PRINTFORML 무엇을 구입하시겠습니까？		所持%LOCALS% {MONEY:ARG}
+DRAWLINE
+;---- EDIT 052 ADD START 存在しないアイテム名はリストに出ないように-------------------------
+LOCAL = 0
+LOCAL:1 = 0
+WHILE 1
+	LOCALS:1 = {PRICE:LOCAL,5}%LOCALS%
+	IF GETNUM(ITEM, ITEMLIST:LOCAL) >= 10000 && GETNUM(ITEM, ITEMLIST:LOCAL) <= 15000
+		CALL GET_SKILL_PROP, "SKILL_NAME", GETNUM(ITEM,  ITEMLIST:LOCAL) - 10000
+		BUYITEMNAME = 【%RESULTS%】
+	ELSE
+		BUYITEMNAME = %ITEMLIST:LOCAL%
+	ENDIF
+	IF GETNUM(ITEM, ITEMLIST:LOCAL) >= 0
+		PRINTFORM [{LOCAL,2}] %BUYITEMNAME, 24, LEFT% %@"{PRICE:LOCAL,5}%LOCALS%", 9%　　
+		LOCAL:1++
+	ELSE
+		PRICE:LOCAL = 0
+	ENDIF
+	LOCAL += 1
+	SIF LOCAL:1 % 2 == 0
+		PRINTL 
+	SIF ITEMLIST:LOCAL == ""
+		BREAK
+WEND
+SIF LOCAL:1 & 1
+	PRINTL 
+;---- EDIT 052 ADD END   -------------------------
+$INPUT_LOOP
+DRAWLINE
+PRINTFORML [100] 돌아간다
+INPUT
+IF RESULT == 100
+	RETURN -1
+ELSEIF RESULT < 0 || RESULT > 19 || PRICE:RESULT == 0
+	GOTO INPUT_LOOP
+ELSE
+	CALL DUNGEON_BUY, GETNUM(ITEM, ITEMLIST:RESULT), PRICE:RESULT, ARG
+	RESTART
+ENDIF
+
+;=====================================================================
+;扉への進入
+;=====================================================================
+@DUNGEON_DOOR,ARG
+IF ARG > 0
+	;TA:(FLAG:현M*100+FLAG:현던전):(FLAG:현X):(FLAG:현Y) = 2
+	CALL SET_FLOOR_ANALYZE(2, FLAG:현던전, FLAG:현M, FLAG:현X, FLAG:현Y)
+	CALL WALK_DUNGEON,ARG,1
+ENDIF
+
+;=====================================================================
+;トラップ：ＨＰダメージ
+;=====================================================================
+@DUNGEON_TRAP_HP,ARG
+SIF FLAG:리프트마
+	RETURN 1
+LOCAL:1 = 0
+FOR LOCAL,1,7
+	IF POS(LOCAL) > -1 && GET_STATE(CFLAG:(POS(LOCAL)):상태이상) != "DYING"
+		IF RAND:2 && RAND:100 < MAXBASE:(POS(LOCAL)):지혜
+			CONTINUE
+		ELSEIF RAND:100 < MAXBASE:(POS(LOCAL)):운
+			CONTINUE
+		ENDIF
+		CALL VAR_HP,POS(LOCAL),-MAXBASE:(POS(LOCAL)):ＨＰ*ARG/100
+		LOCAL:1 += 1
+	ENDIF
+NEXT
+PRINTFORMW \@LOCAL:1 > 0 ? %CALLNAME:MASTER% 일행은 데미지를 입었다 # %CALLNAME:MASTER% 일행은 함정을 회피했다\@
+RETURN 1
+
+;=====================================================================
+;トラップ：ＭＰダメージ
+;=====================================================================
+@DUNGEON_TRAP_MP,ARG
+SIF FLAG:리프트마
+	RETURN 1
+LOCAL:1 = 0
+FOR LOCAL,1,7
+	IF POS(LOCAL) > -1 && GET_STATE(CFLAG:(POS(LOCAL)):상태이상) != "DYING"
+		IF RAND:2 && RAND:100 < MAXBASE:(POS(LOCAL)):지혜
+			CONTINUE
+		ELSEIF RAND:100 < MAXBASE:(POS(LOCAL)):운
+			CONTINUE
+		ENDIF
+		CALL VAR_MP,POS(LOCAL),-MAXBASE:(POS(LOCAL)):ＭＰ*ARG/100
+		LOCAL:1 += 1
+	ENDIF
+NEXT
+PRINTFORMW \@LOCAL:1 > 0 ? %CALLNAME:MASTER% 일행은 마력을 빼앗겼다 # %CALLNAME:MASTER% 일행은 함정을 회피했다\@
+RETURN 1
+
+;=====================================================================
+;トラップ：毒
+;=====================================================================
+@DUNGEON_TRAP_POISON,ARG,ARG:1 = 8
+SIF FLAG:리프트마
+	RETURN 1
+LOCAL:1 = 0
+FOR LOCAL,1,7
+	IF POS(LOCAL) > -1 && CFLAG:(POS(LOCAL)):상태이상 < GET_STATE_NUM("POISON")
+		SIF MAXBASE:POS(LOCAL):GET_TYPE(ARG:1) == 999 || MAXBASE:POS(LOCAL):GET_TYPE(ARG:1) < 1 || (100+MAXBASE:POS(LOCAL):POISON) < 1
+			CONTINUE
+		IF RAND:2 && RAND:100 < MAXBASE:(POS(LOCAL)):지혜
+			CONTINUE
+		ELSEIF RAND:100 < MAXBASE:(POS(LOCAL)):운
+			CONTINUE
+		ENDIF
+		IF RAND:100 < ARG * MAXBASE:(POS(LOCAL)):GET_TYPE(ARG:1) * (100+MAXBASE:POS(LOCAL):POISON) / 10000
+			CFLAG:(POS(LOCAL)):상태이상 = GET_STATE_NUM("POISON")
+			LOCAL:1 += 1
+		ENDIF
+	ENDIF
+NEXT
+PRINTFORMW \@LOCAL:1 > 0 ? %CALLNAME:MASTER% 일행은 독을 입었다 # %CALLNAME:MASTER% 일행은 함정을 회피했다\@
+RETURN 1
+
+;=====================================================================
+;トラップ：バッドステータス
+;=====================================================================
+@DUNGEON_TRAP_BADSTATE,ARG,ARG:1,ARG:2 = -1
+;ARG:0　バステの種類
+;ARG:1　付く確率
+;ARG:2　バステの相性
+
+;相性に設定がなければデフォルトの相性をつける
+;※DYINGは破魔
+IF ARG:2 == -1
+	SELECTCASE ARG
+		CASE 1,3,4,10
+			ARG:2 = 9
+		CASE 2
+			ARG:2 = 6
+		CASE 5
+			ARG:2 = 5
+		CASE 6,7,8,9,11
+			ARG:2 = 8
+		CASE 12,14
+			ARG:2 = 11
+		CASE 13,16,17
+			ARG:2 = 17
+		CASE 15,20
+			ARG:2 = 10
+		CASE 18
+			ARG:2 = 4
+		CASE 19
+			ARG:2 = 7
+	ENDSELECT
+ENDIF
+SIF FLAG:리프트마 || ARG:2 == -1
+	RETURN 1
+LOCAL:1 = 0
+FOR LOCAL,1,7
+	IF POS(LOCAL) > -1
+		SIF MAXBASE:POS(LOCAL):GET_TYPE(ARG:2) == 999 || MAXBASE:POS(LOCAL):GET_TYPE(ARG:2) < 1 || (100+MAXBASE:POS(LOCAL):GET_STATE(ARG)) < 1
+			CONTINUE
+		IF RAND:2 && RAND:100 < MAXBASE:(POS(LOCAL)):지혜
+			CONTINUE
+		ELSEIF RAND:100 < MAXBASE:(POS(LOCAL)):운
+			CONTINUE
+		ENDIF
+		IF RAND:100 < ARG:1 * MAXBASE:(POS(LOCAL)):GET_TYPE(ARG:2) * (100+MAXBASE:POS(LOCAL):GET_STATE(ARG)) / 10000
+			CFLAG:(POS(LOCAL)):상태이상 = ARG
+			LOCAL:1 += 1
+		ENDIF
+	ENDIF
+NEXT
+PRINTFORMW \@LOCAL:1 > 0 ? %CALLNAME:MASTER% 일행은 %GET_STATE(ARG)%에 걸렸다 # %CALLNAME:MASTER% 일행은 함정을 회피했다\@
+RETURN 1
+
+;=======================================================================
+;指定したマスに進入可能か・基本
+;=======================================================================
+@CAN_ENTER,ARG,ARG:1
+;マップの最小・最大範囲超えてたら無理
+SIF ARG < 0 || ARG > FLAG:최대X || ARG:1 < 0 || ARG:1 > FLAG:최대Y
+	RETURN 0
+;とりあえず壁は無理
+SIF DA:ARG:(ARG:1) % 10 == 0
+	RETURN 0
+RETURN 1
+
+;===================================================================
+;ＭＡＧ消費処理
+;===================================================================
+@CONSUME_MAG
+FOR LOCAL:1,1,7
+	LOCALS = 포지션{LOCAL:1}
+	IF FLAG:LOCALS > -1
+		;LOCALに消費する人の番号を突っ込む
+		LOCAL = FLAG:LOCALS
+		;CPが0なら飛ばす
+		SIF BASE:LOCAL:CP == 0
+			CONTINUE
+		;種族が人間でも飛ばす
+		SIF ABL:LOCAL:종족 == 0
+			CONTINUE
+		;---- EDIT 042 ADD START -------------------------
+		;呪いのレッドカーペット起動中なら飛ばす
+		SIF FLAG:저주의레드카펫
+			CONTINUE
+		;---- EDIT 042 ADD END -------------------------
+		IF CFLAG:LOCAL:ＭＡＧ자기소비 == 1
+			;自己消費がＯＮなら自分のＭＡＧを見る
+			IF GET_CHARA_STOCK_MAG(LOCAL) == 0
+				;ＭＡＧが空の場合主人を見る
+				IF GET_CHARA_STOCK_MAG(MASTER) == 0
+					;主人のも空ならダメージ処理
+					CALL VAR_HP,LOCAL,-(MAXBASE:LOCAL:ＨＰ/10),"食いしばり無効ダメージ"
+					CALL VAR_MP,LOCAL,-(MAXBASE:LOCAL:ＭＰ/10),"ダメージ"
+				ELSE
+					CALL CONTROL_MAG, MASTER, -MAXBASE:LOCAL:CP * FLAG:MAG소비율 / 100
+				ENDIF
+			ELSE
+				;空でなければ自分で消費
+				CALL CONTROL_MAG,LOCAL, -MAXBASE:LOCAL:CP * FLAG:MAG소비율 / 100
+			ENDIF
+		ELSE
+			;自己消費がＯＦＦなら主人のＭＡＧを見る
+			IF GET_CHARA_STOCK_MAG(MASTER) == 0
+				;主人のＭＡＧが空の場合自分のＭＡＧを見る
+				IF GET_CHARA_STOCK_MAG(LOCAL) == 0
+					;主人のも空ならダメージ処理
+					CALL VAR_HP,LOCAL,-(MAXBASE:LOCAL:ＨＰ/10),"食いしばり無効ダメージ"
+					CALL VAR_MP,LOCAL,-(MAXBASE:LOCAL:ＭＰ/10),"ダメージ"
+				ELSE
+					CALL CONTROL_MAG, LOCAL,-MAXBASE:LOCAL:CP * FLAG:MAG소비율 / 100
+				ENDIF
+			ELSE
+				;空でなければ主人で消費
+				CALL CONTROL_MAG,MASTER,-MAXBASE:LOCAL:CP  * FLAG:MAG소비율 / 100
+			ENDIF
+		ENDIF
+	ENDIF
+NEXT
+
+;===================================================================
+;ＭＡＧ消費切り替え
+;===================================================================
+@SWITCH_MAG
+
+$PRINT_LIST
+DRAWLINE
+FOR LOCAL,1,7
+	LOCALS = 포지션{LOCAL}
+	SIF FLAG:LOCALS < 1
+		CONTINUE
+	PRINTFORM [{LOCAL}]　
+	CALL ARRANGE_CHARALIST_2,FLAG:LOCALS
+	CALL ARRANGE_CHARALIFE, FLAG:LOCALS
+	PRINTFORM 　MAG:[{GET_CHARA_STOCK_MAG(FLAG:LOCALS),8}/{GET_CHARA_MAXMAG(FLAG:LOCALS),8}] \@ CFLAG:(FLAG:LOCALS):ＭＡＧ자기소비 ? 자기소비 # 주인소비 \@
+NEXT
+PRINTL
+
+DRAWLINE
+PRINTFORML ＭＡＧ소비를 전환하고 싶은 캐릭터를 선택해주세요
+DRAWLINE
+
+PRINTLC [1000]돌아간다
+
+$INPUT_LOOP_1
+INPUT
+LOCALS = 포지션{RESULT}
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT < 1 || RESULT > 6 || FLAG:LOCALS < 1
+	GOTO INPUT_LOOP_1
+ELSE
+	IF CFLAG:(FLAG:LOCALS):ＭＡＧ자기소비 == 0
+		CFLAG:(FLAG:LOCALS):ＭＡＧ자기소비 = 1
+	ELSE
+		CFLAG:(FLAG:LOCALS):ＭＡＧ자기소비 = 0
+	ENDIF
+ENDIF
+RESTART
+
+
+;===================================================================
+;ID捜査
+;===================================================================
+@SEARCH_ID(ARG)
+#FUNCTION
+FOR LOCAL,0,FLAG:최대X
+	FOR LOCAL:1,0,FLAG:최대Y
+		IF DA:(LOCAL):(LOCAL:1) == ARG
+			RETURNF LOCAL*100+LOCAL:1
+		ENDIF
+	NEXT
+NEXT
+RETURNF -101
+
+
+;===================================================================
+;エストマ・リベラマ等の効力
+;　COMPの機能でデフォでエンカウント率変動とかあるといいかも
+;===================================================================
+@ENCOUNTER_CHANGER
+;FLAG:エンカウント率補正 = 0
+FLAG:에스트마 = 0
+FLAG:라이트마 = 0
+FLAG:리프트마 = 0
+FLAG:리베라마 = 0
+FLAG:디스가이즈굿즈 = 0
+;---- EDIT 096 ADD START -------------------------
+FLAG:맵퍼= 0
+;---- EDIT 096 ADD END ---------------------------
+RETURN 1
+
+
+;===================================================================
+;月齢変化
+;===================================================================
+@MOON
+#DIM L_CHARA
+#DIMS TEMPS
+IF FLAG:월령벡터 == 0
+	FLAG:월령 ++
+ELSE
+	FLAG:월령 --
+ENDIF
+SIF FLAG:월령 > 8
+	FLAG:월령 = 8
+SIF FLAG:월령 < 0
+	FLAG:월령 = 0
+SIF FLAG:월령 == 8
+	FLAG:월령벡터 = 1
+SIF FLAG:월령 == 0
+	FLAG:월령벡터 = 0
+
+IF FLAG:월령 == 0 && FLAG:SHOP커맨드 == [[ショップ:탐색]]
+	;SIF FLAG:エンカウント率補正 || FLAG:에스트마
+	;---- EDIT 084 MOD START -------------------------
+	IF FLAG:에스트마 || FLAG:리베라마 || FLAG:디스가이즈굿즈
+		IF FLAG:디스가이즈굿즈
+			FLAG:디스가이즈굿즈 = 0
+			;一応ここでも折っておく
+			FLAG:리베라마 = 0
+			IF IS_HAVES_USEITEM("디스가이즈굿즈")
+				PRINTL 이어서 디스가이즈 굿즈를 사용하겠습니까?
+				CALL INPUT_YN, "사용한다", "그만둔다"
+				SIF RESULT == 0
+					CALL ACTION_FIELD, SKILL_NUM_F("디스가이즈굿즈")
+			ENDIF
+		ELSEIF FLAG:리베라마 < 0
+			FLAG:리베라마 = 0
+			IF IS_HAVES_USEITEM("집마의피리")
+				PRINTL 이어서 집마의 피리를 사용하겠습니까?
+				CALL INPUT_YN, "사용한다", "그만둔다"
+				SIF RESULT == 0
+					CALL ACTION_FIELD, SKILL_NUM_F("집마의피리")
+			ENDIF
+		ELSE
+			L_CHARA = FINDCHARA_ID(FLAG:리베라마 - 1)
+			FLAG:리베라마 = 0
+			IF L_CHARA >= 0
+				CALL CHECK_ACTIONABLE, L_CHARA, SKILL_NUM_F("리베라마")
+				IF RESULT && HAVE_SKILL(L_CHARA, SKILL_NUM_F("리베라마"))
+					IF L_CHARA == MASTER
+						PRINTL 이어서 리베라마를 사용하겠습니까?
+					ELSE
+						PRINTFORML 이어서 %CALLNAME:L_CHARA%에게 리베라마를 사용하게 하겠습니까?
+					ENDIF
+					CALL INPUT_YN, "사용한다", "그만둔다"
+					IF RESULT == 0
+						CALL ACTION_FIELD, SKILL_NUM_F("리베라마"), L_CHARA
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDIF
+		IF FLAG:에스트마
+			IF FLAG:에스트마 < 0
+				IF FLAG:에스트마 == -2
+					TEMPS = 황금의벌꿀주
+				ELSE
+					TEMPS = 봉마의방울
+				ENDIF
+				FLAG:에스트마 = 0
+				IF IS_HAVES_USEITEM(TEMPS)
+					PRINTFORML 이어서 %TEMPS%을(를) 사용하겠습니까?
+					CALL INPUT_YN, "사용한다", "그만둔다"
+					SIF RESULT == 0
+						CALL ACTION_FIELD, SKILL_NUM_F(TEMPS)
+				ENDIF
+			ELSE
+				L_CHARA = FINDCHARA_ID(FLAG:에스트마 - 1)
+				FLAG:에스트마 = 0
+				IF L_CHARA >= 0
+					CALL CHECK_ACTIONABLE, L_CHARA, SKILL_NUM_F("에스트마")
+					IF RESULT && HAVE_SKILL(L_CHARA, SKILL_NUM_F("에스트마"))
+						IF L_CHARA == MASTER
+							PRINTL 이어서 에스트마를 사용하겠습니까?
+						ELSE
+							PRINTFORML 이어서 %CALLNAME:L_CHARA%에게 에스트마를 사용하게 하겠습니까?
+						ENDIF
+						CALL INPUT_YN, "사용한다", "그만둔다"
+						IF RESULT == 0
+							CALL ACTION_FIELD, SKILL_NUM_F("에스트마"), L_CHARA
+						ENDIF
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+	IF FLAG:라이트마
+		PRINTW 라이트마의 효과가 끊어졌다.
+		IF FLAG:라이트마 < 0
+			TEMPS = 전망구슬
+			FLAG:라이트마 = 0
+			IF IS_HAVES_USEITEM(TEMPS)
+				PRINTFORML 이어서 %TEMPS%을(를) 사용하겠습니까?
+				CALL INPUT_YN, "사용한다", "그만둔다"
+				SIF RESULT == 0
+					CALL ACTION_FIELD, SKILL_NUM_F(TEMPS)
+			ENDIF
+		ELSE
+			L_CHARA = FINDCHARA_ID(FLAG:라이트마 - 1)
+			FLAG:라이트마 = 0
+			IF L_CHARA >= 0
+				CALL CHECK_ACTIONABLE, L_CHARA, SKILL_NUM_F("라이트마")
+				IF RESULT && HAVE_SKILL(L_CHARA, SKILL_NUM_F("라이트마"))
+					IF L_CHARA == MASTER
+						PRINTL 이어서 라이트마를 사용하겠습니까?
+					ELSE
+						PRINTFORML 이어서 %CALLNAME:L_CHARA%에게 라이트마를 사용하게 하겠습니까?
+					ENDIF
+					CALL INPUT_YN, "사용한다", "그만둔다"
+					IF RESULT == 0
+						CALL ACTION_FIELD, SKILL_NUM_F("라이트마"), L_CHARA
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+	IF FLAG:리프트마
+		PRINTW 리프트마의 효과가 끊어졌다.
+		IF FLAG:리프트마 < 0
+			TEMPS = 코어실드
+			FLAG:리프트마 = 0
+			IF IS_HAVES_USEITEM(TEMPS)
+				PRINTFORML 이어서 %TEMPS%을(를) 사용하겠습니까?
+				CALL INPUT_YN, "사용한다", "그만둔다"
+				SIF RESULT == 0
+					CALL ACTION_FIELD, SKILL_NUM_F(TEMPS)
+			ENDIF
+		ELSE
+			L_CHARA = FINDCHARA_ID(FLAG:리프트마 - 1)
+			FLAG:리프트마 = 0
+			IF L_CHARA >= 0
+				CALL CHECK_ACTIONABLE, L_CHARA, SKILL_NUM_F("리프트마")
+				IF RESULT && HAVE_SKILL(L_CHARA, SKILL_NUM_F("리프트마"))
+					IF L_CHARA == MASTER
+						PRINTL 이어서 리프트마를 사용하겠습니까?
+					ELSE
+						PRINTFORML 이어서 %CALLNAME:L_CHARA%에게 리프트마를 사용하게 하겠습니까?
+					ENDIF
+					CALL INPUT_YN, "사용한다", "그만둔다"
+					IF RESULT == 0
+						CALL ACTION_FIELD, SKILL_NUM_F("리프트마"), L_CHARA
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+	;---- EDIT 000 XXX START -------------------------
+	IF FLAG:맵퍼
+		PRINTW 매퍼의 효과가 끊어졌다.
+		IF FLAG:맵퍼 < 0
+			TEMPS = 둔갑나침반
+			FLAG:맵퍼 = 0
+			IF IS_HAVES_USEITEM(TEMPS)
+				PRINTFORML 이어서 %TEMPS%을(를) 사용하겠습니까?
+				CALL INPUT_YN, "사용한다", "그만둔다"
+				SIF RESULT == 0
+					CALL ACTION_FIELD, SKILL_NUM_F(TEMPS)
+			ENDIF
+		ELSE
+			L_CHARA = FINDCHARA_ID(FLAG:맵퍼 - 1)
+			FLAG:맵퍼 = 0
+			IF L_CHARA >= 0
+				CALL CHECK_ACTIONABLE, L_CHARA, SKILL_NUM_F("맵퍼")
+				IF RESULT && HAVE_SKILL(L_CHARA, SKILL_NUM_F("맵퍼"))
+					IF L_CHARA == MASTER
+						PRINTL 이어서 매퍼를 사용하겠습니까?
+					ELSE
+						PRINTFORML 이어서 %CALLNAME:L_CHARA%에게 매퍼를 사용하게 하겠습니까?
+					ENDIF
+					CALL INPUT_YN, "사용한다", "그만둔다"
+					IF RESULT == 0
+						CALL ACTION_FIELD, SKILL_NUM_F("맵퍼"), L_CHARA
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+	;---- EDIT 000 XXX END ---------------------------
+	;---- EDIT 084 MOD END ---------------------------
+	;FLAG:エンカウント率補正 = 0
+	CALL 酔い覚まし()
+	TRYCALLFORM EVENT_NEWMOON_DUNGEON{FLAG:현던전}
+ENDIF
+
+;===================================================================
+;月齢歩き
+;===================================================================
+@MOVE_MOON,ARG
+LOCAL += 1
+IF LOCAL >= 16 * FLAG:월령진행률 / 100
+	LOCAL = 0
+	CALL MOON
+ENDIF
+
+;===================================================================
+;ＤＤＭ
+;自宅のサーバーに悪魔を転送する
+;===================================================================
+@COMP_DDM
+;CALL INPUT_CHARA_LIST("자택 서버로 전송할 악마를 선택해 주십시오", "CASTING_COMP_DDM", "UP_PRINT_COMP_DDM")
+{
+CALL INPUT_CHARA_LIST
+	, "FUNC_PROPSET_LIST_BATTLE"
+	, "자택 서버로 전송할 악마를 선택해 주십시오"
+	, "CASTING_COMP_DDM" 
+	, "UP_PRINT_COMP_DDM"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+IF RESULT == 1000
+	RETURN 0
+ELSE
+	;---- EDIT 013 ADD START -------------------------
+	IF CFLAG:RESULT:PT플래그 == 2
+		PRINTFORML %CALLNAME:RESULT%는 전투에 참가 중인 멤버입니다
+		PRINTFORML 자택 서버로 전송하더라도、이대로 전투에
+		PRINTFORML 계속 참가시킬지、선택해 주십시오
+		LOCAL = RESULT
+		CALL INPUT_SELECT(1, "계속 참가시킨다", 2, "멤버에서 제외하고 전송한다", 9, "전송을 취소한다")
+		IF RESULT == 9
+			RESTART
+		ELSEIF RESULT == 2
+			CALL REMOVE_POSITION, CPOS(LOCAL)
+			PRINTFORMW %CALLNAME:LOCAL%을(를) 전투 멤버에서 제외하고、자택 서버로 전송했습니다
+		ENDIF
+		RESULT = LOCAL
+	ENDIF
+	;---- EDIT 013 ADD END -------------------------
+	CFLAG:RESULT:소속ＣＯＭＰ = -1
+	;---- EDIT 012 MOD START ------------------------
+	;送った悪魔がリストから消えるようにリスト構築からやり直させる
+	RESTART
+	;GOTO PRINT_LIST
+	;---- EDIT 012 MOD END   ------------------------
+ENDIF
+
+@CASTING_COMP_DDM(ARG)
+SIF ARG == MASTER
+	RETURN 0
+;---- EDIT 098 MOD START -------------------------
+SIF !GET_ROLE_PROP("CAN_PUT_IN_COMP", ARG)
+	RETURN 0
+;SIF (ABL:ARG:종족 == 0 || ABL:ARG:종족 > 45)
+;	RETURN 0
+;---- EDIT 098 MOD END ---------------------------
+SIF CFLAG:ARG:이자리에없는플래그 == 1
+	RETURN 0
+;---- EDIT 012 MOD START ------------------------
+;第一引数がLOCALだったのをARGに修正
+;SIF CFLAG:ARG:용량미사용
+;	RETURN 0
+SIF CFLAG:ARG:소속ＣＯＭＰ == -1
+	RETURN 0
+;---- EDIT 012 MOD END   ------------------------
+RETURN 1
+
+@UP_PRINT_COMP_DDM
+PRINTFORML 자택 서버로 전송할 악마를 선택해 주십시오　\@ A > リスト表示数() ? ＜page.{P + 1}/{A / リスト表示数() + 1}＞ # \@　ＣＯＭＰ：{NUM_NAKAMA()}/{GET_STOCKSIZE()}
+
+
+;---- EDIT 021 ADD START -------------------------
+
+;=================================================
+;   sub DG_GET_TILE
+;=================================================
+;   タイル文字取得
+;-------------------------------------------------
+; Input:
+;  ARG:0				X座標
+;  ARG:1				Y座標
+;  ARG:2				M番号
+;  ARG:3				ダンジョン番号
+; Output:
+;  RESULTS				タイル文字
+;-------------------------------------------------
+@DG_GET_TILE(ARG:0, ARG:1, ARG:2, ARG:3)
+#DIM LX
+#DIM LY
+#DIM LM
+#DIM LD
+#DIM TILE_VAL
+#DIMS KEY
+#LOCALSSIZE 2
+
+LX = ARG:0
+LY = ARG:1
+LM = ARG:2
+LD = ARG:3
+LOCALS =
+KEY =
+TILE_VAL = DA:LX:LY
+
+
+IF (TILE_VAL % 10) == -1
+	KEY = D
+ELSE
+	KEY = {TILE_VAL % 10}
+ENDIF
+TRYCCALLFORM TILE_MARK_COMMON_{LD}_%KEY%, TILE_VAL, LX, LY
+	SIF RESULT == 1
+		GOTO NO_COMMON
+	LOCALS = %RESULTS%
+CATCH
+	$NO_COMMON
+	TRYCCALLFORM TILE_MARK_ID_{LD}_{LM}_% \@TILE_VAL < 0 ? m # \@%{ABS(TILE_VAL)}
+		LOCALS = %RESULTS%
+	CATCH
+		;- DG:タイル標準文字
+		CALL DG_BASE_TILE(LX, LY, LM, LD)
+		LOCALS = %RESULTS%
+	ENDCATCH
+ENDCATCH
+
+;-- ダンジョン32:이상한던전 --------
+;動的に特殊タイルを設定する	※シンボルエンカウントなどの『移動するオブジェクト』対応
+;　※M番号、X座標、Y座標を関数名ではなく引数で渡すことでシンボルエンカウントなどの『移動するオブジェクト』の描画に対応可能とする
+IF FLAG:지형자동생성・FOE플래그 == 1
+	CALL SEF_TILE_MARK_DYBANUC, LX, LY
+	LOCALS = %RESULTS%
+ENDIF
+;-- ダンジョン32:이상한던전 --------
+
+;---- EDIT 093 ADD START -------------------------
+LOCALS:1 '= LOCALS
+;---- EDIT 093 ADD END ---------------------------
+;---- EDIT 051 MOD  -------------------------
+IF GETCOLOR() == GETDEFCOLOR()
+	SELECTCASE LOCALS
+		CASE "■"
+			SETCOLOR GETDEFCOLOR()
+		CASE "□"
+			IF DA:LX:LY < 0
+				SETCOLOR 0x333344
+			ELSE
+				;---- EDIT 092 ADD START -------------------------
+				IF 一時探索経路履歴:(FLAG:현M):LX:LY && DUNGEON_SHOW_TEMP_EXPLORED_ROUTE
+					IF DUNGEON_SHOW_TEMP_EXPLORED_ROUTE == 1
+						LOCALS = %UNICODE(0x303C)%
+					ELSE
+						LOCALS = ■
+					ENDIF
+					SETCOLOR COLOR("p-blue")
+				ELSE
+					SETCOLOR 0x777766
+				ENDIF
+				;---- EDIT 092 ADD END ---------------------------
+			ENDIF
+		CASE "扉"
+			IF 一時探索経路履歴:(FLAG:현M):LX:LY && DUNGEON_SHOW_TEMP_EXPLORED_ROUTE
+				SETCOLOR COLOR("p-blue")
+			ELSE
+				SETCOLOR 0x8888aa
+			ENDIF
+		CASE "宝"
+			SETCOLOR 0xffdd99
+		CASE "罠"
+			SETCOLOR 0xbb0033
+		CASE "昇", "降"
+			SETCOLOR 0x44aa00
+		CASE "Ｔ", "ｔ", "！"
+			SETCOLOR 0xaa44ff
+		CASE "Ｒ", "Ｃ"
+			SETCOLOR 0x77bbff
+		CASE "↑", "→", "↓", "←", "Ｅ", "出"
+			SETCOLOR 0xff7700
+		CASEELSE
+	ENDSELECT
+ENDIF
+;---- EDIT 093 MOD START -------------------------
+RESULTS '= LOCALS, LOCALS:1
+;---- EDIT 093 MOD END ---------------------------
+
+;=================================================
+;   sub DG_BASE_TILE
+;=================================================
+;   タイル標準文字
+;-------------------------------------------------
+; Input:
+;  ARG:0				X座標
+;  ARG:1				Y座標
+;  ARG:2				M番号
+;  ARG:3				ダンジョン番号
+; Output:
+;  RESULTS				タイル標準文字
+;-------------------------------------------------
+@DG_BASE_TILE(ARG:0, ARG:1, ARG:2, ARG:3)
+#DIM LX
+#DIM LY
+#DIM LM
+#DIM LD
+#DIM TILE_VAL
+#LOCALSSIZE 1
+
+LX = ARG:0
+LY = ARG:1
+LM = ARG:2
+LD = ARG:3
+LOCALS=
+TILE_VAL = DA:LX:LY
+
+SELECTCASE TILE_VAL % 10
+	CASE 0
+		LOCALS = ■
+	CASE 1
+		LOCALS = □
+	CASE 2
+		LOCALS = 扉
+	CASE 3
+		LOCALS = 宝
+	CASE 4
+		LOCALS = ！
+	CASE 5
+		IF GET_FLOOR_ANALYZE_T(LX, LY) == 2
+			LOCALS = 罠
+		ELSE
+			LOCALS = □
+		ENDIF
+	CASE 6
+		LOCALS = 昇
+	CASE 7
+		LOCALS = 降
+	CASE 8
+		LOCALS = 出
+	CASE -1 
+		LOCALS = □
+	CASE -9
+		SELECTCASE -(TILE_VAL % 100) / 10
+			CASE 0
+				LOCALS = Ｔ
+			CASE 1
+				LOCALS = Ｒ
+			CASE 2
+				LOCALS = Ｅ
+		ENDSELECT
+	CASEELSE
+		TRYCCALLFORM TILE_MARK_{LD}_{LM}_{LX}_{LY}
+			LOCALS = %RESULTS%
+		CATCH
+			LOCALS = ■
+		ENDCATCH
+ENDSELECT
+
+RESULTS = %LOCALS%
+
+
+@CONVERT_OUTRANGE_COORD_X, LX
+#FUNCTION
+#DIM DYNAMIC LX
+SIF !FLOOR_IS_LOOP_X
+	RETURNF LX
+SIF LX < 0
+	LX += FLAG:최대X
+SIF LX >= FLAG:최대X
+	LX -= FLAG:최대X
+RETURNF LX
+
+@CONVERT_OUTRANGE_COORD_Y, LY
+#FUNCTION
+#DIM DYNAMIC LY
+SIF !FLOOR_IS_LOOP_Y
+	RETURNF LY
+SIF LY < 0
+	LY += FLAG:최대Y
+SIF LY >= FLAG:최대Y
+	LY -= FLAG:최대Y
+RETURNF LY
+
+;---- EDIT 021 ADD END   -------------------------
+;---- EDIT 050 ADD START -------------------------
+@KARMA_TERMINAL
+	CUSTOMDRAWLINE =
+	
+	PRINTL 식노의 세팅을 실행합니다
+	PRINTL 실행할 내용을 선택해 주십시오
+	
+	DRAWLINE
+	
+	PRINTL [1] 스킬 세트
+	PRINTL [2] 스테이터스 세트
+	PRINTL [3] 만트라 취득
+	
+	DRAWLINE
+	PRINTL [0] 아무것도 안 한다
+
+	CALL INPUTINT,0,1,2,3
+
+	SELECTCASE RESULT
+		CASE 0
+			RETURN 1
+		CASE 1
+			CALL SET_KARMANS_SKILL
+		CASE 2
+			CALL SET_KARMANS_STATUS
+		CASE 3
+			CALL KARMAN
+	ENDSELECT
+	RESTART
+		
+;---- EDIT 050 ADD END -------------------------	
+;---- EDIT 029 ADD START -------------------------
+@KARMAN
+	LOCAL:1 = 0
+	FOR LOCAL, 1, 7
+		SIF POS(LOCAL) < 0
+			CONTINUE
+		SIF !TALENT:POS(LOCAL):식노
+			CONTINUE
+		;行動可能なキャラでないとダメ
+		CALL INPUTABLE_CHARA, POS(LOCAL)
+		SIF !RESULT
+			CONTINUE
+		LOCAL:1 = 1
+		BREAK
+	NEXT
+	IF !LOCAL:1
+		PRINTW 만트라를 취득할 수 있는 캐릭터가 없습니다
+		RETURN 0
+	ENDIF
+	LOCAL:2 = LINECOUNT
+	$MANTRA_LOOP
+	CLEARLINE LINECOUNT - LOCAL:2
+	CALL SHOW_NOW_FORMATION_P,0,2
+;---- EDIT 050 MOD START -------------------------
+;RESTAT選べる意味がなさそうなのでコメントアウト
+;	PRINTL [0] ＣＡＮＣＥＬ [2000]ＡＬＬ ＣＡＮＣＥＬ
+	PRINTL [0] 돌아간다
+	PRINTL 누구에게 만트라를 취득시키겠습니까?
+;	CALL INPUTINT(0,1,2,3,4,5,6,2000)
+	CALL INPUTINT(0,1,2,3,4,5,6)
+	IF RESULT == 0
+;		RESTART
+;	ELSEIF RESULT == 2000
+		RETURN 0
+;---- EDIT 050 MOD END -------------------------
+	ELSE
+		LOCAL = POS(RESULT)
+		SIF LOCAL < 0
+			GOTO MANTRA_LOOP
+		IF !TALENT:LOCAL:식노
+			PRINTFORMW %CALLNAME:LOCAL%은(는) 식노가 아닙니다
+			GOTO MANTRA_LOOP
+		ENDIF
+		CALL INPUTABLE_CHARA, LOCAL
+		IF !RESULT
+			PRINTFORMW %CALLNAME:LOCAL%은(는) 만트라를 취득할 수 있는 상태가 아닙니다
+			GOTO MANTRA_LOOP
+		ENDIF
+		CALL DOWNLOAD_MANTRA, 7, 7, LOCAL
+		GOTO MANTRA_LOOP
+	ENDIF
+;---- EDIT 029 ADD END   -------------------------
+
+;---- EDIT 050 ADD START -------------------------
+@SET_KARMANS_SKILL
+
+	LOCAL:1 = LINECOUNT
+	$MANTRA_LOOP
+	CLEARLINE LINECOUNT - LOCAL:1
+	CALL SHOW_NOW_FORMATION_P,0,2
+	PRINTL [0] 돌아간다
+	PRINTL 누구의 장비스킬을 변경할까？
+	CALL INPUTINT(0,1,2,3,4,5,6)
+	IF RESULT == 0
+		RETURN 0
+	ELSE
+		LOCAL = POS(RESULT)
+		SIF LOCAL < 0
+			GOTO MANTRA_LOOP
+		IF !TALENT:LOCAL:식노
+			PRINTFORMW %조사처리(CALLNAME:LOCAL,"는")%는 식노가 아닙니다
+			GOTO MANTRA_LOOP
+		ENDIF
+		CALL INPUTABLE_CHARA, LOCAL
+		IF !RESULT
+			PRINTFORMW %조사처리(CALLNAME:LOCAL,"는")% 스킬을 세트할 수 있는 상태가 아닙니다
+			GOTO MANTRA_LOOP
+		ENDIF
+		CALL SET_MANTRA_SKILL,LOCAL
+		GOTO MANTRA_LOOP
+	ENDIF
+	
+@SET_KARMANS_STATUS
+
+	LOCAL:1 = LINECOUNT
+	$MANTRA_LOOP
+	CLEARLINE LINECOUNT - LOCAL:1
+	CALL SHOW_NOW_FORMATION_P,0,2
+	PRINTL [0] 돌아간다
+	PRINTL 누구의 스테이터스배분을 변경할까？
+	CALL INPUTINT(0,1,2,3,4,5,6)
+	IF RESULT == 0
+		RETURN 0	
+	ELSE
+		LOCAL = POS(RESULT)
+		SIF LOCAL < 0
+			GOTO MANTRA_LOOP
+		IF !TALENT:LOCAL:식노
+			PRINTFORMW %조사처리(CALLNAME:LOCAL,"는")%는 식노가 아닙니다
+			GOTO MANTRA_LOOP
+		ENDIF
+		CALL INPUTABLE_CHARA, LOCAL
+		IF !RESULT
+			PRINTFORMW %조사처리(CALLNAME:LOCAL,"는")% 스테이터스를 변경할 수 있는 상태가 아닙니다
+			GOTO MANTRA_LOOP
+		ENDIF
+		CALL MANTRA_BASESTATUS,LOCAL
+		GOTO MANTRA_LOOP
+	ENDIF
+
+;---- EDIT 050 ADD END -------------------------
+;---- EDIT 093 ADD START -------------------------
+@MAPPING_USER, SELECT_NUM, SELECT_MODE
+#DIM DYNAMIC L_LINE
+#DIM DYNAMIC SELECT_NUM
+#DIMS DYNAMIC SELECT_MODE
+#DIM DYNAMIC STOCK_REDRAW
+#DIM DYNAMIC L_X
+#DIM DYNAMIC L_Y
+STOCK_REDRAW = CURRENTREDRAW()
+REDRAW 0
+L_LINE = LINECOUNT
+WHILE 1
+	CLEARLINE LINECOUNT - L_LINE
+	CALL SHOW_FLOOR, , , "SET" + SELECT_MODE, SELECT_NUM
+	;現パーティ描画
+	CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+	IF SELECT_MODE == "COLOR"
+		IF SELECT_NUM
+			HTML_PRINT SET_BUTTON_TAG("[0] COLOR CONFIG", "0")
+		ELSE
+			HTML_PRINT SET_COLOR_TAG("[0] COLOR CONFIG", "gray")
+		ENDIF
+	ELSE
+		IF SELECT_NUM
+			HTML_PRINT SET_BUTTON_TAG("[0] OBJECT CONFIG", "0")
+		ELSE
+			HTML_PRINT SET_COLOR_TAG("[0] OBJECT CONFIG", "gray")
+		ENDIF
+	ENDIF
+	HTML_PRINT SET_BUTTON_TAG("[1] ALL RESET", "1")
+	HTML_PRINT SET_BUTTON_TAG("[9] END", "9")
+	PRINTL 
+	PRINTSL GETLINESTR("=")
+	PRINTL
+
+	ONEINPUTS
+	SELECTCASE RESULTS
+		CASE "0"
+			IF SELECT_MODE == "COLOR"
+				IF SELECT_NUM
+					CALL COLOR_SETTER, @"■", DUNGEON_USER_TILE_COLOR:SELECT_NUM, GET_DEFAULT_USER_TILE_COLOR(SELECT_NUM)
+					DUNGEON_USER_TILE_COLOR:SELECT_NUM = RESULT
+					SAVEGLOBAL
+				ENDIF
+			ELSE
+				PRINTFORML 타일로 설정하고 싶은 오브젝트를 입력해 주십시오.
+				PRINTFORML 아무것도 입력하지 않았을 경우 기본 오브젝트가 설정됩니다.
+				INPUTS
+				IF RESULTS == ""
+					DUNGEON_USER_TILE_OBJECT:SELECT_NUM '= GET_DEFAULT_USER_TILE_OBJECT(SELECT_NUM)
+				ELSEIF STRLENS(RESULTS) > 2
+					PRINTFORMW 문자열이 너무 깁니다!
+				ELSE
+					DUNGEON_USER_TILE_OBJECT:SELECT_NUM = %RESULTS, 2, LEFT%
+				ENDIF
+				SAVEGLOBAL
+			ENDIF
+		CASE "1"
+			IF SELECT_MODE == "COLOR"
+				FOR L_Y, 0, FLAG:최대Y
+					FOR L_X, 0, FLAG:최대X
+						CALL SET_FLOOR_USER_COLOR, 0, FLAG:현던전, FLAG:현M, L_X, L_Y
+					NEXT
+				NEXT
+				TEMP_SHOW_LAST_FLOOR = -1
+			ELSEIF SELECT_MODE == "OBJECT"
+				FOR L_Y, 0, FLAG:최대Y
+					FOR L_X, 0, FLAG:최대X
+						CALL SET_FLOOR_USER_OBJECT, 0, FLAG:현던전, FLAG:현M, L_X, L_Y
+					NEXT
+				NEXT
+				TEMP_SHOW_LAST_FLOOR = -1
+			ENDIF
+		CASE "9"
+			BREAK
+		CASEELSE
+			IF STRCOUNT(RESULTS, "SETCOLOR")
+				L_X = TOINT(AUTO_SPLIT(RESULTS, "/", 1))
+				L_Y = TOINT(AUTO_SPLIT(RESULTS, "/", 2))
+				;同じ色で塗った場合はリセット
+				IF TEMP_USER_COLOR:L_X:L_Y == SELECT_NUM
+					CALL SET_FLOOR_USER_COLOR, 0, FLAG:현던전, FLAG:현M, L_X, L_Y
+					TEMP_USER_COLOR:L_X:L_Y = 0
+				ELSE
+					CALL SET_FLOOR_USER_COLOR, SELECT_NUM, FLAG:현던전, FLAG:현M, L_X, L_Y
+					TEMP_USER_COLOR:L_X:L_Y = SELECT_NUM
+				ENDIF
+			ELSEIF STRCOUNT(RESULTS, "MAPPING_USER_COLOR")
+				SELECT_NUM = TOINT(AUTO_SPLIT(RESULTS, "/", 1))
+				SELECT_MODE = COLOR
+			ELSEIF STRCOUNT(RESULTS, "SETOBJECT")
+				L_X = TOINT(AUTO_SPLIT(RESULTS, "/", 1))
+				L_Y = TOINT(AUTO_SPLIT(RESULTS, "/", 2))
+				IF TEMP_USER_OBJECT:L_X:L_Y == SELECT_NUM
+					CALL SET_FLOOR_USER_OBJECT, 0, FLAG:현던전, FLAG:현M, L_X, L_Y
+					TEMP_USER_OBJECT:L_X:L_Y = 0
+				ELSE
+					CALL SET_FLOOR_USER_OBJECT, SELECT_NUM, FLAG:현던전, FLAG:현M, L_X, L_Y
+					TEMP_USER_OBJECT:L_X:L_Y = SELECT_NUM
+				ENDIF
+			ELSEIF STRCOUNT(RESULTS, "MAPPING_USER_OBJECT")
+				SELECT_NUM = TOINT(AUTO_SPLIT(RESULTS, "/", 1))
+				SELECT_MODE = OBJECT
+			ENDIF
+	ENDSELECT
+WEND
+REDRAW STOCK_REDRAW
+;---- EDIT 093 ADD END ---------------------------
+
+@SET_DEFAULT_USER_TILE_OBJECT
+#DIM DYNAMIC LCOUNT
+FOR LCOUNT, 0, VARSIZE("DUNGEON_USER_TILE_OBJECT")
+	DUNGEON_USER_TILE_OBJECT:LCOUNT '= GET_DEFAULT_USER_TILE_OBJECT(LCOUNT)
+NEXT
+SAVEGLOBAL
+
+@GET_DEFAULT_USER_TILE_OBJECT, ARG
+#FUNCTIONS
+SELECTCASE ARG
+	CASE 0
+		RETURNF ""
+	CASE 1
+		RETURNF "◆"
+	CASE 2
+		RETURNF "◇"
+	CASE 3
+		RETURNF "★"
+	CASE 4
+		RETURNF "☆"
+	CASE 5
+		RETURNF "○"
+	CASE 6
+		RETURNF "●"
+	CASE 7
+		RETURNF "◎"
+	CASE 8
+		RETURNF "Ж"
+	CASE 9
+		RETURNF "※"
+	CASE 10
+		RETURNF "Δ"
+	CASE 11
+		RETURNF UNICODE(0x2460)
+	CASE 12
+		RETURNF UNICODE(0x2461)
+	CASE 13
+		RETURNF UNICODE(0x2462)
+	CASE 14
+		RETURNF UNICODE(0x2463)
+	CASE 15
+		RETURNF UNICODE(0x2464)
+	CASE 16
+		RETURNF UNICODE(0x2465)
+	CASE 17
+		RETURNF UNICODE(0x2466)
+	CASE 18
+		RETURNF UNICODE(0x2467)
+	CASE 19
+		RETURNF UNICODE(0x2468)
+	CASE 20
+		RETURNF UNICODE(0x2469)
+	CASE 21
+		RETURNF UNICODE(0x2776)
+	CASE 22
+		RETURNF UNICODE(0x2777)
+	CASE 23
+		RETURNF UNICODE(0x2778)
+	CASE 24
+		RETURNF UNICODE(0x2779)
+	CASE 25
+		RETURNF UNICODE(0x277A)
+	CASE 26
+		RETURNF UNICODE(0x277B)
+	CASE 27
+		RETURNF UNICODE(0x277C)
+	CASE 28
+		RETURNF UNICODE(0x277D)
+	CASE 29
+		RETURNF UNICODE(0x277E)
+	CASE 30
+		RETURNF UNICODE(0x277F)
+ENDSELECT
+
+@IS_CLEARED_FIRST_DUNGENON
+#FUNCTION
+SIF ダンジョンフラグ:[[ダンジョン:에코빌딩]]:1 >= 1
+	RETURNF 1
+SIF FLAG_D34_クリアフラグ
+	RETURNF 1
+SIF ダンジョンフラグ:[[ダンジョン:하라주쿠]]:0 == 5
+	RETURNF 1
+SIF ダンジョンフラグ:[[ダンジョン:야토빌딩]]:0
+	RETURNF 1
+RETURNF 0

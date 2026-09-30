@@ -1,0 +1,60 @@
+﻿;依頼名===================================================================
+;依頼難易度は敵の最大レベルによって変動
+; 1～10　☆、11～20　☆☆、21～30　☆☆☆、以下略
+;ダンジョン攻略が必要な場合は☆が★になる。
+
+@TITLE_RANDOM_REQUEST_108_10
+RESULTS = 처리장 점거자 배제（난이도 ☆☆☆）
+RETURN 1
+
+;説明===================================================================
+@REQUEST_EXPLAIN_108_10
+	PRINTL 
+	PRINTFORML 【의뢰주】정부 기관
+	PRINTL 
+	PRINTL 　폐기물 처리장이 가이아교에 점거되어、정부 부대가 몰아넣었으나 교착 상태에 빠졌다。
+	PRINTL 　결정타를 가하지 못하는 정부 부대를 대신하여、놈들을 배제하라。
+	PRINTL 
+	PRINTL 【작전영역】폐기물 처리장
+	PRINTL 【적의전력】가이아교도(뇌격、충격 유효)
+	PRINTL 【성공조건】점거자 배제
+	PRINTL 
+
+;内容====================================================================
+@REQUEST_108_10
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "관리" , @"폐기물 처리장이 가이아교를 자칭하는 불법 무장집단에게 점거당했습니다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "관리" , @"대기오염、환경파괴의 억제가 목적이라고 그들은 공언하고 있지만/실제로는 무질서한 테러 활동에 지나지 않습니다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "관리" , @"소탕작전을 실행할 예정이니、협력을 부탁드립니다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "관리" , @"작전 개요를 설명하겠습니다。우선 우리가 고용한 부대가 공격을 가해/점거자들을 시설 최심부의 용광로까지 몰아넣을 것입니다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "관리" , @"%CALLNAME:MASTER%께서는 집결한 적 세력을 단숨에 쳐부숴 주십시오。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "관리" , @"이상입니다。건투를 빕니다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"――폐기물 처리장、최심부――", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞집단이 최심부의 용광로 앞에서 굳어 있다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "ガイア教徒", "가이아교도", @"「젠장、언제까지 포위당해 있어야…… 큭、이런 곳에 데빌 서머너라고！？」", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "ガイア教徒", "가이아교도", @"「칫、정부가 부른 놈인가！네놈에게 쓰러질 수는 없다！」", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞가이아교도들이 덤벼들었다！", , , , , 4
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+FOR LOCAL, 7, 12
+	CALL SET_ENEMY, LOCAL ,[[キャラ:스쿠나히코나]],22+RAND:5,1,0
+	NAME:(CHARANUM-1) = ガイア教徒
+	CALLNAME:(CHARANUM-1) = ガイア教徒
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+NEXT
+
+CALL BATTLE_START
+
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞가이아교도들을 해치웠다。", , , , , 4
+
+;報酬
+依頼フラグ:[[依頼:랜덤의뢰]]:5 = 3;難易度
+依頼フラグ:[[依頼:랜덤의뢰]]:7 = 0;그외
+CALL PRIZE_REQUEST_108

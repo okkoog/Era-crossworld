@@ -1,0 +1,307 @@
+﻿@SET_BOSS_ENEMY_EVENT_201_飛刀, L_ENEMY_NAME
+#DIMS DYNAMIC L_ENEMY_NAME
+#DIM DYNAMIC L_ENEMY
+#DIM DYNAMIC ADD_LV
+ADD_LV = GROUPMATCH(1, FLAG_白き鋼鉄のX2_光芒クリア, FLAG_白き鋼鉄のX2_鋼獣クリア, FLAG_白き鋼鉄のX2_極寒クリア, FLAG_白き鋼鉄のX2_飛刀クリア) * 3
+SELECTCASE L_ENEMY_NAME
+	CASE "飛刀1"
+		TSTR:전투이벤트패턴 = EVENT_201_2_8_飛刀
+		CALL SET_ENEMY, 7, [[キャラ:데카라비아]], 41 + ADD_LV
+		CALL SET_ENEMY, 8, [[キャラ:데카라비아]], 41 + ADD_LV
+		CALL SET_ENEMY, 9, [[キャラ:근접전투워커]], 42 + ADD_LV
+		CALL SET_ENEMY, 12, [[キャラ:세드나]], 43 + ADD_LV
+		ABL:(CHARANUM-1):스킬3  = 0
+		CALL SET_ENEMY, 13, [[キャラ:경비드론]], LOCAL - 6
+		ABL:(CHARANUM-1):스킬1  = [[스킬:타슬람샷]]
+	CASE "飛刀2"
+		TSTR:전투이벤트패턴 = EVENT_201_2_8_飛刀
+		CALL SET_ENEMY, 7, [[キャラ:베르세르크]], 43 + ADD_LV
+		CALL SET_ENEMY, 8, [[キャラ:근접전투워커]], 42 + ADD_LV
+		CALL SET_ENEMY, 9, [[キャラ:트리글라프]], 42 + ADD_LV
+		CALL SET_ENEMY, 11, [[キャラ:근접전투워커]], 42 + ADD_LV
+		CALL SET_ENEMY, 13, [[キャラ:바이브・카흐]], 41 + ADD_LV
+		ABL:(CHARANUM-1):스킬3  = 0
+		CALL SET_ENEMY, 16, [[キャラ:바이브・카흐]], 41 + ADD_LV
+		ABL:(CHARANUM-1):스킬3  = 0
+	CASE "飛刀3"
+		TSTR:전투이벤트패턴 = EVENT_201_2_8_飛刀
+		CALL SET_ENEMY, 7, [[キャラ:백베어드]], 40 + ADD_LV
+		CALL SET_ENEMY, 8, [[キャラ:카토블레파스]], 43 + ADD_LV
+		CALL SET_ENEMY, 10, [[キャラ:카토블레파스]], 43 + ADD_LV
+		CALL SET_ENEMY, 11, [[キャラ:백베어드]],  40 + ADD_LV
+		CALL SET_ENEMY, 12, [[キャラ:경비드론]], 39 + ADD_LV
+		ABL:(CHARANUM-1):스킬1  = [[스킬:타슬람샷]]
+		CALL SET_ENEMY, 16, [[キャラ:경비드론]], 39 + ADD_LV
+		ABL:(CHARANUM-1):스킬1  = [[스킬:타슬람샷]]
+	CASE "スラグ"
+		TSTR:전투이벤트패턴 = EVENT_201_2_8_スラグ
+
+		CALL SET_ENEMY, 9, [[キャラ:슬러그_X2]], 45 + ADD_LV, 1, 1
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "スラグ"
+		CFLAG:L_ENEMY:ＨＰ보정 += 3000
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		BASE:L_ENEMY:SHOCK = -25
+		CSTR:(CHARANUM-1):사고패턴 = ツインミーティアバースト
+		
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "ＳＰスキル"
+		CALL SET_SKILL, L_ENEMY, "φシュート"
+		CALL SET_SKILL, L_ENEMY, "어둠속의기습"
+		CALL SET_SKILL, L_ENEMY, "포그브레스"
+		CALL SET_SKILL, L_ENEMY, "밤벚꽃의춤"
+		CALL SET_SKILL, L_ENEMY, "결단"
+		CALL SET_SKILL, L_ENEMY, "악셀"
+		CALL SET_SKILL, L_ENEMY, "닷지카운터"
+		CALL SET_SKILL, L_ENEMY, "어드바이스"
+
+		CSTR:L_ENEMY:랜덤선택금지스킬 '= "ＳＰスキル"
+ENDSELECT
+
+;=============================================
+;EVENT_201_2_8_スラグ
+;=============================================
+@SET_ACTION_ツインミーティアバースト, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:회심의패기]]
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	;ガンヴォルトあるある：HPが1/3切ったらSPスキル使う　5Tに1回打ってくるぞ
+	IF CFLAG:ARG:800 == 3 && PU_SKILLGAGE_D_GET(ARG, "ＳＰスキル") == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+	ELSE
+		IF FLAG:경과턴수 % 4 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:포그브레스]]
+		ELSEIF FLAG:경과턴수 % 4 == 1
+			CALL SET_ACTION_SKILL, ARG, [[스킬:리벨리온]]
+		ELSEIF FLAG:경과턴수 % 4 == 2
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "φシュート")
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:어둠속의기습]]
+		ENDIF
+	ENDIF
+ELSE
+	IF FLAG:경과턴수 % 4 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:밤벚꽃의춤]]
+	ELSEIF FLAG:경과턴수 % 4 == 1
+		CALL SET_ACTION_SKILL, ARG, [[스킬:블레이드댄스]]
+	ELSEIF FLAG:경과턴수 % 4 == 2
+		CALL SET_ACTION_SKILL, ARG, [[스킬:포그브레스]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "φシュート")
+	ENDIF
+ENDIF
+
+@CHANGE_ACTION_ツインミーティアバースト, ARG
+IF CFLAG:ARG:800 == 2 
+	CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+	CFLAG:ARG:800 = 3
+ENDIF
+
+@EVENT_BATTLE_DYING_EVENT_201_2_8_スラグ, L_T, L_P, L_SKIP
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_SKIP
+IF L_T == GET_ENEMY("スラグ") && CFLAG:L_T:800 == 0
+	TSTR:스킬메시지추가 = %CALLNAME:L_T%은(는) 일어섰다!!
+	
+	CFLAG:L_T:상태이상 = GET_STATE_NUM("GOOD")
+	BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ / 3
+	CFLAG:L_T:800 = 1
+	CFLAG:L_T:공격대상제외_ACT = 1
+ENDIF
+
+@EVENT_BATTLE_ACTEND_EVENT_201_2_8_スラグ
+IF CFLAG:GET_ENEMY("スラグ"):800 == 1
+	BTL_KOJO_RESULTS:0 = 피해 심대……!
+	SETCOLOR COLOR("ENEMY")
+	CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("スラグ")
+	CFLAG:GET_ENEMY("スラグ"):800 = 2
+ENDIF
+
+@EVENT_BATTLE_START_EVENT_201_2_8_飛刀
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_DAMAGE
+#DIM DYNAMIC L_TYPE_VALUE
+CALL PRINT_ACT_MESSAGE, , , COLOR("ENEMY"), "중력이상", "행동저해", "NOWAIT"
+FOR LCOUNT, 1, 7
+	SIF !IS_TARGET_ABLE(POS(LCOUNT))
+		CONTINUE
+	CALL BTL_CALC_AISYOU, -1, POS(LCOUNT), -1, GET_TYPE_NUM("중력")
+	SELECTCASE CHECK_WEAKNESS(RESULT)
+		CASE 1
+			CALL SKILL_SET_カジャンダ, , POS(LCOUNT), "命中率・回避率", -8, "단체", "NOWAIT"
+		CASE 0, -1
+			CALL SKILL_SET_カジャンダ, , POS(LCOUNT), "命中率・回避率", -4, "단체", "NOWAIT"
+		CASEELSE
+			CALL PRINT_HIT_MESSAGE, POS(LCOUNT), "중력무효"
+	ENDSELECT
+NEXT
+WAIT
+
+@EVENT_BATTLE_START_EVENT_201_2_8_スラグ
+CALL EVENT_BATTLE_START_EVENT_201_2_8_飛刀
+
+;スラグ戦専用ライブノベル
+@EVENT_BATTLE_TURNSTART_EVENT_201_2_8_スラグ
+#DIM 進行度
+#DIM DYNAMIC COPEN
+SIF 進行度 == 30
+	RETURN 0
+SIF FINDCHARA_B([[キャラ:아큐라_X]])  != 2
+	RETURN 0
+COPEN = RESULT:1
+SELECTCASE 進行度
+CASE 0
+	SETCOLOR COLOR("FRIEND")
+	CALL SET_RORO_KOJO_FLAG, COPEN
+	BTL_KOJO_RESULTS:0 = 이, 이 녀석…… 담백하다든가 그런 수준을 넘어서지 않았어?
+	BTL_KOJO_RESULTS:1 = 다른 묘지기들이라도 더 말이 통했다고!?
+	CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+	
+	SETCOLOR COLOR("ENEMY")
+	BTL_KOJO_RESULTS:0 = 헛수고이기 때문이다. 적의 정보를 획득하라는 임무는 주어지지 않았다
+	BTL_KOJO_RESULTS:1 = 임무 달성에 있어 필요 없는 행위는 행하지 않는다
+	LOCAL = 0
+	CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("スラグ")
+	
+	SETCOLOR COLOR("FRIEND")
+	BTL_KOJO_RESULTS:0 = 교전은 피할 수 없다…… 해치울 수밖에 없겠어
+	CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+	
+	進行度 = 30
+	RESETCOLOR
+ENDSELECT
+
+;スラグ・敵対時の口上
+@KOJO_ENEMY_BATTLE_MESSAGE_K[[キャラ:슬러그_X2]], ARG, ARG:1 = 0
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;これは通常攻撃
+SELECTCASE CFLAG:ARG:입력행동
+	CASE 0
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 느리다
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 먹어라
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 흩어져라
+		ENDSELECT
+;-------------------------------------------------
+;汎用スキル
+;-------------------------------------------------
+	CASE [[스킬:회심의패기]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 놓치지 않는다……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 다음 일격으로 도륙한다
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 끝이다
+		ENDSELECT
+	CASE [[스킬:포그브레스]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 연막을 친다
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 간파하지 못할 터
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 모습을 숨긴다
+		ENDSELECT
+	CASE [[스킬:리벨리온]], [[스킬:브레이브스텝]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 공격 준비, 완료……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 공세로 이행한다
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 빈틈을 찌른다
+		ENDSELECT
+	CASE [[스킬:어둠속의기습]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 기습을 가한다
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 느리다
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 저항은 헛수고다
+		ENDSELECT
+	CASE [[스킬:갑옷관통]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 꿰뚫는다
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 막지 못할 터
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 간다
+		ENDSELECT
+	CASE [[스킬:밤벚꽃의춤]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 교란한다
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 쫓아오지 못할 터
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 사라져라
+		ENDSELECT
+	CASE [[스킬:블레이드댄스]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 춤춰라
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 가라
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 끊어내라
+		ENDSELECT
+	CASE [[스킬:베놈재퍼]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 미쳐 날뛰어라
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 새겨주마
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 끊어내라
+		ENDSELECT
+	CASE [[스킬:오의일섬]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 일섬
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 처형한다
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 도륙한다
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "φシュート")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 어지러이 춤춰라
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 베어 갈라라
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 간다
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+		BTL_KOJO_RESULTS:0 = 간다。全刃解放
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		ALIGNMENT RIGHT
+		RESETCOLOR
+		PRINTFORML 　　　　Nine blades run across the field　　　　　　　　 
+		PRINTFORML 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+		PRINTFORML
+		PRINTFORML 　　No hesitation, no mercy　　　　　　　　　　　　　　　
+		SETCOLOR 0xe8307c
+		PRINTFORML 　　　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　
+		RESETCOLOR
+		PRINTFORML
+		PRINTFORML 　　　　Divide the enemy instantly　　　　　　　　　　　 
+		PRINTFORMW 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+		ALIGNMENT LEFT
+		SETCOLOR COLOR("ENEMY")
+		LOCAL = 0
+		BTL_KOJO_RESULTS:0 = 트윈 메테오 버스트
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		TFLAG:전투구상직접출력 = 1
+		VARSET LOCALS
+ENDSELECT

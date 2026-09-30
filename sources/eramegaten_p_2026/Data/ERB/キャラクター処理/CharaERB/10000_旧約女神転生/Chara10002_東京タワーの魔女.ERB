@@ -1,0 +1,93 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara4678_東京タワーの魔女.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/11/03		P(bazzile)				新規作成
+;	002		2025/05/29		epizo					画像パターン設定
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;--------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:도쿄타워의마녀]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+IF ARG:2 == 0
+	BASE:ARG:LV = 42
+	BASE:ARG:힘 = 7
+	BASE:ARG:지혜 = 20
+	BASE:ARG:마력 = 23
+	BASE:ARG:내구 = 10
+	BASE:ARG:속도 = 17
+	BASE:ARG:운 = 7
+
+	CALL CLEAR_ALL_SKILL, ARG
+	CALL LEARN_SKILL_TO_NOW_LEVEL, ARG
+ENDIF
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:도쿄타워의마녀]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("東京タワーの魔女_FACE_2")
+			RETURNF ""
+		SIF !SPRITECREATED("東京タワーの魔女_FACE_3")
+			RETURNF ""
+		SIF !SPRITECREATED("東京タワーの魔女_FACE_EX_0")
+			RETURNF ""
+		SIF !SPRITECREATED("東京タワーの魔女_FACE_EX_1")
+			RETURNF ""
+		RESULTS_F = デフォルト
+		RESULTS_F:1 = 東京タワーの魔女_FACE_2
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:도쿄타워의마녀]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "デフォルト"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+				RESULTS_F = 東京タワーの魔女_FACE_3
+			CASEELSE
+				SELECTCASE L_SITUATION:1
+					;戦闘不能になった時
+					CASE "DYING"
+						RESULTS_F = 東京タワーの魔女_FACE_EX_0
+					;上記以外の状態異常の時
+					CASE "STONE", "FLY", "PALYZE", "BRAND", "CURSE", "FLAME", "BOMB", "POISON", "CLOSE", "BIND", "SLIP", "FREEZE", "PANIC", "SHOCK", "HAPPY"
+						RESULTS_F = 東京タワーの魔女_FACE_EX_1
+					;通常時
+					CASEELSE
+						RESULTS_F = 東京タワーの魔女_FACE_2
+				ENDSELECT
+		ENDSELECT
+	CASEELSE
+ENDSELECT

@@ -1,0 +1,497 @@
+﻿@EVENT_93_8
+
+CUSTOMDRAWLINE =
+
+	PRINTL
+	SETCOLOR 0x5687e6
+	PRINTW 「힘차게 치켜든 손바닥에――」
+	SETCOLOR 0xff0033
+	PRINTW 「가련하게 피워내는 사랑의 꽃」
+	PRINTL
+	SETCOLOR 0x5687e6
+	PRINTW 「설령 비극으로 끝난다 할지라도――」
+	SETCOLOR 0xff0033
+	PRINTW 「반짝이는 무대에 뛰어들어 등장!」
+	RESETCOLOR
+	PRINTL
+	PRINTW 팽팽하게 당겨진 강철 같은 목소리가 메아리친다.
+	PRINTW 짙은 스모크가 운해처럼 일렁인다.
+	PRINTW 쨍그랑 소리를 내며 열기를 띤 조명장치가 가동한다.
+	PRINTL
+	PRINTW 떠오르는 두 사람의 실루엣.
+	PRINTL
+	SETCOLOR 0x5687e6
+	PRINTW 「99기생, 카구라 히카리!」
+	SETCOLOR 0xff0033
+	PRINTW 「99기생, 아이죠 카렌!」
+	RESETCOLOR
+	PRINTL
+	PRINTW 파앗!
+	PRINTW 한층 더 거대한 빛이 뿜어져 나오고,
+	PRINTW 날씬한 몸이 날카로운 그림자를 베어냈다.
+	PRINTL
+	PRINTW 눈동자가 빛나고 있다.
+	PRINTW 빨려 들어갈 것만 같아, 견디지 못하고 당신은 시선을 돌렸다.
+	PRINTL
+	SETCOLOR 0x5687e6
+	PRINTW 「모두를――」
+	SETCOLOR 0xff0033
+	PRINTW 「스타라이트 해버릴 거야!」
+	RESETCOLOR
+	PRINTL
+	PRINTW 그녀들은 아득히 높은 곳을 바라보고 있었다.
+	PRINTW 본래 당신의 위치에 서 있었을 누군가――
+	PRINTW 아니, 그것조차 뛰어넘은 거대한 무언가를 각자가 바라보고 있었다.
+	PRINTL
+	PRINTL 무대소녀 아이죠 카렌이 나타났다!
+	PRINTW 무대소녀 카구라 히카리가 나타났다!
+	PRINTL
+
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+	
+	
+	;※方針　검격＋수격＆신경　そしてレボリューションで事故らせる
+	;最終戦：全体水撃・全体神経あり。神経耐性が無いとアレ。
+	;		 デバフも撒く
+	;　　　　片方を沈めると片方がパワーアップして復活
+	
+	;6戦目　★★★★★
+	IF イベントフラグ:93:0 > 6
+		LOCAL:99 = 6
+		LOCAL:97 = 3
+	;5戦目　★★★★☆
+	ELSEIF イベントフラグ:93:0 > 5
+		LOCAL:99 = 5
+		LOCAL:97 = 3
+	;4戦目　★★★★☆
+	ELSEIF イベントフラグ:93:0 > 4
+		LOCAL:99 = 4
+		LOCAL:97 = 2
+	;3戦目　★★★☆☆
+	ELSEIF イベントフラグ:93:0 > 3
+		LOCAL:99 = 3
+		LOCAL:97 = 2
+	;2戦目　★★☆☆☆
+	ELSEIF イベントフラグ:93:0 > 2
+		LOCAL:99 = 2
+		LOCAL:97 = 1
+	;1戦目　★☆☆☆☆
+	ELSEIF イベントフラグ:93:0 > 1
+		LOCAL:99 = 1
+		LOCAL:97 = 1
+	ENDIF
+	
+	;レベルは自軍最大値（最低値10）
+	LOCAL:98 = 0
+	FOR LOCAL , 0 , CHARANUM
+		SIF IS_JOINABLE_BATTLE(LOCAL) < 1
+			CONTINUE
+		LOCAL:98 = MAX(LOCAL:98 , BASE:LOCAL:LV)
+	NEXT
+	SIF LOCAL:98 < 10
+		LOCAL:98 = 10
+	
+	;- SET:華恋
+		CALL SET_ENEMY,8,[[キャラ:카렌_무대소녀]],LOCAL:98,1,LOCAL:97
+		CFLAG:(CHARANUM-1):행동횟수 = 2
+		;CFLAG:(CHARANUM-1):ＨＰ보정 = MAXBASE:(CHARANUM-1):ＨＰ*2
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 8000
+		ABL:(CHARANUM-1):공격상성 = 0
+		ABL:(CHARANUM-1):스킬1 = [[스킬:기합]]
+		ABL:(CHARANUM-1):스킬2 = [[스킬:히트웨이브]]
+		ABL:(CHARANUM-1):스킬3 = [[스킬:소작권]]
+		ABL:(CHARANUM-1):스킬4 = [[스킬:파사의광인]]
+		ABL:(CHARANUM-1):스킬5 = [[스킬:전용기1]]
+		ABL:(CHARANUM-1):스킬7 = [[스킬:레볼루션]]
+		LOCAL = CHARANUM-1
+		;超人扱いに
+		;ABL:(CHARANUM-1):종족 = 43
+		;式算出の都合でロールを強制的に悪魔に変更する
+		CFLAG:(CHARANUM-1):강제악마화 = 1
+		CSTR:(CHARANUM-1):종족명 = 무대소녀
+		
+		;解析度MAX処理
+		CALL INCREASE_ANALYZE, [[キャラ:카렌_무대소녀]], ANALYSIS_COMPLETED
+
+
+	;- SET:ひかり
+		CALL SET_ENEMY,10,[[キャラ:히카리]],LOCAL:98,1,LOCAL:97
+		CFLAG:(CHARANUM-1):행동횟수 = 2
+		;CFLAG:(CHARANUM-1):ＨＰ보정 = MAXBASE:(CHARANUM-1):ＨＰ*2
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 8000
+		ABL:(CHARANUM-1):공격상성 = 0
+		ABL:(CHARANUM-1):스킬1 = [[스킬:라쿠・카쟈]]
+		ABL:(CHARANUM-1):스킬2 = [[스킬:뉴로크런치]]
+		ABL:(CHARANUM-1):스킬3 = [[스킬:번개찌르기]]
+		ABL:(CHARANUM-1):스킬4 = [[스킬:전용기1]]
+		ABL:(CHARANUM-1):스킬5 = [[스킬:마하・아쿠에스]]
+		ABL:(CHARANUM-1):스킬6 = [[스킬:타루・카쟈]]
+		ABL:(CHARANUM-1):스킬7 = [[스킬:코칭]]
+		ABL:(CHARANUM-1):스킬8 = [[스킬:어드바이스]]
+		LOCAL = CHARANUM-1
+		;超人扱いに
+		;ABL:(CHARANUM-1):종족 = 43
+		;式算出の都合でロールを強制的に悪魔に変更する
+		CFLAG:(CHARANUM-1):강제악마화 = 1
+		CSTR:(CHARANUM-1):종족명 = 무대소녀
+
+		;解析度MAX処理
+		CALL INCREASE_ANALYZE, [[キャラ:히카리]], ANALYSIS_COMPLETED
+
+
+		;6戦目　★★★★★
+		IF LOCAL:99 > 5
+			;素＆ギミックで対応
+		;5戦目　★★★★☆
+		;行動回数増加＆前衛に剣撃耐性が無いと死ぬ
+		ELSEIF LOCAL:99 > 4
+			CFLAG:(CHARANUM-2):행동횟수 = 2
+			CFLAG:(CHARANUM-1):행동횟수 = 2
+			ABL:(CHARANUM-2):스킬3 = [[스킬:레볼루션]]
+			ABL:(CHARANUM-2):스킬4 = [[스킬:전용기1]]
+			ABL:(CHARANUM-2):스킬5 = 0
+			ABL:(CHARANUM-2):스킬6 = 0
+			ABL:(CHARANUM-2):스킬7 = 0
+			ABL:(CHARANUM-2):스킬8 = 0
+
+			;コーチング・アドバイス以外削除
+			;マハ・アクエス、タル・カジャ追加
+			ABL:(CHARANUM-1):스킬1 = [[스킬:마하・아쿠에스]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:타루・카쟈]]
+			ABL:(CHARANUM-1):스킬3 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			ABL:(CHARANUM-1):스킬6 = 0
+		;4戦目　★★★☆☆
+		;行動回数増加＆前衛に剣撃耐性が無いと死ぬ
+		ELSEIF LOCAL:99 > 3
+			CFLAG:(CHARANUM-2):행동횟수 = 2
+			CFLAG:(CHARANUM-1):행동횟수 = 2
+			;専用技1と気合とレボリューションだけ残す
+			ABL:(CHARANUM-2):스킬3 = [[스킬:레볼루션]]
+			ABL:(CHARANUM-2):스킬4 = [[스킬:전용기1]]
+			ABL:(CHARANUM-2):스킬5 = 0
+			ABL:(CHARANUM-2):스킬6 = 0
+			ABL:(CHARANUM-2):스킬7 = 0
+			ABL:(CHARANUM-2):스킬8 = 0
+
+			;コーチング・アドバイス以外削除
+			;マハ・アクエス、タル・カジャ追加
+			ABL:(CHARANUM-1):스킬1 = [[스킬:마하・아쿠에스]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:타루・카쟈]]
+			ABL:(CHARANUM-1):스킬3 = 0
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			ABL:(CHARANUM-1):스킬6 = 0
+			
+		;3戦目　★★★☆☆
+		;行動回数増加＆前衛に剣撃耐性が無いと死ぬ
+		ELSEIF LOCAL:99 > 2
+			;行動回数1
+			CFLAG:(CHARANUM-2):행동횟수 = 2
+			CFLAG:(CHARANUM-1):행동횟수 = 2
+			;専用技1と気合とレボリューションだけ残す
+			ABL:(CHARANUM-2):스킬3 = [[스킬:레볼루션]]
+			ABL:(CHARANUM-2):스킬4 = [[스킬:전용기1]]
+			ABL:(CHARANUM-2):스킬5 = 0
+			ABL:(CHARANUM-2):스킬6 = 0
+			ABL:(CHARANUM-2):스킬7 = 0
+			ABL:(CHARANUM-2):스킬8 = 0
+			
+			;コーチング・アドバイス以外削除
+			;マハ・アクエス、タル・カジャ追加
+			ABL:(CHARANUM-1):스킬1 = [[스킬:마하・아쿠에스]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:타루・카쟈]]
+			ABL:(CHARANUM-1):스킬3 = 0
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			ABL:(CHARANUM-1):스킬6 = 0
+			
+		;2戦目　★★☆☆☆
+		;前衛に剣撃耐性が無いと死ぬ
+		ELSEIF LOCAL:99 > 1
+			;行動回数1
+			CFLAG:(CHARANUM-2):행동횟수 = 1
+			CFLAG:(CHARANUM-1):행동횟수 = 1
+			;ヒートウェイブと気合とレボリューションだけ残す
+			ABL:(CHARANUM-2):스킬3 = [[스킬:레볼루션]]
+			ABL:(CHARANUM-2):스킬4 = 0
+			ABL:(CHARANUM-2):스킬5 = 0
+			ABL:(CHARANUM-2):스킬6 = 0
+			ABL:(CHARANUM-2):스킬7 = 0
+			ABL:(CHARANUM-2):스킬8 = 0
+
+			ABL:(CHARANUM-1):스킬1 = [[스킬:마하・아쿠아]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:타루・카쟈]]
+			ABL:(CHARANUM-1):스킬3 = 0
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			ABL:(CHARANUM-1):스킬6 = 0
+			ABL:(CHARANUM-1):스킬7 = 0
+			ABL:(CHARANUM-1):스킬8 = 0
+			
+		;1戦目　★☆☆☆☆
+		;気合使った次のターンをガードしとけばいいんじゃねえかな
+		ELSEIF LOCAL:99 > 0
+			;行動回数1
+			CFLAG:(CHARANUM-2):행동횟수 = 1
+			CFLAG:(CHARANUM-1):행동횟수 = 1
+			;気合だけ残す
+			ABL:(CHARANUM-2):스킬2 = 0
+			ABL:(CHARANUM-2):스킬3 = 0
+			ABL:(CHARANUM-2):스킬4 = 0
+			ABL:(CHARANUM-2):스킬5 = 0
+			ABL:(CHARANUM-2):스킬6 = 0
+			ABL:(CHARANUM-2):스킬7 = 0
+			ABL:(CHARANUM-2):스킬8 = 0
+
+			ABL:(CHARANUM-1):스킬1 = [[스킬:아쿠아]]
+			ABL:(CHARANUM-1):스킬2 = 0
+			ABL:(CHARANUM-1):스킬3 = 0
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			ABL:(CHARANUM-1):스킬6 = 0
+			ABL:(CHARANUM-1):스킬7 = 0
+			ABL:(CHARANUM-1):스킬8 = 0
+			
+		ENDIF
+		
+		CALL SYNC_STATUS,(CHARANUM-2)
+		CALL SYNC_STATUS,(CHARANUM-1)
+		CALL HEALTH_CHARA,(CHARANUM-2)
+		CALL HEALTH_CHARA,(CHARANUM-1)
+
+	;かれひか復活フラグ
+	SETBIT イベントフラグ:93:11, 1
+	CALL BATTLE_START
+	CLEARBIT イベントフラグ:93:11, 1
+
+	CUSTOMDRAWLINE =
+
+	PRINTL
+	PRINTW 「――어라? 이 사람, 텐도 씨가 아니잖아!?」
+	PRINTW 「……이쪽도, 다른 사람으로 바뀌어 있어」
+	PRINTL
+	PRINTW 공간에 흩뿌려진 짙은 마그네타이트를 흡수하고, 두 사람의 의식이 또렷해지기 시작한 모양이다.
+	PRINTW 당신은 사정을 설명하고, 두 사람에게 무기를 거두어 줄 것을 요구했다.
+	PRINTL
+	PRINTW 「악마……? 데빌 서머너……?
+	PRINTW 　게다가 세이쇼가 존재하지 않는다니 무슨 말인가요!?
+	PRINTW 　저희를 돌려보내 주세요! 해야만 하는 일이 있단 말이에요!」
+	PRINTW 「진정해, 카렌.
+	PRINTW 　아까 설명이 사실이라면, 우리들은…… 반짝임의……」
+	PRINTW 「그런 건 상관없어,
+	PRINTW 　무대에는 텐도 씨나 클로 짱이 기다리고 있단 말이야.
+	PRINTW 　레뷰에서 도망치고 싶지 않아.
+	PRINTW 　왜냐면 난, 무대소녀니까!」
+	PRINTL
+	PRINTW 카렌은 의연한 태도로 일어서서,
+	PRINTW 그 자리에서 빙글 한 바퀴를 돈 뒤,
+	PRINTL
+	PRINTW 「어쩌지 히카리 짱, 돌아갈 길을 모르겠어」
+	PRINTL
+	PRINTW 진심으로 난처한 표정으로 그렇게 중얼거렸다.
+	PRINTL
+	PRINTW 「바카렌(바보 카렌)…….
+	PRINTW 　저기, 데빌 서머너, 라고 했던가.
+	PRINTW 　당신과 계약하지 않으면 우리들 사라져버리는 거라면,
+	PRINTW 　부탁할게, 동료로 삼아 줘」
+	PRINTL
+	PRINTW 카렌은 눈을 깜빡거렸다.
+	PRINTL
+	PRINTW 「히카리 짱!? 어째서!」
+	PRINTL
+	PRINTW 히카리는 한 번 무대 중앙――탑의 꼭대기에서 타오르는 별의 반짝임을 바라본 뒤, 감정을 억누른 눈으로 중얼거렸다.
+	PRINTL
+	PRINTW 「……사라지는 것보단, 나으니까.
+	PRINTW 　카렌, 눈치채지 못한 것 같아서 말해두는데,
+	PRINTW 　우리들, 몸이 투명해져 있어」
+	PRINTW 「앗」
+	PRINTL
+	PRINTW 눈치채지 못했을 리가 없다.
+	PRINTW 직시하고 싶지 않았을 뿐이리라.
+	PRINTW 카렌은 상처를 숨기려는 듯 투명해진 손을 뒤로 감추었으나,
+	PRINTW 내민 가슴도 투명해져 있었다.
+	PRINTL
+	PRINTW 「그런…… 갑자기 말해도……
+	PRINTW 　나, 히카리 짱에게 선택받아서,
+	PRINTW 　드디어 둘이서 스타가 될 수 있을 거라고――」
+	PRINTW 「바보, 바보 카렌ッ! 내가 아무것도 못 느끼고 있다고 생각하는 거야!?
+	PRINTW 　나도 너랑…… 드디어……!
+	PRINTW 　……ッ
+	PRINTW 　……」
+	PRINTL
+	PRINTW 　한동안 눈물 고인 눈으로 바닥을 노려보던 두 사람이었으나,
+	PRINTW 　불현듯 히카리가 카렌의 손을 잡고,
+	PRINTW 　진지한――그러나 연극 같은――얼굴로 그녀의 눈을 응시했다.
+	PRINTL
+	SETCOLOR 0x5687e6
+	PRINTW 「“작은 별을 딴다면, 당신은 작은 행복을 얻으리라.”」
+	RESETCOLOR
+	PRINTL
+	PRINTW 카렌은 숨을 삼키더니,
+	PRINTW 이내 활짝 순진무구한 미소――그래, 연극 같은――를 띄웠다.
+	PRINTL
+	SETCOLOR 0xff0033
+	PRINTW 「“커다란 별을 딴다면, 당신은 커다란 부를 얻으리라.”」
+	RESETCOLOR
+	PRINTL
+	PRINTW 두 사람은 희미해져 가는 가느다란 손가락을 깍지 끼고는,
+	PRINTW 아득히 먼 곳에 보이는 탑의 광채로 시선을 돌리며 외쳤다.
+	PRINTL
+	SETCOLOR 0x5687e6
+	PRINTW 「“가자, 둘이서”」
+	SETCOLOR 0xff0033
+	PRINTW 「“저 별을 따러!”」
+	RESETCOLOR
+	PRINTL
+	PRINTW 바람이 분 것 같은 느낌이 들었다.
+	PRINTW 너무나도 강렬한 섬광에 휩싸인 듯하여 당신은 무심코 눈을 가늘게 떴다.
+	PRINTL
+	PRINTW 「아직 사라질 수는 없어, 그렇지」
+	PRINTW 「……응」
+	PRINTW 「스타라이트 놀이, 오늘로 두 번째네」
+	PRINTW 「그렇네」
+	PRINTL
+	PRINTW 두 사람은 쿡쿡 웃음을 나눈 뒤 당신을 향해 돌아섰다.
+	PRINTL
+	PRINTW 「잘 부탁드립니다!」
+	PRINTL
+	PRINTW 방금 전의 대화에 그녀들만이 아는 무언가가 있었던 모양이다.
+	PRINTW 카렌도 히카리도 망설임은 이미 없는 듯하다.
+	PRINTW 당신은 조금 어안이 벙벙했지만 계약 처리를 진행하고 마그네타이트를 공급하기로 했다.
+	PRINTL
+	PRINTW 「꺄아아아악!?
+	PRINTW 　히, 히카리 짱, 뭔가 눈이 번쩍번쩍거려어!?」
+	PRINTW 「좋은 감촉은 아니네.
+	PRINTW 　기분 좋게 느껴지는 부분이 도리어 싫어」
+	PRINTL
+	PRINTW 꺅꺅거리며 순식간에 떠들썩해진 두 사람을 데리고 당신은 사무소로 돌아왔다.
+	PRINTL
+	PRINTL
+	PRINTL
+	PRINTW 「――이걸로, 된 거야, 분명.
+	PRINTW 　기린의 오디션 따위, 이걸로.
+	SETCOLOR 0x2e2e41
+	PRINTW “두 사람의 꿈은, 이루어지지 않는 거야.”」
+	RESETCOLOR
+	PRINTL
+	PRINTW 히카리의 손안에 쥔 단검은 닫힌 꽃봉오리 형태를 띠고 있었다.
+	PRINTL
+
+	CALL ADD_NEW_COMPANION, [[キャラ:카렌_무대소녀]],200
+	SIF RESULT > 0
+		CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+
+	CALL ADD_NEW_COMPANION, [[キャラ:히카리]],200
+	SIF RESULT > 0
+		CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+	
+	イベントフラグ:93:0 += 1
+	SETBIT イベントフラグ:93:1, 1
+	SETBIT イベントフラグ:93:2, 1
+	CALL EVENT_93_TURN_END
+
+;2020/06/09　完全回復から発狂へ方向性を変更
+@EVENT_BATTLE_ACTEND_EVENT_93_8
+;最終戦かつひかりちゃんが先に死んだ
+;行動回数増加＋1moreを取ると必ず気合、気合が入っているときは必ずイナズマ突き
+;そのうえチェーンアップで気合の効果が倍増しているので相手は死ぬ
+IF イベントフラグ:93:0 > 6 && BASE:(CHARANUM-1):ＨＰ < 1 && イベントフラグ:93:1 == 0
+	PRINTFORML 
+	SETCOLOR 0xff0033
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORMW ┃――논논이야. 우리들은 이겨!　　　　　　　　┃
+	PRINTFORMW ┃히카리 짱, 내가 곁에 있어. 같이 가자!　　　┃
+	PRINTFORMW ┃아이죠 카렌…… 기합 200퍼센트으으으!　　　 ┃
+	PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+	PRINTFORMW ＞카렌의 반짝임이 무대장치를 가동시킨다!
+	
+	CSTR:(CHARANUM-2):사고패턴 = 아이죠카렌기합200퍼센트
+	
+	CFLAG:(CHARANUM-2):행동횟수 = 3
+	
+	ABL:(CHARANUM-2):스킬1 = [[스킬:히트웨이브]]
+	ABL:(CHARANUM-2):스킬2 = [[스킬:히트웨이브]]
+	ABL:(CHARANUM-2):스킬3 = [[스킬:히트웨이브]]
+	ABL:(CHARANUM-2):스킬4 = [[스킬:회전베기]]
+	ABL:(CHARANUM-2):스킬5 = [[스킬:회전베기]]
+	ABL:(CHARANUM-2):스킬6 = [[스킬:회전베기]]
+	;レボリューションは消す
+	ABL:(CHARANUM-2):스킬7 = [[스킬:기합부스터]]
+	SETBIT イベントフラグ:93:1, 1
+	SETBIT イベントフラグ:93:2, 1
+;最終戦かつ華恋が先に死んだ
+;行動回数増加＋２ターンに一回BINDからの即死を狙ってくる
+;愛城よりはマシだと思う
+ELSEIF イベントフラグ:93:0 > 6 && BASE:(CHARANUM-2):ＨＰ < 1 && イベントフラグ:93:2 == 0
+	PRINTFORML 
+	SETCOLOR 0x5687e6
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORMW ┃카렌이 있으니까, 여기까지 올 수 있었어.　　 ┃
+	PRINTFORMW ┃카렌이 있으니까, 나는 다시 한번 꽃피웠어.　 ┃
+	PRINTFORMW ┃지지 않아, 여기까지 와서 지고 싶지 않아.　　┃
+	PRINTFORMW ┃설령 그 아이와 싸우게 된다 할지라도.　　　　┃
+	PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+	PRINTFORMW ＞히카리의 반짝임이 무대장치를 가동시킨다!
+	
+	CSTR:(CHARANUM-1):사고패턴 = 브레인버스트카구라히카리
+	ABL:(CHARANUM-1):스킬1 = [[스킬:아라크노와이어]]
+	ABL:(CHARANUM-1):스킬2 = [[스킬:아라크노와이어]]
+	ABL:(CHARANUM-1):스킬3 = [[스킬:번개찌르기]]
+	ABL:(CHARANUM-1):스킬4 = [[스킬:번개찌르기]]
+	ABL:(CHARANUM-1):스킬5 = [[스킬:번개찌르기]]
+	ABL:(CHARANUM-1):스킬6 = [[스킬:번개찌르기]]
+	ABL:(CHARANUM-1):스킬7 = [[스킬:코칭]]
+	ABL:(CHARANUM-1):스킬8 = [[스킬:어드바이스]]
+	
+	CFLAG:(CHARANUM-1):행동횟수 = 3
+	SETBIT イベントフラグ:93:1, 1
+	SETBIT イベントフラグ:93:2, 1
+ENDIF
+
+
+;毎ターン気合を入れてからイナズマ突きで突っ込んでくる
+;威力は莫大だけど剣撃相性の影響をもろに受けるので対策自体は楽
+@SET_ACTION_아이죠카렌기합200퍼센트, ARG
+IF CFLAG:ARG:행동한횟수 == 0 && CFLAG:ARG:気合フラグ == 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:기합]]
+	SETCOLOR 0xff0033
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃아이죠 카렌…… 기합 200퍼센트으으으!　　　 ┃
+	PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+	PRINTFORMW ＞카렌의 반짝임이 무대장치를 가동시킨다!
+ELSEIF CFLAG:ARG:気合フラグ > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:전용기1]]
+ELSE
+	CALL ランダム行動 , ARG
+ENDIF
+
+;ブレインバーストはエゲツナイと思います
+@SET_ACTION_브레인버스트카구라히카리, ARG
+IF CFLAG:ARG:행동한횟수 == 0 && FLAG:경과턴수 % 2 == 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:무거운공기]]
+ELSEIF CFLAG:ARG:행동한횟수 == 1 && FLAG:경과턴수 % 2 == 0
+	SETCOLOR 0x5687e6
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃이제 지지 않아, 포기하지 않아!　　　　　　 ┃
+	PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORMW ＞히카리의 반짝임이 무대장치를 가동시킨다!
+	RESETCOLOR
+	CALL SET_ACTION_SKILL, ARG, [[스킬:브레인버스트]]
+ELSEIF CFLAG:ARG:행동한횟수 == 2 && FLAG:경과턴수 % 2 == 0
+	SETCOLOR 0x5687e6
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃설령 그 아이와 싸우게 된다 할지라도　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+	CALL SET_ACTION_SKILL, ARG, [[스킬:디스트링스]]
+ELSE
+	CALL ランダム行動 , ARG
+ENDIF
+
+

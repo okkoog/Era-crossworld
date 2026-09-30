@@ -1,0 +1,274 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5397_ゼーレ.ERB
+;	Facility	:ガチャ被りに対する救済措置
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2023/9/21		軽木					新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;-------------------------------------------------
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:제레]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_EV
+	;周回時にリセットされる数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_EV
+	;周回時にリセットされる文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_EV"
+		SELECTCASE ARG
+			CASE 0
+				;
+				RESULTS = 
+			ENDSELECT
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				;周回後も持ち越したいフラグというとまぁこんな感じでしょうか
+				RESULTS = 星魂
+			CASE 1
+				RESULTS = スキル自動発動禁止
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる数値型変数です
+	;スキルゲージHとほぼ互換です。基本的にはゲージHが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる文字列型変数です
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる数値型変数
+	;スキルゲージFとほぼ互換です。基本的にはゲージFが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS =
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる文字列型変数
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS
+
+@ROLE_EXPLAIN_ADD_PAGE_[[キャラ:제레]], ARG
+RETURN 1
+
+;ARG:1 = 表示ページ
+@ROLE_EXPLAIN_[[キャラ:제레]], ARG, ARG:1
+#DIM LCOUNT
+IF ARG:1 == 1
+	PRINTFORML 星魂
+	PRINTL 
+	FOR LCOUNT, 1, 7
+		IF GET_RPG_CFLAG_TAKEOVER(ARG, "星魂") >= LCOUNT
+			SELECTCASE LCOUNT
+				CASE 1
+					PRINTFORML 　１　斬尽
+					PRINTFORML 　　　　전용 기술의 크리티컬률 +15％.
+				CASE 2
+					PRINTFORML 　２　蝶舞
+					PRINTFORML 　　　　환인의 속도 보정이 2회까지 누적될 수 있게 된다.
+				CASE 3
+					PRINTFORML 　３　繚乱
+					PRINTFORML 　　　　환인의 위력 1.1배. 선제공격 성패와 관계없이 환신이 발동한다.
+				CASE 4
+					PRINTFORML 　４　掠影
+					PRINTFORML 　　　　적을 쓰러뜨렸을 경우 EP를 15 회복한다.
+				CASE 5
+					PRINTFORML 　５　鋒鋭
+					PRINTFORML 　　　　『어지러운 나비』『강습』의 위력 1.1배.
+				CASE 6
+					PRINTFORML 　６　離析
+					PRINTFORML 　　　　필살기를 발동한 턴 동안 같은 적에게 아군이 공격하면 만능 상성으로 저위력 추격을 1회 가한다.
+			ENDSELECT
+		ELSE
+			PRINTFORML 　%TOFULL(TOSTR(LCOUNT))%　？？？？
+			PRINTFORML 　　　　？？？？？？？？？？？？？？？？？
+		ENDIF
+	NEXT
+ENDIF
+RETURN 1
+
+;スキル名
+@SKILL_NAME_CHARA_[[キャラ:제레]],ARG
+	RESULTS = 離析
+
+;　명중
+@SKILL_HITRATE_CHARA_[[キャラ:제레]], ARG
+RETURN 999
+
+;　威力
+@SKILL_POWER_CHARA_[[キャラ:제레]], ARG
+RETURN 100
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_CHARA_[[キャラ:제레]], ARG
+RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_CHARA_[[キャラ:제레]], ARG
+;RETURN 10
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_CHARA_[[キャラ:제레]],ARG
+RETURN 1
+RETURN 0
+
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_CHARA_[[キャラ:제레]],ARG
+RETURN 1
+RETURN 0
+
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_CHARA_[[キャラ:제레]],ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_CHARA_[[キャラ:제레]],ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_CHARA_[[キャラ:제레]], ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_CHARA_[[キャラ:제레]],ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_CHARA_[[キャラ:제레]],ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_CHARA_[[キャラ:제레]]
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_CHARA_[[キャラ:제레]],ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;攻撃手段
+;1.物理攻撃 2.魔法攻撃 3.총공격 4.アイテム攻撃(ダメージ計算時の依存ステータスに関わる)
+;関数がない場合はダメージタイプとおなじになる
+;====================================================
+@SKILL_ATTACKTYPE_CHARA_[[キャラ:제레]], ARG
+RETURN GET_攻撃タイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_CHARA_[[キャラ:제레]],ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_CHARA_[[キャラ:제레]],ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_CHARA_[[キャラ:제레]],ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_CHARA_[[キャラ:제레]],ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_CHARA_[[キャラ:제레]],ARG
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_CHARA_[[キャラ:제레]], ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_CHARA_[[キャラ:제레]]
+RETURN 0
+
+;没
+;@SKILL_RANK_CHARA_[[キャラ:제레]], ARG = -1
+
+;====================================================
+;トリガー発動条件
+;
+;詳しい仕様については資料フォルダの解説を参照してください
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_CHARA_[[キャラ:제레]],ARG,ARG:1
+#DIM CHASE_T
+CHASE_T = SKILLGAGE_H_GET(ARG,PU_SKILLNUM_GET(ARG,"乱れ蝶"))
+SIF SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"乱れ蝶")) < 1
+	RETURN 0
+;自分自身の攻撃では発動しない
+SIF FLAG:행동순1 == ARG
+	RETURN 0
+;行動者と味方同士でなければ死
+SIF !IS_FRIEND(FLAG:행동순1, ARG)
+	RETURN 0
+;対象と敵同士でなければ死
+SIF IS_FRIEND(ARG, ARG:1)
+	RETURN 0
+;ダメージ与えてないなら死
+SIF !GET_CREC_ACT(FLAG:행동순1, ARG:1, "HIT")
+	RETURN 0
+;チェイス対象でないとNG
+SIF ARG:1 != CHASE_T
+	RETURN 0
+RETURN 1, CPOS(ARG:1)
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_CHARA_[[キャラ:제레]],ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+LOCAL:1 = 0
+CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM

@@ -1,0 +1,2413 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EQUIPMENT.ERB
+;	Facility	:装備の脱着などのシステム
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/05/19		P						プラグインソフトの処理を追加
+;	003		2011/10/23		旅人					装備品のリスト表示化
+;	004		2011/10/23		旅人					処理を共通化
+;	005		2012/05/20		P						装備の変更時に変動ステータスの表示画面を追加
+;	006		2013/03/27		銃P						生得武器所持にエレジー追記
+;	007		2013/12/02		ひみつ					バステ耐性の表示の仕方を少し変更。装備リスト(キャラクタ版)もページで表示するように。
+;													キャラクタ表示の際に半魔人のアクセサリが変更出来ないのを修正。
+;													装備選択中に戻るを選んだ場合に変動ステータス値表示が残る問題を修正
+;	008		2018/10/23		しぐれみそ				装備説明に魔晶装備追加スキル用の処理を追加
+;	009		2019/05/14		JK好き					装備画面省略設定を追加 レイアウト微調整
+;	010		2019/07/02		JK好き					装備画面省略設定を調整
+;	011		2019/12/25		Jガン					SKILL_NAMEの引数を正しいものに
+;	012		2019/01/13		Jガン					「装備詳細選択」選択時の処理を追加
+;	013		2021/06/23		lemukot					半魔あなたに対する生得武器の装備制限の緩和
+;	014		2021/09/16		JK好き					@全装備解除 特殊弾は解除されないように変更
+;	015		2022/09/24		kamedakeisuke			生得武器の装備制限の緩和（半魔＋武器or射撃武器持ちも追加）、およびAionも生得武器（COMP）を運用できるように
+;	016		2022/10/25		qqqqq					マウスUIモードを追加
+;	017		2022/12/19		P(bazzile)				ロールシステムにあわせて各種判定を変更
+;													銃装備の判定追加
+;	018		2023/04/12		P(bazzile)				特殊弾の装備画面で異常なリストを生成してしまう不具合を修正
+;	019		2023/05/31		P(bazzile)				プラグインの装備時にマウスをかざすことで説明文を表示するように
+;													装備説明における追加スキルの出力を説明文の一部に移す形に変更
+;	020		2023/06/20		P(bazzile)				改造装備のバステ耐性表示処理を追加
+;	021		2023/06/22		P(bazzile)				剣のNOを拡張
+;	022		2023/06/30		P(bazzile)				EQUIP_SORTで戦闘ステータスの参照範囲がずれていた不具合を修正
+;	023		2023/07/15		P(bazzile)				EQUIP_PROPERTYで魔晶装備の装備箇所を帰す処理を変更
+;	024		2023/10/15		P(bazzile)				装備の変更時にHPMPの最大値の変化に合わせて現在値が変動するように修正
+;													キャラクター表示モードで装備変更をする際にあらゆる装備を剣として握ってしまう不具合を修正
+;	025		2023/12/24								装備変更画面の射程表示の不具合を呼び出しの統一を行って修正
+;	026		2024/04/07		P(bazzile)				周回時等のキャラの初期装備のセット関数を追加
+;	027		2024/03/20		P(bazzile)				プラグイン関連の処理をPLUGIN.ERBファイルに移動
+;	028		2024/04/21		P(bazzile)				ゲストキャラの装備を変更不能に
+;	029		2024/05/08		P(bazzile)				フィルタリングフラグが立てられているキャラが装備変更の選択リストの選択肢には一定不具合を修正
+;	030		2024/06/19		P(bazzile)				条件ありの装備スキルによる追加スキルが二重に表示される問題に対処
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2024/06/19		P(bazzile)				セットアップの装備変更に「全装備解除ボタン」を追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;===================================================================
+;装備品の変更等
+;===================================================================
+
+@CASTING_EQUIPMENT(ARG:0)
+SIF CFLAG:(ARG:0):PT플래그 == 0
+	RETURN 0
+;---- EDIT 028 ADD START -------------------------
+SIF CFLAG:(ARG:0):게스트가입플래그
+	RETURN 0
+;---- EDIT 028 ADD END ---------------------------
+;---- EDIT 017 MOD START -------------------------
+SIF !GET_ROLE_PROP("CAN_USE_EQUIP", ARG:0) && !GET_ROLE_PROP("CAN_EQUIP_GUN", ARG:0)
+	RETURN 0
+;SIF ABL:(ARG:0):종족 > 0 && ABL:(ARG:0):종족 < 46 && ABL:(ARG:0):종족 != 36 && SKILL_EQUIPTHEORY_IS_HAVE_SKILL(ARG:0) == 0
+;	RETURN 0
+;---- EDIT 017 MOD END ---------------------------
+;ダンジョン攻略中はPT内のキャラ以外ダメ
+;SIF FLAG:SHOP커맨드 == [[ショップ:탐색]] && CFLAG:(ARG:0):PT플래그 != 2
+;	RETURN 0
+;---- EDIT 029 ADD START -------------------------
+SIF CFLAG:(ARG:0):필터링플래그
+	RETURN 0
+;---- EDIT 029 ADD END ---------------------------
+SIF IS_RENTING(ARG:0)
+	RETURN 0
+SIF TALENT:(ARG:0):비전투원
+	RETURN 0
+SIF CFLAG:(ARG:0):이자리에없는플래그 == 1
+	RETURN 0
+RETURN 1
+
+@EQUIPMENT , ARG = -1 , ARG:1 = -1
+#DIM LINE
+#DIM LCOUNT
+#DIM L_CHARA
+#DIM L_RESULT
+#DIM LIST_NUM
+;キャラリストを表示・選択
+IF ARG == -1
+	;CALL INPUT_CHARA_LIST("装備を変更させたいキャラを選んでください", "CASTING_EQUIPMENT", , , "EQUIPMENT_MouseUI_Handler")
+	{
+	CALL INPUT_CHARA_LIST
+		, "FUNC_PROPSET_LIST_BATTLE"
+		, "장비를 바꾸고 싶은 캐릭터를 선택해주세요"
+		, "CASTING_EQUIPMENT" 
+		, "SHOW_ADD_UP_FUNCTION"
+		, "SHOW_ADD_DOWN_FUNCTION"
+		, "EQUIPMENT_ADD_SELECT"
+		, "L_CANCELS"
+		, "FUNC_CUSTOM_TITLE"
+		, "FUNC_CUSTOM_COLOR"
+		, -1
+	}
+	SIF RESULT == 1000
+		RETURN 0
+	L_CHARA = RESULT
+ELSE
+	;ステータス画面から来た人用
+	L_CHARA = ARG
+	
+	;キャラ送り用のリスト作成
+	VARSET Q , -1
+	FOR LCOUNT, 0, CHARANUM
+		CALL CASTING_EQUIPMENT(LCOUNT)
+		SIF RESULT
+			Q:FINDELEMENT(Q, -1) = LCOUNT
+	NEXT
+	
+ENDIF
+LIST_NUM = FINDELEMENT(Q, L_CHARA)
+
+SIF GETBIT(FLAG:스테이터스화면타입, 2)
+	GOTO PRINT_ELIST
+
+CUSTOMDRAWLINE =
+LINE = LINECOUNT
+LIST_NUM = FINDELEMENT(Q, L_CHARA)
+変更装備箇所 = ARG:1
+
+$RESET
+VARSET アイテムリスト , -1
+SIF 変更装備箇所 != -1
+	CALL STATUS_WINDOW_EQUIP_ITEM_LIST , L_CHARA , 0 , 0 , 変更装備箇所 , "リスト作成"
+VARSET 変更予定装備 , -1
+CALL 装備変更時ステータス更新 , L_CHARA
+
+$PRINTLOOP
+CLEARLINE LINECOUNT - LINE
+
+CALL SET_PICTURE , , , "消去"
+
+;CALL STATUS_WINDOW_MAIN , L_CHARA , 0 , 0
+
+CALL STATUS_WINDOW_EQUIP , L_CHARA , 0 , 0 , 1
+CALL STATUS_WINDOW_BATTLE_STATUS , L_CHARA , 13 , 0 , 1
+CALL STATUS_WINDOW_DEFTYPE , L_CHARA , 24 , 0 , 1
+CALL STATUS_WINDOW_EQUIP_ITEM_LIST , L_CHARA , 0 , 52
+
+;
+IF 変更装備箇所 != -1
+	CALL STATUS_WINDOW_EQUIP_DATA , L_CHARA , 13 , 76 , EQUIP:(L_CHARA):GET_EQUIP(変更装備箇所) , ""
+	CALL SET_PICTURE , "[-],,,-_표시정보전환_[+],,,+" , 13 , , 100
+ENDIF
+IF 変更装備箇所 > -1 && 変更予定装備:変更装備箇所 != -1
+	CALL SET_PICTURE , "↓↓↓" , 23 , , 90
+	CALL STATUS_WINDOW_EQUIP_DATA , L_CHARA , 24 , 76 , 変更予定装備:変更装備箇所 , ""
+ENDIF
+
+CALL SET_PICTURE ,  , 0 , "表示" , 35 ;35行まで表示
+IF FLAG:장비화면생략스위치 == 0
+	PRINTL ========
+	PRINTL 장비해설
+	PRINTL ========
+	IF 変更装備箇所 != -1
+		CALL EQ_装備解説, EQUIP:(L_CHARA):GET_EQUIP(変更装備箇所), L_CHARA
+		SIF !RESULT
+			PRINTL 
+		IF GET_EQUIP(変更装備箇所) == "검"
+			PRINT 종별：
+			TRYCCALLFORM 剣タイプ_{EQUIP:(L_CHARA):GET_EQUIP(変更装備箇所)}
+				PRINTFORML %GET_ARMS_TYPE(RESULT)%
+			CATCH
+				PRINTL 그외
+			ENDCATCH
+		ENDIF
+		CALL 装備強化_CSTR, "解説表示", (L_CHARA),EQUIP:(L_CHARA):GET_EQUIP(変更装備箇所)
+		;---- EDIT 021 MOD END ---------------------------
+	ELSE
+		PRINTL
+	ENDIF
+	IF 変更装備箇所 > -1 && 変更予定装備:変更装備箇所 != -1
+		PRINTL 　↓　　　　　　
+		CALL EQ_装備解説, 変更予定装備:変更装備箇所
+		SIF !RESULT
+			PRINTL 
+		IF GET_EQUIP(変更装備箇所) == "검"
+			PRINT 종별：
+			TRYCCALLFORM 剣タイプ_{変更予定装備:変更装備箇所}
+				PRINTFORML %GET_ARMS_TYPE(RESULT)%
+			CATCH
+				PRINTL 그외
+			ENDCATCH
+		ENDIF
+	ELSE
+		PRINTL
+	ENDIF
+ENDIF
+IF FLAG:장비화면생략스위치 == 1
+	CUSTOMDRAWLINE =
+	PRINTL [401]등록장비1세트 　　[402]등록장비2세트 　　[403]등록장비3세트
+	PRINTL [404]등록장비4세트 　　[405]등록장비5세트 　　[406]등록장비6세트 
+ENDIF
+CUSTOMDRAWLINE =
+PRINTFORM \@(LIST_NUM == 0) ? %" " * 16% # [1001]이전캐릭터\@
+PRINT [100] 돌아간다 [200]장비변경반영 [300]모든장비를 해제
+PRINTFORM \@(LIST_NUM == FINDELEMENT(Q, -1) - 1) ? %" " * 16% # [1003]다음캐릭터\@
+PRINTL [400]현재의 장비를 등록 [500]표시변경
+
+$INPUTS_LOOP
+INPUTS
+ENCODETOUNI %RESULTS%
+IF RESULTS == "100"
+	変更装備箇所 = -1
+	VARSET 変更予定装備, -1
+	CALL 装備変更時ステータス更新(L_CHARA)
+	RETURN 0
+ELSEIF RESULTS == "200"
+	FOR LOCAL , 0 , 7
+		SIF 変更予定装備:LOCAL != -1
+			CALL 装備変更 , L_CHARA , LOCAL , 変更予定装備:LOCAL
+	NEXT
+	GOTO RESET
+ELSEIF RESULTS == "300"
+	CALL 全装備解除(L_CHARA)
+	GOTO RESET
+ELSEIF RESULTS == "400"
+	CLEARLINE LINECOUNT - LINE
+	CALL 装備登録 , L_CHARA
+	GOTO PRINTLOOP
+ELSEIF RESULTS == "500"
+	CLEARLINE LINECOUNT - LINE
+	IF FLAG:장비화면생략스위치 == 0
+		FLAG:장비화면생략스위치 = 1
+	ELSEIF FLAG:장비화면생략스위치 == 1
+		FLAG:장비화면생략스위치 = 2
+	ELSEIF FLAG:장비화면생략스위치 == 2
+		FLAG:장비화면생략스위치 = 0
+	ELSE
+		FLAG:장비화면생략스위치 = 0
+	ENDIF
+	GOTO PRINTLOOP
+ELSEIF RANGE(TOINT(RESULTS) , 401 , 406)
+	LOCAL = TOINT(RESULTS) - 401
+	LOCAL = 3100 + LOCAL * 7
+	FOR LCOUNT , 0 , 7
+		;CALLFORM 装備条件_{CFLAG:(L_CHARA):(LOCAL + LCOUNT)},L_CHARA
+		CALL EQ_装備可能確認,L_CHARA,CFLAG:(L_CHARA):(LOCAL + LCOUNT),LCOUNT
+		IF EQUIP:(L_CHARA):GET_EQUIP(LCOUNT) == CFLAG:(L_CHARA):(LOCAL + LCOUNT)
+			変更予定装備:LCOUNT = -1
+		ELSEIF RESULT && (CFLAG:(L_CHARA):(LOCAL + LCOUNT) == 0 || ITEM:(CFLAG:(L_CHARA):(LOCAL + LCOUNT)))
+			変更予定装備:LCOUNT = CFLAG:(L_CHARA):(LOCAL + LCOUNT)
+		ELSE
+			PRINTFORMW %GET_EQUIP(LCOUNT)% 장비를 세팅할 수 없었습니다
+		ENDIF
+	NEXT
+	CALL 装備変更時ステータス更新 , L_CHARA
+	RESULT = 0
+	GOTO PRINTLOOP
+ELSEIF RESULTS == "1001" && LIST_NUM > 0
+	変更装備箇所 = -1
+	LIST_NUM -= 1
+	L_CHARA = Q:LIST_NUM
+	GOTO RESET
+ELSEIF RESULTS == "1003" && LIST_NUM < FINDELEMENT(Q, -1) -1
+	変更装備箇所 = -1
+	LIST_NUM += 1
+	L_CHARA = Q:LIST_NUM
+	GOTO RESET
+ELSEIF RESULTS == "56" && GET_ROLE_PROP("CAN_USE_PLUGIN", L_CHARA)
+	CALL CHANGE_PLUGIN_SOFT, L_CHARA
+	GOTO RESET
+ELSEIF RANGE(TOINT(RESULTS) , 50 , 56)
+	変更装備箇所 = TOINT(RESULTS) - 50
+	CALL STATUS_WINDOW_EQUIP_ITEM_LIST , L_CHARA , 0 , 0 , 変更装備箇所 , "リスト作成"
+	GOTO PRINTLOOP
+
+;ELSEIF RANGE(TOINT(RESULTS) , 2000 , 5499) && FINDELEMENT(アイテムリスト , TOINT(RESULTS)) > -1
+ELSEIF RESULT == 1 && RANGE(RESULT:1 , 97 , 97 + 19) && アイテムリスト:(アイテムリストページ * 20 + RESULT:1 - 97) > -1
+	;変更予定装備:変更装備箇所 = TOINT(RESULTS)
+	変更予定装備:変更装備箇所 = アイテムリスト:(アイテムリストページ * 20 + RESULT:1 - 97)
+	CALL 装備変更時ステータス更新 , L_CHARA
+	
+	GOTO PRINTLOOP
+ELSEIF RESULTS == "57" && GET_BTL_TALENT_LV("건슬링거", L_CHARA)  && EQUIP:(L_CHARA):총 > 0
+;ELSEIF RESULTS == "57" && TALENT:(L_CHARA):건슬링거 > 0 && EQUIP:(L_CHARA):총 > 0;EDIT 017 MOD
+	CALL EQUIP_SPECIAL_BULLET, L_CHARA
+	GOTO RESET
+ELSEIF RESULTS == "<"
+	アイテムリストページ = LIMIT(アイテムリストページ-1 , 0 , (FINDELEMENT(アイテムリスト , -1)-1) / 20)
+	GOTO PRINTLOOP
+ELSEIF RESULTS == ">"
+	アイテムリストページ = LIMIT(アイテムリストページ+1 , 0 , (FINDELEMENT(アイテムリスト , -1)-1) / 20)
+	GOTO PRINTLOOP
+ELSEIF RESULTS == "장비상세선택" && 変更装備箇所 >= 0
+	CALL EQUIP_DETAIL_ITEM_LIST, 変更装備箇所, L_CHARA
+	SIF RESULT != 100
+		変更予定装備:変更装備箇所 = RESULT
+	CALL 装備変更時ステータス更新 , L_CHARA
+	GOTO PRINTLOOP
+ELSEIF RESULTS == "+" || RESULTS == "-"
+	CALL STATUS_WINDOW_EQUIP_DATA , , , , , @"表示切替%RESULTS%"
+	GOTO PRINTLOOP
+ELSEIF RESULTS == "≫"
+	FLAG:윈도우내성표시설정 = ++FLAG:윈도우내성표시설정 % 3
+	GOTO PRINTLOOP
+ELSEIF RESULTS == "≪"
+	FLAG:윈도우내성표시설정 = (FLAG:윈도우내성표시설정 + 2) % 3
+	GOTO PRINTLOOP
+ELSEIF RESULTS == "정렬 조건 변경"
+	CALL CHANGE_CONDITION_EQUIP_SORT
+	CALL EQUIP_SORT , L_CHARA , 1
+	GOTO PRINTLOOP
+ELSE
+	GOTO INPUTS_LOOP
+ENDIF
+
+;=========================================
+$PRINT_ELIST
+CUSTOMDRAWLINE =
+PRINTFORML %NAME:(L_CHARA)%
+PRINTL
+CALL PRINT_EQUIPLIST,L_CHARA
+IF FLAG:커스텀게임화면
+	;IF TALENT:(L_CHARA):건슬링거 && EQUIP:(L_CHARA):총;EDIT 017 MOD
+	IF GET_BTL_TALENT_LV("건슬링거", L_CHARA)  && EQUIP:(L_CHARA):총 > 0
+		PRINTL 　[7][특수탄변경]
+	ELSE
+		PRINTL 　[-][----------]
+	ENDIF
+ELSE
+	;IF TALENT:(L_CHARA):건슬링거 && EQUIP:(L_CHARA):총;EDIT 017 MOD
+	IF GET_BTL_TALENT_LV("건슬링거", L_CHARA)  && EQUIP:(L_CHARA):총 > 0
+		PRINTL [7][특수탄변경]
+	ELSE
+		PRINTL [-][----------]
+	ENDIF
+ENDIF
+DRAWLINE
+SIF FLAG:커스텀게임화면
+	PRINT 　
+PRINTL [300]모든장비를 해제
+DRAWLINE
+
+PRINTFORMLC \@(LIST_NUM == 0) ? %" " * 16% # [1001]이전캐릭터\@
+PRINTLC [100] 캔슬　　[200]장비변경종료　　
+PRINTFORMLC \@(LIST_NUM == A-1) ? %" " * 16% # [1003]다음캐릭터\@
+$INPUT_LOOP2
+INPUT
+L_RESULT = RESULT
+
+IF RESULT == 100
+	RESTART
+ELSEIF RESULT == 200
+	RETURN 0
+ELSEIF RESULT == 300
+	CALL 全装備解除(L_CHARA)
+	GOTO PRINT_ELIST
+ELSEIF RESULT == 1001 && LIST_NUM > 0
+	LIST_NUM -= 1
+	L_CHARA = Q:LIST_NUM
+	GOTO PRINT_ELIST
+ELSEIF RESULT == 1003 && LIST_NUM < A-1
+	LIST_NUM += 1
+	L_CHARA = Q:LIST_NUM
+	GOTO PRINT_ELIST
+ELSEIF RESULT < 0 || RESULT >= 8
+	GOTO INPUT_LOOP2
+ENDIF
+;IF RESULT == 7 && TALENT:(L_CHARA):건슬링거 && EQUIP:(L_CHARA):총;EDIT 017 MOD
+IF RESULT == 7 && GET_BTL_TALENT_LV("건슬링거", L_CHARA)  && EQUIP:(L_CHARA):총 > 0
+	CALL EQUIP_SPECIAL_BULLET,L_CHARA
+	GOTO PRINT_ELIST
+ELSEIF RESULT == 7
+	GOTO INPUT_LOOP2
+ENDIF
+CALL EQUIP_CHANGE, L_RESULT, L_CHARA
+SIF RESULT == 0
+	GOTO PRINT_ELIST
+RETURN 1
+
+
+;EQUIPMENTのINPUT_CHARA_LISTへ渡す用
+@EQUIPMENT_ADD_SELECT(ARG)
+#DIM DYNAMIC LCOUNT
+IF ARG == -1
+	PRINTLC [1010]마우스UI모드
+	PRINTLC [1011]전체장비해제
+	RETURN
+ENDIF
+IF ARG == 1010
+	CALL EQUIPMENT_MouseUI
+	SIF RESULT == 1
+		RETURN 1000, 0
+	RETURN 0, -1
+ELSEIF ARG == 1011
+	FOR LCOUNT, 0, CHARANUM
+		CALL CASTING_EQUIPMENT, LCOUNT
+		SIF !RESULT
+			CONTINUE
+		CALL 全装備解除, LCOUNT
+		PRINTFORML %CALLNAME:LCOUNT%의 모든 장비가 해제되었습니다。
+	NEXT
+	WAIT
+	RETURN 0, -1
+ENDIF
+RETURN ARG, 1
+
+;多分こんなノリ
+;ARG:0…装備カテゴリ(0.검/1.총/2.머리/3.몸통/4.팔/5.발/6.악세서리)
+;ARG:1…キャラ登録番号
+;ARG:2…呼び元(0.装備変更/1.ステータス画面)
+@EQUIP_CHANGE, L_EQUIP_TYPE, L_CHARA, ARG
+#LOCALSIZE 2
+#DIM L_EQUIP_TYPE
+#DIM L_CHARA
+#DIMS SHOW_MODE
+#DIM アイテム確認表示
+#DIM 元戦闘能力, 8
+#DIM L_COUNT
+#DIM LLINE
+#DIM LPAGE
+#DIM LREDRAW
+#DIM LSIZE
+;---- EDIT 003 ADD START -------------------------
+#DIM L_NG
+;---- EDIT 003 ADD END   -------------------------
+SHOW_MODE = \@ARG == 0 ? 装備変更 # ステータス画面\@
+CALL STATUS_WINDOW_EQUIP_ITEM_LIST(L_CHARA, 0, 0, L_EQUIP_TYPE, "リスト作成")
+ARRAYREMOVE アイテムリスト, 0, 1
+LLINE = LINECOUNT
+LPAGE = 0
+LREDRAW = CURRENTREDRAW()
+SIF LREDRAW != 2
+	REDRAW 2
+LSIZE = FINDELEMENT(アイテムリスト, -1)
+ARRAYSORT アイテムリスト, FORWARD, 0, LSIZE
+
+$PRINT_EMLIST
+CLEARLINE LINECOUNT - LLINE
+;---- EDIT 003 ADD START -------------------------
+L_NG=0
+CUSTOMDRAWLINE =
+PRINTFORM 장착할 장비를 선택해주세요 (현재의 화면모드:\@ !FLAG:아이템리스트화면모드설정 ? 통상 # 간이리스트 \@) 
+PRINTFORML ＜page.{LPAGE + 1}/{(LSIZE - 1) / リスト表示数() + 1}＞
+DRAWLINE
+;---- EDIT 003 ADD END   -------------------------
+
+CALL PRINT_EQUIPMENTLIST2(L_EQUIP_TYPE, L_CHARA, LPAGE, LSIZE)
+IF LPAGE == (LSIZE - 1) / リスト表示数()
+	IF FLAG:아이템리스트화면모드설정
+		PRINTFORM \@ LINECOUNT - LLINE < 4 + リスト表示数() ? %"\n" * MAX(0, 4 + リスト表示数() + LLINE - LINECOUNT)% # \@
+	ELSE
+		LOCAL:1 = LSIZE % リスト表示数()
+		LOCAL = (リスト表示数() / PRINTCPERLINE()) + ((リスト表示数() % PRINTCPERLINE()) != 0)
+		LOCAL -= (LOCAL:1 / PRINTCPERLINE()) + ((LOCAL:1 % PRINTCPERLINE()) != 0)
+		PRINTFORM %"\n" * MAX(0, LOCAL)%
+	ENDIF
+ENDIF
+DRAWLINE
+PRINTL [0] 벗긴다
+;---- EDIT 003 MOD START -------------------------
+PRINTFORMLC \@ LPAGE <= 0 ? %" " * 16% # [1007]이전페이지 \@
+IF SHOW_MODE == "装備変更"
+	PRINTFORMLC [1000] 취소
+	PRINTFORMLC [1001] 장비변경
+ELSE
+	PRINTFORMLC [1000] 종료
+	PRINTFORMLC 
+ENDIF
+PRINTFORMLC \@ LPAGE >= (LSIZE - 1) / リスト表示数() ? %" " * 16% # [1009]다음페이지 \@
+PRINTFORMLC [1002] 화면모드변경(\@ FLAG:아이템리스트화면모드설정 ? 통상 # 간이리스트 \@)
+PRINTL
+;---- EDIT 003 MOD END   -------------------------
+
+
+$INPUT_LOOP3
+INPUT
+
+IF RESULT == 1000
+	GOTO END_FUNC
+ELSEIF RESULT == 1001
+	SIF LREDRAW != 2
+		REDRAW LREDRAW
+	RETURN 1
+;---- EDIT 003 ADD START -------------------------
+ELSEIF RESULT == 1002
+	CALL EQ_画面モード切替
+	CLEARLINE 1
+	GOTO PRINT_EMLIST
+;---- EDIT 003 ADD END   -------------------------
+ELSEIF RESULT == 1007 && LPAGE > 0
+	LPAGE--
+	GOTO PRINT_EMLIST
+ELSEIF RESULT == 1009 && LPAGE < (LSIZE - 1) / リスト表示数()
+	LPAGE++
+	GOTO PRINT_EMLIST
+ELSEIF RESULT == 0
+	;銃の場合、特殊弾を外す
+	IF GET_EQUIP(L_EQUIP_TYPE) == "총"
+		FOR LOCAL,1,8
+			LOCALS = 특수탄{LOCAL}
+			EQUIP:(L_CHARA):LOCALS = 0
+		NEXT
+	ENDIF
+	CALL 装備解除, L_CHARA, GET_EQUIP(L_EQUIP_TYPE)
+	GOTO END_FUNC
+ENDIF
+LOCAL = RESULT
+
+IF LOCAL == 10000
+	GOTO END_FUNC
+ELSE
+	CALL EQ_装備可能確認, L_CHARA, LOCAL, L_EQUIP_TYPE
+	SIF !RESULT
+		L_NG = 1
+ENDIF
+;IF 魔晶装備(LOCAL)
+;	CALLFORM 装備条件_魔晶装備,ARG:1,LOCAL - 2450 - 450*ARG
+;	IF LOCAL == 1000
+;		GOTO END_FUNC
+;	ELSEIF LOCAL < 2000+ARG*500 || LOCAL >= 2000+(ARG+1)*500 || RESULT == 0 || ITEM:(LOCAL) <= 0
+;		;---- EDIT 003 MOD START -------------------------
+;		GOTO INPUT_LOOP3
+;		L_NG=1
+;		;---- EDIT 003 MOD END   -------------------------
+;	ENDIF
+;ELSE
+;	TRYCCALLFORM 装備条件_{LOCAL},ARG:1
+;		IF LOCAL == 1000
+;			GOTO END_FUNC
+;		ELSEIF LOCAL < 2000+ARG*500 || LOCAL >= 2000+(ARG+1)*500 || RESULT == 0 || ITEM:(LOCAL) <= 0
+;			;---- EDIT 003 MOD START -------------------------
+;			GOTO INPUT_LOOP3
+;			L_NG=1
+;			;---- EDIT 003 MOD END   -------------------------
+;		ENDIF
+;	CATCH
+;		;---- EDIT 003 MOD START -------------------------
+;		GOTO INPUT_LOOP3
+;		L_NG=1
+;		;---- EDIT 003 MOD END   -------------------------
+;	ENDCATCH
+;ENDIF
+
+;---- EDIT 003 ADD START -------------------------
+IF L_NG
+	L_NG=0
+
+	;- 装備中の装備は許可
+	IF EQUIP:(L_CHARA):GET_EQUIP(L_EQUIP_TYPE) == LOCAL
+	ELSE
+		CLEARLINE 1
+		REUSELASTLINE （入力値 {LOCAL} は範囲外、または個数0のアイテムです）
+		GOTO INPUT_LOOP3
+	ENDIF
+
+ENDIF
+;---- EDIT 003 ADD END   -------------------------
+$PRINT_STATUS
+IF アイテム確認表示
+	IF EQUIP:(L_CHARA):GET_EQUIP(L_EQUIP_TYPE) > 0
+		CALL 装備説明,EQUIP:(L_CHARA):GET_EQUIP(L_EQUIP_TYPE),L_CHARA
+		PRINTL
+		CUSTOMDRAWLINE ↓
+		PRINTL
+	ENDIF
+	CALL 装備説明,LOCAL,L_CHARA
+ELSE
+	FOR L_COUNT,0, TYPENUM
+		CALLF 装備変更時相性(L_COUNT, 1, MAXBASE:(L_CHARA):GET_TYPE(L_COUNT))
+	NEXT
+	FOR L_COUNT,0,EQUIP_BATTLESTATUSNUM+2
+		元戦闘能力:L_COUNT = MAXBASE:(L_CHARA):GET_BATTLESTATUS(L_COUNT)
+	NEXT
+	DRAWLINE
+	PRINTFORML \@ EQUIP:(L_CHARA):GET_EQUIP(L_EQUIP_TYPE) == 0 ? %AUTO_SPLIT("素手_ＥＭＰＴＹ" , "_" , GET_EQUIP(L_EQUIP_TYPE) != "검" )% # %ITEMNAME:(EQUIP:(L_CHARA):GET_EQUIP(L_EQUIP_TYPE))% \@ → %ITEMNAME:LOCAL%
+	DRAWLINE
+	SWAP EQUIP:(L_CHARA):GET_EQUIP(L_EQUIP_TYPE), LOCAL
+	CALL SYNC_STATUS, L_CHARA
+	FOR L_COUNT,0,GUN_BATTLESTATUSNUM
+		CALLF 装備変更時ステータス変化値(L_COUNT, 1, MAXBASE:(L_CHARA):GET_BATTLESTATUS(L_COUNT) - 元戦闘能力:L_COUNT)
+	NEXT
+	U = L_CHARA
+	CALL SHOW_INFO_NAME
+	CALL SHOW_INFO_PAGE_2, 1
+	SWAP EQUIP:(L_CHARA):GET_EQUIP(L_EQUIP_TYPE), LOCAL
+	CALL SYNC_STATUS, L_CHARA
+ENDIF
+PRINTFORML [0] 장비를 변경한다　[1] %\@アイテム確認表示 ? 스테이터스확인 # 아이템확인 \@% [9] 취소
+CALL INPUTINT, 0, 1, 9
+
+SELECTCASE RESULT
+	CASE 0
+		
+	CASE 1
+		INVERTBIT アイテム確認表示, 0
+		GOTO PRINT_STATUS
+	CASE 9
+		GOTO PRINT_EMLIST
+ENDSELECT
+
+CALL 装備変更,L_CHARA,L_EQUIP_TYPE,LOCAL
+;銃の場合、特殊弾を外すかを判定
+IF GET_EQUIP(L_EQUIP_TYPE) == "총" && EQUIP:(L_CHARA):총 > 0
+	CALLFORM 特殊弾倉_{EQUIP:(L_CHARA):총},L_CHARA
+	LOCAL:1 = RESULT
+	FOR LOCAL,1,8
+		LOCALS = 특수탄{LOCAL}
+		SIF LOCAL > LOCAL:1
+			EQUIP:(L_CHARA):LOCALS = 0
+		SIF EQUIP:(L_CHARA):LOCALS == 0
+			CONTINUE
+		CALLFORM 装備条件_{EQUIP:(L_CHARA):LOCALS},L_CHARA
+		SIF RESULT == 0
+			EQUIP:(L_CHARA):LOCALS = 0
+	NEXT
+ENDIF
+$END_FUNC
+SIF LREDRAW != 2
+	REDRAW LREDRAW
+RETURN 0
+
+
+@PRINT_EQUIPLIST,ARG
+#DIM LCOUNT
+;1行目にレベル・属性を表示
+CALL PRINT_BASE_STATUS,ARG
+
+IF FLAG:커스텀게임화면
+	DRAWLINE
+	PRINTFORML 　ＨＰ[{BASE:ARG:ＨＰ,5}/{MAXBASE:ARG:ＨＰ,5}]　　ＭＰ[{BASE:ARG:ＭＰ,5}/{MAXBASE:ARG:ＭＰ,5}]　　\@MAXBASE:ARG:CP>0?ＣＰ:{MAXBASE:ARG:CP,3}#\@
+	DRAWLINE
+	;---- EDIT 025 MOD START -------------------------
+	PRINTFORM 　통상공격：%GET_TYPE(ABL:ARG:공격상성)% {ABL:ARG:최저공격횟수}-{ABL:ARG:최대공격횟수} 회　사거리%EQ_射程名称(ABL:ARG:사거리)%
+	;PRINTFORM 　通常攻撃：%GET_TYPE(ABL:ARG:공격상성)% {ABL:ARG:최저공격횟수}-{ABL:ARG:최대공격횟수} 회　사거리
+	;IF ABL:ARG:사거리 == 1
+	;	PRINT Ｓ
+	;ELSEIF ABL:ARG:사거리 == 2
+	;	PRINT Ｍ
+	;ELSEIF ABL:ARG:사거리 == 3
+	;	PRINT Ｌ
+	;ENDIF
+	;---- EDIT 025 MOD END ---------------------------
+	PRINTFORML 　%GET_SPHERE(ABL:ARG:공격범위)%
+
+	SIF ABL:ARG:추가효과 > 0
+		PRINTFORML 　　　　추가효과:%GET_STATE(ABL:ARG:추가효과), 6, LEFT%　추가효과상성:%GET_TYPE(ABL:ARG:추가효과상성)%
+	
+	;人間ならばここに銃攻撃の性能と銃攻撃力・銃命中を2行つかって表示
+	IF GET_ROLE_PROP("CAN_USE_GUN", ARG)
+		DRAWLINE
+		PRINTFORML 　총：공격력 {MAXBASE:ARG:총공격}　명중 {MAXBASE:ARG:총명중}
+		PRINT 　　　　
+		;---- EDIT 025 MOD START -------------------------
+		CALL EQUIP_PROPERTY, EQUIP:ARG:총, "최저공격횟수", , ARG
+		PRINTFORM 공격횟수 {RESULT}-
+		CALL EQUIP_PROPERTY, EQUIP:ARG:총, "최대공격횟수", , ARG
+		PRINTFORM {RESULT} 회
+		CALL EQUIP_PROPERTY, EQUIP:ARG:총, "사거리", , ARG
+		PRINTFORM 　사거리%EQ_射程名称(RESULT)%
+		CALL EQUIP_PROPERTY, EQUIP:ARG:총, "공격범위", , ARG
+		;IF 魔晶装備(EQUIP:ARG:총)
+		;	CALLFORM 最低攻撃回数_魔晶装備,EQUIP:ARG:총 - 2900
+		;	PRINTFORM 공격횟수 {RESULT}-
+		;	CALLFORM 最大攻撃回数_魔晶装備,EQUIP:ARG:총 - 2900
+		;	PRINTFORM {RESULT} 회
+		;	CALLFORM 射程_魔晶装備,EQUIP:ARG:총 - 2900
+		;	PRINTFORM 　사거리
+		;	IF RESULT == 1
+		;		PRINT Ｓ
+		;	ELSEIF RESULT == 2
+		;		PRINT Ｍ
+		;	ELSEIF RESULT == 3
+		;		PRINT Ｌ
+		;	ENDIF
+		;	CALLFORM 攻撃範囲_魔晶装備,EQUIP:ARG:총 - 2900
+		;ELSE
+		;	CALLFORM 最低攻撃回数_{EQUIP:ARG:총},ARG
+		;	PRINTFORM 공격횟수 {RESULT}-
+		;	CALLFORM 最大攻撃回数_{EQUIP:ARG:총},ARG
+		;	PRINTFORM {RESULT} 회
+		;	CALLFORM 射程_{EQUIP:ARG:총},ARG
+		;	PRINTFORM 　사거리
+		;	IF RESULT == 1
+		;		PRINT Ｓ
+		;	ELSEIF RESULT == 2
+		;		PRINT Ｍ
+		;	ELSEIF RESULT == 3
+		;		PRINT Ｌ
+		;	ENDIF
+		;	CALLFORM 攻撃範囲_{EQUIP:ARG:총},ARG
+		;ENDIF
+		;---- EDIT 025 MOD END ---------------------------
+		PRINTFORM 　%GET_SPHERE(RESULT),4,LEFT%
+		PRINTL
+	ENDIF
+	DRAWLINE
+	;5～10行目に基本能力値と戦闘能力値を表示
+	FOR LCOUNT, 0, 6
+		PRINTFORM %GET_BASESTATUS(LCOUNT+1),5%{MAXBASE:ARG:(GET_BASESTATUS(LCOUNT+1)),5}({BASE:ARG:(GET_BASESTATUS(LCOUNT+1)),5})　　　　　　　　
+		PRINTFORM %GET_BATTLESTATUS(LCOUNT),10,LEFT% 
+		PRINTFORML {MAXBASE:ARG:(GET_BATTLESTATUS(LCOUNT)),6}
+	NEXT
+	DRAWLINE
+	;11、12行目に被攻撃相性と継承可能表示
+	PRINTL  전투상성
+	LOCAL:1 = GETCOLOR()
+	;現在の色を退避しておく（敵のステータスを表示した時など）
+	FOR LOCAL,0, TYPENUM
+		SIF FLAG:커스텀게임화면 && LOCAL % 6 == 0
+			PRINT 　 
+		CALL SET_AISYOU_COLOR, MAXBASE:ARG:(GET_TYPE(LOCAL))
+		PRINTFORM %GET_TYPE(LOCAL) %\@(MAXBASE:ARG:(GET_TYPE(LOCAL)) < 0) ? 흡 # 　\@
+		PRINTFORM \@ ((MAXBASE:ARG:(GET_TYPE(LOCAL)) != 999)) ? {ABS(MAXBASE:ARG:(GET_TYPE(LOCAL))),4}％ # %" " *2%반사 \@　
+		;PRINTFORM {ABS(MAXBASE:U:(GET_TYPE(LOCAL)),4}％
+		SIF LOCAL % 6 == 5
+			PRINTL
+	NEXT
+	;色を戻す
+	SETCOLOR LOCAL:1
+	DRAWLINE
+	;---- EDIT 017 MOD START -------------------------
+	;装備が可能でないキャラ
+	;IF ABL:ARG:종족 > 0 && ABL:ARG:종족 < 46 && ABL:ARG:종족 != 36 && SKILL_EQUIPTHEORY_IS_HAVE_SKILL(ARG) == 0
+	;装備が可能なキャラ
+	IF GET_ROLE_PROP("CAN_USE_EQUIP", ARG)
+		FOR LOCAL,0,7
+			SIF FLAG:커스텀게임화면
+				PRINT 　
+			PRINTFORM [{LOCAL}]%"[" + GET_EQUIP(LOCAL) + "]",14,LEFT%
+			IF (EQUIP:ARG:(GET_EQUIP(LOCAL))) == 0
+				SETCOLOR 0x404040
+				PRINTFORML ＥＭＰＴＹ
+				RESETCOLOR
+			ELSE
+				IF 改造装備(EQUIP:ARG:(GET_EQUIP(LOCAL)))
+					PRINTFORML %改造装備名称(改造装備番号(EQUIP:ARG:(GET_EQUIP(LOCAL))))%
+					
+					
+				ELSEIF 魔晶装備(EQUIP:ARG:(GET_EQUIP(LOCAL)))
+					;---- EDIT 004 MOD START -------------------------
+	;				PRINTFORML %STR:(DC:(EQUIP:ARG:(GET_EQUIP(LOCAL)) - 2450 - LOCAL*450):49+100)%
+					PRINTFORML %EQ_GETNAME_魔晶装備_CHARA(ARG, LOCAL)%
+					;---- EDIT 004 MOD END   -------------------------
+				ELSE
+					PRINTFORML %ITEMNAME:(EQUIP:ARG:(GET_EQUIP(LOCAL)))%
+				ENDIF
+			ENDIF
+		NEXT
+	ELSE
+		IF GET_ROLE_PROP("CAN_USE_PLUGIN", ARG)
+			PRINT  [PLUG-IN] 
+			IF EQUIP:ARG:악세서리 == 0
+				SETCOLOR 0x404040
+				PRINTFORML ＥＭＰＴＹ
+				RESETCOLOR
+			ELSE
+				PRINTFORML 　%PLUGINNAME(EQUIP:ARG:악세서리)%
+			ENDIF
+		ENDIF
+	ENDIF
+	;---- EDIT 017 MOD END ---------------------------
+ELSE
+	PRINTFORML ＨＰ[{BASE:ARG:ＨＰ,4}/{MAXBASE:ARG:ＨＰ,4}]　　ＭＰ[{BASE:ARG:ＭＰ,4}/{MAXBASE:ARG:ＭＰ,4}]　　\@MAXBASE:ARG:CP>0?ＣＰ:{MAXBASE:ARG:CP,3}#\@
+	;4行目に通常攻撃の性能を表示
+	;---- EDIT 025 MOD START -------------------------
+	PRINTFORM 통상공격：%GET_TYPE(ABL:ARG:공격상성),6,LEFT%　{ABL:ARG:최저공격횟수,2}-{ABL:ARG:최대공격횟수,2}회　사거리:%EQ_射程名称(ABL:ARG:사거리)%
+	;PRINTFORM 通常攻撃：%GET_TYPE(ABL:ARG:공격상성),6,LEFT%　{ABL:ARG:최저공격횟수,2}-{ABL:ARG:최대공격횟수,2}回　사거리:
+	;IF ABL:ARG:사거리 == 1
+	;	PRINT Ｓ
+	;ELSEIF ABL:ARG:사거리 == 2
+	;	PRINT Ｍ
+	;ELSEIF ABL:ARG:사거리 == 3
+	;	PRINT Ｌ
+	;ENDIF
+	;---- EDIT 025 MOD END ---------------------------
+	PRINTFORML  %GET_SPHERE(ABL:ARG:공격범위),4,LEFT%
+	;人間ならばここに銃攻撃の性能と銃攻撃力・銃命中を2行つかって表示
+	IF GET_ROLE_PROP("CAN_USE_GUN", ARG)
+		DRAWLINE
+		PRINTFORML 총：공격 {MAXBASE:ARG:총공격,4} 명중 {MAXBASE:ARG:총명중}
+		;---- EDIT 025 MOD START -------------------------
+		CALL EQUIP_PROPERTY, EQUIP:ARG:총, "최저공격횟수", , ARG
+		PRINTFORM 공격횟수 {RESULT,2}-
+		CALL EQUIP_PROPERTY, EQUIP:ARG:총, "최대공격횟수", , ARG
+		PRINTFORM {RESULT,2}
+		CALL EQUIP_PROPERTY, EQUIP:ARG:총, "사거리", , ARG
+		PRINTFORM 　　사정：%EQ_射程名称(RESULT)%
+		CALL EQUIP_PROPERTY, EQUIP:ARG:총, "공격범위", , ARG
+		;IF 魔晶装備(EQUIP:ARG:총)
+		;	CALLFORM 最低攻撃回数_魔晶装備,EQUIP:ARG:총 - 2900
+		;	PRINTFORM 공격횟수 {RESULT,2}-
+		;	CALLFORM 最大攻撃回数_魔晶装備,EQUIP:ARG:총 - 2900
+		;	PRINTFORM {RESULT,2}
+		;	CALLFORM 射程_魔晶装備,EQUIP:ARG:총 - 2900
+		;	PRINTFORM 　　射程：
+		;	IF RESULT == 1
+		;		PRINT Ｓ
+		;	ELSEIF RESULT == 2
+		;		PRINT Ｍ
+		;	ELSEIF RESULT == 3
+		;		PRINT Ｌ
+		;	ENDIF
+		;	CALLFORM 攻撃範囲_魔晶装備,EQUIP:ARG:총 - 2900
+		;ELSE
+		;	CALLFORM 最低攻撃回数_{EQUIP:ARG:총},ARG
+		;	PRINTFORM 공격횟수 {RESULT,2}-
+		;	CALLFORM 最大攻撃回数_{EQUIP:ARG:총},ARG
+		;	PRINTFORM {RESULT,2}
+		;	CALLFORM 射程_{EQUIP:ARG:총},ARG
+		;	PRINTFORM 　　射程：{RESULT,2}
+		;	CALLFORM 攻撃範囲_{EQUIP:ARG:총},ARG
+		;ENDIF
+		;---- EDIT 025 MOD END ---------------------------
+		PRINTFORM 　　%GET_SPHERE(RESULT),4,LEFT%
+		PRINTL
+	ENDIF
+	DRAWLINE
+	;5～10行目に基本能力値と戦闘能力値を表示
+	FOR LCOUNT, 0, 6
+		PRINTFORM %GET_BASESTATUS(LCOUNT+1),4%{MAXBASE:ARG:(GET_BASESTATUS(LCOUNT+1)),4}({BASE:ARG:(GET_BASESTATUS(LCOUNT+1)),4})　　　　　　　　
+		PRINTFORM %GET_BATTLESTATUS(LCOUNT),8,LEFT% 
+		PRINTFORML {MAXBASE:ARG:(GET_BATTLESTATUS(LCOUNT)),5}
+	NEXT
+	DRAWLINE
+	;11、12行目に被攻撃相性と継承可能表示
+	PRINTL 전투상성
+	FOR LOCAL,0,TYPENUM
+			PRINTFORM %GET_TYPE(LOCAL) %\@(MAXBASE:ARG:(GET_TYPE(LOCAL)) < 0) ? 흡 # 　\@
+			PRINTFORM \@ ((MAXBASE:ARG:(GET_TYPE(LOCAL)) != 999)) ? {ABS(MAXBASE:ARG:(GET_TYPE(LOCAL))),4}％ # %" " *2%반사 \@　
+			;PRINTFORM {ABS(MAXBASE:ARG:(GET_TYPE(LOCAL)),4}％
+		SIF LOCAL % 6 == 5
+			PRINTL
+	NEXT
+	DRAWLINE
+	;装備が可能でないキャラ
+	;IF ABL:ARG:종족 > 0 && ABL:ARG:종족 < 46 && ABL:ARG:종족 != 36 && SKILL_EQUIPTHEORY_IS_HAVE_SKILL(ARG) == 0;EDIT 017 MOD
+	;装備が可能なキャラ
+	FOR LOCAL,0,7
+		SELECTCASE GET_EQUIP(LOCAL)
+			CASE "총"
+				SIF !GET_ROLE_PROP("CAN_EQUIP_GUN", ARG)
+					CONTINUE
+			CASEELSE
+				SIF !GET_ROLE_PROP("CAN_USE_EQUIP", ARG)
+					CONTINUE
+		ENDSELECT
+		PRINTFORM [{LOCAL}]%"[" + GET_EQUIP(LOCAL) + "]",14,LEFT%
+		IF (EQUIP:ARG:(GET_EQUIP(LOCAL))) == 0
+			SETCOLOR 0x404040
+			PRINTFORML ＥＭＰＴＹ
+			RESETCOLOR
+		ELSE
+			IF 改造装備(EQUIP:ARG:(GET_EQUIP(LOCAL)))
+				PRINTFORML %改造装備名称(改造装備番号(EQUIP:ARG:(GET_EQUIP(LOCAL))))%
+			ELSEIF 魔晶装備(EQUIP:ARG:(GET_EQUIP(LOCAL)))
+				;---- EDIT 004 MOD START -------------------------
+	;				PRINTFORML %STR:(DC:(EQUIP:ARG:(GET_EQUIP(LOCAL)) - 2450 - LOCAL*450):49+100)%
+				PRINTFORML %EQ_GETNAME_魔晶装備_CHARA(ARG, LOCAL)%
+				;---- EDIT 004 MOD END   -------------------------
+			ELSE
+				PRINTFORML %ITEMNAME:(EQUIP:ARG:(GET_EQUIP(LOCAL)))%
+			ENDIF
+		ENDIF
+	NEXT
+	;---- EDIT 017 MOD START -------------------------
+	;プラグインが使用可能なキャラ
+	IF GET_ROLE_PROP("CAN_USE_PLUGIN", ARG)
+		PRINT  [PLUG-IN] 
+		IF EQUIP:ARG:악세서리 == 0
+			SETCOLOR 0x404040
+			PRINTFORML ＥＭＰＴＹ
+			RESETCOLOR
+		ELSE
+			PRINTFORML %PLUGINNAME(EQUIP:ARG:악세서리)%
+		ENDIF
+	ENDIF
+	;---- EDIT 017 MOD END ---------------------------
+ENDIF
+
+;---- EDIT 003 DEL START -------------------------
+;;装備できるアイテムを表示する
+;@PRINT_EQUIPMENTLIST, ARG, ARG:1
+;#LOCALSIZE 1
+;FOR LOCAL,2000+ARG*500,2000+(ARG+1)*500
+;	SIF ITEMPRICE:LOCAL == 0
+;		CONTINUE
+;	SIF ITEM:LOCAL == 0
+;		CONTINUE
+;	CALL GET_ITEMMAX, LOCAL
+;	SIF RESULT > 0 && ITEM:LOCAL > RESULT
+;		ITEM:LOCAL = RESULT
+;	IF 魔晶装備(LOCAL)
+;		CALLFORM 装備条件_魔晶装備,ARG:1,LOCAL - 2450 - ARG*450
+;		SIF RESULT == 1
+;			PRINTFORMC [{LOCAL}] %STR:(DC:(LOCAL - 2450 - ARG*450):49+100),20,LEFT% × {ITEM:LOCAL,3} 
+;	ELSE
+;		CALLFORM 装備条件_{LOCAL},ARG:1
+;		SIF RESULT == 1
+;			PRINTFORMC [{LOCAL}] %ITEMNAME:LOCAL,20,LEFT% × {ITEM:LOCAL,3} 
+;	ENDIF
+;NEXT
+;PRINTL
+;DRAWLINE
+;---- EDIT 003 DEL END ---------------------------
+;---- EDIT 003 ADD START -------------------------
+;=================================================
+;   sub PRINT_EQUIPMENTLIST
+;=================================================
+;   表示:装備可能アイテム
+;-------------------------------------------------
+; Input:
+;  ARG:0				アイテム種別
+;  ARG:1				キャラ
+;-------------------------------------------------
+@PRINT_EQUIPMENTLIST(ARG, ARG:1)
+#LOCALSIZE 1
+#DIM L_J
+#DIM L_TMP
+#DIM L_MODE
+
+;- モード(0:通常 1:簡易リスト)
+L_MODE = FLAG:아이템리스트화면모드설정
+
+;- 簡易リスト時
+IF L_MODE
+
+	;- 装備箇所で分岐
+	SELECTCASE ARG
+		;- 0:검
+		CASE 0
+
+			;- 表示:装備可能アイテム(무기)(リスト形式:ヘッダ)
+			CALL PRINT_EQUIPMENTLIST_TYPELIST_ARMS_HEADER
+
+			FOR LOCAL,2000+ARG*500,2000+(ARG+1)*500
+				SIF ITEMPRICE:LOCAL == 0
+					CONTINUE
+				IF ITEM:LOCAL == 0
+					;- 装備中の装備以外は非表示
+					SIF !(EQUIP:(ARG:1):(GET_EQUIP(ARG)) == LOCAL)
+						CONTINUE
+				ELSE
+					RESULT = 0
+					CALL GET_ITEMMAX, LOCAL
+					SIF RESULT > 0 && ITEM:LOCAL > RESULT
+						ITEM:LOCAL = RESULT
+				ENDIF
+				;- 表示:装備可能アイテム(무기)(リスト形式:行単位)
+				CALL PRINT_EQUIPMENTLIST_TYPELIST_ARMS_LINE(LOCAL, ARG:1)
+
+			NEXT
+		;- 1:총
+		CASE 1
+
+			;- 表示:装備可能アイテム(총)(リスト形式:ヘッダ)
+			CALL PRINT_EQUIPMENTLIST_TYPELIST_GUN_HEADER
+
+			FOR LOCAL,2000+ARG*500,2000+(ARG+1)*500
+				SIF ITEMPRICE:LOCAL == 0
+					CONTINUE
+				IF ITEM:LOCAL == 0
+					;- 装備中の装備以外は非表示
+					SIF !(EQUIP:(ARG:1):(GET_EQUIP(ARG)) == LOCAL)
+						CONTINUE
+				ELSE
+					RESULT = 0
+					CALL GET_ITEMMAX, LOCAL
+					SIF RESULT > 0 && ITEM:LOCAL > RESULT
+						ITEM:LOCAL = RESULT
+				ENDIF
+				;- 表示:装備可能アイテム(총)(リスト形式:行単位)
+				CALL PRINT_EQUIPMENTLIST_TYPELIST_GUN_LINE(LOCAL, ARG:1)
+
+			NEXT
+		;- 2-6:防具
+		CASE 2 TO 6
+
+			;- 表示:装備可能アイテム(防具)(リスト形式:ヘッダ)
+			CALL PRINT_EQUIPMENTLIST_TYPELIST_PROTECTOR_HEADER
+
+			FOR LOCAL,2000+ARG*500,2000+(ARG+1)*500
+				SIF ITEMPRICE:LOCAL == 0
+					CONTINUE
+				IF ITEM:LOCAL == 0
+					;- 装備中の装備以外は非表示
+					SIF !(EQUIP:(ARG:1):(GET_EQUIP(ARG)) == LOCAL)
+						CONTINUE
+				ELSE
+					RESULT = 0
+					CALL GET_ITEMMAX, LOCAL
+					SIF RESULT > 0 && ITEM:LOCAL > RESULT
+						ITEM:LOCAL = RESULT
+				ENDIF
+				;- 表示:装備可能アイテム(防具)(リスト形式:行単位)
+				CALL PRINT_EQUIPMENTLIST_TYPELIST_PROTECTOR_LINE(LOCAL, ARG:1)
+
+			NEXT
+
+		;上記以外
+		CASEELSE
+			;- 通常出力
+			L_MODE = 0
+	ENDSELECT
+ENDIF
+
+;- 通常出力時
+IF !L_MODE
+	FOR LOCAL,2000+ARG*500,2000+(ARG+1)*500
+		SIF ITEMPRICE:LOCAL == 0
+			CONTINUE
+		SIF ITEM:LOCAL == 0
+			CONTINUE
+		RESULT = 0
+		CALL GET_ITEMMAX, LOCAL
+		SIF RESULT > 0 && ITEM:LOCAL > RESULT
+			ITEM:LOCAL = RESULT
+		IF 改造装備(LOCAL)
+			;PRINTFORML %改造装備名称(改造装備番号(EQUIP:ARG:(GET_EQUIP(LOCAL)))%
+			PRINTFORML [{LOCAL}] %改造装備名称(改造装備番号(LOCAL)), 20, LEFT% × {ITEM:LOCAL,3} 
+		ELSEIF 魔晶装備(LOCAL)
+			CALLFORM 装備条件_魔晶装備,ARG:1,LOCAL - 2450 - ARG*450
+			SIF RESULT == 1
+				;---- EDIT 004 MOD START -------------------------
+;				PRINTFORMC [{LOCAL}] %STR:(DC:(LOCAL - 2450 - ARG*450):49+100),20,LEFT% × {ITEM:LOCAL,3} 
+				PRINTFORML [{LOCAL}] %EQ_GETNAME_魔晶装備_ITEM(LOCAL), 20, LEFT% × {ITEM:LOCAL,3} 
+				;---- EDIT 004 MOD END   -------------------------
+		ELSE
+			CALLFORM 装備条件_{LOCAL},ARG:1
+			SIF RESULT == 1
+				PRINTFORMC [{LOCAL}] %ITEMNAME:LOCAL,20,LEFT% × {ITEM:LOCAL,3} 
+		ENDIF
+	NEXT
+	PRINTL
+ENDIF
+
+DRAWLINE
+
+@PRINT_EQUIPMENTLIST2(ARG:0, ARG:1, ARG:2, ARG:3)
+#DIMS CONST CATEGORY = "ARMS", "GUN", "PROTECTOR"
+IF FLAG:아이템리스트화면모드설정 && INRANGE(ARG:0, 0, 6)
+	CALLFORM PRINT_EQUIPMENTLIST_TYPELIST_%CATEGORY:MIN(ARG:0, 2)%_HEADER
+	FOR LOCAL:1, ARG:2 * リスト表示数(), MIN((ARG:2 + 1) * リスト表示数(), ARG:3)
+		LOCAL = アイテムリスト:(LOCAL:1)
+		CALLFORM PRINT_EQUIPMENTLIST_TYPELIST_%CATEGORY:MIN(ARG:0, 2)%_LINE(LOCAL, ARG:1)
+	NEXT
+ELSE
+	FOR LOCAL:1, ARG:2 * リスト表示数(), MIN((ARG:2 + 1) * リスト表示数(), ARG:3)
+		LOCAL = アイテムリスト:(LOCAL:1)
+		IF 改造装備(LOCAL)
+			PRINTFORMLC [{LOCAL}] %改造装備名称(改造装備番号(LOCAL)), 20, LEFT% × {ITEM:LOCAL, 3} 
+		ELSE
+			LOCALS '= \@ 魔晶装備(LOCAL) ? %EQ_GETNAME_魔晶装備_ITEM(LOCAL)% # %ITEMNAME:LOCAL% \@
+			PRINTFORMLC [{LOCAL}] %LOCALS, 20, LEFT% × {ITEM:LOCAL, 3} 
+		ENDIF
+	NEXT
+	PRINTFORM \@ LINEISEMPTY() ? # \n \@
+ENDIF
+RETURN RESULT
+
+;=================================================
+;   sub PRINT_EQUIPMENTLIST_TYPELIST_ARMS_HEADER
+;=================================================
+;   表示:装備可能アイテム(무기)(リスト形式:ヘッダ)
+;-------------------------------------------------
+@PRINT_EQUIPMENTLIST_TYPELIST_ARMS_HEADER
+
+;-----------------------------
+;- ヘッダ
+;-----------------------------
+PRINTFORM %" " * 6% %"",20,LEFT% %" "*6%|공격|명중|방어|회피|마법위력|마법효과|
+PRINTFORM 공격횟수|상성|사거리|범위
+PRINTL
+
+
+;=================================================
+;   sub PRINT_EQUIPMENTLIST_TYPELIST_ARMS_LINE
+;=================================================
+;   表示:装備可能アイテム(무기)(リスト形式:行単位)
+;-------------------------------------------------
+; Input:
+;  ARG:0				アイテム番号
+;  ARG:1				キャラ
+;-------------------------------------------------
+@PRINT_EQUIPMENTLIST_TYPELIST_ARMS_LINE(ARG:0, ARG:1)
+#DIM L_J
+#DIM L_ID
+#DIM L_魔晶ID
+#DIM L_TMP
+#DIM L_POINT
+
+L_ID = ARG:0
+
+;-----------------------------
+;- 行
+;-----------------------------
+
+IF 魔晶装備(L_ID)
+	;- EQ:装備箇所(魔晶装備)
+	L_POINT = EQ_装備箇所_魔晶装備(L_ID)
+
+	;- EQ:アイテムID取得(魔晶装備)
+	L_魔晶ID = EQ_GETID_魔晶装備(L_ID)
+
+	;- CHK
+	CALLFORM 装備条件_魔晶装備,ARG:1,L_魔晶ID
+	SIF RESULT != 1
+		RETURN
+
+	;- 装備中の場合は水色
+	SIF EQUIP:(ARG:1):(GET_EQUIP(L_POINT)) == L_ID
+		SETCOLOR 0x66FFFF
+
+	PRINTFORM [{L_ID,4}] %EQ_GETNAME_魔晶装備(L_魔晶ID),20,LEFT% × {ITEM:L_ID,3}
+	RESETCOLOR
+	PRINTFORM |
+
+	FOR L_J, 0, EQUIP_BATTLESTATUSNUM
+		L_TMP = STRLENS(GET_BATTLESTATUS(L_J))
+		CALLFORM 戦闘能力修正_魔晶装備,L_J,L_魔晶ID
+		IF RESULT == 0
+			SETCOLOR 0x404040
+		ELSEIF RESULT < 0
+			SETCOLOR 0xEE1010
+		ENDIF
+		PRINTFORM {RESULT,L_TMP}
+		RESETCOLOR
+		PRINTFORM |
+	NEXT
+
+	CALLFORM 最低攻撃回数_魔晶装備,L_魔晶ID
+	PRINTFORM {RESULT,2} - 
+	CALLFORM 最大攻撃回数_魔晶装備,L_魔晶ID
+	PRINTFORM {RESULT,2} 
+	PRINTFORM |
+	CALLFORM 攻撃相性_魔晶装備,L_魔晶ID
+	PRINTFORM %GET_TYPE(RESULT),4%
+	PRINTFORM |
+	CALLFORM 射程_魔晶装備,L_魔晶ID
+	PRINTFORM  %EQ_射程名称(RESULT)% 
+	PRINTFORM |
+
+	CALLFORM 攻撃範囲_魔晶装備,L_魔晶ID
+	PRINTFORM %GET_SPHERE(RESULT)%
+
+ELSE
+
+	CALLFORM 装備箇所_{L_ID}
+	L_POINT = RESULT
+
+	;- CHK
+	CALLFORM 装備条件_{L_ID},ARG:1
+	SIF RESULT != 1
+		RETURN
+
+	;- 装備中の場合は水色
+	SIF EQUIP:(ARG:1):(GET_EQUIP(L_POINT)) == L_ID
+		SETCOLOR 0x66FFFF
+	IF 改造装備(L_ID)
+		PRINTFORM [{L_ID,4}] %改造装備名称(改造装備番号(L_ID)),20,LEFT% × {ITEM:L_ID,3}
+	ELSE
+		PRINTFORM [{L_ID,4}] %ITEMNAME:L_ID,20,LEFT% × {ITEM:L_ID,3}
+	ENDIF
+	RESETCOLOR
+	PRINTFORM |
+
+	FOR L_J,0,EQUIP_BATTLESTATUSNUM
+		L_TMP = STRLENS(GET_BATTLESTATUS(L_J))
+		CALLFORM 戦闘能力修正_{L_ID},L_J,ARG:1
+		IF RESULT == 0
+			SETCOLOR 0x404040
+		ELSEIF RESULT < 0
+			SETCOLOR 0xEE1010
+		ENDIF
+		PRINTFORM {RESULT,L_TMP}
+		RESETCOLOR
+		PRINTFORM |
+	NEXT
+
+	CALLFORM 最低攻撃回数_{L_ID},ARG:1
+	PRINTFORM {RESULT,2} - 
+	CALLFORM 最大攻撃回数_{L_ID},ARG:1
+	PRINTFORM {RESULT,2} 
+	PRINTFORM |
+	CALLFORM 攻撃相性_{L_ID},ARG:1
+	PRINTFORM %GET_TYPE(RESULT),4%
+	PRINTFORM |
+	CALLFORM 射程_{L_ID},ARG:1
+	PRINTFORM  %EQ_射程名称(RESULT)% 
+	PRINTFORM |
+	CALLFORM 攻撃範囲_{L_ID},ARG:1
+	PRINTFORM %GET_SPHERE(RESULT)%
+
+ENDIF
+PRINTL
+
+;=================================================
+;   sub PRINT_EQUIPMENTLIST_TYPELIST_GUN_HEADER
+;=================================================
+;   表示:装備可能アイテム(총)(リスト形式:ヘッダ)
+;-------------------------------------------------
+@PRINT_EQUIPMENTLIST_TYPELIST_GUN_HEADER
+
+;-----------------------------
+;- ヘッダ
+;-----------------------------
+PRINTFORM %" " * 6% %"",20,LEFT% %" "*6%|총공격|총명중|
+PRINTFORM 공격횟수|상성|탄창|사거리|범위
+PRINTL
+
+
+;=================================================
+;   sub PRINT_EQUIPMENTLIST_TYPELIST_GUN_LINE
+;=================================================
+;   表示:装備可能アイテム(총)(リスト形式:行単位)
+;-------------------------------------------------
+; Input:
+;  ARG:0				アイテム番号
+;  ARG:1				キャラ
+;-------------------------------------------------
+@PRINT_EQUIPMENTLIST_TYPELIST_GUN_LINE(ARG:0, ARG:1)
+#DIM L_J
+#DIM L_ID
+#DIM L_TMP
+#DIM L_POINT
+#DIM L_魔晶ID
+
+L_ID = ARG:0
+
+;-----------------------------
+;- 行
+;-----------------------------
+
+IF 魔晶装備(L_ID)
+
+	;- EQ:装備箇所(魔晶装備)
+	L_POINT = EQ_装備箇所_魔晶装備(L_ID)
+
+	;- EQ:アイテムID取得(魔晶装備)
+	L_魔晶ID = EQ_GETID_魔晶装備(L_ID)
+
+	;- CHK
+	CALLFORM 装備条件_魔晶装備,ARG:1,L_魔晶ID
+	SIF RESULT != 1
+		RETURN
+
+	;- 装備中の場合は水色
+	SIF EQUIP:(ARG:1):(GET_EQUIP(L_POINT)) == L_ID
+		SETCOLOR 0x66FFFF
+
+	PRINTFORM [{L_ID,4}] %EQ_GETNAME_魔晶装備(L_魔晶ID),20,LEFT% × {ITEM:L_ID,3}
+	RESETCOLOR
+	PRINTFORM |
+
+	;-----------------------------
+	;- ※ 残りの項目は魔晶装備の銃が追加されてから作成
+	;-----------------------------
+
+ELSE
+
+	CALLFORM 装備箇所_{L_ID}
+	L_POINT = RESULT
+
+	;- CHK
+	CALLFORM 装備条件_{L_ID},ARG:1
+	SIF RESULT != 1
+		RETURN
+
+	;- 装備中の場合は水色
+	SIF EQUIP:(ARG:1):(GET_EQUIP(L_POINT)) == L_ID
+		SETCOLOR 0x66FFFF
+
+	IF 改造装備(L_ID)
+		PRINTFORM [{L_ID,4}] %改造装備名称(改造装備番号(L_ID)),20,LEFT% × {ITEM:L_ID,3}
+	ELSE
+		PRINTFORM [{L_ID,4}] %ITEMNAME:L_ID,20,LEFT% × {ITEM:L_ID,3}
+	ENDIF
+	RESETCOLOR
+	PRINTFORM |
+
+	CALLFORM 銃攻撃_{L_ID},ARG:1
+	PRINTFORM {RESULT,6}
+	PRINTFORM |
+	CALLFORM 銃命中_{L_ID},ARG:1
+	PRINTFORM {RESULT,6}
+	PRINTFORM |
+
+
+	CALLFORM 最低攻撃回数_{L_ID},ARG:1
+	PRINTFORM {RESULT,2} - 
+	CALLFORM 最大攻撃回数_{L_ID},ARG:1
+	PRINTFORM {RESULT,2} 
+	PRINTFORM |
+	CALLFORM 攻撃相性_{L_ID},ARG:1
+	PRINTFORM %GET_TYPE(RESULT),4%
+	PRINTFORM |
+	CALLFORM 特殊弾倉_{L_ID},ARG:1
+	PRINTFORM {RESULT,4}
+	PRINTFORM |
+
+	CALLFORM 射程_{L_ID},ARG:1
+	PRINTFORM  %EQ_射程名称(RESULT)% 
+	PRINTFORM |
+	CALLFORM 攻撃範囲_{L_ID},ARG:1
+	PRINTFORM %GET_SPHERE(RESULT)%
+	RESULT:1 = RESULT
+	RESULT = 0
+	TRYCALLFORM GUN_RANDOMTARGET_{L_ID}
+	SIF RESULT == 1
+		PRINTFORM （랜덤）
+ENDIF
+PRINTL
+
+
+;=================================================
+;   sub PRINT_EQUIPMENTLIST_TYPELIST_PROTECTOR_HEADER
+;=================================================
+;   表示:装備可能アイテム(防具)(リスト形式:ヘッダ)
+;-------------------------------------------------
+@PRINT_EQUIPMENTLIST_TYPELIST_PROTECTOR_HEADER
+
+;-----------------------------
+;- ヘッダ
+;-----------------------------
+PRINTFORM %" " * 6% %"",20,LEFT% %" "*6%|공격|명중|방어|회피|마법위력|마법효과|
+PRINTFORM 방어상성
+PRINTL
+
+;=================================================
+;   sub PRINT_EQUIPMENTLIST_TYPELIST_PROTECTOR_LINE
+;=================================================
+;   表示:装備可能アイテム(防具)(リスト形式:行単位)
+;-------------------------------------------------
+; Input:
+;  ARG:0				アイテム番号
+;  ARG:1				キャラ
+;-------------------------------------------------
+@PRINT_EQUIPMENTLIST_TYPELIST_PROTECTOR_LINE(ARG:0, ARG:1)
+#DIM L_J
+#DIM L_ID
+#DIM L_TMP
+#DIM L_POINT
+#DIM L_魔晶ID
+#DIM L_HIT
+
+L_ID = ARG:0
+L_HIT=0
+
+;-----------------------------
+;- 行
+;-----------------------------
+
+IF 魔晶装備(L_ID)
+
+	;- EQ:装備箇所(魔晶装備)
+	L_POINT = EQ_装備箇所_魔晶装備(L_ID)
+
+	;- EQ:アイテムID取得(魔晶装備)
+	L_魔晶ID = EQ_GETID_魔晶装備(L_ID)
+
+	;- CHK
+	CALLFORM 装備条件_魔晶装備,ARG:1,L_魔晶ID
+	SIF RESULT != 1
+		RETURN
+
+	;- 装備中の場合は水色
+	SIF EQUIP:(ARG:1):(GET_EQUIP(L_POINT)) == L_ID
+		SETCOLOR 0x66FFFF
+
+	PRINTFORM [{L_ID,4}] %EQ_GETNAME_魔晶装備(L_魔晶ID),20,LEFT% × {ITEM:L_ID,3}
+	RESETCOLOR
+	PRINTFORM |
+
+	;-----------------------------
+	;- ※ 残りの項目は魔晶装備の防具が追加されてから作成
+	;-----------------------------
+
+ELSE
+
+	CALLFORM 装備箇所_{L_ID}
+	L_POINT = RESULT
+
+	;- CHK
+	CALLFORM 装備条件_{L_ID},ARG:1
+	SIF RESULT != 1
+		RETURN
+
+	;- 装備中の場合は水色
+	SIF EQUIP:(ARG:1):(GET_EQUIP(L_POINT)) == L_ID
+		SETCOLOR 0x66FFFF
+	
+	IF 改造装備(L_ID)
+		PRINTFORM [{L_ID,4}] %改造装備名称(改造装備番号(L_ID)),20,LEFT% × {ITEM:L_ID,3}
+	ELSE
+		PRINTFORM [{L_ID,4}] %ITEMNAME:L_ID,20,LEFT% × {ITEM:L_ID,3}
+	ENDIF
+	RESETCOLOR
+	PRINTFORM |
+
+	FOR L_J,0,EQUIP_BATTLESTATUSNUM
+		L_TMP = STRLENS(GET_BATTLESTATUS(L_J))
+		CALLFORM 戦闘能力修正_{L_ID},L_J,ARG:1
+		IF RESULT == 0
+			SETCOLOR 0x404040
+		ELSEIF RESULT < 0
+			SETCOLOR 0xEE1010
+		ENDIF
+		PRINTFORM {RESULT,L_TMP}
+		RESETCOLOR
+		PRINTFORM |
+	NEXT
+
+	FOR L_J,0,TYPENUM
+		CALLFORM 防御相性_{L_ID},L_J,ARG:1
+		IF RESULT != 100
+			SIF L_HIT
+				PRINT 、
+			L_HIT ++
+
+			;表示打ち切り
+			IF L_HIT > 2
+				PRINT (타)
+				BREAK
+			ENDIF
+			CALL SET_AISYOU_COLOR, RESULT
+			;耐性の場合は白表示
+			SIF 0 < RESULT && RESULT < 100
+				RESETCOLOR
+			PRINTFORM %GET_TYPE(L_J),4,LEFT%
+			SELECTCASE RESULT
+				CASE 0
+				CASE 999
+					PRINT 반사
+				CASEELSE
+					PRINTFORM  %\@(RESULT < 0) ? 흡 # 　\@%{ABS(RESULT),3}
+			ENDSELECT
+			RESETCOLOR
+		ENDIF
+	NEXT
+
+ENDIF
+PRINTL
+
+
+
+;---- EDIT 003 ADD END ---------------------------
+
+
+;---- EDIT 021 MOD START -------------------------
+@装備変更,ARG,ARG:1,ARG:2
+;生得武器と素手以外は外したときに増える
+CALL 装備解除, ARG, GET_EQUIP(ARG:1), 1
+;生得武器以外を装備すると数が一個減る
+SIF ARG:2 != GETNUM(ITEM, "생득무기") && ARG:2 != 0
+	ITEM:(ARG:2) -= 1
+SIF ARG:2 == 0 && GET_EQUIP(ARG:1) == "검" && 生得武器所持(ARG)
+	ARG:2 = GETNUM(ITEM, "생득무기")
+EQUIP:ARG:(GET_EQUIP(ARG:1)) = ARG:2
+;---- EDIT 024 MOD START -------------------------
+CALL SYNC_STATUS, ARG, "HPMP割合保持"
+;---- EDIT 024 MOD END ---------------------------
+;---- EDIT 021 MOD END ---------------------------
+
+;---- EDIT 000 XXX START -------------------------
+@装備説明,ARG,ARG:1 = -1, ARG:2 = -1
+#DIM DYNAMIC LCOUNT
+IF 魔晶装備(ARG)
+	LOCAL:2 = EQ_GETID_魔晶装備(ARG)
+	CUSTOMDRAWLINE =
+	PRINTL
+	PRINTFORML %EQ_GETNAME_魔晶装備(LOCAL:2)%
+	TRYCALLFORM 装備解説_魔晶装備,LOCAL:2
+	PRINTL
+	FOR LOCAL,1,BASESTATUSNUM
+		IF GET_BASESTATUS_NUM("속도") > LOCAL
+			PRINTFORM %GET_BASESTATUS(LOCAL),4,LEFT% 
+		ELSE
+			PRINTFORM %GET_BASESTATUS(LOCAL),8,LEFT% 
+		ENDIF
+		CALLFORM 基本能力修正_魔晶装備,LOCAL,LOCAL:2
+		IF RESULT == 0
+			SETCOLOR 0x404040
+		ELSEIF RESULT < 0
+			SETCOLOR 0xEE1010
+		ENDIF
+		PRINTFORM {RESULT,4}　
+		RESETCOLOR
+		PRINTFORM
+	NEXT
+	PRINTL 
+	FOR LOCAL,0,EQUIP_BATTLESTATUSNUM
+		PRINTFORM %GET_BATTLESTATUS(LOCAL),4,LEFT% 
+		CALLFORM 戦闘能力修正_魔晶装備,LOCAL,LOCAL:2
+		IF RESULT == 0
+			SETCOLOR 0x404040
+		ELSEIF RESULT < 0
+			SETCOLOR 0xEE1010
+		ENDIF
+		PRINTFORM {RESULT,4}　
+		RESETCOLOR
+	NEXT
+	PRINTFORML %LOCALS%
+	CALLFORM 装備箇所_魔晶装備,LOCAL:2
+	IF RESULT == 0 || RESULT == 1
+		PRINTL
+		IF RESULT == 1
+			CALLFORM 銃攻撃_魔晶装備,LOCAL:2
+			PRINTFORM 　공격：{RESULT}　　
+			CALLFORM 銃命中_魔晶装備,LOCAL:2
+			PRINTFORM 명중：{RESULT}　　
+		ENDIF
+		PRINT 공격횟수：
+		CALLFORM 最低攻撃回数_魔晶装備,LOCAL:2
+		PRINTFORM {RESULT}-
+		CALLFORM 最大攻撃回数_魔晶装備,LOCAL:2
+		PRINTFORM {RESULT}
+		PRINT 　　　상성：
+		CALLFORM 攻撃相性_魔晶装備,LOCAL:2
+		PRINTFORM %GET_TYPE(RESULT),4%
+		PRINT 　　　사정：
+		CALLFORM 射程_魔晶装備,LOCAL:2
+		PRINTFORM %EQ_射程名称(RESULT)%
+		;---- EDIT 004 ADD END   -------------------------
+		CALLFORM 攻撃範囲_魔晶装備,LOCAL:2
+		PRINTFORM 　　　대상：%GET_SPHERE(RESULT)%
+		PRINTL
+		PRINTL
+	ENDIF
+	SIF ARG:1 >= 0 && (TALENT:(ARG:1):페르소나구사자 || ABL:(ARG:1):종족 == 36)
+		SETCOLOR COLOR("gray")
+	PRINTL 방어상성
+	FOR LOCAL,0,TYPENUM
+		SIF ARG:1 >= 0 && (TALENT:(ARG:1):페르소나구사자 || ABL:(ARG:1):종족 == 36)
+			SETCOLOR COLOR("gray")
+		PRINTFORM %GET_TYPE(LOCAL),4,LEFT%
+		CALLFORM 防御相性_魔晶装備,LOCAL,LOCAL:2
+		CALL SET_AISYOU_COLOR, RESULT
+		SIF ARG:1 >= 0 && (TALENT:(ARG:1):페르소나구사자 || ABL:(ARG:1):종족 == 36)
+			SETCOLOR COLOR("gray")
+		IF RESULT == 999
+			PRINT 　반사　
+		ELSE
+			PRINTFORM  %\@(RESULT < 0) ? 흡 # 　\@%{ABS(RESULT),3}　
+		ENDIF
+		RESETCOLOR
+		IF LOCAL%6 == 5
+			CALL SHOW_AISYOU_COLOR_LIST, LOCAL/6 * 2
+			PRINT 　
+			CALL SHOW_AISYOU_COLOR_LIST, LOCAL/6 * 2 + 1
+			PRINTL 
+		ENDIF
+	NEXT
+	PRINTL
+	TRYCCALLFORM バステ耐性_魔晶装備,0,LOCAL:2
+		SIF ARG:1 >= 0 && (TALENT:(ARG:1):페르소나구사자 || ABL:(ARG:1):종족 == 36)
+			SETCOLOR COLOR("gray")
+		PRINTL 상태이상：
+		LOCAL:3 = 0
+		FOR LOCAL,0,BADSTATENUM
+			TRYCCALLFORM バステ耐性_魔晶装備,LOCAL,LOCAL:2
+				SIF RESULT == 0
+					CONTINUE
+				PRINTFORMLC %GET_STATE(LOCAL),8,LEFT% {100-RESULT}％　
+				SIF (LOCAL:3++ % PRINTCPERLINE()) == PRINTCPERLINE() - 1
+					PRINTL 
+			CATCH
+			ENDCATCH
+		NEXT
+		
+		RESETCOLOR
+		PRINTL
+	CATCH
+	ENDCATCH
+	
+	;魔晶装備追加スキル
+	FOR LCOUNT, 0, 3
+		CALL 装備追加スキル_魔晶装備, LCOUNT, LOCAL:2
+		SIF !RESULT
+			CONTINUE
+		CALL GET_SKILL_PROP, "SKILL_NAME", RESULT, -1
+		SIF RESULTS == ""
+			CONTINUE
+		SIF LINEISEMPTY()
+			PRINTFORM  추가스킬：
+		PRINTFORM [%RESULTS%]
+	NEXT
+	SIF !LINEISEMPTY()
+		PRINTL 
+	TRYCALLFORM 装備条件説明_魔晶装備,LOCAL:2,-1
+	DRAWLINE
+ELSE
+	PRINTFORML \@RANGE(ARG, 8000, 8500) ? %PLUGINNAME(ARG)%#%ITEMNAME:ARG%\@
+	;TRYCALLFORM 装備解説_{ARG}
+	CALL EQ_装備解説, ARG
+	PRINTL 
+	FOR LOCAL,1,BASESTATUSNUM
+		IF GET_BASESTATUS_NUM("속도") > LOCAL
+			PRINTFORM %GET_BASESTATUS(LOCAL),4,LEFT% 
+		ELSE
+			PRINTFORM %GET_BASESTATUS(LOCAL),8,LEFT% 
+		ENDIF
+		CALLFORM 基本能力修正_{ARG},LOCAL,ARG:1
+		IF RESULT == 0
+			SETCOLOR 0x404040
+		ELSEIF RESULT < 0
+			SETCOLOR 0xEE1010
+		ENDIF
+		PRINTFORM {RESULT,4}　
+		RESETCOLOR
+	NEXT
+	PRINTL
+	FOR LOCAL,0,EQUIP_BATTLESTATUSNUM
+		PRINTFORM %GET_BATTLESTATUS(LOCAL),4,LEFT% 
+		CALLFORM 戦闘能力修正_{ARG},LOCAL,ARG:1
+		IF RESULT == 0
+			SETCOLOR 0x404040
+		ELSEIF RESULT < 0
+			SETCOLOR 0xEE1010
+		ENDIF
+		PRINTFORM {RESULT,4}　
+		RESETCOLOR
+	NEXT
+
+	PRINTL
+	CALLFORM 装備箇所_{ARG}
+	IF RESULT == 0 || RESULT == 1
+		PRINTL
+		IF RESULT == 1
+			CALLFORM 銃攻撃_{ARG},ARG:1
+			PRINTFORM 　공격：{RESULT}　　
+			CALLFORM 銃命中_{ARG},ARG:1
+			PRINTFORM 명중：{RESULT}　　
+		ENDIF
+		PRINT 공격횟수：
+		CALLFORM 最低攻撃回数_{ARG},ARG:1
+		PRINTFORM {RESULT}-
+		CALLFORM 最大攻撃回数_{ARG},ARG:1
+		PRINTFORM {RESULT}
+		PRINT 　　　상성：
+		CALLFORM 攻撃相性_{ARG},ARG:1
+		PRINTFORM %GET_TYPE(RESULT),4%
+		PRINT 　　　사정：
+		CALLFORM 射程_{ARG},ARG:1
+		PRINTFORM %EQ_射程名称(RESULT)%
+		CALLFORM 攻撃範囲_{ARG},ARG:1
+		PRINTFORM 　　　대상：%GET_SPHERE(RESULT)%
+		RESULT:1 = RESULT
+		RESULT = 0
+		TRYCALLFORM GUN_RANDOMTARGET_{ARG}
+		SIF RESULT == 1
+			PRINTFORM （랜덤）
+		PRINTL
+		PRINTL
+	ENDIF
+	SIF ARG:1 >= 0 && (TALENT:(ARG:1):페르소나구사자 || ABL:(ARG:1):종족 == 36)
+		SETCOLOR COLOR("gray")
+	PRINTL 방어상성：
+	FOR LOCAL,0,TYPENUM
+		SIF ARG:1 >= 0 && (TALENT:(ARG:1):페르소나구사자 || ABL:(ARG:1):종족 == 36)
+			SETCOLOR COLOR("gray")
+		PRINTFORM %GET_TYPE(LOCAL),4,LEFT%
+		CALLFORM 防御相性_{ARG},LOCAL,ARG:1
+		CALL SET_AISYOU_COLOR, RESULT
+		SIF ARG:1 >= 0 && (TALENT:(ARG:1):페르소나구사자 || ABL:(ARG:1):종족 == 36)
+			SETCOLOR COLOR("gray")
+		IF RESULT == 999
+			PRINT 　반사　
+		ELSE
+			PRINTFORM  %\@(RESULT < 0) ? 흡 # 　\@%{ABS(RESULT),3}　
+		ENDIF
+		RESETCOLOR
+		IF LOCAL%6 == 5
+			CALL SHOW_AISYOU_COLOR_LIST, LOCAL/6 * 2
+			PRINT 　
+			CALL SHOW_AISYOU_COLOR_LIST, LOCAL/6 * 2 + 1
+			PRINTL 
+		ENDIF
+	NEXT
+	PRINTL
+	;---- EDIT 020 MOD START -------------------------
+	IF 改造装備(ARG)
+		CALL バステ耐性あり_改造装備(改造装備番号(ARG))
+		IF RESULT
+			SIF ARG:1 >= 0 && (TALENT:(ARG:1):페르소나구사자 || ABL:(ARG:1):종족 == 36)
+				SETCOLOR COLOR("gray")
+			PRINTL 상태이상：
+			LOCAL:3 = 0
+			FOR LOCAL,1,BADSTATENUM
+				CALLFORM バステ耐性_{ARG},LOCAL,ARG:1
+				PRINTFORMLC %GET_STATE(LOCAL),8,LEFT% {100+RESULT}％　
+				SIF (LOCAL:3++ % PRINTCPERLINE()) == PRINTCPERLINE() - 1
+					PRINTL 
+			NEXT
+			RESETCOLOR
+			PRINTL
+		ENDIF
+	ELSE
+		TRYCCALLFORM バステ耐性_{ARG},0,ARG:1
+			SIF ARG:1 >= 0 && (TALENT:(ARG:1):페르소나구사자 || ABL:(ARG:1):종족 == 36)
+				SETCOLOR COLOR("gray")
+			PRINTL 상태이상：
+			LOCAL:3 = 0
+			FOR LOCAL,1,BADSTATENUM
+				TRYCCALLFORM バステ耐性_{ARG},LOCAL,ARG:1
+					SIF RESULT == 0
+						CONTINUE
+					PRINTFORMLC %GET_STATE(LOCAL),8,LEFT% {100+RESULT}％　
+					SIF (LOCAL:3++ % PRINTCPERLINE()) == PRINTCPERLINE() - 1
+						PRINTL 
+				CATCH
+				ENDCATCH
+			NEXT
+			RESETCOLOR
+			PRINTL
+		CATCH
+		ENDCATCH
+	ENDIF
+	;---- EDIT 020 MOD END ---------------------------
+	CALLFORM 装備箇所_{ARG}
+	IF GET_EQUIP(RESULT) == "검"
+		PRINT 종별：
+		TRYCCALLFORM 剣タイプ_{ARG}
+			PRINTFORML %GET_ARMS_TYPE(RESULT)%
+		CATCH
+			PRINTL 그외
+		ENDCATCH
+	ENDIF
+	TRYCCALLFORM 銃タイプ_{ARG}
+		PRINT 종별：
+		SELECTCASE RESULT
+			CASE 1
+				PRINT 핸드건
+			CASE 2
+				PRINT 샷건
+			CASE 3
+				PRINT 머신건
+			CASE 4
+				PRINT 라이플
+			CASE 5
+				PRINT 그 외의 총
+		ENDSELECT
+		CALLFORM 特殊弾倉_{ARG},ARG:1
+		PRINTFORML 　　특수탄창:{RESULT}
+	CATCH
+	ENDCATCH
+	
+	TRYCCALLFORM 条件つき装備追加スキル_{ARG}
+	CATCH
+		FOR LCOUNT, 0, 3
+			TRYCCALLFORM 装備追加スキル_{ARG}, LCOUNT, ARG:1
+				SIF !RESULT
+					CONTINUE
+				CALL GET_SKILL_PROP, "SKILL_NAME", RESULT, -1
+				SIF RESULTS == ""
+					CONTINUE
+				SIF LINEISEMPTY()
+					PRINTFORM  추가스킬：
+				PRINTFORM [%RESULTS%]
+			CATCH
+				CONTINUE
+			ENDCATCH
+		NEXT
+		SIF !LINEISEMPTY()
+			PRINTL 
+	ENDCATCH
+	CALL EQ_装備条件説明, ARG, ARG:1
+	DRAWLINE
+ENDIF
+;---- EDIT 019 MOD END ---------------------------
+;装備解説終わり
+@装備変更時ステータス更新 , ARG , ARGS
+#DIM 元戦闘能力 , 8
+IF ARGS == "消去"
+	FOR LOCAL , 0 , 18
+		SIF LOCAL < 8
+			CALLF 装備変更時ステータス変化値(LOCAL , 1 , 0)
+	NEXT
+	VARSET LOCAL , 0
+	RETURN 0
+ENDIF
+
+FOR LOCAL , 0 , GUN_BATTLESTATUSNUM
+	元戦闘能力:LOCAL = MAXBASE:ARG:GET_BATTLESTATUS(LOCAL)
+NEXT
+;装備を変更予定の装備と入れ替え
+FOR LOCAL , 0 , 7
+	SIF 変更予定装備:LOCAL != -1
+		SWAP EQUIP:ARG:GET_EQUIP(LOCAL) , 変更予定装備:LOCAL
+NEXT
+CALL SYNC_STATUS , ARG
+FOR LOCAL , 0 , GUN_BATTLESTATUSNUM
+	CALLF 装備変更時ステータス変化値(LOCAL, 1, MAXBASE:ARG:GET_BATTLESTATUS(LOCAL) - 元戦闘能力:LOCAL)
+NEXT
+FOR LOCAL,0, TYPENUM
+	CALLF 装備変更時相性(LOCAL, 1, MAXBASE:ARG:GET_TYPE(LOCAL))
+NEXT
+FOR LOCAL,0, BADSTATENUM
+	CALLF 装備変更時バステ耐性(LOCAL, 1, MAXBASE:ARG:GET_STATE(LOCAL))
+NEXT
+FOR LOCAL , 0 , 7
+	SIF 変更予定装備:LOCAL != -1
+		SWAP EQUIP:ARG:GET_EQUIP(LOCAL) , 変更予定装備:LOCAL
+NEXT
+CALL SYNC_STATUS , ARG
+RETURN 1
+
+@装備変更時ステータス変化値, ARG , ARG:1 , ARG:2
+#FUNCTION
+#LOCALSIZE 8
+IF ARG:1
+	LOCAL:ARG = ARG:2
+ELSE
+	RETURNF LOCAL:ARG
+ENDIF
+@装備変更時相性, ARG, ARG:1, ARG:2
+#FUNCTION
+#LOCALSIZE 18
+IF ARG:1
+	LOCAL:ARG = ARG:2
+ELSE
+	RETURNF LOCAL:ARG
+ENDIF
+@装備変更時バステ耐性, ARG, ARG:1, ARG:2
+#FUNCTION
+#LOCALSIZE 21
+IF ARG:1
+	LOCAL:ARG = ARG:2
+ELSE
+	RETURNF LOCAL:ARG
+ENDIF
+;============================================================================
+;特殊弾の装備
+;============================================================================
+@EQUIP_SPECIAL_BULLET,ARG
+#DIM LCOUNT
+#DIM LINE, 2
+#DIM TEMP
+#DIM L_COMMENT
+#DIM EQUIP_BULLET, 9;判定用に装備中の弾丸をしまっておく
+#DIM BULLET_LIST, 100;本来は500だけど…100もいかないだろうしまぁ…
+#DIM BULLET_LV, 100
+#DIM MAGAZINE_NUM;銃の弾倉数
+#DIM L_REPLACE
+DRAWLINE
+L_COMMENT = -1
+L_REPLACE = 0
+LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - LINE
+VARSET BULLET_LIST, 100*100*100
+PRINTL □장비중인 탄환
+CALLFORM 特殊弾倉_{EQUIP:ARG:총},ARG
+MAGAZINE_NUM = RESULT
+VARSET EQUIP_BULLET, 0
+FOR LCOUNT ,1, 9
+	SIF LCOUNT == 5
+		PRINTL
+	SIF MAGAZINE_NUM < LCOUNT
+		BREAK
+	LOCALS = 특수탄{LCOUNT}
+	IF EQUIP:ARG:LOCALS == 0
+		PRINTFORM [{LCOUNT}] 
+		SETCOLOR 0x404040
+		PRINT ＥＭＰＴＹ　　　 
+		RESETCOLOR
+		CONTINUE
+	ENDIF
+	EQUIP_BULLET:LCOUNT = EQUIP:ARG:LOCALS
+	SETCOLOR LCOUNT == L_REPLACE ? COLOR("aqua") # GETCOLOR()
+	PRINTFORM [{LCOUNT}] %ITEMNAME:(EQUIP:ARG:LOCALS),20,LEFT%
+	RESETCOLOR
+NEXT
+PRINTL
+DRAWLINE
+LINE:1 = LINECOUNT
+IF L_COMMENT >= 0
+	CALLFORM 弾レベル_{L_COMMENT}
+	PRINTFORML □%ITEMNAME:L_COMMENT,20,LEFT%　필요 건슬링거Lv:{RESULT}
+	CALL EQ_装備解説, L_COMMENT
+ENDIF
+WHILE LINECOUNT < LINE:1 + 3
+	PRINTL 
+WEND
+DRAWLINE
+FOR LCOUNT, 0, VARSIZE("BULLET_LIST")
+	TEMP = LCOUNT + 5500
+	TRYCCALLFORM 弾レベル_{TEMP}
+		SIF ITEM:TEMP > 0
+			BULLET_LIST:LCOUNT = RESULT * 1000 + LCOUNT
+	CATCH
+	ENDCATCH
+NEXT
+ARRAYSORT BULLET_LIST, FORWARD
+FOR LCOUNT, 0, VARSIZE("BULLET_LIST")
+	SIF BULLET_LIST:LCOUNT == 100*100*100
+		BREAK
+	BULLET_LV:LCOUNT = 	BULLET_LIST:LCOUNT / 1000
+	BULLET_LIST:LCOUNT %= 1000
+NEXT
+FOR LCOUNT, 0, VARSIZE("BULLET_LIST")
+	SIF BULLET_LIST:LCOUNT == 100*100*100
+		BREAK
+
+	TEMP = BULLET_LIST:LCOUNT + 5500
+	SIF GET_BTL_TALENT_LV("건슬링거", ARG) < BULLET_LV:LCOUNT
+		SETCOLOR COLOR("DARK-GRAY")
+	SIF MATCH(EQUIP_BULLET, TEMP)
+		SETCOLOR COLOR("パ緑")
+	PRINTFORM [{LCOUNT + 100 * BULLET_LV:LCOUNT, 3}] %ITEMNAME:(TEMP), 20, LEFT%×{ITEM:TEMP, 4}　　　　
+	RESETCOLOR
+	SIF LCOUNT % 3 == 2
+		CONTINUE
+	SIF !LINEISEMPTY() && (BULLET_LV:LCOUNT != BULLET_LV:(LCOUNT+1))
+		PRINTL 
+NEXT
+SIF !LINEISEMPTY()
+	PRINTL 
+DRAWLINE
+PRINTL 장비 중인 탄환을 선택하여 장비를 해제할 수 있습니다.
+PRINTL [ALT]/[마우스 사이드 버튼]을 누른 채로, 장비 중인 탄환을 선택하여 위치를 교체할 수 있습니다.
+PRINTL 목록의 탄환을 선택하여 장비를 장착/해제할 수 있습니다.
+PRINTL [ALT]/[마우스 사이드 버튼]을 누른 채로, 목록의 탄환을 선택하여 장비 착탈 없이 설명문 표시만 변경할 수 있습니다.
+DRAWLINE
+PRINTL [0]돌아간다
+RESETCOLOR
+INPUT
+IF RESULT == 0
+	RETURN 0
+ELSEIF INRANGE(RESULT, 1, MAGAZINE_NUM)
+	IF GETKEY(0x12)|| GETKEY(0x05)
+		IF L_REPLACE
+			SWAP EQUIP:ARG:@"특수탄{L_REPLACE}", EQUIP:ARG:@"특수탄{RESULT}"
+		ELSE
+			L_REPLACE = RESULT
+			GOTO START
+		ENDIF
+	ELSE
+		EQUIP:ARG:@"특수탄{RESULT}" = 0
+	ENDIF
+ELSEIF BULLET_LIST:(RESULT % 100) < 100 * 100 * 100
+	RESULT %= 100
+	TEMP = BULLET_LIST:RESULT + 5500
+	L_COMMENT = TEMP
+	SIF GETKEY(0x12)|| GETKEY(0x05)
+		GOTO START
+	IF FINDELEMENT(EQUIP_BULLET, TEMP) >= 0
+		EQUIP:ARG:@"특수탄{FINDELEMENT(EQUIP_BULLET, TEMP)}" = 0
+	ELSE
+		IF GET_BTL_TALENT_LV("건슬링거", ARG) >= BULLET_LV:RESULT
+			SIF FINDELEMENT(EQUIP_BULLET, 0, 1, MAGAZINE_NUM + 1) >= 0
+				EQUIP:ARG:@"특수탄{FINDELEMENT(EQUIP_BULLET, 0, 1, MAGAZINE_NUM + 1)}" = TEMP
+		ENDIF
+	ENDIF		
+ENDIF
+L_REPLACE = 0
+FOR LCOUNT, 1, MAGAZINE_NUM
+	SIF !EQUIP:ARG:@"특수탄{LCOUNT}"
+		SWAP EQUIP:ARG:@"특수탄{LCOUNT}", EQUIP:ARG:@"특수탄{LCOUNT+1}"
+NEXT
+GOTO START
+
+;LOCALS:2 = 특수탄{RESULT}
+;
+;$PRINT_BLIST
+;CALL PRINT_EQUIPMENTLIST,7,ARG
+;
+;PRINTL [0] 外す
+;PRINTL [1000] キャンセル
+
+
+;$INPUT_LOOP3
+;INPUT
+
+;IF RESULT == 1000
+;	RESTART
+;ELSEIF RESULT == 0
+;	EQUIP:ARG:(LOCALS:2) = 0
+;	RESTART
+;ELSEIF RESULT < 5500 || RESULT > 5999 || ITEM:RESULT < 1
+;	GOTO INPUT_LOOP3
+;ENDIF
+;LOCAL:12 = RESULT
+
+;TRYCCALLFORM 装備条件_{LOCAL:12},ARG
+;CATCH
+;	GOTO INPUT_LOOP3
+;ENDCATCH
+
+;CALLFORM 装備解説_{LOCAL:12}
+
+;PRINT よろしいですか？　
+;CALL INPUT_YN,"Yes","No",2
+
+;SELECTCASE RESULT
+;	CASE 0
+
+;	CASE 1
+;		GOTO PRINT_BLIST
+;ENDSELECT
+
+;EQUIP:ARG:(LOCALS:2) = LOCAL:12
+
+;RESTART
+
+;---- EDIT 002 ADD START -------------------------
+;=================================================================
+;プラグインソフト
+;=================================================================
+@EQUIP_PLUGIN_SOFT
+#LOCALSIZE 4
+#DIM LINE, 3
+LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT-LINE
+;CALL INPUT_CHARA_LIST, "プラグインソフトを変更したいキャラを選んでください", "LIST_PLUGIN_SOFT"
+{
+CALL INPUT_CHARA_LIST
+	, "INFO_PLUGIN_MAIN/INFO_PLUGIN_戦闘/育成情報/基本ステータス/防御相性1/防御相性2"
+	, "플러그인소프트를 변경하고 싶은 캐릭터를 선택해주세요"
+	, "LIST_PLUGIN_SOFT" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "PLUGUIN_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+SIF RESULT == 1000
+	RETURN 0
+LOCAL:1 = FINDELEMENT(Q, RESULT)
+LINE:1 = LINECOUNT
+$PRINT_PLIST
+CLEARLINE LINECOUNT-LINE:1
+LOCAL = Q:(LOCAL:1)
+DRAWLINE
+PRINTFORML %NAME:LOCAL%
+DRAWLINE
+CALL PRINT_EQUIPLIST, LOCAL
+DRAWLINE
+PRINTL [300] 소프트 변경 [301] 소프트 해제
+DRAWLINE
+PRINTFORMLC \@(LOCAL:1 == 0) ? %" " * 16% # [1001]이전캐릭터\@
+PRINTLC [100] 취소　　　 [200] 종료　　　 
+PRINTFORMLC \@(Q:(LOCAL:1+1) == -1) ? %" " * 16% # [1003]다음캐릭터\@
+$INPUT_LOOP
+INPUT
+SELECTCASE RESULT
+	CASE 100
+		GOTO START
+	CASE 200
+		RETURN 0
+	CASE 300
+		CALL CHANGE_PLUGIN_SOFT, LOCAL
+		GOTO PRINT_PLIST
+	CASE 301
+		EQUIP:LOCAL:악세서리 = 0
+		CALL SYNC_STATUS, LOCAL
+		GOTO PRINT_PLIST
+	CASE 1001
+		IF LOCAL:1 > 0
+			LOCAL:1--
+			GOTO PRINT_PLIST
+		ENDIF
+	CASE 1003
+		IF Q:(LOCAL:1+1) >= 0
+			LOCAL:1++
+			GOTO PRINT_PLIST
+		ENDIF
+	CASEELSE
+		CLEARLINE 1
+		GOTO INPUT_LOOP
+ENDSELECT
+
+
+;============================================================================
+;装備品の表示(ステータス画面)
+;ARGが偽の時、装備変更出来ない
+;============================================================================
+@PRINT_EQUIP, ARG = 0
+#DIM LCOUNT
+#DIM L_LINE
+TRYCCALLFORM PRINT_EQUIP_ROLE_%CSTR:U:롤%, U, ARG
+CATCH
+	L_LINE = LINECOUNT
+	FOR LCOUNT,0,7
+		SELECTCASE GET_EQUIP(LCOUNT)
+			CASE "총"
+				SIF !GET_ROLE_PROP("CAN_EQUIP_GUN", U)
+					CONTINUE
+			CASEELSE
+				SIF !GET_ROLE_PROP("CAN_USE_EQUIP", U)
+					CONTINUE
+		ENDSELECT
+		SIF FLAG:커스텀게임화면
+			PRINT 　
+		PRINTFORM \@ARG ? [{50+LCOUNT}]#\@%"[" + GET_EQUIP(LCOUNT) + "]",14,LEFT%
+		IF (EQUIP:U:(GET_EQUIP(LCOUNT))) == 0
+			SETCOLOR 0x404040
+			PRINTFORML ＥＭＰＴＹ
+			RESETCOLOR
+		ELSE
+			IF 改造装備(EQUIP:U:(GET_EQUIP(LCOUNT)))
+				PRINTFORML %改造装備名称(改造装備番号(EQUIP:U:(GET_EQUIP(LCOUNT))))%
+			ELSEIF 魔晶装備(EQUIP:U:(GET_EQUIP(LCOUNT)))
+				PRINTFORML %EQ_GETNAME_魔晶装備_CHARA(U, LCOUNT)%
+			ELSE
+				PRINTFORML %ITEMNAME:(EQUIP:U:(GET_EQUIP(LCOUNT)))%
+			ENDIF
+		ENDIF
+	NEXT
+	IF GET_ROLE_PROP("CAN_USE_PLUGIN", U)
+		SIF FLAG:커스텀게임화면
+			PRINT 　
+		PRINTFORM \@GROUPMATCH(FLAG:SHOP커맨드, [[ショップ:셋업]], [[ショップ:능력확인]])? [56] # [--] \@[PLUG-IN]　　 
+		IF EQUIP:U:악세서리
+			PRINTFORML %PLUGINNAME(EQUIP:U:악세서리)%
+		ELSE
+			PRINTL ＥＭＰＴＹ
+		ENDIF
+	ENDIF
+
+	IF ARG && GET_BTL_TALENT_LV("건슬링거",  U)
+		SIF FLAG:커스텀게임화면
+			PRINT 　
+		IF EQUIP:U:총 > 0
+			PRINTL [57][특수탄변경]
+		ELSE
+			PRINTL [--][----------]
+		ENDIF
+	ENDIF
+	DRAWLINE
+ENDCATCH
+
+;============================================================================
+;戦闘開始時効果
+;============================================================================
+@戦闘開始時効果
+FOR LOCAL,0,CHARANUM
+	FOR LOCAL:1,0,7
+		IF EQUIP:LOCAL:GET_EQUIP(LOCAL:1) > 0
+			TRYCCALLFORM 魔晶装備_{EQUIP:LOCAL:GET_EQUIP(LOCAL:1)}
+
+			CATCH
+				TRYCALLFORM 戦闘開始時効果_{EQUIP:LOCAL:GET_EQUIP(LOCAL:1)},LOCAL
+			ENDCATCH
+		ENDIF
+	NEXT
+NEXT
+
+;============================================================================
+;装備解除
+;============================================================================
+@装備解除, ARG:0 = -1, L_装備部位, IS_SYNC_SKIP
+#DIMS DYNAMIC L_装備部位
+#DIM DYNAMIC IS_SYNC_SKIP
+SIF ARG:0<0
+	THROW キャラ登録番号指定なしで装備解除をしようとしています！
+SIF EQUIP:ARG:L_装備部位 == 0
+	RETURN 0
+;装備があれば解除して、アイテム欄の分を１個増やす
+SELECTCASE EQUIP:ARG:L_装備部位
+	CASE MIN_PLUGINNUM TO MAX_PLUGINNUM - 1
+	CASEELSE
+		CALL GET_ITEMMAX, EQUIP:ARG:L_装備部位
+		SIF GET_HAVE_ITEM_NUM(EQUIP:ARG:L_装備部位) <= RESULT
+			ITEM:(EQUIP:ARG:L_装備部位) += 1
+ENDSELECT
+EQUIP:ARG:L_装備部位 = 0
+SIF 生得武器所持(ARG) && EQUIP:ARG:검 == 0
+	EQUIP:ARG:검 = GETNUM(ITEM, "생득무기")
+ITEM:생득무기 = 0
+;全装備解除の場合はSYNCしない
+SIF !IS_SYNC_SKIP
+	CALL SYNC_STATUS, ARG
+
+;============================================================================
+;全装備解除
+;ARG:0に対象者の登録番号(間違うとやばそうなので、省略時はエラー出す)
+;============================================================================
+@全装備解除(ARG:0 = -1)
+#DIM LCOUNT
+SIF ARG:0<0
+	THROW キャラ登録番号指定なしで全装備解除をしようとしています！
+FOR LCOUNT, 0, 8
+	CALL 装備解除, ARG, GET_EQUIP(LCOUNT), 1
+NEXT
+CALL SYNC_STATUS,ARG:0
+RETURN
+
+;============================================================================
+;生得武器所持
+;ARGのキャラが生得武器所持の条件を満たしているかどうか判定
+;============================================================================
+;---- EDIT 006 MOD START -------------------------
+@生得武器所持,ARG
+#FUNCTION
+SIF NO:ARG == [[キャラ:유리아]] || NO:ARG == [[キャラ:에레지]] || NO:ARG == [[キャラ:제트]] || TALENT:ARG:Aion || (ABL:ARG:종족 == 36 &&( ARG == MASTER || TALENT:ARG:갈퀴 || TALENT:ARG:날개 ||  TALENT:ARG:갈퀴발 ||  TALENT:ARG:꼬리 ||  TALENT:ARG:부리 ||  TALENT:ARG:촉수 ||  TALENT:ARG:짐승 ||  TALENT:ARG:새 ||  TALENT:ARG:파충류 ||  TALENT:ARG:물고기 || TALENT:ARG:무기 || TALENT:ARG:사격무기))
+	RETURNF 1
+RETURNF 0
+;---- EDIT 006 MOD END   -------------------------
+
+;============================================================================
+;@EQUIP_PROPERTY
+;装備品の性能を取得する
+;魔晶武器等による呼び出す関数の違いなどもここにまとめて記述する
+;============================================================================
+@EQUIP_PROPERTY , ARG , ARGS , ARG:1 , ARG:2 = -1
+RESULTS =
+RESULT = 0
+IF 魔晶装備(ARG)
+	ARG = EQ_GETID_魔晶装備(ARG)
+	SELECTCASE ARGS
+		CASE "基本能力修正" , "戦闘能力修正" , "총공격" , "총명중" , "防御相性" , "バステ耐性"
+			TRYCALLFORM %ARGS%_魔晶装備 , ARG:1 , ARG
+		CASE "装備箇所"
+			RETURN EQ_装備箇所_魔晶装備(ARG)
+		CASE "최저공격횟수" , "최대공격횟수" , "공격상성" , "사거리" , "공격범위" , "추가효과" , "추가효과상성"
+			TRYCALLFORM %ARGS%_魔晶装備 , ARG
+		CASEELSE
+	ENDSELECT
+ELSE
+	SELECTCASE ARGS
+		CASE "装備箇所" , "購入条件" , "装備条件説明" , "必要レベル"
+			TRYCALLFORM %ARGS%_{ARG}
+		CASE "基本能力修正" , "戦闘能力修正" , "防御相性" , "バステ耐性"
+			TRYCALLFORM %ARGS%_{ARG} , ARG:1 , ARG:2
+			
+			SIF ARGS == "戦闘能力修正"
+				CALL 装備強化_展開, ARG:2, ARG, ARGS ,GET_BATTLESTATUS(ARG:1), RESULT
+			SIF ARGS == "防御相性"
+				CALL 装備強化_展開, ARG:2, ARG, ARGS ,GET_TYPE(ARG:1), RESULT
+		CASEELSE
+			TRYCCALLFORM %ARGS%_{ARG} , ARG:2
+			CATCH
+				RETURN 0
+			ENDCATCH
+			CALL 装備強化_展開, ARG:2, ARG, "戦闘能力修正" ,ARGS, RESULT
+	ENDSELECT
+ENDIF
+RETURN RESULT
+
+;============================================================================
+;@EQUIP_SORT , ARG = -1(装備するキャラ) , ARG:1 (ソート開始位置(素手などを省くため))
+;あらかじめ設定済みのソート条件に応じて装備品のリストをソートする
+;アイテムリストに装備品のリストを作成した上で実行する事
+;============================================================================
+@EQUIP_SORT , ARG = -1 , ARG:1
+SIF ソート条件 == ""
+	ソート条件 = アイテム番号
+FOR LOCAL:2 , 2 , -1 , -1
+	;条件によって、アイテムリストの数値を色々変更
+	IF ソート条件:(LOCAL:2) != ""
+		FOR LOCAL , ARG:1 , FINDELEMENT(アイテムリスト , -1)
+			IF ソート条件:(LOCAL:2) == "アイテム番号"
+			;---- EDIT 022 MOD START -------------------------
+			;ELSEIF ソート条件:(LOCAL:2) == "合計能力値" || RANGE(GET_BATTLESTATUS_NUM(ソート条件:(LOCAL:2)) , 1 , 6 )
+			;	IF ソート条件:(LOCAL:2) == "合計能力値"
+			;		LOCAL:3 = 1 , 9
+			ELSEIF ソート条件:(LOCAL:2) == "合計能力値" || RANGE(GET_BATTLESTATUS_NUM(ソート条件:(LOCAL:2)) , 0 , 5)
+				IF ソート条件:(LOCAL:2) == "合計能力値"
+					LOCAL:3 =0 , 8
+			;---- EDIT 022 MOD END ---------------------------
+				ELSE
+					LOCAL:3 = GET_BATTLESTATUS_NUM(ソート条件:(LOCAL:2))
+					LOCAL:4 = LOCAL:3 + 1
+					;銃なら命中と攻撃を変換
+					IF GROUPMATCH(ソート条件:(LOCAL:2) , "공격" , "명중")
+						TRYCALLFORM 装備箇所_{アイテムリスト:LOCAL % 10000}
+						IF RESULT == GET_EQUIPNUM("총")
+							LOCAL:3 += 6
+							LOCAL:4 += 6
+						ENDIF
+					ENDIF
+				ENDIF
+				FOR LOCAL:1 , LOCAL:3 , LOCAL:4
+					;CALL EQUIP_PROPERTY , アイテムリスト:LOCAL % 10000 , "戦闘能力修正" , LOCAL:1 , ARG
+					IF GET_BATTLESTATUS(LOCAL:1) == "총공격"
+						CALL EQUIP_PROPERTY , MODULO(アイテムリスト:LOCAL , 10000) , "총공격" , LOCAL:1 , ARG
+					ELSEIF GET_BATTLESTATUS(LOCAL:1) == "총명중"
+						CALL EQUIP_PROPERTY , MODULO(アイテムリスト:LOCAL , 10000) , "총명중" , LOCAL:1 , ARG
+					ELSE
+						CALL EQUIP_PROPERTY , MODULO(アイテムリスト:LOCAL , 10000) , "戦闘能力修正" , LOCAL:1 , ARG
+					ENDIF
+					アイテムリスト:LOCAL += RESULT * 10000
+				NEXT
+				
+			ELSEIF RANGE(GET_TYPE_NUM(ソート条件:(LOCAL:2)) , 0 , TYPENUM )
+				CALLFORM EQUIP_PROPERTY , MODULO(アイテムリスト:LOCAL , 10000) , "防御相性" , GET_TYPE_NUM(ソート条件:(LOCAL:2)) , ARG
+				SELECTCASE RESULT
+					CASE 999
+						アイテムリスト:LOCAL += 999 * 10000
+					CASEELSE
+						アイテムリスト:LOCAL += (500 - RESULT) * 10000
+				ENDSELECT
+			ELSEIF ソート条件:(LOCAL:2) == "価格"
+				アイテムリスト:LOCAL += ITEMPRICE:(アイテムリスト:LOCAL) * 10000
+			ELSEIF ソート条件:(LOCAL:2) == "必要レベル"
+				CALL EQUIP_PROPERTY , MODULO(アイテムリスト:LOCAL , 10000) , "必要レベル" , , ARG
+				アイテムリスト:LOCAL += RESULT * 10000
+				
+			ENDIF
+		NEXT
+		SELECTCASE ソート条件:(LOCAL:2)
+			CASE "アイテム番号"
+				ARRAYSORT アイテムリスト , FORWARD , ARG:1 , MAX(0 , FINDELEMENT(アイテムリスト , -1) - ARG:1)
+			CASEELSE
+				ARRAYSORT アイテムリスト , BACK , ARG:1 , MAX(0 , FINDELEMENT(アイテムリスト , -1) - ARG:1)
+		ENDSELECT
+		FOR LOCAL , 0 , FINDELEMENT(アイテムリスト , -1)
+			アイテムリスト:LOCAL = MODULO(アイテムリスト:LOCAL , 10000)
+		NEXT
+	ENDIF
+NEXT
+
+;============================================================================
+;@CHANGE_CONDITION_EQUIP_SORT , ARG = -1(装備するキャラ) , ARG:1 (ソート開始位置(素手などを省くため))
+;EQUIP_SORT内で使用するソート条件を変更する関数
+;============================================================================
+@CHANGE_CONDITION_EQUIP_SORT
+#DIM LINE
+
+CUSTOMDRAWLINE =
+PRINTL □정렬 조건 변경□
+PRINTL
+PRINTL
+LINE = LINECOUNT
+LOCAL:1 = 0
+LOCALS = 未設定_アイテム番号_価格_必要レベル_射程（未）__合計能力値_攻撃_命中_防御_回避_魔法威力_魔法効果_
+LOCALS += "剣撃_飛具_打撃_戦技_火炎_氷結_電撃_衝撃_神経_精神_破魔_呪殺_地変_水撃_疾風_重力_核熱_万能_"
+$PRINT
+FOR LOCAL , 0 , 3
+	SIF LOCAL:1 == LOCAL
+		SETCOLOR COLOR("パ緑")
+	PRINTBUTTON @"　[条件{LOCAL+1}]%ソート条件:LOCAL,16,LEFT%　" , @"条件{LOCAL+1}"
+	RESETCOLOR
+NEXT
+PRINTL
+PRINTL
+FOR LOCAL , 0 , STRCOUNT(LOCALS , "_")
+	LOCALS:1 = [%AUTO_SPLIT(LOCALS , "_" , LOCAL)%]
+	PRINTBUTTON @"　%LOCALS:1 , 18 , LEFT%　" , AUTO_SPLIT(LOCALS , "_" , LOCAL)
+	SIF LOCAL % 6 == 5
+		PRINTL
+NEXT
+PRINTL
+
+CUSTOMDRAWLINE =
+PRINTL [100]돌아간다
+$INPUTS_LOOP
+INPUTS
+IF RESULTS == "100"
+	RETURN 0
+ELSEIF GROUPMATCH(RESULTS , "条件1" , "条件2" , "条件3")
+	LOCAL:1 = TOINT(SUBSTRINGU(RESULTS, 2)) - 1
+ELSEIF AUTO_SPLIT_NUM(LOCALS , "_" , RESULTS) != -1
+	ソート条件:(LOCAL:1) = %RESULTS%
+ELSE
+	GOTO INPUTS_LOOP
+ENDIF
+CLEARLINE LINECOUNT - LINE
+GOTO PRINT
+
+;============================================================================
+;============================================================================
+@MODULO , ARG , ARG:1
+#FUNCTION
+SIF ARG % ARG:1 < 0
+	RETURNF ARG % ARG:1 + ARG:1
+RETURNF ARG % ARG:1
+
+;---- EDIT 026 ADD START -------------------------
+;============================================================================
+;周回および新規あなたの装備をセットする関数
+;============================================================================
+@DO_EQUIP_FOR_NEWGAME, ARG
+#DIM DYNAMIC LCOUNT
+FOR LCOUNT, GETNUM(EQUIP, "검"), GETNUM(EQUIP, "악세서리") + 1
+	IF EQUIPNAME:LCOUNT == "총"
+		IF GET_ROLE_PROP("CAN_EQUIP_GUN", ARG)
+			EQUIP:ARG:LCOUNT = CSVEQUIP(NO:MASTER,LCOUNT,0)
+		ELSE
+			EQUIP:ARG:LCOUNT = 0
+		ENDIF
+	ELSE
+		IF GET_ROLE_PROP("CAN_USE_EQUIP", ARG)
+			EQUIP:ARG:LCOUNT = CSVEQUIP(NO:MASTER,LCOUNT,0)
+		ELSE
+			EQUIP:ARG:LCOUNT = 0
+		ENDIF
+	ENDIF
+NEXT
+;---- EDIT 026 ADD END ---------------------------
+;============================================================================
+;キャラの装備確認関数
+;指定した名称の装備をすべて装備しているかをチェックする
+;============================================================================
+@IS_CHARA_EQUIPED, L_CHARA, L_EQUIPNAME:0, L_EQUIPNAME:1, L_EQUIPNAME:2, L_EQUIPNAME:3, L_EQUIPNAME:4, L_EQUIPNAME:5, L_EQUIPNAME:6, L_EQUIPNAME:7
+#FUNCTION
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_EQUIPNAME, 8
+#DIM DYNAMIC L_HIT
+FOR LCOUNT, 0, VARSIZE("L_EQUIPNAME")
+	SIF L_EQUIPNAME:LCOUNT == ""
+		CONTINUE
+	SIF GETNUM(ITEM, L_EQUIPNAME:LCOUNT) < 0
+		THROW 装備の名称の指定が間違っています [%L_EQUIPNAME:LCOUNT%]
+	SIF !MATCH(EQUIP:L_CHARA:0, GETNUM(ITEM, L_EQUIPNAME:LCOUNT), GETNUM(EQUIP, "검"), GETNUM(EQUIP, "탄환") + 1)
+		RETURNF 0
+	L_HIT = 1
+NEXT
+RETURNF L_HIT

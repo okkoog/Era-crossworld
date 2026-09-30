@@ -1,0 +1,276 @@
+﻿;スキル名
+@SKILL_NAME_銀河流星剣,ARG
+IF TOINT(CSTR:ARG:102) > 3
+	RESULTS = 銀河流星剣XEX
+ELSE
+	RESULTS = 銀河流星剣
+ENDIF
+
+;　명중
+@SKILL_HITRATE_銀河流星剣, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_銀河流星剣, ARG
+RETURN 100
+
+;;クリティカル率
+;@SKILL_CRITICAL_RATE_銀河流星剣, ARG
+;RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_銀河流星剣, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_銀河流星剣,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_銀河流星剣,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_銀河流星剣, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_銀河流星剣,ARG
+RETURN 20
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_銀河流星剣
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_銀河流星剣,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_銀河流星剣,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_銀河流星剣,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_銀河流星剣,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_銀河流星剣,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;속도보정
+@SKILL_SPEED_銀河流星剣, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_銀河流星剣
+RETURN 0
+
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_銀河流星剣,ARG,ARG:1
+#LOCALSIZE 1
+#DIM SKILL_NUM
+
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"銀河流星剣")
+SIF ARG != FLAG:행동순1
+	RETURN 0
+SIF ARG != ARG:1
+	RETURN 0
+SIF SKILLGAGE_D_GET(ARG,SKILL_NUM) < 4
+	RETURN 0
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+SIF RESULT != 1 || CFLAG:ARG:타겟 < 1
+	RETURN 0
+SELECTCASE CFLAG:ARG:타겟
+	CASE IS < 17
+		CALL SABER_CHECK,ARG,POS(CFLAG:ARG:타겟)
+		SIF RESULT == 1
+			RETURN 1
+	CASE IS < 20
+		FOR LOCAL,1,7
+			CALL SABER_CHECK,ARG,POS(LOCAL)
+			SIF RESULT == 1
+				RETURN 1
+		NEXT
+	CASEELSE
+		FOR LOCAL,7,17
+			CALL SABER_CHECK,ARG,POS(LOCAL)
+			SIF RESULT == 1
+				RETURN 1
+		NEXT
+ENDSELECT
+RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_銀河流星剣,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"銀河流星剣")
+
+IF SKILLGAGE_D_GET(ARG,SKILL_NUM) == 0
+	CALL SKILLGAGE_D_SET,ARG,SKILL_NUM,6
+	PRINTL 세이버에 해당하는 대상을 공격했을 때 크리티컬률이 조금 상승하는 상태가 되었다!
+	IF TOINT(CSTR:ARG:102) > 3
+		PRINTL 또한 세이버에 해당하는 대상을 공격했을 때 데미지가 증가하는 상태가 되었다!
+		PRINTFORMW %CALLNAME:ARG%의 공격력이 크게 상승했다!
+		CALL SKILL_SET_カジャンダ, ARG, ARG, "공격", 8, "단체", "NOMES"
+	ELSE
+		PRINTW 또한 세이버에 해당하는 대상을 공격했을 때 데미지가 증가하는 상태가 되었다!
+	ENDIF
+ELSEIF SKILLGAGE_D_GET(ARG,SKILL_NUM) > 3
+	CALL SKILL_SET_カジャンダ, ARG, ARG, "크리티컬", 2, "단체", "NOMES"
+	PRINTFORML 세이버 특효!
+	PRINTFORML %CALLNAME:ARG%의 크리티컬률이 조금 올랐다!
+	PRINTFORM 　　TARGET:[{CPOS(ARG:1),2}] %CALLNAME:(ARG:1),20,LEFT%　>>>>>>　
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;追加コマンド(EXTRAの下)
+;====================================================
+@INPUT_COM_NAME_銀河流星剣,ARG
+RESULTS = 銀河流星剣
+RESULTS:1 = 銀河流星剣
+RETURN 0
+
+@INPUT_COM_ABLE_銀河流星剣,ARG
+RESULTS = 効果発動中
+SIF PU_SKILLGAGE_D_GET(ARG, "銀河流星剣")
+	RETURN -1
+CALL CHECK_COST,ARG,PU_SKILLNUM_GET(ARG, "銀河流星剣")
+SIF !RESULT
+	RETURN -1
+RETURN 1
+
+;====================================================
+;コマンド実行
+;====================================================
+@INPUT_COM_銀河流星剣,ARG
+#DIM SKILL_NUM
+#LOCALSIZE 1
+
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"銀河流星剣")
+
+CALL GET_SKILL_COST,SKILL_NUM,ARG
+
+IF TOINT(CSTR:ARG:102) > 3
+	PRINT 銀河流星剣XEX
+ELSE
+	PRINT 銀河流星剣
+ENDIF
+PRINTFORML (을)를 사용하겠습니까? (소비 MP {RESULT})
+CALL INPUT_YN
+IF RESULT == 0
+	LOCAL = CFLAG:ARG:입력행동
+	CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG,"銀河流星剣")
+	CALL PAY_COST, ARG, CFLAG:ARG:입력행동
+	CALL PRINT_ACT_MESSAGE, ARG, SKILL_NUM
+	CALL BATTLE_EVENT_ACT, ARG
+	RESETCOLOR
+	CALL ACTION_銀河流星剣,ARG
+	CFLAG:ARG:입력행동 = LOCAL
+ENDIF
+RETURN -1
+;-1 再びコマンド選択へ
+; 1 キャラ選択へ
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_銀河流星剣,ARG
+IF PU_SKILLGAGE_D_GET(ARG,"銀河流星剣") > 3
+	RESULTS '= SET_COLOR_TAG(@"銀河流星剣:{PU_SKILLGAGE_D_GET(ARG,"銀河流星剣") - 2}Ｔ", "#dc143c")
+ELSEIF PU_SKILLGAGE_D_GET(ARG,"銀河流星剣") < 4
+	RESULTS '= @"銀河流星剣:ＣＴ{PU_SKILLGAGE_D_GET(ARG,"銀河流星剣")}"
+ENDIF
+RETURN 3
+
+;　説明文の表示
+@SKILL_EXPLAIN_銀河流星剣,ARG
+IF TOINT(CSTR:ARG:102) > 3
+	PRINTL 친구와 수행한 결과 파워업을 이뤄낸 「은하유성검」
+	PRINTFORML XEX의 발음은 「젝스」. %CALLNAME:ARG% 기준으로는 네이밍이 별로 멋있지 않은 듯하다
+ELSE
+	PRINTL 별의 파괴자인 세이버에게 주어지는 스킬. 별명, 세이버 절대 죽이는 검
+	PRINTL 『세이버에 대해 특효를 지니므로, 세이버 중의 세이버로 불리는 것은 필연』이라는 것은 본인의 주장
+ENDIF
+PRINTL 
+PRINTL 공격 대상에 세이버가 존재할 경우 크리티컬률이 조금 상승하는 상태로 만든다
+PRINT 또한 세이버로 판정된 대상에게 주는 데미지가 상승하는 상태로
+IF TOINT(CSTR:ARG:102) > 3
+	PRINTL 만들고,
+	PRINT 자신의 공격력을 강화
+ENDIF
+PRINTL 한다
+PRINTL 한 번 사용하면 6턴 경과할 때까지 재사용 불가
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_銀河流星剣,ARG
+#DIM SKILL_NUM
+RETURN 0
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_銀河流星剣, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+#DIM TOTAL_DMG_B
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			SIF SKILLGAGE_D_GET(L_ACTOR,SKILL_NUM) < 4
+				RETURN 0
+			CALL SABER_CHECK(L_ACTOR, L_TARGET)
+			SIF !RESULT
+				RETURN 0
+			RESULTS = 세이버 특효
+			RETURN 50
+	ENDSELECT
+ENDIF
+
+@SABER_CHECK,ARG,ARG:1
+;セイバーとして認識されるのはFGO側でセイバーとして扱われた悪魔、後はEXTRA勢で剣とか持ってそうな奴
+;後は刀、レイピア、剣の装備持ってる奴もセイバー認定される
+;クラススキル「セイバー」を所持していなくても、CFLAG:(ARG:1):専用技のどこかに設定されていれば問答無用で特効対象
+SIF PU_SKILL_CHECK(ARG:1,"セイバー")
+	RETURN 1
+SELECTCASE NO:(ARG:1)
+	CASE [[キャラ:파랑세이버]],[[キャラ:빨강세이버]],[[キャラ:라마]],[[キャラ:지크프리트]],[[キャラ:아서]],[[キャラ:수르트]],[[キャラ:사야카]],[[キャラ:요우무]],[[キャラ:모미지_동방]],[[キャラ:텐시]],[[キャラ:요리히메]],[[キャラ:Ａ・치르노]],[[キャラ:락슈미]]
+		RETURN 1
+ENDSELECT
+RESULT = 0
+TRYCALLFORM 剣タイプ_{EQUIP:(ARG:1):검}
+SELECTCASE RESULT
+	CASE 1,2,4
+		RETURN 1
+ENDSELECT
+RETURN 0

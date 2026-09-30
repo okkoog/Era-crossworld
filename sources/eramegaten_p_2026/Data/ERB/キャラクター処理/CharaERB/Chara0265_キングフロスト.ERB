@@ -1,0 +1,89 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara265_キングフロスト.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/04/05		P(bazzile)				新規作成
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;イベントフラグ
+;1 = カペラ(依頼:白き刃の後継者で加入する個体)
+;--------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:킹프로스트]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+CALL SET_BASE_[[キャラ:킹프로스트]], ARG, ARG:2
+IF ARG:2 == 1
+	;スキル初期化
+	CALL CLEAR_ALL_SKILL, ARG
+	CALL CLEAR_LEARNED_SKILL_ALL, ARG
+ENDIF
+CALL SET_LEARN_SKILL_[[キャラ:킹프로스트]], ARG, ARG:2
+
+;Data\ERB\RPG\依頼\REQUEST_36_白き刃の後継者.ERB
+;ARG:1はイベントフラグ
+@SET_BASE_[[キャラ:킹프로스트]], ARG, ARG:1
+#DIM DYNAMIC LCOUNT
+SELECTCASE ARG:1
+	CASE 1
+		NAME:ARG = カペラ
+		CALLNAME:ARG = カペラ
+		TALENT:ARG:짐승 = 1
+		TALENT:ARG:갈퀴 = 1
+		TALENT:ARG:꼬리 = 1
+		TALENT:ARG:큰체형 = 0
+		ABL:ARG:변이 = [[キャラ:흐레스벨그]]
+		ABL:ARG:변이레벨 = CSVBASE([[キャラ:흐레스벨그]], GETNUM(BASE, "LV")) - 5
+		CSTR:ARG:30 = マダムを主とする悪魔。
+		CSTR:ARG:31 = 普段は猫の姿をしているようであるが高位の悪魔であった。
+		CSTR:ARG:32 = 
+		CSTR:ARG:33 = 大破壊後に六本木のベリアルと敵対し敗北、上野シェルターの悪魔合体施設にてバジリスクにされた上で封印されていた。
+		CSTR:ARG:34 = ラドンの起こした異変の解決のため計斗と聖に封印を解かれ、マダムとの再会と白刃への興味で白刃たちに同行する。
+		CSTR:ARG:35 = 
+		CSTR:ARG:36 = 悪魔合体でキングフロストを経た後、大洪水を遅らせるために神のいるユグドラシルの先に向かうために本来の姿、フレスベルグの姿になり皆を送り届けた。
+		CSTR:ARG:37 = 
+		CSTR:ARG:38 = 無理にフレスベルグになったせいか白刃と聖を地上に帰した後動けなくなり、別れて養生していたが決戦に向かう白刃たちのために暴れ回ることで目を引きサポートした。
+		CSTR:ARG:39 = 
+		CSTR:ARG:11 = うち
+		CSTR:ARG:12 = 君
+
+		FOR LCOUNT, 0, SUCCESSIONNUM
+			IF GROUPMATCH(GET_SUCCESSION(LCOUNT), "전술", "방어", "신경", "빙결", "회복")
+				TALENT:ARG:GET_SUCCESSION(LCOUNT) = 1
+			ELSE
+				TALENT:ARG:GET_SUCCESSION(LCOUNT) = 0
+			ENDIF
+		NEXT
+ENDSELECT
+
+@SET_LEARN_SKILL_[[キャラ:킹프로스트]], ARG, ARG:1
+#DIM LCOUNT
+IF ARG:1 == 1
+	CALL SET_LEARN_SKILL, ARG, "메・디아", 1
+	CALL SET_LEARN_SKILL, ARG, "석화물어뜯기", 1
+	CALL SET_LEARN_SKILL, ARG, "포효", 1
+	CALL SET_LEARN_SKILL, ARG, "스쿠・카쟈", 1
+	CALL SET_LEARN_SKILL, ARG, "라쿠・카쟈", 1
+	CALL SET_LEARN_SKILL, ARG, "독가스브레스", 1
+	CALL SET_LEARN_SKILL, ARG, "석화침", 1
+	CALL SET_LEARN_SKILL, ARG, "마비할퀴기", 1
+
+	CALL SET_LEARN_SKILL, ARG, "일할의활천",31
+	CALL SET_LEARN_SKILL, ARG, "일할의마맥",33
+	CALL SET_LEARN_SKILL, ARG, "물의벽", 35
+	CALL SET_LEARN_SKILL, ARG, "불의벽", 37
+	CALL SET_LEARN_SKILL, ARG, "메・디아라마", 40
+ENDIF

@@ -1,0 +1,3821 @@
+﻿
+;ARG　0 =AIの行動を設定するのみ
+;　　 1 =AIの基礎の結果を表示と設定
+;　　 2 =AIの基礎の結果を全て表示する
+@CB_CPU_AI_SETTING, ARG = 0
+#DIM L_LINE
+#DIM L_RESULT
+;第一　포지션
+;第二　情報
+;敵E        0-포지션　1-AP　2-HP　3-アタック候補度　4-ブロック候補度 
+;           5-攻撃強度 6-攻撃安全度 7-安全攻撃力 8-ブロック力 9-ブロック候補度2
+;           10-危険敵ポジ
+;           11-バトル力
+;           13~SP後の情報
+
+;＠P        0-포지션　1-AP　2-HP　3-アタックマーク　4-ブロックマーク
+;           5- 6-攻撃安全度 7-安全攻撃力 8-ブロック力
+;           10-アタックの強さ　スキル後が強いと1
+;           11-バトル力
+;           13~SP後の情報
+#DIM UNIT_INFO_E, 6, 20
+#DIM UNIT_INFO_P, 6, 20
+
+;0-攻撃可ユニット数
+;絶対ダメージ　1-安全ダメージ
+#DIM SUMMONER_INFO_E, 20
+#DIM SUMMONER_INFO_P, 20
+
+#DIM SP_INFO_V_E, 20, 20
+#DIMS SP_INFO_S_E, 20, 10
+#DIM SP_INFO_V_P, 20, 20
+#DIMS SP_INFO_S_P, 20, 10
+
+#DIM HAND_INFO_V_E, 20, 50
+#DIMS HAND_INFO_S_E, 20, 10
+
+#DIM ATTACK_BATTLE_RESULT, 2, 6, 6
+#DIM BLOCK_BATTLE_RESULT, 4, 6, 6
+
+#DIM ATTACK_SUMMONER_D_E, 12
+#DIM ATTACK_TRAMPLE_DAMAGE_E, 6, 12 ;貫通時のダメージ
+
+#DIM ATTACK_SUMMONER_D_P, 12
+#DIM ATTACK_TRAMPLE_DAMAGE_P, 6, 24 ;貫通時のダメージ
+
+;COUNT用
+#DIM L_COUNT
+#DIM L_COUNT_E
+#DIM L_COUNT_P
+#DIM L_C_NUM
+#DIM L_C_FOR
+#DIM L_C_ONE
+#DIM L_C_TWO
+#DIM L_C_THR
+
+#DIM L_C_ACTION
+
+#DIM L_OFFERING_RES
+
+
+#DIM L_SORT, 50
+#DIM L_TAMOKU, 50
+
+#DIM A_TIME = 0
+#DIM B_TIME = 1
+
+#DIM TARGET_INFO, 6, 10
+#DIM USE_SP_INFO, 20, 10
+
+;召喚関連
+;第一　0.今召喚　1.MAG　SP付き　2.最強
+;第二　0.召喚仲魔　1.総合力　2.手札使用位置　3.合体素材　4.供物素材 5.コスト
+#DIM SUMMON_DATA, 3, 6
+;0.場所　1.総合戦闘力　2.コスト
+#DIM L_召喚素材, 3, 3
+;0場所　1.喪失度　2.コスト
+#DIM L_召喚素材候補, 50, 3
+#DIM L_召喚素材候補数
+;空き数
+#DIM L_SPACE_COU ;ポジション空き数
+#DIM L_SPACE_POS ;ポジション空き位置
+;召喚するかしないか
+#DIM L_予定SP, 6
+#DIM L_予定SP_戦闘力, 6
+#DIM L_予定SP_防御度, 6
+#DIM L_予定SP_COST, 6
+
+#DIM L_HAVE_MAG
+#DIM L_USING_MAG
+
+;第一　0.今使用　1.MAG　SP付き　2.未使用かも
+;第二　0.SP位置　1.代償　2.手札位置
+#DIM USING_SP_DATA, 3, 3
+
+;MAGUPの情報
+;0.上昇量　1.方法　2.場所
+#DIM MAG_UP_DATA, 10, 3
+
+#DIM L_優勢攻撃力_E, 2
+#DIM L_絶対攻撃力_E, 2
+#DIM L_絶対攻撃度_E
+#DIM L_最大攻撃力_E, 2
+#DIM L_最大攻撃度_E
+#DIM L_結果攻撃度_E ,2
+
+#DIM L_優勢攻撃力_P, 2
+#DIM L_絶対攻撃力_P, 2
+#DIM L_絶対攻撃度_P
+#DIM L_最大攻撃力_P, 2
+#DIM L_最大攻撃度_P
+#DIM L_結果攻撃度_P ,2
+
+#DIM L_結果攻撃度総合
+
+#DIM L_攻撃位置数_P,63,6
+#DIM L_防御位置数_P,63
+
+#DIM L_SP後優勢攻撃力_E, 2
+#DIM L_SP後絶対攻撃力_E, 2
+#DIM L_SP後絶対攻撃度_E
+#DIM L_SP後最大攻撃力_E, 2
+#DIM L_SP後最大攻撃度_E
+#DIM L_SP後結果攻撃度_E ,2
+
+#DIM L_SP後優勢攻撃力_P, 2
+#DIM L_SP後絶対攻撃力_P, 2
+#DIM L_SP後絶対攻撃度_P
+#DIM L_SP後最大攻撃力_P, 2
+#DIM L_SP後最大攻撃度_P
+#DIM L_SP後結果攻撃度_P ,2
+
+#DIM L_SP後結果攻撃度総合
+
+#DIM L_SP後攻撃位置数_P,63,6
+#DIM L_SP後防御位置数_P,63
+
+#DIM L_攻撃数
+#DIM L_戦闘アタック者,3
+#DIM L_戦闘ブロック者,3
+#DIM L_戦闘ブロック者2,6
+
+#DIM L_アタック危険度,6
+
+L_LINE = LINECOUNT
+
+SIF ARG == 0
+    REDRAW 0
+
+IF CBF_P_TURN == 0
+    A_TIME = 1
+    B_TIME = 0
+ELSE
+    A_TIME = 0
+    B_TIME = 1
+ENDIF
+
+VARSET UNIT_INFO_E
+VARSET UNIT_INFO_P
+VARSET ATTACK_TRAMPLE_DAMAGE_E, -1
+
+VARSET SUMMONER_INFO_E
+
+VARSET ATTACK_BATTLE_RESULT, -1
+VARSET BLOCK_BATTLE_RESULT, -1
+
+VARSET ATTACK_SUMMONER_D_E, -1
+VARSET ATTACK_SUMMONER_D_P, -1
+
+VARSET SP_INFO_V_E
+VARSET SP_INFO_S_E
+VARSET SP_INFO_V_P
+VARSET SP_INFO_S_P
+
+VARSET HAND_INFO_V_E, -1
+VARSET HAND_INFO_S_E
+
+VARSET L_アタック危険度, 1
+
+VARSET A
+VARSET B
+;----------
+;パラメータとポジションのセット
+;----------
+L_SPACE_COU = 0
+L_SPACE_POS = 0
+
+L_HAVE_MAG = SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_MAG
+
+L_USING_MAG = L_HAVE_MAG
+
+FOR L_COUNT_E, CBF_ENEMY_POS1, CBF_ENEMY_POS6 + 1
+    UNIT_INFO_E:(L_COUNT_E - 6):0 = L_COUNT_E
+    IF FIELD_DEMON_DATE_V:L_COUNT_E:CBV_NO != 0
+        UNIT_INFO_E:(L_COUNT_E - 6):1 = FIELD_DEMON_DATE_V:L_COUNT_E:CBV_AP
+        UNIT_INFO_E:(L_COUNT_E - 6):2 = FIELD_DEMON_DATE_V:L_COUNT_E:CBV_HP
+        CALL CB_バトル力GET, L_COUNT_E
+        UNIT_INFO_E:(L_COUNT_E - 6):11 = RESULT
+    ELSE
+        L_SPACE_COU ++
+        SETBIT L_SPACE_POS, L_COUNT_E
+        UNIT_INFO_E:(L_COUNT_E - 6):1 = -1
+        UNIT_INFO_E:(L_COUNT_E - 6):2 = -1
+    ENDIF
+    ;UNIT_INFO_E:(L_COUNT_E - 6):5 = SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP / UNIT_INFO_E:(L_COUNT_E - 6):1
+    ;UNIT_INFO_E:(L_COUNT_E - 6):5 += ((SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP % UNIT_INFO_E:(L_COUNT_E - 6):1) > 0)
+    ;UNIT_INFO_E:(L_COUNT_E - 6):5 = 10 - UNIT_INFO_E:(L_COUNT_E - 6):5
+NEXT
+
+FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+    UNIT_INFO_P:L_COUNT_P:0 = L_COUNT_P
+    IF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO != 0
+        UNIT_INFO_P:L_COUNT_P:1 = FIELD_DEMON_DATE_V:L_COUNT_P:CBV_AP
+        UNIT_INFO_P:L_COUNT_P:2 = FIELD_DEMON_DATE_V:L_COUNT_P:CBV_HP
+        CALL CB_バトル力GET, L_COUNT_P
+        UNIT_INFO_P:L_COUNT_P:11 = RESULT
+    ELSE
+        UNIT_INFO_P:L_COUNT_P:1 = -1
+        UNIT_INFO_P:L_COUNT_P:2 = -1
+    ENDIF
+NEXT
+
+
+;----------
+;敵と＠のSPセット
+;----------
+LOCAL = 0
+FOR L_COUNT_E, CBF_ENEMY_POS1, CBF_ENEMY_POS6 + 1
+    VARSET RESULT
+    VARSET RESULTS
+    TRYCCALLFORM CGSP_TYPE_{FIELD_DEMON_DATE_V:L_COUNT_E:CBV_SP1}, FIELD_DEMON_DATE_S:L_COUNT_E:CBS_SP1_SUB, L_COUNT_E
+        IF !(GROUPMATCH(RESULT,2,3,4) && RESULT:3 == 1) && CS_SP_USE_CHECK(L_COUNT_E)
+            RESULT = 0
+            TRYCALLFORM CGSP_COST_{FIELD_DEMON_DATE_V:L_COUNT_E:CBV_SP1}, FIELD_DEMON_DATE_S:L_COUNT_E:CBS_SP1_SUB, L_COUNT_E
+            SIF L_USING_MAG < RESULT
+                CONTINUE
+            SP_INFO_V_E:LOCAL:10 = RESULT
+
+            CALLFORM CGSP_TYPE_{FIELD_DEMON_DATE_V:L_COUNT_E:CBV_SP1}, FIELD_DEMON_DATE_S:L_COUNT_E:CBS_SP1_SUB, L_COUNT_E
+            SP_INFO_V_E:LOCAL:0 = UNIT_INFO_E:(L_COUNT_E - 6):0
+            SP_INFO_V_E:LOCAL:1 = RESULT:0
+            SP_INFO_V_E:LOCAL:2 = RESULT:1
+            SP_INFO_V_E:LOCAL:3 = RESULT:2
+            SP_INFO_V_E:LOCAL:4 = RESULT:3
+            SP_INFO_V_E:LOCAL:5 = RESULT:4
+            SP_INFO_V_E:LOCAL:6 = RESULT:5
+            SP_INFO_V_E:LOCAL:7 = RESULT:6
+            SP_INFO_V_E:LOCAL:8 = RESULT:7
+            SP_INFO_V_E:LOCAL:9 = FIELD_DEMON_DATE_V:L_COUNT_E:CBV_NO
+
+            SP_INFO_S_E:LOCAL:0 = %RESULTS:0%
+            SP_INFO_S_E:LOCAL:1 = %RESULTS:1%
+            SP_INFO_S_E:LOCAL:2 = %RESULTS:2%
+            SP_INFO_S_E:LOCAL:3 = %RESULTS:3%
+            SP_INFO_S_E:LOCAL:4 = %RESULTS:4%
+            SP_INFO_S_E:LOCAL:5 = %RESULTS:5%
+            SP_INFO_S_E:LOCAL:6 = %RESULTS:6%
+            SP_INFO_S_E:LOCAL:7 = %RESULTS:7%
+            SP_INFO_S_E:LOCAL:9 = %FIELD_DEMON_DATE_S:L_COUNT_E:CBS_NAME%
+
+
+            TRYCALLFORM CGSP_TARGET_{FIELD_DEMON_DATE_V:L_COUNT_E:CBV_SP1}, FIELD_DEMON_DATE_S:L_COUNT_E:CBS_SP1_SUB, L_COUNT_E
+            SP_INFO_V_E:LOCAL:11 = RESULT
+
+            TRYCALLFORM CGSP_ACTION_AFTER_{FIELD_DEMON_DATE_V:L_COUNT_E:CBV_SP1}, FIELD_DEMON_DATE_S:L_COUNT_E:CBS_SP1_SUB, L_COUNT_E
+            SP_INFO_V_E:LOCAL:12 = RESULT
+
+            L_COUNT = 13
+            IF SP_INFO_V_E:LOCAL:1 == 1
+                PRINTFORM {SP_INFO_V_E:LOCAL:2,4} %SP_INFO_S_E:LOCAL:0%
+                FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+                    L_COUNT ++
+                    SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                        CONTINUE
+                    CALL CBAI_SP_DAMAGE, L_COUNT_P, L_COUNT_E, SP_INFO_V_E:LOCAL:2, SP_INFO_S_E:LOCAL:0
+                    SP_INFO_V_E:LOCAL:L_COUNT = RESULT
+                    PRINTFORM {SP_INFO_V_E:LOCAL:L_COUNT,4}
+                NEXT
+                PRINTFORML
+            ELSEIF 9 < SP_INFO_V_E:LOCAL:1 % 1000 && SP_INFO_V_E:LOCAL:1 % 1000 < 20
+                IF 3 <= SP_INFO_V_E:LOCAL:11 && SP_INFO_V_E:LOCAL:11 <= 5
+                    FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+                        L_COUNT ++
+                        SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                            CONTINUE
+                        CALL CBAI_SP_SUCCESS, L_COUNT_P, L_COUNT_E, SP_INFO_V_E:LOCAL:3, SP_INFO_S_E:LOCAL:0
+                        SP_INFO_V_E:LOCAL:L_COUNT = RESULT
+                    NEXT
+                ELSE
+                    FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+                        L_COUNT ++
+                        SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                            CONTINUE
+                        CALL CBAI_SP_DAMAGE, L_COUNT_P, L_COUNT_E, SP_INFO_V_E:LOCAL:2, SP_INFO_S_E:LOCAL:0
+                        SP_INFO_V_E:LOCAL:L_COUNT = SP_INFO_V_E:LOCAL:3
+                    NEXT
+
+                ENDIF
+            ENDIF
+
+            VARSET RESULT
+            VARSET RESULTS
+            TRYCCALLFORM CGSP_TYPE_{FIELD_DEMON_DATE_V:L_COUNT_E:CBV_SP1}_1, FIELD_DEMON_DATE_S:L_COUNT_E:CBS_SP1_SUB, L_COUNT_E
+                IF !(GROUPMATCH(RESULT,2,3,4) && RESULT:3 == 1)
+                    LOCAL ++
+
+                    SP_INFO_V_E:LOCAL:0 = SP_INFO_V_E:(LOCAL - 1):0
+                    SP_INFO_V_E:LOCAL:1 = RESULT:0
+                    SP_INFO_V_E:LOCAL:2 = RESULT:1
+                    SP_INFO_V_E:LOCAL:3 = RESULT:2
+                    SP_INFO_V_E:LOCAL:4 = RESULT:3
+                    SP_INFO_V_E:LOCAL:5 = RESULT:4
+                    SP_INFO_V_E:LOCAL:6 = RESULT:5
+                    SP_INFO_V_E:LOCAL:7 = RESULT:6
+                    SP_INFO_V_E:LOCAL:8 = RESULT:7
+                    SP_INFO_V_E:LOCAL:9 = SP_INFO_V_E:(LOCAL - 1):9
+        
+                    SP_INFO_S_E:LOCAL:0 = %RESULTS:0%
+                    SP_INFO_S_E:LOCAL:1 = %RESULTS:1%
+                    SP_INFO_S_E:LOCAL:2 = %RESULTS:2%
+                    SP_INFO_S_E:LOCAL:3 = %RESULTS:3%
+                    SP_INFO_S_E:LOCAL:4 = %RESULTS:4%
+                    SP_INFO_S_E:LOCAL:5 = %RESULTS:5%
+                    SP_INFO_S_E:LOCAL:6 = %RESULTS:6%
+                    SP_INFO_S_E:LOCAL:7 = %RESULTS:7%
+                    SP_INFO_S_E:LOCAL:9 = %SP_INFO_S_E:(LOCAL - 1):9%
+
+                    SP_INFO_V_E:LOCAL:10 = SP_INFO_V_E:(LOCAL - 1):10
+                    SP_INFO_V_E:LOCAL:11 = SP_INFO_V_E:(LOCAL - 1):11
+                    SP_INFO_V_E:LOCAL:12 = SP_INFO_V_E:(LOCAL - 1):12
+
+                    L_COUNT = 13
+                    IF SP_INFO_V_E:LOCAL:1 == 1
+                        FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+                            L_COUNT ++
+                            SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                                CONTINUE
+                            CALL CBAI_SP_DAMAGE, L_COUNT_P, L_COUNT_E, SP_INFO_V_E:LOCAL:2, SP_INFO_S_E:LOCAL:0
+                            SP_INFO_V_E:LOCAL:L_COUNT = RESULT
+                        NEXT
+                    ELSEIF 9 < SP_INFO_V_E:LOCAL:1 % 1000 && SP_INFO_V_E:LOCAL:1 % 1000 < 20
+                        IF 3 <= SP_INFO_V_E:LOCAL:11 && SP_INFO_V_E:LOCAL:11 <= 5
+                            FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+                                L_COUNT ++
+                                SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                                    CONTINUE
+                                CALL CBAI_SP_SUCCESS, L_COUNT_P, L_COUNT_E, SP_INFO_V_E:LOCAL:3, SP_INFO_S_E:LOCAL:0
+                                SP_INFO_V_E:LOCAL:L_COUNT = RESULT
+                            NEXT
+                        ELSE
+                            FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+                                L_COUNT ++
+                                SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                                    CONTINUE
+                                CALL CBAI_SP_DAMAGE, L_COUNT_P, L_COUNT_E, SP_INFO_V_E:LOCAL:2, SP_INFO_S_E:LOCAL:0
+                                SP_INFO_V_E:LOCAL:L_COUNT = SP_INFO_V_E:LOCAL:3
+                            NEXT
+        
+                        ENDIF
+                    ENDIF
+                ENDIF
+            CATCH
+            ENDCATCH
+
+            LOCAL ++
+        ENDIF
+    CATCH
+    ENDCATCH
+NEXT
+FOR L_COUNT, 0, DECK_CARDS(CS1_OPPONENT) + 2
+    PRINTFORML ISN {SUMMONER_HAND_CARDS:CS1_OPPONENT:L_COUNT}
+    SIF SUMMONER_HAND_CARDS:CS1_OPPONENT:L_COUNT == 0 || S_STATE_INFO_GET_F(CS1_OPPONENT ,102) > 0
+        CONTINUE
+    CALL CARD_DATA_GET, SUMMONER_HAND_CARDS:CS1_OPPONENT:L_COUNT
+    SIF CARD_DATE_V:CBV_KINDS < 100 || CARD_DATE_V:CBV_COST > L_USING_MAG
+        CONTINUE
+    VARSET RESULT
+    VARSET RESULTS
+    PRINTFORML IS %CARD_DATE_S:CBS_NAME%
+    TRYCCALLFORM CGSP_TYPE_{CARD_DATE_V:CBV_SP1}, CARD_DATE_S:CBS_SP1_SUB, -1
+        ;IF !(GROUPMATCH(RESULT,2,3,4) && RESULT:1 == 1)
+        SP_INFO_V_E:LOCAL:0 = L_COUNT + 100
+        SP_INFO_V_E:LOCAL:1 = RESULT:0
+        SP_INFO_V_E:LOCAL:2 = RESULT:1
+        SP_INFO_V_E:LOCAL:3 = RESULT:2
+        SP_INFO_V_E:LOCAL:4 = RESULT:3
+        SP_INFO_V_E:LOCAL:5 = RESULT:4
+        SP_INFO_V_E:LOCAL:6 = RESULT:5
+        SP_INFO_V_E:LOCAL:7 = RESULT:6
+        SP_INFO_V_E:LOCAL:8 = RESULT:7
+        SP_INFO_V_E:LOCAL:9 = CARD_DATE_V:CBV_NO
+
+        SP_INFO_S_E:LOCAL:0 = %RESULTS:0%
+        SP_INFO_S_E:LOCAL:1 = %RESULTS:1%
+        SP_INFO_S_E:LOCAL:2 = %RESULTS:2%
+        SP_INFO_S_E:LOCAL:3 = %RESULTS:3%
+        SP_INFO_S_E:LOCAL:4 = %RESULTS:4%
+        SP_INFO_S_E:LOCAL:5 = %RESULTS:5%
+        SP_INFO_S_E:LOCAL:6 = %RESULTS:6%
+        SP_INFO_S_E:LOCAL:7 = %RESULTS:7%
+        SP_INFO_S_E:LOCAL:9 = %CARD_DATE_S:CBS_NAME%
+
+
+        TRYCALLFORM CGSP_COST_{CARD_DATE_V:CBV_SP1}, CARD_DATE_S:CBS_SP1_SUB, -1
+        SP_INFO_V_E:LOCAL:10 = RESULT
+
+        TRYCALLFORM CGSP_TARGET_{CARD_DATE_V:CBV_SP1}, CARD_DATE_S:CBS_SP1_SUB, -1
+        SP_INFO_V_E:LOCAL:11 = RESULT
+
+        TRYCALLFORM CGSP_ACTION_AFTER_{CARD_DATE_V:CBV_SP1}, CARD_DATE_S:CBS_SP1_SUB, -1
+        SP_INFO_V_E:LOCAL:12 = RESULT
+
+        SP_INFO_V_E:LOCAL:13 = CARD_DATE_V:CBV_OFFERING
+        L_C_NUM = 13
+        IF SP_INFO_V_E:LOCAL:1 == 1
+            FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+                L_C_NUM ++
+                SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                    CONTINUE
+                CALL CBAI_SP_DAMAGE, L_COUNT_P, L_COUNT_E, SP_INFO_V_E:LOCAL:2, SP_INFO_S_E:LOCAL:0
+                SP_INFO_V_E:LOCAL:L_C_NUM = RESULT
+            NEXT
+        ELSEIF 9 < SP_INFO_V_E:LOCAL:1 % 1000 && SP_INFO_V_E:LOCAL:1 % 1000 < 20
+            IF 3 <= SP_INFO_V_E:LOCAL:11 && SP_INFO_V_E:LOCAL:11 <= 5
+                FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+                    L_C_NUM ++
+                    SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                        CONTINUE
+                    CALL CBAI_SP_SUCCESS, L_COUNT_P, L_COUNT_E, SP_INFO_V_E:LOCAL:3, SP_INFO_S_E:LOCAL:0
+                    SP_INFO_V_E:LOCAL:L_C_NUM = RESULT
+                NEXT
+            ELSE
+                FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+                    L_C_NUM ++
+                    SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                        CONTINUE
+                    CALL CBAI_SP_DAMAGE, L_COUNT_P, L_COUNT_E, SP_INFO_V_E:LOCAL:2, SP_INFO_S_E:LOCAL:0
+                    SP_INFO_V_E:LOCAL:L_C_NUM = SP_INFO_V_E:LOCAL:3
+                NEXT
+
+            ENDIF
+        ENDIF
+
+        LOCAL ++
+        VARSET RESULT
+        VARSET RESULTS
+        TRYCCALLFORM CGSP_TYPE_{CARD_DATE_V:CBV_SP1}_1, CARD_DATE_S:CBS_SP1_SUB, -1
+            ;IF !(GROUPMATCH(RESULT,2,3,4) && RESULT:1 == 1)
+            SP_INFO_V_E:LOCAL:0 = SP_INFO_V_E:(LOCAL - 1):0
+            SP_INFO_V_E:LOCAL:1 = RESULT:0
+            SP_INFO_V_E:LOCAL:2 = RESULT:1
+            SP_INFO_V_E:LOCAL:3 = RESULT:2
+            SP_INFO_V_E:LOCAL:4 = RESULT:3
+            SP_INFO_V_E:LOCAL:5 = RESULT:4
+            SP_INFO_V_E:LOCAL:6 = RESULT:5
+            SP_INFO_V_E:LOCAL:7 = RESULT:6
+            SP_INFO_V_E:LOCAL:8 = RESULT:7
+            SP_INFO_V_E:LOCAL:9 = SP_INFO_V_E:(LOCAL - 1):9
+
+            SP_INFO_S_E:LOCAL:0 = %RESULTS:0%
+            SP_INFO_S_E:LOCAL:1 = %RESULTS:1%
+            SP_INFO_S_E:LOCAL:2 = %RESULTS:2%
+            SP_INFO_S_E:LOCAL:3 = %RESULTS:3%
+            SP_INFO_S_E:LOCAL:4 = %RESULTS:4%
+            SP_INFO_S_E:LOCAL:5 = %RESULTS:5%
+            SP_INFO_S_E:LOCAL:6 = %RESULTS:6%
+            SP_INFO_S_E:LOCAL:7 = %RESULTS:7%
+            SP_INFO_S_E:LOCAL:9 = %SP_INFO_S_E:(LOCAL - 1):9%
+
+            SP_INFO_V_E:LOCAL:10 = SP_INFO_V_E:(LOCAL - 1):10
+            SP_INFO_V_E:LOCAL:11 = SP_INFO_V_E:(LOCAL - 1):11
+            SP_INFO_V_E:LOCAL:12 = SP_INFO_V_E:(LOCAL - 1):12
+            SP_INFO_V_E:LOCAL:13 = SP_INFO_V_E:(LOCAL - 1):13
+
+            L_C_NUM = 13
+            IF SP_INFO_V_E:LOCAL:1 == 1
+                FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+                    L_C_NUM ++
+                    SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                        CONTINUE
+                    CALL CBAI_SP_DAMAGE, L_COUNT_P, L_COUNT_E, SP_INFO_V_E:LOCAL:2, SP_INFO_S_E:LOCAL:0
+                    SP_INFO_V_E:LOCAL:L_C_NUM = RESULT
+                NEXT
+            ELSEIF 9 < SP_INFO_V_E:LOCAL:1 % 1000 && SP_INFO_V_E:LOCAL:1 % 1000 < 20
+                IF 3 <= SP_INFO_V_E:LOCAL:11 && SP_INFO_V_E:LOCAL:11 <= 5
+                    FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+                        L_C_NUM ++
+                        SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                            CONTINUE
+                        CALL CBAI_SP_SUCCESS, L_COUNT_P, L_COUNT_E, SP_INFO_V_E:LOCAL:3, SP_INFO_S_E:LOCAL:0
+                        SP_INFO_V_E:LOCAL:L_C_NUM = RESULT
+                    NEXT
+                ELSE
+                    FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+                        L_C_NUM ++
+                        SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                            CONTINUE
+                        CALL CBAI_SP_DAMAGE, L_COUNT_P, L_COUNT_E, SP_INFO_V_E:LOCAL:2, SP_INFO_S_E:LOCAL:0
+                        SP_INFO_V_E:LOCAL:L_C_NUM = SP_INFO_V_E:LOCAL:3
+                    NEXT
+
+                ENDIF
+            ENDIF
+            LOCAL ++
+
+            ;ENDIF
+        CATCH
+        ENDCATCH
+
+        ;ENDIF
+    CATCH
+    ENDCATCH
+NEXT
+
+;----------
+;手札状況の入力
+;----------
+PRINTFORML 手札状況
+PRINTFORML 　　　　　　　　名前　AP　HP速さ位置
+FOR L_COUNT, 0, DECK_CARDS(CS1_OPPONENT) + 2
+    PRINTFORML ISN {SUMMONER_HAND_CARDS:CS1_OPPONENT:L_COUNT}
+    SIF SUMMONER_HAND_CARDS:CS1_OPPONENT:L_COUNT == 0
+        CONTINUE
+    CALL CARD_DATA_GET, SUMMONER_HAND_CARDS:CS1_OPPONENT:L_COUNT
+    IF CARD_DATE_V:CBV_KINDS >= 100
+        ;----------
+        ;アイテムの状況の入力
+        ;----------
+        PRINTFORML ISN 아이템
+        VARSET RESULTS
+        VARSET RESULT
+        TRYCCALLFORM CGSP_TYPE_{CARD_DATE_V:CBV_SP1}, CARD_DATE_S:CBS_SP1_SUB, -1
+            HAND_INFO_V_E:L_COUNT:0 = L_COUNT + 100
+            HAND_INFO_V_E:L_COUNT:1 = RESULT:0
+            HAND_INFO_V_E:L_COUNT:2 = RESULT:1
+            HAND_INFO_V_E:L_COUNT:3 = RESULT:2
+            HAND_INFO_V_E:L_COUNT:4 = RESULT:3
+            HAND_INFO_V_E:L_COUNT:5 = RESULT:4
+            HAND_INFO_V_E:L_COUNT:6 = RESULT:5
+            HAND_INFO_V_E:L_COUNT:7 = RESULT:6
+            HAND_INFO_V_E:L_COUNT:8 = RESULT:7
+            HAND_INFO_V_E:L_COUNT:9 = CARD_DATE_V:CBV_NO
+
+            HAND_INFO_S_E:L_COUNT:0 = %RESULTS:0%
+            HAND_INFO_S_E:L_COUNT:1 = %RESULTS:1%
+            HAND_INFO_S_E:L_COUNT:2 = %RESULTS:2%
+            HAND_INFO_S_E:L_COUNT:3 = %RESULTS:3%
+            HAND_INFO_S_E:L_COUNT:4 = %RESULTS:4%
+            HAND_INFO_S_E:L_COUNT:5 = %RESULTS:5%
+            HAND_INFO_S_E:L_COUNT:6 = %RESULTS:6%
+            HAND_INFO_S_E:L_COUNT:7 = %RESULTS:7%
+            HAND_INFO_S_E:L_COUNT:9 = %CARD_DATE_S:CBS_NAME%
+
+
+            TRYCALLFORM CGSP_COST_{CARD_DATE_V:CBV_SP1}, CARD_DATE_S:CBS_SP1_SUB, -1
+            HAND_INFO_V_E:L_COUNT:10 = RESULT
+
+            TRYCALLFORM CGSP_TARGET_{CARD_DATE_V:CBV_SP1}, CARD_DATE_S:CBS_SP1_SUB, -1
+            HAND_INFO_V_E:L_COUNT:11 = RESULT
+
+            TRYCALLFORM CGSP_ACTION_AFTER_{CARD_DATE_V:CBV_SP1}, CARD_DATE_S:CBS_SP1_SUB, -1
+            HAND_INFO_V_E:L_COUNT:12 = RESULT
+
+            HAND_INFO_V_E:L_COUNT:13 = CARD_DATE_V:CBV_OFFERING
+
+            LOCAL = 13
+            IF HAND_INFO_V_E:L_COUNT:1 == 1
+                FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+                    LOCAL ++
+                    SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                        CONTINUE
+                    CALL CBAI_SP_DAMAGE, L_COUNT_P, L_COUNT_E, HAND_INFO_V_E:L_COUNT:2, HAND_INFO_S_E:L_COUNT:0
+                    HAND_INFO_V_E:L_COUNT:LOCAL = RESULT
+                NEXT
+            ELSEIF 9 < HAND_INFO_V_E:L_COUNT:1 % 1000 && HAND_INFO_V_E:L_COUNT:1 % 1000 < 20
+                IF 3 <= HAND_INFO_V_E:L_COUNT:11 && HAND_INFO_V_E:L_COUNT:11 <= 5
+                    FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+                        LOCAL ++
+                        SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                            CONTINUE
+                        CALL CBAI_SP_SUCCESS, L_COUNT_P, L_COUNT_E, HAND_INFO_V_E:L_COUNT:3, HAND_INFO_S_E:L_COUNT:0
+                        HAND_INFO_V_E:L_COUNT:LOCAL = RESULT
+                    NEXT
+                ELSE
+                    FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+                        LOCAL ++
+                        SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                            CONTINUE
+                        CALL CBAI_SP_DAMAGE, L_COUNT_P, L_COUNT_E, HAND_INFO_V_E:L_COUNT:2, SP_INFO_S_E:L_COUNT:0
+                        HAND_INFO_V_E:L_COUNT:LOCAL = HAND_INFO_V_E:L_COUNT:3
+                    NEXT
+
+                ENDIF
+            ENDIF
+
+        CATCH
+        ENDCATCH
+    ELSE
+        ;----------
+        ;悪魔状況の入力
+        ;----------
+        PRINTFORML ISN 仲魔
+        CALL CS_DEMON_SUMMON_FIELD, CBF_ENEMY_AI_POS1, CARD_DATE_V:CBV_NO
+
+        HAND_INFO_V_E:L_COUNT:0 = L_COUNT
+        HAND_INFO_V_E:L_COUNT:1 = FIELD_DEMON_DATE_V:CBF_ENEMY_AI_POS1:CBV_AP
+        HAND_INFO_V_E:L_COUNT:2 = FIELD_DEMON_DATE_V:CBF_ENEMY_AI_POS1:CBV_HP
+        HAND_INFO_V_E:L_COUNT:12 = CARD_DATE_V:CBV_NO
+
+        HAND_INFO_S_E:L_COUNT:9 = %CARD_DATE_S:CBS_NAME%
+
+        CALL CB_バトル力GET, CBF_ENEMY_AI_POS1
+        HAND_INFO_V_E:(L_COUNT):11 = RESULT
+        LOCAL = 19
+        FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+            LOCAL ++
+            HAND_INFO_V_E:L_COUNT:LOCAL = 0
+            FOR LOCAL:1, 0, 4
+                VARSET RESULTS
+                CALL CB_AI戦闘結果GET, CBF_ENEMY_AI_POS1, UNIT_INFO_P:L_COUNT_P:0, LOCAL:1, 2
+                IF GETBIT(LOCAL:1 ,0)
+                ;26
+                    SIF HAND_INFO_V_E:(L_COUNT):(LOCAL + 6) < RESULT
+                        HAND_INFO_V_E:(L_COUNT):(LOCAL + 6) = RESULT
+                ELSE
+                ;20
+                    SIF HAND_INFO_V_E:(L_COUNT):LOCAL < RESULT
+                        HAND_INFO_V_E:(L_COUNT):LOCAL = RESULT
+                ENDIF
+            NEXT
+            FOR LOCAL:1, 0, 4
+                VARSET RESULTS
+                CALL CB_AI戦闘結果GET, UNIT_INFO_P:L_COUNT_P:0, CBF_ENEMY_AI_POS1, LOCAL:1, 1
+                ;PRINTFORML B{RESULT}
+                SIF 32 == RESULT
+                    RESULT = 15
+                IF GETBIT(LOCAL:1 ,1)
+                ;38
+                    SIF HAND_INFO_V_E:(L_COUNT):(LOCAL + 18) > RESULT || HAND_INFO_V_E:(L_COUNT):(LOCAL + 18) < 5
+                        HAND_INFO_V_E:(L_COUNT):(LOCAL + 18) = RESULT
+                ELSE
+                ;32
+                    SIF HAND_INFO_V_E:(L_COUNT):(LOCAL + 12) > RESULT || HAND_INFO_V_E:(L_COUNT):(LOCAL + 12) < 5
+                        HAND_INFO_V_E:(L_COUNT):(LOCAL + 12) = RESULT
+                ENDIF
+            NEXT
+        NEXT
+        PRINTFORM A %FIELD_DEMON_DATE_S:18:CBS_NAME,18%
+        PRINTFORM {A:(18 * 20 + 0),4}
+        PRINTFORM {A:(18 * 20 + 1),4}
+        PRINTFORM {A:(18 * 20 + 2),4}
+        PRINTFORM {A:(18 * 20 + 3),4}
+        PRINTFORML
+        PRINTFORM B %FIELD_DEMON_DATE_S:18:CBS_NAME,18%
+        PRINTFORM {B:(18 * 20 + 0),4}
+        PRINTFORM {B:(18 * 20 + 1),4}
+        PRINTFORM {B:(18 * 20 + 2),4}
+        PRINTFORM %DEC_TO_BIN(B:(18 * 20 + 3)),6%
+        PRINTFORML
+        CALL CS_FIELD_DEMON_CLEAR, CBF_ENEMY_AI_POS1
+
+    ENDIF
+NEXT
+
+LOCAL = 0
+FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+    VARSET RESULT
+    VARSET RESULTS
+    TRYCCALLFORM CGSP_TYPE_{FIELD_DEMON_DATE_V:L_COUNT_P:CBV_SP1}, FIELD_DEMON_DATE_S:L_COUNT_P:CBS_SP1_SUB, L_COUNT_P
+        IF !(GROUPMATCH(RESULT,2,3,4) && RESULT:3 == 1)
+            SP_INFO_V_P:LOCAL:0 = UNIT_INFO_P:L_COUNT_P:0
+            SP_INFO_V_P:LOCAL:1 = RESULT:0
+            SP_INFO_V_P:LOCAL:2 = RESULT:1
+            SP_INFO_V_P:LOCAL:3 = RESULT:2
+            SP_INFO_V_P:LOCAL:4 = RESULT:3
+            SP_INFO_V_P:LOCAL:5 = RESULT:4
+            SP_INFO_V_P:LOCAL:6 = RESULT:5
+            SP_INFO_V_P:LOCAL:7 = RESULT:6
+            SP_INFO_V_P:LOCAL:8 = RESULT:7
+            SP_INFO_V_P:LOCAL:9 = RESULT:8
+
+            SP_INFO_S_P:LOCAL:0 = %RESULTS:0%
+            SP_INFO_S_P:LOCAL:1 = %RESULTS:1%
+            SP_INFO_S_P:LOCAL:2 = %RESULTS:2%
+            SP_INFO_S_P:LOCAL:3 = %RESULTS:3%
+            SP_INFO_S_P:LOCAL:4 = %RESULTS:4%
+            SP_INFO_S_P:LOCAL:5 = %RESULTS:5%
+            SP_INFO_S_P:LOCAL:6 = %RESULTS:6%
+            SP_INFO_S_P:LOCAL:7 = %RESULTS:7%
+            SP_INFO_S_P:LOCAL:9 = %FIELD_DEMON_DATE_S:L_COUNT_P:CBS_NAME%
+
+
+            TRYCALLFORM CGSP_COST_{FIELD_DEMON_DATE_V:L_COUNT_P:CBV_SP1}, FIELD_DEMON_DATE_S:L_COUNT_P:CBS_SP1_SUB, L_COUNT_P
+            SP_INFO_V_P:LOCAL:10 = RESULT
+
+            TRYCALLFORM CGSP_TARGET_{FIELD_DEMON_DATE_V:L_COUNT_P:CBV_SP1}, FIELD_DEMON_DATE_S:L_COUNT_P:CBS_SP1_SUB, L_COUNT_P
+            SP_INFO_V_P:LOCAL:11 = RESULT
+
+            TRYCALLFORM CGSP_ACTION_AFTER_{FIELD_DEMON_DATE_V:L_COUNT_P:CBV_SP1}, FIELD_DEMON_DATE_S:L_COUNT_P:CBS_SP1_SUB, L_COUNT_P
+            SP_INFO_V_P:LOCAL:12 = RESULT
+
+            L_COUNT = 13
+            IF SP_INFO_V_P:LOCAL:1 == 1
+                FOR L_COUNT_E, CBF_ENEMY_POS1, CBF_ENEMY_POS6 + 1
+                    L_COUNT ++
+                    SIF FIELD_DEMON_DATE_V:L_COUNT_E:CBV_NO == 0
+                        CONTINUE
+                    CALL CBAI_SP_DAMAGE, L_COUNT_E, L_COUNT_P, SP_INFO_V_P:LOCAL:2, SP_INFO_S_P:LOCAL:0
+                    SP_INFO_V_P:LOCAL:L_COUNT = RESULT
+                NEXT
+            ELSEIF 9 < SP_INFO_V_P:LOCAL:1 % 1000 && SP_INFO_V_P:LOCAL:1 < 20 % 1000
+                IF 3 <= SP_INFO_V_P:LOCAL:11 && SP_INFO_V_P:LOCAL:11 <= 5
+                    FOR L_COUNT_E, CBF_ENEMY_POS1, CBF_ENEMY_POS6 + 1
+                        L_COUNT ++
+                        SIF FIELD_DEMON_DATE_V:L_COUNT_E:CBV_NO == 0
+                            CONTINUE
+                        CALL CBAI_SP_SUCCESS, L_COUNT_E, L_COUNT_P, SP_INFO_V_P:LOCAL:3, SP_INFO_S_P:LOCAL:0
+                        SP_INFO_V_P:LOCAL:L_COUNT = RESULT
+                    NEXT
+                ELSE
+                    FOR L_COUNT_E, CBF_ENEMY_POS1, CBF_ENEMY_POS6 + 1
+                        L_COUNT ++
+                        SIF FIELD_DEMON_DATE_V:L_COUNT_E:CBV_NO == 0
+                            CONTINUE
+                        CALL CBAI_SP_DAMAGE, L_COUNT_E, L_COUNT_P, SP_INFO_V_P:LOCAL:2, SP_INFO_S_P:LOCAL:0
+                        SP_INFO_V_P:LOCAL:L_COUNT = SP_INFO_V_P:LOCAL:3
+                    NEXT
+
+                ENDIF
+            ENDIF
+            LOCAL ++
+
+            ;VARSET RESULT
+            ;VARSET RESULTS
+            ;TRYCCALLFORM CGSP_TYPE_{FIELD_DEMON_DATE_V:L_COUNT_P:CBV_SP1}_1, FIELD_DEMON_DATE_S:L_COUNT_P:CBS_SP1_SUB, L_COUNT_P
+            ;    IF !(GROUPMATCH(RESULT,2,3,4) && RESULT:3 == 1)
+            ;
+            ;        SP_INFO_V_P:LOCAL:0 = SP_INFO_V_P:(LOCAL - 1):0
+            ;        SP_INFO_V_P:LOCAL:1 = RESULT:0
+            ;        SP_INFO_V_P:LOCAL:2 = RESULT:1
+            ;        SP_INFO_V_P:LOCAL:3 = RESULT:2
+            ;        SP_INFO_V_P:LOCAL:4 = RESULT:3
+            ;        SP_INFO_V_P:LOCAL:5 = RESULT:4
+            ;        SP_INFO_V_P:LOCAL:6 = RESULT:5
+            ;        SP_INFO_V_P:LOCAL:7 = RESULT:6
+            ;        SP_INFO_V_P:LOCAL:8 = RESULT:7
+            ;        SP_INFO_V_P:LOCAL:9 = RESULT:8
+            ;
+            ;        SP_INFO_S_P:LOCAL:0 = %RESULTS:0%
+            ;        SP_INFO_S_P:LOCAL:1 = %RESULTS:1%
+            ;        SP_INFO_S_P:LOCAL:2 = %RESULTS:2%
+            ;        SP_INFO_S_P:LOCAL:3 = %RESULTS:3%
+            ;        SP_INFO_S_P:LOCAL:4 = %RESULTS:4%
+            ;        SP_INFO_S_P:LOCAL:5 = %RESULTS:5%
+            ;        SP_INFO_S_P:LOCAL:6 = %RESULTS:6%
+            ;        SP_INFO_S_P:LOCAL:7 = %RESULTS:7%
+            ;        SP_INFO_S_P:LOCAL:9 = %SP_INFO_S_P:(LOCAL - 1):9%
+            ;
+            ;        SP_INFO_V_P:LOCAL:10 = SP_INFO_V_P:(LOCAL - 1):10
+            ;        SP_INFO_V_P:LOCAL:11 = SP_INFO_V_P:(LOCAL - 1):11
+            ;        SP_INFO_V_P:LOCAL:12 = SP_INFO_V_P:(LOCAL - 1):12
+            ;
+            ;        
+            ;        L_COUNT = 13
+            ;        IF SP_INFO_V_P:LOCAL:1 == 1
+            ;            FOR L_COUNT_E, CBF_ENEMY_POS1, CBF_ENEMY_POS6 + 1
+            ;                L_COUNT ++
+            ;                SIF FIELD_DEMON_DATE_V:L_COUNT_E:CBV_NO == 0
+            ;                    CONTINUE
+            ;                CALL CBAI_SP_DAMAGE, L_COUNT_E, L_COUNT_P, SP_INFO_V_P:LOCAL:2, SP_INFO_S_P:LOCAL:0
+            ;                SP_INFO_V_P:LOCAL:L_COUNT = RESULT
+            ;            NEXT
+            ;        ELSEIF 9 < SP_INFO_V_P:LOCAL:1 && SP_INFO_V_P:LOCAL:1 < 20
+            ;            IF 3 <= SP_INFO_V_P:LOCAL:11 && SP_INFO_V_P:LOCAL:11 <= 5
+            ;                FOR L_COUNT_E, CBF_ENEMY_POS1, CBF_ENEMY_POS6 + 1
+            ;                    L_COUNT ++
+            ;                    SIF FIELD_DEMON_DATE_V:L_COUNT_E:CBV_NO == 0
+            ;                        CONTINUE
+            ;                    CALL CBAI_SP_SUCCESS, L_COUNT_E, L_COUNT_P, SP_INFO_V_P:LOCAL:3, SP_INFO_S_P:LOCAL:0
+            ;                    SP_INFO_V_P:LOCAL:L_COUNT = RESULT
+            ;                NEXT
+            ;            ELSE
+            ;                FOR L_COUNT_E, CBF_ENEMY_POS1, CBF_ENEMY_POS6 + 1
+            ;                    L_COUNT ++
+            ;                    SIF FIELD_DEMON_DATE_V:L_COUNT_E:CBV_NO == 0
+            ;                        CONTINUE
+            ;                    CALL CBAI_SP_DAMAGE, L_COUNT_E, L_COUNT_P, SP_INFO_V_P:LOCAL:2, SP_INFO_S_P:LOCAL:0
+            ;                    SP_INFO_V_P:LOCAL:L_COUNT = SP_INFO_V_P:LOCAL:3
+            ;                NEXT
+            ;
+            ;            ENDIF
+            ;        ENDIF
+            ;        LOCAL ++
+            ;    ENDIF
+            ;CATCH
+            ;ENDCATCH
+
+        ENDIF
+    CATCH
+    ENDCATCH
+NEXT
+
+;----------
+;敵側のアタック性能
+;----------
+;＠側のブロック性能
+;----------
+FOR L_COUNT_E, 0, 6
+    SIF UNIT_INFO_E:L_COUNT_E:2 < 0
+        CONTINUE
+
+    ;0~5 敵のブロック力　計算用
+    LOCAL:0 = 0
+    LOCAL:1 = 0
+    LOCAL:2 = 0
+    LOCAL:3 = 0
+    LOCAL:4 = 0
+    LOCAL:5 = 0
+    
+    ;6~11 敵のブロック力　計算用
+    LOCAL:0 = 0
+    LOCAL:1 = 0
+    LOCAL:2 = 0
+    LOCAL:3 = 0
+    LOCAL:4 = 0
+    LOCAL:5 = 0
+
+    FOR L_COUNT_P, 0, 6
+        CALL CB_AI戦闘結果GET, UNIT_INFO_E:L_COUNT_E:0, UNIT_INFO_P:L_COUNT_P:0, 0, A_TIME
+        L_RESULT = RESULT
+        ATTACK_BATTLE_RESULT:0:L_COUNT_E:L_COUNT_P = RESULT
+        SIF RESULT != 50
+            ATTACK_SUMMONER_D_E:L_COUNT_E = RESULT:1
+        ATTACK_TRAMPLE_DAMAGE_E:L_COUNT_E:L_COUNT_P = RESULT:2
+        SIF GROUPMATCH(RESULT,35,37,40)
+            SETBIT UNIT_INFO_E:L_COUNT_E:10 ,L_COUNT_P
+        IF SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP / 4 < ATTACK_SUMMONER_D_E:L_COUNT_E
+            IF 0
+            ;ELSEIF RESULT == 32 || RESULT == 5
+            ;    LOCAL:L_COUNT_P += 1
+            ;ELSEIF RESULT == 10
+            ;    LOCAL:L_COUNT_P += 100
+            ELSEIF RESULT == 35 || RESULT == 20
+                SIF LOCAL:L_COUNT_P <= 0 || LOCAL:L_COUNT_P < ATTACK_SUMMONER_D_E:L_COUNT_E
+                    LOCAL:L_COUNT_P = ATTACK_SUMMONER_D_E:L_COUNT_E
+            ELSEIF RESULT == 40 || RESULT == 37
+                SIF LOCAL:L_COUNT_P <= 0 || LOCAL:L_COUNT_P < (ATTACK_SUMMONER_D_E:L_COUNT_E + 3)
+                    LOCAL:L_COUNT_P = ATTACK_SUMMONER_D_E:L_COUNT_E + 3
+            ENDIF
+        ENDIF
+    NEXT
+    ;PRINTFORM %FIELD_DEMON_DATE_S:(UNIT_INFO_E:L_COUNT_E:0):CBS_NAME,20%
+    ;PRINTFORML {A:0,4}{A:1,4}{A:2,4}{A:3,4}
+    SIF ATTACK_SUMMONER_D_E:L_COUNT_E > 0
+        SUMMONER_INFO_E:0 ++
+
+
+
+    L_COUNT = UNIT_INFO_E:L_COUNT_E:0
+    TRYCCALLFORM CGSP_TYPE_{FIELD_DEMON_DATE_V:L_COUNT:CBV_SP1}, FIELD_DEMON_DATE_S:L_COUNT:CBS_SP1_SUB, L_COUNT
+        IF (RESULT == 2 || RESULT == 4) && RESULT:3 == 1 && CS_SP_USE_CHECK(L_COUNT_E + 6)
+        
+            TRYCALLFORM CGSP_COST_{FIELD_DEMON_DATE_V:L_COUNT:CBV_SP1}, FIELD_DEMON_DATE_S:L_COUNT:CBS_SP1_SUB, L_COUNT
+            IF RESULT <= L_USING_MAG
+                FOR L_COUNT_P, 0, 6
+                    CALL CB_AI戦闘結果GET, UNIT_INFO_E:L_COUNT_E:0, UNIT_INFO_P:L_COUNT_P:0, 1, A_TIME
+                    ATTACK_BATTLE_RESULT:1:L_COUNT_E:L_COUNT_P = RESULT
+                    SIF RESULT != 50
+                        ATTACK_SUMMONER_D_E:(L_COUNT_E + 6) = RESULT:1
+                    ATTACK_TRAMPLE_DAMAGE_E:L_COUNT_E:(L_COUNT_P + 6) = RESULT:2
+                    SIF GROUPMATCH(RESULT,35,37,40)
+                        SETBIT UNIT_INFO_E:L_COUNT_E:10 ,L_COUNT_P + 6
+                    IF SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP / 4 < ATTACK_SUMMONER_D_E:L_COUNT_E
+                        IF 0
+                        ;ELSEIF RESULT == 32 || RESULT == 5
+                        ;    LOCAL:L_COUNT_P += 1
+                        ;ELSEIF RESULT == 10
+                        ;    LOCAL:L_COUNT_P += 100
+                        ELSEIF RESULT == 35 || RESULT == 20
+                            SIF LOCAL:L_COUNT_P <= 0 || LOCAL:L_COUNT_P < ATTACK_SUMMONER_D_E:L_COUNT_E
+                                LOCAL:L_COUNT_P = ATTACK_SUMMONER_D_E:L_COUNT_E
+                        ELSEIF RESULT == 40 || RESULT == 37
+                            SIF LOCAL:L_COUNT_P <= 0 || LOCAL:L_COUNT_P < (ATTACK_SUMMONER_D_E:L_COUNT_E + 3)
+                                LOCAL:L_COUNT_P = ATTACK_SUMMONER_D_E:L_COUNT_E + 3
+                        ENDIF
+                    ENDIF
+                NEXT
+            ENDIF
+            ;PRINTFORM %FIELD_DEMON_DATE_S:(UNIT_INFO_E:L_COUNT_E:0):CBS_NAME,20%
+            ;PRINTFORML {A:0,4}{A:1,4}{A:2,4}{A:3,4}
+        ELSE
+            ;LOCAL:0 *= 2
+            ;LOCAL:1 *= 2
+            ;LOCAL:2 *= 2
+            ;LOCAL:3 *= 2
+            ;LOCAL:4 *= 2
+            ;LOCAL:5 *= 2
+        ENDIF
+    CATCH
+        ;LOCAL:0 *= 2
+        ;LOCAL:1 *= 2
+        ;LOCAL:2 *= 2
+        ;LOCAL:3 *= 2
+        ;LOCAL:4 *= 2
+        ;LOCAL:5 *= 2
+    ENDCATCH
+
+    UNIT_INFO_P:0:3 += LOCAL:0
+    UNIT_INFO_P:1:3 += LOCAL:1
+    UNIT_INFO_P:2:3 += LOCAL:2
+    UNIT_INFO_P:3:3 += LOCAL:3
+    UNIT_INFO_P:4:3 += LOCAL:4
+    UNIT_INFO_P:5:3 += LOCAL:5
+NEXT
+
+PRINTFORML 
+PRINTFORML 어택　　　　이름　AP　HP속도위치
+FOR L_COUNT,6,12
+    IF A:(L_COUNT * 20 + 1) > 0
+        PRINTFORM %FIELD_DEMON_DATE_S:L_COUNT:CBS_NAME,20%
+        PRINTFORM {A:(L_COUNT * 20 + 0),4}
+        PRINTFORM {A:(L_COUNT * 20 + 1),4}
+        PRINTFORM {A:(L_COUNT * 20 + 2),4}
+        PRINTFORM {A:(L_COUNT * 20 + 3),4}
+        PRINTFORML
+        IF A:(L_COUNT * 20 + 10) > 0 || A:(L_COUNT * 20 + 11) > 0
+            PRINTFORM ＿＿＿＿＿＿＿＿＿＿
+            PRINTFORM {A:(L_COUNT * 20 + 10),4}
+            PRINTFORM {A:(L_COUNT * 20 + 11),4}
+            PRINTFORM {A:(L_COUNT * 20 + 12),4}
+            PRINTFORM {A:(L_COUNT * 20 + 13),4}
+            PRINTFORML
+        ENDIF
+    ENDIF
+NEXT
+
+PRINTFORML 
+PRINTFORML 블록　　　　이름　AP　HP속도위치
+FOR L_COUNT,0,6
+    IF B:(L_COUNT * 20 + 1) > 0
+        PRINTFORM %FIELD_DEMON_DATE_S:L_COUNT:CBS_NAME,20%
+        PRINTFORM {B:(L_COUNT * 20 + 0),4}
+        PRINTFORM {B:(L_COUNT * 20 + 1),4}
+        PRINTFORM {B:(L_COUNT * 20 + 2),4}
+        PRINTFORM %DEC_TO_BIN(B:(L_COUNT * 20 + 3)),6%
+        PRINTFORML
+        IF B:(L_COUNT * 20 + 10) > 0 || B:(L_COUNT * 20 + 11) > 0
+            PRINTFORM ＿＿＿＿＿＿＿＿＿＿
+            PRINTFORM {B:(L_COUNT * 20 + 10),4}
+            PRINTFORM {B:(L_COUNT * 20 + 11),4}
+            PRINTFORM {B:(L_COUNT * 20 + 12),4}
+            PRINTFORM %DEC_TO_BIN(B:(L_COUNT * 20 + 13)),6%
+            PRINTFORML
+        ENDIF
+    ENDIF
+NEXT
+
+;----------
+;＠側の攻撃性能
+;SP使用前後でどちらが強いかも見ておく
+;----------
+;0　お互いにSP無し
+;1　敵側にSPあり
+;2　＠側にSPあり
+;3　両方SPあり
+
+FOR L_COUNT_P, 0, 6
+    SIF UNIT_INFO_P:L_COUNT_P:2 < 0
+        CONTINUE
+    VARSET L_TAMOKU
+    FOR L_COUNT_E, 0, 6
+        CALL CB_AI戦闘結果GET, UNIT_INFO_P:L_COUNT_P:0, UNIT_INFO_E:L_COUNT_E:0, 0, B_TIME
+        BLOCK_BATTLE_RESULT:0:L_COUNT_P:L_COUNT_E = RESULT
+        IF RESULT != 50 && RESULT:1 > 0
+            ATTACK_SUMMONER_D_P:L_COUNT_P = RESULT:1
+            L_TAMOKU:1 ++
+            L_TAMOKU:2 = MATH_ROUND(SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP, RESULT:1, 1)
+        ENDIF
+        ATTACK_TRAMPLE_DAMAGE_P:L_COUNT_P:L_COUNT_E = RESULT:2
+
+        
+        L_COUNT = UNIT_INFO_E:L_COUNT_E:0
+        TRYCCALLFORM CGSP_TYPE_{FIELD_DEMON_DATE_V:L_COUNT:CBV_SP1}, FIELD_DEMON_DATE_S:L_COUNT:CBS_SP1_SUB, L_COUNT
+            IF (RESULT == 3 || RESULT == 4) && RESULT:3 == 1 && CS_SP_USE_CHECK(L_COUNT_E + 6)
+                TRYCALLFORM CGSP_COST_{FIELD_DEMON_DATE_V:L_COUNT:CBV_SP1}, FIELD_DEMON_DATE_S:L_COUNT:CBS_SP1_SUB, L_COUNT
+                IF RESULT <= L_USING_MAG
+                    CALL CB_AI戦闘結果GET, UNIT_INFO_P:L_COUNT_P:0, UNIT_INFO_E:L_COUNT_E:0, 2, B_TIME
+                    BLOCK_BATTLE_RESULT:2:L_COUNT_P:L_COUNT_E = RESULT
+                    IF RESULT != 50 && RESULT:1 > 0
+                        ATTACK_SUMMONER_D_P:(L_COUNT_P + 6) = RESULT:1
+                        L_TAMOKU:11 ++
+                        L_TAMOKU:12 = MATH_ROUND(SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP, RESULT:1, 1)
+                    ENDIF
+                    ATTACK_TRAMPLE_DAMAGE_P:L_COUNT_P:(L_COUNT_E + 12) = RESULT:2
+                ENDIF
+            ENDIF
+        CATCH
+        ENDCATCH
+    NEXT
+    IF 0 < L_TAMOKU:2 && L_TAMOKU:2 < 4 && L_TAMOKU:1 > 0
+        L_TAMOKU:3 = (6 - L_TAMOKU:1) * 10 + (4 - L_TAMOKU:2)
+    ENDIF
+    IF 0 < L_TAMOKU:12 && L_TAMOKU:12 < 4 && L_TAMOKU:11 > 0
+        L_TAMOKU:13 = (6 - L_TAMOKU:11) * 10 + (4 - L_TAMOKU:12)
+    ENDIF
+    SIF L_TAMOKU:3 > 0 || L_TAMOKU:13 > 0
+        L_アタック危険度:L_COUNT_P = (L_TAMOKU:3 < L_TAMOKU:13 ? L_TAMOKU:13 # L_TAMOKU:3) * 100 + L_COUNT_P
+    SIF L_TAMOKU:3 < L_TAMOKU:13
+        L_アタック危険度:L_COUNT_P += 10
+
+
+
+    {
+    LOCAL = 
+    MAX(BLOCK_BATTLE_RESULT:0:L_COUNT_P:0, BLOCK_BATTLE_RESULT:0:L_COUNT_P:1
+    , BLOCK_BATTLE_RESULT:0:L_COUNT_P:2, BLOCK_BATTLE_RESULT:0:L_COUNT_P:3
+    , BLOCK_BATTLE_RESULT:0:L_COUNT_P:4, BLOCK_BATTLE_RESULT:0:L_COUNT_P:5
+    , BLOCK_BATTLE_RESULT:2:L_COUNT_P:0, BLOCK_BATTLE_RESULT:2:L_COUNT_P:1
+    , BLOCK_BATTLE_RESULT:2:L_COUNT_P:2, BLOCK_BATTLE_RESULT:2:L_COUNT_P:3
+    , BLOCK_BATTLE_RESULT:2:L_COUNT_P:4, BLOCK_BATTLE_RESULT:2:L_COUNT_P:5)
+    }
+    {
+    LOCAL:2 = 
+    MIN(BLOCK_BATTLE_RESULT:0:L_COUNT_P:0, BLOCK_BATTLE_RESULT:0:L_COUNT_P:1
+    , BLOCK_BATTLE_RESULT:0:L_COUNT_P:2, BLOCK_BATTLE_RESULT:0:L_COUNT_P:3
+    , BLOCK_BATTLE_RESULT:0:L_COUNT_P:4, BLOCK_BATTLE_RESULT:0:L_COUNT_P:5
+    , BLOCK_BATTLE_RESULT:2:L_COUNT_P:0, BLOCK_BATTLE_RESULT:2:L_COUNT_P:1
+    , BLOCK_BATTLE_RESULT:2:L_COUNT_P:2, BLOCK_BATTLE_RESULT:2:L_COUNT_P:3
+    , BLOCK_BATTLE_RESULT:2:L_COUNT_P:4, BLOCK_BATTLE_RESULT:2:L_COUNT_P:5)
+    }
+    {
+    LOCAL:3 = GROUPMATCH(20
+    , BLOCK_BATTLE_RESULT:0:L_COUNT_P:0, BLOCK_BATTLE_RESULT:0:L_COUNT_P:1
+    , BLOCK_BATTLE_RESULT:0:L_COUNT_P:2, BLOCK_BATTLE_RESULT:0:L_COUNT_P:3
+    , BLOCK_BATTLE_RESULT:0:L_COUNT_P:4, BLOCK_BATTLE_RESULT:0:L_COUNT_P:5
+    , BLOCK_BATTLE_RESULT:2:L_COUNT_P:0, BLOCK_BATTLE_RESULT:2:L_COUNT_P:1
+    , BLOCK_BATTLE_RESULT:2:L_COUNT_P:2, BLOCK_BATTLE_RESULT:2:L_COUNT_P:3
+    , BLOCK_BATTLE_RESULT:2:L_COUNT_P:4, BLOCK_BATTLE_RESULT:2:L_COUNT_P:5)
+    }
+    UNIT_INFO_P:L_COUNT_P:6 = LOCAL
+
+    IF LOCAL:2 == 50 || ATTACK_SUMMONER_D_P:L_COUNT_P < 1
+    ;攻撃できない場合
+    ELSEIF LOCAL == 5
+        UNIT_INFO_P:L_COUNT_P:7 = ATTACK_SUMMONER_D_P:L_COUNT_P * 100
+    ELSEIF LOCAL == 10
+        UNIT_INFO_P:L_COUNT_P:7 = ATTACK_SUMMONER_D_P:L_COUNT_P
+    ELSEIF LOCAL == 32 && LOCAL:3 < 1
+        UNIT_INFO_P:L_COUNT_P:7 = ATTACK_SUMMONER_D_P:L_COUNT_P
+    ENDIF
+
+    L_COUNT = UNIT_INFO_P:L_COUNT_P:0
+    TRYCCALLFORM CGSP_TYPE_{FIELD_DEMON_DATE_V:L_COUNT:CBV_SP1}, FIELD_DEMON_DATE_S:L_COUNT:CBS_SP1_SUB, L_COUNT
+        IF (RESULT == 2 || RESULT == 4) && RESULT:3 == 1 && CS_SP_USE_CHECK(L_COUNT, 1)
+            FOR L_COUNT_E, 0, 6
+                CALL CB_AI戦闘結果GET, UNIT_INFO_P:L_COUNT_P:0, UNIT_INFO_E:L_COUNT_E:0, 1, B_TIME
+                BLOCK_BATTLE_RESULT:1:L_COUNT_P:L_COUNT_E = RESULT
+                SIF RESULT != 50
+                    ATTACK_SUMMONER_D_P:(L_COUNT_P + 6) = RESULT:1
+                ATTACK_TRAMPLE_DAMAGE_P:L_COUNT_P:(L_COUNT_E + 6) = RESULT:2
+
+                L_COUNT = UNIT_INFO_E:L_COUNT_E:0
+                TRYCCALLFORM CGSP_TYPE_{FIELD_DEMON_DATE_V:L_COUNT:CBV_SP1}, FIELD_DEMON_DATE_S:L_COUNT:CBS_SP1_SUB, L_COUNT
+                    IF (RESULT == 3 || RESULT == 4) && RESULT:3 == 1 && CS_SP_USE_CHECK(L_COUNT_E + 6)
+                        
+                        TRYCALLFORM CGSP_COST_{FIELD_DEMON_DATE_V:L_COUNT:CBV_SP1}, FIELD_DEMON_DATE_S:L_COUNT:CBS_SP1_SUB, L_COUNT
+                        IF RESULT <= L_USING_MAG
+                            CALL CB_AI戦闘結果GET, UNIT_INFO_P:L_COUNT_P:0, UNIT_INFO_E:L_COUNT_E:0, 3, B_TIME
+                            BLOCK_BATTLE_RESULT:3:L_COUNT_P:L_COUNT_E = RESULT
+                            ATTACK_TRAMPLE_DAMAGE_P:L_COUNT_P:(L_COUNT_E + 18) = RESULT:2
+                        ENDIF
+                    ENDIF
+                CATCH
+                ENDCATCH
+            NEXT
+            {
+            LOCAL:1 = 
+            MAX(BLOCK_BATTLE_RESULT:1:L_COUNT_P:0, BLOCK_BATTLE_RESULT:1:L_COUNT_P:1
+            , BLOCK_BATTLE_RESULT:1:L_COUNT_P:2, BLOCK_BATTLE_RESULT:1:L_COUNT_P:3
+            , BLOCK_BATTLE_RESULT:1:L_COUNT_P:4, BLOCK_BATTLE_RESULT:1:L_COUNT_P:5
+            , BLOCK_BATTLE_RESULT:3:L_COUNT_P:0, BLOCK_BATTLE_RESULT:3:L_COUNT_P:1
+            , BLOCK_BATTLE_RESULT:3:L_COUNT_P:2, BLOCK_BATTLE_RESULT:3:L_COUNT_P:3
+            , BLOCK_BATTLE_RESULT:3:L_COUNT_P:4, BLOCK_BATTLE_RESULT:3:L_COUNT_P:5)
+            }
+            {
+            LOCAL:2 = 
+            MIN(BLOCK_BATTLE_RESULT:1:L_COUNT_P:0, BLOCK_BATTLE_RESULT:1:L_COUNT_P:1
+            , BLOCK_BATTLE_RESULT:1:L_COUNT_P:2, BLOCK_BATTLE_RESULT:1:L_COUNT_P:3
+            , BLOCK_BATTLE_RESULT:1:L_COUNT_P:4, BLOCK_BATTLE_RESULT:1:L_COUNT_P:5
+            , BLOCK_BATTLE_RESULT:3:L_COUNT_P:0, BLOCK_BATTLE_RESULT:3:L_COUNT_P:1
+            , BLOCK_BATTLE_RESULT:3:L_COUNT_P:2, BLOCK_BATTLE_RESULT:3:L_COUNT_P:3
+            , BLOCK_BATTLE_RESULT:3:L_COUNT_P:4, BLOCK_BATTLE_RESULT:3:L_COUNT_P:5)
+            }
+            {
+            LOCAL:3 = GROUPMATCH(20
+            , BLOCK_BATTLE_RESULT:1:L_COUNT_P:0, BLOCK_BATTLE_RESULT:1:L_COUNT_P:1
+            , BLOCK_BATTLE_RESULT:1:L_COUNT_P:2, BLOCK_BATTLE_RESULT:1:L_COUNT_P:3
+            , BLOCK_BATTLE_RESULT:1:L_COUNT_P:4, BLOCK_BATTLE_RESULT:1:L_COUNT_P:5
+            , BLOCK_BATTLE_RESULT:3:L_COUNT_P:0, BLOCK_BATTLE_RESULT:3:L_COUNT_P:1
+            , BLOCK_BATTLE_RESULT:3:L_COUNT_P:2, BLOCK_BATTLE_RESULT:3:L_COUNT_P:3
+            , BLOCK_BATTLE_RESULT:3:L_COUNT_P:4, BLOCK_BATTLE_RESULT:3:L_COUNT_P:5)
+            }
+            UNIT_INFO_P:L_COUNT_P:16 = LOCAL:1
+
+            IF LOCAL:2 == 50 || ATTACK_SUMMONER_D_P:L_COUNT_P < 1
+            ;攻撃できない場合
+            ELSEIF LOCAL:1 == 5
+                UNIT_INFO_P:L_COUNT_P:7 = ATTACK_SUMMONER_D_P:L_COUNT_P * 100
+            ELSEIF LOCAL:1 == 10
+                UNIT_INFO_P:L_COUNT_P:7 = ATTACK_SUMMONER_D_P:L_COUNT_P
+            ELSEIF LOCAL:1 == 32 && LOCAL:3 < 1
+                UNIT_INFO_P:L_COUNT_P:7 = ATTACK_SUMMONER_D_P:L_COUNT_P
+            ENDIF
+
+            IF LOCAL > LOCAL:1 || (LOCAL == LOCAL:1 && ATTACK_SUMMONER_D_P:L_COUNT_P < ATTACK_SUMMONER_D_P:(L_COUNT_P + 6))
+                UNIT_INFO_P:L_COUNT_P:10 = 1
+            ENDIF
+        ENDIF
+    CATCH
+    ENDCATCH
+NEXT
+PRINTFORML 
+PRINTFORML 어택　　　　이름　AP　HP속도위치
+FOR L_COUNT,0,6
+    IF A:(L_COUNT * 20 + 1) > 0
+        PRINTFORM %FIELD_DEMON_DATE_S:L_COUNT:CBS_NAME,20%
+        PRINTFORM {A:(L_COUNT * 20 + 0),4}
+        PRINTFORM {A:(L_COUNT * 20 + 1),4}
+        PRINTFORM {A:(L_COUNT * 20 + 2),4}
+        PRINTFORM {A:(L_COUNT * 20 + 3),4}
+        PRINTFORML
+        IF A:(L_COUNT * 20 + 10) > 0 || A:(L_COUNT * 20 + 11) > 0
+            PRINTFORM ＿＿＿＿＿＿＿＿＿＿
+            PRINTFORM {A:(L_COUNT * 20 + 10),4}
+            PRINTFORM {A:(L_COUNT * 20 + 11),4}
+            PRINTFORM {A:(L_COUNT * 20 + 12),4}
+            PRINTFORM {A:(L_COUNT * 20 + 13),4}
+            PRINTFORML
+        ENDIF
+    ENDIF
+NEXT
+
+PRINTFORML 
+PRINTFORML 블록　　　　이름　AP　HP속도위치
+FOR L_COUNT,6,12
+    IF B:(L_COUNT * 20 + 1) > 0
+        PRINTFORM %FIELD_DEMON_DATE_S:L_COUNT:CBS_NAME,20%
+        PRINTFORM {B:(L_COUNT * 20 + 0),4}
+        PRINTFORM {B:(L_COUNT * 20 + 1),4}
+        PRINTFORM {B:(L_COUNT * 20 + 2),4}
+        PRINTFORM %DEC_TO_BIN(B:(L_COUNT * 20 + 3)),6%
+        PRINTFORML
+        IF B:(L_COUNT * 20 + 10) > 0 || B:(L_COUNT * 20 + 11) > 0
+            PRINTFORM ＿＿＿＿＿＿＿＿＿＿
+            PRINTFORM {B:(L_COUNT * 20 + 10),4}
+            PRINTFORM {B:(L_COUNT * 20 + 11),4}
+            PRINTFORM {B:(L_COUNT * 20 + 12),4}
+            PRINTFORM %DEC_TO_BIN(B:(L_COUNT * 20 + 13)),6%
+            PRINTFORML
+        ENDIF
+    ENDIF
+NEXT
+
+
+;----------
+;敵側のアタック候補決定
+;----------
+FOR L_COUNT_E, 0, 6
+    SIF UNIT_INFO_E:L_COUNT_E:2 < 0
+        CONTINUE
+
+    {
+    LOCAL = 
+    MIN(ATTACK_BATTLE_RESULT:0:L_COUNT_E:0, ATTACK_BATTLE_RESULT:0:L_COUNT_E:1
+    , ATTACK_BATTLE_RESULT:0:L_COUNT_E:2, ATTACK_BATTLE_RESULT:0:L_COUNT_E:3
+    , ATTACK_BATTLE_RESULT:0:L_COUNT_E:4, ATTACK_BATTLE_RESULT:0:L_COUNT_E:5)
+    }
+    {
+    LOCAL:1 = 
+    MAX(ATTACK_BATTLE_RESULT:0:L_COUNT_E:0, ATTACK_BATTLE_RESULT:0:L_COUNT_E:1
+    , ATTACK_BATTLE_RESULT:0:L_COUNT_E:2, ATTACK_BATTLE_RESULT:0:L_COUNT_E:3
+    , ATTACK_BATTLE_RESULT:0:L_COUNT_E:4, ATTACK_BATTLE_RESULT:0:L_COUNT_E:5)
+    }
+    {
+    LOCAL:2 = GROUPMATCH(20
+    , ATTACK_BATTLE_RESULT:0:L_COUNT_E:0, ATTACK_BATTLE_RESULT:0:L_COUNT_E:1
+    , ATTACK_BATTLE_RESULT:0:L_COUNT_E:2, ATTACK_BATTLE_RESULT:0:L_COUNT_E:3
+    , ATTACK_BATTLE_RESULT:0:L_COUNT_E:4, ATTACK_BATTLE_RESULT:0:L_COUNT_E:5)
+    }
+    UNIT_INFO_E:L_COUNT_E:5 = 0
+    ;IF ATTACK_SUMMONER_D_E:L_COUNT_E > 0
+    ;    LOCAL:2 = SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP / ATTACK_SUMMONER_D_E:L_COUNT_E
+    ;    LOCAL:2 += ((SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP % ATTACK_SUMMONER_D_E:L_COUNT_E) > 0) * 1
+    ;    UNIT_INFO_E:L_COUNT_E:5 = MAX(1, 11 - LOCAL:2)
+    ;ENDIF
+    UNIT_INFO_E:L_COUNT_E:5 = ATTACK_SUMMONER_D_E:L_COUNT_E * 100 / SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP
+
+    UNIT_INFO_E:L_COUNT_E:6 = LOCAL:1
+    IF LOCAL == 50 || ATTACK_SUMMONER_D_E:L_COUNT_E < 1
+    ;攻撃できない場合
+        UNIT_INFO_E:L_COUNT_E:3 = -1
+        UNIT_INFO_E:L_COUNT_E:5 = 0
+    ELSEIF LOCAL:1 == 5
+        UNIT_INFO_E:L_COUNT_E:3 = UNIT_INFO_E:L_COUNT_E:5 + 400
+        UNIT_INFO_E:L_COUNT_E:7 = ATTACK_SUMMONER_D_E:L_COUNT_E * 100
+    ELSEIF LOCAL:1 == 10
+        UNIT_INFO_E:L_COUNT_E:3 = UNIT_INFO_E:L_COUNT_E:5 + 300
+        UNIT_INFO_E:L_COUNT_E:7 = ATTACK_SUMMONER_D_E:L_COUNT_E
+    ELSEIF LOCAL:1 == 20
+        UNIT_INFO_E:L_COUNT_E:3 = UNIT_INFO_E:L_COUNT_E:5 + 200
+    ELSEIF LOCAL:1 == 32 && LOCAL:2 < 1
+        UNIT_INFO_E:L_COUNT_E:3 = UNIT_INFO_E:L_COUNT_E:5 + 100
+        UNIT_INFO_E:L_COUNT_E:7 = ATTACK_SUMMONER_D_E:L_COUNT_E
+    ELSEIF LOCAL:1 == 35
+        UNIT_INFO_E:L_COUNT_E:3 = UNIT_INFO_E:L_COUNT_E:5
+    ENDIF
+
+    IF ATTACK_BATTLE_RESULT:1:L_COUNT_E:0 > 0
+        {
+        LOCAL = 
+        MIN(ATTACK_BATTLE_RESULT:1:L_COUNT_E:0, ATTACK_BATTLE_RESULT:1:L_COUNT_E:1
+        , ATTACK_BATTLE_RESULT:1:L_COUNT_E:2, ATTACK_BATTLE_RESULT:1:L_COUNT_E:3
+        , ATTACK_BATTLE_RESULT:1:L_COUNT_E:4, ATTACK_BATTLE_RESULT:1:L_COUNT_E:5)
+        }
+        {
+        LOCAL:1 = 
+        MAX(ATTACK_BATTLE_RESULT:1:L_COUNT_E:0, ATTACK_BATTLE_RESULT:1:L_COUNT_E:1
+        , ATTACK_BATTLE_RESULT:1:L_COUNT_E:2, ATTACK_BATTLE_RESULT:1:L_COUNT_E:3
+        , ATTACK_BATTLE_RESULT:1:L_COUNT_E:4, ATTACK_BATTLE_RESULT:1:L_COUNT_E:5)
+        }
+        {
+        LOCAL:2 = GROUPMATCH(20
+        , ATTACK_BATTLE_RESULT:1:L_COUNT_E:0, ATTACK_BATTLE_RESULT:1:L_COUNT_E:1
+        , ATTACK_BATTLE_RESULT:1:L_COUNT_E:2, ATTACK_BATTLE_RESULT:1:L_COUNT_E:3
+        , ATTACK_BATTLE_RESULT:1:L_COUNT_E:4, ATTACK_BATTLE_RESULT:1:L_COUNT_E:5)
+        }
+        UNIT_INFO_E:L_COUNT_E:15 = 0
+        ;IF ATTACK_SUMMONER_D_E:L_COUNT_E > 0
+        ;    LOCAL:2 = SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP / ATTACK_SUMMONER_D_E:L_COUNT_E
+        ;    LOCAL:2 += ((SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP % ATTACK_SUMMONER_D_E:L_COUNT_E) > 0) * 1
+        ;    UNIT_INFO_E:L_COUNT_E:5 = MAX(1, 11 - LOCAL:2)
+        ;ENDIF
+        UNIT_INFO_E:L_COUNT_E:15 = ATTACK_SUMMONER_D_E:(L_COUNT_E + 6) * 100 / SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP
+        UNIT_INFO_E:L_COUNT_E:15 = MIN(100, UNIT_INFO_E:L_COUNT_E:15)
+        UNIT_INFO_E:L_COUNT_E:16 = LOCAL:1
+        IF LOCAL == 50 || ATTACK_SUMMONER_D_E:L_COUNT_E < 1
+        ;攻撃できない場合
+            UNIT_INFO_E:L_COUNT_E:13 = -1
+            UNIT_INFO_E:L_COUNT_E:15 = 0
+        ELSEIF LOCAL:1 == 5
+            UNIT_INFO_E:L_COUNT_E:13 = UNIT_INFO_E:L_COUNT_E:15 + 400
+            UNIT_INFO_E:L_COUNT_E:17 = ATTACK_SUMMONER_D_E:(L_COUNT_E + 6) * 100
+        ELSEIF LOCAL:1 == 10
+            UNIT_INFO_E:L_COUNT_E:13 = UNIT_INFO_E:L_COUNT_E:15 + 300
+            UNIT_INFO_E:L_COUNT_E:17 = ATTACK_SUMMONER_D_E:(L_COUNT_E + 6)
+        ELSEIF LOCAL:1 == 20
+            UNIT_INFO_E:L_COUNT_E:13 = UNIT_INFO_E:L_COUNT_E:15 + 200
+        ELSEIF LOCAL:1 == 32 && LOCAL:2 < 1
+            UNIT_INFO_E:L_COUNT_E:13 = UNIT_INFO_E:L_COUNT_E:15 + 100
+            UNIT_INFO_E:L_COUNT_E:17 = ATTACK_SUMMONER_D_E:(L_COUNT_E + 6)
+        ELSEIF LOCAL:1 == 35
+            UNIT_INFO_E:L_COUNT_E:13 = UNIT_INFO_E:L_COUNT_E:15
+        ENDIF
+    ENDIF
+
+    ;ブロック可能位置
+    LOCAL = 0
+    ;格上相打ち数
+    LOCAL:1 = 0
+    ;ブロック安全度
+    LOCAL:2 = 50
+
+    FOR L_COUNT_P, 0, 6
+        IF 5 < BLOCK_BATTLE_RESULT:0:L_COUNT_P:L_COUNT_E && BLOCK_BATTLE_RESULT:0:L_COUNT_P:L_COUNT_E < 50 && UNIT_INFO_P:L_COUNT_P:10 == 0
+            ;SETBIT LOCAL ,L_COUNT_P
+            LOCAL ++
+            SIF BLOCK_BATTLE_RESULT:0:L_COUNT_P:L_COUNT_E == 37
+                LOCAL:1 ++
+            SIF BLOCK_BATTLE_RESULT:0:L_COUNT_P:L_COUNT_E < LOCAL:2
+                LOCAL:2 = BLOCK_BATTLE_RESULT:0:L_COUNT_P:L_COUNT_E
+        ENDIF
+        IF 5 < BLOCK_BATTLE_RESULT:1:L_COUNT_P:L_COUNT_E && BLOCK_BATTLE_RESULT:1:L_COUNT_P:L_COUNT_E < 50 && UNIT_INFO_P:L_COUNT_P:10 == 1
+            ;SETBIT LOCAL ,L_COUNT_P
+            LOCAL ++
+            SIF BLOCK_BATTLE_RESULT:1:L_COUNT_P:L_COUNT_E == 37
+                LOCAL:1 ++
+            SIF BLOCK_BATTLE_RESULT:1:L_COUNT_P:L_COUNT_E < LOCAL:2
+                LOCAL:2 = BLOCK_BATTLE_RESULT:1:L_COUNT_P:L_COUNT_E
+        ENDIF
+        IF LOCAL:2 < 50
+            UNIT_INFO_E:L_COUNT_E:8 = LOCAL + LOCAL:1 * 100 + LOCAL:2 * 10000
+        ELSE
+            UNIT_INFO_E:L_COUNT_E:8 = 5 * 10000
+        ENDIF
+    NEXT
+
+    ;ブロック可能数
+    LOCAL = 0
+    ;格上相打ち数
+    LOCAL:1 = 0
+    ;ブロック安全度
+    LOCAL:2 = 50
+
+    FOR L_COUNT_P, 0, 6
+        IF 5 < BLOCK_BATTLE_RESULT:2:L_COUNT_P:L_COUNT_E && BLOCK_BATTLE_RESULT:2:L_COUNT_P:L_COUNT_E < 50 && UNIT_INFO_P:L_COUNT_P:10 == 0
+            ;SETBIT LOCAL ,L_COUNT_P
+            LOCAL ++
+            SIF BLOCK_BATTLE_RESULT:2:L_COUNT_P:L_COUNT_E == 37
+                LOCAL:1 ++
+            SIF BLOCK_BATTLE_RESULT:2:L_COUNT_P:L_COUNT_E < LOCAL:2
+                LOCAL:2 = BLOCK_BATTLE_RESULT:2:L_COUNT_P:L_COUNT_E
+        ENDIF
+        IF 5 < BLOCK_BATTLE_RESULT:3:L_COUNT_P:L_COUNT_E && BLOCK_BATTLE_RESULT:3:L_COUNT_P:L_COUNT_E < 50 && UNIT_INFO_P:L_COUNT_P:10 == 1
+            ;SETBIT LOCAL ,L_COUNT_P
+            LOCAL ++
+            SIF BLOCK_BATTLE_RESULT:3:L_COUNT_P:L_COUNT_E == 37
+                LOCAL:1 ++
+            SIF BLOCK_BATTLE_RESULT:3:L_COUNT_P:L_COUNT_E < LOCAL:2
+                LOCAL:2 = BLOCK_BATTLE_RESULT:3:L_COUNT_P:L_COUNT_E
+        ENDIF
+        IF LOCAL:2 < 50
+            UNIT_INFO_E:L_COUNT_E:18 = LOCAL + LOCAL:1 * 100 + LOCAL:2 * 10000
+        ELSE
+            UNIT_INFO_E:L_COUNT_E:18 = 5 * 10000
+        ENDIF
+    NEXT
+
+
+
+
+NEXT
+
+;0~5 敵の総合攻撃力の計算
+;LOCAL:0 = MAX(ATTACK_SUMMONER_D_P:0, ATTACK_SUMMONER_D_P:6)
+;LOCAL:1 = MAX(ATTACK_SUMMONER_D_P:1, ATTACK_SUMMONER_D_P:7)
+;LOCAL:2 = MAX(ATTACK_SUMMONER_D_P:2, ATTACK_SUMMONER_D_P:8)
+;LOCAL:3 = MAX(ATTACK_SUMMONER_D_P:3, ATTACK_SUMMONER_D_P:9)
+;LOCAL:4 = MAX(ATTACK_SUMMONER_D_P:4, ATTACK_SUMMONER_D_P:10)
+;LOCAL:5 = MAX(ATTACK_SUMMONER_D_P:5, ATTACK_SUMMONER_D_P:11)
+LOCAL:0 = UNIT_INFO_P:0:10 == 0 ? ATTACK_SUMMONER_D_P:0 # ATTACK_SUMMONER_D_P:6
+LOCAL:1 = UNIT_INFO_P:1:10 == 0 ? ATTACK_SUMMONER_D_P:1 # ATTACK_SUMMONER_D_P:7
+LOCAL:2 = UNIT_INFO_P:2:10 == 0 ? ATTACK_SUMMONER_D_P:2 # ATTACK_SUMMONER_D_P:8
+LOCAL:3 = UNIT_INFO_P:3:10 == 0 ? ATTACK_SUMMONER_D_P:3 # ATTACK_SUMMONER_D_P:9
+LOCAL:4 = UNIT_INFO_P:4:10 == 0 ? ATTACK_SUMMONER_D_P:4 # ATTACK_SUMMONER_D_P:10
+LOCAL:5 = UNIT_INFO_P:5:10 == 0 ? ATTACK_SUMMONER_D_P:5 # ATTACK_SUMMONER_D_P:11
+
+
+;6　＠の現在HPの1/3　少数繰り上げ
+LOCAL:6 = SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP / 3 + (SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP % 3 > 1) * 1
+LOCAL:6 = MIN(LOCAL:6, 5)
+PRINTFORML ＠総合最大AP　{CB_MAX_SUM(0, 3, LOCAL:0, LOCAL:1, LOCAL:2, LOCAL:3, LOCAL:4, LOCAL:5)}
+IF CB_MAX_SUM(0, 3, LOCAL:0, LOCAL:1, LOCAL:2, LOCAL:3, LOCAL:4, LOCAL:5) >= LOCAL:6
+    VARSET L_SORT
+    L_SORT:0 = 1000 - (LOCAL:0 * 100 + UNIT_INFO_P:0:11)
+    L_SORT:1 = 1000 - (LOCAL:1 * 100 + UNIT_INFO_P:1:11)
+    L_SORT:2 = 1000 - (LOCAL:2 * 100 + UNIT_INFO_P:2:11)
+    L_SORT:3 = 1000 - (LOCAL:3 * 100 + UNIT_INFO_P:3:11)
+    L_SORT:4 = 1000 - (LOCAL:4 * 100 + UNIT_INFO_P:4:11)
+    L_SORT:5 = 1000 - (LOCAL:5 * 100 + UNIT_INFO_P:5:11)
+
+    ARRAYMSORT L_SORT, UNIT_INFO_P
+    ;ブロック不可　0
+    ;条件次第でブロック可能　1
+    ;SP使えばブロック可能　2
+    ;ブロック可能　3
+    ;LOCAL:0
+    
+    PRINTFORML 
+    PRINTFORML {LOCAL:6}
+    FOR L_COUNT, 0, 6
+        L_COUNT_P = UNIT_INFO_P:L_COUNT:0
+        PRINTFORML {L_COUNT_P,2} %FIELD_DEMON_DATE_S:L_COUNT_P:CBS_NAME,18%  {ATTACK_SUMMONER_D_P:L_COUNT_P,2}  {ATTACK_SUMMONER_D_P:(L_COUNT_P + 6),2}
+    NEXT
+    ;ブロック可　生き残れない　0
+    ;ブロック可　条件次第で生き残れる　1
+    ;ブロック可　生き残れる　2
+    ;ブロック危険度で判定
+
+    ;7ブロック数
+    ;9ブロック数
+    LOCAL:7 = 0
+    LOCAL:8 = 0 
+    PRINTFORML 
+    PRINTFORML {CB_MAX_SUM(LOCAL:8, 3, LOCAL:0, LOCAL:1, LOCAL:2, LOCAL:3, LOCAL:4, LOCAL:5)}
+    FOR L_COUNT, 0, 6
+        ;ブロック可能度
+        LOCAL:20 = -1 ;ブロック候補
+        LOCAL:21 = 0 ;ブロック度
+
+        ;ブロック安全度
+        LOCAL:30 = -1 ;ブロック候補2
+        LOCAL:31 = 0 ;ブロック度2
+        L_COUNT_P = UNIT_INFO_P:L_COUNT:0
+        SIF UNIT_INFO_P:L_COUNT:2 < 0
+            CONTINUE
+        LOCAL:22 = 0 ;ブロック可能力
+        LOCAL:23 = 0 ;ブロック安全度
+        
+        FOR L_C_NUM, 0, 2
+            IF L_C_NUM == 1
+                SIF LOCAL:6 > MAX(ATTACK_SUMMONER_D_P:L_COUNT_P, ATTACK_SUMMONER_D_P:(L_COUNT_P + 6))
+                    CONTINUE
+                SIF LOCAL:20 > 0 && LOCAL:30 > 0
+                    CONTINUE
+                SIF LOCAL:20 > 300000
+                    CONTINUE
+            ENDIF
+            FOR L_COUNT_E, 0, 6
+                SIF UNIT_INFO_E:L_COUNT_E:2 < 0
+                    CONTINUE
+                ;アタック候補300以下
+                SIF MAX(UNIT_INFO_E:L_COUNT_E:5, UNIT_INFO_E:L_COUNT_E:15) >= 300 && L_C_NUM == 0
+                    CONTINUE
+                ;アタック候補300超
+                SIF MAX(UNIT_INFO_E:L_COUNT_E:5, UNIT_INFO_E:L_COUNT_E:15) < 300 && L_C_NUM == 1
+                    CONTINUE
+
+                IF UNIT_INFO_P:L_COUNT:10 == 1
+                    ;＠がSP使用
+                    LOCAL:10 = BLOCK_BATTLE_RESULT:1:L_COUNT_P:L_COUNT_E
+
+                    ;両方SP使用
+                    LOCAL:11 = BLOCK_BATTLE_RESULT:3:L_COUNT_P:L_COUNT_E > 0 ? BLOCK_BATTLE_RESULT:3:L_COUNT_P:L_COUNT_E # LOCAL:11
+                ELSE
+                    ;素の状態
+                    LOCAL:10 = BLOCK_BATTLE_RESULT:0:L_COUNT_P:L_COUNT_E
+
+                    ;敵がSP使用
+                    LOCAL:11 = BLOCK_BATTLE_RESULT:2:L_COUNT_P:L_COUNT_E > 0 ? BLOCK_BATTLE_RESULT:1:L_COUNT_P:L_COUNT_E # LOCAL:10
+                ENDIF
+
+                ;ブロックできない
+                IF MAX(LOCAL:10, LOCAL:11) < 10
+                    LOCAL:22 = 0
+                ;必ずブロックできる
+                ELSEIF MIN(LOCAL:10, LOCAL:11) >= 10
+                    LOCAL:22 = 3
+                ;スキル使用すればブロック可
+                ELSEIF LOCAL:10 < 10 && LOCAL:11 >= 10
+                    LOCAL:22 = 2
+                ;그외
+                ELSE
+                    LOCAL:22 = 1
+                ENDIF
+
+                SIF LOCAL:22 > 0
+                    SETBIT UNIT_INFO_E:L_COUNT_E:4, 20 + L_COUNT_P
+                ;SIF UNIT_INFO_E:L_COUNT_E:4 % 1048576 > 0
+                ;    CONTINUE
+                LOCAL:24 = UNIT_INFO_E:L_COUNT_E:4 % 1048576 ;ブロック候補度1
+                LOCAL:25 = UNIT_INFO_E:L_COUNT_E:9
+                LOCAL:26 = UNIT_INFO_E:L_COUNT_E:11
+                CALL CB_SP_WORTH, FIELD_DEMON_DATE_V:(UNIT_INFO_E:L_COUNT_E:0):CBV_SP1, UNIT_INFO_E:L_COUNT_E:0, FIELD_DEMON_DATE_S:(UNIT_INFO_E:L_COUNT_E:0):CBS_SP1_SUB
+                LOCAL:26 += RESULT
+                ;LOCAL:24 = ((UNIT_INFO_E:L_COUNT_E:4 % 1048576) % 1000) / 100 ;ブロック可能力
+                ;LOCAL:25 = (UNIT_INFO_E:L_COUNT_E:4 % 1048576) % 100 ;ブロック安全度
+
+
+                IF LOCAL:22 > 0
+                    LOCAL:14 = MIN(LOCAL:10 < 10 ? 99 # LOCAL:10, LOCAL:11 < 10 ? 99 # LOCAL:11)
+                    LOCAL:15 = MAX(LOCAL:10 < 10 ?  0 # LOCAL:10, LOCAL:11 < 10 ?  0 # LOCAL:11)
+                    
+                    IF LOCAL:14 >= 35
+                        LOCAL:23 = LOCAL:14
+                    ELSEIF LOCAL:14 == 32
+                        LOCAL:23 = 15
+                    ELSEIF LOCAL:14 <= 20
+                        LOCAL:23 = LOCAL:14
+                    ENDIF
+
+                    IF (LOCAL:21 < 1 || (LOCAL:21 < (LOCAL:22 * 100 + LOCAL:23))) && LOCAL:24 < 1
+                        LOCAL:20 = L_COUNT_E
+                        LOCAL:21 = (LOCAL:22 * 100 + LOCAL:23) * 1000 + (900 - LOCAL:26)
+                    ENDIF
+                    IF (LOCAL:31 < 1 || (LOCAL:31 < (LOCAL:23 * 10 + LOCAL:22))) && LOCAL:25 < 1
+                        LOCAL:30 = L_COUNT_E
+                        LOCAL:31 = (LOCAL:23 * 10 + LOCAL:22) * 1000 + (900 - LOCAL:26)
+                    ENDIF
+                ENDIF
+            NEXT
+            SIF LOCAL:21 % 100 < 20 && L_C_NUM == 1
+                UNIT_INFO_P:L_COUNT:4 = MAX(ATTACK_SUMMONER_D_P:L_COUNT_P, ATTACK_SUMMONER_D_P:(L_COUNT_P + 6))
+            PRINTFORML {LOCAL:21}　{LOCAL:31}
+        NEXT
+
+        SIF LOCAL:20 > -1
+            UNIT_INFO_E:(LOCAL:20):4 += L_COUNT_P * 1000 + (LOCAL:21 / 1000)
+        SIF LOCAL:30 > -1
+            UNIT_INFO_E:(LOCAL:30):9 += L_COUNT_P * 1000 + (LOCAL:31 / 1000)
+        IF LOCAL:20 > -1 || LOCAL:30 > -1
+            LOCAL:7 ++
+            SETBIT LOCAL:8, L_COUNT_P
+        ENDIF
+
+        SIF LOCAL:20 < 0 && LOCAL:30 < 0
+            UNIT_INFO_P:L_COUNT:4 = UNIT_INFO_P:L_COUNT:10 == 0 ? ATTACK_SUMMONER_D_P:L_COUNT_P # ATTACK_SUMMONER_D_P:(L_COUNT_P + 6)
+        
+        PRINTFORML ＠現総合攻撃力 {CB_MAX_SUM(LOCAL:8, 3, LOCAL:0, LOCAL:1, LOCAL:2, LOCAL:3, LOCAL:4, LOCAL:5)}
+        SIF LOCAL:7 > 2 || CB_MAX_SUM(LOCAL:8, 3, LOCAL:0, LOCAL:1, LOCAL:2, LOCAL:3, LOCAL:4, LOCAL:5) < LOCAL:6
+            BREAK
+    NEXT
+
+    VARSET L_SORT
+
+    L_SORT:0 = UNIT_INFO_P:0:0 + 1
+    L_SORT:1 = UNIT_INFO_P:1:0 + 1
+    L_SORT:2 = UNIT_INFO_P:2:0 + 1
+    L_SORT:3 = UNIT_INFO_P:3:0 + 1
+    L_SORT:4 = UNIT_INFO_P:4:0 + 1
+    L_SORT:5 = UNIT_INFO_P:5:0 + 1
+
+    PRINTFORML 
+    FOR L_COUNT, 0, 6
+        L_COUNT_P = UNIT_INFO_P:L_COUNT:0
+        PRINTFORML {L_COUNT_P,2} %FIELD_DEMON_DATE_S:L_COUNT_P:CBS_NAME,18% {UNIT_INFO_P:L_COUNT_P:4,2} {ATTACK_SUMMONER_D_P:L_COUNT_P,2}  {ATTACK_SUMMONER_D_P:(L_COUNT_P + 6),2}
+    NEXT
+
+    ARRAYMSORT L_SORT, UNIT_INFO_P
+
+ENDIF
+
+IF ARG
+    PRINTFORML POS 이름　　　　　　　AP　HP　배틀력　A후보 B후보　　　B후보2 A강도 A안전 A안전A　블록력　S데미지 어택위험위치 
+    ;PRINTFORM                                         A
+    FOR L_COUNT_E, 0, 6
+        SIF UNIT_INFO_E:L_COUNT_E:2 < 0
+            CONTINUE
+        PRINTFORM {UNIT_INFO_E:L_COUNT_E:0,4}
+        PRINTFORM %FIELD_DEMON_DATE_S:(UNIT_INFO_E:L_COUNT_E:0):CBS_NAME,18%
+        PRINTFORM {UNIT_INFO_E:L_COUNT_E:1,4}
+        PRINTFORM {UNIT_INFO_E:L_COUNT_E:2,4}
+        PRINTFORM {UNIT_INFO_E:L_COUNT_E:11,8}
+        PRINTFORM {UNIT_INFO_E:L_COUNT_E:3,6}
+        PRINTFORM %DEC_TO_BIN(UNIT_INFO_E:L_COUNT_E:4 / 1048576),6%
+        PRINTFORM {UNIT_INFO_E:L_COUNT_E:4 % 1048576,6}
+        PRINTFORM {UNIT_INFO_E:L_COUNT_E:9,6}
+        PRINTFORM {UNIT_INFO_E:L_COUNT_E:5,6}
+        PRINTFORM {UNIT_INFO_E:L_COUNT_E:6,6}
+        PRINTFORM {UNIT_INFO_E:L_COUNT_E:7,6}
+        PRINTFORM {UNIT_INFO_E:L_COUNT_E:8,12}
+        PRINTFORM {ATTACK_SUMMONER_D_E:L_COUNT_E,4}
+        PRINTFORM %DEC_TO_BIN(UNIT_INFO_E:L_COUNT_E:10),18%
+
+        IF UNIT_INFO_E:L_COUNT_E:16 > 0
+            PRINTFORML
+            PRINTFORM 　                                    _
+            PRINTFORM {UNIT_INFO_E:L_COUNT_E:13,6}
+            PRINTFORM %DEC_TO_BIN(UNIT_INFO_E:L_COUNT_E:14 / 1048576),6%
+            PRINTFORM {UNIT_INFO_E:L_COUNT_E:14 % 1048576,6}
+            PRINTFORM {UNIT_INFO_E:L_COUNT_E:19,6}
+            PRINTFORM {UNIT_INFO_E:L_COUNT_E:15,6}
+            PRINTFORM {UNIT_INFO_E:L_COUNT_E:16,6}
+            PRINTFORM {UNIT_INFO_E:L_COUNT_E:17,6}
+            PRINTFORM {UNIT_INFO_E:L_COUNT_E:18,12}
+            PRINTFORM {ATTACK_SUMMONER_D_E:(L_COUNT_E + 6),4}
+        ENDIF
+        PRINTFORML
+    NEXT
+    
+    PRINTFORML
+    PRINTFORML
+    PRINTFORML POS 이름　　　　　　　AP　HP　배틀력　A마크  B마크  A강도 A안전 A안전A　블록력　S데미지 어택위험위치
+    ;PRINTFORM                                         A
+    FOR L_COUNT_P, 0, 6
+        SIF UNIT_INFO_P:L_COUNT_P:2 < 0
+            CONTINUE
+        PRINTFORM {UNIT_INFO_P:L_COUNT_P:0,4}
+        PRINTFORM %FIELD_DEMON_DATE_S:(UNIT_INFO_P:L_COUNT_P:0):CBS_NAME,18%
+        PRINTFORM {UNIT_INFO_P:L_COUNT_P:1,4}
+        PRINTFORM {UNIT_INFO_P:L_COUNT_P:2,4}
+        PRINTFORM {UNIT_INFO_P:L_COUNT_P:11,8}
+        PRINTFORM {UNIT_INFO_P:L_COUNT_P:3,9}
+        PRINTFORM {UNIT_INFO_P:L_COUNT_P:4,6}
+        PRINTFORM {UNIT_INFO_P:L_COUNT_P:5,6}
+        PRINTFORM {UNIT_INFO_P:L_COUNT_P:6,6}
+        PRINTFORM {UNIT_INFO_P:L_COUNT_P:7,6}
+        PRINTFORM {UNIT_INFO_P:L_COUNT_P:8,12}
+        PRINTFORM {ATTACK_SUMMONER_D_P:L_COUNT_P,4}
+        PRINTFORM %DEC_TO_BIN(UNIT_INFO_P:L_COUNT_P:10),18%
+
+        IF UNIT_INFO_P:L_COUNT_P:16 > 0
+            PRINTFORML
+            PRINTFORM 　                                   _
+            PRINTFORM {UNIT_INFO_P:L_COUNT_P:13,9}
+            PRINTFORM {UNIT_INFO_P:L_COUNT_P:14,6}
+            PRINTFORM {UNIT_INFO_P:L_COUNT_P:15,6}
+            PRINTFORM {UNIT_INFO_P:L_COUNT_P:16,6}
+            PRINTFORM {UNIT_INFO_P:L_COUNT_P:17,6}
+            PRINTFORM {UNIT_INFO_P:L_COUNT_P:18,12}
+            PRINTFORM {ATTACK_SUMMONER_D_P:(L_COUNT_P + 6),4}
+        ENDIF
+        PRINTFORML
+    NEXT
+
+    PRINTFORML
+    PRINTFORML
+    PRINTFORML SP情報
+    FOR L_COUNT, 0, VARSIZE("SP_INFO_V_E",0)
+        SIF SP_INFO_V_E:L_COUNT:1 < 1
+            CONTINUE
+        PRINTFORM %SP_INFO_S_E:L_COUNT:9,20%
+        FOR L_COUNT_E, 0, VARSIZE("SP_INFO_V_E",1)
+            PRINTFORM {SP_INFO_V_E:L_COUNT:L_COUNT_E,4}
+        NEXT
+        PRINTFORM ＿
+        FOR L_COUNT_E, 0, VARSIZE("SP_INFO_S_E",1)
+            SIF SP_INFO_S_E:L_COUNT:L_COUNT_E != ""
+                PRINTFORM %SP_INFO_S_E:L_COUNT:L_COUNT_E% 
+        NEXT
+        PRINTFORML
+    NEXT
+    PRINTFORML
+    FOR L_COUNT, 0, VARSIZE("SP_INFO_V_P",0)
+        SIF SP_INFO_V_P:L_COUNT:1 < 1
+            CONTINUE
+        PRINTFORM %SP_INFO_S_P:L_COUNT:9,20%
+        FOR L_COUNT_P, 0, VARSIZE("SP_INFO_V_P",1)
+            PRINTFORM {SP_INFO_V_P:L_COUNT:L_COUNT_P,4}
+        NEXT
+        FOR L_COUNT_P, 0, VARSIZE("SP_INFO_S_P",1)
+            SIF SP_INFO_S_P:L_COUNT:L_COUNT_P != ""
+                PRINTFORM %SP_INFO_S_P:L_COUNT:L_COUNT_P% 
+        NEXT
+        PRINTFORML
+    NEXT
+    
+    PRINTFORML
+    PRINTFORML
+    PRINTFORML 배틀 결과 자신 턴
+
+    PRINTFORML
+    PRINTFORM 　　　　　　　　　＿
+    FOR L_COUNT_P, 0, 6
+        PRINTFORM %FIELD_DEMON_DATE_S:(UNIT_INFO_P:L_COUNT_P:0):CBS_NAME,16%
+    NEXT
+    PRINTFORML
+
+    FOR L_COUNT, 0 ,2
+        FOR L_COUNT_E, 0, 6
+            SIF ATTACK_BATTLE_RESULT:L_COUNT:L_COUNT_E:0 < 1
+                CONTINUE
+            PRINTFORM %FIELD_DEMON_DATE_S:(UNIT_INFO_E:L_COUNT_E:0):CBS_NAME,16%
+            FOR L_COUNT_P, 0, 6
+                PRINTFORM {ATTACK_BATTLE_RESULT:L_COUNT:L_COUNT_E:L_COUNT_P,16}
+            NEXT
+            PRINTFORML
+        NEXT
+    NEXT
+
+    PRINTFORML
+    PRINTFORML
+    PRINTFORML 배틀 결과 적 턴
+    PRINTFORM 　　　　　　　　　＿
+    FOR L_COUNT_P, 0, 6
+        PRINTFORM %FIELD_DEMON_DATE_S:(UNIT_INFO_P:L_COUNT_P:0):CBS_NAME,16%
+    NEXT
+    PRINTFORML
+
+    FOR L_COUNT, 0 ,4
+        FOR L_COUNT_E, 0, 6
+            SIF BLOCK_BATTLE_RESULT:L_COUNT:0:L_COUNT_E < 1
+                CONTINUE
+            PRINTFORM %FIELD_DEMON_DATE_S:(UNIT_INFO_E:L_COUNT_E:0):CBS_NAME,16%
+            FOR L_COUNT_P, 0, 6
+                PRINTFORM {BLOCK_BATTLE_RESULT:L_COUNT:L_COUNT_P:L_COUNT_E,16}
+            NEXT
+            PRINTFORML
+        NEXT
+    NEXT
+    PRINTFORML
+
+    PRINTFORML
+    PRINTFORML
+    PRINTFORML 手札　状況
+    FOR L_COUNT, 0 ,VARSIZE("HAND_INFO_V_E",0)
+        IF HAND_INFO_V_E:L_COUNT:0 > 100
+            PRINTFORM %HAND_INFO_S_E:L_COUNT:9,20%
+            FOR L_COUNT_E, 0, VARSIZE("HAND_INFO_V_E",1)
+                PRINTFORM {HAND_INFO_V_E:L_COUNT:L_COUNT_E,4}
+            NEXT
+            PRINTFORM ＿
+            FOR L_COUNT_E, 0, VARSIZE("HAND_INFO_S_E",1)
+                SIF HAND_INFO_S_E:L_COUNT:L_COUNT_E != ""
+                    PRINTFORM %HAND_INFO_S_E:L_COUNT:L_COUNT_E% 
+            NEXT
+            PRINTFORML 
+        ELSEIF HAND_INFO_V_E:L_COUNT:2 > 0
+            PRINTFORM %HAND_INFO_S_E:L_COUNT:9,20%
+            FOR L_COUNT_E, 0, 20
+                PRINTFORM {HAND_INFO_V_E:L_COUNT:L_COUNT_E,4}
+            NEXT
+            FOR L_COUNT_E, 0, VARSIZE("HAND_INFO_S_E",1)
+                SIF HAND_INFO_S_E:L_COUNT:L_COUNT_E != ""
+                    PRINTFORM %HAND_INFO_S_E:L_COUNT:L_COUNT_E% 
+            NEXT
+            PRINTFORML
+            PRINTFORM ＿＿＿＿＿＿＿＿＿＿
+            FOR L_COUNT_E, 20, 32
+                PRINTFORM {HAND_INFO_V_E:L_COUNT:L_COUNT_E,4}
+            NEXT
+            PRINTFORML
+            PRINTFORM ＿＿＿＿＿＿＿＿＿＿
+            FOR L_COUNT_E, 32, 44
+                PRINTFORM {HAND_INFO_V_E:L_COUNT:L_COUNT_E,4}
+            NEXT
+            PRINTFORML
+        ENDIF
+    NEXT
+    PRINTFORML
+    PRINTFORMW
+ENDIF
+
+
+IF CBF_PHASE == 4
+    ;
+    PRINTFORML 블록 선택
+    CS_AI_ACTNUM = 4000
+    LOCAL = 0
+
+    VARSET L_戦闘アタック者, -1
+    VARSET L_戦闘ブロック者, -1
+    VARSET L_戦闘ブロック者2, -1
+
+	FOR L_COUNT_P, 0, 6
+        ;
+		IF FIELD_DEMON_DATE_V:(UNIT_INFO_P:L_COUNT_P:0):CBV_BATTLE > 0
+            ;
+            L_戦闘アタック者:LOCAL = ATTACK_SUMMONER_D_P:L_COUNT_P * 100000
+            L_戦闘アタック者:LOCAL += UNIT_INFO_P:L_COUNT_P:11 * 100 + L_COUNT_P
+            LOCAL ++
+        ENDIF
+        SIF LOCAL > 2
+            BREAK
+    NEXT
+    IF LOCAL > 0
+        ARRAYSORT L_戦闘アタック者, BACK
+        ;必ず守る3
+        ;有利なら守る2
+        ;完全有利なら守る1
+        L_TAMOKU:10 = 0 ;ブロック除外
+        L_TAMOKU:11 = 0 ;ブロック重要度
+        L_TAMOKU:12 = 0 ;敵のアタック力(少ないほど強い)
+        L_TAMOKU:13 = 0 ;敵のアタック総合力(少ないほど強い)
+        L_TAMOKU:14 = 0 ;ブロック範囲
+        FOR L_C_NUM, 0, 2
+        ;一周目は生き残り優先
+            FOR L_COUNT, 0, LOCAL
+                L_COUNT_P = L_戦闘アタック者:L_COUNT % 100
+                L_TAMOKU = -1;守り者
+                L_TAMOKU:1 = 0;守り力
+                PRINTFORML %FIELD_DEMON_DATE_S:L_COUNT_P:CBS_NAME% {L_戦闘アタック者:L_COUNT}
+
+                SIF L_戦闘アタック者:L_COUNT / 100000 < 1
+                    CONTINUE
+                L_TAMOKU:12 = MATH_ROUND(SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP, L_戦闘アタック者:L_COUNT / 100000, 1)
+                IF L_C_NUM == 0
+                    L_TAMOKU:11 = 1
+                    L_TAMOKU:14 = 20
+                ELSE
+                    L_C_ONE = CB_MAX_SUM(L_TAMOKU:10, 3, L_戦闘アタック者:0 / 100000, L_戦闘アタック者:1 / 100000, L_戦闘アタック者:2 / 100000)
+                    SIF L_C_ONE < 1
+                        BREAK
+                    L_TAMOKU:13 = MATH_ROUND(SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP, L_C_ONE, 1)
+                    IF L_TAMOKU:13 < 3
+                        L_TAMOKU:11 = 3
+                        L_TAMOKU:14 = 10
+                    ELSEIF L_TAMOKU:13 < 5
+                        L_TAMOKU:11 = 2
+                        L_TAMOKU:14 = 10
+                    ELSE
+                        L_TAMOKU:11 = 1
+                        L_TAMOKU:14 = 20
+                    ENDIF
+                    PRINTFORML 総合アタック力 {L_TAMOKU:13}　ブロック重要度 {L_TAMOKU:11}　ブロック候補度{L_TAMOKU:14}
+                ENDIF
+                FOR L_COUNT_E, 0, 6
+                    SIF UNIT_INFO_E:L_COUNT_E:1 < 0
+                        CONTINUE
+                    SIF L_C_NUM == 0 && L_戦闘ブロック者2:L_COUNT_E > 0
+                        CONTINUE
+                    SIF L_C_NUM == 1 && (ARG == 1 || ARG == 2)
+                        PRINTFORML ブロック上書き {L_戦闘ブロック者2:L_COUNT_E / 100} >= {L_TAMOKU:11}
+                    SIF L_C_NUM == 1 && L_戦闘ブロック者2:L_COUNT_E / 100 >= L_TAMOKU:11
+                        CONTINUE
+                    ;守り結果
+                    L_TAMOKU:2 = BLOCK_BATTLE_RESULT:0:L_COUNT_P:L_COUNT_E
+                    IF L_TAMOKU:11 < 3
+                        SIF 30 < L_TAMOKU:2 && L_TAMOKU:2 < 37
+                            L_TAMOKU:2 -= 20
+                    ELSE
+                        SIF 30 < L_TAMOKU:2 && L_TAMOKU:2 < 35
+                            L_TAMOKU:2 -= 20
+                    ENDIF
+                    ;戦闘力
+                    L_TAMOKU:3 = UNIT_INFO_E:L_COUNT_E:11
+                    CALL CB_SP_WORTH, FIELD_DEMON_DATE_V:(L_COUNT_E + 6):CBV_SP1, L_COUNT_E + 6, FIELD_DEMON_DATE_S:(L_COUNT_E + 6):CBS_SP1_SUB
+                    L_TAMOKU:3 += RESULT
+                    ;守り力
+                    L_TAMOKU:4 = L_TAMOKU:2 * 100000 + (900 - L_TAMOKU:3) * 100 + L_COUNT_E
+                    IF L_TAMOKU:14 <= L_TAMOKU:2 && L_TAMOKU:2 < 50 && L_TAMOKU:1 < L_TAMOKU:4
+                        ;
+                        L_TAMOKU = L_COUNT_E
+                        L_TAMOKU:1 = L_TAMOKU:4
+                        PRINTFORML ブロック候補 %FIELD_DEMON_DATE_S:(UNIT_INFO_E:L_COUNT_E:0):CBS_NAME% {L_TAMOKU:1}
+                    ENDIF
+                NEXT
+                IF L_TAMOKU > -1
+                    L_戦闘ブロック者:L_COUNT = L_TAMOKU
+                    PRINTFORML ブロックセット %FIELD_DEMON_DATE_S:(UNIT_INFO_E:L_TAMOKU:0):CBS_NAME%
+                    SETBIT L_TAMOKU:10, L_COUNT
+                    IF L_C_NUM == 0
+                        IF L_TAMOKU:12 < 3
+                            L_戦闘ブロック者:L_COUNT += 300
+                        ELSEIF L_TAMOKU:12 < 5
+                            L_戦闘ブロック者:L_COUNT += 200
+                        ELSE
+                            L_戦闘ブロック者:L_COUNT += 100
+                        ENDIF
+                    ELSE
+                        L_戦闘ブロック者:L_COUNT += L_TAMOKU:11 * 100
+                        FOR L_C_FOR, 0, LOCAL
+                            SIF L_C_FOR == L_COUNT
+                                CONTINUE
+                            IF L_戦闘ブロック者:L_C_FOR % 100 == L_TAMOKU
+                                L_戦闘ブロック者:L_C_FOR = -1
+                                CLEARBIT L_TAMOKU:10, L_C_FOR
+                            ENDIF
+                        NEXT
+                    ENDIF
+                    L_戦闘ブロック者2:L_TAMOKU = L_戦闘ブロック者:L_COUNT
+                ENDIF
+            NEXT
+        NEXT
+
+        ;戦闘力
+        L_TAMOKU:20 = 0
+        FOR L_COUNT, 0, LOCAL
+            IF L_戦闘ブロック者:L_COUNT >= 0
+                IF ARG == 0 || ARG == 1
+                    CALL CB_AI_SET, 3600 + (L_戦闘アタック者:L_COUNT % 100)
+                    CALL CB_AI_SET, 100 + (L_戦闘ブロック者:L_COUNT % 100 + 6)
+                ENDIF
+                PRINTFORML {3600 + (L_戦闘アタック者:L_COUNT % 100)}
+                PRINTFORML {100 + (L_戦闘ブロック者:L_COUNT % 100 + 6)}
+                L_TAMOKU:20 = 1
+            ENDIF
+        NEXT
+        SIF L_TAMOKU:20 > 0
+            PRINTFORML OK
+    ENDIF
+    SIF ARG == 0 || ARG == 1
+	    CS_AI_STEP = 50
+    SIF ARG == 1 || ARG == 2
+        PRINTFORMW 블록 여기까지
+    
+    REDRAW 1
+	RETURN 0
+
+ENDIF
+;0  SPブロマS   SPブロマ即死100 防御PUスキル    ブロマ召喚
+;1              SPブロマ即死99
+;2　アタクマS   アタクマ即死100                 アタクマ召喚
+;3              アタクマ即死99                                  ブロックサポSP
+;5                              攻撃PUスキル                    アタックサポSP  
+;6                              最強、SP召喚
+;7                              低コスト召喚
+;5              雑魚散らしD
+;8                              攻撃宣言
+FOR L_C_ACTION, 0, 9
+    ;----------
+    ;味方の排除
+    ;----------
+    ;IF CS_AI_STEP == 10
+    CS_AI_ACTNUM = 1000 * L_C_ACTION
+    IF 1
+        VARSET TARGET_INFO, -1
+        FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+            TARGET_INFO:L_COUNT_P:0 = L_COUNT_P
+            SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                CONTINUE
+            TARGET_INFO:L_COUNT_P:1 = 0
+            ;ブロックマークはあるか？
+            ;PRINTFORML %FIELD_DEMON_DATE_S:L_COUNT_P:CBS_NAME,16%  {UNIT_INFO_P:L_COUNT_P:4}
+            IF UNIT_INFO_P:L_COUNT_P:4 > 0 && L_C_ACTION < 2
+                TARGET_INFO:L_COUNT_P:1 += UNIT_INFO_P:L_COUNT_P:4 * 30
+            ELSEIF UNIT_INFO_P:L_COUNT_P:3 > 0 && L_C_ACTION < 4
+            ;アタックマークの状況
+                ;LOCAL = UNIT_INFO_P:L_COUNT_P:3
+                ;LOCAL:1 = 0
+                ;LOCAL:1 -= (LOCAL % 100) * 2
+                ;LOCAL /= 100
+                ;LOCAL:1 -= LOCAL % 100
+                ;LOCAL /= 100
+                ;LOCAL:1 += LOCAL % 100
+                ;LOCAL /= 100
+                ;LOCAL:1 += LOCAL % 100
+                ;IF LOCAL:1 > 0
+                ;    TARGET_INFO:L_COUNT_P:1 += UNIT_INFO_P:L_COUNT_P:3 * 5
+                ;ENDIF
+                TARGET_INFO:L_COUNT_P:1 += UNIT_INFO_P:L_COUNT_P:3 * 100
+            ENDIF
+        NEXT
+
+        IF L_C_ACTION < 2
+            ;SPの状況
+            FOR L_COUNT, 0, VARSIZE("SP_INFO_V_P",0)
+                L_COUNT_P = SP_INFO_V_P:L_COUNT:0
+                IF SP_INFO_V_P:L_COUNT:1 == 1
+                    TARGET_INFO:L_COUNT_P:1 += 50
+                    SIF SP_INFO_V_P:L_COUNT:3 == 2
+                        TARGET_INFO:L_COUNT_P:1 += 200
+                    SIF SP_INFO_V_P:L_COUNT:12 == 0
+                        TARGET_INFO:L_COUNT_P:1 += 100
+                    FOR L_C_NUM, 14, 20
+                        TARGET_INFO:L_COUNT_P:1 += SP_INFO_V_P:L_COUNT:L_C_NUM * 10
+                    NEXT
+                ELSEIF SP_INFO_V_P:L_COUNT:1 == 12 && (SP_INFO_V_P:L_COUNT:2 == 998 || SP_INFO_V_P:L_COUNT:2 == 997)
+                    TARGET_INFO:L_COUNT_P:1 += 180
+                    FOR L_C_NUM, 14, 20
+                        TARGET_INFO:L_COUNT_P:1 += SP_INFO_V_P:L_COUNT:L_C_NUM * 10
+                    NEXT
+                ENDIF
+            NEXT
+        ENDIF
+
+        VARSET L_SORT
+        L_SORT:0 = 10000 - TARGET_INFO:0:1
+        L_SORT:1 = 10000 - TARGET_INFO:1:1
+        L_SORT:2 = 10000 - TARGET_INFO:2:1
+        L_SORT:3 = 10000 - TARGET_INFO:3:1
+        L_SORT:4 = 10000 - TARGET_INFO:4:1
+        L_SORT:5 = 10000 - TARGET_INFO:5:1
+
+        ARRAYMSORT L_SORT, TARGET_INFO
+
+        IF L_C_ACTION < 2
+            PRINTL ブロマタゲ
+        ELSEIF L_C_ACTION < 4
+            PRINTL アタクマタゲ
+        ENDIF
+        FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+            PRINTFORML %FIELD_DEMON_DATE_S:(TARGET_INFO:L_COUNT_P:0):CBS_NAME,16%  {TARGET_INFO:L_COUNT_P:1}
+        NEXT
+
+        ;----------
+        ;ダメージSPによる排除（100％だけにしておく）
+        ;----------
+        IF (L_C_ACTION == 0 || L_C_ACTION == 2)
+            IF L_C_ACTION < 2
+                PRINTL ブロマ排除
+            ELSEIF L_C_ACTION < 4
+                PRINTL アタクマ排除
+            ENDIF
+            FOR L_COUNT, 0, VARSIZE("TARGET_INFO",0)
+                SIF TARGET_INFO:L_COUNT:1 < 10
+                    CONTINUE
+                L_COUNT_P = TARGET_INFO:L_COUNT:0
+                
+                VARSET USE_SP_INFO
+                LOCAL = 0
+                FOR L_C_NUM, 0, VARSIZE("SP_INFO_V_E",0)
+                    IF SP_INFO_V_E:L_C_NUM:1 == 1
+                        SIF SP_INFO_V_E:L_C_NUM:(14 + L_COUNT_P) < 1
+                            CONTINUE
+                        IF SP_INFO_V_E:L_C_NUM:0 >= 100 && TARGET_INFO:L_COUNT:1 > 0
+                            USE_SP_INFO:LOCAL:0 = L_C_NUM
+                            USE_SP_INFO:LOCAL:1 = 10 + (SP_INFO_V_E:L_C_NUM:13 * 10)
+                            LOCAL ++
+                        ELSEIF SP_INFO_V_E:L_C_NUM:0 < 100
+                            L_COUNT_E = SP_INFO_V_E:L_C_NUM:0 - 6
+                            ;代償
+                            IF SP_INFO_V_E:L_C_NUM:12 == 0
+                                ;アンタップ
+                                USE_SP_INFO:LOCAL:0 = L_C_NUM
+                                USE_SP_INFO:LOCAL:1 = 0
+                                LOCAL ++
+                            ELSEIF SP_INFO_V_E:L_C_NUM:12 == 1 && TARGET_INFO:L_COUNT:1 > 0
+                                ;タップ
+                                LOCAL:1 = 0
+                                IF UNIT_INFO_E:L_COUNT_E:4 % 1048576 > 0
+                                    ;ブロック候補で、相手にブロックマークはあるか？
+                                    IF UNIT_INFO_P:L_COUNT_P:4 > 0
+                                        LOCAL:1 = 1
+                                    ;ブロック候補で、替りはいるか？
+                                    ELSE
+                                        LOCAL:2 = UNIT_INFO_E:L_COUNT_E:4 / 1048576
+                                        FOR L_C_FOR, 0 ,6
+                                            SIF L_COUNT_E == L_C_FOR
+                                                CONTINUE
+                                            LOCAL:3 = LOCAL:2 & (UNIT_INFO_E:L_C_FOR:4 / 1048576)
+                                            IF LOCAL:2 == LOCAL:3
+                                                LOCAL:1 = 1
+                                                BREAK
+                                            ENDIF
+                                        NEXT
+                                    ENDIF
+                                ELSEIF UNIT_INFO_E:L_COUNT_E:4 <= 300
+                                    ;アタック候補で、300未満？
+                                    LOCAL:1 = 1
+                                ENDIF
+                                IF LOCAL:1 == 1
+                                    USE_SP_INFO:LOCAL:0 = L_C_NUM
+                                    USE_SP_INFO:LOCAL:1 = UNIT_INFO_E:L_COUNT_E:11 / 10 + 1
+                                    LOCAL ++
+                                ENDIF
+                            ELSEIF (SP_INFO_V_E:L_C_NUM:12 == 2 || SP_INFO_V_E:L_C_NUM:12 == 3)  && TARGET_INFO:L_COUNT:1 > 0
+                                ;山札、黄泉
+                                ;相手よりバトル力は低いか同等？
+                                IF UNIT_INFO_P:L_COUNT_P:11 >= UNIT_INFO_E:L_COUNT_E:11 - 3
+                                    ;ブロック候補で、相手にブロックマークはあるか？
+                                    ;アタック候補で、300未満？
+                                    IF (UNIT_INFO_E:L_COUNT_E:4 % 1048576 > 0 && UNIT_INFO_P:L_COUNT_P:4 > 0) || UNIT_INFO_E:L_COUNT_E:4 <= 300
+                                        USE_SP_INFO:LOCAL:0 = L_C_NUM
+                                        USE_SP_INFO:LOCAL:1 = UNIT_INFO_E:L_COUNT_E:11 + 5
+                                        LOCAL ++
+                                    ENDIF
+                                ENDIF
+                            ENDIF
+                        ENDIF
+                    ENDIF
+                NEXT
+                LOCAL:30 = 0 ;SP除け位置
+                IF LOCAL > 0
+                    PRINTFORML
+                    PRINTFORML SP 받음 %FIELD_DEMON_DATE_S:L_COUNT_P:CBS_NAME,16%　現MAG {L_USING_MAG}
+                    FOR L_C_NUM, 0, LOCAL
+                        PRINTFORML %SP_INFO_S_E:(USE_SP_INFO:L_C_NUM:0):9,16% {USE_SP_INFO:L_C_NUM:0} {USE_SP_INFO:L_C_NUM:1}
+                    NEXT
+                    LOCAL:1 =  1 << LOCAL
+
+                    $DSP_CONTINUE
+                    ;LOCAL:20 = 0 ;採用組み合わせ
+                    ;LOCAL:21 = 0 ;総合代償
+                    ;LOCAL:22 = 0 ;手札使用位置
+                    VARSET USING_SP_DATA, 0
+                    FOR L_C_NUM , 1, LOCAL:1
+                        LOCAL:10 = 0 ;ダメージ
+                        LOCAL:11 = 0 ;代償
+                        LOCAL:12 = 0 ;SP人数
+                        LOCAL:13 = 0 ;使用コスト
+                        LOCAL:18 = 0 ;手札使用位置
+                        LOCAL:19 = -1 ;SP番号
+                        FOR L_C_FOR, 0, LOCAL
+                            IF GETBIT(L_C_NUM, L_C_FOR)
+                                SIF GETBIT(LOCAL:30, L_C_FOR) 
+                                    CONTINUE
+                                LOCAL:10 += SP_INFO_V_E:(USE_SP_INFO:L_C_FOR:0):(14 + L_COUNT_P)
+                                LOCAL:11 += USE_SP_INFO:L_C_FOR:1
+                                LOCAL:12 ++
+                                LOCAL:13 += SP_INFO_V_E:(USE_SP_INFO:L_C_FOR:0):10
+                                SIF SP_INFO_V_E:(USE_SP_INFO:L_C_FOR:0):0 == LOCAL:19 && SP_INFO_V_E:(USE_SP_INFO:L_C_FOR:0):0 > -1
+                                    CONTINUE
+                                SIF SP_INFO_V_E:(USE_SP_INFO:L_C_FOR:0):0 >= 100
+                                    SETBIT LOCAL:18, SP_INFO_V_E:(USE_SP_INFO:L_C_FOR:0):0 - 100
+                                LOCAL:19 = SP_INFO_V_E:(USE_SP_INFO:L_C_FOR:0):0
+                            ENDIF
+                            LOCAL:11 = LOCAL:11 * 1000 + LOCAL:12 * 100 + LOCAL:13
+                            {
+                            IF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_HP <= LOCAL:10 && (USING_SP_DATA:0:1 < 1 || LOCAL:11 < USING_SP_DATA:0:1) 
+                            && L_USING_MAG >= LOCAL:13
+                            }
+                                USING_SP_DATA:0:0 = L_C_NUM
+                                USING_SP_DATA:0:1 = LOCAL:11
+                                USING_SP_DATA:0:2 = LOCAL:18
+                            ENDIF
+                        NEXT
+                    NEXT
+                    IF USING_SP_DATA:0:0 != 0
+                        FOR L_C_NUM , 0, LOCAL
+                            IF GETBIT(USING_SP_DATA:0:0, L_C_NUM)
+                                IF SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):0 < 100
+                                    SIF ARG == 0 || ARG == 1
+                                        CALL CB_AI_SET, 1500 + SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):0
+                                    PRINTFORML {1500 + SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):0}
+                                ELSE
+                                    SIF ARG == 0 || ARG == 1
+                                        CALL CB_AI_SET, 10000 + SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):9
+                                    PRINTFORML {10000 + SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):9}
+                                    IF SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):13 > 0
+                                        CALL CB_OFFERING_POSGET, HAND_INFO_V_E, SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):13, USING_SP_DATA:0:2, SP_INFO_S_E:(USE_SP_INFO:L_C_NUM:0):0
+                                        IF RESULT != 0
+                                            L_OFFERING_RES = RESULT
+                                            FOR L_C_FOR , 0, HAND_CARDS(CS1_OPPONENT)
+                                                IF GETBIT(L_OFFERING_RES, L_C_FOR)
+                                                    IF HAND_INFO_V_E:L_C_FOR:0 >= 100
+                                                        SIF ARG == 0 || ARG == 1
+                                                            CALL CB_AI_SET, 20000 + HAND_INFO_V_E:L_C_FOR:9
+                                                        PRINTFORML {20000 + HAND_INFO_V_E:L_C_FOR:9}
+                                                    ELSE
+                                                        SIF ARG == 0 || ARG == 1
+                                                            CALL CB_AI_SET, 20000 + HAND_INFO_V_E:L_C_FOR:12
+                                                        PRINTFORML {20000 + HAND_INFO_V_E:L_C_FOR:12}
+                                                    ENDIF
+                                                ENDIF
+                                            NEXT
+                                            PRINTFORML {999}
+                                            SIF ARG == 0 || ARG == 1
+                                                CALL CB_AI_SET, 999
+                                        ELSE
+                                            SETBIT LOCAL:30, L_C_NUM
+                                            GOTO DSP_CONTINUE
+                                        ENDIF
+                                    ENDIF
+                                ENDIF
+                                IF SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):3 == 1
+                                    PRINTFORML {100 + L_COUNT_P}
+                                    SIF ARG == 0 || ARG == 1
+                                        CALL CB_AI_SET, 100 + L_COUNT_P
+                                ENDIF
+                            ENDIF
+                        NEXT
+                        PRINTFORML OK
+                        PRINTFORML
+                        SIF ARG == 0 || ARG == 1
+                            GOTO AI_SET_OK
+                    ENDIF
+
+                ENDIF
+            NEXT
+        ENDIF
+        ;----------
+        ;即死による排除
+        ;----------
+        CS_AI_ACTNUM ++
+        IF (L_C_ACTION < 4)
+            IF L_C_ACTION == 0
+                PRINTL ブロマ即死100
+            ELSEIF L_C_ACTION == 1
+                PRINTL ブロマ即死99
+            ELSEIF L_C_ACTION == 2
+                PRINTL アタクマ即死100
+            ELSEIF L_C_ACTION == 3
+                PRINTL アタクマ即死99
+            ENDIF
+            FOR L_COUNT, 0, VARSIZE("TARGET_INFO",0)
+                SIF TARGET_INFO:L_COUNT:1 < 10
+                    CONTINUE
+                L_COUNT_P = TARGET_INFO:L_COUNT:0
+                
+                VARSET USE_SP_INFO
+                LOCAL = 0
+                FOR L_C_NUM, 0, VARSIZE("SP_INFO_V_E",0)
+                    IF SP_INFO_V_E:L_C_NUM:1 == 12 && (SP_INFO_V_E:L_C_NUM:2 == 998 || SP_INFO_V_E:L_C_NUM:2 == 997)
+                        SIF SP_INFO_V_E:L_C_NUM:(14 + L_COUNT_P) < 1
+                            CONTINUE
+                        SIF SP_INFO_V_E:L_C_NUM:(14 + L_COUNT_P) < 6 && (L_C_ACTION == 0 || L_C_ACTION == 2)
+                            CONTINUE
+                        IF SP_INFO_V_E:L_C_NUM:0 >= 100 && TARGET_INFO:L_COUNT:1 > 0
+                            USE_SP_INFO:LOCAL:0 = L_C_NUM
+                            USE_SP_INFO:LOCAL:1 = 10 + (SP_INFO_V_E:L_C_NUM:13 * 10)
+                            LOCAL ++
+                        ELSEIF SP_INFO_V_E:L_C_NUM:0 < 100
+                            L_COUNT_E = SP_INFO_V_E:L_C_NUM:0 - 6
+                            ;代償
+                            IF SP_INFO_V_E:L_C_NUM:12 == 0
+                                ;アンタップ
+                                USE_SP_INFO:LOCAL:0 = L_C_NUM
+                                USE_SP_INFO:LOCAL:1 = 0
+                                LOCAL ++
+                            ELSEIF SP_INFO_V_E:L_C_NUM:12 == 1 && TARGET_INFO:L_COUNT:1 > 0
+                                ;タップ
+                                LOCAL:1 = 0
+                                IF UNIT_INFO_E:L_COUNT_E:4 % 1048576 > 0
+                                    ;ブロック候補で、相手にブロックマークはあるか？
+                                    IF UNIT_INFO_P:L_COUNT_P:4 > 0
+                                        LOCAL:1 = 1
+                                    ;ブロック候補で、替りはいるか？
+                                    ELSE
+                                        LOCAL:2 = UNIT_INFO_E:L_COUNT_E:4 / 1048576
+                                        FOR L_C_FOR, 0 ,6
+                                            SIF L_COUNT_E == L_C_FOR
+                                                CONTINUE
+                                            LOCAL:3 = LOCAL:2 & (UNIT_INFO_E:L_C_FOR:4 / 1048576)
+                                            IF LOCAL:2 == LOCAL:3
+                                                LOCAL:1 = 1
+                                                BREAK
+                                            ENDIF
+                                        NEXT
+                                    ENDIF
+                                ELSEIF UNIT_INFO_E:L_COUNT_E:4 <= 300
+                                    ;アタック候補で、300未満？
+                                    LOCAL:1 = 1
+                                ENDIF
+                                SIF SP_INFO_V_E:L_C_NUM:(14 + L_COUNT_P) < 6 && TARGET_INFO:L_COUNT:1 < 100
+                                    CONTINUE
+                                IF LOCAL:1 == 1
+                                    USE_SP_INFO:LOCAL:0 = L_C_NUM
+                                    USE_SP_INFO:LOCAL:1 = UNIT_INFO_E:L_COUNT_E:11 / 10 + 1
+                                    LOCAL ++
+                                ENDIF
+                            ELSEIF (SP_INFO_V_E:L_C_NUM:12 == 2 || SP_INFO_V_E:L_C_NUM:12 == 3)  && TARGET_INFO:L_COUNT:1 > 0
+                                ;山札、黄泉
+                                ;相手よりバトル力は低いか同等？
+                                SIF SP_INFO_V_E:L_C_NUM:(14 + L_COUNT_P) < 6 && TARGET_INFO:L_COUNT:1 < 100
+                                    CONTINUE
+                                IF UNIT_INFO_P:L_COUNT_P:11 >= UNIT_INFO_E:L_COUNT_E:11 - 3
+                                    ;ブロック候補で、相手にブロックマークはあるか？
+                                    ;アタック候補で、300未満？
+                                    IF (UNIT_INFO_E:L_COUNT_E:4 % 1048576 > 0 && UNIT_INFO_P:L_COUNT_P:4 > 0) || UNIT_INFO_E:L_COUNT_E:4 <= 300
+                                        USE_SP_INFO:LOCAL:0 = L_C_NUM
+                                        USE_SP_INFO:LOCAL:1 = UNIT_INFO_E:L_COUNT_E:11 + 5
+                                        LOCAL ++
+                                    ENDIF
+                                ENDIF
+                            ENDIF
+                        ENDIF
+                    ENDIF
+                NEXT
+                LOCAL:30 = 0 ;SP除け位置
+                IF LOCAL > 0
+                    PRINTFORML
+                    PRINTFORML SP 받음 %FIELD_DEMON_DATE_S:L_COUNT_P:CBS_NAME,16%
+                    FOR L_C_NUM, 0, LOCAL
+                        PRINTFORML %SP_INFO_S_E:(USE_SP_INFO:L_C_NUM:0):9,16% {USE_SP_INFO:L_C_NUM:1}
+                    NEXT
+                    LOCAL:1 =  1 << LOCAL
+
+                    $DETSP_CONTINUE
+                    LOCAL:20 = -1 ;採用組み合わせ
+                    LOCAL:21 = 0 ;総合代償
+                    LOCAL:22 = 0 ;手札使用位置
+
+                    FOR L_C_FOR, 0, LOCAL
+                        LOCAL:10 = 0 ;ダメージ
+                        LOCAL:11 = 0 ;代償
+                        LOCAL:12 = 0 ;SP人数
+                        LOCAL:13 = 0 ;使用コスト
+                        LOCAL:18 = 0 ;手札使用位置
+                        LOCAL:19 = -1 ;SP番号
+                        SIF GETBIT(LOCAL:30, L_C_FOR) 
+                            CONTINUE
+                        ;LOCAL:10 += SP_INFO_V_E:(USE_SP_INFO:L_C_FOR:0):(14 + L_COUNT_P)
+                        LOCAL:11 += USE_SP_INFO:L_C_FOR:1
+                        ;LOCAL:12 ++
+                        LOCAL:13 += SP_INFO_V_E:(USE_SP_INFO:L_C_FOR:0):10
+                        SIF SP_INFO_V_E:(USE_SP_INFO:L_C_FOR:0):0 == LOCAL:19 && SP_INFO_V_E:(USE_SP_INFO:L_C_FOR:0):0 > -1
+                            CONTINUE
+                        SIF SP_INFO_V_E:(USE_SP_INFO:L_C_FOR:0):0 >= 100
+                            SETBIT LOCAL:18, SP_INFO_V_E:(USE_SP_INFO:L_C_FOR:0):0 - 100
+                        LOCAL:19 = SP_INFO_V_E:(USE_SP_INFO:L_C_FOR:0):0
+
+                        ; + LOCAL:12 * 100
+                        LOCAL:11 = LOCAL:11 * 1000 + LOCAL:13
+                        ;PRINTFORMW {LOCAL:11}
+                        {
+                        IF (LOCAL:21 < 1 || LOCAL:11 < LOCAL:21)
+                        && L_USING_MAG >= LOCAL:13
+                        }
+                            LOCAL:20 = L_C_FOR
+                            LOCAL:21 = LOCAL:11
+                            LOCAL:22 = LOCAL:18
+                        ENDIF
+                    NEXT
+                    ;PRINTFORMW {LOCAL:20}
+
+                    IF LOCAL:20 > -1
+                        L_C_NUM = LOCAL:20
+                        
+                        IF SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):0 < 100
+                            SIF ARG == 0 || ARG == 1
+                                CALL CB_AI_SET, 1500 + SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):0
+                            PRINTFORML {1500 + SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):0}
+                        ELSE
+                            SIF ARG == 0 || ARG == 1
+                                CALL CB_AI_SET, 10000 + SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):9
+                            PRINTFORML {10000 + SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):9}
+                            IF SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):13 > 0
+                                CALL CB_OFFERING_POSGET, HAND_INFO_V_E, SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):13, LOCAL:22, SP_INFO_S_E:(USE_SP_INFO:L_C_NUM:0):0
+                                IF RESULT != 0
+                                    L_OFFERING_RES = RESULT
+                                    FOR L_C_FOR , 0, LOCAL
+                                        IF GETBIT(L_OFFERING_RES, L_C_FOR)
+                                            IF HAND_INFO_V_E:L_C_FOR:0 >= 100
+                                                PRINTFORML {20000 + HAND_INFO_V_E:L_C_FOR:9}
+                                                SIF ARG == 0 || ARG == 1
+                                                    CALL CB_AI_SET, 20000 + HAND_INFO_V_E:L_C_FOR:9
+                                            ELSE
+                                                PRINTFORML {10000 + HAND_INFO_V_E:L_C_FOR:12}
+                                                SIF ARG == 0 || ARG == 1
+                                                    CALL CB_AI_SET, 20000 + HAND_INFO_V_E:L_C_FOR:12
+                                            ENDIF
+                                        ENDIF
+                                    NEXT
+                                    PRINTFORML {999}
+                                    SIF ARG == 0 || ARG == 1
+                                        CALL CB_AI_SET, 999
+                                    LOCAL:22 |= LOCAL:29
+                                ELSE
+                                    SETBIT LOCAL:30, L_C_NUM
+                                    GOTO DETSP_CONTINUE
+                                ENDIF
+                            ENDIF
+                        ENDIF
+                        PRINTFORML {100 + L_COUNT_P}
+                        SIF ARG == 0 || ARG == 1
+                            CALL CB_AI_SET, 100 + L_COUNT_P
+
+                        PRINTFORML OK
+                        PRINTFORML
+                        SIF ARG == 0 || ARG == 1
+                            GOTO AI_SET_OK
+                    ENDIF
+
+                ENDIF
+            NEXT
+            PRINTFORML
+            ;PRINTFORMW
+        ENDIF
+
+    ENDIF
+    ;----------
+    ;ブロック候補者がスキル使用
+    ;----------
+    CS_AI_ACTNUM ++
+    ;IF CS_AI_STEP == 20
+    VARSET L_予定SP, -1
+    VARSET L_予定SP_戦闘力, -1
+    VARSET L_予定SP_防御度, -1
+    VARSET L_予定SP_COST, -1
+    LOCAL:10 = -1
+    LOCAL:11 = -1
+    LOCAL:12 = -1
+    LOCAL:13 = -1
+    IF L_C_ACTION == 0
+        PRINTFORML 블록 강화 스킬 사용
+        PRINTFORML
+        FOR L_COUNT_E, 0, 6
+            PRINTFORML %FIELD_DEMON_DATE_S:(UNIT_INFO_E:L_COUNT_E:0):CBS_NAME% 조사
+            FOR L_C_FOR, 0 ,2
+                ;ブロック候補度
+                LOCAL = L_C_FOR == 0 ? UNIT_INFO_E:L_COUNT_E:4 % 1048576 # UNIT_INFO_E:L_COUNT_E:9 % 1048576
+                PRINTFORML ブロック候補度{LOCAL}
+
+                ;ブロックする相手
+                L_COUNT_P = LOCAL / 1000
+
+                ;相手がスキル使う？
+                L_C_ONE = UNIT_INFO_E:L_COUNT_P:10 == 0 ? 0 # 1
+                SIF LOCAL < 1 || !CS_SP_USE_CHECK(UNIT_INFO_E:L_COUNT_E:0)
+                    CONTINUE
+
+                LOCAL = LOCAL % 1000
+                PRINTFORML %FIELD_DEMON_DATE_S:L_COUNT_P:CBS_NAME%　{LOCAL}
+
+                ;防御度
+                LOCAL:13 = L_C_FOR == 0 ? LOCAL / 100 # LOCAL % 10
+                ;ブロック度
+                LOCAL:11 = L_C_FOR == 0 ? LOCAL % 100 # LOCAL / 10
+
+                SIF BLOCK_BATTLE_RESULT:(L_C_ONE + 2):L_COUNT_P:L_COUNT_E <= BLOCK_BATTLE_RESULT:L_C_ONE:L_COUNT_P:L_COUNT_E
+                    CONTINUE
+                SIF BLOCK_BATTLE_RESULT:(L_C_ONE + 2):L_COUNT_P:L_COUNT_E < 20 && LOCAL:13 != 2
+                    CONTINUE
+                
+                ;コスト
+                TRYCALLFORM CGSP_COST_{FIELD_DEMON_DATE_V:(UNIT_INFO_E:L_COUNT_E:0):CBV_SP1}, FIELD_DEMON_DATE_S:(UNIT_INFO_E:L_COUNT_E:0):CBS_SP1_SUB, (UNIT_INFO_P:L_COUNT_P:0)
+                LOCAL:12 = RESULT
+
+
+                ;{
+                ;IF (LOCAL:11 < L_C_NUM || LOCAL:10 < 0)
+                ;&& (LOCAL == 2 || BLOCK_BATTLE_RESULT:(L_C_ONE + 1):L_COUNT_P:L_COUNT_E > BLOCK_BATTLE_RESULT:(L_C_ONE):L_COUNT_P:L_COUNT_E)
+                ;}
+                ;    LOCAL:10 = UNIT_INFO_E:L_COUNT_E:0
+                ;    LOCAL:11 = L_C_NUM
+                ;    LOCAL:12 = LOCAL
+                ;ENDIF
+                LOCAL:10 = UNIT_INFO_E:L_COUNT_E:0
+                LOCAL:20 = SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP / 3
+                LOCAL:21 = UNIT_INFO_P:L_COUNT_P:10 == 0 ? ATTACK_SUMMONER_D_P:L_COUNT_P # ATTACK_SUMMONER_D_P:(L_COUNT_P + 6)
+                {
+                IF ((L_予定SP_防御度:L_COUNT_P * 100 + L_予定SP_戦闘力:L_COUNT_P) < (LOCAL:13 * 100 + LOCAL:11) && (LOCAL:20 < LOCAL:21 || LOCAL:21 > 4))
+                || ((L_予定SP_戦闘力:L_COUNT_P * 100 + L_予定SP_防御度:L_COUNT_P) < (LOCAL:11 * 100 + LOCAL:13) && (LOCAL:20 >= LOCAL:21 || LOCAL:21 > 4))
+                }
+                    L_予定SP:L_COUNT_P = LOCAL:10
+                    L_予定SP_戦闘力:L_COUNT_P = LOCAL:11
+                    L_予定SP_COST:L_COUNT_P = LOCAL:12
+                    L_予定SP_防御度:L_COUNT_P = LOCAL:13
+                ENDIF
+            NEXT
+        NEXT
+        FOR L_COUNT, 0, 6
+            SIF L_予定SP:L_COUNT > -1
+                PRINTFORML {L_COUNT} %FIELD_DEMON_DATE_S:(L_予定SP:L_COUNT):CBS_NAME%
+        NEXT
+    ENDIF
+
+    ;仲魔を召喚する
+    ;IF CS_AI_STEP == 20
+    CS_AI_ACTNUM ++
+    {
+    IF (L_C_ACTION == 0 || L_C_ACTION == 2 || L_C_ACTION == 5 || L_C_ACTION == 6 || L_C_ACTION == 7)
+    && S_STATE_INFO_GET_F(CS1_OPPONENT, 106) <= 0
+    }
+        PRINTFORML 召喚
+        IF (L_C_ACTION == 0)
+            LOCAL:9 = 0 ;ブロックマーク数
+            PRINTFORML 대 블록마 소환
+            VARSET TARGET_INFO, -1
+            FOR L_COUNT_P, CBF_ALLY_POS1, CBF_ALLY_POS6 + 1
+                TARGET_INFO:L_COUNT_P:0 = L_COUNT_P
+                SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                    CONTINUE
+                TARGET_INFO:L_COUNT_P:1 = 0
+                ;ブロックマークはあるか？
+                ;PRINTFORML %FIELD_DEMON_DATE_S:L_COUNT_P:CBS_NAME,16%  {UNIT_INFO_P:L_COUNT_P:4}
+                IF UNIT_INFO_P:L_COUNT_P:4 > 0
+                    TARGET_INFO:L_COUNT_P:1 += UNIT_INFO_P:L_COUNT_P:4 * 100 + UNIT_INFO_P:L_COUNT_P:11
+                ENDIF
+                LOCAL:9 ++
+                SIF TARGET_INFO:L_COUNT_P:1 > 0
+                    PRINTFORML tage %FIELD_DEMON_DATE_S:L_COUNT_P:CBS_NAME,16% {TARGET_INFO:L_COUNT_P:1}
+            NEXT
+            VARSET L_SORT
+            L_SORT:0 = 1000 - TARGET_INFO:0:1
+            L_SORT:1 = 1000 - TARGET_INFO:1:1
+            L_SORT:2 = 1000 - TARGET_INFO:2:1
+            L_SORT:3 = 1000 - TARGET_INFO:3:1
+            L_SORT:4 = 1000 - TARGET_INFO:4:1
+            L_SORT:5 = 1000 - TARGET_INFO:5:1
+            
+            ARRAYMSORT L_SORT, TARGET_INFO
+        ELSEIF (L_C_ACTION == 2)
+            PRINTFORML 어택커 소환
+        ELSEIF (L_C_ACTION == 5)
+            PRINTFORML 強SP召喚
+        ELSEIF (L_C_ACTION == 6)
+            PRINTFORML 強SP
+        ENDIF
+
+        LOCAL = 0
+        VARSET L_召喚素材候補, -1
+        VARSET L_SORT
+        FOR L_COUNT, 0, VARSIZE("HAND_INFO_V_E", 0)
+            IF 0 <= HAND_INFO_V_E:L_COUNT:0 && HAND_INFO_V_E:L_COUNT:0 < 100
+                CALL CARD_DATA_GET, HAND_INFO_V_E:L_COUNT:12
+                ;合体仲魔は除外
+                SIF CARD_DATE_V:CBV_FUSION > 1
+                    CONTINUE
+                IF HAND_INFO_V_E:L_COUNT:11 > 15 && CARD_DATE_V:CBV_COST > 2
+                    ;ブロックマーク付きに有利がとれる奴は除外
+                    FOR L_COUNT_P, 0, 6
+                        SIF UNIT_INFO_P:L_COUNT_P:4 < 4
+                            CONTINUE
+                        SIF HAND_INFO_V_E:L_COUNT:(32 + L_COUNT_P) > 35 || HAND_INFO_V_E:L_COUNT:(38 + L_COUNT_P) > 35
+                            BREAK
+                    NEXT
+                    SIF L_COUNT_P < 6
+                        CONTINUE
+                    
+                    ;現状、アタックが得意な奴は除外
+                    {
+                    LOCAL:1 = MAX(
+                        HAND_INFO_V_E:L_COUNT:20, HAND_INFO_V_E:L_COUNT:21,
+                        HAND_INFO_V_E:L_COUNT:22, HAND_INFO_V_E:L_COUNT:23,
+                        HAND_INFO_V_E:L_COUNT:24, HAND_INFO_V_E:L_COUNT:25
+                    )
+                    }
+                    {
+                    LOCAL:2 = MAX(
+                        HAND_INFO_V_E:L_COUNT:26, HAND_INFO_V_E:L_COUNT:29,
+                        HAND_INFO_V_E:L_COUNT:27, HAND_INFO_V_E:L_COUNT:30,
+                        HAND_INFO_V_E:L_COUNT:28, HAND_INFO_V_E:L_COUNT:31
+                    )
+                    }
+                    SIF MIN(LOCAL:1, LOCAL:2) < 20
+                        CONTINUE
+                ENDIF
+                
+                L_召喚素材候補:LOCAL:0 = L_COUNT + 100
+                CALL CB_SP_WORTH, CARD_DATE_V:CBV_SP1
+                L_召喚素材候補:LOCAL:1 = RESULT
+                L_召喚素材候補:LOCAL:1 += HAND_INFO_V_E:L_COUNT:11
+                L_召喚素材候補:LOCAL:2 = CARD_DATE_V:CBV_COST
+
+                L_召喚素材候補:LOCAL:1 = L_召喚素材候補:LOCAL:1 * 100 + L_召喚素材候補:LOCAL:2
+
+                L_SORT:LOCAL = 10000 - L_召喚素材候補:LOCAL:2
+                PRINTFORML {L_召喚素材候補:LOCAL:0,5}{L_召喚素材候補:LOCAL:1,5}{L_召喚素材候補:LOCAL:2,5} %CARD_DATE_S:CBS_NAME%
+                LOCAL ++
+            ENDIF
+        NEXT
+        LOCAL:6 = 0;アタック候補300以上
+        LOCAL:7 = 0;アタック候補200以上
+        FOR L_COUNT_E, 0, 6
+            SIF GETBIT(FIELD_DEMON_DATE_V:(UNIT_INFO_E:L_COUNT_E:0):CBV_CONDITION, 2) && FIELD_DEMON_DATE_V:(UNIT_INFO_E:L_COUNT_E:0):CBV_FUSION > 1
+                CONTINUE
+            SIF FIELD_DEMON_DATE_V:(UNIT_INFO_E:L_COUNT_E:0):CBV_FUSION > 1
+                CONTINUE
+            SIF STATE_INFO_GET_F((UNIT_INFO_E:L_COUNT_E:0), 112) || GETBIT(FIELD_DEMON_DATE_V:(UNIT_INFO_E:L_COUNT_E:0):CBV_CONDITION, 3)
+                CONTINUE
+            IF UNIT_INFO_E:L_COUNT_E:3 >= 300
+                SIF UNIT_INFO_E:L_COUNT_E:4 % 1048576 < 1 || UNIT_INFO_E:L_COUNT_E:9 % 1048576 < 1
+                    LOCAL:6 ++
+                CONTINUE
+            ELSEIF UNIT_INFO_E:L_COUNT_E:3 >= 200
+                SIF UNIT_INFO_E:L_COUNT_E:4 % 1048576 < 1 || UNIT_INFO_E:L_COUNT_E:9 % 1048576 < 1
+                    LOCAL:7 ++
+            ENDIF
+            SIF UNIT_INFO_E:L_COUNT_E:4 % 1048576 > 319 || UNIT_INFO_E:L_COUNT_E:9 % 1048576 > 350
+                CONTINUE
+            SIF FIELD_DEMON_DATE_V:(L_COUNT_E + 6):CBV_NO == 0
+                CONTINUE
+
+            L_召喚素材候補:LOCAL:0 = L_COUNT_E + 6
+            CALL CB_SP_WORTH, FIELD_DEMON_DATE_V:(L_COUNT_E + 6):CBV_SP1
+            L_召喚素材候補:LOCAL:1 = RESULT
+            L_召喚素材候補:LOCAL:1 += UNIT_INFO_E:L_COUNT_E:11
+            L_召喚素材候補:LOCAL:2 = 0
+
+            L_召喚素材候補:LOCAL:1 = L_召喚素材候補:LOCAL:1 * 100 + L_召喚素材候補:LOCAL:2
+
+            L_SORT:LOCAL = 20000
+            
+            PRINTFORML {L_召喚素材候補:LOCAL:0,5}{L_召喚素材候補:LOCAL:1,5}{L_召喚素材候補:LOCAL:2,5} %FIELD_DEMON_DATE_S:(L_COUNT_E + 6):CBS_NAME%
+            LOCAL ++
+        NEXT
+        L_召喚素材候補数 = LOCAL
+        ARRAYMSORT L_SORT, L_召喚素材候補
+
+        LOCAL:8 = 1
+        
+        VARSET L_TAMOKU, 0
+        IF CBF_TURN == 1 && CS_F_DEMON_COUNT(CS1_OPPONENT) > 1
+            LOCAL:8 = 0
+        ELSEIF CBF_TURN == 1 && L_C_ACTION < 6
+            FOR L_C_NUM, 0, VARSIZE("HAND_INFO_V_E", 0)
+                IF HAND_INFO_V_E:L_C_NUM:0 < 100 && HAND_INFO_V_E:L_C_NUM:2 > 0 && HAND_INFO_V_E:L_C_NUM:12 != 0
+                    CALL CARD_DATA_GET, HAND_INFO_V_E:L_C_NUM:12
+                    IF CARD_DATE_V:CBV_FUSION < 2 && CARD_DATE_V:CBV_COST < 5
+                        L_TAMOKU:0 += 10^(CARD_DATE_V:CBV_COST)
+                        L_TAMOKU:(10 + CARD_DATE_V:CBV_COST) ++
+                        IF MAG_SUPPLY(SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_ALIGNMENT, CARD_DATE_V:CBV_KINDS) > 1
+                            L_TAMOKU:1 += 10^(CARD_DATE_V:CBV_COST)
+                            L_TAMOKU:(20 + CARD_DATE_V:CBV_COST) ++
+                        ENDIF
+                    ELSEIF CARD_DATE_V:CBV_FUSION == 2 && CARD_DATE_V:CBV_COST < 5
+                        SIF MAG_SUPPLY(SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_ALIGNMENT, CARD_DATE_V:CBV_KINDS) > 1
+                            L_TAMOKU:9 ++
+                    ENDIF
+                ENDIF
+            NEXT
+            L_TAMOKU:5 = 2
+            IF L_TAMOKU:14 > 0 && L_TAMOKU:10 > 0
+                L_TAMOKU:5 = 4
+            ELSEIF L_TAMOKU:13 > 0 && (L_TAMOKU:10 + L_TAMOKU:11) > 0
+                L_TAMOKU:5 = 3
+            ENDIF
+        ELSEIF L_C_ACTION == 0
+            LOCAL:8 = LOCAL:9 > 0 ? 6 # 0
+        ELSEIF L_C_ACTION == 2
+            SIF LOCAL:6 > 2
+                LOCAL:8 = 0
+        ELSEIF L_C_ACTION == 6
+            SIF CS_F_DEMON_COUNT(CS1_OPPONENT) > 3
+                LOCAL:8 = 0
+        ELSE
+            LOCAL:8 = 1
+        ENDIF
+        FOR L_COUNT, 0, LOCAL:8
+            VARSET SUMMON_DATA, -1
+            IF L_C_ACTION == 0
+                SIF TARGET_INFO:L_COUNT:1 < 1
+                    CONTINUE
+                L_COUNT_P = TARGET_INFO:L_COUNT:0
+                PRINTFORML 対%FIELD_DEMON_DATE_S:L_COUNT_P:CBS_NAME,16%
+            ENDIF
+
+            LOCAL:30 = 0 ;召喚除け位置
+            LOCAL:20 = 1 ;SP使う人と戦闘力は一緒かSP使う人の方が強いか
+            FOR L_C_NUM, 0, VARSIZE("HAND_INFO_V_E", 0)
+                IF HAND_INFO_V_E:L_C_NUM:0 < 100 && HAND_INFO_V_E:L_C_NUM:2 > 0 && HAND_INFO_V_E:L_C_NUM:12 != 0
+                    
+                    CALL CARD_DATA_GET, HAND_INFO_V_E:L_C_NUM:12
+                    PRINTFORML 確認%CARD_DATE_S:CBS_NAME,16%
+                    IF L_C_ACTION == 0
+                        PRINTFORML {HAND_INFO_V_E:(L_C_NUM):(32 + L_COUNT_P)} {HAND_INFO_V_E:(L_C_NUM):(32 + L_COUNT_P)}
+                        SIF HAND_INFO_V_E:(L_C_NUM):(32 + L_COUNT_P) < 10 && HAND_INFO_V_E:(L_C_NUM):(38 + L_COUNT_P) < 10
+                            CONTINUE
+                    ENDIF
+                    
+                    ;戦闘結果
+                    IF CBF_TURN == 1 && CS_F_DEMON_COUNT(CS1_OPPONENT) < 2
+                        ;
+                        SIF L_TAMOKU:5 < CARD_DATE_V:CBV_COST && CS_F_DEMON_COUNT(CS1_OPPONENT) < 1
+                            CONTINUE
+                        LOCAL:11 = CARD_DATE_V:CBV_HP
+                        SIF CS_F_DEMON_COUNT(CS1_OPPONENT) == 1
+                            LOCAL:11 = CARD_DATE_V:CBV_COST
+                    ELSEIF L_C_ACTION == 0
+                        LOCAL:11 = MAX(HAND_INFO_V_E:(L_C_NUM):(32 + L_COUNT_P), HAND_INFO_V_E:(L_C_NUM):(38 + L_COUNT_P) - 5)
+                        PRINTFORML 防御SP比較　{LOCAL:11}　{L_予定SP_戦闘力:L_COUNT_P}
+                        SIF L_予定SP:L_COUNT_P > -1 && L_予定SP_戦闘力:L_COUNT_P > LOCAL:11
+                            CONTINUE
+                    ELSEIF L_C_ACTION == 2
+                        {
+                        LOCAL:11 = MAX(HAND_INFO_V_E:(L_C_NUM):20, HAND_INFO_V_E:(L_C_NUM):21, HAND_INFO_V_E:(L_C_NUM):22
+                        , HAND_INFO_V_E:(L_C_NUM):23, HAND_INFO_V_E:(L_C_NUM):24, HAND_INFO_V_E:(L_C_NUM):25)
+                        }
+                        {
+                        LOCAL:12 = MAX(HAND_INFO_V_E:(L_C_NUM):26, HAND_INFO_V_E:(L_C_NUM):27, HAND_INFO_V_E:(L_C_NUM):28
+                        , HAND_INFO_V_E:(L_C_NUM):29, HAND_INFO_V_E:(L_C_NUM):30, HAND_INFO_V_E:(L_C_NUM):31)
+                        }
+                        LOCAL:11 = MIN(LOCAL:11 ,LOCAL:12)
+                        PRINTFORML アタック強度　{LOCAL:11}
+                        SIF LOCAL:11 >= 35
+                            CONTINUE
+                        SIF (LOCAL:6 + LOCAL:7) > 2 && LOCAL:11 >= 20
+                            CONTINUE
+                        LOCAL:11 = 60 - LOCAL:11
+                    ELSEIF L_C_ACTION == 5
+                        LOCAL:11 = 0
+                        CALL CB_SP_WORTH, CARD_DATE_V:CBV_SP1, -1, CARD_DATE_S:CBS_SP1_SUB
+                        LOCAL:11 += RESULT
+                        CALL CB_SP_WORTH, CARD_DATE_V:CBV_SP2, -1, CARD_DATE_S:CBS_SP2_SUB
+                        LOCAL:11 += RESULT
+                        SIF LOCAL:11 < 100
+                            CONTINUE
+                    ELSEIF L_C_ACTION == 6
+                        SIF CARD_DATE_V:CBV_FUSION > 0
+                            CONTINUE
+                        LOCAL:11 = (50 - CARD_DATE_V:CBV_COST) * 1000
+                        CALL CB_SP_WORTH, CARD_DATE_V:CBV_SP1, -1, CARD_DATE_S:CBS_SP1_SUB
+                        LOCAL:11 += RESULT
+                        CALL CB_SP_WORTH, CARD_DATE_V:CBV_SP2, -1, CARD_DATE_S:CBS_SP2_SUB
+                        LOCAL:11 += RESULT
+                    ELSEIF L_C_ACTION == 7
+                        LOCAL:11 = HAND_INFO_V_E:L_C_NUM:11
+                        CALL CB_SP_WORTH, CARD_DATE_V:CBV_SP1, -1, CARD_DATE_S:CBS_SP1_SUB
+                        LOCAL:11 += RESULT
+                        CALL CB_SP_WORTH, CARD_DATE_V:CBV_SP2, -1, CARD_DATE_S:CBS_SP2_SUB
+                        LOCAL:11 += RESULT
+                    ENDIF
+                    
+                    ;コスト
+                    LOCAL:12 = CARD_DATE_V:CBV_COST
+                    ;供物
+                    LOCAL:13 = CARD_DATE_V:CBV_OFFERING
+                    ;戦闘力
+                    LOCAL:15 = HAND_INFO_V_E:(L_C_NUM):11
+
+                    LOCAL:18 = 0
+                    SETBIT LOCAL:18, L_C_NUM
+
+                    LOCAL:10 = LOCAL:11 * 10000 + LOCAL:15 * 100 + (50 - LOCAL:12 + LOCAL:13 * 5)
+
+                    PRINTFORML コスト　{LOCAL:12} <= {L_USING_MAG}
+
+                    IF (SUMMON_DATA:0:0 < 0 || SUMMON_DATA:0:1 < LOCAL:10) && L_USING_MAG >= LOCAL:12
+                        LOCAL:19 = 0
+                        LOCAL:17 = 0
+                        SIF L_SPACE_COU < 1 && CARD_DATE_V:CBV_FUSION < 1
+                            CONTINUE
+                        IF CARD_DATE_V:CBV_FUSION > 1
+                            PRINTFORML 合体必要数　{CARD_DATE_V:CBV_FUSION}
+                            ;合体仲魔の場合、合体素材を出す
+                            LOCAL:25 = L_USING_MAG - LOCAL:12
+                            LOCAL:26 = CARD_DATE_V:CBV_FUSION
+                            VARSET L_召喚素材, -1
+                            L_召喚素材:0:2 = 0
+                            L_召喚素材:1:2 = 0
+                            L_召喚素材:2:2 = 0
+                            SIF LOCAL:26 > L_召喚素材候補数
+                                CONTINUE
+                            FOR L_C_FOR, 0, VARSIZE("L_召喚素材候補", 0)
+                                SIF L_召喚素材候補:L_C_FOR:0 < 0
+                                    CONTINUE
+                                IF L_召喚素材候補:L_C_FOR:0 >= 100
+                                    LOCAL = L_召喚素材候補:L_C_FOR:0 - 100
+                                    SIF LOCAL == L_C_NUM || LOCAL:25 < L_召喚素材候補:L_C_FOR:2
+                                        CONTINUE
+                                    SIF L_C_ACTION == 0 && LOCAL:11 <= MAX(HAND_INFO_V_E:(LOCAL):(32 + L_COUNT_P), HAND_INFO_V_E:(LOCAL):(38 + L_COUNT_P) - 5)
+                                        CONTINUE
+                                ENDIF
+                                FOR L_C_ONE, 0, LOCAL:26
+                                    SIF L_SPACE_COU < 1 && L_召喚素材候補:L_C_FOR:0 >= 100
+                                        CONTINUE
+                                    SIF L_召喚素材候補:L_C_FOR:0 >= 100 && (L_SPACE_COU - 1) > L_C_ONE
+                                        BREAK
+                                    IF L_召喚素材:L_C_ONE:1 < 1 || L_召喚素材:L_C_ONE:1 > L_召喚素材候補:L_C_FOR:1
+                                        {
+                                        IF LOCAL:26 > 1 && (LOCAL:26 - 1) > L_C_ONE 
+                                        && L_召喚素材:(L_C_ONE + 1):1 < 1 && L_召喚素材:(L_C_ONE):1 > 0
+                                        && LOCAL:25 >= (L_召喚素材:0:2 + L_召喚素材:1:2 + L_召喚素材:2:2 + L_召喚素材候補:L_C_FOR:2)
+                                        && (L_召喚素材候補:L_C_FOR:0 < 100 || (L_SPACE_COU - 2) > L_C_ONE)
+                                        }
+                                            L_召喚素材:(L_C_ONE + 1):0 = L_召喚素材:L_C_ONE:0
+                                            L_召喚素材:(L_C_ONE + 1):1 = L_召喚素材:L_C_ONE:1
+                                            L_召喚素材:(L_C_ONE + 1):2 = L_召喚素材:L_C_ONE:2
+                                        ENDIF
+                                        L_召喚素材:L_C_ONE:0 = L_召喚素材候補:L_C_FOR:0
+                                        L_召喚素材:L_C_ONE:1 = L_召喚素材候補:L_C_FOR:1
+                                        L_召喚素材:L_C_ONE:2 = L_召喚素材候補:L_C_FOR:2
+                                        PRINTFORML 素材セット {L_召喚素材:L_C_ONE:0}
+                                        BREAK
+                                    ENDIF
+                                NEXT
+                            NEXT
+                            SIF L_召喚素材:(LOCAL:26 - 1):1 < 1
+                                CONTINUE
+                            PRINTFORML {L_召喚素材:0:0}
+                            PRINTFORML {L_召喚素材:1:0}
+                            PRINTFORML {L_召喚素材:2:0}
+                            LOCAL:27 = 0
+                            FOR L_C_ONE, 0, LOCAL:26
+                                LOCAL:12 += L_召喚素材:L_C_ONE:2
+                                IF L_召喚素材:L_C_ONE:0 >= 100
+                                    SETBIT LOCAL:18, (L_召喚素材:L_C_ONE:0 - 100)
+                                    SETBIT LOCAL:19, 20 + (L_召喚素材:L_C_ONE:0 - 100)
+                                    LOCAL:27 ++
+                                ELSE
+                                    SETBIT LOCAL:19, L_召喚素材:L_C_ONE:0
+                                ENDIF
+                            NEXT
+                            IF LOCAL:27 > 0
+                                LOCAL:28 = 0
+                                FOR L_C_ONE, 6, 12
+                                    IF GETBIT(L_SPACE_POS, L_C_ONE)
+                                        SETBIT LOCAL:19, L_C_ONE
+                                        LOCAL:28 ++ 
+                                    ENDIF
+                                    SIF LOCAL:27 >= LOCAL:28
+                                        BREAK
+                                NEXT
+                                SIF L_C_ONE > 11
+                                    CONTINUE
+                            ENDIF
+                        ENDIF
+                        IF LOCAL:13 > 0
+                            PRINTFORML 供物確認
+                            CALL CB_OFFERING_POSGET, HAND_INFO_V_E, LOCAL:13, LOCAL:18
+                            SIF RESULT == 0
+                                CONTINUE
+                            LOCAL:17 = RESULT
+                            LOCAL:18 |= LOCAL:17
+                        ENDIF
+                        SUMMON_DATA:0:0 = L_C_NUM
+                        SUMMON_DATA:0:1 = LOCAL:10
+                        SUMMON_DATA:0:2 = LOCAL:18
+                        SUMMON_DATA:0:3 = LOCAL:19
+                        SUMMON_DATA:0:4 = LOCAL:17
+                        SUMMON_DATA:0:5 = LOCAL:12
+                        PRINTFORML 소환 후보 세트
+                        IF L_C_ACTION == 0 && L_予定SP:L_COUNT_P > -1
+                            LOCAL:20 = (L_予定SP_戦闘力:L_COUNT_P == LOCAL:11)
+                        ELSE
+                            LOCAL:20 = 0
+                        ENDIF
+                    ENDIF
+                ENDIF
+            NEXT
+            IF L_C_ACTION == 0 && L_予定SP:L_COUNT_P > -1 && L_予定SP_COST:L_COUNT_P < SUMMON_DATA:0:5 && LOCAL:20
+                PRINTFORML {1500 + L_予定SP:L_COUNT_P} %FIELD_DEMON_DATE_S:(L_予定SP:L_COUNT_P):CBS_NAME%
+                SIF ARG == 0 || ARG == 1
+                    CALL CB_AI_SET, 1500 + L_予定SP:L_COUNT_P
+                PRINTFORML 召喚比較　SP使用 OK
+                PRINTFORML
+                SIF ARG == 0 || ARG == 1
+                    GOTO AI_SET_OK
+            ENDIF
+            IF SUMMON_DATA:0:0 >= 0 && HAND_INFO_V_E:(SUMMON_DATA:0:0):12 > 0
+                IF SUMMON_DATA:0:3 != 0
+                    PRINTFORML 素材召喚
+                    FOR L_C_FOR , 0, 20
+                        IF GETBIT(SUMMON_DATA:0:3, L_C_FOR + 20)
+                            PRINTFORML {10000 + HAND_INFO_V_E:L_C_FOR:12}
+                            SIF ARG == 0 || ARG == 1
+                                CALL CB_AI_SET, 10000 + HAND_INFO_V_E:L_C_FOR:12
+                        ENDIF
+                    NEXT
+                ENDIF
+                SIF ARG == 0 || ARG == 1
+                    CALL CB_AI_SET, 10000 + HAND_INFO_V_E:(SUMMON_DATA:0:0):12
+                PRINTFORML {10000 + HAND_INFO_V_E:(SUMMON_DATA:0:0):12} %HAND_INFO_S_E:(SUMMON_DATA:0:0):9%
+                IF SUMMON_DATA:0:4 != 0
+                    PRINTFORML 供物
+                    FOR L_C_FOR , 0, 20
+                        IF GETBIT(SUMMON_DATA:0:4, L_C_FOR)
+                            IF HAND_INFO_V_E:L_C_FOR:0 >= 100
+                                PRINTFORML {20000 + HAND_INFO_V_E:L_C_FOR:9}
+                                SIF ARG == 0 || ARG == 1
+                                    CALL CB_AI_SET, 20000 + HAND_INFO_V_E:L_C_FOR:9
+                            ELSE
+                                PRINTFORML {20000 + HAND_INFO_V_E:L_C_FOR:12}
+                                SIF ARG == 0 || ARG == 1
+                                    CALL CB_AI_SET, 20000 + HAND_INFO_V_E:L_C_FOR:12
+                            ENDIF
+                        ENDIF
+                    NEXT
+                    PRINTFORML {999}
+                    SIF ARG == 0 || ARG == 1
+                        CALL CB_AI_SET, 999
+                ENDIF
+                IF SUMMON_DATA:0:3 != 0
+                    PRINTFORML 素材選択
+                    FOR L_C_FOR , 0, 12
+                        IF GETBIT(SUMMON_DATA:0:3, L_C_FOR)
+                            PRINTFORML {100 + L_C_FOR}
+                            SIF ARG == 0 || ARG == 1
+                                CALL CB_AI_SET, 100 + L_C_FOR
+                        ENDIF
+                    NEXT
+                ENDIF
+                PRINTFORML 召喚OK
+                SIF ARG == 0 || ARG == 1
+                    GOTO AI_SET_OK
+            ENDIF
+        NEXT
+    ENDIF
+
+    ;守り、攻めのSPを使う
+    ;IF CS_AI_STEP == 20
+    CS_AI_ACTNUM ++
+    IF (L_C_ACTION == 3 || L_C_ACTION == 4)
+        IF (L_C_ACTION == 3)
+            PRINTFORML 블록 서포트
+        ELSEIF (L_C_ACTION == 4)
+            PRINTFORML 어택 서포트
+        ENDIF
+        VARSET L_優勢攻撃力_E
+        VARSET L_絶対攻撃力_E
+        VARSET L_最大攻撃力_E
+        L_絶対攻撃度_E = 0
+        L_最大攻撃度_E = 0
+        VARSET L_結果攻撃度_E
+
+        VARSET L_攻撃位置数_P
+        VARSET L_防御位置数_P
+        VARSET L_最大攻撃力_P
+        L_絶対攻撃度_P = 0
+        L_最大攻撃度_P = 0
+        VARSET L_結果攻撃度_P
+
+        VARSET USING_SP_DATA, -1
+
+        VARSET USE_SP_INFO, -1
+        LOCAL = 0
+        FOR L_C_NUM, 0, VARSIZE("SP_INFO_V_E",0)
+            IF L_C_ACTION == 3 && (GROUPMATCH(SP_INFO_V_E:L_C_NUM:1 % 100, 11, 12, 15, 16) || (GROUPMATCH(SP_INFO_V_E:L_C_NUM:1 % 100, 3, 4) && SP_INFO_V_E:L_C_NUM:4 > 1))
+                USE_SP_INFO:LOCAL:0 = L_C_NUM
+                LOCAL ++
+            ELSEIF L_C_ACTION == 4 && (GROUPMATCH(SP_INFO_V_E:L_C_NUM:1 % 100, 1, 10, 12, 14, 16) || (GROUPMATCH(SP_INFO_V_E:L_C_NUM:1 % 100, 2, 4) && SP_INFO_V_E:L_C_NUM:4 > 1))
+                USE_SP_INFO:LOCAL:0 = L_C_NUM
+                LOCAL ++
+            ENDIF
+        NEXT
+        PRINTFORML {LOCAL}
+        FOR L_C_NUM, 0, LOCAL
+            PRINTFORML %SP_INFO_S_E:(USE_SP_INFO:L_C_NUM:0):9,16% {USE_SP_INFO:L_C_NUM:0}
+        NEXT
+                        
+        IF (L_C_ACTION == 4)
+            VARSET L_TAMOKU
+            LOCAL:2 = 0
+            FOR L_COUNT_E, 0, 6
+                IF UNIT_INFO_E:L_COUNT_E:7 >= 100
+                    L_TAMOKU:L_COUNT_E = UNIT_INFO_E:L_COUNT_E:7 / 100
+                    L_TAMOKU:6 ++
+                ELSEIF UNIT_INFO_E:L_COUNT_E:7 > 0
+                    FOR L_COUNT_P, 0, 6
+                        SIF ATTACK_BATTLE_RESULT:0:L_COUNT_E:L_COUNT_P >= 10
+                            SETBIT LOCAL:2, L_COUNT_P
+                    NEXT
+                    L_TAMOKU:(L_COUNT_E + 10) = UNIT_INFO_E:L_COUNT_E:7
+                    L_TAMOKU:16 ++
+                ENDIF
+            NEXT
+            ;攻撃者が防御者より多い
+            ;絶対攻撃者が二人以下
+            ;防御者が、攻撃者の空きより少ない
+            LOCAL:3 = L_TAMOKU:16 - BIT_SUM(LOCAL:2)
+            PRINTFORML A入れ替え前　絶対{L_TAMOKU:6}　最大{L_TAMOKU:16}　ブロック数{BIT_SUM(LOCAL:2)}
+            IF LOCAL:3 > 0 && L_TAMOKU:6 < 2 && (3 - L_TAMOKU:6) > BIT_SUM(LOCAL:2)
+                FOR L_C_NUM, 0, LOCAL:3
+                    LOCAL:4 = 99
+                    LOCAL:5 = -1
+                    FOR L_COUNT_E, 0, 6
+                        IF L_TAMOKU:(L_COUNT_E + 10) > 0 && L_TAMOKU:(L_COUNT_E + 10) < LOCAL:4
+                            LOCAL:4 = L_TAMOKU:(L_COUNT_E + 10)
+                            LOCAL:5 = L_COUNT_E
+                        ENDIF
+                    NEXT
+                    IF LOCAL:5 >= 0
+                        L_TAMOKU:(LOCAL:5) = L_TAMOKU:(LOCAL:5 + 10)
+                        L_TAMOKU:(LOCAL:5 + 10) = 0
+                        L_TAMOKU:6 ++
+                        L_TAMOKU:16 --
+                    ENDIF
+                NEXT
+            ENDIF
+            PRINTFORML A入れ替え後　絶対{L_TAMOKU:6}　最大{L_TAMOKU:16}　ブロック数{BIT_SUM(LOCAL:2)}
+            L_絶対攻撃力_E:0 = CB_MAX_SUM(0,3,L_TAMOKU:0,L_TAMOKU:1,L_TAMOKU:2,L_TAMOKU:3,L_TAMOKU:4,L_TAMOKU:5)
+            L_絶対攻撃力_E:1 = 0
+            IF L_絶対攻撃力_E:0 == 0
+                L_絶対攻撃度_E = 0
+            ELSE
+                LOCAL:1 = (SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP / L_絶対攻撃力_E:0)
+                LOCAL:1 += ((SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP % L_絶対攻撃力_E:0) > 0)
+                L_絶対攻撃力_E:1 = MAX(6 - LOCAL:1, 1)
+                L_絶対攻撃度_E = (L_絶対攻撃力_E:1) * 100 + L_絶対攻撃力_E:0
+            ENDIF
+            
+
+            ;L_優勢攻撃力_E:0 = CB_MAX_SUM(0,3,L_TAMOKU:10,L_TAMOKU:11,L_TAMOKU:12,L_TAMOKU:13,L_TAMOKU:14,L_TAMOKU:15)
+            ;L_優勢攻撃力_E:1 = (SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP / L_優勢攻撃力_E:0)
+            ;L_優勢攻撃力_E:1 += ((SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP % L_優勢攻撃力_E:0) > 0)
+
+            L_最大攻撃力_E:0 = CB_MAX_SUM(0,3,L_TAMOKU:0,L_TAMOKU:1,L_TAMOKU:2,L_TAMOKU:3,L_TAMOKU:4,L_TAMOKU:5,L_TAMOKU:10,L_TAMOKU:11,L_TAMOKU:12,L_TAMOKU:13,L_TAMOKU:14,L_TAMOKU:15)
+            L_最大攻撃力_E:1 = 0
+            IF L_最大攻撃力_E:0 == 0
+                L_最大攻撃度_E = 0
+            ELSE
+                LOCAL:1 = (SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP / L_最大攻撃力_E:0)
+                LOCAL:1 += ((SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP % L_最大攻撃力_E:0) > 0)
+                L_最大攻撃力_E:1 = MAX(5 - LOCAL:1, 1)
+                L_最大攻撃度_E = (L_最大攻撃力_E:1) * 100 + L_最大攻撃力_E:0
+            ENDIF
+            
+
+            L_結果攻撃度_E:0 = L_絶対攻撃度_E >= L_最大攻撃度_E ? L_絶対攻撃度_E # L_最大攻撃度_E
+            L_結果攻撃度_E:1 = L_絶対攻撃度_E >= L_最大攻撃度_E ? 1 # 0
+        ENDIF
+
+        VARSET L_TAMOKU
+        LOCAL:2 = 0
+        FOR L_COUNT_P, 0, 6
+            IF UNIT_INFO_P:L_COUNT_P:7 >= 100
+                L_TAMOKU:L_COUNT_P = UNIT_INFO_P:L_COUNT_P:7 / 100
+                L_TAMOKU:6 ++
+            ELSEIF UNIT_INFO_P:L_COUNT_P:7 > 0
+                FOR L_COUNT_E, 0, 6
+                    L_C_NUM = UNIT_INFO_P:L_COUNT_P:10 > 0 ? 1 # 0
+                    SIF BLOCK_BATTLE_RESULT:L_C_NUM:L_COUNT_P:L_COUNT_E >= 10
+                        SETBIT LOCAL:2, L_COUNT_E
+                NEXT
+                L_TAMOKU:(L_COUNT_P + 10) = UNIT_INFO_P:L_COUNT_P:7
+                L_TAMOKU:16 ++
+            ENDIF
+        NEXT
+        ;攻撃者が防御者より多い
+        ;絶対攻撃者が二人以下
+        ;防御者が、攻撃者の空きより少ない
+        LOCAL:3 = L_TAMOKU:16 - BIT_SUM(LOCAL:2)
+        PRINTFORML B入れ替え前　絶対{L_TAMOKU:6}　最大{L_TAMOKU:16}　ブロック数{BIT_SUM(LOCAL:2)}
+        IF LOCAL:3 > 0 && L_TAMOKU:6 < 2 && (3 - L_TAMOKU:6) > BIT_SUM(LOCAL:2)
+            FOR L_C_NUM, 0, LOCAL:3
+                LOCAL:4 = 99
+                LOCAL:5 = -1
+                FOR L_COUNT_P, 0, 6
+                    IF L_TAMOKU:(L_COUNT_P + 10) > 0 && L_TAMOKU:(L_COUNT_P + 10) < LOCAL:4
+                        LOCAL:4 = L_TAMOKU:(L_COUNT_P + 10)
+                        LOCAL:5 = L_COUNT_P
+                    ENDIF
+                NEXT
+                IF LOCAL:5 >= 0
+                    L_TAMOKU:(LOCAL:5) = L_TAMOKU:(LOCAL:5 + 10)
+                    L_TAMOKU:(LOCAL:5 + 10) = 0
+                    L_TAMOKU:6 ++
+                    L_TAMOKU:16 --
+                ENDIF
+            NEXT
+        ENDIF
+        PRINTFORML B入れ替え後　絶対{L_TAMOKU:6}　最大{L_TAMOKU:16}　ブロック数{BIT_SUM(LOCAL:2)}
+
+        L_絶対攻撃力_P:0 = CB_MAX_SUM(0,3,L_TAMOKU:0,L_TAMOKU:1,L_TAMOKU:2,L_TAMOKU:3,L_TAMOKU:4,L_TAMOKU:5)
+        L_絶対攻撃力_P:1 = 0
+        IF L_絶対攻撃力_P:0 == 0
+            L_絶対攻撃度_P = 0
+        ELSE
+            LOCAL:1 = (SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP / L_絶対攻撃力_P:0)
+            LOCAL:1 += ((SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP % L_絶対攻撃力_P:0) > 0)
+            L_絶対攻撃力_P:1 = MAX(6 - LOCAL:1, 1)
+            L_絶対攻撃度_P = (L_絶対攻撃力_P:1) * 100 + L_絶対攻撃力_P:0
+        ENDIF
+
+        L_最大攻撃力_P:0 = CB_MAX_SUM(0,3,L_TAMOKU:0,L_TAMOKU:1,L_TAMOKU:2,L_TAMOKU:3,L_TAMOKU:4,L_TAMOKU:5,L_TAMOKU:10,L_TAMOKU:11,L_TAMOKU:12,L_TAMOKU:13,L_TAMOKU:14,L_TAMOKU:15)
+        L_最大攻撃力_P:1 = 0
+        IF L_最大攻撃力_P:0 == 0
+            L_最大攻撃度_P = 0
+        ELSE
+            LOCAL:1 = (SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP / L_最大攻撃力_P:0)
+            LOCAL:1 += ((SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP % L_最大攻撃力_P:0) > 0)
+            L_最大攻撃力_P:1 = MAX(5 - LOCAL:1, 1)
+            L_最大攻撃度_P = (L_最大攻撃力_P:1) * 100 + L_最大攻撃力_P:0
+        ENDIF
+        
+
+        PRINTFORML {L_TAMOKU:0}  {L_TAMOKU:1}  {L_TAMOKU:2}  {L_TAMOKU:3}  {L_TAMOKU:4}  {L_TAMOKU:5}  {L_TAMOKU:10}  {L_TAMOKU:11}  {L_TAMOKU:12}  {L_TAMOKU:13}  {L_TAMOKU:14}  {L_TAMOKU:15}
+        ;L_優勢攻撃力_P:0 = CB_MAX_SUM(0,3,L_TAMOKU:10,L_TAMOKU:11,L_TAMOKU:12,L_TAMOKU:13,L_TAMOKU:14,L_TAMOKU:15)
+        ;L_優勢攻撃力_P:1 = (SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP / L_優勢攻撃力_P:0)
+        ;L_優勢攻撃力_P:1 += ((SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP % L_優勢攻撃力_P:0) > 0)
+
+        L_結果攻撃度_P:0 = L_絶対攻撃度_P >= L_最大攻撃度_P ? L_絶対攻撃度_P # L_最大攻撃度_P
+        L_結果攻撃度_P:1 = L_絶対攻撃度_P >= L_最大攻撃度_P ? 1 # 0
+
+        L_結果攻撃度総合 = L_結果攻撃度_E:0 - L_結果攻撃度_P:0
+
+        PRINTFORML 敵 絶対 {L_絶対攻撃度_P} 最大 {L_最大攻撃度_P}
+        PRINTFORML 結果攻撃度総合 敵 {L_結果攻撃度_E:0} ＠ {L_結果攻撃度_P:0}
+        IF L_C_ACTION == 4
+            FOR L_C_NUM, 0, 6
+                SIF UNIT_INFO_E:L_C_NUM:17 < 1
+                    CONTINUE
+                IF UNIT_INFO_E:L_C_NUM:17 > UNIT_INFO_E:L_C_NUM:7
+                ELSE
+                    SIF UNIT_INFO_E:L_C_NUM:17 <= UNIT_INFO_E:L_C_NUM:7 / 100
+                        CONTINUE
+                ENDIF
+
+                VARSET L_TAMOKU
+                LOCAL:2 = 0
+                FOR L_COUNT_E, 0, 6
+                    L_C_FOR = L_C_NUM == L_COUNT_E ? UNIT_INFO_E:L_COUNT_E:17 # UNIT_INFO_E:L_COUNT_E:7
+                    IF L_C_FOR >= 100
+                        L_TAMOKU:L_COUNT_E = L_C_FOR / 100
+                        L_TAMOKU:6 ++
+                    ELSEIF L_C_FOR > 0
+                        FOR L_COUNT_P, 0, 6
+                            SIF ATTACK_BATTLE_RESULT:0:L_COUNT_E:L_COUNT_P >= 10
+                                SETBIT LOCAL:2, L_COUNT_P
+                        NEXT
+                        L_TAMOKU:(L_COUNT_E + 10) = L_C_FOR
+                        L_TAMOKU:16 ++
+                    ENDIF
+                NEXT
+                ;攻撃者が防御者より多い
+                ;絶対攻撃者が二人以下
+                ;防御者が、攻撃者の空きより少ない
+                LOCAL:3 = L_TAMOKU:16 - BIT_SUM(LOCAL:2)
+                PRINTFORML ASP入れ替え前　絶対{L_TAMOKU:6}　最大{L_TAMOKU:16}　ブロック数{BIT_SUM(LOCAL:2)}
+                IF LOCAL:3 > 0 && L_TAMOKU:6 < 2 && (3 - L_TAMOKU:6) > BIT_SUM(LOCAL:2)
+                    FOR L_C_NUM, 0, LOCAL:3
+                        LOCAL:4 = 99
+                        LOCAL:5 = -1
+                        FOR L_COUNT_E, 0, 6
+                            IF L_TAMOKU:(L_COUNT_E + 10) > 0 && L_TAMOKU:(L_COUNT_E + 10) < LOCAL:4
+                                LOCAL:4 = L_TAMOKU:(L_COUNT_E + 10)
+                                LOCAL:5 = L_COUNT_E
+                            ENDIF
+                        NEXT
+                        IF LOCAL:5 >= 0
+                            L_TAMOKU:(LOCAL:5) = L_TAMOKU:(LOCAL:5 + 10)
+                            L_TAMOKU:(LOCAL:5 + 10) = 0
+                            L_TAMOKU:6 ++
+                            L_TAMOKU:16 --
+                        ENDIF
+                    NEXT
+                ENDIF
+                PRINTFORML ASP入れ替え後　絶対{L_TAMOKU:6}　最大{L_TAMOKU:16}　ブロック数{BIT_SUM(LOCAL:2)}
+                L_SP後絶対攻撃力_E:0 = CB_MAX_SUM(0,3,L_TAMOKU:0,L_TAMOKU:1,L_TAMOKU:2,L_TAMOKU:3,L_TAMOKU:4,L_TAMOKU:5)
+                L_SP後絶対攻撃力_E:1 = 0
+                IF L_SP後絶対攻撃力_E:0 == 0
+                    L_SP後絶対攻撃度_E = 0
+                ELSE
+                    LOCAL:1 = (SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP / L_SP後絶対攻撃力_E:0)
+                    LOCAL:1 += ((SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP % L_SP後絶対攻撃力_E:0) > 0)
+                    L_SP後絶対攻撃力_E:1 = MAX(6 - LOCAL:1, 1)
+                    L_SP後絶対攻撃度_E = (L_SP後絶対攻撃力_E:1) * 100 + L_SP後絶対攻撃力_E:0
+                ENDIF
+                
+    
+                ;L_SP後優勢攻撃力_E:0 = CB_MAX_SUM(0,3,L_TAMOKU:10,L_TAMOKU:11,L_TAMOKU:12,L_TAMOKU:13,L_TAMOKU:14,L_TAMOKU:15)
+                ;L_SP後優勢攻撃力_E:1 = (SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP / L_SP後優勢攻撃力_E:0)
+                ;L_SP後優勢攻撃力_E:1 += ((SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP % L_SP後優勢攻撃力_E:0) > 0)
+    
+                L_SP後最大攻撃力_E:0 = CB_MAX_SUM(0,3,L_TAMOKU:0,L_TAMOKU:1,L_TAMOKU:2,L_TAMOKU:3,L_TAMOKU:4,L_TAMOKU:5,L_TAMOKU:10,L_TAMOKU:11,L_TAMOKU:12,L_TAMOKU:13,L_TAMOKU:14,L_TAMOKU:15)
+                L_SP後最大攻撃力_E:1 = 0
+                IF L_SP後最大攻撃力_E:0 == 0
+                    L_SP後最大攻撃度_E = 0
+                ELSE
+                    LOCAL:1 = (SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP / L_SP後最大攻撃力_E:0)
+                    LOCAL:1 += ((SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP % L_SP後最大攻撃力_E:0) > 0)
+                    L_SP後最大攻撃力_E:1 = MAX(5 - LOCAL:1, 1)
+                    L_SP後最大攻撃度_E = (L_SP後最大攻撃力_E:1) * 100 + L_SP後最大攻撃力_E:0
+                ENDIF
+    
+                L_SP後結果攻撃度_E:0 = L_SP後絶対攻撃度_E >= L_SP後最大攻撃度_E ? L_SP後絶対攻撃度_E # L_SP後最大攻撃度_E
+                L_SP後結果攻撃度_E:1 = L_SP後絶対攻撃度_E >= L_SP後最大攻撃度_E ? 1 # 0
+
+                L_SP後結果攻撃度総合 = L_SP後結果攻撃度_E:0 - L_結果攻撃度_P:0
+                IF L_SP後結果攻撃度総合 > L_結果攻撃度総合 && ((USING_SP_DATA:0:0 < 0) || (USING_SP_DATA:0:1 < L_SP後結果攻撃度総合))
+                    USING_SP_DATA:0:0 = L_C_NUM
+                    USING_SP_DATA:0:1 = L_SP後結果攻撃度総合
+                    USING_SP_DATA:0:2 = -2
+                    PRINTFORML SP使用 {USING_SP_DATA:0:0}　{USING_SP_DATA:0:1} {USING_SP_DATA:0:2}
+                ENDIF
+            NEXT
+
+        ENDIF
+        FOR L_C_NUM, 0, LOCAL
+            SIF SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):2 == 998 || SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):2 == 997
+                CONTINUE
+            FOR L_C_FOR, 0, 6
+                CALL CB_AI_UNIT_SET(0 ,12)
+                
+                LOCAL:10 = 0 ;確率ポイント
+                LOCAL:11 = -1 ;타겟
+                IF SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1 % 1000 == 1
+                    SIF FIELD_DEMON_DATE_V:(L_C_FOR + 12):CBV_NO == 0
+                        CONTINUE
+                    LOCAL:12 = SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):(14 + L_C_FOR)
+                    FIELD_DEMON_DATE_V:(L_C_FOR + 12):CBV_HP -= LOCAL:12
+                    SIF FIELD_DEMON_DATE_V:(L_C_FOR + 12):CBV_HP < 1
+                        CALL CS_FIELD_DEMON_CLEAR, L_C_FOR + 12
+                    LOCAL:11 = L_C_FOR
+                    IF SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1 >= 1000
+                        LOCAL:10 = MAX(6 - SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1 / 1000, 0)
+                    ENDIF
+                ELSEIF INRANGE(SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1 % 1000, 10 ,18)
+                    IF SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1 / 1000 == 0
+                        SIF FIELD_DEMON_DATE_V:(L_C_FOR + 12):CBV_NO == 0
+                            CONTINUE
+                        L_C_ONE = L_C_FOR
+                        L_C_TWO = L_C_FOR + 1
+                        LOCAL:11 = L_C_FOR
+                    ELSEIF SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1 / 1000 == 1
+                        L_C_ONE = CBF_ALLY_POS1
+                        L_C_TWO = CBF_ALLY_POS6 + 1
+                        L_C_FOR = 5
+                    ELSEIF SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1 / 1000 == 2
+                        L_C_ONE = CBF_ALLY_POS1
+                        L_C_TWO = CBF_ENEMY_POS6 + 1
+                        L_C_FOR = 5
+                    ENDIF
+                    LOCAL:10 = MAX(6 - SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):(14 + L_C_FOR), 0)
+                    FOR L_COUNT, L_C_ONE, L_C_TWO
+                        IF SP_INFO_S_E:(USE_SP_INFO:L_C_NUM:0):0 != "" && (L_C_TWO - L_C_ONE) > 1
+                            SIF STRFIND(SP_INFO_S_E:(USE_SP_INFO:L_C_NUM:0):0, "飛行") >= 0 && FIELD_DEMON_DATE_V:(L_COUNT + 12):CBV_FLYING < 1
+                                CONTINUE
+                        ENDIF
+                        IF SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):2 == 999
+                            SETBIT FIELD_DEMON_DATE_V:(L_COUNT + 12):CBV_CONDITION,0
+                        ELSE
+                            IF GROUPMATCH(SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1 % 1000, 10, 14)
+                                CALL CB_STATE_ADD, L_COUNT + 12, SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):2, 1
+                            ELSEIF GROUPMATCH(SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1 % 1000, 11, 15)
+                                CALL CB_STATE_ADD, L_COUNT + 12, SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):2, 2 ,3
+                            ELSEIF GROUPMATCH(SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1 % 1000, 12)
+                                CALL CB_STATE_ADD, L_COUNT + 12, SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):2, 2
+                            ELSEIF GROUPMATCH(SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1 % 1000, 16)
+                                CALL CB_STATE_ADD, L_COUNT + 12, SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):2, SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):4
+                            ENDIF
+                        ENDIF
+                    NEXT
+
+                    ;IF SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):2 == 999
+                    ;    SETBIT FIELD_DEMON_DATE_V:(L_C_FOR + 12):CBV_CONDITION,0
+                    ;ELSE
+                    ;    IF GROUPMATCH(SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1 % 100, 10, 14)
+                    ;        CALL CB_STATE_ADD, L_C_FOR + 12, SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):2, 1
+                    ;    ELSEIF GROUPMATCH(SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1 % 100, 11, 15)
+                    ;        CALL CB_STATE_ADD, L_C_FOR + 12, SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):2, 2 ,3
+                    ;    ELSEIF GROUPMATCH(SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1 % 100, 12)
+                    ;        CALL CB_STATE_ADD, L_C_FOR + 12, SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):2, 2
+                    ;    ELSEIF GROUPMATCH(SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1 % 100, 16)
+                    ;        CALL CB_STATE_ADD, L_C_FOR + 12, SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):2, SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):4
+                    ;    ENDIF
+                    ;ENDIF
+                    
+                    
+                ELSEIF INRANGE(SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1, 2 ,4)
+                    SIF FIELD_DEMON_DATE_V:(L_C_FOR + 18):CBV_NO == 0
+                        CONTINUE
+                    SIF !CS_ATTACK_USE_CHECK(L_C_FOR + 18, 0)
+                        CONTINUE
+                    VARSET L_TAMOKU
+                    L_C_ONE = 0
+                    SIF STRFIND(SP_INFO_S_E:(USE_SP_INFO:L_C_NUM:0):0, "無敵") >= 0
+                        L_TAMOKU:(L_C_ONE ++) = 3 * 10 + SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1
+                    SIF STRFIND(SP_INFO_S_E:(USE_SP_INFO:L_C_NUM:0):0, "A反射") >= 0
+                        L_TAMOKU:(L_C_ONE ++) = 4 * 10 + SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1
+                    SIF STRFIND(SP_INFO_S_E:(USE_SP_INFO:L_C_NUM:0):0, "制空") >= 0
+                        L_TAMOKU:(L_C_ONE ++) = 7 * 10 + SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1
+                    SIF STRFIND(SP_INFO_S_E:(USE_SP_INFO:L_C_NUM:0):0, "관통") >= 0
+                        L_TAMOKU:(L_C_ONE ++) = 8 * 10 + SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1
+                    SIF STRFIND(SP_INFO_S_E:(USE_SP_INFO:L_C_NUM:0):0, "通過") >= 0
+                        L_TAMOKU:(L_C_ONE ++) = 9 * 10 + SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1
+                    SIF STRFIND(SP_INFO_S_E:(USE_SP_INFO:L_C_NUM:0):0, "先無") >= 0
+                        L_TAMOKU:(L_C_ONE ++) = 13 * 10 + SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1
+                    SIF STRFIND(SP_INFO_S_E:(USE_SP_INFO:L_C_NUM:0):0, "先制") >= 0
+                        L_TAMOKU:(L_C_ONE ++) = 301 * 10 + SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1
+                    SIF STRFIND(SP_INFO_S_E:(USE_SP_INFO:L_C_NUM:0):0, "飛行") >= 0
+                        L_TAMOKU:(L_C_ONE ++) = 305 * 10 + SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1
+                    SIF STRFIND(SP_INFO_S_E:(USE_SP_INFO:L_C_NUM:0):0, "歩行") >= 0
+                        L_TAMOKU:(L_C_ONE ++) = 306 * 10 + SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):1
+                    FOR L_C_TWO, 0, L_C_ONE
+                        IF L_TAMOKU:L_C_TWO % 10 == 2
+                            CALL CB_STATE_ADD, L_C_FOR + 18, L_TAMOKU:L_C_TWO / 10, 1
+                        ELSEIF L_TAMOKU:L_C_TWO % 10 == 3
+                            CALL CB_STATE_ADD, L_C_FOR + 18, L_TAMOKU:L_C_TWO / 10, 2 ,3
+                        ELSEIF L_TAMOKU:L_C_TWO % 10 == 4
+                            CALL CB_STATE_ADD, L_C_FOR + 18, L_TAMOKU:L_C_TWO / 10, 2
+                            CALL CB_STATE_ADD, L_C_FOR + 18, L_TAMOKU:L_C_TWO / 10, 2 ,3
+                        ENDIF
+                    NEXT
+                    LOCAL:11 = L_C_FOR + 6
+                ENDIF
+                IF SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):12 == 1
+                    SETBIT FIELD_DEMON_DATE_V:(SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):0 + 12):CBV_CONDITION,0
+                ELSEIF SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):12 == 2 || SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):12 == 3
+                    CALL CS_FIELD_DEMON_CLEAR, SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):0 + 12
+                ENDIF
+
+                VARSET L_SP後優勢攻撃力_E
+                VARSET L_SP後絶対攻撃力_E
+                VARSET L_SP後最大攻撃力_E
+                L_SP後絶対攻撃度_E = 0
+                L_SP後最大攻撃度_E = 0
+                VARSET L_SP後結果攻撃度_E
+
+                IF L_C_ACTION == 4
+                    VARSET L_TAMOKU
+                    LOCAL:2 = 0
+                    FOR L_COUNT_E, 0, 6
+                        SIF FIELD_DEMON_DATE_V:(L_COUNT_E + 18):CBV_NO == 0
+                            CONTINUE
+                        FOR L_COUNT_P, 0, 6
+                            SIF FIELD_DEMON_DATE_V:(L_COUNT_P + 12):CBV_NO == 0
+                                CONTINUE
+                            CALL CB_AI戦闘結果GET, (L_COUNT_E + 18), (L_COUNT_P + 12), 0, 0
+                            L_TAMOKU:(L_COUNT_P + 20) = RESULT
+                            SIF L_TAMOKU:(L_COUNT_P + 20) == 32
+                                L_TAMOKU:(L_COUNT_P + 20) = 12
+                            L_TAMOKU:29 = RESULT:1
+                        NEXT
+                        L_TAMOKU:28 = MAX(L_TAMOKU:20, L_TAMOKU:21, L_TAMOKU:22, L_TAMOKU:23, L_TAMOKU:24, L_TAMOKU:25)
+                        PRINTFORML ＠ {L_TAMOKU:20} {L_TAMOKU:21} {L_TAMOKU:22} {L_TAMOKU:23} {L_TAMOKU:24} {L_TAMOKU:25}
+                        IF L_TAMOKU:28 < 10
+                            L_TAMOKU:(L_COUNT_E) = L_TAMOKU:29
+                            L_TAMOKU:6 ++
+                        ELSEIF L_TAMOKU:28 < 20
+                            FOR L_COUNT_P, 0, 6
+                                SIF L_TAMOKU:(L_COUNT_P + 20) >= 10
+                                    SETBIT LOCAL:2, L_COUNT_P
+                            NEXT
+                            L_TAMOKU:(L_COUNT_E + 10) = L_TAMOKU:29
+                            L_TAMOKU:16 ++
+                        ENDIF
+                    NEXT
+                    ;攻撃者が防御者より多い
+                    ;絶対攻撃者が二人以下
+                    ;防御者が、攻撃者の空きより少ない
+                    LOCAL:3 = L_TAMOKU:16 - BIT_SUM(LOCAL:2)
+                    PRINTFORML AITEM入れ替え前　絶対{L_TAMOKU:6}　最大{L_TAMOKU:16}　ブロック数{BIT_SUM(LOCAL:2)}
+                    IF LOCAL:3 > 0 && L_TAMOKU:6 < 2 && (3 - L_TAMOKU:6) > BIT_SUM(LOCAL:2)
+                        FOR L_C_ONE, 0, LOCAL:3
+                            LOCAL:4 = 99
+                            LOCAL:5 = -1
+                            FOR L_COUNT_E, 0, 6
+                                IF L_TAMOKU:(L_COUNT_E + 10) > 0 && L_TAMOKU:(L_COUNT_E + 10) < LOCAL:4
+                                    LOCAL:4 = L_TAMOKU:(L_COUNT_E + 10)
+                                    LOCAL:5 = L_COUNT_E
+                                ENDIF
+                            NEXT
+                            IF LOCAL:5 >= 0
+                                L_TAMOKU:(LOCAL:5) = L_TAMOKU:(LOCAL:5 + 10)
+                                L_TAMOKU:(LOCAL:5 + 10) = 0
+                                L_TAMOKU:6 ++
+                                L_TAMOKU:16 --
+                            ENDIF
+                        NEXT
+                    ENDIF
+                    PRINTFORML AITEM入れ替え後　絶対{L_TAMOKU:6}　最大{L_TAMOKU:16}　ブロック数{BIT_SUM(LOCAL:2)}
+                    L_SP後絶対攻撃力_E:0 = CB_MAX_SUM(0,3,L_TAMOKU:0,L_TAMOKU:1,L_TAMOKU:2,L_TAMOKU:3,L_TAMOKU:4,L_TAMOKU:5)
+                    L_SP後絶対攻撃力_E:1 = 0
+                    IF L_SP後絶対攻撃力_E:0 == 0
+                        L_SP後絶対攻撃度_E = 0
+                    ELSE
+                        LOCAL:1 = (SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP / L_SP後絶対攻撃力_E:0)
+                        LOCAL:1 += ((SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP % L_SP後絶対攻撃力_E:0) > 0)
+                        L_SP後絶対攻撃力_E:1 = MAX(6 - LOCAL:1, 1)
+                        L_SP後絶対攻撃度_E = (L_SP後絶対攻撃力_E:1) * 100 + L_SP後絶対攻撃力_E:0
+                    ENDIF
+        
+                    ;L_SP後優勢攻撃力_E:0 = CB_MAX_SUM(0,3,L_TAMOKU:10,L_TAMOKU:11,L_TAMOKU:12,L_TAMOKU:13,L_TAMOKU:14,L_TAMOKU:15)
+                    ;L_SP後優勢攻撃力_E:1 = (SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP / L_SP後優勢攻撃力_E:0)
+                    ;L_SP後優勢攻撃力_E:1 += ((SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP % L_SP後優勢攻撃力_E:0) > 0)
+        
+                    L_SP後最大攻撃力_E:0 = CB_MAX_SUM(0,3,L_TAMOKU:0,L_TAMOKU:1,L_TAMOKU:2,L_TAMOKU:3,L_TAMOKU:4,L_TAMOKU:5,L_TAMOKU:10,L_TAMOKU:11,L_TAMOKU:12,L_TAMOKU:13,L_TAMOKU:14,L_TAMOKU:15)
+                    L_SP後最大攻撃力_E:1 = 0
+                    IF L_SP後最大攻撃力_E:0 == 0
+                        L_SP後最大攻撃度_E = 0
+                    ELSE
+                        LOCAL:1 = (SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP / L_SP後最大攻撃力_E:0)
+                        LOCAL:1 += ((SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP % L_SP後最大攻撃力_E:0) > 0)
+                        L_SP後最大攻撃力_E:1 = MAX(5 - LOCAL:1, 1)
+                        L_SP後最大攻撃度_E = (L_SP後最大攻撃力_E:1) * 100 + L_SP後最大攻撃力_E:0
+                    ENDIF
+        
+                    L_SP後結果攻撃度_E:0 = L_SP後絶対攻撃度_E >= L_SP後最大攻撃度_E ? L_SP後絶対攻撃度_E # L_SP後最大攻撃度_E
+                    L_SP後結果攻撃度_E:1 = L_SP後絶対攻撃度_E >= L_SP後最大攻撃度_E ? 1 # 0
+    
+                ENDIF
+
+                VARSET L_TAMOKU
+                LOCAL:2 = 0
+                FOR L_COUNT_P, 12, 18
+                    SIF FIELD_DEMON_DATE_V:L_COUNT_P:CBV_NO == 0
+                        CONTINUE
+                    FOR L_COUNT_E, 18, 24
+                        SIF FIELD_DEMON_DATE_V:L_COUNT_E:CBV_NO == 0
+                            CONTINUE
+                        
+                        L_C_ONE = UNIT_INFO_P:(L_COUNT_P - 12):10 > 0 ? 1 # 0
+                        CALL CB_AI戦闘結果GET, L_COUNT_P, L_COUNT_E, L_C_ONE, 1
+                        L_TAMOKU:(L_COUNT_E + 2) = RESULT
+                        SIF L_TAMOKU:(L_COUNT_E + 2) == 32
+                            L_TAMOKU:(L_COUNT_E + 2) = 12
+                        L_TAMOKU:29 = RESULT:1
+                    NEXT
+                    L_TAMOKU:28 = MAX(L_TAMOKU:20, L_TAMOKU:21, L_TAMOKU:22, L_TAMOKU:23, L_TAMOKU:24, L_TAMOKU:25)
+                    PRINTFORML 敵 {L_TAMOKU:20} {L_TAMOKU:21} {L_TAMOKU:22} {L_TAMOKU:23} {L_TAMOKU:24} {L_TAMOKU:25}
+                    IF L_TAMOKU:28 < 10
+                        L_TAMOKU:(L_COUNT_P - 12) = L_TAMOKU:29
+                        L_TAMOKU:6 ++
+                    ELSEIF L_TAMOKU:28 < 20
+                        FOR L_COUNT_E, 0, 6
+                            SIF L_TAMOKU:(L_COUNT_E + 20) >= 10
+                                SETBIT LOCAL:2, L_COUNT_E
+                        NEXT
+                        L_TAMOKU:(L_COUNT_P - 2) = L_TAMOKU:29
+                        L_TAMOKU:16 ++
+                    ENDIF
+                NEXT
+                ;攻撃者が防御者より多い
+                ;絶対攻撃者が二人以下
+                ;防御者が、攻撃者の空きより少ない
+                LOCAL:3 = L_TAMOKU:16 - BIT_SUM(LOCAL:2)
+                PRINTFORML BITEM入れ替え前　絶対{L_TAMOKU:6}　最大{L_TAMOKU:16}　ブロック数{BIT_SUM(LOCAL:2)}
+                IF LOCAL:3 > 0 && L_TAMOKU:6 < 2 && (3 - L_TAMOKU:6) > BIT_SUM(LOCAL:2)
+                    FOR L_C_ONE, 0, LOCAL:3
+                        LOCAL:4 = 99
+                        LOCAL:5 = -1
+                        FOR L_COUNT_E, 0, 6
+                            IF L_TAMOKU:(L_COUNT_E + 10) > 0 && L_TAMOKU:(L_COUNT_E + 10) < LOCAL:4
+                                LOCAL:4 = L_TAMOKU:(L_COUNT_E + 10)
+                                LOCAL:5 = L_COUNT_E
+                            ENDIF
+                        NEXT
+                        IF LOCAL:5 >= 0
+                            L_TAMOKU:(LOCAL:5) = L_TAMOKU:(LOCAL:5 + 10)
+                            L_TAMOKU:(LOCAL:5 + 10) = 0
+                            L_TAMOKU:6 ++
+                            L_TAMOKU:16 --
+                        ENDIF
+                    NEXT
+                ENDIF
+                PRINTFORML BITEM入れ替え後　絶対{L_TAMOKU:6}　最大{L_TAMOKU:16}　ブロック数{BIT_SUM(LOCAL:2)}
+
+                L_SP後絶対攻撃力_P:0 = CB_MAX_SUM(0,3,L_TAMOKU:0,L_TAMOKU:1,L_TAMOKU:2,L_TAMOKU:3,L_TAMOKU:4,L_TAMOKU:5)
+                L_SP後絶対攻撃力_P:1 = 0
+                IF L_SP後絶対攻撃力_P:0 == 0
+                    L_SP後絶対攻撃度_P = 0
+                ELSE
+                    LOCAL:1 = (SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP / L_SP後絶対攻撃力_P:0)
+                    LOCAL:1 += ((SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP % L_SP後絶対攻撃力_P:0) > 0)
+                    L_SP後絶対攻撃力_P:1 = MAX(6 - LOCAL:1, 1)
+                    L_SP後絶対攻撃度_P = (L_SP後絶対攻撃力_P:1) * 100 + L_SP後絶対攻撃力_P:0
+                ENDIF
+                
+                L_SP後最大攻撃力_P:0 = CB_MAX_SUM(0,3,L_TAMOKU:0,L_TAMOKU:1,L_TAMOKU:2,L_TAMOKU:3,L_TAMOKU:4,L_TAMOKU:5,L_TAMOKU:10,L_TAMOKU:11,L_TAMOKU:12,L_TAMOKU:13,L_TAMOKU:14,L_TAMOKU:15)
+                L_SP後最大攻撃力_P:1 = 0
+                IF L_SP後最大攻撃力_P:0 == 0
+                    L_SP後最大攻撃度_P = 0
+                ELSE
+                    LOCAL:1 = (SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP / L_SP後最大攻撃力_P:0)
+                    LOCAL:1 += ((SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP % L_SP後最大攻撃力_P:0) > 0)
+                    L_SP後最大攻撃力_P:1 = MAX(5 - LOCAL:1, 1)
+                    L_SP後最大攻撃度_P = (L_SP後最大攻撃力_P:1) * 100 + L_SP後最大攻撃力_P:0
+                ENDIF
+        
+                ;L_SP後優勢攻撃力_P:0 = CB_MAX_SUM(0,3,L_TAMOKU:10,L_TAMOKU:11,L_TAMOKU:12,L_TAMOKU:13,L_TAMOKU:14,L_TAMOKU:15)
+                ;L_SP後優勢攻撃力_P:1 = (SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP / L_SP後優勢攻撃力_P:0)
+                ;L_SP後優勢攻撃力_P:1 += ((SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP % L_SP後優勢攻撃力_P:0) > 0)
+        
+                L_SP後結果攻撃度_P:0 = L_SP後絶対攻撃度_P >= L_SP後最大攻撃度_P ? L_SP後絶対攻撃度_P # L_SP後最大攻撃度_P
+                L_SP後結果攻撃度_P:1 = L_SP後絶対攻撃度_P >= L_SP後最大攻撃度_P ? 1 # 0
+
+                PRINTFORML 敵 {L_SP後結果攻撃度_E:0}　＠ {L_SP後結果攻撃度_P:0}
+
+                L_SP後結果攻撃度総合 = L_SP後結果攻撃度_E:0 - L_SP後結果攻撃度_P:0 - (LOCAL:10 * 34)
+                IF L_SP後結果攻撃度総合 > L_結果攻撃度総合 && ((USING_SP_DATA:0:0 < 0) || (USING_SP_DATA:0:1 < L_SP後結果攻撃度総合))
+                    IF SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):13 > 0
+                        CALL CB_OFFERING_POSGET, HAND_INFO_V_E, SP_INFO_V_E:(USE_SP_INFO:L_C_NUM:0):13, USE_SP_INFO:L_C_NUM:2, SP_INFO_S_E:(USE_SP_INFO:L_C_NUM:0):0
+                        SIF RESULT == 0
+                            CONTINUE
+                    ENDIF
+                    IF (L_C_ACTION == 3 && (L_SP後結果攻撃度総合 / 100) > (L_結果攻撃度総合 / 100)) || (L_C_ACTION == 4)
+                        USING_SP_DATA:0:0 = USE_SP_INFO:L_C_NUM:0 + 100
+                        USING_SP_DATA:0:1 = L_SP後結果攻撃度総合
+                        USING_SP_DATA:0:2 = LOCAL:11
+                        PRINTFORML SP使用 {USING_SP_DATA:0:0}　{USING_SP_DATA:0:1}　{USING_SP_DATA:0:2}
+                    ENDIF
+                ENDIF
+
+            NEXT
+        NEXT
+        
+        FOR L_COUNT, CBF_ALLY_AI_POS1, CBF_ENEMY_AI_POS6 + 1
+            CALL CS_FIELD_DEMON_CLEAR, L_COUNT
+        NEXT
+        IF USING_SP_DATA:0:0 > -1 && USE_SP_INFO:0:0 > -1
+            PRINTFORML 最終SP使用 {USING_SP_DATA:0:0}　{USING_SP_DATA:0:1}　{USING_SP_DATA:0:2}
+            IF USING_SP_DATA:0:0 >= 100
+                USING_SP_DATA:0:0 -= 100
+                IF SP_INFO_V_E:(USING_SP_DATA:0:0):0 < 100
+                    SIF ARG == 0 || ARG == 1
+                        CALL CB_AI_SET, 1500 + SP_INFO_V_E:(USING_SP_DATA:0:0):0
+                    PRINTFORML {1500 + SP_INFO_V_E:(USING_SP_DATA:0:0):0}
+                ELSE
+                    SIF ARG == 0 || ARG == 1
+                        CALL CB_AI_SET, 10000 + SP_INFO_V_E:(USING_SP_DATA:0:0):9
+                    PRINTFORML {10000 + SP_INFO_V_E:(USING_SP_DATA:0:0):9}
+                ENDIF
+            ELSE
+                PRINTFORML {1500 + USING_SP_DATA:0:0 + 6}
+                SIF ARG == 0 || ARG == 1
+                    CALL CB_AI_SET, 1500 + USING_SP_DATA:0:0 + 6
+                SIF USING_SP_DATA:0:0 && USING_SP_DATA:0:2 == -2
+                    SETBIT CS_AI_ATTACK_S, USING_SP_DATA:0:0 + 6
+            ENDIF
+            IF SP_INFO_V_E:(USING_SP_DATA:0:0):13 > 0
+                CALL CB_OFFERING_POSGET, HAND_INFO_V_E, SP_INFO_V_E:(USING_SP_DATA:0:0):13, USING_SP_DATA:0:2, SP_INFO_S_E:(USING_SP_DATA:0:0):0
+                IF RESULT != 0
+                    L_OFFERING_RES = RESULT
+                    FOR L_C_FOR , 0, HAND_CARDS(CS1_OPPONENT)
+                        IF GETBIT(L_OFFERING_RES, L_C_FOR)
+                            IF HAND_INFO_V_E:L_C_FOR:0 >= 100
+                                SIF ARG == 0 || ARG == 1
+                                    CALL CB_AI_SET, 20000 + HAND_INFO_V_E:L_C_FOR:9
+                                PRINTFORML {20000 + HAND_INFO_V_E:L_C_FOR:9}
+                            ELSE
+                                SIF ARG == 0 || ARG == 1
+                                    CALL CB_AI_SET, 20000 + HAND_INFO_V_E:L_C_FOR:12
+                                PRINTFORML {20000 + HAND_INFO_V_E:L_C_FOR:12}
+                            ENDIF
+                        ENDIF
+                    NEXT
+                    PRINTFORML {999}
+                    SIF ARG == 0 || ARG == 1
+                        CALL CB_AI_SET, 999
+                ENDIF
+            ENDIF
+            IF USING_SP_DATA:0:2 > -1
+                PRINTFORML {100 + USING_SP_DATA:0:2}
+                SIF ARG == 0 || ARG == 1
+                    CALL CB_AI_SET, 100 + USING_SP_DATA:0:2
+                SIF L_C_ACTION == 4 && 5 < USING_SP_DATA:0:2
+                    SETBIT CS_AI_ATTACK_S, USING_SP_DATA:0:2
+            ENDIF
+            PRINTFORML OK
+            PRINTFORML
+            SIF ARG == 0 || ARG == 1
+                GOTO AI_SET_OK
+        ENDIF
+    ENDIF
+NEXT
+
+PRINTFORML SP 사용 기타
+PRINTFORML 
+VARSET L_TAMOKU, -1
+
+L_TAMOKU:1 = 30
+FOR L_C_ACTION ,1 ,VARSIZE("L_TAMOKU", 0)
+    SIF L_TAMOKU:L_C_ACTION <= 0
+        BREAK
+    L_TAMOKU = L_TAMOKU:L_C_ACTION
+    SIF L_TAMOKU == 30
+        PRINTFORML 회복
+    USING_SP_DATA:0:0 = -1
+    USING_SP_DATA:0:1 = 0
+
+    CS_AI_ACTNUM = 1100 + L_TAMOKU
+    FOR L_COUNT ,0 ,VARSIZE("SP_INFO_V_E", 0)
+        IF SP_INFO_V_E:L_COUNT:1 == L_TAMOKU
+            PRINTFORML %SP_INFO_S_E:L_COUNT:9%
+            IF L_TAMOKU == 30
+                LOCAL = SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_MAX_HP - SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP
+                SIF LOCAL < 1
+                    BREAK
+                IF SP_INFO_V_E:L_COUNT:0 >= 100 && LOCAL >= SP_INFO_V_E:L_COUNT:2
+                    PRINTFORML {10000 + SP_INFO_V_E:L_COUNT:9} %SP_INFO_S_E:L_COUNT:9%
+                    PRINTFORML OK
+                    IF ARG == 0 || ARG == 1
+                        CALL CB_AI_SET, 10000 + SP_INFO_V_E:L_COUNT:9
+                        GOTO AI_SET_OK
+                    ENDIF
+                ELSEIF 0 <= SP_INFO_V_E:L_COUNT:0 && SP_INFO_V_E:L_COUNT:0 < 100
+                    LOCAL:10 = (3 - SP_INFO_V_E:L_COUNT:12) * 100000 + (20 - SP_INFO_V_E:L_COUNT:10) * 1000 + 900 - UNIT_INFO_E:(SP_INFO_V_E:L_COUNT:0 - 6):11
+                    IF SP_INFO_V_E:L_COUNT:12 == 0 && LOCAL >= SP_INFO_V_E:L_COUNT:2 && USING_SP_DATA:0:1 < LOCAL:10
+                        USING_SP_DATA:0:0 = SP_INFO_V_E:L_COUNT:0
+                        USING_SP_DATA:0:1 = LOCAL:10
+                    ELSEIF SP_INFO_V_E:L_COUNT:12 > 0
+                        SIF UNIT_INFO_E:(SP_INFO_V_E:L_COUNT:0 - 6):3 >= 300 && SP_INFO_V_E:L_COUNT:12 == 1
+                            CONTINUE
+                        SIF UNIT_INFO_E:(SP_INFO_V_E:L_COUNT:0 - 6):3 >= 100 && (SP_INFO_V_E:L_COUNT:12 == 2 || SP_INFO_V_E:L_COUNT:12 == 3)
+                            CONTINUE
+                        LOCAL:3 = -1
+                        LOCAL:4 = -1
+                        IF UNIT_INFO_E:(SP_INFO_V_E:L_COUNT:0 - 6):4 % 1048576 > 0
+                            LOCAL:3 = (UNIT_INFO_E:(SP_INFO_V_E:L_COUNT:0 - 6):4 % 1048576) / 1000
+                            LOCAL:3 = MAX(ATTACK_SUMMONER_D_E:(LOCAL:3), ATTACK_SUMMONER_D_E:(LOCAL:3 + 6))
+                        ENDIF
+                        IF UNIT_INFO_E:(SP_INFO_V_E:L_COUNT:0 - 6):9 > 0
+                            LOCAL:4 = UNIT_INFO_E:(SP_INFO_V_E:L_COUNT:0 - 6):9 / 1000
+                            LOCAL:4 = MAX(ATTACK_SUMMONER_D_E:(LOCAL:4), ATTACK_SUMMONER_D_E:(LOCAL:4 + 6))
+                        ENDIF
+                        LOCAL:5 = MAX(LOCAL:3, LOCAL:4)
+                        SIF LOCAL:5 > 0 && (SP_INFO_V_E:L_COUNT:12 == 2 || SP_INFO_V_E:L_COUNT:12 == 3)
+                            CONTINUE
+                        SIF LOCAL:5 > SP_INFO_V_E:L_COUNT:2 && LOCAL:5 > -1
+                            CONTINUE
+                        {
+                        IF USING_SP_DATA:0:1 < LOCAL:10
+                        && (((LOCAL:5 < 0 || SP_INFO_V_E:L_COUNT:2 <= LOCAL - 2) && SP_INFO_V_E:L_COUNT:12 == 1) 
+                        || (SP_INFO_V_E:L_COUNT:2 <= LOCAL && (SP_INFO_V_E:L_COUNT:12 == 2 || SP_INFO_V_E:L_COUNT:12 == 3)))
+                        }
+                            USING_SP_DATA:0:0 = SP_INFO_V_E:L_COUNT:0
+                            USING_SP_DATA:0:1 = LOCAL:10
+                        ENDIF
+                    ENDIF
+                ENDIF
+            ENDIF
+        ENDIF
+    NEXT
+    IF USING_SP_DATA:0:0 > -1
+        PRINTFORML {3500 + USING_SP_DATA:0:0} %FIELD_DEMON_DATE_S:(USING_SP_DATA:0:0):CBS_NAME%
+        PRINTFORML OK
+        IF ARG == 0 || ARG == 1
+            CALL CB_AI_SET, 1500 + USING_SP_DATA:0:0
+            GOTO AI_SET_OK
+        ENDIF
+    ENDIF
+NEXT
+
+PRINTFORML 어택 세트
+CS_AI_ACTNUM = 1200
+
+VARSET L_TAMOKU
+VARSET L_SORT
+L_TAMOKU = 0
+L_攻撃数 = 0
+;1の位　攻撃者のポジション
+;10の位　攻撃力
+FOR L_COUNT_E, 0, 6
+    LOCAL = UNIT_INFO_E:L_COUNT_E:7 >= 100 ? UNIT_INFO_E:L_COUNT_E:7 / 100 # UNIT_INFO_E:L_COUNT_E:7
+
+    IF FIELD_DEMON_DATE_V:(L_COUNT_E + 6):CBV_BATTLE > 0
+        L_攻撃数 ++
+        CONTINUE
+    ENDIF
+    SIF LOCAL < 1 || !CS_ATTACK_USE_CHECK(L_COUNT_E + 6, 0)
+        CONTINUE
+    SIF !GETBIT(CS_AI_ATTACK_S, L_COUNT_E + 6) && (UNIT_INFO_E:L_COUNT_E:4 % 1048576 > 0 || UNIT_INFO_E:L_COUNT_E:9 > 0)
+        CONTINUE
+        
+    LOCAL:1 = (SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP / LOCAL)
+    LOCAL:1 += ((SUMMONER_PARAMETER:CS1_ONESELF:CSP2_HP % LOCAL) > 0)
+
+    LOCAL:2 = 0
+    IF GETBIT(CS_AI_ATTACK_S, L_COUNT_E + 6)
+        LOCAL:2 = MAX(6 - LOCAL:1, 1)
+    ELSEIF UNIT_INFO_E:L_COUNT_E:3 >= 400
+        LOCAL:2 = MAX(6 - LOCAL:1, 1)
+    ELSEIF UNIT_INFO_E:L_COUNT_E:3 >= 300
+        LOCAL:2 = MAX(5 - LOCAL:1, 1)
+    ELSEIF UNIT_INFO_E:L_COUNT_E:3 % 100 == 2
+        FOR L_COUNT_P, 0, 6
+            ;
+            IF ATTACK_BATTLE_RESULT:0:L_COUNT_E:L_COUNT_P == 20
+                L_TAMOKU:(10 + L_COUNT_E) ++
+                SETBIT L_TAMOKU:(20 + L_COUNT_E), L_COUNT_P
+            ENDIF
+        NEXT
+    ELSEIF UNIT_INFO_E:L_COUNT_E:3 % 100 == 1
+        LOCAL:2 = MAX(4 - LOCAL:1, 1)
+    ELSEIF UNIT_INFO_E:L_COUNT_E:3 % 100 == 0 && UNIT_INFO_E:L_COUNT_E:3 > 0
+        SETBIT L_TAMOKU:5, L_COUNT_E
+    ENDIF
+    IF LOCAL:2 > 0
+        LOCAL:2 = LOCAL:2 * 100 + LOCAL
+
+        L_SORT:L_TAMOKU = LOCAL:2 * 100 + L_COUNT_E + 6
+        L_TAMOKU ++
+    ENDIF
+NEXT
+
+
+IF L_TAMOKU > 0
+    ARRAYSORT L_SORT, BACK, 0, L_TAMOKU
+    LOCAL = 0
+    FOR L_COUNT, 0, L_TAMOKU
+        IF L_SORT:L_COUNT > 0
+            SIF ARG == 0 || ARG == 1
+                CALL CB_AI_SET, 3500 + L_SORT:L_COUNT % 100
+            PRINTFORML {3500 + L_SORT:L_COUNT % 100} %FIELD_DEMON_DATE_S:(L_SORT:L_COUNT % 100):CBS_NAME%
+            LOCAL ++
+        ENDIF
+        SIF L_攻撃数 + LOCAL > 2
+            BREAK
+    NEXT
+    SIF LOCAL > 0
+        PRINTFORML OK
+        SIF ARG == 0 || ARG == 1
+            GOTO AI_SET_OK
+ENDIF
+
+IF L_攻撃数 < 2
+    VARSET L_SORT
+    L_TAMOKU = 0
+    FOR L_COUNT_E, 0, 6
+        ;
+        SIF L_TAMOKU:(10 + L_COUNT_E) < 1
+            CONTINUE
+        LOCAL = UNIT_INFO_E:L_COUNT_E:7 >= 100 ? UNIT_INFO_E:L_COUNT_E:7 / 100 # UNIT_INFO_E:L_COUNT_E:7
+        IF (3 - L_攻撃数) > L_TAMOKU:(10 + L_COUNT_E)
+            ;
+            L_SORT:L_TAMOKU = LOCAL * 100 + L_COUNT_E
+            L_TAMOKU ++
+        ENDIF
+    NEXT
+    IF L_TAMOKU >= 2
+        ;
+        ARRAYSORT L_SORT, BACK, 0, L_TAMOKU
+        LOCAL = 0
+        LOCAL:1 = 0
+        FOR L_COUNT, 0, MIN(3 - L_攻撃数, L_TAMOKU)
+            ;
+            LOCAL ++
+            LOCAL:1 |= L_TAMOKU:(20 + L_SORT:L_COUNT % 100)
+        NEXT
+        IF LOCAL > BIT_SUM(LOCAL:1,0,12)
+            FOR L_COUNT, 0, MIN(3 - L_攻撃数, L_TAMOKU)
+                SIF ARG == 0 || ARG == 1
+                    CALL CB_AI_SET, 3500 + L_SORT:L_COUNT % 100 + 6
+                PRINTFORML {3500 + L_SORT:L_COUNT % 100 + 6} %FIELD_DEMON_DATE_S:(L_SORT:L_COUNT % 100 + 6):CBS_NAME%
+            NEXT
+            PRINTFORML OK
+            SIF ARG == 0 || ARG == 1
+                GOTO AI_SET_OK
+        ENDIF
+    ENDIF
+ENDIF
+
+IF L_TAMOKU:5 != 0
+    ;
+    VARSET L_SORT
+    L_TAMOKU = 0
+    FOR L_COUNT, 0, 6
+        ;
+        IF GETBIT(L_TAMOKU:5, L_COUNT)
+            ;
+            LOCAL = UNIT_INFO_E:L_COUNT:7 >= 100 ? UNIT_INFO_E:L_COUNT:7 / 100 # UNIT_INFO_E:L_COUNT:7
+            L_SORT:L_TAMOKU = LOCAL * 100 + L_COUNT
+            L_TAMOKU ++
+        ENDIF
+    NEXT
+    IF L_TAMOKU > 0
+        ;
+        ARRAYSORT L_SORT, BACK, 0, L_TAMOKU
+        FOR L_COUNT, 0, L_TAMOKU
+            LOCAL:1 = (SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP / (L_SORT:L_COUNT / 100))
+            LOCAL:1 += ((SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_HP % (L_SORT:L_COUNT / 100)) > 0)
+            
+            SIF LOCAL:1 > 4
+                CONTINUE
+            LOCAL:2 = -1
+            LOCAL:3 = 99
+            FOR L_COUNT_P, 0, 6
+                ;
+                IF ATTACK_BATTLE_RESULT:0:(L_SORT:L_COUNT % 100):L_COUNT_P == 35 && UNIT_INFO_P:L_COUNT_P:1 < LOCAL:3
+                    LOCAL:2 = L_COUNT_P
+                    LOCAL:3 = UNIT_INFO_P:L_COUNT_P:1
+                ENDIF
+            NEXT
+            IF LOCAL:2 >= 0
+                LOCAL:4 = 0
+                LOCAL:5 = 0
+                SETBIT LOCAL:4, L_SORT:L_COUNT % 100
+                SETBIT LOCAL:5, LOCAL:2
+                LOCAL:6 = CB_MAX_SUM(LOCAL:4, 3, UNIT_INFO_E:0:1, UNIT_INFO_E:1:1, UNIT_INFO_E:2:1, UNIT_INFO_E:3:1, UNIT_INFO_E:4:1, UNIT_INFO_E:5:1)
+                LOCAL:7 = CB_MAX_SUM(LOCAL:5, 3, UNIT_INFO_P:0:1, UNIT_INFO_P:1:1, UNIT_INFO_P:2:1, UNIT_INFO_P:3:1, UNIT_INFO_P:4:1, UNIT_INFO_P:5:1)
+                IF LOCAL:6 >= LOCAL:7
+                    SIF ARG == 0 || ARG == 1
+                        CALL CB_AI_SET, 3500 + L_SORT:L_COUNT % 100 + 6
+                    PRINTFORML {3500 + L_SORT:L_COUNT % 100 + 6} %FIELD_DEMON_DATE_S:(L_SORT:L_COUNT % 100 + 6):CBS_NAME%
+                    PRINTFORML OK
+                    SIF ARG == 0 || ARG == 1
+                        GOTO AI_SET_OK
+                ENDIF
+            ENDIF
+        NEXT
+
+    ENDIF
+
+ENDIF
+
+
+
+
+
+
+
+
+PRINTFORML 스톡 마그네타이트
+PRINTFORML 生成
+CS_AI_ACTNUM = 1300
+
+LOCAL = 0
+LOCAL:1 = -1
+LOCAL:2 = SUMMONER_PARAMETER:CS1_OPPONENT:CSP2_STOCK_MAG % 10
+FOR L_COUNT_E, 6, 12
+    {
+    SIF FIELD_DEMON_DATE_V:L_COUNT_E:CBV_BATTLE > 0 || FIELD_DEMON_DATE_V:L_COUNT_E:CBV_NO == 0
+    || GETBIT(FIELD_DEMON_DATE_V:L_COUNT_E:CBV_CONDITION, 0) || GETBIT(FIELD_DEMON_DATE_V:L_COUNT_E:CBV_CONDITION, 2) || GETBIT(FIELD_DEMON_DATE_V:L_COUNT_E:CBV_CONDITION, 3)
+    }
+        CONTINUE
+    SIF UNIT_INFO_E:(L_COUNT_E - 6):4 % 1048576 > 0 || UNIT_INFO_E:(L_COUNT_E - 6):9 > 0
+        CONTINUE
+    LOCAL:3 = CS_STOCK_MAG_GET_F(L_COUNT_E, CS1_OPPONENT, 0) * 10000 + BIT_SUM(UNIT_INFO_E:(L_COUNT_E - 6):4, 20, 30) * 1000 + 200 - UNIT_INFO_E:(L_COUNT_E - 6):11
+    IF CS_STOCK_MAG_GET_F(L_COUNT_E, CS1_OPPONENT, 0) + LOCAL:2 >= 10 && LOCAL < LOCAL:3
+        LOCAL = CS_STOCK_MAG_GET_F(L_COUNT_E, CS1_OPPONENT, 0)
+        LOCAL:1 = L_COUNT_E
+    ELSEIF CS_STOCK_MAG_GET_F(L_COUNT_E, CS1_OPPONENT, 0) + LOCAL:2 < 10
+        LOCAL:2 += CS_STOCK_MAG_GET_F(L_COUNT_E, CS1_OPPONENT, 0)
+    ENDIF
+NEXT
+IF LOCAL:1 > -1
+    PRINTFORML {3600 + LOCAL:1} %FIELD_DEMON_DATE_S:(LOCAL:1):CBS_NAME%
+    PRINTFORML OK
+    SIF ARG == 0 || ARG == 1
+        CALL CB_AI_SET, 3600 + LOCAL:1
+    ;RETURN 1
+    SIF ARG == 0 || ARG == 1
+        GOTO AI_SET_OK
+ENDIF
+
+SIF ARG == 1 || ARG == 2
+    PRINTFORMW 
+CLEARLINE LINECOUNT - L_LINE
+
+
+REDRAW 1
+SIF ARG == 0 || ARG == 1
+    CS_AI_STEP = 40
+
+RETURN 0
+
+$AI_SET_OK
+IF ARG == 1
+    PRINTFORML 
+    PRINTFORML 
+    PRINTFORML ACTION
+    FOR L_COUNT, 0, VARSIZE("CS_AI_ACTION",0)
+        SIF CS_AI_ACTION:L_COUNT < 1
+            BREAK
+        PRINTFORML {CS_AI_ACTION:L_COUNT}
+    NEXT
+    WAIT
+ENDIF
+SIF ARG == 0
+    CLEARLINE LINECOUNT - L_LINE
+
+REDRAW 1
+RETURN 1
+
+
+@DEC_TO_BIN, ARG
+#FUNCTIONS
+#DIMS L_RETS
+#DIM L_COUNT
+#DIM L_NUM
+L_RETS =
+L_NUM = ARG
+L_COUNT = 0
+DO
+    IF GETBIT(ARG, L_COUNT)
+        L_RETS = 1%L_RETS%
+    ELSE
+        L_RETS = 0%L_RETS%
+    ENDIF
+    CLEARBIT L_NUM, L_COUNT
+    L_COUNT ++
+LOOP L_NUM > 0
+RETURNF L_RETS
+
+
+
+
+;ARG    除外位置（ビット）
+{
+@CB_MAX_SUM, L_EXCLUSION = 0, L_NUM = 3, 
+ARG:0 = 0, ARG:1 = 0, ARG:2 = 0, ARG:3 = 0, ARG:4 = 0, ARG:5 = 0, ARG:6 = 0, ARG:7 = 0,
+ARG:8 = 0, ARG:9 = 0, ARG:10 = 0, ARG:11 = 0, ARG:12 = 0, ARG:13 = 0, ARG:14 = 0, ARG:15 = 0
+}
+#FUNCTION
+#DIM L_EXCLUSION
+#DIM L_COUNT
+#DIM L_NUM
+#DIM L_RET
+LOCAL:1 = 0
+L_RET = 0
+
+DO
+    LOCAL:2 = 0
+    FOR L_COUNT, 0, 16
+        SIF GETBIT(L_EXCLUSION, L_COUNT)
+            ARG:L_COUNT = 0
+        IF LOCAL:2 < ARG:L_COUNT
+            LOCAL:2 = ARG:L_COUNT
+            LOCAL = L_COUNT
+        ENDIF
+    NEXT
+    IF LOCAL:2 > 0
+        L_RET += LOCAL:2
+        ARG:LOCAL = 0
+        LOCAL:1 ++
+    ENDIF
+LOOP LOCAL:2 > 0 && LOCAL:1 < L_NUM
+
+RETURNF L_RET
+

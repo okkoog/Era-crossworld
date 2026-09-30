@@ -1,0 +1,409 @@
+﻿;롯폰기대환락가
+;エロレストラン関連
+
+;もしかしたらこちらもなんか弄るかも…と思って分割
+;例によって共通化できそうな部分を一本化
+;…といっても娼館よりかはまだまだ修正の余地あり→11/20：少し改修。料理とか後で増やしやすいように対応
+;21/10/29　ファイル分割。中身は以前と同じ
+;21/11/20　第3の娼館こと援助の斡旋が可能なように対応。お持ち帰りも作成したが現時点では対応キャラいないのでガワだけ
+;22/12/10　AI製顔グラを追加しました
+
+;フラグ管理メモ
+;26　エロレストラン、今まで利用したかどうかチェック
+;40番台　カフェ利用フラグ
+
+;=======================================================================
+;エロレストラン、食器持ち込みＯＫ、女体盛りや乳盃、おっぱいミルクティーやそれらの合わせ技を楽しめる
+;(第3の娼館として援助の斡旋所の機能を追加)
+;=======================================================================
+@RESTRANT31_BASE
+#DIM L_NUM
+六本木娼館ナンバー = 3
+L_NUM = RAND:3
+
+給仕アイコンアドレス:((L_NUM + 0) % 3) = 52_ウェイトレスA
+給仕アイコンアドレス:((L_NUM + 1) % 3) = 53_ウェイトレスB
+給仕アイコンアドレス:((L_NUM + 2) % 3) = 53_ウェイトレスC
+;PRINTFORMW 　　　　　　　カフェー・クピドの矢にようこそー
+CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:0, "05_レストラン", "노출한 여자", @"카페 큐피드의 화살에 어서 오세요~"
+IF ダンジョンフラグ:31:26 == 0
+	;初回時
+	CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:0, "05_レストラン", "노출한 웨이트리스", @"어서 오세요~/이쪽 자리로 오세요~/"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞비소나 풍만한 유방을 가리기는커녕, 그곳만 훤히 드러낸 웨이트리스 복을 입은 여자가 있다/＞이 가게의 접수원인 모양이다/＞여자는 늘어지는 말투로 이쪽에 말을 걸어왔다…"
+	CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:0, "05_レストラン", "노출한 웨이트리스", @"어머나, 손님은 저희 가게 이용이 처음이시네요~/규칙을 설명해 드릴게요~/"
+	;再説明時はここから
+	$RESTRANT_INFO
+	CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:0, "05_レストラン", "노출한 웨이트리스", @"저희 가게는 손님의 욕망을 듬뿍 채워주는 여자아이들과~/살짝 야릇한 식사를 즐기기 위한 카페랍니다~/"
+	CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:0, "05_レストラン", "노출한 웨이트리스", @"저희 가게에서는 식기로 여성을 채용하고 있으니까요~/마음껏 즐겁게 드시고 가세요~/"
+	CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:0, "05_レストラン", "노출한 웨이트리스", @"다만 저희 가게는 음식점이니까요~/핥는 정도까지 식사를 드시는 건 상관없지만~/그 이상의 행위는 금지하고 있답니다~"
+	;ここ追記分(21/11/19)
+	CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:0, "05_レストラン", "노출한 웨이트리스", @"대신이라고 하긴 뭐하지만~/저희 가게는 원조를 희망하는 여자아이를 중개하고 있으니까요~/희망하시는 분은 그쪽을 이용해 주세요~"
+	CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:0, "05_レストラン", "노출한 웨이트리스", @"그럼 부디~/저희 가게를 즐겨주세요~/그럼 담당 직원이 올 테니 조오금만 기다려주세요~"
+	SIF ダンジョンフラグ:31:26 == 0
+		ダンジョンフラグ:31:26 = 1
+ELSE		
+	CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:0, "05_レストラン", "노출한 웨이트리스", @"어서 오세요~/이쪽 자리로 오세요~/담당 직원이 올 테니 조오금만 기다려주세요~"
+ENDIF
+$REST_LOOP
+CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, "05_レストラン", "노출한 웨이트리스", @"어서 오세요~/그럼~/오늘은 어떻게 하시겠어요~？"
+CALL INPUT_SELECT_D, "[1]요리를 먹는다/[2]설명을 듣는다/[3]원조한다/[4]테이크아웃(신원 인수)/////[0]그만둔다" , , , 4
+SELECTCASE RESULT
+	CASE 2
+		;説明を聞く
+		GOTO RESTRANT_INFO
+	CASE 0
+		CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:0, "05_レストラン", "노출한 웨이트리스", @"감사합니다~//"
+		CALL DUNGEON_WORP,2,14,1
+	CASE 1
+		;食事
+		CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, "05_レストラン", "노출한 웨이트리스", @"그럼~/오늘의 메뉴는 이쪽인데요~/어떻게 하시겠어요~？"
+		$REST_LOOP_1
+		CALLFORM RESTRANT31_MENU_LIST
+		IF RESULT == 0
+			;やめる
+			GOTO REST_LOOP
+		ELSE
+			CALLFORM RESTRANT31_MENU, RESULT, 給仕アイコンアドレス:0
+			CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, "05_レストラン", "노출한 웨이트리스", @"손님~/다른 주문은~/있으신가요~？"
+			GOTO REST_LOOP_1
+		ENDIF
+	CASE 3
+		;仲介
+		CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, "05_レストラン", "노출한 웨이트리스", @"희망하는 여자아이는~/이쪽이랍니다~/"
+		$REST_LOOP_2
+		;商品のリスト選択
+		CALL DU31_SELECT_SORP_GOODS, 1
+		IF RESULT == 0
+			CALL SHOW_PICTURE, "D"
+			;やめる
+			GOTO REST_LOOP
+		ENDIF
+		LOCAL = RESULT
+		;CALLFORM SORP_LIST_NEW, 1, 3
+		;IF RESULT == 0
+		;	;やめる
+		;	GOTO REST_LOOP
+		;ELSE
+		;	LOCAL = 0
+		;	LOCAL = RESULT
+		;ENDIF
+		CALLFORM SORP_PLAY_{LOCAL}, "紹介文"
+		CALLFORM SORP_PLAY_{LOCAL}, "確認"
+		CALLFORM SORP_PLAY_{LOCAL}, "価格"
+		IF MONEY:1 < RESULT
+			CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:0, "05_レストラン", "노출한 웨이트리스", @"손님~/마카가 부족해요~/"
+			GOTO REST_LOOP_2
+		ENDIF
+		CALLFORM SORP_PLAY_{LOCAL}, "キャラ名"
+		CALL INPUT_SELECT_D, "" + RESULTS + "을(를) 원조하시겠습니까？////[0]원조한다/[1]다른 아이로 한다" , , , 2
+		;CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"%RESULTS%を援助しますか？"
+		;CALL INPUT_YN_D , "援助する" , "他の娘にする"
+		SELECTCASE RESULT
+		CASE 0
+			CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, "05_レストラン", "노출한 웨이트리스", @"그럼~/저쪽 개인실에서 기다려주세요~/"
+			CALL SHOW_PICTURE, "D"
+			CALLFORM SORP_PLAY_{LOCAL}, "価格"
+			MONEY:1 -= RESULT
+			CALLFORM SORP_PLAY_{LOCAL}, "プレイ口上"
+			CALL DUNGEON_WORP,2,14,1
+		CASEELSE
+			CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, "05_レストラン", "노출한 웨이트리스", @"다른 희망하는 여자아이는~/있으신가요~？/"
+			GOTO REST_LOOP_2
+		ENDSELECT
+	CASE 4
+		;お持ち帰り
+		CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, "05_レストラン", "노출한 웨이트리스", @"여자아이의~/테이크아웃이신가요~？/"
+		CALLFORM SORP_CAN_BUY_COUNT_NEW, 3
+		LOCAL = RESULT
+		IF LOCAL == 0
+			CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, "05_レストラン", "노출한 웨이트리스", @"안타깝지만 테이크아웃을 희망하는 여자아이가 없어요~/저희 가게는 어디까지나 중개라서요~/여자아이의 동의가 없으면 데려가실 수 없답니다~"
+			GOTO REST_LOOP
+		ENDIF
+		$REST_LOOP_3
+		;商品のリスト選択
+		CALL DU31_SELECT_SORP_GOODS, 2
+		IF RESULT == 0
+			CALL SHOW_PICTURE, "D"
+			;やめる
+			GOTO REST_LOOP
+		ENDIF
+		LOCAL = RESULT
+		CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, "05_レストラン", "노출한 웨이트리스", @"테이크아웃을 희망하는 여자아이는~/다음과 같답니다~/"
+		;CALLFORM SORP_LIST_NEW, 2, 3
+		;IF RESULT == 0
+		;	;やめる
+		;	GOTO REST_LOOP
+		;ELSE
+		;	LOCAL = 0
+		;	LOCAL = RESULT
+		;ENDIF
+		CALLFORM SORP_PLAY_{LOCAL}, "身受け確認"
+		CALLFORM SORP_PLAY_{LOCAL}, "身受け価格"
+		IF MONEY:1 < RESULT
+			CALLFORM SORP_PLAY_{LOCAL}, "キャラ名"
+			CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, "05_レストラン", "노출한 웨이트리스", @"손님~/마카가 부족해요~/"
+			GOTO REST_LOOP_3
+		ENDIF
+		CALL INPUT_YN_D , "데려간다" , "다른 아이로 한다"
+		IF RESULT == 0
+			CALLFORM SORP_PLAY_{LOCAL}, "キャラ名"
+			CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, "05_レストラン", "노출한 웨이트리스", @"그럼~/조금만 기다려주세요~/불러오겠습니다~"
+			CALL SHOW_PICTURE, "D"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"………………/…………/……"
+			CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:2, "05_レストラン", "노출한 웨이트리스", @"오래 기다리셨습니다~ 다음은 자유롭게 해주세요~/이후 바로를 원하신다면~/대각선 맞은편 빌딩에 있는 계열 호텔을 추천해 드려요~"
+			CALL SHOW_PICTURE, "D"
+			CALLFORM SORP_PLAY_{LOCAL}, "身受け口上"
+			CALL DUNGEON_WORP,2,14,1
+		ELSE
+			GOTO REST_LOOP_3
+		ENDIF
+	CASEELSE
+		GOTO REST_LOOP
+ENDSELECT
+
+;=======================================================================
+;メニューの処理
+;=======================================================================
+;もっとお手軽に手が出せるように1/20に値下げ。
+;あと、アルカディアと被るけどPT全体にMAG補給する効果を追加
+;量自体は及ばないがPT全体が対象なことと、経験等の加算なしな点で差別化
+
+;メニューリスト
+@RESTRANT31_MENU_LIST
+#DIMS VALUES
+
+VALUES = [1]여체성찬 아 라 모드 50
+VALUES += @"/[2]유배 35"
+VALUES += @"/[3]밀크티 30"
+VALUES += @"/[4]자지 밀크셰이크 40"
+VALUES += @"/"
+VALUES += @"/"
+VALUES += @"/[0]그만둔다"
+CALL INPUT_SELECT_D , VALUES , , , 2
+
+SELECTCASE RESULT
+	CASE 0
+		RETURN 0
+	CASEELSE
+		RETURN RESULT
+ENDSELECT
+
+;メニュー選択時
+@RESTRANT31_MENU, ARG, ARGS
+#DIM 価格
+SELECTCASE ARG
+	CASE 1
+		;つるぺたリリム
+		CALL MESSAGE_WINDOW_D_ICON, , ARGS, "05_レストラン", "노출한 웨이트리스", @"여체성찬 아 라 모드는~/50마카랍니다~/어떻게 하시겠어요~？"
+		価格 = 50
+	CASE 2
+		;おっぱいサキュバス
+		CALL MESSAGE_WINDOW_D_ICON, , ARGS, "05_レストラン", "노출한 웨이트리스", @"유배는~/35마카랍니다~/어떻게 하시겠어요~？"
+		価格 = 35
+	CASE 3
+		;母乳ヴェパール
+		CALL MESSAGE_WINDOW_D_ICON, , ARGS, "05_レストラン", "노출한 웨이트리스", @"밀크티는~/30마카랍니다~/어떻게 하시겠어요~？"
+		価格 = 30
+	CASE 4
+		;ふたなりエルフor男の娘インプ
+		CALL MESSAGE_WINDOW_D_ICON, , ARGS, "05_レストラン", "노출한 웨이트리스", @"자지 밀크셰이크는~/40마카랍니다~/어떻게 하시겠어요~？"
+		価格 = 40
+	CASEELSE
+		RETURN
+ENDSELECT
+
+CALL INPUT_YN_D , "먹는다" , "그만둔다"
+IF RESULT == 0
+	IF MONEY:1 < 価格
+		CALL MESSAGE_WINDOW_D_ICON, , ARGS, "05_レストラン", "노출한 웨이트리스", @"손님~/마카가 부족해요~/"
+		RETURN
+	ENDIF
+	MONEY:1 -= 価格
+	
+	;4の時は追加選択。
+	IF ARG == 4
+		CALL MESSAGE_WINDOW_D_ICON, , ARGS, "05_レストラン", "노출한 웨이트리스", @"그럼 손님~/식기의 종류를 골라주세요~/"
+		CALL INPUT_YN_D , "후타나리" , "오토코노코"
+		ARG += RESULT
+	ENDIF
+	
+	CALL MESSAGE_WINDOW_D_ICON, , ARGS, "05_レストラン", "노출한 웨이트리스", @"그럼~/조금만 기다려주세요~/"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"………………/…………/……"
+
+	CALL MESSAGE_WINDOW_D_ICON, , ARGS, "05_レストラン", "노출한 웨이트리스", @"오래 기다리셨습니다~/부디 편안히 즐겨주세요~/"
+	CALLFORM RESTRANT31_EAT_{ARG}
+	;PT全員にMAG供給のオマケ効果を追加。入手MAGは価格*100
+	FOR LOCAL,1,7
+		SIF POS(LOCAL) < 0
+			CONTINUE
+		CALL CONTROL_MAG, LOCAL, 価格 * 100
+	NEXT
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"파티 전체에 MAG가 보급되었다…//"
+	RETURN
+ELSE
+	RETURN
+ENDIF
+
+;=======================================================================
+;食事内容
+;=======================================================================
+;ごめんなさい…わかめ酒、趣味じゃないんで書けないんです…ごめんなさい…
+;というかエロ文章力を下さい…
+;------------
+;つるぺたリリム
+@RESTRANT31_EAT_1, ARGS
+#DIMS ICON_ADDRESS
+#DIM DYNAMIC CSV_NO
+#DIMS L_NAME
+IF RAND:2
+	CSV_NO = [[キャラ:리림]]
+	L_NAME = リリム
+	ICON_ADDRESS '= D31_FACE("つるぺたリリム")
+ELSE
+	CSV_NO = [[キャラ:소악마리림]]
+	L_NAME = 小悪魔リリム
+	ICON_ADDRESS '= D31_FACE("小悪魔リリム")
+ENDIF
+IF ダンジョンフラグ:31:40 == 0
+	ダンジョンフラグ:31:40 = 1
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞운반되어 온 것은 완만한 체형의 " + LOCALS + "였다/＞전라에 비소는 훤히 드러나 있었지만,/평탄한 가슴 위에는 그것을 보충하듯 푸딩이 얹혀 있고/＞날개는 크림과 잼으로 칠색을 그리고 있었다"
+	CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, "05_レストラン", L_NAME, @"하아… 하아… %ハート()% /손님, 부디 맛있게 드셔주세요 %ハート()% /"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞본인도 이렇게 말하고 있으니, 곧바로 먹기로 하자/＞우선은 그대로, 가슴 위에 얹힌 푸딩을 먹어볼까…/"
+	CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, "05_レストラン", L_NAME, @"앗… 햣！/숟가락이 기분 좋아요, 손니임 %ハート()% /"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞숟가락이 가슴에 닿을 때마다 " + LOCALS + "는 흥분하고/＞날개에 얹힌 소스와 크림이 뒤섞인다/＞이것도 숟가락으로 긁어모아 일부러 가슴에 얹어 푸딩과 함께…"
+	CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, "05_レストラン", L_NAME, @"히익… 흐아아 %ハート()% /날개가 차가워서… 앙！/앗, 안 돼 벌써 나와버려어！"
+	CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, "05_レストラン", L_NAME, @"앗…/아흥 %ハート()% /"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞갑자기 %LOCALS%의 가슴에서 모유가 쏟아져 나와 푸딩의 카라멜 소스와 뒤섞인다/＞더불어 치구도 흠뻑 젖어, 이쪽도 소스로 쓸 수 있을 것 같다/"
+	CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, "05_レストラン", L_NAME, @"그럼 손니임…/소스는 전부 갖추어졌으니이…/손님 마음대로 드셔주세요오 %ハート()% "
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞이미 피로한 기색이 보이는 " + LOCALS + "였지만, 푸딩은 아직 많이 남아있다/＞물론 소스는 끊임없이 넘쳐흘러 나온다/＞" + CALLNAME:MASTER + "는 " + LOCALS + "의 교성을 배경 삼아 맛있게 푸딩을 먹었다…"
+ELSE
+	CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, "05_レストラン", L_NAME, @"그럼 손님,/오늘도 부디 남김없이 드셔주세요 %ハート()% /"
+	IF RAND:3 == 0
+		;行儀悪いのは３分の１です
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞오늘은 조금 예의 없게 가슴의 푸딩을 그대로 쿡쿡 찔러보기로 했다/＞비교적 단단히 고정되어 있어서, 잘만 하면…/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, "05_レストラン", L_NAME, @"히이익 %ハート()% /푸딩이 내 가슴을 빨아들이고 있어어 %ハート()% /"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞굳이 숟가락을 가슴에 대지 않고/＞푸딩 너머로 약한 자극을 계속 가해 듬뿍 우유를 짜냈다…/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, "05_レストラン", L_NAME, @"제, 제 밀크 푸딩…/맛있으신가요 %ハート()% /"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞무척 맛있다/＞때때로 날개의 소스를 묻혀 맛을 바꿔가며/＞" + CALLNAME:MASTER + "는 " + LOCALS + "의 푸딩을 맛있게 먹었다…"
+	ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞오늘은 밀크 소스 기분이다/＞두 개의 숟가락을 능숙하게 다루어 " + LOCALS + "의 양 유두를 찾아낸다/＞그곳을 비비며 으깨주자…"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, "05_レストラン", L_NAME, @"앗… 히잉！/그렇게 짓눌리면 넘쳐흘러서…/아앗, 나와버려어 %ハート()% "
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞…잘 풀렸다. 푸딩은 눈 깜짝할 사이에 밀크 소스 범벅으로 탈바꿈했다/＞이제 흘러넘치는 밀크와 함께 숟가락에 얹어 먹기만 하면 된다/＞비밀스런 꿀도 섞어서 악센트를 줘볼까…"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, "05_レストラン", L_NAME, @"응아앗 %ハート()% /클리 으깨는 거 그만해애 %ハート()% /"
+	ENDIF
+ENDIF
+CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"………………/…………/……"
+CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞이윽고 푸딩이 다 떨어질 무렵, " + LOCALS + "는 조금 전의 웨이트리스에게 실려 나갔다…//"
+
+;------------
+;おっぱいサキュバス
+@RESTRANT31_EAT_2
+IF ダンジョンフラグ:31:41 == 0
+	ダンジョンフラグ:31:41 = 1
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞운반되어 온 것은 너무나 거대한 가슴을 가진 서큐버스였다/＞정좌한 하반신이 고정되어, 드러난 허리 위만 움직일 수 있는 모양이다…/＞서큐버스는 그 가느다란 팔로 가슴을 들어 올리며…"
+	CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("서큐버스"), D31_FACE("おっぱいサキュバス"), "05_レストラン", "서큐버스", @"손님/부디 저의 가슴골에 마음껏 술을 따라주세요 %ハート()% /"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞서큐버스를 싣고 온 수레에는 와인이 함께 놓여 있었다/＞이것을 가슴골에 부어서 마시면 되는 것이겠지…/"
+	CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("서큐버스"), D31_FACE("おっぱいサキュバス"), "05_レストラン", "서큐버스", @"맞아요, 손님/정말 능숙하세요, 처음이라고는 생각되지 않을 정도로 %ハート()% /그럼 이번에는 제가…"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞말하기가 무섭게 서큐버스는 자신의 가슴골에 입을 대고/＞자신의 입에 와인을 머금었다/＞아무래도 입으로 옮겨 담아줄 모양이다…"
+	CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("서큐버스"), D31_FACE("おっぱいサキュバス"), "05_レストラン", "서큐버스", @"음… 츄릅… 츕…/후우, 맛있으셨나요, 손님 %ハート()% /"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"서로 서큐버스의 가슴골에 담긴 술을 마시고 먹여주며 시간을 보냈다…//"
+ELSE
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞여전히 거대한 유방을 자랑하는 서큐버스다/＞이번에는 양팔로 가슴을 모아쥐며…/"
+	CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("서큐버스"), D31_FACE("おっぱいサキュバス"), "05_レストラン", "서큐버스", @"손님/부디 오늘 밤도, 마음껏 저의 가슴골에서 마셔주세요 %ハート()% /"
+	IF RAND:2 == 0
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞이번에는 반대로 가슴 아래쪽에서 마셔보기로 했다/＞무릎베개를 받는 듯한 자세가 되어, 틈새로 새어 나오는 술에 입을 맞춘다/"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("서큐버스"), D31_FACE("おっぱいサキュバス"), "05_レストラン", "서큐버스", @"히익！/소, 손니임 %ハート()% /저, 가슴 아래는 약해요 %ハート()% "
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞이 거대한 가슴이다, 혼자서는 어쩌지 못하는 것이리라/＞그런 생각을 하며, " + CALLNAME:MASTER + "는 가슴골 틈새를 혀로 유린하며 와인을 마셨다…/"
+	ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞이번에는 가슴골에 힘껏 얼굴을 파묻고 마시기로 했다/＞마치 아기가 된 것 같은 감각이다…/"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("서큐버스"), D31_FACE("おっぱいサキュバス"), "05_レストラン", "서큐버스", @"앙 %ハート()% /정말이지, 그렇게 서두르지 않으셔도 와인은 아직 얼마든지 있는데/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞때때로 키스를 해 술을 먹여주면서/＞" + CALLNAME:MASTER + "는 와인과 가슴을 음미했다…/"
+	
+	ENDIF
+ENDIF
+CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"………………/…………/……"
+CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞이윽고 술이 다 떨어질 무렵,/서큐버스는 조금 전의 웨이트리스에게 실려 나갔다…//"
+
+;------------
+;母乳ヴェパール
+@RESTRANT31_EAT_3
+IF ダンジョンフラグ:31:42 == 0
+	ダンジョンフラグ:31:42 = 1
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞운반되어 온 것은 포트와 인어상… 아니, 베파르였다/＞그 손과 인어 꼬리는 움직이지 못하게 고정되어 무언가 버둥거리고 있다/＞유두에서는 이미 백탁액이 흘러나오고 있다…"
+	CALL MESSAGE_WINDOW_D_ICON, , "72_母乳ヴェパール", "05_レストラン", "베파르", @"손니임！/부디, 제발 제 가슴에서 밀크를 짜내어 주세요！/가슴이 괴롭고 답답해서, 저는, 이제…"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞아무래도 이를 위해 끝없이 모유를 모아두게 한 모양이다/＞과연 그건 괴롭겠지, 그래서 버둥거리고 있었던 것이다/＞모처럼이니 마음껏 짜내어 줄까…"
+	CALL MESSAGE_WINDOW_D_ICON, , "72_母乳ヴェパール", "05_レストラン", "베파르", @"아아 손님, 감사합니다！/그럼… 아앙 %ハート()% /"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞풍만한 가슴의 뿌리부터 짜내듯 천천히 앞으로 손을 움직인다/＞베파르의 유두에서는 순식간에 모유가 뿜어져 나왔다/＞그나저나 이 정도로 기세가 좋으면 밀크티 만들기는 어렵겠는데…"
+	CALL MESSAGE_WINDOW_D_ICON, , "72_母乳ヴェパール", "05_レストラン", "베파르", @"포트！ 포트가 있으니 그쪽에 짜주시면！/부디 제 모유를 마음껏 맛봐주세요！/"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞확실히, 이미 포트에는 홍차가 들어가 있었다/＞뿜어져 나오는 모유를 포트로 받아내어…/＞밀크티의 완성이다"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞…/＞흠, 꽤 달다/＞설탕을 넣은 기억도 없으니, 모유가 진한 것이리라"
+	CALL MESSAGE_WINDOW_D_ICON, , "72_母乳ヴェパール", "05_レストラン", "베파르", @"아앗, 가슴이 답답해요/손님, 부디 더 제 천한 젖을 짜주세요！/"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞…다행히 홍차는 아직 남아있다/＞조금 달착지근한 감은 있지만 즐겨보기로 하자…/"
+ELSE
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞역시 이번에도 운반되어 온 베파르의 자유는 거의 빼앗겨 있는 듯하다/＞가슴이 팽팽하게 부풀어 올랐겠지/＞몸이 다치지 않을까 싶을 정도로 움직이려 하고 있다"
+	CALL MESSAGE_WINDOW_D_ICON, , "72_母乳ヴェパール", "05_レストラン", "베파르", @"아아 손님！ 또 저를 골라주셔서 감사합니다！/부디, 부디 이번에도 제 이 가슴을 짜내어 주세요！/"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞어떻게 이 정도로 모유를 내뿜고 싶어 안달 나도록 조교해 두었는가/＞조교사로서의 " + CALLNAME:MASTER + "는 그 점이 궁금했다/＞…하지만 어디까지나 지금의 " + CALLNAME:MASTER + "는 손님이다"
+	CALL MESSAGE_WINDOW_D_ICON, , "72_母乳ヴェパール", "05_レストラン", "베파르", @"아아, 손님！/더, 더 강하게 짜내어 주세요！/앗… 아아앗 %ハート()% "
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞마음껏 모유를 짜내어/＞밀크티로 만들어 마시기로 하자…/"
+ENDIF
+CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"………………/…………/……"
+CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞이윽고 차가 다 떨어질 무렵,/베파르는 조금 전의 웨이트리스에게 실려 나갔다…//"
+
+;------------
+;ふたなりエルフ
+@RESTRANT31_EAT_4
+
+	CALL SHOW_PICTURE, "D"
+IF ダンジョンフラグ:31:43 == 0
+	ダンジョンフラグ:31:43 = 1
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞운반되어 온 것은 우유와,/그에 못지않은 하얀 피부를 가진 아름다운 엘프 여성이었다/＞균형 잡힌 신체에는 그러나 분명히 이질적인 부분이 있었다/＞가랑이에 우뚝 솟아있는 검게 번들거리는 육봉이다"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞전신이 묶여 스스로 쾌락을 맛볼 수는 없는 것 같지만/＞그 끝에서는 이미 쿠퍼액을 줄줄 흘리며/＞아름다운 얼굴은 페니스에 주어질 쾌락을 기대하며 녹아내리고 있다…"
+	CALL MESSAGE_WINDOW_D_ICON, , "73_ふたなりエルフ", "05_レストラン", "エルフ", @"손니임…/부디 이 음란한 엘프의 더러운 자지에서 저엉액을 짜내어 주세요오 %ハート()% /파르르 떨고 있는 자지를 괴롭혀주세요오 %ハート()% "
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞본래 고결한 종족인 엘프에게 이 정도로 간청하게 만들다니/＞아무래도 이 엘프는 상당한 실력의 조교사가 완성해 둔 모양이다/＞" + CALLNAME:MASTER + "는 그 솜씨에 가벼운 질투와 선망을 느꼈다…"
+	CALL MESSAGE_WINDOW_D_ICON, , "73_ふたなりエルフ", "05_レストラン", "エルフ", @"손니임, 생각 같은 건 나중에 해주세요오 %ハート()% /그런 것보다 자지에서 뷰륫뷰륫 싸게 해주세요오/"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞그것도 그렇다/＞마음을 고쳐먹은 " + CALLNAME:MASTER + "는 곧바로 컵에 따른 우유에 엘프의 육봉을 조준하고/＞음낭을 강하게 쥐어짰다！"
+	CALL MESSAGE_WINDOW_D_ICON, , "73_ふたなりエルフ", "05_レストラン", "エルフ", @"히이아아아앙 %ハート()% /싸요, 사정해버려, 사정해버려어어 %ハート()% /"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞질척한 소리를 내며 마치 폭발하듯 엘프는 사정했다/＞눈 깜짝할 사이에 컵의 내용물은 흘러넘쳤다…/＞하지만 제법 맛있게 완성되었다"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞포트 안에는 아직 우유가 많이 있다/＞자, 얼마나 더 짜내 볼까…/"
+ELSE
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞엘프 여성은 여전히 페니스를 발기시키고 있다/＞스스로 처리할 수 없으니 꽤나 괴로울 것이다/"
+	CALL MESSAGE_WINDOW_D_ICON, , "73_ふたなりエルフ", "05_レストラン", "エルフ", @"손니임…/오늘도 제 더러운 암컷자지에서 저엉액을 짜내어 주세요오 %ハート()% /"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞그럼 곧바로 사정시켜주도록 하자/＞오늘은 유두를 꼬집으며… 영차/"
+	CALL MESSAGE_WINDOW_D_ICON, , "73_ふたなりエルフ", "05_レストラン", "エルフ", @"아앗 %ハート()%  가슴 뜯겨나가요옷 %ハート()% /암컷자지 뷰륫뷰륫 싸버려요오 %ハート()% "
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞순식간에 컵 안은 정액으로 가득 찼다/＞거기에 우유를 붓고…/＞후우 제법 맛있다…"
+	CALL MESSAGE_WINDOW_D_ICON, , "73_ふたなりエルフ", "05_レストラン", "エルフ", @"행복해애 %ハート()% /나 암컷자지 덕분에 매일 행복해애 %ハート()% /더 사정할래요오 %ハート()% /"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞순식간에 승천해버린 엘프는 제쳐두고/＞마음껏 정액을 짜내어 마셨다…/"
+ENDIF
+CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"………………/…………/……"
+CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞이윽고 우유가 다 떨어질 무렵,/엘프는 조금 전의 웨이트리스에게 실려 나갔다…//"
+
+;------------
+;男の娘インプ
+@RESTRANT31_EAT_5
+IF ダンジョンフラグ:31:44 == 0
+	ダンジョンフラグ:31:44 = 1
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞운반되어 온 것은 우유와 까무잡잡하고 고운 피부를 가진,/소녀로 착각할 정도의 미소년이었다/＞등에 돋아난 박쥐 날개로 보아 아마 임프일 것이다/＞모든 것이 섬세해 보이는 그 육체에는 그러나, 리본이 달린 굵은 육봉이 우뚝 솟아 있다…"
+	CALL MESSAGE_WINDOW_D_ICON, , "78_男の娘インプ", "05_レストラン", "インプ", @"으으… 누구…/누구라도 좋으니까… 이제 싸게 해줘…/누구라도 좋으니까… 부탁이야…"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞아무래도 리본으로 사정이 계속 막혀 주변도 보이지 않는 모양이다/＞사정하는 것밖에는 이미 그의 머릿속에 없겠지/＞이쪽도 우유 준비는 끝났다, 밀크셰이크를 만들어볼까"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞그렇게 생각한 " + CALLNAME:MASTER + "는 우유가 든 컵을 페니스에 갖다 대고/＞리본을 재빠르게 풀어주었다…/"
+	IF TALENT:MASTER:남자 && !TALENT:MASTER:오토코노코
+		CALL MESSAGE_WINDOW_D_ICON, , "78_男の娘インプ", "05_レストラン", "インプ", @"아, 형아 고마워, 아, 아, 아아앗！/싸버려어 %ハート()% /수컷즙 뷰륫뷰륫 싸버려어 %ハート()% "
+	ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , "78_男の娘インプ", "05_レストラン", "インプ", @"아, 누나 고마워, 아, 아, 아아앗！/싸버려어 %ハート()% /수컷즙 뷰륫뷰륫 싸버려어 %ハート()% "
+	ENDIF
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞임프는 격렬하게 경련하며 페니스에서 정액을 흩뿌렸다/＞밀크셰이크의 완성이다…/＞응, 제법 괜찮은 맛이다"
+	CALL MESSAGE_WINDOW_D_ICON, , "78_男の娘インプ", "05_レストラン", "インプ", @"히잉 %ハート()% /안 멈춰, 자지 밀크가 안 멈춰어 %ハート()% /"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞다행히 우유도 정액도 많이 있다/＞만족할 때까지 마시도록 하자…/"
+ELSE
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞임프 소년은 역시나 리본으로 사정 관리당하고 있다/＞멋대로 사정하려 했던 건지, 양손은 뒤로 돌려져 묶여 있다/"
+	CALL MESSAGE_WINDOW_D_ICON, , "78_男の娘インプ", "05_レストラン", "インプ", @"누구, 누구…/누구라도 좋으니까… 내 자지…/리본… 이거 풀어줘… 부탁드려요…/"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞그럼 곧바로 먹어볼까/＞리본을 풀고…/"
+	CALL MESSAGE_WINDOW_D_ICON, , "78_男の娘インプ", "05_レストラン", "インプ", @"아, 해냈다, 이걸로 쌀 수 있어어 %ハート()% /앗, 앗앗… 굉장한 거 와버려어 %ハート()% /내 자지 엄청 기분 좋아아 %ハート()% "
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞웨이트리스가 말하길 애널도 충분히 조교되어 있다고 한다/＞이참에 더 뽑아내 볼까/"
+	CALL MESSAGE_WINDOW_D_ICON, , "78_男の娘インプ", "05_レストラン", "インプ", @"히에에 %ハート()%  엉덩이도, 엉덩이도인 거야아 %ハート()% /내 몸 엉망진창이야아 %ハート()% /하지만 기분 좋아아 %ハート()% "
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞마치 폭포와도 같은 정액이다…/＞남기는 것도 아까우니 맛있게 먹어두자…/"
+ENDIF
+CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"………………/…………/……"
+CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_レストラン", "", @"＞이윽고 우유가 다 떨어질 무렵,/임프는 다시 리본이 묶인 채 조금 전의 웨이트리스에게 실려 나갔다…//"
+
+;------------

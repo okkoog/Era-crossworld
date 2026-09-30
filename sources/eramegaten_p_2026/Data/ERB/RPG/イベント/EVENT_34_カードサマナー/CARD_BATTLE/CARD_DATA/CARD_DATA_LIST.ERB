@@ -1,0 +1,367 @@
+﻿@CS_CARD_DATA_LIST
+#DIM L_LINE
+#DIM L_COUNT
+#DIM L_SELECT
+#DIM L_LIST
+#DIM L_LIST_S , 4 =   1,131,281,441
+#DIM L_LIST_E , 4 = 131,281,441,601
+;┏┓┗┛━┃┳┣┻┫╋
+
+L_SELECT = 0
+L_LINE = LINECOUNT
+L_LIST = 0
+
+$INPUT_LOOP
+CLEARLINE LINECOUNT - L_LINE
+
+CALL SET_PICTURE, , , "消去"
+CALL CARDDATA_WINDOW , L_SELECT , 0 , 0 , 50
+
+CALL SET_PICTURE , @"┳해설%"━" * 8%┓" , 0 , , 22
+FOR L_COUNT , 1 , 49
+	CALL SET_PICTURE , @"┃%"　" * 10%┃" , L_COUNT , , 22
+NEXT
+CALL SET_PICTURE , @"┻%"━" * 10%┛" , 49 , , 22
+CALL CARD_DATA_GET, L_SELECT
+
+LOCAL = 1
+LOCAL:1 = 0
+
+LOCALS:0 = %CARD_DATE_S:CBS_COMMENTARY%
+LOCALS:1 = %CARD_DATE_S:CBS_APPEARANCE%
+WHILE STRLENS(SUBSTRING_T(LOCALS:0, LOCAL:1, 19)) > 0 && LOCAL < 48
+	CALL SET_PICTURE , SUBSTRING_T(LOCALS:0, LOCAL:1, 19) , LOCAL++ , , 24
+	LOCAL:1 += STRLENS(SUBSTRING_T(LOCALS:0, LOCAL:1, 19))
+WEND
+IF LOCAL < 44
+	LOCAL:1 = 0
+	LOCAL++
+	CALL SET_PICTURE , "등장 작품　" , LOCAL++ , , 24
+	WHILE STRLENS(SUBSTRING_T(LOCALS:1, LOCAL:1, 19)) > 0 && LOCAL < 48
+		CALL SET_PICTURE , SUBSTRING_T(LOCALS:1, LOCAL:1, 19) , LOCAL++ , , 24
+		LOCAL:1 += STRLENS(SUBSTRING_T(LOCALS:1, LOCAL:1, 19))
+	WEND
+ENDIF
+IF CARD_DATE_V:CBV_NO > 0
+	IF CARD_DATE_V:CBV_KINDS >= 100
+		CALL SET_PICTURE , @"출격수　：{CARD_MARCHING_COUNT:L_SELECT,6,RIGHT}" , 47 , , 24
+		CALL SET_PICTURE , @"사용수　：{CARD_USING_COUNT:L_SELECT,6,RIGHT}" , 48 , , 24
+	ELSE
+		CALL SET_PICTURE , @"출격수　：{CARD_MARCHING_COUNT:L_SELECT,6,RIGHT}" , 45 , , 24
+		CALL SET_PICTURE , @"소환수　：{CARD_USING_COUNT:L_SELECT,6,RIGHT}" , 46 , , 24
+		CALL SET_PICTURE , @"전투수　：{CARD_FIGHTING_COUNT:L_SELECT,6,RIGHT}" , 47 , , 24
+		CALL SET_PICTURE , @"SP사용수：{CARD_SP_USING_COUNT:L_SELECT,6,RIGHT}" , 48 , , 24
+	ENDIF
+ENDIF
+
+
+
+LOCAL = 0
+FOR L_COUNT, L_LIST_S:L_LIST, L_LIST_E:L_LIST
+	IF CS_OBTAIN_CARD_GET(L_COUNT) || OWN_CARD:L_COUNT > 0
+		CALL CARD_DATA_GET, L_COUNT
+
+		CALL SET_PICTURE ,@"%TOSTR(L_COUNT, "000")%_%CARD_DATE_S:CBS_NAME%,{KINDSCOLOR(CARD_DATE_V:CBV_KINDS)},,{10000 + CARD_DATE_V:CBV_NO}" , LOCAL % 49 , , (LOCAL / 49) * 20 + 46
+		;CARD_DATE_S:CBS_RACE
+	ELSE
+		CALL SET_PICTURE ,@"%TOSTR(L_COUNT, "000")%_----------------" , LOCAL % 49 , , (LOCAL / 49) * 20 + 46
+	ENDIF
+	LOCAL++
+NEXT
+SIF L_LIST > 0
+	CALL SET_PICTURE , "＜ＢＡＣＫ,,,11" , 49 , , 46
+SIF L_LIST < VARSIZE("L_LIST_S", 0) - 1
+	CALL SET_PICTURE , "ＮＥＸＴ＞,,,10" , 49 , , 90
+
+CALL SET_PICTURE , @"PAGE.{L_LIST + 1,2}" , 49 , , 68
+
+CALL SET_PICTURE , "[사용 랭킹],,,9000" , 49 , , 102
+CALL SET_PICTURE , "[돌아간다],,,9999" , 49 , , 118
+
+
+CALL SET_PICTURE, , 0, "HTML表示", 50
+
+INPUT
+IF  RESULT == 10 && L_LIST < VARSIZE("L_LIST_S", 0) - 1
+	L_LIST++
+ELSEIF RESULT == 11 && L_LIST > 0
+	L_LIST--
+ELSEIF RESULT == 9000
+	CALL CS_CARD_DATA_RANKING
+ELSEIF RESULT == 9999
+	RETURN
+ELSEIF RESULT > 9999 && RESULT < 40000
+	LOCAL = RESULT
+	CALL CARD_DATA_GET, LOCAL % 10000
+	IF CARD_DATE_V:CBV_NO > 0 || (CS_OBTAIN_CARD_GET(CARD_DATE_V:CBV_NO) || OWN_CARD:(CARD_DATE_V:CBV_NO) > 0)
+		L_SELECT = CARD_DATE_V:CBV_NO
+	ENDIF
+ENDIF
+GOTO INPUT_LOOP
+
+@CS_CARD_DATA_RANKING
+#DIM MARCHING_SORT, CS_CARD_TYPES
+#DIM FIGHTING_SORT, CS_CARD_TYPES
+#DIM SP_USING_SORT, CS_CARD_TYPES
+#DIM USING_SORT, CS_CARD_TYPES
+#DIMS MARCHING_NAME, CS_CARD_TYPES
+#DIMS FIGHTING_NAME, CS_CARD_TYPES
+#DIMS SP_USING_NAME, CS_CARD_TYPES
+#DIMS USING_NAME, CS_CARD_TYPES
+
+#DIM MARCHING_SORT_I, CS_CARD_TYPES
+#DIM USING_SORT_I, CS_CARD_TYPES
+#DIMS MARCHING_NAME_I, CS_CARD_TYPES
+#DIMS USING_NAME_I, CS_CARD_TYPES
+
+#DIM L_COUNT
+
+FOR L_COUNT, 0, CS_CARD_TYPES
+	CALL CARD_DATA_GET, L_COUNT
+	IF CARD_DATE_V:CBV_NO > 0 && CARD_DATE_V:CBV_KINDS < 100 && (CS_OBTAIN_CARD_GET(CARD_DATE_V:CBV_NO) || OWN_CARD:(CARD_DATE_V:CBV_NO) > 0)
+		MARCHING_NAME:L_COUNT '= CARD_DATE_S:CBS_NAME
+		FIGHTING_NAME:L_COUNT '= CARD_DATE_S:CBS_NAME
+		SP_USING_NAME:L_COUNT '= CARD_DATE_S:CBS_NAME
+		USING_NAME:L_COUNT '= CARD_DATE_S:CBS_NAME
+
+		MARCHING_SORT:L_COUNT = 10000 - CARD_MARCHING_COUNT:L_COUNT
+		FIGHTING_SORT:L_COUNT = 10000 - CARD_FIGHTING_COUNT:L_COUNT
+		SP_USING_SORT:L_COUNT = 10000 - CARD_SP_USING_COUNT:L_COUNT
+		USING_SORT:L_COUNT = 10000 - CARD_USING_COUNT:L_COUNT
+	ELSE
+		MARCHING_NAME:L_COUNT = 
+		FIGHTING_NAME:L_COUNT = 
+		SP_USING_NAME:L_COUNT = 
+		USING_NAME:L_COUNT = 
+
+		MARCHING_SORT:L_COUNT = 11000
+		FIGHTING_SORT:L_COUNT = 11000
+		SP_USING_SORT:L_COUNT = 11000
+		USING_SORT:L_COUNT = 11000
+	ENDIF
+
+	IF CARD_DATE_V:CBV_NO > 0 && CARD_DATE_V:CBV_KINDS >= 100 && (CS_OBTAIN_CARD_GET(CARD_DATE_V:CBV_NO) || OWN_CARD:(CARD_DATE_V:CBV_NO) > 0)
+		MARCHING_NAME_I:L_COUNT '= CARD_DATE_S:CBS_NAME
+		USING_NAME_I:L_COUNT '= CARD_DATE_S:CBS_NAME
+
+		MARCHING_SORT_I:L_COUNT = 10000 - CARD_MARCHING_COUNT:L_COUNT
+		USING_SORT_I:L_COUNT = 10000 - CARD_USING_COUNT:L_COUNT
+	ELSE
+		MARCHING_NAME_I:L_COUNT = 
+		USING_NAME_I:L_COUNT = 
+
+		MARCHING_SORT_I:L_COUNT = 11000
+		USING_SORT_I:L_COUNT = 11000
+	ENDIF
+NEXT
+
+ARRAYMSORT MARCHING_SORT, MARCHING_NAME
+ARRAYMSORT FIGHTING_SORT, FIGHTING_NAME
+ARRAYMSORT SP_USING_SORT, SP_USING_NAME
+ARRAYMSORT USING_SORT, USING_NAME
+
+ARRAYMSORT MARCHING_SORT_I, MARCHING_NAME_I
+ARRAYMSORT USING_SORT_I, USING_NAME_I
+
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 순위%"출격 횟수",25,LEFT%%"배틀 횟수",25,LEFT%%"SP 사용수",25,LEFT%%"소환수",25,LEFT%
+FOR L_COUNT, 0, 100
+	PRINTFORM {L_COUNT + 1,4}
+	PRINTFORM %MARCHING_NAME:L_COUNT,20,LEFT%
+	IF CARD_NUMBER_GET(MARCHING_NAME:L_COUNT) > -1
+		PRINTFORM {CARD_MARCHING_COUNT:CARD_NUMBER_GET(MARCHING_NAME:L_COUNT),3}  
+	ELSE
+		PRINTFORM 　   
+	ENDIF
+	PRINTFORM %FIGHTING_NAME:L_COUNT,20,LEFT%
+	IF CARD_NUMBER_GET(FIGHTING_NAME:L_COUNT) > -1
+		PRINTFORM {CARD_FIGHTING_COUNT:CARD_NUMBER_GET(FIGHTING_NAME:L_COUNT),3}  
+	ELSE
+		PRINTFORM 　   
+	ENDIF
+	PRINTFORM %SP_USING_NAME:L_COUNT,20,LEFT%
+	IF CARD_NUMBER_GET(SP_USING_NAME:L_COUNT) > -1
+		PRINTFORM {CARD_SP_USING_COUNT:CARD_NUMBER_GET(SP_USING_NAME:L_COUNT),3}  
+	ELSE
+		PRINTFORM 　   
+	ENDIF
+	PRINTFORM %USING_NAME:L_COUNT,20,LEFT%
+	IF CARD_NUMBER_GET(USING_NAME:L_COUNT) > -1
+		PRINTFORM {CARD_USING_COUNT:CARD_NUMBER_GET(USING_NAME:L_COUNT),3}  
+	ELSE
+		PRINTFORM 　   
+	ENDIF
+	PRINTFORML 
+NEXT
+WAIT
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 순위%"출격 횟수",25,LEFT%%"사용수",25,LEFT%
+FOR L_COUNT, 0, 100
+	PRINTFORM {L_COUNT + 1,4}
+	PRINTFORM %MARCHING_NAME_I:L_COUNT,20,LEFT%
+	IF CARD_NUMBER_GET(MARCHING_NAME_I:L_COUNT) > -1
+		PRINTFORM {CARD_MARCHING_COUNT:CARD_NUMBER_GET(MARCHING_NAME_I:L_COUNT),3}  
+	ELSE
+		PRINTFORM 　   
+	ENDIF
+	PRINTFORM %USING_NAME_I:L_COUNT,20,LEFT%
+	IF CARD_NUMBER_GET(USING_NAME_I:L_COUNT) > -1
+		PRINTFORM {CARD_USING_COUNT:CARD_NUMBER_GET(USING_NAME_I:L_COUNT),3}  
+	ELSE
+		PRINTFORM 　   
+	ENDIF
+	PRINTFORML 
+NEXT
+WAIT
+
+;	コウガサブロウ	カオスパック
+;	롱기누스	特殊合体
+;	イナバシロウサギ	シングル、ブースター
+;	アイラーヴァタ	シングル、ライト
+;	サキュバス	カオスパック
+;	ハオマ	ブースター
+;	バロール	バトル（タイゾー）
+;	ピュートーン	バトル（連続）
+;	ナジャ	バトル（アキ）
+;	くびなしライダー	シングル、ダークパック
+;	サキミタマ	バトル（レイカ）、カード合体（ランダム）
+;	クシミタマ	バトル（オダ）、カード合体（ランダム）
+;	アラミタマ	バトル（クロサワ）、カード合体（ランダム）
+;	ニギミタマ	バトル（サカモト）、カード合体（ランダム）
+;	ジョカ・人型	バトル（アリス）
+;	ヨシツネ	ブースター
+;	セイテンタイセイ	バトル（セイテンタイセイ）
+;	チェルノボグ	シングル、ダークパック
+;	シュウ	特殊合体
+;	ミシャグジさま	バトル（ニスロク）
+;	サンニ・ヤカー	シングル、ダークパック
+;	対空ミサイル	シングル
+;	死怨香	ブースター
+;	アグラト	シングル
+;	アーソナ	ブースター
+;	ソロネ	合体パック
+;	ガルーダ	シングル、合体
+;	フドウミョウオウ	バトル（ドラオ）
+;	アンズー	バトル（ユキヒコ）
+;	ノルン	ブースター
+;	ＤＢバスターズ	バトル（ジャック兄弟）
+;	ラリョウオウ	特別合体
+;	ジャンヴァバン	ゴッドドロー
+;	ホクトセイクン	ゴッドドロー
+;	インドラ	ロウパック
+;	ウカノミタマ	バトル（ネコマタ）
+;	천어검	バトル（ツトム）
+;	ネルガル	バトル（マイケル）
+;	カンテイセイクン	特別合体
+;	アールズロック	特別合体
+;	蜘蛛の巣	シングル
+
+
+;	ヴィシュヌ	特別合体	
+;	フェニックス	特殊合体	
+;	マサカド	大会優勝	
+;	アザゼル	レア売り場	
+;	사탄	レア売り場	
+;	シヴァ	特殊合体	
+;	セト	バトル（タクヤ）	連戦
+;	キュベレ	バトル（ミホ）	
+;	後期龍１型	ゴッドドロー	
+;	アメン・ラー	特殊合体	
+;	ダイアナ	バトル（ミドリ）	
+;	リリム	シングル、ブースター	
+;	ロキ	特殊合体	
+;	アヌビス	バトル（アヌビス）	
+;	ククノチ	連戦	
+;	スサノオ	レア売り場	
+;	メタトロン	レア売り場	
+;	モラクス	ブースター	
+;	パレス	ダークパック	
+;	ケルプ	ブースター	
+;	アールキング	連戦	
+;	プロメテウス	連戦	
+;	ガルガンチュアＸ	ブースター	
+;	ダークエルフ	バトル（シズカ）	
+;	ナンディ	バトル（タケシ）	
+;	アリス	特殊合体	
+;	サタナエル	ゴッドドロー	
+;	カルキ	ロウパック	
+;	スカアハ	バトル（マユミ）	
+;	アールマティ	合体	
+;	カルティケーヤ	ライトパック	
+;	ヴリトラ	合体	
+;	ディオニュソス	合体	連戦
+;	ガブリエル	バトル（リカ）	
+;	ヘイムダル	大会優勝	
+;	イシュタル	大会優勝	
+;	アエロファンテ	シングル	ライトパック
+;	ケルベロス	バトル（ケルベロス）	
+;	ミキヤ	合体	連戦
+;	アスタロト	合体	バトル（ヤタガラス）
+;	オルクス	ゴッドドロー	レア売り場
+;	Ｐガルガンチュア	ブースター	
+;	ぶたいへい	カオスパック	
+;	ツクヨミ	特別合体	
+;	マーラ	バトル（アーマーン）	
+;	モト	特殊合体	
+;	スナッピー	バトル（スナッピー）	
+;	ドリルハンニャ	特殊合体	バトル（ドリルハンニャ）
+;	カマソッソ	ロウパック	
+;	スクーグスロー	ブースター	
+;	ラクシャーサ	ダークパック	
+;	ベルゼブブ	バトル（ベルセルク）	
+;	ルシファー	特別合体	
+;	パズス	バトル（パズス）	
+;	霞の壺	シングル	
+;	ギャッラルホルン	特殊合体	大会優勝
+;	死のルーレット	大会優勝	
+;	賢者の石	特殊合体	
+;	甘露	バトル（ジャグラー）	
+;	デメテル	合体パック	
+;	サンダルフォン	大会優勝	
+;	クー・フーリン	特殊合体	
+;	リリス	特殊合体	
+;	キングフロスト	特殊合体	バトル（キングフロスト）
+;	ナントセイクン	レア売り場	
+;	カーリー	特殊合体	
+;	グレンデル	ダークパック	
+;	バアル	レア売り場	合体
+;	スザク	特殊合体	
+;	セイオウボ	特殊合体	
+;	マリシテン	ブースター	
+;	トキサダ	特殊合体	
+;	アナンタ	特殊合体	
+;	ウロボロス	大会優勝	
+;	パイモン	バトル（アーマーン）	
+;	カドクラ	特殊合体	
+;	タケミカヅチ	属性パック	
+;	ガルガンチュア８	レア売り場	
+;	セクメト	大会優勝	連戦
+;	ダーキニー	ゴッドドロー	
+;	タナトス	特殊合体	
+;	ヴィローシャナ	レア売り場	
+;	ムールムール	ブースター	
+;	ドゥルガー	大会優勝	
+;	オーディン	特殊合体	
+;	ミルきんフロスト	レア売り場	
+;	いちごフロスト	バトル（ヒクゾー）	
+;	レモンフロスト	バトル（タイゾー、敗北）	
+;	メロンフロスト	バトル（イガラシ）	
+;	Ｂハワイフロスト	ドラオ・イベント	
+;	픽시나이프	レア売り場	
+;	毒薬	ヒクゾー・イベント	
+;	星の砂時計	レア売り場	
+;	悪魔の家	ゴッドドロー	
+;	뉴클리어밤	レア売り場	
+;	メデューサの首	特殊合体	
+;	アルテミス	レア売り場	
+;	アリラト	ライトパック	
+;	コノハナサクヤ	ライトパック	
+;	デミウルゴス	特別合体	
+;	コウテイ	ニュートラルパック	
+;	ファリードゥーン	特別合体	
+;	アマノザコ	ニュートラルパック	
+;	로열포켓	特別合体	
+
+

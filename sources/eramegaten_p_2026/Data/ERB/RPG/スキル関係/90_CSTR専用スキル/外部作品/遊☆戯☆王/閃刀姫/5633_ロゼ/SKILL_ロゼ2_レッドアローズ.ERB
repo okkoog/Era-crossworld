@@ -1,0 +1,158 @@
+﻿
+;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_レッドアローズ,ARG
+RESULTS = 레드애로우즈
+
+;　명중
+@SKILL_HITRATE_レッドアローズ, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_レッドアローズ, ARG
+RETURN 235
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_レッドアローズ,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_レッドアローズ,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_レッドアローズ, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_レッドアローズ,ARG
+RETURN 8
+
+;　相性
+@SKILL_TYPE_レッドアローズ,ARG
+IF ARG >= 0
+	RETURN GET_TYPE_NUM("검격"), GET_ADD_TYPE_ROZE_SKILL(ARG)
+ELSE
+	RETURN GET_TYPE_NUM("검격")
+ENDIF
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_レッドアローズ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_レッドアローズ, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_レッドアローズ, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_レッドアローズ,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_レッドアローズ,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_レッドアローズ, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_レッドアローズ
+RETURN GET_SUCCESSION_NUM("검격")
+
+;속도보정
+@SKILL_SPEED_レッドアローズ, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_レッドアローズ
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_レッドアローズ, ARG = -1
+RETURN 4
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_レッドアローズ,ARG,ARG:1
+#DIM LCOUNT
+;判定は一回
+SIF ARG != ARG:1
+	RETURN 0
+;自分自身の行動でないと誘発しない
+SIF ARG != FLAG:행동순1
+	RETURN 0
+SIF !IS_PU_SKILL_入力行動(ARG, "レッドアローズ")
+	RETURN 0
+FOR LCOUNT, 1, 7
+	SIF !IS_TARGET_ABLE(POS(LCOUNT))
+		CONTINUE
+	SIF !IS_SENTOUKI_REI(POS(LCOUNT))
+		CONTINUE
+	SIF HAVE_PU_SKILL(POS(LCOUNT), "召喚時効果_カガリ")
+		RETURN 1, LCOUNT
+	SIF HAVE_PU_SKILL(POS(LCOUNT), "召喚時効果_シズク")
+		RETURN 1, LCOUNT
+	SIF HAVE_PU_SKILL(POS(LCOUNT), "召喚時効果_ハヤテ")
+		RETURN 1, LCOUNT
+	SIF HAVE_PU_SKILL(POS(LCOUNT), "召喚時効果_カイナ")
+		RETURN 1, LCOUNT
+NEXT
+RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_レッドアローズ, ARG, ARG:1, ARG:2
+IF FLAG:총공격중
+	CALL 召喚時効果_閃刀姫, POS(ARG:1)
+ELSE
+	CALL ATTACK_SKILL, ARG, ARG:1, ARG:2
+ENDIF
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_レッドアローズ, ARG
+PRINTFORML 【로제 전용 스킬】
+PRINTFORML 적 1체에 검격 속성의 데미지를 가한다. 후열 사용 가능.
+PRINTFORML 
+PRINTFORML 이 스킬에 의한 공격 후, 『소환 시 효과』를 가진 ＜섬도희＞가 있을 경우 이하의 연동효과가 발동한다.
+PRINTFORML 「소환 시 효과가 발동한다」
+PRINTFORML 
+PRINTFORML 이 스킬은 섬도 카운터가 3개 이상 없으면 발동할 수 없으며,
+PRINTFORML 효과 발동 후 자신이 가진 섬도 카운터를 제거한다.
+
+@SKILL_EXPLAIN_TOOLTIP_レッドアローズ, ARG = -1
+RESULTS:0 = 적 1체에 검격 속성의 데미지를 가한다. 후열 사용 가능.
+RESULTS:1 = 
+RESULTS:2 = このスキルによる攻撃後、『召喚時効果』を持つ＜閃刀姫＞がいる場合、以下の連動効果が発動する。
+RESULTS:3 = 「召喚時効果が発動する」
+RESULTS:4 = 
+RESULTS:5 = このスキルは閃刀カウンターが3つ以上なければ発動できず、
+RESULTS:6 = 効果発動後、自身の持つ閃刀カウンターを取り除く。
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_レッドアローズ,ARG
+RESULTS = "필요:섬도 카운터 3"
+SIF GET_RPG_CFLAG_BTL(ARG, "閃刀カウンター") < 3
+	RETURN 0
+RETURN 1
+
+@リンク不能_レッドアローズ
+RETURN 1
+
+@SKILL_TAG_レッドアローズ
+RESULTS = 로제 전용 스킬
+

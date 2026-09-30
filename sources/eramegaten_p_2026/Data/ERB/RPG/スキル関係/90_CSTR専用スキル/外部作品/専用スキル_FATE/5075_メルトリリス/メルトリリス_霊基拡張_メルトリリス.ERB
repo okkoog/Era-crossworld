@@ -1,0 +1,55 @@
+﻿;スキル名
+@SKILL_NAME_霊基拡張_メルトリリス,ARG
+RESULTS = 霊基拡張
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_霊基拡張_メルトリリス,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;スキル変化？用ランク
+@SKILL_RANK_霊基拡張_メルトリリス, ARG = -1
+RETURN 15
+;変化不可
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_霊基拡張_メルトリリス
+RETURN GET_SUCCESSION_NUM("자동효과")
+;====================================================
+;実行内容ここまで
+;====================================================
+;　説明文の表示
+@SKILL_EXPLAIN_霊基拡張_メルトリリス,ARG
+#DIM SKILL_NUM
+PRINTL 자동효과:검격 내성, 비구 내성, 타격 내성, 전기 내성을 얻는다
+PRINTL 
+PRINTL 이 스킬 소유자의 본질은 물이며, 유체로서 활동할 수 있다.
+
+@SKILL_EXPLAIN_TOOLTIP_霊基拡張_メルトリリス, ARG
+RESULTS:0 = 검격 내성, 비구 내성, 타격 내성, 전기 내성을 얻는다
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_霊基拡張_メルトリリス,ARG
+RETURN 0
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_霊基拡張_メルトリリス, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	CASE "相性"
+		SELECTCASE ARGS:1
+			CASE "검격", "비구", "타격", "전술"
+				RETURN 1, 50
+		ENDSELECT
+ENDSELECT
+RETURN 0

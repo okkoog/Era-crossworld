@@ -1,0 +1,3117 @@
+﻿;発生条件は組織貢献度10000以上
+;最速でチュートリアルクリア段階から突入可能
+
+;偽典からフラグリセット関数を拝借
+;イベントフラグ:93:0
+;0:開始時点　1:レヴュー観戦
+;2:初戦　3:２戦目　4:３戦目　5:４戦目　6:５戦目　7:６戦目
+;8:舞台少女戦終了　9:推し選択終了　10:だれもいない　11:合宿行けます　12:合宿行った　13:あなた合宿突入前
+;14:パワーアップイベント終了
+
+;舞台少女別イベント記録変数
+;出席番号順の方が不公平感が無いかなと思ったけど
+;おれが　おぼえ　られない
+;なので並び順に他意はありません、悪しからず
+
+;以下はbit演算で記録
+;イベントフラグ:93:1　1:華恋に勝利　2～個別イベント制御（以下同じ）
+;イベントフラグ:93:2　1:ひかりに勝利
+;イベントフラグ:93:3　1:純那に勝利
+;イベントフラグ:93:4　1:まひるに勝利
+;イベントフラグ:93:5　1:双葉に勝利
+;イベントフラグ:93:6　1:ぶぶ漬けに勝利
+;イベントフラグ:93:7　1:ばななに勝利
+;イベントフラグ:93:8　1:天堂真矢に勝利
+;イベントフラグ:93:9　1:クロに勝利
+
+;イベントフラグ:93:10　推しNo（今周のトップスタァ）
+
+;イベントフラグ:93:1X　戦闘ギミックとかに使う（Xは↑のイベント記録変数と同じ通し番号で）
+;イベントフラグ:93:11, 60　のみ、例外的に『あなたのキラめき』のフラグとして使用する
+
+;あなたのキラめき
+;OFF:通常　ON:片キン
+
+;イベントフラグ:99:5　大場見滝原遠征フラグ
+
+;====================
+;条件
+;====================
+
+@GET_EVENT_NAME_93
+#FUNCTIONS
+RESULTS_F '= "레뷰스타라이트"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_93
+#DIM DYNAMIC 先生の数
+	;イベント蹴ったら出ない
+	SIF イベントフラグ:93:0 <0
+		RETURN 0
+		
+	LOADGLOBAL
+	
+	;仕様変更に伴うセーブデータの互換を保つ処理	
+	;メガテン系イベント以外不許可の場合、離脱
+	;ただし大場がこっちを認識しているのなら逃れられない
+	SIF 大場ななの記憶:0:1 < 2 && !GETS_USEABLE_EXTRA_TITLE("レヴュースタァライト")
+		RETURN 0
+	
+	;組織貢献度10000で解放
+	SIF FLAG:조직공헌도 < 10000
+		RETURN 0
+		
+	;イベントフラグ:93:0 が 9 以上のときだけ、特定の悪魔がいるかどうか判定
+	IF イベントフラグ:93:0 > 8
+		先生の数 = 0
+		SIF ヴォーカリスト・セイレーン進行 && FINDCHARA_B([[キャラ:세이렌]], 1) >= 0
+			先生の数 += 1
+		SIF シナリオライター・ジークフリート進行 > 1 && FINDCHARA_B([[キャラ:지크프리트]], 1) >= 0
+			先生の数 += 1
+		;IF ヴォーカリスト・セイレーン進行 > 1
+		;	FOR LOCAL, 0, CHARANUM
+		;		;劇場憑きのセイレーンはここで判定
+		;		IF NO:LOCAL == [[キャラ:세이렌]] && CFLAG:LOCAL:998 == 1
+		;			先生の数 ++
+		;			BREAK
+		;		ENDIF
+		;	NEXT
+		;ENDIF
+		;;シナリオライター・ジークフリート（大劇場）
+		;IF 
+		;	FOR LOCAL, 0, CHARANUM
+		;		;劇場憑きのジークフリートはここで判定
+		;		IF NO:LOCAL == [[キャラ:지크프리트]] && CFLAG:LOCAL:998 == 1
+		;			先生の数 ++
+		;			BREAK
+		;		ENDIF
+		;	NEXT
+		;ENDIF
+		;PRINTV 先生の数
+		;PRINTL ﾆｬｰﾝ
+		;WAIT
+	ENDIF
+
+	;(舞台少女戦制覇後は省略)
+	IF イベントフラグ:93:0 == 0 && GLOBAL:기린의기억 < 1
+		RESULTS = （EX:RSL）착신・ki-ringtone
+		RETURN 1
+	;(舞台少女戦制覇後は省略)
+	ELSEIF イベントフラグ:93:0 == 1 && GLOBAL:기린의기억 < 1
+		RESULTS = （EX:RSL）정열의 레뷰 【-Re_PLAY-】
+		RETURN 1
+	;舞台少女戦＆個別イベント3終了後かつ、マヨ公加入可能フラグ後、上司を名乗る何者かの来訪　舞台少女全員揃い
+	ELSEIF イベントフラグ:93:0 == 8 && EVENT93_個別イベ3終わった判定() > 8 && (イベントフラグ:1:0 > 1 && BASE:MASTER:LV > 40) && (EVENT93_人数確認() > 8)
+		RESULTS = （EX:RSL）……상사가 와 있다
+		RETURN 1
+	;上司襲来後、劇場憑き悪魔のうち、セイレーンとジークフリートがいる
+	ELSEIF イベントフラグ:93:0 == 10
+		IF 先生の数 > 1 && (EVENT93_人数確認() > 8)
+			RESULTS = （EX:RSL）무대소녀와 극장의 악마
+			RETURN 1
+		ELSE
+			RETURN 0
+		ENDIF		
+	;先生ズとの顔合わせ後、劇場憑き悪魔のうち、セイレーンとジークフリートがいる
+	;2022/04/30　全員実装
+	;ELSEIF イベントフラグ:93:0 == 11 && 先生の数 > 1 && (イベントフラグ:93:10 == [[キャラ:카렌_무대소녀]] || イベントフラグ:93:10 == [[キャラ:히카리]] || イベントフラグ:93:10 == [[キャラ:마히루]] || イベントフラグ:93:10 == [[キャラ:쥰나]] || イベントフラグ:93:10 == [[キャラ:후타바_무대소녀]] || イベントフラグ:93:10 == [[キャラ:카오루코]] || イベントフラグ:93:10 == [[キャラ:나나]] || イベントフラグ:93:10 == [[キャラ:마야_무대소녀]] || イベントフラグ:93:10 == [[キャラ:클로딘]]) && (EVENT93_人数確認() > 8)
+	ELSEIF イベントフラグ:93:0 == 11
+		IF 先生の数 > 1 && (EVENT93_人数確認() > 8) && イベントフラグ:93:10 > 0
+			LOCAL = EVENT93_推しの位置取得()
+			;推しのレベルが低すぎる場合、怒られる
+			IF BASE:LOCAL:LV < 40
+				RESULTS = （EX:RSL）세이렌 선생님이 화났다……
+			ELSE
+				RESULTS = （EX:RSL）【경고】무대소녀를 합숙에 보낸다【경고】
+			ENDIF
+			RETURN 1
+		ELSE
+			RETURN 0
+		ENDIF
+	;合宿に送ったあと
+	ELSEIF (イベントフラグ:93:0 == 12 || イベントフラグ:93:0 == 13)
+		IF 先生の数 > 1 && イベントフラグ:93:10 > 0
+			SELECTCASE イベントフラグ:93:10
+				CASE [[キャラ:나나]]
+					IF 大場ななの記憶_L:0:1 < 3
+						RESULTS = （EX:RSL）빛나는 무지개와도 같은 행복한 나날을, 영원히
+					ELSE
+						RESULTS = （EX:RSL）『다이바 나나』
+					ENDIF
+				CASEELSE
+					RESULTS = （EX:RSL）별을 목표로 한 소녀들에게
+			ENDSELECT
+			RETURN 1
+		ELSE
+			RETURN 0
+		ENDIF
+	;キリンのありがたいコメント
+	ELSEIF イベントフラグ:93:0 == 9
+		RESULTS = （EX:RSL）※지하극장에는 아무도 없다
+		RETURN 1
+	;舞台少女戦は終わったけど個別イベントの消化がまだ
+	ELSEIF イベントフラグ:93:0 == 8 && EVENT93_個別イベ3終わった判定() < 9
+		RESULTS = （EX:RSL）무대소녀와 마주한다
+		RETURN 1
+	;舞台少女戦が終わってない
+	ELSEIF イベントフラグ:93:0 < 8
+		RESULTS = （EX:RSL）기린의 지하극장에서 레뷰에 도전한다
+		RETURN 1
+	ENDIF
+RETURN 0
+
+
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_93
+#DIMS わたしたちは舞台少女
+#DIM 舞台少女の人数
+#DIMS L_SELECT_ABLE
+#DIM IS_PLAYABLE_KYOTO
+#DIM IS_PLAYABLE_MAYAKURO
+#DIM IS_PLAYABLE_KAREHIKA
+
+IS_PLAYABLE_KYOTO = PLAYABLE_EVENT93_CHARA("双葉") && PLAYABLE_EVENT93_CHARA("香子")
+IS_PLAYABLE_MAYAKURO = PLAYABLE_EVENT93_CHARA("真矢") && PLAYABLE_EVENT93_CHARA("クロディーヌ")
+IS_PLAYABLE_KAREHIKA = PLAYABLE_EVENT93_CHARA("華恋") && PLAYABLE_EVENT93_CHARA("ひかり")
+
+わたしたちは舞台少女 = %EVENT93_出席確認()%
+舞台少女の人数 = EVENT93_人数確認()
+
+		
+;イベントフラグ:93:0 が 9 以上のときだけ、特定の悪魔がいるかどうか判定
+;IF イベントフラグ:93:0 > 8
+;	先生の数 = 0
+;	IF ヴォーカリスト・セイレーン進行 > 1
+;		FOR LOCAL, 0, CHARANUM
+;			;劇場憑きのセイレーンはここで判定
+;			IF NO:LOCAL == [[キャラ:세이렌]] && CFLAG:LOCAL:998 == 1
+;				先生の数 ++
+;				BREAK
+;			ENDIF
+;		NEXT
+;	ENDIF
+;	;シナリオライター・ジークフリート（大劇場）
+;	IF シナリオライター・ジークフリート進行 > 1
+;		FOR LOCAL, 0, CHARANUM
+;			;劇場憑きのジークフリートはここで判定
+;			IF NO:LOCAL == [[キャラ:지크프리트]] && CFLAG:LOCAL:998 == 1
+;				先生の数 ++
+;				BREAK
+;			ENDIF
+;		NEXT
+;	ENDIF
+;ENDIF
+
+
+;FOR LOCAL, 0, CHARANUM
+;	IF GROUPMATCH(NO:LOCAL, [[キャラ:카렌_무대소녀]], [[キャラ:히카리]], [[キャラ:마히루]], [[キャラ:쥰나]], [[キャラ:후타바_무대소녀]], [[キャラ:카오루코]], [[キャラ:나나]], [[キャラ:마야_무대소녀]], [[キャラ:클로딘]]) && GET_VALUE_TALENT_JOINABLE(LOCAL) > 0 && TALENT:LOCAL:비전투원 < 1
+;		わたしたちは舞台少女 += @"%CSVCALLNAME(NO:LOCAL)%_"
+;		舞台少女の人数 += 1
+;	ENDIF
+;NEXT
+
+;CALL EVENT93_推しチェック_デバッグ
+
+LOADGLOBAL
+
+;電話
+IF イベントフラグ:93:0 == 0 && GLOBAL:기린의기억 < 1
+	CALL EVENT_93_1
+	CALL RESET_ANNOUNCE_FLAG
+	RETURN 0
+	
+;地下劇場
+ELSEIF イベントフラグ:93:0 == 1 && GLOBAL:기린의기억 < 1
+	CALL EVENT_93_2
+	CALL RESET_ANNOUNCE_FLAG
+	RETURN 0
+	
+;舞台少女戦＆個別イベント3終了後かつ、マヨ公加入可能フラグ後、上司を名乗る何者かの来訪
+ELSEIF イベントフラグ:93:0 == 8 && EVENT93_個別イベ3終わった判定() > 8 && (イベントフラグ:1:0 > 1 && BASE:MASTER:LV > 40)
+	CALL EVENT_93_9
+	CALL RESET_ANNOUNCE_FLAG
+	RETURN 0
+
+;舞台少女と劇場の悪魔
+;ELSEIF イベントフラグ:93:0 == 10 && 先生の数 > 1
+ELSEIF イベントフラグ:93:0 == 10
+	CALL EVENT_93_10
+	CALL RESET_ANNOUNCE_FLAG
+	RETURN 0
+
+;合宿送り
+;ELSEIF イベントフラグ:93:0 == 11 && 先生の数 > 1
+ELSEIF イベントフラグ:93:0 == 11
+	CALL EVENT_93_11
+	CALL RESET_ANNOUNCE_FLAG
+	RETURN 0
+
+ENDIF
+
+;キリンがこっちを覚えてる場合は導入イベントスキップ
+SIF GLOBAL:기린의기억 > 0 && イベントフラグ:93:0 < 2
+	イベントフラグ:93:0 = 2
+
+;個別イベント中
+CUSTOMDRAWLINE =
+
+;舞台少女戦が終わってないときのテキスト
+IF イベントフラグ:93:0 < 8
+	PRINTL 기린에게서 리플레이의 발생 알림이 도착했다。
+	PRINTL 엘리베이터를 타고, 참가할까？
+ENDIF
+PRINTL 어떤 상연목록을 택하시겠습니까？
+
+IF イベントフラグ:93:0 == 2
+	CUSTOMDRAWLINE =
+	IF GLOBAL:기린의기억 > 0
+		PRINTL 
+		
+		GETTIME
+		SUBSTRING RESULTS:0, 11,2
+		
+		;기린은 징그러우므로 PC 시간으로 인사를 바꾼다
+		SELECTCASE TOINT(RESULTS:0)
+			CASE 3 TO 5
+				PRINTW 「이런이런, 이런 새벽부터 수고가 많으십니다, 마음씨 고운 데빌 서머너.
+			CASE 6 TO 10
+				PRINTW 「좋은 아침입니다, 마음씨 고운 데빌 서머너.
+			CASE 11 TO 13
+				PRINTW 「점심시간이군요, 마음씨 고운 데빌 서머너.
+			CASE 14 TO 16
+				PRINTW 「간식 시간이네요, 마음씨 고운 데빌 서머너.
+			CASE 17 TO 19
+				PRINTW 「황혼 녘에 어서 오십시오, 마음씨 고운 데빌 서머너.
+			CASE 19 TO 20
+				PRINTW 「저녁 식사는 드셨습니까? 마음씨 고운 데빌 서머너.
+			CASEELSE
+				PRINTW 「야심한 시각에 실례하겠습니다, 마음씨 고운 데빌 서머너.
+		ENDSELECT
+		PRINTW 　세계가 한 바퀴를 돌아, 반짝임의 잔재 또한
+		PRINTW 　이 지하 극장으로 되돌아오고 말았습니다.
+		PRINTL 
+		PRINTW 　이번에도 제게, 리플레이의 가능성을 보여주시기를,
+		PRINTW 　……기대하고 있겠습니다?
+		PRINTL 　
+		PRINTW 　그럼, 무운을.
+		PRINTW 　당신입니다, 당신에게 드리는 말씀입니다.
+		PRINTW 　마음씨 고운 데빌 서머너.
+		PRINTL 
+		PRINTW 　――승리하신다면 확실하게 『포지션 제로!』라고 외치셔야 합니다!」
+	ELSE
+		PRINTL 
+		PRINTL 「맞다 맞아, 깜빡 잊고 말씀을 안 드렸습니다만,
+		PRINTL 　무대소녀들은 【당신 일행의 최대 레벨】로 등장합니다.
+		PRINTL 　레벨 노가다보다는 대책과 경향 파악, 무척 중요하답니다?
+		PRINTL 　
+		PRINTL 　또한 이겨나갈수록 남겨진 이들에게 『반짝임』……
+		PRINTL 　이 세계에서는 표현자가 지닌 마음의 힘인 『퍼포마』와 비슷하려나요?
+		PRINTL 　그것이 농축되어 더욱 강력한 스킬을 사용하게 될 것입니다.
+		PRINTL 　까다로워 보이는 상대는 일찍 쓰러뜨려 두면 나중에 편해질 겁니다.
+		PRINTL 　
+		PRINTL 　뭐…… 그중에는 끝까지 변하지 않는 분도 계신 모양입니다만.
+		PRINTL 　
+		PRINTL 　그럼, 무운을.
+		PRINTL 　당신입니다, 당신에게 드리는 말씀입니다.
+		PRINTL 　마음씨 고운 데빌 서머너.
+		PRINTL 
+		PRINTL 　――승리하신다면 확실하게 『포지션 제로!』라고 외치셔야 합니다!」
+		PRINTL 
+	ENDIF
+ELSEIF イベントフラグ:93:0 == 3
+	IF 大場ななの記憶:0:1 > 1
+		PRINTL 
+
+		GETTIME
+		SUBSTRING RESULTS:0, 11,2
+
+		;기린은 징그러우므로 PC 시간으로 인사를 바꾼다
+		SELECTCASE TOINT(RESULTS:0)
+			CASE 3 TO 5
+				PRINTW 「이런이런, 이런 새벽부터 수고가 많으십니다, 마음씨 고운 데빌 서머너.
+			CASE 6 TO 10
+				PRINTW 「좋은 아침입니다, 마음씨 고운 데빌 서머너.
+			CASE 11 TO 13
+				PRINTW 「점심시간이군요, 마음씨 고운 데빌 서머너.
+			CASE 14 TO 16
+				PRINTW 「간식 시간이네요, 마음씨 고운 데빌 서머너.
+			CASE 17 TO 19
+				PRINTW 「황혼 녘에 어서 오십시오, 마음씨 고운 데빌 서머너.
+			CASE 19 TO 20
+				PRINTW 「저녁 식사는 드셨습니까? 마음씨 고운 데빌 서머너.
+			CASEELSE
+				PRINTW 「야심한 시각에 실례하겠습니다, 마음씨 고운 데빌 서머너.
+		ENDSELECT
+		PRINTL 　
+		PRINTW 　다이바 나나, 그녀는 시간을 건너뛰고 있군요.
+		PRINTW 　당신과, 무대소녀들에게 일어난 모든 일을 끌어안은 채,
+		PRINTW 　홀로 외롭게 계속 달리고 있습니다…….
+		PRINTL 　
+		PRINTW 　이 무대의 각본은 당신의 것입니다.
+		PRINTW 　모조품으로서 내던져 버릴지, 무대소녀로서 갈고닦아낼지,
+		PRINTW 　아무것도 아닌 동트기 전의 그녀들에게 어떤 결말을 이끌어낼 것인지……
+		PRINTL 　
+		PRINTW 　저는 끝까지 지켜보고 싶습니다,
+		PRINTW 　당신과, 함께」
+		PRINTL 　
+	ELSE
+		PRINTL 
+		PRINTL 「이런, 벌써 하나, 모조품을 주워 올리셨군요.
+		PRINTL 　
+		PRINTL 　한 가지 주의사항이 있습니다.
+		PRINTL 　무대소녀는 【복종】이나 【붕괴】 상태가 되면,
+		PRINTL 　무대에 오를 힘을 잃어버리고 맙니다.
+		PRINTL 　
+		SETCOLOR 0xff0033
+		PRINTL 　조금 더 알기 쉽게 말씀드리자면, 이런저런 플래그가 꺾여 비전투원이 됩니다.
+		RESETCOLOR
+		PRINTL 　
+		PRINTL 　유념해 주시기를 바랍니다」
+		PRINTL 　
+	ENDIF
+ELSEIF イベントフラグ:93:0 == 7
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTW 「오랜만에 뵙습니다, 접니다. 이것이 마지막 리플레이로군요?
+	PRINTL 
+	IF イベントフラグ:93:1 == 0
+		PRINTW 　――무대소녀, 아이죠 카렌, 그리고 카구라 히카리.
+		PRINTL 　
+		PRINTW 　어린 시절, 친구와 나누었던 약속을 완수하기 위해,
+		PRINTW 　그리고 스스로에게 불타오른, 무대소녀로서의 숙명을 다하기 위해,
+		PRINTW 　그녀들은 저의 오디션에 참가했습니다.
+		PRINTL 　
+		PRINTW 　아아, 당신에게도 보여드리고 싶었습니다……!
+		PRINTW 　보여드리고 싶었어요! 그녀와 그녀의 행선지를!
+		PRINTW 　가슴에 별을 품었기에 짊어진 죄를!
+		PRINTW 　그리고, 그것을 능가하는,
+		PRINTW 　사랑과 우정의 약속 타워가 무대로 내리꽂히는 그 순간을으으으……!
+		PRINTL 　
+		PRINTW 　하아. 저 역시도, 보고 싶었습니다.
+		PRINTW 　저, 이런 곳에서 대체 뭘 하고 있는 걸까요?
+		PRINTW 　이런 꿈도 희망도 없고, 허구한 날 세계가 붕괴하는 우주 따위…… 하아.
+		PRINTL 　
+		PRINTW 　뭐, 챙겨가시지요,
+		PRINTW 　당신이 남겨둔 반짝임을.
+		PRINTW 　마음씨 고운―― 데빌 서머너」
+	ELSEIF イベントフラグ:93:3 == 0
+		PRINTW 　――무대소녀, 호시미 쥰나.
+		PRINTW 　지금 저곳에 있는 그녀는 완성형입니다.
+		PRINTL 　
+		PRINTW 　모든 별을 쏘아 떨어뜨리고,
+		PRINTW 　단 하나의 자신의 별을 손에 넣은,
+		PRINTW 　톱스타 호시미 쥰나.
+		PRINTL 　
+		PRINTW 　저는 보고 싶었습니다, 완전한 그녀를.
+		PRINTW 　그 생애를 바쳐 밑바닥부터 기어올라, 그러고도 갈망을 꺼뜨리지 않는,
+		PRINTW 　맹렬한 항성이 된 그녀의 생애를.
+		PRINTL 　
+		PRINTW 　……안타깝게도, 에튀드조차 하지 못하는 잔향으로서는 쓸데없이 빛나고 있을 뿐이겠지만요.
+		PRINTL 　
+		PRINTW 　자, 챙겨가시지요,
+		PRINTW 　당신이 남겨둔 반짝임을.
+		PRINTW 　마음씨 고운―― 데빌 서머너」
+	ELSEIF イベントフラグ:93:4 == 0
+		PRINTW 　――무대소녀, 츠유자키 마히루.
+		PRINTW 　지금 저곳에 있는 그녀는 완성형입니다.
+		PRINTL 　
+		PRINTW 　온갖 라이벌을 때려눕히고,
+		PRINTW 　만루 홈런을 쳐낸 그 웅자.
+		PRINTW 　톱스타…… 츠유자키 마히루.
+		PRINTL 　
+		PRINTW 　저는 보고 싶었습니다, 완성된 그녀를.
+		PRINTW 　유연한 사지에서 펼쳐지는,
+		PRINTW 　풍부한 표현력에 뒷받침된 아름다운 레뷰를.
+		PRINTL 　
+		PRINTW 　……안타깝게도, 친구를 향한 망집에 사로잡힌 리플레이로서는 쓸데없이 격렬하게 배경 막만 움직일 뿐입니다만.
+		PRINTL 　
+		PRINTW 　자, 챙겨가시지요,
+		PRINTW 　당신이 남겨둔 반짝임을.
+		PRINTW 　마음씨 고운―― 데빌 서머너」
+	ELSEIF イベントフラグ:93:5 == 0
+		PRINTW 　――아아, 어여쁜 무대소녀들.
+		PRINTL 　
+		PRINTW 　하나야기 카오루코. 저것은 한때 흐려졌던 칼날.
+		PRINTW 　나태에 묻혀, 녹슬 뻔했던 무대소녀.
+		PRINTL 　
+		PRINTW 　이스루기 후타바. 저것은 본래 조역의 운명.
+		PRINTW 　그러나 친구의 뒤를 쫓는 사이에 빛나는 꽃봉오리를 맺기에 이릅니다.
+		PRINTL 　
+		PRINTW 　저는 보고 싶었습니다, 온전한 그녀들을…….
+		PRINTL 　
+		PRINTW 　그녀는 응답했겠지요, 자신을 사모하는 친구의 사랑에.
+		PRINTW 　그녀는 응답했겠지요, 자신을 갈구하는 친구의 등 뒤에.
+		PRINTL 　
+		PRINTW 　……다행스럽게도 저곳은 그녀들의 세계.
+		PRINTW 　이물질인 당신은 말하자면 겨울 산에 내리치는 벼락.
+		PRINTW 　저는 보고 싶습니다, 리플레이에 갇혀있던 반짝임이 다시금 뜨겁게 불타오르는 순간을…….
+		PRINTL 　
+		PRINTW 　자, 챙겨가시지요,
+		PRINTW 　당신이 남겨둔 반짝임을.
+		PRINTW 　마음씨 고운―― 데빌 서머너」
+	ELSEIF イベントフラグ:93:7 == 0
+		PRINTW 　――무대소녀, 다이바 나나.
+		PRINTW 　그녀는 참 신비롭군요. 리플레이로 전락하고도 과거의 빛을 잃지 않고 있습니다.
+		PRINTL 　
+		PRINTW 　이미 톱스타가 되기에 충분할 정도의 반짝임이,
+		PRINTW 　이 지하 극장에 쌓여 있는데도,
+		PRINTW 　줄곧 줄곧…… 그 반짝임을 뒤쫓고 있군요.
+		PRINTL 　
+		PRINTW 　아름다운 모습입니다. 깊은 감동을 느낍니다.
+		PRINTW 　그러나 그것은 끝없는 영원의 론도.
+		PRINTW 　찬란하게 빛나는 반짝임이 매너리즘으로 향해 치닫는 모습이란…….
+		PRINTL 　
+		PRINTW 　자, 챙겨가시지요,
+		PRINTW 　당신이 남겨둔 반짝임을.
+		PRINTW 　마음씨 고운―― 데빌 서머너」
+	ELSEIF イベントフラグ:93:8 == 0
+		PRINTW 　――텐도 마야, 그리고 사이죠 클로딘.
+		PRINTW 　천재다 수재다 하며 사람들은 경솔하게 부르지만,
+		PRINTW 　참으로 두려운 것은 오만하지 않은 천재.
+		PRINTL 　
+		PRINTW 　두 사람을 마지막까지 남겨둔 것은 실책입니다, 데빌 서머너.
+		PRINTW 　이물질이 있다면 그녀들은 즉각 리플레이로부터 해방되겠지요.
+		PRINTW 　그것이 텐도 마야, 사이죠 클로딘이라는 무대소녀입니다.
+		PRINTL 　
+		PRINTW 　분명, 아아, 분명.
+		PRINTW 　리플레이에서는 일어날 수 없는 화학반응이,
+		PRINTW 　정열적이고 사랑과 우정 어린 멋진 레뷰가!
+		PRINTW 　지금 여기서 눈앞에 아아아아 오랜만에! 개연될 것입니다!
+		PRINTL 　
+		PRINTW 　자! 노래하고! 춤추고! 서로 빼앗으십시오!
+		PRINTW 　져도 좋으니 적어도 그럴싸한 곳까지는 가주세요!
+		PRINTW 　부탁드립니다! 마음씨 고운 데빌 서머너!」
+	ENDIF
+ELSEIF イベントフラグ:93:0 == 9
+		PRINTL 
+		
+		PRINTL 「이건 사소한 질문입니다만…….
+		PRINTL 　당신 쪽에 『스태프』는 계십니까?
+		PRINTL 　
+		PRINTL 　무대소녀―― 그것은 아직 밝지 않은 하늘을 올려다보는 미완성의 소녀들.
+		PRINTL 　그 몸은 별에는 까마득히 멀고,
+		PRINTL 　빛은 하늘에 닿을 리 없습니다…….
+		PRINTL 　
+		PRINTL 　그녀들은 미숙합니다.
+		PRINTL 　그녀들의 꿈과 희망을 제대로 이루어주고 싶으시다면――
+		PRINTL 　
+		PRINTL 　든든한 『스태프』, 그리고 그에 걸맞은 『시설』이 불가결하겠지요.
+		PRINTL 　
+		PRINTL 　짚이는 데가 있으십니까?
+		PRINTL 　후후후, 저는 가르쳐 드리지 않습니다!
+		PRINTL 　관객이 각본을 앞질러 가는 것은 촌스러운 짓이니까요!
+		PRINTL 　
+		PRINTL 　그럼 다음 무대를 기대하고 있겠습니다,
+		PRINTL 　다시 준비가 되면 찾아와 주세요.
+		PRINTL 　마음씨 고운…… 데빌 서머너」
+		
+		IF ヴォーカリスト・セイレーン進行 && FINDCHARA_B([[キャラ:세이렌]], 1) >= 0
+			IF シナリオライター・ジークフリート進行 > 1 && FINDCHARA_B([[キャラ:지크프리트]], 1) >= 0
+				イベントフラグ:93:0 = 10
+				CALL RESET_ANNOUNCE_FLAG
+			ENDIF
+		ENDIF
+		
+		;IF 先生の数 > 1
+		;	イベントフラグ:93:0 = 10
+		;	CALL RESET_ANNOUNCE_FLAG
+		;ENDIF
+		
+ELSEIF イベントフラグ:93:0 == 12 || イベントフラグ:93:0 == 13
+		PRINTL 
+		;大場の場合
+		IF イベントフラグ:93:10 == [[キャラ:나나]]
+			;톱스타 경험 완료 시, 신속하게 종료
+			IF 大場ななの記憶_L:0:1 > 4
+				PRINTW 당신이 지하 극장으로 발걸음을 옮기자, 이미 모든 것이 끝나 있었다.
+				PRINTL
+				PRINTW 「바나나 너무 세잖아~!!」
+				PRINTL
+				PRINTW 바닥에 드러누워 분한 듯 버둥거리는 아이죠 카렌과,
+				PRINTW 그 외에 험한 꼴로 나뒹굴고 있는 무대소녀들.
+				PRINTW 나나는 무대 한가운데에서 ヽ(*´∀｀)ノ ← 이런 느낌의 포즈로 깡충깡충 뛰며 양쪽 트윈테일을 퐁퐁 가지고 놀고 있다.
+				PRINTL
+				PRINTW 「으음, 모두 힘냈어요! 바나나이스♪」
+				PRINTL
+				PRINTW ……그건 그렇고 참 요란하게도 해치운 모양이다.
+				PRINTW 전말을 지켜보고 있었던 모양인 지크프리트만이 배를 잡고 껄껄 웃고 있다.
+				PRINTL
+				PRINTW 「난 선택받은걸. 질 수는 없지.
+				PRINTW 　그럼 모두들, 각본을 받는 대로 연습 시작이야!
+				PRINTW 　좌장 다이바 나나를 따르도록 하세-요」
+				PRINTW 「네-에」
+				PRINTW 「치트」
+				PRINTW 「난 치사한 짓 안 했어 히카리 쨩」
+				PRINTW 「……버그?」
+				PRINTW 「날 뭐라고 생각하는 거야 히카리 쨩」
+				PRINTL
+				PRINTW 무대소녀들의 주역을 정하는 합숙은 다이바 나나의 승리로 막을 내린 것이었다――
+				
+				;パワーアップイベント完了フラグ
+				イベントフラグ:93:0 = 14
+				
+				;本来の使い方じゃないけど、各舞台少女の番号が欲しい
+				CALL EVENT93_推しチェック
+				;力技で全員に設定
+				CFLAG:(RESULT:1):이자리에없는플래그 = 0
+				CFLAG:(RESULT:2):이자리에없는플래그 = 0
+				CFLAG:(RESULT:3):이자리에없는플래그 = 0
+				CFLAG:(RESULT:4):이자리에없는플래그 = 0
+				CFLAG:(RESULT:5):이자리에없는플래그 = 0
+				CFLAG:(RESULT:6):이자리에없는플래그 = 0
+				CFLAG:(RESULT:7):이자리에없는플래그 = 0
+				CFLAG:(RESULT:8):이자리에없는플래그 = 0
+				CFLAG:(RESULT:9):이자리에없는플래그 = 0
+				
+				CALL RESET_ANNOUNCE_FLAG
+				RETURN
+			ENDIF
+			
+			PRINTW 기이한 정적이 지하 극장을 지배하고 있다.
+			PRINTW 과연, 싸움 준비는 제대로 되었을까.
+			PRINTL 　
+			CUSTOMDRAWLINE =
+			;루프를 인식하지 못했다
+			IF 大場ななの記憶_L:0:1 < 3
+				PRINTL [0]나아간다
+				PRINTL [1]일단 돌아간다
+			ELSE
+				SETCOLOR 0xBB0000
+				PRINTL ※여기서부터는 당신 혼자만 들어갈 수 있다. 동료마를 소환할 수단이 필요하다
+				RESETCOLOR
+				PRINTL 　
+				PRINTL [0]나아간다
+				PRINTL [1]아직 준비가 덜 됐다
+			ENDIF
+		ELSE
+			IF イベントフラグ:93:0 == 12
+				SETCOLOR 0x2e2e41
+				PRINTL 「아-악 그만두십시오 지크프리트 님!!! 저 그런 캐릭터가 아닌, 끄아악!」
+				PRINTL 「대단해-! 진짜 기린이잖아 너! 어디서 어떻게 봐도 기린이다!」
+				PRINTW 「아파요!!! 왜 절 때리…… 아파요!!!!!」
+				RESETCOLOR
+				PRINTL 　
+				PRINTW 「……각본가 선생이 쓸모가 없으니 내가 말하겠는데.
+				PRINTW 　지배인, 네가 애지중지하는 무대소녀 녀석들한테 과제를 하나 냈거든.
+				PRINTW 『자기가 하고 싶은 배역을, 하나 완벽하게 완성해 와라』
+				PRINTW 　그게 대영웅 지크프리트가 각본을 써줄 조건――」
+				PRINTL 　
+				SETCOLOR 0x2e2e41
+				PRINTL 「어이, 울어보라고! 기린은 소처럼 운다며!」
+				PRINTL 「히이익!?」
+				PRINTL 　
+				PRINTW 「아-! 정말! 확 꺾어버린다!?
+				RESETCOLOR
+				PRINTW 　녀석들은 각자 역할 만들기에 한창이야. 저 녀석이 준비한 이계 속에서 각자가 서로 다른 세계에서 시행착오를 겪고 있어.
+				PRINTW 　가장 먼저 튀어나온 녀석이 주역이 된다.
+				PRINTW 　가장 먼저 튀어나온 녀석이 스타가 된다.
+				PRINTW 　가장 먼저 튀어나온 녀석을 위해 지크프리트는 목숨을 걸고 시를 쓴다……
+				PRINTW 　그러니까 녀석들, 바보처럼 필사적이지.
+				PRINTW 　모-두 1등으로 나오는 걸 목표로 시공간이 뒤틀린 세계에서 발버둥 치고 있어.
+				PRINTL 　
+				PRINTW 　……미리 말해두겠는데, 녀석들 망가질 거니까.
+				PRINTL 　
+				PRINTW 　녀석들은 어차피 동트기 전의 별 부스러기야. 부스러기는 부스러기답게 타올라 반짝이다 사라질 뿐. 지크프리트는 다정하지 않아.
+				PRINTW 　저 녀석은 진심을 냈어. 저 녀석이 바라는 건 붉게 빛나는 하나의 항성. 부스러기 따윈 애초에 안중에도 없어.
+				PRINTW 　그런데도 그 부스러기 녀석들! 부스러기 주제에 기고만장해져서는, 내가 말렸는데도――
+				PRINTL 　
+				PRINTW 　……지배인, 도우러 갈 거라면 각오해.
+				PRINTW 　혹시 도울 생각이라면, 그 아이들을 구할 생각이라면
+				PRINTW 　넌 아마,
+				SETCOLOR 0xBB0000
+				PRINTW 　가장 소중한 것을 빼앗길 테니까.
+				RESETCOLOR
+				PRINTL 　
+				PRINTW 　딱히 네가 어떤 선택을 하든 내 알 바 아니지만.
+				PRINTW 　기껏해야 후회 없도록이나 해보라고」
+			ELSE
+				PRINTL 「……서둘러, 준비 다 됐지.
+				PRINTL 　이계 안은 시간의 흐름이 달라. 지금도 녀석들은 가차 없는 세계에 짓눌려 있어.
+				PRINTL 　빨리 서둘러. 너만이 그 부스러기 녀석들을 도울 수 있으니까」
+			ENDIF
+			PRINTL 　
+			CUSTOMDRAWLINE =
+			SETCOLOR 0xBB0000
+			PRINTL ※이계에는 당신 혼자만 들어갈 수 있다. 동료마를 소환할 수단이 필요하다
+			RESETCOLOR
+			PRINTL 　
+			PRINT [0]무대소녀・
+			PRINTS NAME:(EVENT93_推しの位置取得())
+			PRINTL 를 마중하러 간다
+			PRINTL [1]준비만 하게 해줘
+			PRINTL 　
+		ENDIF
+		
+		CALL INPUTINT, 0 , 1
+		
+		CUSTOMDRAWLINE =
+		PRINTL
+		IF RESULT == 0
+			
+			;大場の場合
+			IF イベントフラグ:93:10 == [[キャラ:나나]]
+				;まだループを認識してない
+				IF 大場ななの記憶_L:0:1 < 3
+					PRINTW 당신이 지하 극장으로 뛰어 들어가자, 다이바 나나가 웃고 있었다.
+					PRINTL
+					PRINTW 「늦었네」
+					PRINTL
+					PRINTW 그녀는 레뷰 옷 차림이었다. 양손에는 대소 한 쌍의 일본도를 늘어뜨리고 있었다.
+					PRINTL
+					PRINTW 「다음 연극의 주역은 나, 다이바 나나로 정해졌어요♪
+					PRINTW 　그러니 이제 걱정하지 마세요. 모-두 달콤하고 맛있는 바나나에게 맡겨줘♪
+					PRINTW 　분명 좋은 무대로 만들어 보일게요♪」
+					PRINTL
+					PRINTW 생글생글 웃는 그녀는 쾌활하고, 갸륵하며, 사랑스러웠지만,
+					PRINTW 그녀의 좌우에는 8켤레의 부츠가 쓰러지듯 흩어져 있었다.
+					PRINTL
+					PRINTW 「모두가 다툰다면 내가 주역이 되면 돼.
+					PRINTW 　나한테는 그럴 힘이 있어, 당신이 나를 선택했으니까.
+					PRINTW 　――포지션 제로」
+					PRINTL
+					PRINTW 푹. 묵직한 소리를 내며 나나는 일본도를 무대 한가운데에 내리꽂았다.
+					PRINTL
+					PRINTW 「내가 스타다」
+					LOCAL:0 = GETCHARA([[キャラ:나나]])
+					BASE:(LOCAL:0):힘 += 3
+					BASE:(LOCAL:0):지혜 += 3
+					BASE:(LOCAL:0):마력 += 3
+					BASE:(LOCAL:0):내구 += 3
+					BASE:(LOCAL:0):속도 += 3
+					BASE:(LOCAL:0):운 += 3
+					CFLAG:(LOCAL:0):이자리에없는플래그 = 0
+					PRINTL
+					PRINTL ＞나나의 힘이 3 상승했다
+					PRINTL ＞나나의 지혜가 3 상승했다
+					PRINTL ＞나나의 마력이 3 상승했다
+					PRINTL ＞나나의 인내가 3 상승했다
+					PRINTL ＞나나의 속도가 3 상승했다
+					PRINTL ＞나나의 운이 3 상승했다
+					PRINTL
+					SETCOLOR 0xBB0000
+					PRINTW 「이걸로 이제, 이제 아무도 괴로워하지 않아. 나와 당신 말고는」
+					RESETCOLOR
+					PRINTL
+					PRINTW ＞운명이 끊어지는 소리가 났다
+					PRINTW ＞다이바 나나 이외의 무대소녀가 당신의 눈에서 숨겨졌다
+					
+					;推し番号をクリアー、イベント進行ストップ
+					イベントフラグ:93:10 = -1
+					
+					LOADGLOBAL
+					;初めて通ったときにフラグを立てる
+					IF !GETBIT(大場ななの記憶_L:0:6, 1)
+						;グローバルとローカルのフラグが一致してたらグローバルも加算
+						IF GETBIT(大場ななの記憶:0:6, 1) == GETBIT(大場ななの記憶_L:0:6, 1)
+							SETBIT 大場ななの記憶:0:6, 1
+						ENDIF
+						SETBIT 大場ななの記憶_L:0:6, 1
+					ENDIF
+					SAVEGLOBAL
+					
+					RETURN
+					
+					
+				;나나의 루프를 인식
+				ELSE
+					PRINTW 당신이 지하 극장으로 뛰어 들어가자, 기린이 먼 곳을 바라보며 서 있었다.
+					PRINTL
+					PRINTW 「이 너머에서 무대소녀들이 싸우고 있습니다.
+					PRINTW 　미지의 희곡의, 아직 보지 못한 주역을 거머쥐기 위해. 그러나――
+					PRINTW 　분명 또다시 다이바 나나가 승리하겠지요.
+					PRINTW 　당신이 그녀를 선택했기에. 당신이 이 무대를 선택했기에」
+					PRINTL
+					PRINTW 긴 목을 돌려 초록빛 눈동자가 당신을 바라보았다.
+					PRINTW 마치 무언가를 묻듯이――
+					PRINTL
+					
+					SETCOLOR 0xBB0000
+					PRINTL [0]이해할 수 없다
+					PRINTL [1]다이바 나나를 모르겠다
+					PRINTL [2]이제 더는 얽히게 하지 마라
+					SETCOLOR 0x33ffcc
+					PRINT [99]……그래도, 
+					PRINTS NAME:(EVENT93_推しの位置取得())
+					PRINTL 이 자아내는 무대를 내 눈으로 직접 보고 싶다
+					RESETCOLOR
+					PRINTL 
+					CALL INPUTINT, 0 , 1 , 2 ,99
+					
+					IF RESULT != 99
+						PRINTL
+						PRINTW 문득 깨달았을 때 기린은 이미 사라져 있었다.
+						PRINTL
+						PRINTW 「포지션 제로」
+						PRINTL
+						PRINTW 푹. 묵직한 소리를 내며 나나는 일본도를 무대 한가운데에 내리꽂았다.
+						PRINTL
+						PRINTW 「내가, 스타다」
+						PRINTL
+						PRINTW 그녀의 좌우에는 8켤레의 부츠가 쓰러지듯 흩어져 있었다.
+						
+						LOCAL:0 = GETCHARA([[キャラ:나나]])
+						BASE:(LOCAL:0):힘 += 3
+						BASE:(LOCAL:0):지혜 += 3
+						BASE:(LOCAL:0):마력 += 3
+						BASE:(LOCAL:0):내구 += 3
+						BASE:(LOCAL:0):속도 += 3
+						BASE:(LOCAL:0):운 += 3
+						CFLAG:(LOCAL:0):이자리에없는플래그 = 0
+						PRINTL
+						PRINTL ＞나나의 힘이 3 상승했다
+						PRINTL ＞나나의 지혜가 3 상승했다
+						PRINTL ＞나나의 마력이 3 상승했다
+						PRINTL ＞나나의 인내가 3 상승했다
+						PRINTL ＞나나의 속도가 3 상승했다
+						PRINTL ＞나나의 운이 3 상승했다
+						PRINTL
+						PRINTL
+						SETCOLOR 0xBB0000
+						PRINTW 「이걸로 이제, 이제 아무도 괴로워하지 않아. 나와 당신 말고는」
+						RESETCOLOR
+						PRINTL
+						PRINTL ＞다이바 나나 이외의 무대소녀가 당신의 눈에서 숨겨졌다
+						FORCEWAIT
+						
+						;최애 번호를 클리어, 이벤트 진행 스톱
+						イベントフラグ:93:10 = -1
+						
+						RETURN
+					ENDIF
+					
+					PRINTW 기린은 애틋한 듯 고개를 숙였다.
+					PRINTW 그리고 바람을 가르며 다시 몸을 젖히더니 포효하듯 외쳤다.
+					PRINTL
+					PRINTW 「자, 보여주십시오, 당신이 선택한 결말을!
+					PRINTW 　당신만이 자아낼 수 있는, 당신만의 이야기를!
+					PRINTW 　당신은 아마라 우주의 지배자, 그리고 이 운명의 주최자!」
+					PRINTL
+					PRINTW 문이 열리고, 풍경이 일그러지며, 당신의 몸이 허공에 뜬다.
+					PRINTW 검고 차가운 우주 속에 하얗게 소용돌이치는 눈부신 별.
+					PRINTL
+					PRINTW 「춤추십시오!
+					PRINTW 　노래하십시오!
+					PRINTW 　싸우는 것입니다! 마음씨 고운―― 데빌 서머너!!」
+					PRINTL
+					PRINTW 소름 끼칠 정도로 거대한 질량 속으로 당신의 몸이 빨려 들어가고, 그리고――
+					PRINTL
+					
+				ENDIF
+			ELSE
+				PRINTW 당신이 지하 극장으로 뛰어 들어가자, 지크프리트는 평소와 같은 투로 껄껄 웃었다.
+				PRINTL
+				PRINTW 「어이, 너냐!
+				PRINTW 　애송이 녀석들은 합숙 보냈다, 속효성이 있으니까 말이다!」
+				PRINTL
+				PRINTW 그 표정에 그늘이라곤 티끌만큼도 보이지 않는다.
+				PRINTW 잠깐 편의점에 심부름 보낸 듯한 딱 그 정도의 홀가분함이었다.
+				PRINTW ――허공에는 엄청난 신기(神氣)가 소용돌이치는 하나의 문이 떠 있었다.
+				PRINTL
+				PRINTW 「뭐- 그럭저럭 완성되겠지.
+				PRINTW 　그 녀석들 의욕도 있고 인간치고는 근성도 있어.
+				PRINTW 　걱정되냐? 괜찮-대도, 그저 자기 자신과 마주할 뿐이다!
+				PRINTW 　자신의 이상과 마주하고,
+				PRINTW 　자신이 납득할 때까지,
+				PRINTW 　자기 자신을 혹독하게 담금질하는 거다! 간단하지?」
+				PRINTL
+				PRINTW 그런 짓을 시키면 보통은 미쳐버릴 텐데. 대영웅은 실실 쪼개며 기린과 장난을 치고 있다.
+				PRINTL
+				PRINTW 「응? 이계 안의 체감 시간?
+				PRINTW 　그런 거 내가 알 게 뭐냐, 나도 글 쓸 때 쓰긴 하는데, 아-
+				PRINTW 　……100배쯤 되려나?」
+				PRINTL
+				PRINTW 과연, 1분이 100분에, 1시간이 100시간에, 하루가 100일처럼 느껴지는 세계라는 뜻인가.
+				PRINTW ――알고 보니 이 자식 바보 아냐!?
+				PRINTW 당신은 허겁지겁 허공의 문에 다가갔다. 『합숙』 시작으로부터의 시간을 역산해 그녀들의 체감 시간을 가늠해 보았다. 지크프리트는 실실 웃고 있다.
+				PRINTL
+				PRINTW 「뭐냐? 남의 마음속에 들어가겠다고? 악취미로구나 네놈, 하하하」
+				PRINTL
+				PRINTW 실실 쪼개더니만, 이내 딴사람처럼 정한 얼굴로 그는 당신을 가만히 응시했다.
+				PRINTL
+				PRINTW 「어리석구나, 데빌 서머너.
+				PRINTW 　저자들에게 도움 따윈 필요 없다.
+				PRINTW 　저자들에게는 운명이 있어.
+				PRINTW 　얼굴 없는 네놈으로선 알 수 없겠지, 별도 짊어지지 않은 범백으로선 영예의 길을 이해할 수 없겠지. 어리석구나, 데빌 서머너」
+				PRINTL
+				PRINTW 쿵, 쿵.
+				PRINTW 지크프리트의 붉은 살결에서 기차처럼 김이 피어오른다.
+				PRINTW 천천히 다가오는 그의 모습은 당신보다 훨씬 거대해서 몸이 제멋대로 뒷걸음질 쳤다.
+				PRINTL
+				PRINTW 「저자들은 스스로 원했다.
+				PRINTW 　별을 올려다보고, 별에 매달려, 스스로가 별이 되기 위해 단 하나의 영혼을 활활 타오르는 불꽃에 내던졌다.
+				PRINTW 　신, 악마, 그리고 영웅.
+				PRINTW 　우리와 같은 『이야기』의 세계로 가기 위해.
+				PRINTW 　――닿지 못한다면 어둡고 깊은 모래벌판 속에서 영원히 고통받게 될 것을 알면서도, 말이다」
+				PRINTL
+				PRINTW 등 뒤가 벽에 부딪힌다. 이제 더는 물러설 수 없다.
+				PRINTL
+				PRINTW 「데빌 서머너.
+				PRINTW 　네놈은, 걸 수 있겠나?
+				PRINTW 　아직 밝지 않은 미완성의 소녀들에게.
+				PRINTL
+				PRINTW 　데빌 서머너.
+				PRINTW 　네놈은, 발을 내딛을 수 있겠나?
+				PRINTW 　아직 개척되지 않은 사막의 끝자락으로.
+				PRINTL
+				PRINTW 　데빌 서머너.
+				PRINTW 　네놈은, 범할 수 있겠나.
+				PRINTW 　인간을 별자리로 새겨넣은 제우스와도 같은 대죄를!!」
+				PRINTL
+				SETCOLOR 0xBB0000
+				PRINTL [0]이해할 수 없다
+				PRINTL [1]냉정해졌다
+				PRINTL [2]이제 그만두자
+				SETCOLOR 0x33ffcc
+				PRINT [99]……그래도, 
+				PRINTS NAME:(EVENT93_推しの位置取得())
+				PRINTL 의 얼굴이 머리에서 떠나지 않는다
+				RESETCOLOR
+				PRINTL 
+				CALL INPUTINT, 0 , 1 , 2 ,99
+				IF RESULT != 99
+					PRINTL
+					PRINTW 지크프리트는 실실 웃었다.
+					PRINTL
+					PRINTW 「시시하긴.
+					PRINTW 　뭐, 상관없지 않나? 아무도 널 탓하지 않는다.
+					PRINTW 　그게 보통이니까」
+					PRINTL
+					PRINTW 지크프리트는 원래 자리로 돌아가 벌러덩 눕더니 태평하게 코를 골기 시작했다.
+					PRINTW 어느샌가 기린의 모습은 사라져 있었다.
+					PRINTW 조명도, 공조도 멈춰 있었다.
+					PRINTL
+					SETCOLOR 0xff0033
+					PRINTW ……당신은 무대소녀와의 인연이 결정적으로 끊어져 버린 듯한 느낌이 들었다.
+					RESETCOLOR
+					FORCEWAIT
+					
+					;무대소녀, 전원 말소……하면 나나가 극대노한다는 걸 깨달았으므로 이대로 유지. 어차피 자리에 없는 플래그 서 있으니 안심안심
+					;CALL EVENT93_ALL_LOST
+					イベントフラグ:93:0 = -1
+					RETURN
+				ENDIF
+				PRINTL
+				PRINTW 지크프리트는 눈을 부릅뜨고 사납게 웃었다.
+				PRINTL
+				PRINTW 「바보 녀석! 별도 보이지 않는 범부가 영걸의 싹을 사랑하는가!
+				PRINTW 　곱게는 끝나지 않을 게다,
+				PRINTW 　별에 불타 네놈은 죽을 것이다, 하지만――
+				PRINTW 　난 네놈의 그 결단이 사랑스럽구나!」
+				PRINTL
+				PRINTW 문이 열리고, 풍경이 일그러지며, 당신의 몸이 허공에 뜬다.
+				PRINTW 검고 차가운 우주 속에 하얗게 소용돌이치는 눈부신 별.
+				PRINTL
+				PRINTW 「나아가라, 나아가라, 데빌 서머너!
+				PRINTW 　네놈이 그 손으로 거머쥘 것은 오직 사랑하는 소녀의 손끝뿐!」
+				PRINTL
+				PRINTL 소름 끼칠 정도로 거대한 질량 속으로 당신의 몸이 빨려 들어가고, 그리고――
+				FORCEWAIT
+			ENDIF
+			
+			;アシスタントが入ってるとオペレータがしゃべりだすので……
+			;あなたと推し以外は出禁！　出禁です！
+			ASSI = -1
+			
+			;パーティ解散
+			FOR LOCAL:0,1,7
+				LOCALS = 포지션{LOCAL:0}
+				IF FLAG:LOCALS != 0 && FLAG:LOCALS != -1
+					CALL REMOVE_POSITION, LOCAL:0
+				ENDIF
+			NEXT
+			
+			;あなたをポジション1に移動
+			CALL CHANGE_POS, CFLAG:MASTER:포지션,1
+			
+			;エラー落ち避けのおまじない
+			SELECTCASE イベントフラグ:93:10
+				CASE [[キャラ:카렌_무대소녀]]
+				CASE [[キャラ:히카리]]
+				CASE [[キャラ:쥰나]]
+				CASE [[キャラ:마히루]]
+				CASE [[キャラ:후타바_무대소녀]]
+				CASE [[キャラ:카오루코]]
+				CASE [[キャラ:나나]]
+				CASE [[キャラ:마야_무대소녀]]
+				CASE [[キャラ:클로딘]]
+				;該当なし（バグった）
+				CASEELSE
+					PRINTW 『윽! 최애 무대소녀를 제대로 가져오지 못했습니다!』
+					PRINTW 이 메시지가 떴을 때는 에러가 발생한 것이니 어딘가에 제보해 주십시오!
+					PRINTW 아저씨와의 약속 타워 브릿지다!
+					PRINTW 이대로 진행하면 버그 난다구! 버그 나니까 닫아줘!
+					PRINTW 버그 나니까 닫아줘!
+					PRINTW 버그 나니까 닫으라고 말했잖아!?
+					PRINTW 앗 이 녀석 보아하니 우클릭으로 전부 스킵하는 맨…… 끄아아악!!!
+					FORCEWAIT
+			ENDSELECT
+			
+			;推しの居ないフラグだけ解除
+			CFLAG:(EVENT93_推しの位置取得()):이자리에없는플래그 = 0
+			;ポジション3に推しを挿入
+			CALL INSERT_POSITION, 3, EVENT93_推しの位置取得()
+			
+			SELECTCASE イベントフラグ:93:10
+				CASE [[キャラ:카렌_무대소녀]]
+					CALL EVENT_93_愛城華恋_04
+				CASE [[キャラ:히카리]]
+					CALL EVENT_93_神楽ひかり_04
+				CASE [[キャラ:쥰나]]
+					CALL EVENT_93_星見純那_04
+				CASE [[キャラ:마히루]]
+					CALL EVENT_93_露崎まひる_04
+				CASE [[キャラ:후타바_무대소녀]]
+					CALL EVENT_93_石動双葉_04
+				CASE [[キャラ:카오루코]]
+					CALL EVENT_93_花柳香子_04
+				CASE [[キャラ:나나]]
+					CALL EVENT_93_大場なな_04
+				CASE [[キャラ:마야_무대소녀]]
+					CALL EVENT_93_天堂真矢_04
+				CASE [[キャラ:클로딘]]
+					CALL EVENT_93_西條クロディーヌ_04
+					
+				;該当なし（バグった）
+				CASEELSE
+					PRINTW 『윽! 최애 무대소녀를 제대로 가져오지 못했습니다!』
+					PRINTW 이 메시지가 떴을 때는 에러가 발생한 것이니 어딘가에 제보해 주십시오!
+					PRINTW 아저씨와의 약속 타워 브릿지다!
+					PRINTW 이대로 진행하면 버그 난다구! 버그 나니까 닫아줘!
+					PRINTW 버그 나니까 닫아줘!
+					PRINTW 버그 나니까 닫으라고 말했잖아!?
+					PRINTW 앗 이 녀석 보아하니 우클릭으로 전부 스킵하는 맨…… 끄아아악!!!
+					FORCEWAIT
+			ENDSELECT
+			
+			;パワーアップイベント完了フラグ
+			イベントフラグ:93:0 = 14
+			
+			;本来の使い方じゃないけど、各舞台少女の番号が欲しい
+			CALL EVENT93_推しチェック
+			;力技で全員に設定
+			CFLAG:(RESULT:1):이자리에없는플래그 = 0
+			CFLAG:(RESULT:2):이자리에없는플래그 = 0
+			CFLAG:(RESULT:3):이자리에없는플래그 = 0
+			CFLAG:(RESULT:4):이자리에없는플래그 = 0
+			CFLAG:(RESULT:5):이자리에없는플래그 = 0
+			CFLAG:(RESULT:6):이자리에없는플래그 = 0
+			CFLAG:(RESULT:7):이자리에없는플래그 = 0
+			CFLAG:(RESULT:8):이자리에없는플래그 = 0
+			CFLAG:(RESULT:9):이자리에없는플래그 = 0
+			
+			CALL RESET_ANNOUNCE_FLAG
+			;解散した編成を復元する
+			CALL CHANGE_LAST_BATTLE_MEMBERSET
+		ELSE
+			;大場の場合
+			IF イベントフラグ:93:10 == [[キャラ:나나]]
+				;とくになし
+			ELSEIF イベントフラグ:93:0 == 12
+				PRINTW 「……서둘러, 녀석들이 소중하다면」
+				
+				イベントフラグ:93:0 = 13
+			ELSE
+				PRINTW 「쳐죽여 버리고 싶어!?」
+			ENDIF
+			
+		ENDIF
+		
+		RETURN
+
+ENDIF
+
+
+$INPUT_LOOP1
+L_SELECT_ABLE = /0/
+CUSTOMDRAWLINE =
+	PRINTL [0]……지금은 바쁘다.
+	PRINTL 
+	;카렌
+	IF イベントフラグ:93:1 == 0 && イベントフラグ:93:2 == 0
+		PRINT [1]운명의 레뷰　주연: 아이죠 카렌・카구라 히카리　난이도:
+		IF イベントフラグ:93:0 > 6
+			PRINTL ★★★★★
+		ELSEIF イベントフラグ:93:0 > 5
+			PRINTL ★★★★☆
+		ELSEIF イベントフラグ:93:0 > 4
+			PRINTL ★★★☆☆
+		ELSEIF イベントフラグ:93:0 > 3
+			PRINTL ★★★☆☆
+		ELSEIF イベントフラグ:93:0 > 2
+			PRINTL ★★☆☆☆
+		ELSEIF イベントフラグ:93:0 > 1
+			PRINTL ★☆☆☆☆
+		ENDIF
+		L_SELECT_ABLE+= "1/"
+	ELSE
+		;존재하지 않거나 붕괴했거나 복종계 함락이거나 전투 참가 불가
+		;그 경우에는 이벤트가 진행되지 않는다
+		IF !PLAYABLE_EVENT93_CHARA("華恋")
+			SETCOLOR 0x2e2e41
+				PRINTL [-]공연 미정
+			RESETCOLOR
+		ELSEIF GETBIT(イベントフラグ:93:1, 2) == 0
+			PRINTL [1]카렌과 히카리에 대해 생각한다
+			L_SELECT_ABLE+= "1/"
+		ELSEIF GETBIT(イベントフラグ:93:2, 3) && GETBIT(イベントフラグ:93:1, 3) == 0
+			PRINTL [1]아이죠 카렌이 부르고 있다
+			L_SELECT_ABLE+= "1/"
+		ELSE
+			SETCOLOR 0x2e2e41
+				PRINTL [-]------
+			RESETCOLOR
+		ENDIF
+	ENDIF
+	
+	;ひかり
+	;IF 
+	;ELSE
+		;存在しない、または崩壊している、または服従系陥落、または戦闘参加不能
+		;その場合はイベントが進行しない
+		IF !PLAYABLE_EVENT93_CHARA("ひかり")
+			SETCOLOR 0x2e2e41
+				PRINTL [-]공연 미정
+			RESETCOLOR
+		;기점은 카렌
+		ELSEIF GETBIT(イベントフラグ:93:1, 2) && GETBIT(イベントフラグ:93:2, 3) == 0
+			PRINTL [2]카구라 히카리가 부르고 있다
+			L_SELECT_ABLE+= "2/"
+		ELSE
+			SETCOLOR 0x2e2e41
+				PRINTL [-]------
+			RESETCOLOR
+		ENDIF
+	;ENDIF
+	
+	;쥰나
+	IF イベントフラグ:93:3 == 0
+		PRINT [3]갈망의 레뷰　주연: 호시미 쥰나　　　　　　　난이도:
+		IF イベントフラグ:93:0 > 6
+			PRINTL ★★★★★
+		ELSEIF イベントフラグ:93:0 > 5
+			PRINTL ★★★★☆
+		ELSEIF イベントフラグ:93:0 > 4
+			PRINTL ★★★★☆
+		ELSEIF イベントフラグ:93:0 > 3
+			PRINTL ★★★★☆
+		ELSEIF イベントフラグ:93:0 > 2
+			PRINTL ★★☆☆☆
+		ELSEIF イベントフラグ:93:0 > 1
+			PRINTL ★☆☆☆☆
+		ENDIF
+		L_SELECT_ABLE+= "3/"
+	ELSE
+		;存在しない、または非戦闘員化している、または崩壊している、または服従系陥落、または戦闘参加不能
+		;その場合はイベントが進行しない
+		IF !PLAYABLE_EVENT93_CHARA("純那")
+			SETCOLOR 0x2e2e41
+				PRINTL [-]공연 미정
+			RESETCOLOR
+		ELSEIF GETBIT(イベントフラグ:93:3, 2) == 0
+			PRINTL [3]쥰나에 대해 생각한다
+			L_SELECT_ABLE+= "3/"
+		ELSEIF GETBIT(イベントフラグ:93:3, 3) == 0
+			PRINTL [3]지하 극장에서 쥰나를 발견한다
+			L_SELECT_ABLE+= "3/"
+		ELSE
+			SETCOLOR 0x2e2e41
+			PRINTL [-]------
+			RESETCOLOR
+		ENDIF
+	ENDIF
+	
+	;마히루
+	IF イベントフラグ:93:4 == 0
+		PRINT [4]질투의 레뷰　주연: 츠유자키 마히루　　　　　　난이도:
+		IF イベントフラグ:93:0 > 6
+			PRINTL ★★★★★
+		ELSEIF イベントフラグ:93:0 > 5
+			PRINTL ★★★★☆
+		ELSEIF イベントフラグ:93:0 > 4
+			PRINTL ★★★☆☆
+		ELSEIF イベントフラグ:93:0 > 3
+			PRINTL ★★☆☆☆
+		ELSEIF イベントフラグ:93:0 > 2
+			PRINTL ★★☆☆☆
+		ELSEIF イベントフラグ:93:0 > 1
+			PRINTL ★★☆☆☆
+		ENDIF
+		L_SELECT_ABLE+= "4/"
+	ELSE
+		;存在しない、または非戦闘員化している、または崩壊している、または服従系陥落、または戦闘参加不能
+		;その場合はイベントが進行しない
+		IF !PLAYABLE_EVENT93_CHARA("まひる")
+			SETCOLOR 0x2e2e41
+				PRINTL [-]공연 미정
+			RESETCOLOR
+		ELSEIF GETBIT(イベントフラグ:93:4, 2) == 0
+			PRINTL [4]마히루에 대해 생각한다
+			L_SELECT_ABLE+= "4/"
+		ELSEIF GETBIT(イベントフラグ:93:4, 3) == 0
+			PRINTL [4]마히루가 당신을 부르고 있다
+			L_SELECT_ABLE+= "4/"
+		ELSE
+			SETCOLOR 0x2e2e41
+			PRINTL [-]------
+			RESETCOLOR
+		ENDIF
+	ENDIF
+	
+	;후타바 씨
+	IF イベントフラグ:93:5 == 0 && イベントフラグ:93:6 == 0
+		PRINT [5]약속의 레뷰　주연: 이스루기 후타바・하나야기 카오루코　난이도:
+		IF イベントフラグ:93:0 > 6
+			PRINTL ★★★★★
+		ELSEIF イベントフラグ:93:0 > 5
+			PRINTL ★★★★★
+		ELSEIF イベントフラグ:93:0 > 4
+			PRINTL ★★★★☆
+		ELSEIF イベントフラグ:93:0 > 3
+			PRINTL ★★★☆☆
+		ELSEIF イベントフラグ:93:0 > 2
+			PRINTL ★★☆☆☆
+		ELSEIF イベントフラグ:93:0 > 1
+			PRINTL ★☆☆☆☆
+		ENDIF
+		L_SELECT_ABLE+= "5/"
+	ELSE
+		;存在しない、または非戦闘員化している、または崩壊している、または服従系陥落、または戦闘参加不能
+		;その場合はイベントが進行しない
+		;京都組はセットで判定
+		IF !IS_PLAYABLE_KYOTO
+			SETCOLOR 0x2e2e41
+				PRINTL [-]공연 미정
+			RESETCOLOR
+		ELSEIF GETBIT(イベントフラグ:93:5, 2) == 0
+			PRINTL [5]후타바에 대해 생각한다
+			L_SELECT_ABLE+= "5/"
+		ELSEIF GETBIT(イベントフラグ:93:5,2) && GETBIT(イベントフラグ:93:6,2) && GETBIT(イベントフラグ:93:5,3) == 0
+			PRINTL [5]교토 조가 시끌벅적하다
+			L_SELECT_ABLE+= "5/"
+		ELSE
+			SETCOLOR 0x2e2e41
+			PRINTL [-]------
+			RESETCOLOR
+		ENDIF
+	ENDIF
+	
+	;存在しない、または非戦闘員化している、または崩壊している、または服従系陥落、または戦闘参加不能
+	;その場合はイベントが進行しない
+	;京都組はセットで判定
+	;ぶぶ漬け
+	;IF 
+	;		PRINTL [6]
+	;ELSE
+		;京都組はセットで判定
+	;	IF LOCAL:1 < 0
+		IF !IS_PLAYABLE_KYOTO
+			SETCOLOR 0x2e2e41
+				PRINTL [-]공연 미정
+			RESETCOLOR
+		ELSEIF GETBIT(イベントフラグ:93:6, 2) == 0
+			PRINTL [6]카오루코에 대해 생각한다
+			L_SELECT_ABLE+= "6/"
+		ELSEIF GETBIT(イベントフラグ:93:5,2) && GETBIT(イベントフラグ:93:6,2) && GETBIT(イベントフラグ:93:6,3) == 0
+			PRINTL [6]교토 조가 시끌벅적하다
+			L_SELECT_ABLE+= "6/"
+		ELSE
+			SETCOLOR 0x2e2e41
+			PRINTL [-]------
+			RESETCOLOR
+		ENDIF
+	;ENDIF
+	
+	;나나 / 위 미타키하라 원정 플래그(イベントフラグ:99:5)가 1이면 애초에 나오지 않는다
+	IF イベントフラグ:99:5 == 1
+		PRINTL [-]공연 미정
+	ELSEIF イベントフラグ:93:7 == 0
+		PRINT [7]유대의 레뷰　　주연: 다이바 나나　　　　　　　난이도:
+		IF イベントフラグ:93:0 > 6
+			PRINTL ★★★★☆
+		ELSEIF イベントフラグ:93:0 > 5
+			PRINTL ★★★★☆
+		ELSEIF イベントフラグ:93:0 > 4
+			PRINTL ★★★★☆
+		ELSEIF イベントフラグ:93:0 > 3
+			PRINTL ★★★★☆
+		ELSEIF イベントフラグ:93:0 > 2
+			PRINTL ★★★★☆
+		ELSEIF イベントフラグ:93:0 > 1
+			PRINTL ★★★★☆
+		ENDIF
+		L_SELECT_ABLE+= "7/"
+	ELSE
+		;存在しない、または非戦闘員化している、または崩壊している、または服従系陥落、または戦闘参加不能
+		;その場合はイベントが進行しない
+		IF !PLAYABLE_EVENT93_CHARA("なな")
+			SETCOLOR 0x2e2e41
+				PRINTL [-]공연 미정
+			RESETCOLOR
+		ELSEIF GETBIT(イベントフラグ:93:7, 2) == 0
+			PRINTL [7]나나에 대해 생각한다
+			L_SELECT_ABLE+= "7/"
+		ELSEIF GETBIT(イベントフラグ:93:7, 3) == 0 && イベントフラグ:93:0 > 7 && EVENT93_個別イベ3終わった判定() > 7
+			PRINTL [7]『다이바 나나』
+			L_SELECT_ABLE+= "7/"
+		ELSE
+			SETCOLOR 0x2e2e41
+			PRINTL [-]------
+			RESETCOLOR
+		ENDIF
+	ENDIF
+	
+	;텐도 마야
+	IF イベントフラグ:93:8 == 0 && イベントフラグ:93:9 == 0
+		PRINT [8]운명의 레뷰　주연: 텐도 마야・사이죠 클로딘 난이도:
+		IF イベントフラグ:93:0 > 6
+			PRINTL ★★★★★
+		ELSEIF イベントフラグ:93:0 > 5
+			PRINTL ★★★★☆
+		ELSEIF イベントフラグ:93:0 > 4
+			PRINTL ★★★★☆
+		ELSEIF イベントフラグ:93:0 > 3
+			PRINTL ★★★☆☆
+		ELSEIF イベントフラグ:93:0 > 2
+			PRINTL ★★★☆☆
+		ELSEIF イベントフラグ:93:0 > 1
+			PRINTL ★★★☆☆
+		ENDIF
+		L_SELECT_ABLE+= "8/"
+	ELSE
+		;存在しない、または非戦闘員化している、または崩壊している、または服従系陥落、または戦闘参加不能
+		;その場合はイベントが進行しない
+		;真矢クロはセットで判定
+		IF !IS_PLAYABLE_MAYAKURO
+			SETCOLOR 0x2e2e41
+				PRINTL [-]공연 미정
+			RESETCOLOR
+		ELSEIF GETBIT(イベントフラグ:93:8, 2) == 0
+			PRINTL [8]마야에 대해 생각한다
+			L_SELECT_ABLE+= "8/"
+		ELSEIF GETBIT(イベントフラグ:93:8,2) && GETBIT(イベントフラグ:93:8,3) == 0
+			;텐도 마야의 약점을 알고 있다
+			IF GETBIT(イベントフラグ:93:8,20)
+				PRINTL [8]마야와 클로딘이 다과회를 하고 있는 모양이다
+				L_SELECT_ABLE+= "8/"
+			;모른다
+			ELSE
+				PRINTL [8]클로딘이 당신을 찾고 있는 모양이다
+				L_SELECT_ABLE+= "8/"
+			ENDIF
+		ELSE
+			SETCOLOR 0x2e2e41
+			PRINTL [-]------
+			RESETCOLOR
+		ENDIF
+	ENDIF
+	
+	;存在しない、または非戦闘員化している、または崩壊している、または服従系陥落、または戦闘参加不能
+	;その場合はイベントが進行しない
+	;真矢クロはセットで判定
+		
+	;クロちゃんが居てメリジェーヌフラグが立ってる場合、クロちゃんのCFLAGにもメリジェーヌフラグのONOFFを記録（後方互換のため）
+	SIF LOCAL > -1 && GETBIT(イベントフラグ:93:9, 21)
+		CFLAG:LOCAL:998 = 1
+	
+	;クロディーヌ
+	;IF 
+	;		PRINTL [9]
+		;IF LOCAL:2 < 0
+		IF !IS_PLAYABLE_MAYAKURO
+			SETCOLOR 0x2e2e41
+				PRINTL [-]공연 미정
+			RESETCOLOR
+		ELSEIF GETBIT(イベントフラグ:93:9, 2) == 0
+			PRINTL [9]클로딘에 대해 생각한다
+			L_SELECT_ABLE+= "9/"
+		;클로딘 이벤트 3은 텐도 마야 이벤트 3 이후에
+		ELSEIF GETBIT(イベントフラグ:93:9,2) && GETBIT(イベントフラグ:93:9,3) == 0 && GETBIT(イベントフラグ:93:8,3)
+			;철저한 살육전을 거친 클로딘 (카렌・히카리도 있어야 진행)
+			IF GETBIT(イベントフラグ:93:9,20) && IS_PLAYABLE_KAREHIKA
+				PRINTL [9]클로딘이 무대 위에서 무언가를 하고 있다
+			L_SELECT_ABLE+= "9/"
+			;살육전 거쳤으나 카렌・히카리가 없음
+			ELSEIF GETBIT(イベントフラグ:93:9,20)
+				SETCOLOR 0x2e2e41
+					PRINTL [-]공연 미정
+				RESETCOLOR
+			;가시가 빠진 클로딘
+			ELSE
+				PRINTL [9]무대소녀들이 다과회를 하고 있는 것 같다
+				L_SELECT_ABLE+= "9/"
+			ENDIF
+		ELSE
+			SETCOLOR 0x2e2e41
+			PRINTL [-]------
+			RESETCOLOR
+		ENDIF
+	;ENDIF
+CUSTOMDRAWLINE =
+	
+INPUT
+[IF_DEBUG]
+	IF RESULT == 877
+		PRINTL 디버그용 글로벌 변수 조작
+		PRINTL 이것 이외의 숫자를 치고 엔터 누르면 보지 못했던 것으로 하고 우향우
+		PRINTL 
+		PRINTL [0]다이바리셋（시나리오 진행의 기억）
+		PRINTL [1]다이바리셋（↑의 로컬 동기화）
+		PRINTL [9]기린 리셋
+		INPUT
+		IF RESULT == 0
+			FOR LOCAL:4, 0, 10
+				大場ななの記憶:0:(LOCAL:4) = 0
+			NEXT
+			FOR LOCAL:4, 0, 10
+				大場ななの記憶:1:(LOCAL:4) = 0
+			NEXT
+			FOR LOCAL:4, 0, 10
+				大場ななの記憶:2:(LOCAL:4) = 0
+			NEXT
+			PRINTW 「바나나이스」
+		ELSEIF RESULT == 1
+			FOR LOCAL:4, 0, 10
+				大場ななの記憶_L:0:(LOCAL:4) = 0
+			NEXT
+			FOR LOCAL:4, 0, 10
+				大場ななの記憶_L:1:(LOCAL:4) = 0
+			NEXT
+			FOR LOCAL:4, 0, 10
+				大場ななの記憶_L:2:(LOCAL:4) = 0
+			NEXT
+			PRINTW 「바나나이스」
+		ELSEIF RESULT == 9
+			GLOBAL:기린의기억 = 0
+			PRINTW 「이해합니다」
+		ENDIF
+		SAVEGLOBAL
+		
+		GOTO INPUT_LOOP1
+	ENDIF
+[ENDIF]
+;入力可能な番号でないなら戻す
+SIF !STRCOUNT(L_SELECT_ABLE, @"/{RESULT}/")
+	GOTO INPUT_LOOP1
+IF RESULT == 0
+	SELECTCASE イベントフラグ:93:0
+		CASE 2
+			PRINTW 지금, 화장실에 있는데……
+			PRINTW 볼일 보고 있는 중에 전화 같은 거 받고 싶지 않다. 당신은 착신을 무시했다。
+		CASE 3
+			PRINTW 선잠이 들려고 할 때 통화라니 무슨 짓이냐。
+			PRINTW 당신은 단말을 매너 모드로 바꾸고 착신을 무시했다……
+		CASE 4
+			PRINTW 아니아니, 지금, 밥 먹고 있는데요. 이 돈까스 카레 안 보임요？
+			PRINTW 당신은 단말을 매너 모드로 바꾸고 식사를 계속했다。
+		CASE 5
+			PRINTW 왜 저 기린은 바쁠때만 전화해오냐？
+			PRINTW 왠지 열받아서 오늘은 안 가기로 했습니다。
+		CASE 6
+			PRINTW 언제나 전화로 해오는데 오늘은 문자라서 마음이 안 내킨다。
+			PRINTW 기린새끼, 빠졌냐? 당신은 단말기를 내버려두고 작업을 계속했다。
+		CASE 7
+			PRINTW 왜 고구마 껍질 벗기는 중에 전화가 걸려오냐……
+			PRINTW 어차피 기린일 게 뻔하니, 당신은 착신을 무시하기로 했다。
+	    CASEELSE
+			PRINTW 역시 그만두자。
+			PRINTW 당신은 스케쥴을 다시 생각했다。
+	ENDSELECT
+	RETURN
+
+;愛城華恋
+ELSEIF RESULT == 1 && イベントフラグ:93:1 == 0 && イベントフラグ:93:2 == 0
+	$INPUT_LOOP_01
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「그럼, 힌트입니다. 아이죠 카렌은 【검격】을、
+	PRINTL 　카구라 히카리는【수격】에 특화되어 있습니다。
+	IF イベントフラグ:93:0 == 7
+		PRINTL 　아차, 거기에 이번에는 【화염】【신경】상성도 쓸 것 같네요？
+	ENDIF
+	PRINTL 
+	PRINTL 　특히 전자는 기합을 모아 쿵 하고 부딪혀오는 걸 선호하니、
+	PRINTL 　상대의 행동을 잘 살펴보면 좋을 겁니다。」
+	PRINTL 
+	PRINTL [1]리플레이와 싸운다
+	PRINTL [0]생각을 고친다
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_8
+		CALL EVENT_93_総当たり戦後のキリン
+	ELSE
+		GOTO INPUT_LOOP_01
+	ENDIF
+;愛城華恋　個別イベント02
+ELSEIF RESULT == 1 && GETBIT(イベントフラグ:93:1, 2) == 0
+	$INPUT_LOOP_01_02
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「오야, 무슨 일인가요？
+	PRINTL 　멍하니, 뭘 생각하시나요？」
+	PRINTL 
+	PRINTL [1]생각을 계속한다
+	PRINTL [0]역시 그만둔다
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_愛城華恋_02
+	ELSE
+		GOTO INPUT_LOOP_01_02
+	ENDIF
+;愛城華恋　個別イベント03
+ELSEIF RESULT == 1 && GETBIT(イベントフラグ:93:2, 3) && GETBIT(イベントフラグ:93:1, 3) == 0
+	$INPUT_LOOP_01_03
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「아이죠 카렌이 당신을 부르고 있다구요？
+	PRINTL 　아무래도, 가고 싶은 곳이 있는 모양입니다。」
+	PRINTL 
+	PRINTL [1]만나러 간다
+	PRINTL [0]지금 바쁘다
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_愛城華恋_03
+	ELSE
+		GOTO INPUT_LOOP_01_03
+	ENDIF
+	
+	
+	
+;神楽ひかり　個別イベント03
+ELSEIF RESULT == 2 && GETBIT(イベントフラグ:93:1, 2) && GETBIT(イベントフラグ:93:2, 3) == 0
+	$INPUT_LOOP_02_03
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「카구라 히카리……
+	PRINTL 　그녀와 아이죠 카렌은, 둘이서 하나의 운명。
+	PRINTL 　무대소녀와 마주할 생각이 있다면, 신중하세요」
+	PRINTL 
+	PRINTL [1]히카리의 부름에 응한다
+	PRINTL [0]지금 바쁘다
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_神楽ひかり_03
+	ELSE
+		GOTO INPUT_LOOP_02_03
+	ENDIF
+	
+	
+	
+;星見純那
+ELSEIF RESULT == 3 && イベントフラグ:93:3 == 0
+	$INPUT_LOOP_03
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「그럼, 힌트입니다. 호시미 쥰나는 【비구】의 사용자……
+	IF イベントフラグ:93:0 > 3
+		PRINTL 　그녀는 기습기책을 아주 좋아합니다。
+		PRINTL 　제대로 대책을 세우지 않는다면 【즉사】당해버릴지도 모른다구요？
+	ENDIF
+	IF イベントフラグ:93:0 == 7
+		PRINTL 
+		PRINTL 　게다가, 지금의 그녀는 비구가드브레이크를 사용합니다。
+		PRINTL 　테트라칸…… 추천드린다구요？
+		PRINTL 　또, 【정신】 상성의 공격도 사용해오니、
+		PRINTL 　그쪽 대책도 해놓지 않으면 낭패를 볼 수도 있어요。」
+	ELSE
+		PRINTL 
+		PRINTL 　거기에 더해, 애용하는 안경을 늘어놓아 【정신】상성도 날립니다。
+		PRINTL 　뭐어, 결국은 안경입니다, 범위공격으로 베어넘길 수 있다면 가장 좋겠죠。
+		PRINTL 　디버프 대책도 제대로 해둡시다。」
+	ENDIF
+	PRINTL 
+	PRINTL [1]리플레이와 싸운다
+	PRINTL [0]생각을 고친다
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_3
+		CALL EVENT_93_総当たり戦後のキリン
+	ELSE
+		GOTO INPUT_LOOP_03
+	ENDIF
+;星見純那　個別イベント02
+ELSEIF RESULT == 3 && GETBIT(イベントフラグ:93:3, 2) == 0
+	$INPUT_LOOP_03_02
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「오야？　오늘은 멍하게 계시는군요。
+	PRINTL 　호시미 쥰나의 일이라도…… 생각하고 계신 건가요？」
+	PRINTL 
+	PRINTL [1]이대로 생각에 잠긴다
+	PRINTL [0]지금 바쁘다
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_星見純那_02
+	ELSE
+		GOTO INPUT_LOOP_03_02
+	ENDIF
+	
+;星見純那　個別イベント03
+ELSEIF RESULT == 3 && GETBIT(イベントフラグ:93:3, 3) == 0
+	$INPUT_LOOP_03_03
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「아아, 마침 좋은 때에……
+	PRINTL 　호시미 쥰나의 잔향이, 제 극장에 틀어박혀 있어요！
+	PRINTL 　민폐이니까, 어떻게든 해주시지 않으시겠습니까, 데빌 서머너。」
+	PRINTL 
+	PRINTL [1]알았어 알았어
+	PRINTL [0]내 알 바냐
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_星見純那_03
+	ELSE
+		GOTO INPUT_LOOP_03_03
+	ENDIF
+	
+	
+;露崎まひる
+ELSEIF RESULT == 4 && イベントフラグ:93:4 == 0
+	$INPUT_LOOP_04
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「그럼, 힌트입니다. 츠유자키 마히루는 대량의 스즈다루캣을 데리고 있습니다。
+	PRINTL 　……으응？　그게 뭐냐, 구요？
+	PRINTL 　제게 묻지 마세요. 저도 모르는 건 있다구요。
+	PRINTL 
+	PRINTL 　그런 것보다, 저 고양이들은 어쨌거나 재주가 좋습니다。
+	PRINTL 　그들은 【타격】이나 【파마】나 【지변】、
+	PRINTL 　때에 따라서는 【주살】 같은 것도 쓸 수 있을 것입니다。
+	PRINTL 　공통된 약점은 【수격】입니다. 마하 아쿠아나 운디네탄을 준비해오세요。
+	PRINTL 　【전격】도 나쁘진 않겠죠。
+	IF イベントフラグ:93:0 == 7
+		PRINTL 
+		PRINTL 　그리고, 이번에는、왠지 묘하게 격렬히 움직이는 그림조각이 있는 듯 합니다。
+		PRINTL 　【검격】【화염】에, 특히 주의를 기울이는 편히 좋을 겁니다。
+	ENDIF
+	PRINTL 
+	PRINTL 　거기에 거기에, 츠유자키 마히루 본인은 소생마법을 사용할지도 모릅니다。
+	PRINTL 　놔둔다면 쓰러뜨렸을 고양이가 다시 일어나、
+	PRINTL 　주먹을 치켜들고 이쪽을 바라보고 있다…… 같은 일도。
+	PRINTL 　주의사항은 다양합니다만, 이건 그런 레뷰이니까, 부디 용서해주세요。」
+	PRINTL 
+	PRINTL [1]리플레이와 싸운다
+	PRINTL [0]생각을 고친다
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_4
+		CALL EVENT_93_総当たり戦後のキリン
+	ELSE
+		GOTO INPUT_LOOP_04
+	ENDIF
+	
+;露崎まひる　個別イベント02
+ELSEIF RESULT == 4 && GETBIT(イベントフラグ:93:4, 2) == 0
+	$INPUT_LOOP_04_02
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「오야, 멍하니 계시는군요. 생각하시는 건가요？
+	PRINTL 　츠유자키 마히루……。
+	PRINTL 　본래는 더 밝은 아이, 인데 말이죠。」
+	PRINTL 
+	PRINTL [1]이대로 생각에 잠긴다
+	PRINTL [0]어이쿠 안 되지, 멍때리고 있었다
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_露崎まひる_02
+	ELSE
+		GOTO INPUT_LOOP_04_02
+	ENDIF
+	
+;露崎まひる　個別イベント03
+ELSEIF RESULT == 4 && GETBIT(イベントフラグ:93:4, 3) == 0
+	$INPUT_LOOP_04_03
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「어라？　이런 곳을 산책하고 계셔도, 괜찮으신 건가요？
+	PRINTL 　츠유자키 마히루…… 당신을 부른 것 같은데요？
+	PRINTL 　얼굴을 비추어두는 쪽이, 나중에 후회하지 않을 것 같군요。」
+	PRINTL 
+	PRINTL [1]그렇게까지 말한다면 만나러 가볼까
+	PRINTL [0]내 알 바냐, 나중에
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_露崎まひる_03
+	ELSE
+		GOTO INPUT_LOOP_04_03
+	ENDIF
+	
+	
+;石動双葉
+ELSEIF RESULT == 5 && イベントフラグ:93:5 == 0 && イベントフラグ:93:6 == 0
+	$INPUT_LOOP_05
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「그럼, 힌트입니다. 이스루기 후타바는 【타격】과 【충격】、
+	PRINTL 　하나야기 카오루코는 【질풍】【주살】을 잘 씁니다。
+	IF イベントフラグ:93:0 > 4
+		PRINTL 　……전자는 친구를 위해 그 몸으로 버티고 서고、
+		PRINTL 　……후자는 친구를 위해 버프나 바스테 공격을 짜낸다。
+		PRINTL 　그녀들은, 『소꿉친구의 인연』이 있다는 듯 하다구요？　아름답네요, 데빌 서머너」
+	ELSE
+		PRINTL 　……그러나, 이 리플레이는, 살짝 제휴가 안 좋은 듯 합니다。
+		PRINTL 　각자 사용해오는 속성들은 매우 제한되어 있을 겁니다。」
+	ENDIF
+	PRINTL 
+	PRINTL [1]리플레이와 싸운다
+	PRINTL [0]생각을 고친다
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_5
+		CALL EVENT_93_総当たり戦後のキリン
+	ELSE
+		GOTO INPUT_LOOP_05
+	ENDIF
+;石動双葉　個別イベント02　京都組はセットで判定
+ELSEIF RESULT == 5 && GETBIT(イベントフラグ:93:5,2) == 0 && IS_PLAYABLE_KYOTO
+	$INPUT_LOOP_05_02
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「이스루기 후타바가 신경쓰이나요？
+	PRINTL 　후후후, 그렇다면 생각에 잠기시는 것도 좋겠죠, 방해하지 않겠습니다。」
+	PRINTL 
+	PRINTL [1]이대로 생각에 잠긴다
+	PRINTL [0]딱히 그런 건 아니다
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_石動双葉_02
+	ELSE
+		GOTO INPUT_LOOP_05_02
+	ENDIF
+;石動双葉　個別イベント02　京都組はセットで判定
+ELSEIF RESULT == 5 && GETBIT(イベントフラグ:93:5,2) && GETBIT(イベントフラグ:93:6,2) && GETBIT(イベントフラグ:93:5,3) == 0 && IS_PLAYABLE_KYOTO
+	$INPUT_LOOP_05_03
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「어라, 이런 곳에 있어도 되나요？
+	PRINTL 　위…… 시끄럽다구요？」
+	PRINTL 
+	PRINTL [1]확인하러 간다
+	PRINTL [0]나중에 해도 돼
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_石動双葉_03
+	ELSE
+		GOTO INPUT_LOOP_05_02
+	ENDIF
+	
+;ぶぶ漬け　個別イベ02
+ELSEIF RESULT == 6 && GETBIT(イベントフラグ:93:6,2) == 0 && IS_PLAYABLE_KYOTO && イベントフラグ:93:5
+	$INPUT_LOOP_06_02
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「하나야기 카오루코…… 신경쓰이시죠？
+	PRINTL 　사려에 잠기신다면 부디 마음대로, 좌석도 비어있으니 말이죠。」
+	PRINTL 
+	PRINTL [1]이대로 생각에 잠긴다
+	PRINTL [0]딱히 그런 건 아니다
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_花柳香子_02
+	ELSE
+		GOTO INPUT_LOOP_06_02
+	ENDIF
+
+;ぶぶ漬け　個別イベ03
+ELSEIF RESULT == 6 && GETBIT(イベントフラグ:93:5,2) && GETBIT(イベントフラグ:93:6,2) && GETBIT(イベントフラグ:93:6,3) == 0 && IS_PLAYABLE_KYOTO
+	$INPUT_LOOP_06_03
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「어라, 이런 곳에 있어도 되나요？
+	PRINTL 　위…… 시끄럽다구요？」
+	PRINTL 
+	PRINTL [1]확인하러 간다
+	PRINTL [0]기분 탓 아닐까？
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_花柳香子_03
+	ELSE
+		GOTO INPUT_LOOP_06_03
+	ENDIF
+
+;大場なな
+ELSEIF RESULT == 7 && イベントフラグ:93:7 == 0
+	$INPUT_LOOP_07
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「그럼, 힌트입니다。
+	PRINTL 　다이바 나나는 고화력의 【검격】【전술】【중력】을 특기로 합니다。
+	PRINTL 　무리하게 응전하려고 하면、
+	PRINTL 　압도적인 실력 아래 쓰러지고 말 겁니다。
+	PRINTL 
+	PRINTL 　거기에, 저 무대는, 그녀의 독무대입니다。
+	PRINTL 　흔히 말하는 카쟈/인다는 싹 지워버리므로 주의。
+	PRINTL 　전위는 솔직히 방어를 굳히는 편이 좋지 않을까요？
+	PRINTL 
+	PRINTL 　아아, 하나 더。
+	PRINTL 　마법은 마카라칸으로 반사될 가능성이 있습니다。
+	PRINTL 　고화력으로 밀어붙이려고 하면…… 꽈광！
+	PRINTL 　후후후。
+	PRINTL 
+	PRINTL 　괜찮으시죠？　데빌 서머너。」
+	PRINTL 
+	PRINTL [1]리플레이와 싸운다
+	PRINTL [0]생각을 고친다
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_6
+		CALL EVENT_93_総当たり戦後のキリン
+	ELSE
+		GOTO INPUT_LOOP_07
+	ENDIF
+;大場なな　個別イベ2
+ELSEIF RESULT == 7 && GETBIT(イベントフラグ:93:7, 2) == 0
+	$INPUT_LOOP_07_02
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「후후후, 누구를 생각하시는지, 맞춰볼까요？
+	PRINTL 　아니요, 아니요, 답 맞추기는 꽤나…… 이래 보여도, 감은 좋다구요, 전。」
+	PRINTL 
+	PRINTL [1]다이바 나나, 말이지……
+	PRINTL [0]무슨 소리 하는 거야 이 우제류 놈
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_大場なな_02
+	ELSE
+		GOTO INPUT_LOOP_07_02
+	ENDIF
+;大場なな　個別イベ3　全員と戦った後かつ大場以外の個別イベ3を終わらせた
+ELSEIF RESULT == 7 && GETBIT(イベントフラグ:93:7, 3) == 0 && イベントフラグ:93:0 > 7 && EVENT93_個別イベ3終わった判定() > 7
+	$INPUT_LOOP_07_03
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL ……다이바 나나가, 관객석에 서 있다。
+	PRINTL 
+	PRINTL [1]말을 건다
+	PRINTL [0]나중에 하자
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_大場なな_03
+	ELSE
+		GOTO INPUT_LOOP_07_03
+	ENDIF
+;天堂真矢
+ELSEIF RESULT == 8 && イベントフラグ:93:8 == 0
+	$INPUT_LOOP_08
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「그럼, 힌트입니다。
+	PRINTL 　텐도 마야는 【검격】【지변】 거기에 데・카쟈를,
+	PRINTL 　사이죠 클로딘은 【화염】【전격】【타격】을、
+	PRINTL 　각자 사용합니다。
+	PRINTL 
+	PRINTL 　특히 위험한 건 【검격】이라구요？
+	PRINTL 　텐도 마야는, 사거리만 짧지, 스킬의 위력은 월등합니다。
+	PRINTL 　내성을 준비해둘 수 없다면, 전위는 방어를 굳히는 편이 좋을지도 모르겠군요。
+	IF イベントフラグ:93:0 == 7
+		PRINTL 
+		PRINTL 　게다가, 게다가, 텐도 마야는、
+		PRINTL 　20%의 확률로 물리 상성을 무효화・반격하는, 하이퍼 카운터 기능을 탑재……
+		PRINTL 　멍청하게 손을 댔다가는, 맵게 되갚아지고、
+		PRINTL 　퍼부어지는 꼴을 보겠죠……
+	ENDIF
+	PRINTL 　경향과 대책, 중요하다구요？」
+	
+	PRINTL 
+	PRINTL [1]리플레이와 싸운다
+	PRINTL [0]생각을 고친다
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_7
+		CALL EVENT_93_総当たり戦後のキリン
+	ELSE
+		GOTO INPUT_LOOP_08
+	ENDIF
+;天堂真矢　個別イベ2
+ELSEIF RESULT == 8 && GETBIT(イベントフラグ:93:8, 2) == 0 && IS_PLAYABLE_MAYAKURO
+	$INPUT_LOOP_08_02
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「아버지는 무대 배우, 어머니는 프리 마돈나。
+	PRINTL 　드문 혈통에 더해, 오싹한 투쟁심。
+	PRINTL 　……무대소녀, 텐도 마야, 그녀는 보통 수단으로는 못 당해낸답니다？」
+	PRINTL 
+	PRINTL [1]그녀를 생각한다
+	PRINTL [0]갑자기 포엠 읊지 말아주실래요？？？
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_天堂真矢_02
+	ELSE
+		GOTO INPUT_LOOP_08_02
+	ENDIF
+	
+;天堂真矢　個別イベ3
+ELSEIF RESULT == 8 && GETBIT(イベントフラグ:93:8, 3) == 0 && IS_PLAYABLE_MAYAKURO
+	$INPUT_LOOP_08_03
+	CUSTOMDRAWLINE =
+	PRINTL 
+	
+	;天堂真矢の弱点を知っている
+	IF GETBIT(イベントフラグ:93:8,20)
+		PRINTL 「이거이거, 이런 곳에 있어도 되나요？
+		PRINTL 　텐도 마야, 사이죠 클로딘…… 심각한 표정으로 다과회를 하고 있는 것 같습니다만？」
+		PRINTL 
+		PRINTL [1]얼굴을 비추는 편이 좋으려나
+		PRINTL [0]나중에 해
+	;しらん
+	ELSE
+		PRINTL 「어라, 데빌 서머너
+		PRINTL 　사이죠 클로딘이 당신을 찾고 있었다구요？
+		PRINTL 　뭔가, 텐도 마야에 대해, 상담하고 싶은 게 있다던가。」
+		PRINTL 
+		PRINTL [1]네에네에, 가면 되는거죠
+		PRINTL [0]나중에 하자
+	ENDIF
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_天堂真矢_03
+	ELSE
+		GOTO INPUT_LOOP_08_03
+	ENDIF
+	
+;西條クロディーヌ
+ELSEIF RESULT == 9 && イベントフラグ:93:8 && GETBIT(イベントフラグ:93:9, 2) == 0 && IS_PLAYABLE_MAYAKURO
+	$INPUT_LOOP_09_02
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL 「사이죠 클로딘。
+	PRINTL 　일본인인 아버지에 프랑스인 어머니를 두고、
+	PRINTL 　어릴 적부터 예능 활동을 해온 "전" 천재아역。
+	PRINTL 　……그녀가 지닌 프라이드는 진짜입니다, 상하지 않게, 주의해주세요。」
+	PRINTL 
+	PRINTL [1]그녀를 생각한다
+	PRINTL [0]네에네에 나중에 합시다
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_西條クロディーヌ_02
+	ELSE
+		GOTO INPUT_LOOP_09_02
+	ENDIF
+	
+;西條クロディーヌ
+ELSEIF RESULT == 9 && イベントフラグ:93:8 && GETBIT(イベントフラグ:93:9, 3) == 0 && IS_PLAYABLE_MAYAKURO && (GETBIT(イベントフラグ:93:9,20) < 1 || GETBIT(イベントフラグ:93:9,20) && IS_PLAYABLE_KAREHIKA)
+	$INPUT_LOOP_09_03
+	CUSTOMDRAWLINE =
+	PRINTL 
+	;がっつり殺し合いを経たクロちゃん
+	IF GETBIT(イベントフラグ:93:9,20)
+		PRINTL 「아아, 마침 좋을 때에……
+		PRINTL 　사이죠 클로딘이 제 극장을 제멋대로 쓰고 있어요、
+		PRINTL 　어떻게든 해주시겠나요？」
+		PRINTL 
+		PRINTL [1]네에네에
+		PRINTL [0]스스로 어떻게든 해보세요
+	;それ以外
+	ELSE
+		PRINTL 「아아, 마침 좋을 때에……
+		PRINTL 　사이죠 씨들이, 가끔 다과회를 열고 있다구요。
+		PRINTL 　식품 반입 금지는 아닙니다만…… 상식을, 상식을 말이죠, 조금만 더 그녀들에게는 상식을！」
+		PRINTL 
+		PRINTL [1]네에네에, 말하고 올게요
+		PRINTL [0]지금 바쁘니까 나중에 합시다
+	ENDIF
+	INPUT
+	
+	IF RESULT == 0
+		GOTO INPUT_LOOP1
+	ELSEIF RESULT == 1
+		CALL EVENT_93_西條クロディーヌ_03
+	ELSE
+		GOTO INPUT_LOOP_09_03
+	ENDIF
+ELSE
+	GOTO INPUT_LOOP1
+ENDIF
+
+
+@EVENT_93_総当たり戦後のキリン
+;最終戦後
+LOADGLOBAL
+IF イベントフラグ:93:0 > 7 && GLOBAL:기린의기억 < 1
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTW 끈적하게 한 남자의 목소리가 들려온다……
+	PRINTL 
+	PRINTW 「접니다。
+	PRINTW 　우선은, 감사를。
+	PRINTW 　당신 덕에, 좋은 반짝임을 볼 수 있었습니다」
+	PRINTL 
+	PRINTW 목소리의 상태로 보아, 꽤나 기분이 좋은 듯 하다。
+	PRINTL 
+	PRINTW 「코러스 미만의 리플레이가、
+	PRINTW 　기껏해야 마그나타이트만으로도、
+	PRINTW 　진짜와 비슷한 멘탈리티를 논할 줄이야…… 이거 이거……」
+	PRINTL 
+	PRINTW 기린은 흥하며 콧김을 흘리고는, 말을 이었다。
+	PRINTL 
+	PRINTW 「떠다니던 리플레이는, 지금으로선 이게 전부입니다。
+	PRINTW 　이제는 당신의 재량으로、
+	PRINTW 　마음대로 다뤄주시면 되겠죠」
+	PRINTL 
+	PRINTW ……멀리서 동물원의 냄새가 난다。
+	PRINTW 당신은 고개를 돌린다。
+	PRINTW 어둠 속에, 비취빛의 눈동자가, 반짝인다。
+	PRINTL 
+	PRINTW 「그러나, 이런 우주를 택하는 분이십니다。
+	PRINTW 　사용법은, 하나 뿐이신가요。
+	PRINTW 　아니면…… 그 반짝임의 잔향을, 무대소녀로 취급해버리는 것이실까요？」
+	PRINTL 
+	PRINTW 점차점차, 냄새가 짙어진다。
+	PRINTW 비취의 눈동자가 다가온다。
+	PRINTL 
+	PRINTW 기린은 당신의 눈 앞에 있다。
+	PRINTL 
+	PRINTW 「저는, 당신을, 보고 있습니다。
+	PRINTW 　당신은…… 죽이실 건가요？
+	PRINTW 　아니면…… 노래하실 건가요？
+	PRINTW 　후후후, 이해합니다. 여기는 당신의 세계입니다。
+	PRINTW 　마음대로 하시길。
+	PRINTW 　당신은, 자유。
+	PRINTW 　그렇죠？　상냥하신, 데빌 서머너」
+	PRINTL 
+	LOADGLOBAL
+	SETBIT GLOBAL:기린의기억 ,1
+	SAVEGLOBAL
+	CUSTOMDRAWLINE =
+;二周目以降
+ELSEIF イベントフラグ:93:0 > 7
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTW 끈적하게 남자의 목소리가 들려온다……。
+	PRINTL 
+	PRINTW 「접니다。
+	PRINTW 　또 다시, 당신은, 무대 소녀들을 주워올리셨군요」
+	PRINTL 
+	PRINTW ……멀리서 동물원의 냄새가 난다。
+	PRINTW 당신은 고개를 돌린다。
+	PRINTW 어둠 속에, 비취빛의 눈동자가, 반짝인다。
+	PRINTL 
+	PRINTW 「저것은 가짜, 어차피, 위작。
+	PRINTW 　당신이 어떻게 쓰던 간에 비난받을 일도……
+	PRINTW 　그리고, 칭찬받을 일도, 없습니다」
+	PRINTL 
+	PRINTW 점점, 냄새가 짙어진다。
+	PRINTW 비취의 눈동자가 다가온다。
+	PRINTL 
+	PRINTW 기린은 당신의 눈 앞에 있다。
+	PRINTL 
+	PRINTW 「마음대로 하시길. 자유롭게 하시길。
+	PRINTW 　당신을 바라보는 것이, 무척이나 즐겁습니다。
+	PRINTW 　앞으로도 잘 부탁드려요, 상냥하신, 데빌 서머너」
+	PRINTL 
+	CUSTOMDRAWLINE =
+ENDIF
+
+RETURN 0
+
+
+
+@EVENT_93_TURN_END
+;- 1ターン経過
+;FLAG:휴식플래그 = 1
+;BEGIN TURNEND
+RETURN
+
+
+@EVENT_BATTLE_START_EVENT93
+;華恋パワーアップイベント_女神セリフ
+IF GETBIT(イベントフラグ:93:11, 2)
+	CALL EVENT_BATTLE_START_EVENT93_華恋パワーアップイベント_女神セリフ
+;神楽パワーアップイベント_三貴子セリフ
+ELSEIF GETBIT(イベントフラグ:93:12, 2)
+	CALL EVENT_BATTLE_START_EVENT93_神楽パワーアップイベント_三貴子セリフ
+;星見パワーアップイベント_ガイセリフ
+ELSEIF GETBIT(イベントフラグ:93:13, 2)
+	CALL EVENT_BATTLE_START_EVENT93_星見パワーアップイベント_ガイセリフ
+;露崎パワーアップイベント_ガーネットセリフ
+ELSEIF GETBIT(イベントフラグ:93:14, 2)
+	CALL EVENT_BATTLE_START_EVENT93_露崎パワーアップイベント_ガーネットセリフ
+;双葉パワーアップイベント_魔王セリフ
+ELSEIF GETBIT(イベントフラグ:93:15, 2)
+	CALL EVENT_BATTLE_START_EVENT93_双葉パワーアップイベント_魔王セリフ
+;香子パワーアップイベント_双葉セリフ
+ELSEIF GETBIT(イベントフラグ:93:16, 2)
+	CALL EVENT_BATTLE_START_EVENT93_香子パワーアップイベント_双葉セリフ
+;大場パワーアップイベント_大場セリフ
+ELSEIF GETBIT(イベントフラグ:93:17, 2)
+	CALL EVENT_BATTLE_START_EVENT93_大場パワーアップイベント_大場セリフ
+;天堂真矢パワーアップイベント_ミノタウロスセリフ
+ELSEIF GETBIT(イベントフラグ:93:18, 2)
+	CALL EVENT_BATTLE_START_EVENT93_天堂真矢パワーアップイベント_ミノタウロスセリフ
+;西條パワーアップイベント_アルケイデスセリフ
+ELSEIF GETBIT(イベントフラグ:93:19, 2)
+	CALL EVENT_BATTLE_START_EVENT93_西條パワーアップイベント_アルケイデスセリフ
+ENDIF
+
+@EVENT_BATTLE_TURNTOP_EVENT93
+IF FLAG:경과턴수 > 0
+	;華恋パワーアップイベント_女神セリフ
+	IF GETBIT(イベントフラグ:93:11, 2)
+		CALL EVENT_BATTLE_TURNTOP_EVENT93_華恋パワーアップイベント_女神セリフ
+	;神楽パワーアップイベント_三貴子セリフ
+	ELSEIF GETBIT(イベントフラグ:93:12, 2)
+		CALL EVENT_BATTLE_TURNTOP_EVENT93_神楽パワーアップイベント_三貴子セリフ
+	;星見パワーアップイベント_ガイセリフ
+	ELSEIF GETBIT(イベントフラグ:93:13, 2)
+		CALL EVENT_BATTLE_TURNTOP_EVENT93_星見パワーアップイベント_ガイセリフ
+	;露崎パワーアップイベント_ガイセリフ
+	ELSEIF GETBIT(イベントフラグ:93:14, 2)
+		CALL EVENT_BATTLE_TURNTOP_EVENT93_露崎パワーアップイベント_ガーネットセリフ
+	;双葉パワーアップイベント_魔王セリフ
+	ELSEIF GETBIT(イベントフラグ:93:15, 2)
+		CALL EVENT_BATTLE_TURNTOP_EVENT93_双葉パワーアップイベント_魔王セリフ
+	;香子パワーアップイベント_双葉セリフ
+	ELSEIF GETBIT(イベントフラグ:93:16, 2)
+		CALL EVENT_BATTLE_TURNTOP_EVENT93_香子パワーアップイベント_双葉セリフ
+	;大場パワーアップイベント_大場セリフ
+	ELSEIF GETBIT(イベントフラグ:93:17, 2)
+		CALL EVENT_BATTLE_TURNTOP_EVENT93_大場パワーアップイベント_大場セリフ
+	;天堂真矢パワーアップイベント_ミノタウロスセリフ
+	ELSEIF GETBIT(イベントフラグ:93:18, 2)
+		CALL EVENT_BATTLE_TURNTOP_EVENT93_天堂真矢パワーアップイベント_ミノタウロスセリフ
+	;西條パワーアップイベント_アルケイデスセリフ
+	ELSEIF GETBIT(イベントフラグ:93:19, 2)
+		CALL EVENT_BATTLE_TURNTOP_EVENT93_西條パワーアップイベント_アルケイデスセリフ
+	ENDIF
+ENDIF
+
+@EVENT_BATTLE_TURNEND_EVENT93
+;ななのイニシャライズ
+IF GETBIT(イベントフラグ:93:17, 1)
+	CALL EVENT_BATTLE_TURNEND_EVENT_93_6_0
+;激おこ大場1
+ELSEIF GETBIT(イベントフラグ:93:17, 3)
+	CALL EVENT_BATTLE_TURNEND_EVENT_93_大場パワーアップイベント_ブチきれ大場1
+;激おこ大場2
+ELSEIF GETBIT(イベントフラグ:93:17, 4)
+	CALL EVENT_BATTLE_TURNEND_EVENT_93_大場パワーアップイベント_ブチきれ大場2
+ENDIF
+RETURN
+
+
+@EVENT_BATTLE_ACTEND_EVENT93
+;かれひか復活フラグ
+IF GETBIT(イベントフラグ:93:11, 1)
+	CALL EVENT_BATTLE_ACTEND_EVENT_93_8
+;華恋パワーアップイベント_女神セリフ
+ELSEIF GETBIT(イベントフラグ:93:11, 2)
+	CALL EVENT_BATTLE_ACTEND_EVENT_93_華恋パワーアップイベント_女神セリフ
+	
+;神楽パワーアップイベント_三貴子セリフ
+ELSEIF GETBIT(イベントフラグ:93:12, 2)
+	CALL EVENT_BATTLE_ACTEND_EVENT_93_神楽パワーアップイベント_三貴子セリフ
+	
+;星見純那覚醒フラグ
+ELSEIF GETBIT(イベントフラグ:93:13, 1)
+	CALL EVENT_BATTLE_ACTEND_EVENT_93_3
+;星見パワーアップイベント_ガイセリフ
+ELSEIF GETBIT(イベントフラグ:93:13, 2)
+	CALL EVENT_BATTLE_ACTEND_EVENT_93_星見パワーアップイベント_ガイセリフ
+	
+;露崎パワーアップイベント_ガーネットセリフ
+ELSEIF GETBIT(イベントフラグ:93:14, 2)
+	CALL EVENT_BATTLE_ACTEND_EVENT_93_露崎パワーアップイベント_ガーネットセリフ
+	
+;ふたかお復活フラグ
+ELSEIF GETBIT(イベントフラグ:93:15, 1)
+	CALL EVENT_BATTLE_ACTEND_EVENT_93_5
+;双葉パワーアップイベント_魔王セリフ
+ELSEIF GETBIT(イベントフラグ:93:15, 2)
+	CALL EVENT_BATTLE_ACTEND_EVENT_93_双葉パワーアップイベント_セリフ
+	
+;香子パワーアップイベント_双葉セリフ
+ELSEIF GETBIT(イベントフラグ:93:16, 2)
+	CALL EVENT_BATTLE_ACTEND_EVENT_93_香子パワーアップイベント_双葉セリフ
+
+;ばななパワーアップ拒否
+ELSEIF GETBIT(イベントフラグ:93:17, 1)
+	CALL EVENT_BATTLE_ACTEND_EVENT_93_6
+;激おこ大場1
+ELSEIF GETBIT(イベントフラグ:93:17, 3)
+	CALL EVENT_BATTLE_ACTEND_EVENT_93_大場パワーアップイベント_ブチきれ大場1
+;激おこ大場2
+ELSEIF GETBIT(イベントフラグ:93:17, 4)
+	CALL EVENT_BATTLE_ACTEND_EVENT_93_大場パワーアップイベント_ブチきれ大場2
+;大場パワーアップイベント_大場セリフ
+ELSEIF GETBIT(イベントフラグ:93:17, 2)
+	CALL EVENT_BATTLE_ACTEND_EVENT_93_大場パワーアップイベント_大場セリフ
+	
+;天堂真矢復活フラグ
+ELSEIF  GETBIT(イベントフラグ:93:18, 1)
+	CALL EVENT_BATTLE_ACTEND_EVENT_93_7
+;天堂真矢パワーアップイベント_ミノタウロスセリフ
+ELSEIF GETBIT(イベントフラグ:93:18, 2)
+	CALL EVENT_BATTLE_ACTEND_EVENT_93_天堂真矢パワーアップイベント_ミノタウロスセリフ
+	
+;西條パワーアップイベント_アルケイデスセリフ
+ELSEIF GETBIT(イベントフラグ:93:19, 2)
+	CALL EVENT_BATTLE_ACTEND_EVENT_93_西條パワーアップイベント_アルケイデスセリフ
+	
+ENDIF
+RETURN
+
+;キャラクターがイベント進行が可能な状態かどうかをチェック
+;ARGS = キャラクターのCALLNAME(CSV依存)
+@PLAYABLE_EVENT93_CHARA, ARGS
+#FUNCTION
+#DIM LCOUNT
+#DIM CHARA
+
+CHARA = GETCHARA(GET_NO_舞台少女(ARGS))
+SIF CHARA < 0
+	RETURNF 0
+SIF !IS_HAVE_KIRAMEKI(CHARA)
+	RETURNF 0
+SIF GET_VALUE_TALENT_JOINABLE(CHARA) == 0
+	RETURNF 0
+SIF IS_RENTING(CHARA)
+	RETURNF 0
+RETURNF 1
+
+@GET_NAME_TABLE_舞台少女
+#FUNCTIONS
+RETURNF "華恋/ひかり/まひる/純那/双葉/香子/なな/真矢/クロディーヌ"
+
+
+@GET_NO_舞台少女, ARGS
+#FUNCTION
+SELECTCASE ARGS
+	CASE "華恋"
+		RETURNF [[キャラ:카렌_무대소녀]]
+	CASE "ひかり"
+		RETURNF [[キャラ:히카리]]
+	CASE "まひる"
+		RETURNF [[キャラ:마히루]]
+	CASE "純那"
+		RETURNF [[キャラ:쥰나]]
+	CASE "双葉"
+		RETURNF [[キャラ:후타바_무대소녀]]
+	CASE "香子"
+		RETURNF [[キャラ:카오루코]]
+	CASE "なな"
+		RETURNF [[キャラ:나나]]
+	CASE "真矢"
+		RETURNF [[キャラ:마야_무대소녀]]
+	CASE "クロディーヌ"
+		RETURNF [[キャラ:클로딘]]
+	CASEELSE
+		THROW 不適切な名称[%ARGS%]がARGSとして指定されています
+ENDSELECT
+
+;対象がきらめきをもっているかどうか(≒イベントの進行が可能な状態かどうか)
+;ARG = キャラ登録番号
+@IS_HAVE_KIRAMEKI, ARG
+#FUNCTION
+;チェック対象のキャラクターがいるかどうかを取得
+SIF !TALENT:ARG:무대소녀
+	RETURNF 0
+SIF GET_RACE(ABL:ARG:종족) != "인간"
+	RETURNF 0
+SIF TALENT:ARG:비전투원
+	RETURNF 0
+SIF TALENT:ARG:붕괴
+	RETURNF 0
+CALLFORMF 陥落(ARG)
+SIF RESULTS == "복종"
+	RETURNF 0
+RETURNF 1
+
+@EVENT93_出席確認
+#FUNCTIONS
+#DIM DYNAMIC ループ用
+#DIMS DYNAMIC 舞台少女点呼 = "_"
+#DIMS DYNAMIC 少女名
+#DIM CHARA
+FOR ループ用, 0, STRCOUNT(GET_NAME_TABLE_舞台少女(), "/") + 1
+	少女名 = %AUTO_SPLIT(GET_NAME_TABLE_舞台少女(), "/", ループ用)%
+	CHARA = GETCHARA(GET_NO_舞台少女(少女名))
+	SIF CHARA < 0
+		CONTINUE
+	舞台少女点呼 += @"%CSVCALLNAME(NO:CHARA)%_%少女名%_"
+	SIF 少女名 == "双葉"
+		舞台少女点呼 += "双葉（舞台少女）_후타바（무대소녀）_"
+NEXT
+RETURNF 舞台少女点呼
+
+;FOR ループ用, 0, CHARANUM
+;	SIF GROUPMATCH(NO:ループ用, [[キャラ:카렌_무대소녀]], [[キャラ:히카리]], [[キャラ:마히루]], [[キャラ:쥰나]], [[キャラ:후타바_무대소녀]], [[キャラ:카오루코]], [[キャラ:나나]], [[キャラ:마야_무대소녀]], [[キャラ:클로딘]]) && GET_VALUE_TALENT_JOINABLE(ループ用) > 0 && TALENT:ループ用:비전투원 < 1 && TALENT:ループ用:예속 < 1 && TALENT:ループ用:복종 < 1 && TALENT:ループ用:붕괴 < 1
+;		舞台少女点呼 += @"%CSVCALLNAME(NO:ループ用)%_"
+;NEXT
+;RETURNF 舞台少女点呼
+
+;キラめきを失った（服従・隷属・崩壊・非戦闘員）場合はカウントしない
+;戦闘参加不能状態でもカウントしない
+@EVENT93_人数確認, ARGS = "戦闘参加不可能なし"
+#FUNCTION
+#DIM DYNAMIC ループ用
+#DIM DYNAMIC 舞台少女点呼
+#DIM CHARA
+FOR ループ用, 0, STRCOUNT(GET_NAME_TABLE_舞台少女(), "/") + 1
+	CHARA = GETCHARA(GET_NO_舞台少女(AUTO_SPLIT(GET_NAME_TABLE_舞台少女(), "/", ループ用)))
+	SIF CHARA < 0
+		CONTINUE
+	SIF !IS_HAVE_KIRAMEKI(CHARA)
+		CONTINUE
+	SIF ARGS == "戦闘参加不可能なし" && GET_VALUE_TALENT_JOINABLE(CHARA) == 0
+		CONTINUE
+	舞台少女点呼++
+NEXT
+RETURNF 舞台少女点呼
+
+;FOR ループ用, 0, CHARANUM
+;	SIF GROUPMATCH(NO:ループ用, [[キャラ:카렌_무대소녀]], [[キャラ:히카리]], [[キャラ:마히루]], [[キャラ:쥰나]], [[キャラ:후타바_무대소녀]], [[キャラ:카오루코]], [[キャラ:나나]], [[キャラ:마야_무대소녀]], [[キャラ:클로딘]]) && GET_VALUE_TALENT_JOINABLE(ループ用) > 0 && TALENT:ループ用:비전투원 < 1 && TALENT:ループ用:예속 < 1 && TALENT:ループ用:복종 < 1 && TALENT:ループ用:붕괴 < 1
+;		舞台少女点呼++
+;NEXT
+;RETURNF 舞台少女点呼
+
+;キラめきを失った（服従・隷属・崩壊・非戦闘員）場合はカウントしない
+;戦闘参加不能状態はカウントする
+@EVENT93_人数確認_戦闘参加不能あり
+#FUNCTION
+RETURNF EVENT93_人数確認("戦闘参加不可能あり")
+;#DIM DYNAMIC ループ用
+;#DIM DYNAMIC 舞台少女点呼
+
+;FOR ループ用, 0, CHARANUM
+;	SIF GROUPMATCH(NO:ループ用, [[キャラ:카렌_무대소녀]], [[キャラ:히카리]], [[キャラ:마히루]], [[キャラ:쥰나]], [[キャラ:후타바_무대소녀]], [[キャラ:카오루코]], [[キャラ:나나]], [[キャラ:마야_무대소녀]], [[キャラ:클로딘]]) && TALENT:ループ用:비전투원 < 1 && TALENT:ループ用:예속 < 1 && TALENT:ループ用:복종 < 1 && TALENT:ループ用:붕괴 < 1
+;		舞台少女点呼++
+;NEXT
+;RETURNF 舞台少女点呼
+
+
+;個別イベント3が終わった舞台少女を数える
+@EVENT93_個別イベ3終わった判定
+#FUNCTION
+#DIM DYNAMIC ループ用
+#DIM DYNAMIC 舞台少女点呼
+
+;かれひかのみ、判定を東京タワー観光に。
+SIF GETBIT(ダンジョンフラグ:27:13, 5)
+	舞台少女点呼 = 2
+
+;星見～クロ子
+FOR ループ用, 3, 10
+	SIF GETBIT(イベントフラグ:93:ループ用, 3)
+		舞台少女点呼++
+NEXT
+
+RETURNF 舞台少女点呼
+
+
+
+;推しといいつつ明確に恋慕信頼系優遇の判定かつ同率の場合の優先度が平等ではないので何かに流用する人は注意な
+;実行後に何が帰ってくるかはRETURNの直前参照
+@EVENT93_推しチェック
+#DIM DYNAMIC ループ用, 2
+#DIM DYNAMIC 推し番号1
+#DIM DYNAMIC 推し番号2
+#DIM DYNAMIC 推し番号3
+#DIM DYNAMIC 推し番号4
+#DIM DYNAMIC 推し番号5
+#DIM DYNAMIC 推し番号6
+#DIM DYNAMIC 推し番号7
+#DIM DYNAMIC 推し番号8
+#DIM DYNAMIC 推し番号9
+#DIM DYNAMIC ポイント計算用
+#DIM DYNAMIC 個別番号, 9
+#DIM DYNAMIC 個別ポイント, 9
+
+FOR ループ用, 0, CHARANUM
+	IF GROUPMATCH(NO:ループ用, [[キャラ:카렌_무대소녀]], [[キャラ:히카리]], [[キャラ:마히루]], [[キャラ:쥰나]], [[キャラ:후타바_무대소녀]], [[キャラ:카오루코]], [[キャラ:나나]], [[キャラ:마야_무대소녀]], [[キャラ:클로딘]])
+		;ひとつでも取得しちゃってる場合は-1点で固定ですニャン
+		IF GET_VALUE_TALENT_JOINABLE(ループ用) > 0 && TALENT:ループ用:비전투원 < 1 && TALENT:ループ用:예속 < 1 && TALENT:ループ用:복종 < 1 && TALENT:ループ用:붕괴 < 1
+			;計算領域ゼロクリア
+			ポイント計算用 = 0
+			
+			;以下、習得素質に基づき足し算していく
+			;基本的にはクリティカルな素質・経験などのみ足していく
+			
+			;契約系
+			IF TALENT:ループ用:맹우
+				ポイント計算用 += 1000
+			ELSEIF TALENT:ループ用:아내 || TALENT:ループ用:남편
+				ポイント計算用 += 800
+			ELSEIF TALENT:ループ用:음마
+				ポイント計算用 += 500
+			;上位陥落
+			ELSEIF TALENT:ループ用:동료
+				ポイント計算用 += 1000
+			ELSEIF TALENT:ループ用:친애
+				ポイント計算用 += 800
+			ELSEIF TALENT:ループ用:창부
+				ポイント計算用 += 500
+			;下位陥落
+			ELSEIF TALENT:ループ用:신뢰
+				ポイント計算用 += 500
+			ELSEIF TALENT:ループ用:연모
+				ポイント計算用 += 400
+			ELSEIF TALENT:ループ用:음란
+				ポイント計算用 += 250
+			ENDIF
+			
+			;EXP
+			SIF EXP:ループ用:애정경험 > 9
+				ポイント計算用 += (EXP:ループ用:애정경험 / 10)
+			SIF EXP:ループ用:이상경험
+				ポイント計算用 += EXP:ループ用:이상경험
+			;충성도(1/100にして加算）
+			SIF GET_CHARA_LOYALTY(ループ用) > 99
+				ポイント計算用 += (GET_CHARA_LOYALTY(ループ用) / 100)
+			;LV(10倍にして加算）
+			SIF BASE:ループ用:LV > 9
+				ポイント計算用 += (BASE:ループ用:LV * 10)
+				
+			;最後は属性LD軸で加減（影響大）
+			;Lだとスタァライトされているとみなし掛け算
+			;スタァライトされるって日本語おかしいね
+			IF ABL:ループ用:속성LD == 1
+				TIMES ポイント計算用 , 1.25
+			;Dだと割り算。デフォだと大場だけ
+			ELSEIF ABL:ループ用:속성LD == 3
+				TIMES ポイント計算用 , 0.75
+			ENDIF
+			;Q:なんでLだとスタァライトされてるの？　天使とかと同類なの？
+			;A:舞台に目覚め、舞台に生き、舞台のために命を燃やす
+			;　そんなキチガイのアライメントがまともだと思ってんの？
+		ELSE
+			ポイント計算用 = -1
+		ENDIF
+		
+		;0の場合は1にする（ソートが機能しないので）
+		SIF ポイント計算用 == 0
+			ポイント計算用 = 1
+		
+		;キャラ番号とか記憶
+		SELECTCASE NO:ループ用
+			CASE [[キャラ:카렌_무대소녀]]
+				個別ポイント:0 = ポイント計算用
+				個別番号:0 = ループ用
+			CASE [[キャラ:히카리]]
+				個別ポイント:1 = ポイント計算用
+				個別番号:1 = ループ用
+			CASE [[キャラ:쥰나]]
+				個別ポイント:2 = ポイント計算用
+				個別番号:2 = ループ用
+			CASE [[キャラ:마히루]]
+				個別ポイント:3 = ポイント計算用
+				個別番号:3 = ループ用
+			CASE [[キャラ:후타바_무대소녀]]
+				個別ポイント:4 = ポイント計算用
+				個別番号:4 = ループ用
+			CASE [[キャラ:카오루코]]
+				個別ポイント:5 = ポイント計算用
+				個別番号:5 = ループ用
+			CASE [[キャラ:나나]]
+				個別ポイント:6 = ポイント計算用
+				個別番号:6 = ループ用
+			CASE [[キャラ:마야_무대소녀]]
+				個別ポイント:7 = ポイント計算用
+				個別番号:7 = ループ用
+			CASE [[キャラ:클로딘]]
+				個別ポイント:8 = ポイント計算用
+				個別番号:8 = ループ用
+		ENDSELECT
+	ENDIF
+NEXT
+
+;存在しない（個別番号が0）舞台少女の個別番号・個別ポイントを-1へ変換　ソートが機能しなくなるので
+FOR ループ用, 0, 9
+	IF 個別番号:ループ用 == 0
+		個別番号:ループ用 = -1
+		個別ポイント:ループ用 = 1
+	ENDIF
+NEXT
+
+FOR ループ用, 0, 9
+	SIF 個別ポイント:ループ用 == 0
+		個別ポイント:ループ用 = __INT_MAX__
+NEXT
+ARRAYMSORT 個別ポイント,個別番号
+FOR ループ用, 0, 9
+	SIF 個別ポイント:ループ用 == __INT_MAX__
+		個別ポイント:ループ用 = 0
+NEXT
+
+[IF_DEBUG]
+;	PRINTL デバッグモード情報
+;	PRINTL 무대소녀　ヒロイン度一覧（昇順）
+;	PRINTL 
+;	PRINTS NAME:(個別番号:0)
+;	PRINTV 個別ポイント:0
+;	PRINTL 
+;	PRINTS NAME:(個別番号:1)
+;	PRINTV 個別ポイント:1
+;	PRINTL 
+;	PRINTS NAME:(個別番号:2)
+;	PRINTV 個別ポイント:2
+;	PRINTL 
+;	PRINTS NAME:(個別番号:3)
+;	PRINTV 個別ポイント:3
+;	PRINTL 
+;	PRINTS NAME:(個別番号:4)
+;	PRINTV 個別ポイント:4
+;	PRINTL 
+;	PRINTS NAME:(個別番号:5)
+;	PRINTV 個別ポイント:5
+;	PRINTL 
+;	PRINTS NAME:(個別番号:6)
+;	PRINTV 個別ポイント:6
+;	PRINTL 
+;	PRINTS NAME:(個別番号:7)
+;	PRINTV 個別ポイント:7
+;	PRINTL 
+;	PRINTS NAME:(個別番号:8)
+;	PRINTV 個別ポイント:8
+;	PRINTL 
+;	PRINTW
+[ENDIF]
+
+;大きい順にRESULTへ格納
+;すべて同値の場合は西條・天堂・大場・花柳・石動・露崎・星見・神楽・愛城の順に並ぶ
+;（個別イベントのみをこなしたら、ダンジョン探索をしないといけない愛城＆神楽が上に来る＋西條、となる、はず）
+;RESULT:0は1で固定（無事完了フラグ）
+;RESULT:1～9が個別番号の記録
+;RESULT:10は0で固定（ただの空欄）
+;RESULT:11～19が個別ポイントの記録
+RETURN 1, 個別番号:8, 個別番号:7, 個別番号:6, 個別番号:5, 個別番号:4, 個別番号:3, 個別番号:2, 個別番号:1, 個別番号:0, 0, 個別ポイント:8, 個別ポイント:7, 個別ポイント:6, 個別ポイント:5, 個別ポイント:4, 個別ポイント:3, 個別ポイント:2, 個別ポイント:1, 個別ポイント:0
+
+
+@EVENT93_推しの位置取得
+#FUNCTION
+#DIM DYNAMIC ループ用
+#DIM DYNAMIC 返り値
+返り値 = -1
+
+FOR ループ用, 0, CHARANUM
+	IF NO:ループ用 == イベントフラグ:93:10
+		返り値 = ループ用
+		BREAK
+	ENDIF
+NEXT
+RETURNF 返り値
+
+
+@EVENT93_推しチェック_デバッグ
+
+PRINTL 최애 테스트
+PRINTL 당신의 최애는
+CALL EVENT93_推しチェック
+LOCAL = RESULT:1
+;LOCAL = EVENT93_推しチェック()
+PRINTS NAME:LOCAL
+PRINTW 입니다
+
+PRINTL 
+PRINTS NAME:(RESULT:1)
+PRINTV RESULT:11
+PRINTL 
+PRINTS NAME:(RESULT:2)
+PRINTV RESULT:12
+PRINTL 
+PRINTS NAME:(RESULT:3)
+PRINTV RESULT:13
+PRINTL 
+PRINTS NAME:(RESULT:4)
+PRINTV RESULT:14
+PRINTL 
+PRINTS NAME:(RESULT:5)
+PRINTV RESULT:15
+PRINTL 
+PRINTS NAME:(RESULT:6)
+PRINTV RESULT:16
+PRINTL 
+PRINTS NAME:(RESULT:7)
+PRINTV RESULT:17
+PRINTL 
+PRINTS NAME:(RESULT:8)
+PRINTV RESULT:18
+PRINTL 
+PRINTS NAME:(RESULT:9)
+PRINTV RESULT:19
+PRINTL 
+
+
+;なんらかの事情で舞台少女を全員削除するやつ
+@EVENT93_ALL_LOST
+#DIM DYNAMIC ループ用
+
+FOR ループ用, 0, CHARANUM
+	IF NO:ループ用 == [[キャラ:카렌_무대소녀]]
+		CALL キャラ削除(ループ用)
+		BREAK
+	ENDIF
+NEXT
+FOR ループ用, 0, CHARANUM
+	IF NO:ループ用 == [[キャラ:히카리]]
+		CALL キャラ削除(ループ用)
+		BREAK
+	ENDIF
+NEXT
+FOR ループ用, 0, CHARANUM
+	IF NO:ループ用 == [[キャラ:마히루]]
+		CALL キャラ削除(ループ用)
+		BREAK
+	ENDIF
+NEXT
+FOR ループ用, 0, CHARANUM
+	IF NO:ループ用 == [[キャラ:쥰나]]
+		CALL キャラ削除(ループ用)
+		BREAK
+	ENDIF
+NEXT
+FOR ループ用, 0, CHARANUM
+	IF NO:ループ用 == [[キャラ:후타바_무대소녀]]
+		CALL キャラ削除(ループ用)
+		BREAK
+	ENDIF
+NEXT
+FOR ループ用, 0, CHARANUM
+	IF NO:ループ用 == [[キャラ:카오루코]]
+		CALL キャラ削除(ループ用)
+		BREAK
+	ENDIF
+NEXT
+FOR ループ用, 0, CHARANUM
+	IF NO:ループ用 == [[キャラ:나나]]
+		CALL キャラ削除(ループ用)
+		BREAK
+	ENDIF
+NEXT
+FOR ループ用, 0, CHARANUM
+	IF NO:ループ用 == [[キャラ:마야_무대소녀]]
+		CALL キャラ削除(ループ用)
+		BREAK
+	ENDIF
+NEXT
+FOR ループ用, 0, CHARANUM
+	IF NO:ループ用 == [[キャラ:클로딘]]
+		CALL キャラ削除(ループ用)
+		BREAK
+	ENDIF
+NEXT
+
+;デビシフ化した際に人間時スキルを定義しないとおかしい挙動をすると聞いて。
+@EVENT93_人間時スキル転写処理,ARG
+#DIM DYNAMIC ループ用
+#DIM DYNAMIC ループ用2
+FOR ループ用, 1, 21
+	ABL:ARG:("인간시스킬"+TOSTR(ループ用)) = ABL:ARG:("스킬"+TOSTR(ループ用))
+NEXT
+RETURN
+
+
+
+;非戦闘員化処理
+;ARG=対象キャラの番号
+@EVENT93_KIRAMEKI_LOST,ARG
+#DIM LCOUNT
+;ただの人間に
+CSTR:ARG:종족명 = 인간
+ABL:ARG:종족 = 0
+
+CFLAG:ARG:이벤트가입 = 2
+CALL CLEAR_ROLE_TALENT, ARG
+TALENT:ARG:비전투원 = 1
+CALL CLEAR_ALL_LEARN_SKILL, ARG
+FOR LCOUNT, 1, HAVEABLE_SKILLNUM + 1
+	ABL:ARG:@"스킬{LCOUNT}" = 0
+NEXT
+
+CALL SYNC_STATUS, ARG
+;推し確定後に使う奴
+@Star_tiara_Coronation
+#DIM DYNAMIC ループ用
+#DIM DYNAMIC 誰のティアラ
+
+SELECTCASE NO:(EVENT93_推しの位置取得())
+	CASE [[キャラ:카렌_무대소녀]]
+		誰のティアラ = 1
+	CASE [[キャラ:히카리]]
+		誰のティアラ = 2
+	CASE [[キャラ:쥰나]] 
+		誰のティアラ = 3
+	CASE [[キャラ:마히루]]
+		誰のティアラ = 4
+	CASE [[キャラ:후타바_무대소녀]]
+		誰のティアラ = 5
+	CASE [[キャラ:카오루코]]
+		誰のティアラ = 6
+	CASE [[キャラ:나나]]
+		誰のティアラ = 7
+	CASE [[キャラ:마야_무대소녀]]
+		誰のティアラ = 8
+	CASE [[キャラ:클로딘]]
+		誰のティアラ = 9
+	;該当なし（バグった）
+	CASEELSE
+		PRINTW 『읏！　최애 무대소녀를 제대로 못 얻었구나！』
+		PRINTW 이 메세지가 나오면 에러 뿜고 있다는 뜻이니 어딘가에 보고해줘！
+		PRINTW 아저씨와 약속 타워브릿지다！
+		PRINTW 이대로라면 버그 난다！　버그 나니까 닫아！
+		PRINTW 버그 나니까 닫아！
+		PRINTW 버그 나니까 닫으라고 하잖아！？
+		PRINTW 앗 이녀석 오른쪽클릭으로 모두 스킵하는 유형…… 그와아앗！！！
+		FORCEWAIT
+ENDSELECT
+
+;大場よ大場よあなたの代わりに思い出せ
+;同じイベントで２つ目は手に入らない。既に通過してたらいっこ消す
+IF 大場ななの記憶_L:3:(誰のティアラ) > 0
+	;在庫なし
+	IF ITEM:별의티아라 < 1
+		;誰か持ってないか探す
+		FOR ループ用, 0, CHARANUM
+			;持ってたら外してBREAK
+			IF EQUIP:ループ用:악세서리 == GETNUM(ITEM, "별의티아라")
+				;在庫増加
+				ITEM:(GETNUM(ITEM, "별의티아라")) ++
+				;装備から消除
+				EQUIP:ループ用:악세서리 = 0
+				;ブレイク
+				BREAK
+			ENDIF
+		NEXT
+	ENDIF
+	;一個減らす
+	ITEM:별의티아라 --
+ENDIF
+
+;推しを探し星のティアラを装着
+LOCAL = EVENT93_推しの位置取得()
+SIF EQUIP:LOCAL:악세서리 > 0
+	ITEM:(EQUIP:LOCAL:악세서리) ++
+EQUIP:LOCAL:악세서리 = GETNUM(ITEM, "별의티아라")
+
+
+
+@KI_RINGTONE
+;CLEARLINE LINECOUNT
+CALL 疑似的画面クリア
+
+ALIGNMENT CENTER
+
+CALL PRINT_EVENT_PICTURE, "キリンロゴ", 10, "CENTER"
+PRINTW 거머쥐세요
+PRINTW 당신이 택한
+PRINTL 그 별을
+FORCEWAIT
+;CLEARLINE LINECOUNT
+CALL 疑似的画面クリア
+
+ALIGNMENT LEFT
+
+
+@I_AM_REBORN_PRE
+ALIGNMENT CENTER
+;CLEARLINE LINECOUNT
+CALL 疑似的画面クリア
+
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　나　　　재생산　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　나　　　재생산　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+
+FORCEWAIT
+	;CLEARLINE LINECOUNT
+	CALL 疑似的画面クリア
+
+
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　나　　　재생산　　　　　　　　　　　　　나　　　재생산　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　나　　　재생산　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　나　　　재생산　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　나　　　재생산　　　　　　　　　　　　　나　　　재생산　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+
+FORCEWAIT
+	;CLEARLINE LINECOUNT
+	CALL 疑似的画面クリア
+
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　나　　　재생산　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　나　　　재생산　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　나　　　재생산　　　　　　　　　　　　　나　　　재생산　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　나　　　재생산　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　나　　　재생산　　　　　　　　　　　　나　　　재생산　　　　　　　　　　　　나　　　재생산　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　MY STAR:REVUE GET READY　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　나　　　재생산　　　　　　　　　　　　　나　　　재생산　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　나　　　재생산　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　나　　　재생산　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+FORCEWAIT
+;CLEARLINE LINECOUNT
+CALL 疑似的画面クリア
+ALIGNMENT LEFT
+
+
+
+@I_AM_REBORN
+GETFONT
+LOCALS = RESULTS:0
+SETFONT "ＭＳ ゴシック"
+;CLEARLINE LINECOUNT
+CALL 疑似的画面クリア
+ALIGNMENT CENTER
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL    [MMMMNg,.                                                                                 ....　　　　
+PRINTL    [MMMMMMMMMMNg,.                                                                 .MMMM   /MMMM]　　　　
+PRINTL    [MMMMMMMMMMMMMMMM.                                                         .MMMMMMMMMMMMMMMMN]　　　　
+PRINTL    [MMMMMMMMMMMMMMMM.  MMMMNg.                                       .g]     .MMMMMMMMMMMMMMMMMM]　　　　
+PRINTL    [TMMMMMMMMMMMMMMM. NMMMMMMMMMMN.                              .MM(MMN(&MM].MMMMMM#/   .MMMML.,　　　　
+PRINTL              [MMMMMM./MMMMMMMMMMMM. [MMMMN.             ../JMM] .JMMMMMMMMMM]  .MMMMJ./MMMMMMMMN]　　　　
+PRINTL              [MMMMMM.NMMMM/   TMMN. [MMMM#.[MM.      .dMMMMMM]  .MMMMMMMMNHH].MMMMMMMMMMMMMMMMMM]　　　　
+PRINTL              [MMMMMM.NMMN@    .MMN. .      [MM.       .MMMM.MMN].MM'(MM]    .MMMMMMMMMMMMMMMMMM] 　　　　
+PRINTL         jMMMMMMMMMMM.NMMN/  JMMMMM. [MMMM#.[MM.      .dN.MM.MMN].'G..MMN++N] .MMMM.   .MMMMN   , 　　　　
+PRINTL        .MMMMMMMMMMMF,      /MMMMMM. [MMMM#.[MM.      .dMMMMMMMM] .MMMMMMMMN] .MMNF(MMMMMMMMMMMM] 　　　　
+PRINTL        jMMMMMMF,          /MMMMMMN,       /MMN.      .dN.MM.MMN] .TMMMMMMMM] .MMNFdMMMMMMMMMMMM] 　　　　
+PRINTL       .MMMMMF,                /MMN, /NMMMMMMMM.      .MMMMMMMMMM]   .MMN]    .MMN)'  .MMMMMM     　　　　
+PRINTL       jMMMMM,           /MMMMMMMMN, [MMMMMMMMN.      .dN] ~~MMN].MMMMMMMMMMN].MMN) MMMMMMMMMMN#] 　　　　
+PRINTL      .MMMMMM,           dMMMMMMMMN, [N===-'                .dTN].MMMMMMMMMMN].MMN'   .dMMMMYT  　　　　　
+PRINTL      jMMMMMM,           \MMMMN@/'                                   .-===MMN].MMN.MMMMMMMMMMMMMMN] 　　　
+PRINTL     .MMMMMMM,          /N==='        ＞MY STAR:REVUE GET READY■             dMM7 'WMMMMMMMMMMMM#] 　　　
+PRINTL     /MMMMMMM,                                                                             ..\MMN#] 　　　
+PRINTL     ========,　　　　　　　　　　　　　　　　　　　　　　　 　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 
+FORCEWAIT
+SETFONT
+;CLEARLINE LINECOUNT
+CALL 疑似的画面クリア
+ALIGNMENT LEFT
+
+
+@疑似的画面クリア
+#DIM DYNAMIC ループ用
+	FOR ループ用, 0, 120
+		PRINTL 
+	NEXT
+
+
+@RSL_演目名表示, ARGS
+ALIGNMENT CENTER
+;CLEARLINE LINECOUNT
+CALL 疑似的画面クリア
+
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 상연목록
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTW 
+
+CALL 疑似的画面クリア
+
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 상연목록
+PRINT ‐
+PRINTS ARGS
+PRINTL ‐
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL 
+FORCEWAIT
+;CLEARLINE LINECOUNT
+CALL 疑似的画面クリア
+ALIGNMENT LEFT
+
+@PICTURENAME_TABLE_EVENT_93, ARG
+#FUNCTIONS
+SELECTCASE ARG
+	CASE 0
+		RESULTS_F '= "キリンロゴ"
+ENDSELECT

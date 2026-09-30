@@ -1,0 +1,357 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:ROLE_FUNCTION.ERB
+;	Facility	:ロール用の組み込み関数群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/12/25		P(Bazzile)				新規作成
+;	002		2023/03/03		P(Bazzile)				@GET_BTL_TALENT_LVに数値指定機能を追加
+;													@SET_BTL_TALENT_LVを作成
+;	003		2023/04/13		P(Bazzile)				ロール未指定によるバグの暫定対処
+;	004		2023/04/20		P(Bazzile)				CAN_USE_SKILLに専用の関数を追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;===============================================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name						Explanation
+;
+;	・ GET_ROLE_PROP					ロールのプロパティ取得関数
+;	・ GETS_ROLE_PROP					ロールのプロパティ取得関数(文字列版)
+;	・ GET_SUB_ROLE_NUM					サブロールの名称取得関数
+;	・GET_SUB_ROLE_PROP					サブロール関数のプロパティ取得
+;	・GETS_SUB_ROLE_PROP				サブロール関数のプロパティ取得(文字列版)
+;	・ GET_BTL_TALENT_LV				戦闘素質のレベル取得
+;	・SET_BTL_TALENT_LV					戦闘素質のセット関数
+;	・GET_SKILL_CHANGEABLE_RANK			スキル継承能力の獲得
+;	・GET_ROLE_CP						キャラクターの残りCPの取得関数
+;	・SET_VAR_HAVE_SUB_ROLE				キャラクターの所持サブ素質の一括取得関数
+;	・CLEAR_ROLE_TALENT					ロールに関係する素質の一括消去関数
+;===============================================================================
+
+;-------------------------------------------------
+;ロールのプロパティ取得関数
+;
+;ARGS		項目名(ex:CAN_USE_EQUIPなど)
+;ARG		対象のキャラクター登録番号
+;ARGS:1		キャラクターを指定せずにロールを指定する際のロール名
+;ARGS:2		通常形態/変身形態の直指定
+;-------------------------------------------------
+@GET_ROLE_PROP, ARGS, ARG = -1, ARGS:1, TRANS_MODE
+#FUNCTION
+#DIMS DYNAMIC TRANS_MODE
+IF ARG >= 0
+	ARGS:1 '= CSTR:ARG:롤
+	SIF CFLAG:ARG:악마변신 && TRANS_MODE== ""
+		TRANS_MODE = 変身形態
+ENDIF
+VARSET RESULT_F, 0, 0, 10
+VARSET RESULTS_F, "", 0, 10
+
+;---- EDIT 003 ADD START -------------------------
+;バグが潜在化するのでよろしくないが、どうも原因不明の落ち方をするので
+IF ARGS:1 == ""
+	IF IS_DEBUG
+		THROW %CALLNAME:ARG%のロールが未指定のまま、【%ARGS%】のプロパティを取得しようとしています！
+	ELSE
+		RETURNF 0
+	ENDIF
+ENDIF
+;---- EDIT 003 ADD END ---------------------------
+;専用関数送り
+IF GROUPMATCH(ARGS, "CAN_USE_EQUIP", "CAN_USE_PLUGIN", "CAN_USE_GUN", "CAN_EQUIP_GUN", "CAN_FUSION", "CHANGEABLE_SKILLCOUNT", "CAN_USE_스킬적성")
+	CALLFORMF %ARGS%, ARG, ARGS:1, TRANS_MODE
+;---- EDIT 004 ADD START -------------------------
+ELSEIF ARGS == "CAN_USE_SKILL"
+	CALLFORMF ROLE_CAN_USE_SKILL, ARG, ARGS:1, TRANS_MODE
+;---- EDIT 004 ADD END ---------------------------
+ELSEIF ARGS == "CAPACITY"
+	CALLFORMF ROLE_CAPACITY, ARG, ARGS:1, TRANS_MODE
+ELSE
+	SELECTCASE ARGS
+		;マスターは常にMAGを消費しない
+		CASE "NEED_MAG"
+			SIF ARG == MASTER
+				RETURNF 0
+		;マスターは常にコンプに入れない
+		CASE "CAN_PUT_IN_COMP"
+			SIF ARG == MASTER
+				RETURNF 0
+	ENDSELECT
+	SIF !EXISTFUNCTION(@"ROLE_%ARGS%_%ARGS:1%")
+		RETURNF 0
+	CALLFORMF ROLE_%ARGS%_%ARGS:1%, ARG
+ENDIF
+IF TRANS_MODE == "両形態"
+	RETURNF MAX(RESULT_F, RESULT_F:1)
+ELSEIF TRANS_MODE == "変身形態"
+	RETURNF RESULT_F:1
+ELSE
+	RETURNF RESULT_F
+ENDIF
+
+;-------------------------------------------------
+;ロールのプロパティ取得関数(文字列版)
+;文字列を返すプロパティに使う場合はこっちをつかう
+;
+;ARGS		項目名(ex:CAN_USE_EQUIPなど)
+;ARG		対象のキャラクター登録番号
+;ARGS:1		キャラクターを指定せずにロールを指定する際のロール名
+;ARGS:2		通常形態/変身形態の直指定
+;ARG:1		文字列取得版から送られてきていることを判別するためのもの。内部的に使うだけなのでエンドユーザーは使わない
+;-------------------------------------------------
+@GETS_ROLE_PROP, ARGS, ARG = -1, ARGS:1, ARGS:2
+#FUNCTIONS
+IF ARG >= 0
+	ARGS:1 '= CSTR:ARG:롤
+	SIF CFLAG:ARG:악마변신 && ARGS:2 == ""
+		ARGS:2 = 変身形態
+ENDIF
+CALLFORMF GET_ROLE_PROP, ARGS, ARG, ARGS:1, ARGS:2
+IF ARGS:2 == "変身形態"
+	RETURNF RESULTS_F:1
+ELSE
+	RETURNF RESULTS_F
+ENDIF
+
+;--------------------------------------------
+;サブロールの番号取得関数
+;
+;ARGS = 番号取得をしたい素質名
+;--------------------------------------------
+@GET_SUB_ROLE_NUM, ARGS
+#FUNCTION
+;名称リストを作成
+CALLFORMF MAKE_SUB_ROLENAME_LIST
+RETURNF FINDELEMENT(SUB_ROLENAME, ARGS, , , 1)
+
+;--------------------------------------------
+;
+;
+;ARGS = 名称取得をしたい番号
+;--------------------------------------------
+@GET_SUB_ROLE_NAME, ARG
+#FUNCTIONS
+;名称リストを作成
+CALLFORMF MAKE_SUB_ROLENAME_LIST
+RETURNF SUB_ROLENAME:ARG
+
+;---------------------------------------------------
+;サブロール関数のプロパティ取得
+;
+;ARGS		サブロール名
+;ARGS:1		プロパティ名
+;ARG		対象のキャラクター登録番号
+;ARGS:2		形態の指定
+;ARG:1		レベルの直指定
+;---------------------------------------------------
+@GET_SUB_ROLE_PROP, ARGS, ARGS:1, ARG = -1, ARGS:2, ARG:1
+#FUNCTION
+IF ARG >= 0
+	SIF ARGS:1 == ""
+		ARGS:1 = \@CFLAG:ARG:악마변신 ? 変身形態 # 通常形態 \@
+ENDIF
+CALLFORMF SUB_ROLE_%ARGS%_%ARGS:1%, ARG, ARGS:2, ARG:1
+RETURNF RESULT_F
+
+;---------------------------------------------------
+;サブロール関数のプロパティ取得
+;
+;ARGS		プロパティ名
+;ARGS:1		サブロール名
+;ARG		対象のキャラクター登録番号
+;ARGS:2		形態の指定
+;ARG:1		レベルの直指定
+;---------------------------------------------------
+@GETS_SUB_ROLE_PROP, ARGS, ARGS:1, ARG = -1, ARGS:2, ARG:1
+#FUNCTIONS
+CALLFORMF GET_SUB_ROLE_PROP, ARGS, ARGS:1, ARG, ARGS:2, ARG:1
+RETURNF RESULTS_F
+;---------------------------------------------------
+;戦闘素質のレベル取得
+;
+;ARGS		取得する素質名。対応する素質はSUB_ROLEとして定義されているもの
+;			"10"のように数値型として送ることも可能
+;ARG		対象のキャラクター登録番号
+;ARGS:1		通常形態/変身形態の直指定
+;---------------------------------------------------
+@GET_BTL_TALENT_LV, L_TALENT, ARG, TRANS_MODE
+#FUNCTION
+#DIMS DYNAMIC L_TALENT
+#DIMS DYNAMIC TRANS_MODE
+#DIM L_RESULT
+;---- EDIT 002 ADD START -------------------------
+;数値指定の場合、数値から文字列に変換する
+IF GET_SUB_ROLE_NUM(L_TALENT) == -1
+	IF L_TALENT != "0" && !TOINT(L_TALENT)
+		THROW @GET_BTL_TALENT_LVのTALENT名指定が間違っています！
+	ELSE
+		L_TALENT = %GET_SUB_ROLE_NAME(TOINT(L_TALENT))%
+	ENDIF
+ENDIF
+
+SIF TRANS_MODE == ""
+	TRANS_MODE = \@CFLAG:ARG:악마변신 ? 変身形態 # 通常形態 \@
+
+L_RESULT = 0
+IF GET_ROLE_PROP(@"CAN_USE_%L_TALENT%", ARG, , TRANS_MODE)
+	SELECTCASE TRANS_MODE
+		CASE "両形態"
+			L_RESULT = MAX(TALENT:ARG:L_TALENT, TRANS_BTL_TALENT:ARG:GET_SUB_ROLE_NUM(L_TALENT))
+		CASE "変身形態"
+			L_RESULT = TRANS_BTL_TALENT:ARG:GET_SUB_ROLE_NUM(L_TALENT)
+		CASEELSE
+			L_RESULT = TALENT:ARG:L_TALENT
+	ENDSELECT
+ENDIF
+RETURNF L_RESULT
+;---- EDIT 002 ADD END ---------------------------
+;---- EDIT 002 ADD START -------------------------
+;---------------------------------------------------
+;戦闘素質のセット
+;
+;ARGS		取得する素質名。対応する素質はSUB_ROLEとして定義されているもの
+;ARG		対象のキャラクター登録番号
+;ARG:1		セットするレベル
+;ARGS:1		通常形態/変身形態の直指定
+;---------------------------------------------------
+@SET_BTL_TALENT_LV, L_TALENT, ARG, ARG:1, TRANS_MODE
+#DIMS L_TALENT
+#DIMS TRANS_MODE
+
+;数値指定の場合、数値から文字列に変換する
+IF GET_SUB_ROLE_NUM(L_TALENT) == -1
+	IF L_TALENT != "0" && !TOINT(L_TALENT)
+		THROW @GET_BTL_TALENT_LVのTALENT名指定が間違っています！
+	ELSE
+		L_TALENT = %GET_SUB_ROLE_NAME(TOINT(L_TALENT))%
+	ENDIF
+ENDIF
+
+SIF TRANS_MODE == ""
+	TRANS_MODE = \@CFLAG:ARG:악마변신 ? 変身形態 # 通常形態 \@
+IF GET_ROLE_PROP(@"CAN_USE_%L_TALENT%", ARG, , TRANS_MODE)
+	SELECTCASE TRANS_MODE
+		CASE "変身形態"
+			TRANS_BTL_TALENT:ARG:GET_SUB_ROLE_NUM(L_TALENT) = ARG:1
+		CASEELSE
+			TALENT:ARG:L_TALENT = ARG:1
+	ENDSELECT
+ENDIF
+RETURN 1
+;---- EDIT 002 ADD END ---------------------------
+;---------------------------------------------------
+;スキル継承能力の獲得
+;
+;ARG		対象のキャラクター登録番号
+;ARGS		通常形態/変身形態の直指定
+;
+;0 = スキルカードによるスキル取得が出来ない
+;1 = 継承条件不問のみ可能
+;2 = さらに継承素質をもつものを取得可能
+;3 = すべてのカードを使用可能
+;---------------------------------------------------
+@GET_SKILL_CHANGEABLE_RANK, ARG, ARGS
+#FUNCTION
+#DIM L_RESULT
+;スキルカードが使用できない場合は0
+SIF !GET_ROLE_PROP("CAN_USE_SKILLCARD", ARG, , ARGS)
+	RETURNF 0
+;ランク指定と異能者レベルの大きいほう(ただし、1は保証される)
+L_RESULT = MAX(GET_BTL_TALENT_LV("이능자", ARG, ARGS), GET_ROLE_PROP("CAN_USE_SKILL", ARG, , ARGS), 1)
+;上限3
+L_RESULT = MIN(L_RESULT, 3)
+;専心がある場合は3にならないように制限をかける
+SIF TALENT:ARG:전심
+	L_RESULT = MIN(L_RESULT, 2)
+;MPがない場合は上限1に
+SIF !GET_ROLE_PROP("HAVE_MP", ARG, , ARGS)
+	L_RESULT = MIN(L_RESULT, 1)
+RETURNF L_RESULT
+
+;---------------------------------------------------
+;キャラクターの残りCP取得
+;
+;ARG	キャラクターの登録番号
+;ARGS	形態の指定(省略時は悪魔変身フラグを見る)
+;---------------------------------------------------
+@GET_ROLE_CP, ARG, ARGS = "未指定"
+#FUNCTION
+IF ARGS == "変身形態" || (CFLAG:ARG:악마변신 && ARGS == "未指定")
+	RETURNF ROLE_CP_TRANS:ARG:0
+ELSE
+	RETURNF ROLE_CP:ARG:0
+ENDIF
+
+;---------------------------------------------------
+;キャラクターの所持サブ素質の取得
+;
+;ARG	キャラクターの登録番号
+;ARGS	形態の指定
+;ARGS:1 옵션(デフォルト排除/固定排除)
+;---------------------------------------------------
+@SET_VAR_HAVE_SUB_ROLE, ARG, ARGS = "通常形態", L_RESULTS, ARGS:1
+#DIM LCOUNT
+#DIMS L_FIXED_BTL_TALENT
+#DIMS L_DEFAULT_BTL_TALENT
+#DIMS REF L_RESULTS
+L_RESULTS = 
+
+IF STRCOUNT(ARGS:1, "固定排除")
+	RESULTS = 
+	IF ARGS == "通常形態"
+		TRYCALLFORM ROLE_FIXED_BTL_TALENT_%CSTR:ARG:롤%
+	ELSE
+		TRYCALLFORM ROLE_FIXED_BTL_TALENT_TRANS_%CSTR:ARG:롤%
+	ENDIF
+	L_FIXED_BTL_TALENT = %RESULTS%
+ELSE
+	L_FIXED_BTL_TALENT = 
+ENDIF
+L_FIXED_BTL_TALENT = %RESULTS%
+IF STRCOUNT(ARGS:1, "デフォルト排除")
+	RESULTS = 
+	IF ARGS == "通常形態"
+		TRYCALLFORM ROLE_DEFAULT_BTL_TALENT_%CSTR:ARG:롤%
+	ELSE
+		TRYCALLFORM ROLE_DEFAULT_BTL_TALENT_TRANS_%CSTR:ARG:롤%
+	ENDIF
+	L_DEFAULT_BTL_TALENT = %RESULTS%
+ELSE
+	L_DEFAULT_BTL_TALENT = 
+ENDIF
+FOR LCOUNT, 0, SUB_ROLENUM
+	SIF STRCOUNT(L_FIXED_BTL_TALENT, GET_SUB_ROLE_NAME(LCOUNT))
+		CONTINUE
+	SIF STRCOUNT(L_DEFAULT_BTL_TALENT, GET_SUB_ROLE_NAME(LCOUNT))
+		CONTINUE
+	SIF GET_SUB_ROLE_NAME(LCOUNT) == "과부하"
+		CONTINUE
+	SIF GET_SUB_ROLE_NAME(LCOUNT) == "커패시티확대"
+		CONTINUE
+	;素質を所持しているかチェック
+	SIF !GET_BTL_TALENT_LV(GET_SUB_ROLE_NAME(LCOUNT), ARG, ARGS)
+		CONTINUE
+	;コスト100以上は達人でもはじく。というかほぼ異能者5用
+	SIF GET_SUB_ROLE_PROP("COST", GET_SUB_ROLE_NAME(LCOUNT), ARG) > 99
+		CONTINUE
+	SIF L_RESULTS != ""
+		L_RESULTS += "/"
+	L_RESULTS += GET_SUB_ROLE_NAME(LCOUNT)
+	SIF GET_SUB_ROLE_PROP("MAXLV", GET_SUB_ROLE_NAME(LCOUNT), ARG) > 1
+		L_RESULTS += "_" + TOSTR(GET_BTL_TALENT_LV(GET_SUB_ROLE_NAME(LCOUNT), ARG, ARGS))
+NEXT
+RETURN L_RESULTS != ""
+
+;---------------------------------------------------
+;ROLE絡みの素質を一旦リセットする
+;---------------------------------------------------
+@CLEAR_ROLE_TALENT, ARG
+#DIM LCOUNT
+FOR LCOUNT, 0, VARSIZE("TALENT")
+	SIF IS_ROLE_TALENT(LCOUNT)
+		TALENT:ARG:LCOUNT = 0
+NEXT

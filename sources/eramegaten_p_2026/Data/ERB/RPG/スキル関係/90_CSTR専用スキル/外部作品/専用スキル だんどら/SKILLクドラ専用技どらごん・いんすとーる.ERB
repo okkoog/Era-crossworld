@@ -1,0 +1,186 @@
+﻿;専用スキル用のテンプレート
+;「Ｄ・いんすとーる」を別の名前に置き換えてください
+
+;アクティブスキルに必須なものはそのままにしており
+;なくてもいいものはコメントアウトしております
+;必要だと思ったらコメントアウトを外して設定してください
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_Ｄ・いんすとーる,ARG
+RESULTS = D·인스톨
+
+;　명중
+@SKILL_HITRATE_Ｄ・いんすとーる, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_Ｄ・いんすとーる, ARG
+RETURN 0
+
+;;クリティカル率
+;@SKILL_CRITICAL_RATE_Ｄ・いんすとーる, ARG
+;RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_Ｄ・いんすとーる, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_Ｄ・いんすとーる,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_Ｄ・いんすとーる,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_Ｄ・いんすとーる,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_Ｄ・いんすとーる,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_Ｄ・いんすとーる, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+;クドラは物理型だが効果が効果なのでコストを重く
+@SKILL_COST_Ｄ・いんすとーる,ARG
+RETURN 70
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_Ｄ・いんすとーる
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_Ｄ・いんすとーる,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_Ｄ・いんすとーる,ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_Ｄ・いんすとーる,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_Ｄ・いんすとーる,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_Ｄ・いんすとーる,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_Ｄ・いんすとーる
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_Ｄ・いんすとーる, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_Ｄ・いんすとーる
+RETURN 0
+
+;没
+;@SKILL_RANK_Ｄ・いんすとーる, ARG = -1
+
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_Ｄ・いんすとーる,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;====================================================
+;@SKILL_TRIGGER_ACTIONABLE_Ｄ・いんすとーる,ARG,ARG:1
+;RETURN 0
+
+;====================================================
+;カウンター発動条件
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_Ｄ・いんすとーる,ARG,ARG:1
+;RETURN RESULT
+
+;====================================================
+;ダメージ発動時
+;====================================================
+;@SKILL_DAMAGE_EFFECT_Ｄ・いんすとーる,ARG,ARG:1
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_Ｄ・いんすとーる,ARG,ARG:1
+
+;====================================================
+;顔グラを指定する関数
+;ERB\CharaERB\Chara5751_クドラ（だんどら）.ERBで管理しているのでそちらを参照されたし
+;====================================================
+;@PRINT_SPECIAL_FACE_Ｄ・いんすとーる, ARG, ARG:1, ARG:2, SKILL_NUM
+;====================================================
+
+
+;スキル及び行動の実行
+;====================================================
+@ACTION_Ｄ・いんすとーる,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM スキル番号
+FOR LOCAL,0,6
+	CFLAG:ARG:(GET_BATTLESTATUS(LOCAL) + "강화") = MIN(32, CFLAG:ARG:(GET_BATTLESTATUS(LOCAL) + "강화") + 4)
+NEXT
+スキル番号 = PU_SKILLNUM_GET(ARG,"Ｄ・いんすとーる")
+;ターン保存
+CALL SKILLGAGE_D_SET,ARG,スキル番号,4
+PRINTFORMW 　　TARGET:[{CPOS(ARG),2}] %CALLNAME:ARG,20,LEFT%　>>>>>>　모든 능력이 상승하고 4턴 동안 %CALLNAME:ARG%의 전용기에 관통이 부여된다!
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_Ｄ・いんすとーる,ARG
+IF PU_SKILLGAGE_D_GET(ARG, "Ｄ・いんすとーる") > 0
+    PRINTFORML 전용기 강화:{PU_SKILLGAGE_D_GET(ARG, "Ｄ・いんすとーる")}T
+	RETURN 3
+ENDIF
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_Ｄ・いんすとーる,ARG
+PRINTL 기술명: 드래곤·인스톨
+PRINTL 구속구를 풀고 용의 힘을 해방한다
+PRINTL 모든 능력을 상승시키고 3턴 동안 쿠드라가 지닌 전용기에
+PRINTL 상성을 꿰뚫는 효과를 부여하지만 열, 전체 범위 공격의 소비 MP가 상승한다
+PRINTL 용희 쿠드라의 전용기
+
+@SKILL_EX_DISPLAY_Ｄ・いんすとーる, ARG, ARGS
+IF PU_SKILLGAGE_D_GET(ARG, "Ｄ・いんすとーる") > 0
+	RESULTS += "<img src = 'SKILL_ICON_EX_00_KUDORA_CHARGE'>"
+	RESULTS += HTML_RECT_SPLIT_BAR(PU_SKILLGAGE_D_GET(ARG, "Ｄ・いんすとーる"), 3, SKILL_EX_DISPLAY_LENS - 2, BARCOLORSET("緑"), RESULT:1)	
+ELSE
+	RESULTS += "<img src = 'SKILL_ICON_EX_00_KUDORA_CHARGE'>"
+	RESULTS += SET_COLOR_TAG(@"%" Ready", SKILL_EX_DISPLAY_LENS - 2, LEFT%", TOSTR(0xff4500))
+ENDIF
+RESULTS:1 = D·인스톨
+RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_Ｄ・いんすとーる,ARG
+RETURN 1

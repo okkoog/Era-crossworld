@@ -1,0 +1,411 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:FUSION.ERB
+;	Facility	:悪魔合体のベースとなる処理群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/01/28		P						ジェンダーフリーの処理を追加
+;	003		2011/02/03		名無し					手紙システムで汎用だけでなく個人口上にも対応
+;	004		2011/02/05		Rsp暇人					重複習得可能スキルは複数スキル継承するように変更
+;	005		2011/02/16		Ｎ鳥					ストレージ機能に対応・継承方式変更
+;	006		2011/02/22		Rsp暇人					特殊合体時用処理を呼び出すタイミングを追加
+;	007		2011/03/08		P						造魔強化合体が実行不能なときでも表示されていた場合があったのを修正。また判定を変更
+;	008		2011/05/19		P						コーディング処理を追加。コーディングのためにCHARANUMを全部回す処理が出来たので、シフターイケニエの判定を統合
+;	009		2011/06/13		名無し					3身合体の素材スキル表示にミスがあったのを修正
+;	010		2012/01/06		TR						悪魔ストレージを邪教の館から呼び出せるように、ボタンの数字表記を右揃えで整列
+;	011		2013/01/12		ネトリス				合体用ソフトクイック設定を追加
+;	012		2012/01/16		TR						「라지엘의서」適用時に一部悪魔の素質や変異先を変更する処理を追記
+;	013		2013/12/02		ひみつ					リスト表示数設定と合体用ソフトクイック設定(改)を追加。スキル属性表示の適用範囲拡大。
+;													合体でデビルシフターや喰奴が作られた場合の処理を追加。チラつき抑止。
+;													スキル属性表示にキャラ情報を渡すように
+;	014		2015/01/01		セーロGUN				館内変身悪魔変更コマンドから戦闘用素質が複合したデビルシフターを弾く処理を追加
+;	015		2017/06/23		kuni					キャラ表示でINPUT_CHARA_LISTを使用するように変更
+;	016		2015/10/02		魔晶拡張パッチ			魔晶武器作成に分岐処理を追加
+;	017		2017/09/23		名無					ガチャモード(「가챠」素質継承)
+;	018		2017/10/03		名無					悪魔合体ライト処理追加
+;	019		2018/10/13		しぐれみそ				魔晶武器作成に杖作成の分岐処理を追加
+;	020		2019/08/28		空気					COMPに仲魔が加入できる余裕があるかどうか判定する関数を導入
+;	021		2019/10/04		なんとなくの人			スキルカード確認コマンドを追加
+;	022		2019/11/21		JK好き					@CASTING_CHANGE_LINKをIF文に使えるように#FUNCTION対応
+;	023		2019/12/02		JK好き					@CASTING_CHANGE_LINK_Fを新たに追加して@CASTING_CHANGE_LINKは差し戻しました
+;	024		2020/08/31		JK好き					達人悪魔は素材のスキルを継承できないように変更
+;	025		2020/12/20		JK好き					ABL引き継ぎチェックに素材:3を追加
+;	026		2021/12/30		楽中					時間城に向かう処理の修正
+;	027		2022/06/01		Collared				陥落合体に関する処理を追加
+;	028		2022/09/21		aroaro					妊娠しやすいしにくいを継承
+;	029		2022/09/17		kamedakeisuke			Aion式召喚術まわりの仕様を追加
+;	030		2022/10/24		JK好き					@SHOP_COM_108 デバッグモード限定の悪魔全書100%解放処理を追加
+;	031		2022/12/07		aroaro					「[12] 코딩」だけ半角スペース入ってるのを削除
+;	032		2022/12/24		P(bazzile)				リンクの条件をロール方式に変更
+;	033		2023/03/12		P(bazzile)				合体時のインストールソフト設定周りをリファクタリング
+;	034		2023/04/17		P(bazzile)				インストールソフトの設定でソフトの所持状況をみていなかった不具合を修正
+;	035		2023/05/30		P(bazzile)				合体時完成品に戦闘素質を獲得させるソフト[메리크리스마스]の処理を追加
+;	036		2023/06/04		P(bazzile)				合体時に所持スキルのポップアップを追加
+;	037		2023/06/11		P(bazzile)				探索中の素材の条件を追加
+;	038		2023/06/16		P(bazzile)				潜在戦闘素質の操作関数を追加
+;													イケニエ合体の機能拡張にあわせて説明文を調整
+;	039		2023/07/05		P(bazzile)				継承部位が指定されていないスキルが悪魔の継承スキル候補に入ると落ちる不具合を修正
+;	040		2023/07/09		P(bazzile)				合体時のMAG強化の引き継ぎ方式を変更
+;													合体時にスキル削除とスキル抽出にアクセスできるように
+;	041		2023/08/23		P(bazzile)				合体時の継承スキルの表示時に表示が乱れる不具合を修正
+;	042		2023/08/25		P(bazzile)				合体時のスキル操作時に[21]の入力が機能していなかった不具合を修正
+;	043		2023/09/02		P(bazzile)				合体時のもとの所持スキルの保存変数がズレていた不具合を修正
+;													レベル不足合体のNoのボタンが99でなく、9になっていた不具合を修正
+;	044		2024/03/22		P(bazzile)				合体時のキャラクター選択リストUIを調整
+;	045		2024/05/28		P(bazzile)				合体時の表示レベルが異常になっていた不具合を修正
+;	046		2024/05/30		P(bazzile)				邪教の館で変身悪魔を変更する際にシフター・Aion式サマナー以外もリンク悪魔を指定できてしまった不具合を修正
+;													二身合体時のスキル確認の際に3体目がもつスキル部分を直選択すると落ちる不具合を修正
+;	047		2024/06/06		P(bazzile)				メリークリスマスの処理に素質を取得できない場合に弾く処理が抜けてた不具合を修正
+;	048		2024/06/08		P(bazzile)				合体時の抽出・削除画面でスキルカードの所持状況をリスト時点で表示するように変更
+;	049		2024/06/08		P(bazzile)				合体結果の名前が長すぎる場合の表示が間違っていた不具合を修正。また長すぎる名前を誘発するのでCSVNAMEをCSVCALLNAMEに変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2024/06/08		P(bazzile)				合体で作成した際に解析が完了し、仲間加入履歴をつけるように変更
+;	002		2024/08/22		P(bazzile)				スキルの継承を任意選択方式に変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@SHOPCOMABLE_108
+SIF !IS_USEABLE_SHOPCOM
+	RETURN 0
+RESULT:1 = 1
+RESULTS = 사교의관
+RETURN 1
+
+@SHOP_COM_108, ARG
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC SELECT_LIST, 100
+#DIM DYNAMIC SELECT_UNABLE, 100
+#DIM DYNAMIC SELECT_LIST_KEY, 100
+VARSET SELECT_LIST
+SELECT_LIST:0 '= "돌아간다"
+SELECT_LIST:1 '= "２신합체"
+SELECT_LIST:2 '= "３신합체"
+SELECT_LIST:3 '= "특수합체"
+SELECT_LIST:4 '= "제물합체"
+SELECT_LIST:5 '= "조마제작"
+SELECT_LIST:6 '= "조마강화합체"
+SELECT_LIST:7 '= "조마초기화"
+SELECT_LIST:8 '= "마정무구작성"
+SELECT_LIST:9 '= "마정무구소재화"
+SELECT_LIST:10 '= "스킬카드작성"
+SELECT_LIST:11 '= "악마전서"
+SELECT_LIST:12 '= "코딩실행"
+SELECT_LIST:13 '= "변신악마변경"
+SELECT_LIST:14 '= "악마스토리지"
+SELECT_LIST:15 '= "당신합체"
+SELECT_LIST:16 '= "시간성"
+SELECT_LIST:98 '= "악마전서완전해방"
+SELECT_LIST:99 '= "여기는 뭐야？"
+
+VARI L_LINE = LINECOUNT
+WHILE 1
+	CLEARLINE LINECOUNT - L_LINE
+	VARSET SELECT_UNABLE
+	VARSET SELECT_LIST_KEY
+	SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "２신합체")) = 1
+	SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "３신합체")) = 1
+	SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "특수합체")) = 1
+	SIF ITEM:도리・카드몬
+		SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "조마제작")) = 1
+	SIF NUM_ZOUMA() > 0 && NUM_FUSIONABLE() > 0
+		SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "조마강화합체")) = 1
+	;メアリが居る場合は必要な造魔の数に+1
+	SIF NUM_ZOUMA("汎用のみ") > 0
+		SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "조마초기화")) = 1
+	CUSTOMDRAWLINE =
+	;メアリが居る場合は必要な造魔の数に+1
+	SIF ITEM:무명의도 || SOFT_ON("마장의공방")
+		SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "마정무구작성")) = 1
+	FOR LOCAL,2000,VARSIZE("ITEM")
+		SIF !魔晶装備(LOCAL)
+			CONTINUE
+		SIF !ITEM:LOCAL
+			CONTINUE
+		SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "마정무구소재화")) = 1
+		BREAK
+	NEXT
+	SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "스킬카드작성")) = 1
+	FLAG:합체소재악마1 = -1
+	FOR LOCAL,0,CHARANUM
+		CALL CASTING_FUSION_SACRIFICE, LOCAL
+		SIF RESULT
+			SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "제물합체")) = 1
+		SIF TALENT:LOCAL:데빌시프터
+			SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "변신악마변경")) = 1
+	NEXT
+	SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "악마전서")) = 1
+	IF IS_CODING_ABLE()
+		SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "코딩실행")) = 1
+	ELSE
+		SELECT_UNABLE:(FINDELEMENT(SELECT_LIST, "코딩실행")) = 1
+	ENDIF
+	SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "악마스토리지")) = 1
+	SIF TALENT:MASTER:금단의지식
+		SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "당신합체")) = 1
+	SIF GETBIT(FLAG:발견ED, 30)
+		SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "시간성")) = 1
+	SIF IS_DEBUG
+		SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "악마전서완전해방")) = 1
+	SELECT_LIST_KEY:(FINDELEMENT(SELECT_LIST, "여기는 뭐야？")) = 1
+	FOR LCOUNT, 1, VARSIZE("SELECT_LIST")
+		SIF SELECT_UNABLE:LCOUNT
+			CALL PRINT_COLOR, @"[{LCOUNT, 2}] %SELECT_LIST:LCOUNT%", COLOR("gray"), "L"
+		SIF SELECT_LIST_KEY:LCOUNT
+			PRINTFORML [{LCOUNT, 2}] %SELECT_LIST:LCOUNT%
+	NEXT
+	CUSTOMDRAWLINE =
+	SELECT_LIST_KEY:0 = 1
+	PRINTFORML [0] 돌아간다
+	CALL INPUT_ARRAY, SELECT_LIST_KEY
+	SELECTCASE SELECT_LIST:RESULT
+		CASE "돌아간다"
+			RETURN 0
+		CASE "２신합체", "３신합체", "특수합체"
+			IS_IN_FUSION = 1
+			SELECTCASE SELECT_LIST:RESULT
+				CASE "２신합체"
+					CALL FUSION_NORMAL
+				CASE "３신합체"
+					CALL FUSION_NORMAL,3
+				CASE "특수합체"
+					CALL FUSION_SPECIAL
+			ENDSELECT
+			IS_IN_FUSION = 0
+		CASE "조마제작"
+			CALL MAKE_ZOUMA
+		CASE "조마강화합체"
+			CALL FUSION_ZOUMA
+		CASE "조마초기화"
+			CALL DEL_ZOUMA
+		CASE "마정무구작성"
+			PRINTL [ 1]마정검 작성
+			PRINTL [ 2]마정지팡이 작성
+			DRAWLINE
+			PRINTL [0]돌아간다
+			CALL INPUTINT, 0, 1, 2
+			SELECTCASE RESULT
+				CASE 1
+					SIF SOFT_ON("마장의공방")
+						CALL SELECT_MASHO2
+					SIF !SOFT_ON("마장의공방")
+						CALL MAKE_MASHO
+				CASE 2
+					CALL MAKE_MASHO_STAFF
+			ENDSELECT
+		CASE "마정무구소재화"
+			CALL DEL_MASHO
+		CASE "스킬카드작성"
+			CALL MAKE_SKILLCARD
+		CASE "변신악마변경"
+			CALL CHANGE_LINK
+		CASE "제물합체"
+			CALL FUSION_SACRIFICE
+		CASE "악마전서"
+			CALL DEVIL_COMPENDIUM
+		CASE "코딩실행"
+			CALL CODING
+		CASE "악마스토리지"
+			CALL DEVIL_STORAGE
+		CASE "당신합체"
+			CALL FUSION_WITH_YOU
+		CASE "시간성"
+			IF GETBIT(FLAG:발견ED, 30)
+				CALL CASTLE_OF_WATCH
+			ELSE
+				PRINTL 시간성 이사 예정지라고 적혀 있다……
+				CALL SHOP_COM_108
+			ENDIF
+		CASE "악마전서완전해방"
+			PRINTFORML 모든 악마전서를 100％로 합니다
+			CALL INPUT_YN,"Yes","NO"
+			IF RESULT == 0
+				FOR LOCAL, 1, CSVCHARANUM
+					IF EXISTCSV(LOCAL, 0)
+						ANALYSIS_RATE:LOCAL = ANALYSIS_COMPLETED
+						SETBIT IS_CHARA_COMPANIONED:LOCAL, 0
+					ENDIF
+				NEXT
+			ENDIF
+		CASE "여기는 뭐야？"
+			CALL MIRKO
+	ENDSELECT
+WEND
+
+;========================================
+;デビルシフター用・Aion式召喚術、邪教の館内リンク悪魔変更
+;========================================
+@CHANGE_LINK
+;---- EDIT 046 MOD START -------------------------
+;CALL INPUT_CHARA_LIST("誰を変更する？", "CASTING_CHANGE_LINK")
+{
+CALL INPUT_CHARA_LIST
+	, "FUNC_PROPSET_LIST_BATTLE"
+	, "누구를 변경할까？"
+	, "CASTING_CHANGE_LINK" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+;---- EDIT 046 MOD END ---------------------------
+IF RESULT == 1000
+	RETURN 0
+ENDIF
+CALL ACTION_2311,RESULT
+
+@CASTING_CHANGE_LINK(ARG)
+RETURN CASTING_CHANGE_LINK_F(ARG)
+
+;IF文にそのまま入れたかったので新規に作成
+@CASTING_CHANGE_LINK_F(ARG)
+#FUNCTION
+SIF CFLAG:ARG:이자리에없는플래그 == 1
+	RETURNF 0
+SIF CFLAG:ARG:전투이외불능
+	RETURNF 0
+;労役中はダメ
+SIF IS_RENTING(ARG)
+	RETURNF 0
+SIF CFLAG:ARG:PT플래그 == 0
+	RETURNF 0
+SIF !GET_ROLE_PROP("CAN_USE_LINK", ARG)
+	RETURNF 0
+RETURNF 1
+
+@MIRKO
+;陥落合体の追加に伴い説明役が必要……ということで仮実装しました。
+;世界観的なフォローも含めて大雑把にですが説明してくれます。
+
+PRINTL ――사교의 관을 돌아다니고 있자、기묘한 차림의 여성과 마주쳤다。
+PRINTW 뭐랄까 그……소무늬 케이프와 수영복、롱 글러브와 사이하이 부츠로 몸을 감싼 기묘한 패션의 여성이다。
+PRINTL 
+
+CALL PRINT_EVENT_PICTURE, "Milko_face", 6
+PRINTL 「이야 이야、이런 곳에서 사람을 만났다는 건、너는 데빌・서머너인가？
+PRINTW 　그렇다면、이 사교의관에서 할 수 있는 악마합체、그에 관한 이야기를 내가 하게 해 줘」
+
+PRINTL 
+PRINTL 「물론。 네가 괜찮을 때의 이야기이고、뭣하면 네 질문에만 대답해 주도록 하지。
+PRINTL 　뭐、마음에 안 들면 헛소리라고 흘려들어도 상관없어。 그냥 이야기하고 싶을 뿐이니까。
+PRINTW 　자아 빠ー알ー리、빠ー알ー리、질문해 줘ー어ー어。 내가 이야기해도 될지 모르겠잖아」
+
+PRINTL 
+PRINTW ――귀찮은 상대에게 걸려버렸다。
+$INPUT_LOOP
+PRINTL 
+CUSTOMDRAWLINE =
+PRINTL 
+PRINTL [ 1]애초에 악마합체란？
+PRINTL [ 3]합체사고가 뭐야？
+PRINTL [ 4]정령합체가 뭐야？
+PRINTL [ 5]특수합체가 뭐야？
+PRINTL [ 6]조마가 뭐야？
+PRINTL [ 7]영웅합체？
+PRINTL [ 8]제물합체？
+PRINTL [ 9]좀 더 자세한 이야기
+CUSTOMDRAWLINE =
+PRINTL [ 0]도망친다
+INPUT
+IF RESULT == 1
+	PRINTL 
+	PRINTL 「그 이름 그대로、서로 다른 악마를 합체시켜 새로운 악마로 만드는 거야！
+	PRINTL 　대략적인 법칙성에 대해서는 생략하겠지만、
+	PRINTW 　대체로 합체한 악마의 평균보다 조금 강한 정도의 악마가 된다고 보면 돼」
+	GOTO INPUT_LOOP
+ELSEIF RESULT == 3
+	PRINTL 
+	PRINTL 「악마합체도 결코 확실한건 아니라서、１００회에 ２회 정도는 실패하는 경우도 있어。
+	PRINTL 　그래도 뭐 나름대로 합체 자체는 이루어지고、예정과는 다른 악마가 되는거지。
+	PRINTW 　기본적으로는 반갑지 않은 사태고……특히 만월일 때나 사교의관 이외의 장소에서 합체하면 사고가 일어나기 쉬운 모양이야」
+	GOTO INPUT_LOOP
+ELSEIF RESULT == 4
+	PRINTL 
+	PRINTL 「악마 중에는、합체했을 때 특수한 성질을 발휘하는 악마도 있어。
+	PRINTL 　그중에서도 정령이라는 악마……같은 종별의 악마끼리 합체하면 만들어지는 악마는 특수해서 말이지。
+	PRINTW 　이 악마를 합체시키면、합체 후에는 같은 종별에서 한 단계 위나 한 단계 아래의 악마가 되는 거야」
+	GOTO INPUT_LOOP
+ELSEIF RESULT == 5
+	PRINTL 
+	PRINTL 「악마합체 중에는 특수한 법칙성을 가진 합체도 존재해。
+	PRINTL 　특별한 일화가 있는 악마끼리 합체하거나 하면 일화에 따른 결과가 나오는 경우가 있지。
+	PRINTW 　그게 바로 특수합체라고 불리는 것으로、이걸로 완성되는 악마는 대개 다른 방법으로는 만들 수 없는 유니크한 악마야」
+	GOTO INPUT_LOOP
+ELSEIF RESULT == 6
+	PRINTL 
+	PRINTL 「도리 카드몬이라고 불리는 촉매를 사용해서 만들어진 인조 악마、그게 조마야。
+	PRINTL 　이 악마는 다른 악마와 달리 ＭＡＧ를 소비하지 않지만、전투로 강해지지도 않아。
+	PRINTW 　대신 ＭＡＧ를 사용해서 강해지는 악마지。 참고로 약점이 없고 뭐든 배울 수 있다는 특징도 있어」
+	GOTO INPUT_LOOP
+ELSEIF RESULT == 7
+	PRINTL 
+	PRINTL 「일반적으로는 합체할 수 없는 조마를 이용한 특수합체、그게 영웅합체야。
+	PRINTL 　이걸로는 영웅이라는 특별한 카테고리의 악마가 완성되지。
+	PRINTW 　일정 이상의 강함을 지닌 조마와 일화에 관련된 악마를 합체시키면 만들어지는 모양이지만……별로 본 적은 없어서 말이야」
+	GOTO INPUT_LOOP
+ELSEIF RESULT == 8
+	;---- EDIT 038 MOD START -------------------------
+	;PRINTL 
+	;PRINTL 「悪魔の種類はそのままに、その悪魔を強くしたりできるのがイケニエ合体さ。
+	;PRINTL 　戦闘経験を積むのと同じ感じに強くなれるし、君と共闘した忠誠心ある悪魔なら副次効果もある。
+	;PRINTW 　まあ基本的には、その副次効果である素質の変更……体や心の状態を調えたりするのにすることになるかな？」
+	PRINTL 
+	PRINTL 「악마의 종류는 그대로 둔 채、그 악마를 강하게 만들거나 할 수 있는 게 제물합체야。
+	PRINTL 　이 합체는 계약한 악마가 일반적인 합체를 할 수 없게 되는 대신 할 수 있게 되는 녀석이지。
+	PRINTW 　제물이 되는 악마가 가진 전투 경험이나 ＭＡＧ를 계승해서 강해질 수 있고、너와 함께 싸운 충성심 있는 악마라면 부가 효과도 있어。
+	PRINTL 
+	PRINTL 「기본적으로는 그 부가 효과인 소질 변경……몸이나 마음의 상태를 조정하거나 하는 데 쓰게 되려나？
+	PRINTL 　그리고 특수한 프로그램으로 얻은 소질이나 각성 스킬이라고 불리는 스킬도 충성도에 따라 계승할 수 있어
+	PRINTW 　뭐 기본적으로는 마음에 드는 악마에게 이것저것 갖다 바치기 위한 합체라고 보면 돼」
+	;---- EDIT 038 MOD END ---------------------------
+	GOTO INPUT_LOOP
+ELSEIF RESULT == 9
+	PRINTL 
+	PRINTL 「……흐음。 내 이야기는 길어질 텐데、그래도 괜찮겠어？」
+	PRINTL 
+	PRINTL [1000]네
+	PRINTL [ 9]아니오
+	INPUT
+	IF RESULT == 1000
+		PRINTW 「그렇다면 제대로 이야기해 보도록 할까」
+		PRINTL
+		PRINTL 「애초에 악마합체란、단테・알리기에리의『신곡』에 따르면、지옥에서 볼 수 있는 악마의 생태 중 하나로、지옥에 떨어진 인간을 악마가 집어삼켜 새로운 악마가 되었다는 이야기에서 착상을 얻어 만들어진 시스템이라고도 하지」
+		PRINTL 「악마가 가진 다른 존재와 뒤섞이는 생태、그 성질을 이용해 악마끼리 뒤섞어 새로운 악마를 만들어내는 것이 악마합체야。 모든 것이 섞여 하나의 형태를 이루는 것이 악마합체지。그 악마합체 중에서도 정령합체나 미타마합체라는 건、특수한 성질을 지닌 악마를 섞어서 일반적과는 다른 합체를 행하는 걸 말하지만、넓은 의미로는 ２신 합체나 ３신 합체와 같은 거야」
+		PRINTL 
+		PRINTW 「뭐 요컨대、악마끼리 뒤섞어서 다른 악마로 만드는 게 일반적인 악마합체」
+		PRINTL 
+		PRINTW 「이야기가 길어졌지만 요컨대、서로 마음이 통한 악마를、네가 좋아하는 악마인 채로 두기 위해、악마합체에 손을 대서、강함을 바꾸고 마음에 드는 부분을 남길 수도 있다는 거야」
+		PRINTL 
+		PRINTL 「그럼 다음은 조마와 영웅합체에 대해 이야기지만、간단히 말하면 조마란 도리 카드몬이라는 것을 사용해 만드는 인조 악마、그중에서도 생체 마그네타이트에 의존하지 않는 육체를 가진 악마를 말해。 몸이 생체 마그네타이트로 구성된 것이 아니라 물질로서 존재하기 때문에、육체를 유지하는 데 ＭＡＧ가 필요하지 않아。 다만 인간이나 악마와는 달리 전투 등을 통해 생체 마그네타이트를 회수하는 데 서툴기 때문에、조마합체나 육체에 ＭＡＧ를 주입하는 방법으로 밖에 강해질 수 없다는 단점은 있지」
+		PRINTL 「그리고、이 육체를 가진 악마라는 성질과 인조로 태어난 지 얼마 되지 않아 일화를 갖지 않는다는 성질을 이용하는 게 영웅합체。 신화나 역사에 이름을 남길 정도로 강대한 육체를 지닌 존재인 영웅이나 맹장、그들과 깊이 관련된 악마를 촉매로 삼아 일화를 갖지 않는 조마의 육체에 뒤섞음으로써、과거의 영웅이나 맹장을 악마라는 형태로 재현하는 게 영웅합체지。 뭐、그 영웅이나 맹장과 어깨를 나란히 할 정도로 강화되어 있지 않으면 재현할 수 없어서 합체로 만들 수도 없지만 말이야」
+		PRINTL 
+		PRINTW 「중요한 부분은、조마는 ＭＡＧ를 소비하지 않지만 일반적인 레벨업도 하지 않고、전용의 합체나 ＭＡＧ 강화로만 강해진다는 것。 강해진 조마를 이용해서、영웅이나 맹장과 인연이 깊은 악마를 합체시킴으로써 의사적으로 영웅이나 맹장을 재현하는 게 영웅합체야」
+		PRINTL 
+		PRINTL 「그리고、제물합체의 경우인데……이쪽은 신화에서의 동일성에 대해 이야기해 볼까？ 우선、다신교에서 주신으로 여겨지는 유명한 악마들은、누구누구와 혼인해서 자식을 낳았다든가 어디에 찾아가 무언가를 했다든가、그런 식으로 권위를 덧붙이기 위한 소재로 쓰이는 경우가 적지 않은데……사실 이걸、관점을 바꿔 보면 재미있는 게 보여」
+		PRINTL 「반대로 생각해서 혼인을 맺은 악마나 어딘가를 방문한 악마가、나중에 주신격이 되는 악마와 동일한 존재가……그야말로 악마합체로 서로 뒤섞인 거라면？ 그렇다면 사실상、과거의 강력한 악마가 한 일이 되는 셈이라고 생각하지 않아？ 이 성질을 이용해서 특정 악마에게 일화를 추가해 나가는 게 바로 제물합체라는 거야」
+		PRINTL 
+		PRINTW 「게다가 이 성질을 이용하면、악마는 강해지지만 형태나나 악마로서의 격이 변하지는 않아。 어디까지나 일화를 추가함으로써 강화되는 거니까。 이야기가 길어졌지만、악마를 같은 악마인 채로 강하게 만드는 게 제물합체야」
+		PRINTL 
+		PRINTW …
+		PRINTW ……
+		PRINTW ………
+		PRINTL 
+		PRINTW 「뭐 대충 이런 정도려나？ ……백문이 불여일견이라고도 하니、실제로 시험해 보거나、아니면 100번 정도 더 물어보는 걸 추천할게」
+		GOTO INPUT_LOOP
+	ELSE
+		PRINTL 
+		PRINTL 「그럼、그만두도록 하지」
+		GOTO INPUT_LOOP
+	ENDIF
+ELSEIF RESULT == 0
+	PRINTL 어울려 줄 수가 없다……。
+	PRINTFORMW %MASTER는%、그 자리에서 떠났다。
+ELSE
+	GOTO INPUT_LOOP
+ENDIF

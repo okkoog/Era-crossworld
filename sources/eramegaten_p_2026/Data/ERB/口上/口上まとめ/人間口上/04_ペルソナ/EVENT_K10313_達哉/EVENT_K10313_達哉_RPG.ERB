@@ -1,0 +1,183 @@
+﻿@KOJO_BATTLE_MESSAGE_K[[キャラ:타츠야]], ARG,ARG:1 = 0
+LOCAL:1 = 1
+LOCAL = CFLAG:ARG:입력행동
+;231227:EMPTYと喋っていたケースの対処
+;LOCALS = EMPTY
+;タイプ取得
+CALL GET_SKILL_PROP, "SKILL_EFECT", LOCAL, ARG
+IF LOCAL == 0
+	IF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = せいっ！
+	ELSE
+		BTL_KOJO_RESULTS:0 = おそいっ！
+	ENDIF
+ELSEIF LOCAL == [[스킬:ＧＵＮ]]
+	BTL_KOJO_RESULTS:0 = あたれっ
+ELSEIF LOCAL == [[스킬:노바사이저]]
+	IF RAND:2
+		BTL_KOJO_RESULTS:0 = ノヴァサイザーっ！！
+	ELSE
+		BTL_KOJO_RESULTS:0 = もう終わりだ
+	ENDIF
+;공격
+ELSEIF RESULT == 1 && RAND:3 == 0
+	;潜在反撃対策
+	IF CFLAG:ARG:입력행동 == -1
+		RETURN
+	ENDIF
+	CALL GET_SKILL_PROP, "SKILL_TYPE", CFLAG:ARG:입력행동, ARG,ARG
+	SELECTCASE RESULT
+		;剣撃・飛具・打撃・戦技
+		CASE 0 ,1 ,2 ,3
+			IF RAND:2
+				BTL_KOJO_RESULTS:0 = そこをどけ！
+			ELSE
+				BTL_KOJO_RESULTS:0 = フンッ！
+			ENDIF
+		;화염
+		CASE 4
+			IF RAND:2
+				BTL_KOJO_RESULTS:0 = 燃え尽きろっ！
+			ELSE
+				BTL_KOJO_RESULTS:0 = もらったぁ！
+			ENDIF
+		CASEELSE
+			IF RAND:2
+				BTL_KOJO_RESULTS:0 = 来いっ
+			ELSE
+				BTL_KOJO_RESULTS:0 = 使わせてもらう
+			ENDIF
+	ENDSELECT
+;회복
+ELSEIF RESULT == 2 && RAND:3 == 0
+	IF CFLAG:ARG:타겟 > 6
+		BTL_KOJO_RESULTS:0 = 守ってみせる…！
+	ELSE
+		IF RAND:2
+			BTL_KOJO_RESULTS:0 = やらせるかっ
+		ELSE
+			BTL_KOJO_RESULTS:0 = 目を閉じてな
+		ENDIF
+	ENDIF
+;状態変化
+;ELSEIF RESULT == 3
+;特殊
+;ELSEIF RESULT == 4
+;状態回復
+;ELSEIF RESULT == 5
+ELSE
+	IF RAND:3 == 0
+		BTL_KOJO_RESULTS:0 = これで終わりだ！
+	ELSEIF RAND:2
+		BTL_KOJO_RESULTS:0 = 페르소나！
+	ELSE
+		BTL_KOJO_RESULTS:0 = 来いっ！
+	ENDIF
+ENDIF
+;SIF BTL_KOJO_RESULTS:0 != "EMPTY"
+;	CALL MESSAGE_BL(LOCAL:1, BTL_KOJO_RESULTS:0, BTL_KOJO_RESULTS:0:1, BTL_KOJO_RESULTS:0:2, BTL_KOJO_RESULTS:0:3, BTL_KOJO_RESULTS:0:4)
+
+@KOJO_BATTLE_EVENT_K[[キャラ:타츠야]], ARG, ARG:1, ARG:2
+SIF ARG < 0 && NO:ARG != 4524
+	RETURN 0
+LOCAL:1 = 1
+;231227:EMPTYと喋っていたケースの対処
+;BTL_KOJO_RESULTS:0 = EMPTY
+SELECTCASE TFLAG:전투이벤트
+	;COOP発動 ARGは発動者
+	CASE 1
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 俺に続け！
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 今だ…！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 行くぞ！
+		ENDIF
+	CASE 2
+	;공격　ARGが攻撃をする仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 11
+		;潜在反撃対策
+		IF CFLAG:ARG:입력행동 == -1
+			RETURN
+		ENDIF
+		;相手が死んだ
+		IF BASE:(ARG:1):ＨＰ <= 0
+				IF RAND:2
+					BTL_KOJO_RESULTS:0 = 退いてくれれば済んだものを…
+				ELSE
+					BTL_KOJO_RESULTS:0 = 詰めが、甘かったな…
+				ENDIF
+		;弱点をついた。つまりCOOP
+		ELSEIF GET_CREC_ACT(ARG, ARG:1, "WEAK")
+			IF CFLAG:(ARG:1):방어플래그
+				BTL_KOJO_RESULTS:0 = やるな
+			ELSE
+				;こっちはCOOP発動に回すためにカット
+				RETURN 0
+			ENDIF
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 50
+			BTL_KOJO_RESULTS:0 = 差がありすぎるんだ…悪く思うな…
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 25
+			IF RAND:2
+				BTL_KOJO_RESULTS:0 = 相手が悪かったな
+			ELSE
+				BTL_KOJO_RESULTS:0 = 喧嘩を売るなら相手をよく見て売るんだな
+			ENDIF
+		ELSEIF ダメージ割合(ARG:1, ARG:2) <= 0
+			BTL_KOJO_RESULTS:0 = 命拾いしたな
+		ENDIF
+	;被ダメージ
+	;ARGが攻撃を受ける仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 12
+		;死んだ
+		IF BASE:ARG:ＨＰ <= 0
+			IF RAND:2
+				BTL_KOJO_RESULTS:0 = 俺の炎が…
+			ELSE
+				BTL_KOJO_RESULTS:0 = 済まない…みんな…
+			ENDIF
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 50 || 現HP割合(ARG) < 25
+			BTL_KOJO_RESULTS:0 = まだだ…まだ、燃え尽きちゃいない！
+		ELSEIF ダメージ割合(ARG, ARG:2) > 20
+			IF RAND:2
+				BTL_KOJO_RESULTS:0 = まだやれる！
+			ELSE
+				BTL_KOJO_RESULTS:0 = ぐぅっ
+			ENDIF
+		ELSEIF ダメージ割合(ARG, ARG:2) > 0
+		;無効
+		ELSEIF ARG:2 == 0
+			BTL_KOJO_RESULTS:0 = 邪魔をするな！
+		;吸収
+		ELSEIF ARG:2 < 0
+			BTL_KOJO_RESULTS:0 = 甘いな…
+		ENDIF
+	CASE 15
+		BTL_KOJO_RESULTS:0 = なにっ！？
+	CASE 16
+		BTL_KOJO_RESULTS:0 = 悪く思うな
+	CASE 17
+		BTL_KOJO_RESULTS:0 = 二度はない！
+	CASE 18
+		BTL_KOJO_RESULTS:0 = 遅いっ
+ENDSELECT
+;SIF LOCALS != "EMPTY"
+;	CALL MESSAGE_BL(LOCAL:1, LOCALS, LOCALS:1, LOCALS:2, LOCALS:3, LOCALS:4)
+@EVOLUTE_PERSONA_K[[キャラ:타츠야]],ARG
+IF CFLAG:ARG:페르소나강화플래그 == 1
+	PRINTFORMW 「스오우 타츠야, 당신의 힘이 되고 싶다는 그의 마음에」
+	PRINTFORMW 「줄곧 그의 곁에 함께해 온 페르소나가 응답하려 하는 것 같군요」
+	PRINTFORMW 「제가 도와, 페르소나의 새로운 힘을 이끌어내어 보이지요」
+	PRINTL
+	PRINTW
+	PRINTW 페르소나 「보르카누스」가 페르소나 「보르카누스·개」로 다시 태어났다
+ELSE
+	PRINTFORMW 「스오우 타츠야, 이전에 그의 마음에 응답했던 페르소나입니다만」
+	PRINTFORMW 「그의 한층 더한 성장과 마음에, 또다시 페르소나도 새로운 힘을 얻으려 하고 있는 것 같군요」
+	PRINTFORMW 「지금 다시금 제가 도와, 페르소나의 진정한 힘을 이끌어내어 보이지요」
+	PRINTL
+	PRINTW
+	PRINTW 페르소나 「보르카누스·개」가 페르소나 「아폴로」로 다시 태어났다
+ENDIF

@@ -1,0 +1,162 @@
+﻿
+
+;スキル名
+@SKILL_NAME_4002,ARG
+RESULTS = 광염난무
+;　명중
+@SKILL_HITRATE_4002, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_4002, ARG
+SIF FLAG:공격횟수 == 1
+	RETURN 145
+RETURN 150
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_4002,ARG
+RETURN 2
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_4002,ARG
+RETURN 2
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_4002, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;コストの量
+@SKILL_COST_4002, ARG, ARG:1
+	RETURN 5
+;　相性
+@SKILL_TYPE_4002,ARG
+SIF FLAG:공격횟수 == 1
+	RETURN GET_TYPE_NUM("화염")
+RETURN GET_TYPE_NUM("검격")
+;　1EXTRAか2MAGICか
+
+@SKILL_DECIDE_TYPE_4002
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_4002, ARG
+SIF FLAG:공격횟수 == 1
+	RETURN 2
+RETURN 1
+
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_4002, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_4002,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_4002,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_4002, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_4002
+RETURN GET_SUCCESSION_NUM("계통없음")
+
+;속도보정
+@SKILL_SPEED_4002, ARG = -1
+RETURN 20
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_4002
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_4002, ARG = -1
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_4002, ARG, ARG:1, ARG:2
+CALL ATTACK_FIELD, ARG, ARG:1, 4002
+
+
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_4002, ARG
+PRINTL 적 전체에 검격 상성＋화염 상성의 데미지
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_4002,ARG
+CALL CHECK_COST,ARG,4002
+SIF RESULT == 0
+	RETURN 0
+RETURN 1
+;とくにない
+
+
+;=====================================================
+;リンケージ設定
+;=====================================================
+@LINKAGE_4002
+RETURN 1
+
+@参加人数_4002
+RETURN 1
+
+@参加条件表示_4002, ARG
+SELECTCASE ARG
+	CASE 1
+		PRINTFORM 화염계 마법
+	CASE 2
+		PRINTFORM 검격계 범위 물리
+ENDSELECT
+
+@発動者条件_4002 , ARG
+;剣撃相性の範囲物理攻撃スキルを使用可能なこと
+CALL HAVE_SKILL_SEARCH(ARG, "검격", "範囲", "공격", "物理")
+RETURN RESULT
+
+
+@参加者条件_4002, ARG , ARG:1
+SIF CPOS(ARG) < 1 || CPOS(ARG) > 6
+	RETURN 0
+CALL CHECK_COST_LINCAGE, ARG, 4002, ARG:1
+SIF RESULT == 0
+	RETURN 0
+SELECTCASE ARG:1
+	CASE 1
+		;火炎相性の攻撃魔法スキルを使用可能なこと
+		CALL HAVE_SKILL_SEARCH(ARG, "화염", , "공격", "魔法", 4002)
+		RETURN RESULT
+ENDSELECT
+@リンケージ能力参照者_4002, ARG
+	SIF FLAG:공격횟수 == 1
+		RETURN 1
+	RETURN 0
+
+@リンケージコストタイプ_4002, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 3
+ENDSELECT
+@リンケージコスト_4002, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 8
+ENDSELECT

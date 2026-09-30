@@ -1,0 +1,295 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:NGO_FUNCTION.ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2023/05/02		P(bazzile)				作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=================================================
+;配信用のスキップフラグを折る関数
+;配信を実行したら常に終了時にこれを宣言してフラグをおるように
+;=================================================
+@RESET_SKIP_SUPER_ANGEL_HAISIN
+#DIMS L_DUMMY;参照値渡しの仕様上、引数を省略できないので送る
+CALL PRINT_SUPER_ANGEL_HAISIN, "RESET_SKIP", L_DUMMY, L_DUMMY
+
+;=================================================
+;配信風表示関数
+;ARGS 				= メイン画面表示内容(基本的にはアスキーアートを想定)
+;L_ANGEL_COMMENT	= 画面下部、配信者のセリフ、参照渡し(配列ごともらってくる)
+;L_ANGEL_COMMENT	= 画面右部、コメント欄、　　参照渡し(配列ごともらってくる)
+;ANGEL_COLOR		= 色を指定する場合(特殊数値:-1:虹色、-2;虹色アニメ1、-3:虹色アニメ2)
+;=================================================
+@PRINT_SUPER_ANGEL_HAISIN, ARGS, L_ANGEL_COMMENT, L_COMMENT, ANGEL_COLOR
+#DIM L_LINE
+#DIM L_RAINBOW_CNT
+#DIM SHOW_LINENUM
+#DIM LCOUNT, 2
+#DIMS REF L_ANGEL_COMMENT
+#DIMS REF L_COMMENT
+#DIM ANGEL_COLOR
+#DIMS ANGEL_COMMENT_COLOR
+#DIMS COMMENT_COLOR
+#DIMS ANGEL_COMMENT_LINE, 5 
+#DIMS AA_STR, 45
+#DIMS SHOW_LINE, 45
+#DIMS SHOW_COMMENT, 45
+#DIM IS_BREAK
+#DIM IS_MESSKIP
+SELECTCASE ARGS
+	CASE "RESET_SKIP"
+		IS_MESSKIP = 0
+		RETURN 0
+ENDSELECT
+L_LINE = LINECOUNT
+IS_BREAK = 0
+WHILE 1
+	CLEARLINE LINECOUNT - L_LINE
+	CALL SET_VAR_NGO_AA, ARGS, AA_STR, ANGEL_COLOR, L_RAINBOW_CNT
+	SHOW_LINENUM = RESULT
+	;色の指定部分
+	COMMENT_COLOR = %TOSTR_HTML(COLOR("p-blue"))%
+	ANGEL_COMMENT_COLOR = %TOSTR_HTML(COLOR("p-blue"))%
+
+	SHOW_COMMENT:0 = <font color = '%COMMENT_COLOR%'>┏━━━━━━━━━━━━┓</font>
+	SHOW_COMMENT:1 = <font color = '%COMMENT_COLOR%'>┃시청자 코멘트 　　　　　┃</font>
+	SHOW_COMMENT:2 = <font color = '%COMMENT_COLOR%'>┣━━━━━━━━━━━━┫</font>
+	SHOW_COMMENT:(SHOW_LINENUM -1) = <font color = '%COMMENT_COLOR%'>┗━━━━━━━━━━━━┛</font>
+
+	FOR LCOUNT, 3, SHOW_LINENUM - 1
+		SHOW_COMMENT:LCOUNT = ┃%L_COMMENT:(LCOUNT-3)%%" " * (24 - STRLENS(HTML_TOPLAINTEXT(L_COMMENT:(LCOUNT-3))))%┃
+		CALL SET_COLOR_TAG_IN_TAG_CASE, SHOW_COMMENT:LCOUNT, COMMENT_COLOR
+		SHOW_COMMENT:LCOUNT = %RESULTS%
+	NEXT
+
+	FOR LCOUNT, 0, SHOW_LINENUM
+		SHOW_LINE:LCOUNT '= AA_STR:LCOUNT + SHOW_COMMENT:LCOUNT
+	NEXT
+
+	ANGEL_COMMENT_LINE:0 = <font color = '%ANGEL_COMMENT_COLOR%'>┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</font>
+	ANGEL_COMMENT_LINE:4 = <font color = '%ANGEL_COMMENT_COLOR%'>┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</font>
+
+	FOR LCOUNT, 1, VARSIZE("ANGEL_COMMENT_LINE") - 1
+		ANGEL_COMMENT_LINE:LCOUNT = ┃%L_ANGEL_COMMENT:(LCOUNT-1)%%" " * (96 - STRLENS(HTML_TOPLAINTEXT(L_ANGEL_COMMENT:(LCOUNT-1))))%┃
+		CALL SET_COLOR_TAG_IN_TAG_CASE, ANGEL_COMMENT_LINE:LCOUNT, ANGEL_COMMENT_COLOR
+		ANGEL_COMMENT_LINE:LCOUNT = %RESULTS%
+	NEXT
+
+	;本表示のときはスペースをいれて調整する
+	IF IS_BREAK == 0
+		FOR LCOUNT, 0, 50
+			PRINTL 
+		NEXT
+	ENDIF
+	FOR LCOUNT, 0, VARSIZE("AA_STR")
+		HTML_PRINT SHOW_LINE:LCOUNT
+	NEXT
+	FOR LCOUNT, 0, VARSIZE("ANGEL_COMMENT_LINE")
+		HTML_PRINT ANGEL_COMMENT_LINE:LCOUNT
+	NEXT
+	SIF IS_BREAK
+		BREAK
+	IF MESSKIP() || IS_MESSKIP
+		RESULT = 1
+		REDRAW 2
+	ELSE
+		INPUTMOUSEKEY  100
+	ENDIF
+	IF RESULT < 4
+		IS_BREAK = 1
+		SIF RESULT == 1 && RESULT:1 == 0x200000
+			IS_MESSKIP = 1
+	ELSE
+		L_RAINBOW_CNT++
+		L_RAINBOW_CNT %= 12
+	ENDIF
+WEND
+
+@SET_VAR_NGO_AA, ARGS, AA_STR, L_COLOR, L_RAINBOW_CNT
+#DIM LCOUNT
+#DIMS REF AA_STR 
+#DIM L_COLOR
+#DIM CNT_AA_LINE;AAの行数
+#DIM L_RAINBOW_CNT
+#DIMS L_FONT
+IF CHKFONT("ＭＳ ゴシック")
+	L_FONT '= "ＭＳ ゴシック"
+ELSE
+	L_FONT = 
+ENDIF
+VARSET AA_STR
+SELECTCASE ARGS
+	CASE "超天使"
+		CNT_AA_LINE = 45
+		;デフォルトカラーの指定部分(虹色が指定されている場合が-1以下が来てる)
+		SIF L_COLOR >= 0
+			L_COLOR = L_COLOR == 0 ? COLOR("pink") # L_COLOR
+		
+		AA_STR:0 = %HTML_ESCAPE("~~:(:::(>   (<~~(+>`````` . `` ```  ._ ``  ..~... ...``.  `  <!!<_.~.` .")%
+		AA_STR:1 = %HTML_ESCAPE(":~:;::(>  ` -<_(+<_~~~~~_   ` `  .._`` .....~.. .......`..-.  `.` _- ~Jz")%
+		AA_STR:2 = %HTML_ESCAPE("~:(<:(:   - .<<<~~~~.~~_  `.`  ..._.......~~_. _....`.`..`...._ _ ` ~ .1")%
+		AA_STR:3 = %HTML_ESCAPE("::><(! `.``.~~~~~~.~~_` .... ....__......~~(._ ~....````.. ..._  ..``_. ")%
+		AA_STR:4 = %HTML_ESCAPE(":(<(!  .  .:~~~~.~~~_`.........~__.....~~~({. .~_` . `````` ...-  _.``--")%
+		AA_STR:5 = %HTML_ESCAPE("(<<`  _ ...:~~~~~~~_`...`...._~_~.....~~~(z~_ ~. ```     `` `… _.``-")%
+		AA_STR:6 = %HTML_ESCAPE("><   ~ .~..<:~~~~_~`...`....._(~.....~~~+zv. .~.````     ``     ~   _.`.")%
+		AA_STR:7 = %HTML_ESCAPE("<   ! -_...<:~~~(!...`-....__(:.....~~_+1>{. _...``` `  ` ``  ` __`___..")%
+		AA_STR:8 = %HTML_ESCAPE("  `` -_~~.--<::(!....-....~_(<....~~~_J<!(}. <...``..` ``````` `.~_  ~..")%
+		AA_STR:9 = %HTML_ESCAPE("   `._(~~.~<_<<!..`.-...~~_(>!...~~~(v!``({..~.......``````.```..._ .._.")%
+		AA_STR:10 = %HTML_ESCAPE("`.` ~_(~~~~_<+!.`..-..~~._(><.~_~~(<~~~~~(>-._.....`...`....`.....~`.__.")%
+		AA_STR:11 = %HTML_ESCAPE(" _ ~~_;:~.~(+!....._~...~(+><~~~(?``````` {_(_-...`...`..`...`....~_._..")%
+		AA_STR:12 = %HTML_ESCAPE(" } ~_.;:~~(+:..`..-~~..._+>><~(?``````````(.(:_~_.........`..`....._.___")%
+		AA_STR:13 = %HTML_ESCAPE(" :-~~.<:_(+>...._.~~..~_(?>+<!````````````.-(<_...................~_.->_")%
+		AA_STR:14 = %HTML_ESCAPE(" {~__.(:;<c.__.__-~...~_+<! ```````````````<-<__............`.....~..-I_")%
+		AA_STR:15 = %HTML_ESCAPE(" l~___.++c._~._~ ~~.~..J:````` ````````````.-><~.....................-I(")%
+		AA_STR:16 = %HTML_ESCAPE(" (~(_J``.!_~__<__~~.~~(>``..--(Ha.-.. ``  ``.(<i_~...........___~~:..(I;")%
+		AA_STR:17 = %HTML_ESCAPE("  .<(/` .>_~__<~.~~~~~.(-(><jdWqmgggHmXy~..``````` ____...........~_..(I")%
+		AA_STR:18 = %HTML_ESCAPE("  1/`.~(_~__:~~_~~~~~_+&+dWWVWMHeZTHMHWS..__ ```````` ___........(!..+I(")%
+		AA_STR:19 = %HTML_ESCAPE("  ,`.`.l~~:(<~~~:~~~~_vCOv!~jM61dNeOWNmvXZ&-~.``````````` __.~..-<.-(jI<")%
+		AA_STR:20 = %HTML_ESCAPE(" .!.``,~~~(<~~~(;:::~(~_?z__XD<(WUS:?WHl~<+<~```````````````_-~(<._J!jz<")%
+		AA_STR:21 = %HTML_ESCAPE(" .`. `v~~_<~~~(+>;::~(_.._~.(w+:<<<::[(!``__` ````````````````_<__?_`(z~")%
+		AA_STR:22 = %HTML_ESCAPE(" :` ~.l~~(<~~:<zz;:::(.`...._?74USWXWk:  ```.`````````````` ` (((+g: .1_")%
+		AA_STR:23 = %HTML_ESCAPE(" <` _(>~(<~:::?1I>;::(.``............. ....``.```````````..jXXWWHHHHm,.1")%
+		AA_STR:24 = %HTML_ESCAPE("  >``,<:;<:~:(??z+;::(_..`.............`..`.`````` ```` _(XQKUWXXe(TMHgH")%
+		AA_STR:25 = %HTML_ESCAPE("   ?(,<(<~:::<??zI<;:::.`.... ........`.``.`.```` ` ````.vJBD:<wM#>__WmR")%
+		AA_STR:26 = %HTML_ESCAPE("     ,<:<::::<??c_1<;:<`.`````..`..`.`.`..``.```````  -. <+?>::+HD_~~(WH")%
+		AA_STR:27 = %HTML_ESCAPE("     ,<:(::::<?j~..?+:<-````.````````.``.``.``.``````!._.`.7+&JX,!```(?X")%
+		AA_STR:28 = %HTML_ESCAPE("     .<<<::::<?2..~._<++.`.````.``.`````````````````..__...._?Hn.` .(++<")%
+		AA_STR:29 = %HTML_ESCAPE("     .<(:::::<j>~~._. `_<-.````````.``.``.```````````..`.`......?(>~~jz1")%
+		AA_STR:30 = %HTML_ESCAPE("     .>(:::::;v.x..  . ``` ````````````` ...... ```.````.`.`.........-1x")%
+		AA_STR:31 = %HTML_ESCAPE("      l<:::::;r ,-. ``` ``````````````.J@@HM&-._?1..```.``..`.......(11>")%
+		AA_STR:32 = %HTML_ESCAPE("    ` r>:;::;<[  ) `` `` ````````````.JHHHHMH@MHa+dy ``````.`......._Z?<")%
+		AA_STR:33 = %HTML_ESCAPE("      l>;::;;+| .:```  ``````````````.11zOZUHH@@HHM$````.`````.``...(>~.")%
+		AA_STR:34 = %HTML_ESCAPE("      lI:;::;(} c` `  `  ````````````(::::<1OWHH@@D```````.``.``.`.(6~~.")%
+		AA_STR:35 = %HTML_ESCAPE(" `    lw:;:;:;:,``   _-`  ```````````+::~::<<OXH@D``````````````.`.r+~~(")%
+		AA_STR:36 = %HTML_ESCAPE("`   ~.>>I;:;;:v```` ``-_.` ``````````(:~:~:::+wWt ````````````.``.v_I~(_")%
+		AA_STR:37 = %HTML_ESCAPE("    ``>l,+;::<<`` `  ` _:-  `````````.<~:~~::+v!``````````````` -=::$><.")%
+		AA_STR:38 = %HTML_ESCAPE("      .><z<:;;I_`` `` ` ::<-  ````````<:::::+!``````````````..('_:_J1>~_")%
+		AA_STR:39 = %HTML_ESCAPE("` ``   z ~?<;:j+ ` ` ` `_::<+- `` ```` ?-(<!````````````` .-7`   J1vI~-+")%
+		AA_STR:40 = %HTML_ESCAPE("```   `(-`~(+;;Ci`` `` ``~:::?1- `````````````````````..?!`   .Jv^~:I_+z")%
+		AA_STR:41 = %HTML_ESCAPE("````` ` I` ~.1<(_i `````` ~::::1i- ``````````````.._?!   ...?=!`   ~O+z>")%
+		AA_STR:42 = %HTML_ESCAPE(" `````` .:  ~`(1<.1.`````` ~::::<?o- ````````..J7`               `  Z1>j")%
+		AA_STR:43 = %HTML_ESCAPE(" ``.````  `  ~``_1,__`````` ~:::::+z1. ` ..?1<``                   Jz>;:")%
+		AA_STR:44 = %HTML_ESCAPE(" ````  `  ```._``` ~_ ```````_::+J6~~:<<<:(<!                   ` Jz;;;+")%
+	CASE "バグり天使"
+		CNT_AA_LINE = 45
+		;デフォルトカラーの指定部分(虹色が指定されている場合が-1以下が来てる)
+		SIF L_COLOR >= 0
+			L_COLOR = L_COLOR == 0 ? COLOR("pink") # L_COLOR
+		L_FONT '= "ＭＳ Ｐゴシック"
+		AA_STR:0 = %HTML_ESCAPE("~~:(:::(>   (<~~(+>`````` . `` ```  ._ ``  ..~... ...``.  `  <!!<_.~.` .")%
+		AA_STR:1 = %HTML_ESCAPE(":~:;::(>  ` -<_(+<_~~~~~_   ` `  .._`` .....~.. .......`..-.  `.` _- ~Jz")%
+		AA_STR:2 = %HTML_ESCAPE("~:(<:(:   - .<<<~~~~.~~_  `.`  ..._.......~~_. _....`.`..`...._ _ ` ~ .1")%
+		AA_STR:3 = %HTML_ESCAPE("::><(! `.``.~~~~~~.~~_` .... ....__......~~(._ ~....````.. ..._  ..``_. ")%
+		AA_STR:4 = %HTML_ESCAPE(":(<(!  .  .:~~~~.~~~_`.........~__.....~~~({. .~_` . `````` ...-  _.``--")%
+		AA_STR:5 = %HTML_ESCAPE("(<<`  _ ...:~~~~~~~_`...`...._~_~.....~~~(z~_ ~. ```     `` `… _.``-")%
+		AA_STR:6 = %HTML_ESCAPE("><   ~ .~..<:~~~~_~`...`....._(~.....~~~+zv. .~.````     ``     ~   _.`.")%
+		AA_STR:7 = %HTML_ESCAPE("<   ! -_...<:~~~(!...`-....__(:.....~~_+1>{. _...``` `  ` ``  ` __`___..")%
+		AA_STR:8 = %HTML_ESCAPE("  `` -_~~.--<::(!....-....~_(<....~~~_J<!(}. <...``..` ``````` `.~_  ~..")%
+		AA_STR:9 = %HTML_ESCAPE("   `._(~~.~<_<<!..`.-...~~_(>!...~~~(v!``({..~.......``````.```..._ .._.")%
+		AA_STR:10 = %HTML_ESCAPE("`.` ~_(~~~~_<+!.`..-..~~._(><.~_~~(<~~~~~(>-._.....`...`....`.....~`.__.")%
+		AA_STR:11 = %HTML_ESCAPE(" _ ~~_;:~.~(+!....._~...~(+><~~~(?``````` {_(_-...`...`..`...`....~_._..")%
+		AA_STR:12 = %HTML_ESCAPE(" } ~_.;:~~(+:..`..-~~..._+>><~(?``````````(.(:_~_.........`..`....._.___")%
+		AA_STR:13 = %HTML_ESCAPE(" :-~~.<:_(+>...._.~~..~_(?>+<!````````````.-(<_...................~_.->_")%
+		AA_STR:14 = %HTML_ESCAPE(" {~__.(:;<c.__.__-~...~_+<! ```````````````<-<__............`.....~..-I_")%
+		AA_STR:15 = %HTML_ESCAPE(" l~___.++c._~._~ ~~.~..J:````` ````````````.-><~.....................-I(")%
+		AA_STR:16 = %HTML_ESCAPE(" (~(_J``.!_~__<__~~.~~(>``..--(Ha.-.. ``  ``.(<i_~...........___~~:..(I;")%
+		AA_STR:17 = %HTML_ESCAPE("  .<(/` .>_~__<~.~~~~~.(-(><jdWqmgggHmXy~..``````` ____...........~_..(I")%
+		AA_STR:18 = %HTML_ESCAPE("  1/`.~(_~__:~~_~~~~~_+&+dWWVWMHeZTHMHWS..__ ```````` ___........(!..+I(")%
+		AA_STR:19 = %HTML_ESCAPE("  ,`.`.l~~:(<~~~:~~~~_vCOv!~jM61dNeOWNmvXZ&-~.``````````` __.~..-<.-(jI<")%
+		AA_STR:20 = %HTML_ESCAPE(" .!.``,~~~(<~~~(;:::~(~_?z__XD<(WUS:?WHl~<+<~```````````````_-~(<._J!jz<")%
+		AA_STR:21 = %HTML_ESCAPE(" .`. `v~~_<~~~(+>;::~(_.._~.(w+:<<<::[(!``__` ````````````````_<__?_`(z~")%
+		AA_STR:22 = %HTML_ESCAPE(" :` ~.l~~(<~~:<zz;:::(.`...._?74USWXWk:  ```.`````````````` ` (((+g: .1_")%
+		AA_STR:23 = %HTML_ESCAPE(" <` _(>~(<~:::?1I>;::(.``............. ....``.```````````..jXXWWHHHHm,.1")%
+		AA_STR:24 = %HTML_ESCAPE("  >``,<:;<:~:(??z+;::(_..`.............`..`.`````` ```` _(XQKUWXXe(TMHgH")%
+		AA_STR:25 = %HTML_ESCAPE("   ?(,<(<~:::<??zI<;:::.`.... ........`.``.`.```` ` ````.vJBD:<wM#>__WmR")%
+		AA_STR:26 = %HTML_ESCAPE("     ,<:<::::<??c_1<;:<`.`````..`..`.`.`..``.```````  -. <+?>::+HD_~~(WH")%
+		AA_STR:27 = %HTML_ESCAPE("     ,<:(::::<?j~..?+:<-````.````````.``.``.``.``````!._.`.7+&JX,!```(?X")%
+		AA_STR:28 = %HTML_ESCAPE("     .<<<::::<?2..~._<++.`.````.``.`````````````````..__...._?Hn.` .(++<")%
+		AA_STR:29 = %HTML_ESCAPE("     .<(:::::<j>~~._. `_<-.````````.``.``.```````````..`.`......?(>~~jz1")%
+		AA_STR:30 = %HTML_ESCAPE("     .>(:::::;v.x..  . ``` ````````````` ...... ```.````.`.`.........-1x")%
+		AA_STR:31 = %HTML_ESCAPE("      l<:::::;r ,-. ``` ``````````````.J@@HM&-._?1..```.``..`.......(11>")%
+		AA_STR:32 = %HTML_ESCAPE("    ` r>:;::;<[  ) `` `` ````````````.JHHHHMH@MHa+dy ``````.`......._Z?<")%
+		AA_STR:33 = %HTML_ESCAPE("      l>;::;;+| .:```  ``````````````.11zOZUHH@@HHM$````.`````.``...(>~.")%
+		AA_STR:34 = %HTML_ESCAPE("      lI:;::;(} c` `  `  ````````````(::::<1OWHH@@D```````.``.``.`.(6~~.")%
+		AA_STR:35 = %HTML_ESCAPE(" `    lw:;:;:;:,``   _-`  ```````````+::~::<<OXH@D``````````````.`.r+~~(")%
+		AA_STR:36 = %HTML_ESCAPE("`   ~.>>I;:;;:v```` ``-_.` ``````````(:~:~:::+wWt ````````````.``.v_I~(_")%
+		AA_STR:37 = %HTML_ESCAPE("    ``>l,+;::<<`` `  ` _:-  `````````.<~:~~::+v!``````````````` -=::$><.")%
+		AA_STR:38 = %HTML_ESCAPE("      .><z<:;;I_`` `` ` ::<-  ````````<:::::+!``````````````..('_:_J1>~_")%
+		AA_STR:39 = %HTML_ESCAPE("` ``   z ~?<;:j+ ` ` ` `_::<+- `` ```` ?-(<!````````````` .-7`   J1vI~-+")%
+		AA_STR:40 = %HTML_ESCAPE("```   `(-`~(+;;Ci`` `` ``~:::?1- `````````````````````..?!`   .Jv^~:I_+z")%
+		AA_STR:41 = %HTML_ESCAPE("````` ` I` ~.1<(_i `````` ~::::1i- ``````````````.._?!   ...?=!`   ~O+z>")%
+		AA_STR:42 = %HTML_ESCAPE(" `````` .:  ~`(1<.1.`````` ~::::<?o- ````````..J7`               `  Z1>j")%
+		AA_STR:43 = %HTML_ESCAPE(" ``.````  `  ~``_1,__`````` ~:::::+z1. ` ..?1<``                   Jz>;:")%
+		AA_STR:44 = %HTML_ESCAPE(" ````  `  ```._``` ~_ ```````_::+J6~~:<<<:(<!                   ` Jz;;;+")%
+	CASE "新宿アルタ前超てんちゃん降臨"
+		CNT_AA_LINE = 45
+		;デフォルトカラーの指定部分(虹色が指定されている場合が-1以下が来てる)
+		SIF L_COLOR >= 0
+			L_COLOR = L_COLOR == 0 ? COLOR("pink") # L_COLOR
+		L_FONT '= "ＭＳ Ｐゴシック"
+		AA_STR:0 = %HTML_ESCAPE("＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:1 = %HTML_ESCAPE("＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:2 = %HTML_ESCAPE("＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:3 = %HTML_ESCAPE("＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:4 = %HTML_ESCAPE("＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:5 = %HTML_ESCAPE("＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:6 = %HTML_ESCAPE("＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:7 = %HTML_ESCAPE("＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:8 = %HTML_ESCAPE("＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:9 = %HTML_ESCAPE("＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:10 = %HTML_ESCAPE("＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:11 = %HTML_ESCAPE("＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:12 = %HTML_ESCAPE("＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:13 = %HTML_ESCAPE("＿＿■＿＿＿＿＿＿＿＿＿＿■＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿■＿＿＿＿■＿")%
+		AA_STR:14 = %HTML_ESCAPE("■■■■＿＿＿■＿＿■■■■■■■■＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿■■■■■＿＿＿■＿＿■■＿")%
+		AA_STR:15 = %HTML_ESCAPE("＿■＿■＿■■＿＿＿■＿＿＿＿＿＿■＿■■■■■■■■＿＿＿■＿＿＿＿＿■＿＿＿■＿■■■■■■■■")%
+		AA_STR:16 = %HTML_ESCAPE("＿■■＿＿■＿＿＿＿■＿＿＿＿＿＿■＿＿＿＿＿＿＿＿■＿■＿■＿＿＿＿＿■＿＿＿■＿＿＿＿＿＿＿＿＿")%
+		AA_STR:17 = %HTML_ESCAPE("■■■■＿■■■■＿＿＿■＿■■■■＿＿＿＿■＿＿■＿＿■＿■＿＿＿＿＿■■＿＿■＿■＿＿■＿■＿■")%
+		AA_STR:18 = %HTML_ESCAPE("＿＿■＿＿■＿■＿＿＿■＿＿＿■＿＿＿＿＿＿■■■＿＿＿■＿■＿＿■＿■＿＿■■＿＿■■■■＿■＿■")%
+		AA_STR:19 = %HTML_ESCAPE("■■■■■＿＿■＿＿■■＿＿■■■■＿＿＿＿■＿＿＿＿＿■＿■＿■＿＿＿＿＿＿■＿＿■＿＿■＿■＿■")%
+		AA_STR:20 = %HTML_ESCAPE("＿■■＿■＿＿■＿＿■■＿＿■■■■＿＿＿＿■＿＿＿＿＿■＿■■＿＿＿＿＿＿■＿＿＿■■■■＿■＿■")%
+		AA_STR:21 = %HTML_ESCAPE("■■■＿■＿＿■＿＿＿■＿＿■■■■＿＿＿■＿＿＿＿＿＿＿＿■＿＿＿＿＿＿■＿＿＿＿■＿＿■＿＿＿■")%
+		AA_STR:22 = %HTML_ESCAPE("＿＿■＿＿＿＿＿＿＿＿＿＿＿■■■■＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿■■＿＿＿＿")%
+		AA_STR:23 = %HTML_ESCAPE("＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:24 = %HTML_ESCAPE("＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿■＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:25 = %HTML_ESCAPE("＿＿■＿＿＿■■■■＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿■＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:26 = %HTML_ESCAPE("＿■■■＿＿＿■＿■＿■■■■■■＿■＿＿＿＿＿＿■■■■■＿＿＿＿＿＿＿＿＿＿■＿＿＿＿＿＿＿＿＿")%
+		AA_STR:27 = %HTML_ESCAPE("＿＿■＿＿＿■＿■■＿＿＿＿■■＿＿■＿＿＿＿＿＿＿＿■＿＿＿＿＿■＿＿■＿＿＿■＿＿＿＿＿＿＿＿＿")%
+		AA_STR:28 = %HTML_ESCAPE("＿■■■■＿＿＿■＿＿＿＿＿■＿＿＿■■■＿＿＿＿＿＿＿＿＿＿＿■■■■■■■＿■■■＿＿＿＿＿＿＿")%
+		AA_STR:29 = %HTML_ESCAPE("＿＿■＿＿＿■■■■＿＿＿■＿＿＿＿■■＿■＿＿＿＿■■■■＿＿＿■＿＿＿＿■＿■■＿■＿＿＿＿＿＿")%
+		AA_STR:30 = %HTML_ESCAPE("＿■■■■＿■＿＿■＿＿＿■＿＿＿＿■＿＿■＿＿■＿■■＿＿■＿＿■＿＿＿■＿＿■＿＿■＿＿■＿＿＿")%
+		AA_STR:31 = %HTML_ESCAPE("＿■■＿＿＿■■■■＿＿＿＿■＿＿＿■＿＿■＿■■＿＿＿＿＿■＿＿＿■＿＿＿＿＿■＿＿■＿■■＿＿＿")%
+		AA_STR:32 = %HTML_ESCAPE("■＿■■＿＿＿＿＿＿＿＿＿＿＿■＿＿＿＿＿＿■■＿＿＿＿■■■＿＿＿■＿＿＿＿＿＿＿＿＿■■＿＿＿＿")%
+		AA_STR:33 = %HTML_ESCAPE("＿＿＿■■■■■■＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:34 = %HTML_ESCAPE("＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:35 = %HTML_ESCAPE("＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:36 = %HTML_ESCAPE("■■■＿＿■■■＿＿＿■■■■＿＿■＿＿＿＿＿■■＿■■＿■■＿■■＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:37 = %HTML_ESCAPE("■■■＿■■■■＿＿＿■■■＿＿■■■■＿＿＿■■＿■■＿■■＿■■＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:38 = %HTML_ESCAPE("■■＿＿＿■■■■＿＿■＿■■＿■■■■＿＿＿■■＿■■＿■■＿■■＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:39 = %HTML_ESCAPE("■■■＿■■■＿■■＿■■＿■＿＿■＿■＿＿＿■■＿■■＿■■＿■■＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:40 = %HTML_ESCAPE("■■＿＿＿■■■■＿＿■■■■＿＿■■■＿＿＿■＿＿■＿＿■＿＿■＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:41 = %HTML_ESCAPE("■＿＿＿＿■■＿＿＿＿■＿■＿＿■■■■■＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:42 = %HTML_ESCAPE("■＿＿＿■■■■■■＿■■■■＿■■■＿■＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:43 = %HTML_ESCAPE("■＿＿＿＿＿■＿＿＿＿＿＿＿＿＿■■■■■＿＿■■＿■■＿■■＿■■＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+		AA_STR:44 = %HTML_ESCAPE("■＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿")%
+	ENDSELECT
+FOR LCOUNT, 0, 45
+	SELECTCASE L_COLOR
+		CASE -1
+			AA_STR:LCOUNT = <font face = '%L_FONT%' color = '%TOSTR_HTML(COLOR("RAINBOW", LCOUNT))%'>%AA_STR:LCOUNT%</font>
+		CASE -2
+			AA_STR:LCOUNT = <font face = '%L_FONT%' color = '%TOSTR_HTML(COLOR("RAINBOW", LCOUNT + L_RAINBOW_CNT))%'>%AA_STR:LCOUNT%</font>
+		CASE -3
+			AA_STR:LCOUNT = <font face = '%L_FONT%' color = '%TOSTR_HTML(COLOR("RAINBOW", L_RAINBOW_CNT))%'>%AA_STR:LCOUNT%</font>
+		CASEELSE
+			AA_STR:LCOUNT = <font face = '%L_FONT%' color = '%TOSTR_HTML(L_COLOR)%'>%AA_STR:LCOUNT%</font>
+	ENDSELECT
+NEXT
+RETURN CNT_AA_LINE
+
+

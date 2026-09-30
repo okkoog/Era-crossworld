@@ -1,0 +1,2431 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SYSYTEM_BATTLE.ERB
+;	Facility	:HPの増減の実行処理や新規キャラクターの追加など戦闘及びRPGで使われる処理群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX								新規作成
+;	002		2011/01/30		P						真・全門耐性の処理を追加
+;	003		2011/02/06		Rsp暇人					CFLAG:アイテム使用能力およびアイテム使用強化の処理を追加
+;	004		2011/03/06		Rsp暇人					CFLAG:アイテム使用能力およびアイテム使用強化の処理を修正。仲魔作成時に初期衣装を設定するように。
+;	005		2011/03/28		P						初期好感度の処理を追加。戦闘員による霊媒体質によってMAG移動が増加するように変更
+;	006		2011/08/31		P						人間がLv80を超えている場合、追加でステ補正が入るように
+;	007		2011/11/09		旅人					統合整備
+;													ファイルが肥大化している為、ダメージ処理を分離
+;	008		2011/05/20		P						半魔人がバステ耐性を装備からとっていたのを修正
+;	009		2012/10/00		(ﾟдﾟ)					プリンキピアに関する記述を追加
+;	010		2012/12/02		ネトリス				瀕死になった場合にCFLAG:ダンジョン内発情用欲情値が半分になり、発情状態が解除されるように
+;	011		2012/12/26		P						식노(데빌시프터)が主人の場合、悪魔変身時に最大MAGが減ってしまうのを修正
+;	012		2013/11/25		ひみつ					NEXT経験値の設定を@GET_NEXT_EXPで行うように(@CHECK_LEVEL_UPの動きに合わせる)
+;													現在経験値が1つ下のLVのNEXT経験値より低い場合、その値まで引き上げる(主に加入時の為)
+;	013		2013/12/11		ひみつ					NEXT経験値の設定を@GET_NEXT_EXPで行うように(@CHECK_LEVEL_UPの動きに合わせる)
+;													現在経験値が1つ下のLVのNEXT経験値より低い場合、その値まで引き上げる(主に加入時の為)
+;	014		2015/01/27		Iz						達人強化パッチとして、「무도의마음가짐」「마술의소양」に対応調整
+;	015		2015/12/11		JK好き					異能者用のスキル数を確保
+;	016		2016/12/11		Jガン					特定のバステで攻撃が必ず命中するように
+;	017		2017/09/23		名無					ガチャモード追加(ガチャ縛り時、非ガチャ産ステータス半減)
+;	018		2018/09/05		sil						相性関係の処理を相性変更複数化用に変更
+;	019		2018/10/23		しぐれみそ				装備追加スキルの処理に魔晶装備用の処理を追加
+;	020		2019/03/17		名無					エクスリンケージに伴うムフフでCOOP時 欲情増加
+;	021		2019/03/29		名無					ハーモナイザーの処理を追加
+;	022		2019/04/12		オレンジスコーン		素質ガンスリンガーがある場合の計算式を追加
+;	023		2019/04/27		名無					CSVに特殊友情を追加し、特殊友情があるとアライメント関係なくCOOP最大になるように
+;	024		2019/08/27		空気					装備知識Lv5の補正が重複していた部分を削除、装備知識持ち悪魔の魔法効果・魔法威力が装備で上がらないように変更
+;	025		2019/08/28		空気					デビルチェンバー使用時の挙動を修正。また、DDMがONなら容量いっぱいでも仲魔になって自動的にストレージに送られるように
+;	026		2019/08/30		空気					悪魔合体時に容量を超えていないのにストレージに送られてしまう問題を修正
+;	027		2019/11/27		Jガン					熱り弱点処理を追加
+;	028		2019/12/20		Jガン					FLYのステータス変更追加
+;	029		2020/01/31		131						世代数をステータスにボーナス
+;	030		2020/02/11		名無し					ペルソナ使いの戦闘ステータスにペルソナの戦闘ステータスに応じた加算
+;	031		2020/03/XX		Jガン					武器素質仕様の変更、追加
+;	032		2020/04/XX		Jガン					盟友取得時能力値が上がるように
+;	033		2020/05/19		がめら					NTR好感度処理をCDFLAGに変更。キャラ上限増加に対応
+;	034		2020/06/24		名無し					半魔の追加相性変更が機能するように
+;	035		2020/07/06		Jガン					COOP被ダメージ制限追加
+;	036		2020/07/18		木綿豆腐				ADD_NEW_COMPANIONにARG:4追加。悪魔を人間にして加入させたい際に使用する。
+;	037		2020/08/02		Jガン					1モアを減らす関数削除(その代わり他に1モア増減する処理追加)、JUDG_HITの処理の変更、修正
+;	038		2020/08/13		春眠					バッドステータス命中判定時にガードブレイクが機能するように修正、能力差・カジャンダ・スキル素質による補正後の値に成功率上限値が適用されるように
+;	039		2020/08/12		kamedakeisuke(ﾟдﾟ)		片キンフラグ増設
+;	040		2020/08/19		Jガン					バステ耐性のブロック判定を移動、他変なところ修正、壁系を消費しやすいように処理を下の方に
+;													FLY状態のパラメータ調整の修正
+;	041		2020/08/27		Jガン					装備スキル変更時のスキルゲージ処理を追加
+;	042		2020/08/26		MkjX					陥落履歴により耐性強化を更に追加で可能に
+;	043		2020/08/28		Jガン					VAR_HPに食いしばりのフラグを自動選出できるように、ネバーギブアップでデビルトリガーできるように、潜在能力発動回数修正
+;	044		2020/09/02		Jガン					エアトリックの処理追加
+;	045		2020/09/05		Jガン					特殊友情の仕様変更、仲間になるとき素のバステ耐性が全て通常になるように
+;	046		2020/09/17		SUIHOU					エアハイクの処理追加
+;	047		2020/09/25		kamedakeisuke(ﾟдﾟ)		ハーモナイザーの仕様をパーティのサマナーレベル合計から出力を算出する形に変更
+;	048		2020/09/17		マリーちゃんの中の人	ADD_NEW_COMPANIONの処理の際にARG:5にLVを指定するだけでLVUPする様に改良
+;	049		2020/09/18		JK好き					@ADD_NEW_COMPANIONを増加したランダムキャラ枠に対応
+;	050		2020/09/18		Jガン					ATTACK_BADSTATEを改行しないように(SKILL TEMPの方で改行するように)
+;	051		2020/12/16		Jガン					ATTACK_BADSTATEにRECEIVE_BADSTATEを追加、バステ無効フラグが機能するように
+;	052		2021/01/05		Jガン					VAR_HPに食いしばり時に口上を出せるように、ATTACK_BADSTATEにバステ付与時に口上が出てくるように
+;													バステの優先度の関数を作ってATTACK_BADSTATEに組み込み、COOP強化Cが正しく行われなかったので新しい関数を入れて正しくなるように
+;													GET_SUMMONER_LV2→GET_SUMMONER_MLV　に名前を変更、ハーモナイザーをサマナーレベル3以上の味方がいないと発動しないように
+;	053		2021/01/07		JK好き					@ATTACK_BADSTATEで３回もバステ付与確率上限計算していたのをBS付与率計算後に１回だけ行うように変更
+;	054		2021/01/29		Rsp暇人					アイテム習熟の効果量をTALENT:+40% SKILL:+20%(最大3枠まで累積)に変更。オプションで切り替えられる道具命中/道具威力を新設
+;	055		2021/02/22		亜人いいよね			@SYNC_STATUSに悪魔強化スキル（陥落の悪魔, ナチュラルボーン, オートファジー）の適用
+;	056		2021/03/02		亜人いいよね			強化オプションのフィルタ適用
+;	057		2021/03/05		JK好き					@SYNC_STATUSでMASTERのステータス計算に今周回信頼人数を加算するように変更
+;	058		2021/03/21		木綿豆腐				SONG OF DIVAに関する処理を追加
+;	059		2021/04/07		Jガン					4行、仲間に入るときに特殊なスキルにロックがかかるように(「スキルロック」で検索すると変更場所がわかります)
+;	060		2021/04/13		NEO						ふたごちゃんパッチで多胎妊娠している場合、妊娠のステータス上昇を補正無しにしたりステが下がるようにしたり
+;	061		2021/04/24		JK好き					@ADD_NEW_COMPANIONにCFLAG子宮最大容量を設定する処理を追加
+;	062		2021/04/25		SUIHOU					Fate専用技実装に伴い、効果を追記(回避、クリティカル、ダメージ補正、食いしばり処理)
+;	063		2021/04/30		しゃけ					ラグナロク（ＡＮ）、劫火の余燼の処理を追加
+;	064		2021/04/13		Jガン					HP処理を簡略化、食いしばり処理忘れ修正
+;	065		2021/06/24		しゃけ					謎のヒロインX'sの処理を追加
+;	066		2021/08/19		SUIHOU					ゲッシュとサーヴァント各クラススキルの効果を追加
+;	067		2021/09/27		軽木					ハーモナイザーの銃性能補正部分の計算式も変更
+;	068		2021/10/23		Collared				ダッジの処理を追加。銃関連の能力をガンスリンガーと非ガンスリンガーで統一
+;	069		2021/11/28		JK好き					喰奴の変身中ステータス分配結果で基本ステータスが0以下になってしまう場合があるのを応急処置的修正
+;													本当はそもそも0以下にならないようにすべき
+;	070		2021/12/19		SUIHOU					ダークネストリガー、ゲッシュ、矢避けの加護の対象が逆転していたのを修正
+;	071		2022/01/03		しゃけ					潜在特殊の処理を変更、ついでに劫火の余燼の処理改修
+;	072		2022/01/04		kamedakeisuke(ﾟдﾟ)		ハーモナイザーの効果が人間による何らかの変身体（シフターなど）にも乗るように修正
+;													倍率は人間体時の半分。やりこみ期において変身体の性能が変身前より見劣りする問題の応急処置（もっと良いやり方があればそっちに変更）
+;													および、ハーモナイザーの発動可能サマナーLvを仕様に合わせLv1に修正（ハーモナイザーに関わる2か所の GET_SUMMONER_MLV > 2 を GET_SUMMONER_MLV > 0 に置き換え）
+;	073		2022/01/27		しゃけ					バイ・バイ・ライジングの回避率上昇の効果を追記
+;	074		2022/04/14		takaya					魔人学園キャラの固有スキルの処理を追記
+;	075		2022/01/27		しゃけ					@SYNC_STATUSにて、使用者の射程と攻撃範囲が0の時は1に設定しなおすように変更
+;	076		2022/06/10		Collared				UI整理プロジェクトにより参照番号をショップ番号に変更
+;	077		2021/08/25		しゃけ					戦術詠唱γ、キメラの効果を追加、劫火の余燼所持分岐が同じ個所に二つもあったのを修正、「아버지의이름에맹세코」が通常の治癒・魔脈より優先されるように修正、ラグナロク（ＡＮ）の処理一部改修
+;	078		2022/09/17		kamedakeisuke(ﾟдﾟ)		Aion式召喚術まわりの仕様を追加
+;	079		2022/10/13		P						ダメージ計算関連の処理をBATTLE_SYSTEM_DAMAGE.ERBに移動、バステ計算関連の関数をBATTLE_SYSTEM_BAD_STATE.ERBに移動。
+;													デバッグ用にTFLAG:HP固定を追加。このフラグが立っている間はVAR_HPの処理がスキップされる形でダメージによる死亡がなくなる。(ダメージ表記や受けフラグの蓄積は通常通り実行される)
+;	080		2022/10/29		P(bazzile)				行動毎・ターン毎に初期化するフラグを追加。及び行動毎の初期化を関数化し追加行動にも適用されるように変更
+;													戦闘時のメッセージ出力に関連して一部メッセージをTSTRに格納してまとめて出力する形に
+;													行動履歴(KILL)の記録処理を追加
+;													キリングリアクトの処理を削除
+;													@MAKE_BCHARA_LIST(戦闘参加キャラリスト作成関数)を追加
+;													@IS_EXIST_ターゲット(ターゲットの存在確認関数)を追加
+;	081		2022/10/31		P(bazzile)				PRINT_SKILL_MESSAGEの内容追加にあわせて引数を仕様を変更。
+;	082		2022/11/25		P(bazzile)				@SYNC_STATUSの記述量が非常に多いので、SYSTEM_STATUS_CALC.ERBとして独立させて移動
+;													COOP解析時にダメージが低すぎる場合にエラー落ちするのを防止する措置を追加
+;	083		2022/12/10		P(bazzile)				気合や集中などの効果処理をEX_STATEとしてまとめてさらに説明文を取得する関数を追加
+;	084		2022/12/26		P(bazzile)				@ADD_NEW_COMPANIONにロールとロールの初期素質の設定処理を追加
+;													加入時のキャラクター固有処理の呼び出しを追加
+;													加入時にスキルを自力で習得した履歴を取る処理を追加
+;	085		2022/12/26		P(bazzile)				加入時のロール決定の位置を変更。BASE:EXPの空にする条件を造魔であることから経験値倍率が-1であることに変更
+;	086		2023/03/30		P(bazzile)				DELCHARA時にBCHARAの同期処理を追加
+;	087		2023/05/09		P(bazzile)				初期覚醒スキルを消す処理を追加
+;	088		2023/06/07		P(bazzile)				初期異常経験をリストから生成する際に一旦異常経験を0にする措置を追加
+;	089		2023/06/10		P(bazzile)				COOPに参加していないメンバーにも忠誠度がはいっていた不具合を修正
+;													COOP時に増加する忠誠度を増やすスキル魅せる殺戮を追加
+;													COOP時のンダの影響を8段階になるように変更
+;													追加メッセージの改行処理を変更
+;	090		2023/06/19		P(bazzile)				自力習得スキルの追加タイミングを関数末尾に移動
+;	091		2023/06/23		P(bazzile)				あとからリンク悪魔をセットするための関数を追加
+;	092		2023/07/01		P(bazzile)				敵削除時にBCHARANUMが異常になってしまう不具合を修正
+;	093		2023/07/07		P(bazzile)				VAR_HP/MPをリファクタリング
+;													食いしばり系スキルの挙動を調整し、不死の蟠桃と医療キットの処理を追加
+;													死亡時に一部のステート変動のリセット処理を追加
+;	094		2023/08/20		P(bazzile)				MPの増減が機能しなくなっていた不具合を修正
+;	095		2023/08/23		P(bazzile)				全書の一時登録の際にDDMのメッセージがでないように修正
+;	096		2023/08/27		P(bazzile)				不死身フラグの一部の処理が無茶苦茶にしてしまっていたのを修正
+;	097		2023/09/09		P(bazzile)				COOP強化Cの発動条件がCOOP強化Wを参照していた不具合を修正
+;													回復量がマイナスの場合とダメージ量がプラスの場合にエラーを出すように修正
+;	098		2023/08/24		P(bazzile)				戦闘中の死亡時のポジションからの除外処理のタイミングを調整
+;													除外判定をロールの条件から見るように修正
+;	099		2023/09/22		P(bazzile)				敵パーティーの攻撃相性登録関数を追加
+;	100		2023/10/15		P(bazzile)				味方キャラ追加時に指定レベルで加入させる引数が機能していなかったので処理を追加
+;													MAXBASE:LVでNEXTEXPを算出していた部分をBASE:LV基準になるように修正
+;													HPを超過効果なしで回復する際、超過部分を消してしまっていた不具合を修正
+;	101		2023/10/17		P(bazzile)				通常の回復のスキル効果で回復できなくなっていた不具合を修正
+;	102		2024/02/27		P(bazzile)				顔グラの自動設定関数を削除
+;	103		2024/03/13		P(bazzile)				キャラの完全なIDとして利用するためにリアル加入時間フラグを追加
+;	104		2024/05/08		P(bazzile)				キャラ作成時にバージョン管理情報を追加
+;													HPが残った状態でDEAD_CHARAを呼ばれた場合を考慮してHPを0にする処理の位置を変更
+;													キリングリアクトの処理の残骸を削除
+;	105		2024/05/16		P(bazzile)				複数生成可能キャラの条件が間違っていた不具合を修正
+;	106		2024/05/16		P(bazzile)				あっていたものを間違いにしてしまっていた不具合を修正
+;	107		2024/06/03		P(bazzile)				撃破時の同族保持によるLC軸の変動が戦闘に参加していないマシンや人間で発生しないように変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;・P
+;	001		2024/05/16		P(bazzile)				絶対会心の表示処理を作成
+;	002		2024/05/16		P(bazzile)				絶対会心の表示処理を作成
+;	003		2024/06/30		P(bazzile)				独覚フラグを削除
+;	004		2024/07/26		P(bazzile)				チュートリアル進行中に戦闘難易度によるCOOPダメージの変動処理を発生しないように修正
+;	005		2024/05/28		P(bazzile)				顔グラの初期設定処理を関数化して追加
+;	007		2024/07/29		P(bazzile)				BCHARAを戦闘開始時に控えも含めて取るように変更
+;													死亡時のCOMP送還を撤廃
+;	008		2024/09/22		P(bazzile)				COOP不能フラグを追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;RESULT:-	成否
+;RESULT:1 = 失敗した場合のすでに生成されているキャラの登録番号
+@CAN_ADD_NEW_COMPANION, L_CSVNO, L_ADD_EVENT, L_SHOW_MODE
+#FUNCTION
+#DIM DYNAMIC L_CSVNO
+#DIM DYNAMIC L_ADD_EVENT
+#DIM DYNAMIC L_SHOW_MODE
+;キャラが生成されていない
+SIF GETCHARA(L_CSVNO) < 0
+	RETURNF 1
+;合体の結果表示等で制限を無視する場合
+SIF L_SHOW_MODE
+	RETURNF 1
+;イベントフラグのチェック
+SIF L_ADD_EVENT > 0 && FINDCHARA_B(L_CSVNO, L_ADD_EVENT) >= 0
+	RETURNF 0
+RESULT:1 = GETCHARA(L_CSVNO)
+;人間の場合
+IF GROUPMATCH(GET_RACE(CSVABL(L_CSVNO,GETNUM(ABL,"종족"),0)), "인간", "반마인", "악마인", "조마")
+	;複数生成可能でない場合はここで終わり
+	SIF !CSVCFLAG(L_CSVNO,GETNUM(CFLAG,"복수생성가능"),0)
+		RETURNF 0
+ENDIF
+;一体のみフラグ
+SIF CSVCFLAG(L_CSVNO,GETNUM(CFLAG,"１체만"),0)
+	RETURNF 0
+RETURNF 1
+
+;=================================================================
+;仲魔として加入
+;ARG:NO
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す / -2はゲストキャラを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+;RESULT 真:キャラが作成されたことを示す。偽:既に同一キャラがいた場合や人数制限にかかった場合などでキャラが作成されなかった場合
+;RRSULT:1 作成したキャラの登録番号を返す
+;
+;★サンプルです。わかります★
+;CALL ADD_NEW_COMPANION,[[キャラ:기린]],충성도,イベントフラグ2,一時的に仲魔に3,人間化4,Lv指定5
+;CALL ADD_NEW_COMPANION,[[キャラ:기린]],114514,0,0,0,99
+;忠誠度114514、イベント加入、全書表示用、特別な人間化なし、LV99で加入
+;=================================================================
+;---- EDIT 048 ADD START ----
+;@ADD_NEW_COMPANION, ARG, ARG:1, ARG:2 = 0, ARG:3 = 0, ARG:4 = 0
+@ADD_NEW_COMPANION, ARG, ARG:1, ARG:2 = 0, ARG:3 = 0, ARG:4 = 0, ARG:5 = 0
+#DIMS 異常経験名 , 64
+#DIM LCOUNT,2
+#DIM TEMP
+#DIM CHARA
+#DIM STOCK_TARGET
+#DIM L_キャラ固有の番号
+#DIM L_CHARANUM
+#DIM レベル上昇値,1
+#DIM ボーナスポイント,1
+#DIM レベルアップ回数
+#DIM マリアージュ成立
+#DIM SUM_OF_BASE, 2
+;---------------------------------------------------
+;すでにキャラクターが生成されている場合の処理
+;
+;一部の例外をのぞいで人間はひとりしか生成できないのでここでひっかかったら戻る
+;---------------------------------------------------
+SIF !CAN_ADD_NEW_COMPANION(ARG, ARG:2, ARG:2 == -1 || ARG:3 > 0)
+	RETURN 0, RESULT:1
+FOR L_キャラ固有の番号, 0, MAX_PLAYER_CHARA
+	SIF !CMATCH(CFLAG:캐릭터고유번호, L_キャラ固有の番号)
+		BREAK
+	IF !ARG:3
+		IF L_キャラ固有の番号 == MAX_PLAYER_CHARA-5
+			PRINTFORMW ※소지하고 있는 캐릭터가 {MAX_PLAYER_CHARA-5}명에 도달했습니다
+			PRINTFORMW 　{MAX_PLAYER_CHARA}명을 초과하면, 가입 처리가 취소되므로 주의해 주십시오
+		ENDIF
+		IF L_キャラ固有の番号 == MAX_PLAYER_CHARA-1
+			PRINTW 캐릭터 수가 상한에 도달했습니다
+			PRINTW 캐릭터 가입 처리를 취소합니다
+			RETURN 0
+		ENDIF
+	ENDIF
+NEXT
+;抜けた段階で+1されるので調整
+L_キャラ固有の番号 -= 1
+CHARA = CHARANUM
+STOCK_TARGET = TARGET
+ADDCHARA ARG
+SIF NICKNAME:CHARA == ""
+	THROW NICKNAMEが定義されてないキャラ[%CALLNAME:CHARA%({NO:CHARA})]が生成されました。
+;---- EDIT 034 MOD START -------------------------
+SIF ARG:4
+	ABL:CHARA:종족 = 0
+;---- EDIT 034 MOD END -------------------------
+TARGET = STOCK_TARGET
+CFLAG:CHARA:PT플래그 = 1
+CFLAG:CHARA:캐릭터고유번호 = L_キャラ固有の番号
+;---- EDIT 103 ADD START -------------------------
+CFLAG:CHARA:실제가입시간 = GETMILLISECOND()
+;---- EDIT 103 ADD END ---------------------------
+;一応RESULTを破壊しておく
+VARSET RESULT
+;危険日を設定する
+ENCODETOUNI %NAME:CHARA%
+TEMP = RESULT+1
+IF ABL:CHARA:종족 == 0 || ABL:CHARA:종족 == 45
+	CFLAG:CHARA:위험일 = (SUMARRAY(RESULT , 1 , TEMP) + DAY*4 + TIME)%16
+ELSE
+	CFLAG:CHARA:위험일 = (SUMARRAY(RESULT , 1 , TEMP) + DAY*4 + TIME)%15
+	SIF CFLAG:CHARA:위험일 >= 8
+		CFLAG:CHARA:위험일 += 1
+ENDIF
+
+CALL 子宮最大容量初期設定,(CHARA)
+
+;---- EDIT 084 ADD START -------------------------
+;ロールとロールごとの初期素質の設定
+CALL SET_ROLE, CHARA
+CALL SET_BTL_TALENT_NEW, CHARA
+;---- EDIT 084 ADD END ---------------------------
+
+VARSET RESULT
+CFLAG:CHARA:조교메뉴표시설정 = GLOBAL:9
+
+;---- EDIT 120 ADD START -------------------------
+;レベルが指定されている場合
+IF ARG:5 > 0
+	;合計ステを確認
+	SUM_OF_BASE = 0
+	FOR LCOUNT, 1, BASESTATUSNUM
+		SUM_OF_BASE += BASE:CHARA:(GET_BASESTATUS(LCOUNT))
+	NEXT
+	;指定レベルの基準値を取る
+	SUM_OF_BASE:1 = 18 + ARG:5 * 3 / 2
+	;元々の数値の基準値との差を折り込む
+	SUM_OF_BASE:1 += SUM_OF_BASE - (18 + BASE:CHARA:LV * 3 / 2)
+
+	;レベルを変更
+	BASE:CHARA:LV = ARG:5
+	;ステータスを調整
+	FOR LCOUNT, 1, BASESTATUSNUM
+		BASE:CHARA:(GET_BASESTATUS(LCOUNT)) = BASE:CHARA:(GET_BASESTATUS(LCOUNT)) * SUM_OF_BASE:1 / SUM_OF_BASE
+	NEXT
+	;振り分け元の合計ステータスと現在のステータスの合計が一致していない場合、もっとも低いものに加算、あるいは最も高いものに減算を繰り返して数値をあわせる
+	WHILE SUMARRAY(BASE:CHARA:0, GETNUM(BASE, "힘"), GETNUM(BASE, "운") + 1) != SUM_OF_BASE:1
+		IF SUMARRAY(BASE:CHARA:0, GETNUM(BASE, "힘"), GETNUM(BASE, "운") + 1) > SUM_OF_BASE:1
+			BASE:CHARA:FINDELEMENT(BASE:CHARA:0, MAXARRAY(BASE:CHARA:0, GETNUM(BASE, "힘"), GETNUM(BASE, "운") + 1), GETNUM(BASE, "힘"), GETNUM(BASE, "운") + 1)--
+		ELSE
+			BASE:CHARA:FINDELEMENT(BASE:CHARA:0, MINARRAY(BASE:CHARA:0, GETNUM(BASE, "힘"), GETNUM(BASE, "운") + 1), GETNUM(BASE, "힘"), GETNUM(BASE, "운") + 1)++
+		ENDIF
+	WEND
+ENDIF
+
+CALL INIT_CHARA_SKILL, CHARA
+;現レベルまでのスキルを習得させる
+;いちおうレベル指定と関係ないタイミングにすることで、習得レベルが初期レベル以下に指定したスキルをレベルが低い加入では習得していないが、通常の加入では習得していると形にできるようにしておく
+CALL LEARN_SKILL_TO_NOW_LEVEL, CHARA
+
+;---- EDIT 120 ADD END ---------------------------
+;経験値、マグネタイト、忠誠度の初期化、仲魔フラグ
+;TEMP = MAXBASE:CHARA:(GET_BASESTATUS(0))
+TEMP = BASE:CHARA:LV
+BASE:CHARA:ＥＸＰ = 5*(TEMP-1)*(TEMP+1)*(TEMP)/3
+SIF ABL:CHARA:종족 != 0
+	TIMES BASE:CHARA:ＥＸＰ , 1.25
+
+;SIF ABL:CHARA:종족 == 45;EDIT 085 MOD
+SIF GET_ROLE_PROP("NEXT_EXP", CHARA) == -1
+	BASE:CHARA:ＥＸＰ = 0
+BASE:CHARA:ＭＡＧ = 0
+BASE:CHARA:충성도 = ARG:1
+MAXBASE:CHARA:충성도 = 0
+;ＭＡＧ自己消費フラグをＯＦＦ
+CFLAG:CHARA:ＭＡＧ자기소비 = 0
+;人間ならば戦闘参加不能(一時加入処理の場合は通さない)
+IF ARG:2 >= 0 && ARG:3 == 0
+	SIF (ABL:CHARA:종족 > 45 || ABL:CHARA:종족 == 0) && CHARA != MASTER
+		CALL SET_TALENT_PARTY_JOINABLE, CHARA, "参加不可能"
+ENDIF
+;善悪値・秩混値未設定の場合、設定
+CALL ADJUST_CHARA_ALI,CHARA
+
+;一時登録の場合は通さない
+IF ARG:2 >= 0 && ARG:3 == 0
+	;ダンジョンや依頼ごとの修正
+	SELECTCASE FLAG:SHOP커맨드
+		CASE [[ショップ:탐색]]
+			TRYCALLFORM SET_COMPANION_DUNGEON_{FLAG:현던전} , CHARA
+		CASE [[ショップ:콜로세움참가]]
+			TRYCALLFORM SET_COMPANION_COLOSSEUM_{FLAG:진행중콜로세움} , CHARA
+		CASE [[ショップ:이벤트]]
+			TRYCALLFORM SET_COMPANION_EVENT_{FLAG:진행중이벤트} , CHARA
+		CASE [[ショップ:의뢰청부]]
+			TRYCALLFORM SET_COMPANION_REQUEST_{FLAG:진행중의뢰} , CHARA
+	ENDSELECT
+ENDIF
+;着衣状況をセット
+FOR LCOUNT, 0, 14
+	CFLAG:CHARA:("초기" + GET_CLOTHESNAME(LCOUNT)) = CFLAG:CHARA:GET_CLOTHESNAME(LCOUNT)
+	TEMP = GROUPMATCH(GET_CLOTHESNAME(LCOUNT), "그외2", "그외3") ? 11 # LCOUNT
+	IF CFLAG:CHARA:GET_CLOTHESNAME(LCOUNT) > 0 && !INRANGE(CFLAG:CHARA:GET_CLOTHESNAME(LCOUNT), TEMP * 100, 99 + TEMP * 100)
+		DRAWLINE
+		PRINTFORML %CALLNAME:CHARA%의 %GET_CLOTHESNAME(LCOUNT)%에 이상한 의상[%CLOTHESNAMEF(CHARA, LCOUNT)%]이(가) 세트되어 있습니다！
+		DRAWLINE
+		FORCEWAIT
+	ENDIF
+	SIF CFLAG:CHARA:GET_CLOTHESNAME(LCOUNT)
+		SETBIT CFLAG:CHARA:전회조교시의복장기록, LCOUNT
+NEXT
+CFLAG:CHARA:전회탐색시의복장기록 = CFLAG:CHARA:전회조교시의복장기록
+
+;初期マスターマントラ
+IF TALENT:CHARA:식노
+	FOR LCOUNT, 1, 9
+		SIF ABL:CHARA:@"스킬{LCOUNT}"
+			CDFLAG:CHARA:만트라:(ABL:CHARA:@"스킬{LCOUNT}") = 10000
+		ABL:CHARA:@"스킬{LCOUNT}" = 0
+	NEXT
+ENDIF
+
+;初期レベルを保存
+CFLAG:CHARA:초기LV = BASE:CHARA:LV
+
+;---- EDIT 087 ADD START -------------------------
+;初期覚醒スキルはCSVから参照したいだけなので落とす
+ABL:CHARA:각성스킬 = 0
+;---- EDIT 087 ADD END ---------------------------
+
+CFLAG:CHARA:이벤트가입 = ARG:2
+
+FOR LCOUNT, 0, VARSIZE("C_REPEAT_SKILL")
+	CALL SET_REPEAT_CHARA, CHARA, -1
+NEXT
+
+;初期異常経験分を加算
+IF CSTR:CHARA:초기이상경험 != ""
+	EXP:CHARA:이상경험 = 0
+	VARSET 異常経験名
+	SPLIT CSTR:CHARA:초기이상경험 , "_" , 異常経験名
+	FOR LCOUNT , 0 , STRCOUNT(CSTR:CHARA:초기이상경험 , "_") + 1
+		SETBIT CFLAG:CHARA:이상경험기록 , NUM_ABNORMAL_EXP(異常経験名:(LCOUNT))
+		EXP:CHARA:이상경험 += RANK_ABNORMAL_EXP(異常経験名:(LCOUNT))
+	NEXT
+ENDIF
+CFLAG:CHARA:초기이상경험 = EXP:CHARA:이상경험
+
+CFLAG:CHARA:딸의부친고유번호딸 = -1
+CFLAG:CHARA:딸의친부모고유번호딸 = -1
+
+;初期好感度
+;加入キャラに好感度と被好感度のデータを両方持たせておき、加入時点で相手をサーチして両方上書きする
+;配偶者・近親はデフォで初期好感度を持つ
+FOR LCOUNT, 0, CHARANUM
+	IF CSV配偶者(CHARA, LCOUNT)
+		CDFLAG:CHARA:캐릭터간호감도:(CFLAG:LCOUNT:캐릭터고유번호 + 100) = 2000
+		CDFLAG:LCOUNT:캐릭터간호감도:(CFLAG:CHARA:캐릭터고유번호 + 100) = 2000
+	ENDIF
+NEXT
+
+FOR LCOUNT,0,BADSTATENUM
+	BASE:CHARA:GET_STATE(LCOUNT) = 0
+NEXT
+;---- EDIT 045 ADD END -------------------------
+;二人称の変換
+;FORM文の展開
+CALL CONVERT_SECOND_PERSON, CHARA
+
+;固有処理の呼び出し
+;一時登録でない場合は通さない
+IF ARG:2 >= 0 && ARG:3 == 0
+	TRYCALLFORM ADD_NEW_COMPANION_{ARG}, CHARA, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+	;---- EDIT 026 MOD START -------------------------
+	;---- EDIT 025 ADD START -------------------------
+	;---- EDIT 095 MOD START -------------------------
+	IF !ARG:3 && !IS_IN_FUSION
+		;悪魔が容量を超えて仲魔になった場合、ＤＤＭ使用中ならその機能で自宅サーバーに転送することを説明
+		IF GET_ROLE_PROP("CAN_PUT_IN_COMP", CHARA) && ストック空き容量() == -1
+			IF SOFT_ON("ＤＤＭ")
+				PRINTFORMW ＣＯＭＰ에 빈 용량이 없으므로, ＤＤＭ으로 자택 서버에 전송했습니다
+			ENDIF
+			CFLAG:CHARA:소속ＣＯＭＰ = -1
+		ENDIF
+	ENDIF
+	;アイテムの入手履歴をつけておく
+	FOR LCOUNT, GETNUM(EQUIP, "검"), GETNUM(EQUIP, "탄환") + 1
+		SIF EQUIP:CHARA:LCOUNT
+			TAKEN_ITEM:(EQUIP:CHARA:LCOUNT) = 1
+	NEXT
+	;---- EDIT 026 MOD END -------------------------
+ENDIF
+;設定された性別の場合、夜這いを不許可に
+IF (FLAG:요바이불허가성별 & 2 && TALENT:CHARA:오토코노코)
+	CFLAG:CHARA:요바이불허가 = 1
+ELSEIF (FLAG:요바이불허가성별 & 1 && TALENT:CHARA:남자 && TALENT:CHARA:오토코노코 == 0)
+	CFLAG:CHARA:요바이불허가 = 1
+ELSEIF (FLAG:요바이불허가성별 & 4 && TALENT:CHARA:남자 == 0)
+	CFLAG:CHARA:요바이불허가 = 1
+ENDIF
+
+;全コマンド系統フィルタＯＮ
+FOR LCOUNT , 0 , 13
+	CFLAG:CHARA:(170+LCOUNT) = 1
+NEXT
+
+CALL EXCLUDE_UNABLE_SKILL, CHARA
+;取得済みスキルの登録
+FOR LCOUNT, 1, HAVEABLE_SKILLNUM + 1
+	SIF ABL:CHARA:@"스킬{LCOUNT}"
+		CALL SET_LEARNED_SKILL, CHARA, TOSTR(ABL:CHARA:@"스킬{LCOUNT}"), "通常形態"
+	SIF ABL:CHARA:@"초기변신악마스킬{LCOUNT}"
+		CALL SET_LEARNED_SKILL, CHARA, TOSTR(ABL:CHARA:@"초기변신악마스킬{LCOUNT}"), "変身形態"
+NEXT
+
+;スキルロック
+CALL AUTO_SKILL_ROCK,CHARA
+SIF スキル変更可能確かめ(CHARA) > 1
+	CALL AUTO_SKILL_ROCK,CHARA,1
+
+CALL 顔グラ追加, NO:CHARA
+
+;---- EDIT P 001 ADD START -------------------------
+;デフォ顔グラセット
+SIF CSTR:CHARA:基本アイコンファイルネーム == ""
+	CALL SET_DEFAULT_FACE, CHARA, "通常形態"
+
+;TALK加入の場合はひきうつしと基礎力プラグインのチェック
+VARI L_ENEMY
+L_ENEMY = FINDCHARA(CFLAG:실제가입시간, TFLAG:교섭대상실제가입시간)
+IF L_ENEMY >= 0
+	CALL COPY_ENEMY_TO_NEW_COMPANION, L_ENEMY, CHARA
+	;---- EDIT 027 ADD START -------------------------
+	IF SOFT_ON("기초력플러그인")
+		VARI L_ENHANCE_MAG
+		VARI CNT_FREE_ENHANCE
+		;強化の産出用のMAG
+		L_ENHANCE_MAG = GET_BASE_ENEMY_MAG(, BASE:CHARA:LV, GET_RACE_NUM("요정"))
+		VARI CNT_FREE_ENHANCE = 0
+		;ふれなくなるまでふらせる
+		WHILE L_ENHANCE_MAG >= MAG_CALC_ENHANCE_BASE(CHARA, CNT_FREE_ENHANCE)
+			L_ENHANCE_MAG -= MAG_CALC_ENHANCE_BASE(CHARA, CNT_FREE_ENHANCE)
+			CNT_FREE_ENHANCE++
+		WEND
+		CFLAG:CHARA:능력강화횟수 = CNT_FREE_ENHANCE
+	ENDIF
+	;---- EDIT 027 ADD END ---------------------------
+	TFLAG:교섭대상실제가입시간 = 0
+ENDIF
+
+;---- EDIT P 001 ADD END ---------------------------
+;---- EDIT 104 ADD START -------------------------
+;バージョン情報を持たせる
+CFLAG:CHARA:본체버전정보 = GAMEBASE_VERSION
+CFLAG:CHARA:본체버전관리보조정보 = FLAG:버전관리보조
+;---- EDIT 104 ADD END ---------------------------
+
+;一時登録でない場合は解析度をつける
+IF ARG:2 >= 0 && ARG:3 == 0
+	ANALYSIS_RATE:(NO:CHARA) = ANALYSIS_COMPLETED
+	;イベントフラグのBITを立てておく
+	SETBIT IS_CHARA_COMPANIONED:(NO:CHARA), ARG:2
+ENDIF
+
+CALL SYNC_STATUS,CHARA
+CALL HEALTH_CHARA,CHARA
+
+RESULT:1 = CHARA
+RETURN 1
+
+;---- EDIT 091 ADD START -------------------------
+;=======================================
+;リンク悪魔のセット関数
+;ARG = 対象のキャラの登録番号
+;ARG:1 = セットする悪魔の番号
+;ARGS = セットする内容
+;=======================================
+@SET_LINK_DEVIL, ARG, ARG:1, ARGS = "攻撃性能/스킬"
+#DIM LCOUNT
+CFLAG:ARG:초기링크악마 = ARG:1
+IF COUNT_SPLIT(ARGS, "/", "攻撃性能")
+	ABL:ARG:초기링크악마공격상성 = CSVABL(ARG:1, GETNUM(ABL, "공격상성"))
+	ABL:ARG:초기링크악마최저공격횟수 = CSVABL(ARG:1, GETNUM(ABL, "최저공격횟수"))
+	ABL:ARG:초기링크악마최대공격횟수 = CSVABL(ARG:1, GETNUM(ABL, "최대공격횟수"))
+	ABL:ARG:초기링크악마사거리 = CSVABL(ARG:1, GETNUM(ABL, "사거리"))
+	ABL:ARG:초기링크악마공격범위 = CSVABL(ARG:1, GETNUM(ABL, "공격범위"))	
+ENDIF
+IF COUNT_SPLIT(ARGS, "/", "스킬")
+	FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+		SIF CSVABL(ARG:1, GETNUM(ABL, @"스킬{LCOUNT+1}"))
+			CALL SET_LEARN_SKILL, ARG, TOSTR(CSVABL(ARG:1, GETNUM(ABL, @"스킬{LCOUNT+1}"))), 1, "変身形態"
+	NEXT
+	FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+		SIF CSVABL(ARG:1, GETNUM(ABL, @"습득스킬{LCOUNT+1}"))
+			CALL SET_LEARN_SKILL, ARG, TOSTR(CSVABL(ARG:1, GETNUM(ABL, @"습득스킬{LCOUNT+1}"))), CSVABL(ARG:1, GETNUM(ABL, @"습득LV{LCOUNT+1}")), "変身形態"
+	NEXT
+ENDIF
+;---- EDIT 091 ADD END ---------------------------
+
+;=======================================
+;敵キャラクターの消滅
+;=======================================
+@DELENEMY
+SIF FLAG:디버그전투플래그
+	RETURN 0
+FOR LOCAL,CHARANUM,0,-1
+	IF CFLAG:(LOCAL-1):PT플래그 == 0
+		SIF CFLAG:(LOCAL-1):포지션 > 0
+			CALL REMOVE_POSITION,CFLAG:(LOCAL-1):포지션
+		DELCHARA (LOCAL-1)
+	ENDIF
+NEXT
+;---- EDIT 086 ADD START -------------------------
+;BCHARAのリストを作り直す
+VARSET BCHARA, -1
+BCHARANUM = 0
+FOR LOCAL, 0, CHARANUM
+	SIF !IS_JOINED_BCHARA:LOCAL:0
+		CONTINUE
+	BCHARA:FINDELEMENT(BCHARA, -1) = LOCAL
+	BCHARANUM++
+	;BCHARANUM = -1
+NEXT
+;---- EDIT 086 ADD END ---------------------------
+
+@DEL_ENEMY_SINGLE, L_ENEMY
+#DIM DYNAMIC L_ENEMY
+#DIM DYNAMIC LCOUNT
+SIF CFLAG:L_ENEMY:PT플래그
+	THROW 味方キャラを削除しようとしています！
+SIF CFLAG:L_ENEMY:포지션 > 0
+	CALL REMOVE_POSITION,CFLAG:L_ENEMY:포지션
+ARRAYSHIFT BCHARA, -1, -1, FINDELEMENT(BCHARA, L_ENEMY)
+BCHARANUM -= 1
+FOR LCOUNT, 0, BCHARANUM
+	SIF BCHARA:LCOUNT >= L_ENEMY
+		BCHARA:LCOUNT--
+NEXT
+FOR LCOUNT, 1, 17
+	SIF FLAG:@"포지션{LCOUNT}" >= L_ENEMY
+		FLAG:@"포지션{LCOUNT}" -= 1
+NEXT
+DELCHARA L_ENEMY
+;===============================
+;キャラクター全快
+;===============================
+@HEALTH_CHARA,ARG
+BASE:ARG:ＨＰ = MAXBASE:ARG:ＨＰ
+BASE:ARG:ＭＰ = MAXBASE:ARG:ＭＰ
+CFLAG:ARG:상태이상 = 0
+CFLAG:ARG:상태이상경과턴수 = 0
+
+;---- EDIT 093 MOD START -------------------------
+;=======================================================
+;スキル実行時の基本的な動作
+;=======================================================
+@VAR_HP, L_T, L_VAR, CALC_TYPE = "自動振り分け", L_P = -1, L_SKIP_MESSAGE
+#DIM DYNAMIC LCOUNT,2
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_FRIEND
+#DIM DYNAMIC L_VAR
+#DIM DYNAMIC STOCK_HP
+#DIM DYNAMIC L_SKIP_MESSAGE
+#DIMS DYNAMIC CALC_TYPE
+#DIMS DYNAMIC TEMP_SKILL
+#DIM DYNAMIC L_STOCK
+#DIM DYNAMIC L_COST_CHARA, MAX_PLAYER_CHARA
+#DIM DYNAMIC STOCK_CLENCHING_HEAL
+#DIMS DYNAMIC STOCK_CLENCHING_MESSAGE
+;死人は増減しない
+SIF GET_STATE(CFLAG:L_T:상태이상) == "DYING"
+	RETURN 0
+SIF TFLAG:HP고정
+	RETURN 0
+STOCK_HP = BASE:L_T:ＨＰ
+IF CALC_TYPE == "自動振り分け"
+	IF L_VAR >= 0
+		CALC_TYPE = 회복
+	ELSE
+		CALC_TYPE = ダメージ
+	ENDIF
+ENDIF
+;회복
+IF CALC_TYPE == "회복" ||  CALC_TYPE == "超過回復"
+	;---- EDIT 097 ADD START -------------------------
+	SIF L_VAR < 0
+		THROW 回復量がマイナスになってしまっています！
+	;---- EDIT 097 ADD END ---------------------------
+	;死亡予約型食いしばりは回復を停止する
+	SIF CFLAG:L_T:사망예약형이악물기
+		RETURN 0
+	SIF AUTO_PU_SKILL_ラグナロク（ＡＮ）(L_T,"回復阻害") > 0
+		L_VAR /= 10
+	BASE:L_T:ＨＰ += L_VAR
+	;---- EDIT 101 MOD START -------------------------
+	;---- EDIT 100 MOD START -------------------------
+	SIF CALC_TYPE == "회복"
+		BASE:L_T:ＨＰ = MIN(BASE:L_T:ＨＰ, MAX(STOCK_HP, MAXBASE:L_T:ＨＰ))
+	;	BASE:L_T:ＨＰ = MIN(BASE:L_T:ＨＰ, MAXBASE:L_T:ＨＰ)
+	;---- EDIT 100 MOD END ---------------------------
+	;---- EDIT 101 MOD END ---------------------------
+	;HPがリンクしていた場合連動処理
+	VARSET LINKED_DAMAGE_TO_POS
+	CALL GET_LINKED_HP_CHARA, L_T
+	FOR LCOUNT, 0, 10
+		SIF RESULT:LCOUNT < 0
+			CONTINUE
+		SIF L_T == RESULT:LCOUNT
+			CONTINUE
+		SIF CPOS(RESULT:LCOUNT) > 0
+			LINKED_DAMAGE_TO_POS:CPOS(RESULT:LCOUNT) = BASE:(RESULT:LCOUNT):ＨＰ - BASE:L_T:ＨＰ
+		BASE:(RESULT:LCOUNT):ＨＰ = BASE:L_T:ＨＰ
+	NEXT
+	RETURN BASE:L_T:ＨＰ - STOCK_HP
+;ダメージ
+ELSEIF CALC_TYPE == "ダメージ" || CALC_TYPE == "食いしばり無効ダメージ"
+	;---- EDIT 097 ADD START -------------------------
+	SIF L_VAR > 0
+		THROW ダメージ量がプラスになってしまっています！
+	;---- EDIT 097 ADD END ---------------------------
+	;ダメージ処理
+	BASE:L_T:ＨＰ += L_VAR
+	;---- EDIT 096 MOD START -------------------------
+	;食いしばり等の判定
+	IF BASE:L_T:ＨＰ <= 0
+		;不死身フラグを判定
+		;3 = 無限に不屈の闘志　2 = 無限に食いしばり　1 = メッセージ無しでHP1で耐える
+		IF CFLAG:L_T:불사신플래그
+			IF CFLAG:L_T:불사신플래그 == 3
+				SIF L_SKIP_MESSAGE != 2
+					TSTR:스킬메시지추가 = %CALLNAME:L_T%は立ち上がった！
+				BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ
+			ELSEIF CFLAG:L_T:불사신플래그 == 2
+				SIF L_SKIP_MESSAGE != 2
+					TSTR:스킬메시지추가 = %CALLNAME:L_T%は食いしばった！
+				BASE:L_T:ＨＰ = 1
+			ELSE
+				BASE:L_T:ＨＰ = 1
+			ENDIF
+			CFLAG:L_T:이악물기플래그 = 1
+	;---- EDIT 096 MOD END ---------------------------
+		ELSE
+			;通常のダメージ場合、所持スキルを優先度の高い順に判定していく
+			IF CALC_TYPE == "ダメージ"
+				IF HAVE_PU_SKILL(L_T,"劫火の余燼")
+					IF !CFLAG:L_T:이악물기플래그
+						BASE:L_T:ＨＰ = 1
+						IF !CFLAG:L_T:사망예약형이악물기 && !IS_BADSTATE(L_T, "STONE")
+							CFLAG:L_T:상태이상 = 0
+							SIF L_SKIP_MESSAGE != 2
+								TSTR:스킬메시지추가 = %CALLNAME:L_T%は自身の余燼を燃やし、身体を奮い立たせた！
+							;食いしばりフラグは死亡したときにつける。１は発動ターンの終了時に死ぬことになるので注意
+							CFLAG:L_T:사망예약형이악물기 = 1 + 1 + (CSTR:L_T:104 != "")
+							CSTR:L_T:강제사망시메시지 = %CALLNAME:L_T%を奮い立たせる余燼が燃え尽きた・・・
+						ELSE
+							SIF L_SKIP_MESSAGE != 2
+								TSTR:스킬메시지추가 = %CALLNAME:L_T%の燃える余燼が、身体を奮い立たせる！
+						ENDIF
+					ENDIF
+				ELSEIF HAVE_PU_SKILL(L_T,"精霊たちの守り") && !IS_BADSTATE(L_T, "STONE")
+					IF !CFLAG:L_T:이악물기플래그
+						BASE:L_T:ＨＰ = 1
+						IF !CFLAG:L_T:사망예약형이악물기
+							CFLAG:L_T:상태이상 = 0
+							SIF L_SKIP_MESSAGE != 2
+								TSTR:스킬메시지추가 = 精霊の加護が%CALLNAME:L_T%を奮い立たせる！
+							;食いしばりフラグは死亡したときにつける。
+							CFLAG:L_T:사망예약형이악물기 = 1 + 1
+							CSTR:L_T:강제사망시메시지 = 精霊の加護が切れて、%CALLNAME:L_T%は力尽きた…
+						ELSE
+							SIF L_SKIP_MESSAGE != 2
+								TSTR:스킬메시지추가 = 精霊の加護が%CALLNAME:L_T%を奮い立たせる！
+						ENDIF
+					ENDIF
+				ELSEIF HAVE_SKILL(L_T, [[스킬:SONG OF DIVA]])
+					;このタイミングで戦闘メッセージが挟まれるのは問題があるので、メイン部分をカウンター処理に移動
+					;既にモード・アウェイクニングになってたらダメ（そんなことないと起きないと思うけど）
+					IF !CFLAG:L_T:이악물기플래그 && HAVE_SKILL(L_T, [[스킬:SONG OF DIVA]]) && SKILLGAGE_H_GET(L_T, [[스킬:SONG OF DIVA]]) == 0
+						BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ
+						CFLAG:L_T:이악물기플래그 = 1
+						;攻撃終了後にモードチェンジをするのでそれまで攻撃対象から外しておく
+						CFLAG:L_T:공격대상제외_ACT = 1
+						CALL SKILLGAGE_H_SET, L_T, [[스킬:SONG OF DIVA]], 1
+					ENDIF
+				ELSEIF HAVE_SKILL(L_T, [[스킬:네버기브업]])
+					IF !CFLAG:L_T:이악물기플래그
+						;デビルトリガーを持っている場合は攻撃終了後にデビルトリガー判定をするのでそれまで攻撃対象から外しておく
+						SIF HAVE_SKILL(L_T, [[스킬:데빌트리거]])
+							CFLAG:L_T:공격대상제외_ACT = 1
+						BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ
+						SIF L_SKIP_MESSAGE != 2
+							TSTR:스킬메시지추가 = %CALLNAME:L_T%はまだまだやる気だ！
+						CFLAG:L_T:이악물기플래그 = 1
+					ENDIF
+				ELSEIF HAVE_SKILL(L_T, (PU_SKILLNUM_GET(L_T,"四枝の浅瀬")))
+					IF CFLAG:L_T:이악물기플래그 < 3
+						BASE:L_T:ＨＰ = 1
+						SIF L_SKIP_MESSAGE != 2
+							TSTR:스킬메시지추가 = %CALLNAME:L_T%はまだまだやる気だ！
+						CFLAG:L_T:이악물기플래그 += 1
+					ENDIF
+				ELSEIF (L_T == MASTER && SOFT_ON("바・벨") && FLAG:벨신격파 & 8)
+					IF !CFLAG:L_T:이악물기플래그
+						BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ
+						SIF L_SKIP_MESSAGE != 2
+							TSTR:스킬메시지추가 = %CALLNAME:L_T%は立ち上がった！
+						CFLAG:L_T:이악물기플래그 = 1
+					ENDIF
+				ELSEIF IS_ACTIVE_C_BTL_EFFECT_PERMANENCE("我慢のフホホイ", L_T)
+					BASE:L_T:ＨＰ = 1
+					SIF L_SKIP_MESSAGE != 2
+						TSTR:스킬메시지추가 = %CALLNAME:L_T%は我慢して食いしばった！
+					CALL CLEAR_C_BTL_EFFECT_PERMANENCE, "我慢のフホホイ", L_T
+				ELSEIF HAVE_AW_SKILL(L_T, "生贄交代")
+					IF RAND:2
+						FOR L_STOCK, 0, BCHARANUM
+							SIF CPOS(BCHARA:L_STOCK) > 0
+								CONTINUE
+							SIF !IS_COMP内効果有効(BCHARA:L_STOCK)
+								CONTINUE
+							SIF IS_BADSTATE(BCHARA:L_STOCK, "DYING")
+								CONTINUE
+							CALL PUSH_ARRAY_INT, L_COST_CHARA, BCHARA:L_STOCK
+						NEXT
+						IF L_COST_CHARA:0 > 0
+							SWAP L_COST_CHARA:0, L_COST_CHARA:(RAND:FINDELEMENT(L_COST_CHARA, 0))
+							BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ
+							CALL DEAD_CHARA, L_COST_CHARA:0, L_FRIEND, 1
+							TSTR:스킬메시지추가 = 生贄交代の効果で%CALLNAME:(L_COST_CHARA:0)%を身代わりにして%CALLNAME:L_T%は復活した！
+						ENDIF
+					ENDIF
+				ELSE
+					;汎用食いしばり処理
+					;1度のみ、指定したHP%で復帰するだけのものは纏めて探す
+					;主に覚醒スキルや専用スキルで食いしばり効果も内包している…といったものを作る場合はスキル側だけで完結できるように
+					IF CFLAG:L_T:이악물기플래그 == 0
+						STOCK_CLENCHING_HEAL = -1
+						STOCK_CLENCHING_MESSAGE = 
+						;食いしばりスキルを探し、回復HP量の多いものを優先して残す
+						FOR LCOUNT, 0, TRYSKILLNUM(L_T)
+							RESULT = 0, 0
+							RESULTS = 
+							TRYCCALLFORM SKILL_CLENCHING_%GET_TRYSKILL(L_T, LCOUNT)%, L_T, TRYSKILL_VAR
+								SIF !RESULT
+									CONTINUE
+								SIF STOCK_CLENCHING_HEAL > RESULT:1
+									CONTINUE
+								STOCK_CLENCHING_HEAL = RESULT:1
+								STOCK_CLENCHING_MESSAGE = %RESULTS%
+							CATCH
+							ENDCATCH
+						NEXT
+						;回復率が0以上になっていれば発動条件を満たしている
+						IF STOCK_CLENCHING_HEAL >= 0
+							IF L_SKIP_MESSAGE != 2
+								IF STOCK_CLENCHING_MESSAGE == ""
+									IF STOCK_CLENCHING_HEAL == 0
+										TSTR:스킬메시지추가 = %CALLNAME:L_T%は食いしばった！
+									ELSE
+										TSTR:스킬메시지추가 = %CALLNAME:L_T%は立ち上がった！
+									ENDIF
+								ELSE
+									TSTR:스킬메시지추가 = %STOCK_CLENCHING_MESSAGE%
+								ENDIF
+							ENDIF
+							BASE:L_T:ＨＰ = MAX(STOCK_CLENCHING_HEAL * MAXBASE:L_T:ＨＰ / 100, 1) 
+							CFLAG:L_T:이악물기플래그 = 1
+						ENDIF
+					ENDIF
+				ENDIF
+			ENDIF
+			;HPが戻っているのならば食いしばりが発動したとみなす
+			IF BASE:L_T:ＨＰ > 0
+				CFLAG:L_T:이악물기발동 = 1
+				;食いしばりのメッセージ表示
+				SIF !L_SKIP_MESSAGE
+					CALL PRINT_SKILL_MESSAGE, "追加";EDIT MOD 081
+			ELSE
+				FOR LCOUNT:1, CFLAG:L_T:PT플래그 ? 1 # 7, CFLAG:L_T:PT플래그 ? 7 # 17
+					L_FRIEND = POS(LCOUNT:1)
+					SIF !IS_TARGET_ABLE(L_FRIEND)
+						CONTINUE
+					;PT範囲の食いしばりスキルを探す
+					FOR LCOUNT, 0, TRYSKILLNUM(L_FRIEND)
+						SELECTCASE GET_TRYSKILL(L_FRIEND, LCOUNT)
+							CASE "AW_" + TOSTR(GET_AW_SKILL_NUM("不死の蟠桃"))
+								IF SKILLGAGE_H_GET(L_FRIEND, [[스킬:각성스킬]]) < 2
+									CALL SKILLGAGE_H_SET, L_FRIEND, [[스킬:각성스킬]], SKILLGAGE_H_GET(L_FRIEND, [[스킬:각성스킬]]) + 1
+									BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ
+									SIF L_SKIP_MESSAGE != 2
+										TSTR:스킬메시지추가 = 不死の蟠桃の効果で%CALLNAME:L_T%は復活した！
+									BREAK
+								ENDIF
+							CASE "AW_" + TOSTR(GET_AW_SKILL_NUM("真夏の夜の夢"))
+								IF L_T == MASTER
+									FOR L_STOCK, 0, BCHARANUM
+										SIF CPOS(BCHARA:L_STOCK) > 0
+											CONTINUE
+										SIF !IS_COMP内効果有効(BCHARA:L_STOCK)
+											CONTINUE
+										SIF IS_BADSTATE(BCHARA:L_STOCK, "DYING")
+											CONTINUE
+										CALL PUSH_ARRAY_INT, L_COST_CHARA, BCHARA:L_STOCK
+									NEXT
+									IF L_COST_CHARA:0 > 0
+										SWAP L_COST_CHARA:0, L_COST_CHARA:(RAND:FINDELEMENT(L_COST_CHARA, 0))
+										BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ
+										CALL DEAD_CHARA, L_COST_CHARA:0, L_FRIEND, 1
+										SIF L_SKIP_MESSAGE != 2
+											TSTR:스킬메시지추가 = 真夏の夢の効果で%CALLNAME:(L_COST_CHARA:0)%を身代わりにして%CALLNAME:L_T%は復活した！
+										BREAK
+									ENDIF
+								ENDIF
+							CASE "[[스킬:의료키트]]"
+								IF !SKILLGAGE_H_GET(L_FRIEND, [[스킬:의료키트]])
+									CALL SKILLGAGE_H_SET, L_FRIEND, [[스킬:의료키트]], 1
+									BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ
+									SIF L_SKIP_MESSAGE != 2
+										TSTR:스킬메시지추가 = 医療キットにより%CALLNAME:L_T%が蘇生された！
+									BREAK
+								ENDIF
+							CASE "AW_" + TOSTR(GET_AW_SKILL_NUM("気合の合成"))
+								IF CFLAG:L_T:피타겟비율변동지속턴수 > 0 && CFLAG:L_T:변동피타겟율 > 100 && RAND:2
+									BASE:L_T:ＨＰ = 1
+									SIF L_SKIP_MESSAGE != 2
+										TSTR:스킬메시지추가 = %CALLNAME:L_T%は食いしばった！
+									BREAK
+								ENDIF
+						ENDSELECT
+					NEXT 
+					SIF BASE:L_T:ＨＰ > 0
+						BREAK
+				NEXT
+				;HPが戻っているのならば食いしばりが発動したとみなす
+				IF BASE:L_T:ＨＰ > 0
+					;食いしばりのメッセージ表示
+					SIF !L_SKIP_MESSAGE
+						CALL PRINT_SKILL_MESSAGE, "追加";EDIT MOD 081
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+	;ここまで来てHPが付きているのならば死亡処理
+	SIF BASE:L_T:ＨＰ < 1
+		CALL DEAD_CHARA, L_T, L_P, L_SKIP_MESSAGE
+	;HPがリンクしていた場合連動処理
+	VARSET LINKED_DAMAGE_TO_POS
+	CALL GET_LINKED_HP_CHARA, L_T
+	FOR LCOUNT, 0, 10
+		SIF RESULT:LCOUNT < 0
+			CONTINUE
+		SIF L_T == RESULT:LCOUNT
+			CONTINUE
+		SIF CPOS(RESULT:LCOUNT) > 0
+			LINKED_DAMAGE_TO_POS:CPOS(RESULT:LCOUNT) = L_VAR
+		BASE:(RESULT:LCOUNT):ＨＰ = BASE:L_T:ＨＰ
+		SIF BASE:(RESULT:LCOUNT):ＨＰ < 1 && CPOS(RESULT:LCOUNT) > 0
+			CALL DEAD_CHARA, (RESULT:LCOUNT), L_P, 2
+	NEXT
+	RETURN L_VAR
+ENDIF
+
+;MPの増減処理
+;ダメージと違って食いしばりの有無や超過を気にする場面はとりあえずなく、引数はいらないが
+;一応、何かの補正を追加する可能性ももあるのでHPと引数の型はあわせておく
+@VAR_MP,ARG,ARG:1,ARGS = "自動振り分け"
+#DIM STOCK_MP
+IF ARGS == "自動振り分け"
+	IF ARG:1 <= 0
+		ARGS = ダメージ
+	ELSE
+		ARGS = 회복
+	ENDIF
+ENDIF
+STOCK_MP = BASE:ARG:ＭＰ
+;---- EDIT 094 MOD START -------------------------
+BASE:ARG:ＭＰ = LIMIT(BASE:ARG:ＭＰ + ARG:1, 0, MAXBASE:ARG:ＭＰ)
+;---- EDIT 094 MOD END ---------------------------
+RETURN BASE:ARG:ＭＰ - STOCK_MP
+;---- EDIT 093 MOD END ---------------------------
+;---- EDIT 080 MOD START -------------------------バトルメッセージ関連ですぐにメッセージを出力せずにTSTRに逃がすオプションを追加。ついでにLOCAL変数をDIM変数に置き換え
+;HPの増減処理
+;@VAR_HP, ARG, ARG:1, ARG:2 = -1, ARG:3 = -1, ARG:4
+;#DIM L_P
+;#DIM L_T
+;#DIM L_SKIP_MESSAGE
+;#DIM L_DMG
+;#DIM STOCK_食いしばり
+;SIF TFLAG:HP고정
+;	RETURN 0
+;L_T = ARG
+;L_DMG = ARG:1
+;L_P = ARG:3
+;L_SKIP_MESSAGE = ARG:4
+;STOCK_食いしばり = CFLAG:L_T:이악물기플래그
+;
+;;---- EDIT 043 ADD START -------------------------
+;;ARG:0　 対象のキャラ番号
+;;ARG;1　 HPの増減量
+;;ARG:2　 -1 自動選出 0通常のダメージorマッスルドリンコ的回復　1食いしばり有効　2不屈の闘志有効　3通常の回復　4アルカナシフト　5ネバーギブアップ有効　6SONG OF DIVA有効　7四枝の浅瀬有効　8劫火の余燼有効
+;;ARG:3　 攻撃者のキャラ番号
+;;ARG:4　 1 この関数ないでメッセージをPRINTしない
+;IF ARG:2 == -1
+;	ARG:2 = 0
+;	IF L_DMG < 0 && CFLAG:L_T:이악물기플래그 == 0
+;		SIF HAVE_SKILL(ARG, [[스킬:이악물기]])
+;			ARG:2 = 1
+;		SIF HAVE_SKILL(ARG, [[스킬:불굴의투지]]) || (L_T == MASTER && SOFT_ON("바・벨") && FLAG:벨신격파 & 8);061
+;			ARG:2 = 2
+;		SIF HAVE_SKILL(ARG, [[스킬:네버기브업]])
+;			ARG:2 = 5
+;		;---- EDIT 058 ADD START -------------------------
+;		SIF HAVE_SKILL(ARG, [[스킬:SONG OF DIVA]])
+;			ARG:2 = 6
+;		;---- EDIT 058 ADD END   -------------------------
+;		;---- EDIT 062 ADD START -------------------------
+;		SIF HAVE_SKILL(ARG, (PU_SKILLNUM_GET(ARG,"四枝の浅瀬")))
+;			ARG:2 = 7
+;		;---- EDIT 062 ADD END   -------------------------
+;		;---- EDIT 077 ADD START -------------------------
+;		;---- EDIT 071 ADD START -------------------------
+;		;---- EDIT 063 ADD START -------------------------
+;		SIF HAVE_PU_SKILL(ARG,"劫火の余燼")
+;			ARG:2 = 8
+;		;---- EDIT 063 ADD END -------------------------
+;		;---- EDIT 071 ADD END -------------------------
+;		;---- EDIT 077 ADD END -------------------------
+;	ELSEIF L_DMG > 0
+;		ARG:2 = 3
+;	ENDIF
+;ENDIF
+;;---- EDIT 043 ADD END -------------------------
+;SIF GET_STATE(CFLAG:(ARG):상태이상) == "DYING" && L_DMG < 0
+;	RETURN 0
+;;---- EDIT 063 ADD START  -------------------------
+;IF AUTO_PU_SKILL_ラグナロク（ＡＮ）(ARG,"回復阻害") > 0
+;	SIF L_DMG > 0 && ARG:2 == 3
+;		L_DMG /= 10
+;ENDIF
+;;---- EDIT 063 ADD END  -------------------------
+;BASE:L_T:ＨＰ += L_DMG
+;
+;;---- EDIT 020 ADD START -------------------------
+;IF FLAG:무후후전개 && SOFT_ON("엑스링케이지")
+;	;受けたダメージ量の最大HPに対する割合に、欲望とマゾっ気をかけてダンジョン内発情用欲情値が増加
+;	CFLAG:L_T:던전내발정용욕정치 += L_DMG * (ABL:L_T:욕망 + ABL:L_T:마조끼) / MAXBASE:L_T:ＨＰ
+;ENDIF
+;;---- EDIT 020 ADD END -------------------------
+;;---- EDIT 071 ADD START -------------------------
+;;IF TALENT:L_T:페르소나구사자 >= 1 && CFLAG:L_T:잠재능력발동횟수 < 4
+;	;ペルソナ使いで尚且つ潜在能力発動回数が4未満なら潜在フラグを立てる（現時点では潜在反撃、潜在特殊での使用を想定している）
+;;	CALL SENZAI_FLAG,L_T,"登録",L_DMG
+;;ENDIF
+;
+;TSTR:스킬메시지추가 = 
+;;---- EDIT 071 ADD END   -------------------------
+;IF BASE:L_T:ＨＰ < 1
+;	IF CFLAG:L_T:불사신플래그
+;		IF CFLAG:L_T:불사신플래그 > 1
+;			TSTR:스킬메시지추가 = \@ CFLAG:L_T:불사신플래그 == 2 ? %CALLNAME:ARG%は食いしばった！ # %CALLNAME:ARG%は立ち上がった！ \@
+;			;PRINTL
+;			;PRINTFORM \@ CFLAG:ARG:불사신플래그 == 2 ? %CALLNAME:ARG%は食いしばった！ # %CALLNAME:ARG%は立ち上がった！ \@
+;		ENDIF
+;		BASE:L_T:ＨＰ = (CFLAG:L_T:불사신플래그 == 3 ? MAXBASE:L_T:ＨＰ # 1)
+;		CFLAG:L_T:이악물기플래그 = 1
+;		;CALL BATTLE_EVENT_ATTACK, ARG , ARG:1, 0, 5;052
+;	ELSEIF ARG:2 == 1
+;		BASE:L_T:ＨＰ = 1
+;		TSTR:스킬메시지추가 = %CALLNAME:ARG%は食いしばった！
+;		;PRINTL
+;		;PRINTFORM %CALLNAME:ARG%は食いしばった！
+;	;---- EDIT 043 ADD -------------------------
+;		CFLAG:ARG:이악물기플래그 = 1
+;		;CALL BATTLE_EVENT_ATTACK, ARG , ARG:1, 0, 5;052
+;	ELSEIF ARG:2 == 2
+;		BASE:L_T:ＨＰ = MAXBASE:L_T:5
+;		TSTR:스킬메시지추가 = %CALLNAME:ARG%は立ち上がった！
+;		;PRINTL
+;		;PRINTFORM %CALLNAME:ARG%は立ち上がった！
+;	;---- EDIT 043 ADD -------------------------
+;		CFLAG:L_T:이악물기플래그 = 1
+;		;CALL BATTLE_EVENT_ATTACK, ARG , ARG:1, 0, 5;052
+;	ELSEIF ARG:2 == 5
+;		BASE:L_T:ＨＰ = MAXBASE:L_T:5
+;		TSTR:스킬메시지추가 = %CALLNAME:L_T%はまだまだやる気だ！
+;		;PRINTL
+;		;PRINTFORM %CALLNAME:ARG%はまだまだやる気だ！
+;	;---- EDIT 043 ADD START -------------------------
+;		CFLAG:L_T:이악물기플래그 = 1
+;		;CALL BATTLE_EVENT_ATTACK, ARG , ARG:1, 0, 5;052
+;		IF HAVE_SKILL(L_T, [[스킬:데빌트리거]]) && SKILLGAGE_F_GET(L_T, [[스킬:데빌트리거]]) > 19
+;			CALL SKILLGAGE_D_SET,L_T,[[스킬:데빌트리거]],SKILLGAGE_F_GET(L_T, [[스킬:데빌트리거]])/20
+;			CALL SKILLGAGE_F_SET,L_T,[[스킬:데빌트리거]],0
+;			TSTR:스킬메시지추가 += @"_{SKILLGAGE_D_GET(L_T, [[스킬:데빌트리거]])}ターン魔人化状態！"
+;			;PRINTFORM {SKILLGAGE_D_GET(ARG, [[스킬:데빌트리거]])}ターン魔人化状態！
+;		ENDIF
+;	;---- EDIT 043 ADD END -------------------------
+;	;---- EDIT 058 ADD START -------------------------
+;	ELSEIF ARG:2 == 6
+;		;既にモード・アウェイクニングになってたらダメ（そんなことないと起きないと思うけど）
+;		IF HAVE_SKILL(L_T, [[스킬:SONG OF DIVA]]) && SKILLGAGE_H_GET(L_T, [[스킬:SONG OF DIVA]]) == 0
+;			BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ
+;			;PRINTL
+;			CFLAG:L_T:이악물기플래그 = 1
+;			;CALL BATTLE_EVENT_ATTACK, ARG , ARG:1, 0, 5
+;			CALL SKILLGAGE_H_SET, ARG, [[스킬:SONG OF DIVA]], 1
+;			CALL ACTION_3626, ARG, L_DMG
+;		ENDIF
+;	;---- EDIT 058 ADD END -------------------------
+;	;---- EDIT 061 ADD START -------------------------
+;	ELSEIF ARG:2 == 7
+;		BASE:L_T:ＨＰ = 1
+;		TSTR:스킬메시지추가 = %CALLNAME:ARG%はまだまだやる気だ！
+;		;PRINTL
+;		;PRINTFORM %CALLNAME:ARG%はまだまだやる気だ！
+;		SELECTCASE SKILLGAGE_H_GET(L_T,(PU_SKILLNUM_GET(L_T,"四枝の浅瀬")))
+;			CASE 0
+;				CALL SKILLGAGE_H_SET,L_T,(PU_SKILLNUM_GET(L_T,"四枝の浅瀬")),1
+;			CASE 1
+;				CALL SKILLGAGE_H_SET,L_T,(PU_SKILLNUM_GET(L_T,"四枝の浅瀬")),2
+;			CASEELSE
+;				CALL SKILLGAGE_H_SET,L_T,(PU_SKILLNUM_GET(L_T,"四枝の浅瀬")),3
+;				CFLAG:L_T:이악물기플래그 = 1
+;		ENDSELECT
+;		;CALL BATTLE_EVENT_ATTACK, ARG , ARG:1, 0, 5;052
+;	;---- EDIT 061 ADD END ---------------------------
+;	;---- EDIT 063 ADD START ---------------------------
+;	ELSEIF ARG:2 == 8
+;		BASE:L_T:ＨＰ = 1
+;		IF SKILLGAGE_H_GET(L_T,(PU_SKILLNUM_GET(L_T,"劫火の余燼"))) < 1
+;			CFLAG:L_T:회복불능플래그 = 1
+;			TSTR:스킬메시지추가 = %CALLNAME:ARG%は自身の余燼を燃やし、身体を奮い立たせた！
+;			;PRINTL 
+;			;PRINTFORML %CALLNAME:ARG%は自身の余燼を燃やし、身体を奮い立たせた！
+;			CALL SKILLGAGE_H_SET,L_T,(PU_SKILLNUM_GET(L_T,"劫火の余燼")),1
+;			IF CSTR:L_T:104 != ""
+;				CALL SKILLGAGE_D_SET,L_T,(PU_SKILLNUM_GET(L_T,"劫火の余燼")),2
+;			ELSE
+;				CALL SKILLGAGE_D_SET,L_T,(PU_SKILLNUM_GET(L_T,"劫火の余燼")),1
+;			ENDIF
+;		ELSE
+;			TSTR:스킬메시지추가 = %CALLNAME:ARG%の燃える余燼が、身体を奮い立たせる！
+;			;PRINTL
+;			;PRINTFORML %CALLNAME:ARG%の燃える余燼が、身体を奮い立たせる！
+;		ENDIF
+;		;CALL BATTLE_EVENT_ATTACK, ARG , ARG:1, 0, 5;052
+;	;---- EDIT 063 ADD END ---------------------------
+;	;잠재능력
+;	;ペルソナ使いであり潜在復活・特殊を持つ時発動
+;	ELSEIF TALENT:L_T:페르소나구사자 >= 1 && ABL:L_T:잠재능력 == 3 && CFLAG:L_T:PT플래그
+;		;潜在復活
+;		IF ABL:L_T:잠재능력 == 3 && !CFLAG:L_T:잠재능력발동횟수
+;			;相性☆
+;			IF GET_P_FITNESS(L_T, 0) >= 3
+;				TSTR:스킬메시지추가 = 　　潜在復活 __{0x66FFFF}/%CALLNAME:ARG%は立ち上がった！
+;				;PRINTL
+;				;SETCOLOR 0x66FFFF
+;				;PRINT 　　潜在復活 
+;				RESETCOLOR
+;				BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ
+;				;PRINTFORM %CALLNAME:ARG%は立ち上がった！
+;			;相性◎
+;			ELSEIF GET_P_FITNESS(L_T, 0) == 2
+;				TSTR:스킬메시지추가 = 　　潜在復活 __{0x66FFFF}/%CALLNAME:ARG%は立ち上がった！
+;				;PRINTL
+;				;SETCOLOR 0x66FFFF
+;				;PRINT 　　潜在復活 
+;				;RESETCOLOR
+;				BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ / 4
+;				;PRINTFORM %CALLNAME:ARG%は立ち上がった！
+;			ENDIF
+;			CFLAG:L_T:잠재능력발동횟수 = 4
+;			;CALL BATTLE_EVENT_ATTACK, ARG , ARG:1, 0, 5;052
+;		ENDIF
+;		;---- EDIT 071 START -------------------------
+;		;IF RAND:2 == 0 && CFLAG:ARG:잠재능력발동횟수 < 4
+;		;	;잠재특수
+;		;	IF ABL:ARG:잠재능력 == 4
+;		;		;相性☆
+;		;		IF GET_P_FITNESS(ARG, 0) >= 3
+;		;			PRINTL
+;		;			SETCOLOR 0x66FFFF
+;		;			PRINTFORML 　　%CALLNAME:ARG% 潜在特殊攻撃
+;		;			RESETCOLOR
+;		;			CALLFORM ACTION_2010, ARG, 22
+;		;		;相性◎
+;		;		ELSEIF GET_P_FITNESS(ARG, 0) == 2
+;		;			PRINTL
+;		;			SETCOLOR 0x66FFFF
+;		;			PRINTFORML 　　%CALLNAME:ARG% 潜在特殊攻撃
+;		;			RESETCOLOR
+;		;			CALLFORM ACTION_2010, ARG, 22
+;		;		ENDIF
+;		;		CFLAG:ARG:잠재능력발동횟수 ++
+;		;	ENDIF
+;		;ELSEIF BASE:ARG:ＨＰ < 1
+;		;	CALL DEAD_CHARA,ARG
+;		;ENDIF
+;		SIF !L_SKIP_MESSAGE
+;			CALL PRINT_SKILL_MESSAGE, "追加";EDIT MOD 081
+;		IF BASE:ARG:ＨＰ < 1
+;			CALL DEAD_CHARA,L_T
+;		ELSE
+;			SIF !STOCK_食いしばり && CFLAG:L_T:이악물기플래그
+;				CFLAG:L_T:이악물기발동 = 1
+;		ENDIF
+;		;---- EDIT 071 END   -------------------------
+;	ELSE
+;		CALL DEAD_CHARA, L_T, L_P, L_SKIP_MESSAGE
+;	ENDIF
+;ELSEIF BASE:ARG:ＨＰ > MAXBASE:ARG:ＨＰ && ARG:2 == 3
+;	BASE:ARG:ＨＰ = MAXBASE:ARG:ＨＰ
+;ENDIF
+;---- EDIT 080 MOD END ---------------------------
+
+;MPの増減処理
+;ARG:2　0通常のダメージorマッスルドリンコ的回復　1食いしばり有効　2不屈の闘志有効　3通常の回復　4アルカナシフト　5ネヴァーギブアップ有効
+;BASE:ARG:ＭＰ += ARG:1
+;IF BASE:ARG:ＭＰ < 1
+;	IF ARG:2 == 1
+;		BASE:ARG:ＭＰ = 1
+;	ELSEIF ARG:2 == 2
+;		BASE:ARG:ＭＰ = MAXBASE:ARG:ＭＰ
+;	ELSEIF ARG:2 == 5
+;		BASE:ARG:ＭＰ = MAXBASE:ARG:ＭＰ
+;	ELSE
+;		BASE:ARG:ＭＰ = 0
+;	ENDIF
+;ELSEIF BASE:ARG:ＭＰ > MAXBASE:ARG:ＭＰ && ARG:2 == 3
+;	BASE:ARG:ＭＰ = MAXBASE:ARG:ＭＰ
+;ENDIF
+;---- EDIT 079 MOD START -------------------------
+;@JUDG_HIT_1			JUDG_HIT_1, JUDG_HIT_2, JUDG_HIT_GUNの3種を統合し、
+;@JUDG_HIT_2			@BTL_JUDG_HITとしてBATTLE_SYSTEM_DAMAGE.ERBに移動
+;
+;@ATTACK_BADSTATE		処理を分割してBATTLE_SYSTEM_BAD_STATE.ERBに移動
+;@BADSTATE_PRIORITY		BATTLE_SYSTEM_BAD_STATE.ERBに移動
+;---- EDIT 079 MOD END   -------------------------
+
+;---- EDIT 080 MOD START -------------------------
+;戦闘時のメッセージ関連ですぐにメッセージを出力せずにTSTRに退避させるオプションを追加。
+;======================================================================
+;戦闘不能処理
+;ARG 	対象のキャラ番号
+;ARG:1	下手人のキャラ番号
+;ARG:2	1 = この関数ないでメッセージをPRINTしない
+;======================================================================
+@DEAD_CHARA, ARG, ARG:1 = -1, ARG:2
+;#DIM num
+#LOCALSIZE 3
+#DIM L_SKIP_MESSAGE
+;---- EDIT 104 ADD START -------------------------
+BASE:ARG:ＨＰ = 0
+;---- EDIT 104 ADD END ---------------------------
+;死亡時のイベント呼び出し
+CALL EVENT_BATTLE_DYING, ARG, ARG:1, ARG:2
+L_SKIP_MESSAGE= ARG:2
+;上の呼び出しでHPが回復されてたら死亡時の処理を飛ばす
+IF BASE:ARG:ＨＰ <= 0
+	;---- EDIT 104 DEL START -------------------------
+	;VARSET num,0
+	;BASE:ARG:ＨＰ = 0
+	;---- EDIT 104 DEL END ---------------------------
+	CFLAG:ARG:상태이상 = GET_STATE_NUM("DYING")
+	CALL REFRESH_BATTLE_CHARA_STATE, ARG;EDIT  093 ADD
+	;---- EDIT 080 ADD START -------------------------キャラクター履歴の登録処理を追加
+	SIF ARG:1 >= 0
+		CALL SET_C_RECORDS, ARG:1, ARG, "KILL"
+	;---- EDIT 080 ADD END ---------------------------
+	;---- EDIT 028 MOD START -------------------------
+	CALL SYNC_STATUS,ARG
+	;---- EDIT 028 MOD END ---------------------------
+
+	IF CFLAG:ARG:PT플래그 == 0
+		;会話不能フラグが立っているときは傾かない
+		IF !FLAG:회화불능플래그 && !CFLAG:ARG:보스플래그 && !SOFT_ON("세컨드헬로") && ABL:ARG:회화타입 != 331
+			;仲魔に居る悪魔を倒すと混沌に傾く ストレージ内は考慮しないように変更
+			;---- EDIT 107 MOD START -------------------------
+			VARI L_FRIEND
+			FOR LOCAL, 0, BCHARANUM
+				L_FRIEND = BCHARA:LOCAL
+				IF NO:L_FRIEND == NO:ARG && IS_FRIEND(MASTER, L_FRIEND)
+					IF CFLAG:L_FRIEND:PT플래그 == 1
+						SIF !GET_ROLE_PROP("CAN_PUT_IN_COMP", L_FRIEND)
+							CONTINUE
+					ENDIF
+					SIF CFLAG:L_FRIEND:이자리에없는플래그
+						CONTINUE
+					CALL INCREASE_LC,-1
+					BREAK
+				ENDIF
+			NEXT
+		ENDIF
+		;---- EDIT 107 MOD END ---------------------------
+		SIF L_SKIP_MESSAGE != 2
+			TSTR:스킬메시지추가 = %ARG를% 쓰러트렸다
+		;PRINTFORMW %CALLNAME:ARG%を倒した
+		;悪魔解析度が5上昇
+		IF FLAG:악마해석률상승불가플래그 == 0
+			;解析可能な場合
+			CALL INCREASE_ANALYZE,NO:ARG,5
+		ENDIF
+		;---- EDIT 098 DEL START -------------------------
+		;SIF CFLAG:ARG:시체잔존 == 0
+		;	CALL REMOVE_POSITION,CFLAG:ARG:포지션
+		;---- EDIT 098 DEL END ---------------------------
+		CFLAG:ARG:입력행동 = -1
+	ELSE
+		;---- EDIT 000 XXX START -------------------------
+		SIF L_SKIP_MESSAGE != 2
+			TSTR:스킬메시지추가 = %CALLNAME:ARG%は力尽きた
+		CFLAG:ARG:입력행동 = -1
+		;瀕死になった場合はCFLAG:ダンジョン内発情用欲情値が半分になり、発情状態が解除される
+		IF FLAG:무후후전개 && CFLAG:ARG:던전내발정용욕정치
+			CFLAG:ARG:던전내발정용욕정치 /= 2
+			CFLAG:ARG:던전내발정 = 0
+		ENDIF
+		;---- EDIT 000 XXX END ---------------------------
+	ENDIF
+ENDIF
+IF !L_SKIP_MESSAGE
+	CALL PRINT_SKILL_MESSAGE, "追加";EDIT MOD 081
+	WAIT
+ENDIF
+;---- EDIT 080 DEL START -------------------------キリングリアクトを追撃スキル化したので処理を削除
+;IF num > 0
+;	FOR LOCAL:1, 7, 17
+;		SIF POS(LOCAL:1) == -1 || CFLAG:POS(LOCAL:1):상태이상 == GET_STATE_NUM("DYING")
+;			CONTINUE
+;		SIF NO:(POS(LOCAL:1)) == [[キャラ:니알라]]
+;			CALL SPECIAL_ACTION_3571,LOCAL:1
+;	NEXT
+;ENDIF
+;---- EDIT 080 DEL END ---------------------------
+;---- EDIT 080 MOD END ---------------------------
+
+;===============================
+;善悪操作
+;==============================
+@INCREASE_LD,ARG
+CALL INCREASE_CHARA_LD,MASTER,ARG
+
+@INCREASE_CHARA_LD,ARG,ARG:1
+CFLAG:ARG:선악치 += ARG:1
+CALL SYNC_CHARA_LD,ARG
+
+@CHANGE_CHARA_LD,ARG,ARG:1,ARG:2
+;ARGのキャラが、ARG:1に、ARG:2だけ近づく
+IF CFLAG:ARG:선악치 >= ARG:1
+	CFLAG:ARG:선악치 -= ARG:2
+	SIF CFLAG:ARG:선악치 < ARG:1
+		CFLAG:ARG:선악치 = ARG:1
+ELSE
+	CFLAG:ARG:선악치 += ARG:2
+	SIF CFLAG:ARG:선악치 > ARG:1
+		CFLAG:ARG:선악치 = ARG:1
+ENDIF
+CALL SYNC_CHARA_LD,ARG
+
+@SET_CHARA_LD,ARG,ARG:1
+;ARGのキャラの善悪値をARG:1にする
+CFLAG:ARG:선악치 = ARG:1
+CALL SYNC_CHARA_LC,ARG
+
+@SYNC_CHARA_LD,ARG
+CFLAG:ARG:선악치 = LIMIT(CFLAG:ARG:선악치, 0, 255)
+IF ARG == MASTER
+	SELECTCASE FLAG:속성고정LD
+		CASE 1
+			CFLAG:MASTER:선악치 = 255
+		CASE 2
+			CFLAG:MASTER:선악치 = 128
+		CASE 3
+			CFLAG:MASTER:선악치 = 0
+	ENDSELECT
+ENDIF
+SELECTCASE CFLAG:ARG:선악치
+	CASE IS > 170
+		ABL:ARG:속성LD = 1
+	CASE IS > 84
+		ABL:ARG:속성LD = 2
+	CASEELSE
+		ABL:ARG:속성LD = 3
+ENDSELECT
+
+;===========================
+;秩混操作
+;==============================
+@INCREASE_LC,ARG
+CALL INCREASE_CHARA_LC,MASTER,ARG
+
+@INCREASE_CHARA_LC,ARG,ARG:1
+CFLAG:ARG:질혼치 += ARG:1
+CALL SYNC_CHARA_LC,ARG
+
+@CHANGE_CHARA_LC,ARG,ARG:1,ARG:2
+;ARGのキャラが、ARG:1に、ARG:2だけ近づく
+IF CFLAG:ARG:질혼치 >= ARG:1
+	CFLAG:ARG:질혼치 -= ARG:2
+	SIF CFLAG:ARG:질혼치 < ARG:1
+		CFLAG:ARG:질혼치 = ARG:1
+ELSE
+	CFLAG:ARG:질혼치 += ARG:2
+	SIF CFLAG:ARG:질혼치 > ARG:1
+		CFLAG:ARG:질혼치 = ARG:1
+ENDIF
+CALL SYNC_CHARA_LC,ARG
+
+@SET_CHARA_LC,ARG,ARG:1
+;ARGのキャラの秩混値をARG:1にする
+CFLAG:ARG:질혼치 = ARG:1
+CALL SYNC_CHARA_LC,ARG
+
+@SYNC_CHARA_LC,ARG
+CFLAG:ARG:질혼치 = LIMIT(CFLAG:ARG:질혼치, 0, 255)
+IF ARG == MASTER
+	SELECTCASE FLAG:속성고정LC
+		CASE 1
+			CFLAG:MASTER:질혼치 = 255
+		CASE 2
+			CFLAG:MASTER:질혼치 = 128
+		CASE 3
+			CFLAG:MASTER:질혼치 = 0
+	ENDSELECT
+ENDIF
+SELECTCASE CFLAG:ARG:질혼치
+	CASE IS > 170
+		ABL:ARG:속성LC = 1
+	CASE IS > 84
+		ABL:ARG:속성LC = 2
+	CASEELSE
+		ABL:ARG:속성LC = 3
+ENDSELECT
+
+@ADJUST_CHARA_ALI,ARG
+;いわゆる初期設定
+IF CFLAG:ARG:선악치 == 0
+	IF ABL:ARG:속성LD == 1
+		CFLAG:ARG:선악치 = 255
+	ELSEIF ABL:ARG:속성LD == 2
+		CFLAG:ARG:선악치 = 128
+	ENDIF
+ENDIF
+IF CFLAG:ARG:질혼치 == 0
+	IF ABL:ARG:속성LC == 1
+		CFLAG:ARG:질혼치 = 255
+	ELSEIF ABL:ARG:속성LC == 2
+		CFLAG:ARG:질혼치 = 128
+	ENDIF
+ENDIF
+
+;==============================
+;MAG保有量
+;==============================
+@GET_CHARA_STOCK_MAG, L_CHARA
+#FUNCTION
+#DIM DYNAMIC L_CHARA
+IF CFLAG:L_CHARA:MAG링크 > 0
+	L_CHARA = FINDCHARA_TIMEID(CFLAG:L_CHARA:피링크캐릭터실제가입시간)
+	SIF L_CHARA < 0
+		RETURNF 0
+ENDIF
+RETURNF BASE:L_CHARA:ＭＡＧ
+
+;==============================
+;MAG保有量
+;==============================
+@GET_CHARA_MAXMAG, L_CHARA
+#FUNCTION
+#DIM DYNAMIC L_CHARA
+IF CFLAG:L_CHARA:MAG링크 > 0
+	L_CHARA = FINDCHARA_TIMEID(CFLAG:L_CHARA:피링크캐릭터실제가입시간)
+	SIF L_CHARA < 0
+		RETURNF 0
+ENDIF
+RETURNF MAXBASE:L_CHARA:ＭＡＧ
+
+;==============================
+;MAG操作
+;==============================
+@CONTROL_MAG,L_CHARA,MAG_AMOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC MAG_AMOUNT
+IF CFLAG:L_CHARA:MAG링크 > 0
+	L_CHARA = FINDCHARA_TIMEID(CFLAG:L_CHARA:피링크캐릭터실제가입시간)
+	SIF L_CHARA < 0
+		RETURN 0
+ENDIF
+IF GET_CHARA_STOCK_MAG(L_CHARA) + MAG_AMOUNT > GET_CHARA_MAXMAG(L_CHARA)
+	MAG_AMOUNT = GET_CHARA_MAXMAG(L_CHARA) - GET_CHARA_STOCK_MAG(L_CHARA)
+ELSEIF GET_CHARA_STOCK_MAG(L_CHARA) + MAG_AMOUNT < 0
+	MAG_AMOUNT = -GET_CHARA_STOCK_MAG(L_CHARA)
+ENDIF
+
+BASE:L_CHARA:ＭＡＧ += MAG_AMOUNT
+
+;調教時の表示用に追加
+TCVAR:L_CHARA:획득ＭＡＧ += MAG_AMOUNT
+DOWNBASE:L_CHARA:ＭＡＧ -= MAG_AMOUNT
+;変動量を返す
+RETURN MAG_AMOUNT
+
+;==============================
+;忠誠度保有量
+;==============================
+@GET_CHARA_LOYALTY, L_CHARA
+#FUNCTION
+#DIM DYNAMIC L_CHARA
+IF CFLAG:L_CHARA:충성도링크 > 0
+	L_CHARA = FINDCHARA_TIMEID(CFLAG:L_CHARA:피링크캐릭터실제가입시간)
+	SIF L_CHARA < 0
+		RETURNF 0
+ENDIF
+RETURNF BASE:L_CHARA:충성도
+
+;==============================
+;忠誠度操作
+;==============================
+@CONTROL_LOYALTY,L_CHARA, L_AMOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_AMOUNT
+IF CFLAG:L_CHARA:충성도링크 > 0
+	L_CHARA = FINDCHARA_TIMEID(CFLAG:L_CHARA:피링크캐릭터실제가입시간)
+	SIF L_CHARA < 0
+		RETURN 0
+ENDIF
+BASE:L_CHARA:충성도 += L_AMOUNT
+
+;===============================
+;MAG吸収
+;==============================
+@DRAIN_MAG, L_PLAYER, L_AMOUNT, L_TARGET
+#DIM DYNAMIC L_PLAYER
+#DIM DYNAMIC L_AMOUNT
+#DIM DYNAMIC L_TARGET
+L_AMOUNT *= 2
+
+IF TEQUIP:TARGET:촉수 && FLAG:촉수신사각성
+	IF L_TARGET == TARGET
+		L_AMOUNT = MIN(ABS(L_AMOUNT), BASE:L_TARGET:ＭＡＧ)
+		IF L_AMOUNT > 0
+			CALL CONTROL_MAG, L_TARGET, -L_AMOUNT
+
+			AMOUNT_DRAIN_TENTACLE = L_AMOUNT * (10 + ABL:L_TARGET:촉수중독 * 9) / 100
+			FLAG:촉수에너지 += AMOUNT_DRAIN_TENTACLE
+			RETURN L_AMOUNT
+		ELSE
+			RETURN 0
+		ENDIF
+	ELSE
+		RETURN 0
+	ENDIF
+ELSE
+	IF TALENT:L_TARGET:영매체질
+		L_AMOUNT *= 5
+		SIF !TALENT:L_TARGET:비전투원
+			L_AMOUNT /= 2
+	ENDIF
+	L_AMOUNT = MIN(L_AMOUNT, GET_CHARA_STOCK_MAG(L_PLAYER))
+	IF GET_CHARA_MAXMAG(L_TARGET) == GET_CHARA_STOCK_MAG(L_TARGET)
+		;相手のMAGが満タンの場合は経験値になる（割五鈷杵彫りの指輪装備時のみ）
+		;1EXP = 10MAG、一回の最高値は次のレベルに必要な総経験地の20％
+		;『あなた』のレベルの半分までしか上げられない
+		IF GROUPMATCH([[衣装:금강저의반지]], CFLAG:L_PLAYER:그외, CFLAG:L_PLAYER:그외2, CFLAG:L_PLAYER:그외3) && BASE:MASTER:LV / 2 > BASE:L_TARGET:LV
+			L_AMOUNT = LIMIT(L_AMOUNT / 10 , 0 , MAXBASE:L_TARGET:ＥＸＰ / 5)
+			BASE:L_TARGET:ＥＸＰ += L_AMOUNT
+			CALL CONTROL_MAG, L_PLAYER, -L_AMOUNT
+			RETURN L_AMOUNT
+		ELSE
+			RETURN 0
+		ENDIF
+	ELSE
+		L_AMOUNT = MIN(L_AMOUNT, GET_CHARA_MAXMAG(L_TARGET) - GET_CHARA_STOCK_MAG(L_TARGET))
+		CALL CONTROL_MAG, L_TARGET, L_AMOUNT
+		CALL CONTROL_MAG, L_PLAYER, -L_AMOUNT
+		RETURN L_AMOUNT
+	ENDIF
+ENDIF
+
+;---- EDIT 080 ADD START -------------------------COOPに解析用フラグを追加
+;====================================================
+;DEVIL_COOP
+;使用されたスキル攻撃力・魔法威力+αの基礎威力と平均攻撃力と平均レベルを利用して基本計算式を通したあと、各種補正をかける
+;イメージとしてはCOOPのトリガーになったスキルの威力の万能攻撃を味方全員で実行する感じになる
+;
+;基礎威力		通常スキルのスキル威力に相当
+;50 + 参加者の平均LV /2 + 敵が受けたスキル威力の合計値 * COOP倍率(Crt50% / WEAK 100%)
+;攻撃力			参加者の攻撃値(攻撃力/魔力の高い方)の平均値
+;COOP위력		相性などによる参加者の倍率値、ダメージに乗算
+;50% + 各参加者の属性一致率(60% / 110%) * 추격의심득(150%) * 相性・関係補正(50% ~ 150%)
+;====================================================
+@DEVIL_COOP,ARG
+#DIM LCOUNT,2
+#DIM L_CHARA
+#DIM L_COOP_MEMBER
+#DIM CNT_COOP_MEMBER
+#DIM L_TARGET
+#DIM IS_EXIST_COOP_TARGET
+#DIM COOP_DMG
+#DIM COOP_POWER
+#DIM TEMP_POWER
+#DIM TEMP_RELATION
+#DIM COOP_MEMBER_ATTACK_AVERAGE
+#DIM COOP_MEMBER_LV_AVERAGE
+#DIM L_POS_MIN
+#DIM L_POS_MAX
+#LOCALSIZE 11
+#DIM 解析用
+;COOPできないキャラ
+SIF CFLAG:ARG:COOP불능
+	RETURN 0
+;COOPを行う必要があるかの判定
+;LOCAL:5 = 受ける人数
+IS_EXIST_COOP_TARGET = 0
+
+IF CFLAG:ARG:PT플래그
+	L_POS_MIN = 7
+	L_POS_MAX = 17
+ELSE
+	L_POS_MIN = 1
+	L_POS_MAX = 7
+ENDIF
+FOR LCOUNT, L_POS_MIN, L_POS_MAX 
+	SIF !IS_TARGET_ABLE(POS(LCOUNT))
+		CONTINUE
+	SIF CFLAG:POS(LCOUNT):ＣＯＯＰ플래그 <= 0
+		CONTINUE
+	IS_EXIST_COOP_TARGET = 1
+NEXT
+;COOPを受ける敵がいないなら終わる
+SIF !IS_EXIST_COOP_TARGET
+	RETURN 0
+
+;FOR LOCAL,L_POS_MIN,L_POS_MAX
+;	LOCALS = 포지션{LOCAL}
+;	SIF FLAG:LOCALS > -1 && GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) != "DYING" && CFLAG:(FLAG:LOCALS):ＣＯＯＰ플래그
+;		CNT_TARGET += 1
+;NEXT
+
+;SIF CNT_TARGET == 0
+;	RETURN 0
+
+
+;ARG = 発動させたキャラ
+CNT_COOP_MEMBER = 0
+;CNT_COOP_MEMBER = 参加人数
+;LOCAL:3 = COOP위력
+COOP_POWER = 50
+;COOP_MEMBER_ATTACK_AVERAGE = COOP攻撃力
+COOP_MEMBER_ATTACK_AVERAGE = 0
+COOP_MEMBER_LV_AVERAGE = 0
+;COOP_MEMBER_LV_AVERAGE = 攻撃側の平均ＬＶ
+;LOCAL:6 = ダメージ値
+;参加人数を割り出す
+IF CFLAG:ARG:PT플래그 == 0
+	L_POS_MIN = 7
+	L_POS_MAX = 17
+ELSE
+	L_POS_MIN = 1
+	L_POS_MAX = 7
+ENDIF
+;------------------------------------
+;威力計算に用いる数値の取得
+;------------------------------------
+FOR LOCAL,L_POS_MIN,L_POS_MAX
+	LOCALS = 포지션{LOCAL}
+	IF FLAG:LOCALS > -1
+		CALL COOPABLE_CHARA,FLAG:LOCALS
+		SIF RESULT == 0
+			CONTINUE
+		;COOP発動者の攻撃力加算
+		;IF FLAG:LOCALS == ARG && CFLAG:ARG:보스플래그 == 0
+			;CNT_COOP_MEMBER += 1
+			;COOP_MEMBER_ATTACK_AVERAGE += MAX(MAXBASE:(FLAG:LOCALS):공격 , MAXBASE:(FLAG:LOCALS):마법위력)
+			;COOP_MEMBER_LV_AVERAGE += MAXBASE:(FLAG:LOCALS):LV
+			;CFLAG:(FLAG:LOCALS):ＣＯＯＰ참가플래그 = 1
+			;CONTINUE
+		;ENDIF
+		;LOCAL:9 = 個別のCOOP威力加算値
+		;基本COOP加算 110%
+		;IF (ABL:(FLAG:LOCALS):속성LD == ABL:ARG:속성LD && ABL:(FLAG:LOCALS):속성LC == ABL:ARG:속성LC) || (SOFT_ON("ＣＯ－ＯＰ강화C") && CAPITULATION_CHECK(FLAG:LOCALS, ARG)) || 特殊友情確認(ARG,FLAG:LOCALS);052
+		;	;ペルソナEXPの加算
+		;	CALL INCREASE_PERSONA_EXP, FLAG:LOCALS, 1, 30
+		;	LOCAL:2 += 1
+		;	LOCAL:9 = 110
+		;	IF FLAG:LOCALS == ARG && CFLAG:ARG:보스플래그
+		;		LOCAL:2 += 1
+		;		LOCAL:9 += 40
+		;	ENDIF
+		;	LOCAL:4 += MAX(MAXBASE:(FLAG:LOCALS):공격 , MAXBASE:(FLAG:LOCALS):마법위력)
+		;	LOCAL:5 += MAXBASE:(FLAG:LOCALS):LV
+		;	CFLAG:(FLAG:LOCALS):ＣＯＯＰ참가플래그 = 1
+		;基本COOP威力加算 60%
+		;ELSEIF ABL:(FLAG:LOCALS):속성LD == ABL:ARG:속성LD || ABL:(FLAG:LOCALS):속성LC == ABL:ARG:속성LC
+		;	;ペルソナEXPの加算
+		;	CALL INCREASE_PERSONA_EXP, FLAG:LOCALS, 1, 30
+		;	LOCAL:9 = 60
+		;	SIF SOFT_ON("ＣＯ－ＯＰ강화W")
+		;		LOCAL:9 += 50
+		;	LOCAL:2 += 1
+		;	LOCAL:4 += MAX(MAXBASE:(FLAG:LOCALS):공격 , MAXBASE:(FLAG:LOCALS):마법위력)
+		;	LOCAL:5 += MAXBASE:(FLAG:LOCALS):LV
+		;	CFLAG:(FLAG:LOCALS):ＣＯＯＰ참가플래그 = 1
+		;基本COOP威力加算 60%
+		;ELSEIF SOFT_ON("ＣＯ－ＯＰ강화C") && CAPITULATION_CHECK(FLAG:LOCALS, ARG);052
+		;	;ペルソナEXPの加算
+		;	CALL INCREASE_PERSONA_EXP, FLAG:LOCALS, 1, 30
+		;	LOCAL:9 = 60
+		;	LOCAL:2 += 1
+		;	LOCAL:4 += MAX(MAXBASE:(FLAG:LOCALS):공격 , MAXBASE:(FLAG:LOCALS):마법위력)
+		;	LOCAL:5 += MAXBASE:(FLAG:LOCALS):LV
+		;	CFLAG:(FLAG:LOCALS):ＣＯＯＰ참가플래그 = 1
+		;ELSE
+		;	CONTINUE
+		;ENDIF
+		;発動者は威力0
+		IF FLAG:LOCALS == ARG
+			TEMP_POWER = 0
+		ELSE
+			;ランク2 = ALI2種一致、1 = ALT一種一致
+			SELECTCASE GET_DEVIL_COOP_MEMBER_RANK(ARG, FLAG:LOCALS)
+				CASE 2
+					TEMP_POWER = 110
+				CASE 1
+					TEMP_POWER = 60
+				CASEELSE
+					CONTINUE
+			ENDSELECT
+			;追撃の心得持ちは威力が1.5倍
+			SIF HAVE_SKILL(FLAG:LOCALS,[[스킬:추격의심득]])
+				TIMES TEMP_POWER, 1.50
+			
+			;ALI補正を抜いた相性と陥落によって1%～150%の補正が発生する
+			TEMP_RELATION = GET_RELATION(FLAG:LOCALS, ARG , 0)
+			IF 陥落(FLAG:LOCALS, ARG) == 1
+				TEMP_RELATION += 10
+			ELSE
+				TEMP_RELATION += 陥落(FLAG:LOCALS, ARG) * 25
+			ENDIF
+			TEMP_RELATION = LIMIT(TEMP_RELATION, 1, 200)
+			TEMP_RELATION = TEMP_RELATION > 100 ? (TEMP_RELATION - 100) / 2 + 100 # TEMP_RELATION
+			TEMP_POWER = TEMP_POWER * TEMP_RELATION / 100
+		ENDIF
+		;合計COOP威力に個別COOP威力を加算
+		COOP_POWER += TEMP_POWER
+		CNT_COOP_MEMBER += 1
+		COOP_MEMBER_ATTACK_AVERAGE += MAX(MAXBASE:(FLAG:LOCALS):공격 , MAXBASE:(FLAG:LOCALS):마법위력)
+		COOP_MEMBER_LV_AVERAGE += MAXBASE:(FLAG:LOCALS):LV
+		CFLAG:(FLAG:LOCALS):ＣＯＯＰ참가플래그 = 1
+	ENDIF
+NEXT
+SIF CNT_COOP_MEMBER < 2
+	RETURN 0
+;チアーリングの補正 / 自分が参加してない場合も効果があるが参加人数が多くないと効果が弱い
+FOR LCOUNT, L_POS_MIN, L_POS_MAX
+	L_CHARA = POS(LCOUNT)
+	SIF !IS_TARGET_ABLE(L_CHARA)
+		CONTINUE
+	SIF !HAVE_SKILL(L_CHARA, SKILL_NUM_F("체인업"))
+		CONTINUE
+	COOP_POWER += CNT_COOP_MEMBER * 10
+NEXT
+;COOP_POWER += (CNT_COOP_MEMBER - 1) * 60
+COOP_MEMBER_ATTACK_AVERAGE /= CNT_COOP_MEMBER
+COOP_MEMBER_LV_AVERAGE /= CNT_COOP_MEMBER
+;DEVIL_COOP発動
+;ＣＯＯＰを引き起こしたペルソナ使いのペルソナ経験値を人数分増加
+;ただし、自分参加で1点入るのでここでは1引いとく
+SIF CFLAG:ARG:PT플래그 > 0
+	CALL INCREASE_PERSONA_EXP, ARG, LOCAL:2 - 1, 31
+IF CFLAG:ARG:PT플래그 == 0
+	SETCOLOR COLOR("ENEMY")
+ELSE
+	SETCOLOR COLOR("FRIEND")
+ENDIF
+IF FLAG:RPG구상 == 0
+	CALL BATTLE_EVENT, "COOP発動", ARG, ARG
+	;口上用にTARGET保存
+	;LOCAL:9 = TARGET
+	;TARGET = ARG
+	;COOP発動時口上
+	;TFLAG:전투이벤트 = 1
+	;IF CFLAG:ARG:PT플래그 == 0
+	;	CALL 口上呼び出し , "ENEMY_BATTLE_EVENT" , ARG , ARG
+	;ELSE
+	;	CALL 口上呼び出し , "BATTLE_EVENT" , ARG , ARG
+	;ENDIF
+	;TARGET = LOCAL:9
+ENDIF
+;参加者の表示・新記述版
+SETCOLOR COLOR("BATTLE", ARG)
+ALIGNMENT CENTER
+PRINTFORML ┏━━━━━━━━━━━━━━━━━┓
+PRINTFORML ┃   ＤＥＶＩＬ ＣＯ－ＯＰ 발동！   ┃
+PRINTFORML ┗━━━━━━━━━━━━━━━━━┛
+FOR LCOUNT,0,2
+	FOR LCOUNT:1,L_POS_MIN,(L_POS_MAX - L_POS_MIN) / 2 + 1
+		L_COOP_MEMBER = POS(LCOUNT * (L_POS_MAX - L_POS_MIN) / 2 + LCOUNT:1) 
+		IF L_COOP_MEMBER > -1 && (CFLAG:L_COOP_MEMBER:ＣＯＯＰ참가플래그 || L_COOP_MEMBER == ARG)
+			SETCOLOR COLOR("BATTLE", ARG)
+			PRINTFORM ┏━━━━━━━━━━┓
+		ELSE
+			SETCOLOR 0x404040
+			PRINTFORM ┏━━━━━━━━━━┓
+		ENDIF
+		SIF LCOUNT:1 != (L_POS_MAX - L_POS_MIN)/2
+			PRINTFORM 　
+	NEXT
+	PRINTL
+	FOR LCOUNT:1,L_POS_MIN,(L_POS_MAX - L_POS_MIN) / 2 + 1
+		L_COOP_MEMBER = POS(LCOUNT * (L_POS_MAX - L_POS_MIN) / 2 + LCOUNT:1)
+		IF L_COOP_MEMBER > -1 && (CFLAG:L_COOP_MEMBER:ＣＯＯＰ참가플래그 || L_COOP_MEMBER == ARG)
+			SETCOLOR COLOR("BATTLE", ARG)
+			PRINTFORM ┃%CALLNAME:L_COOP_MEMBER,20,LEFT%┃
+		ELSE
+			SETCOLOR 0x404040
+			PRINTFORM ┃\@ L_COOP_MEMBER > -1 ? %CALLNAME:L_COOP_MEMBER,20,LEFT% # %"ＥＭＰＴＹ",20,LEFT%\@┃
+		ENDIF
+		SIF LCOUNT:1 != (L_POS_MAX - L_POS_MIN)/2
+			PRINTFORM 　
+	NEXT
+	PRINTL
+	FOR LCOUNT:1,L_POS_MIN,(L_POS_MAX - L_POS_MIN) / 2 + 1
+		L_COOP_MEMBER = POS(LCOUNT * (L_POS_MAX - L_POS_MIN) / 2 + LCOUNT:1)
+		IF L_COOP_MEMBER > -1 && (CFLAG:L_COOP_MEMBER:ＣＯＯＰ참가플래그 || L_COOP_MEMBER == ARG)
+			SETCOLOR COLOR("BATTLE", ARG)
+			PRINTFORM ┗━━━━━━━━━━┛
+		ELSE
+			SETCOLOR 0x404040
+			PRINTFORM ┗━━━━━━━━━━┛
+		ENDIF
+		SIF LCOUNT:1 != (L_POS_MAX - L_POS_MIN)/2
+			PRINTFORM 　
+	NEXT
+	PRINTL
+NEXT
+SETCOLOR COLOR("BATTLE", ARG)
+TFLAG:COOP위력 = COOP_POWER * 100 / 600
+
+PRINTFORML ┏━━━━━━━━┓
+PRINTFORML ┃ＰＯＷＥＲ:{TFLAG:COOP위력,3}％┃
+PRINTFORML ┗━━━━━━━━┛
+ALIGNMENT LEFT
+;新記述版ここまで
+FOR LOCAL,L_POS_MIN,L_POS_MAX
+	LOCALS = 포지션{LOCAL}
+	IF FLAG:LOCALS > -1
+		SIF CFLAG:(FLAG:LOCALS):ＣＯＯＰ참가플래그 == 0
+			CONTINUE
+		;SIF FLAG:LOCALS != MASTER
+		;	TCVAR:(FLAG:LOCALS):획득충성도 += 20
+			;BASE:(FLAG:LOCALS):충성도 += 20
+		;---- EDIT 020 ADD START -------------------------
+		IF FLAG:무후후전개 && SOFT_ON("엑스링케이지")
+			;ＣＯＯＰ参加した仲間のダンジョン内発情用欲情値が欲情とサドっ気に応じて増加
+			CFLAG:(FLAG:LOCALS):던전내발정용욕정치 += 25 * (ABL:(FLAG:LOCALS):욕망 + ABL:(FLAG:LOCALS):새드끼 ) + 250
+		ENDIF
+		;---- EDIT 020 ADD START -------------------------
+		;ＣＯＯＰ参加した悪魔の解析度+20
+		IF CFLAG:(FLAG:LOCALS):PT플래그 > 0
+			IF FLAG:악마해석률상승불가플래그 == 0
+				;解析可能な場合
+				CALL INCREASE_ANALYZE,NO:(FLAG:LOCALS),20
+			ENDIF
+		ENDIF
+		TFLAG:전투이벤트 = 0
+		;参加者表示：旧記述版
+;		PRINTFORML ┏━━━━━━━━━━━━━┓　┏━━━━━━━━━━━━━━━━━━━━┓
+;		PRINTFORML ┃[{CFLAG:(FLAG:LOCALS):포지션,2}] %CALLNAME:(FLAG:LOCALS),21,LEFT%┃　┃        デビルＣＯ－ＯＰ 発動！         ┃
+;		PRINTFORML ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+		;IF FLAG:RPG구상 == 0 && FLAG:LOCALS != ARG
+		IF FLAG:LOCALS != ARG
+			SETCOLOR CFLAG:(FLAG:LOCALS):PT플래그 ? COLOR("FRIEND") # COLOR("ENEMY")
+			CALL BATTLE_EVENT, "COOP参加", FLAG:LOCALS , FLAG:LOCALS
+			;TFLAG:전투이벤트 = 2
+			;LOCAL:9 = TARGET
+			;TARGET = FLAG:LOCALS
+			;IF CFLAG:ARG:PT플래그 == 0
+			;	CALL 口上呼び出し , "ENEMY_BATTLE_EVENT" , FLAG:LOCALS , FLAG:LOCALS
+			;ELSE
+			;	CALL 口上呼び出し , "BATTLE_EVENT" , FLAG:LOCALS , FLAG:LOCALS
+			;ENDIF
+			;TARGET = LOCAL:9
+			;TFLAG:전투이벤트 = 0
+		ENDIF
+	ENDIF
+NEXT
+RESETCOLOR
+WAIT
+
+;------------------------------------------
+;ダメージの算出と処理
+;------------------------------------------
+IF CFLAG:ARG:PT플래그 == 0
+	L_POS_MIN = 1
+	L_POS_MAX = 7
+ELSE
+	L_POS_MIN = 7
+	L_POS_MAX = 17
+ENDIF
+
+FOR LCOUNT,L_POS_MIN,L_POS_MAX
+	L_TARGET = POS(LCOUNT)
+	SIF !IS_TARGET_ABLE(L_TARGET)
+		CONTINUE
+	SIF CFLAG:L_TARGET:ＣＯＯＰ플래그 == 0
+		CONTINUE
+	;HPがリンクしている場合はメイン対象にＣＯＯＰフラグをまとめる
+	CALL GET_LINKED_HP_CHARA, L_TARGET
+	IF RESULT > 0 && RESULT != L_TARGET
+		CFLAG:RESULT:ＣＯＯＰ플래그 += CFLAG:L_TARGET:ＣＯＯＰ플래그
+		CFLAG:L_TARGET:ＣＯＯＰ플래그 = 0
+	ENDIF
+NEXT
+
+FOR LCOUNT,L_POS_MIN,L_POS_MAX
+	L_TARGET = POS(LCOUNT)
+	SIF !IS_TARGET_ABLE(L_TARGET)
+		CONTINUE
+	;LOCALS = 포지션{LOCAL}
+	;IF FLAG:LOCALS > -1
+	SIF CFLAG:L_TARGET:ＣＯＯＰ플래그 == 0
+		CONTINUE
+	IF CFLAG:L_TARGET:PT플래그 == 0
+		IF FLAG:악마해석률상승불가플래그 == 0
+			;解析可能な場合
+			CALL INCREASE_ANALYZE,NO:L_TARGET,LIMIT((COOP_POWER * 10 / 6),20,100)
+		ENDIF
+	ENDIF
+	PRINTFORM 　　TARGET:[\@CPOS(L_TARGET) > 0 ? {CPOS(L_TARGET),2} # --\@] %CALLNAME:L_TARGET,20,LEFT%　>>>>>>　
+
+;	LOCAL:6 = CFLAG:L_TARGET:ＣＯＯＰ플래그 * COOP_POWER * COOP_MEMBER_ATTACK_AVERAGE * (LOCAL:4/4+4) / ((MAXBASE:L_TARGET:방어 + MAXBASE:L_TARGET:마법효과) * 50) * 3 / 2 / 100
+	;COOP위력(通常の計算式のスキル威力に相当する)
+	COOP_DMG = (50 + COOP_MEMBER_LV_AVERAGE * 5/2) + CFLAG:L_TARGET:ＣＯＯＰ플래그
+	TSTR:COOP해석 = 基礎威力_{COOP_DMG}
+
+	;COOP威力補正(参加者の相性等の数値の合計)
+	COOP_DMG = COOP_DMG * COOP_POWER
+	TSTR:COOP해석 += @"/ALI補正_{COOP_POWER}\%"
+
+	COOP_DMG *= (100+COOP_MEMBER_LV_AVERAGE) * (COOP_MEMBER_ATTACK_AVERAGE) * (10+COOP_MEMBER_ATTACK_AVERAGE/12)
+	TSTR:COOP해석 += @"/攻撃力実数値_{(100+COOP_MEMBER_LV_AVERAGE) * (COOP_MEMBER_ATTACK_AVERAGE) * (10+COOP_MEMBER_ATTACK_AVERAGE/12)}"
+
+	解析用 = MAX(COOP_DMG, 1)
+	COOP_DMG /= ((MAXBASE:L_TARGET:방어 + MAXBASE:L_TARGET:마법효과)/2) * 100 * 100 * 300
+		
+	TSTR:COOP해석 += @"/防御力実数値_{((MAXBASE:L_TARGET:방어 + MAXBASE:L_TARGET:마법효과)/2) * 100 * 100 * 300}"
+	TSTR:COOP해석 += @"/攻防比計算後_{COOP_DMG / 解析用}"
+	解析用 = MAX(COOP_DMG, 1)
+	;---- EDIT 089 MOD START -------------------------
+	IF CFLAG:ARG:공격강화 + CFLAG:ARG:마법위력강화 > 0
+		COOP_DMG *= 64 + CFLAG:ARG:공격강화 + CFLAG:ARG:마법위력강화
+		COOP_DMG /= 64
+	ELSE
+		COOP_DMG *= 128 + CFLAG:ARG:공격강화 + CFLAG:ARG:마법위력강화
+		COOP_DMG /= 128
+	ENDIF
+	IF CFLAG:L_TARGET:방어강화 + CFLAG:L_TARGET:마법효과강화 > 0
+		COOP_DMG *= 128 - (CFLAG:L_TARGET:방어강화 + CFLAG:L_TARGET:마법효과강화)
+		COOP_DMG /= 128
+	ELSE
+		COOP_DMG *= 64 - (CFLAG:L_TARGET:방어강화 + CFLAG:L_TARGET:마법효과강화)
+		COOP_DMG /= 64
+	ENDIF
+	;COOP_DMG *= (32 + CFLAG:ARG:공격강화) + (32 + CFLAG:ARG:마법위력강화)
+	;COOP_DMG /= 64
+	;COOP_DMG *= (32 - CFLAG:L_TARGET:방어강화) + (32 - CFLAG:L_TARGET:마법효과강화)
+	;COOP_DMG /= 64
+	;---- EDIT 089 MOD END ---------------------------
+	TSTR:COOP해석 += @"/カジャンダ補正_{COOP_DMG * 100 / 解析用}\%"
+
+	;乱数
+	COOP_DMG *= (9500+RAND:1000)
+	COOP_DMG /= 10000
+	TSTR:COOP해석 += @"/乱数後_{COOP_DMG}"
+	解析用 = MAX(COOP_DMG, 1)
+	;防御中のキャラにはダメージ減少
+	SIF CFLAG:L_TARGET:방어플래그
+		COOP_DMG /= 2
+	;後列のキャラへのダメージ減少はない
+	;受ける側が味方の場合難易度修正
+	IF CFLAG:L_TARGET:PT플래그 > 0
+		SELECTCASE FLAG:4
+			CASE 1
+				TIMES COOP_DMG,0.75
+			CASE 3
+				TIMES COOP_DMG,1.5
+		ENDSELECT
+	ENDIF
+	;---- EDIT P 003 MOD START -------------------------
+	TSTR:COOP해석 += @"/防御・列補正_{COOP_DMG * 100 / 解析用}\%"
+	解析用 = MAX(COOP_DMG, 1)
+	IF CFLAG:L_TARGET:PT플래그 > 0 && !FLAG:튜토리얼진행중
+		SELECTCASE FLAG:전투난이도
+			CASE 1
+				TIMES COOP_DMG , 0.75
+			CASE 3,4
+				TIMES COOP_DMG , 1.5
+			CASE 5
+				TIMES COOP_DMG , 2
+			CASE 6
+				TIMES COOP_DMG , 3
+		ENDSELECT
+	ENDIF
+	;---- EDIT P 003 MOD END ---------------------------
+	TSTR:COOP해석 += @"/難度補正_{COOP_DMG * 100 / 解析用}\%"
+	;眠っていたらダメージ大
+	SIF CFLAG:L_TARGET:상태이상 == GET_STATE_NUM("SLEEP")
+		TIMES COOP_DMG,1.5
+	;特殊補正
+	COOP_DMG = COOP_DMG * (CFLAG:L_TARGET:COOP피데미지보정 +100) / 100
+	;ハントスキル補正
+	TRYCCALLFORM ハントスキル_{CFLAG:ARG:입력행동}
+		COOP_DMG = COOP_DMG * RESULT / 100
+	CATCH
+	ENDCATCH
+	TSTR:COOP해석 += @"/異常・ハント補正_{COOP_DMG * 100 / 解析用}\%"
+	解析用 = MAX(COOP_DMG, 1)
+	;特殊補正2
+	;---- EDIT 034 MOD -------------------------
+	SIF CFLAG:L_TARGET:COOP피데미지제한 > 0 && CFLAG:L_TARGET:COOP피데미지제한 > COOP_DMG
+		COOP_DMG = CFLAG:L_TARGET:COOP피데미지제한
+		
+	;---- EDIT 064 MOD -------------------------
+	TSTR:COOP해석 += @"/DMG_{COOP_DMG}"
+	PRINTFORM {COOP_DMG}데미지
+	CALL VAR_HP,L_TARGET,-COOP_DMG, "ダメージ", ARG
+	;---- EDIT 064 MOD -------------------------
+
+	SIF L_TARGET > -1 && CFLAG:L_TARGET:상태이상 == GET_STATE_NUM("SLEEP")
+		CFLAG:L_TARGET:상태이상 = 0
+	;ダメージを受け、死亡しており、ハントスキルを使われていた場合は被ハントフラグを立てておく
+	;IF L_TARGET > -1 && COOP_DMG > 0 && CFLAG:L_TARGET:상태이상 == GET_STATE_NUM("DYING")
+	;	TRYCCALLFORM ハントスキル_{CFLAG:ARG:입력행동}
+	;		CFLAG:L_TARGET:피헌트 = ARG + 1
+	;	CATCH
+	;	ENDCATCH
+	;ENDIF
+	SIF !LINEISEMPTY()
+		PRINTL
+	;ENDIF
+NEXT
+WAIT
+;---- EDIT 080 ADD END ---------------------------
+
+;====================================================
+;COOPでの経験値取得
+;ARG = COOP発動者
+;====================================================
+@ADD_DEVIL_COOP_EXP, ARG
+#DIM LCOUNT
+#DIM L_FRIEND
+#DIM L_ENEMY
+#DIM IS_EXIST_COOP_TARGET
+#DIM ADD_BY_ENTERTAINER
+#DIM CHARM_BY_KILL
+SIF CFLAG:ARG:PT플래그 == 0
+	RETURN 0
+
+;COOPを受けている敵がいるか確認する
+IS_EXIST_COOP_TARGET = 0
+FOR LCOUNT, 0, BCHARANUM
+	SIF IS_FRIEND(ARG, BCHARA:LCOUNT)
+		CONTINUE
+	SIF !CFLAG:(BCHARA:LCOUNT):ＣＯＯＰ플래그
+		CONTINUE
+	IS_EXIST_COOP_TARGET = 1
+	BREAK
+NEXT
+SIF !IS_EXIST_COOP_TARGET
+	RETURN 0
+
+ADD_BY_ENTERTAINER = 0
+CHARM_BY_KILL = 0
+FOR LCOUNT, 1, 7
+	L_FRIEND = POS(LCOUNT)
+	SIF L_FRIEND < 0
+		CONTINUE
+	SIF !GET_DEVIL_COOP_MEMBER_RANK(ARG, L_FRIEND)
+		CONTINUE
+	IF L_FRIEND != MASTER
+		IF CFLAG:L_FRIEND:충성도링크 && FINDCHARA_TIMEID(CFLAG:L_FRIEND:피링크캐릭터실제가입시간) >= 0
+			CFLAG:FINDCHARA_TIMEID(CFLAG:L_FRIEND:피링크캐릭터실제가입시간):전투중획득충성도 += 20
+		ELSE
+			CFLAG:L_FRIEND:전투중획득충성도 += 20
+		ENDIF
+	ENDIF
+	;エンターテイナーは数値だけとっておいてあとから加算する
+	SIF HAVE_SKILL(L_FRIEND, [[스킬:엔터테이너]])
+		ADD_BY_ENTERTAINER += 10
+	;魅せる殺戮のフラグ立て
+	SIF HAVE_SKILL(L_FRIEND, [[스킬:매혹적인살육]])
+		CHARM_BY_KILL = 1
+	;PEXPは参加者1点+発動者人数分点
+	IF L_FRIEND != ARG
+		CALL INCREASE_PERSONA_EXP, ARG, 1, 30
+		CALL INCREASE_PERSONA_EXP, L_FRIEND, 1, 30
+	ENDIF
+NEXT
+;魅せる殺戮用
+FOR LCOUNT, 1, 7
+	L_FRIEND = POS(LCOUNT)
+	SIF L_FRIEND < 0
+		CONTINUE
+	SIF !GET_DEVIL_COOP_MEMBER_RANK(ARG, L_FRIEND)
+		CONTINUE
+	SIF CFLAG:L_FRIEND:충성도링크 && FINDCHARA_TIMEID(CFLAG:L_FRIEND:피링크캐릭터실제가입시간) >= 0
+		L_FRIEND = FINDCHARA_TIMEID(CFLAG:L_FRIEND:피링크캐릭터실제가입시간)
+	SIF L_FRIEND != MASTER
+		CFLAG:L_FRIEND:전투중획득충성도 += ADD_BY_ENTERTAINER
+	SIF CHARM_BY_KILL
+		CFLAG:L_FRIEND:매혹적인살육플래그 += 1
+NEXT
+
+TRYCCALLFORM ハントスキル_{CFLAG:ARG:입력행동}
+	FOR LCOUNT, 0, BCHARANUM
+		L_ENEMY = BCHARA:LCOUNT
+		SIF IS_FRIEND(ARG, L_ENEMY)
+			CONTINUE
+		SIF !CFLAG:L_ENEMY:ＣＯＯＰ플래그
+			CONTINUE
+		SIF !IS_BADSTATE(L_ENEMY, "DYING")
+			CONTINUE
+		CFLAG:L_ENEMY:피헌트 = ARG + 1
+	NEXT
+CATCH
+ENDCATCH
+
+;====================================================
+;COOPのランクをチェック
+;ARG 	= COOP発動者
+;ARG:1 	= COOP参加者
+;
+;COOP強化W 不完全一致を完全一致にする
+;COOP強化C 発動者と参加者が恋人同士である時に完全一致扱いにする
+;====================================================
+@GET_DEVIL_COOP_MEMBER_RANK, ARG, ARG:1
+#FUNCTION
+#DIM DYNAMIC L_RESULT
+;属性完全一致は2
+SIF ABL:ARG:속성LD == ABL:(ARG:1):속성LD && ABL:ARG:속성LC == ABL:(ARG:1):속성LC
+	RETURNF 2
+;COOP強化C
+SIF COOP_CAPITULATION_CHECK(ARG, ARG:1)
+	RETURNF 2
+
+SIF HAVE_PU_SKILL(ARG, "데빌칠드런") && GETS_ROLE_PROP("INSTALLSOFT_EFFECT_TYPE", ARG:1) == "悪魔"
+	RETURNF 2
+SIF HAVE_PU_SKILL(ARG:1, "데빌칠드런") && GETS_ROLE_PROP("INSTALLSOFT_EFFECT_TYPE", ARG) == "悪魔"
+	RETURNF 2
+SIF HAVE_PU_SKILL(ARG, "パートナーシップ") && GETS_ROLE_PROP("INSTALLSOFT_EFFECT_TYPE", ARG:1) == "人間"
+	RETURNF 2
+SIF HAVE_PU_SKILL(ARG:1, "パートナーシップ") && GETS_ROLE_PROP("INSTALLSOFT_EFFECT_TYPE", ARG) == "人間"
+	RETURNF 2
+SIF HAVE_PU_SKILL(ARG, "シャドウミストレス") && (相性素質チェック_F(ARG:1, GET_SUCCESSION_NUM("파마")) || 相性素質チェック_F(ARG:1, GET_SUCCESSION_NUM("주살")))
+	RETURNF 2
+SIF HAVE_PU_SKILL(ARG:1, "シャドウミストレス") && (相性素質チェック_F(ARG, GET_SUCCESSION_NUM("파마")) || 相性素質チェック_F(ARG, GET_SUCCESSION_NUM("주살")))
+	RETURNF 2
+
+IF ABL:ARG:속성LD == ABL:(ARG:1):속성LD || ABL:ARG:속성LC == ABL:(ARG:1):속성LC
+	SIF SOFT_ON("ＣＯ－ＯＰ강화W")
+		RETURNF 2
+	RETURNF 1
+ENDIF
+RETURNF 0
+;====================================================
+;追撃可能かの判定
+;====================================================
+@COOPABLE_CHARA,ARG
+SELECTCASE GET_STATE(CFLAG:ARG:상태이상)
+	CASE "DYING","STONE","PALYZE","BIND","FREEZE","SHOCK","SLEEP","PANIC","CHARM","HEAT","SLIP"
+	;死んでると駄目
+	;石になってると駄目
+	;麻痺してると駄目
+	;金縛りだと駄目
+	;凍ってると駄目
+	;感電してると駄目
+	;眠ってるとダメ
+	;魅了されてるとダメ
+	;混乱してるとダメ
+	;オーバーヒートでダメ
+	;転倒してると駄目
+		RETURN 0
+ENDSELECT
+SIF CFLAG:ARG:COOP불능
+	RETURN 0
+RETURN 1
+
+;---- EDIT 052 MOD START -------------------------
+;====================================================
+;ＣＯ－ＯＰ強化C発動条件のチェック
+;====================================================
+@COOP_CAPITULATION_CHECK,ARG,ARG:1
+#FUNCTION
+;---- EDIT 097 MOD START -------------------------
+SIF !SOFT_ON("ＣＯ－ＯＰ강화C")
+	RETURNF 0
+;---- EDIT 097 MOD END ---------------------------
+SIF 陥落(ARG, ARG:1)
+	RETURNF 1
+SIF 陥落(ARG:1, ARG)
+	RETURNF 1
+RETURNF 0
+;---- EDIT 052 MOD END -------------------------
+
+
+;---- EDIT P 007 MOD START -------------------------
+;====================================================
+;戦闘参加者のリスト作成
+;戦闘開始時に全てのメンバーを登録する
+;リターンでCOMP内に戻った味方や死亡で場から外れた敵を総当りで探したいときの負担軽減用です
+;====================================================
+@INIT_BCHARA_LIST
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC LINK_CHARA
+VARSET BCHARA, -1
+BCHARANUM = 0
+CVARSET IS_JOINED_BCHARA:0:0
+
+FOR L_CHARA, 0, CHARANUM
+	SIF !IS_JOINABLE_BATTLE(L_CHARA)
+		CONTINUE
+	SIF FINDELEMENT(BCHARA, L_CHARA) >= 0
+		CONTINUE
+	BCHARA:BCHARANUM = L_CHARA
+	IS_JOINED_BCHARA:L_CHARA:0 = 1
+	BCHARANUM++
+	FOR LCOUNT, 0, LINKCHARANUM
+		LINK_CHARA = FINDCHARA_LINK(L_CHARA, LCOUNT)
+		SIF LINK_CHARA < 0
+			CONTINUE
+		SIF IS_JOINED_BCHARA:LINK_CHARA:0
+			CONTINUE
+		BCHARA:BCHARANUM = LINK_CHARA
+		IS_JOINED_BCHARA:LINK_CHARA:0 = 1
+		BCHARANUM++
+	NEXT
+NEXT
+
+;---- EDIT 082 ADD START -------------------------
+;======================================================================
+;追加ステート解説
+;ARG = 番号指定の場合
+;ARGS = 名称指定の場合
+;ARG;1 = キャラ登録番号
+;ARG:2 = 1の場合HTMLS用のものになる
+;戻り値 = 解説文。改行コードをいれているので改行込みで帰ってくるが、行としては1行で扱われるのに注意
+;
+;PRINTしたい場合は@PRINTFORM_LF関数を使ってください
+;======================================================================
+@EX_STATE_COMMENT, ARG, ARGS = "", ARG:1 = -1, ARG:2
+#FUNCTIONS
+#DIMS L_RESULTS;出力文字列
+#DIMS L_BR;改行文字
+IF ARG:2
+	L_RESULTS = □
+	L_BR '= UNICODE(0x000D) + "　"
+ELSE
+	L_RESULTS = 
+	L_BR '= UNICODE(0x000D)
+ENDIF
+SELECTCASE ARGS != ""  ? ARGS # GET_EX_STATE(ARG)
+	CASE "물리반사플래그", "物理反射"
+		L_RESULTS += "物理反射結界"  + L_BR + "物理属性の攻撃を反射する。"
+	CASE "마법반사플래그", "魔法反射"
+		L_RESULTS += "魔法反射結界"  + L_BR + "魔法属性の攻撃を反射する。"
+	CASE "気合フラグ", "기합"
+		L_RESULTS += "기합"  + L_BR + "次に行う物理攻撃の威力が大幅に上昇する。"
+	CASE "집중플래그", "集中"
+		L_RESULTS += "集中"  + L_BR + "次に行う魔法攻撃の威力が大幅に上昇する。"
+	CASE "회심의패기플래그", "회심의패기"
+		L_RESULTS += "회심의패기"  + L_BR + "次に行う物理攻撃が必ず命中し、クリティカルしやすくなる。"
+	CASE "수호의방패"
+		L_RESULTS += "ダメージ防壁"  + L_BR + "一度だけ万能相性以外の攻撃を無効化する。"
+	CASE "성스러운가호"
+		L_RESULTS += "状態異常防壁"  + L_BR + "一度だけFLY,DYING,ORGY,HEAT以外の状態異常の付着を無効化する。"
+	CASE "테트라쟈"
+		L_RESULTS += "即死防壁"  + L_BR + "一度だけDYINGの付着を無効化する。"
+	CASE "롱기누스"
+		L_RESULTS += "롱기누스"  + L_BR + "聖なる槍の力により、異能力を封印されている。"
+	CASE "HP배리어"
+		IF ARG:2 >= 0
+			L_RESULTS += CSTR:(ARG:1):HP배리어명  + L_BR + @"{CFLAG:(ARG:1):HP배리어}のダメージを無効化する。"
+		ELSE
+			L_RESULTS += "HP배리어"
+		ENDIF
+	CASE "절대회심"
+		L_RESULTS += "절대회심"  + L_BR + "次に行う魔法も含めた攻撃が確実にクリティカルする。"
+	CASE "다단공격횟수상한고정"
+		L_RESULTS += "乱舞"  + L_BR + "物理・魔法スキルの多段攻撃の攻撃回数が上限で固定される。"
+	CASE "최적화"
+		L_RESULTS += "최적화"  + L_BR + "スキル適性の効果が最大化される。"
+	CASE "충전력"
+		L_RESULTS += "충전력"  + L_BR + "気合・集中が適用された攻撃にダメージが追加される。"
+	CASE "장력"
+		L_RESULTS += "장력"  + L_BR + "攻撃力上昇によるダメージの上昇量が増加する。"
+	;---- EDIT P 001 ADD END ---------------------------
+	CASEELSE
+		RETURNF "値域外"
+ENDSELECT
+RETURNF L_RESULTS
+
+@GET_EX_STATE_VALUE, ARG, ARGS, ARG:1 = -1
+#FUNCTION
+IF ARG:1 >= 0
+	RETURNF CFLAG:ARG:GET_EX_STATE(ARG:1)
+ELSE
+	RETURNF CFLAG:ARG:GETNUM(CFLAG, GET_EX_STATE(GET_EX_STATE_NUM(ARGS)))
+ENDIF
+
+@GET_EX_STATE, ARG
+#FUNCTIONS
+SELECTCASE ARG
+	CASE 0
+		RETURNF "물리반사플래그"
+	CASE 1
+		RETURNF "마법반사플래그"
+	CASE 2
+		RETURNF "気合フラグ"
+	CASE 3
+		RETURNF "집중플래그"
+	CASE 4
+		RETURNF "회심의패기플래그"
+	CASE 5
+		RETURNF "수호의방패"
+	CASE 6
+		RETURNF "성스러운가호"
+	CASE 7
+		RETURNF "테트라쟈"
+	CASE 8
+		RETURNF "롱기누스"
+	CASE 9
+		RETURNF "HP배리어"
+	CASE 10
+		RETURNF "절대회심"
+	CASE 11
+		RETURNF "다단공격횟수상한고정"
+	CASE 12
+		RETURNF "최적화"
+	CASE 13
+		RETURNF "충전력"
+	CASE 14
+		RETURNF "장력"
+	;---- EDIT P 001 ADD END ---------------------------
+	CASEELSE
+		RETURNF "値域外"
+ENDSELECT
+
+@GET_EX_STATE_NUM, ARGS
+#FUNCTION
+SELECTCASE ARGS
+	CASE "물리반사플래그", "物理反射"
+		RETURNF 0
+	CASE "마법반사플래그", "魔法反射"
+		RETURNF 1
+	CASE "気合フラグ", "기합"
+		RETURNF 2
+	CASE "집중플래그", "集中"
+		RETURNF 3
+	CASE "회심의패기플래그", "회심의패기"
+		RETURNF 4
+	CASE "수호의방패"
+		RETURNF 5
+	CASE "성스러운가호"
+		RETURNF 6
+	CASE "테트라쟈"
+		RETURNF 7
+	CASE "롱기누스"
+		RETURNF 8
+	CASE "HP배리어"
+		RETURNF 9
+	CASE "절대회심"
+		RETURNF 10
+	CASE "다단공격횟수상한고정"
+		RETURNF 11
+	CASE "최적화"
+		RETURNF 12
+	CASE "충전력"
+		RETURNF 13
+	CASE "장력"
+		RETURNF 14
+	;---- EDIT P 001 ADD END ---------------------------
+	CASEELSE
+		RETURNF -1
+ENDSELECT
+;---- EDIT 082 ADD END ---------------------------
+
+@IS_JOINABLE_BATTLE, ARG, IS_SHOP
+#FUNCTION
+#DIM DYNAMIC IS_SHOP
+;COMPに入れない控えの味方は無理
+IF CFLAG:ARG:PT플래그 == 1 && IS_SHOP == 0
+	;自宅サーバーにいる場合はCOMPに入れても無理
+	SIF CFLAG:ARG:소속ＣＯＭＰ == -1
+		RETURNF 0
+	SIF !GET_ROLE_PROP("CAN_PUT_IN_COMP", ARG)
+		RETURNF 0
+ENDIF
+;レンタル中は排除
+SIF IS_RENTING(ARG)
+	RETURNF 0
+SIF TALENT:ARG:비전투원
+	RETURNF 0
+SIF CFLAG:ARG:이자리에없는플래그 == 1
+	RETURNF 0
+SIF GET_VALUE_TALENT_JOINABLE(ARG) == 0
+	RETURNF 0
+SIF TALENT:ARG:전력상실
+	RETURNF 0
+RETURNF 1
+
+@IS_JOINABLE_BATTLE_BY_CSV, L_NO, L_EVENTFLAG = -1
+#FUNCTION
+#DIM DYNAMIC L_NO
+#DIM DYNAMIC L_EVENTFLAG
+#DIM DYNAMIC L_CHARA
+L_CHARA = GETCHARA(L_NO)
+SIF L_CHARA < 0
+	RETURNF 0
+SIF L_EVENTFLAG >= 0 && CFLAG:L_CHARA:이벤트가입 != L_EVENTFLAG
+	RETURNF 0
+SIF !IS_JOINABLE_BATTLE(L_CHARA, 1)
+	RETURNF 0
+RETURNF 1
+
+;======================================================================
+;敵パーティーの攻撃相性登録
+;警告表示・ギボアイズ用に敵パーティー全体の所持相性を登録する
+;======================================================================
+;---- EDIT 099 ADD START -------------------------
+@SET_ENEMY_HAVE_SKILL_ATK_TYPE
+#DIM L_TYPE
+#DIM LCOUNT
+#DIM L_ENEMY
+VARSET ENEMY_HAVE_SKILL_ATK_TYPE
+FOR L_TYPE, 0, TYPENUM
+	;所持情報が完全に確定していたら
+	SIF ENEMY_HAVE_SKILL_ATK_TYPE:L_TYPE == 2
+		BREAK
+	FOR LCOUNT, 7, 17
+		L_ENEMY = POS(LCOUNT)
+		SIF !IS_TARGET_ABLE(L_ENEMY)
+			CONTINUE
+		SIF !C_HAVE_SKILL_ATK_TYPE:L_ENEMY:L_TYPE
+			CONTINUE
+		;所持している場合は1 = ギボ・アイズの警告対象
+		ENEMY_HAVE_SKILL_ATK_TYPE:L_TYPE = 1
+		SIF !CAN_SHOW_ENEMY_TYPE(L_ENEMY)
+			CONTINUE
+		SIF CFLAG:L_ENEMY:보스플래그
+			CONTINUE
+		;さらに敵ステータスを閲覧できる状態 = 公開情報
+		ENEMY_HAVE_SKILL_ATK_TYPE:L_TYPE = 2
+	NEXT
+NEXT
+;---- EDIT 099 ADD END ---------------------------
+
+@GET_LINKED_HP_CHARA, L_CHARA
+#DIM DYNAMIC L_CHARA
+VARSET RESULT, -1, 0, 10
+IF CFLAG:L_CHARA:PT플래그 > 0
+	TRYCCALLFORM LINKED_HP_CHARA_{NO:L_CHARA}, L_CHARA
+		RETURN RESULT
+	CATCH
+	ENDCATCH
+ENDIF
+TRYCCALLFORM LINKED_HP_ROLE_%CSTR:L_CHARA:롤%, L_CHARA
+	RETURN RESULT
+CATCH
+ENDCATCH
+TRYCCALLFORM LINKED_HP_%CSTR:L_CHARA:특수적보정패턴%, L_CHARA
+	RETURN RESULT
+CATCH
+ENDCATCH
+RETURN -1

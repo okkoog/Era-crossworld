@@ -1,0 +1,207 @@
+﻿;スキル名
+@SKILL_NAME_AW_367,ARG
+IF TFLAG:커맨드표시중 || FLAG:총공격중 || (ARG >= 0 && FLAG:행동순1 == ARG)
+	RESULTS = 선라이즈
+ELSE
+	RESULTS = 신의 불꽃
+ENDIF
+;　명중
+@SKILL_HITRATE_AW_367, ARG
+RETURN 100
+
+@SKILL_POWER_AW_367, ARG
+RETURN 420
+
+;;クリティカル率
+@SKILL_CRITICAL_RATE_AW_367, ARG
+RETURN 0
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_AW_367, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_AW_367,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_AW_367,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_AW_367,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_AW_367,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_AW_367, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_AW_367,ARG
+RETURN 80
+
+;　相性
+@SKILL_TYPE_AW_367,ARG
+RETURN GET_TYPE_NUM("화염")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_AW_367
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_AW_367,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_AW_367,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_AW_367,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_AW_367,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_AW_367,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_AW_367, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_AW_367
+RETURN 0
+
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_AW_367, ARG = -1, ARG:1 = -1
+RETURN 4
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_AW_367,ARG,ARG:1,SKILL_NUM
+#DIM LCOUNT
+#DIM SKILL_NUM
+#DIMS TARGET_LIST
+#DIM L_TARGET
+IF FLAG:총공격중
+	TARGET_LIST = 
+	;死んでいる味方がいるかサーチ
+	FOR LCOUNT, 0, CHARANUM
+		SIF !IS_BADSTATE(LCOUNT, "DYING")
+			CONTINUE
+		SIF !IS_FRIEND(ARG, LCOUNT)
+			CONTINUE
+		SIF CPOS(LCOUNT) > 0
+			CONTINUE
+		SIF !IS_COMP内効果有効(LCOUNT)
+			CONTINUE
+		TARGET_LIST = %ADD_SPLIT(TARGET_LIST, "/", TOSTR(LCOUNT))%
+	NEXT
+	IF TARGET_LIST == ""
+		PRINTW 대상이 없었다…
+	ELSE
+		L_TARGET = TOINT(RAND_SPLIT(TARGET_LIST, "/"))
+		PRINTFORMW %CALLNAME:L_TARGET%는 숨을 되찾았다
+		CFLAG:L_TARGET:상태이상 = 0
+		CFLAG:L_TARGET:상태이상경과턴수 = 0
+		CALL VAR_HP,L_TARGET,MAXBASE:L_TARGET:ＨＰ/2
+	ENDIF
+ELSE
+	CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM
+ENDIF
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_AW_367,ARG,ARG:1
+#DIM LCOUNT
+;自分以外ならNG
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+;判定は1回
+SIF ARG != ARG:1
+	RETURN 0
+;攻撃のHITが存在しなければダメ
+SIF !GET_CREC_ACT(FLAG:행동순1, , "HIT")
+	RETURN 0
+;sサンライズを使ってないとダメ
+SIF CFLAG:ARG:입력행동 != SKILL_NUM_F("각성스킬")
+	RETURN 0
+;死んでいる味方がいるかサーチ
+FOR LCOUNT, 0, CHARANUM
+	SIF !IS_BADSTATE(LCOUNT, "DYING")
+		CONTINUE
+	SIF !IS_FRIEND(ARG, LCOUNT)
+		CONTINUE
+	SIF CPOS(LCOUNT) > 0
+		CONTINUE
+	SIF !IS_COMP内効果有効(LCOUNT)
+		CONTINUE
+	RETURN 1, -1
+NEXT
+
+;　説明文の表示
+@SKILL_EXPLAIN_AW_367,ARG
+PRINTL 대천사 우리엘의 각성 스킬
+PRINTL 자동: 턴 종료 시 파티 멤버 내의 건재한 히브리 천사 수에 따른 확률로 연동 효과가 발동한다.
+PRINTL 　　　「아군 전체의 공격·마법위력·명중 중 어느 2개가 상승한다.」
+PRINTL 　　　파티 멤버 내에 건재한 히브리 천사가 4체 이상 있을 경우, 【선라이즈】를 사용할 수 있다.
+PRINTL 【선라이즈】
+PRINTL 적 전체에 모든 화염 상성과 화염 상성 강화 효과를 관통하는 화염 상성의 초특대 데미지를 준다.
+PRINTL 이 공격이 성공했을 경우 연동 효과가 발동한다.
+PRINTL 「대기 중인 동료악마를 무작위로 1체, HP 50%로 소생시킨다.」
+
+@SKILL_EXPLAIN_TOOLTIP_AW_367, ARG
+RESULTS:0 = 적 전체에 모든 화염 상성과 화염 상성 강화 효과를 관통하는 화염 상성의 초특대 데미지를 준다.
+RESULTS:1 = 이 공격이 성공했을 경우 연동 효과가 발동한다.
+RESULTS:2 = 「대기 중인 동료악마를 무작위로 1체, HP 50\%로 소생시킨다.」
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_AW_367,ARG
+SIF ARG >= 0 && GET_ANGEL_COUNT(ARG) > 3
+	RETURN 1
+RETURN 0
+
+@SKILL_ACTIONABLE_BATTLE_AW_367, ARG
+;選択肢に出るかどうか
+SIF ARG >= 0 && GET_ANGEL_COUNT(ARG) > 3
+	RETURN 1
+RETURN 0
+
+@SKILL_TURNEND_AW_367, ARG
+#DIM L_CHARA
+SIF !CFLAG:ARG:PT플래그
+	RETURN 0
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+	RETURN 0
+;入力可能な状態じゃないとだめ
+SIF !ACTIONABLE_CHARA_F(ARG)
+	RETURN 0
+;ランダムで抽選した味方がヘブライ天使なら発動
+L_CHARA = POS(RAND(1, 7))
+SIF L_CHARA < 0
+	RETURN 0
+SIF CSTR:L_CHARA:상성그룹 != "ヘブライ天使"
+	RETURN 0
+CALL PRINT_ACT_MESSAGE, ARG,  SKILL_NUM_F("각성스킬")
+CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ? 19 # 22, DEL_SPLIT("공격/마법위력/명중", "/", RAND_SPLIT("공격/마법위력/명중", "/")), 4, "範囲"

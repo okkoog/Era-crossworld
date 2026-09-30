@@ -1,0 +1,3924 @@
+﻿@VERUP_BASE
+#DIM DYNAMIC LCOUNT
+FOR LCOUNT, 0, CHARANUM
+	CALL VERUP_CHANGE_CSVNO, LCOUNT
+NEXT
+;---- EDIT 053 ADD START -------------------------
+IF LASTLOAD_VERSION < GAMEBASE_VERSION
+	SIF LASTLOAD_VERSION < 1000000
+		CALL CHECK_EXIST_CSV
+	SIF LASTLOAD_VERSION < 0309154
+		CALL VERUP_OLD_VAERIANT
+	CALL VERUP_REGACY
+ENDIF
+CALL VERUP_TEMP
+;---- EDIT 051 ADD START -------------------------
+FOR LCOUNT, 0, CHARANUM
+	CALL VERUP_FOR_CHARA, LCOUNT
+NEXT
+;不正スキル・キャラのチェック
+CALL CHECK_EXIST_CSV
+CALL CHECK_EXIST_SKILL
+
+@VERUP_REGACY
+#DIM DYNAMIC LCOUNT, 3
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000103
+	;レヴィアタン口上の不具合に対応
+	SIF STR:1 != "지모신"
+		STR:1 '= "지모신"
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000104
+	IF FLAG:버전관리보조 < 1
+		CALL PRINT_ANNOUNCEMENT, 000103, "20240601"
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000105
+	IF FLAG:버전관리보조 < 1
+		FLAG:버전관리보조 = 1
+	ENDIF
+	;シフト設定を排除
+	IF FLAG:버전관리보조 < 2
+		FLAG:버전관리보조 = 2
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000106
+	IF FLAG:버전관리보조 < 1
+		CALL PRINT_ANNOUNCEMENT, 000105, "20240607"
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 < 2
+		CALL PRINT_ANNOUNCEMENT, 000106, "20240611"
+		;デビオク廃止に伴い、廃棄
+		FOR LCOUNT, 0, VARSIZE("イベントフラグ", 1)
+			イベントフラグ:40:LCOUNT = 0
+		NEXT
+		FLAG:버전관리보조 = 2
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000107
+	IF FLAG:버전관리보조 < 1
+		CALL PRINT_ANNOUNCEMENT, 000107, "20240620"
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 < 2
+		FLAG:버전관리보조 = 2
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000108
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000109
+	IF FLAG:버전관리보조 == 0
+		;結界石を削除
+		ITEM:204 = 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000110
+	IF FLAG:버전관리보조 == 0
+		;独覚と独善の楔のカードを削除
+		ITEM:10618 = 0
+		ITEM:12467 = 0
+		FLAG:버전관리보조 = 1
+		CALL PRINT_ANNOUNCEMENT, 000110, "20240703"
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000200
+	IF FLAG:버전관리보조 == 0
+		CALL PRINT_ANNOUNCEMENT, 000200, "20240712"
+		FLAG:버전관리보조 = 1
+		FOR LCOUNT, 0, VARSIZE("ダンジョンフラグ", 1)
+			ダンジョンフラグ:33:LCOUNT = 0
+		NEXT
+		;解析度を新しいフラグに移動
+		FOR LCOUNT, 0, 10000
+			IF LCOUNT < CSVCHARANUM
+				SIF FLAG:(20000 + LCOUNT) == 1000
+					IS_CHARA_COMPANIONED:LCOUNT = 1
+				IF FLAG:(20000 + LCOUNT) >= ANALYSIS_COMPLETED
+					ANALYSIS_RATE:LCOUNT = ANALYSIS_COMPLETED
+				ELSE
+					ANALYSIS_RATE:LCOUNT = FLAG:(20000 + LCOUNT)
+				ENDIF
+			ENDIF
+			FLAG:(20000 + LCOUNT) = 0
+		NEXT
+		ITEM:201 = 0
+		ITEM:202 = 0
+
+		CALL CONVERT_SKILL_NUMBER, 41, [[스킬:피의안달루시아]]
+		CALL CONVERT_SKILL_NUMBER, 543, [[스킬:적색의카포테]]
+		CALL CONVERT_SKILL_NUMBER, 740, [[스킬:헬버너]]
+		CALL CONVERT_SKILL_NUMBER, 1037, [[스킬:헬에기조스트]]
+		CALL CONVERT_SKILL_NUMBER, 1320, [[스킬:회전설법]]
+		CALL CONVERT_SKILL_NUMBER, 2076, [[스킬:명상]]
+		CALL CONVERT_SKILL_NUMBER, 1408, [[스킬:죽어줄래？]]
+
+		SIF ANALYSIS_RATE:[[キャラ:마타도르]]
+			CALL LIFTING_A_BAN, [[キャラ:마타도르]]
+		SIF ANALYSIS_RATE:[[キャラ:헬즈엔젤]]
+			CALL LIFTING_A_BAN, [[キャラ:헬즈엔젤]]
+		SIF ANALYSIS_RATE:[[キャラ:대승정]]
+			CALL LIFTING_A_BAN, [[キャラ:대승정]]
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FOR LCOUNT, 0, CHARANUM
+			SETBIT IS_CHARA_COMPANIONED:(NO:LCOUNT), CFLAG:LCOUNT:이벤트가입 < 0 ? 0 # CFLAG:LCOUNT:이벤트가입
+			ANALYSIS_RATE:(NO:LCOUNT) = ANALYSIS_COMPLETED
+		NEXT
+		IF ITEM:5498
+			CALL GETS_INSTALLSOFT("그리프시드")
+			ITEM:5498 = 0
+			DRAWLINE
+			PRINTFORMW 호환 처리에 의해 악세서리【그리프시드】를 잃고、인스톨 소프트【그리프시드】를 입수했습니다
+			DRAWLINE
+		ENDIF
+		FLAG:버전관리보조 = 2
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000201
+	IF FLAG:버전관리보조 == 0
+		CALL PRINT_ANNOUNCEMENT, 000201, "20240717"
+		FLAG:버전관리보조 = 1
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000202
+	IF FLAG:버전관리보조 == 0
+		CALL PRINT_ANNOUNCEMENT, 000202, "20240720"
+		FOR LCOUNT, 0, CSVCHARANUM
+			SIF IS_CHARA_COMPANIONED:LCOUNT
+				ANALYSIS_RATE:LCOUNT = ANALYSIS_COMPLETED
+		NEXT
+		FLAG:버전관리보조 = 1
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000203
+	IF FLAG:버전관리보조 == 0
+		CALL PRINT_ANNOUNCEMENT, 000203, "20240727"
+		FLAG:버전관리보조 = 1
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000203
+	IF FLAG:버전관리보조 == 0
+		CALL PRINT_ANNOUNCEMENT, 000203, "20240727"
+		FLAG:버전관리보조 = 1
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000204
+	IF FLAG:버전관리보조 == 0
+		CALL PRINT_ANNOUNCEMENT, 000204, "20240803"
+		FLAG:버전관리보조 = 1
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000206
+	IF FLAG:버전관리보조 == 0
+		CALL PRINT_ANNOUNCEMENT, 000206, "20240820"
+		FLAG:버전관리보조 = 1
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000301
+	IF FLAG:버전관리보조 == 0
+		FLAG:소프트용량 = 8
+		FLAG:ＣＯＭＰ용량 -= FLAG:마카에의한Ｃ용량증가
+		
+		EQUIP_INSTALLSOFT:240 = 0
+		HAVE_INSTALLSOFT:240 = 0
+		ITEM:12489 = 0
+		ITEM:12490 = 0
+		ITEM:12491 = 0
+
+		IF G_OPT_USE_ICON == ""
+			SELECTCASE FLAG:669
+				CASE 0, 3
+					G_OPT_USE_ICON '= "사용안함"
+					G_OPT_REPLACE_ICON '= "種族アイコン"
+				CASE 1
+					G_OPT_USE_ICON '= "使用"
+					G_OPT_REPLACE_ICON '= "種族アイコン"
+				CASE 2
+					G_OPT_USE_ICON '= "使用"
+					G_OPT_REPLACE_ICON '= "鬼アイコン"
+			ENDSELECT
+
+			G_OPT_NOT_USE_ICON_AT_TRAIN = !FLAG:672
+
+			SELECTCASE FLAG:679
+				CASE 0
+					G_OPT_USE_LINK_DEVIL_ICON '= "リンク優先"
+				CASE 1
+					G_OPT_USE_LINK_DEVIL_ICON '= "リンク不使用"
+				CASE 2
+					G_OPT_USE_LINK_DEVIL_ICON '= "固有優先使用"
+			ENDSELECT
+			SAVEGLOBAL
+		ENDIF
+
+		IF ダンジョンフラグ:[[ダンジョン:에코빌딩]]:1
+			IS_TOTEM_MEMORY_TAKEN:0 = 1
+			ITEM:토템메모리 += 1
+		ENDIF
+		IF ダンジョンフラグ:[[ダンジョン:하라주쿠]]:0 == 5
+			IS_TOTEM_MEMORY_TAKEN:1 = 1
+			ITEM:토템메모리 += 1
+		ENDIF
+		IF FLAG_D34_クリアフラグ
+			IS_TOTEM_MEMORY_TAKEN:2 = 1
+			ITEM:토템메모리 += 1
+		ENDIF
+		IF ダンジョンフラグ:[[ダンジョン:신주쿠위생병원]]:3
+			IS_TOTEM_MEMORY_TAKEN:3 = 1
+			ITEM:토템메모리 += 1
+		ENDIF
+		IF ITEM:토템메모리
+			CALL MESSAGE_B, 1, @"互換処理によりトーテムメモリーを{ITEM:토템메모리}個入手！"
+		ENDIF
+
+		FOR LCOUNT, 0, 64
+			SIF GETBIT(FLAG:던전출현1, LCOUNT)
+				ANNOUNCE_DUNGEON_APPEARED:LCOUNT = 4
+			SIF GETBIT(FLAG:던전출현2, LCOUNT)
+				ANNOUNCE_DUNGEON_APPEARED:(LCOUNT + 63) = 4
+			SIF GETBIT(FLAG:투기장출현1, LCOUNT)
+				ANNOUNCE_COLOSSEUM_APPEARED:LCOUNT = 4
+			SIF GETBIT(FLAG:투기장출현2, LCOUNT)
+				ANNOUNCE_COLOSSEUM_APPEARED:(LCOUNT + 63) = 4
+			SIF GETBIT(FLAG:의뢰출현1, LCOUNT)
+				ANNOUNCE_REQUEST_APPEARED:LCOUNT = 4
+			SIF GETBIT(FLAG:의뢰출현2, LCOUNT)
+				ANNOUNCE_REQUEST_APPEARED:(LCOUNT + 63) = 4
+			SIF GETBIT(FLAG:이벤트출현1, LCOUNT)
+				ANNOUNCE_EVENT_APPEARED:LCOUNT = 4
+			SIF GETBIT(FLAG:이벤트출현2, LCOUNT)
+				ANNOUNCE_EVENT_APPEARED:(LCOUNT + 63) = 4
+		NEXT
+
+		FLAG:665 = 0
+		HAVE_INSTALLSOFT:56 = 0
+		EQUIP_INSTALLSOFT:56 = 0
+		
+		IF GETBIT(FLAG:656, 1)
+			;FOR LCOUNT, 0, 64
+			;	SETBIT FLAG:EXTRA強化フィルタ, LCOUNT
+			;NEXT
+			CALL MESSAGE_B, 2, "VER.0.3.0で、EXTRA強化が大きく変更されたので", "確認をして改めて設定をしてください"
+			CALL SELECT_USE_EXTRA_GAME_OPTION
+		ENDIF
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		IF FLAG:미조교시함락
+			IF FLAG:675
+				FLAG:미조교시함락 = 2
+			ELSE
+				FLAG:미조교시함락 = 1
+			ENDIF
+		ENDIF
+		FLAG:버전관리보조 = 2	
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		IF FLAG_D34_クリアフラグ && !IS_TOTEM_MEMORY_TAKEN:2
+			IS_TOTEM_MEMORY_TAKEN:2 = 1
+			ITEM:토템메모리 += 1
+			CALL MESSAGE_B, 1, @"互換処理によりトーテムメモリーを1個入手！"
+		ENDIF
+		FLAG:버전관리보조 = 3
+	ENDIF
+	IF FLAG:버전관리보조 == 3
+		IF FLAG:216
+			FLAG:216 = 0
+			CALL SET_FLAG_SHOP_EV_TAKEOVER, "마요네 님의 노고 치하", "クリア", 1
+	CALL SET_FLAG_SHOP_EV_TAKEOVER, "マヨーネ様の労い", "クリア", 1
+		ENDIF
+		CALL PRINT_ANNOUNCEMENT, 000300, "20240903"
+		FLAG:버전관리보조 = 4
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000302
+	IF FLAG:버전관리보조 == 0
+		CALL PRINT_ANNOUNCEMENT, 000301, "20240908"
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FLAG:신뢰계함락설정 = 0
+		FOR LCOUNT, 0, 5
+			オプション設定保存領域:LCOUNT:49 = 0
+		NEXT
+		FLAG:버전관리보조 = 2
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+VARI CPD_STRFLAG_NUM_MAX
+CPD_STRFLAG_NUM_MAX = GET_CPD_STRFLAG_NUM("MAXNUM")
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000303
+	IF FLAG:버전관리보조 == 0
+		CALL PRINT_ANNOUNCEMENT, 000303, "20240918"
+		FOR LCOUNT, 2000, 7000
+			SIF SAVESTR:LCOUNT == ""
+				CONTINUE
+			SPLIT SAVESTR:LCOUNT, ",", RESULTS
+			SAVESTR:LCOUNT '= ""
+			FOR LCOUNT:1, 0, RESULT
+				SIF LCOUNT:1
+					SAVESTR:LCOUNT += ","
+				IF LCOUNT:1 < CPD_STRFLAG_NUM_MAX && STRCOUNT(GET_CPD_STRFLAG(LCOUNT:1), "香使用回数")
+					SAVESTR:LCOUNT += "0"
+				ELSE
+					SAVESTR:LCOUNT += RESULTS:(LCOUNT:1)
+				ENDIF
+			NEXT
+		NEXT
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000304
+	IF FLAG:버전관리보조 == 0
+		FOR LCOUNT, 0, CHARANUM
+			SIF EXISTCSV(NO:LCOUNT)
+				NICKNAME:LCOUNT '= CSVNICKNAME(NO:LCOUNT)
+		NEXT
+		FLAG:버전관리보조 = 1
+		CALL PRINT_ANNOUNCEMENT, 000304, "20241018"
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000305
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+		;CALL PRINT_ANNOUNCEMENT, 000304, "20241018"
+		IF 依頼フラグ:[[依頼:세이카학원조사]]:0 == 3
+			 依頼フラグ:[[依頼:세이카학원조사]]:4 = CFLAG:FINDCHARA_ID(STRFLAG_NUM_REQ("調査奴隷")):실제가입시간
+		ENDIF
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000306
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+		IS_USEABLE_EXTRA_TITLE = GETBIT(FLAG:656, 0)
+		FOR LCOUNT, 0, 64
+			DISABLE_EACH_EXTRA_TITLE:LCOUNT = GETBIT(FLAG:668, LCOUNT)
+		NEXT
+		CALL PRINT_ANNOUNCEMENT, 000306, "20241016"
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000307
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FLAG:버전관리보조 = 2
+		CALL MESSAGE_B, 2, "EXTRAイベントフィルターに「遊☆戯☆王」と「ちいかわ」が追加されました", "改めてEXTRAイベントの設定をしてください。"
+		CALL SET_EXTRAEVENT
+		
+		CALL PRINT_ANNOUNCEMENT, 000307, "20241023"
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000308
+	IF FLAG:버전관리보조 < 4
+		FLAG:버전관리보조 = 4
+	ENDIF
+	IF FLAG:버전관리보조 < 5
+		FLAG:버전관리보조 = 5
+	ENDIF
+	IF FLAG:버전관리보조 < 6
+		FLAG:버전관리보조 = 6
+	ENDIF
+	IF FLAG:버전관리보조 < 7
+		FLAG:버전관리보조 = 7
+	ENDIF
+	IF FLAG:버전관리보조 < 9
+		FLAG:버전관리보조 = 9
+	ENDIF
+	IF FLAG:버전관리보조 < 10
+		FLAG:버전관리보조 = 10
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000308, "20241101"
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000309
+	IF FLAG:버전관리보조 < 1
+		CALL CONVERT_SKILL_NUMBER, 2813, 0
+		CALL CONVERT_SKILL_NUMBER, 2814, 0
+		CALL CONVERT_SKILL_NUMBER, 2815, 0
+		CALL CONVERT_SKILL_NUMBER, 2816, 0
+		CALL CONVERT_SKILL_NUMBER, 2817, 0
+		CALL CONVERT_SKILL_NUMBER, 2818, 0
+		CALL CONVERT_SKILL_NUMBER, 2819, 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 < 2
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 < 3
+		FLAG:버전관리보조 = 3
+	ENDIF
+	IF FLAG:버전관리보조 < 4
+		FLAG:버전관리보조 = 4
+	ENDIF
+	IF FLAG:버전관리보조 < 5
+		FLAG:버전관리보조 = 5
+	ENDIF
+	IF FLAG:버전관리보조 < 6
+		IF COUNT_TRADE_TOTEM_MEMORY < 4
+			ITEM:토템메모리 = GROUPMATCH(IS_TOTEM_MEMORY_TAKEN, 1) - COUNT_TRADE_TOTEM_MEMORY
+		ENDIF
+		MAX_MASTER_LV = MAX(MAX_MASTER_LV, BASE:MASTER:LV)
+		FLAG:버전관리보조 = 6
+	ENDIF
+	IF FLAG:버전관리보조 < 7
+		FLAG:버전관리보조 = 7
+	ENDIF
+	IF FLAG:버전관리보조 < 8
+		CALL CONVERT_CHARA_NO, 1122, [[キャラ:마스캣]]
+		CALL CONVERT_CHARA_NO, 9003, [[キャラ:이마미아]]
+		FLAG:버전관리보조 = 8
+	ENDIF
+	FLAG:버전관리보조 = 0
+	CALL PRINT_ANNOUNCEMENT, 000309, "20250106"
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000310
+	FOR LCOUNT, 0, CHARANUM
+		CALL SET_ROLE, LCOUNT
+	NEXT
+	IF FLAG:버전관리보조 < 1
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 < 2
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 < 3
+		FLAG:버전관리보조 = 3
+	ENDIF
+	FLAG:버전관리보조 = 0
+	CALL PRINT_ANNOUNCEMENT, 000310, "20250117"
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000311
+	IF FLAG:버전관리보조 < 1
+		;アナライズフラグをリセット
+		VARSET FLAG, 0, 20000, 30000
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 < 2
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 < 3
+		FLAG:버전관리보조 = 3
+	ENDIF
+	FLAG:버전관리보조 = 0
+	CALL PRINT_ANNOUNCEMENT, 000311, "202510127"
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000312
+	IF FLAG:버전관리보조 == 0
+		IF GETCHARA(5332) >= 0
+			CALL キャラ削除, GETCHARA(5332)
+			CALL MESSAGE_B2, , , "ライセンスの要件を満たせないため、SCP-191をゲーム内から削除しました。", "それに伴い、所持キャラからも削除します。"
+			ダンジョンフラグ:27:12 = 0
+		ENDIF
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FLAG:버전관리보조 = 3
+	ENDIF
+	IF FLAG:버전관리보조 == 3
+		FLAG:버전관리보조 = 4
+	ENDIF
+	IF FLAG:버전관리보조 == 4
+		FLAG:버전관리보조 = 5
+	ENDIF
+	FLAG:버전관리보조 = 0
+	CALL PRINT_ANNOUNCEMENT, 000312, "20250205"
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000313
+	IF FLAG:버전관리보조 == 0
+		;互換の間にカードを手に入れてしまっていた場合の措置
+		ITEM:11322 += ITEM:스킬카드【갓애로우】
+		ITEM:42 += ITEM:스킬카드【테러소드】
+		ITEM:11140 += ITEM:스킬카드【혼의밸런스】
+		ITEM:12075 += ITEM:스킬카드【전염병생산】
+		CALL CONVERT_SKILL_NUMBER, 1322, [[스킬:갓애로우]]
+		CALL CONVERT_SKILL_NUMBER, 42, [[스킬:테러소드]]
+		CALL CONVERT_SKILL_NUMBER, 1140, [[스킬:혼의밸런스]]
+		CALL CONVERT_SKILL_NUMBER, 2075, [[스킬:전염병생산]]
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		IF ITEM:지혜의메노라 >= 2 && ITEM:지식의메노라 == 0
+			ITEM:지혜의메노라 = 1
+			ITEM:지식의메노라 = 1
+		ENDIF
+		FLAG:버전관리보조 = 3
+	ENDIF
+	IF FLAG:버전관리보조 == 3
+		FOR LCOUNT, 0, SKILLNUM
+			SIF !ITEM:(10000 + LCOUNT) && !ABLE_MAKESKILLCARD(LCOUNT)
+				CONTINUE
+			CALL GET_SKILL_PROP, "SKILL_NAME", LCOUNT, -1
+			IF RESULTS == ""
+				ITEM:(10000 + LCOUNT) = 0
+				CALLF ABLE_MAKESKILLCARD(LCOUNT, -1)
+			ENDIF
+		NEXT
+		FLAG:버전관리보조 = 4
+	ENDIF
+	IF FLAG:버전관리보조 == 4
+		FLAG:버전관리보조 = 5
+	ENDIF
+	FLAG:버전관리보조 = 0
+	CALL PRINT_ANNOUNCEMENT, 000313, "20250219"
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000314
+	IF FLAG:버전관리보조 == 0
+		;絆の力・絆の奇跡
+		CALL CONVERT_SKILL_NUMBER, 554, 0
+		CALL CONVERT_SKILL_NUMBER, 555, 0
+		;エナジーシャワー
+		CALL CONVERT_SKILL_NUMBER, 615, 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FLAG:버전관리보조 = 3
+	ENDIF
+	FLAG:버전관리보조 = 0
+	CALL PRINT_ANNOUNCEMENT, 000314, "20250222"
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000400
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FLAG:버전관리보조 = 3
+	ENDIF
+	FLAG:버전관리보조 = 0
+	CALL PRINT_ANNOUNCEMENT, 000400, "20250227"
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000401
+	FLAG:버전관리보조 = 1
+	CALL PRINT_ANNOUNCEMENT, 000401, "20250302"
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000402
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FLAG:버전관리보조 = 3
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000402, "20250312"
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000403
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FLAG:버전관리보조 = 2
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000403, "20250318"
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000404
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000404, "20250324"
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000405
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FOR LCOUNT, 0, 10000
+			TAKEN_ITEM:LCOUNT = FLAG:(40000 + LCOUNT)
+		NEXT
+		VARSET FLAG, 0, 40000, 50000
+		FOR LCOUNT, 2378, 2390
+			ITEM:LCOUNT = 0
+			TAKEN_ITEM:LCOUNT = 0
+		NEXT
+		ITEM:5349 = 0
+		TAKEN_ITEM:5349 = 0
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		;七の太刀・遊蝶華
+		CALL CONVERT_SKILL_NUMBER, 3536, 0
+		;스킬:六太刀・壱
+		CALL CONVERT_SKILL_NUMBER, 3538, 0
+		;스킬:六太刀・弐
+		CALL CONVERT_SKILL_NUMBER, 3539, 0
+		;스킬:六太刀・参
+		CALL CONVERT_SKILL_NUMBER, 3540, 0
+		FLAG:버전관리보조 = 3
+	ENDIF
+	IF FLAG:버전관리보조 == 3
+		FLAG:버전관리보조 = 4
+	ENDIF
+	IF FLAG:버전관리보조 == 4
+		;ペルソナ使い仕様設定
+		FLAG:667 = 0
+		SIF GETS_HAVE_ITEM_NUM("아메지스트부적") > 1
+			ITEM:아메지스트부적 = 0
+		FLAG:버전관리보조 = 5
+	ENDIF
+	IF FLAG:버전관리보조 == 5
+		FLAG:버전관리보조 = 6
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000405, "20250409"
+ENDIF
+FLAG:버전관리보조 = 0
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000406
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000406, "20250415"
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000407
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FOR LCOUNT, 0, 10000
+			FALLEN_RECORD:LCOUNT = FLAG:(50000 + LCOUNT)
+			;バグで数値上書きされているケース
+			SIF !GET_陥落履歴(LCOUNT, "복종") && GET_陥落履歴(LCOUNT, "예속")
+				FALLEN_RECORD:LCOUNT = 0
+			FLAG:(50000 + LCOUNT) = 0
+		NEXT
+		VARS FALLEN_TABLE, 8
+		FALLEN_TABLE '= "연모", "친애", "음란", "창부", "복종", "예속", "신뢰", "동료"
+		FOR LCOUNT, 0, CHARANUM
+			SIF CFLAG:LCOUNT:피조교횟수
+				CALL SET_陥落履歴, NO:LCOUNT, "調教"
+			FOR LCOUNT:1, 0, VARSIZE("FALLEN_TABLE")
+				SIF !TALENT:LCOUNT:(FALLEN_TABLE:(LCOUNT:1))
+					CONTINUE
+				CALL SET_陥落履歴, NO:LCOUNT, FALLEN_TABLE:(LCOUNT:1)
+			NEXT
+		NEXT
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FLAG:버전관리보조 = 3
+	ENDIF
+	IF FLAG:버전관리보조 == 3
+		FLAG:버전관리보조 = 4
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000407, "20250421"
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000408
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		EXCULDE_LIST_FUSION_SOFT = %DEL_SPLIT(EXCULDE_LIST_FUSION_SOFT, "/", "206")%
+		STOCK_USE_LIST_FUSION_SOFT = %DEL_SPLIT(STOCK_USE_LIST_FUSION_SOFT, "/", "206")%
+		FLAG:버전관리보조 = 2
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000408, "20250426"
+	FLAG:버전관리보조 = 0
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000409
+	IF FLAG:버전관리보조 == 0
+		CALL CONVERT_SKILL_NUMBER, 586, [[스킬:회심의패기]]
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FLAG:버전관리보조 = 3
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000409, "20250509"
+	FLAG:버전관리보조 = 0
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000410
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FLAG:버전관리보조 = 3
+	ENDIF
+	IF FLAG:버전관리보조 == 3
+		FLAG:버전관리보조 = 4
+		SIF GETBIT(イベントフラグ:19:19, 5)
+			FLAG_白き鋼鉄のX_進行度 = 1
+		VARI L_CHARA
+		L_CHARA = GETCHARA([[キャラ:아큐라_X]])
+		IF L_CHARA >= 0
+			FOR LCOUNT, 0, 5
+				SIF GETBIT(CFLAG:L_CHARA:개별이벤트읽음, LCOUNT)
+					FLAG_白き鋼鉄のX_進行度++
+			NEXT
+			SIF GETBIT(CFLAG:L_CHARA:개별이벤트읽음, 6)
+				FLAG_白き鋼鉄のX2_進行度 = 1
+			SIF GETBIT(CFLAG:L_CHARA:개별이벤트읽음, 7)
+				FLAG_白き鋼鉄のX2_入り口クリア = 1
+			SIF GETBIT(CFLAG:L_CHARA:개별이벤트읽음, 8)
+				FLAG_白き鋼鉄のX2_炎獄クリア = 1
+			SIF GETBIT(CFLAG:L_CHARA:개별이벤트읽음, 9)
+				FLAG_白き鋼鉄のX2_機蜂クリア = 1
+			SIF GETBIT(CFLAG:L_CHARA:개별이벤트읽음, 10)
+				FLAG_白き鋼鉄のX2_超越クリア = 1
+			SIF GETBIT(CFLAG:L_CHARA:개별이벤트읽음, 11)
+				FLAG_白き鋼鉄のX2_光芒クリア = 1
+			SIF GETBIT(CFLAG:L_CHARA:개별이벤트읽음, 12)
+				FLAG_白き鋼鉄のX2_鋼獣クリア = 1
+			SIF GETBIT(CFLAG:L_CHARA:개별이벤트읽음, 13)
+				FLAG_白き鋼鉄のX2_極寒クリア = 1
+			SIF GETBIT(CFLAG:L_CHARA:개별이벤트읽음, 14)
+				FLAG_白き鋼鉄のX2_飛刀クリア = 1
+			SIF GROUPMATCH(1, FLAG_白き鋼鉄のX2_光芒クリア, FLAG_白き鋼鉄のX2_鋼獣クリア, FLAG_白き鋼鉄のX2_極寒クリア, FLAG_白き鋼鉄のX2_飛刀クリア) == 4
+				FLAG_白き鋼鉄のX2_進行度 = 2
+			FOR LCOUNT, 15, 19
+				SIF GETBIT(CFLAG:L_CHARA:개별이벤트읽음, LCOUNT)
+					FLAG_白き鋼鉄のX_進行度++
+			NEXT
+		ENDIF
+		IF FLAG:버전관리보조 == 4
+			FLAG:버전관리보조 = 5
+			;強欲な獣とのMemento
+			ITEM:5262 = 0
+		ENDIF
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000410, "20250612"
+	FLAG:버전관리보조 = 0
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000411
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FLAG:버전관리보조 = 2
+		RESULT = 0
+		IF !((GETCONFIG("ウィンドウ幅") == 1344 && GETCONFIG("フォントサイズ") == 16) || (GETCONFIG("ウィンドウ幅") == 1512 && GETCONFIG("フォントサイズ") == 18) || (GETCONFIG("ウィンドウ幅") == 1680 && GETCONFIG("フォントサイズ") == 20))
+			PRINTFORML 기본 화면 크기가 [1512 × 882]로 변경되었습니다。
+			PRINTFORML 비율이 맞지 않으면 잘림이나 표시 깨짐을 유발하므로 확인해 주십시오。
+			PRINTFORML 또한、폰트 크기 18에서 잘리는 분을 위해서는 폰트 크기 16에서 [1344 × 784]
+			PRINTFORML 화면 크기가 남는 분을 위해서는 폰트 크기 20에서 [1680 × 980]을 권장하고 있습니다。  
+			PRINTFORML 
+			PRINTFORML 변경할 경우 emuera.config를 직접 고쳐 쓰거나、화면사이즈변경.bat를 이용해 주십시오。
+			PRINTFORML ※1을 입력하면 진행합니다。
+			WHILE RESULT != 1
+				INPUT
+				CLEARLINE 1
+			WEND
+		ENDIF
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000500, "20250619"
+	FLAG:버전관리보조 = 0
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000502
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		CALL CONVERT_CHARA_NO, 4208, [[キャラ:고토우]]
+		IS_CHARA_COMPANIONED:[[キャラ:고토우_적전용]] = IS_CHARA_COMPANIONED:[[キャラ:고토우]]
+		CALL CONVERT_CHARA_NO, 4224, [[キャラ:시드]]
+		IS_CHARA_COMPANIONED:[[キャラ:시드_적전용]] = IS_CHARA_COMPANIONED:[[キャラ:시드]]
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FLAG:버전관리보조 = 3
+	ENDIF
+	IF FLAG:버전관리보조 == 3
+		FLAG:버전관리보조 = 4
+	ENDIF
+	IF FLAG:버전관리보조 == 4
+		FLAG:버전관리보조 = 5
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000501, "20250713"
+	FLAG:버전관리보조 = 0
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000502
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		CALL CONVERT_SKILL_NUMBER, 69, [[스킬:라비리스연격]]
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FLAG:버전관리보조 = 3
+	ENDIF
+	IF FLAG:버전관리보조 == 3
+		FLAG:버전관리보조 = 4
+	ENDIF
+	IF FLAG:버전관리보조 == 4
+		FLAG:버전관리보조 = 5
+	ENDIF
+	IF FLAG:버전관리보조 == 5
+		ITEM:스킬카드【초중폭탄】 = 0
+		CALLF ABLE_MAKESKILLCARD([[스킬:초중폭탄]], -1)
+		FLAG:버전관리보조 = 6
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000502, "20250726"
+	FLAG:버전관리보조 = 0
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000503
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		CALL CONVERT_CHARA_NO, 9515, [[キャラ:고양이소녀]]
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FLAG:버전관리보조 = 3
+	ENDIF
+	IF FLAG:버전관리보조 == 3
+		FLAG:버전관리보조 = 3
+		;パーソナルトルーパーでのパトリシアイベントを削除
+		CLEARBIT イベントフラグ:43:3, 0
+	ENDIF
+	IF FLAG:버전관리보조 == 3
+		FLAG:버전관리보조 = 4
+	ENDIF
+	IF FLAG:버전관리보조 == 4
+		CALL CONVERT_CHARA_NO, 4562, [[キャラ:아케미]]
+		CALL CONVERT_CHARA_NO, 4563, [[キャラ:유미코]]
+		CALL CONVERT_CHARA_NO, 4678, [[キャラ:도쿄타워의마녀]]
+		CALL CONVERT_CHARA_NO, 4653, [[キャラ:고토우]]
+		CALL CONVERT_CHARA_NO, 4689, [[キャラ:유리코]]
+		CALL CONVERT_CHARA_NO, 4690, [[キャラ:리리스_진]]
+		CALL CONVERT_CHARA_NO, 4783, [[キャラ:교도카즈펠]]
+		CALL CONVERT_CHARA_NO, 4501, [[キャラ:베스]]
+		CALL CONVERT_CHARA_NO, 4997, [[キャラ:다레스]]
+		CALL CONVERT_CHARA_NO, 4623, [[キャラ:기멜]]
+		CALL CONVERT_CHARA_NO, 4503, [[キャラ:타마키]]
+		CALL CONVERT_CHARA_NO, 4502, [[キャラ:유미]]
+		CALL CONVERT_CHARA_NO, 4508, [[キャラ:레이코]]
+		CALL CONVERT_CHARA_NO, 4790, [[キャラ:아키라]]
+		CALL CONVERT_CHARA_NO, 4656, [[キャラ:챠린코Ｃ]]
+		CALL CONVERT_CHARA_NO, 4597, [[キャラ:하자마]]
+		CALL CONVERT_CHARA_NO, 4750, [[キャラ:노부]]
+		CALL CONVERT_CHARA_NO, 4199, [[キャラ:인수라M]]
+		CALL CONVERT_CHARA_NO, 4198, [[キャラ:인수라F]]
+		CALL CONVERT_CHARA_NO, 4791, [[キャラ:알렉스]]
+		CALL CONVERT_CHARA_NO, 4696, [[キャラ:이자보]]
+		CALL CONVERT_CHARA_NO, 4697, [[キャラ:요나탄]]
+		CALL CONVERT_CHARA_NO, 4698, [[キャラ:월터]]
+		CALL CONVERT_CHARA_NO, 4699, [[キャラ:카가]]
+		CALL CONVERT_CHARA_NO, 4775, [[キャラ:나나시]]
+		CALL CONVERT_CHARA_NO, 4770, [[キャラ:아사히]]
+		CALL CONVERT_CHARA_NO, 4771, [[キャラ:토키]]
+		CALL CONVERT_CHARA_NO, 5106, [[キャラ:노조미]]
+		CALL CONVERT_CHARA_NO, 4773, [[キャラ:히미카]]
+		CALL CONVERT_CHARA_NO, 4774, [[キャラ:바기트]]
+		CALL CONVERT_CHARA_NO, 4776, [[キャラ:리카_D2]]
+		CALL CONVERT_CHARA_NO, 4777, [[キャラ:손샨]]
+		CALL CONVERT_CHARA_NO, 4778, [[キャラ:리린]]
+		CALL CONVERT_CHARA_NO, 4779, [[キャラ:차이준윤]]
+		CALL CONVERT_CHARA_NO, 4780, [[キャラ:가쿠토]]
+		CALL CONVERT_CHARA_NO, 4781, [[キャラ:메가킨]]
+		CALL CONVERT_CHARA_NO, 4782, [[キャラ:시오냥]]
+		CALL CONVERT_CHARA_NO, 4694, [[キャラ:타오]]
+		CALL CONVERT_CHARA_NO, 4695, [[キャラ:요코]]
+		CALL CONVERT_CHARA_NO, 4722, [[キャラ:사호리]]
+		CALL CONVERT_CHARA_NO, 4627, [[キャラ:레이]]
+		CALL CONVERT_CHARA_NO, 4679, [[キャラ:쿄우지]]
+		CALL CONVERT_CHARA_NO, 4599, [[キャラ:쿠미코]]
+		CALL CONVERT_CHARA_NO, 4704, [[キャラ:시드]]
+		CALL CONVERT_CHARA_NO, 5108, [[キャラ:하루나]]
+		CALL CONVERT_CHARA_NO, 4510, [[キャラ:네밋사_밝음]]
+		CALL CONVERT_CHARA_NO, 4511, [[キャラ:네밋사_쿨]]
+		CALL CONVERT_CHARA_NO, 4512, [[キャラ:네밋사_섹시]]
+		CALL CONVERT_CHARA_NO, 4509, [[キャラ:메어리]]
+		CALL CONVERT_CHARA_NO, 4516, [[キャラ:마요네]]
+		CALL CONVERT_CHARA_NO, 4635, [[キャラ:캐롤Ｊ]]
+		CALL CONVERT_CHARA_NO, 4636, [[キャラ:유다]]
+		CALL CONVERT_CHARA_NO, 4638, [[キャラ:나오미]]
+		CALL CONVERT_CHARA_NO, 4540, [[キャラ:토모코]]
+		CALL CONVERT_CHARA_NO, 4594, [[キャラ:식스]]
+		CALL CONVERT_CHARA_NO, 5101, [[キャラ:유이치]]
+		CALL CONVERT_CHARA_NO, 4542, [[キャラ:라이도우]]
+		CALL CONVERT_CHARA_NO, 5104, [[キャラ:타에]]
+		CALL CONVERT_CHARA_NO, 4768, [[キャラ:나기]]
+		CALL CONVERT_CHARA_NO, 4793, [[キャラ:쿠시나다]]
+		CALL CONVERT_CHARA_NO, 4792, [[キャラ:살안의아야메]]
+		CALL CONVERT_CHARA_NO, 4543, [[キャラ:세이메이]]
+		CALL CONVERT_CHARA_NO, 4794, [[キャラ:오우한]]
+		CALL CONVERT_CHARA_NO, 4680, [[キャラ:링고_소울해커즈2]]
+		CALL CONVERT_CHARA_NO, 4681, [[キャラ:피그]]
+		CALL CONVERT_CHARA_NO, 4721, [[キャラ:유메]]
+		CALL CONVERT_CHARA_NO, 4654, [[キャラ:P1주인공]]
+		CALL CONVERT_CHARA_NO, 4519, [[キャラ:마키]]
+		CALL CONVERT_CHARA_NO, 4514, [[キャラ:에리]]
+		CALL CONVERT_CHARA_NO, 4515, [[キャラ:아야세]]
+		CALL CONVERT_CHARA_NO, 4535, [[キャラ:유키노씨]]
+		CALL CONVERT_CHARA_NO, 4655, [[キャラ:브라운]]
+		CALL CONVERT_CHARA_NO, 4592, [[キャラ:마이]]
+		CALL CONVERT_CHARA_NO, 4593, [[キャラ:아키]]
+		CALL CONVERT_CHARA_NO, 4568, [[キャラ:트리슈]]
+		CALL CONVERT_CHARA_NO, 4558, [[キャラ:트리슈_샘]]
+		CALL CONVERT_CHARA_NO, 4524, [[キャラ:타츠야]]
+		CALL CONVERT_CHARA_NO, 4525, [[キャラ:리사]]
+		CALL CONVERT_CHARA_NO, 4528, [[キャラ:마야_P2]]
+		CALL CONVERT_CHARA_NO, 4534, [[キャラ:에이키치]]
+		CALL CONVERT_CHARA_NO, 4545, [[キャラ:쥰]]
+		CALL CONVERT_CHARA_NO, 4537, [[キャラ:우라라]]
+		CALL CONVERT_CHARA_NO, 4538, [[キャラ:카츠야]]
+		CALL CONVERT_CHARA_NO, 4539, [[キャラ:파오푸]]
+		CALL CONVERT_CHARA_NO, 4526, [[キャラ:미호]]
+		CALL CONVERT_CHARA_NO, 4527, [[キャラ:아사미]]
+		CALL CONVERT_CHARA_NO, 4536, [[キャラ:미야비]]
+		CALL CONVERT_CHARA_NO, 4523, [[キャラ:치카링]]
+		CALL CONVERT_CHARA_NO, 4517, [[キャラ:안나]]
+		CALL CONVERT_CHARA_NO, 4518, [[キャラ:아카리]]
+		CALL CONVERT_CHARA_NO, 4544, [[キャラ:노리코]]
+		CALL CONVERT_CHARA_NO, 4705, [[キャラ:준코]]
+		CALL CONVERT_CHARA_NO, 4546, [[キャラ:치즈루]]
+		CALL CONVERT_CHARA_NO, 5100, [[キャラ:마야]]
+		CALL CONVERT_CHARA_NO, 5105, [[キャラ:시오리_P2]]
+		CALL CONVERT_CHARA_NO, 4530, [[キャラ:니알라토텝_P2]]
+		CALL CONVERT_CHARA_NO, 4600, [[キャラ:재수생]]
+		CALL CONVERT_CHARA_NO, 4533, [[キャラ:P3여주인공]]
+		CALL CONVERT_CHARA_NO, 4532, [[キャラ:P3남주인공]]
+		CALL CONVERT_CHARA_NO, 4557, [[キャラ:유카리]]
+		CALL CONVERT_CHARA_NO, 4550, [[キャラ:후카]]
+		CALL CONVERT_CHARA_NO, 4549, [[キャラ:미츠루]]
+		CALL CONVERT_CHARA_NO, 4522, [[キャラ:아이기스]]
+		CALL CONVERT_CHARA_NO, 4547, [[キャラ:준페이]]
+		CALL CONVERT_CHARA_NO, 4548, [[キャラ:사나다]]
+		CALL CONVERT_CHARA_NO, 4551, [[キャラ:아마다]]
+		CALL CONVERT_CHARA_NO, 4552, [[キャラ:코로마루]]
+		CALL CONVERT_CHARA_NO, 4553, [[キャラ:아라가키]]
+		CALL CONVERT_CHARA_NO, 4556, [[キャラ:메티스]]
+		CALL CONVERT_CHARA_NO, 4555, [[キャラ:엘리자베스]]
+		CALL CONVERT_CHARA_NO, 4554, [[キャラ:치도리]]
+		CALL CONVERT_CHARA_NO, 4575, [[キャラ:치히로]]
+		CALL CONVERT_CHARA_NO, 4584, [[キャラ:유우코]]
+		CALL CONVERT_CHARA_NO, 4585, [[キャラ:리오]]
+		CALL CONVERT_CHARA_NO, 4586, [[キャラ:토리우미]]
+		CALL CONVERT_CHARA_NO, 4588, [[キャラ:마이코]]
+		CALL CONVERT_CHARA_NO, 4596, [[キャラ:사오리]]
+		CALL CONVERT_CHARA_NO, 4587, [[キャラ:나츠키]]
+		CALL CONVERT_CHARA_NO, 4573, [[キャラ:P4주인공]]
+		CALL CONVERT_CHARA_NO, 4560, [[キャラ:치에]]
+		CALL CONVERT_CHARA_NO, 4561, [[キャラ:유키코]]
+		CALL CONVERT_CHARA_NO, 4531, [[キャラ:리세]]
+		CALL CONVERT_CHARA_NO, 4541, [[キャラ:나오토]]
+		CALL CONVERT_CHARA_NO, 4564, [[キャラ:요스케]]
+		CALL CONVERT_CHARA_NO, 4565, [[キャラ:칸지]]
+		CALL CONVERT_CHARA_NO, 4567, [[キャラ:곰]]
+		CALL CONVERT_CHARA_NO, 4574, [[キャラ:마가렛]]
+		CALL CONVERT_CHARA_NO, 4583, [[キャラ:나나코]]
+		CALL CONVERT_CHARA_NO, 4576, [[キャラ:아야네]]
+		CALL CONVERT_CHARA_NO, 4577, [[キャラ:아이]]
+		CALL CONVERT_CHARA_NO, 4578, [[キャラ:사요코]]
+		CALL CONVERT_CHARA_NO, 5103, [[キャラ:키츠네]]
+		CALL CONVERT_CHARA_NO, 5107, [[キャラ:하나코_P4]]
+		CALL CONVERT_CHARA_NO, 5102, [[キャラ:코니시]]
+		CALL CONVERT_CHARA_NO, 4579, [[キャラ:에리_P4]]
+		CALL CONVERT_CHARA_NO, 4595, [[キャラ:아이카]]
+		CALL CONVERT_CHARA_NO, 4625, [[キャラ:토오루]]
+		CALL CONVERT_CHARA_NO, 4700, [[キャラ:라비리스]]
+		CALL CONVERT_CHARA_NO, 4665, [[キャラ:P5주인공]]
+		CALL CONVERT_CHARA_NO, 4658, [[キャラ:안]]
+		CALL CONVERT_CHARA_NO, 4659, [[キャラ:마코토_P5]]
+		CALL CONVERT_CHARA_NO, 4662, [[キャラ:후타바]]
+		CALL CONVERT_CHARA_NO, 4661, [[キャラ:하루_P5]]
+		CALL CONVERT_CHARA_NO, 4657, [[キャラ:류지]]
+		CALL CONVERT_CHARA_NO, 4660, [[キャラ:유스케]]
+		CALL CONVERT_CHARA_NO, 4663, [[キャラ:모르가나]]
+		CALL CONVERT_CHARA_NO, 4769, [[キャラ:고로]]
+		CALL CONVERT_CHARA_NO, 4664, [[キャラ:카스미]]
+		CALL CONVERT_CHARA_NO, 4691, [[キャラ:라벤차]]
+		CALL CONVERT_CHARA_NO, 4692, [[キャラ:쥐스틴]]
+		CALL CONVERT_CHARA_NO, 4693, [[キャラ:카롤린]]
+		CALL CONVERT_CHARA_NO, 4666, [[キャラ:타에_P5]]
+		CALL CONVERT_CHARA_NO, 4667, [[キャラ:히후미]]
+		CALL CONVERT_CHARA_NO, 4668, [[キャラ:사다요]]
+		CALL CONVERT_CHARA_NO, 4669, [[キャラ:치하야]]
+		CALL CONVERT_CHARA_NO, 4976, [[キャラ:앨리스_신약LB]]
+		CALL CONVERT_CHARA_NO, 4977, [[キャラ:리젤]]
+		CALL CONVERT_CHARA_NO, 4978, [[キャラ:레온]]
+		CALL CONVERT_CHARA_NO, 4979, [[キャラ:루나]]
+		CALL CONVERT_CHARA_NO, 4761, [[キャラ:아야토]]
+		CALL CONVERT_CHARA_NO, 4762, [[キャラ:에미]]
+		CALL CONVERT_CHARA_NO, 4763, [[キャラ:유우카]]
+		CALL CONVERT_CHARA_NO, 4764, [[キャラ:루이]]
+		CALL CONVERT_CHARA_NO, 4767, [[キャラ:하야사카]]
+		CALL CONVERT_CHARA_NO, 4786, [[キャラ:산시로]]
+		CALL CONVERT_CHARA_NO, 4974, [[キャラ:카즈사]]
+		CALL CONVERT_CHARA_NO, 4975, [[キャラ:시즈나]]
+		CALL CONVERT_CHARA_NO, 4789, [[キャラ:고양이소녀]]
+		CALL CONVERT_CHARA_NO, 4504, [[キャラ:미라이]]
+		CALL CONVERT_CHARA_NO, 4529, [[キャラ:세츠나]]
+		CALL CONVERT_CHARA_NO, 4650, [[キャラ:에레지]]
+		CALL CONVERT_CHARA_NO, 4651, [[キャラ:제트]]
+		CALL CONVERT_CHARA_NO, 4652, [[キャラ:나가히사]]
+		CALL CONVERT_CHARA_NO, 4795, [[キャラ:『미라이』]]
+		CALL CONVERT_CHARA_NO, 4968, [[キャラ:아미]]
+		CALL CONVERT_CHARA_NO, 4969, [[キャラ:레나]]
+		CALL CONVERT_CHARA_NO, 4682, [[キャラ:미도리]]
+		CALL CONVERT_CHARA_NO, 4683, [[キャラ:아키_TCG]]
+		CALL CONVERT_CHARA_NO, 4684, [[キャラ:미호_카드서머너]]
+		CALL CONVERT_CHARA_NO, 4685, [[キャラ:리카_카드서머너]]
+		CALL CONVERT_CHARA_NO, 4686, [[キャラ:시즈카]]
+		CALL CONVERT_CHARA_NO, 4687, [[キャラ:사쿠라_카드서머너]]
+		CALL CONVERT_CHARA_NO, 4688, [[キャラ:레이카]]
+		CALL CONVERT_CHARA_NO, 4615, [[キャラ:서프]]
+		CALL CONVERT_CHARA_NO, 4616, [[キャラ:알지라]]
+		CALL CONVERT_CHARA_NO, 4620, [[キャラ:세라]]
+		CALL CONVERT_CHARA_NO, 4617, [[キャラ:히트]]
+		CALL CONVERT_CHARA_NO, 4619, [[キャラ:시에로]]
+		CALL CONVERT_CHARA_NO, 4618, [[キャラ:게일]]
+		CALL CONVERT_CHARA_NO, 4621, [[キャラ:로알드]]
+		CALL CONVERT_CHARA_NO, 4569, [[キャラ:해리Ｑ]]
+		CALL CONVERT_CHARA_NO, 4571, [[キャラ:지나나]]
+		CALL CONVERT_CHARA_NO, 4701, [[キャラ:루파]]
+		CALL CONVERT_CHARA_NO, 4622, [[キャラ:제나]]
+		CALL CONVERT_CHARA_NO, 4702, [[キャラ:자피아]]
+		CALL CONVERT_CHARA_NO, 4703, [[キャラ:그라나토]]
+		CALL CONVERT_CHARA_NO, 4572, [[キャラ:데빌서바주인공]]
+		CALL CONVERT_CHARA_NO, 4507, [[キャラ:유즈]]
+		CALL CONVERT_CHARA_NO, 4513, [[キャラ:아마네]]
+		CALL CONVERT_CHARA_NO, 4521, [[キャラ:하루]]
+		CALL CONVERT_CHARA_NO, 4505, [[キャラ:도리]]
+		CALL CONVERT_CHARA_NO, 4506, [[キャラ:마리]]
+		CALL CONVERT_CHARA_NO, 4520, [[キャラ:이즈나]]
+		CALL CONVERT_CHARA_NO, 4566, [[キャラ:아츠로우]]
+		CALL CONVERT_CHARA_NO, 4626, [[キャラ:쇼우지]]
+		CALL CONVERT_CHARA_NO, 4601, [[キャラ:데빌서바２주인공]]
+		CALL CONVERT_CHARA_NO, 4603, [[キャラ:이오]]
+		CALL CONVERT_CHARA_NO, 4604, [[キャラ:마코토]]
+		CALL CONVERT_CHARA_NO, 4605, [[キャラ:히나코]]
+		CALL CONVERT_CHARA_NO, 4606, [[キャラ:아이리]]
+		CALL CONVERT_CHARA_NO, 4607, [[キャラ:후미]]
+		CALL CONVERT_CHARA_NO, 4608, [[キャラ:오토메]]
+		CALL CONVERT_CHARA_NO, 4602, [[キャラ:다이치]]
+		CALL CONVERT_CHARA_NO, 4670, [[キャラ:야마토]]
+		CALL CONVERT_CHARA_NO, 4671, [[キャラ:케이타]]
+		CALL CONVERT_CHARA_NO, 4672, [[キャラ:준고]]
+		CALL CONVERT_CHARA_NO, 4673, [[キャラ:죠]]
+		CALL CONVERT_CHARA_NO, 4674, [[キャラ:로나우도]]
+		CALL CONVERT_CHARA_NO, 4675, [[キャラ:사다크]]
+		CALL CONVERT_CHARA_NO, 4677, [[キャラ:미야코]]
+		CALL CONVERT_CHARA_NO, 4609, [[キャラ:티코]]
+		CALL CONVERT_CHARA_NO, 4676, [[キャラ:코하루]]
+		CALL CONVERT_CHARA_NO, 4598, [[キャラ:데빌콜로주인공]]
+		CALL CONVERT_CHARA_NO, 4766, [[キャラ:아인]]
+		CALL CONVERT_CHARA_NO, 4765, [[キャラ:라메드]]
+		CALL CONVERT_CHARA_NO, 4559, [[キャラ:코시로]]
+		CALL CONVERT_CHARA_NO, 4570, [[キャラ:유리아]]
+		CALL CONVERT_CHARA_NO, 4628, [[キャラ:마야_NT]]
+		CALL CONVERT_CHARA_NO, 4629, [[キャラ:카야]]
+		CALL CONVERT_CHARA_NO, 4630, [[キャラ:쇼고]]
+		CALL CONVERT_CHARA_NO, 4632, [[キャラ:유우키]]
+		CALL CONVERT_CHARA_NO, 4631, [[キャラ:코우린]]
+		CALL CONVERT_CHARA_NO, 4633, [[キャラ:리에코]]
+		CALL CONVERT_CHARA_NO, 4634, [[キャラ:미즈키]]
+		CALL CONVERT_CHARA_NO, 4637, [[キャラ:레이_NT]]
+		CALL CONVERT_CHARA_NO, 4639, [[キャラ:다누]]
+		CALL CONVERT_CHARA_NO, 4772, [[キャラ:유지]]
+		CALL CONVERT_CHARA_NO, 4610, [[キャラ:이치고]]
+		CALL CONVERT_CHARA_NO, 4611, [[キャラ:찰리]]
+		CALL CONVERT_CHARA_NO, 4612, [[キャラ:린]]
+		CALL CONVERT_CHARA_NO, 4613, [[キャラ:애니]]
+		CALL CONVERT_CHARA_NO, 4614, [[キャラ:유리]]
+		CALL CONVERT_CHARA_NO, 4787, [[キャラ:사사즈카치요_네코마타]]
+		CALL CONVERT_CHARA_NO, 4788, [[キャラ:사사즈카치요_바스테드]]
+		CALL CONVERT_CHARA_NO, 4641, [[キャラ:카즈토]]
+		CALL CONVERT_CHARA_NO, 4642, [[キャラ:아야메]]
+		CALL CONVERT_CHARA_NO, 4643, [[キャラ:헤르만]]
+		CALL CONVERT_CHARA_NO, 4644, [[キャラ:이쿠네]]
+		CALL CONVERT_CHARA_NO, 4645, [[キャラ:히지리]]
+		CALL CONVERT_CHARA_NO, 4646, [[キャラ:크랙]]
+		CALL CONVERT_CHARA_NO, 4647, [[キャラ:에이다]]
+		CALL CONVERT_CHARA_NO, 4648, [[キャラ:아셰라]]
+		CALL CONVERT_CHARA_NO, 4649, [[キャラ:마리아]]
+		CALL CONVERT_CHARA_NO, 4624, [[キャラ:키쿠에]]
+		CALL CONVERT_CHARA_NO, 4640, [[キャラ:나나미]]
+		CALL CONVERT_CHARA_NO, 4580, [[キャラ:마리카]]
+		CALL CONVERT_CHARA_NO, 4581, [[キャラ:히토미]]
+		CALL CONVERT_CHARA_NO, 4589, [[キャラ:쿄우코]]
+		CALL CONVERT_CHARA_NO, 4590, [[キャラ:사키]]
+		CALL CONVERT_CHARA_NO, 4784, [[キャラ:아키토]]
+		CALL CONVERT_CHARA_NO, 4785, [[キャラ:요시코]]
+		CALL CONVERT_CHARA_NO, 4582, [[キャラ:시이나]]
+		FLAG:버전관리보조 = 5
+	ENDIF
+	IF FLAG:버전관리보조 == 5
+		FLAG:버전관리보조 = 6
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000503, "20250814"
+	FLAG:버전관리보조 = 0
+ENDIF
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000504
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FOR LCOUNT, 0, SKILLNUM
+			IF ITEM:(LCOUNT + ITEMNUM) > 0
+				CALL GET_SKILL_PROP, "継承不能", LCOUNT, -1
+				SIF RESULT == 1
+					TAKEN_SKILLCARD:LCOUNT = 1
+			ENDIF
+		NEXT
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FLAG:버전관리보조 = 3
+	ENDIF
+	IF FLAG:버전관리보조 == 3
+		FLAG:버전관리보조 = 4
+	ENDIF
+	;CALL PRINT_ANNOUNCEMENT, 000308, "20241101"
+	;FLAG:버전관리보조 = 0
+
+	IF FLAG:버전관리보조 == 4
+		FOR LCOUNT, 0, 10000
+			REMOVED_FUSION_LIMIT:LCOUNT = FLAG:(10000 + LCOUNT)
+		NEXT
+		;売却人数をチェック
+		FOR LCOUNT, 0, 10000
+			;売却数が1以上でない、またはcsvが定義されていない場合は弾く
+			SIF FLAG:(30000+LCOUNT) <= 0 || !EXISTCSV(LCOUNT, 0)
+				CONTINUE
+			;該当キャラが人間系の場合
+			IF GROUPMATCH(GET_RACE(CSVABL(LCOUNT, GETNUM(ABL, "종족"))), "인간", "반마인")
+				FLAG:누계인간판매수 += FLAG:(30000+LCOUNT)
+			;人間系ではない＝悪魔系の場合
+			ELSE
+				FLAG:누계악마판매수 += FLAG:(30000+LCOUNT)
+			ENDIF
+			COUNT_SOLD_CHARA:LCOUNT = FLAG:(30000+LCOUNT)
+		NEXT
+
+		FLAG:버전관리보조 = 5
+	ENDIF
+	IF FLAG:버전관리보조 == 5
+		FLAG:버전관리보조 = 6
+	ENDIF
+	IF FLAG:버전관리보조 == 6
+		CALL CONVERT_SKILL_NUMBER, 2449, [[스킬:결단]]
+		CALL CONVERT_SKILL_NUMBER, 2486, [[스킬:결단]]
+		FLAG:버전관리보조 = 7
+	ENDIF
+	IF FLAG:버전관리보조 == 7
+		FOR LCOUNT, 0, 10000
+			SIF !EXISTCSV(LCOUNT)
+				CONTINUE
+			SIF !FLAG:(10000 + LCOUNT)
+				CONTINUE
+			SIF REMOVED_FUSION_LIMIT:LCOUNT
+				CONTINUE
+			CALL LIFTING_A_BAN, LCOUNT
+			FLAG:(10000 + LCOUNT) = 0
+		NEXT
+		FLAG:버전관리보조 = 8
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000504, "20250906"
+ENDIF
+FLAG:버전관리보조 = 0
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000505
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+		;突然変異デミナンディからキクエを分離
+		IF GETCHARA([[キャラ:히메미야키쿠에]]) >= 0
+			CALL CONVERT_CHARA_NO, 3315, [[キャラ:히메미야키쿠에]]
+		ELSE
+			CALL CONVERT_CHARA_NO, 3315, [[キャラ:Ｑ・데미난디]]
+		ENDIF
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FOR LCOUNT, 0, 4
+			IF FLAG:(1406 + LCOUNT * 10)
+				IF EXISTCSV(FLAG:(1406 + LCOUNT * 10))
+					奴隷売却最高額キャラ名:LCOUNT '= CSVCALLNAME(FLAG:(1406 + LCOUNT * 10))
+				ELSE
+					奴隷売却最高額キャラ名:LCOUNT '= "不明な誰か"
+				ENDIF
+			ENDIF
+			FLAG:(1406 + LCOUNT * 10) = 0
+		NEXT
+		FOR LCOUNT, 0, 4
+			IF FLAG:(1407 + LCOUNT * 10)
+				IF EXISTCSV(FLAG:(1407 + LCOUNT * 10))
+					奴隷売却最低額キャラ名:LCOUNT '= CSVCALLNAME(FLAG:(1407 + LCOUNT * 10))
+				ELSE
+					奴隷売却最低額キャラ名:LCOUNT '= "不明な誰か"
+				ENDIF
+			ENDIF
+			FLAG:(1407 + LCOUNT * 10) = 0
+		NEXT
+		VARI TEMP_TABLE, 6
+		TEMP_TABLE = 1444, 1450, 1456, 1462, 0, 1470
+		FOR LCOUNT, 0, 6
+			IF FLAG:(TEMP_TABLE:LCOUNT) && TEMP_TABLE:LCOUNT != 0
+				IF EXISTCSV(FLAG:(TEMP_TABLE:LCOUNT))
+					労役最高利益キャラ名:LCOUNT '= CSVCALLNAME(FLAG:(TEMP_TABLE:LCOUNT))
+				ELSE
+					労役最高利益キャラ名:LCOUNT '= "不明な誰か"
+				ENDIF
+				FLAG:(TEMP_TABLE:LCOUNT) = 0
+			ENDIF
+		NEXT
+		TEMP_TABLE = 1445, 1451, 1457
+		FOR LCOUNT, 0, 3
+			IF FLAG:(TEMP_TABLE:LCOUNT)
+				IF EXISTCSV(FLAG:(TEMP_TABLE:LCOUNT))
+					労役最高接客数キャラ名:LCOUNT '= CSVCALLNAME(FLAG:(TEMP_TABLE:LCOUNT))
+				ELSE
+					労役最高接客数キャラ名:LCOUNT '= "不明な誰か"
+				ENDIF
+				FLAG:(TEMP_TABLE:LCOUNT) = 0
+			ENDIF
+		NEXT
+		FLAG:버전관리보조 = 2
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000505, "20251121"
+ENDIF
+FLAG:버전관리보조 = 0
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000506
+	SIF GETBIT(ダンジョンフラグ:[[ダンジョン:유폐탑]]:19 , 0)
+		REACHED_TERMINAL:[[ダンジョン:유폐탑]]:0 = 1
+	SIF GETBIT(ダンジョンフラグ:[[ダンジョン:유폐탑]]:19 , 1)
+		REACHED_TERMINAL:[[ダンジョン:유폐탑]]:7 = 1
+	SIF GETBIT(ダンジョンフラグ:[[ダンジョン:유폐탑]]:19 , 2)
+		REACHED_TERMINAL:[[ダンジョン:유폐탑]]:13 = 1
+	SIF GETBIT(ダンジョンフラグ:[[ダンジョン:유폐탑]]:19 , 3)
+		REACHED_TERMINAL:[[ダンジョン:유폐탑]]:19 = 1
+	SIF GETBIT(ダンジョンフラグ:[[ダンジョン:유폐탑]]:19 , 4)
+		REACHED_TERMINAL:[[ダンジョン:유폐탑]]:26 = 1
+	SIF GETBIT(ダンジョンフラグ:[[ダンジョン:유폐탑]]:19 , 5)
+		REACHED_TERMINAL:[[ダンジョン:유폐탑]]:32 = 1
+	;ミコンの街は初めからフラグが立ってる
+	CALLF STRFLAG_D("M0", 1, [[ダンジョン:대마궁]])
+	SIF STRFLAG_D("M4", 0, [[ダンジョン:대마궁]])
+		REACHED_TERMINAL:[[ダンジョン:대마궁]]:4 = 1
+	SIF STRFLAG_D("M7", 0, [[ダンジョン:대마궁]])
+		REACHED_TERMINAL:[[ダンジョン:대마궁]]:7 = 1
+	SIF STRFLAG_D("M14", 0, [[ダンジョン:대마궁]])
+		REACHED_TERMINAL:[[ダンジョン:대마궁]]:14 = 1
+	SIF STRFLAG_D("M9", 0, [[ダンジョン:대마궁]])
+		REACHED_TERMINAL:[[ダンジョン:대마궁]]:9 = 1
+	SIF STRFLAG_D("M10", 0, [[ダンジョン:대마궁]])
+		REACHED_TERMINAL:[[ダンジョン:대마궁]]:10 = 1
+	SIF STRFLAG_D("M21", 0, [[ダンジョン:대마궁]])
+		REACHED_TERMINAL:[[ダンジョン:대마궁]]:21 = 1
+	SIF STRFLAG_D("M25", 0, [[ダンジョン:대마궁]])
+		REACHED_TERMINAL:[[ダンジョン:대마궁]]:25 = 1
+	SIF STRFLAG_D("M27", 0, [[ダンジョン:대마궁]])
+		REACHED_TERMINAL:[[ダンジョン:대마궁]]:27 = 1
+	SIF STRFLAG_D("M36", 0, [[ダンジョン:대마궁]])
+		REACHED_TERMINAL:[[ダンジョン:대마궁]]:36 = 1
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000506, "20251129"
+ENDIF
+FLAG:버전관리보조 = 0
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000507
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FLAG:버전관리보조 = 3
+		IF GETBIT(FLAG:656, 1)
+			FLAG:금단의인스톨소프트해금 = !GETBIT(FLAG:1471, 0)
+			FLAG:마정장비해금 = !GETBIT(FLAG:1471, 1)
+			FLAG:오리지널스킬해금 = !GETBIT(FLAG:1471, 2)
+			FLAG:전투스테이터스계산식통일 = !GETBIT(FLAG:1471, 3)
+			FLAG:아이템합성해금 = !GETBIT(FLAG:1471, 4)
+			FLAG:CP제한무효화 = !GETBIT(FLAG:1471, 5)
+			FLAG:드워프대장장이해금 = !GETBIT(FLAG:1471, 6)
+			FLAG:마장의공방해금 = !GETBIT(FLAG:1471, 9)
+			FLAG:장비능력보정변경해금 = !GETBIT(FLAG:1471, 10)
+		ENDIF
+		FLAG:656 = 0
+		FLAG:1471 = 0
+	ENDIF
+	IF FLAG:버전관리보조 == 3
+		FLAG:버전관리보조 = 4
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000507, "20251216"
+ENDIF
+FLAG:버전관리보조 = 0
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000508
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		SIF FLAG_REQ95_進行度 == 26
+			FLAG_REQ95_進行度 = 25
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FLAG:버전관리보조 = 3
+	ENDIF
+	IF FLAG:버전관리보조 == 3
+		FLAG:버전관리보조 = 4
+	ENDIF
+	IF FLAG:버전관리보조 == 4
+		FLAG:버전관리보조 = 5
+	ENDIF
+	IF FLAG:버전관리보조 == 5
+		FLAG:버전관리보조 = 6
+	ENDIF
+	IF FLAG:버전관리보조 == 6
+		FLAG:버전관리보조 = 7
+	ENDIF
+	IF FLAG:버전관리보조 == 7
+		FLAG:버전관리보조 = 8
+	ENDIF
+	IF FLAG:버전관리보조 == 8
+		FLAG:버전관리보조 = 9
+	ENDIF
+	IF FLAG:버전관리보조 == 9
+		CALL CONVERT_SKILL_NUMBER, 73, [[스킬:반역의칼날]]
+		FLAG:버전관리보조 = 10
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000508, "20260113"
+ENDIF
+FLAG:버전관리보조 = 0
+
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000509
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		CALL CONVERT_CHARA_NO, 5037, [[キャラ:혹등고래]]
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FOR LCOUNT, 1, 10
+			TARGET:LCOUNT = FINDCHARA_ID(TARGET:LCOUNT)
+			SIF TARGET:LCOUNT > 0
+				TARGET:LCOUNT = CFLAG:(TARGET:LCOUNT):실제가입시간
+		NEXT
+		FLAG:버전관리보조 = 3
+	ENDIF
+	IF FLAG:버전관리보조 == 3
+		CALL CONVERT_CHARA_NO, 1121, [[キャラ:광무]]
+		FLAG:버전관리보조 = 4
+	ENDIF
+	IF FLAG:버전관리보조 == 4
+		依頼フラグ:[[依頼:랜덤의뢰]]:11 = MAX(依頼フラグ:[[依頼:랜덤의뢰]]:11, 1)
+		依頼フラグ:[[依頼:랜덤의뢰]]:12 = MAX(依頼フラグ:[[依頼:랜덤의뢰]]:12, 1)
+		FLAG:버전관리보조 = 5
+	ENDIF
+	CALL PRINT_ANNOUNCEMENT, 000509, "20260627"
+ENDIF
+FLAG:버전관리보조 = 0
+
+@VERUP_TEMP
+#DIM LCOUNT, 3
+;FLAG:バージョン管理補助はTEMP内専用で
+;1回だけ互換処理をするようにする為に使う
+;なので、VERUPの移すときは必ず削除するように
+;版あげがあったときに数値を0に
+SIF LASTLOAD_VERSION < GAMEBASE_VERSION
+	FLAG:버전관리보조 = 0
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) < 000510
+	;IF FLAG:버전관리보조 == 0
+	;	FLAG:버전관리보조 = 1
+	;ENDIF
+ENDIF
+;========================================================================================
+;キャラ個別互換処理
+;CHARADATA経由のキャラの処理があるため、キャラ個別にかける処理はFOR_CHARA関数で扱うこと
+;========================================================================================
+@VERUP_FOR_CHARA, L_CHARA
+#DIM DYNAMIC L_CHARA
+IF CFLAG:L_CHARA:본체버전정보 < GAMEBASE_VERSION
+	CALL VERUP_FOR_CHARA_LEGACY, L_CHARA
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+CALL VERUP_FOR_CHARA_TEMP, L_CHARA
+
+CFLAG:L_CHARA:본체버전정보 = GAMEBASE_VERSION
+CFLAG:L_CHARA:본체버전관리보조정보 = FLAG:버전관리보조
+
+;========================================================================================
+;キャラNO変更措置
+;不在の番号などが発生すると互換処理にエラーを出しやすいので最初に処理する
+;========================================================================================
+@VERUP_CHANGE_CSVNO, L_CHARA
+#DIM DYNAMIC L_CHARA
+IF CFLAG:L_CHARA:본체버전정보 < 0309154
+	SELECTCASE NO:L_CHARA
+		CASE 424
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:유리코]]
+		CASE 425
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:리리스_진]]
+		CASE 840
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:사사즈카치요_네코마타]]
+		CASE 841
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:사사즈카치요_바스테드]]
+	ENDSELECT
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000309
+	CALL CONVERT_CSVNO_OLD, L_CHARA
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 8 || GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000308
+		SELECTCASE NO:L_CHARA
+			CASE 1112
+				CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:마스캣]]
+			CASE 9003
+				CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:이마미아]]
+		ENDSELECT
+	ENDIF
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000313
+	SELECTCASE NO:L_CHARA
+		CASE 4685
+			NICKNAME:L_CHARA '= CSVNICKNAME([[キャラ:리카_카드서머너]])
+		CASE 4776
+			NICKNAME:L_CHARA '= CSVNICKNAME([[キャラ:리카_D2]])
+		CASE 4845
+			NICKNAME:L_CHARA '= CSVNICKNAME([[キャラ:루나차일드]])
+	ENDSELECT
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000501
+	IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000500 || CFLAG:L_CHARA:본체버전관리보조정보 == 0
+		VARS TEMP_SKILLS, 9
+		TEMP_SKILLS:0 '= CSTR:L_CHARA:52
+		TEMP_SKILLS:1 '= CSTR:L_CHARA:53
+		TEMP_SKILLS:2 '= CSTR:L_CHARA:54
+		TEMP_SKILLS:3 '= CSTR:L_CHARA:60
+		TEMP_SKILLS:4 '= CSTR:L_CHARA:61
+		TEMP_SKILLS:5 '= CSTR:L_CHARA:62
+		TEMP_SKILLS:6 '= CSTR:L_CHARA:63
+		TEMP_SKILLS:7 '= CSTR:L_CHARA:64
+		TEMP_SKILLS:8 '= CSTR:L_CHARA:65
+		
+		CSTR:L_CHARA:전용기1 '= TEMP_SKILLS:0
+		CSTR:L_CHARA:전용기2 '= TEMP_SKILLS:1
+		CSTR:L_CHARA:전용기3 '= TEMP_SKILLS:2
+		CSTR:L_CHARA:장비강화 '= TEMP_SKILLS:3
+		CSTR:L_CHARA:전용기4 '= TEMP_SKILLS:4
+		CSTR:L_CHARA:전용기5 '= TEMP_SKILLS:5
+		CSTR:L_CHARA:전용기6 '= TEMP_SKILLS:6
+		CSTR:L_CHARA:전용기7 '= TEMP_SKILLS:7
+		CSTR:L_CHARA:초기이상경험 '= TEMP_SKILLS:8
+	ENDIF
+	IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000500 || CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		SELECTCASE NO:L_CHARA
+			CASE 4208
+				CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:고토우]]
+			CASE 4224
+				CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:시드]]
+		ENDSELECT
+	ENDIF
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000503
+	IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000502 || CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		SELECTCASE NO:L_CHARA
+			CASE 9515
+				CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:고양이소녀]]
+				NICKNAME:L_CHARA '= "猫娘"
+			CASE 9516
+				NICKNAME:L_CHARA '= "六本木大歓楽街の悪魔人"
+		ENDSELECT
+	ENDIF
+	IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000502 || CFLAG:L_CHARA:본체버전관리보조정보 < 5
+		IF !EXISTCSV(NO:L_CHARA) || (CSVCFLAG(NO:L_CHARA, GETNUM(CFLAG, "작품코드")) > 0 && NO:L_CHARA != GET_識別番号(NICKNAME:L_CHARA))
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, GET_識別番号(NICKNAME:L_CHARA)
+		ENDIF
+	ENDIF
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000504
+	IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000503 || CFLAG:L_CHARA:본체버전관리보조정보 < 6
+		IF NICKNAME:L_CHARA == "ウィディーネ"
+			NICKNAME:L_CHARA '= "ウィンディーネ"
+			SIF NAME:L_CHARA == "ウィディーネ"
+				NAME:L_CHARA '= "ウィンディーネ"
+			SIF CALLNAME:L_CHARA == "ウィディーネ"
+				CALLNAME:L_CHARA '= "ウィンディーネ"
+		ENDIF
+	ENDIF
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000505
+	;突然変異ﾃﾞﾐﾅﾝﾃﾞｨ
+	IF NO:L_CHARA == 3315
+		SELECTCASE CFLAG:L_CHARA:이벤트가입
+			CASE 0
+				CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:Ｑ・데미난디]]
+				CFLAG:L_CHARA:이벤트가입 = 1
+			CASE 1, 2
+				CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:히메미야키쿠에]]
+		ENDSELECT
+	ENDIF
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000507
+	;ユーザー投稿フィルターからの離脱と、ShinEraTensei オリジナル カテゴリー新設のため、番号移動
+	SELECTCASE NO:L_CHARA
+		;デモニカオペレータ
+		CASE 4970
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:데모니카오퍼레이터]]
+		;デモニカオペレータ マッチョ
+		CASE 4971
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:마초]]
+		;デモニカオペレータ マイルド
+		CASE 4972
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:마일드]]
+		;デモニカオペレータ 異能ちゃん
+		CASE 4973
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:이능쨩]]
+		;창부 シェリー
+		CASE 9503
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:셰리]]
+		;창부 ナヴィ
+		CASE 9504
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:나뷔]]
+		;창부 メラニー
+		CASE 9505
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:멜라니]]
+		;창부 ミア
+		CASE 9506
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:미아]]
+		;창부 ウェンディー
+		CASE 9507
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:웬디]]
+		;창부 ベリンダ
+		CASE 9508
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:벨린다]]
+		;창부 楓_娼婦
+		CASE 9509
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:카에데_창부]]
+		;창부 クッキー
+		CASE 9510
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:쿠키]]
+		;창부 グリムヒルデ（明らかに元ネタがあるのでユーザー投稿に残留、番号だけ詰める）
+		CASE 9511
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:크림힐트]]
+		;창부 りんご
+		CASE 9512
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:링고]]
+		;창부 ルーセラ
+		CASE 9513
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:루세라]]
+		;六本木大歓楽街の悪魔人
+		CASE 9516
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:롯본기대환락가의악마인]]
+		;聖乳メシア教徒
+		CASE 9517
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:성유메시아교도]]
+		;味方にいるロンギヌスはすべて噂と見なし、NO付け替え処理（正規の手段ではボスキャラ版は入手できないため）
+		;ロンギヌス１_噂
+		CASE 4036
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:롱기누스１_소문]]
+		;ロンギヌス２_噂
+		CASE 4035
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:롱기누스２_소문]]
+		
+		;ロンギヌス３_噂
+		CASE 4034
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:롱기누스３_소문]]
+		
+		;ロンギヌス４_噂
+		CASE 4033
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:롱기누스４_소문]]
+		
+		;ロンギヌス５_噂
+		CASE 4032
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:롱기누스５_소문]]
+		
+		;ロンギヌス６_噂
+		CASE 4031
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:롱기누스６_소문]]
+		
+		;ロンギヌス７_噂
+		CASE 4030
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:롱기누스７_소문]]
+		
+		;ロンギヌス８_噂
+		CASE 4029
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:롱기누스８_소문]]
+		
+		;ロンギヌス９_噂
+		CASE 4028
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:롱기누스９_소문]]
+		;ロンギヌス１０_噂
+		CASE 4027
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:롱기누스１０_소문]]
+		;ロンギヌス１１_噂
+		CASE 4026
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:롱기누스１１_소문]]
+		;ロンギヌス１２_噂
+		CASE 4025
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:롱기누스１２_소문]]
+		;ロンギヌス１３_噂
+		CASE 4024
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:롱기누스１３_소문]]
+		;ダークサマナー　加入する「ダークサマナー」は変わった悪魔の売買に登場するやつのみだと思うので、すべて同期のダークサマナーに変換
+		CASE 3118
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:동기다크서머너]]
+		;Ｑ・デミナンディ
+		CASE 9524
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:Ｑ・데미난디]]
+		;ヒメミヤキクエ
+		CASE 9525
+			CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:히메미야키쿠에]]
+	ENDSELECT
+ENDIF
+
+;キャラ個別互換処理。全処理置き場
+@VERUP_FOR_CHARA_LEGACY, L_CHARA
+#DIM DYNAMIC TEMP
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_CHARA
+IF CFLAG:L_CHARA:본체버전정보 < 0309154
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 3
+		SIF NO:L_CHARA == [[キャラ:초텐짱]]
+			CFLAG:L_CHARA:링크불능 = 1
+		IF GET_RACE(ABL:L_CHARA:종족) == "머신"
+			CFLAG:L_CHARA:소속ＣＯＭＰ = 0
+			CALL CHANGE_ROLE, L_CHARA, "", ""
+		ENDIF
+		SIF EQUIP:L_CHARA:악세서리 == 5204
+			EQUIP:L_CHARA:악세서리 = 0
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 4
+		IF GROUPMATCH(NO:L_CHARA, [[キャラ:유리코]], [[キャラ:리리스_진]], [[キャラ:사사즈카치요_네코마타]], [[キャラ:사사즈카치요_바스테드]], [[キャラ:듀]])
+			TEMP = NO:L_CHARA
+			IF NO:L_CHARA !=  [[キャラ:듀]]
+				FLAG:(10000 + NO:L_CHARA) = FLAG:(10000 + TEMP)
+				FLAG:(20000 + NO:L_CHARA) = FLAG:(20000 + TEMP)
+				FLAG:(30000 + NO:L_CHARA) = FLAG:(30000 + TEMP)
+				FLAG:(50000 + NO:L_CHARA) = FLAG:(50000 + TEMP)
+				FLAG:(10000 + TEMP) = 0
+				FLAG:(20000 + TEMP) = 0
+				FLAG:(30000 + TEMP) = 0
+				FLAG:(50000 + TEMP) = 0
+			ENDIF
+			ABL:L_CHARA:종족 = GET_RACE_NUM("악마인")
+			SIF ABL:L_CHARA:변이 == 425
+				ABL:L_CHARA:변이 = [[キャラ:리리스_진]]
+			SIF ABL:L_CHARA:변이 == 841
+				ABL:L_CHARA:변이 = [[キャラ:사사즈카치요_바스테드]]
+			CALL CLEAR_ROLE_TALENT, L_CHARA
+			CFLAG:L_CHARA:소속ＣＯＭＰ = 0
+			CALL CHANGE_ROLE, L_CHARA, "스킬적성_3", ""
+			EQUIP:L_CHARA:악세서리 = 0
+		ELSEIF ABL:L_CHARA:종족 == GET_RACE_NUM("악마인")
+			IF L_CHARA != MASTER && CSVABL(NO:L_CHARA, GETNUM(ABL, "종족")) != GET_RACE_NUM("악마인")
+				CALL CHANGE_ROLE, L_CHARA, "데모노이드", ""
+			ELSE
+				SIF L_CHARA != MASTER
+					CALL CLEAR_ROLE_TALENT, L_CHARA
+				CFLAG:L_CHARA:소속ＣＯＭＰ = 0
+				CALL CHANGE_ROLE, L_CHARA, "", ""
+			ENDIF
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 5
+		IF GROUPMATCH(NO:L_CHARA, [[キャラ:유리코]], [[キャラ:리리스_진]], [[キャラ:사사즈카치요_네코마타]], [[キャラ:사사즈카치요_바스테드]]) && TALENT:L_CHARA:마술의소양 == 5
+			TALENT:L_CHARA:마술의소양 = 0
+			TALENT:L_CHARA:스킬적성 = 3
+		ENDIF
+		;本来のゲストからフラグをはく奪するのを回避するための分岐
+		IF FLAG:SHOP커맨드 == [[ショップ:탐색]]
+			SIF CPOS(L_CHARA) == 0
+				CFLAG:L_CHARA:게스트가입플래그 = 0
+		ELSE
+			CFLAG:L_CHARA:게스트가입플래그 = 0
+		ENDIF
+	ENDIF
+ENDIF
+IF CFLAG:L_CHARA:본체버전정보 < 00003309153
+	IF NO:L_CHARA == [[キャラ:모・쇼보]]
+		ABL:L_CHARA:습득스킬8 = [[스킬:소녀의간식]]
+		ABL:L_CHARA:습득LV8 = 20
+	ENDIF
+	IF GROUPMATCH(NO:L_CHARA, [[キャラ:디오니소스]], [[キャラ:지크프리트]], [[キャラ:세이렌]]) && CFLAG:L_CHARA:998
+		CFLAG:L_CHARA:998 = 0
+		CFLAG:L_CHARA:이벤트가입 = 1
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF CFLAG:L_CHARA:본체버전정보 < 00104309153
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		IF NO:L_CHARA == [[キャラ:클로딘]] && CFLAG:L_CHARA:998
+			CALL LEARN_PU_SKILL, L_CHARA, "メリジェーヌの爪"
+			CFLAG:L_CHARA:998 = 0
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:아스톨포]]
+			BASE:L_CHARA:신경 = 150
+			ABL:L_CHARA:습득스킬9 = [[스킬:기공(대)]]
+			ABL:L_CHARA:습득LV9 = 66
+		ENDIF
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF CFLAG:L_CHARA:본체버전정보 < 00104309153
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		CFLAG:L_CHARA:31 = 0
+	ENDIF
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000106
+	SIF NO:L_CHARA == [[キャラ:후타바 안즈]] && TALENT:L_CHARA:아웃사이더 && CFLAG:L_CHARA:초기링크악마 == 0
+		CFLAG:L_CHARA:초기링크악마 = [[キャラ:벨페고르]]
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 00200
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		SIF CFLAG:L_CHARA:이벤트가입 == -1
+			CFLAG:L_CHARA:이벤트가입 = 0
+		ANALYSIS_RATE:(NO:L_CHARA) = ANALYSIS_COMPLETED
+		SETBIT IS_CHARA_COMPANIONED:(NO:L_CHARA), CFLAG:L_CHARA:이벤트가입
+		IF NO:L_CHARA == [[キャラ:카야]] && CFLAG:L_CHARA:이벤트가입 == 1
+			BASE:L_CHARA:검격 = 75
+			BASE:L_CHARA:비구 = 125
+			BASE:L_CHARA:타격 = 75
+			BASE:L_CHARA:전술 = 125
+			BASE:L_CHARA:화염 = 100
+			BASE:L_CHARA:빙결 = 100
+			BASE:L_CHARA:전격 = 0
+			BASE:L_CHARA:충격 = 125
+			BASE:L_CHARA:신경 = 999
+			BASE:L_CHARA:정신 = 999
+			BASE:L_CHARA:파마 = 200
+			BASE:L_CHARA:주살 = 999
+			BASE:L_CHARA:지변 = 100
+			BASE:L_CHARA:수격 = 100
+			BASE:L_CHARA:질풍 = 100
+			BASE:L_CHARA:중력 = 100
+			BASE:L_CHARA:핵열 = 100
+			BASE:L_CHARA:만능 = 100
+			BASE:L_CHARA:사이코 = 100
+		ENDIF
+		IF GROUPMATCH(NO:L_CHARA, [[キャラ:앨리스]], [[キャラ:마도카]], [[キャラ:호무라]], [[キャラ:호무라_U-U]]) && 陥落(L_CHARA)
+			CALL EVENT_CHANGE_TRAIN_TALENT, L_CHARA, RESULTS, "GET"
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:네비로스]]
+			CALL SET_LEARN_SKILL, L_CHARA, "사령이부르는소리", 60
+			SIF 陥落(L_CHARA)
+				CALL EVENT_CHANGE_TRAIN_TALENT, L_CHARA, RESULTS, "GET"
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:베리얼]]
+			CALL SET_LEARN_SKILL, L_CHARA, "고모라의옥염", 65
+			SIF 陥落(L_CHARA)
+				CALL EVENT_CHANGE_TRAIN_TALENT, L_CHARA, RESULTS, "GET"
+		ENDIF
+		
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 41, [[스킬:피의안달루시아]]
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 543, [[스킬:적색의카포테]]
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 740, [[스킬:헬버너]]
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 1037, [[스킬:헬에기조스트]]
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 1320, [[스킬:회전설법]]
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 2076, [[스킬:명상]]
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 1408, [[스킬:죽어줄래？]]
+
+		IF NO:L_CHARA == [[キャラ:레비아탄]]
+			;口上で付けるフラグが
+			IF CFLAG:L_CHARA:201 > 0
+				CFLAG:L_CHARA:구상셀렉트 = 1
+				SIF CSTR:L_CHARA:종족명 == "竜の花嫁"
+					CALL SET_ACHIEVED_CHARA_ENDING, L_CHARA, "妻・夫END"
+			ENDIF
+		ENDIF
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000107
+	SIF NO:L_CHARA == [[キャラ:운디네]]
+		TALENT:L_CHARA:달인 = 0
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		IF NO:L_CHARA == [[キャラ:쿠비키리바사라]]
+			CALL LEARN_PU_SKILL, L_CHARA, "影煩い"
+			CALL LEARN_PU_SKILL, L_CHARA, "鵺玉_固有"
+			CALL LEARN_PU_SKILL, L_CHARA, "首斬り破沙羅修羅奥義"
+			CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, [[스킬:누에타마]]
+		ENDIF
+		;影縫と影煩いと獄門
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 3019
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 3020
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 3520
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		ABL:L_CHARA:수태아이템 = CSVABL(NO:L_CHARA, GETNUM(ABL, "수태아이템"))
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000108
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		IF NO:L_CHARA == [[キャラ:쿠비키리바사라]]
+			ABL:L_CHARA:수태아이템 = CSVABL(NO:L_CHARA, GETNUM(ABL, "수태아이템"))
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:나나]] && CFLAG:L_CHARA:이벤트가입 > 0
+			大場ななの記憶:3:7 = 1
+			SAVEGLOBAL
+		ENDIF
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000110
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 618
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 2467
+
+		IF NO:L_CHARA == [[キャラ:알리비나]]
+			CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/突撃兵の心得", 60
+		ENDIF
+
+		CALL CONVERT_PU_SKILL_FOR_CHARA, L_CHARA, "エレウシスの祈り", "エレウシスの実り"
+		IF NO:L_CHARA == [[キャラ:케이네]]
+			ABL:L_CHARA:공격상성 = CSVABL(NO:L_CHARA, GETNUM(ABL, "공격상성"))
+			ABL:L_CHARA:최저공격횟수 = CSVABL(NO:L_CHARA, GETNUM(ABL, "최저공격횟수"))
+			ABL:L_CHARA:최대공격횟수 = CSVABL(NO:L_CHARA, GETNUM(ABL, "최대공격횟수"))
+			ABL:L_CHARA:사거리 = CSVABL(NO:L_CHARA, GETNUM(ABL, "사거리"))
+			ABL:L_CHARA:공격범위 = CSVABL(NO:L_CHARA, GETNUM(ABL, "공격범위"))
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:카야]] && CFLAG:L_CHARA:이벤트가입 == 1
+			BASE:L_CHARA:검격 = 75
+			BASE:L_CHARA:비구 = 125
+			BASE:L_CHARA:타격 = 75
+			BASE:L_CHARA:전술 = 125
+			BASE:L_CHARA:화염 = 100
+			BASE:L_CHARA:빙결 = 100
+			BASE:L_CHARA:전격 = 0
+			BASE:L_CHARA:충격 = 125
+			BASE:L_CHARA:신경 = 999
+			BASE:L_CHARA:정신 = 999
+			BASE:L_CHARA:파마 = 200
+			BASE:L_CHARA:주살 = 999
+			BASE:L_CHARA:지변 = 100
+			BASE:L_CHARA:수격 = 100
+			BASE:L_CHARA:질풍 = 100
+			BASE:L_CHARA:중력 = 100
+			BASE:L_CHARA:핵열 = 100
+			BASE:L_CHARA:만능 = 100
+			BASE:L_CHARA:사이코 = 100
+		ENDIF
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000201
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		IF EQUIP:L_CHARA:악세서리 == 5498
+			CALL GETS_INSTALLSOFT("그리프시드")
+			EQUIP:L_CHARA:악세서리 = 0
+		ENDIF
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000203
+	CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 2489
+	CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 2490
+	CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 2491
+
+	CALL DISPOSE_EQUIP_CHARA, L_CHARA, 2628
+	CALL DISPOSE_EQUIP_CHARA, L_CHARA, 2629
+	;CALL 装備強化_CSTR, "해제", 対象, 装備番号
+	;SIF EQUIP:L_CHARA:총 
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000300
+	;変異・陥落合体による差し替え処理を廃棄
+	SIF CFLAG:L_CHARA:4900 && EXISTCSV(CFLAG:L_CHARA:4900)
+		NO:L_CHARA = CFLAG:L_CHARA:4900
+	CFLAG:L_CHARA:4900 = 0
+	CFLAG:L_CHARA:4902 = 0
+	CFLAG:L_CHARA:4904 = 0
+	CFLAG:L_CHARA:4906 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000301
+	IF CFLAG:L_CHARA:본체버전관리보조정보 == 0
+		IF NO:L_CHARA == [[キャラ:하이픽시]]
+			IF CSTR:L_CHARA:基本アイコンファイルネーム != ""
+				TEMP = TOINT(AUTO_SPLIT(CSTR:L_CHARA:基本アイコンファイルネーム, "_", 2))
+				SELECTCASE TEMP
+					CASE 0, 1, 2, 3, 4, 5
+						CSTR:L_CHARA:基本アイコンファイルネーム = ハイピクシー_FACE_{TEMP + 2}
+					CASE 6, 7
+						CSTR:L_CHARA:基本アイコンファイルネーム = ハイピクシー_FACE_{TEMP - 6}
+				ENDSELECT
+			ENDIF
+			IF CSTR:L_CHARA:調教アイコンファイルネーム != ""
+				TEMP = TOINT(AUTO_SPLIT(CSTR:L_CHARA:調教アイコンファイルネーム, "_", 2))
+				SELECTCASE TEMP
+					CASE 0, 1, 2, 4, 5
+						CSTR:L_CHARA:調教アイコンファイルネーム = ハイピクシー_FACE_{TEMP + 2}
+					CASE 6, 7
+						CSTR:L_CHARA:調教アイコンファイルネーム = ハイピクシー_FACE_{TEMP - 6}
+				ENDSELECT
+			ENDIF
+		ENDIF
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000303
+	IF CFLAG:L_CHARA:본체버전관리보조정보 == 0
+		FOR LCOUNT, 1, 21
+			SIF GROUPMATCH(ABL:L_CHARA:@"스킬{LCOUNT}", [[스킬:P・체인지]])
+				ABL:L_CHARA:@"스킬{LCOUNT}" = 0
+		NEXT
+		SIF CFLAG:L_CHARA:전신복 == 6317
+			CFLAG:L_CHARA:전신복 =[[衣装:민족의상]]
+		SIF CFLAG:L_CHARA:초기전신복 == 6317
+			CFLAG:L_CHARA:초기전신복 =[[衣装:민족의상]]
+		SIF TALENT:L_CHARA:신뢰 && TALENT:L_CHARA:맹우
+			TALENT:L_CHARA:신뢰 = 0
+		IF EXISTCSV(CFLAG:L_CHARA:초기링크악마)  && (!ABL:L_CHARA:초기링크악마최저공격횟수 || !ABL:L_CHARA:초기링크악마최대공격횟수)
+			ABL:L_CHARA:초기링크악마공격상성 = CSVABL(CFLAG:L_CHARA:초기링크악마, GETNUM(ABL, "초기링크악마공격상성"))
+			ABL:L_CHARA:초기링크악마최저공격횟수 = CSVABL(CFLAG:L_CHARA:초기링크악마, GETNUM(ABL, "초기링크악마최저공격횟수"))
+			ABL:L_CHARA:초기링크악마최대공격횟수 = CSVABL(CFLAG:L_CHARA:초기링크악마, GETNUM(ABL, "초기링크악마최대공격횟수"))
+			ABL:L_CHARA:초기링크악마사거리 = CSVABL(CFLAG:L_CHARA:초기링크악마, GETNUM(ABL, "초기링크악마사거리"))
+			ABL:L_CHARA:초기링크악마공격범위 = CSVABL(CFLAG:L_CHARA:초기링크악마, GETNUM(ABL, "초기링크악마공격범위"))
+			ABL:L_CHARA:초기링크악마추가효과 = CSVABL(CFLAG:L_CHARA:초기링크악마, GETNUM(ABL, "초기링크악마추가효과"))
+			ABL:L_CHARA:초기링크악마추가효과상성 = CSVABL(CFLAG:L_CHARA:초기링크악마, GETNUM(ABL, "초기링크악마추가효과상성"))
+			ABL:L_CHARA:초기링크악마추가효과명중률 = CSVABL(CFLAG:L_CHARA:초기링크악마, GETNUM(ABL, "초기링크악마추가효과명중률"))
+			ABL:L_CHARA:초기링크악마추가효과최대명중률 = CSVABL(CFLAG:L_CHARA:초기링크악마, GETNUM(ABL, "초기링크악마추가효과최대명중률"))
+		ENDIF
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000304
+	IF CFLAG:L_CHARA:본체버전관리보조정보 == 0
+		IF CSTR:L_CHARA:롤 == "悪魔" && !TALENT:L_CHARA:스킬적성
+			TALENT:L_CHARA:스킬적성 = 3
+		ENDIF
+	ENDIF
+	;雑賀孫一が全身服にホワイトブリムをつけていた不具合を修正
+	SIF CFLAG:L_CHARA:전신복 == 1
+		CFLAG:L_CHARA:전신복 = 0
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000305
+	IF CFLAG:L_CHARA:본체버전관리보조정보 == 0
+		FOR LCOUNT, 1, 20
+			SIF CFLAG:L_CHARA:@"캐릭터상성치{LCOUNT}" == 0
+				CONTINUE
+			TEMP = FINDCHARA_ID(CFLAG:L_CHARA:@"캐릭터상성{LCOUNT}")
+			SIF TEMP < 0
+				CONTINUE
+			CFLAG:L_CHARA:@"캐릭터상성{LCOUNT}" = CFLAG:TEMP:실제가입시간
+		NEXT
+		;相性値と相性フラグをクリア
+		FOR LCOUNT, 1640, 1680
+			CFLAG:L_CHARA:LCOUNT = 0
+		NEXT
+		FOR LCOUNT, 1750, 1780
+			CFLAG:L_CHARA:LCOUNT = 0
+		NEXT
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000306
+	IF CFLAG:L_CHARA:본체버전관리보조정보 == 0
+		IF NO:L_CHARA == [[キャラ:동기다크서머너]]
+			VARS TEMPS
+			TEMPS '= "/" + GET_RPG_CSTR_TAKEOVER(L_CHARA, "迷宮案内人スキル") + "/"
+			TEMPS '= REPLACE(TEMPS, "/" + "5621" + "/", "/")
+			TEMPS '= SUBSTRING(TEMPS, 1, STRLENS(TEMPS) - 2)
+			CALL SET_RPG_CSTR_TAKEOVER, L_CHARA, "迷宮案内人スキル", TEMPS
+			CALL CLEAR_LEARNED_SKILL, L_CHARA, "5621"
+			FOR LCOUNT, 1, 21
+				SIF ABL:L_CHARA:@"스킬{LCOUNT}" == 5621
+					ABL:L_CHARA:@"스킬{LCOUNT}" = 0
+			NEXT
+		ENDIF
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000307
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		IF NO:L_CHARA == [[キャラ:블랙매지션걸]]
+			CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/黒魔術の継承", 1, , "入れ替え確認"
+			CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/黒魔導爆裂破", 70, , "入れ替え確認"
+			CALL CLEAR_LEARNED_SKILL, L_CHARA, "[[스킬:코즈믹플레어]]"
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:리나_인버스]]
+			CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/ドラグスレイブ", 70, , "入れ替え確認"
+			CALL CLEAR_LEARNED_SKILL, L_CHARA, "[[스킬:코즈믹플레어]]"
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:아우스]]
+			CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/地霊使い", 1, , "入れ替え確認"
+			CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/アウス_大霊術－「一輪」", 30, , "入れ替え確認"
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:윈]]
+			CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/風霊使い", 1, , "入れ替え確認"
+			CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/ウィン_大霊術－「一輪」", 30, , "入れ替え確認"
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:에리아]]
+			CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/水霊使い", 1, , "入れ替え確認"
+			CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/エリア_大霊術－「一輪」", 30, , "入れ替え確認"
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:히타]]
+			CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/火霊使い", 1, , "入れ替え確認"
+			CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/ヒータ_大霊術－「一輪」", 30, , "入れ替え確認"
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:뱀파이어레이디]]
+			CALL CLEAR_ALL_SKILL, L_CHARA
+			CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+			CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+			FOR LCOUNT, 1, 6
+				CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+			NEXT
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:코즈피]]
+			CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+			CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+			FOR LCOUNT, 1, 6
+				CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+			NEXT
+			FOR LCOUNT, 1, 21
+				IF ABL:L_CHARA:@"스킬{LCOUNT}" == [[스킬:서드아이]]
+					ABL:L_CHARA:@"스킬{LCOUNT}" = [[스킬:전용기1]]
+				ENDIF
+			NEXT
+			SIF !HAVE_PU_SKILL(L_CHARA, "被害妄想")
+				ABL:L_CHARA:스킬1 = [[스킬:전용기1]]
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+			NEXT
+		ENDIF
+		CSTR:L_CHARA:캐릭터고유소질정의1 '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "캐릭터고유소질정의1"))
+		TALENT:L_CHARA:캐릭터고유소질1 = CSVTALENT(NO:L_CHARA, GETNUM(TALENT, "캐릭터고유소질1"))
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000308
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 4
+		IF GROUPMATCH(NO:L_CHARA, [[キャラ:아우스]],[[キャラ:윈]],[[キャラ:에리아]],[[キャラ:히타]],[[キャラ:라뷰린스]])
+			CSTR:L_CHARA:상성그룹 '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "상성그룹"))
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:제퓨티_베이커리작전]]
+			CALL CLEAR_ALL_SKILL, L_CHARA
+			CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+			CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+			FOR LCOUNT, 1, 6
+				CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+			NEXT
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 5
+		IF NO:L_CHARA == [[キャラ:이계의다크서머너]]
+			CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/天より降り注ぐ剣の雨", 70, , "入れ替え確認"
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 6
+		IF CSVCFLAG(NO:L_CHARA, GETNUM(CFLAG, "EXTRA출전")) > 0 && EXTRA_TITLE:CSVCFLAG(NO:L_CHARA, GETNUM(CFLAG, "EXTRA출전")) == "遊戯王"
+			CSTR:L_CHARA:아이콘패턴 '= "デフォルト"
+			VARI DO_CHANGE = 1
+			SELECTCASE NO:L_CHARA
+				CASE [[キャラ:히타]]
+					FOR LCOUNT, 0, TYPENUM
+						SELECTCASE GET_TYPE(LCOUNT)
+							CASE "빙결", "수격", "전술", "신경", "정신", 
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 150
+									CONTINUE
+							CASE "화염", "핵열"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == -50
+									CONTINUE
+							CASE "주살"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 0
+									CONTINUE
+							CASE "사이코"
+								CONTINUE
+							CASEELSE
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 100
+									CONTINUE
+						ENDSELECT
+						DO_CHANGE = 0
+						BREAK
+					NEXT
+				CASE [[キャラ:윈]]
+					FOR LCOUNT, 0, TYPENUM
+						SELECTCASE GET_TYPE(LCOUNT)
+							CASE "전술", "충격", "신경", "정신", "지변"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 150
+									CONTINUE
+							CASE "전격", "질풍"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == -50
+									CONTINUE
+							CASE "주살"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 0
+									CONTINUE
+							CASE "사이코"
+								CONTINUE
+							CASEELSE
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 100
+									CONTINUE
+						ENDSELECT
+						DO_CHANGE = 0
+						BREAK
+					NEXT
+				CASE [[キャラ:에리아]]
+					FOR LCOUNT, 0, TYPENUM
+						SELECTCASE GET_TYPE(LCOUNT)
+							CASE "화염", "핵열", "전술", "신경", "정신", 
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 150
+									CONTINUE
+							CASE "빙결", "수격"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == -50
+									CONTINUE
+							CASE "주살"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 0
+									CONTINUE
+							CASE "사이코"
+								CONTINUE
+							CASEELSE
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 100
+									CONTINUE
+						ENDSELECT
+						DO_CHANGE = 0
+						BREAK
+					NEXT
+				CASE [[キャラ:아우스]]
+					FOR LCOUNT, 0, TYPENUM
+						SELECTCASE GET_TYPE(LCOUNT)
+							CASE "전격", "질풍", "전술", "신경", "정신", 
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 150
+									CONTINUE
+							CASE "지변", "충격"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == -50
+									CONTINUE
+							CASE "주살"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 0
+									CONTINUE
+							CASE "사이코"
+								CONTINUE
+							CASEELSE
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 100
+									CONTINUE
+						ENDSELECT
+						DO_CHANGE = 0
+						BREAK
+					NEXT
+				CASE [[キャラ:라뷰린스]]
+					FOR LCOUNT, 0, TYPENUM
+						SELECTCASE GET_TYPE(LCOUNT)
+							CASE "파마"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 200
+									CONTINUE
+							CASE "검격", "전격", "질풍"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 150
+									CONTINUE
+							CASE "충격"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 125
+									CONTINUE
+							CASE "화염"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 50
+									CONTINUE
+							CASE "신경", "정신", "주살"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 0
+									CONTINUE
+							CASE "사이코"
+								CONTINUE
+							CASEELSE
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 100
+									CONTINUE
+						ENDSELECT
+						DO_CHANGE = 0
+						BREAK
+					NEXT
+				CASE [[キャラ:라이너]]
+					FOR LCOUNT, 0, TYPENUM
+						SELECTCASE GET_TYPE(LCOUNT)
+							CASE "주살" 
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 150
+									CONTINUE
+							CASE "파마"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 0
+									CONTINUE
+							CASE "사이코"
+								CONTINUE
+							CASEELSE
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 100
+									CONTINUE
+						ENDSELECT
+						DO_CHANGE = 0
+						BREAK
+					NEXT
+				CASE [[キャラ:달크]]
+					FOR LCOUNT, 0, TYPENUM
+						SELECTCASE GET_TYPE(LCOUNT)
+							CASE "파마" 
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 150
+									CONTINUE
+							CASE "주살"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 0
+									CONTINUE
+							CASE "사이코"
+								CONTINUE
+							CASEELSE
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 100
+									CONTINUE
+						ENDSELECT
+						DO_CHANGE = 0
+						BREAK
+					NEXT
+				CASE [[キャラ:블랙매지션걸]]
+					FOR LCOUNT, 0, TYPENUM
+						SELECTCASE GET_TYPE(LCOUNT)
+							CASE "전격"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 200
+									CONTINUE
+							CASE "전술", "신경", "정신" 
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 150
+									CONTINUE
+							CASE "화염", "핵열", "주살"
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 0
+									CONTINUE
+							CASE "사이코"
+								CONTINUE
+							CASEELSE
+								SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 100
+									CONTINUE
+						ENDSELECT
+						DO_CHANGE = 0
+						BREAK
+					NEXT
+				CASEELSE
+					DO_CHANGE = 0
+			ENDSELECT
+			IF DO_CHANGE
+				FOR LCOUNT, 0, TYPENUM
+					BASE:L_CHARA:GET_TYPE(LCOUNT) = CSVBASE(NO:L_CHARA, GETNUM(BASE, GET_TYPE(LCOUNT)))
+				NEXT
+			ENDIF
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:밀피오레]]
+			CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+			CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+			FOR LCOUNT, 1, 3
+				CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+			NEXT
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:가렌]]
+			CALL CLEAR_ALL_SKILL, L_CHARA
+			CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+			CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+			FOR LCOUNT, 1, 12
+				CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+			NEXT
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 7
+		IF NO:L_CHARA == [[キャラ:가렌]]
+			TALENT:L_CHARA:무도의마음가짐 = 5
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 9
+		IF NO:L_CHARA == [[キャラ:쿄코]]
+			VARI DO_CHANGE = 1
+			FOR LCOUNT, 0, SUCCESSIONNUM
+				SELECTCASE GET_SUCCESSION(LCOUNT)
+					CASE "검격", "파마", "지원"
+						SIF TALENT:L_CHARA:GET_SUCCESSION(LCOUNT)
+							CONTINUE
+					CASEELSE
+						SIF !TALENT:L_CHARA:GET_SUCCESSION(LCOUNT)
+							CONTINUE
+				ENDSELECT
+				DO_CHANGE = 0
+				BREAK
+			NEXT
+			IF DO_CHANGE
+				FOR LCOUNT, 0, SUCCESSIONNUM
+					TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) = CSVTALENT(NO:L_CHARA,GETNUM(TALENT, GET_SUCCESSION(LCOUNT)))
+				NEXT
+			ENDIF
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:Ophelia]]
+			VARI DO_CHANGE = 1
+			FOR LCOUNT, 0, SUCCESSIONNUM
+				SELECTCASE GET_SUCCESSION(LCOUNT)
+					CASE "검격", "주살", "화염"
+						SIF TALENT:L_CHARA:GET_SUCCESSION(LCOUNT)
+							CONTINUE
+					CASEELSE
+						SIF !TALENT:L_CHARA:GET_SUCCESSION(LCOUNT)
+							CONTINUE
+				ENDSELECT
+				DO_CHANGE = 0
+				BREAK
+			NEXT
+			IF DO_CHANGE
+				FOR LCOUNT, 0, SUCCESSIONNUM
+					TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) = CSVTALENT(NO:L_CHARA,GETNUM(TALENT, GET_SUCCESSION(LCOUNT)))
+				NEXT
+			ENDIF
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:사토노]]
+			SIF GET_RACE(ABL:L_CHARA:종족) == "요마"
+				ABL:L_CHARA:종족 = GET_RACE_NUM("요귀")
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:밀피오레]]
+			CSTR:L_CHARA:종족명 = 異世界人
+			CSTR:L_CHARA:이인칭 = サマナー様
+			CSTR:L_CHARA:타이틀 = 犬姫無惨
+			CALLNAME:L_CHARA = ミルヒオーレ
+			NICKNAME:L_CHARA = ミルヒオーレ
+			TALENT:L_CHARA:발정가능 = 1
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 10
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:블랙매지션걸]]
+				NICKNAME:L_CHARA '= "ブラックマジシャンガール"
+				CSTR:L_CHARA:상성그룹 '= "黒魔術師"
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/賢者の宝石", 1, , "入れ替え確認"
+			CASE [[キャラ:아리안나]], [[キャラ:아리안느]]
+				CSTR:L_CHARA:일인칭 '= "아리아"
+			CASE [[キャラ:뱀파이어레이디]]
+				CALL SET_LEARN_SKILL, L_CHARA, "이할의활천", 33, , "入れ替え確認"
+				CALL SET_LEARN_SKILL, L_CHARA, "치유촉진(중)", 48, , "入れ替え確認"
+		ENDSELECT
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000309
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 2813, 0
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 2814, 0
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 2815, 0
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 2816, 0
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 2817, 0
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 2818, 0
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 2819, 0
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		IF NO:L_CHARA == [[キャラ:도쿄타워의마녀]]
+			CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+			CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+			FOR LCOUNT, 1, 13
+				CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+			NEXT
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 3
+		IF NO:L_CHARA == [[キャラ:아사기_봄버걸]]
+			IF CFLAG:L_CHARA:옷 == 1
+				FOR LCOUNT, 0, 14
+					CFLAG:L_CHARA:(GET_CLOTHESNAME(LCOUNT)) = CSVCFLAG(NO:L_CHARA, GETNUM(CFLAG, GET_CLOTHESNAME(LCOUNT)))
+				NEXT
+			ENDIF
+			NICKNAME:L_CHARA '= CSVNICKNAME(NO:L_CHARA)
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 4
+		IF NO:L_CHARA == [[キャラ:유키카제]] && TALENT:L_CHARA:달인 == 0
+			CALL CHANGE_ROLE, L_CHARA, "달인_1/공격의심득_3", , , "サブ素質引継ぎなし"
+			CALL CLEAR_ALL_SKILL, L_CHARA
+			CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+			CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+			FOR LCOUNT, 1, 6
+				CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+			NEXT
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 5
+		VARI TEMP
+		;異常な服がセットされている場合CSVからセットしなおす
+		FOR LCOUNT, 0, 14
+			TEMP = GROUPMATCH(GET_CLOTHESNAME(LCOUNT), "그외2", "그외3") ? 11 # LCOUNT
+			IF CFLAG:L_CHARA:GET_CLOTHESNAME(LCOUNT) > 0 && !INRANGE(CFLAG:L_CHARA:GET_CLOTHESNAME(LCOUNT), TEMP * 100, 99 + TEMP * 100)
+				CFLAG:L_CHARA:전회조교시의복장기록 = 0
+				FOR LCOUNT:1, 0,  14
+					CFLAG:L_CHARA:GET_CLOTHESNAME(LCOUNT:1) = CSVCFLAG(NO:L_CHARA, GETNUM(CFLAG, GET_CLOTHESNAME(LCOUNT:1)))
+					SIF CFLAG:L_CHARA:GET_CLOTHESNAME(LCOUNT:1)
+						SETBIT CFLAG:L_CHARA:전회조교시의복장기록, LCOUNT:1
+				NEXT
+				CFLAG:L_CHARA:전회탐색시의복장기록 = CFLAG:L_CHARA:전회조교시의복장기록
+				BREAk
+			ENDIF
+		NEXT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 7
+		IF NO:L_CHARA == [[キャラ:사쿠라_사쿠라대전]]
+			CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/破邪剣征・百花繚乱", 60, , "入れ替え確認"
+		ENDIF
+		NICKNAME:L_CHARA '= CSVNICKNAME(NO:L_CHARA)
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 8
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:레비]]
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/カートリッジ", 1, , "入れ替え確認"
+			CASE [[キャラ:슈텔]]
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/カートリッジ", 1, , "入れ替え確認"
+			CASE [[キャラ:디아체]]
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/王の威光", 64, , "入れ替え確認"
+			CASE [[キャラ:유리_나노하]]
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/永遠結晶エグザミア", 71, , "入れ替え確認"
+		ENDSELECT
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000310
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		IF NO:L_CHARA == [[キャラ:머드락]] && TALENT:L_CHARA:달인 == 0
+			CALL CHANGE_ROLE, L_CHARA, "달인_1/방어의심득_3/마술의소양_2", , , "サブ素質引継ぎなし"
+			CALL CLEAR_ALL_SKILL, L_CHARA
+			CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+			CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+			FOR LCOUNT, 1, 6
+				CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+			NEXT
+		ENDIF
+		SIF NO:L_CHARA == [[キャラ:청룡]] && CFLAG:L_CHARA:이벤트가입 == 1 && GET_RACE(ABL:L_CHARA:종족) != "외도"
+			CFLAG:L_CHARA:이벤트가입 = 0
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		TEMP = FINDCHARA_ID(CFLAG:L_CHARA:1030)
+		IF TEMP > 0
+			CFLAG:L_CHARA:링크캐릭터실제가입시간0 = CFLAG:TEMP:실제가입시간
+			CFLAG:TEMP:피링크캐릭터실제가입시간 = CFLAG:L_CHARA:실제가입시간
+		ENDIF
+		CFLAG:L_CHARA:1030 = 0
+	ENDIF
+	;A潜在と変身先対応を削除
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 3
+		TALENT:L_CHARA:233 = 0
+		TALENT:L_CHARA:234 = 0
+		SIF TALENT:L_CHARA:229 > 0
+			TALENT:L_CHARA:달인 = 1
+		TALENT:L_CHARA:229 = 0
+	ENDIF
+	CALL SET_ROLE, L_CHARA
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000311
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		IF NO:L_CHARA == [[キャラ:노아_라비리비]]
+			SIF CSTR:L_CHARA:基本アイコンファイルネーム == "ノア_兎_FACE_0" && CSTR:L_CHARA:調教アイコンファイルネーム == "ノア_兎_FACE_0" && CSTR:L_CHARA:아이콘패턴 == ""
+				CSTR:L_CHARA:아이콘패턴 '= "亡兎回帰変身"
+		ENDIF
+		IF TALENT:L_CHARA:무대소녀
+			CALL SYNC_STATUS, L_CHARA, "HPMP割合保持"
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 3
+		IF NO:L_CHARA == [[キャラ:코우린]]
+			CALL SET_LEARN_SKILL, L_CHARA, "이럴줄알았지", 50
+		ENDIF
+		IF NO:L_CHARA == [[キャラ:쿄우코]]
+			CALL SET_LEARN_SKILL, L_CHARA, "이럴줄알았지", 50
+		ENDIF
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000312
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:코우린]]
+				CALL SET_LEARN_SKILL, L_CHARA, "성대한접대", 20
+			CASE [[キャラ:쿄우코]]
+				CALL SET_LEARN_SKILL, L_CHARA, "검약가", 20
+			CASE [[キャラ:레스터_KE]]
+				CALL SET_LEARN_SKILL, L_CHARA, "성대한접대", 55
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		SIF CSVTALENT(NO:L_CHARA, GETNUM(TALENT, "달인")) && ABL:L_CHARA:종족 == 0
+			TALENT:L_CHARA:달인 = 1
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 4
+		IF NO:L_CHARA == [[キャラ:T씨]]
+			CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/親父譲りのお守り", 60
+			CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 1322, 0
+			CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, [[스킬:갓애로우]], 0
+		ENDIF
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 1322, [[스킬:갓애로우]]
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 42, [[스킬:테러소드]]
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 1140, [[스킬:혼의밸런스]]
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 2075, [[스킬:전염병생산]]
+	ENDIF
+	SELECTCASE NO:L_CHARA
+		CASE [[キャラ:화이트라이더]]
+			VARI DO_CHANGE = 1
+			FOR LCOUNT, 0, SUCCESSIONNUM
+				SELECTCASE GET_SUCCESSION(LCOUNT)
+					CASE "화염"
+						SIF TALENT:L_CHARA:GET_SUCCESSION(LCOUNT)
+							CONTINUE
+					CASEELSE
+						SIF !TALENT:L_CHARA:GET_SUCCESSION(LCOUNT)
+							CONTINUE
+				ENDSELECT
+				DO_CHANGE = 0
+				BREAK
+			NEXT
+			IF DO_CHANGE
+				FOR LCOUNT, 0, SUCCESSIONNUM
+					TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) = CSVTALENT(NO:L_CHARA,GETNUM(TALENT, GET_SUCCESSION(LCOUNT)))
+				NEXT
+			ENDIF
+		CASE [[キャラ:레드라이더]]
+			VARI DO_CHANGE = 1
+			FOR LCOUNT, 0, SUCCESSIONNUM
+				SELECTCASE GET_SUCCESSION(LCOUNT)
+					CASE "검격"
+						SIF TALENT:L_CHARA:GET_SUCCESSION(LCOUNT)
+							CONTINUE
+					CASEELSE
+						SIF !TALENT:L_CHARA:GET_SUCCESSION(LCOUNT)
+							CONTINUE
+				ENDSELECT
+				DO_CHANGE = 0
+				BREAK
+			NEXT
+			IF DO_CHANGE
+				FOR LCOUNT, 0, SUCCESSIONNUM
+					TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) = CSVTALENT(NO:L_CHARA,GETNUM(TALENT, GET_SUCCESSION(LCOUNT)))
+				NEXT
+			ENDIF
+		CASE [[キャラ:블랙라이더]]
+			VARI DO_CHANGE = 1
+			FOR LCOUNT, 0, SUCCESSIONNUM
+				SELECTCASE GET_SUCCESSION(LCOUNT)
+					CASE "빙결", "신경"
+						SIF TALENT:L_CHARA:GET_SUCCESSION(LCOUNT)
+							CONTINUE
+					CASEELSE
+						SIF !TALENT:L_CHARA:GET_SUCCESSION(LCOUNT)
+							CONTINUE
+				ENDSELECT
+				DO_CHANGE = 0
+				BREAK
+			NEXT
+			IF DO_CHANGE
+				FOR LCOUNT, 0, SUCCESSIONNUM
+					TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) = CSVTALENT(NO:L_CHARA,GETNUM(TALENT, GET_SUCCESSION(LCOUNT)))
+				NEXT
+			ENDIF
+		CASE [[キャラ:페일라이더]]
+			VARI DO_CHANGE = 1
+			FOR LCOUNT, 0, SUCCESSIONNUM
+				SELECTCASE GET_SUCCESSION(LCOUNT)
+					CASE "빙결"
+						SIF TALENT:L_CHARA:GET_SUCCESSION(LCOUNT)
+							CONTINUE
+					CASEELSE
+						SIF !TALENT:L_CHARA:GET_SUCCESSION(LCOUNT)
+							CONTINUE
+				ENDSELECT
+				DO_CHANGE = 0
+				BREAK
+			NEXT
+			IF DO_CHANGE
+				FOR LCOUNT, 0, SUCCESSIONNUM
+					TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) = CSVTALENT(NO:L_CHARA,GETNUM(TALENT, GET_SUCCESSION(LCOUNT)))
+				NEXT
+			ENDIF
+		CASE [[キャラ:리리스_진]]
+			ANALYSIS_RATE:[[キャラ:유리코]] = ANALYSIS_COMPLETED
+			IS_CHARA_COMPANIONED:[[キャラ:유리코]] = 1
+		CASE [[キャラ:사사즈카치요_바스테드]]
+			ANALYSIS_RATE:[[キャラ:사사즈카치요_네코마타]] = ANALYSIS_COMPLETED
+			IS_CHARA_COMPANIONED:[[キャラ:사사즈카치요_네코마타]] = 1
+	ENDSELECT
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 4
+		IF ABL:L_CHARA:종족 == 0 && !GROUPMATCH(CSTR:L_CHARA:롤, "ペルソナ使い", "デビルシフター", "アウトサイダー", "喰奴")
+			IF !MAXARRAY(TALENT:L_CHARA:0, GETNUM(TALENT, "검격"), GETNUM(TALENT, "만능") + 1)
+				FOR LCOUNT, GETNUM(TALENT, "검격"), GETNUM(TALENT, "만능") + 1
+					TALENT:L_CHARA:LCOUNT = CSVTALENT(NO:L_CHARA, LCOUNT)
+				NEXT
+			ENDIF
+		ENDIF
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000313
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		IF NO:L_CHARA == [[キャラ:동기다크서머너]] && GET_RPG_CSTR_TAKEOVER(L_CHARA, "新式管使いスキル") != ""
+			VARS TEMP_TABLE, 4
+			TEMP_TABLE '= "인간", "攻勢指揮官", "迷宮案内人", "新式管使い"
+			VARS TEMP_RACE
+			TEMP_RACE '= CSTR:L_CHARA:종족명
+			CALL CHANGE_ROLE_[[キャラ:동기다크서머너]], L_CHARA, FINDELEMENT(TEMP_TABLE, "新式管使い")
+			FOR LCOUNT, 1, 21
+				SIF ABL:L_CHARA:@"스킬{LCOUNT}" == [[스킬:요시츠네등장]]
+					ABL:L_CHARA:@"스킬{LCOUNT}" = 0
+			NEXT
+			CALL CHANGE_ROLE_[[キャラ:동기다크서머너]], L_CHARA, FINDELEMENT(TEMP_TABLE, TEMP_RACE)
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 5
+		SIF CSTR:L_CHARA:종족명 == "札精霊"
+			CFLAG:L_CHARA:합체소재사용금지 = 0
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000314
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 615, 0
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		IF NO:L_CHARA != [[キャラ:나오토]]
+			;直斗以外から正義の盾をはがす
+			CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 616, 0
+			SELECTCASE NO:L_CHARA
+				CASE [[キャラ:스티아라_KE]]
+					TALENT:L_CHARA:도구지식 = 1
+					TALENT:L_CHARA:신들의가호 = 1
+					TALENT:L_CHARA:아이템숙련 = 0
+				CASE [[キャラ:캐스여우]]
+					CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/呪層界・怨天祝祭", 35
+					CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/魂息吹", 40
+					CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/呪層・黒天洞", 50
+					CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/常世咲き裂く大殺界", 66
+				CASE [[キャラ:T씨]]
+					CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/俺の後ろに隠れろ", 1
+				CASE [[キャラ:네네_대악사]]
+					CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/白き煙幕", 45
+				CASE [[キャラ:요우코]]
+					CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/男殺し", 30
+					CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/★男殺し", 60
+				CASE [[キャラ:하루카]]
+					CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/疾風の剣", 30
+					CALL SET_LEARN_SKILL, L_CHARA, "꿰뚫는투기", 45
+					CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/★疾風の剣", 60
+			ENDSELECT
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 3
+		IF NO:L_CHARA == [[キャラ:이가와센슈]]
+			CALL CHANGE_ROLE, L_CHARA, "전심_1/이능자_5/무도의마음가짐_3/스킬적성_3", , , "サブ素質引継ぎなし"
+			CALL CLEAR_ALL_SKILL, L_CHARA
+			CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+			CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+			FOR LCOUNT, 1, 6
+				CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+			NEXT
+		ENDIF
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000315
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:네네_대악사]]
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/白き煙幕", 45
+			CASE [[キャラ:쿠도라_단도라]]
+				SIF ABL:L_CHARA:종족 == 7
+					ABL:L_CHARA:종족 = CSVABL(NO:L_CHARA, GETNUM(ABL, "종족"))
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:캐스여우]]
+				SIF 陥落(L_CHARA) && RESULTS != "신뢰"
+					CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/水天日光天照八野鎮石", 1, , "入れ替え確認"
+			CASE [[キャラ:키츠네]]
+				SIF ABL:L_CHARA:종족 == 0
+					CSTR:L_CHARA:종족명 = 여우
+			CASE [[キャラ:창조주_X2]]
+				SIF CSTR:L_CHARA:47 == "彼は悪魔として新生したのである。ENDIF"
+					CSTR:L_CHARA:47 '= "彼は悪魔として新生したのである。"
+			CASE [[キャラ:뱀파이어레이디]]
+				TALENT:L_CHARA:무도의마음가짐 = 1
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 3
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:동기다크서머너]]
+				CALL SET_RPG_CSTR_TAKEOVER, L_CHARA, "新式管使いスキル", ""
+				IF CSTR:L_CHARA:종족명 == "新式管使い"
+					CALL CLEAR_ALL_SKILL, L_CHARA
+					CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+					CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+				ENDIF
+				VARS TEMP_TABLE, 4
+				TEMP_TABLE '= "인간", "攻勢指揮官", "迷宮案内人", "新式管使い"
+				VARS TEMP_RACE
+				TEMP_RACE '= CSTR:L_CHARA:종족명
+				CALL CHANGE_ROLE_[[キャラ:동기다크서머너]], L_CHARA, FINDELEMENT(TEMP_TABLE, "攻勢指揮官")
+				FOR LCOUNT, 1, 21
+					SIF ABL:L_CHARA:@"스킬{LCOUNT}" == [[스킬:관통]]
+						ABL:L_CHARA:@"스킬{LCOUNT}" = 0
+				NEXT
+				CALL CHANGE_ROLE_[[キャラ:동기다크서머너]], L_CHARA, FINDELEMENT(TEMP_TABLE, TEMP_RACE)
+			CASE [[キャラ:이가와센슈]]
+				CSTR:L_CHARA:49 '= CSVCSTR(NO:L_CHARA, 49)
+			CASE [[キャラ:메두사]], [[キャラ:짐]]
+				ABL:L_CHARA:추가효과 = 0
+				ABL:L_CHARA:추가효과상성 = 0
+				ABL:L_CHARA:추가효과명중률 = 0
+				ABL:L_CHARA:추가효과최대명중률 = 0
+			CASE [[キャラ:아수라]], [[キャラ:라후]], [[キャラ:모트]], [[キャラ:아벤트]]
+				ABL:L_CHARA:최대공격횟수 = 1
+				ABL:L_CHARA:최대공격횟수 = 1
+		ENDSELECT
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000401
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		IF NO:L_CHARA == [[キャラ:마리_블루아카]]
+			CALL SET_CHARA_EXPLAIN_BY_CSV, L_CHARA
+			SIF CSTR:L_CHARA:이인칭 == "당신"
+				CSTR:L_CHARA:이인칭 '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "이인칭"))
+		ENDIF
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000402
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:멜트릴리스]]
+				CALL CHANGE_ROLE, L_CHARA, "전심_1/스킬적성_3", , , "サブ素質引継ぎなし"
+				CALL CLEAR_ALL_SKILL, L_CHARA
+				CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+				CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+				FOR LCOUNT, 1, 13
+					CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+				NEXT
+				CALL SET_LEARNED_SKILL, L_CHARA, "輝くばかりの"
+				SIF 陥落(L_CHARA) && RESULTS != "신뢰"
+					CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/弁財天五弦琵琶", 1, , "入れ替え確認"
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:멜트릴리스]]
+				CALL CHANGE_ROLE, L_CHARA, "전심_1/스킬적성_3/스피드부스터_2", , , "サブ素質引継ぎなし"
+				FOR LCOUNT, 0, SUCCESSIONNUM
+					TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) = CSVTALENT(NO:L_CHARA, GETNUM(TALENT, GET_SUCCESSION(LCOUNT)))
+				NEXT
+				FOR LCOUNT, 0, TYPENUM
+					BASE:L_CHARA:GET_TYPE(LCOUNT) = CSVBASE(NO:L_CHARA, GETNUM(BASE, GET_TYPE(LCOUNT)))
+				NEXT
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 3
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:패션립]]
+				CALL CHANGE_ROLE, L_CHARA, "전심_1/스킬적성_3/파워부스터_2", , , "サブ素質引継ぎなし"
+				CALL CLEAR_ALL_SKILL, L_CHARA
+				CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+				CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+				FOR LCOUNT, 1, 13
+					CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+				NEXT
+				CALL SET_LEARNED_SKILL, L_CHARA, "目を逸らさずに"
+				SIF 陥落(L_CHARA) && RESULTS != "신뢰"
+					CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/死が二人を分断つまで", 1, , "入れ替え確認"
+				FOR LCOUNT, 0, SUCCESSIONNUM
+					TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) = CSVTALENT(NO:L_CHARA, GETNUM(TALENT, GET_SUCCESSION(LCOUNT)))
+				NEXT
+				FOR LCOUNT, 0, TYPENUM
+					BASE:L_CHARA:GET_TYPE(LCOUNT) = CSVBASE(NO:L_CHARA, GETNUM(BASE, GET_TYPE(LCOUNT)))
+				NEXT
+		ENDSELECT
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000403
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		IF FETUS_RACE:L_CHARA:0 == "未決定"
+			REPLACE FETUS_ROLE:L_CHARA:0, "悪魔", "異能者"
+			FETUS_ROLE:L_CHARA:0 '= RESULTS
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		;召喚不可フラグを削除
+		CFLAG:L_CHARA:1013 = 0
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000404
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:당신]]
+				SIF INRANGE(CFLAG:L_CHARA:당신의전공분야1, 4701, 4720)
+					CFLAG:L_CHARA:당신의전공분야1 -= 4700
+				SIF INRANGE(CFLAG:L_CHARA:당신의전공분야2, 4701, 4720)
+					CFLAG:L_CHARA:당신의전공분야2 -= 4700
+				SIF INRANGE(CFLAG:L_CHARA:당신의전공분야1, 4751, 4760)
+					CFLAG:L_CHARA:당신의전공분야1 -= 4750
+				SIF INRANGE(CFLAG:L_CHARA:당신의전공분야2, 4751, 4760)
+					CFLAG:L_CHARA:당신의전공분야2 -= 4750
+			CASE [[キャラ:요시토라]]
+				CALL CLEAR_ALL_SKILL, L_CHARA
+				CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+				CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+				FOR LCOUNT, 1, 13
+					CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+				NEXT
+		ENDSELECT
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000405
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		SELECTCASE NO:L_CHARA
+			CASE  [[キャラ:히요리]], [[キャラ:히요리]]
+				CSTR:L_CHARA:체형 '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "체형"))
+				CSTR:L_CHARA:머리색 = CSVCFLAG(NO:L_CHARA, GETNUM(CSTR, "머리색"))
+				CSTR:L_CHARA:눈동자색 = CSVCFLAG(NO:L_CHARA, GETNUM(CSTR, "눈동자색"))
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		SELECTCASE NO:L_CHARA
+			CASE  [[キャラ:리카온_젠존제]]
+				FOR LCOUNT, 1, PU_NUM() + 1
+					SIF CSTR:L_CHARA:@"전용기{LCOUNT}" == "冷酷なる猟人"
+						CSTR:L_CHARA:@"전용기{LCOUNT}" '= "冷酷な猟人"
+				NEXT
+				C_LEARNED_SKILLS:L_CHARA:0 = %REPLACE("/" + C_LEARNED_SKILLS:L_CHARA:0 + "/", "/" + "冷酷なる猟人" + "/", "/" + "冷酷な猟人" + "/")%
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 3
+		SIF INRANGE(CFLAG:L_CHARA:당신의전공분야1, 4701, 4720)
+			CFLAG:L_CHARA:당신의전공분야1 -= 4700
+		SIF INRANGE(CFLAG:L_CHARA:당신의전공분야2, 4701, 4720)
+			CFLAG:L_CHARA:당신의전공분야2 -= 4700
+		SIF INRANGE(CFLAG:L_CHARA:당신의전공분야1, 4751, 4760)
+			CFLAG:L_CHARA:당신의전공분야1 -= 4750
+		SIF INRANGE(CFLAG:L_CHARA:당신의전공분야2, 4751, 4760)
+			CFLAG:L_CHARA:당신의전공분야2 -= 4750
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 4
+		SELECTCASE NO:L_CHARA
+			CASE  [[キャラ:덴게키코]]
+				IF CSTR:L_CHARA:74 != ""
+					CALL LEARN_PU_SKILL, L_CHARA, "変身・覚醒！／スタービーナスビリビリーム"
+					CALL GET_ITEMS, "ＰＵ・폴리탄", 1
+				ENDIF
+			CASE  [[キャラ:블레이드_X]]
+				SIF STRFIND(CSTR:L_CHARA:74, "벽색의뇌정") >= 0
+					CALL GET_ITEMS, "벽색의뇌정", 1
+			CASE  [[キャラ:GV]]
+				SIF STRFIND(CSTR:L_CHARA:74, "번개의렌즈") >= 0
+					CALL GET_ITEMS, "번개의렌즈", 1
+			CASE [[キャラ:아큐라_X]]
+				SIF STRFIND(CSTR:L_CHARA:74, "다크니스트리거Ｘ") >= 0
+					CALL GET_ITEMS, "다크니스트리거Ｘ", 1
+		ENDSELECT
+		CSTR:L_CHARA:74 '= ""
+		FOR LCOUNT, 2378, 2390
+			CALL DISPOSE_EQUIP_CHARA, L_CHARA, LCOUNT
+		NEXT
+		CALL DISPOSE_EQUIP_CHARA, L_CHARA, 5349
+		;アイテムの入手履歴をつけておく
+		FOR LCOUNT, GETNUM(EQUIP, "검"), GETNUM(EQUIP, "탄환") + 1
+			SIF EQUIP:L_CHARA:LCOUNT
+				TAKEN_ITEM:(EQUIP:L_CHARA:LCOUNT) = 1
+		NEXT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 6
+		SELECTCASE NO:L_CHARA
+			CASE  [[キャラ:머드락]]
+				CALL CLEAR_ALL_SKILL, L_CHARA
+				CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+				CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+				FOR LCOUNT, 1, 13
+					CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+				NEXT
+		ENDSELECT
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000406
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:타마키]]
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/パートナーシップ", 1
+			CASE [[キャラ:미라이]], [[キャラ:세츠나]]
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/데빌칠드런", 1
+			CASE [[キャラ:샤미코]]
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/シャドウミストレス", 1
+				TALENT:L_CHARA:타격 = 1
+				TALENT:L_CHARA:주살 = 1
+				TALENT:L_CHARA:지원 = 1
+		ENDSELECT
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000407
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		FOR LCOUNT, 0, 26
+			ABL:L_CHARA:LCOUNT = LIMIT(ABL:L_CHARA:LCOUNT, 0, 10)
+		NEXT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 3
+		SELECTCASE NO:L_CHARA
+			CASE  [[キャラ:키사라기]]
+				CALL CLEAR_ALL_SKILL, L_CHARA
+				CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+				CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+				FOR LCOUNT, 1, 13
+					CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+				NEXT
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 4
+		SELECTCASE NO:L_CHARA
+			CASE  [[キャラ:후미]]
+				SIF ABL:L_CHARA:수태아이템 == [[스킬:집중부스터]]
+					ABL:L_CHARA:수태아이템 = GETNUM(ITEM, "스킬카드【집중부스터】")
+		ENDSELECT
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000408
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		TALENT:L_CHARA:송곳니 = CSVTALENT(NO:L_CHARA, GETNUM(TALENT, "송곳니"))
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000409
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 586, [[스킬:회심의패기]]
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		;CFLAG:L_CHARA:머리색
+		SELECTCASE CFLAG:L_CHARA:35
+			CASE 1
+				CSTR:L_CHARA:머리색 = 黒
+			CASE 2
+				CSTR:L_CHARA:머리색 = 茶色
+			CASE 3
+				CSTR:L_CHARA:머리색 = 金色
+			CASE 4
+				CSTR:L_CHARA:머리색 = 銀色
+			CASE 5
+				CSTR:L_CHARA:머리색 = 赤
+			CASE 6
+				CSTR:L_CHARA:머리색 = 青
+			CASE 7
+				CSTR:L_CHARA:머리색 = 緑
+			CASE 8
+				CSTR:L_CHARA:머리색 = ピンク
+			CASE 9
+				CSTR:L_CHARA:머리색 = 紫
+			CASE 10
+				CSTR:L_CHARA:머리색 = 白
+			CASE 11
+				CSTR:L_CHARA:머리색 = 栗色
+			CASE 12
+				CSTR:L_CHARA:머리색 = 薄紫
+			CASE 13
+				CSTR:L_CHARA:머리색 = 赤紫
+			CASE 14
+				CSTR:L_CHARA:머리색 = プラチナ
+			CASE 15
+				CSTR:L_CHARA:머리색 = アッシュブラウン
+			CASE 16
+				CSTR:L_CHARA:머리색 = オレンジ
+		ENDSELECT
+		CFLAG:L_CHARA:35 = 0
+		;CFLAG:L_CHARA:체형
+		SIF CFLAG:L_CHARA:36 > 0
+			CSTR:L_CHARA:체형 '= GET_HAIRSTYLE_NAME(CFLAG:L_CHARA:36, L_CHARA)
+		CFLAG:L_CHARA:36 = 0
+		;CFLAG:ARG:눈동자색
+		SELECTCASE CFLAG:L_CHARA:37
+			CASE 1
+				CSTR:L_CHARA:눈동자색 = 黒
+			CASE 2
+				CSTR:L_CHARA:눈동자색 = 茶色
+			CASE 3
+				CSTR:L_CHARA:눈동자색 = 金色
+			CASE 4
+				CSTR:L_CHARA:눈동자색 = 銀色
+			CASE 5
+				CSTR:L_CHARA:눈동자색 = 赤
+			CASE 6
+				CSTR:L_CHARA:눈동자색 = 青
+			CASE 7
+				CSTR:L_CHARA:눈동자색 = 緑
+			CASE 8
+				CSTR:L_CHARA:눈동자색 = 紫
+			CASE 9
+				CSTR:L_CHARA:눈동자색 = 灰色
+			CASE 10
+				CSTR:L_CHARA:눈동자색 = 水色
+		ENDSELECT
+		CFLAG:L_CHARA:37 = 0
+		;CFLAG:L_CHARA:피부색
+		SELECTCASE CFLAG:L_CHARA:38
+			CASE 1
+				CSTR:L_CHARA:피부색 = 白
+			CASE 2
+				CSTR:L_CHARA:피부색 = 褐色
+			CASE 3
+				CSTR:L_CHARA:피부색 = 赤
+			CASE 4
+				CSTR:L_CHARA:피부색 = 青
+			CASE 5
+				CSTR:L_CHARA:피부색 = 緑
+		ENDSELECT
+		CFLAG:L_CHARA:38 = 0
+		;白肌・褐色肌・赤肌・青肌のつかわれてない素質を削除
+		TALENT:L_CHARA:117 = 0
+		TALENT:L_CHARA:118 = 0
+		TALENT:L_CHARA:119 = 0
+		TALENT:L_CHARA:120 = 0
+		CALL SET_RANDOM_CHARA_FACE, L_CHARA
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 3
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:카타나코]]
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/袈裟斬り", 1
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/不動居", 48
+			CASE [[キャラ:빨강세이버]]
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/燃え盛る聖者の泉", 1
+			CASE [[キャラ:마야_무대소녀]]
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/クレタスマイル", 1, "変身形態"
+			CASE [[キャラ:히요리]],[[キャラ:카나미]]
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/八幡力", 30
+			CASE [[キャラ:쿄이치]]
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/諸手上段", 1
+			CASE [[キャラ:아오이_마인학원]]
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/癒しの光", 1
+		ENDSELECT
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000410
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		IF NO:L_CHARA == [[キャラ:기묘한모라쿠스]]
+			TALENT:L_CHARA:지변 = 1
+			TALENT:L_CHARA:전격 = 0
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:픽시]], [[キャラ:하이픽시]]
+				CALL SET_LEARN_SKILL, L_CHARA, "손이많이가네！", 1
+				ABL:L_CHARA:수태아이템 = GETNUM(ITEM, "스킬카드【손이많이가네！】")
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 3
+		FOR LCOUNT, GETNUM(ABL, "순종"), GETNUM(ABL, "키스중독")
+			ABL:L_CHARA:LCOUNT = LIMIT(ABL:L_CHARA:LCOUNT, 0, 10)
+		NEXT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 4
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:아큐라_X]]
+				CALL CLEAR_ALL_SKILL, L_CHARA
+				CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+				CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+				FOR LCOUNT, 1, 6
+					CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+				NEXT
+				IF GETBIT(CFLAG:L_CHARA:개별이벤트읽음, 6)
+					CALL CHANGE_MODE_アキュラ, L_CHARA, "X2"
+				ELSE
+					CALL CHANGE_MODE_アキュラ, L_CHARA, "X"
+				ENDIF
+				VARS SKILL_TABLE, 6
+				SKILL_TABLE '= "メギドバースト", "スピンチョッパー", "オプティックラウンド", "ガトリングスコール", "タイムフリーザー", "ラピッドリッパー"
+				FOR LCOUNT, 0, 6
+					SIF GETBIT(CFLAG:L_CHARA:개별이벤트읽음, 8 + LCOUNT) || GETBIT(FLAG:발견ED2, 11)
+						CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/" + SKILL_TABLE:LCOUNT, 1, , "入れ替え確認"
+				NEXT
+			CASE [[キャラ:기묘한바알]]
+				TALENT:L_CHARA:지변 = 0
+				TALENT:L_CHARA:전격 = 1
+			CASE [[キャラ:오우한]]
+				CALL CLEAR_ALL_SKILL, L_CHARA
+				CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+				CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+				FOR LCOUNT, 1, 6
+					CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+				NEXT
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 5
+		;強欲な獣とのMemento
+		CALL DISPOSE_EQUIP_CHARA, L_CHARA, 5262
+		SIF ABL:L_CHARA:수태아이템 == 5262
+			ABL:L_CHARA:수태아이템 = 0
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000411
+	IF CFLAG:L_CHARA:본체버전관리보조정보 == 0
+		IF NO:L_CHARA == [[キャラ:클레오파트라]]
+			CALL SET_LEARN_SKILL, L_CHARA, "레디언트블래스트", 1
+			ABL:L_CHARA:수태아이템 = GETNUM(ITEM, "스킬카드【레디언트블래스트】")
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 == 1
+		IF NO:L_CHARA == [[キャラ:듀얼플레이스_아담스키]]
+			BASE:L_CHARA:만능 = 100
+			BASE:L_CHARA:사이코 = 100
+		ENDIF
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000501
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 3
+		SELECTCASE  NO:L_CHARA
+			CASE [[キャラ:오우한]]
+				CALL RESET_SKILL_FOR_CHARA, L_CHARA
+			CASE [[キャラ:유카_아이마스]]
+				CALL CHANGE_ROLE, L_CHARA, "이능자_5/공격의심득_2"
+				CALL RESET_SKILL_FOR_CHARA, L_CHARA
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 4
+		SELECTCASE  NO:L_CHARA
+			CASE [[キャラ:초텐짱]]
+				CSTR:L_CHARA:아이콘패턴 '= "デフォルト"
+				IF GET_RPG_CFLAG_TAKEOVER(L_CHARA, "てんちゃん強化１")
+					CALL SET_RPG_CFLAG_TAKEOVER, L_CHARA, "アイコン追加1", 1
+					CALL SET_RPG_CFLAG_TAKEOVER, L_CHARA, "アイコン追加2", 1
+					CALL SET_RPG_CFLAG_TAKEOVER, L_CHARA, "アイコン追加3", 1
+					CSTR:L_CHARA:아이콘패턴 '= "追加パターン3"
+				ENDIF
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 5
+		SELECTCASE  NO:L_CHARA
+			CASE [[キャラ:사키]], [[キャラ:머메이드_4F]], [[キャラ:에리카]]
+				CALL RESET_CHARA_PROFILE, L_CHARA
+				SIF CSTR:L_CHARA:피부색 == ""
+					CSTR:L_CHARA:피부색 = CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "피부색"))
+			CASE [[キャラ:히마리]]
+				TALENT:L_CHARA:마술의소양 = 0
+				TALENT:L_CHARA:도구지식 = 3
+				TALENT:L_CHARA:아이템숙련 = 1
+				SIF CSTR:L_CHARA:머리색 == ""
+					CSTR:L_CHARA:머리색 = CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "머리색"))
+				IF 服従系陥落(L_CHARA)
+					TALENT:L_CHARA:캐릭터고유소질 = 0
+					TALENT:L_CHARA:캐릭터고유소질1 = 0
+					TALENT:L_CHARA:캐릭터고유소질2 = 1
+					CSTR:L_CHARA:캐릭터고유소질정의2 '= "病弱/体質/私はただの役立たずです……"
+				ENDIF
+		ENDSELECT
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000502
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 69, [[스킬:라비리스연격]]
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 3
+		;レイのリンクをつけなおす
+		IF NO:L_CHARA == [[キャラ:섬도희레이]]
+			CALL REMOVE_LINK_DEVIL, L_CHARA
+			VARI L_TABLE, 4
+			VARI SELECT_CHARA
+			L_TABLE = [[キャラ:섬도희카가리]], [[キャラ:섬도희시즈쿠]], [[キャラ:섬도희하야테]], [[キャラ:섬도희카이나]]
+			FOR LCOUNT, 0, 4
+				SELECT_CHARA = GETCHARA(L_TABLE:LCOUNT)
+				SIF SELECT_CHARA < 0
+					CONTINUE
+				CFLAG:L_CHARA:@"링크캐릭터실제가입시간{LCOUNT}" = CFLAG:SELECT_CHARA:실제가입시간
+				CFLAG:SELECT_CHARA:피링크캐릭터실제가입시간 = CFLAG:L_CHARA:실제가입시간
+			NEXT
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 4
+		IF NO:L_CHARA == [[キャラ:쇼고]]
+			CALL CLEAR_ALL_SKILL, L_CHARA
+			CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+			CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+			FOR LCOUNT, 1, 6
+				CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+					CONTINUE
+				CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+			NEXT
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 5
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:팬텀]],[[キャラ:나하트]],[[キャラ:아벤트]]
+				CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+				CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+				FOR LCOUNT, 1, 6
+					CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+				NEXT
+				CSTR:L_CHARA:MAG습득스킬리스트 '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "MAG습득스킬리스트"))
+			CASE [[キャラ:팻]]
+				CALL CLEAR_ALL_LEARN_SKILL, L_CHARA, "変身形態"
+				CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA, "変身形態"
+				FOR LCOUNT, 1, 6
+					CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"초기변신악마스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"초기변신악마스킬{LCOUNT}"))), 1, "変身形態", "入れ替え確認"
+				NEXT
+				FOR LCOUNT, 1, 21
+					SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"초기변신악마습득스킬{LCOUNT}"))
+						CONTINUE
+					CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"초기변신악마습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"초기변신악마습득LV{LCOUNT}")), "変身形態", "入れ替え確認"
+				NEXT
+				CSTR:L_CHARA:초기변신악마MAG스킬습득리스트 '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "초기변신악마MAG스킬습득리스트"))
+		ENDSELECT
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000503
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		IF ABL:L_CHARA:초기페르소나 == [[キャラ:니알랏토텝_약]]
+			ABL:L_CHARA:초기페르소나2 = 0
+			ABL:L_CHARA:초기페르소나3 = 0
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 3
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:팻]]
+				CALL CLEAR_ALL_SKILL, L_CHARA
+				CALL CHANGE_ROLE, L_CHARA, "공격의심득_2", , "악마인", "サブ素質引継ぎなし"
+				CALL RESET_SKILL_FOR_CHARA, L_CHARA
+				CSTR:L_CHARA:종족명 = 操縦者
+				FOR LCOUNT, GETNUM(BASE, "검격"), GETNUM(BASE, "만능") + 1
+					BASE:L_CHARA:LCOUNT = CSVBASE(NO:L_CHARA, LCOUNT)
+				NEXT
+				FOR LCOUNT, GETNUM(TALENT, "검격"), GETNUM(TALENT, "만능") + 1
+					TALENT:L_CHARA:LCOUNT = CSVTALENT(NO:L_CHARA, LCOUNT)
+				NEXT
+				CALL RESET_CHARA_PROFILE, L_CHARA
+				TALENT:L_CHARA:꿋꿋함 = 0
+				TALENT:L_CHARA:아픔에강함 = 1
+				TALENT:L_CHARA:습득빠름 = 1
+			CASE [[キャラ:아키라]]
+				CALL CLEAR_ALL_SKILL, L_CHARA
+				CALL CHANGE_ROLE, L_CHARA, "공격의심득_2", , "악마인", "サブ素質引継ぎなし"
+				CALL RESET_SKILL_FOR_CHARA, L_CHARA
+				CSTR:L_CHARA:종족명 = 操縦者
+				FOR LCOUNT, GETNUM(BASE, "검격"), GETNUM(BASE, "만능") + 1
+					BASE:L_CHARA:LCOUNT = CSVBASE(NO:L_CHARA, LCOUNT)
+				NEXT
+				FOR LCOUNT, GETNUM(TALENT, "검격"), GETNUM(TALENT, "만능") + 1
+					TALENT:L_CHARA:LCOUNT = CSVTALENT(NO:L_CHARA, LCOUNT)
+				NEXT
+				CALL RESET_CHARA_PROFILE, L_CHARA
+				TALENT:L_CHARA:꿋꿋함 = 1
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 3
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:인수라F]], [[キャラ:인수라M]]
+				ABL:L_CHARA:종족 = 0
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 6
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:에미]]
+				CALL CHANGE_ROLE, L_CHARA, "서머너_5/도구지식_3/석세서_1/コンピューター技能_1", , , "サブ素質引継ぎなし"
+			CASE [[キャラ:엘레나]]
+				CALL CLEAR_ALL_SKILL, L_CHARA
+				CALL RESET_SKILL_FOR_CHARA, L_CHARA
+		ENDSELECT
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000504
+	SIF NO:L_CHARA == [[キャラ:아키라]]
+		CSTR:L_CHARA:종족명 '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "종족명"))
+	IF NO:L_CHARA == [[キャラ:케이네_백택]]
+		TALENT:L_CHARA:머리 = 1
+		TALENT:L_CHARA:눈 = 1
+		TALENT:L_CHARA:입 = 1
+		TALENT:L_CHARA:팔 = 1
+		TALENT:L_CHARA:발 = 1
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		SELECTCASE  NO:L_CHARA
+			CASE [[キャラ:하트호르]]
+				VARI DO_CHANGE = 1
+				FOR LCOUNT, 0, TYPENUM
+					SELECTCASE GET_TYPE(LCOUNT)
+						CASE "정신", "주살"
+							SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 150
+								CONTINUE
+						CASE "전술", "비구"
+							SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 125
+								CONTINUE
+						CASE "타격", "화염", "빙결", "전격", "충격", "수격"
+							SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 80
+								CONTINUE
+						CASE "파마", "질풍"
+							SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 0
+								CONTINUE
+						CASE "사이코"
+							CONTINUE
+						CASEELSE
+							SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 100
+								CONTINUE
+					ENDSELECT
+					DO_CHANGE = 0
+					BREAK
+				NEXT
+				IF DO_CHANGE
+					FOR LCOUNT, 0, TYPENUM
+						BASE:L_CHARA:GET_TYPE(LCOUNT) = CSVBASE(NO:L_CHARA, GETNUM(BASE, GET_TYPE(LCOUNT)))
+					NEXT
+				ENDIF
+				DO_CHANGE = 1
+				FOR LCOUNT, 0, SUCCESSIONNUM
+					SELECTCASE GET_SUCCESSION(LCOUNT)
+						CASE "회복", "만능"
+							SIF TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) == 1
+								CONTINUE
+						CASEELSE
+							SIF TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) == 0
+								CONTINUE
+					ENDSELECT
+					DO_CHANGE = 0
+					BREAK
+				NEXT
+				IF DO_CHANGE
+					FOR LCOUNT, 0, SUCCESSIONNUM
+						TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) = CSVTALENT(NO:L_CHARA, GETNUM(TALENT, GET_SUCCESSION(LCOUNT)))
+					NEXT
+				ENDIF
+				CALL RESET_SKILL_FOR_CHARA, L_CHARA, , "習得スキルのみ"
+			CASE [[キャラ:세베크]]
+				VARI DO_CHANGE = 1
+				FOR LCOUNT, 0, TYPENUM
+					SELECTCASE GET_TYPE(LCOUNT)
+						CASE "빙결", "핵열"
+							SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 150
+								CONTINUE
+						CASE "전격"
+							SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 125
+								CONTINUE
+						CASE "타격", "전술"
+							SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 80
+								CONTINUE
+						CASE "신경"
+							SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 50
+								CONTINUE
+						CASE "수격"
+							SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 25
+								CONTINUE
+						CASE "주살"
+							SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 0
+								CONTINUE
+						CASE "사이코"
+							CONTINUE
+						CASEELSE
+							SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 100
+								CONTINUE
+					ENDSELECT
+					DO_CHANGE = 0
+					BREAK
+				NEXT
+				DO_CHANGE = 1
+				FOR LCOUNT, 0, SUCCESSIONNUM
+					SELECTCASE GET_SUCCESSION(LCOUNT)
+						CASE "전술", "회복", "수격"
+							SIF TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) == 1
+								CONTINUE
+						CASEELSE
+							SIF TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) == 0
+								CONTINUE
+					ENDSELECT
+					DO_CHANGE = 0
+					BREAK
+				NEXT
+				IF DO_CHANGE
+					FOR LCOUNT, 0, SUCCESSIONNUM
+						TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) = CSVTALENT(NO:L_CHARA, GETNUM(TALENT, GET_SUCCESSION(LCOUNT)))
+					NEXT
+				ENDIF
+				IF DO_CHANGE
+					FOR LCOUNT, 0, TYPENUM
+						BASE:L_CHARA:GET_TYPE(LCOUNT) = CSVBASE(NO:L_CHARA, GETNUM(BASE, GET_TYPE(LCOUNT)))
+					NEXT
+				ENDIF
+				CALL RESET_SKILL_FOR_CHARA, L_CHARA, , "習得スキルのみ"
+			CASE [[キャラ:토트]]
+				VARI DO_CHANGE = 1
+				FOR LCOUNT, 0, TYPENUM
+					SELECTCASE GET_TYPE(LCOUNT)
+						CASE "검격", "비구", "타격", "전술"
+							SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 300
+								CONTINUE
+						CASE "정신"
+							SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 100
+								CONTINUE
+						CASE "사이코"
+							CONTINUE
+						CASEELSE
+							SIF BASE:L_CHARA:GET_TYPE(LCOUNT) == 999
+								CONTINUE
+					ENDSELECT
+					DO_CHANGE = 0
+					BREAK
+				NEXT
+				DO_CHANGE = 1
+				FOR LCOUNT, 0, SUCCESSIONNUM
+					SELECTCASE GET_SUCCESSION(LCOUNT)
+						CASE "지원", "충격", "중력"
+							SIF TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) == 1
+								CONTINUE
+						CASEELSE
+							SIF TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) == 0
+								CONTINUE
+					ENDSELECT
+					DO_CHANGE = 0
+					BREAK
+				NEXT
+				IF DO_CHANGE
+					FOR LCOUNT, 0, SUCCESSIONNUM
+						TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) = CSVTALENT(NO:L_CHARA, GETNUM(TALENT, GET_SUCCESSION(LCOUNT)))
+					NEXT
+				ENDIF
+				IF DO_CHANGE
+					FOR LCOUNT, 0, TYPENUM
+						BASE:L_CHARA:GET_TYPE(LCOUNT) = CSVBASE(NO:L_CHARA, GETNUM(BASE, GET_TYPE(LCOUNT)))
+					NEXT
+				ENDIF
+				CALL RESET_SKILL_FOR_CHARA, L_CHARA, , "習得スキルのみ"
+			CASE [[キャラ:하피]]
+				CALL SET_LEARN_SKILL, L_CHARA, "윈드트릭", 8, , "入れ替え確認"
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 3
+		SELECTCASE  NO:L_CHARA
+			CASE [[キャラ:에레킹씨]]
+				TALENT:L_CHARA:타격 = 0
+				CALL CHANGE_ROLE, L_CHARA, "파워부스터_3/매직부스터_3", , "마수", "サブ素質引継ぎなし"
+				CALL RESET_SKILL_FOR_CHARA, L_CHARA, , "習得スキルのみ"
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 4
+		SELECTCASE  NO:L_CHARA
+			CASE [[キャラ:유리코]]
+				SIF ABL:L_CHARA:변이
+					ABL:L_CHARA:변이 = [[キャラ:리리스_진]]
+			CASE [[キャラ:사사즈카치요_네코마타]]
+				SIF ABL:L_CHARA:변이
+					ABL:L_CHARA:변이 = [[キャラ:사사즈카치요_바스테드]]
+		ENDSELECT
+	ENDIF
+	;CFLAG:L_CHARA:본체버전관리보조정보 = 0
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 6
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:뷔디네]]
+				CALL RESET_CHARA_PROFILE, L_CHARA
+			CASE [[キャラ:미타마・아리아]]
+				TALENT:L_CHARA:공격의심득 = 3
+				TALENT:L_CHARA:파워부스터 = 0
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 7
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 2449, [[스킬:결단]]
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 2486, [[스킬:결단]]
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:미하리]], [[キャラ:나코루루]], [[キャラ:요시토라]], [[キャラ:오키타소지]], [[キャラ:쿄이치]], [[キャラ:마리_마인학원]]
+				CALL RESET_SKILL_FOR_CHARA, L_CHARA
+			CASE [[キャラ:코이시]]
+				CALL SET_LEARN_SKILL, L_CHARA, "촌분의결단", 47, , "入れ替え確認"
+			CASE [[キャラ:Konngara]]
+				CALL SET_LEARN_SKILL, L_CHARA, "촌분의결단", 57, , "入れ替え確認"
+			CASE [[キャラ:다레스]]
+				CALL SET_LEARN_SKILL, L_CHARA, "촌분의결단", 75, , "入れ替え確認"
+			CASE [[キャラ:앙쥬_DR]]
+				CALL SET_LEARN_SKILL, L_CHARA, "촌분의결단", 60, , "入れ替え確認"
+			CASE [[キャラ:히요리]]
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/迅移", 25, , "入れ替え確認"
+		ENDSELECT
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000505
+	SELECTCASE NO:L_CHARA
+		CASE [[キャラ:유리아]]
+			SIF ABL:L_CHARA:종족 == GET_RACE_NUM("인간")
+				ABL:L_CHARA:종족 = GET_RACE_NUM("반마인")
+		CASE [[キャラ:다크서머너_구당신]]
+			;マスターと被ってしまうケースがあるのでふりなおす
+			IF CFLAG:L_CHARA:실제가입시간 == CFLAG:MASTER:실제가입시간
+				CFLAG:L_CHARA:실제가입시간 = GETMILLISECOND()
+				WHILE CMATCH(CFLAG:0:실제가입시간, CFLAG:L_CHARA:실제가입시간) > 1
+					CFLAG:L_CHARA:실제가입시간++
+				WEND
+			ENDIF
+	ENDSELECT
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000506
+	SIF L_CHARA == MASTER
+		CALL SET_TALENT_PARTY_JOINABLE, L_CHARA, "参加可能"
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:이계의다크서머너]]
+				CALL CHANGE_ROLE, L_CHARA, "이능자_5/전심_1/스킬적성_3/무도의마음가짐_1/서머너_1", , , "サブ素質引継ぎなし"
+				CALL CLEAR_ALL_SKILL, L_CHARA
+				CALL RESET_SKILL_FOR_CHARA, L_CHARA
+		ENDSELECT
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000507
+	SIF ABL:L_CHARA:공격범위 == 0
+		ABL:L_CHARA:공격범위 = 1
+	SIF NO:L_CHARA == [[キャラ:매드가서]]
+		CALL RESET_CHARA_PROFILE, L_CHARA
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:마리_마인학원]], [[キャラ:타츠마]],[[キャラ:코마키]],[[キャラ:아란]],[[キャラ:키사라기]]
+				CALL RESET_SKILL_FOR_CHARA, L_CHARA
+				FOR LCOUNT, 0, SUCCESSIONNUM
+					TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) = CSVTALENT(NO:L_CHARA, GETNUM(TALENT, GET_SUCCESSION(LCOUNT)))
+				NEXT
+			CASE [[キャラ:아오이_마인학원]]
+				CALL RESET_SKILL_FOR_CHARA, L_CHARA
+				FOR LCOUNT, 0, SUCCESSIONNUM
+					TALENT:L_CHARA:GET_SUCCESSION(LCOUNT) = CSVTALENT(NO:L_CHARA, GETNUM(TALENT, GET_SUCCESSION(LCOUNT)))
+				NEXT
+				TALENT:L_CHARA:공격의심득 = 0
+				TALENT:L_CHARA:신들의가호 = 5
+			CASE [[キャラ:텐도]]
+				IF GETBIT(CFLAG:L_CHARA:개별이벤트읽음, 0)
+					CFLAG:L_CHARA:이벤트가입 = 1
+
+					CALL CLEAR_ALL_SKILL, L_CHARA
+					CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+					CALL SET_LEARN_SKILL_[[キャラ:텐도]], L_CHARA, 1
+				ELSE
+					CALL RESET_SKILL_FOR_CHARA, L_CHARA
+				ENDIF
+			CASE [[キャラ:다이고]]
+				CALL SET_LEARN_SKILL, L_CHARA, "CSTR専用スキル/稲妻ラリアット", 30, "変身形態"
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+		TALENT:L_CHARA:197 = 0
+		TALENT:L_CHARA:198 = 0
+		TALENT:L_CHARA:199 = 0
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 4
+		SELECTCASE CFLAG:L_CHARA:1007
+			CASE -1
+				CALL SET_TALENT_PARTY_JOINABLE, L_CHARA, "신용"
+			CASE 1
+				CALL SET_TALENT_PARTY_JOINABLE, L_CHARA, "参加不可能"
+			CASE 2
+				CALL SET_TALENT_PARTY_JOINABLE, L_CHARA, "반역"
+		ENDSELECT
+		CFLAG:L_CHARA:1007 = 0
+		TALENT:L_CHARA:낙적 = CSVTALENT(NO:L_CHARA, GETNUM(TALENT, "낙적"))
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000508
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+		SELECTCASE  NO:L_CHARA
+			CASE [[キャラ:마초]], [[キャラ:마일드]], [[キャラ:이능쨩]]
+				CALL RESET_CHARA_PROFILE, L_CHARA
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 3
+		CSTR:L_CHARA:잠재전투소질'= REPLACE(CSTR:L_CHARA:잠재전투소질, "不浄の手", "바스테부스터")
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 4
+		IF NO:L_CHARA == [[キャラ:메갈로돈]]
+			IF MAXARRAY(TALENT:L_CHARA:0, GETNUM(TALENT, "검격"), GETNUM(TALENT, "검격") + SUCCESSIONNUM) == 0
+				FOR LCOUNT, GETNUM(TALENT, "검격"), GETNUM(TALENT, "검격") + SUCCESSIONNUM
+					TALENT:L_CHARA:LCOUNT = CSVTALENT(NO:L_CHARA, LCOUNT)
+				NEXT
+			ENDIF
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 5
+		SELECTCASE NO:L_CHARA
+			CASE [[キャラ:루파]]
+				CALL RESET_CHARA_PROFILE, L_CHARA
+				SIF CSTR:L_CHARA:체형 == "ロン毛"
+					CSTR:L_CHARA:체형 '= "ハーフアップ"
+			CASE [[キャラ:게일]]
+				SIF CSTR:L_CHARA:머리색 == ""
+					CSTR:L_CHARA:머리색 '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "머리색"))
+				SIF CSTR:L_CHARA:체형 == ""
+					CSTR:L_CHARA:체형 '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "체형"))
+				SIF CSTR:L_CHARA:눈동자색 == ""
+					CSTR:L_CHARA:눈동자색 '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "눈동자색"))
+				SIF CSTR:L_CHARA:피부색 == ""
+					CSTR:L_CHARA:피부색 '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "피부색"))
+				SIF CSTR:L_CHARA:일인칭 == ""
+					CSTR:L_CHARA:일인칭 '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "일인칭"))
+				SIF CSTR:L_CHARA:이인칭 == ""
+					CSTR:L_CHARA:이인칭 '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "이인칭"))
+				SIF CSTR:L_CHARA:타이틀 == ""
+					CSTR:L_CHARA:타이틀 '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "타이틀"))
+		ENDSELECT
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 7
+		IF NO:L_CHARA == [[キャラ:렌]] || NO:L_CHARA == [[キャラ:하얀렌]]
+			CALL RESET_CHARA_PROFILE, L_CHARA
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 8
+		CALL LINK_陥落素質, L_CHARA
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 9
+		IF NO:L_CHARA == [[キャラ:나나시]]
+			CALL RESET_CHARA_PROFILE, L_CHARA
+		ENDIF
+	ENDIF
+	IF CFLAG:L_CHARA:본체버전관리보조정보 < 10
+		CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, 73, [[스킬:반역의칼날]]
+		IF NO:L_CHARA == [[キャラ:고로]]
+			ABL:L_CHARA:수태아이템 = CSVABL(NO:L_CHARA, GETNUM(ABL, "수태아이템"))
+		ENDIF
+	ENDIF
+	CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF
+IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+	SELECTCASE  NO:L_CHARA
+		CASE [[キャラ:유카_아이마스]]
+			CALL CHANGE_ROLE, L_CHARA, "이능자_5/공격의심득_2", , , "サブ素質引継ぎなし"
+	ENDSELECT
+ENDIF
+IF CFLAG:L_CHARA:본체버전관리보조정보 < 2
+	IF NO:L_CHARA == 5037
+		CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:혹등고래]]
+	ENDIF
+ENDIF
+IF CFLAG:L_CHARA:본체버전관리보조정보 < 4
+	IF NO:L_CHARA == 1121
+		CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, NO:L_CHARA, [[キャラ:광무]]
+	ENDIF
+ENDIF
+CFLAG:L_CHARA:본체버전관리보조정보 = 0
+;キャラ個別互換処理。一時置き場
+@VERUP_FOR_CHARA_TEMP, L_CHARA
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC TEMP
+#DIM DYNAMIC LCOUNT,2
+IF GET_GAME_VERSION_P(CFLAG:L_CHARA:본체버전정보) < 000510
+	IF GROUPMATCH(NO:L_CHARA, [[キャラ:렌코]], [[キャラ:메리_환상향]], [[キャラ:아큐]])
+		IF !GROUPMATCH(1, TALENT:L_CHARA:머리, TALENT:L_CHARA:눈, TALENT:L_CHARA:입, TALENT:L_CHARA:팔, TALENT:L_CHARA:발)
+			TALENT:L_CHARA:머리 = 1
+			TALENT:L_CHARA:눈 = 1
+			TALENT:L_CHARA:입 = 1
+			TALENT:L_CHARA:팔 = 1
+			TALENT:L_CHARA:발 = 1
+		ENDIF
+	ENDIF
+	;IF CFLAG:L_CHARA:본체버전관리보조정보 < 1
+	;	SELECTCASE  NO:L_CHARA
+	;		CASE [[キャラ:]]
+	;	ENDSELECT
+	;ENDIF
+	;CFLAG:L_CHARA:본체버전관리보조정보 = 0
+ENDIF

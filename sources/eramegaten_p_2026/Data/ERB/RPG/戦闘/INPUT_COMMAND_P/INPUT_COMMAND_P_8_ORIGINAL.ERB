@@ -1,0 +1,60 @@
+﻿;=================================================
+;入力結果：オリジナルスキル
+;=================================================
+@INPUT_COM_NAME_COM_8,ARG
+RESULTS = ORIGINAL
+RESULTS:1 '= CSTR:MASTER:199
+RETURN 0
+
+@INPUT_COM_ABLE_ORIGINAL,ARG
+SIF イベントフラグ:45:19 != 1
+	RETURN 0
+SIF ARG != MASTER
+	RETURN 0
+RESULTS = 後列発動不能
+SIF イベントフラグ:45:0 == 1 && (CPOS(MASTER) == 4 || CPOS(MASTER) == 5 || CPOS(MASTER) == 6) && (イベントフラグ:45:14 == 0 || イベントフラグ:45:14 == 2)
+	RETURN -1
+RESULTS = 소비 리소스 미설정
+SIF イベントフラグ:45:17 == 0
+	RETURN -1
+RESULTS = 코스트 부족
+SIF イベントフラグ:45:17 == 2 && BASE:ARG:ＨＰ <= イベントフラグ:45:16
+	RETURN -1
+SIF イベントフラグ:45:17 == 3 && BASE:ARG:ＭＰ < イベントフラグ:45:16
+	RETURN -1
+RETURN 1
+
+@INPUT_COM_ORIGINAL,ARG
+IF イベントフラグ:45:14 == 0
+	CALL GET_SKILL_PROP, "SKILL_EXPLAIN", 3900, 0
+	CALL SELECT_SKILL_TARGET,3900,ARG
+ELSEIF イベントフラグ:45:14 == 1
+	CALL GET_SKILL_PROP, "SKILL_EXPLAIN", 3901, 0
+	CALL SELECT_SKILL_TARGET,3901,ARG
+ELSEIF イベントフラグ:45:14 == 2
+	CALL GET_SKILL_PROP, "SKILL_EXPLAIN", 3902, 0
+	CALL SELECT_SKILL_TARGET,3902,ARG
+ELSEIF イベントフラグ:45:14 == 3 || イベントフラグ:45:14 == 4
+	CALL GET_SKILL_PROP, "SKILL_EXPLAIN", 3903, 0
+	CALL SELECT_SKILL_TARGET,3903,ARG
+ELSEIF RESULT == -1
+	RETURN -1
+ENDIF
+SIF RESULT == -1
+	RETURN -1
+CFLAG:(ARG):타겟 = RESULT
+CFLAG:ARG:입력행동 = [[스킬:비소지스킬]]
+;---- EDIT 068 MOD START -------------------------
+IF イベントフラグ:45:14 == 0
+	CSTR:ARG:비소지스킬 = 3900
+ELSEIF イベントフラグ:45:14 == 1
+	CSTR:ARG:비소지스킬 = 3901
+ELSEIF イベントフラグ:45:14 == 2
+	CSTR:ARG:비소지스킬 = 3902
+ELSEIF イベントフラグ:45:14 == 3 || イベントフラグ:45:14 == 4
+	CSTR:ARG:비소지스킬 = 3903
+ENDIF
+CFLAG:ARG:방어플래그 = 0
+CALL SET_REPEAT_CHARA, ARG
+RETURN 1
+;---- EDIT 068 MOD END ---------------------------

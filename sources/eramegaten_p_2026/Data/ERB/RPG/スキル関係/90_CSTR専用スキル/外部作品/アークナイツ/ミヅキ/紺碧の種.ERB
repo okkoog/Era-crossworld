@@ -1,0 +1,74 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_紺碧の種,ARG
+RESULTS = 【감벽의 씨앗】
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_紺碧の種
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_紺碧の種,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_紺碧の種,ARG
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+@継承不能_紺碧の種
+RETURN 2
+;不可、造魔や子供にも継承せず
+
+;スキル変化？用ランク
+@SKILL_RANK_紺碧の種, ARG = -1
+RETURN 20
+;変化不可
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_紺碧の種,ARG
+PRINTL 자동: 【전기】【수격】 상성 스킬의 명중률과 크리티컬률이 상승한다.
+PRINTL 　　　미즈키의 전용 스킬의 소비 MP를 상승시키는 대신 성능을 강화한다.
+
+@SKILL_ACTIONABLE_BATTLE_紺碧の種, ARG
+RETURN 0
+
+@SKILL_DEL_UNABLE_紺碧の種,ARG
+RETURN 0
+;削除可
+
+@SKILL_PASSIVE_BTL_EFFECT_紺碧の種,ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;スキル命中率に加算する。低命中スキルに影響度が高く、カジャンダによって効果量が増減する
+		 CASE "スキル命中強化"
+			;合致した素質で攻撃した場合、命中率１０％増加
+			SIF GROUPMATCH(L_相性名, "전술", "수격")
+				RETURN 10
+		;100% ± Xの補正を与える。同種(粗雑・慢心)などとは加算。補正量が素直
+		;この補正を999以上で指定した場合は確定クリティカル、-999以下で指定した場合はクリティカル不能となる
+		CASE "クリティカル補正A"
+			;合致した素質で攻撃した場合、クリティカル率1.3倍
+			;クリランクはアドバイスあるのでハネ上がりすぎると判断
+			SIF GROUPMATCH(L_相性名, "전술", "수격")
+				RETURN 30
+	ENDSELECT
+;自分が防御側
+ELSE
+ENDIF
+RETURN 0

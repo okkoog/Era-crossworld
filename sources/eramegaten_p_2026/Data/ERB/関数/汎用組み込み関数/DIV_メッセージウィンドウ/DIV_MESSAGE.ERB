@@ -1,0 +1,838 @@
+﻿
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;	※未完成ファイルです。
+;	Module		:DIV_MESSAGE.ERB
+;	Facility	:<div>制御によるメッセージウィンドウを作成する関数。アニメーション機能付き。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/07/03		一ノ瀬				    新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;------------------------------------------------------------------------------------------------------------
+;引数解説
+;発言者 			喋る人。省略時は表示されない。
+;얼굴이미지				表示する顔グラ。省略時は表示されない。 
+;					キャラ画像(CHARA)　、 NPC画像(スプライト親番号) 、 NPC画像_NO(CSV番号)で指定する。
+;発言内容 			メッセージ内容
+;ウィンドウID		複数のメッセージウィンドウを同時に表示したいときに使用する。
+;
+;------------------------------------------------------------------------------------------------------------
+;参照変数解説
+;@DIV_MESSAGE_W、@DIV_MESSAGE_LなどをCALLする前に直接操作することを推奨する変数。
+;引数にした方が良いのではないかと思ったけど、どうせこの操作ができない人は無駄に大量にある引数を操作するのも難しいのでこの仕組みへ。
+;
+;メッセージ_区切文字:ウィンドウID		指定したIDのウィンドウでメッセージを区切る文字列
+;メッセージ_X:ウィンドウID				メッセージを表示するx座標の始点（初期値は50=半角文字列1つ分左に空ける）
+;メッセージ_Y:ウィンドウID				メッセージを表示するy座標の始点（初期値は-800。最下段から8行分上に上がった位置を始点にします）
+;メッセージ_幅:ウィンドウID				横幅（初期値は3600=36文字分。ここから更に顔グラ表示する場合）
+;メッセージ_高さ:ウィンドウID			行数(初期値は800=7行＋上下0.5g行ずつの高さ。改行数が多い場合は自動で数をあわせます)
+;メッセージ_枠太さ:ウィンドウID			メッセージ枠の太さ。（初期値は10=全角文字の10％分の幅）
+;メッセージ_枠色:ウィンドウID			メッセージウィンドウの枠の色。（初期値はデフォルトのフォントの色）
+;メッセージ_表示タイプ:ウィンドウID		TYPE:タイプ風アニメ　FADE:フェードイン
+;メッセージ_オプション:ウィンドウID		文字列で指定します。無記述のものは～しないという形になるので注意してください
+;										ログを残さない/ログを残す
+;											表示後。メッセージを消すかどうかです。
+;											同一ウィンドウ内で文字が出力されてるように見せかけたい場合は残してください。あるいは再利用する場合は着前のはログを消します
+;										ボタンを利用する/ボタンを利用しない/ボタンを表示しない
+;											LOG/AUTO/SKIP/CONFIGの4ボタンを表示し、実行できるようにするかどうか選びます
+;											それぞれのボタンは過去ログ閲覧・メッセージ表示後の自動送り・スキップ・コンフィグ設定に対応しています
+;										再利用する/再利用しない
+;											同じウィンドウの前のメッセージ欄からそのまま続いてるかのように表記します
+;											フェードインとタイプを組み合わせるときなどにどうぞ
+;										NOWAIT
+;											最後にWAITをかけずにPRINTLのまま流します
+;										NOANIME
+;											アニメをせずに一気に表示します
+;メッセージ_フェード間隔:ウィンドウID	フェードインの場合の、1行当たりの表示時間(*1/10sec) 
+;メッセージ_終色:ウィンドウID			フェードインの場合の最終的な文字色（現在オミット中）
+;メッセージ_文字列体裁:ウィンドウID		LEFT / CENTER / RIGHT
+;										中の文字列の枠内の表示位置を変更します
+;
+;位置				LEFT / CENTER / RIGHT
+;							枠の表示位置を調整します。（オミット中）
+;コンフィグ								以下のフラグはmegatenにおいてはFLAG.csvで定義していますが、ERHで定義すること（そしてこのファイル内の記述を変換すること）を推奨します。
+;										FLAG:자동넘기기
+;												オート送りのONOFFを保存します
+;										GLOBAL:メッセージ速度
+;												メッセージ速度を保存します。表示は0.1秒ごとですがその際の表示されていく文字数はこの値と等しくなります
+;										GLOBAL:オート時ウェイト
+;												オート送り時、全メッセージ表示後の待機時間を保存します
+;										GLOBAL:右クリック時ウェイト
+;												右クリック時、全メッセージ表示後の待機時間を保存します
+;										GLOBAL:メッセージアニメ利用
+;												自動的にオプションに"/NOANIME"を追加します
+;------------------------------------------------------------------------------------------------------------
+
+@DIV_MESSAGE_W , 発言者 = "" , 얼굴이미지 = "" , 発言内容 = "" , W_ID = 0 , L_オプション
+#DIMS DYNAMIC 発言者
+#DIMS DYNAMIC 얼굴이미지
+#DIMS DYNAMIC 発言内容
+#DIM DYNAMIC W_ID 						;ウィンドウの番号。同時に10個まで管理・表示可能
+#DIM DYNAMIC L_文字開始位置				;メッセージウィンドウのX座標スタート位置
+#DIM DYNAMIC L_ウィンドウ高さ			;メッセージウィンドウ及び顔ウィンドウの高さ
+#DIMS DYNAMIC L_オプション				;メッセージウィンドウの挙動を制御する
+#DIM CONST L_PAD = 50
+#DIMS DYNAMIC L_CONTENT					;最終的に表示するメッセージウィンドウをそのまま保存した文字列
+#DIM DYNAMIC L_LINE
+#DIM DYNAMIC 読んでいる行
+#DIM DYNAMIC 読んでいる文字
+#DIM DYNAMIC L_BUTTON_NUM				;メッセージウィンドウ内で表示するボタンの数
+#DIM DYNAMIC BUTTON_COORD, 100 , 4		;上記のボタンそれぞれの座標(ボタンごとにx1,x2,y1,y2の範囲を設定)
+#DIMS DYNAMIC BUTTON_VALUE, 100			;上記の範囲に設定するボタンそれぞれの中身 
+#DIMS DYNAMIC SPLIT_発言内容, 100		;発言内容を行ごとに分割する先の変数
+#DIM DYNAMIC SPLIT_NUM					;発言内容を分割したときの行数
+
+;キーの押しっぱなしの場合フラグ立てる？
+
+;過去の発言ウィンドウを暗くする
+FOR LOCAL , 0 , 最大メッセージウィンドウ数
+	SIF LOCAL != W_ID && MATCH(NAME_DISPLAY , @"メッセージウィンドウ{LOCAL}")
+		CALL DEACTIVATE_DISPLAY , @"メッセージウィンドウ{LOCAL}"
+NEXT
+SIF MATCH(NAME_DISPLAY , @"メッセージウィンドウ{W_ID}")
+	CALL ACTIVATE_DISPLAY , @"メッセージウィンドウ{W_ID}"
+;表示オプションが空文字列の場合、ウィンドウに設定されているオプションを取得。
+SIF L_オプション == ""
+	L_オプション = %メッセージ_オプション:W_ID%
+
+;右クリックでここに来たのなら、NOANIMEを追加
+SIF MESSKIP()
+	L_オプション += "/NOANIME"
+;GLOBAL:メッセージアニメ利用が立ってない場合、自動的にオプションに"/NOANIME"を追加する
+SIF GLOBAL:メッセージアニメ利用 == 0
+	L_オプション += "/NOANIME"
+
+;発言内容の中の区切り文字を改行タグへと変換しておく
+発言内容 = %REPLACE(発言内容 , メッセージ_区切文字:W_ID , "<br>")%
+;必要な初期値を取得
+L_ウィンドウ高さ = メッセージ_高さ:W_ID
+IF !STRCOUNT(L_オプション, "再利用する")
+	;再利用しない場合は前回のメッセージを消す
+	M_メッセージ内容:W_ID = 
+ELSE
+	;メッセージの中に改行を普通に入れるので必要なくなりました
+	;;再利用する場合は前回のメッセージに改行を追加
+	;M_メッセージ内容:W_ID += "<br>"
+	読んでいる行 = STRCOUNT(M_メッセージ内容:W_ID , "<br>")
+ENDIF
+;改行数に応じてウィンドウの高さ調整
+LOCAL = STRCOUNT(発言内容 + M_メッセージ内容:W_ID , "<br>")*100+L_PAD*2
+L_ウィンドウ高さ = MAX(L_ウィンドウ高さ , LOCAL )
+
+;----------------------------------------
+;１．顔グラと名前の表示。
+;----------------------------------------
+;顔グラウィンドウ作成関数を呼び出し
+CALL DIV_MESSAGE_ICON_WINDOW , 発言者 , 얼굴이미지 , L_ウィンドウ高さ , L_PAD , メッセージ_枠太さ:W_ID , メッセージ_枠色:W_ID , メッセージ_背景色:W_ID
+;ウィンドウを作成してる場合
+IF RESULT == 1
+	;中身を記録
+	L_CONTENT = %RESULTS%
+	L_文字開始位置 = RESULT:1
+	L_ウィンドウ高さ = RESULT:2
+ENDIF
+;此処までに作った顔グラ＆発言者ウィンドウを（あるなら）記録しておく
+M_顔グラウィンドウ:W_ID '= L_CONTENT
+
+;----------------------------------------
+;２．操作用UIの作成
+;----------------------------------------
+VARS UIボタン
+UIボタン '= REFRESH_DIV_MESSAGE_GUI_BUTTON(BUTTON_COORD , BUTTON_VALUE , L_オプション)
+;----------------------------------------
+;３．メッセージウィンドウの作成
+;----------------------------------------
+;文字列体裁による発言内容に対する修正
+発言内容 = %文字列体裁整え(発言内容 , メッセージ_文字列体裁:W_ID , メッセージ_幅:W_ID -(L_文字開始位置) - L_PAD*2)%
+
+;前残ってた文字を表示
+;メッセージ内容を保存する
+M_メッセージ内容:W_ID += 発言内容 + "<br>"
+LOCALS = %M_メッセージ内容:W_ID%
+;メッセージ内容からウィンドウを作成する
+LOCALS = <div xpos='{L_文字開始位置}'>%HTML_DIV_WINDOW( メッセージ_幅:W_ID -(L_文字開始位置) , L_ウィンドウ高さ , LOCALS , , L_PAD , メッセージ_枠太さ:W_ID , メッセージ_枠色:W_ID , メッセージ_背景色:W_ID)%</div>
+;作成したメッセージウィンドウも保存する
+M_メッセージウィンドウ:W_ID = %LOCALS%
+;顔グラウィンドウとメッセージウィンドウを合成する。これが実際の表示とログの保存に用いられる。
+L_CONTENT += M_メッセージウィンドウ:W_ID
+;非アクティブになった時用に範囲を指定
+L_CONTENT '= @"<div width='{メッセージ_幅:W_ID}' height='{L_ウィンドウ高さ}'>" + L_CONTENT + "</div>"
+
+;スムーズに書いたり消したりの為の現在の行数保存
+L_LINE=LINECOUNT
+
+
+
+;----------------------------------------
+;４．アニメーション処理
+;----------------------------------------
+;;アニメスキップ処理がある時はここで最後まで飛ばす
+SIF STRCOUNT(L_オプション , "NOANIME")
+	GOTO END_ANIME
+
+;アニメ用に行を分割する。ここで分割した結果はあくまでも文字を消す処理の為にのみ用いられる。
+SPLIT M_メッセージ内容:W_ID , "<br>" , SPLIT_発言内容 , SPLIT_NUM
+
+;フェードインを表現するため、出力した文字を隠すブロックを生成する
+VARS 文字隠し
+VARI 文字隠し長さ , 2
+文字隠し長さ:1 = メッセージ_幅:W_ID -(L_文字開始位置)-L_PAD*2 ;文字隠しの最大長さ
+;読んでいる文字、TAGSPLITブロックの位置をリセット
+読んでいる文字 = 0
+
+VARS 表示済み文字列	;現在の行の前までの行の内容をまとめておく
+VARS タイプ済み文字列 ;現在の行でタイプ済みの所までの文字列
+
+;前回のメッセージが残っているならここで足しておくこと
+VARI L_COUNT
+IF 読んでいる行 > 0
+	FOR L_COUNT , 0 , 読んでいる行
+		表示済み文字列 += SPLIT_発言内容:L_COUNT + "<br>"
+	NEXT
+ENDIF
+;アニメをスムーズに表示するためにREDRAWを0に
+REDRAW 0
+WHILE 1
+	;右下のUIボタンを更新
+	UIボタン '= REFRESH_DIV_MESSAGE_GUI_BUTTON(BUTTON_COORD , BUTTON_VALUE , L_オプション)
+	文字隠し =
+	;ここからアニメ用処理
+	IF メッセージ_表示タイプ:W_ID == "TYPE"
+		;新規文字タイピング処理
+		;読んでいる文字数が0ならここでTAGSPLITして読んでいる文字数を1に
+		IF 読んでいる文字 == 0
+			VARI L_TAGS_NUM
+			VARS L_TAGS , 20
+			HTML_TAGSPLIT SPLIT_発言内容:読んでいる行 , L_TAGS , L_TAGS_NUM
+			読んでいる文字++
+		ENDIF
+		VARI TEMP_文字数 = 0
+		タイプ済み文字列 =
+		;分解した中身をタイプ済み文字列として取得していく
+		FOR L_COUNT , 0 , L_TAGS_NUM
+			IF SUBSTRING(L_TAGS:L_COUNT , 0 , 4) == "<img" && (読んでいる文字 - TEMP_文字数) >= 1
+				;画像は1文字としてカウント
+				タイプ済み文字列 += L_TAGS:L_COUNT
+				TEMP_文字数 ++ 
+			ELSEIF SUBSTRING(L_TAGS:L_COUNT , 0 , 1) == "<"
+				;タグは無条件で追加
+				タイプ済み文字列 += L_TAGS:L_COUNT
+			ELSEIF (読んでいる文字 - TEMP_文字数) <= 0
+				;平文で、もう読める文字の数が残っていないならすっ飛ばす
+			ELSEIF (読んでいる文字 - TEMP_文字数) > STRLENSU(L_TAGS:L_COUNT)
+				;平文で、今までのカウント数+今回の文字の長さが読んでいる文字の位置よりも短いのならそのまま加算
+				タイプ済み文字列 += L_TAGS:L_COUNT
+				TEMP_文字数 += STRLENSU(L_TAGS:L_COUNT)
+			ELSE
+				;平文で、読める文字の数が残っているなら文字を加算して1文字進む
+				タイプ済み文字列 += SUBSTRINGU(L_TAGS:L_COUNT , 0 , 読んでいる文字 - TEMP_文字数)
+				TEMP_文字数 += 読んでいる文字 - TEMP_文字数
+			ENDIF
+		NEXT
+		;次に読み込む座標の位置を指定しておく
+		読んでいる文字++
+		;ここで長さを超えてたら次の行へ
+		IF 読んでいる文字 > STRLENSU(HTML_TOPLAINTEXT(SPLIT_発言内容:読んでいる行))
+			表示済み文字列 += SPLIT_発言内容:読んでいる行 + "<br>"
+			タイプ済み文字列 =
+			読んでいる行++
+			読んでいる文字 = 0
+		ENDIF
+		VARS TEMP_WINDOW
+		TEMP_WINDOW = <div xpos='{L_文字開始位置}'>%HTML_DIV_WINDOW( メッセージ_幅:W_ID -(L_文字開始位置) , L_ウィンドウ高さ , 表示済み文字列 + タイプ済み文字列+ 文字隠し , , L_PAD , メッセージ_枠太さ:W_ID , メッセージ_枠色:W_ID , メッセージ_背景色:W_ID)%</div>
+		TEMP_WINDOW '= M_顔グラウィンドウ:W_ID + TEMP_WINDOW
+		;メッセージウィンドウをDISPLAYにセット
+		CALL SET_DISPLAY , メッセージ_X:W_ID , メッセージ_Y:W_ID , @"メッセージウィンドウ{W_ID}" , TEMP_WINDOW
+	ELSEIF メッセージ_表示タイプ:W_ID == "FADE"
+		;フェードイン処理
+		表示済み文字列 '= L_CONTENT
+		FOR L_COUNT , 0 ,  STRCOUNT(M_メッセージ内容:W_ID , "<br>")
+			VARS 表示文章
+			IF 読んでいる行 > L_COUNT
+				;既に読み終えてる行は何も隠さない
+				文字隠し+="<br>"
+			ELSEIF 読んでいる行 == L_COUNT
+				;読んでいる文字をタイムキープとして利用しつつ、透明度を計算
+				VARI 透明度 = 100 * (100 * メッセージ_フェード間隔:W_ID - 読んでいる文字) / (100 * メッセージ_フェード間隔:W_ID) 
+				;算出された透明度を元にして背景色のX％の透明度のフィルターを作って現在の行に張り付ける
+				文字隠し+= @"%メッセージフェードフィルタ( 透明度 , メッセージ_背景色:W_ID , 文字隠し長さ:1 , 100 )%" + "<br>"
+				;文字隠し+= @"%メッセージフェードフィルタ( 透明度 , COLOR("RED") , 文字隠し長さ:1 , 100 )%" + "<br>"
+				読んでいる文字 += (100 - (GLOBAL:メッセージ速度 - 1) * 5 ) + 15 ;どうしても処理に15msかかるっぽい
+				;時間が100ms×フェード間隔分溜まったら次の行へ
+				IF 読んでいる文字 >= 100 * メッセージ_フェード間隔:W_ID
+					読んでいる行++
+					読んでいる文字=0
+				ENDIF
+			ELSE
+				;まだ届いてない行は全隠し
+				文字隠し+= @"<shape type='rect' param='{文字隠し長さ:1}' color='%TOSTR_HTML(メッセージ_背景色:W_ID)%'><br>"
+			ENDIF
+		NEXT
+		
+		;文字を隠すための画像やRECTの総体を作成
+		文字隠し = <div xpos='{(L_文字開始位置)+L_PAD}' ypos='{L_PAD}'>%文字隠し%</div>
+		;メッセージウィンドウをDISPLAYにセット
+		CALL SET_DISPLAY , メッセージ_X:W_ID , メッセージ_Y:W_ID , @"メッセージウィンドウ{W_ID}" , 表示済み文字列 + 文字隠し
+	ENDIF
+	CALL SET_DISPLAY , 0 , 0 , @"メッセージGUI" , UIボタン
+	CALL SHOW_DISPLAY
+	;ここまでアニメ用処理
+
+	;ここからアニメ中の入力処理
+	;メッセージウィンドウ内入力処理呼び出し
+	CALL INPUTMOUSEKEY_MESSAGE , BUTTON_COORD , BUTTON_VALUE , L_オプション , 1
+	IF RESULTS == "+"
+		;ログ閲覧
+		CALL DIV_MESSAGE_LOG
+	ELSEIF RESULTS == "-"
+		;オートモード切替
+		INVERTBIT FLAG:자동넘기기, 0
+	ELSEIF RESULTS == "*"
+		;スキップモード切替
+		INVERTBIT FLAG:윈도우메시지스킵, 0
+	ELSEIF RESULTS == "/"
+		;コンフィグ呼び出し
+		CALL MESSAGE_WINDOW_CONFIG
+	ELSEIF (RESULT:0 == 1 && RESULTS == "") || (RESULT:0 == 3)
+		;それ以外をクリックした、キーを叩いていたなら、アニメーション処理終了
+		BREAK
+	ENDIF
+	;INPUTMOUSEKEY 100 - (GLOBAL:メッセージ速度 - 1) * 5
+	CLEARLINE LINECOUNT - L_LINE
+	;最後の行まで読んだらアニメーション処理終了
+	SIF 読んでいる行 >= STRCOUNT(M_メッセージ内容:W_ID , "<br>")
+		BREAK
+WEND
+
+;----------------------------------------
+;５．ログの保存及び表示、入力待ち
+;----------------------------------------
+$END_ANIME
+;全部終わってからログを保存
+CALL SAVE_DIV_MESSAGE_LOG , 発言者 , 얼굴이미지 , 発言内容 , L_CONTENT
+
+$INPUT_LOOP
+;右下のUIボタンを更新
+UIボタン '= REFRESH_DIV_MESSAGE_GUI_BUTTON(BUTTON_COORD , BUTTON_VALUE , L_オプション)
+CLEARLINE LINECOUNT - L_LINE
+;DISPLAYにセット
+CALL SET_DISPLAY , メッセージ_X:W_ID , メッセージ_Y:W_ID , @"メッセージウィンドウ{W_ID}" , L_CONTENT
+CALL SET_DISPLAY , 0 , 0 , @"メッセージGUI" , UIボタン
+CALL SHOW_DISPLAY
+
+;メッセージウィンドウ内入力処理呼び出し
+CALL INPUTMOUSEKEY_MESSAGE , BUTTON_COORD , BUTTON_VALUE , L_オプション , 0
+IF RESULTS == "+"
+	;ログ閲覧
+	CALL DIV_MESSAGE_LOG
+ELSEIF RESULTS == "-"
+	;オートモード切替
+	INVERTBIT FLAG:자동넘기기, 0
+ELSEIF RESULTS == "*"
+	;スキップモード切替
+	INVERTBIT FLAG:윈도우메시지스킵, 0
+ELSEIF RESULTS == "/"
+	;コンフィグ呼び出し
+	CALL MESSAGE_WINDOW_CONFIG
+ELSEIF (RESULT:0 == 1 && RESULTS == "") || (RESULT:0 == 3) || RESULT:0 == 4
+	CLEARLINE LINECOUNT - L_LINE
+	;それ以外をクリックした、キーを叩いていた、時間切れ処理なら終了
+	REDRAW 1
+	;CALL SET_DISPLAY
+	RETURN 1
+ENDIF
+;INPUTMOUSEKEY 100 - (GLOBAL:メッセージ速度 - 1) * 5
+CLEARLINE LINECOUNT - L_LINE
+GOTO INPUT_LOOP
+
+REDRAW 1
+;CALL SET_DISPLAY
+RETURN 1
+
+
+@DIV_MESSAGE_L , 発言者 = "" , 얼굴이미지 = "" , 発言内容 = "", W_ID = 0 , L_オプション = ""
+#LOCALSIZE 1
+#DIMS 発言者
+#DIMS 얼굴이미지
+#DIMS 発言内容
+#DIM W_ID ;ウィンドウの番号。同時に10個まで管理・表示可能
+#DIM L_文字開始位置
+#DIM L_ウィンドウ高さ
+#DIMS L_オプション
+#DIM L_PAD = 50
+#DIMS DYNAMIC L_CONTENT
+#DIM DYNAMIC L_SIZE , 2
+
+;表示オプションが空文字列で渡されている場合、ウィンドウに設定されているオプションを取得。
+SIF L_オプション == ""
+	L_オプション = %メッセージ_オプション:W_ID%
+
+;発言内容の中の区切り文字を改行タグへと変換しておく
+発言内容 = %REPLACE(発言内容 , メッセージ_区切文字:W_ID , "<br>")%
+;必要な初期値を取得
+L_ウィンドウ高さ = メッセージ_高さ:W_ID
+IF !STRCOUNT(L_オプション, "再利用する")
+	;再利用しない場合は前回のメッセージを消す
+	M_メッセージ内容:W_ID = 
+ENDIF
+;改行数に応じてウィンドウの高さ調整
+LOCAL = STRCOUNT(発言内容 + M_メッセージ内容:W_ID , "<br>")*100+L_PAD*2
+L_ウィンドウ高さ = MAX(L_ウィンドウ高さ , LOCAL )
+
+
+;----------------------------------------
+;１．顔グラと名前の表示。
+;----------------------------------------
+;顔グラウィンドウ作成関数を呼び出し
+CALL DIV_MESSAGE_ICON_WINDOW , 発言者 , 얼굴이미지 , L_ウィンドウ高さ , L_PAD , メッセージ_枠太さ:W_ID , メッセージ_枠色:W_ID , メッセージ_背景色:W_ID
+;ウィンドウを作成してる場合
+IF RESULT == 1
+	;中身を記録
+	L_CONTENT = %RESULTS%
+	L_文字開始位置 = RESULT:1
+	L_ウィンドウ高さ = RESULT:2
+ENDIF
+;此処までに作った顔グラ＆発言者ウィンドウを（あるなら）記録しておく
+M_顔グラウィンドウ:W_ID = L_CONTENT
+
+;----------------------------------------
+;２．メッセージウィンドウの作成
+;----------------------------------------
+;文字列体裁による発言内容に対する修正
+発言内容 = %文字列体裁整え(発言内容 , メッセージ_文字列体裁:W_ID , メッセージ_幅:W_ID -(L_文字開始位置) - L_PAD*2)%
+
+;本文用のメッセージウィンドウを表示
+;メッセージ内容を保存する
+M_メッセージ内容:W_ID += 発言内容 + "<br>"
+;メッセージ内容からウィンドウを作成する
+LOCALS = <div xpos='{L_文字開始位置}'>%HTML_DIV_WINDOW( メッセージ_幅:W_ID -(L_文字開始位置) , L_ウィンドウ高さ , M_メッセージ内容:W_ID , , L_PAD , メッセージ_枠太さ:W_ID , メッセージ_枠色:W_ID , メッセージ_背景色:W_ID)%</div>
+;作成したメッセージウィンドウも保存する
+M_メッセージウィンドウ:W_ID = %LOCALS%
+;表示用の変数に格納
+L_CONTENT += LOCALS
+;非アクティブになった時用に範囲を指定
+L_CONTENT '= @"<div width='{メッセージ_幅:W_ID}' height='{L_ウィンドウ高さ}'>" + L_CONTENT + "</div>"
+
+;ログ保存作業仮置き
+CALL SAVE_DIV_MESSAGE_LOG , 発言者 , 얼굴이미지 , 発言内容 , L_CONTENT
+
+;DISPLAYにセット
+CALL SET_DISPLAY , メッセージ_X:W_ID , メッセージ_Y:W_ID , @"メッセージウィンドウ{W_ID}" , L_CONTENT 
+;PRINTL互換扱いの関数なので、ここでの表示はせずにそのまま帰る
+RETURN 1
+
+
+;=====================================================
+;	@DIVE_MESSAGE_ICON_WINDOW , ARGS
+;	引数として渡した画像をウィンドウ枠で囲って名札を付けてHTML文章化して返す
+;
+;	RESULTは
+;	RESULT:0 作ったかどうか
+;	RESULT:1 作った時の幅
+;	RESULT:2 作った時の高さ
+;	RESULTS:0 = 作成した文字列
+;=====================================================
+@DIV_MESSAGE_ICON_WINDOW , 発言者 = "" , 얼굴이미지 = "" , L_ウィンドウ高さ , L_PAD = 50 , L_枠太さ = 20 , L_枠色 = -1 , L_背景色 = -1
+#DIMS 発言者
+#DIMS 얼굴이미지
+#DIMS 発言内容
+#DIM L_ウィンドウ高さ
+#DIM DYNAMIC 顔グラ位置 = 0
+#DIM 名前位置
+#DIM L_PAD
+#DIM L_枠太さ
+#DIM DYNAMIC L_枠色
+#DIM DYNAMIC L_背景色
+#DIMS DYNAMIC L_CONTENT
+#DIM DYNAMIC L_SIZE , 2
+SIF L_枠色 == -1
+	L_枠色 = GETCOLOR()
+SIF L_背景色 == -1
+	L_背景色 = GETBGCOLOR()
+
+IF 얼굴이미지 != ""
+	;高さが想定よりも大きい場合は真ん中に寄せる
+	L_SIZE:0 = GET_IMG_SIZE(얼굴이미지 , "width")
+	;本当はheightのサイズを取得するのはこちらの方が良いんだけど、megatenの現在の仕様だと一個あたりの画像を4分割してしまっているので4倍にする
+	;L_SIZE:1 = GET_IMG_SIZE(얼굴이미지 , "height")
+	L_SIZE:1 = GET_IMG_SIZE(얼굴이미지 , "height")*4
+	;画像とウィンドウサイズがぴったりだったらそのままでいいが、ずれていたら修正したりウィンドウを大きくしなければならない
+	IF L_SIZE:1 +L_PAD*2 + (発言者!="") * 100 > L_ウィンドウ高さ
+		L_ウィンドウ高さ = L_SIZE:1 + L_PAD*2 + (発言者!="") * 100
+	ELSEIF L_SIZE:1 +L_PAD*2 + (発言者!="") * 100 > L_ウィンドウ高さ
+		顔グラ位置 = L_ウィンドウ高さ / 2 - ((L_SIZE:1 +L_PAD*2 + (発言者!="") * 100)/2) 
+	ENDIF
+	;名前の表示位置は画像のちょっと下へ
+	名前位置 = 顔グラ位置 + L_SIZE:1 + L_PAD + 10
+	;얼굴이미지&名札用のウィンドウ宣言
+	L_CONTENT = <div ypos='{顔グラ位置}'>%얼굴이미지%</div>
+	L_CONTENT = %HTML_DIV_WINDOW(L_SIZE:0+L_PAD*2 , L_ウィンドウ高さ , L_CONTENT , , L_PAD , L_枠太さ , L_枠色 , L_背景色)%
+
+	;名前を足す
+	SIF 発言者 != ""
+		L_CONTENT += @"<div xpos='{L_PAD}' ypos='{名前位置}'>%名札(発言者 , L_SIZE:0 , 100)%</div>"
+	
+	;本文の開始位置をセットして次へ
+	RESULTS = %L_CONTENT%
+	RETURN 1 , L_SIZE + L_PAD*2 , L_ウィンドウ高さ
+ELSE
+	;顔グラが無い場合、発言者名があるかどうかで更に分岐
+	IF 発言者 != ""
+		;良い感じの位置を割り出して、発言者ウィンドウを作る
+		名前位置 = L_ウィンドウ高さ / 2 - 50
+		L_CONTENT = %HTML_DIV_WINDOW(400+L_PAD*2 , L_ウィンドウ高さ , "" , , L_PAD , L_枠太さ , L_枠色 , L_背景色)%
+		;発言者名を表示
+		L_CONTENT += @"<div xpos='50' ypos='{名前位置}'>%名札(発言者 , L_SIZE:0 , 100)%</div>"
+		RESULTS = %L_CONTENT%
+		RETURN 1 , 400 + L_PAD*2 , L_ウィンドウ高さ
+	ELSE
+		;発言者名も無いなら、今回は発言内容のウィンドウだけ出します
+		RESULTS =
+		RETURN 0 , 0 , L_ウィンドウ高さ
+	ENDIF 
+ENDIF
+
+;=====================================================
+;	@文字列体裁整え , ARGS , ARGS:1 = LEFT , ARG（文字数）
+;	<br>を含んだ文字をCENTER・RIGHTに<div>で整形してお返し
+;=====================================================
+@文字列体裁整え , ARGS , ARGS:1 = "LEFT" , ARG
+#FUNCTIONS
+#LOCALSSIZE 1
+#DIM DYNAMIC L_X
+#DIM TAG_NUM
+#DIMS TAG_STR
+#DIMS DYNAMIC L_RESULTS
+#DIM LCOUNT
+SIF ARGS:1 == "LEFT"
+	RETURNF ARGS
+
+SPLIT ARGS , "<br>" , TAG_STR , TAG_NUM
+FOR LCOUNT , 0 , TAG_NUM
+	SIF HTML_TOPLAINTEXT(TAG_STR:LCOUNT) == ""
+		CONTINUE
+	IF ARGS:1 == "CENTER"
+		L_X = (ARG - STRLENS(HTML_TOPLAINTEXT(TAG_STR:LCOUNT)) * 50)/2
+	ELSE
+		L_X = (ARG - STRLENS(HTML_TOPLAINTEXT(TAG_STR:LCOUNT)) * 50)
+	ENDIF
+	LOCALS = <div xpos='{L_X}'>%TAG_STR:LCOUNT%</div>
+	L_RESULTS += LOCALS
+	SIF LCOUNT != TAG_NUM-1
+		L_RESULTS += "<br>"
+NEXT
+RETURNF L_RESULTS
+
+;=====================================================
+;	@UIボタン更新
+;	画面右下に表示するUIを取得
+;=====================================================
+@REFRESH_DIV_MESSAGE_GUI_BUTTON, BUTTON_COORD , BUTTON_VALUE , L_オプション , START_BUTTON = 0
+#FUNCTIONS
+#DIM REF BUTTON_COORD, 0, 0		;ボタンの座標定義
+#DIMS REF BUTTON_VALUE, 0		;ボタンの中身
+#DIMS DYNAMIC L_オプション
+#DIMS DYNAMIC UIボタン
+#DIM DYNAMIC L_X = 1500
+#DIM DYNAMIC L_Y = 0
+#DIM START_BUTTON				;ボタンを代入し始める位置
+#DIM LENS , 4 = 19 , 19+25 , 19+25+25 , 19+25+25+21
+#DIM 比較時間
+#DIM 前回時間
+比較時間 = GETMILLISECOND() - 前回時間 
+前回時間 = GETMILLISECOND()
+
+;ログボタン・スキップボタンを表示させる
+IF STRCOUNT(L_オプション , "ボタンを表示しない")
+	;ボタンを表示しない場合は何も触らない
+ELSEIF STRCOUNT(L_オプション , "ボタンを利用しない")
+	;ボタン利用しない場合ボタンをオンにしない
+{
+UIボタン +=
+@"<div display='absolute-leftbottom' xpos='{L_X}' ypos='{L_Y}' background_color='%TOSTR_HTML(GETBGCOLOR())%'>"
++ "hogegege" + @"[WHEEL ↑]or[+] LOG"
++ @"[WHEEL ↓]or[-] AUTO&lt;	\@FLAG:자동넘기기 ?%" ON"%#OFF\@&gt;"
++ @"[R Click]or[*] SKIP&lt;	\@FLAG:윈도우메시지스킵 ?%" ON"%#OFF\@&gt;"
++ @"[M Click]or[/] CONFIG"
++ "</div>"
+}
+	
+ELSE
+{
+UIボタン +=
+@"<div display='absolute-leftbottom' xpos='{L_X}' ypos='{L_Y}' background_color='%TOSTR_HTML(GETBGCOLOR())%'>"
++ SET_BUTTON_TAG(@"[WHEEL↑]or[+] LOG " , "+")
++ SET_BUTTON_TAG(@"[WHEEL↓]or[-] AUTO&lt;	\@FLAG:자동넘기기 ?%" ON"%#OFF\@&gt; ", "-")
++ SET_BUTTON_TAG(@"[R Click]or[*] SKIP&lt;	\@FLAG:윈도우메시지스킵 ?%" ON"%#OFF\@&gt; ", "*")
++ SET_BUTTON_TAG(@"[M Click]or[/] CONFIG", "/")
++ " " + TOSTR(比較時間) + "ms" + "</div>" 
+}
+	BUTTON_COORD:(START_BUTTON+0):0 = L_X , L_X+LENS:0*50 , L_Y-100 , L_Y
+	BUTTON_COORD:(START_BUTTON+1):0 = L_X+LENS:0*50 , L_X+LENS:1*50 , L_Y-100 , L_Y
+	BUTTON_COORD:(START_BUTTON+2):0 = L_X+LENS:1*50 , L_X+LENS:2*50 , L_Y-100 , L_Y
+	BUTTON_COORD:(START_BUTTON+3):0 = L_X+LENS:2*50 , L_X+LENS:3*50 , L_Y-100 , L_Y
+	BUTTON_VALUE:START_BUTTON '= "+" , "-" , "*" , "/"
+ENDIF
+RETURNF UIボタン
+;=====================================================
+;	@INPUTMOUSEKEY_MESSAGE , ARG , ARGS
+;	メッセージウィンドウ内でのユーザーの入力制御
+;=====================================================
+
+@INPUTMOUSEKEY_MESSAGE , BUTTON_COORD , BUTTON_VALUE , L_OPTION , IS_ANIME
+#DIM REF BUTTON_COORD, 0, 0		;ボタンの座標定義
+#DIMS REF BUTTON_VALUE, 0		;ボタンの中身
+#DIMS DYNAMIC L_OPTION			;送られてきたオプション
+#DIM DYNAMIC IS_ANIME			;メッセージアニメ中に呼び出されたどうか。これが否ならメッセージの終わりに呼ばれている。
+RESULTS =
+;+と*を入れようとする挙動を踏まえてSHIFTはループで逃がす
+DO
+	IF IS_ANIME && (MESSKIP() || FLAG:윈도우메시지스킵 || GLOBAL:メッセージ速度 == 0 )
+		;アニメ中にスキップ設定状態で呼び出されたなら、1msで返す
+		INPUTMOUSEKEY 5
+	ELSEIF IS_ANIME
+		;アニメ中に呼び出された場合はメッセージ速度依存
+		INPUTMOUSEKEY 100 - (GLOBAL:メッセージ速度 - 1) * 5
+	ELSEIF STRCOUNT(L_OPTION, "NOWAIT") || FLAG:윈도우메시지스킵
+		;アニメ中でない場合、ウェイトしないモードであるなら、1msだけ待ってクリックしたものとして返す
+		RETURN 1
+		INPUTMOUSEKEY 1
+		IF RESULT:0 == 4
+			RETURN 1
+		ENDIF
+	ELSEIF FLAG:자동넘기기
+		;アニメ中でなくオート送りオンなら設定したウェイト分待つ
+		INPUTMOUSEKEY GLOBAL:オート時ウェイト
+		IF RESULT:0 == 4
+			RETURN 1
+		ENDIF
+	ELSE
+		;オート送りオフなら入力するまで待つ
+		INPUTMOUSEKEY 0
+	ENDIF
+LOOP CONVERT_KEYCORD_TO_STR(RESULT:1) == "SHIFT"
+;INPUTMOUSEKEYの結果ごとに処理
+VARI IS_CLICKED
+IF RESULT:0 == 1
+	;クリックした場合
+	;クリックフラグをオン
+	IS_CLICKED = 1
+	SELECTCASE RESULT:1
+		CASE 0x100000
+			;クリック座標からRESULTSを取る
+			CALL CONVERT_CLICK_TO_RESULTS_ABSOLUTE, BUTTON_COORD, BUTTON_VALUE
+		CASE 0x200000
+			;右クリックしていた場合はスキップボタンと同様
+			RESULTS '= "*"
+		CASE 0x400000
+			;中クリック(ホイール押下)していた場合はコンフィグボタンと同様
+			RESULTS '= "/"
+	ENDSELECT
+	;関数を呼び出してRESULT変わっちゃってるので再度。
+	RESULT:0 = IS_CLICKED
+;ホイールを動かした場合
+ELSEIF RESULT:0 == 2
+	;下に動かした場合はオートボタンと同様
+	IF RESULT:1 < 0
+		RESULTS '= "-"
+	;上に動かした場合はログボタンと同様
+	ELSEIF RESULT:1 > 0
+		RESULTS '= "+"
+	ENDIF
+ELSEIF RESULT:0 == 3
+	;キーボードを押していた
+	RESULTS '= CONVERT_KEYCORD_TO_STR(RESULT:1)
+	IF MATCH(BUTTON_VALUE , RESULTS)
+		;指定されてるボタンと一致してたらそのまま返す
+	ELSEIF RESULTS == "ESC"
+		;エスケープボタンはスキップボタン扱い
+		RESULTS '= "*"
+	ELSE
+		;指定されてるボタンに一致してないなら空文字列を入れて返す=ENTERとかと同様扱い
+	ENDIF
+ENDIF
+
+;スキップ中はスキップボタン以外反応しない
+IF IS_ANIME && (MESSKIP() || FLAG:윈도우메시지스킵 || GLOBAL:メッセージ速度 == 0 ) && RESULTS != "*"
+	RETURN 1
+ELSE
+	;時間切れ(RESULT:0==4)の場合はそのままRESULTを返すだけでよいので省略
+	RETURN RESULT:0 , RESULT:1 , RESULT:2 , RESULT:3 , RESULT:4 
+ENDIF
+
+;=====================================================
+;	@CLEAR_MESSAGE , ARG
+;	指定したメッセージウィンドウを削除し、座標やオプション等も初期化する
+;	ARGを省略した場合、全てのメッセージウィンドウについて同様の処理を行う。
+;	システム側で呼び出す場所：推奨
+;			ダンジョンのイベント終了時/メインフローに戻って来た時
+;			戦闘開始/ターン開始/ターン終了時など
+;			ショップ画面に戻って来た時
+;
+;=====================================================
+@CLEAR_MESSAGE , ARG = -1
+#DIM DYNAMIC L_MIN = 0
+#DIM DYNAMIC L_MAX = 最大メッセージウィンドウ数
+IF INRANGE(ARG , 0 , 最大メッセージウィンドウ数 -1)
+	CALL CLEAR_DISPLAY , @"メッセージウィンドウ{ARG}"
+	CALL INITIALIZE_MESSAGE , ARG 
+ELSE 
+	FOR LOCAL , L_MIN , L_MAX
+		CALL CLEAR_DISPLAY , @"メッセージウィンドウ{LOCAL}"
+	NEXT
+	CALL INITIALIZE_MESSAGE
+	CALL CLEAR_DISPLAY , "メッセージGUI"
+ENDIF
+
+;=====================================================
+;	@INITIALIZE_MESSAGE , ARG
+;メッセージウィンドウ初期化処理
+;ゲーム起動時のイニシャライズで呼び出しておきたい
+;@SET_GAMEPLAY_START 内で呼ぼう
+;=====================================================
+
+@INITIALIZE_MESSAGE , ARG = -1
+#DIM DYNAMIC L_MIN = 0
+#DIM DYNAMIC L_MAX = 最大メッセージウィンドウ数
+IF INRANGE(ARG , 0 , 最大メッセージウィンドウ数 -1)
+	L_MIN = ARG
+	L_MAX = ARG + 1
+ENDIF
+
+VARSET M_発言者名 , "" , L_MIN , L_MAX
+VARSET M_顔グラウィンドウ , "" , L_MIN , L_MAX
+VARSET M_メッセージ内容 , "" , L_MIN , L_MAX
+VARSET メッセージ_X , DEF_メッセージ_X , L_MIN , L_MAX
+VARSET メッセージ_Y , DEF_メッセージ_Y , L_MIN , L_MAX
+VARSET メッセージ_幅 , DEF_メッセージ_幅 , L_MIN , L_MAX
+VARSET メッセージ_高さ , DEF_メッセージ_高さ , L_MIN , L_MAX
+VARSET メッセージ_枠太さ , DEF_メッセージ_枠太さ , L_MIN , L_MAX
+VARSET メッセージ_枠色 , DEF_メッセージ_枠色 , L_MIN , L_MAX
+VARSET メッセージ_背景色 , DEF_メッセージ_背景色 , L_MIN , L_MAX
+VARSET メッセージ_区切文字 , DEF_メッセージ_区切文字 , L_MIN , L_MAX
+VARSET メッセージ_表示タイプ , DEF_メッセージ_表示タイプ , L_MIN , L_MAX
+VARSET メッセージ_オプション , DEF_メッセージ_オプション , L_MIN , L_MAX
+VARSET メッセージ_フェード間隔 , DEF_メッセージ_フェード間隔 , L_MIN , L_MAX
+VARSET メッセージ_終色 , DEF_メッセージ_終色 , L_MIN , L_MAX
+VARSET メッセージ_文字列体裁 , DEF_メッセージ_文字列体裁 , L_MIN , L_MAX
+
+
+
+;後で別の場所に移動させる
+
+
+
+@GET_IMG_SIZE , ARGS , ARGS:1="width"
+#FUNCTION
+#DIM TAG_NUM 
+#DIMS TAG_STR
+
+ARGS '= REPLACE(ARGS , @".*(<img).* %ARGS:1%='" , "")
+SPLIT ARGS , "'" , TAG_STR , TAG_NUM
+RETURNF TOINT(TAG_STR:0)
+
+;;==================================================
+;;※MESSAGE_W没案
+;;----------------------------------------
+;;２．メッセージウィンドウの作成
+;;----------------------------------------
+;;最初に発言内容をSPLIT
+;SPLIT 発言内容 , "<br>" , SPLIT_発言内容 , SPLIT_NUM
+;
+;;文字を表示
+;
+;読み終えた行 = 0
+;読み終えた文字 = 0
+;読み終えたブロック = 0
+;WHILE 1
+;	;前残ってた文字は必ず表示
+;	LOCALS = M_メッセージ内容:W_ID
+;	;ここまで読んだ行も全部表示
+;	VARI L_COUNT
+;	IF 読み終えた行 > 0
+;		FOR L_COUNT , 0 , 読み終えた行+1
+;			LOCALS += SPLIT_発言内容:L_COUNT + "<br>"
+;		NEXT
+;	ENDIF
+;	;最新の行をタイプ
+;	VARI 最新行の要素数
+;	VARS 最新行の中身 , STRCOUNT(SPLIT_発言内容:読み終えた行 , "<")
+;	HTML_TAGSPLIT SPLIT_発言内容:読み終えた行 , 最新行の中身 , 最新行の要素数
+;	VARI 読み終えたブロック
+;	VARS 適用タグ , 最新行の要素数
+;	VARS 閉じるタグ , 最新行の要素数
+;	LOCALS:1 = 
+;	$TYPING_LOOP
+;	FOR L_COUNT , 読み終えたブロック , 最新行の要素数
+;		IF STRCOUNT(最新行の中身:L_COUNT , "<") && !STRCOUNT(最新行の中身:L_COUNT , "</") 
+;			LOCALS
+;		ELSE
+;		ENDIF
+;		読み終えたブロック++
+;	NEXT
+;
+;	LOCALS:1 += ""
+;	;DISPLAYにセット
+;	CALL SET_DISPLAY , メッセージ_X:W_ID , メッセージ_Y:W_ID , @"メッセージウィンドウ{W_ID}" , M_顔グラウィンドウ + LOCALS + LOCALS:1
+;	CALL SHOW_DISPLAY
+;
+;	;表示が終わってなかったらループ
+;	SIF 1
+;		GOTO TYPING_LOOP
+;	読み終えた行++
+;	SIF 読み終えた行 == SPLIT_NUM
+;		BREAK
+;WEND
+
+
+
+
+
+
+;没案2　1文字ずつ隠す
+
+;VARI 開示部長さ
+;VARI 文字隠し長さ , 2
+;VARI 文字隠し位置
+;VARS 文字隠し
+;		;;文字タイピング処理
+		;FOR L_COUNT , 0 ,  STRCOUNT(M_メッセージ内容:W_ID , "<br>")
+		;	VARS 表示文章
+		;	IF 読んでいる行 > L_COUNT
+		;		文字隠し+="<br>"
+		;	ELSEIF 読んでいる行 == L_COUNT
+		;		LOCALS:1 = %HTML_TOPLAINTEXT(SPLIT_発言内容:L_COUNT)%
+		;		文字隠し長さ = STRLENS(LOCALS:1) * 50
+		;		;文字列体裁によって隠す場所の始点を変える
+		;		IF メッセージ_文字列体裁:W_ID == "CENTER"
+		;			文字隠し位置 = (メッセージ_幅:W_ID -(L_文字開始位置) - L_PAD*2 - STRLENS(LOCALS:1) * 50)/2
+		;		ELSEIF メッセージ_文字列体裁:W_ID == "RIGHT"
+		;			文字隠し位置 = (メッセージ_幅:W_ID -(L_文字開始位置) - L_PAD*2 - STRLENS(LOCALS:1) * 50)
+		;		ELSE
+		;			文字隠し位置 = 0
+		;		ENDIF
+		;		IF 読んでいる文字 <= STRLENSU(LOCALS:1)
+		;			開示部長さ += STRLENS(SUBSTRINGU(LOCALS:1 , 読んでいる文字 , 1))*50
+		;			読んでいる文字++
+		;			IF 開示部長さ < 文字隠し長さ
+		;				文字隠し+= @"<div xpos='{文字隠し位置+開示部長さ}'><shape type='rect' color='%TOSTR_HTML(COLOR("RED"))%' param='{文字隠し長さ-開示部長さ}'></div><br>"
+		;			ELSE
+		;				文字隠し+= "<br>"
+		;			ENDIF
+		;			;<shape type='space' param='{開示長さ}'>
+		;			;末尾に来てたらリセットして次の行へ
+		;			IF 読んでいる文字 > STRLENSU(LOCALS:1)
+		;				読んでいる行++
+		;				読んでいる文字=0
+		;				開示部長さ = 0
+		;			ENDIF
+		;		ELSE
+		;			文字隠し+="<br>"
+		;		ENDIF
+		;	ELSE
+		;		文字隠し+= @"<shape type='rect' param='{文字隠し長さ:1}' color='%TOSTR_HTML(メッセージ_背景色:W_ID)%'><br>"
+		;	ENDIF
+		;NEXT

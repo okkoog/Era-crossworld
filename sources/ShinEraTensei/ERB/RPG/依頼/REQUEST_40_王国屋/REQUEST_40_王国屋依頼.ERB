@@ -1,0 +1,209 @@
+
+;====================
+;条件
+;====================
+@PLAYABLE_REQUEST_40
+IF  イベントフラグ:18:0
+	RESULTS = ペットショップ 王国屋
+	RETURN 1
+ENDIF
+RETURN 0
+
+;====================
+;説明
+;====================
+@EXPLAIN_REQUEST_40
+PRINTFORML ペットショップ王国屋に趣き
+PRINTFORML 王国屋依頼を受けることができる
+;====================
+;内容
+;====================
+@REQUEST_40
+#LOCALSIZE 2
+#LOCALSSIZE 10
+#DIM ページ
+#DIMS 依頼, 10
+#DIM SELLCHARA
+#DIM PRICE
+#DIM REQ
+#DIM LINE
+;一日一回、依頼を生成
+IF ONCEDAY("王国屋依頼")
+	FOR LOCAL, 1, 4
+		SIF SAVESTR:@"王国屋依頼{LOCAL}" == "" || !GETBIT(依頼フラグ:40:0, LOCAL)
+			CALL SET_OUKOKUYA, LOCAL
+	NEXT
+ENDIF
+CALL SHOW_PICTURE, "NONFLOORD", "ペットショップ 王国屋"
+;初回
+IF !STRFLAG_REQ("王国屋初回", 1)
+	CALL MESSAGE_WINDOW, "", "＞ペットショップ 王国屋/＞カラフルで愛らしい電子ペットの達の群れの中に/＞エプロンをつけた、眼鏡の老人が/＞笑みを浮かべているのが画面に映っている", , , , , 4
+	CALL MESSAGE_WINDOW, "店主", "ようこそペットショップへ！/僕はここの店主のロク五郎です/よろしく！", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "うちは電子ペットを扱っている、/デジタルペットショップなんですねー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "ほらっ！/僕の周りにいるこの子たち！/メッチーって言うんですねー/かわいいですねー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "でもこれ、ぜーんぶ予約済み！/もう全部！！", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "だから今売れるのが無いんです/ごめんなさいねー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "んっ！　どうしたメッチー！/おやっ！　おやおやっ！/キミはパスワードが登録されてるね/しかも調教師ですねー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "この子！/メッチーが教えてくれるんです/賢いですねー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "でっ、/パスワードを持ってるキミには/別の生き物を紹介しますねー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "さあっ、始まりますよ！/ペットショップ王国屋！！/ロク五郎と愉快な奴隷たちー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "じゃあ、簡単に説明しますねー/キミは調教師ですねー/可愛い悪魔達をもっと可愛くしてあげる、/すばらしいお仕事ですねー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "でもお客さんがどんな可愛さを求めてるか/悩んだりすることもあるんじゃないかなー？/うんうん、わかります/わかりますよー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "お客さんのほうも好みの子が/なかなか売ってるのを見かけないとかもあるんですよー/ほらこの子とかみてくださいー", , , , , 4
+	CALL MESSAGE_WINDOW, "", "＞一匹の女悪魔が映像が浮かびあがる", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "おや、物欲しそうな顔でこちらを見てますねー/チンポが欲しくて欲しくてたまらないんですねー/可愛いですねー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "でも、この子はまだ処女でキスもまだなんですよー/だから入れて欲しいのは後ろのほうなんですよー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "あっ今はダメだよー/よしよしいい子だからもうちょっと待っててねー/もうすぐご主人様に渡してあげられるからねー", , , , , 4
+	CALL MESSAGE_WINDOW, "", "＞女悪魔の姿が消えた……", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "可愛かったですねー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "とまぁこういう悪魔がほしいお客さんも多いんですねー/でも売り物としていつも市場にあるわけじゃないんですねー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "そこでお客様から注文を聞いて/調教師の人にお仕事を頼むことにしたんですよー/そういうわけでキミには/注文通りの悪魔を用意してもらいたいのですよー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "もちろん用意したらお金が払ってもらえるんですねー/しかも可愛さに目がない人達ですよー/普通に売るより高くなるんですねー", , , , , 4
+ENDIF
+$INPUT_LOOP
+CALL MESSAGE_WINDOW, "ロク五郎", "さて、どうしましょうかねー？", , , , , 4
+CALL INPUT_SELECT_M, "[0] 依頼を受ける/[1] 話を聞く/[2] 説明を聞く/[9] 店を出る", "/", "ログを残さない/ボタンを利用する" , 1, 4, "LEFT", 72
+IF RESULT == 9
+	CALL MESSAGE_WINDOW, "ロク五郎", "ほらっメッチー、さびしいですねー/また来てくださいねー", , , , , 4
+	RETURN 0
+ELSEIF RESULT == 0
+	$INPUT_LOOP_REQ
+	CALL SHOW_PICTURE, "NONFLOORD", "ペットショップ 王国屋"
+	VARSET 依頼
+	SIF SAVESTR:王国屋依頼1 != ""
+		依頼+= @"/[1] 一般依頼1%\@GETBIT(依頼フラグ:40:0, 1) ?(予約中)#\@%"
+	SIF SAVESTR:王国屋依頼2 != ""
+		依頼 += @"/[2] 一般依頼2%\@GETBIT(依頼フラグ:40:0, 2) ?(予約中)#\@%"
+	SIF SAVESTR:王国屋依頼3 != ""
+		依頼 += @"/[3] 一般依頼3%\@GETBIT(依頼フラグ:40:0, 3) ?(予約中)#\@%"
+	LOCAL:1 = 0
+	FOR LOCAL, 4, 64
+		RESULTS = 
+		TRYCCALLFORM PLAYABLE_OUKOKUYA_REQ_{LOCAL}
+			IF RESULT
+				依頼:(LOCAL:1) += @"/[{LOCAL,2}] %RESULTS%"
+			ELSE
+				CONTINUE
+			ENDIF
+		CATCH
+			CONTINUE
+		ENDCATCH
+		IF STRCOUNT(依頼:(LOCAL:1), "/") >= 9
+			;一文字目が/になってるはずなので削る
+			依頼:(LOCAL:1) = %SUBSTRING(依頼:(LOCAL:1), 1)%
+			依頼:(LOCAL:1) += @"/[99] 戻る/%\@LOCAL:1 > 0 ? [100] 前のページ#\@%"
+			LOCAL:1++
+		ELSEIF STRCOUNT(依頼:(LOCAL:1), "/") == 1 && LOCAL:1 > 0
+			依頼:(LOCAL:1 - 1) += "/[101] 次のページ"
+		ENDIF
+	NEXT
+	IF 依頼:(LOCAL:1) != ""
+		;一文字目が/になってるはずなので削る
+		依頼:(LOCAL:1) = %SUBSTRING(依頼:(LOCAL:1), 1)%
+		依頼:(LOCAL:1) += "/" * (8 - STRCOUNT(依頼:(LOCAL:1), "/"))
+		依頼:(LOCAL:1) += @"/[99] 戻る/%\@LOCAL:1 > 0 ? [100] 前のページ#\@%"
+		
+	ENDIF
+	
+	CALL INPUT_SELECT_M, 依頼:ページ, "/", "ログを残さない/ボタンを利用する" , 3, 4, "LEFT", 72
+	IF RESULT == 101
+		ページ++
+		GOTO INPUT_LOOP_REQ
+	ELSEIF RESULT == 100
+		ページ--
+		GOTO INPUT_LOOP_REQ
+	ELSEIF RESULT == 99
+		CALL SHOW_PICTURE, "NONFLOORD", "ペットショップ 王国屋"
+		GOTO INPUT_LOOP
+	ELSE
+		R = RESULT
+		IF RANGE(R, 1, 3)
+			$SHOW_RANDOM
+			CALL SHOW_OUKOKUYA_REQ_RANDOM, R
+			CALL INPUT_SELECT_M, @"[0] 依頼を達成する/[1] %\@GETBIT(依頼フラグ:40:0, R) ? 予約を解除する # 予約する\@%/[9] 他の依頼を見る", "/", "ログを残さない/ボタンを利用する" , 1, 4, "LEFT", 72
+			CLEARLINE 1
+			IF RESULT == 9
+				GOTO INPUT_LOOP_REQ
+			ELSEIF RESULT == 0
+				LINE = LINECOUNT
+				CALL INPUT_CHARA_LIST("誰を売りますか？", "CHARASELLABLE_OUKOKUYA_REQ")
+				CLEARLINE LINECOUNT - LINE
+				IF RESULT == 1000
+					GOTO SHOW_RANDOM
+				ELSE
+					SELLCHARA = RESULT
+					CALL CHARA_SELL, SELLCHARA, 1
+					PRICE = RESULT
+					;価格補正をかける
+					SPLIT SAVESTR:@"王国屋依頼{R}", "/", LOCALS
+					PRICE *= (100 + TOINT(LOCALS:5))
+					PRICE /= 100
+					CALL MESSAGE_WINDOW, "", @"＞%NAME:SELLCHARA%は{PRICE}魔貨で売却できます/＞売却してもよろしいですか？", , , , , 4
+					CALL INPUT_YN_M, , , , "ログを残さない/ボタンを利用する", "LEFT", 4, 72
+					IF RESULT == 0
+						CALL MESSAGE_WINDOW, "", @"＞%NAME:SELLCHARA%を売却し/＞{PRICE}魔貨を手に入れました", , , , , 4
+						;売却時の諸々の処理
+						CALL CHARASELL_AFTER, SELLCHARA, PRICE
+						;依頼を破棄
+						SAVESTR:@"王国屋依頼{R}" = 
+						;予約破棄
+						CLEARBIT 依頼フラグ:40:0, R
+						CALL SHOW_PICTURE, "NONFLOORD", "ペットショップ 王国屋"
+					ELSE
+						GOTO SHOW_RANDOM
+					ENDIF
+				ENDIF
+			ELSEIF RESULT == 1
+				CALL MESSAGE_WINDOW, "", @"＞%\@GETBIT(依頼フラグ:40:0, R) ? 予約を解除しました # 予約しました\@%", , , , , 4
+				INVERTBIT 依頼フラグ:40:0, R
+				GOTO SHOW_RANDOM
+			ENDIF
+		ELSE
+			$SHOW_REQ
+			CALLFORM EXPLAIN_OUKOKUYA_REQ_{R}
+			;行数あわせ
+			RESULTS += "/" * MAX(17 - STRCOUNT(RESULTS, "/"),0)
+			CALL SHOW_PICTURE, "NONFLOORD", "ペットショップ 王国屋", RESULTS
+			CALL INPUT_SELECT_M, @"[0] 依頼を達成する/[9] 他の依頼を見る", "/", "ログを残さない/ボタンを利用する" , 1, 4, "LEFT", 72
+			IF RESULT == 9
+				GOTO INPUT_LOOP_REQ
+			ELSE
+				LINE = LINECOUNT
+				CALL INPUT_CHARA_LIST("誰を売りますか？", "CHARASELLABLE_OUKOKUYA_REQ")
+				CLEARLINE LINECOUNT - LINE
+				IF RESULT == 1000
+					GOTO SHOW_REQ
+				ELSE
+					SELLCHARA = RESULT
+					CALL MESSAGE_WINDOW, "", @"＞%NAME:SELLCHARA%を売却し/＞依頼を達成してもよろしいですか？", , , , , 4
+					CALL INPUT_YN_M, , , , "ログを残さない/ボタンを利用する", "LEFT", 4, 72
+					IF RESULT == 0
+						;報酬獲得処理
+						CALLFORM TAKE_REWARD_OUKOKUYA_REQ_{R}, SELLCHARA
+						;売却時の諸々の処理
+						CALL CHARASELL_AFTER, SELLCHARA, PRICE
+						SETBIT 依頼フラグ:40:0, R
+						CALL SHOW_PICTURE, "NONFLOORD", "ペットショップ 王国屋"
+					ELSE
+						GOTO SHOW_REQ
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+ELSEIF RESULT == 1
+	CALL MESSAGE_WINDOW, "ロク五郎", "あー、ほらほら、いい子だねー/メッチー、かわいいですねー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "ほらっ、こうすると喜ぶんですよー/ぐぁ！ メッチー！！/メッチー！ くぅ！！", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "ハァハァハァ……/……たまにかむんですねー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "でも、しかりつけてはいけませんよー/やさしく接する事が大切なんです/かわいいですねー", , , , , 4
+ELSE
+	CALL MESSAGE_WINDOW, "ロク五郎", "それじゃあ説明しますねー/まず依頼には一般依頼と特別依頼があるんですねー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "一般依頼は匿名の依頼で/いろんな人がいろんな依頼を出すのですねー/これは毎日違う依頼を紹介するけど/予約してくれればその依頼を残しますよー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "すぐには達成できないけど準備はできると思うなら/予約しておくといいですねー/もちろん予約したからには達成はして欲しいですが/無理そうならキャンセルしてくださいねー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "特別依頼は一般人ではなく/サマナーをはじめとした悪魔と関わる者達からの依頼ですねー/こっちは日替わりで紹介することはできないけど/予約しないと消えちゃうということはないですよー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "一般依頼より細かくややこしい依頼だったりすることが多いので/出来そうならのんびりと準備するといいですよー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "どちらの依頼も表示されてる条件の他に/奴隷は悪魔であること/奴隷として売却可能であることが/条件になるので注意してくださいねー", , , , , 4
+	CALL MESSAGE_WINDOW, "ロク五郎", "また難易度が高い依頼ほど報酬も多くなるので/できるだけ難しい依頼を頑張るといいですよー", , , , , 4
+ENDIF
+GOTO INPUT_LOOP
+	

@@ -1,0 +1,396 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_82_英霊召喚(カーミラ).ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author		Reason
+;	000		20XX/XX/XX		----		テンプレ
+;	001		2022/12/14	takaya		新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;触媒はLV50以上の『처녀』持ち１人とレザーウィップ１つ。
+;処女持ちは未陥落でもよい。レザーウィップはジャンクショップで普通に売ってる。お手軽。
+;
+;イベントフラグ:82:5の90番台をカーミラ用として使用しています
+;召喚イベント自体は他と比べて少し短めかも。ご容赦ください。
+;
+;====================
+;召喚イベント条件
+;====================
+@FGO_SUMMON_CHECK_9
+#DIM LCOUNT
+#DIM 達成度
+#DIM 生贄
+
+;■召喚可否条件をここに記載することで読み込んでくれます■
+;※召喚はイベントフラグ:82:1が必ず4以上から。
+;---- EDIT 002 ADD START ---------------------------
+達成度 = 0
+IF イベントフラグ:82:1 > 3
+	IF GETCHARA([[キャラ:카밀라]]) > 0
+		RESULTS = 피의 백작부인(카밀라)
+		RESULTS:1 = 필요 촉매：LV50 이상의 『소질：처녀 소유자』＋가죽채찍　가입 완료
+		RETURN 0
+	;レザーウィップ所持が絶対条件
+	ELSEIF ITEM:가죽채찍 > 0
+		;レザーウィップを所持していれば更に条件を詰めて確認してゆく
+		FOR LCOUNT,0,CHARANUM
+			;処女以外は除外
+			SIF TALENT:LCOUNT:처녀 == 0
+				CONTINUE
+			;LV50未満は除外
+			SIF BASE:LCOUNT:LV < 50
+				CONTINUE
+			;上記条件達成していたら達成度に+1
+			達成度 ++
+		NEXT
+		
+		IF 達成度 > 0
+			RESULTS = 피의 백작부인(카밀라)
+			RESULTS:1 = 필요 촉매：LV50 이상의 『소질：처녀』 소유자＋가죽채찍　카밀라 미가입
+			RETURN 1
+		ELSE
+			RESULTS = 피의 백작부인(카밀라)
+			RESULTS:1 = 필요 촉매：LV50 이상의 『소질：처녀』 소유자＋가죽채찍　조건 미달성
+			RETURN 0
+		ENDIF
+;---- EDIT 002 ADD END -----------------------------
+	ELSE
+		RESULTS = 피의 백작부인(카밀라)
+		RESULTS:1 = 필요 촉매：LV50 이상의 『소질：처녀』 소유자＋가죽채찍　미소지
+		RETURN 0
+	ENDIF
+ELSE
+	;そもこれが出ることはないはずだけど、確認用に一応記載
+	RESULTS = 최초 소환 이벤트 미소화
+	RETURN 0
+ENDIF
+
+;※RETURN 1　で鯖リストのBITがオンになるようにしているため、必ずRETURNを記入してください
+
+
+;---- EDIT 002 ADD START ---------------------------
+;====================
+;生贄可否の条件確認
+;====================
+@FGO_SUMMON_SACRIFICE_9(ARG:0)
+	;処女以外は不可
+	SIF TALENT:ARG:처녀 == 0
+		RETURN 0
+	;LV50未満は対象外
+	SIF BASE:ARG:LV < 50
+		RETURN 0
+	SIF !FGO_SUMMON_SACRIFIE_COMMON(ARG)
+		RETURN 0
+	RETURN 1
+;---- EDIT 002 ADD END -----------------------------
+
+
+;====================
+;カーミラ召喚
+;====================
+@FGO_SUMMON_9
+#DIM 対象
+#DIM L_COUNT
+
+;■イベント本文を記載■
+
+	対象 = [[キャラ:카밀라]]
+	;バトルイベント識別のためにイベントフラグを特定値に設定
+	イベントフラグ:82:5 = 90
+	PRINTFORML  「자, 소환술은 다음 단계로!
+	PRINTFORMW  　――우리들의 연구 성과를 보여주도록 하지」
+	PRINTFORML  
+	PRINT  「자, 마음 단단히 먹게나
+	PRINTFORM \@ TALENT:MASTER:서머너 > 0 ? 서머너 # 전사 \@ %CALLNAME:MASTER%.
+	PRINTFORMW  　이것이 새로운 소환 기술, 그 발전이다――――읏읏읏」
+
+	
+	;ITEMの消費をここでする
+	ITEM:가죽채찍 -= 1
+
+	CALL 疑似的画面クリア
+	TWAIT 500,1
+	PRINTFORML  
+	PRINTFORML  
+	;■以下、召喚イベント本文をどうぞ■
+	PRINTFORML  ＞ 준비한 제물이 형체를 잃고 마력으로 변해간다
+	PRINTFORML  　그것들이 마법진으로 빨려 들어가자 뿜어져 나오는 마력이 한층 더 강렬한 광채를 띠었다
+	PRINTFORML  　소환에 수반된 빛이 잦아들자 그곳에는 은발에 붉은 드레스 코트를 입은 여성이 있었다
+	PRINTFORMW  　여성은 단정한 미모와 함께 요염하면서도 위험한 분위기를 전신에 두르고 있다
+	PRINTFORML 
+	PRINTFORML  「……제법 취향이 고상한 촉매를 준비해 주었네.
+	PRINTFORMW  　어새신의 서번트. 카밀라라 부르도록 해」
+	PRINTFORML 
+	PRINTFORML  ＞ 카밀라, 이 바닥에서 그 이름을 모르는 자가 없는 여성 흡혈귀의 이름이다
+	PRINTFORML  　생전에는 잔인하고 비도한 행각으로 인해 피의 백작부인이라고도 불렸던 카밀라
+	PRINTFORMW  　그녀는 소환된 것에 동요하는 기색조차 보이지 않고, %CALLNAME:MASTER%를 품평하듯이 이쪽을 바라보고 있다
+	PRINTFORML 
+	PRINTFORML  「그래서?
+	PRINTFORML  　어째서 명백히 반영령밖에 부를 수 없을 촉매를 써서 소환을 거행한 걸까.
+	PRINTFORMW  　누군가 나에게 죽이게 하고 싶은 상대라도 있고?」
+	PRINTFORML 
+
+	$INPUT_LOOP1
+	PRINTFORML [0] 있다
+	PRINTFORML [1] 그런 상대는 없다
+	INPUT
+	SELECTCASE RESULT
+		CASE 0
+			PRINTFORML  「그래. 소환된 이상은 당신을 따르겠어.
+			PRINTFORML  　하지만 이것만은 기억해 두렴.
+			PRINTFORML  　당신이 꼴사나운 꼴을 보인다면, 반항하지 않는다고는 장담 못 해.
+			PRINTFORMW  　그래도 나를 부릴 각오는 되어 있으려나?」
+			PRINTFORML 
+		CASE 1
+			PRINTFORML  
+			PRINTFORML  「그래. 그럼 대체 무엇을 위해 나를 소환했을까.
+			PRINTFORML  　이 몸은 흡혈귀이자 어새신의 서번트라고는 하나 피의 백작부인.
+			PRINTFORMW  　싸우는 힘은 있지만 어새신으로서는 본업 암살자에게 미치지 못해」
+			PRINTFORML  
+		CASEELSE
+			GOTO INPUT_LOOP1
+	ENDSELECT
+
+	PRINTFORML  　＞ 물론 이해한 상태에서 소환한 것이라고 카밀라에게 알린다
+	PRINTFORML  　　소환 실험의 일환이기는 하나 정식으로 소환된 서번트
+	PRINTFORMW  　　확실하게 유효 활용할 생각이다
+	PRINTFORML 
+	PRINTFORML 　 ＞ 그러나 미심쩍은 부분도 있다
+	PRINTFORML  　　피의 백작부인의 생전 이름은 바토리 에르제베트였을 터
+	PRINTFORML  　　또는 엘리자베트 바토리
+	PRINTFORML  　　에르제베트는 카밀라의 모델일 뿐 흡혈귀 카밀라 본인은 아닐 터다
+	PRINTFORMW  　　무심코 그 의문이 입 밖으로 흘러나왔다 
+	PRINTFORML 
+	PRINTFORML  　「그 이름으로 부르지 마.
+	PRINTFORML  　　나는 카밀라. 흡혈귀 카밀라야.
+	PRINTFORMW  　　다음에 고의로 그 이름을 입에 담는다면…… 소환주라도 죽이겠어」
+	PRINTFORML 
+	PRINTFORML  　＞ 소년을 죽이고, 소녀를 죽이고, 청년을 죽이고, 시종 여성을 죽이고
+	PRINTFORML  　　남편이 전쟁으로 자리를 비운 틈을 타 잔학의 극치를 다했던 백작부인
+	PRINTFORML  　　한편 라틴어나 그리스어 읽고 쓰기에도 능통했던 총명한 여성
+	PRINTFORML  　　왕족과도 연이 닿는 고귀한 가문에서 태어난 그녀가 어째서 피로 얼룩진 이상한 삶을 살았는가
+	PRINTFORMW  　　가문의 지위와 명예, 그리고 재산을 지키기 위해 근친혼을 거듭한 결과라는 설도 있지만……
+	PRINTFORML  　　
+	PRINTFORML  　「아무래도 변질된 어린 시절의 나도 좌에 있는 모양이야.
+	PRINTFORMW  　　당신이 그 아이를 아는지 모르는지는 모르겠지만, 설령 그렇다 해도…… 그 이야기는 관둬」
+	PRINTFORML 
+	PRINTFORML  　＞ 의연한 태도는 무너뜨리지 않으나 카밀라는 에르제베트라는 이름에 단호한 거절의 태도를 보인다
+	PRINTFORMW  　　말과 함께 %CALLNAME:MASTER%를 응시하는 눈동자에는 강한 의지가 깃들어 있다　
+	PRINTFORML 
+	PRINTFORML  　「그래서.
+	PRINTFORML  　　이대로 당신을 따라가는 것도 상관은 없지만.
+	PRINTFORMW  　　소환된 것이 나라는 점에 만족하고 있으려나」
+	PRINTFORML 
+	PRINTFORML  　＞ 즉 지금 여기서 실력을 봐두지 않아도 괜찮은가? 하고 묻고 싶은 것이리라
+	PRINTFORMW  　　그렇게 이해했으나 그녀의 표정을 보건대 틀리지 않은 듯하다
+	PRINTFORML  
+	PRINTFORML  　「흡혈귀 카밀라. 본업 암살자는 아니라지만 서번트.
+	PRINTFORMW  　　이 악명은 헛된 것이 아니며, 이 나를 얕잡아본다면 후회하게 만들어 주겠어」
+	PRINTFORML 
+	PRINTFORML  　＞ 어디까지나 실력을 가늠하기 위한 테스트다
+	PRINTFORML  　　지금 이 자리가 아니더라도 할 수 있는 일이긴 하지만
+	PRINTFORMW  　　자, 어떻게 할까……
+	PRINTFORML  
+	$INPUT_LOOP2
+	PRINTFORML [0] 실력을 시험해 본다
+	PRINTFORML [1] 역시 그만둔다
+	INPUT
+	SELECTCASE RESULT
+		CASE 0
+			PRINTFORML  
+			PRINTFORML  「후후, 어디까지나 이건 실력 테스트.
+			PRINTFORMW  　하지만 봐줄 생각은 없어. 기왕이면 듣기 좋은 비명을 질러주었으면 좋겠네」
+			PRINTFORML
+			PRINTFORML 
+			PRINTFORMW  ＞ 영령 카밀라가 장식 지팡이를 겨누고 전투 태세에 들어갔다! 
+			PRINTFORML 
+
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+	
+			CALL SET_ENEMY,9,[[キャラ:카밀라]],50,1,3
+			CFLAG:(CHARANUM-1):행동횟수 = 1
+			CFLAG:(CHARANUM-1):ＨＰ보정 = (MAXBASE:(CHARANUM-1):ＨＰ / 2)
+			CFLAG:(CHARANUM-1):ＭＰ보정 += 99999
+	
+			BASE:(CHARANUM-1):힘 += 4
+			BASE:(CHARANUM-1):내구 += 3
+			BASE:(CHARANUM-1):속도 += 6
+	
+			ABL:(CHARANUM-1):스킬3 = 0
+			ABL:(CHARANUM-1):스킬8 = 0
+	
+			CSTR:(CHARANUM-1):사고패턴 = 血の伯爵夫人
+	
+	
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL BATTLE_START
+
+			PRINTFORML  
+			PRINTFORMW  「정말이지…… 꼴사납네」
+			PRINTFORML  
+			PRINTFORML  ＞ 전투 종료 후, 카밀라는 고개를 살짝 가로저으며 한 손으로 얼굴을 감쌌다
+			PRINTFORMW  　자신을 향해 내뱉은 말인 듯하다
+			PRINTFORML 
+			PRINTFORML  「승패는 지금 중요한 일이 아니었다지만.
+			PRINTFORMW  　가능하다면 추태를 보이고 싶진 않았어」
+			PRINTFORML 
+			PRINTFORML  「자, 그래서 나를 어디로 데려가 주려는 걸까.
+			PRINTFORML  　생전에는 끝내 체이테 성에서 나가는 것이 이루어지지 않았으니.
+			PRINTFORMW  　나를 실망시키지 말아 주었으면 하네?」
+			PRINTFORML 
+			PRINTFORML 
+			PRINTFORMW  ＞ 영령 카밀라가 동료마가 되었다!
+			PRINTFORML  
+			CALL ADD_NEW_COMPANION, [[キャラ:카밀라]], 1000
+			;バトルイベント識別に使ったイベントフラグを片付け
+			イベントフラグ:82:5 = 0
+		CASE 1
+			PRINTFORML  
+			PRINTFORML  「어머. 그래.
+			PRINTFORMW  　내 실력이 알고 싶어졌다면 필요할 때 그렇게 말하렴」
+			PRINTFORML  　
+			PRINTFORMW  ＞ 아름다운 미모의 입가에 옅은 미소를 띠는 카밀라
+			PRINTFORML 
+			PRINTFORML  「어새신의 서번트, 카밀라.
+			PRINTFORMW  　부디 나를 낭비하지 말고 유용하게 부려보렴」
+			PRINTFORML 
+			PRINTFORML  「자, 그래서 나를 어디로 데려가 주려는 걸까.
+			PRINTFORML  　생전에는 끝내 체이테 성에서 나가는 것이 이루어지지 않았으니.
+			PRINTFORMW  　나를 실망시키지 말아 주었으면 하네?」
+			PRINTFORML 
+			PRINTFORML 
+			PRINTFORMW  ＞ 영령 카밀라가 동료마가 되었다!
+			PRINTFORML  
+			CALL ADD_NEW_COMPANION, [[キャラ:카밀라]], 1000
+			;バトルイベント識別に使ったイベントフラグを片付け
+			イベントフラグ:82:5 = 0
+		CASEELSE
+			GOTO INPUT_LOOP2
+	ENDSELECT
+	PRINTFORML  
+
+
+
+	
+;--------------------
+;バトル設定
+;--------------------
+;戦闘開始時のイベント発生
+;サンプル：初手ノウブル・ファンタズムゲージMAX、気合フラグオン
+@EVENT_BATTLE_START_EVENT82_9
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+
+IF イベントフラグ:82:5 == 90
+	PRINTFORML  
+	CUSTOMDRAWLINE =
+	PRINTFORML  
+	SETCOLOR COLOR("YELLOW")
+	PRINTFORMW  ＞  역할을 마쳤을 마법진에서 마그네타이트가 뿜어져 나와 영령에게 공급되어 간다!
+	RESETCOLOR
+	PRINTFORML  
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃어머…… 후후, 어쩐지 힘이 넘쳐흐르는 것 같네　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃억누르고 있던 피를 향한 갈망이 흘러넘치는 것 같아……┃
+	PRINTL ┃아아…… 선명한 피를 마음껏 뒤집어쓰고 싶어　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃당신이 나를 만족시켜 줄 수 있으려나……?　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	;魔力放出状態に強制移行
+	CALL SKILLGAGE_F_SET,(CHARANUM-1),SKILL_NUM,100
+	CALL PRINT_ACT_MESSAGE, CHARANUM-1, SKILL_NUM
+	CALL ACTION_ノウブル・ファンタズム,(CHARANUM-1)
+	CFLAG:(CHARANUM-1):気合フラグ = 1
+	イベントフラグ:82:5 = 91
+ENDIF
+
+;---------------------------------------------------
+@EVENT_BATTLE_TURNEND_EVENT82_7
+;---------------------------------------------------
+#DIM SKILL_NUM
+
+SKILL_NUM = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+
+IF イベントフラグ:82:5 == 92 && 現HP割合(CHARANUM-1) < 50
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃큭…… 제법 하잖아　　　　　　　　　　　　　　　　　┃
+	PRINTL ┃이 내가 이렇게 큰 타격을 입다니　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTL
+	PRINTW ＞영령 카밀라가 손에 쥔 장식 지팡이로 마력의 빛이 모여들기 시작한다.
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃흡혈귀 카밀라. 피의 백작부인의 본령을 보여주마　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	ABL:(CHARANUM-1):스킬3 = 3906
+	CSTR:(CHARANUM-1):전용기3 = 幻想の鉄処女
+	CALL VAR_HP,(CHARANUM-1),MAX(MAXBASE:(CHARANUM-1):ＨＰ,1),"회복"
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	CALL SKILLGAGE_D_SET,(CHARANUM-1),SKILL_NUM,5
+	イベントフラグ:82:5 = 93
+ELSEIF イベントフラグ:82:5 == 91 && 現HP割合(CHARANUM-1) < 80
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃쳇……! 　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTL ┃나도 역시 힘을 보여주지 않으면 안 되겠어　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	CFLAG:(CHARANUM-1):행동횟수 = 2
+	イベントフラグ:82:5 = 92
+ELSE
+ENDIF
+
+;--------------------
+;思考パターン設定
+;--------------------
+@SET_ACTION_血の伯爵夫人, ARG
+#DIM SKILL_NUM,2
+
+SKILL_NUM:0 = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+SKILL_NUM:1 = PU_SKILLNUM_GET((CHARANUM-1),"幻想の鉄処女")
+
+SELECTCASE イベントフラグ:82:5
+	CASE 93
+		IF CFLAG:(CHARANUM-1):행동한횟수 == 0
+			CALL SET_ACTION_SKILL, (CHARANUM-1), (SKILL_NUM:1)
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					CALL SET_ACTION_SKILL, (CHARANUM-1), 3907
+				CASE 1
+					CALL SET_ACTION_SKILL, (CHARANUM-1), 3908
+				CASE 2
+					CALL SET_ACTION_SKILL, (CHARANUM-1), 3909
+			ENDSELECT
+		ENDIF
+	CASEELSE
+		SELECTCASE RAND:3
+			CASE 0
+				CALL SET_ACTION_SKILL, (CHARANUM-1), 3907
+			CASE 1
+				CALL SET_ACTION_SKILL, (CHARANUM-1), 3908
+			CASE 2
+				CALL SET_ACTION_SKILL, (CHARANUM-1), 3909
+		ENDSELECT
+ENDSELECT
+
+
+

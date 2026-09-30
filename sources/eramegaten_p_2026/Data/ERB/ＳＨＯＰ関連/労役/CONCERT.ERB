@@ -1,0 +1,2094 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:CONCERT.ERB
+;	Facility	:コンサートでの労役に関する関数群です。
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/09/08		黒天					ＮＴＲイベント時の処女(재생처녀)喪失処理を関数を呼ぶように修正
+;													なんとなくＮＴＲイベントの関数名(NTR_SEX)を「NTR_CONCERT_SEX」に変更
+;	003		2012/12/13		黒天					ストレスが0未満にならないように修正
+;	004		2020/03/17		(ﾟдﾟ)					↑のタイムスタンプを見て時の流れが恐ろしくなる
+;													ライブハウス、大劇場追加に伴い報酬周りをかさ増し
+;	005		2020/05/02		(ﾟдﾟ)					引継ぎ制限を撤廃
+;	006		2020/05/19		がめら					NTR好感度処理をCDFLAGに変更
+;	007		2020/06/19		JK好き					FLAG:労役実行確認省略設定を適用するように追記
+;	008		2020/06/24		名無し					尻素質が収益に影響するように
+;	009		2020/06/24		kamedakeisuke(ﾟдﾟ)		1:スタッフバフ追加　2:プライドの高低での報酬乗算を逆（プライド高いのほうが＋）に、その他素質の見直し
+;													3:ライブ経験も報酬計算で勘定されるように
+;													4:歌唱経験の影響をちょっとだけ下げた（全体ではかなり報酬が増えた）
+;													5:信頼陥落が報酬計算に絡んでなかったので追加
+;													6:実行時の歌唱経験付与がダイナミックだったので結構下げた
+;													7:要望のあったコンサートでのＭＡＧ吸収を追加。強すぎたら数字を考える
+;													8:実行判定を変更。複雑にはなったけど実行しやすくなった……はず。
+;													9:体力の閾値を500に下げる、調教と同じである方が初めて触る人にもとっつきやすい……よね？
+;													10:人気取得の閾値を100に遅らせた、ライブハウスなどで加速できるので
+;													11:アイドル人気が低いと報酬に天井ができるようになった
+;													12:リザルトを見やすくした
+;	010		2021/03/05		NEO						香をちょっとだけ出にくくした（10回で1個くらい）
+;	011		2021/04/27		JK好き					コンサートで多胎OP時でも妊娠するように修正
+;	012		2021/05/24		JK好き					休憩フラグの立て方が正常でない問題を修正
+;	013		2021/07/10		名無し					倍率算出の時、信頼が恋慕、相棒が親愛と表示される不具合の修正
+;													倍率算出の時、尻系の素質の表示が文字一つ分ズレているのを修正
+;	014		2021/11/04		JK好き					結果に関わらず歌唱経験が１は獲得出来るように修正
+;	015		2021/12/13		JK好き					ＮＴＲイベント時の処女喪失周りを整備 口上に影響しない範囲では一文字関数を使わないように変更 誤字修正
+;	016		2022/06/07		NEO						ＮＴＲ防御/誘発服飾追加の関数対応
+;	017		2022/09/17		JK好き					@CONCERT ライブ実行毎に労役選択画面に戻らないように修正
+;	018		2023/07/15		P(bazzile)				MAGの加算処理を専用の関数を通すように変更
+;	019		2024/05/26		P(bazzile)				スタッフ補正の判定式を変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2024/02/15		P(bazzile)				ゲーム進行の変更にあわせて処理を調整
+;	002		2024/06/07		P(bazzile)				コンサートの実行回数分、調教手番が減ってしまう不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;CONSERT.ERB　コンサートを開いてチケットなどを売る労役コマンド
+;奴隷の歌唱力だけでなく、奴隷の能力が高いとフェロモンで売り上げが上がる
+;やはり、基本的には厳しい
+
+;コンサート条件
+@CASTING_CONCERT(ARG)
+#DIM 実行可能カウント
+実行可能カウント = 0
+SIF TALENT:ARG:반역
+	RETURN 0
+SIF CFLAG:ARG:이자리에없는플래그 == 1
+	RETURN 0
+SIF CFLAG:ARG:전투이외불능
+	RETURN 0
+	
+;あなた以外は隷属以外の陥落が必要
+IF ARG != MASTER 
+	SIF !(TALENT:ARG:연모 || TALENT:ARG:친애 || TALENT:ARG:음란 || TALENT:ARG:창부 || TALENT:ARG:신뢰 || TALENT:ARG:동료)
+		RETURN 0
+	
+	;以下実行判定
+	IF ABL:ARG:가창기능 > 4
+		実行可能カウント += 3
+	ELSEIF ABL:ARG:가창기능 > 2
+		実行可能カウント += 2
+	ELSEIF ABL:ARG:가창기능 > 0
+		実行可能カウント += 1
+	ENDIF
+	
+	IF EXP:ARG:가창경험 > 199
+		実行可能カウント += 3
+	ELSEIF EXP:ARG:가창경험 > 99
+		実行可能カウント += 2
+	ELSEIF EXP:ARG:가창경험 > 49
+		実行可能カウント += 1
+	ENDIF
+	
+	IF EXP:ARG:라이브경험 > 99
+		実行可能カウント += 3
+	ELSEIF EXP:ARG:라이브경험 > 49
+		実行可能カウント += 2
+	ELSEIF EXP:ARG:라이브경험 > 19
+		実行可能カウント += 1
+	ENDIF
+	
+	SIF TALENT:ARG:습득빠름
+		実行可能カウント += 1
+	SIF TALENT:ARG:눈에띄고싶어함
+		実行可能カウント += 1
+	SIF TALENT:ARG:프라이드높음
+		実行可能カウント += 1
+	SIF TALENT:ARG:매력
+		実行可能カウント += 2
+	SIF TALENT:ARG:인기
+		実行可能カウント += 2
+	
+	;信頼陥落は優遇（調教できないので）
+	SIF TALENT:ARG:신뢰
+		実行可能カウント += 1
+	SIF TALENT:ARG:동료
+		実行可能カウント += 2
+	SIF TALENT:ARG:맹우
+		実行可能カウント += 1
+	
+	;技巧はおおざっぱに
+	SIF ABL:ARG:기교 > 2
+		実行可能カウント += 1
+	;露出癖もおおざっぱに
+	SIF ABL:ARG:노출증 > 2
+		実行可能カウント += 1
+	
+	;実行可能カウントが5以上で可能
+	SIF 実行可能カウント < 5
+		RETURN 0
+ENDIF
+SIF BASE:ARG:체력 < 500
+	RETURN 0
+RETURN 1
+
+;---- EDIT P 001 ADD START -------------------------
+@CONCERT_UP_FUNCTION
+PRINTFORML 아무 노예에게 콘서트를 시킨 뒤 이 화면을 벗어나면
+PRINTFORML 조교가능횟수를 1회 소모하고、또한 다음 턴까지 콘서트를 개최할 수 없게 되므로 주의해주세요
+PRINTFORM 콘서트에서 노래할 노예를 선택해주세요　
+SIF A > リスト表示数()
+	PRINTFORM ＜page.{P + 1}/{A / 리스트표시수() + 1}＞
+PRINTL
+;---- EDIT P 001 ADD END ---------------------------
+
+;---MOD 004 START---
+@CONCERT
+#DIMS CONCERT_ファンからのプレゼント = "외상약"
+#DIM 対象
+;---MOD 004 END---
+$CONCERT_TOP
+
+;使用する一時変数の初期化
+A = 0
+B = 0
+S = 0
+V = 0
+C = 0
+D = 0
+G = 0
+
+;コンサートで歌う奴隷を選択
+;CALL INPUT_CHARA_LIST("コンサートで歌う奴隷を選択してください", "CASTING_CONCERT")
+{
+CALL INPUT_CHARA_LIST
+	, "PROPSET_CONCERT"
+	, "콘서트에서 노래할 노예를 선택해주세요"
+	, "CASTING_CONCERT" 
+	, "CONCERT_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+IF RESULT == 1000
+	;---- EDIT P 001 MOD START -------------------------
+	;SIF FLAG:휴식플래그 == 1
+	IF コンサート実行日 == DAY
+		FLAG:조교실행완료횟수++
+		RETURN 1
+	ENDIF
+	RETURN 0
+	;---- EDIT P 001 MOD END ---------------------------
+ENDIF
+対象 = RESULT
+;FLAG:조교실행완료횟수++
+PRINTL 【기본값산출】
+;奴隷の歌唱技能と歌唱経験のレベルによって値段の基礎値が上昇
+IF ABL:対象:가창기능 == 0
+	S += 0
+ELSEIF ABL:対象:가창기능 == 1
+	S += 60
+ELSEIF ABL:対象:가창기능 == 2
+	S += 100
+ELSEIF ABL:対象:가창기능 == 3
+	S += 150
+ELSEIF ABL:対象:가창기능 == 4
+	S += 210
+ELSEIF ABL:対象:가창기능 == 5
+	S += 280
+ELSEIF ABL:対象:가창기능 == 6
+	S += 360
+ELSEIF ABL:対象:가창기능 == 7
+	S += 450
+ELSEIF ABL:対象:가창기능 == 8
+	S += 550
+ELSEIF ABL:対象:가창기능 == 9
+	S += 660
+ELSE
+	S += 780
+ENDIF
+SIF S
+	PRINTFORML 　%ABLNAME:14%{ABL:対象:가창기능}LV ＋ {S}
+
+IF EXP:対象:가창경험 < 25
+	D += 1
+ELSEIF EXP:対象:가창경험 < 50
+	D += 20
+ELSEIF EXP:対象:가창경험 < 75
+	D += 80
+ELSEIF EXP:対象:가창경험 < 150
+	D += 160
+ELSEIF EXP:対象:가창경험 < 250
+	D += 250
+ELSE
+	D += 400
+ENDIF
+PRINTFORML 　%EXPNAME:64%{EXP:対象:가창경험} ＋{D}
+
+;ライブ経験はx2したのち加算。250（500）で頭打ちに
+IF EXP:対象:라이브경험 < 250
+	D += EXP:対象:라이브경험 * 2
+	PRINTFORML 　%EXPNAME:74%{EXP:対象:라이브경험} ＋ {EXP:対象:라이브경험 * 2}
+ELSE
+	D += 500
+	PRINTFORML 　%EXPNAME:74%{EXP:対象:라이브경험} ＋ 500
+ENDIF
+
+SETCOLOR 0x33ffcc
+PRINTFORML 기초치：{S+D}p
+RESETCOLOR
+
+PRINTL
+
+S += D
+
+PRINTL 【배율 산출】
+V = 100
+CALL PRINT_CONCERT_PRICE_BY_ABL, 対象
+V += RESULT
+CALL PRINT_CONCERT_PRICE_BY_TALENT, 対象
+V += RESULT
+
+;奴隷の能力、素質による倍率計算（歌唱技能は前項で見ているので省略）
+;V = 100
+;IF ABL:対象:순종 == 0
+;	C = 0
+;ELSEIF ABL:対象:순종 == 1
+;	C = 10
+;ELSEIF ABL:対象:순종 == 2
+;	C = 20
+;ELSEIF ABL:対象:순종 == 3
+;	C = 30
+;ELSEIF ABL:対象:순종 == 4
+;	C = 40
+;ELSEIF ABL:対象:순종 == 5
+;	C = 50
+;ELSEIF ABL:対象:순종 == 6
+;	C = 60
+;ELSEIF ABL:対象:순종 == 7
+;	C = 70
+;ELSEIF ABL:対象:순종 == 8
+;	C = 80
+;ELSEIF ABL:対象:순종 == 9
+;	C = 90
+;ELSE
+;	C = 100
+;ENDIF
+;SIF C > 0
+;	PRINTFORML 　%ABLNAME:0%{ABL:対象:순종}LV ＋{C}％
+;V += C
+;
+;IF ABL:対象:욕망 == 0
+;	C = 0
+;ELSEIF ABL:対象:욕망 == 1
+;	C = 10
+;ELSEIF ABL:対象:욕망 == 2
+;	C = 20
+;ELSEIF ABL:対象:욕망 == 3
+;	C = 30
+;ELSEIF ABL:対象:욕망 == 4
+;	C = 40
+;ELSEIF ABL:対象:욕망 == 5
+;	C = 50
+;ELSEIF ABL:対象:욕망 == 6
+;	C = 60
+;ELSEIF ABL:対象:욕망 == 7
+;	C = 70
+;ELSEIF ABL:対象:욕망 == 8
+;	C = 80
+;ELSEIF ABL:対象:욕망 == 9
+;	C = 90
+;ELSE
+;	C = 100
+;ENDIF
+;SIF C > 0
+;	PRINTFORML 　%ABLNAME:1%{ABL:対象:욕망}LV ＋{C}％
+;V += C
+;
+;IF ABL:対象:기교 == 0
+;	C = 0
+;ELSEIF ABL:対象:기교 == 1
+;	C = 5
+;ELSEIF ABL:対象:기교 == 2
+;	C = 10
+;ELSEIF ABL:対象:기교 == 3
+;	C = 15
+;ELSEIF ABL:対象:기교 == 4
+;	C = 20
+;ELSEIF ABL:対象:기교 == 5
+;	C = 25
+;ELSEIF ABL:対象:기교 == 6
+;	C = 30
+;ELSEIF ABL:対象:기교 == 7
+;	C = 35
+;ELSEIF ABL:対象:기교 == 8
+;	C = 40
+;ELSEIF ABL:対象:기교 == 9
+;	C = 45
+;ELSE
+;	C = 50
+;ENDIF
+;SIF C > 0
+;	PRINTFORML 　%ABLNAME:2%{ABL:対象:기교}LV ＋{C}％
+;V += C
+;
+;IF ABL:対象:Ｖ감각 == 0
+;	C = 0
+;ELSEIF ABL:対象:Ｖ감각 == 1
+;	C = 5
+;ELSEIF ABL:対象:Ｖ감각 == 2
+;	C = 10
+;ELSEIF ABL:対象:Ｖ감각 == 3
+;	C = 15
+;ELSEIF ABL:対象:Ｖ감각 == 4
+;	C = 20
+;ELSEIF ABL:対象:Ｖ감각 == 5
+;	C = 25
+;ELSEIF ABL:対象:Ｖ감각 == 6
+;	C = 30
+;ELSEIF ABL:対象:Ｖ감각 == 7
+;	C = 35
+;ELSEIF ABL:対象:Ｖ감각 == 8
+;	C = 40
+;ELSEIF ABL:対象:Ｖ감각 == 9
+;	C = 45
+;ELSE
+;	C = 50
+;ENDIF
+;SIF C > 0
+;	PRINTFORML 　%ABLNAME:4%{ABL:対象:Ｖ감각}LV ＋{C}％
+;V += C
+;
+;IF ABL:対象:봉사정신 == 0
+;	C = 0
+;ELSEIF ABL:対象:봉사정신 == 1
+;	C = 5
+;ELSEIF ABL:対象:봉사정신 == 2
+;	C = 10
+;ELSEIF ABL:対象:봉사정신 == 3
+;	C = 15
+;ELSEIF ABL:対象:봉사정신 == 4
+;	C = 20
+;ELSEIF ABL:対象:봉사정신 == 5
+;	C = 25
+;ELSEIF ABL:対象:봉사정신 == 6
+;	C = 30
+;ELSEIF ABL:対象:봉사정신 == 7
+;	C = 35
+;ELSEIF ABL:対象:봉사정신 == 8
+;	C = 40
+;ELSEIF ABL:対象:봉사정신 == 9
+;	C = 45
+;ELSE
+;	C = 50
+;ENDIF
+;SIF C > 0
+;	PRINTFORML 　%ABLNAME:7%{ABL:対象:봉사정신}LV ＋{C}％
+;V += C
+;
+;IF ABL:対象:노출증 == 0
+;	C = 0
+;ELSEIF ABL:対象:노출증 == 1
+;	C = 5
+;ELSEIF ABL:対象:노출증 == 2
+;	C = 10
+;ELSEIF ABL:対象:노출증 == 3
+;	C = 15
+;ELSEIF ABL:対象:노출증 == 4
+;	C = 20
+;ELSEIF ABL:対象:노출증 == 5
+;	C = 25
+;ELSEIF ABL:対象:노출증 == 6
+;	C = 30
+;ELSEIF ABL:対象:노출증 == 7
+;	C = 35
+;ELSEIF ABL:対象:노출증 == 8
+;	C = 40
+;ELSEIF ABL:対象:노출증 == 9
+;	C = 45
+;ELSE
+;	C = 50
+;ENDIF
+;SIF C > 0
+;	PRINTFORML 　%ABLNAME:8%{ABL:対象:노출증}LV ＋{C}％
+;V += C
+;
+;IF ABL:対象:마조끼 == 0
+;	C = 0
+;ELSEIF ABL:対象:마조끼 == 1
+;	C = 5
+;ELSEIF ABL:対象:마조끼 == 2
+;	C = 10
+;ELSEIF ABL:対象:마조끼 == 3
+;	C = 15
+;ELSEIF ABL:対象:마조끼 == 4
+;	C = 20
+;ELSEIF ABL:対象:마조끼 == 5
+;	C = 25
+;ELSEIF ABL:対象:마조끼 == 6
+;	C = 30
+;ELSEIF ABL:対象:마조끼 == 7
+;	C = 35
+;ELSEIF ABL:対象:마조끼 == 8
+;	C = 40
+;ELSEIF ABL:対象:마조끼 == 9
+;	C = 45
+;ELSE
+;	C = 50
+;ENDIF
+;SIF C > 0
+;	PRINTFORML 　%ABLNAME:9%{ABL:対象:마조끼}LV ＋{C}％
+;V += C
+;
+;IF ABL:対象:새드끼 == 0
+;	C = 0
+;ELSEIF ABL:対象:새드끼 == 1
+;	C = 5
+;ELSEIF ABL:対象:새드끼 == 2
+;	C = 10
+;ELSEIF ABL:対象:새드끼 == 3
+;	C = 15
+;ELSEIF ABL:対象:새드끼 == 4
+;	C = 20
+;ELSEIF ABL:対象:새드끼 == 5
+;	C = 25
+;ELSEIF ABL:対象:새드끼 == 6
+;	C = 30
+;ELSEIF ABL:対象:새드끼 == 7
+;	C = 35
+;ELSEIF ABL:対象:새드끼 == 8
+;	C = 40
+;ELSEIF ABL:対象:새드끼 == 9
+;	C = 45
+;ELSE
+;	C = 50
+;ENDIF
+;SIF C > 0
+;	PRINTFORML 　%ABLNAME:10%{ABL:対象:새드끼}LV ＋{C}％
+;V += C
+;
+;IF ABL:対象:섹스중독 == 0
+;	C = 0
+;ELSEIF ABL:対象:섹스중독 == 1
+;	C = 10
+;ELSEIF ABL:対象:섹스중독 == 2
+;	C = 20
+;ELSEIF ABL:対象:섹스중독 == 3
+;	C = 30
+;ELSEIF ABL:対象:섹스중독 == 4
+;	C = 40
+;ELSEIF ABL:対象:섹스중독 == 5
+;	C = 50
+;ELSEIF ABL:対象:섹스중독 == 6
+;	C = 60
+;ELSEIF ABL:対象:섹스중독 == 7
+;	C = 70
+;ELSEIF ABL:対象:섹스중독 == 8
+;	C = 80
+;ELSEIF ABL:対象:섹스중독 == 9
+;	C = 90
+;ELSE
+;	C = 100
+;ENDIF
+;SIF C > 0
+;	PRINTFORML 　%ABLNAME:18%{ABL:対象:섹스중독}LV ＋{C}％
+;V += C
+;
+;;陥落素質
+;IF TALENT:対象:연모
+;	C = 100
+;	V += 100
+;	PRINTFORML 　%TALENTNAME:3% ＋{C}％
+;ENDIF
+;;IF TALENT:対象:음란
+;;	C = 30
+;;	V -= 30
+;;	PRINTFORML 　%TALENTNAME:4% －{C}％
+;;ENDIF
+;;IF TALENT:対象:복종
+;;	C = 50
+;;	V -= 50
+;;	PRINTFORML 　%TALENTNAME:5% ＋{C}％
+;;ENDIF
+;IF TALENT:対象:신뢰
+;	C = 100
+;	V += 100
+;	PRINTFORML 　%TALENTNAME:180% ＋{C}％
+;ENDIF
+;
+;IF TALENT:対象:친애
+;	C = 200
+;	V += 200
+;	PRINTFORML 　%TALENTNAME:6% ＋{C}％
+;ENDIF
+;;IF TALENT:対象:창부
+;;	C = 60
+;;	V -= 60
+;;	PRINTFORML 　%TALENTNAME:7% －{C}％
+;;ENDIF
+;;IF TALENT:対象:예속
+;;	C = 100
+;;	V -= 100
+;;	PRINTFORML 　%TALENTNAME:8% ＋{C}％
+;;ENDIF
+;IF TALENT:対象:동료
+;	C = 200
+;	V += 200
+;	PRINTFORML 　%TALENTNAME:181% ＋{C}％
+;ENDIF
+;
+;
+;;その他素質
+;;おさわりなしのアーティストだし、客から見てキャラ立ちしてるかどうかで考え直す
+;;性格
+;IF TALENT:対象:겁쟁이
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:10% ＋{C}％
+;ENDIF
+;IF TALENT:対象:반항적
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:11% ＋{C}％
+;ENDIF
+;IF TALENT:対象:꿋꿋함
+;	C = 20
+;	V += 20
+;	PRINTFORML 　%TALENTNAME:12% ＋{C}％
+;ENDIF
+;IF TALENT:対象:솔직함
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:13% ＋{C}％
+;ENDIF
+;IF TALENT:対象:얌전함
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:14% ＋{C}％
+;ENDIF
+;IF TALENT:対象:프라이드높음
+;	C = 20
+;	V += 20
+;	PRINTFORML 　%TALENTNAME:15% ＋{C}％
+;ENDIF
+;IF TALENT:対象:건방짐
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:16% ＋{C}％
+;ENDIF
+;IF TALENT:対象:프라이드낮음
+;	C = 20
+;	V -= 20
+;	PRINTFORML 　%TALENTNAME:17% －{C}％
+;ENDIF
+;IF TALENT:対象:츤데레
+;	C = 20
+;	V += 20
+;	PRINTFORML 　%TALENTNAME:18% ＋{C}％
+;ENDIF
+;;性への関心
+;;分かりやすい性欲の有無は乱交ライブで頑張ってもらおう（※そのぶんほかの素質を追加してます）
+;;IF TALENT:対象:자제심
+;;	C = 10
+;;	V += 10
+;;	PRINTFORML 　%TALENTNAME:20% ＋{C}％
+;;ENDIF
+;;IF TALENT:対象:무관심
+;;	C = 10
+;;	V -= 10
+;;	PRINTFORML 　%TALENTNAME:21% －{C}％
+;;ENDIF
+;IF TALENT:対象:감정결핍
+;	C = 10
+;	V -= 10
+;	PRINTFORML 　%TALENTNAME:22% －{C}％
+;ENDIF
+;;IF TALENT:対象:일선을넘지않음
+;;	C = 15
+;;	V += 15
+;;	PRINTFORML 　%TALENTNAME:27% ＋{C}％
+;;ENDIF
+;IF TALENT:対象:눈에띄고싶어함
+;	C = 20
+;	V += 20
+;	PRINTFORML 　%TALENTNAME:28% ＋{C}％
+;ENDIF
+;;乙女心
+;;IF TALENT:対象:정조관념
+;;	C = 10
+;;	V += 10
+;;	PRINTFORML 　%TALENTNAME:30% ＋{C}％
+;;ENDIF
+;;IF TALENT:対象:정조관결여
+;;	C = 10
+;;	V += 10
+;;	PRINTFORML 　%TALENTNAME:31% －{C}％
+;;ENDIF
+;;体質
+;IF TALENT:対象:아픔에약함
+;	C = 10
+;	V -= 10
+;	PRINTFORML 　%TALENTNAME:40% －{C}％
+;ENDIF
+;IF TALENT:対象:아픔에강함
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:41% ＋{C}％
+;ENDIF
+;;技術
+;IF TALENT:対象:습득빠름
+;	C = 15
+;	V += 15
+;	PRINTFORML 　%TALENTNAME:50% ＋{C}％
+;ENDIF
+;IF TALENT:対象:습득느림
+;	C = 15
+;	V -= 15
+;	PRINTFORML 　%TALENTNAME:51% －{C}％
+;ENDIF
+;;潔癖度
+;IF TALENT:対象:헌신적
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:63% ＋{C}％
+;ENDIF
+;;性愛性
+;IF TALENT:対象:도착적
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:80% ＋{C}％
+;ENDIF
+;IF TALENT:対象:바이
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:81% ＋{C}％
+;ENDIF
+;IF TALENT:対象:남성혐오
+;	C = 20
+;	V += 20
+;	PRINTFORML 　%TALENTNAME:82% ＋{C}％
+;ENDIF
+;IF TALENT:対象:새드
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:83% ＋{C}％
+;ENDIF
+;IF TALENT:対象:마조
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:84% ＋{C}％
+;ENDIF
+;IF TALENT:対象:망신
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:86% ＋{C}％
+;ENDIF
+;IF TALENT:対象:소악마
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:87% ＋{C}％
+;ENDIF
+;IF TALENT:対象:여성혐오
+;	C = 20
+;	V += 20
+;	PRINTFORML 　%TALENTNAME:88% ＋{C}％
+;ENDIF
+;;魅了
+;IF TALENT:対象:요호
+;	C = 20
+;	V += 20
+;	PRINTFORML 　%TALENTNAME:91% ＋{C}％
+;ENDIF
+;IF TALENT:対象:매력
+;	C = 30
+;	V += 30
+;	PRINTFORML 　%TALENTNAME:92% ＋{C}％
+;ENDIF
+;IF TALENT:対象:매혹
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:93% ＋{C}％
+;ENDIF
+;IF TALENT:対象:수수께끼의매력
+;	C = 50
+;	V += 50
+;	PRINTFORML 　%TALENTNAME:94% ＋{C}％
+;ENDIF
+;IF TALENT:対象:미끼
+;	C = 30
+;	V += 30
+;	PRINTFORML 　%TALENTNAME:95% ＋{C}％
+;ENDIF
+;;身体特徴
+;IF TALENT:対象:유아체형
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:100% ＋{C}％
+;ENDIF
+;IF TALENT:対象:빈유
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:109% ＋{C}％
+;ENDIF
+;;オトコの絶壁は除外
+;IF TALENT:対象:절벽 && TALENT:対象:남자 < 1
+;	C = 15
+;	V += 15
+;	PRINTFORML 　%TALENTNAME:110% ＋{C}％
+;ENDIF
+;IF TALENT:対象:거유
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:111% ＋{C}％
+;ENDIF
+;IF TALENT:対象:폭유
+;	C = 15
+;	V += 15
+;	PRINTFORML 　%TALENTNAME:112% ＋{C}％
+;ENDIF
+;IF TALENT:対象:큰체형
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:113% ＋{C}％
+;ENDIF
+;IF TALENT:対象:거체
+;	C = 20
+;	V += 20
+;	PRINTFORML 　%TALENTNAME:114% ＋{C}％
+;ENDIF
+;IF TALENT:対象:마유
+;	C = 20
+;	V += 20
+;	PRINTFORML 　%TALENTNAME:126% ＋{C}％
+;ENDIF
+;
+;;オトコでないなら有効
+;IF !TALENT:対象:남자
+;	IF TALENT:対象:小尻
+;		C = 10
+;		V -= 10
+;		PRINTFORML 　%TALENTNAME:121% －{C}％
+;	ENDIF
+;	IF TALENT:対象:巨尻
+;		C = 20
+;		V += 20
+;		PRINTFORML 　%TALENTNAME:123% ＋{C}％
+;	ENDIF
+;	IF TALENT:対象:爆尻
+;		C = 10
+;		V += 10
+;		PRINTFORML 　%TALENTNAME:124% ＋{C}％
+;	ENDIF
+;	IF TALENT:対象:魔尻
+;		C = 10
+;		V += 10
+;		PRINTFORML 　%TALENTNAME:124% ＋{C}％
+;	ENDIF
+;ENDIF
+;
+;;特殊
+;IF TALENT:対象:흡혈귀
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:132% ＋{C}％
+;ENDIF
+;IF TALENT:対象:동물귀
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:143% ＋{C}％
+;ENDIF
+;IF TALENT:対象:소인체형
+;	C = 10
+;	V += 10
+;	PRINTFORML 　%TALENTNAME:142% ＋{C}％
+;ENDIF
+;IF TALENT:対象:인기
+;	C = 30
+;	V += 30
+;	PRINTFORML 　%TALENTNAME:145% ＋{C}％
+;ENDIF
+;;迷ったけどコメントアウト。性的素質は乱交ライブで頑張ってもらおう
+;;IF TALENT:対象:임신
+;;	C = 30
+;;	V += 30
+;;	PRINTFORML %TALENTNAME:153% ＋{C}％
+;;ENDIF
+;;IF TALENT:対象:모성
+;;	C = 60
+;;	V += 60
+;;	PRINTFORML %TALENTNAME:155% ＋{C}％
+;;ENDIF
+;
+;;補正値が0以下の場合は1にする
+;SIF V <= 0
+;	V = 1
+
+SETCOLOR 0x33ffcc
+PRINTFORML 배율 합계：{V}％
+RESETCOLOR
+
+;補正値の適用
+S *= V
+S /= 100
+
+;붕괴,狂気は利潤をかなり低くする（従順によって、80％まで回復）
+IF TALENT:対象:붕괴 || TALENT:対象:광기
+	PRINTL 
+	IF TALENT:対象:붕괴
+		S *= ABL:対象:순종
+		TIMES S , 0.08
+		Z = ABL:対象:순종
+		Z *= 8
+		PRINTFORML %TALENTNAME:9% ×{Z}％
+	ELSEIF TALENT:対象:광기
+		S *= ABL:対象:순종
+		TIMES S , 0.08
+		Z = ABL:対象:순종
+		Z *= 8
+		PRINTFORML %TALENTNAME:141% ×{Z}％
+	ENDIF
+	PRINTL 
+ENDIF
+
+;---MOD 004 START---
+;所持施設
+IF ITEM:무도관 == 1
+	PRINTL 
+	PRINTL 【시설 평가】
+	PRINTL 　무도관 ×140％
+	TIMES S , 1.40
+ELSEIF ITEM:라이브하우스 == 1
+	PRINTL 
+	PRINTL 【시설 평가】
+	PRINTL 　라이브하우스 ×110％
+	TIMES S , 1.10
+ELSE
+	PRINTL 
+	PRINTL 【시설 평가】
+	PRINTL 　노상 라이브 ×---％
+ENDIF
+;---MOD 004 END---
+
+;---- EDIT 019 MOD START -------------------------
+;スタッフバフ
+SIF ヴォーカリスト・セイレーン進行 > 1 && FINDCHARA_B([[キャラ:세이렌]], 1) >= 0
+	TIMES S , 1.10
+;シナリオライター・ジークフリート（大劇場）
+SIF シナリオライター・ジークフリート進行 > 1 && FINDCHARA_B([[キャラ:지크프리트]], 1) >= 0
+	TIMES S , 1.10
+;;『観客』ディオニュソス（大劇場）
+SIF 『観客』ディオニュソス進行 > 1 && FINDCHARA_B([[キャラ:디오니소스]], 1) >= 0
+	TIMES S , 1.15
+;;ヴォーカリスト・セイレーン（ライブハウス）
+;IF ヴォーカリスト・セイレーン進行 > 1
+;	FOR LOCAL, 0, CHARANUM
+;		;劇場憑きのセイレーンはここで判定
+;		IF NO:LOCAL == [[キャラ:세이렌]] && CFLAG:LOCAL:998 == 1
+;			PRINTL 　ヴォーカリスト・セイレーンの加護 ×110％
+;			TIMES S , 1.10
+;			BREAK
+;		ENDIF
+;	NEXT
+;ENDIF
+;IF シナリオライター・ジークフリート進行 > 1
+;	FOR LOCAL, 0, CHARANUM
+;		;劇場憑きのジークフリートはここで判定
+;		IF NO:LOCAL == [[キャラ:지크프리트]] && CFLAG:LOCAL:998 == 1
+;			PRINTL 　シナリオライター・ジークフリートの加護 ×110％
+;			TIMES S , 1.10
+;			BREAK
+;		ENDIF
+;	NEXT
+;ENDIF
+;;『観客』ディオニュソス（大劇場）
+;IF 『観客』ディオニュソス進行 > 1
+;	FOR LOCAL, 0, CHARANUM
+;		;劇場憑きのディオニュソスはここで判定
+;		IF NO:LOCAL == [[キャラ:디오니소스]] && CFLAG:LOCAL:998 == 1
+;			PRINTL 　『観客』ディオニュソスの加護 ×115％
+;			TIMES S , 1.15
+;			BREAK
+;		ENDIF
+;	NEXT
+;ENDIF
+;---- EDIT 019 MOD END ---------------------------
+PRINTL 
+PRINTL 【아이돌 인기 보정】
+PRINTFORML 　아이돌인기 {CFLAG:対象:아이돌인기}p
+
+;超人気
+IF CFLAG:対象:아이돌인기 > 299
+		PRINTL 　아이돌 인기에 따른 집객력……∞
+;大人気
+ELSEIF CFLAG:対象:아이돌인기 > 199
+	IF S > 5999
+		SETCOLOR 0xff0033
+		PRINTL ※집객이 한계에 도달했습니다, 아이돌 인기를 더 올려야 합니다
+		PRINTL 다음 목표치……300p
+		RESETCOLOR
+		S = 6000
+	ELSE
+		PRINTL 　아이돌 인기에 따른 집객력……대
+	ENDIF
+;인기
+ELSEIF CFLAG:対象:아이돌인기 > 99 || TALENT:対象:인기
+	IF S > 3999
+		SETCOLOR 0xff0033
+		PRINTL ※집객이 한계에 도달했습니다, 아이돌 인기를 더 올려야 합니다
+		PRINTL 다음 목표치……200p
+		RESETCOLOR
+		S = 4000
+	ELSE
+		PRINTL 　아이돌 인기에 따른 집객력……있음
+	ENDIF
+;小人気
+ELSEIF CFLAG:対象:아이돌인기 > 49
+	IF S > 2999
+		SETCOLOR 0xff0033
+		PRINTL ※집객이 한계에 도달했습니다, 아이돌 인기를 더 올려야 합니다
+		PRINTL 다음 목표치……100p
+		RESETCOLOR
+		S = 3000
+	ELSE
+		PRINTL 　아이돌 인기에 따른 집객력……소
+	ENDIF
+;人気習得以前
+ELSE
+	IF S > 1999
+		SETCOLOR 0xff0033
+		PRINTL ※집객이 한계에 도달했습니다, 아이돌 인기를 더 올려야 합니다
+		PRINTL 다음 목표치……50p
+		RESETCOLOR
+		S = 2000
+	ELSE
+		PRINTL 　아이돌 인기에 따른 집객력……없음
+	ENDIF
+ENDIF
+
+;難易度処理
+;EASY
+IF FLAG:조교난이도 == 1
+	PRINTL 
+	PRINTL 난이도:EASY ×120％
+	TIMES S , 1.20
+;NORMAL
+ELSEIF FLAG:조교난이도 == 2
+	TIMES S , 1.00
+;HARD
+ELSEIF FLAG:조교난이도 == 3
+	PRINTL 
+	PRINTL 난이도:HARD ×80％
+	TIMES S , 0.80
+ENDIF
+
+
+PRINTL 
+SETCOLOR 0x33ffcc
+PRINTFORML 시산 결과：{S}
+RESETCOLOR
+PRINTL 
+
+;;---MOD 004 START---
+;IF CFLAG:対象:인계횟수 > 0 && FLAG:게임모드 < 9 && DAY < 51
+;	PRINTFORML 引継ぎ済みキャラ： × 0.01
+;	S /= 100
+;	SIF S < 1
+;		S = 1
+;ENDIF
+;;---MOD 004 END---
+;
+
+;コンサートを実行するか？
+IF S > 0
+	PRINTFORMW 이윤은 ￥{S} 정도로 예상됩니다
+ELSE
+	PRINTW 이윤을 기대할 수 없기 때문에, 콘서트를 중지합니다
+	GOTO CONCERT_TOP
+	;RETURN 0
+ENDIF
+IF FLAG:노역실행확인생략설정 == 0
+	PRINTFORML %CALLNAME:대상%의 콘서트를 실행하겠습니까?
+	;---- EDIT INPUT_YN追加対応(2011/02/03) MOD START -------------------------
+	CALL INPUT_YN, "실행한다", "그만둔다"
+	;PRINTL [0] -   実行する
+	;PRINTL [100] - 그만둔다
+	;$INPUT_LOOP_3
+	;INPUT
+	;---- EDIT INPUT_YN追加対応(2011/02/03) MOD END ---------------------------
+ELSE
+	RESULT = 0
+ENDIF
+IF RESULT == 0
+	;---- EDIT P 002 DEL START -------------------------
+	コンサート実行日 = DAY
+	;---- EDIT P 002 DEL END ---------------------------
+	PRINTFORML %CALLNAME:대상%의 콘서트를 실행합니다.
+	;評判判定
+	IF ABL:対象:가창기능 == 0
+		IF RAND:3 == 0
+			F = 1
+			Z = S
+			TIMES Z , 0.05
+			S += Z
+		ELSE
+			F = 0
+			Z = S
+			TIMES Z , 0.05
+			S -= Z
+		ENDIF
+	ELSEIF ABL:対象:가창기능 < 4
+		IF RAND:(ABL:対象:가창기능)
+			F = 1
+			Z = S
+			TIMES Z , 0.05
+			S += Z
+		ELSE
+			F = 0
+			Z = S
+			TIMES Z , 0.05
+			S -= Z
+		ENDIF
+	ELSE
+		IF RAND:10 == 0
+			F = 0
+			Z = S
+			TIMES Z , 0.05
+			S -= Z
+		ELSE
+			F = 1
+			Z = S
+			TIMES Z , 0.05
+			S += Z
+		ENDIF
+	ENDIF
+	;イベント口上呼び出し
+	U = 0
+	IF ASSI >= 0
+		SIF ASSI == 対象
+			U = 1
+	ENDIF
+	T = TARGET
+	TARGET = 対象
+	TFLAG:이벤트구상호출용 = 20
+	CALL KOJO_MESSAGE_EVENT
+	TARGET = T
+	SIF U
+		ASSI = 対象
+	;奴隷の経験、能力処理
+	IF ABL:対象:가창기능 == 0
+		R = 8
+		Q = 0
+	ELSEIF ABL:対象:가창기능 == 1
+		R = 50
+		Q = 1
+	ELSEIF ABL:対象:가창기능 == 2
+		R = 300
+		Q = 2
+	ELSEIF ABL:対象:가창기능 == 3
+		R = 900
+		Q = 3
+	ELSEIF ABL:対象:가창기능 == 4
+		R = 2400
+		Q = 5
+	ELSEIF ABL:対象:가창기능 == 5
+		R = 3000
+		Q = 8
+	ELSEIF ABL:対象:가창기능 == 6
+		R = 3500
+		Q = 12
+	ELSEIF ABL:対象:가창기능 == 7
+		R = 4000
+		Q = 16
+	ELSEIF ABL:対象:가창기능 == 8
+		R = 4500
+		Q = 20
+	ELSEIF ABL:対象:가창기능 == 9
+		R = 5000
+		Q = 24
+	ELSEIF ABL:対象:가창기능 >= 10
+		R = 6000
+		Q = 30
+	ENDIF
+	
+	;信頼系陥落時は歌唱経験獲得量1.5倍～2.5倍に（変更前と同じくらいの水準）
+	IF TALENT:対象:맹우
+		TIMES Q , 2.50
+	ELSEIF TALENT:対象:동료
+		TIMES Q , 2.00
+	ELSEIF TALENT:対象:신뢰
+		TIMES Q , 1.50
+	ENDIF
+	
+	;愛情経験は恋慕ルートのみ
+	BASE:対象:체력 -= BASE:対象:체력 / 2
+	LOCAL = 0
+	IF TALENT:対象:아내 || TALENT:対象:남편
+		LOCAL = RAND:15 + 1
+		EXP:対象:애정경험 += LOCAL
+	ELSEIF TALENT:対象:친애
+		LOCAL = RAND:10 + 1
+		EXP:対象:애정경험 += LOCAL
+	ELSEIF TALENT:対象:연모
+		LOCAL = RAND:10 + 1
+		EXP:対象:애정경험 += LOCAL
+	ENDIF
+	
+	EXP:対象:가창경험 += MAX(1 , Q)
+	JUEL:対象:습득 += R
+	EXP:対象:라이브경험 += 1
+	
+	SIF CFLAG:対象:스트레스치 > 0
+		CFLAG:対象:스트레스치 -= 1
+	G = (1 + RAND:(1 + ABL:対象:가창기능)) * (F + 1)
+	
+	PRINTL
+	SIF LOCAL
+		PRINTFORML %EXPNAME:23%＋{LOCAL}
+	PRINTFORML %EXPNAME:64%＋{MAX(1 , Q)}
+	PRINTFORML %PALAMNAME:8%의 구슬＋{R}
+	PRINTL
+	PRINTFORML %EXPNAME:74%＋1
+
+	IF F == 1
+;---ADD 004 START---
+		SIF ITEM:라이브하우스
+			G += 1
+		SIF ITEM:무도관
+			G += 2
+;---ADD 004 END---
+		
+		CFLAG:対象:아이돌인기 += G
+		PRINTFORML 아이돌인기＋{G}
+	ELSE
+		CFLAG:対象:아이돌인기 -= G
+		PRINTFORML 아이돌인기－{G}
+	ENDIF
+	
+	;マグネタイト放出量計算
+	LOCAL = (G * 100 + (R + D))
+	
+	;大劇場は100％吸収
+	IF ITEM:무도관
+	
+	;ライブハウスは50％吸収
+	ELSEIF ITEM:라이브하우스
+		LOCAL = LOCAL / 2
+	;路上ライブは10％吸収
+	ELSE
+		LOCAL = LOCAL / 10
+	ENDIF
+	CALL CONTROL_MAG, 対象, LOCAL
+	PRINTFORML 방출된 마그네타이트＋{LOCAL}
+	
+	IF !TALENT:対象:인기
+		IF CFLAG:対象:아이돌인기 > 99
+			TALENT:対象:인기 = 1
+			PRINTL
+			PRINTFORML %CALLNAME:대상%의 인기가 급상승하고 있다
+			PRINTFORML %CALLNAME:대상%은(는) 【인기】를 얻었다
+		ENDIF
+	ELSEIF TALENT:対象:인기
+		IF CFLAG:対象:아이돌인기 < -5
+			TALENT:対象:인기 = 0
+			PRINTL
+			PRINTFORML %CALLNAME:대상%의 인기가 침체되고 있다
+			PRINTFORML %CALLNAME:대상%은(는) 【인기】를 잃었다
+		ENDIF
+	ENDIF
+	PRINTL
+	PRINTFORMW 콘서트에서 노래를 선보인 결과, ￥{S}의 이윤을 얻었습니다
+	MONEY += S
+	CALL 帳簿閲覧_労役, 対象, S, 0, 6
+
+;---MOD 004 START---
+	IF F == 1
+		;最大値、26
+		E = ABL:対象:가창기능
+		SIF TALENT:対象:인기
+			E += 5
+		SIF ITEM:라이브하우스
+			E += 5
+		SIF ITEM:무도관
+			E += 6
+
+		PRINTL
+		PRINTW 팬에게서 선물을 받았다
+		PRINTL ・
+		PRINTL ・・
+		PRINTL ・・・
+		;MAX＝13％、でおよそ8回に1回程度
+		IF RAND:100 < E / 2
+			;30/1000＝3%
+			IF RAND:1000 < E + 5
+				CALL GET_ITEMS, "힘의향", 1
+				CALL GET_ITEMS, "지혜의향", 1
+				CALL GET_ITEMS, "마력의향", 1
+				CALL GET_ITEMS, "내구의향", 1
+				CALL GET_ITEMS, "속도의향", 1
+				CALL GET_ITEMS, "운의향", 1
+				PRINTW ＞오, 이것 참 좋군! 인센스 모둠을 1세트 손에 넣었다!
+			ELSE
+				SELECTCASE RAND:7
+					;CASE 7
+						;CALL GET_ITEMS, "진주", 1
+						;CALL GET_ITEMS, "사파이어", 1
+						;CALL GET_ITEMS, "토파즈", 1
+						;CALL GET_ITEMS, "아쿠아마린", 1
+						;CALL GET_ITEMS, "오닉스", 1
+						;CALL GET_ITEMS, "가넷", 1
+						;CALL GET_ITEMS, "터키석", 1
+						;CALL GET_ITEMS, "아메지스트", 1
+						;CALL GET_ITEMS, "오팔", 1
+						;CALL GET_ITEMS, "루비", 1
+						;CALL GET_ITEMS, "다이아몬드", 1
+						;CALL GET_ITEMS, "에메랄드", 1
+						;CONCERT_ファンからのプレゼント = 宝石詰め合わせ
+					CASE 6
+						CONCERT_ファンからのプレゼント = 힘의향
+					CASE 5
+						CONCERT_ファンからのプレゼント = 지혜의향
+					CASE 4
+						CONCERT_ファンからのプレゼント = 마력의향
+					CASE 3
+						CONCERT_ファンからのプレゼント = 내구의향
+					CASE 2
+						CONCERT_ファンからのプレゼント = 속도의향
+					CASE 1
+						CONCERT_ファンからのプレゼント = 운의향
+					CASE 0
+						CONCERT_ファンからのプレゼント = 그레이트챠크라
+					;エラー落ちよけ
+					CASEELSE
+						CONCERT_ファンからのプレゼント = 외상약
+				ENDSELECT
+
+				;IF CONCERT_ファンからのプレゼント == "宝石詰め合わせ"
+				;ELSE
+					CALL GET_ITEMS, CONCERT_ファンからのプレゼント, 1
+				;ENDIF
+				PRINT ＞
+				PRINTS CONCERT_ファンからのプレゼント
+				PRINTW 을(를) 1개 손에 넣었다
+			ENDIF
+		;再抽選で宝石を判定する。こちらも最大13%程度
+		ELSEIF RAND:100 < E / 2
+			SELECTCASE RAND:6
+				CASE 0
+					SELECTCASE RAND:4
+						CASE 0
+							CONCERT_ファンからのプレゼント = 사파이어
+						CASE 1
+							CONCERT_ファンからのプレゼント = 진주
+						CASE 2
+							CONCERT_ファンからのプレゼント = 루비
+						CASE 3
+							CONCERT_ファンからのプレゼント = 다이아몬드
+					ENDSELECT
+				CASE 1,2
+					SELECTCASE RAND:4
+						CASE 0
+							CONCERT_ファンからのプレゼント = 오닉스
+						CASE 1
+							CONCERT_ファンからのプレゼント = 아쿠아마린
+						CASE 2
+							CONCERT_ファンからのプレゼント = 터키석
+						CASE 3
+							CONCERT_ファンからのプレゼント = 토파즈
+					ENDSELECT
+				CASEELSE
+					SELECTCASE RAND:4
+						CASE 0
+							CONCERT_ファンからのプレゼント = 에메랄드
+						CASE 1
+							CONCERT_ファンからのプレゼント = 아메지스트
+						CASE 2
+							CONCERT_ファンからのプレゼント = 오팔
+						CASE 3
+							CONCERT_ファンからのプレゼント = 가넷
+					ENDSELECT
+			ENDSELECT
+			CALL GET_ITEMS, CONCERT_ファンからのプレゼント, 1
+			PRINT ＞
+			PRINTS CONCERT_ファンからのプレゼント
+			PRINTW 을(를) 1개 손에 넣었다
+		ELSE
+			;ライブハウスがあればハズレくじなし
+			IF ITEM:라이브하우스
+				SELECTCASE RAND:100
+					CASE 70 TO 99
+						CONCERT_ファンからのプレゼント = 마석
+					CASE 50 TO 69
+						CONCERT_ファンからのプレゼント = 보옥
+					CASE 40 TO 49
+						CONCERT_ファンからのプレゼント = 곱빼기즉석라멘
+					CASE 30 TO 39
+						CONCERT_ファンからのプレゼント = 모듬스시세트
+					CASE 20 TO 29
+						CONCERT_ファンからのプレゼント = 전투식량MRE
+					CASE 15 TO 19
+						CONCERT_ファンからのプレゼント = 챠크라드롭
+					CASE 10 TO 14
+						CONCERT_ファンからのプレゼント = 파마화살
+					CASE 5 TO 9
+						CONCERT_ファンからのプレゼント = 비공침
+					CASE 4
+						CONCERT_ファンからのプレゼント = 질서의돌
+					CASE 3
+						CONCERT_ファンからのプレゼント = 혼돈의돌
+					CASE 2
+						CONCERT_ファンからのプレゼント = 선행의돌
+					CASE 1
+						CONCERT_ファンからのプレゼント = 악행의돌
+					CASE 0
+						CONCERT_ファンからのプレゼント = 챠크라포트
+					;エラー落ちよけ
+					CASEELSE
+						CONCERT_ファンからのプレゼント = 외상약
+				ENDSELECT
+				CALL GET_ITEMS, CONCERT_ファンからのプレゼント, 1
+				PRINT ＞
+				PRINTS CONCERT_ファンからのプレゼント
+				PRINTW 을(를) 1개 손에 넣었다
+			ELSE
+				IF RAND:7 == 0
+					IF 対象 == MASTER
+						PRINTW 지극히 평범한 팬레터였다. 나중에 본인에게 전해주자……
+					ELSE
+						PRINTW 지극히 평범한 팬레터였다. 나중에 읽어보자……
+					ENDIF
+				ELSEIF RAND:6 == 0
+					PRINTW 안에는 잘 모를 센스의 액세서리가 들어 있었다. 열심히 골랐던 걸까……
+				ELSEIF RAND:5 == 0
+					PRINTFORMW 안에는 %CALLNAME:대상%과의 투샷 사진(합성 사진)이 들어 있었다. 무섭네
+				ELSEIF RAND:4 == 0
+					PRINTW 과연, 지극히 평범한 꽃다발이다. 일단 장식해 두자……
+				ELSEIF RAND:3 == 0
+					PRINTW 으음, 대단해, 자작 시다. 일단 치워두자……
+				ELSEIF RAND:2 == 0
+					PRINTW 안에는 하얀 잼 같은 것이 채워진 라벨 없는 병이 들어 있었다……
+				ELSE
+					PRINTFORMW 안에는 비린내 나는 점액으로 얼룩진 %CALLNAME:대상%의 사진이 들어 있었다……
+				ENDIF
+			ENDIF
+		ENDIF
+		;大劇場を持っている場合はもういちど抽選
+		IF ITEM:무도관
+			;ワイはビビりなので何か入れとく
+			CONCERT_ファンからのプレゼント = 외상약
+			;追加入手率はぐっと低くMAX5%
+			IF RAND:100 < (ABL:対象:가창기능)/2
+				;香詰め合わせはナシで
+				SELECTCASE RAND:7
+					CASE 6
+						CONCERT_ファンからのプレゼント = 힘의향
+					CASE 5
+						CONCERT_ファンからのプレゼント = 지혜의향
+					CASE 4
+						CONCERT_ファンからのプレゼント = 마력의향
+					CASE 3
+						CONCERT_ファンからのプレゼント = 내구의향
+					CASE 2
+						CONCERT_ファンからのプレゼント = 속도의향
+					CASE 1
+						CONCERT_ファンからのプレゼント = 운의향
+					CASE 0
+						CONCERT_ファンからのプレゼント = 그레이트챠크라
+					;エラー落ちよけ
+					CASEELSE
+						CONCERT_ファンからのプレゼント = 외상약
+				ENDSELECT
+				CALL GET_ITEMS, CONCERT_ファンからのプレゼント, 1
+				PRINT ＞게다가, 
+				PRINTS CONCERT_ファンからのプレゼント
+				PRINTW 을(를) 1개 손에 넣었다
+			ELSE
+				SELECTCASE RAND:100
+					CASE 80 TO 99
+						CONCERT_ファンからのプレゼント = 마석
+					CASE 60 TO 79
+						CONCERT_ファンからのプレゼント = 보옥
+					CASE 50 TO 59
+						CONCERT_ファンからのプレゼント = 곱빼기즉석라멘
+					CASE 40 TO 49
+						CONCERT_ファンからのプレゼント = 모듬스시세트
+					CASE 30 TO 39
+						CONCERT_ファンからのプレゼント = 전투식량MRE
+					CASE 25 TO 29
+						CONCERT_ファンからのプレゼント = 챠크라드롭
+					CASE 20 TO 24
+						CONCERT_ファンからのプレゼント = 물반경
+					CASE 15 TO 19
+						CONCERT_ファンからのプレゼント = 마반경
+
+					CASE 14
+						CONCERT_ファンからのプレゼント = 보옥륜
+					CASE 13
+						CONCERT_ファンからのプレゼント = 챠크라포트
+					CASE 12
+						CONCERT_ファンからのプレゼント = 뉴클리어밤
+					CASEELSE
+						SELECTCASE RAND:6
+							CASE 0
+								SELECTCASE RAND:4
+									CASE 0
+										CONCERT_ファンからのプレゼント = 사파이어
+									CASE 1
+										CONCERT_ファンからのプレゼント = 진주
+									CASE 2
+										CONCERT_ファンからのプレゼント = 루비
+									CASE 3
+										CONCERT_ファンからのプレゼント = 다이아몬드
+								ENDSELECT
+							CASE 1,2
+								SELECTCASE RAND:4
+									CASE 0
+										CONCERT_ファンからのプレゼント = 오닉스
+									CASE 1
+										CONCERT_ファンからのプレゼント = 아쿠아마린
+									CASE 2
+										CONCERT_ファンからのプレゼント = 터키석
+									CASE 3
+										CONCERT_ファンからのプレゼント = 토파즈
+								ENDSELECT
+							CASEELSE
+								SELECTCASE RAND:4
+									CASE 0
+										CONCERT_ファンからのプレゼント = 에메랄드
+									CASE 1
+										CONCERT_ファンからのプレゼント = 아메지스트
+									CASE 2
+										CONCERT_ファンからのプレゼント = 오팔
+									CASE 3
+										CONCERT_ファンからのプレゼント = 가넷
+								ENDSELECT
+						ENDSELECT
+					;エラー落ちよけ
+					;CASEELSE
+					;	CONCERT_ファンからのプレゼント = 외상약
+				ENDSELECT
+				CALL GET_ITEMS, CONCERT_ファンからのプレゼント, 1
+				PRINT ＞게다가, 
+				PRINTS CONCERT_ファンからのプレゼント
+				PRINTW 을(를) 1개 손에 넣었다
+			ENDIF
+		ENDIF
+	ENDIF
+;---MOD 004 END---
+;ＮＴＲ進行
+	IF GETBIT(FLAG:ＮＴＲ기능 , 6) && 対象 != MASTER
+		PRINTL
+		;전속노예의목걸이
+		;→22/06/07：同効果の服を増やして関数にしたので修正
+		IF IS_ANTI_NTR_CLOTHES(対象) == 1
+			GOTO SKIP_NTR
+		;信頼陥落はダメ
+		ELSEIF TALENT:対象:신뢰 || TALENT:対象:동료
+			GOTO SKIP_NTR
+		ENDIF
+		;배덕의반지
+		;→22/06/07：同効果の服を増やして関数にしたので修正
+		SIF IS_ANTI_NTR_CLOTHES(対象) == -1
+			PRINTFORMW %CALLNAME:대상%은(는) 뭐라 말할 수 없는 달콤한 향기를 두르고 있다……
+	
+		;成功すると一定確立でスカウトフラグ
+		IF RAND:100 < 10 + E + ABL:対象:가창기능 && F == 1 || TALENT:対象:ＮＴＲ == 2 && F == 1 || IS_ANTI_NTR_CLOTHES(対象) == -1 && F == 1 
+			PRINTFORML 
+			IF TALENT:対象:ＮＴＲ == 2
+				PRINTFORMW %CALLNAME:대상%은(는) 스카우트가 말을 걸자 요염하게 미소지었다……
+			ELSEIF CDFLAG:対象:캐릭터간호감도:(86) < 0
+				PRINTFORMW %CALLNAME:대상%은(는) 스카우트가 휴대전화 화면을 보여주자 얼굴이 파랗게 질렸다……
+			ELSE
+				PRINTFORMW %CALLNAME:대상%에게 스카우트라고 자칭하는 남자가 말을 걸고 있다……
+			ENDIF
+			IF RAND:100 < 10 + E || TALENT:対象:ＮＴＲ == 2 && F == 1 || IS_ANTI_NTR_CLOTHES(対象) == -1
+				IF TALENT:対象:ＮＴＲ == 2
+					PRINTFORMW %CALLNAME:대상%은(는) 상기된 표정으로 사무실로 들어갔다……
+				ELSEIF CDFLAG:対象:캐릭터간호감도:(86) < 0
+					PRINTFORMW %CALLNAME:대상%은(는) 고개를 떨군 채 사무실로 따라갔다……
+				ELSE
+					PRINTFORML %CALLNAME:대상%은(는) 스카우트의 이야기를 듣기 위해 사무실로 따라갔다……
+				ENDIF
+				PRINTL ・
+				PRINTL ・・
+				PRINTL ・・・
+				IF CDFLAG:対象:캐릭터간호감도:(86) < 0 || IS_ANTI_NTR_CLOTHES(対象) == -1
+					CDFLAG:対象:캐릭터간호감도:(86) -= CDFLAG:対象:캐릭터간호감도:(100+FAVORITE_1_ID(対象)) / 10
+					CFLAG:対象:음란도+= 30
+					IF TALENT:対象:남자 == 0 
+						IF CFLAG:対象:자궁내피임결계 == 1
+							IF RAND:100 < CFLAG:対象:현ＮＴＲ진행도 * 5
+								CFLAG:対象:자궁내피임결계 -= 1
+								PRINTFORML %CALLNAME:대상%의 자궁 내 피임 결계가 해제되어 버린 것 같다……
+							ENDIF
+						ENDIF
+						IF RAND:100 < CFLAG:対象:현ＮＴＲ진행도 * 5
+							IF CFLAG:対象:배란유발제 == 0
+								CFLAG:対象:배란유발제 += 1
+								PRINTFORML %CALLNAME:대상%은(는) 배란유발제를 입맞춤으로 억지로 마시게 되었다……
+							ENDIF
+						ENDIF
+						IF TALENT:対象:ＮＴＲ == 2
+							IF RAND:3 == 0
+								PRINTFORMW %CALLNAME:대상%은(는) 카메라를 든 스카우트 위에 올라타, 허리를 흔들고 있다……
+								PRINTW 스카우트의 정액이 질내에 방출되자 카메라를 향해 질내사정당한 것을 기뻐하며 이야기하고 있다……
+								CALL NTR_CONCERT_SEX, 対象, 1
+								PRINTW 질내의 페니스가 단단함을 되찾은 것을 확인하자 음란한 얼굴로 다시 허리를 흔들기 시작했다……
+							ELSEIF RAND:2 == 0
+								PRINTFORMW %CALLNAME:대상%은(는) 난교물 AV에 출연당했다……
+								PRINTW 남자들이 질내사정할 때마다 절정에 달하며 교성을 지르고 있다……
+								CALL NTR_CONCERT_SEX, 対象, 5
+								PRINTFORMW %CALLNAME:대상%은(는) 카메라 앞에서 다리를 쩍 벌린 채 질내사정당하며 칠칠치 못한 아헤가오를 드러내고 있다……
+							ELSE
+								PRINTFORMW %CALLNAME:대상%은(는) 은밀한 접대를 강요당했다……
+								PRINTW 뚱뚱하게 살찐 아저씨의 끈적한 허리놀림에 꼴사나운 목소리를 지르고 있다……
+								CALL NTR_CONCERT_SEX, 対象, 2
+								PRINTW 뚱뚱한 아저씨의 농후한 씨앗이 자궁 안을 채우자 임신당하는 기쁨에 몸을 떨었다……
+							ENDIF
+						ELSE
+							IF RAND:3 == 0
+								PRINTFORMW %CALLNAME:대상%은(는) 사무실에서 스카우트에게 강간당했다……
+								PRINTFORMW 울부짖는 %CALLNAME:대상%의 질내에 스카우트의 씨앗이 쏟아졌다……
+								CALL NTR_CONCERT_SEX, 対象, 1
+								PRINTFORMW %CALLNAME:대상%은(는) 눈물을 흘리면서, 애액과 정액으로 범벅된 스카우트의 페니스를 핥고 있다……
+							ELSEIF RAND:2 == 0
+								PRINTFORMW %CALLNAME:대상%은(는) 강간물 AV에 출연당했다……
+								PRINTFORMW 도움을 요청하는 %CALLNAME:대상%의 안에 남자들이 차례차례 정액을 쏟아붓고 있다……
+								CALL NTR_CONCERT_SEX, 対象, 5
+								PRINTFORMW %CALLNAME:대상%은(는) %CALLNAME:MASTER% 이외의 남자의 정액이 흘러넘치는 질구를 바라보며 망연자실해 있다……
+							ELSE
+								PRINTFORMW %CALLNAME:대상%은(는) 은밀한 접대를 강요당했다……
+								PRINTW 뚱뚱하게 살찐 아저씨에게 농후한 씨앗을 몇 번이고 교배당했다……
+								CALL NTR_CONCERT_SEX, 対象, 2
+								PRINTFORMW %CALLNAME:대상%은(는) 입안을 혀로 침범당하면서 뚱뚱한 아저씨의 씨앗을 주입당하고 있다……
+							ENDIF
+						ENDIF
+						;行方不明フラグ
+						IF TALENT:対象:ＮＴＲ == 3 && CDFLAG:対象:캐릭터간호감도:(86) == CDFLAG:対象:캐릭터간호감도:(100+FAVORITE_1_ID(対象)) || TALENT:対象:ＮＴＲ == 2 || IS_ANTI_NTR_CLOTHES(対象) == -1
+							SIF TALENT:対象:임신 || TALENT:対象:육아중
+								GOTO SKIP_YUKUEHUMEI
+							IF RAND:100 < 10 + CFLAG:対象:현ＮＴＲ진행도 * 5
+								LOCAL:1 = S
+								IF LOCAL:1 < 3001
+									LOCAL:1 = 30000
+								ELSEIF LOCAL:1 < 5001
+									LOCAL:1 = 50000
+								ELSEIF LOCAL:1 > 5000
+									LOCAL:1 = 100000
+								ENDIF
+								SIF !CFLAG:対象:포지션 == 0
+									CFLAG:対象:포지션 = 0
+								SETCOLOR COLOR("red")
+								PRINTFORMW %CALLNAME:대상%의 행방을 알 수 없게 되었다……
+								RESETCOLOR
+								PRINTFORMW ＜%CALLNAME:대상%을(를) 찾을 때까지 콘서트를 중지합니다＞	
+								TALENT:対象:악덕스카우트 = LOCAL:1
+								イベントフラグ:32:0 = 1
+								CALL DEACTIVATE_FRIEND_CHARA, 対象
+							ENDIF
+						ENDIF
+						$SKIP_YUKUEHUMEI
+					ENDIF
+				ELSE
+					CDFLAG:対象:캐릭터간호감도:(86) -= CDFLAG:対象:캐릭터간호감도:(100+FAVORITE_1_ID(対象)) / 10
+					IF TALENT:対象:남자 == 0 
+						PRINTFORMW %CALLNAME:대상%은(는) 사무실에서 스카우트에게 밀려 넘어졌다
+						PRINTW 필사적으로 저항했지만 스카우트의 독니에 걸려들고 말았다……
+						PRINTL
+						CALL NTR_CONCERT_SEX, 対象, 1
+						IF CFLAG:対象:처녀상실플래그 == 1
+							PRINTFORMW %CALLNAME:대상%은(는) %CALLNAME:MASTER%에게 바치려 했던 순결을 빼앗겨 망연자실해 있다
+							PRINTW 질구에서는 순결했던 증거와 함께 하얗게 탁한 덩어리가 흘러내렸다……
+						ELSE
+							PRINTFORMW 망연자실한 %CALLNAME:대상%의 질구에서 능욕의 증거가 흘러나오고 있다……
+						ENDIF
+					ENDIF
+				ENDIF
+			ELSE
+				IF CDFLAG:対象:캐릭터간호감도:(86) < 0
+					PRINTFORMW %CALLNAME:대상%은(는) 어깨를 떨면서 돌아왔다……
+				ELSE
+					PRINTFORMW %CALLNAME:대상%은(는) 곧바로 돌아왔다……	
+				ENDIF
+			ENDIF
+			PRINTL
+		ENDIF
+		;失敗すると一定確立でチンピラフラグ
+		IF RAND:100 < 10 + E + ABL:対象:가창기능 && F == 0 || TALENT:対象:ＮＴＲ == 2 && F == 0 && RAND:100 < 50  || IS_ANTI_NTR_CLOTHES(対象) == -1 && F == 0 
+			PRINTFORML 
+			IF TALENT:対象:ＮＴＲ == 2
+				PRINTFORMW %CALLNAME:대상%은(는) 차 앞에 선 남자를 발견하자 상기된 표정으로 걸어갔다……
+			ELSEIF CDFLAG:対象:캐릭터간호감도:(85) < 0
+				PRINTFORMW %CALLNAME:대상%은(는) 차 앞에서 히죽거리며 이쪽을 바라보는 남자를 발견하자 몸을 굳혔다……
+			ELSE
+				PRINTFORMW 풀이 죽어 있는 %CALLNAME:대상%에게 팬이 악수를 청해왔다……
+			ENDIF
+			IF RAND:100 < 10 + E || TALENT:対象:ＮＴＲ == 2 && F == 0 && RAND:100 < 50 || IS_ANTI_NTR_CLOTHES(対象) == -1
+				IF TALENT:対象:ＮＴＲ == 2
+					PRINTFORMW %CALLNAME:대상%은(는) 요염한 미소를 띠며 차에 올라탔다……
+				ELSEIF CDFLAG:対象:캐릭터간호감도:(85) < 0
+					PRINTFORMW %CALLNAME:대상%은(는) 재촉받는 대로 차에 끌려 들어갔다……
+				ELSE
+					PRINTL 갑자기, 등 뒤에 멈춰 서 있던 차로 밀어넣어졌다……
+				ENDIF
+				PRINTL ・
+				PRINTL ・・
+				PRINTL ・・・
+				IF CDFLAG:対象:캐릭터간호감도:(85) < 0 || IS_ANTI_NTR_CLOTHES(対象) == -1
+					CDFLAG:対象:캐릭터간호감도:(85) -= 10
+					CFLAG:対象:음란도+= 200 + (ABL:対象:마조끼 + 5)*10
+					IF TALENT:対象:남자 == 0 
+						IF CFLAG:対象:자궁내피임결계 == 1
+							IF RAND:100 < CFLAG:対象:현ＮＴＲ진행도 * 5
+								CFLAG:対象:자궁내피임결계 -= 1
+								PRINTFORML %CALLNAME:대상%의 자궁 내 피임 결계가 해제되어 버린 것 같다……
+							ENDIF
+						ENDIF
+						IF RAND:100 < CFLAG:対象:현ＮＴＲ진행도 * 5
+							IF CFLAG:対象:배란유발제 == 0
+								CFLAG:対象:배란유발제 += 1
+								PRINTFORML %CALLNAME:대상%은(는) 배란유발제를 입맞춤으로 억지로 마시게 되었다……
+							ENDIF
+						ENDIF
+						IF TALENT:対象:ＮＴＲ == 2
+							IF RAND:3 == 0
+								PRINTFORMW %CALLNAME:대상%은(는) 방에 들어가자마자 무릎을 꿇고, 양아치의 페니스를 입에 물었다……
+								PRINTW 그대로 엎드려 기다시피 하며 양아치를 향해 비순을 손가락으로 벌렸다……
+								CALL NTR_CONCERT_SEX, 対象, 4
+								PRINTFORMW %CALLNAME:대상%은(는) 질내사정이 끝나고 페니스가 뽑히자, 다음을 갈구하듯 허리를 요염하게 흔들었다……
+							ELSEIF RAND:2 == 0
+								PRINTFORMW 양아치들은 %CALLNAME:대상%에게 수상쩍은 약을 주사했다……
+								PRINTFORMW %CALLNAME:대상%은(는) 양아치 위에 올라타, 칠칠치 못한 아헤가오를 드러내며 필사적으로 허리를 흔들고 있다……
+								CALL NTR_CONCERT_SEX, 対象, 4
+								PRINTFORMW %CALLNAME:대상%은(는) 능욕이 끝나도 정액투성이가 된 채 넋이 나간 표정으로 자위를 반복하고 있다……
+							ELSE
+								PRINTFORMW %CALLNAME:대상%은(는) 양아치의 형님뻘에게 바쳐졌다……
+								PRINTFORMW 손목만한 거대한 페니스가 %CALLNAME:대상%의 안에 빽빽하게 비틀려 들어간다……
+								CALL NTR_CONCERT_SEX, 対象, 2
+								PRINTFORMW %CALLNAME:대상%은(는) 거근의 쾌락에 타락하여, 흐트러진 표정 그대로 시키는 대로 범해지고 있다……
+							ENDIF
+						ELSE
+							IF RAND:3 == 0
+								PRINTW 끌려간 호텔에서 반성회라는 이름의 윤간이 행해졌다……
+								PRINTFORMW 양아치들은 울부짖는 %CALLNAME:대상%을(를) 비웃으며 범하고 있다……
+								CALL NTR_CONCERT_SEX, 対象, 4
+								PRINTFORMW %CALLNAME:대상%은(는) 안에 사정당할 때마다 비통한 비명을 지르고 있다……
+							ELSEIF RAND:2 == 0
+								PRINTFORMW 양아치들은 싫어하는 %CALLNAME:대상%에게 수상쩍은 약을 주사했다……
+								PRINTFORMW %CALLNAME:대상%은(는) 몸의 달아오름을 견디지 못하고 양아치에게 조르고 있다……
+								PRINTW 양아치가 허리를 쳐올릴 때마다 교성이 울려 퍼지고 있다……
+								CALL NTR_CONCERT_SEX, 対象, 4
+								PRINTFORMW %CALLNAME:대상%은(는) 자신의 행위에 자기혐오를 느끼며 %CALLNAME:MASTER%의 이름을 중얼거렸다……
+							ELSE
+								PRINTFORMW %CALLNAME:대상%은(는) 양아치의 형님뻘에게 바쳐졌다……
+								PRINTW 진주가 박힌 울퉁불퉁한 페니스로 질벽을 뻑뻑하게 유린당하고 있다……
+								CALL NTR_CONCERT_SEX, 対象, 2
+								PRINTFORMW %CALLNAME:대상%은(는) 질내를 후벼파이는 쾌감에 필사적으로 버티고 있다……
+							ENDIF
+						ENDIF
+					ENDIF
+				ELSE
+					CDFLAG:対象:캐릭터간호감도:(85) -= CFLAG:対象:방치일수
+					CFLAG:対象:음ＮＴＲ진행도 ++
+					IF TALENT:対象:남자 == 0 
+						CFLAG:対象:음란도+= 200 + CFLAG:対象:현ＮＴＲ진행도*10
+						PRINTFORMW %CALLNAME:대상%은(는) 뒷좌석에서 옷이 찢겨지고, 은밀한 부위에 페니스가 맞대어졌다
+						PRINTFORMW 그리고 저항할 틈도 없이 질 깊숙이 단숨에 꿰뚫렸다……
+						PRINTL
+						CALL NTR_CONCERT_SEX, 対象, 1
+						IF CFLAG:対象:처녀상실플래그 == 1
+							PRINTFORMW 양아치는 %CALLNAME:대상%이(가) 처녀라는 것을 알자 몹시 기뻐하며 허리를 흔들었다
+							PRINTW 그리고 자궁구에 페니스를 꽉 눌러대고, 낄낄 웃으며 대량으로 사정했다……
+							PRINTFORMW %CALLNAME:대상%은(는) 무참하게 처녀를 빼앗긴 충격과 임신의 공포로 눈물을 흘리며 망연자실해 있다
+						ELSE
+							PRINTFORMW 양아치들은 차례차례 %CALLNAME:대상%의 안에 정액을 쏟아내고 있다……
+						ENDIF
+					ENDIF
+				ENDIF
+			ELSE
+				IF CDFLAG:対象:캐릭터간호감도:(85) < 0
+					PRINTFORMW %CALLNAME:대상%은(는) 어깨를 떨면서 돌아왔다……
+				ELSE
+					PRINTFORMW %CALLNAME:대상%은(는) 팬의 응원에 힘을 얻은 것 같다……	
+				ENDIF
+			ENDIF
+			PRINTL
+		ENDIF
+		PRINTL
+	ENDIF
+	CFLAG:対象:처녀상실플래그 = 0
+	CALL SHOW_ABNORMAL_EXP, 対象, 1
+	$SKIP_NTR
+
+	DRAWLINE
+	;休憩フラグを立てる
+	FLAG:휴식플래그 = 1
+	;BEGIN TURNEND
+	GOTO CONCERT_TOP
+;---- EDIT INPUT_YN追加対応(2011/02/03) MOD START -------------------------
+;ELSEIF RESULT == 100
+;	RETURN 0
+ELSE
+;	GOTO INPUT_LOOP_3
+	GOTO CONCERT_TOP
+	;RETURN 0
+;---- EDIT INPUT_YN追加対応(2011/02/03) MOD END ---------------------------
+ENDIF
+GOTO CONCERT_TOP
+
+@NTR_CONCERT_SEX, 対象, 人数
+#DIM 対象
+#DIM 人数
+
+LOCAL:1 = 2 + RAND:3
+PRINTFORML Ｖ경험 ＋{LOCAL:1 * 人数}
+EXP:対象:Ｖ경험 += LOCAL:1 * 人数
+PRINTFORML Ａ경험 ＋{(LOCAL:1 / 2) * 人数}
+EXP:対象:Ａ경험 += (LOCAL:1 / 2) * 人数
+PRINTFORML 키스경험 ＋{LOCAL:1 * 人数}
+EXP:対象:키스경험 += LOCAL:1 * 人数
+PRINTFORML 성교경험 ＋{(LOCAL:1 + LOCAL:1 / 2) * 人数}
+EXP:対象:성교경험 += (LOCAL:1 + LOCAL:1 / 2) * 人数
+PRINTFORML 절정경험 ＋{((LOCAL:1 + LOCAL:1 / 2) / 3) * 人数}
+EXP:対象:절정경험 += ((LOCAL:1 + LOCAL:1 / 2) / 3) * 人数
+PRINTFORML 질사경험 ＋{LOCAL:1 * 人数}
+EXP:対象:질사경험 += LOCAL:1 * 人数
+PRINTFORML 펠라경험 ＋{(LOCAL:1 / 2) * 人数}
+EXP:対象:펠라경험 += (LOCAL:1 / 2) * 人数
+PRINTFORMW 정액경험 ＋{(LOCAL:1 * 2) * 人数}
+EXP:対象:정액경험 += (LOCAL:1 * 2) * 人数
+IF 人数 == 5
+	PRINTFORMW 피사경험 ＋{(LOCAL:1 * 2)}
+	EXP:対象:피사경험 += (LOCAL:1 * 2)
+ENDIF
+PRINTFORML 
+
+;처녀/再生処女喪失
+IF TALENT:対象:처녀
+	CALL ADDS_ABNORMAL_EXP, "処女喪失（強姦）", 対象
+	CALL 처녀상실, 対象
+ENDIF
+
+CDFLAG:対象:캐릭터간호감도:(100+FAVORITE_1_ID(対象)) += CDFLAG:対象:캐릭터간호감도:(86)
+SIF CFLAG:対象:함락캐릭터 == 86
+	CFLAG:対象:현ＮＴＲ진행도++
+
+;子宮現在容量加算
+IF TALENT:対象:오토코노코
+	CFLAG:対象:자궁현재용량 += LOCAL:1 * 人数 * 2
+ELSEIF !IS_MALE(対象)
+	CFLAG:対象:자궁현재용량 += LOCAL:1 * 人数 * 2
+ENDIF
+
+;妊娠用
+IF CFLAG:対象:자궁내피임결계 == 0
+	SIF TALENT:対象:남자 == 0
+		CFLAG:対象:고객의질내사정에의한임신판정 += LOCAL:1 * 人数 + CFLAG:対象:현ＮＴＲ진행도
+ENDIF
+
+@GET_CONCERT_PRICE_BY_ABL, L_ABL, L_LV, L_CHARA = -1
+#FUNCTION
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_ABL
+#DIM DYNAMIC L_LV
+#DIM DYNAMIC L_TABLE, 11
+SIF L_CHARA >= 0
+	L_LV = ABL:L_CHARA:L_ABL
+SELECTCASE ABLNAME:L_ABL
+	;			  0  1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+	CASE "순종"
+		L_TABLE = 0,10,20,30,40,50,60,70,80,90,100
+	CASE "욕망"
+		L_TABLE = 0,10,20,30,40,50,60,70,80,90,100
+	CASE "기교"
+		L_TABLE = 0, 5,10,15,20,25,30,35,40,45, 50
+	CASE "Ｖ감각"
+		L_TABLE = 0, 5,10,15,20,25,30,35,40,45, 50
+	CASE "봉사정신"
+		L_TABLE = 0, 5,10,15,20,25,30,35,40,45, 50
+	CASE "노출증"
+		L_TABLE = 0, 5,10,15,20,25,30,35,40,45, 50
+	CASE "마조끼"
+		L_TABLE = 0, 5,10,15,20,25,30,35,40,45, 50
+	CASE "새드끼"
+		L_TABLE = 0, 5,10,15,20,25,30,35,40,45, 50
+	CASE "섹스중독"
+		L_TABLE = 0,10,20,30,40,50,60,70,80,90,100
+	CASEELSE
+		RETURNF 0
+ENDSELECT
+RETURNF L_TABLE:L_LV
+
+
+@GET_CONCERT_PRICE_BY_TALENT, L_TALENT, L_CHARA = -1
+#FUNCTION
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_TALENT
+SIF L_CHARA >= 0 && !TALENT:L_CHARA:L_TALENT
+	RETURNF 0
+;陥落素質
+SELECTCASE TALENTNAME:L_TALENT
+	CASE "연모"
+		RETURNF 100
+;	CASE "음란"
+;		RETURNF -30
+;	CASE "복종"
+;		RETURNF -50
+	CASE "신뢰"
+		RETURNF 100
+	CASE "친애"
+		RETURNF 200
+;	CASE "창부"
+;		RETURNF -60
+;	CASE "예속"
+;		RETURNF -100
+	CASE "동료"
+		RETURNF 200
+;その他素質
+;おさわりなしのアーティストだし、客から見てキャラ立ちしてるかどうかで考え直す
+;性格
+	CASE "겁쟁이"
+		RETURNF 10
+	CASE "반항적"
+		RETURNF 10
+	CASE "꿋꿋함"
+		RETURNF 20
+	CASE "솔직함"
+		RETURNF 10
+	CASE "얌전함"
+		RETURNF 10
+	CASE "프라이드높음"
+		RETURNF 20
+	CASE "건방짐"
+		RETURNF 10
+	CASE "프라이드낮음"
+		RETURNF -20
+	CASE "츤데레"
+		RETURNF 20
+;性への関心
+;分かりやすい性欲の有無は乱交ライブで頑張ってもらおう（※そのぶんほかの素質を追加してます）
+;	CASE "자제심"
+;		RETURNF 10
+;	CASE "무관심"
+;		RETURNF -10
+	CASE "감정결핍"
+		RETURNF -10
+;	CASE "一線"越えない
+;		RETURNF 15
+	CASE "눈에띄고싶어함"
+		RETURNF 20
+;乙女心
+;	CASE "貞操"観念
+;		RETURNF 10
+;	CASE "貞操"無頓着
+;		RETURNF 10
+;体質
+	CASE "아픔에약함"
+		RETURNF -10
+	CASE "아픔에강함"
+		RETURNF 10
+;技術
+	CASE "습득빠름"
+		RETURNF 15
+	CASE "습득느림"
+		RETURNF -15
+;潔癖度
+	CASE "헌신적"
+		RETURNF 10
+;性愛性
+	CASE "도착적"
+		RETURNF 10
+	CASE "바이"
+		RETURNF 10
+	CASE "남성혐오"
+		RETURNF 20
+	CASE "새드"
+		RETURNF 10
+	CASE "마조"
+		RETURNF 10
+	CASE "망신"
+		RETURNF 10
+	CASE "소악마"
+		RETURNF 10
+	CASE "여성혐오"
+		RETURNF 20
+;魅了
+	CASE "요호"
+		RETURNF 20
+	CASE "매력"
+		RETURNF 30
+	CASE "매혹"
+		RETURNF 10
+	CASE "수수께끼의매력"
+		RETURNF 50
+	CASE "미끼"
+		RETURNF 30
+;身体特徴
+	CASE "유아체형"
+		RETURNF 10
+	CASE "빈유"
+		RETURNF 10
+;オトコの絶壁は除外
+	CASE "절벽"
+		SIF L_CHARA >= 0 && IS_LOOKSLIKE_MALE(L_CHARA)
+			RETURNF 0
+		RETURNF 15
+	CASE "거유"
+		RETURNF 10
+	CASE "폭유"
+		RETURNF 15
+	CASE "큰체형"
+		RETURNF 10
+	CASE "거체"
+		RETURNF 20
+	CASE "마유"
+		RETURNF 20
+	CASE "小尻"
+		SIF L_CHARA >= 0 && IS_LOOKSLIKE_MALE(L_CHARA)
+			RETURNF 0
+		RETURNF -10
+	CASE "巨尻"
+		SIF L_CHARA >= 0 && IS_LOOKSLIKE_MALE(L_CHARA)
+			RETURNF 0
+		RETURNF 20
+		
+	CASE "爆尻"
+		SIF L_CHARA >= 0 && IS_LOOKSLIKE_MALE(L_CHARA)
+			RETURNF 0
+		RETURNF 10
+	CASE "魔尻"
+		SIF L_CHARA >= 0 && IS_LOOKSLIKE_MALE(L_CHARA)
+			RETURNF 0
+		RETURNF 10
+;特殊
+	CASE "흡혈귀"
+		RETURNF 10
+	CASE "동물귀"
+		RETURNF 10
+	CASE "소인체형"
+		RETURNF 10
+	CASE "인기"
+		RETURNF 30
+;迷ったけどコメントアウト。性的素質は乱交ライブで頑張ってもらおう
+;	CASE "임신"
+;		RETURNF 30
+;	CASE "모성"
+;		RETURNF 60
+ENDSELECT
+
+@PROPSET_CONCERT
+RESULTS '= "NO_NAME_LV_ALI_SEX_体力_FALLTALENT_歌唱技能_歌唱経験_ライブ経験_技能倍率_素質倍率"
+
+;--------------------------------------------------------------------------------
+;가창기능
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_歌唱技能_HEADER
+INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT("歌唱Lv", 6, "CENTER"), "SORT,가창기능")
+
+@GET_VAR_INFO_DATA_歌唱技能, ARG
+RESULTS += TOALIGNMENT(@"{ABL:ARG:가창기능,2}", 6, "CENTER")
+
+@GET_INFO_SORT_KEY_歌唱技能, ARG, ARGS
+RETURN ABL:ARG:가창기능
+
+;--------------------------------------------------------------------------------
+;가창경험
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_歌唱経験_HEADER
+INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT("가창경험", 8, "CENTER"), "SORT,가창경험")
+
+@GET_VAR_INFO_DATA_歌唱経験, ARG
+RESULTS += TOALIGNMENT(TOSTR(MIN(EXP:ARG:가창경험, 99999999)), 8, "CENTER")
+SIF EXP:ARG:가창경험 > 99999999
+	INFO_COLOR = COLOR("p-green")
+
+@GET_INFO_SORT_KEY_歌唱経験, ARG, ARGS
+RETURN EXP:ARG:가창경험
+
+;--------------------------------------------------------------------------------
+;라이브경험
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_ライブ経験_HEADER
+INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT("라이브경험", 10, "CENTER"), "SORT,라이브경험")
+
+@GET_VAR_INFO_DATA_ライブ経験, ARG
+RESULTS += TOALIGNMENT(TOSTR(MIN(EXP:ARG:라이브경험, 99999999)), 10, "CENTER")
+SIF EXP:ARG:라이브경험 > 99999999
+	INFO_COLOR = COLOR("p-green")
+
+@GET_INFO_SORT_KEY_ライブ経験, ARG, ARGS
+RETURN EXP:ARG:라이브경험
+
+
+;--------------------------------------------------------------------------------
+;技能倍率
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_技能倍率_HEADER
+INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT("기능배율", 8, "CENTER"), "SORT,기능배율")
+
+@GET_VAR_INFO_DATA_技能倍率, ARG
+CALL PRINT_CONCERT_PRICE_BY_ABL, ARG, "NOPRINT"
+RESULTS += TOALIGNMENT(@"{RESULT, 3}％", 8, "CENTER")
+
+@GET_INFO_SORT_KEY_技能倍率, ARG, ARGS
+CALL PRINT_CONCERT_PRICE_BY_ABL, ARG, "NOPRINT"
+RETURN RESULT
+
+
+;--------------------------------------------------------------------------------
+;素質倍率
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_素質倍率_HEADER
+INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT("소질배율", 8, "CENTER"), "SORT,소질배율")
+
+@GET_VAR_INFO_DATA_素質倍率, ARG
+CALL PRINT_CONCERT_PRICE_BY_TALENT, ARG, "NOPRINT"
+RESULTS += TOALIGNMENT(@"{RESULT, 3}％", 8, "CENTER")
+
+@GET_INFO_SORT_KEY_素質倍率, ARG, ARGS
+CALL PRINT_CONCERT_PRICE_BY_TALENT, ARG, "NOPRINT"
+RETURN RESULT
+
+
+@PRINT_CONCERT_PRICE_BY_ABL, L_CHARA, L_MODE = "PRINT"
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC TEMP_VAR
+#DIM DYNAMIC SUM_PRICE
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_MODE
+FOR LCOUNT, 0, TRAINABLNUM
+	TEMP_VAR = GET_CONCERT_PRICE_BY_ABL(LCOUNT, , L_CHARA)
+	SIF !TEMP_VAR
+		CONTINUE
+	SUM_PRICE += TEMP_VAR
+	IF L_MODE != "NOPRINT"
+		PRINTFORM 　%ABLNAME:LCOUNT,12,LEFT%
+		PRINTFORM {ABL:L_CHARA:LCOUNT, 3}Lv
+		PRINTFORM %" "%
+		IF TEMP_VAR > 0
+			PRINT ＋
+		ELSE
+			PRINT －
+		ENDIF
+		PRINTFORML {ABS(TEMP_VAR), 3}％
+	ENDIF
+NEXT
+RETURN SUM_PRICE
+
+@PRINT_CONCERT_PRICE_BY_TALENT, L_CHARA, L_MODE = "PRINT"
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC TEMP_VAR
+#DIM DYNAMIC SUM_PRICE
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_MODE
+FOR LCOUNT, 0, TRAINTALENTNUM
+	TEMP_VAR = GET_CONCERT_PRICE_BY_TALENT(LCOUNT, L_CHARA)
+	SIF !TEMP_VAR
+		CONTINUE
+	SUM_PRICE += TEMP_VAR
+	IF L_MODE != "NOPRINT"
+		PRINTFORM 　%TALENTNAME:LCOUNT, 18, LEFT%
+		IF TEMP_VAR > 0
+			PRINT ＋
+		ELSE
+			PRINT －
+		ENDIF
+		PRINTFORML {ABS(TEMP_VAR),3}％
+	ENDIF
+NEXT
+RETURN SUM_PRICE

@@ -1,0 +1,109 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2534,ARG
+RESULTS = BS엑스트라
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2534
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2534, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2534
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;속도보정
+@SKILL_SPEED_2534, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2534
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2534, ARG = -1
+RETURN 9
+
+;====================================================
+;行動によるスキルゲージ操作
+;各キャラクターの通常の行動後に全キャラで呼び出される
+;ARG:		このスキルの持ち主のキャラ番号
+;ARG:1		行動したキャラクターのキャラ番号
+;
+;RESULT 		獲得したゲージの量を返すことで獲得量を表示させる。つまり、他人の行動に反応させることなども可能。
+;RESULT:1		獲得表示のときの文字色を指定できる。ゲージが溜まったときの表示わけなどに
+;RESULTS		ゲージの名称 「<<XXXX>>」という形で表示される
+;RESULTS:1		ゲージの単位。半角の%を使いたい場合は「\%」と言うかたちで退避記号を使うと良い
+;RESULTS;2		色指定以外の要素を使わずに文字列を返す。ゲージ式の獲得量で表現したい場合などに
+;====================================================
+@SKILLGAGE_CHARGE_2534,ARG,ARG:1
+#LOCALSIZE 3
+#DIM 前ステート
+#DIM 前ステート経過ターン
+IF ARG == ARG:1 && CFLAG:ARG:１more플래그 < 1
+	LOCAL:1 = SKILLGAGE_H_GET(ARG,2534)
+	LOCAL:2 = SKILLGAGE_D_GET(ARG,2534) / 10
+	FOR LOCAL,1,7
+		前ステート = LOCAL:1 % BADSTATENUM
+		LOCAL:1 /= BADSTATENUM
+		前ステート経過ターン = LOCAL:2 % 10
+		LOCAL:2 /= 10
+		SIF POS(LOCAL) < 0
+			CONTINUE
+		SIF CFLAG:POS(LOCAL):상태이상 == 0 || CFLAG:POS(LOCAL):상태이상 == 15
+			CONTINUE
+		SIF 前ステート != CFLAG:POS(LOCAL):상태이상 || (前ステート == CFLAG:POS(LOCAL):상태이상 && 前ステート経過ターン > CFLAG:POS(LOCAL):상태이상경과턴수 && CFLAG:POS(LOCAL):상태이상경과턴수 == 0)
+			CFLAG:ARG:１more플래그 += 1
+	NEXT
+ENDIF
+LOCAL:1 = 1
+LOCAL:2 = 1
+CALL SKILLGAGE_H_SET,ARG,2534,0
+CALL SKILLGAGE_D_SET,ARG,2534,1
+FOR LOCAL,1,7
+	SIF LOCAL > 1
+		LOCAL:1 *= BADSTATENUM
+	LOCAL:2 *= 10
+	SIF POS(LOCAL) < 0
+		CONTINUE
+	CALL SKILLGAGE_H_ADD,ARG,2534,CFLAG:POS(LOCAL):상태이상 * LOCAL:1
+	CALL SKILLGAGE_D_ADD,ARG,2534,MIN(CFLAG:POS(LOCAL):상태이상경과턴수,9) * LOCAL:2
+NEXT
+
+
+
+@敵専用_2534
+RETURN 1
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+
+@ACTION_2534, ARG, ARG:1, ARG:2
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2534, ARG
+PRINTL 자신의 행동으로 상대를 BS로 만들면 1more가 발생한다
+
+
+;とくにない
+
+@SKILL_ACTIONABLE_BATTLE_2534, ARG
+RETURN 0
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2534,ARG
+RETURN 0
+;とくにない
+

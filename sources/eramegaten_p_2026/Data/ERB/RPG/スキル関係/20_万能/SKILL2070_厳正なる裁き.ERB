@@ -1,0 +1,124 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2070,ARG
+RESULTS = 엄정한심판
+
+;　명중
+@SKILL_HITRATE_2070, ARG
+SIF ARG >= 0 && CFLAG:ARG:보스플래그
+	RETURN 150
+RETURN 100
+;　威力
+@SKILL_POWER_2070, ARG
+;SIF FLAG:확산플래그 == 1
+;	RETURN 750
+;ボスだけ旧仕様の気合・集中二重がけに近い倍率になるようにしておく
+IF ARG >= 0 && CFLAG:ARG:보스플래그
+	IF CFLAG:ARG:집중플래그
+		RETURN 470
+	ELSE
+		RETURN 300
+	ENDIF
+ELSE
+	RETURN 300
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2070,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2070,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2070, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2070,ARG
+RETURN 35
+
+;　相性
+@SKILL_TYPE_2070,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2070
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2070, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2070, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2070,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2070,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2070, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2070
+RETURN GET_SUCCESSION_NUM("만능")
+
+;속도보정
+@SKILL_SPEED_2070, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2070
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2070, ARG = -1
+RETURN 12
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2070, ARG, ARG:1, ARG:2
+;SIF CFLAG:ARG:PT플래그 < 1
+;	CFLAG:ARG:회심의패기플래그 = 1
+;SIF CFLAG:ARG:집중플래그 == 1
+;	FLAG:확산플래그 = 1
+TFLAG:집중적용 = 1
+CALL ATTACK_FIELD,ARG,ARG:1,2070
+
+;CFLAG:ARG:집중플래그 = 0
+;FLAG:확산플래그 = 0
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2070, ARG
+;PRINTL 敵全体に万能の中ダメージ 物理攻撃;コスト威力ともにメギドラ互換なので説明文もあわせる
+PRINTL 적 전체에 만능의 대 데미지 물리공격
+PRINTL 이 스킬은 컨센트레이트로도 위력이 오른다
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2070,ARG
+RETURN 1
+;とくにない
+

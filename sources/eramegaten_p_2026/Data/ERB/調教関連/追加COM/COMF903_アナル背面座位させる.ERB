@@ -1,0 +1,331 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;	
+;	Licence:ライセンスフリー
+;	
+;	Edit	Date			Author					Reason
+;	001		2021/02/20		J>s!UL@1				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+@CHECK_COM_ABLE903
+;アナル背面座位させる実行判定
+
+;調教者のアヌスが使えないとダメ
+SIF !USE_ANUS(PLAYER)
+	RETURN 0
+
+;調教対象のペニスが使えないとダメ
+SIF !USE_PENIS(TARGET) && !USE_PBAND(TARGET)
+	RETURN 0
+
+;触手調教中はダメ
+SIF TEQUIP:촉수
+	RETURN 0
+
+;縄・拘束中はダメ
+SIF TEQUIP:밧줄
+	RETURN 0
+
+;三角木馬騎乗中はダメ
+SIF TEQUIP:삼각목마
+	RETURN 0
+
+;お風呂場プレイ中はプレイマットが無いとダメ
+IF TEQUIP:목욕탕
+	SIF !EXIST_ITEM(20)
+		RETURN 0
+ENDIF
+
+RETURN 1
+
+@JUMP_COM903
+;-------------------------------------------------
+;特殊派生処理
+;-------------------------------------------------
+;前のプレイがアナル背面座位させるかつ対象の技巧3以上の場合、挿入前立腺責めさせるへ派生
+SIF PREVCOM == 903 && (ABL:TARGET:기교 > 2)
+	RETURN 520
+RETURN -1
+
+@ACT_COM903
+;애널배면좌위시킨다
+PRINTL 애널배면좌위시킨다
+TSTR:0 = 애널배면좌위시킨다
+;-------------------------------------------------
+;実行決定
+;-------------------------------------------------
+;CALL KOJO_MESSAGE_COM
+
+;調教者←→調教対象
+TFLAG:28 = 3
+
+;-------------------------------------------------
+;射精ゲージチェック　●付け足し
+;-------------------------------------------------
+B = 1500
+
+;ABL:調教対象の技巧をみる
+IF ABL:TARGET:기교 == 0
+	TIMES B , 1.00
+ELSEIF ABL:TARGET:기교 == 1
+	TIMES B , 1.20
+ELSEIF ABL:TARGET:기교 == 2
+	TIMES B , 1.40
+ELSEIF ABL:TARGET:기교 == 3
+	TIMES B , 1.60
+ELSEIF ABL:TARGET:기교 == 4
+	TIMES B , 1.80
+ELSE
+	TIMES B , 2.00
+ENDIF
+
+;ABL:従順をみる
+IF ABL:순종 == 0
+	TIMES B , 0.80
+ELSEIF ABL:순종 == 1
+	TIMES B , 0.90
+ELSEIF ABL:순종 == 2
+	TIMES B , 1.00
+ELSEIF ABL:순종 == 3
+	TIMES B , 1.10
+ELSEIF ABL:순종 == 4
+	TIMES B , 1.20
+ELSE
+	TIMES B , 1.30
+ENDIF
+
+;ABL:欲望をみる
+IF ABL:욕망 == 0
+	TIMES B , 1.00
+ELSEIF ABL:욕망 == 1
+	TIMES B , 1.10
+ELSEIF ABL:욕망 == 2
+	TIMES B , 1.20
+ELSEIF ABL:욕망 == 3
+	TIMES B , 1.30
+ELSEIF ABL:욕망 == 4
+	TIMES B , 1.40
+ELSE
+	TIMES B , 1.50
+ENDIF
+
+;PALAM:潤滑をみる
+IF PALAM:윤활 < PALAMLV:1
+	TIMES B , 0.60
+ELSEIF PALAM:윤활 < PALAMLV:2
+	TIMES B , 0.80
+ELSEIF PALAM:윤활 < PALAMLV:3
+	TIMES B , 1.00
+ELSEIF PALAM:윤활 < PALAMLV:4
+	TIMES B , 1.20
+ELSEIF PALAM:윤활 >= PALAMLV:4
+	TIMES B , 1.40
+ENDIF
+
+;調教対象のABL:Ｃ感覚をみる
+IF ABL:TARGET:Ｃ감각 == 0
+	TIMES B , 1.00
+ELSEIF ABL:TARGET:Ｃ감각 == 1
+	TIMES B , 1.50
+ELSEIF ABL:TARGET:Ｃ감각 == 2
+	TIMES B , 2.00
+ELSEIF ABL:TARGET:Ｃ감각 == 3
+	TIMES B , 2.50
+ELSEIF ABL:TARGET:Ｃ감각 == 4
+	TIMES B , 3.50
+ELSE
+	TIMES B , 5.00
+ENDIF
+
+;;再装填処理中は射精ゲージは20分の1に
+;SIF CFLAG:PLAYER:射精ゲージ再装填 > 0
+;	B /= 20
+
+
+SIF HAVE_PENIS(PLAYER)
+	BASE:PLAYER:사정 += B
+
+;調教対象→調教者
+TFLAG:28 = 1
+TEQUIP:PLAYER:Ａ삽입자 = TARGET
+TFLAG:삽입속행 = 1
+
+
+;-------------------------------------------------
+;ソースの計算
+;-------------------------------------------------
+LOSEBASE:체력 += 40
+LOSEBASE:기력 += 160
+
+SOURCE:TARGET:쾌Ｃ = 650
+SOURCE:TARGET:성행위 = 500
+SOURCE:TARGET:달성 = 1000
+SOURCE:TARGET:반감 = 500
+SIF IS_MALE(TARGET) && (TALENT:쾌감을부정 == 0 || ABL:욕망 > 2) && !IS_LOOKSLIKE_MALE(PLAYER)
+	SOURCE:TARGET:반감 /= 10
+SOURCE:TARGET:불결 = 750
+SOURCE:TARGET:일탈 = 1500
+
+;調教者に快Ａ
+SOURCE:PLAYER:쾌Ａ = 400
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;抑圧、抵抗持ちには、抑鬱ソース追加
+SIF TALENT:억압 || TALENT:저항
+	SOURCE:TARGET:울굴 += 700
+
+;-------------------------------------------------
+;射精チェック
+;-------------------------------------------------
+
+;射精先タイプの設定
+TCVAR:TARGET:페니스사용대상 = PLAYER
+TCVAR:TARGET:사정부위 = 2
+;射精先選択の可・不可
+TFLAG:사정대상선택가능 = 0
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;射精に関係なく行われる処理はここから
+;調教者のＡ⇔奴隷のＰの汚れが移動
+CALL MOVE_STAIN("애널", PLAYER, "페니스", TARGET)
+
+;-------------------------------------------------
+;吸精処理
+;-------------------------------------------------
+IF CFLAG:PLAYER:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:10+1) * BASE:LV
+	CALL DRAIN_MAG,PLAYER,LOCAL,TARGET
+ELSEIF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:10+1) * BASE:LV
+	CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+ENDIF
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+;調教者のＡ経験
+CALL ADDS_EXP("Ａ경험", 1, PLAYER)
+
+CALL ADDS_EXP("봉사쾌락경험", 1, PLAYER)
+CALL ADDS_EXP("성교경험", 1, PLAYER)
+
+;삽입경험
+CALL ADDS_EXP("삽입경험", 1, TARGET)
+
+;수간경험
+IF (TALENT:TARGET:짐승 || TALENT:TARGET:새) && !(TALENT:PLAYER:짐승 || TALENT:PLAYER:새)
+	CALL ADDS_EXP("수간경험", 1, PLAYER)
+	
+ENDIF
+;레즈경험
+A = 4
+IF IS_LESBIAN(TARGET,PLAYER)
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, PLAYER)
+ELSEIF IS_GAY(TARGET,PLAYER)
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+ENDIF
+
+;依存度ベクトル
+TFLAG:33 = 3
+
+;依存度補正値(主人かつ恋慕、淫乱、服従で1。親愛、娼婦、隷属で2）
+IF (TALENT:연모 || TALENT:음란 || TALENT:복종) && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF (TALENT:친애 || TALENT:창부 || TALENT:예속) && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+;奉仕快楽フラグ
+TFLAG:100 = 1
+
+RETURN 1
+
+@MESSAGE_COM903
+	;前回の調教がアナル背面座位させるであり、入れっぱなしの場合
+	IF TEQUIP:주도권 && TEQUIP:PLAYER:Ａ섹스 && (PREVCOM == 903 || PREVCOM == 520)
+		PRINTFORMW %TARGET은% %PLAYER의% 유두를 굴리며, 다시 몸을 흔들기 시작했다……
+	;同様に前回の調教がアナル正常位かアナル対面座位の場合
+	ELSEIF TEQUIP:주도권 && TEQUIP:PLAYER:Ａ섹스 && (PREVCOM == 95 || PREVCOM == 902)
+		PRINTFORMW %TARGET은% 항문의 조임을 음미하면서
+		PRINTFORML %PLAYER를% 뒤돌려 안아 올리고는, 다시 허리를 흔들기 시작했다……
+	;同様に前回の調教がアナル騎乗位の場合
+	ELSEIF TEQUIP:주도권 && TEQUIP:PLAYER:Ａ섹스 && PREVCOM == 97
+		PRINTFORMW 아누스를 꿰뚫은 채 %PLAYER를% 뒤돌아서게 하고는,
+		PRINTFORML %TARGET은% 상체를 일으켜 끌어안더니, 다시 허리를 흔들기 시작했다……
+	;同様に前回の調教がアナル後背位の場合
+	ELSEIF TEQUIP:주도권 && TEQUIP:PLAYER:Ａ섹스 && PREVCOM == 96
+		PRINTFORMW %TARGET은% %PLAYER의% 엉덩이를 찌른 채로,
+		PRINTFORML 등 뒤에서 끌어안더니, 그 몸을 다시 흔들기 시작했다……
+	ELSEIF TEQUIP:주도권
+		PRINTFORM %TARGET은% \@TALENT:영맹 ? 거칠게 #\@ %PLAYER의% 몸을 등 뒤에서 안아 올리고는, 
+		PRINTFORML \@ ABL:PLAYER:Ａ감각 > 2 ? 기대로 옴찔옴찔 꿈틀거리는 #\@ 아누스에 페니스를 대고 
+		;「TARGETが真性のサドか」「サドっ気持ちか」で分岐
+		IF (TALENT:새드 || ABL:새드끼 >= 5) && RAND:3 == 0
+			PRINT 몸을 꿰뚫듯이 
+		ELSEIF TALENT:새드 || (ABL:새드끼 >= 4 && RAND:2 == 0)
+			PRINT 두세 번 국문을 덧그리더니 
+		ELSEIF RAND:2 == 0
+			PRINT 천천히 
+		ENDIF
+		;「TARGETが真性のサドか」「サドっ気持ちか」で分岐
+		IF (TALENT:새드 || ABL:새드끼 >= 5) && RAND:3 == 0
+			PRINT 단숨에 안쪽까지 밀어 넣고, 
+		ELSEIF ABL:새드끼 >= 3 && RAND:2 == 0
+			PRINT 삽입하고, 
+		ELSE
+			PRINT 밀어 넣고, 
+		ENDIF
+		;恋慕で追加
+		SIF (TALENT:연모 || TALENT:친애) && RAND:3 >= 1
+			PRINTFORM 몸부림치는 %PLAYER의% 가슴을 애무하면서 
+		;「TARGETが真性のサドか」「サドっ気持ちか」で分岐
+		IF (TALENT:새드 || ABL:새드끼 == 5) && RAND:3 == 0
+			PRINTFORMW 격렬하게 %PLAYER의% 몸을 뒤흔들었다…
+		ELSEIF TALENT:새드 || (ABL:새드끼 >= 3 && RAND:2 == 0)
+			PRINTFORMW %PLAYER의% 몸을 흔들었다…
+		ELSE
+			PRINTFORMW 허리를 움직이기 시작했다…
+		ENDIF
+	;前回の調教がアナル背面座位させるであり、入れっぱなしの場合
+	ELSEIF TEQUIP:PLAYER:Ａ섹스 && (PREVCOM == 903 || PREVCOM == 520)
+			PRINTFORMW %TARGET에게% 강하게 안긴 채, %PLAYER는% 장내의 페니스를 확인하듯 조여왔다……
+	;同様に前回の調教がアナル正常位かアナル後背位かアナル騎乗位かアナル対面座位の場合
+	ELSEIF TEQUIP:PLAYER:Ａ섹스 && (PREVCOM == 95 || PREVCOM == 96|| PREVCOM == 97 || PREVCOM == 902)
+			PRINTFORMW 이어진 채 %PLAYER는% 등 뒤에서 끌어안기자, 조르듯이 스스로 허리를 흔들기 시작했다……
+	ELSE
+		PRINTFORM %PLAYER는% %TARGET에게% 등을 맡기듯 안아 올려지자, 기다리고 있던 페니스를 
+		SIF ABL:PLAYER:욕망 > 3
+			PRINTFORM 이끌듯이 
+		SIF EXP:PLAYER:Ａ경험 == 0
+			PRINT 남자를 받아들인 적 없는 
+		PRINTFORMW 자신의 아누스로 삼켜버렸다…
+		PRINTFORM %TARGET은% 
+		SIF TALENT:연모 && RAND:3 >= 1
+			PRINT 몸을 빈틈없이 밀착시키고, 
+		PRINTFORMW %PLAYER의% 몸을 흔들기 시작했다…
+	ENDIF
+;-------------------------------------------------
+;実行判定処理
+;アナル正常位させると同じ
+;-------------------------------------------------
+@COM_ORDER_903, ARG, ARG:1
+CALL COM_ORDER_95, ARG, ARG:1
+;-------------------------------------------------
+;実行値
+;-------------------------------------------------
+@COM_ORDER_NUM_903
+RETURN 15
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_903
+RETURN COMTYPE("調教者奉仕系")
+
+

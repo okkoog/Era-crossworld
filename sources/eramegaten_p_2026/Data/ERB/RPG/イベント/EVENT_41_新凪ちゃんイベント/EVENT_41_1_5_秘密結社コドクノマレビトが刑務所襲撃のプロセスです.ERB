@@ -1,0 +1,1917 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_41_1_5_秘密結社コドクノマレビトが刑務所襲撃のプロセスです.ERB
+;	Facility	:コドクノマレビトMOD/凪ちゃんイベント群/凪仲間ルートその５
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2023/04/04		NEO						Ver1.0。ほぼ新規作成
+;													ヘッダー追加、テキスト面調整・改稿
+;													凪仲間ルートと凪敵対ルートのファイル分割
+;													色々あって時間かかったが……
+;													TRPGやってると思うんだけど、「PCが強くなりすぎると、それに対抗できる敵が山のようにいるのが不自然」になってくる。
+;													スパロボの日本か？って状況になるので、メイン武器をいったん取り上げたり、敵をめっちゃ出したりが必要になってくるのだなあ。
+;	002		2023/06/24		NEO						スーパー山田に火炎準貫通を持たせる
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;================================================================================================================
+;メモ
+;================================================================================================================
+;凪仲間ルート：その５
+;
+;連続で戦闘が発生する可能性がある、テキストメインイベント
+;「難易度ポイント」、あるいは「凪ちゃんの修行と苦労ポイント」が加算される
+;だいたい、簡単な選択肢だと戦闘回数と報酬が少し減る形になる
+;（一部例外アリ）
+;================================================================================================================
+
+
+@EVENT_41_1_5
+
+#DIM NAGI_NO
+CALLF FINDCHARA_B([[キャラ:나기]])
+LOCAL = RESULT:1
+NAGI_NO = GETCHARA([[キャラ:나기]])
+
+	PRINTFORML 
+	CALL AA_EV41_Nagi
+	PRINTFORML 
+	PRINTFORML 　나기
+	PRINTFORML 「%CALLNAME:MASTER% 전,
+	PRINTFORML 　교도소 경비의 타임입니다」
+	PRINTFORMW  
+	PRINTFORML ＞교도소로 향하기 전, 나기가 %CALLNAME:MASTER%의 사무소로 찾아왔다.
+	PRINTFORML ＞이번에는 나기와 함께 교도소로 향하기로 되어 있다……
+	PRINTFORML ＞……본래라면 %CALLNAME:MASTER% 역시 교도소에 처넣어져야 마땅할 인간이기에.
+	PRINTFORMW  
+	PRINTFORML ＞교도소는 아직 경비원들이 활약할 만한 사태는 벌어지지 않은 모양이다.
+	PRINTFORML ＞……슬슬 일이 터질 것 같긴 하지만…… 마음을 다잡고 향하기로 하자.
+	PRINTFORML 
+	PRINTFORML [0] “교도소로 간다” (연전이 발생합니다)
+	PRINTFORML [1] “아직 준비가 부족하다”
+	$INPUT_LOOP1
+	INPUT
+	IF 0
+	;準備ヨシ
+	ELSEIF RESULT == 0
+	;あうと
+	ELSEIF RESULT == 1
+		;フラグなどの変動はない
+		RETURN 0
+	ELSE
+		GOTO INPUT_LOOP1
+	ENDIF
+
+
+
+
+	;================================================================================================================
+	;アドベンチャーパート
+	;================================================================================================================
+	;普通にダンジョンいじるのがよく分からなかったのとこだわりすぎそうだったのでなんか作る
+	;だいたい、「かんたん」「ふつう」「むずかしい」みっつのルートがある
+	;ストーリーの進行上は何を選んでも同じで、アライメントの変動、最終的に凪ちゃんが習得するスキル、報酬などが変化する
+	;戦闘を避けると２戦＋ボスで済む
+	;================================================================================================================
+	;難易度ポイント（っつーか凪ちゃん苦労ポイント）の初期化
+	イベントフラグ:41:8 = 0
+
+
+	;================================================================================================================
+	;0-00.オープニング
+	;================================================================================================================
+	PRINTFORMW  
+	CALL AA_EV41_tenten
+	PRINTFORMW  
+	PRINTFORML ＞쿠시나다히메《串蛇媛》 경호를 위해, 히메를 보호하고 있는 교도소로 향한다……
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「수고 많으십니다. 야타가라스의 나기입니다.
+	PRINTFORML 　……나기입니다, 만…………?」
+	PRINTFORMW  
+	PRINTFORML ＞통행용 서류를 교도소 입구 초소에 제출하려던 나기가 고개를 갸웃거린다.
+	PRINTFORML ＞……초소에 아무도 없다……
+	PRINTFORML ＞얼마나 불성실한 자들이 모여있다 한들 아무도 없다는 것은 상식적으로 생각하기 어렵다.
+	PRINTFORMW  
+	PRINTFORML ＞그렇다면, 하고 %CALLNAME:MASTER%는 GUN을 뽑아 초소 창문을 총탄으로 쏴 열었다.
+	PRINTFORML ＞나기가 불평하지 않는 것을 보니 조금은 성장한 것 같다.
+	PRINTFORML ＞그렇다, 이것은 필요한 조치다.
+	PRINTFORMW  
+	PRINTFORML ＞안을 들여다보니 얼굴을 뜯어먹히고 내장을 파먹힌 교도관이 쓰러져 있었다.
+	PRINTFORML ＞타이밍이 좋은 건지 나쁜 건지.
+	PRINTFORML ＞『저희는 우연히 이곳에 왔다가 사건에 휘말린 것뿐입니다』―― 그런 변명을 해봤자 소용없겠지만, 누구에게든 푸념이라도 늘어놓고 싶어진다.
+	PRINTFORMW  
+	PRINTFORML ＞피비린내가 짙고 아직 체온마저 느껴지는 듯하다.
+	PRINTFORML ＞이 교도관이 살해당한 지 그리 오랜 시간이 지나지 않았으리라.
+	PRINTFORML ＞%CALLNAME:MASTER%는 창틀 너머로 나기를 안으로 들여보내 안쪽에서 문을 열도록 했다.
+	PRINTFORMW  
+	PRINTFORML ＞문을 연 나기는 낯익은 복면을 손에 쥐고 있었다.
+	PRINTFORML 
+	PRINTFORML 　凪
+	PRINTFORML 「코도쿠노 마레비토의 습격 프로세스……!
+	PRINTFORML 　%CALLNAME:MASTER% 전, 쿠시나다히메가 계신 안쪽으로 서두릅시다!」
+	PRINTFORML 
+	PRINTFORML ＞끄덕이며 문을 통과하자 결계 안으로 들어선 듯한 감각이 덮쳐온다.
+	PRINTFORML ＞……이 결계의 감각은 기억에 있다.
+	PRINTFORML ＞그 오펀인가 하는 남자도 와 있는 것일까.
+	PRINTFORML ＞칼질, 총성, 폭음이 울려 퍼지는 교도소 내부로 %CALLNAME:MASTER% 일행은 발을 들여놓는다.
+	PRINTFORML 
+
+	;================================================================================================================
+	;1-01.駐車場
+	;================================================================================================================
+	PRINTFORMW  
+	CALL AA_EV41_tenten
+	PRINTFORMW  
+	PRINTFORML ＞이번에는 공무원스러운 일이기에 평면도는 입수할 수 있었다.
+	PRINTFORML ＞(물론 경호 대상…… 쿠시나다히메의 거처에 관해서는 『이 몇 군데 중 어딘가에 있다』 수준의 정보지만)
+	PRINTFORML ＞그에 따르면 이 교도소는 상당한 규모에 비해 수용 인원이 적다…… 이러한 비상사태에 요새로 활용하는 것에 주안점을 둔 시설이라는 것이다.
+	PRINTFORML ＞그렇기에―― 지금 %CALLNAME:MASTER%는 다소 곤란을 겪고 있었다.
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「와아아아아――!」
+	PRINTFORML 　
+	PRINTFORML ＞나기가 %CALLNAME:MASTER%의 등 뒤에 딱 달라붙어 호송차 뒤로 뛰어들었다.
+	PRINTFORML ＞이야, 평면도에 『숨겨진 토치카(기관총좌)』라고 적혀있을 때 무슨 헛소린가 싶었는데 설마 진짜 기관포 총좌가 있을 줄이야.
+	PRINTFORML ＞%CALLNAME:MASTER%의 육신이 MAG로 강화되어 있다곤 해도 직격당했다간 요단강을 건널 판이다.
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「하, 하아, 으와, 으와아아, 아이에엣, 어, 어, 어째서 일본 국내에 저런 거대한 기관포가!? 기관포가 왜!? 호와이!?」
+	PRINTFORMW  
+	PRINTFORML ＞대체 정비는 어떻게 해왔던 걸까.
+	PRINTFORML ＞어쨌든 코도쿠노 마레비토 놈들도 %CALLNAME:MASTER% 일행처럼 뒤이어 올 지원 인력에 대해선 상정하고 있었던 모양이다.
+	PRINTFORML ＞본래 교도소의 방어 시설이어야 할 토치카를 코도쿠노 마레비토가 장악해 써먹고 있다. 빌어먹을.
+	PRINTFORML ＞……으음, 그러나 어찌해야 할까.
+	PRINTFORML 
+	PRINTFORML [0] 똑바로 가서 날려버린다 (※대미지를 입습니다)
+	PRINTFORML [1] 어라, 이 호송차 묘하게 장갑이 두껍네.
+	PRINTFORML [2] 사두길 잘했군, 메기도라 스톤. (※자금 또는 메기도라 스톤을 소비합니다)
+	$INPUT_LOOP1_01
+	INPUT
+	IF 0
+	;生身で突っ込むんだよ！
+	ELSEIF RESULT == 0
+		;凪ちゃん苦労ポイント＋３
+		イベントフラグ:41:8 += 3
+		;どこをどう考えてもカオスに寄る
+		CALL INCREASE_LC, -15
+
+		PRINTFORML 
+		PRINTFORML ＞――귀찮다. 날려버리자.
+		PRINTFORMW  
+		PRINTFORML 　凪
+		PRINTFORML 「엣」
+		PRINTFORMW  
+		PRINTFORML ＞똑바로 가서 날려버린다.
+		PRINTFORML ＞SWORD와 GUN과 중마로 날려버린다.
+		PRINTFORMW  
+		PRINTFORML 　凪
+		PRINTFORML 「저기 그 중마에는 저도」
+		PRINTFORMW  
+		PRINTFORML ＞포함되어 있는 세오리.
+		PRINTFORML  
+		;割合でダメージを受けてから戦闘に入る
+		FOR LOCAL,1,7
+			IF POS(LOCAL) > -1 && GET_STATE(CFLAG:(POS(LOCAL)):상태이상) != "DYING"
+				PRINTFORML [{LOCAL}] %CALLNAME:POS(LOCAL)%　>>>>>>　{MAXBASE:(POS(LOCAL)):ＨＰ*30/100}데미지
+				CALL VAR_HP,POS(LOCAL),-MAXBASE:(POS(LOCAL)):ＨＰ*30/100
+			ENDIF
+		NEXT
+		PRINTFORML  
+		PRINTFORML ＞……질색하는 나기를 끌고 엄청나게 얻어맞으며 돌진했다!
+		PRINTFORMW  
+		PRINTFORML ＞머신 토치카 총좌를 덮쳤다!
+		PRINTFORMW  
+
+		;vs.トーチカ（という名のゴーレム）
+		CALL EV41_1_5_VS_TAKOTUBO
+
+
+	;車で突っ込むんだよ！
+	ELSEIF RESULT == 1
+		;凪ちゃん苦労ポイント＋１
+		イベントフラグ:41:8 += 1
+		;普通に戦闘に入る
+		PRINTFORML 
+		PRINTFORML ＞……그런데 지금 방패막이로 쓰고 있는 호송차, 묘하게 장갑이 두꺼운 것 같다.
+		PRINTFORML ＞기관포의 소사를 받아도 이쪽으로 뚫고 들어오는 총탄이 없다.
+		PRINTFORML ＞영적 범죄자의 호송 등도 염두에 둔 것인지, 평범한 호송차 같아 보여도 실은 전차급의 강도를 지닌 모양이다.
+		PRINTFORMW  
+		PRINTFORML ＞이거라면, 하고 %CALLNAME:MASTER%는 문을 열고 차재 공구로 재빠르게 시동을 걸었다.
+		PRINTFORML ＞나기와 중마들에게 신호를 보내고…… 엑셀을 힘껏 밟았다!
+		PRINTFORML ＞타이어를 격렬하게 헛돌리던 호송차는 단숨에 발진하여 토치카로 돌진해 들어간다!
+		PRINTFORMW  
+		PRINTFORML ＞당황한 듯 기관포가 난사되지만 호송차 창유리를 깨부수는 정도일 뿐, 깡깡 소리를 내며 총탄은 튕겨 나간다.
+		PRINTFORML ＞호송차는 토치카 틈새로 들이받았고…… 틈을 타 중마들이 토치카를 덮친다!
+		PRINTFORMW  
+		PRINTFORML ＞머신 토치카 총좌를 덮쳤다!
+		PRINTFORMW  
+
+		;vs.トーチカ（という名のゴーレム）
+		CALL EV41_1_5_VS_TAKOTUBO
+
+	;持ってきてよかった、メギドラ石。
+	ELSEIF RESULT == 2
+		;凪ちゃん苦労ポイント＋０
+
+		PRINTFORML 
+		PRINTFORML ＞호송차 측면을 박차고 뛰어올라, %CALLNAME:MASTER%는 총격의 틈을 노려 토치카 개구부에 메기도라 스톤을 던져 넣었다.
+		PRINTFORML ＞빗나가지 않았다.
+		PRINTFORML ＞슈욱 빨려 들어가 기폭 직전이 된 메기도라 스톤이 토치카 내부에서 폭발하고, 기관포가 뜯겨 나가듯 폭산한다.
+		PRINTFORML ＞%CALLNAME:MASTER%는 착지하여 폭압을 호송차 그늘 뒤에서 흘려보냈다.
+		PRINTFORML ＞……좋아!
+		PRINTFORMW  
+		PRINTFORML 　凪
+		PRINTFORML 「나이스…… 으음…… 나이스겠죠, 메이비!」
+		PRINTFORMW  
+		PRINTFORML ＞뭐 그렇게 쳐둬라. 다음이다 다음.
+		PRINTFORMW  
+		;メギドラストーンを勝手に消費するor資金を消費し、買っていたことになる
+		IF ITEM:1111 > 0
+			ITEM:1111 -= 1
+			PRINTFORML ＞메기도라 스톤을 1개 소비했다.
+		ELSEIF MONEY:1 >= 498
+			;メギドラストーン、いっこ498マッカなり。
+			MONEY:1 -= 498
+			PRINTFORML ＞소지금 중 498 마카를 사용했다(라는 셈이 되었다).
+		ELSEIF MONEY >= 30000
+			;マッカ立てで買うより高額
+			MONEY -= 30000
+			PRINTFORML ＞소지금 중 3만 엔 상당을 사용했다(라는 셈이 되었다).
+		ELSE
+			;お金が３万円未満だとゼロに
+			MONEY = 0
+			PRINTFORML ＞소지금 중 3만 엔 상당을 사용했다(라는 셈이 되었다).
+		ENDIF
+
+		PRINTFORMW  
+	ELSE
+		GOTO INPUT_LOOP1_01
+	ENDIF
+
+
+
+	;================================================================================================================
+	;1-02.１階
+	;================================================================================================================
+	PRINTFORMW  
+	CALL AA_EV41_tenten
+	PRINTFORMW  
+	PRINTFORML ＞돌파당한 바리케이드를 뛰어넘어 1층 안쪽을 향해 나아간다.
+	PRINTFORML ＞육감에 따른 진행이다.
+	PRINTFORML ＞쿠시나다히메가 어디에 있는지 %CALLNAME:MASTER% 일행은 모른다―― 나기 역시 「더미를 호위하는 날도 있었던 프로세스」라 하여 구체적으로 어디에 히메가 있는지 모르는 듯하다.
+	PRINTFORMW  
+	PRINTFORML ＞좋아, 여기서는――
+	PRINTFORML 
+	PRINTFORML [0] 총격전이 벌어지는 곳으로 가자
+	PRINTFORML [1] 감옥을 둘러보자
+	PRINTFORML [2] 그 근처에 정보를 알고 있을 시체가 있지 않은가.
+	$INPUT_LOOP1_02
+	INPUT
+	IF 0
+	;ドンパチの真っただ中に！
+	ELSEIF RESULT == 0
+		;凪ちゃん苦労ポイント＋３
+		イベントフラグ:41:8 += 3
+		;敵がめちゃくちゃいる
+		;どこをどう考えてもカオスに寄る
+		CALL INCREASE_LC, -15
+
+		PRINTFORML 
+		PRINTFORML 　교도소 직원
+		PRINTFORML 「무, 무슨 일이 일어난 겁니까?
+		PRINTFORML 　테러리스트의? 습격?」
+		PRINTFORML 
+		PRINTFORML 　교도소 직원
+		PRINTFORML 「이 소동, 설마 요전에 들어온 주, 중요 인물인가 뭔가와 관련이 있는 건가?」
+		PRINTFORMW  
+		PRINTFORML ＞평범한…… 양지의 교도소 간수 차림의 인원들이 겁에 질려 떨고 있는 것을 곁눈질하며 %CALLNAME:MASTER% 일행은 안쪽으로 서두른다.
+		PRINTFORML ＞겁에 질릴 틈조차 없었던 자들은 시체가 되어 뒹굴고 있었다.
+		PRINTFORML ＞상처는 인간의 손에 의한 것이 아니다.
+		PRINTFORML ＞당연하겠지만 악마 변신을 한 채 습격해 온 모양이다.
+		PRINTFORMW  
+		PRINTFORML ＞가장 소란스러운 곳은 아군이 뭉쳐있는 장소이기도 하다.
+		PRINTFORML ＞적을 격멸해 주면 신용도 얻을 수 있을 터.
+		PRINTFORML ＞더미가 있다 하더라도 직원이라면 파악하고 있을 것이다.
+		PRINTFORMW  
+		PRINTFORML 　凪
+		PRINTFORML 「최근 들어 알게 된 것입니다만, %CALLNAME:MASTER% 전.
+		PRINTFORML 　때때로 브레인 머슬(뇌근육) 카테고리가 될 때가 있는 세오리」
+		PRINTFORMW  
+		PRINTFORML ＞――좋은 것을 가르쳐 주마.
+		PRINTFORML ＞만사는 폭력으로 해결하는 것이 제일 빠르다.
+		PRINTFORML ＞나기는 그런 것인가, 하는 표정으로 고개를 갸웃거린다.
+		PRINTFORML ＞의심스럽다면 증명해 보일 수밖에 없겠지.
+		PRINTFORMW  
+		PRINTFORML ＞코도쿠노 마레비토 구성원들을 덮쳤다!
+		PRINTFORMW  
+
+		
+		;vs.オーファンのオーファン抜き
+		CALL EV41_1_5_VS_ORPHAN_MAINUS_ORPHAN
+
+	;牢屋巡り
+	ELSEIF RESULT == 1
+		;凪ちゃん苦労ポイント＋１
+		イベントフラグ:41:8 += 1
+		;敵は少ない
+		PRINTFORML 
+		;今一般ピープル、略してパンピー、って言うかな。言わない気がする
+		PRINTFORML 　죄수
+		PRINTFORML 「뭐야, 시끄러워 죽겠네……
+		PRINTFORML 　안쪽에서 누가 깽판 치나? 그보다 당신, 이런 곳에 함부로 들어오면 안 되잖아 일반인이」
+		PRINTFORML  
+		PRINTFORML 　가이아 교도
+		PRINTFORML 「난 봤어……
+		PRINTFORML 　괴물이 사람을 덮치고 있었다고……」
+		PRINTFORML  
+		PRINTFORML 　메시아도
+		PRINTFORML 「믿고 있으면 구원받는 거 아니었나?」
+		PRINTFORMW  
+		PRINTFORML ＞멀쩡해 보이는 죄수에게 이야기를 듣는다.
+		PRINTFORML ＞유독 시끄러운 방향이라든가 지금까지 중요 인물로 보이는 자가 호송되어 오지 않았는지 등이다.
+		PRINTFORMW  
+		PRINTFORML 　죄수
+		PRINTFORML 「아니, 본 적은 없는데……
+		PRINTFORML 　아, 하지만 소문은 들었지. 높으신 분이 비밀 통로를 통해 잡혀 와 있다던가.
+		PRINTFORML 　이 교도소, 비밀 통로가 있단 모양이더라고.
+		PRINTFORML 　옛날에 여기가 실은 요새였다던가 해서 지금도 총좌가 남아있다던가……
+		PRINTFORML 　그리고 밥도 말이지, 뭔가 따로 만들고 있더라고.
+		PRINTFORML 　우리 짬밥하고는 다른, 셰프 같은 놈이 와서 만들더라니까. 최근 밥맛이 끝내줬지.
+		PRINTFORML 　……비밀 통로 끝이 어디냐고? 아아, B동 쪽이란 이야기였어」
+		PRINTFORMW  
+		PRINTFORML ＞과연, 고맙군.
+		PRINTFORML ＞%CALLNAME:MASTER%는 푼돈을 쥐여주고 B동인가 하는 곳으로 서두른다……
+		PRINTFORML ＞……서두르려 했으나 주위 죄수들이 「나도 알고 있다고!」「내보내 줘어어!」 따위로 고함을 질러댄 탓에 적들이 몰려와 버렸다.
+		PRINTFORML ＞어쩔 수 없다. 돌파하기로 하자.
+		PRINTFORMW  
+		PRINTFORML ＞코도쿠노 마레비토 구성원들이 덤벼들었다!
+		PRINTFORMW  
+
+		;vs.オーファンのオーファン抜きの後列抜き
+		CALL EV41_1_5_VS_ORPHAN_MAINUS_ORPHAN_MAINUS_BACKS
+
+	;GOUMON
+	ELSEIF RESULT == 2
+		;凪ちゃん苦労ポイント＋１、教育したからね
+		イベントフラグ:41:8 += 1
+		;GOUMONするゆえ、ちょっとDC側に偏る
+		CALL INCREASE_LC, -5
+		CALL INCREASE_LD, -5
+
+		PRINTFORML 
+		PRINTFORML ＞발상을 전환하자.
+		PRINTFORML ＞적들은 어디에 있는지 알고 있을 터다. 히메의 신병을 노리고 온 것이니까.
+		PRINTFORML ＞모르면서 돌진해 온 거라면 얼간이 말고는 아무것도 아니다.
+		PRINTFORML ＞뭐 피라미들은 모를 수도 있겠지만, 그렇다면 간수들의 시체를 소생시키는 것도 시도해 보자.
+		PRINTFORMW  
+		PRINTFORML ＞그런 연유로 여분의 반혼향을 사용하여 악마로 변신하던 도중 쓰러져 죽은 코도쿠노 마레비토 구성원을 소생시켰다.
+		PRINTFORML ＞사망 상태에서 빈사 상태까지 돌아온 코도쿠노 마레비토 구성원은 벗겨질 듯한 복면을 털어내듯 고개를 젓다가 눈앞의 GUN을 알아챈 듯했다.
+		PRINTFORMW  
+		PRINTFORML 　코도쿠노 마레비토 구성원
+		PRINTFORML 「뭣, ……크악!」
+		PRINTFORMW  
+		PRINTFORML ＞죽지 않도록 힘을 조절해 후려친다.
+		PRINTFORML ＞네놈들은 어디를 노리고 있나.
+		PRINTFORML ＞추궁하고는 총구를 들이댄다.
+		PRINTFORMW  
+		PRINTFORML 　코도쿠노 마레비토 구성원
+		PRINTFORML 「그, 그런 걸, 끄아아악!」
+		PRINTFORMW  
+		PRINTFORML ＞코도쿠노 마레비토 구성원의 오른팔을 쏴 뚫는다.
+		PRINTFORML ＞다음은 왼손. 마지막은 머리다.
+		PRINTFORMW  
+		PRINTFORML 　코도쿠노 마레비토 구성원
+		PRINTFORML 「크악…… 컥…… 비…… B동…… 이다……」
+		PRINTFORMW  
+		PRINTFORML ＞코도쿠노 마레비토 구성원은 떨리는 목소리로 말하며 떨리는 왼손으로 창문 쪽을 가리켰다.
+		PRINTFORML ＞O.K. 끄덕이며 헤드샷으로 더블 탭.
+		PRINTFORML ＞%CALLNAME:MASTER%는 나기에게로 돌아선다.
+		PRINTFORML ＞서두르자―― 그렇게 말하려 했으나 나기의 표정은 딱딱하게 굳어있었다.
+		PRINTFORMW  
+		PRINTFORML 　凪
+		PRINTFORML 「……아, 아무리 테러리스트 카테고리라곤 하지만……」
+		PRINTFORMW  
+		PRINTFORML ＞유감스럽게도 %CALLNAME:MASTER% 역시 테러리스트라 불러도 할 말은 없다. 일단은 폭탄마의 부하이기도 하고.
+		PRINTFORML ＞악당은 이런 수단도 쓰는 법이다.
+		PRINTFORML ＞총탄을 재장전하고 나기를 바라보니 나기는 시체를 응시하고 있었다.
+		PRINTFORMW  
+		PRINTFORML ＞……정서 교육에는 나쁘겠지만 실무 교육으로서는 성공했을까?
+		PRINTFORMW  
+	ELSE
+		GOTO INPUT_LOOP1_02
+	ENDIF
+
+	;================================================================================================================
+	;1-03.２階/vsオーファン
+	;================================================================================================================
+	PRINTFORMW  
+	CALL AA_EV41_tenten
+	PRINTFORMW  
+	PRINTFORML ＞피투성이가 되거나 혹은 상처 하나 없이 쓰러진 야타가라스 요원이나 교도소 직원들의 시체를 뛰어넘고,
+	PRINTFORML ＞미처 안개처럼 흩어지지 않은 코도쿠노 마레비토 구성원들의 숨통을 끊어가며,
+	PRINTFORML ＞파괴된 바리케이드를 돌파하여,
+	PRINTFORML ＞그렇게 %CALLNAME:MASTER% 일행은 히메가 보호받고 있을 동에 도달했다.
+	PRINTFORMW  
+	PRINTFORML 　슈겐쟈
+	PRINTFORML 「누구냐앗! 웬 놈이냐!?」
+	PRINTFORML 
+	PRINTFORML 　凪
+	PRINTFORML 「야타가라스 소속입니다! 지원하러 온 세오리!」
+	PRINTFORMW  
+	PRINTFORML ＞나기가 힘차게 외치자 결계 바리케이드를 구축 중이던 슈겐쟈들이 오오, 하고 술렁였다.
+	PRINTFORMW  
+	PRINTFORML 　슈겐쟈
+	PRINTFORML 「둘뿐인가? 하지만 좋다! 돌파해 온 실력자임은 인정하마!
+	PRINTFORML 　이곳은 우리에게 맡겨라, 히메는 바로 안쪽 방에 계신다! 반드시 지켜내라! 소환! 오니!」
+	PRINTFORML  
+	PRINTFORML 　오니
+	PRINTFORML 「남자는 배짱이여어어 악마는 풍류여어어! 아사쿠사 ROCK으로 축제로구나아아!!」
+	PRINTFORMW  
+	PRINTFORML ＞슈겐쟈가 석장을 울리며 %CALLNAME:MASTER% 일행의 후방―― 코도쿠노 마레비토 구성원들이 몰려오는 방향으로 악마를 해방한다.
+	PRINTFORML ＞요즘 세상에 보기 드문 마관식 소환술인 모양이다.
+	PRINTFORML ＞나기 역시 같은 마관식이지만――
+	PRINTFORMW  
+	PRINTFORML ＞――무언가 머릿속에 걸리는 것이 있었다.
+	PRINTFORML ＞번뜩였다…… 고 하기엔 깨달음이 얕다.
+	PRINTFORML ＞단서…… 아니, 의문이 떠올랐을 뿐이다.
+	PRINTFORML ＞등 뒤에서 코도쿠노 마레비토 구성원들은 알약을 삼키고 허물을 벗어던지듯 악마로 변신한다.
+	PRINTFORMW  
+	PRINTFORML ＞저 악마 변신―― 설마 소환술이나 강령술의 일종이 아닐까?
+	PRINTFORMW  
+	PRINTFORML ＞바리케이드 안으로 뛰어들어 숨을 고르며 생각을 거기서 멈춘다.
+	PRINTFORML ＞지금 깊이 생각하고 있을 틈은 없다.
+	PRINTFORML ＞숨을 고른 뒤 슈겐쟈들과 협력하여 탈출을―――― 나기의 뒷덜미를 낚아채며 뒤로 뛰어 물러났다.
+	PRINTFORML 
+	PRINTFORML 　오니
+	PRINTFORML 「오라오라, 끄아악!?」
+	PRINTFORML 「갸아아악!?」
+	PRINTFORML 
+	PRINTFORML 　슈겐쟈
+	PRINTFORML 「뭣, 꺄아악」
+	PRINTFORML 「크악, 컥」
+	PRINTFORML 
+	PRINTFORML ＞……등 뒤로 처절하게 피가 쏟아져 내린다.
+	PRINTFORML ＞바리케이드가 와르르 무너져 내린다.
+	PRINTFORML ＞절단되어 있다―― 베여 나갔다.
+	PRINTFORML 
+	PRINTFORML 　？？？
+	PRINTFORML 「네놈인가……
+	PRINTFORML 　이곳엔 사람도 악마도 나약한 것들뿐이라 생각했거늘…… 네놈이 있었군, 팬텀의 개」
+	PRINTFORMW  
+	PRINTFORML ＞무수히 토막 난 시체 위를 복면의 사내가 걸어온다.
+	PRINTFORML ＞복면에는 원환을 이루는 뱀이 그려져 있으며, 얼굴 아래쪽 절반은 드러나 있다.
+	PRINTFORML ＞분명 오펀이라 자칭했던가.
+	PRINTFORML ＞쿠쿠리《供倶璃》 가문에서 싸웠던 코도쿠노 마레비토의 간부인지 수령격인지 하는 자다.
+	PRINTFORMW  
+	PRINTFORML 　오펀
+	PRINTFORML 「쿠쿠리의 히메를 거듭 확보해 버린다면 쿠즈노하 라이도조차 『마레비토 계획』의 장애물이 될 수 없다.
+	PRINTFORML 　물론 네놈 역시 마찬가지다.
+	PRINTFORML 　자―― 연회를 즐겨볼까」
+	PRINTFORMW  
+	PRINTFORML 코도쿠노 마레비토 오펀이 덤벼들었다!
+	PRINTFORMW  
+
+	CALL EV41_1_5_VS_ORPHAN
+
+	;Lv100オーバーのひとがブッ飛ばしたとかは知らん
+	PRINTFORML  
+	PRINTFORML 　오펀
+	PRINTFORML 「큭큭…… 나답지 않게 엄청난 추태를 부렸군」
+	PRINTFORMW  
+	PRINTFORML ＞격파했다―― 고 할 수 있는 것인지 어쩐지.
+	PRINTFORML ＞오펀은 크게 뛰어 물러나며 전투는 일시 중단되었다.
+	PRINTFORML ＞이번엔 식신이 아닌 모양이지만 그 목소리에는 여유가 넘친다. 아직 숨겨둔 수를 남겨두고 있음이 틀림없다.
+	PRINTFORMW  
+	PRINTFORML ＞하지만 그 얼굴을 가리고 있던 복면은 찢어져 맨얼굴을 드러내고 있었다.
+	PRINTFORML ＞손으로 가리고는 있으나 눈매는 보였고, 그로 인해 누구인지도 알아챘다.
+	PRINTFORML ＞단정한 이목구비의 남자다. 뉴스에서 본 기억이 있다.
+	PRINTFORML ＞명문가 출신이라는 청년 실업가였던가――
+	PRINTFORMW  
+	PRINTFORML ＞오펀은 솟구쳐 뛰어 사슬 달린 칼날을 회피했다.
+	PRINTFORMW  
+	PRINTFORML 　오펀
+	PRINTFORML 「게다가…… 성가신 사람에게 들켜버렸군」
+	PRINTFORMW  
+	PRINTFORML 　？？？
+	PRINTFORML 「네놈이 뒤에서 조종하고 있었나…… 구라하시 오우한《倉橋黄幡》」
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「아야메 씨!」
+	PRINTFORMW  
+	;供倶璃家で綾女に会っている
+	IF イベントフラグ:41:10 == 3
+		PRINTFORML ＞아야메―― 『살안』의 아야메, 이전에 쿠쿠리 가에서 만났던 야타가라스의 청소부가 나타났다.
+	ELSE
+		PRINTFORML ＞아야메―― 나기에게서 들은 바 있다. 『살안』의 아야메, 인가.
+		PRINTFORML ＞야타가라스의 청소부, 미부 일족의 여인이다.
+	ENDIF
+	PRINTFORML ＞오펀과는 아는 사이인 듯하지만…….
+	;このあたりは、4巻半ばくらいの会話から
+	PRINTFORMW  
+	PRINTFORML 　綾女
+	PRINTFORML 「구라하시 오우한! 혁명가 흉내라도 낼 셈이냐!」
+	PRINTFORMW  
+	PRINTFORML 　오펀
+	PRINTFORML 「네놈에겐 알 턱이 없지, 아야메.
+	PRINTFORML 　허나 눈치가 빠르다는 점만큼은 인정해주마…… 네놈은 일찌감치 나를 의심하고 있었던 모양이니까」
+	PRINTFORMW  
+	PRINTFORML 　綾女
+	PRINTFORML 「적어도 네놈 주둥이에서 나오는 말은 믿지 않기로 했으니까 말이다.
+	PRINTFORML 　핫, 가련한 꼴이로군! 음양사의 영광을 이제 와서 되찾을 수라도 있을 줄 알고!?」
+	PRINTFORMW  
+	;ワーグナーの時と同様、あなたは「サマナーネーム」に理解があるので、オーファンと呼んであげる
+	PRINTFORML ＞오펀의 칼날과 아야메의 칼날이 격렬하게 맞부딪힌다.
+	PRINTFORML ＞여기까지 오며 너무 소모한 탓일까.
+	PRINTFORML ＞나기는 거칠게 숨을 헐떡이며 싸울 수 있는 상태가 아니다…….
+	PRINTFORMW  
+	PRINTFORML ＞%CALLNAME:MASTER%는 나기를 감싸듯, 그리고 오펀을 놓치지 않도록 자세를 낮춘다.
+	PRINTFORMW  
+	PRINTFORML 　오펀
+	PRINTFORML 「훗―― 쿠쿠리의 히메는 포기하기로 하지.
+	PRINTFORML 　그리고 한 가지, 네놈의 착각을 지적해 두마……」
+	PRINTFORMW  
+	PRINTFORML ＞칼부림이 한층 더 치열해져 간다.
+	PRINTFORML ＞%CALLNAME:MASTER%는 방심 없이 주위를 살피고――
+	PRINTFORMW  
+	PRINTFORML 　오펀
+	PRINTFORML 「아야메에게 전해라.
+	PRINTFORML 　――나는 오히려, 어느 분을 섬기고 있는 것이다, 라고 말이지」
+	PRINTFORMW  
+	PRINTFORML ＞――등 뒤에서, 그 목소리가 들렸다.
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「! 아야메 씨, 이쪽이……!」
+	PRINTFORMW  
+	PRINTFORML 　綾女
+	PRINTFORML 「칫……!」
+	PRINTFORMW  
+	PRINTFORML ＞아야메의 칼날이 정확히 %CALLNAME:MASTER%를 겨누고 날아온다.
+	PRINTFORML ＞그것을 가까스로 회피했으나―― 오펀의 모습은 연기처럼 사라져 버렸다.
+	PRINTFORMW  
+	PRINTFORML 　綾女
+	PRINTFORML 「은형술…… 도망칠 셈이냐 오우한! 오우한!
+	PRINTFORML 　……제길!」
+	PRINTFORMW  
+	PRINTFORML ＞……하마터면 죽을 뻔했다고 지금 따져 물을 상황은 아니다……
+	PRINTFORML ＞설령 아야메가 아무 힘이 없는 상태라 해도 그렇게 느꼈을 만큼 아야메는 격노해 있었다.
+	PRINTFORML ＞놓쳐버렸지만 상대의 정체가 밝혀진 이상 다음에 싸울 때는 결판을 내게 될 것 같다.
+	PRINTFORMW  
+	PRINTFORML 　綾女
+	PRINTFORML 「하아…… 받아라, 팬텀의 개!」
+	PRINTFORMW  
+	PRINTFORML ＞한바탕 분통을 터뜨린 아야메는 수리검을 던지듯 ID 카드를 던져 넘겨주었다.
+	PRINTFORMW  
+	PRINTFORML ＞ID 카드를 손에 넣었다.
+	PRINTFORMW  
+	PRINTFORML ＞히메의 방을 여는 카드키일까?
+	PRINTFORML ＞아야메는 찰랑찰랑 쇠사슬을 만지작거리며 말했다.
+	PRINTFORMW  
+	PRINTFORML 　綾女
+	PRINTFORML 「후우…… 나기, 난 남은 잔챙이들을 섬멸하겠다.
+	PRINTFORML 　너희는 안쪽의 여자를 데리고 여기서 탈출해라」
+	PRINTFORMW  
+	PRINTFORML ＞……여자, 라는 호칭이 조금 마음에 걸린다.
+	PRINTFORML ＞뭐, 어떤지는 곧바로 알게 되겠지……
+	PRINTFORMW  
+
+
+	;================================================================================================================
+	;1-04.IDカード扉の奥
+	;================================================================================================================
+	PRINTFORMW  
+	CALL AA_EV41_tenten
+	PRINTFORMW  
+	PRINTFORML ＞ID 카드를 사용해 진입한 교도소의 최심부.
+	PRINTFORML ＞VIP 룸으로 보이는 방에 한 여성이 있었다…….
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「쿠시나다히메《串蛇媛》 님! 무사하신 프로세스입니까!?
+	PRINTFORML 　――아니, 당신은……?」
+	PRINTFORMW  
+	PRINTFORML ＞기세 좋게 발을 들여놓았던 나기가 놀란 표정을 짓는다……
+	PRINTFORML ＞여성은 분명하게 쿠시나다히메가 아니다.
+	PRINTFORMW  
+	PRINTFORML 　쿠시나다?
+	PRINTFORML 「야타가라스 분들이시군요. 구해 주셔서 감사합니다…… 이동해야 합니까?」
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「저기…… 쿠시나다히메…… 가 아닌, 세오리지요……?」
+	PRINTFORMW  
+	PRINTFORML 　토요
+	PRINTFORML 「저는 토요《都世》라고 합니다.
+	PRINTFORML 　쿠시나다히메 님의 시녀를 맡고 있습니다.
+	PRINTFORML 　……쿠시나다히메 님은 다른 곳에서 보호받고 계십니다」
+	PRINTFORMW  
+	PRINTFORML ＞즉 토요를 포함한 우리들은 적의 시선을 돌리기 위한 미끼였다는 것인가.
+	PRINTFORML ＞……야타가라스 놈들도 제법 약았군.
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「어쨌든 이 자리에 머무는 것은 위험한 카테고리입니다.
+	PRINTFORML 　%CALLNAME:MASTER% 전, 토요 씨를 데리고 탈출합시다」
+	PRINTFORMW  
+	PRINTFORML ＞지난번 오펀의 수법은 보아두었다.
+	PRINTFORML ＞결계가 쳐져 있긴 하지만 문제없이 탈출할 수 있을 터다…….
+	PRINTFORMW  
+
+
+
+	;================================================================================================================
+	;2-01.脱出行
+	;================================================================================================================
+	PRINTFORMW  
+	CALL AA_EV41_tenten
+	PRINTFORMW  
+	PRINTFORML ＞문제가 없을 리가 없고――
+	PRINTFORMW  
+	PRINTFORML 　코도쿠노 마레비토 구성원
+	PRINTFORML 「찾았다!」
+	PRINTFORML 「히메다아아아!」
+	PRINTFORML 「확보다아――!」
+	PRINTFORMW  
+	PRINTFORML ＞――엄청나게 쫓기고 있었다.
+	PRINTFORML ＞역시나 오펀의 최측근들보단 약해서 적수는 되지 못하지만……
+	PRINTFORML ＞대치하고 있자 사슬 달린 칼날이 풀썩풀썩 피와 내장을 흩뿌려댔다.
+	PRINTFORML ＞%CALLNAME:MASTER%에게 적수가 아니라면 당연히 아야메에게도 적수가 아니다.
+	PRINTFORML ＞순식간에 코도쿠노 마레비토 구성원들을 몰살시킨 아야메는 칼날을 휘둘러 피를 털어내고는 가짜 히메인 토요를 바라보았다.
+	PRINTFORMW  
+	PRINTFORML 　綾女
+	PRINTFORML 「그 여자, 오펀에게 얼굴을 들키진 않았지?
+	PRINTFORML 　아직 그 여자를 진짜로 취급한다.
+	PRINTFORML 　아마 적 증원이 더 올 테고, 이쪽 증원은 제시간에 못 와.
+	PRINTFORML 　그 여자를 『그럴듯하게』 모시면서 도망쳐라.
+	PRINTFORML 　그렇게 해서 『저놈이 진짜』라고 오인하게 만들어.
+	PRINTFORML 　쫓겨 다니고 있어라.
+	PRINTFORML 　나는 그걸 쫓는 놈들의 뒤를 쫓아가서 죽이겠다」
+	PRINTFORMW  
+	PRINTFORML ＞우리 이탈리아 물먹은 여자 상사만큼이나 무서운 여자다.
+	PRINTFORML ＞……그 말이 맞다면 지체할 여유는 없다.
+	PRINTFORML ＞토요를 업고 일단은 바깥으로.
+	PRINTFORML ＞도망칠 거라면 비행 가능한 악마를 불러도 좋겠지만――
+	PRINTFORML ＞나기에게 시선을 던지자 나기는 고개를 끄덕이고 마관을 꺼내 들었다.
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「맡겨주시길―― 소환, 오보로그루마!」
+	PRINTFORMW  
+	PRINTFORML 　오보로그루마
+	PRINTFORML 「우오오오, 나아아는 말이다아아아아! TAXY」
+	PRINTFORMW  
+	PRINTFORML ＞지나치게 낡은 구형 자동차와 해골 운전수가 나기에 의해 소환된다.
+	PRINTFORML ＞묘하게 갓 달아놓은 듯한 『TAxY』 갓등이 독특하다.
+	PRINTFORML ＞오보로그루마―― 100년 전쯤 모델의 자동차이던가.
+	PRINTFORML ＞자동차도 100년이나 지나면 훌륭한 주물이 된다.
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「안전벨트는 없으므로 꽉 붙잡으시는 세오리입니다!
+	PRINTFORML 　갑니다!」
+	PRINTFORMW  
+	PRINTFORML ＞폭풍처럼 질주한다.
+	PRINTFORML ＞중력의 방향이 바뀌며 벽면을 내달린다.
+	PRINTFORML ＞찢어진 타이어가 벽면을 움켜쥐고 입구 대문 위를 뛰어넘어 포효하듯 허공을 내달린다.
+	PRINTFORMW  
+	PRINTFORML 　코도쿠노 마레비토 구성원
+	PRINTFORML 「야! 봐라!」
+	PRINTFORML 「히메다!?」
+	PRINTFORML 「쫓아라! 쫓아――앗!」
+	PRINTFORMW  
+	PRINTFORML 　아야메
+	PRINTFORML 「걸려들었군」
+	PRINTFORMW  
+	PRINTFORML ＞착지 직전 아야메는 붙잡고 있던 프레임을 놓고 오보로그루마와 동시에 착지했다.
+	PRINTFORML ＞그대로 MAG로 강화된 육체 강도를 믿고 초고속으로 질주하며 말한다.
+	PRINTFORMW  
+	PRINTFORML 　綾女
+	PRINTFORML 「도심 쪽으로는 들어가지 마라. 은폐가 귀찮아지니까」
+	PRINTFORMW  
+	PRINTFORML ＞아야메가 차와 동일한 속도를 유지한 채 방향을 꺾어 초고속으로 교도소 주변 들판으로 파고든다.
+	PRINTFORML ＞자―― 이쪽도 요격 준비다.
+	PRINTFORML ＞아야메는 추격하며 죽이고, 이쪽은 쫓기면서 죽이는 것이다.
+	PRINTFORMW  
+	PRINTFORML ＞적의 수는 많다.
+	PRINTFORML ＞바이크 폭주족이 대략 50, 안주가 대략 50.
+	PRINTFORML ＞한 마리 한 마리는 약하지만 잘도 여기까지 긁어모았군―― 10마리쯤 모여야 겨우 제 몫을 할 정도다.
+	PRINTFORML ＞100마리가 모여야 비로소 『상대』가 된다.
+	PRINTFORML ＞아야메 녀석이 거들먹거리지 못할 정도로 힘 좀 써보기로 하자.
+	PRINTFORMW  
+	PRINTFORML 코도쿠노 마레비토 데몬 트룹 10마리가 나타났다!
+	PRINTFORMW  
+	
+	CALL EV41_1_5_VS_DAEMON_Troop
+
+
+
+	;================================================================================================================
+	;2-02.vs十文字ワーグナー
+	;================================================================================================================
+	;凪ちゃん仲間ルートではここでワーグナーを処理
+	;ヒノカグツチに大変身して襲い掛かってくる
+
+	PRINTFORMW  
+	CALL AA_EV41_tenten
+	PRINTFORMW  
+	PRINTFORML ＞대충 정리되었나―― 그렇게 생각하던 참에 우르르르르, 겹쳐진 소음이 들려왔다.
+	PRINTFORML ＞그것은 바이크 엔진 소리이자 발자국 소리였다.
+	PRINTFORMW  
+	PRINTFORML 　？？？
+	PRINTFORML 「으아아아아아아아아!?」
+	PRINTFORMW  
+	PRINTFORML ＞속도가 붙은 바이크는 맹렬하게 내달리는 소를 뒤쫓고 있다.
+	PRINTFORML ＞바이크는 무시무시한 여자에게 쫓기고 있기도 했다.
+	PRINTFORML ＞바이크를 탄 사내는 아야메에게 난도질당하고 있었지만, 저 수염, 저 머리 모양은――
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「저자는…… 야마다 겐고로!」
+	PRINTFORMW  
+	PRINTFORML ＞――십문자 바그너라고 불러줘라.
+	PRINTFORML ＞나기가 맨 처음 가져왔던 의뢰 사건에서 적이었던 남자다.
+	PRINTFORML ＞야타가라스에 신병을 넘겼을 텐데 틈을 노려 탈옥한 것일까?
+	PRINTFORMW  
+	PRINTFORML ＞소는…… 불타는 것처럼 보이는 것은 강력한 MAG를 발산하고 있기 때문이다.
+	PRINTFORML ＞저것은 생물의 범주를 벗어났지만 틀림없는 살아있는 짐승이다.
+	PRINTFORMW  
+	PRINTFORML 　십문자 바그너
+	PRINTFORML 「누웃!? 오랜만이로군요 여러부운! 으허억!
+	PRINTFORML 　원거리 무기라니 비겁하게, 히이이이익!!!
+	PRINTFORML 　야타, 야타가라스 놈들에게 사육되는 여우 놈들아! 지금이야말로 나의이이이이!?」
+	PRINTFORMW  
+	PRINTFORML ＞아마 코도쿠노 마레비토 구성원이겠지.
+	PRINTFORML ＞그렇게 생각하며 쐈으나 뜻밖의 핸들 조작으로 피해버렸다.
+	PRINTFORML ＞아야메의 칼날을 피해 가며 저 소를 쫓고 있는 듯하다.
+	PRINTFORML ＞허나 사신은 마침내 따라붙었다――
+	PRINTFORML ＞%CALLNAME:MASTER%의 엄호 사격을 등에 업은 아야메의 사슬이 바이크의 뒷바퀴를 박살 냈다.
+	PRINTFORMW  
+	PRINTFORML 　십문자 바그너
+	PRINTFORML 「우오오! 므오오오오오오옷!!!」
+	PRINTFORMW  
+	PRINTFORML ＞공중으로 튕겨 날아간 바그너는 허공에서 자세를 제어하더니 불타는 소의 목에 도를 꽂아 넣었다.
+	PRINTFORML ＞근성 하나는 있군, 하고 솔직히 감탄하던 차에 바그너는 바닥에 처박혀 데굴데굴 굴렀다.
+	PRINTFORML ＞숨은 붙어있는 듯하지만 내동댕이쳐진 인형 같은 꼴로 바들바들 경련하고 있다.
+	PRINTFORMW  
+	PRINTFORML 　아야메
+	PRINTFORML 「핫. 이 자식 때문에 꽤나 놓쳐버렸잖아」
+	PRINTFORMW  
+	PRINTFORML ＞아야메의 의상은 찢어진 곳 하나 없이 검은 그대로다―― 만, 옷자락 끝에서 검붉은 피가 뚝뚝 떨어지고 있다.
+	PRINTFORML ＞아마도 반죽음(절반 정도 몰살시켰다는 뜻)당한 코도쿠노 마레비토 놈들이 뿜어낸 핏물이리라.
+	PRINTFORMW  
+	PRINTFORML ＞아야메도 역시 숨이 조금 가쁜 모양이다.
+	PRINTFORML ＞그 오랜 시간 자동차와 동일한 속도로 내달렸으니 그럴 만도 하다.
+	PRINTFORML ＞뒤처리는 맡겨라, 사후 수습이나 해달라며 GUN을 재장전하며 말한다.
+	PRINTFORML ＞아야메는 얇은 눈썹을 씰룩거리더니…… 어깨를 으쓱하고는 떠나갔다.
+	PRINTFORMW  
+	PRINTFORML ＞%CALLNAME:MASTER%는 쓰러져 신음하는 바그너를 향해 입을 연다――
+	PRINTFORML 
+	PRINTFORML [0] 반성은 좀 했나?
+	PRINTFORML [1] 유언 정도는 들어주마
+	PRINTFORML [2] (역시 관두자. 말없이 숨통을 끊는다)
+	$INPUT_LOOP2_02
+	INPUT
+	IF 0
+	;反省したか
+	ELSEIF RESULT == 0
+		;凪ちゃん苦労ポイント＋３
+		イベントフラグ:41:8 += 3
+		;ロウに寄る
+		CALL INCREASE_LC, 10
+		PRINTFORML 
+		PRINTFORML ＞반성은 좀 했나? ―― 그렇게 묻는다.
+		PRINTFORML ＞아야메에게서 그 오랜 시간 도망쳐 살아남을 정도라면 프리랜서로도 먹고살 수 있을 터.
+		PRINTFORML ＞나쁜 짓 따윈 벌이는 게 아니다―― 절반쯤은 나기를 향해 그런 말을 던진다.
+		PRINTFORML ＞십문자 바그너는 으그극, 신음하며 비틀비틀 일어났다.
+		PRINTFORMW  
+		PRINTFORML 　십문자 바그너
+		PRINTFORML 「네…… 네놈에게…… 내가…… 겁을 먹고…… 있는…… 건가……?」
+		PRINTFORMW  
+		PRINTFORML ＞MAG로 충만하여 강화된 육체라 할지라도 기관포탄을 정통으로 맞으면 죽고 교통사고는 막대한 대미지가 된다.
+		PRINTFORML ＞십문자 바그너는 아야메에게 쫓겨 다니며 얻어맞은 데다 바이크에서 굴러떨어진 충격으로 빈사 상태다.
+		PRINTFORMW  
+		PRINTFORML 　십문자 바그너
+		PRINTFORML 「대답은…… NO……! 겁 따윈 먹지 않았다……!
+		PRINTFORML 　그러므로…… 똑똑히 지켜보아라…… 이 십문자 바그너의 살육의 춤을!」
+		PRINTFORMW  
+		PRINTFORML ＞방아쇠를 당겼으나 총탄은 빗나갔다.
+		PRINTFORML ＞소의 사체에서 맹렬하게 뿜어져 나온 MAG가 총탄의 궤도를 꺾어버린 것이다.
+		PRINTFORMW  
+		PRINTFORML 　십문자 바그너
+		PRINTFORML 「소환!」
+		PRINTFORMW  
+		PRINTFORML ＞……나기에게.
+		PRINTFORML ＞어설프게 자비를 베풀면 꼴이 이렇게 된다고, 멋쩍게 타이르듯 말했다.
+	ELSEIF RESULT == 1
+		;凪ちゃん苦労ポイント＋３
+		イベントフラグ:41:8 += 3
+		PRINTFORML 
+		PRINTFORML ＞유언 정도는 들어주마, 라고 말을 건넨다.
+		PRINTFORML ＞뭐 그에게도 그 나름의 사연이 있었겠지.
+		PRINTFORML ＞변신 소망…… 인정 욕구. 그 부근의 복잡한 사정이 있었을 터.
+		PRINTFORML ＞묘비에 새길 문구라든가 인생을 총결산하며 어떻게 생각하는지 정도는 들어주지 못할 것도 없다―― 절반쯤은 나기를 향해 악당의 말로를 훈육한다.
+		PRINTFORML ＞십문자 바그너는 으그극 신음하며 비틀비틀 일어났다.
+		PRINTFORMW  
+		PRINTFORML 　십문자 바그너
+		PRINTFORML 「네…… 네놈에게…… 내가…… 겁을 먹고…… 있는…… 건가……?」
+		PRINTFORMW  
+		PRINTFORML ＞MAG로 충만하여 강화된 육체라 할지라도 기관포탄을 정통으로 맞으면 죽고 교통사고는 막대한 대미지가 된다.
+		PRINTFORML ＞십문자 바그너는 아야메에게 쫓겨 다니며 얻어맞은 데다 바이크에서 굴러떨어진 충격으로 빈사 상태다.
+		PRINTFORMW  
+		PRINTFORML 　십문자 바그너
+		PRINTFORML 「대답은…… NO……! 겁 따윈 먹지 않았다……!
+		PRINTFORML 　그러므로…… 똑똑히 지켜보아라…… 이 십문자 바그너의 살육의 춤을!」
+		PRINTFORMW  
+		PRINTFORML ＞방아쇠를 당겼으나 총탄은 빗나갔다.
+		PRINTFORML ＞소의 사체에서 맹렬하게 뿜어져 나온 MAG가 총탄의 궤도를 꺾어버린 것이다.
+		PRINTFORMW  
+		PRINTFORML 　십문자 바그너
+		PRINTFORML 「소환!」
+		PRINTFORMW  
+		PRINTFORML ＞……나기에게.
+		PRINTFORML ＞칠 거라면 철저하게 끝장을 내지 않으면 이렇게 된다고, 멋쩍게 타이르듯 말했다.
+	ELSEIF RESULT == 2
+		;ボス戦、飛ばせるよ！
+		PRINTFORML 
+		PRINTFORML ＞%CALLNAME:MASTER%는 말없이 더블 탭으로 십문자 바그너의 두개골과 심장에 총탄을 박아 넣었다.
+		PRINTFORML ＞쳐죽였“다”.
+		PRINTFORML ＞거의 동시에 불타는 소에게서 거센 기세로 MAG가 뿜어져 나왔다.
+		PRINTFORML ＞십문자 바그너가 소를 쫓고 있었던 것은 이 MAG를 이용해 무언가를 벌일 셈이었기 때문이었으리라.
+		PRINTFORMW  
+		PRINTFORML ＞십문자 바그너는 즉사했고 더는 아무것도 하지 못한다.
+		PRINTFORML ＞제법 긴 하루였지만 이것으로 겨우 끝이었다.
+		PRINTFORML 
+		GOTO EVE41_LAST
+	ELSE
+		GOTO INPUT_LOOP2_02
+	ENDIF
+
+	;無言で撃った場合このへんはすっとぷ
+
+	PRINTFORMW  
+	PRINTFORML 
+	PRINTFORML 
+	;赤文字中央
+	ALIGNMENT CENTER
+	SETCOLOR COLOR("RED")
+	PRINTFORML 「　　악　마　변　신　　　
+	PRINTFORML 　　히 노 카 구 츠 치 　」
+	;文字色戻して左詰め
+	ALIGNMENT LEFT
+	RESETCOLOR
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORMW  
+	PRINTFORML ＞콰아아, 하고 십문자 바그너의 발밑에서 불꽃이 치솟는다.
+	PRINTFORML ＞그 피부가 안쪽에서 폭발하듯 벗겨져 나가며 신체가 십수 미터에 달할 정도로 거대화한다.
+	PRINTFORML ＞히노카구츠치―― 그것도 상당히 고위의 영격《LV》이다.
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「꺄앗!?」
+	PRINTFORMW  
+	PRINTFORML ＞폭풍에 휩쓸린 나기를 받아내며 그대로 회피 기동에 들어간다.
+	PRINTFORML ＞불타는 거대한 주먹이 방금 전까지 타고 있던 오보로그루마를 짓이겨 박살 냈다.
+	PRINTFORMW  
+	PRINTFORML 　십문자 바그너
+	PRINTFORML 『자아 참극의 시작입니다
+	PRINTFORML 　들려옵니다 비명의 오페라가!』
+	PRINTFORMW  
+	PRINTFORML ＞목소리마저 화염이 되어 있다.
+	PRINTFORML ＞나무들 사이로 상반신을 불쑥 내민 바그너를 이정표 삼아 생존한 코도쿠노 마레비토 구성원들이 모여드는 기척이 있다.
+	PRINTFORML ＞멀리서 단말마가 들려오는 걸 보니 아야메도 되돌아오고 있는 것 같지만――
+	PRINTFORMW  
+	PRINTFORML ＞나기에게 말을 건넨다.
+	PRINTFORML ＞아무리 그래도 오늘은 이만 파장할까―― 아야메에게 떠넘기고 오늘은 퇴근할까, 하고.
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「아닙니다, ……아닙니다! 대답은 노입니다, %CALLNAME:MASTER% 전……!
+	PRINTFORML 　저것을 시가지나 다른 곳으로 보낼 수는 없는 세오리입니다!」
+	PRINTFORMW  
+	PRINTFORML ＞잘 말했다.
+	PRINTFORML ＞그렇다면 이것도 셀프 수행의 프로세스다.
+	PRINTFORML ＞오페라 가수 나으리를 상대로 칼싸움 연습이나 한판 벌여보지 않겠나――
+	PRINTFORMW  
+	PRINTFORML ＞악마인간 십문자 바그너와 코도쿠노 마레비토 구성원들이 덤벼들었다!
+	PRINTFORMW  
+
+	CALL EV41_1_5_VS_YAMADA
+
+	PRINTFORML 
+	PRINTFORML 　십문자 바그너
+	PRINTFORML 『……시, 십문자 바그너…… 에게…… 영광…… 이…………』
+	PRINTFORML 
+	PRINTFORML ＞십문자 바그너는 악마처럼 안개가 되어 흩어졌다.
+	PRINTFORML ＞주위는 시커멓게 그을렸지만 인명 피해는 없다.
+	PRINTFORML ＞이제 아야메 일행과 합류하여 이번에야말로 뒤처리와 사후 수습을 하도록 하자――
+	PRINTFORML 
+
+
+
+	;================================================================================================================
+	;2-03.説明ッ！
+	;================================================================================================================
+	;＠はどうしても外側から関与するので、このあたりの設定を開示しようとするとこういう形になりがち……
+	;================================================================================================================
+	;即死させるとこっちにくるよ
+	$EVE41_LAST
+
+	PRINTFORML 
+	CALL AA_EV41_tenten
+	PRINTFORML 
+	PRINTFORML ＞뒷수습은 대규모로 진행되었다.
+	PRINTFORML ＞야타가라스 측의 사망자만 100여 명. 간수·죄수 피해자 및 시체조차 남지 않은 코도쿠노 마레비토 구성원까지 합치면 수백 명 규모에 달했다.
+	PRINTFORML ＞하지만 그 덕분에 코도쿠노 마레비토에 대해서도 상세히 알아낼 수 있었다――
+	PRINTFORMW  
+	PRINTFORML 　綾女
+	PRINTFORML 「……이거다」
+	PRINTFORMW  
+	PRINTFORML ＞아야메가 탁, 하고 검은 알약이 든 병을 내려놓는다.
+	PRINTFORML ＞이곳은 %CALLNAME:MASTER%의 사무소다.
+	PRINTFORML ＞아야메는 나기가 멋대로 데려왔다. 무슨 짓을 저지른 건가.
+	PRINTFORML ＞힐난하는 시선에 나기는 어리둥절한 표정으로 마주 보았다.
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「야타가라스의 조사에 따르면 이 알약은 사악하게 물든 MAG의 응축물이라는 카테고리.
+	PRINTFORML 　아무래도 본래는 쿠쿠리 가문의 비술이었던 모양으로…… 고독(蠱毒)에 대해선 알고 계십니까?」
+	PRINTFORMW  
+	PRINTFORML ＞고독.
+	PRINTFORML ＞독충들을 단지 속에 잔뜩 집어넣고 서로를 잡아먹게 하여 강력한 독물이나 주물을 만들어내는 주술이다.
+	PRINTFORML ＞그 고독과 이 알약에 무슨 연관이 있단 말인가?
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「저희 눈앞에서 야마다 겐고로가 소를 죽였습니다만……
+	PRINTFORML 　그 불타는 소는 쿠쿠리 가문의 비술의 결과물…… 대형 동물을 사용한 고독이었던 세오리입니다.
+	PRINTFORML 　그렇기에 그 힘을 흡수한 야마다 겐고로는 그토록 강력한 악마로 변신했던 것이다…… 라고 분석되고 있습니다.
+	PRINTFORML 　그리고 알약은 고독으로 만들어진 생물을 가공한 것.
+	PRINTFORML 　성분은 주술적 생물의 혈육으로 추정된다는 세오리입니다」
+	PRINTFORMW  
+	PRINTFORML ＞과연…… 그 불타는 소 같은 것을 만들어내고 그 혈액에 MAG를 응축한 것이 늘 코도쿠노 마레비토 놈들이 삼키던 알약이란 말인가.
+	PRINTFORML ＞제정신으로 먹을 물건은 아니군―― 하고 책상 위에 놓인 알약을 바라본다.
+	PRINTFORMW  
+	PRINTFORML ＞그리고 문득 의문이 든다.
+	PRINTFORML ＞쿠쿠리 가문의 비술인 건 알겠는데 시기가 이상하지 않은가.
+	PRINTFORML ＞코도쿠노 마레비토가 언제부터 암약했는지는 모르겠으나 쿠쿠리 가를 습격하기 전부터 저 알약 기술을 지니고 있었다.
+	PRINTFORML ＞코도쿠노 마레비토는 내부 소행이거나 같은 기술을 연구했거나, 아니면――
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「네…… 새롭게 밝혀진 사실 카테고리입니다.
+	PRINTFORML 　쿠쿠리의 분가는 과거에 괴한들에게 습격당하여……
+	PRINTFORML 　분가 혈통인 『사쿠야《裂夜》』, 『타치바나《断華》』 두 분의 히메가 납치당했었다는 사실이 확인되었습니다」
+	PRINTFORMW  
+	PRINTFORML 　綾女
+	PRINTFORML 「핫. 꾸중 들을 게 무서워서 쉬쉬하며 숨기고 있었다더군―― 그러니까 쿠시나다히메 때 그 난리를 치며 안달을 부렸던 거지.
+	PRINTFORML 　본가의 딸이니까 말이다. 그 애까지 납치당하면 도저히 숨길 수가 없으니」
+	PRINTFORMW  
+	PRINTFORML ＞차를 마시던 아야메가 조소한다.
+	PRINTFORML ＞여러 가지 퍼즐이 맞아떨어지기 시작했다.
+	PRINTFORML ＞코도쿠노 마레비토가 음양사 놈들의 조직이라는 점을 포함해서 말이다.
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「알고 계셨습니까」
+	PRINTFORMW  
+	IF イベントフラグ:41:10  == 3
+		PRINTFORML ＞이전에 마요네에게서 들었던 이야기다.
+		PRINTFORML ＞아야메가 「그 마카로니 년인가」 하고 투덜거리는 것을 흘려 넘기며 다음 이야기를 재촉한다.
+	ELSE
+		PRINTFORML ＞오펀…… 구라하시 오우한이 음양술을 사용했다는 단서를 토대로 조사했다.
+		PRINTFORML ＞하지만 지금은 어디서 알았는지가 중요한 게 아니다.
+		PRINTFORML ＞나기에게 이야기의 뒷부분을 재촉한다.
+	ENDIF
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「말씀하신 대로 코도쿠노 마레비토는 음양사 계열 조직 카테고리.
+	PRINTFORML 　최근 들어 도시 계획 등에도 음양술이 채용되는 일은 드물어져 폐업하는 가문도 늘어나던 프로세스였습니다.
+	PRINTFORML 　아베 가문의 분가 계통인 구라하시 가문도 그중 하나로, 마찬가지로 폐업한 음양사 가문이 지난 10년 사이에 잇따랐습니다.
+	PRINTFORML 　그 중심인물인 구라하시 오우한―― 어릴 적부터 기린아(기린 칠드런)라 불리던 프로세스입니다.
+	PRINTFORML 　그런 그가 음양사를 관두겠다고 선언한 것은 영향이 컸던 모양입니다.
+	PRINTFORML 　그는 아야메 씨의 말씀에 따르면……」
+	PRINTFORMW  
+	PRINTFORML 　綾女
+	PRINTFORML 「『난 야타가라스에서 해나가기엔 역부족이다』 따위로 주절거리며 실업계로 발을 넓혔지.
+	PRINTFORML 　그건 돈과 인맥을 손에 넣기 위한 수작이었을 게다.
+	PRINTFORML 　야타가라스와 거리를 두려는 속셈도 있었을 테고 말이지」
+	PRINTFORMW  
+	PRINTFORML ＞그놈이 역부족이라면 아야메도 일하기 어려울 것이다.
+	PRINTFORML ＞어떤 수행을 쌓았는지는 모르겠으나 오펀은 상당한 강자였다.
+	PRINTFORML ＞……그것은 재능만으로 치부할 수 있는 강함이 아니었지만……
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「그것과 관련해서입니다만, 쿠쿠리의 비술을 응용하여 만들어진 것으로 보이는 이 알약에 대해.
+	PRINTFORML 　이것은 방금 전 말씀드린 대로 주술적 생물이나 악마의 혈액을 사용한 것으로 추정되는 세오리입니다만……」
+	PRINTFORMW  
+	PRINTFORML ＞나기는 휴대 단말기를 꺼내 %CALLNAME:MASTER%에게 화면이 보이도록 내려놓았다.
+	PRINTFORML ＞화면에는 쥐 두 마리가 찍혀 있다.
+	PRINTFORML ＞분주히 움직이던 쥐 중 한 마리가 살짝 물든 액체를 핥아 마시더니―― 순간 쥐의 형상이 흉포하게 일그러졌다.
+	PRINTFORML ＞그러고는 다른 쥐를 갈기갈기 찢어발겨 게걸스럽게 뜯어먹기 시작했다……
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「……복용하면 욕망을 폭주시키는 작용이 있다는 프로세스입니다.
+	PRINTFORML 　이것이 경미한 수준이라면 욕망을 향한 집착이 강화되기에 마치 활력을 얻은 것처럼 작용합니다.
+	PRINTFORML 　그러나 연속으로 복용할 경우 욕망을 향한 충동이 육체에도 영향을 미치게 되어 육체의 변형 및 MAG화가 발생……
+	PRINTFORML 　그리고 마지막에는 악마로 변신한다는 프로세스입니다.
+	PRINTFORML 　MAG 덩어리이기 때문에 소량 복용이라면 서머너나 이능력자의 파워업 카테고리.
+	PRINTFORML 　과다 복용으로 인한 악마 변신도 평범한 이능력자라면 대폭적인 파워업입니다」
+	PRINTFORMW  
+	PRINTFORML ＞그놈들의 영격《Lv》이 묘하게 높았던 것은 그 때문인가.
+	PRINTFORML ＞일종의 도핑 기술인가.
+	PRINTFORML ＞오펀 역시 알약을 복용하여 강해진 것이 아닐까(기술적인 면은 본인의 연마 덕이겠지만).
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「이 기술을 통해 힘을 얻고, 그것으로 음양사가 세상을 장악하자――는 것이 코도쿠노 마레비토의 대략적인 목적인 세오리.
+	PRINTFORML 　폐업했다는 음양사들이 코도쿠노 마레비토에 가담하고 있는 프로세스도 확인되었습니다.
+	PRINTFORML 　현재는 사실 확인과 구라하시 오우한이 경영하는 구라하시 상사의 영업정지 등 절차를 밟고 있는 프로세스입니다.
+	PRINTFORML 　또한 이번에 정보가 유출된 경로를 역추적하여 내통자 확인도 진행 중입니다」
+	PRINTFORMW  
+	PRINTFORML ＞그렇군 그래―― 하고 %CALLNAME:MASTER%는 끄덕인다.
+	PRINTFORML ＞헌데.
+	PRINTFORML ＞……어째서 그것을 설명해 주는 것일까?
+	PRINTFORMW  
+	PRINTFORML 　綾女
+	PRINTFORML 「이미 적발을 위해 야타가라스가 움직이기 시작했다――
+	PRINTFORML 　굳이 내가 찾아온 것은 입단속을 위해서지. 굴러들어온 팬텀의 개새끼는 네놈 한 마리뿐이었으니까」
+	PRINTFORMW  
+	PRINTFORML ＞궁금하지 않았느냐는 물음에는 수긍할 수밖에 없다.
+	PRINTFORML ＞강매당한 정보였으나 실제로 호기심이 동했던 것은 사실이다.
+	PRINTFORML ＞악용할 여지는 있어 보이지만 굳이 미리 털어놓았다는 것은 대항이나 감지 수단이 마련되어 있다는 뜻이리라.
+	PRINTFORMW  
+	PRINTFORML 　綾女
+	PRINTFORML 「뭐, 그렇게 된 거다.
+	PRINTFORML 　이제 너희 팬텀과의 관계도 슬슬 끝장이지.
+	PRINTFORML 　그전에 조금 이야기해 두고 싶기도 했다. 나기가 하도 푹 빠져있기도 해서 말이야」
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「푸, 푹 빠져있거나 하지 않은 카테고리입니다만!?」
+	PRINTFORMW  
+	PRINTFORML ＞아야메가 손을 팔랑팔랑 흔들고 커피를 꿀꺽 들이켠 뒤 돌아갔다.
+	PRINTFORML ＞볼을 살짝 붉힌 나기가 엉덩이를 들썩이며 말했다.
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「그, 그럼 %CALLNAME:MASTER% 전, 저도 물러가보는 세오리입니다」
+	PRINTFORMW  
+	PRINTFORML ＞%CALLNAME:MASTER%는 고개를 끄덕이고, 이제 다시 올 일도 만날 일도 없을 테니까, 라고 운을 뗀 뒤 말한다.
+	PRINTFORML ＞악당의 수법을 배웠다고 해서 섣불리 흉내 내지 마라―― 나기는 정도를 걸어야 한다.
+	PRINTFORML ＞배울 거라면 최소한 아야메한테 배워라.
+	PRINTFORMW  
+	PRINTFORML 　凪
+	PRINTFORML 「……아직도 가르침을 받고 싶은 것들이 잔뜩 있습니다.
+	PRINTFORML 　이것이 마지막이 아니기를 기도해 두는 세오리입니다」
+	PRINTFORMW  
+	PRINTFORML ＞나기는 정중하게 고개를 숙이고 떠나간다.
+	PRINTFORML ＞참으로 긴 하루였지만 이것으로 야타가라스와의 일도 끝인가.
+	PRINTFORML ＞정말이지 참으로 얻기 힘든 진귀한 경험이었다.
+	PRINTFORMW  
+	;教育！
+	イベントフラグ:41:8 += 1
+
+
+	;================================================================================================================
+	;最終報酬
+	;================================================================================================================
+
+	PRINTFORML ＞야타가라스로부터 의뢰 보수로 10만 엔이 입금되었다
+	PRINTFORMW  
+	MONEY += 100000
+
+	PRINTFORML ＞200의 명성을 얻었다
+	PRINTFORMW  
+	FLAG:명성 += 200
+
+	;凪ちゃんがセルフ修行したプロセスです。
+	;ただし苦労してないなら覚えてくれない
+	;今回は２～10の値を取る
+	IF イベントフラグ:41:8 >= 1
+		イベントフラグ:41:4 = 3
+		CALL EVENT_41_Nagi_Learn_Skill
+	ENDIF
+
+	;次イベントが発生
+	イベントフラグ:41:1 = 6
+
+
+	;１日の終了処理
+	CALL EVENT_41_DAY_END
+
+
+
+
+;=======================================================================
+;●エネミー設定
+;=======================================================================
+
+
+;=======================================================================
+@EV41_1_5_VS_TAKOTUBO
+;=======================================================================
+;7.8.10って感じの半端な位置にいる
+;モデルは1113,ゴーレム
+;都合上、飛具攻撃しかしてこない
+;連続撃ち、刹那五月雨撃、フレアショット、デスシャワー、乱撃乱射
+;（乱撃乱射はアレックスだったかの専用スキルだけど）
+;飛具無効なら一人でも勝てるが、まあ緒戦からそれはどうなのって感じ。
+;=======================================================================
+#DIM s_LV
+	;Lv設定
+	s_LV = 45
+
+	CALL SET_ENEMY,7,[[キャラ:T95골렘]],s_LV,1,1
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	NAME:LOCAL = 토치카
+	CALLNAME:LOCAL = 토치카
+	CFLAG:LOCAL:ＨＰ보정 += 1500
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:연속사격]]
+	ABL:LOCAL:스킬2 = [[스킬:연속사격]]
+	ABL:LOCAL:스킬3 = [[스킬:찰나장대비쏘기]]
+	ABL:LOCAL:스킬4 = [[스킬:찰나장대비쏘기]]
+	ABL:LOCAL:스킬5 = [[스킬:플레어샷]]
+	ABL:LOCAL:스킬6 = [[스킬:플레어샷]]
+	ABL:LOCAL:스킬7 = [[스킬:데스샤워]]
+	ABL:LOCAL:스킬8 = [[스킬:난격난사]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	CALL SET_ENEMY,8,[[キャラ:T95골렘]],s_LV,1,1
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	NAME:LOCAL = 토치카
+	CALLNAME:LOCAL = 토치카
+	CFLAG:LOCAL:ＨＰ보정 += 1500
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:연속사격]]
+	ABL:LOCAL:스킬2 = [[스킬:연속사격]]
+	ABL:LOCAL:스킬3 = [[스킬:찰나장대비쏘기]]
+	ABL:LOCAL:스킬4 = [[스킬:찰나장대비쏘기]]
+	ABL:LOCAL:스킬5 = [[스킬:플레어샷]]
+	ABL:LOCAL:스킬6 = [[스킬:플레어샷]]
+	ABL:LOCAL:스킬7 = [[스킬:데스샤워]]
+	ABL:LOCAL:스킬8 = [[스킬:난격난사]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	CALL SET_ENEMY,10,[[キャラ:T95골렘]],s_LV,1,1
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	NAME:LOCAL = 토치카
+	CALLNAME:LOCAL = 토치카
+	CFLAG:LOCAL:ＨＰ보정 += 1500
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:연속사격]]
+	ABL:LOCAL:스킬2 = [[스킬:연속사격]]
+	ABL:LOCAL:스킬3 = [[스킬:찰나장대비쏘기]]
+	ABL:LOCAL:스킬4 = [[스킬:찰나장대비쏘기]]
+	ABL:LOCAL:스킬5 = [[스킬:플레어샷]]
+	ABL:LOCAL:스킬6 = [[스킬:플레어샷]]
+	ABL:LOCAL:스킬7 = [[스킬:데스샤워]]
+	ABL:LOCAL:스킬8 = [[스킬:난격난사]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+
+	CALL BATTLE_START
+
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+	FORCEWAIT
+
+;=======================================================================
+@EV41_1_5_VS_ORPHAN_MAINUS_ORPHAN
+;=======================================================================
+;vs.オーファンのオーファン抜き
+;=======================================================================
+#DIM s_LV
+	;Lv設定
+	s_LV = 40
+
+	;アークエンジェル
+	;마하・라기　한마　히트웨이브　메・디아
+	;라쿠・카쟈　회심의패기　헤븐즈도어
+	CALL SET_ENEMY, 7, [[キャラ:아크엔젤]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 300
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:마하・라기]]
+	ABL:LOCAL:스킬2 = [[스킬:히트웨이브]]
+	ABL:LOCAL:스킬3 = [[스킬:메・디아]]
+	ABL:LOCAL:스킬4 = [[스킬:헤븐즈도어]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;ジョロウグモ
+	;프린파　돌격　파라라・웨이브　섹시댄스
+	;대지의벽　아라크노와이어　사만・다
+	CALL SET_ENEMY, 8, [[キャラ:죠로구모]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 300
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:프린파]]
+	ABL:LOCAL:스킬2 = [[스킬:돌격]]
+	ABL:LOCAL:스킬3 = [[스킬:파라라・웨이브]]
+	ABL:LOCAL:스킬4 = [[스킬:섹시댄스]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;アークエンジェル
+	CALL SET_ENEMY, 9, [[キャラ:아크엔젤]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 300
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:마하・라기]]
+	ABL:LOCAL:스킬2 = [[스킬:히트웨이브]]
+	ABL:LOCAL:스킬3 = [[스킬:메・디아]]
+	ABL:LOCAL:스킬4 = [[스킬:헤븐즈도어]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;ジョロウグモ
+	CALL SET_ENEMY, 10, [[キャラ:죠로구모]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 300
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:프린파]]
+	ABL:LOCAL:스킬2 = [[스킬:돌격]]
+	ABL:LOCAL:스킬3 = [[스킬:파라라・웨이브]]
+	ABL:LOCAL:스킬4 = [[스킬:섹시댄스]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;アークエンジェル
+	CALL SET_ENEMY, 11, [[キャラ:아크엔젤]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 300
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:마하・라기]]
+	ABL:LOCAL:스킬2 = [[스킬:히트웨이브]]
+	ABL:LOCAL:스킬3 = [[스킬:메・디아]]
+	ABL:LOCAL:스킬4 = [[스킬:헤븐즈도어]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;ガシャドクロ
+	;무드　지온가　마하・지오　무드온　바이에이하
+	CALL SET_ENEMY, 12, [[キャラ:가샤도쿠로]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 300
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:지온가]]
+	ABL:LOCAL:스킬2 = [[스킬:마하・지오]]
+	ABL:LOCAL:스킬3 = [[스킬:바이에이하]]
+	ABL:LOCAL:스킬4 = [[스킬:무드온]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;ドミニオン
+	;데스바운드　코우가온　마하・지온가　수정의벽
+	;일할의마맥　메기도
+	CALL SET_ENEMY, 13, [[キャラ:도미니온]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 300
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:데스바운드]]
+	ABL:LOCAL:스킬2 = [[스킬:코우가온]]
+	ABL:LOCAL:스킬3 = [[스킬:마하・지온가]]
+	ABL:LOCAL:스킬4 = [[스킬:수정의벽]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+
+	;ドミニオン
+	CALL SET_ENEMY, 15, [[キャラ:도미니온]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 300
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:데스바운드]]
+	ABL:LOCAL:스킬2 = [[스킬:코우가온]]
+	ABL:LOCAL:스킬3 = [[스킬:마하・지온가]]
+	ABL:LOCAL:스킬4 = [[스킬:수정의벽]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;ガシャドクロ
+	CALL SET_ENEMY, 16, [[キャラ:가샤도쿠로]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 300
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:지온가]]
+	ABL:LOCAL:스킬2 = [[스킬:마하・지오]]
+	ABL:LOCAL:스킬3 = [[스킬:바이에이하]]
+	ABL:LOCAL:스킬4 = [[스킬:무드온]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+
+	CALL BATTLE_START
+
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+	FORCEWAIT
+
+
+
+;=======================================================================
+@EV41_1_5_VS_ORPHAN_MAINUS_ORPHAN_MAINUS_BACKS
+;=======================================================================
+;vs.オーファンのオーファン抜きの後列抜き
+;=======================================================================
+#DIM s_LV
+	;Lv設定
+	s_LV = 40
+
+	;アークエンジェル
+	;마하・라기　한마　히트웨이브　메・디아
+	;라쿠・카쟈　회심의패기　헤븐즈도어
+	CALL SET_ENEMY, 7, [[キャラ:아크엔젤]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 300
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:마하・라기]]
+	ABL:LOCAL:스킬2 = [[스킬:히트웨이브]]
+	ABL:LOCAL:스킬3 = [[스킬:메・디아]]
+	ABL:LOCAL:스킬4 = [[스킬:헤븐즈도어]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;ジョロウグモ
+	;프린파　돌격　파라라・웨이브　섹시댄스
+	;대지의벽　아라크노와이어　사만・다
+	CALL SET_ENEMY, 8, [[キャラ:죠로구모]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 300
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:프린파]]
+	ABL:LOCAL:스킬2 = [[스킬:돌격]]
+	ABL:LOCAL:스킬3 = [[스킬:파라라・웨이브]]
+	ABL:LOCAL:스킬4 = [[스킬:섹시댄스]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;アークエンジェル
+	CALL SET_ENEMY, 9, [[キャラ:아크엔젤]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 300
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:마하・라기]]
+	ABL:LOCAL:스킬2 = [[스킬:히트웨이브]]
+	ABL:LOCAL:스킬3 = [[스킬:메・디아]]
+	ABL:LOCAL:스킬4 = [[스킬:헤븐즈도어]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;ジョロウグモ
+	CALL SET_ENEMY, 10, [[キャラ:죠로구모]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 300
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:프린파]]
+	ABL:LOCAL:스킬2 = [[스킬:돌격]]
+	ABL:LOCAL:스킬3 = [[스킬:파라라・웨이브]]
+	ABL:LOCAL:스킬4 = [[스킬:섹시댄스]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;アークエンジェル
+	CALL SET_ENEMY, 11, [[キャラ:아크엔젤]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 300
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:마하・라기]]
+	ABL:LOCAL:스킬2 = [[스킬:히트웨이브]]
+	ABL:LOCAL:스킬3 = [[스킬:메・디아]]
+	ABL:LOCAL:스킬4 = [[스킬:헤븐즈도어]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+
+	CALL BATTLE_START
+
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+	FORCEWAIT
+
+
+
+;=======================================================================
+@EV41_1_5_VS_ORPHAN
+;=======================================================================
+;vs.オーファン（真）
+;=======================================================================
+;凪仲間ルートだとここの大ボスになる
+;Lv50-55程度を想定
+;取り巻きもエース級
+;（エイトショウジンより強いのは流石にどうなんだろう……）
+;=======================================================================
+#DIM s_LV
+
+	;Lvの設定
+	s_LV = 50
+
+	;アンズー
+	CALL SET_ENEMY, 7, [[キャラ:안주]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 500
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:화쇄열풍파]]
+	ABL:LOCAL:스킬2 = [[스킬:바인드보이스]]
+	ABL:LOCAL:스킬3 = [[스킬:마하・잔마]]
+	ABL:LOCAL:스킬4 = [[스킬:타룬・다]]
+	ABL:LOCAL:스킬5 = [[스킬:하늘의선풍]]
+	ABL:LOCAL:스킬6 = 0
+	ABL:LOCAL:스킬7 = 0
+	ABL:LOCAL:스킬8 = 0
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+	
+	;ジョロウグモ
+	CALL SET_ENEMY, 8, [[キャラ:죠로구모]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 500
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:프린파다인]]
+	ABL:LOCAL:스킬2 = [[스킬:맹돌진]]
+	ABL:LOCAL:스킬3 = [[스킬:파라라・웨이브]]
+	ABL:LOCAL:스킬4 = [[스킬:파이널누드]]
+	ABL:LOCAL:스킬5 = [[스킬:아라크노와이어]]
+	ABL:LOCAL:스킬6 = [[스킬:사만・다]]
+	ABL:LOCAL:스킬7 = 0
+	ABL:LOCAL:스킬8 = 0
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;アンズー
+	CALL SET_ENEMY, 9, [[キャラ:안주]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 500
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:화쇄열풍파]]
+	ABL:LOCAL:스킬2 = [[스킬:바인드보이스]]
+	ABL:LOCAL:스킬3 = [[스킬:마하・잔마]]
+	ABL:LOCAL:스킬4 = [[스킬:타룬・다]]
+	ABL:LOCAL:스킬5 = [[스킬:하늘의선풍]]
+	ABL:LOCAL:스킬6 = 0
+	ABL:LOCAL:스킬7 = 0
+	ABL:LOCAL:스킬8 = 0
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;ジョロウグモ
+	CALL SET_ENEMY, 10, [[キャラ:죠로구모]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 500
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:프린파다인]]
+	ABL:LOCAL:스킬2 = [[스킬:맹돌진]]
+	ABL:LOCAL:스킬3 = [[스킬:파라라・웨이브]]
+	ABL:LOCAL:스킬4 = [[스킬:파이널누드]]
+	ABL:LOCAL:스킬5 = [[스킬:아라크노와이어]]
+	ABL:LOCAL:스킬6 = [[스킬:사만・다]]
+	ABL:LOCAL:스킬7 = 0
+	ABL:LOCAL:스킬8 = 0
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;アンズー
+	CALL SET_ENEMY, 11, [[キャラ:안주]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 500
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:화쇄열풍파]]
+	ABL:LOCAL:스킬2 = [[스킬:바인드보이스]]
+	ABL:LOCAL:스킬3 = [[스킬:마하・잔마]]
+	ABL:LOCAL:스킬4 = [[스킬:타룬・다]]
+	ABL:LOCAL:스킬5 = [[스킬:하늘의선풍]]
+	ABL:LOCAL:스킬6 = 0
+	ABL:LOCAL:스킬7 = 0
+	ABL:LOCAL:스킬8 = 0
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;元パッチではバックベアード……って書いてあるけどコレナンバーがガシャドクロなんだけど……
+	;たぶんガシャドクロなんだと思う（他が前段と共通してるので）
+	CALL SET_ENEMY, 12, [[キャラ:가샤도쿠로]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 500
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:마하무드온]]
+	ABL:LOCAL:스킬2 = [[스킬:집뢰격]]
+	ABL:LOCAL:스킬3 = [[스킬:마하・지온가]]
+	ABL:LOCAL:스킬4 = [[스킬:마하주온]]
+	ABL:LOCAL:스킬5 = [[스킬:마하에이하]]
+	ABL:LOCAL:스킬6 = 0
+	ABL:LOCAL:스킬7 = 0
+	ABL:LOCAL:스킬8 = 0
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;ドミニオン
+	CALL SET_ENEMY, 13, [[キャラ:도미니온]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 500
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:데스바운드]]
+	ABL:LOCAL:스킬2 = [[스킬:코우가온]]
+	ABL:LOCAL:스킬3 = [[스킬:마하・지온가]]
+	ABL:LOCAL:스킬4 = [[스킬:메기도]]
+	ABL:LOCAL:스킬5 = [[스킬:마하・잔마]]
+	ABL:LOCAL:스킬6 = [[스킬:사마카쟈오토]]
+	ABL:LOCAL:스킬7 = [[스킬:멸망의빛]]
+	ABL:LOCAL:스킬8 = 0
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;オーファン
+	CALL SET_ENEMY,14,[[キャラ:오우한_보스]],60,1,1
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	NAME:LOCAL = 오펀
+	CALLNAME:LOCAL = 오펀
+	CFLAG:LOCAL:ＨＰ보정 += 3000
+	CFLAG:LOCAL:ＭＰ보정 = 1000
+	;行動回数が１回増えている
+	CFLAG:LOCAL:행동횟수 = 2
+	CSTR:LOCAL:사고패턴 = EVENT_41_1_3_Orphan
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	;スキル、変わらず
+	ABL:LOCAL:스킬1 = [[스킬:아라이소]]
+	ABL:LOCAL:스킬2 = [[스킬:구십구나선격]]
+	ABL:LOCAL:스킬3 = [[스킬:앵화섬란]]
+	;予想以上に面倒だったのでランダム行動では使用しない
+;	ABL:LOCAL:스킬4 = [[스킬:결계부・물리]]
+;	ABL:LOCAL:스킬5 = [[스킬:결계부・마법]]
+	ABL:LOCAL:스킬6 = [[스킬:어둠의심판]]
+	ABL:LOCAL:스킬7 = [[스킬:중재의뇌화]]
+;	ABL:LOCAL:스킬8 = [[스킬:이니셜라이즈]]
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;ドミニオン
+	CALL SET_ENEMY, 15, [[キャラ:도미니온]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 500
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:데스바운드]]
+	ABL:LOCAL:스킬2 = [[스킬:코우가온]]
+	ABL:LOCAL:스킬3 = [[스킬:마하・지온가]]
+	ABL:LOCAL:스킬4 = [[스킬:메기도]]
+	ABL:LOCAL:스킬5 = [[스킬:마하・잔마]]
+	ABL:LOCAL:스킬6 = [[스킬:사마카쟈오토]]
+	ABL:LOCAL:스킬7 = [[스킬:멸망의빛]]
+	ABL:LOCAL:스킬8 = 0
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	;バックベアード←ガシャドクロです
+	CALL SET_ENEMY, 16, [[キャラ:가샤도쿠로]],s_LV,0,0
+	;きゃらなむをLOCALに保存
+	LOCAL = CHARANUM - 1
+	CFLAG:LOCAL:ＨＰ보정 += 500
+	;スキルをリセットする
+	CALL EVENT_41_Skill_Reset(LOCAL)
+	ABL:LOCAL:스킬1 = [[스킬:마하무드온]]
+	ABL:LOCAL:스킬2 = [[스킬:집뢰격]]
+	ABL:LOCAL:스킬3 = [[스킬:마하・지온가]]
+	ABL:LOCAL:스킬4 = [[스킬:마하주온]]
+	ABL:LOCAL:스킬5 = [[스킬:마하에이하]]
+	ABL:LOCAL:스킬6 = 0
+	ABL:LOCAL:스킬7 = 0
+	ABL:LOCAL:스킬8 = 0
+	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+
+	
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+
+	CALL BATTLE_START
+
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+	FORCEWAIT
+
+;=======================================================================
+@EV41_1_5_VS_DAEMON_Troop
+;=======================================================================
+;vs.デーモントループ
+;=======================================================================
+;みっちり！
+;雑魚×たくさん、なのでボス判定をしない
+;レベルが低いが行動回数が多くてウザい
+;=======================================================================
+
+	FOR LOCAL:2, 7, 17
+		IF LOCAL:2 % 2 == 0
+			;アンズー×10×5
+			CALL SET_ENEMY,LOCAL:2,[[キャラ:안주]],40,0,0
+			;きゃらなむをLOCALに保存
+			LOCAL = CHARANUM - 1
+			NAME:LOCAL = 안주 트룹
+			CALLNAME:LOCAL = 안주 트룹
+			CFLAG:LOCAL:ＨＰ보정 += 1000
+			CFLAG:LOCAL:행동횟수 = 3
+			;スキルをリセットする
+			CALL EVENT_41_Skill_Reset(LOCAL)
+			;화쇄열풍파　바인드보이스　날개짓　마하・잔　タルンダ　하늘의선풍
+			ABL:LOCAL:스킬1 = [[스킬:화쇄열풍파]]
+			ABL:LOCAL:스킬2 = [[스킬:바인드보이스]]
+			ABL:LOCAL:스킬3 = [[스킬:마하・잔다인]]
+			ABL:LOCAL:스킬4 = [[스킬:타룬・다]]
+			ABL:LOCAL:스킬5 = [[스킬:하늘의선풍]]
+			ABL:LOCAL:스킬6 = 0
+			ABL:LOCAL:스킬7 = 0
+			ABL:LOCAL:스킬8 = 0
+		ELSE
+			;クリスティーンカスタム
+			;バイカー×10×5
+			CALL SET_ENEMY,LOCAL:2,1014,40,0,0
+			;きゃらなむをLOCALに保存
+			LOCAL = CHARANUM - 1
+			NAME:LOCAL = 바이커 트룹
+			CALLNAME:LOCAL = 바이커 트룹
+			CFLAG:LOCAL:ＨＰ보정 += 1000
+			CFLAG:LOCAL:행동횟수 = 3
+			;スキルをリセットする
+			CALL EVENT_41_Skill_Reset(LOCAL)
+			;브레인쉐이크　押しつぶし　독가스브레스　연속사격　포그브레스　메가톤프레스　플래시봄
+			ABL:LOCAL:스킬1 = [[스킬:브레인쉐이크]]
+			ABL:LOCAL:스킬2 = [[스킬:눌러으깨기]]
+			ABL:LOCAL:스킬3 = [[스킬:독가스브레스]]
+			ABL:LOCAL:스킬4 = [[스킬:연속사격]]
+			ABL:LOCAL:스킬5 = [[스킬:포그브레스]]
+			ABL:LOCAL:스킬6 = [[스킬:메가톤프레스]]
+			ABL:LOCAL:스킬7 = [[스킬:플래시봄]]
+			ABL:LOCAL:스킬8 = 0
+		ENDIF
+		CSTR:LOCAL:종족명 = 악마인간
+		CALL SYNC_STATUS,LOCAL
+		CALL HEALTH_CHARA,LOCAL
+	NEXT
+
+
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+
+	CALL BATTLE_START
+
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+	FORCEWAIT
+
+
+
+;=======================================================================
+@EV41_1_5_VS_YAMADA
+;=======================================================================
+;大連戦のボスで最後に自爆してくるよ！
+;=======================================================================
+	FOR LOCAL:2, 7, 17
+		IF LOCAL:2 == 9
+			;定期的にキル、定期的にブレイク
+			;不死身フラグ持ち、HP30％を切ったら30％くらいまで回復して、不死身フラグ解除
+			;５ターンほどなにもしないでいて、数ターン後最後に自爆してくる
+			;ヒノカグツチモデル：十文字ワーグナー
+			;火炎耐性しておこうね　ブレイクするけど
+			CALL SET_ENEMY,LOCAL:2,1429,65,0,1
+			;きゃらなむをLOCALに保存
+			LOCAL = CHARANUM - 1
+			NAME:LOCAL = 십문자 바그너
+			CALLNAME:LOCAL = 십문자 바그너
+			CFLAG:LOCAL:ＨＰ보정 += 5500
+			CFLAG:LOCAL:행동횟수 = 3
+			;自爆フェーズ入るまで不死身
+			CFLAG:LOCAL:불사신플래그 = 1
+			CSTR:LOCAL:사고패턴 = EVENT_41_1_5_YAMADA_AI
+			CSTR:LOCAL:특수적보정패턴 = EVENT_41_1_5_VS_YAMADA
+			;スキルをリセットする
+			CALL EVENT_41_Skill_Reset(LOCAL)
+			;루이나플레임　버닝링　플레어라이트　대염상　아기바리온　화염가드킬　데들리번　화염가드킬
+			ABL:LOCAL:스킬1 = [[스킬:루이나플레임]]
+			ABL:LOCAL:스킬2 = [[스킬:버닝링]]
+			ABL:LOCAL:스킬3 = [[스킬:플레어라이트]]
+			ABL:LOCAL:스킬4 = [[스킬:대염상]]
+			ABL:LOCAL:스킬5 = [[스킬:아기다인]]
+			ABL:LOCAL:스킬6 = [[스킬:데들리번]]
+			;準貫通処理が入ったためガーキル行動を削除
+;			ABL:LOCAL:스킬7 = [[스킬:화염가드킬]]
+;			ABL:LOCAL:스킬8 = [[스킬:화염가드킬]]
+		ELSE
+			;ソロネ
+			CALL SET_ENEMY,LOCAL:2,311,55,0,1
+			;きゃらなむをLOCALに保存
+			LOCAL = CHARANUM - 1
+			CFLAG:LOCAL:ＨＰ보정 += 500
+			;スキルをリセットする
+			CALL EVENT_41_Skill_Reset(LOCAL)
+			;アギダイン、マハラギオン、天羽の舞、ヘブンズドア、あとメギド
+			ABL:LOCAL:스킬1 = [[스킬:아기다인]]
+			ABL:LOCAL:스킬2 = [[스킬:마하・라기온]]
+			ABL:LOCAL:스킬3 = [[스킬:천우의춤]]
+			ABL:LOCAL:스킬4 = [[스킬:헤븐즈도어]]
+			ABL:LOCAL:스킬5 = [[스킬:메기도]]
+			ABL:LOCAL:스킬6 = 0
+			ABL:LOCAL:스킬7 = 0
+			ABL:LOCAL:스킬8 = 0
+		ENDIF
+		CSTR:LOCAL:종족명 = 악마인간
+		CALL SYNC_STATUS,LOCAL
+		CALL HEALTH_CHARA,LOCAL
+	NEXT
+
+
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+
+	CALL BATTLE_START
+
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+	FORCEWAIT
+
+
+;=======================================================================
+;●vs.山田源五郎AI
+;=======================================================================
+@SET_ACTION_EVENT_41_1_5_YAMADA_AI, ARG
+;=======================================================================
+#DIM EV41_FINAL_STRIKE
+
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+
+	;最初セリフを言う
+	IF FLAG:경과턴수 == 0 && CFLAG:ARG:행동한횟수 == 0
+		PRINTFORML ┏> 십문자 바그너 ━━━━━━━━━━━━━┓
+		PRINTFORML ┃내 분노의 주먹을 맛보아라!　　　　　　　　　　┃
+		PRINTFORML ┃내 힘의 근원은 분노!　　　　　　　　　　　　　┃
+		PRINTFORML ┃불경한 놈들을 불태워버릴 격앙의 불꽃이여!　　　┃
+		PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+
+	IF 0
+	ELSEIF EV41_FINAL_STRIKE > 0
+		;自爆モード
+		;自爆まで５ターン
+		IF 0
+		ELSEIF EV41_FINAL_STRIKE == 1
+			PRINTFORML ┏> 십문자 바그너 ━━━━━━━━━━━━━┓
+			PRINTFORML ┃하아아아…… 안 되는가……　　　　　　　　　　┃
+			PRINTFORML ┃아무도 나를 이해하지 못하는가……　　　　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━┛
+		ELSEIF EV41_FINAL_STRIKE == 2
+			PRINTFORML ┏> 십문자 바그너 ━━━━━━━━━━━━━┓
+			PRINTFORML ┃크아아악! 크아아아아아악!　　　　　　　　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━┛
+		ELSEIF EV41_FINAL_STRIKE == 3
+			PRINTFORML ┏> 십문자 바그너 ━━━━━━━━━━━━━┓
+			PRINTFORML ┃내 생애…… 복수…… 무너져 내린다……　　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━┛
+		ELSEIF EV41_FINAL_STRIKE == 4
+			PRINTFORML ┏> 십문자 바그너 ━━━━━━━━━━━━━┓
+			PRINTFORML ┃하지만…… 나야말로 선택받은 서머너……　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━┛
+		ELSEIF EV41_FINAL_STRIKE >= 5
+			PRINTFORML ┏> 십문자 바그너 ━━━━━━━━━━━━━┓
+			PRINTFORML ┃십문자 바그너에게에에!!!　　　　　　　　　　┃
+			PRINTFORML ┃영광 있으라아아아아앗!!!　　　　　　　　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━┛
+		ENDIF
+		
+		IF EV41_FINAL_STRIKE >= 5
+			CFLAG:ARG:입력행동 = [[스킬:옥쇄파]]
+		ELSE
+			CSTR:ARG:전용기1 = ＷＡＩＴ
+			CFLAG:ARG:입력행동 = 3904
+		ENDIF
+		EV41_FINAL_STRIKE += 1
+	ELSEIF EV41_FINAL_STRIKE == 0 && 現HP割合(ARG) < 30
+		;行動回数が１回に減少
+		;不死身フラグが解除され撃破可能に
+		;モード変更
+		;HPが３割まで補正
+		CFLAG:ARG:행동횟수 = 1
+		CFLAG:ARG:불사신플래그 = 0
+		EV41_FINAL_STRIKE += 1
+		BASE:ARG:ＨＰ = MAXBASE:ARG:ＨＰ
+		TIMES BASE:ARG:ＨＰ, 0.30
+		PRINTFORML ┏> 십문자 바그너 ━━━━━━━━━━━━━┓
+		PRINTFORML ┃네놈만 네놈만 네놈만 없었더라면 아아아악!　　　┃
+		PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━┛
+		PRINTFORML ┏> MESSAGE ━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃십문자 바그너의 상태가 이상하다……　　　　　┃
+		PRINTFORML ┃힘이 부풀어 올라, 흘러넘치려 하고 있다!　　　┃
+		PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━┛
+		CFLAG:ARG:입력행동 = [[스킬:데들리번]]
+	;あたり：もう一回
+	ELSEIF CFLAG:ARG:１more플래그 > 0
+		CFLAG:ARG:입력행동 = [[스킬:데들리번]]
+	;ターン
+	ELSEIF CFLAG:ARG:행동한횟수 == 0
+		IF 0
+		;準貫通処理が入ったためガーキル行動を削除
+;		;現在ターン数が6n+0：火炎ガーキルまたはブレイクを使用
+;		ELSEIF FLAG:경과턴수 % 6 == 0
+;			IF RAND:2 == 0
+;				CFLAG:ARG:입력행동 = [[스킬:화염가드브레이크]]
+;			ELSE
+;				CFLAG:ARG:입력행동 = [[스킬:화염가드킬]]
+;			ENDIF
+		ELSE
+			CALL ランダム行動, ARG
+		ENDIF
+	ELSE
+		;以下ランダム行動
+		CALL ランダム行動, ARG
+	ENDIF
+
+
+
+	;アクション実行不能
+	CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+	SIF RESULT == 0
+		CFLAG:ARG:입력행동 = 0
+	;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+	SIF CFLAG:ARG:타겟 == -1
+		CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+	RETURN 1
+
+;=======================================================================
+;スーパー山田に炎の準貫通を持たせる
+;=======================================================================
+@SKILL_PASSIVE_PENETRATION_RANK_EVENT_41_1_5_VS_YAMADA, L_P, L_T, L_スキル, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM DYNAMIC L_P;このスキルの所持者
+#DIM DYNAMIC L_T;攻撃対象
+#DIMS DYNAMIC L_スキル;スキルの所持者が敵に対して使用しているスキルの関数名称
+#DIM DYNAMIC L_ダメージタイプ
+#DIM DYNAMIC L_攻撃タイプ
+#DIM DYNAMIC L_相性
+#DIM DYNAMIC GIVE_EFFECT_CHARA;リーダースキル等他人からつけられている場合の提供者
+;火炎準貫通
+SIF GET_TYPE(L_相性) == "화염"
+	RETURN 0, 4
+RETURN 0, 0
+
+

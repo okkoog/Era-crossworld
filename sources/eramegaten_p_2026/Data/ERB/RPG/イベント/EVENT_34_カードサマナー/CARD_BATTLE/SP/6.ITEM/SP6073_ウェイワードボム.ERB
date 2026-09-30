@@ -1,0 +1,82 @@
+﻿;잔/1/0/
+;特技名
+@CGSP_NAME_6073, ARGS, ARG
+RESULTS = ウェイワードボム
+
+;　コストの量
+@CGSP_COST_6073, ARGS, ARG
+RETURN 5
+
+;　타겟(選択するかしないか)
+@CGSP_TARGET_6073, ARGS, ARG
+RETURN 0
+;0-無し　　　1-味方1体　2-味方1体(自身含む)　3-敵1体　4-敵1体(サマナー含む)
+;5-敵味方1体　6-サマナーどちらか
+;自動発動なので0
+
+;　発動タイミング
+@CGSP_TIMING_6073, ARGS, ARG
+RETURN 0
+;0-アクティブ　1-味方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　2-相手ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　3-両方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　4-召喚時
+
+;====================================================
+;特技発動
+;====================================================
+@CGSP_ACTION_6073, ARGS, ARG, ARG:1
+#DIM L_DAMAGE , 3 
+#DIM L_ADD
+#DIM L_T
+L_DAMAGE:0 = 2
+L_DAMAGE:1 = 4
+L_DAMAGE:2 = 6
+IF ARG % 20 == CS1_ONESELF
+	L_T = CS1_OPPONENT
+ELSE
+	L_T = CS1_ONESELF
+ENDIF
+
+
+L_ADD = 0
+FOR LOCAL, 0, VARSIZE("OFFERING_CARD_DATE_V", 0)
+	SIF OFFERING_CARD_DATE_V:LOCAL:CBV_KINDS >= 100
+		L_ADD = 2
+NEXT
+LOCAL = RAND:3
+
+CALL CS_SUMMONER_DAMAGE, L_T, L_DAMAGE:LOCAL + L_ADD, ARG
+SIF LOCAL == 2
+    CALL CS_SUMMONER_DAMAGE, ARG % 20, 8, -1, 99
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;発動後どうなるか
+@CGSP_ACTION_AFTER_6073, ARGS, ARG, ARG:1
+RETURN 0
+;0-何もなし　1-フリーズ状態　2-山札に戻る　3-即死する
+
+;　 説明文の表示
+@CGSP_EXPLAIN_6073, ARGS, ARG
+RESULTS = 敵サマナーに2P、4P、6Pのいずれかダメージをあたえる。供物にアイテムを使うとダメージが+2上昇する。最大値だと自身に8Pのダメージ。『安定しないの爆弾』
+
+
+;　スキルタイプ
+;　主にこのターンパワーアップとアギとかのダメージ系で使用
+;　それ以外は省略
+;　1(アギとかのダメージ魔法系は1),ダメージ,範囲1体は1、全体は2
+@CGSP_TYPE_6073, ARGS, ARG
+RESULTS = 飛行-99歩行-99
+RETURN 1, 4, 1
+
+@CGSP_TYPE_6073_1, ARGS, ARG
+RESULTS = 飛行-99歩行-99
+RESULTS:1 = アイテム
+RETURN 1, 6, 1
+
+;使用条件
+;特になければ省略してOK
+;@SKILL_SPECIAL_ACTIONABLE_6073,ARG
+;RETURN 1
+;とくにない

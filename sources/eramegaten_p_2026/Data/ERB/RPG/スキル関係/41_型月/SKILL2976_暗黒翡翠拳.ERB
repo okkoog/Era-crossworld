@@ -1,0 +1,166 @@
+﻿;221013		NEO		説明文などを変更、名称変化と演出を追加
+;					ブラッドヒート状態での状態異常付与を万能相性に
+
+;スキル名
+@SKILL_NAME_2976,ARG
+	;ARGがいない、戦闘中でない、行動時に表示するタイミングでない、なら通常のスキル名を返す
+	;あくまで「使用する瞬間に」この名前になる
+	IF ARG == -1 || TFLAG:전투중 == 0 || FLAG:행동순1 != ARG
+		RESULTS = 암흑히스이권
+	;ブラッドヒート状態ならアナザーアークの名称に変更
+	ELSEIF 現HP割合(ARG) < 33
+		RESULTS = 大暗黒翡翠拳
+	ELSE
+		RESULTS = 암흑히스이권
+	ENDIF
+
+
+;　명중
+@SKILL_HITRATE_2976, ARG
+RETURN 80
+
+;　威力
+@SKILL_POWER_2976, ARG
+	IF ARG == -1
+		RETURN 150
+	ENDIF
+
+	;威力は消費MP20なりの値
+	IF 現HP割合(ARG) < 33
+		RETURN 200
+	ELSE
+		RETURN 150
+	ENDIF
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2976,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2976,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2976, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2976,ARG
+RETURN 20
+
+;　相性
+@SKILL_TYPE_2976,ARG
+RETURN GET_TYPE_NUM("타격")
+
+;クリティカルは発生しない
+@SKILL_CRITICAL_RATE_2976, ARG
+RETURN 0
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2976
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2976, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2976, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2976,ARG
+RETURN 2
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2976,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2976, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_2976,ARG
+RETURN GET_STATE_NUM("PANIC")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_2976,ARG
+	IF ARG >= 0  && 現HP割合(ARG) < 33
+		RETURN GET_TYPE_NUM("만능")
+	ELSE
+		RETURN GET_TYPE_NUM("정신")
+	ENDIF
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_2976,ARG
+	IF ARG >= 0 && 現HP割合(ARG) < 33
+		RETURN 50
+	ELSE
+		RETURN 40
+	ENDIF
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_2976,ARG
+RETURN 90
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2976
+RETURN GET_SUCCESSION_NUM("타격")
+;不可
+
+@継承不能_2976
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_2976, ARG = -1
+RETURN -1
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2976
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2976, ARG = -1
+RETURN 15
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2976, ARG, ARG:1, ARG:2
+
+	;メッセージ表示
+	;HP条件をチェックし、強化状態であったら「BLOOD HEAT!!」を表示する
+	CALL MELTY_BLOOD_IS_BLOOD_HEAT_HP_CONDITIONS(ARG)
+
+	LOCAL = POS(ARG:1)
+	CALL ATTACK_SINGLE,ARG,LOCAL,2976
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2976, ARG
+PRINTL 적 단체에 타격 상성으로 중위력의 물리 공격을 행한다. 크리티컬이 발생하지 않는다.
+PRINTL 추가 효과: 정신 상성으로 PANIC 부여
+PRINTL 사용자의 HP가 얼마 남지 않았을 경우 위력이 향상되며, 만능 상성으로 PANIC을 부여한다.
+PRINTL 　
+PRINTL 팔을 빙글빙글 회전시켜 칠흑의 파동을 쏜다.
+PRINTL 메이드 히스이의 필살기
+
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2976,ARG
+RETURN 1
+

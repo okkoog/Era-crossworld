@@ -1,0 +1,30 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@LEADER_SKILL_CONTROL_NO_205,ARG
+RESULTS = 치유의 선율
+
+;スキル名
+@SKILL_NAME_LEADER_癒しの調べ,ARG
+RESULTS = 치유의 선율
+
+;　 説明文の設定
+@SET_VAR_LEADER_SKILL_EXPLAIN_癒しの調べ, L_TEXT
+#DIMS REF L_TEXT
+L_TEXT = 전투 중 액티브 상태인 동안、아군 전체는 회복 스킬의 소비 ＭＰ가 감소한다
+
+;重複可能な数
+@LEADER_SKILL_COUNT_LIMIT_癒しの調べ
+RETURN 6
+
+;効果付与の場合の付与者がL_CHARA:1となる
+@SKILL_COST_CHANGE_LEADER_癒しの調べ, L_CHARA, L_SKILL, L_CHARA:1
+#DIM DYNAMIC L_CHARA, 2
+#DIM DYNAMIC L_SKILL
+CALL GET_SKILL_PROP, "SKILL_COSTTYPE", L_SKILL, L_CHARA
+SIF GET_SKILL_COST_TYPE(RESULT) != "MP"
+	RETURN 0
+CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", L_SKILL, L_CHARA
+SIF GET_SUCCESSION(RESULT) != "회복"
+	RETURN 0
+RETURN -20

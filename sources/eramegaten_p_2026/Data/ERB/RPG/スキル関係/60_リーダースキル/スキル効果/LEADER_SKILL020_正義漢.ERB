@@ -1,0 +1,56 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@LEADER_SKILL_CONTROL_NO_20,ARG
+RESULTS = 正義漢
+
+;スキル名
+@SKILL_NAME_LEADER_正義漢,ARG
+RESULTS = 정의한
+
+@ACTION_LEADER_正義漢,ARG,ARG:1,ARG:2
+
+;　 説明文の設定
+@SET_VAR_LEADER_SKILL_EXPLAIN_正義漢, L_TEXT
+#DIMS REF L_TEXT
+#DIM L_CNT
+L_TEXT = 적의 공격으로 파티 멤버가 데미지를 받았을 경우、일정확률로 데미지를 대신 받는다。
+
+;====================================================
+;かばうの判定
+;
+;RESULT かばうキャラの登録番号、不成立の場合は-1をかえすこと
+;====================================================
+@SKILL_COVERING_LEADER_正義漢, L_TARGET, L_ATTACKER, L_COVER,  L_スキル, L_威力, L_相性, L_相性倍率, L_クリティカル率, L_吸収率, L_ダメージタイプ, L_攻撃タイプ, L_割合計算, L_割合上限
+#DIM L_TARGET		;攻撃の対象となっているキャラ
+#DIM L_ATTACKER		;攻撃をしている敵
+#DIM L_COVER		;かばうキャラクター
+#DIM L_スキル
+#DIM L_威力
+#DIM L_相性
+#DIM L_相性倍率
+#DIM L_クリティカル率
+#DIM L_吸収率
+#DIM L_ダメージタイプ
+#DIM L_攻撃タイプ
+#DIM L_割合計算
+#DIM L_割合上限
+SELECTCASE 現HP割合(L_TARGET)
+	CASE IS < 5
+		SIF RAND:100 < 90
+			RETURN L_COVER
+	CASE IS < 25
+		SIF RAND:100 < 50 + (25 - 現HP割合(L_TARGET))
+			RETURN L_COVER
+	CASE IS < 50
+		SIF RAND:100 < 25 + (50 - 現HP割合(L_TARGET)) / 2
+			RETURN L_COVER
+	CASE IS < 75
+		SIF RAND:100 < 10 + (75 - 現HP割合(L_TARGET)) / 4
+			RETURN L_COVER
+ENDSELECT
+RETURN -1
+
+;重複可能な数
+@LEADER_SKILL_COUNT_LIMIT_正義漢
+RETURN 6

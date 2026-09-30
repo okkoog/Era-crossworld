@@ -1,0 +1,108 @@
+﻿;======================================================
+;装備品のデータ
+;2026　진홍의나가마키
+;2111　加州清光と同レベル帯の武器として設定
+;======================================================
+
+
+@基本能力修正_2026,ARG,ARG:1 = -1
+SELECTCASE ARG
+	;原作に倣い、力と速さにバフ
+	CASE 1
+		RETURN 2
+	CASE 5
+		RETURN 2
+ENDSELECT
+RETURN 0
+
+;加州清光と比較して攻撃↑↑　命中だだ下がり（列攻撃なので）
+@戦闘能力修正_2026,ARG,ARG:1 = -1
+	SELECTCASE ARG
+		CASE 0
+			RETURN 131
+		CASE 1
+			RETURN 71
+		CASE 4
+			RETURN 82
+		CASE 5
+			RETURN 44
+	ENDSELECT
+
+RETURN 0
+
+@防御相性_2026,ARG,ARG:1 = -1
+SELECTCASE ARG
+ENDSELECT
+RETURN 100
+
+@攻撃相性_2026, ARG = -1
+RETURN 0
+
+@最低攻撃回数_2026, ARG = -1
+RETURN 1
+
+@最大攻撃回数_2026, ARG = -1
+RETURN 1
+
+@射程_2026, ARG = -1
+RETURN 1
+
+;列攻撃
+@攻撃範囲_2026, ARG = -1
+RETURN 2
+
+@装備箇所_2026
+RETURN GET_EQUIPNUM("검")
+
+;刀術持ちには会心の覇気追加
+@装備追加スキル_2026,ARG,ARG:1 = -1
+;IF ARG:1 != -1 && TALENT:(ARG:1):도술 == 1
+IF ARG:1 >= 0 && GET_ROLE_PROP("CAN_USE_WEAPON_MASTERY", ARG:1) && TALENT:(ARG:1):도술
+	SELECTCASE ARG
+		CASE 0
+			RETURN [[스킬:회심의패기]]
+	ENDSELECT
+ENDIF
+RETURN 0
+
+@条件つき装備追加スキル_2026
+RETURN 1
+
+;-----------------------------
+;- ショップ
+;-----------------------------
+;ジャンクショップでは売らない
+@購入条件_2026
+RETURN 0
+
+@必要レベル_2026
+RETURN 35
+
+@性別制限_2026
+RETURN 2
+
+@装備条件_2026,ARG
+;SIF IS_LOOKSLIKE_MALE(ARG)
+;	RETURN 0
+;SIF BASE:ARG:LV < 35
+;	RETURN 0
+RETURN 1
+
+@装備条件説明_2026
+;PRINTL 装備条件：♀　＆　LV35～
+;PRINTL 装備条件：♀
+
+;ビジュアルはたぶん無いので捏造。
+@装備解説_2026
+PRINTL 진홍색 칼날을 지닌 나가마키 양식의 노다치.
+PRINTL 거대한 날과 그에 걸맞은 긴 자루를 지녔으나 다루기는 어렵다
+PRINTL 
+PRINTL 추가 스킬:회심의패기　추가 조건:도술
+;SETCOLOR 0xdc143c
+;PRINTL 刀術追加スキルあり
+;RESETCOLOR
+
+@剣タイプ_2026
+;1 = 刀　2 =레이피어　3 = 弓　　　　4 = 검　5 = 槍　　　6 = 斧、鈍器
+;7 = 채찍　8 =投具　　　9 = 杖、祭具　10= 棍　11= 拳闘具
+RETURN 1

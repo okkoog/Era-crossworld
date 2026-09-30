@@ -1,0 +1,77 @@
+﻿;スキル名
+@SKILL_NAME_閃刀起動「リンケージ」,ARG
+RESULTS = 섬도기동「링케이지」
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_閃刀起動「リンケージ」,ARG
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_閃刀起動「リンケージ」,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_閃刀起動「リンケージ」
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_閃刀起動「リンケージ」, ARG = -1
+RETURN 0
+
+@リンク不能_閃刀起動「リンケージ」
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_閃刀起動「リンケージ」, ARG = -1
+RETURN 1
+
+;　説明文の表示
+@SKILL_EXPLAIN_閃刀起動「リンケージ」,ARG
+PRINTL 자동: 턴 종료 시 자신과 링크되어 있는 링크체가 사망했을 경우 이하의 연동효과가 발동한다.
+PRINTL 「대기 중인 자신과 링크체를 교대시킨다.」
+PRINTL 「〈강화 효과〉 섬도 카운터가 3개 이상 있을 경우 교대 후 자신의 능력을 모두 상승시킨다.」
+PRINTL 강화 효과 발동 후 섬도 카운터를 얻는 대신 3개 제거한다.
+
+@SKILL_TURNEND_閃刀起動「リンケージ」, L_P
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_T
+#DIM DYNAMIC LCOUNT
+SIF IS_BADSTATE(L_P, "DYING")
+	RETURN 0
+FOR LCOUNT, 0, LINKCHARANUM
+	L_T = FINDCHARA_LINK(L_P, LCOUNT)
+	SIF L_T < 0
+		CONTINUE
+	SIF CPOS(L_T) == 0
+		CONTINUE
+	SIF !IS_BADSTATE(L_T, "DYING")
+		CONTINUE
+	CALL PRINT_ACT_MESSAGE, L_P, , , , "閃刀起動「リンケージ」", "NOWAIT"
+	PRINTFORMW %CALLNAME:L_P%(이)가 소환되었다!
+	VARI STOCK_POS = CPOS(L_T)
+	CALL REMOVE_POSITION, CPOS(L_T)
+	CALL INSERT_POSITION, STOCK_POS, L_P
+
+	IF GET_COUNT_閃刀カウンター(L_P) >= 3
+		CALL SKILL_SET_カジャンダ, L_P, L_P, "공격/방어/마법위력/마법효과/명중/회피", 4, "단체"
+		CALL SET_RPG_CFLAG_BTL, L_P, "閃刀カウンター", -3, "+="
+	ENDIF
+	SETCOLOR COLOR("FRIEND")
+	CALL BATTLE_EVENT, "被召喚", L_P, L_P
+	RESETCOLOR
+	;交代時効果
+	CALL SKILL_ACTION_AT_SWITCHING, L_T, L_P
+	;入場時の処理
+	CALL SET_BATTLE_ENTER_FLAG, L_P
+	CALL SKILL_TIMING, "BATTLE_ENTER"
+	CFLAG:L_P:입장플래그 = 0
+	BREAK
+NEXT
+
+@SKILL_TURNEND_USEABLE_RESERVE_閃刀起動「リンケージ」, L_P
+#DIM DYNAMIC L_P
+RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_閃刀起動「リンケージ」,ARG
+RETURN 1

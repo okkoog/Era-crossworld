@@ -1,0 +1,281 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILL_ACTION_COST.ERB
+;	Facility	:スキルのコスト関連の関数群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/05/03		P(bazzile)				SKILL_TEMPを分割して作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;@PAY_COST								コスト支払い
+;@BACK_COST								コスト払い戻し
+;@CHECK_COST							コストのチェック関数
+;@GET_SKILL_COST						スキルのコスト取得
+;@COST_CUT								コストの軽減処理
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=========================================
+;コスト支払い
+;=========================================
+@PAY_COST, ARG, ARG:1
+#DIM L_COST
+#DIM L_COST_TYPE
+#LOCALSIZE 6
+;リンケージの支払い
+IF ARG:1 >= MIN_LINKAGENUM && ARG:1 < MAX_LINKAGENUM && !CFLAG:ARG:단독링케이지
+	CALLFORM 参加人数_{ARG:1}
+	FOR LOCAL:1, 1, RESULT + 1
+		LOCALS = 링케이지참가자{LOCAL:1}
+		;コストを支払う
+		CALLFORM リンケージコストタイプ_{ARG:1}, LOCAL:1
+		IF RESULT == 2
+			CALLFORM リンケージコスト_{ARG:1}, LOCAL:1
+			LOCAL = MAXBASE:(CFLAG:ARG:LOCALS):ＨＰ * RESULT / 100
+			SIF CFLAG:(CFLAG:ARG:LOCALS):보스플래그
+				LOCAL /= 10
+			BASE:(CFLAG:ARG:LOCALS):ＨＰ -= LOCAL
+		ELSE
+			CALLFORM リンケージコスト_{ARG:1}, LOCAL:1
+			BASE:(CFLAG:ARG:LOCALS):ＭＰ -= RESULT
+		ENDIF
+	NEXT
+ENDIF
+;コストを支払う
+CALL GET_SKILL_PROP, "SKILL_COSTTYPE", ARG:1, ARG
+L_COST_TYPE = RESULT
+CALL GET_SKILL_COST, ARG:1, ARG
+L_COST = RESULT
+SELECTCASE GET_SKILL_COST_TYPE(L_COST_TYPE)
+	CASE "HP"
+		BASE:ARG:ＨＰ -= L_COST
+		CFLAG:ARG:소비HP += L_COST
+	CASE "MP"
+		BASE:ARG:ＭＰ -= L_COST
+		CFLAG:ARG:소비MP += L_COST
+	CASE "TURN"
+		CALL GET_SKILL_PROP, "SKILL_DECIDE_TYPE", ARG:1
+		SELECTCASE GET_SKILL_DECIDE_TYPE(RESULT)
+			CASE "CS"
+				C_COMMANDER_SKILL_CT:ARG:FINDELEMENT(C_COMMANDER_SKILL:ARG:0, ARG:1) = -1
+			CASE "AS"
+				C_ASSIST_SKILL_CT:ARG:FINDELEMENT(C_ASSIST_SKILL:ARG:0, ARG:1) = 0
+		ENDSELECT
+	CASE "アイテム"
+		IF ARG >= 0
+			SIF CFLAG:ARG:PT플래그 == 0
+				RETURN 0
+			SIF TFLAG:전투중 && HAVE_SKILL(ARG, [[스킬:검약가]]) && RAND:100 < 30
+				RETURN 0
+		ENDIF
+		ITEM:CONVERT_SKILLNUM_TO_USEITEMNUM(ARG:1) -= L_COST
+ENDSELECT
+
+;=========================================
+;コスト払い戻し
+;ARG 	= キャラクター登録番号
+;ARG:1  = 一応小数点第2位まで扱えるように還元率(X / 10000)の割合にしておく
+;ARGS	= コストの種類
+;ARGS:1 = メッセージなどのオプション指定
+;=========================================
+@BACK_COST, ARG, ARG:1, ARGS = "HP/MP", ARGS:1 = "MES/WAIT"
+#DIM BACK_COST
+IF COUNT_SPLIT(ARGS, "HP") && CFLAG:ARG:소비HP
+	BACK_COST = MAX(CFLAG:ARG:소비HP * ARG:1 / 10000, 1)
+	CALL VAR_HP, ARG, BACK_COST, "회복"
+	CFLAG:ARG:소비HP -= BACK_COST
+	SIF !COUNT_SPLIT(ARGS:1, "NOMES")
+		CALL PRINT_HIT_MESSAGE, ARG, @"{BACK_COST}회복", \@COUNT_SPLIT(ARGS:1, "NOWAIT") ? L # W \@
+ENDIF
+IF COUNT_SPLIT(ARGS, "MP") && CFLAG:ARG:소비MP
+	BACK_COST = MAX(CFLAG:ARG:소비MP * ARG:1 / 10000, 1)
+	CALL VAR_MP, ARG, BACK_COST, "회복"
+	SIF !COUNT_SPLIT(ARGS:1, "NOMES")
+		CALL PRINT_HIT_MESSAGE, ARG, @"{BACK_COST}ＭＰ회복", \@COUNT_SPLIT(ARGS:1, "NOWAIT") ? L # W \@
+	CFLAG:ARG:소비MP -= BACK_COST
+ENDIF
+
+;=========================================
+;コストチェック
+;ARG = スキルの使用者のキャラ登録番号
+;ARG:1 = スキル番号
+;=========================================
+@CHECK_COST, ARG, ARG:1
+#DIM TEMP
+#DIM L_COST
+#DIM L_COST_TYPE
+CALL GET_SKILL_PROP, "SKILL_COSTTYPE", ARG:1, ARG ;061
+L_COST_TYPE = RESULT
+IF L_COST_TYPE > 1
+	CALL GET_SKILL_COST, ARG:1, ARG
+	L_COST = RESULT
+	SELECTCASE GET_SKILL_COST_TYPE(L_COST_TYPE)
+		CASE "HP"
+			IF BASE:ARG:ＨＰ < L_COST
+				RESULTS = 코스트 부족: HP
+				RETURN 0
+			ENDIF
+		CASE "MP"
+			IF BASE:ARG:ＭＰ < L_COST
+				RESULTS = 코스트 부족: MP
+				RETURN 0
+			ENDIF
+		CASE "TURN"
+			CALL GET_CAST_SKILL_EMULATOR, ARG:1, ARG
+			L_COST = RESULT
+			IF L_COST > 0
+				RESULTS = 필요 턴 수:%TOFULL(TOSTR(L_COST))%
+				RETURN 0
+			ENDIF
+		CASE "アイテム"
+			IF CFLAG:ARG:PT플래그 > 0
+				SIF ITEM:(ARG:1 - 2000) < L_COST
+					RETURN 0
+			ENDIF
+	ENDSELECT
+ENDIF
+RETURN 1
+
+@CHECK_COST_LINCAGE, ARG, ARG:1, ARG:2
+CALLFORM リンケージコストタイプ_{ARG:1}, ARG:2
+IF RESULT > 1
+	IF RESULT == 2
+		CALLFORM リンケージコスト_{ARG:1}, ARG:2
+		LOCAL = MAXBASE:ARG:ＨＰ * RESULT /100
+		SIF CFLAG:ARG:보스플래그
+			LOCAL /= 10
+		SIF BASE:ARG:ＨＰ <= LOCAL
+			RETURN 0
+	ELSE
+		CALLFORM リンケージコスト_{ARG:1}, ARG:2
+		SIF BASE:ARG:ＭＰ < RESULT
+			RETURN 0
+	ENDIF
+ENDIF
+RETURN 1
+
+;=========================================
+;スキルのコスト取得
+;ARG	スキル番号
+;ARG:1	使用者
+;
+;RESULT = コスト
+;RESULTS = コストのテキスト表示
+;=========================================
+@GET_SKILL_COST, SKILL_NUM, ACTOR = -1
+#DIM DYNAMIC SKILL_NUM
+#DIM DYNAMIC ACTOR
+#DIM DYNAMIC L_COST
+#DIMS DYNAMIC L_COSTTYPE
+#DIMS DYNAMIC L_COST_TEXT
+;コストのタイプを取得
+CALL GET_SKILL_PROP, "SKILL_COSTTYPE", SKILL_NUM,ACTOR
+L_COSTTYPE = %GET_SKILL_COST_TYPE(RESULT)%
+SIF RESULT == 0
+	RETURN 0
+;COST所得前にRESULTSをリセット
+;COST関数の中でRESULTSを代入することで消費なしスキルの消費の表示を指定できる
+;コストの元の値を取得
+CALL GET_SKILL_PROP, "SKILL_COST", SKILL_NUM, ACTOR
+L_COST = RESULT
+L_COST_TEXT '= RESULTS
+;使用者の指定なしの場合
+IF ACTOR < 0
+	SELECTCASE L_COSTTYPE
+		CASE "HP"
+			L_COST_TEXT = ＨＰ{L_COST, 3}\％
+		CASE "MP"
+			L_COST_TEXT = ＭＰ{L_COST, 3}
+		CASE "TURN"
+			L_COST_TEXT = {L_COST}Ｔ
+		CASE "アイテム"
+			L_COST_TEXT = {L_COST}개
+	ENDSELECT
+ELSE
+	SELECTCASE L_COSTTYPE
+		CASE "HP", "MP"
+			IF L_COSTTYPE == "HP"
+				L_COST = L_COST * MAXBASE:ACTOR:ＨＰ / 100
+				SIF CFLAG:ACTOR:보스플래그
+					L_COST /= 10
+			ENDIF
+			CALL COST_CUT, L_COST, SKILL_NUM, ACTOR
+			L_COST = RESULT;EDIT 011 ADD
+			SIF L_COST_TEXT == ""
+				L_COST_TEXT = {L_COST, 3}%TOFULL(L_COSTTYPE)%
+		CASE "TURN"
+			CALL GET_CAST_SKILL_EMULATOR, SKILL_NUM, ACTOR
+			L_COST = RESULT
+			IF RESULTS == ""
+				;IF CFLAG:ACTOR:コマンダースキル経過ターン数 >= L_COST
+				IF L_COST == 0
+					L_COST_TEXT = READY
+				ELSE
+					L_COST_TEXT = {L_COST, 3}Ｔ
+				ENDIF
+			ENDIF
+		CASE "アイテム"
+			SIF L_COST_TEXT == ""
+				L_COST_TEXT = {L_COST}개
+	ENDSELECT
+ENDIF
+RESULTS '= L_COST_TEXT
+RETURN L_COST
+
+;=========================================
+;コストカット
+;ARG	コスト
+;ARG:1	スキル番号
+;ARG:2	使用者
+;=========================================
+@COST_CUT, ARG, ARG:1, ARG:2
+#DIM L_素質番号
+#DIM L_COST
+#DIM COST_VALUE
+#DIM TEMP
+#DIM LCOUNT
+L_COST = ARG
+;コスト0のスキル(通常攻撃など)の場合
+SIF L_COST == 0
+	RETURN 0
+CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", ARG:1, ARG:2
+L_素質番号 = RESULT
+
+;小数点以下を扱えない仕様上、激しく斬り捨てが出るので調整する
+COST_VALUE = 10000
+;魔術の素養はLvに応じて10%~30%カット
+COST_VALUE = COST_VALUE * (100 - GET_BTL_TALENT_LV("마술의소양", ARG:2) * 5 - (GET_BTL_TALENT_LV("마술의소양", ARG:2) > 0) * 5) / 100
+
+;相性素質は20%カット。素養とは効果の高い方のみが効果を発揮する
+IF GET_BTL_TALENT_LV("스킬적성", ARG:2)
+	SIF 相性素質チェック_F(ARG:2, L_素質番号)
+		COST_VALUE = MIN(COST_VALUE * (100 - SUB_ROLE_스킬적성효과("コスト軽減", ARG:2))/ 100, COST_VALUE)
+ENDIF
+;デビルアームズで取得しているスキルは消費が軽減される
+SIF MATCH(C_DEVIL_ARMS_SKILL:(ARG:2):0, ARG:1)
+	COST_VALUE = COST_VALUE * 85 / 100
+
+;その他スキル効果による変動
+FOR LCOUNT, 0, TRYSKILLNUM(ARG:2)
+	TRYCCALLFORM SKILL_COST_CHANGE_%GET_TRYSKILL(ARG:2, LCOUNT, "CONVERT")%, ARG:2, ARG:1, TRYSKILL_VAR
+		;100%カットはここで落としてしまう
+		SIF RESULT <= -100
+			RETURN 0
+		COST_VALUE = COST_VALUE * (100 + RESULT) / 100
+	CATCH
+	ENDCATCH
+NEXT
+
+L_COST = L_COST * COST_VALUE / 10000 + (L_COST % COST_VALUE / 10000 > 0)
+;効果量が低すぎる場合も増減1は発生する
+IF L_COST == ARG
+	SIF COST_VALUE < 10000
+		L_COST++
+	SIF COST_VALUE > 10000
+		L_COST--
+ENDIF
+
+;いちおう75%カットまでの上限もつけておく
+L_COST = MAX(L_COST, 1, ARG * 25 / 100)
+RETURN L_COST

@@ -1,0 +1,171 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;====================
+;조건
+;====================
+@GET_EVENT_NAME_52
+#FUNCTIONS
+RESULTS_F '= "특이한악마의매매"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_52
+IF FLAG:조직공헌도 >= 200000 && イベントフラグ:52:0 <= 1
+	RESULTS = 특이한 악마의 매매
+	RETURN 1
+ENDIF
+
+;====================
+;내용
+;====================
+@SHOPCOM_EVENT_52
+CALL EVENT_52_START
+SIF !RESULT
+	RETURN 0
+CALL KOJOSYOUKAIPAGE
+SIF RESULT == 0
+	CALL EVENT_52_END
+RETURN 1
+
+@EVENT_52_START
+#DIM DYNAMIC L_DAMANA
+#DIMS DYNAMIC L_TALK
+#DIMS DYNAMIC DAMANA_NAME
+PRINTL 
+PRINTL 
+DRAWLINE
+L_DAMANA = GETCHARA([[キャラ:동기다크서머너]])
+IF L_DAMANA >= 0
+	IF CALLNAME:L_DAMANA == "동기다크서머너" || CALLNAME:L_DAMANA == "同期のダークサマナー"
+		DAMANA_NAME '= "다크서머너"
+	ELSE
+		DAMANA_NAME '= CALLNAME:L_DAMANA
+	ENDIF
+ELSE
+	DAMANA_NAME '= "다크서머너"
+ENDIF
+IF イベントフラグ:52:0 >= 1
+	IF L_DAMANA >= 0 && 친애(L_DAMANA)
+		CALL PRINT_TALK_BY_CHARA, L_DAMANA, , , "어서 와, 오늘도 와 줘서 기뻐._기특하다고? 왜냐면, 넌 특별한 걸……", "赤面", DAMANA_NAME,
+	ELSE
+		CALL PRINT_TALK_BY_CHARA, L_DAMANA, [[キャラ:동기다크서머너]], "FACE_0", "여어, 또 왔구만._오늘은 어떤 녀석을 사 갈 텐가?", , DAMANA_NAME,
+	ENDIF
+	WAIT
+ELSE
+	イベントフラグ:52:0 = 1
+	IF GETCHARA([[キャラ:동기다크서머너]]) > 0
+		PRINTFORML
+		PRINTL 
+		PRINTW 어디서 자금을 조달했는지는 모르겠지만 망했을 터인 가게가 재건되고 있었다……
+		PRINTW 변함없이 특이한 악마를 팔고 있는 것 같다……
+		PRINTL
+		CALL PRINT_TALK_BY_CHARA, L_DAMANA, [[キャラ:동기다크서머너]], "FACE_0", "어서오……으와아아아아아!!!_　부탁이에요! 눈감아주세요! 가게에 해코지하지 말아줘요! 주인니임!_말 없이 장사한 건 이렇게 빌게요! 용서해주세요!", , DAMANA_NAME,
+		WAIT
+		PRINTL 
+		PRINTL 
+		PRINTW 용서하시겠습니까?
+		CALL INPUT_YN
+
+		IF RESULT == 0
+			CALL PRINT_TALK_BY_CHARA, L_DAMANA, [[キャラ:동기다크서머너]], "FACE_0", "엣, 괜찮아?_다행이다……이제 끝장인 줄 알았어……_이런 짓을 할 거면 먼저 허락을 맡아라? 네에……그 말씀대로예요……_어, 맞아! 상납금! 이걸로 용서해 줘!" , , DAMANA_NAME,
+			WAIT
+			PRINTL 
+			PRINTL 
+			MONEY:1 += 1000
+			PRINTFORMW 상납금으로 1000마카가 걷혔다
+		ELSE
+			CALL PRINT_TALK_BY_CHARA, L_DAMANA, [[キャラ:동기다크서머너]], "FACE_0", "으와아아아앙!_너무하잖아아아아아아아!!!" , , DAMANA_NAME,
+			WAIT
+			PRINTL 
+			PRINTL 
+			PRINTFORMW 
+			PRINTFORML 울부짖는 다크서머너를 흘긋 본 %CALLNAME:MASTER%은 가게를 팔아치울 준비를 시작했다.
+			PRINTFORML 제멋대로 장사를 시작하는 노예를 용서할 수는 없다.
+			PRINTFORMW 
+			PRINTFORMW 가게 권리를 경매에 부친 결과, 2000마카 정도의 수입이 생겼다……
+			イベントフラグ:52:0 = 2
+			MONEY:1 += 2000
+			RETURN 0
+		ENDIF
+	ELSE
+		PRINTFORML
+		PRINTL
+		PRINTW 동기 서머너가 기묘한 장사를 시작한 모양이다.
+		PRINTW 뭐든지 특이한 악마의 매매를 하고 있다던가.
+		PRINTL 
+		CALL PRINT_TALK_BY_CHARA, L_DAMANA, [[キャラ:동기다크서머너]], "FACE_0", "여어, 오랜만이네_이 가게는 특이한 악마들을 취급하고 있어._실용성이라든가 그런 게 아니라, 단순하게 조교할 때 특이한 소릴 하는 악마 말이야._조교사인 너한텐 유용하지 않겠어?_라인업은 이런 느낌이지", , DAMANA_NAME,
+		WAIT
+		PRINTL 
+		PRINTL 
+	ENDIF
+ENDIF
+RETURN 1
+
+@EVENT_52_END
+#DIM DYNAMIC L_DAMANA
+#DIMS DYNAMIC L_TALK
+#DIMS DYNAMIC DAMANA_NAME
+L_DAMANA = GETCHARA([[キャラ:동기다크서머너]])
+
+IF L_DAMANA >= 0
+	IF CALLNAME:L_DAMANA == "동기다크서머너" || CALLNAME:L_DAMANA == "同期のダークサマナー"
+		DAMANA_NAME '= "다크서머너"
+	ELSE
+		DAMANA_NAME '= CALLNAME:L_DAMANA
+	ENDIF
+ENDIF
+
+IF L_DAMANA >= 0 && 친애(L_DAMANA)
+	SELECTCASE RAND:3
+		CASE 0
+			CALL PRINT_TALK_BY_CHARA, L_DAMANA, , , "돌아갈 거면 잠깐만 기다려._오늘은 마감할 테니까 같이 돌아가자", "笑顔", DAMANA_NAME,
+		CASE 1
+			CALL PRINT_TALK_BY_CHARA, L_DAMANA, , , "응, 돌아가는 거야?_바쁘니까 말이지……또 시간 나면 얼굴이라도 비춰 줘?_……언제든지 기다릴 테니까", , DAMANA_NAME,
+		CASE 2
+			CALL PRINT_TALK_BY_CHARA, L_DAMANA, , , "……벌써 돌아가는 거야?_……외롭다거나 그런 건 아니니까 말야……", "赤面", DAMANA_NAME,
+	ENDSELECT
+ELSE
+	SELECTCASE RAND:3
+		CASE 0
+			L_TALK '= "벌써 됐어?_그럼, 또 와라"
+		CASE 1
+			L_TALK '= "어이쿠, 벌써 가나?_동기 중에서도 넌 출세가도지. 기대하고 있다고"
+		CASE 2
+			L_TALK '= "왜 이런 짓을 하고 있냐고?_싸우는 게 서툴러서 그래, 말하게 하지 마 쪽팔리게……"
+	ENDSELECT
+	CALL PRINT_TALK_BY_CHARA, L_DAMANA, [[キャラ:동기다크서머너]], "FACE_0", L_TALK, , DAMANA_NAME,
+ENDIF
+WAIT
+RETURN
+
+@EVENT_52_LIST_HEAD_TALK
+#DIMS DYNAMIC L_FACE, 2
+#DIMS DYNAMIC L_TALK
+#DIM DYNAMIC L_DAMANA
+#DIMS DYNAMIC DAMANA_NAME
+L_DAMANA = GETCHARA([[キャラ:동기다크서머너]])
+
+IF L_DAMANA >= 0
+	IF CALLNAME:L_DAMANA == "동기다크서머너" || CALLNAME:L_DAMANA == "同期のダークサマナー"
+		DAMANA_NAME '= "다크서머너"
+	ELSE
+		DAMANA_NAME '= CALLNAME:L_DAMANA
+	ENDIF
+ELSE
+	DAMANA_NAME '= "다크서머너"
+ENDIF
+
+IF RAND:2
+	L_FACE '= "FACE_0", "통상"
+ELSE
+	L_FACE '= "FACE_1", "笑顔"
+ENDIF
+
+SELECTCASE RAND:3
+	CASE 0
+		L_TALK = 「원하는 악마를 정했다면 언제든 불러줘」
+	CASE 1
+		L_TALK = 「가게 안에서 난동 부리지 말라고?」
+	CASE 2
+		L_TALK = 「자, 팍팍 사달라고」
+ENDSELECT
+CALL PRINT_TALK_BY_CHARA, GETCHARA([[キャラ:동기다크서머너]]), [[キャラ:동기다크서머너]], L_FACE:0, L_TALK, L_FACE:1, DAMANA_NAME,

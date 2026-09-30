@@ -1,0 +1,132 @@
+﻿;スキル名
+@SKILL_NAME_AW_1525,ARG
+RESULTS = 군신의 가호
+
+;　명중
+@SKILL_HITRATE_AW_1525, ARG
+RETURN 0
+
+@SKILL_POWER_AW_1525, ARG
+RETURN 0
+
+;;クリティカル率
+@SKILL_CRITICAL_RATE_AW_1525, ARG
+RETURN 0
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_AW_1525, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_AW_1525,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_AW_1525,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_AW_1525,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_AW_1525,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_AW_1525, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_AW_1525,ARG
+RETURN 0
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_AW_1525
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_AW_1525,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_AW_1525,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_AW_1525,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_AW_1525,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_AW_1525,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_AW_1525, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_AW_1525
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_AW_1525,ARG,ARG:1,ARG:2
+
+;効果を発揮するリーダースキル
+@SKILL_GET_LEADER_SKILL_NAME_AW_1525, ARG
+RESULTS = 관반의 영압
+
+;　説明文の表示
+@SKILL_EXPLAIN_AW_1525,ARG
+PRINTL 마신 아타바크의 각성 스킬
+PRINTL 자동: 물리 명중이 대폭 상승한다.
+PRINTL 　　　이 악마가 생존해 있는 동안, 아군의 반사 상성이 관통·가드킬에 대해 데미지 반감 효과를 가진다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_AW_1525,ARG
+RETURN 0
+
+@SKILL_ACTIONABLE_BATTLE_AW_1525, ARG
+;選択肢に出るかどうか
+RETURN 0
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_AW_1525, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;スキル命中率に加算する。低命中スキルに影響度が高く、カジャンダによって効果量が増減する
+		 CASE "スキル命中強化"
+		 	SIF L_攻撃タイプ == "物理"
+				RETURN 20
+	ENDSELECT
+;自分が防御側
+ELSE
+ENDIF
+RETURN 0

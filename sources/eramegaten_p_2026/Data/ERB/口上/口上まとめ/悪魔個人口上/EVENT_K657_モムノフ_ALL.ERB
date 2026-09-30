@@ -1,0 +1,4607 @@
+﻿;-------------------------------------------------
+;即落ち二コマなモムノフ口上
+;某感度3000倍のあれとか、くっころとか、女騎士とかリスペクトの淫乱　叫ぶ喘ぎ
+;つまり？→ひたすらアヘるだけ　 屈服刻印2→3で落ちる
+;容姿はMeiQのさらしブシドーちゃんみたいな　意
+;
+;武士と騎士って似てるじゃん？ モムノフじゃなくていいとかのツッコミはなしで　
+;一応戦一筋でHなこと知らなくて、一度されたら未知の感覚で落ちる感じって設定だから、あと会話で設定が生えるし（震え声）
+;複数人プレイをかけたら書きたい
+;現状、モムノフが何か出すときと、調教開始・終了時がある。コマンドはほぼない
+;-------------------------------------------------
+
+;-------------------------------------------------
+;eraMegaten専用口上テンプレート
+;X1とX2をキャラ番号に置換し、Y1を助手のキャラ番号に置換してください
+;ただし、キャラ番号が一桁のキャラの場合、X1,Y1は1、X2は01のように変えてください
+;そしてコマンド内の適当な条件の下のPRINTFORMWの後ろに半角スペースを置いてセリフを追加してください
+;口上を追加しないコマンドは無記入でも構いませんが、CFLAG:XXXの頭に『;』をつけてコメントアウトすると尚良いでしょう
+;エキストラ構文など、コメントアウトされている構文を使う際には、『;』を外してコメントアウトを解除する必要があります
+;最後にread meにも目を通しておくことをお勧めします
+;-------------------------------------------------
+
+;-------------------------------------------------
+;汎用口上の作成に使用する場合は、X1→キャラ番号ではなく、
+;K[[キャラ:모무노후]]_12→PUB会話タイプ番号　へと変換してご使用ください
+;-------------------------------------------------
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_K[[キャラ:모무노후]]_12_ASSI.ERB
+;	Facility	:会話タイプ：助手時口上
+;
+;	Modification Data:
+;	Edit	Date			Author					Reason
+;	001		2017/11/6								新規作成
+;	002		2022/05/21								コマンドに未陥落口上と淫乱(女_若者)を表示するように
+;	003		2023/09/06		絹延					処女喪失処理修正　TFLAG:20が恋慕系陥落を保証しなくなった修正の対応。
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+
+;ライセンスについて
+;	・基本項目(許可する項目を"○"に、許可しない項目を"×"に変更してください。)
+;	+----+----+-------------------------------+
+;	|番号|許可|ライセンス内容                 |
+;	+----+----+-------------------------------+
+;	|   1| ○ | 処理上のバグ修正              |
+;	+----+----+-------------------------------+
+;	|   2| ○ | 口上の誤字・脱字の修正        |
+;	+----+----+-------------------------------+
+;	|   3| ○ | 口上まとめへの収録            |
+;	+----+----+-------------------------------+
+;	|   4| ○ | 口上の新規追加                |
+;	+----+----+-------------------------------+
+;	|   5| ○ | 既存口上の改変                |
+;	+----+----+-------------------------------+
+;	|   6| ○ | 改変した口上の自由な再配布    |
+;	+----+----+-------------------------------+
+;	|   7| ○ | 口上内容の転載                |
+;	+----+----+-------------------------------+
+
+;--------------------------------------------------
+;口上セレクト機能：口上説明
+;--------------------------------------------------
+;この関数のコメントアウトを外すと、口上の選択時に選択肢として候補にあがります
+;既に口上のあるキャラや会話タイプの別版の口上を作成する時に利用してください
+;その際、この関数を含めたこのファイル内の関数名すべてに_任意の1-49(汎用口上なら1-9)の数字を加えてください
+;例： EVENTTRAIN_K[[キャラ:모무노후]]_12 → EVENTTRAIN_K[[キャラ:모무노후]]_12_12
+;--------------------------------------------------
+@セレクト口上説明_K[[キャラ:모무노후]]_12,ARG = 0
+SIF ARG == 1
+	RETURN 0
+;口上名
+PRINTFORML TS음란모무노후짱（仮称）
+;口上説明文
+PRINTFORML  자지 따위에 절대 굴복하지 않아! (비장)
+PRINTFORML  당연히 음란 루트(일부)뿐이며 다른 루트는 백지
+PRINTFORML  비명 헐떡임 & %UNICODE(0x2661)% 다용
+PRINTFORML  TS하여 소질이 생깁니다
+PRINTFORML  ─大損恐
+
+;--------------------------------------------------
+;EVENTTRAIN関係（X1をキャラ番号に置換）
+;調教開始時のセリフ CFLAG 201～219を使用
+;--------------------------------------------------
+@EVENTTRAIN_K[[キャラ:모무노후]]_12
+;--------------------------------------------------
+;エキストラモード構文　CFLAG:220を使用
+;はいを選択した時に初調教時に口上設定用の素質に変更できます
+;下記に処女化する場合の構文をサンプルとして載せておきます
+;--------------------------------------------------
+IF CFLAG:220 == 0
+	PRINTL 이 구상은 여성화 등의 소질 변경이 전제인 구상입니다。
+	PRINTW 이 구상에 맞게 소질을 변경합니까？
+	PRINTL 
+	PRINTL [0] 기능 소질·의복 등을 변경한다
+	PRINTL [1] 여체화만 한다
+	PRINTL [2] 소질을 변경하지 않는다
+	$INPUT_LOOP_bushi_TS
+	INPUT
+	IF RESULT == 0
+		PRINTFORMW ―자지 따위에 절대 지지 않아！
+		;呼び名変更
+		CSTR:일인칭 = 私
+		;処女化
+		TALENT:TARGET:0 = 1
+		ABL:TARGET:4 = 0
+		EXP:TARGET:0 = 0
+		;素質変化
+		TALENT:절벽 = 0
+		TALENT:헌신적 = 0
+		TALENT:솔직함 = 0
+		TALENT:프라이드높음 = 1
+		TALENT:도착적 = 1
+		;既に女体化してた時対策
+		IF TALENT:남자 == 1
+			TALENT:남자 = 0
+			TALENT:절벽 = 0
+			TALENT:거유 = 1
+			CFLAG:220 = 2
+		ENDIF
+
+		;服装
+		;陣羽織、袴、さらし、手甲
+		CFLAG:초기속옷（상） = 503
+		CFLAG:속옷（상） = 503
+		TEQUIP:속옷（상） = 503
+		CFLAG:초기손 = 412
+		CFLAG:손 = 412
+		TEQUIP:손 = 412
+		CFLAG:초기겉옷 = 1029
+		CFLAG:겉옷 = 1029
+		TEQUIP:겉옷 = 1029
+		CFLAG:초기하의 = 215
+		CFLAG:하의 = 215
+		TEQUIP:하의 = 215
+		CFLAG:초기전신복 = 0
+		CFLAG:전신복 = 0
+		TEQUIP:전신복 = 0
+
+	ELSEIF RESULT == 1
+		PRINTFORMW ―여체화만 진행합니다―
+		CSTR:일인칭 = 나
+		SIF TALENT:남자 == 1
+			TALENT:절벽 = 0
+		TALENT:남자 = 0
+	ELSEIF RESULT == 2
+		PRINTFORMW ―남자인 채로 시작합니다―
+	ELSE
+		GOTO INPUT_LOOP_bushi_TS
+	ENDIF
+	CFLAG:800 = 2
+	SIF CFLAG:220 == 0
+		CFLAG:220 = 1
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL EVENTTRAIN_PY1_K[[キャラ:모무노후]]_12
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL EVENTTRAIN_PY1_K[[キャラ:모무노후]]_12
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;--------------------------------------------------
+;簡易助手口上の発動時に初調教時口上をスキップ（Y1を助手のキャラ番号にする）
+;複数人いる際には、SIF NO:ASSI == Y1 || NO:ASSI == Z1と追加していく
+;--------------------------------------------------
+;IF CFLAG:201 == 0 && ASSI > 0
+;	SIF NO:ASSI == Y1
+;		CFLAG:201 =1
+;ENDIF
+;-------------------------------------------------
+;調教開始時（一回のみ） CFLAG201
+;-------------------------------------------------
+DRAWLINE
+;初調教時
+IF CFLAG:201 == 0 && TALENT:연모 == 0
+    PRINTFORML 당신이 조교실에 불러낸 것은 %CALLNAME%다。
+    PRINTFORML 검고 긴 머리카락을 높은 위치에서 묶고、날카로운 눈매와 늠름한 표정으로、기동성을 중시한 방어력을 기대할 수 없는 의복을 입고 있었다。
+	PRINTFORMW 또、보기에도 프라이드가 높아 보이는 몸짓만으로 어딘가 건방짐이 느껴졌다。
+	PRINTFORML 「……뭐냐 %CSTR:이인칭%。이런 곳에 불러내서…」
+	PRINTFORML 「조교라고！  ……흥！ 시험해 봐라。」
+	PRINTFORMW 「네놈 정도로 이 %일인칭을% 어떻게 할 수 있다고 생각하느냐！」
+		CSTR:이인칭 = 네놈
+	CFLAG:201 = 1
+	RETURN 0
+;屈服刻印Lv1
+ELSEIF CFLAG:201 < 2 && MARK:2 == 1
+	PRINTFORML %CALLNAME은% %MASTER를% 멸시하는 눈빛을 보이고 있었다…
+	PRINTFORMW 「……흥！%CSTR:이인칭%은 아직 쓸데 없는 짓을 계속하는 건가？」
+	CFLAG:201 = 2
+	RETURN 0
+;屈服刻印Lv2
+ELSEIF CFLAG:201 < 3 && MARK:2 == 2
+	PRINTFORML %CALLNAME%의 %MASTER를% 보는 눈에서 기대가 섞이기 시작했다…
+	PRINTFORMW 「아、아직이다… 이 정도로 %CSTR:일인칭%에겐 문제 없다。」
+	CFLAG:201 = 3
+	RETURN 0
+;屈服刻印Lv3
+ELSEIF CFLAG:201 < 4 && MARK:2 == 3 && (TALENT:3 == 0 && TALENT:4 == 0 && TALENT:5 == 0 && TALENT:6 == 0 && TALENT:7 == 0 && TALENT:8 == 0)
+	PRINTFORML %CALLNAME은% 얼굴을 붉히며 계속 발을 비벼대고 있었다…
+	PRINTFORMW 「다시 온 건가%UNICODE(0x2661)%   큭、기대같은 건 하지 않았다！」
+	CFLAG:201 = 4
+	RETURN 0
+;陥落
+ELSEIF CFLAG:201 < 5 && (TALENT:3 || TALENT:4 || TALENT:5)
+	;연모
+	IF TALENT:3
+		IF CFLAG:미조교함락 == 1
+			;調教せずに恋慕をつけた場合
+			PRINTFORMW 
+		ELSE
+			PRINTFORMW 
+		ENDIF
+	;음란
+	ELSEIF TALENT:4
+		CSTR:이인칭 = 주인님
+		PRINTFORML %MASTER가% 방에 들어가자 물소리가 들렸다。아무래도 %CALLNAME은% 자위를 하는 것 같다…
+		PRINTFORML %CALLNAME%의 정욕으로 흐려진 눈과 시선이 부딪친다。거기엔 예전같은 자존심은 남아있지 않았다。
+		PRINTFORML 거기에 있는 것은 조교에 의해서 자존심도 인품도 파괴된、단순한 육변기다。
+		PRINTFORMW 「히아앗%UNICODE(0x2661)% 굉장해엣%UNICODE(0x2661)% 빨리%CSTR:이인칭%의 %CSTR:일인칭%의 구멍에 넣어줘어%UNICODE(0x2661)%」
+	;복종
+	ELSEIF TALENT:5
+		PRINTFORMW 
+	ENDIF
+	CFLAG:201 = 5
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;簡易助手口上（Y1を助手のキャラ番号に置換、X1をキャラ番号に変更する) CFLAG203
+;掛け合いをするキャラを増やす場合は、構文をコピー＆ペーストをして、CFLAGの数を204、205と増やす
+;-------------------------------------------------
+;助手の有無をチェック（いない場合は二回目以降へ飛ぶ）
+IF ASSI < 0 
+	CALL EVENTTRAIN_SECOND_K[[キャラ:모무노후]]_12
+;助手
+;ELSEIF NO:ASSI == Y1
+	;初めて
+;	IF CFLAG:203 == 0
+		;陥落済み＋陥落時初口上が発生済み
+;		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && CFLAG:201 >= 5
+;			PRINTFORMW 
+		;それ以外
+;		ELSE
+;			PRINTFORMW 
+;		ENDIF
+;		CFLAG:203 = 1
+	;二回目以降
+;	ELSEIF CFLAG:203 < 2 || FLAG:7 ==2
+		;陥落済み
+;		IF TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8
+;			PRINTFORMW 
+		;それ以外
+;		ELSE
+;			PRINTFORMW 
+;		ENDIF
+;		CFLAG:203 = 2
+;	ENDIF
+;口上のある助手が居ない場合は、通常の二回目以降の口上へ飛ぶ
+ELSE
+	CALL EVENTTRAIN_SECOND_K[[キャラ:모무노후]]_12
+ENDIF
+
+;-------------------------------------------------
+;調教開始時（2回目以降、X1をキャラ番号に変更する）
+;-------------------------------------------------
+@EVENTTRAIN_SECOND_K[[キャラ:모무노후]]_12
+;反発刻印Lv3
+IF MARK:3 == 3 && (CFLAG:202 < 4 || FLAG:7 == 2)
+	PRINTFORML 「………」
+	PRINTFORMW %CALLNAME은% %MASTER를% 굉장한 눈빛으로 노려보고 있었다。
+	CFLAG:202 = 4
+;屈服刻印Lv0
+ELSEIF MARK:2 == 0 && (CFLAG:202 < 1 || FLAG:7 == 2)
+	PRINTFORML 「어떻게 됐나？조교한다고？ …아아、역시 %CSTR:이인칭% 정도로는 능한 일인가。」
+	PRINTFORMW %CALLNAME은% %MASTER를% 비웃고 있었다。
+	CFLAG:202 = 1
+;屈服刻印Lv1
+ELSEIF MARK:2 == 1 && (CFLAG:202 < 2 || FLAG:7 == 2)
+	PRINTFORMW 「이정도 속도로는 %일인칭을% 떨어트리기 전에 %CSTR:이인칭%의 수명이 다하겠군。」
+	CFLAG:202 = 2
+;屈服刻印Lv2
+ELSEIF MARK:2 == 2 && (CFLAG:202 < 3 || FLAG:7 == 2)
+	PRINTFORML 「꽤 하는군。이 상태라면 %이인칭이% 죽기 전에는 끝나겠군」
+	PRINTFORMW %CALLNAME은% %MASTER를% 비웃었다。
+	CFLAG:202 = 3
+;屈服刻印Lv3＋陥落素質無し
+ELSEIF MARK:2 == 3 && (TALENT:3 == 0 && TALENT:4 == 0 && TALENT:5 == 0 && TALENT:6 == 0 && TALENT:7 == 0 && TALENT:8 == 0) && (CFLAG:202 < 4 || FLAG:7 == 2)
+	PRINTFORML 「후앗%UNICODE(0x2661)%    …！%CSTR:이인칭%！본건가！」
+	PRINTFORMW %CALLNAME은% 발정한 모습을 보이고는 얼굴을 붉히고 있었다。
+	CFLAG:202 = 4
+;陥落済み
+ELSEIF CFLAG:202 < 5 || FLAG:7 == 2
+	IF 1== 0
+	;恋慕、親愛
+	ELSEIF TALENT:3 || TALENT:6
+		;ランダムで口上が変化する（使わない場合はすべて同じにすればよい）
+			PRINTFORMW 
+	;淫乱、娼婦
+	ELSEIF TALENT:4 || TALENT:7
+		;ランダムで口上が変化する（使わない場合はすべて同じにすればよい）
+		IF RAND:3 == 0
+			PRINTFORML 「%CSTR:이인칭%의 자지、이 음란 노예에게 팍팍 찔러주세요%UNICODE(0x2661)%」
+			PRINTFORMW %CALLNAME은% 납작히 엎드려 애액을 줄줄 흘리고 있는 질구를 보여주었다…
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「히끅… 자지 갖고 싶어、갖고 싶어어%UNICODE(0x2661)%」
+			PRINTFORMW %CALLNAME은% %MASTER가% 온 것을 눈치채지 못하고、자위에 몰두하고 있었다…
+		ELSE
+			PRINTFORML 「몸이 뜨거워%UNICODE(0x2661)% 부탁합니다%CSTR:이인칭%。%CSTR:일인칭%의 몸을 엉망진창으로%UNICODE(0x2661)%」
+			PRINTFORMW %CALLNAME은% 발정한 몸을 주체 못하는 것 같았다…
+		ENDIF
+	;服従、隷属
+	;ELSEIF TALENT:5 || TALENT:8
+		;ランダムで口上が変化する（使わない場合はすべて同じにすればよい）
+		;IF RAND:3 == 0
+		;	PRINTFORMW 
+		;ELSEIF RAND:2 == 0
+		;	PRINTFORMW 
+		ELSE
+			PRINTFORMW 
+		ENDIF
+	;その他、共通
+	ELSE
+			PRINTFORMW 
+	ENDIF
+	CFLAG:202 = 5
+RETURN 0
+
+;-------------------------------------------------
+;EVENTEND関係（X1をキャラ番号に置換）
+;調教終了時のセリフ
+;-------------------------------------------------
+@EVENTEND_K[[キャラ:모무노후]]_12
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL EVENTEND_PY1_K[[キャラ:모무노후]]_12
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	SIF NO:ASSI == Y1
+;	CALL EVENTEND_PY1_K[[キャラ:모무노후]]_12
+;	RETURN 0
+;ENDIF
+;--------------------------------------------------
+;調教終了時のセリフ
+;--------------------------------------------------
+DRAWLINE
+;反発刻印Lv3
+IF MARK:3 == 3 && (CFLAG:217 < 1 || FLAG:7 == 2)
+	PRINTFORMW 「……집어치워라 하찮은 쓰레기 놈。 언젠가 죽여버리겠다」
+	CFLAG:217 = 1
+;屈服刻印Lv1以下
+ELSEIF MARK:2 <= 1 && (CFLAG:219 < 1 || FLAG:7 == 2)
+	IF RAND:2 == 0
+			PRINTFORMW 「조교라고、잘도 그 치졸한 기교로 말하는 구나。부끄럽지도 않은가？」
+		ELSE
+			PRINTFORMW 「이런 상태로는 %일인칭을% 떨어뜨리는 것에 몇년이 걸리는거지？직업을 바꾸길 권하겠어。」
+		ENDIF
+	CFLAG:219 = 1
+;屈服刻印Lv2
+ELSEIF MARK:2 == 2
+	PRINTFORMW 「아、아직이다… 이 정도는 %CSTR:일인칭%에겐 아무 문제 없다。그래、기분 좋아지지 않았다…」
+	CFLAG:219 = 2
+;屈服刻印Lv3＋陥落素質無し
+ELSEIF MARK:2 == 3 && (TALENT:3 == 0 && TALENT:4 == 0 && TALENT:5 == 0 && TALENT:6 == 0 && TALENT:7 == 0 && TALENT:8 == 0)
+	PRINTFORMW 「몸이 뜨거워%UNICODE(0x2661)%　%CSTR:이인칭%에겐 절대 지지 않으니까…%UNICODE(0x2661)%」
+	CFLAG:219 = 3
+;陥落済み＋体力500未満
+ELSEIF BASE:0 < 500 && (CFLAG:218 < 1 || FLAG:7 == 2)
+	;恋慕、親愛
+	IF TALENT:3 || TALENT:6
+		PRINTFORMW 
+	;淫乱、娼婦
+	ELSEIF TALENT:4 || TALENT:7
+		 IF RAND:2 == 0
+			PRINTFORML 「…아헤헤%UNICODE(0x2661)% 헤헤…%UNICODE(0x2661)%」
+			PRINTFORMW %CALLNAME은% 다양한 체엑을 뿜으면서 경련하고 있었다…
+		ELSE
+			PRINTFORML 「으흥%UNICODE(0x2661)% 굉장해、굉장해에에%UNICODE(0x2661)%」
+			PRINTFORMW %CALLNAME은% 몽롱해지는 의식 중에도、자위를 계속하고 있었다…
+		ENDIF
+	;服従、隷属
+	ELSEIF TALENT:5 || TALENT:8
+		PRINTFORMW 
+	ENDIF
+	CFLAG:218 = 1
+;陥落済み
+ELSEIF CFLAG:219 < 4 || FLAG:7 == 2
+	;恋慕、親愛
+	IF TALENT:3 || TALENT:6
+		PRINTFORMW 
+	;淫乱、娼婦
+	ELSEIF TALENT:4 || TALENT:7
+		IF RAND:3 == 0
+			PRINTFORML 「좀 더 %CSTR:일인칭%의 보지 %CSTR:이인칭%의 자지로 쑤겅쑤겅 해줘어%UNICODE(0x2661)%」
+			PRINTFORMW %CALLNAME은% %CALLNAME:MASTER%의 발 근처로 붙어왔다…
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「히끅…%UNICODE(0x2661)% %CSTR:이인칭%의 자지 굉장해써어%UNICODE(0x2661)%」
+			PRINTFORMW %CALLNAME%의 질구에서 흘러나오는 애액으로 웅덩이가 생겼다…
+		ELSE
+			PRINTFORML 「부족해에%UNICODE(0x2661)% 이런 어중간한 상태로 멈추지 말아줘 %CSTR:이인칭%…」
+			PRINTFORMW %CALLNAME%의 성욕은 아직 해소되지 않은 것 같다…
+		ENDIF
+	;服従、隷属
+	ELSEIF TALENT:5 || TALENT:8
+		PRINTFORMW 
+	ENDIF
+	CFLAG:219 = 4
+ENDIF
+RETURN 0
+
+;--------------------------------------------------
+;@KOJO_MESSAGE_COM関係（X1をキャラ番号に置換）
+;コマンド実行時に出力されます
+;--------------------------------------------------
+@KOJO_MESSAGE_COM_K[[キャラ:모무노후]]_12
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL TRAIN_MESSAGE
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_COM_PY1_K[[キャラ:모무노후]]_12
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_COM_PY1_K[[キャラ:모무노후]]_12
+;		RETURN 0
+;	ENDIF
+;ENDIF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;-------------------------------------------------
+;コマンド実行時のセリフ CFLAG 300～500
+;-------------------------------------------------
+SELECTCASE SELECTCOM
+;=================================================
+;愛撫系コマンド
+;=================================================
+;-------------------------------------------------
+;0,愛撫、14,クリ愛撫、15,엉덩이애무
+;-------------------------------------------------
+	CASE 0
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORML 軽%CALLNAME%体撫敏感反応、읏強刺激体寄来。
+			PRINTFORMW 「♪읏強읏、%CSTR:11%乳首읏♪　읏……%UNICODE(0x2661)%%UNICODE(0x2661)%」
+		ELSE
+			IF (ABL:Ｂ감각 >= 5 && PALAM:쾌Ｂ >= 1000) || PALAM:쾌Ｂ >= 5000 || (ABL:Ｃ감각 >= 5 && PALAM:쾌Ｃ >= 1000) || PALAM:쾌Ｃ >= 5000
+				CALL BODYTOUCH_K[[キャラ:모무노후]]_1
+			ELSE
+				CALL BODYTOUCH_K[[キャラ:모무노후]]_2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;1,커닐링구스
+;-------------------------------------------------
+	CASE 1
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「、읏汁吸읏、읏%CSTR:11%……%UNICODE(0x2661)%」
+		ELSE
+			IF (ABL:Ｃ감각 >= 5 && PALAM:쾌Ｃ >= 1000) || PALAM:쾌Ｃ >= 5000
+				CALL BODYTOUCH_K[[キャラ:모무노후]]_1
+			ELSE
+				IF RAND:2 == 0
+					PRINTFORMW 「所舐…%CSTR:이인칭%変態…」
+				ELSE
+					CALL BODYTOUCH_K[[キャラ:모무노후]]_2
+				ENDIF
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;2,펠라한다
+;-------------------------------------------------
+	CASE 2
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「！%CSTR:12%口、気持♪읏、…읏♪」
+			PRINTFORMW 「？%CSTR:11%、？읏읏♪」
+		ELSE
+			IF (ABL:Ｃ감각 >= 5 && PALAM:쾌Ｃ >= 1000) || PALAM:쾌Ｃ >= 5000
+				CALL BODYTOUCH_K[[キャラ:모무노후]]_1
+			ELSE
+				IF RAND:2 == 0
+					PRINTFORMW 「舐…%CSTR:이인칭%変態…」
+				ELSE
+					CALL BODYTOUCH_K[[キャラ:모무노후]]_2
+				ENDIF
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;3,손가락삽입
+;-------------------------------------------------
+	CASE 3
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「읏읏……%CSTR:11%汁읏出%UNICODE(0x2661)%」
+		ELSE
+			IF (ABL:Ｖ감각 >= 5 && PALAM:쾌Ｖ >= 1000) || PALAM:쾌Ｖ >= 5000
+				CALL BODYTOUCH_K[[キャラ:모무노후]]_1
+			ELSE
+				IF RAND:2 == 0
+					PRINTFORML %CALLNAME%膣内這入異物感触悶、顔赤。
+					PRINTFORMW 「、읏…………！」
+				ELSE
+					CALL BODYTOUCH_K[[キャラ:모무노후]]_2
+				ENDIF
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;4,アナル舐め、5,애널애무
+;-------------------------------------------------
+	CASE 4, 5
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			IF RAND:2 == 0
+				PRINTFORMW 「읏…尻気持…읏、%CSTR:11%変態읏…♪」
+			ELSE
+				PRINTFORMW 「……、開発…尻気持읏…」
+				PRINTFORMW %CALLNAME%尻穴与快感享受甘声続。
+			ENDIF
+		ELSE
+			IF (ABL:Ａ감각 >= 5 && PALAM:쾌Ａ >= 1000) || PALAM:쾌Ａ >= 5000
+				IF RAND:2 == 0
+					PRINTFORMW 「읏、不浄穴…、…읏！」
+				ELSE
+					CALL BODYTOUCH_K[[キャラ:모무노후]]_1
+				ENDIF
+			ELSE
+				IF RAND:2 == 0
+					PRINTFORMW 「읏、我慢읏……耐%CSTR:일인칭%、屈辱晴…」
+				ELSE
+					CALL BODYTOUCH_K[[キャラ:모무노후]]_2
+				ENDIF
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;6,胸揉み、8,가슴애무
+;-------------------------------------------------
+	CASE 6, 8
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「읏、……揉、읏……%UNICODE(0x2661)%」
+			PRINTFORMW 「읏♪揉%UNICODE(0x2661)%」
+		ELSE
+			IF (ABL:Ｂ감각 >= 5 && PALAM:쾌Ｂ >= 1000) || PALAM:쾌Ｂ >= 5000
+				CALL BODYTOUCH_K[[キャラ:모무노후]]_1
+			ELSE
+				IF RAND:2 == 0
+					PRINTFORMW 「읏…揉？」
+				ELSE
+					CALL BODYTOUCH_K[[キャラ:모무노후]]_2
+				ENDIF
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;7,유두자극
+;-------------------------------------------------
+	CASE 7
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「…気持…、……」
+			PRINTFORMW 表面撫回乳首硬읏
+			PRINTFORMW 痛張詰乳首吸、%CALLNAME%高嬌声上
+		ELSE
+			IF (ABL:Ｂ감각 >= 5 && PALAM:쾌Ｂ >= 1000) || PALAM:쾌Ｂ >= 5000
+				IF RAND:2 == 0
+					PRINTFORML 乳首刺激、%CALLNAME%腰浮上읏。
+					PRINTFORMW 「！…읏、！、…읏！읏！」
+				ELSE
+					CALL BODYTOUCH_K[[キャラ:모무노후]]_1
+				ENDIF
+			ELSE
+				CALL BODYTOUCH_K[[キャラ:모무노후]]_2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;9,조개젖히기
+;-------------------------------------------------
+	CASE 9
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「、早入읏……%CSTR:11%%UNICODE(0x2661)%」
+		ELSE
+			PRINTFORMW %CALLNAME%姿%CALLNAME:MASTER%前晒、恥읏。
+			PRINTFORMW 「읏…様姿……！　見……！」
+		ENDIF
+
+;-------------------------------------------------
+;10,가슴자위
+;-------------------------------------------------
+	CASE 10
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「早읏…早%CSTR:12%읏！」
+			PRINTFORMW 「…%CSTR:11%읏…！」
+			PRINTFORMW %CALLNAME:TARGET%必死%CALLNAME:MASTER%懇願、乳房揉動止高昇읏行
+		ELSE
+			PRINTFORMW 「気乗……？」
+			PRINTFORMW 「胸…言…」
+		ENDIF
+;-------------------------------------------------
+;11,자위
+;-------------------------------------------------
+	CASE 11
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「早읏…早%CSTR:12%읏！」
+			PRINTFORMW 「…%CSTR:11%읏…！」
+			PRINTFORMW %CALLNAME:TARGET%必死%CALLNAME:MASTER%懇願、股間動止高昇읏行
+		ELSE
+			PRINTFORMW 「気乗…、？」
+		ENDIF
+;-------------------------------------------------
+;12,날개애무
+;-------------------------------------------------
+	CASE 12
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;13,꼬리애무
+;-------------------------------------------------
+	CASE 13
+		CALL TRAIN_MESSAGE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;=================================================
+;コミュニケーション系コマンド
+;=================================================
+;-------------------------------------------------
+;20,キスする、;21,아무것도안한다
+;-------------------------------------------------
+	CASE 20, 21
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+
+;-------------------------------------------------
+;22,회화　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 22
+		CALL TRAIN_MESSAGE
+		;初めて
+		 IF CFLAG:314 == 0
+		 ;淫乱、娼婦	
+			IF TALENT:4 || TALENT:7 && (CFLAG:312 < 4 || FLAG:7 == 2)	
+				PRINTFORML 「평소와 모습이 다르다고 말하고 싶은건가？%CSTR:이인칭%。
+				PRINTFORML 　%CSTR:일인칭%도 늘 발정하고 있는 것은 아니다。
+				PRINTFORMW 　…뭐、가끔은 이렇게 이야기를 나눌 수 있다。」
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:314 = 1
+		;二回目以降
+		ELSEIF CFLAG:314 < 2 || FLAG:7 == 2
+			IF TALENT:4 || TALENT:7 && (CFLAG:312 < 4 || FLAG:7 == 2)	
+				SELECTCASE RAND:9
+					CASE 0
+						PRINTFORML 「%일인칭은% 무사였으니까。
+						PRINTFORML 　아픔에는 익숙하다고 생각했지만、그런 모욕을 받은 것은 처음이었다%UNICODE(0x2661)%」
+						PRINTFORMW %CALLNAME은% 얼굴을 붉히며、과거의 조교를 회상하고 있었다…
+					CASE 1
+						PRINTFORML 「……기분이 좋으면 아무것도 생각할 수 없게 된다。
+						PRINTFORML 　　　　　　　　　　그래서 그렇게 헝클어져서……」
+						PRINTFORMW %CALLNAME은% 얼굴을 숨기고 있다…
+					CASE 2
+						PRINTFORML 「생각하는 것은 별로 자신이 없다。그러니、그저 %CSTR:이인칭%의 지시에 따라서 싸우지、
+						PRINTFORMW  　쾌락을 얻을 수 있는 지금의 환경은 풍족하다고 생각한다。」
+					CASE 4
+						PRINTFORMW 「만약 %일인칭이% 싸움에서 제일 큰 공을 세운다면、포상으로 더 엉망진창으로 만들어 줬으면 좋겠다%UNICODE(0x2661)%」
+					CASE 5
+						PRINTFORML 「출세의 수단으로 몸을 이용하는 동료를 본 적도 있었지。
+						PRINTFORML 　%일인칭은% 적당히 싸울 수 있다면 아무래도 좋았다。
+						PRINTFORMW 　…지금의 %CSTR:일인칭%도 비슷할지도 모르겠군。」
+					CASE 6
+						PRINTFORML 「엤날에는 목 베기의 %CALLNAME%로 경외되고 있었다。
+						PRINTFORML 　…지금의 별명은 %CALLNAME:MASTER%의 음란암컷노예나、음경베기의 %CALLNAME%겠군！」
+						PRINTFORMW …%CALLNAME은% 가슴을 펴고 득의양양한 표정을 하고 있었다。
+					CASE 7
+						PRINTFORML 「처음에는 조교 같은 것에 %일인칭이% 굴복하리라고는 생각도 하지 않았다。
+						PRINTFORML 　그리고 쾌락을 몰랐기에 %CSTR:이인칭%에게 거만한 듯이 말하였다。
+						PRINTFORMW 　　…지금은 %CSTR:이인칭%에게 무척 감사하고 있다고？」
+					CASE 8
+						PRINTFORML 「여자가 무사를 하고 있다、바보취급 당하며 손가락질 당할 때도 있었다。
+						PRINTFORML 　그런 말을 하는 무리들은 모두 때려눕혀 버렸지만、지금은 그들의 기교가 궁금하군
+						PRINTFORMW 　뭐 %CALLNAME:MASTER% 정도로 능숙하진 않겠지만！」
+					CASEELSE
+						PRINTFORMW 「…대화하는 것보다、빨리 이 몸에 쾌락을 얻고 싶다%UNICODE(0x2661)%」
+				ENDSELECT
+			ELSE
+				PRINTFORMW 
+				CFLAG:314 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;23,프레젠트　恋慕、親愛のみ、24,스킨쉽　恋慕、親愛のみ、25,느긋하게있는다　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 23 TO 25
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;-------------------------------------------------
+;26,가사　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 26
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:318 == 0
+			PRINTFORMW 
+			CFLAG:318 = 1
+		;二回目以降
+		ELSEIF CFLAG:318 < 2 || FLAG:7 == 2
+			IF EXP:가사경험 >= 50
+				SELECTCASE RAND:3
+					CASE 0
+						PRINTFORML 「…이걸로 어떤가！」
+						PRINTFORML ＞…역시 %CALLNAME은% 재료가 엉성하게 쪼개진 화쾌한 요리를 선보였다
+						PRINTFORML ＞…보기에는 좀 그렇지만、꽤 능숙해졌다。
+						PRINTFORMW 「당연하군！」
+					CASE 1
+						PRINTFORML 「보아라！ 멋있겠지！」
+						PRINTFORMW ＞%CALLNAME은% 직접 만든 듯한、승천하는 용의 자수가 들어간 견직물을 선보였다…
+					CASE 2
+						PRINTFORML 「…이걸로 어떤가！」
+						PRINTFORML ＞%CALLNAME은% 자동 청소기에게 구석을 맡기고 넓은 장소를 청소하고 있었다
+						PRINTFORMW ＞……스스로 청소하는 것을 포기하고 있다！
+				ENDSELECT
+			ELSEIF EXP:가사경험 >= 20
+				SELECTCASE RAND:3
+					CASE 0
+						PRINTFORML 「…이번에는 어떤가？」
+						PRINTFORML ＞…오늘도 %CALLNAME은% 재료가 엉성하게 쪼개진 호쾌한 요리를 선보였다
+						PRINTFORMW ＞…미묘하게 개선한 느낌이 안 드는 것도 아니다。
+					CASE 1
+						PRINTFORML 「…바느질인가。그것은 자신이 있다」
+						PRINTFORML ＞꿰맬 수는 있다　……꿰맬 수는 있지만 좀 더 보는 법을 신경 썼으면 좋겠다…
+						PRINTFORMW ＞흰 바탕에 검은 실은 아니지……　
+					CASE 2
+						PRINTFORML 「청소인가……　이번에는 실패하지 않곘다」
+						PRINTFORMW ＞……물건은 파괴하지 않았지만 구석구석 청소하지 못하고 있다。
+				ENDSELECT
+			ELSE
+				IF RAND:2 == 0
+					PRINTFORML 「…어떤가？」
+					PRINTFORML ＞…%CALLNAME은% 엄식이 엉성하게 쪼개진 호쾌한 요리를 선보였다
+					PRINTFORMW ＞………맛도 대략적이고 태운 부분과 덜익은 부분이 공존했다。
+				ELSE
+					PRINTFORML 「청소인가……　당연히 가능하다」
+					PRINTFORMW ＞……휘두른 빗자루가 꽃병을 파괴했다。
+				ENDIF
+			CFLAG:318 = 2
+		ENDIF
+		ENDIF
+;-------------------------------------------------
+;27,노래연습　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 27
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:319 == 0
+			PRINTFORMW 
+			CFLAG:319 = 1
+		;二回目以降
+		ELSEIF CFLAG:319 < 2 || FLAG:7 == 2
+			IF EXP:가창경험 >= 50
+				IF RAND:2 == 0
+					PRINTFORMW ＞…%CALLNAME은% 나각을 쓸데없이 현란한 손놀림으로 부르고 있었다。
+				ELSE
+					PRINTFORML 「화천의 집을 준비하면 덧없는～♪」
+					PRINTFORMW ＞…%CALLNAME은% 발랄하게 아츠모리를 춤추고 있었다。
+				ENDIF
+			ELSEIF EXP:가창경험 >= 20
+					PRINTFORMW ＞%CALLNAME은% 나각을 불며 고문서를 읽고 있다…　재주다
+			ELSE
+				IF RAND:2 == 0
+					PRINTFORMW 「…나각이라면 할 수 있다고？　후─웃！　소리가 안나오는군…」
+				ELSE
+					PRINTFORML 「아츠모리 정도밖에 모르는데……아직 배운 적이 없으니까 말이지。지금부터 배운다。」
+					PRINTFORMW ＞……%CALLNAME은% 노래연습을 위해서 고문서를 읽기 시작했다。
+				ENDIF
+			ENDIF	
+			CFLAG:319 = 2
+		ENDIF
+
+;-------------------------------------------------
+;28,매도
+;-------------------------------------------------
+	CASE 28
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:320 == 0
+			PRINTFORMW 
+			CFLAG:320 = 1
+		;二回目以降					
+		ELSE			
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:320 < 3 || FLAG:7 == 2)		
+				;通す	
+				IF 0 == (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:320 < 3 || FLAG:7 == 2)	
+				;恋慕、親愛	
+				;ELSEIF TALENT:3 || TALENT:6 && (CFLAG:320 < 4 || FLAG:7 == 2)	
+				;	PRINTFORMW 
+				;	CFLAG:320= 4
+				;淫乱、娼婦	
+				ELSEIF TALENT:4 || TALENT:7 && (CFLAG:320 < 4 || FLAG:7 == 2)	
+					IF RAND:2 == 0
+						PRINTFORMW 「네에… %일인칭은% 욕을 들으면서 느끼는 음란암퇘지입니다%UNICODE(0x2661)%」
+					ELSE
+						PRINTFORMW 「네에… %일인칭은% 전신 성감대인 암퇘지입니다%UNICODE(0x2661)%」
+					ENDIF
+					CFLAG:320= 4
+				;服従、隷属	
+				;ELSEIF TALENT:5 || TALENT:8 && (CFLAG:320 < 4 || FLAG:7 == 2)	
+				;	PRINTFORMW 
+				;	CFLAG:320= 4
+				;屈服刻印Lv3	
+				ELSE	
+					PRINTFORMW 
+					CFLAG:320= 3
+				ENDIF	
+			;それ以外
+			ELSEIF CFLAG:320 < 2 || FLAG:7 == 2
+				PRINTFORMW 
+				CFLAG:320 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;29,비디오감상　陥落済みのみ
+;-------------------------------------------------
+	CASE 29
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;30,파후파후　陥落済みのみ
+;-------------------------------------------------
+	CASE 30
+		CALL TRAIN_MESSAGE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;=================================================
+;道具使用コマンド
+;=================================================
+;40,로터
+;-------------------------------------------------
+	CASE 40
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「읏♪…！」
+		ELSE
+			IF (ABL:Ｃ감각 >= 5 && PALAM:쾌Ｃ >= 1000) || PALAM:쾌Ｃ >= 5000
+				CALL BODYTOUCH_K[[キャラ:모무노후]]_1
+			ELSE
+				CALL BODYTOUCH_K[[キャラ:모무노후]]_2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;41,전기마사지기
+;-------------------------------------------------
+	CASE 41
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「♪気持良읏、읏、읏♪」
+			PRINTFORMW %CALLNAME%%CALLNAME:MASTER%淫猥目向快楽享受
+		ELSE
+			IF (ABL:Ｃ감각 >= 5 && PALAM:쾌Ｃ >= 1000) || PALAM:쾌Ｃ >= 5000
+				CALL BODYTOUCH_K[[キャラ:모무노후]]_1
+			ELSE
+				CALL BODYTOUCH_K[[キャラ:모무노후]]_2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;42,클리캡
+;-------------------------------------------------
+	CASE 42
+		IF TEQUIP:11
+			CALL TRAIN_MESSAGE
+			;淫乱、娼婦
+			IF TALENT:4 || TALENT:7
+				PRINTFORMW 「付？癖읏…！！♪凄！」
+				PRINTFORMW %CALLNAME%凄快楽波堪卑猥悲鳴上続
+			ENDIF
+		ELSE
+			IF CFLAG:324 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+			ENDIF
+		ENDIF
+		
+;-------------------------------------------------
+;43,오나홀
+;-------------------------------------------------
+	CASE 43
+		IF TEQUIP:12
+			CALL TRAIN_MESSAGE
+			;淫乱、娼婦
+			SIF TALENT:4 || TALENT:7
+				PRINTFORMW 「%CSTR:11%包、읏…、優？」
+		ELSE
+			CALL TRAIN_MESSAGE
+		ENDIF
+
+;-------------------------------------------------
+;44,바이브
+;-------------------------------------------------
+	CASE 44
+	IF TEQUIP:13
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「읏%CALLNAME:MASTER%方、%CALLNAME:MASTER%喜…」
+			PRINTFORMW 「읏大……！읏最大…읏읏！」
+			PRINTFORMW 容赦振動最大今飛出左右暴읏
+		ENDIF
+	ELSE
+		CALL TRAIN_MESSAGE
+	ENDIF
+
+;-------------------------------------------------
+;45,애널바이브
+;-------------------------------------------------
+	CASE 45
+	IF TEQUIP:14
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「읏激穿읏欲～…、変態？誰읏읏～？」
+			PRINTFORMW %CALLNAME%%CALLNAME:MASTER%手%CALLNAME:MASTER%手出入始。
+			PRINTFORMW 「！읏、気持읏、変態읏、気持！」
+		ENDIF
+	ELSE
+		CALL TRAIN_MESSAGE
+	ENDIF
+
+;-------------------------------------------------
+;46,애널비즈
+;-------------------------------------------------
+	CASE 46
+	IF TEQUIP:15
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「읏激穿읏欲～…、変態？誰읏읏～？」
+			PRINTFORMW 「！읏、気持읏、変態읏、気持！」
+		ENDIF
+	ELSE
+		CALL TRAIN_MESSAGE
+	ENDIF
+
+;-------------------------------------------------
+;47,유두캡
+;-------------------------------------------------
+	CASE 47
+		IF TEQUIP:16
+			CALL TRAIN_MESSAGE
+			;淫乱、娼婦
+			IF TALENT:4 || TALENT:7
+				PRINTFORMW 「읏♪읏付읏！읏！！」
+				PRINTFORMW 「何知赤使읏……興奮」
+			ENDIF
+		ELSE
+			CALL TRAIN_MESSAGE
+		ENDIF
+;-------------------------------------------------
+;48,유두로터
+;-------------------------------------------------
+	CASE 48
+		CALL TRAIN_MESSAGE
+		
+;-------------------------------------------------
+;49,착유기
+;-------------------------------------------------
+	CASE 49
+		IF TEQUIP:17
+			CALL TRAIN_MESSAGE
+			;淫乱、娼婦	
+			SIF TALENT:4 || TALENT:7
+				PRINTFORMW 「가축처럼 %CSTR:일인칭%의 가슴을 짜주세요%UNICODE(0x2661)%」
+		ELSE
+			CALL TRAIN_MESSAGE
+		ENDIF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;=================================================
+;調教者道具系コマンド
+;=================================================
+;-------------------------------------------------
+;50,클리캡쓴다
+;-------------------------------------------------
+	CASE 50
+		IF TEQUIP:PLAYER:11
+			CALL TRAIN_MESSAGE
+		ELSEIF CFLAG:453 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+				PRINTFORMW 
+		ENDIF
+;-------------------------------------------------
+;51,오나홀쓴다
+;-------------------------------------------------
+	CASE 51
+		IF TEQUIP:PLAYER:12
+			CALL TRAIN_MESSAGE
+		ELSEIF CFLAG:454 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+				PRINTFORMW 
+		ENDIF
+		
+;-------------------------------------------------
+;52,바이브쓴다
+;-------------------------------------------------
+	CASE 52
+		IF TEQUIP:PLAYER:13
+			CALL TRAIN_MESSAGE
+		ELSEIF CFLAG:455 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+				PRINTFORMW 
+		ENDIF
+;-------------------------------------------------
+;53,애널바이브쓴다
+;-------------------------------------------------
+	CASE 53
+		IF TEQUIP:PLAYER:14
+			CALL TRAIN_MESSAGE
+		ELSEIF CFLAG:456 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+				PRINTFORMW 
+		ENDIF
+;-------------------------------------------------
+;54,애널비즈쓴다
+;-------------------------------------------------
+	CASE 54
+		IF TEQUIP:PLAYER:15
+			CALL TRAIN_MESSAGE
+		ELSEIF CFLAG:457 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+				PRINTFORMW 
+		ENDIF
+;-------------------------------------------------
+;55,유두캡쓴다
+;-------------------------------------------------
+	CASE 55
+		IF TEQUIP:PLAYER:16
+			CALL TRAIN_MESSAGE
+		ELSEIF CFLAG:458 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+				PRINTFORMW 
+		ENDIF
+;-------------------------------------------------
+;56,착유기쓴다
+;-------------------------------------------------
+	CASE 56
+		IF TEQUIP:PLAYER:17
+			CALL TRAIN_MESSAGE
+		ELSEIF CFLAG:459 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+				PRINTFORMW 
+		ENDIF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;=================================================
+;セックス系コマンド
+;=================================================
+;-------------------------------------------------
+;60,正常位、61,후배위
+;-------------------------------------------------
+	CASE 60
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦	
+		IF TALENT:4 || TALENT:7 && (CFLAG:332 < 4 || FLAG:7 == 2)	
+			IF RAND:2 == 0
+				PRINTFORMW 「아헤헷！보지 느껴버려어%UNICODE(0x2661)%！」
+			ELSE
+				PRINTFORMW 「膣内읏出%UNICODE(0x2661)%　%CSTR:12%♪」
+				PRINTFORMW 「%CSTR:12%精液、欲읏♪읏읏欲읏♪」
+			ENDIF
+		ELSE
+			IF (ABL:Ｖ감각 >= 5 && PALAM:쾌Ｖ >= 1000) || PALAM:쾌Ｖ >= 5000
+				CALL SEX_REACTION_K[[キャラ:모무노후]]_1
+			ELSE
+				CALL SEX_REACTION_K[[キャラ:모무노후]]_2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;62,正常位アナル、63,후배위애널
+;-------------------------------------------------
+	CASE 62, 63
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦	
+		IF TALENT:4 || TALENT:7 && (CFLAG:332 < 4 || FLAG:7 == 2)	
+			IF RAND:2 == 0
+				PRINTFORMW 「早私犯！待…♪ﾞ읏！入읏♪」
+				PRINTFORMW 「읏♪읏！尻熱♪읏！」
+				PRINTFORMW 「읏！♪%CSTR:11%尻읏変態！！！！」
+			ELSE
+				PRINTFORMW 「、읏…尻、尻、읏！、凄、太읏%UNICODE(0x2661)%　읏…%UNICODE(0x2661)%」
+				PRINTFORMW 悦露嬌声、品無雌様%CALLNAME:MASTER%激動期待。
+			ENDIF
+		ELSE
+			IF (ABL:Ａ감각 >= 5 && PALAM:쾌Ａ >= 1000) || PALAM:쾌Ａ >= 5000
+				CALL SEX_REACTION_K[[キャラ:모무노후]]_1
+			ELSE
+				CALL SEX_REACTION_K[[キャラ:모무노후]]_2
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;64,역강간
+;-------------------------------------------------
+	CASE 64
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「읏、全部入읏♪」
+			PRINTFORMW %CALLNAME%愉悦頬緩激腰突上
+			PRINTFORMW 「、읏膣中締付、읏気持♪」
+			PRINTFORMW 、物足읏%CALLNAME:MASTER%尻叩始
+		ENDIF
+;-------------------------------------------------
+;65,젖성교
+;-------------------------------------------------
+	CASE 65
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「、%CSTR:11%읏、%CSTR:12%犯♪」
+			PRINTFORMW 「%CSTR:11%읏気持？乳中읏出♪」
+		ENDIF
+;-------------------------------------------------
+;66,騎乗位、;67,기승위애널
+;-------------------------------------------------
+	CASE 66
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「、읏？　읏？」
+			PRINTFORMW 「♪　%CSTR:11%満足읏%UNICODE(0x2661)%」
+			PRINTFORMW 「읏、읏♪自分動읏、気持읏%UNICODE(0x2661)%」
+		ELSE
+			PRINTFORMW 「…分읏、%CSTR:11%動、…읏……」
+			PRINTFORMW %CALLNAME%黙々%CALLNAME:MASTER%上腰振읏。
+		ENDIF
+
+;-------------------------------------------------
+;68,대면좌위
+;-------------------------------------------------
+	CASE 68
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「읏……읏吸읏……%UNICODE(0x2661)%」
+			PRINTFORMW %CALLNAME%%CALLNAME:MASTER%顔自身胸元埋。
+			PRINTFORMW 息苦忘、%CALLNAME:MASTER%%CALLNAME%乳房、激揉、強吸上。
+			PRINTFORMW 「읏！　最高……♪」
+			PRINTFORMW 「읏、읏、……！읏…♪」
+		ELSE
+			IF (ABL:Ｖ감각 >= 5 && PALAM:쾌Ｖ >= 1000) || PALAM:쾌Ｖ >= 5000
+				CALL SEX_REACTION_K[[キャラ:모무노후]]_1
+			ELSE
+				CALL SEX_REACTION_K[[キャラ:모무노후]]_2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;69,배면좌위
+;-------------------------------------------------
+	CASE 69
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「읏！읏！읏…！」
+			PRINTFORMW 「気持읏♪읏突♪읏읏%UNICODE(0x2661)%」
+			PRINTFORMW %CALLNAME%淫喘続、激狂읏읏。
+		ELSE
+			IF (ABL:Ｖ감각 >= 5 && PALAM:쾌Ｖ >= 1000) || PALAM:쾌Ｖ >= 5000
+				CALL SEX_REACTION_K[[キャラ:모무노후]]_1
+			ELSE
+				CALL SEX_REACTION_K[[キャラ:모무노후]]_2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;70,対面座位アナル、;71,배면좌위애널
+;-------------------------------------------------
+	CASE 70, 71
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「早私犯！待…♪ﾞ읏！入읏♪」
+			PRINTFORMW 「읏！♪%CSTR:11%尻읏変態！！！！」
+		ELSE
+			IF (ABL:Ａ감각 >= 5 && PALAM:쾌Ａ >= 1000) || PALAM:쾌Ａ >= 5000
+				CALL SEX_REACTION_K[[キャラ:모무노후]]_1
+			ELSE
+				CALL SEX_REACTION_K[[キャラ:모무노후]]_2
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;72,속옷비켜삽입
+;-------------------------------------------------
+	CASE 72
+		CALL TRAIN_MESSAGE
+		
+;-------------------------------------------------
+;73,속옷비켜삽입애널
+;-------------------------------------------------
+	CASE 73
+		CALL TRAIN_MESSAGE
+		
+;-------------------------------------------------
+;74,역강간당한다
+;-------------------------------------------------
+	CASE 74
+		CALL TRAIN_MESSAGE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;=================================================
+;奉仕系コマンド
+;=================================================
+;-------------------------------------------------
+;80,수음
+;-------------------------------------------------
+	CASE 80
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「大읏읏、♪」
+			PRINTFORMW 「、口？　……中읏？　♪」
+			PRINTFORMW 「一回終。읏出♪」
+		ELSE
+			PRINTFORMW 「읏…%CSTR:일인칭%」
+			PRINTFORMW 「읏…折읏…」
+		ENDIF
+
+;-------------------------------------------------
+;81,펠라치오
+;-------------------------------------------------
+	CASE 81
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「…、……大읏。美味…%UNICODE(0x2661)%」
+				PRINTFORMW 읏我慢읏、%CALLNAME%自身秘唇指這慰始。
+				PRINTFORMW 「、읏、、읏、…읏、읏%UNICODE(0x2661)%」
+				PRINTFORML %CALLNAME:MASTER%突姿想像、瞳次第上気蕩、唇窄。
+				PRINTFORMW 首─次第大%CALLNAME%腰激揺、蜜零……
+		ELSE
+			PRINTFORMW 「固…읏…破廉恥…」
+		ENDIF
+
+;-------------------------------------------------
+;82,パイズリ、87,세로파이즈리
+;-------------------------------------------------
+	CASE 82, 87
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「……出、%CALLNAME:MASTER%汁♪」
+			PRINTFORMW %CALLNAME%動止、亀頭始。唇刺激背筋走。
+			PRINTFORMW 「읏…읏…읏、物足顔？」
+			PRINTFORMW %CALLNAME%間읏%CALLNAME:PLAYER%焦続
+		ELSE
+			PRINTFORMW 「……何臭……」
+			PRINTFORMW 「洗읏？」
+		ENDIF
+;-------------------------------------------------
+;83,스마타
+;-------------------------------------------------
+	CASE 83
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「읏！읏！…읏！…割目満足？」
+			PRINTFORMW 「！읏！早入？…─♪命令%CSTR:12%♪」
+		ELSE
+			PRINTFORMW 「…%CSTR:일인칭%一物生気分…」
+		ENDIF
+;-------------------------------------------------
+;84,거품춤
+;-------------------------------------------------
+	CASE 84
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 満遍泡塗%CALLNAME:MASTER%白染
+			PRINTFORMW 「…、全身泡읏읏」
+			PRINTFORMW 「出流、遠慮出♪」
+			PRINTFORMW %CALLNAME%前抱、全身擦
+		ELSE
+			PRINTFORMW 「…%CSTR:일인칭%…」
+			PRINTFORMW %CALLNAME%淡々作業泡裸体擦付읏。
+		ENDIF
+;-------------------------------------------------
+;85,풋잡
+;-------------------------------------------------
+	CASE 85
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「足満足읏？」
+			PRINTFORMW 「口읏、好射精？」
+		ELSE
+			PRINTFORMW 「…、踏…」
+		ENDIF
+
+;-------------------------------------------------
+;86,다리핥기강제
+;-------------------------------------------------
+	CASE 86
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「足？읏色、舐？」
+		ELSE
+			PRINTFORMW 「읏…屈辱……」
+		ENDIF
+
+;-------------------------------------------------
+;88,파이즈리펠라
+;-------------------------------------------------
+	CASE 88
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「%CALLNAME:MASTER%精液、읏出欲%UNICODE(0x2661)%」
+			PRINTFORMW %CALLNAME%胸谷間出%CALLNAME:PLAYER%先端。刺激%CALLNAME:MASTER%跳上
+			PRINTFORMW 「！？…읏、♪」
+		ELSE
+			PRINTFORMW 奉仕終%CALLNAME%口拭、鋭目%CALLNAME:MASTER%睨。
+			PRINTFORMW 「……、」
+		ENDIF
+;-------------------------------------------------
+;89,모유마시기　陥落済みのみ
+;-------------------------------------------------
+	CASE 89
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「읏吸…、읏違？」
+			PRINTFORMW 「%CSTR:11%飲읏…、～？」
+			PRINTFORMW 「…変感、。읏%UNICODE(0x2661)%」
+		ENDIF
+;-------------------------------------------------
+;211,귀두공격(受)
+;-------------------------------------------------
+	CASE 211
+		CALL TRAIN_MESSAGE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;=================================================
+;調教者奉仕系コマンド
+;=================================================
+;-------------------------------------------------
+;수음한다
+;-------------------------------------------------
+	CASE 90
+		CALL TRAIN_MESSAGE
+		IF TEQUIP:12 == 0
+			;淫乱、娼婦	
+			IF TALENT:4 || TALENT:7
+				PRINTFORMW 「擦気持%UNICODE(0x2661)%」
+			ELSE
+				PRINTFORMW 「읏、읏…읏…읏…！気持읏…！」
+			ENDIF
+;-------------------------------------------------
+;オナホコキ
+;-------------------------------------------------
+		ELSE
+
+		ENDIF
+
+;-------------------------------------------------
+;91:パイズリする、92:正常位させる、93:後背位させる、94:騎乗位する、95:애널정상위시킨다
+;-------------------------------------------------
+	CASE 91 TO 95
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;-------------------------------------------------
+;96:アナル後背位させる、97:アナル騎乗位する、98,모유먹이기　陥落済みのみ、愛撫させる
+;-------------------------------------------------
+	CASE 96 TO 99
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+
+;-------------------------------------------------
+;210,귀두공격
+;-------------------------------------------------
+	CASE 210
+		CALL TRAIN_MESSAGE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;=================================================
+;SM系コマンド
+;=================================================
+;-------------------------------------------------
+;100,스팽킹
+;-------------------------------------------------
+	CASE 100
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦	
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「엉덩이 맞는 거 기분 좋아앗%UNICODE(0x2661)%───！」
+		ELSE
+			PRINTFORMW 「痛읏…程度、%CSTR:일인칭%音上？」
+		ENDIF
+
+;-------------------------------------------------
+;101,젖스팽킹
+;-------------------------------------------------
+	CASE 101
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦	
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「네헤엣%UNICODE(0x2661)%！　%일인칭은% 젖가슴을 맞으면서 가버리는 변태헤효오%UNICODE(0x2661)%」
+		ELSE
+			PRINTFORMW 「痛읏…程度、%CSTR:일인칭%音上？」
+		ENDIF
+
+;-------------------------------------------------
+;102,채찍
+;-------------------------------------------------
+	CASE 102
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「읏！鞭叩…읏！！！」
+			PRINTFORMW 「읏強叩！！%CSTR:11%変態！읏！！」
+		ELSE
+			PRINTFORMW 「읏！！　………」
+		ENDIF
+;-------------------------------------------------
+;103,양초
+;-------------------------------------------------
+	CASE 103
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;104,바늘
+;-------------------------------------------------
+	CASE 104
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「針入읏！읏！痛！읏읏…읏…大丈夫…！」
+			PRINTFORMW 「苛慣…읏…我慢分？」
+		ELSE
+			PRINTFORMW 「읏…、痛………」
+		ENDIF
+;-------------------------------------------------
+;105,아이마스크
+;-------------------------------------------------
+	CASE 105
+		IF TEQUIP:18
+			CALL TRAIN_MESSAGE
+			;淫乱、娼婦
+			IF TALENT:4 || TALENT:7
+				PRINTFORMW 「……見읏何」
+				PRINTFORMW 「？今日酷？…楽」
+			ELSE
+				PRINTFORMW 「何…目隠？…」
+			ENDIF
+		ELSE
+			IF CFLAG:359 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+				PRINTFORMW 
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;106,밧줄
+;-------------------------------------------------
+	CASE 106
+		IF TEQUIP:19
+			CALL TRAIN_MESSAGE
+			;淫乱、娼婦
+			IF TALENT:4 || TALENT:7
+				PRINTFORMW 「…縛感읏…%CSTR:11%凄変態♪」
+				PRINTFORMW 「읏縛！、읏！苛苛抜！」
+			ELSE
+				PRINTFORMW 「%CSTR:일인칭%縛付、心折知읏！」
+			ENDIF
+		ELSE
+			IF CFLAG:360 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;107,볼재갈
+;-------------------------------------------------
+	CASE 107
+		IF TEQUIP:20
+			CALL TRAIN_MESSAGE
+		ELSE
+			IF CFLAG:361 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;108,삼각목마
+;-------------------------------------------------
+	CASE 108
+		IF TEQUIP:삼각목마
+			CALL TRAIN_MESSAGE
+		ELSE
+			IF CFLAG:463 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;109,사정멈추기
+;-------------------------------------------------
+	CASE 109
+		IF TEQUIP:42
+			CALL TRAIN_MESSAGE
+		ELSE
+			IF CFLAG:464 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+				PRINTFORMW 「읏─出%UNICODE(0x2661)%」
+			ENDIF
+		ENDIF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;=================================================
+;助手によるコマンド、及びレズプレイ
+;=================================================
+;-------------------------------------------------
+;120,クンニ強制、121,貝あわせ、122,조수를범하게한다
+;-------------------------------------------------
+	CASE 120 TO 122
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;123,풋잡한다
+;-------------------------------------------------
+	CASE 123
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦	
+		SIF TALENT:4 || TALENT:7
+			PRINTFORMW 「네에%UNICODE(0x2661)%、%일인칭은% %CSTR:이인칭%에게 고추를 밟혀서 느끼는 변태입니다%UNICODE(0x2661)%」
+
+;-------------------------------------------------
+;124,ダブルフェラ、125,ダブルパイズリ、126,乳の揉み合い、127,自慰見せつけ、128,秘貝開帳見せつけ、129,자위구음과시
+;-------------------------------------------------
+	CASE 124 TO 129
+		CALL TRAIN_MESSAGE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;=================================================
+;ハードな調教コマンド
+;=================================================
+;-------------------------------------------------
+;140,イラマチオ、141,피스트퍽　服従、隷属のみ、142,애널피스트　服従、隷属のみ、143,양구멍피스트　服従、隷属のみ
+;-------------------------------------------------
+	CASE 140 TO 143
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;144,放尿、145,アナル奉仕強制、146,浣腸器＋プラグ、147,空気浣腸、148,拡張バルーン、149,애널전극　服従、隷属のみ
+;-------------------------------------------------
+	CASE 144 TO 145
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;146,관장기＋플러그
+;-------------------------------------------------
+	CASE 146
+		IF TEQUIP:21
+			CALL TRAIN_MESSAGE
+			;淫乱、娼婦
+			IF TALENT:4 || TALENT:7
+				PRINTFORMW 「……읏!!　……읏、冷、入읏……」
+				PRINTFORMW 「……中、尻中入읏……」
+			ENDIF
+		ELSE
+			CALL TRAIN_MESSAGE
+		ENDIF
+;-------------------------------------------------
+;147,공기관장
+;-------------------------------------------------
+	CASE 147
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「읏…읏！、汚音聞읏%UNICODE(0x2661)%」
+			PRINTFORML 解放感尻振嫌%CALLNAME%声、嬌声。
+			PRINTFORMW 周知辱与表情、何処嬉見……
+		ENDIF
+;-------------------------------------------------
+;148,拡張バルーン、149,애널전극　服従、隷属のみ、150,유방전극　服従、隷属のみ
+;-------------------------------------------------
+	CASE 148 TO 150
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;151,뱀장어욕탕　服従、隷属のみ、152,벌레욕탕　服従、隷属のみ
+;-------------------------------------------------
+	CASE 151, 152
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+
+;-------------------------------------------------
+;154,요정오나홀　小人体系のみ
+;-------------------------------------------------
+
+	CASE 154
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;155,구슬킥
+;-------------------------------------------------
+	CASE 155
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;156,음뇨
+;-------------------------------------------------
+	CASE 156
+		CALL TRAIN_MESSAGE
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;=================================================
+;触手系コマンド
+;=================================================
+;ENDSELECT
+
+;CALL KOJO_MESSAGE2_COM_K[[キャラ:모무노후]]_12
+
+;@KOJO_MESSAGE2_COM_K[[キャラ:모무노후]]_12
+;SELECTCASE SELECTCOM
+;-------------------------------------------------
+;160,촉수소환
+;-------------------------------------------------
+	CASE 160
+		CALL TRAIN_MESSAGE
+		
+;-------------------------------------------------
+;161,촉수삽입
+;-------------------------------------------------
+	CASE 161
+		CALL TRAIN_MESSAGE
+		
+;-------------------------------------------------
+;162,애널촉수
+;-------------------------------------------------
+	CASE 162
+		CALL TRAIN_MESSAGE
+		
+;-------------------------------------------------
+;163,촉수클리자극
+;-------------------------------------------------
+	CASE 163
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;164,촉수유두자극
+;-------------------------------------------------
+	CASE 164
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;165,촉수착유
+;-------------------------------------------------
+	CASE 165
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;166,촉수긴박
+;-------------------------------------------------
+	CASE 166
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;167,촉수관장
+;-------------------------------------------------
+	CASE 167
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;168,촉수구욕
+;-------------------------------------------------
+	CASE 168
+		IF TEQUIP:36
+			CALL TRAIN_MESSAGE
+		ELSE
+			CALL TRAIN_MESSAGE
+		ENDIF
+
+;-------------------------------------------------
+;169,촉수페니스자극
+;-------------------------------------------------
+	CASE 169
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;촉수삽입시킨다
+;-------------------------------------------------
+	CASE 170
+		IF TEQUIP:PLAYER:13
+			CALL TRAIN_MESSAGE
+		ELSEIF CFLAG:470 == 1 || FLAG:7 == 2
+			CALL TRAIN_MESSAGE
+		ENDIF
+;-------------------------------------------------
+;애널촉수시킨다
+;-------------------------------------------------
+	CASE 171
+		IF TEQUIP:PLAYER:14
+			CALL TRAIN_MESSAGE
+		ELSEIF CFLAG:471 == 1 || FLAG:7 == 2
+			CALL TRAIN_MESSAGE
+		ENDIF
+;-------------------------------------------------
+;촉수클리자극시킨다
+;-------------------------------------------------
+	CASE 172
+		IF TEQUIP:PLAYER:11
+			CALL TRAIN_MESSAGE
+		ELSEIF CFLAG:472 == 1 || FLAG:7 == 2
+			CALL TRAIN_MESSAGE
+		ENDIF
+;-------------------------------------------------
+;촉수유두자극시킨다
+;-------------------------------------------------
+	CASE 173
+		IF TEQUIP:PLAYER:16
+			CALL TRAIN_MESSAGE
+		ELSEIF CFLAG:473 == 1 || FLAG:7 == 2
+			CALL TRAIN_MESSAGE
+		ENDIF
+;-------------------------------------------------
+;촉수착유시킨다
+;-------------------------------------------------
+	CASE 174
+		IF TEQUIP:PLAYER:17
+			CALL TRAIN_MESSAGE
+		ELSEIF CFLAG:474 == 1 || FLAG:7 == 2
+			CALL TRAIN_MESSAGE
+		ENDIF
+;-------------------------------------------------
+;촉수페니스자극시킨다
+;-------------------------------------------------
+	CASE 175
+		IF TEQUIP:PLAYER:12
+			CALL TRAIN_MESSAGE
+		ELSEIF CFLAG:475 == 1 || FLAG:7 == 2
+			CALL TRAIN_MESSAGE
+		ENDIF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;=================================================
+;特殊コマンド
+;=================================================
+;-------------------------------------------------
+;180,로션,
+;-------------------------------------------------
+	CASE 180
+		CALL TRAIN_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「使、%CSTR:11%？」
+		ELSE
+			PRINTFORMW 「…洗大変…」
+		ENDIF
+;-------------------------------------------------
+;181,媚薬、182,利尿剤、183,ビデオカメラ、184,野外プレイ、185,助手を犯す、186,羞恥プレイ、187,お風呂場プレイ、188,샤워
+;-------------------------------------------------
+	CASE 181 TO 188
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;189,새댁플레이,　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 189
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;190,사진촬영,
+;-------------------------------------------------
+	CASE 190
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;191,강정신약,
+;-------------------------------------------------
+	CASE 191 
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;192,콘돔정음（노예）
+;-------------------------------------------------
+	CASE 192
+		CALL TRAIN_MESSAGE
+		
+;-------------------------------------------------
+;193,콘돔정음（조수）
+;-------------------------------------------------
+	CASE 193
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;194,정액키스
+;-------------------------------------------------
+	CASE 194
+		CALL TRAIN_MESSAGE
+		
+;-------------------------------------------------
+;195,유선개발
+;-------------------------------------------------
+	CASE 195
+		CALL TRAIN_MESSAGE
+		
+;-------------------------------------------------
+;196,미약쓴다
+;-------------------------------------------------
+	CASE 196
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;197,팬티훑기
+;-------------------------------------------------
+	CASE 197
+		CALL TRAIN_MESSAGE
+		
+;-------------------------------------------------
+;200,사람을부른다
+;-------------------------------------------------
+	CASE 200
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:433 == 0
+			PRINTFORMW 
+			CFLAG:433 = 1
+		;二回目以降					
+		ELSE			
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:433 < 3 || FLAG:7 == 2)		
+				;通す	
+				IF 0 == (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:433 < 3 || FLAG:7 == 2)	
+				;恋慕、親愛	
+				;ELSEIF TALENT:3 || TALENT:6 && (CFLAG:433 < 4 || FLAG:7 == 2)	
+				;	PRINTFORMW 
+				;	CFLAG:433= 4
+				;淫乱、娼婦	
+				ELSEIF TALENT:4 || TALENT:7 && (CFLAG:433 < 4 || FLAG:7 == 2)	
+					PRINTFORMW 「좀 더 많은 사람에게%일인칭을% 보여주고 싶어어%UNICODE(0x2661)%」
+					CFLAG:433= 4
+				;服従、隷属	
+				;ELSEIF TALENT:5 || TALENT:8 && (CFLAG:433 < 4 || FLAG:7 == 2)	
+				;	PRINTFORMW 
+				;	CFLAG:433= 4
+				;屈服刻印Lv3	
+				ELSE	
+					PRINTFORMW 
+					CFLAG:433= 3
+				ENDIF	
+			;それ以外		
+			ELSEIF CFLAG:433 < 2 || FLAG:7 == 2
+				PRINTFORMW 
+				CFLAG:433 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;201,윤간
+;-------------------------------------------------
+	CASE 201
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;202,사람을모으게한다
+;-------------------------------------------------
+	CASE 202
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;203,원격조교
+;-------------------------------------------------
+	CASE 203
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;204,정음
+;-------------------------------------------------
+	CASE 204
+		CALL TRAIN_MESSAGE
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;=================================================
+;500番台,派生コマンド
+;=================================================
+;-------------------------------------------------
+;500,３Ｐ
+;-------------------------------------------------
+	CASE 500
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;501,식스나인
+;-------------------------------------------------
+	CASE 501
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;502,이와시미즈
+;-------------------------------------------------
+	CASE 502
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;503,G스팟자극
+;-------------------------------------------------
+	CASE 503
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:410 == 0
+			PRINTFORMW 
+			CFLAG:410 = 1
+		;二回目以降					
+		ELSE			
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:410 < 3 || FLAG:7 == 2)		
+				;通す	
+				IF 0 == (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:410 < 3 || FLAG:7 == 2)	
+				;恋慕、親愛	
+				;ELSEIF TALENT:3 || TALENT:6 && (CFLAG:410 < 4 || FLAG:7 == 2)	
+				;	PRINTFORMW 
+				;	CFLAG:410= 4
+				;淫乱、娼婦	
+				ELSEIF TALENT:4 || TALENT:7 && (CFLAG:410 < 4 || FLAG:7 == 2)	
+					PRINTFORMW 「거깃%UNICODE(0x2661)%、굉장해에%UNICODE(0x2661)%！」
+					CFLAG:410= 4
+				;服従、隷属	
+				;ELSEIF TALENT:5 || TALENT:8 && (CFLAG:410 < 4 || FLAG:7 == 2)	
+				;	PRINTFORMW 
+				;	CFLAG:410= 4
+				;屈服刻印Lv3	
+				ELSE	
+					PRINTFORMW 
+					CFLAG:410= 3
+				ENDIF	
+			;それ以外		
+			ELSEIF CFLAG:410 < 2 || FLAG:7 == 2
+				PRINTFORMW 
+				CFLAG:410 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;504,흐트러진모란
+;-------------------------------------------------
+	CASE 504
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;505,기승유방자위
+;-------------------------------------------------
+	CASE 505
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;506,挿入Ｇスポ責め
+;-------------------------------------------------
+	CASE 506
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:413 == 0
+			PRINTFORMW 
+			CFLAG:413 = 1
+		;二回目以降					
+		ELSE			
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:413 < 3 || FLAG:7 == 2)		
+				;通す	
+				IF 0 == (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:413 < 3 || FLAG:7 == 2)	
+				;恋慕、親愛	
+				;ELSEIF TALENT:3 || TALENT:6 && (CFLAG:413 < 4 || FLAG:7 == 2)	
+				;	PRINTFORMW 
+				;	CFLAG:413= 4
+				;淫乱、娼婦	
+				ELSEIF TALENT:4 || TALENT:7 && (CFLAG:413 < 4 || FLAG:7 == 2)	
+					PRINTFORMW 「거깃%UNICODE(0x2661)%、문지르면、아아아아앗%UNICODE(0x2661)%%UNICODE(0x2661)%！！」
+					CFLAG:413= 4
+				;服従、隷属	
+				;ELSEIF TALENT:5 || TALENT:8 && (CFLAG:413 < 4 || FLAG:7 == 2)	
+				;	PRINTFORMW 
+				;	CFLAG:413= 4
+				;屈服刻印Lv3	
+				ELSE	
+					PRINTFORMW 
+					CFLAG:413= 3
+				ENDIF	
+			;それ以外		
+			ELSEIF CFLAG:413 < 2 || FLAG:7 == 2
+				PRINTFORMW 
+				CFLAG:413 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;507,삽입자궁구자극
+;-------------------------------------------------
+	CASE 507
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:414 == 0
+			PRINTFORMW 
+			CFLAG:414 = 1
+		;二回目以降					
+		ELSE			
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:414 < 3 || FLAG:7 == 2)		
+				;通す	
+				IF 0 == (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:414 < 3 || FLAG:7 == 2)	
+				;恋慕、親愛	
+				;ELSEIF TALENT:3 || TALENT:6 && (CFLAG:414 < 4 || FLAG:7 == 2)	
+				;	PRINTFORMW 
+				;	CFLAG:414= 4
+				;淫乱、娼婦	
+				ELSEIF TALENT:4 || TALENT:7 && (CFLAG:414 < 4 || FLAG:7 == 2)	
+					PRINTFORMW 「아헤에엣──%UNICODE(0x2661)%%UNICODE(0x2661)%！그런 곳에 싸버리면、아이 생겨버려%UNICODE(0x2661)%읏」
+					CFLAG:414= 4
+				;服従、隷属	
+				;ELSEIF TALENT:5 || TALENT:8 && (CFLAG:414 < 4 || FLAG:7 == 2)	
+				;	PRINTFORMW 
+				;	CFLAG:414= 4
+				;屈服刻印Lv3	
+				ELSE	
+					PRINTFORMW 
+					CFLAG:414= 3
+				ENDIF	
+			;それ以外		
+			ELSEIF CFLAG:414 < 2 || FLAG:7 == 2
+				PRINTFORMW 
+				CFLAG:414 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;508,６９파이즈리
+;-------------------------------------------------
+	CASE 508
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;509,착유
+;-------------------------------------------------
+	CASE 509
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:416 == 0
+			PRINTFORMW 
+			CFLAG:416 = 1
+		;二回目以降					
+		ELSE			
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:416 < 3 || FLAG:7 == 2)		
+				;通す	
+				IF 0 == (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:416 < 3 || FLAG:7 == 2)	
+				;恋慕、親愛	
+				;ELSEIF TALENT:3 || TALENT:6 && (CFLAG:416 < 4 || FLAG:7 == 2)	
+				;	PRINTFORMW 
+				;	CFLAG:416= 4
+				;淫乱、娼婦	
+				ELSEIF TALENT:4 || TALENT:7 && (CFLAG:416 < 4 || FLAG:7 == 2)	
+					PRINTFORMW 「안돼에%UNICODE(0x2661)%　젖가슴 짜는 걸로 기분 좋게 되버려어%UNICODE(0x2661)%！」
+					CFLAG:416= 4
+				;服従、隷属	
+				;ELSEIF TALENT:5 || TALENT:8 && (CFLAG:416 < 4 || FLAG:7 == 2)	
+				;	PRINTFORMW 
+				;	CFLAG:416= 4
+				;屈服刻印Lv3	
+				ELSE	
+					PRINTFORMW 
+					CFLAG:416= 3
+				ENDIF	
+			;それ以外		
+			ELSEIF CFLAG:416 < 2 || FLAG:7 == 2
+				PRINTFORMW 
+				CFLAG:416 = 2
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;510,더블스마타
+;-------------------------------------------------
+	CASE 510
+		CALL TRAIN_MESSAGE
+		
+;-------------------------------------------------
+;511,두개펠라
+;-------------------------------------------------
+	CASE 511
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;512,애널기승유방자위
+;-------------------------------------------------
+	CASE 512
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;513,입과바기나를범한다(３Ｐ派生)
+;-------------------------------------------------
+	CASE 513
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;514,입과애널을범한다(３Ｐ派生)
+;-------------------------------------------------
+	CASE 514
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;515,애널흐트러진모란
+;-------------------------------------------------
+	CASE 515
+		CALL TRAIN_MESSAGE
+;=================================================
+;600番台,非戦闘員コマンド
+;=================================================
+;-------------------------------------------------
+;600,戦闘訓練
+;-------------------------------------------------
+	CASE 600
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;601,시험소환
+;-------------------------------------------------
+	CASE 601
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;602,그림자추출
+;-------------------------------------------------
+	CASE 602
+		CALL TRAIN_MESSAGE
+		IF TALENT:페르소나구사자 && !TALENT:비전투원
+			PRINTFORMW 
+;			;初期ペルソナ追加
+			;ABL:초기페르소나 =
+			
+;			;初期ペルソナ能力変更
+			;ABL:페르소나1데이터／스킬1 =
+			
+			;ABL:페르소나1데이터／습득스킬1 =
+			;ABL:페르소나1데이터／습득LV1 =
+ 
+		ENDIF
+
+;-------------------------------------------------
+;603,각성원조
+;-------------------------------------------------
+	CASE 603
+		CALL TRAIN_MESSAGE
+		IF TALENT:이능자 && !TALENT:비전투원
+			PRINTFORMW 
+;			;能力変更
+			;ABL:스킬1 = 
+			
+			;ABL:습득스킬1
+			;ABL:습득LV1
+
+		ENDIF
+
+;-------------------------------------------------
+;604,바이러스조사
+;-------------------------------------------------
+	CASE 604
+		CALL TRAIN_MESSAGE
+		IF TALENT:식노 && !TALENT:비전투원
+			PRINTFORMW 
+		ENDIF
+
+;-------------------------------------------------
+;605,영매실험
+;-------------------------------------------------
+	CASE 605
+		CALL TRAIN_MESSAGE
+		IF TALENT:데빌시프터 && !TALENT:비전투원
+			PRINTFORMW 
+;			;초기링크악마
+			;CFLAG:초기링크악마
+			
+;			;初期リンク悪魔能力変更
+			;ABL:초기변신악마스킬1
+			
+			;ABL:초기변신악마습득스킬1
+			;ABL:초기변신악마습득LV1
+			
+			;ABL:초기링크악마공격상성
+			;ABL:초기링크악마최저공격횟수
+			;ABL:초기링크악마최대공격횟수
+			;ABL:초기링크악마사거리
+			;ABL:초기링크악마공격범위
+			;ABL:초기링크악마추가효과
+			;ABL:초기링크악마추가효과상성
+			;ABL:초기링크악마추가효과명중률
+			;ABL:초기링크악마추가효과최대명중률
+		ENDIF
+
+;-------------------------------------------------
+;606,개조수술
+;-------------------------------------------------
+	CASE 606
+		CALL TRAIN_MESSAGE
+		IF TALENT:기계의처녀 && !TALENT:비전투원
+			PRINTFORMW 
+		ENDIF
+
+;------------------------------------------------
+;コマンド口上ここまで
+;------------------------------------------------
+	CASEELSE
+		SIF FLAG:6 > 0
+			CALL TRAIN_MESSAGE
+ENDSELECT
+
+
+
+;========================================================
+;汎用台詞（愛撫系）
+;========================================================
+@BODYTOUCH_K[[キャラ:모무노후]]_1
+SELECTCASE RAND:4
+	CASE 0
+		PRINTFORML %CALLNAME%痺感覚深呼吸、息震。
+		PRINTFORMW 「읏……읏……、읏！」
+	CASE 1
+		PRINTFORML %CALLNAME%明快感感、必死声抑。
+		PRINTFORMW 「읏…………、……」
+	CASE 2
+		PRINTFORML %CALLNAME%官能耐必死。
+		PRINTFORMW 「읏…읏──읏！！」
+	CASE 3
+		PRINTFORML %CALLNAME%切羽詰읏甘悲鳴上
+		PRINTFORMW 「！！읏！」
+ENDSELECT
+
+
+@BODYTOUCH_K[[キャラ:모무노후]]_2
+SELECTCASE RAND:3
+	CASE 0
+		PRINTFORMW %CALLNAME%羞恥耐目읏閉。
+		PRINTFORMW 「읏…」
+	CASE 1
+		PRINTFORML %CALLNAME%顔真읏赤紅潮。
+		PRINTFORMW 「읏…읏…읏…」
+	CASE 2
+		PRINTFORML %CALLNAME%抵抗暴。
+		PRINTFORMW 「！離！離！」
+ENDSELECT
+
+
+
+
+;====================================================
+;汎用台詞(SEX系）
+;====================================================
+@SEX_REACTION_K[[キャラ:모무노후]]_1
+SELECTCASE RAND:4
+	CASE 0
+		PRINTFORMW 「읏、、읏、읏♪」
+		PRINTFORMW %CALLNAME%%CALLNAME:MASTER%激攻、淫喘。
+	CASE 1
+		PRINTFORMW 「읏、…읏、읏…！」
+		PRINTFORMW %CALLNAME%、羞恥声殺腰振읏喘。
+	CASE 2
+		PRINTFORMW 「읏、%UNICODE(0x2661)%…읏、읏、읏%UNICODE(0x2661)%」
+		PRINTFORMW %CALLNAME%吐息甘混始。
+	CASE 3
+		PRINTFORMW 「%UNICODE(0x2661)%…、！、私…！変！消！」
+		PRINTFORMW %CALLNAME%体揺읏逃、抵抗、足伸。。
+ENDSELECT
+
+@SEX_REACTION_K[[キャラ:모무노후]]_2
+SELECTCASE RAND:3
+	CASE 0
+		PRINTFORMW %CALLNAME%淡々%CALLNAME:MASTER%攻身体揺。
+	CASE 1
+		PRINTFORMW 「읏…辱受…」
+		PRINTFORML %CALLNAME%身体揺、泣읏。
+	CASE 2
+		PRINTFORMW 「…읏…熱…」
+		PRINTFORML 肉壁擦%CALLNAME%下半身圧迫感覚味읏。。
+ENDSELECT
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;-------------------------------------------------
+;輪姦時の口上
+;CASE 0 内は必ず通るようになっており
+;RETURNで0を返すと、この後通常の輪姦行動を出します
+;CFLAGは使っていません
+;-------------------------------------------------
+@KOJO_MESSAGE_RINKAN_K[[キャラ:모무노후]]_12, ARG:1 , ARG:2
+SELECTCASE ARG:1
+	;オリジナル輪姦口上
+	CASE 0
+		;ハードON
+		IF ARG:2 == 1
+			;RETURN 1
+		;ハードOFF
+		ELSE
+			;RETURN 1
+		ENDIF
+	;ハード系
+	;胸を踏まれる（巨乳・爆乳のみ）
+	CASE 1
+		IF 0 == 1
+		;恋慕、親愛	
+		;ELSEIF TALENT:3 || TALENT:6
+		;	PRINTFORMW 
+		;	RETURN 1
+		;淫乱、娼婦	
+		;ELSEIF TALENT:4 || TALENT:7
+		;	PRINTFORMW 
+		;	RETURN 1
+		;服従、隷属	
+		;ELSEIF TALENT:5 || TALENT:8
+		;	PRINTFORMW 
+		;	RETURN 1
+		;屈服刻印Lv3、陥落済み共通
+		;ELSEIF TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3
+		;	PRINTFORMW 
+		;	RETURN 1
+		;その他
+		ELSE
+			PRINTFORMW 
+		;	RETURN 1
+		ENDIF
+	;頭を踏まれる
+	CASE 2
+	
+	;暴力を振るわれる
+	CASE 3
+	
+	;タバコの根性焼き
+	;興奮度が低く、反抗的、気丈、プライド高い、生意気、抵抗を持っている
+	CASE 4
+	
+	;地面に垂れた精液舐めとらせる
+	;マゾっ気３以上
+	CASE 5
+	
+	;体に落書きをされて犯される
+	CASE 6
+	
+	;尻突き上げてバックから犯されつつ、頭を踏んづけられて屈辱で涙目状態
+	CASE 7
+	
+	;通常系
+	;淫乱系で目の前に棒並べられて、どれが欲しいか選ばせるとか（淫乱・娼婦のみ）
+	CASE 8
+	
+	;巨乳以上のキャラだと「その乳は飾りか？遊ばせてるんじゃねえ」とか罵られパイズリする（巨乳・爆乳のみ）
+	CASE 9
+	
+	;挿れられるのだけは回避しようと必死に口と手で群がるチンポにご奉仕する（恋幕・親愛のみ）
+	CASE 10
+	
+	;;両穴突かれながら無理やり笑顔とピースサインとらされて記念撮影
+	CASE 11
+	
+	;;輸姦後の後始末描写で、本人精液でどろどろにされてるのに周囲の男達の肉棒を舌で掃除させられてる
+	CASE 12
+	
+	;中に出されても即座にほかの人に交代
+	CASE 13
+	
+	;一斉射精で精液まみれ
+	CASE 14
+	
+	;;両穴突かれて同時射精
+	CASE 15
+	
+	;기승위+両脇コキ
+	CASE 16
+	
+	;;입+マンコ
+	CASE 17
+	
+ENDSELECT
+RETURN 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG関係（X1をキャラ番号に置換）
+;パラメータ変化などをトリガーにした口上　CFLAG 221～260を使用
+;-------------------------------------------------
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_A（X1をキャラ番号に置換）
+;調教者の射精をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_A_K[[キャラ:모무노후]]_12
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_A
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_A_PY1_K[[キャラ:모무노후]]_12
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_A_PY1_K[[キャラ:모무노후]]_12
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;調教者の射精時のテキスト
+;-------------------------------------------------
+;-------------------------------------------------
+;射精箇所変更時のテキスト　有効時はここで関数終了
+;-------------------------------------------------
+
+
+IF CFLAG:106
+	CALL PALAM_MESSAGE_A
+	SELECTCASE CFLAG:106
+		;머리카락
+		CASE 1
+		;顔
+		CASE 2
+		;가슴
+		CASE 3
+		;腹
+		CASE 4
+		;腋
+		CASE 5
+		;太腿
+		CASE 6
+		;割れ目
+		CASE 7
+		;尻
+		CASE 8
+		;ゴム
+		CASE 9
+	ENDSELECT
+	RETURN 0
+ENDIF
+
+
+;-------------------------------------------------
+;手、口以外で射精
+;対応コマンドはキス、素股、足コキ、アナル強制奉仕、ダブル素股、助手を犯させる
+;-------------------------------------------------
+IF TFLAG:9 > 0
+	CALL PALAM_MESSAGE_A
+ENDIF
+
+;-------------------------------------------------
+;조수를범한다로사정
+;-------------------------------------------------
+IF TFLAG:7 > 0
+	CALL PALAM_MESSAGE_A	
+ENDIF
+
+;-------------------------------------------------
+;입으로사정
+;-------------------------------------------------
+IF TFLAG:0 > 0
+	CALL PALAM_MESSAGE_A
+	;淫乱、娼婦
+	IF TALENT:4 || TALENT:7
+		PRINTFORMW 「、읏……♪　、읏읏欲、主人様─♪」
+	ELSE
+		PRINTFORMW 「、읏！　……口変味気持悪…」
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;손으로사정
+;-------------------------------------------------
+IF TFLAG:1 > 0
+	CALL PALAM_MESSAGE_A
+	;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「、읏出。%CSTR:12%%UNICODE(0x2661)%」
+		ELSE
+			PRINTFORMW 「읏………」
+		ENDIF
+ENDIF
+
+;-------------------------------------------------
+;가슴으로사정
+;-------------------------------------------------
+IF TFLAG:34 > 0
+	CALL PALAM_MESSAGE_A
+	;淫乱、娼婦
+	IF TALENT:4 || TALENT:7
+		PRINTFORMW 「♪　気持읏？」
+	ELSE
+		PRINTFORMW 「읏………」
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;오나홀에사정
+;-------------------------------------------------
+IF TFLAG:16 == 1
+	CALL PALAM_MESSAGE_A
+ENDIF
+
+;-------------------------------------------------
+;섹스로사정
+;-------------------------------------------------
+IF TFLAG:2 > 0
+	CALL PALAM_MESSAGE_A
+	;アナルセックス系
+	IF SELECTCOM == 62 || SELECTCOM == 63 || SELECTCOM == 67 || SELECTCOM == 70 || SELECTCOM == 71 || SELECTCOM == 512
+		;淫乱、娼婦	
+			IF TALENT:4 || TALENT:7
+				IF RAND:2 == 0
+					PRINTFORMW 「엉덩이%UNICODE(0x2661)%、엉덩이에 잔뜩 정액 와버려엇%UNICODE(0x2661)%！」
+				ELSE
+					PRINTFORMW 「정액 뱃속으로 잔뜩 흘러 들어와앗%UNICODE(0x2661)%！」
+				ENDIF
+			ELSE
+				PRINTFORMW 「읏…尻穴…出…」
+			ENDIF
+	;奥攻めセックス系
+	ELSEIF SELECTCOM == 506 || SELECTCOM == 507
+		;淫乱、娼婦	
+		IF TALENT:4 || TALENT:7
+			IF RAND:2 == 0
+				PRINTFORMW 「아히이이이%UNICODE(0x2661)%！　%CSTR:이인칭%의 자지로 임신해버려어%UNICODE(0x2661)%」
+			ELSE
+				PRINTFORMW 「굉향해에%UNICODE(0x2661)%　자궁이 정액으로 채워지고 있어어%UNICODE(0x2661)%！」
+			ENDIF 
+		ELSE
+			PRINTFORMW 「읏、…읏…！…、奥읏……！！」
+		ENDIF
+	;その他セックス系
+	ELSE
+		;淫乱、娼婦	
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「굉향해에%UNICODE(0x2661)%　보지에 뜨거운 게 와버려엇%UNICODE(0x2661)%！」
+		ELSE
+			PRINTFORMW 「…中出…」
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;逆レイプで射精させた
+;-------------------------------------------------
+IF SELECTCOM == 64 && TFLAG:10 > 0
+	CALL PALAM_MESSAGE_A
+	IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:240 < 2 || FLAG:7 == 2)		
+		;通す	
+		IF 0 == (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:240 < 2 || FLAG:7 == 2)	
+		;陥落済み	
+		ELSEIF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:240 < 3 || FLAG:7 == 2)	
+			PRINTFORMW 「나온다앗！　%CSTR:이인칭%의 안 굉장히 조여서%UNICODE(0x2661)%」
+			CFLAG:240= 3
+		;屈服刻印Lv3	
+		ELSE	
+			PRINTFORMW 
+			CFLAG:240= 2
+		ENDIF	
+	;それ以外		
+	ELSEIF CFLAG:240 < 1 || FLAG:7 == 2
+		PRINTFORMW 
+		CFLAG:240 = 1
+	ENDIF
+ENDIF
+
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_E（X1をキャラ番号に置換）
+;触手の射精をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_E_K[[キャラ:모무노후]]_12
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_E
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_E_PY1_K[[キャラ:모무노후]]_12
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_E_PY1_K[[キャラ:모무노후]]_12
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;触手の射精時のテキスト
+;-------------------------------------------------
+;-------------------------------------------------
+;촉수가사정
+;-------------------------------------------------
+IF TFLAG:15 >0
+	CALL PALAM_MESSAGE_E
+ENDIF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_B関係（X1をキャラ番号に置換）
+;奴隷の絶頂をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_B_K[[キャラ:모무노후]]_12
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_B
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_B_PY1_K[[キャラ:모무노후]]_12
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_B_PY1_K[[キャラ:모무노후]]_12
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;奴隷の絶頂時のテキスト
+;-------------------------------------------------
+;-------------------------------------------------
+;初めてC絶頂
+;-------------------------------------------------
+IF NOWEX:0 > 0 && CFLAG:242 == 0
+	PRINTFORMW 「크윽%UNICODE(0x2661)%！　가랑이가 뜨거워%UNICODE(0x2661)%」
+	CFLAG:242 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めてV絶頂
+;-------------------------------------------------
+IF NOWEX:1 > 0 && CFLAG:243 == 0
+	PRINTFORMW 
+	CFLAG:243 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めてA絶頂
+;-------------------------------------------------
+IF NOWEX:2 > 0 && CFLAG:244 == 0
+	PRINTFORMW 「엉덩이가%UNICODE(0x2661)%、엉덩이가 뜨거웟%UNICODE(0x2661)%！」
+	CFLAG:244 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めてB絶頂
+;-------------------------------------------------
+IF NOWEX:3 > 0 && CFLAG:245 == 0
+	PRINTFORMW 「이런거 %일인칭은% 몰라%UNICODE(0x2661)%！」
+	CFLAG:245 = 1
+ENDIF
+
+;-------------------------------------------------
+;절정
+;-------------------------------------------------
+;4重絶頂
+IF TFLAG:29 > 4
+	CALL PALAM_MESSAGE_B
+	;陥落済み
+	IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:245 < 4 || FLAG:7 == 2)
+		;恋慕、親愛
+		;IF TALENT:3 || TALENT:6
+			;PRINTFORML 
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORML 「간다 간다 간다아────%UNICODE(0x2661)%%UNICODE(0x2661)%%UNICODE(0x2661)%！！！！
+			PRINTFORML 　갸！　갼다아아아앗──%UNICODE(0x2661)%%UNICODE(0x2661)%%UNICODE(0x2661)%！！！！」
+			PRINTFORMW %CALLNAME은% 남은 쾌락으로 거품을 뿜는 흰자를 뒤집으며、온몸으로 모든 체액을 내뿜으며 절규했다。
+		;服従、隷属
+		;ELSEIF TALENT:5 || TALENT:8
+			;PRINTFORML 
+		ENDIF
+		CFLAG:245 = 4
+	;屈服刻印Lv3
+	ELSEIF MARK:2 == 3 && (CFLAG:245 < 3 || FLAG:7 == 2)
+		PRINTFORML 「가아아아아악─%UNICODE(0x2661)%！ 싫어%UNICODE(0x2661)% 기분 좋아서 죽어버려─%UNICODE(0x2661)%」
+		PRINTFORMW %CALLNAME은% 부들부들 온몸을 경련하며 짐승처럼 울부 짖었다。
+		CFLAG:245 = 3
+	;それ以外
+	ELSEIF CFLAG:245 < 2 || FLAG:7 == 2
+		PRINTFORML 
+		CFLAG:245 = 2
+	ENDIF
+;三重絶頂
+ELSEIF TFLAG:29 > 2
+	CALL PALAM_MESSAGE_B
+	;陥落済み
+	IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:245 < 4 || FLAG:7 == 2)
+		;恋慕、親愛
+		;IF TALENT:3 || TALENT:6
+			;PRINTFORML 
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORML 「아그으윽！！굉향해에에에에엣！！
+			PRINTFORML 　굉향히 기분 조하아아%UNICODE(0x2661)%%UNICODE(0x2661)%！！
+			PRINTFORML 　가버려어────%UNICODE(0x2661)%%UNICODE(0x2661)%！！！！」
+			PRINTFORMW %CALLNAME은% 쾌락에 빠져서 음부에서 힘차게 체액을 뿜고 있었다。
+		;服従、隷属
+		;ELSEIF TALENT:5 || TALENT:8
+			;PRINTFORML 
+		ENDIF
+		CFLAG:245 = 4
+	;屈服刻印Lv3
+	ELSEIF MARK:2 == 3 && (CFLAG:245 < 3 || FLAG:7 == 2)
+		PRINTFORML 「으그윽%UNICODE(0x2661)%！　이、이제 가고 싶지 않아아아아！！
+		PRINTFORMW 　그만둿！？　꺄"아"아"아"아"아"앗%UNICODE(0x2661)%！！！」
+		CFLAG:245 = 3
+	;それ以外
+	ELSEIF CFLAG:245 < 2 || FLAG:7 == 2
+		PRINTFORML 
+		CFLAG:245 = 2
+	ENDIF
+;強絶頂
+ELSEIF TFLAG:29 > 1
+	CALL PALAM_MESSAGE_B
+	IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:246 < 3 || FLAG:7 == 2)		
+		;通す	
+		IF 0 == (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:246 < 3 || FLAG:7 == 2)	
+		;恋慕、親愛	
+		;ELSEIF TALENT:3 || TALENT:6 && (CFLAG:246 < 4 || FLAG:7 == 2)	
+		;	PRINTFORMW 
+		;	CFLAG:246= 4
+		;淫乱、娼婦	
+		IF TALENT:4 || TALENT:7 && (CFLAG:246 < 4 || FLAG:7 == 2)	
+			IF RAND:2 == 0
+					PRINTFORML 「간다 간다 간다앗────%UNICODE(0x2661)%
+					PRINTFORMW 　좀 더 좀 더 엉망진창으로 해줘어엇！！！」
+				ELSE
+					PRINTFORMW 「굉장해에엣──%UNICODE(0x2661)%읏、머릿속이 하얗게 되버려어엇%UNICODE(0x2661)%」
+				ENDIF  
+			CFLAG:246= 4
+		;服従、隷属	
+		;ELSEIF TALENT:5 || TALENT:8 && (CFLAG:246 < 4 || FLAG:7 == 2)	
+		;	PRINTFORMW 
+		;	CFLAG:246= 4
+		;屈服刻印Lv3	
+		ELSE	
+			PRINTFORMW 「후앗%UNICODE(0x2661)% 그만、보지마아%UNICODE(0x2661)%！」
+			CFLAG:246= 3
+		ENDIF
+	;それ以外		
+	ELSEIF CFLAG:246 < 2 || FLAG:7 == 2
+		PRINTFORML 「%UNICODE(0x2661)%！ 아힛、아、아직 %일인칭은% 떨어지지 않았다%UNICODE(0x2661)%…」
+		CFLAG:246 = 2
+	ENDIF
+;절정
+ELSEIF TFLAG:29 > 0
+	CALL PALAM_MESSAGE_B	
+	IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:246 < 3 || FLAG:7 == 2)		
+		;通す	
+		IF 0 == (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:246 < 3 || FLAG:7 == 2)	
+		;恋慕、親愛	
+		;ELSEIF TALENT:3 || TALENT:6 && (CFLAG:246 < 4 || FLAG:7 == 2)	
+		;	PRINTFORMW 
+		;	CFLAG:246= 4
+		;淫乱、娼婦	
+		ELSEIF TALENT:4 || TALENT:7 && (CFLAG:246 < 4 || FLAG:7 == 2)	
+			IF RAND:2 == 0
+				PRINTFORMW 「히익、또오%UNICODE(0x2661)%！
+			ELSE
+				PRINTFORML 「굉장해엣──%UNICODE(0x2661)%、머릿속이 새하얗게 되버려어%UNICODE(0x2661)%」
+			ENDIF  
+			CFLAG:246= 4
+		;服従、隷属	
+		;ELSEIF TALENT:5 || TALENT:8 && (CFLAG:246 < 4 || FLAG:7 == 2)	
+		;	PRINTFORMW 
+		;	CFLAG:246= 4
+		;屈服刻印Lv3	
+		ELSE	
+			PRINTFORMW 「후앗%UNICODE(0x2661)% 아、아직이다。%일인칭을% 떨어 트리기엔 부족하다고。」 
+			CFLAG:246= 3
+		ENDIF	
+	;それ以外		
+	ELSEIF CFLAG:246 < 2 || FLAG:7 == 2
+		IF RAND:2 == 0
+			PRINTFORMW 「…읏！」
+		ELSE
+			PRINTFORMW 「보지마라%UNICODE(0x2661)%、보지마라 쓰레기가！」
+		ENDIF  
+		CFLAG:246 = 2
+	ENDIF
+ENDIF
+ENDIF
+
+;-------------------------------------------------
+;사정
+;-------------------------------------------------
+;射精している
+IF TFLAG:10 > 0	
+	IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:247 < 2 || FLAG:7 == 2)		
+		;通す	
+		IF 0 == (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:247 < 2 || FLAG:7 == 2)	
+		;陥落済み	
+		ELSEIF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:247 < 3 || FLAG:7 == 2)	
+			IF RAND:3 == 0
+			PRINTFORMW 「정액%UNICODE(0x2661)%、 정액 잔뜩 나오고 있어%UNICODE(0x2661)%」
+			ELSEIF RAND:2 == 0
+			PRINTFORMW 「응홋%UNICODE(0x2661)%  자지밀크가 푸욱─푸욱─나오고 있어어%UNICODE(0x2661)%」
+		ELSE
+			PRINTFORMW 「굉향해에%UNICODE(0x2661)% 사정하는 거 기분 좋아아앗！」
+		ENDIF
+			CFLAG:247= 3
+		;屈服刻印Lv3	
+		ELSE	
+			PRINTFORMW 「싫어어%UNICODE(0x2661)% 정액 내고 싶지 않아%UNICODE(0x2661)%」
+			CFLAG:247= 2
+		ENDIF	
+	;それ以外		
+	ELSEIF CFLAG:247 < 1 || FLAG:7 == 2
+		PRINTFORMW 「크윽… 젠장、%일인칭은%、 %일인칭은% 사정한건가…」
+		CFLAG:247 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;분유
+;-------------------------------------------------
+;噴乳している
+IF TFLAG:11 > 0
+	IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:248 < 2 || FLAG:7 == 2)		
+		;通す	
+		IF 0 == (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:248 < 2 || FLAG:7 == 2)	
+		;陥落済み	
+		ELSEIF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:248 < 3 || FLAG:7 == 2)	
+			IF RAND:2 == 0
+			PRINTFORMW 「젖가슴에서 푸욱─푸욱─나와버려%UNICODE(0x2661)%！」
+		ELSE
+			PRINTFORMW 「굉향해엣%UNICODE(0x2661)%！ 밀크 나오는거 기분 좋아아%UNICODE(0x2661)%！」
+		ENDIF
+			CFLAG:248= 3
+		;屈服刻印Lv3	
+		ELSE	
+			PRINTFORMW 「히익%UNICODE(0x2661)%  모유가아…」
+			CFLAG:248= 2
+		ENDIF	
+	;それ以外		
+	ELSEIF CFLAG:248 < 1 || FLAG:7 == 2
+		PRINTFORMW 「…아앗……  모、모유가 나오다니」
+		CFLAG:248 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;방뇨
+;-------------------------------------------------
+;放尿している
+IF TFLAG:29 > 0 && (TEQUIP:27 || TALENT:57)
+	IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:249 < 2 || FLAG:7 == 2)		
+		;通す	
+		IF 0 == (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:249 < 2 || FLAG:7 == 2)	
+		;陥落済み	
+		ELSEIF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8 || MARK:2 == 3) && (CFLAG:249 < 3 || FLAG:7 == 2)	
+			IF RAND:2 == 0
+			PRINTFORMW 「싫어、오줌 새어버려엇%UNICODE(0x2661)%！」
+		ELSE
+			PRINTFORMW 「%CSTR:이인칭%、%일인칭이% 쉬 하는 모습을 봐줘어%UNICODE(0x2661)%！」
+		ENDIF
+			CFLAG:249= 3
+		;屈服刻印Lv3	
+		ELSE	
+			PRINTFORMW 「싫어…  소변이 나오는 걸 보지말아줘…」
+			CFLAG:249= 2
+		ENDIF	
+	;それ以外		
+	ELSEIF CFLAG:249 < 1 || FLAG:7 == 2
+		PRINTFORMW 웃기지마라！ 이 변태가！」
+		CFLAG:249 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_C関係（X1をキャラ番号に置換）
+;調教後の変化をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_C_K[[キャラ:모무노후]]_12
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_C
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_C_PY1_K[[キャラ:모무노후]]_12
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_C_PY1_K[[キャラ:모무노후]]_12
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;調教後のテキスト
+;-------------------------------------------------
+;-------------------------------------------------
+;処女喪失(処女のみ)
+;-------------------------------------------------
+IF TFLAG:3 > 0
+	CALL PALAM_MESSAGE_C
+	;---003 EDIT START---
+	;주인에의한처녀상실
+	IF TFLAG:20
+		;陥落素質チェック
+		IF TALENT:연모 || TALENT:친애
+			WSTR:(K++) =
+		ELSEIF TALENT:음란 || TALENT:창부
+			WSTR:(K++) = 
+		ELSEIF TALENT:복종 || TALENT:예속
+			WSTR:(K++) = 
+		ELSE
+			;屈服刻印Lv3
+			IF MARK:2 == 3
+				WSTR:(K++) = 
+			ELSE
+				WSTR:(K++) = 
+			ENDIF
+		ENDIF
+	;それ以外の時に処女喪失(主人による道具系調教含む)
+	ELSE
+		;陥落素質チェック
+		IF TALENT:연모 || TALENT:친애
+			WSTR:(K++) =
+		ELSEIF TALENT:음란 || TALENT:창부
+			WSTR:(K++) =
+		ELSEIF TALENT:복종 || TALENT:예속
+			WSTR:(K++) =
+		ELSE
+			;屈服刻印Lv3
+			IF MARK:2 == 3
+				WSTR:(K++) = 
+			ELSE
+				WSTR:(K++) = 
+			ENDIF
+		ENDIF
+	ENDIF
+	;---003 EDIT END---
+ENDIF
+
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_D関係（X1をキャラ番号に置換）
+;パラメータ変化をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_D_K[[キャラ:모무노후]]_12
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_D
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_D_PY1_K[[キャラ:모무노후]]_12
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_D_PY1_K[[キャラ:모무노후]]_12
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;パラメータ変化時のテキスト
+;-------------------------------------------------
+;-------------------------------------------------
+;初めて潤滑がLV3超えた
+;-------------------------------------------------
+P = PALAM:4 + CUP:4
+IF P > PALAMLV:4 && CFLAG:250 == 0
+	CALL PALAM_MESSAGE_D
+	;ローションを使った場合
+	IF SELECTCOM == 180
+		PRINTFORMW 
+	;それ以外
+	ELSE
+		PRINTFORMW 
+	ENDIF
+	CFLAG:250 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて欲情がLV2超えた
+;-------------------------------------------------
+P = PALAM:6 + CUP:6
+IF P > PALAMLV:3 && CFLAG:251 == 0
+	CALL PALAM_MESSAGE_D
+	;媚薬を使った場合
+	IF SELECTCOM == 181
+		PRINTFORMW 「…%UNICODE(0x2661)%  약에 의지하지 않으면 안되는 건가？ 한심하군！」
+	;それ以外
+	ELSE
+		PRINTFORMW 「…윽%UNICODE(0x2661)% 」
+	ENDIF
+	CFLAG:251 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて屈服がLV3超えた
+;-------------------------------------------------
+P = PALAM:7 + CUP:7
+IF P > PALAMLV:3 && CFLAG:252 == 0
+	CALL PALAM_MESSAGE_D
+	PRINTFORMW 「…흥。조금이라면 %CSTR:이인칭%의 말을 들어주도록 하지。」
+	CFLAG:252 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて恭順がLV3超えた
+;-------------------------------------------------
+P = PALAM:5 + CUP:5
+IF P > PALAMLV:3 && CFLAG:253 == 0
+	CALL PALAM_MESSAGE_D
+	;陥落済み
+	IF TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8
+		PRINTFORMW 
+	;それ以外
+	ELSE
+		PRINTFORMW 「저기、……아니、아무것도 아니다。」
+	ENDIF
+	CFLAG:253 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて恐怖がLV3超えた
+;-------------------------------------------------
+P = PALAM:11 + CUP:11
+IF P > PALAMLV:3 && CFLAG:254 == 0
+	CALL PALAM_MESSAGE_D
+	;陥落済み
+	IF TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8
+		PRINTFORMW 
+	;それ以外
+	ELSE
+		PRINTFORMW （이 %일인칭이% %CSTR:이인칭%같은 것에게 공포를 느낀다、라고？）
+	ENDIF
+	CFLAG:254 = 1
+ENDIF
+
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_MARKCNG関係（X1をキャラ番号に置換）
+;刻印変動をトリガーにした口上
+;刻印変動後に口上を発動します
+;-------------------------------------------------
+@KOJO_MESSAGE_MARKCNG_K[[キャラ:모무노후]]_12
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL MARK_MESSAGE
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_MARKCNG_PY1_K[[キャラ:모무노후]]_12
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_MARKCNG_PY1_K[[キャラ:모무노후]]_12
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;苦痛刻印Lv3
+;-------------------------------------------------
+IF TFLAG:22 == 3
+	CALL MARK_MESSAGE_A
+	    PRINTFORMW 「히익───！！」
+		PRINTFORMW %CALLNAME은% 침과 콧물을 흘리며 흰자를 보이며 경련하고 있다…
+ENDIF
+
+;-------------------------------------------------
+;快楽刻印Lv3
+;-------------------------------------------------
+IF TFLAG:23 == 3
+	CALL MARK_MESSAGE_P
+	    PRINTFORMW 「아히이이잇───%UNICODE(0x2661)%%UNICODE(0x2661)%」
+		PRINTFORMW 「어떻게 되어도 좋으니까 좀 더 좀 더 원해에엣───%UNICODE(0x2661)%%UNICODE(0x2661)%%UNICODE(0x2661)%」
+	ENDIF
+
+;-------------------------------------------------
+;屈服刻印Lv3
+;-------------------------------------------------
+IF TFLAG:24 == 13 || TFLAG:24 == 23 || TFLAG:24 == 33
+	CALL MARK_MESSAGE_S
+	;快楽による屈服
+	IF TFLAG:24 == 13
+		PRINTFORMW 「거만한 소리를 해서 죄송합니다… 사과할테니 좀 더 야한 짓을 해줘%UNICODE(0x2661)%」
+	;恐怖と苦痛による屈服
+	ELSEIF TFLAG:24 == 23
+		PRINTFORMW 「싫어… 뭐든지 할테니까、그러니까 이제 아픈 건 싫어！！」
+	;屈服と恭順による屈服
+	ELSEIF TFLAG:24 == 33
+		PRINTFORMW 
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;反発刻印Lv3
+;-------------------------------------------------
+IF TFLAG:21 == 3
+	CALL MARK_MESSAGE_R
+	;陥落済み
+	IF TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8
+		IF 1 == 0
+		;恋慕、親愛
+		;ELSEIF TALENT:3 || TALENT:6
+		;	PRINTFORMW 
+		;淫乱、娼婦
+		ELSEIF TALENT:4 || TALENT:7
+			PRINTFORMW 
+		;服従、隷属
+		;ELSEIF TALENT:5 || TALENT:8
+		;	PRINTFORMW 
+		;共通、その他
+		ELSE
+			PRINTFORMW 「쓰레기가…。그 목 반드시 베어 주겠다…。」
+		ENDIF
+	ELSE
+		PRINTFORMW 
+	ENDIF
+ENDIF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;-------------------------------------------------
+;イベント口上集（X1をキャラ番号に置換する） CFLAG 261～299を使用
+;-------------------------------------------------
+@KOJO_MESSAGE_EVENT_K[[キャラ:모무노후]]_12
+
+;--------------------------------------------------
+;特定主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_EVENT_PY1_K[[キャラ:모무노후]]_12
+;	RETURN 0
+;ENDIF
+SELECTCASE TFLAG:13
+	;-------------------------------------------------
+	;朝フェラ
+	;-------------------------------------------------
+	CASE 1
+		CALL EVENT_MESSAGE
+		;淫乱、娼婦
+		SIF TALENT:4 || TALENT:7
+			PRINTFORMW 「츄흡、…조흔아힘─%CSTR:이인칭%%UNICODE(0x2661)%。」
+
+	;-------------------------------------------------
+	;朝パイズリ
+	;-------------------------------------------------
+	CASE 2
+		CALL EVENT_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			;母乳体質かどうか
+			IF TALENT:149
+				PRINTFORMW 「좋은 아침이군 %CSTR:이인칭%%UNICODE(0x2661)%。%CSTR:일인칭%의 가슴은 어떤가？」
+			ELSE
+				PRINTFORMW 「좋은 아침이군 %CSTR:이인칭%%UNICODE(0x2661)%。%CSTR:일인칭%의 가슴은 어떤가？」
+			ENDIF
+		ENDIF
+
+	;-------------------------------------------------
+	;朝騎乗位
+	;-------------------------------------------------
+	CASE 3
+		CALL EVENT_MESSAGE
+		;淫乱、娼婦
+		SIF TALENT:4 || TALENT:7
+			PRINTFORMW 「아침부터 보지가 욱신거거리는 것이다%UNICODE(0x2661)%」
+
+	;-------------------------------------------------
+	;朝騎乗位A
+	;-------------------------------------------------
+	CASE 24
+		CALL EVENT_MESSAGE
+		;淫乱、娼婦
+		SIF TALENT:4 || TALENT:7
+			PRINTFORMW 「엉덩이보지 %CSTR:이인칭%의 자지로 쑤셔넣어줘%UNICODE(0x2661)%」
+
+	;-------------------------------------------------
+	;朝キス 恋慕、親愛前提
+	;-------------------------------------------------
+	CASE 25
+		CALL EVENT_MESSAGE
+		
+	;-------------------------------------------------
+	;朝食
+	;-------------------------------------------------
+	CASE 26
+		CALL EVENT_MESSAGE
+		;戦場の料理って革靴とか？
+		IF RAND:2 == 0
+			PRINTFORML 「…아아、좋은 아침이군 %CSTR:이인칭%。아침 식사를 만들어 두었다고。」
+			PRINTFORMW …！　냄비가 아니라 투구로 요리를 하고 있다。
+		ELSE
+			PRINTFORML 「…아아、좋은 아침이군 %CSTR:이인칭%。아침 식사를 만들어 두었다고。」
+			PRINTFORMW …%CALLNAME은% 재료가 엉성하게 쪼개진 호쾌한 요리를 선보였다
+		ENDIF
+
+	;-------------------------------------------------
+	;起きたら隣で寝てる 恋慕、親愛前提
+	;-------------------------------------------------
+	CASE 27
+		CALL EVENT_MESSAGE
+
+	;-------------------------------------------------
+	;朝の足コキ
+	;-------------------------------------------------
+	CASE 28
+		CALL EVENT_MESSAGE
+		;淫乱、娼婦
+		SIF TALENT:4 || TALENT:7
+			PRINTFORMW 「…아아、%이인칭은% 발로 하는 것도 기분좋겠지？」
+	
+	;-------------------------------------------------
+	;;朝の搾りたてミルク
+	;-------------------------------------------------
+	CASE 29
+		CALL EVENT_MESSAGE
+		;淫乱、娼婦
+		SIF TALENT:4 || TALENT:7
+			PRINTFORMW 「좋은 아침이군 %CSTR:이인칭%%UNICODE(0x2661)%。아침 우유다%UNICODE(0x2661)%」
+
+	;-------------------------------------------------
+	;;お寝小
+	;-------------------------------------------------
+	CASE 30
+		CALL EVENT_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORML 「……%CSTR:이인칭%！？　본 것인가！」
+			PRINTFORMW 과연 음란한 %CALLNAME%도 소변을 보는 것을 보인 것에는 부끄러운 듯 얼굴을 붉히고 있었다。
+		ENDIF
+
+	;-------------------------------------------------
+	;4:調教後レズプレイ、6:強精神薬の反動
+	;-------------------------------------------------
+	CASE 4
+		CALL EVENT_MESSAGE
+
+	;-------------------------------------------------
+	;調教後セックス
+	;-------------------------------------------------
+	CASE 5
+		CALL EVENT_MESSAGE
+		;淫乱、娼婦
+		SIF TALENT:4 || TALENT:7
+			PRINTFORMW 「부족해、부족하니까 조금 더 범해주길 %CSTR:이인칭%%UNICODE(0x2661)%。」
+
+	;-------------------------------------------------
+	;調教後搾乳
+	;-------------------------------------------------
+	CASE 7
+		CALL EVENT_MESSAGE
+		;淫乱、娼婦
+		SIF TALENT:4 || TALENT:7
+			PRINTFORMW 「%CSTR:이인칭%、運動喉渇？　%CSTR:일인칭%乳飲%UNICODE(0x2661)%？」
+
+	;-------------------------------------------------
+	;調教後自慰
+	;-------------------------------------------------
+	CASE 8
+		CALL EVENT_MESSAGE
+		;淫乱、娼婦
+		SIF TALENT:4 || TALENT:7
+			PRINTFORMW 「切…　足%UNICODE(0x2661)%」
+
+	;-------------------------------------------------
+	;夜這い（主人C 相手V）
+	;-------------------------------------------------
+	CASE 9
+		CALL EVENT_MESSAGE
+		;淫乱、娼婦
+		SIF TALENT:4 || TALENT:7
+			PRINTFORMW 「%CSTR:이인칭%%CSTR:이인칭%%UNICODE(0x2661)%」
+
+	;-------------------------------------------------
+	;夜這い（主人C 相手A）
+	;-------------------------------------------------
+	CASE 31
+		CALL EVENT_MESSAGE
+		;淫乱、娼婦
+		SIF TALENT:4 || TALENT:7
+			PRINTFORMW 「%CSTR:이인칭%%CSTR:이인칭%%UNICODE(0x2661)%」
+
+	;-------------------------------------------------
+	;32:夜這い（主人V 相手C）、33:夜這い（主人A 相手C）、34:夜這い（両者C（素股）・両者C（貝合わせ））
+	;-------------------------------------------------
+	CASE 32 TO 34
+		CALL EVENT_MESSAGE
+
+	;-------------------------------------------------
+	;35:夜自慰、36:一緒に寝る 恋慕、親愛、10:黄色のキャンディ使用時
+	;-------------------------------------------------
+	CASE 35, 36, 10
+		CALL EVENT_MESSAGE
+
+
+	;-------------------------------------------------
+	;妊娠発覚時
+	;-------------------------------------------------
+	CASE 11
+			SIF CFLAG:271 >= 1 && FLAG:7 != 2
+				RETURN 0
+			CALL EVENT_MESSAGE
+			;妊娠対象をTARGETに格納し、父親は奴隷はV、助手はWとする
+			;崩壊してしまった場合
+			IF TALENT:9 == 1
+				PRINTFORMW 
+			;父親が主人で母親が恋慕か親愛持ち
+			ELSEIF (TALENT:3 || TALENT:6) && CFLAG:102 == 1
+				PRINTFORMW 
+			;父親が奴隷か助手で母親が淫乱か娼婦持ち
+			ELSEIF (TALENT:4 || TALENT:7) && (CFLAG:102 == 2 || CFLAG:102 == 3)
+				;父親(助手）との相性が125より大きい場合
+				IF CFLAG:102 == 2 && GET_RELATION(TARGET, W) > 125
+					PRINTFORMW 
+			 	;父親(奴隷）との相性が125より大きい場合
+				ELSEIF CFLAG:102 == 3 && GET_RELATION(TARGET, V) > 125
+					PRINTFORMW 
+				ELSE
+					PRINTFORMW 「아이인가…　%CSTR:이인칭%도 세력의 우두머리다。이러한 말이 많이 필요할 것이다。도와주도록 하지。」
+				ENDIF
+			;服従か隷属持ち
+			ELSEIF (TALENT:5 || TALENT:8)
+				PRINTFORMW 
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:271 = 1
+
+	;-------------------------------------------------
+	;出産時
+	;-------------------------------------------------
+	CASE 12
+		CALL EVENT_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORML 「아기가 보지를 문질러서%UNICODE(0x2661)%%UNICODE(0x2661)%」
+			PRINTFORMW %CALLNAME은% 자궁 전체에서 쾌락을 느끼고 있다。
+		ENDIF
+		
+	;-------------------------------------------------
+	;13:育児室、14:親離れ時
+	;-------------------------------------------------
+	CASE 13, 14
+		CALL EVENT_MESSAGE
+
+
+
+	;-------------------------------------------------
+	;定食屋台時
+	;-------------------------------------------------
+	CASE 15
+		CALL EVENT_MESSAGE
+
+	;-------------------------------------------------
+	;娼館でバイト・設定時
+	;-------------------------------------------------
+	CASE 16
+		CALL EVENT_MESSAGE
+		;初めて
+		IF CFLAG:276 == 0
+			PRINTFORMW 「오늘밤은 다른 사람에게 범해지는 것인가%UNICODE(0x2661)%」
+			CFLAG:276 = 1
+		;それ以外
+		ELSEIF CFLAG:276 < 1 || FLAG:7 == 2
+			PRINTFORMW 「전에도 기분 좋았으니까 말이야%UNICODE(0x2661)%　기대되는군」
+			CFLAG:276 = 1
+		ENDIF
+	;-------------------------------------------------
+	;娼館でバイト・実行時
+	;-------------------------------------------------
+	CASE 63
+		CALL EVENT_MESSAGE
+		;初めて
+		IF CFLAG:606 == 0
+			PRINTFORMW 「굉향해에%UNICODE(0x2661)%──！！　말좆 자지에 느껴버려엇%UNICODE(0x2661)%%UNICODE(0x2661)%！」
+			CFLAG:606 = 1
+		;それ以外
+		ELSEIF CFLAG:276 < 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:606 = 1
+		ENDIF
+	;-------------------------------------------------
+	;レンタル時
+	;-------------------------------------------------
+	CASE 17
+		CALL EVENT_MESSAGE
+
+	;-------------------------------------------------
+	;売却時
+	;-------------------------------------------------
+	CASE 18
+		CALL EVENT_MESSAGE
+		;淫乱、娼婦
+		IF TALENT:4 || TALENT:7
+			PRINTFORMW 「%CSTR:이인칭%、가능하면 성교가 능숙한 주인에게 팔았으면 좋겠군。」
+		;反発刻印Lv3
+		ELSEIF MARK:3 == 3
+			PRINTFORMW 「…必殺。」
+		;それ以外
+		ELSE
+		
+		ENDIF	
+	;-------------------------------------------------
+	;19:ビデオ売却時、20:コンサート時、21:乱交ライブ時、22:公衆便所プレイ時、23:ビデオ保有時
+	;-------------------------------------------------
+	CASE 19 TO 23
+		CALL EVENT_MESSAGE
+
+	;-------------------------------------------------
+	;65:教会で祈る、66:教会で口奉仕、67:教会で性奉仕
+	;-------------------------------------------------
+	CASE 65 TO 67
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+
+	;-------------------------------------------------
+	;記憶消去薬使用時
+	;-------------------------------------------------
+	CASE 30
+		CALL EVENT_MESSAGE
+
+	;-------------------------------------------------
+	;;[아내][남편]取得時 親愛前提
+	;-------------------------------------------------
+	CASE 40
+		CALL EVENT_MESSAGE
+	
+	;-------------------------------------------------
+	;;[음마]取得時 娼婦前提
+	;-------------------------------------------------
+	CASE 41
+		CALL EVENT_MESSAGE
+		IF CFLAG:284 < 1 || FLAG:7 == 2
+			PRINTFORML 오늘、이 날에 의식의 준비는 완료했다。
+			PRINTFORML 66개의 처녀의 자궁、44개의 영아의 시체、그외 다양한 모독적인 물품…
+			PRINTFORML 그것을 이용하여 %CALLNAME%를 음마로 빠트린다。
+			PRINTFORML 성공하면 %CALLNAME%의 감각은 치솟아、약간의 바람만 불어도 절정하게 될 것이다。
+			PRINTFORML 「성공하면 더욱 더 기분 좋아지는 건가%UNICODE(0x2661)%、기대되는군。」
+			PRINTFORML %CALLNAME이% 마법진 위에 서는 의식을 시작하자、온 세상이 빛에 휩싸였다…
+			PRINTFORMW 
+			PRINTFORML …성공한 것 같다。그녀는 그냥 살아간다면 느낄 수 없는 강한 쾌감을 느꼈다。다시는 원래의 생활을 보낼 수 없을 것이다。
+			PRINTFORMW 「아헷%UNICODE(0x2661)%、굉향해에%UNICODE(0x2661)%、간다 간다 간다아%UNICODE(0x2661)%%UNICODE(0x2661)%%UNICODE(0x2661)%────！！！」
+			CFLAG:284 = 1
+		ENDIF
+	
+	;-------------------------------------------------
+	;;[専属奴隷]取得時 隷属前提
+	;-------------------------------------------------
+	CASE 42
+		CALL EVENT_MESSAGE
+
+	;-------------------------------------------------
+	;;オープン/クローズ・オブ・オッパイ
+	;-------------------------------------------------
+	CASE 44
+		CALL EVENT_MESSAGE
+
+	;-------------------------------------------------
+	;;[愛ＮＴＲ]イベント時
+	;-------------------------------------------------
+	CASE 45
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;;[淫ＮＴＲ]イベント時
+	;-------------------------------------------------
+	CASE 46
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;;[隷ＮＴＲ]イベント時
+	;-------------------------------------------------
+	CASE 47
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;;愛系再陥落時
+	;;主人に対して恋慕系陥落している、もしくは一度愛系ＮＴＲ状態にされたキャラに再び陥落させられる時
+	;-------------------------------------------------
+	CASE 48
+		CALL EVENT_MESSAGE
+	
+	;-------------------------------------------------
+	;;淫系再陥落時
+	;;主人に対して淫乱系陥落している、もしくは一度淫系ＮＴＲ状態にされたキャラに再び陥落させられる時
+	;-------------------------------------------------
+	CASE 49
+		CALL EVENT_MESSAGE
+	
+	;-------------------------------------------------
+	;;隷系再陥落時
+	;;主人に対して服従系陥落している、もしくは一度隷系ＮＴＲ状態にされたキャラに再び陥落させられる時
+	;-------------------------------------------------
+	CASE 50
+		CALL EVENT_MESSAGE
+	
+	;-------------------------------------------------
+	;;ＮＴＲ夜這い・乱交パーティ
+	;;淫ＮＴＲ状態（TALENT:ＮＴＲ == 2 か TALENT:ＮＴＲ == 5）である時のみ
+	;-------------------------------------------------
+	CASE 51
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;;ＮＴＲ夜這い・公園
+	;;淫ＮＴＲ状態（TALENT:ＮＴＲ == 2 か TALENT:ＮＴＲ == 5）である時のみ
+	;-------------------------------------------------
+	CASE 52
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;;ＮＴＲ夜這い・便器
+	;;淫ＮＴＲ状態（TALENT:ＮＴＲ == 2 か TALENT:ＮＴＲ == 5）である時のみ
+	;-------------------------------------------------
+	CASE 53
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;;ＮＴＲ夜這い・夜の街
+	;;淫ＮＴＲ状態（TALENT:ＮＴＲ == 2 か TALENT:ＮＴＲ == 5）である時のみ
+	;-------------------------------------------------
+	CASE 54
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;;ＮＴＲ夜這い・ＮＴＲ前逢引
+	;;ＮＴＲ状態になる前に逢引する時
+	;-------------------------------------------------
+	CASE 55
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;;ＮＴＲ夜這い・ＮＴＲ後初逢引
+	;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)になった直後の一日の終了後、一度だけ行う
+	;別のキャラに陥落する度に起こる。同じキャラに再度陥落した場合は起こらない
+	;-------------------------------------------------
+	CASE 56
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;;ＮＴＲ夜這い・デート
+	;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)で１日の終了時に発生。
+	;-------------------------------------------------
+	CASE 57
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;;ＮＴＲ夜這い・本番
+	;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)で１日の終了時に発生。
+	;女性であれば入れられる側、男性であれば入れる側で固定
+	;-------------------------------------------------
+	CASE 58
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;;ＮＴＲ夜這い・自慰見せ合い
+	;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)で１日の終了時に発生。
+	;愛ＮＴＲ状態の場合、露出癖3か自慰中毒1のどちらかを満たしている事が条件になります。
+	;-------------------------------------------------
+	CASE 59
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;;ＮＴＲ夜這い・アナル
+	;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)で１日の終了時に発生。
+	;CFLAG:アナル回数が1以上なら入れられている、CFLAG:挿入回数が1以上なら入れています。
+	;両方立っている場合は、地の文では入れられている側が優先されます。
+	;-------------------------------------------------
+	CASE 60
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;;ＮＴＲ夜這い・野外プレイ
+	;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)で１日の終了時に発生。
+	;愛ＮＴＲの場合、露出癖が4以上でないと発生しません
+	;-------------------------------------------------
+	CASE 61
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;;ＮＴＲ夜這い・野外調教
+	;;隷ＮＴＲ状態(TALENT:ＮＴＲが 3 か 6)でCFLAG:現ＮＴＲ進行度が6以上の場合１日の終了時に発生。
+	;-------------------------------------------------
+	CASE 62
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;ダンジョン内性欲処理：仲魔とセックスする
+	;やられちゃう側
+	;PLAYERに実行者の番号が入っています
+	;-------------------------------------------------
+	CASE 79
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;ダンジョン内性欲処理：仲魔に奉仕させる
+	;奉仕する側
+	;PLAYERに実行者の番号が入っています
+	;-------------------------------------------------
+	CASE 80
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;ダンジョン内性欲処理：その場で自慰
+	;奉仕する側
+	;-------------------------------------------------
+	CASE 81
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;ダンジョン内性欲処理：物陰で自慰
+	;奉仕する側
+	;-------------------------------------------------
+	CASE 82
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;ダンジョン内性欲処理：仲魔とセックスする
+	;やる側
+	;PLAYERに相手の番号が入っています
+	;-------------------------------------------------
+	CASE 83
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;ダンジョン内性欲処理：仲魔に奉仕させる
+	;奉仕される側
+	;PLAYERに奉仕する側の番号が入っています
+	;-------------------------------------------------
+	CASE 84
+		CALL EVENT_MESSAGE
+	;-------------------------------------------------
+	;ダンジョン内性欲処理：輪姦イベント
+	;奉仕する側
+	;PLAYERに実行者=輪姦する悪魔の番号が入っています
+	;-------------------------------------------------
+	CASE 85
+		CALL EVENT_MESSAGE
+	CASEELSE
+		SIF FLAG:6 > 0
+			CALL EVENT_MESSAGE
+
+ENDSELECT
+
+
+
+;-------------------------------------------------
+;闘技場敗北時口上集（X1をキャラ番号に置換する） 基本的に見るとゲームオーバーなのでフラグは使わない事に
+;-------------------------------------------------
+@KOJO_MESSAGE_LOSE_COLOSSEUM_K[[キャラ:모무노후]]_12
+SELECTCASE TFLAG:투기장패배
+		;-------------------------------------------------
+		;オニ＆蔦
+		;-------------------------------------------------
+	CASE 1
+			CALL MESSAGE_LOSE_COLOSSEUM
+			IF 1 == 2
+			;恋慕、親愛
+			;IF TALENT:3 || TALENT:6
+			;	PRINTFORMW 
+			;淫乱、娼婦
+			;ELSEIF TALENT:4 || TALENT:7
+			;	PRINTFORMW 
+			;服従、隷属
+			;ELSEIF TALENT:5 || TALENT:8
+			;	PRINTFORMW 
+			ELSE
+				PRINTFORMW 
+			ENDIF
+ENDSELECT
+
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_ENDING関係(X1、X2をキャラ番号に置換する)
+;-------------------------------------------------
+;-------------------------------------------------
+;エンディング口上の有無を判別する関数
+;記述したエンディングの種類に応じてコメントアウトを解除
+;-------------------------------------------------
+@ENDING_CHECK_K[[キャラ:모무노후]]_12
+SELECTCASE TSTR:END종별
+	;CASE "個別END"
+	;	SIF TALENT:아내 || TALENT:남편
+	;		RETURN 1
+	;	SIF TALENT:음마
+	;		RETURN 1
+	;	SIF TALENT:노리개
+	;		RETURN 1
+	;CASE "調教師END"
+	;	RETURN 1
+	;CASE "稀代の調教師END"
+	;	RETURN 1
+	;CASE "食堂経営END"
+	;	RETURN 1
+	;CASE "娼館経営END"
+	;	RETURN 1
+	;CASE "アイドルEND"
+	;	RETURN 1
+ENDSELECT
+RETURN 0
+
+;-------------------------------------------------
+;エンド本文
+;-------------------------------------------------
+@KOJO_MESSAGE_ENDING_K[[キャラ:모무노후]]_12
+;--------------------------------------------------
+SELECTCASE TSTR:END종별
+	;CASE "個別END"
+		;恋慕単体エンド
+		;IF TALENT:아내 || TALENT:남편 && CFLAG:21 == 1
+			;DRAWLINE
+			;PRINTFORMW …………
+			;PRINTFORMW ………
+			;PRINTFORMW ……
+			;PRINTFORMW 
+
+			;PRINTFORMW 
+			;PRINTFORMW 　　　　　　　　―― Extra Ending　（◯◯エンド）
+		;淫乱単体エンド
+		;ELSEIF TALENT:음마 && CFLAG:21 == 1
+			;DRAWLINE
+			;PRINTFORMW …………
+			;PRINTFORMW ………
+			;PRINTFORMW ……
+			;PRINTFORMW 
+
+			;PRINTFORMW 
+			;PRINTFORMW 　　　　　　　　―― Extra Ending　（◯◯エンド）
+		;服従単体エンド
+		;ELSEIF TALENT:노리개 && CFLAG:21 == 1
+			;DRAWLINE
+			;PRINTFORMW …………
+			;PRINTFORMW ………
+			;PRINTFORMW ……
+			;PRINTFORMW 
+
+			;PRINTFORMW 
+			;PRINTFORMW 　　　　　　　　―― Extra Ending　（◯◯エンド）
+		;ENDIF
+	;CASE "調教師END"
+	;CASE "稀代の調教師END"
+	;CASE "食堂経営END"
+	;CASE "娼館経営END"
+	;CASE "アイドルEND"
+ENDSELECT
+;個別ENDの場合ここでRETURN 1すると、その後ゲームは続かず次周に行くかゲーム終了かの選択になります
+RETURN 1
+
+
+@ENEMY_BATTLE_EVENT_K[[キャラ:모무노후]]_12, ARG, ARG:1, ARG:2
+IF TFLAG:전투이벤트 == 1
+;敵でのデビルＣＯ－ＯＰ発動時の台詞
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%"",72,LEFT%┃
+;			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ENDIF
+IF TFLAG:전투이벤트 == 2
+;敵でのデビルＣＯ－ＯＰ参加時の台詞
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%"",72,LEFT%┃
+;			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ENDIF
+
+@KOJO_BATTLE_EVENT_K[[キャラ:모무노후]]_12, ARG, ARG:1, ARG:2
+IF TFLAG:전투이벤트 == 1
+;味方パーティでのデビルＣＯ－ＯＰ発動時の台詞
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"자！　%CSTR:일인칭%에게 맡겨라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"총원 돌격하라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+ENDIF
+IF TFLAG:전투이벤트 == 2
+;味方パーティでのデビルＣＯ－ＯＰ参加時の台詞
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"일단 엄호하겠다！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"…연계는 별로 자신이 없지만",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+ENDIF
+
+IF TFLAG:전투이벤트 == 3
+;味方パーティでの被召喚時の台詞	
+			PRINTFORML ┏＠%CALLNAME:ARG,20,LEFT%━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"%CALLNAME% 참전한다！",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ENDIF
+
+;攻撃して殺害した
+IF TFLAG:전투이벤트 == 11 && BASE:(ARG:1):ＨＰ <= 0
+		IF RAND:5 == 0
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"하하하핫！　무찔렀다고！",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ELSEIF RAND:4 == 0
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"%CSTR:이인칭%！보아라、수급을 땄다고！",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ELSEIF RAND:3 == 0
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"흥…　%CSTR:일인칭%의 승리로군",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ELSEIF RAND:2 == 0
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"네놈의 패배다…　%CSTR:일인칭%의 양식이 되어라！",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ELSE
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"%이인칭을% 위해서 죽어라！",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ENDIF
+
+ELSEIF TFLAG:전투이벤트 == 11 && BASE:(ARG:1):ＨＰ <= 50
+;大ダメージ
+	IF RAND:2 == 0
+		PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"칫…조금 부족했군",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"하핫！남은건 한번이군！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+
+
+ELSEIF TFLAG:전투이벤트 == 11 && BASE:(ARG:1):ＨＰ <= 0
+;効かない
+	IF RAND:2 == 0
+		PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"큭…　듣지 않는건가",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"젠장…공격이 안통한다",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+
+ENDIF
+
+IF TFLAG:전투이벤트 == 12 && BASE:ARG:ＨＰ <= 0
+;死亡
+		PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"젠장…%일인칭은%…%CSTR:일인칭%…는 죽는 건…가？…",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+ELSEIF TFLAG:전투이벤트 == 12 && 現HP割合(ARG) < 15
+;瀕死
+	IF RAND:3 == 0
+		PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"아직…죽을 수는…！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSEIF RAND:2 == 0
+		PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"핫…끝나진 않은건가？",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"…아직…%일인칭은%…싸울 수 있다",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+ENDIF
+
+IF TFLAG:전투이벤트 == 15
+;反射された
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"제길…돌파 할 수 없다…",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+ELSEIF TFLAG:전투이벤트 == 16
+;反射した
+		PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"그건 듣지 않는다고！　바보 녀석！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+ELSEIF TFLAG:전투이벤트 == 17
+;回避された
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"…읏　피했나",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"촐랑촐랑 피하기만 하는가…",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+
+ELSEIF TFLAG:전투이벤트 == 18
+;回避した
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"흥…　어떻게 되었나？맞지 않았다고？",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"간파했다！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+ENDIF
+
+@KOJO_BATTLE_MESSAGE_K[[キャラ:모무노후]]_12,ARG,ARG:1 = 0
+
+;選択したコマンドにより分岐させたい場合、IF文の条件にコマンドNoを記入すること
+;ＡＴＴＡＣＫ
+IF CFLAG:ARG:입력행동 == 0
+	IF RAND:3 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"끝이다！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSEIF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"그 목 받아가지！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"꿰뚫어라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;검격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1, 99)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "！　나의 검술、천천히 맛보는 것이 좋다！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"그 목、베어내겠다！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;비구
+ELSEIF RANGE(CFLAG:ARG:입력행동,101, 199)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"네놈을 뚫어버린다！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;타격
+ELSEIF RANGE(CFLAG:ARG:입력행동,201, 299)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"때려눕힌다！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;전술
+ELSEIF RANGE(CFLAG:ARG:입력행동,301, 399)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "！　쳐들어간다！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"각오하여라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;회복
+ELSEIF RANGE(CFLAG:ARG:입력행동,401, 499)
+	;ディア系
+	IF RANGE(CFLAG:ARG:입력행동,401, 406)
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"부상이라고？　근성으로 일어서라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	;状態回復系
+	ELSEIF RANGE(CFLAG:ARG:입력행동,408, 414)
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"기합을 넣어라！　흔들흔들 거리지않는가！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	;リカーム、サマリカーム
+	ELSEIF RANGE(CFLAG:ARG:입력행동,417, 418)
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"지금 한번 더 일어서서 네놈을 쓰러뜨린 것을 죽여라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	;その他
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;지원
+ELSEIF RANGE(CFLAG:ARG:입력행동,501, 599)
+	;強化系
+	IF RANGE(CFLAG:ARG:입력행동,501, 505)
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"일어서라！　전사여！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	;弱体系
+	ELSEIF RANGE(CFLAG:ARG:입력행동,506, 509)
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"나의 적에게 저주를！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	;気合、コンセントレイト
+	ELSEIF RANGE(CFLAG:ARG:입력행동,511, 512)
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"…！　준비는 끝났다",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	;その他
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;방어
+ELSEIF RANGE(CFLAG:ARG:입력행동,601, 699)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"방비를 굳히겠다！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"공격을 대비하라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;화염
+ELSEIF RANGE(CFLAG:ARG:입력행동,701, 799)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"화공이다！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;빙결
+ELSEIF RANGE(CFLAG:ARG:입력행동,801, 899)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"얼어 죽어라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;전격
+ELSEIF RANGE(CFLAG:ARG:입력행동,901, 999)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"번개여、적을 뚫어라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;충격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1001, 1099)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"날아거벼라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;신경
+ELSEIF RANGE(CFLAG:ARG:입력행동,1101, 1199)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"이런 것은 어떠냐？",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;정신
+ELSEIF RANGE(CFLAG:ARG:입력행동,1201, 1299)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "！　미쳐 날뛰어라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"%일인칭을% 그냥 뇌근이라고 생각하지 마라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;파마
+ELSEIF RANGE(CFLAG:ARG:입력행동,1301, 1399)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "　…죽는 것이 좋다！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"…파마인가。현이라도 타야하는건가？",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;주살
+ELSEIF RANGE(CFLAG:ARG:입력행동,1401, 1499)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "！　…지옥에 떨어져라",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"죽여라 죽여라 죽여라！죽어라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;지변
+ELSEIF RANGE(CFLAG:ARG:입력행동,1501, 1599)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"대지여、미친 둣이 날뛰어라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;수격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1601, 1699)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "다！ 빠져라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "！　수공이다！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;질풍
+ELSEIF RANGE(CFLAG:ARG:입력행동,1701, 1799)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "！　베어내라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"바람이여、적을 베어라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;중력
+ELSEIF RANGE(CFLAG:ARG:입력행동,1801, 1899)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "다！　짓눌려라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"짓눌려 죽어라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;핵열
+ELSEIF RANGE(CFLAG:ARG:입력행동,1901, 1999)
+	IF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS + "！　날아가라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"날아가라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;만능
+ELSEIF RANGE(CFLAG:ARG:입력행동,2001, 2099)
+	;自爆攻撃系
+	IF RANGE(CFLAG:ARG:입력행동,2005, 2007)
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"%CSTR:이인칭%에게 영광이 있으리！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	;その他
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"방어는 가능한가？…죽어라！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;リンケージ
+ELSEIF RANGE(CFLAG:ARG:입력행동,4000, 4999)
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"%CSTR:이인칭%、맡기겠다！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;その他
+ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%RESULTS +"！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ENDIF
+
+
+;ELSEIF ARG:1 > 0
+	;忠誠度が上昇する行動をとった場合に表示する口上
+
+;	CALL GET_SKILL_PROP, "SKILL_NAME", CFLAG:ARG:입력행동, ARG
+;	;使用したスキルの名前をLOCALSに代入
+;	LOCALS = %RESULTS%
+
+;	SELECTCASE ARG:1
+;		;物理ダメージを与える行動で、獰猛持ちの忠誠度が上昇
+;		CASE GETNUM(TALENT,"영맹")
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%LOCALS + "",72,LEFT%┃
+;			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;		;魔法ダメージを与える行動で、狡猾持ちの忠誠度が上昇
+;		CASE GETNUM(TALENT,"교활")
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%LOCALS + "",72,LEFT%┃
+;			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;		;高威力の行動で、残虐持ちの忠誠度が上昇
+;		CASE GETNUM(TALENT,"잔학")
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%LOCALS + "",72,LEFT%┃
+;			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;		;相手の弱点を付いた攻撃or行動不能な状態異常の敵に対する攻撃で、賢い持ちの忠誠度が上昇
+;		CASE GETNUM(TALENT,"현명")
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%LOCALS + "",72,LEFT%┃
+;			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;		;破魔相性の行動で、天使持ちの忠誠度が上昇
+;		CASE GETNUM(TALENT,"천사")
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%LOCALS + "",72,LEFT%┃
+;			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;		;呪殺相性の行動で、堕天使持ちの忠誠度が上昇
+;		CASE GETNUM(TALENT,"타천사")
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%LOCALS + "",72,LEFT%┃
+;			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;		;回復・状態回復行動では友愛持ちの忠誠度が上昇
+;		CASE GETNUM(TALENT,"우애")
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%LOCALS + "",72,LEFT%┃
+;			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;		;状態変化では高慢持ちの忠誠度が上昇
+;		CASE GETNUM(TALENT,"교만")
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%LOCALS + "",72,LEFT%┃
+;			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;		;特殊では冷静持ちの忠誠度が上昇
+;		CASE GETNUM(TALENT,"냉정")
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%LOCALS + "",72,LEFT%┃
+;			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;		;愚鈍持ちは主人とのLv差だけ忠誠度が上昇
+;		CASE GETNUM(TALENT,"우둔")
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%LOCALS + "",72,LEFT%┃
+;			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;		;虚心持ちは最低２だけ忠誠度が上昇
+;		CASE GETNUM(TALENT,"허심")
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%LOCALS + "",72,LEFT%┃
+;			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;	ENDSELECT
+;ELSE
+;	;システムによらず忠誠度を上げたいとか他があったらここに記載
+;ENDIF
+

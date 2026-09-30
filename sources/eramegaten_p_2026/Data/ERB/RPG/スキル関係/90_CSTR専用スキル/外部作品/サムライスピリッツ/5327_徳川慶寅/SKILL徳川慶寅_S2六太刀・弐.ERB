@@ -1,0 +1,212 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+@SKILL_STRGET_六太刀・弐, ARG
+#FUNCTIONS
+#DIM SKILL_NUM
+SKILL_NUM = CHARANUM_CHECK(ARG) ? PU_SKILLNUM_GET(ARG,"六太刀・弐") # 0
+LOCAL = SKILL_NUM < 1 ? 0 # SKILLGAGE_H_GET(ARG,SKILL_NUM)
+SELECTCASE LOCAL
+CASE 3
+	RETURNF "参の太刀・牡丹"
+CASE 0,5
+	RETURNF "五の太刀・朝顔"
+ENDSELECT
+RETURNF "五の太刀・朝顔"
+
+
+;スキル名
+@SKILL_NAME_六太刀・弐, ARG
+RESULTS = 六太刀・弐
+SIF TFLAG:전투중 != 0 && CHARANUM_CHECK(ARG)
+	RESULTS = %SKILL_STRGET_六太刀・弐(ARG)%
+
+;　명중
+@SKILL_HITRATE_六太刀・弐, ARG
+TRYCALLFORM SKILL_HITRATE_%SKILL_STRGET_六太刀・弐(ARG)%, ARG
+RETURN RESULT
+
+;　威力
+@SKILL_POWER_六太刀・弐, ARG
+TRYCALLFORM SKILL_POWER_%SKILL_STRGET_六太刀・弐(ARG)%, ARG
+RETURN RESULT
+
+@SKILL_CRITICAL_RATE_六太刀・弐, ARG
+RESULT = 5
+TRYCALLFORM SKILL_CRITICAL_RATE_%SKILL_STRGET_六太刀・弐(ARG)%, ARG
+RETURN RESULT
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_六太刀・弐, ARG
+RESULT = 1
+TRYCALLFORM SKILL_MINATTACKNUMBER_%SKILL_STRGET_六太刀・弐(ARG)%, ARG
+RETURN RESULT
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_六太刀・弐, ARG
+RESULT = 1
+TRYCALLFORM SKILL_MAXATTACKNUMBER_%SKILL_STRGET_六太刀・弐(ARG)%, ARG
+RETURN RESULT
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_六太刀・弐, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_六太刀・弐, ARG
+RESULT = 15
+TRYCALLFORM SKILL_COST_%SKILL_STRGET_六太刀・弐(ARG)%, ARG
+RETURN RESULT
+
+;　相性
+@SKILL_TYPE_六太刀・弐, ARG
+RESULT = 0
+TRYCALLFORM SKILL_TYPE_%SKILL_STRGET_六太刀・弐(ARG)%, ARG
+RETURN RESULT
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_六太刀・弐
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_六太刀・弐, ARG
+RESULT = 1
+TRYCALLFORM SKILL_DAMAGETYPE_%SKILL_STRGET_六太刀・弐(ARG)%, ARG
+RETURN RESULT
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_六太刀・弐, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_六太刀・弐, ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_六太刀・弐, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_六太刀・弐, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_六太刀・弐, ARG
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;속도보정
+@SKILL_SPEED_六太刀・弐, ARG = -1
+RESULT = 0
+TRYCALLFORM SKILL_SPEED_%SKILL_STRGET_六太刀・弐(ARG)%, ARG
+RETURN RESULT
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_六太刀・弐, ARG
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_六太刀・弐, ARG = -1
+RETURN 23
+
+
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;
+;修羅:参の太刀・牡丹　　単体攻撃で会心が出ると50％で発動。剣撃相性の大ダメージ。
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_六太刀・弐, ARG, ARG:1
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"六太刀・弐")
+
+;自分の攻撃じゃなければNG
+;SIF ARG != ARG:1
+;	RETURN 0
+;自分への攻撃は追撃しない
+SIF ARG == ARG:1
+	RETURN 0
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+;単体攻撃じゃなければNG
+SIF CFLAG:ARG:타겟 > 16 || CFLAG:ARG:타겟 < 1
+	RETURN 0
+;クリティカルを受けているキャラを探す
+SIF !GET_CREC_ACT(ARG, ARG:1, "CRT")
+	RETURN 0
+;死んでる可能性があるのでキャラ全体くまなく探す
+;FOR LOCAL,0,CHARANUM
+;	SIF GETBIT(CFLAG:LOCAL:受けフラグ,21) && CFLAG:LOCAL:PT플래그 != CFLAG:ARG:PT플래그
+;		BREAK
+;	SIF LOCAL == (CHARANUM - 1)
+;		RETURN 0
+;NEXT
+
+;50%
+SIF RAND:2
+	RETURN 0
+;LOCAL = POS(CFLAG:ARG:타겟)
+;SIF LOCAL < 0 || GET_STATE(CFLAG:LOCAL:상태이상) == "DYING"
+;	CALL RANDOM_TARGET,ARG,3539
+;SIF CFLAG:ARG:타겟 < 0 || POS(CFLAG:ARG:타겟) < 0 || GET_STATE(CFLAG:POS(CFLAG:ARG:타겟):상태이상) == "DYING"
+;	RETURN 0
+CALL SKILLGAGE_H_SET(ARG,SKILL_NUM,3)
+;RESULT:1 = CFLAG:ARG:타겟
+;RETURN 1
+RETURN 1, CPOS(ARG:1)
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+@SKILL_DAMAGE_EFFECT_六太刀・弐, ARG, ARG:1, ARG:2
+TRYCALLFORM SKILL_DAMAGE_EFFECT_%SKILL_STRGET_六太刀・弐(ARG)%, ARG, ARG:1, ARG:2
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_六太刀・弐, ARG = -1, ARG:1 = -1
+RESULT = 0
+TRYCALLFORM SKILL_PENETRATION_RANK_%SKILL_STRGET_六太刀・弐(ARG)%, ARG, ARG:1
+RETURN RESULT
+;====================================================
+;スキル及び行動の実行
+;====================================================
+
+@ACTION_六太刀・弐, ARG, ARG:1, SKILL_NUM
+#DIM SKILL_NUM
+LOCAL = POS(ARG:1)
+
+TRYCALLFORM ACTION_%SKILL_STRGET_六太刀・弐(ARG)%, ARG, ARG:1, SKILL_NUM
+
+CALL PU_SKILLGAGE_H_SET(ARG, "六太刀・弐", 0)
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_六太刀・弐, ARG
+PRINTL 전투 중에는 「오의 태도·나팔꽃」이 되어, 검격 상성의 4~6회 소데미지.
+PRINTL 
+PRINTL 단체 공격 스킬로 크리티컬이 발동하면 50% 확률로 「삼의 태도·모란」이 발동하여,
+PRINTL 적 단체에 검격 상성의 대데미지
+
+;継承に必要な部位
+
+;とくにない
+
+@SKILL_ACTIONABLE_BATTLE_六太刀・弐, ARG
+RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_六太刀・弐, ARG
+RETURN 1
+;とくにない
+

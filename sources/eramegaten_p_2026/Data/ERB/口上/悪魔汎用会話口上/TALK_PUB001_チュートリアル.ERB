@@ -1,0 +1,1553 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:TALK_PUB1_女_子供.ERB
+;	Facility	:会話タイプ：女・子供の会話用メッセージ＋挨拶・問答処理
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/01/10		Ｎ鳥					基本処理をTALK_COMMONに一元化し、メッセージを口上呼び出し用関数に移植
+;	003		2011/05/06		望崎					問いかけと選択肢が一致していなかった箇所の修正。
+;	004		2011/06/11		元248					ムフフ展開の実装、文章の整理・増補
+
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=====================================================================
+;口調タイプ：女・子供の汎用口上＋会話用ファイルです
+;=====================================================================
+@KOJO_TALK_PUB1,ARG,ARG:1
+SELECTCASE ARG:1
+	CASE 62
+		;62:仲魔になる
+		PRINTFORML 「인간이란, 정말 재밌어요오!」
+		PRINTFORMW 「친구 되는 거에요오!」
+		PRINTFORML 「%STR:(ABL:ARG:종족)% %CALLNAME:ARG%에요오!」
+		PRINTFORMW 「앞으로도 잘 부탁해요오!」
+ENDSELECT
+
+;===========================================================================
+;会話時挨拶
+;===========================================================================
+@GREET_PUB1,ARG
+CALL GREET_TUTORIAL, ARG
+WHILE 1
+	SELECTCASE RESULT
+		CASE 1
+			RETURN 1
+		CASE 3
+			PRINTFORML …그렇다고 싸우고 싶은 건 아니에요오!
+			PRINTFORMW 좀 더 제대로 해줘요! 다시 할 거라구요오!
+		CASE 4
+			PRINTFORML 하아, 이상한 소리만 하니까 살짝 화나버렸잖아요오
+			PRINTFORMW 다시 한번 처음부터 할 테니까 이번엔 똑바로 하는 거에요오
+		CASE 5
+			PRINTFORML ……그렇다고 도망치면 안 돼요오. 이제 이런 곳에 있고 싶지 않단 말이에요
+			PRINTFORMW 후우~ 하아~. 자, 이야기를 계속하는 거에요오
+		CASE 6
+			PRINTFORML
+			PRINTFORMW 분위기가 어색해졌다……
+			PRINTFORML
+	ENDSELECT
+	CALL QUESTION_TUTORIAL, ARG
+	IF RESULT == 0
+		PRINTFORML 그럼, 마석을 원해요오…라고 할 참이지만
+		PRINTFORMW 이번엔 봐주는 거에요오. 감사해야 해요오
+		RETURN 1
+	ENDIF
+WEND
+
+@GREET_TUTORIAL, ARG
+PRINTFORML 「%CSTR:ARG:일인칭%와(과) 친구가 되고 싶다는 거에요오?」
+PRINTFORML 「이런 곳에 있고 싶지도 않으니까 환영이지만…」
+PRINTFORMW 「엄마가 서머너랑 계약할 때는 제대로 이야기하라고 했으니까 이야기해 보는 거에요오」
+
+PRINTFORML
+
+;質問を増やした場合、RAND:XのXを増やす
+;RETURNの値により回答後の雰囲気が変わる。
+;0.会話継続 1.直接仲魔になる 2.何かくれる 3.奇襲される 4.敵対する 5.逃げる 6.気まずくなる
+
+;基本確率設定
+LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+SELECTCASE RAND:2
+	CASE 0
+		PRINTFORMW 「그래서, 어떤 걸 묻고 싶은 건가요오?」
+		PRINTFORML
+		PRINTFORML [1]사귀는 남자아이는 있어?　[2]흥미 있는 일은?
+		PRINTFORML [3]지금 몇 시?　　　　　　　　[4]좋아하는 플레이는?
+		CALL INPUTINT(1, 2, 3, 4)
+		PRINTFORML 
+		;つき合ってる男の子は？
+		IF RESULT == 1
+			;大失敗率
+			LOCAL:1 = 15 + TALENT:ARG:교만 * 100
+			;失敗率
+			LOCAL:2 = 15 + LOCAL:1 + TALENT:ARG:얌전함 * 30 + TALENT:ARG:보수적 * 30
+			;成功率
+			LOCAL:3 = 60 + LOCAL:2 + TALENT:ARG:냉정 * 30 + TALENT:ARG:교활 * 30
+			;大成功率
+			LOCAL:4 = 10 + LOCAL:3 + TALENT:ARG:솔직함 * 30 + TALENT:ARG:호기심 * 30
+			LOCAL = LOCAL * LOCAL:4 / 100
+			IF LOCAL < LOCAL:1
+				CFLAG:ARG:우호도 -= RAND:50
+				;大失敗
+				PRINTFORMW 「왜 그런 걸 %CSTR:ARG:이인칭%한테 가르쳐줘야 하는 건가요오!」
+				IF RAND:3
+					RETURN 4
+				ELSE
+					PRINTFORMW 「사귀는 남자아이가 없는 게 그렇게 나쁜 일인가요오!」
+					RETURN 3
+				ENDIF
+			ELSEIF LOCAL < LOCAL:2
+				;失敗
+				CFLAG:ARG:우호도 += RAND:10 - 20
+				PRINTFORMW 「그, 그런 거언……」
+				PRINTFORMW 「대답 못 해요오……」
+				RETURN 0
+			ELSEIF LOCAL < LOCAL:3
+				CFLAG:ARG:우호도 += RAND:20
+				;大成功
+				PRINTFORMW 「그건 비밀이에요오!」
+				PRINTFORMW 「꺄하핫!」
+				RETURN 0
+			ELSE
+				CFLAG:ARG:우호도 += RAND:50
+				;大成功
+				PRINTFORMW 「사귀진 않지만, 신경 쓰이는 애는 있어요오」
+				PRINTFORMW 「아, 아무한테도 말하면 안 돼요오!」
+				RETURN 0
+			ENDIF
+		ELSEIF RESULT == 2
+			;興味のあることは？
+			;大失敗率
+			LOCAL:1 = 0
+			;失敗率
+			LOCAL:2 = 30 + LOCAL:1 + TALENT:ARG:현명 * 50
+			;成功率
+			LOCAL:3 = 70 + LOCAL:2 + TALENT:ARG:우애 * 50
+			;大成功率
+			LOCAL:4 = 0
+			LOCAL = LOCAL * LOCAL:4 / 100
+			IF LOCAL < LOCAL:2
+				CFLAG:ARG:우호도 -= RAND:50
+				;失敗
+				PRINTFORMW 「그런 질문, 시시해요오!」
+				PRINTFORMW 「기대 이하에요오!」
+				RETURN 6
+			ELSE
+				CFLAG:ARG:우호도 += RAND:30
+				;成功
+				PRINTFORMW 「%CSTR:ARG:일인칭%, %CSTR:ARG:이인칭%에게 흥미진진이에요오!」
+				RETURN 0
+			ENDIF
+		ELSEIF RESULT == 3
+			;今、何時？
+			;大失敗率
+			LOCAL:1 = 30 + TALENT:ARG:교만 * 50 
+			;失敗率
+			LOCAL:2 = 30 + LOCAL:1
+			;成功率
+			LOCAL:3 = 20 + LOCAL:2 + TALENT:ARG:현명 * 50
+			;大成功率
+			LOCAL:4 = 20 + TALENT:ARG:우애 * 50
+			LOCAL = LOCAL * LOCAL:4 / 100
+			;大失敗
+			IF LOCAL < LOCAL:1
+				CFLAG:ARG:우호도 -= RAND:50
+				PRINTFORMW 「%CSTR:ARG:이인칭%, 너무해요오!」
+				;1/3で敵対コース
+				IF RAND:3
+					RETURN 6
+				ELSE
+					PRINTFORMW 「%CSTR:ARG:일인칭%, 이제 뾰로통해졌어요오!」
+					RETURN 4
+				ENDIF
+			;失敗
+			ELSEIF LOCAL < LOCAL:2
+				CFLAG:ARG:우호도 -= RAND:10
+				PRINTFORMW 「그, 그럴 수가아……」
+				PRINTFORMW 「혹시 %CSTR:ARG:일인칭%한테 관심 없는 건가요오?」
+				RETURN 0
+			;成功
+			ELSEIF LOCAL < LOCAL:3
+				CFLAG:ARG:우호도 += RAND:30
+				PRINTFORMW 「%CSTR:ARG:이인칭%, 어른인데 시계도 안 차고 있나요오?」
+				PRINTFORMW 「후후, 그거 엄청 부끄러운 거에요오」
+				RETURN 0
+			;成功
+			ELSE
+				CFLAG:ARG:우호도 += RAND:10
+				PRINTFORMW 「에ー 그러니까, 미안해요오」
+				PRINTFORMW 「%CSTR:ARG:일인칭%, 시계 안 갖고 있어요오」
+				RETURN 0
+			ENDIF
+		ELSE
+			;好きなプレイは？
+			;失敗率
+			LOCAL:1 = 30 + TALENT:ARG:우둔 * 50
+			SIF TALENT:ARG:현명
+				LOCAL:1 = 0
+			;失敗率
+			LOCAL:2 = TALENT:ARG:현명 * 25 + TALENT:ARG:교활 * 25 + LOCAL:1
+			;成功率
+			LOCAL:3 = 20 + LOCAL:2 + TALENT:ARG:우애 * 50
+			;大成功率
+			LOCAL:4 = 0 + TALENT:ARG:현명 * 100 + TALENT:ARG:교활 * 50
+			LOCAL = LOCAL * LOCAL:4 / 100
+			;失敗
+			IF LOCAL < LOCAL:1
+				CFLAG:ARG:우호도 -= RAND:50
+				PRINTFORML 「좋아하는 놀이?」
+				PRINTFORMW 「%CSTR:ARG:일인칭%을(를) 어린애 취급하지 말았으면 좋겠어요오」
+				RETURN 6
+			ELSEIF LOCAL < LOCAL:2
+				CFLAG:ARG:우호도 -= RAND:30
+				;失敗
+				PRINTFORMW 「……왜 히죽히죽 웃고 있나요오?」
+				PRINTFORMW 「%CSTR:ARG:이인칭%, 왠지 기분 나빠요오!」
+				RETURN 0
+			ELSEIF LOCAL < LOCAL:3
+				CFLAG:ARG:우호도 += RAND:30
+				;成功
+				PRINTFORMW 「%CSTR:ARG:일인칭%은(는) 소꿉놀이를 좋아해요오」
+				PRINTFORMW 「다음에 같이 해볼래요오?」
+				RETURN 0
+			ELSE
+				CFLAG:ARG:우호도 += RAND:50
+				PRINTFORMW 「싫다, %CSTR:ARG:이인칭%, 그거 성희롱이에요오!」
+				RETURN 0
+			ENDIF
+		ENDIF
+	CASE 1
+		PRINTFORMW 「그래서, 볼일은 뭔데요오?」
+		PRINTFORML
+		PRINTFORML [1]칭찬한다　　[2]설득한다
+		PRINTFORML [3]\@TALENT:PLAYER:남자?눈으로 제압한다#뇌쇄한다\@　[4]주먹으로 말한다
+		CALL INPUTINT(1, 2, 3, 4)
+		PRINTFORML 
+		;褒める
+		IF RESULT == 1
+			;大失敗率
+			LOCAL:1 = 20 + TALENT:ARG:현명 * 50
+			;失敗率
+			LOCAL:2 = 20 + LOCAL:1
+			;成功率
+			LOCAL:3 = 30 + LOCAL:2 + TALENT:ARG:교만 * 50
+			;大成功率
+			LOCAL:4 = 30 + LOCAL:3+ TALENT:ARG:우둔 * 50
+			LOCAL = LOCAL * LOCAL:4 / 100
+			IF LOCAL < LOCAL:1
+				CFLAG:ARG:우호도 -= RAND:30
+				PRINTFORMW 「%CSTR:ARG:일인칭%을(를) 어린애 취급하지 말았으면 좋겠어요오!!」
+				RETURN 6
+			;失敗
+			ELSEIF LOCAL < LOCAL:2
+				CFLAG:ARG:우호도 -= RAND:30
+				PRINTFORMW 「왠지 엄청 대충대충인 것 같아요오!」
+				SIF RAND:(4 + TALENT:ARG:영맹 - 2)
+					RETURN 0
+				PRINTFORMW 「%CSTR:ARG:일인칭%, 이제 뾰로통해졌어요오!」
+				RETURN 4
+			ELSEIF LOCAL < LOCAL:3
+				CFLAG:ARG:우호도 += RAND:30
+				PRINTFORMW 「꺄하핫!」
+				PRINTFORMW 「%CSTR:ARG:이인칭%, 칭찬을 참 잘하네요오!」
+				RETURN 0
+			ELSE
+				CFLAG:ARG:우호도 += RAND:30
+				PRINTFORMW 「꺄하핫!」
+				PRINTFORMW 「혹시 %CSTR:ARG:일인칭%을(를) 좋아하는 건가요오?」
+				RETURN 0
+			ENDIF
+		;説得する
+		ELSEIF RESULT == 2
+			;失敗率　属性が離れている場合
+			LOCAL:1 = ABS(ABL:PLAYER:속성LD - ABL:ARG:속성LD) * 50 + ABS(ABL:PLAYER:속성LC - ABL:ARG:속성LC) * 50
+			;失敗率
+			LOCAL:2 = 50 + LOCAL:1 + TALENT:ARG:교만 * 100
+			;成功率　属性が近い場合
+			LOCAL:3 = LOCAL:2 + 200 - ABS(ABL:PLAYER:속성LD - ABL:ARG:속성LD) * 50 - ABS(ABL:PLAYER:속성LC - ABL:ARG:속성LC) * 50 + LOCAL:2
+			;成功率
+			LOCAL:4 = 50 + LOCAL:3 + TALENT:ARG:교활 * 50
+			LOCAL = LOCAL * LOCAL:4 / 100
+			;失敗
+			IF LOCAL < LOCAL:1
+				CFLAG:ARG:우호도 -= RAND:50
+				PRINTFORMW 「그런 말을 들어도, %CSTR:ARG:이인칭% 같은 사람 말은 못 믿겠어요오!」
+				RETURN 6
+			;失敗
+			ELSEIF LOCAL < LOCAL:2
+				CFLAG:ARG:우호도 -= RAND:30
+				PRINTFORMW 「%CSTR:ARG:이인칭%, 엄청 거만해 보여요오!」
+				PRINTFORMW 「%CSTR:ARG:일인칭%, 그런 거 안 좋아해요오!」
+				RETURN 6
+			ELSEIF LOCAL < LOCAL:3
+				CFLAG:ARG:우호도 += RAND:30
+				PRINTFORMW 「%CSTR:ARG:이인칭%의 이야기에 %CSTR:ARG:일인칭%, 감격했어요오!」
+				PRINTFORMW 「%CSTR:ARG:일인칭%한테 %CSTR:ARG:이인칭%을(를) 돕게 해주면 좋겠어요오!」
+				RETURN 1
+			ELSE
+				CFLAG:ARG:우호도 += RAND:30
+				PRINTFORMW 「%CSTR:ARG:이인칭%, %CSTR:ARG:일인칭%이(가) 필요하군요오」
+				PRINTFORMW 「으ー음, 조금만 생각할 시간을 줬으면 좋겠어요오」
+				RETURN 0
+			ENDIF
+		;目で殺す
+		ELSEIF RESULT == 3 && TALENT:PLAYER:남자
+			;失敗率
+			LOCAL:1 = 20 + TALENT:ARG:우둔 * 50
+			;失敗率
+			LOCAL:2 = 20 + LOCAL:1 + TALENT:ARG:교만 * 50
+			;成功率
+			LOCAL:3 = 30 + LOCAL:2 + TALENT:ARG:우애 * 50 + TALENT:ARG:호기심 * 20
+			;成功率
+			LOCAL:4 = 30 + LOCAL:3 + TALENT:ARG:현명 * 50 + TALENT:PLAYER:수수께끼의매력 * 100
+			LOCAL = LOCAL * LOCAL:4 / 100
+			;失敗
+			IF LOCAL < LOCAL:1
+				CFLAG:ARG:우호도 -= RAND:20
+				PRINTFORMW 「%CSTR:ARG:이인칭%, 왠지 무서워요오」
+				PRINTFORMW 「%CSTR:ARG:일인칭%을(를) 때리거나 하진 않겠죠…」
+				RETURN 6
+			;失敗
+			ELSEIF LOCAL < LOCAL:2
+				CFLAG:ARG:우호도 -= RAND:50
+				PRINTFORMW 「빤히 쳐다보지 말았으면 좋겠어요오」
+				PRINTFORMW 「그런 건 민폐라구요오!」
+				RETURN 6
+			ELSEIF LOCAL < LOCAL:3
+				CFLAG:ARG:우호도 += RAND:10
+				PRINTFORMW 「왜 아무 말도 안 하는 걸까나아?」
+				PRINTFORMW 「신경 쓰여요오」
+				RETURN 0
+			ELSE
+				CFLAG:ARG:우호도 += RAND:30
+				PRINTFORMW 「그 눈빛, 혹시……」
+				RETURN 0
+			ENDIF
+		;悩殺する
+		ELSEIF RESULT == 3
+			;失敗率
+			LOCAL:1 = 10 + TALENT:ARG:현명 * 50
+			;失敗率
+			LOCAL:2 = 40 + LOCAL:1 + TALENT:ARG:겁쟁이 * 20 - TALENT:ARG:호기심 * 20
+			;成功率
+			LOCAL:3 = 40 + LOCAL:2 + TALENT:ARG:우둔 * 50 + TALENT:ARG:우애 * 50 + TALENT:ARG:호기심 * 20
+			;成功率
+			LOCAL:4 = 10 + LOCAL:3 + TALENT:PLAYER:수수께끼의매력 * 100
+			LOCAL = LOCAL * LOCAL:4 / 100
+			;失敗
+			IF LOCAL < LOCAL:1
+				CFLAG:ARG:우호도 -= RAND:50
+				PRINTFORMW 「%CSTR:ARG:일인칭%, 여자아이라구요오…」
+				PRINTFORMW 「어, 어떻게 할 생각인가요오…」
+				RETURN 6
+			;失敗
+			ELSEIF LOCAL < LOCAL:2
+				CFLAG:ARG:우호도 -= RAND:50
+				PRINTFORMW 「저, 저기, %CSTR:ARG:일인칭%은(는) 남자아이가 더 좋으니까」
+				PRINTFORMW 「그게에…… 미안해요!」
+				RETURN 5
+			ELSEIF LOCAL < LOCAL:3
+				CFLAG:ARG:우호도 += RAND:10
+				PRINTFORMW 「몸을 꼬면서 왜 그러는 거에요오?」
+				PRINTFORMW 「어디 몸이라도 안 좋은 건가요오?」
+				RETURN 0
+			ELSE
+				CFLAG:ARG:우호도 += RAND:30
+				PRINTFORMW 「%CSTR:ARG:이인칭%, 예뻐요오…」
+				RETURN 0
+			ENDIF
+		;拳で語る
+		ELSE
+			;失敗率
+			LOCAL:1 = 20 + TALENT:ARG:영맹 * 200 + TALENT:ARG:반항적 * 100
+			;失敗率
+			LOCAL:2 = 40 + LOCAL:1 + TALENT:ARG:겁쟁이 * 50
+			;成功率
+			LOCAL:3 = 20 + LOCAL:2 + TALENT:ARG:겁쟁이 * 20 + TALENT:ARG:얌전함 * 20 + TALENT:ARG:솔직함 * 20
+			;成功率
+			LOCAL:4 = 20 + LOCAL:3 + TALENT:ARG:교활 * 50 + TALENT:ARG:냉정 * 50
+			LOCAL = LOCAL * LOCAL:4 / 100
+			;失敗
+			IF LOCAL < LOCAL:1
+				CFLAG:ARG:우호도 -= RAND:50
+				PRINTFORMW 「그거, %CSTR:ARG:일인칭%이(가) 어린애라고 얕보지 말았으면 좋겠어요오!」
+				PRINTFORMW 「그런 거 절대 용서 안 할 거니까아!」
+				RETURN 4
+			;失敗
+			ELSEIF LOCAL < LOCAL:2
+				CFLAG:ARG:우호도 -= RAND:50
+				PRINTFORMW 「무, 무서워요오…… 엄마아!」
+				RETURN 5
+			ELSEIF LOCAL < LOCAL:3
+				CFLAG:ARG:우호도 -= RAND:10
+				PRINTFORMW 「그, 그런 짓을 당하면 %CSTR:ARG:일인칭%은(는)…」
+				PRINTFORMW 「뭐든지 말 잘 들을 테니까 그만둬줘요오」
+				RETURN 1
+			ELSE
+				CFLAG:ARG:우호도 -= RAND:10
+				PRINTFORMW 「무, 뭘 하는 거에요오」
+				PRINTFORMW 「아, 알았어요오. 동마가 되면 되는 거죠?」
+				RETURN 1
+			ENDIF
+		ENDIF
+ENDSELECT
+
+;===========================================================================
+;会話時問答
+;===========================================================================
+@QUESTION_TUTORIAL,ARG,ARG:1
+;RAND:X (Xは問答の個数)
+
+PRINTFORML
+CUSTOMDRAWLINE ･
+PRINTFORML
+
+DO
+
+	RESULT:1 = RAND:8
+	;基本確率設定
+	LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+	SELECTCASE RESULT:1
+		CASE 0
+			PRINTFORMW 「%CSTR:ARG:일인칭%, 질문이 이써요오!」
+			PRINTFORMW 「바닷물은 왜 짠 건가요오?」
+			PRINTFORML
+			PRINTFORML [1]태고 화산의 분출물 때문　[2]소금이 나오는 맷돌이 바다 밑에서 돌고 있어서
+			PRINTFORML [3]모른다
+			CALL INPUTINT(1,2,3)
+			PRINTFORML 
+			IF RESULT == 1
+				;太古の火山からの噴出物のせい
+				;失敗率
+				LOCAL:1 = 30 + TALENT:ARG:우둔 * 50
+				;失敗率
+				LOCAL:2 = 0 + LOCAL:1
+				;成功率
+				LOCAL:3 = 70 + LOCAL:2 + TALENT:ARG:현명 * 30 + TALENT:ARG:솔직함 * 20
+				;成功率
+				LOCAL:4 = 0 + LOCAL:3
+				LOCAL = LOCAL * LOCAL:4 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗
+						PRINTFORML 「그런 건 거짓말이에요오!」
+						PRINTFORMW 「절대절대 거짓말이라구요오!」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+						PRINTFORMW 「박학다식하시네요오!」
+						PRINTFORMW 「감탄해 버렸어요오!」
+						RETURN 0
+				ENDIF
+			ELSEIF RESULT == 2
+				;塩が出てくる臼が海底で回ってるから
+				;失敗率
+				LOCAL:1 = 30 + TALENT:ARG:현명 * (50 * (TALENT:ARG:교만 * 3 + 1))
+				;失敗率
+				LOCAL:2 = 0 + LOCAL:1
+				;成功率
+				LOCAL:3 = 35 + LOCAL:2 + TALENT:ARG:우둔 * 50 + TALENT:ARG:솔직함 * 20
+				;成功率
+				LOCAL:4 = 35 + LOCAL:3 + TALENT:ARG:교활 * 50
+				LOCAL = LOCAL * LOCAL:4 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗
+						PRINTFORMW 「그거 분명 %CSTR:ARG:일인칭%을(를) 바보 취급하는 거에요오!」
+						RETURN 6
+				ELSEIF LOCAL < LOCAL:3
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+						PRINTFORMW 「그런 게 있는 건가요오!」
+						PRINTFORMW 「한 번 봐보고 싶어요오!」
+						RETURN 0
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+						PRINTFORMW 「꺄하핫!」
+						PRINTFORMW 「그 이야기, 재밌어요오!」
+						RETURN 0
+				ENDIF
+			ELSEIF RESULT == 3
+				;知らない
+				;失敗率
+				LOCAL:1 = 20 + TALENT:ARG:교만 * 100
+				;失敗率
+				LOCAL:2 = 30 + LOCAL:1 + TALENT:ARG:겁쟁이 * 20
+				;成功率
+				LOCAL:3 = 40 + LOCAL:2 + TALENT:ARG:우애 * 50
+				;成功率
+				LOCAL:4 = 10 + LOCAL:3 + TALENT:ARG:현명 * 50
+				LOCAL = LOCAL * LOCAL:4 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗
+					PRINTFORMW 「혹시 %CSTR:ARG:일인칭%한테는 안 가르쳐주겠다는 건가요오!」
+					PRINTFORMW 「정말 싫어요오!」
+					RETURN 6
+				ELSEIF LOCAL < LOCAL:2
+					CFLAG:ARG:우호도 -= RAND:10
+					PRINTFORMW 「그, 그럴 수가아…」
+					RETURN 0
+				ELSEIF LOCAL < LOCAL:3
+					CFLAG:ARG:우호도 += RAND:10
+					PRINTFORMW 「모른다니 어쩔 수 없네요오」
+					RETURN 0
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+					PRINTFORMW 「꺄하핫!」
+					PRINTFORMW 「%CSTR:ARG:이인칭%, 겉모습은 어른이어도 머리는 어린애로군요오!」
+					RETURN 0
+				ENDIF
+			ENDIF
+
+		CASE 1
+			PRINTFORMW 「%CSTR:ARG:일인칭%, 질문이 이써요오!」
+			PRINTFORMW 「하늘색은 왜 파란 건가요오?」
+			PRINTFORML
+			PRINTFORML [1]태양광이 대기에 산란되어 파란빛만 닿아서　[2]천사가 파란 물감을 엎질러서
+			PRINTFORML [3]모른다
+			CALL INPUTINT(1,2,3)
+			PRINTFORML 
+			IF RESULT == 1
+				;太陽光線が大気で拡散し青色だけ届くから
+				;失敗率
+				LOCAL:1 = 30 + TALENT:ARG:우둔 * 50
+				;失敗率
+				LOCAL:2 = 0 + LOCAL:1
+				;成功率
+				LOCAL:3 = 70 + LOCAL:2 + TALENT:ARG:현명 * 30 + TALENT:ARG:솔직함 * 20
+				;成功率
+				LOCAL:4 = 0 + LOCAL:3
+				LOCAL = LOCAL * LOCAL:4 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗
+						PRINTFORML 「그런 건 거짓말이에요오!」
+						PRINTFORMW 「절대절대 거짓말이라구요오!」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+						PRINTFORMW 「박학다식하시네요오!」
+						PRINTFORMW 「감탄해 버렸어요오!」
+						RETURN 0
+				ENDIF
+			ELSEIF RESULT == 2
+				;天使が青い絵の具をこぼしたから
+				;失敗率
+				LOCAL:1 = 30 + TALENT:ARG:현명 * (50 * (TALENT:ARG:교만 * 3 + 1))
+				;失敗率
+				LOCAL:2 = 0 + LOCAL:1
+				;成功率
+				LOCAL:3 = 35 + LOCAL:2 + TALENT:ARG:우둔 * 50 + TALENT:ARG:솔직함 * 20
+				;成功率
+				LOCAL:4 = 35 + LOCAL:3 + TALENT:ARG:교활 * 50
+				LOCAL = LOCAL * LOCAL:4 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗
+						PRINTFORMW 「그거 분명 %CSTR:ARG:일인칭%을(를) 바보 취급하는 거에요오!」
+						RETURN 6
+				ELSEIF LOCAL < LOCAL:3
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+						PRINTFORMW 「그런 건가요오!」
+						PRINTFORMW 「그 천사님은 덜렁이로군요오!」
+						RETURN 0
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+						PRINTFORMW 「꺄하핫!」
+						PRINTFORMW 「그 이야기, 재밌어요오!」
+						RETURN 0
+				ENDIF
+			ELSEIF RESULT == 3
+				;知らない
+				;失敗率
+				LOCAL:1 = 20 + TALENT:ARG:교만 * 100
+				;失敗率
+				LOCAL:2 = 30 + LOCAL:1 + TALENT:ARG:겁쟁이 * 20
+				;成功率
+				LOCAL:3 = 40 + LOCAL:2 + TALENT:ARG:우애 * 50
+				;成功率
+				LOCAL:4 = 10 + LOCAL:3 + TALENT:ARG:현명 * 50
+				LOCAL = LOCAL * LOCAL:4 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗
+					PRINTFORMW 「혹시 %CSTR:ARG:일인칭%한테는 안 가르쳐주겠다는 건가요오!」
+					PRINTFORMW 「정말 싫어요오!」
+					RETURN 6
+				ELSEIF LOCAL < LOCAL:2
+					CFLAG:ARG:우호도 -= RAND:10
+					PRINTFORMW 「그, 그럴 수가아…」
+					RETURN 0
+				ELSEIF LOCAL < LOCAL:3
+					CFLAG:ARG:우호도 += RAND:10
+					PRINTFORMW 「모른다니 어쩔 수 없네요오」
+					RETURN 0
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+					PRINTFORMW 「꺄하핫!」
+					PRINTFORMW 「%CSTR:ARG:이인칭%, 겉모습은 어른이어도 머리는 어린애로군요오!」
+					RETURN 0
+				ENDIF
+			ENDIF
+		CASE 2
+			IF CFLAG:ARG:우호도 > 0
+				PRINTFORMW 「으ー음, 혹시…」
+				PRINTFORMW 「%CSTR:ARG:일인칭%을(를) 좋아하는 건가요오?」
+				PRINTFORML
+				PRINTFORML [1]좋아한다　　　[2]그런 건 아니다
+				PRINTFORML [3]우쭐대지 마라　[4]장난치고 싶다
+				CALL INPUTINT (1,2,3,4)
+				IF RESULT == 1
+					;好きだ
+					;失敗率
+					LOCAL:1 = 30 + TALENT:ARG:교만 * 50
+					;失敗率
+					LOCAL:2 = 0 + LOCAL:1
+					;成功率
+					LOCAL:3 = 60 + LOCAL:2 + TALENT:ARG:우애 * 50
+					;成功率
+					LOCAL:4 = 10 + LOCAL:3 + TALENT:PLAYER:수수께끼의매력 * 20
+					LOCAL = LOCAL * LOCAL:4 / 100
+					IF LOCAL < LOCAL:1
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+						PRINTFORMW 「%CSTR:ARG:일인칭%, 오빠를 별로 좋아하지 않아요오!」
+						PRINTFORMW 「조금 민폐에요오!」
+						RETURN 6
+					ELSEIF LOCAL < LOCAL:3
+						CFLAG:ARG:우호도 += RAND:30
+						;成功
+						PRINTFORMW 「꺄하핫!」
+						PRINTFORMW 「기뻐요오!」
+						RETURN 0
+					ELSE
+						CFLAG:ARG:우호도 += RAND:100
+						;成功
+						PRINTFORMW 「저기…… 그…… %CSTR:ARG:일인칭%도 %CSTR:ARG:이인칭%을(를) 꽤…」
+						RETURN 0
+					ENDIF
+				ELSEIF RESULT == 2
+					;そういう訳ではない
+					;失敗率
+					LOCAL:1 = 20 + TALENT:ARG:반항적 * 20
+					;失敗率
+					LOCAL:2 = 20 + LOCAL:1 + TALENT:ARG:우둔 * 50
+					;成功率
+					LOCAL:3 = 40 + LOCAL:2 + TALENT:ARG:우애 * 50 + TALENT:ARG:호기심 * 20
+					;成功率
+					LOCAL:4 = 20 + LOCAL:3 + TALENT:ARG:교만 * 50
+					LOCAL = LOCAL * LOCAL:4 / 100
+					IF LOCAL < LOCAL:1
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+						PRINTFORMW 「%CSTR:ARG:일인칭%, 똑 부러지지 못한 사람은 정말 싫어요오!」
+						RETURN 6
+					ELSEIF LOCAL < LOCAL:2
+						CFLAG:ARG:우호도 -= RAND:10
+						PRINTFORMW 「그런 건 아니라는 말은…」
+						PRINTFORMW 「무슨 뜻인 걸까나아?」
+						PRINTFORMW 「%CSTR:ARG:일인칭%, 모르겠어요오!」
+						RETURN 0
+					ELSEIF LOCAL < LOCAL:3
+						CFLAG:ARG:우호도 += RAND:10
+						PRINTFORMW 「그런 건 아니라는 말은…」
+						PRINTFORMW 「무슨 뜻인 걸까나아?」
+						PRINTFORMW 「%CSTR:ARG:일인칭%, 신경 쓰여요오!」
+						RETURN 0
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						;成功
+						PRINTFORMW 「꺄하핫!」
+						PRINTFORMW 「%CSTR:ARG:이인칭%, 혹시 부끄러워하는 건가요오?」
+						PRINTFORMW 「귀여워요오
+						CALL HEARTBW
+						RETURN 0
+					ENDIF
+				ELSEIF RESULT == 3
+					;調子にのるな
+					;失敗率
+					LOCAL:1 = 50 + TALENT:ARG:반항적 * 20 - TALENT:ARG:겁쟁이 * 30
+					;失敗率
+					LOCAL:2 = 20 + LOCAL:1 - TALENT:ARG:냉정 * 20
+					;成功率
+					LOCAL:3 = 10 + LOCAL:2 + TALENT:ARG:교활 * 50
+					;成功率
+					LOCAL:4 = 20 + LOCAL:3 + TALENT:ARG:우애 * 50
+					LOCAL = LOCAL * LOCAL:4 / 100
+					IF LOCAL < LOCAL:1
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+						PRINTFORMW 「%CSTR:ARG:일인칭%, 그렇게 성미 급한 사람은 정말 싫어요오!」
+						RETURN 6
+					ELSEIF LOCAL < LOCAL:2
+						CFLAG:ARG:우호도 -= RAND:10
+						PRINTFORMW 「흑, 흑…… 무서워요오! 으앙~」
+						RETURN 5
+					ELSEIF LOCAL < LOCAL:3
+						CFLAG:ARG:우호도 += RAND:10
+						PRINTFORMW 「호, 혹시 %CSTR:ARG:이인칭%, 화난 건가요…」
+						PRINTFORMW 「동마가 될 테니까 용서해 줬으면 좋겠어요오」
+						RETURN 1
+					ELSE
+						CFLAG:ARG:우호도 += RAND:10
+						PRINTFORMW 「호, 혹시 %CSTR:ARG:이인칭%, 화난 건가요…」
+						PRINTFORMW 「%CSTR:ARG:일인칭%이(가) 잘못했으니까 기분 풀어줬으면 좋겠어요오」
+						RETURN 0
+					ENDIF
+				ELSE
+					;悪戯したい
+					;失敗率
+					LOCAL:1 = 50 + TALENT:ARG:우둔 * 50
+					;失敗率
+					LOCAL:2 = 10 + LOCAL:1 + TALENT:ARG:겁쟁이 * 100
+					;成功率
+					LOCAL:3 = 30 + LOCAL:2 + TALENT:ARG:우애 * 50
+					;成功率
+					LOCAL:4 = 10 + LOCAL:3 + TALENT:ARG:현명 * 50
+					LOCAL = LOCAL * LOCAL:4 / 100
+					IF LOCAL < LOCAL:1
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+						PRINTFORMW 「%CSTR:ARG:일인칭%, 심술궂은 사람은 안 좋아해요오!」
+						RETURN 6
+					ELSEIF LOCAL < LOCAL:2
+						CFLAG:ARG:우호도 -= RAND:10
+						PRINTFORMW 「뭔진 잘 모르겠지만 엄청 불길한 예감이 들어요오…」
+						PRINTFORMW 「이제 %CSTR:ARG:일인칭%은(는) 돌아가 보겠어요오」
+						RETURN 5
+					ELSEIF LOCAL < LOCAL:3
+						CFLAG:ARG:우호도 += RAND:30
+						PRINTFORMW 「%CSTR:ARG:일인칭%한테 장난을 치다니 말도 안 돼요오」
+						PRINTFORMW 「대신에 %CSTR:ARG:일인칭%이(가) %CSTR:ARG:이인칭%한테 장난쳐줄 거에요오」
+						RETURN 0
+					ELSE
+						CFLAG:ARG:우호도 += RAND:50
+						PRINTFORMW 「혹시 야한 짓인가요오?」
+						PRINTFORMW 「싫다아, %CSTR:ARG:일인칭%, 두근거려 버려요오」
+						RETURN 0
+					ENDIF
+				ENDIF
+			ELSE
+				PRINTFORMW 「뿌우~ 뿌우~ 뾰로통!」
+				PRINTFORMW 「절대 %CSTR:ARG:일인칭%을(를) 바보 취급하고 있어요오!!」
+				PRINTFORMW 「%CSTR:ARG:일인칭%, 바보가 아니니까 화낼 거라구요오!」
+				PRINTFORMW 「그런데 왜 화나게 할 짓을 하는 건가요오?」
+				PRINTFORML
+				PRINTFORML [1]네가 바보니까　　　　　　　[2]화난 얼굴이 귀여워서
+				PRINTFORML [3]바보 취급할 생각은 없다　　[4]………
+				CALL INPUTINT (1,2,3,4)
+				IF RESULT == 1
+					;お前がバカだから
+					;失敗率
+					LOCAL:1 = 30 + TALENT:ARG:영맹 * 50 - TALENT:ARG:겁쟁이 * 20 + TALENT:ARG:우둔 * 50
+					;失敗率
+					LOCAL:2 = 30 + LOCAL:1 + TALENT:ARG:겁쟁이 * 50
+					;成功率
+					LOCAL:3 = 30 + LOCAL:2 + TALENT:ARG:우애 * 50
+					;成功率
+					LOCAL:4 = 10 + LOCAL:3 + TALENT:ARG:현명 * 50
+					LOCAL = LOCAL * LOCAL:4 / 100
+					IF LOCAL < LOCAL:1
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+						PRINTFORMW 「더는 용서 못 해요오!!」
+						RETURN 4
+					ELSEIF LOCAL < LOCAL:2
+						CFLAG:ARG:우호도 -= RAND:10
+						PRINTFORMW 「그, 그렇게 딱 잘라 말하지 않아도…」
+						PRINTFORMW 「%CSTR:ARG:일인칭%, 울어버릴 거에요오…」
+						RETURN 6
+					ELSEIF LOCAL < LOCAL:3
+						CFLAG:ARG:우호도 += RAND:10
+						PRINTFORMW 「아우, %CSTR:ARG:일인칭%은(는) 아직 어린애니까 너그럽게 봐줬으면 좋겠어요오…」
+						RETURN 0
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						PRINTFORMW 「바보라고 하는 쪽이 바보라구요오」
+						PRINTFORMW 「%CSTR:ARG:일인칭%은(는) 바보가 아니니까 용서해 주는 거에요오」
+						RETURN 0
+					ENDIF
+				ELSEIF RESULT == 2
+					;怒った顔が可愛いから
+					;失敗率
+					LOCAL:1 = 50 + TALENT:ARG:현명 * 100
+					;失敗率
+					LOCAL:2 = 0 + LOCAL:1
+					;成功率
+					LOCAL:3 = 50 + LOCAL:2 + TALENT:ARG:우애 * 50 + TALENT:ARG:우둔 * 50
+					;成功率
+					LOCAL:4 = 0 + LOCAL:3
+					LOCAL = LOCAL * LOCAL:4 / 100
+					IF LOCAL < LOCAL:1
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+						PRINTFORMW 「그거 절대 진심이 아니잖아요오!」
+						PRINTFORMW 「%CSTR:ARG:일인칭%, 이제 뾰로통해졌어요오!」
+						RETURN 4
+					ELSEIF LOCAL < LOCAL:2
+					ELSEIF LOCAL < LOCAL:3
+						CFLAG:ARG:우호도 += RAND:10
+						PRINTFORMW 「꺄하핫! 기뻐요오!」
+						PRINTFORMW 「그렇다면 용서해 줄게요오!」
+						RETURN 0
+					ELSE
+					ENDIF
+				ELSEIF RESULT == 3
+					;バカにしてるつもりはない
+					;失敗率
+					LOCAL:1 = 30 + TALENT:ARG:현명 * 100
+					;失敗率
+					LOCAL:2 = 0 + LOCAL:1
+					;成功率
+					LOCAL:3 = 30 + LOCAL:2 + TALENT:ARG:교활 * 50
+					;成功率
+					LOCAL:4 = 40 + LOCAL:3 + TALENT:ARG:우둔 * 50
+					LOCAL = LOCAL * LOCAL:4 / 100
+					IF LOCAL < LOCAL:1
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+						PRINTFORMW 「그런 건 거짓말이에요오!」
+						PRINTFORMW 「절대절대 거짓말이라구요오!」
+						RETURN 6
+					ELSEIF LOCAL < LOCAL:2
+					ELSEIF LOCAL < LOCAL:3
+						CFLAG:ARG:우호도 += RAND:20
+						PRINTFORMW 「꺄하핫!」
+						PRINTFORMW 「사실은 그렇게까지 화 안 났어요오!」
+						PRINTFORMW 「깜짝 놀랐나요오?」
+						RETURN 0
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						PRINTFORMW 「꺄하핫! %CSTR:ARG:일인칭%, 바보가 아닌 거네요!」
+						PRINTFORMW 「다행이에요오!」
+						RETURN 0
+					ENDIF
+				ELSE
+					;………
+					;失敗率
+					LOCAL:1 = 20 + TALENT:ARG:교만 * 100
+					;失敗率
+					LOCAL:2 = 20 + LOCAL:1 + TALENT:ARG:영맹 * 100
+					;成功率
+					LOCAL:3 = 30 + LOCAL:2 + TALENT:ARG:교활 * 50 + TALENT:ARG:겁쟁이 * 50 
+					;成功率
+					LOCAL:4 = 30 + LOCAL:3 + TALENT:ARG:우둔 * 50 + TALENT:ARG:우애 * 50
+					LOCAL = LOCAL * LOCAL:4 / 100
+					IF LOCAL < LOCAL:1
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+						PRINTFORMW 「왜 아무 말도 안 하는 건가요!」
+						PRINTFORMW 「그거 고집불통인 거에요오!」
+						RETURN 6
+					ELSEIF LOCAL < LOCAL:2
+						CFLAG:ARG:우호도 -= RAND:30
+						PRINTFORMW 「뭘 입 다물고 있는 건가요!」
+						PRINTFORMW 「이제 용서 안 해요오!」
+						RETURN 4
+					ELSEIF LOCAL < LOCAL:3
+						CFLAG:ARG:우호도 += RAND:10
+						PRINTFORMW 「왜, 왜 가만히 있는 건가요오…」
+						PRINTFORMW 「화나 버린 건가요오…」
+						PRINTFORMW 「미, 미안해요오…」
+						RETURN 0
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						PRINTFORMW 「%CSTR:ARG:일인칭%이(가) 무서운 건가요오?」
+						PRINTFORMW 「사실 그렇게 화 안 났으니까 안심해도 돼요오!」
+						RETURN 0
+					ENDIF
+				ENDIF
+			ENDIF
+		CASE 3
+			IF TALENT:PLAYER:남자
+				PRINTFORMW 「%CSTR:ARG:일인칭%은(는) 멋진 여자아이가 되고 싶어요오!」
+				PRINTFORMW 「%CSTR:ARG:이인칭%가 보기에 %CSTR:ARG:일인칭%은(는) 어떤 것 같아요?」
+				PRINTFORML
+				PRINTFORML [1]여동생 삼고 싶을 만큼 큐트　[2]신부 삼고 싶을 만큼 뷰티풀
+				PRINTFORML [3]악마 주제에 헛소리 마라　　　[4]여자한텐 관심 없어
+				CALL INPUTINT(1,2,3,4)
+				PRINTFORML 
+				IF RESULT == 1
+					;妹にしたい
+					;失敗率
+					LOCAL:1 = 15
+					;失敗率
+					LOCAL:2 = 15 + LOCAL:1 + TALENT:ARG:현명 * 50 + TALENT:ARG:교만 * 50
+					;成功率
+					LOCAL:3 = 0 + LOCAL:2
+					;成功率
+					LOCAL:4 = 70 + LOCAL:3 + TALENT:ARG:솔직함 * 20 + TALENT:ARG:우애 * 50
+					LOCAL = LOCAL * LOCAL:4 / 100
+					IF LOCAL < LOCAL:1
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+						PRINTFORMW 「그거 분명 %CSTR:ARG:일인칭%을(를) 바보 취급하는 거에요오!」
+						RETURN 6
+					ELSEIF LOCAL < LOCAL:2
+						CFLAG:ARG:우호도 -= RAND:10
+						PRINTFORMW 「그거 그냥 귀엽기만 하고 여자로서의 매력은 없다는 뜻인가요…」
+						RETURN 0
+					ELSEIF LOCAL < LOCAL:3
+						RETURN 0
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						PRINTFORMW 「꺄하핫!」
+						PRINTFORMW 「기뻐요오!」
+						RETURN 0
+					ENDIF
+				ELSEIF RESULT == 2
+					;花嫁にしたい
+					;失敗率
+					LOCAL:1 = 20 + TALENT:ARG:교만 * 50
+					;失敗率
+					LOCAL:2 = 10 + LOCAL:1 + TALENT:ARG:현명 * 50
+					;成功率
+					LOCAL:3 = 35 + LOCAL:2 + TALENT:ARG:우애 * 50
+					;成功率
+					LOCAL:4 = 35 + LOCAL:3 + TALENT:PLAYER:수수께끼의매력 * 100
+					LOCAL = LOCAL * LOCAL:4 / 100
+					IF LOCAL < LOCAL:1
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+						PRINTFORMW 「%CSTR:ARG:일인칭%, 오빠를 별로 좋아하지 않아요오!」
+						PRINTFORMW 「조금 민폐에요오!」
+						RETURN 6
+					ELSEIF LOCAL < LOCAL:2
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+						PRINTFORMW 「%CSTR:ARG:이인칭%, 진심으로 하는 말인가요오?」
+						PRINTFORMW 「이런 소릴 대충 지껄이는 남자는 살려둬선 안 된다고 엄마가 그랬어요오!」
+						PRINTFORMW 「%CSTR:ARG:일인칭%이(가) 응징해 주는 거에요오!」
+						RETURN 4
+					ELSEIF LOCAL < LOCAL:3
+						CFLAG:ARG:우호도 += RAND:10
+						PRINTFORMW 「마음은 기쁘지만 이런 건 제대로 단계를 밟아야 한다고 생각해요오」
+						PRINTFORMW 「그러니까 먼저 친구부터 시작하는 거에요오!」
+						RETURN 0
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						PRINTFORMW 「앗! %CSTR:ARG:일인칭%(으)로도 괜찮은 건가요오?」
+						PRINTFORMW 「잠깐、생각해볼께요！」
+						RETURN 0
+					ENDIF
+				ELSEIF RESULT == 3
+					;悪魔の分際で
+					;失敗率
+					LOCAL:1 = 30 + TALENT:ARG:교만 * 50
+					;失敗率
+					LOCAL:2 = 30 + LOCAL:1 + TALENT:ARG:겁쟁이 * 30 + TALENT:ARG:우애 * 50
+					;成功率
+					LOCAL:3 = 40 + LOCAL:2 + TALENT:ARG:교활 * 50
+					;成功率
+					LOCAL:4 = 0 + LOCAL:3
+					LOCAL = LOCAL * LOCAL:4 / 100
+					IF LOCAL < LOCAL:1
+						CFLAG:ARG:우호도 -= RAND:50
+						PRINTFORMW 「%CSTR:ARG:이인칭%, 너무해요오!」
+						;1/3で敵対コース
+						IF RAND:3
+							RETURN 6
+						ELSE
+							PRINTFORMW 「%CSTR:ARG:일인칭%, 이제 뾰로통해졌어요오!」
+							RETURN 4
+						ENDIF
+					ELSEIF LOCAL < LOCAL:2
+						CFLAG:ARG:우호도 += RAND:10
+						PRINTFORMW 「왜 그런 소릴 들어야 하는지 %CSTR:ARG:일인칭%은(는) 모르겠어요오!」
+						PRINTFORMW 「흑, 흑, 으아~앙!」
+						RETURN 5
+					ELSEIF LOCAL < LOCAL:3
+						CFLAG:ARG:우호도 += RAND:20
+						PRINTFORMW 「%CSTR:ARG:이인칭%, 혹시」
+						PRINTFORMW 「화난 건가요…」
+						PRINTFORMW 「사과할 테니까 기분 풀어줬으면 좋겠어요오…」
+						RETURN 0
+					ELSE
+					ENDIF
+				ELSEIF RESULT == 4
+					;女には興味ないんだ
+					;失敗率
+					LOCAL:1 = 30 + TALENT:ARG:교만 * 50
+					;失敗率
+					LOCAL:2 = 30 + LOCAL:1 + TALENT:ARG:겁쟁이 * 30 + TALENT:ARG:우애 * 50
+					;成功率
+					LOCAL:3 = 40 + LOCAL:2 + TALENT:ARG:우애 * 50
+					;成功率
+					LOCAL:4 = 40 + LOCAL:3 + TALENT:ARG:현명 * 50
+					LOCAL = LOCAL * LOCAL:4 / 100
+					IF LOCAL < LOCAL:1
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+						PRINTFORMW 「그거 분명 %CSTR:ARG:일인칭%을(를) 바보 취급하는 거에요오!」
+						PRINTFORMW 「적당히 둘러대는 거에요오!」
+						RETURN 6
+					ELSEIF LOCAL < LOCAL:2
+						CFLAG:ARG:우호도 -= RAND:30
+						PRINTFORMW 「에, 그거…」
+						PRINTFORMW 「기분 나빠요오! 꺄아~」
+						RETURN 5
+					ELSEIF LOCAL < LOCAL:3
+						CFLAG:ARG:우호도 += RAND:30
+						PRINTFORMW 「%CSTR:ARG:이인칭%, 혹시 자기가 인기 없다고 생각하는 건가요오?」
+						PRINTFORMW 「괜찮아요오」
+						PRINTFORMW 「분명 %CSTR:ARG:이인칭%을(를) 좋아해 줄 사람이 나타날 거에요오」
+						RETURN 0
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						PRINTFORMW 「꺄하핫!」
+						PRINTFORMW 「그거 남자아이가 좋다는 뜻인가요오?」
+						PRINTFORMW 「%CSTR:ARG:이인칭%, 이상해요오!」
+						RETURN 0
+					ENDIF
+				ENDIF
+			ELSE
+				PRINTFORMW 「%CSTR:ARG:일인칭%은(는) 유쾌한 남자아이가 좋아요오!」
+				PRINTFORMW 「%CSTR:ARG:이인칭%은(는) 어떤 아이가 좋나요오?」
+				PRINTFORML
+				PRINTFORML [1]유쾌한 남자가 좋으려나　　[2]역시 강해야지
+				PRINTFORML [3]멋있어야지　　　　　　　　[4]여자아이가 좋아
+				CALL INPUTINT(1,2,3,4)
+				PRINTFORML 
+				IF RESULT == 1
+					;楽しい男の人
+					;失敗率
+					LOCAL:1 = 0
+					;失敗率
+					LOCAL:2 = 30 + LOCAL:1 + TALENT:ARG:교만 * 50
+					;成功率
+					LOCAL:3 = 0 + LOCAL:2
+					;成功率
+					LOCAL:4 = 70 + LOCAL:3 + TALENT:ARG:솔직함 * 20 + TALENT:ARG:우애 * 50
+					LOCAL = LOCAL * LOCAL:4 / 100
+					IF LOCAL < LOCAL:1
+					ELSEIF LOCAL < LOCAL:2
+						CFLAG:ARG:우호도 -= RAND:10
+						PRINTFORMW 「%CSTR:ARG:일인칭% 따라 하지 말아줬으면 좋겠어요오」
+						RETURN 6
+					ELSEIF LOCAL < LOCAL:3
+						RETURN 0
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						PRINTFORMW 「꺄하핫!」
+						PRINTFORMW 「%CSTR:ARG:일인칭%와(과) 똑같네요오!」
+						RETURN 0
+					ENDIF
+				ELSEIF RESULT == 2
+					;やっぱり強くないと
+					;失敗率
+					LOCAL:1 = 0
+					;失敗率
+					LOCAL:2 = 50 + LOCAL:1 + TALENT:ARG:겁쟁이
+					;成功率
+					LOCAL:3 = 0 + LOCAL:2
+					;成功率
+					LOCAL:4 = 50 + LOCAL:3 + TALENT:ARG:우애 * 50 + TALENT:ARG:영맹 * 50
+					LOCAL = LOCAL * LOCAL:4 / 100
+					IF LOCAL < LOCAL:1
+					ELSEIF LOCAL < LOCAL:2
+						CFLAG:ARG:우호도 -= RAND:10
+						PRINTFORML 「%CSTR:ARG:이인칭%보다 강해 보이는
+						PRINTFORMW 　남자라니, 대체…」
+						RETURN 0
+					ELSEIF LOCAL < LOCAL:3
+						RETURN 0
+					ELSE
+						CFLAG:ARG:우호도 += RAND:20
+						PRINTFORMW 「%CSTR:ARG:일인칭%의 아빠는 엄청 강해요오!」
+						PRINTFORMW 「다음에 소개해 줄게요오!」
+						RETURN 0
+					ENDIF
+				ELSEIF RESULT == 3
+					;カッコ良くないとね
+					;失敗率
+					LOCAL:1 = 0
+					;失敗率
+					LOCAL:2 = 30 + LOCAL:1 + TALENT:ARG:현명* 50
+					;成功率
+					LOCAL:3 = 35 + LOCAL:2 + TALENT:ARG:우애 * 50
+					;成功率
+					LOCAL:4 = 35 + LOCAL:3 + TALENT:ARG:교활 * 50
+					LOCAL = LOCAL * LOCAL:4 / 100
+					IF LOCAL < LOCAL:1
+					ELSEIF LOCAL < LOCAL:2
+						CFLAG:ARG:우호도 -= RAND:30
+						PRINTFORMW 「%CSTR:ARG:이인칭%, 재미없어요오!」
+						PRINTFORMW 「기대 이하에요오!」
+						RETURN 6
+					ELSEIF LOCAL < LOCAL:3
+						CFLAG:ARG:우호도 += RAND:20
+						PRINTFORMW 「어떤 사람이 멋있는 걸까나아…」
+						PRINTFORMW 「%CSTR:ARG:이인칭%, 아직 잘 모르겠어요오!」
+						RETURN 0
+					ELSE
+						CFLAG:ARG:우호도 += RAND:20
+						PRINTFORMW 「꺄하핫!」
+						PRINTFORMW 「그건 눈이 너무 높은 거에요오!」
+						RETURN 0
+					ENDIF
+				ELSE
+					;女の子が好きなんだ
+					;失敗率
+					LOCAL:1 = 20
+					;失敗率
+					LOCAL:2 = 40 + LOCAL:1
+					;成功率
+					LOCAL:3 = 30 + LOCAL:2 + TALENT:ARG:호기심 * 20 + TALENT:ARG:우애 * 30
+					;成功率
+					LOCAL:4 = 10 + LOCAL:3 + TALENT:PLAYER:수수께끼의매력 * 100
+					LOCAL = LOCAL * LOCAL:4 / 100
+					IF LOCAL < LOCAL:1
+						CFLAG:ARG:우호도 -= RAND:30
+						PRINTFORMW 「이쪽으로 오지 마요오!」
+						PRINTFORMW 「아니, 오기 전에 해치워버릴 거에요오」
+						RETURN 3
+						
+					ELSEIF LOCAL < LOCAL:2
+						CFLAG:ARG:우호도 -= RAND:30
+						PRINTFORMW 「저, 저기, %CSTR:ARG:일인칭%은(는) 남자아이가 더 좋으니까, 그게에…」
+						RETURN 0
+					ELSEIF LOCAL < LOCAL:3
+						CFLAG:ARG:우호도 += RAND:20
+						PRINTFORMW 「꺄하핫!」
+						PRINTFORMW 「그럼 %CSTR:ARG:일인칭%도 좋아하는 걸까나아?」
+						RETURN 0
+					ELSE
+						CFLAG:ARG:우호도 += RAND:20
+						PRINTFORMW 「그게에…… 사실은 %CSTR:ARG:일인칭%도……」
+						PRINTFORMW 「%CSTR:ARG:이인칭%에게 이것저것 배우고 싶어요오……」
+						RETURN 1
+					ENDIF
+				ENDIF
+			ENDIF
+		CASE 4
+			PRINTFORMW 「%CSTR:ARG:이인칭%, 강해 보여요오!」
+			PRINTFORMW 「%CSTR:ARG:일인칭%도 강한 여자아이가 되고 싶어요오!!」
+			PRINTFORMW 「어떻게 하면 강해질 수 있나요오?」
+			PRINTFORML
+			PRINTFORML [1]역시 근성이 필요해　[2]잘 먹는 거지
+			PRINTFORML [3]너에겐 무리다　　　　[4]야한 짓을 한다
+			CALL INPUTINT(1,2,3,4)
+			PRINTFORML 
+			IF RESULT == 1
+				;やっぱり根性が必要
+				;失敗率
+				LOCAL:1 = 20 + TALENT:ARG:현명 * 50
+				;失敗率
+				LOCAL:2 = 20 + LOCAL:1 + TALENT:ARG:교활 * 50
+				;成功率
+				LOCAL:3 = 60 + LOCAL:2 + TALENT:ARG:솔직함 * 20 + TALENT:ARG:우애 * 50
+				;成功率
+				LOCAL:4 = 0 + LOCAL:3
+				LOCAL = LOCAL * LOCAL:4 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:30
+					PRINTFORMW 「그거 엄청 대충대충인 것 같아요오!」
+					PRINTFORMW 「%CSTR:ARG:일인칭%, 이제 뾰로통해졌어요오!」
+					RETURN 4
+				ELSEIF LOCAL < LOCAL:2
+					CFLAG:ARG:우호도 -= RAND:30
+					PRINTFORMW 「%CSTR:ARG:이인칭%, 재미없어요오!」
+					PRINTFORMW 「기대 이하에요오!」
+					RETURN 6
+				ELSEIF LOCAL < LOCAL:3
+					CFLAG:ARG:우호도 += RAND:30
+					PRINTFORMW 「%CSTR:ARG:일인칭%, 열심히 할게요오!」
+					RETURN 0
+				ELSE
+				ENDIF
+			ELSEIF RESULT == 2
+				;良く食べる事だね
+				;失敗率
+				LOCAL:1 = 20 + TALENT:ARG:우둔 * 50
+				;失敗率
+				LOCAL:2 = 20 + LOCAL:1 + TALENT:ARG:교활 * 50
+				;成功率
+				LOCAL:3 = 60 + LOCAL:2 + TALENT:ARG:솔직함 * 20
+				;成功率
+				LOCAL:4 = 0 + LOCAL:3
+				LOCAL = LOCAL * LOCAL:4 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:30
+					PRINTFORMW 「그거 %CSTR:ARG:일인칭%이(가) 귀여우니까」
+					PRINTFORMW 「살찌우려고 그러는 거 아닌가요오!」
+					PRINTFORMW 「%CSTR:ARG:일인칭%, 이제 뾰로통해졌어요오!」
+					RETURN 4
+				ELSEIF LOCAL < LOCAL:2
+					CFLAG:ARG:우호도 -= RAND:10
+					PRINTFORMW 「에… %CSTR:ARG:일인칭%, 편식 같은 거 안 하는데요?」
+					PRINTFORMW 「진짜라구요오?」
+					RETURN 0
+				ELSEIF LOCAL < LOCAL:3
+					CFLAG:ARG:우호도 += RAND:30
+					PRINTFORMW 「꺄하핫!」
+					PRINTFORMW 「%CSTR:ARG:일인칭%, 편식 같은 거 없어요오!」
+					PRINTFORMW 「분명 강해질 수 있겠죠!」
+					RETURN 0
+				ELSE
+				ENDIF
+			ELSEIF RESULT == 3
+				;お前には無理
+				;失敗率
+				LOCAL:1 = 20 + TALENT:ARG:영맹 * 30
+				;失敗率
+				LOCAL:2 = 20 + LOCAL:1 + TALENT:ARG:겁쟁이 * 30 + TALENT:ARG:우애 * 50
+				;成功率
+				LOCAL:3 = 40 + LOCAL:2 + TALENT:ARG:교활 * 50
+				;成功率
+				LOCAL:4 = 20 + LOCAL:3 + TALENT:ARG:교만 * 50
+				LOCAL = LOCAL * LOCAL:4 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:50
+					PRINTFORMW 「%CSTR:ARG:이인칭%, 너무해요오!」
+					;1/3で敵対コース
+					IF RAND:3
+						RETURN 6
+					ELSE
+						PRINTFORMW 「%CSTR:ARG:일인칭%, 이제 뾰로통해졌어요오!」
+						RETURN 4
+					ENDIF
+				ELSEIF LOCAL < LOCAL:2
+					CFLAG:ARG:우호도 += RAND:10
+					PRINTFORMW 「왜 그런 소릴 들어야 하는지 %CSTR:ARG:일인칭%은(는) 모르겠어요오!」
+					PRINTFORMW 「흑, 흑, 으아~앙!」
+					RETURN 5
+				ELSEIF LOCAL < LOCAL:3
+					CFLAG:ARG:우호도 += RAND:20
+					PRINTFORMW 「%CSTR:ARG:이인칭%, 혹시」
+					PRINTFORMW 「화난 건가요…」
+					PRINTFORMW 「사과할 테니까 기분 풀어줬으면 좋겠어요오…」
+					RETURN 0
+				ELSE
+					CFLAG:ARG:우호도 += RAND:10
+					PRINTFORMW 「무리 같은 게 아니에요오!」
+					PRINTFORMW 「분명 엄청난 악마가 돼서 %CSTR:ARG:이인칭%을(를) 콧대 납작하게 해줄 테니까」
+					PRINTFORMW 「두고 보라구요오!」
+					RETURN 0
+				ENDIF
+			ELSE
+				;エッチなこと
+				;失敗率
+				LOCAL:1 = 20 + TALENT:ARG:우둔 * 100
+				;失敗率
+				LOCAL:2 = 20 + LOCAL:1 + TALENT:ARG:겁쟁이 * 30 + TALENT:ARG:얌전함 * 30
+				;成功率
+				LOCAL:3 = 40 + LOCAL:2 + TALENT:ARG:교활 * 50 + TALENT:ARG:영맹 * 50
+				;成功率
+				LOCAL:4 = 0 + LOCAL:3 + TALENT:PLAYER:수수께끼의매력 * 50
+				LOCAL = LOCAL * LOCAL:4 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗
+					PRINTFORML 「그런 건 거짓말이에요오!」
+					PRINTFORMW 「절대절대 거짓말이라구요오!」
+					RETURN 6
+				ELSEIF LOCAL < LOCAL:2
+					CFLAG:ARG:우호도 -= RAND:10
+					PRINTFORMW 「에… 그런 거 부, 부끄러워요오…」
+					RETURN 0
+				ELSEIF LOCAL < LOCAL:3
+					CFLAG:ARG:우호도 += RAND:30
+					PRINTFORMW 「에, 정말로?」
+					PRINTFORMW 「%CSTR:ARG:일인칭%, 조금 무섭지만 그걸로 강해질 수 있다면…」
+					PRINTFORMW 「조금 생각할 시간을 줬으면 좋겠어요오」
+					RETURN 0
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					PRINTFORMW 「뭘 히죽거리고 있는 건가요」
+					PRINTFORMW 「%CSTR:ARG:일인칭%이(가) 어린애니까 그런 거 못 할 거라고 생각하는 건가요?」
+					PRINTFORMW 「%CSTR:ARG:일인칭%도 이제 어른이라는 걸 가르쳐 줄게요오!」
+					RETURN 1
+				ENDIF
+			ENDIF
+		CASE 5
+			PRINTFORMW 「맞다 맞다, %CSTR:ARG:일인칭%은(는) 말이죠오」
+			PRINTFORMW 「서머너에게 흥미진진이에요오!」
+			PRINTFORMW 「%CSTR:ARG:일인칭%도 서머너가 될 수 있나요오?」
+			PRINTFORML
+			PRINTFORML [1]분명 될 수 있어　　　　[2]악마는 무리일지도
+			PRINTFORML [3]글쎄, 잘 모르겠네　　　[4]노예 쪽이 어울려
+			CALL INPUTINT(1,2,3,4)
+			PRINTFORML 
+			IF RESULT == 1
+				;きっとなれるよ
+				;失敗率
+				LOCAL:1 = 30 + TALENT:ARG:현명 * 50
+				;失敗率
+				LOCAL:2 = 0
+				;成功率
+				LOCAL:3 = 70 + LOCAL:2 + TALENT:ARG:솔직함 * 20 + TALENT:ARG:우애 * 50
+				;成功率
+				LOCAL:4 = 0 + LOCAL:3
+				LOCAL = LOCAL * LOCAL:4 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:30
+					PRINTFORMW 「그거 절대 진심이 아니잖아요오!」
+					PRINTFORMW 「%CSTR:ARG:일인칭%, 이제 뾰로통해졌어요오!」
+					RETURN 4
+				ELSEIF LOCAL < LOCAL:2
+					RETURN 0
+				ELSEIF LOCAL < LOCAL:3
+					CFLAG:ARG:우호도 += RAND:30
+					PRINTFORMW 「꺄하핫!」
+					PRINTFORMW 「서머너가 되면 %CSTR:ARG:이인칭%도 동마로 삼아줄게요오!」
+					RETURN 0
+				ELSE
+				ENDIF
+			ELSEIF RESULT == 2
+				;悪魔じゃ無理かも
+				;失敗率
+				LOCAL:1 = 20 + TALENT:ARG:교만 * 100
+				;失敗率
+				LOCAL:2 = 20 + LOCAL:1 + TALENT:ARG:겁쟁이 * 30 + TALENT:ARG:우애 * 50
+				;成功率
+				LOCAL:3 = 40 + LOCAL:2 + TALENT:ARG:우둔 * 50
+				;成功率
+				LOCAL:4 = 0 + LOCAL:3
+				LOCAL = LOCAL * LOCAL:4 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:50
+					PRINTFORMW 「%CSTR:ARG:이인칭%, 너무해요오!」
+					;1/3で敵対コース
+					IF RAND:3
+						RETURN 6
+					ELSE
+						PRINTFORMW 「%CSTR:ARG:일인칭%, 이제 뾰로통해졌어요오!」
+						RETURN 4
+					ENDIF
+				ELSEIF LOCAL < LOCAL:2
+					CFLAG:ARG:우호도 -= RAND:10
+					PRINTFORMW 「그, 그럴 수가아…」
+					RETURN 0
+				ELSEIF LOCAL < LOCAL:3
+					CFLAG:ARG:우호도 += RAND:20
+					PRINTFORMW 「아쉬워요오…」
+					PRINTFORMW 「그럼 %CSTR:ARG:일인칭%은(는) 다크 서머너를 목표로 할 거에요오」
+					PRINTFORMW 「이러면 괜찮은 거죠!」
+					RETURN 0
+				ELSE
+				ENDIF
+			ELSEIF RESULT == 3
+				;ちょっと、わからないな
+				;失敗率
+				LOCAL:1 = 20 + TALENT:ARG:교만 * 100 + TALENT:ARG:잔학 * 100
+				;失敗率
+				LOCAL:2 = 20 + LOCAL:1 + TALENT:ARG:우애 * 50
+				;成功率
+				LOCAL:3 = 40 + LOCAL:2 + TALENT:ARG:우애 * 50
+				;成功率
+				LOCAL:4 = 20 + LOCAL:3 + TALENT:ARG:교활 * 50 + TALENT:ARG:현명 * 50
+				LOCAL = LOCAL * LOCAL:4 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:50
+					PRINTFORMW 「좀 더 진지하게 대답해 줬으면 좋겠어요오!」
+					;1/3で敵対コース
+					IF RAND:3
+						RETURN 6
+					ELSE
+						PRINTFORMW 「%CSTR:ARG:일인칭%, 이제 뾰로통해졌어요오!」
+						RETURN 4
+					ENDIF
+				ELSEIF LOCAL < LOCAL:2
+					CFLAG:ARG:우호도 -= RAND:10
+					PRINTFORMW 「그, 그럴 수가아…」
+					RETURN 0
+				ELSEIF LOCAL < LOCAL:3
+					CFLAG:ARG:우호도 += RAND:10
+					PRINTFORMW 「모른다니 어쩔 수 없네요오」
+					RETURN 0
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+					PRINTFORMW 「꺄하핫!」
+					PRINTFORMW 「%CSTR:ARG:이인칭%, 서머너인데 그런 것도 모르는 건가요오」
+					PRINTFORMW 「구제불능 서머너네요오!」
+					RETURN 0
+				ENDIF
+			ELSE
+				;奴隷のほうが
+				;失敗率
+				LOCAL:1 = 20 + TALENT:ARG:교만 * 100
+				;失敗率
+				LOCAL:2 = 20 + LOCAL:1 + TALENT:ARG:우둔 * 50
+				;成功率
+				LOCAL:3 = 50 + LOCAL:2 + TALENT:ARG:우애 * 50 + TALENT:ARG:호기심 * 50
+				;成功率
+				LOCAL:4 = 10 + LOCAL:3 + TALENT:ARG:현명 * 50
+				LOCAL = LOCAL * LOCAL:4 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:50
+					PRINTFORMW 「%CSTR:ARG:일인칭%, 노예 따윈 싫어요오!」
+					;1/3で敵対コース
+					IF RAND:3
+						RETURN 6
+					ELSE
+						PRINTFORMW 「%CSTR:ARG:일인칭%, 이제 뾰로통해졌어요오!」
+						RETURN 4
+					ENDIF
+				ELSEIF LOCAL < LOCAL:2
+					CFLAG:ARG:우호도 -= RAND:10
+					PRINTFORMW 「그, 그럴 수가아…」
+					RETURN 0
+				ELSEIF LOCAL < LOCAL:3
+					CFLAG:ARG:우호도 += RAND:10
+					PRINTFORMW 「노예에 어울린다는 건 무슨 뜻일까나?」
+					PRINTFORMW 「신경 쓰여요오」
+					RETURN 0
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+					PRINTFORMW 「꺄하핫!」
+					PRINTFORMW 「그거 %CSTR:ARG:일인칭%이(가) 귀엽다는 뜻인가요오?」
+					RETURN 0
+				ENDIF
+			ENDIF
+		CASE 6
+			PRINTFORMW 「저기 저기. \@TALENT:PLAYER:남자?오빠#언니\@는 무슨 곤란한 일 없나요오?」
+			PRINTFORMW 「보아하니 비실비실해 보이고, 모처럼이니 %CSTR:ARG:일인칭%이(가) 따라가 줄게요오♪」
+			PRINTFORML
+			PRINTFORML [1]데려간다　[2]그만둔다
+			CALL INPUTINT(1,2)
+			PRINTFORML 
+			IF RESULT == 1
+				;連れていく
+				;失敗率
+				LOCAL:1 = 20 + TALENT:ARG:교만 * 100
+				;失敗率
+				LOCAL:2 = 20 + LOCAL:1 + TALENT:ARG:교활 * 50 + TALENT:ARG:현명 * 50
+				;成功率
+				LOCAL:3 = 50 + LOCAL:2 + TALENT:ARG:우둔 * 50 + TALENT:ARG:호기심 * 50
+				;成功率
+				LOCAL:4 = 10 + LOCAL:3 + TALENT:ARG:우애 * 50
+				LOCAL = LOCAL * LOCAL:4 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:50
+					PRINTFORMW 「…라~든가, \@TALENT:PLAYER:남자?오빠#언니\@ 같은 변태는 안 따라가기로 정해뒀어요오」
+					PRINTFORMW 「여기서 죽어주세요오. 꺄하하♪」
+					RETURN 3
+				ELSEIF LOCAL < LOCAL:2
+					CFLAG:ARG:우호도 -= RAND:30
+					PRINTFORMW 「……라~든가, 진~짜로 \@TALENT:PLAYER:남자?오빠#언니\@의 동마가 될 수 있을 줄 알았나요오?」
+					PRINTFORMW 「꺄하, 인간은 진짜 얼간이에요오♪ 죽어버려요오♪」
+					RETURN 3
+				ELSEIF LOCAL < LOCAL:3
+					CFLAG:ARG:우호도 += RAND:10
+					PRINTFORMW 「으~음. 어쩔까나아♪」
+					RETURN 0
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+					PRINTFORMW 「아싸아♪ 그럼 계약 성립이네요오」
+					RETURN 1
+				ENDIF
+			ELSEIF RESULT == 2
+				;やめておく
+				;失敗率
+				LOCAL:1 = 25 + TALENT:ARG:교만 * 100
+				;失敗率
+				LOCAL:2 = 25 + LOCAL:1 + TALENT:ARG:우애 * 50
+				;成功率
+				LOCAL:3 = 50 + LOCAL:2 + TALENT:ARG:우둔 * 50 + TALENT:ARG:호기심 * 50
+				;成功率
+				LOCAL = LOCAL * LOCAL:3 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:50
+					PRINTFORMW 「뭐에요오~! 기껏 %CSTR:ARG:일인칭%이(가) 동마가 되어주려는데에~!」
+					PRINTFORMW 「이 꽉 막힌 사람아~. 이제 죽어버려욧!」
+					RETURN 3
+				ELSEIF LOCAL < LOCAL:2
+					CFLAG:ARG:우호도 -= RAND:30
+					PRINTFORML 「여자아이의 마음을 몰라주는 사람은 싫어요오!」
+					PRINTFORMW 「얼른 죽어주세요오!」
+					RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:10
+					PRINTFORML 「꺄하하! 다 들통나버렸네요오♪」
+					PRINTFORMW 「동마가 되는 척하면서 몰래 \@TALENT:PLAYER:남자?오빠#언니\@의 목을 따려고 했는데에~」
+					PRINTFORMW 「여기는 후퇴에요오. 또 봐요오♪」
+					RETURN 5
+				ENDIF
+			ENDIF
+		CASE 7
+			PRINTFORMW 「%CSTR:ARG:일인칭%, 어~ㅁ청 심심해요오」
+			PRINTFORMW 「뭔가 재미있는 일 없나요오?」
+			PRINTFORML
+			PRINTFORML [1]춤춰 본다　[2]웃겨 본다
+			PRINTFORML [3]없다
+			CALL INPUTINT(1,2,3)
+			PRINTFORML
+			IF RESULT == 1
+				;歌って踊る
+				;失敗率
+				LOCAL:1 = 50 + TALENT:ARG:교만 * 100
+				;成功率
+				LOCAL:2 = 50 + LOCAL:1 + TALENT:ARG:우애 * 50
+				LOCAL = LOCAL * LOCAL:2 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:50
+					PRINTFORMW %PLAYER는% 춤추었다！
+					PRINTFORMW 하지만、%CALLNAME:ARG%에겐 통하지 않았다……
+					PRINTFORMW 「왠지 탈춤 같아서 재미 하나도 없어요오……」
+					RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					PRINTFORMW %PLAYER는% 춤추었다！
+					PRINTFORMW 놀랍게도、%CALLNAME:ARG%에게 통한 것 같다！！
+					PRINTFORML 「꺄하하! 엄청 신나 보여요!」
+					PRINTFORMW 「%CSTR:ARG:일인칭%도 같이 춤출 거에요오♪」
+					PRINTFORMW %ARG는% %PLAYER와% 함께 춤을 추었다！
+					PRINTFORMW 「엄청 즐거웠어요오!」
+					RETURN 0
+				ENDIF
+			ELSEIF RESULT == 2
+				;笑わせてみせる
+				;失敗率
+				LOCAL:1 = 50 + TALENT:ARG:교만 * 100
+				;成功率
+				LOCAL:2 = 50 + LOCAL:1 + TALENT:ARG:우애 * 50
+				LOCAL = LOCAL * LOCAL:2 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:50
+					PRINTFORMW %PLAYER는% 재치있는 죠크로 웃기려 했다
+					PRINTFORMW 하지만、%CALLNAME:ARG%에겐 통하지 않은 것 같다……
+					PRINTFORML 「왠지 재밌지도 않아요오……」
+					PRINTFORMW 「이만 돌아가도 되나요오?」
+					RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:40
+					PRINTFORMW %PLAYER는% 재치있는 죠크로 웃기려 했다
+					PRINTFORMW 놀랍게도 %CALLNAME:ARG%에게 통했다！！
+					PRINTFORMW 「꺄하하하! 재밌어요오, 더 들려줬으면 좋겠어요오♪」
+					RETURN 0
+				ENDIF
+			ELSE
+				;ない
+				;失敗率
+				LOCAL:1 = 50 + TALENT:ARG:교만 * 100
+				;成功率
+				LOCAL:2 = 50 + LOCAL:1 + TALENT:ARG:우애 * 50
+				LOCAL = LOCAL * LOCAL:2 / 100
+				IF LOCAL < LOCAL:1
+					CFLAG:ARG:우호도 -= RAND:20
+						PRINTFORML 「재미대가리 없는 사람이에요오. 살아서 즐겁긴 한가요오, \@TALENT:PLAYER:남자?오빠#언니\@?」
+						PRINTFORMW 「왠지 흥이 다 깨져버렸으니까 이제 돌아갈래요오.」
+						RETURN 5
+				ELSE
+					CFLAG:ARG:우호도 -= RAND:10
+					PRINTFORMW 「시시한 사람이에요오! %CSTR:ARG:일인칭% 이제 돌아갈래요, 흥칫뿡!」
+					RETURN 5
+				ENDIF
+			ENDIF
+	ENDSELECT
+LOOP 1

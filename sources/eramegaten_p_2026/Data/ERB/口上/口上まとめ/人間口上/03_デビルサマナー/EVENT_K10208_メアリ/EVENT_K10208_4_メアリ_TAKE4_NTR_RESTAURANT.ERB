@@ -1,0 +1,2522 @@
+﻿;==========================================================
+;@Mary_K4509_NTR_RESTO
+; 식당노역에서의 NTR 처리
+;<인수>
+;	ARG   = 노역 캐릭터의 등록번호
+;	ARG:1 = 접객수
+;	ARG:2 = 고객만족도
+;<반환값>
+;	없음
+;==========================================================
+@Mary_K4509_NTR_RESTO, ARG, ARG:1, ARG:2
+#LOCALSIZE 7
+;LOCAL:1 = NTR 취향의 손님으로부터 유혹당할 확률
+;LOCAL:2 = NTR 확정 확률보정
+;LOCAL:3 = 헌팅인지 클레임인지 판정
+;LOCAL:4 = 클레임 윤간에 대한 저항보정
+;LOCAL:5 = 윤간인수
+;LOCAL:6 = 미약 플래그
+VARSET LOCAL, 0
+
+
+;개별 구상 노역 ＮＴＲ 플래그가 OFF인 경우 아무것도 하지 않고 돌아온다
+SIF CFLAG:TARGET:816 == 0
+	RETURN
+;"전속노예의목걸이"를 장비한 경우 아무것도 하지 않고 돌아온다
+SIF (TEQUIP:TARGET:그외 == 1116 || TEQUIP:TARGET:그외2 == 1116 || TEQUIP:TARGET:그외3 == 1116)
+	RETURN
+;남자는 돌아가라
+SIF TALENT:TARGET:남자 == 1
+	RETURN
+
+SIF ARG:2 == 0
+	ARG:2 = 1
+
+LOCAL:1 = LIMIT(CFLAG:TARGET:1320 * 4, 0, 40) + (TALENT:TARGET:인기 * 10) + (CFLAG:TARGET:904 / 50) + 20
+LOCAL:2 = (CFLAG:TARGET:1320 * 4) + (TALENT:TARGET:즉각함락 * 10) + (CFLAG:TARGET:904 / 50)
+
+IF BASE:TARGET:체력 >= 2000
+	LOCAL:4 = 100
+ELSEIF BASE:TARGET:체력 < 2000
+	LOCAL:4 = 80
+ELSEIF BASE:TARGET:체력 < 1000
+	LOCAL:4 = 50
+ELSEIF BASE:TARGET:체력 < 500
+	LOCAL:4 = 0
+ENDIF
+
+;ＮＴＲ손님의 설정 처리
+SELECTCASE FLAG:59
+	CASE  0
+		TIMES LOCAL:1 , 1.00
+		TIMES LOCAL:2 , 1.00
+		TIMES LOCAL:4 , 1.00
+		TIMES ARG:2 , 1.50
+	CASE  1
+		TIMES LOCAL:1 , 1.50
+		TIMES LOCAL:2 , 1.50
+		TIMES LOCAL:4 , 0.80
+		TIMES ARG:2 , 1.00
+	CASE  2
+		TIMES LOCAL:1 , 3.00
+		TIMES LOCAL:2 , 3.00
+		TIMES LOCAL:4 , 0.50
+		TIMES ARG:2 , 0.80
+ENDSELECT
+
+SIF ASSI > 0 && NO:ASSI == CFLAG:805
+	CFLAG:808 = 1
+
+SIF ASSI > 0 && FLAG:51 && TALENT:TARGET:처녀 == 0 && CFLAG:TARGET:904 >= 250 && CFLAG:808 == 1 && RAND:10 == 0
+	CFLAG:TARGET:824 = 1
+
+LOCAL:4 += (TALENT:TARGET:반항적 + TALENT:TARGET:프라이드높음 + TALENT:TARGET:건방짐 + TALENT:TARGET:츤데레) * 5 - (TALENT:TARGET:겁쟁이 + TALENT:TARGET:얌전함 + TALENT:TARGET:프라이드낮음) * 10
+
+	SIF (TEQUIP:TARGET:그외 == 1117 || TEQUIP:TARGET:그외2 == 1117 || TEQUIP:TARGET:그외3 == 1117)
+		PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 뭐라고 할 수 없는 달콤한 향기를 풍기고 있다……
+	;ＮＴＲ 좋아함 플래그
+	;방치일수*4（상한40％）의 확률로 유혹（"인기" 소지시 +10％ , CFLAG:904의 2％ 만큼 확률 상승）
+	;기본 20% 보정
+	;ＮＴＲ상태인 경우는 무조건
+	;조수가 찾아왔다면 (CFLAG:824가 1이면) 무조건 (10 퍼센트 확률)
+	PRINTFORML
+	PRINTFORML
+	IF RAND:100 <= LOCAL:1 || TALENT:TARGET:ＮＴＲ > 0 || CFLAG:TARGET:824 == 1 || (TEQUIP:TARGET:그외 == 1117 || TEQUIP:TARGET:그외2 == 1117 || TEQUIP:TARGET:그외3 == 1117)
+		IF CFLAG:TARGET:824 == 1
+			PRINTFORML 한창 일하고 있던 %CALLNAME:TARGET%에게 반가운 얼굴이 찾아왔다.
+			PRINTFORM 「앗, %CALLNAME:ASSI% 님…!
+			IF RAND:2 == 0
+				PRINTFORML   자, 이쪽으로 와 주세요」
+			ELSE
+				PRINTFORML   부디, 이쪽으로…」
+			ENDIF
+			IF CFLAG:823 == 0
+				PRINTFORML 「이렇게 찾아와 주시다니… 어쩐 일이십니까?」
+				PRINTFORML %CALLNAME:TARGET%가 이끄는 대로 자리에 앉은 %CALLNAME:ASSI%는 음식을 주문하듯 태연한 목소리로
+				PRINTFORMW 알면서 뭘 물어보는 거냐고, 그 음란한 몸을 써서 어서 봉사하라고 속삭였다.
+				PRINTFORML
+				IF CFLAG:904 >= 1000
+					PRINTFORML 「아, 네엣…%UNICODE(0x2661)%  %CALLNAME:ASSI% 님께서 원하신다면 언제든지%UNICODE(0x2661)%」
+					PRINTFORML 자신을 정복한 수컷의 명령에 따라 곧바로 봉사할 준비를 하는 %CALLNAME:TARGET%.
+				ELSEIF CFLAG:904 >= 750
+					PRINTFORML 「우후훗…♪ 좋아요, %CALLNAME:ASSI% 님이시라면, 언제든지…%UNICODE(0x2661)%」
+					PRINTFORML %CALLNAME:ASSI%의 말에 흥분해 입술을 살짝 깨물며 눈웃음을 짓는 %CALLNAME:TARGET%.
+				ELSE
+					PRINTFORML 「지금 말입니까…? 그, 그렇다면…  알겠습니다, 조금만 기다려 주시길…」
+					PRINTFORML 조금 망설였지만, 얼굴을 붉히면서 %CALLNAME:ASSI%의 말에 따르는 %CALLNAME:TARGET%. 
+				ENDIF
+				CFLAG:823 = 1
+			ELSE
+				PRINTFORML %CALLNAME:ASSI%의 손을 잡고 자리로 이끈 %CALLNAME:TARGET%는 그 옆자리에 붙어 앉았다.
+				IF CFLAG:904 >= 1000
+					SELECTCASE RAND:4
+					CASE 0
+						PRINTFORML 「오늘도 최선을 다해 봉사하겠습니다%UNICODE(0x2661)%」
+					CASE 1
+						PRINTFORML 「매번 찾아주셔서 정말로 감사합니다, 오늘도 열심히 봉사할게요%UNICODE(0x2661)%」
+					CASE 2
+						PRINTFORML 「오늘도 잔뜩 즐겁게 해드릴게요♪」
+					CASE 3
+						PRINTFORML 「찾아와주신 만큼, 더욱 열심히 할게요♪」
+					ENDSELECT
+				ELSEIF CFLAG:904 >= 750
+					IF RAND:2 == 0
+						PRINTFORML 「오늘도 잔뜩 즐겁게 해드릴게요♪」
+					ELSE
+						PRINTFORML 「찾아와주신 만큼, 더욱 열심히 할게요♪」
+					ENDIF
+				ELSE
+					PRINTFORML 「그럼, 그… 오늘도 봉사, 인가요…?」
+					PRINTFORML 「네, 최선을 다하겠습니다…」
+				ENDIF
+			ENDIF
+		;애ＮＴＲ
+		ELSEIF TALENT:TARGET:ＮＴＲ == 1
+			;위험일
+			IF 위험일(TARGET) == 1
+				PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 뺨을 붉히고 미소지으면서 %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 뭔가를 속삭이고 있다……
+			;発情
+			ELSEIF 위험일(TARGET) == 2
+				PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 매달리듯이 몸을 붙이고 무언가를 속삭이고 있다……
+			;만월発情
+			ELSEIF 위험일(TARGET) == 3
+				PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 매달리듯이 몸을 붙이고 무언가를 속삭이고 있다……
+			;通常
+			ELSE
+				IF RAND:14 == 0
+					PRINTFORMW %조사처리(CALLNAME:TARGET,"가")% %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"와")% 키스하고 있다……
+				ELSEIF RAND:13 == 0
+					PRINTFORMW %NTRNAME(CFLAG:TARGET:함락캐릭터)% 옆에서 %조사처리(CALLNAME:TARGET,"는")% 얼굴이 새빨개져 있다. 테이블 밑에서 무슨 장난을 받고 있는 것 같다……
+				ELSEIF RAND:12 == 0
+					PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% %NTRNAME(CFLAG:TARGET:함락캐릭터)%의 옆에 앉아서, 몸을 비비듯이 밀착시키고 있다……
+				ELSEIF RAND:11 == 0
+					PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 스커트의 안쪽을 만지작거려지며 황홀해 하고 있다……
+				ELSEIF RAND:10 == 0
+					PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 어깨를 안겨 귓가에 무언가 속삭여지고 있다
+				ELSEIF RAND:9 == 0
+					PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"와")% 그늘에서 서로 껴안고 있다……
+				ELSEIF RAND:8 == 0
+					PRINTFORMW %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"는")% %조사처리(CALLNAME:TARGET,"를")% 옆에 앉힌 채 허리에 손을 두르고 끌어 안으며 밀착되어 있다…
+				ELSEIF RAND:7 == 0
+					PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 엉덩이를 비비어져 얼굴을 붉히고 있다……
+				ELSEIF RAND:6 == 0
+					PRINTFORMW %조사처리(CALLNAME:TARGET,"와")% %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"는")% 손가락을 엮어 가며 작은 소리로 이야기에 열중하고 있다
+				ELSEIF RAND:5 == 0
+					PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"와")% 손가락을 엮으면서 친근한 듯이 말하고 있다
+				ELSEIF RAND:4 == 0
+					PRINTFORMW %조사처리(CALLNAME:TARGET,"가")% %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 키스하고 있다……
+				ELSEIF RAND:3 == 0
+					PRINTFORMW 허벅지를 쓰다듬는 %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"를")% %조사처리(CALLNAME:TARGET,"는")% 얼굴을 붉히며 받아들이고 있다
+				ELSEIF RAND:2 == 0
+					PRINTFORMW 끌어 안고 키스를 요구하는 %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 %조사처리(CALLNAME:TARGET,"는")% 수줍어하면서도 혀를 섞으며 응하고 있다
+				ELSE
+					PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 어깨를 안겨 기뻐하고 있다……！
+				ENDIF
+			ENDIF
+		;淫ＮＴＲ
+		ELSEIF TALENT:TARGET:ＮＴＲ == 2
+			;위험일
+			IF 위험일(TARGET) == 1
+				PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 손님에게 몸을 밀착시키며 무언가를 속삭이고 있다……
+			;発情
+			ELSEIF 위험일(TARGET) == 2
+				PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 손님의 손이 자신의 치마 안에 들어오자 요염하게 미소 지었다……
+			;만월発情
+			ELSEIF 위험일(TARGET) == 3
+				PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 손님의 손을 자신의 치마 안에 넣으면서 요염하게 미소 지었다……
+			;通常
+			ELSE
+				PRINTFORMW %조사처리(CALLNAME:TARGET,"가")% 손님을 유혹하고 있다……
+			ENDIF
+		;통상
+		ELSE
+			;위험일 또는 발정
+			IF 위험일(TARGET) == 1 || 위험일(TARGET) == 2 || 위험일(TARGET) == 3
+				SELECTCASE RAND:5
+				CASE 0
+					PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 이전에 몸을 섞었던 단골손님에게 말을 걸고 있다……
+					PRINTFORML 손님과의 섹스가 마음에 들었던 것을 떠올린 그녀는 남들 몰래 팬티를 벗었다……
+					PRINTFORMW 그녀는 촉촉하게 젖은 팬티를 손님에게 건네며, "1회 무료 이용권"이라고 속삭였다……!
+					TEQUIP:98 = 6
+				CASE 1
+					PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 살짝 달뜬 얼굴로 계산을 돕고 있다……
+					PRINTFORML 계산하려는 사람이 이전에 몸을 섞었던 단골손님인 것을 알아보고 입맛을 다시고 있다……
+					PRINTFORML 그녀는 영수증이 필요한지 물어보고, 스탬프를 찍어주고 나서, 마지막에 카드를 돌려줄 때
+					PRINTFORMW 슬쩍 몸을 밀착하며, "디저트"를 준비해 놓았다고 손님에게 속삭였다……!
+				CASE 2
+					PRINTFORML 성욕 때문에 감각이 예민해진 %조사처리(CALLNAME:TARGET,"는")% 자신을 향하는 강렬한 시선을 눈치챘다……
+					PRINTFORML 이전에 몸을 섞었던 단골손님이 노골적인 시선으로 그녀의 몸을 구석구석 핥듯이 감상하고 있다……
+					PRINTFORML 손님의 자지가 상당히 컸던 것을 떠올린 그녀는 다른 사람들의 시선이 뜸해진 틈을 타 손님을 향해 고개를 돌리고,
+					PRINTFORMW 손가락을 둥글게 말아 입가에 가져다 대고 앞뒤로 움직이며, 손가락 구멍 안쪽으로 혀를 날름거리는 모습을 보여주었다……!
+				CASE 3
+					PRINTFORM %조사처리(CALLNAME:TARGET,"는")%
+					SELECTCASE RAND:3
+					CASE 0
+						PRINTFORM  체격이 큰
+					CASE 1
+						PRINTFORM  잘생긴
+					CASE 2
+						PRINTFORM  돈이 많아 보이는
+					ENDSELECT
+					PRINTFORML  손님의 말상대를 하고 있다……
+					PRINTFORML 손님이 은근슬쩍 치마 속으로 손을 넣으려고 하자, 몸이 달아오른 그녀는 그에 응해 손님의 사타구니로 손을 가져갔다……
+					PRINTFORMW 바지 아래로도 느껴지는 상당한 크기에 만족하며 입맛을 다신 그녀는 손님의 귀에 무언가를 속삭이고 있다……!
+				CASE 4
+					PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 물을 가져다 달라는 손님의 요청에 발걸음을 옮겼다……
+					PRINTFORML 테이블에 다가가자, 앉아있는 사람은 이전에 몸을 섞었던 손님이었다……
+					PRINTFORML 손님과의 섹스가 만족스러웠던 것을 떠올린 그녀는 욕구를 억누르지 않았다……
+					PRINTFORMW 그녀는 시선이 없는 틈을 타, 입에 물을 머금고 손님에게 키스해 혀를 섞으며 입으로 물을 먹여주었다……!
+				ENDSELECT
+			;통상
+			ELSE
+				IF RAND:2 == 0
+					SELECTCASE RAND:3
+					;살짝 야한 대화
+					CASE 0
+						IF RAND:3 == 0
+							PRINTFORML %조사처리(CALLNAME:TARGET,"는")% VIP 손님과 대화하고 있다…
+							PRINTFORML 스탬프는 몇 개나 모았는지, 이 다음에는 무슨 "메뉴"를 고를 것인지 등을 물어보며 대화에 열중하고 있다…
+							PRINTFORMW 은근슬쩍 몸 이곳저곳을 쓰다듬는 손길을 즐기면서, 그녀는 야릇한 눈웃음을 지으며 손님에게 몸을 가까이 했다……
+						ELSE
+							PRINTFORML 한 손님이 %CALLNAME:TARGET%에게 말을 걸어 연락처를 물어보고 있다…
+							PRINTFORML 손님의 가랑이 사이를 흘긋 쳐다본 %조사처리(CALLNAME:TARGET,"는")% 살짝 고개를 끄덕이고서
+							PRINTFORML 연락처는 알려줄 수 없지만, 대신에 더 좋은 걸 알려주겠다며
+							PRINTFORM 자신의
+							IF RAND:3 == 0
+								PRINTFORM  쓰리 사이즈는 {BASE:25},{BASE:26},{BASE:27} 이라고
+							ELSEIF RAND:2 == 0
+								PRINTFORM  가슴의 컵 사이즈는
+									CALL Mary_K4509_CupSize
+								PRINTFORM 이라고
+							ELSE
+								PRINTFORM  엉덩이 둘레는 {BASE:27}CM이라고
+							ENDIF
+							PRINTFORMW  속삭이자, 손님은 침을 꿀꺽 삼켰다……
+						ENDIF
+					;성희롱
+					CASE 1
+						PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 테이블에 가려진 뒤쪽에서 다가오는 손길을 느꼈다…
+						PRINTFORML 고개를 돌려 바라본 손의 주인의 모습이 제법 취향에 맞다고 생각한 그녀는
+						SELECTCASE RAND:3
+						CASE 0
+							PRINTFORML 하반신을 슬쩍 내밀어 엉덩이와 허벅지를 더욱 만지기 쉽게 해 주었다……
+							PRINTFORMW 끈적하게 희롱하는 손길을 즐기며, 그녀는 남자의 속삭임에 살짝 얼굴을 붉히고 있다……!
+						CASE 1
+							PRINTFORML 몸을 살짝 기울이고서 그 손을 붙잡고 자신의 허리에 휘감았다……
+							PRINTFORMW 끈적하게 희롱하는 손길을 즐기며, 그녀는 남자의 속삭임에 살짝 얼굴을 붉히고 있다……!
+						CASE 2
+							PRINTFORML 그 손을 붙잡고 치마 속으로 이끌어 부드러운 살결을 즐기게 해 주었다…
+							IF RAND:5 == 0
+								PRINTFORML …그러던 도중, 남자가 교묘한 손놀림으로 팬티의 매듭을 당겨 버렸다……!
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 새침한 미소를 지으며 책임을 져 달라고 속삭였다……!
+								TEQUIP:98 = 6
+							ELSE
+								PRINTFORMW 끈적하게 희롱하는 손길을 즐기며, 그녀는 남자의 속삭임에 살짝 얼굴을 붉히고 있다……!
+							ENDIF
+						ENDSELECT
+					;은근슬쩍 스킨십
+					CASE 2
+						IF RAND:2 == 0
+							PRINTFORML 한 손님이 메뉴에 대해 물어보기 위해 %조사처리(CALLNAME:TARGET,"를")% 불렀다…
+							PRINTFORML 자기 취향에 맞는 손님의 모습을 보고, 그녀는 몸을 딱 붙이고 속삭이듯 설명해 주었다…
+							PRINTFORML 어깨에 눌려지는 가슴의 감촉이나 목덜미에 닿는 숨결에 손님의 고간이 점점 부풀어 오르자,
+							PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 만족스러운 기색으로 눈웃음을 지었다……
+						ELSE
+							PRINTFORML 손님의 바지에 소스가 묻은 것을 알아챈 %조사처리(CALLNAME:TARGET,"는")% 냅킨으로 닦아주었다…
+							PRINTFORML 비록 천 너머였지만, 그녀의 손길이 하반신에 닿자 남자의 고간이 심상치 않은 기세로 부풀어올랐다……
+							PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 그 크기에 입맛을 다시며 은근슬쩍 사타구니 안쪽까지 스윽스윽 닦아내고 있다……!
+						ENDIF
+					ENDSELECT
+				;보여주기
+				ELSE
+					SELECTCASE RAND:3
+					;팬티 보여주기
+					CASE 0
+						SELECTCASE RAND:3
+						CASE 0
+							PRINTFORML 시선을 느낀 %조사처리(CALLNAME:TARGET,"가")% 고개를 돌리자, 한 남자가 그녀의 엉덩이를 흘끔흘끔 쳐다보고 있었다…
+							PRINTFORML 장난기가 솟아난 그녀가 남자에게 다가가 마음껏 봐도 괜찮다고 속삭이자, 남자의 고간이 흥분으로 부풀어 올랐다…
+							PRINTFORMW 그것을 눈치챈 그녀는 만족스러운 기색을 비치며 요염한 목소리로 남자에게 무언가를 속삭였다……
+						CASE 1
+							PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 가게를 방문한 단골손님과 대화하고 있다…
+							PRINTFORML 신체 접촉을 동반한 대화를 이어가던 손님이 장난스럽게 오늘 팬티는 무슨 색이냐고 묻자
+							PRINTFORML 살짝 뜸을 들인 그녀는 단골이시니까 서비스, 라고 하며 슬쩍 치마를 들어올려 안쪽을 보여주었다……
+							IF RAND:10 == 0
+								PRINTFORML …놀랍게도, 그녀는 팬티를 입지 않고 있었다…!
+								PRINTFORML 훤히 드러난 비밀스러운 장소에 손님이 숨을 들이키자, 그녀는 요염하게 눈웃음을 지어 보였다……
+								TEQUIP:98 = 6
+							ELSE
+								PRINTFORM 드러난 것은, 
+								SELECTCASE RAND:9
+								CASE 0
+									PRINTFORM  살짝 안쪽으로 먹혀들어간 흰색 마이크로 팬티
+								CASE 1
+									PRINTFORM  가운데에 희미하게 물기가 스며든 핑크색 끈팬티
+								CASE 2
+									PRINTFORM  안쪽이 살짝 비쳐보이는 검은색 시스루 팬티
+								CASE 3
+									PRINTFORM  화려하게 수놓아진 검은색 레이스 팬티
+								CASE 4
+									PRINTFORM  아슬아슬하게 골반에 걸쳐진 하늘색 로우라이즈 팬티
+								CASE 5
+									PRINTFORM  안쪽이 살짝 들여다보이는 흰색 시스루 팬티
+								CASE 6
+									PRINTFORM  귀여운 흰색 리본이 달린 하늘색 끈팬티
+								CASE 7
+									PRINTFORM  골반이 강조되는 핑크색 하이레그 팬티
+								CASE 8
+									PRINTFORM  귀여운 장식이 되어 있는 검은색 고양이 팬티
+								CASE 9
+								ENDSELECT
+								PRINTFORML 였다……!
+								PRINTFORMW 그 자극적인 모습에 손님이 숨을 들이키자, 그녀는 요염하게 눈웃음을 지어 보였다……
+							ENDIF
+						CASE 2
+							PRINTFORML 바닥에 떨어진 포크를 본 %조사처리(CALLNAME:TARGET,"가")% 그것을 줍기 위해 자세를 낮추자, 노골적인 시선이 느껴졌다…
+							PRINTFORML 그것을 느낀 %조사처리(CALLNAME:TARGET,"는")% 쪼그려 앉은 채로 다리를 벌려 치마의 안쪽을 드러냈다……!
+							PRINTFORMW 몸을 일으키고서 자신을 쳐다보던 남자에게 다가간 그녀가 무언가 속삭이자, 남자가 침을 꿀꺽 삼켰다……
+						ENDSELECT
+					;허리 숙이기
+					CASE 1
+						IF RAND:2 == 0
+							PRINTFORML 손님이 떠난 테이블을 정리하던 %조사처리(CALLNAME:TARGET,"는")% 뜨거운 시선을 느꼈다…
+							PRINTFORML 옆 테이블에 앉은 손님이 살짝 드러난 그녀의 가슴골을 흘끔흘끔 쳐다보고 있었다…
+							PRINTFORML 장난기가 솟은 그녀는 더욱 깊숙히 허리를 숙여 가슴골의 안쪽까지 보여주었다……!
+							PRINTFORML 이윽고 %조사처리(CALLNAME:TARGET,"가")% 고개를 들어 눈을 마주치자, 남자는 흥분을 주체하지 못하고 침을 삼켰다……
+						ELSE
+							PRINTFORML 주문을 받기 위해 발걸음을 옮긴 %조사처리(CALLNAME:TARGET,"는")% 앉아있는 손님이 제법 취향에 맞는다고 생각했다…
+							PRINTFORML 그녀는 메뉴판을 건넬 때 평소보다 더 깊이 허리를 숙여, 그녀의 가슴골이 더 잘 보이도록 했다…
+							PRINTFORML 그것이 통했는지 손님이 얼굴을 붉히며 시선을 떼지 못하자, 그녀는 요염한 미소를 지으며 무언가를 속삭였다……
+						ENDIF
+					;가슴 보여주기
+					CASE 2
+						IF (TALENT:TARGET:거유 || TALENT:TARGET:폭유 || TALENT:TARGET:마유) && RAND:100 <= 70
+							PRINTFORML 취향에 맞는 손님을 찾은 %조사처리(CALLNAME:TARGET,"는")% 대화를 이어가고 있다…
+							PRINTFORML 가슴 쪽을 흘끔거리는 손님의 시선을 눈치챈 그녀는 제복이 답답하니 잠깐 실례하겠다며,
+							PRINTFORML 블라우스의 단추를 풀어 부드러운 가슴이 만들어내는 깊은 골짜기를 훤히 드러내었다……!
+							PRINTFORMW 눈을 떼지 못하는 손님에게 몸을 기댄 그녀는 요염한 기색으로 무언가를 속삭였다……
+						ELSE
+							IF RAND:2 == 0
+								PRINTFORML 시선을 느낀 %조사처리(CALLNAME:TARGET,"가")% 고개를 돌리자 쳐다보던 손님과 눈이 마주쳤다…
+								PRINTFORML 제법 취향에 맞는 손님의 모습에, 그녀는 단추 사이로 가슴팍을 벌려 안쪽의 살결을 보여주었다……!
+								PRINTFORMW 손님이 눈을 크게 뜨며 숨을 들이키자 그녀는 요염한 기색으로 쉿, 하는 손동작을 보였다……
+							ELSE
+								PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 가게를 방문한 단골손님과 대화하고 있다…
+								PRINTFORML 신체 접촉을 동반한 대화를 이어가던 손님이 장난스럽게 서비스를 요청하자,
+								PRINTFORMW 그녀는 잠깐 고민하는 척을 하고서 단추 사이로 가슴팍을 벌려 안쪽의 살결을 보여주었다……!
+							ENDIF
+						ENDIF
+					ENDSELECT
+				ENDIF
+			ENDIF
+		ENDIF
+		;유혹에 넘어가는 판정
+		;기본치 50％ + 방치일수*4（상한 없음）거기에 "즉각함락" 소지시 +10, CFLAG:904의 2％ 만큼 확률 상승
+		;여기에 함락도만큼 마이너스 보정이 들어감
+		;위험일이나 발정이면 무조건 넘어감
+		;ＮＴＲ상태인 경우 무조건 넘어감
+		;조수가 상대면 무조건 넘어감
+		IF RAND:100 <= (50 + LOCAL:2) - 함락(TARGET) || TALENT:TARGET:ＮＴＲ > 0 || CFLAG:TARGET:824 == 1 || (위험일(TARGET) == 1 || 위험일(TARGET) == 2 || 위험일(TARGET) == 3) || (TEQUIP:TARGET:그외 == 1117 || TEQUIP:TARGET:그외2 == 1117 || TEQUIP:TARGET:그외3 == 1117)
+			PRINTFORML
+			PRINTFORML ……………………………
+			PRINTFORML ………………………
+			PRINTFORMW …………………
+			;조수 상대
+			IF CFLAG:TARGET:824 == 1
+				PRINTFORML
+			;애ＮＴＲ
+			ELSEIF TALENT:TARGET:ＮＴＲ == 1
+				;위험일
+				IF 위험일(TARGET) == 1
+					PRINTFORML
+					PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 눈을 글썽이면서 %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"와")% 함께 가게 밖으로 나갔다……
+				;発情
+				ELSEIF 위험일(TARGET) == 2 || 위험일(TARGET) == 3
+					PRINTFORML
+					PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 숨을 거칠게 쉬면서 %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"와")% 함께 가게 밖으로 나갔다……
+				;通常
+				ELSE
+					PRINTFORML
+					PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"와")% 함께 화장실에 들어갔다……
+				ENDIF
+			;淫ＮＴＲ
+			ELSEIF TALENT:TARGET:ＮＴＲ == 2
+				;위험일
+				IF 위험일(TARGET) == 1
+					PRINTFORML
+					PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 손님에게 몸을 밀착시킨 채 가게 밖으로 나갔다……
+				;発情
+				ELSEIF 위험일(TARGET) == 2 || 위험일(TARGET) == 3
+					PRINTFORML
+					PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 열에 들뜬 표정으로 손님과 함께 가게 밖으로 나갔다……
+				;通常
+				ELSE
+					PRINTFORML
+					PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 살짝 달아오른 얼굴로 손님과 함께 가게 밖으로 나갔다……
+				ENDIF
+			;통상
+			ELSE
+				PRINTFORML
+				PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 야릇한 표정으로 손님과 함께 발걸음을 옮겼다……
+			ENDIF
+			PRINTFORML
+			PRINTFORML ㆍ
+			PRINTFORML ㆍㆍ
+			PRINTFORML ㆍㆍㆍ
+			PRINTFORML
+			;본방 판정
+			;기본치 50％ + 방치일수*4（상한 없음）여기에 "즉각함락" 소지시 +10, CFLAG:904의 2％ 만큼 확률 상승
+			;거기에 함락도만큼 마이너스 보정이 들어감
+			;위험일이나 발정이면 80퍼센트 확률로 실행
+			;ＮＴＲ상태인 경우 80퍼센트 확률로 실행
+			;조수가 상대면 70퍼센트 확률로 실행
+			IF RAND:100 <= 50 + LOCAL:2 - 함락(TARGET) || TALENT:TARGET:ＮＴＲ > 0 && RAND:100 <= 80 || CFLAG:TARGET:824 == 1 && RAND:100 <= 70 || (위험일(TARGET) == 1 || 위험일(TARGET) == 2 || 위험일(TARGET) == 3) && RAND:100 < 80 || (TEQUIP:TARGET:그외 == 1117 || TEQUIP:TARGET:그외2 == 1117 || TEQUIP:TARGET:그외3 == 1117)
+				IF TALENT:TARGET:남자 == 0 
+					IF CFLAG:TARGET:1319 > 10
+						IF CFLAG:TARGET:108 == 1
+							CFLAG:TARGET:108 = 0
+							PRINTFORML %CALLNAME:TARGET%의 자궁내 피임결계가 해제되어 버린 것 같다……
+						ENDIF
+						IF RAND:100 < 30 && CFLAG:TARGET:109 == 0
+							CFLAG:TARGET:109 = 1
+							PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 배란유발제를 입과 입을 통해서 받아먹었다……
+						ENDIF
+					ENDIF
+					PRINTFORML
+					;조수가 상대
+					IF CFLAG:TARGET:824 == 1
+						;스탬프 카드 특별실
+						IF CFLAG:1020 >= 500 && (TALENT:0 == 0 && TALENT:1 == 0) && RAND:10 == 0
+							PRINTFORML 그녀는 %CALLNAME:ASSI%의 손을 잡고, 가게 안쪽의 숨겨진 방으로 이끌었다.
+							PRINTFORML 「오늘은 한가한 편이니, 여길 써도 괜찮을 겁니다」
+							;VIP 첫 방문
+							IF CFLAG:823 < 2
+								PRINTFORM 여긴 뭐하는 곳이냐며 %CALLNAME:ASSI%가 묻자, %CALLNAME:TARGET%는
+								IF CFLAG:904 >= 750
+									PRINTFORML  입술을 할짝이며 요염한 목소리로 대답했다.
+									PRINTFORML 「후훗…  스탬프 열 개를 다 모으신, VIP 손님들만을 위한 특별실이랍니다♪」
+								ELSE
+									PRINTFORML  얼굴을 살짝 붉히면서도 순순히 대답했다.
+									PRINTFORML 「그으…  스탬프 열 개를 다 모으신 손님들을 위한, VIP 룸입니다…」
+								ENDIF
+								PRINTFORML 그런 곳에 멋대로 데려와도 괜찮은 거냐는 %CALLNAME:ASSI%의 질문에, 그녀는
+								IF CFLAG:904 >= 750
+									PRINTFORML  당연하다는 듯 미소지으며 으쓱거렸다.
+									PRINTFORML 「%CALLNAME:ASSI% 님이시니까요, 누구보다도 중요한 손님이시라구요%UNICODE(0x2661)%」
+								ELSE
+									PRINTFORML  얼굴을 더욱 빨갛게 물들이며 작게 속삭였다.
+									PRINTFORML 「%CALLNAME:ASSI% 님이시니까… 괜찮습니다…」
+								ENDIF
+							ELSE
+								IF RAND:2 == 0
+									PRINTFORML 스탬프를 다 못 채웠는데 들어가도 괜찮냐는 %CALLNAME:ASSI%의 질문에, 그녀는
+									IF CFLAG:904 >= 750
+										PRINTFORML  당연하다는 듯 미소지으며 으쓱거렸다.
+										PRINTFORML 「%CALLNAME:ASSI% 님이시니까요, 누구보다도 중요한 손님이시라구요%UNICODE(0x2661)%」
+									ELSE
+										PRINTFORML  얼굴을 더욱 빨갛게 물들이며 작게 속삭였다.
+										PRINTFORML 「%CALLNAME:ASSI% 님이시니까… 괜찮습니다…」
+									ENDIF
+								ELSE
+									PRINTFORML 스탬프가 하나 모자란데 들어가도 괜찮냐는 %CALLNAME:ASSI%의 질문에, 그녀는
+									IF CFLAG:904 >= 1000
+										PRINTFORML  가볍게 입을 맞추고서 고개를 끄덕였다.
+										PRINTFORML 「쪽…%UNICODE(0x2661)%  %CALLNAME:ASSI% 님 전용 스탬프에요♪」
+									ELSEIF CFLAG:904 >= 750
+										PRINTFORML  흔쾌히 고개를 끄덕였다.
+										PRINTFORML 「%CALLNAME:ASSI% 님이시니까, 후불로도 괜찮아요♪」
+									ELSE
+										PRINTFORML  얼굴을 붉게 물들이며 고개를 끄덕였다.
+										PRINTFORML 「%CALLNAME:ASSI% 님이시니까 하나 정도는 괜찮습니다…」
+									ENDIF
+								ENDIF
+							ENDIF
+							PRINTFORMW 그 말에 즐거운 미소를 짓는 %CALLNAME:ASSI%의 손을 잡고서, %CALLNAME:TARGET%는 방음 처리가 된 문을 열고 안으로 들어갔다.
+							PRINTFORML
+							IF CFLAG:823 < 2
+								PRINTFORML 푹신한 매트가 깔려있는 기다란 식탁과 커다란 소파가 놓여 있는, 은은한 조명이 밝혀진 넓은 방.
+								PRINTFORML 방음벽으로 둘러싸인 방은 내부의 소리가 전혀 새어나가지 못하는 구조였고, 옷을 보관할 수 있는 작은 옷장까지 마련되어 있었다.
+								PRINTFORML %CALLNAME:ASSI%에게 소파에 앉아달라고 권유하고서, %CALLNAME:TARGET%는 분홍색 테두리로 장식된 메뉴판을 꺼내들었다.
+							ELSE
+								PRINTFORML 자연스럽게 소파에 앉은 %CALLNAME:ASSI%의 옆에 붙어앉아, %CALLNAME:TARGET%는 분홍색 테두리로 장식된 메뉴판을 꺼내들었다.
+							ENDIF
+							PRINTFORML 탱글탱글하고 부드러운 엉덩이와 허벅지를 끈적하게 어루만지는 손길을 즐기며, 앞쪽 페이지에 나와있는 평범한 것들은 넘겨버리고
+							PRINTFORML 가장 뒤쪽의 숨겨진 페이지를 펼쳐, 이 VIP 룸에서도 아무나 주문할 수 없는 특별한 메뉴들을 보여주었다.
+							PRINTFORML 「%CALLNAME:ASSI% 님, 오늘의 메뉴는 무엇으로 하시겠어요?」
+							PRINTFORMW 잠시 고민하던 %CALLNAME:ASSI%가 하나를 고르자, 그녀는 웃으며 고개를 끄덕이고서 메뉴를 준비하기 위해 방을 나섰다.
+							PRINTFORML
+							PRINTFORML ……………………………
+							PRINTFORML ………………………
+							PRINTFORMW …………………
+							PRINTFORML
+							PRINTFORML 10분 정도가 지난 후, 문에서 노크 소리가 들려왔다.
+							PRINTFORM %CALLNAME:ASSI%가 들어오라고 하자 천천히 문이 열리며,
+							;직접 짜 마시는 우유
+							IF TALENT:149 && RAND:5 == 0
+								PRINTFORML  옷을 갈아입은 %CALLNAME:TARGET%가 쟁반 하나를 들고 들어왔다.
+								PRINTFORML 머리에는 뿔 머리띠가 씌워져 있고, 목에 채워진 가느다란 초커에는 자그만 종이 달려 있었다.
+								PRINTFORML 거기다 입고 있는 것은 천이 아니라 끈이라고 해야 할 정도로 면적이 작은, 젖소같은 얼룩무늬의 마이크로 비키니.
+								IF TALENT:폭유
+									PRINTFORML 젖꼭지만을 간신히 덮은 위쪽은 푸릉푸릉 흔들리는 천박한 폭유에 어울리는, 그야말로 "젖소"의 옷이었다.
+								ELSEIF TALENT:거유
+									PRINTFORML 젖꼭지만을 간신히 덮은 위쪽은 출렁거리는 커다란 가슴을 살짝 조여, 더욱 천박한 자태를 과시했다.
+								ELSEIF TALENT:빈유
+									PRINTFORML 작아도 제대로 우유를 짜낼 수 있다는 듯, 완만한 언덕 가운데에서 툭 튀어나온 젖꼭지는 얇은 천으로 아슬아슬하게 가려져 있다.
+								ELSEIF TALENT:절벽
+									PRINTFORML 젖꼭지만을 간신히 덮은 위쪽은 납작한 가슴을 더욱 부각시켜, 배덕적인 흥분을 자아내고 있다.
+								ELSE
+									PRINTFORML 봉긋하게 솟아오른 가슴은 "젖소"의 역할에 충실하겠다는 듯, 벌써부터 빳빳하게 젖꼭지를 세우고 있다.
+								ENDIF
+								PRINTFORMW 시선을 살짝 밑으로 내리면, 비키니의 아랫부분이 가랑이의 균열 사이를 파고들어 보지둔덕을 훤히 드러내고 있었다.
+								PRINTFORML 그 음란한 자태를 즐겁게 감상한 %CALLNAME:ASSI%가 손짓으로 부르자, 기다렸다는 듯 발걸음을 옮기는 %CALLNAME:TARGET%.
+								IF CFLAG:904 >= 1000
+									PRINTFORMW 그녀는 엉덩이를 살랑살랑 흔들며 %CALLNAME:ASSI%에게 다가가 요염한 미소를 지어보였다.
+								ELSEIF CFLAG:904 >= 750
+									PRINTFORMW 그녀는 교태어린 걸음걸이로 사뿐사뿐 %CALLNAME:ASSI%에게 다가가 요망한 미소를 지어보였다.
+								ELSE
+									PRINTFORMW 그녀는 수줍게 얼굴을 붉히며 조심스럽게 %CALLNAME:ASSI%에게 다가가 살짝 미소를 지었다.
+								ENDIF
+								PRINTFORML
+								IF CFLAG:904 >= 1000
+									PRINTFORML 「주문하신 우유 짜내기 코스입니다%UNICODE(0x2661)%  부디 %CSTR:일인칭%의 우유, 잔뜩 드셔주세요%UNICODE(0x2661)%」
+								ELSEIF CFLAG:904 >= 750
+									PRINTFORML 「주문하신 우유 짜내기 코스, 준비되었습니다♪  원하시는 만큼 잔뜩 짜내주세요♪」
+								ELSE
+									PRINTFORML 「주문하신, 우유 짜내기 코스… 입니다…  부디 즐겨주시길…」
+								ENDIF
+								PRINTFORML 싱글거리며 손끝으로 비키니를 살짝 밀어낸 %조사처리(CALLNAME:ASSI,"는")%, 크게 입을 벌려 새빨갛게 솟아오른 유두를 그대로 입 속에 머금었다.
+								PRINTFORML 쮸웁쮸웁 하는 소리가 방 안에 울리자, 이윽고 새하얀 모유가 %CALLNAME:ASSI%의 입 안으로 흘러내리기 시작한다.
+								PRINTFORML 모성의 상징인 모유가 그저 %CALLNAME:ASSI%의 성욕을 충족하기 위해 이용되는 배덕적인 감각에 번민하며, %CALLNAME:TARGET%는 뜨겁게 헐떡였다.
+								PRINTFORML 한참 동안
+								IF TALENT:거유 || TALENT:폭유
+									PRINTFORM  양쪽 가슴을 동시에 빨리고 나서
+								ELSE
+									PRINTFORM  양쪽 가슴을 번갈아 빨리고 나서
+								ENDIF
+								PRINTFORML  정신을 차린 그녀는, 힘겹게 손을 뻗어 쟁반 위의 물건을 %CALLNAME:ASSI%에게 건네었다.
+								PRINTFORMW 투명한 호스와 흡입기 등으로 이루어진 착유기.  그것도 제법 커다란 크기의 젖병과 연결되어 있는 것이었다.
+								PRINTFORML
+								PRINTFORML 양쪽 가슴의 가운데에 흡입기가 연결되는 순간 가볍게 신음을 흘리고서, 그녀는 달아오른 표정으로 %조사처리(CALLNAME:ASSI,"를")% 바라보았다.
+								PRINTFORML 「저기, %CALLNAME:ASSI% 님…  그게, 착유를 할 때 성적인 자극이 주어지면, 짧은 시간 안에 많은 양을 생산할 수가 있습니다… 그러니…」
+								IF CFLAG:904 >= 750
+									IF RAND:2 == 0
+										PRINTFORML 「부디, 혼자서는 우유도 제대로 만들지 못하는 이 칠칠맞은 젖소를… 그 커다란 자지님으로 도와주세요…%UNICODE(0x2661)%」
+									ELSE
+										PRINTFORML 「%CALLNAME:ASSI% 님을 위해 잔뜩 우유를 만들고 싶으니까… 부디 도와주시겠어요…?  물론, 그 커다란 자지님으로%UNICODE(0x2661)%」
+									ENDIF
+								ELSE
+									PRINTFORML 「귀찮게 해 드려 면목이 없습니다만… 부디, 도움을 주시겠습니까…?」
+								ENDIF
+								IF RAND:2 == 0
+									PRINTFORM 선 채로 살짝 다리를 벌리고 가랑이를 앞으로 내미는 
+								ELSE
+									PRINTFORM 식탁을 짚고 서서 엉덩이를 실룩거리는
+								ENDIF
+								PRINTFORMW  %CALLNAME:TARGET%의 유혹을, %조사처리(CALLNAME:ASSI,"는")% 거부하지 않았다…
+								PRINTFORML
+								PRINTFORML ……………………………
+								PRINTFORML ………………………
+								PRINTFORMW …………………
+								SETCOLOR COLOR("pink")
+								PRINTFORML
+								PRINTFORMW ………철퍽! 철퍽! 철퍽! 철퍽! 철퍽! 철퍽! 철퍽! 철퍼억…!
+								PRINTFORML
+								PRINTFORML 「옥, 오옷, 옷, 오, 오, 호고옥%UNICODE(0x2661)%  아, 안대해…  가슴 찌그러져엇%UNICODE(0x2661)%」
+								PRINTFORML 팡! 팡! 팡! 팡! 팡! 파앙……  찰싸악!!
+								PRINTFORML 「응히이이이잇…!! …아, 알게씁니다… 바로 할게요오……%UNICODE(0x2661)%」
+								PRINTFORML 양쪽 가슴을 거칠게 쥐어짜이며 보지를 범해지던 %CALLNAME:TARGET%의 엉덩이에 강렬한 스팽킹이 가해지고,
+								PRINTFORML 제대로 암소처럼 울라는 %CALLNAME:ASSI%의 말에 그녀는 힘겹게 헐떡이면서도 곧바로 수긍했다.
+								PRINTFORMW 「모, 모오… 모오옷%UNICODE(0x2661)%  히긋!  흐, 모오, 모오오옷%UNICODE(0x2661)%」
+								PRINTFORML
+								PRINTFORML %CALLNAME:TARGET%가 젖소 흉내를 내며 천박한 신음을 흘릴 때마다, 흡입기 속에 주룩주룩 뿌려지는 모유가 호스를 타고 젖병으로 흘러 들어간다.
+								PRINTFORML 이윽고 젖병이 끝까지 채워지자 %조사처리(CALLNAME:ASSI,"는")% 허릿짓을 잠시 멈추고, 병을 분리해 입으로 가져갔다.
+								PRINTFORML 달콤한 향기가 풍겨오는 모유를 꿀꺽꿀꺽 목구멍으로 넘길 때마다 수 차례의 사정을 거듭한 거근이 불끈거리며 조금 전보다 더욱 사납게 발기하고,
+								PRINTFORMW %CALLNAME:TARGET%는 그것을 질내로 느끼고 등줄기를 타고 오르는 오싹오싹한 기대감에 입술을 깨물었다.
+								PRINTFORML
+								PRINTFORML 「응… 후우, 후우으……  어떠신가요? %CSTR:일인칭%의 우유…%UNICODE(0x2661)%」
+								PRINTFORML 「모자라시다면…  얼마든지 더 드셔도 괜찮으니까요?  아, 하윽%UNICODE(0x2661)%」
+								PRINTFORML 텅텅 비어버린 병을 다시 착유기에 연결하고, 재차 격렬하게 허리를 흔들기 시작한 %CALLNAME:ASSI%.
+								PRINTFORML 두 사람은 %CALLNAME:TARGET%의 모유가 더 이상 나오지 않을 때까지, 계속해서 착유섹스를 계속했다…
+								PRINTFORMW
+								RESETCOLOR
+							ELSE
+								SELECTCASE RAND:4
+								;미약절임
+								CASE 0
+									PRINTFORML  한 웨이트리스가 커다란 통이 얹어진 카트를 밀고 들어왔다.
+									PRINTFORML 조심스럽게 통을 바닥에 내려놓고서 공손히 인사한 웨이트리스는 뒷걸음질로 방에서 나갔고, 
+									PRINTFORMW %CALLNAME:ASSI%는 구멍이 뚫린 뚜껑을 열고 찰랑거리는 소리가 들리는 통 안을 들여다보았다.
+									PRINTFORML
+									PRINTFORML 「후으, 흐으, 후으으… 아, %CALLNAME:ASSI% 님, 오래 기다리셨습니다……」
+									PRINTFORM 「주문하신, 읏… %CALLNAME:TARGET% 미약절임, 입니다아
+									IF CFLAG:904 >= 750
+										PRINTFORML …%UNICODE(0x2661)%」
+									ELSE
+										PRINTFORML …」
+									ENDIF
+									PRINTFORML 걸쭉한 분홍빛의 액체 속에 턱 아래까지 잠긴 채, %CALLNAME:TARGET%는 거칠게 숨을 내쉬며 인사를 했다.
+									PRINTFORML 조금만 움직여도 민감해진 살결이 젖은 옷에 스쳐 느껴버리고, 그것 때문에 몸이 움직이면 더 큰 자극이 찾아오는 악순환.
+									PRINTFORMW %CALLNAME:ASSI%는 그 속에서 간신히 이성을 유지하고 있는 그녀를 들어올리고 식탁 위에 올려놓았다.
+									PRINTFORML
+									PRINTFORML 「히우윽! 아, 으긋, 흑%UNICODE(0x2661)%  으으읏…%UNICODE(0x2661)%」
+									PRINTFORML %CALLNAME:ASSI%의 손이 닿고, 들어올려지고 내려지는 것만으로도 잔뜩 달아오른 몸은 몇 번이나 절정해버렸고,
+									PRINTFORML %CALLNAME:TARGET%는 헤벌쭉한 얼굴로 위를 바라보며, 초점이 풀린 눈으로 웃으면서 속삭였다.
+									PRINTFORMW 「부디… 마음껏 드셔주세요오%UNICODE(0x2661)%」
+									PRINTFORML
+									SETCOLOR COLOR("pink")
+									PRINTFORMW ………철퍽! 철퍽! 철퍽! 철퍽! 철퍽! 철퍽! 철퍽! 철퍼억…!
+									PRINTFORML 「오옥%UNICODE(0x2661)%  아, 흐, 흐이이익…! 하으, 흐, 후오옷…%UNICODE(0x2661)%」
+									PRINTFORML (조앗%UNICODE(0x2661)% 자지 조앗, 보지 팡팡 조아앗%UNICODE(0x2661)% 기분조은 거 더 해져어%UNICODE(0x2661)%)
+									PRINTFORML 「에흐으으윽…!! 아, 아으, 후으윽%UNICODE(0x2661)%  오, 오호옷%UNICODE(0x2661)%  호오옥…!!」
+									PRINTFORML 치켜뜬 눈. 질퍽하게 녹아내린 얼굴. 줄줄 흐르는 침과 눈물. 짐승같은 천박한 교성. 떨리는 팔다리. 펄떡이는 허리. 
+									PRINTFORML 수컷을 기쁘게 한다거나, 번식하고 싶다거나 하는 본능조차 압도하는 거대한 욕망에 빠져 그저 쾌감을 받아들일 뿐, 
+									PRINTFORMW 지금의 %CALLNAME:TARGET%는 암컷 그 이하의 무언가였다.
+									PRINTFORML
+									PRINTFORML 평소에 %CALLNAME:ASSI%의 자지를 받아들일 때도 너무 느껴버려서 종종 기절하곤 했던 그녀에게
+									PRINTFORML 미약에 절여져 한계 이상으로 감도가 높아진 몸으로 하는 교미는 너무나도 압도적인 쾌락이었고,
+									PRINTFORML 지금까지 %CALLNAME:ASSI%에게 몸으로 배웠던, 수컷을 기쁘게 하는 방법들을 써보지도 못하고 그저 상스럽게 헐떡일 뿐이었다.
+									PRINTFORML 「%CALLNAME:ASSI% 니히임%UNICODE(0x2661)%  조앗, 조아해요옷%UNICODE(0x2661)%  아, 하으, 아우으으으읏%UNICODE(0x2661)%%UNICODE(0x2661)%」
+									PRINTFORML 훌륭한 수컷에게 열렬히 구애하며, 그녀는 머릿속을 새하얗게 만들어버리는 뜨거운 쾌락에 밤새도록 몸을 맡겼다…
+									PRINTFORMW
+									RESETCOLOR
+								;생크림 케이크
+								CASE 1
+									PRINTFORML  한 웨이트리스가 리본이 묶인 커다란 상자가 얹어진 카트를 밀고 들어왔다.
+									PRINTFORML 조심스럽게 상자를 식탁에 내려놓고서 공손히 인사한 웨이트리스는 뒷걸음질로 방에서 나갔고, 
+									PRINTFORMW %CALLNAME:ASSI%가 리본을 풀고 상자를 열자, 그 안에는……
+									PRINTFORML
+									PRINTFORML 「오래 기다리셨습니다, %CALLNAME:ASSI% 님」
+									PRINTFORML 「주문하신 "생크림 케이크", 지금 나왔습니다
+									IF CFLAG:904 >= 750
+										PRINTFORML …%UNICODE(0x2661)%」
+									ELSE
+										PRINTFORML …」
+									ENDIF
+									PRINTFORML 길쭉한 상자 속에서 무릎을 세우고 누운 %CALLNAME:TARGET%가 위를 올려다보며 인사했다.
+									PRINTFORML 가랑이에는 둔덕이 보이지 않을 정도로 하얀 생크림이 치덕치덕 발라져 있고, 아랫배에는 끈적한 초코시럽으로 그려진 하트.
+									PRINTFORML 가슴에도 마찬가지로 생크림이 발라져 있었으며, 유두가 있을 자리에 조그만 딸기가 하나씩 얹어진 모습이었다.
+									PRINTFORML %CALLNAME:TARGET%는 안쪽의 버튼을 눌러 상자의 벽을 내리고, 미소지었다.
+									PRINTFORML 「%CALLNAME:ASSI% 님, 부디… 마음껏 드셔주세요
+									IF CFLAG:904 >= 750
+										PRINTFORMW …%UNICODE(0x2661)%」
+									ELSE
+										PRINTFORMW …」
+									ENDIF
+									PRINTFORML
+									SETCOLOR COLOR("pink")
+									PRINTFORMW ………츄르르르르릅! 쥬르릅, 하웁, 꿀꺽, 츄루룹, 쮸우우우웁…
+									IF CFLAG:904 >= 750
+										PRINTFORML 「아응%UNICODE(0x2661)% 그렇게 아래쪽만 드시다니… 가슴이 서운해 한다구요…?」
+										PRINTFORML 「자아… %CALLNAME:ASSI% 님, 아~앙%UNICODE(0x2661)%」
+									ELSE
+										PRINTFORML 「하읏, 응… 으흣, 거기… 읏!  하아, 네에… 이렇게 더 벌리면 되겠습니까…?」
+										PRINTFORML 「아… 저기, %CALLNAME:ASSI% 님, 여기 이것도…」
+									ENDIF
+									PRINTFORML 추잡한 물소리와 함께 아래쪽을 빨아먹히며, 가슴에 얹힌 딸기를 %CALLNAME:ASSI%에게 먹여주는 %CALLNAME:TARGET%.
+									PRINTFORML 웃으면서 그것을 받아먹은 %CALLNAME:ASSI%가 가슴 쪽으로 입을 옮겨 유두를 핥아먹기 시작하자 그녀는 가볍게 허리를 떨었고,
+									PRINTFORML 남은 한 쪽의 딸기를 입 안으로 넘긴 입술이 가볍게 유두를 깨물고 우물거릴 때는 살짝 벌어진 입술 사이로 달콤한 신음을 흘렸다.
+									PRINTFORML 느긋하게 즐기며 생크림과 토핑을 전부 먹어치운 %CALLNAME:ASSI%의 입이 점점 밑으로 내려가다가 아랫배에서 멈추고,
+									PRINTFORML 마지막으로 남은 초코시럽 하트를, 그것이 그려진 선을 따라서 혀끝으로 천천히 쓸어올리며 남김없이 핥아먹었다.
+									PRINTFORM 그것으로 "생크림 케이크"를 완식한 %조사처리(CALLNAME:ASSI,"가")% 후식을 요구하자,
+									IF CFLAG:904 >= 750
+										PRINTFORMW  그녀는 요염하게 웃으며 다리를 활짝 벌렸다.
+									ELSE
+										PRINTFORMW  그녀는 새빨개진 얼굴로 엉덩이를 들이밀었다.
+									ENDIF
+									PRINTFORML 
+									IF CFLAG:904 >= 750
+										PRINTFORML 「네에, %CALLNAME:ASSI% 님을 위한 디저트입니다아%UNICODE(0x2661)%」
+									ELSE
+										PRINTFORML 「네, 네에… 여기, 디저트입니다…」
+									ENDIF
+									PRINTFORML 전신을 핥아져 잔뜩 발정한 암컷구멍이 음란하게 실룩거리는 모습을 과시하며 %CALLNAME:TARGET%가 달뜬 숨을 내뱉자, 
+									PRINTFORML %조사처리(CALLNAME:ASSI,"는")% 한껏 발기한 극대자지를 조준하고 그대로 허리를 밀어붙였다.
+									PRINTFORML 「흐이잇! 아, 아흐읏%UNICODE(0x2661)%  응, 읏, 후으응%UNICODE(0x2661)%」
+									PRINTFORML 「%CALLNAME:ASSI%, 님… 케이크는, 흐긋! 입에, 맞으셨나요오…?」
+									PRINTFORML 말하는 대신 자궁을 찌그러트릴 기세로 더욱 격렬하게 쑤셔박히는 거근에, 그녀는 황홀한 표정으로 말을 이었다.
+									PRINTFORMW 「그러며언, %CSTR:일인칭%에게도, 맛있는 크림, 잔뜩 먹여주세요옷%UNICODE(0x2661)%」
+									PRINTFORML
+									PRINTFORML 그 말이 결정타였는지, %조사처리(CALLNAME:ASSI,"는")% %CALLNAME:TARGET%의 골반을 붙잡고 깊숙하게 자지를 찔러넣고 사정을 시작했다.
+									PRINTFORML 부룩부룩, 하는 소리와 함께 걸쭉한 정액을 쏟아내며, 천천히 허리를 흔들어 안쪽을 충분히 휘젓는다.
+									PRINTFORML 계속해서 이어질 것만 같던 사정이 마침내 끝나고 %조사처리(CALLNAME:ASSI,"가")% 코르크를 뽑듯 자지를 뽑아내자, 
+									PRINTFORMW 그 거대한 페니스에는 %CALLNAME:TARGET%의 짙은 애액과 %CALLNAME:ASSI%의 농후한 정액이 뒤섞인, 음란한 크림이 잔뜩 묻어있었다.
+									PRINTFORML
+									PRINTFORML 자연스럽게 입가에 들이밀어진 자지를 황홀한 눈빛으로 반기며 청소펠라를 시작한 %CALLNAME:TARGET%는 조금 전의 %CALLNAME:ASSI%처럼,
+									PRINTFORML 게걸스럽게 귀두를 빨아먹는 것으로 시작해 혀를 내밀어 뒷힘줄을 쓸어올리는 것으로 끝마치며, 두 사람이 함께 만든 크림을 즐겁게 음미했다.
+									IF CFLAG:904 >= 750
+										PRINTFORML 「음, 츄릅……%UNICODE(0x2661)%  역시… %CALLNAME:ASSI% 님과 함께 만든 크림이 더 맛있네요%UNICODE(0x2661)%」
+										PRINTFORML 「그래도… 아직 살짝, 양이 모자란 것 같은데…  10인분 정도 더, 추가로 만들어주실 수 있을까요…?  아, 햐읏%UNICODE(0x2661)%」
+										PRINTFORM 말이 끝나자마자 다시
+									ELSE
+										PRINTFORML 「음, 츄릅… 하아아…  잘 먹었습니다, %CALLNAME:ASSI% 님…%UNICODE(0x2661)%」
+										PRINTFORML 「그, 혹시 괜찮으시다면… 조금만 더, 만들어주실 수 있, 아, 햐읏%UNICODE(0x2661)%」
+										PRINTFORM 말을 끊어버리고 다시
+									ENDIF
+									PRINTFORML  아랫입에 찔러넣어지는 거근에 환희 섞인 신음소리를 내며, 본능적으로 질내를 꼭꼭 조여대는 %CALLNAME:TARGET%.
+									PRINTFORML 그녀는 %CALLNAME:ASSI%와 함께 밤새도록 "크림 만들기"에 빠져, 윗입도 아랫입도 모두 찐득하고 새하얀 정액크림으로 덧칠되었다…
+									PRINTFORMW
+									RESETCOLOR
+								;특제 크림파이
+								CASE 2
+									PRINTFORML  %CALLNAME:TARGET%가 쟁반 하나를 들고 방으로 들어왔다.
+									PRINTFORML 그녀는 그 위에 놓인 조그만 유리병을 %CALLNAME:ASSI%에게 건네며 입을 열었다.
+									PRINTFORML 「메뉴를 즐기시기 전의 준비를 위한, 특제 정력제입니다」
+									PRINTFORMW 「%CALLNAME:ASSI% 님이시라면 굳이 필요하지는 않겠지만, 시간을 절약하기 위해서 부디…」
+									PRINTFORML
+									PRINTFORML %CALLNAME:ASSI%가 흔쾌히 물약을 마시자 곧바로 약효가 나타나기 시작했다.
+									PRINTFORML 안 그래도 커다랗던 페니스가 손가락 한 마디는 더 커졌고 울퉁불퉁한 혈관은 더욱 도드라졌으며, 
+									PRINTFORML 큼직한 불알은 위쪽으로 올라와 몸에 밀착되어, 당장이라도 농후한 정액을 잔뜩 쏟아낼 듯이 꿈틀거리고 있다. 
+									PRINTFORML 그 변화를 바라보며 입술을 핥던 %CALLNAME:TARGET%는 이윽고 요염한 목소리로 말을 이었다.
+									PRINTFORML 「그럼, 준비도 끝났으니……  지금부터 주문하신 "크림파이"를 만들도록 하겠습니다」
+									PRINTFORMW 「%CSTR:일인칭%의 몸에 있는 구멍 전부, %CALLNAME:ASSI% 님의 크림으로 가득 채워주세요…%UNICODE(0x2661)%」
+									SETCOLOR COLOR("pink")
+									PRINTFORML
+									PRINTFORMW ………팡! 팡! 팡! 팡! 팡! 팡! 팡! 파앙…!
+									PRINTFORML 「오, 옷, 옥, 옥, 오옥, 호오옷%UNICODE(0x2661)%」
+									PRINTFORML 힘찬 피스톤으로 질내의 안쪽을 쿵쿵 얻어맞을 때마다 끊어지는 신음소리를 흘리며 허덕이고 있는 %CALLNAME:TARGET%.
+									PRINTFORML 뭔가를 할 생각조차 하지 못한 채, 그저 온몸으로 %조사처리(CALLNAME:ASSI,"를")% 얼싸안고 버티고 있을 뿐이었다.
+									PRINTFORML 굴곡위로 밀어붙여지고 있는 보지는 거친 마찰로 빨갛게 부어올랐고, 자궁은 물론 보지 속까지 가득 채운 농후한 정액은 
+									PRINTFORMW 우람한 자지가 보지를 쑤셔댈 때마다 밖으로 넘쳐흘러, 엉덩이 사이를 타고 허리 밑으로 흘러내리고 있다.
+									PRINTFORML
+									PRINTFORML 크게 뜨여진 눈에는 환희의 눈물이 방울방울 맺혀있고, 오므려진 채 살짝 벌어진 입에서는 투명한 침이 줄줄 새어나오고 있었다.
+									PRINTFORML 하지만 %CALLNAME:TARGET%는 그런 것들에 신경쓰지 않고, %CALLNAME:ASSI%의 허리를 끌어안은 다리에 힘을 주었다.
+									PRINTFORML 이윽고 %CALLNAME:ASSI%의 거근이 자궁구를 푸욱 밀어붙이며 부룩부룩 사정하기 시작했고,
+									PRINTFORMW 넘쳐흐른 정액이 후두둑 쏟아지고, 체력의 한계를 맞이한 %CALLNAME:TARGET%의 다리가 풀리며 풀썩 널브러졌다.
+									PRINTFORML
+									PRINTFORML 「헥, 헤엑, 흐에에……%UNICODE(0x2661)%  아, 흐으… %CALLNAME:ASSI% 님을 위한, 특제 크림파이… 완서엉… 입니다아%UNICODE(0x2661)%」
+									PRINTFORML 이미 원래의 피부색을 찾아볼 수 없을 정도로 백탁으로 덧칠된 아랫입에서 뷰릇뷰릇 정액이 역류하는 모습을 과시하며, 
+									PRINTFORML %CALLNAME:TARGET%는 잔뜩 풀어진 얼굴로 미소지으며 %CALLNAME:ASSI%에게 더블 피스를 지어 보였다.
+									PRINTFORML 아주 좋았다고 칭찬하며 %CALLNAME:ASSI%가 정액범벅이 된 자지를 %CALLNAME:TARGET%의 뺨에 슥슥 문질러 닦아내자,
+									PRINTFORML 그녀는 힘겹게 고개를 돌려 귀두에 애정어린 입맞춤을 바치고, 기절하듯 잠들어 버렸다…
+									PRINTFORMW
+									RESETCOLOR
+								;오코노미야끼
+								CASE 3
+									PRINTFORML  %CALLNAME:TARGET%가 쟁반 하나를 들고 방으로 들어왔다.
+									PRINTFORML 그 위에는, 울퉁불퉁한 바이브가 여러 개. 로터도 여러 개. 초박형 콘돔이 잔뜩. 투명한 로션이 여러 병. 
+									PRINTFORML 저자극 테이프. 유성 매직. 가죽 수갑과 눈가리개. 밧줄. 꼬리 플러그. 비디오 카메라까지.
+									IF CFLAG:904 >= 1000
+										PRINTFORM 그녀는 완전히 발정한 얼굴로 혀를 내밀어 입술을 핥으며,
+									ELSEIF CFLAG:904 >= 750
+										PRINTFORM 그녀는 기대감으로 붉게 달아오른 얼굴로 미소지으며,
+									ELSE
+										PRINTFORM 그녀는 터질 듯이 새빨개진 얼굴로 애써 태연하게 행동하며,
+									ENDIF
+									PRINTFORMW  천천히 쟁반을 내려놓았다.
+									PRINTFORML
+									PRINTFORML 「%CALLNAME:ASSI% 님을 위한, "오코노미야끼"의 재료들입니다」
+									IF CFLAG:904 >= 1000
+										PRINTFORML 「부디 이것들을 써서, %CALLNAME:ASSI% 님의 취향대로 %CSTR:일인칭%를 요리해 주세요%UNICODE(0x2661)%」
+									ELSEIF CFLAG:904 >= 750
+										PRINTFORML 「여기 있는 것들 전부 쓰셔도 좋으니까, 부디 마음껏 %CSTR:일인칭%를 요리해 주세요%UNICODE(0x2661)%」
+									ELSE
+										PRINTFORML 「부, 부디 이 재료들을 써서, %CALLNAME:ASSI% 님의 취향대로 %CSTR:일인칭%를 요리해 주세요…」
+									ENDIF
+									PRINTFORML 식탁 위에 걸터앉으며 치마를 걷어올리는 %CALLNAME:TARGET%의 유혹에, %조사처리(CALLNAME:ASSI,"는")% 참지 않고 달려들었다.
+									PRINTFORML 「꺄앗%UNICODE(0x2661)%」
+									PRINTFORMW 앙탈을 부리듯 일부러 몸부림치는 그녀의 두 팔이 붙잡히고, 촉촉하게 젖은 팬티의 위에 그대로 걸쭉한 로션이 부어진다…
+									PRINTFORML
+									PRINTFORML ……………………………
+									PRINTFORML ………………………
+									PRINTFORMW …………………
+									SETCOLOR COLOR("pink")
+									PRINTFORML
+									SELECTCASE RAND:3
+									CASE 0
+										PRINTFORML 「응히익%UNICODE(0x2661)% 아, 흐, 하, 하읏%UNICODE(0x2661)% 자, 잠시마안%UNICODE(0x2661)%  잠깐만 멈쳐어, 흐극%UNICODE(0x2661)%」
+									CASE 1
+										PRINTFORML 「이제 그마안%UNICODE(0x2661)%  보지 망가졋, 아, 으, 흐긋%UNICODE(0x2661)%  %CALLNAME:ASSI% 니힘, 이제, 아, 아흐윽%UNICODE(0x2661)%」
+									CASE 2
+										PRINTFORML 「거기잇%UNICODE(0x2661)%  꾹꾹 누르면 안대, 아,하으으으으읏!!  아, 아, 아읏%UNICODE(0x2661)% 이거, 안대, 진짜로 안, 응히잇%UNICODE(0x2661)%」
+									ENDSELECT
+									PRINTFORML
+									PRINTFORML ……………………………
+									PRINTFORML ………………………
+									PRINTFORMW …………………
+									PRINTFORML
+									SELECTCASE RAND:3
+									CASE 0
+										PRINTFORML 「안대애%UNICODE(0x2661)% 이거, 주거, 진짜로 주거버려엇%UNICODE(0x2661)% 아, 하으윽! 오, 오옷, 옷, 오호옷%UNICODE(0x2661)%」
+									CASE 1
+										PRINTFORML 「시러, 시러시럿%UNICODE(0x2661)% 이제 자지 시럿, 멈쳐줘어%UNICODE(0x2661)% 아, 흐윽, 아, 아으읏, 으, 흐긋, 으후웃%UNICODE(0x2661)%」
+									CASE 2
+										PRINTFORML 「이거, 이거 안대%UNICODE(0x2661)%  아, 하으, 읏, 가, 가는거 멈추질 아나앗%UNICODE(0x2661)%  살려져, 사… 아, 하으윽%UNICODE(0x2661)%」
+									ENDSELECT
+									PRINTFORML
+									PRINTFORML ……………………………
+									PRINTFORML ………………………
+									PRINTFORMW …………………
+									PRINTFORML
+									SELECTCASE RAND:3
+									CASE 0
+										PRINTFORMW 「제셩해여엇%UNICODE(0x2661)%  잘모테써, 머든지 잘모테쓰니까아, 이제 자지 멈쳐줘엇%UNICODE(0x2661)%%UNICODE(0x2661)%」
+									CASE 1
+										PRINTFORMW 「에, 에흐윽%UNICODE(0x2661)%  아, 하으, 흑%UNICODE(0x2661)%  자지, 이제 안대애… 아, 오옥%UNICODE(0x2661)%」
+									CASE 2
+										PRINTFORMW 「아, 으, 아, 하, 읏%UNICODE(0x2661)%  그마안… 그, 아, 그읏%UNICODE(0x2661)%  자지 멈쳐, 멈쳐어…%UNICODE(0x2661)%」
+									ENDSELECT
+									PRINTFORML
+									PRINTFORML ……가게의 영업시간은 이미 한참 넘긴 새벽. %CALLNAME:TARGET%의 교성은 아직도 끊이지 않고 울려퍼지고 있다.
+									PRINTFORML 카메라 속에 담기고 있는, 구겨진 티슈와 다 쓴 로션병, 비어버린 콘돔 박스가 나뒹구는 식탁 위의 그녀의 모습.
+									PRINTFORML 젖꼭지와 클리에는, 새빨갛게 퉁퉁 부어오른 돌기를 꼬집는 형태로 로터가 두 개씩 테이프로 고정되어 있고,
+									PRINTFORM 푹 젖은 강아지 꼬리가 달린 플러그가 꽂힌 뒷구멍
+									IF CFLAG:818 == 1
+										PRINTFORMW 에서는, 가득 채워진 정액이 틈새로 새어나오고 있다.
+									ELSE
+										PRINTFORMW 은, 잔뜩 풀어져 움찔거리고 있다.
+									ENDIF
+									PRINTFORML
+									PRINTFORML 두 손은 저항할 수 없도록 수갑이 채워져 있고, 눈은 안대로 가려져 다른 감각에 집중할 것을 강제한다.
+									PRINTFORML 입고 있던 옷들은 죄다 찢어져 천조각이 되어버린 채, 음란즙으로 범벅이 되어 바닥에 널브러져 있다.
+									PRINTFORMW 유일하게 남아있는 가느다란 끈팬티는 정액으로 빵빵한 콘돔이 주렁주렁 매달려, 장신구로서 사용되고 있을 뿐이었다.
+									PRINTFORML
+									PRINTFORML 새하얀 피부는 붉은 손자국과 키스마크, 뿌려진 백탁과 로션으로 찐득하게 물들어 추잡하게 더럽혀져 있고,
+									PRINTFORM 군데군데 검은색 매직으로
+									SELECTCASE RAND:3
+									CASE 0
+										PRINTFORM 『마조 암캐』
+									CASE 1
+										PRINTFORM 『손잡이』
+									CASE 2
+										PRINTFORM 『거근섹스 중독』
+									ENDSELECT
+									SELECTCASE RAND:3
+									CASE 0
+										PRINTFORM 『극대자지 좋아%UNICODE(0x2661)%』
+									CASE 1
+										PRINTFORM 『정액변기』
+									CASE 2
+										PRINTFORM 『생오나홀』
+									ENDSELECT
+									SELECTCASE RAND:3
+									CASE 0
+										PRINTFORM 『교배 완료』
+									CASE 1
+										PRINTFORM 『正正正正』
+									CASE 2
+										PRINTFORM 『%CALLNAME:ASSI% 전용』
+									ENDSELECT
+									PRINTFORML 따위의 낙서가 쓰여 있다.
+									PRINTFORMW 혀를 빼물고서 헥헥거리고 있는 입은, 쾌락으로 흐물흐물하게 풀어져 자기도 모르게 음란한 미소를 짓고 있었다.
+									PRINTFORML
+									PRINTFORML 이윽고 %CALLNAME:ASSI%가 사정감을 느끼고 허리를 뒤로 빼자, 그녀는 자지를 놓치지 않으려 무심코 허리를 내밀었다. 
+									PRINTFORML %조사처리(CALLNAME:ASSI,"는")% 그런 그녀의 허벅지를 찰싹 때리고서, 힘껏 거근을 쑤셔박으며 정액을 뿜어냈다.
+									PRINTFORML 「읏……!! 아, 흐으………%UNICODE(0x2661)%  ………%UNICODE(0x2661)% …!……! ……%UNICODE(0x2661)%%UNICODE(0x2661)%」
+									PRINTFORML 고개를 뒤로 꺾으며 소리없는 교성을 지르는 %CALLNAME:TARGET%. 그녀는 숨조차 제대로 쉬지 못하고 허리를 움찔거리는 모습으로, 
+									PRINTFORMW 발가락을 꽈악 오므린 채 다리를 파들파들 떨며, 말로는 표현하지 못할 극상의 쾌락을 조금이나마 드러내고 있다.
+									PRINTFORML
+									PRINTFORML 잠시 후 정액범벅 자지가 입술을 꾹꾹 누르자 그녀는 본능적으로 입을 벌려 그것을 뿌리까지 가득 삼키고는
+									PRINTFORML 혀를 휘감아 달라붙은 정액을 건져내고, 츄릅츄릅 소리와 함께 투명한 타액으로 코팅하며 입청소 봉사를 하기 시작했다.
+									PRINTFORML 끈적한 쾌락의 끝에 말끔해진 자지에 만족한 %CALLNAME:ASSI%가 눈가리개를 벗겨주자 그녀는 몇 번 눈을 깜박이더니,
+									PRINTFORML 핑크빛 하트가 떠오를 것만 같은, 쾌락으로 흐릿해진 눈동자로 %조사처리(CALLNAME:ASSI,"를")% 바라보며
+									PRINTFORML 「쪼옥%UNICODE(0x2661)%  ……오늘도 맛있게 드셔주셔서, 정말로 감사드립니다아…%UNICODE(0x2661)%」
+									PRINTFORML 라고 인사하고서, 흐물흐물하게 풀어진 암컷의 미소를 지으며 귀두 끝에 찐한 입맞춤을 바쳤다…
+									PRINTFORMW
+									RESETCOLOR
+								ENDSELECT
+							ENDIF
+							PRINTFORML
+							PRINTFORMW
+							CFLAG:823 = 2
+						ELSE
+							SELECTCASE RAND:4
+							;테이블 밑에서
+							CASE 0
+								PRINTFORM 
+								PRINTFORML 그녀는 바닥까지 닿는 긴 식탁보로 가려진 테이블 밑으로 기어들어가, %CALLNAME:ASSI%의 가랑이 사이에 엉덩이를 들이밀었다.
+								IF CFLAG:904 >= 750
+									PRINTFORM 빨리 박아달라는 듯 새하얀 엉덩이가 살랑살랑 흔들렸고,
+								ELSE
+									PRINTFORM 가만히 있는 엉덩이와는 달리 위아래의 구멍은 음란하게 움찔거렸고,
+								ENDIF
+								PRINTFORML  그것을 본 %CALLNAME:ASSI%의 입꼬리가 만족스럽게 휘어졌다.
+								PRINTFORMW 부드러운 살집을 주무르며 충분히 즐기고 나서 양쪽으로 열어젖히고, 흉악하게 발기한 거근을 그 사이에 조준하고 천천히 엉덩이를 잡아당겼다.
+								PRINTFORML
+								SETCOLOR COLOR("pink")
+								PRINTFORML 붙잡은 엉덩이가 움찔움찔 떨리고, 안쪽의 속살이 자지를 빨아들이듯이 자극하는 감촉을 즐기며, %CALLNAME:ASSI%의 허릿짓이 점점 빨라졌다.
+								PRINTFORML 「…………!! …………! ………%UNICODE(0x2661)% ……………!」
+								PRINTFORML 억눌린 신음소리가 아래쪽에서 흘러나오지만, 그런 것 따위에 아랑곳하지 않고 안쪽까지 거침없이 쑤셔박히는 우람한 페니스.
+								PRINTFORML 절정을 맞이했는지 격렬하게 연동하는 질내를 짙은 쿠퍼액으로 코팅하며, 쾌락에 굴복한 암컷을 정복하는 즐거움을 만끽하고 있다.
+								PRINTFORML %CALLNAME:TARGET%의 골반을 붙잡고 대형 오나홀처럼 사용하던 %CALLNAME:ASSI%가 마침내 사정하자,
+								PRINTFORMW 커다란 절정의 쾌감을 주체하지 못한 %CALLNAME:TARGET%가 등줄기를 쭈뼛거리고 골반을 움찔움찔 튕겨대며, 소리없이 열락을 표현했다.
+								RESETCOLOR
+								PRINTFORML
+								PRINTFORML 아직도 꿈틀거리고 있는 아랫입에서 %CALLNAME:ASSI%가 거근을 뽑아내고, 여기저기 묻어있는 정액을 엉덩이에 슥슥 닦아내자
+								PRINTFORML %CALLNAME:TARGET%의 하반신이 테이블 밑으로 들어갔고, 잠시 후에 그녀가 숨을 헐떡이며 다시 밖으로 나왔다.
+								PRINTFORM 「이렇게 격렬하게 하실 줄이야… 팬티를 물고 있지 않았다면 틀림없이 들켰을 겁니다
+								IF CFLAG:904 >= 750
+									PRINTFORML …%UNICODE(0x2661)%」
+								ELSE
+									PRINTFORML …」
+								ENDIF
+								PRINTFORML 지금은 입고 있냐는 %CALLNAME:ASSI%의 말에 그녀는 고개를 가로저었다.
+								PRINTFORMW 「아니요… 침에 잔뜩 젖은 데다가, 워낙 얇은 재질이었던지라 조금 찢어져 버려서… 지금은 주머니에 넣어두었습니다」
+								PRINTFORML
+								PRINTFORM 그 말을 들은 %CALLNAME:ASSI%는 웃으면서,
+								IF CFLAG:904 >= 1000 && RAND:2 == 0
+									PRINTFORMW  지금 있는 손님들 중 가장 중요한 손님에게 그걸 주고 오라고 속삭였다.
+									PRINTFORML
+									PRINTFORML 「아앗…  네, 네에… 그럼 지금 바로 다녀오겠습니다…」
+									PRINTFORML 수치심으로 붉게 얼굴을 물들이며 자리에서 일어난 %CALLNAME:TARGET%는, 발걸음을 옮겨 한 테이블에 도착했다.
+									PRINTFORML 그곳에 앉은 남자 손님과 이야기를 하다가 주머니에서 조심스럽게 팬티를 꺼내 건네고서 귓속말을 하자, 남자는 무척이나 흥분했다.
+									PRINTFORMW %CALLNAME:TARGET%는 그의 허벅지를 슬쩍 쓰다듬고서, 스탬프 카드에 도장을 한 번 찍어준 후 다시 %CALLNAME:ASSI%에게 돌아왔다.
+									PRINTFORML
+									PRINTFORML 「명령하신 대로, 저 손님에게 드리고 왔습니다…  무척이나 흥분해 주시기에, %CSTR:일인칭%도 조금 들떠서… 스탬프도 추가해드렸습니다」
+									PRINTFORML %CALLNAME:ASSI%의 옆자리에 찰삭 붙어앉아, 몸 이곳저곳을 끈적하게 만져지며 눈웃음치는 %CALLNAME:TARGET%.
+									PRINTFORML 그녀는 영업시간 내내 %CALLNAME:ASSI%에게 교태를 부리다가, 가게가 끝나자마자 유니폼을 갈아입지도 않고 러브호텔로 발걸음을 옮겼다.
+									PRINTFORML 팔짱을 끼고 연인처럼 방에 들어간 %CALLNAME:TARGET%는 날이 밝을 때까지 웨이트리스 차림으로 %CALLNAME:ASSI%와 몸을 섞었고,
+									PRINTFORML 치마와 블라우스 모두 여기저기 찢어지고 정액범벅이 되어버려, 결국 그녀는 다음날 새 유니폼을 받아야만 했다…
+								ELSE
+									PRINTFORML  그렇다면 가져가겠다며 손을 내밀었다.
+									IF CFLAG:904 >= 750
+										PRINTFORML 「후훗… 너무 많이 쓰지는 말아주세요?  가게가 끝나면 곧바로 찾아갈 테니까…♪」
+									ELSE
+										PRINTFORML 「네, 여기 있습니다…」
+									ENDIF
+									PRINTFORM 가랑이 부분이 조금 찢어진, 축축하게 젖은 하얀색 끈팬티를
+									IF CFLAG:904 >= 750
+										PRINTFORM  웃으면서
+									ELSE
+										PRINTFORM  공손하게
+									ENDIF
+									PRINTFORML  건네는 %CALLNAME:TARGET%.
+									IF CFLAG:904 >= 750
+										PRINTFORML 그녀는 %CALLNAME:ASSI% 담당의 웨이트리스가 되어 영업시간 내내 찰싹 달라붙어 있다가, 가게가 마친 이후에 팔짱을 끼고 함께 집으로 돌아갔다…
+									ELSE
+										PRINTFORML 그녀는 영업시간 내내 %CALLNAME:ASSI%의 곁을 맴돌다가, 가게가 마친 이후에 함께 집으로 돌아갔다…
+									ENDIF
+								ENDIF
+								PRINTFORML
+								PRINTFORMW
+							;화장실에서
+							CASE 1
+								PRINTFORML 그녀는 %CALLNAME:ASSI%의 손을 잡고 가게의 화장실로 들어갔다.
+								IF CFLAG:904 >= 1000
+									PRINTFORML 「%CALLNAME:ASSI%님을 위한 정액변기, 지금 준비되었습니다%UNICODE(0x2661)%」
+								ELSEIF CFLAG:904 >= 750
+									PRINTFORML 「자아… %CSTR:일인칭%는 준비되었으니까, 처음부터 격하게 하셔도 괜찮아요%UNICODE(0x2661)%」
+								ELSE
+									PRINTFORML 「준비되었습니다, 언제든지 와주세요…」
+								ENDIF
+								PRINTFORMW 그렇게 말하며 변기에 걸터앉은 %CALLNAME:TARGET%는, 치마를 걷어올리고서 촉촉하게 젖은 팬티를 옆으로 젖혔다.
+								PRINTFORML
+								PRINTFORML ……………………………
+								PRINTFORML ………………………
+								PRINTFORMW …………………
+								PRINTFORML
+								SETCOLOR COLOR("pink")
+								PRINTFORML ……철썩, 철썩, 철썩, 철썩, 철썩, 철썩, 철써억…!
+								PRINTFORML 「안대, 너무 격렬해욧%UNICODE(0x2661)%  으흐읏…! 으긋, 아, 오, 오호옷…%UNICODE(0x2661)%」
+								PRINTFORML 처음에는 소리를 참던 %CALLNAME:TARGET%였지만, %CALLNAME:ASSI%가 허릿짓을 빠르게 하며 유두를 자극하자 큰 소리로 허덕이기 시작했다.
+								PRINTFORML 노브라의 얇은 블라우스 너머로 솟아오른 탱글탱글한 유두를 빙글빙글 꼬집히면서 귀두로 안쪽을 문질러지자, 그녀는 더 이상 버틸 수가 없었다.
+								PRINTFORML %CALLNAME:TARGET%는 이대로라면 밖에 들려버린다거나, 잠시 후 다시 일을 해야 한다거나, 유니폼이 더러워진다거나 하는 것 따위는 하나도 생각하지 못하고,
+								PRINTFORMW 그저 쾌락에 몸과 마음을 맡기고 두꺼운 거근이 쳐올려질 때마다 달콤한 목소리로 교성을 지를 뿐이었다.
+								PRINTFORML
+								PRINTFORML 동그랗게 오므려진 입술 사이로 천박한 신음소리를 흘리던 %CALLNAME:TARGET%의 귀에 이제 슬슬 정액을 부어주겠다고 %CALLNAME:ASSI%가 속삭이자,
+								PRINTFORML 그녀는 두 다리로 %CALLNAME:ASSI%의 허리를 휘감아 끌어당기며, 입구부터 안쪽까지 질내를 꾸우욱 조이며 말이 아닌 행동으로 암컷의 기쁨을 표현했다.
+								PRINTFORML 이윽고 %CALLNAME:ASSI%의 귀두가 %CALLNAME:TARGET%의 가장 안쪽에 맞닿은 순간 엄청난 기세로 찐득한 정액이 뿜어지며, 두 사람은 동시에 절정을 맞이했다.
+								PRINTFORMW 「으, 흐이이이잇…!! 아, 아으… 흐, 흐으… 후으으……%UNICODE(0x2661)%  아, 소리… 너무 컸을까요…  너무 기분 좋아서, 어쩔 수 없었지만요…%UNICODE(0x2661)%」
+								RESETCOLOR
+								PRINTFORML
+								PRINTFORML 가랑이부터 정수리까지 단숨에 꿰뚫는 극상의 쾌락에 커다란 교성을 질러버리고서 몽롱한 얼굴로 헤롱거리던 %CALLNAME:TARGET%는,
+								PRINTFORM 입가에 들이밀어진 정액투성이의 자지를
+								IF CFLAG:904 >= 750
+									PRINTFORML  사랑스럽다는 듯 쳐다보다가 단숨에 뿌리까지 머금고 정성껏 청소하기 시작했다.
+								ELSE
+									PRINTFORML  뜨거운 눈빛으로 바라보다가 자연스럽게 입에 넣고 청소펠라를 시작했다.
+								ENDIF
+								PRINTFORML 「응, 츄웁… 츄르릅, 쥬릅쥬릅쥬릅, 쥬르르르릅…%UNICODE(0x2661)% 에으읍, 응급… 쮸우우우웁… 츗츗, 쪼오옥%UNICODE(0x2661)%」
+								IF CFLAG:904 >= 750
+									PRINTFORML 오므린 입술을 붙여 귀두를 빨아들이고 혀로 뒷힘줄을 쓸어올리는, 
+									PRINTFORML 암컷으로서의 복종심이 가득 담긴 찐한 키스를 바치는 것으로 헌신적인 입청소를 끝낸 %CALLNAME:TARGET%.
+								ELSE
+									PRINTFORML 자지 구석구석을 깨끗이 핥고 빨아 남은 정액을 닦아내고, 
+									PRINTFORML 마지막으로 귀두 끝에 입술을 붙이고 소리내어 키스를 바치는 것으로 입청소를 끝낸 %CALLNAME:TARGET%.
+								ENDIF
+								PRINTFORMW 화장실의 불빛을 받아 번들거리는, 타액으로 얇게 코팅된 거근을 아쉬운 눈빛으로 바라보던 그녀는 이내 변기에서 일어나 매무새를 정리하기 시작했다.
+								PRINTFORML
+								IF TALENT:빈유
+									PRINTFORM 봉긋하게 솟아오른
+								ELSEIF TALENT:절벽
+									PRINTFORM 평평한
+								ELSEIF TALENT:거유
+									PRINTFORM 팽팽하게 부풀어있는
+								ELSEIF TALENT:폭유
+									PRINTFORM 터질 듯 빵빵한
+								ELSE
+									PRINTFORM 탐스럽게 솟아오른
+								ENDIF
+								PRINTFORML  블라우스의 양쪽 가슴 부분은 엉망으로 구겨져 있었고, 얇은 천 너머로 아직도 발기해 있는 유두가 비쳐보였다.
+								PRINTFORML 치마도 크게 사정이 다르지 않아, 안쪽에 잔뜩 묻은 애액이 바깥쪽으로도 스며나와 짙은 색의 얼룩을 만들고 있었다.
+								PRINTFORML 양쪽 발목에 걸쳐져 있던 팬티는 형편없이 늘어나버려 허리에 걸쳐지지도 않았기에, 입는 것을 포기하고 치마 주머니에 챙길 수 밖에 없었다.
+								PRINTFORML 최대한 가다듬었지만 여전히 흐트러진 모습으로, 아쉬운 기색이 가득한 미소를 지으며 그녀는 %CALLNAME:ASSI%에게 인사했다.
+								IF CFLAG:904 >= 750
+									PRINTFORMW 「아쉽지만 어쩔 수 없네요… 돌아가서 잔뜩 봉사할 테니, 부디 기다려 주세요…%UNICODE(0x2661)%」
+								ELSE
+									PRINTFORMW 「이 이상은, 가게가 마치는 대로 돌아가서 계속하겠습니다, 부디 기다려 주시길…」
+								ENDIF
+								PRINTFORML
+								PRINTFORML %CALLNAME:TARGET%가 화장실에서 나오자마자, 수없이 많은 시선들이 날아와 그녀에게 꽂힌다. 
+								PRINTFORML 음흉한 시선, 노골적인 시선, 끈적한 시선, 시선시선시선시선……
+								IF ABL:노출증 > 3
+									PRINTFORM 그녀는 그것을 즐기면서
+								ELSE
+									PRINTFORM 그녀는 아랑곳하지 않고
+								ENDIF
+								PRINTFORML  태연하게 접객을 시작했고, 
+								PRINTFORML 은근슬쩍 치마를 들추거나 블라우스의 단추 사이를 벌려 속살을 보여주는 등 눈을 즐겁게 하는 서비스를 했다.
+								IF RAND:3 == 0
+									PRINTFORMW 어쩌다 크게 몸을 움직이면 보지 안쪽에서 %CALLNAME:ASSI%의 요거트처럼 농후한 정액이 살짝 출렁거렸고, 그때마다 허리를 움찔거렸다.
+									PRINTFORML
+									PRINTFORML 그러던 와중 단골손님 중 하나가 허리에 팔을 휘감고 끌어안자, 그녀는 곤란해하면서도 미소를 지으며 주머니에서 팬티를 꺼내 건네었고,
+									PRINTFORML 만족스럽게 웃으며 허리를 놓아주는 손님에게『조금 전까지 입고 있던 거에요♪』 라고 속삭이고서, 살랑살랑 골반을 흔들며 발걸음을 옮겼다.
+									PRINTFORML 끈적한 애액이 허벅지 안쪽을 타고 흐르는 것을 느끼며, 그녀는 붉게 달아오른 얼굴로 접객을 계속했다…
+								ELSE
+									PRINTFORML "암컷"으로서의 만족감과 격렬하게 움직인 이후의 나른함이 더해진 %CALLNAME:TARGET%의 표정에는 무척이나 음란한 분위기가 맴돌았고,
+									PRINTFORML 손님들은 평소와는 명백히 다른 그녀의 모습에 홀린 듯 눈을 떼지 못하고, 계속 가게에 남아있기 위해 추가로 메뉴를 주문했다…
+								ENDIF
+								PRINTFORMW
+							;근무가 끝나고 나서
+							CASE 2
+								PRINTFORML 그녀는 %CALLNAME:ASSI%의 옆자리에 앉고서, 허리가 맞닿을 정도로 몸을 밀착시키며 팔짱을 꼈다.
+								PRINTFORML 「아직은 일하는 중이니까, 영업이 끝나기 전까진 이 정도로 참아주세요…」
+								PRINTFORML %CALLNAME:ASSI%의 손이 가슴이나 엉덩이를 주무를 때마다 달콤한 신음을 흘리며, %CALLNAME:TARGET%는 음식을 먹여주거나 하면서 시중을 들었다.
+								PRINTFORMW 그러던 중 슬슬 영업이 끝날 시간이 되자, %CALLNAME:ASSI%에게 잠시 가게 뒤쪽의 골목길에서 기다려 달라고 했다.
+								PRINTFORML
+								PRINTFORMW ……………잠시 후,
+								PRINTFORML
+								PRINTFORML 「%CALLNAME:ASSI% 님, 이쪽입니다…」
+								PRINTFORML 잠시 시간이 흐른 후, 뒷문을 열고 나타난 %CALLNAME:TARGET%가 기다리고 있던 %CALLNAME:ASSI%의 손을 잡고 이끌었다.
+								PRINTFORML 주방과 화장실 통로 쪽에만 불을 밝힌 가게 안에서, %CALLNAME:TARGET%는 한껏 달아오른 음란한 미소를 지었다.
+								PRINTFORMW 「그럼… 시작할까요?」
+								PRINTFORML
+								PRINTFORML ……………………………
+								PRINTFORML ………………………
+								PRINTFORMW …………………
+								PRINTFORML
+								SETCOLOR COLOR("pink")
+								SELECTCASE RAND:4
+								CASE 0
+									PRINTFORML 두 사람만이 있는 가게 안에서, 온갖 소리가 울려퍼지고 있다.
+									PRINTFORML 삐걱거리는 소리, 살이 부딪히는 소리, 추잡한 물소리, 암컷의 교성…
+									PRINTFORML 테이블 위에 엎어진 %CALLNAME:TARGET%는 그 한가운데에서 천박하게 다리를 벌리고, 쾌락에 빠져들고 있다.
+									PRINTFORMW 질내를 거칠게 쑤셔대던 자지가 꿈틀거리며 사정하려고 하자, 그녀는 안쪽을 꽈악 조이며 뒤를 돌아보았다.
+									IF CFLAG:904 >= 1000
+										PRINTFORML 「안에 싸주세요…! %CALLNAME:ASSI% 님의 정액으로, 임신시켜주세요옷%UNICODE(0x2661)%」
+									ELSEIF CFLAG:904 >= 750
+										PRINTFORML 「아, 으응%UNICODE(0x2661)%  안쪽까지, 가득 부어주세요…! 응으으으읏%UNICODE(0x2661)%」
+									ELSE
+										PRINTFORML 「앗, %CALLNAME:ASSI% 님…! 오늘은, 안에… 흐그윽……%UNICODE(0x2661)%」
+									ENDIF
+									IF 위험일(TARGET) == 1
+										PRINTFORM 위험일의 자궁 속을
+									ELSE
+										PRINTFORM 자궁구 뒤쪽의 오목한 공간을
+									ENDIF
+									PRINTFORML  %CALLNAME:ASSI%의 농후한 정액으로 가득 채워지며 황홀한 교성을 지르는 %CALLNAME:TARGET%.
+									PRINTFORML 절정의 여운이 사라지기도 전에 또다시 시작된 격렬한 피스톤에 뜨겁게 헐떡이며, 그녀는 아슬아슬한 시간까지 진심 교미를 계속했다.
+									PRINTFORML
+								CASE 1
+									PRINTFORML 대기하는 손님을 위한 소파에 누워, 정상위로 연결되어 있는 두 사람.
+									PRINTFORML %CALLNAME:TARGET%는 %CALLNAME:ASSI%의 허리를 두 다리로 휘감고서, 촉촉한 눈빛으로 키스를 요구했다.
+									PRINTFORML 「헤으읍, 쯉, 츕…%UNICODE(0x2661)%  쥬르릅, 츄룹, 츗, 츗%UNICODE(0x2661)%  츄루루루룹…%UNICODE(0x2661)%」
+									PRINTFORML 거칠게 밀어붙여지는 그녀의 자궁구가 귀두에 쪽쪽 키스하듯 달라붙으며 농후한 정액을 달라고 앙탈을 부리자, 드디어 사정이 시작되었다.
+									PRINTFORML 「후으으으읍…!!  ………!  ……%UNICODE(0x2661)%%UNICODE(0x2661)%  응, 푸흐으으… 헥, 헤윽, 하으으…%UNICODE(0x2661)%」
+									PRINTFORML 극상의 쾌락으로 허리를 젖히면서도, %CALLNAME:TARGET%는 꽈악 끌어안은 %CALLNAME:ASSI%의 몸을 놔주지 않고 매달렸다.
+									PRINTFORM 그녀는 체력이 다할 때까지 격렬한 교미를 계속해,
+									IF 위험일(TARGET) == 1
+										PRINTFORML  위험일의 자궁을 훌륭한 수컷의 정액으로 가득 채워졌다…
+									ELSE
+										PRINTFORML  훌륭한 수컷의 정액으로 보지의 안팎을 빈틈없이 덧칠되었다…
+									ENDIF
+									PRINTFORML
+								CASE 2
+									PRINTFORML %CALLNAME:TARGET%는 푹신한 의자에 앉은 %CALLNAME:ASSI%의 위에 걸터앉아, 대면좌위로 이어져 있다.
+									IF 위험일(TARGET) == 1
+										PRINTFORML 평소와는 다른 질내의 느낌에 그녀가 위험일이라는 것을 눈치챈 %CALLNAME:ASSI%의 거근은, 더욱 격렬하게 안쪽을 쳐올렸다.
+									ELSE
+										PRINTFORML 찰싹 달라붙은 질내의 주름 하나하나가 꿈틀대며 자극하는 쾌락에, %CALLNAME:ASSI%의 거근은 더욱 격렬하게 안쪽을 쳐올렸다.
+									ENDIF
+									PRINTFORML 자궁구의 뒤쪽을 힘껏 밀어붙여지며 꾹꾹 눌러지고 문질러지는 쾌락에 %CALLNAME:TARGET%는 계속해서 크고 작은 절정을 반복하며,
+									PRINTFORML 진심으로 자신에게 씨앗을 뿌리려는 수컷의 열기에, 기대와 흥분으로 오슬오슬 몸을 떨면서 쾌락에 빠지고 있다.
+									PRINTFORML 그 순간 거근의 끝이 가장 안쪽에 밀착하고 농후한 정액을 잔뜩 쏟아내, 그녀를 조금 전과는 비교도 할 수 없이 커다란 절정에 빠트렸다.
+									PRINTFORML 「응히이이이잇……!!  흐윽……!  아……%UNICODE(0x2661)%%UNICODE(0x2661)%   으읏…%UNICODE(0x2661)%」
+									PRINTFORML 극상의 쾌락과 암컷으로서의 기쁨에 눈물을 흘리며, 그녀는 목소리조차 내지 못하고 뜨겁게 헐떡였다. 
+									PRINTFORML
+								CASE 3
+									PRINTFORML 「아으응%UNICODE(0x2661)% 손님, 이러시면, 응읏, 안 된다구요… 읏! 거기잇%UNICODE(0x2661)%」
+									PRINTFORML %CALLNAME:TARGET%는 일할 때 입었던 웨이트리스 유니폼을 그대로 입고, 코스프레 섹스를 하고 있다.
+									PRINTFORML 카운터의 벽을 짚고 선 채 뒤로 박히며, 후들거리는 다리 사이로 끈적한 애액을 주륵주륵 흘리면서 달콤하게 헐떡인다.
+									PRINTFORMW 이윽고 사정의 전조를 느끼자, 쾌락으로 머릿속이 흐려져 완전히 역할에 몰두한 그녀는 뒤를 돌아보며 요염하게 웃었다.
+									PRINTFORML
+									PRINTFORML 「앙, 흐으, 으응%UNICODE(0x2661)%  손니임, 손님 전용의 특별 메뉴… 끈적끈적 보지에 씨뿌리기 코스, 어떠신가요…?」
+									PRINTFORML 「계산은, 흐읏, 찐득하고 맛있는 자지밀크%UNICODE(0x2661)%  보지에 가득 부어주세, 으그읏…!!」
+									PRINTFORML 말이 끝나기도 전에, 덩어리질 정도로 농후한 정액이 그녀의 가장 안쪽에 꿀럭꿀럭 쏟아졌다.
+									PRINTFORML 「으, 흐으으…%UNICODE(0x2661)% 매번 감사합니다…  거스름돈, 드릴게요오… 하웁, 쮸부붑…%UNICODE(0x2661)%」
+									PRINTFORML 절정의 여운으로 거칠게 숨을 내쉬면서도, 질척질척해진 자지를 입에 물고 청소하기 시작하는 %CALLNAME:TARGET%.
+									PRINTFORML 밤새도록 이어진 코스프레 섹스로 정액범벅이 된 옷은 완전히 못 쓰게 되어버려, 결국 그녀는 다음날 새 유니폼을 받아야만 했다.
+									PRINTFORML
+								ENDSELECT
+								RESETCOLOR
+								PRINTFORMW
+							;골목길
+							CASE 3
+								PRINTFORML 그녀는 %CALLNAME:ASSI%의 손을 잡고 가게 뒤쪽의 골목길로 이끌었다.
+								IF CFLAG:904 >= 1000
+									PRINTFORML 「집에 돌아가면 잔뜩 봉사할 테니까, 지금은 한 번으로 참아주세요?  일하던 도중이니까, 그 이상은 위험하다구요…%UNICODE(0x2661)%」
+								ELSEIF CFLAG:904 >= 750
+									PRINTFORML 「한 번만 해드리는 거에요? 너무 해버리면 제대로 일할 수가 없다구요…♪」
+								ELSE
+									PRINTFORML 「아직 일하는 중이니까… 한 번만이에요?  나머지는 돌아가서 해드릴 테니까…」
+								ENDIF
+								PRINTFORMW 그렇게 말하며, %CALLNAME:TARGET%는 능숙한 손길로 %CALLNAME:ASSI%의 하의를 벗겼다.
+								PRINTFORML
+								PRINTFORML ……………………………
+								PRINTFORML ………………………
+								PRINTFORMW …………………
+								PRINTFORML
+								SETCOLOR COLOR("pink")
+								PRINTFORML 「하윽%UNICODE(0x2661)% 읏, 으웃! 아, 흐, 으흣…!  %CALLNAME:ASSI% 님, 아, 하으읏%UNICODE(0x2661)%」
+								PRINTFORM %CALLNAME:TARGET%는 벽을 짚고 서서, 한쪽 다리를 %CALLNAME:ASSI%에게 들어올려진 자세로 
+								IF CFLAG:818 == 1 && RAND:2 == 0
+									PRINTFORML 뒷구멍을 범해지고 있다.
+									TFLAG:60 = 9
+								ELSE
+									PRINTFORML 박히고 있다.
+									TFLAG:60 = 3
+								ENDIF
+								PRINTFORML 허벅지를 붙잡은 손이 움직일 때마다 몸이 따라 움직이는, 오나홀처럼 사용되는 감각에 아찔한 쾌락을 느끼면서,
+								PRINTFORML 이따금 교성이 터져나오려 하면 고개를 뒤로 돌려 %CALLNAME:ASSI%와 끈적하게 혀를 섞거나, 손으로 입을 틀어막는다.
+								IF RAND:2 == 0
+									PRINTFORM 왼쪽
+								ELSE
+									PRINTFORM 오른쪽
+								ENDIF
+								IF RAND:2 == 0
+									PRINTFORM  발목
+								ELSE
+									PRINTFORM  허벅지
+								ENDIF
+								PRINTFORML 에 걸려있는 조그만 속옷과, 가슴께까지 젖혀진 짧은 치마는 격렬한 피스톤을 따라 나풀거렸고,
+								IF TFLAG:60 == 3
+									PRINTFORMW 쾌락에 젖은 질내는 어서 정액을 달라는 듯 쉴새없이 꿀렁거리며 거근을 조여대고, 그 반동으로 더 큰 쾌락을 얻기를 반복한다.
+								ELSE
+									PRINTFORMW %CALLNAME:TARGET%의 엉덩이 보지는 빡빡하게 조여드는 입구로 뿌리를 강하게 자극하고, 찰싹 달라붙는 안쪽으로도 기둥을 자극하며 쾌락에 빠져들고 있다.
+								ENDIF
+								PRINTFORML
+								PRINTFORML 「으흡, 응, 후으읍…! 응, 흐긋%UNICODE(0x2661)%  %CALLNAME:ASSI% 님, %CSTR:일인칭%, %CSTR:일인칭% 이제…!」
+								PRINTFORML 이윽고 그녀가 절정에 다다르려 하자, %CALLNAME:ASSI%도 허리를 크게 뒤로 뺐다가, 힘차게 밀어붙이며 정액을 쏟아내기 시작했다.
+								IF TFLAG:60 == 3
+									PRINTFORM 보지의 가장 안쪽, 자궁구 뒤쪽의 오목한 곳을
+								ELSE
+									PRINTFORM 애널의 가장 깊숙한 곳을
+								ENDIF
+								PRINTFORML  농후한 정액으로 가차없이 유린당하는 쾌감에, 
+								PRINTFORML %CALLNAME:TARGET%는 입을 틀어막아도 새어나올 정도로 교성을 질렀다.
+								PRINTFORML 「우으으으으읍…!! 읏, 흐읍…!  헤에엑…… 후으, 후아아…%UNICODE(0x2661)%  아, 흐으… 감사, 합니다아…%UNICODE(0x2661)%」
+								PRINTFORML %CALLNAME:ASSI%가 다리를 놓아주고 나서도 잠시 벽을 짚고 움찔거리다가, 숨을 고르고 나서 간신히 감사인사를 하는 %CALLNAME:TARGET%.
+								IF RAND:2 == 0
+									PRINTFORMW 그녀는 어느새 바닥에 떨어져 널브러진 팬티를 포기하고, 잔뜩 구겨진 치마만을 다시 입고서 쪼그려 앉았다.
+									TEQUIP:98 = 6
+								ELSE
+									PRINTFORMW 그녀는 아슬아슬하게 발목에 걸쳐져 있는 얇은 팬티를 입고, 잔뜩 구겨진 치마를 펴서 다시 허리까지 내리고서 쪼그려 앉았다.
+								ENDIF
+								RESETCOLOR
+								PRINTFORML
+								IF CFLAG:904 >= 750
+									PRINTFORM 「그럼 청소할게요?
+								ELSE
+									PRINTFORM 「그럼 청소하겠습니다…
+								ENDIF
+								PRINTFORML  하우움… 응, 츄부부붑…  츄루룹, 레로레로… 쮸우우웁…%UNICODE(0x2661)%」
+								PRINTFORML 세심한 입봉사로 거근을 깨끗이 하고서, 입 안에 모인 정액을 음미하며 삼킨 그녀는 이내 몸을 일으키고 %CALLNAME:ASSI%에게 인사했다.
+								IF CFLAG:904 >= 750
+									PRINTFORML 「%CSTR:일인칭%도 더 하고 싶지만, 근무 중이니까요…  대신 돌아가서 잔뜩 봉사할 테니까, 기다려 주세요%UNICODE(0x2661)%」
+									PRINTFORM 홍조를 띠운 얼굴로 아쉬움 가득한 미소를 지으며,
+								ELSE
+									PRINTFORML 「아쉽지만… 지금은 이걸로 끝내야 할 것 같습니다…  그, 일이 끝나면 곧바로 찾아갈 테니, 부디 기다려 주시길…」
+									PRINTFORM 아직 열기가 가시지 않은 얼굴로 인사하고서,
+								ENDIF
+								PRINTFORML  뒷문을 열고 다시 가게로 돌아간 %CALLNAME:TARGET%.
+								IF TEQUIP:98
+									PRINTFORML 노팬티의 그녀는 평소보다 더욱 허리를 깊게 숙인다거나, 일부러 치맛자락을 팔랑거린다거나, 다리를 살짝 벌리고 쪼그려 앉거나 하며 서비스를 했고,
+									PRINTFORML 애액으로 번들거리는 그녀의 은밀한 곳을 볼 수 있었던 운 좋은 남자 손님들로, 그날 가게의 화장실은 비어있을 틈이 없었다…
+								ELSE
+									PRINTFORM %CALLNAME:ASSI%의 농후한 정액은 너무 진해 밖으로 새어나오지 않았지만, 이미 아랫입을 잔뜩 적시고 있던 애액이
+									IF RAND:2 == 0
+										PRINTFORML  얇은 팬티에 진한 얼룩을 만들었고,
+										PRINTFORML 그녀는 가랑이에서 느껴지는 축축함에 얼굴을 붉히며 평소보다 더욱 요염한 기색으로 다시 손님들을 맞이했다…
+									ELSE
+										PRINTFORML  스며들어 축축해진 속옷은
+										PRINTFORML %CALLNAME:TARGET%의 도톰한 보짓살이나 그 사이의 균열을 내비쳤고, 더 이상 스며들지 못한 애액이 허벅지 사이로 주르륵 흘러내렸다. 
+										PRINTFORML 그녀는 그것을 과시하듯 평소보다 더욱 허리를 깊게 숙인다거나, 일부러 치맛자락을 팔랑거린다거나,
+										PRINTFORML 다리를 살짝 벌리고 쪼그려 앉거나 하며 서비스를 했고,
+										PRINTFORML 애액이 흐르는 허벅지와 푹 젖은 팬티 너머로 비치는 그녀의 은밀한 곳을 볼 수 있었던 운 좋은 남자 손님들로, 그날 가게의 화장실은 비어있을 틈이 없었다…
+									ENDIF
+								ENDIF
+								PRINTFORML
+								PRINTFORMW
+							ENDSELECT
+						ENDIF
+						LOCAL:3 = 1
+					;애ＮＴＲ
+					ELSEIF TALENT:TARGET:ＮＴＲ == 1
+						SETCOLOR COLOR("pink")
+						;위험일
+						IF 위험일(TARGET) == 1
+							IF RAND:7 == 0
+								PRINTFORML 방 안에 침대가 삐걱거리는 소리가 울린다……
+								PRINTFORMW 침대에서 위를 향해 누운 %조사처리(CALLNAME:TARGET,"는")% %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 몸을 맡기고, 밀려 넘어진 채 쾌락에 허덕이고 있다……
+								PRINTFORML %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"가")% 사정할 것 같다、고 %CALLNAME:TARGET%에게 전하자 %조사처리(CALLNAME:TARGET,"는")% 웃는 얼굴로 『안에다 싸 줘』라고 속삭였다……
+								PRINTFORML 
+								PRINTFORMW 그 순간、질내에서 페니스가 퍼득이고 %NTRNAME(CFLAG:TARGET:함락캐릭터)%의 정액이 배란일의 자궁을 가득 채워 간다……
+								PRINTFORMW 두 사람은 사정이 끝난 후에도 연결된 채로 키스를 나누면서 마음을 확인한다……
+								PRINTFORML 
+								SIF TALENT:TARGET:아내
+									PRINTFORMW 테이블 위에는 벗은 반지가 놓여 있었다……
+							ELSEIF RAND:6 == 0
+								PRINTFORML %조사처리(CALLNAME:TARGET,"는")% %NTRNAME(CFLAG:TARGET:함락캐릭터)%의 정액에 자궁을 채워지면서 기쁜 듯이 웃고 있다……
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 하복부에 손을 올린 채 행복한 표정으로 가게에 돌아왔다……
+							ELSEIF RAND:5 == 0
+								PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 호텔에 도착하자마자 %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 달라붙어, 귓속말로 위험일이라는 사실을 알렸다……
+								PRINTFORML %조사처리(CALLNAME:TARGET,"가")% 바라는 것을 알아차린 %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"는")% 참지 못하고 %CALLNAME:TARGET%의 속옷에 손을 걸었다……
+								PRINTFORMW 
+								PRINTFORML 시간을 잊은 채 몰두하고 있던 자식 만들기 섹스를 마친 %조사처리(CALLNAME:TARGET,"는")% 
+								PRINTFORMW 쏟아부어진 아기 씨앗에 만발해、부드럽게 %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 미소 지었다……
+							ELSEIF RAND:4 == 0
+								PRINTFORML 위를 보는 채 %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"를")% 받아들이고 있는 %조사처리(CALLNAME:TARGET,"는")% 발을 엮은 채 물기를 띤 눈동자로 %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"를")% 바라보고 있다……
+								PRINTFORMW 나신을 밀착시키며 더 깊은 삽입을 바라는 %CALLNAME:TARGET%의 신체는、자궁까지 닿는 사정을 기다리며 바라고 있다……
+								PRINTFORML 그리고 뜨거운 사정을 가장 안쪽에서 느끼자 %조사처리(CALLNAME:TARGET,"는")% 뒤로 몸을 젖히면서도 %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 매달려、
+								PRINTFORML 여전히 페니스를 놓아 주지 않고 몸을 겹친다……
+								PRINTFORMW 
+								PRINTFORML 격렬하게 몇 번이나 몸을 섞은 뒤 겨우 페니스를 해방시킨 %조사처리(CALLNAME:TARGET,"는")%
+								PRINTFORMW 질구부터 넘치는 정액을 %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 보이면서 오늘이 위험일이라고 알리며、생긋 미소 지었다……
+							ELSEIF RAND:3 == 0
+								PRINTFORML 질 안쪽에 꽂았을 때의 %CALLNAME:TARGET%의 반응에 평소와는 다른 열기를 감지한 %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"는")% 
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"가")% 위험일이라는 것을 깨닫고、대면좌위로 %CALLNAME:TARGET%의 허리를 단단히 안은 채 가장 깊은 곳의 자극에 집중하기 시작했다……
+								PRINTFORML 밀착한 허리놀림을 통해 %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"가")% 진심으로 자신을 임신시킬 생각이라는 것을 알고、
+								PRINTFORMW %CALLNAME:TARGET%의 기대와 흥분은 더욱 높아지고 있다……
+								PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 안쪽을 빙글빙글 괴롭혀지며 몇 번을 계속해서 가고 있었지만、
+								PRINTFORMW 한층 더 강렬한 절정과 함께 질이 단번에 페니스를 물고、대망의 질내사정이 방문했다……！
+								PRINTFORMW 격렬한 쾌감과 여자로서의 기쁨에 전율하며、%조사처리(CALLNAME:TARGET,"는")% 눈물을 흘리며 질내에 퍼져 가는 %NTRNAME(CFLAG:TARGET:함락캐릭터)%의 정액을 맛봤다……
+							ELSEIF RAND:2 == 0
+								PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 위험일이니 오늘은 안 된다며 마음을 먹고 있었음이 분명했지만, 
+								PRINTFORMW %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 껴안긴 그 체온을 몸으로 느끼자 다짐한 마음을 본능이 이겼다……
+								PRINTFORML %NTRNAME(CFLAG:TARGET:함락캐릭터)%의 정자를 자궁에 받아들이고 싶다、%NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 임신되고 싶다고 바라는 마음에,
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 거스를 수 없었다……
+							ELSE
+								PRINTFORML %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"는")% %조사처리(CALLNAME:TARGET,"가")% 위험일이라는 것을 알자、평소보다 격렬하게 %조사처리(CALLNAME:TARGET,"를")% 원하고 있다…
+								PRINTFORMW 
+								PRINTFORML 몇 번씩 대량으로 쏟아진 정액이 흐르는 것을 놔둔 채 한계를 맞이하고 녹초가 되어 침대에 누운 %CALLNAME:TARGET%에게
+								PRINTFORMW %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"는")% 다시 페니스를 꽂아、몸을 흔들기 시작했다……
+								PRINTFORML %CALLNAME:TARGET%의 자궁을 %NTRNAME(CFLAG:TARGET:함락캐릭터)%의 정액으로 채우고 제대로 교배를 완료할 때까지
+								PRINTFORMW %NTRNAME(CFLAG:TARGET:함락캐릭터)%의 수컷 본능이 행위를 끝내려고 하지 않았다……
+							ENDIF
+						;発情
+						ELSEIF 위험일(TARGET) == 2
+							PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 위험일인 것도 아랑곳하지 않고 욕망이 솟구치는 대로 %NTRNAME(CFLAG:TARGET:함락캐릭터)% 위에서 허리를 흔들고 있다……
+							PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 일을 끝마치는 시간까지 %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"와")% 몸을 섞어 질내를 정액으로 계속 채웠다
+						;만월発情
+						ELSEIF 위험일(TARGET) == 3
+							PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 욕망이 솟구치는 대로 %NTRNAME(CFLAG:TARGET:함락캐릭터)%의 위에서 허리를 흔들고 있다……
+							PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 일을 끝마치는 시간까지 %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"와")% 몸을 섞어 질내를 정액으로 계속 채웠다……
+						;通常
+						ELSE
+							IF RAND:16 == 0
+								PRINTFORMW 소리를 죽이는 %CALLNAME:TARGET%의 질내를 %NTRNAME(CFLAG:TARGET:함락캐릭터)%의 씨앗이 빈틈없이 가득 채웠다……
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 상기된 얼굴로 비틀비틀 접객을 재개했다……
+							ELSEIF RAND:15 == 0
+								PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 양 팔을 뒤로 묶이고、가슴을 내밀은 자세로 %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"와")% 몸을 섞고 있다……
+								PRINTFORM  %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"가")% 허리를 흔들 때마다 쭈욱 내민 
+								IF TALENT:TARGET:거유 || TALENT:TARGET:폭유 || TALENT:TARGET:마유
+									PRINTFORMW 찰지게 여문 유방이 야릇하게 흔들리고 있다……
+								ELSEIF TALENT:TARGET:빈유 || TALENT:TARGET:절벽
+									PRINTFORMW 살짝 부풀어 오른 곳이、봉오리를 꼿꼿하게 새우면서 부들부들 떨고 있다……
+								ELSE
+									PRINTFORMW 부드러운 유방이 자기주장을 하듯이 흔들리고 있다……
+								ENDIF
+								PRINTFORML 
+								PRINTFORMW  %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"는")% 야릇한 소리를 내는 %CALLNAME:TARGET% 안에다 확실하게 자신의 유전자를 새겨 넣었다……
+							ELSEIF RAND:14 == 0
+								PRINTFORMW %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 뒤에서 박히면서 %조사처리(CALLNAME:TARGET,"는")% 달콤한 교성을 올리고 있다……
+								PRINTFORMW %CALLNAME:TARGET%의 자포자기한 질은 조금이라도 많은 정자를 받아들이려고 %NTRNAME(CFLAG:TARGET:함락캐릭터)%의 페니스를 꾹 하고 잡아 떼어 놓지 않는다……
+								PRINTFORML
+								PRINTFORMW %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 여러 번 진심으로 교배된 후、%조사처리(CALLNAME:TARGET,"는")% 키스를 나누며 접객업으로 돌아갔다……
+							ELSEIF RAND:13 == 0
+								PRINTFORMW 좁은 독방에서 두 사람의 공간을 확보하며 %조사처리(CALLNAME:TARGET,"과")% %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"는")% 강하게 껴안은 채 서로의 입술을 탐했다……
+								PRINTFORMW 완전히 준비가 된 %조사처리(CALLNAME:TARGET,"는")% 관철되는 것을 요구하며 %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 무의식적으로 허리를 비빈다……
+								PRINTFORMW 그리고 %조사처리(CALLNAME:TARGET,"는")% %NTRNAME(CFLAG:TARGET:함락캐릭터)%의 페니스를 받아들이며、%NTRNAME(CFLAG:TARGET:함락캐릭터)%의 귓전에 달콤한 교성을 올리기 시작했다……
+							ELSEIF RAND:12 == 0
+								PRINTFORMW %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게서부터 부드럽게 달콤한 키스를 여러 번 받고 있는 사이에, %CALLNAME:TARGET%의 비밀 장소는 완전히 눅진눅진하게 되어 있었다……
+								PRINTFORMW 속옷에서 흘러넘치는 애액을 알아챈 %조사처리(CALLNAME:TARGET,"는")%、부끄러워하면서도 열정적으로 삽입을 조르는 것이었다……
+							ELSEIF RAND:11 == 0
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 웨이트리스 의상의 위에서부터 %NTRNAME(CFLAG:TARGET:함락캐릭터)%의 애무를 받아 황홀해 하고 있다……
+							ELSEIF RAND:10 == 0
+								PRINTFORMW  %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"과")% 격렬한 행위를 여러 번 반복한 후,%조사처리(CALLNAME:TARGET,"는")% 접객업으로 돌아갔지……만、조금 주위의 시선이 이상하다……
+								PRINTFORMW 아무래도 %CALLNAME:TARGET%의 달콤한 목소리가 밖으로 새어 나오고 있었던 것 같다……
+							ELSEIF RAND:9 == 0
+								PRINTFORMW  %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"는")% %조사처리(CALLNAME:TARGET,"를")% 뒤에서 격렬하게 박아 대며,가슴이나 음부에의 애무를 빠뜨리지 않는다……
+								PRINTFORMW %CALLNAME:TARGET%의 약한 곳을 파악해 낸 손가락이 %조사처리(CALLNAME:TARGET,"를")% 오늘 몇 번째의 절정에 간단하게 몰아넣었다……
+								PRINTFORMW 그리고、머릿속이 하얗게 된 가운데 더욱 자극 받아、%조사처리(CALLNAME:TARGET,"는")% %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 몸도 마음도 맡겨 버렸다……
+							ELSEIF RAND:8 == 0
+								PRINTFORMW 손님 곤란합니다 등등을 말하며、웨이트리스 차림인 채의 플레이를 만끽하는 바보 커플이 거기 있었다.
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"과")%  %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"는")% 잔뜩 기분이 올라 배역에 몰두해 즐겁고 격렬하게 섹스에 몰두했다……
+							ELSEIF RAND:7 == 0
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"과")%  %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"는")% 양손을 맞잡은 채、시선을 얽히게 바라보며 몇 번이나 뜨거운 입맞춤을 하고 있다……
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 흐리멍덩한 눈빛으로 %조사처리(NTRNAME(CFLAG:TARGET:함락캐릭터),"와")%의 키스에 열중하며 타액의 교환을 계속하고 있다……
+								PRINTFORMW 길고 뜨거운 입맞춤으로 완전히 달아올라 버린 %CALLNAME:TARGET%의 몸은、%NTRNAME(CFLAG:TARGET:함락캐릭터)%의 페니스를 받아들이는 것만으로 절정에 올랐다……
+							ELSEIF RAND:6 == 0
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 긴 휴식 후、완전히 충실해진 얼굴로 가게에 돌아왔다……
+								PRINTFORMW %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 몇 번이나 사랑 받은 지 얼마 안 된 탓인지, 묘하게 행동이 요염하다……
+							ELSEIF RAND:5 == 0
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% %NTRNAME(CFLAG:TARGET:함락캐릭터)%의 남근에, 사랑스러운 듯이 혀를 기게 했다……
+								PRINTFORMW %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 거칠게 짓눌리는 것을 상상하면서 펠라치오로 %CALLNAME:TARGET%의 속옷은 이미 질척질척한 듯하다……
+							ELSEIF RAND:4 == 0
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 변기에 앉아 있는 %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 대면좌위로 찔려 올려지고 있다……
+								PRINTFORMW 두 사람은 사랑을 확인하듯이 입술을 포개면서、절정의 여운에 잠겨있다……
+							ELSEIF RAND:3 == 0
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 세면대에 손을 대고、%NTRNAME(CFLAG:TARGET:함락캐릭터)%의 괴롭힘에 신음하고 있다……
+								PRINTFORMW 거울에 비친 자신의 황홀해 하는 얼굴을 보면서、%NTRNAME(CFLAG:TARGET:함락캐릭터)%의 정액을 태내에 흘려보냈다……
+							ELSEIF RAND:2 == 0
+								PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 변기에 앉아 있는 %NTRNAME(CFLAG:TARGET:함락캐릭터)%의 페니스를 물고서 눈을 치켜뜨고 있다……
+								PRINTFORMW 페니스에 붙은 정액을 혀로 빨아 주자、%NTRNAME(CFLAG:TARGET:함락캐릭터)%(이)가 상냥하게 머리를 쓰다듬었다……
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 기쁜 듯이 뺨을 붉히고、더욱 세심하게 혀를 움직이기 시작했다……
+								PRINTFORML 
+								PRINTFORMW 봉사를 계속하는 %CALLNAME:TARGET%의 질구에서는 방금 전에 방출된 %NTRNAME(CFLAG:TARGET:함락캐릭터)%의 정액이 방울져 떨어지고 있다……
+							ELSE
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 벽에 손을 댄 모습으로 %NTRNAME(CFLAG:TARGET:함락캐릭터)%에게 뒤에서 범해지고 있다……
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 엉덩이살을 붙잡혀、천천히 확실하게 %NTRNAME(CFLAG:TARGET:함락캐릭터)%의 씨앗을 받아들였다……
+							ENDIF
+						ENDIF
+						RESETCOLOR
+						LOCAL:3 = 3
+					;淫ＮＴＲ
+					ELSEIF TALENT:TARGET:ＮＴＲ == 2
+						SETCOLOR COLOR("pink")
+						;위험일
+						IF 위험일(TARGET) == 1
+							PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 손님의 정액이 위험일인 질내에 쏟아질 때마다、기쁨의 소리를 내고 있다……
+						;発情
+						ELSEIF 위험일(TARGET) == 2
+							PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 마치 짐승처럼 손님과 몸을 섞고 있다……
+							PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 생식 본능대로 본 적도 없는 남자의 씨앗을 자궁 내에 받아들이고 있다……
+						;만월発情
+						ELSEIF 위험일(TARGET) == 3
+							PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 마치 짐승처럼 손님과 몸을 섞고 있다……
+							PRINTFORMW 달빛을 받은 %조사처리(CALLNAME:TARGET,"는")% 남자의 위에서 춤을 추듯이 허리를 흔들고 있다……
+						;通常
+						ELSE
+							IF RAND:6 == 0
+								PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 골목에 들어가 벽에 손을 대고、내밀어진 둔부를 덮는 스커트를 살짝 들어올렸다……
+								PRINTFORMW 속옷을 입지 않은 꿀단지는 이미 물기를 머금어、남자를 유혹하는 암컷의 향기가 손님의 본능을 자극했다……
+								PRINTFORML 
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 난폭하게 엉덩이 살을 붙잡히고、짐승처럼 범해져、몇 번이고 손님의 씨앗을 태내에 받아들였다……
+							ELSEIF RAND:5 == 0
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 문 닫는 시간까지 손님과 어울린 모양이다……
+							ELSEIF RAND:4 == 0
+								PRINTFORML 침대에 걸터 앉은 %조사처리(CALLNAME:TARGET,"는")% 발을 넓게 벌려、들리도록 쿠츄쿠츄하는 물소리를 내면서
+								PRINTFORMW 핑크색의 음순을、고객에게 보이게 손가락으로 천천히 열어 간다.
+								PRINTFORML 요염하고 강렬한 암컷의 냄새를 발하면서, 번들번들하게 젖은 치부는 꿈틀거리며, 사람을 불러들이고 있다……
+								PRINTFORMW 그 자극적인 광경에 손님들은 매료되어, 숨 가쁘게 삽입하고 그대로 일심불란하게 허리를 움직였다……
+							ELSEIF RAND:3 == 0
+								PRINTFORMW 평소 이목구비에서 전혀 상상할 수없는 표정으로, %조사처리(CALLNAME:TARGET,"는")% 쾌락을 탐했다。
+								PRINTFORML 고객의 야생적이고 단정적인 고문에, 등에 손톱을 세워 크게 신음을 올리며
+								PRINTFORMW 자궁에까지 닿을 것 같은 사정을 질내에 받고、몇 번이나 격렬한 절정을 맛보고 있다……
+							ELSEIF RAND:2 == 0
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 완전히 녹은 얼굴로 격렬하게 들이닥치는 페니스에 취해 있다……
+								PRINTFORML 강하게, 깊이 침입할 때마다 %조사처리(CALLNAME:TARGET,"는")% 뒤로 몸을 젖히며 달콤한 목소리를 올리고 있다……
+								PRINTFORMW 밀려 드는 쾌감을 오랫동안 탐내고 있었다……
+							ELSE
+								PRINTFORMW 손님의 페니스를 맛보는 듯이 %조사처리(CALLNAME:TARGET,"는")% 스스로 허리를 튕기며 그 느낌을 즐기고 있다……
+							ENDIF
+						ENDIF
+						RESETCOLOR
+						LOCAL:3 = 3
+					;통상
+					ELSE
+						;통상 위험일 or 위험일 발정(야생의사탕)
+						IF 위험일(TARGET) == 1 || 위험일(TARGET) == 2
+							IF 위험일(TARGET) == 1 || 위험일(TARGET) == 2 && RAND:2 == 0
+								PRINTFORML
+								IF RAND:2 == 0
+									PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 가게 근처의 러브호텔로 향해, 손님의 손을 잡고 방에 들어갔다……
+									PRINTFORML
+									SETCOLOR COLOR("pink")
+									SELECTCASE RAND:5
+									CASE 0
+										PRINTFORML 머리 위로 올린 양팔에 수갑이 채워진 %조사처리(CALLNAME:TARGET,"는")% 여러가지 장난감으로 잔뜩 괴롭혀지며 범해지고 있다…
+										PRINTFORML 클리와 젖꼭지에 부착된 로터가 징징 울리는 소리와 물기 섞인 살 부딪히는 소리, 쾌락에 젖은 신음소리가 방 안에 가득 울려퍼졌다…
+										PRINTFORMW 끈질긴 자극에 흐물흐물하게 녹아버린 그녀는 결국 허리를 흔들며 위험일의 자궁에 정액을 부어달라고 간청해 버렸다……
+									CASE 1
+										PRINTFORML 밧줄로 묶인 채 침대에 엎드린 %조사처리(CALLNAME:TARGET,"는")% 엉덩이를 찰싹찰싹 맞으며 교성을 지르고 있다…
+										PRINTFORMW 절묘한 압박감과 엉덩이 스팽킹에 마조 욕구가 자극된 그녀는 허리를 움찔대며 교태로운 목소리로 손님에게 위험일 질내사정을 졸랐다……
+									CASE 2
+										PRINTFORML 손님과 함께 샤워하던 %조사처리(CALLNAME:TARGET,"는")% 딱딱하게 발기한 평균 이상의 자지를 보고 참을 수 없어졌다…
+										PRINTFORML 그녀는 손끝으로 손님의 가슴팍과 발기자지를 살살 쓰다듬으면서, 오늘은 위험한 날이라고 교태로운 목소리로 귓가에 속삭였다…
+										PRINTFORMW 잠시 후, 샤워기에서 쏟아지는 물소리로도 덮을 수 없는 그녀의 뜨거운 교성이 욕실을 가득 채우기 시작했다……
+									CASE 3
+										PRINTFORML 한참 동안 69를 즐기던 두 사람은 자세를 바꿔, %조사처리(CALLNAME:TARGET,"가")% 침대에 엎드리게 되었다…
+										PRINTFORML 손님의 능숙한 애무에 한껏 달아오른 %조사처리(CALLNAME:TARGET,"는")% 엉덩이의 살집을 잡아 벌리고 그 사이의 흠뻑 젖은 아랫입을 과시하며,
+										PRINTFORMW 임신 준비 완료의 발정난 자궁에 잔뜩 씨뿌리기 해달라고 조르면서 엉덩이를 살랑살랑 흔들어, 지금부터 교미할 수컷에게 잔뜩 교태를 부렸다……
+									CASE 4
+										PRINTFORML 축축하게 젖은 침대 위에 엉망진창으로 범해진 %조사처리(CALLNAME:TARGET,"가")% 널브러져 있다…
+										PRINTFORMW 위험일인데도 잔뜩 질내사정 섹스를 즐긴 그녀의 가랑이 사이에서 방금 받아낸 질퍽한 정액이 꿀럭꿀럭 흘러나오고 있다……
+									ENDSELECT
+									RESETCOLOR
+								ELSE
+									PRINTFORM %조사처리(CALLNAME:TARGET,"는")% 손님의 손을 잡고 가게 근처에 있는 손님의 집으로
+									IF RAND:100 <= 30
+										PRINTFORML  가려고 했… 지만, 참을 수 없었던 것 같다…
+										PRINTFORM 하반신에서 올라오는 갈증에 인내심이 바닥난 %조사처리(CALLNAME:TARGET,"는")% 그대로 
+										IF RAND:2 == 0
+											PRINTFORMW 가게 뒤쪽의 골목으로 향했다……
+											PRINTFORML
+											SETCOLOR COLOR("pink")
+											IF RAND:2 == 0
+												PRINTFORML 집요한 안쪽 찌르기를 동반한 추궁에 %조사처리(CALLNAME:TARGET,"는")% 결국 위험일이라는 것을 손님에게 실토해 버렸다…
+												PRINTFORMW 그것을 들은 손님의 허릿짓은 더욱 격렬해졌고, %조사처리(CALLNAME:TARGET,"도")% 뒷골목에서 씨뿌리기 당하는 흥분으로 더욱 목소리를 높였다……
+											ELSE
+												PRINTFORML 다리를 벌리고 서서 허리를 숙인 자세로 범해지고 있는 %조사처리(CALLNAME:TARGET,"는")% 추잡한 물소리를 내는 결합부를 동영상으로 녹화되고 있다…
+												PRINTFORMW 약한 부분을 비벼질 때마다 달콤한 신음을 흘리며, 그녀는 카메라를 향해 오늘이 위험일이라고 말하며 야릇한 눈웃음과 함께 더블 피스를 해보였다……
+											ENDIF
+											RESETCOLOR
+										ELSE
+											PRINTFORMW 가게 근처에 주차된 손님의 차로 다가갔다……
+											PRINTFORML
+											SETCOLOR COLOR("pink")
+											PRINTFORML 차 안이 후끈하게 달아오를 정도로 격렬한 교미를 즐긴 %조사처리(CALLNAME:TARGET,"는")% 만족스러운 표정으로 청소펠라를 하고 있다…
+											PRINTFORMW 아랫입에서 방금 받아낸 정액을 뚝뚝 흘리며 혀를 날름거리는 그녀에게, 오늘이 위험일이라는 것은 중요하지 않았다……
+											RESETCOLOR
+										ENDIF
+									ELSE
+										PRINTFORMW  향했다……
+										PRINTFORML
+										SETCOLOR COLOR("pink")
+										SELECTCASE RAND:5
+										CASE 0
+											PRINTFORML 후끈하게 달아오른 방 안에서, 침대에 누운 %조사처리(CALLNAME:TARGET,"가")% 다리를 벌리고 눈웃음을 지었다…
+											PRINTFORMW 정액이 흘러넘치는 가랑이 사이를 과시하며, 위험일 보지에 확실히 씨뿌리기 해달라고 손님에게 졸라대고 있다……
+										CASE 1
+											PRINTFORML 잔뜩 흥분한 손님은 침대 모서리에 몸을 걸친 %CALLNAME:TARGET%의 골반을 붙잡고 격렬하게 허리를 흔들고 있다…
+											PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 위험일 보지를 범하는 힘찬 허릿짓에 쾌락에 젖은 교성을 지르며 헐떡이고 있다……
+										CASE 2
+											PRINTFORML 손님의 몸을 끌어안은 %조사처리(CALLNAME:TARGET,"는")% 끈적한 허리놀림으로 사정을 재촉하고 있다…
+											PRINTFORMW 사정의 전조를 느낀 그녀가 오늘은 위험일이라고 손님에게 속삭이자, 흥분한 손님은 더욱 격렬하게 허리를 흔들었다…
+										CASE 3
+											PRINTFORML 손님의 하반신에 올라탄 %조사처리(CALLNAME:TARGET,"는")% 능숙한 솜씨로 끈적하게 허리를 돌리고 있다…
+											PRINTFORMW 수컷의 씨를 받을 준비가 된 여체는 평소보다 더 뜨겁게 달아올라, 한계에 가까워진 자지에서 금방이라도 정액을 쥐어짜내 버릴 것 같다……
+										CASE 4
+											PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 베란다 유리창에 몸을 밀어붙여진 채로 손님에게 범해지고 있다…
+											PRINTFORMW 엉덩이를 짓누르는 힘찬 피스톤에 만족한 그녀는, 위험일이지만 안에 싸도 괜찮다고 요염한 목소리로 손님에게 속삭였다……
+										ENDSELECT
+										RESETCOLOR
+									ENDIF
+								ENDIF
+							ELSE
+								SETCOLOR COLOR("pink")
+								IF RAND:8 == 0
+									PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 야릇한 분위기에 휩쓸려 발정한 질내에 손님의 정액을 흘려 넣어졌다…
+									PRINTFORMW 돌아온 %조사처리(CALLNAME:TARGET,"는")% 하얀 얼룩이 묻은 옷을 손으로 가리고, 빠른 걸음으로 샤워실에 들어갔다……
+								ELSEIF RAND:7 == 0
+									PRINTFORML 발정해버린 %조사처리(CALLNAME:TARGET,"는")% 손님의 자지를 스스로 받아들이고 질내사정까지 허용하고 말았다…
+									PRINTFORMW 경솔한 행위에 후회하면서도, 하복부에 느껴지는 충만함에 %조사처리(CALLNAME:TARGET,"는")% 만족하고 있다……
+								ELSEIF RAND:6 == 0
+									PRINTFORML %조사처리(CALLNAME:TARGET,"가")% 가게에서 돌아오는 길에, 안쪽에서 흘러나온 손님이 정액이 허벅지 사이로 뚝뚝 떨어졌다…
+									PRINTFORMW 질내사정을 조르면서 교성을 높인 것을 떠올리며, 그녀는 달아오른 육체에서 느껴지는 만족감에 깊은 숨을 내쉬었다……
+								ELSEIF RAND:5 == 0
+									PRINTFORML 손님의 위에 올라타 스스로 허리를 흔들던 %조사처리(CALLNAME:TARGET,"는")% 결국 발정한 질내에 교배를 허용하고 말았다…
+									PRINTFORMW 안 되는 일이라는 걸 알면서도 신체의 욕구에 이기지 못하고, 그녀는 하반신이 시키는 대로 수컷의 씨앗을 받아들이는 쾌락에 몸을 맡겼다……
+								ELSEIF RAND:4 == 0
+									PRINTFORML 손님의 정액을 잔뜩 받아낸 %CALLNAME:TARGET%의 발정난 아랫입은 엉망진창으로 백탁 투성이가 되어 있다……
+									PRINTFORMW 멈출 수 있는 선을 완전히 넘었다는 것을 알았지만, 이미 교미의 쾌락을 알아버린 %조사처리(CALLNAME:TARGET,"는")% 멈추지 않았다……
+								ELSEIF RAND:3 == 0
+									PRINTFORML 끈질기게 약점을 괴롭혀져 헤롱헤롱하게 되어버린 %조사처리(CALLNAME:TARGET,"가")% 위험일이지만 안에 싸도 괜찮다고 귓가에 속삭이자
+									PRINTFORMW 흥분한 손님은 그녀를 강하게 껴안고 간단하게 함락되어버린 자궁에 잔뜩 아기 씨앗을 들이부었다……
+								ELSEIF RAND:2 == 0
+									PRINTFORML 발정해버린 암컷구멍에 반복해서 교배되고 그것을 자연스럽게 받아들이고있는 일에 %조사처리(CALLNAME:TARGET,"는")% 동요했다……
+									PRINTFORMW 마음도 신체도 안쪽으로부터 암컷의 본능대로 바뀌어, %조사처리(CALLNAME:TARGET,"는")% 이제 돌아갈 수 없다는 생각이 들었다……
+								ELSE
+									PRINTFORML 발정해버렸으니까 어쩔 수 없다며 자신에게 변명한 %조사처리(CALLNAME:TARGET,"는")% 상냥한 말과 달콤한 분위기에 간단하게 넘어가 버렸다……
+									PRINTFORMW 손님과 뜨거운 시간을 보낸 후 돌아온 %조사처리(CALLNAME:TARGET,"는")% 고간에서 느껴지는 열기와 충족감에 깊은 숨을 내쉬었다……
+								ENDIF
+								RESETCOLOR
+							ENDIF
+						;通常
+						ELSE
+							SELECTCASE RAND:4
+							;화장실
+							CASE 0
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 손님과 함께 가게의 화장실로 들어갔다…
+								PRINTFORML
+								SETCOLOR COLOR("pink")
+								SELECTCASE RAND:3
+								CASE 0
+									PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 변기에 걸터 앉은 채 손님의 페니스를 받아들이고 있다…
+									PRINTFORML 육변기가 된 듯한 느낌에 더욱 흥분한 그녀가 질내를 강하게 조이자, 손님은 참지 못하고 사정했다…
+									IF ITEM:45 >= 1
+										PRINTFORMW 안쪽에서 콘돔이 부풀어 오르는 것을 느끼며, %CALLNAME:TARGET%도 달콤한 교성을 울렸다……
+									ELSE
+										PRINTFORMW 욕망 가득한 백탁액이 안쪽에 뿌려지는 것을 느끼며, %CALLNAME:TARGET%도 함께 절정했다……
+									ENDIF
+								CASE 1
+									PRINTFORML 좁은 변기 칸에 들어간 %조사처리(CALLNAME:TARGET,"는")% 칸막이를 짚고 선 채로 손님과 몸을 섞고 있다…
+									PRINTFORML 뒤에서 강하게 찔러대는 단단한 자지에 그녀의 앙다문 입술 사이로 달콤한 교성이 흘러나오고 있다……
+									PRINTFORMW 얇은 블라우스 위로 젖꼭지를 강하게 꼬집힌 순간, 화장실에 %조사처리(CALLNAME:TARGET,"의")% 뜨거운 신음소리가 울려퍼졌다……
+								CASE 2
+									PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 세면대를 짚고 서서 손님에게 범해지고 있다…
+									PRINTFORML 거울에 비치는 음란한 모습에 %CALLNAME:TARGET%의 질내가 더욱 강하게 조여들자, 손님은 감탄하며 사정감을 터뜨렸다……
+									IF ITEM:45 >= 1
+										PRINTFORMW 안쪽에서 콘돔이 부풀어 오르는 것을 느끼며, %CALLNAME:TARGET%도 달콤한 교성을 울렸다……
+									ELSE
+										PRINTFORMW 욕망 가득한 백탁액이 안쪽에 뿌려지는 것을 느끼며, %CALLNAME:TARGET%도 함께 절정했다……
+									ENDIF
+								ENDSELECT
+								RESETCOLOR
+							;뒷골목
+							CASE 1
+								SETCOLOR COLOR("pink")
+								PRINTFORM %조사처리(CALLNAME:TARGET,"는")% 가게 뒤쪽의 뒷골목에서
+								SELECTCASE RAND:3
+								CASE 0
+									PRINTFORML  손님의 페니스를 받아들이고 있다…
+								CASE 1
+									PRINTFORML  손님과 몸을 섞고 있다…
+								CASE 2
+									PRINTFORML  손님에게 범해지고 있다…
+								ENDSELECT
+								IF RAND:2 == 0
+									PRINTFORML 누군가에게 보여질지도 모른다는 아슬아슬한 스릴이 쾌감으로 더해져 그녀는 평소보다 더 크게 느껴버리고 있다…
+									PRINTFORMW 소리를 죽이기 위해 한 손으로 입을 막고 있었지만, 순간 강하게 안쪽을 찔러오는 감각에 결국 뜨거운 교성을 질러버리고 말았다……
+								ELSE
+									PRINTFORML 치마를 걷어올리고 벽을 짚은 채로 야외섹스의 스릴을 즐기며, 그녀는 더욱 강하게 질내를 조였다……
+									IF ITEM:45 >= 1
+										PRINTFORMW 그 강렬한 자극에 손님이 참지 못하고 사정하자 %조사처리(CALLNAME:TARGET,"는")%는 콘돔 너머로 정액이 뿜어지는 것을 느꼈다……
+									ELSE
+										PRINTFORMW 참지 못한 손님이 그녀의 질내에 백탁을 뿜어내자 %CALLNAME:TARGET%도 동시에 절정했다……
+									ENDIF
+								ENDIF
+								RESETCOLOR
+							;자택
+							CASE 2
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 가게 근처의 손님의 집으로 향했다…
+								PRINTFORML
+								SETCOLOR COLOR("pink")
+								SELECTCASE RAND:6
+								CASE 0
+									PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 침대까지 가는 시간도 아깝다는 듯 현관에 엎드려 손님과 섹스하고 있다…
+									PRINTFORMW 뒤에서부터 엉덩이를 밀어붙여질 때마다 %CALLNAME:TARGET%의 달콤한 신음이 문 밖으로 희미하게 새어나갔다……
+								CASE 1
+									PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 샤워기에서 쏟아지는 물을 맞으며 손님과 믐을 섞고 있다…
+									PRINTFORMW 딱딱한 자지가 달아오른 질내를 헤집을 때마다 물기로 반짝이는 그녀의 허리가 움찔움찔 떨렸다……
+								CASE 2
+									PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 침대에 누워 손님의 페니스를 받아들이고 있다…
+									PRINTFORMW 발기한 젖꼭지와 클리를 함께 괴롭혀지자, 그녀는 만족스러운 교성을 지르며 질내를 더욱 강하게 조였다…… 
+								CASE 3
+									PRINTFORML 손님과의 정사를 끝낸 %조사처리(CALLNAME:TARGET,"는")% 침대에 엎드려 거칠게 헐떡이고 있다…
+									IF ITEM:45 >= 1
+										PRINTFORMW 잔뜩 주물러지고 밀어붙여져 울긋불긋하게 물든 그녀의 엉덩이 위에 정액이 든 콘돔이 걸쳐져 있다……
+									ELSE
+										PRINTFORMW 이따금 움찔거리는 그녀의 아랫입에서 뷰룻, 뷰룻 하고 방금 받아낸 정액이 질퍽하게 흘러내렸다……
+									ENDIF
+								CASE 4
+									PRINTFORML 손님의 하반신에 올라탄 %조사처리(CALLNAME:TARGET,"는")% 몸을 반대로 돌린 자세로 허리를 흔들고 있다…
+									PRINTFORMW 손님의 자지로 자위하듯이 기분 좋은 곳을 자극하고 있는 그녀의 등줄기는 쾌감을 느낄 때마다 요염하게 움찔거렸다……
+								CASE 5
+									PRINTFORM 손님과의 정사를 마친 %조사처리(CALLNAME:TARGET,"는")% 마무리로 청소펠라를 하
+									IF ITEM:45 >= 1
+										PRINTFORML 기 시작했다…
+										PRINTFORMW 그녀는 우선 사정을 마친 페니스를 동그랗게 오므린 입술로 감싸고 고개를 뒤로 빼, 추잡한 물소리를 내며 콘돔을 벗겨내었다……
+									ELSE
+										PRINTFORML 고 있다…
+										PRINTFORMW 방금 전에 아랫입으로 마신 것으로는 모자라다는 듯이, 그녀는 다시 사정시킬 기세로 자지를 핥고 빨았다……
+									ENDIF
+								ENDSELECT
+								RESETCOLOR
+							;차에서
+							CASE 3
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 가게 근처에 주차된 손님의 차로 향했다…
+								PRINTFORML
+								SETCOLOR COLOR("pink")
+								SELECTCASE RAND:3
+								CASE 0
+									PRINTFORML 차 뒤쪽에 몸을 가리고 선 %조사처리(CALLNAME:TARGET,"는")% 스스로 치마를 걷어올려 삽입을 재촉했다…
+									PRINTFORMW 발기한 자지가 촉촉하게 젖은 비열을 헤집고 질내로 들어온 순간, 그녀는 앙다문 입술 사이로 달콤한 교성을 흘렸다……
+								CASE 1
+									PRINTFORML %조사처리(CALLNAME:TARGET,"가")% 손님과 함께 들어간 차가 삐걱삐걱 흔들리고 있다…
+									PRINTFORMW 차 안에서는 뒷좌석에 엎드려 헐떡이는 그녀의 하반신에서 흘러내린 애액이 시트 커버를 축축하게 적시고 있다……
+								CASE 2
+									PRINTFORML 문 열린 뒷좌석에 상반신을 집어넣은 %조사처리(CALLNAME:TARGET,"는")% 다리를 벌리고 손님의 자지를 받아들이고 있다…
+									PRINTFORMW 손님이 허리를 흔들 때마다 열려있는 문으로 가려지지 못한 그녀의 다리가 가끔씩 새어나오는 달뜬 신음과 함께 움찔거렸다……
+								ENDSELECT
+								RESETCOLOR
+							ENDSELECT
+						ENDIF
+					ENDIF
+					;가게로 돌아온 이후의 반응
+					PRINTFORML
+					PRINTFORML ㆍㆍㆍ
+					PRINTFORML
+					SELECTCASE RAND:5
+					CASE 0
+						PRINTFORML 짧지 않은 시간이 지난 후 돌아온 %조사처리(CALLNAME:TARGET,"는")% 농후한 수컷의 냄새를 풍기고 있다…
+						PRINTFORMW 발걸음을 옮기던 도중 돌연히 느껴지는 허벅지를 타고 흘러내리는 백탁액의 감촉에, 그녀의 얼굴이 순식간에 붉게 달아올랐다……
+					CASE 1
+						PRINTFORML 늦은 것에 대해 사과한 %조사처리(CALLNAME:TARGET,"는")% 다시 접객으로 돌아갔다…
+						PRINTFORMW 격렬하게 움직인 이후의 나른함이 더해져 평소보다 더욱 요염해 보이는 그녀의 모습에 손님들은 눈을 뗄 수 없는 것 같다……
+					CASE 2
+						IF 위험일(TARGET) == 1 || 위험일(TARGET) == 2
+							PRINTFORML 한껏 충만한 표정을 하고 가게로 돌아온 %CALLNAME:TARGET%에게서 평소보다 훨씬 야릇한 분위기가 맴돈다…
+							PRINTFORMW 허벅지 안쪽을 타고 흐르는 백탁액을 숨길 생각조차 하지 않는 그녀의 달아오른 얼굴은 손님들의 욕정어린 시선을 사로잡고 있다……
+						ELSE
+							IF ITEM:45 >= 1
+								PRINTFORML 가게로 돌아온 %조사처리(CALLNAME:TARGET,"가")% 허리를 숙일 때마다 남자들의 시선이 홀린 듯이 그쪽으로 향한다…
+								PRINTFORM 짧은 치맛자락이 살짝 올라갈 때마다
+								IF TEQUIP:98
+									PRINTFORMW  그 안쪽에서 아랫입으로 물고 있는 콘돔의 묶인 끝부분이 달랑거리는 모습이 흘끗흘끗 보여지고 있는 것 같다……
+								ELSE
+									PRINTFORMW  얇은 팬티 끈에 묶여진 정액콘돔이 흔들거리는 모습이 흘끔흘끔 보여지고 있는 것 같다……
+								ENDIF
+							ELSE
+								PRINTFORML 가게로 돌아온 %조사처리(CALLNAME:TARGET,"는")% 붉어진 얼굴로 자꾸만 허벅지를 비비꼬고 있다…
+								PRINTFORMW 안쪽에서 흘러내린 정액이 팬티를 축축하게 적시는 것을 느끼며 그녀는 허리를 가볍게 부르르 떨었다……
+							ENDIF
+						ENDIF
+					CASE 3
+						PRINTFORML 가게로 돌아온 %CALLNAME:TARGET%의 옷에 묻은 하얀 얼룩들을 보고 손님들이 음흉한 시선을 보내고 있다…
+						PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 오히려 그런 시선을 즐기는 듯 야릇한 눈웃음을 지으며 슬쩍 치맛자락을 흔들어 보였다……
+					CASE 4
+						PRINTFORML 휴식 시간이 한참 지난 후 돌아온 %조사처리(CALLNAME:TARGET,"는")% 암컷의 향기를 진하게 풍기고 있다… 
+						PRINTFORMW 목덜미에 새겨진 울긋불긋한 키스마크와 땀에 푹 젖은 얇은 블라우스의 너머로 비치는 달아오른 살결이 손님들의 시선을 사로잡았다……
+					ENDSELECT
+					LOCAL:3 = 3
+					PRINTFORML
+					PRINTFORML
+					CALL Mary_K4509_NTR_RESTO_SEX, TARGET, LOCAL:3
+					;노동 결과값：ＮＴＲ
+					TFLAG:86 += 1000
+				ENDIF
+			ELSE
+				IF CFLAG:TARGET:824 == 1
+					SELECTCASE RAND:4
+					CASE 0
+						PRINTFORML 그녀는 바닥까지 닿는 긴 식탁보로 가려진 테이블 밑으로 기어들어가, %CALLNAME:ASSI%의 가랑이 사이에서 고개를 내밀었다.
+						IF CFLAG:904 >= 1000
+							PRINTFORML 「%CALLNAME:ASSI% 님을 위한 입보지 오나홀, 지금 준비되었습니다%UNICODE(0x2661)%」
+						ELSEIF CFLAG:904 >= 750
+							PRINTFORML 「%CALLNAME:ASSI% 님의 맛있는 정액, %CSTR:일인칭%에게 잔뜩 먹여주세요…%UNICODE(0x2661)%」
+						ELSE
+							PRINTFORML 「준비되었습니다, 언제든지 와주세요…」
+						ENDIF
+						PRINTFORMW %CALLNAME:TARGET%는 그렇게 말하며, 입을 크게 벌리고 선홍빛 혀를 날름거렸다.
+						PRINTFORML
+						PRINTFORML ……………………………
+						PRINTFORML ………………………
+						PRINTFORMW …………………
+						PRINTFORML
+						SETCOLOR COLOR("pink")
+						PRINTFORML 「응부웁, 응, 쯉…  쮸웁, 츗, 쥬르르릅…  응, 우읍… 응그읍%UNICODE(0x2661)%」
+						PRINTFORML 소리를 줄이기 위해, %CALLNAME:TARGET%는 고개를 거의 움직이지 않고 입 안쪽만을 사용해서 봉사하고 있다.
+						PRINTFORML 비교적 평온해 보이는 겉모습과는 달리, 입 안은 혀가 휘감기거나 점막이 격렬하게 연동하거나 하며 일심불란하게 자지를 기쁘게 하고 있다.
+						PRINTFORML 아이스크림을 녹여먹듯 거근을 머금고 차분한 봉사를 계속하던 그녀는 사정의 전조를 느끼고서, 숨을 깊게 들이쉬고 깊숙이 고개를 밀어넣었다.
+						PRINTFORML %CALLNAME:ASSI%의 고간에 얼굴을 처박고서 쉴새없이 묵을 꿀렁꿀렁 움직이며, 목구멍에 쏟아지는 정액을 받아들이는 %CALLNAME:TARGET%.
+						PRINTFORMW 그녀는 사정이 끝나자 입술을 붙인 채로 고개를 뒤로 빼, 청소하는 동시에 입에서 자지를 뽑아냈다.
+						RESETCOLOR
+						PRINTFORML
+						PRINTFORML 「응, 후으, 꿀꺽, 꿀꺽꿀꺽… 응읍, 읏, 꿀꺼억… 후으으……%UNICODE(0x2661)%」
+						IF CFLAG:904 >= 1000
+							PRINTFORML 「진한 정액, 가득 먹여주셔서 정말로 감사드립니다… 쪽%UNICODE(0x2661)%」
+							PRINTFORM 감사인사를 속삭이고 귀두 끝에 가볍게 입을 맞춘 %CALLNAME:TARGET%는
+						ELSEIF CFLAG:904 >= 750
+							PRINTFORML 「전부 삼켰는데, 아직도 정액의 맛이 느껴지는 것 같아요… 우후훗♪」
+							PRINTFORM 남아있는 정액을 삼키고 웃으면서 속삭인 %CALLNAME:TARGET%는
+						ELSE
+							PRINTFORML 「후, 하으…  사정, 감사합니다…」
+							PRINTFORM 잠깐 숨을 고르고 정중하게 인사를 속삭인 %CALLNAME:TARGET%는
+						ENDIF
+						PRINTFORML  테이블 밑에서 빠져나와, %CALLNAME:ASSI% 옆에 붙어앉았다.
+						IF CFLAG:904 >= 750
+							PRINTFORML 그녀는 %CALLNAME:ASSI% 담당의 웨이트리스가 되어 영업시간 내내 찰싹 달라붙어 있다가, 가게가 마친 이후에 팔짱을 끼고 함께 집으로 돌아갔다…
+						ELSE
+							PRINTFORML 그녀는 영업시간 내내 %CALLNAME:ASSI%의 곁을 맴돌다가, 가게가 마친 이후에 함께 집으로 돌아갔다…
+						ENDIF
+						PRINTFORML
+						PRINTFORMW
+					CASE 1
+						PRINTFORML 그녀는 %CALLNAME:ASSI%의 손을 잡고 가게의 화장실로 들어갔다.
+						IF CFLAG:904 >= 1000
+							PRINTFORML 「%CALLNAME:ASSI% 님을 위한 입보지 오나홀, 지금 준비되었습니다%UNICODE(0x2661)%」
+						ELSEIF CFLAG:904 >= 750
+							PRINTFORML 「%CALLNAME:ASSI% 님의 맛있는 정액, %CSTR:일인칭%에게 잔뜩 먹여주세요…%UNICODE(0x2661)%」
+						ELSE
+							PRINTFORML 「준비되었습니다, 언제든지 와주세요…」
+						ENDIF
+						PRINTFORMW 그렇게 말하며 변기에 걸터앉은 %CALLNAME:TARGET%는, 입을 크게 벌리고 선홍빛 혀를 날름거렸다.
+						PRINTFORML
+						PRINTFORML ……………………………
+						PRINTFORML ………………………
+						PRINTFORMW …………………
+						PRINTFORML
+						SETCOLOR COLOR("pink")
+						PRINTFORML 「츄부부부붑… 쿠후웁… 구풉, 구푸구푸구풉… 쮸우우웁, 쥬루쥬루쥬룻… 쮸우웁%UNICODE(0x2661)%」
+						PRINTFORML 빨아들이고, 핥고, 문지르고, 입술로 살짝 물고, 끈적하게 키스하고, 목구멍까지 쑤셔넣고, 혀로 휘감고, 후비듯이 날름거리고…
+						PRINTFORML 입으로 할 수 있는 모든 봉사를 선보이며, %CALLNAME:TARGET%는 %CALLNAME:ASSI%의 거근을 기쁘게 하고 있다.
+						PRINTFORML 「쪼오옥%UNICODE(0x2661)%  뉴푸부부부붑……  츄포츄포츄포츄폿…! 쮸봅쮸봅, 쥬루루루루룻… 레로레로레로레로…  쿠후웁, 쿠푸쿠푸쿠풋… 쮸웁%UNICODE(0x2661)%」
+						PRINTFORML 턱 밑으로 흘러내린 침으로 블라우스의 앞섶은 이미 흥건하게 젖어있고, 두 손은 톡 뒤어나온 클리토리스를 팬티 위로 문지르고 있다.
+						PRINTFORML 살짝 숨이 막히는 감각과 수컷에게 봉사하는 흥분으로 붉게 물들어, 거근의 움직임에 따라 툭 튀어나왔다가 홀쭉해졌다가 하는 얼굴은 몹시 천박했고,
+						IF CFLAG:904 >= 1000
+							PRINTFORMW 그 모든 봉사를 완벽하게 해내면서 한 순간도 %CALLNAME:ASSI%의 얼굴에서 시선을 떼지 않는 모습은, 그야말로 훌륭한 성처리 메이드의 표본이었다.
+						ELSEIF CFLAG:904 >= 750
+							PRINTFORMW 화장실 변기에 앉은 채로 펠라자위하며 흥분하는 그녀의 모습은, 말 그대로 "정액변기"에 걸맞는 음란한 모습이었다.
+						ELSE
+							PRINTFORMW 코로 거칠게 호흡할 때마다 들이마셔지는 강렬한 수컷의 페로몬에 취해, 그녀는 몽롱한 눈웃음을 지으며 한층 더 입과 손을 열렬하게 움직였다.
+						ENDIF
+						PRINTFORML
+						PRINTFORML 이윽고 우람한 자지가 지금까지와는 다른 움직임으로 꿈틀꿈틀 떨리자, 그녀는 숨을 크게 들이마시고 두 팔로 %CALLNAME:ASSI%의 엉덩이를 끌어안았다.
+						PRINTFORML 「으후웁%UNICODE(0x2661)%  응, 꿀꺽, 꿀꺽꿀꺽꿀꺽… 응그읍, 후으… 쥬루루루루루루룹… 츄포옷%UNICODE(0x2661)%」
+						PRINTFORML 쏟아지는 것과 동시에 꿀꺽꿀꺽 삼키고, 입에서 빼낼 때 동그랗게 오므린 입술을 붙여 훑어낸 자지에는 한 방울의 정액도 남아있지 않았다.
+						IF CFLAG:904 >= 1000
+							PRINTFORML 「여기까지 와 주시고, 농후하고 맛있는 자지밀크까지 가득 주셔서… 정말로 감사드립니다… 쪼옥%UNICODE(0x2661)%」
+							PRINTFORM 황홀한 표정으로 감사인사를 하며 귀두 끝에 애정어린 키스를 바친 %CALLNAME:TARGET%는
+						ELSEIF CFLAG:904 >= 750
+							PRINTFORML 「%CALLNAME:ASSI%의 정액… 너무 진해서, 목구멍에 붙어버렸어요… 우후훗♪」
+							PRINTFORM 남아있는 정액을 삼키며 만족스럽게 웃은 %CALLNAME:TARGET%는
+						ELSE
+							PRINTFORML 「후, 하으…  사정, 감사합니다…」
+							PRINTFORM 잠깐 숨을 고르고 정중하게 인사한 %CALLNAME:TARGET%는
+						ENDIF
+						PRINTFORMW  변기에서 일어나, 매무새를 정리하기 시작했다.
+						RESETCOLOR
+						PRINTFORML
+						PRINTFORML 입봉사를 하는 동안 마구 문질러댄 팬티는 애액으로 흠뻑 젖어있었지만, 평소에도 가게에서 팬티 정도는 보여지고 있으니 큰 문제는 아니었다.
+						PRINTFORML 다른 곳에도 별 문제는 없었지만, 쿠퍼액과 섞인 침이 잔뜩 흘러내린 블라우스의 가슴팍에는 커다란 얼룩이 남아있었다.
+						PRINTFORML 시선을 사로잡는 한 군데를 제외하면 나름 말끔한 모습으로, 아쉬운 기색이 가득한 미소를 지으며 그녀는 %CALLNAME:ASSI%에게 인사했다.
+						IF CFLAG:904 >= 750
+							PRINTFORML 「아쉽지만 어쩔 수 없네요… 돌아가서 잔뜩 봉사할 테니, 부디 기다려 주세요…%UNICODE(0x2661)%」
+						ELSE
+							PRINTFORML 「이 이상은, 가게가 마치는 대로 돌아가서 계속하겠습니다, 부디 기다려 주시길…」
+						ENDIF
+						PRINTFORML %CALLNAME:TARGET%가 화장실에서 나오자, 살짝 마르기 시작해 하얀색으로 변한 가슴팍의 얼룩에 야릇한 시선들이 꽂혔다. 
+						IF ABL:노출증 >= 3
+							PRINTFORM 그녀는 그것을 즐기면서
+						ELSE	
+							PRINTFORM 그녀는 아랑곳하지 않고
+						ENDIF
+						PRINTFORML  태연하게 걸어다니며, 팬티를 축축하게 적신 채 평소보다도 더욱 요염한 기색으로 접객을 계속했다…
+						PRINTFORML
+						PRINTFORMW
+					CASE 2
+						PRINTFORML 그녀는 %CALLNAME:ASSI%의 옆자리에 앉고서, 허리가 맞닿을 정도로 몸을 밀착시키며 팔짱을 꼈다.
+						PRINTFORML 「아직은 일하는 중이니까, 영업이 끝나기 전까진 이 정도로 참아주세요…」
+						PRINTFORML %CALLNAME:ASSI%의 손이 가슴이나 엉덩이를 주무를 때마다 달콤한 신음을 흘리며, %CALLNAME:TARGET%는 음식을 먹여주거나 하면서 시중을 들었다.
+						PRINTFORMW 그러던 중 슬슬 영업이 끝날 시간이 되자, %CALLNAME:ASSI%에게 잠시 가게 뒤쪽의 골목길에서 기다려 달라고 했다.
+						PRINTFORML
+						PRINTFORMW ……………잠시 후,
+						PRINTFORML
+						PRINTFORML 「%CALLNAME:ASSI% 님, 이쪽입니다…」
+						PRINTFORML 잠시 시간이 흐른 후, 뒷문을 열고 나타난 %CALLNAME:TARGET%가 기다리고 있던 %CALLNAME:ASSI%의 손을 잡고 이끌었다.
+						PRINTFORML 주방과 화장실 통로 쪽에만 불을 밝힌 가게 안에서, %CALLNAME:TARGET%는 한껏 달아오른 음란한 미소를 지었다.
+						PRINTFORMW 「그럼… 시작할까요?」
+						PRINTFORML
+						PRINTFORML ……………………………
+						PRINTFORML ………………………
+						PRINTFORMW …………………
+						PRINTFORML
+						SETCOLOR COLOR("pink")
+						PRINTFORML 「으푸웁%UNICODE(0x2661)%  쿠훕, 츄부붑, 쮸우우우웁… 레로레로… 츄포츄포츄포츄폿…%UNICODE(0x2661)%」
+						PRINTFORML %CALLNAME:TARGET%는 일할 때 입었던 웨이트리스 유니폼을 그대로 입고, 펠라치오 봉사에 열중하고 있다.
+						PRINTFORML 입과 혀를 절묘하게 사용하면서, 두 손도 쉬지 않고 자위를 하거나 %CALLNAME:ASSI%의 묵직한 불알을 어루만지며 바쁘게 움직인다. 
+						PRINTFORML 때때로 귀두가 입 안쪽을 찌를 때 볼이 볼록하게 튀어나오는 모습은 조금 전까지 일할 때 보였던 얼굴과는 비교도 할 수 없이 음란했고,
+						PRINTFORML 혀를 내밀어 뒷힘줄을 집중적으로 날름거리거나, 입 안쪽의 살을 꿀렁꿀렁 움직여 자지를 마사지하거나, 볼이 홀쭉해질 정도로 강하게 빨아들이는 
+						PRINTFORMW 그녀의 입놀림은 몹시 능숙해, 평범한 사람이라면 얼마 버티지도 못하고 사정해버릴 정도로 뛰어난 입봉사 기술이었다.
+						PRINTFORML
+						PRINTFORML 이윽고 자지가 움찔거리며 사정하려는 기색을 보이자, %CALLNAME:TARGET%는 격렬하게 가랑이를 비비적거리던 손을 멈추고 %CALLNAME:ASSI%의 허리를 꽉 붙들었다.
+						PRINTFORML 그대로 고개를 %CALLNAME:ASSI%의 사타구니에 처박고 자지의 뿌리를 힘껏 빨아들이자, 거근의 요도구로부터 걸쭉한 정액이 세차게 뿜어져 나왔다. 
+						PRINTFORML 「후으으으읍%UNICODE(0x2661)%  응, 꿀꺽, 꿀꺽꿀꺽꿀꺽… 응그읍, 후으… 쥬루루루루루루룹… 츄포옷%UNICODE(0x2661)%」
+						PRINTFORML 「후아앗… 진한 정액, 잔뜩 싸주셔서 감사합니다…%UNICODE(0x2661)%  」
+						PRINTFORML 봉사의 흥분으로 살짝 절정했는지, 가랑이 사이에서 투명한 애액을 뚝뚝 흘리면서도 다시금 자지를 빨기 시작한 %CALLNAME:TARGET%.
+						PRINTFORML 그녀는 입에 %CALLNAME:ASSI%의 농후한 정액의 냄새가 배어버릴 때까지, 영업이 끝난 식당에서 "추가 근무"를 계속했다…
+						PRINTFORML
+						PRINTFORMW
+						RESETCOLOR
+					CASE 3
+						SELECTCASE RAND:3
+						;착정펠라
+						CASE 0
+							SETCOLOR COLOR("pink")
+							PRINTFORML 「츄룹, 쮸븝쮸븝, 구포구폿… 구풉, 응부웁, 쮸보보봅, 츄루룹… 츄포옷…%UNICODE(0x2661)%  빨리 싸주세요오… 늦어 버린다구요?」
+							PRINTFORML 「정말이지 심술궂으시다니까… 그렇다면, %CSTR:일인칭%도 진심으로 할게요… 응, 츗%UNICODE(0x2661)%」
+							PRINTFORML %CALLNAME:ASSI%의 자지가 좀처럼 사정하지 않자, 다급해진 그녀는 방금 전까지와는 다른 기색으로 눈빛을 바꾸었다.
+							PRINTFORML 「쪼오옥%UNICODE(0x2661)%  뉴푸부부부붑……  츄포츄포츄포츄폿…! 쮸봅쮸봅, 쥬루루루루룻… 레로레로레로레로…  쿠후웁, 쿠푸쿠푸쿠풋… 쮸웁%UNICODE(0x2661)%」
+							PRINTFORML 수컷을 기분좋게 해주기 위한 봉사가 아니라, 한계까지 쾌감을 주입해 불알에서 곧바로 정액을 짜내기 위한 착정 펠라치오.
+							PRINTFORML 굉장한 혀놀림이 더해진 고속 진공펠라에, %CALLNAME:ASSI%의 허리가 부들부들 떨리며 사정하기 시작했다.
+							PRINTFORMW 「으후웁%UNICODE(0x2661)%  응, 꿀꺽, 꿀꺽꿀꺽꿀꺽… 응그읍, 후으… 쥬루루루루루루룹… 츄포옷%UNICODE(0x2661)%」
+							RESETCOLOR
+							PRINTFORML
+							PRINTFORML 백탁이라고는 조금도 묻어있지 않은 반들반들한 거근을 입에서 빼내며, 아쉬운 눈빛으로 입술을 핥는 %CALLNAME:TARGET%.
+							PRINTFORML 그녀는 %CALLNAME:ASSI%의 하의를 다시 입혀주고서 요염한 목소리로 속삭였다. 
+							PRINTFORML 「%CSTR:일인칭%도 참고 있을 테니까… 나중에 돌아가면, 잔뜩 해주세요… 쪽%UNICODE(0x2661)%」
+							PRINTFORML 마지막으로 %CALLNAME:ASSI%의 귀에 입을 맞추고, 그녀는 살랑거리는 발걸음으로 뒷문을 열고 들어갔다.
+							PRINTFORML 가게로 돌아온 그녀는 농후한 수컷의 냄새를 풍기며, 달아오른 얼굴로 다시 손님들을 맞이하기 시작했다…
+							PRINTFORML
+						;귀핥기 대딸
+						CASE 1
+							SETCOLOR COLOR("pink")
+							PRINTFORML 「죄송합니다… 기껏 찾아와 주셨는데, 손으로밖에 해드리지 못해서…」
+							PRINTFORML %CALLNAME:TARGET%는 %CALLNAME:ASSI%를 뒤에서 끌어안고 촉촉한 목소리로 속삭였다.
+							PRINTFORML 오늘은 평소보다도 더 바쁜 탓에, 오랫동안 자리를 비울 수가 없다. 조금만 덜 바빴다면 최소한 입으로라도 봉사해드렸을 텐데.
+							PRINTFORMW 그런 생각을 하며 손을 움직이자, %CALLNAME:ASSI%는 집에 오면 잔뜩 할 테니 지금은 이걸로도 충분하다며 그녀를 안심시켰다.
+							PRINTFORML
+							PRINTFORML 「그렇게 말씀해주셔서 감사합니다…  응, 쪽…%UNICODE(0x2661)%  대신이라고 하기엔 그렇지만, 귀도 봉사할게요… 츄웃%UNICODE(0x2661)%」
+							PRINTFORML 손놀림을 더욱 세심하게 하며 %CALLNAME:ASSI%의 귀를 핥기 시작한 %CALLNAME:TARGET%.
+							PRINTFORML 입술로 살짝 물거나, 귀 뒤쪽을 핥거나 귓구멍을 혀로 쑤시거나 하며 정성껏 봉사하자, %CALLNAME:ASSI%의 자지가 사정하려 꿈틀거리기 시작했다.
+							PRINTFORML 「아, %CALLNAME:ASSI% 님, 잠시만요…  읏차… 네, 여기에 뿌려주세요…」
+							PRINTFORMW 눈 깜짝할 사이에 팬티를 벗은 %CALLNAME:TARGET%는 고간에 닿는 부분으로 귀두를 덮고, 상냥하게 문질렀다.
+							RESETCOLOR
+							PRINTFORML
+							PRINTFORML 「앗… 손만으로도 이렇게 잔뜩 싸주셨네요…%UNICODE(0x2661)%  다행이에요…」
+							PRINTFORML 사정이 끝나자, %CALLNAME:TARGET%는 안쪽이 정액범벅이 되어 바깥쪽까지 질퍽한 물기가 스며나오는 팬티를 다시 입었다.
+							IF CFLAG:904 >= 750
+								PRINTFORML 「%CALLNAME:ASSI% 님의 색으로 물든 정액 팬티… 보지가 큥큥거려요…%UNICODE(0x2661)%」
+								PRINTFORML 「일이 끝나면 곧바로 찾아갈 테니까, 그때까지 %CSTR:일인칭%의 발정난 보지를 상상하시면서 기다려 주세요…?」
+								PRINTFORML %CALLNAME:ASSI%에게 요염한 눈웃음을 보내고서, 그녀는 뒷문을 열고 다시 가게로 돌아갔다.
+							ELSE
+								PRINTFORML 「이건, 그러니까…  일하는 동안 참기 위해서… 입니다」
+								PRINTFORML 「이대로라면, 일이 끝나기 전가지 참지 못할 것 같아서……」
+								PRINTFORML 우물쭈물하며 말을 흐린 그녀는 %CALLNAME:ASSI%에게 정중히 인사하고서, 뒷문을 열고 다시 가게로 돌아갔다.
+							ENDIF
+							PRINTFORML %CALLNAME:ASSI%의 농후한 정액은 팬티에 달라붙은 채로 흐르지 않았지만, 손님들을 맞이하는 그녀의 허벅지 사이에서는 투명한 애액이 주르륵 흘러내렸다…
+							PRINTFORML
+						;애널핥기 대딸
+						CASE 2
+							SETCOLOR COLOR("pink")
+							PRINTFORML 「쪽, 쪼옥… 츄루루루루룹…%UNICODE(0x2661)%  후으… 죄송합니다, 조금 빠르게 할게요…」
+							PRINTFORML 오늘은 평소보다도 더 바쁜 탓에, %CALLNAME:TARGET%는 오랫동안 자리를 비울 수가 없었다.
+							PRINTFORML 최대한 빠르게 성처리를 해주기 위해, 그녀는 %CALLNAME:ASSI%의 엉덩이 구멍을 빨면서 두 손으로 거근을 훑고 있다.
+							PRINTFORML 꼿꼿하게 세운 혀로 구멍을 파낼 기세로 후비거나, 입구 안쪽을 끈적하게 문지르거나, 주름 하나하나를 펴듯이 핥거나 하면서,
+							PRINTFORML 손으로는 역으로 잡은 손가락으로 고리를 만들어 귀두 뒤쪽을 빙글빙글 돌린다거나, 손바닥으로 귀두를 비벼댄다거나, 
+							PRINTFORML 열 손가락을 절묘하게 압박하며 첨단부터 뿌리까지 훑어댄다거나 하며 착정에 가까운 봉사로 사정을 재촉한다.
+							PRINTFORMW 아무리 %CALLNAME:ASSI%라도 그것을 오래 버틸 수는 없었는지, 이윽고 양손으로 감싸인 귀두의 끝에서 울컥울컥 정액이 쏟아졌다.
+							RESETCOLOR
+							PRINTFORML
+							PRINTFORML 「쮸우우우웁…%UNICODE(0x2661)% 파하… 사정, 감사합니다…  우선 정액부터 마실게요… 후루루룹…」
+							PRINTFORM 그녀는 손바닥에 고인 정액을 전부 들이마시고, 손가락 사이사이에 묻은 한 방울까지 전부 핥아먹고 나서
+							IF TALENT:ASSI:64 == 1 && RAND:2 == 0
+								PRINTFORML  질척거리는 자지를 붙잡았다.
+								PRINTFORML 「자지도 청소해드릴게요… 하우웁, 츄룹… 레로레로, 츄루루루루룹…%UNICODE(0x2661)%」
+								PRINTFORML 한 방울의 정액도 남기지 않고 꼼꼼하게 청소한 %CALLNAME:TARGET%는 몸을 일으키고 %CALLNAME:ASSI%에게 인사했다.
+								IF CFLAG:904 >= 750
+									PRINTFORML 「%CSTR:일인칭%도 간신히 참고 있으니까… 돌아가면 잔뜩 귀여워해 주셔야 해요? 후훗…%UNICODE(0x2661)%」
+									PRINTFORM 진한 아쉬움이 드러나는 미소를 지어보이며
+								ELSE
+									PRINTFORML 「가게가 마치면 바로 찾아가겠습니다, 부디 기다려 주시길…」
+									PRINTFORM 붉게 달아오른 얼굴로
+								ENDIF
+								PRINTFORML  말을 마치고서, 뒷문을 열고 다시 가게로 돌아간 %CALLNAME:TARGET%.
+								PRINTFORML 가게로 돌아온 그녀는 농후한 수컷의 냄새를 풍기며, 달아오른 얼굴로 다시 손님들을 맞이하기 시작했다…
+							ELSE
+								PRINTFORML  팬티를 벗었다.
+								PRINTFORML 봉사의 흥분으로 흥건하게 젖은 팬티의 안쪽으로 질척거리는 자지를 감싸고, 그녀는 부드러운 손길로 정액을 닦아내었다.
+								IF CFLAG:904 >= 750
+									PRINTFORML 「이렇게 하면, %CSTR:일인칭%도 일하는 동안 %CALLNAME:ASSI% 님의 정액을 느낄 수 있으니까요… 후후훗%UNICODE(0x2661)%」
+								ELSE
+									PRINTFORML 「이대로라면, 일이 끝날 때까지 참지 못할 것 같아서… 조금만 빌리겠습니다」
+								ENDIF
+								PRINTFORML 가랑이가 닿는 부분을 정액으로 꼼꼼하게 덧칠한 팬티를 다시 입은 %CALLNAME:TARGET%는 몸을 일으키고 %CALLNAME:ASSI%에게 인사했다.
+								IF CFLAG:904 >= 750
+									PRINTFORML 「정액으로 잔뜩 애태워진 보지, 돌아가면 잔뜩 귀여워해 주셔야 해요? 후훗…%UNICODE(0x2661)%」
+									PRINTFORM 진한 아쉬움이 드러나는 미소를 지어보이며
+								ELSE
+									PRINTFORML 「가게가 마치면 바로 찾아가겠습니다, 부디 기다려 주시길…」
+									PRINTFORM 붉게 달아오른 얼굴로
+								ENDIF
+								PRINTFORML  말을 마치고서, 뒷문을 열고 다시 가게로 돌아간 %CALLNAME:TARGET%.
+								PRINTFORML %CALLNAME:ASSI%의 농후한 정액은 팬티에 달라붙은 채로 흐르지 않았지만, 손님들을 맞이하는 그녀의 허벅지 사이에서는 투명한 애액이 주르륵 흘러내렸다…
+							ENDIF
+							PRINTFORML
+						ENDSELECT
+						PRINTFORMW
+					ENDSELECT
+					LOCAL:3 = 2
+				ELSE
+					SETCOLOR COLOR("pink")
+					;애 NTR
+					IF TALENT:TARGET:ＮＴＲ == 1
+						;위험일 or 위험일 발정(야생의사탕)
+						IF 위험일(TARGET) == 1 || 위험일(TARGET) == 2
+							IF RAND:2 == 0
+								PRINTFORMW 수컷의 씨앗을 받고 싶어 안달난 %조사처리(CALLNAME:TARGET,"는")% 가게 뒤쪽의 골목길에서 손님의 정액을 입으로 받아낸 것 같다……
+							ELSE
+								PRINTFORMW 수컷의 씨앗을 받고 싶어 안달난 %조사처리(CALLNAME:TARGET,"는")% 가게의 화장실에서 손님의 정액을 입으로 받아낸 것 같다……
+							ENDIF
+						ELSE
+							IF RAND:2 == 0
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 사랑스러운 표정으로 가게 뒤쪽의 골목길에서 손님의 정액을 입으로 받아낸 것 같다……
+							ELSE
+								PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 사랑스러운 표정으로 가게의 화장실에서 손님의 정액을 입으로 받아낸 것 같다……
+							ENDIF
+						ENDIF
+					ELSEIF TALENT:TARGET:ＮＴＲ == 2
+						;위험일 or 위험일 발정(야생의사탕)
+						IF 위험일(TARGET) == 1 || 위험일(TARGET) == 2
+							IF RAND:2 == 0
+								PRINTFORMW 발정한 %조사처리(CALLNAME:TARGET,"는")% 가게 뒤쪽의 골목길에서 손님의 정액을 입으로 받아낸 것 같다……
+							ELSE
+								PRINTFORMW 발정한 %조사처리(CALLNAME:TARGET,"는")% 가게의 화장실에서 손님의 정액을 입으로 받아낸 것 같다……
+							ENDIF
+						ELSE
+							IF RAND:2 == 0
+								PRINTFORMW 쾌락의 포로가 되어버린 %조사처리(CALLNAME:TARGET,"는")% 가게 뒤쪽의 골목길에서 손님의 정액을 입으로 받아낸 것 같다……
+							ELSE
+								PRINTFORMW 쾌락의 포로가 되어버린 %조사처리(CALLNAME:TARGET,"는")% 가게의 화장실에서 손님의 정액을 입으로 받아낸 것 같다……
+							ENDIF
+						ENDIF
+					ELSE
+						;위험일 or 위험일 발정(야생의사탕)
+						IF 위험일(TARGET) == 1 || 위험일(TARGET) == 2
+							IF RAND:2 == 0
+								IF RAND:2 == 0
+									PRINTFORML 가게 뒤쪽의 골목길에서, 치마를 걷어올리고 쪼그려 앉은 %조사처리(CALLNAME:TARGET,"가")% 일심분란하게 손님의 자지를 빨아대고 있다…
+									PRINTFORMW 이윽고 사정감이 치솟은 손님은 그녀의 뒤통수를 붙잡고 끌어당겨, 뜨겁게 달아오른 입 안에 질퍽한 정액을 힘껏 뿜어내었다……
+								ELSE
+									PRINTFORML 골목길의 벽에 손을 짚고 선 손님의 다리 사이에 쪼그려 앉은 %조사처리(CALLNAME:TARGET,"가")% 추잡한 소리를 내며 펠라치오를 하고 있다…
+									PRINTFORMW 한껏 달아오른 %조사처리(CALLNAME:TARGET,"는")% 입 안에 뿜어지는 쿠퍼액의 맛과 냄새에 만족한 듯 음란한 눈웃음을 지어 보였다……
+								ENDIF
+							ELSE
+								IF RAND:2 == 0
+									PRINTFORML 화장실 바닥에 쪼그려 앉은 %조사처리(CALLNAME:TARGET,"는")% 변기에 걸터앉은 손님의 자지를 혀로 날름날름 핥고 있다…
+									PRINTFORMW 거칠게 숨을 쉬며 사정을 참는 손님의 반응에 불이 붙은 그녀는, 평소의 단정한 얼굴에서는 상상할 수 없는 추잡한 착정펠라를 시작했다……
+								ELSE
+									PRINTFORML 변기에 앉아 일심분란하게 자지를 빨아대는 %CALLNAME:TARGET%의 혀놀림에, 손님은 칸막이를 짚고 간신히 버티고 있다…
+									PRINTFORMW 마침내 사정의 순간 강하게 흡입당하며 정액을 남김없이 쥐어짜이는 감각에 손님은 결국 다리 힘이 풀려 쓰러지고 말았다……
+								ENDIF
+							ENDIF
+						ELSE
+							SELECTCASE RAND:3
+							CASE 0
+								PRINTFORML 화장실의 칸막이 안에서 쪼그려 앉은 %조사처리(CALLNAME:TARGET,"는")% 변기에 걸터앉은 손님의 페니스를 혀로 핥고 있다…
+								PRINTFORMW 잠시 후 강하게 빨아들이는 음란한 물소리와 쾌락을 견디는 남자의 꼴사나운 신음소리가 화장실에 울려퍼졌다……
+							CASE 1
+								PRINTFORML 변기에 걸터앉아 집요하게 귀두의 뒷힘줄을 핥아대는 %CALLNAME:TARGET%의 혀놀림에 손님은 부들부들 다리를 떨고 있다…
+								PRINTFORMW 마지막에 %조사처리(CALLNAME:TARGET,"가")% 귀두 끝을 입에 머금은 순간, 입 안에 뷰룻뷰룻 하고 정액이 뿜어졌다……
+							CASE 2
+								PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 교묘한 혀놀림으로 손님의 자지를 애태우는 동시에 상냥하게 불알을 쓰다듬고 있다…
+								PRINTFORMW 허리를 부들부들 떨며 버티던 손님이 마침내 변기가 덜컹거릴 정도로 움찔거리며 사정하자, 그녀는 눈웃음을 지으며 입으로 받아들였다……
+							ENDSELECT
+						ENDIF						
+					ENDIF
+					RESETCOLOR
+					PRINTFORML
+					PRINTFORML ㆍㆍㆍ
+					PRINTFORML
+					SELECTCASE RAND:6
+					CASE 0
+						PRINTFORMW 입꼬리를 살짝 당긴 %조사처리(CALLNAME:TARGET,"는")% 흐트러진 복장을 고치면서 가게로 돌아왔다……
+					CASE 1
+						PRINTFORMW 조금 풀어진 표정으로 돌아온 %조사처리(CALLNAME:TARGET,"는")% 혀로 입술을 슬쩍 핥으며 흐트러진 복장을 고쳤다……
+					CASE 2
+						PRINTFORMW 크림이라도 바른 듯 확연히 촉촉해진 %CALLNAME:TARGET%의 입술이 조명을 받아 반들반들하게 빛나고 있다……
+					CASE 3
+						PRINTFORMW 잠시 후 살짝 붉어진 얼굴로 돌아온 %CALLNAME:TARGET%의 입가에 구불구불한 털이 한 가닥 붙어 있었다……
+					CASE 4
+						PRINTFORMW 야릇한 표정을 하고서 가게로 돌아온 %조사처리(CALLNAME:TARGET,"는")% 입을 우물거리며 무언가를 천천히 삼키고 있다……
+					CASE 5
+						PRINTFORMW 잠시 후 살짝 붉어진 얼굴로 돌아온 %CALLNAME:TARGET%의 턱 아래쪽에 끈적하고 하얀 점액질이 달라붙어 있었다……
+					ENDSELECT
+				ENDIF
+				PRINTFORML
+				LOCAL:3 = 4
+				CALL Mary_K4509_NTR_RESTO_SEX, TARGET, LOCAL:3
+				;노동 결과값：ＮＴＲ
+				TFLAG:86 += 1000
+			ENDIF
+		;회피
+		ELSE
+			PRINTFORML
+			PRINTFORML ……………………………
+			PRINTFORML ………………………
+			PRINTFORMW …………………
+			PRINTFORML
+			PRINTFORML %조사처리(CALLNAME:TARGET,"의")% 유혹에도, 손님은 완전히 그럴 기분이 되지는 않은 것 같다…
+			PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 조금 아쉬워하며 대화를 이어갔다…
+			PRINTFORML
+			;가벼운 대화
+			IF 함락(ARG) * 50 - LOCAL:2 > 80
+				IF RAND:5 == 0
+					PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 즐거운 듯이 손님과 회화하고 있다.
+				ELSEIF RAND:4 == 0
+					PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 질문에 웃는 얼굴로 대답하고 있다.
+				ELSEIF RAND:3 == 0
+					PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 손님의 음란한 농담에 살짝 웃어 보였다.
+				ELSEIF RAND:2 == 0
+					PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 조금 수위가 높은 질문에 수줍은 얼굴로 대답하고 있다.
+				ELSE
+					PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 가벼운 잡담을 하고 있는 것 같다.
+				ENDIF
+				PRINTFORMW 잠시 시간을 보낸 뒤, %조사처리(CALLNAME:TARGET,"는")% 자리에서 일어나는 손님에게 정중히 인사했다.
+			;가벼운 터치
+			ELSEIF 함락(ARG) * 50 - LOCAL:2 > 60
+				IF RAND:7 == 0
+					PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 손님과 신체를 서로 기대는 듯이 하며 회화하고 있다…
+				ELSEIF RAND:6 == 0
+					PRINTFORML 손을 붙잡히자 살짝 미소지은 %조사처리(CALLNAME:TARGET,"는")% 태연하게 대화를 이어갔다…
+				ELSEIF RAND:5 == 0
+					PRINTFORML 엉덩이를 만져지고 있는 %조사처리(CALLNAME:TARGET,"는")% 불평하고는 있지만, 어떻게 봐도 즐거워 보인다…
+				ELSEIF RAND:4 == 0
+					PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 조금 야한 주제로 대화하며 은근슬쩍 몸을 가까이 했다…
+				ELSEIF RAND:3 == 0
+					PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 성희롱 질문에 살며시 눈웃음을 지으며 성실하게 대답하고 있다…
+				ELSEIF RAND:2 == 0
+					PRINTFORML 허벅지를 쓰다듬어지고 있는 %조사처리(CALLNAME:TARGET,"는")% 태연한 표정으로 즐겁게 대화하고 있다…
+				ELSE
+					PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 허리에 닿는 손길에 손님을 흘겨보면서도, 은근슬쩍 몸을 더 가까이 했다…
+				ENDIF
+				PRINTFORMW 즐거운 시간을 보낸 뒤, %조사처리(CALLNAME:TARGET,"는")% 자리에서 일어나는 손님에게 다음에 또 보자며 야릇한 목소리로 속삭였다…
+				CFLAG:TARGET:방치일수 += 1 + RAND:3
+			;조금 열중한 대화
+			ELSEIF 함락(ARG) * 50 - LOCAL:2 <= 60
+				IF RAND:7 == 0
+					PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 성적인 주제로 손님과 대화하며, 치마 속으로 파고드는 손길에 끈적한 눈웃음을 지었다……
+				ELSEIF RAND:6 == 0
+					PRINTFORML 엉덩이를 끈적하게 주무르는 손길에 야릇한 미소를 지은 %조사처리(CALLNAME:TARGET,"는")% 달뜬 숨을 내쉬며 손님에게 몸을 기대었다……
+				ELSEIF RAND:5 == 0
+					PRINTFORML 노골적인 성희롱 질문에 요염한 눈웃음을 지은 %조사처리(CALLNAME:TARGET,"는")% 손님의 귀에 입술을 붙이고 대답을 속삭였다……
+				ELSEIF RAND:4 == 0
+					PRINTFORML 블라우스의 단추를 풀어버린 %조사처리(CALLNAME:TARGET,"는")% 손님의 팔에 스스로 가슴을 문지르며 야한 대화를 계속하고 있다……
+				ELSEIF RAND:3 == 0
+					PRINTFORML 손님의 무릎에 앉아 야한 대화를 이어가고 있는 %조사처리(CALLNAME:TARGET,"는")% 은근히 몸을 움직이며 요염하게 미소지었다……
+				ELSEIF RAND:2 == 0
+					PRINTFORML 허벅지를 잔뜩 주물러지고 있는 %조사처리(CALLNAME:TARGET,"는")% 손자국이 남을 정도로 해도 좋다고 속삭이며 손님에게 몸을 기대었다……
+				ELSE
+					PRINTFORML 팬티 위로 가랑이 사이를 희롱당하며, %조사처리(CALLNAME:TARGET,"는")% 다음에 올 때에는 잔뜩 '서비스'를 해주겠다고 손님에게 속삭였다……
+				ENDIF
+				PRINTFORMW 뜨거운 시간을 보낸 %조사처리(CALLNAME:TARGET,"는")% 자리에서 일어나는 손님의 고간을 부드럽게 쓰다듬고서, 스탬프 카드에 도장을 한 번 찍어주었다……
+				CFLAG:TARGET:방치일수 += 1 + RAND:2
+			ENDIF
+			IF CFLAG:TARGET:신경썼다플래그 == 1
+				CDFLAG:TARGET:캐릭터간호감도:(98) += 10
+			ELSE
+				CDFLAG:TARGET:캐릭터간호감도:(98) += 10 + CFLAG:TARGET:1320
+			ENDIF
+		ENDIF
+	;고객 만족도가 낮을수록 클레임 플래그
+	;위에서 유혹한 손님이 있으면 클레임 없음
+	;기본적으로 20%의 보정
+	;고객 만족도가 70 이하일 때만 실행
+	ELSEIF ARG:2 <= 70
+		IF RAND:100 <= 100 - (ARG:2 + 20) || (TEQUIP:TARGET:그외 == 1117 || TEQUIP:TARGET:그외2 == 1117 || TEQUIP:TARGET:그외3 == 1117)
+			PRINTFORML
+			PRINTFORML %CALLNAME:TARGET%에게 인상 나쁜 남자가 클레임을 걸어왔다……
+			PRINTFORML ㆍ
+			PRINTFORML ㆍㆍ
+			PRINTFORMW ㆍㆍㆍ
+			;클레임 대응 여부 판정
+			;淫ＮＴＲ의 경우 저항하지 않음
+			IF RAND:100 <= 100 - (ARG:2 + (ABL:TARGET:기교 + ABL:TARGET:봉사정신)) || TALENT:TARGET:ＮＴＲ == 2 || (TEQUIP:TARGET:그외 == 1117 || TEQUIP:TARGET:그외2 == 1117 || TEQUIP:TARGET:그외3 == 1117)
+				PRINTFORML 
+				PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 능숙하게 대처하지 못했다……
+				;몸으로 클레임을 처리하는 판정
+				;기본적으로 10%의 보정
+				;淫ＮＴＲ의 경우 곧바로 실행
+				IF RAND:100 <= 100 - (LOCAL:4 + 10) || TALENT:TARGET:ＮＴＲ == 2 || (TEQUIP:TARGET:그외 == 1117 || TEQUIP:TARGET:그외2 == 1117 || TEQUIP:TARGET:그외3 == 1117)
+					;윤간인수
+					LOCAL:5 = 3 + RAND:4
+					;여자의 경우
+					IF TALENT:TARGET:남자 == 0 
+						IF TALENT:TARGET:ＮＴＲ == 2
+							PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 남자의 사무실에서 실내에 있던 {LOCAL:5}명의 남자들에게 몸을 사용하여 클레임을 처리했다……
+							PRINTFORMW 몸을 써서 위기를 모면한다는 시츄에이션에 흥분한 %조사처리(CALLNAME:TARGET,"는")% 시작하기 전부터 달아오른 얼굴로 입맛을 다셨다……
+						ELSE
+							PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 남자의 사무소에 억지로 끌려가 실내에 있던 {LOCAL:5}명의 남자들에게 윤간당했다……
+							IF CFLAG:TARGET:904 >= 750
+								IF BASE:30 >= 10
+									IF RAND:2 == 0
+										PRINTFORMW 손쉽게 해치워버릴 수 있는 남자들에게 범해진다는 시츄에이션에 마조 욕구가 자극된 %조사처리(CALLNAME:TARGET,"는")% 몰래 입맛을 다셨다……
+									ELSE
+										PRINTFORMW 손끝만 까딱여도 모조리 해치워버릴 수 있는 남자들에게 범해진다는 흥분으로 %조사처리(CALLNAME:TARGET,"는")% 얼굴을 붉히며 침을 삼켰다……
+									ENDIF
+								ELSEIF TALENT:TARGET:84 == 1
+									IF RAND:2 == 0
+										PRINTFORMW 몸을 바쳐 위기를 모면한다는 시츄에이션에 흥분한 %조사처리(CALLNAME:TARGET,"는")% 시작하기 전부터 달아오른 얼굴로 입맛을 다셨다……
+									ELSE
+										PRINTFORMW 억지로 트집을 잡혀 여러 명에게 범해진다는 시츄에이션에 흥분한 %조사처리(CALLNAME:TARGET,"는")% 얼굴을 붉히며 침을 삼켰다……
+									ENDIF
+								ELSE
+									IF RAND:2 == 0
+										PRINTFORMW 여러 개의 자지에 한꺼번에 범해지게 된다는 굴욕적인 상황에 흥분한 %조사처리(CALLNAME:TARGET,"는")% 고개를 숙이고 몰래 입꼬리를 당겼다……
+									ELSE
+										PRINTFORMW 여러 개의 자지에 한꺼번에 범해지게 된다는 기대로 흥분한 %조사처리(CALLNAME:TARGET,"는")% 붉게 물든 얼굴로 미소지었다……
+									ENDIF
+								ENDIF
+							ENDIF
+						ENDIF
+						PRINTFORML
+						SIF CFLAG:TARGET:배란유발제 == 1
+							GOTO OKUSURI
+						;음란도(1316)가 높을 때
+						IF CFLAG:TARGET:1316 > 300
+							IF CFLAG:TARGET:자궁내피임결계 == 1
+								CFLAG:TARGET:자궁내피임결계 = 0
+								PRINTFORML 몇 개나 되는 자지에 거칠게 범해진 %CALLNAME:TARGET%의 자궁내 피임결계가 해제되어버렸다……
+							ENDIF
+							IF RAND:100 <= 30 && CFLAG:TARGET:자궁내피임결계 == 0
+								CFLAG:TARGET:배란유발제 = 1
+								IF RAND:2 == 0
+									PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 숨을 고르려 입을 벌린 틈을 타 배란유발제를 먹여졌다……
+								ELSE
+									$OKUSURI
+									PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 정신없이 헐떡이던 틈에 수상한 약을 주사당했다……
+									CFLAG:TARGET:1316+= 100 - ARG:2 + CFLAG:TARGET:1319*10
+									LOCAL:6 = 1
+								ENDIF
+							ENDIF
+						ENDIF
+						PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 정액투성이인 모습으로 자초지종이 기록된 테이프와 함께 가게 앞에 버려져 있었다……	
+						PRINTFORML 
+						LOCAL:3 = 5
+						CALL Mary_K4509_NTR_RESTO_SEX, TARGET, LOCAL:3, LOCAL:5
+						SETCOLOR 204,51,255
+						PRINTFORML 
+						IF 위험일(TARGET)
+							PRINTFORMW 테이프에는 위험일일 터인 %조사처리(CALLNAME:TARGET,"가")% 잔뜩 흥분한 표정을 하고 차례차례로 질내에 사정당하고 있는 영상이 찍혀 있었다……
+						ELSEIF TALENT:TARGET:ＮＴＲ == 2
+							PRINTFORMW 테이프에는 헤롱헤롱한 얼굴의 %조사처리(CALLNAME:TARGET,"가")% 질내사정 당하면서 『피스 사인(V사인)』을 하고 있는 영상이 찍혀 있었다……	
+						;배란유발제
+						ELSEIF CFLAG:TARGET:배란유발제 == 1
+							;妖しい薬
+							IF LOCAL:6 == 1
+								IF RAND:4 == 0
+									PRINTFORMW 테이프에는 %조사처리(CALLNAME:TARGET,"가")% 내밀어진 혀끝에서 침을 늘어뜨리며 남자 위에서 허리를 계속 흔드는 영상이 찍혀 있었다……
+									PRINTFORMW 입가에 내밀어진 페니스를 맛있다는 듯이 빨면서, 여러 명의 남자들에게 계속 질내사정 당하고 있다……
+								ELSEIF RAND:3 == 0
+									PRINTFORML 테이프에는 남자에게 배면좌위로 거칠게 범해지고 있는 %CALLNAME:TARGET%의 영상이 찍혀 있었다……
+									PRINTFORMW %CALLNAME:TARGET%의 다리는 크게 벌려져, 희뿌연 애액이 흘러나오는 결합부가 훤히 보이고 있다……
+									PRINTFORMW 남자는 음란한 말을 외치는 %CALLNAME:TARGET%의 안에 사정을 끝마치고, 정액투성이의 페니스를 뽑았다……
+									PRINTFORML 
+									PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 쾌락에 녹아내릴 것같은 얼굴로 『극태자지에 교배당해 버렸습니다아♡』라며 더블 피스 사인을 하고 있다……
+									PRINTFORMW 벌어진 질구에서는 %CALLNAME:TARGET%의 뺨에 백탁투성이의 귀두를 비비면서 히죽거리는 남자의 정액이 넘쳐 나오고 있었다……
+								ELSEIF RAND:2 == 0
+									PRINTFORMW 테이프에는 침대에 엎드려 누워있는 %조사처리(CALLNAME:TARGET,"가")%、남자에게 양다리를 안긴 듯한 자세로 허리를 쳐붙여지고 있는 영상이 찍혀있었다……
+									PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 정숙하지 못하게 벌린 입 사이로 혀를 내밀고, 황홀한 눈으로 쾌락의 소용돌이에 몸을 맡기고 있다……
+									PRINTFORML 
+									PRINTFORMW 남자가 정액을 질내에 전부 뿜어내자, %조사처리(CALLNAME:TARGET,"는")% 고개를 뒤로 꺾으며 수정당하는 기쁨에 몸을 떨었다……
+								ELSE
+									PRINTFORMW 테이프에는 헤픈 웃음을 띤 채로 자신의 비소를 벌리면서 질내사정을 조르는 %CALLNAME:TARGET%의 영상이 찍혀 있었다……
+									PRINTFORMW 쾌락에 녹아내릴 것 같은 얼굴을 한 %CALLNAME:TARGET%에게, 차례차례 남자들이 질내사정을 하는 모습이 생생하게 찍혀 있었다……
+								ENDIF
+							;배란유발제
+							ELSE
+								IF CFLAG:TARGET:904 >= 750
+									IF RAND:2 == 0
+										PRINTFORML 테이프를 재생하자 배란유발제를 먹은 것을 깨달은 %조사처리(CALLNAME:TARGET,"가")% 오히려 요염한 얼굴로 남자들을 도발하는 모습이 비춰지고 있었다……
+										PRINTFORML 흥분한 남자들은 일제히 덤벼들어 그녀의 옷을 찢어버릴 기세로 벗겨내고 발기한 자지를 그녀의 얼굴과 하반신에 들이밀었다……
+										PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% 몸집이 커다란 남자 두 명에게 앞뒤로 범해지면서, 입으로도 자지를 빨며 달콤한 콧소리를 흘렸다……
+										PRINTFORML 
+										PRINTFORMW 영상의 끝에는, 쾌락에 녹아내린 표정의 %조사처리(CALLNAME:TARGET,"가")% 크게 다리를 벌려 정액이 넘쳐흐르는 아랫입을 과시하는 자세로
+										PRINTFORMW 백탁투성이의 자지들 끝에 차례대로 입을 맞추며, 남자들과 함께 피스 사인을 하고 있는 모습이 찍혀 있었다……
+									ELSE
+										PRINTFORML 테이프에는 배란유발제를 먹은 %조사처리(CALLNAME:TARGET,"가")% 근육질의 남자의 위에 올라타 허리를 흔드는 모습이 찍혀 있었다……
+										PRINTFORML 거칠게 헐떡이며 춤추듯이 허리를 돌리던 %조사처리(CALLNAME:TARGET,"는")% 음란한 말과 함께 남자에게 질내사정을 재촉했다……
+										PRINTFORMW 영상의 끝에는, 몇 번이고 질내사정 당한 %조사처리(CALLNAME:TARGET,"가")% 허리를 들어올려 벌어진 질구에서 정액이 흘러넘치는 모습을 과시했다……
+									ENDIF
+								ELSE
+									IF RAND:2 == 0
+										PRINTFORML 테이프를 재생하자 배란유발제를 먹은 것을 깨달은 %조사처리(CALLNAME:TARGET,"가")% 다급한 얼굴로 남자들에게 간청하는 모습이 비춰지고 있었다……
+										PRINTFORML 다른 봉사로 만족시킨다면 질내사정은 용서해주겠다는 말에 황급히 고개를 끄덕이고서, 그녀는 최선을 다해 남자들의 자지를 빨았다……
+										PRINTFORMW 그러나 결국 %조사처리(CALLNAME:TARGET,"는")% 몸집이 커다란 남자에게 허벅지를 안기듯이 끌어당겨져, 확실하게 질내에 정액을 퍼부어졌다……
+										PRINTFORML 
+										PRINTFORMW 영상의 끝에는, 몽롱한 표정으로 축 늘어진 %CALLNAME:TARGET%의 벌어진 아랫입에서 정액이 넘쳐흐르는 모습이 클로즈업 되어 있었다……
+									ELSE
+										PRINTFORML 테이프에는 배란유발제를 먹은 %조사처리(CALLNAME:TARGET,"가")% 문신을 한 남자에게 몇 번이고 질내사정 당하는 영상이 찍혀 있었다……
+										PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 처음엔 저항하려 했지만 자궁의 갈증을 이기지 못하고 결국 남자의 페니스가 안으로 들어오는 것을 허락하고 말았다……
+										PRINTFORMW 영상의 후반부에선 완전히 쾌락에 녹아내린 표정의 %조사처리(CALLNAME:TARGET,"가")% 남자의 허리에 다리를 휘감아 끌어당겨 질내사정을 재촉하고 있었다……
+									ENDIF
+								ENDIF
+							ENDIF
+						;통상
+						ELSE
+							IF CFLAG:TARGET:904 >= 750
+								IF RAND:6 == 0
+									PRINTFORML 테이프에는 %조사처리(CALLNAME:TARGET,"가")% 남자들에게 파묻혀 엉망진창으로 범해지는 영상이 찍혀 있었다……
+									PRINTFORMW 몸의 안팎으로 정액이 뿌려진 %조사처리(CALLNAME:TARGET,"는")% 헤롱헤롱한 얼굴로 허리를 흔들며 카메라를 향해 웃어 보였다……
+								ELSEIF RAND:5 == 0
+									PRINTFORML 테이프를 재생하자 기대감 가득한 얼굴로 앉아있는 %CALLNAME:TARGET%의 모습이 찍혀 있었다……
+									PRINTFORML 화면에서 『해라』라고 말하는 남자의 목소리가 들리자, 페니스를 발기시킨 남자들이 일제히 덤벼들었다…
+									PRINTFORML 화면에서는 %CALLNAME:TARGET%의 교태어린 목소리와 남자들의 웃음소리가 들려오고, 이윽고 무언가 빠는 듯한 추잡한 물소리가 들려왔다…
+									PRINTFORMW 그러던 도중 아찔한 교성과 함께 찢어진 팬티가 걸려있는 %CALLNAME:TARGET%의 다리가 움찔거렸고, 철퍽거리는 소리와 달콤한 신음소리가 이어졌다…
+									PRINTFORML 
+									PRINTFORMW 마지막으로 비춰진 것은, 정액을 뒤집어쓴 채 녹아내린 표정으로 남자들의 자지를 핥으며 피스 사인을 해보이는 %CALLNAME:TARGET%의 모습이었다……
+								ELSEIF RAND:4 == 0
+									PRINTFORML 테이프에는 등을 돌리고 남자의 하반신에 올라타 요염하게 허리를 흔들고 있는 %CALLNAME:TARGET%의 모습이 찍혀 있었다……
+									PRINTFORML 입으로는 다른 남자의 자지를 쉴새없이 빨아대며, 두 손도 쉬지 않고 각각 다른 페니스를 열심히 흔들고 있다……
+									PRINTFORMW 영상의 끝에는 몸 구석구석까지 백탁으로 더럽혀진 %조사처리(CALLNAME:TARGET,"가")% 카메라를 향해 정액이 넘쳐흐르는 아랫입을 과시하고 있었다……
+								ELSEIF RAND:3 == 0
+									PRINTFORML 테이프를 재생하자 붉게 물든 얼굴로 미소지으며 알몸으로 앉아있는 %CALLNAME:TARGET%의 모습이 찍혀 있었다……
+									PRINTFORML 이윽고 그녀는 카메라를 바라보면서, 실수를 한 것에 대한 사죄로 몸을 바치겠다고 말하며 천천히 도게자를 했다……
+									PRINTFORMW 뒤에 서 있던 남자들은 그대로 도게자를 한 채인 그녀의 보지를 차례차례로 범하면서, 엉덩이를 찰싹 때리거나 하며 그녀의 몸 안팎에 마음껏 정액을 흩뿌렸다……
+									PRINTFORML 
+									PRINTFORMW 영상의 끝에는, 마지막까지 도게자 자세를 유지한 채로 정액범벅이 된 %조사처리(CALLNAME:TARGET,"가")% 용서해 주셔서 감사하다고 말하는 모습이 찍혀 있었다……
+								ELSEIF RAND:2 == 0
+									PRINTFORML 테이프에는 남자의 위에 걸터앉아 배면좌위로 범해지고 있는 %CALLNAME:TARGET%의 모습이 찍혀 있었다……
+									PRINTFORML 카메라를 바라본 그녀는 더블 피스를 해 보이면서, 화해의 의미로 남자들 모두와 섹스하고 있다며 흐물흐물한 표정으로 미소지었다…
+									PRINTFORMW 마지막으로 정액범벅이 된 그녀가 발기한 자지들에 둘러싸인 채로, 지금부터 2차전을 시작한다며 손을 흔드는 모습을 비추며 영상은 끝났다……
+								ELSE
+									PRINTFORML 테이프에는 양손을 뒤로 묶이고 눈가리개를 한 %조사처리(CALLNAME:TARGET,"가")% 남자들과 차례차례 후배위로 몸을 섞는 영상이 찍혀 있었다……
+									PRINTFORML 혀를 내밀고 교성을 지르는 그녀는 완전히 녹아내린 표정으로, 스스로 허리를 움직여 남자들의 사정을 돕고 있다……
+									PRINTFORML 사정을 마친 남자들은 앞쪽으로 가서 그녀에게 청소펠라를 받고, 다시 그녀를 범하기 위해 뒤쪽으로 가 줄을 서서 기다리고 있다…
+									PRINTFORMW 영상의 끝에는 윗입도 아랫입도 정액투성이가 된 %조사처리(CALLNAME:TARGET,"가")% 눈가리개를 한 채로 피스 사인을 해 보이는 모습이 생생하게 찍혀 있었다……
+								ENDIF
+							ELSE
+								IF RAND:6 == 0
+									PRINTFORML 테이프에는 %조사처리(CALLNAME:TARGET,"가")% 남자들에게 파묻혀 엉망진창으로 범해지는 영상이 찍혀 있었다……
+									PRINTFORMW 몸의 안팎으로 정액이 뿌려진 %조사처리(CALLNAME:TARGET,"는")% 축 늘어진 채 몽롱한 얼굴로 헐떡일 뿐이었다……
+								ELSEIF RAND:5 == 0
+									PRINTFORML 테이프를 재생하자 불안한 얼굴로 앉아있는 %CALLNAME:TARGET%의 모습이 찍혀 있었다……
+									PRINTFORML 화면에서 『해라』라고 말하는 남자의 목소리가 들리자, 페니스를 발기시킨 남자들이 일제히 덤벼들었다…
+									PRINTFORML 화면에서는 %CALLNAME:TARGET%의 억눌린 목소리와 남자들의 웃음소리가 들려오고,
+									PRINTFORMW 몰려든 남자들의 틈새로 비어져 나온 발목에는 찢어진 속옷이 팔랑팔랑 흔들리고 있다…
+									PRINTFORML 
+									PRINTFORMW 마지막으로 비춰진 것은, 너덜너덜한 복장으로 정액을 뒤집어쓴 채 멍한 표정으로 남자들의 자지를 핥고 있는 %CALLNAME:TARGET%의 모습이었다……
+								ELSEIF RAND:4 == 0
+									PRINTFORML 테이프에는 바닥에 깔아눕혀진 %조사처리(CALLNAME:TARGET,"가")% 몸부림치며 저항하는 영상이 찍혀 있었다……
+									PRINTFORMW 점점 다가오는 남자의 몸을 양손으로 밀어내려고 했지만, 저항도 헛되이 머리를 바닥에 억눌리면서 양아치의 육봉을 삽입당해 버렸다……
+									PRINTFORML 
+									PRINTFORML 양아치가 입꼬리를 끌어올리면서 질내에 사정을 시작하자, %CALLNAME:TARGET%의 눈동자가 흐려지며 입에서 멋대로 신음소리가 흘러나왔다……
+									PRINTFORMW 저항할 기력을 잃은 %조사처리(CALLNAME:TARGET,"는")% 차례차례로 남자들의 노리개가 되고 있었다……
+								ELSEIF RAND:3 == 0
+									PRINTFORML 테이프에는 남자들에게 억눌리면서 질내사정 당하고 있는 %CALLNAME:TARGET%의 결합부가 클로즈업으로 찍혀 있었다……
+									PRINTFORMW 촬영 전에도 몇 번이나 더럽혀진 듯, 그녀의 비부는 마찰로 붉게 달아오르고 찐득한 정액이 잔뜩 달라붙어 엉망진창이 되어 있다……
+								ELSEIF RAND:2 == 0
+									PRINTFORMW 테이프에는 양손을 뒤로 묶이고 눈가리개를 한 %조사처리(CALLNAME:TARGET,"가")% 남자들에게 차례차례 뒤로 범해지는 영상이 찍혀 있었다……
+									PRINTFORMW 알지 못하는 남자의 정액으로 질내를 더럽혀질 때마다 그녀는 비통함과 쾌락이 섞인 억눌린 교성을 지르고 있다……
+								ELSE
+									PRINTFORML 테이프에는 양손이 묶인 %조사처리(CALLNAME:TARGET,"가")% 침대 위에서 살찐 아저씨들에게 범해지는 영상이 찍혀 있었다……
+									PRINTFORML 대머리 아저씨가 처진 아랫배를 흔들면서 %CALLNAME:TARGET%의 엉덩이가 뭉개질 정도로 허리를 밀어붙일 때마다, 
+									PRINTFORMW 다른 아저씨의 자지로 틀어막힌 그녀의 입에서 침과 섞인 정액과 함께 억눌린 신음소리가 흘러나오고 있다……
+								ENDIF
+							ENDIF
+						ENDIF
+						PRINTFORML
+						RESETCOLOR
+						;노동 결과값：몸으로 클레임을 처리
+						TFLAG:86 += 200
+					ENDIF
+				;입으로 클레임을 처리
+				ELSE
+					PRINTFORML
+					;노동 결과값：입으로 클레임을 처리
+					TFLAG:86 += 100
+					IF RAND:2 == 0
+						PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 남자를 화장실로 이끌어, 입으로 봉사할테니 부디 용서해달라고 속삭였다…
+						PRINTFORML 음흉하게 미소지은 남자가 바지를 내리고 변기에 앉자, %조사처리(CALLNAME:TARGET,"는")% 곧바로 그 앞에 쪼그려 앉았다…
+					ELSE
+						PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 테이블 아래로 기어들어가, 입으로 봉사할테니 부디 용서해달라고 말하며 남자를 올려다보았다……
+						PRINTFORML 남자가 기다렸다는 듯 고개를 끄덕이자 %조사처리(CALLNAME:TARGET,"는")% 정중한 손짓으로 남자의 바지를 벗겼다……
+					ENDIF
+					PRINTFORMW ……잠시 후, %CALLNAME:TARGET%의 훌륭한 입봉사에 만족한 남자는 더 이상 소란을 피우지 않고 얌전히 가게 밖으로 나갔다……
+					PRINTFORML
+					LOCAL:3 = 6
+					CALL Mary_K4509_NTR_RESTO_SEX, TARGET, LOCAL:3
+				ENDIF
+			;클레임 처리 성공
+			ELSE
+				IF RAND:3 == 0
+					;노동 결과값: 클레임 처리를 원만히 마쳤다
+					TFLAG:86 += 10
+					IF RAND:4 == 0
+						PRINTFORML %CALLNAME:TARGET%의 빠른 응대에, 손님의 분노는 곧 가라앉았다.
+						PRINTFORMW 애초에 그렇게 큰 문제는 아니었는지, %조사처리(CALLNAME:TARGET,"가")% 얼굴을 비추자 분위기는 금새 풀렸다.
+					ELSEIF RAND:3 == 0
+						PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 능숙하게 손님에게 몸을 붙이고, 친절한 태도로 대응했다.
+						PRINTFORMW 몸에 닿는 부드러운 여체의 감촉에, 손님의 분노는 곧 가라앉았다.
+					ELSEIF RAND:2 == 0
+						PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 어떻게든 손님을 진정시키 위해 계속해서 머리를 숙여 사과했다.
+						PRINTFORMW %조사처리(CALLNAME:TARGET,"가")% 허리를 굽힐 때마다 드러나는 가슴골 안쪽을 보며, 손님은 화를 가라앉힌 듯 하다.
+					ELSE
+						PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 미흡한 서비스에 대해 고개 숙여 사과했다.
+						PRINTFORMW 다행히 %조사처리(CALLNAME:TARGET,"와")% 안면이 있었는지, 곧 진정한 손님과 원만하게 대화를 마쳤다.
+					ENDIF
+				ELSE
+					;노동 결과값: 클레임 처리로 성희롱을 당했다
+					TFLAG:86 += 20
+					IF RAND:4 == 0
+						PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 손님이 돌아갈 때까지 위자료 대신이라며 가슴을 비비길 계속했다…
+						PRINTFORML 가끔씩 젖꼭지를 꼬집힐 때마다 그녀는 작게 신음을 흘리며 움찔움찔 어깨를 떨었다…
+						PRINTFORMW 끝에는 완전히 풀어진 얼굴로 달뜬 숨을 내쉬며, %조사처리(CALLNAME:TARGET,"는")% 자기도 모르게 손님의 손에 가슴을 문지르기까지 했다……
+					ELSEIF RAND:3 == 0
+						PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 손님의 요구로 옆자리에 몸을 붙이고 앉게 되어, 잔뜩 성희롱을 당하고 말았다…
+						PRINTFORMW 몸 이곳저곳을 마음대로 주물러지며, 그녀는 붉게 물든 수줍은 얼굴로 야한 질문에 성실히 대답했다……
+					ELSEIF RAND:2 == 0
+						PRINTFORML 성의를 보이면 용서한다는 말에, 그녀는 명령하는 대로 스커트를 걷어올려 얼굴을 붉히며 속옷을 드러냈다…
+						PRINTFORMW 한참 동안 그녀의 하반신을 감상하던 손님이 용서해주었을 때는, 이미 흘러나온 애액으로 팬티 안쪽이 젖어버린 후였다……
+					ELSE
+						PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 자신이 입고 있는 속옷을 내미는 것으로 용서받았다……
+						PRINTFORML 치마를 걷어올려 입으로 물고, 손님이 잘 볼 수 있도록 천천히 몸을 움직여 팬티를 벗었다…
+						PRINTFORMW 두 손으로 공손하게 내민 팬티를 받아낸 손님이 고개를 끄덕이자, 그녀는 붉게 물든 얼굴로 다시 한 번 허리를 숙였다……
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDIF
+	;유혹 없음, 클레임 없음 
+	ELSE
+		PRINTFORML %조사처리(CALLNAME:TARGET,"는")% 오늘도 남자들의 시선을 한 몸에 받으며, 접객에 최선을 다했다.
+	ENDIF
+	PRINTFORML
+	PRINTFORML
+	PRINTFORMW
+
+
+CFLAG:TARGET:824 = 0
+CFLAG:TARGET:808 = 0
+
+;==========================================================
+;@Mary_K4509_NTR_RESTO_SEX
+; ＮＴＲ섹스 계산
+;<인수>
+;	ARG   = 노역 캐릭터의 등록번호
+;	ARG:1 = ＮＴＲ상대 번호
+;LOCAL:1 = 상대의 사정횟수
+;LOCAL:2 = 상대의 성교횟수
+;LOCAL:3 = 플레이 내용
+;LOCAL:4 = 윤간인수
+;LOCAL:5 = 호감도
+;LOCAL:6 = 음란도
+;LOCAL:7 = 호감도 감소 처리용
+;==========================================================
+@Mary_K4509_NTR_RESTO_SEX, ARG, ARG:3, ARG:4
+#LOCALSIZE 8
+#DIM LCOUNT
+CFLAG:TARGET:펠라횟수 = 0
+CFLAG:TARGET:본방횟수 = 0
+CFLAG:TARGET:애널횟수 = 0
+CFLAG:TARGET:질내사정횟수 = 0
+CFLAG:TARGET:수음횟수 = 0
+TCVAR:TARGET:획득키스경험 = 0
+LOCAL:3 = ARG:3 , ARG:4
+
+
+;조수 ＮＴＲ（본방）
+IF LOCAL:3 == 1
+	CFLAG:TARGET:질내사정횟수 = 1
+	CFLAG:TARGET:본방횟수 = 1
+	LOCAL:1 = 2 + RAND:4
+	LOCAL:2 = LOCAL:1 + RAND:(LOCAL:1)
+	TCVAR:TARGET:획득바람경험 = 1
+;조수 ＮＴＲ（펠라）
+ELSEIF LOCAL:3 == 2
+	CFLAG:TARGET:펠라횟수 = 1 + RAND:3
+	TCVAR:TARGET:획득바람경험 = 1
+;ＮＴＲ 좋아하는 손님（본방）
+ELSEIF LOCAL:3 == 3
+	ARG:1 = -2
+	CFLAG:TARGET:질내사정횟수 = 1
+	CFLAG:TARGET:본방횟수 = 1
+	LOCAL:1 = 2 + RAND:4
+	LOCAL:2 = LOCAL:1 + RAND:(LOCAL:1)
+	TCVAR:TARGET:획득바람경험 = 1
+;ＮＴＲ 좋아하는 손님（펠라）
+ELSEIF LOCAL:3 == 4
+	ARG:1 = -2
+	CFLAG:TARGET:펠라횟수 = 1 + RAND:3
+	TCVAR:TARGET:획득바람경험 = 1
+;클레임 손님（본방）
+ELSEIF LOCAL:3 == 5
+	ARG:1 = -3
+	CFLAG:TARGET:질내사정횟수 = LOCAL:4
+	CFLAG:TARGET:본방횟수 = LOCAL:4
+	LOCAL:1 = LOCAL:4 + RAND:(LOCAL:4)
+	LOCAL:2 = LOCAL:1 + RAND:(LOCAL:4)
+	TCVAR:TARGET:획득윤간경험 = 1
+;클레임 손님（펠라）
+ELSEIF LOCAL:3 == 6
+	ARG:1 = -3
+	CFLAG:TARGET:펠라횟수 = 3 + RAND:3
+ENDIF
+
+
+IF LOCAL:3 == 1 || LOCAL:3 == 3 || LOCAL:3 == 5
+	FOR LCOUNT , 0 , LOCAL:2
+		IF RAND:100 <= 60
+			IF HAVE_PENIS(TARGET) && HAVE_VAGINA(TARGET)
+				CFLAG:TARGET:본방횟수 += 1
+				CFLAG:TARGET:수음횟수 += 1
+			ELSEIF HAVE_PENIS(TARGET)
+				CFLAG:TARGET:애널횟수 += 1
+				CFLAG:TARGET:수음횟수 += 1
+			ELSE
+				CFLAG:TARGET:본방횟수 += 1
+			ENDIF
+		ELSEIF RAND:100 <= 50
+			IF HAVE_PENIS(TARGET)
+				CFLAG:TARGET:수음횟수 += 1
+			ELSE
+				CFLAG:TARGET:펠라횟수 += 1
+			ENDIF
+		ELSE
+			IF HAVE_PENIS(TARGET) && HAVE_VAGINA(TARGET)
+				CFLAG:TARGET:애널횟수 += 1
+				CFLAG:TARGET:수음횟수 += 1
+			ELSEIF HAVE_PENIS(TARGET)
+				CFLAG:TARGET:애널횟수 += 1
+				CFLAG:TARGET:수음횟수 += 1
+			ELSE
+				CFLAG:TARGET:애널횟수 += 1
+			ENDIF
+		ENDIF
+	NEXT
+	CFLAG:TARGET:질내사정횟수 += LIMIT(RAND:(1+CFLAG:TARGET:본방횟수) , 0, LOCAL:1)
+
+	;키스경험처리：첫키스 이외에만
+	SIF CFLAG:TARGET:312 != 0
+		TCVAR:TARGET:획득키스경험 += (CFLAG:TARGET:본방횟수 + CFLAG:TARGET:펠라횟수)
+ENDIF
+
+;획득경험
+TCVAR:TARGET:획득펠라경험 = CFLAG:TARGET:펠라횟수
+TCVAR:TARGET:획득봉사쾌락경험 = CFLAG:TARGET:펠라횟수
+TCVAR:TARGET:획득Ｖ경험 = CFLAG:TARGET:본방횟수
+TCVAR:TARGET:획득Ａ경험 = CFLAG:TARGET:애널횟수
+TCVAR:TARGET:획득성교경험 = CFLAG:TARGET:본방횟수 + CFLAG:TARGET:애널횟수
+TCVAR:TARGET:획득질사경험 = CFLAG:TARGET:질내사정횟수
+TCVAR:TARGET:획득정액경험 = LOCAL:1
+IF TCVAR:TARGET:획득윤간경험
+	TCVAR:TARGET:획득고통쾌락경험 = (CFLAG:TARGET:본방횟수 + CFLAG:TARGET:애널횟수) / 2
+	TCVAR:TARGET:획득피사경험 = (CFLAG:TARGET:본방횟수 + CFLAG:TARGET:애널횟수) / 2
+ENDIF
+SIF CFLAG:TARGET:수음횟수 > 0
+	TCVAR:TARGET:획득사정경험 = RAND:(CFLAG:TARGET:수음횟수)
+SIF TCVAR:TARGET:획득성교경험 + TCVAR:TARGET:획득사정경험 > 0
+	TCVAR:TARGET:획득절정경험 = RAND:(TCVAR:TARGET:획득성교경험 + TCVAR:TARGET:획득사정경험)
+;임신용
+SIF CFLAG:TARGET:자궁내피임결계 == 0
+	CFLAG:TARGET:105 = TCVAR:TARGET:획득질사경험*2
+;처녀상실 처리
+IF TALENT:TARGET:처녀 && CFLAG:TARGET:본방횟수
+	CALL ADDS_ABNORMAL_EXP, "처녀상실（윤간）", TARGET
+	CALL ADDS_ABNORMAL_EXP, "처녀상실（촬영）", TARGET
+	SETCOLOR COLOR("red")
+	IF LOCAL:3 == 5
+		PRINTFORML 【＋２】   처녀상실（윤간）
+		PRINTFORML 【＋２】   처녀상실（촬영）
+	ELSEIF LOCAL:3 == 1 || LOCAL:3 == 3
+		PRINTFORML 【＋２】   처녀상실(ＮＴＲ)
+	ENDIF
+	RESETCOLOR
+	TALENT:TARGET:처녀 = 0
+ELSEIF TALENT:TARGET:재생처녀
+	PRINTFORML 재생처녀상실
+	TALENT:TARGET:재생처녀 = 0
+ENDIF
+
+LOCAL:5 = TCVAR:TARGET:획득정액경험 * 5 + (TCVAR:TARGET:획득절정경험 + TCVAR:TARGET:획득질사경험) * 10 + CFLAG:TARGET:1320
+LOCAL:6 = CFLAG:TARGET:본방횟수 + CFLAG:TARGET:애널횟수 + TCVAR:TARGET:획득절정경험 * 10
+LOCAL:7 = CFLAG:TARGET:질내사정횟수 * 3 + TCVAR:TARGET:획득절정경험 * 5
+
+
+;ＮＴＲ손님의 설정 처리
+SELECTCASE FLAG:59
+	CASE  0
+		TIMES LOCAL:5 , 1.00
+		TIMES LOCAL:6 , 1.00
+		TIMES LOCAL:7 , 1.00
+	CASE  1
+		TIMES LOCAL:5 , 2.00
+		TIMES LOCAL:6 , 2.00
+		TIMES LOCAL:7 , 2.00
+	CASE  2
+		TIMES LOCAL:5 , 5.00
+		TIMES LOCAL:6 , 5.00
+		TIMES LOCAL:7 , 5.00
+ENDSELECT
+
+;자궁 현재 용량 가산
+IF TALENT:TARGET:오토코노코
+	CFLAG:(TARGET):91 += LOCAL:7 * 2
+ELSEIF !IS_MALE(TARGET)
+	CFLAG:(TARGET):91 += LOCAL:7 * 2
+ENDIF
+
+;호감도
+IF CFLAG:TARGET:824 == 1
+	CDFLAG:TARGET:캐릭터간호감도:(CFLAG:ASSI:캐릭터고유번호 + 100) += LOCAL:5
+ELSEIF ARG:1 == -2
+	CDFLAG:TARGET:캐릭터간호감도:(98) += LOCAL:5
+ELSEIF ARG:1 == -3
+	CDFLAG:TARGET:캐릭터간호감도:(97) -= LOCAL:5
+ENDIF
+
+;음란도 상승
+;"바람기"가 있는 경우 음란도를 배로 한다
+;904도 상승
+IF TALENT:TARGET:바람기
+	CFLAG:TARGET:1316 += LOCAL:6*2
+	CFLAG:TARGET:904 += LOCAL:6 / 5
+ELSE
+	CFLAG:TARGET:1316 += LOCAL:6
+	CFLAG:TARGET:904 += LOCAL:6 / 10
+ENDIF
+
+
+;호감도 감소 처리
+CALL NTR_SHOOT , TARGET, ARG:1, LOCAL:7
+
+CALL SHOW_ADD_EXP, ARG

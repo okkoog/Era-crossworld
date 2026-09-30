@@ -1,0 +1,93 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5461_白き鋼鉄のＸ_デイサイト.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/05/15		P(bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:데이사이트_X2]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+CALL SET_BASE_[[キャラ:데이사이트_X2]], ARG, ARG:2
+
+;ARG:1はイベントフラグ
+@SET_BASE_[[キャラ:데이사이트_X2]], ARG, ARG:1
+IF ARG:1 == 0
+	NAME:ARG = デイサイト
+	CALLNAME:ARG = デイサイト
+	;機械から悪魔になったため電撃弱点を通常に、神経と呪殺を耐性に
+	BASE:ARG:전격 = 100
+	BASE:ARG:신경 = 50
+	BASE:ARG:주살 = 50
+	CFLAG:ARG:초기옷 = 0
+	CFLAG:ARG:옷 = 0
+	TEQUIP:ARG:옷 = 0
+	CFLAG:ARG:초기하의 = [[衣装:파레오]]
+	CFLAG:ARG:하의 = [[衣装:파레오]]
+	TEQUIP:ARG:하의 = [[衣装:파레오]]
+	CFLAG:ARG:초기속옷（하） = [[衣装:복서브리프]]
+	CFLAG:ARG:속옷（하） = [[衣装:복서브리프]]
+	TEQUIP:ARG:속옷（하） = [[衣装:복서브리프]]
+	CSTR:ARG:44 = 躯体を構成するＰｉｘをドリー・カドモンに封じられたことで、悪魔として受肉することとなった。
+	CSTR:ARG:45 = 突然%CALLNAME:MASTER%によって拉致されたも同然の経緯であるが、
+	CSTR:ARG:46 = 本人としては雇い主が変わった程度の認識であり、使命とあらば力を振るう所存である。
+ENDIF
+
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:데이사이트_X2]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("デイサイト_X2_FACE_0")
+			RETURNF ""
+		SIF !SPRITECREATED("デイサイト_X2_FACE_1")
+			RETURNF ""
+		SIF !SPRITECREATED("デイサイト_X2_FACE_2")
+			RETURNF ""
+		RESULTS_F = デフォルト
+		RESULTS_F:1 = デイサイト_X2_FACE_0
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:데이사이트_X2]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "デフォルト"
+		SELECTCASE L_SITUATION
+			CASE "強火"
+				RESULTS_F '= "デイサイト_X2_FACE_2"
+			CASE "中火"
+				RESULTS_F '= "デイサイト_X2_FACE_1"
+			CASEELSE
+				RESULTS_F '= "デイサイト_X2_FACE_0"
+		ENDSELECT
+	CASEELSE
+ENDSELECT

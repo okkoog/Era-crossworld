@@ -1,0 +1,219 @@
+﻿;====================
+;条件
+;====================
+@GET_EVENT_NAME_243
+#FUNCTIONS
+RESULTS_F '= "천재인형"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_243
+SIF イベントフラグ:[[이벤트:천재인형]]:0
+	RETURN 0
+;メガテン系イベント以外不許可の場合
+SIF !GET_USEABLE_EXTRA_TITLE()
+	RETURN 0
+;ヘルタ所持済み(引き継ぎ済みなど)だと出ない
+SIF GETCHARA([[キャラ:헤르타]]) > 0
+	RETURN 0
+;LV15未満だと出ない
+SIF BASE:MASTER:LV < 15
+	RETURN 0
+RESULTS '= " (EX:붕괴: 스타레일) 천재인형"
+RETURN 1
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_243
+#DIM DYNAMIC L_LINE
+CUSTOMDRAWLINE =
+
+PRINTFORML 팬텀으로부터 임무 통달이 도착해 있다……
+PRINTFORML 미확인의 악마가 목격되었다는 보고가 잇따르고 있다.
+PRINTFORML 목격된 현장으로 가서, 조사를 행하라는 명령이다.
+PRINTFORML 
+PRINTFORML [0] 즉시 향한다
+PRINTFORML [1] 나중으로 미룬다
+
+CALL INPUTINT, 0, 1
+
+IF RESULT == 0
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"――모처――", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞현장에 도착했다. 주변은 쥐죽은 듯 고요하다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞목격 정보가 있던 좌표에는 틀림이 없다./하지만, 흔적이라 할 만한 것은 하나도 보이지 않는다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞조사를 시작했지만…… 역시 아무것도 없다./슬슬 귀환할까 생각하기 시작하던 바로 그 순간이었다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞공중이―― 찢어졌다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞울리는 노이즈. 공간이 톱으로 잘려나가는 듯한 소리와 함께 검은 구멍이 나타난다./이공간으로 이어진 균열. 그 너머에서 무언가가 떨어져 내렸다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞……소녀?", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞떨어져 내린 존재는, 명백히 인간 소녀의 모습을 하고 있었다./아니…… 자세히 보니 곳곳에 구체관절이 있는, 인형이다./하지만, 그 외에는…… 인간 소녀와 분간이 가지 않을 정도로 정교하다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞미확인 악마와 무언가 관계가 있는 걸까?/적어도, 현시점에서는 최대의 단서임에 틀림없다./정보를 얻기 위해서라도, 데려가야 할 것이다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞그렇게 판단하고, 손을 뻗었다―― 그 순간이었다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞인형의 눈이, 소리도 없이 뜨였다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, [[キャラ:헤르타]], "CSV", "인형", "인형", "……특수 조건 감지./자동 방위 기능, 기동./――미확인 접근 대상, 배제 개시.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"다음 순간에는, 명확한 살의를 띤 공격이 날아왔다./자동 방위 기능이라기엔 너무나도 가차 없다.", , , , , 4
+	CUSTOMDRAWLINE =
+	PRINTFORMW 수수께끼의 인형이 1체 나타났다!
+	CUSTOMDRAWLINE =
+	WAIT
+
+	;関数でボスエネミー呼び出し
+	CALL SET_BOSS_ENEMY_EVENT_243, "수수께끼의 인형"
+	CALL BATTLE_START
+
+	CUSTOMDRAWLINE =
+	PRINTFORMW 수수께끼의 인형은 움직임을 멈췄다.
+	CUSTOMDRAWLINE =
+	WAIT
+
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞・・/＞・・・/＞・・・・/", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞……어떻게든 제압했다. 파손은 최소한으로 억제했다./이윽고, 소녀―― 아니, 인형의 눈동자에 다시 빛이 깃든다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, [[キャラ:헤르타]], "CSV", "인형", "인형", "……자동 방위 모드 종료./재부팅. 통신 불가. 접속 불가./특수 기능 기동.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞혼선된 듯한 음성./잠시 동안의 침묵 후, 음성의 톤이 바뀌었다./인격 모듈의 전환인가――?", , , , , 4
+CALL MESSAGE_WINDOW_ICON, [[キャラ:헤르타]], "CSV", "인형", "인형", "여기는……./거기 당신, 여기가 어디야?", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞질문을 받고, 답변을 망설인다. 애초에 어떻게 설명해야 할지……./망설이고 있자――", , , , , 4
+CALL MESSAGE_WINDOW_ICON, [[キャラ:헤르타]], "CSV", "인형", "인형", "……대답할 수 없다, 이건가./아니면, 대답할 가치가 없다고 판단한 거야?", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞순간, 눈동자를 가늘게 뜬다./비꼬는 투로 들리는 말이었지만, 캐묻지 않고 대신 스스로 결론을 도출하듯 끄덕인다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, [[キャラ:헤르타]], "CSV", "인형", "인형", "흐응./미지의 행성, 혹은 세계인가……", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞작지만, 분명한 호기심이 묻어나는 목소리./아무래도 상황 파악보다 미지에 대한 호기심이 앞서는 모양이다./혼잣말처럼 중얼거리더니, 갑자기 이쪽을 빤히 바라본다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, [[キャラ:헤르타]], "CSV", "인형", "인형", "재밌어질 것 같네./당신, 내 조수로 삼아줄게./감사하도록 해.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞눈 깜짝할 사이에 주종 관계가 날조되었다./상황은 전혀 납득되지 않았지만, 그녀의 발걸음엔 망설임이 없었다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, [[キャラ:헤르타]], "CSV", "인형", "인형", "우물쭈물하지 말고, 빨리 가자고.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, [[キャラ:헤르타]], "CSV", "헤르타", "헤르타", "난 헤르타. 미스 헤르타가 만든 인형이야. 그것뿐.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞어안이 벙벙해 있는 사이에, 그녀―― 헤르타는 이미 걷기 시작하고 있었다./……우선은 거점으로 돌아가자./이 녀석에 대해서는 돌아간 뒤에 생각하기로 하자.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞・・/＞・・・/＞・・・・/", , , , , 4
+	
+	CUSTOMDRAWLINE =
+	PRINTFORMW 헤르타가 억지로 따라왔다.
+	CUSTOMDRAWLINE =
+
+	CALL ADD_NEW_COMPANION, [[キャラ:헤르타]], 0, 0
+	SIF RESULT == 1
+		CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+
+	イベントフラグ:[[이벤트:천재인형]]:0 = 1
+
+	RETURN 1
+
+ELSE
+	PRINTFORML 지금은 나중으로 미루고, 다른 임무를 우선하자.
+	RETURN 0
+ENDIF
+
+@SET_BOSS_ENEMY_EVENT_243, L_ENEMY_NAME, L_NO = -1, L_OPT
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_NO
+#DIM DYNAMIC L_ENEMY
+#DIMS DYNAMIC L_ENEMY_NAME
+#DIMS DYNAMIC L_OPT
+#DIMS DYNAMIC L_ENEMY_TABLE, 10
+
+L_ENEMY_TABLE:0 '= "수수께끼의 인형"
+
+IF L_NO >= 0
+	SIF !INRANGE(L_NO, 0, VARSIZE("L_ENEMY_TABLE") - 1)
+		RETURN 0
+	L_ENEMY_NAME '= L_ENEMY_TABLE:L_NO
+ENDIF
+IF L_OPT == "名称取得"
+	SIF L_ENEMY_TABLE:L_NO == ""
+		RETURN 0
+	RESULTS '= L_ENEMY_NAME
+	RETURN 1
+ENDIF
+
+CALL SET_ENEMY,9, [[キャラ:헤르타]], 20, 0, 1
+NAME:(CHARANUM-1) = 수수께끼의 인형
+CALLNAME:(CHARANUM-1) = 수수께끼의 인형
+L_ENEMY = CHARANUM - 1
+CSTR:L_ENEMY:사고패턴 = 수수께끼의인형
+TSTR:전투이벤트패턴 = 수수께끼의 인형
+CALL SET_ENEMY_TIMEID, L_ENEMY, "수수께끼의 인형"
+CFLAG:L_ENEMY:강제악마화 = 1
+ABL:L_ENEMY:공격상성 = GET_TYPE_NUM("타격")
+FOR LCOUNT, 0, TYPENUM
+	SELECTCASE GET_TYPE(LCOUNT)
+		CASE "빙결", "파마", "수격"
+			BASE:L_ENEMY:GET_TYPE(LCOUNT) = 0
+		CASE "화염", "전격", "핵열"
+			BASE:L_ENEMY:GET_TYPE(LCOUNT) = 150
+	ENDSELECT
+NEXT
+;全貫通持ちなのでHP補正はやめておく。
+CFLAG:L_ENEMY:ＭＰ보정 += 2000
+CFLAG:L_ENEMY:행동횟수 = 1
+BASE:L_ENEMY:힘 = 1
+BASE:L_ENEMY:지혜 = 12
+BASE:L_ENEMY:마력 = 12
+BASE:L_ENEMY:내구 = 7
+BASE:L_ENEMY:속도 = 12
+BASE:L_ENEMY:운 = 4
+;余計なスキルを持たないよう初期化
+CALL CLEAR_ALL_SKILL, L_ENEMY
+
+;順に単体、一列、全体を撃ってくる。
+
+;やっぱり私がやるは敵だと上手く動かせなかったので持たない
+;２段階マカカジャの改善すべきだよを搭載。
+
+CALL SET_SKILL, L_ENEMY, "何見てるの"
+CALL SET_SKILL, L_ENEMY, "一度限りの取引"
+CALL SET_SKILL, L_ENEMY, "私がかけた魔法だよ"
+CALL SET_SKILL, L_ENEMY, "改善すべきだよ"
+CALL SYNC_STATUS,L_ENEMY
+CALL HEALTH_CHARA,L_ENEMY
+
+;=======================================================================
+@SET_ACTION_수수께끼의인형, ARG
+
+@SET_ACTION_謎の人形, ARG
+CALL SET_ACTION_수수께끼의인형, ARG
+;=======================================================================
+;敵特殊思考パターン
+;基本行動
+;1ターン目　何見てるの
+;2ターン目　一度限りの取引
+;3ターン目　私がかけた魔法だよ
+;1ターン目へ
+;=======================================================================
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+
+;ワンモア（クリティカルか、弱点を突いた場合の行動）
+IF CFLAG:ARG:１more플래그 > 0
+	;1more時は一度限りの取引を撃つ
+	CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "一度限りの取引")
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目
+		CASE 0
+			CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "何見てるの")
+		;２ターン目
+		CASE 1
+			CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "一度限りの取引")
+		;３ターン目
+		CASEELSE
+			CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "私がかけた魔法だよ")
+	ENDSELECT
+ENDIF
+
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;行動未決定時のおまじない
+SIF CFLAG:ARG:입력행동 == -1
+	CALL ランダム行動 , ARG
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1

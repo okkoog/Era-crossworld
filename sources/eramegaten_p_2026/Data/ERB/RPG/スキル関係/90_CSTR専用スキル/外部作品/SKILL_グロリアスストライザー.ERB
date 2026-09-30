@@ -1,0 +1,192 @@
+﻿;スキル名
+@SKILL_NAME_グロリアスストライザー, ARG
+RESULTS = GLORIOUS STRIZER
+
+;　명중
+@SKILL_HITRATE_グロリアスストライザー, ARG
+RETURN 200
+
+;　威力
+@SKILL_POWER_グロリアスストライザー, ARG
+#DIM RGRN_F
+
+RGRN_F = SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]])
+
+;コメントアウトにテンジアンお兄様降臨　別に参戦させようとして没った訳ではない
+;用心堅固。アパシーマンのクードスは1200上限にする
+;直前までアパシーで10000溜めれば……という軽慮浅謀は見逃さない
+SIF EQUIP:ARG:악세서리 == GETNUM(ITEM, "무기력의부적") && RGRN_F > 1200
+	RGRN_F = 1200
+
+IF RGRN_F > 9999
+	;最高値　一念通天、やってやれないことはない
+	RETURN 800
+ELSEIF RGRN_F > 8999
+	;八色雷光
+	RETURN 550
+ELSEIF RGRN_F > 7999
+	;焼灼拳とか風神撃とか　臥薪嘗胆、ここまで溜めれば実用に堪えるか
+	RETURN 400
+ELSEIF RGRN_F > 6999
+	;지오다인
+	RETURN 320
+ELSEIF RGRN_F > 4999
+	;지온가
+	RETURN 225
+ELSEIF RGRN_F > 2499
+	;스파크볼트
+	RETURN 180
+ELSEIF RGRN_F > 1999
+	;지오
+	RETURN 130
+ELSEIF RGRN_F > 1499
+	;코우하/에이하
+	RETURN 95
+;クードス1000以上→
+ELSEIF RGRN_F > 999
+	;프린파　威力75。電子の謡精が歌い出してすぐでは大した効果にはなり得ない。残念無念
+	RETURN 75
+ELSEIF RGRN_F > 499
+	;忠義シリーズの基礎値
+	RETURN 56
+ELSE
+	RETURN 40
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_グロリアスストライザー, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_グロリアスストライザー, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_グロリアスストライザー, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_グロリアスストライザー, ARG
+RETURN 58
+
+;　相性
+@SKILL_TYPE_グロリアスストライザー, ARG
+RETURN GET_TYPE_NUM("만능"), GET_TYPE_NUM("검격"), GET_TYPE_NUM("전격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_グロリアスストライザー
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　攻撃タイプ　魔法
+@SKILL_ATTACKTYPE_グロリアスストライザー,ARG
+RETURN GET_攻撃タイプ_NUM("魔法")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_グロリアスストライザー, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_グロリアスストライザー, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_グロリアスストライザー, ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_グロリアスストライザー, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_グロリアスストライザー, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_グロリアスストライザー, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_グロリアスストライザー
+RETURN 0
+
+
+;====================================================
+;独自のカジャ処理
+;ARG		攻撃側のキャラ登録番号
+;ARG:1		防御側のキャラ登録番号
+;RESULT 	= 強化値
+;RESULT:1	= 基準値	(基準値 + x) / 基準値 あるいは　(基準値 * 2 - x) /基準値 * 2倍になる
+;			　デフォは基準値32で、最大で(32 + 32) / 32 or (64 - 32) / 64倍になる
+;====================================================
+@SKILL_CALC_BUFF_グロリアスストライザー, ARGS, ARG, ARG:1
+SELECTCASE ARGS
+	CASE "ATK"
+		IF SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]]) > 7999
+			RETURN LIMIT(CFLAG:ARG:공격강화 + CFLAG:ARG:마법위력강화, -48, 64), 32
+		ELSE
+			RETURN 0
+		ENDIF
+ENDSELECT
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_グロリアスストライザー, ARG, ARG:1, SKILL_NUM
+#LOCALSIZE 4
+#LOCALSSIZE 1
+#DIM SKILL_NUM
+#DIM RGRN_F
+#DIM ボス殺したフラグ
+
+RGRN_F = SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]])
+LOCAL:2 = POS(ARG:1)
+CALL ATTACK_SINGLE, ARG, LOCAL:2, SKILL_NUM
+;鴉雀無声。謡精の歌唱はここで終わり
+CALL SKILLGAGE_F_SET, ARG, [[스킬:SONG OF DIVA]], 0
+;金科玉条。クードスは没収させてもらう
+SIF SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]]) > 0
+	PRINTFORML ＞%CALLNAME:ARG%의 쿠도스가 리셋되었다!
+CALL SKILLGAGE_F_SET, ARG, [[스킬:뇌격린]], 0
+
+LOCAL = RAND:4
+IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정") && LOCAL == 0
+ELSE
+	;規則厳守。SP3消費=ゲージDを12加算
+	CALL SKILLGAGE_D_ADD, ARG, [[스킬:뇌격린]], 12
+ENDIF
+
+CALL SKILLGAGE_D_SET, ARG, SKILL_NUM, 4
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_グロリアスストライザー, ARG
+PRINTFORML 뇌검의 진정한 힘을 해방하여 궁극의 일격을 날리는 %CALLNAME:ARG%의 SP스킬.
+PRINTL 　
+PRINTL 적 단체에게 검격과 전격과 만능 복합 속성으로 데미지를 준다. 후열 사용 불가.
+PRINTL 위력은 현재 쿠도스에 따라 상승한다.
+PRINTL 또한, 물리 공격이지만 데미지 계산은 마법위력을 사용한다.
+PRINTL 단, 사용 후에는 쿠도스가 0이 되며, 재사용까지 4턴의 쿨타임이 필요하다.
+PRINTL MP와는 별개로 SP를 3 소비한다.
+PRINTL ※SP는 4턴마다 1 회복되며, 전투 종료 후에 완전 회복된다.
+PRINTL ※스킬「뇌격린」을 소지하지 않은 경우 사용 불가.
+;スーパーガンヴォルトはストライザー使わないのでSONG OF DIVA中の強化は特になし
+;流石にコイツにクードス消費回避は与えられない
+IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정")
+	SETCOLOR 0x144ff4
+	PRINTL 번개의 렌즈 장비 중 25% 확률로 SP 소비를 회피
+	RESETCOLOR
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_グロリアスストライザー, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG, "グロリアスストライザー")
+SIF SKILLGAGE_D_GET(ARG, SKILL_NUM)
+	RETURN 0
+SIF !HAVE_SKILL(ARG, [[스킬:뇌격린]])
+	RETURN 0
+SIF SKILLGAGE_D_GET(ARG, [[스킬:뇌격린]]) != 0
+	RETURN 0
+RETURN 1
+

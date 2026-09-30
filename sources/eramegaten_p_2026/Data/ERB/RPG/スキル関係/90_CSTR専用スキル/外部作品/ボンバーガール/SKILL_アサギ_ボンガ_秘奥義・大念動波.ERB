@@ -1,0 +1,107 @@
+﻿;-----------------------------
+;秘奥義・大念動波
+;敵陣に切り込んで、敵の行動をひきつけて阻害する役割としてターゲット集中を実装
+;パッシブの攻撃時HP回復とあわせて役割の完遂を狙う
+;-----------------------------
+;スキル名
+@SKILL_NAME_秘奥義・大念動波,ARG
+RESULTS = 秘奥義・大念動波
+
+;　명중
+@SKILL_HITRATE_秘奥義・大念動波, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_秘奥義・大念動波, ARG
+RETURN 95
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_秘奥義・大念動波,ARG
+RETURN 3
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_秘奥義・大念動波,ARG
+RETURN 3
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_秘奥義・大念動波, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_秘奥義・大念動波,ARG
+RETURN 36
+
+;　相性
+@SKILL_TYPE_秘奥義・大念動波,ARG
+RETURN GET_TYPE_NUM("검격")
+;검격
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_秘奥義・大念動波
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　攻撃タイプ
+@SKILL_ATTACKTYPE_秘奥義・大念動波,ARG
+RETURN GET_攻撃タイプ_NUM("物理")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_秘奥義・大念動波, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_秘奥義・大念動波,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_秘奥義・大念動波,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_秘奥義・大念動波,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_秘奥義・大念動波, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_秘奥義・大念動波
+RETURN GET_SUCCESSION_NUM("검격")
+;검격
+
+;スキル変化？用ランク
+@SKILL_RANK_秘奥義・大念動波, ARG = -1
+RETURN 12
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_秘奥義・大念動波,ARG,ARG:1,ARG:2
+CALL ATTACK_SKILL, ARG, ARG:1,ARG:2
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_秘奥義・大念動波,ARG
+PRINTL 적 전체에 검격 상성으로 소데미지를 3회 준다.
+PRINTL 이 스킬이 사용되는 턴 동안 적에게 표적이 될 확률이 크게 상승한다.
+PRINTL 
+PRINTL 【아사기 전용】
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_秘奥義・大念動波,ARG
+RETURN 1
+;とくにない
+
+@SKILL_TURNSTART_秘奥義・大念動波, ARG
+SIF CFLAG:ARG:입력행동 != PU_SKILLNUM_GET(ARG, "秘奥義・大念動波")
+	RETURN 0
+IF CFLAG:ARG:변동피타겟율 < 300 || CFLAG:ARG:피타겟비율변동지속턴수 == 0
+	CFLAG:ARG:피타겟비율변동지속턴수 = 1
+	CFLAG:ARG:변동피타겟율 = 300
+ENDIF
+
+@SKILL_TAG_秘奥義・大念動波
+RESULTS = 아사기_봄버걸

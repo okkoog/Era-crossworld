@@ -1,0 +1,46 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:称号取得判定.ERB
+;
+;	Modification Data	:称号の取得条件を取得し、予約をセットするための関数群
+;
+;	Edit	Date			Author					Reason
+;	001		2024/06/15		P(bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;TODO:全体をばらしてTRYプロパ取得型にしたい(名称・取得メッセージ・ターン毎や独自などの判定タイミング等)だが、とりあえずリソースを使わない形で仮処置
+;	 :また、そもそも称号の取得タイミングを名称変更のタイミングから移したいところ
+@DO_称号取得判定_AT_ターンエンド
+;TODO:エンディング判定はエンディングに突入した段階で行うべきなんでエンディングを関数化してまとめてそちらに移したい。またBADENDが発見EDに含まれるようになったりすると困るので注意
+IF COUNT_ENDING_POINT() > 0
+	IF (FLAG:플레이시간 + (GETMILLISECOND() - FLAG:플레이개시시간)) < 2 * 1000 * 60 * 60
+		CALL SET_G_称号取得予約("スピードスター")
+	ENDIF
+ENDIF
+
+@SET_G_称号取得予約, L_称号名
+#DIMS DYNAMIC L_称号名
+#DIM DYNAMIC L_称号番号
+IF ISNUMERIC(L_称号名)
+	L_称号番号 = TOINT(L_称号名)
+	L_称号名 '= GET_称号名(TOINT(L_称号名))
+ELSE
+	L_称号番号 = GET_称号名_NUM(L_称号名)
+ENDIF
+SIF IS_称号取得済み(L_称号名)
+	RETURN 0
+G_称号取得予約:L_称号番号 = 1
+SAVEGLOBAL
+RETURN 1
+
+@IS_称号取得済み, L_称号名
+#FUNCTION
+#DIMS DYNAMIC L_称号名
+#DIM DYNAMIC L_称号番号
+IF ISNUMERIC(L_称号名)
+	L_称号番号 = TOINT(L_称号名)
+ELSE
+	L_称号番号 = GET_称号名_NUM(L_称号名)
+ENDIF
+SIF L_称号番号 < 0
+	RETURNF 0
+RETURNF GETBIT(GLOBAL:@"称号記録{L_称号番号 / 64 + 1}", L_称号番号 % 64)

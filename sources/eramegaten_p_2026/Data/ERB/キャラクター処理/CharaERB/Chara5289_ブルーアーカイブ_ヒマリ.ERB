@@ -1,0 +1,157 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5289_ヒマリ.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/04/24		epizo					新規作成
+;	002		2025/05/05		epizo					素質変更修正
+;	003		2025/05/06		epizo					素質変更の記述変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;陥落後に固有素質の変更
+;--------------------------------------------------
+@EVENT_CHANGE_TRAIN_TALENT_[[キャラ:히마리]], ARG, ARGS, ARGS:1 = "GET"
+SIF IS_MALE(ARG) || TALENT:ARG:캐릭터고유소질1 == 0
+    RETURN
+SELECTCASE ARGS
+    CASE "연모"
+		TALENT:ARG:캐릭터고유소질1 = 0
+		TALENT:ARG:캐릭터고유소질2 = 1
+		CSTR:ARG:캐릭터고유소질정의2 '= "超天才良妻系病弱美少女ハッカー/体質/あなただけの可憐な花ですよ"
+		PRINTFORMW %NAME:ARG%의 【초천재 청초계 병약 미소녀 해커】는 【초천재 현모양처계 병약 미소녀 해커】가 되었다
+    CASE "음란"
+		TALENT:ARG:캐릭터고유소질1 = 0
+		TALENT:ARG:캐릭터고유소질2 = 1
+		CSTR:ARG:캐릭터고유소질정의2 '= "超天才淫乱系病弱美少女ハッカー/体質/淫らに咲き誇る一輪の花ですよ"
+		PRINTFORMW %NAME:ARG%의 【초천재 청초계 병약 미소녀 해커】는 【초천재 음란계 병약 미소녀 해커】가 되었다
+    CASE "복종"
+		TALENT:ARG:캐릭터고유소질 = 0
+		TALENT:ARG:캐릭터고유소질1 = 0
+		TALENT:ARG:캐릭터고유소질2 = 1
+		CSTR:ARG:캐릭터고유소질정의2 '= "病弱/体質/私はただの役立たずです……"
+		PRINTFORML %NAME:ARG%의 【병약 미소녀의 본보기 같은 존재】는 【병약】이 되었다
+		PRINTFORMW %NAME:ARG%의 【초천재 청초계 병약 미소녀 해커】는 소멸했다
+ENDSELECT
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:히마리]], L_CHARA, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("ヒマリ_FACE_0")
+			RETURNF ""
+		SIF !SPRITECREATED("ヒマリ_FACE_1")
+			RETURNF ""
+		SIF !SPRITECREATED("ヒマリ_FACE_2")
+			RETURNF ""
+		SIF !SPRITECREATED("ヒマリ_FACE_3")
+			RETURNF ""
+		SIF !SPRITECREATED("ヒマリ_FACE_4")
+			RETURNF ""
+		SIF !SPRITECREATED("ヒマリ_FACE_5")
+			RETURNF ""
+		SIF !SPRITECREATED("ヒマリ_FACE_6")
+			RETURNF ""
+		SIF !SPRITECREATED("ヒマリ_FACE_EX_0")
+			RETURNF ""
+		SIF !SPRITECREATED("ヒマリ_FACE_EX_1")
+			RETURNF ""
+		SIF !SPRITECREATED("ヒマリ_FACE_EX_2")
+			RETURNF ""
+		SIF !SPRITECREATED("ヒマリ_FACE_EX_3")
+			RETURNF ""
+		RESULTS_F = デフォルト
+		RESULTS_F:1 = ヒマリ_FACE_0
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:히마리]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "デフォルト"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+;				IF 恋慕系陥落(L_CHARA)
+;					RESULTS_F = ヒマリ_FACE_3
+;				ELSEIF 淫乱系陥落(L_CHARA)
+;					RESULTS_F = ヒマリ_FACE_4
+;				ELSEIF 服従系陥落(L_CHARA)
+;					RESULTS_F = ヒマリ_FACE_6
+;				ELSE
+;					RESULTS_F = ヒマリ_FACE_1
+;				ENDIF
+				CALLF 陥落(L_CHARA)
+				IF RESULTS == "연모"
+					RESULTS_F = ヒマリ_FACE_3
+				ELSEIF RESULTS == "음란"
+					RESULTS_F = ヒマリ_FACE_4
+				ELSEIF RESULTS == "복종"
+					RESULTS_F = ヒマリ_FACE_6
+				ELSEIF RESULTS == "신뢰"
+					RESULTS_F = ヒマリ_FACE_1
+				ELSE
+					RESULTS_F = ヒマリ_FACE_1
+				ENDIF
+			CASEELSE
+				SELECTCASE L_SITUATION:1
+					;戦闘不能になった時
+					CASE "DYING"
+						RESULTS_F = ヒマリ_FACE_EX_0
+					;魅了にされた時
+					CASE "CHARM"
+						RESULTS_F = ヒマリ_FACE_EX_1
+					;睡眠にされた時
+					CASE "SLEEP" 
+						RESULTS_F = ヒマリ_FACE_EX_2
+					;上記以外の状態異常の時
+					CASE "STONE", "FLY", "PALYZE", "BRAND", "CURSE", "FLAME", "BOMB", "POISON", "CLOSE", "BIND", "SLIP", "FREEZE", "PANIC", "SHOCK", "HAPPY"
+						RESULTS_F = ヒマリ_FACE_EX_3
+					;通常時
+					CASEELSE
+;						IF 恋慕系陥落(L_CHARA)
+;							RESULTS_F = ヒマリ_FACE_2
+;						ELSEIF 淫乱系陥落(L_CHARA)
+;							RESULTS_F = ヒマリ_FACE_4
+;						ELSEIF 服従系陥落(L_CHARA)
+;							RESULTS_F = ヒマリ_FACE_5
+;						ELSE
+;							RESULTS_F = ヒマリ_FACE_0
+;						ENDIF
+					CALLF 陥落(L_CHARA)
+					IF RESULTS == "연모"
+						RESULTS_F = ヒマリ_FACE_2
+					ELSEIF RESULTS == "음란"
+						RESULTS_F = ヒマリ_FACE_4
+					ELSEIF RESULTS == "복종"
+						RESULTS_F = ヒマリ_FACE_5
+					ELSEIF RESULTS == "신뢰"
+						RESULTS_F = ヒマリ_FACE_7
+					ELSE
+						RESULTS_F = ヒマリ_FACE_0
+					ENDIF
+				ENDSELECT
+		ENDSELECT
+	CASEELSE
+ENDSELECT

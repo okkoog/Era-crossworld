@@ -1,0 +1,142 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5399_カフカ.ERB
+;	Facility	:ガチャ被りに対する救済措置
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2023/9/21		軽木					新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;-------------------------------------------------
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:카프카]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_EV
+	;周回時にリセットされる数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_EV
+	;周回時にリセットされる文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_EV"
+		SELECTCASE ARG
+			CASE 0
+				;
+				RESULTS = 
+			ENDSELECT
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				;周回後も持ち越したいフラグというとまぁこんな感じでしょうか
+				RESULTS = 星魂
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる数値型変数です
+	;スキルゲージHとほぼ互換です。基本的にはゲージHが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる文字列型変数です
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる数値型変数
+	;スキルゲージFとほぼ互換です。基本的にはゲージFが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS =
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる文字列型変数
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS
+
+@ROLE_EXPLAIN_ADD_PAGE_[[キャラ:카프카]], ARG
+RETURN 1
+
+;ARG:1 = 表示ページ
+@ROLE_EXPLAIN_[[キャラ:카프카]], ARG, ARG:1
+#DIM LCOUNT
+IF ARG:1 == 1
+	PRINTFORML 星魂
+	PRINTL 
+	FOR LCOUNT, 1, 7
+		IF GET_RPG_CFLAG_TAKEOVER(ARG, "星魂") >= LCOUNT
+			SELECTCASE LCOUNT
+				CASE 1
+					PRINTFORML 　1단계　무궁하게 움직여라! 무궁하게
+					PRINTFORML 　　　　『상냥함도 잔혹함이 될 수 있어』 공격 후, 2턴간 대상이 상태이상일 때 받는 데미지 +30％.
+				CASE 2
+					PRINTFORML 　2단계　광상곡의 흐느낌
+					PRINTFORML 　　　　아군 전체의 상태이상 적에 대한 데미지 +25％.
+				CASE 3
+					PRINTFORML 　3단계　즉흥 연주의 찬미
+					PRINTFORML 　　　　『달빛이 어루만지는 연면함』『끝없는 밤의 소란』의 위력 +1.1배.
+				CASE 4
+					PRINTFORML 　4단계　이 서창을
+					PRINTFORML 　　　　카프카가 EP를 회복할 때 최종 회복량을 1.4배로 한다.
+				CASE 5
+					PRINTFORML 　5단계　오늘 밤만의 소나타
+					PRINTFORML 　　　　『비극 끝의 트릴』『상냥함도 잔혹함이 될 수 있어』의 위력 +1.1배.
+				CASE 6
+					PRINTFORML 　6단계　조용히 회전하라
+					PRINTFORML 　　　　『달빛이 어루만지는 연면함』『비극 끝의 트릴』의 추격 위력이 상승한다.
+			ENDSELECT
+		ELSE
+			PRINTFORML 　%TOFULL(TOSTR(LCOUNT))%　？？？？
+			PRINTFORML 　　　　？？？？？？？？？？？？？？？？？
+		ENDIF
+	NEXT
+ENDIF
+RETURN 1
+
+@SKILL_GET_LEADER_SKILL_NAME_CHARA_[[キャラ:카프카]], ARG
+SIF GET_RPG_CFLAG_TAKEOVER(ARG, "星魂") > 1
+	RESULTS = 狂想者の嗚咽

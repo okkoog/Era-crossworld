@@ -1,0 +1,1169 @@
+﻿
+;=======================================================================
+
+;=======================================================================
+;更新日時　　更新者　　　内容
+;202202/23　 実績中毒者　ダンジョンナンバーを移動　推奨レベルが他ダンジョンからのコピペだったので変更
+;202306/26　 P　　　　　 改行不足で表示が乱れていたメッセージを修正
+
+
+;=======================================================================
+;攻略条件
+;=======================================================================
+@PREREQUISITE_DUNGEON_98
+;コオリノハテニorホノオノハテニ クリア
+IF イベントフラグ:102:0 == 3
+	RETURN 1
+ELSEIF イベントフラグ:102:0 == 6
+	RETURN 1
+ENDIF
+
+;=======================================================================
+;긴눙가가프
+;=======================================================================
+@GET_DUNGEON_NAME_98
+#FUNCTIONS
+RESULTS_F = ギンヌンガガップ
+@FLOORNAME_98
+SELECTCASE FLAG:현M
+	CASE 0
+	PRINTL 불과 얼음의 경계・１F
+	CASE 1
+	PRINTL 불과 얼음의 경계・２F
+	CASE 2
+	PRINTL 불과 얼음의 경계・３F
+	CASE 3
+	PRINTL 불과 얼음의 경계・４F
+	CASE 4
+	PRINTL 불과 얼음의 경계・신의 사당
+	CASE 5
+	PRINTL 이미르의 샘・１F
+	CASE 6
+	PRINTL 이미르의 샘・２F
+	CASE 7
+	PRINTL 이미르의 샘・３F
+	CASE 8
+	PRINTL 이미르의 샘・４F
+	CASE 9
+	PRINTL 암흑의 공간
+ENDSELECT
+
+;=======================================================================
+;ターミナルマップ
+;RESULT:X = 1で階層Mのマップのターミナルを登録できる
+;登録されたターミナル同士は相互で移動が可能になり、スタート地点から選べるようになる
+;
+;RESULTS:100は入り口の名称。入り口のままでいいなら定義する必要はない
+;=======================================================================
+@TERMINAL_MAP_98, IS_START
+#DIM DYNAMIC IS_START
+RESULT:6 = 1
+RESULTS:6 '= "터미널"
+RETURN RESULT
+
+;=======================================================================
+;スタート地点入力
+;=======================================================================
+@START_DUNGEON_98, ARG
+FLAG:현M =  0
+FLAG:현X = 9
+FLAG:현Y = 15
+;CALL AUTOMAP
+RETURN 0
+
+;=======================================================================
+;スタート時イベント
+;=======================================================================
+@EVENT_DUNGEON_START_98
+IF ダンジョンフラグ:98:2 == 0
+	CALL MESSAGE_WINDOW_D, "", "＞불의 세계와 얼음 세계의 경계　긴눙가가프"
+	CALL MESSAGE_WINDOW_D, "", "＞근처에 사는 주민의 말에 따르면、여기서 사도와 수호신이 무언가의 준비를 하고 있다고 한다"
+	CALL MESSAGE_WINDOW_D, "", "＞그런 조사 결과가 나와 있다。아마도 소녀 역시 이곳에 있을 것이다…"
+	ダンジョンフラグ:98:2 = 1
+ENDIF
+;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@CAN_ENTER_98, ARG, ARG:1
+SELECTCASE DA:ARG:(ARG:1)
+ENDSELECT
+CALL CAN_ENTER,ARG,ARG:1
+RETURN RESULT
+
+;=======================================================================
+;特殊タイル表示
+;=======================================================================
+@TILE_MARK_COMMON_98_1, ARG , ARG:1 , ARG:2
+SELECTCASE ARG / 10
+	CASE 10 , 20 , 30 , 40 , 50 , 60 , 70 , 80 , 90, 160 , 170 , 171
+		SETCOLOR 0xFFFF00
+		RESULTS = ◎
+	CASE 101 , 111 , 121 , 131 , 141 , 151
+		RESULTS = 穴
+;	CASE 11 , 21 , 31 , 41 , 51 , 61 , 71 , 81 , 91 , 160 , 161 , 100 , 110 , 120 , 130 , 140 , 150
+;		RESULTS = □
+	CASE 180
+	RESULTS = ↑
+	CASE 181
+	RESULTS = ↓
+	CASEELSE
+		RETURN 1
+ENDSELECT
+
+@TILE_MARK_COMMON_98_4, ARG , ARG:1 , ARG:2
+SELECTCASE ARG / 10
+	CASE 100
+		SIF ダンジョンフラグ:98:0 == 0
+			RESULTS = ！
+	CASE 200
+		SIF ダンジョンフラグ:98:0 == 1
+			RESULTS = ！
+	CASE 300
+		SIF ダンジョンフラグ:98:0 == 2
+			RESULTS = ！
+		CASE 400
+		SIF ダンジョンフラグ:98:0 == 3
+			RESULTS = ！
+	CASE 500
+		SIF ダンジョンフラグ:98:0 == 4
+			RESULTS = ！
+		SIF ダンジョンフラグ:98:1 > 0
+			RESULTS = ！
+ENDSELECT
+
+
+@TILE_MARK_COMMON_98_9, ARG , ARG:1 , ARG:2
+SELECTCASE ARG / 10
+	CASE 1
+		SETCOLOR 0xFFFF00
+		RESULTS = ◎
+	CASE 2
+	IF ダンジョンフラグ:98:0 >= 2
+		SETCOLOR 0xFFFF00
+		RESULTS = ◎
+	ENDIF
+ENDSELECT
+;=======================================================================
+;フロアデータ
+;=======================================================================
+@MAKE_FLOOR_98
+SELECTCASE FLAG:현M
+	CASE 0
+		FLAG:최대X = 19
+		FLAG:최대Y = 17
+							;	  01234567890123456789012345
+		CALL MAKE_FLOOR_LINE, 0, "                   "
+		CALL MAKE_FLOOR_LINE, 1, "         6         "
+		CALL MAKE_FLOOR_LINE, 2, "  313   111   111  "
+		CALL MAKE_FLOOR_LINE, 3, "  1n1  11111  1o1  "
+		CALL MAKE_FLOOR_LINE, 4, "  111  11111  111  "
+		CALL MAKE_FLOOR_LINE, 5, "   1    111    1   "
+		CALL MAKE_FLOOR_LINE, 6, "  1w1    1    1w1  "
+		CALL MAKE_FLOOR_LINE, 7, "   1    111    1   "
+		CALL MAKE_FLOOR_LINE, 8, "         1         "
+		CALL MAKE_FLOOR_LINE, 9, "   6     1         "
+		CALL MAKE_FLOOR_LINE,10, "  111   111   111  "
+		CALL MAKE_FLOOR_LINE,11, " 11111  111  111A1 "
+		CALL MAKE_FLOOR_LINE,12, " 11111111a11111311 "
+		CALL MAKE_FLOOR_LINE,13, "  111  11!11  111  "
+		CALL MAKE_FLOOR_LINE,14, "         1     1   "
+		CALL MAKE_FLOOR_LINE,15, "         1         "
+		CALL MAKE_FLOOR_LINE,16, "         8         "
+
+	CASE 1
+		FLAG:최대X = 15
+		FLAG:최대Y = 9
+							;	  0123456789012345
+   		CALL MAKE_FLOOR_LINE, 0, "               "
+   		CALL MAKE_FLOOR_LINE, 1, "  1l1  6  1m1  "
+   		CALL MAKE_FLOOR_LINE, 2, " 11N11 1 11O11 "
+   		CALL MAKE_FLOOR_LINE, 3, "  111  7  111  "
+   		CALL MAKE_FLOOR_LINE, 4, "               "
+   		CALL MAKE_FLOOR_LINE, 5, " 6             "
+   		CALL MAKE_FLOOR_LINE, 6, " 1             "
+   		CALL MAKE_FLOOR_LINE, 7, " 7             "
+   		CALL MAKE_FLOOR_LINE, 8, "               "
+
+
+	CASE 2
+		FLAG:최대X = 22
+		FLAG:최대Y = 16
+							;	  01234567890123456789012
+   		CALL MAKE_FLOOR_LINE, 0, "                      "
+   		CALL MAKE_FLOOR_LINE, 1, "   111           111  "
+   		CALL MAKE_FLOOR_LINE, 2, "   1c1    1W1    1c1  "
+   		CALL MAKE_FLOOR_LINE, 3, "  11L11  11111  11M11 "
+   		CALL MAKE_FLOOR_LINE, 4, "   1j1    171    1k1  "
+   		CALL MAKE_FLOOR_LINE, 5, "   1F1           1B1  "
+   		CALL MAKE_FLOOR_LINE, 6, "          111         "
+   		CALL MAKE_FLOOR_LINE, 7, "    C     1c1     D   "
+   		CALL MAKE_FLOOR_LINE, 8, "   111   11111   111  "
+   		CALL MAKE_FLOOR_LINE, 9, "  b171d 111E111 1e1f1 "
+   		CALL MAKE_FLOOR_LINE,10, "   131   11111   131  "
+   		CALL MAKE_FLOOR_LINE,11, "             1        "
+   		CALL MAKE_FLOOR_LINE,12, "           6 1        "
+   		CALL MAKE_FLOOR_LINE,13, "          1111        "
+   		CALL MAKE_FLOOR_LINE,14, "           111        "
+   		CALL MAKE_FLOOR_LINE,15, "                      "
+
+	CASE 3
+		FLAG:최대X = 24
+		FLAG:최대Y = 19
+							;	  0123456789012345678901234
+   		CALL MAKE_FLOOR_LINE, 0, "                        "
+   		CALL MAKE_FLOOR_LINE, 1, "       31     13        "
+   		CALL MAKE_FLOOR_LINE, 2, "      111     111       "
+   		CALL MAKE_FLOOR_LINE, 3, "      1J1 111 1K1       "
+   		CALL MAKE_FLOOR_LINE, 4, "    11111 1g1 11111     "
+   		CALL MAKE_FLOOR_LINE, 5, "   111111 111 111111    "
+   		CALL MAKE_FLOOR_LINE, 6, "       1   1   1        "
+   		CALL MAKE_FLOOR_LINE, 7, "       1  111  1        "
+   		CALL MAKE_FLOOR_LINE, 8, " 1h1   1  111  1    111 "
+   		CALL MAKE_FLOOR_LINE, 9, " 1111111  1H1  111111I1 "
+   		CALL MAKE_FLOOR_LINE,10, " 1G1   1  111  1    111 "
+   		CALL MAKE_FLOOR_LINE,11, "       1  111  1        "
+   		CALL MAKE_FLOOR_LINE,12, "       1   1   1 6      "
+   		CALL MAKE_FLOOR_LINE,13, "   111111 111 111111    "
+   		CALL MAKE_FLOOR_LINE,14, "    11111 171 11111     "
+   		CALL MAKE_FLOOR_LINE,15, "      1i1 111 111       "
+   		CALL MAKE_FLOOR_LINE,16, "      111     111       "
+   		CALL MAKE_FLOOR_LINE,17, "       11     11        "
+   		CALL MAKE_FLOOR_LINE,18, "                        "
+
+	CASE 4
+		FLAG:최대X = 9
+		FLAG:최대Y = 17
+							;	  01234567890
+   		CALL MAKE_FLOOR_LINE, 0, "         "
+   		CALL MAKE_FLOOR_LINE, 1, "    1    "
+   		CALL MAKE_FLOOR_LINE, 2, "   111   "
+   		CALL MAKE_FLOOR_LINE, 3, "  11q11  "
+   		CALL MAKE_FLOOR_LINE, 4, "   111   "
+   		CALL MAKE_FLOOR_LINE, 5, "    1    "
+   		CALL MAKE_FLOOR_LINE, 6, "    2    "
+   		CALL MAKE_FLOOR_LINE, 7, "   1#1   "
+   		CALL MAKE_FLOOR_LINE, 8, "  11111  "
+   		CALL MAKE_FLOOR_LINE, 9, "   111   "
+   		CALL MAKE_FLOOR_LINE,10, "    1    "
+   		CALL MAKE_FLOOR_LINE,11, "   111   "
+   		CALL MAKE_FLOOR_LINE,12, "  11111  "
+   		CALL MAKE_FLOOR_LINE,13, "  1   1  "
+   		CALL MAKE_FLOOR_LINE,14, "  1 7 1  "
+   		CALL MAKE_FLOOR_LINE,15, "  11111  "
+   		CALL MAKE_FLOOR_LINE,16, "         "
+
+	CASE 5
+		FLAG:최대X = 5
+		FLAG:최대Y = 7
+							;	  01234567
+   		CALL MAKE_FLOOR_LINE, 0, "     "
+   		CALL MAKE_FLOOR_LINE, 1, "  6  "
+   		CALL MAKE_FLOOR_LINE, 2, "  1  "
+   		CALL MAKE_FLOOR_LINE, 3, " 111 "
+   		CALL MAKE_FLOOR_LINE, 4, " 1Q1 "
+   		CALL MAKE_FLOOR_LINE, 5, " 111 "
+   		CALL MAKE_FLOOR_LINE, 6, "     "
+
+	CASE 6
+		FLAG:최대X = 15
+		FLAG:최대Y = 12
+							;	  0123456789012345678901
+   		CALL MAKE_FLOOR_LINE, 0, "               "
+   		CALL MAKE_FLOOR_LINE, 1, "     3 T 3     "
+   		CALL MAKE_FLOOR_LINE, 2, "     1 1 1     "
+   		CALL MAKE_FLOOR_LINE, 3, "  6  11111  6  "
+   		CALL MAKE_FLOOR_LINE, 4, " 111  111  111 "
+   		CALL MAKE_FLOOR_LINE, 5, " 1111111111111 "
+   		CALL MAKE_FLOOR_LINE, 6, " 111  111  111 "
+   		CALL MAKE_FLOOR_LINE, 7, "      111      "
+   		CALL MAKE_FLOOR_LINE, 8, "     11111     "
+   		CALL MAKE_FLOOR_LINE, 9, "       1       "
+   		CALL MAKE_FLOOR_LINE,10, "       7       "
+   		CALL MAKE_FLOOR_LINE,11, "               "
+
+
+	CASE 7
+		FLAG:최대X = 15
+		FLAG:최대Y = 13
+							;	  0123456789012345678901
+   		CALL MAKE_FLOOR_LINE, 0, "               "
+   		CALL MAKE_FLOOR_LINE, 1, "       6       "
+   		CALL MAKE_FLOOR_LINE, 2, "    11 1 11    "
+   		CALL MAKE_FLOOR_LINE, 3, "    1111111    "
+   		CALL MAKE_FLOOR_LINE, 4, "    11 1 11    "
+   		CALL MAKE_FLOOR_LINE, 5, "     11111     "
+   		CALL MAKE_FLOOR_LINE, 6, "      111      "
+   		CALL MAKE_FLOOR_LINE, 7, "     11111     "
+   		CALL MAKE_FLOOR_LINE, 8, " 111  111  111 "
+   		CALL MAKE_FLOOR_LINE, 9, " 1111111111111 "
+   		CALL MAKE_FLOOR_LINE,10, " 111  111  111 "
+   		CALL MAKE_FLOOR_LINE,11, "  7         7  "
+   		CALL MAKE_FLOOR_LINE,12, "               "
+
+	CASE 8
+		FLAG:최대X = 7
+		FLAG:최대Y = 13
+							;	  0123456789
+   		CALL MAKE_FLOOR_LINE, 0, "   r   "
+   		CALL MAKE_FLOOR_LINE, 1, "   2   "
+   		CALL MAKE_FLOOR_LINE, 2, "  1=1  "
+   		CALL MAKE_FLOOR_LINE, 3, " 11111 "
+   		CALL MAKE_FLOOR_LINE, 4, " 1 1 1 "
+   		CALL MAKE_FLOOR_LINE, 5, " 11111 "
+   		CALL MAKE_FLOOR_LINE, 6, "  111  "
+   		CALL MAKE_FLOOR_LINE, 7, " 11111 "
+   		CALL MAKE_FLOOR_LINE, 8, " 1 1 1 "
+   		CALL MAKE_FLOOR_LINE, 9, "  111  "
+   		CALL MAKE_FLOOR_LINE,10, "  111  "
+   		CALL MAKE_FLOOR_LINE,11, "   7   "
+   		CALL MAKE_FLOOR_LINE,12, "       "
+
+	CASE 9
+		FLAG:최대X = 9
+		FLAG:최대Y = 8
+							;	  0123456789
+   		CALL MAKE_FLOOR_LINE, 0, "         "
+   		CALL MAKE_FLOOR_LINE, 1, "   1$1   "
+   		CALL MAKE_FLOOR_LINE, 2, " 111%111 "
+   		CALL MAKE_FLOOR_LINE, 3, " 1111111 "
+   		CALL MAKE_FLOOR_LINE, 4, " 1111111 "
+   		CALL MAKE_FLOOR_LINE, 5, " 1111111 "
+   		CALL MAKE_FLOOR_LINE, 6, "   111   "
+   		CALL MAKE_FLOOR_LINE, 7, "    R    "
+
+	CASE 10
+	CASEELSE
+ENDSELECT
+
+;=======================================================================
+;タイル調整
+;=======================================================================
+@MAKE_FLOOR_LINE_COMMON_98, ARG, ARG:1, ARG:2
+#LOCALSIZE 30
+;LOCAL:3 宝箱 ダンジョンフラグ:84~99
+;LOCAL:4 이벤트
+;(0/0)でLOCALを消去
+SIF ARG:1 == 0 && ARG:2 == 0
+	VARSET LOCAL
+SELECTCASE ARG
+	CASE 3
+		IF GETBIT(ダンジョンフラグ:(FLAG:현던전):(FLAG:현M+70), LOCAL:3)
+			DA:(ARG:1):(ARG:2) = 1
+		ELSE
+			DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:3 * 10 + 3
+		ENDIF
+		LOCAL:3++
+	CASE 4
+		DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:4 * 10 + 4
+		LOCAL:4++
+	CASE 5
+		;DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:5 * 10 + 5
+		;LOCAL:5++
+	CASE 6
+		DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:6 * 10 + 6
+		LOCAL:6++
+	CASE 7
+		DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:7 * 10 + 7
+		LOCAL:7++
+	CASE 8
+		DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:8 * 10 + 8
+		LOCAL:8++
+	CASE 9
+		DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:9 * 10 + 9
+		LOCAL:9++
+
+ENDSELECT
+;=======================================================================
+;タイル定義
+;=======================================================================
+@DEFINE_TILES_98, ARGS, ARG, ARG:1
+SELECTCASE ARGS
+	CASE "a"
+		RETURN 101
+	CASE "A"
+		RETURN 111
+	CASE "b"
+		RETURN 201
+	CASE "B"
+		RETURN 211
+	CASE "c"
+		RETURN 301
+	CASE "C"
+		RETURN 311
+	CASE "d"
+		RETURN 401
+	CASE "D"
+		RETURN 411
+	CASE "e"
+		RETURN 501
+	CASE "E"
+		RETURN 511
+	CASE "f"
+		RETURN 601
+	CASE "F"
+		RETURN 611
+	CASE "g"
+		RETURN 701
+	CASE "G"
+		RETURN 711
+	CASE "h"
+		RETURN 801
+	CASE "H"
+		RETURN 811
+	CASE "i"
+		RETURN 901
+	CASE "I"
+		RETURN 911
+	CASE "j"
+		RETURN 1001
+	CASE "J"
+		RETURN 1011
+	CASE "k"
+		RETURN 1101
+	CASE "K"
+		RETURN 1111
+	CASE "l"
+		RETURN 1201
+	CASE "L"
+		RETURN 1211
+	CASE "m"
+		RETURN 1301
+	CASE "M"
+		RETURN 1311
+	CASE "n"
+		RETURN 1401
+	CASE "N"
+		RETURN 1411
+	CASE "o"
+		RETURN 1501
+	CASE "O"
+		RETURN 1511
+	CASE "p"
+		RETURN 1601
+	CASE "P"
+		RETURN 1611
+	CASE "q"
+		RETURN 1701
+	CASE "Q"
+		RETURN 1711
+	CASE "r"
+		RETURN 1801
+	CASE "R"
+		RETURN 1811
+	CASE "w"
+		RETURN 19
+	CASE "W"
+		RETURN 29
+
+	CASE "!"
+		RETURN 1004
+	CASE "#"
+		RETURN 2004
+	CASE "="
+		RETURN 3004
+	CASE "%"
+		RETURN 4004
+	CASE "$"
+		RETURN 5004
+ENDSELECT
+
+;=======================================================================
+;[5]調べる　実行時のイベント
+;=======================================================================
+@EVENT_CHECK_DUNGEON_98
+CALL EVENT_DUNGEON_98
+RETURN RESULT
+
+;=======================================================================
+;タイル進入時のイベント
+;=======================================================================
+@EVENT_ENTER_DUNGEON_98,ARG
+;ARG = 進入時の向き　0の場合ワープなど
+CALL EVENT_DUNGEON_98, ARG , 0
+RETURN RESULT
+
+@EVENT_DUNGEON_98, ARG, ARG:1
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 10
+	;==========
+	;ワープの処理
+	;==========
+	CASE 1
+		CALL FLOOR_98
+		RETURN RESULT
+	CASE 9
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+		CASE 1
+			CALL DUNGEON_WORP,2,11,3
+		CASE 2
+			SIF ダンジョンフラグ:98:0 >= 2
+				CALL DUNGEON_WORP,5,2,3
+		ENDSELECT
+	;==========
+	;出口の処理
+	;==========
+	CASE 8
+		CALL DUNGEON_EXIT
+	RETURN 1
+	;==========
+	;扉の処理
+	;==========
+	CASE 2
+		CALL DUNGEON_DOOR,ARG
+		RETURN 1
+	;========
+	;宝の処理
+	;========
+	CASE 3
+		CALL TREASURE_98
+		RETURN 1
+	;=======
+	;階段
+	;=======
+	CASE 6
+		CALL UPSTAIRS_98
+		RETURN RESULT
+	CASE 7
+		CALL DOWNSTAIRS_98
+		RETURN RESULT
+	;==========
+	;이벤트
+	;==========
+	CASE 4
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE  100
+		IF ダンジョンフラグ:98:0 == 0
+			IF イベントフラグ:102:0 == 3 
+				CALL MESSAGE_WINDOW_D, "메피스토", "오랜만이군요/그럼 싸워볼까요！"
+				CALL MESSAGE_WINDOW_D, "", "＞사신　메피스토가 １체 나타났다！" , , , , , , , , , "CENTER"
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				CALL SET_ENEMY,9,[[キャラ:메피스토]], 69, 0, 1
+				CFLAG:(CHARANUM-1):ＨＰ보정 = 1000
+				CFLAG:(CHARANUM-1):ＭＰ보정 = 500
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+				CALL BATTLE_START
+
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+				CALL MESSAGE_WINDOW_D, "메피스토", "빛의 후예여。당신의 힘이 얼음 사도의 힘을 일깨우는 것입니다…"
+				CALL MESSAGE_WINDOW_D, "메피스토", "저 레나라는 소녀조차도。당신을 불러들이기 위한 미끼에 지나지 않았던 거다…"
+				ダンジョンフラグ:98:0 = 1
+			ELSEIF イベントフラグ:102:0 == 6
+				CALL MESSAGE_WINDOW_D, "이사크", "오랜만이군요/아미를 위해、잘도 여기까지 오셨습니다"
+				CALL MESSAGE_WINDOW_D, "", "＞영웅　이사크가 １체 나타났다！" , , , , , , , , , "CENTER"
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				CALL SET_ENEMY,9,[[キャラ:이삭]], 69, 0, 1
+				CFLAG:(CHARANUM-1):ＨＰ보정 = 1000
+				CFLAG:(CHARANUM-1):ＭＰ보정 = 500
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+				CALL BATTLE_START
+
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+				CALL MESSAGE_WINDOW_D, "이사크", "어둠의 귀공자여。불의 사도를 만나러 가세요…"
+				CALL MESSAGE_WINDOW_D, "이사크", "빛의 힘을 따르는 그분께서、아미를 원하셨으니까요…"
+				ダンジョンフラグ:98:0 = 1
+			ENDIF
+		ENDIF
+	CASE  200
+		IF ダンジョンフラグ:98:0 == 1
+			IF イベントフラグ:102:0 == 3 
+				CALL MESSAGE_WINDOW_D, "목소리", "나와、상반되는 힘이 느껴진다"
+				CALL MESSAGE_WINDOW_D, "", "＞그가 레나에게 천사의 힘을 주어 이용한 원흉。모든 것은、싸움을 위해"
+				CALL MESSAGE_WINDOW_D, "진", "너희들은 그런 짓까지 해가며、싸움을 계속하고 싶은 거냐！ 레나를、어디로 보냈어！"
+				CALL MESSAGE_WINDOW_D, "얼음의 사도", "『수호신에게 새로운 역할을 부여받고、각성의 때를 기다리고 있겠지요』"
+				CALL MESSAGE_WINDOW_D, "", "＞얼음의 사도가 나타났다！" , , , , , , , , , "CENTER"
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				CALL SET_ENEMY,9,[[キャラ:헬]],70,0,0
+				CFLAG:(CHARANUM-1):ＨＰ보정 += 1500
+				CFLAG:(CHARANUM-1):행동횟수 = 2
+				NAME:(CHARANUM-1) = 氷の使徒
+				CALLNAME:(CHARANUM-1) = 氷の使徒
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+
+				CALL BATTLE_START
+
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+				CALL MESSAGE_WINDOW_D, "얼음의 사도", "레나는 진의 대역으로서 준비된 것입니다"
+				CALL MESSAGE_WINDOW_D, "얼음의 사도", "지금의 당신이라면、아직 늦지 않았을지도…"
+				CALL MESSAGE_WINDOW_D, "", "＞창세가 행해지려 하고 있다。서둘러야 해…"
+				ダンジョンフラグ:98:0 = 2
+
+			ELSEIF イベントフラグ:102:0 == 6
+				CALL MESSAGE_WINDOW_D, "아키라", "어째서 너희들은 싸움을 멈추려 하지 않는 거야！ 그 때문에、모두가 상처받고 있는데！"
+				CALL MESSAGE_WINDOW_D, "", "＞아미의 세계、발할라도 멸망해 버렸다。하라주쿠처럼、이라고 하기엔 조금 어폐가 있지만"
+				CALL MESSAGE_WINDOW_D, "불의 사도", "아미에 관한 것이라면、축복하도록 해라。그녀는 신이 될 몸이니까"
+				CALL MESSAGE_WINDOW_D, "아키라", "아미는 발할라를 구하기 위해、너희들을 따랐을 터다。신으로 만들어 놓고、어쩔 셈이지！？"
+				CALL MESSAGE_WINDOW_D, "불의 사도", "낡아빠진 발할라 따위 아무래도 좋다！ 아미는 새로운 세계를 낳는 것이다！"
+				CALL MESSAGE_WINDOW_D, "아키라", "아미를 속이고、그 마음을 짓밟은 네놈을、결코 용서치 않겠다！"
+				CALL MESSAGE_WINDOW_D, "", "＞불의 사도가 나타났다！" , , , , , , , , , "CENTER"
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+
+				CALL SET_ENEMY,9,[[キャラ:크투가]],70,0,0
+				CFLAG:(CHARANUM-1):ＨＰ보정 += 1500
+				CFLAG:(CHARANUM-1):행동횟수 = 2
+				NAME:(CHARANUM-1) = 炎の使徒
+				CALLNAME:(CHARANUM-1) = 炎の使徒
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+
+				CALL BATTLE_START
+
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+				CALL MESSAGE_WINDOW_D, "불의 사도", "숨겨진 장소로 가도록 해라…"
+				CALL MESSAGE_WINDOW_D, "불의 사도", "그렇지 않으면、아미와 두 번 다시 만날 수 없게 되어버린다…"
+				CALL MESSAGE_WINDOW_D, "", "＞창세가 행해지려 하고 있다。서둘러야 해…"
+				ダンジョンフラグ:98:0 = 2
+			ENDIF
+		ENDIF
+	CASE  300
+		IF ダンジョンフラグ:98:0 == 2
+			IF イベントフラグ:102:0 == 3 
+				CALL MESSAGE_WINDOW_D, "천사　레미엘", "설마、에녹 님께서 가짜였다니。저는、어떻게 해야…"
+				CALL MESSAGE_WINDOW_D, "진", "정신 차려！ 우리들은 진짜다。지금까지 몇 번이고 함께 싸워왔잖아！？"
+				CALL MESSAGE_WINDOW_D, "", "＞엔젤 칠드런의 파트너로서의 책무를 다해라/＞그렇게、기합을 불어넣었다。"
+				CALL MESSAGE_WINDOW_D, "천사　레미엘", "그렇、군요。레나를、레나를 구해야 해요"
+			
+				CALL MESSAGE_WINDOW_D, "", "＞천사　레미엘이 동료마가 되었다"
+				CALL ADD_NEW_COMPANION,[[キャラ:레미엘]],200,1
+				ABL:(CHARANUM-1):스킬4 = [[스킬:라그나로크]]
+			ELSEIF イベントフラグ:102:0 == 6
+				CALL MESSAGE_WINDOW_D, "", "＞발할라의 전사가 앞을 가로막아 섰다"
+				CALL MESSAGE_WINDOW_D, "아즈라엘", "아미의 결단을 방해하게 둘 수는 없다！"
+
+				CALL MESSAGE_WINDOW_D, "", "＞이 앞에 아미가 있다。그것만은 확실한 듯하다"
+				CALL MESSAGE_WINDOW_D, "불・가이", "발할라의 미래를、되찾기 위해！"
+				CALL MESSAGE_WINDOW_D, "", "＞미노타우로스 형제와 천사 아즈라엘이 승부를 걸어왔다！" , , , , , , , , , "CENTER"
+
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+
+				CALL SET_ENEMY,9,[[キャラ:아즈라엘]],70,0,1
+				CFLAG:(CHARANUM-1):행동횟수 = 2
+				CFLAG:(CHARANUM-1):ＨＰ보정 += 1000
+				CFLAG:(CHARANUM-1):ＭＰ보정 += 5000
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+
+				CALL SET_ENEMY,8,[[キャラ:아스테리오스]],71,0,0
+				CFLAG:(CHARANUM-1):ＨＰ보정 += 1500
+				ABL:(CHARANUM-1):스킬1 = [[스킬:마하・마그다인]]
+				CFLAG:(CHARANUM-1):행동횟수 = 2
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+
+				CALL SET_ENEMY,10,[[キャラ:미노타우로스]],71,0,0
+				CFLAG:(CHARANUM-1):ＨＰ보정 += 1500
+				CFLAG:(CHARANUM-1):행동횟수 = 2
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+					
+				CALL BATTLE_START
+
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+				CALL MESSAGE_WINDOW_D, "아키라", "정신 차려、이대로 무스펠헤임이 시키는 대로만 있을 셈이야！"
+				CALL MESSAGE_WINDOW_D, "", "＞그들이、발할라를 이롭게 해 줄 이유 따위 없을 텐데도"
+				CALL MESSAGE_WINDOW_D, "아즈라엘", "하지만、아미라면 우리들을…"
+				CALL MESSAGE_WINDOW_D, "아키라", "그러기 위해서、아미가 희생되어도 좋다는 거야！"
+				
+				CALL MESSAGE_WINDOW_D, "가이", "원래는、한 사람에게 떠맡기고 싶지 않았다。하지만 모든 것을 끝내고、모든 것을 되찾기 위해서는…"
+				CALL MESSAGE_WINDOW_D, "불", "형…"
+				CALL MESSAGE_WINDOW_D, "가이", "세계의 알을 쓸 수 있는 것은 특별한 인간뿐이라는 이야기다、하지만 너희들이라면…"
+				CALL MESSAGE_WINDOW_D, "", "＞발할라의 가이가 동료마가 되었다"
+				CALL ADD_NEW_COMPANION,[[キャラ:아스테리오스]],200,1
+				ABL:(RESULT:1):종족 = 6
+				CSTR:(RESULT:1):종족명 = 『요귀』
+			ENDIF
+			ダンジョンフラグ:98:0 = 3
+		ENDIF
+	CASE  400
+		IF ダンジョンフラグ:98:0 == 3
+			IF イベントフラグ:102:0 == 3 
+				CALL MESSAGE_WINDOW_D, "", "＞세계의 알이 태동하고 있다/＞소녀에게서 빛이 넘쳐흐르고 있다。"
+				CALL MESSAGE_WINDOW_D, "수호신", "신이 될 너는 새로운 세계를 잉태했다/그리고 분쟁으로 가득 찬 세계를、낳는 것이다/우리는 그것을 계속 지켜보겠다。언제까지나…"
+				CALL MESSAGE_WINDOW_D, "", "＞돌아보며、싸움을 계속해 온 여정을 축복했다。동시에 저주했다。/＞두 세계는 이 장소로부터 싸움을 지향당하고 있다。/＞그리고 우리들조차도、그런 것이라고 말한다。"
+				CALL MESSAGE_WINDOW_D, "진", "그래。하지만、친구를 믿고、친구를 되찾기 위한……/그것은 파괴를 위한 싸움이 아니었어！"
+				CALL MESSAGE_WINDOW_D, "진", "두 상반된 힘이 있다 해도、그 힘은 서로를 돕고/조화로운 평화 속에서、기쁨을 함께 나눌 수 있어。"
+				CALL MESSAGE_WINDOW_D, "", "＞그 세계야말로、세계가 있어야 할 모습이라고。/＞이 말은、진만의 생각인가？/＞아니면、시공을 초월해 그를 지켜보는 누군가의 마음도…"
+			ELSEIF イベントフラグ:102:0 == 6
+				CALL MESSAGE_WINDOW_D, "수호신", "이제 곧 아미는、신이 되는 것이다/네 안에 깃든、새로운 세계가、이제 곧 태어나려 하고 있다/그 세계 역시 분쟁으로 가득 차 넘쳐나겠지…"
+				CALL MESSAGE_WINDOW_D, "", "＞빛과 어둠、불과 얼음。상반되는 두 힘이 다툼의 근원이 되어、영원히 이어진다。그리고 그것을、이 신이 키워내겠다는 것이다"
+				CALL MESSAGE_WINDOW_D, "아키라", "싸움을 계속 이어가게 만드는 것이、네놈의 역할이었던 거군/모든 것은、네놈이 시작했다！"
+				CALL MESSAGE_WINDOW_D, "수호신", "모르겠는가。싸움이야말로、세계의 시작인 것이다/싸움이야말로、세계의 본모습。너희들도 그 일부가 아니더냐。"
+				CALL MESSAGE_WINDOW_D, "아키라", "싸움을 끝내기 위해 온 거야/서로가、도울 수 있는 세계를 만들기 위해서！！"
+				CALL MESSAGE_WINDOW_D, "", "＞이 마음은、아키라만의 것인가？ 분명 그에게 희망을、힘을 맡긴 자들의 마음도…"
+				CALL MESSAGE_WINDOW_D, "수호신", "건방진 소리를…"
+				CALL MESSAGE_WINDOW_D, "", "＞수호신은 짐승의 모습을 드러내며、이쪽을 노려보았다"
+				CALL MESSAGE_WINDOW_D, "수호신", "배신과 절망、그리고 파멸이야말로 나를 만들어낸 것이다！"
+				CALL MESSAGE_WINDOW_D, "", "＞수호신　조즈마・세쿤두스가 １체 나타났다！" , , , , , , , , , "CENTER"
+
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				
+				CALL SET_ENEMY,10,[[キャラ:치치미틀]],76,0,1
+				NAME:(CHARANUM-1) = ゾズマ
+				CALLNAME:(CHARANUM-1) = ゾズマ
+				CFLAG:(CHARANUM-1):ＨＰ보정 += 5000
+				CFLAG:(CHARANUM-1):ＭＰ보정 += 5000
+				ABL:(CHARANUM-1):스킬3 = [[스킬:화염가드킬]]
+				ABL:(CHARANUM-1):스킬4 = [[스킬:마이트버닝]]
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+
+				CALL SET_ENEMY,9,[[キャラ:라구엘]],75,0,1
+				CFLAG:(CHARANUM-1):ＨＰ보정 += 5000
+				CFLAG:(CHARANUM-1):ＭＰ보정 += 5000
+				CSTR:(CHARANUM-1):종족명 = 천사
+				CFLAG:(CHARANUM-1):행동횟수 = 2
+				ABL:(CHARANUM-1):스킬1 = [[스킬:마하・부흐다인]]
+				
+				NAME:(CHARANUM-1) = セクンドゥス
+				CALLNAME:(CHARANUM-1) = セクンドゥス
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+
+				CALL SET_ENEMY,8,[[キャラ:마르코시아스]],75,0,1
+				CFLAG:(CHARANUM-1):ＨＰ보정 += 5000
+				CFLAG:(CHARANUM-1):ＭＰ보정 += 5000
+				CSTR:(CHARANUM-1):종족명 = 천사
+				CFLAG:(CHARANUM-1):행동횟수 = 2
+				ABL:(CHARANUM-1):스킬2 = [[스킬:초중폭탄]]
+				
+				NAME:(CHARANUM-1) = ゾズマ
+				CALLNAME:(CHARANUM-1) = ゾズマ
+
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+				CALL BATTLE_START
+
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+
+				CALL MESSAGE_WINDOW_D, "", "＞수호신은 시공 저편으로 사라져 갔다……"
+			ENDIF
+
+				IF イベントフラグ:102:0 == 3 
+					CALL MESSAGE_WINDOW_D, "", "＞레나가 해방되었다"
+					CALL ADD_NEW_COMPANION, [[キャラ:레나]],300
+				ELSEIF イベントフラグ:102:0 == 6
+					CALL MESSAGE_WINDOW_D, "", "＞아미가 해방되었다"
+					CALL ADD_NEW_COMPANION, [[キャラ:아미]],300
+				ENDIF
+				CALL MESSAGE_WINDOW_D, "", "＞이것으로 소녀는 되찾았다……/＞자아는 아직、완전하지 않은 것 같지만……"
+				CALL MESSAGE_WINDOW_D, "", "＞회복시킬 방법은 있다……/＞조교사 나름의、수단이 되어버리겠지만……"
+			ダンジョンフラグ:98:0 = 4
+		ENDIF
+
+	CASE  500
+		IF ダンジョンフラグ:98:0 == 4
+			;ジャシンとの会話
+			CALL MESSAGE_WINDOW_D, "", "＞무(無)에 가까운 암흑의 공간。알티미아라 불리는 장소에 그것이 있었다"
+			CALL MESSAGE_WINDOW_D, "", "＞봉인을 풀겠습니까？"
+			CALL INPUT_SELECT_D, @"[1]예/[2]아니오"
+			SELECTCASE RESULT
+				CASE 1
+					CALL MESSAGE_WINDOW_D, "", "＞상냥한 눈으로、서로를 지켜보며。서로 도우며、세계를 쌓아 올린다"
+					CALL MESSAGE_WINDOW_D, "", "………/……/…"
+					CALL MESSAGE_WINDOW_D, "", "＞눈앞에 강대한 힘을 지닌 악마가 나타났다"
+					CALL MESSAGE_WINDOW_D, "", "＞그녀를 상대로、그것이 이루어질 수 있을까？"
+					CALL MESSAGE_WINDOW_D, "사신", "불과 얼음의 세계도 멸망했는가…"
+					CALL MESSAGE_WINDOW_D, "사신", "감시자도 사도도 물리치고、무엇을 바라는가…"
+
+					;日数制限の解除
+;					IF DAY < 52
+						CALL INPUT_SELECT_D, @"[0] 새로운 세계의 순환을/[1] 자신이 신이 된다/[2] 사신(자신)을 원한다/[3] 아무것도 바라지 않는다/"
+;					ELSE
+;						CALL INPUT_SELECT_D, @"[2] ジャシンが欲しい/[3] 何も望まない/"
+;					ENDIF
+
+					SELECTCASE RESULT
+						CASE 0
+							CALL SHOW_PICTURE, "NONFLOORD", ""
+							CALL MESSAGE_WINDOW, "사신", "빛과 어둠의 힘은、전생의 힘。그것은 지금、너의 손에 있다…"
+							CALL MESSAGE_WINDOW, "", "＞세계로 빛이 퍼져나간다"
+							CALL MESSAGE_WINDOW, "", "………/……/…"
+							CALL MESSAGE_WINDOW, "", "＞시간의 흐름이 모든 것을 원래대로"
+							CALL MESSAGE_WINDOW, "", "＞오래되고도 새로운 여명의 때다…"
+							CALL MESSAGE_WINDOW, "마요네", "대천사나 대마왕으로 둔갑하여、아마겟돈을 이용하려 한 자가 있었다고。흥미로운 보고입니다"
+							
+							CALL MESSAGE_WINDOW, "마요네", "하지만、그 이상으로 경탄할 만한 것은。비록 가상이라지만、최종전쟁의 상흔을 벌써부터 잊어버리려 하는 이 세계로군요"
+							CALL MESSAGE_WINDOW, "마요네", "세뇌한 아이에게 만들게 한 세계의 알의 힘。전생의 힘이란 것은、실로 훌륭한 것입니다"
+							CALL MESSAGE_WINDOW, "", "―― Ending No.047 (데빌칠드런　세계의 여명 엔드)" , , , , , , , , , "CENTER"
+
+							;ＥＤボーナス：ノルンの鍵
+							ITEM:노른의열쇠 = 1
+							FLAG:5 = 9
+							SETBIT FLAG:취소된ED,47
+							SETBIT FLAG:발견ED,47
+							FLAG:탈출 = 1
+							FLAG:전생리스타트예약 = 1
+							RETURN 1
+						CASE 1
+							CALL MESSAGE_WINDOW_D, "사신", "신이 되기를 바라는가/그렇다면 저것을 쓰러뜨리고 힘을 해방하는 것이 좋다…"
+							FLAG:도주불가플래그 = 1
+							FLAG:회화불능플래그 = 1
+							FLAG:선제기습취소 = 1
+
+							CALL SET_ENEMY,9,[[キャラ:레나]],75,0,1
+							CFLAG:(CHARANUM-1):ＨＰ보정 += 5000
+							CFLAG:(CHARANUM-1):ＭＰ보정 += 5000
+							CSTR:(CHARANUM-1):종족명 = 인간
+							CFLAG:(CHARANUM-1):행동횟수 = 2
+							ABL:(CHARANUM-1):스킬5 = [[스킬:마하・잔다인]]
+							ABL:(CHARANUM-1):스킬6 = [[스킬:마하・아쿠다인]]
+							ABL:(CHARANUM-1):스킬7 = [[스킬:시나이의신화]]
+							ABL:(CHARANUM-1):스킬8 = [[스킬:마하・그라다인]]
+							CALL SYNC_STATUS,(CHARANUM-1)
+							CALL HEALTH_CHARA,(CHARANUM-1)
+
+							CALL SET_ENEMY,14,[[キャラ:아미]],75,0,1
+							CFLAG:(CHARANUM-1):ＨＰ보정 += 5000
+							CFLAG:(CHARANUM-1):ＭＰ보정 += 5000
+							CSTR:(CHARANUM-1):종족명 = 인간
+							CFLAG:(CHARANUM-1):행동횟수 = 2
+							
+							ABL:(CHARANUM-1):스킬4 = [[스킬:이악물기]]
+							ABL:(CHARANUM-1):스킬5 = [[스킬:메기도라]]
+							ABL:(CHARANUM-1):스킬6 = [[스킬:리캄드라]]
+							ABL:(CHARANUM-1):스킬7 = [[스킬:나락의파동]]
+							ABL:(CHARANUM-1):스킬8 = [[스킬:인페르노]]
+							CALL SYNC_STATUS,(CHARANUM-1)
+							CALL HEALTH_CHARA,(CHARANUM-1)
+							CALL BATTLE_START
+
+							FLAG:도주불가플래그 = 0
+							FLAG:회화불능플래그 = 0
+							FLAG:선제기습취소 = 0
+							CALL SHOW_PICTURE, "NONFLOORD", ""
+							
+							CALL MESSAGE_WINDOW_D, "레나", "아미！ 무사해서 다행이야"
+							CALL MESSAGE_WINDOW_D, "아미", "레나야말로、위험한 짓은 하면 안 돼"
+							CALL MESSAGE_WINDOW_D, "레나", "그런 소리를 들을 건 나보다도 그 녀석이……누구 이야기였더라？"
+							CALL MESSAGE_WINDOW, "", "―― Ending No.046 (데빌칠드런　세쿤두스　조즈마 엔드)" , , , , , , , , , "CENTER"
+										
+							;FLAG:10280 = 1
+							FLAG:5 = 9
+							SETBIT FLAG:취소된ED,46
+							SETBIT FLAG:발견ED,46
+							FLAG:탈출 = 1
+
+							FLAG:전생리스타트예약 = 1
+							RETURN 1
+						CASE 2
+							CALL MESSAGE_WINDOW_D, "사신", "나를 바라는가？/이 얼마나 탐욕스러운가…"
+							CALL MESSAGE_WINDOW_D, "사신", "그렇다면 내게 힘을 증명해 보여라…"
+
+							CALL BATTLE_jyasin
+
+							CALL MESSAGE_WINDOW_D, "사신", "너의 승리다…"
+							CALL MESSAGE_WINDOW_D, "사신", "그렇다면 이제부터는 너의 것이 되도록 하마…"
+							CALL MESSAGE_WINDOW_D, "", "＞사신(자신)이 노예가 되었다"
+							CALL ADD_NEW_COMPANION,[[キャラ:쟈신]],300
+
+							ダンジョンフラグ:98:1 = 2
+							ダンジョンフラグ:98:0 = 6
+						CASE 3
+							CALL MESSAGE_WINDOW_D, "사신", "…정말로 아무것도 바라지 않는 것이로군"
+							CALL MESSAGE_WINDOW_D, "사신", "그럼、작별이다……"
+
+							ダンジョンフラグ:98:1 = 1
+							ダンジョンフラグ:98:0 = 6
+					ENDSELECT
+				CASE 2
+			ENDSELECT
+		ELSEIF ダンジョンフラグ:98:1 == 1
+			CALL MESSAGE_WINDOW_D, "", "＞적대하는 두 힘이 세계를 만들었다。그 하나의 해답이、무스펠헤임과 니플헤임"
+			CALL MESSAGE_WINDOW_D, "", "＞또 다른 해답이 있다。호시가미는、빛과 어둠과 인간、모든 근원이 되는 힘으로、세계를 창조했다"
+			CALL MESSAGE_WINDOW_D, "", "＞세계가 시작되기 전부터 다툼이 있었다。창세의 여신에게는、짝이 되는 파괴의 여신이 있었다"
+			CALL MESSAGE_WINDOW_D, "", "＞천계의 기록에는、호시가미는 인간과 천사와 악마의 힘을 사용하여、사신(자신)을 봉인했다。고 되어 있지만…"
+			CALL MESSAGE_WINDOW_D, "사신", "호시가미의 보잘것없는 아이들아、모두、모두 멸망하거라"
+			CALL INPUT_SELECT_D, @"[1] 준비되었다/[2] 기다려"
+
+			SELECTCASE RESULT
+				CASE 1
+					CALL MESSAGE_WINDOW_D, "사신", "호시가미의 피조물이여/다 함께 산산조각나거라…"
+					CALL BATTLE_jyasin
+					CALL MESSAGE_WINDOW_D, "사신", "나의 패배다…"
+					;撃破ボーナス：ジャシン解禁
+					CALL LIFTING_A_BAN([[キャラ:쟈신]])
+					CALL MESSAGE_WINDOW_D, "사신", "시간여행자여、이후는 마음대로 하도록 해라…"
+					CALL MESSAGE_WINDOW_D, "", "＞사신(자신)이 노예가 되었다"
+					CALL ADD_NEW_COMPANION,[[キャラ:쟈신]],300
+					ダンジョンフラグ:98:1 = 2
+				CASE 2
+					CALL MESSAGE_WINDOW_D, "사신", "그런가……"
+				ENDSELECT
+		ENDIF
+	ENDSELECT
+	RETURN 0
+ENDSELECT
+RETURN 1
+
+@BATTLE_jyasin
+	CALL MESSAGE_WINDOW_D, "", "＞사신(자신)이 １체 나타났다！" , , , , , , , , , "CENTER"
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+	CALL SET_ENEMY,9,[[キャラ:쟈신]],87,0,1
+	CFLAG:(CHARANUM-1):ＨＰ보정 += 10000
+	CFLAG:(CHARANUM-1):ＭＰ보정 += 10000
+	BASE:(CHARANUM-1):힘 += 5
+	BASE:(CHARANUM-1):지혜 += 5
+	BASE:(CHARANUM-1):마력 += 5
+	BASE:(CHARANUM-1):내구 += 5
+	BASE:(CHARANUM-1):속도 += 5
+	BASE:(CHARANUM-1):운 += 5
+	ABL:(CHARANUM-1):스킬1 = [[스킬:마하・그라다인]]
+	ABL:(CHARANUM-1):스킬2 = [[스킬:마하・마그다인]]
+	ABL:(CHARANUM-1):스킬3 = [[스킬:기간트마키아]]
+	ABL:(CHARANUM-1):스킬4 = [[스킬:심판의천둥]]
+	ABL:(CHARANUM-1):스킬5 = [[스킬:기어오는혼돈]]
+	ABL:(CHARANUM-1):스킬6 = [[스킬:침묵의기도]]
+	ABL:(CHARANUM-1):스킬7 = [[스킬:컨센트레이트]]
+	CFLAG:(CHARANUM-1):행동횟수 = 3
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	CALL BATTLE_START
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+	CALL MESSAGE_WINDOW_D, "", "＞사신(자신)을 쓰러뜨렸다…"
+
+;=======================================================================
+;階段置き場
+;=======================================================================
+@UPSTAIRS_98
+;位置とIDが対応しているはずなので、同IDの階段を探させれば良い
+SELECTCASE FLAG:현M
+	CASEELSE
+		CALL DUNGEON_UPSTAIRS_ID, FLAG:현M+1 , DA:(FLAG:현X):(FLAG:현Y) + 1000 + 1
+ENDSELECT
+RETURN 1
+
+@DOWNSTAIRS_98
+SELECTCASE FLAG:현M
+	CASEELSE
+		CALL DUNGEON_DOWNSTAIRS_ID, FLAG:현M-1 , DA:(FLAG:현X):(FLAG:현Y) - 1000 - 1
+ENDSELECT
+RETURN 1
+
+;-----------------------------------------------------------------------
+;タイルイベント
+;-----------------------------------------------------------------------
+@FLOOR_98, ARG
+#LOCALSIZE 4
+#LOCALSSIZE 2
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 0 , 11 , 21 , 31 , 41 , 51 , 61 , 71 , 81 , 91 , 160 , 161 , 100 , 110 , 120 , 130 , 140 , 150
+		RETURN 0
+	;ワープゾーン
+	CASEELSE
+		;ワープゾーン関係
+		;100の位がID
+		;10の位が0なら上層に、1なら下層に行く
+		LOCAL = DA:(FLAG:현X):(FLAG:현Y) / 10 % 10 ? DA:(FLAG:현X):(FLAG:현Y) -10 # DA:(FLAG:현X):(FLAG:현Y) + 10
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 101 , 111 , 121 , 131 , 141 , 151 , 170 , 171 , 180 , 181
+		LOCAL:1 = DA:(FLAG:현X):(FLAG:현Y) / 10 % 10 ? FLAG:현M - 1 # FLAG:현M + 1
+	CASEELSE
+		LOCAL:1 = FLAG:현M
+ENDSELECT
+		CALL SHOW_PICTURE, "EMPTY"
+		CALL DUNGEON_WORP_ID, LOCAL:1, LOCAL, 1
+ENDSELECT
+
+;=======================================================================
+;宝箱の中身
+;=======================================================================
+@TREASURE_98
+#LOCALSIZE 9
+LOCAL = FLAG:현M + 70
+LOCAL:1 = (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	;マップ番号*100+そのマップで何番目の宝箱かを示す数値でどの宝箱かを判別します。
+	;例えば0の場合、0版のマップの0番目の宝箱であることを表しています。
+	CASE 0
+		CALL GETS_TREASURE, "보옥륜" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 1
+		CALL GET_TREASURE_MONEY, 0 , 150000 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 2
+		CALL GETS_TREASURE, "이와쿠라의물" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 200
+		CALL GETS_TREASURE, "스킬카드【아기바리온】" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 201
+		CALL GETS_TREASURE, "보옥" , 3 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 300
+		CALL GETS_TREASURE, "힘의향" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 301
+		CALL GETS_TREASURE, "내구의향" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 600
+		CALL GETS_TREASURE, "야마타노드링크" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 601
+		CALL GETS_TREASURE, "반혼향" , 3 , FLAG:현던전, LOCAL , LOCAL:1
+ENDSELECT
+RETURN 1
+
+;=======================================================================
+;必要レベル目安
+;推奨LV 雑魚最低LV 雑魚最高LV ボスLV 
+;=======================================================================
+@GET_DUNGEON_LV_98
+RETURN 60, 60, 68, 87
+;=======================================================================
+;인카운트율
+;=======================================================================
+@ENCOUNT_RATE_98
+SELECTCASE FLAG:현M
+	CASEELSE
+		FLAG:인카운트율 = FLAG:미조우걸음수*5 + 10
+		;せめて３歩くらいはぶじに
+		SIF FLAG:미조우걸음수 < 4
+			FLAG:인카운트율 = 0
+ENDSELECT
+
+;=======================================================================
+;エンカウント処理
+;=======================================================================
+@CHECK_ENCOUNT_98
+IF RAND:100 < FLAG:인카운트율
+	RETURN 1
+ELSE
+	FLAG:미조우걸음수 += 1
+	RETURN 0
+ENDIF
+;=======================================================================
+;敵の種族の種類数
+;=======================================================================
+@CLASS_NUM_98
+RETURN CLASS_NUM_COMMON("中級")
+;=======================================================================
+;敵の総数
+;ARGは出現する敵の種類です
+;=======================================================================
+@ENEMY_NUM_98, ARG
+RETURN ENEMY_NUM_COMMON("中級", ARG)
+;=======================================================================
+;敵の種類
+;=======================================================================
+@ENEMY_98, ARG
+SELECTCASE FLAG:현M
+
+CASE 0 , 1
+SELECTCASE RAND:100
+	CASE IS < 10
+		RETURN [[キャラ:큐리오테스]], 60
+	CASE IS < 20
+		RETURN [[キャラ:프로스트에이스]], 60
+	CASE IS < 30
+		RETURN [[キャラ:유키죠로]], 60
+	CASE IS < 40
+		RETURN [[キャラ:클로토]], 60
+	CASE IS < 50
+		RETURN [[キャラ:모리안]], 60
+	CASE IS < 60
+		RETURN [[キャラ:쿠드락]], 60
+	CASE IS < 75
+		RETURN [[キャラ:마르두크]], 60
+	CASE IS < 80
+		RETURN [[キャラ:이참・나]], 60
+	CASE IS < 85
+		RETURN [[キャラ:앙그르보다]], 63
+	CASE IS < 90
+		RETURN [[キャラ:도플갱어]], 63
+	CASE IS < 95
+		RETURN [[キャラ:란다]], 63
+	CASE IS < 100
+		RETURN [[キャラ:달기]], 63
+ENDSELECT
+
+
+CASE 2 TO 4
+SELECTCASE RAND:100
+	CASE IS < 10
+		RETURN [[キャラ:큐리오테스]], 60
+	CASE IS < 20
+		RETURN [[キャラ:프로스트에이스]], 60
+	CASE IS < 30
+		RETURN [[キャラ:유키죠로]], 60
+	CASE IS < 40
+		RETURN [[キャラ:라케시스]], 60
+	CASE IS < 50
+		RETURN [[キャラ:모리안]], 60
+	CASE IS < 60
+		RETURN [[キャラ:쿠드락]], 60
+	CASE IS < 75
+		RETURN [[キャラ:마르두크]], 60
+	CASE IS < 80
+		RETURN [[キャラ:이참・나]], 61
+	CASE IS < 85
+		RETURN [[キャラ:앙그르보다]], 63
+	CASE IS < 90
+		RETURN [[キャラ:도플갱어]], 63
+	CASE IS < 95
+		RETURN [[キャラ:란다]], 63
+	CASE IS < 100
+		RETURN [[キャラ:달기]], 63
+ENDSELECT
+
+CASEELSE
+SELECTCASE RAND:100
+	CASE IS < 10
+		RETURN [[キャラ:큐리오테스]], 65
+	CASE IS < 20
+		RETURN [[キャラ:발키리]], 65
+	CASE IS < 30
+		RETURN [[キャラ:카구야]], 65
+	CASE IS < 40
+		RETURN [[キャラ:도올]], 65
+	CASE IS < 50
+		RETURN [[キャラ:파프니르]], 66
+	CASE IS < 60
+		RETURN [[キャラ:칼리]], 65
+	CASE IS < 70
+		RETURN [[キャラ:다곤_데빌칠드런]], 66
+	CASE IS < 80
+		RETURN [[キャラ:큐리오테스]],66
+	CASE IS < 90
+		RETURN [[キャラ:아트로포스]], 67
+	CASE IS < 95
+		RETURN [[キャラ:고모리]], 68
+	CASE IS < 100
+		RETURN [[キャラ:보후・마나흐]], 68
+ENDSELECT
+
+ENDSELECT
+;=======================================================================
+;輪姦参加悪魔
+;=======================================================================
+@DUNGEON_RAPE_DEVIL_98
+;ランダムにどの悪魔が出るか決定
+;RETURN CSV番号 , 人数 , レベル
+SELECTCASE RAND:3
+	CASE 0
+		RETURN [[キャラ:쿠드락]] , 3 + RAND:10 , CSVBASE([[キャラ:쿠드락]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 1
+		RETURN [[キャラ:야마타노오로치]] , 3 + RAND:10 , CSVBASE([[キャラ:야마타노오로치]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 2
+		RETURN [[キャラ:케르눈노스]] , 3 + RAND:10 , CSVBASE([[キャラ:케르눈노스]] , GETNUM(BASE , "LV") , 0) + RAND:3
+ENDSELECT

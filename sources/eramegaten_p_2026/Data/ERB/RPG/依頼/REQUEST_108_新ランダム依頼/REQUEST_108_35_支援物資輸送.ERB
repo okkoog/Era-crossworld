@@ -1,0 +1,264 @@
+﻿;依頼名===================================================================
+;依頼難易度は敵の最大レベルによって変動
+; 1～10　☆、11～20　☆☆、21～30　☆☆☆、以下略
+;ダンジョン攻略が必要な場合は☆が★になる。
+
+@TITLE_RANDOM_REQUEST_108_35
+RESULTS = 지원 물자 수송（난이도 ★★★）
+RETURN 1
+
+;説明===================================================================
+@REQUEST_EXPLAIN_108_35
+PRINTL 
+PRINTL 【의뢰주】메시아교
+PRINTL 
+PRINTL 던전을 돌파하여 화물을 배달하라.
+PRINTL 
+PRINTL 【작전영역】	잔해의 산으로 변한 도시
+PRINTL 【적의 전력】	체르노보그（화염이 유효합니다）
+PRINTL 【성공조건】	지원 물자를 전선 거점까지 전달
+PRINTL 【주의사항】	던전 공략이 필요
+PRINTL 
+
+;内容====================================================================
+@REQUEST_108_35
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", "의뢰를 받아주신 분이시군요, 곧바로 본론이지만/이 지원 물자를 전선 거점까지 전달해 주십시오.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", "현재 모 국가가 체르노보그 군세의 공격을 받아/각지가 전장이 되어 있습니다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", "저희는 그 지원을 위한 유지연합에 참가하고 있으며/현재 전력적으로 불리하면서도 전선은 교착 상태를 유지하고 있습니다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", "하지만 전선의 한 거점이 적에게 포위되어/지원 물자를 전달하지 못하고 있습니다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", "현장에서는 무기·약품뿐만 아니라 물이나 식량조차 부족하다는 연락을 받고 있습니다./잔해 더미로 미로가 된 도시를 빠져나가 지원 물자를 거점까지 전해 주십시오.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, ,"BLANK", "", "MESSAGE", "＞지원 물자를 받았다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", "목표 거점에는 저희 동료가 있습니다. 그녀에게 그것을 전해 주십시오.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", "그리고 혹시 가지고 계신 것 중 남는 상처약 등이 있다면/그것도 전선에 있는 동료에게 양보해 주신다면 큰 도움이 되겠습니다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", "현장은 전장의 한가운데입니다. 잔해 더미로 미로가 된 거리를 체르노보그의 분신이 순찰하고 있고/언제 유탄이나 무차별 폭격이 날아올지 모르는 상황이니, 부디 조심하십시오.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, ,"BLANK", "", "MESSAGE", "【전장으로 변한 거리】에 갈 수 있게 되었습니다.", , , , , 4
+;ダンジョン発生
+依頼フラグ:[[依頼:랜덤의뢰]]:2 = 1
+;ランダム迷宮
+依頼フラグ:[[依頼:랜덤의뢰]]:3 = 8
+
+;ダンジョン名=============================================================
+@DUNGEON_NAME_108_35
+#FUNCTIONS
+RESULTS_F = 전장으로 변한 거리
+
+;攻略開始時のイベント=====================================================
+@EVENT_DUNGEON_START_108_35
+CALL MESSAGE_WINDOW_D, "", @"＞전장으로 변한 거리에 잠입했다/　잔해와 바리케이드로 미로가 된 마을을 빠져나가 전선 기지를 향하자.", , , , , 4
+
+;===================================
+;ダンジョン内イベント
+;==================================
+@DUNGEON_EVENT_108_35
+;最深部
+IF FLAG:현M == 0
+	IF FLAG:현X == 15 && FLAG:현Y == 2
+		IF 依頼フラグ:[[依頼:랜덤의뢰]]:4 == 0
+			CALL MESSAGE_WINDOW_D, "메시아교도" , @"앗! 본부에서 연락받은 %CALLNAME:MASTER% 씨로군요!/무사히 와주셔서 다행입니다!", , , , , 4
+			CALL MESSAGE_WINDOW_D, "" , @"＞지원 물자를 건넸다.", , , , , 4
+			CALL MESSAGE_WINDOW_D, "메시아교도" , @"다행이다… 이걸로 어떻게든 버텨낼 수 있겠어요!", , , , , 4
+			CALL MESSAGE_WINDOW_D, "메시아교도" , @"그리고… 혹시 가지고 계신 아이템 중에 남는 게 있다면/나눠주실 수 없을까요… 모든 것이 부족한 상황이라서요.", , , , , 4
+			CALL MESSAGE_WINDOW_D, "메시아교도" , @"돌아가실 때는 말을 걸어주세요/본부에 의뢰가 완료되었다고 연락할 테니까요.", , , , , 4
+			依頼フラグ:[[依頼:랜덤의뢰]]:4 = 1
+			CALL MAKE_FLOOR, FLAG:현던전
+			CALL AUTOMAP
+		ELSE
+			CALL MESSAGE_WINDOW_D, "메시아교도" , @"돌아가시겠습니까?", , , , , 4
+			CALL INPUT_YN,"귀환한다","조금 더 여기에 머문다"
+			SIF RESULT == 0
+				FLAG:탈출 = 1
+		ENDIF
+	ELSEIF FLAG:현X == 13 && FLAG:현Y == 3
+		CALL MESSAGE_WINDOW_D, "위생병" , @"저기… 혹시 도반옥이 남는 게 있다면, 나눠주지 않겠나?", , , , , 4
+		CALL INPUT_YN,"네","아니오"
+		IF RESULT == 0
+			IF ITEM:도반옥 >= 1
+				ITEM:도반옥 -= 1
+				CALL MESSAGE_WINDOW_D, "위생병" , @"고마워, 살았어.", , , , , 4
+				CALL INCREASE_LD, 25
+			ELSE
+				CALL MESSAGE_WINDOW_D, "" , @"＞소지품이 부족하다", , , , , 4
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "위생병" , @"그런가… 아니, 무리한 부탁을 해서 미안하군", , , , , 4
+		ENDIF
+			
+	ELSEIF FLAG:현X == 13 && FLAG:현Y == 5
+		CALL MESSAGE_WINDOW_D, "민병" , @"저기… 혹시 우황단이 남는 게 있다면, 나눠주지 않겠나?", , , , , 4
+		CALL INPUT_YN,"네","아니오"
+		IF RESULT == 0
+			IF ITEM:우황단 >= 1
+				ITEM:우황단 -= 1
+				CALL MESSAGE_WINDOW_D, "민병" , @"고마워, 이걸로 아직 더 싸울 수 있겠어!", , , , , 4
+				CALL INCREASE_LD, 25
+			ELSE
+				CALL MESSAGE_WINDOW_D, "" , @"＞소지품이 부족하다", , , , , 4
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "민병" , @"그런가… 아니, 무리한 부탁을 해서 미안하군", , , , , 4
+		ENDIF
+	ELSEIF FLAG:현X == 13 && FLAG:현Y == 7
+		CALL MESSAGE_WINDOW_D, "간호사" , @"죄송하지만… 혹시 외상약이 남는 게 있다면, 5개 정도 나눠주실 수 있나요?", , , , , 4
+		CALL INPUT_YN,"네","아니오"
+		IF RESULT == 0
+			IF ITEM:외상약 >= 5
+				ITEM:외상약 -= 5
+				CALL MESSAGE_WINDOW_D, "간호사" , @"고마워요, 이걸로 부상자를 구할 수 있겠어요", , , , , 4
+				CALL INCREASE_LD, 25
+			ELSE
+				CALL MESSAGE_WINDOW,  "MESSAGE" , @"＞소지품이 부족하다", , , , , 4
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "간호사" , @"그렇습니까… 무리한 부탁을 드려 죄송해요", , , , , 4
+		ENDIF
+	ELSEIF FLAG:현X == 17 && FLAG:현Y == 3
+		CALL MESSAGE_WINDOW_D, "병사" , @"저기… 혹시 전투식량MRE가 남는 게 있다면, 나눠주지 않겠나?", , , , , 4
+		CALL INPUT_YN,"네","아니오"
+		IF RESULT == 0
+			IF ITEM:전투식량MRE >= 1
+				ITEM:전투식량MRE -= 1
+				CALL MESSAGE_WINDOW_D, "병사" , @"고마워, 맛은 없지만 먹을 수 있는 것만으로도 감지덕지지", , , , , 4
+				CALL INCREASE_LD, 25
+			ELSE
+				CALL MESSAGE_WINDOW,  "MESSAGE" , @"＞소지품이 부족하다", , , , , 4
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "병사" , @"그런가… 아니, 무리한 부탁을 해서 미안하군", , , , , 4
+		ENDIF
+	ELSEIF FLAG:현X == 17 && FLAG:현Y == 5
+		CALL MESSAGE_WINDOW_D, "병사" , @"저기… 혹시 네이팜탄을 가지고 있다면, 나눠주지 않겠나?", , , , , 4
+		CALL INPUT_YN,"네","아니오"
+		IF RESULT == 0
+			IF ITEM:네이팜탄 >= 1
+				ITEM:네이팜탄 -= 1
+				CALL MESSAGE_WINDOW_D, "병사" , @"고마워, 적에게 이걸 먹여줄 생각을 하니 기대되는군", , , , , 4
+				CALL INCREASE_LD, 25
+			ELSE
+				CALL MESSAGE_WINDOW_D, "" , @"＞소지품이 부족하다", , , , , 4
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "병사" , @"그런가… 아니, 무리한 부탁을 해서 미안하군", , , , , 4
+		ENDIF
+	ELSEIF FLAG:현X == 17 && FLAG:현Y == 7
+		CALL MESSAGE_WINDOW_D, "정찰병" , @"저기… 혹시 눈속임의구슬이 남는 게 있다면, 나눠주지 않겠나?", , , , , 4
+		CALL INPUT_YN,"네","아니오"
+		IF RESULT == 0
+			IF ITEM:눈속임의구슬 >= 1
+				ITEM:눈속임의구슬 -= 1
+				CALL MESSAGE_WINDOW_D, "정찰병" , @"고마워, 이걸로 만약의 경우에도 퇴각할 수 있겠어", , , , , 4
+				CALL INCREASE_LD, 25
+			ELSE
+				CALL MESSAGE_WINDOW_D, "" , @"＞소지품이 부족하다", , , , , 4
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "정찰병" , @"그런가… 아니, 무리한 부탁을 해서 미안하군", , , , , 4
+		ENDIF
+	ENDIF
+;ランダム迷宮内
+ELSE
+	SELECTCASE RAND:4
+		CASE 0
+			CALL MESSAGE_WINDOW_D, "" , @"＞시체가 있다… 손에 무언가를 쥐고 있는 듯한데…/　지도다, 부근의 지형이 밝혀졌다.", , , , , 4
+			FOR LOCAL:1, 0, FLAG:최대Y
+				FOR LOCAL, 0, FLAG:최대X
+					CALLF DPOINT("SET" , 2 , LOCAL , LOCAL:1 , FLAG:현M , @"ダンジョン%TOSTR(FLAG:현던전 , "00")%" )
+				NEXT
+			NEXT
+			CALL AUTOMAP
+		CASE 1
+			CALL GET_TREASURE_TRAP, "ＨＰ", 25 , GET_TYPE_NUM("만능") , , ,
+		CASE 2
+			CALL MESSAGE_WINDOW_D, "" , @"＞아무것도 없었다", , , , , 4
+		CASE 3
+			CALL MESSAGE_WINDOW_D, "" , @"＞시체가 있다…", , , , , 4
+			CALL INPUT_YN,"시체를 뒤진다","내버려 둔다"
+			IF RESULT == 0
+				SELECTCASE RAND:7
+					CASE 0
+						LOCAL = 2000;어택나이프
+					CASE 1
+						LOCAL = 2500;베레타９２Ｆ
+					CASE 2
+						LOCAL = 3000;헤드기어
+					CASE 3
+						LOCAL = 3500;서바이벌베스트
+					CASE 4
+						LOCAL = 4000;레더글러브
+					CASE 5
+						LOCAL = 4500;레더부츠
+					CASE 6
+						LOCAL = 5002;로자리오
+				ENDSELECT
+				CALL CHECK_ITEMMAX,LOCAL
+				IF RESULT == 0
+					CALL MESSAGE_WINDOW_D, "" , @"%ITEMNAME:LOCAL%을(를) 1개 손에 넣었다.", , , , , 4
+					CALL GET_ITEM, LOCAL, 1
+				ELSE
+					CALL MESSAGE_WINDOW_D, "" , @"%ITEMNAME:LOCAL%을(를) 발견했지만 더 이상 지닐 수 없었다.", , , , , 4
+				ENDIF
+			ENDIF
+	ENDSELECT
+	DA:(FLAG:현X):(FLAG:현Y) = 1
+	RETURN 1
+ENDIF
+
+;脱出時のイベント============================================================--
+@DUNGEON_RESULT_108_35
+;目標地点に到達してからダンジョンを脱出するとクリア
+IF 依頼フラグ:[[依頼:랜덤의뢰]]:4 >= 1
+	CALL MESSAGE_WINDOW_D, "" , @"＞지원 물자 수송에 성공했다.", , , , , 4
+	依頼フラグ:[[依頼:랜덤의뢰]]:5 = 3;難易度
+	依頼フラグ:[[依頼:랜덤의뢰]]:7 = 1;依頼主：メシア教
+	CALL PRIZE_REQUEST_108	
+ELSE
+	CALL MESSAGE_WINDOW_D, "", "＞의뢰를 취소했다."
+ENDIF
+
+;敵の総数==================================================================
+@ENEMY_NUM_108_35
+RESULTS = 中級
+RETURN 0
+
+;敵の種類==================================================================
+@ENEMY_108_35
+RETURN [[キャラ:체르노보그]], (25 + RAND:6)
+
+;フロア名表示===============================================================
+@FLOORNAME_108_35
+SELECTCASE FLAG:현M
+	CASE 9
+		PRINTFORML 전장으로 변한 거리　입구
+	CASE 0
+		PRINTFORML 전선 기지
+	CASEELSE
+		PRINTFORML 전장으로 변한 거리-{(9-(FLAG:현M))}
+ENDSELECT
+
+
+;MAP改変=====================================================================
+@MAP_CHANGE_108_35
+SELECTCASE FLAG:현M
+	CASE 0
+		;X == 15,Y == 2に人物を設置
+		CALL SET_TILE, 15, 2, , , 14
+		;依頼フラグ:[[依頼:랜덤의뢰]]:4 == 1なら(X,Y) == (13,3) (13,5)(13,7)(17,3)(17,5)(17,7)に人物を設置
+		CALL SET_TILE, 13, 3, 依頼フラグ:[[依頼:랜덤의뢰]]:4, 1, 14
+		CALL SET_TILE, 13, 5, 依頼フラグ:[[依頼:랜덤의뢰]]:4, 1, 14
+		CALL SET_TILE, 13, 7, 依頼フラグ:[[依頼:랜덤의뢰]]:4, 1, 14
+		CALL SET_TILE, 17, 3, 依頼フラグ:[[依頼:랜덤의뢰]]:4, 1, 14
+		CALL SET_TILE, 17, 5, 依頼フラグ:[[依頼:랜덤의뢰]]:4, 1, 14
+		CALL SET_TILE, 17, 7, 依頼フラグ:[[依頼:랜덤의뢰]]:4, 1, 14
+ENDSELECT
+
+;行動終了時にダメージ=========================================================
+@EVENT_BATTLE_ACTEND_DUNGEON_108_35
+#DIM DYNAMIC 行動者
+行動者 = FLAG:행동순1
+;ダメージ処理が発生する
+RESULTS:0 = あり
+;ダメージを与える属性
+RESULTS:1 = 화염
+;ダメージを受ける際に表示するテキスト
+RESULTS:2 = 무차별 포격이 %CALLNAME:行動者%을(를) 덮친다!
+;ダメージ量
+RETURN RAND:20 + 50

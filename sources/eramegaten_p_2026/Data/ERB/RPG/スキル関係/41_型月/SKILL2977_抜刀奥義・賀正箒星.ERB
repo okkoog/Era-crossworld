@@ -1,0 +1,171 @@
+﻿;220205		NEO		威力向上、「50/100」→「200/300」
+;					原作でガード不能であったため、HPが減少している状態では貫通を付与
+;					（その分威力は控えめ、CT高いしな）
+;221013		NEO		説明文などを変更、名称変化と演出を追加
+;					内部的な動きはあんまり変わってないけれど、動きを貫通単体攻撃×全体、を貫通付与×全体→全体攻撃、にするなど。
+
+;スキル名
+@SKILL_NAME_2977,ARG
+RESULTS = 발도오의・하정추성
+
+;　명중
+@SKILL_HITRATE_2977, ARG
+RETURN 120
+
+;　威力
+@SKILL_POWER_2977, ARG
+	IF ARG == -1
+		RETURN 200
+	;ブラッドヒートだと威力上昇
+	ELSEIF 現HP割合(ARG) < 33
+		RETURN 300
+	ELSE
+		RETURN 200
+	ENDIF
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2977,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2977,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2977, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2977,ARG
+RETURN 40
+
+;　相性
+@SKILL_TYPE_2977,ARG
+RETURN GET_TYPE_NUM("검격")
+
+;高クリティカル
+@SKILL_CRITICAL_RATE_2977, ARG
+RETURN 30
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2977
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2977, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2977, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2977,ARG
+RETURN 4
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2977,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2977, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;テンプレート用、追加効果シリーズ
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2977
+RETURN GET_SUCCESSION_NUM("검격")
+;不可
+
+@継承不能_2977
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_2977, ARG = -1
+RETURN -1
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2977
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2977, ARG = -1
+RETURN 15
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_2977, ARG = -1, ARG:1 = -1
+	;ブラッドヒートだと完全貫通
+	SIF 現HP割合(ARG) < 33 && SKILL_CHANGE(ARG, [[キャラ:코하쿠]])
+		RETURN 4
+
+	RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2977, ARG, ARG:1, ARG:2
+#LOCALSIZE 4
+#DIM ATK_TARGET_START
+#DIM ATK_TARGET_END
+#DIM ATK_TARGET
+#DIM LCOUNT
+#DIM IS_PENETRATE
+;LOCAL = POS(ARG:1)
+;全体攻撃に修正
+;CALL ATTACK_SINGLE,ARG,LOCAL,2977
+
+
+	;メッセージ表示
+	;HP条件をチェックし、強化状態であったら「BLOOD HEAT!!」を表示する
+	CALL MELTY_BLOOD_IS_BLOOD_HEAT_HP_CONDITIONS(ARG)
+
+	;おまじない：琥珀が使用した場合のみ貫通
+	;ただし貫通処理そのものは「SKILL_PENETRATION_RANK_2977」で行うので、ここでは「貫通が必要か」のチェック
+	IF 現HP割合(ARG) < 33 && SKILL_CHANGE(ARG, [[キャラ:코하쿠]])
+
+		;付与処理終了後、誰かに貫通効果を付与してた場合メッセージ表示
+		;→BHなら必ず表示とする
+		IF RAND:2 == 0
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃코하쿠류 발도술 오의는 빈틈없는 2단 자세!　　　　　　　　　　　　　　　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ELSE
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃내일로 내딛는 한 걸음이 발도술에 힘을 불어넣는다!　　　　　　　　　　　　　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ENDIF
+	ENDIF
+	;HP33％以上だと↑の貫通処理を行わない
+	CALL ATTACK_FIELD,ARG,ARG:1,2977
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+;「踏み込んだ足の加重がキモの神速抜刀術」。
+@SKILL_EXPLAIN_2977, ARG
+PRINTL 적 전체에 검격 상성으로 중위력의 물리 공격을 행한다. 고크리티컬.
+PRINTL 사용자의 HP가 얼마 남지 않았을 경우 내일로 내딛는 한 걸음을 펼친다.
+PRINTL (※위력이 향상되며, 모든 적의 내성을 관통한다)
+PRINTL 　
+PRINTL 코하쿠류 발도술의 오의?
+PRINTL 장검 빗자루의 일섬과 함께 배경이 우파루파 같은 무언가(뿔과 날개가 보이는 것으로 보아 용을 의도한 듯하다)의 그림으로 변하며, 우측 하단에 근하신년 글자가 나타난다.
+PRINTL 고용인 코하쿠의 필살기
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2977,ARG
+RETURN 1
+

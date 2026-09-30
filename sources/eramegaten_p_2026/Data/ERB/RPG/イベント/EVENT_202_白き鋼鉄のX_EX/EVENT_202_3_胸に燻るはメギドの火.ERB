@@ -1,0 +1,161 @@
+﻿;====================
+;条件
+;====================
+@EVENT_TITLE_202_3
+RESULTS '= "가슴에 그을리는 것은 메기도의 불"
+
+@EVENT_EXPLAIN_202_3
+RESULTS:0 '= "보수: 데이사이트 획득"
+IF GETCHARA([[キャラ:데이사이트_X2]]) >= 0
+	RESULTS:1 '= "　　 ※보수 소지 중"
+ELSE
+	RESULTS:1 '= "　　 ※보수를 수령하려면 도리 카드몬이 필요"
+ENDIF
+
+@PLAYABLE_EVENT_202_3
+SIF !GETBIT(FLAG:발견ED2, 11)
+	RETURN 0
+RETURN 1
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_202_3
+PRINTFORML ………
+PRINTFORML ……
+PRINTFORMW …
+PRINTFORMW 그레이브 필러　화산 블록 최심부――
+PRINTFORML 숨이 턱턱 막히는 열기가 지배하는, 이곳은 염옥.
+PRINTFORML 생명의 모든 것을 부정하고 까맣게 태워버리는 극한 환경에, 우두커니 선 기영이 하나.
+PRINTFORML 　
+PRINTFORMW 「지치지도 않고 또 찾아오셨나. 그렇게나 나랑 한판 붙고 싶었던 건가?」
+PRINTFORML 　
+PRINTFORML 등 뒤로 담담하게 흘러나오는 것은, 희미해진――혹은 메마른 감정을 실은 말.
+PRINTFORMW 침입자에게 등을 돌리고 있는 것은 결코 방심이 아니다. 섣불리 쳐들어가면 위험하다고 본능이 경고하고 있다.
+PRINTFORML 　
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:데이사이트_X2]]), [[キャラ:데이사이트_X2]]
+PRINTFORMW 「뭐, 당신 사정 따윈 아무래도 상관없지. 이 데이사이트가, 전 화력을 다해 소탕해 주마」
+CLEARLINE 7
+PRINTFORML 「뭐, 당신 사정 따윈 아무래도 상관없지. 이 데이사이트가, 전 화력을 다해 소탕해 주마」
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:데이사이트_X2]]), [[キャラ:데이사이트_X2]], "FACE_1", , "中火"
+PRINTFORMW 「자아, 준비하시지――도굴꾼 놈들」
+CLEARLINE 7
+PRINTFORML 「자아, 준비하시지――도굴꾼 놈들」
+PRINTFORML 　
+PRINTFORMW 워커　데이사이트가　1체 나타났다!
+
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+CALL SET_BOSS_ENEMY_EVENT_202, "デイサイト"
+CALL BATTLE_START
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+SIF FLAG:패배플래그
+	RETURN 0
+
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:데이사이트_X2]]), [[キャラ:데이사이트_X2]]
+PRINTFORMW 「새하얗게 불태웠어……」
+CLEARLINE 7
+PRINTFORML 「새하얗게 불태웠어……」
+PRINTFORML 　
+PRINTFORML 두 동강 난 데이사이트에게서, 사방팔방으로 흩날리는 Pix.
+IF GETCHARA([[キャラ:데이사이트_X2]]) > 0 || ITEM:도리・카드몬 == 0
+	PRINTFORML 외각이 소실되고, 소체가 드러나자, 내부에서 섬광이 번쩍이더니――대폭발.
+	PRINTFORMW 뒤에는 잔불조차 남지 않는 것이었다.
+ELSE
+	PRINTFORML 이대로 방치하면, 머지않아 소체가 드러나 대폭발할 것이다.
+	PRINTFORML 과연, 도리 카드몬을 써야 할까?
+	CALL INPUT_YN, "예", "아니오"
+	IF RESULT == 0
+		PRINTFORML %CALLNAME:MASTER%은(는) 도리 카드몬을 집어던져,
+		PRINTFORML 소체의 대용품으로서 주위에 흩날린 Pix를 남김없이 흡수시켜 간다.
+		PRINTFORMW ……그렇게 완성된 것은, 악마로 다시 태어난 데이사이트의 모습이었다.
+		PRINTFORML 　
+		CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:데이사이트_X2]]), [[キャラ:데이사이트_X2]]
+		PRINTFORMW 「뭐…… 도대체, 무슨 일이 일어난 거야……?」
+		CLEARLINE 7
+		PRINTFORML 「뭐…… 도대체, 무슨 일이 일어난 거야……?」
+		PRINTFORML 　
+		PRINTFORML 당혹해하고 있는 틈을 타, 능숙하게 계약을 진행하여――
+		PRINTFORMW 마침내 데이사이트는 %CALLNAME:MASTER%의 악마가 되는 것이었다.
+		PRINTFORML 　
+		PRINTFORMW ＞데이사이트가 동료마가 되었다.
+		ITEM:도리・카드몬 -= 1
+		CALL ADD_NEW_COMPANION, [[キャラ:데이사이트_X2]], 0
+	ELSE
+		PRINTFORML %CALLNAME:MASTER%은(는) 도리 카드몬을 쓰지 않기로 하고, 전말을 지켜보기로 했다.
+		PRINTFORML 외각이 소실되고, 소체가 드러나자, 내부에서 섬광이 번쩍이더니――대폭발.
+		PRINTFORMW 뒤에는 잔불조차 남지 않는 것이었다.
+	ENDIF
+ENDIF
+CUSTOMDRAWLINE =
+RETURN 1
+
+@SET_ACTION_アルマゲドンレイ3, ARG
+#DIM DYNAMIC LCOUNT
+IF CFLAG:ARG:１more플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:회심의패기]]
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	;ライブノベルは使わないので省略
+	;ガンヴォルトあるある：HPが1/3切ったらSPスキル使う　5Tに1回打ってくるぞ
+	IF CFLAG:ARG:800 && PU_SKILLGAGE_D_GET(ARG, "ＳＰスキル") == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+	ELSE
+		SELECTCASE FLAG:경과턴수
+			CASE 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:포효]]
+			CASE 1
+				CALL SET_ACTION_SKILL, ARG, [[스킬:헬파이어]]
+			CASE 2
+				CALL SET_ACTION_SKILL, ARG, [[스킬:워크라이]]
+			CASE 3
+				CALL SET_ACTION_SKILL, ARG, [[스킬:뇌진왕모의발차기]]
+			CASE 4
+				CALL SET_ACTION_SKILL, ARG, [[스킬:회심의패기]]
+			CASEELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:예광구리가라축]]
+		ENDSELECT
+	ENDIF
+ELSE
+	FOR LCOUNT, 1, 7
+		SIF !IS_TARGET_ABLE(POS(LCOUNT))
+			CONTINUE
+		SIF !CFLAG:POS(LCOUNT):방어플래그
+			CONTINUE
+		CFLAG:ARG:입력행동 = [[스킬:방어부수기]]
+		CFLAG:ARG:타겟 = LCOUNT
+		RETURN 1
+	NEXT
+	SELECTCASE FLAG:경과턴수
+		CASE 0
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "インフェルノドロップ")
+		CASE 1
+			CALL SET_ACTION_SKILL, ARG, [[스킬:여덟머리의염구]]
+		CASE 2
+			CALL SET_ACTION_SKILL, ARG, [[스킬:타격가드브레이크]]
+		CASE 3
+			CALL SET_ACTION_SKILL, ARG, [[스킬:분노의철권]]
+		CASE 4
+			CALL SET_ACTION_SKILL, ARG, [[스킬:천열찌르기]]
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:소작권]]
+	ENDSELECT
+ENDIF
+
+@CHANGE_ACTION_アルマゲドンレイ3, ARG
+CALL CHANGE_ACTION_アルマゲドンレイ, ARG
+
+@EVENT_BATTLE_DYING_アルマゲドンレイ3, L_T, L_P, L_SKIP
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_SKIP
+CALL EVENT_BATTLE_DYING_EVENT_201_2_2_デイサイト, L_T, L_P, L_SKIP
+
+@EVENT_BATTLE_ACTEND_アルマゲドンレイ3
+CALL EVENT_BATTLE_ACTEND_EVENT_201_2_2_デイサイト
+
+@EVENT_BATTLE_LOSE_アルマゲドンレイ3
+RETURN 1

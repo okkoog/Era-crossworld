@@ -1,0 +1,75 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@C_BTL_EFFECT_CONTROL_NO_ELD_2,ARG
+RESULTS = 악마의 눈동자
+
+;スキル名
+@SKILL_NAME_C_BTL_EFFECT_悪魔の瞳,ARG
+RESULTS = 악마의 눈동자
+
+;重複可能な数
+@C_BTL_EFFECT_COUNT_LIMIT_悪魔の瞳
+RETURN 1
+
+;効果時間　最大10ターンまで、0を指定した場合は戦闘中永続
+@C_BTL_EFFECT_CONTINUE_TIME_悪魔の瞳
+RETURN 0
+
+;排他となる効果
+;戻り値
+; RESULTS = 効果名
+; RESULT
+; 0 = 排他
+;-1 = 上書き不能
+; 1 = 上書き(対象も1なら相互上書き)
+@C_BTL_EFFECT_EXCLUSIVE_悪魔の瞳
+RESULTS = 
+RETURN 0
+
+;個別の対象条件
+;ARG 	効果を受けるキャラの登録番号
+;ARG:1	効果を与えるキャラの登録番号
+@C_BTL_EFFECT_SPECIAL_TARGET_悪魔の瞳, ARG, ARG:1
+SIF IS_BADSTATE(ARG, "DYING")
+	RETURN 0
+RETURN 1
+
+@SKILL_BATTLE_MAIN_TOOLTIP_C_BTL_EFFECT_悪魔の瞳, ARG, ARG:1
+RESULTS = □악마의 눈동자
+RESULTS:1 '= "　주는 데미지＋" + "２５" + "％"
+
+;====================================================
+;ダメージ計算時の追加補正
+;クリティカルダメージ+10%　セット数が増える場合5%づつ強化される
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_C_BTL_EFFECT_悪魔の瞳, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			RETURN 25
+	ENDSELECT
+ENDIF
+RETURN 0
+;RESULT:0 = HP回復量
+;RESULT:1 = MP回復量
+;RESULT:2 = MAG消費量
+@SKILL_REGEN_AT_TURNEND_C_BTL_EFFECT_悪魔の瞳,ARG
+RETURN -MAXBASE:ARG:ＨＰ * 30 / 100

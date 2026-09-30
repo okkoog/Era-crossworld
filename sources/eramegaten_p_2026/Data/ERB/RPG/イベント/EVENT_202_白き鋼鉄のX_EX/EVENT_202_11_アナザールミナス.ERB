@@ -1,0 +1,117 @@
+﻿;====================
+;条件
+;====================
+@EVENT_TITLE_202_11
+RESULTS '= "어나더 루미너스"
+
+@EVENT_EXPLAIN_202_11
+RESULTS:0 '= "보수: 창조주 획득"
+IF GETCHARA([[キャラ:창조주_X2]]) >= 0
+	RESULTS:1 '= "　　 ※보수 소지 중"
+ELSE
+	RESULTS:1 '= "　　 ※보수를 수령하려면 도리 카드몬이 필요"
+ENDIF
+
+@PLAYABLE_EVENT_202_11
+SIF EVENT_202_白き鋼鉄のXチャレンジバトル_クリアフラグ:9 == 0
+	RETURN 0
+RETURN 1
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_202_11
+PRINTFORML ………
+PRINTFORML ……
+PRINTFORMW …
+PRINTFORMW 그레이브 필러　최상층 엔트런스――
+PRINTFORML 사람이 떠나간 세계에 남겨진, 묘비 대신인 탑. 이곳은 그 최상층.
+PRINTFORMW 처참하게 파괴된 전송 단말이 그 존재를 주장하고 있다.
+PRINTFORML 　
+PRINTFORMW 「…………」
+PRINTFORML 　
+PRINTFORML 그리고, 단말 바로 곁에는 이세계의 아큐라가 서 있었다.
+PRINTFORML 이쪽의 존재를 확인하자, 키만 한 거대한 방패를 겨눈다.
+PRINTFORMW ……다시, 힘을 증명해 보이길 바라는 걸까?
+PRINTFORML 　
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:창조주_X2]]), [[キャラ:창조주_X2]]
+PRINTFORMW 「……간다」
+CLEARLINE 7
+PRINTFORML 「……간다」
+PRINTFORML 　
+PRINTFORML  루미너스 크리에이터
+PRINTFORMW 하얀 강철의 X　아큐라가　1체 나타났다!
+
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+CALL SET_BOSS_ENEMY_EVENT_202, "創造主"
+CALL BATTLE_START
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+SIF FLAG:패배플래그
+	RETURN 0
+
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:창조주_X2]]), [[キャラ:창조주_X2]]
+PRINTFORMW 「큭……! 훌륭, 하군」
+CLEARLINE 7
+PRINTFORML 「큭……! 훌륭, 하군」
+PRINTFORML 　
+PRINTFORML 이세계의 아큐라가 무너져 내린다.
+PRINTFORML 손에서 놓친 방패가, 날카로운 쇳소리를 방 안에 공허하게 울려 퍼뜨렸다.
+IF GETCHARA([[キャラ:창조주_X2]]) > 0 || ITEM:도리・카드몬 == 0
+	PRINTFORML 그대로 상황을 지켜보고 있자, 점차 그 모습이 옅어져 가더니,
+	PRINTFORMW 이윽고 완전히 모습이 사라져 버리는 것이었다.
+ELSE
+	PRINTFORML 이대로 방치하면, 그의 흔적은 완전히 사라져 버릴 것이다.
+	PRINTFORML 과연, 도리 카드몬을 써야 할까?
+	CALL INPUT_YN, "예", "아니오"
+	IF RESULT == 0
+		PRINTFORML %CALLNAME:MASTER%은(는) 재빠르게 도리 카드몬을 집어던져,
+		PRINTFORML 마그네타이트를 대신할, 그의 새로운 소체로 삼기로 했다.
+		PRINTFORMW ……그렇게 완성된 것은, 악마로 다시 태어난, 이세계의 아큐라의 모습이었다.
+		PRINTFORML 　
+		CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:창조주_X2]]), [[キャラ:창조주_X2]]
+		PRINTFORMW 「……좋겠지. 어차피, 나로서는 이제 네놈들을 당해낼 수 없으니 말이다」
+		CLEARLINE 7
+		PRINTFORML 「……좋겠지. 어차피, 나로서는 이제 네놈들을 당해낼 수 없으니 말이다」
+		PRINTFORML 　
+		PRINTFORML 현 상황을 순순히 받아들여 주었기에, 순조롭게 계약이 진행되어――
+		PRINTFORMW 마침내 이세계의 아큐라는 %CALLNAME:MASTER%의 악마가 되는 것이었다.
+		PRINTFORML 　
+		PRINTFORMW ＞창조주 아큐라가 동료마가 되었다.
+		ITEM:도리・카드몬 -= 1
+		CALL ADD_NEW_COMPANION, [[キャラ:창조주_X2]], 500
+	ELSE
+		PRINTFORML %CALLNAME:MASTER%은(는) 도리 카드몬을 쓰지 않기로 하고, 전말을 지켜보기로 했다.
+		PRINTFORMW 쓰러진 아큐라의 신체는 점차 옅어져 가더니, 이윽고 처음부터 아무것도 없었던 것처럼 사라져 버렸다.
+	ENDIF
+ENDIF
+CUSTOMDRAWLINE =
+RETURN 1
+
+@EVENT_BATTLE_DYING_エクストリームビヨンド, L_T, L_P, L_SKIP
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_SKIP
+IF L_T == GET_ENEMY("アキュラ？") && CFLAG:L_T:800 == 0
+	TSTR:스킬메시지추가 = %CALLNAME:L_T%은(는) 일어섰다!!
+	
+	CFLAG:L_T:상태이상 = GET_STATE_NUM("GOOD")
+	BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ / 3
+	CFLAG:L_T:800 = 1
+	CFLAG:L_T:공격대상제외_ACT = 1
+ENDIF
+
+@EVENT_BATTLE_ACTEND_エクストリームビヨンド
+IF CFLAG:GET_ENEMY("アキュラ？"):800 == 1
+	BTL_KOJO_RESULTS:0 = ……그래. 너희들이라면, 분명
+	SETCOLOR COLOR("ENEMY")
+	CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("アキュラ？")
+	CFLAG:GET_ENEMY("アキュラ？"):800 = 2
+ENDIF
+
+@EVENT_BATTLE_LOSE_エクストリームビヨンド
+RETURN 1

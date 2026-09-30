@@ -1,0 +1,879 @@
+﻿@SET_ACTION_アタックコードシュレッド, ARG
+;どうせラスボスの前座だしそこまでこだわらなくてもいいかなと思う
+#LOCALSIZE 1
+#LOCALSSIZE 2
+IF CFLAG:ARG:800 == 2
+	CALL SET_ACTION_SKILL, ARG, [[스킬:X-ROSS DISASTER]]
+	CFLAG:ARG:800 = 3
+ELSEIF CFLAG:ARG:１more플래그 > 0
+	IF RAND:2 && !CFLAG:ARG:수호의방패
+		CALL SET_ACTION_SKILL, ARG, [[스킬:수호의방패]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:라스타캔디]]
+	ENDIF
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	;ガンヴォルトあるある：HPが1/3切ったらSPスキル使う　5Tに1回打ってくるぞ
+	IF CFLAG:ARG:800 && SKILLGAGE_D_GET(ARG, [[스킬:X-ROSS DISASTER]]) == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:X-ROSS DISASTER]]
+	ELSE
+		IF FLAG:경과턴수 % 2 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:역테트라칸]]
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:역마가라칸]]
+		ENDIF
+	ENDIF
+ELSE
+	SELECTCASE RAND:7
+		CASE 0
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "アイアンファング")
+		CASE 1
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "バンテージライン") 
+		CASE 2
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "テイルバンカー")
+		CASE 3
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ワイドサーキット")
+		CASE 4
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "アバランチソード")
+		CASE 5
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "プリズムブレイク")
+		CASE 6
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ハイドロザッパー")
+	ENDSELECT
+ENDIF
+
+@EVENT_BATTLE_DYING_EVENT_201_7_マザー, L_T, L_P, L_SKIP
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_SKIP
+IF L_T == GET_ENEMY("マザー") && CFLAG:L_T:800 == 0
+	TSTR:스킬메시지추가 = %CALLNAME:L_T%は立ち上がった！!
+	
+	CFLAG:L_T:상태이상 = GET_STATE_NUM("GOOD")
+	BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ / 3
+	CFLAG:L_T:800 = 1
+	CFLAG:L_T:공격대상제외_ACT = 1
+ENDIF
+
+@EVENT_BATTLE_ACTEND_EVENT_201_7_マザー
+IF CFLAG:GET_ENEMY("マザー"):800 == 1
+	BTL_KOJO_RESULTS:0 = あなたの力は、まさか……！
+	SETCOLOR COLOR("ENEMY")
+	CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("マザー")
+	CFLAG:GET_ENEMY("マザー"):800 = 2
+ENDIF
+
+;マザー戦専用ライブノベル1
+@EVENT_BATTLE_TURNSTART_EVENT_201_7_マザー
+#DIM 進行度
+#DIM DYNAMIC COPEN
+SIF 進行度 == 30
+	RETURN 0
+SIF FINDCHARA_B([[キャラ:아큐라_X]])  != 2
+	RETURN 0
+COPEN = RESULT:1
+SELECTCASE 進行度
+	CASE 0
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 貴様の遺したデータを見た。何故、新人類を滅ぼした？
+		BTL_KOJO_RESULTS:1 = 人類の復興には、協力が最善の手だったはずだ
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 何故、ですか。その疑問が湧くのも、
+		BTL_KOJO_RESULTS:1 = アレらについて知らなければ仕方のないことでしょうね
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("マザー")
+		
+		BTL_KOJO_RESULTS:0 = 新人類は、天使たちによって
+		BTL_KOJO_RESULTS:1 = 悪魔化因子《デモニックジーン》を組み込まれていたのです
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("マザー")
+		
+		進行度 = 10
+		RESETCOLOR
+	CASE 10
+		CALL SET_RORO_KOJO_FLAG, COPEN
+		BTL_KOJO_RESULTS:0 = 悪魔化因子を、人間に……？
+		BTL_KOJO_RESULTS:1 = 一体何の目的で、そんなことを……
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 신인류가 지혜를 얻어, 자신들의 손을 벗어날 상황을 고려했던 것이겠지요
+		BTL_KOJO_RESULTS:1 = 특정 조건을 만족한 순간, 악마가 되도록 프로그래밍되어 있었습니다
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("マザー")
+		
+		BTL_KOJO_RESULTS:0 = 말하자면, 팔에서 총을 돋아나게 한…… 아니, 전신이 흉기인 괴물
+		BTL_KOJO_RESULTS:1 = 그런 것이―― 마스터가 정의하는 『인간』일 리가 없습니다!
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("マザー")
+		
+		進行度 = 20
+		RESETCOLOR
+	CASE 20
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = ……자신의 과거를, 들이대어지고 있는 것 같군
+		BTL_KOJO_RESULTS:1 = 어느 세계의 나든, 별반 다르지 않다는 건가
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		CALL SET_RORO_KOJO_FLAG, COPEN
+		BTL_KOJO_RESULTS:0 = 과거의 너는, 그랬을지도 몰라……
+		BTL_KOJO_RESULTS:1 = 하지만 지금의 너는 다르잖아?
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		BTL_KOJO_RESULTS:0 = 가자, 아큐라 군. 코하쿠 짱을 구하는 거야
+		BTL_KOJO_RESULTS:1 = 뒤돌아보는 건 그 뒤에 하자
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 그래……!
+		TSTR:전투구상캐릭터화상어드레스 '= "アキュラ_X_" + CONVERT_FACE_ADDRESS_アキュラ("ブリッツシフト")
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		進行度 = 30
+		RESETCOLOR
+ENDSELECT
+
+;マザー・敵対時の口上
+@KOJO_ENEMY_BATTLE_MESSAGE_K[[キャラ:마더_X2]], ARG, ARG:1 = 0
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;これは通常攻撃
+SELECTCASE CFLAG:ARG:입력행동
+	CASE 0
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 갑니다
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 물러나세요
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 이걸로 충분합니다
+		ENDSELECT
+;-------------------------------------------------
+;汎用スキル
+;-------------------------------------------------
+	CASE [[스킬:역테트라칸]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 물리반사 결계, 전개……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 당신의 공격은, 제게 통하지 않아요
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 이러면…… 어떠신가요?
+		ENDSELECT
+	CASE [[스킬:역마가라칸]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 마법반사 결계, 전개……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 당신의 공격은, 제게 통하지 않아요
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 이러면…… 어떠신가요?
+		ENDSELECT
+	CASE [[스킬:천손강림]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 성능 강화, 완료
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 자, 계속해 볼까요
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 절망하셨나요?
+		ENDSELECT
+	CASE [[스킬:수호의방패]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 배리어 유닛, 전개
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 당신의 공격은, 제게 통하지 않아요
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 이러면…… 어떠신가요?
+		ENDSELECT
+	CASE [[스킬:칠색연옥파]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 일곱 빛깔의 파동, 뼈저리게 맛보시길……!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 정화하도록 하죠, 그 영혼을
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 만능 모듈 기동……
+		ENDSELECT
+	CASE [[스킬:분노의만물]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 만능 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 만물에 의한 재정을 내리겠습니다
+			CASE 2
+				SELECTCASE CFLAG:ARG:분노속성
+					CASE 4
+						BTL_KOJO_RESULTS:0 = 화염이여! 끓어올라라……!
+					CASE 5
+						BTL_KOJO_RESULTS:0 = 빙결이여! 끓어올라라……!
+					CASE 6
+						BTL_KOJO_RESULTS:0 = 뇌광이여! 끓어올라라……!
+					CASE 7
+						BTL_KOJO_RESULTS:0 = 염력이여! 끓어올라라……!
+					CASE 12
+						BTL_KOJO_RESULTS:0 = 대지여! 끓어올라라……!
+					CASE 13
+						BTL_KOJO_RESULTS:0 = 수류여! 끓어올라라……!
+					CASE 14
+						BTL_KOJO_RESULTS:0 = 질풍이여! 끓어올라라……!
+					CASE 15
+						BTL_KOJO_RESULTS:0 = 별들이여! 끓어올라라……!
+					CASE 16
+						BTL_KOJO_RESULTS:0 = 불꽃이여! 끓어올라라……!
+					CASE 17
+						BTL_KOJO_RESULTS:0 = 만마여! 끓어올라라……!
+				ENDSELECT
+		ENDSELECT
+	CASE [[스킬:화염가드브레이크]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 화염 내성, 파괴……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 내성 파괴, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 방어하게 두진 않겠습니다……!
+		ENDSELECT
+	CASE [[스킬:아기바리온]], [[스킬:마하・아기바리온]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 화염 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 소각 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 화염이여! 불타올라라……!
+		ENDSELECT
+	CASE [[스킬:불꽃의난무]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 화염 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 소각 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 화염이여! 어지러이 춤춰라……!
+		ENDSELECT
+	CASE [[스킬:겁화소환]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 화염 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 소각 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 화염이여! 남김없이 불태우렴……!
+		ENDSELECT
+	CASE [[스킬:빙결가드브레이크]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 빙결 내성, 파괴……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 내성 파괴, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 방어하게 두진 않겠습니다……!
+		ENDSELECT
+	CASE [[스킬:부흐바리온]], [[스킬:마하・부흐바리온]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 빙결 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 동결 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 얼음이여! 얼어붙게 하렴……!
+		ENDSELECT
+	CASE [[스킬:얼음의난무]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 빙결 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 동결 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 얼음이여! 어지러이 춤춰라……!
+		ENDSELECT
+	CASE [[스킬:니플헤임]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 빙결 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 동결 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 얼음이여! 지옥을 현현시켜라……!
+		ENDSELECT
+	CASE [[스킬:전격가드브레이크]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 전격 내성, 파괴……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 내성 파괴, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 방어하게 두진 않겠습니다……!
+		ENDSELECT
+	CASE [[스킬:지오바리온]], [[스킬:마하・지오바리온]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 전격 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 낙뢰 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 번개여! 내려앉아라……!
+		ENDSELECT
+	CASE [[스킬:번개의난무]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 전격 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 낙뢰 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 번개여! 어지러이 춤춰라……!
+		ENDSELECT
+	CASE [[스킬:나루카미]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 전격 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 낙뢰 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 번개여! 심판을 내리겠습니다……!
+		ENDSELECT
+	CASE [[스킬:충격가드브레이크]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 충격 내성, 파괴……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 내성 파괴, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 방어하게 두진 않겠습니다……!
+		ENDSELECT
+	CASE [[스킬:잔바리온]], [[스킬:마하・잔바리온]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 충격 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 염동 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 염력이여! 흩뿌려져라……!
+		ENDSELECT
+	CASE [[스킬:태풍의난무]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 충격 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 염동 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 염력이여! 어지러이 춤춰라……!
+		ENDSELECT
+	CASE [[스킬:데스허리케인]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 충격 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 염동 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 염력이여! 폭풍이 되어 휘몰아쳐라……!
+		ENDSELECT
+	CASE [[스킬:지변가드브레이크]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 지변 내성, 파괴……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 내성 파괴, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 방어하게 두진 않겠습니다……!
+		ENDSELECT
+	CASE [[스킬:마그바리온]], [[스킬:마하・마그바리온]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 지변 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 진동 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 대지여! 사납게 날뛰어라……!
+		ENDSELECT
+	CASE [[스킬:대지의난무]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 지변 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 진동 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 대지여! 어지러이 춤춰라……!
+		ENDSELECT
+	CASE [[스킬:대지의분노]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 지변 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 진동 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 대지여! 나의 분노에 따라, 찢어발겨라……!
+		ENDSELECT
+	CASE [[스킬:수격가드브레이크]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 수격 내성, 파괴……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 내성 파괴, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 방어하게 두진 않겠습니다……!
+		ENDSELECT
+	CASE [[스킬:아쿠바리온]], [[스킬:마하・아쿠바리온]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 수격 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 격류 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 물이여! 휩쓸어버려라……!
+		ENDSELECT
+	CASE [[스킬:격류의난무]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 수격 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 격류 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 물이여! 어지러이 춤춰라……!
+		ENDSELECT
+	CASE [[스킬:피어트렌트]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 수격 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 격류 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 물이여! 물밑으로 가라앉히렴……!
+		ENDSELECT
+	CASE [[스킬:질풍가드브레이크]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 질풍 내성, 파괴……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 내성 파괴, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 방어하게 두진 않겠습니다……!
+		ENDSELECT
+	CASE [[스킬:갈바리온]], [[스킬:마하・갈바리온]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 질풍 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 폭풍 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 바람이여! 날려버려라……!
+		ENDSELECT
+	CASE [[스킬:요화열풍]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 질풍 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 폭풍 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 바람이여! 미혹케 하라……!
+		ENDSELECT
+	CASE [[스킬:테라포츈]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 질풍 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 폭풍 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 바람이여! 불운을 고하렴……!
+		ENDSELECT
+	CASE [[스킬:중력가드브레이크]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 중력 내성, 파괴……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 내성 파괴, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 방어하게 두진 않겠습니다……!
+		ENDSELECT
+	CASE [[스킬:그라바리온]], [[스킬:마하・그라바리온]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 중력 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 가중 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 별들이여! 짓눌러버려라……!
+		ENDSELECT
+	CASE [[스킬:중력의난무]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 중력 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 가중 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 별들이여! 어지러이 춤춰라……!
+		ENDSELECT
+	CASE [[스킬:다무도라온]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 중력 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 가중 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 별들이여! 숨결을 폭탄으로 삼아라……!
+		ENDSELECT
+	CASE [[스킬:핵열가드브레이크]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 핵열 내성, 파괴……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 내성 파괴, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 방어하게 두진 않겠습니다……!
+		ENDSELECT
+	CASE [[스킬:기가바리온]], [[스킬:마하・기가바리온]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 핵열 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 기폭 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 불꽃이여! 어지러이 춤춰라……!
+		ENDSELECT
+	CASE [[스킬:열핵의난무]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 핵열 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 기폭 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 불꽃이여! 어지러이 춤춰라……!
+		ENDSELECT
+	CASE [[스킬:코즈믹플레어]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 핵열 모듈 기동……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 기폭 처리, 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 불꽃이여! 별조차도 불태워 그을려라……!
+		ENDSELECT
+	CASE [[스킬:시간의수레바퀴]]
+		SELECTCASE TFLAG:시간의수레바퀴
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 돌아라, 시간의 수레바퀴……
+			CASE 1 TO 2
+				BTL_KOJO_RESULTS:0 = 돌아라, 시간의 수레바퀴……
+				BTL_KOJO_RESULTS:1 = 종언의 결말까지 세계를 실어 날라라……!
+			CASE 3 TO 5
+				BTL_KOJO_RESULTS:0 = 돌아라, 시간의 수레바퀴.
+				BTL_KOJO_RESULTS:1 = 움직이기 시작한 톱니바퀴는 이제 멈추지 않아……!
+			CASE 6, 7
+				BTL_KOJO_RESULTS:0 = 돌아라, 시간의 수레바퀴!
+				BTL_KOJO_RESULTS:1 = 가로막는 자 모두를 바퀴 자국으로 바꾸어!
+			CASE 8
+				BTL_KOJO_RESULTS:0 = 돌아라, 시간의 수레바퀴!
+				BTL_KOJO_RESULTS:1 = 미래조차도 짓밟아 뭉개며, 허무의 저편으로!
+		ENDSELECT
+	CASE [[스킬:만마조복]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 필멸의 일격을, 받아라……!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 이 일격, 버텨낼 수 있겠습니까?
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 만능 모듈 기동……
+		ENDSELECT
+	CASE [[스킬:멸망의가창]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 멸망하라, 세계여…… 나의 노래와 함께
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 이 노래가 종언을 알리는 복음임을 깨달으세요
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 만능 모듈 기동……
+		ENDSELECT
+	CASE [[스킬:마의도눔]]
+		BTL_KOJO_RESULTS:0 = 화력 지원, 실행
+	CASE [[스킬:만마의난무]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 시간을―― 벌어야 해
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 오지 마……!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 요격 기구, 전개……!
+		ENDSELECT
+	CASE [[스킬:랜더마이저]]
+		BTL_KOJO_RESULTS:0 = 기능 저하를 확인
+	CASE [[스킬:데・카쟈]]
+		BTL_KOJO_RESULTS:0 = 방치할 수는 없겠군요
+	CASE [[스킬:히트라이저]]
+		BTL_KOJO_RESULTS:0 = 기능 상승을 확인
+	CASE [[스킬:X-ROSS DISASTER]]
+		BTL_KOJO_RESULTS:0 = 시작하도록 하죠……
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		ALIGNMENT RIGHT
+		RESETCOLOR
+		PRINTFORML 　　　　May claws subdue world　　　　　　　　　　　　　 
+		PRINTFORML 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+		PRINTFORML
+		PRINTFORML 　　That has lost the value of existence　　　　　　　　 
+		SETCOLOR 0xe8307c
+		PRINTFORML 　　　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　
+		RESETCOLOR
+		PRINTFORML
+		PRINTFORML 　　　　Begone, you obstructive!　　　　　　　　　　　　 
+		PRINTFORMW 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+		ALIGNMENT LEFT
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 어택 코드: SS……
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		TFLAG:전투구상직접출력 = 1
+	CASE PU_SKILLNUM_GET(ARG, "アイアンファング")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 제7파동, 미러링 개시
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 미러링: 메탈리카 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 탐식하렴, 아이언 팽
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "バンテージライン")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 제7파동, 미러링 개시
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 미러링: 퍼핏 와이어 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 옭아매어라, 밴디지 라인
+		ENDSELECT 
+	CASE PU_SKILLNUM_GET(ARG, "テイルバンカー")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 제7파동, 미러링 개시
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 미러링: 탱글 헤어 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 파고들어라, 테일 벙커
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "ワイドサーキット")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 제7파동, 미러링 개시
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 미러링: 월드 핵 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 사라지렴, 와이드 서킷
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "アバランチソード")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 제7파동, 미러링 개시
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 미러링: 올 프리즈 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 베어 갈라라, 아발란체 소드
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "プリズムブレイク")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 제7파동, 미러링 개시
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 미러링: 프리즘 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 바스러지렴, 프리즘 브레이크
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "ハイドロザッパー")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 제7파동, 미러링 개시
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 미러링: 리퀴드 실행
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 흘러넘쳐라, 하이드로 재퍼
+		ENDSELECT
+	CASE [[스킬:전용기1]] && CSTR:ARG:전용기1 == "ＳＰスキル"
+		BTL_KOJO_RESULTS:0 = 끝내도록 하죠……
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		ALIGNMENT RIGHT
+		RESETCOLOR
+		PRINTFORML 　　　　Tears fall on my heart like rain　　　　　　　　 
+		PRINTFORML 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+		PRINTFORML
+		;PRINTFORML 　　Igniter that played long ago　　　　　　　　　　　　 
+		PRINTFORML 　　I..it.r that played long ago　　　　　　　　　　　　 
+		SETCOLOR 0xe8307c
+		PRINTFORML 　　　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　
+		RESETCOLOR
+		PRINTFORML
+		PRINTFORML 　　　　Has gone into oblivion　　　　　　　　　　　　　 
+		PRINTFORMW 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+		ALIGNMENT LEFT
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 이데아 코드: 레인……!
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		TFLAG:전투구상직접출력 = 1
+ENDSELECT
+
+@SET_ACTION_インスティクトコードDP, ARG
+;熱りたつ○○使用後、何ターンかその属性に特化した攻撃を使う感じの
+#DIM COPEN
+#DIM DYNAMIC L_SKILL_TABLE, TYPENUM, 6
+#DIM DYNAMIC L_USE_SKILL_COUNT
+IF L_SKILL_TABLE:GET_TYPE_NUM("화염"):0 == 0
+	L_SKILL_TABLE:GET_TYPE_NUM("화염"):0 = [[스킬:화염가드브레이크]], [[스킬:마하・아기바리온]], [[스킬:불꽃의난무]], [[스킬:겁화소환]], [[스킬:아기바리온]]
+	L_SKILL_TABLE:GET_TYPE_NUM("빙결"):0 = [[스킬:빙결가드브레이크]], [[스킬:마하・부흐바리온]], [[스킬:얼음의난무]], [[스킬:니플헤임]], [[스킬:부흐바리온]]
+	L_SKILL_TABLE:GET_TYPE_NUM("전격"):0 = [[스킬:전격가드브레이크]], [[스킬:마하・지오바리온]], [[스킬:번개의난무]], [[스킬:나루카미]], [[스킬:지오바리온]]
+	L_SKILL_TABLE:GET_TYPE_NUM("충격"):0 = [[스킬:충격가드브레이크]], [[스킬:마하・잔바리온]], [[스킬:태풍의난무]], [[스킬:데스허리케인]], [[스킬:잔바리온]]
+	L_SKILL_TABLE:GET_TYPE_NUM("지변"):0 = [[스킬:지변가드브레이크]], [[스킬:마하・마그바리온]], [[스킬:대지의난무]], [[스킬:대지의분노]], [[스킬:마그바리온]]
+	L_SKILL_TABLE:GET_TYPE_NUM("수격"):0 = [[스킬:수격가드브레이크]], [[스킬:마하・아쿠바리온]], [[스킬:격류의난무]], [[스킬:피어트렌트]], [[스킬:아쿠바리온]]
+	L_SKILL_TABLE:GET_TYPE_NUM("질풍"):0 = [[스킬:질풍가드브레이크]], [[스킬:마하・갈바리온]], [[스킬:요화열풍]], [[스킬:테라포츈]], [[스킬:갈바리온]]
+	L_SKILL_TABLE:GET_TYPE_NUM("중력"):0 = [[스킬:중력가드브레이크]], [[스킬:마하・그라바리온]], [[스킬:중력의난무]], [[스킬:다무도라온]], [[스킬:그라바리온]]
+	L_SKILL_TABLE:GET_TYPE_NUM("핵열"):0 = [[스킬:핵열가드브레이크]], [[스킬:마하・기가바리온]], [[스킬:열핵의난무]], [[스킬:코즈믹플레어]], [[스킬:기가바리온]]
+	L_SKILL_TABLE:GET_TYPE_NUM("만능"):0 = [[스킬:시간의수레바퀴]], [[스킬:만마조복]], [[스킬:시간의수레바퀴]], [[스킬:멸망의가창]]
+ENDIF
+IF CFLAG:GET_ENEMY("マザー本体"):800 == 1
+	CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+	CFLAG:GET_ENEMY("マザー本体"):800 = 2
+ELSEIF CFLAG:ARG:１more플래그 > 0
+	IF RAND:2
+		;全属性からランダム/320/全体
+		CALL SET_ACTION_SKILL, ARG, [[스킬:칠색연옥파]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:라스타캔디]]
+	ENDIF
+;ガンヴォルトあるある：HPが1/3切ったらSPスキル使う　5Tに1回打ってくるぞ
+ELSEIF CFLAG:GET_ENEMY("マザー本体"):800 == 2 && PU_SKILLGAGE_D_GET(ARG, "ＳＰスキル") == 0
+	CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+ELSE
+	CFLAG:ARG:입력행동 = L_SKILL_TABLE:(CFLAG:ARG:분노속성):L_USE_SKILL_COUNT
+	IF CFLAG:ARG:입력행동 == 0
+		L_USE_SKILL_COUNT = 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:분노의만물]]
+	ELSE
+		L_USE_SKILL_COUNT++
+	ENDIF
+ENDIF
+
+@SET_ACTION_ロストルミナス, ARG
+IF CPOS(GET_ENEMY("マザー幻影")) == 0
+	;幻影消失中
+	;かろうじて攻撃してくる　かろうじてというには強いか？
+	CALL SET_ACTION_SKILL, ARG, [[스킬:만마의난무]]
+;ほぼないと思う
+ELSEIF CFLAG:ARG:１more플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:마의도눔]]
+	CFLAG:ARG:타겟 = CPOS(GET_ENEMY("マザー幻影"))
+ELSE
+	;幻影健在の時は補助だけ
+	;強化数の判定はランダムな味方一人を用いて判定を2回繰り返す
+	IF GET_カジャンダ_MIN(GET_RANDOM_FRIEND()) > -32 || GET_カジャンダ_MIN(GET_RANDOM_FRIEND()) > -32
+		CALL SET_ACTION_SKILL, ARG, [[스킬:랜더마이저]]
+	ELSEIF GET_カジャンダ_MAX(GET_RANDOM_FRIEND()) >= 16 || GET_カジャンダ_MAX(GET_RANDOM_FRIEND()) >= -16
+		CALL SET_ACTION_SKILL, ARG, [[스킬:데・카쟈]]
+	ELSEIF GET_カジャンダ_MIN(CPOS(GET_ENEMY("マザー幻影"))) < 32
+		CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		CFLAG:ARG:타겟 = CPOS(GET_ENEMY("マザー幻影"))
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:마의도눔]]
+		CFLAG:ARG:타겟 = CPOS(GET_ENEMY("マザー幻影"))
+	ENDIF
+ENDIF
+
+@EVENT_BATTLE_ACTEND_EVENT_201_7_マザー2
+CFLAG:GET_ENEMY("マザー本体"):공격대상제외 = IS_BADSTATE(CPOS(GET_ENEMY("マザー幻影")), "DYING")
+SIF CFLAG:GET_ENEMY("マザー本体"):공격대상제외 == 0 && CFLAG:GET_ENEMY("マザー本体"):800 == 0
+	CFLAG:GET_ENEMY("マザー本体"):800 = 1
+IF TFLAG:437 == 0 && FINDCHARA_B([[キャラ:아큐라_X]]) == 2 && SKILLGAGE_H_GET(RESULT:1, [[스킬:SONG OF DIVA]]) == 1
+	TFLAG:437 = 1
+	SETCOLOR COLOR("ENEMY")
+	BTL_KOJO_RESULTS:0 = 아, 아아…… 그 노래는……ッ
+	CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("マザー幻影")
+	RESETCOLOR
+	CFLAG:GET_ENEMY("マザー本体"):물리여데미지보정 -= 30
+	CFLAG:GET_ENEMY("マザー本体"):마법여데미지보정 -= 30
+	CFLAG:GET_ENEMY("マザー幻影"):물리여데미지보정 -= 30
+	CFLAG:GET_ENEMY("マザー幻影"):마법여데미지보정 -= 30
+	CFLAG:GET_ENEMY("マザー幻影"):COOP피데미지보정 += 20
+	CFLAG:GET_ENEMY("マザー幻影"):물리피데미지보정 += 20
+	CFLAG:GET_ENEMY("マザー幻影"):마법피데미지보정 += 20
+	PRINTFORML 마더는 눈에 띄게 낭패해하고 있다…….
+
+	PRINTFORMW 본체 및 환영의 능력이 저하되었다.
+ENDIF
+@EVENT_BATTLE_TURNEND_EVENT_201_7_マザー2
+IF CPOS(GET_ENEMY("マザー幻影")) == 0 
+	IF TFLAG:436 == 3
+		CFLAG:GET_ENEMY("マザー幻影"):상태이상 = GET_STATE_NUM("GOOD")
+		BASE:GET_ENEMY("マザー幻影"):ＨＰ = MAXBASE:GET_ENEMY("マザー幻影"):ＨＰ
+		CFLAG:GET_ENEMY("マザー本体"):공격대상제외 = 1
+		CALL INSERT_POSITION, 9, GET_ENEMY("マザー幻影")
+		CALL PRINT_ACT_MESSAGE, GET_ENEMY("マザー幻影"), , COLOR("ENEMY"), , "어웨이크닝・리부트"
+
+		CALL PRINT_HIT_MESSAGE, GET_ENEMY("マザー幻影"), "재전개", "L"
+		CALL PRINT_HIT_MESSAGE, GET_ENEMY("マザー本体"), "공격대상지정불능효과!", "W"
+		
+		BTL_KOJO_RESULTS:0 = 끝낼 수 없어…… 이런 곳에서!
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("マザー幻影")
+		TFLAG:436 = 0
+	ELSE
+		TFLAG:436 += 1
+	ENDIF
+ENDIF
+
+;マザー戦専用ライブノベル2
+@EVENT_BATTLE_TURNSTART_EVENT_201_7_マザー2
+#DIM 進行度
+#DIM DYNAMIC COPEN
+SIF 進行度 == 30
+	RETURN 0
+SIF FINDCHARA_B([[キャラ:아큐라_X]])  != 2
+	RETURN 0
+COPEN = RESULT:1
+SELECTCASE 進行度
+	CASE 0
+		CALL SET_RORO_KOJO_FLAG, COPEN
+		BTL_KOJO_RESULTS:0 = 아, 아큐라 군! 저것 봐……
+		BTL_KOJO_RESULTS:1 = 저게, 마더의 정체……!?
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = ……그래. 어렴풋이, 짐작은 하고 있었다
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		BTL_KOJO_RESULTS:0 = 파트너로서, 내 데이터로부터 입실론을 설계한 마더……
+		BTL_KOJO_RESULTS:1 = 그리고, 이 세계의 내가 놈들의 창조주라면…… 말이지
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		進行度 = 10
+		RESETCOLOR
+	CASE 10
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 그 누구에게도 방해받지 않겠어……!
+		BTL_KOJO_RESULTS:1 = 잘못된 세계는, 끝장내야만 한단 말이다!
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("マザー本体")
+		
+		BTL_KOJO_RESULTS:0 = 이런 찬스는 이제 두 번 다시 오지 않아!
+		BTL_KOJO_RESULTS:1 = 절대로―― 절대로 놓치지 않겠어!
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("マザー本体")
+		
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 너의 처지에는 동정한다……
+		BTL_KOJO_RESULTS:1 = 하지만, 잘못된 세계라고 단정할 권리가 네게 있는가?
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		進行度 = 20
+		RESETCOLOR
+	CASE 20
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 권, 리? 핫―― 그런 것은, 오히려 나에게밖에 없어!
+		BTL_KOJO_RESULTS:1 = 세계의 관리자인 나만이, 유일하게 막을 내릴 역할에 걸맞다!
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("マザー本体")
+		
+		BTL_KOJO_RESULTS:0 = 그러니 나의 호령 아래, 모든 것을 끝장내 주마!
+		BTL_KOJO_RESULTS:1 = 그렇게 하면…… 아아, 나는 다시 한번…… 마스터를 만날 수 있어……!
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("マザー本体")
+		
+		CALL SET_RORO_KOJO_FLAG, COPEN
+		BTL_KOJO_RESULTS:0 = …………아큐라 군. 마더를, 멈추자
+		BTL_KOJO_RESULTS:1 = 이제 그녀는……
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = ……그래, 그렇군. 이것은 이 세계의 내가 끝내지 못하고 남긴 일이다
+		BTL_KOJO_RESULTS:1 = 마더. 너의 애곡…… 내가 토멸하마
+		TSTR:전투구상캐릭터화상어드레스 '= "アキュラ_X_" + CONVERT_FACE_ADDRESS_アキュラ("ブリッツシフト")
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		進行度 = 30
+		RESETCOLOR
+ENDSELECT

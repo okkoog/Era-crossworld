@@ -1,0 +1,100 @@
+﻿;==================================
+;種族アイコンの描画
+;==================================
+@GET_RACE_ICON_ADDRESS_BY_CHARA, L_CHARA
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_RACE
+SELECTCASE CSTR:L_CHARA:롤
+	CASE "デビルサマナー"
+		L_RACE '= "純サマナー"
+	CASE "ペルソナ使い"
+		L_RACE '= "ペルソナ使い"
+	CASE "悪魔狩人"
+		L_RACE '= "悪魔狩人"
+	CASEELSE
+		L_RACE '= GET_RACE(ABL:L_CHARA:종족)
+ENDSELECT
+RETURNF GET_RACE_ICON_ADDRESS_BY_CSV(L_RACE)
+
+@GET_RACE_ICON_ADDRESS_BY_CSV, L_RACENAME
+#FUNCTIONS
+#DIMS DYNAMIC L_RESULTS
+#DIMS DYNAMIC L_RACENAME
+SIF ISNUMERIC(L_RACENAME)
+	L_RACENAME '= GET_RACE(TOINT(L_RACENAME))
+L_RESULTS '= L_RACENAME + "_" + "FACE"
+;spriteがない場合は人間にして戻す
+SIF !SPRITECREATED(L_RESULTS)
+	L_RESULTS '= "人間_FACE"
+SIF L_RACENAME == "보스전용"
+	L_RESULTS '= "BLANK"
+RETURNF L_RESULTS
+
+;==================================
+;オニマークのスプライトネーム取得
+;==================================
+@GET_ONI_MARK, L_STATE
+#FUNCTIONS
+#DIMS DYNAMIC L_RESULTS
+#DIMS L_STATE						;状態分岐の指定
+L_RESULTS '= L_STATE + "_" + "FACE"
+RETURNF L_RESULTS
+
+;==================================
+;オニマークのスプライトネーム取得
+;==================================
+@GET_ONI_MARK_BY_CHARA, L_CHARA
+#FUNCTIONS
+#DIM L_CHARA
+#DIMS L_STATE						;状態分岐の指定
+IF IS_BADSTATE(L_CHARA, "GOOD")
+	SELECTCASE 現HP割合(L_CHARA)
+		CASE IS < 25
+			L_STATE '= "危険"
+		CASE IS < 50
+			L_STATE '= "負傷"
+		CASEELSE
+			L_STATE '= "正常"
+	ENDSELECT
+ELSE
+	;画像があるかチェック
+	SPRITECREATED GET_STATE(CFLAG:L_CHARA:상태이상) + "_" + "FACE"
+	IF RESULT
+		L_STATE '= GET_STATE(CFLAG:L_CHARA:상태이상)
+	ELSE
+		;定義された画像がない場合は汎用
+		L_STATE '= "バステ汎用"
+	ENDIF
+ENDIF
+RETURNF GET_ONI_MARK(L_STATE)
+
+;==================================
+;空いているTEMP_GIDを取得する。
+;セット側で使用済みフラグを立ててない可能性があるのでチェックしつつ拾っていく
+;==================================
+@GET_FREE_TEMP_GID
+#FUNCTION
+#DIM DYNAMIC START_GID
+#DIM DYNAMIC LCOUNT
+IF FINDELEMENT(USED_TEMP_GID, 0) >= 0
+	FOR LCOUNT, FINDELEMENT(USED_TEMP_GID, 0), TEMP_GIDNUM
+		IF GCREATED(TEMP_GID_START + LCOUNT)
+			USED_TEMP_GID:LCOUNT = 1
+		ELSE
+			RETURNF TEMP_GID_START + LCOUNT
+		ENDIF
+	NEXT
+ELSE
+	RETURNF -1
+ENDIF
+
+;==================================
+;CSV番号からアイコンのCSVNOを取る
+;==================================
+@GET_ICON_CSVNO, L_CSVNO
+#FUNCTION
+#DIM DYNAMIC L_CSVNO
+SIF CSVCFLAG(L_CSVNO, GETNUM(CFLAG, "아이콘공유대상")) > 0
+	RETURNF CSVCFLAG(L_CSVNO, GETNUM(CFLAG, "아이콘공유대상"))
+RETURNF L_CSVNO

@@ -1,0 +1,86 @@
+﻿@PLAYABLE_OUKOKUYA_REQ_62
+RESULTS = 강자 모집
+;ある程度調教師名声が必要
+SIF FLAG:조교사명성 < 400
+	RETURN 0
+SIF !GETBIT(依頼フラグ:[[依頼:왕국점]]:0, 61)
+	RETURN 0
+RETURN !GETBIT(依頼フラグ:[[依頼:왕국점]]:0, 62)
+RETURN 1
+@EXPLAIN_OUKOKUYA_REQ_62
+RESULTS = 
+RESULTS += "/탐구(의뢰인: 후루이치안)/"
+RESULTS += "난이도:☆☆☆☆☆☆☆/"
+RESULTS += "보수:조건을 만족한 악마의 가치에 상응하는 마카/"
+RESULTS += "　　 여악마 1체/"
+RESULTS += "/조건/"
+RESULTS += "LV55 이상의 여악마/"
+RESULTS += "타격과 전술에 대해 무효, 흡수, 반사 중 하나/"
+RESULTS += "/비고/"
+RESULTS += "언제나 신세 지고 있습니다/"
+RESULTS += "이번에 악마를 상대로 한판 싸워야만 하게 되어서, 유리하게 싸울 수 있는 악마가 필요합니다/"
+RESULTS += "대신 다른 악마를 드릴 테니 부탁드릴 수 있을까요?/"
+RESULTS += "/아, 남자 상대로 MAG 공급할 취미는 없으니 여자로 부탁드립니다/"
+
+@CHARASELLABLE_OUKOKUYA_REQ_62(ARG:0)
+
+;ＬＶを満たしていないとアウト
+SIF !(HAVE_VAGINA(ARG:0) && BASE:(ARG:0):LV >= 55)
+	RETURN 0
+
+;打撃耐性があるかをチェック
+IF BASE:(ARG:0):타격 == 999 || (CFLAG:ARG:변경상성1 == 3 && CFLAG:ARG:추가변경상성치1 == 999)
+;	PRINTFORMW %CALLNAME:(ARG:0)% は打撃反射でOK
+ELSEIF BASE:(ARG:0):타격 == 0 || (CFLAG:ARG:변경상성1 == 3 && CFLAG:ARG:추가변경상성치1 == 0)
+;	PRINTFORMW %CALLNAME:(ARG:0)% は打撃無効
+ELSEIF BASE:(ARG:0):타격< 0 || (CFLAG:ARG:변경상성1 == 3 && CFLAG:ARG:추가변경상성치1 < 0)
+;	PRINTFORMW %CALLNAME:(ARG:0)% は打撃反射とか吸収するからOK
+ELSEIF BASE:(ARG:0):타격 == 100|| (CFLAG:ARG:변경상성1 == 3 && CFLAG:ARG:추가변경상성치1 ==  0)
+;	PRINTFORMW %CALLNAME:(ARG:0)% は打撃耐性なしでアウト
+	RETURN 0
+ELSE
+;	PRINTFORMW %CALLNAME:(ARG:0)% は打撃弱点でアウト
+	RETURN 0
+ENDIF
+
+;戦技耐性があるかをチェック
+IF BASE:(ARG:0):전술 == 999 || (CFLAG:ARG:변경상성1 == 4 && CFLAG:ARG:추가변경상성치1 == 999)
+;	PRINTFORMW %CALLNAME:(ARG:0)% は戦技反射でOK
+ELSEIF BASE:(ARG:0):전술 == 0 || (CFLAG:ARG:변경상성1 == 4 && CFLAG:ARG:추가변경상성치1 == 0)
+;	PRINTFORMW %CALLNAME:(ARG:0)% は戦技無効
+ELSEIF BASE:(ARG:0):전술< 0 || (CFLAG:ARG:변경상성1 == 4 && CFLAG:ARG:추가변경상성치1 < 0)
+;	PRINTFORMW %CALLNAME:(ARG:0)% は戦技反射とか吸収するからOK
+ELSEIF BASE:(ARG:0):전술 == 100|| (CFLAG:ARG:변경상성1 == 4 && CFLAG:ARG:추가변경상성치1 ==  0)
+;	PRINTFORMW %CALLNAME:(ARG:0)% は戦技耐性なしでアウト
+	RETURN 0
+ELSE
+;	PRINTFORMW %CALLNAME:(ARG:0)% は戦技弱点でアウト
+	RETURN 0
+ENDIF
+
+RETURN 1
+
+;--------------------------------------------------------
+;報酬処理
+;ただし、売却人数・属性変動などは共通で処理済み
+;調教師名声の処理はされてないので適宜処理してください
+;
+;ARGはキャラクター
+;--------------------------------------------------------
+@TAKE_REWARD_OUKOKUYA_REQ_62, ARG
+CALL CHARA_SELL, ARG, 1
+LOCAL = RESULT
+CALL MESSAGE_WINDOW, "후루이치안", @"감사합니다.　이걸로 그 자식을 이길 수 있겠습니다", , , , , 4
+CALL MESSAGE_WINDOW, "후루이치안", @"보수인 악마입니다만, 서버로 전송해 두었습니다", , , , , 4
+CALL MESSAGE_WINDOW, "", @"＞의뢰를 달성하여/＞마수 스핑크스가 동료악마가 되었다.", , , , , 4
+
+;売却代と名声
+MONEY:1 += LOCAL
+FLAG:조교사명성 += 150
+
+;帳簿閲覧用処理
+CALL 帳簿閲覧, ARG, LOCAL
+
+;スフィンクス加入処理
+;"対バエル用に悪魔を合体したけど事故った"という設定
+CALL ADD_NEW_COMPANION, [[キャラ:스핑크스]], 500, 1, , , 56

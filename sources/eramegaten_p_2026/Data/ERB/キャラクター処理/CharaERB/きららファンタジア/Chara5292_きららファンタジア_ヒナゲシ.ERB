@@ -1,0 +1,180 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5292_ヒナゲシ.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author				Reason
+;	001		2025/05/05		Tiael		        Started Work
+;	
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;--------------------------------------------------
+;キャラクター独自変数名称定義関数
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:히나게시]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_EV
+	;周回時にリセットされる数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_EV
+	;周回時にリセットされる文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる数値型変数です
+	;スキルゲージHとほぼ互換です。基本的にはゲージHが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = KFチャージスキル
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる文字列型変数です
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる数値型変数
+	;スキルゲージFとほぼ互換です。基本的にはゲージFが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる文字列型変数
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS
+
+;====================================================
+;行動によるスキルゲージ操作
+;各キャラクターの通常の行動後に全キャラで呼び出される
+;ARG:		このスキルの持ち主のキャラ番号
+;ARG:1		行動したキャラクターのキャラ番号
+;
+;RESULT 		獲得したゲージの量を返すことで獲得量を表示させる。つまり、他人の行動に反応させることなども可能。
+;RESULT:1		獲得表示のときの文字色を指定できる。ゲージが溜まったときの表示わけなどに
+;RESULTS		ゲージの名称 「<<XXXX>>」という形で表示される
+;RESULTS:1		ゲージの単位。半角の%を使いたい場合は「\%」と言うかたちで退避記号を使うと良い
+;RESULTS;2		色指定以外の要素を使わずに文字列を返す。ゲージ式の獲得量で表現したい場合などに
+;====================================================
+@SKILLGAGE_CHARGE_CHARA_[[キャラ:히나게시]], ARG, ARG:1
+#DIM L_GP
+#DIM L_GP_LIMIT
+#DIM L_COLOR
+
+;上限は１０
+L_GP_LIMIT = 10
+;上限に到達している場合はリターン
+SIF GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") >= L_GP_LIMIT
+	RETURN 0
+;自分の行動の場合
+L_GP = 0
+L_COLOR = 0xffef00
+
+IF ARG == ARG:1
+	CALL CHECK_SKILL_TAG, ARG, CFLAG:ARG:입력행동, "KFチャージスキル"
+	;No points for using the charged skill
+	IF RESULT
+		L_GP += 0
+	;1 point for any other action.
+	ELSE
+		L_GP += 1
+	ENDIF
+ENDIF
+IF IS_FRIEND(ARG, ARG:1) && NO:(ARG:1) == [[キャラ:로벨리아]]
+	SIF IS_PU_SKILL_入力行動(ARG:1, "特殊計")
+		L_GP += 1
+ENDIF
+
+CALL SET_RPG_CFLAG_BTL, ARG, "KFチャージスキル", MIN(L_GP + GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル"), L_GP_LIMIT)
+IF GET_RPG_CFLAG_BTL(ARG,"KFチャージスキル") == L_GP_LIMIT
+	RESULTS = チャージ MAX!
+	RESULT:1 = L_COLOR
+ELSE
+	RESULTS = チャージ
+ENDIF
+RESULTS:1 = %" "%
+RETURN L_GP
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@SKILLGAGE_DISPLAY_CHARA_[[キャラ:히나게시]], ARG
+;何らかの理由で１０を超えていた場合１０に補正。
+SIF GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") > 10
+	CALL SET_RPG_CFLAG_BTL, ARG, "KFチャージスキル", 10
+
+SIF GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 0
+	CALL SET_RPG_CFLAG_BTL, ARG, "KFチャージスキル", 0
+;チャージ現在地と最大値を表示。チャージ完了時カラーで強調。他グレー
+SETCOLOR 0x999999
+SIF GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") == 10
+	SETCOLOR 0xffef00
+PRINTFORML 차지：{GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル")}／10
+RESETCOLOR
+
+@SKILL_EX_DISPLAY_CHARA_[[キャラ:히나게시]], ARG, ARGS
+RESULTS = 
+IF GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") >= 10
+	RESULTS += SET_COLOR_TAG(@"%"チャージ MAX!", SKILL_EX_DISPLAY_LENS, LEFT%", TOSTR(0xffef00))
+ELSE
+	LOCALS = チャージ：{GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル")} ／10　
+	RESULTS += SET_COLOR_TAG(@"%LOCALS, SKILL_EX_DISPLAY_LENS, LEFT%", TOSTR(0x999999))
+ENDIF
+RETURN 1

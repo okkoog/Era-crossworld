@@ -1,0 +1,114 @@
+﻿;スキル名
+@SKILL_NAME_ドラムヘッド,ARG
+RESULTS = 드럼 헤드
+
+;　명중
+@SKILL_HITRATE_ドラムヘッド, ARG
+RETURN 999
+
+;　威力
+@SKILL_POWER_ドラムヘッド, ARG
+RETURN 125
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ドラムヘッド,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ドラムヘッド,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ドラムヘッド, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ドラムヘッド,ARG
+RETURN 60
+
+;　相性
+@SKILL_TYPE_ドラムヘッド,ARG
+RETURN GET_TYPE_NUM("지변")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ドラムヘッド
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ドラムヘッド, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+@SKILL_ATTACKTYPE_ドラムヘッド, ARG
+RETURN GET_攻撃タイプ_NUM("割合")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ドラムヘッド, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_ドラムヘッド,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ドラムヘッド,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ドラムヘッド, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;ARG:5 割合計算　0-現在HP　1-最大HP　-1-現在HP(不殺)　-2-最大HP(不殺)
+@SKILL_RATE_DAMAGETYPE_ドラムヘッド,ARG
+RETURN 0
+
+;계승타입　지변
+@SKILL_SUCCESSION_TYPE_ドラムヘッド
+RETURN GET_SUCCESSION_NUM("지변")
+
+;속도보정
+@SKILL_SPEED_ドラムヘッド, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ドラムヘッド
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_ドラムヘッド, ARG = -1
+RETURN 15
+;変化不能
+
+@継承不能_ドラムヘッド
+RETURN 2
+
+@敵専用_ドラムヘッド
+RETURN 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ドラムヘッド, ARG, ARG:1, ARG:2
+CALL PU_SKILLGAGE_H_SET, ARG, "ドラムヘッド", 1
+PRINTFORMW 더 스캐버가 일으킨 충격으로 턴 종료마다 암석이 쏟아져 내린다!!
+
+@SKILL_TURNEND_ドラムヘッド, ARG
+SIF !PU_SKILLGAGE_H_GET(ARG, "ドラムヘッド")
+	RETURN 0
+CALL PRINT_ACT_MESSAGE, ARG,  , , "ドラムヘッド", "岩石が降り注ぐ！"
+TFLAG:반사0데미지화 = 1
+CALL ATTACK_SKILL, ARG, CFLAG:ARG:PT플래그 ? 22 # 19, PU_SKILLNUM_GET(ARG, "ドラムヘッド")
+TFLAG:반사0데미지화 = 0
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_ドラムヘッド, ARG
+PRINTL 턴 종료 시 적의 HP를 7/8로 만든다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ドラムヘッド,ARG
+RETURN 1
+;とくにない
+

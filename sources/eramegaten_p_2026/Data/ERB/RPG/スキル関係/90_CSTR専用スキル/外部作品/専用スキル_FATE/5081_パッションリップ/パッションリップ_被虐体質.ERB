@@ -1,0 +1,107 @@
+﻿;スキル名
+@SKILL_NAME_被虐体質,ARG
+RESULTS = 被虐体質
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_被虐体質,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;スキル変化？用ランク
+@SKILL_RANK_被虐体質, ARG = -1
+RETURN 1
+;変化不可
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_被虐体質
+RETURN GET_SUCCESSION_NUM("자동효과")
+;====================================================
+;実行内容ここまで
+;====================================================
+;　説明文の表示
+@SKILL_EXPLAIN_被虐体質,ARG
+#DIM SKILL_NUM
+PRINTL 자동효과:적으로부터의 피표적률이 상승한다.
+PRINTL 　　　　받는 데미지를 20% 경감하지만 회피할 수 없게 된다.
+PRINTL 　　　　행동 속도가 대폭 저하된다.
+PRINTL 　　　　자신의 HP 감소량에 비례해 적에게 주는 데미지가 증가한다.
+
+@SKILL_BATTLE_MAIN_TOOLTIP_被虐体質, ARG, ARG:1
+IF SKILLGAGE_H_GET(ARG,ARG:1) > 0
+	RESULTS = □被虐体質
+	RESULTS:1 '= "　与ダメージ＋" + TOFULL(TOSTR(GET_STRENGTH_被虐体質(ARG))) + "％"
+ENDIF
+
+@GET_STRENGTH_被虐体質, ARG
+#FUNCTION
+SELECTCASE 現HP割合(ARG)
+	CASE IS < 10
+		RETURNF 50
+	CASE IS < 25
+		RETURNF 30 + (25 - 現HP割合(ARG)) * 20 / 15
+	CASE IS < 50
+		RETURNF 15 + (50 - 現HP割合(ARG)) * 15 / 25
+	CASEELSE
+		RETURNF (100 - 現HP割合(ARG)) * 15 / 50
+ENDSELECT
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_被虐体質,ARG
+RETURN 0
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_被虐体質, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			RETURN GET_STRENGTH_被虐体質(L_P)
+	ENDSELECT
+;自分が防御側
+ELSE
+	SELECTCASE ARGS
+		CASE "ダメージ倍率"
+			RETURN -20
+		CASE "追加回避強化"
+			RETURN -999
+	ENDSELECT
+ENDIF
+RETURN 0
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_被虐体質, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	CASE "被ターゲット率"
+		RETURN 200
+	;速度補正はそのまま速度補正となる
+	CASE "속도보정"
+		RETURN -20
+ENDSELECT
+RETURN 0

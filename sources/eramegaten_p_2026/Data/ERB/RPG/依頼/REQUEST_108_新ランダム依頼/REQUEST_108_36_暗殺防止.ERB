@@ -1,0 +1,125 @@
+﻿;依頼名===================================================================
+;依頼難易度は敵の最大レベルによって変動
+; 1～10　☆、11～20　☆☆、21～30　☆☆☆、以下略
+;ダンジョン攻略が必要な場合は☆が★になる。
+
+@TITLE_RANDOM_REQUEST_108_36
+RESULTS = 암살 방지（난이도 ☆☆）
+RETURN 1
+
+;説明===================================================================
+@REQUEST_EXPLAIN_108_36
+PRINTL 
+PRINTL 【의뢰주】팬텀 소사이어티
+PRINTL 
+PRINTL 　어느 회사의 사장이 암살자에게 목숨을 위협받고 있다.
+PRINTL 　암살자를 배제하라.
+PRINTL 
+PRINTL
+PRINTL 【작전영역】	시가지
+PRINTL 【적의 전력】	히트맨（전격·정신·중력에 약함）
+PRINTL 【성공조건】	호위 대상을 지키면서 히트맨을 쓰러뜨린다
+PRINTL 【주의사항】	파티를 해산한 상태로 전투에 진입합니다
+PRINTL 
+PRINTL 
+;内容====================================================================
+@REQUEST_108_36
+#DIM DYNAMIC L_GUEST
+CALL MESSAGE_WINDOW, "MESSAGE", "＞조직으로부터 히트맨을 배제하라는 지령이 내려왔다.", , , , , 4
+CALL MESSAGE_WINDOW, "팬텀 소사이어티의 지령", "지금까지 조직과 관계를 맺어온 회사의 사장이 바뀌면서/조직과의 관계를 끊으려 하고 있다.", , , , , 4
+CALL MESSAGE_WINDOW, "팬텀 소사이어티의 지령", "물론, 우리는 그런 제멋대로인 짓을 용납할 생각이 없다./이에 가벼운 경고를 줄 예정이다.", , , , , 4
+CALL MESSAGE_WINDOW, "팬텀 소사이어티의 지령", "히트맨을 시켜 신임 사장을 습격하게 할 테니, 호위로서 히트맨을 배제하라./이것으로 신임 사장은 팬텀 소사이어티와의 관계를 유지할 필요가 있음을 이해하게 될 것이다.", , , , , 4
+CALL MESSAGE_WINDOW, "팬텀 소사이어티의 지령", "또한, 습격은 시가지에서 이루어진다./따라서 눈에 띄는 것을 피하기 위해, 처음부터 동료마를 대동하는 것은 금지한다.", , , , , 4
+CALL MESSAGE_WINDOW, "", "・・・・・・・・・/・・・・・・/・・・", , , , , 4
+;PTを解散
+FOR LOCAL:0,1,7
+	LOCALS = 포지션{LOCAL:0}
+	IF FLAG:LOCALS != 0 && FLAG:LOCALS != -1
+		CALL REMOVE_POSITION,LOCAL:0
+	ENDIF
+NEXT
+SELECTCASE TIME
+	CASE 0;朝
+		CALL MESSAGE_WINDOW, "MESSAGE", "아침의 맑은 공기가 감도는 시가지에서/신임 사장이 누구보다 일찍 출근하여 회사 앞을 청소하고 있다.", , , , , 4
+	CASE 1;昼
+		CALL MESSAGE_WINDOW, "MESSAGE", "화창한 햇살이 내리쬐는 시가지에서/신임 사장이 회사의 정문 입구에서 밖으로 나왔다.", , , , , 4
+	CASE 2;夕方
+		CALL MESSAGE_WINDOW, "MESSAGE", "부드러운 석양이 거리를 비추고 있을 때,/외출에서 돌아온 신임 사장이 차에서 내려 회사로 들어가려 하고 있다.", , , , , 4
+	CASE 3;夜
+		CALL MESSAGE_WINDOW, "MESSAGE", "거리에 밤의 장막이 내릴 무렵,/일을 마친 신임 사장이 회사에서 나왔다.", , , , , 4
+ENDSELECT
+CALL MESSAGE_WINDOW, "MESSAGE", "＞그런 신임 사장에게 건물 그늘에 숨어 있던 히트맨이 덮쳐왔다!", , , , , 4
+;護衛対象の新社長（内部データはブランクキャラ）をパーティーに加入
+CALL ADD_GUEST_COMPANION([[キャラ:블랭크캐릭터]], 100)
+L_GUEST = RESULT:1
+NAME:L_GUEST = 新社長
+CALLNAME:L_GUEST = 新社長
+BASE:L_GUEST:LV = 1
+BASE:L_GUEST:ＥＸＰ = 0
+BASE:L_GUEST:ＨＰ= 50
+CFLAG:L_GUEST:선악치 = 128
+CFLAG:L_GUEST:질혼치 = 128
+EQUIP:L_GUEST:악세서리 = GETNUM(ITEM, "갖지못한자의반지")
+
+;ヒットマンと戦闘
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+;位置9にパンクスをLv13で人間(1)としてボス(1)として配置
+CALL SET_ENEMY,9,[[キャラ:펑크스]],13,1,1
+NAME:(CHARANUM-1) = ヒットマン
+CALLNAME:(CHARANUM-1) = ヒットマン
+CFLAG:(CHARANUM-1):행동횟수 = 2
+CFLAG:(CHARANUM-1):ＭＰ보정 = 1000
+ABL:(CHARANUM-1):스킬1 = [[스킬:기합]]
+ABL:(CHARANUM-1):스킬2 = [[스킬:연속사격]]
+CSTR:(CHARANUM-1):사고패턴 = ヒットマン_ランダム依頼３６
+CALL SYNC_STATUS,(CHARANUM-1)
+CALL HEALTH_CHARA,(CHARANUM-1)
+CALL BATTLE_START
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+;護衛に失敗した。
+IF 依頼フラグ:[[依頼:랜덤의뢰]]:4 == 1
+	CALL MESSAGE_WINDOW, "MESSAGE", "＞호위에 실패했다.", , , , , 4
+ELSE
+	CALL MESSAGE_WINDOW, "MESSAGE", "＞호위에 성공했다.", , , , , 4
+	;報酬
+	依頼フラグ:[[依頼:랜덤의뢰]]:5 = 2;難易度
+	依頼フラグ:[[依頼:랜덤의뢰]]:7 = 0;그외
+	CALL PRIZE_REQUEST_108
+ENDIF
+;護衛対象の新社長（内部データはブランクキャラ）を削除
+CALL 全ゲスト削除
+CALL CHANGE_LAST_BATTLE_MEMBERSET
+;ヒットマンの戦闘行動====================================================================
+@SET_ACTION_ヒットマン_ランダム依頼３６, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+IF CFLAG:ARG:気合フラグ == 0
+	CFLAG:ARG:입력행동 = [[스킬:기합]]
+ELSE
+	CFLAG:ARG:입력행동 = [[스킬:연속사격]]
+ENDIF
+;アクション実行不能
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+;戦闘中行動終了時処理====================================================================
+@EVENT_BATTLE_ACTEND_REQUEST_108_36
+LOCAL = GETCHARA([[キャラ:블랭크캐릭터]])
+IF GET_STATE(CFLAG:LOCAL:상태이상) == "DYING"
+	LOCALS = 신임 사장은 죽고 말았다.
+	SETCOLORBYNAME Red
+	CALL MESSAGE_B(1, LOCALS)
+	RESETCOLOR
+	依頼フラグ:[[依頼:랜덤의뢰]]:4 = 1
+	FLAG:승리플래그 = 1
+ENDIF

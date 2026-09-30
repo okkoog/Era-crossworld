@@ -1,0 +1,187 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2862,ARG
+RESULTS = 차부「오오나무치님의약」
+
+
+;　명중
+@SKILL_HITRATE_2862, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2862, ARG
+RETURN 1000
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2862,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2862,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2862, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2862,ARG
+RETURN 10
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2862
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2862, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2862, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_2862,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2862,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2862, ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+@SKILL_HEAL_TYPE_2862, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("割合")
+
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2862
+RETURN GET_SUCCESSION_NUM("회복")
+
+;속도보정
+@SKILL_SPEED_2862, ARG = -1
+RETURN 2
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2862
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_2862, ARG = -1
+RETURN 10
+
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2862, ARG, ARG:1, ARG:2
+LOCAL = POS(ARG:1)
+
+;支払い発生フラグ
+LOCAL:1 = 0
+
+;コスト支払い
+;CALL VAR_MP,ARG,-15,0
+IF MONEY >= 500 || CFLAG:ARG:PT플래그 == 0
+	;회복
+	CALL SKILL_CURE_STATE_2862,CFLAG:LOCAL:상태이상
+	IF (MAXBASE:LOCAL:ＨＰ > BASE:LOCAL:ＨＰ) || RESULT
+		CALL HEAL_SINGLE, ARG, POS(ARG:1), 2862
+		IF CFLAG:ARG:PT플래그 > 0
+			PRINTFORMW ￥{MAX(500, MONEY / 500)}이(가) 지갑에서 소멸했다…
+			MONEY -= MAX(500, MONEY / 500)
+		ENDIF
+	ELSE
+		CALL PRINT_HIT_MESSAGE, POS(ARG:1), "回復する必要がなかった！", "w"
+	ENDIF
+ELSE
+	PRINTFORMW 　　인색한 배교자 놈 나가라!
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;====================================================
+;戦闘中以外での実行
+;====================================================
+@ACTION_FIELD_2862,ARG,ARG:1,ARG:2
+LOCAL = POS(ARG:1)
+
+;支払い発生フラグ
+LOCAL:1 = 0
+
+;コスト支払い
+;CALL VAR_MP,ARG,-15,0
+IF MONEY >= 500
+	;회복
+	CALL SKILL_CURE_STATE_2862,CFLAG:LOCAL:상태이상
+	IF (MAXBASE:LOCAL:ＨＰ > BASE:LOCAL:ＨＰ) || RESULT
+		LOCAL:1 = 1
+		CALL HEAL_SINGLE, ARG, POS(ARG:1), 2862
+	ENDIF
+	;支払い
+	IF LOCAL:1 == 1
+		PRINTFORMW ￥{MAX(500, MONEY / 500)}이(가) 지갑에서 소멸해 있었다…
+		MONEY -= MAX(500, MONEY / 500)
+	ENDIF
+	SIF LOCAL:1 == 0
+		PRINTFORMW 　　TARGET:[{ARG:1,2}] %CALLNAME:(LOCAL),20,LEFT%　>>>>>>　회복할 필요가 없었다!
+ELSE
+
+PRINTFORMW 　　인색한 배교자 놈 나가라!
+
+ENDIF
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2862, ARG
+PRINTL 신대의 영약 (꿀꺽함)으로 전장의 아군 1명을 전회복하고 상태이상도 해제한다.
+PRINTL 죽은 자도 되살아나는 (지도 모르는) 영약이 진찰료 포함 단돈 ￥500!
+;実動が固定消費になっていたので
+;PRINTFORML 死者も生き返る（かも知れない）霊薬が、診察料も含めてたったの￥{MAX(500, MONEY / 500)}！
+PRINTL 珍獣　이나바 테위의 스펠카드
+
+;スキル選択時のツールチップの内容
+;※選択不能な場合は戦闘不能メッセージが優先される
+@SKILL_EXPLAIN_TOOLTIP_2862, ARG
+RESULTS = 추가 코스트: 죽은 자도 되살아나는 (지도 모르는) 영약이 진찰료 포함 단돈 ￥500!
+
+
+
+;使用条件
+;RESULTS = 選択出来ない場合のツールチップの内容
+@SKILL_SPECIAL_ACTIONABLE_2862,ARG
+SIF CFLAG:ARG:PT플래그 == 0
+	RETURN 1
+IF MONEY < 500
+	RESULTS = 인색한 배교자 놈 나가라! (￥부족)
+	RETURN 0
+ENDIF
+RETURN 1
+
+;何のバッドステータスを治せるか
+@SKILL_CURE_STATE_2862,ARG
+SELECTCASE GET_STATE(ARG)
+	CASE "FLY","GOOD","DYING","ORGY","HEAT"
+		RETURN 0
+	CASEELSE
+		RETURN 1
+ENDSELECT
+
+;このスキルの使用料金を求める関数
+;@KAKAKU_ONAMUTHI
+;RESULT = MAX(500, MONEY:1 / 100)

@@ -1,0 +1,332 @@
+﻿;ドロシー(アルゴニアンメイド)
+;キャラ追加(新版)のサンプルキャラその1
+;少し卑屈気味な裏方メイド。なお卑屈と言っても仕事中は表面を取り繕う事が出来る程度なので、初対面時はそこそこ普通
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		っとっとき				新規作成
+;	002		20XX/XX/XX		XXX						AI製顔グラ対応
+;	003		2023/10/11		っとっとき				妊娠イベント対応
+;	004		2023/10/20		っとっとき				ver150の更新に伴い、最新ソースにマージ
+;	005		2023/12/11		っとっとき				妊娠イベント微加筆
+;	006		2024/04/16		っとっとき				ビデオタイトル対応
+;	007		2025/12/11		kamedakeisuke			元ネタが明らかにThe Elder ScrollsなのでEXTRA参戦扱いに変更
+
+@SORP_PLAY_1017, ARGS
+#DIM CONST CSV_NO = [[キャラ:도로시]]
+#DIM CONST FACE_NO = 30
+#DIMS DYNAMIC ICON_ADDRESS
+ICON_ADDRESS '= D31_FACE("シェリー")
+SELECTCASE ARGS
+	CASE "娼婦番号"
+		RESULTS = [1017]
+	CASE "キャラ名"
+	RESULTS = 도로시
+	CASE "指名名"
+		IF 六本木娼婦フラグ:17 == 0
+	RESULTS = 도로시(메이드？)
+		ELSE
+	RESULTS = 도로시(아르고니안 메이드)
+		ENDIF
+	CASE "所属"
+		;表なら1、裏なら2
+		RETURN 2
+	CASE "判定"
+		;指名可能なら0、不可なら1
+		
+		;明確に元ネタがThe Elder Scrollsなので、EXキャラがONになってないと出ない
+		SIF !GETS_USEABLE_EXTRA_TITLE()
+			RETURN 0
+			
+		;(出現条件はテキトー。女の場合を考えるのが面倒だからひとまずSEXできる前提)
+		SIF !IS_PLAYABLE_EXTRA_CHARA(CSV_NO)
+			RETURN 1
+		SIF GETCHARA(CSV_NO) >= 0
+			RETURN 1
+		SIF 六本木娼婦フラグ:17 >= 3
+			RETURN 1
+		SIF !HAVE_PENIS(MASTER)
+			RETURN 1
+		SIF ABL:MASTER:기교 <= 5
+			RETURN 1
+		RETURN 0
+	CASE "価格"
+		IF 六本木娼婦フラグ予備2:17 > 0
+			;出産済みなら値上げ
+			RETURN 800
+		ELSE
+			RETURN 500
+		ENDIF
+	CASE "紹介文"
+		IF 六本木娼婦フラグ:17 == 0
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"………도로시 양을 희망하십니까/…저기, 그게, 그녀는 조금… 사람을 가리는 타입이라고 해야 할지…/"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"저희 가게에서도 직전에 취소하는 분이 많은 아가씨라서 말이지요…/그녀 본인이 나쁘다는 건 아닙니다만, /트러블이 끊이지 않다 보니 무심코 경계하게 된다고나 할까요…"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"…다시 한번 확인합니다만, 정말로 괜찮으시겠습니까？/취소하시더라도 환불이나 클레임은 절대 불가하니까요？/민폐 요금이라 생각하고 지불만 해주신다면, 그 이상의 소동으로는 번지지 않게 할 테니…"
+		ELSEIF 六本木娼婦フラグ予備1:17 > 0
+			;妊娠イベント時
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"……도로시 양입니까/손님… 여러모로 드리고 싶은 말씀은 많습니다만, 딱 한 가지만…/부디… 각오를 단단히 하시길…"
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"……도로시 양입니까/…저기, 손님……？/혹시 허브나 뭐 이상한 거라도 하고 계십니까…？/"
+		ENDIF
+	CASE "確認"
+		IF 六本木娼婦フラグ予備2:17 > 0
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그럼, 도로시 양입니다만…/하룻밤에 ８００마카가 되겠습니다/…짐작 가는 데가 있으시지요？ 인상된 이유 말입니다…"
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그럼, 도로시 양입니다만…/하룻밤에 ５００마카가 되겠습니다/"
+		ENDIF
+	CASE "プレイ口上"
+		CALL DUNGEON_WORP,2,5,10
+		;条件によって分岐の追加も可
+		IF 六本木娼婦フラグ:17 == 0
+			六本木娼婦フラグ:17 = 1
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"저 같은 자를 지명해 주셔서 대단히 감사합니다. /손님/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞나타난 것은 메이드복을 걸친 도마뱀형 악마였다…/물어보니 「아르고니안」이라는 이향의 땅의 종족이라고 한다…/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"놀라셨겠지요？/이 거리에도 다종다양한 사람이 있습니다만/저 같은 모습의 자가 하룻밤의 꽃을 파는 일은 거의 없다고 들었습니다…"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"남성이었다면 전투 일로 푼돈이라도 벌 수 있었을 텐데/천성적으로 그런 것과는 무관한 삶을 살아온 터라/사정상 이곳에서 거두어 주신 덕에 머물고 있습니다…"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"평소에는 이곳의 모든 분들의 신변 시중을 드는 것이 제 일이라서…/명부에 올라 있는 것은 솔직히 명목상일 뿐이랍니다/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"지금까지 지명된 적은 몇 번 있었습니다만, 안아줄 마음이 든 손님은 단 한 분도 계시지 않았고…/아주 드물게 일부 별난 분들과 이렇게 이야기를 나누며/동정심에서 나오는 임시 수입을 받고 있는 처지입니다"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"/손님도……/분명 저 같은 자를 안을 마음은 들지 않으시겠지요……？"
+			;あなた「は？！んな訳ないだろ。こちとら机や土偶も構わず犯す悪魔調教師やぞ！」
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+			CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"아앗！ 손님！！ 안 됩니다！ 안 돼요%ハート()%/아아앗！ 곤란합니다！ 곤란해요！ 손님！ 손니이임%ハート()%/앗！ 아아앗！ 손님！ 손님~앗%ハート()%"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"안 돼요！ 가버려요！ 곤란해요 손니이임%ハート(2)% 그런 짓 하시면 곤란합니다%ハート()%/아앗！ 아앗！！ 안 됩니다 손님%ハート()%/아아앗！！！ 아아아 손니이임~~%ハート(3)%"
+			CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"소, 손니이임…%ハート()%/이거 그런 뜻%ハート()%으로 받아들여도 되는 거겠지요…？/저 같은 것으로도 흥분해 주신 거%ハート()% 맞지요…？"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞도로시는 흐트러진 메이드복 차림으로 침대에 깊이 파묻혀/천장에 넋을 놓은 채, 마음속의 당혹감을 하나씩 되짚어보고 있다…/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞「다음에 또 안으러 오마」라고 귓가에 속삭이자/열락의 여운인지 다음번에 대한 기대인지 도로시는 파르르 떨었고, /당신은 조용히 방을 나섰다…"
+			;なんかティーン系の少女漫画っぽくなった…まあいいか、この路線で行こう
+		ELSEIF 六本木娼婦フラグ:17 == 1 || FLAG:임신기능 == 0
+			;2回目。また、妊娠オプションがOFFの場合はココで止まる
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"아…… 소, 손, 님…？/어, 어서 오십시오…？/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞지난번의 일을 떠올리고 있는 것인지, 도로시는 어색하게 당신을 맞이했다//"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"그, 저기… 창관에서 일하고는 있습니다만/저 자신은 그런 경험이 미천하여, 서요…/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"손님의, 나, 날카로운 어금니가, 그……/제 소중한 부위…에, 깊은 상처, 를 새겨…놓으셔서…/주제넘은 소리, 겠지만… 다른 누군가를 다치게, 하지 않을까, 불안해서…"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"부디… 부탁드립니다…/그 어금니가… 섣불리 다른 분을 상처 입히지 않도록…/제게 하룻밤, 손질을… 맡겨주시지, 않겠습니까…？"
+			;「俺の槍を磨け！」「おおきくて一晩中かかるかも」という原作リスペクト
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+			CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"아앗！ 아아앗！！ 손니이임%ハート(3)%/곤란해요！ 곤란합니다아%ハート()% 거기는 안 돼요 손님%ハート(3)%/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"손님！ 손니이임~~%ハート(3)% 아아아~~%ハート(3)%/안 돼요오%ハート()% 이런 건 곤란합니다 손님%ハート(3)%/아！ 아아~~%ハート(5)%"
+			CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"소, 손니이임%ハート(3)%………//"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞태내를 뜨거운 진흙탕으로 가득 채워진 도로시는/그 밑바닥 없는 늪 같은 황홀경에서 도무지 헤어 나오지 못하고 있다…/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞「다음에 또 안으러 오마」라고 귓가에 속삭이자/열락의 여운인지 다음번에 대한 기대인지 도로시는 파르르 떨었고, /당신은 조용히 방을 나섰다…"
+			;見受け可能フラグを設定
+			六本木娼婦フラグ:17 = 2
+			;妊娠イベントフラグを戻す
+			六本木娼婦フラグ予備1:17 = 0
+			六本木娼婦フラグ予備2:17 = 0
+		ELSEIF 六本木娼婦フラグ予備1:17 > 0
+			;妊娠イベント
+			IF 六本木娼婦フラグ予備1:17 == 1
+				;進行度1、妊娠イベント1(妊娠報告)
+				;口上の妊娠発覚時で卵生がどうのと言ってたのとつじつまが合わないって？
+				;こう、悪魔主体の娼館だし、先輩方との交流でそういう知識を教えてもらった感じで…　(※このイベントを見た時点で口上側の初妊娠時は見れなくして整合性を取る)
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"아…… 소, 손, 님……/어…… 어서… 오, 오십시오…/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞도로시는 조심스러워하며 당신을 맞이했다//"
+				IF 六本木娼婦フラグ予備2:17 == 0
+					;妊娠初めて
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"그, 저기… 창관 근무지만… 저, 저는… 꽃을 파는 건 손님…뿐이었고/…다, 다른 분들과 달리… 피임에 대처를… 하, 하지 못했…던 거예요…/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"…지난번 상대해 주셨을 때가… 위, 위험한 날…이었어서…/소, 손님께서 다그쳐 오시니… 휩쓸리는 채로… 가랑이를 허락해 드렸, 잖아요…？/그… 그게… 저기… '명중'…해버린, 것 같아요…"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞내민 임신 테스트기에는 「하룻밤의 실수」라는 명백한 증거――/――'양성'을 나타내는 붉은 두 줄이 선명히 떠올라 있고…/눈앞의 암컷이 「씨앗이 박혀」「당신의 아이를 배고 있다」고 주장하는 꼴이다…"
+				ELSE
+					;2回目以降
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"그, 저기… 이것을, 봐주세요…//"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞내민 임신 테스트기에는, 언젠가 보았던 것과 똑같은――/――'양성'을 나타내는 붉은 두 줄이 떠올라 있는 상황이다…/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"…또, 또다시… '생겨버린%ハート()%'… 것 같아요…/여… '여기'에…… 손님과의 유정란(알)%ハート()%이……/"
+				ENDIF
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"소…… 손님… 어…… 어떻게… 하, 면 좋을까요……？//"
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+				CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"아아앗！！ 손니이임%ハート(2)% 안 돼요 손님%ハート(3)%/「이미 생겼으니까」라고 하셔도 곤란합니다%ハート(2)% 아아아앗~%ハート(3)%/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"소%ハート()% 손니이임！%ハート(3)% 이런 건 안 돼요%ハート(2)%/손님이 듬뿍 심어준 크림파이%ハート()% 이 이상 만드시면 안 됩니다앗%ハート(4)%/아아~~%ハート(5)%"
+				CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"소, 손니이임%ハート(3)%………//"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞아이를 밴 여자의 성역을 남자의 욕망으로 다시금 가득 채워진 도로시는/남에겐 보여줄 수 없는 부끄러움을 잊은 암컷의 수정된 얼굴을 드러내고 있다…/만약 다태아 임신이라면, 한 명 더 만들어버렸을지도 모를 지경이다"
+				
+				六本木娼婦フラグ予備1:17 = 2
+			ELSEIF 六本木娼婦フラグ予備1:17 > 1 && 六本木娼婦フラグ予備1:17 <= 4
+				;進行度2～4、妊娠イベント2(経過1)、複数回発生する。最大3回見れば次へ
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"아…… 소, 손님…/……어, 어서 오… 십시오……%ハート()%/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞도로시는 기대와 불안이 교차하는 표정으로 당신을 맞이했다/몸의 곡선이 조금씩 둥그스름해지기 시작하여… 그 몸이 틀림없는 「여자」이며…/그리고… 「어머니」가 되어가는 도중임을…… 말없이 호소하고 있다…"
+				IF 六本木娼婦フラグ予備2:17 == 0 || RAND:2 == 0
+					;妊娠初めて
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"…저기… 손님… 또, 찾아와 주셨다…는 것은…/도… 도망치거나, 거리를 두지, 않는다…는 것은…/……그… 그런 뜻%ハート()%으로… 받아들여도, 되는… 거지요…？"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"이, 이대로… 배를 불려서/…나, 낳아도……… 괜찮은, 거지요…？%ハート()%……/"
+				ELSE
+					;2回目以降は分岐増やす
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"…손님… 저기… 자주 발걸음해 주시는, 것은… 기쁩니다, 만…/몇 번이나… 알을, 심어져 버리면…/…저, 저…… 착각%ハート()%…해버리고 말아요…？"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"손님을 「반려 수컷%ハート(2)%」이라며…/…몸 파는 처지임을 잊고… 몸이, 제멋대로 기억해 버려서――/스스로가 「번식 상대(암컷)%ハート(3)%」라고… 기어오르게, 되어버려요…"
+				ENDIF
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+				CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"아아앗！！ 손님 안 됩니다%ハート(3)% 아직 일러요 손님%ハート(2)%/곤란합니다%ハート(2)% 알이 작아서 손님의 우유는 아직 시기상조예요！ 아아앗！！%ハート(3)%/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"그！ 그런 짓은 곤란해요%ハート(2)% 이렇게 격렬한 건 안 됩니다아%ハート(3)%/아！ 아아아앗~%ハート(5)% 깊은 곳까지 밀어붙이시는 건 곤란해요오~~！！%ハート(4)%/"
+				CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"소, 손니이임%ハート(3)%………//"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞도로시는 살짝 부풀어 오른 배에 우유를 잔뜩 대접받아, /자신을 탐식한 수컷의 맛을 태내에서 남김없이 음미하고 있다…/당신의 포로로 떨어진, 오히려 사로잡힌 쪽은 그녀일 것이다…"
+				
+				;進行度+1～3、
+				六本木娼婦フラグ予備1:17 += (RAND:3 + 1)
+			ELSEIF 六本木娼婦フラグ予備1:17 > 4 && 六本木娼婦フラグ予備1:17 <= 7
+				;進行度5～7、妊娠イベント3(経過2)、複数回発生する。最大3回見れば次へ
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"아…… 소, 손님…%ハート()% /……어, 어서 오… 십시오…%ハート()%/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞도로시는 암컷의 기색을 짙게 풍기며 당신을 맞이했다/메이드복 위로도 확연히 부풀어 오른 아랫배가 엿보이고…/그 달아오른 기운은 「자신을 어머니로 만들어준 반려의 방문」을 환호하는 듯하다"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"요, 요즘… 마주치는 다른 손님들로부터… 눈총을 받는 일이, 많아져서…/모두에게서, 휴가를… 출산 휴가를 갖도록 권유받거나, 한답니다…/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"…역, 역시… 커다란 배를 안고서, 저 같은 자가 일하는 것은…/뻔, 뻔뻔스럽거나… 한 걸까요…？…/"
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+				CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"고, 곤란합니다 손님%ハート(2)% 아아앗 알을 콕콕 찌르시다니 안 돼요%ハート(3)%/손님을 상대로 진심이 되어버린%ハート()% 창부 실격의 염치없는 증거%ハート(2)%/강조하듯이 흔들지 마세요오~%ハート(4)%"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"아앗！ 아아%ハート()% 안 됩니다%ハート(2)% 시선만 느껴져도 의식해 버리는데에/「여기에 손님의 아이가 있다%ハート()%」고 생각하는 것만으로도, 여자의 행복을 느껴버리는데에%ハート(2)%/더한 행복으로 저, 터져버릴 것 같아요오!%ハート(3)%"
+				CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"소, 손니이임%ハート(5)%………//"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞아이의 아버지로부터 애정을 아이와 함께 듬뿍 받은 도로시는/여자의 환희로 몸과 머릿속을 분홍빛으로 물들이고 있다…/그녀의 의식은 지금, 시트까지 넘쳐흐르는 백탁 속에 있을 것이다…"
+				
+				;進行度+1～3
+				六本木娼婦フラグ予備1:17 += (RAND:3 + 1)
+			ELSEIF 六本木娼婦フラグ予備1:17 > 7
+				;進行度8以上、妊娠イベント4(出産報告)　(※このイベントを見た時点で口上側の初妊娠時の育児室イベントは見れない想定)
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"아%ハート()%…… 소, 손님…%ハート()%/……어서… 오, 오십시오…%ハート()%/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞도로시는 사랑스러운 시선을 당신에게 보내며 맞이했다/이전과 실루엣이 달라져 있어, 늘씬한 본래의 체형으로 돌아와 있다…/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"…손님의 아이입니다만… 조, 조금 전에… 무사히 낳았습니다…/하지만… 그… 아이를 좋아하기로 소문난 요정 분께, 맡겨드렸…더니…/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"시간의 흐름이 다른 이계에서 활동하시는 분…이었던 모양이라…/어제, 만나러 갔더니… 벌써 자립해서 여행을 떠났다…고, 하더군요…/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"그리고… 건강하게 잘 자랐으니, 그 부분은 안심해 달라는 전언도…/손님께, 아이의 얼굴을 보여드리지 못하는 것이… 조금, 안타깝기는 합니다만…/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞조금 쓸쓸한 듯, 도로시는 자신이 낳은 아이를 떠올리고 있다…//"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"…뭐, 뭐어… 이, 이미 지난 일이고, 기운을 차리도록 하지요！/오, 오늘도… 손질을 맡겨주시옵소서/…손님의 늠름한 어금니가… 저, 저 이외의 사람을, 다치게 하지 않도록……%ハート()%"
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+				CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"아아앗！！ 손니이임%ハート(2)% 손니임~%ハート(3)%/곤란합니다%ハート()% 비어버린 뱃속을 재점령하시다니…%ハート(2)%/안 돼요 안 됩니다%ハート()% 그런 뜨거운 걸로 채우지 마세요오%ハート(4)%"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"곤란해요%ハート()% 곤란합니다%ハート(2)% 이런 건 안 돼요%ハート(2)%/아, 아니에요%ハート()% 뱃속이 허전하다…라니, 생, 생각 안, 했어요%ハート(2)%/저… 정말입니다%ハート()% 믿어주세…%ハート(2)% 아아아앗~%ハート(4)%"
+				CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"소, 손니이임%ハート(3)%………//"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞도로시는 새하얀 망아의 경지로 마음의 틈새를 채우며/따스해진 뱃속의 안도감에 그 몸을 내맡기고 있다…/"
+				
+				;妊娠イベントフラグを戻す
+				六本木娼婦フラグ予備1:17 = 0
+				;出産済みフラグをON
+				六本木娼婦フラグ予備2:17 += 1
+			ENDIF
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞「다음에 또 안으러 오마」라고 귓가에 속삭이자/열락의 여운인지 다음번에 대한 기대인지 도로시는 파르르 떨었고, /당신은 조용히 방을 나섰다…"
+		ELSE
+			;3回目以降
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"아…… 소, 손, 님…？/어, 어서 오십시오…？/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞지난번의 일을 떠올리고 있는 것인지, 도로시는 어색하게 당신을 맞이했다//"
+			SELECTCASE RAND:4
+				CASE 0
+					;1/4で危険日イベント
+					IF 六本木娼婦フラグ予備2:17 == 0
+						;妊娠初めて
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"그, 저기… 오, 오늘은… 조, 조금/…제… 사, 사정이… 좋지 않아서, 요…/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"…도, 돈은… 돌려드릴 테, 니…/부, 부디… 오늘은 그대로… 돌아가 주실 수… 없을, 까요…？/"
+					ELSE
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"그, 저기… 오, 오늘은… 저의… 위, 위험한 날…이라서요……//"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"…죄, 죄송합니다만, /부, 부디… 오늘은, 고무를… 사용해, 주실 수… 없을, 까요…？/"
+					ENDIF
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞꼼지락꼼지락 몸을 떨며, /붉어진 얼굴을 감추려는 듯 도로시는 이쪽과 눈을 마주치지 못하고 있다…/"
+					CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+					CALL SHOW_PICTURE, "EMPTY"
+					SIF 六本木娼婦フラグ予備2:17 > 0
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞//……………고무가 다 떨어졌다"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"아아앗！！ 안 됩니다 손니이임%ハート(3)% 오늘은！ 오늘만큼은 정말로 안 된다고요%ハート(2)%/곤란합니다 손님~！ 억지로 덮치시다니 저 곤란해요오%ハート(3)%/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"손님！ 아아아아~~%ハート(3)% 거긴 절대로 안 됩니다앗%ハート(3)%/오늘은 곤란해요 손님%ハート()% 저, 저는, 중요한 날이란 말입니다%ハート(3)% 부, 부디 멈춰주세요！/아！ 아아~ 곤란해요오~~%ハート(5)%"
+					IF RAND:4 == 0
+						;1/4で外れる
+						CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"소, 손니이임%ハート(3)%………//"
+					ELSE
+						;명중
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"//　　　　　　　――――쿵쾅!%ハート()%"
+						CALL SHOW_PICTURE, "EMPTY"
+						IF 六本木娼婦フラグ予備2:17 > 0 && RAND:2 == 0
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"소, 손니이임%ハート(3)%………/(알… 손님의 각인이 새겨져, 버렸…어어%ハート()%…/…또… 뱃속을 점령당해 버리는구나%ハート(2)%……)"
+						ELSE
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"소, 손니이임%ハート(3)%………/(위… 위험한 날인데… 뜨거운 걸… 싸질러, 버렸어어%ハート(2)%……)/"
+						ENDIF
+						;妊娠イベントフラグON
+						六本木娼婦フラグ予備1:17 = 1
+					ENDIF
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞도로시는 생명의 고동을 자신의 가장 깊은 곳에서 받아들이며/자신에게 쇄도하는 하얀 마그마의 열기 앞에서 넋을 잃고/관능의 환희로 풀어진 표정을 짓고 있다…"
+				CASEELSE
+					;通常
+					;TODO 2回目とコンパチ、気が向いたらパターン増やすかも？
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"손님의, 나, 날카로운 어금니에 대해…/오, 오늘도… 주제넘은 소리, 겠지만… 다른 누군가를 다치게, 하지 않을까, 불안해서…/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"부디… 부탁드립니다…/그 어금니가… 섣불리 다른 분을 상처 입히지 않도록…/제게 하룻밤, 손질을… 맡겨주시지, 않겠습니까…？"
+					;「俺の槍を磨け！」「おおきくて一晩中かかるかも」という原作リスペクト
+					CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+					CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"아앗！ 아아앗！！ 손니이임%ハート(3)%/곤란해요！ 곤란합니다아%ハート()% 거기는 안 돼요 손님%ハート(3)%/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"손님！ 손니이임~~%ハート(3)% 아아아~~ %ハート(3)%/안 돼요오%ハート()% 이런 건 곤란합니다 손님%ハート(3)%/아！ 아아~~%ハート(5)%"
+					CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"소, 손니이임%ハート(3)%………//"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞태내를 뜨거운 진흙탕으로 가득 채워진 도로시는/그 밑바닥 없는 늪 같은 황홀경에서 도무지 헤어 나오지 못하고 있다…/"
+			ENDSELECT
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞「다음에 또 안으러 오마」라고 귓가에 속삭이자/열락의 여운인지 다음번에 대한 기대인지 도로시는 파르르 떨었고, /당신은 조용히 방을 나섰다…"
+		ENDIF
+		;プレイ経験(任意の経験を追加可)
+		;正直ここはテキトーにコピペ
+		EXP:MASTER:삽입경험 += ABL:MASTER:기교 * 2 + 1
+		EXP:MASTER:절정경험 += ABL:MASTER:기교
+		JUEL:MASTER:습득 += ABL:MASTER:기교 * (1000) + 1000
+		IF !TALENT:MASTER:남자
+			EXP:MASTER:레즈경험 += ABL:MASTER:기교 * 5 + 1
+		ENDIF
+		IF TALENT:MASTER:남자 || TALENT:MASTER:후타나리
+			EXP:MASTER:사정경험 += ABL:MASTER:기교 * 7 + 1
+			CALL CONTROL_MAG, MASTER, -(ABL:MASTER:기교 * 5000 + 3000)
+		ENDIF
+		;CALL INCREASE_LC,5  意図が不明かつ変動量が強烈で、ユーザー側から認識できない場所での変動なので除外します。必要性があって再実装する場合は右記の点に注意して再実装してください。
+	CASE "身受け価格"
+		RETURN 3000
+	CASE "身受け確認"
+		IF 六本木娼婦フラグ予備1:17 > 0 || 六本木娼婦フラグ予備2:17 > 0
+			;妊娠ルート
+			IF 六本木娼婦フラグ予備2:17 > 0 || 六本木娼婦フラグ予備2:17 > 0
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"도로시 양을 신원 인수하시겠습니까？/뭐… 당연하다면 당연한 결과로군요/「설마 배짱도 없는 놈인가」 하고 조금 의심스러울 만큼 늦으셨습니다만…"
+				;出産済みなら少し嫌味を言われる
+			ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"도로시 양을 신원 인수하시겠습니까？/뭐… 당연하다면 당연한 결과로군요/임신을 시켜버리셨으니, 말입니다…"
+			ENDIF
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"여러 가지 일이 있었습니다만, 그녀에게는 저희 모두가 신세를 졌고, /제대로 책임은 져주셔야지요…/…아아, 비용은 그녀의 몸값과 동일한 ３０００마카가 되겠습니다"
+			;こっちのルートは最初からサービス額と明言。つまり「有難く思え」という思惑を含むメッセージ
+		ELSE
+			;通常ルート
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"도로시 양을 신원 인수하시겠습니까？/손님…… 진심으로 하시는 말씀입니까？/"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그녀가 빠져나가는 건 저희도 조금 곤란합니다만, 뭐 좋습니다/대신할 자를 고용할 비용을 포함해 ３０００마카를 받게 됩니다만/괜찮으시겠습니까？/"
+			;受付の男「本当はもっと費用必要だったけど、彼女のこれまでの仕事ぶりに免じてサービスだ！ご祝儀としてとっといて！」
+		ENDIF
+	CASE "身受け口上";口上
+		CALL SHOW_PICTURE, "D"
+		IF 六本木娼婦フラグ予備1:17 > 0 || 六本木娼婦フラグ予備2:17 > 0
+			;妊娠ルート
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"소, 손님… 지, 진심, 이신가요…？/저, 저를…… 거두어 주신다…니…/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"아니에요！ 기, 기쁘지 않은 건 아니…에요？/생각지도 못했던 일이라… 당혹스러울, 뿐이지…/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"혹시… 채, 책임 때문이라던가… 손님께서… 무리하고 계신 거라면/지… 지금이라도…… 취, 취소하셔, 도…/…괘… 괜찮…으니까…요……"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"……아%ハート()%… 네, 넷… 기, 기꺼이%ハート()%/이제부터는… 메이드로서, 곁에 시중들게 해주시겠어요？/……서, 서방님%ハート()%…"
+		ELSE
+			;通常ルート
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"소, 손님… 오늘은 무슨 일이신가요？/왠지, 다들 짐을 챙겨서 이리로 오라고 하셨는데…/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞당신은, 도로시를 자신의 전속 메이드로 삼기 위해 돈을 완납했음을 전했다//"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"에… 에에~~!!/저 같은 자를 위해 그런 큰돈을？！ 왜 그런 짓을 하신 건가요！！/그런 짓을 당해도… 전…"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"그런 짓을 당해도… 저, 아무것도 돌려드릴 수, 없잖아요…/손님께는, 더욱, 걸맞은 분, 이…/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞에잇！ 이미 지불 끝났으니 잔말 말고 입 다물어라！/좋으니까 썩 내 것이나 되어라！/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"그, 그런/……저, 정말로 저라도, 괜찮은, 건가요？/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"도로시", @"//……저, 저기… 앞으로도, 영원히, 잘 부탁드립니다, 네？/손님… 아니, 저의 서방님(마이 히어로)…%ハート()%"
+			;ダル＝マの「私のヒーロー」リスペクト
+		ENDIF
+		六本木娼婦フラグ:17 = 3
+		RESULTS '= "ドロシー" + "_" + D31_FACE("ドロシー", 1)
+		;妊娠・出産の有無で変化する
+		RETURN CSV_NO, 6000, (六本木娼婦フラグ予備1:17 > 0 || 六本木娼婦フラグ予備2:17 > 0)
+	CASE "宣伝"
+		;(なし)
+	CASE "リスト"
+		IF 六本木娼婦フラグ:17 == 0
+			;指名前は顔を非表示に
+			;また、正体を隠す
+			RESULTS = 55_SECRET
+			RESULTS:1 = 　
+		ELSE
+			CALLF 顔グラ追加_F, CSV_NO
+			RESULTS '= "ドロシー" + "_" + D31_FACE("ドロシー", 1)
+		RESULTS:1 = 아앗！ 손님！！ 안 돼요！
+		ENDIF
+ENDSELECT

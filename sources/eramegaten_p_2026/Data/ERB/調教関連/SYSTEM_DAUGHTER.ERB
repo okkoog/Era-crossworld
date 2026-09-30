@@ -1,0 +1,1856 @@
+﻿;=============================================================================
+;娘パッチの諸処理
+;=============================================================================
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SYSTEM_DAUGHTER.ERB
+;	Facility	:子供の作成処理
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/01/27		P						初期リンク悪魔周辺の処理変更
+;	003		2011/01/31		P						遺伝処理の整理及び・変更
+;	004		2011/02/01		P						003のバグ修正
+;	005		2011/02/04		迷走中の人				狐・妖狐・吸血鬼の引継ぎを可能に。胸のサイズ変更時に処女化する可能性があったのを修正
+;	006		2011/02/04		P						子供の体力気力の算出式を変更
+;	007		2011/02/06		Rsp暇人					サマナー・道具知識のLv制とアイテム習熟実装に対応。
+;	008		2011/02/11		P						父親の名前の取り方を変更/体力気力決定式のミスを修正
+;	009		2011/02/11		Rsp暇人					相性決定別案の記述ミスを修正。バステ耐性の引き継ぎ方法を変更。人間以外は非戦闘員にならないようにする
+;	010		2011/03/02		P						父親判定時に親が触手である場合も、エラーオチしていたのを修正
+;	011		2011/03/28		P						一部の素質の遺伝を変更
+;	012		2011/06/20		P						戦闘素質の遺伝処理を変更
+;	013		2011/06/27		P						遺伝時の除外処理を変更しつつ、敵専用スキルを除外/習得スキルからも継承するように
+;													仕送りにランダム幅を持たせる
+;													容量がオーバーする場合も子供の調教を可能にし、ストレージにおくるように
+;													痛みに弱いと強いを排他に
+;													相矛盾する性格素質を持つ([현명][우둔]とか)・ペニスがないのに[크고아름다움]が付く等の問題を修正
+;	014		2019/05/20		kuma					子供の遺伝戦闘資質の縛りを緩和(サマナー・ガンスリンガー・道具知識がとても簡単に付くように)
+;													半魔人と人間の交配時の子は高い割合で異能者になる様に
+;													子供の体力と気力に上方修正(強力なので、再度調整が必要かもしれません)
+;	015		2020/01/30		131						世代増やす処理を追加
+;	016		2020/07/02		JK好き					娘仲魔化処理の判定をMAX_PLAYER_CHARAで行うように修正
+;	017		2020/12/19		JK好き					子供のバステ耐性が弱点だらけになる問題を修正
+;	018		2021/01/19		JK好き					@CHILD_GROWTHと@CHILD_GROWTH2で成長中の子供の数だけDRAWLINEしていた問題を修正
+;	019		2021/02/21		Rsp暇人					子供のバステ耐性決定に親の属性相性を参照していたバグを修正
+;	020		2021/03/23		名無し					スキル継承で異能者の親はFLAG:異能者スキル数を使うように分岐
+;	021		2022/01/01		kamedakeiuske(ﾟдﾟ)		特定の条件下で戦闘素質の継承が凄まじいことになっていた部分を修正
+;													シフターのバリエーションを追加、異能シフター、ガンスリンガーシフター、サクセサーシフターが生まれるように暫定変更
+;													（既知の問題点：初期変身悪魔が貧弱で兼業シフターの強みを生かしづらい）
+;													ペルソナ使いは未整備のままだったため遺伝結果から除外
+;													（ペルソナの指定がないので異常な値になる＆ペルソナは遺伝するものではないという意見に従い）
+;													他、ロールまわりの構文の整理と遺伝率、遺伝条件を調整
+;	022		2022/05/28		JK好き					親のスキル継承時にCSTR専用技を半端に引き継がないように修正
+;	023		2022/06/28		JK好き					父親が触手の場合のスキル・素質等の処理を整備
+;	024		2022/09/01		JK好き					ヤリチン用の処理を追加
+;	025		2022/09/06		JK好き					@DAUGHTER_TALENT_SET2 父親がいない場合に子供の能力決定時にエラーを吐く問題を修正
+;	026		2022/09/17		kamedakeisuke			Aion式召喚術まわりの処理追加、ついでに妊娠しやすい・妊娠しにくいが両立しないように
+;	027		2022/10/22		JK好き					@DAUGHTER_TALENT_SET2 初期リンク悪魔の設定時の処理に修正漏れがあった問題を修正
+;	028		2022/12/12		JK好き					@DAUGHTER_TALENT_SET2 子供のロール決定処理後にロールを上書きしてしまっていた問題を修正
+;	029		2023/03/18		P(bazzile)				子供のスキルの継承条件を追加
+;	030		2023/04/11		P(bazzile)				ロール制にあわせて娘のキャラクター生成処理を再編
+;													旧ファイルは資料フォルダへ
+;	031		2023/05/12		P(bazzile)				戦闘素質の付与判定で正しく最大レベルを参照できていなかった不具合を修正
+;	032		2023/06/09		P(bazzile)				肉体部位の付与漏れがあった不具合を修正
+;	033		2023/08/23		P(bazzile)				初期変身悪魔スキルの登録時にスキルの削除対象の変数のミスがあった不具合を修正
+;													スキルのテーブルのリセットが不十分で他の配合結果で得られるスキルが混入してしまう不具合を修正
+;	034		2023/09/24		P(bazzile)				子供が成長した時に生みの親が抹消されているとエラーが出る不具合を修正
+;	035		2023/10/25		P(bazzile)				親の種族の参照部分にミスがあったのを修正
+;	036		2024/01/13		JK好き					子供の性別決定時に両親の性別を誤ってすべて女と取得していた問題を修正
+;	037		2024/05/09		P(bazzile)				ふたなりの子供が生まれない不具合を集英
+;	038		2024/07/01		P(bazzile)				生まれた子供が親名称が正しくセットされない不具合を修正
+;	039		2024/09/17		P(bazzile)				生まれた子供の初期リンク悪魔の攻撃回数などがセットされない不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;========================================================
+;子供のキャラクター生成
+;母親(あるいは育ての親)に格納しておいたフラグからキャラをランダム生成する
+;
+;FLAGの付与は妊娠時に
+;ERB\調教関連\EVENT_P.ERBの@SET_FETUS_STATUS関数で行う
+;========================================================
+@MAKE_DAUGHTER, PALENT
+#DIM DYNAMIC STOCK_TARGET
+#DIM DYNAMIC TEMP, 2
+#DIMS DYNAMIC TEMPS
+#DIM DYNAMIC LCOUNT, 3
+#DIM DYNAMIC PALENT;親　胎児のフラグの格納元のキャラ
+#DIM DYNAMIC L_MOTHER
+#DIM DYNAMIC L_FATHER
+#DIMS DYNAMIC CHILD_SEX
+#DIMS DYNAMIC TEMP_SEX, 2
+#DIM DYNAMIC IS_MAKE_CHARA
+#DIM DYNAMIC MAIN_PALENT
+#DIM DYNAMIC SUB_PALENT
+#DIM DYNAMIC COUNT_HAVE_WEAK
+#DIM DYNAMIC COUNT_HAVE_RESIST
+#DIM DYNAMIC APPARENT_TYPE, TYPENUM
+#DIM DYNAMIC INAPPARENT_TYPE, TYPENUM
+#DIM DYNAMIC CAN_USE_SKILL_RANK, 2
+#DIM DYNAMIC LINK_DEVIL_NUM
+#DIM DYNAMIC LINK_DEVIL_NO
+#DIM DYNAMIC LINK_DEVIL_SKILL, HAVEABLE_SKILLNUM
+#DIM DYNAMIC LINK_DEVIL_LEARN, HAVEABLE_SKILLNUM
+#DIM DYNAMIC LINK_DEVIL_LEARN_LV, HAVEABLE_SKILLNUM
+#DIM DYNAMIC LINK_DEVIL_SUCCESSION, SUCCESSIONNUM
+#DIM DYNAMIC LINK_DEVIL_MANTRA, 5
+#DIMS DYNAMIC LINK_DEVIL_EXPLAIN, 2
+#DIMS DYNAMIC L_TALENTS
+#DIM DYNAMIC L_TALENT_LV
+#DIM DYNAMIC L_LV_FIXED, 50
+#DIMS DYNAMIC L_TALENTS_FIXED, 50
+#DIMS DYNAMIC SETED_TALENT
+#DIMS DYNAMIC TO_END
+#DIM DYNAMIC L_SKILL
+#DIMS DYNAMIC L_SKILLS, 2
+#DIM DYNAMIC TABLE_RANK
+#DIMS DYNAMIC SKILL_TABLE, 7
+#DIMS DYNAMIC TRANS_SKILL_TABLE, 7
+#DIMS DYNAMIC INAPPARENT_SKILL_TABLE, 7
+#DIMS DYNAMIC INAPPARENT_TRANS_SKILL_TABLE, 7
+#DIM DYNAMIC IS_TRANS
+#DIMS DYNAMIC TRANS_MODE
+#DIM DYNAMIC IS_SET_TO_TRANS
+#DIM DYNAMIC HAVE_SKILL_BY_SUCCESSION, SUCCESSIONNUM
+;急成長するか、それは娘か息子かなどを判定します。
+
+;-------------------------------------------------------------
+;両親の出産履歴を追加
+;-------------------------------------------------------------
+;ARGはPALENTの登録番号
+TFLAG:600 = 0
+IF CFLAG:PALENT:딸교육
+	IF MONEY <= 50000
+		CFLAG:PALENT:딸교육 = 0
+	ELSE
+		MONEY -= 50000
+	ENDIF
+ENDIF
+L_MOTHER = FINDCHARA_ID(CFLAG:PALENT:딸의친부모고유번호부모)
+IF CFLAG:PALENT:부친의고유번호부모 >= 0
+	L_FATHER = FINDCHARA_ID(CFLAG:PALENT:부친의고유번호부모)
+ELSE
+	L_FATHER = CFLAG:PALENT:부친의고유번호부모
+ENDIF
+;変身を解除しておく
+SIF CFLAG:PALENT:딸교육
+	CALLFORM TRANS_DEVIL, PALENT, , "変身解除"
+;産んだ子供の数をサーチした産みの親に追加
+SIF L_MOTHER != -1
+	CFLAG:L_MOTHER:몇번째아이까지낳았는가 += 1
+SIF L_FATHER >= 0
+	CFLAG:L_FATHER:몇번째아이까지낳았는가 += 1
+
+;-------------------------------------------------------------
+;性別の決定
+;-------------------------------------------------------------
+;両親の性別を取得
+FOR LCOUNT, 0, 2
+	IF COUNT_SPLIT(FETUS_TALENT:PALENT:LCOUNT, "/", "오토코노코" + "_\\d*")
+		TEMP_SEX:LCOUNT = 오토코노코
+	ELSEIF COUNT_SPLIT(FETUS_TALENT:PALENT:LCOUNT, "/", "남자" + "_\\d*")
+		TEMP_SEX:LCOUNT = 男
+	ELSEIF COUNT_SPLIT(FETUS_TALENT:PALENT:LCOUNT, "/", "후타나리" + "_\\d*")
+		TEMP_SEX:LCOUNT = 후타나리
+	ELSE
+		TEMP_SEX:LCOUNT = 女
+	ENDIF
+NEXT
+
+;両親が同性ならそのまま、そうでないならどちらか
+IF TEMP_SEX:0 == TEMP_SEX:1
+	CHILD_SEX = %TEMP_SEX:0%
+ELSE
+	CHILD_SEX = %TEMP_SEX:(RAND:2)%
+	;10%でばける
+	IF CHILD_SEX == "男" && !RAND:10
+		CHILD_SEX = 오토코노코
+	ELSEIF CHILD_SEX == "女" && !RAND:10
+		CHILD_SEX = 후타나리
+	ELSEIF CHILD_SEX == "오토코노코" && !RAND:10
+		CHILD_SEX = 男
+	ELSEIF CHILD_SEX == "후타나리" && !RAND:10
+		CHILD_SEX = 女
+	ENDIF
+ENDIF
+
+;-------------------------------------------------------------
+;成長後の選択
+;-------------------------------------------------------------
+IS_MAKE_CHARA = 0
+IF CFLAG:PALENT:딸의친부모캐릭터번호부모 != -1 && TALENT:MASTER:금단의지식 && CHARANUM < MAX_PLAYER_CHARA
+	IF CHILD_SEX == "女" || CHILD_SEX == "후타나리"
+		PRINTFORML %CALLNAME:PALENT%이(가) 키우던 딸이 급격히 성장하여, 조교할 수 있을 정도가 되었습니다.
+	ELSE
+		PRINTFORML %CALLNAME:PALENT%이(가) 키우던 아들이 급격히 성장하여, 조교할 수 있을 정도가 되었습니다.
+	ENDIF
+	PRINTFORMW 조교하겠습니까?
+	CALL INPUT_YN
+	SIF !RESULT
+		IS_MAKE_CHARA = 1
+ENDIF
+
+;キャラ作成しない場合は仕送りだけ追加して終わる
+IF !IS_MAKE_CHARA
+	CALL SON_BIRTH, PALENT, L_MOTHER
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------------------
+;キャラ生成
+;-------------------------------------------------------------
+;ベースキャラはあなたの子供かどうかで変わる
+IF GROUPMATCH(MASTER, L_MOTHER, L_FATHER)
+	CALL ADD_NEW_COMPANION, [[キャラ:당신의딸]],500
+ELSE
+	CALL ADD_NEW_COMPANION, [[キャラ:노예의딸]],500
+ENDIF
+STOCK_TARGET = TARGET
+TARGET = RESULT:1
+CALL CLEAR_ROLE_TALENT, TARGET
+
+;-------------------------------------------------------------
+;誕生関係のフラグ登録
+;-------------------------------------------------------------
+CFLAG:딸의생일 = CFLAG:PALENT:출산일
+CFLAG:딸의양부모캐릭터번호딸 = NO:PALENT
+
+;---- EDIT 038 MOD START -------------------------
+IF L_MOTHER >= 0
+	CFLAG:딸의친부모캐릭터번호딸 = NO:L_MOTHER
+	CFLAG:딸이어머니의몇번째아이인가딸 = CFLAG:L_MOTHER:몇번째아이까지낳았는가
+	CFLAG:딸의세대딸 = CFLAG:L_MOTHER:딸의세대딸+ 1
+ENDIF
+CFLAG:딸의부친고유번호딸 = CFLAG:PALENT:부친의고유번호부모
+CFLAG:딸의부친캐릭터번호딸 = CFLAG:PALENT:임신확정후의부친판정
+;---- EDIT 038 MOD END ---------------------------
+SIF L_FATHER >= 0
+	CFLAG:딸이아버지의몇번째아이인가딸 = CFLAG:L_FATHER:몇번째아이까지낳았는가
+CFLAG:딸의양부모고유번호딸 = CFLAG:PALENT:캐릭터고유번호
+
+;---- EDIT 034 MOD START -------------------------
+;CFLAG:딸의친부모고유번호딸 = CFLAG:L_MOTHER:캐릭터고유번호
+CFLAG:딸의친부모고유번호딸 = CFLAG:PALENT:딸의친부모고유번호부모
+;---- EDIT 034 MOD END ---------------------------
+;-------------------------------------------------
+;似ている親の選定
+;成長に偏りをつける
+;-------------------------------------------------
+MAIN_PALENT = RAND:2
+SUB_PALENT = !MAIN_PALENT
+IF L_MOTHER >= 0
+	PRINTFORM %조사처리(CALLNAME:L_MOTHER, "와")% 
+ELSE
+	IF FETUS_母親名称:PALENT:0 != ""
+		PRINTFORM %조사처리(FETUS_母親名称:PALENT:0, "와")% 
+	ELSE
+		PRINTFORM 이제는 없는 누군가와 
+	ENDIF
+ENDIF
+IF CSTR:PALENT:부친명칭 != ""
+	PRINTFORM %CSTR:PALENT:부친명칭%
+ELSE
+	IF L_FATHER >= 0
+		PRINTFORM %CALLNAME:L_FATHER%
+	ELSE
+		PRINTFORM 누군가
+	ENDIF
+ENDIF
+PRINTFORML 의 아이
+
+;---- EDIT 037 DEL START -------------------------
+;あとでまとめて処理されているので
+;-------------------------------------------------------------
+;性別の確定
+;-------------------------------------------------------------
+;SELECTCASE CHILD_SEX
+;	CASE "男"
+;		TALENT:남자 = 1
+;	CASE "오토코노코"
+;		TALENT:남자 = 1
+;		TALENT:오토코노코 = 1
+;ENDSELECT
+;---- EDIT 037 DEL END ---------------------------
+;-------------------------------------------------------------
+;ロール・種族の確定
+;-------------------------------------------------------------
+CSTR:롤 = %RAND_SPLIT(FETUS_ROLE:PALENT:0, "/")%
+;ロールのキーとなる素質を呼び出す
+RESULTS = 
+CALLFORM ROLE_HEREDITY_MAIN_TALENT_%CSTR:롤%
+IF RESULTS != ""
+	FOR LCOUNT, 0, STRCOUNT(RESULTS, "/") + 1
+		TEMPS = %AUTO_SPLIT(RESULTS, "/", LCOUNT)%
+		TALENT:AUTO_SPLIT(TEMPS, "_", 0) = TOINT(AUTO_SPLIT(TEMPS, "_", 1))
+	NEXT
+ENDIF
+;半魔などはロールが決まるまでは決まらないのでここで決める
+IF FETUS_RACE:PALENT:0 == "未決定"
+	CALLFORM ROLE_HEREDITY_ABL_RACE_%CSTR:롤%
+	ABL:종족 = RESULT
+ELSE
+	ABL:종족 = TOINT(RAND_SPLIT(FETUS_RACE:PALENT:0, "/"))
+ENDIF
+
+;-------------------------------------------------
+;攻撃タイプなどの決定
+;-------------------------------------------------
+ABL:회화타입 = TOINT(AUTO_SPLIT(FETUS_BTL_ABL:PALENT:MAIN_PALENT, "/", 0))
+IF !GET_ROLE_PROP("CAN_USE_EQUIP", TARGET, , "通常形態")
+	ABL:공격상성 = TOINT(AUTO_SPLIT(FETUS_BTL_ABL:PALENT:MAIN_PALENT, "/", 1))
+	ABL:최저공격횟수 = TOINT(AUTO_SPLIT(FETUS_BTL_ABL:PALENT:MAIN_PALENT, "/", 2))
+	ABL:최대공격횟수 = TOINT(AUTO_SPLIT(FETUS_BTL_ABL:PALENT:MAIN_PALENT, "/", 3))
+	ABL:사거리 = TOINT(AUTO_SPLIT(FETUS_BTL_ABL:PALENT:MAIN_PALENT, "/", 4))
+	ABL:공격범위 = TOINT(AUTO_SPLIT(FETUS_BTL_ABL:PALENT:MAIN_PALENT, "/", 5))
+	ABL:추가효과 = TOINT(AUTO_SPLIT(FETUS_BTL_ABL:PALENT:MAIN_PALENT, "/", 6))
+	ABL:추가효과상성 = TOINT(AUTO_SPLIT(FETUS_BTL_ABL:PALENT:MAIN_PALENT, "/", 7))
+	ABL:추가효과명중률 = TOINT(AUTO_SPLIT(FETUS_BTL_ABL:PALENT:MAIN_PALENT, "/", 8))
+	ABL:추가효과최대명중률 = TOINT(AUTO_SPLIT(FETUS_BTL_ABL:PALENT:MAIN_PALENT, "/", 9))
+ENDIF
+
+;-------------------------------------------------
+;戦闘素質の決定
+;-------------------------------------------------
+CALL SET_ROLE_CP, TARGET
+;固定素質の付与
+FOR IS_TRANS, 0, 1 + GET_ROLE_PROP("CAN_USE_TRANS", TARGET)
+	CALL SET_FIXED_BTL_TALENT, TARGET, TRANS_MODE, L_LV_FIXED, L_TALENTS_FIXED
+	IF IS_TRANS
+		TRANS_MODE = 変身形態
+	ELSE
+		TRANS_MODE = 通常形態
+	ENDIF
+	WHILE 1
+		;保存されているテーブルからランダムで取る
+		TEMPS = %RAND_SPLIT(FETUS_SUB_BTL_TALENT:PALENT:IS_TRANS, "/")%
+		;取った素質はテーブルから消す
+		FETUS_SUB_BTL_TALENT:PALENT:IS_TRANS = %DEL_SPLIT(FETUS_SUB_BTL_TALENT:PALENT:IS_TRANS, "/", TEMPS)%
+		;素質付与
+		IF TEMPS != ""
+			L_TALENTS = %AUTO_SPLIT(TEMPS, "_", 0)%
+			L_TALENT_LV = MAX(TOINT(AUTO_SPLIT(TEMPS, "_", 1)), 1)
+			;固定素質はセットに関与させない
+			SIF MATCH(L_TALENTS_FIXED, L_TALENTS)
+				CONTINUE
+			SIF !GET_ROLE_PROP("CAN_USE_" + L_TALENTS, TARGET, , TRANS_MODE)
+				CONTINUE
+			SIF !COUNT_SPLIT(SETED_TALENT, "/", L_TALENTS)
+				SETED_TALENT = %ADD_SPLIT(SETED_TALENT, "/", L_TALENTS)%
+			;---- EDIT 031 MOD START -------------------------
+			CALL SET_BTL_TALENT_LV, L_TALENTS, TARGET, MAX(GET_BTL_TALENT_LV(L_TALENTS, TARGET, TRANS_MODE), L_TALENT_LV), TRANS_MODE
+			;---- EDIT 031 MOD END ---------------------------
+			;前提となる素質がある場合は一緒につける
+			TRYCCALLFORM SUB_ROLE_PREREQUISITE_BTL_TALENT_%L_TALENTS%
+				SIF RESULT
+					CALL SET_BTL_TALENT_LV, RESULTS, TARGET, MAX(GET_BTL_TALENT_LV(RESULTS, TARGET, TRANS_MODE), RESULT), TRANS_MODE
+			CATCH
+			ENDCATCH
+		ELSE
+			;つける素質がなくなっていて、CPが制限内なら終わる
+			SIF GET_ROLE_CP(TARGET, TRANS_MODE) >= 0
+				BREAK
+		ENDIF
+
+		;コストチェック
+		CALL SET_ROLE_CP, TARGET
+		;コストがオーバーしている場合はセットされた素質のいずれかのレベルを下げる
+		IF GET_ROLE_CP(TARGET, TRANS_MODE) < 0
+			L_TALENTS = %RAND_SPLIT(SETED_TALENT, "/")%
+			IF !GET_BTL_TALENT_LV(L_TALENTS, TARGET, TRANS_MODE)
+				SETED_TALENT = %DEL_SPLIT(SETED_TALENT, "/", L_TALENTS)%
+				;前提条件のあるものがそれをみたせているかをチェック
+				FOR LCOUNT:1, 0, SUB_ROLENUM
+					TRYCCALLFORM SUB_ROLE_PREREQUISITE_BTL_TALENT_%GET_SUB_ROLE_NAME(LCOUNT:1)%
+						;前提を満たせなくなっているのを確認できたら消す
+						SIF RESULT > 0 && GET_BTL_TALENT_LV(L_TALENTS, TARGET, TRANS_MODE) < RESULT
+								CALL SET_BTL_TALENT_LV, RESULTS, TARGET, 0, TRANS_MODE
+					CATCH
+					ENDCATCH
+				NEXT
+				FETUS_SUB_BTL_TALENT:PALENT:IS_TRANS = %DEL_SPLIT(FETUS_SUB_BTL_TALENT:PALENT:IS_TRANS, "/", TEMPS)%
+			ENDIF
+			;レベルを1減らす。ただし、サマナーLv2等、取得されない設定されているものは飛ばして落とす
+			DO
+				CALL SET_BTL_TALENT_LV, L_TALENTS, TARGET, MAX(GET_BTL_TALENT_LV(L_TALENTS, TARGET, TRANS_MODE) - 1, 0), TRANS_MODE
+			LOOP  GET_SUB_ROLE_PROP("COST", L_TALENTS, , , GET_BTL_TALENT_LV(L_TALENTS, TARGET, TRANS_MODE)) < 0
+			;コストを再設定
+			CALL SET_ROLE_CP, TARGET
+		ENDIF
+		;CPの空がある程度多い場合は終わらずに続ける
+		SIF INRANGE(GET_ROLE_CP(TARGET, TRANS_MODE), 0, 7)
+			BREAK
+	WEND
+NEXT
+;デフォルト素質の付与
+CALL SET_BTL_TALENT_NEW, TARGET
+
+;-------------------------------------------------
+;素質遺伝
+;-------------------------------------------------
+;性格素質の継承
+FOR LCOUNT, 201, 209
+	TEMP = (RAND:100 > 30) ? MAIN_PALENT # SUB_PALENT
+	SIF COUNT_SPLIT(FETUS_TALENT:PALENT:TEMP, "/", TALENTNAME:LCOUNT + "_\\d*")
+		TALENT:LCOUNT = 1
+	SIF RAND:10 == 0
+		TALENT:LCOUNT = 1
+NEXT
+
+;性格素質は3個まで
+WHILE MATCH(TALENT, 1, 201, 209) > 3
+	TALENT:(RAND:9+201) = 0
+WEND
+
+;素質遺伝
+FOR LCOUNT, 10, 137
+	SIF !STRLENS(TALENTNAME:LCOUNT)
+		CONTINUE
+	SELECTCASE RAND:100
+		CASE IS < 64
+			SIF COUNT_SPLIT(FETUS_TALENT:PALENT:MAIN_PALENT, "/", TALENTNAME:LCOUNT + "_\\d*")
+				TALENT:LCOUNT = 1
+		CASE IS < 96
+			SIF COUNT_SPLIT(FETUS_TALENT:PALENT:SUB_PALENT, "/", TALENTNAME:LCOUNT + "_\\d*")
+				TALENT:LCOUNT = 1
+		CASE IS < 98
+			TALENT:LCOUNT = 1
+		CASEELSE
+			TALENT:LCOUNT = 0
+	ENDSELECT
+NEXT
+
+;両立不能な素質を削っていく
+IF TALENT:겁쟁이 && TALENT:꿋꿋함
+	IF RAND:2
+		TALENT:겁쟁이 = 0
+	ELSE
+		TALENT:꿋꿋함 = 0
+	ENDIF
+ENDIF
+IF TALENT:솔직함 && TALENT:반항적
+	IF RAND:2
+		TALENT:솔직함 = 0
+	ELSE
+		TALENT:반항적 = 0
+	ENDIF
+ENDIF
+IF TALENT:건방짐 && TALENT:얌전함
+	IF RAND:2
+		TALENT:건방짐 = 0
+	ELSE
+		TALENT:얌전함 = 0
+	ENDIF
+ENDIF
+IF TALENT:프라이드높음 && TALENT:프라이드낮음
+	IF RAND:2
+		TALENT:프라이드높음 = 0
+	ELSE
+		TALENT:프라이드낮음 = 0
+	ENDIF
+ENDIF
+IF TALENT:무관심 && TALENT:호기심
+	IF RAND:2
+		TALENT:무관심 = 0
+	ELSE
+		TALENT:호기심 = 0
+	ENDIF
+ENDIF
+IF TALENT:낙관적 && TALENT:비관적
+	IF RAND:2
+		TALENT:낙관적 = 0
+	ELSE
+		TALENT:비관적 = 0
+	ENDIF
+ENDIF
+IF TALENT:억압 && TALENT:해방
+	IF RAND:2
+		TALENT:억압 = 0
+	ELSE
+		TALENT:해방 = 0
+	ENDIF
+ENDIF
+IF TALENT:부끄럼쟁이 && TALENT:부끄럼없음
+	IF RAND:2
+		TALENT:부끄럼쟁이 = 0
+	ELSE
+		TALENT:부끄럼없음 = 0
+	ENDIF
+ENDIF
+IF TALENT:젖기쉬움 && TALENT:젖기어려움
+	IF RAND:2
+		TALENT:젖기쉬움 = 0
+	ELSE
+		TALENT:젖기어려움 = 0
+	ENDIF
+ENDIF
+IF TALENT:습득빠름 && TALENT:습득느림
+	IF RAND:2
+		TALENT:습득느림 = 0
+	ELSE
+		TALENT:습득빠름 = 0
+	ENDIF
+ENDIF
+IF TALENT:악취둔감 && TALENT:악취민감
+	IF RAND:2
+		TALENT:악취둔감 = 0
+	ELSE
+		TALENT:악취민감 = 0
+	ENDIF
+ENDIF
+IF TALENT:쾌감에솔직 && TALENT:쾌감을부정
+	IF RAND:2
+		TALENT:쾌감을부정 = 0
+	ELSE
+		TALENT:쾌감에솔직 = 0
+	ENDIF
+ENDIF
+IF TALENT:바이 && (TALENT:남성혐오 || TALENT:여성혐오)
+	IF RAND:2
+		TALENT:바이 = 0
+	ELSE
+		TALENT:남성혐오 = 0
+		TALENT:여성혐오 = 0
+	ENDIF
+ENDIF
+IF TALENT:Ｃ민감 && TALENT:Ｃ둔감
+	IF RAND:2
+		TALENT:Ｃ둔감 = 0
+	ELSE
+		TALENT:Ｃ민감 = 0
+	ENDIF
+ENDIF
+IF TALENT:Ｖ둔감 && TALENT:Ｖ민감
+	IF RAND:2
+		TALENT:Ｖ둔감 = 0
+	ELSE
+		TALENT:Ｖ민감 = 0
+	ENDIF
+ENDIF
+IF TALENT:Ａ민감 && TALENT:Ａ둔감
+	IF RAND:2
+		TALENT:Ａ둔감 = 0
+	ELSE
+		TALENT:Ａ민감 = 0
+	ENDIF
+ENDIF
+IF TALENT:Ｂ민감 && TALENT:Ｂ둔감
+	IF RAND:2
+		TALENT:Ｂ둔감 = 0
+	ELSE
+		TALENT:Ｂ민감 = 0
+	ENDIF
+ENDIF
+IF TALENT:아픔에약함 && TALENT:아픔에강함
+	IF RAND:2
+		TALENT:아픔에약함 = 0
+	ELSE
+		TALENT:아픔에강함 = 0
+	ENDIF
+ENDIF
+IF TALENT:회복빠름 && TALENT:회복느림
+	IF RAND:2
+		TALENT:회복느림 = 0
+	ELSE
+		TALENT:회복빠름 = 0
+	ENDIF
+ENDIF
+IF TALENT:슬렌더 && TALENT:포동포동
+	IF RAND:2
+		TALENT:슬렌더 = 0
+	ELSE
+		TALENT:포동포동 = 0
+	ENDIF
+ENDIF
+IF TALENT:임신하기쉬움 && TALENT:임신하기어려움
+	IF RAND:2
+		TALENT:임신하기쉬움 = 0
+	ELSE
+		TALENT:임신하기어려움 = 0
+	ENDIF
+ENDIF
+IF TALENT:크고아름다움 && !TALENT:남자&& !TALENT:후타나리
+	TALENT:크고아름다움 = 0
+ENDIF
+
+IF TALENT:남자 && TALENT:음모없음
+	TALENT:음모없음 = 0
+ENDIF
+
+;처녀。再生処女の場合もあるので直接代入
+TALENT:처녀 = 1
+TALENT:재생처녀 = 0
+
+TALENT:큰체형 = 0
+TALENT:거체 = 0
+TALENT:유아체형 = 1
+
+;小人体型の場合、小柄体型を消す
+IF TALENT:PALENT:소인체형
+	TALENT:소인체형 = 1
+	TALENT:유아체형 = 0
+ENDIF
+;남자,후타나리,早漏,遅漏,모유체질
+TALENT:남자 = 0
+TALENT:후타나리 = 0
+TALENT:모유체질 = 0
+;性別処理
+IF CHILD_SEX == "男"
+	TALENT:처녀 = 0
+	TALENT:남자 = 1
+	TALENT:오토코노코 = 0
+	CFLAG:원성별 = 1
+ELSEIF CHILD_SEX == "女"
+	TALENT:처녀 = 1
+	TALENT:남자 = 0
+	TALENT:오토코노코 = 0
+	CFLAG:원성별 = 2
+;---- EDIT 037 ADD START -------------------------
+ELSEIF CHILD_SEX == "후타나리"
+	TALENT:처녀 = 1
+	TALENT:후타나리 = 1
+	TALENT:남자 = 0
+	TALENT:오토코노코 = 0
+	CFLAG:원성별 = 2
+;---- EDIT 037 ADD END ---------------------------
+ELSEIF CHILD_SEX == "오토코노코"
+	TALENT:처녀 = 0
+	TALENT:남자 = 1
+	TALENT:오토코노코 = 1
+	CFLAG:원성별 = 1
+ENDIF
+
+;一部遺伝しない素質。最初からついているものと矛盾する(＝打ち消して付かない)
+;しかし似ていない方の親も同じ素質を保持していれば遺伝する
+;젖기쉬움
+IF TALENT:젖기쉬움
+	TALENT:젖기어려움 = 0
+	SIF !COUNT_SPLIT(FETUS_TALENT:PALENT:SUB_PALENT, "/", "젖기쉬움" + "_\\d*")
+		TALENT:젖기쉬움 = 0
+ENDIF
+;습득빠름
+IF TALENT:습득빠름
+	TALENT:습득느림 = 0
+	SIF !COUNT_SPLIT(FETUS_TALENT:PALENT:SUB_PALENT, "/", "습득빠름" + "_\\d*")
+		TALENT:습득빠름 = 0
+ENDIF
+
+;知識がない([바늘다루기]や[大甲斐性]等は才能とする)
+;정조관념,정조관결여,조합지식,금단의지식,
+IF CFLAG:PALENT:딸교육 == 0 || TALENT:PALENT:정조관념 == 0
+	TALENT:정조관념 = 0
+ELSE
+	TALENT:정조관념 = 1
+ENDIF
+IF CFLAG:PALENT:딸교육 == 0 || TALENT:PALENT:정조관결여 == 0
+	TALENT:정조관결여 = 0
+ELSE
+	TALENT:정조관결여 = 1
+ENDIF
+IF CFLAG:PALENT:딸교육 == 0 || TALENT:PALENT:조합지식 == 0
+	TALENT:조합지식 = 0
+ELSE
+	TALENT:조합지식 = 1
+ENDIF
+IF CFLAG:PALENT:딸교육 == 0 || TALENT:PALENT:금단의지식 == 0
+	TALENT:금단의지식 = 0
+ELSE
+	TALENT:금단의지식 = 1
+ENDIF
+;20%で大業物が残る
+SIF TALENT:크고아름다움 && RAND:5
+	TALENT:크고아름다움 = 0
+
+;後天的なもの(오줌싸개버릇,キス魔は幼児なので除く)
+;약점,인기
+TALENT:약점 = 0
+TALENT:인기 = 0
+
+;取得できるキャラ自体存在しないので
+TALENT:수수께끼의매력 = 0
+TALENT:망신 = 0
+TALENT:즉각함락 = 0
+TALENT:질투 = 0
+
+TALENT:임신 = 0
+TALENT:육아중 = 0
+TALENT:모성 = 0
+TALENT:아내 = 0
+TALENT:남편 = 0
+TALENT:음마 = 0
+TALENT:노리개 = 0
+TALENT:자위광 = 0
+TALENT:섹스광 = 0
+TALENT:애널광 = 0
+TALENT:음유 = 0
+TALENT:창놈 = 0
+TALENT:새드 = 0
+TALENT:마조 = 0
+
+;種族的な特徴
+IF GET_RACE(ABL:종족) == "인간"
+	TALENT:짐승 = 0
+	TALENT:새 = 0
+	TALENT:파충류 = 0
+	TALENT:물고기 = 0
+	TALENT:부정형 = 0
+	TALENT:머리 = 1
+	TALENT:눈 = 1
+	TALENT:입 = 1
+	TALENT:팔 = 1
+	TALENT:발 = 1
+ELSE
+	;---- EDIT 032 MOD START -------------------------
+	TEMPS = 좀비/천사/타천사/짐승/새/파충류/물고기/부정형/머리/눈/입/팔/갈퀴/날개/발/갈퀴발/꼬리/모피/무기/사격무기/촉수/부리
+	;---- EDIT 032 MOD END ---------------------------
+	FOR LCOUNT, 0, STRCOUNT(TEMPS, "/") + 1
+		SIF COUNT_SPLIT(FETUS_TALENT:PALENT:MAIN_PALENT, "/", AUTO_SPLIT(TEMPS, "/", LCOUNT) + "_\\d*")
+			TALENT:AUTO_SPLIT(TEMPS, "/", LCOUNT) = 1
+	NEXT
+ENDIF
+
+TEMPS = 여우/요호/흡혈귀/고양이혀
+FOR LCOUNT, 0, STRCOUNT(TEMPS, "/") + 1
+	SIF COUNT_SPLIT(FETUS_TALENT:PALENT:MAIN_PALENT, "/", AUTO_SPLIT(TEMPS, "/", LCOUNT) + "_\\d*")
+		TALENT:AUTO_SPLIT(TEMPS, "/", LCOUNT) = 1
+NEXT
+SIF CFLAG:PALENT:부친의고유번호부모 == -2
+	TALENT:촉수 = 1
+
+;サドマゾ処理部
+;一旦娘のサドマゾ素質を初期化
+TALENT:새드 = 0
+TALENT:마조 = 0
+
+TEMP = (FETUS_SM_VALUE:PALENT:MAIN_PALENT * 3 + FETUS_SM_VALUE:PALENT:SUB_PALENT * 2) / 5
+IF TEMP > 0
+	ABL:새드끼 = MAX(TEMP -3, 0)
+ELSE
+	ABL:마조끼 = MAX(-TEMP -3, 0)
+ENDIF
+
+
+;胸サイズ決定(サドマゾのように胸サイズ参照する)
+;一旦乳サイズリセット
+TALENT:절벽 = 0
+TALENT:빈유 = 0
+TALENT:거유 = 0
+TALENT:폭유 = 0
+TALENT:마유 = 0
+
+TEMP = (FETUS_BUST_VALUE:PALENT:MAIN_PALENT * 17 + FETUS_BUST_VALUE:PALENT:SUB_PALENT * 10) / 10
+;TEMPの値が正なら最初から大きめ、負なら小さめ。基本的に控えめになる
+SELECTCASE TEMP
+	CASE IS >= 10
+		TALENT:마유 = 1
+	CASE IS >= 8
+		TALENT:폭유 = 1
+	CASE IS >= 4
+		TALENT:거유 = 1
+	CASE IS <= -4
+		TALENT:절벽 = 1
+	CASE IS <= 0
+		TALENT:빈유 = 1
+ENDSELECT
+
+IF TALENT:남자 == 1
+	CFLAG:원가슴사이즈 = 3
+	SIF TALENT:절벽 == 1
+		CFLAG:원가슴사이즈 = 1
+	SIF TALENT:빈유 == 1
+		CFLAG:원가슴사이즈 = 2
+	SIF TALENT:거유 == 1
+		CFLAG:원가슴사이즈 = 4
+	SIF TALENT:폭유 == 1
+		CFLAG:원가슴사이즈 = 5
+	SIF TALENT:마유 == 1
+		CFLAG:원가슴사이즈 = 6
+	TALENT:절벽 = 1
+	TALENT:빈유 = 0
+	TALENT:거유 = 0
+	TALENT:폭유 = 0
+	TALENT:마유 = 0
+ENDIF
+
+TALENT:유아／유아퇴행 = 1
+TALENT:유치 = 1
+TALENT:아이 = 1
+MARK:딸의성장기록 = 1
+
+;素質の数を調整
+TEMP = 6 + RAND:5
+;10～137の素質はこ合計6~10個まで
+WHILE MATCH(TALENT, 1 , 10, 137) > TEMP
+	TALENT:(10 + RAND:128) = 0
+WEND
+
+;-------------------------------------------------
+;世代の反映
+;元処理ではMAXBASEの加算もやっていたが再計算で消えるのとステ計算にボーナスが存在するので削除
+;-------------------------------------------------
+TALENT:세대 = MAX(FETUS_世代:PALENT:0, 1)
+
+;-------------------------------------------------
+;アライトメントの決定
+;-------------------------------------------------
+CFLAG:선악치 = LIMIT((FETUS_善悪値:PALENT:MAIN_PALENT * 3 + FETUS_善悪値:PALENT:SUB_PALENT * 2) / 5, 0, 255)
+CFLAG:질혼치 = LIMIT((FETUS_秩混値:PALENT:MAIN_PALENT * 3 + FETUS_秩混値:PALENT:SUB_PALENT * 2) / 5, 0, 255)
+
+;LD
+SELECTCASE CFLAG:선악치
+	CASE IS > 170
+		ABL:속성LD = 1
+	CASE IS > 84
+		ABL:속성LD = 2
+	CASEELSE
+		ABL:속성LD = 3
+ENDSELECT
+;LC
+SELECTCASE CFLAG:질혼치
+	CASE IS > 170
+		ABL:속성LC = 1
+	CASE IS > 84
+		ABL:속성LC = 2
+	CASEELSE
+		ABL:속성LC = 3
+ENDSELECT
+;受胎アイテムの追加
+IF RAND:2 == 0
+	IF CFLAG:선악치 > 170
+		ABL:수태아이템 = 1052
+	ELSEIF CFLAG:선악치 > 84
+		ABL:수태아이템 = 1001
+	ELSE
+		ABL:수태아이템 = 1053
+	ENDIF
+ELSE
+	IF CFLAG:질혼치 > 170
+		ABL:수태아이템 = 1050
+	ELSEIF CFLAG:질혼치 > 84
+		ABL:수태아이템 = 1001
+	ELSE
+		ABL:수태아이템 = 1051
+	ENDIF
+ENDIF
+
+;-------------------------------------------------------------
+;初期変身悪魔の設定
+;1.両親のいずれかが悪魔ならその悪魔になる
+;2.両親のいずれかの初期リンク悪魔が設定されているのならその悪魔になる
+;3.ランダム発現
+;-------------------------------------------------------------
+LINK_DEVIL_NUM = -1
+IF GET_ROLE_PROP("CAN_USE_TRANS", TARGET)
+	LINK_DEVIL_NO = -1
+	FOR LCOUNT, 0, 2
+		TRYCCALLFORM ROLE_HEREDITY_IS_TRANS_ABLE_%CSTR:롤%, FETUS_PALENT_NO:PALENT:LCOUNT
+			SIF !RESULT
+				CONTINUE
+			CFLAG:초기링크악마 = FETUS_PALENT_NO:PALENT:LCOUNT
+			BREAK
+		CATCH
+		ENDCATCH
+	NEXT
+	IF CFLAG:초기링크악마 <= 0
+		;両方の場合は先に判定するほうで決まるのでどちらが先化かランダムにする
+		TEMP = RAND:100 < 70 ? MAIN_PALENT # SUB_PALENT
+		FOR LCOUNT, 0, 2
+			SIF FETUS_初期リンク悪魔:PALENT:(LCOUNT ? !TEMP # TEMP) <= 0
+				CONTINUE
+			TRYCCALLFORM ROLE_HEREDITY_IS_TRANS_ABLE_%CSTR:롤%, FETUS_初期リンク悪魔:PALENT:LCOUNT
+				SIF !RESULT
+					CONTINUE
+				CFLAG:초기링크악마 = FETUS_初期リンク悪魔:PALENT:LCOUNT
+			CATCH
+			ENDCATCH
+		NEXT
+	ENDIF
+	;ここまでで決まっていなかったらマスター用のリンク悪魔からアライトメントが一致するものをあてる
+	WHILE CFLAG:초기링크악마 <= 0 || !EXISTCSV(CFLAG:초기링크악마)
+		LINK_DEVIL_NUM = RAND:50
+		SIF !IS_ABLE_MASTER_LINK_DEVIL(LINK_DEVIL_NUM, TARGET)
+			CONTINUE
+		CALL SET_VAR_MASTER_LINK_DEVIL, LINK_DEVIL_NUM, LINK_DEVIL_NO, LINK_DEVIL_SKILL, LINK_DEVIL_LEARN, LINK_DEVIL_LEARN_LV, LINK_DEVIL_EXPLAIN
+		SIF ABL:속성LC != CSVABL(LINK_DEVIL_NO, GETNUM(ABL, "속성LC"))
+			CONTINUE
+		SIF ABL:속성LD != CSVABL(LINK_DEVIL_NO, GETNUM(ABL, "속성LD"))
+			CONTINUE
+		CFLAG:초기링크악마 = LINK_DEVIL_NO
+	WEND
+	ABL:초기링크악마공격상성 = CSVABL(CFLAG:초기링크악마, GETNUM(ABL, "초기링크악마공격상성"))
+	ABL:초기링크악마최저공격횟수 = CSVABL(CFLAG:초기링크악마, GETNUM(ABL, "초기링크악마최저공격횟수"))
+	ABL:초기링크악마최대공격횟수 = CSVABL(CFLAG:초기링크악마, GETNUM(ABL, "초기링크악마최대공격횟수"))
+	ABL:초기링크악마사거리 = CSVABL(CFLAG:초기링크악마, GETNUM(ABL, "초기링크악마사거리"))
+	ABL:초기링크악마공격범위 = CSVABL(CFLAG:초기링크악마, GETNUM(ABL, "초기링크악마공격범위"))
+	ABL:초기링크악마추가효과 = CSVABL(CFLAG:초기링크악마, GETNUM(ABL, "초기링크악마추가효과"))
+	ABL:초기링크악마추가효과상성 = CSVABL(CFLAG:초기링크악마, GETNUM(ABL, "초기링크악마추가효과상성"))
+	ABL:초기링크악마추가효과명중률 = CSVABL(CFLAG:초기링크악마, GETNUM(ABL, "초기링크악마추가효과명중률"))
+	ABL:초기링크악마추가효과최대명중률 = CSVABL(CFLAG:초기링크악마, GETNUM(ABL, "초기링크악마추가효과최대명중률"))
+ENDIF
+
+;-------------------------------------------------
+;体力・気力の設定
+;~2000:1づつ、2000~10000, 0.25づつ,10000~0.1づつの傾斜で親の数値を取る
+;7:3であわせてから、0.8 ~ 1.2倍
+;-------------------------------------------------
+TEMP = MIN(FETUS_体力:PALENT:MAIN_PALENT,2000)
+TEMP += LIMIT(FETUS_体力:PALENT:MAIN_PALENT - 2000, 0, 8000) / 4 
+TEMP += MAX(FETUS_体力:PALENT:MAIN_PALENT - 10000, 0) / 10
+TEMP:1 = LIMIT(FETUS_体力:PALENT:SUB_PALENT, 600, 2000)
+TEMP:1 += LIMIT(FETUS_体力:PALENT:SUB_PALENT - 2000, 0, 8000) / 4 
+TEMP:1 += MAX(FETUS_体力:PALENT:SUB_PALENT - 10000, 0) / 10
+MAXBASE:체력 = (TEMP * 70  + TEMP:1 * 30) * RAND(80, 121) / 100 / 100
+;下二桁の切り捨て処理
+MAXBASE:체력 = MAX(MAXBASE:체력 / 100, 10) * 100
+
+TEMP = MIN(FETUS_気力:PALENT:MAIN_PALENT,2000)
+TEMP += LIMIT(FETUS_気力:PALENT:MAIN_PALENT - 2000, 0, 8000) / 4 
+TEMP += MAX(FETUS_気力:PALENT:MAIN_PALENT - 10000, 0) / 10
+TEMP:1 = LIMIT(FETUS_気力:PALENT:SUB_PALENT, 600, 2000)
+TEMP:1 += LIMIT(FETUS_気力:PALENT:SUB_PALENT - 2000, 0, 8000) / 4 
+TEMP:1 += MAX(FETUS_気力:PALENT:SUB_PALENT - 10000, 0) / 10
+MAXBASE:기력 = (TEMP * 70  + TEMP:1 * 30) * RAND(80, 121) / 100 / 100
+MAXBASE:기력 = MAX(MAXBASE:기력 / 100, 10) * 100
+
+BASE:체력 = MAXBASE:체력
+BASE:기력 = MAXBASE:기력
+
+;-------------------------------------------------
+;基本ステータスの設定
+;-------------------------------------------------
+BASE:LV = 1
+BASE:ＥＸＰ = 0
+BASE:TARGET:ＭＡＧ = 0
+
+BASE:TARGET:충성도 = LIMIT((FETUS_忠誠度:PALENT:MAIN_PALENT * 3 + FETUS_忠誠度:PALENT:SUB_PALENT * 2) / 10, FETUS_従順:PALENT:MAIN_PALENT * 70 + FETUS_従順:PALENT:SUB_PALENT * 30, FETUS_従順:PALENT:MAIN_PALENT * 350 + FETUS_従順:PALENT:SUB_PALENT * 150)
+CALL CONTROL_LOYALTY, TARGET, FETUS_忠誠度:PALENT:MAIN_PALENT * 3
+
+FOR LCOUNT, 1, BASESTATUSNUM
+	BASE:GET_BASESTATUS(LCOUNT) = 3
+NEXT
+
+;-------------------------------------------------
+;MAG強化引継ぎ
+;似ている方の親の30%　似ていない方の親20%、教育者の10%
+;-------------------------------------------------
+FOR LCOUNT, 1, BASESTATUSNUM
+	CFLAG:(GET_BASESTATUS(LCOUNT) + "강화횟수") += TOINT(AUTO_SPLIT(FETUS_MAG強化:PALENT:MAIN_PALENT, "/", LCOUNT -1)) * 3
+	CFLAG:(GET_BASESTATUS(LCOUNT) + "강화횟수") += TOINT(AUTO_SPLIT(FETUS_MAG強化:PALENT:SUB_PALENT, "/", LCOUNT -1)) * 2
+	;教育がONのときは育ての親が教育者となっている
+	SIF CFLAG:PALENT:딸교육 > 0
+		CFLAG:(GET_BASESTATUS(LCOUNT) + "강화횟수") += CFLAG:PALENT:(GET_BASESTATUS(LCOUNT) + "강화횟수")
+	CFLAG:(GET_BASESTATUS(LCOUNT) + "강화횟수") /= 10
+	CFLAG:능력강화횟수 += CFLAG:(GET_BASESTATUS(LCOUNT) + "강화횟수")
+NEXT
+
+;-------------------------------------------------
+;防御相性の決定
+;-------------------------------------------------
+VARSET APPARENT_TYPE, 100
+VARSET INAPPARENT_TYPE, 100
+
+IF ABL:종족 != GET_RACE_NUM("인간")
+	;両親の数値を70%と30%の確率で潜在と顕在に振り分けていく
+	;反射は数値の扱いの関係で一旦-100になおす
+	FOR LCOUNT, 0, TYPENUM - 1
+		APPARENT_TYPE:LCOUNT = TOINT(AUTO_SPLIT(FETUS_防御相性:PALENT:MAIN_PALENT, "/", LCOUNT))
+		APPARENT_TYPE:LCOUNT = APPARENT_TYPE:LCOUNT == 999 ? -100 # APPARENT_TYPE:LCOUNT
+		INAPPARENT_TYPE:LCOUNT = TOINT(AUTO_SPLIT(FETUS_防御相性:PALENT:SUB_PALENT, "/", LCOUNT))
+		INAPPARENT_TYPE:LCOUNT = INAPPARENT_TYPE:LCOUNT == 999 ? -100 # INAPPARENT_TYPE:LCOUNT
+		SIF RAND:100 < 70
+			SWAP APPARENT_TYPE:LCOUNT, INAPPARENT_TYPE:LCOUNT
+	NEXT
+
+	;最大で5回、相性の変化が入る。100％の相性は変化しないし、弱点と耐性が入れ替わることもない
+	FOR LCOUNT, 0, 5
+		TEMP = RAND:(TYPENUM - 1)
+		SELECTCASE RAND:100
+			CASE IS < 5
+				APPARENT_TYPE:TEMP -= (APPARENT_TYPE:TEMP-100) * 100 / 100
+			CASE IS < 25
+				APPARENT_TYPE:TEMP -= (APPARENT_TYPE:TEMP-100) * 50 / 100
+			CASE IS < 45
+				APPARENT_TYPE:TEMP += (APPARENT_TYPE:TEMP-100) * 50 / 100
+			CASE IS < 50
+				APPARENT_TYPE:TEMP += (APPARENT_TYPE:TEMP-100) * 100 / 100
+		ENDSELECT
+	NEXT
+
+	COUNT_HAVE_WEAK = 0
+	COUNT_HAVE_RESIST = 0
+	;範囲外の数値をまるめつつ、無効以上・弱点の数をカウント
+	FOR LCOUNT, 0, TYPENUM-1
+		IF CHECK_WEAKNESS(APPARENT_TYPE:LCOUNT) > 0
+			COUNT_HAVE_WEAK++
+		ELSEIF CHECK_WEAKNESS(APPARENT_TYPE:LCOUNT) < -1
+			COUNT_HAVE_RESIST++
+		ENDIF
+		SELECTCASE APPARENT_TYPE:LCOUNT
+			CASE IS > 999
+				APPARENT_TYPE:LCOUNT = 995
+			CASE IS < -99
+				APPARENT_TYPE:LCOUNT = 999
+			CASE 101 TO 104
+				APPARENT_TYPE:LCOUNT = 105
+		ENDSELECT
+	NEXT
+
+	;弱点が（無効以上の1.5倍）個以下の場合、2～4個になるまで発現していない親の弱点を追加
+	;潜在弱点の最低値が100以下になったら付与しきったとみなす
+	WHILE COUNT_HAVE_WEAK < LIMIT(COUNT_HAVE_RESIST * 150 / 100, 2, 4)
+		TEMP = RAND:(TYPENUM -1)
+		;付与できる潜在弱点がある
+		IF MINARRAY(INAPPARENT_TYPE) > 100
+			IF CHECK_WEAKNESS(INAPPARENT_TYPE:TEMP) > 0
+				;通常以下
+				SIF CHECK_WEAKNESS(APPARENT_TYPE:TEMP) <= 0
+					APPARENT_TYPE:TEMP = INAPPARENT_TYPE:TEMP
+				;使った潜在耐性は100にしておく
+				INAPPARENT_TYPE:TEMP = 100
+			ENDIF
+		;潜在弱点が足りない場合はランダムで発現させる
+		ELSE
+			SIF CHECK_WEAKNESS(APPARENT_TYPE:TEMP) > 0
+				CONTINUE
+			APPARENT_TYPE:TEMP = 100 + 25 * RAND(1, 5)
+		ENDIF
+		;弱点・耐性数のチェック
+		COUNT_HAVE_WEAK = 0
+		COUNT_HAVE_RESIST = 0
+		FOR LCOUNT, 0, TYPENUM -1
+			SIF CHECK_WEAKNESS(APPARENT_TYPE:LCOUNT) > 0
+				COUNT_HAVE_WEAK++
+			SIF CHECK_WEAKNESS(APPARENT_TYPE:LCOUNT) < -1
+				COUNT_HAVE_RESIST++
+		NEXT
+	WEND
+
+	FOR LCOUNT, 0, TYPENUM
+		;端数処理
+		APPARENT_TYPE:TEMP = APPARENT_TYPE:TEMP / 5 * 5
+		BASE:GET_TYPE(LCOUNT) = APPARENT_TYPE:LCOUNT
+	NEXT
+	;万能は100確定
+	BASE:만능 = 100
+ELSE
+	;人間の場合、似ている親が人間なら相性を引きうつす
+	;---- EDIT 035 MOD START -------------------------
+	IF FETUS_PALENT_RACE:PALENT:MAIN_PALENT == GET_RACE_NUM("인간")
+	;---- EDIT 035 MOD END ---------------------------
+		FOR LCOUNT, 0, TYPENUM
+			BASE:GET_TYPE(LCOUNT) = TOINT(AUTO_SPLIT(FETUS_防御相性:PALENT:MAIN_PALENT, "/", LCOUNT))
+		NEXT
+	;違うのなら人間デフォに
+	ELSE
+		FOR LCOUNT, 0, TYPENUM
+			BASE:GET_TYPE(LCOUNT) = 100
+			BASE:파마 = 0
+		NEXT
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;バステ耐性の決定　70％で似ている親から、30％で似てない親から受け継ぐ
+;-------------------------------------------------
+FOR LCOUNT, 0, BADSTATENUM
+	IF RAND:100 >= 30
+		BASE:GET_STATE(LCOUNT) = TOINT(AUTO_SPLIT(FETUS_バステ耐性:PALENT:MAIN_PALENT, "/", LCOUNT))
+	ELSE
+		BASE:GET_STATE(LCOUNT) = TOINT(AUTO_SPLIT(FETUS_バステ耐性:PALENT:SUB_PALENT, "/", LCOUNT))
+	ENDIF
+NEXT
+
+;-------------------------------------------------
+;継承素質の継承
+;似た親が65% 似てない親が25% ランダム発現が10%
+;-------------------------------------------------
+;引継ぎ保証用のストック
+FOR LCOUNT, GETNUM(TALENT, "검격"), GETNUM(TALENT, "만능") + 1
+	SELECTCASE RAND:100
+		CASE IS < 65
+			SIF COUNT_SPLIT(FETUS_TALENT:PALENT:MAIN_PALENT, "/", @"%TALENTNAME:LCOUNT%_\\d*") > 0
+				TALENT:LCOUNT = 1
+		CASE IS < 90
+			SIF COUNT_SPLIT(FETUS_TALENT:PALENT:SUB_PALENT, "/", @"%TALENTNAME:LCOUNT%_\\d*") > 0
+				TALENT:LCOUNT = 1
+		CASEELSE
+			TALENT:LCOUNT = 1
+	ENDSELECT
+NEXT
+
+;-------------------------------------------------
+;肉体部位・特徴などの継承
+;-------------------------------------------------
+;肉体部位の継承 似ている方の親のは確定、似ていない方は1/3の確率で追加判定
+FOR LCOUNT, GETNUM(TALENT, "머리"), GETNUM(TALENT, "검격")
+	SIF COUNT_SPLIT(FETUS_TALENT:PALENT:MAIN_PALENT, "/", @"%TALENTNAME:LCOUNT%_\\d*") > 0
+		TALENT:LCOUNT = 1
+	SIF COUNT_SPLIT(FETUS_TALENT:PALENT:SUB_PALENT, "/", @"%TALENTNAME:LCOUNT%_\\d*") > 0 && !RAND:3
+		TALENT:LCOUNT = 1
+NEXT
+
+;-------------------------------------------------
+;容姿の継承
+;-------------------------------------------------
+BASE:신장 = FETUS_MOTHER_FOUR_SIZE:PALENT:0
+BASE:바스트 = FETUS_MOTHER_FOUR_SIZE:PALENT:1
+BASE:웨스트 = FETUS_MOTHER_FOUR_SIZE:PALENT:2
+BASE:힙사이즈 = FETUS_MOTHER_FOUR_SIZE:PALENT:3
+FETUS_MOTHER_FOUR_SIZE:PALENT:0 = BASE:(PALENT:0):신장 > 0 && BASE:(PALENT:0):바스트 > 0 && BASE:(PALENT:0):웨스트 > 0 && BASE:(PALENT:0):힙사이즈 > 0
+IF IS_LOOKSLIKE_MALE(TARGET)
+	IF BASE:신장 > 0
+		BASE:신장 = BASE:신장 - 10 + RAND(15)
+		SIF BASE:신장 < 165 && !TALENT:유아체형
+			BASE:신장 = 165 + RAND(10)
+	ENDIF
+ELSE
+	IF MINARRAY(FETUS_MOTHER_FOUR_SIZE:PALENT:0) > 0
+		BASE:신장 = BASE:신장 - 10 + RAND(15)
+		SIF BASE:신장 < 150 && !TALENT:유아체형
+			BASE:신장 = 150 + RAND(5)
+		BASE:바스트 = MIN(BASE:바스트 , BASE:신장 * 3 / 5) - 5 + RAND(9)
+		BASE:웨스트 = BASE:웨스트 - 3 + RAND(7)
+		BASE:힙사이즈 = BASE:힙사이즈 - 5 + RAND(9)
+	ENDIF
+ENDIF
+
+;体重とウェストの計算
+CALL CALC_TAIJU, TARGET
+CALL DEFINITE_KOSINIKU, TARGET
+
+;-------------------------------------------------
+;スキル継承
+;TABLE 0:最終結果　,1:1~3(初期スキル),　2:4~7 3:7~10, 4:11～15, 5:継承不能, 6:자동효과
+;
+;
+;-------------------------------------------------
+;隔世遺伝用にデータ保存と付与
+FOR LCOUNT, 0, 2
+	SIF FETUS_SKILL:PALENT:LCOUNT != ""
+		CHILD_PALENTS_SKILL:0 = %ADD_SPLIT(CHILD_PALENTS_SKILL:0, "/", FETUS_SKILL:PALENT:LCOUNT)%
+NEXT
+
+VARSET SKILL_TABLE
+VARSET TRANS_SKILL_TABLE
+;---- EDIT 033 ADD START -------------------------
+VARSET INAPPARENT_SKILL_TABLE
+VARSET INAPPARENT_TRANS_SKILL_TABLE
+;---- EDIT 033 ADD END ---------------------------
+
+;ランクの取得(スキル使用能力あるいはスキルチェンジ能力、達人と異能者持ちデビルシフター両方を拾おうとするとこうなる)
+CAN_USE_SKILL_RANK:0 = MAX(GET_ROLE_PROP("CAN_USE_SKILL", TARGET, , "通常形態"), GET_SKILL_CHANGEABLE_RANK(TARGET, "通常形態"))
+;変身できる場合
+IF GET_ROLE_PROP("CAN_USE_TRANS", TARGET)
+	CAN_USE_SKILL_RANK:1 = MAX(GET_ROLE_PROP("CAN_USE_SKILL", TARGET, , "変身形態"), GET_SKILL_CHANGEABLE_RANK(TARGET, "変身形態"))
+ELSE
+	CAN_USE_SKILL_RANK:1 = 0
+ENDIF
+
+;配列わけ
+FOR LCOUNT:2, 0, 2 + (CFLAG:PALENT:딸교육 == 1)
+	FOR LCOUNT:1, 0, 2
+		FOR IS_TRANS, 0, 2
+			;人間形態同士→変身形態同士を先にチェックして、そのあと余ったスキルで逆パターンをチェック
+			IF !LCOUNT:1
+				IF IS_TRANS
+					IS_SET_TO_TRANS = 1
+				ELSE
+					IS_SET_TO_TRANS = 0
+				ENDIF
+			ELSE
+				IF IS_TRANS
+					IS_SET_TO_TRANS = 0
+				ELSE
+					IS_SET_TO_TRANS = 1
+				ENDIF
+			ENDIF
+			;セット先が変身の場合、変身出来ないなら終わる
+			SIF IS_SET_TO_TRANS && !GET_ROLE_PROP("CAN_USE_TRANS", TARGET)
+				CONTINUE
+			;遺伝スキルのプールが空から終わる
+			SIF FETUS_SKILL:PALENT:IS_TRANS == ""
+				CONTINUE
+			FOR LCOUNT, LCOUNT:2 == 2 ? 4 # STRCOUNT(FETUS_SKILL:PALENT:IS_TRANS, "/"), -1, -1
+				;教育者は所持スキルをランダムに4回を2周
+				IF LCOUNT:2 == 2
+					SIF TALENT:PALENT:페르소나구사자
+						CONTINUE
+					SIF GET_ROLE_PROP("CAN_USE_MANTRA", PALENT, ,\@IS_TRANS ? 変身形態 # 通常形態\@)
+						CONTINUE
+					IF IS_TRANS
+						L_SKILLS = {ABL:PALENT:RAND(GETNUM(ABL, "초기변신악마스킬1"), GETNUM(ABL, "초기변신악마스킬1") + GET_ROLE_PROP("CHANGEABLE_SKILLCOUNT", PALENT, , "変身形態") + 1)}
+					ELSE
+						L_SKILLS = {ABL:PALENT:RAND(GETNUM(ABL, "스킬1"), GETNUM(ABL, "스킬1") + GET_ROLE_PROP("CHANGEABLE_SKILLCOUNT", PALENT, , "通常形態") + 1)}
+					ENDIF
+				ELSE
+					L_SKILLS = %AUTO_SPLIT(FETUS_SKILL:PALENT:IS_TRANS, "/", LCOUNT)%
+				ENDIF
+				;削除用に置換前の名称をとっておく
+				L_SKILLS:1 = %L_SKILLS%
+
+				;CSTR専用スキルは現状では除外
+				SIF TOINT(L_SKILLS) == 0 || IS_PU_SKILLNUM(TOINT(L_SKILLS))
+					CONTINUE
+				TABLE_RANK = 0
+				CALL GETS_SKILL_PROP, "ロール専用", L_SKILLS, -1
+				IF RESULT
+					IF !STRCOUNT(GETS_ROLE_PROP("CAN_USE_SPECIAL_SKILL", TARGET, TRANS_MODE), RESULTS)
+						;置換スキルがあるなら置き換える
+						CALL GETS_SKILL_PROP, "置換スキル", L_SKILLS, -1
+						IF RESULT
+							TEMP = RESULT
+							L_SKILLS:1 = %L_SKILLS%
+							L_SKILLS = {TEMP}
+						ELSE
+							CONTINUE
+						ENDIF
+					ENDIF
+				ENDIF
+				CALL GETS_SKILL_PROP, "継承不能", L_SKILLS, -1
+				;教育者は継承不能スキルを扱えない
+				IF RESULT
+					IF RESULT > 1 || (LCOUNT:2 == 2 && RESULT > 0)
+						;置換スキルがあるなら置き換える
+						CALL GETS_SKILL_PROP, "置換スキル", L_SKILLS, -1
+						IF RESULT
+							FETUS_SKILL:PALENT:IS_TRANS = %DEL_SPLIT(FETUS_SKILL:PALENT:IS_TRANS, "/", L_SKILLS)%
+							L_SKILLS = {RESULT}
+						ELSE
+							CONTINUE
+						ENDIF
+					ENDIF
+					TABLE_RANK = 5
+				ELSE
+					CALL GETS_SKILL_PROP, "SKILL_EFECT", L_SKILLS, -1
+					IF GET_SKILL_EFFECT(RESULT) == "자동효과"
+						TABLE_RANK = 6
+					ELSE
+						CALL GETS_SKILL_PROP, "SKILL_RANK", L_SKILLS, -1
+						SIF LCOUNT:2 == 2 && !INRANGE(RESULT, 1, 15)
+							CONTINUE
+						SELECTCASE RESULT
+							CASE 1 TO 3
+								TABLE_RANK = 1
+							CASE 4 TO 7
+								TABLE_RANK = 2
+							CASE 7 TO 10
+								TABLE_RANK = 3
+							CASE 11 TO 15
+								TABLE_RANK = 4
+							CASEELSE
+								TABLE_RANK = 5
+						ENDSELECT
+					ENDIF
+				ENDIF
+				;一周目で自動効果以外は継承素質チェック
+				;二周目は継承素質不問だがすでに2個入ってる場所には入れない
+				IF TABLE_RANK != 6
+					;スキル使用能力がない場合は自動効果以外弾く
+					SIF CAN_USE_SKILL_RANK:IS_SET_TO_TRANS < 2
+						CONTINUE
+					;一周目は素質をチェックを行い、二周目では省く
+					IF LCOUNT:2 == 0
+						CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", TOINT(L_SKILLS), TARGET
+						;範囲外=素質存在なし
+						SIF !INRANGE(RESULT, 0, SUCCESSIONNUM - 1)
+							CONTINUE
+						IF !IS_SET_TO_TRANS
+							SIF !TALENT:GET_SUCCESSION(RESULT)
+								CONTINUE
+						ELSE
+							SIF !CSVTALENT(CFLAG:초기링크악마, GETNUM(TALENT, GET_SUCCESSION(RESULT)))
+								CONTINUE
+						ENDIF
+					ENDIF
+				ENDIF
+				;ここまで抜けてきたらテーブルにしまう
+				IF !IS_SET_TO_TRANS
+					;2周目は潜在テーブルに入れる
+					IF LCOUNT:2
+						SIF COUNT_SPLIT(INAPPARENT_SKILL_TABLE:TABLE_RANK, "/", L_SKILLS)
+							CONTINUE
+						INAPPARENT_SKILL_TABLE:TABLE_RANK = %ADD_SPLIT(INAPPARENT_SKILL_TABLE:TABLE_RANK, "/", L_SKILLS)%
+						;PRINTFORMW INAPPARENT_SKILL_TABLE:{TABLE_RANK} = %INAPPARENT_SKILL_TABLE:TABLE_RANK%
+					ELSE
+						SIF COUNT_SPLIT(SKILL_TABLE:TABLE_RANK, "/", L_SKILLS)
+							CONTINUE
+						SKILL_TABLE:TABLE_RANK = %ADD_SPLIT(SKILL_TABLE:TABLE_RANK, "/", L_SKILLS)%
+						;PRINTFORMW SKILL_TABLE:{TABLE_RANK} = %SKILL_TABLE:TABLE_RANK%
+					ENDIF
+				ELSE
+					IF LCOUNT:2
+						SIF COUNT_SPLIT(INAPPARENT_TRANS_SKILL_TABLE:TABLE_RANK, "/", L_SKILLS)
+							CONTINUE
+						INAPPARENT_TRANS_SKILL_TABLE:TABLE_RANK = %ADD_SPLIT(INAPPARENT_TRANS_SKILL_TABLE:TABLE_RANK, "/", L_SKILLS)%
+					ELSE
+						SIF COUNT_SPLIT(TRANS_SKILL_TABLE:TABLE_RANK, "/", L_SKILLS)
+							CONTINUE
+						TRANS_SKILL_TABLE:TABLE_RANK = %ADD_SPLIT(TRANS_SKILL_TABLE:TABLE_RANK, "/", L_SKILLS)%
+					ENDIF
+				ENDIF
+				;しまったスキルは削除する
+				IF LCOUNT:2 < 2
+					WHILE COUNT_SPLIT(FETUS_SKILL:PALENT:IS_TRANS, "/", L_SKILLS:1)
+						FETUS_SKILL:PALENT:IS_TRANS = %DEL_SPLIT(FETUS_SKILL:PALENT:IS_TRANS, "/", L_SKILLS:1)%
+					WEND
+				ENDIF
+				;PRINTFORMW FETUS_SKILL:PALENT:IS_TRANS = %FETUS_SKILL:PALENT:IS_TRANS%
+			NEXT
+		NEXT
+	NEXT
+NEXT
+
+;-------------------------------------------------
+;初期スキルのテーブル追加
+;-------------------------------------------------
+;初期スキルテーブルの中身に基本スキルを追加する
+IF CAN_USE_SKILL_RANK:0 > 1
+	FOR LCOUNT, 0, SUCCESSIONNUM - 1
+		SIF !TALENT:GET_SUCCESSION(LCOUNT)
+			CONTINUE
+		TEMP = SKILL_NUM_F(AUTO_SPLIT("산바람/싱글샷/숏잽/할퀴기/디아/라쿠・카쟈/테트라쟈/아기/부흐/지오/잔/포이즈마/해피루마/한마/무드/마그나/아쿠아/갈/그라이/기가", "/", LCOUNT))
+		SIF COUNT_SPLIT(SKILL_TABLE:1, "/", TOSTR(TEMP))
+			CONTINUE
+		SKILL_TABLE:1 = %ADD_SPLIT(SKILL_TABLE:1, "/", TOSTR(TEMP))%
+	NEXT
+ENDIF
+;初期スキルテーブルの中身に基本スキルを追加する
+IF CAN_USE_SKILL_RANK:1 > 1
+	FOR LCOUNT, 0, SUCCESSIONNUM - 1
+		SIF !CSVTALENT(CFLAG:초기링크악마, GETNUM(TALENT, GET_SUCCESSION(LCOUNT)))
+			CONTINUE
+		TEMP = SKILL_NUM_F(AUTO_SPLIT("산바람/싱글샷/숏잽/할퀴기/디아/라쿠・카쟈/테트라쟈/아기/부흐/지오/잔/포이즈마/해피루마/한마/무드/마그나/아쿠아/갈/그라이/기가", "/", LCOUNT))
+		SIF COUNT_SPLIT(TRANS_SKILL_TABLE:1, "/", TOSTR(TEMP))
+			CONTINUE
+		TRANS_SKILL_TABLE:1 = %ADD_SPLIT(TRANS_SKILL_TABLE:1, "/", TOSTR(TEMP))%
+	NEXT
+ENDIF
+
+;-------------------------------------------------
+;習得スキルの確定
+;各レベル帯に顕在潜在の順に最大2個(初期スキルは4個)までランダムに詰めていく
+;-------------------------------------------------
+FOR LCOUNT:1, 0, 2
+	FOR TABLE_RANK, 1, VARSIZE("SKILL_TABLE")
+		FOR LCOUNT, 0, TABLE_RANK == 1 ? 4 # 2
+			IF !LCOUNT:1
+				SIF SKILL_TABLE:TABLE_RANK == ""
+					BREAK
+				TEMPS = %RAND_SPLIT(SKILL_TABLE:TABLE_RANK, "/")%
+				SKILL_TABLE:TABLE_RANK = %DEL_SPLIT(SKILL_TABLE:TABLE_RANK, "/", TEMPS)%
+			ELSE
+				SIF INAPPARENT_SKILL_TABLE:TABLE_RANK == ""
+					BREAK
+				TEMPS = %RAND_SPLIT(INAPPARENT_SKILL_TABLE:TABLE_RANK, "/")%
+				INAPPARENT_SKILL_TABLE:TABLE_RANK = %DEL_SPLIT(INAPPARENT_SKILL_TABLE:TABLE_RANK, "/", TEMPS)%
+			ENDIF
+			SKILL_TABLE:0 = %ADD_SPLIT(SKILL_TABLE:0, "/", TEMPS)%
+		NEXT
+	NEXT
+NEXT
+;テーブルの余りをまとめる
+FOR TABLE_RANK, 2, VARSIZE("SKILL_TABLE")
+	SIF SKILL_TABLE:TABLE_RANK  != ""
+		SKILL_TABLE:1 = %ADD_SPLIT(SKILL_TABLE:1, "/", SKILL_TABLE:TABLE_RANK)%
+	SIF INAPPARENT_SKILL_TABLE:TABLE_RANK  != ""
+		INAPPARENT_SKILL_TABLE:1 = %ADD_SPLIT(INAPPARENT_SKILL_TABLE:1, "/", INAPPARENT_SKILL_TABLE:TABLE_RANK)%
+NEXT
+
+IF SKILL_TABLE:0 != ""
+	FOR LCOUNT, 0, STRCOUNT(SKILL_TABLE:0, "/") + 1
+		L_SKILLS = %AUTO_SPLIT(SKILL_TABLE:0, "/", LCOUNT)%
+		CALL GETS_SKILL_PROP, "SKILL_RANK",L_SKILLS, -1
+		IF INRANGE(RESULT, 1, 3)
+			CALL SET_LEARN_SKILL, TARGET, L_SKILLS, 1, "通常形態"
+		ELSE
+			SIF !INRANGE(RESULT, 1, 15)
+				RESULT = 15
+			CALL SET_LEARN_SKILL, TARGET, L_SKILLS, RESULT * 4, "通常形態"
+		ENDIF
+	NEXT
+ENDIF
+
+;習得スキルに余りがある場合、残ったスキルで埋める
+FOR LCOUNT, 0, 2
+	WHILE FINDELEMENT(ABL:TARGET:0, 0, GETNUM(ABL, "스킬1"), GETNUM(ABL, "스킬20")) >= 0
+		IF !LCOUNT
+			SIF SKILL_TABLE:1 == ""
+				BREAK
+			L_SKILLS = %RAND_SPLIT(SKILL_TABLE:1, "/")%
+			SKILL_TABLE:1 = %DEL_SPLIT(SKILL_TABLE:1, "/", L_SKILLS)%
+		ELSE
+			SIF INAPPARENT_SKILL_TABLE:1 == ""
+				BREAK
+			L_SKILLS = %RAND_SPLIT(INAPPARENT_SKILL_TABLE:1, "/")%
+			INAPPARENT_SKILL_TABLE:1 = %DEL_SPLIT(INAPPARENT_SKILL_TABLE:1, "/", L_SKILLS)%
+			;非潜在スキルの穴埋めは1/2の確率
+			SIF RAND:2
+				CONTINUE
+		ENDIF
+		CALL GETS_SKILL_PROP, "SKILL_RANK", L_SKILLS
+		IF INRANGE(RESULT, 1, 3)
+			CALL SET_LEARN_SKILL, TARGET, L_SKILLS, 1, "通常形態"
+		ELSE
+			SIF !INRANGE(RESULT, 1, 15)
+				RESULT = 15
+			CALL SET_LEARN_SKILL, TARGET, L_SKILLS, RESULT * 4, "通常形態"
+		ENDIF
+	WEND
+NEXT
+
+IF CAN_USE_SKILL_RANK:1
+	FOR LCOUNT:1, 0, 2
+		FOR TABLE_RANK, 1, VARSIZE("SKILL_TABLE")
+			FOR LCOUNT, 0, 4
+				IF !LCOUNT:1
+					SIF TRANS_SKILL_TABLE:TABLE_RANK == ""
+						BREAK
+					TEMPS = %RAND_SPLIT(TRANS_SKILL_TABLE:TABLE_RANK, "/")%
+					TRANS_SKILL_TABLE:TABLE_RANK = %DEL_SPLIT(TRANS_SKILL_TABLE:TABLE_RANK, "/", TEMPS)%
+				ELSE
+					SIF INAPPARENT_TRANS_SKILL_TABLE:TABLE_RANK == ""
+						BREAK
+					TEMPS = %RAND_SPLIT(INAPPARENT_TRANS_SKILL_TABLE:TABLE_RANK, "/")%
+					INAPPARENT_TRANS_SKILL_TABLE:TABLE_RANK = %DEL_SPLIT(INAPPARENT_TRANS_SKILL_TABLE:TABLE_RANK, "/", TEMPS)%
+				ENDIF
+				TRANS_SKILL_TABLE:0 = %ADD_SPLIT(TRANS_SKILL_TABLE:0, "/", TEMPS)%
+			NEXT
+		NEXT
+	NEXT
+	;---- EDIT 033 MOD START -------------------------
+	;テーブルの余りをまとめる
+	FOR TABLE_RANK, 2, VARSIZE("SKILL_TABLE")
+		SIF TRANS_SKILL_TABLE:TABLE_RANK  != ""
+			TRANS_SKILL_TABLE:1 = %ADD_SPLIT(TRANS_SKILL_TABLE:1, "/", TRANS_SKILL_TABLE:TABLE_RANK)%
+		SIF INAPPARENT_TRANS_SKILL_TABLE:TABLE_RANK  != ""
+			INAPPARENT_TRANS_SKILL_TABLE:1 = %ADD_SPLIT(INAPPARENT_TRANS_SKILL_TABLE:1, "/", INAPPARENT_TRANS_SKILL_TABLE:TABLE_RANK)%
+	NEXT
+	;---- EDIT 033 MOD END ---------------------------
+	IF TRANS_SKILL_TABLE:0 != ""
+		FOR LCOUNT, 0, STRCOUNT(TRANS_SKILL_TABLE:0, "/") + 1
+			L_SKILLS = %AUTO_SPLIT(TRANS_SKILL_TABLE:0, "/", LCOUNT)%
+			CALL GETS_SKILL_PROP, "SKILL_RANK",L_SKILLS
+			IF INRANGE(RESULT, 1, 3)
+				CALL SET_LEARN_SKILL, TARGET, L_SKILLS, 1, "変身形態"
+			ELSE
+				SIF !INRANGE(RESULT, 1, 15)
+					RESULT = 15
+				CALL SET_LEARN_SKILL, TARGET, L_SKILLS, RESULT * 4, "変身形態"
+			ENDIF
+		NEXT
+	ENDIF
+
+	;習得スキルに余りがある場合、残ったスキルで埋める
+	FOR LCOUNT, 0, 2
+		WHILE FINDELEMENT(ABL, 0, GETNUM(ABL, "초기변신악마스킬1"), GETNUM(ABL, "초기변신악마스킬20")) >= 0
+			IF !LCOUNT
+				SIF TRANS_SKILL_TABLE:1 == ""
+					BREAK
+				L_SKILLS = %AUTO_SPLIT(TRANS_SKILL_TABLE:1, "/", 0)%
+				TRANS_SKILL_TABLE:1 = %DEL_SPLIT(TRANS_SKILL_TABLE:1, "/", L_SKILLS)%
+			ELSE
+				SIF INAPPARENT_TRANS_SKILL_TABLE:1 == ""
+					BREAK
+				;---- EDIT 033 MOD START -------------------------
+				L_SKILLS = %AUTO_SPLIT(INAPPARENT_TRANS_SKILL_TABLE:1, "/", 0)%
+				INAPPARENT_TRANS_SKILL_TABLE:1 = %DEL_SPLIT(INAPPARENT_SKILL_TABLE:1, "/", L_SKILLS)%
+				SIF RAND:2
+					CONTINUE
+				;---- EDIT 033 MOD END ---------------------------
+			ENDIF
+			CALL GETS_SKILL_PROP, "SKILL_RANK",L_SKILLS
+			IF INRANGE(RESULT, 1, 3)
+				CALL SET_LEARN_SKILL, TARGET, L_SKILLS, 1, "変身形態"
+			ELSE
+				SIF !INRANGE(RESULT, 1, 15)
+					RESULT = 15
+				CALL SET_LEARN_SKILL, TARGET, L_SKILLS, RESULT * 4, "変身形態"
+			ENDIF
+		WEND
+	NEXT
+ENDIF
+;整列作業
+FOR IS_TRANS, 0, 2
+	SIF IS_TRANS && CAN_USE_SKILL_RANK:1 == 0
+		BREAK
+	TEMPS = \@IS_TRANS ? 초기변신악마 # \@
+	FOR LCOUNT, 1, 21
+		IF ABL:@"%TEMPS%습득스킬{LCOUNT}"
+			ABL:@"%TEMPS%습득스킬{LCOUNT}" += ABL:@"%TEMPS%습득LV{LCOUNT}" * POWER(10, 7)
+		ELSE
+			ABL:@"%TEMPS%습득스킬{LCOUNT}" = POWER(10, 12)
+		ENDIF
+	NEXT
+	ARRAYSORT ABL:TARGET:0, FORWARD, GETNUM(ABL, @"%TEMPS%습득스킬1"), 20
+
+	FOR LCOUNT, 1, 21
+		IF ABL:@"%TEMPS%습득스킬{LCOUNT}" == POWER(10, 12)
+			ABL:@"%TEMPS%습득스킬{LCOUNT}" = 0
+		ELSE
+			ABL:@"%TEMPS%습득LV{LCOUNT}" = ABL:@"%TEMPS%습득스킬{LCOUNT}" / POWER(10, 7)
+			ABL:@"%TEMPS%습득스킬{LCOUNT}" = ABL:@"%TEMPS%습득스킬{LCOUNT}" % POWER(10, 7)
+		ENDIF
+	NEXT
+
+	;レベルをずらす
+	FOR LCOUNT, 2, 21
+		SIF ABL:@"%TEMPS%습득LV{LCOUNT}" == 0
+			BREAK
+		SIF ABL:@"%TEMPS%습득LV{LCOUNT}" <= ABL:@"%TEMPS%습득LV{LCOUNT - 1}"
+			ABL:@"%TEMPS%습득LV{LCOUNT}" = ABL:@"%TEMPS%습득LV{LCOUNT - 1}" + RAND(1, 4)
+	NEXT
+	;FOR LCOUNT, 1, 21
+	;	PRINTFORML ABL:%TEMPS%습득스킬{LCOUNT} = %SKILL_NAME_F(ABL:@"%TEMPS%습득스킬{LCOUNT}")% Lv{ABL:@"%TEMPS%습득LV{LCOUNT}"}
+	;NEXT
+	;WAIT
+NEXT
+
+;習得スキルが3個以上ある素質は開花し、一つも継承されていない素質は消える
+VARSET HAVE_SKILL_BY_SUCCESSION
+FOR LCOUNT, 1, CHARA_SKILLCOUNT(TARGET, "通常形態") + 1
+	SIF !ABL:@"스킬{LCOUNT}"
+		CONTINUE
+	CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", ABL:@"스킬{LCOUNT}", TARGET
+	SIF !INRANGE(RESULT, 0, SUCCESSIONNUM)
+		CONTINUE
+	HAVE_SKILL_BY_SUCCESSION:RESULT++
+NEXT
+
+FOR LCOUNT, 1, 21
+	SIF !ABL:@"습득스킬{LCOUNT}"
+		CONTINUE
+	CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", ABL:@"습득스킬{LCOUNT}", TARGET
+	SIF !INRANGE(RESULT, 0, SUCCESSIONNUM)
+		CONTINUE
+	HAVE_SKILL_BY_SUCCESSION:RESULT++
+NEXT
+
+FOR LCOUNT, 0, SUCCESSIONNUM
+	SIF HAVE_SKILL_BY_SUCCESSION:LCOUNT >= 3
+		TALENT:GET_SUCCESSION(LCOUNT) = 1
+	SIF HAVE_SKILL_BY_SUCCESSION:LCOUNT == 0
+		TALENT:GET_SUCCESSION(LCOUNT) = 0
+NEXT
+
+;-------------------------------------------------
+;服装のランダム設定
+;-------------------------------------------------
+;見た目が男
+IF IS_LOOKSLIKE_MALE(TARGET)
+	CFLAG:초기모자 = GET_CLOTHESNUM(RAND_SPLIT("후드/모자/헤어밴드/더미", "/"))
+	CFLAG:초기옷 = GET_CLOTHESNUM(RAND_SPLIT("겉옷/와이셔츠/런닝셔츠/탱크탑/캐미솔/터틀넥/T셔츠", "/"))
+	CFLAG:초기하의 = GET_CLOTHESNUM(RAND_SPLIT("숏팬츠/바지", "/"))
+	CFLAG:초기속옷（상） = GET_CLOTHESNUM(RAND_SPLIT("더미", "/"))
+	CFLAG:초기속옷（하） = GET_CLOTHESNUM(RAND_SPLIT("트렁크스/부메랑팬츠", "/"))
+	CFLAG:초기양말 = GET_CLOTHESNUM(RAND_SPLIT("양말/하이삭스/더미", "/"))
+	CFLAG:초기신발 = GET_CLOTHESNUM(RAND_SPLIT("스니커/부츠/슈즈/가죽구두", "/"))
+	CFLAG:초기겉옷 = GET_CLOTHESNUM(RAND_SPLIT("후드집업/저지/베스트/백의/자켓/수트/더미", "/"))
+ELSE
+	;性別が男(=오토코노코)
+	IF IS_MALE(TARGET)
+		CFLAG:초기모자 = GET_CLOTHESNUM(RAND_SPLIT("리본/모자/후드/더미", "/"))
+		CFLAG:초기옷 = GET_CLOTHESNUM(RAND_SPLIT("겉옷/와이셔츠/런닝셔츠/터틀넥", "/"))
+		CFLAG:초기하의 = GET_CLOTHESNUM(RAND_SPLIT("미니스커트/숏팬츠/바지", "/"))
+		CFLAG:초기속옷（상） = GET_CLOTHESNUM(RAND_SPLIT("마이크로브라/브래지어/스포츠브라/더미", "/"))
+		CFLAG:초기속옷（하） = GET_CLOTHESNUM(RAND_SPLIT("트렁크스/팬티/레이스달린팬티", "/"))
+		CFLAG:초기양말 = GET_CLOTHESNUM(RAND_SPLIT("양말/하이삭스/더미", "/"))
+		CFLAG:초기신발 = GET_CLOTHESNUM(RAND_SPLIT("스니커/부츠/슈즈/가죽구두", "/"))
+		CFLAG:초기겉옷 = GET_CLOTHESNUM(RAND_SPLIT("볼레로/후드집업/베스트/더미", "/"))
+	;女
+	ELSE
+		CFLAG:초기모자 = GET_CLOTHESNUM(RAND_SPLIT("리본/모자/카츄샤/더미", "/"))
+		IF RAND:2
+			CFLAG:전신복 = GET_CLOTHESNUM(RAND_SPLIT("나가기/원피스/드레스/로브", "/"))
+		ELSE
+			CFLAG:초기옷 = GET_CLOTHESNUM(RAND_SPLIT("겉옷/세일러복/블라우스/탱크탑/캐미솔/터틀넥/T셔츠", "/"))
+			CFLAG:초기하의 = GET_CLOTHESNUM(RAND_SPLIT("스커트/미니스커트/숏팬츠/바지", "/"))
+		ENDIF
+		CFLAG:초기속옷（상） = GET_CLOTHESNUM(RAND_SPLIT("마이크로브라/브래지어/스포츠브라/레이스달린브래지어", "/"))
+		CFLAG:초기속옷（하） = GET_CLOTHESNUM(RAND_SPLIT("스패츠/팬티/레이스달린팬티/줄무늬팬티", "/"))
+		CFLAG:초기양말 = GET_CLOTHESNUM(RAND_SPLIT("양말/하이삭스/니삭스/가터스타킹", "/"))
+		CFLAG:초기신발 = GET_CLOTHESNUM(RAND_SPLIT("펌프스/부츠/슈즈/샌들", "/"))
+		CFLAG:초기겉옷 = GET_CLOTHESNUM(RAND_SPLIT("자켓/후드집업/카디건/더미", "/"))
+	ENDIF
+ENDIF
+CFLAG:초기그외 = GET_CLOTHESNUM(RAND_SPLIT("안경/머플러/ヘッドフォン/넥타이/리본넥타이/벨트/쵸커/더미", "/"))
+CALL CLOTHES_INITIALIZE,TARGET
+CALL SYNC_STATUS,TARGET
+
+IF FLAG:SHOP커맨드 != 698
+	PRINTFORMW %CALLNAME:PALENT%이(가) 키우던 아이가 조교 가능해졌습니다.
+	PRINTFORML %CALLNAME:PALENT%에게 이름을 짓게 하겠습니까?
+	PRINTL [0] 맡긴다
+	PRINTL [1] 직접 짓는다
+	$INPUT_LOOP_A
+	INPUT
+	;嫁に任せる
+	IF RESULT ==0
+		CALL DAUGHTER_NAME, PALENT, L_MOTHER, L_FATHER
+		PRINTFORM %CALLNAME:PALENT%은(는) 이 아이
+		PRINTFORM 에게 %CALLNAME%
+		PRINTL 라는 이름을 붙였습니다
+	ELSEIF RESULT == 1
+		PRINTL 이름을 입력해주세요
+		INPUTS
+		NAME:TARGET = %RESULTS%
+		CALLNAME:TARGET = %RESULTS%
+		PRINTW 이름을 등록했습니다
+	ELSE
+		PRINTL 올바른 값을 입력해주세요
+		GOTO INPUT_LOOP_A
+	ENDIF
+
+	PRINTL 별명을 붙이겠습니까?
+	PRINTL [0] 네
+	PRINTL [1] 아니오
+	$INPUT_LOOP_B
+	INPUT
+	IF RESULT == 0
+		PRINTL 별명을 입력해주세요
+		INPUTS
+		CALLNAME:TARGET = %RESULTS%
+		PRINTW 별명을 등록했습니다
+	ELSEIF RESULT != 1
+		PRINTL 올바른 값을 입력해주세요
+		GOTO INPUT_LOOP_B
+	ENDIF
+ENDIF
+CSTR:해설1 = 急激に成長した%AUTO_SPLIT(AUTO_SPLIT(FETUS_親族名称:PALENT:0, "/", 0), "(", 0)%と%CSTR:PALENT:부친명칭%の子。
+
+IF ABL:종족 == 32
+	CSTR:해설2 = 何らかの悪魔の一種のようだ
+ELSEIF TALENT:인수라
+	CSTR:해설2 = 何らかの魔人の一種のようだ
+ELSEIF ABL:종족 == 36
+	CSTR:해설2 = 人と悪魔の混血で未知の力を秘めているようだ
+ELSEIF ABL:종족 == 0
+	CSTR:해설2 = 異能を持つ人間のようだ
+ELSE
+	CSTR:해설2 = 親と同じ種族のようだ
+ENDIF
+IF L_MOTHER >= 0
+	CSTR:母 = %CALLNAME:L_MOTHER%(第{CFLAG:L_MOTHER:몇번째아이까지낳았는가}子)
+ELSE
+	CSTR:母 = %AUTO_SPLIT(FETUS_親族名称:PALENT:0, "/", 0)%
+ENDIF
+CSTR:외조부 = %AUTO_SPLIT(FETUS_親族名称:PALENT:0, "/", 1)%
+CSTR:외조모 = %AUTO_SPLIT(FETUS_親族名称:PALENT:0, "/", 2)%
+SIF CSTR:외조부 == ""
+	CSTR:외조부 = 不明
+SIF CSTR:외조부 == ""
+	CSTR:외조부 = 不明
+
+IF CFLAG:PALENT:부친의고유번호부모 == -2
+	CSTR:父 = 촉수
+ELSE
+	IF L_FATHER >= 0
+		CSTR:父 = %CALLNAME:L_FATHER%(第{CFLAG:L_FATHER:몇번째아이까지낳았는가}子)
+	ELSE
+		CSTR:父 = %AUTO_SPLIT(FETUS_親族名称:PALENT:1, "/", 0)%
+	ENDIF
+ENDIF
+CSTR:친조부 = %AUTO_SPLIT(FETUS_親族名称:PALENT:1, "/", 1)%
+CSTR:친조모 = %AUTO_SPLIT(FETUS_親族名称:PALENT:1, "/", 2)%
+SIF CSTR:친조부 == ""
+	CSTR:친조부 = 不明
+SIF CSTR:친조부 == ""
+	CSTR:친조부 = 不明
+;次回のために消しておく
+CSTR:PALENT:부친명칭 =
+SIF L_MOTHER >= 0
+	CSTR:L_MOTHER:부친명칭 = 
+IF L_MOTHER >= 0
+	CSTR:일인칭 = %CSTR:L_MOTHER:일인칭%
+ELSE
+	CSTR:일인칭 = %CSTR:PALENT:일인칭%
+ENDIF
+
+U = TARGET
+CALL SHOW_INFO_PAGE_1
+WAIT
+CALL SHOW_INFO_PAGE_2
+WAIT
+DRAWLINE
+PRINTFORML 습득 예정 스킬
+DRAWLINE
+FOR LCOUNT, 1, 21
+	L_SKILL = ABL:@"습득스킬{LCOUNT}"
+	SIF !L_SKILL
+		CONTINUE
+	CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, TARGET
+	PRINTFORML [{LCOUNT,2}] %RESULTS%
+NEXT
+IF GET_ROLE_PROP("CAN_USE_TRANS", TARGET)
+	DRAWLINE
+	PRINTFORML 초기 변신 악마 습득 예정 스킬
+	DRAWLINE
+	FOR LCOUNT, 1, 21
+		L_SKILL = ABL:@"초기변신악마습득스킬{LCOUNT}"
+		SIF !L_SKILL
+			CONTINUE
+		CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, TARGET
+		PRINTFORML [{LCOUNT,2}] %RESULTS%
+	NEXT
+ENDIF
+WAIT
+TARGET = STOCK_TARGET
+;-------------------------------------------------
+;男の子誕生処理
+;-------------------------------------------------
+@SON_BIRTH, 育ての親, 母親
+#DIM DYNAMIC 育ての親, 1
+#DIM DYNAMIC 母親, 1
+#DIM DYNAMIC 父親, 1
+;産んだ子供の数+1
+IF 母親 == -1
+	PRINTFORMW %CALLNAME:育ての親%이(가) 키우던 아이는 부모를 뒤쫓아, 집을 나갔습니다.
+	RETURN 0
+ELSE
+	PRINTFORMW 아이는 자신을 키워준 것에 감사하며, 독립해 혼자 살기 시작했다…
+	;仕送り人数増加
+	CFLAG:母親:송금해주는인수부모 += 1
+ENDIF
+
+
+;-------------------------------------------------
+;仕送り
+;-------------------------------------------------
+@REMITTANCE
+#LOCALSIZE 3
+;仕送り人数総数をカウント
+LOCAL = 0
+LOCAL:1 = 0
+FOR LOCAL:2, 0, CHARANUM
+	SIF CFLAG:(LOCAL:2):송금해주는인수부모 == 0
+		CONTINUE
+	IF CFLAG:(LOCAL:2):인계횟수 && FLAG:5 < 9
+		LOCAL:1 += CFLAG:(LOCAL:2):송금해주는인수부모
+	ELSE
+		LOCAL += CFLAG:(LOCAL:2):송금해주는인수부모
+	ENDIF
+NEXT
+;0人なら帰れ
+SIF LOCAL+LOCAL:1 <= 0
+	RETURN 0
+DRAWLINE
+PRINTFORM %MASTER의% 아이
+SIF LOCAL+LOCAL:1 > 1
+	PRINT 들
+;人数×￥500
+LOCAL *= 500
+LOCAL:1 *= 10
+;75%~125%でランダムをかける
+;ランダムの種として主人の経験値とDAYを用いる
+LOCAL:2 = MAX(1, (LOCAL + MIN(1000,LOCAL:1)) * ((BASE:MASTER:ＥＸＰ / (DAY+1)) % 50 + 75) / 100)
+MONEY += LOCAL:2
+PRINTFORMW 에게서 송금 ￥{LOCAL:2}이(가) 도착했습니다
+
+;-------------------------------------------------
+;娘の名前
+;-------------------------------------------------
+@DAUGHTER_NAME, 育ての親, 母親, 父親
+#DIM DYNAMIC 育ての親, 1
+#DIM DYNAMIC 母親, 1
+#DIM DYNAMIC 父親, 1
+#DIMS DYNAMIC 命名, 1
+TFLAG:600 += 1
+CALL CREATE_RANDOM_NAME_IF, "", 育ての親, 母親, 父親
+命名 = %RESULTS%
+TFLAG:600 -= 1
+IF STRCOUNT( 命名, " " ) == 1
+	CALLNAME = %AUTO_SPLIT( 命名, " ", 1 )%
+ELSEIF STRCOUNT( 命名, "・" ) == 1
+	CALLNAME = %AUTO_SPLIT( 命名, "・", 0 )%
+ELSE
+	CALLNAME = %命名%
+ENDIF
+IF 母親 == MASTER || 父親 == MASTER
+	IF TALENT:남자 == 0
+		NAME = %命名%(娘)
+	ELSE
+		NAME = %命名%(息子)
+	ENDIF
+ELSE
+	NAME = %命名%(子)
+ENDIF
+
+;-------------------------------------------------
+;子供成長汎用処理
+;-------------------------------------------------
+@CHILD_GROWTH(ARG)
+IF MARK:ARG:딸의성장기록 >= 1 && TALENT:ARG:유아／유아퇴행
+	DRAWLINE
+	PRINTFORML %CALLNAME:ARG%이(가) 태어나고서 얼마간의 시간이 흘렀다………
+	PRINTFORM %ARG는% 성장하여, [유아]
+	TALENT:ARG:유아／유아퇴행 = 0
+	X = 0
+	IF RAND:4 == 0
+		X = 1
+	ELSE
+		TALENT:ARG:유아체형 = 0
+		PRINT 와 [유아체형]
+	ENDIF
+	IF X == 1 || RAND:5 == 0
+		X = 1
+	ELSE
+		TALENT:ARG:유치 = 0
+		PRINT 와 [유치]
+	ENDIF
+	PRINTW 을(를) 잃었다
+	;------------------------------------------------------
+	;絶壁が存在できなくなるのと十分にばらけて分布するのでオミット
+	;------------------------------------------------------
+	;胸の成長は1段階アップに変更。[爆乳以上のときは変化なし
+	;IF TALENT:ARG:마유 == 0  && TALENT:ARG:폭유 == 0 && TALENT:ARG:남자 == 0
+	;	PRINT 胸も成長して
+	;	;[절벽]の場合
+	;	IF TALENT:ARG:절벽
+	;		TALENT:ARG:절벽 = 0
+	;		X = 109
+	;	;[빈유]の場合
+	;	ELSEIF TALENT:ARG:빈유
+	;		TALENT:ARG:빈유 = 0
+	;		X = 0
+	;	;[거유]の場合
+	;	ELSEIF TALENT:ARG:거유
+	;		TALENT:ARG:거유 = 0
+	;		X = 112
+	;	;[普乳]の場合
+	;	ELSE
+	;		X = 111
+	;	ENDIF
+	;	PRINTFORMW [\@(X == 0) ? 普乳 # %TALENTNAME:X%\@]になった
+	;	SIF X != 0
+	;		TALENT:ARG:X = 1
+	;ENDIF
+	TALENT:ARG:소년／소녀 = 1
+	PRINT 나이대가 되어, 
+	IF TALENT:ARG:남자
+		PRINTW [소년]이 되었다
+	ELSEIF TALENT:ARG:오토코노코
+		PRINTW 소녀 같은 [소년]이 되었다
+	ELSE
+		PRINTW [소녀]가 되었다
+	ENDIF
+	;[소년／소녀]になった
+	;幼児→未成年に成長したことを示す
+	MARK:ARG:딸의성장기록 = 1
+ENDIF
+
+@CHILD_GROWTH2(ARG)
+;未成年→大人フラグ
+IF MARK:ARG:딸의성장기록 >= 1 && TALENT:ARG:소년／소녀
+	DRAWLINE
+	TALENT:ARG:소년／소녀 = 0
+	PRINTFORML %CALLNAME:ARG%이(가) 태어나고서, 많은 시간이 흘렀다………
+	PRINTFORM %ARG는% 번듯하게 성장하여, 
+		IF TALENT:ARG:남자 || TALENT:ARG:오토코노코
+		PRINTW [소년]을 잃었다
+	ELSE
+		PRINTW [소녀]를 잃었다
+	ENDIF
+	;未成年→成人に成長したことを示す（成長終了）
+	MARK:ARG:딸의성장기록 = 0
+ENDIF
+

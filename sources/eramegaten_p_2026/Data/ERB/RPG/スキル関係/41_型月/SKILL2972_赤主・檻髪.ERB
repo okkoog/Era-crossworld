@@ -1,0 +1,216 @@
+﻿;221013		NEO		説明文などを変更、名称変化と演出を追加、継承不能を追加
+;					対象と自分が共に前列にいる場合、「密着状態だと投げに変化する」ように変更
+
+;スキル名
+@SKILL_NAME_2972,ARG
+#DIM ATTACKER
+#DIM ATK_TARGET
+	;ARGがいない、戦闘中でない、行動時に表示するタイミングでない、なら通常のスキル名を返す
+	;あくまで「使用する瞬間に」この名前になる
+	IF ARG == -1 || TFLAG:전투중 == 0 || FLAG:행동순1 != ARG
+		RESULTS = 적주：함발
+	ELSE
+		;投げ間合いチェック
+		;ATTACKER   = CPOS(ARG)
+		;ATK_TARGET = CFLAG:ARG:타겟
+		;投げになる場合「掌握」とつける（メルブラでは名前変化はしないんだよなー）
+		;IF (INRANGE(ATTACKER, 1, 3) && INRANGE(ATK_TARGET, 7, 11)) || (INRANGE(ATK_TARGET, 1, 3) && INRANGE(ATTACKER, 7, 11)) 
+		IF IS_FRONT(ARG) && IS_FRONT(POS(CFLAG:ARG:타겟))
+			TFLAG:스킬용1 = 1
+			RESULTS = 赤主：檻髪（掌握）
+		ELSE
+			RESULTS = 적주：함발
+		ENDIF
+	ENDIF
+
+;　명중
+@SKILL_HITRATE_2972, ARG
+	;投げ間合いだと高命中
+	IF TFLAG:스킬용1 == 1
+		RETURN 200
+	ELSE
+		RETURN 120
+	ENDIF
+
+;　威力
+@SKILL_POWER_2972, ARG
+#DIM SKILL2972_POW
+
+	;基本からして500の超特大なの兄貴に威力分けてあげて？
+	;→「投げ」条件追加につき基礎威力を450に減少
+	;　ブラッドヒートだけで750まで向上してたのを、片方だと650or675、条件ふたつで最大975
+	;　「投げ間合い（お互い前衛）」条件はかなりユルい条件だと思うが、魔法攻撃なので前衛に出るのはリスクあり
+	;　HP条件は言わずもがな
+
+	SKILL2972_POW = 450
+
+	SIF ARG == -1
+		RETURN SKILL2972_POW
+
+	;ブラッドヒート状態だと威力向上
+	SIF 現HP割合(ARG) < 33
+		SKILL2972_POW += 200
+	;投げ間合いだと威力向上（1.5倍）
+	IF TFLAG:스킬용1
+		SKILL2972_POW *= 150
+		SKILL2972_POW /= 100
+	ENDIF
+
+	RETURN SKILL2972_POW
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2972,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2972,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2972, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2972,ARG
+RETURN 50
+
+;　相性
+@SKILL_TYPE_2972,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2972
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2972, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2972, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2972,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2972,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2972, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2972
+RETURN GET_SUCCESSION_NUM("만능")
+;不可
+
+
+@継承不能_2972
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_2972, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2972
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2972, ARG = -1
+RETURN 15
+
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_2972,ARG
+RETURN GET_STATE_NUM("DYING")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_2972,ARG
+RETURN GET_TYPE_NUM("빙결")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_2972,ARG
+RETURN 10
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_2972,ARG
+RETURN 75
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2972, ARG, ARG:1, ARG:2
+#DIM ATTACKER
+#DIM ATK_TARGET
+
+	;メッセージ表示
+	;HP条件をチェックし、強化状態であったら「BLOOD HEAT!!」を表示する
+	CALL MELTY_BLOOD_IS_BLOOD_HEAT_HP_CONDITIONS(ARG)
+
+	;投げ間合いチェック
+	;お互い前列にいる場合（射程１の距離にいる場合）、投げに変化し命中と威力が向上
+	;まず初期化
+	TFLAG:스킬용1 = 0
+	;ATTACKER   = POS(ARG)
+	;ATK_TARGET = POS(ARG:1)
+
+	;攻撃者のポジションが1-3、対象のポジションが7-11（またはその逆）である場合……どちらも前列である場合、投げ間合いとする
+	;SIF (INRANGE(ATTACKER, 1, 3) && INRANGE(ATK_TARGET, 7, 11)) || (INRANGE(ATK_TARGET, 1, 3) && INRANGE(ATTACKER, 7, 11)) 
+	;	TFLAG:스킬용1 = 1
+
+	SIF IS_FRONT(ARG) && IS_FRONT(POS(ARG:1))
+		TFLAG:스킬용1 = 1
+	;投げ間合いだとメッセージ表示
+	IF TFLAG:스킬용1 == 1
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+
+		PRINTFORM ┃
+		SETCOLOR COLOR("深紅")
+		PRINTFORM % CALLNAME:ARG + "의 손톱이 먹잇감을 낚아챈다!",72,LEFT%
+		RESETCOLOR
+		PRINTFORML ┃
+		PRINTFORML ┃%" " * 72%┃
+
+		PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+
+
+	CALL ATTACK_SINGLE, ARG, ATK_TARGET, 2972
+
+
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2972, ARG
+;「적주：함발」は、密着状態ではガード不能の投げ技に変化する
+
+PRINTL 적 단체에 만능 상성으로 특대 위력의 마법 공격을 행한다.
+PRINTL 추가 효과: 빙결 상성으로 DYING 부여
+PRINTL 사용자의 HP가 얼마 남지 않았을 경우 위력이 향상된다.
+PRINTL 사용자와 대상이 서로 전열에 있을 경우 「잡기 던지기」로 변화하여 위력과 명중률이 향상된다.
+PRINTL 　
+PRINTL 혼혈로서의 힘을 사용해 적에게서 열량을 빼앗아 소멸시킨다.
+PRINTL 혼혈 아키하의 필살기
+
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2972,ARG
+RETURN 1
+

@@ -1,0 +1,142 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_5600,ARG
+RESULTS = 리페어Ⅰ
+
+;　명중
+@SKILL_HITRATE_5600, ARG
+RETURN 100
+
+;　威力 75(Lv5) ~ 300(Lv80)
+;디아 75　디아라마 200
+@SKILL_POWER_5600, ARG = -1
+RETURN 60 + LIMIT((ARG >= 0 ? MAXBASE:ARG:LV * 3 # 0), 0, 240)
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_5600,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_5600,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_5600, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("TURN")
+
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_5600,ARG
+RETURN 3
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_5600
+RETURN GET_SKILL_DECIDE_TYPE_NUM("AS")
+;魔法
+
+
+@SKILL_HEAL_TYPE_5600, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("통상")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_5600, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_5600,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_5600,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_5600, ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_5600
+RETURN GET_SUCCESSION_NUM("회복")
+
+;속도보정
+@SKILL_SPEED_5600, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_5600
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_5600, ARG = -1
+RETURN 1
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_5600, ARG, ARG:1, ARG:2
+CALL HEAL_SKILL,ARG, ARG:1, ARG:2
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;ターゲット条件
+@SKILL_TARGETABLE_5600,ARG, ARG:1
+SIF BASE:(ARG:1):ＨＰ >= MAXBASE:(ARG:1):ＨＰ
+	RETURN 0
+SIF IS_BADSTATE(ARG:1, "DYING")
+	RETURN 0
+RETURN 1
+
+;控えに使えるか
+@SKILL_T_RESERVE_5600, ARG
+RETURN 1
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_5600, ARG
+PRINTL 아군 １체의 ＨＰ를 회복한다。사용자의 레벨에 따라 추가로 효과가 UP한다。
+
+@SKILL_EXPLAIN_TOOLTIP_5600, ARG
+CALL GET_CAST_SKILL_EMULATOR, 5600, ARG
+IF ARG < 0
+	RESULTS = 어시스트스킬:필요턴수%TOFULL(TOSTR(RESULT))%
+ELSE
+	IF RESULT <= 0
+		RESULTS = 어시스트스킬:ＲＥＡＤＹ
+	ELSE
+		RESULTS = 어시스트스킬:필요턴수%TOFULL(TOSTR(RESULT))%
+	ENDIF
+ENDIF
+RESULTS:1 = 아군 한 명을 회복한다。
+
+@SKILL_EX_DISPLAY_5600, ARG, ARGS
+CALL ASSIST_SKILL_EX_DISPLAY, ARG, ARGS, 5600, "RepairI"
+RETURN RESULT
+
+@SKILL_BATTLE_MAIN_TOOLTIP_5600, ARG, ARG:1
+CALL GET_CAST_SKILL_EMULATOR, ARG:1, ARG
+RESULTS = □리페어 I
+IF RESULT <= 0
+	RESULTS:1 = 　READY
+ELSE
+	RESULTS:1 =　필요턴수:{RESULT}
+ENDIF
+
+@ロール専用_5600
+RESULTS = Aion식 서머너
+RETURN 1
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_5600,ARG
+RETURN 1
+;とくにない
+

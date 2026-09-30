@@ -1,0 +1,546 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_89.ERB
+;	Facility	:悪魔人あなた用イベント
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2020/09/18								新規作成
+;	002		2020/10/11		MkjX					マーラルート、たけしルートを追加。一部文言を既存の物に寄せ。
+;	003		2023/02/06		P(bazzile)				악마인(데모노이드)をデフォルトでスキル12枠にしたので、異能者の獲得を削除
+;													また耐性の付け方の変更の関係で、耐性強化の条件を変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=================================================
+;   依頼:フラグリセット
+;-------------------------------------------------
+;====================
+;条件
+;====================
+@GET_EVENT_NAME_89
+#FUNCTIONS
+RESULTS_F '= "악마인당신"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_89
+SIF CFLAG:MASTER:당신의전공분야 != 8
+	RETURN 0
+IF BASE:MASTER:LV > 10 && イベントフラグ:89:0 == 0
+	RESULTS = Enemy within 0
+	RETURN 1
+;ELSEIF BASE:MASTER:LV > 20 && イベントフラグ:89:0 == 1 && TIME == 3
+ELSEIF BASE:MASTER:LV > 20 && イベントフラグ:89:0 == 1
+	RESULTS = Enemy within 1
+	RETURN 1
+ELSEIF BASE:MASTER:LV > 30 && イベントフラグ:89:0 == 2
+	RESULTS = Enemy within 2
+	RETURN 1
+ENDIF
+RETURN 0
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_89
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+CALL RESET_ANNOUNCE_FLAG
+
+IF イベントフラグ:89:0 == 0
+	CUSTOMDRAWLINE =
+	PRINTFORML 
+	PRINTFORMW 기분 탓인지, %CALLNAME:MASTER%의 내면에서 울려 퍼지는 목소리는 나날이 커져가는 느낌이 든다.
+	PRINTFORMW 충동에 몸을 맡기고, 힘을 휘두르며 투쟁에 몸을 던지고 있을 때는 아무것도 신경 쓰이지 않지만, 진정되고 나면 다시 원상태다.
+	PRINTFORMW 악마를 쓰러뜨리고, MAG를 빼앗아 힘을 키우면 억누를 수 있게 되는 것이 아닐까도 생각했지만, 정말로 그런 것일까?
+	PRINTFORMW 오히려 자신은 내면의 적에게 먹이를 주고 있을 뿐인 것은 아닐까?
+	PRINTFORMW 그런 생각이 미치자 섬뜩함에 몸을 떤다.
+	PRINTFORMW 이대로라면 자신이 자신이 아니게 될 날이 그리 머지않은 것은 아닐까? 그런 예감은 하루하루 강해져만 간다……
+	PRINTFORMW 팬텀에 상담할 수는 없다. 어설프게 약점을 보였다간 당장 실험용 쥐 꼴이 된다 해도 이상할 것이 없기 때문이다.
+	PRINTFORMW 첫날 마요네가 보여주었던 차가운 미소가 뇌리에 떠올랐다.
+	PRINTFORMW 안 된다. 이 문제는 스스로의 힘으로 해결해야만 한다……
+	イベントフラグ:89:0 = 1
+ELSEIF イベントフラグ:89:0 == 1
+	CUSTOMDRAWLINE =
+	PRINTFORML 
+	PRINTFORMW 피로감에 겨워 침대에 몸을 던졌다. 여자를 부르는 것조차 귀찮다.
+	PRINTFORMW 끊이지 않는 속삭임 탓에 요즘 들어 깊은 잠을 이루지 못하고 있다.
+	PRINTFORMW 그럼에도 불구하고 체력적으로 부족함을 느낀 적은 거의 없었다.
+	PRINTFORMW 이 피로감은 어디까지나 정신적인 것에 불과하다.
+	PRINTFORMW 수면제라도 먹고 싶을 지경이지만, 이 몸에 과연 제대로 들기나 할지.
+	PRINTFORMW 한숨을 내쉬며 눈을 감았다.
+	PRINTFORMW 어찌 되었든 잘 수밖에 없다……
+	PRINTFORML 
+	PRINTFORMW ………
+	PRINTFORMW ……
+	PRINTFORMW …
+	PRINTFORML 
+	PRINTFORMW 문득 기묘한 장소에 서 있는 자신을 알아차렸다.
+	PRINTFORMW 주위는 안개에 덮인 듯 흐릿하여 먼 곳은 보이지 않는다.
+	PRINTFORMW 주변은 어둑어둑하여 숲처럼도 마천루처럼도 보이지만, 확인하려 하면 신기루처럼 멀어져 간다.
+	PRINTFORMW ……망연자실해 있어 봐야 아무것도 해결되지 않는다.
+	PRINTFORMW 무작정 돌아다녀 보기로 했다. 현명한 선택은 아닐 터이지만, 가만히 머물러 있는 것은 잘못이라는 느낌이 들기 때문이다.
+	PRINTFORML 
+	PRINTFORMW ………
+	PRINTFORMW ……
+	PRINTFORMW …
+	
+	LOCALS =
+	LOCALS += "[0] …짐승의 목소리가 난다"
+	LOCALS += "/[1] …어머니의 목소리가 난다"
+	IF FLAG:연모인수 + FLAG:음란인수 + FLAG:복종인수 > 99
+		;百人斬り達成
+		LOCALS += "/[2] …남근의 목소리가 난다"
+	ENDIF
+	
+	CALL INPUT_SELECT_M, LOCALS 
+	LOCAL = RESULT
+	PRINTFORML %TOSTR(LOCAL)%
+	SELECTCASE LOCAL
+		CASE 0
+			;アモンルート
+		CASE 1
+			;たけしルート
+			CALL EVENT_89_ROUTE_1
+			RETURN
+		CASE 2
+			;マーラルート
+			CALL EVENT_89_ROUTE_2
+			RETURN
+	ENDSELECT
+
+	PRINTFORML 
+	PRINTFORMW 오오…… 우, 오오……
+	PRINTFORMW 어딘가에서 짐승의 울부짖음이 들려온다.
+	PRINTFORMW 이 포효는 들어본 적이 있다. 그런 기분이 든다.
+	PRINTFORMW 내키지는 않지만, 발걸음은 저절로 포효가 들린 쪽으로 향한다.
+	PRINTFORMW 억지로 멈추려 하지 않는 것은 달리 아무런 단서도 없기 때문이리라.
+	PRINTFORMW 이윽고 눈앞에는 검은 그림자가 짐승의 형태를 본뜬 듯한 무언가가 서 있었다.
+	PRINTFORML 
+	PRINTFORMW 짐승『너, 너, 누구냐? 아니, 이 몸은…… 누구냐!?』
+	PRINTFORML 
+	PRINTFORMW 대답을 망설이고 있자, 짐승은 이쪽을 노려보며 기쁜 듯 목을 울렸다.
+	PRINTFORML 
+	PRINTFORMW 짐승『너, 가지고 있다! 이 몸의 힘! 돌려줘! 아니…… 너째로 통째로 집어삼켜 주마!』
+	
+	FOR LOCAL:0,1,7
+		LOCALS = 포지션{LOCAL:0}
+		IF FLAG:LOCALS != 0 && FLAG:LOCALS != -1
+			CALL REMOVE_POSITION,LOCAL:0
+		ENDIF
+	NEXT
+	PRINTFORML 
+	CUSTOMDRAWLINE =
+	PRINTFORML 
+	CALL SET_ENEMY, 14, [[キャラ:시트리]],25, 0,0
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	CALLNAME:(CHARANUM-1) = 그림자의 짐승
+	CUSTOMDRAWLINE =
+	CALL BATTLE_START
+	CALL CHANGE_LAST_BATTLE_MEMBERSET
+	PRINTFORML 
+	PRINTFORML 
+	CUSTOMDRAWLINE =
+	PRINTFORMW 짐승『오, 오오…… 나, 나는, 누구냐……』
+	PRINTFORMW 짐승은 흩어져 안개 속으로 녹아들어 간다. 완전히 사라져 없어진 것은 아니라는 점은 실감으로 알 수 있다.
+	PRINTFORMW 하지만 당분간은 조용해질 것이다. 형태를 되찾기 전까지는…… 말이지만.
+	PRINTFORML ……저것이 %CALLNAME:MASTER%와 합체한 악마의 잔재라면,
+	PRINTFORMW 합체 상대였던 악마가 누구였는지를 밝혀낸다면 어쩌면 상황이 달라질지도 모른다……
+	
+	PRINTFORML 
+	IF BASE:MASTER:정신 != 999 && INRANGE(BASE:MASTER:정신, 0, 100)
+		BASE:MASTER:정신 -= 50
+		PRINTFORMW ＞%CALLNAME:MASTER%의 정신에 가해지던 부하가 약간 경감되어, 정신 공격에 강해졌다.
+	ENDIF
+	イベントフラグ:89:0 = 2
+	;- 依頼:ターンの終了
+	;FLAG:휴식플래그 = 1
+	;BEGIN TURNEND
+	RETURN
+ELSEIF イベントフラグ:89:0 == 2
+	CUSTOMDRAWLINE =
+	PRINTFORML 
+	PRINTFORMW 짐승을 쓰러뜨려도 속삭이는 목소리가 사라지지는 않았다.
+	PRINTFORMW 그저 견딜 수 있게 된 것뿐이리라. 뭐, 밤에 잠을 잘 수 있게 된 것만으로도 큰 진보다.
+	PRINTFORMW 그러던 어느 날, 홀로 외출하던 도중 문득 누군가 부르는 듯한 기분이 들었다.
+	PRINTFORMW 무시해도 괜찮았겠지만, 조금 들여다보기로 할까……
+	PRINTFORML 
+	PRINTFORMW ………
+	PRINTFORMW ……
+	PRINTFORMW …
+	PRINTFORML 
+	PRINTFORMW 그곳은 언젠가 찾아왔던 라이브 하우스였다.
+	PRINTFORMW 여기서 %CALLNAME:MASTER%는 인간을 그만두게 된 것이다.
+	PRINTFORMW 겉으로는 모종의 사고로 처리된 듯, 입구에는 폐점 표지가 걸려 있다.
+	PRINTFORMW 사망자도 나온 모양인지 길가에 꽃이 놓여 있었다.
+	PRINTFORMW 물론 열쇠도…… 잠겨 있지 않다?
+	PRINTFORMW ……%CALLNAME:MASTER%는 조용히 문을 열고, 칠흑같이 어두운 실내로 발을 들여놓았다.
+	PRINTFORMW 안은 코를 찌르는 모종의 자극적인 냄새로 가득 차 있다.
+	PRINTFORMW 지금의 %CALLNAME:MASTER%의 눈은 밤눈이 꽤 밝다. 불을 켤 필요는 없었다.
+	PRINTFORMW 안쪽에 희미한 불빛이 있다. 누군가 있는 것일까?
+	PRINTFORML 
+	PRINTFORMW ………
+	PRINTFORMW ……
+	PRINTFORMW …
+	PRINTFORML 
+	PRINTFORML 「제기랄, 제기랄! 어째서냐!? 마법진도 술식에도 오류는 없다……
+	PRINTFORMW 　제물도 충분했단 말이다! 그런데 어째서 소환이 실패한 거냐!?」
+	PRINTFORML 
+	PRINTFORMW 라이브 하우스 안쪽에서 초조해하는 남자의 목소리가 들려온다.
+	PRINTFORML 
+	PRINTFORML 「여기서 다시 한번 사바트를 치를 수는 없어.
+	PRINTFORMW 　장소를 물색하고 사람을 모으는 것부터 다시 시작해야 한다니! 아아……」
+	PRINTFORML 
+	PRINTFORMW 푸념을 늘어놓던 남자는 문득 무언가를 눈치챈 듯 충혈된 눈을 이쪽으로 돌렸다.
+	PRINTFORMW 들켰다면 어쩔 수 없지, 얼굴을 들이밀어 줄까.
+	PRINTFORML 
+	PRINTFORML 「악마인간인가. 어디 녀석이냐?
+	PRINTFORMW 　가이아는 아니로군. 응, 아니, 너 분명……」
+	PRINTFORML 
+	PRINTFORMW 남자는 입꼬리를 비틀며 씩 웃었다.
+	PRINTFORML 
+	PRINTFORML 「아아, 기억났다. 너 그때 여기 있던 손님이지?
+	PRINTFORMW 　비교적 앞쪽 자리에 앉아 있었지…… 하핫, 과연」
+	PRINTFORML 
+	PRINTFORML 「……소환은 성공했던 거였군.
+	PRINTFORML 　그리고 그 악마는 네놈 안에 있다는 소리겠지.
+	PRINTFORMW 　어째서 인간 따위와 합체했는지는 모르겠지만」
+	PRINTFORMW 「돌려받아야겠다. 그것은 내 물건이다!」
+	PRINTFORML 
+	PRINTFORMW 심장이 크게 고동쳤다. 치밀어 오르는 듯한 분노가 끓어오른다. 뜨거운 숨결은 의지와 무관하게 화염이 되어 소용돌이쳤다.
+	PRINTFORMW 이것은 엉터리 소환 의식에 휘말려 인간의 모습마저 잃어버린 %CALLNAME:MASTER%의 분노인가.
+	PRINTFORML 어설픈 소환 의식으로 불려 나와 실체조차 얻지 못하고,
+	PRINTFORMW 우연히 그 자리에 있던 인간과 합체함으로써만 존재를 유지할 수 있었던 악마의 분노인가.
+	PRINTFORMW 이제는 분간할 수조차 없다. 하지만 한 가지 알 수 있는 것이 있다.
+	PRINTFORML 
+	PRINTFORML -　　　　　　　네　놈　탓　이　다　！　　　　　　　　　　　-
+	PRINTFORMW 
+	FOR LOCAL:0,1,7
+		LOCALS = 포지션{LOCAL:0}
+		IF FLAG:LOCALS != 0 && FLAG:LOCALS != -1
+			CALL REMOVE_POSITION,LOCAL:0
+		ENDIF
+	NEXT
+
+	CUSTOMDRAWLINE =
+	PRINTFORML 
+	CALL SET_ENEMY, 13, [[キャラ:안드라스]],15, 0,0
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	CALL SET_ENEMY, 14, [[キャラ:광신자]],20, 0,0
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	CALLNAME:(CHARANUM-1) = 소환술사
+	CALL SET_ENEMY, 15, [[キャラ:가기손]],18, 0,0
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	CUSTOMDRAWLINE =
+	CALL BATTLE_START
+	PRINTFORML 
+	PRINTFORML 
+	CUSTOMDRAWLINE =
+	PRINTFORMW 
+	PRINTFORMW 쓰러뜨린 소환사의 소지품을 조사한다.
+	PRINTFORMW 옛 방식의 술자 타입 소환사였던 덕분에 이번 건에 대해서도 기록을 남겨두고 있었다.
+	PRINTFORMW 자세한 것은 아무래도 좋다. 알고 싶은 것은 단 하나뿐이다. 자신 안에 있는 짐승의 이름.
+	PRINTFORMW 홀린 듯이 페이지를 넘겨, 마침내 그것을 찾아낸다.
+	PRINTFORML 
+	PRINTFORML －악마 아몬－　－그것은 솔로몬 왕이 소환한 마신의 일주이며……－
+	PRINTFORMW 
+	PRINTFORMW 읽어나가는 동안 의식에 안개가 끼기 시작한다.
+	PRINTFORMW 이미 알고 있다. 자신의 이름을 되찾은 짐승이 %CALLNAME:MASTER%를 부르고 있는 것이다……
+	PRINTFORML 
+	PRINTFORMW ………
+	PRINTFORMW ……
+	PRINTFORMW …
+	PRINTFORML 
+	PRINTFORMW 정신을 차려보니 이전에 악몽 속에서 보았던 안개에 휩싸인 장소에 서 있었다.
+	PRINTFORMW 하지만 지금은 불안에 짓눌릴 일도, 무작정 방황할 일도 없다.
+	PRINTFORMW 이곳에 있는 존재가 무엇을 갈망하는지 지금의 %CALLNAME:MASTER%는 알고 있기 때문이다.
+	PRINTFORMW 잠시 기다리자, 안개를 헤치듯 누군가가 모습을 드러냈다.
+	PRINTFORMW 그것은 %CALLNAME:MASTER% 자신의 모습과 닮아 있었다.
+	PRINTFORMW 다른 점이라면 변이된 부분이 오른 반신으로 되어 있다는 점 정도다.
+	PRINTFORMW 그 모습은 마치 거울에 비춘 듯이 보이기도 한다.
+	PRINTFORML 
+	PRINTFORML 『아몬, 아몬…… 그것이 이 몸의 이름인가?
+	PRINTFORMW 　아아, 참으로 딱 맞아떨어지는군. ……하지만 지금의 이 몸에게는 어울리지 않는 이름이다』
+	PRINTFORML 『지금의 이 몸은 완전하지 못하니 말이다.
+	PRINTFORML 　인간이여. 내 이름을 되찾아준 공을 치하하마.
+	PRINTFORMW 　그리고 지금이야말로 네가 가진 이 몸의 힘을 돌려받아야겠다』
+	PRINTFORML 
+	PRINTFORMW 또 다른 자신이 되어버린 악마에게, %CALLNAME:MASTER%는 침착하게 물었다.
+	PRINTFORMW 그렇게 하면 우리는 원래대로 인간과 악마로 되돌아갈 수 있는 것인가, 하고.
+	PRINTFORML 
+	PRINTFORML 『아니, 알고 있지 않느냐?
+	PRINTFORML 　우리는 이미 돌이킬 수 없을 정도로 뒤섞여 버렸다.
+	PRINTFORMW 　엎질러진 물은 다시 주워 담을 수 없는 법』
+	PRINTFORML 『마(魔)로서의 이름을 되찾은 지금, 이 몸에 깃든 힘 또한 쓸 수 있게 될 터.
+	PRINTFORMW 　이제 남은 것은……』
+	PRINTFORML 『이 뒤섞인 육신을 지배하는 자가 인간 %CALLNAME:MASTER%가 될 것인가, 악마 아몬이 될 것인가.
+	PRINTFORMW 　그것뿐이다!』
+	CUSTOMDRAWLINE =
+;火炎系は持ってるはずだが、効かないの知ってるため使ってこない
+	PRINTFORML 
+	CALL SET_ENEMY, 14, [[キャラ:섀도우]],35, 0,0
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	CALLNAME:(CHARANUM-1) = 아몬의 정신체
+	ABL:(CHARANUM-1):스킬1 = [[스킬:마구날뛰기]]
+	ABL:(CHARANUM-1):스킬2 = [[스킬:아이언클로]]
+	ABL:(CHARANUM-1):스킬3 = [[스킬:이악물기]]
+
+	CUSTOMDRAWLINE =
+	CALL BATTLE_START
+	CALL CHANGE_LAST_BATTLE_MEMBERSET
+	PRINTFORML 
+	PRINTFORML 
+	CUSTOMDRAWLINE =
+	
+	PRINTFORML 
+	PRINTFORMW 『……이렇게 되었는가. 아아, 허나 자신이 누구인지도 모르는 짐승으로 사라지는 것보다는……』
+	PRINTFORML 
+	PRINTFORMW 또 다른 자신은 안개에 녹아들 듯 사라졌다. 의식에 빛이 비치며 급속도로 각성하기 시작한다.
+	PRINTFORML 
+	PRINTFORMW ………
+	PRINTFORMW ……
+	PRINTFORMW …
+	PRINTFORML 
+	PRINTFORMW 정신을 차려보니 라이브 하우스에서 자료를 손에 쥔 채 우두커니 서 있었다.
+	PRINTFORMW 자신의 신체는 다소 변화한 모양이다.
+	PRINTFORMW 꼬리는 윤기 나는 뱀의 비늘로 덮였고, 왼 반신을 덮은 모피는 짐승의 그것보다 조류의 깃털에 가깝게도 보인다.
+	PRINTFORMW 등에는 날개 같은 것마저 돋아났는데, 익숙해지면 이걸로 날 수 있는 것일까? 움직일 수는 있을 것 같지만……
+	PRINTFORMW 피부는 다소 붉은빛을 띠게 되었고, 무엇보다 눈동자의 색이 붉은색으로 변해 있었다.
+	PRINTFORMW ……크게 신경 쓰지 않고 마술사의 시체에 등을 돌린다.
+	PRINTFORMW 자신이 악마인간이라는 사실, 팬텀에 사로잡힌 실험용 쥐 직전의 신세라는 점, 그것들은 아무것도 변하지 않았지만.
+	PRINTFORMW 자신의 모든 것을 온전히 스스로 지배하고 있다는 감각은 참으로 오랜만이었던 것이다……
+	
+	TALENT:MASTER:날개 = 1
+	;TALENT:MASTER:이능자 = 1
+
+	PRINTFORML 
+	IF ABL:MASTER:속성LC == 1
+;Law
+		IF BASE:MASTER:파마 != 999 && INRANGE(BASE:MASTER:파마, 0, 100)
+			BASE:MASTER:파마 -= 50
+			PRINTFORMW ＞%CALLNAME:MASTER%는 파마 공격에 강해졌다.
+		ENDIF
+	ELSEIF ABL:MASTER:속성LC == 2
+;Neutral
+		IF BASE:MASTER:검격 != 999 &&  INRANGE(BASE:MASTER:검격, 0, 100)
+			BASE:MASTER:검격 -= 50
+			PRINTFORMW ＞%CALLNAME:MASTER%는 검격 공격에 강해졌다.
+		ENDIF
+	ELSE
+;Chaos
+		IF BASE:MASTER:주살 != 999 &&  INRANGE(BASE:MASTER:주살, 0, 100) > 0
+			BASE:MASTER:주살 -= 50
+			PRINTFORMW ＞%CALLNAME:MASTER%는 주살 공격에 강해졌다.
+		ENDIF
+	ENDIF
+	;PRINTFORMW ＞%CALLNAME:MASTER%は［이능자］を得た。
+
+	CSTR:MASTER:해설4 = 그 몸에는 마신 아몬을 품고 있다。
+
+	イベントフラグ:89:0 = 3
+	
+	
+;1010 シャドウでスキル1,2,3を入れ替え
+ENDIF
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+RETURN
+
+
+
+
+
+@EVENT_89_ROUTE_1
+;たけしルート
+
+	PRINTFORML 
+	PRINTFORMW ……새?
+	PRINTFORMW %CALLNAME:MASTER%의 앞에 한 마리의 연약하고 초라한 새가 나타났다.
+	PRINTFORMW 느껴지는 기척으로 보아 악마인 듯하지만…
+	PRINTFORMW 어째서 슬라임화되지 않았는지 신기할 정도로 나약하다.
+	PRINTFORMW 이 악마를 쓰러뜨리면 이 이변을 타개할 수 있을까…‥
+	PRINTFORML 
+	PRINTFORML ＞엄청나게 끔찍한 악마의 기척이 느껴진다……
+	PRINTFORMW 
+	PRINTFORML ！？
+	PRINTFORMW 
+	PRINTFORMW ＞도망칠 수 없다!
+	PRINTFORML 
+	PRINTFORML 모습이 보이지 않는 무시무시한 기척 쪽에서
+	PRINTFORMW 어딘가 그리움이 느껴지는 듯한 다정한 목소리가 울려 퍼졌다.
+	PRINTFORML 
+	PRINTFORMW Ｊ( 'ー`)し < 타케시에게. 잘 지내고 있니.
+	PRINTFORMW Ｊ( 'ー`)し < 미안하구나. 엄마가 실수로 한 단계 위의 세계로 보내버렸단다.
+	PRINTFORMW Ｊ( 'ー`)し < 그 세계에는 다른 네가 있겠지만, 사이좋게 지내렴.
+	PRINTFORML Ｊ( 'ー`)し < 타케시에게. 힘들지도 모르겠지만
+	PRINTFORMW 　　　　　　　힘내거라, 전라로
+	PRINTFORML 
+	PRINTFORMW Ｊ( 'ー`)し < %CALLNAME:MASTER% 씨.
+	PRINTFORMW Ｊ( 'ー`)し < …타케시를 잘 부탁드립니다.
+	PRINTFORML 
+	PRINTFORMW ………
+	PRINTFORMW ……
+	PRINTFORMW …
+	PRINTFORML 
+	PRINTFORMW 문득 제정신을 차렸을 때, 그곳에는 목소리의 기척도 더러운 새도 존재하지 않았다.
+	PRINTFORML 그리고 %CALLNAME:MASTER%의 내면에서 울리던 목소리도 들리지 않게 되었으나,
+	PRINTFORMW 대신 무언가 돌이킬 수 없는 일을 떠맡아 버린 듯한 기분이 든다…‥
+	PRINTFORML 
+	PRINTFORMW ＞%CALLNAME:MASTER%의 전신의 감도가 민감해졌다
+	PRINTFORMW ＞%CALLNAME:MASTER%는 모든 속성에 약해졌다
+	PRINTFORML 
+	
+	TALENT:MASTER:Ｃ민감 = 1
+	TALENT:MASTER:Ｖ민감 = 1
+	TALENT:MASTER:Ａ민감 = 1
+	TALENT:MASTER:Ｂ민감 = 1
+	BASE:MASTER:검격 = 500
+	BASE:MASTER:비구 = 500
+	BASE:MASTER:타격 = 500
+	BASE:MASTER:전술 = 500
+	BASE:MASTER:화염 = 500
+	BASE:MASTER:빙결 = 500
+	BASE:MASTER:전격 = 500
+	BASE:MASTER:충격 = 500
+	BASE:MASTER:신경 = 500
+	BASE:MASTER:정신 = 500
+	BASE:MASTER:파마 = 500
+	BASE:MASTER:주살 = 500
+	BASE:MASTER:지변 = 500
+	BASE:MASTER:수격 = 500
+	BASE:MASTER:질풍 = 500
+	BASE:MASTER:중력 = 500
+	BASE:MASTER:핵열 = 500
+	BASE:MASTER:만능 = 500
+	BASE:MASTER:사이코 = 500
+
+	CSTR:MASTER:해설4 = 그 몸에 타케시를 품고 말았다。
+
+	イベントフラグ:89:0 = 3
+	;- 依頼:ターンの終了
+	;FLAG:휴식플래그 = 1
+	;BEGIN TURNEND
+	
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+RETURN
+
+
+
+
+
+@EVENT_89_ROUTE_2
+;魔王マーラルート
+
+	PRINTFORML 
+	PRINTFORMW 아무래도 조교사 일에 지나치게 몰두한 모양이다. 사타구니의 그것에서 속삭이는 듯한 목소리가 들려온다.
+	IF !HAVE_PENIS(MASTER)
+		TALENT:MASTER:후타나리 = 1
+		PRINTFORMW %CALLNAME:MASTER%에게는 그것이 달려있지 않았을 터이지만, 지금은 확실한 존재감이 느껴진다.
+	ENDIF
+	PRINTFORMW …돌아가서 쉴까.
+	PRINTFORMW 만약 그래도 가라앉지 않는다면 마법의 캔디에 의존해 없애버리는 것도 고려해야 할지 모른다.
+	PRINTFORML 
+	PRINTFORMW 『기다려 기다려 기다려라! 인간이여. 조루는 여자에게 인기가 없다고!』
+	PRINTFORML 
+	PRINTFORMW 목소리가 또렷하게 들려오기 시작하더니, 남근으로 MAG가 모여든다…!
+	PRINTFORML 
+	PRINTFORMW 『푸하하하하-!』
+	PRINTFORMW 『카오스한 형제들의 기대에 부응하여 이 몸 등장!』
+	PRINTFORMW 『이 몸이야말로 마왕 마라로다!』
+	PRINTFORML 
+	PRINTFORML ＞마왕 마라가 나타났다.
+	PRINTFORMW 
+	PRINTFORMW 『그대의 업, 똑똑히 보았다.』
+	PRINTFORMW 『인간의 몸치고는 제법 대단한 정력이더군.』
+	PRINTFORMW 『이 몸의 숙주로 삼기에 걸맞도다.』
+	PRINTFORML 
+	PRINTFORMW ＞마라는 기쁨에 들떠 있다…
+	PRINTFORML 
+	PRINTFORMW 『자, 함께 더욱 절륜한 경지로 나아가자꾸나!』
+	PRINTFORMW 『그대가 허리를 흔든다. 여자가 기분 좋아진다. 이 몸도 기분 좋아진다.』
+	PRINTFORMW 『윈, 윈, 위~인이지 않느냐!』
+	PRINTFORML 
+	PRINTFORMW 농담이 아니다.
+	PRINTFORMW %CALLNAME:MASTER%의 노예도, %CALLNAME:MASTER%의 남근도, %CALLNAME:MASTER%의 것이다.
+	PRINTFORMW 애초에 악마술사가 악마에게 부림당한다는 건 웃기지도 않은 소리다.
+	PRINTFORML 
+	PRINTFORMW 『흠…. 그대의 물건 대신 이 훌륭한 몸께서 물건 노릇을 해주겠다는데』
+	PRINTFORMW 『설마 거절할 줄이야.』
+	PRINTFORMW 『좋다. 그렇다면 그대의 몸뚱이째로 이 몸이 대신 차지해 주마!』
+
+
+	FOR LOCAL:0,1,7
+		LOCALS = 포지션{LOCAL:0}
+		IF FLAG:LOCALS != 0 && FLAG:LOCALS != -1
+			CALL REMOVE_POSITION,LOCAL:0
+		ENDIF
+	NEXT
+	
+	;HP多くてガードキルで火炎耐性抜いてきて絶妙打も撃ってくるけど
+	;あなたと同レベルだし攻撃性能雑魚並なので頑張れば一人でも勝てる…かも
+	CALL SET_ENEMY,9,[[キャラ:마라]],MAXBASE:PLAYER:LV,0,1
+	CFLAG:(CHARANUM-1):행동횟수 = 3
+	CFLAG:(CHARANUM-1):ＨＰ보정 += 15000
+	CFLAG:(CHARANUM-1):ＭＰ보정 += 10000
+	CFLAG:(CHARANUM-1):속도보정 -= 100
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	ABL:(CHARANUM-1):스킬6 = [[스킬:불굴의투지]]
+	ABL:(CHARANUM-1):스킬7 = [[스킬:화염가드킬]]
+	ABL:(CHARANUM-1):스킬8 = [[스킬:절묘타]]
+	
+	CALL BATTLE_START
+	CALL CHANGE_LAST_BATTLE_MEMBERSET
+	
+	PRINTFORML 
+	PRINTFORMW 『설마 내 유혹을 뿌리칠 줄이야…』
+	PRINTFORMW 『인간… 얕볼 수 없구나…』
+	PRINTFORML 
+	PRINTFORMW ＞마라는 흩어져 안개가 되어, 당신의 사타구니로 되돌아갔다.
+	PRINTFORML 
+	PRINTFORMW %CALLNAME:MASTER%는 악마인간임과 동시에 악마 조교사이며, 악마 소환사이다.
+	PRINTFORMW 마왕이라 한들 이제 와서 악마 한 마리 정도 아무것도 아니다.
+	PRINTFORML 
+	PRINTFORMW 자신의 신체는 다소 변화한 모양이다.
+	PRINTFORMW 꼬리는 사라진 듯 보였으나, 대신 무수한 촉수를 뻗을 수 있게 되었고,
+	PRINTFORMW 피부는 다소 초록빛으로 번들거리는 광택으로 변했으며, 무엇보다 다루는 불꽃이 황록색이 되어 있었다.
+	PRINTFORML 
+	PRINTFORMW 내면에 있는 악마의 힘을 완전히 지배하에 둔 모양이다.
+	PRINTFORMW 이제 속삭임에 시달리며 잠 못 이루는 밤을 보낼 일은 없을 것이다…‥
+	
+	PRINTFORML 
+	;PRINTFORMW ＞%CALLNAME:MASTER%は［이능자］を得た。
+	PRINTFORMW ＞마라라기다인을 습득했다!
+	PRINTFORMW ＞광란의 촉수를 습득했다!
+	ABL:PLAYER:스킬9 = [[스킬:마라라기다인]]
+	ABL:PLAYER:스킬10 = [[스킬:광란의촉수]]
+	;耐性は据置、引継ぎ不可なマララギダインGETがご褒美（役割に合うとは言ってない）
+	;触手は趣味
+	
+	;TALENT:MASTER:이능자 = 1
+	TALENT:MASTER:꼬리 = 0
+	TALENT:MASTER:촉수 = 1
+	TALENT:MASTER:촉수사역술 = 1
+
+	CSTR:MASTER:해설4 = 그 몸에는 마왕 마라를 품고 있다。
+
+	イベントフラグ:89:0 = 3
+	;- 依頼:ターンの終了
+	;FLAG:휴식플래그 = 1
+	;BEGIN TURNEND
+	
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+RETURN
+

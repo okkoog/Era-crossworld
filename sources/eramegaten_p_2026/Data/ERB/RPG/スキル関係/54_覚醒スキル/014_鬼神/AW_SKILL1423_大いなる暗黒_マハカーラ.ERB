@@ -1,0 +1,98 @@
+﻿;スキル名
+@SKILL_NAME_AW_1423,ARG
+RESULTS = 위대한 암흑
+
+;　명중
+@SKILL_HITRATE_AW_1423, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_AW_1423, ARG
+RETURN 100
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_AW_1423,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_AW_1423,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_AW_1423, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_AW_1423,ARG
+RETURN 0
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_AW_1423
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_AW_1423, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입,制限なし
+@SKILL_SUCCESSION_TYPE_AW_1423, ARG
+RETURN GET_SUCCESSION_NUM("자동효과")
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PASSIVE_PENETRATION_RANK_AW_1423, L_P, L_T, L_スキル, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM DYNAMIC L_P;このスキルの所持者
+#DIM DYNAMIC L_T;攻撃対象
+#DIMS DYNAMIC L_スキル;スキルの所持者が敵に対して使用しているスキルの関数名称
+#DIM DYNAMIC L_ダメージタイプ
+#DIM DYNAMIC L_攻撃タイプ
+#DIM DYNAMIC L_相性
+#DIM DYNAMIC GIVE_EFFECT_CHARA;リーダースキル等他人からつけられている場合の提供者
+SIF GET_TYPE(L_相性) == "화염"
+	RETURN 0, 4
+
+;　 説明文の表示
+@SKILL_EXPLAIN_AW_1423, ARG
+PRINTL 파괴신 마하칼라의 각성 스킬
+PRINTL 자동: 화염 상성 공격이 적의 내성을 50%까지 무시하고 관통하는 효과를 얻는다.
+PRINTL 　　　자신의 화염 상성 물리 공격이 성공했을 때 이하의 연동 효과가 발동한다.
+PRINTL 　　　「아군 전체의 공격력과 방어력을 상승시킨다.」
+
+@SKILL_EXPLAIN_TOOLTIP_AW_1423, ARG
+RESULTS:0 = 자동: 화염 상성 공격이 적의 내성을 50\%까지 무시하고 관통하는 효과를 얻는다.
+RESULTS:1 = 　　　자신의 화염 상성 물리 공격이 성공했을 때 이하의 연동 효과가 발동한다.
+RESULTS:2 = 　　　「아군 전체의 공격력과 방어력을 상승시킨다.」
+
+@SKILL_ACTIONABLE_BATTLE_AW_1423, ARG
+RETURN 0
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_AW_1423,ARG,ARG:1
+#DIM LCOUNT
+;自分自身の行動でないと誘発しない
+SIF ARG != FLAG:행동순1
+	RETURN 0
+SIF ARG != ARG:1
+	RETURN 0
+;攻撃が成功している
+SIF !GET_CREC_ACT(ARG, ,"HIT")
+	RETURN 0
+;火炎物理でないとダメ
+SIF !GET_CREC_ACT(ARG, ,"物理", "화염")
+	RETURN 0
+RETURN 1, CFLAG:ARG:PT플래그 ? 22 # 19
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_AW_1423,ARG,ARG:1, ARG:2
+CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ? 19 # 22, "攻撃_防御", 4, "範囲"

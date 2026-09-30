@@ -1,0 +1,72 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_身体無き者,ARG
+RESULTS = 육신 없는 자
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_身体無き者
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_身体無き者,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_身体無き者
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+@継承不能_身体無き者
+RETURN 2
+;不可、造魔や子供にも継承せず
+
+;スキル変化？用ランク
+@SKILL_RANK_身体無き者, ARG = -1
+RETURN 2
+;変化不可
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_身体無き者,ARG
+PRINTL 자동: CHARM에 완전한 내성을 얻는다.
+PRINTL 　　　타격 속성이 100으로 고정되고, 화염 속성을 반사하게 된다.
+
+@SKILL_ACTIONABLE_BATTLE_身体無き者, ARG
+RETURN 0
+
+@SKILL_DEL_UNABLE_身体無き者,ARG
+RETURN 1
+;削除不可
+
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_身体無き者, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	;ステート耐性は0のときに通常(100%)のに注意。
+	CASE "상태이상"
+		RESULTS = 代入
+		SIF ARGS:1　== "CHARM"
+			RETURN -100
+	;RESULT   = 変化があるかどうか(基準値が100だがこの項目が指定されていないと0で返してしまうので真偽判定の処理を追加している)
+	;RESULT:1 = 耐性値。基準値が100なのに注意
+	CASE "相性"
+		IF ARGS:1 == "타격"
+			RETURN 1, 100
+		ELSEIF ARGS:1 == "화염"
+			RETURN 1, 999
+		ENDIF
+ENDSELECT
+RETURN 0

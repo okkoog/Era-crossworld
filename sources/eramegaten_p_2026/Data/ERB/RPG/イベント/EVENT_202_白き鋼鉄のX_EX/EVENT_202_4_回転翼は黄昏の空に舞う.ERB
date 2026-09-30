@@ -1,0 +1,165 @@
+﻿;====================
+;条件
+;====================
+@EVENT_TITLE_202_4
+RESULTS '= "회전익은 황혼의 하늘에 흩날린다"
+
+@EVENT_EXPLAIN_202_4
+RESULTS:0 '= "보수: 베스파 획득"
+IF GETCHARA([[キャラ:베스파_X2]]) >= 0
+	RESULTS:1 '= "　　 ※보수 소지 중"
+ELSE
+	RESULTS:1 '= "　　 ※보수를 수령하려면 도리 카드몬이 필요"
+ENDIF
+
+@PLAYABLE_EVENT_202_4
+SIF !GETBIT(FLAG:발견ED2, 11)
+	RETURN 0
+RETURN 1
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_202_4
+PRINTFORML ………
+PRINTFORML ……
+PRINTFORMW …
+PRINTFORMW 그레이브 필러　밀림 블록 최심부――
+PRINTFORML 그 누구의 방해도 받지 않고, 성장하고 번식한 나무들이 지붕이 되어,
+PRINTFORMW 인공조명의 불빛이 나뭇잎 사이로 비치는 햇살처럼 쏟아져 들어왔다.
+PRINTFORML 　
+PRINTFORMW 「또 당신들이군요! 이제 슬슬, 그 얼굴도 지긋지긋하답니다!」
+PRINTFORML 　
+PRINTFORML 구동음을 울려 퍼뜨리며, 늠름한 소녀의 목소리가 들려온다.
+PRINTFORMW 천천히 고도를 낮추며 나타난 것은, 창을 든 워커――베스파다.
+PRINTFORML 　
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:베스파_X2]]), [[キャラ:베스파_X2]]
+PRINTFORMW 「하지만, 그것도 오늘로 끝이에요! 이 몸과 마주친 불행을 후회하시지요!」
+CLEARLINE 7
+PRINTFORML 「하지만, 그것도 오늘로 끝이에요! 이 몸과 마주친 불행을 후회하시지요!」
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:베스파_X2]]), [[キャラ:베스파_X2]]
+PRINTFORML 「침입자의 배제는, 우리에게 주어진 숭고한 “사명”!
+PRINTFORMW 　지금부터 너희들은, 이 몸의 회전익의 먹이가 되는 거라구요-!」
+CLEARLINE 8
+PRINTFORML 「침입자의 배제는, 우리에게 주어진 숭고한 “사명”!
+PRINTFORML 　지금부터 너희들은, 이 몸의 회전익의 먹이가 되는 거라구요-!」
+PRINTFORML 　
+PRINTFORMW 워커　베스파가　1체 나타났다!
+
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+CALL SET_BOSS_ENEMY_EVENT_202, "ヴェスパ"
+CALL BATTLE_START
+
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+SIF FLAG:패배플래그
+	RETURN 0
+
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:베스파_X2]]), [[キャラ:베스파_X2]]
+PRINTFORMW 「나의, 격식이ッ……!」
+CLEARLINE 7
+PRINTFORML 「나의, 격식이ッ……!」
+PRINTFORML 　
+PRINTFORML 두 동강 난 베스파에게서, 사방팔방으로 흩날리는 Pix.
+IF GETCHARA([[キャラ:베스파_X2]]) > 0 || ITEM:도리・카드몬 == 0
+	PRINTFORML 외각이 소실되고, 소체가 드러나자, 내부에서 섬광이 번쩍이더니――대폭발.
+	PRINTFORMW 주인을 잃은 대기의 분류는 흩어져, 나무들을 흔드는 산들바람이 되는 것이었다.
+ELSE
+	PRINTFORML 이대로 방치하면, 머지않아 소체가 드러나 대폭발할 것이다.
+	PRINTFORML 과연, 도리 카드몬을 써야 할까?
+	CALL INPUT_YN, "예", "아니오"
+	IF RESULT == 0
+		PRINTFORML %CALLNAME:MASTER%은(는) 재빠르게 도리 카드몬을 집어던져,
+		PRINTFORML 소체의 대용품으로서 주위에 흩날린 Pix를 남김없이 흡수시켜 간다.
+		PRINTFORMW ……그렇게 완성된 것은, 악마로 다시 태어난 베스파의 모습이었다.
+		PRINTFORML 　
+		CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:베스파_X2]]), [[キャラ:베스파_X2]]
+		PRINTFORMW 「뭐예요 이건!? 이 바디…… 저한테 무슨 일이 일어나고 있는 건가요오-!?」
+		CLEARLINE 7
+		PRINTFORML 「뭐예요 이건!? 이 바디…… 저한테 무슨 일이 일어나고 있는 건가요오-!?」
+		PRINTFORML 　
+		PRINTFORML 너무 놀란 나머지 절규하고 있는 틈을 타, 능숙하게 계약을 진행하여――
+		PRINTFORMW 마침내 베스파는 %CALLNAME:MASTER%의 악마가 되는 것이었다.
+		PRINTFORML 　
+		PRINTFORMW ＞베스파가 동료마가 되었다.
+		ITEM:도리・카드몬 -= 1
+		CALL ADD_NEW_COMPANION, [[キャラ:베스파_X2]], 0
+	ELSE
+		PRINTFORML %CALLNAME:MASTER%은(는) 도리 카드몬을 쓰지 않기로 하고, 전말을 지켜보기로 했다.
+		PRINTFORML 외각이 소실되고, 소체가 드러나자, 내부에서 섬광이 번쩍이더니――대폭발.
+		PRINTFORMW 주인을 잃은 대기의 분류는 흩어져, 나무들을 흔드는 산들바람이 되는 것이었다.
+	ENDIF
+ENDIF
+CUSTOMDRAWLINE =
+RETURN 1
+
+@SET_ACTION_スティンガートーレント2, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:데・쿤다]]
+ELSEIF CFLAG:ARG:집중플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:크로스포츈]]
+ELSEIF CFLAG:ARG:회심의패기플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:원샷킬]]
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	;ガンヴォルトあるある：HPが1/3切ったらSPスキル使う　5Tに1回打ってくるぞ
+	IF CFLAG:ARG:800 && PU_SKILLGAGE_D_GET(ARG, "ＳＰスキル") == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+	ELSE
+		SELECTCASE FLAG:경과턴수 % 6
+			CASE 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:용분의춤]]
+			CASE 1
+				CALL SET_ACTION_SKILL, ARG, [[스킬:갈바리온]]
+			CASE 2
+				CALL SET_ACTION_SKILL, ARG, [[스킬:용분의춤]]
+			CASE 3
+				CALL SET_ACTION_SKILL, ARG, [[스킬:찰나장대비쏘기]]
+			CASE 4
+				CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "オラージュリーゼ")
+			CASEELSE
+				IF RAND:2 == 0
+					CALL SET_ACTION_SKILL, ARG, [[스킬:컨센트레이트]]
+				ELSE
+					CALL SET_ACTION_SKILL, ARG, [[스킬:회심의패기]]
+				ENDIF
+		ENDSELECT
+	ENDIF
+ELSE
+	SELECTCASE FLAG:경과턴수 % 6
+		CASE 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:땅의열풍]]
+		CASE 1
+			CALL SET_ACTION_SKILL, ARG, [[스킬:마하・갈다인]]
+		CASE 2
+			CALL SET_ACTION_SKILL, ARG, [[스킬:고천열풍탄]]
+		CASE 3
+			CALL SET_ACTION_SKILL, ARG, [[스킬:원샷킬]]
+		CASE 4
+			IF RAND:2 == 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:컨센트레이트]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:회심의패기]]
+			ENDIF
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:땅의열풍]]
+	ENDSELECT
+ENDIF
+
+@CHANGE_ACTION_スティンガートーレント2, ARG
+CALL CHANGE_ACTION_スティンガートーレント, ARG
+
+@EVENT_BATTLE_DYING_スティンガートーレント2, L_T, L_P, L_SKIP
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_SKIP
+CALL EVENT_BATTLE_DYING_EVENT_201_2_3_ヴェスパ, L_T, L_P, L_SKIP
+
+@EVENT_BATTLE_ACTEND_スティンガートーレント2
+CALL EVENT_BATTLE_ACTEND_EVENT_201_2_3_ヴェスパ
+
+@EVENT_BATTLE_LOSE_スティンガートーレント2
+RETURN 1

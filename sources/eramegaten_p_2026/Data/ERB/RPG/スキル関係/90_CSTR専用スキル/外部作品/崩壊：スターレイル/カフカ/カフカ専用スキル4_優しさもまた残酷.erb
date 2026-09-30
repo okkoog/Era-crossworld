@@ -1,0 +1,314 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:優しさもまた残酷
+;	Facility	:銀狼専用スキル
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2023/9/17		軽木        			新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_優しさもまた残酷,ARG
+RESULTS = 優しさもまた残酷
+
+;　명중
+@SKILL_HITRATE_優しさもまた残酷, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_優しさもまた残酷, ARG
+RETURN 100
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_優しさもまた残酷, ARG
+RETURN 5
+
+;　吸収率
+@SKILL_HP_ABSORBER_優しさもまた残酷, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_優しさもまた残酷,ARG
+CALLFORM 最低攻撃回数_{EQUIP:ARG:총},ARG
+RETURN RESULT
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_優しさもまた残酷,ARG
+CALLFORM 最大攻撃回数_{EQUIP:ARG:총},ARG
+RETURN RESULT
+
+;一体辺りの最大ＨＩＴ数
+;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_優しさもまた残酷,ARG
+;RETURN 0
+
+;一体辺りの最低ＨＩＴ数
+;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_優しさもまた残酷,ARG
+;RETURN 0
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_優しさもまた残酷, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+
+;　コストの量
+@SKILL_COST_優しさもまた残酷,ARG
+RETURN 22
+
+;　相性
+@SKILL_TYPE_優しさもまた残酷,ARG
+CALLFORM 攻撃相性_{EQUIP:ARG:총},ARG
+RETURN RESULT, GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_優しさもまた残酷
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_優しさもまた残酷,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;====================================================
+;攻撃手段
+;1.物理攻撃 2.魔法攻撃 3.총공격 4.アイテム攻撃(ダメージ計算時の依存ステータスに関わる)
+;関数がない場合はダメージタイプとおなじになる
+;====================================================
+@SKILL_ATTACKTYPE_優しさもまた残酷, ARG
+RETURN GET_攻撃タイプ_NUM("총")
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_優しさもまた残酷, ARG = -1, ARG:1 = -1
+RETURN 0
+
+
+;====================================================
+;耐性変化スキルの貫通強度。こちらは突破したときはもともとの相性値を適用する
+;1 - 耐性(1~99%)を無効にする。対応先も対応元も2022年10月時点ではない
+;2 - 1に加えて、無効に対応する。壁や護符、無効化付与、ブレイク(ウェイトスキル)。
+;3 - 2に加えて、吸収に対応する。ドレイン(ウェイトスキル)
+;4 - 3に加えて、反射に対応する。カーン・ハイパーカウンタ・リフレクト(ウェイトスキル)
+;====================================================
+@SKILL_ADD_PENETRATION_RANK_優しさもまた残酷, ARG
+RETURN 0
+
+;スキルを所持ししていることによるパッシブ効果
+@SKILL_PASSIVE_ADD_PENETRATION_RANK_優しさもまた残酷, L_P, L_T, SKILL_NUM, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM L_P
+#DIM L_T
+#DIM SKILL_NUM
+#DIM L_ダメージタイプ
+#DIM L_攻撃タイプ
+#DIM L_相性
+#DIM GIVE_EFFECT_CHARA
+RETURN 0
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_優しさもまた残酷,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_優しさもまた残酷,ARG
+CALLFORM 射程_{EQUIP:ARG:총},ARG
+RETURN RESULT
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_優しさもまた残酷,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_優しさもまた残酷,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+;계승타입
+;@SKILL_SUCCESSION_TYPE_優しさもまた残酷
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_優しさもまた残酷, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_優しさもまた残酷
+RETURN 0
+
+;没
+;@SKILL_RANK_優しさもまた残酷, ARG = -1
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_優しさもまた残酷,ARG
+RETURN GET_STATE_NUM("SHOCK")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_優しさもまた残酷,ARG
+RETURN GET_TYPE_NUM("전격")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_優しさもまた残酷,ARG
+RETURN 20
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_優しさもまた残酷,ARG
+RETURN 100
+
+;拡散スキルの拡散距離定義関数(このような感じで数値を増やすことで増えていく)
+;1 　　　　　2 　　　　
+;□□◆□□　□◆◆◆□
+;□◆★◆□　◆◆★◆◆
+;@SKILL_SPREAD_優しさもまた残酷,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;
+;詳しい仕様については資料フォルダの解説を参照してください
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_優しさもまた残酷,ARG,ARG:1
+;１ターンに一回しか発動しない
+SIF SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"優しさもまた残酷"))
+	RETURN 0
+SIF FLAG:행동순1 == ARG
+	RETURN 0
+SIF !GET_ROLE_PROP("CAN_USE_GUN", ARG)
+	RETURN 0
+SIF EQUIP:ARG:총 == 0
+	RETURN 0
+;行動者と味方同士でなければ死
+SIF !IS_FRIEND(FLAG:행동순1, ARG)
+	RETURN 0
+;対象と敵同士でなければ死
+SIF IS_FRIEND(ARG, ARG:1)
+	RETURN 0
+;単体攻撃でないと発動しない
+SIF CFLAG:(FLAG:행동순1):타겟 > 16
+	RETURN 0
+;味方対象だと発動しない
+SIF CFLAG:(FLAG:행동순1):타겟 < 7
+	RETURN 0
+;あたってないと発動しない
+SIF !GET_CREC_ACT(FLAG:행동순1, ARG:1, "HIT")
+	RETURN 0
+RETURN 1, CFLAG:(FLAG:행동순1):타겟
+;====================================================
+;カウンター発動条件
+;ARG 		このスキルの持ち主
+;ARG;1 		攻撃してきている相手
+;0 	カウンターが成立したかどうか
+;0:1	カウンターする相手のターゲット番号(ポジションなのでCPOSで返すか、あるいは範囲なら19などで返す)
+;0;1は指定なしなら敵の生存判定・存在判定を行わずにACTIONを実行する
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_優しさもまた残酷,ARG,ARG:1
+;RETURN 0
+
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+@SKILL_DAMAGE_EFFECT_優しさもまた残酷,ARG,ARG:1,ARG:2
+SIF GET_RPG_CFLAG_TAKEOVER(ARG, "星魂") && ARG:1 > 0
+	CALL SET_C_BTL_EFFECT_SINGLE, ARG, ARG:1, "無窮に動く！無窮に", 2
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_優しさもまた残酷,ARG,ARG:1
+;RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_優しさもまた残酷,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+CALL SKILLGAGE_D_SET,ARG,PU_SKILLNUM_GET(ARG,"優しさもまた残酷"),1
+CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@C_BTL_EFFECT_CONTROL_NO_無窮に動く！無窮に,ARG
+RESULTS = 優しさもまた残酷
+
+;スキル名
+@SKILL_NAME_C_BTL_EFFECT_無窮に動く！無窮に,ARG
+RESULTS = 優しさもまた残酷
+
+;重複可能な数
+@C_BTL_EFFECT_COUNT_LIMIT_無窮に動く！無窮に
+RETURN 1
+
+;効果時間　最大10ターンまで、0を指定した場合は戦闘中永続
+@C_BTL_EFFECT_CONTINUE_TIME_無窮に動く！無窮に
+RETURN 2
+;排他となる効果
+;戻り値
+; RESULTS = 効果名
+; RESULT
+; 0 = 排他
+;-1 = 上書き不能
+; 1 = 上書き(対象も1なら相互上書き)
+@C_BTL_EFFECT_EXCLUSIVE_無窮に動く！無窮に
+RESULTS = 
+RETURN 0
+
+;個別の対象条件
+;ARG 	効果を受けるキャラの登録番号
+;ARG:1	効果を与えるキャラの登録番号
+@C_BTL_EFFECT_SPECIAL_TARGET_無窮に動く！無窮に, ARG, ARG:1
+SIF IS_BADSTATE(ARG, "DYING")
+	RETURN 0
+RETURN 1
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_C_BTL_EFFECT_無窮に動く！無窮に, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	CASE "ダメージ倍率"
+			SIF GET_STATE(CFLAG:L_P:상태이상) != "GOOD"
+				RETURN 30
+	;RESULT = 	ランク, 高いほど優先される。またランクによって代入されるタイミングが変わる
+	;			 1~10:基本BASE代入直後(装備・MAG・強化プラグインの影響をうける。要するにBASEを変えたのと同じ挙動)
+	;			11~20:装備・MAG・強化プラグイン変更後の上書き
+	;			21～ :とりあえず未実装
+	;
+	;			ただし、加算で指定している時は1=BASE直後 2=装備での変更後になる
+	;RESULT:1 = 変更する相性値
+	;RESULTS  = "加算"の場合は耐性値に加算する。代入あるいは無指定で上書きする(相性と同じ挙動)。
+	;
+ENDSELECT
+;　説明文の表示
+@SKILL_EXPLAIN_優しさもまた残酷,ARG
+PRINTL １ターンに１度、味方が単体攻撃を行った場合に発動する。
+PRINTL 装備している銃でその敵に対し追撃を行い、高確率で感電状態にする。
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_優しさもまた残酷,ARG
+RETURN 0

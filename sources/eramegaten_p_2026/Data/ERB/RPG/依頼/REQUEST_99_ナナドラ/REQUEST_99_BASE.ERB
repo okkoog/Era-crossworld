@@ -1,0 +1,470 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:REQUEST_99.ERB
+;	Facility	:依頼:099(セブンスドラゴン2020)
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2019/10/15		ナナドラMOD				新規作成
+;	002		2019/10/19		ナナドラMOD				CHAPTER1.5追加
+;	003		2019/10/22		ナナドラMOD				CHAPTER2追加
+;	004		2019/10/24		ナナドラMOD				CHAPTER3追加
+;	005		2019/10/26		ナナドラMOD				CHAPTER4追加
+;	006		2019/10/27		ナナドラMOD				CHAPTER5追加
+;	007		2019/10/30		ナナドラMOD				CHAPTER6追加
+;	008		2019/11/01		ナナドラMOD				CHAPTER7追加
+;	009		2019/11/03		ナナドラMOD				CHAPTERX追加
+;	010		2019/12/08		ナナドラMOD				チェルシー参戦に伴う処理追加
+;	011		2020/04/23		ナナドラMOD				2020-Ⅱ用に処理を追加
+;	012		2020/05/03		ナナドラMOD				PROLOGUE～CHAPTER1(Ⅱ)追加
+;	013		2020/05/05		ナナドラMOD				CHAPTER1.5～CHAPTER2(Ⅱ)追加
+;	014		2020/05/06		ナナドラMOD				CHAPTER3(Ⅱ)追加
+;	015		2020/05/07		ナナドラMOD				CHAPTER4(Ⅱ)追加
+;	016		2020/05/09		ナナドラMOD				CHAPTER5(Ⅱ)追加
+;	017		2020/05/10		ナナドラMOD				CHAPTER6(Ⅱ)追加+依頼フラグ増設
+;	018		2020/05/11		ナナドラMOD				CHAPTER7(Ⅱ)追加
+;	019		2020/05/14		ナナドラMOD				CHAPTERX(Ⅱ)追加
+;	020		2021/01/15		ナナドラMOD				都庁までのハードルが上がったので出現条件を変えた
+;	021		2021/01/30		kamedakeisuke(ﾟдﾟ)		他のEXと共に“（ナナドラMOD）”を“（EX:ナナドラ）”の形式にした
+;	022		2024/02/16		P(bazzile)				進行形式の変更を伴い、一日が経過する処理を次のターンまで進行できない形に変更
+
+;	依頼フラグ:[[依頼:나나도라의뢰]]:0…恥ずかしい女フラグ。0だと回避、1だと発生
+;	依頼フラグ:[[依頼:나나도라의뢰]]:1…13班フラグ。1だとチェルシー加入、それ以外だとカタナコ加入状態
+;	依頼フラグ:[[依頼:나나도라의뢰]]:2…シナリオ決定フラグ。0だと『2020』シナリオ、1だと『2020-Ⅱ』シナリオ
+;	依頼フラグ:[[依頼:나나도라의뢰]]:3…(Ⅱ)CHAPTER6の進行に使用。
+;	依頼フラグ:[[依頼:나나도라의뢰]]:4…(Ⅱ)CHAPTER6の進行に使用。
+;	依頼フラグ:[[依頼:나나도라의뢰]]:5…(Ⅱ)CHAPTER6の進行に使用。
+;	依頼フラグ:[[依頼:나나도라의뢰]]:6…(Ⅱ)CHAPTER6の進行に使用。
+;	依頼フラグ:[[依頼:나나도라의뢰]]:7…日数記録用
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+@GET_REQUEST_NAME_99
+#FUNCTIONS
+RESULTS_F '= "ナナドラ依頼"
+RETURNF RESULTS_F
+
+@PLAYABLE_REQUEST_99
+SIF !GETS_USEABLE_EXTRA_TITLE("セブンスドラゴン")
+	RETURN 0
+SIF 依頼フラグ:[[依頼:나나도라의뢰]]:7 == DAY
+	RETURN 0
+;都庁クリア済みでないとだめ
+;SIF ダンジョンフラグ:26:2 < 4
+;	RETURN 0
+;とりあえずレベル35以上で
+SIF BASE:MASTER:LV < 34
+	RETURN 0
+IF FLAG:나나도라의뢰진행도 == 0 && GETBIT(FLAG:발견ED2,1) && 依頼フラグ:[[依頼:나나도라의뢰]]:2 == 0
+	RESULTS = （EX:나나도라）사람과 용의 이야기
+	RETURN 1
+;2020シナリオ
+ELSEIF FLAG:나나도라의뢰진행도 < 19
+	IF FLAG:나나도라의뢰진행도 == 0
+		RESULTS = （EX:나나도라）카운트、제로 -Time Count,Zero-(1)
+		RETURN 1
+	ELSEIF FLAG:나나도라의뢰진행도 == 1
+		RESULTS = （EX:나나도라）카운트、제로 -Time Count,Zero-(2)
+		RETURN 1
+	;チェルシー加入済み
+	ELSEIF FLAG:나나도라의뢰진행도 > 1 && 依頼フラグ:[[依頼:나나도라의뢰]]:1 == 1
+		;ここからはチェルシーがいて、戦闘に参加できなきゃだめ（パーティにはいなくてもいい）
+		IF FLAG:나나도라의뢰진행도 == 2 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）전장의 부름 -The Warcry-(1)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 3 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）전장의 부름 -The Warcry-(2)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 4 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）생존자 -SKY and The Others-(1)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 5 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）생존자 -SKY and The Others-(2)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 6 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）하늘의 초전자포 -The Jigowatt-(1)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 7 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）하늘의 초전자포 -The Jigowatt-(2)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 8 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）끝나지 않는 월야 -The Lore-A-Lua-
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 9 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）열사의 Ｄ플랜트 -The Tri-Nitro-
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 10 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）눈을 뜬 광기 -The Sleepy-Hollow-
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 11 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）어둠과 대동의 왕 -The Scaber-(1)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 12 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			IF 依頼フラグ:[[依頼:나나도라의뢰]]:0 == 0;アオイちゃん生存ルートならアオイがいて、戦闘に参加できなきゃだめ（パーティにはいなくてもいい）
+				IF GETCHARA([[キャラ:아오이]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:아오이]])) > 0
+					RESULTS = （EX:나나도라）어둠과 대동의 왕 -The Scaber-(2)
+					RETURN 1
+				ENDIF
+			ELSE
+				RESULTS = （EX:나나도라）어둠과 대동의 왕 -The Scaber-(2)
+				RETURN 1
+			ENDIF
+		ELSEIF FLAG:나나도라의뢰진행도 == 13 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			IF 依頼フラグ:[[依頼:나나도라의뢰]]:0 == 0;アオイちゃん生存ルートならアオイがいて、戦闘に参加できなきゃだめ（パーティにはいなくてもいい）
+				IF GETCHARA([[キャラ:아오이]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:아오이]])) > 0
+					RESULTS = （EX:나나도라）고요한 바다 -The Zero-Blue-
+					RETURN 1
+				ENDIF
+			ELSE
+				RESULTS = （EX:나나도라）고요한 바다 -The Zero-Blue-
+				RETURN 1
+			ENDIF
+		ELSEIF FLAG:나나도라의뢰진행도 == 14 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			IF 依頼フラグ:[[依頼:나나도라의뢰]]:0 == 0;アオイちゃん生存ルートならアオイがいて、戦闘に参加できなきゃだめ（パーティにはいなくてもいい）
+				IF GETCHARA([[キャラ:아오이]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:아오이]])) > 0
+					RESULTS = （EX:나나도라）신ＸＸＸＸＸＸＸ인간 -Nyarla of 7th-(1)
+					RETURN 1
+				ENDIF
+			ELSE
+				RESULTS = （EX:나나도라）신ＸＸＸＸＸＸＸ인간 -Nyarla of 7th-(1)
+				RETURN 1
+			ENDIF
+		ELSEIF FLAG:나나도라의뢰진행도 == 15 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			IF 依頼フラグ:[[依頼:나나도라의뢰]]:0 == 0;アオイちゃん生存ルートならアオイがいて、戦闘に参加できなきゃだめ（パーティにはいなくてもいい）
+				IF GETCHARA([[キャラ:아오이]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:아오이]])) > 0
+					RESULTS = （EX:나나도라）신ＸＸＸＸＸＸＸ인간 -Nyarla of 7th-(2)
+					RETURN 1
+				ENDIF
+			ELSE
+				RESULTS = （EX:나나도라）신ＸＸＸＸＸＸＸ인간 -Nyarla of 7th-(2)
+				RETURN 1
+			ENDIF
+		ENDIF
+	;カタナコ加入済み
+	ELSEIF FLAG:나나도라의뢰진행도 > 1
+		;ここからはカタナコがいて、戦闘に参加できなきゃだめ（パーティにはいなくてもいい）
+		IF FLAG:나나도라의뢰진행도 == 2 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）전장의 부름 -The Warcry-(1)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 3 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）전장의 부름 -The Warcry-(2)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 4 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）생존자 -SKY and The Others-(1)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 5 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）생존자 -SKY and The Others-(2)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 6 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）하늘의 초전자포 -The Jigowatt-(1)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 7 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）하늘의 초전자포 -The Jigowatt-(2)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 8 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）끝나지 않는 월야 -The Lore-A-Lua-
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 9 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）열사의 Ｄ플랜트 -The Tri-Nitro-
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 10 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）눈을 뜬 광기 -The Sleepy-Hollow-
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 11 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）어둠과 대동의 왕 -The Scaber-(1)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 12 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			IF 依頼フラグ:[[依頼:나나도라의뢰]]:0 == 0;アオイちゃん生存ルートならアオイがいて、戦闘に参加できなきゃだめ（パーティにはいなくてもいい）
+				IF GETCHARA([[キャラ:아오이]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:아오이]])) > 0
+					RESULTS = （EX:나나도라）어둠과 대동의 왕 -The Scaber-(2)
+					RETURN 1
+				ENDIF
+			ELSE
+				RESULTS = （EX:나나도라）어둠과 대동의 왕 -The Scaber-(2)
+				RETURN 1
+			ENDIF
+		ELSEIF FLAG:나나도라의뢰진행도 == 13 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			IF 依頼フラグ:[[依頼:나나도라의뢰]]:0 == 0;アオイちゃん生存ルートならアオイがいて、戦闘に参加できなきゃだめ（パーティにはいなくてもいい）
+				IF GETCHARA([[キャラ:아오이]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:아오이]])) > 0
+					RESULTS = （EX:나나도라）고요한 바다 -The Zero-Blue-
+					RETURN 1
+				ENDIF
+			ELSE
+				RESULTS = （EX:나나도라）고요한 바다 -The Zero-Blue-
+				RETURN 1
+			ENDIF
+		ELSEIF FLAG:나나도라의뢰진행도 == 14 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			IF 依頼フラグ:[[依頼:나나도라의뢰]]:0 == 0;アオイちゃん生存ルートならアオイがいて、戦闘に参加できなきゃだめ（パーティにはいなくてもいい）
+				IF GETCHARA([[キャラ:아오이]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:아오이]])) > 0
+					RESULTS = （EX:나나도라）신ＸＸＸＸＸＸＸ인간 -Nyarla of 7th-(1)
+					RETURN 1
+				ENDIF
+			ELSE
+				RESULTS = （EX:나나도라）신ＸＸＸＸＸＸＸ인간 -Nyarla of 7th-(1)
+				RETURN 1
+			ENDIF
+		ELSEIF FLAG:나나도라의뢰진행도 == 15 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			IF 依頼フラグ:[[依頼:나나도라의뢰]]:0 == 0;アオイちゃん生存ルートならアオイがいて、戦闘に参加できなきゃだめ（パーティにはいなくてもいい）
+				IF GETCHARA([[キャラ:아오이]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:아오이]])) > 0
+					RESULTS = （EX:나나도라）신ＸＸＸＸＸＸＸ인간 -Nyarla of 7th-(2)
+					RETURN 1
+				ENDIF
+			ELSE
+				RESULTS = （EX:나나도라）신ＸＸＸＸＸＸＸ인간 -Nyarla of 7th-(2)
+				RETURN 1
+			ENDIF
+		ENDIF
+	ENDIF
+;2020-Ⅱシナリオ
+ELSE
+	IF FLAG:나나도라의뢰진행도 == 20
+		RESULTS = （EX:나나도라）202X년 도쿄(1)
+		RETURN 1
+	ELSEIF FLAG:나나도라의뢰진행도 == 21
+		RESULTS = （EX:나나도라）202X년 도쿄(2)
+		RETURN 1
+	ELSEIF FLAG:나나도라의뢰진행도 == 22
+		RESULTS = （EX:나나도라）새로운 전장(0)
+		RETURN 1
+	;チェルシー加入済み
+	ELSEIF FLAG:나나도라의뢰진행도 > 22 && 依頼フラグ:[[依頼:나나도라의뢰]]:1 == 1
+		;ここからはチェルシーがいて、戦闘に参加できなきゃだめ（パーティにはいなくてもいい）
+		IF FLAG:나나도라의뢰진행도 == 23 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）새로운 전장(1)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 24 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）새로운 전장(2)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 25 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）11의 모습
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 26 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）해발238M에서 온 침략자(1)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 27 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）해발238M에서 온 침략자(2)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 28 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）되살아난 광기(1)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 29 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）되살아난 광기(2)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 30 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）크리티컬 포인트
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 31 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）천공의 전장(1)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 32 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）천공의 전장(2)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 33 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）거대유적의 왕
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 34 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）수도고속　심연으로 내려가는 길
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 35 && ( GETCHARA([[キャラ:첼시]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:첼시]])) > 0)
+			RESULTS = （EX:나나도라）신ＸＸＸＸＸＸＸ인간
+			RETURN 1
+		ENDIF
+	;カタナコ加入済み
+	ELSEIF FLAG:나나도라의뢰진행도 > 22
+		;ここからはカタナコがいて、戦闘に参加できなきゃだめ（パーティにはいなくてもいい）
+		IF FLAG:나나도라의뢰진행도 == 23 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）새로운 전장(1)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 24 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）새로운 전장(2)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 25 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）11의 모습
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 26 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）해발238M에서 온 침략자(1)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 27 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）해발238M에서 온 침략자(2)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 28 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）되살아난 광기(1)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 29 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）되살아난 광기(2)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 30 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）크리티컬 포인트
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 31 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）천공의 전장(1)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 32 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）천공의 전장(2)
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 33 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）거대유적의 왕
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 34 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）수도고속　심연으로 내려가는 길
+			RETURN 1
+		ELSEIF FLAG:나나도라의뢰진행도 == 35 && ( GETCHARA([[キャラ:카타나코]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:카타나코]])) > 0)
+			RESULTS = （EX:나나도라）신ＸＸＸＸＸＸＸ인간
+			RETURN 1
+		ENDIF
+	ENDIF
+ENDIF
+
+@EXPLAIN_REQUEST_99
+IF FLAG:나나도라의뢰진행도 == 0 && GETBIT(FLAG:발견ED2,1) && 依頼フラグ:[[依頼:나나도라의뢰]]:2 == 0
+	CALL EXPLAIN_REQUEST_99_00
+;2020シナリオ
+ELSEIF FLAG:나나도라의뢰진행도 < 19
+	IF FLAG:나나도라의뢰진행도 == 0
+		CALL EXPLAIN_REQUEST_99_01
+	ELSEIF FLAG:나나도라의뢰진행도 == 1
+		CALL EXPLAIN_REQUEST_99_02
+	ELSEIF FLAG:나나도라의뢰진행도 == 2
+		CALL EXPLAIN_REQUEST_99_03
+	ELSEIF FLAG:나나도라의뢰진행도 == 3
+		CALL EXPLAIN_REQUEST_99_04
+	ELSEIF FLAG:나나도라의뢰진행도 == 4
+		CALL EXPLAIN_REQUEST_99_05
+	ELSEIF FLAG:나나도라의뢰진행도 == 5
+		CALL EXPLAIN_REQUEST_99_06
+	ELSEIF FLAG:나나도라의뢰진행도 == 6
+		CALL EXPLAIN_REQUEST_99_07
+	ELSEIF FLAG:나나도라의뢰진행도 == 7
+		CALL EXPLAIN_REQUEST_99_08
+	ELSEIF FLAG:나나도라의뢰진행도 == 8
+		CALL EXPLAIN_REQUEST_99_09
+	ELSEIF FLAG:나나도라의뢰진행도 == 9
+		CALL EXPLAIN_REQUEST_99_10
+	ELSEIF FLAG:나나도라의뢰진행도 == 10
+		CALL EXPLAIN_REQUEST_99_11
+	ELSEIF FLAG:나나도라의뢰진행도 == 11
+		CALL EXPLAIN_REQUEST_99_12
+	ELSEIF FLAG:나나도라의뢰진행도 == 12
+		CALL EXPLAIN_REQUEST_99_13
+	ELSEIF FLAG:나나도라의뢰진행도 == 13
+		CALL EXPLAIN_REQUEST_99_14
+	ELSEIF FLAG:나나도라의뢰진행도 == 14
+		CALL EXPLAIN_REQUEST_99_15
+	ELSEIF FLAG:나나도라의뢰진행도 == 15
+		CALL EXPLAIN_REQUEST_99_16
+	ENDIF
+;2020-Ⅱシナリオ
+ELSE
+	IF FLAG:나나도라의뢰진행도 == 20
+		CALL EXPLAIN_REQUEST_99_21
+	ELSEIF FLAG:나나도라의뢰진행도 == 21
+		CALL EXPLAIN_REQUEST_99_22
+	ELSEIF FLAG:나나도라의뢰진행도 == 22
+		CALL EXPLAIN_REQUEST_99_23
+	ELSEIF FLAG:나나도라의뢰진행도 == 23
+		CALL EXPLAIN_REQUEST_99_24
+	ELSEIF FLAG:나나도라의뢰진행도 == 24
+		CALL EXPLAIN_REQUEST_99_25
+	ELSEIF FLAG:나나도라의뢰진행도 == 25
+		CALL EXPLAIN_REQUEST_99_26
+	ELSEIF FLAG:나나도라의뢰진행도 == 26
+		CALL EXPLAIN_REQUEST_99_27
+	ELSEIF FLAG:나나도라의뢰진행도 == 27
+		CALL EXPLAIN_REQUEST_99_28
+	ELSEIF FLAG:나나도라의뢰진행도 == 28
+		CALL EXPLAIN_REQUEST_99_29
+	ELSEIF FLAG:나나도라의뢰진행도 == 29
+		CALL EXPLAIN_REQUEST_99_30
+	ELSEIF FLAG:나나도라의뢰진행도 == 30
+		CALL EXPLAIN_REQUEST_99_31
+	ELSEIF FLAG:나나도라의뢰진행도 == 31
+		CALL EXPLAIN_REQUEST_99_32
+	ELSEIF FLAG:나나도라의뢰진행도 == 32
+		CALL EXPLAIN_REQUEST_99_33
+	ELSEIF FLAG:나나도라의뢰진행도 == 33
+		CALL EXPLAIN_REQUEST_99_34
+	ELSEIF FLAG:나나도라의뢰진행도 == 34
+		CALL EXPLAIN_REQUEST_99_35
+	ELSEIF FLAG:나나도라의뢰진행도 == 35
+		CALL EXPLAIN_REQUEST_99_36
+	ENDIF
+ENDIF
+
+@REQUEST_99
+IF FLAG:나나도라의뢰진행도 == 0 && GETBIT(FLAG:발견ED2,1) && 依頼フラグ:[[依頼:나나도라의뢰]]:2 == 0
+	CALL REQUEST_99_00
+;2020シナリオ
+ELSEIF FLAG:나나도라의뢰진행도 < 19
+	IF FLAG:나나도라의뢰진행도 == 0
+		CALL REQUEST_99_01
+	ELSEIF FLAG:나나도라의뢰진행도 == 1
+		CALL REQUEST_99_02
+	ELSEIF FLAG:나나도라의뢰진행도 == 2
+		CALL REQUEST_99_03
+	ELSEIF FLAG:나나도라의뢰진행도 == 3
+		CALL REQUEST_99_04
+	ELSEIF FLAG:나나도라의뢰진행도 == 4
+		CALL REQUEST_99_05
+	ELSEIF FLAG:나나도라의뢰진행도 == 5
+		CALL REQUEST_99_06
+	ELSEIF FLAG:나나도라의뢰진행도 == 6
+		CALL REQUEST_99_07
+	ELSEIF FLAG:나나도라의뢰진행도 == 7
+		CALL REQUEST_99_08
+	ELSEIF FLAG:나나도라의뢰진행도 == 8
+		CALL REQUEST_99_09
+	ELSEIF FLAG:나나도라의뢰진행도 == 9
+		CALL REQUEST_99_10
+	ELSEIF FLAG:나나도라의뢰진행도 == 10
+		CALL REQUEST_99_11
+	ELSEIF FLAG:나나도라의뢰진행도 == 11
+		CALL REQUEST_99_12
+	ELSEIF FLAG:나나도라의뢰진행도 == 12
+		CALL REQUEST_99_13
+	ELSEIF FLAG:나나도라의뢰진행도 == 13
+		CALL REQUEST_99_14
+	ELSEIF FLAG:나나도라의뢰진행도 == 14
+		CALL REQUEST_99_15
+	ELSEIF FLAG:나나도라의뢰진행도 == 15
+		CALL REQUEST_99_16
+	ENDIF
+;2020-Ⅱシナリオ
+ELSE
+	IF FLAG:나나도라의뢰진행도 == 20
+		CALL REQUEST_99_21
+	ELSEIF FLAG:나나도라의뢰진행도 == 21
+		CALL REQUEST_99_22
+	ELSEIF FLAG:나나도라의뢰진행도 == 22
+		CALL REQUEST_99_23
+	ELSEIF FLAG:나나도라의뢰진행도 == 23
+		CALL REQUEST_99_24
+	ELSEIF FLAG:나나도라의뢰진행도 == 24
+		CALL REQUEST_99_25
+	ELSEIF FLAG:나나도라의뢰진행도 == 25
+		CALL REQUEST_99_26
+	ELSEIF FLAG:나나도라의뢰진행도 == 26
+		CALL REQUEST_99_27
+	ELSEIF FLAG:나나도라의뢰진행도 == 27
+		CALL REQUEST_99_28
+	ELSEIF FLAG:나나도라의뢰진행도 == 28
+		CALL REQUEST_99_29
+	ELSEIF FLAG:나나도라의뢰진행도 == 29
+		CALL REQUEST_99_30
+	ELSEIF FLAG:나나도라의뢰진행도 == 30
+		CALL REQUEST_99_31
+	ELSEIF FLAG:나나도라의뢰진행도 == 31
+		CALL REQUEST_99_32
+	ELSEIF FLAG:나나도라의뢰진행도 == 32
+		CALL REQUEST_99_33
+	ELSEIF FLAG:나나도라의뢰진행도 == 33
+		CALL REQUEST_99_34
+	ELSEIF FLAG:나나도라의뢰진행도 == 34
+		CALL REQUEST_99_35
+	ELSEIF FLAG:나나도라의뢰진행도 == 35
+		CALL REQUEST_99_36
+	ENDIF
+ENDIF
+CALL RESET_ANNOUNCE_FLAG
+

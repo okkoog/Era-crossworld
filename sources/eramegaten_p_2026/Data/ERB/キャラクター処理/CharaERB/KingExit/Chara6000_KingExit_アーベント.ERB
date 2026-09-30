@@ -1,0 +1,232 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara6000_アーベント.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author				Reason
+;	001		2023/06/29		路傍の木				新規作成
+;	
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;--------------------------------------------------
+;キャラクター独自変数名称定義関数
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:아벤트_KE]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_EV
+	;周回時にリセットされる数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_EV
+	;周回時にリセットされる文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる数値型変数です
+	;スキルゲージHとほぼ互換です。基本的にはゲージHが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる文字列型変数です
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる数値型変数
+	;スキルゲージFとほぼ互換です。基本的にはゲージFが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = KE_TPゲージ
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる文字列型変数
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS
+
+;====================================================
+;戦闘開始時の処理
+;====================================================
+@SKILL_BATTLE_START_CHARA_[[キャラ:아벤트_KE]], ARG, ARG:1
+;戦闘開始時、0～30の範囲でTP獲得
+CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", MIN(RAND:31 + GET_RPG_CFLAG_DUNGEON(ARG,　"KE_TPゲージ"), 100)
+
+;====================================================
+;戦闘終了時の処理
+;====================================================
+@SKILL_BATTLE_END_CHARA_[[キャラ:아벤트_KE]], ARG, ARG:1
+;戦闘終了時、TP10消失
+CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", MAX(GET_RPG_CFLAG_DUNGEON(ARG,　"KE_TPゲージ") - 10, 0)
+
+;====================================================
+;ターンエンド時の処理
+;====================================================
+@SKILL_TURNEND_CHARA_[[キャラ:아벤트_KE]], ARG, ARG:1
+;聖剣装備時TP増加処理
+IF EQUIP:ARG:검 == GETNUM(ITEM, "KE＿성검")
+	;ここに来るまでにゲージの持ち主が死んでいる場合は飛ばす
+	SIF CPOS(ARG) <= 0
+		RETURN
+	SIF GET_STATE(CFLAG:ARG:상태이상) == "DYING"
+		RETURN
+	;TP10獲得
+	CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", MIN(10 + GET_RPG_CFLAG_DUNGEON(ARG,　"KE_TPゲージ"), 100)
+	CUSTOMDRAWLINE =
+	SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") == 100
+		SETCOLOR 0xffef00
+	PRINTFORML
+	PRINTFORML 성검의 효과!
+	PRINTFORM [{CPOS(ARG),2}] %CALLNAME:ARG%    :  +10 　
+	IF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") == 100
+		PRINTFORML <<ＴＰ　ＦＵＬＬＹ　ＣＨＡＲＧＥＤ！>>
+	ELSE
+		PRINTFORML <<ＴＰ>>
+	ENDIF
+	PRINTFORML
+	RESETCOLOR
+ENDIF
+
+;====================================================
+;行動によるスキルゲージ操作
+;各キャラクターの通常の行動後に全キャラで呼び出される
+;ARG:		このスキルの持ち主のキャラ番号
+;ARG:1		行動したキャラクターのキャラ番号
+;
+;RESULT 		獲得したゲージの量を返すことで獲得量を表示させる。つまり、他人の行動に反応させることなども可能。
+;RESULT:1		獲得表示のときの文字色を指定できる。ゲージが溜まったときの表示わけなどに
+;RESULTS		ゲージの名称 「<<XXXX>>」という形で表示される
+;RESULTS:1		ゲージの単位。半角の%を使いたい場合は「\%」と言うかたちで退避記号を使うと良い
+;RESULTS;2		色指定以外の要素を使わずに文字列を返す。ゲージ式の獲得量で表現したい場合などに
+;====================================================
+@SKILLGAGE_CHARGE_CHARA_[[キャラ:아벤트_KE]], ARG, ARG:1
+#DIM L_GP
+#DIM L_GP_LIMIT
+#DIM L_COLOR
+
+;TPの上限は１００
+L_GP_LIMIT = 100
+;上限に到達している場合はリターン
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") >= L_GP_LIMIT
+	RETURN 0
+;自分の行動の場合
+L_GP = 0
+L_COLOR = 0xffef00
+
+IF ARG == ARG:1
+	;攻撃系の技以外なら基礎値10を加算
+	SIF !GET_CREC_ACT_SUM(ARG, "적", "ATTACK")
+		L_GP = 10
+	;誰か１体に当てたらTP上昇量が10未満なら10にする
+	SIF GET_CREC_ACT_SUM(ARG, "적", "HIT")
+		L_GP = MAX(L_GP, 10)
+	;バステが入ったらTP上昇量が10未満なら10にする
+	SIF GET_CREC_ACT_SUM(ARG, "적", "BADSTATE")
+		L_GP = MAX(L_GP, 10)
+	;バステが外れたらTP上昇量が5未満なら5にする
+	SIF GET_CREC_ACT_SUM(ARG, "적", "BSAVOID")
+		L_GP = MAX(L_GP, 5)
+
+	;２hit以上、もしくはクリティカル、もしくは弱点に当てたらボーナス
+	SIF GET_CREC_ACT_SUM(ARG, "적", "HIT") >= 2 || GET_CREC_ACT_SUM(ARG, "적", "CRITICAL") > 0 || GET_CREC_ACT_SUM(ARG, "적", "WEAK") > 0
+		L_GP += 5
+
+	;専用技はTPにボーナス
+	SIF IS_PU_SKILLNUM(CFLAG:ARG:입력행동) && L_GP != 0
+		L_GP += 5
+ENDIF
+
+;ダメージを受けた又はカウンター、トリガー以外の攻撃を受けたら
+;ゲージが増える。増加量は最大体力に対するダメージ割合％分の数値。
+SIF GET_CREC_ACT(ARG:1, ARG, "HIT")
+	L_GP += MAX(100 * CFLAG:ARG:현데미지 / MAXBASE:ARG:ＨＰ, 2)
+
+CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", MIN(L_GP + GET_RPG_CFLAG_DUNGEON(ARG,　"KE_TPゲージ"), L_GP_LIMIT)
+IF GET_RPG_CFLAG_DUNGEON(ARG,"KE_TPゲージ") == L_GP_LIMIT
+	RESULTS = ＴＰ　ＦＵＬＬＹ　ＣＨＡＲＧＥＤ！
+	RESULT:1 = L_COLOR
+ELSE
+	RESULTS = ＴＰ
+ENDIF
+RESULTS:1 = %" "%
+RETURN L_GP
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_CHARA_[[キャラ:아벤트_KE]], ARG
+;何らかの理由で１００を超えていた場合１００に補正。
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") > 100
+	CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", 100
+IF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") == 100
+	RESULTS '= SET_COLOR_TAG(@"ＴＰ：{GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ")}／100", "0xffef00")
+ELSE
+	RESULTS '= SET_COLOR_TAG(@"ＴＰ：{GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ")}／100", "0x999999")
+ENDIF
+RETURN 3
+
+@SKILL_EX_DISPLAY_CHARA_[[キャラ:아벤트_KE]], ARG, ARGS
+RESULTS = 
+IF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") >= 100
+	RESULTS += SET_COLOR_TAG(@"%"TP FULLY CHARGED", SKILL_EX_DISPLAY_LENS, LEFT%", TOSTR(0xffef00))
+ELSE
+	LOCALS = ＴＰ：{GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ")} ／100　
+	RESULTS += SET_COLOR_TAG(@"%LOCALS, SKILL_EX_DISPLAY_LENS, LEFT%", TOSTR(0x999999))
+ENDIF
+RETURN 1

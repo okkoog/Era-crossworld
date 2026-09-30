@@ -1,0 +1,136 @@
+﻿;-------------------------------------------------
+;九角天童個人イベント　今のところ単発の個別イベント　
+;-------------------------------------------------
+@INDIVIDUAL_EVENT_K5711, ARG, ARG:1 = 0, ARG:2 = -1
+#LOCALSIZE 3
+#LOCALSSIZE 1
+;ARG:0　キャラ番号
+;ARG:1　関数種類　1,開放条件　2,타이틀　3,이벤트
+;ARG:2　イベント番号（0～63まで）
+
+;リストにキャラを表示する条件
+IF ARG:1 == 0
+	;イベント0で全部終了
+	SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+		RETURN 0
+	;EXTRAフィルタ自体か魔人学園にフィルタかかってると出てこない
+	SIF !GETS_USEABLE_EXTRA_TITLE("東京魔人学園")
+		RETURN 0
+	RETURN 1
+ENDIF
+
+SELECTCASE ARG:2
+CASE 0
+	;解放条件
+	IF ARG:1 == 1
+		;上位陥落してないと出てこない
+		SIF 陥落(ARG) < 2 
+			RETURN 0
+		;天童がLV75以上じゃないとダメ
+		SIF BASE:ARG:LV < 75
+			RETURN 0
+		RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방, ARG:2)
+			;타이틀
+			RESULTS = 봉인, 해제
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			RESULTS = (%CALLNAME:ARG%이(가) LV75 이상, 및 상위 함락 완료)
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		$INDIVIDUAL_EVENT_K5711_GOTO1
+		CUSTOMDRAWLINE =
+		PRINTFORML 
+		PRINTFORML 
+		PRINTFORMW %CALLNAME:ARG%이(가) 당신의 손에 떨어진 지 얼마간 지난, 어느 날의 낮 무렵。
+		PRINTFORML 
+
+		;친애
+		IF TALENT:ARG:6
+			PRINTFORM 침대에 걸터앉아 온화한 분위기의 %CALLNAME:ARG%와(과) 이야기를 나누고 있을 때, 
+		;창부
+		ELSEIF TALENT:ARG:7
+			PRINTFORM %CALLNAME:ARG%와(과) 대낮부터 침대에서 음란하게 어우러지고 있을 때, 
+		;예속
+		ELSEIF TALENT:ARG:8
+			PRINTFORM 새끼줄에 묶여 바닥에서 애벌레처럼 뒹굴고 있는 %CALLNAME:ARG%을(를) 바라보며 책을 읽고 있을 때, 
+		ELSE
+		ENDIF
+
+
+		PRINTFORMW 당신은 문득 생각했다。
+		PRINTFORML 
+		PRINTFORML 이만큼이나 당신 색으로 물든 %CALLNAME:ARG%라면, 이제 배신할 일은 없다。
+		PRINTFORML %CALLNAME:ARG%의 힘을 묶고 있는 봉인을, 슬슬 풀어줘도 되지 않을까, 하고。
+		PRINTFORMW 지금까지는 외법의 힘을 경계하여 %CALLNAME:ARG%의 몸에 영부를 붙이고, 이 방에도 영구로 결계를 치고 있었다。
+		PRINTFORML 
+		PRINTFORML 게다가 원래는 귀도중을 이끌던 수령이다, 본래의 힘을 되찾는다면 전력으로서도 손색이 없으리라。
+		PRINTFORML 우선 몸가짐을 정돈하고, 그 사실을 %CALLNAME:ARG%에게 일러주자 잠시 눈을 크게 뜨더니, 이내 무언가를 생각하는 표정으로 자신의 턱을 문질렀다。
+		PRINTFORML 「괜찮은 거냐? 지금까지 밖으로 내보낼 때도 영부나 영구를 차게 했었잖나?」
+		PRINTFORMW 역으로 이쪽에서, 이제 와서 배신할 셈이냐? 하고 되물어주자, %CALLNAME:ARG%은(는) 코웃음을 치며 다음 말을 입에 담았다。
+		PRINTFORML 
+
+		;친애
+		IF TALENT:ARG:친애
+			PRINTFORML 「바보냐。%CSTR:일인칭%은(는) 이미 %CSTR:이인칭%에게 푹 빠져 있다고? 알면서 일부러 말하긴」
+			PRINTFORMW 그렇게 말하며 살짝 붉게 물든 뺨을 손가락으로 긁적이더니, 입가에 온화한 미소를 띄웠다。
+		;창부
+		ELSEIF TALENT:ARG:창부
+			PRINTFORML 「이렇게 몸 궁합이 끝내주는데 떨어질 수 있을 리가 없잖냐。농담은 집어치우라고」
+			PRINTFORMW 그렇게 말하며 당신의 가슴에 손을 얹고는, 색기 넘치는 눈빛을 보내왔다。
+		;예속
+		ELSEIF TALENT:ARG:예속
+			PRINTFORML 「%CSTR:일인칭%은(는) 이미 몸도 마음도 %CSTR:이인칭%의 것이야。……그렇지? 주인님?」
+			PRINTFORMW 그렇게 말하며 어딘가 결의가 담긴 진지한 눈빛을 보내왔다。
+		ELSE
+		ENDIF
+
+
+		PRINTFORML 
+		PRINTFORMW 그렇게까지 말한다면 괜찮겠지, 하고 당신은 오늘로 %CALLNAME:ARG%의 봉인을 해제하기로 결정했다。
+		PRINTFORML
+		PRINTFORML 당신은 우선 한쪽 벽으로 다가가, 벽 중앙에 붙여진 다른 것보다 커다란 영부를 찢는다。
+		PRINTFORML %CALLNAME:ARG%는 찢을 수 없고, 당신만이 찢을 수 있도록 준비시킨 결계의 중심이 되는 영부다。
+		PRINTFORMW 그 영부가 효력을 잃자, 서서히 실내에 붙여진 영부들이 힘을 잃어가며, 최종적으로는 결계의 소멸로 이어진다。
+		PRINTFORML 결계가 소멸하자 %CALLNAME:ARG%의 몸에서 검은 힘이 단숨에 넘쳐흘렀지만, %CALLNAME:ARG%은(는) 금세 그것을 억눌러 보였다。
+		PRINTFORML 
+		PRINTFORML 「……%CSTR:이인칭%와(과) 싸우는 사이에, %CSTR:일인칭%도 모르는 새에 강해져 있었다는 건가」
+		PRINTFORML 「%CSTR:일인칭%에게 아직 성장 여지가 남아있었다니 놀랍구만」
+		PRINTFORMW 손바닥을 쥐었다 폈다 하며, %CALLNAME:ARG%은(는) 넘쳐흐르는 새로운 힘에 만족스러운 모양이다。
+
+		CFLAG:ARG:이벤트가입 = 1
+
+		CALL CLEAR_ALL_SKILL, ARG
+		CALL CLEAR_LEARNED_SKILL_ALL, ARG
+		CALL SET_LEARN_SKILL_[[キャラ:텐도]], ARG, 1
+
+		PRINTFORML 
+		PRINTFORML …………
+		PRINTFORML ……
+		PRINTFORMW …
+		PRINTFORML 
+		PRINTFORMW 【%CALLNAME:ARG%이(가) 본래의 힘을 되찾아, 스킬 구성이 변경되었습니다】
+
+		RETURN 1
+	ENDIF
+CASE 1
+	;解放条件
+	IF ARG:1 == 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			RESULTS = 
+		ELSE
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		RETURN 1
+	ENDIF
+ENDSELECT
+RETURN 0
+
+

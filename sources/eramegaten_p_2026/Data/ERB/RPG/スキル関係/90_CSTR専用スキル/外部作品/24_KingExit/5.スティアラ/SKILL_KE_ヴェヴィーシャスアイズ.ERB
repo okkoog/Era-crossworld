@@ -1,0 +1,132 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_KE_ヴェヴィーシャスアイズ, ARG
+IF FLAG:행동순1 == ARG
+	RESULTS = 베비셔스 아이즈
+ELSE
+	RESULTS = ｳﾞｪｳﾞｨｰｼｬｽｱｲｽﾞ
+ENDIF
+
+;　명중
+@SKILL_HITRATE_KE_ヴェヴィーシャスアイズ, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_KE_ヴェヴィーシャスアイズ, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_KE_ヴェヴィーシャスアイズ, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_KE_ヴェヴィーシャスアイズ, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_KE_ヴェヴィーシャスアイズ, ARG
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 70
+	RETURN 1
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_KE_ヴェヴィーシャスアイズ, ARG
+IF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 70
+	RESULTS = %" 70ＴＰ"%
+	RETURN 0
+ENDIF
+RETURN 50
+
+;　相性
+@SKILL_TYPE_KE_ヴェヴィーシャスアイズ, ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_KE_ヴェヴィーシャスアイズ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_KE_ヴェヴィーシャスアイズ, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_KE_ヴェヴィーシャスアイズ, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_KE_ヴェヴィーシャスアイズ, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_KE_ヴェヴィーシャスアイズ, ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_KE_ヴェヴィーシャスアイズ, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;속도보정
+@SKILL_SPEED_KE_ヴェヴィーシャスアイズ, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_KE_ヴェヴィーシャスアイズ
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_KE_ヴェヴィーシャスアイズ, ARG, ARG:1, SKILL_NUM
+#LOCALSIZE 4
+#DIM SKILL_NUM
+
+;ゲージ再回収できる様に起動前にTP70消費。
+CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", 70, "-="
+
+;全能力ダウン構文
+CALL SKILL_SET_カジャンダ, ARG, ARG:1, "攻撃_防御_魔法威力_魔法効果_命中_回避", -4, "範囲"
+
+;Dゲージ6。使用後5ターンクールタイム。
+CALL SKILLGAGE_D_SET, ARG, PU_SKILLNUM_GET(ARG,"KE_ヴェヴィーシャスアイズ"),5
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_KE_ヴェヴィーシャスアイズ,ARG
+IF PU_SKILLGAGE_D_GET(ARG,"KE_ヴェヴィーシャスアイズ") == 0
+	RESULTS '= SET_COLOR_TAG(@"ヴェヴィーシャスアイズ：STAND BY！", "#ffef00")
+ELSE
+	RESULTS = V아이즈:CT{PU_SKILLGAGE_D_GET(ARG,"KE_ヴェヴィーシャスアイズ")}
+ENDIF
+RETURN 3
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_KE_ヴェヴィーシャスアイズ, ARG
+PRINTL 
+PRINTL 진실을 꿰뚫어 보는 성마법 『베비셔스 아이즈』.
+PRINTL 적 전체의 능력치를 1단계 다운시킨다.
+PRINTL 
+PRINTL 옥중 성직자 스티아라의 스킬(CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_KE_ヴェヴィーシャスアイズ, ARG
+;クールタイムが0のときのみ
+SIF SKILLGAGE_D_GET(ARG, PU_SKILLNUM_GET(ARG, "KE_ヴェヴィーシャスアイズ")) != 0
+	RETURN 0
+;ゲージが70以上のときのみ
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 70
+	RETURN 0
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_KE_ヴェヴィーシャスアイズ, ARG
+RESULTS:0 = 적 전체의 능력치를 1단계 다운시킨다.
+RESULTS:1 = TP消費 70
+SIF ARG >= 0 && GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 70
+	RESULTS:1 = %RESULTS:1%(不足)

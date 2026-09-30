@@ -1,0 +1,6155 @@
+﻿;-------------------------------------------------
+;奥村春口上（キャラクターの名前を入れる、下にコンセプトなど一言あれば入れる）
+;
+;
+;-------------------------------------------------
+
+;-------------------------------------------------
+;eraMegaten専用口上テンプレート
+;4661と4661をキャラ番号に置換し、Y1を助手のキャラ番号に置換してください
+;ただし、キャラ番号が一桁のキャラの場合、4661,Y1は1、4661は01のように変えてください
+;そしてコマンド内の適当な条件の下のPRINTFORMWの後ろに半角スペースを置いてセリフを追加してください
+;口上を追加しないコマンドは無記入でも構いませんが、CFLAG:XXXの頭に『;』をつけてコメントアウトすると尚良いでしょう
+;エキストラ構文など、コメントアウトされている構文を使う際には、『;』を外してコメントアウトを解除する必要があります
+;最後にread meにも目を通しておくことをお勧めします
+;-------------------------------------------------
+
+;-------------------------------------------------
+;汎用口上の作成に使用する場合は、4661→キャラ番号ではなく、
+;K[[キャラ:하루_P5]]→PUB会話タイプ番号　へと変換してご使用ください
+;-------------------------------------------------
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_K[[キャラ:하루_P5]]_ASSI.ERB
+;	Facility	:会話タイプ：助手時口上
+;
+;	Modification Data:
+;	Edit	Date			Author					Reason
+;	001		2023/4			男装巨乳萌				新規作成　調教開始時（一回のみ）、調教開始時、調教終了時
+;	002		2023/09/06		絹延					処女喪失処理修正　TFLAG:20が恋慕系陥落を保証しなくなった修正の対応。
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;ライセンスについて
+;	・基本項目(許可する項目を"○"に、許可しない項目を"×"に変更してください。)
+;	+----+----+-------------------------------+
+;	|番号|許可|ライセンス内容                 |
+;	+----+----+-------------------------------+
+;	|   1| ○ | 処理上のバグ修正              |
+;	+----+----+-------------------------------+
+;	|   2| ○ | 口上の誤字・脱字の修正        |
+;	+----+----+-------------------------------+
+;	|   3| ○ | 口上まとめへの収録            |
+;	+----+----+-------------------------------+
+;	|   4| ○ | 口上の新規追加                |
+;	+----+----+-------------------------------+
+;	|   5| ○ | 既存口上の改変                |
+;	+----+----+-------------------------------+
+;	|   6| ○ | 改変した口上の自由な再配布    |
+;	+----+----+-------------------------------+
+;	|   7| ○ | 口上内容の転載                |
+;	+----+----+-------------------------------+
+
+;--------------------------------------------------
+;口上セレクト機能：口上説明
+;--------------------------------------------------
+;この関数のコメントアウトを外すと、口上の選択時に選択肢として候補にあがります
+;既に口上のあるキャラや会話タイプの別版の口上を作成する時に利用してください
+;その際、この関数を含めたこのファイル内の関数名すべてに_任意の1-49(汎用口上なら1-9)の数字を加えてください
+;例： EVENTTRAIN_K[[キャラ:하루_P5]] → EVENTTRAIN_K[[キャラ:하루_P5]]_12
+;--------------------------------------------------
+;@セレクト口上説明_K[[キャラ:하루_P5]],ARG = 0
+;SIF ARG == 1
+;	RETURN 0
+;;口上名
+;PRINTFORML ここに口上の名称を記述してください
+;;口上説明文
+;PRINTFORML    ここに口上の簡単な説明や注意点などを記述してください
+
+;--------------------------------------------------
+;EVENTTRAIN関係（4661をキャラ番号に置換）
+;調教開始時のセリフ CFLAG 201～219を使用
+;--------------------------------------------------
+@EVENTTRAIN_K[[キャラ:하루_P5]]
+CALL 口上変数初期化
+;--------------------------------------------------
+;エキストラモード構文　CFLAG:220を使用
+;はいを選択した時に初調教時に口上設定用の素質に変更できます
+;下記に処女化する場合の構文をサンプルとして載せておきます
+;--------------------------------------------------
+;IF CFLAG:220 == 0
+;	PRINTL 処女モードに移行しますか？
+;	PRINTL [0] はい
+;	PRINTL [1] いいえ
+;	$INPUT_LOOP
+;	INPUT
+;	IF RESULT == 0
+;		PRINTFORMW ―処女モードに素質、能力を変更します―
+;		TALENT:TARGET:0 = 1
+;		ABL:TARGET:4 = 0
+;		EXP:TARGET:0 = 0
+;	ELSEIF RESULT == 1
+;		PRINTFORMW ―通常モードで調教を開始します―
+;	ELSE
+;		GOTO INPUT_LOOP
+;	ENDIF
+;	CFLAG:220 = 1
+;ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、4661を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL EVENTTRAIN_PY1_K[[キャラ:하루_P5]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL EVENTTRAIN_PY1_K[[キャラ:하루_P5]]
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;--------------------------------------------------
+;簡易助手口上の発動時に初調教時口上をスキップ（Y1を助手のキャラ番号にする）
+;複数人いる際には、SIF NO:ASSI == Y1 || NO:ASSI == Z1と追加していく
+;--------------------------------------------------
+;IF CFLAG:201 == 0 && ASSI > 0
+;	SIF NO:ASSI == Y1
+;		CFLAG:201 =1
+;ENDIF
+;-------------------------------------------------
+;調教開始時（一回のみ） CFLAG201
+;-------------------------------------------------
+DRAWLINE
+;初調教時
+IF CFLAG:201 == 0 && TALENT:연모 == 0
+	WSTR:(K++) = %CALLNAME:TARGET%は、時間通りに%CALLNAME:MASTER%の部屋へやってきた。
+	WSTR:(K++) = 丁寧に戸がノックされたので、%CALLNAME:TARGET%を部屋に招き入れる。
+	IF ダンジョンフラグ:13:14 >= 8
+		WSTR:(K++) = 部屋に入った%CALLNAME:TARGET%は、少し目を伏せ緊張した様子で、自分が足を踏み入れた部屋の異様な雰囲気にも気づいた様子はなかった。
+		WSTR:(K++) = 「……あ、あの、あの時はありがとうございました。　だけど、あの時の事は忘れてもらえませんか……？」
+		WSTR:(K++) = よほど恥ずかしかったのか、顔を上げることも出来ずに消え入るような声で%CALLNAME:TARGET%は懇願する。
+		WSTR:(K++) = 触手に身体を体中をまさぐられて悶える姿を、カメラの前で晒されたのだ。
+		WSTR:(K++) = 懇願するうちにその時の事を思い出したのか、%CALLNAME:TARGET%は身震いしながらも、何やら息を荒げている。。
+		WSTR:(K++) = %CALLNAME:TARGET%のあごに手をかけてうつむく顔を強引に起こすと、%CALLNAME:TARGET%の顔は真っ赤に高揚している。
+		WSTR:(K++) = 「きゃっ、な、何をするんですか……」
+		WSTR:(K++) = 弱弱しい抗議を無視して、視線を下に進めていった。
+		WSTR:(K++) = 栗色の髪を真ん中で左右に分けたショートボブで、毛先はふわっとパーマが掛かっている。
+		WSTR:(K++) = ピンクのニットは身体のラインが出るような物ではないが、触手に絡みつかれていた時を思い出せばスタイルの良さは分かる。
+		WSTR:(K++) = 「ひっ……っ」
+		WSTR:(K++) = 視線に何を感じたのか、身をすくめた%CALLNAME:TARGET%を強引に抱き寄せる。
+		WSTR:(K++) = 触手の悪魔による凌辱は、%CALLNAME:TARGET%の心身に消えない傷痕を刻み込んでいる様だ。
+		WSTR:(K++) = 抵抗どころか、悲鳴も上げられないほど怯えながら、%CALLNAME:TARGET%の表情は何処か期待しているようにも見えた。
+		WSTR:(K++) = %NAME:TARGET% は【도착적】を得た
+		TALENT:TARGET:도착적 = 1
+	ELSEIF ダンジョンフラグ:13:14 >= 6
+		WSTR:(K++) = 部屋に入った%CALLNAME:TARGET%は、少し目を伏せ緊張した様子で、自分が足を踏み入れた部屋の異様な雰囲気にも気づいた様子はなかった。
+		WSTR:(K++) = 「……あ、あの、あの時はありがとうございました。　だけど、あの時の事は忘れてもらえませんか……？」
+		WSTR:(K++) = よほど恥ずかしかったのか、顔を上げることも出来ずに消え入るような声で%CALLNAME:TARGET%は懇願する。
+		WSTR:(K++) = 触手に身体を体中をまさぐられて悶える姿を、カメラの前で晒されたのだ。
+		WSTR:(K++) = 懇願するうちにその時の事を思い出したのか、%CALLNAME:TARGET%は自分で自分の身体を抱くようにして、身震いした。
+		WSTR:(K++) = その弱気な仕草が妙に嗜虐心を煽った。　%CALLNAME:TARGET%の肩を掴み、強引に引き起こし、正面から顔を合わせる。
+		WSTR:(K++) = 栗色の髪を真ん中で左右に分けたショートボブで、毛先はふわっとパーマが掛かっている。
+		WSTR:(K++) = ピンクのニットは身体のラインが出るような物ではないが、触手に絡みつかれていた時を思い出せばスタイルの良さは分かる。
+		WSTR:(K++) = 急に引き起こされた%CALLNAME:TARGET%は少し怯えたようにこちらを見上げている。
+		WSTR:(K++) = 案外力は強いようだが、構わずそのまま突き飛ばすようにベッドに押し倒した。
+		WSTR:(K++) = 「きゃっ！　何をするんですかっ！　放してっ！」
+	ELSE
+		WSTR:(K++) = 部屋に入った%CALLNAME:TARGET%は、自分が足を踏み入れた部屋の様子に目を丸くした。
+		WSTR:(K++) = 学校の保健室に置かれているような飾り気のないパイプのベッド。近くに小さな台が置かれ、怪しげな小道具が転がっている。
+		WSTR:(K++) = 「……？　なにかしら、これ……？　あ、%CALLNAME:MASTER%。　申し遅れましたけれど、空港ではありがとうございました。　もう少しで%CSTR:일인칭%……」
+		WSTR:(K++) = %CALLNAME:TARGET%は、空港で戦った悪魔を思い出して身震いした。
+		WSTR:(K++) = 育ちが良さそうな %CALLNAME:TARGET%にとって、襲われかけたのは、ショックが大きかったようだ。
+		WSTR:(K++) = 「それで、今度の御用は何でしょう？　悪魔退治でしたら、この美少女怪盗ノワールにお任せを！」
+		WSTR:(K++) = 「……いつもの衣装と仮面がないと、ちょっと乗り切れませんね……」
+		WSTR:(K++) = %CALLNAME:TARGET%は漫画のヒーローのようにポーズを決めてから、ふと冷静になったようで少し赤面した。
+		WSTR:(K++) = ……美少女怪盗か。　改めて、%CALLNAME:TARGET%の容姿を眺める。
+		WSTR:(K++) = 栗色の髪を真ん中で左右に分けたショートボブで、毛先はふわっとパーマが掛かっている。
+		WSTR:(K++) = ピンクのニットは身体のラインが出るような物ではないが、それでも見て取れる程度にはスタイルも良いようだ。
+		WSTR:(K++) = 容姿も、美少女怪盗という呼び名は、言い過ぎではなさそうだ。
+		WSTR:(K++) = 「あの、何か？」
+		WSTR:(K++) = 育ちのせいか、危機を救われたことによる物か、こちらを警戒する様子が薄かった%CALLNAME:TARGET%だが、流石に値踏みするような視線は不快だったのか、
+		WSTR:(K++) = 自分で自分の身体を抱くようにして、後ずさった。
+		WSTR:(K++) = だが、もう遅い。　%CALLNAME:MASTER%は、異様な雰囲気に身を固くした%CALLNAME:TARGET%をベッドに押し倒した。
+		WSTR:(K++) = 「え？　え……っ！？　待って、そんな……%CSTR:일인칭%、そんなつもりじゃ！　困ります、放してっ」
+	ENDIF
+	CFLAG:201 = 1
+	GOTO 表示
+;屈服刻印Lv1
+ELSEIF CFLAG:201 < 2 && MARK:2 == 1
+	IF ダンジョンフラグ:13:14 >= 6
+		WSTR:(K++) = 「あ、あの……こんなこと、もうやめてください。 %CSTR:일인칭%も、%CSTR:이인칭%にされたことは忘れますから……」
+		WSTR:(K++) = 呼び出されて部屋を訪れた%CALLNAME:TARGET%はおずおずとそんなことを口にする。
+		WSTR:(K++) = その気の弱そうな態度を見ていると、サディスティックな気分が沸き上がってきた。
+		WSTR:(K++) = 元からそのために呼んだのだ。　遠慮は不要だ。
+		WSTR:(K++) = 抵抗しようとする、%CALLNAME:TARGET%の襟首を掴んで強引に引き寄せ、投げ出すようにベッドに突き倒す。
+		WSTR:(K++) = 「きゃぁっ！」
+		WSTR:(K++) = 悲鳴を上げてベッドに仰向けに倒れた%CALLNAME:TARGET%の胸が弾む。
+		WSTR:(K++) = %CALLNAME:MASTER%は、%CALLNAME:TARGET%が身を起こすより早く、その上に圧し掛かった。
+	ELSE
+		WSTR:(K++) = 「まだこんな事を続ける気ですか！？　%CSTR:일인칭%はこんな事で屈したりはしません！」
+		WSTR:(K++) = 呼び出されて部屋を訪れた%CALLNAME:TARGET%はこちらを睨みながら口を開く。
+		WSTR:(K++) = だが、その態度にはどこか演技じみた雰囲気も感じられた。
+		WSTR:(K++) = %CALLNAME:TARGET%が抵抗を始めるより早く、腕を取ってベッドに押し付けるように倒す。
+		WSTR:(K++) = 「きゃっ！　う、ぅ……」
+		WSTR:(K++) = 豊満な胸がベッドに押し付けられ、%CALLNAME:TARGET%は怯えたような表情を見せた。
+		WSTR:(K++) = %CALLNAME:MASTER%は、%CALLNAME:TARGET%が身を起こすより早く、その上に圧し掛かった。
+	ENDIF
+	CFLAG:201 = 2
+	GOTO 表示
+;屈服刻印Lv2
+ELSEIF CFLAG:201 < 3 && MARK:2 == 2
+	IF ダンジョンフラグ:13:14 >= 6
+		WSTR:(K++) = 呼び出しを受けた%CALLNAME:TARGET%は、怯えた様子で%CALLNAME:MASTER%の部屋を訪れた。
+		WSTR:(K++) = 「あ、あの……%CSTR:일인칭%……」
+		WSTR:(K++) = なにか言いたいことがある様なので、続きを促す。
+		WSTR:(K++) = %CALLNAME:TARGET%は言葉を探すように少し沈黙して言葉をつないだ。
+		WSTR:(K++) = 「お願いします、もうこんな事嫌なんです。　お願いします、何でもしますから……」
+		WSTR:(K++) = 悪魔に弄ばれた事で彼女の心には大きな傷がついているようだ。
+		IF ABL:Ｃ감각 + ABL:Ｖ감각 + ABL:Ａ감각 + ABL:Ｂ감각 + ABL:마조끼 > 12
+			WSTR:(K++) = しかし、同時に弱弱しくこちらを見上げる彼女の表情には、マゾヒスティックな快楽の片鱗も見て取れた。
+		ELSE
+			WSTR:(K++) = 何でもするというならば、雌奴隷をやっていればいいのだ。
+		ENDIF
+		WSTR:(K++) = 黙ってベッドに押し倒し、豊満な女体に手を掛ける。
+		WSTR:(K++) = 「そ、そんな……やめて、やめて……」
+	ELSE
+		WSTR:(K++) = 「く……また、あんな事を……」
+		WSTR:(K++) = 抵抗しても無駄であることを思い知ったようで、%CALLNAME%はむやみに暴れようとはしなかった。
+		WSTR:(K++) = それでも弱気を押し隠すように、視線だけでも強くこちらをにらみつけている。
+		WSTR:(K++) = 「……だけど、無駄です！　こんな事で%CSTR:일인칭%の心を折ることなどできはしないのですから！」
+		WSTR:(K++) = そうか。　まだまだ元気なようで結構な事だ。
+		WSTR:(K++) = ならば、もう少しハードに責めても大丈夫だろう。
+		WSTR:(K++) = 「……っ」
+		WSTR:(K++) = 隠しきれない怯えで身を震わせる少女を、ベッドに押し倒した……
+	ENDIF
+	CFLAG:201 = 3
+	GOTO 表示
+;屈服刻印Lv3
+ELSEIF CFLAG:201 < 4 && MARK:2 == 3 && (TALENT:3 == 0 && TALENT:4 == 0 && TALENT:5 == 0 && TALENT:6 == 0 && TALENT:7 == 0 && TALENT:8 == 0)
+	WSTR:(K++) = 「……また、始めるんですか……？」
+	WSTR:(K++) = 部屋に入ると、これまでの態度が嘘のように%CALLNAME:TARGET%は震えを何とか隠しながら呟いた。
+	IF ダンジョンフラグ:13:14 >= 6
+		WSTR:(K++) = 空港で触手に嬲られて女になった身体は、度重なる調教で快楽を教え込まれ、%CALLNAME:TARGET%の心を侵していった。
+	ELSE
+		WSTR:(K++) = 箱入り娘として大事に育てられた身体は、度重なる調教で快楽を教え込まれ、%CALLNAME:TARGET%の心を侵していった。
+	ENDIF
+	WSTR:(K++) = 服の上からでも存在をアピールする乳房を鷲掴みにすると、苦痛に表情を歪めて身をよじる。
+	WSTR:(K++) = 抗議するように涙をためた目でこちらを睨むが、既に頬は紅潮し、息を荒げている。
+	WSTR:(K++) = ……調教は実に順調なようだ……
+	CFLAG:201 = 4
+	GOTO 表示
+;陥落
+ELSEIF CFLAG:201 < 5 && (TALENT:3 || TALENT:4 || TALENT:5)
+	;연모
+	IF TALENT:3
+		IF CFLAG:미조교함락 == 1
+			;調教せずに恋慕をつけた場合
+			WSTR:(K++) = 
+		ELSE
+			WSTR:(K++) = %CALLNAME:TARGET%は呼ばれた時間に、自分で淹れたコーヒーを持って%CALLNAME:MASTER%の部屋を訪れた。
+			WSTR:(K++) = 助けられたという意識からか、嫌々でも部屋に来いと言えば指示には従っていたが、最近は抵抗を見せることも少なくなってきた。
+			WSTR:(K++) = しかし、自発的に何かするのは初めての事だった。
+			WSTR:(K++) = 「あ、そういえばそうですね。　どうぞ、結構自信あるんですよ」
+			WSTR:(K++) = ……成程、大した道具も豆もなかったはずだが、それにしては悪くない。
+			WSTR:(K++) = 「こんな事にならなければ喫茶店の経営がしたいなんて考えてたんですよ。　でも……」
+			WSTR:(K++) = 「%CSTR:이인칭%に振舞うだけでもいいのかも、って……」
+			WSTR:(K++) =  %CALLNAME:TARGET%は真っ赤になって目を伏せ、消えいるような声で言葉をつづけた。
+			WSTR:(K++) = 「%CSTR:일인칭%、奴隷のままでもいいんです。　……手放さずに、傍においてください。　
+		ENDIF
+	;음란
+	ELSEIF TALENT:4
+		WSTR:(K++) = 呼び出した時間に%CALLNAME:TARGET%が来ない。　これまではいやいやでも呼び出されれば来ていたはずなのだが。
+		WSTR:(K++) = しかたなく、%CALLNAME:TARGET%に割り当てた部屋まで迎えに行った。
+		WSTR:(K++) = ……部屋の中からは、%CALLNAME:TARGET%のすすり泣く声と、水音のような物が聞こえてくる。
+		WSTR:(K++) = 「く……ん、ダメ……、手、止まらないぃ……ン……」
+		WSTR:(K++) = 部屋の扉を勝手に開くと、%CALLNAME:TARGET%は慌てて自慰に浸っていた手を止め、大きく開かれた胸元と捲れたスカートを押さえようとして……。
+		WSTR:(K++) = その手を止めた。　
+		WSTR:(K++) = 「あ、そうですか、もうそんな時間……」
+		WSTR:(K++) = %CALLNAME:TARGET%は気怠そうに身を起こし、だらしなく蕩けた表情のまま、%CALLNAME:MASTER%の方ににじり寄ってきた。
+		WSTR:(K++) = 「%CSTR:일인칭%、もうダメなんです。　いくら自分でしても、満足できない……」
+		WSTR:(K++) = そのまま熱い息を吐きながら、豊満な身体を擦りつけてくる。
+		WSTR:(K++) = 「もう、滅茶苦茶にしてください。　お願いしますぅ……」
+	;복종
+	ELSEIF TALENT:5
+		WSTR:(K++) = 
+	ENDIF
+	;共通
+	IF !口上有無確認(0)
+		KSTR:(K++) = 
+	ENDIF
+	CFLAG:201 = 5
+	GOTO 表示
+ENDIF
+
+;-------------------------------------------------
+;簡易助手口上（Y1を助手のキャラ番号に置換、4661をキャラ番号に変更する) CFLAG203
+;掛け合いをするキャラを増やす場合は、構文をコピー＆ペーストをして、CFLAGの数を204、205と増やす
+;-------------------------------------------------
+;助手の有無をチェック（いない場合は二回目以降へ飛ぶ）
+IF ASSI < 0 
+	CALL EVENTTRAIN_SECOND_K[[キャラ:하루_P5]]
+;助手
+;ELSEIF NO:ASSI == Y1
+	;初めて
+;	IF CFLAG:203 == 0
+		;陥落済み＋陥落時初口上が発生済み
+;		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && CFLAG:201 >= 5
+;			WSTR:(K++) = 
+		;それ以外
+;		ELSE
+;			KSTR:(K++) = 
+;		ENDIF
+;		CFLAG:203 = 1
+	;二回目以降
+;	ELSEIF CFLAG:203 < 2 || FLAG:7 ==2
+		;陥落済み
+;		IF TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8
+;			WSTR:(K++) = 
+		;それ以外
+;		ELSE
+;			KSTR:(K++) = 
+;		ENDIF
+;		CFLAG:203 = 2
+;	ENDIF
+;口上のある助手が居ない場合は、通常の二回目以降の口上へ飛ぶ
+ELSE
+	CALL EVENTTRAIN_SECOND_K[[キャラ:하루_P5]]
+ENDIF
+
+$表示
+
+CALL 口上変数表示
+;口上がなければ別の口上を呼び出す
+IF RESULT == 0
+	TRYCCALLFORM EVENTTRAIN_ZZZ
+	CATCH
+	ENDCATCH
+	
+ENDIF
+;-------------------------------------------------
+;調教開始時（2回目以降、4661をキャラ番号に変更する）
+;-------------------------------------------------
+@EVENTTRAIN_SECOND_K[[キャラ:하루_P5]]
+;反発刻印Lv3
+IF MARK:3 == 3 && (CFLAG:202 < 4 || FLAG:7 == 2)
+	KSTR:(K++) = 「……%CSTR:이인칭%と話すことなど何もありません」
+	KSTR:(K++) = %CALLNAME:TARGET%は嫌悪感をあらわにそれだけ言うと、黙り込んだ。
+	CFLAG:202 = 4
+;屈服刻印Lv0
+ELSEIF MARK:2 == 0 && (CFLAG:202 < 1 || FLAG:7 == 2)
+	IF ダンジョンフラグ:13:14 >= 8
+		KSTR:(K++) = 「……あ、あぁ……。　いや、私、また……」
+		KSTR:(K++) = %CALLNAME:TARGET%は青ざめた表情で視線を落として震えている。
+		TALENT:TARGET:도착적 = 1
+	ELSEIF ダンジョンフラグ:13:14 >= 6
+		KSTR:(K++) = 「……何をしに……、出ていってください！　早くっ！」
+		KSTR:(K++) = %CALLNAME:TARGET%は怒りのこもった叫びをあげるが、%CALLNAME:MASTER%と目を合わせようともしない。
+		KSTR:(K++) = 悪魔に襲われた恐怖がぶり返した、という所か……
+	ELSE
+		KSTR:(K++) = 「……出て行っていただけますか？　特に話したいこともありませんし。　まさか歓迎されるなんて思ってはいないでしょう？」
+		KSTR:(K++) = %CALLNAME:TARGET%は%CALLNAME:MASTER%に対して皮肉のこもったセリフを吐いた。
+		KSTR:(K++) = 歓んで歓迎するようになるまでは通う心算だというと、%CALLNAME:TARGET%はこちらに怒りの視線を向けた。
+	ENDIF
+	CFLAG:202 = 1
+;屈服刻印Lv1
+ELSEIF MARK:2 == 1 && (CFLAG:202 < 2 || FLAG:7 == 2)
+	IF ダンジョンフラグ:13:14 >= 6
+		KSTR:(K++) = 「……あ、あぁ……。　いや、私、また……」
+		KSTR:(K++) = %CALLNAME:TARGET%は青ざめた表情で視線を落として震えている。
+	ELSE
+		KSTR:(K++) = 「……何をしに……、出ていってください！　早くっ！」
+		KSTR:(K++) = %CALLNAME:TARGET%は怒りのこもった叫びをあげるが、%CALLNAME:MASTER%と目を合わせようともしない。
+	ENDIF
+	KSTR:(K++) = 
+	CFLAG:202 = 2
+;屈服刻印Lv2
+ELSEIF MARK:2 == 2 && (CFLAG:202 < 3 || FLAG:7 == 2)
+	IF ダンジョンフラグ:13:14 >= 6
+		KSTR:(K++) = 「……あ、あぁ……。　いや、私、また……」
+		KSTR:(K++) = %CALLNAME:TARGET%は青ざめた表情で視線を落として震えている。
+	ELSE
+		KSTR:(K++) = 「何度も同じことを言わせないでもらえますか？　こんな事で私の心を折る事なんてできません！」
+		KSTR:(K++) = %CALLNAME:TARGET%の言葉を聞き流して腕をつかみ、ベッドに引き倒した。
+		KSTR:(K++) = 引き倒すと分かるが、微かに震えているようだ。
+	ENDIF
+	CFLAG:202 = 3
+;屈服刻印Lv3＋陥落素質無し
+ELSEIF MARK:2 == 3 && (TALENT:3 == 0 && TALENT:4 == 0 && TALENT:5 == 0 && TALENT:6 == 0 && TALENT:7 == 0 && TALENT:8 == 0) && (CFLAG:202 < 4 || FLAG:7 == 2)
+	KSTR:(K++) = 「……また、あんな事を始めるんですか……？」
+	KSTR:(K++) = %CALLNAME:TARGET%は怯えを隠せなくなってきたようだ。
+	KSTR:(K++) = 震える%CALLNAME:TARGET%を抱き寄せると、身を竦めて固まった。
+	CFLAG:202 = 4
+;陥落済み
+ELSEIF CFLAG:202 < 5 || FLAG:7 == 2
+	;恋慕、親愛
+	IF TALENT:3 || TALENT:6
+		;ランダムで口上が変化する（使わない場合はすべて同じにすればよい）
+		IF RAND:3 == 0
+			WSTR:(K++) = 部屋を訪れると、%CALLNAME:TARGET%がコーヒーを入れて待っていた。
+			WSTR:(K++) = 「お疲れ様、%CALLNAME:MASTER%。　今日はゆっくりしていける？」
+			WSTR:(K++) = ……お楽しみはお茶の後にしようか……。
+		ELSEIF RAND:2 == 0
+			WSTR:(K++) = 部屋を訪れると、%CALLNAME:TARGET%がコーヒーを入れて待っていた。
+			WSTR:(K++) = 「お疲れ様、%CALLNAME:MASTER%。　今日はゆっくりしていける？」
+			WSTR:(K++) = ……お楽しみはお茶の後にしようか……。
+		ELSE
+			WSTR:(K++) = 部屋を訪れると、服を着ている途中の%CALLNAME:TARGET%と出くわした。
+			WSTR:(K++) = シャワーでも浴びていたのか、髪が少し湿り気を帯びている。
+			WSTR:(K++) = 「あ、%CALLNAME:MASTER%。　着替え、間に合ってよかった……」
+		ENDIF
+	;淫乱、娼婦
+	ELSEIF TALENT:4 || TALENT:7
+		;ランダムで口上が変化する（使わない場合はすべて同じにすればよい）
+		IF RAND:3 == 0
+			WSTR:(K++) = 「お待ちしていました。　さぁ、今日はどんな趣向で私を弄んでもらえるんですか？」
+			WSTR:(K++) = これからの展開を想像でもしたのか、%CALLNAME:TARGET%は早くも息を荒くしている。
+		ELSEIF RAND:2 == 0
+			WSTR:(K++) = 「お待ちしていました。　さぁ、今日はどんな趣向で私を弄んでもらえるんですか？」
+			WSTR:(K++) = これからの展開を想像でもしたのか、%CALLNAME:TARGET%は早くも息を荒くしている。
+		ELSE
+			WSTR:(K++) = 部屋を訪れると、服を着ている途中の%CALLNAME:TARGET%と出くわした。
+			WSTR:(K++) = シャワーでも浴びていたのか、髪が少し湿り気を帯びている。
+			WSTR:(K++) = 「あ、%CALLNAME:MASTER%。　今、シャワーを浴びた所なんですけど……服、着ない方がよかったですか？」
+		ENDIF
+	;服従、隷属
+	ELSEIF TALENT:5 || TALENT:8
+		;ランダムで口上が変化する（使わない場合はすべて同じにすればよい）
+		IF RAND:3 == 0
+			WSTR:(K++) =
+		ELSEIF RAND:2 == 0
+			WSTR:(K++) =
+		ELSE
+			WSTR:(K++) =
+		ENDIF
+	ENDIF
+	;その他、共通
+	IF !口上有無確認(0)
+		;ランダムで口上が変化する（使わない場合はすべて同じにすればよい）
+		IF RAND:3 == 0
+			KSTR:(K++) = 
+		ELSEIF RAND:2 == 0
+			KSTR:(K++) = 
+		ELSE
+			KSTR:(K++) = 
+		ENDIF
+	ENDIF
+	CFLAG:202 = 5
+ENDIF
+
+
+;-------------------------------------------------
+;EVENTEND関係（4661をキャラ番号に置換）
+;調教終了時のセリフ
+;-------------------------------------------------
+@EVENTEND_K[[キャラ:하루_P5]]
+CALL 口上変数初期化
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、4661を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL EVENTEND_PY1_K[[キャラ:하루_P5]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	SIF NO:ASSI == Y1
+;	CALL EVENTEND_PY1_K[[キャラ:하루_P5]]
+;	RETURN 0
+;ENDIF
+;--------------------------------------------------
+;調教終了時のセリフ
+;--------------------------------------------------
+DRAWLINE
+;反発刻印Lv3
+IF MARK:3 == 3 && (CFLAG:217 < 1 || FLAG:7 == 2)
+	KSTR:(K++) = 「……！」
+	KSTR:(K++) = %CALLNAME:TARGET%の視線からは殺意を感じる。
+	KSTR:(K++) = %CALLNAME:MASTER%が部屋を去ると、閉ざされた扉に何かがぶつかる音がした。
+	CFLAG:217 = 1
+;屈服刻印Lv1以下
+ELSEIF MARK:2 <= 1 && (CFLAG:219 < 1 || FLAG:7 == 2)
+	KSTR:(K++) = 「お願い……早く出ていって……」
+	KSTR:(K++) = %CALLNAME:TARGET%は肩を落として小声で呟く。
+	KSTR:(K++) = %CALLNAME:MASTER%が部屋を去ると、室内からはすすり泣く声が漏れていた。
+	CFLAG:219 = 1
+;屈服刻印Lv2
+ELSEIF MARK:2 == 2
+	KSTR:(K++) = %CALLNAME:TARGET%は、言葉もなくがっくりと打ちひしがれている。
+	KSTR:(K++) = 「……こんな……こんな事、いや、なのに……」
+	CFLAG:219 = 2
+;屈服刻印Lv3＋陥落素質無し
+ELSEIF MARK:2 == 3 && (TALENT:3 == 0 && TALENT:4 == 0 && TALENT:5 == 0 && TALENT:6 == 0 && TALENT:7 == 0 && TALENT:8 == 0)
+	KSTR:(K++) = %CALLNAME:TARGET%は、打ちひしがれながら、ゆっくりと身を起こしシャワーを浴びに向かった。
+	KSTR:(K++) = がっくりしているのは変わりないが、いくらか慣れてきた……いや諦めだろうか。
+	KSTR:(K++) = いずれにせよ雰囲気が変わってきたようだ。
+	CFLAG:219 = 3
+;陥落済み＋体力500未満
+ELSEIF BASE:0 < 500 && (CFLAG:218 < 1 || FLAG:7 == 2)
+	;恋慕、親愛
+	IF TALENT:3 || TALENT:6
+		WSTR:(K++) =
+	;淫乱、娼婦
+	ELSEIF TALENT:4 || TALENT:7
+		WSTR:(K++) =
+	;服従、隷属
+	ELSEIF TALENT:5 || TALENT:8
+		WSTR:(K++) =
+	ENDIF
+	;共通
+	IF !口上有無確認(0)
+		KSTR:(K++) = 
+	ENDIF
+	CFLAG:218 = 1
+;陥落済み
+ELSEIF CFLAG:219 < 4 || FLAG:7 == 2
+	;恋慕、親愛
+	IF TALENT:3 || TALENT:6
+		KSTR:(K++) = 
+	;淫乱、娼婦
+	ELSEIF TALENT:4 || TALENT:7
+		KSTR:(K++) = 
+	;服従、隷属
+	ELSEIF TALENT:5 || TALENT:8
+		KSTR:(K++) = 
+	ENDIF
+	;共通
+	IF !口上有無確認(0)
+		WSTR:(K++) =
+	ENDIF
+	CFLAG:219 = 4
+ENDIF
+
+CALL 口上変数表示
+;口上がなければ別の口上を呼び出す
+IF RESULT == 0
+	TRYCCALLFORM EVENTEND_ZZZ
+	CATCH
+	ENDCATCH
+	
+ENDIF
+
+;--------------------------------------------------
+;@KOJO_MESSAGE_COM関係（4661をキャラ番号に置換）
+;コマンド実行時に出力されます
+;--------------------------------------------------
+@KOJO_MESSAGE_COM_K[[キャラ:하루_P5]]
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL TRAIN_MESSAGE
+	RETURN 0
+ENDIF
+;想定外の口上だとスキップ(これ消したらバグる)
+IF SELECTCOM < 0 || SELECTCOM > 699
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、4661を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_COM_PY1_K[[キャラ:하루_P5]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_COM_PY1_K[[キャラ:하루_P5]]
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;関数初期化
+;-------------------------------------------------
+CALL 口上変数初期化
+ 
+CALLFORM COMTYPE_{SELECTCOM}
+;-------------------------------------------------
+;コマンド実行時のセリフ CFLAG 300～500
+;-------------------------------------------------
+IF 0 == 1
+;=================================================
+;愛撫系コマンド
+;=================================================
+ELSEIF RESULT == COMTYPE("愛撫系")
+SIF TEQUIP:25 > 0 && ( SELECTCOM == 0 || SELECTCOM == 5 || SELECTCOM == 6 || SELECTCOM == 7 || SELECTCOM == 8 || SELECTCOM == 12 || SELECTCOM == 13 || SELECTCOM == 15 )
+	GOTO SHOKUSHU_PLAY
+SELECTCASE SELECTCOM
+;-------------------------------------------------
+;0,애무
+;-------------------------------------------------
+	CASE 0
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:300 == 0
+			KSTR:(K++) =
+			CFLAG:300 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:300 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:300 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:300 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:300 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:300 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:300 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;1,커닐링구스
+;-------------------------------------------------
+	CASE 1
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:301 == 0
+			KSTR:(K++) =
+			CFLAG:301 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:301 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:301 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:301 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:301 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:301 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:301 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;4,애널핥기
+;-------------------------------------------------
+	CASE 4
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:304 == 0
+			KSTR:(K++) =
+			CFLAG:304 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:304 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:304 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:304 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:304 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:304 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:304 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;胸系愛撫
+;6胸揉み,7乳首責め,8胸愛撫
+;-------------------------------------------------
+	CASE 6,7,8
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:306 == 0
+			KSTR:(K++) =
+			CFLAG:306 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:306 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:306 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:306 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:306 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:306 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:306 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;9,조개젖히기
+;-------------------------------------------------
+	CASE 9
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:309 == 0
+			KSTR:(K++) =
+			CFLAG:309 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:309 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:309 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:309 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:309 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:309 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:309 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;自慰共通
+;10胸自慰,11自慰
+;-------------------------------------------------
+	CASE 10,11
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:310 == 0
+			KSTR:(K++) =
+			CFLAG:310 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:310 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:310 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:310 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:310 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:310 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:310 = 2
+			ENDIF
+		ENDIF
+	CASEELSE
+ENDSELECT
+;-------------------------------------------------
+;愛撫系共通
+;-------------------------------------------------
+		IF !口上有無確認(0)
+			K_CALL:K = TRAIN_MESSAGE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && FLAG:7 == 2
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && FLAG:7 == 2 && !口上有無確認(0)
+				KSTR:(K++) = 
+			ENDIF
+			;それ以外
+			IF FLAG:7 == 2 && !口上有無確認(0)
+				;WSTR:(K++) =
+			ENDIF
+		ENDIF
+;=================================================
+;コミュニケーション系コマンド
+;=================================================
+ELSEIF RESULT == COMTYPE("コミュ系")
+SELECTCASE SELECTCOM
+;-------------------------------------------------
+;20,키스한다
+;-------------------------------------------------
+	CASE 20
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:312 == 0
+			KSTR:(K++) =
+			CFLAG:312 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:312 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:312 = 4
+			ENDIF
+			;従順Lv3以上
+			IF ABL:0 >= 3 && (CFLAG:312 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:312 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:312 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:312 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;24,스킨쉽　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 24
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:316 == 0
+			KSTR:(K++) =
+			CFLAG:316 = 1
+		;二回目以降
+		ELSEIF CFLAG:316 < 2 || FLAG:7 == 2
+			KSTR:(K++) =
+			CFLAG:316 = 2
+		ENDIF
+;-------------------------------------------------
+;28,매도
+;-------------------------------------------------
+	CASE 28
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:320 == 0
+			KSTR:(K++) =
+			CFLAG:320 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:320 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:320 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:320 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:320 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:320 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:320 = 2
+			ENDIF
+		ENDIF
+	CASEELSE
+ENDSELECT
+;-------------------------------------------------
+;コミュニケーション系共通
+;-------------------------------------------------
+		IF !口上有無確認(0)
+			K_CALL:K = TRAIN_MESSAGE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && FLAG:7 == 2
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && FLAG:7 == 2 && !口上有無確認(0)
+				KSTR:(K++) = 
+			ENDIF
+			;それ以外
+			IF FLAG:7 == 2 && !口上有無確認(0)
+				;WSTR:(K++) =
+			ENDIF
+		ENDIF
+;=================================================
+;道具使用コマンド
+;=================================================
+ELSEIF RESULT == COMTYPE("道具系")
+SELECTCASE SELECTCOM
+;-------------------------------------------------
+;40,로터
+;-------------------------------------------------
+	CASE 40
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:322 == 0
+			KSTR:(K++) =
+			CFLAG:322 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:322 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:322 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:322 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:322 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:322 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:322 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;41,전기마사지기
+;-------------------------------------------------
+	CASE 41
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:323 == 0
+			KSTR:(K++) =
+			CFLAG:323 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:323 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:323 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:323 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:323 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:323 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:323 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;48,유두로터
+;-------------------------------------------------
+	CASE 48
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:330 == 0
+			KSTR:(K++) =
+			CFLAG:330 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:330 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:330 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:330 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:330 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:330 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:330 = 2
+			ENDIF
+		ENDIF
+	CASEELSE
+ENDSELECT
+;-------------------------------------------------
+;道具使用共通
+;-------------------------------------------------
+		IF !口上有無確認(0)
+			K_CALL:K = TRAIN_MESSAGE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && FLAG:7 == 2
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && FLAG:7 == 2 && !口上有無確認(0)
+				KSTR:(K++) = 
+			ENDIF
+			;それ以外
+			IF FLAG:7 == 2 && !口上有無確認(0)
+				;WSTR:(K++) =
+			ENDIF
+		ENDIF
+;=================================================
+;調教者道具系コマンド
+;=================================================
+ELSEIF RESULT == COMTYPE("対調教者道具系")
+SELECTCASE SELECTCOM
+	CASEELSE
+ENDSELECT
+;-------------------------------------------------
+;調教者道具系共通
+;-------------------------------------------------
+		IF !口上有無確認(0)
+			K_CALL:K = TRAIN_MESSAGE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && FLAG:7 == 2
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && FLAG:7 == 2 && !口上有無確認(0)
+				KSTR:(K++) = 
+			ENDIF
+			;それ以外
+			IF FLAG:7 == 2 && !口上有無確認(0)
+				;WSTR:(K++) =
+			ENDIF
+		ENDIF
+;=================================================
+;セックス系コマンド
+;=================================================
+ELSEIF RESULT == COMTYPE("Ｖ性交系")
+SELECTCASE SELECTCOM
+	CASEELSE
+ENDSELECT
+;-------------------------------------------------
+;セックス系共通
+;-------------------------------------------------
+		IF !口上有無確認(0)
+			K_CALL:K = TRAIN_MESSAGE
+			;処女
+			IF TALENT:0
+				IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8)
+					;恋慕、親愛
+					IF (TALENT:3 || TALENT:6)
+						KSTR:(K++) = 
+					;淫乱、娼婦
+					ELSEIF (TALENT:4 || TALENT:7)
+						KSTR:(K++) = 
+					;服従、隷属
+					ELSEIF (TALENT:5 || TALENT:8)
+						KSTR:(K++) = 
+					ENDIF
+					;陥落済み共通
+					IF !口上有無確認(0)
+						KSTR:(K++) = 
+					ENDIF
+				ENDIF
+				;それ以外
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+			ENDIF
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && FLAG:7 == 2
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && FLAG:7 == 2 && !口上有無確認(0)
+				KSTR:(K++) = 
+			ENDIF
+			;それ以外
+			IF FLAG:7 == 2 && !口上有無確認(0)
+				;WSTR:(K++) =
+			ENDIF
+		ENDIF
+;=================================================
+;アナルセックス系コマンド
+;=================================================
+ELSEIF RESULT == COMTYPE("Ａ性交系")
+SELECTCASE SELECTCOM
+	CASEELSE
+ENDSELECT
+		IF !口上有無確認(0)
+			K_CALL:K = TRAIN_MESSAGE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && FLAG:7 == 2
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && FLAG:7 == 2 && !口上有無確認(0)
+				KSTR:(K++) = 
+			ENDIF
+			;それ以外
+			IF FLAG:7 == 2 && !口上有無確認(0)
+				;WSTR:(K++) =
+			ENDIF
+		ENDIF
+;=================================================
+;奉仕系コマンド
+;=================================================
+ELSEIF RESULT == COMTYPE("奉仕系")
+SELECTCASE SELECTCOM
+;-------------------------------------------------
+;80,수음
+;-------------------------------------------------
+	CASE 80
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:344 == 0
+			KSTR:(K++) =
+			CFLAG:344 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:344 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:344 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:344 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:344 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:344 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:344 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;フェラチオ系
+;81フェラチオ,88パイズリフェラ,211亀頭攻め(受)
+;-------------------------------------------------
+	CASE 81,88,211
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:345 == 0
+			KSTR:(K++) =
+			CFLAG:345 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:345 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:345 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:345 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:345 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:345 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:345 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;パイズリ系
+;82パイズリ,87縦パイズリ
+;-------------------------------------------------
+	CASE 82,87
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:346 == 0
+			KSTR:(K++) =
+			CFLAG:346 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:346 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:346 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:346 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:346 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:346 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:346 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;83,스마타
+;-------------------------------------------------
+	CASE 83
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:347 == 0
+			KSTR:(K++) =
+			CFLAG:347 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:347 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:347 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:347 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:347 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:347 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:347 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;84,거품춤
+;-------------------------------------------------
+	CASE 84
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:348 == 0
+			KSTR:(K++) =
+			CFLAG:348 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:348 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:348 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:348 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:348 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:348 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:348 = 2
+			ENDIF
+		ENDIF
+	CASEELSE
+ENDSELECT
+;-------------------------------------------------
+;奉仕系共通
+;-------------------------------------------------
+		IF !口上有無確認(0)
+			K_CALL:K = TRAIN_MESSAGE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && FLAG:7 == 2
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && FLAG:7 == 2 && !口上有無確認(0)
+				KSTR:(K++) = 
+			ENDIF
+			;それ以外
+			IF FLAG:7 == 2 && !口上有無確認(0)
+				;WSTR:(K++) =
+			ENDIF
+		ENDIF
+;=================================================
+;調教者奉仕系コマンド
+;=================================================
+ELSEIF RESULT == COMTYPE("調教者奉仕系")
+SELECTCASE SELECTCOM
+	CASEELSE
+ENDSELECT
+;-------------------------------------------------
+;調教者奉仕系共通
+;-------------------------------------------------
+		IF !口上有無確認(0)
+			K_CALL:K = TRAIN_MESSAGE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && FLAG:7 == 2
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && FLAG:7 == 2 && !口上有無確認(0)
+				KSTR:(K++) = 
+			ENDIF
+			;それ以外
+			IF FLAG:7 == 2 && !口上有無確認(0)
+				;WSTR:(K++) =
+			ENDIF
+		ENDIF
+;=================================================
+;SM系コマンド
+;=================================================
+ELSEIF RESULT == COMTYPE("ＳＭ系")
+SELECTCASE SELECTCOM
+;-------------------------------------------------
+;鞭打系
+;100スパンキング,101乳スパンキング,102鞭
+;-------------------------------------------------
+	CASE 100,101,102
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:354 == 0
+			KSTR:(K++) =
+			CFLAG:354 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:354 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:354 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:354 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:354 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:354 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:354 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;104,바늘
+;-------------------------------------------------
+	CASE 104
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:358 == 0
+			KSTR:(K++) =
+			CFLAG:358 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:358 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:358 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:358 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:358 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:358 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:358 = 2
+			ENDIF
+		ENDIF
+	CASEELSE
+ENDSELECT
+;-------------------------------------------------
+;SM系共通
+;-------------------------------------------------
+		IF !口上有無確認(0)
+			K_CALL:K = TRAIN_MESSAGE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && FLAG:7 == 2
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && FLAG:7 == 2 && !口上有無確認(0)
+				KSTR:(K++) = 
+			ENDIF
+			;それ以外
+			IF FLAG:7 == 2 && !口上有無確認(0)
+				;WSTR:(K++) =
+			ENDIF
+		ENDIF
+;=================================================
+;助手によるコマンド、及びレズプレイ
+;=================================================
+ELSEIF RESULT == COMTYPE("助手・レズ系")
+SELECTCASE SELECTCOM
+;-------------------------------------------------
+;124,더블펠라
+;-------------------------------------------------
+	CASE 124
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:366 == 0
+			KSTR:(K++) =
+			CFLAG:366 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:366 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:366 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:366 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:366 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:366 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:366 = 2
+			ENDIF
+		ENDIF
+		;助手口上呼び出し関数
+		;一緒に気持ちよくしようというセリフ
+		;		K_CALL:K = KOJO_MESSAGE_ASSIPAIR_COM_1
+		;私のほうが気持ちよくしてるというセリフ
+		;		K_CALL:K = KOJO_MESSAGE_ASSIPAIR_COM_2
+		;煽りに対してのセリフ
+		;		K_CALL:K = KOJO_MESSAGE_ASSIPAIR_COM_3
+		;いつもより感じてるねというセリフ
+		;		K_CALL:K = KOJO_MESSAGE_ASSIPAIR_COM_4
+		;レズっぽいセリフに対するセリフ
+		;		K_CALL:K = KOJO_MESSAGE_ASSIPAIR_COM_5
+		;二人のフェラは気持ちいいでしょ？セリフ
+		;		K_CALL:K = KOJO_MESSAGE_ASSIPAIR_COM_6
+ 
+;-------------------------------------------------
+;125,더블파이즈리
+;-------------------------------------------------
+	CASE 125
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:367 == 0
+			KSTR:(K++) =
+			CFLAG:367 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:367 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:367 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:367 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:367 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:367 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:367 = 2
+			ENDIF
+		ENDIF
+		
+		;助手口上呼び出し関数
+		;一緒に気持ちよくしようというセリフ
+		;		K_CALL:K = KOJO_MESSAGE_ASSIPAIR_COM_1
+		;私のほうが気持ちよくしてるというセリフ
+		;		K_CALL:K = KOJO_MESSAGE_ASSIPAIR_COM_2
+		;煽りに対してのセリフ
+		;		K_CALL:K = KOJO_MESSAGE_ASSIPAIR_COM_3
+		;いつもより感じてるねというセリフ
+		;		K_CALL:K = KOJO_MESSAGE_ASSIPAIR_COM_4
+		;お互いに乳首がこすれて気持ちいいセリフ
+		;		K_CALL:K = KOJO_MESSAGE_ASSIPAIR_COM_5
+		;二人のパイズリで気持ちよくなってセリフ
+		;		K_CALL:K = KOJO_MESSAGE_ASSIPAIR_COM_6
+		;パイズリで感じているの？セリフ
+		;		K_CALL:K = KOJO_MESSAGE_ASSIPAIR_COM_7
+ 
+	CASEELSE
+ENDSELECT
+;-------------------------------------------------
+;助手による共通、及びレズプレイ
+;-------------------------------------------------
+		IF !口上有無確認(0)
+			K_CALL:K = TRAIN_MESSAGE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && FLAG:7 == 2
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && FLAG:7 == 2 && !口上有無確認(0)
+				KSTR:(K++) = 
+			ENDIF
+			;それ以外
+			IF FLAG:7 == 2 && !口上有無確認(0)
+				;WSTR:(K++) =
+			ENDIF
+		ENDIF
+;=================================================
+;ハードな調教コマンド
+;=================================================
+ELSEIF RESULT == COMTYPE("ハード系")
+SELECTCASE SELECTCOM
+	CASEELSE
+ENDSELECT
+;-------------------------------------------------
+;ハードな調教共通
+;-------------------------------------------------
+		IF !口上有無確認(0)
+			K_CALL:K = TRAIN_MESSAGE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && FLAG:7 == 2
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && FLAG:7 == 2 && !口上有無確認(0)
+				KSTR:(K++) = 
+			ENDIF
+			;それ以外
+			IF FLAG:7 == 2 && !口上有無確認(0)
+				;WSTR:(K++) =
+			ENDIF
+		ENDIF
+;=================================================
+;触手系コマンド
+;=================================================
+ELSEIF RESULT == COMTYPE("触手系")
+$SHOKUSHU_PLAY
+SELECTCASE SELECTCOM
+;-------------------------------------------------
+;触手胸系愛撫
+;6胸揉み,7乳首責め,8胸愛撫
+;-------------------------------------------------
+	CASE 6,7,8
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:457 == 0
+			KSTR:(K++) =
+			CFLAG:457 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:457 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:457 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:457 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:457 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:457 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:457 = 2
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;160,촉수소환
+;-------------------------------------------------
+	CASE 160
+		K_CALL:K = TRAIN_MESSAGE
+		IF TEQUIP:25
+			;初めて
+			IF CFLAG:382 == 0
+				KSTR:(K++) =
+				CFLAG:382 = 1
+			ELSE
+				IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:382 < 3 || FLAG:7 == 2)
+					;恋慕、親愛
+					IF (TALENT:3 || TALENT:6)
+						KSTR:(K++) = 
+					;淫乱、娼婦
+					ELSEIF (TALENT:4 || TALENT:7)
+						KSTR:(K++) = 
+					;服従、隷属
+					ELSEIF (TALENT:5 || TALENT:8)
+						KSTR:(K++) = 
+					ENDIF
+					;陥落済み共通
+					IF !口上有無確認(0)
+						KSTR:(K++) = 
+					ENDIF
+					CFLAG:382 = 4
+				ENDIF
+				;屈服刻印Lv3
+				IF MARK:2 == 3 && (CFLAG:382 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+					KSTR:(K++) = 
+					CFLAG:382 = 3
+				ENDIF
+				;それ以外
+				IF (CFLAG:382 || FLAG:7 == 2) && !口上有無確認(0)
+					KSTR:(K++) =
+					CFLAG:382 = 2
+				ENDIF
+			ENDIF
+		;해제
+		ELSE
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && !口上有無確認(0)
+				KSTR:(K++) =
+			ENDIF
+			;それ以外
+			IF !口上有無確認(0)
+				KSTR:(K++) =
+			ENDIF
+		ENDIF
+	CASEELSE
+ENDSELECT
+;-------------------------------------------------
+;触手愛撫共通
+;-------------------------------------------------
+	IF SELECTCOM < 20 && !口上有無確認(0)
+			K_CALL:K = TRAIN_MESSAGE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && FLAG:7 == 2
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && FLAG:7 == 2 && !口上有無確認(0)
+				KSTR:(K++) = 
+			ENDIF
+			;それ以外
+			IF FLAG:7 == 2 && !口上有無確認(0)
+				;WSTR:(K++) =
+			ENDIF
+	ENDIF
+;-------------------------------------------------
+;触手系共通
+;-------------------------------------------------
+		IF !口上有無確認(0)
+			K_CALL:K = TRAIN_MESSAGE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && FLAG:7 == 2
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && FLAG:7 == 2 && !口上有無確認(0)
+				KSTR:(K++) = 
+			ENDIF
+			;それ以外
+			IF FLAG:7 == 2 && !口上有無確認(0)
+				;WSTR:(K++) =
+			ENDIF
+		ENDIF
+;=================================================
+;特殊コマンド
+;=================================================
+ELSEIF RESULT == COMTYPE("特殊コマンド系") && SELECTCOM < 600
+SELECTCASE SELECTCOM
+;-------------------------------------------------
+;187,목욕탕플레이
+;-------------------------------------------------
+	CASE 187
+		K_CALL:K = TRAIN_MESSAGE
+		IF TEQUIP:31
+			;初めて
+			IF CFLAG:399 == 0
+				KSTR:(K++) =
+				CFLAG:399 = 1
+			ELSE
+				IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:399 < 3 || FLAG:7 == 2)
+					;恋慕、親愛
+					IF (TALENT:3 || TALENT:6)
+						KSTR:(K++) = 
+					;淫乱、娼婦
+					ELSEIF (TALENT:4 || TALENT:7)
+						KSTR:(K++) = 
+					;服従、隷属
+					ELSEIF (TALENT:5 || TALENT:8)
+						KSTR:(K++) = 
+					ENDIF
+					;陥落済み共通
+					IF !口上有無確認(0)
+						KSTR:(K++) = 
+					ENDIF
+					CFLAG:399 = 4
+				ENDIF
+				;屈服刻印Lv3
+				IF MARK:2 == 3 && (CFLAG:399 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+					KSTR:(K++) = 
+					CFLAG:399 = 3
+				ENDIF
+				;それ以外
+				IF (CFLAG:399 || FLAG:7 == 2) && !口上有無確認(0)
+					KSTR:(K++) =
+					CFLAG:399 = 2
+				ENDIF
+			ENDIF
+		;해제
+		ELSE
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && !口上有無確認(0)
+				KSTR:(K++) =
+			ENDIF
+			;それ以外
+			IF !口上有無確認(0)
+				KSTR:(K++) =
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;189,새댁플레이　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 189
+		K_CALL:K = TRAIN_MESSAGE
+		IF TEQUIP:33
+			;初めて
+			IF CFLAG:401 == 0
+				KSTR:(K++) =
+				CFLAG:401 = 1
+			;二回目以降
+			ELSEIF CFLAG:401 < 2 || FLAG:7 == 2
+				KSTR:(K++) =
+				CFLAG:401 = 2
+			ENDIF
+		ELSE
+		;해제
+			IF CFLAG:401 == 1 || FLAG:7 == 2
+				KSTR:(K++) =
+			ENDIF
+		ENDIF
+	CASEELSE
+ENDSELECT
+;-------------------------------------------------
+;特殊共通
+;-------------------------------------------------
+		IF !口上有無確認(0)
+			K_CALL:K = TRAIN_MESSAGE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && FLAG:7 == 2
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && FLAG:7 == 2 && !口上有無確認(0)
+				KSTR:(K++) = 
+			ENDIF
+			;それ以外
+			IF FLAG:7 == 2 && !口上有無確認(0)
+				;WSTR:(K++) =
+			ENDIF
+		ENDIF
+;=================================================
+;500番台,派生コマンド
+;=================================================
+ELSEIF RESULT == COMTYPE("派生系") && SELECTCOM < 600
+SELECTCASE SELECTCOM
+;-------------------------------------------------
+;奥攻めセックス
+;503Gスポット刺激,506挿入局所責め,507挿入子宮口責め
+;-------------------------------------------------
+	CASE 503,506,507
+		K_CALL:K = TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:410 == 0
+			KSTR:(K++) =
+			CFLAG:410 = 1
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:410 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+				CFLAG:410 = 4
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:410 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) = 
+				CFLAG:410 = 3
+			ENDIF
+			;それ以外
+			IF (CFLAG:410 || FLAG:7 == 2) && !口上有無確認(0)
+				KSTR:(K++) =
+				CFLAG:410 = 2
+			ENDIF
+		ENDIF
+	CASEELSE
+ENDSELECT
+;-------------------------------------------------
+;500番台,派生共通
+;-------------------------------------------------
+		IF !口上有無確認(0)
+			K_CALL:K = TRAIN_MESSAGE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && FLAG:7 == 2
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					KSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					KSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					KSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					KSTR:(K++) = 
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && FLAG:7 == 2 && !口上有無確認(0)
+				KSTR:(K++) = 
+			ENDIF
+			;それ以外
+			IF FLAG:7 == 2 && !口上有無確認(0)
+				;WSTR:(K++) =
+			ENDIF
+		ENDIF
+;=================================================
+;600番台,非戦闘員コマンド
+;=================================================
+ELSEIF SELECTCOM >= 600
+SELECTCASE SELECTCOM
+	CASEELSE
+ENDSELECT
+ENDIF
+;-------------------------------------------------
+;その他、どれ系の調教かわからなかった奴
+;-------------------------------------------------
+IF !口上有無確認(0)
+SELECTCASE SELECTCOM
+ 
+ENDSELECT
+ENDIF
+;------------------------------------------------
+;コマンド口上ここまで
+;------------------------------------------------
+ 
+CALL 口上変数表示
+;口上がなければ別の口上を呼び出す
+IF RESULT == 0
+	TRYCCALLFORM KOJO_MESSAGE_COM_ZZZ
+	CATCH
+		CALL TRAIN_MESSAGE
+	ENDCATCH
+	
+ENDIF
+;-------------------------------------------------
+;輪姦時の口上
+;CASE 0 内は必ず通るようになっており
+;RETURNで0を返すと、この後通常の輪姦行動を出します
+;CFLAGは使っていません
+;COMF201_輪姦内でLOCALを使っているので使いません
+;-------------------------------------------------
+@KOJO_MESSAGE_RINKAN_K[[キャラ:하루_P5]], ARG:1 , ARG:2
+CALL 口上変数初期化
+
+SELECTCASE ARG:1
+	CASE 0
+	;CASE 0はオリジナル輪姦口上
+	;C:一回あたりの帰宅人数、D：興奮度増加(及び減少)
+	;CとDはオリジナル輪姦口上内のみ使う
+	;C += 、D += を使う
+		IF ARG:2 == 1
+		;ハードON
+		
+		ELSE
+		;ハードOFF
+		
+		ENDIF
+	;ハード系
+	;胸を踏まれる（巨乳・爆乳のみ）
+	CASE 1
+		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && FLAG:7 == 2
+			;恋慕、親愛
+			IF (TALENT:3 || TALENT:6)
+				WSTR:(K++) = 
+			;淫乱、娼婦
+			ELSEIF (TALENT:4 || TALENT:7)
+				WSTR:(K++) = 
+			;服従、隷属
+			ELSEIF (TALENT:5 || TALENT:8)
+				WSTR:(K++) = 
+			ENDIF
+			;陥落済み共通
+			IF KSTR:0 == ""
+				WSTR:(K++) = 
+			ENDIF
+		ENDIF
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && FLAG:7 == 2 && KSTR:0 == ""
+			WSTR:(K++) = 
+		ENDIF
+		;それ以外
+		IF FLAG:7 == 2 && KSTR:0 == ""
+			WSTR:(K++) =
+		ENDIF
+	;頭を踏まれる
+	CASE 2
+	
+	;暴力を振るわれる
+	CASE 3
+	
+	;タバコの根性焼き
+	;興奮度が低く、反抗的、気丈、プライド高い、生意気、抵抗を持っている
+	CASE 4
+	
+	;地面に垂れた精液舐めとらせる
+	;マゾっ気３以上
+	CASE 5
+	
+	;体に落書きをされて犯される
+	CASE 6
+	
+	;尻突き上げてバックから犯されつつ、頭を踏んづけられて屈辱で涙目状態
+	CASE 7
+	
+	;通常系
+	;淫乱系で目の前に棒並べられて、どれが欲しいか選ばせるとか（淫乱・娼婦のみ）
+	CASE 8
+	
+	;巨乳以上のキャラだと「その乳は飾りか？遊ばせてるんじゃねえ」とか罵られパイズリする（巨乳・爆乳のみ）
+	CASE 9
+	
+	;挿れられるのだけは回避しようと必死に口と手で群がるチンポにご奉仕する（恋幕・親愛のみ）
+	CASE 10
+	
+	;;両穴突かれながら無理やり笑顔とピースサインとらされて記念撮影
+	CASE 11
+	
+	;;輸姦後の後始末描写で、本人精液でどろどろにされてるのに周囲の男達の肉棒を舌で掃除させられてる
+	CASE 12
+	
+	;中に出されても即座にほかの人に交代
+	CASE 13
+	
+	;一斉射精で精液まみれ
+	CASE 14
+	
+	;;両穴突かれて同時射精
+	CASE 15
+	
+	;기승위+両脇コキ
+	CASE 16
+	
+	;;입+マンコ
+	CASE 17
+	
+ENDSELECT
+
+CALL 口上変数表示
+;口上がなければ別の口上を呼び出す
+IF RESULT == 0
+	TRYCCALLFORM KOJO_MESSAGE_RINKAN_ZZZ
+	CATCH
+	ENDCATCH
+	
+ENDIF
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG関係（4661をキャラ番号に置換）
+;パラメータ変化などをトリガーにした口上　CFLAG 221～260を使用
+;-------------------------------------------------
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_A（4661をキャラ番号に置換）
+;調教者の射精をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_A_K[[キャラ:하루_P5]]
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_A
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、4661を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_A_PY1_K[[キャラ:하루_P5]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_A_PY1_K[[キャラ:하루_P5]]
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;調教者の射精時のテキスト
+;-------------------------------------------------
+CALL 口上変数初期化
+LOCAL = 0;사정량
+;-------------------------------------------------
+;射精箇所変更時のテキスト　有効時はここで関数終了
+;-------------------------------------------------
+
+
+IF CFLAG:106
+	LOCAL = 1
+	K_CALL:K = PALAM_MESSAGE_A
+	IF 1 == 0
+	;顔
+	ELSEIF CFLAG:106 == 2
+		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:222 < 3 || FLAG:7 == 2)
+			;恋慕、親愛
+			IF (TALENT:3 || TALENT:6)
+				WSTR:(K++) = 
+				CFLAG:222= 4
+			;淫乱、娼婦
+			ELSEIF (TALENT:4 || TALENT:7)
+				WSTR:(K++) = 
+				CFLAG:222= 3
+			;服従、隷属
+			ELSEIF (TALENT:5 || TALENT:8)
+				WSTR:(K++) = 
+				CFLAG:222= 3
+			ENDIF
+			;陥落済み共通
+			IF !口上有無確認(0)
+				WSTR:(K++) = 
+				CFLAG:222= 3
+			ENDIF
+		ENDIF
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:222 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+			WSTR:(K++) = 
+			CFLAG:222= 2
+		ENDIF
+		;それ以外
+		IF (CFLAG:222 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+			WSTR:(K++) =
+			CFLAG:222= 1
+		ENDIF
+	;ゴム
+	ELSEIF CFLAG:106 == 9
+		LOCAL = 0
+		;セックスで射精かつ、アナルセックス以外を実行時
+		IF GROUPMATCH(SELECTCOM , 60 , 61 , 66 , 68 , 69 , 72 , 504 , 505 , 506 , 507)
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:229 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+					CFLAG:229= 4
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+					CFLAG:229= 3
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+					CFLAG:229= 3
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) = 
+					CFLAG:229= 3
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:229 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) = 
+				CFLAG:229= 2
+			ENDIF
+			;それ以外
+			IF (CFLAG:229 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) =
+				CFLAG:229= 1
+			ENDIF
+		ELSE
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:230 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+					CFLAG:230= 4
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+					CFLAG:230= 3
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+					CFLAG:230= 3
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) = 
+					CFLAG:230= 3
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:230 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) = 
+				CFLAG:230= 2
+			ENDIF
+			;それ以外
+			IF (CFLAG:230 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) =
+				CFLAG:230= 1
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+
+
+;-------------------------------------------------
+;手、口以外で射精
+;対応コマンドはキス、素股、足コキ、アナル強制奉仕、ダブル素股、助手を犯させる
+;-------------------------------------------------
+IF TFLAG:9 > 0
+	K_CALL:K = PALAM_MESSAGE_A
+	IF !口上有無確認(0)
+		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:230 < 3 || FLAG:7 == 2)
+			;恋慕、親愛
+			IF (TALENT:3 || TALENT:6)
+				WSTR:(K++) = 
+				CFLAG:230= 4
+			;淫乱、娼婦
+			ELSEIF (TALENT:4 || TALENT:7)
+				WSTR:(K++) = 
+				CFLAG:230= 3
+			;服従、隷属
+			ELSEIF (TALENT:5 || TALENT:8)
+				WSTR:(K++) = 
+				CFLAG:230= 3
+			ENDIF
+			;陥落済み共通
+			IF !口上有無確認(0)
+				WSTR:(K++) = 
+				CFLAG:230= 3
+			ENDIF
+		ENDIF
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:230 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+			WSTR:(K++) = 
+			CFLAG:230= 2
+		ENDIF
+		;それ以外
+		IF (CFLAG:230 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+			WSTR:(K++) =
+			CFLAG:230= 1
+		ENDIF
+	ENDIF
+	LOCAL = TFLAG:9
+ENDIF
+
+;-------------------------------------------------
+;조수를범한다로사정
+;-------------------------------------------------
+IF TFLAG:7 > 0
+	K_CALL:K = PALAM_MESSAGE_A
+	IF !口上有無確認(0)
+		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:232 < 3 || FLAG:7 == 2)
+			;恋慕、親愛
+			IF (TALENT:3 || TALENT:6)
+				WSTR:(K++) = 
+				CFLAG:232= 4
+			;淫乱、娼婦
+			ELSEIF (TALENT:4 || TALENT:7)
+				WSTR:(K++) = 
+				CFLAG:232= 3
+			;服従、隷属
+			ELSEIF (TALENT:5 || TALENT:8)
+				WSTR:(K++) = 
+				CFLAG:232= 3
+			ENDIF
+			;陥落済み共通
+			IF !口上有無確認(0)
+				WSTR:(K++) = 
+				CFLAG:232= 3
+			ENDIF
+		ENDIF
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:232 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+			WSTR:(K++) = 
+			CFLAG:232= 2
+		ENDIF
+		;それ以外
+		IF (CFLAG:232 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+			WSTR:(K++) =
+			CFLAG:232= 1
+		ENDIF
+	ENDIF
+	LOCAL = TFLAG:7
+ENDIF
+
+;-------------------------------------------------
+;입으로사정
+;-------------------------------------------------
+IF TFLAG:0 > 0
+	K_CALL:K = PALAM_MESSAGE_A
+	;イラマチオで射精
+	IF SELECTCOM == 140
+		IF !口上有無確認(0)
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:233 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+					CFLAG:233= 4
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+					CFLAG:233= 3
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+					CFLAG:233= 3
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) = 
+					CFLAG:233= 3
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:233 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) = 
+				CFLAG:233= 2
+			ENDIF
+			;それ以外
+			IF (CFLAG:233 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) =
+				CFLAG:233= 1
+			ENDIF
+		ENDIF
+	;それ以外の口射精
+	ELSE
+		IF !口上有無確認(0)
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:233 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+					CFLAG:233= 4
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+					CFLAG:233= 3
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+					CFLAG:233= 3
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) = 
+					CFLAG:233= 3
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:233 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) = 
+				CFLAG:233= 2
+			ENDIF
+			;それ以外
+			IF (CFLAG:233 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) =
+				CFLAG:233= 1
+			ENDIF
+		ENDIF
+	ENDIF
+	LOCAL = TFLAG:0
+ENDIF
+
+;-------------------------------------------------
+;손으로사정
+;-------------------------------------------------
+IF TFLAG:1 > 0
+	K_CALL:K = PALAM_MESSAGE_A
+	IF !口上有無確認(0)
+		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:234 < 3 || FLAG:7 == 2)
+			;恋慕、親愛
+			IF (TALENT:3 || TALENT:6)
+				WSTR:(K++) = 
+				CFLAG:234= 4
+			;淫乱、娼婦
+			ELSEIF (TALENT:4 || TALENT:7)
+				WSTR:(K++) = 
+				CFLAG:234= 3
+			;服従、隷属
+			ELSEIF (TALENT:5 || TALENT:8)
+				WSTR:(K++) = 
+				CFLAG:234= 3
+			ENDIF
+			;陥落済み共通
+			IF !口上有無確認(0)
+				WSTR:(K++) = 
+				CFLAG:234= 3
+			ENDIF
+		ENDIF
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:234 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+			WSTR:(K++) = 
+			CFLAG:234= 2
+		ENDIF
+		;それ以外
+		IF (CFLAG:234 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+			WSTR:(K++) =
+			CFLAG:234= 1
+		ENDIF
+	ENDIF
+	LOCAL = TFLAG:1
+ENDIF
+
+;-------------------------------------------------
+;가슴으로사정
+;-------------------------------------------------
+IF TFLAG:34 > 0
+	K_CALL:K = PALAM_MESSAGE_A
+	IF !口上有無確認(0)
+		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:235 < 3 || FLAG:7 == 2)
+			;恋慕、親愛
+			IF (TALENT:3 || TALENT:6)
+				WSTR:(K++) = 
+				CFLAG:235= 4
+			;淫乱、娼婦
+			ELSEIF (TALENT:4 || TALENT:7)
+				WSTR:(K++) = 
+				CFLAG:235= 3
+			;服従、隷属
+			ELSEIF (TALENT:5 || TALENT:8)
+				WSTR:(K++) = 
+				CFLAG:235= 3
+			ENDIF
+			;陥落済み共通
+			IF !口上有無確認(0)
+				WSTR:(K++) = 
+				CFLAG:235= 3
+			ENDIF
+		ENDIF
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:235 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+			WSTR:(K++) = 
+			CFLAG:235= 2
+		ENDIF
+		;それ以外
+		IF (CFLAG:235 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+			WSTR:(K++) =
+			CFLAG:235= 1
+		ENDIF
+	ENDIF
+	LOCAL = TFLAG:34
+ENDIF
+W:K = 1
+;-------------------------------------------------
+;오나홀에사정
+;-------------------------------------------------
+IF TFLAG:16 == 1
+	K_CALL:K = PALAM_MESSAGE_A
+	;通常					
+	IF !口上有無確認(0)
+		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:236 < 3 || FLAG:7 == 2)
+			;恋慕、親愛
+			IF (TALENT:3 || TALENT:6)
+				WSTR:(K++) = 
+				CFLAG:236= 4
+			;淫乱、娼婦
+			ELSEIF (TALENT:4 || TALENT:7)
+				WSTR:(K++) = 
+				CFLAG:236= 3
+			;服従、隷属
+			ELSEIF (TALENT:5 || TALENT:8)
+				WSTR:(K++) = 
+				CFLAG:236= 3
+			ENDIF
+			;陥落済み共通
+			IF !口上有無確認(0)
+				WSTR:(K++) = 
+				CFLAG:236= 3
+			ENDIF
+		ENDIF
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:236 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+			WSTR:(K++) = 
+			CFLAG:236= 2
+		ENDIF
+		;それ以外
+		IF (CFLAG:236 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+			WSTR:(K++) =
+			CFLAG:236= 1
+		ENDIF
+	ENDIF
+	LOCAL = 0
+ENDIF
+
+;-------------------------------------------------
+;섹스로사정
+;-------------------------------------------------
+IF TFLAG:2 > 0
+	LOCAL = TFLAG:2
+	K_CALL:K = PALAM_MESSAGE_A
+	;アナルセックス系
+	IF SELECTCOM == 62 || SELECTCOM == 63 || SELECTCOM == 67 || SELECTCOM == 70 || SELECTCOM == 71 || SELECTCOM == 512
+		IF !口上有無確認(0)
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:237 < 3 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+					CFLAG:237= 4
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+					CFLAG:237= 3
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+					CFLAG:237= 3
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) = 
+					CFLAG:237= 3
+				ENDIF
+			ENDIF
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:237 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) = 
+				CFLAG:237= 2
+			ENDIF
+			;それ以外
+			IF (CFLAG:237 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) =
+				CFLAG:237= 1
+			ENDIF
+		ENDIF
+	;V系セックス
+	ELSE
+		;奥攻めセックス系
+		IF SELECTCOM == 506 || SELECTCOM == 507
+			IF !口上有無確認(0)
+				IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:238 < 3 || FLAG:7 == 2)
+					;恋慕、親愛
+					IF (TALENT:3 || TALENT:6)
+						WSTR:(K++) = 
+						CFLAG:238= 4
+					;淫乱、娼婦
+					ELSEIF (TALENT:4 || TALENT:7)
+						WSTR:(K++) = 
+						CFLAG:238= 3
+					;服従、隷属
+					ELSEIF (TALENT:5 || TALENT:8)
+						WSTR:(K++) = 
+						CFLAG:238= 3
+					ENDIF
+					;陥落済み共通
+					IF !口上有無確認(0)
+						WSTR:(K++) = 
+						CFLAG:238= 3
+					ENDIF
+				ENDIF
+				;屈服刻印Lv3
+				IF MARK:2 == 3 && (CFLAG:238 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+					WSTR:(K++) = 
+					CFLAG:238= 2
+				ENDIF
+				;それ以外
+				IF (CFLAG:238 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+					WSTR:(K++) = 
+					CFLAG:238= 1
+				ENDIF
+			ENDIF
+		
+		ENDIF
+		;その他セックス系
+		IF !口上有無確認(0)
+			IF !口上有無確認(0)
+				IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:239 < 3 || FLAG:7 == 2)
+					;恋慕、親愛
+					IF (TALENT:3 || TALENT:6)
+						WSTR:(K++) = 
+						CFLAG:239= 4
+					;淫乱、娼婦
+					ELSEIF (TALENT:4 || TALENT:7)
+						WSTR:(K++) = 
+						CFLAG:239= 3
+					;服従、隷属
+					ELSEIF (TALENT:5 || TALENT:8)
+						WSTR:(K++) = 
+						CFLAG:239= 3
+					ENDIF
+					;陥落済み共通
+					IF !口上有無確認(0)
+						WSTR:(K++) = 
+						CFLAG:239= 3
+					ENDIF
+				ENDIF
+				;屈服刻印Lv3
+				IF MARK:2 == 3 && (CFLAG:239 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+					WSTR:(K++) = 
+					CFLAG:239= 2
+				ENDIF
+				;それ以外
+				IF (CFLAG:239 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+					WSTR:(K++) =
+					CFLAG:239= 1
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;逆レイプで射精させた
+;-------------------------------------------------
+IF SELECTCOM == 64 && TFLAG:10 > 0
+	LOCAL = TFLAG:10
+	K_CALL:K = PALAM_MESSAGE_A
+	IF !口上有無確認(0)
+		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:240 < 3 || FLAG:7 == 2)
+			;恋慕、親愛
+			IF (TALENT:3 || TALENT:6)
+				WSTR:(K++) = 
+				CFLAG:240= 4
+			;淫乱、娼婦
+			ELSEIF (TALENT:4 || TALENT:7)
+				WSTR:(K++) = 
+				CFLAG:240= 3
+			;服従、隷属
+			ELSEIF (TALENT:5 || TALENT:8)
+				WSTR:(K++) = 
+				CFLAG:240= 3
+			ENDIF
+			;陥落済み共通
+			IF !口上有無確認(0)
+				WSTR:(K++) = 
+				CFLAG:240= 3
+			ENDIF
+		ENDIF
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:240 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+			WSTR:(K++) = 
+			CFLAG:240= 2
+		ENDIF
+		;それ以外
+		IF (CFLAG:240 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+			WSTR:(K++) =
+			CFLAG:240= 1
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;射精共通
+;-------------------------------------------------
+	IF !口上有無確認(0) && LOCAL > 0
+		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:240 < 3 || FLAG:7 == 2)
+			;恋慕、親愛
+			IF (TALENT:3 || TALENT:6)
+				WSTR:(K++) = 
+				CFLAG:240= 4
+			;淫乱、娼婦
+			ELSEIF (TALENT:4 || TALENT:7)
+				WSTR:(K++) = 
+				CFLAG:240= 3
+			;服従、隷属
+			ELSEIF (TALENT:5 || TALENT:8)
+				WSTR:(K++) = 
+				CFLAG:240= 3
+			ENDIF
+			;陥落済み共通
+			IF !口上有無確認(0)
+				WSTR:(K++) = 
+				CFLAG:240= 3
+			ENDIF
+		ENDIF
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:240 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+			WSTR:(K++) = 
+			CFLAG:240= 2
+		ENDIF
+		;それ以外
+		IF (CFLAG:240 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+			WSTR:(K++) =
+			CFLAG:240= 1
+		ENDIF
+	ENDIF
+
+CALL 口上変数表示
+;口上がなければ別の口上を呼び出す
+IF RESULT == 0
+	TRYCCALLFORM KOJO_MESSAGE_PALAMCNG_A_ZZZ
+	CATCH
+		CALL PALAM_MESSAGE_A
+	ENDCATCH
+	
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_E（4661をキャラ番号に置換）
+;触手の射精をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_E_K[[キャラ:하루_P5]]
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_E
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、4661を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_E_PY1_K[[キャラ:하루_P5]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_E_PY1_K[[キャラ:하루_P5]]
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;触手の射精時のテキスト
+;-------------------------------------------------
+CALL 口上変数初期化
+;-------------------------------------------------
+;촉수가사정
+;-------------------------------------------------
+IF TFLAG:15 >0
+	K_CALL:K = PALAM_MESSAGE_E
+	IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:241 < 3 || FLAG:7 == 2)
+		;恋慕、親愛
+		IF (TALENT:3 || TALENT:6)
+			WSTR:(K++) = 
+			CFLAG:241= 4
+		;淫乱、娼婦
+		ELSEIF (TALENT:4 || TALENT:7)
+			WSTR:(K++) = 
+			CFLAG:241= 3
+		;服従、隷属
+		ELSEIF (TALENT:5 || TALENT:8)
+			WSTR:(K++) = 
+			CFLAG:241= 3
+		ENDIF
+		;陥落済み共通
+		IF !口上有無確認(0)
+			WSTR:(K++) = 
+			CFLAG:241= 3
+		ENDIF
+	ENDIF
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:241 < 2 || FLAG:7 == 2) && !口上有無確認(0)
+		WSTR:(K++) = 
+		CFLAG:241= 2
+	ENDIF
+	;それ以外
+	IF (CFLAG:241 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+		WSTR:(K++) =
+		CFLAG:241= 1
+	ENDIF
+ENDIF
+
+CALL 口上変数表示
+IF RESULT == 0
+	TRYCCALLFORM KOJO_MESSAGE_COM_ZZZ
+	CATCH
+		CALL PALAM_MESSAGE_E
+	ENDCATCH
+	
+ENDIF
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_B関係（4661をキャラ番号に置換）
+;奴隷の絶頂をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_B_K[[キャラ:하루_P5]]
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_B
+	RETURN 0
+ENDIF
+;想定外の口上だとスキップ(これ消したらバグる)
+IF SELECTCOM < 0 || SELECTCOM > 700
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、4661を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_B_PY1_K[[キャラ:하루_P5]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_B_PY1_K[[キャラ:하루_P5]]
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;奴隷の絶頂時のテキスト
+;-------------------------------------------------
+CALL 口上変数初期化
+;-------------------------------------------------
+;初めてC絶頂
+;-------------------------------------------------
+IF NOWEX:0 > 0 && CFLAG:242 == 0
+	WSTR:(K++) =
+	CFLAG:242 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めてV絶頂
+;-------------------------------------------------
+IF NOWEX:1 > 0 && CFLAG:243 == 0
+	WSTR:(K++) =
+	CFLAG:243 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めてA絶頂
+;-------------------------------------------------
+IF NOWEX:2 > 0 && CFLAG:244 == 0
+	WSTR:(K++) =
+	CFLAG:244 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めてB絶頂
+;-------------------------------------------------
+IF NOWEX:3 > 0 && CFLAG:245 == 0
+	WSTR:(K++) =
+	CFLAG:245 = 1
+ENDIF
+
+;-------------------------------------------------
+;절정
+;-------------------------------------------------
+SIF 口上有無確認(0) && K > 0
+	CALL WSTR書き込み,K - 1
+LOCAL = K
+
+IF TFLAG:29 > 0
+	K_CALL:K = PALAM_MESSAGE_B
+	;強絶頂
+	IF TFLAG:29 > 1
+		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:246 < 3 || FLAG:7 == 2)
+			;恋慕、親愛
+			IF (TALENT:3 || TALENT:6)
+				WSTR:(K++) = 
+				CFLAG:246= 3
+			;淫乱、娼婦
+			ELSEIF (TALENT:4 || TALENT:7)
+				WSTR:(K++) = 
+				CFLAG:246= 3
+			;服従、隷属
+			ELSEIF (TALENT:5 || TALENT:8)
+				WSTR:(K++) = 
+				CFLAG:246= 3
+			ENDIF
+			;陥落済み共通
+			IF !口上有無確認(LOCAL)
+				WSTR:(K++) = 
+				CFLAG:246= 3
+			ENDIF
+		ENDIF
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:246 < 2 || FLAG:7 == 2) && !口上有無確認(LOCAL)
+			WSTR:(K++) = 
+			CFLAG:246= 2
+		ENDIF
+		;それ以外
+		IF (CFLAG:246 < 1 || FLAG:7 == 2) && !口上有無確認(LOCAL)
+			WSTR:(K++) = 
+			CFLAG:246= 1
+		ENDIF
+	ENDIF
+	;절정
+	IF !口上有無確認(LOCAL)
+		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:246 < 3 || FLAG:7 == 2)
+			;恋慕、親愛
+			IF (TALENT:3 || TALENT:6)
+				WSTR:(K++) = 
+				CFLAG:246= 3
+			;淫乱、娼婦
+			ELSEIF (TALENT:4 || TALENT:7)
+				WSTR:(K++) = 
+				CFLAG:246= 3
+			;服従、隷属
+			ELSEIF (TALENT:5 || TALENT:8)
+				WSTR:(K++) = 
+				CFLAG:246= 3
+			ENDIF
+			;陥落済み共通
+			IF !口上有無確認(LOCAL)
+				WSTR:(K++) = 
+				CFLAG:246= 3
+			ENDIF
+		ENDIF
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:246 < 2 || FLAG:7 == 2) && !口上有無確認(LOCAL)
+			WSTR:(K++) = 
+			CFLAG:246= 2
+		ENDIF
+		;それ以外
+		IF (CFLAG:246 < 1 || FLAG:7 == 2) && !口上有無確認(LOCAL)
+			WSTR:(K++) =
+			CFLAG:246= 1
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;사정
+;-------------------------------------------------
+;射精している
+SIF 口上有無確認(0) && K > 0
+	CALL WSTR書き込み,K - 1
+LOCAL = K
+
+IF TFLAG:10 > 0
+	IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:247 < 3 || FLAG:7 == 2)
+		;恋慕、親愛
+		IF (TALENT:3 || TALENT:6)
+			WSTR:(K++) = 
+			CFLAG:247= 4
+		;淫乱、娼婦
+		ELSEIF (TALENT:4 || TALENT:7)
+			WSTR:(K++) = 
+			CFLAG:247= 3
+		;服従、隷属
+		ELSEIF (TALENT:5 || TALENT:8)
+			WSTR:(K++) = 
+			CFLAG:247= 3
+		ENDIF
+		;陥落済み共通
+		IF !口上有無確認(LOCAL)
+			WSTR:(K++) = 
+			CFLAG:247= 3
+		ENDIF
+	ENDIF
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:247 < 2 || FLAG:7 == 2) && !口上有無確認(LOCAL)
+		WSTR:(K++) = 
+		CFLAG:247= 2
+	ENDIF
+	;それ以外
+	IF (CFLAG:247 < 1 || FLAG:7 == 2) && !口上有無確認(LOCAL)
+		WSTR:(K++) =
+		CFLAG:247= 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;분유
+;-------------------------------------------------
+SIF 口上有無確認(0) && K > 0
+	CALL WSTR書き込み,K - 1
+LOCAL = K
+
+;噴乳している
+IF TFLAG:11 > 0
+	IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:248 < 3 || FLAG:7 == 2)
+		;恋慕、親愛
+		IF (TALENT:3 || TALENT:6)
+			WSTR:(K++) = 
+			CFLAG:248= 4
+		;淫乱、娼婦
+		ELSEIF (TALENT:4 || TALENT:7)
+			WSTR:(K++) = 
+			CFLAG:248= 3
+		;服従、隷属
+		ELSEIF (TALENT:5 || TALENT:8)
+			WSTR:(K++) = 
+			CFLAG:248= 3
+		ENDIF
+		;陥落済み共通
+		IF !口上有無確認(LOCAL)
+			WSTR:(K++) = 
+			CFLAG:248= 3
+		ENDIF
+	ENDIF
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:248 < 2 || FLAG:7 == 2) && !口上有無確認(LOCAL)
+		WSTR:(K++) = 
+		CFLAG:248= 2
+	ENDIF
+	;それ以外
+	IF (CFLAG:248 < 1 || FLAG:7 == 2) && !口上有無確認(LOCAL)
+		WSTR:(K++) =
+		CFLAG:248= 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;방뇨
+;-------------------------------------------------
+;放尿している
+SIF 口上有無確認(0) && K > 0
+	CALL WSTR書き込み,K - 1
+LOCAL = K
+
+IF TFLAG:29 > 0 && (TEQUIP:27 || TALENT:57)
+	IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:249 < 3 || FLAG:7 == 2)
+		;恋慕、親愛
+		IF (TALENT:3 || TALENT:6)
+			WSTR:(K++) = 
+			CFLAG:249= 4
+		;淫乱、娼婦
+		ELSEIF (TALENT:4 || TALENT:7)
+			WSTR:(K++) = 
+			CFLAG:249= 3
+		;服従、隷属
+		ELSEIF (TALENT:5 || TALENT:8)
+			WSTR:(K++) = 
+			CFLAG:249= 3
+		ENDIF
+		;陥落済み共通
+		IF !口上有無確認(LOCAL)
+			WSTR:(K++) = 
+			CFLAG:249= 3
+		ENDIF
+	ENDIF
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:249 < 2 || FLAG:7 == 2) && !口上有無確認(LOCAL)
+		WSTR:(K++) = 
+		CFLAG:249= 2
+	ENDIF
+	;それ以外
+	IF (CFLAG:249 < 1 || FLAG:7 == 2) && !口上有無確認(LOCAL)
+		WSTR:(K++) =
+		CFLAG:249= 1
+	ENDIF
+ENDIF
+
+CALL 口上変数表示
+;口上がなければ別の口上を呼び出す
+IF RESULT == 0
+	TRYCCALLFORM KOJO_MESSAGE_PALAMCNG_B_ZZZ
+	CATCH
+		CALL PALAM_MESSAGE_B
+	ENDCATCH
+	
+ENDIF
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_C関係（4661をキャラ番号に置換）
+;調教後の変化をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_C_K[[キャラ:하루_P5]]
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_C
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、4661を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_C_PY1_K[[キャラ:하루_P5]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_C_PY1_K[[キャラ:하루_P5]]
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;調教後のテキスト
+;-------------------------------------------------
+;-------------------------------------------------
+;処女喪失(処女のみ)
+;-------------------------------------------------
+CALL 口上変数初期化
+
+IF TFLAG:3 > 0
+	K_CALL:K = PALAM_MESSAGE_C
+	;---002 EDIT START---
+	;주인에의한처녀상실
+	IF TFLAG:20
+		;陥落素質チェック
+		IF TALENT:연모 || TALENT:친애
+			WSTR:(K++) =
+		ELSEIF TALENT:음란 || TALENT:창부
+			WSTR:(K++) = 
+		ELSEIF TALENT:복종 || TALENT:예속
+			WSTR:(K++) = 
+		ELSE
+			;屈服刻印Lv3
+			IF MARK:2 == 3
+				WSTR:(K++) = 
+			ELSE
+				WSTR:(K++) = 
+			ENDIF
+		ENDIF
+	;それ以外の時に処女喪失(主人による道具系調教含む)
+	ELSE
+		;陥落素質チェック
+		IF TALENT:연모 || TALENT:친애
+			WSTR:(K++) =
+		ELSEIF TALENT:음란 || TALENT:창부
+			WSTR:(K++) =
+		ELSEIF TALENT:복종 || TALENT:예속
+			WSTR:(K++) =
+		ELSE
+			;屈服刻印Lv3
+			IF MARK:2 == 3
+				WSTR:(K++) = 
+			ELSE
+				WSTR:(K++) = 
+			ENDIF
+		ENDIF
+	ENDIF
+	;---002 EDIT END---
+ENDIF
+
+;-------------------------------------------------
+;何もしない後
+;-------------------------------------------------
+IF SELECTCOM == 21
+	K_CALL:K = PALAM_MESSAGE_C
+	;欲情LV5以上
+	IF !口上有無確認(0) && PALAM:5 >= PALAMLV:5
+		;陥落済み
+		IF 陥落()
+			WSTR:(K++) =
+		ENDIF
+		;それ以外
+		IF !口上有無確認(0)
+			WSTR:(K++) =
+		ENDIF
+	ENDIF
+	;欲情LV3以上
+	IF !口上有無確認(0) && PALAM:5 >= PALAMLV:3
+		;陥落済み
+		IF 陥落()
+			WSTR:(K++) =
+		ENDIF
+		;それ以外
+		IF !口上有無確認(0)
+			WSTR:(K++) =
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;お掃除フェラ
+;-------------------------------------------------
+IF TFLAG:8 > 0
+	;ABL:정액중독　ABL:ASSI:정액중독
+	K_CALL:K = PALAM_MESSAGE_C
+	;ダブルフェラで助手とお掃除フェラ
+	IF TFLAG:8 >= 2 && !口上有無確認(0)
+		;恋慕、親愛
+		IF (TALENT:3 || TALENT:6)
+			WSTR:(K++) = 
+		;淫乱、娼婦
+		ELSEIF (TALENT:4 || TALENT:7)
+			WSTR:(K++) = 
+		;服従、隷属
+		ELSEIF (TALENT:5 || TALENT:8)
+			WSTR:(K++) = 
+		ENDIF
+		;従順Lv3
+		IF ABL:0 >= 3 && !口上有無確認(0)
+			WSTR:(K++) = 
+		ENDIF
+		;共通
+		IF !口上有無確認(0)
+			WSTR:(K++) =
+		ENDIF
+	ENDIF
+	;フェラ後お掃除フェラ
+	IF !口上有無確認(0)
+		;恋慕、親愛
+		IF (TALENT:3 || TALENT:6)
+			WSTR:(K++) = 
+		;淫乱、娼婦
+		ELSEIF (TALENT:4 || TALENT:7)
+			WSTR:(K++) = 
+		;服従、隷属
+		ELSEIF (TALENT:5 || TALENT:8)
+			WSTR:(K++) = 
+		ENDIF
+		;従順Lv3
+		IF ABL:0 >= 3 && !口上有無確認(0)
+			WSTR:(K++) = 
+		ENDIF
+		;共通
+		IF !口上有無確認(0)
+			WSTR:(K++) =
+		ENDIF
+	ENDIF
+ENDIF
+
+CALL 口上変数表示
+;口上がなければ別の口上を呼び出す
+IF RESULT == 0
+	TRYCCALLFORM KOJO_MESSAGE_COM_ZZZ
+	CATCH
+		CALL PALAM_MESSAGE_C
+	ENDCATCH
+	
+ENDIF
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_D関係（4661をキャラ番号に置換）
+;パラメータ変化をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_D_K[[キャラ:하루_P5]]
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_D
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、4661を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_D_PY1_K[[キャラ:하루_P5]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_D_PY1_K[[キャラ:하루_P5]]
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;パラメータ変化時のテキスト
+;-------------------------------------------------
+CALL 口上変数初期化
+;-------------------------------------------------
+;初めて潤滑がLV3超えた
+;-------------------------------------------------
+P = PALAM:4 + CUP:4
+IF P > PALAMLV:4 && CFLAG:250 == 0
+	K_CALL:K = PALAM_MESSAGE_D
+	;ローションを使った場合
+	IF SELECTCOM == 180
+		WSTR:(K++) =
+	;それ以外
+	ELSE
+		WSTR:(K++) =
+	ENDIF
+	CFLAG:250 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて欲情がLV2超えた
+;-------------------------------------------------
+P = PALAM:6 + CUP:6
+IF P > PALAMLV:3 && CFLAG:251 == 0
+	K_CALL:K = PALAM_MESSAGE_D
+	;媚薬を使った場合
+	IF SELECTCOM == 181
+		WSTR:(K++) =
+	;それ以外
+	ELSE
+		WSTR:(K++) =
+	ENDIF
+	CFLAG:251 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて屈服がLV3超えた
+;-------------------------------------------------
+P = PALAM:7 + CUP:7
+IF P > PALAMLV:3 && CFLAG:252 == 0
+	K_CALL:K = PALAM_MESSAGE_D
+	WSTR:(K++) =
+	CFLAG:252 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて恭順がLV3超えた
+;-------------------------------------------------
+P = PALAM:5 + CUP:5
+IF P > PALAMLV:3 && CFLAG:253 == 0
+	K_CALL:K = PALAM_MESSAGE_D
+	;陥落済み
+	IF TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8
+		WSTR:(K++) =
+	;それ以外
+	ELSE
+		WSTR:(K++) =
+	ENDIF
+	CFLAG:253 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて恐怖がLV3超えた
+;-------------------------------------------------
+P = PALAM:11 + CUP:11
+IF P > PALAMLV:3 && CFLAG:254 == 0
+	K_CALL:K = PALAM_MESSAGE_D
+	;陥落済み
+	IF TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8
+		WSTR:(K++) =
+	;それ以外
+	ELSE
+		WSTR:(K++) =
+	ENDIF
+	CFLAG:254 = 1
+ENDIF
+
+CALL 口上変数表示
+IF RESULT == 0
+	TRYCCALLFORM KOJO_MESSAGE_PALAMCNG_D_ZZZ
+	CATCH
+		CALL PALAM_MESSAGE_D
+	ENDCATCH
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_MARKCNG関係（4661をキャラ番号に置換）
+;刻印変動をトリガーにした口上
+;刻印変動後に口上を発動します
+;-------------------------------------------------
+@KOJO_MESSAGE_MARKCNG_K[[キャラ:하루_P5]]
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL MARK_MESSAGE
+	RETURN 0
+ENDIF
+
+CALL 口上変数初期化
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、4661を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_MARKCNG_PY1_K[[キャラ:하루_P5]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_MARKCNG_PY1_K[[キャラ:하루_P5]]
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;苦痛刻印Lv3
+;-------------------------------------------------
+LOCAL = K
+IF TFLAG:22 == 3
+	K_CALL:K = MARK_MESSAGE_A
+	;恋慕、親愛
+	IF (TALENT:3 || TALENT:6)
+		WSTR:(K++) = 
+	;淫乱、娼婦
+	ELSEIF (TALENT:4 || TALENT:7)
+		WSTR:(K++) = 
+	;服従、隷属
+	ELSEIF (TALENT:5 || TALENT:8)
+		WSTR:(K++) = 
+	ENDIF
+	;共通
+	IF !口上有無確認(LOCAL)
+		WSTR:(K++) = 
+	ENDIF
+	SIF !口上有無確認(LOCAL)
+		CALL MARK_MESSAGE_A
+ENDIF
+
+;-------------------------------------------------
+;快楽刻印Lv3
+;-------------------------------------------------
+
+LOCAL = K
+IF TFLAG:23 == 3
+	K_CALL:K = MARK_MESSAGE_P
+	;恋慕、親愛
+	IF (TALENT:3 || TALENT:6)
+		WSTR:(K++) = 
+	;服従、隷属
+	ELSEIF (TALENT:5 || TALENT:8)
+		WSTR:(K++) = 
+	ENDIF
+	;共通
+	IF !口上有無確認(LOCAL)
+		WSTR:(K++) = 
+	ENDIF
+	SIF !口上有無確認(LOCAL)
+		CALL MARK_MESSAGE_P
+ENDIF
+
+;-------------------------------------------------
+;屈服刻印Lv3
+;-------------------------------------------------
+LOCAL = K
+IF TFLAG:24 == 13 || TFLAG:24 == 23 || TFLAG:24 == 33
+	K_CALL:K = MARK_MESSAGE_S
+	;快楽による屈服
+	IF TFLAG:24 == 13
+		WSTR:(K++) = 
+	;恐怖と苦痛による屈服
+	ELSEIF TFLAG:24 == 23
+		WSTR:(K++) = 
+	;屈服と恭順による屈服
+	ELSEIF TFLAG:24 == 33
+		WSTR:(K++) = 
+	ENDIF
+	SIF !口上有無確認(LOCAL)
+		CALL MARK_MESSAGE_S
+ENDIF
+
+;-------------------------------------------------
+;反発刻印Lv3
+;-------------------------------------------------
+LOCAL = K
+IF TFLAG:21 == 3
+	K_CALL:K = MARK_MESSAGE_R
+	;陥落済み
+	IF TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8
+		;恋慕、親愛
+		IF (TALENT:3 || TALENT:6)
+			WSTR:(K++) = 
+		;淫乱、娼婦
+		ELSEIF (TALENT:4 || TALENT:7)
+			WSTR:(K++) = 
+		;服従、隷属
+		ELSEIF (TALENT:5 || TALENT:8)
+			WSTR:(K++) = 
+		ENDIF
+		;陥落済み共通
+		IF !口上有無確認(LOCAL)
+			WSTR:(K++) = 
+		ENDIF
+	ENDIF
+	;それ以外
+	IF !口上有無確認(LOCAL)
+		WSTR:(K++) = 
+	ENDIF
+	SIF !口上有無確認(LOCAL)
+		CALL MARK_MESSAGE_R
+ENDIF
+
+CALL 口上変数表示
+IF RESULT == 0
+	TRYCCALLFORM KOJO_MESSAGE_MARKCNG_ZZZ
+	CATCH
+	ENDCATCH
+	
+ENDIF
+;-------------------------------------------------
+;イベント口上集（4661をキャラ番号に置換する） CFLAG 261～299を使用
+;-------------------------------------------------
+@KOJO_MESSAGE_EVENT_K[[キャラ:하루_P5]]
+
+;--------------------------------------------------
+;特定主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、4661を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_EVENT_PY1_K[[キャラ:하루_P5]]
+;	RETURN 0
+;ENDIF
+
+
+CALL 口上変数初期化
+
+SELECTCASE TFLAG:13
+;　　1:朝フェラ
+;　　2:朝パイズリ
+;　　3:朝騎乗位
+;　　4:調教後レズプレイ
+;　　5:調教後セックス
+;　　6:強精神薬の反動
+;　　7:調教後搾乳
+;　　8:調教後自慰
+;　　9:調教後夜這い
+;　　10:黄色いキャンディ使用時
+;　　11:妊娠発覚時
+;　　12:出産時
+;　　13:育児室でのイベント口上
+;　　14:親離れ時
+;　　15:定食屋台実行時
+;　　16:娼館でのバイト時
+;　　17:レンタル実行時
+;　　18:売却時
+;　　19:ビデオ売却時
+;　　20:コンサート実行時
+;　　21:乱交ライブ実行時
+;　　22:公衆便所プレイ実行時
+;　　23:ビデオ保有時
+;　　24:朝騎乗位A
+;　　25:朝キス
+;　　26:朝食
+;　　27:起きたら隣で寝てる
+;　　28:朝の足コキ
+;　　29:朝の搾りたてミルク
+;　　30:おねしょ
+;　　31:夜這い C/A
+;　　32:夜這い V/C
+;　　33:夜這い A/C
+;　　34:夜這い C/C
+;　　35:夜自慰
+;　　36:一緒に寝る
+;　　37:起きたら隣で寝てる
+;　　38:朝の足コキ
+;　　39:朝の搾りたてミルク
+;　　40:妻・夫取得
+;　　41:淫魔取得
+;　　42:玩具取得
+;　　43:スト劇場
+;　　44:着替え・胸を出す
+;　　45:愛系ＮＴＲイベント
+;　　46:淫系ＮＴＲイベント
+;　　47:隷系ＮＴＲイベント
+;　　48:愛系再陥落イベント
+;　　49:淫系再陥落イベント
+;　　50:隷系再陥落イベント
+;　　51:ＮＴＲ夜這い・乱交パーティ
+;　　52:ＮＴＲ夜這い・公園
+;　　53:ＮＴＲ夜這い・便器
+;　　54:ＮＴＲ夜這い・夜の街
+;　　55:ＮＴＲ夜這い・ＮＴＲ前逢引
+;　　56:ＮＴＲ夜這い・ＮＴＲ後初夜這い
+;　　57:ＮＴＲ夜這い・デート
+;　　58:ＮＴＲ夜這い・本番
+;　　59:ＮＴＲ夜這い・自慰見せ合い
+;　　60:ＮＴＲ夜這い・アナルセックス
+;　　61:ＮＴＲ夜這い・野外プレイ
+;　　62:ＮＴＲ夜這い・野外調教
+;　　63:娼館で実際に働いたとき
+;　　64:ＮＴＲ上司来襲
+;　　65:教会で祈る
+;　　66:教会で口奉仕
+;　　67:教会で性奉仕
+;　　68:朝Vレイプ(対象C 主人V)
+;　　70:陰唇・胸同時露出(調教対象)
+;　　71:陰唇・胸同時露出(主人)
+;　　72:陰唇・胸同時露出(助手)
+;　　73:陰唇出(調教対象)
+;　　74:음순노출(主人)
+;　　75:음순노출(助手)
+;　　76:胸露出(調教対象)
+;　　77:胸露出(主人)
+;　　78:胸露出(助手)
+;　　79:ダンジョン内性欲処理：仲魔とセックス(やられる側)
+;　　80:ダンジョン内性欲処理：仲魔に奉仕してもらう(奉仕側)
+;　　81:ダンジョン内性欲処理：その場で自慰
+;　　82:ダンジョン内性欲処理：物陰で自慰
+;　　83:ダンジョン内性欲処理：仲魔とセックス(やる側)
+;　　84:ダンジョン内性欲処理：仲魔とセックス(奉仕させる側)
+;　　85:ダンジョン内性欲処理：輪姦される
+;　　90:道場開始
+;　　91:道場終了
+;　　92:盟友取得
+;　　93:炭鉱
+;　　94:교류한다
+;　　95:집회시킨다
+;　　96:着替え・股間露出
+;　　97:定食屋台で実際に働いたとき
+;　　98:集団ライブ実行時
+;　　99:調教後セックス(逆転)
+		;-------------------------------------------------
+		;朝フェラ
+		;-------------------------------------------------
+	CASE 1
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:261 < 1 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) =
+				ENDIF
+				CFLAG:261 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;朝パイズリ
+		;-------------------------------------------------
+	CASE 2
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:262 < 1 || FLAG:7 == 2)
+				;모유체질
+				IF TALENT:149
+					;恋慕、親愛
+					IF (TALENT:3 || TALENT:6)
+						WSTR:(K++) = 
+					;淫乱、娼婦
+					ELSEIF (TALENT:4 || TALENT:7)
+						WSTR:(K++) = 
+					;服従、隷属
+					ELSEIF (TALENT:5 || TALENT:8)
+						WSTR:(K++) = 
+					ENDIF
+					;陥落済み共通
+					IF !口上有無確認(0)
+						WSTR:(K++) = 
+					ENDIF
+				ENDIF
+				;母乳体質じゃない
+				IF !口上有無確認(0)
+					;恋慕、親愛
+					IF (TALENT:3 || TALENT:6)
+						WSTR:(K++) = 
+					;淫乱、娼婦
+					ELSEIF (TALENT:4 || TALENT:7)
+						WSTR:(K++) = 
+					;服従、隷属
+					ELSEIF (TALENT:5 || TALENT:8)
+						WSTR:(K++) = 
+					ENDIF
+					;陥落済み共通
+					IF !口上有無確認(0)
+						WSTR:(K++) =
+					ENDIF
+				ENDIF
+				CFLAG:262 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;朝騎乗位
+		;-------------------------------------------------
+	CASE 3
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:263 < 1 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) =
+				ENDIF
+				CFLAG:263 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;朝騎乗位A
+		;-------------------------------------------------
+	CASE 24
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:263 < 1 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) =
+				ENDIF
+				CFLAG:263 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;朝キス 恋慕、親愛前提
+		;-------------------------------------------------
+	CASE 25
+			K_CALL:K = EVENT_MESSAGE
+			IF CFLAG:263 < 1 || FLAG:7 == 2
+				WSTR:(K++) =
+				CFLAG:263 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;朝食
+		;-------------------------------------------------
+	CASE 26
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:263 < 1 || FLAG:7 == 2)
+				;歌いながら
+				IF (TALENT:25 || TALENT:28) && ABL:14 >= 2
+					;恋慕、親愛
+					IF (TALENT:3 || TALENT:6)
+						WSTR:(K++) = 
+					;淫乱、娼婦
+					ELSEIF (TALENT:4 || TALENT:7)
+						WSTR:(K++) = 
+					;服従、隷属
+					ELSEIF (TALENT:5 || TALENT:8)
+						WSTR:(K++) = 
+					ENDIF
+					;陥落済み共通
+					IF !口上有無確認(0)
+						WSTR:(K++) = 
+					ENDIF
+				ENDIF
+				;歌ってない
+				IF !口上有無確認(0)
+					;恋慕、親愛
+					IF (TALENT:3 || TALENT:6)
+						WSTR:(K++) = 
+					;淫乱、娼婦
+					ELSEIF (TALENT:4 || TALENT:7)
+						WSTR:(K++) = 
+					;服従、隷属
+					ELSEIF (TALENT:5 || TALENT:8)
+						WSTR:(K++) = 
+					ENDIF
+					;陥落済み共通
+					IF !口上有無確認(0)
+						WSTR:(K++) =
+					ENDIF
+				ENDIF
+				CFLAG:263 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;起きたら隣で寝てる 恋慕、親愛前提
+		;-------------------------------------------------
+	CASE 27
+			K_CALL:K = EVENT_MESSAGE
+			IF CFLAG:263 < 1 || FLAG:7 == 2
+				WSTR:(K++) =
+				CFLAG:263 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;朝の足コキ
+		;-------------------------------------------------
+	CASE 28
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:263 < 1 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) =
+				ENDIF
+				CFLAG:263 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;;朝の搾りたてミルク
+		;-------------------------------------------------
+	CASE 29
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:263 < 1 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) =
+				ENDIF
+				CFLAG:263 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;;お寝小
+		;-------------------------------------------------
+	CASE 30
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:263 < 1 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) =
+				ENDIF
+				CFLAG:263 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;調教後レズプレイ
+		;-------------------------------------------------
+	CASE 4
+			K_CALL:K = EVENT_MESSAGE
+			;初めて
+			IF CFLAG:264 == 0
+				WSTR:(K++) =
+				CFLAG:264 = 1
+			;それ以外
+			ELSEIF CFLAG:264 < 1 || FLAG:7 == 2
+				WSTR:(K++) =
+				CFLAG:264 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;調教後セックス
+		;-------------------------------------------------
+	CASE 5
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:265 < 1 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) =
+				ENDIF
+				CFLAG:265 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;強精神薬の反動
+		;-------------------------------------------------
+	CASE 6
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:266 < 2 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) = 
+				ENDIF
+				CFLAG:266 = 2
+			ENDIF
+			IF (CFLAG:266 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) =
+				CFLAG:266 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;調教後搾乳
+		;-------------------------------------------------
+	CASE 7
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:267 < 2 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) = 
+				ENDIF
+				CFLAG:267 = 2
+			ENDIF
+			IF (CFLAG:267 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) =
+				CFLAG:267 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;調教後自慰
+		;-------------------------------------------------
+	CASE 8
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:268 < 2 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) = 
+				ENDIF
+				CFLAG:268 = 2
+			ENDIF
+			IF (CFLAG:268 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) =
+				CFLAG:268 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;夜這い（主人C 相手V）
+		;-------------------------------------------------
+	CASE 9
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:269 < 1 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) =
+				ENDIF
+				CFLAG:269 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;夜這い（主人C 相手A）
+		;-------------------------------------------------
+	CASE 31
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:269 < 1 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) =
+				ENDIF
+				CFLAG:269 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;夜這い（主人V 相手C）
+		;-------------------------------------------------
+	CASE 32
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:269 < 1 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) =
+				ENDIF
+				CFLAG:269 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;夜這い（主人A 相手C）
+		;-------------------------------------------------
+	CASE 33
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:269 < 1 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) =
+				ENDIF
+				CFLAG:269 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;夜這い（両者C（素股）・両者C（貝合わせ））
+		;-------------------------------------------------
+	CASE 34
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:269 < 1 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) =
+				ENDIF
+				CFLAG:269 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;夜自慰
+		;-------------------------------------------------
+	CASE 35
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:269 < 1 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) =
+				ENDIF
+				CFLAG:269 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;一緒に寝る 恋慕、親愛
+		;-------------------------------------------------
+	CASE 36
+			K_CALL:K = EVENT_MESSAGE
+			IF CFLAG:269 < 1 || FLAG:7 == 2
+				WSTR:(K++) =
+				CFLAG:269 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;黄色のキャンディ使用時
+		;-------------------------------------------------
+	CASE 10
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:270 < 2 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) = 
+				ENDIF
+				CFLAG:270 = 2
+			ENDIF
+			IF (CFLAG:270 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) =
+				CFLAG:270 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;妊娠発覚時
+		;-------------------------------------------------
+	CASE 11
+			SIF CFLAG:271 >= 1 && FLAG:7 != 2
+				GOTO 表示
+			K_CALL:K = EVENT_MESSAGE
+			;妊娠対象をTARGETに格納し、父親は奴隷はV、助手はWとする
+			;崩壊してしまった場合
+			IF TALENT:9 == 1
+				WSTR:(K++) =
+			;父親が主人で母親が恋慕か親愛持ち
+			ELSEIF (TALENT:3 || TALENT:6) && CFLAG:102 == 1
+				WSTR:(K++) =
+			;父親が奴隷か助手で母親が淫乱か娼婦持ち
+			ELSEIF (TALENT:4 || TALENT:7) && (CFLAG:102 == 2 || CFLAG:102 == 3)
+				;父親(助手）との相性が125より大きい場合
+				IF CFLAG:102 == 2 && GET_RELATION(TARGET, W) > 125
+					WSTR:(K++) =
+			 ;父親(奴隷）との相性が125より大きい場合
+				ELSEIF CFLAG:102 == 3 && GET_RELATION(TARGET, V) > 125
+					WSTR:(K++) =
+				ELSE
+					WSTR:(K++) =
+				ENDIF
+			;服従か隷属持ち
+			ELSEIF (TALENT:5 || TALENT:8)
+				WSTR:(K++) =
+			ELSE
+				WSTR:(K++) =
+			ENDIF
+			CFLAG:271 = 1
+
+		;-------------------------------------------------
+		;出産時
+		;-------------------------------------------------
+	CASE 12
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:272 < 2 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) = 
+				ENDIF
+				CFLAG:272 = 2
+			ENDIF
+			IF (CFLAG:272 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) =
+				CFLAG:272 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;育児室
+		;-------------------------------------------------
+	CASE 13
+			K_CALL:K = EVENT_MESSAGE
+			;出産前
+			IF TALENT:153
+				;陥落済み
+				IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:273 < 2 || FLAG:7 == 2)
+					;恋慕、親愛
+					IF (TALENT:3 || TALENT:6)
+						WSTR:(K++) = 
+					;淫乱、娼婦
+					ELSEIF (TALENT:4 || TALENT:7)
+						WSTR:(K++) = 
+					;服従、隷属
+					ELSEIF (TALENT:5 || TALENT:8)
+						WSTR:(K++) = 
+					ENDIF
+					;陥落済み共通
+					IF !口上有無確認(0)
+						WSTR:(K++) = 
+					ENDIF
+					CFLAG:273 = 2
+				ENDIF
+				IF (CFLAG:273 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+					WSTR:(K++) =
+					CFLAG:273 = 1
+				ENDIF
+			;出産後
+			ELSE
+				;陥落済み
+				IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:273 < 4 || FLAG:7 == 2)
+					;恋慕、親愛
+					IF (TALENT:3 || TALENT:6)
+						WSTR:(K++) = 
+					;淫乱、娼婦
+					ELSEIF (TALENT:4 || TALENT:7)
+						WSTR:(K++) = 
+					;服従、隷属
+					ELSEIF (TALENT:5 || TALENT:8)
+						WSTR:(K++) = 
+					ENDIF
+					;陥落済み共通
+					IF !口上有無確認(0)
+						WSTR:(K++) = 
+					ENDIF
+					CFLAG:273 = 4
+				ENDIF
+				IF (CFLAG:273 < 3 || FLAG:7 == 2) && !口上有無確認(0)
+					WSTR:(K++) =
+					CFLAG:273 = 3
+				ENDIF
+			ENDIF
+
+		;-------------------------------------------------
+		;親離れ時
+		;-------------------------------------------------
+	CASE 14
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:274 < 2 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) = 
+				ENDIF
+				CFLAG:274 = 2
+			ENDIF
+			IF (CFLAG:274 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) =
+				CFLAG:274 = 1
+			ENDIF
+		;-------------------------------------------------
+		;定食屋台時
+		;-------------------------------------------------
+	CASE 15
+			K_CALL:K = EVENT_MESSAGE
+			;初めて
+			IF CFLAG:275 == 0
+				WSTR:(K++) =
+				CFLAG:275 = 1
+			;それ以外
+			ELSEIF CFLAG:275 < 1 || FLAG:7 == 2
+				WSTR:(K++) =
+				CFLAG:275 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;娼館でバイト・設定時
+		;-------------------------------------------------
+	CASE 16
+			K_CALL:K = EVENT_MESSAGE
+			;初めて
+			IF CFLAG:276 == 0
+				WSTR:(K++) =
+				CFLAG:276 = 1
+			;それ以外
+			ELSEIF CFLAG:276 < 1 || FLAG:7 == 2
+				WSTR:(K++) =
+				CFLAG:276 = 1
+			ENDIF
+		;-------------------------------------------------
+		;娼館でバイト・実行時
+		;-------------------------------------------------
+	CASE 63
+			K_CALL:K = EVENT_MESSAGE
+			;初めて
+			IF CFLAG:606 == 0
+				WSTR:(K++) =
+				CFLAG:606 = 1
+			;それ以外
+			ELSEIF CFLAG:276 < 1 || FLAG:7 == 2
+				WSTR:(K++) =
+				CFLAG:606 = 1
+			ENDIF
+
+
+		;-------------------------------------------------
+		;レンタル時
+		;-------------------------------------------------
+	CASE 17
+			K_CALL:K = EVENT_MESSAGE
+			;初めて
+			IF CFLAG:277 == 0
+				WSTR:(K++) =
+				CFLAG:277 = 1
+			;それ以外
+			ELSEIF CFLAG:277 < 1 || FLAG:7 == 2
+				WSTR:(K++) =
+				CFLAG:277 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;売却時
+		;-------------------------------------------------
+	CASE 18
+			K_CALL:K = EVENT_MESSAGE
+			;反発刻印Lv3
+			IF MARK:3 == 3
+				WSTR:(K++) = 
+			ENDIF
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && MARK:3 < 3 && !口上有無確認(0)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) = 
+				ENDIF
+			ENDIF
+			;それ以外
+			IF !口上有無確認(0)
+				WSTR:(K++) =
+			ENDIF
+
+		;-------------------------------------------------
+		;ビデオ売却時
+		;-------------------------------------------------
+	CASE 19
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:278 < 2 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) = 
+				ENDIF
+				CFLAG:278 = 2
+			ENDIF
+			IF (CFLAG:278 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) =
+				CFLAG:278 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;コンサート時
+		;-------------------------------------------------
+	CASE 20
+			K_CALL:K = EVENT_MESSAGE
+			;初めて
+			IF CFLAG:279 == 0
+				WSTR:(K++) =
+				CFLAG:279 = 1
+			;それ以外
+			ELSEIF CFLAG:279 < 1 || FLAG:7 == 2
+				WSTR:(K++) =
+				CFLAG:279 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;乱交ライブ時
+		;-------------------------------------------------
+	CASE 21
+			K_CALL:K = EVENT_MESSAGE
+			;初めて
+			IF CFLAG:280 == 0
+				WSTR:(K++) =
+				CFLAG:280 = 1
+			;それ以外
+			ELSEIF CFLAG:280 < 1 || FLAG:7 == 2
+				WSTR:(K++) =
+				CFLAG:280 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;公衆便所プレイ時
+		;-------------------------------------------------
+	CASE 22
+			K_CALL:K = EVENT_MESSAGE
+			;初めて
+			IF CFLAG:281 == 0
+				WSTR:(K++) =
+				CFLAG:281 = 1
+			;それ以外
+			ELSEIF CFLAG:281 < 1 || FLAG:7 == 2
+				WSTR:(K++) =
+				CFLAG:281 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;ビデオ保有時
+		;-------------------------------------------------
+	CASE 23
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:282 < 2 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) = 
+				ENDIF
+				CFLAG:282 = 2
+			ENDIF
+			IF (CFLAG:282 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) =
+				CFLAG:282 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;記憶消去薬使用時
+		;-------------------------------------------------
+	CASE 30
+			K_CALL:K = EVENT_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:283 < 2 || FLAG:7 == 2)
+				;恋慕、親愛
+				IF (TALENT:3 || TALENT:6)
+					WSTR:(K++) = 
+				;淫乱、娼婦
+				ELSEIF (TALENT:4 || TALENT:7)
+					WSTR:(K++) = 
+				;服従、隷属
+				ELSEIF (TALENT:5 || TALENT:8)
+					WSTR:(K++) = 
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					WSTR:(K++) = 
+				ENDIF
+				CFLAG:283 = 2
+			ENDIF
+			IF (CFLAG:283 < 1 || FLAG:7 == 2) && !口上有無確認(0)
+				WSTR:(K++) =
+				CFLAG:283 = 1
+			ENDIF
+
+		;-------------------------------------------------
+		;;[아내][남편]取得時 親愛前提
+		;-------------------------------------------------
+	CASE 40
+			K_CALL:K = EVENT_MESSAGE
+			IF CFLAG:283 < 1 || FLAG:7 == 2
+				WSTR:(K++) =
+				CFLAG:283 = 1
+			ENDIF
+		;-------------------------------------------------
+		;;[음마]取得時 娼婦前提
+		;-------------------------------------------------
+	CASE 41
+			K_CALL:K = EVENT_MESSAGE
+			IF CFLAG:284 < 1 || FLAG:7 == 2
+				WSTR:(K++) =
+				CFLAG:284 = 1
+			ENDIF
+		;-------------------------------------------------
+		;;[専属奴隷]取得時 隷属前提
+		;-------------------------------------------------
+	CASE 42
+			K_CALL:K = EVENT_MESSAGE
+			IF CFLAG:285 < 1 || FLAG:7 == 2
+				WSTR:(K++) =
+				CFLAG:285 = 1
+			ENDIF
+		;-------------------------------------------------
+		;;オープン/クローズ・オブ・オッパイ
+		;-------------------------------------------------
+	CASE 44
+			K_CALL:K = EVENT_MESSAGE
+			IF TEQUIP:가슴앞열림
+				;胸を出す
+				;陥落済み
+				IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:285 < 1 || FLAG:7 == 2)
+					;恋慕、親愛
+					IF (TALENT:3 || TALENT:6)
+						WSTR:(K++) = 
+					;淫乱、娼婦
+					ELSEIF (TALENT:4 || TALENT:7)
+						WSTR:(K++) = 
+					;服従、隷属
+					ELSEIF (TALENT:5 || TALENT:8)
+						WSTR:(K++) = 
+					ENDIF
+					;陥落済み共通
+					IF !口上有無確認(0)
+						WSTR:(K++) = 
+					ENDIF
+				ENDIF
+				;その他
+				IF !口上有無確認(0)
+					WSTR:(K++) =
+				ENDIF
+				CFLAG:285 = 1
+			ELSE
+				;胸をしまう
+				;陥落済み
+				IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:285 < 1 || FLAG:7 == 2)
+					;恋慕、親愛
+					IF (TALENT:3 || TALENT:6)
+						WSTR:(K++) = 
+					;淫乱、娼婦
+					ELSEIF (TALENT:4 || TALENT:7)
+						WSTR:(K++) = 
+					;服従、隷属
+					ELSEIF (TALENT:5 || TALENT:8)
+						WSTR:(K++) = 
+					ENDIF
+					;陥落済み共通
+					IF !口上有無確認(0)
+						WSTR:(K++) = 
+					ENDIF
+				ENDIF
+				;その他
+				IF !口上有無確認(0)
+					WSTR:(K++) =
+				ENDIF
+				CFLAG:287 = 1
+			ENDIF
+		;-------------------------------------------------
+		;;[愛ＮＴＲ]イベント時
+		;-------------------------------------------------
+	CASE 45
+		K_CALL:K = EVENT_MESSAGE
+		;陥落済み
+		IF (CFLAG:288 < 1 || FLAG:7 == 2)
+			IF CFLAG:함락캐릭터 == CFLAG:MASTER:캐릭터고유번호
+				;主人に陥落しているor誰にも陥落してない状態でＮＴＲ
+				;恋慕、親愛
+				IF TALENT:3 || TALENT:6
+					;進行度分岐
+					;初回
+					IF CFLAG:애ＮＴＲ진행도 == 0
+						WSTR:(K++) = 
+					;二回目（リーチ）
+					ELSEIF CFLAG:애ＮＴＲ진행도 == 1
+						WSTR:(K++) = 
+					;三回目（陥落）
+					ELSEIF CFLAG:애ＮＴＲ진행도 == 2
+						WSTR:(K++) = 
+					ENDIF
+				;淫乱、娼婦
+				ELSEIF TALENT:4 || TALENT:7
+					;進行度分岐
+					;初回
+					IF CFLAG:애ＮＴＲ진행도 == 0
+						WSTR:(K++) = 
+					;二回目（リーチ）
+					ELSEIF CFLAG:애ＮＴＲ진행도 == 1
+						WSTR:(K++) = 
+					;三回目（陥落）
+					ELSEIF CFLAG:애ＮＴＲ진행도 == 2
+						WSTR:(K++) = 
+					ENDIF
+				;服従、隷属
+				ELSEIF TALENT:5 || TALENT:8
+					;進行度分岐
+					;初回
+					IF CFLAG:애ＮＴＲ진행도 == 0
+						WSTR:(K++) = 
+					;二回目（リーチ）
+					ELSEIF CFLAG:애ＮＴＲ진행도 == 1
+						WSTR:(K++) = 
+					;三回目（陥落）
+					ELSEIF CFLAG:애ＮＴＲ진행도 == 2
+						WSTR:(K++) = 
+					ENDIF
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					;進行度分岐
+					;初回
+					IF CFLAG:애ＮＴＲ진행도 == 0
+						WSTR:(K++) =
+					;二回目（リーチ）
+					ELSEIF CFLAG:애ＮＴＲ진행도 == 1
+						WSTR:(K++) =
+					;三回目（陥落）
+					ELSEIF CFLAG:애ＮＴＲ진행도 == 2
+						WSTR:(K++) =
+					ENDIF
+				ENDIF
+			ELSE
+				;主人以外の誰かに陥落している状態で更に別のキャラにＮＴＲ
+				;進行度分岐
+				;初回
+				IF CFLAG:애ＮＴＲ진행도 == 0
+					WSTR:(K++) =
+				;二回目（リーチ）
+				ELSEIF CFLAG:애ＮＴＲ진행도 == 1
+					WSTR:(K++) =
+				;三回目（陥落）
+				ELSEIF CFLAG:애ＮＴＲ진행도 == 2
+					WSTR:(K++) =
+				ENDIF
+			ENDIF
+			CFLAG:288 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;[淫ＮＴＲ]イベント時
+		;-------------------------------------------------
+	CASE 46
+		K_CALL:K = EVENT_MESSAGE
+		;陥落済み
+		IF (CFLAG:289 < 1 || FLAG:7 == 2)
+			IF CFLAG:함락캐릭터 == CFLAG:MASTER:캐릭터고유번호
+				;主人に陥落しているor誰にも陥落してない状態でＮＴＲ
+				;恋慕、親愛
+				IF TALENT:3 || TALENT:6
+					;進行度分岐
+					;初回
+					IF CFLAG:음ＮＴＲ진행도 == 0
+						WSTR:(K++) = 
+					;二回目（リーチ）
+					ELSEIF CFLAG:음ＮＴＲ진행도 == 1
+						WSTR:(K++) = 
+					;三回目（陥落）
+					ELSEIF CFLAG:음ＮＴＲ진행도 == 2
+						WSTR:(K++) = 
+					ENDIF
+				;服従、隷属
+				ELSEIF TALENT:5 || TALENT:8
+					;進行度分岐
+					;初回
+					IF CFLAG:음ＮＴＲ진행도 == 0
+						WSTR:(K++) = 
+					;二回目（リーチ）
+					ELSEIF CFLAG:음ＮＴＲ진행도 == 1
+						WSTR:(K++) = 
+					;三回目（陥落）
+					ELSEIF CFLAG:음ＮＴＲ진행도 == 2
+						WSTR:(K++) = 
+					ENDIF
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					;進行度分岐
+					;初回
+					IF CFLAG:음ＮＴＲ진행도 == 0
+						WSTR:(K++) =
+					;二回目（リーチ）
+					ELSEIF CFLAG:음ＮＴＲ진행도 == 1
+						WSTR:(K++) =
+					;三回目（陥落）
+					ELSEIF CFLAG:음ＮＴＲ진행도 == 2
+						WSTR:(K++) =
+					ENDIF
+				ENDIF
+			ELSE
+				;主人以外の誰かに陥落している状態で更に別のキャラにＮＴＲ
+				;進行度分岐
+				;初回
+				IF CFLAG:음ＮＴＲ진행도 == 0
+					WSTR:(K++) =
+				;二回目（リーチ）
+				ELSEIF CFLAG:음ＮＴＲ진행도 == 1
+					WSTR:(K++) =
+				;三回目（陥落）
+				ELSEIF CFLAG:음ＮＴＲ진행도 == 2
+					WSTR:(K++) =
+				ENDIF
+			ENDIF
+			CFLAG:289 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;[隷ＮＴＲ]イベント時
+		;-------------------------------------------------
+	CASE 47
+		K_CALL:K = EVENT_MESSAGE
+		;陥落済み
+		IF (CFLAG:290 < 1 || FLAG:7 == 2)
+			IF CFLAG:함락캐릭터 == CFLAG:MASTER:캐릭터고유번호
+				;主人に陥落しているor誰にも陥落してない状態でＮＴＲ
+				;恋慕、親愛
+				IF TALENT:3 || TALENT:6
+					;進行度分岐
+					;初回
+					IF CFLAG:예ＮＴＲ진행도 == 0
+						WSTR:(K++) = 
+					;二回目（リーチ）
+					ELSEIF CFLAG:예ＮＴＲ진행도 == 1
+						WSTR:(K++) = 
+					;三回目（陥落）
+					ELSEIF CFLAG:예ＮＴＲ진행도 == 2
+						WSTR:(K++) = 
+					ENDIF
+				;淫乱、娼婦
+				ELSEIF TALENT:4 || TALENT:7
+					;進行度分岐
+					;初回
+					IF CFLAG:예ＮＴＲ진행도 == 0
+						WSTR:(K++) = 
+					;二回目（リーチ）
+					ELSEIF CFLAG:예ＮＴＲ진행도 == 1
+						WSTR:(K++) = 
+					;三回目（陥落）
+					ELSEIF CFLAG:예ＮＴＲ진행도 == 2
+						WSTR:(K++) = 
+					ENDIF
+				;服従、隷属
+				ELSEIF TALENT:5 || TALENT:8
+					;進行度分岐
+					;初回
+					IF CFLAG:예ＮＴＲ진행도 == 0
+						WSTR:(K++) = 
+					;二回目（リーチ）
+					ELSEIF CFLAG:예ＮＴＲ진행도 == 1
+						WSTR:(K++) = 
+					;三回目（陥落）
+					ELSEIF CFLAG:예ＮＴＲ진행도 == 2
+						WSTR:(K++) = 
+					ENDIF
+				ENDIF
+				;陥落済み共通
+				IF !口上有無確認(0)
+					;進行度分岐
+					;初回
+					IF CFLAG:예ＮＴＲ진행도 == 0
+						WSTR:(K++) =
+					;二回目（リーチ）
+					ELSEIF CFLAG:예ＮＴＲ진행도 == 1
+						WSTR:(K++) =
+					;三回目（陥落）
+					ELSEIF CFLAG:예ＮＴＲ진행도 == 2
+						WSTR:(K++) =
+					ENDIF
+				ENDIF
+			ELSE
+				;主人以外の誰かに陥落している状態で更に別のキャラにＮＴＲ
+				;進行度分岐
+				;初回
+				IF CFLAG:예ＮＴＲ진행도 == 0
+					WSTR:(K++) =
+				;二回目（リーチ）
+				ELSEIF CFLAG:예ＮＴＲ진행도 == 1
+					WSTR:(K++) =
+				;三回目（陥落）
+				ELSEIF CFLAG:예ＮＴＲ진행도 == 2
+					WSTR:(K++) =
+				ENDIF
+			ENDIF
+			CFLAG:290 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;愛系再陥落時
+		;;主人に対して恋慕系陥落している、もしくは一度愛系ＮＴＲ状態にされたキャラに再び陥落させられる時
+		;-------------------------------------------------
+	CASE 48
+		K_CALL:K = EVENT_MESSAGE
+		;再陥落前に陥落しているキャラ→CFLAG:함락캐릭터 で取得可能、名前は%NTRNAME(CFLAG:함락캐릭터)%
+		;再陥落先のキャラ→ FAVORITE_1_ID(TARGET)　で取得可能、名前は%NTRNAME(FAVORITE_1_ID(TARGET))%
+		;やや煩雑になるのでLOCAL、あるいは#DIM等を使用して分かりやすくする事を推奨します
+		
+		IF (CFLAG:291 < 1 || FLAG:7 == 2)
+			;主人に対して陥落し直し
+			IF FAVORITE_1_ID(TARGET) == CFLAG:MASTER:캐릭터고유번호
+				WSTR:(K++) =
+			;その他のキャラ・ＮＰＣにＮＴＲし直し
+			ELSE
+				WSTR:(K++) =
+			ENDIF
+			CFLAG:291 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;淫系再陥落時
+		;;主人に対して淫乱系陥落している、もしくは一度淫系ＮＴＲ状態にされたキャラに再び陥落させられる時
+		;-------------------------------------------------
+	CASE 49
+		K_CALL:K = EVENT_MESSAGE
+		;再陥落前に陥落しているキャラ→CFLAG:함락캐릭터 で取得可能、名前は%NTRNAME(CFLAG:함락캐릭터)%
+		;再陥落先のキャラ→ FAVORITE_1_ID(TARGET)　で取得可能、名前は%NTRNAME(FAVORITE_1_ID(TARGET))%
+		;やや煩雑になるのでLOCAL、あるいは#DIM等を使用して分かりやすくする事を推奨します
+					
+		IF (CFLAG:292 < 1 || FLAG:7 == 2)
+			;主人に対して陥落し直し
+			IF FAVORITE_1_ID(TARGET) == CFLAG:MASTER:캐릭터고유번호
+				WSTR:(K++) =
+			;その他のキャラ・ＮＰＣにＮＴＲし直し
+			ELSE
+				WSTR:(K++) =
+			ENDIF
+			CFLAG:292 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;隷系再陥落時
+		;;主人に対して服従系陥落している、もしくは一度隷系ＮＴＲ状態にされたキャラに再び陥落させられる時
+		;-------------------------------------------------
+	CASE 50
+		K_CALL:K = EVENT_MESSAGE
+		;再陥落前に陥落しているキャラ→CFLAG:함락캐릭터 で取得可能、名前は%NTRNAME(CFLAG:함락캐릭터)%
+		;再陥落先のキャラ→ FAVORITE_1_ID(TARGET)　で取得可能、名前は%NTRNAME(FAVORITE_1_ID(TARGET))%
+		;やや煩雑になるのでLOCAL、あるいは#DIM等を使用して分かりやすくする事を推奨します
+					
+		IF (CFLAG:293 < 1 || FLAG:7 == 2)
+			;主人に対して陥落し直し
+			IF FAVORITE_1_ID(TARGET) == CFLAG:MASTER:캐릭터고유번호
+				WSTR:(K++) =
+			;その他のキャラ・ＮＰＣにＮＴＲし直し
+			ELSE
+				WSTR:(K++) =
+			ENDIF
+			CFLAG:293 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・乱交パーティ
+		;;淫ＮＴＲ状態（TALENT:ＮＴＲ == 2 か TALENT:ＮＴＲ == 5）である時のみ
+		;-------------------------------------------------
+	CASE 51
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:294 < 1 || FLAG:7 == 2)
+			IF (TALENT:3 || TALENT:6)
+				;以前恋慕ルートだった場合
+				WSTR:(K++) =
+			ELSEIF (TALENT:5 || TALENT:8)
+				;以前服従ルートだった場合
+				WSTR:(K++) = 
+			ENDIF
+			;淫乱、陥落済み共通
+			IF !口上有無確認(0)
+				WSTR:(K++) =
+			ENDIF
+			CFLAG:294 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・公園
+		;;淫ＮＴＲ状態（TALENT:ＮＴＲ == 2 か TALENT:ＮＴＲ == 5）である時のみ
+		;-------------------------------------------------
+	CASE 52
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:295 < 1 || FLAG:7 == 2)
+			IF (TALENT:3 || TALENT:6)
+				;以前恋慕ルートだった場合
+				WSTR:(K++) =
+			ELSEIF (TALENT:5 || TALENT:8)
+				;以前服従ルートだった場合
+				WSTR:(K++) = 
+			ENDIF
+			;淫乱、陥落済み共通
+			IF !口上有無確認(0)
+				WSTR:(K++) =
+			ENDIF
+			CFLAG:295 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・便器
+		;;淫ＮＴＲ状態（TALENT:ＮＴＲ == 2 か TALENT:ＮＴＲ == 5）である時のみ
+		;-------------------------------------------------
+	CASE 53
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:296 < 1 || FLAG:7 == 2)
+			IF (TALENT:3 || TALENT:6)
+				;以前恋慕ルートだった場合
+				WSTR:(K++) =
+			ELSEIF (TALENT:5 || TALENT:8)
+				;以前服従ルートだった場合
+				WSTR:(K++) = 
+			ENDIF
+			;淫乱、陥落済み共通
+			IF !口上有無確認(0)
+				WSTR:(K++) =
+			ENDIF
+			CFLAG:296 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・夜の街
+		;;淫ＮＴＲ状態（TALENT:ＮＴＲ == 2 か TALENT:ＮＴＲ == 5）である時のみ
+		;-------------------------------------------------
+	CASE 54
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:296 < 1 || FLAG:7 == 2)
+			IF (TALENT:3 || TALENT:6)
+				;以前恋慕ルートだった場合
+				WSTR:(K++) =
+			ELSEIF (TALENT:5 || TALENT:8)
+				;以前服従ルートだった場合
+				WSTR:(K++) = 
+			ENDIF
+			;淫乱、陥落済み共通
+			IF !口上有無確認(0)
+				WSTR:(K++) =
+			ENDIF
+			CFLAG:296 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・ＮＴＲ前逢引
+		;;ＮＴＲ状態になる前に逢引する時
+		;-------------------------------------------------
+	CASE 55
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:297 < 1 || FLAG:7 == 2)
+			IF CFLAG:함락캐릭터 != 0
+			;	;主人以外に陥落している場合
+				WSTR:(K++) = 
+			ELSEIF (TALENT:3 || TALENT:6)
+			;	;恋慕ルート
+				WSTR:(K++) = 
+			ELSEIF (TALENT:4 || TALENT:7)
+			;	;淫乱ルート
+				WSTR:(K++) = 
+			ELSEIF (TALENT:5 || TALENT:8)
+			;	;服従ルート
+				WSTR:(K++) = 
+			ENDIF
+			;陥落済み共通
+			IF !口上有無確認(0)
+				WSTR:(K++) =
+			ENDIF
+			CFLAG:297 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・ＮＴＲ後初逢引
+		;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)になった直後の一日の終了後、一度だけ行う
+		;別のキャラに陥落する度に起こる。同じキャラに再度陥落した場合は起こらない
+		;-------------------------------------------------
+	CASE 56
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:298 < 1 || FLAG:7 == 2)
+			IF (TALENT:ＮＴＲ == 1 || TALENT:ＮＴＲ == 4) ;&& (RAND:2 == 0)
+				;愛ＮＴＲ
+				WSTR:(K++) = 
+			ELSEIF (TALENT:ＮＴＲ == 3 || TALENT:ＮＴＲ == 6) ;&& (RAND:2 == 0)
+				;隷ＮＴＲ
+				WSTR:(K++) = 
+			ENDIF
+			;共通
+			IF !口上有無確認(0)
+				WSTR:(K++) =
+			ENDIF
+			CFLAG:298 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・デート
+		;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)で１日の終了時に発生。
+		;-------------------------------------------------
+	CASE 57
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:299 < 1 || FLAG:7 == 2)
+			IF (TALENT:ＮＴＲ == 1 || TALENT:ＮＴＲ == 4) ;&& (RAND:2 == 0)
+				;愛ＮＴＲ
+				WSTR:(K++) = 
+			ELSEIF (TALENT:ＮＴＲ == 3 || TALENT:ＮＴＲ == 6) ;&& (RAND:2 == 0)
+				;隷ＮＴＲ
+				WSTR:(K++) = 
+			ENDIF
+			;共通
+			IF !口上有無確認(0)
+				WSTR:(K++) =
+			ENDIF
+			CFLAG:299 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・本番
+		;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)で１日の終了時に発生。
+		;女性であれば入れられる側、男性であれば入れる側で固定
+		;-------------------------------------------------
+	CASE 58
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:601 < 1 || FLAG:7 == 2)
+			IF (TALENT:ＮＴＲ == 1 || TALENT:ＮＴＲ == 4) ;&& (RAND:2 == 0)
+				;愛ＮＴＲ
+				WSTR:(K++) = 
+			ELSEIF (TALENT:ＮＴＲ == 3 || TALENT:ＮＴＲ == 6) ;&& (RAND:2 == 0)
+				;隷ＮＴＲ
+				WSTR:(K++) = 
+			ENDIF
+			;共通
+			IF !口上有無確認(0)
+				WSTR:(K++) =
+			ENDIF
+			CFLAG:601 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・自慰見せ合い
+		;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)で１日の終了時に発生。
+		;愛ＮＴＲ状態の場合、露出癖3か自慰中毒1のどちらかを満たしている事が条件になります。
+		;-------------------------------------------------
+	CASE 59
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:602 < 1 || FLAG:7 == 2)
+			IF (TALENT:ＮＴＲ == 1 || TALENT:ＮＴＲ == 4) ;&& (RAND:2 == 0)
+				;愛ＮＴＲ
+				WSTR:(K++) = 
+			ELSEIF (TALENT:ＮＴＲ == 3 || TALENT:ＮＴＲ == 6) ;&& (RAND:2 == 0)
+				;隷ＮＴＲ
+				WSTR:(K++) = 
+			ENDIF
+			;共通
+			IF !口上有無確認(0)
+				WSTR:(K++) =
+			ENDIF
+			CFLAG:602 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・アナル
+		;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)で１日の終了時に発生。
+		;CFLAG:アナル回数が1以上なら入れられている、CFLAG:挿入回数が1以上なら入れています。
+		;両方立っている場合は、地の文では入れられている側が優先されます。
+		;-------------------------------------------------
+	CASE 60
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:603 < 1 || FLAG:7 == 2)
+			IF (TALENT:ＮＴＲ == 1 || TALENT:ＮＴＲ == 4) ;&& (RAND:2 == 0)
+				;愛ＮＴＲ
+				WSTR:(K++) = 
+			ELSEIF (TALENT:ＮＴＲ == 3 || TALENT:ＮＴＲ == 6) ;&& (RAND:2 == 0)
+				;隷ＮＴＲ
+				WSTR:(K++) = 
+			ENDIF
+			;共通
+			IF !口上有無確認(0)
+				WSTR:(K++) =
+			ENDIF
+			CFLAG:603 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・野外プレイ
+		;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)で１日の終了時に発生。
+		;愛ＮＴＲの場合、露出癖が4以上でないと発生しません
+		;-------------------------------------------------
+	CASE 61
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:604 < 1 || FLAG:7 == 2)
+			IF (TALENT:ＮＴＲ == 1 || TALENT:ＮＴＲ == 4) ;&& (RAND:2 == 0)
+				;愛ＮＴＲ
+				WSTR:(K++) = 
+			ELSEIF (TALENT:ＮＴＲ == 3 || TALENT:ＮＴＲ == 6) ;&& (RAND:2 == 0)
+				;隷ＮＴＲ
+				WSTR:(K++) = 
+			ENDIF
+			;共通
+			IF !口上有無確認(0)
+				WSTR:(K++) =
+			ENDIF
+			CFLAG:604 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・野外調教
+		;;隷ＮＴＲ状態(TALENT:ＮＴＲが 3 か 6)でCFLAG:現ＮＴＲ進行度が6以上の場合１日の終了時に発生。
+		;-------------------------------------------------
+	CASE 62
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:605 < 1 || FLAG:7 == 2)
+			;隷ＮＴＲ
+			WSTR:(K++) =
+			CFLAG:605 = 1
+		ENDIF
+		;-------------------------------------------------
+		;ダンジョン内性欲処理：仲魔とセックスする
+		;やられちゃう側
+		;PLAYERに実行者の番号が入っています
+		;-------------------------------------------------
+	CASE 79
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:602 < 1 || FLAG:7 == 2)
+			WSTR:(K++) =
+			CFLAG:602 = 1
+		ENDIF
+		;-------------------------------------------------
+		;ダンジョン内性欲処理：仲魔に奉仕させる
+		;奉仕する側
+		;PLAYERに実行者の番号が入っています
+		;-------------------------------------------------
+	CASE 80
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:603 < 1 || FLAG:7 == 2)
+			WSTR:(K++) =
+			CFLAG:603 = 1
+		ENDIF
+		;-------------------------------------------------
+		;ダンジョン内性欲処理：その場で自慰
+		;奉仕する側
+		;-------------------------------------------------
+	CASE 81
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:604 < 1 || FLAG:7 == 2)
+			WSTR:(K++) =
+			CFLAG:604 = 1
+		ENDIF
+		;-------------------------------------------------
+		;ダンジョン内性欲処理：物陰で自慰
+		;奉仕する側
+		;-------------------------------------------------
+	CASE 82
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:605 < 1 || FLAG:7 == 2)
+			WSTR:(K++) =
+			CFLAG:605 = 1
+		ENDIF
+		;-------------------------------------------------
+		;ダンジョン内性欲処理：仲魔とセックスする
+		;やる側
+		;PLAYERに相手の番号が入っています
+		;-------------------------------------------------
+	CASE 83
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:606 < 1 || FLAG:7 == 2)
+			WSTR:(K++) =
+			CFLAG:606 = 1
+		ENDIF
+		;-------------------------------------------------
+		;ダンジョン内性欲処理：仲魔に奉仕させる
+		;奉仕される側
+		;PLAYERに奉仕する側の番号が入っています
+		;-------------------------------------------------
+	CASE 84
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:607 < 1 || FLAG:7 == 2)
+			WSTR:(K++) =
+			CFLAG:607 = 1
+		ENDIF
+		;-------------------------------------------------
+		;ダンジョン内性欲処理：輪姦イベント
+		;奉仕する側
+		;PLAYERに実行者=輪姦する悪魔の番号が入っています
+		;-------------------------------------------------
+	CASE 85
+		K_CALL:K = EVENT_MESSAGE
+		IF (CFLAG:608 < 1 || FLAG:7 == 2)
+			WSTR:(K++) =
+			CFLAG:608 = 1
+		ENDIF
+		
+
+		;-------------------------------------------------
+		;教会で祈る
+		;-------------------------------------------------
+	CASE 65
+			K_CALL:K = EVENT_MESSAGE
+			;教会の種類によって分ける
+			SELECTCASE 店舗("종류",(CFLAG:노역플래그 - 10))
+				;メシア教会
+				CASE 13
+					;初めて
+					IF CFLAG:609 == 0
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:609 = 1
+					;それ以外
+					ELSEIF CFLAG:276 < 1 || FLAG:7 == 2
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:609 = 1
+					ENDIF
+				;ガイア教会
+				CASE 14
+					;初めて
+					IF CFLAG:610 == 0
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:610 = 1
+					;それ以外
+					ELSEIF CFLAG:276 < 1 || FLAG:7 == 2
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:610 = 1
+					ENDIF
+				;教会
+				CASE 15
+					;初めて
+					IF CFLAG:611 == 0
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:611 = 1
+					;それ以外
+					ELSEIF CFLAG:276 < 1 || FLAG:7 == 2
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:611 = 1
+					ENDIF
+			ENDSELECT
+		;-------------------------------------------------
+		;教会で口奉仕
+		;-------------------------------------------------
+	CASE 66
+			K_CALL:K = EVENT_MESSAGE
+			;教会の種類によって分ける
+			SELECTCASE 店舗("종류",(CFLAG:노역플래그 - 10))
+				;メシア教会
+				CASE 13
+					;初めて
+					IF CFLAG:612 == 0
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:612 = 1
+					;それ以外
+					ELSEIF CFLAG:276 < 1 || FLAG:7 == 2
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:612 = 1
+					ENDIF
+				;ガイア教会
+				CASE 14
+					;初めて
+					IF CFLAG:613 == 0
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:613 = 1
+					;それ以外
+					ELSEIF CFLAG:276 < 1 || FLAG:7 == 2
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:613 = 1
+					ENDIF
+				;教会
+				CASE 15
+					;初めて
+					IF CFLAG:614 == 0
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:614 = 1
+					;それ以外
+					ELSEIF CFLAG:276 < 1 || FLAG:7 == 2
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:614 = 1
+					ENDIF
+			ENDSELECT
+		;-------------------------------------------------
+		;教会で性奉仕
+		;-------------------------------------------------
+	CASE 67
+			K_CALL:K = EVENT_MESSAGE
+			;教会の種類によって分ける
+			SELECTCASE 店舗("종류",(CFLAG:노역플래그 - 10))
+				;メシア教会
+				CASE 13
+					;初めて
+					IF CFLAG:615 == 0
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:615 = 1
+					;それ以外
+					ELSEIF CFLAG:276 < 1 || FLAG:7 == 2
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:615 = 1
+					ENDIF
+				;ガイア教会
+				CASE 14
+					;初めて
+					IF CFLAG:616 == 0
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:616 = 1
+					;それ以外
+					ELSEIF CFLAG:276 < 1 || FLAG:7 == 2
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:616 = 1
+					ENDIF
+				;教会
+				CASE 15
+					;初めて
+					IF CFLAG:617 == 0
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:617 = 1
+					;それ以外
+					ELSEIF CFLAG:276 < 1 || FLAG:7 == 2
+						;ロウ
+						IF ABL:속성LC == 1
+							WSTR:(K++) =
+						;カオス
+						ELSEIF ABL:속성LC == 3
+							WSTR:(K++) =
+						;ニュートラル
+						ELSE
+							WSTR:(K++) =
+						ENDIF
+						CFLAG:617 = 1
+					ENDIF
+			ENDSELECT
+	CASEELSE
+ENDSELECT
+
+$表示
+CALL 口上変数表示
+;口上がなければ別の口上を呼び出す
+IF RESULT == 0
+	TRYCCALLFORM KOJO_MESSAGE_EVENT_ZZZ
+	CATCH
+		CALL EVENT_MESSAGE
+	ENDCATCH
+ENDIF
+;-------------------------------------------------
+;闘技場敗北時口上集（4661をキャラ番号に置換する） 基本的に見るとゲームオーバーなのでフラグは使わない事に
+;-------------------------------------------------
+@KOJO_MESSAGE_LOSE_COLOSSEUM_K[[キャラ:하루_P5]]
+CALL 口上変数初期化
+SELECTCASE TFLAG:투기장패배
+		;-------------------------------------------------
+		;オニ＆蔦
+		;-------------------------------------------------
+	CASE 1
+			K_CALL:K = MESSAGE_LOSE_COLOSSEUM
+			;恋慕、親愛
+			IF TALENT:3 || TALENT:6
+				WSTR:(K++) = 
+			;淫乱、娼婦
+			ELSEIF TALENT:4 || TALENT:7
+				WSTR:(K++) = 
+			;服従、隷属
+			ELSEIF TALENT:5 || TALENT:8
+				WSTR:(K++) = 
+			ENDIF
+			;その他
+			IF !口上有無確認(0)
+				WSTR:(K++) = 
+			ENDIF
+ENDSELECT
+CALL 口上変数表示
+;口上がなければ別の口上を呼び出す
+IF RESULT == 0
+	TRYCCALLFORM KOJO_MESSAGE_LOSE_COLOSSEUM_ZZZ
+	CATCH
+		CALL MESSAGE_LOSE_COLOSSEUM
+	ENDCATCH
+ENDIF
+
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_ENDING関係(4661、4661をキャラ番号に置換する)
+;-------------------------------------------------
+;-------------------------------------------------
+;エンディング口上の有無を判別する関数
+;記述したエンディングの種類に応じてコメントアウトを解除
+;-------------------------------------------------
+@ENDING_CHECK_K[[キャラ:하루_P5]]
+SELECTCASE TSTR:END종별
+	;CASE "個別END"
+	;	SIF TALENT:아내 || TALENT:남편
+	;		RETURN 1
+	;	SIF TALENT:음마
+	;		RETURN 1
+	;	SIF TALENT:노리개
+	;		RETURN 1
+	;CASE "調教師END"
+	;	RETURN 1
+	;CASE "稀代の調教師END"
+	;	RETURN 1
+	;CASE "食堂経営END"
+	;	RETURN 1
+	;CASE "娼館経営END"
+	;	RETURN 1
+	;CASE "アイドルEND"
+	;	RETURN 1
+ENDSELECT
+RETURN 0
+
+;-------------------------------------------------
+;エンド本文
+;-------------------------------------------------
+@KOJO_MESSAGE_ENDING_K[[キャラ:하루_P5]]
+;--------------------------------------------------
+CALL 口上変数初期化
+SELECTCASE TSTR:END종별
+	;CASE "個別END"
+		;恋慕単体エンド
+		;IF TALENT:아내 || TALENT:남편 && CFLAG:21 == 1
+			;DRAWLINE
+			;WSTR:(K++) = …………
+			;WSTR:(K++) = ………
+			;WSTR:(K++) = ……
+			;WSTR:(K++) = 
+
+			;WSTR:(K++) = 
+			;WSTR:(K++) = 　　　　　　　　―― Extra Ending　（◯◯エンド）
+		;淫乱単体エンド
+		;ELSEIF TALENT:음마 && CFLAG:21 == 1
+			;DRAWLINE
+			;WSTR:(K++) = …………
+			;WSTR:(K++) = ………
+			;WSTR:(K++) = ……
+			;WSTR:(K++) = 
+
+			;WSTR:(K++) = 
+			;WSTR:(K++) = 　　　　　　　　―― Extra Ending　（◯◯エンド）
+		;服従単体エンド
+		;ELSEIF TALENT:노리개 && CFLAG:21 == 1
+			;DRAWLINE
+			;WSTR:(K++) = …………
+			;WSTR:(K++) = ………
+			;WSTR:(K++) = ……
+			;WSTR:(K++) = 
+
+			;WSTR:(K++) = 
+			;WSTR:(K++) = 　　　　　　　　―― Extra Ending　（◯◯エンド）
+		;ENDIF
+	;CASE "調教師END"
+	;CASE "稀代の調教師END"
+	;CASE "食堂経営END"
+	;CASE "娼館経営END"
+	;CASE "アイドルEND"
+ENDSELECT
+CALL 口上変数表示
+;個別ENDの場合ここでRETURN 1すると、その後ゲームは続かず次周に行くかゲーム終了かの選択になります
+RETURN 1
+
+
+@ENEMY_BATTLE_EVENT_K[[キャラ:하루_P5]], ARG, ARG:1, ARG:2
+IF TFLAG:전투이벤트 == 1
+;敵でのデビルＣＯ－ＯＰ発動時の台詞
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%"",72,LEFT%┃
+;			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ENDIF
+IF TFLAG:전투이벤트 == 2
+;敵でのデビルＣＯ－ＯＰ参加時の台詞
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%"",72,LEFT%┃
+;			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ENDIF
+
+@KOJO_BATTLE_EVENT_K[[キャラ:하루_P5]], ARG, ARG:1, ARG:2
+;■台詞の行数を増やしたいときは
+;			LOCALS:10 = 一行目
+;			LOCALS:11 = 二行目
+;			LOCALS:12 = 三行目
+;			LOCALS:13 = 四行目
+;			LOCALS:14 = 五行目
+;と増やしていく
+SIF ARG < 0 && NO:ARG != 4661
+	RETURN 0
+VARSET LOCALS
+
+SELECTCASE TFLAG:전투이벤트
+	;COOP発動 ARGは発動者
+	CASE 1
+		BTL_KOJO_RESULTS:0 = 
+	;COOP参加
+	CASE 2
+		;主人がCOOP発動
+		IF FLAG:행동순1 != -1 && FLAG:행동순1 == MASTER
+			BTL_KOJO_RESULTS:0 = 
+		;それ以外
+		ELSE
+			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;被召喚時
+	CASE 3
+			BTL_KOJO_RESULTS:0 = 
+	;공격　ARGが攻撃をする仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 11
+		;相手が死んだ
+		IF BASE:(ARG:1):ＨＰ <= 0
+			BTL_KOJO_RESULTS:0 = 
+		;弱点をついた。つまりCOOP
+		ELSEIF GET_CREC_ACT(ARG, ARG:1, "WEAK")
+			IF CFLAG:(ARG:1):방어플래그
+				BTL_KOJO_RESULTS:0 = 
+			ELSE
+				;こっちはCOOP発動に回すためにカット
+				RETURN 0
+			ENDIF
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 50
+			BTL_KOJO_RESULTS:0 = 
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 25
+			BTL_KOJO_RESULTS:0 = 
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 0
+			BTL_KOJO_RESULTS:0 = 
+		;無効された
+		ELSEIF ダメージ割合(ARG:1, ARG:2) <= 0
+			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;被ダメージ
+	;ARGが攻撃を受ける仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 12
+		;死んだ
+		IF BASE:ARG:ＨＰ <= 0
+			BTL_KOJO_RESULTS:0 = 
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 50 || 現HP割合(ARG) < 25
+			BTL_KOJO_RESULTS:0 = 
+		;無効
+		ELSEIF ARG:2 == 0
+			BTL_KOJO_RESULTS:0 = 
+		;吸収
+		ELSEIF ARG:2 < 0
+			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;反射された
+	CASE 15
+			BTL_KOJO_RESULTS:0 = 
+	;反射した
+	CASE 16
+			BTL_KOJO_RESULTS:0 = 
+	;回避された
+	CASE 17
+			BTL_KOJO_RESULTS:0 = 
+	;回避した
+	CASE 18
+			BTL_KOJO_RESULTS:0 = 
+	;反撃スキル発動した
+	CASE 20
+			BTL_KOJO_RESULTS:0 = 
+	;バトルに勝利した
+	CASE 90
+			BTL_KOJO_RESULTS:0 = 
+	;レベルアップした
+	CASE 91
+			BTL_KOJO_RESULTS:0 = 
+	;逃走に成功した
+	CASE 92
+			BTL_KOJO_RESULTS:0 = 
+	;逃走に失敗した
+	CASE 93
+			BTL_KOJO_RESULTS:0 = 
+	;戦闘開始時
+	CASE 94
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			BTL_KOJO_RESULTS:0 = 
+		ELSE
+			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;バックアタックを受けた
+	CASE 95
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			BTL_KOJO_RESULTS:0 = 
+		ELSE
+			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;敵の先制攻撃を受けた
+	CASE 96
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			BTL_KOJO_RESULTS:0 = 
+		ELSE
+			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;先制攻撃に成功
+	CASE 97
+			BTL_KOJO_RESULTS:0 = 
+ENDSELECT
+SIF !(LOCALS:10 == "")
+	CALL MESSAGE_B2(CALLNAME:ARG,0, LOCALS:10, LOCALS:11, LOCALS:12, LOCALS:13, LOCALS:14)
+
+
+@KOJO_BATTLE_MESSAGE_K[[キャラ:하루_P5]],ARG,ARG:1 = 0
+;■台詞の行数を増やしたいときは
+;			LOCALS:10 = 一行目
+;			LOCALS:11 = 二行目
+;			LOCALS:12 = 三行目
+;			LOCALS:13 = 四行目
+;			LOCALS:14 = 五行目
+;と増やしていく
+VARSET LOCALS
+;使用したスキルの名前をLOCALSに代入
+CALL GET_SKILL_PROP, "SKILL_NAME", CFLAG:ARG:입력행동, ARG
+LOCALS = %RESULTS%
+;FLAG:ARG:타겟
+
+;崩壊してる場合は口上表示しないようにもできる
+;SIF TALENT:ARG:9
+;	RETURN 0
+
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+;コメントアウトしやすいように
+IF 1 == 0
+;-------------------------------------------------
+;状態異常時
+;-------------------------------------------------
+;魅了時
+ELSEIF CFLAG:ARG:상태이상 == GET_STATE_NUM("CHARM")
+	;行動不能（ムラムラしている）
+	IF CFLAG:ARG:입력행동 == 2314
+		BTL_KOJO_RESULTS:0 = 
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;混乱時
+ELSEIF CFLAG:ARG:상태이상 == GET_STATE_NUM("PANIC")
+	;금전뿌리기
+	IF CFLAG:ARG:입력행동 == 2315
+		BTL_KOJO_RESULTS:0 = 
+	;行動不能（ぼんやりしている）
+	ELSEIF CFLAG:ARG:입력행동 == 2314
+		BTL_KOJO_RESULTS:0 = 
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;これは通常攻撃
+ELSEIF CFLAG:ARG:입력행동 == 0
+	BTL_KOJO_RESULTS:0 = 
+;ELSEIF CFLAG:ARG:입력행동 == (スキル番号)
+;	BTL_KOJO_RESULTS:0 = 
+;섹시댄스
+ELSEIF CFLAG:ARG:입력행동 == 1212
+	BTL_KOJO_RESULTS:0 = 
+;캔디보이스
+ELSEIF CFLAG:ARG:입력행동 == 1213
+	BTL_KOJO_RESULTS:0 = 
+;파이널누드
+ELSEIF CFLAG:ARG:입력행동 == 1214
+	BTL_KOJO_RESULTS:0 = 
+;-------------------------------------------------
+;銃攻撃（特殊弾丸含む）
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,2101, 2200)
+	;GUN
+	IF CFLAG:ARG:입력행동 == 2101
+		BTL_KOJO_RESULTS:0 = 
+	;その他（特殊弾丸）
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;-------------------------------------------------
+;基本行動
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,2301, 2400)
+	;ＣＨＡＮＧＥ
+	IF CFLAG:ARG:입력행동 == 2301
+		BTL_KOJO_RESULTS:0 = 
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;-------------------------------------------------
+;アイテム
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,3001, 3500)
+	BTL_KOJO_RESULTS:0 = 
+;-------------------------------------------------
+;リンケージ
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,4000, 5000)
+	;메시아라이저
+	IF CFLAG:ARG:입력행동 == 4160
+		BTL_KOJO_RESULTS:0 = 
+	;Lヒートライザ
+	ELSEIF CFLAG:ARG:입력행동 == 4200
+		BTL_KOJO_RESULTS:0 = 
+	;사망유희
+	ELSEIF CFLAG:ARG:입력행동 == 4800
+		BTL_KOJO_RESULTS:0 = 
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;-------------------------------------------------
+;汎用スキル
+;-------------------------------------------------
+;검격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1, 99)
+	BTL_KOJO_RESULTS:0 = 
+;비구
+ELSEIF RANGE(CFLAG:ARG:입력행동,101, 199)
+	BTL_KOJO_RESULTS:0 = 
+;타격
+ELSEIF RANGE(CFLAG:ARG:입력행동,201, 299)
+	BTL_KOJO_RESULTS:0 = 
+;전술
+ELSEIF RANGE(CFLAG:ARG:입력행동,301, 400)
+	;噛み付き系
+	IF RANGE(CFLAG:ARG:입력행동,321, 326)
+		BTL_KOJO_RESULTS:0 = 
+	;その他
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;회복
+ELSEIF RANGE(CFLAG:ARG:입력행동,401, 499)
+	;全体回復
+	IF CFLAG:ARG:타겟 > 6
+		BTL_KOJO_RESULTS:0 = 
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;지원
+ELSEIF RANGE(CFLAG:ARG:입력행동,501, 599)
+	;強化系
+	IF RANGE(CFLAG:ARG:입력행동,501, 505) || CFLAG:ARG:입력행동 == 558
+		BTL_KOJO_RESULTS:0 = 
+	;弱体系
+	ELSEIF RANGE(CFLAG:ARG:입력행동,506, 509) || CFLAG:ARG:입력행동 == 541 || CFLAG:ARG:입력행동 == 556
+		BTL_KOJO_RESULTS:0 = 
+	;도발
+	ELSEIF CFLAG:ARG:입력행동 == 515
+		BTL_KOJO_RESULTS:0 = 
+	;その他
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;방어
+ELSEIF RANGE(CFLAG:ARG:입력행동,601, 699)
+	BTL_KOJO_RESULTS:0 = 
+;화염
+ELSEIF RANGE(CFLAG:ARG:입력행동,701, 799)
+	BTL_KOJO_RESULTS:0 = 
+;빙결
+ELSEIF RANGE(CFLAG:ARG:입력행동,801, 899)
+	BTL_KOJO_RESULTS:0 = 
+;전격
+ELSEIF RANGE(CFLAG:ARG:입력행동,901, 999)
+	BTL_KOJO_RESULTS:0 = 
+;충격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1001, 1099)
+	BTL_KOJO_RESULTS:0 = 
+;신경
+ELSEIF RANGE(CFLAG:ARG:입력행동,1101, 1199)
+	BTL_KOJO_RESULTS:0 = 
+;정신
+ELSEIF RANGE(CFLAG:ARG:입력행동,1201, 1299)
+	BTL_KOJO_RESULTS:0 = 
+;파마
+ELSEIF RANGE(CFLAG:ARG:입력행동,1301, 1399)
+	BTL_KOJO_RESULTS:0 = 
+;주살
+ELSEIF RANGE(CFLAG:ARG:입력행동,1401, 1499)
+	BTL_KOJO_RESULTS:0 = 
+;지변
+ELSEIF RANGE(CFLAG:ARG:입력행동,1501, 1599)
+	BTL_KOJO_RESULTS:0 = 
+;수격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1601, 1699)
+	BTL_KOJO_RESULTS:0 = 
+;질풍
+ELSEIF RANGE(CFLAG:ARG:입력행동,1701, 1799)
+	BTL_KOJO_RESULTS:0 = 
+;중력
+ELSEIF RANGE(CFLAG:ARG:입력행동,1801, 1899)
+	BTL_KOJO_RESULTS:0 = 
+;핵열
+ELSEIF RANGE(CFLAG:ARG:입력행동,1901, 1999)
+	BTL_KOJO_RESULTS:0 = 
+;만능
+ELSEIF RANGE(CFLAG:ARG:입력행동,2001, 2099)
+	;自爆系
+	IF RANGE(CFLAG:ARG:입력행동,2005, 2007)
+		BTL_KOJO_RESULTS:0 = 
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;魔法少女系
+ELSEIF RANGE(CFLAG:ARG:입력행동,2989, 2999)
+	BTL_KOJO_RESULTS:0 = 
+;-------------------------------------------------
+;その他
+;-------------------------------------------------
+ELSE
+	BTL_KOJO_RESULTS:0 = 
+ENDIF
+;-------------------------------------------------
+;真・その他
+;-------------------------------------------------
+IF BTL_KOJO_RESULTS:0 == ""
+	;必ず何か喋る
+	BTL_KOJO_RESULTS:0 = 
+ENDIF
+
+;SIF !(LOCALS:10 == "")
+;	CALL MESSAGE_B2(CALLNAME:ARG,1, LOCALS:10, LOCALS:11, LOCALS:12, LOCALS:13, LOCALS:14)

@@ -1,0 +1,319 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SYSTEM_MANAGEMENT.ERB
+;	Facility	:店舗経営の処理に関する関数群です。
+;
+;	Licence		:不明
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2013/01/13		TR						労役中のキャラに○をつける部分を修正
+;	003		2014/09/19		ネトリス				労役：教会の処理を追加
+;	004		2020/07/29		Jガン					便器選択時のエラー修正(@WORKABLE)
+;	005		2022/11/04		JK好き					@MANAGEMENT_CHARALIST 店舗配置キャラ選択時の情報量増加
+;	006		2023/07/05		P(bazzile)				口上の存在確認を専用関数を使用する形に変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;========================================================
+;店舗情報
+;========================================================
+@SHOW_STATUS_MANAGEMENT,ARG
+;１行目に名前
+PRINTFORM %SAVESTR:(20+ARG),20,LEFT%
+SELECTCASE 店舗("종류", ARG)
+	CASE 10
+		PRINTFORML 　점포 종류: 공중변소
+		;3行目には規模と雇用人数
+		PRINTFORML 최대 이용자 수/일:{店舗("규모",ARG),4}명　변기 설치 수：{접객인수(ARG),2}/{店舗("접객고용",ARG),2}개
+		;4行目には人気と宣伝効果
+		PRINTFORML 인기　　　　　 :{店舗("인기",ARG),5} 　　홍보 효과：{店舗("선전효과",ARG),5}　　\@ 看板便器(ARG) > -1 ? 간판 변기:%CALLNAME:看板便器(ARG)% # \@
+		;5行目には維持費
+		;※変更点ここから※
+		SIF [[店舗:선전플래그]]:ARG == 0
+			PRINTFORML 현재 선전 매체: 없음
+		SIF [[店舗:선전플래그]]:ARG == 1
+			PRINTFORML 현재 선전 매체: 전단지 배포
+		SIF [[店舗:선전플래그]]:ARG == 2
+			PRINTFORML 현재 선전 매체: 라디오 광고
+		SIF [[店舗:선전플래그]]:ARG == 3
+			PRINTFORML 현재 선전 매체: 패러다임 X
+		SIF [[店舗:선전플래그]]:ARG == 4
+			PRINTFORML 현재 선전 매체: 비행선 선전
+		SIF [[店舗:선전플래그]]:ARG >= 1000000
+			PRINTFORML 현재 선전 매체: 대대적인 선전　비용: {[[店舗:선전플래그]]:ARG}
+		;※変更点ここまで※
+		PRINTFORML 하루 유지비: ￥{ 500 + 店舗("규모",ARG) * 50 + 접객인수(ARG) * 200}
+		PRINTL
+		;6行目には基本の価格
+		PRINTL 【상품 기본 가격】
+		PRINTFORML 펠라치오:{店舗("펠라가격",ARG),3} 마카　　　본방:{店舗("본방가격",ARG),3} 마카　　　애널:{店舗("애널가격",ARG),3} 마카　　　질내사정:{店舗("질내사정가격",ARG),3} 마카
+	CASE 11
+		PRINTFORML 　점포 종류: 스트립 극장
+		PRINTFORML 최대 집객 수/일:{店舗("규모",ARG) * 100,4}명　최대 배우 수：{店舗("규모",ARG),2}명
+		PRINTFORML 선전 효과: {店舗("선전효과",ARG),5}　하루 유지비: ￥{店舗("규모",ARG) * 500}
+	CASE 12
+		PRINTFORML 　점포 종류: 구경거리 천막
+		PRINTFORML 노예 배치 가능 수: {店舗("규모",ARG),2}명 + 렌탈 10체
+		PRINTFORML 선전 효과: {店舗("선전효과",ARG),5}　하루 유지비: ￥{SHOW_TENT_維持費(ARG)}\@ SHOW_TENT_RENTAL_COST(ARG) ? + 렌탈료 {SHOW_TENT_RENTAL_COST(ARG)} 마카 # \@
+	;教会
+	CASE 13
+		PRINTFORML 　점포 종류: 메시아 교단
+		PRINTFORML 상주 인원수：{접객인수(ARG),2}/{店舗("접객고용",ARG),2}명
+	CASE 14
+		PRINTFORML 　점포 종류: 가이아 교단
+		PRINTFORML 상주 인원수：{접객인수(ARG),2}/{店舗("접객고용",ARG),2}명
+	CASE 15
+		PRINTFORML 　점포 종류: 교회
+		PRINTFORML 상주 인원수：{접객인수(ARG),2}/{店舗("접객고용",ARG),2}명
+	;
+ENDSELECT
+CUSTOMDRAWLINE ･
+
+;========================================================
+;労役でレベルアップ
+;========================================================
+
+;========================================================
+;コマンド表示
+;========================================================
+@PRINT_COMMAND_MANAGEMENT,ARG
+VARSET C , -1
+SELECTCASE [[店舗:종류]]:ARG
+	CASE 10
+		;規模拡張、設置数増加、
+		C:0 = 1
+		PRINTL [0]  - 변기 설치
+		C:1 = 1
+		PRINTL [1]  - 변기 설치 가능 수 확장
+		C:2 = 1
+		PRINTL [2]  - 점포 규모 확장
+		C:3 = 1
+		PRINTL [3]  - 기본 이용료 설정
+		C:4 = 1
+		PRINTL [4]  - 기본 이용 방법 설정
+		C:5 = 1
+		PRINTL [5]  - 광고를 낸다
+		C:6 = 1
+		PRINT [6]  - 현재 수지 보고 방법　-　
+		SELECTCASE FLAG:공중변소보고설정
+			CASE 0
+				PRINTL 상세 보고
+			CASE 1
+				PRINTL 간이 보고
+			CASE 2
+				PRINTL 수지만 보고
+		ENDSELECT
+
+		C:10 = 1
+		PRINTL [10] - 이용료 개별 설정
+		C:11 = 1
+		PRINTL [11] - 이용 방법 개별 설정
+		C:99 = 1
+		PRINTL [99] - 점포 매각
+	CASE 11
+		C:0 = 1
+		PRINTL [0]  - 출연자 변경
+		C:1 = 1
+		PRINTL [1]  - 극장 확장
+		C:2 = 1
+		PRINTL [2]  - 광고를 낸다
+		C:3 = 1
+		PRINTFORML [3]  - \@GETBIT(FLAG:스트립극장보고설정,ARG) ? 상세 보고로 변경 # 간이 보고로 변경\@
+		C:99 = 1
+		PRINTL [99] - 점포 매각
+	CASE 12
+		C:0 = 1
+		PRINTL [0]  - 출연자 변경
+		C:1 = 1
+		PRINTL [1]  - 렌탈 악마
+		C:2 = 1
+		PRINTL [2]  - 시설 확장
+		C:3 = 1
+		PRINTL [3]  - 광고를 낸다
+		C:4 = 1
+		PRINTFORML [4]  - \@GETBIT(VAR_店舗リザルト,ARG) ? 상세 보고로 변경 # 간이 보고로 변경\@
+		;#;C:5 = 1
+		;#;PRINTFORML [5]  - \@GETBIT(VAR_店舗リザルト,ARG+10) ? デバッグ情報非表示 # デバッグ情報表示 \@
+		C:99 = 1
+		PRINTL [99] - 점포 매각
+	;教会
+	CASE 13, 14, 15
+		;規模拡張、設置数増加、
+		C:0 = 1
+		PRINTL [0]  - 상주 수녀 선택
+		C:1 = 1
+		PRINTL [1]  - 상주 인원수 확장
+		C:2 = 1
+		PRINTL [2]  - 개축
+		C:3 = 1
+		PRINTL [3]  - 권유
+		C:11 = 1
+		PRINTL [11] - 봉사 활동 개별 설정
+		C:99 = 1
+		PRINTL [99] - 점포 매각
+ENDSELECT
+DRAWLINE
+PRINTL [100] - 돌아간다
+
+;========================================================
+;配置キャラリスト
+;========================================================
+@MANAGEMENT_CHARALIST,ARG,ARG:1
+#DIM LCOUNT
+FOR LCOUNT, 0, リスト表示数()
+	LOCAL = Q:(LCOUNT + P * リスト表示数())
+	SIF LOCAL < 0
+		CONTINUE
+	SIF CFLAG:LOCAL:이자리에없는플래그 == 1
+		CONTINUE
+	SIF CFLAG:LOCAL:전투이외불능
+		RETURN 0
+	SIF ARG:1 == 0 && 접객인수(ARG) >= [[店舗:접객고용]]:ARG
+		SETCOLOR 0x404040
+	;色セット
+	SIF CFLAG:LOCAL:노역플래그 == 10+ARG
+		SETCOLOR 0x33ffcc
+	CALL ARRANGE_TARGETSIGN, LOCAL
+	CALL ARRANGE_CHARALIST, LOCAL
+	CALL ARRANGE_CHARALIFE, LOCAL
+	CALL ARRANGE_FALLTALENT, LOCAL
+	CALL ARRANGE_SEX, LOCAL
+	CALL PRINT_ALIGNMENT(LOCAL,1,0)
+	;---- EDIT 006 MOD START -------------------------
+	CALL 口上存在確認, LOCAL
+	;CALL 口上呼び出し , "存在" , LOCAL
+	;---- EDIT 006 MOD END ---------------------------
+	IF RESULT == 1
+		PRINT 　전
+	ELSEIF RESULT == 2
+		PRINT 　범
+	ELSE
+		PRINT 　―
+	ENDIF
+	;EDIT002 MOD START ------------------------------
+	;SIF ARG:1 == 0 && 접객인수(ARG) >= [[店舗:접객고용]]:ARG
+	SIF CFLAG:LOCAL:노역플래그 == 10+ARG
+	;EDIT002 MOD END   ------------------------------
+		PRINT 　○
+	PRINTL
+	RESETCOLOR
+NEXT
+PRINTL ○: 이 점포에서 노역 중인 캐릭터를 나타냅니다
+
+RESETCOLOR
+
+;========================================================
+;店舗に出る条件
+;========================================================
+@WORKABLE(ARG,ARG:1)
+#FUNCTION
+SELECTCASE [[店舗:종류]]:ARG
+	CASE 0
+		RETURNF 1
+
+	CASE 10
+		;盟友だとできない
+		SIF TALENT:(ARG:1):맹우
+			RETURNF 0
+		;縛り上げるだけなので、条件は無い
+		RETURNF 1
+	CASE 11
+		;主人は無理をする
+		SIF ARG:1 == MASTER
+			RETURNF 1
+		;信頼陥落はダメ
+		SIF TALENT:(ARG:1):신뢰 || TALENT:(ARG:1):동료
+			RETURNF 0
+		;露出癖がないと無理
+		SIF ABL:(ARG:1):노출증 <= 0
+			RETURNF 0
+		;売却可能じゃないと無理
+		SIF CFLAG:(ARG:1):매각가능 == 0
+			RETURNF 0
+		RETURNF 1
+	CASE 12
+		;主人以外
+		SIF ARG:1 == MASTER
+			RETURNF 0
+		;信頼陥落はダメ
+		SIF TALENT:(ARG:1):신뢰 || TALENT:(ARG:1):동료
+			RETURNF 0
+		SIF IS_LOOKSLIKE_MALE(ARG:1) == 0
+			RETURNF 1
+		;オトコはヤる気がないとダメ
+		SIF 陥落(ARG:1)
+			RETURNF 1
+	;教会
+	CASE 13, 14, 15
+		;信頼陥落はダメ
+		SIF TALENT:(ARG:1):신뢰 || TALENT:(ARG:1):동료
+			RETURNF 0
+		;男はダメ
+		SIF IS_MALE(ARG:1)
+			RETURNF 0
+		;陥落していないとダメ
+		SIF 陥落(ARG:1) == 0
+			RETURNF 0
+		RETURNF 1
+
+ENDSELECT
+RETURNF 0
+
+
+
+;===========================================================
+;変数関係
+;=========================================================
+@店舗(ARGS,ARG)
+#FUNCTION
+LOCAL = 店舗項目(ARGS)
+IF LOCAL < 0
+	PRINTFORML 에러가 발생하여 0을 반환합니다. %ARGS%라는 항목은 없습니다
+	RETURNF 0
+ENDIF
+RETURNF DE:LOCAL:ARG
+
+@店舗演算(ARGS,ARG,ARG:1,ARGS:1)
+LOCAL = 店舗項目(ARGS)
+IF LOCAL < 0
+	PRINTFORML 에러가 발생하여 0을 반환합니다. %ARGS%라는 항목은 없으므로 연산할 수 없습니다.
+	RETURN 0
+ENDIF
+SELECTCASE ARGS:1
+	CASE "="
+		DE:LOCAL:ARG = ARG:1
+	CASE "+"
+		DE:LOCAL:ARG += ARG:1
+	CASE "-"
+		DE:LOCAL:ARG -= ARG:1
+	CASE "*"
+		DE:LOCAL:ARG *= ARG:1
+	CASE "/"
+		DE:LOCAL:ARG /= ARG:1
+	CASE "%"
+		DE:LOCAL:ARG %= ARG:1
+ENDSELECT
+
+@店舗項目(ARGS)
+#FUNCTION
+SIF LOCALS == ""
+	SPLIT "종류_교복_상품_인기_선전효과_요리완성도_요리인기_규모_접객고용_ダミー_키친고용_ダミー_성적서비스_만지기가격_애무가격_펠라가격_본방가격_애널가격_질내사정가격_처녀가격_ダミー_ダミー_요리가격_술가격_음료가격_유지비_명칭_요리기대도_술기대도_음료기대도_성적기대도_교복스커트_교복속옷_교복가슴_교복음구_난교플래그_ダミー_ダミー_ダミー_ダミー_ダミー_ダミー_ダミー_ダミー_ダミー_ダミー_ダミー_선전플래그_役者１_役者２_役者３_役者４_役者５_役者６_役者７_役者８_役者９_役者１０_演目１_演目２_演目３_演目４_演目５_演目６_演目７_演目８_演目９_演目１０" , "_" , LOCALS
+RETURNF FINDELEMENT(LOCALS , ARGS)
+
+
+;===========================================================
+; 한국어 호환 래퍼: @점포, @점포연산, @점포항목
+;===========================================================
+@점포(ARGS, ARG)
+#FUNCTION
+RETURNF 店舗(ARGS, ARG)
+
+@점포연산(ARGS, ARG, ARG:1, ARGS:1)
+CALL 店舗演算, ARGS, ARG, ARG:1, ARGS:1
+RETURN RESULT
+
+@점포항목(ARGS)
+#FUNCTION
+RETURNF 店舗項目(ARGS)

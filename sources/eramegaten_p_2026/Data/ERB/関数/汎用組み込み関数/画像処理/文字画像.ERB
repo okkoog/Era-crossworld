@@ -1,0 +1,36 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:文字画像.ERB
+;	Facility	:文字のみを表示する（主に幅圧縮などに使う）関数群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/07/09		一ノ瀬				    新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+@名札 , L_NAME , L_width = 100 , L_height = 100
+#FUNCTIONS
+#DIMS L_NAME
+#DIM L_width
+#DIM L_height
+#DIM L_HASH
+#DIMS SPR_NAME
+
+;引数から、実際に使用するスプライトネームとハッシュ値を取得しておく
+SPR_NAME = 名札_%L_NAME%
+L_HASH = 画像ハッシュ値(SPR_NAME)
+IF ハッシュ画像(SPR_NAME , STRLENS(L_NAME)*50 , 100) == 0
+	;ここに来た時点で@ハッシュ画像の中でGRAPHICSとSPRITEは作成済み
+	GCLEAR L_HASH , 0x00FFFFFF
+	GSETBRUSH L_HASH , 0xFFC0C0C0
+	GSETFONT L_HASH , "ＭＳ ゴシック" , 100
+	GDRAWTEXT L_HASH , L_NAME , 0 , 0 
+ENDIF
+RETURNF @"<img src='%SPR_NAME%' width='{L_width}' height='{L_height}'>"
+
+@名札消去 , L_NAME
+#DIMS L_NAME
+CALL ハッシュ画像消去 , @"名札_%L_NAME%"

@@ -1,0 +1,365 @@
+﻿;-------------------------------------------------
+;3P
+;セックス系派生コマンド
+;-------------------------------------------------
+@ACT_COM500
+;他の3Pから飛んできた場合の調整
+SIF TEQUIP:TARGET:Ｖ삽입자 == SUBPLAYER()
+	TEQUIP:TARGET:Ａ삽입자 = PLAYER
+SIF TEQUIP:TARGET:Ａ삽입자 == SUBPLAYER()
+	TEQUIP:TARGET:Ｖ삽입자 = PLAYER
+PRINTL 양구멍 삽입
+TSTR:0 = 両穴挿入
+CALL ACT_3P
+RETURN 1
+;SELECTCOM = 500
+;３Pの実際の処理
+@ACT_3P
+#DIM CHARA, 1
+;CALL KOJO_MESSAGE_COM
+;-------------------------------------------------
+;挿入部位管理
+;-------------------------------------------------
+;V経験を伴うコマンドのフラグ(処女膜再生対応)
+SIF TEQUIP:TARGET:Ｖ삽입자 >= 0
+	TFLAG:19 = 1
+
+SIF ASSIPLAY == 0
+	TFLAG:20 = 1
+
+;-------------------------------------------------
+;射精ゲージチェック（PLAYER）
+;-------------------------------------------------
+FOR LOCAL:1, 0 ,2
+	CHARA = LOCAL:1 ? SUBPLAYER() # PLAYER
+	SIF !HAVE_PENIS(MASTER)
+		CONTINUE
+	LOCAL = 2500
+	;ABL:調教者の技巧をみる
+	IF ABL:CHARA:기교 == 0
+		TIMES LOCAL , 1.00
+	ELSEIF ABL:CHARA:기교 == 1
+		TIMES LOCAL , 1.20
+	ELSEIF ABL:CHARA:기교 == 2
+		TIMES LOCAL , 1.40
+	ELSEIF ABL:CHARA:기교 == 3
+		TIMES LOCAL , 1.60
+	ELSEIF ABL:CHARA:기교 == 4
+		TIMES LOCAL , 1.80
+	ELSE
+		TIMES LOCAL , 2.00
+	ENDIF
+
+	;ABL:従順をみる
+	IF ABL:순종 == 0
+		TIMES LOCAL , 0.80
+	ELSEIF ABL:순종 == 1
+		TIMES LOCAL , 0.90
+	ELSEIF ABL:순종 == 2
+		TIMES LOCAL , 1.00
+	ELSEIF ABL:순종 == 3
+		TIMES LOCAL , 1.10
+	ELSEIF ABL:순종 == 4
+		TIMES LOCAL , 1.20
+	ELSE
+		TIMES LOCAL , 1.30
+	ENDIF
+
+	;ABL:欲望をみる
+	IF ABL:욕망 == 0
+		TIMES LOCAL , 1.00
+	ELSEIF ABL:욕망 == 1
+		TIMES LOCAL , 1.10
+	ELSEIF ABL:욕망 == 2
+		TIMES LOCAL , 1.20
+	ELSEIF ABL:욕망 == 3
+		TIMES LOCAL , 1.30
+	ELSEIF ABL:욕망 == 4
+		TIMES LOCAL , 1.40
+	ELSE
+		TIMES LOCAL , 1.50
+	ENDIF
+
+	;VとAに挿入時、PALAM:潤滑をみる
+	IF TFLAG:40 <= 2
+		IF PALAM:TARGET:윤활 < PALAMLV:1
+			TIMES LOCAL , 0.60
+		ELSEIF PALAM:TARGET:윤활 < PALAMLV:2
+			TIMES LOCAL , 0.80
+		ELSEIF PALAM:TARGET:윤활 < PALAMLV:3
+			TIMES LOCAL , 1.00
+		ELSEIF PALAM:TARGET:윤활 < PALAMLV:4
+			TIMES LOCAL , 1.20
+		ELSEIF PALAM:TARGET:윤활 >= PALAMLV:4
+			TIMES LOCAL , 1.40
+		ENDIF
+	ENDIF
+
+	;プレイヤーのABL:Ｃ感覚をみる
+	IF ABL:CHARA:Ｃ감각 == 0
+		TIMES LOCAL , 1.00
+	ELSEIF ABL:CHARA:Ｃ감각 == 1
+		TIMES LOCAL , 1.50
+	ELSEIF ABL:CHARA:Ｃ감각 == 2
+		TIMES LOCAL , 2.00
+	ELSEIF ABL:CHARA:Ｃ감각 == 3
+		TIMES LOCAL , 2.50
+	ELSEIF ABL:CHARA:Ｃ감각 == 4
+		TIMES LOCAL , 3.50
+	ELSE
+		TIMES LOCAL , 5.00
+	ENDIF
+
+	;EXP:Ｖ経験をみる→まぁ少しならしててもセーフということに
+	;(純正)処女だと増える
+	SIF TALENT:TARGET:처녀
+		TIMES LOCAL , 1.50
+	;SIF HAVE_PENIS(MASTER)
+		BASE:CHARA:2 += LOCAL
+NEXT
+;-------------------------------------------------
+;射精ゲージチェック（助手）
+;-------------------------------------------------
+
+;調教者←→調教対象
+TFLAG:28 = 3
+TFLAG:삽입속행 = 1
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 160
+DOWNBASE:TARGET:기력 += 350
+
+SOURCE:TARGET:정애 = 300
+SOURCE:TARGET:성행위 = 100
+SOURCE:TARGET:중독충족 = 500
+SOURCE:TARGET:굴종 = 500
+SOURCE:TARGET:일탈 = 500
+SOURCE:TARGET:반감 = 500
+
+;挿入している部位によって、ソースの数値が変化する
+;Vに挿入している場合
+IF TEQUIP:TARGET:Ｖ삽입자 >= 0
+	SOURCE:TARGET:쾌Ｖ += 400
+	SOURCE:TARGET:성행위 += 100
+	SOURCE:TARGET:아픔 += 500
+ENDIF
+;Aに挿入している場合
+IF TEQUIP:TARGET:Ａ삽입자 >= 0
+	SOURCE:TARGET:쾌Ａ += 400
+	SOURCE:TARGET:성행위 += 100
+	SOURCE:TARGET:아픔 += 800
+ENDIF
+;口に挿入している場合
+IF TEQUIP:TARGET:입삽입자 >= 0
+	SOURCE:TARGET:성행위 += 420
+	SOURCE:TARGET:달성 += 150
+ENDIF
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;抑圧、抵抗持ちには、抑鬱ソース追加
+SIF TALENT:억압 || TALENT:저항
+	SOURCE:TARGET:울굴 += 500
+
+;貞操観念持ちで恋慕、親愛持ち以外には常に反発のソースを追加する（セックス系のみ）
+SIF TALENT:정조관념 && !IS_LOVER(TARGET)
+	SOURCE:TARGET:반감 += 1000
+
+;Vに挿入している場合
+IF TEQUIP:TARGET:Ｖ삽입자 >= 0
+	;処女だった場合は、苦痛のソースと反発のソースを追加する
+	IF TALENT:처녀 == 1
+		SOURCE:TARGET:아픔 += 5500
+		SOURCE:TARGET:반감 += 3000
+	ENDIF
+
+	;再生処女だった場合は、苦痛のソースと反発のソースを追加する
+	IF TALENT:재생처녀 == 1
+		SOURCE:TARGET:아픔 += 5500
+		SOURCE:TARGET:반감 += 1000
+	ENDIF
+
+	;苦痛回りは新しく作ったやつにぶん投げ
+	CALL CHINPO,TARGET,PLAYER,"V"
+ENDIF
+
+;Aに挿入している場合
+IF TEQUIP:TARGET:Ａ삽입자 >= 0
+	;苦痛回りは新しく作ったやつにぶん投げ
+	CALL CHINPO,TARGET,PLAYER,"A"
+ENDIF
+
+;セックス中毒を見る
+IF ABL:섹스중독 == 0
+	TIMES SOURCE:TARGET:중독충족 , 0.00
+ELSEIF ABL:섹스중독 == 1
+	TIMES SOURCE:TARGET:중독충족 , 0.30
+ELSEIF ABL:섹스중독 == 2
+	TIMES SOURCE:TARGET:중독충족 , 0.60
+ELSEIF ABL:섹스중독 == 3
+	TIMES SOURCE:TARGET:중독충족 , 0.90
+ELSEIF ABL:섹스중독 == 4
+	TIMES SOURCE:TARGET:중독충족 , 1.20
+ELSEIF ABL:섹스중독 == 5
+	TIMES SOURCE:TARGET:중독충족 , 1.50
+ELSEIF ABL:섹스중독 == 6
+	TIMES SOURCE:TARGET:중독충족 , 1.80
+ELSEIF ABL:섹스중독 == 7
+	TIMES SOURCE:TARGET:중독충족 , 2.10
+ELSEIF ABL:섹스중독 == 8
+	TIMES SOURCE:TARGET:중독충족 , 2.40
+ELSEIF ABL:섹스중독 == 9
+	TIMES SOURCE:TARGET:중독충족 , 3.00
+ELSEIF ABL:섹스중독 >= 10
+	TIMES SOURCE:TARGET:중독충족 , 5.00
+ENDIF
+
+
+;-------------------------------------------------
+;射精チェック１（主人）
+;-------------------------------------------------
+
+;射精先タイプの設定
+TCVAR:MASTER:페니스사용대상 = TARGET
+IF TEQUIP:TARGET:Ｖ삽입자 == MASTER
+	TCVAR:MASTER:사정부위 = 1
+ELSEIF TEQUIP:TARGET:Ａ삽입자 == MASTER
+	TCVAR:MASTER:사정부위 = 2
+ELSE
+	TCVAR:MASTER:사정부위 = 4
+ENDIF
+;射精先選択の可・不可
+TFLAG:사정대상선택가능 = 0
+
+;-------------------------------------------------
+;射精チェック２（助手）
+;-------------------------------------------------
+
+;射精先タイプの設定
+TCVAR:ASSI:페니스사용대상 = TARGET
+IF TEQUIP:TARGET:Ｖ삽입자 == ASSI
+	TCVAR:ASSI:사정부위 = 1
+ELSEIF TEQUIP:TARGET:Ａ삽입자 == ASSI
+	TCVAR:ASSI:사정부위 = 2
+ELSE
+	TCVAR:ASSI:사정부위 = 4
+ENDIF
+;射精先選択の可・不可
+TFLAG:사정대상선택가능 = 0
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+FOR LOCAL:1, 0, 2
+	CHARA = LOCAL:1 ? SUBPLAYER() # PLAYER
+	IF TEQUIP:TARGET:Ｖ삽입자 == CHARA
+		;膣内に破瓜の血の汚れを付加
+		SIF TALENT:처녀 == 1 || TALENT:재생처녀 == 1
+			CALL SET_STAIN("질내", "破瓜の血", TARGET)
+		;奴隷の膣内⇔調教者のＰの汚れが移動
+		SIF HAVE_PENIS(CHARA)
+			CALL MOVE_STAIN("질내", TARGET, "페니스", CHARA)
+	ELSEIF TEQUIP:TARGET:Ａ삽입자 == CHARA
+		;奴隷のＡ⇔調教者のＰの汚れが移動
+		SIF HAVE_PENIS(CHARA)
+			CALL MOVE_STAIN("애널", TARGET, "페니스", CHARA)
+	ELSE
+		;奴隷の口⇔調教者のＰの汚れが移動
+		SIF HAVE_PENIS(CHARA)
+			CALL MOVE_STAIN("입", TARGET, "페니스", CHARA)
+	ENDIF
+NEXT
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+FOR LOCAL:1, 0, 2
+	CHARA = LOCAL:1 ? SUBPLAYER() # PLAYER
+	;Vに挿入している場合
+	IF TEQUIP:TARGET:Ｖ삽입자 == CHARA
+		CALL ADDS_EXP("Ｖ경험", 1, TARGET)
+		CALL ADDS_EXP("성교경험", 1, TARGET)
+		;삽입경험
+		CALL ADDS_EXP("삽입경험", 1, CHARA)
+		SIF TALENT:처녀
+			CALL ADDS_ABNORMAL_EXP("処女喪失（３Ｐ）", TARGET)
+		SIF !IS_MALE(CHARA) 
+			CALL ADDS_ABNORMAL_EXP("処女奪取（同性）", CHARA)
+		SIF !IS_MALE(CHARA)
+			CALL ADDS_ABNORMAL_EXP("処女喪失（同性）", TARGET)
+		;近親相姦の場合異常経験付与
+		IF 近親チェック(TARGET , CHARA)
+			CALL ADDS_ABNORMAL_EXP( @"近親相姦（%RESULTS:0%）", TARGET)
+			CALL ADDS_ABNORMAL_EXP( @"近親相姦（%RESULTS:1%）", CHARA)
+		ENDIF
+		;助手が配偶者の場合異常経験付与
+		IF CSV配偶者(TARGET, ASSI)
+			CALL ADDS_ABNORMAL_EXP( @"寝取られ", TARGET)
+			CALL ADDS_ABNORMAL_EXP( @"寝取られ", ASSI)
+		ENDIF
+		
+	ENDIF
+	;Aに挿入している場合
+	IF TEQUIP:TARGET:Ａ삽입자 == CHARA
+		CALL ADDS_EXP("Ａ경험", 2, TARGET)
+		CALL ADDS_EXP("성교경험", 1, TARGET)
+		;삽입경험
+		CALL ADDS_EXP("삽입경험", 1, CHARA)
+	ENDIF
+	;口に挿入している場合
+	IF TEQUIP:TARGET:입삽입자 == CHARA
+		CALL ADDS_EXP("펠라경험", 1, TARGET)
+	ENDIF
+NEXT
+;女1人を、男ふたりで犯して、それで男の間に同性愛が成立…するのはへんなきがするので
+;調教者間の経験獲得はとりあえずコメントアウトしておきます
+IF IS_LESBIAN(TARGET,MASTER)
+	CALL ADDS_EXP("레즈경험", 5, TARGET)
+	CALL ADDS_EXP("레즈경험", 5, MASTER)
+ENDIF
+IF IS_LESBIAN(TARGET,ASSI)
+	CALL ADDS_EXP("레즈경험", 5, TARGET)
+	CALL ADDS_EXP("레즈경험", 5, ASSI)
+ENDIF
+IF IS_LESBIAN(MASTER,ASSI)
+	;CALL ADDS_EXP("레즈경험", 5, MASTER)
+	;CALL ADDS_EXP("레즈경험", 5, ASSI)
+ENDIF
+IF IS_GAY(TARGET,MASTER)
+	CALL ADDS_EXP("ＢＬ경험", 5, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", 5, MASTER)
+ENDIF
+IF IS_GAY(TARGET,ASSI)
+	CALL ADDS_EXP("ＢＬ경험", 5, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", 5, ASSI)
+ENDIF
+IF IS_GAY(MASTER,ASSI)
+	;CALL ADDS_EXP("ＢＬ경험", 5, MASTER)
+	;CALL ADDS_EXP("ＢＬ경험", 5, ASSI)
+ENDIF
+
+
+;依存度ベクトル
+TFLAG:33 = 1
+
+;依存度補正値(主人かつ恋慕で1、親愛で2）
+IF TALENT:연모 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:친애 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_500
+RETURN COMTYPE("派生系")
+
+

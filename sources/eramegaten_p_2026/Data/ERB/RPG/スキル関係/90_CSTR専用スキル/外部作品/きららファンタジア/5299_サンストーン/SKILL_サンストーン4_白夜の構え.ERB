@@ -1,0 +1,136 @@
+﻿
+;スキル名
+@SKILL_NAME_白夜の構え,ARG
+RESULTS = 백야의 자세
+
+;　명중
+@SKILL_HITRATE_白夜の構え, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_白夜の構え, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_白夜の構え,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_白夜の構え,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_白夜の構え, ARG
+RETURN 1
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_白夜の構え,ARG
+IF ARG >= 0 && GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 3
+	RESULTS = %"ＣＨ:3"%
+	RETURN 0
+ENDIF
+RETURN 0
+
+;　相性
+@SKILL_TYPE_白夜の構え,ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_白夜の構え
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_白夜の構え,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_白夜の構え,ARG
+RETURN 4
+
+;　사거리
+@SKILL_RANGE_白夜の構え,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_白夜の構え,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_白夜の構え,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+@SKILL_SUCCESSION_TYPE_白夜の構え,ARG
+RETURN GET_SUCCESSION_NUM("검격")
+
+@SKILL_RANK_白夜の構え, ARG = -1
+RETURN 6
+
+;속도보정
+@SKILL_SPEED_白夜の構え, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_白夜の構え
+RETURN 0
+
+@SKILL_QUICK_ACTION_白夜の構え, ARG
+RETURN 1
+
+@SKILL_PASSIVE_PENETRATION_RANK_白夜の構え, L_P, L_T, L_スキル, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM DYNAMIC L_P;このスキルの所持者
+#DIM DYNAMIC L_T;攻撃対象
+#DIMS DYNAMIC L_スキル;スキルの所持者が敵に対して使用しているスキルの関数名称
+#DIM DYNAMIC L_ダメージタイプ
+#DIM DYNAMIC L_攻撃タイプ
+#DIM DYNAMIC L_相性
+#DIM DYNAMIC GIVE_EFFECT_CHARA;リーダースキル等他人からつけられている場合の提供者
+SIF GET_ダメージタイプ(L_ダメージタイプ) == "物理" && PU_SKILLGAGE_H_GET(L_P,"白夜の構え") > 0
+	RETURN 2
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_白夜の構え,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+CALL SET_RPG_CFLAG_BTL, ARG, "KFチャージスキル", 3, "-="
+CALL SKILLGAGE_H_SET, ARG, SKILL_NUM ,1
+PRINTFORML %CALLNAME:ARG%의 자세가 백야로 바뀌었다.
+SIF HAVE_PU_SKILL(ARG,"暁光の構え") && PU_SKILLGAGE_H_GET(ARG,"暁光の構え") > 0
+	CALL PU_SKILLGAGE_H_SET, ARG, "暁光の構え", 0
+SIF HAVE_PU_SKILL(ARG,"落日の構え") && PU_SKILLGAGE_H_GET(ARG,"落日の構え") > 0
+	CALL PU_SKILLGAGE_H_SET, ARG, "落日の構え", 0
+;====================================================
+;実行内容ここまで
+;====================================================
+
+@SKILLGAGE_DISPLAY_白夜の構え,ARG
+IF PU_SKILLGAGE_H_GET(ARG, "白夜の構え")
+	SETCOLOR COLOR("yellow")
+	PRINTFORML 자세: 백야
+	RESETCOLOR
+ENDIF
+;　説明文の表示
+@SKILL_EXPLAIN_白夜の構え,ARG
+PRINTL 발동 시, 자신의 물리 스킬이 「무효」까지 관통한다.
+PRINTL 효과는 전투 종료까지 지속되거나, 다른 자세로 덮어씌워질 때까지 계속된다.
+PRINTL 차지 3을 소비하여 발동하지만, 행동 턴은 소비하지 않는다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_白夜の構え, ARG
+IF PU_SKILLGAGE_H_GET(ARG,"白夜の構え") > 0
+	RESULTS = 発動中
+	RETURN 0
+ELSEIF GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 3
+	RESULTS = 차지 부족
+	RETURN 0
+ENDIF
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_白夜の構え, ARG
+RESULTS:0 = 발동 시, 자신의 물리 스킬이 「무효」까지 관통한다.
+RESULTS:1 = 효과는 전투 종료까지 지속되거나, 다른 자세로 덮어씌워질 때까지 계속된다.
+RESULTS:2 = チャージを3消費して発動するが、行動ターンは消費しない。

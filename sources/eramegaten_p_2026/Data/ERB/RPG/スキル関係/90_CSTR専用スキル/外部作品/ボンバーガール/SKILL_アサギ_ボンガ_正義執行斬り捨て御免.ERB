@@ -1,0 +1,63 @@
+﻿;スキル名
+@SKILL_NAME_正義執行斬り捨て御免,ARG
+RESULTS = 정의집행 참수면죄
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_正義執行斬り捨て御免
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_正義執行斬り捨て御免,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;　説明文の表示
+@SKILL_EXPLAIN_正義執行斬り捨て御免,ARG
+PRINTL 공격한 적에게서 혼백을 떼어내 흡수한다.
+PRINTL 자동효과: 적에게 자신의 전용 스킬로 데미지를 주었을 경우 이하의 연동 효과가 발동한다.
+PRINTL 　　　　 「가한 데미지에 따라 자신의 HP를 회복한다」
+
+@SKILL_EXPLAIN_TOOLTIP_正義執行斬り捨て御免, ARG
+RESULTS:0 = 자동효과: 적에게 자신의 전용 스킬로 데미지를 주었을 경우 이하의 연동 효과가 발동한다.
+RESULTS:1 = 　　　　 「가한 데미지에 따라 자신의 HP를 회복한다」
+
+;====================================================
+;トリガー発動条件
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_正義執行斬り捨て御免,ARG,ARG:1
+;自身の行動のみ
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+CALL CHECK_SKILL_TAG, ARG, CFLAG:ARG:입력행동, "アサギ_ボンガ"
+SIF !RESULT
+	RETURN 0
+;物理攻撃を与えている
+SIF !GET_CREC_ACT(ARG, ARG:1, "HIT")
+	RETURN 0
+;一応ダメージも確認
+SIF CFLAG:(ARG:1):현데미지 <= 0
+	RETURN 0
+CALL GET_SKILL_PROP, "SKILL_SPHERE", CFLAG:ARG:입력행동, ARG
+;単体攻撃だけ回復蓄積量を増やす
+IF RESULT == 1
+	CALL PU_SKILLGAGE_H_ADD, ARG, "正義執行斬り捨て御免", CFLAG:(ARG:1):현데미지 * 40 / 100
+ELSE
+	CALL PU_SKILLGAGE_H_ADD, ARG, "正義執行斬り捨て御免", CFLAG:(ARG:1):현데미지 * 20 / 100
+ENDIF
+;実際の発動はターンエンド時なので蓄積だけ行う
+RETURN 0
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_正義執行斬り捨て御免,ARG
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_正義執行斬り捨て御免, ARG = -1
+RETURN 1
+
+@SKILL_TURNEND_正義執行斬り捨て御免, ARG
+;場にでて健在じゃないとだめ
+IF IS_TARGET_ABLE(ARG) && PU_SKILLGAGE_H_GET(ARG, "正義執行斬り捨て御免") > 0
+	CALL PRINT_ACT_MESSAGE, ARG, , , , "正義執行斬り捨て御免"
+	CALL PRINT_HIT_MESSAGE, ARG, @"{PU_SKILLGAGE_H_GET(ARG, "正義執行斬り捨て御免")}회복", "W"
+	CALL VAR_HP, ARG, PU_SKILLGAGE_H_GET(ARG, "正義執行斬り捨て御免"), "회복"
+ENDIF
+CALL PU_SKILLGAGE_H_SET, ARG, "正義執行斬り捨て御免", 0

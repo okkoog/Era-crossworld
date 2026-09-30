@@ -1,0 +1,54 @@
+﻿;スキル名
+@SKILL_NAME_悪魔の化身,ARG
+RESULTS = 악마의 화신
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_悪魔の化身, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_悪魔の化身
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;スキルランク
+;スキルの習得時の必要ＭＡＧの算出に主に用いられる
+;また、習得・所持スキルはこのランクの5倍のレベルを基準として設定する。
+@SKILL_RANK_悪魔の化身, ARG = -1
+RETURN 11
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_悪魔の化身, ARG
+PRINTFORML 자동효과:정신 상성의 공격이 적의 내성을 50%까지 무시하고 관통하는 효과를 얻는다.
+PRINTFORML 　　　　 %BADSTATE_GROUP_TEXT("정신")%에 걸리지 않게 된다.
+
+;ツールチップ版の解説文
+@SKILL_EXPLAIN_TOOLTIP_悪魔の化身, ARG
+RESULTS:0 = 자동효과:정신 상성의 공격이 적의 내성을 50%까지 무시하고 관통하는 효과를 얻는다.
+RESULTS:1 = 　　　　 %BADSTATE_GROUP_TEXT("정신")%에 걸리지 않게 된다.
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_悪魔の化身, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	;ステート耐性は0のときに通常(100%)のに注意。
+	CASE "상태이상"
+		RESULTS = 代入
+		SIF !IS_BADSTATE_GROUP(ARGS:1, "정신")
+			RETURN 0
+		RETURN -100
+ENDSELECT
+RETURN 0

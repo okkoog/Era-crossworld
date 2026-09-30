@@ -1,0 +1,192 @@
+﻿;-------------------------------------------------
+;
+;-------------------------------------------------
+@INDIVIDUAL_EVENT_K718, ARG, ARG:1 = 0, ARG:2 = -1
+;ARG:0　キャラ番号
+;ARG:1　関数種類　1,開放条件　2,타이틀　3,이벤트
+;ARG:2　イベント番号（0～63まで）
+
+;リストにキャラを表示する条件
+IF ARG:1 == 0
+	;初回イベント後は選択で分岐
+	IF GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+		IF CFLAG:ARG:이벤트가입 == 1
+			;イベント0で全部終了
+			SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 1)
+				RETURN 0
+		ELSE
+			RETURN 0
+		ENDIF
+	ELSE
+		;一定回数の調教まではルート折れを表示するためにリストに残す
+		SIF CFLAG:ARG:피조교횟수 > 3
+			RETURN 0
+	ENDIF
+	RETURN 1
+ENDIF
+
+SELECTCASE ARG:2
+	CASE 0
+		IF ARG:1 == 1
+			;既読で実行不能
+			SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+				RETURN 0
+			SIF !GET_TRAINABLE_NUM()
+				RETURN 0
+			RETURN 1
+		ELSEIF ARG:1 == 2
+			IF GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+				RESULTS = 미조교 시에만 실행할 수 있습니다
+			ELSE
+				IF GET_TRAINABLE_NUM()
+					RESULTS = 광기의 착상
+					RETURN 1
+				ELSE
+					RESULTS = 조교 횟수가 필요합니다
+				ENDIF
+			ENDIF
+			RETURN 0
+		ELSE
+			PRINTFORML 문득 생각이 났다。레비아탄을 조교해보자고。
+			PRINTFORML 분명 신화에서는 암컷이었을 터이고。
+			PRINTFORML 미쳐버린 듯한 발상이지만、이쪽은 악마 조교사다。제정신으로 해나갈 수 있을 리가 없다。
+			PRINTFORML 레비아탄이라면、신화에 이름을 남긴 강력한 드래곤。만약 조교해낼 수 있다면、비싼 값에 팔릴 것이다。
+			PRINTFORML 애완동물이나 호위로서의 수요도 높아 보이고、성적인 조교를 할 필요는 없을지도 모르지만、굴복시키려면 성적인 조교가 가장 빠르다。
+			PRINTFORMW 그런 생각을 품으며、조교실에 레비아탄을 소환했다。그러자 그곳에 나타난 것은。
+			PRINTFORML [0] 레비아탄이라고는 털끝만큼도 닮지 않은、자그마한 소녀였다。
+			PRINTFORML [1] 평범하게 조교 대상이 되리라고는 생각할 수 없는 거대한 용이었다。
+			CALL INPUTINT, 0, 1
+			IF RESULT == 0
+				PRINTFORML 「나(이 몸)에게 무슨 용건이지、인간?」
+				PRINTFORML 소녀는 왠지 경기용 수영복을 입고 있지만、머리에서 뿔이 돋아나 있는 걸 보면、적어도 인간이 아님은 분명하다。
+				PRINTFORMW 그리고 COMP의 반응을 보아하니、아무래도 레비아탄 본인이 틀림없는 모양이다。
+				PRINTFORML 「원래 이 세계에서 활동하는 모습 따위 MAG로 만든 거니까、어느 정도 자유롭게 바꿀 수 있을 뿐이야。저건 전투용 외각」
+				PRINTFORML 그런 것인가…… 다른 악마 중에도 그런 녀석이 있을지도 모른다。
+				PRINTFORMW 하지만、어여쁜 소녀의 모습을 하고 있다면、원래 예정과는 다르지만 오히려 편리하다。
+				PRINTFORML 너를 조교하겠다、그렇게 통보하자、레비아탄은 엷은 미소를 띄웠다。
+				PRINTFORML 「헤에、인간 주제에 꽤나 우쭐대는구나。좋아、받아주지。이 몸을 완전히 네 것으로 만들어 보렴?」
+
+				CSTR:ARG:이인칭 = 인간
+				CSTR:ARG:일인칭 = 我（わたし）
+				CALLF SET_ALL_FACE_NEW, ARG, "レヴィアタン_FACE_TS_0"
+				CFLAG:ARG:이벤트가입 = 1
+				CFLAG:ARG:구상셀렉트 = 1
+
+				CSTR:ARG:피부색 = 白
+
+				TALENT:ARG:파충류 = 0
+				TALENT:ARG:거체 = 0
+				TALENT:ARG:유아체형 = 1
+				TALENT:ARG:빈유 = 1
+				TALENT:ARG:팔 = 1
+				TALENT:ARG:발 = 1
+				TALENT:ARG:인간화 = 1
+				TALENT:ARG:츤데레 = 1
+				TALENT:ARG:음모없음 = 1
+				;
+				CFLAG:ARG:초기전신속옷 = [[衣装:경주용수영복]]
+				CFLAG:ARG:전신속옷 = [[衣装:경주용수영복]]
+				TEQUIP:ARG:전신속옷 = [[衣装:경주용수영복]]
+				CFLAG:ARG:초기그외 = [[衣装:쵸커]]
+				CFLAG:ARG:그외 = [[衣装:쵸커]]
+				TEQUIP:ARG:그외 = [[衣装:쵸커]]
+				
+				PRINTFORML 　일부 조교、이벤트、전투 중 스킬 사용 시 이미지를 표시할 수 있습니다。
+				PRINTFORML 　이미지 표시 여부를 선택해 주십시오 (나중에 커맨드 「아무것도안한다」에서도 변경할 수 있습니다)
+				PRINTFORML  [0] “이미지 표시 없음”
+				PRINTFORML  [1] “이미지 표시 있음”　주・resources에 이미지를 준비하고、이미지 CSV를 설정해야 합니다
+				CALL INPUTINT, 0, 1
+				CFLAG:802 = RESULT
+			ELSE
+				PRINTFORMW 역시、이걸 조교하는 건 무리가 있는 게 아닐까…?
+				PRINTFORMW 순간、마음이 꺾여 돌아가고 싶어졌지만、하기로 마음먹은 이상 악마 조교사로서 물러설 수는 없다。
+				PRINTFORMW %CALLNAME:MASTER%는 마음을 다잡고 조교 채비에 착수했다……
+			ENDIF
+			CALL SHOP_COM_201
+			RETURN 1
+		ENDIF
+	CASE 1
+		;解放条件
+		IF ARG:1 == 1
+			SIF CFLAG:ARG:이벤트가입 != 1
+				RETURN 0
+			SIF !確認_達成済み個別END(ARG, "妻・夫END")
+				RETURN 0
+			RETURN 1
+		ELSEIF ARG:1 == 2
+		;타이틀
+			IF 確認_達成済み個別END(ARG, "妻・夫END")
+				RESULTS = 개별 엔딩 보너스
+			ELSE
+				RESULTS = (연모 루트 개별 엔딩 달성 후 개방)
+			ENDIF
+		;이벤트
+		ELSEIF ARG:1 == 3
+			PRINTFORML  
+			PRINTFORMW  여러 가지가 변해가도、레비아탄과 당신의 관계는 변하지 않는다。오히려 한층 더 깊어졌다고 해도 좋으리라。
+			PRINTFORMW  그런 레비아탄의 부름에 응하여、당신은 뒷마당으로 나갔다。
+			;マヨーネ（裏庭なんてあったかしらあのセーフハウス……）
+			PRINTFORMW 「%CALLNAME:MASTER%는 이 몸의 어디가 좋은 부분이라고 생각해?」
+			PRINTFORMW  갑자기 그런 질문을 받았기에、대답하기로 했다。
+			PRINTFORMW 자존심이 높아 접근하기 어려워 보이면서도、실제로는 이쪽에 푹 빠져 귀여운 점이라든가。
+			PRINTFORMW 생각보다 가정적인 점이라든가。
+			PRINTFORMW 늘씬하게 뻗은 예쁜 팔다리라든가、아니 아름다운 육체 그 자체라 해야 할까。
+			PRINTFORMW 그리고 섹스의……
+			PRINTFORMW 「그런 게 아니라 전력적인 이야기야、%CALLNAME:MASTER%。그건 그거대로 이 몸을 칭찬하는 말은 나중에 전부 듣겠지만」
+			PRINTFORML 전력이라니、어째서 그런 걸 지금 묻는 걸까? 그렇게 당신은 물었다。
+			PRINTFORML 「이런저런 일을 겪어온 결과、이 몸도 특수한 능력과 한 단계 위의 힘을 손에 넣을 수 있을 것 같은 느낌이 들어」
+			PRINTFORML 「그래서 모처럼이니까、%CALLNAME:MASTER%가 바라는 능력을 손에 넣을까 해서」
+			PRINTFORMW 과연、그런 거라면―― 하고 생각하며、당신은 대답했다。
+	
+			PRINTFORML [0] 모든 것을 꿰뚫는 파괴력
+			PRINTFORML [1] 끝까지 버텨내는 방어력
+			PRINTFORML [2] 그대로의 네 모습으로 있어줘
+			;魔型で使ってる人はすまんな
+			$INPUT_LOOP_Leviathan_BONUS
+			INPUT
+				IF RESULT == 0
+					PRINTFORMW 「그렇구나、꿰뚫는 힘이로군。알았어…… 그렇다고 해도、곧바로 손에 들어오는 건 아니야」
+					PRINTFORMW 「방향성을 정하고、단련한다…… 그 끝에、새로운 힘은 형태를 이루지」
+					PRINTFORMW 「그러니까、좀 더 날 데리고 돌아다니도록 해、%CALLNAME:MASTER%」
+					PRINTFORMW ※레비아탄의 내성이 강화되고、습득 스킬이 추가되었습니다。
+					
+					;状態異常と即死に強くなり戦技無効でより強い前衛らしくなる
+					;一見すると超強化だけど正直元から耐性なところが幾つ無効になるよりもメジャーな弱点が一つ消えるほうが強いと思う
+					
+					BASE:ARG:전술 = 0
+					BASE:ARG:신경 = 0
+					BASE:ARG:타격 = 0
+					BASE:ARG:파마 = 0
+					
+					ABL:습득스킬7 = [[스킬:관통]]
+					ABL:습득LV7 = 99
+				ELSEIF RESULT == 1
+					PRINTFORMW 「그렇구나、방어력이로군。알았어…… 그렇다고 해도、곧바로 손에 들어오는 건 아니야」
+					PRINTFORMW 「방향성을 정하고、단련한다…… 그 끝에、새로운 힘은 형태를 이루지」
+					PRINTFORMW 「그러니까、좀 더 날 데리고 돌아다니도록 해、%CALLNAME:MASTER%」
+					PRINTFORMW ※레비아탄의 내성이 강화되고、습득 스킬이 추가되었습니다。
+					BASE:ARG:전술 = 0
+					BASE:ARG:신경 = 0
+					BASE:ARG:타격 = 0
+					BASE:ARG:파마 = 0
+					
+					MAXBASE:ARG:전술 = 0
+					MAXBASE:ARG:신경 = 0
+					MAXBASE:ARG:타격 = 0
+					MAXBASE:ARG:파마 = 0
+					ABL:습득스킬7 = [[스킬:진・전문내성]]
+					ABL:습득LV7 = 99
+				ELSEIF RESULT == 2
+					PRINTFORMW 「어머、아까워라。모처럼의 보너스인데」
+					PRINTFORMW 「뭐、그런 생각도 없지는 않지만 말이야」
+				ELSE
+					GOTO INPUT_LOOP_Leviathan_BONUS
+					;好感度以外は後に上昇値が表示される
+					;CFLAG:ARG:(MASTER + 2100) += (好感度)
+					;TCVAR:ARG:획득의존도 += 
+					;TCVAR:ARG:획득충성도 += 
+					;CALL ADDS_EXP("○○経験", 1, ARG)
+				ENDIF
+			ENDIF
+ENDSELECT
+RETURN 0

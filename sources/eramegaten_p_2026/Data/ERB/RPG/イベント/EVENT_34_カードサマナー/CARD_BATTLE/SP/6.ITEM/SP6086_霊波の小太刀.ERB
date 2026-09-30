@@ -1,0 +1,66 @@
+﻿
+;特技名
+@CGSP_NAME_6086, ARGS, ARG
+RESULTS = 霊波の小太刀
+
+;　コストの量
+@CGSP_COST_6086, ARGS, ARG
+RETURN 0
+;1
+
+;　타겟(選択するかしないか)
+@CGSP_TARGET_6086, ARGS, ARG
+RETURN 1
+;0-無し　　　1-味方1体　2-味方1体(自身含む)　3-敵1体　4-敵1体(サマナー含む)
+;5-敵味方1体　6-サマナーどちらか
+;自動発動なので0
+
+;　発動タイミング
+@CGSP_TIMING_6086, ARGS, ARG
+RETURN 0
+;0-アクティブ　1-味方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　2-相手ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　3-両方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ
+
+;====================================================
+;特技発動
+;====================================================
+@CGSP_ACTION_6086, ARGS, ARG, ARG:1
+#DIM L_HOST
+#DIM L_C
+L_HOST = ARG % 20
+L_C = FIELD_DEMON_DATE_V:(ARG:1):CBV_COST
+
+CALL CS_DEMON_DEATH, ARG:1, 0, 0
+
+IF L_C > 3
+    SUMMONER_PARAMETER:L_HOST:CSP2_MAG += 1
+    CALL CARDBATTLE_MESSAGE, CS_PIC_NAME(L_HOST + 100) + @"は1PのMAGが増加した。"
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;発動後どうなるか
+@CGSP_ACTION_AFTER_6086, ARGS, ARG, ARG:1
+RETURN 0
+;0-何もなし　1-フリーズ状態　2-山札に戻る　3-即死する
+
+;　 説明文の表示
+@CGSP_EXPLAIN_6086, ARGS, ARG
+RESULTS = 味方仲魔1体を黄泉に葬るが、その仲魔の召喚コストが4以上の場合サマナーのMAGが１増加する。『霊気を帯びた珍しい短刀』
+
+;　スキルタイプ
+;　主にこのターンパワーアップとアギとかのダメージ系で使用
+;　それ以外は省略
+;　41 MAG獲得
+@CGSP_TYPE_6086, ARGS, ARG
+RESULTS = コスト4以上犠牲
+RETURN 41, 1
+
+;使用条件
+;特になければ省略してOK
+;@CGSP_SPECIAL_ACTIONABLE_6086, ARGS, ARG
+;SIF HAND_CARDS(FIELD_DEMON_DATE_V:ARG:CBV_HOST) < 8
+;	RETURN 1
+;RETURN 0
+;とくにない
+

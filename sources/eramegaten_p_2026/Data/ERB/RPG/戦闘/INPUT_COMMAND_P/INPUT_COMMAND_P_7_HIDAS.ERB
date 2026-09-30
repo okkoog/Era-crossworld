@@ -1,0 +1,28 @@
+﻿;=================================================
+;入力結果：Hi-Das
+;=================================================
+@INPUT_COM_NAME_COM_7,ARG
+RESULTS = HIDAS
+RESULTS:1 = ＨＩ-ＤＡＳ
+RETURN 0
+
+;Hi-Dasを使えてスキルを使えない場合のみでる
+@INPUT_COM_ABLE_HIDAS,ARG
+SIF !HAVE_SKILL(ARG, [[스킬:Hi-Das]])
+	RETURN 0
+SIF GET_ROLE_PROP("CAN_USE_SKILL", ARG)
+	RETURN 0
+RETURN 1
+
+@INPUT_COM_HIDAS,ARG, ARG:1 = -1
+#DIM DYNAMIC L_LINE, 3
+#DIM DYNAMIC DISABLE_SUMMON
+#DIMS DYNAMIC REASON_DISABLE_SUMMON
+CALLFORM SELECT_SKILL_TARGET,[[스킬:Hi-Das]],ARG
+SIF RESULT == -1
+	RETURN -1
+CFLAG:ARG:타겟 = RESULT
+CFLAG:ARG:입력행동 = [[스킬:Hi-Das]]
+CFLAG:ARG:방어플래그 = 0
+CALL SET_REPEAT_CHARA, ARG
+RETURN 1

@@ -1,0 +1,201 @@
+﻿;-------------------------------------------------
+;더블엉덩이잡
+;助手によるコマンド、及びレズプレイ、レベル3
+;-------------------------------------------------
+@ACT_COM131
+PRINTL 더블엉덩이잡
+
+;-------------------------------------------------
+;実行決定
+;-------------------------------------------------
+TSTR:0 = 더블엉덩이잡
+;CALL KOJO_MESSAGE_COM
+
+;実行者が奴隷であるフラグ
+TFLAG:행위자판정 = 1
+
+;-------------------------------------------------
+;射精ゲージチェック
+;-------------------------------------------------
+B = 2500
+
+;ABL:調教者の技巧をみる
+IF ABL:기교 == 0
+	TIMES B , 1.00
+ELSEIF ABL:기교 == 1
+	TIMES B , 1.20
+ELSEIF ABL:기교 == 2
+	TIMES B , 1.40
+ELSEIF ABL:기교 == 3
+	TIMES B , 1.60
+ELSEIF ABL:기교 == 4
+	TIMES B , 1.80
+ELSE
+	TIMES B , 2.00
+ENDIF
+
+;ABL:従順をみる
+IF ABL:순종 == 0
+	TIMES B , 0.80
+ELSEIF ABL:순종 == 1
+	TIMES B , 0.90
+ELSEIF ABL:순종 == 2
+	TIMES B , 1.00
+ELSEIF ABL:순종 == 3
+	TIMES B , 1.10
+ELSEIF ABL:순종 == 4
+	TIMES B , 1.20
+ELSE
+	TIMES B , 1.30
+ENDIF
+
+;ABL:奉仕精神をみる
+IF ABL:봉사정신 == 0
+	TIMES B , 0.50
+ELSEIF ABL:봉사정신 == 1
+	TIMES B , 0.80
+ELSEIF ABL:봉사정신 == 2
+	TIMES B , 1.20
+ELSEIF ABL:봉사정신 == 3
+	TIMES B , 1.50
+ELSEIF ABL:봉사정신 == 4
+	TIMES B , 1.80
+ELSE
+	TIMES B , 2.40
+ENDIF
+
+;助手のABL:技巧をみる
+IF ABL:ASSI:2 >= 2
+	TIMES B , 1.00
+ELSEIF ABL:ASSI:2 == 3
+	TIMES B , 1.20
+ELSEIF ABL:ASSI:2 == 4
+	TIMES B , 1.50
+ELSE
+	TIMES B , 1.80
+ENDIF
+
+;プレイヤーのABL:Ｃ感覚をみる
+IF ABL:MASTER:3 == 0
+	TIMES B , 1.00
+ELSEIF ABL:MASTER:3 == 1
+	TIMES B , 1.50
+ELSEIF ABL:MASTER:3 == 2
+	TIMES B , 2.00
+ELSEIF ABL:MASTER:3 == 3
+	TIMES B , 2.50
+ELSEIF ABL:MASTER:3 == 4
+	TIMES B , 3.50
+ELSE
+	TIMES B , 5.00
+ENDIF
+
+
+SIF HAVE_PENIS(MASTER)
+	BASE:MASTER:2 += B
+
+;調教者→調教対象
+TFLAG:28 = 1
+;調教者に快Ｃ
+SOURCE:PLAYER:쾌Ｃ = 250
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 10
+DOWNBASE:TARGET:기력 += 100
+
+SOURCE:TARGET:쾌Ａ = 100
+SOURCE:TARGET:정애 = 200
+SOURCE:TARGET:성행위 = 500
+SOURCE:TARGET:달성 = 250
+SOURCE:TARGET:굴종 = 900
+SOURCE:TARGET:일탈 = 400
+SOURCE:TARGET:반감 = 400
+
+;上のほうで計算した汚れデータ
+SOURCE:TARGET:불결 = Y*40 + 100
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;抑圧、抵抗持ちには、抑鬱ソース追加
+SIF TALENT:억압 || TALENT:저항
+	SOURCE:TARGET:울굴 += 600
+
+;-------------------------------------------------
+;射精チェック
+;-------------------------------------------------
+;射精先タイプの設定
+TCVAR:MASTER:페니스사용대상 = TARGET + (ASSI+1)*10000
+TCVAR:MASTER:사정부위 = 12
+;射精先選択の可・不可
+TFLAG:사정대상선택가능 = 1
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+A = 7
+
+;マスターと奴隷のレズ
+IF IS_LESBIAN(TARGET,MASTER)
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, MASTER)
+ELSEIF IS_GAY(TARGET,MASTER)
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, MASTER)
+ENDIF
+
+;助手と奴隷のレズ
+IF IS_LESBIAN(TARGET,ASSI)
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, ASSI)
+ELSEIF IS_GAY(TARGET,ASSI)
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, ASSI)
+ENDIF
+
+;依存度ベクトル
+;P = PLAYER
+IF GET_RELATION(TARGET, PLAYER) > 100
+	TFLAG:依存度のベクトル指定 = 2
+ELSEIF GET_RELATION(TARGET, PLAYER) < 100
+	TFLAG:依存度のベクトル指定 = 3
+ELSE
+	TFLAG:依存度のベクトル指定 = 1
+ENDIF
+
+;依存度補正値(相性100↑かつ淫乱で2、娼婦で4）
+;P = PLAYER
+IF TALENT:음란 && GET_RELATION(TARGET, PLAYER) > 100
+	TFLAG:의존도보정 += 2
+ELSEIF TALENT:창부 && GET_RELATION(TARGET, PLAYER) > 100
+	TFLAG:의존도보정 += 4
+ENDIF
+
+TFLAG:봉사쾌락경험판정용플래그 = 1
+
+RETURN 1
+
+;-------------------------------------------------
+;実行判定処理
+;ダブルフェラと同じ
+;-------------------------------------------------
+@COM_ORDER_131, ARG, ARG:1
+CALL COM_ORDER_124, ARG, ARG:1
+
+;-------------------------------------------------
+;実行値
+;-------------------------------------------------
+@COM_ORDER_NUM_131
+RETURN 38
+
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_131
+RETURN COMTYPE("助手・レズ系")
+
+
+

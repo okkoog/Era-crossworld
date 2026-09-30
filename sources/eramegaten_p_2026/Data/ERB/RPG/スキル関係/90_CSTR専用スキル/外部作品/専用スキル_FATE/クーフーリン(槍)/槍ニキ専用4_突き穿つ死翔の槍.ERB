@@ -1,0 +1,143 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:突き穿つ死翔の槍.ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author		Reason
+;	000		20XX/XX/XX		----		テンプレ
+;	001		2021/04/24		SUIHOU		作成
+;	002		2021/06/26		SUIHOU		威力を調整
+;	003		2021/08/10		SUIHOU		ダメージ計算が「魔法」になっていたのを修正
+;										それに伴い、威力を再調整
+;	004		2021/08/30		SUIHOU		ヒット時ダメージ前処理の修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_突き穿つ死翔の槍,ARG
+RESULTS = 날려 뚫는 죽음의 가시창
+
+;　명중
+@SKILL_HITRATE_突き穿つ死翔の槍, ARG
+RETURN 200
+
+;　威力
+@SKILL_POWER_突き穿つ死翔の槍, ARG
+SELECTCASE SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム"))
+	CASE IS > 3
+		RETURN 500
+	CASE IS > 1
+		RETURN 350
+	CASEELSE
+		RETURN 300
+ENDSELECT
+
+;;クリティカル率
+@SKILL_CRITICAL_RATE_突き穿つ死翔の槍, ARG
+RETURN 25
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_突き穿つ死翔の槍,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_突き穿つ死翔の槍,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_突き穿つ死翔の槍, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_突き穿つ死翔の槍,ARG
+RETURN 50
+
+;　相性
+@SKILL_TYPE_突き穿つ死翔の槍,ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_突き穿つ死翔の槍
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_突き穿つ死翔の槍,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_突き穿つ死翔の槍,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_突き穿つ死翔の槍,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_突き穿つ死翔の槍,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_突き穿つ死翔の槍,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_突き穿つ死翔の槍
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_突き穿つ死翔の槍, ARG = -1
+RETURN 50
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_突き穿つ死翔の槍
+RETURN 0
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_突き穿つ死翔の槍, ARG = -1, ARG:1 = -1
+RETURN 4
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_突き穿つ死翔の槍,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+CALL SKILLGAGE_D_SET,ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム"),0
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_突き穿つ死翔の槍,ARG
+;PRINTL 全体高命中、高クリティカル、ガードキル(1T)　剣撃相性の大ダメージ
+PRINTL 전체 고명중, 고크리티컬, 완전관통  검격 속성의 대 데미지
+PRINTL 
+PRINTL 마창 본래의 사용법으로, 저주를 최대한 발휘시킨 후 상대에게 투척하는 특수 사용 보구
+PRINTL 『명중할 때까지 몇 번이고 덤벼든다』는 성질을 지녀, 한번 록온하면 지구 반대편까지 도망쳐도 쫓아온다고 한다
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_突き穿つ死翔の槍,ARG
+SIF SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム")) > 3
+	RETURN 1
+RETURN 0
+
+
+;スキルゲージで役に立つ関数
+;SKILLGAGE_H_GET(ARG,PU_SKILLNUM_GET(ARG,"突き穿つ死翔の槍"))
+;CALL SKILLGAGE_H_SET,ARG,PU_SKILLNUM_GET(ARG,"突き穿つ死翔の槍"),0
+
+;スキルのタグ、他の処理でこのスキルがどういう物か調べる時に使う
+@SKILL_TAG_突き穿つ死翔の槍
+RESULTS = 宝具

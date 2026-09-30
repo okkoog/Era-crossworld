@@ -1,0 +1,196 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara10831_ヒメミヤキクエ.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/10/02		P(bazzile)				新規作成
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;イベントフラグ
+;0 = 通常加入(使用箇所なし)
+;1 = 
+;2 = 
+;--------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:히메미야키쿠에]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+CALL SET_BASE_[[キャラ:히메미야키쿠에]], ARG, ARG:2
+CALL CLEAR_ALL_SKILL, ARG
+CALL SET_LEARN_SKILL_[[キャラ:히메미야키쿠에]], ARG, ARG:2
+
+;ARG:1はイベントフラグ
+@SET_BASE_[[キャラ:히메미야키쿠에]], ARG, ARG:1
+#DIM L_DAY
+IF ARG:1 == 1
+	L_DAY = MAX(DAY - STRFLAG_NUM_REQ("依頼を受けた日" , , , , 13), 35)
+
+	ABL:ARG:순종 = 3
+	ABL:ARG:욕망 = 3
+	ABL:ARG:Ｖ감각 = 3
+	ABL:ARG:Ｂ감각 = 1
+	ABL:ARG:정액중독 = 3
+	ABL:ARG:섹스중독 = 3
+	ABL:ARG:분유중독 = 1
+	ABL:ARG:수간중독 = 3
+	
+	;コンセプトはやけくそ（どうせ狂気付いてるし）
+	EXP:ARG:Ｖ경험 = 30 + (13 * L_DAY)
+	EXP:ARG:절정경험 = 11 + (6 * L_DAY)
+	EXP:ARG:성교경험 = 45 + (11 * L_DAY)
+	EXP:ARG:질사경험 = 45 + (9 * L_DAY)
+	EXP:ARG:정액경험 = 61 + (23 * L_DAY)
+	EXP:ARG:펠라경험 = 11 + (17 * L_DAY)
+	;途中から奉仕とかどうでもよくなってるし控えめに
+	EXP:ARG:봉사쾌락경험 = 61 + (L_DAY / 2)
+	;同上
+	EXP:ARG:키스경험 = 11 + (L_DAY)
+	;自慰もする必要ないし……
+	EXP:ARG:자위경험 = 10
+
+	EXP:ARG:Ｖ확장경험 = 0 + (4 * L_DAY)
+	EXP:ARG:수간경험 = 0 + (21 * L_DAY)
+	EXP:ARG:윤간경험 = 3 + (21 * L_DAY)
+	EXP:ARG:분유경험 = 0 + (13 * L_DAY)
+	;出産だけは日数ごとに加速度的に増えていく
+	EXP:ARG:출산경험 = 0 + (((L_DAY - 34)) * L_DAY)
+	
+	CALL ADDS_ABNORMAL_EXP("獣姦", ARG)
+	CALL ADDS_ABNORMAL_EXP("噴乳", ARG)
+	CALL ADDS_ABNORMAL_EXP("処女喪失（輪姦）", ARG)
+	CALL SHOW_ABNORMAL_EXP , ARG, 0
+	
+	;これをセットすると恋慕と異常経験を両立できると聞いた
+	CFLAG:ARG:초기이상경험 = EXP:ARG:이상경험
+	
+	MARK:ARG:쾌락각인 = 3
+	MARK:ARG:굴복각인 = 3
+		
+	CALL SET_TALENT_PARTY_JOINABLE, ARG, "신용"
+ELSE
+	L_DAY = MIN(DAY - STRFLAG_NUM_REQ("依頼を受けた日" , , , , 13),24)
+	BASE:ARG:LV = 39
+	BASE:ARG:힘 = 40
+	BASE:ARG:지혜 = 7
+	BASE:ARG:마력 =  1
+	BASE:ARG:내구 = 20
+	BASE:ARG:속도 = 18
+	BASE:ARG:운 = 1
+	BASE:ARG:CP = 10
+	;基準値76.5＋10
+	
+	TALENT:ARG:정조관결여 = 1
+	TALENT:ARG:해방 = 1
+	TALENT:ARG:아픔에강함 = 1
+	TALENT:ARG:Ｖ민감 = 1
+	TALENT:ARG:폭유 = 1
+	TALENT:ARG:광기 = 1
+	TALENT:ARG:모유체질 = 1
+	TALENT:ARG:발정가능 = 0
+	TALENT:ARG:임신하기어려움 = 1
+	TALENT:ARG:건방짐 = 0
+	TALENT:ARG:절벽 = 0
+	TALENT:ARG:남자 = 0
+
+	TALENT:ARG:팔 = 1
+	TALENT:ARG:인간화 = 1
+	TALENT:ARG:이형 = 1
+	TALENT:ARG:짐승 = 0
+	TALENT:ARG:사격무기 = 1
+	
+	TALENT:ARG:타격 = 1
+	TALENT:ARG:전술 = 1
+	TALENT:ARG:회복 = 1
+
+	ABL:ARG:순종 = 3
+	ABL:ARG:욕망 = 3
+	ABL:ARG:Ｖ감각 = 3
+	ABL:ARG:Ｂ감각 = 3
+
+	;この辺は牛枝さん準拠
+	;コンセプトはやけくそ（どうせ狂気付いてるし）
+	EXP:ARG:Ｖ경험 = 30 + (13 * L_DAY)
+	EXP:ARG:절정경험 = 11 + (6 * L_DAY)
+	EXP:ARG:성교경험 = 45 + (10 * L_DAY)
+	EXP:ARG:질사경험 = 45 + (9 * L_DAY)
+	EXP:ARG:정액경험 = 61 + (23 * L_DAY)
+	EXP:ARG:펠라경험 = 11 + (17 * L_DAY)
+	;途中から奉仕とかどうでもよくなってるし控えめに
+	EXP:ARG:봉사쾌락경험 = 61 + (L_DAY / 2)
+	;同上
+	EXP:ARG:키스경험 = 11 + (L_DAY)
+	EXP:ARG:자위경험 = 10
+
+	EXP:ARG:Ｖ확장경험 = 0 + (4 * L_DAY)
+	EXP:ARG:수간경험 = 0 + (5 * L_DAY)
+	EXP:ARG:윤간경험 = 3 + (6 * L_DAY)
+	EXP:ARG:분유경험 = 0 + (10 * L_DAY)
+	EXP:ARG:출산경험 = 0 + (L_DAY - 23)
+	
+	CALL ADDS_ABNORMAL_EXP("獣姦", ARG)
+	CALL ADDS_ABNORMAL_EXP("噴乳", ARG)
+	CALL ADDS_ABNORMAL_EXP("処女喪失（輪姦）", ARG)
+	CALL SHOW_ABNORMAL_EXP , ARG, 0
+	
+	CFLAG:ARG:초기이상경험 = EXP:ARG:이상경험
+	MARK:ARG:쾌락각인 = 3
+	MARK:ARG:굴복각인 = 3
+		
+	CSTR:ARG:일인칭 = 私
+	CSTR:ARG:이인칭 = あなたさま
+	CSTR:ARG:타이틀 = 復讐者
+	
+	CALL SET_TALENT_PARTY_JOINABLE, ARG, "신용"
+
+	CSTR:ARG:30 = 太く反り返った角と、黒光りする体毛を持つ異形の女。
+	CSTR:ARG:31 = 人間・姫宮菊枝の肉体とデビルシフターとしての感受性、メシア教徒の洗脳による自己暗示。
+	CSTR:ARG:32 = そこにデミナンディの精液に含まれる大量のＭＡＧが反応したことによって、
+	CSTR:ARG:33 = 彼女の身体は化け物へと変貌を遂げた。
+	CSTR:ARG:34 = 
+	CSTR:ARG:35 = そのまま身も心も化け物に変化したほうが彼女にとっては幸せだったかもしれないが、
+	CSTR:ARG:36 = 監視塔が破壊され、歌が止まったことによって、奇跡的な肉体の変化は途中でストップしてしまった。
+	CSTR:ARG:37 = 彼女の身体は悪魔の「できそこない」に留まってしまったのである。
+	CSTR:ARG:38 = 
+	CSTR:ARG:39 = 放置された彼女はそのままであればＭＡＧの欠乏によりグズグズに溶けて消えるところだったが、
+	CSTR:ARG:40 = あなたがその場を訪れたことにより、その一命を取り留めた。
+	CSTR:ARG:41 = 立ち上がるのにも不自由だった四肢は彼女の希望により、サイバネ技術によって機械義肢に換装されている。
+	CSTR:ARG:42 = 
+	CSTR:ARG:43 = 強力な洗脳の後遺症か、肉体の悪魔化に引きずられてか、彼女の精神は狂気に蝕まれている。
+	CSTR:ARG:44 = あなたに見せる忠誠は、その狂気が辛うじて繋ぎ留めた彼女の知性の残滓に過ぎない。
+	CSTR:ARG:45 = 彼女が愛したものは失われた。魂は穢され、肉体すらも原型を留めぬままに変貌した。
+	CSTR:ARG:46 = 彼女に残ったものはただ一つ。
+	CSTR:ARG:47 = 彼女の全てを焼き払ったメシア教に対する憎悪のみである。
+	CSTR:ARG:48 = 
+	CSTR:ARG:49 = 登場作品：オリジナル
+ENDIF
+
+@SET_LEARN_SKILL_[[キャラ:히메미야키쿠에]], ARG, ARG:1
+IF ARG:1 == 2
+	CALL CLEAR_ALL_SKILL, ARG
+	CALL CLEAR_ALL_LEARN_SKILL, ARG
+	CALL SET_LEARN_SKILL, ARG, "디아라한", 1
+	CALL SET_LEARN_SKILL, ARG, "사마리캄", 1
+	CALL SET_LEARN_SKILL, ARG, "꼬치꿰기", 1
+	CALL SET_LEARN_SKILL, ARG, "해피트리거", 1
+	CALL SET_LEARN_SKILL, ARG, "빛의벽", 1
+	CALL SET_LEARN_SKILL, ARG, "페트라디", 41
+	CALL SET_LEARN_SKILL, ARG, "테트라쟈", 44
+	CALL SET_LEARN_SKILL, ARG, "해피트리거", 46
+	CALL SET_LEARN_SKILL, ARG, "수호의방패", 49
+	CALL SET_LEARN_SKILL, ARG, "사마・카쟈", 40
+	CALL SET_LEARN_SKILL, ARG, "비틀어꺾기", 52
+	CALL SET_LEARN_SKILL, ARG, "리캄드라", 56
+	CALL SET_LEARN_SKILL, ARG, "모탈지하드", 62
+ENDIF

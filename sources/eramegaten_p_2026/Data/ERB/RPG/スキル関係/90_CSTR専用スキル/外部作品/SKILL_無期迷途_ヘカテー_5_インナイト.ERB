@@ -1,0 +1,57 @@
+﻿;スキル名
+@SKILL_NAME_インナイト,ARG
+RESULTS = 인나이트
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_インナイト, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_インナイト
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;スキルランク
+;スキルの習得時の必要ＭＡＧの算出に主に用いられる
+;また、習得・所持スキルはこのランクの5倍のレベルを基準として設定する。
+@SKILL_RANK_インナイト, ARG = -1
+RETURN 10
+
+@SKILL_SKILLEND_インナイト, ARG
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_PTS
+SIF !GET_CREC_ACT(ARG, , "HIT")
+	RETURN 0
+SIF PU_SKILLGAGE_F_GET(ARG, "インナイト") < 10
+	CALL PU_SKILLGAGE_F_ADD, ARG, "インナイト", 1
+CUSTOMDRAWLINE =
+IF CPOS(ARG) > 0
+	PRINTFORM 　　[{CPOS(ARG),2}] 
+ELSE
+	PRINTFORM 　　[--] 
+ENDIF
+PRINTFORMW %CALLNAME:ARG%:+1 <<夢路>>
+RETURN 1
+
+;効果を発揮するリーダースキル
+@SKILL_GET_LEADER_SKILL_NAME_インナイト, ARG
+RESULTS = 인나이트
+
+;====================================================
+;実行内容ここまで
+;====================================================
+@SKILL_EX_DISPLAY_インナイト, ARG, ARGS
+RESULTS = 夢路:
+RESULTS += HTML_RECT_SPLIT_BAR(PU_SKILLGAGE_F_GET(ARG, "インナイト"), 10, SKILL_EX_DISPLAY_LENS - 5, BARCOLORSET("紫"), RESULT:1)
+RETURN 1
+
+;　 説明文の表示
+@SKILL_EXPLAIN_インナイト, ARG
+PRINTL 자동효과:스킬 소지자가 공격을 성공시킬 때마다 【꿈길】 효과를 얻는다.
+PRINTL 　　　　 【꿈길】 효과는 최대 10회까지 스택되며,
+PRINTL 　　　　 이 스킬 소지자와 악몽이 부여된 아군이 주는 데미지가 스택당 3% 증가한다.
+
+;ツールチップ版の解説文
+@SKILL_EXPLAIN_TOOLTIP_インナイト, ARG
+RESULTS:0 = 자동효과:스킬 소지자가 공격을 성공시킬 때마다 【꿈길】 효과를 얻는다.
+RESULTS:1 = 　　　　 【꿈길】 효과는 최대 10회까지 스택되며,
+RESULTS:2 = 　　　　 このスキルの所持者と悪夢が付与された味方が与えるダメージがスタックごとに３％増加する。

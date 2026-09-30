@@ -1,0 +1,79 @@
+﻿
+;特技名
+@CGSP_NAME_6078, ARGS, ARG
+RESULTS = ドリーカドモン
+
+;　コストの量
+@CGSP_COST_6078, ARGS, ARG
+RETURN 2
+;1
+
+;　타겟(選択するかしないか)
+@CGSP_TARGET_6078, ARGS, ARG
+RETURN 0
+;0-無し　　　1-味方1体　2-味方1体(自身含む)　3-敵1体　4-敵1体(サマナー含む)
+;5-敵味方1体　6-サマナーどちらか
+;自動発動なので0
+
+;　発動タイミング
+@CGSP_TIMING_6078, ARGS, ARG
+RETURN 0
+;0-アクティブ　1-味方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　2-相手ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　3-両方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ
+
+;====================================================
+;特技発動
+;====================================================
+@CGSP_ACTION_6078, ARGS, ARG, ARG:1
+#DIM L_S
+;
+L_S = ARG % 20
+
+CALL CS_DECK_SHUFFLE(L_S)
+FOR LOCAL ,0, DECK_CARDS(L_S)
+	SIF SUMMONER_DECK:L_S:LOCAL != 0
+		CONTINUE
+    CALL CARD_DATA_GET(SUMMONER_DECK:L_S:LOCAL)
+    IF CARD_DATE_V:CBV_KINDS < 100 && CARD_DATE_V:CBV_FUSION > 1
+        CALL CS_HANDCARD_ADD, ARG, SUMMONER_DECK:ARG:LOCAL
+        CALL CS_CARD_DECK_DEL, ARG, LOCAL, 1
+        CALL CARDBATTLE_MESSAGE, CS_PIC_NAME(ARG) + @"はカードを引いた。"
+        RETURN
+    ENDIF
+NEXT
+CALL CARDBATTLE_MESSAGE, @"デッキに合体仲魔のカードがなかった！"
+RETURN
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;発動後どうなるか
+@CGSP_ACTION_AFTER_6078, ARGS, ARG, ARG:1
+RETURN 0
+;0-何もなし　1-フリーズ状態　2-山札に戻る　3-即死する
+
+;　 説明文の表示
+@CGSP_EXPLAIN_6078, ARGS, ARG
+RESULTS = 自身の山札から合体仲魔を1枚引いてくる。『人によって造られた悪魔実験用の素材。悪魔と合体する事によりその能力を持つ』
+
+
+;　スキルタイプ
+;　主にこのターンパワーアップとアギとかのダメージ系で使用
+;　それ以外は省略
+;　100,その他速使った方がいいかも
+@CGSP_TYPE_6078, ARGS, ARG
+RETURN 49, 1
+
+;使用条件
+;特になければ省略してOK
+;@SKILL_SPECIAL_ACTIONABLE_6078,ARG
+;RETURN 1
+;とくにない
+
+
+
+
+
+
+

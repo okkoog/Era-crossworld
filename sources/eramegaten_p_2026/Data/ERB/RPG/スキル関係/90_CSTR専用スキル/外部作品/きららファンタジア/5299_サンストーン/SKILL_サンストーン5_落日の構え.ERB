@@ -1,0 +1,146 @@
+﻿
+;スキル名
+@SKILL_NAME_落日の構え,ARG
+RESULTS = 낙일의 자세
+
+;　명중
+@SKILL_HITRATE_落日の構え, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_落日の構え, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_落日の構え,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_落日の構え,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_落日の構え, ARG
+RETURN 1
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_落日の構え,ARG
+IF ARG >= 0 && GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 3
+	RESULTS = %"ＣＨ:3"%
+	RETURN 0
+ENDIF
+RETURN 0
+
+;　相性
+@SKILL_TYPE_落日の構え,ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_落日の構え
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_落日の構え,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_落日の構え,ARG
+RETURN 4
+
+;　사거리
+@SKILL_RANGE_落日の構え,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_落日の構え,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_落日の構え,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+@SKILL_SUCCESSION_TYPE_落日の構え,ARG
+RETURN GET_SUCCESSION_NUM("검격")
+
+@SKILL_RANK_落日の構え, ARG = -1
+RETURN 6
+
+;속도보정
+@SKILL_SPEED_落日の構え, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_落日の構え
+RETURN 0
+
+@SKILL_QUICK_ACTION_落日の構え, ARG
+RETURN 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_落日の構え,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+CALL SET_RPG_CFLAG_BTL, ARG, "KFチャージスキル", 3, "-="
+CALL SKILLGAGE_H_SET, ARG, SKILL_NUM ,1
+PRINTFORML %CALLNAME:ARG%의 자세가 낙일로 바뀌었다.
+SIF HAVE_PU_SKILL(ARG,"暁光の構え") && PU_SKILLGAGE_H_GET(ARG,"暁光の構え") > 0
+	CALL PU_SKILLGAGE_H_SET, ARG, "暁光の構え", 0
+SIF HAVE_PU_SKILL(ARG,"白夜の構え") && PU_SKILLGAGE_H_GET(ARG,"白夜の構え") > 0
+	CALL PU_SKILLGAGE_H_SET, ARG, "白夜の構え", 0
+;====================================================
+;実行内容ここまで
+;====================================================
+
+@SKILLGAGE_DISPLAY_落日の構え,ARG
+IF PU_SKILLGAGE_H_GET(ARG, "落日の構え")
+	SETCOLOR COLOR("orange")
+	PRINTFORML 자세: 낙일
+	RESETCOLOR
+ENDIF
+;　説明文の表示
+@SKILL_EXPLAIN_落日の構え,ARG
+PRINTL 발동 시, 자신이 가하는 데미지를 10% 상승시킨다.
+PRINTL 효과는 전투 종료까지 지속되거나, 다른 자세로 덮어씌워질 때까지 계속된다.
+PRINTL 차지 3을 소비하여 발동하지만, 행동 턴은 소비하지 않는다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_落日の構え, ARG
+IF PU_SKILLGAGE_H_GET(ARG,"落日の構え") > 0
+	RESULTS = 発動中
+	RETURN 0
+ELSEIF GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 3
+	RESULTS = 차지 부족
+	RETURN 0
+ENDIF
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_落日の構え, ARG
+RESULTS:0 = 발동 시, 자신이 가하는 데미지를 10% 상승시킨다.
+RESULTS:1 = 효과는 전투 종료까지 지속되거나, 다른 자세로 덮어씌워질 때까지 계속된다.
+RESULTS:2 = チャージを3消費して発動するが、行動ターンは消費しない。
+
+@SKILL_PASSIVE_BTL_EFFECT_落日の構え, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+#DIM TOTAL_DMG_B
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			SIF PU_SKILLGAGE_H_GET(L_P, "落日の構え")
+				RETURN 10
+	ENDSELECT
+ENDIF

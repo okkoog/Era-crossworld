@@ -1,0 +1,182 @@
+﻿
+;スキル名
+@SKILL_NAME_2934,ARG
+RESULTS = 순부「퓨얼리불릿헬」
+SIF  GETBIT (FLAG:커스텀게임화면,1)
+	RESULTS = 순부「퓨어리 불릿 헬」
+
+;　명중
+@SKILL_HITRATE_2934, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2934, ARG
+RETURN 240
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2934,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2934,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2934, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2934,ARG
+RETURN 50
+
+;　相性 攻撃相性のうち、もっともダメージが高くなるものになる
+;クレセントミラーノコピペ
+@SKILL_TYPE_2934, ARG
+#LOCALSIZE 1
+;RESULT配列で返すので最初にもっていきたい万能から逆に入れていく
+FOR LOCAL, 0, TYPENUM
+	RESULT:LOCAL = TYPENUM - LOCAL - 1
+NEXT
+RETURN RESULT
+;#LOCALSSIZE 19
+;#LOCALSIZE 4
+;SIF ARG == -1
+;	RETURN GET_TYPE_NUM("만능")
+;SIF CFLAG:ARG:타겟 > 16 || CFLAG:ARG:타겟 < 1
+;	RETURN GET_TYPE_NUM("만능")
+;LOCAL = POS(CFLAG:ARG:타겟)
+;SIF LOCAL < 0
+;	RETURN GET_TYPE_NUM("만능")
+;LOCAL:2 = -1000
+;LOCALS = 만능
+;LOCALS:1 = 검격
+;LOCALS:2 = 비구
+;LOCALS:3 = 타격
+;LOCALS:4 = 전술
+;LOCALS:5 = 화염
+;LOCALS:6 = 빙결
+;LOCALS:7 = 전격
+;LOCALS:8 = 충격
+;LOCALS:9 = 신경
+;LOCALS:10 = 정신
+;LOCALS:11 = 파마
+;LOCALS:12 = 주살
+;LOCALS:13 = 지변
+;LOCALS:14 = 수격
+;LOCALS:15 = 질풍
+;LOCALS:16 = 중력
+;LOCALS:17 = 핵열
+;LOCALS:18 = 만능
+;
+;FOR LOCAL:1, 1, 18
+;	;判定用に数値をしまう。反射は-200扱い
+;	LOCAL:3 = MAXBASE:LOCAL:(LOCALS:(LOCAL:1)) == 999 ? -200 # MAXBASE:LOCAL:(LOCALS:(LOCAL:1))
+;	LOCAL:3 = CFLAG:LOCAL:(LOCALS:(LOCAL:1)+"무효화횟수") ? 0 # LOCAL:3
+;	IF LOCAL:3 > LOCAL:2
+;		LOCAL:2 = LOCAL:3
+;		LOCALS = %LOCALS:(LOCAL:1)%
+;	ENDIF
+;NEXT
+;RETURN GET_TYPE_NUM(LOCALS)
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2934
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2934, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2934, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2934,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2934,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2934, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입,継承不能
+@SKILL_SUCCESSION_TYPE_2934
+RETURN GET_SUCCESSION_NUM("만능")
+@継承不能_2934
+RETURN 1
+;핵열
+
+;속도보정
+@SKILL_SPEED_2934, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2934
+RETURN 0
+
+;スキル変化？用ランク,もちろん不可
+@SKILL_RANK_2934, ARG = -1
+RETURN 15
+
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_2934,ARG
+RETURN 0
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_2934,ARG
+RETURN 0
+
+;基礎値高いけど上限は低め
+@SKILL_ADDTIONAL_BASE_RATE_2934,ARG
+RETURN 0
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_2934,ARG
+RETURN 0
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2934, ARG, ARG:1, ARG:2
+IF CFLAG:ARG:포지션 < 7
+	LOCAL:1 = 7
+	LOCAL:2 = 17 
+ELSE
+	LOCAL:1 = 1
+	LOCAL:2 = 7
+ENDIF
+FOR LOCAL, LOCAL:1, LOCAL:2
+	LOCALS = 포지션{LOCAL}
+	;#;PRINTFORML FLAG:LOCALS = {FLAG:LOCALS}
+	SIF FLAG:LOCALS < 0
+		CONTINUE
+	SIF GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) == "DYING"
+		CONTINUE
+	CFLAG:ARG:타겟 = LOCAL
+	CALL ATTACK_SINGLE, ARG, FLAG:LOCALS, 2934
+NEXT
+CFLAG:ARG:타겟 = CFLAG:ARG:포지션 < 7 ? 22 # 19
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2934, ARG
+PRINTL 적 전체에 강제 약점 속성으로 중위력의 마법 공격을 1회 행한다.
+PRINTL 생사를 거절한 순수한 영력에 의한 전방위 탄막.
+PRINTL 神霊　순호의 스펠카드 (전용)
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2934,ARG
+RETURN 1
+;とくにない
+

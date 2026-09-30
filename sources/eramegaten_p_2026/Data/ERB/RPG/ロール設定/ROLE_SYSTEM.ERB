@@ -1,0 +1,982 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:ROLE_SYSTEM.ERB
+;	Facility	:ロール用のシステム関数群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/12/25		P(Bazzile)				新規作成
+;	002		2023/02/26		P(Bazzile)				CSVからのロール説明のフラグ読み込みのミスを修正
+;	003		2023/04/20		P(Bazzile)				スキル使用能力の確認関数@ROLE_CAN_USEを作成
+;	004		2023/05/31		P(Bazzile)				ロール決定段階でキャラのスキル枠数を設定するように変更
+;	005		2023/06/26		P(Bazzile)				装備知識がある場合でもプラグインを装備できるケースがあるのを修正
+;	006		2023/08/07		P(Bazzile)				悪魔変身が絡む場合のスキルの還元処理に問題があったのを修正
+;	007		2023/09/02		P(Bazzile)				敵に対してキャパシティオーバーによるペナルティが適用されないように修正
+;	008		2024/02/23		P(Bazzile)				ロール変更時にペルソナ使いのペルソナが正しく破棄されなかった不具合を修正
+;	009		2024/05/26		P(Bazzile)				ロールチェンジ関数にデフォルト素質抜きオプションを追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=========================================================
+;定義
+;=========================================================
+;--------------------------------------------
+;サブロールの名称リスト作成
+;--------------------------------------------
+@MAKE_SUB_ROLENAME_LIST
+#FUNCTION
+#DIM LCOUNT
+;すでに作成済みなら終わる
+SIF SUB_ROLENAME != ""
+	RETURNF 0
+FOR LCOUNT, 0, SUB_ROLENUM
+	CALLFORMF SUB_ROLE_TALENT_{LCOUNT}
+	SUB_ROLENAME:LCOUNT '= RESULTS_F
+NEXT
+RETURNF 1
+
+;=======================================================
+;ロールの決定
+;
+;ex:異能者・達人を持っていた場合は異能者→달인→複合達人の順にクリアーして、最終的に複合達人になる
+;=======================================================
+@SET_ROLE, ARG
+CALL ROLE_DECIDE, ARG
+CALL SET_CHARA_SKILLCOUNT, ARG;EDIT 004 ADD 
+
+;=======================================================
+;キャラクター生成時に設定されている戦闘素質をセットする
+;=======================================================
+@SET_BTL_TALENT_NEW, ARG
+#DIM LCOUNT
+#DIM L_LV, SUB_ROLENUM
+#DIMS L_TALENTS, SUB_ROLENUM
+#DIM L_LV_FIXED, SUB_ROLENUM
+#DIMS L_TALENTS_FIXED, SUB_ROLENUM
+#DIM L_COST
+;固定素質の付与
+CALL SET_FIXED_BTL_TALENT, ARG, "通常形態", L_LV_FIXED, L_TALENTS_FIXED
+TRYCCALLFORM ROLE_DEFAULT_BTL_TALENT_%CSTR:ARG:롤%
+	CALL SET_BTL_TALENT_DEFAULT, RESULTS, ARG, "通常形態"
+CATCH
+ENDCATCH
+
+;変身しないロールはここで設定終わり
+SIF !GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+	RETURN 1
+;変身時の固定素質の付与
+;固定素質の付与
+CALL SET_FIXED_BTL_TALENT, ARG, "変身形態", L_LV_FIXED, L_TALENTS_FIXED
+
+;変身時のデフォルト素質の付与
+IF CSTR:ARG:초기변신악마전투소질  != "EMPTY"
+	IF CSTR:ARG:초기변신악마전투소질  == ""
+		RESULTS = 
+		TRYCALLFORM ROLE_DEFAULT_BTL_TALENT_TRANS_%CSTR:ARG:롤%
+		SIF RESULTS == ""
+			RETURN 0
+		CSTR:ARG:초기변신악마전투소질 '= RESULTS
+	ENDIF
+	CALL SET_BTL_TALENT_DEFAULT, CSTR:ARG:초기변신악마전투소질, ARG, "変身形態"
+ENDIF
+
+;=======================================================
+;デフォルト素質の付与
+;=======================================================
+@SET_BTL_TALENT_DEFAULT, ARGS, ARG, ARGS:1 = "通常形態"
+#DIM LCOUNT
+#DIM L_CAP;キャパシティー最大値
+#DIM L_LV, SUB_ROLENUM
+#DIMS L_TALENTS, SUB_ROLENUM
+#DIM L_LV_FIXED, SUB_ROLENUM
+#DIMS L_TALENTS_FIXED, SUB_ROLENUM
+#DIM L_COST
+SIF ARGS == ""
+	RETURN 0
+CALL SET_ROLE_CP, ARG
+SPLIT ARGS, "/", L_TALENTS
+IF ARGS:1 == "通常形態"
+	L_CAP = GET_ROLE_CP(ARG, "通常形態")
+	FOR LCOUNT, 0, RESULT
+		L_LV:LCOUNT = TOINT(AUTO_SPLIT(L_TALENTS:LCOUNT, "_", 1))
+		L_TALENTS:LCOUNT = %AUTO_SPLIT(L_TALENTS:LCOUNT, "_", 0)%
+		;すでに持っていてそれがデフォルトよりレベルが低い場合はつけ直し判定
+		IF TALENT:ARG:(L_TALENTS:LCOUNT) < L_LV:LCOUNT
+			TALENT:ARG:(L_TALENTS:LCOUNT) = 0
+			CALL SET_ROLE_CP, ARG
+			L_CAP = GET_ROLE_CP(ARG, "通常形態")
+		ELSE
+			CONTINUE
+		ENDIF
+		;レベルをさげながらコストチェックをして付与していく
+		WHILE L_LV:LCOUNT > 0
+			L_COST = GET_SUB_ROLE_PROP("COST", L_TALENTS:LCOUNT, , , L_LV:LCOUNT)
+			IF L_COST > 0 && L_CAP >= L_COST
+				L_CAP -= L_COST
+				TALENT:ARG:(L_TALENTS:LCOUNT) = L_LV:LCOUNT
+				BREAK
+			ENDIF
+			L_LV:LCOUNT--
+		WEND
+	NEXT
+ELSE
+	L_CAP = GET_ROLE_CP(ARG, "変身形態")
+	FOR LCOUNT, 0, RESULT
+		L_LV:LCOUNT = TOINT(AUTO_SPLIT(L_TALENTS:LCOUNT, "_", 1))
+		L_TALENTS:LCOUNT = %AUTO_SPLIT(L_TALENTS:LCOUNT, "_", 0)%
+		;すでに持ってるならとばす
+		IF TRANS_BTL_TALENT:ARG:GET_SUB_ROLE_NUM(L_TALENTS:LCOUNT) < L_LV:LCOUNT
+			TRANS_BTL_TALENT:ARG:GET_SUB_ROLE_NUM(L_TALENTS:LCOUNT) = 0
+			CALL SET_ROLE_CP, ARG
+			L_CAP = GET_ROLE_CP(ARG, "変身形態")
+		ELSE
+			CONTINUE
+		ENDIF
+		;レベルをさげながらコストチェックをして付与していく
+		WHILE L_LV:LCOUNT > 0
+			RESULT_F = 0
+			L_COST = GET_SUB_ROLE_PROP("COST", L_TALENTS:LCOUNT, , , L_LV:LCOUNT)
+			IF L_COST > 0 && L_CAP >= L_COST
+				L_CAP -= L_COST
+				TRANS_BTL_TALENT:ARG:GET_SUB_ROLE_NUM(L_TALENTS:LCOUNT) = L_LV:LCOUNT
+				BREAK
+			ENDIF
+			L_LV:LCOUNT--
+		WEND
+	NEXT
+ENDIF
+CALL SET_ROLE_CP, ARG
+
+;----------------------------------------------------
+;ロール固定素質の付与関数
+;処理で使えるようにセット状況を変数に渡して返す
+;----------------------------------------------------
+@SET_FIXED_BTL_TALENT, ARG, ARGS, L_LV_FIXED, L_TALENTS_FIXED
+#DIM LCOUNT
+#DIM REF L_LV_FIXED
+#DIMS REF L_TALENTS_FIXED
+RESULTS = 
+IF ARGS == "変身形態"
+	TRYCCALLFORM ROLE_FIXED_BTL_TALENT_TRANS_%CSTR:ARG:롤%
+		SPLIT RESULTS, "/", L_TALENTS_FIXED
+		IF RESULTS != ""
+			FOR LCOUNT, 0, RESULT
+				L_LV_FIXED:LCOUNT = TOINT(AUTO_SPLIT(L_TALENTS_FIXED:LCOUNT, "_", 1))
+				L_TALENTS_FIXED:LCOUNT = %AUTO_SPLIT(L_TALENTS_FIXED:LCOUNT, "_", 0)%
+				TRANS_BTL_TALENT:ARG:GET_SUB_ROLE_NUM(L_TALENTS_FIXED:LCOUNT) = L_LV_FIXED:LCOUNT
+			NEXT
+		ENDIF
+	CATCH
+	ENDCATCH
+ELSE
+	TRYCCALLFORM ROLE_FIXED_BTL_TALENT_%CSTR:ARG:롤%
+		SPLIT RESULTS, "/", L_TALENTS_FIXED
+		IF RESULTS != ""
+			FOR LCOUNT, 0, RESULT
+				L_LV_FIXED:LCOUNT = TOINT(AUTO_SPLIT(L_TALENTS_FIXED:LCOUNT, "_", 1))
+				L_TALENTS_FIXED:LCOUNT = %AUTO_SPLIT(L_TALENTS_FIXED:LCOUNT, "_", 0)%
+				TALENT:ARG:(L_TALENTS_FIXED:LCOUNT) = L_LV_FIXED:LCOUNT
+			NEXT
+		ENDIF
+	CATCH
+	ENDCATCH
+ENDIF
+;---------------------------------------------------
+;CAPACITYのセット関数
+;---------------------------------------------------
+@SET_ROLE_CP, ARG
+#DIM LCOUNT
+#DIMS L_TALENTS
+#DIMS L_FIXED
+ROLE_CP:ARG:0 = GET_ROLE_PROP("CAPACITY", ARG, , "通常形態")
+RESULTS =
+TRYCALLFORM ROLE_FIXED_BTL_TALENT_%CSTR:ARG:롤%
+L_FIXED '= RESULTS
+;所持している素質をキャパシティーからひいていく
+FOR LCOUNT, 0, SUB_ROLENUM
+	L_TALENTS = %GET_SUB_ROLE_NAME(LCOUNT)%
+	SIF !GET_BTL_TALENT_LV(L_TALENTS, ARG, "通常形態")
+		CONTINUE
+	SIF STRCOUNT(L_FIXED, L_TALENTS + "_")
+		CONTINUE
+	ROLE_CP:ARG:0 -= GET_SUB_ROLE_PROP("COST", L_TALENTS, ARG, "通常形態")
+NEXT
+
+;変身しないロールはここで設定終わり
+SIF !GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+	RETURN 1
+
+RESULTS =
+TRYCALLFORM ROLE_FIXED_BTL_TALENT_TRANS_%CSTR:ARG:롤%
+L_FIXED '= RESULTS
+ROLE_CP_TRANS:ARG:0 = GET_ROLE_PROP("CAPACITY", ARG, , "変身形態")
+;所持している素質をキャパシティーからひいていく
+FOR LCOUNT, 0, SUB_ROLENUM
+	L_TALENTS = %GET_SUB_ROLE_NAME(LCOUNT)%
+	SIF !GET_BTL_TALENT_LV(L_TALENTS, ARG, "変身形態")
+		CONTINUE
+	SIF STRCOUNT(L_FIXED, L_TALENTS + "_")
+		CONTINUE
+	ROLE_CP_TRANS:ARG:0 -= GET_SUB_ROLE_PROP("COST", L_TALENTS, ARG, "変身形態")
+NEXT
+
+;---------------------------------------------------
+;キャパシティ容量の確認関数
+;---------------------------------------------------
+@ROLE_CAPACITY, ARG = -1, ARGS, ARGS:1
+#FUNCTION
+RESULT_F = 0, 0
+CALLFORMF ROLE_CAPACITY_%ARGS%, ARG
+IF ARGS:1 == "変身形態"
+	RESULT_F:1 += GET_BTL_TALENT_LV("커패시티확대", ARG, ARGS:1)
+	RETURNF RESULT_F:1
+ELSE
+	RESULT_F += GET_BTL_TALENT_LV("커패시티확대", ARG, ARGS:1)
+	RETURNF RESULT_F
+ENDIF
+
+;---- EDIT 003 ADD START -------------------------
+;---------------------------------------------------
+;SKILLを使えるかどうかの確認関数
+;実際はGET_PROP関数からそのままこれを呼ぶので実際の利用はそちらからを推奨
+;---------------------------------------------------
+@ROLE_CAN_USE_SKILL, ARG = -1, ARGS, ARGS:1
+#FUNCTION
+;MPがないロールは常に不可能
+CALLFORMF ROLE_HAVE_MP_%ARGS%, ARG
+IF ARGS:1 == "変身形態"
+	SIF !RESULT_F:1
+		RETURNF 0
+ELSE
+	SIF !RESULT_F
+		RETURNF 0
+ENDIF
+IF ARG >= 0
+	;異能者が2以上なら使える
+	IF GET_BTL_TALENT_LV("이능자", ARG, ARGS:1) > 1
+		RESULT_F = 1, 1
+		RETURNF 1
+	ENDIF
+ENDIF
+CALLFORMF ROLE_CAN_USE_SKILL_%ARGS%, ARG
+IF ARGS:1 == "変身形態"
+	RETURNF RESULT_F:1
+ELSE
+	RETURNF RESULT_F
+ENDIF
+;---- EDIT 003 ADD END ---------------------------
+;---------------------------------------------------
+;装備を使えるかどうかの確認関数
+;実際はGET_PROP関数からそのままこれを呼ぶので実際の利用はそちらからを推奨
+;---------------------------------------------------
+@CAN_USE_EQUIP, ARG = -1, ARGS, ARGS:1
+#FUNCTION
+IF ARG >= 0
+	ARGS '= CSTR:ARG:롤
+	SIF CFLAG:ARG:악마변신 && ARGS:1 == ""
+		ARGS:1 = 変身形態
+ENDIF
+RESULT_F = 0, 0
+CALLFORMF ROLE_CAN_USE_EQUIP_%ARGS%, ARG
+
+;装備知識によって効果を得てる場合は2をかえさせる
+IF SKILL_EQUIPTHEORY_IS_HAVE_SKILL(ARG)
+	RESULT_F = RESULT_F == 1 ? 1 # 2
+	RESULT_F:1 = RESULT_F:1 == 1 ? 1 # 2
+ENDIF
+
+IF ARGS:1 == "変身形態"
+	RETURNF RESULT_F:1
+ELSE
+	RETURNF RESULT_F
+ENDIF
+
+;---------------------------------------------------
+;装備を使えるかどうかの確認関数
+;実際はGET_PROP関数からそのままこれを呼ぶので実際の利用はそちらからを推奨
+;---------------------------------------------------
+@CAN_USE_PLUGIN, ARG = -1, ARGS, ARGS:1
+#FUNCTION
+IF ARG >= 0
+	;装備知識でアクセサリーが装備出来る場合はプラグインは使えなくなる
+	IF SKILL_EQUIPTHEORY_IS_HAVE_SKILL(ARG); && BATTLE_SETTING_IS_EQUIPTHEORY() == 0
+		RESULT_F = 0
+		RETURNF 0
+	ENDIF
+	ARGS '= CSTR:ARG:롤
+	SIF CFLAG:ARG:악마변신 && ARGS:1 == ""
+		ARGS:1 = 変身形態
+ENDIF
+RESULT_F = 0, 0
+CALLFORMF ROLE_CAN_USE_PLUGIN_%ARGS%, ARG
+IF ARGS:1 == "変身形態"
+	RETURNF RESULT_F:1
+ELSE
+	RETURNF RESULT_F
+ENDIF
+
+;---------------------------------------------------
+;銃を装備できるかどうかの確認関数
+;実際はGET_PROP関数からそのままこれを呼ぶので実際の利用はそちらからを推奨
+;
+;装備関数で弾かれた後に使うことを基本的に想定
+;---------------------------------------------------
+@CAN_EQUIP_GUN, ARG = -1, ARGS, ARGS:1
+#FUNCTION
+IF ARG >= 0
+	;ガンスリンガー持ちは銃を装備できる
+	IF GET_BTL_TALENT_LV("건슬링거", ARG, ARGS:1) > 0
+		RESULT_F = 1
+		RETURNF 1
+	ENDIF
+	;装備知識持ちは銃を装備できる
+	IF SKILL_EQUIPTHEORY_IS_HAVE_SKILL(ARG)
+		RESULT_F = 1
+		RETURNF 1
+	ENDIF
+	ARGS '= CSTR:ARG:롤
+	SIF CFLAG:ARG:악마변신 && ARGS:1 == ""
+		ARGS:1 = 変身形態
+ENDIF
+RESULT_F = 0, 0
+CALLFORMF ROLE_CAN_USE_EQUIP_%ARGS%, ARG
+IF ARGS:1 == "変身形態"
+	RETURNF RESULT_F:1
+ELSE
+	RETURNF RESULT_F
+ENDIF
+
+;---------------------------------------------------
+;銃を撃てるかどうかの確認関数
+;実際はGET_PROP関数からそのままこれを呼ぶので実際の利用はそちらからを推奨
+;---------------------------------------------------
+@CAN_USE_GUN, ARG = -1, ARGS, ARGS:1
+#FUNCTION
+RESULT_F = 0
+SIF EQUIP:ARG:총 == 0
+	RETURNF 0
+SIF CAN_EQUIP_GUN(ARG, ARGS, ARGS:1)
+	RETURNF 0
+RESULT_F = 1
+RETURNF RESULT_F
+
+;---------------------------------------------------
+;合体に使えるかどうかの確認関数
+;---------------------------------------------------
+@CAN_FUSION, ARG = -1, ARGS, ARGS:1
+#FUNCTION
+IF ARG >= 0
+	SIF ARG == MASTER
+		RETURNF 0
+	;SIF CFLAG:ARG:합체소재사용금지
+	;	RETURNF 0
+ENDIF
+RESULT_F = 0, 0
+CALLFORMF ROLE_CAN_FUSION_%ARGS%, ARG
+IF ARGS:1 == "変身形態"
+	RETURNF RESULT_F:1
+ELSE
+	RETURNF RESULT_F
+ENDIF
+;---------------------------------------------------
+;スキル適性を使えるかどうかの判定
+;実際はGET_PROP関数からそのままこれを呼ぶので実際の利用はそちらからを推奨
+;---------------------------------------------------
+@CAN_USE_스킬적성, ARG = -1, ARGS, ARGS:1
+#FUNCTION
+;敵はスキル適性を使わせない(敵の大半が持っている素質で想定されてない数値で攻撃されることになってしまうので)
+IF ARG >= 0
+	SIF !CFLAG:ARG:PT플래그
+		RETURNF 0
+ENDIF
+RESULT_F = 0, 0
+CALLFORMF ROLE_CAN_USE_스킬적성_%ARGS%, ARG
+
+;---------------------------------------------------
+;スキルの変更可能範囲
+;---------------------------------------------------
+@CHANGEABLE_SKILLCOUNT, ARG = -1, ARGS, ARGS:1
+#FUNCTION
+RESULT_F = 0, 0
+IF ARG >= 0
+	RESULT_F = GET_CHARA_SKILLCOUNT(ARG, "通常形態", "CHANGEABLE"), GET_CHARA_SKILLCOUNT(ARG, "変身形態", "CHANGEABLE")
+ELSE
+	CALLFORMF ROLE_CHANGEABLE_SKILLCOUNT_%ARGS%, ARG
+ENDIF
+IF ARGS:1 == "変身形態"
+	RETURNF RESULT_F:1
+ELSE
+	RETURNF RESULT_F
+ENDIF
+;---------------------------------------------------
+;キャパシティーオーバー・過負荷によるペナルティの確認関数
+;---------------------------------------------------
+@GET_ROLE_BTL_ST_PENALTY, ARG = -1, ARGS
+#FUNCTION
+#DIM L_RESULT
+;---- EDIT 007 MOD START -------------------------
+;敵はペナルティを受けない
+SIF !CFLAG:ARG:PT플래그
+	RETURNF 0
+;---- EDIT 007 MOD END ---------------------------
+SIF ARGS == ""
+	ARGS = \@CFLAG:ARG:악마변신 ? "変身形態" # "通常形態"\@
+L_RESULT = FLAG:CP제한무효화 ? 0 # MAX(-GET_ROLE_CP(ARG, ARGS), 0)
+
+IF GET_BTL_TALENT_LV("과부하", ARG, ARGS) >= L_RESULT
+	L_RESULT = GET_BTL_TALENT_LV("과부하", ARG, ARGS)
+	RESULTS_F = 과부하
+ELSE
+	RESULTS_F = キャパシティーオーバー
+ENDIF
+L_RESULT = LIMIT(L_RESULT, 0, 90)
+RETURNF L_RESULT
+
+;---- EDIT 002 MOD START -------------------------
+;---------------------------------------------------
+;ROLE絡みのフラグをCSV状態になおす関数
+;---------------------------------------------------
+@SET_CSV_ROLE_FLAG, ARG
+#DIM LCOUNT
+;TALENTをセット
+FOR LCOUNT, 0, VARSIZE("TALENT")
+	SIF IS_ROLE_TALENT(LCOUNT)
+		TALENT:ARG:LCOUNT = CSVTALENT(NO:ARG, LCOUNT)
+NEXT
+
+CSTR:ARG:롤설명1 = %CSVCSTR(NO:ARG, GETNUM(CSTR, "롤설명1"))%
+CSTR:ARG:롤설명2 = %CSVCSTR(NO:ARG, GETNUM(CSTR, "롤설명2"))%
+CSTR:ARG:초기변신악마전투소질 = %CSVCSTR(NO:ARG, GETNUM(CSTR, "초기변신악마전투소질"))%
+;---- EDIT 002 MOD END ---------------------------
+
+;---------------------------------------------------
+;ロールの変更関数
+;ARG	対象のキャラクター
+;ARGS	付与する素質の指定(ロール決定用の素質も含む)
+;ARGS:1	付与する素質の指定(変身後)
+;ARGS:2 種族を変更する場合
+;ARGS:3 オプション指定
+;---------------------------------------------------
+@CHANGE_ROLE, ARG, ARGS, ARGS:1, ARGS:2, ARGS:3
+#DIM LCOUNT
+#DIM L_ID
+#DIMS L_DEFAULT, 2
+#DIMS TEMP_TALENTNAME
+#DIMS L_TALENT
+#DIMS L_TRANS_TALENT
+#DIMS L_TALENTS, SUB_ROLENUM
+RESULTS = 
+
+;悪魔変身とリンクを処理する
+CALL REMOVE_LINK_DEVIL, ARG
+
+;---- EDIT 008 MOD START -------------------------
+IF TALENT:ARG:페르소나구사자
+	CALL REMOVE_PERSONA, ARG
+	;ペルソナ共通枠から対象の持ってるペルソナを探してくる
+	;FOR LCOUNT, 1, 11
+	;	SIF DITEMTYPE:(LCOUNT):0 == 0
+	;		CONTINUE
+	;	L_ID = FINDCHARA_ID(DITEMTYPE:LCOUNT:페르소나("ペルソナ所持者"))
+	;	SIF ARG == L_ID
+	;		CALL PERSONA_UNEQUIPMENT(L_ID, LCOUNT)
+	;NEXT
+	;FOR LCOUNT, 1, HAVEABLE_SKILLNUM + 1
+	;	ABL:ARG:@"스킬{LCOUNT}" = 0
+	;NEXT
+ENDIF
+;---- EDIT 008 MOD END ---------------------------
+
+;元のロールのデフォルト素質を取得
+;TRYCALLFORM ROLE_DEFAULT_BTL_TALENT_%CSTR:ARG:롤%
+;L_DEFAULT = %RESULTS%
+;RESULTS = 
+;TRYCALLFORM ROLE_DEFAULT_BTL_TALENT_TRANS_%CSTR:ARG:롤%
+;L_DEFAULT:1 = %RESULTS%
+
+;所持しているサブ素質を取得
+IF STRCOUNT(ARGS:3, "サブ素質引継ぎなし")
+	L_TALENT = 
+	L_TRANS_TALENT = 
+ELSE
+	CALL SET_VAR_HAVE_SUB_ROLE, ARG, "通常形態", L_TALENT, "固定排除"
+	CALL SET_VAR_HAVE_SUB_ROLE, ARG, "変身形態", L_TRANS_TALENT, "固定排除"
+ENDIF
+;CALL SET_VAR_HAVE_SUB_ROLE, ARG, "通常形態", L_TALENT, "デフォルト排除/固定排除"
+;CALL SET_VAR_HAVE_SUB_ROLE, ARG, "変身形態", L_TRANS_TALENT, "デフォルト排除/固定排除"
+
+;一旦全ての素質を除去
+CALL CLEAR_ROLE_TALENT, ARG
+
+;-------------------------------
+;一部のMAG強化をリセットする
+;-------------------------------
+CALL RESET_MAG_ENHANCE_DEFTYPE, ARG
+
+;-------------------------------
+;指定した素質を所持させる
+;-------------------------------
+IF ARGS != ""
+	SPLIT ARGS, "/", L_TALENTS
+	FOR LCOUNT, 0, RESULT
+		TALENT:ARG:AUTO_SPLIT(L_TALENTS:LCOUNT, "_", 0) = MAX(TOINT(AUTO_SPLIT(L_TALENTS:LCOUNT, "_", 1)), 1)
+	NEXT
+ENDIF
+
+IF ARGS:1 != ""
+	SPLIT ARGS:1, "/", L_TALENTS
+	FOR LCOUNT, 0, RESULT
+		TRANS_BTL_TALENT:ARG:GET_SUB_ROLE_NUM(AUTO_SPLIT(L_TALENTS:LCOUNT, "_", 0)) = MAX(TOINT(AUTO_SPLIT(L_TALENTS:LCOUNT, "_", 1)), 1)
+	NEXT
+ENDIF
+SIF ARGS:2 != ""
+	ABL:ARG:종족 = GET_RACE_NUM(ARGS:2)
+;ここまでで新しいロールが決定できるので取得しなおす
+CALL SET_ROLE, ARG
+;-------------------------------
+;ロール変更前に持っていたサブ素質を付与する
+;-------------------------------
+IF L_TALENT != ""
+	SPLIT L_TALENT, "/", L_TALENTS
+	FOR LCOUNT, 0, RESULT
+		TEMP_TALENTNAME '= AUTO_SPLIT(L_TALENTS:LCOUNT, "_", 0)
+		SIF TALENT:ARG:TEMP_TALENTNAME
+			CONTINUE
+		;---- EDIT 009 ADD START -------------------------
+		;持てない素質をはじく
+		SIF GET_SUB_ROLE_NUM(TEMP_TALENTNAME) >= 0 && !GET_ROLE_PROP(@"CAN_USE_%TEMP_TALENTNAME%", ARG, "通常形態")
+			CONTINUE
+		;---- EDIT 009 ADD END ---------------------------
+		TALENT:ARG:TEMP_TALENTNAME = MAX(TOINT(AUTO_SPLIT(L_TALENTS:LCOUNT, "_", 1)), 1)
+	NEXT
+ENDIF
+IF L_TRANS_TALENT != ""
+	SPLIT L_TRANS_TALENT, "/", L_TALENTS
+	FOR LCOUNT, 0, RESULT
+		TEMP_TALENTNAME '= AUTO_SPLIT(L_TALENTS:LCOUNT, "_", 0)
+		SIF TRANS_BTL_TALENT:ARG:GET_SUB_ROLE_NUM(TEMP_TALENTNAME)
+			CONTINUE
+		;---- EDIT 009 ADD START -------------------------
+		SIF !GET_ROLE_PROP(@"CAN_USE_%TEMP_TALENTNAME%", ARG, "変身形態")
+			CONTINUE
+		;---- EDIT 009 ADD END ---------------------------
+		TRANS_BTL_TALENT:ARG:GET_SUB_ROLE_NUM(TEMP_TALENTNAME) = MAX(TOINT(AUTO_SPLIT(L_TRANS_TALENT:LCOUNT, "_", 1)), 1)
+	NEXT
+ENDIF
+;---- EDIT 009 MOD START -------------------------
+;ロール変更後のデフォルト素質を付与する
+SIF !STRCOUNT(ARGS:3, "デフォルト素質なし")
+	CALL SET_BTL_TALENT_NEW, ARG
+;---- EDIT 009 MOD END ---------------------------
+;-------------------------------
+;ここまでの状態でCPを計算して
+;足りないなら、素質選択
+;足りているのなら、変更前のロールのデフォルト素質の付与判定をする
+;-------------------------------
+CALL SET_ROLE_CP, ARG
+IF GET_ROLE_CP(ARG, "通常形態") < 0 && !FLAG:CP제한무효화
+	RESULTS '= ""
+	TRYCALLFORM ROLE_DEFAULT_BTL_TALENT_%CSTR:ARG:롤%
+	L_DEFAULT:0 '= RESULTS
+	SIF L_TALENT != "" && L_DEFAULT:0 != ""
+		L_TALENT += "/"
+	L_TALENT += L_DEFAULT:0
+	DRAWLINE
+	PRINTL 남길 소질을 선택해 주십시오
+	DRAWLINE
+	CALL ENHANCE_ROLE, ARG, "通常形態", L_TALENT, , "戻る不可"
+ELSE
+	CALL SET_BTL_TALENT_DEFAULT, L_DEFAULT:0, ARG, "通常形態"
+ENDIF
+IF GET_ROLE_CP(ARG, "変身形態") < 0 && !FLAG:CP제한무효화
+	RESULTS '= ""
+	TRYCALLFORM ROLE_DEFAULT_BTL_TALENT_TRANS_%CSTR:ARG:롤%
+	L_DEFAULT:1 '= RESULTS
+	SIF L_TRANS_TALENT != "" && L_DEFAULT:1 != ""
+		L_TRANS_TALENT += "/"
+	L_TRANS_TALENT += L_DEFAULT:1
+	DRAWLINE
+	PRINTL 남길 소질을 선택해 주십시오
+	DRAWLINE
+	CALL ENHANCE_ROLE, ARG, "変身形態", L_TALENT, , "戻る不可"
+ELSE
+	CALL SET_BTL_TALENT_DEFAULT, L_DEFAULT:1, ARG, "変身形態"
+ENDIF
+
+;-------------------------------
+;装備関係の処理
+;-------------------------------
+CALL FIX_ROLE_EQUIP, ARG
+
+;-------------------------------
+;スキル関係の処理
+;-------------------------------
+;この段階で確実に変身解除状態なので、人間時スキルを更新する
+IF GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+	FOR LCOUNT, 1, HAVEABLE_SKILLNUM + 1
+		ABL:ARG:@"인간시스킬{LCOUNT}" = ABL:ARG:@"스킬{LCOUNT}"
+	NEXT
+ENDIF
+;枠数を取得
+CALL SET_CHARA_SKILLCOUNT, ARG
+;---- EDIT 006 DEL START -------------------------　Fix内で除外処理を走らせるのでここのは削除
+;ロール変更で使用不能になったスキルを除外する
+;CALL EXCLUDE_UNABLE_SKILL, ARG, 1
+;---- EDIT 006 DEL END ---------------------------
+CALL FIX_ROLE_HAVESKILL, ARG
+CALL FIX_CHARA_TRANS_SKILL, ARG
+
+;-------------------------------
+;素質の変更等で装備条件を満たせなくなった装備を確認する
+;-------------------------------
+@FIX_ROLE_EQUIP, ARG
+#DIM LCOUNT
+;サクセサーでなくなっていたら魔晶剣を外す
+SIF 魔晶装備(EQUIP:ARG:검) && !GET_BTL_TALENT_LV("석세서", ARG, "両形態")
+	CALL 装備変更, ARG, GET_EQUIPNUM("검"), 0
+FOR LCOUNT, 0, 7
+	SELECTCASE GET_EQUIP(LCOUNT)
+		CASE "총"
+			SIF GET_ROLE_PROP("CAN_USE_GUN", ARG, "両形態")
+				CONTINUE
+		CASE "악세서리"
+			SIF GET_ROLE_PROP("CAN_USE_EQUIP", ARG, "両形態")
+				CONTINUE
+			SIF GET_ROLE_PROP("CAN_USE_PLUGIN", ARG, "両形態")
+				CONTINUE
+		CASEELSE
+			SIF GET_ROLE_PROP("CAN_USE_EQUIP", ARG, "両形態")
+				CONTINUE
+	ENDSELECT
+	;装備の使用条件を満たせなくなっていたら外す
+	CALL 装備変更, ARG, LCOUNT, 0
+NEXT
+
+;-------------------------------
+;素質の変更等で仕様条件を満たせなくなったスキルを確認する
+;-------------------------------
+@FIX_ROLE_HAVESKILL, ARG, ARGS = "枠数/スキル使用能力"
+#DIM LCOUNT
+#DIM STOCK_HAVESKILLNUM, 3
+#DIM IS_TRANS
+;悪魔変身していた場合は戻す
+IF GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+	IS_TRANS = CFLAG:ARG:악마변신
+	CALL TRANS_DEVIL, ARG, ,"変身解除"
+ENDIF
+
+;---- EDIT 006 MOD START -------------------------
+;還元前にスキルが除外されてしまうので処理順を変更
+;還元処理
+;スキル使用能力が低下していたり、枠数が足りないなどスキルを減らす必要がある場合。カード＋MAGで返す
+CALL REDUCTION_SKILL_CHARA, ARG, ARGS
+;ロールが条件として指定されているスキルなどを除外(所持スキルは適正化されているはずなのでここでは習得スキルの除外を行う)
+CALL EXCLUDE_UNABLE_SKILL, ARG
+;---- EDIT 006 MOD END ---------------------------
+
+;変身出来ない場合は変身絡みのスキルをクリアー
+IF !GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+	FOR LCOUNT, 1, HAVEABLE_SKILLNUM + 1
+		ABL:ARG:@"인간시스킬{LCOUNT}" = 0
+		ABL:ARG:@"초기변신악마스킬{LCOUNT}" = 0
+		ABL:ARG:@"초기변신악마습득스킬{LCOUNT}" = 0
+		ABL:ARG:@"초기변신악마습득LV{LCOUNT}" = 0
+	NEXT
+ELSE
+	;ここでもいちおう人間スキルを登録しておく
+	FOR LCOUNT, 1, CHARA_SKILLCOUNT(ARG, "通常形態")
+		ABL:ARG:@"인간시스킬{LCOUNT}" = ABL:ARG:@"스킬{LCOUNT}"
+	NEXT
+	;いちおう変身していたなら変身状態に
+	SIF IS_TRANS
+		CALL TRANS_DEVIL, ARG
+ENDIF
+
+;---- EDIT 006 MOD START ---------------------------
+;人間時スキルでなく、スキルを操作する必要があったので修正
+;---------------------------------------------------
+;スキル所持数が減った場合などに、所持スキルをスキルカードとMAGにして還元して取得させる処理
+;ARG 	対象のキャラ番号
+;ARGS	還元判定の対象
+;---------------------------------------------------
+@REDUCTION_SKILL_CHARA, ARG, ARGS = "枠数/スキル使用能力"
+#DIM LCOUNT, 3
+#DIM L_RESULT
+#DIM L_LINE
+#DIM L_COLOR
+#DIM L_SKILL, 2
+#DIMS L_SKILLS
+#DIM L_COST
+#DIM L_DEL_SKILL, HAVEABLE_SKILLNUM * 2
+#DIM L_REDUCTION_SKILL, HAVEABLE_SKILLNUM * 2
+#DIM IS_DEL_SKILL
+#DIM CNT_REDUCTION
+#DIM MAG_REDUCTION
+#DIM STOCK_HAVESKILLNUM, 3
+#DIM L_SKILL_SUCCESSION
+#DIMS TRANS_MODE
+#DIM SELECT_SKILL, HAVEABLE_SKILLNUM
+#DIM STOCK_REDRAW
+
+STOCK_REDRAW = CURRENTREDRAW()
+REDRAW 0
+
+VARSET L_REDUCTION_SKILL
+VARSET L_DEL_SKILL
+
+FOR LCOUNT:2, 0, 1 + GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+	IF LCOUNT:2 == 0
+		TRANS_MODE = 通常形態
+		IF GET_ROLE_PROP("CAN_USE_TRANS", ARG) && CFLAG:ARG:악마변신
+			L_SKILLS = 인간시스킬
+		ELSE
+			L_SKILLS = 스킬
+		ENDIF
+	ELSE
+		TRANS_MODE = 変身形態
+		IF GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+			;初期変身悪魔に変身している場合
+			IF CFLAG:ARG:악마변신 && CFLAG:ARG:링크캐릭터실제가입시간0 <= 0
+				L_SKILLS = 스킬
+			ELSE
+				L_SKILLS = 초기변신악마스킬
+			ENDIF
+		ELSE
+			BREAK
+		ENDIF
+	ENDIF
+	;-------------------------------------------
+	;所持不能になったスキルの還元・削除処理
+	;最初に持てないスキルを自動的にすべて抜く
+	;-------------------------------------------
+	FOR LCOUNT, HAVEABLE_SKILLNUM, 0, -1
+		L_SKILL = ABL:ARG:@"%L_SKILLS%{LCOUNT}"
+		SIF !L_SKILL
+			CONTINUE
+		;削除不能スキルは対象外にする
+		CALL GET_SKILL_PROP, "SKILL_DEL_UNABLE", L_SKILL, ARG
+		SIF RESULT
+			CONTINUE
+		;最初に継承タイプをチェック
+		SIF !STRCOUNT(ARGS, "スキル使用能力")
+			CONTINUE
+		CALL IS_SKILL_HAVEABLE, L_SKILL, ARG, TRANS_MODE
+		IF !RESULT
+			;置換スキルがあるなら置き換える
+			CALL GET_SKILL_PROP, "置換スキル", L_SKILL, ARG
+			IF RESULT
+				L_SKILL:1 = RESULT
+				IF !HAVE_SKILL(ARG, L_SKILL:1)
+					CALL IS_SKILL_HAVEABLE, L_SKILL:1, ARG, TRANS_MODE
+					IF RESULT
+						ABL:ARG:@"%L_SKILLS%{LCOUNT}" = L_SKILL:1
+						CALL PRINT_COLOR, @"使用条件を満たせなくなり、%CALLNAME:ARG%の%SKILL_NAME_F(L_SKILL)%が%SKILL_NAME_F(L_SKILL:1)%に置換された。", COLOR("red"), "W"
+						CONTINUE
+					ENDIF
+				ENDIF
+			ENDIF
+		ELSE
+			CONTINUE
+		ENDIF
+		;スキルを消す
+		ABL:ARG:@"%L_SKILLS%{LCOUNT}" = 0
+		;マントラの場合はカード還元をしない
+		IF GET_ROLE_PROP("CAN_USE_MANTRA", ARG, ,TRANS_MODE)
+			L_DEL_SKILL:FINDELEMENT(L_DEL_SKILL, 0) = L_SKILL
+		;還元不能の削除フラグが立てられていたら削除リストに入れる
+		ELSE
+			;スキルカードにできるスキルかどうかを確認する
+			CALL IS_MAKEABLE_SKILLCARD, L_SKILL
+			IF RESULT
+				L_REDUCTION_SKILL:FINDELEMENT(L_REDUCTION_SKILL, 0) = L_SKILL
+			ELSE
+				L_DEL_SKILL:FINDELEMENT(L_DEL_SKILL, 0) = L_SKILL
+			ENDIF
+		ENDIF
+	NEXT
+NEXT
+MAG_REDUCTION = 0
+FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+	L_SKILL = L_REDUCTION_SKILL:LCOUNT
+	SIF !L_SKILL
+		BREAK
+	CALL GET_ITEM, 10000 + L_SKILL
+	PRINTFORML %CALLNAME:ARG%의 소지 스킬이 %ITEMNAME:(10000 + L_SKILL)%(으)로서 환원되었다。
+	CALL GET_ITEM, 10000 + L_SKILL, 1
+	;コストを計算
+	CALL GET_SKILL_PROP, "SKILL_RANK", L_SKILL, ARG
+	L_COST = POWER(RESULT,3)*150 * ＭＡＧ強化ＣＰ補正(ARG) / 1000
+	CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", L_SKILL, ARG
+	SIF TALENT:ARG:GET_SUCCESSION(RESULT) == 0
+		L_COST *= 2
+	MAG_REDUCTION += L_COST
+NEXT
+FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+	L_SKILL = L_DEL_SKILL:LCOUNT
+	SIF !L_SKILL
+		BREAK
+	CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, ARG
+	CALL PRINT_COLOR, @"%CALLNAME:ARG%의 %RESULTS%(을)를 잃어버렸다。", COLOR("red"), "L"
+NEXT
+
+SIF MAG_REDUCTION
+	PRINTFORML 합계 {MAG_REDUCTION}의 ＭＡＧ가 환원되었다。
+CALL CONTROL_MAG, ARG, MAG_REDUCTION
+
+;空き番号を詰める
+FOR LCOUNT, 1, HAVEABLE_SKILLNUM
+	IF !ABL:ARG:@"%L_SKILLS%{LCOUNT}"&& ABL:ARG:@"%L_SKILLS%{LCOUNT+1}"
+		SWAP ABL:ARG:@"%L_SKILLS%{LCOUNT}", ABL:ARG:@"%L_SKILLS%{LCOUNT + 1}"
+		LCOUNT = 0
+	ENDIF
+NEXT
+
+;人間時スキルなどを更新
+;CALL FIX_CHARA_TRANS_SKILL, ARG
+
+SIF L_REDUCTION_SKILL || L_DEL_SKILL
+	FORCEWAIT
+
+;スキル所持数を確認
+VARSET STOCK_HAVESKILLNUM
+FOR LCOUNT, 1, HAVEABLE_SKILLNUM + 1
+	STOCK_HAVESKILLNUM:0 += (ABL:ARG:@"스킬{LCOUNT}" > 0)
+	STOCK_HAVESKILLNUM:1 += (ABL:ARG:@"초기변신악마스킬{LCOUNT}" > 0)
+	STOCK_HAVESKILLNUM:2 += (ABL:ARG:@"인간시스킬{LCOUNT}" > 0)
+NEXT
+
+FOR LCOUNT:2, 0, 1 + GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+	VARSET SELECT_SKILL
+	IF LCOUNT:2 == 0
+		TRANS_MODE = 通常形態
+		IF GET_ROLE_PROP("CAN_USE_TRANS", ARG) && CFLAG:ARG:악마변신
+			L_SKILLS = 인간시스킬
+			CNT_REDUCTION = STOCK_HAVESKILLNUM:2 - CHARA_SKILLCOUNT(ARG, TRANS_MODE)
+		ELSE
+			L_SKILLS = 스킬
+			CNT_REDUCTION = STOCK_HAVESKILLNUM:0 - CHARA_SKILLCOUNT(ARG, TRANS_MODE)
+		ENDIF
+	ELSE
+		TRANS_MODE = 変身形態
+		IF GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+			IF CFLAG:ARG:악마변신 && CFLAG:ARG:링크캐릭터실제가입시간0 <= 0
+				L_SKILLS = 스킬
+				CNT_REDUCTION = STOCK_HAVESKILLNUM:0 - CHARA_SKILLCOUNT(ARG, TRANS_MODE)
+			ELSE
+				L_SKILLS = 초기변신악마스킬
+				CNT_REDUCTION = STOCK_HAVESKILLNUM:1 - CHARA_SKILLCOUNT(ARG, TRANS_MODE)
+			ENDIF
+		ELSE
+			BREAK
+		ENDIF
+	ENDIF
+	IF CNT_REDUCTION > 0
+		CALL MESSAGE_B, 4, @"%CALLNAME:ARG%のスキル所持可能数が変わって持ちきれないスキルが出来ました。", "所持スキルから外すスキルを指定してください", "なお、外したスキルがスキルカードにできる場合はスキルカードを取得し", "さらに取得に必要なMAGが還元されまます。"
+		L_LINE = LINECOUNT
+		$START
+		CLEARLINE LINECOUNT - L_LINE
+		FOR LCOUNT, 0, HAVEABLE_SKILLNUM 
+			L_SKILL = ABL:ARG:@"%L_SKILLS%{LCOUNT+1}"
+			SIF L_SKILL == 0
+				CONTINUE
+			SETCOLOR SELECT_SKILL:LCOUNT ? COLOR("aqua") # COLOR("デフォルト")
+			CALL GET_SKILL_PROP, "SKILL_DEL_UNABLE", L_SKILL, ARG
+			L_RESULT = RESULT
+			SIF L_RESULT
+				SETCOLOR COLOR("gray")
+			CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, ARG
+			PRINTFORM [{LCOUNT}] %RESULTS, 36%
+			SIF L_RESULT
+				PRINTFORM 　　　삭제불능
+			PRINTL 
+			RESETCOLOR
+		NEXT
+		DRAWLINE
+		PRINTFORML 【소지가능 스킬 수:{CHARA_SKILLCOUNT(ARG, TRANS_MODE)}】
+		DRAWLINE
+		CALL PRINT_COLOR, "[99] 결정", CNT_REDUCTION > MATCH(SELECT_SKILL, 1) ? COLOR("gray") # COLOR("デフォルト")
+		INPUT
+		SELECTCASE RESULT
+			CASE 0 TO HAVEABLE_SKILLNUM
+				L_RESULT = RESULT
+				L_SKILL = ABL:ARG:@"%L_SKILLS%{L_RESULT+1}"
+				IF L_SKILL
+					CALL GET_SKILL_PROP, "SKILL_DEL_UNABLE", L_SKILL, ARG
+					SIF !RESULT
+						SELECT_SKILL:L_RESULT = !SELECT_SKILL:L_RESULT
+				ENDIF
+			CASE 99
+				IF MATCH(SELECT_SKILL, 1) >= CNT_REDUCTION
+					VARSET L_REDUCTION_SKILL
+					VARSET L_DEL_SKILL
+					MAG_REDUCTION = 0
+					FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+						SIF !SELECT_SKILL:LCOUNT
+							CONTINUE
+						L_SKILL = ABL:ARG:@"%L_SKILLS%{LCOUNT+1}"
+						IS_DEL_SKILL = 0
+						RESULT = 0
+						CALL GET_SKILL_PROP, "継承不能", L_SKILL, ARG
+						SIF RESULT
+							IS_DEL_SKILL = 1
+						RESULT = 0
+						CALL GET_SKILL_PROP, "SKILL_RANK", L_SKILL, ARG
+						SIF !INRANGE(RESULT, 1, 15)
+							IS_DEL_SKILL = 1
+						CALL GETS_SKILL_PROP, "ロール専用", L_SKILLS, ARG
+						IF RESULT
+							SIF !STRCOUNT(GETS_ROLE_PROP("CAN_USE_SPECIAL_SKILL", ARG, TRANS_MODE), RESULTS)
+								IS_DEL_SKILL = 1
+						ENDIF
+						;還元不能の削除フラグが立てられていたら削除リストに入れる
+						IF IS_DEL_SKILL
+							L_DEL_SKILL:FINDELEMENT(L_DEL_SKILL, 0) = L_SKILL
+						ELSE
+							L_REDUCTION_SKILL:FINDELEMENT(L_REDUCTION_SKILL, 0) = L_SKILL
+						ENDIF
+						ABL:ARG:@"%L_SKILLS%{LCOUNT+1}" = 0
+					NEXT
+					MAG_REDUCTION = 0
+					FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+						L_SKILL = L_REDUCTION_SKILL:LCOUNT
+						SIF !L_SKILL
+							BREAK
+						CALL GET_ITEM, 10000 + L_SKILL
+						PRINTFORML %CALLNAME:ARG%의 소지 스킬이 %ITEMNAME:(10000 + L_SKILL)%(으)로서 환원되었다。
+						CALL GET_ITEM, 10000 + L_SKILL, 1
+						;コストを計算
+						CALL GET_SKILL_PROP, "SKILL_RANK", L_SKILL, ARG
+						L_COST = POWER(RESULT,3)*150 * ＭＡＧ強化ＣＰ補正(ARG) / 1000
+						CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", L_SKILL, ARG
+						SIF TALENT:ARG:GET_SUCCESSION(RESULT) == 0
+							L_COST *= 2
+						MAG_REDUCTION += L_COST
+					NEXT
+					FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+						L_SKILL = L_DEL_SKILL:LCOUNT
+						SIF !L_SKILL
+							BREAK
+						CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, ARG
+						CALL PRINT_COLOR, @"%CALLNAME:ARG%의 %RESULTS%(을)를 잃어버렸다。", COLOR("red"), "L"
+					NEXT
+
+					SIF MAG_REDUCTION
+						PRINTFORMW 합계 {MAG_REDUCTION}의 ＭＡＧ가 환원되었다。
+					CALL CONTROL_MAG, ARG, MAG_REDUCTION
+
+					;空き番号を詰める
+					FOR LCOUNT, 1, HAVEABLE_SKILLNUM
+						IF !ABL:ARG:@"%L_SKILLS%{LCOUNT}"&& ABL:ARG:@"%L_SKILLS%{LCOUNT+1}"
+							SWAP ABL:ARG:@"%L_SKILLS%{LCOUNT}", ABL:ARG:@"%L_SKILLS%{LCOUNT + 1}"
+							LCOUNT = 0
+						ENDIF
+					NEXT
+					CONTINUE
+				ENDIF
+		ENDSELECT
+		GOTO START
+	ENDIF
+NEXT
+REDRAW STOCK_REDRAW
+;---- EDIT 006 MOD END ---------------------------

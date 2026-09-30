@@ -1,0 +1,278 @@
+﻿;-------------------------------------------------
+;さっちん戦闘用口上
+;テンプレより作成。ライセンスフリー
+;-------------------------------------------------
+
+;-------------------------------------------------
+;■台詞の行数を増やしたいときは
+;			LOCAL:1 = 行数
+;			LOCALS = 一行目
+;			LOCALS:1 = 二行目
+;			LOCALS:2 = 三行目
+;と増やしていく
+;-------------------------------------------------
+
+;-------------------------------------------------
+@KOJO_BATTLE_EVENT_K[[キャラ:사츠키]], ARG, ARG:1, ARG:2
+;-------------------------------------------------
+SIF ARG < 0 && NO:ARG != 5051
+	RETURN 0
+LOCAL:1 = 1
+;BTL_KOJO_RESULTS:0 = EMPTY
+
+SELECTCASE TFLAG:전투이벤트
+	;COOP発動 ARGは発動者
+	CASE 1
+		IF RAND:2
+			BTL_KOJO_RESULTS:0 = 좋~아！　모두들、해치웠어！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 응、컨디션 좋고、만사 오케이♪
+		ENDIF
+		
+	;COOP参加
+	CASE 2
+		;主人がCOOP発動
+		IF FLAG:행동순1 != -1 && FLAG:행동순1 == MASTER
+			BTL_KOJO_RESULTS:0 = 응。점점 연계에 익숙해져가는、걸까나？
+		;それ以外
+		ELSE
+		IF RAND:2
+				BTL_KOJO_RESULTS:0 = 네ー에、맡겼어요！
+			ELSE
+				BTL_KOJO_RESULTS:0 = 여기 사람들은 모두 굉장하네。나도 열심히 해야겠다。
+			ENDIF
+		ENDIF
+	;被召喚時
+	CASE 3
+			BTL_KOJO_RESULTS:0 = 아ー아、이런 극적인 모험도 익숙해졌어…
+	;공격　ARGが攻撃をする仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 11
+		;相手が死んだ
+		IF BASE:(ARG:1):ＨＰ <= 0
+			BTL_KOJO_RESULTS:0 = 후으、어떻게든 됐네。
+		;弱点をついた。つまりCOOP
+		ELSEIF GET_CREC_ACT(ARG, ARG:1, "WEAK")
+			IF CFLAG:(ARG:1):방어플래그
+				BTL_KOJO_RESULTS:0 = 후후、왜 그러니？　방어만 하고 있다간 죽는다구우？
+			ELSE
+				;こっちはCOOP発動に回すためにカット
+				RETURN 0
+			ENDIF
+;		;大ダメージ
+;		ELSEIF ダメージ割合(ARG:1, ARG:2) > 50
+;			BTL_KOJO_RESULTS:0 = 
+;		ELSEIF ダメージ割合(ARG:1, ARG:2) > 25
+;			BTL_KOJO_RESULTS:0 = 
+;		ELSEIF ダメージ割合(ARG:1, ARG:2) <= 0
+;			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;被ダメージ
+	;ARGが攻撃を受ける仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 12
+		;死んだ
+		IF BASE:ARG:ＨＰ <= 0
+			IF RAND:2
+				BTL_KOJO_RESULTS:0 = 미안-해…
+			ELSE
+				BTL_KOJO_RESULTS:0 = （아――――）
+			ENDIF
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 50 || 現HP割合(ARG) < 25
+			IF RAND:2
+				BTL_KOJO_RESULTS:0 = 꺄아아아아！？
+			ELSE
+				BTL_KOJO_RESULTS:0 = 우우、절대 괜찮지 않아…
+			ENDIF
+		;無効
+		ELSEIF ARG:2 == 0
+			BTL_KOJO_RESULTS:0 = 안 통한다니깐！
+		;吸収
+		ELSEIF ARG:2 < 0
+			BTL_KOJO_RESULTS:0 = 와와와！　회복시켜 준 건 절대 아닌거지…?
+		ENDIF
+	;反射された
+	CASE 15
+			BTL_KOJO_RESULTS:0 = 에―――에에에！？
+	;反射した
+	CASE 16
+			BTL_KOJO_RESULTS:0 = 학습능력이 없는거야? 당신、과거에 내가 그랬던 것 이상으로 멍청이네!
+	;回避された
+	CASE 17
+			BTL_KOJO_RESULTS:0 = 어라아？
+	;回避した
+	CASE 18
+			BTL_KOJO_RESULTS:0 = 이래뵈도、나는 몇 년에 한 번 나올까말까 하는 일재(逸材)라고 했잖아！
+ENDSELECT
+;SIF LOCALS != "EMPTY"
+;	CALL MESSAGE_BL(LOCAL:1, LOCALS, LOCALS:1, LOCALS:2, LOCALS:3, LOCALS:4)
+
+;-------------------------------------------------
+@KOJO_BATTLE_MESSAGE_K[[キャラ:사츠키]],ARG,ARG:1 = 0
+;-------------------------------------------------
+
+LOCAL:1 = 1
+;BTL_KOJO_RESULTS:0 = "EMPTY"
+
+;崩壊してる場合は口上表示しない
+SIF TALENT:ARG:9
+	RETURN 0
+
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;これは通常攻撃
+IF CFLAG:ARG:입력행동 == 0
+	IF RAND:3 == 0
+		BTL_KOJO_RESULTS:0 = 에이！
+	ELSEIF !RAND:2
+		BTL_KOJO_RESULTS:0 = 에얏！
+	ELSE
+		BTL_KOJO_RESULTS:0 = 에ー엣또、아팠다면 미안합니다ー
+	ENDIF
+;-------------------------------------------------
+;ＣＨＡＮＧＥ
+;-------------------------------------------------
+;ELSEIF LOCAL == 2301
+;	BTL_KOJO_RESULTS:0 = 
+;-------------------------------------------------
+;汎用スキル
+;-------------------------------------------------
+;검격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1, 99)
+	BTL_KOJO_RESULTS:0 = 토오노 군처럼은 안 되겠지만…
+;;비구
+;ELSEIF RANGE(CFLAG:ARG:입력행동,101, 199)
+;	BTL_KOJO_RESULTS:0 = 
+;타격
+ELSEIF RANGE(CFLAG:ARG:입력행동,201, 299)
+	IF RAND:3 == 0
+		BTL_KOJO_RESULTS:0 = 하나ー두울！
+	ELSEIF !RAND:2
+		BTL_KOJO_RESULTS:0 = 간다앗～！
+	ELSE
+		BTL_KOJO_RESULTS:0 = 엄청 화내고 있다구！
+	ENDIF
+;噛み付き系
+ELSEIF RANGE(CFLAG:ARG:입력행동,321, 326)
+	BTL_KOJO_RESULTS:0 = 목이 마르네……　하지만 참지 않으면…
+;회복
+;ELSEIF RANGE(CFLAG:ARG:입력행동,401, 499)
+;	;全体回復
+;	IF CFLAG:ARG:타겟 > 6
+;		BTL_KOJO_RESULTS:0 = 
+;	ELSE
+;		BTL_KOJO_RESULTS:0 = 
+;	ENDIF
+;지원
+ELSEIF RANGE(CFLAG:ARG:입력행동,501, 599)
+	;強化系
+	IF RANGE(CFLAG:ARG:입력행동,501, 505)
+		BTL_KOJO_RESULTS:0 = 활기차게 해나가자~！
+	;弱体系
+	ELSEIF RANGE(CFLAG:ARG:입력행동,506, 509)
+		BTL_KOJO_RESULTS:0 = 엣또、이런 때는… 약간 실례할게요…
+	;도발
+	ELSEIF CFLAG:ARG:입력행동 == 515
+		BTL_KOJO_RESULTS:0 = 응응。같은 뒷세계의 사람으로서、당신의 고통에는 공감해요！
+	;その他
+	ELSE
+;		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;;방어
+;ELSEIF RANGE(CFLAG:ARG:입력행동,601, 699)
+;	BTL_KOJO_RESULTS:0 = 
+;;화염
+;ELSEIF RANGE(CFLAG:ARG:입력행동,701, 799)
+;	BTL_KOJO_RESULTS:0 = 
+;;빙결
+;ELSEIF RANGE(CFLAG:ARG:입력행동,801, 899)
+;	BTL_KOJO_RESULTS:0 = 
+;;전격
+;ELSEIF RANGE(CFLAG:ARG:입력행동,901, 999)
+;	BTL_KOJO_RESULTS:0 = 
+;;충격
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1001, 1099)
+;	BTL_KOJO_RESULTS:0 = 
+;;신경
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1101, 1199)
+;	BTL_KOJO_RESULTS:0 = 
+;;정신
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1201, 1299)
+;	BTL_KOJO_RESULTS:0 = 
+;;파마
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1301, 1399)
+;	BTL_KOJO_RESULTS:0 = 
+;;주살
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1401, 1499)
+;	BTL_KOJO_RESULTS:0 = 
+;;지변
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1501, 1599)
+;	BTL_KOJO_RESULTS:0 = 
+;;수격
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1601, 1699)
+;	BTL_KOJO_RESULTS:0 = 
+;;질풍
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1701, 1799)
+;	BTL_KOJO_RESULTS:0 = 
+;;중력
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1801, 1899)
+;	BTL_KOJO_RESULTS:0 = 
+;;핵열
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1901, 1999)
+;	BTL_KOJO_RESULTS:0 = 
+;;만능
+;ELSEIF RANGE(CFLAG:ARG:입력행동,2001, 2099)
+;	;自爆系
+;	IF RANGE(CFLAG:ARG:입력행동,2005, 2007)
+;		BTL_KOJO_RESULTS:0 = 
+;	ELSE
+;		BTL_KOJO_RESULTS:0 = 
+;	ENDIF
+;魔法少女系
+ELSEIF RANGE(CFLAG:ARG:입력행동,2989, 2999)
+;アルティメットさつき
+	IF CFLAG:ARG:입력행동 == 2991
+		BTL_KOJO_RESULTS:0 = 死ぬがよい（ニッコリ）
+	ELSE
+;		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+
+;-------------------------------------------------
+;加筆分
+;-------------------------------------------------
+;枯渇庭園
+ELSEIF CFLAG:ARG:입력행동 == 2971
+	IF RAND:2
+		BTL_KOJO_RESULTS:0 = 覚悟して…！
+	ELSE
+		BTL_KOJO_RESULTS:0 = 엣！　몸이、터질 것만―――
+	ENDIF
+
+;-------------------------------------------------
+;リンケージ
+;-------------------------------------------------
+;;메시아라이저
+;ELSEIF CFLAG:ARG:입력행동 == 4160
+;	BTL_KOJO_RESULTS:0 = 
+;;Lヒートライザ
+;ELSEIF CFLAG:ARG:입력행동 == 4200
+;	BTL_KOJO_RESULTS:0 = 
+;;사망유희
+;ELSEIF CFLAG:ARG:입력행동 == 4800
+;	BTL_KOJO_RESULTS:0 = 
+;ELSEIF CFLAG:ARG:입력행동 == 
+;	IF RAND:2
+;		BTL_KOJO_RESULTS:0 = 
+;	ELSE
+;		BTL_KOJO_RESULTS:0 = 
+;	ENDIF
+;-------------------------------------------------
+;その他
+;-------------------------------------------------
+ELSE
+;	BTL_KOJO_RESULTS:0 = 
+ENDIF
+
+;SIF LOCALS != "EMPTY"
+;	CALL MESSAGE_B(LOCAL:1, LOCALS, LOCALS:1, LOCALS:2, LOCALS:3, LOCALS:4)

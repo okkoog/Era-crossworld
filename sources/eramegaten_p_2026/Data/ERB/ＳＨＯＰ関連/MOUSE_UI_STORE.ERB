@@ -1,0 +1,567 @@
+﻿;-------------------------------------------------
+;MOUSE_UI_STORE.ERB
+;LICENCE: FREE
+;YEAR: 2020
+;REGION: 日本
+;-------------------------------------------------
+;001	2020/MM/DD	？？？	（新規作成）
+;002	2022/08/17	NEO		表示変更やJP使用切り替えなどを追加（処理の追加の仕方が恐ろしく美しくなくてマジで申し訳なさしかない）
+;
+
+;-------------------------------------------------
+;マウス専用統合型ショップUI
+;-------------------------------------------------
+@MouseUIStore(aShopName)
+#DIMS aShopName
+[IF_DEBUG]
+[ENDIF]
+CALL MouseUIStore_Exsits_Items()
+CALL MouseUIStore_Exsits_CustomItem()
+SELECTCASE aShopName
+	CASE "JUNK"
+		CALL MouseUIStore_JunkShop()
+	CASE "MACCA"
+		CALL MouseUIStore_Macca()
+	CASEELSE
+		THROW %aShopName%은(는) 알 수 없는 점포입니다.
+ENDSELECT
+RETURN RESULT
+
+;-------------------------------------------------
+;魔貨
+;-------------------------------------------------
+@MouseUIStore_Macca()
+#DIM DYNAMIC lOnSales, 20000
+#DIMS lCategories = "검", "총", "머리", "몸통", "팔", "발", "악세서리", "탄환", "アイテム"
+#DIMS lCurrencies = "MACCA"
+#DIM DYNAMIC lDisplays, 9, 1000
+CALL MouseUIStore_Macca_OnSales(lOnSales)
+CALL MouseUIStore_Displays(lOnSales, lCategories, lDisplays)
+CALL MouseUIStore_Trades(lDisplays, lCategories, lCurrencies, "BUY")
+
+;-------------------------------------------------
+;정크숍
+;-------------------------------------------------
+@MouseUIStore_JunkShop()
+#DIM DYNAMIC lOnSales, 20000
+#DIMS lMenu = "표시변경", "JP사용전환", "산다", "귀중품을 판다", "불필요한 물건을 매입 요청한다", "행복티켓을 사용한다", "JP에 대해 묻는다", "가게를 나간다"
+#DIM lShopper
+#DIMS lCategories = "검", "총", "머리", "몸통", "팔", "발", "악세서리", "탄환", "アイテム"
+#DIMS lBuyCurrencies = "JP", "YEN"
+#DIMS lTurnCurrency = "JP", "JP"
+#DIMS lSellCurrency = "YEN", "YEN"
+#DIM DYNAMIC lDisplays, 9, 1000
+#DIM DYNAMIC lTradeIn, 9, 1000
+#DIM DYNAMIC lSells, 9, 1000
+lShopper = 0
+
+CALL MouseUIStore_Set_Value()
+CALL MouseUIStore_Yen_OnSales(lOnSales)
+CALL MouseUIStore_Displays(lOnSales, lCategories, lDisplays)
+CALL MouseUIStore_JunkShop_Talk("ENTER")
+DO
+	CALL MouseUIStore_JunkShop_Talk(@"TALK_{lShopper}")
+	lShopper = 1
+	CALL MouseUIStore_JunkShop_Menu(lMenu, lBuyCurrencies)
+	SELECTCASE lMenu:RESULT
+		CASE "표시변경"
+			CALL RPG_SHOP_SCREENMODE_CHANGE
+			;マウスUIモード→非マウスUIモードになるはずなのでいったんリセット
+			RETURN 0
+		CASE "JP사용전환"
+			;※購入画面側でも変更は可能です
+			FLAG:정크포인트미사용 = !FLAG:정크포인트미사용
+		CASE "산다"
+			CALL MouseUIStore_Trades(lDisplays, lCategories, lBuyCurrencies, "BUY")
+		CASE "귀중품을 판다"
+			CALL MouseUIStore_Sells(lCategories, lSells)
+			CALL MouseUIStore_Trades(lSells, lCategories, lSellCurrency, "SELL")
+		CASE "불필요한 물건을 매입 요청한다"
+			CALL MouseUIStore_TradeIn(lCategories, lTradeIn)
+			CALL MouseUIStore_Trades(lTradeIn, lCategories, lTurnCurrency, "TRADEIN")
+		CASE "장비변경"
+		CASE "행복티켓을 사용한다"
+			CALL SIAWASE_TICKET
+			SIF !RESULT
+				RETURN 0
+		CASE "티켓에 대해 묻는다"
+			CALL MouseUIStore_JunkShop_Talk("H_TICKET")
+		CASE "JP에 대해 묻는다"
+			CALL MouseUIStore_JunkShop_Talk("JP")
+		CASE "가게를 나간다"
+			CALL MouseUIStore_JunkShop_Talk("EXIT")
+			RETURN 0
+	ENDSELECT
+LOOP 1
+
+;-------------------------------------------------
+;店メニュー
+;-------------------------------------------------
+@MouseUIStore_JunkShop_Menu(rMenu, rCurrencies)
+#DIM StockLine
+#DIMS REF rMenu, 0
+#DIMS REF rCurrencies, 0
+REDRAW 0
+CALL MouseUIStore_Shows_WalletBar(rCurrencies)
+HTML_PRINT GETLINESTR("━") + "<br>"
+FOR LOCAL, 0, VARSIZE("rMenu")
+	IF rMenu:LOCAL == "표시변경"
+		;ADD 002:表示切替設定な
+		PRINTL 【화면모드：마우스UI모드】
+		;半角スペースは「別モードの表示変更ボタン」と判定を同じにするためのもの
+		PRINTFORML [{LOCAL, 2}] %rMenu:LOCAL + "→ 비마우스UI모드        ", 30, LEFT%
+	ELSEIF rMenu:LOCAL == "JP사용전환"
+		;ADD 002:半分くらいは表示位置合わせのための意味のない行な
+		PRINTFORML [--] 장비자 비교 설정：변경불가（단품구매 모드에서만 변경가능）
+		PRINTFORML [{LOCAL, 2}] %rMenu:LOCAL + "（현재：" + \@ !FLAG:정크포인트미사용 ? 사용한다 # 사용하지 않는다 \@ + "）", 30, LEFT%
+	ELSEIF rMenu:LOCAL == "가게를 나간다"
+		;ADD 002:誤クリック対策に１行開く
+		HTML_PRINT GETLINESTR("━") + "<br>"
+		PRINTFORML [{LOCAL, 2}] %rMenu:LOCAL, 30, LEFT%
+	ELSE
+		PRINTFORML [{LOCAL, 2}] %rMenu:LOCAL, 30, LEFT%
+	ENDIF
+NEXT
+StockLine = LINECOUNT
+DO
+	CLEARLINE LINECOUNT - StockLine
+	INPUT
+	SELECTCASE RESULT
+		CASE 0 TO (VARSIZE("rMenu") - 1)
+			RETURN RESULT
+	ENDSELECT
+LOOP 1
+
+;-------------------------------------------------
+@MouseUIStore_JunkShop_Talk(lDetail)
+#DIMS DYNAMIC lDetail
+#DIM DYNAMIC lstockline
+REDRAW 0
+lstockline = LINECOUNT
+HTML_PRINT "<br>" + GETLINESTR("━") + "<br>" + "<br>"
+SELECTCASE lDetail
+	CASE "ENTER"
+		CALL PRINT_TALK_BY_ADDRESS, "", "junkshop_signbord", "어서 오세요ー!"
+		WAIT
+		CLEARLINE LINECOUNT - lstockline
+	CASE "TALK_0"
+		CALL PRINT_TALK_BY_ADDRESS, "알바", "junkshop_worker", "오늘은 어떤 일이신가요ー？"
+	CASE "TALK_1"
+		CALL PRINT_TALK_BY_ADDRESS, "알바", "junkshop_worker", "더 필요하신 게 있으신가요ー？"
+	CASE "EXIT"
+		CALL PRINT_TALK_BY_ADDRESS, "알바", "junkshop_worker", "감사했습니다ー!"
+		WAIT
+	CASE "H_TICKET"
+		PRINTL 점주：
+		PRINTL 「우리 가게에서 물건을 사면 주는 티켓이다
+		PRINTL 　￥1000 이상 사 주면 얹어 주지
+		PRINTW 　단, JP로는 안 줘　티켓을 원하면 ￥으로 물건을 사라고」
+	CASE "JP"
+		PRINTL 점주：
+		PRINTL 「우리 가게에서만 쓸 수 있는 포인트다
+		PRINTL 　납금하거나 마카로 물건을 사면 쌓여 가지
+		PRINTL 　팬텀 녀석들에게 신세 지고 있으니까 말이야
+		PRINTW 　우리 물건을 포인트만큼 할인해 주는 거다」
+		REDRAW 0
+		PRINTL
+		PRINTL 「단, 포인트가 부족한 만큼은 현금으로 받겠지만 말이야
+		PRINTL 　그리고, 우리 가게에서 파는 물건을 되팔면 그게 되지
+		PRINTW 　우리 물건으로 돈벌이하게 둘 순 없으니까」
+ENDSELECT
+
+;-------------------------------------------------
+;売買画面
+;-------------------------------------------------
+@MouseUIStore_Trades(rDisplays, rItemTypes, rCurrencies, aMode)
+#DIM REF rDisplays, 0, 0
+#DIMS REF rItemTypes, 0
+#DIMS REF rCurrencies, 0
+#DIM DYNAMIC lCart, 10, 1000
+#DIMS aMode
+#DIM lPerPage = 20
+#DIM lUserNo
+#DIM lUnit
+#DIM lCurType
+#DIM lCurPage
+#DIM lCurItem
+#DIMS lCurrency
+#DIMS lTypeColor = "TYPE"
+#DIMS lInputedS
+#DIM lInputed
+#DIMS DYNAMIC lSortedS, 10
+#DIM DYNAMIC lSorted, 10
+#DIM DYNAMIC Is_Start_Sorted, 10
+lUserNo = -1
+lUnit = 1
+lCurType = 0
+lCurPage = 0
+lCurItem = 0
+IF VARSIZE("rCurrencies") >= 2
+	lCurrency '= rCurrencies:(FLAG:정크포인트미사용)
+ELSE
+	lCurrency '= rCurrencies:0
+ENDIF
+;lCurrency '= rCurrencies:0
+lSortedS '= ""
+;初回はレベル逆順ソートに流す
+VARSET Is_Start_Sorted
+;アイテムと弾丸は開幕ソートをしない
+Is_Start_Sorted:7 = 1, 1
+DO
+	REDRAW 0
+	lCurType = MouseUIStore_Select_ItemType(rDisplays, lCurType)
+	lCurrency '= rCurrencies:(MouseUIStore_Select_Currency(rCurrencies, lCurrency))
+	HTML_PRINT "<br>" * 3
+	CALL MouseUIStore_Shows_ItemDetail(rItemTypes:lCurType, rDisplays:lCurType:lCurItem, lUserNo)
+	CALL MouseUIStore_Shows_WalletBar(rCurrencies, lCurrency, lUnit)
+
+	SIF VARSIZE("rItemTypes") > 1
+		CALL MouseUIStore_Shows_CategoryTab(rItemTypes, rDisplays, lCurType)
+	IF aMode == "BUY"
+		CALL MouseUIStore_Shows_UserBar(lUserNo, "TRADE")
+		CALL MouseUIStore_Shows_UserStatus(lUserNo, rItemTypes:lCurType, rDisplays:lCurType:lCurItem, lTypeColor)
+	ENDIF
+	CALL MouseUIStore_Shows_ItemList(rDisplays, lCart, lPerPage, rItemTypes:lCurType, lCurType, lCurPage, lCurItem, lUserNo, aMode, lTypeColor)
+	CALL MouseUIStore_Shows_CartBar(rDisplays, lCart, rCurrencies, lCurrency, aMode)
+	HTML_PRINT GETLINESTR("━") + "<br>"
+	IF Is_Start_Sorted:lCurType
+		INPUTS
+	ELSE
+		RESULTS = ELv_0
+	ENDIF
+	REDRAW 0
+	lInputedS '= SUBSTRING(RESULTS, 0, 3)
+	lInputed = TOINT(SUBSTRING(RESULTS, 4))
+	IF MouseUIStore_Sorts_CondSymbol(lInputedS)
+		IF lInputedS == lSortedS:lCurType && lInputed == lSorted:lCurType
+			CALL MouseUIStore_Sorts_Reverse(rDisplays, lCart, lCurType)
+		ELSE
+			lSortedS:lCurType '= lInputedS
+			lSorted:lCurType = lInputed
+			CALL MouseUIStore_Sorts(rDisplays, lCart, lCurType, lUserNo, RESULTS, lInputed)
+			IF !Is_Start_Sorted:lCurType
+				CALL MouseUIStore_Sorts_Reverse(rDisplays, lCart, lCurType)
+				Is_Start_Sorted:lCurType = 1
+			ENDIF
+		ENDIF
+	ENDIF
+	SELECTCASE lInputedS
+		CASE "ext"
+			RETURN 0
+		CASE "pay"
+			SIF lInputed < VARSIZE("rCurrencies") && MouseUIStore_CurMoney(rCurrencies:lInputed) > 0
+				FLAG:정크포인트미사용 = !FLAG:정크포인트미사용
+			lCurrency '= rCurrencies:(FLAG:정크포인트미사용)
+			;lCurrency '= rCurrencies:lInputed
+		CASE "tab"
+			IF rDisplays:lInputed:0
+				lCurType = lInputed
+				lCurPage = 0
+				lCurItem = 0
+			ENDIF
+		CASE "use"
+			lUserNo = lInputed
+		CASE "clk"
+			IF lCurItem == lInputed
+				IF aMode == "BUY"
+					CALL MouseUIStore_SimpleDeal(rDisplays:lCurType:lCurItem, lUserNo, rCurrencies, lCurrency, lUnit, aMode)
+				ELSEIF aMode == "TRADEIN"
+					CALL MouseUIStore_SimpleDeal(rDisplays:lCurType:lCurItem, lUserNo, rCurrencies, lCurrency, lUnit, aMode)
+					SIF !RESULT
+						CONTINUE
+					CALL MouseUIStore_TradeIn(rItemTypes, rDisplays)
+					VARSET lCart
+				ELSEIF aMode == "SELL"
+					CALL MouseUIStore_SimpleDeal(rDisplays:lCurType:lCurItem, lUserNo, rCurrencies, lCurrency, lUnit, aMode)
+					SIF !RESULT
+						CONTINUE
+					VARSET lCart
+					CALL MouseUIStore_Sells(rItemTypes, rDisplays)
+				ENDIF
+			ELSE
+				lCurItem = lInputed
+			ENDIF
+		CASE "add"
+				CALL MouseUIStore_Add_ToCart(lCart, lCurType, lInputed, rDisplays:lCurType:lInputed, lUnit, aMode)
+		CASE "out"
+			lCart:lCurType:lInputed = MAX(lCart:lCurType:lInputed - lUnit, 0)
+		CASE "crt"
+			SELECTCASE lInputed
+				CASE 0
+					VARSET lCart
+				CASE 999
+					IF aMode == "BUY"
+						CALL MouseUIStore_Confirm_Buy(rDisplays, lCart, rCurrencies, lCurrency, aMode)
+					ELSEIF aMode == "TRADEIN"
+						CALL MouseUIStore_Confirm_Sell(rDisplays, lCart, lCurrency, aMode)
+						SIF !RESULT
+							CONTINUE
+						CALL MouseUIStore_TradeIn(rItemTypes, rDisplays)
+					ELSEIF aMode == "SELL"
+						CALL MouseUIStore_Confirm_Sell(rDisplays, lCart, lCurrency, aMode)
+						SIF !RESULT
+							CONTINUE
+						CALL MouseUIStore_Sells(rItemTypes, rDisplays)
+					ENDIF
+			ENDSELECT
+		CASE "scr"
+			IF !lInputed
+				lCurPage = MAX(0, lCurPage-1)
+			ELSE
+				VARSIZE rDisplays
+				SIF (lCurPage*lPerPage + lPerPage) < RESULT:1 && rDisplays:lCurType:(lCurPage*lPerPage + lPerPage)
+					lCurPage ++
+			ENDIF
+		CASE "uni"
+			lUnit = lInputed
+		CASE "TyC"
+			IF lTypeColor == "TYPE"
+				lTypeColor '= "EFFECT"
+			ELSE
+				lTypeColor '= "TYPE"
+			ENDIF
+		CASE "det"
+			IF !lInputed
+				MouseUIStore_ItemDetail_LineNum = MAX(MouseUIStore_ItemDetail_LineNum - 1, 1)
+			ELSE
+				MouseUIStore_ItemDetail_LineNum = MIN(MouseUIStore_ItemDetail_LineNum + 1, 30)
+			ENDIF
+			SAVEGLOBAL
+		CASEELSE
+	ENDSELECT
+LOOP 1
+
+;-------------------------------------------------
+;単体取引及び装備
+;-------------------------------------------------
+@MouseUIStore_SimpleDeal(aItemNo, aUserNo, rCurrencies, aFirstCur, aUnit, aMode)
+#DIM aItemNo
+#DIM aUserNo
+#DIM aHaveITEMNum
+#DIMS REF rCurrencies, 0
+#DIMS aFirstCur
+#DIM aUnit
+#DIMS aMode
+#DIM lUnit
+#DIM lTotalPrice
+;例外処理とダイアログ
+SELECTCASE aMode
+	CASE "BUY"
+		lUnit = MIN(aUnit, MouseUIStore_ItemMaxPosses:aItemNo - ITEM:aItemNo - COUNT_STOCK_ITEM:aItemNo)
+		lTotalPrice = ITEMPRICE:aItemNo * lUnit
+		;既に最大所持
+		IF lUnit <= 0
+			RETURN 0
+		ENDIF
+		;所持金不足
+		IF !MouseUIStore_Is_Payable(lTotalPrice, rCurrencies)
+			RETURN 0
+		ENDIF
+		CALL MouseUIStore_Dialog_Buy(rCurrencies, aFirstCur, lTotalPrice, @"%ITEMNAME:aItemNo% {lUnit}個")
+	CASE "TRADEIN", "SELL"
+		lUnit = MIN(aUnit, ITEM:aItemNo + COUNT_STOCK_ITEM:aItemNo)
+		IF INRANGE(aItemNo, MIN_EQUIPNUM, MAX_EQUIPNUM -1)
+			CALL EQ_売却価格, aItemNo
+			lTotalPrice = RESULT * lUnit
+		ELSE
+			lTotalPrice = (ITEMPRICE:aItemNo / 2) * lUnit
+		ENDIF
+		;持ってない、売値0
+		IF lUnit <= 0 || lTotalPrice <= 0
+			RETURN 0
+		ENDIF
+		CALL MouseUIStore_Dialog_Sell(rCurrencies, aFirstCur, lTotalPrice, @"%ITEMNAME:aItemNo% {lUnit}個")
+	CASEELSE
+		THROW %aMode%은(는) 알 수 없는 매매 형식입니다.
+ENDSELECT
+IF RESULT
+	RETURN 0
+ENDIF
+;売買処理
+SELECTCASE aMode
+	CASE "BUY"
+		CALL MouseUIStore_Pay(lTotalPrice, rCurrencies, aFirstCur)
+		IF !RESULT
+			PRINTL 　소지금이 부족합니다
+			PRINTW 　구입을 취소했습니다
+			RETURN 0
+		ENDIF
+		ITEM:aItemNo += lUnit
+		PRINTFORMW 　구입을 완료했습니다
+		CALL MouseUIStore_Dialog_ChangeEquip(aUserNo, aItemNo)
+	CASE "TRADEIN", "SELL"
+		ITEM:aItemNo -= lUnit
+		PRINTFORMW 　매각을 완료했습니다
+		CALL MouseUIStore_Add_Money(aFirstCur, lTotalPrice)
+ENDSELECT
+CALL MOVE_STOCK_ITEM, aItemNo
+RETURN 1
+
+;-------------------------------------------------
+;購入処理
+;-------------------------------------------------
+@MouseUIStore_Confirm_Buy(rDisplays, rCart, rCurrencies, aFirstCur, aMode)
+#LOCALSIZE 1
+#DIM REF rDisplays, 0, 0
+#DIM REF rCart, 0, 0
+#DIMS REF rCurrencies, 0
+#DIMS aFirstCur
+#DIM lTotalPrice
+#DIM lTotalNum
+#DIM lTotalItem
+#DIMS aMode
+CALL MouseUIStore_Calc_TotalPrice(rDisplays, rCart, aMode)
+lTotalPrice = RESULT:0
+lTotalNum = RESULT:1
+lTotalItem = RESULT:2
+IF !MouseUIStore_Is_Payable(lTotalPrice, rCurrencies)
+	PRINTW 　소지금이 부족합니다
+	RETURN 0
+ENDIF
+CALL MouseUIStore_Shows_Cart(rDisplays, rCart)
+CALL MouseUIStore_Dialog_Buy(rCurrencies, aFirstCur, lTotalPrice, @"上記 {lTotalItem}アイテム {lTotalNum}個")
+IF RESULT
+	PRINTW 　구입을 취소했습니다
+	RETURN 0
+ENDIF
+;支払い
+CALL MouseUIStore_Pay(lTotalPrice, rCurrencies, aFirstCur)
+;支払い失敗
+IF !RESULT
+	PRINTL 　소지금이 부족합니다
+	PRINTW 　구입을 취소했습니다
+	RETURN 0
+ENDIF
+CALL MouseUIStore_Adds_AllOfCart(rDisplays, rCart)
+VARSET rCart
+PRINTFORMW 　구입을 완료했습니다
+RETURN 1
+
+;-------------------------------------------------
+;売却処理
+;-------------------------------------------------
+@MouseUIStore_Confirm_Sell(rList, rCart, aSellCur, aMode)
+#DIM REF rList, 0, 0
+#DIM REF rCart, 0, 0
+#DIMS REF rCurrencies, 0
+#DIMS aSellCur
+#DIM lTotalPrice
+#DIM lTotalNum
+#DIM lTotalItem
+#DIMS aMode
+CALL MouseUIStore_Calc_TotalPrice(rList, rCart, aMode)
+lTotalPrice = RESULT:0
+lTotalNum = RESULT:1
+lTotalItem = RESULT:2
+CALL MouseUIStore_Shows_Cart(rList, rCart)
+CALL MouseUIStore_Dialog_Sell(aSellCur, aSellCur, lTotalPrice, @"上記 {lTotalItem}アイテム {lTotalNum}個")
+IF RESULT
+	PRINTW 　매각을 취소했습니다
+	RETURN 0
+ENDIF
+CALL MouseUIStore_Removes_AllOfCart(rList, rCart)
+CALL MouseUIStore_Add_Money(aSellCur, lTotalPrice)
+VARSET rCart
+PRINTFORMW 　매각을 완료했습니다
+RETURN 1
+
+;-------------------------------------------------
+;支払
+;-------------------------------------------------
+@MouseUIStore_Pay(aTotalPrice, rCurrencies, aFirstCur)
+#LOCALSIZE 2
+#DIM aTotalPrice
+#DIMS REF rCurrencies, 0
+#DIMS aFirstCur
+#DIM DYNAMIC lWallet, 10
+#DIM preYEN
+#DIM preMACCA
+;ポイント付与用に現在値を取得
+preYEN = MouseUIStore_CurMoney("YEN")
+preMACCA = MouseUIStore_CurMoney("MACCA")
+;支払い可能かチェック
+LOCAL:1 = MouseUIStore_Is_Payable(aTotalPrice, rCurrencies)
+SIF !LOCAL:1
+	RETURN 0
+;支払い処理
+CALL MouseUIStore_Remove_Money(aFirstCur, aTotalPrice)
+IF aTotalPrice != RESULT
+	LOCAL:1 = aTotalPrice - RESULT
+	aTotalPrice = RESULT
+	PRINTFORML 　%MouseUIStore_MoneyS(aFirstCur, LOCAL:1)% 지불했습니다
+ENDIF
+FOR LOCAL, 0, VARSIZE("rCurrencies")
+	SIF !aTotalPrice
+		BREAK
+	CALL MouseUIStore_Remove_Money(rCurrencies:LOCAL, aTotalPrice)
+		IF aTotalPrice != RESULT
+			LOCAL:1 = aTotalPrice - RESULT
+			aTotalPrice = RESULT
+			PRINTFORML 　%MouseUIStore_MoneyS(rCurrencies:LOCAL, LOCAL:1)% 지불했습니다
+		ENDIF
+NEXT
+;ポイント付与
+LOCAL = (preYEN - MouseUIStore_CurMoney("YEN")) / 1000
+IF LOCAL > 0
+	CALL MouseUIStore_Add_Money("TICKET", LOCAL)
+	PRINTFORML 　행복티켓을 {LOCAL}장 입수했습니다
+ENDIF
+RETURN 1
+
+;-------------------------------------------------
+;アイテム入手
+;-------------------------------------------------
+@MouseUIStore_Adds_AllOfCart(rDisplays, rCart)
+#LOCALSIZE 2
+#DIM REF rDisplays, 0, 0
+#DIM REF rCart, 0, 0
+#DIM lMax, 2
+#DIM lItemNo
+VARSIZE rDisplays
+lMax:0 = RESULT:0, RESULT:1
+FOR LOCAL:0, 0, lMax:0
+	FOR LOCAL:1, 0, lMax:1
+		IF !(rDisplays:(LOCAL:0):(LOCAL:1))
+			BREAK
+		ENDIF
+		IF !(rCart:(LOCAL:0):(LOCAL:1))
+			CONTINUE
+		ENDIF
+		;実処理
+		lItemNo = rDisplays:(LOCAL:0):(LOCAL:1)
+		ITEM:lItemNo += rCart:(LOCAL:0):(LOCAL:1)
+		IF ITEM:lItemNo + COUNT_STOCK_ITEM:lItemNo > MouseUIStore_ItemMaxPosses:lItemNo
+			THROW
+		ENDIF
+		CALL MOVE_STOCK_ITEM, lItemNo
+	NEXT
+NEXT
+
+;-------------------------------------------------
+;アイテム消失
+;-------------------------------------------------
+@MouseUIStore_Removes_AllOfCart(rList, rCart)
+#LOCALSIZE 2
+#DIM REF rList, 0, 0
+#DIM REF rCart, 0, 0
+#DIM lMax, 2
+#DIM lItemNo
+VARSIZE rList
+lMax:0 = RESULT:0, RESULT:1
+FOR LOCAL:0, 0, lMax:0
+	FOR LOCAL:1, 0, lMax:1
+		IF !(rList:(LOCAL:0):(LOCAL:1))
+			BREAK
+		ENDIF
+		IF !(rCart:(LOCAL:0):(LOCAL:1))
+			CONTINUE
+		ENDIF
+		;実処理
+		lItemNo = rList:(LOCAL:0):(LOCAL:1)
+		ITEM:lItemNo -= rCart:(LOCAL:0):(LOCAL:1)
+		IF ITEM:lItemNo + COUNT_STOCK_ITEM:lItemNo < 0
+			THROW
+		ENDIF
+		CALL MOVE_STOCK_ITEM, lItemNo
+	NEXT
+NEXT

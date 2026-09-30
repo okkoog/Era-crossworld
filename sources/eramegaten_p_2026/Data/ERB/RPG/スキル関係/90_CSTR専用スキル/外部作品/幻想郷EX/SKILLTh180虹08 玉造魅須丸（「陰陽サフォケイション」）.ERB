@@ -1,0 +1,149 @@
+﻿;専用スキル用のテンプレート
+;「「陰陽サフォケイション」」を別の名前に置き換えてください
+
+;アクティブスキルに必須なものはそのままにしており
+;なくてもいいものはコメントアウトしております
+;必要だと思ったらコメントアウトを外して設定してください
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_「陰陽サフォケイション」,ARG
+RESULTS = 「음양 서포케이션」
+
+;　명중
+@SKILL_HITRATE_「陰陽サフォケイション」, ARG
+RETURN 130
+
+;　威力
+;R11 / 450 - 30(추가효과) - 30(条件付き強化)
+;強化は50%の追加ダメージ
+@SKILL_POWER_「陰陽サフォケイション」, ARG
+RETURN 390
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_「陰陽サフォケイション」,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_「陰陽サフォケイション」,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_「陰陽サフォケイション」, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_「陰陽サフォケイション」,ARG
+RETURN 22
+
+;　相性
+@SKILL_TYPE_「陰陽サフォケイション」,ARG
+RETURN GET_TYPE_NUM("파마")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_「陰陽サフォケイション」
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_「陰陽サフォケイション」,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_「陰陽サフォケイション」,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_「陰陽サフォケイション」,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_「陰陽サフォケイション」,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_「陰陽サフォケイション」,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_「陰陽サフォケイション」, ARG = -1
+RETURN -20
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_「陰陽サフォケイション」
+RETURN 0
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_「陰陽サフォケイション」,ARG
+RETURN GET_STATE_NUM("DYING")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_「陰陽サフォケイション」,ARG
+RETURN GET_TYPE_NUM("파마")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_「陰陽サフォケイション」,ARG
+RETURN 50
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_「陰陽サフォケイション」,ARG
+RETURN 95
+
+@SKILL_RANK_「陰陽サフォケイション」,ARG
+RETURN 11
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_「陰陽サフォケイション」,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL ATTACK_SKILL,ARG,ARG:1,SKILL_NUM;	単体攻撃
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　説明文の表示
+@SKILL_EXPLAIN_「陰陽サフォケイション」,ARG
+PRINTL 적 1체에 파마 상성으로 데미지를 주고 고확률로 DYING을 부여한다. 발동이 느리고 높은 명중.
+PRINTL 대상이 파마 가드킬 효과를 받고 있을 경우 데미지가 50% 증가한다.
+PRINTL 
+PRINTL 숨이 막힐 듯한 음양옥 폭풍으로 적을 감싸 안고 공격한다.
+PRINTL 대상의 파마 내성이 파괴되어 있을 경우 더욱 가열차게 몰아붙여 숨통을 끊는다.
+PRINTL 타마노오야노미코토 타마츠쿠리 미스마루의 스펠카드 (CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_「陰陽サフォケイション」,ARG
+RETURN 1
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_「陰陽サフォケイション」, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			IF IS_PU_SKILL_入力行動(L_P, "「陰陽サフォケイション」") && IS_VALID_GUARD_KILL(L_TARGET, "파마")
+				RESULTS = 가드킬 특공
+				RETURN 50
+			ENDIF
+	ENDSELECT
+;自分が防御側
+ELSE
+ENDIF
+RETURN 0

@@ -1,0 +1,178 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_恐怖喚起,ARG
+IF ARG == -1
+	RESULTS = 追撃・恐怖喚起
+ELSEIF HAVE_PU_SKILL(ARG, "紺碧の種") 
+	RESULTS = 追撃・恐怖喚起★
+ELSE
+	RESULTS = 追撃・恐怖喚起
+ENDIF
+
+;　명중
+@SKILL_HITRATE_恐怖喚起, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_恐怖喚起, ARG
+SIF ARG == -1
+	RETURN 100
+SIF HAVE_PU_SKILL(ARG, "紺碧の種") 
+	RETURN 300
+RETURN 100
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_恐怖喚起,ARG
+SIF ARG == -1
+	RETURN 5
+SIF HAVE_PU_SKILL(ARG, "紺碧の種") 
+	RETURN 10
+RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_恐怖喚起,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_恐怖喚起,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_恐怖喚起, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_恐怖喚起,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_恐怖喚起,ARG
+RETURN GET_TYPE_NUM("전술")
+
+@SKILL_ATTACKTYPE_恐怖喚起,ARG
+RETURN GET_攻撃タイプ_NUM("LV")
+;なんかこれでレベル依存になるらしい
+;割合ダメージとかもこの項目で作るんだって
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_恐怖喚起
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_恐怖喚起, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_恐怖喚起,ARG
+RETURN GET_SKILL_TARGET_NUM("특수")
+
+;　사거리
+@SKILL_RANGE_恐怖喚起,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_恐怖喚起,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_恐怖喚起,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_恐怖喚起,ARG
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;속도보정
+@SKILL_SPEED_恐怖喚起, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_恐怖喚起
+RETURN 0
+;できない
+
+;戦闘中に使用できるか
+@SKILL_ACTIONABLE_BATTLE_恐怖喚起, ARG
+RETURN 0
+;できない
+
+;スキル変化？用ランク
+@SKILL_RANK_恐怖喚起, ARG = -1
+RETURN 0
+
+
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_恐怖喚起,ARG,ARG:1
+;自分じゃなければNG
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+;判定は一回のみ
+SIF ARG != ARG:1
+	RETURN 0
+IF CFLAG:ARG:PT플래그
+	SIF GROUPMATCH(CFLAG:ARG:타겟, 17, 18, 19)
+		RETURN 0
+	SIF INRANGE(CFLAG:ARG:타겟, 1, 6)
+		RETURN 0
+ELSE
+	SIF GROUPMATCH(CFLAG:ARG:타겟, 20, 21, 22)
+		RETURN 0
+	SIF INRANGE(CFLAG:ARG:타겟, 7, 16)
+		RETURN 0
+ENDIF
+;通常攻撃はダメ～
+SIF CFLAG:ARG:입력행동 == [[스킬:ＡＴＴＡＣＫ]]
+	RETURN 0
+;入力行動が攻撃スキルでかつターゲットがちゃんと存在していること
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+SIF RESULT != 1 || CFLAG:ARG:타겟 < 1
+	RETURN 0
+RETURN 1, CFLAG:ARG:타겟
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_恐怖喚起,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+IF INRANGE(ARG:1, 1, 16)
+	CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM
+ELSE
+	CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM
+ENDIF
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_恐怖喚起,ARG
+IF HAVE_PU_SKILL(ARG, "紺碧の種") 
+	PRINTL 패시브: 스킬로 공격을 행했을 때, 자동으로 전기 상성의 추격을 가한다.
+	PRINTL 　　　　　【감벽의 씨앗】으로 강화되어, 위력은 캐릭터의 레벨에 의존한다.
+ELSE
+	PRINTL 패시브: 스킬로 공격을 행했을 때, 자동으로 전기 상성의 추격을 가한다.
+	PRINTL 　　　　　위력은 캐릭터의 레벨에 의존한다.
+ENDIF
+;とくにない
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_恐怖喚起,ARG
+RETURN 0
+;とくにない
+
+@SKILL_DEL_UNABLE_恐怖喚起,ARG
+RETURN 0
+;削除可
+
+@継承不能_恐怖喚起
+RETURN 2
+;不可、造魔や子供にも継承せず
+

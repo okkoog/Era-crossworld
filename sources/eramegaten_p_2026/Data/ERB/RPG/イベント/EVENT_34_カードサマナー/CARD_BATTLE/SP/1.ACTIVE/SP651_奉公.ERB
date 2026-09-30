@@ -1,0 +1,62 @@
+﻿
+;特技名
+@CGSP_NAME_651, ARGS, ARG
+RESULTS = 奉公
+
+;　コストの量
+@CGSP_COST_651, ARGS, ARG
+RETURN 0
+;1
+
+;　타겟(選択するかしないか)
+@CGSP_TARGET_651, ARGS, ARG
+RETURN 0
+;0-無し　　　1-味方1体　2-味方1体(自身含む)　3-敵1体　4-敵1体(サマナー含む)
+;5-敵味方1体　6-サマナーどちらか
+;自動発動なので0
+
+;　発動タイミング
+@CGSP_TIMING_651, ARGS, ARG
+RETURN 0
+;0-アクティブ　1-味方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　2-相手ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　3-両方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ
+
+;====================================================
+;特技発動
+;====================================================
+@CGSP_ACTION_651, ARGS, ARG, ARG:1
+
+FIELD_DEMON_DATE_V:ARG:CBV_B_HP -= 1
+FIELD_DEMON_DATE_V:ARG:CBV_HP -= 1
+
+CALL CARDBATTLE_MESSAGE, CS_PIC_NAME(ARG) + @"は基礎HP:-1になった。"
+
+CALL CS_STOCK_MAG_GET, ARG, 0, 1, 1
+CALL CB_STATE_ADD, ARG, 996, 1
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;発動後どうなるか
+@CGSP_ACTION_AFTER_651, ARGS, ARG, ARG:1
+RETURN 1
+;0-何もなし　1-フリーズ状態　2-山札に戻る　3-即死する
+
+;　 説明文の表示
+@CGSP_EXPLAIN_651, ARGS, ARG
+RESULTS = 自身の基礎HP-1にし、MAG生成を1段階上昇させて行う。ただし、このＳＰを使った仲魔はタップする。基礎HPが2以上ないと使用できない。
+
+;　スキルタイプ
+;　主にこのターンパワーアップとアギとかのダメージ系で使用
+;　それ以外は省略
+;　43 ストックMAG獲得
+@CGSP_TYPE_651, ARGS, ARG
+RETURN 43
+
+;使用条件
+;特になければ省略してOK
+@CGSP_SPECIAL_ACTIONABLE_651, ARGS, ARG
+SIF FIELD_DEMON_DATE_V:ARG:CBV_B_HP > 1
+	RETURN 1
+RETURN 0
+;とくにない
+

@@ -1,0 +1,184 @@
+﻿;スキル名
+@SKILL_NAME_2959,ARG
+RESULTS = 보석마술
+
+
+;　명중
+@SKILL_HITRATE_2959, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2959, ARG
+IF ARG == -1
+	RETURN 300
+ENDIF
+IF BASE:ARG:LV < 60
+	RETURN BASE:ARG:LV * 10
+ELSE
+	RETURN 600
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2959,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2959,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2959, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2959,ARG
+RETURN 5
+
+;　相性
+@SKILL_TYPE_2959,ARG
+;　相性 火炎・電撃(レベル40まで)・氷結(レベル60まで)・疾風(それ以上)のうち、もっともダメージが高くなるものになる
+IF ARG >= 0
+	SELECTCASE BASE:ARG:LV
+		CASE IS < 40
+			RETURN GET_TYPE_NUM("화염"), GET_TYPE_NUM("전격")
+		CASE IS < 60
+			RETURN GET_TYPE_NUM("화염"), GET_TYPE_NUM("전격"), GET_TYPE_NUM("빙결")
+		CASEELSE
+			RETURN GET_TYPE_NUM("화염"), GET_TYPE_NUM("전격"), GET_TYPE_NUM("빙결"), GET_TYPE_NUM("질풍")
+	ENDSELECT
+ELSE
+	RETURN GET_TYPE_NUM("화염")
+ENDIF
+;#LOCALSSIZE 5
+;#LOCALSIZE 5
+;SIF ARG < 0 || スキル属性表示中
+;	RETURN GET_TYPE_NUM("화염")
+;SIF CFLAG:ARG:타겟 > 16 || CFLAG:ARG:타겟 < 1
+;	RETURN GET_TYPE_NUM("화염")
+;LOCAL = POS(CFLAG:ARG:타겟)
+;SIF LOCAL < 0
+;	RETURN GET_TYPE_NUM("화염")
+;	
+;IF BASE:ARG:LV < 40
+;	LOCAL:4 = 3
+;ELSEIF BASE:ARG:LV < 60
+;	LOCAL:4 = 4
+;ELSE
+;	LOCAL:4 = 5
+;ENDIF
+;	
+;LOCAL:2 = -300
+;;デフォは火炎をいれとく
+;LOCALS = 화염
+;LOCALS:1 = 전격
+;LOCALS:2 = 화염
+;LOCALS:3 = 빙결
+;LOCALS:4 = 질풍
+;FOR LOCAL:1, 1, LOCAL:4
+;	;判定用に数値をしまう。反射は-200扱い
+;	LOCAL:3 = MAXBASE:LOCAL:(LOCALS:(LOCAL:1)) == 999 ? -200 # MAXBASE:LOCAL:(LOCALS:(LOCAL:1))
+;	LOCAL:3 = !(HAVE_SKILL(ARG,[[스킬:영세라이도우]]) || HAVE_SKILL(ARG,2947)) && CFLAG:LOCAL:(LOCALS:(LOCAL:1)+"무효화횟수") ? -5 # LOCAL:3
+;	LOCAL:3 = CFLAG:LOCAL:(LOCALS:(LOCAL:1)+"가드킬") && LOCAL:3 < 100 ? 100 # LOCAL:3
+;	LOCAL:3 = CFLAG:LOCAL:마법반사플래그 ? -200 # LOCAL:3
+;
+;	IF LOCAL:3 > LOCAL:2
+;		LOCAL:2 = LOCAL:3
+;		LOCALS = %LOCALS:(LOCAL:1)%
+;	ENDIF
+;NEXT
+;RETURN GET_TYPE_NUM(LOCALS)
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2959
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2959, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2959, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2959,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2959,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2959, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2959
+RETURN GET_SUCCESSION_NUM("화염")
+
+;속도보정
+@SKILL_SPEED_2959, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2959
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2959, ARG = -1
+RETURN 7
+
+
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2959, ARG, ARG:1, ARG:2
+IF CFLAG:ARG:PT플래그 > 0
+	IF BASE:ARG:LV < 60
+		MONEY -=  BASE:ARG:LV * 200
+	ELSE
+		MONEY -=  12000
+	ENDIF
+	SIF MONEY < 0
+		MONEY = 0
+ENDIF
+PRINTFORMW %CALLNAME:ARG%은(는) 보석을 깨뜨려 마력을 개방했다!
+LOCAL = POS(ARG:1)
+CALL ATTACK_SINGLE,ARG,LOCAL,2959
+
+
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2959, ARG
+PRINTL 보석을 깨뜨려 복합 속성의 마력탄으로서 발사한다.
+
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2959,ARG
+IF CFLAG:ARG:PT플래그 > 0
+	IF BASE:ARG:LV < 60
+		SIF MONEY < BASE:ARG:LV * 200
+			RETURN 0
+	ELSE
+		SIF MONEY < 12000
+			RETURN 0
+	ENDIF
+ENDIF
+RETURN 1
+;金の有無、
+

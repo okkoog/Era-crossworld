@@ -1,0 +1,233 @@
+﻿;スキル名
+@SKILL_NAME_アブソープション,ARG
+SELECTCASE TOINT(CSTR:ARG:104)
+	CASE 0
+		RESULTS = ？？？
+	CASEELSE
+		RESULTS = 압솝션
+ENDSELECT
+
+;　명중
+@SKILL_HITRATE_アブソープション, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_アブソープション, ARG
+RETURN 100
+
+;;クリティカル率
+;@SKILL_CRITICAL_RATE_アブソープション, ARG
+;RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_アブソープション, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_アブソープション,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_アブソープション,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_アブソープション,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_アブソープション,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_アブソープション, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_アブソープション,ARG
+RETURN 0
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_アブソープション
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_アブソープション,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_アブソープション,ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_アブソープション,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_アブソープション,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_アブソープション,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_アブソープション
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_アブソープション, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_アブソープション
+RETURN 0
+
+;没
+;@SKILL_RANK_アブソープション, ARG = -1
+
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_アブソープション,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;====================================================
+;@SKILL_TRIGGER_ACTIONABLE_アブソープション,ARG,ARG:1
+;RETURN 0
+
+;====================================================
+;カウンター発動条件
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_アブソープション,ARG,ARG:1
+;RETURN RESULT
+
+;====================================================
+;ダメージ発動時
+;====================================================
+;@SKILL_DAMAGE_EFFECT_アブソープション,ARG,ARG:1
+
+;====================================================
+;行動によるスキルゲージ操作
+;各キャラクターの通常の行動後に全キャラで呼び出される
+;ARG:		このスキルの持ち主のキャラ番号
+;ARG:1		行動したキャラクターのキャラ番号
+;
+;RESULT 		獲得したゲージの量を返すことで獲得量を表示させる。つまり、他人の行動に反応させることなども可能。
+;RESULT:1		獲得表示のときの文字色を指定できる。ゲージが溜まったときの表示わけなどに
+;RESULTS		ゲージの名称 「<<XXXX>>」という形で表示される
+;RESULTS:1		ゲージの単位。半角の%を使いたい場合は「\%」と言うかたちで退避記号を使うと良い
+;RESULTS;2		色指定以外の要素を使わずに文字列を返す。ゲージ式の獲得量で表現したい場合などに
+;====================================================
+@SKILLGAGE_CHARGE_アブソープション,ARG,ARG:1
+#LOCALSIZE 1
+#DIM MAX_F
+#DIM L_T
+IF ARG == ARG:1 && CSTR:ARG:104 != ""
+	SELECTCASE CSTR:ARG:전용기1
+		CASE "戦術詠唱γ","ソウルブースト","キメラ"
+			SIF SKILLGAGE_F_GET(ARG,[[스킬:전용기1]]) < 0
+				RETURN 0
+			CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+			IF RESULT == 1
+				CALL SKILLGAGE_F_ADD,ARG,[[스킬:전용기1]],3
+				;FOR LOCAL,0,CHARANUM
+				FOR LOCAL, 0, BCHARANUM
+					L_T = BCHARA:LOCAL
+					;同陣営の場合は省く
+					SIF CFLAG:L_T:PT플래그 == CFLAG:ARG:PT플래그
+						CONTINUE
+					;味方で尚且つ戦闘に出ていないキャラも省く
+					SIF CFLAG:L_T:PT플래그 == 1
+						CONTINUE
+					;回避に失敗して現ダメージが現ＨＰを上回る or DYINGになったか、もしくはDYINGのステートを付与された場合はSP加算
+					;要は自身で敵を撃破したor敵をDYINGにすればSP+10という処理……合ってるかどうかはわからん
+					;IF (CFLAG:LOCAL:회피실패 && (CFLAG:LOCAL:현데미지 >= BASE:LOCAL:ＨＰ || GET_STATE(CFLAG:LOCAL:상태이상) == "DYING")) || GETBIT(CFLAG:LOCAL:受けフラグ,23 + GET_STATE_NUM("DYING"))
+					IF GET_CREC_ACT(ARG, L_T, "KILL")
+						CALL SKILLGAGE_F_ADD,ARG,[[스킬:전용기1]],10
+						;SP+10が発生した時点でBREAK
+						BREAK
+					ENDIF
+				NEXT
+			ENDIF
+			;;専用技1のHゲージが最大値を越えた場合、最大値まで値を戻す
+			;TRYCALLFORM AUTO_PU_SKILL_%CSTR:ARG:전용기1%,ARG,"Hゲージ最大値"
+			SIF CSTR:ARG:전용기1 == "戦術詠唱γ"
+				MAX_F = TOINT(AUTO_SPLIT("40_35_32_30","_",TOINT(CSTR:ARG:102)-1))
+			SIF CSTR:ARG:전용기1 == "ソウルブースト"
+				MAX_F = 100
+			SIF CSTR:ARG:전용기1 == "キメラ"
+				MAX_F = 120
+			SIF SKILLGAGE_F_GET(ARG,[[스킬:전용기1]]) > MAX_F
+				CALL SKILLGAGE_F_SET,ARG,[[스킬:전용기1]],MAX_F
+		CASEELSE
+			RETURN 0
+	ENDSELECT
+ENDIF
+
+;ターン終了時に行う処理
+@SKILL_TURNEND_アブソープション,ARG
+#DIM SKILL_NUM
+#DIM L_GAGE
+;キメラのクールタイムゲージとして活用
+SIF ARG < 0 || CSTR:ARG:104 == "" || CSTR:ARG:전용기1 != "キメラ"
+	RETURN 0
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"アブソープション")
+L_GAGE = SKILLGAGE_F_GET(ARG,SKILL_NUM)
+SIF L_GAGE == 0
+	RETURN 0
+CALL SKILLGAGE_F_SET(ARG,SKILL_NUM,MIN(SKILLGAGE_F_GET(ARG,SKILL_NUM) + 5 ,0))
+RETURN 0
+
+;SHOP画面を開いた時に行う処理
+;@SKILL_INITIALIZE_アブソープション,ARG
+;#DIM SKILL_NUM
+;RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_アブソープション,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+;CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+;CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+;CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM;		拡散攻撃
+;CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM;			ランダム攻撃
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_アブソープション,ARG
+SELECTCASE TOINT(CSTR:ARG:104)
+	CASE 0
+		PRINTL ？？？？？
+		PRINTL 
+	CASEELSE
+		PRINTL 적을 공격할 때마다 SP+3, 자신의 공격으로 적을 격파하면 처치 수에 상관없이 추가로 SP+10
+		PRINTL 단, EX 스킬 기동 중에는 SP가 가산되지 않는다
+		PRINTL 
+ENDSELECT
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_アブソープション,ARG
+RETURN 0
+
+@リンク不能_アブソープション
+RETURN 1
+

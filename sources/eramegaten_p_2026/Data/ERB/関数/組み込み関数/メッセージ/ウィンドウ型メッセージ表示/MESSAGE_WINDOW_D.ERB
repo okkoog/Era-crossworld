@@ -1,0 +1,49 @@
+﻿@MESSAGE_WINDOW_D, ARGS, ARGS:1, 区切り文字 = "/" , 옵션 = "デフォルト" , 位置 = "CENTER" , 字幅 = 72, 行数 = 4 , 表示タイプ = "TYPE" , フェード間隔 = 10 , 終色 = -1 , 文字列体裁 = "LEFT", 指定番号, 指定方式, イベント画像
+#LOCALSIZE 1
+#DIMS 옵션
+#DIMS 区切り文字
+#DIMS 位置
+#DIM 字幅
+#DIM 行数
+#DIMS 表示タイプ
+#DIM フェード間隔
+#DIM 終色
+#DIMS 文字列体裁
+#DIM 指定番号
+#DIMS 指定方式, 2
+#DIMS イベント画像
+行数 = MAX(行数 , STRCOUNT(ARGS:1, 区切り文字) + 1)
+REDRAW 0
+;スキップ中は描画しない
+IF !MESSKIP() && !FLAG:윈도우메시지스킵
+	;ダンジョンを描画
+	IF AUTO_SPLIT(イベント画像, "/", 0) == "NONFLOORD"
+		CALL SHOW_PICTURE, "NONFLOORD", AUTO_SPLIT(イベント画像, "/", 1)
+	ELSE
+		CALL SHOW_FLOOR, AUTO_SPLIT(イベント画像, "/", 0), TOINT(AUTO_SPLIT(イベント画像, "/", 1))
+		;現パーティ描画
+		CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+	ENDIF
+	FLAG:커맨드표시행수 = LINECOUNT
+	;コマンド表示
+	CALL SHOW_DUNGEON_COMMAND
+	CLEARLINE LINECOUNT - FLAG:커맨드표시행수
+ENDIF
+SIF 옵션 == "デフォルト"
+	옵션 = ログを残さない/ボタンを利用する/再利用しない
+IF 指定方式 == ""
+	CALL MESSAGE_WINDOW, ARGS, ARGS:1, 区切り文字 , 옵션 , 位置 , 字幅, 行数 , 表示タイプ, フェード間隔 , 終色 , 文字列体裁
+ELSE
+	SPLIT 指定方式, "/", 指定方式
+	SIF 指定方式:1 == ""
+		指定方式:1 '= "셋업"
+	CALL MESSAGE_WINDOW_ICON, 指定番号, 指定方式:0, 指定方式:1, ARGS, ARGS:1, 区切り文字 , 옵션 , 位置 , 字幅, 行数 , 表示タイプ, フェード間隔 , 終色 , 文字列体裁
+ENDIF
+REDRAW 0
+;スキップした場合はログを残す
+IF !MESSKIP() && !FLAG:윈도우메시지스킵
+	CLEARLINE LINECOUNT - FLAG:커맨드표시행수
+	;ちらつき防止で終了時にメッセージウィンドウ分を補う
+	CALL SHOW_DUNGEON_COMMAND
+ENDIF
+REDRAW 1

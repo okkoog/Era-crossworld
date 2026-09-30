@@ -1,0 +1,3406 @@
+﻿@MASTER_MAJORING_NUM
+#FUNCTION
+;---- EDIT P 001 MOD START -------------------------
+RETURNF 15
+;---- EDIT P 001 MOD END ---------------------------
+@GET_MASTER_MAJORING, ARG = -1, ARG:1
+#FUNCTIONS
+ARG = ARG == -1 ? CFLAG:MASTER:당신의전공분야 # ARG
+SELECTCASE ARG
+	CASE 0
+		RETURNF "없음"
+	CASE 1
+		RETURNF "데빌서머너"
+	CASE 2
+		RETURNF "페르소나구사자"
+	CASE 3
+		RETURNF "이능자"
+	CASE 4
+		SIF ARG:1
+			RETURNF "관광객"
+		RETURNF "일반인"
+	CASE 5
+		RETURNF "식노"
+	CASE 6
+		RETURNF "달인"
+	CASE 7
+		RETURNF "데빌헌터"
+	CASE 8
+		RETURNF "악마인"
+	CASE 9
+		RETURNF "타케시"
+	CASE 10
+		RETURNF "데빌시프터"
+	CASE 11
+		RETURNF "아웃사이더"
+	CASE 12
+		RETURNF "반마인"
+	CASE 13
+		RETURNF "MASTER의후손"
+	;---- EDIT P 001 ADD START -------------------------
+	CASE 14
+		RETURNF "합일신"
+	;---- EDIT P 001 ADD END ---------------------------
+	CASEELSE
+		RETURNF "전공분야의지정미스"
+ENDSELECT
+
+@GET_MASTER_MAJORING_NUM, ARGS
+#FUNCTION
+#DIM LCOUNT
+#DIMS L_MASTER_MAJORING, 20
+IF L_MASTER_MAJORING == ""
+	FOR LCOUNT, 0, MASTER_MAJORING_NUM()
+		L_MASTER_MAJORING:LCOUNT = %GET_MASTER_MAJORING(LCOUNT)%
+	NEXT
+ENDIF
+RETURNF FINDELEMENT(L_MASTER_MAJORING, ARGS)
+
+;専攻を選択できるかどうか
+;RESULT = 表示順
+@IS_ABLE_MASTER_MAJORING, ARG, STOCK_MASTER
+#FUNCTION
+#DIM STOCK_MASTER
+SELECTCASE GET_MASTER_MAJORING(ARG)
+	CASE "없음"
+		RETURNF 0
+	CASE "MASTER의후손"
+		SIF !TALENT:STOCK_MASTER:마스터의혈통
+			RETURNF 0
+		RETURNF 1
+	CASE "데빌서머너"
+		RETURNF 2
+	CASE "이능자"
+		RETURNF 11
+	CASE "달인"
+		IF !IS_DEBUG
+			SIF !FLAG:경험ED수
+				RETURNF 0
+		ENDIF
+		RETURNF 12
+	CASE "페르소나구사자"
+		RETURNF 21
+	CASE "식노"
+		RETURNF 33
+	CASE "데빌헌터"
+		IF !IS_DEBUG
+			SIF !FLAG:단테격파
+				RETURNF 0
+			;SIF FLAG:경험ED수 < 60 EDIT 047 MOD
+			SIF FLAG:경험ED수 < 5
+				RETURNF 0
+		ENDIF
+		RETURNF 43
+	;---- EDIT P 001 ADD START -------------------------
+	CASE "합일신"
+		RETURNF 40
+	;---- EDIT P 001 ADD END --------------------------
+	CASE "반마인"
+		RETURNF 41
+	CASE "악마인"
+		RETURNF 42
+	CASE "데빌시프터"
+		RETURNF 31
+	CASE "아웃사이더"
+		RETURNF 32
+	CASE "일반인"
+		RETURNF 91
+	CASE "타케시"
+		RETURNF 92
+	CASE "전공분야의지정미스"
+		RETURNF 0
+ENDSELECT
+
+@GET_MASTER_MAJORING_EXPLAIN, ARG
+SELECTCASE GET_MASTER_MAJORING(ARG)
+	CASE "없음"
+		RESULTS:0 = 
+		RESULTS:1 = 
+		RESULTS:2 = 
+		RESULTS:3 = 
+	CASE "데빌서머너"
+		RESULTS:0 = ☆☆
+		RESULTS:1 = 최고 수준의 동료마를 다루는 능력을 지닌 악마 소환사입니다。
+		RESULTS:2 = ＭＰ를 보유하지 않아、스킬을 사용할 수 없지만 대신 아이템이나 총기를 활용한 뛰어난 지원능력과 강력한 일반공격이 가능합니다。
+		RESULTS:3 = 전투요원으로서 ＭＰ에 구애받지 않고 높은 지속 전투능력을 갖추고 있다는 점이 큰 장점입니다。
+	CASE "페르소나구사자"
+		RESULTS:0 = ☆☆☆☆
+		RESULTS:1 = 페르소나를 교체함으로써 다양한 스킬을 폭넓게 다룰 수 있는 이능자입니다。
+		RESULTS:2 = 순수하게 선택의 폭이 넓고、상황에 따라 공격형이나 방어형 성능을 전환하며 싸울 수 있는 것이 강점입니다。
+		RESULTS:3 = 하지만、시스템적으로 다소 복잡하고、잘 싸우기 위한 준비과정이 번거로워、게임에 익숙해지는 것이 필요합니다。
+	CASE "이능자"
+		RESULTS:0 = ☆☆☆
+		RESULTS:1 = 스킬을 사용하여 싸울 수 있는 능력자입니다。２가지 인간 클래스를 선택하여 성능을 커스터마이즈 가능합니다。
+		RESULTS:2 = 인간으로서 스탠다드한 성능에 더해、스킬 보유 수 증가를 기본으로 가지고 있으며、
+		RESULTS:3 = 유연성이 뛰어나고、다루기 쉬운 것이 특징입니다。
+	CASE "일반인"
+		RESULTS:0 = ☆☆☆☆☆
+		RESULTS:1 = 그저 평범한 사람일 뿐이지만 팬텀・소사이어티에 소속된 수수께끼가 많은 인물。
+		RESULTS:2 = 
+		RESULTS:3 = 특별히 눈에 띄는 강점은 없습니다。
+	CASE "식노"
+		RESULTS:0 = ☆☆☆☆
+		RESULTS:1 = 특수 변신능력자로 평상시에는 스킬을 사용할 수 없는 인간이지만、변신 후에는 악마가 됩니다。
+		RESULTS:2 = 인간 상태에서는 총을 메인으로 싸우며、악마 상태에서는 독자적인 시스템인 만트라를 이용해 스킬을 습득합니다。
+		RESULTS:3 = 악마 상태에서、스킬을 한 번 습득하면 커스터마이징하기 쉬운 점이 강점입니다。
+	;---- EDIT P 001 ADD START -------------------------
+	CASE "합일신"
+		RESULTS:0 = ☆☆☆☆
+		RESULTS:1 = 인간과 악마가 융합된 존재입니다。
+		RESULTS:2 = 기본적인 성능은 악마와 비슷하지만、전용 마가츠히게이지를 사용하면
+		RESULTS:3 = 강력한 지원 행동을 할 수 있어、이를 통해 다양한 아군들을 활약시킬 수 있습니다。
+	;---- EDIT P 001 ADD END ---------------------------
+	CASE "달인"
+		RESULTS:0 = ☆
+		RESULTS:1 = 그 길을 극한까지 연마한 달인이 됩니다。
+		RESULTS:2 = 스킬카드를 통해 스킬을 습득하거나、커스터마이징할 수는 없지만 그 대신 매우 강력한 스킬을 사용할 수 있습니다。
+		RESULTS:3 = 몇 가지 메인클래스와 서브클래스를 조합하여 습득할 스킬이 결정됩니다。
+	CASE "데빌헌터"
+		RESULTS:0 = ☆
+		RESULTS:1 = 단테를 물리친 당신에게는 별다른 설명이 필요 없겠죠。
+		RESULTS:2 = 악마사냥꾼의 힘을 마음껏 발휘해 주세요。
+		RESULTS:3 = 
+	CASE "악마인"
+		RESULTS:0 = ☆☆☆☆
+		RESULTS:1 = 악마화된 인간입니다。２가지 악마 클래스를 선택하여 성능을 커스터마이즈할 수 있습니다。
+		RESULTS:2 = 또한、방어상성을 커스터마이즈할 수 있습니다。
+		RESULTS:3 = 장비를 사용할 수 없는 만큼、기본 스테이터스 배분의 중요도가 높아지지만 그만큼 금전적인 부담은 적습니다。
+	CASE "데빌시프터"
+		RESULTS:0 = ☆☆☆☆
+		RESULTS:1 = 변신능력과 링크능력을 갖춘 능력자입니다。
+		RESULTS:2 = 악마로 변신하여 스킬을 사용할 수 있으며、또한 동료마와 링크하여 그 능력을 사용할 수 있습니다。
+		RESULTS:3 = 변신 클래스로서 인간 형태는 약한 편이지만、링크할 동료마를 준비함으로써 다양한 운용이 가능해집니다。
+	CASE "아웃사이더"
+		RESULTS:0 = ☆☆☆
+		RESULTS:1 = 변신능력을 가진 능력자입니다。
+		RESULTS:2 = 데빌시프터와 달리、변신 대상을 바꿀 수 없지만 그 대신 인간 형태가 강력합니다。
+		RESULTS:3 = 잘 다루려면 자유롭게 형태를 변화시킬 수 있는 점을 활용해야 할 것입니다。
+	CASE "반마인"
+		RESULTS:0 = ☆☆☆
+		RESULTS:1 = 인간과 악마의 혼혈입니다。악마처럼 스킬을 다룰 수 있을 뿐만 아니라、무기에서 스킬을 끌어내어 사용할 수도 있습니다。
+		RESULTS:2 = 인간처럼 방어구도 사용하지만、방어 상성은 타고난 것을 따르기 때문에 약점을 보완하기 어렵습니다。
+		RESULTS:3 = 하지만、이 특성 덕분에 보통은 사용하기 어려운 장비를 쉽게 사용할 수 있다는 장점도 있습니다。
+	CASE "MASTER의후손"
+		RESULTS:0 = ？
+		RESULTS:1 = 마스터의 혈통을 잇는 자
+		RESULTS:2 = 마스터의 전투스타일을 그대로 이어받아 싸웁니다。
+		RESULTS:3 = 
+	CASE "타케시"
+		RESULTS:0 = J( 'ー`)し・・・
+		RESULTS:1 = 그저 평범한 사람？일 뿐이지만 팬텀・소사이어티에 소속된 수수께끼가 많은《광대愚者》。
+		RESULTS:2 = 
+		RESULTS:3 = 특별히 눈에 띄는 강점은 없으나、큰 페널티가 발생합니다。
+
+	CASE "전공분야의지정미스"
+		RETURN 0
+ENDSELECT
+;========================================================================
+;主人の専攻分野
+;========================================================================
+@SET_MASTER_MAJORING
+#DIM LCOUNT, 2
+#DIM STOCK_MASTER
+#DIM L_LINE, 2
+#DIMS TEMPS
+#DIMS L_TEXT
+#DIM ABLE_LIST, 20
+#DIM SHOW_COUNT
+#DIM CONST L_SHOWNUM = 6
+#DIM L_LISTNUM
+#DIM L_PAGE
+#DIM L_PAGE_MAX
+#DIM L_Y
+#LOCALSIZE 2
+
+;参照用にMASTERのコピーを取っておく
+ADDCOPYCHARA MASTER
+STOCK_MASTER = CHARANUM - 1
+$RESET
+COPYCHARA STOCK_MASTER, MASTER
+
+;戦闘素質等のリセット
+CALL SET_MASTER_MAJORING_RESET
+
+;---- EDIT 058 DEL START -------------------------
+;---- EDIT 025 CSTR:MASTER:해설3～20を初期化 ADD START ----
+;해설3～20を初期化
+;1～2は書き換えor引継ぎのためそのまま
+;FOR LCOUNT,32,49
+;	CSTR:MASTER:LCOUNT = 
+;NEXT
+;---- EDIT 058 DEL END ---------------------------
+
+;---- EDIT 025 CSTR:MASTER:해설3～20を初期化 ADD END   ----
+;選べるクラスをリストに取得する
+VARSET ABLE_LIST, 100*100*100
+FOR LCOUNT, 0, 100
+	SIF IS_ABLE_MASTER_MAJORING(LCOUNT)
+		ABLE_LIST:FINDELEMENT(ABLE_LIST, 100*100*100) = LCOUNT + IS_ABLE_MASTER_MAJORING(LCOUNT) * 100
+NEXT
+ARRAYSORT ABLE_LIST, FORWARD
+FOR LCOUNT, 0, VARSIZE("ABLE_LIST")
+	ABLE_LIST:LCOUNT %= 100
+NEXT
+L_PAGE_MAX = (FINDELEMENT(ABLE_LIST, 0) / L_SHOWNUM) + (FINDELEMENT(ABLE_LIST, 0) % L_SHOWNUM > 0)
+
+REDRAW 0
+L_LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - L_LINE
+
+;------------------------------------------------------
+;背景色の設定　あかるい黒と通常の黒を交互に
+;背景色は改行コードを利用して、未来の行に文字を出して重ねることで実現できる
+;------------------------------------------------------
+;起点の位置をとる。スタートまでの5行 + 表示のためにPRINTLが入る回数(0x000Dは改行コード)
+SHOW_COUNT = 0
+L_Y = (L_SHOWNUM / 2) + (L_SHOWNUM % 2) + 4
+FOR LCOUNT, 0, L_SHOWNUM
+	L_LISTNUM = ABLE_LIST:(LCOUNT + L_PAGE * L_SHOWNUM)
+	IF LCOUNT % 2 == 0
+		IF L_LISTNUM > 0
+			HTML_PRINT @"<shape type ='rect' param = '0, {L_Y * 100 + 50 + (LCOUNT == 0) * 10}, {LINELENS() * 50}, 500' color = '%TOSTR_HTML(BGCOLOR("LIGHT-BLACK"))%'>"
+		ELSE
+			PRINTL 
+		ENDIF
+		L_Y -= 1
+	ENDIF
+	L_Y += 5
+NEXT
+CUSTOMDRAWLINE =
+PRINTL 당신은 결국 어떤 사람입니까？
+PRINTL ※이 게임은 기본적으로 플레이어가 서머너라는 전제 하에 제작되었습니다。
+PRINTL 　서머너 이외의 게임 난이도나 일관성 등에 대해서는 어느 정도까지만 고려되어 있습니다。
+CUSTOMDRAWLINE =
+SHOW_COUNT = 0
+FOR LCOUNT, 0, L_SHOWNUM
+	L_LISTNUM = ABLE_LIST:(LCOUNT + L_PAGE * L_SHOWNUM)
+	IF L_LISTNUM > 0
+		L_TEXT = [{LCOUNT + L_PAGE * L_SHOWNUM,2}] %GET_MASTER_MAJORING(L_LISTNUM, 1), 18, LEFT%난이도:
+		CALL GET_MASTER_MAJORING_EXPLAIN, L_LISTNUM
+		FOR LCOUNT:1, 0, 4
+			SIF LCOUNT:1
+				L_TEXT = 　　 
+			L_TEXT += RESULTS:(LCOUNT:1)
+			L_TEXT += " " * MAX((LINELENS() - STRLENS(L_TEXT)), 0)
+			PRINTBUTTON L_TEXT, LCOUNT + L_PAGE * L_SHOWNUM
+			PRINTL 
+		NEXT
+		DRAWLINE
+	ELSE
+		FOR LCOUNT:1, 0, 5
+			PRINTL 
+		NEXT
+	ENDIF
+NEXT
+CLEARLINE 1
+CUSTOMDRAWLINE =
+FOR LCOUNT, 0, L_PAGE_MAX
+	SETCOLOR (L_PAGE == LCOUNT ? COLOR("aqua") # GETDEFCOLOR())
+	PRINTBUTTON @"[{LCOUNT+100}] PAGE.{LCOUNT}　　　　　", LCOUNT + 100
+NEXT
+CALL PRINT_COLOR, "[200] 힌트", COLOR("パ緑"), "L"
+RESETCOLOR
+CUSTOMDRAWLINE =
+L_LINE:1 = LINECOUNT
+INPUT
+IF RESULT == 200
+	CLEARLINE LINECOUNT - L_LINE
+	CUSTOMDRAWLINE =
+	PRINTL 당신은 결국 어떤 사람입니까？
+	PRINTL ※이 게임은 기본적으로 플레이어가 서머너라는 전제 하에 제작되었습니다。
+	PRINTL 　서머너 이외의 게임 난이도나 일관성 등에 대해서는 어느 정도까지만 고려되어 있습니다。
+	CUSTOMDRAWLINE =
+	PRINTL □난이도에 대하여
+	PRINTL 　☆☆　　　:본래 상정되어 있는 기본 난이도입니다.
+	PRINTL 　　　　　　 데빌 서머너는 스킬을 쓸 수 없다는 점이 걸림돌이 되지만, 그 대신 특수탄이나 아이템 등
+	PRINTL 　　　　　　 돈을 씀으로써 다양한 역할을 수행할 수 있어 매우 다루기 쉬운 성능을 지니고 있습니다.
+	PRINTL 　☆☆☆　　:일반적인 스킬을 쓸 수 있는 클래스 등입니다. 복잡한 시스템이 적어 익숙지 않아도 무난합니다.
+	PRINTL 　　　　　　 성능적으로는 통상 동료와 마찬가지로 MP 배분에 신경 써야 하지만,
+	PRINTL 　　　　　　 초반부터 유용한 스킬을 얻을 수 있으므로 전투 진행이 수월합니다.
+	PRINTL 　☆☆☆☆　:복잡한 시스템을 활용해야 하거나 능력치 면에서 다소 불안요소가 있는 클래스입니다.
+	PRINTL 　　　　　　 잘 다루면 강력하고 단점도 보완되지만, 시스템에 익숙하지 않다면 추천하기 어렵습니다.
+	PRINTL 　☆☆☆☆☆:파티 멤버에서 뺄 수 없는 주인공 캐릭터가 매우 약한 상태로 시작하는 제약(하드코어) 플레이입니다.
+	PRINTL 
+	PRINTL □素質:서머너
+	PRINTL 　악마를 파티 멤버에 편성하거나 교체하고, 인스톨 소프트를 사용하는 데 필수적인 소질입니다.
+	PRINTL 　데빌 서머너를 선택하면 최고 레벨을 얻지만, 다른 클래스에서는 선택 취득이거나 아예 취득할 수 없습니다.
+	PRINTL 　서머너 Lv3 이상을 지닌 캐릭터가 파티 내에 있는지 여부에 따라,
+	PRINTL 　게임 난이도가 크게 달라지므로 기본적으로는 Lv3을 취득해 두는 것을 권장합니다.
+	PRINTL 　단, 서머너 소질을 지닌 캐릭터를 동료로 삼는다면 주인이 반드시 보유할 필요는 없으며,
+	PRINTL 　서머너 캐릭터도 초반에 동료로 영입할 수 있으므로 그런 방향을 택할 수도 있습니다.
+	PRINTL 　
+	PRINTL □게임의 목적과 일수 제한
+	PRINTL 　기본적인 게임의 목적은 악마나 인간을 조교하여, 매각이나 노역으로 돈을 벌어 조직에 상납하는 것입니다.
+	PRINTL 　그리고 고레벨의 악마나 인간일수록 비싸게 팔리므로, RPG 파트를 진행할수록 돈을 벌기 쉬워집니다.
+	PRINTL 
+	PRINTL 　또한 RPG 파트를 진행하여 각종 엔딩 조건을 만족함으로써도 게임을 클리어할 수 있습니다.
+	PRINTL 　이 경우에는 앞서 언급한 돈벌이로 구입할 수 있는 장비나 아이템 등이 큰 도움이 됩니다.
+	PRINTL 
+	PRINTL 　이러한 엔딩을 달성하기 위한 기한으로 50일의 일수 제한이 있습니다만,
+	PRINTL 　이 일수 제한이 지나더라도 일부 엔딩을 볼 수 없게 될 뿐 게임오버가 되지는 않으며,
+	PRINTL 　무제한으로 게임을 속행하여 회차 플레이(인계 후 뉴 게임)를 선택할 수도 있습니다.
+	PRINTL 　
+	PRINTL 　즉, 일수 제한을 초과하는 것 자체는 치명적인 문제가 아니므로,
+	PRINTL 　익숙해지기 전까지는 일수를 넉넉히 쓰며 다음 회차를 위해 게임 내 정보를 모은다는 생각으로 플레이해도 좋습니다.
+	WHILE LINECOUNT < L_LINE:1 - 3
+		PRINTL 
+	WEND
+	WAIT
+ELSEIF INRANGE(RESULT, 100, 100 + L_PAGE_MAX - 1)
+	L_PAGE = RESULT - 100
+ELSE
+	;CLEARLINE LINECOUNT - L_LINE
+	IF INRANGE(RESULT, 0, VARSIZE("ABLE_LIST")) && ABLE_LIST:RESULT >= 0
+		SELECTCASE GET_MASTER_MAJORING(ABLE_LIST:RESULT)
+			CASE "데빌서머너"
+				CALL SET_MASTER_MAJORING_SUMMONER, STOCK_MASTER
+			CASE "이능자"
+				CALL SET_MASTER_MAJORING_MAGIC, STOCK_MASTER
+			CASE "달인"
+				CALL SET_MASTER_MAJORING_TECHNIC, STOCK_MASTER
+			CASE "페르소나구사자"
+				CALL SET_MASTER_MAJORING_PERSONA, STOCK_MASTER
+			CASE "데빌시프터"
+				CALL SET_MASTER_MAJORING_SHIFTER, STOCK_MASTER, "데빌시프터"
+			CASE "아웃사이더"
+				CALL SET_MASTER_MAJORING_SHIFTER, STOCK_MASTER, "아웃사이더"
+			CASE "식노"
+				CALL SET_MASTER_MAJORING_SHIFTER, STOCK_MASTER, "식노"
+			;---- EDIT P 001 ADD START -------------------------
+			CASE "합일신"
+				CALL SET_MASTER_MAJORING_NAHOBINO, STOCK_MASTER
+			;---- EDIT P 001 ADD END ---------------------------
+			CASE "반마인"
+				CALL SET_MASTER_HALF_AKUMA, STOCK_MASTER
+			CASE "악마인"
+				CALL SET_MASTER_DEMONOID, STOCK_MASTER
+			CASE "데빌헌터"
+				CALL SET_MASTER_DEVIL_HUNTER, STOCK_MASTER
+			CASE "일반인"
+				CALL SET_MASTER_TOURIST
+			CASE "타케시"
+				CALL SET_MASTER_TAKESI
+		ENDSELECT
+		;0で戻された場合はキャラの差し戻しから始める
+		SIF !RESULT
+			GOTO RESET
+		;---- EDIT 061 ADD START -------------------------
+		CALL DO_EQUIP_FOR_NEWGAME, MASTER
+		;---- EDIT 061 ADD END ---------------------------
+		;ステータス同期
+		CALL SYNC_STATUS, MASTER
+		CALLF SET_ALL_FACE_NEW, MASTER, GET_RACE_ICON_ADDRESS_BY_CHARA(MASTER), "通常形態"
+		IF CFLAG:MASTER:초기링크악마
+			CSTR:MASTER:悪魔変身アイコンファイルネーム '= ""
+			CALLF SET_DEFAULT_FACE_F, MASTER, "変身形態"
+			;アイコンをセットできなかった場合
+			SIF CSTR:MASTER:悪魔変身アイコンファイルネーム == ""
+				CALLF SET_ALL_FACE_NEW, MASTER, GET_RACE_ICON_ADDRESS_BY_CHARA(MASTER), "変身形態"
+		ENDIF
+		REDRAW 1
+		DELCHARA STOCK_MASTER
+		RETURN 1
+	ELSE
+		GOTO START
+	ENDIF
+ENDIF
+GOTO START
+
+@SET_MASTER_MAJORING_SUMMONER, STOCK_MASTER
+#DIM STOCK_MASTER
+#DIM LCOUNT
+#DIM L_SELECT
+#DIMS CONST SUMMONER_TYPE = "ヒーロー", "救世主", "ハッカー", "コマンダー"
+#DIM L_LINE
+#DIM L_LV_FIXED, SUB_ROLENUM
+#DIMS L_TALENTS_FIXED, SUB_ROLENUM
+L_LINE = LINECOUNT
+L_SELECT = 0
+$START
+CLEARLINE LINECOUNT - L_LINE
+
+;--------------------------------
+;タイプ毎の素質設定
+;--------------------------------
+TALENT:MASTER:서머너 = 5
+TALENT:MASTER:석세서 = 0
+TALENT:MASTER:건슬링거 = 0
+TALENT:MASTER:도구지식 = 0
+TALENT:MASTER:공격의심득 = 0
+TALENT:MASTER:방어의심득 = 0
+TALENT:MASTER:무도의마음가짐 = 0
+TALENT:MASTER:나락의마스크 = 0
+TALENT:MASTER:아이템숙련 = 0
+TALENT:MASTER:바스테부스터 = 0
+TALENT:MASTER:컴퓨터기능 = 0
+TALENT:MASTER:이능자 = 0
+TALENT:MASTER:신들의가호 = 0
+
+SELECTCASE SUMMONER_TYPE:L_SELECT
+	CASE "ヒーロー"
+		TALENT:MASTER:석세서 = 1
+		TALENT:MASTER:건슬링거 = 3
+		TALENT:MASTER:도구지식 = 3
+	CASE "救世主"
+		TALENT:MASTER:석세서 = 1
+		TALENT:MASTER:도구지식 = 3
+		TALENT:MASTER:공격의심득 = 1
+		TALENT:MASTER:무도의마음가짐 = 3
+		TALENT:MASTER:나락의마스크 = 2
+	CASE "ハッカー"
+		TALENT:MASTER:석세서 = 1
+		TALENT:MASTER:건슬링거 = 1
+		TALENT:MASTER:아이템숙련 = 1
+		TALENT:MASTER:도구지식 = 3
+		TALENT:MASTER:바스테부스터 = 3
+	CASE "コマンダー"
+		TALENT:MASTER:컴퓨터기능 = 1
+		TALENT:MASTER:이능자 = 1
+		TALENT:MASTER:신들의가호 = 2
+		TALENT:MASTER:방어의심득 = 3
+		TALENT:MASTER:도구지식 = 3 
+ENDSELECT
+;---- EDIT 057 ADD START -------------------------
+CALL SET_ROLE, MASTER
+;---- EDIT 057 ADD END ---------------------------
+CALL SET_FIXED_BTL_TALENT, MASTER, "通常形態", L_LV_FIXED, L_TALENTS_FIXED
+CALL SYNC_STATUS, MASTER
+CALL ROLE_EXPLAIN_BASE, MASTER
+CALL ROLE_EXPLAIN_ABILITY, MASTER
+WHILE LINECOUNT < L_LINE + 35
+	PRINTL 
+WEND
+DRAWLINE
+PRINTL □해설
+SELECTCASE SUMMONER_TYPE:L_SELECT
+	CASE "ヒーロー"
+		PRINTL 　이 게임에서 전통적으로 채택되어 온 기본적인 스타일입니다。
+		PRINTL 　높은 서머너 레벨 덕분에 강력한 인스톨소프트를 사용할 수 있고、파티 전체의 수준을 높일 수 있을 뿐만 아니라
+		PRINTL 　돈이 들긴 하지만、아이템과 총을 통해 안정적인 공격・지원・회복으로 폭넓게 싸울 수 있습니다。
+		PRINTL 　또한、마정검을 활용해 코스트 없이 상태이상이나 안정적인 범위 공격 요원으로 활약할 수 있습니다。
+		PRINTL 　스킬을 사용할 수는 없지만、단순히 스킬을 사용하는 것 이상으로 폭넓은 움직임이 가능하므로、확실히 파티에 기여할 수 있습니다。
+	CASE "救世主"
+		PRINTL 　순수하게 신체능력이 뛰어난 스타일입니다。
+		PRINTL 　ＨＰ가 매우 높은데다가、상태이상 내성까지 갖추고 있어、내구력이 매우 뛰어납니다。
+		PRINTL 　이 때문에、적의 공격에 대한 벽 역할 뿐만 아니라、아이템이나 COMP를 통한 보조 역할도 수행하기 쉽습니다。
+		PRINTL 　게임 초반에 마스터의 사망으로 인한 게임오버를 방지하기 쉬운 점도 큰 메리트라고 할 수 있겠네요。
+		PRINTL 　반면、공격 면에서는 아이템이 있지만、기본적으로는 통상공격에 의존하므로 힘이 중요합니다。
+	CASE "ハッカー"
+		PRINTL 　아이템 사용능력과 상태이상 공격에 특화된 스타일입니다。
+		PRINTL 　케미스트리는 공격아이템 뿐만 아니라、다양한 아이템의 성능늘 보정하여、본래부터 다채로운 아이템을 활용한 행동을 강력하게 만들어 줍니다。
+		PRINTL 　또한、상태이상 발동률을 강화하는 소질을 가지고 있어、상태이상 특수탄이나 상태이상 부착 무기를 이용해 적의 움직임을 멈추는 등의 방해 행위에도 능합니다。
+		PRINTL 　서머너 능력을 포함해、아군을 보조하는 능력이 뛰어나며、강력한 아군을 어시스트하기 위한 스타일이라고 할 수 있습니다。
+		PRINTL 
+	CASE "コマンダー"
+		PRINTL 　파티 멤버를 전략적으로 보조하는데 특화된 형태입니다。
+		PRINTL 　이능자와 컴퓨터기능을 통해、매우 많은 스킬 슬롯을 보유하고 있어、이를 통해 다양한 지원 효과를 아군에게 부여할 수 있습니다。
+		PRINTL 　또한 매우 높은 회복 능력을 가지고 있어、회복력으로 파티를 지탱할 수 있습니다。
+		PRINTL 　하지만 그 반대로、공격에 관여할 수 있는 소질이 도구지식 뿐이라、스스로 공격하기에는 적합하지 않습니다。
+		PRINTL 　또한、이 형태를 선택한 경우 일부 스킬을 사용가능하게 해주는 소프트를 장착한 상태에서 게임이 시작됩니다。
+ENDSELECT
+DRAWLINE
+PRINTL □스타일 선택
+PRINT 　
+FOR LCOUNT, 0, VARSIZE("SUMMONER_TYPE")
+	SETCOLOR LCOUNT == L_SELECT ? COLOR("aqua") # GETDEFCOLOR()
+	PRINTBUTTON @"[{LCOUNT+1}] 스타일" + AUTO_SPLIT("Ａ/Ｂ/Ｃ/Ｄ/Ｅ", "/", LCOUNT), LCOUNT + 1
+	PRINT 　　　　　
+NEXT
+PRINTL 
+RESETCOLOR
+DRAWLINE
+PRINTL 　[0] 결정　　　　　[9] 돌아간다
+INPUT
+SELECTCASE RESULT
+	CASE 0
+		CSTR:MASTER:30 = 팬텀・소사이어티에 소속된 서머너。
+		CFLAG:MASTER:당신의전공분야  = GET_MASTER_MAJORING_NUM("데빌서머너")
+		;----------------------------------
+		;陥落ボーナスの処理
+		;----------------------------------
+		;不屈の闘志は引き継げない
+		CLEARBIT FLAG:주인획득스킬, 50
+		IF FLAG:주인획득스킬
+			PRINTL 함락보너스를 통해 자동효과를 스킬로 습득할 수 있습니다
+			PRINTL 습득하시겠습니까？
+			PRINTL ※이 단계에서 습득하지 않은 스킬은、이 주회중에는 습득할 수 없습니다
+			CALL INPUT_YN
+			IF RESULT == 0
+				FOR LCOUNT, 0, 64
+					IF GETBIT(FLAG:주인획득스킬, LCOUNT)
+						IF MASTER_SKILL(LCOUNT) >= 0
+							CALL LEARN_SKILL, MASTER, MASTER_SKILL(LCOUNT)
+						ELSE
+							CLEARBIT FLAG:주인획득스킬, LCOUNT
+						ENDIF
+					ENDIF
+				NEXT
+			ENDIF
+		ENDIF
+		SELECTCASE SUMMONER_TYPE:L_SELECT
+			;魔貨交換できるまでやることがないのもあれなので
+			CASE "コマンダー"
+				CALL ADDS_SKILL_EMULATOR, "ＡＳ - 리페어Ⅰ"
+				CALL ADDS_SKILL_EMULATOR, "ＣＳ - 응원"
+				CALL ADDS_SKILL_EMULATOR, "ＬＳ - 내UP"
+				EQUIP_SKILL_EMULATOR:MASTER:0 = GET_SKILL_EMULATOR_NUM("ＡＳ - 리페어Ⅰ")
+				EQUIP_SKILL_EMULATOR:MASTER:1 = GET_SKILL_EMULATOR_NUM("ＣＳ - 응원")
+				EQUIP_SKILL_EMULATOR:MASTER:2 = GET_SKILL_EMULATOR_NUM("ＬＳ - 내UP")
+		ENDSELECT
+		RETURN 1
+	CASE 9
+		RETURN 0
+	CASEELSE
+		SIF INRANGE(RESULT - 1, 0, VARSIZE("SUMMONER_TYPE"))
+			L_SELECT = RESULT - 1
+ENDSELECT
+GOTO START
+;========================================================================
+;主人の初期スキル
+;異能者のクラス・素質設定
+;========================================================================
+@SET_MASTER_MAJORING_MAGIC, STOCK_MASTER
+#DIM DYNAMIC LCOUNT,3
+#DIM DYNAMIC L_LINE
+#DIM DYNAMIC TEMP, 2
+#DIMS DYNAMIC TEMPS, 2
+#DIM DYNAMIC L_ST
+#DIM DYNAMIC CLASS_LIST, 50
+#DIM DYNAMIC SELECT_CLASS, 2
+#DIM DYNAMIC STOCK_MASTER, 2
+#DIMS DYNAMIC SHOW_LINE, 30
+#DIM DYNAMIC L_SKILL, 20
+#DIM DYNAMIC CLASS_SKILL, HAVEABLE_SKILLNUM
+#DIM DYNAMIC CLASS_LEARN, HAVEABLE_SKILLNUM
+#DIM DYNAMIC CLASS_LEARN_LV, HAVEABLE_SKILLNUM
+#DIM DYNAMIC CLASS_BASE_STATUS, BASESTATUSNUM
+#DIM DYNAMIC CLASS_SUCCESSION, SUCCESSIONNUM
+#DIMS DYNAMIC CLASS_ALI, 2
+#DIMS DYNAMIC CLASS_BTL_TALENT
+#DIMS DYNAMIC CLASS_EXPLAIN,2
+#DIMS DYNAMIC L_TALENT
+#DIMS DYNAMIC CAN_ADD_TALENT
+#DIM DYNAMIC L_LV_FIXED, SUB_ROLENUM
+#DIMS DYNAMIC L_TALENTS_FIXED, SUB_ROLENUM
+#DIMS DYNAMIC L_COLOR
+;選択可能クラスのリスト作成
+FOR LCOUNT, 1, VARSIZE("CLASS_LIST")
+	SIF !IS_ABLE_CLASS(LCOUNT)
+		CONTINUE
+	CALL PUSH_ARRAY_INT, CLASS_LIST, LCOUNT
+NEXT
+
+ADDCOPYCHARA MASTER
+STOCK_MASTER:1 = CHARANUM -1
+L_LINE = LINECOUNT
+$SELECT_CLASS
+COPYCHARA STOCK_MASTER:1, MASTER
+;---- EDIT 055 ADD START -------------------------
+TALENT:MASTER:이능자 = 5
+CFLAG:MASTER:당신의전공분야1  = SELECT_CLASS:0
+CFLAG:MASTER:당신의전공분야2  = SELECT_CLASS:1
+CSTR:MASTER:해설1 = 팬텀・소사이어티에 소속된 이능자。
+CFLAG:MASTER:당신의전공분야  = GET_MASTER_MAJORING_NUM("이능자")
+CALL SET_ROLE, MASTER
+;---- EDIT 055 ADD END ---------------------------
+
+REDRAW 0
+CLEARLINE LINECOUNT - L_LINE
+
+;ステータスとスキルの設定
+FOR LCOUNT, 1, 7
+	BASE:MASTER:GET_BASESTATUS(LCOUNT) = 0
+NEXT
+FOR LCOUNT, 0, SUCCESSIONNUM
+	TALENT:MASTER:GET_SUCCESSION(LCOUNT) = 0
+NEXT
+CAN_ADD_TALENT = 서머너_3
+
+VARSET CLASS_SKILL
+VARSET CLASS_LEARN
+VARSET CLASS_LEARN_LV
+
+;並びの整理
+SIF SELECT_CLASS:1 && (!SELECT_CLASS:0 || (SELECT_CLASS:0 > SELECT_CLASS:1))
+	SWAP SELECT_CLASS:0, SELECT_CLASS:1
+CUSTOMDRAWLINE =
+PRINTFORML 이능자로서의 소질을 선택해주세요
+CUSTOMDRAWLINE =
+VARSET SHOW_LINE
+;-----------------------------------------------------
+;左選択欄
+;-----------------------------------------------------
+SHOW_LINE:0 = %"┌" + "CLASS " + "─" * 7 + "┐"%
+FOR LCOUNT, 0, MAX(FINDELEMENT(CLASS_LIST, 0), 25)
+	IF CLASS_LIST:LCOUNT > 0
+		TEMPS '= GET_CLASS_NAME(CLASS_LIST:LCOUNT)
+		SIF TEMPS == "アームチェア・ディテクティブ"
+			TEMPS = 安楽椅子探偵
+		SHOW_LINE:(LCOUNT + 1) += @"<button value = '{LCOUNT+1}'>" + @"[{LCOUNT+1,2}] %TEMPS, 15, LEFT%" + "</button>"
+		SIF GROUPMATCH(CLASS_LIST:LCOUNT, SELECT_CLASS:0, SELECT_CLASS:1)
+			SHOW_LINE:(LCOUNT + 1) = %@"<font color = '%TOSTR_HTML(COLOR("aqua"))%'>" + SHOW_LINE:(LCOUNT + 1) + "</font>" %
+		SHOW_LINE:(LCOUNT + 1) = %"│" + SHOW_LINE:(LCOUNT + 1) + "│" %
+	ELSE
+		SHOW_LINE:(LCOUNT + 1) = %"│" + " " * 20 + "│" %
+	ENDIF
+NEXT
+SHOW_LINE:(LCOUNT + 1) = %"└" + "─" * 10 + "┘"%
+
+;-----------------------------------------------------
+;クラス欄
+;-----------------------------------------------------
+FOR LCOUNT, 0, 2
+	SHOW_LINE:0 += "┌" + @"CLASS{LCOUNT + 1}" + "─" * 22 + "┐"
+	IF SELECT_CLASS:LCOUNT
+		CALL SET_VAR_CLASS, SELECT_CLASS:LCOUNT, CLASS_BASE_STATUS, CLASS_ALI, CLASS_SKILL, CLASS_LEARN, CLASS_LEARN_LV, CLASS_SUCCESSION, CLASS_EXPLAIN, CLASS_BTL_TALENT
+		SHOW_LINE:1 += "│"  + @"%"□" + GET_CLASS_NAME(SELECT_CLASS:LCOUNT), 50, LEFT%" + "│" 
+		SHOW_LINE:2 += "│"  + @"%"　" + CLASS_EXPLAIN:0, 50, LEFT%" + "│" 
+		SHOW_LINE:3 += "│"  + @"%"　" + CLASS_EXPLAIN:1, 50, LEFT%" + "│" 
+		SHOW_LINE:4 += "│"  + " " * 50 + "│"
+		SHOW_LINE:5 += "│"  + @"%"□" + "스테이터스", 50, LEFT%" + "│" 
+		FOR LCOUNT:1, 0, 3
+			SHOW_LINE:(6 + LCOUNT:1) += "│"
+			FOR LCOUNT:2, 0, 2
+				L_ST = LCOUNT:1 * 2 + LCOUNT:2 + 1
+				TEMP = CLASS_BASE_STATUS:L_ST
+				TEMPS = 　%GET_BASESTATUS(L_ST), 4%　{TEMP}
+				TEMPS:1 = <font color = '%TOSTR_HTML(COLOR("パ緑"))%'>%" " + TEMP * UNICODE(0x258B)%</font>
+				TEMPS:1 += " " * (25 - TEMP - 10)
+				SHOW_LINE:(6 + LCOUNT:1) += TEMPS + TEMPS:1
+
+				BASE:MASTER:GET_BASESTATUS(L_ST) += CLASS_BASE_STATUS:L_ST
+			NEXT
+			SHOW_LINE:(6 + LCOUNT:1) += "│"
+		NEXT
+		
+		SHOW_LINE:9 += "│"  + " " * 50 + "│"
+		SHOW_LINE:10 += "│"  + @"%"□" + "계승소질", 50, LEFT%" + "│"
+		TEMPS '= ""
+		FOR LCOUNT:1, 0, FINDELEMENT(CLASS_SUCCESSION, -1)
+			TEMPS += "【" + GET_SUCCESSION(CLASS_SUCCESSION:(LCOUNT:1)) + "】" + "　"
+			TALENT:0:GET_SUCCESSION(CLASS_SUCCESSION:(LCOUNT:1)) = 1
+		NEXT
+		SHOW_LINE:11 += "│" + TOALIGNMENT(TEMPS, 50, "LEFT") + "│"
+
+		SHOW_LINE:12 += "│"  + " " * 50 + "│"
+		SHOW_LINE:13 += "│"  + @"%"□" + "스킬", 50, LEFT%" + "│"
+		VARSET L_SKILL
+		FOR LCOUNT:1, 0, HAVEABLE_SKILLNUM
+			L_SKILL:FINDELEMENT(L_SKILL, 0) = CLASS_SKILL:(LCOUNT:1)
+		NEXT
+		FOR LCOUNT:1, 0, HAVEABLE_SKILLNUM
+			L_SKILL:FINDELEMENT(L_SKILL, 0) = CLASS_LEARN:(LCOUNT:1)
+		NEXT
+		FOR LCOUNT:1, 0, 6
+			SHOW_LINE:(14 + LCOUNT:1) += "│"
+			FOR LCOUNT:2, 0, 2
+				TEMP = LCOUNT:1 * 2 + LCOUNT:2
+				IF L_SKILL:TEMP
+					TEMPS = %SKILL_NAME_F(L_SKILL:TEMP)%
+					TEMPS:1 = %" " * (27 - STRLENS(TEMPS) - 4 - 2)%
+					CALL GET_SKILL_EXPLAIN_TOOLTIP, L_SKILL:TEMP
+					TEMPS = 【<button value = '' title = '%RESULTS%'>%TEMPS%</button>】
+					SHOW_LINE:(14 + LCOUNT:1) += TEMPS + TEMPS:1
+				ELSE
+					SHOW_LINE:(14 + LCOUNT:1) += " " * 25
+				ENDIF
+			NEXT
+			SHOW_LINE:(14 + LCOUNT:1) += "│"
+		NEXT
+		SHOW_LINE:20 += "│"  + @"%"□" + "추가소질", 50, LEFT%" + "│" 
+		L_TALENT '= CLASS_BTL_TALENT
+		FOR LCOUNT:1, 0, 3
+			TEMPS = %AUTO_SPLIT(L_TALENT, "/", LCOUNT:1)%
+			TEMPS:1 = %AUTO_SPLIT(TEMPS, "_", 0)%
+			TEMP:1 = GETNUM(TALENT, TEMPS:1);EDIT 50 ADD
+			;ツールチップが取れるかどうかで戦闘素質かを判定する
+			TRYCCALLFORM SUB_ROLE_EXPLAIN_TOOLTIP_%TEMPS:1%
+				CAN_ADD_TALENT += "/" + TEMPS
+				TEMPS:1 = %TEMPS:1,12,LEFT%
+				SIF TOINT(AUTO_SPLIT(TEMPS, "_", 1))
+					TEMPS:1 += @" Lv{TOINT(AUTO_SPLIT(TEMPS, "_", 1))}"
+			CATCH
+				;調教素質をセットする
+				SIF FINDELEMENT(TALENTNAME, TEMPS:1) > 0
+					TALENT:MASTER:(TEMPS:1) = 1
+			ENDCATCH
+			IF TEMPS:1 == ""
+				SHOW_LINE:(21 + LCOUNT:1) += "│" + " " * 50 + "│"
+			ELSE
+				;余白の長さを確定しておく
+				TEMP = 50 - STRLENS(HTML_TOPLAINTEXT(TEMPS:1)) - 4
+				CALL GET_TALENT_EXPLAIN, TEMP:1;EDIT 50 ADD
+				TEMPS:1 = 【<button value = '' title = '%RESULTS%'>%TEMPS:1%</button>】
+				SHOW_LINE:(21 + LCOUNT:1) += "│" + TEMPS:1 + " " * TEMP + "│"
+			ENDIF
+		NEXT
+		FOR LCOUNT:1, 24, MAX(FINDELEMENT(CLASS_LIST, 0), 25) + 1
+			SHOW_LINE:(LCOUNT:1) += "│"  + " " * 50 + "│"
+		NEXT
+	ELSE
+		FOR LCOUNT:1, 1, MAX(FINDELEMENT(CLASS_LIST, 0), 25) + 1
+			SHOW_LINE:(LCOUNT:1) += "│"  + " " * 50 + "│"
+		NEXT
+	ENDIF
+	SHOW_LINE:(LCOUNT:1) += "└"  + "─" * 25 + "┘"
+NEXT
+
+FOR LCOUNT, 0, MAX(FINDELEMENT(CLASS_LIST, 0), 25) + 2
+	HTML_PRINT SHOW_LINE:LCOUNT
+NEXT
+CALL MIX_BTL_TALENT_LIST, CAN_ADD_TALENT
+
+DRAWLINE
+PRINTL 초기 스테이터스는 ２가지 클래스의 스테이터스의 합계값이 됩니다。
+PRINTL 초기스킬과 습득스킬은 ２가지 클래스의 습득스킬에 따라 결정됩니다。
+PRINTL 
+PRINTL 클래스 결정 후、추가 서브소질 설정을 실행합니다。
+PRINTL 선택한 클래스에 따라 추가 전투소질의 선택지가 늘어납니다。동일한 전투소질을 중복하여 추가하면 해당 소질이 강화될 수 있습니다。
+PRINTL 모든 소질을 획득할 수는 없으므로、선택과 집중이 필요하다는 점에 유의해주세요
+PRINTL 
+PRINTL 스킬이나 소질에 마우스를 올리면 간단한 설명을 볼 수 있습니다。
+DRAWLINE
+CALL PRINT_COLOR, "[0] 결정", (SELECT_CLASS:0 && SELECT_CLASS:1) ? GETDEFCOLOR() # COLOR("DARK-GRAY")
+PRINTFORML 　　　　[99] 돌아간다
+INPUT
+IF RESULT == 99
+	COPYCHARA STOCK_MASTER:1, MASTER
+	DELCHARA STOCK_MASTER:1
+	RETURN 0
+ELSEIF RESULT == 0 && SELECT_CLASS:0 && SELECT_CLASS:1
+	;---- EDIT 055 DEL END ---------------------------
+	CALL SET_FIXED_BTL_TALENT, MASTER, "通常形態", L_LV_FIXED, L_TALENTS_FIXED
+	CALL SYNC_STATUS, MASTER
+	CUSTOMDRAWLINE =
+	CALL ROLE_EXPLAIN_ABILITY, MASTER, , ,"メイン"
+	CALL ENHANCE_ROLE, MASTER, , CAN_ADD_TALENT
+	SIF !RESULT
+		GOTO SELECT_CLASS
+	REDRAW 1
+	ABL:MASTER:스킬1 = SKILL_NUM_F("사바트마")
+	CALL SET_MASTER_SKILL, MASTER, "通常形態", "CLASS", SELECT_CLASS:0, "CLASS", SELECT_CLASS:1
+
+	CALL ROLE_EXPLAIN_BASE, MASTER
+	CALL ROLE_EXPLAIN_ABILITY, MASTER
+	DRAWLINE
+	PRINTL □스테이터스
+	DRAWLINE
+	FOR LCOUNT:1, 0, 3
+		SHOW_LINE =
+		FOR LCOUNT:2, 0, 2
+			L_ST = LCOUNT:1 * 2 + LCOUNT:2 + 1
+			TEMP = BASE:MASTER:GET_BASESTATUS(L_ST)
+			TEMPS = 　%GET_BASESTATUS(L_ST), 4%　{TEMP,2}
+			TEMPS:1 = <font color = '%TOSTR_HTML(COLOR("パ緑"))%'>%" " + TEMP * UNICODE(0x258B)%</font>
+			TEMPS:1 += " " * (15 - TEMP)
+			SHOW_LINE += TEMPS + TEMPS:1
+		NEXT
+		HTML_PRINT SHOW_LINE
+	NEXT
+	DRAWLINE
+	PRINTL □스킬
+	DRAWLINE
+	;初期スキル
+	SHOW_LINE = 　
+	FOR LCOUNT,1,4
+		SIF ABL:MASTER:@"스킬{LCOUNT}" == 0
+			BREAK
+		CALL GET_SKILL_EXPLAIN_TOOLTIP, ABL:MASTER:@"스킬{LCOUNT}"
+		SHOW_LINE += "초기:" + @"<button value = '' title = '%RESULTS%'>" + SKILL_NAME_F(ABL:MASTER:@"스킬{LCOUNT}") + "</button>"
+		SHOW_LINE += " " * (SKILLNAMELENS - STRLENS(SKILL_NAME_F(ABL:MASTER:@"스킬{LCOUNT}")))
+	NEXT
+	HTML_PRINT SHOW_LINE
+	SHOW_LINE = 
+	;습득스킬
+	FOR LCOUNT,1, 21
+		SIF ABL:MASTER:@"습득스킬{LCOUNT}" == 0
+			BREAK
+		SIF SHOW_LINE == ""
+			SHOW_LINE += "　"
+		CALL GET_SKILL_EXPLAIN_TOOLTIP, ABL:MASTER:@"습득스킬{LCOUNT}"
+		SHOW_LINE += @"Lv{ABL:MASTER:@"습득LV{LCOUNT}", 2}:" + @"<button value = '' title = '%RESULTS%'>" + SKILL_NAME_F(ABL:MASTER:@"습득스킬{LCOUNT}") + "</button>"
+		SHOW_LINE += " " * (SKILLNAMELENS - STRLENS(SKILL_NAME_F(ABL:MASTER:@"습득스킬{LCOUNT}")))
+		IF LCOUNT % 4 == 0
+			HTML_PRINT SHOW_LINE
+			SHOW_LINE = 
+		ENDIF
+	NEXT
+	SIF SHOW_LINE != ""
+		HTML_PRINT SHOW_LINE
+	DRAWLINE
+	PRINTFORML 　[0] 결정　　　　[9] 돌아간다
+	CALL INPUTINT(0, 9)
+	SIF RESULT
+		GOTO SELECT_CLASS
+	DELCHARA STOCK_MASTER:1
+	RETURN 1
+ELSE
+	IF INRANGE(RESULT, 1, 1 + VARSIZE("CLASS_LIST")) && CLASS_LIST:(RESULT - 1) > 0
+		RESULT -= 1
+		;すでに選ばれていたら解除
+		IF SELECT_CLASS:0 == CLASS_LIST:RESULT
+			SELECT_CLASS:0 = 0
+		ELSEIF SELECT_CLASS:1 == CLASS_LIST:RESULT
+			SELECT_CLASS:1 = 0
+		ELSE
+			;空きがあるなら
+			SIF FINDELEMENT(SELECT_CLASS, 0) >= 0
+				SELECT_CLASS:FINDELEMENT(SELECT_CLASS, 0) = CLASS_LIST:RESULT
+		ENDIF
+	ENDIF
+	GOTO SELECT_CLASS
+ENDIF
+;========================================================================
+;主人の達人としての技能
+;========================================================================
+@SET_MASTER_MAJORING_TECHNIC, STOCK_MASTER
+#DIM DYNAMIC LCOUNT,3
+#DIM DYNAMIC L_LINE
+#DIM DYNAMIC TEMP, 2
+#DIMS DYNAMIC TEMPS, 2
+#DIM DYNAMIC L_ST
+#DIM CONST CLASSNUM = 20
+#DIM CONST TECNUM = 10
+#DIM DYNAMIC CLASS_LIST, 21
+#DIM DYNAMIC TECHNIC_LIST, 20
+#DIM DYNAMIC SELECT_CLASS, 2
+#DIM DYNAMIC STOCK_MASTER,2
+#DIMS DYNAMIC SHOW_LINE, 40
+#DIM DYNAMIC L_SKILL, HAVEABLE_SKILLNUM
+#DIM DYNAMIC TECHNIC_SKILL, HAVEABLE_SKILLNUM
+#DIM DYNAMIC TECHNIC_LEARN, HAVEABLE_SKILLNUM
+#DIM DYNAMIC TECHNIC_LEARN_LV, HAVEABLE_SKILLNUM
+#DIM DYNAMIC CLASS_SKILL, HAVEABLE_SKILLNUM
+#DIM DYNAMIC CLASS_LEARN, HAVEABLE_SKILLNUM
+#DIM DYNAMIC CLASS_LEARN_LV, HAVEABLE_SKILLNUM
+#DIM DYNAMIC CLASS_BASE_STATUS, BASESTATUSNUM
+#DIM DYNAMIC CLASS_SUCCESSION, SUCCESSIONNUM
+#DIMS DYNAMIC CLASS_ALI, 2
+#DIMS DYNAMIC CLASS_BTL_TALENT
+#DIMS DYNAMIC CLASS_EXPLAIN,2
+#DIMS DYNAMIC L_TALENT
+#DIMS DYNAMIC L_TALENTS, 3
+#DIMS DYNAMIC L_TALENT_TITLE, 3
+#DIMS DYNAMIC CAN_ADD_TALENT
+#DIM DYNAMIC L_LV_FIXED, SUB_ROLENUM
+#DIMS DYNAMIC L_TALENTS_FIXED, SUB_ROLENUM
+#DIMS DYNAMIC L_COLOR
+;選択可能クラスのリスト作成
+FOR LCOUNT, 1, VARSIZE("TECHNIC_LIST")
+	SIF !IS_ABLE_TECHNIC(LCOUNT)
+		CONTINUE
+	CALL PUSH_ARRAY_INT, TECHNIC_LIST, LCOUNT
+NEXT
+FOR LCOUNT, 1, VARSIZE("CLASS_LIST")
+	SIF !IS_ABLE_CLASS(LCOUNT)
+		CONTINUE
+	CALL PUSH_ARRAY_INT, CLASS_LIST, LCOUNT
+NEXT
+
+L_LINE = LINECOUNT
+ADDCOPYCHARA MASTER
+STOCK_MASTER:1 = CHARANUM -1
+$START
+CAN_ADD_TALENT = 서머너_1
+COPYCHARA STOCK_MASTER:1, MASTER
+
+;---- EDIT 055 ADD START -------------------------
+TALENT:MASTER:달인 = 1
+TALENT:MASTER:서머너 = 1
+CFLAG:MASTER:당신의전공분야1  = SELECT_CLASS:1
+CFLAG:MASTER:당신의전공분야2  = SELECT_CLASS:0
+CSTR:MASTER:해설1 = 팬텀・소사이어티에 소속된 달인。
+CFLAG:MASTER:당신의전공분야  = GET_MASTER_MAJORING_NUM("달인")
+CALL SET_ROLE, MASTER
+;---- EDIT 055 ADD END ---------------------------
+FOR LCOUNT, 1, 7
+	BASE:MASTER:GET_BASESTATUS(LCOUNT) = 0
+NEXT
+
+CLEARLINE LINECOUNT - L_LINE
+CUSTOMDRAWLINE =
+PRINTFORML 달인으로서의 소질을 선택해주세요
+CUSTOMDRAWLINE =
+;-----------------------------------------------------
+;左選択欄
+;-----------------------------------------------------
+VARSET SHOW_LINE
+SHOW_LINE:0 = %"┌" + "CLASS " + "─" * 7 + "┐"%
+FOR LCOUNT, 1, TECNUM + 1
+	IF TECHNIC_LIST:(LCOUNT - 1) == 0
+		SHOW_LINE:LCOUNT += @"<font color = '%TOSTR_HTML(COLOR("DARK-GRAY"))%'>" + @"<button value = '' TITLE = '経験ED数を増やすことで解放される。'>" + @"[--] %"？？？？", 15, LEFT%" + "</button>" + "</font>"
+	ELSE
+		TEMP = TECHNIC_LIST:(LCOUNT - 1)
+		TEMPS = %GET_TECHNIC_NAME(TEMP)%
+		SHOW_LINE:LCOUNT += @"<button value = '{LCOUNT}'>" + @"[{LCOUNT,2}] %TEMPS, 15, LEFT%" + "</button>"
+		SIF SELECT_CLASS:0 == TEMP
+			SHOW_LINE:LCOUNT = %@"<font color = '%TOSTR_HTML(COLOR("aqua"))%'>" + SHOW_LINE:LCOUNT + "</font>" %
+	ENDIF
+	SHOW_LINE:LCOUNT = %"│" + SHOW_LINE:LCOUNT + "│" %
+NEXT
+SHOW_LINE:LCOUNT = %"└" + "─" * 10 + "┘"%
+
+SHOW_LINE:(TECNUM + 2) = %"┌" + "CLASS " + "─" * 7 + "┐"%
+FOR LCOUNT, 1, CLASSNUM + 1
+	TEMP = LCOUNT + TECNUM + 2
+	TEMPS = %GET_CLASS_NAME(CLASS_LIST:(LCOUNT-1))%
+	SIF TEMPS == "アームチェア・ディテクティブ"
+		TEMPS = 安楽椅子探偵
+	SHOW_LINE:TEMP += @"<button value = '{50 + LCOUNT}'>" + @"[{LCOUNT + 50,2}] %TEMPS, 15, LEFT%" + "</button>"
+	SIF SELECT_CLASS:1 == CLASS_LIST:(LCOUNT-1)
+		SHOW_LINE:TEMP = %@"<font color = '%TOSTR_HTML(COLOR("aqua"))%'>" + SHOW_LINE:TEMP + "</font>" %
+	SHOW_LINE:TEMP = %"│" + SHOW_LINE:TEMP + "│" %
+NEXT
+SHOW_LINE:(TEMP+1) = %"└" + "─" * 10 + "┘"%
+
+;-----------------------------------------------------
+;クラス欄
+;-----------------------------------------------------
+FOR LCOUNT, 0, 2
+	SHOW_LINE:0 += "┌" + @"CLASS{LCOUNT + 1}" + "─" * 22 + "┐"
+	IF SELECT_CLASS:LCOUNT
+		VARI SELECTNUM
+		IF LCOUNT == 0
+			CALL SET_VAR_TECHNIC, SELECT_CLASS:LCOUNT, CLASS_BASE_STATUS, CLASS_ALI, TECHNIC_SKILL, TECHNIC_LEARN, TECHNIC_LEARN_LV, CLASS_SUCCESSION, CLASS_EXPLAIN, CLASS_BTL_TALENT
+			SHOW_LINE:1 += "│"  + @"%"□" + GET_TECHNIC_NAME(SELECT_CLASS:LCOUNT), 50, LEFT%" + "│" 
+		ELSE
+			CALL SET_VAR_CLASS, SELECT_CLASS:LCOUNT, CLASS_BASE_STATUS, CLASS_ALI, CLASS_SKILL, CLASS_LEARN, CLASS_LEARN_LV, CLASS_SUCCESSION, CLASS_EXPLAIN, CLASS_BTL_TALENT
+			SHOW_LINE:1 += "│"  + @"%"□" + GET_CLASS_NAME(SELECT_CLASS:LCOUNT), 50, LEFT%" + "│" 
+		ENDIF
+		SHOW_LINE:2 += "│"  + @"%"　" + CLASS_EXPLAIN:0, 50, LEFT%" + "│" 
+		SHOW_LINE:3 += "│"  + @"%"　" + CLASS_EXPLAIN:1, 50, LEFT%" + "│" 
+		SHOW_LINE:4 += "│"  + " " * 50 + "│"
+		SHOW_LINE:5 += "│"  + @"%"□" + "스테이터스", 50, LEFT%" + "│" 
+		FOR LCOUNT:1, 0, 6
+			SHOW_LINE:(6 + LCOUNT:1) += "│"
+			L_ST = LCOUNT:1 + 1
+			TEMP = CLASS_BASE_STATUS:L_ST
+			TEMPS = 　%GET_BASESTATUS(L_ST), 4% {TEMP,2}
+			TEMPS:1 = <font color = '%TOSTR_HTML(COLOR("パ緑"))%'>%" " + TEMP * UNICODE(0x258B)%</font>
+			TEMPS:1 += " " * (50 - TEMP - 10)
+			SHOW_LINE:(6 + LCOUNT:1) += TEMPS + TEMPS:1
+			SHOW_LINE:(6 + LCOUNT:1) += "│"
+			BASE:MASTER:GET_BASESTATUS(L_ST) += CLASS_BASE_STATUS:L_ST
+		NEXT
+		SHOW_LINE:12 += "│"  + " " * 50 + "│"
+		SHOW_LINE:13 += "│"  + @"%"□" + "스킬", 50, LEFT%" + "│"
+
+		VARSET L_SKILL
+		FOR LCOUNT:1, 0, HAVEABLE_SKILLNUM
+			IF LCOUNT == 0
+				L_SKILL:FINDELEMENT(L_SKILL, 0) = TECHNIC_SKILL:(LCOUNT:1)
+			ELSE
+				L_SKILL:FINDELEMENT(L_SKILL, 0) = CLASS_SKILL:(LCOUNT:1)
+			ENDIF
+		NEXT
+		FOR LCOUNT:1, 0, HAVEABLE_SKILLNUM
+			SIF L_SKILL:FINDELEMENT(L_SKILL, 0) < 0
+				BREAK
+			IF LCOUNT == 0
+				L_SKILL:FINDELEMENT(L_SKILL, 0) = TECHNIC_LEARN:(LCOUNT:1)
+			ELSE
+				L_SKILL:FINDELEMENT(L_SKILL, 0) = CLASS_LEARN:(LCOUNT:1)
+			ENDIF
+		NEXT
+		FOR LCOUNT:1, 0, 14
+			SHOW_LINE:(14 + LCOUNT:1) += "│"
+			IF L_SKILL:(LCOUNT:1)
+				TEMPS = %SKILL_NAME_F(L_SKILL:(LCOUNT:1))%
+				TEMPS:1 = %" " * (50 - STRLENS(TEMPS) - 4)%
+				CALL GET_SKILL_EXPLAIN_TOOLTIP, L_SKILL:(LCOUNT:1)
+				TEMPS = 【<button value = '' title = '%RESULTS%'>%TEMPS%</button>】
+				SHOW_LINE:(14 + LCOUNT:1) += TEMPS + TEMPS:1
+			ELSE
+				SHOW_LINE:(14 + LCOUNT:1) += " " * 50
+			ENDIF
+			SHOW_LINE:(14 + LCOUNT:1) += "│"
+		NEXT
+		SHOW_LINE:28 += "│"  + @"%"□" + "추가소질", 50, LEFT%" + "│" 
+		L_TALENT '= CLASS_BTL_TALENT
+		VARSET L_TALENTS
+		;---- EDIT 051 MOD START -------------------------
+		VARSET L_TALENT_TITLE
+		FOR LCOUNT:1, 0, 3
+			TEMPS = %AUTO_SPLIT(L_TALENT, "/", LCOUNT:1)%
+			TEMPS:1 = %AUTO_SPLIT(TEMPS, "_", 0)%
+			TEMP:1 = GETNUM(TALENT, TEMPS:1);EDIT 50 ADD
+			RESULTS = 
+			;ツールチップが取れるかどうかで戦闘素質かを判定する
+			TRYCCALLFORM SUB_ROLE_EXPLAIN_TOOLTIP_%TEMPS:1%
+				L_COLOR = %TOSTR_HTML(GETDEFCOLOR())%
+				SIF LCOUNT
+					CONTINUE
+				CAN_ADD_TALENT += "/" + TEMPS
+				SIF GET_SUB_ROLE_PROP("MAXLV", TEMPS:1) > 1
+					TEMPS:1 = %TEMPS:1,12,LEFT% Lv{TOINT(AUTO_SPLIT(TEMPS, "_", 1))}
+			CATCH
+				;調教素質をセットする
+				IF FINDELEMENT(TALENTNAME, TEMPS:1) > 0
+					TALENT:MASTER:(TEMPS:1) = 1
+					CALL GET_TALENT_EXPLAIN, TEMP:1;EDIT 50 ADD
+				ENDIF
+			ENDCATCH
+			L_TALENT_TITLE:FINDELEMENT(L_TALENTS, "", , , 1) = %RESULTS%
+			L_TALENTS:FINDELEMENT(L_TALENTS, "", , , 1) = %TEMPS:1%
+		NEXT
+		FOR LCOUNT:1, 0, 3
+			IF L_TALENTS:(LCOUNT:1) == ""
+				SHOW_LINE:(29 + LCOUNT:1) += "│" + " " * 50 + "│"
+			ELSE
+				;余白の長さを確定しておく
+				TEMP = 50 - STRLENS(HTML_TOPLAINTEXT(L_TALENTS:(LCOUNT:1))) - 4
+				L_TALENTS:(LCOUNT:1) = <font color = '%L_COLOR%'>【<button value = '' title = '%L_TALENT_TITLE:(LCOUNT:1)%'>%L_TALENTS:(LCOUNT:1)%</button>】</font>
+				SHOW_LINE:(29 + LCOUNT:1) += "│" + L_TALENTS:(LCOUNT:1) + " " * TEMP + "│"
+			ENDIF
+		NEXT
+		;---- EDIT 051 MOD END ---------------------------
+		FOR LCOUNT:1, 32, TECNUM + CLASSNUM + 3
+			SHOW_LINE:(LCOUNT:1) += "│"  + " " * 50 + "│"
+		NEXT
+	ELSE
+		FOR LCOUNT:1, 1, TECNUM + CLASSNUM + 3
+			SHOW_LINE:(LCOUNT:1) += "│"  + " " * 50 + "│"
+		NEXT
+	ENDIF
+	SHOW_LINE:(TECNUM + CLASSNUM + 3) += "└"  + "─" * 25 + "┘"
+NEXT
+
+FOR LCOUNT, 0, TECNUM + CLASSNUM + 4
+	HTML_PRINT SHOW_LINE:LCOUNT
+NEXT
+DRAWLINE
+PRINTL 초기 스테이터스는 ２가지 클래스의 스테이터스의 합계값이 됩니다。
+PRINTL 초기스킬과 습득스킬은 ２가지 클래스의 습득스킬에 따라 결정됩니다。
+PRINTL 
+PRINTL 스킬이나 소질에 마우스를 올리면 간단한 설명을 볼 수 있습니다。
+DRAWLINE
+CALL PRINT_COLOR, "[0] 결정", (SELECT_CLASS:0 && SELECT_CLASS:1) ? GETDEFCOLOR() # COLOR("DARK-GRAY")
+PRINTFORML 　　　　[99] 돌아간다
+INPUT
+
+IF RESULT == 99
+	DELCHARA STOCK_MASTER:1
+	RETURN 0
+ELSEIF RESULT == 0 && SELECT_CLASS:0 && SELECT_CLASS:1
+	CALL SYNC_STATUS, MASTER
+	CALL SET_FIXED_BTL_TALENT, MASTER, "通常形態", L_LV_FIXED, L_TALENTS_FIXED
+
+	ABL:MASTER:스킬1 = SKILL_NUM_F("사바트마")
+
+	CALL SET_MASTER_SKILL, MASTER, "通常形態", "TECHNIC", SELECT_CLASS:0, "CLASS", SELECT_CLASS:1
+	;戦闘素質のセット
+	FOR LCOUNT, 0, STRCOUNT(CAN_ADD_TALENT, "/") + 1
+		TALENT:MASTER:AUTO_SPLIT(AUTO_SPLIT(CAN_ADD_TALENT, "/", LCOUNT), "_", 0) = MAX(TOINT(AUTO_SPLIT(AUTO_SPLIT(CAN_ADD_TALENT, "/", LCOUNT), "_", 1)),1)
+	NEXT
+	;確認画面
+	CALL ROLE_EXPLAIN_BASE, MASTER
+	CALL ROLE_EXPLAIN_ABILITY, MASTER
+	DRAWLINE
+	PRINTL □스테이터스
+	DRAWLINE
+	FOR LCOUNT:1, 0, 3
+		SHOW_LINE =
+		FOR LCOUNT:2, 0, 2
+			L_ST = LCOUNT:1 * 2 + LCOUNT:2 + 1
+			TEMP = BASE:MASTER:GET_BASESTATUS(L_ST)
+			TEMPS = 　%GET_BASESTATUS(L_ST), 4%　{TEMP,2}
+			TEMPS:1 = <font color = '%TOSTR_HTML(COLOR("パ緑"))%'>%" " + TEMP * UNICODE(0x258B)%</font>
+			TEMPS:1 += " " * (15 - TEMP)
+			SHOW_LINE += TEMPS + TEMPS:1
+		NEXT
+		HTML_PRINT SHOW_LINE
+	NEXT
+	DRAWLINE
+	PRINTL □스킬
+	DRAWLINE
+	;初期スキル
+	SHOW_LINE = 　
+	FOR LCOUNT,1,4
+		SIF ABL:MASTER:@"스킬{LCOUNT}" == 0
+			BREAK
+		CALL GET_SKILL_EXPLAIN_TOOLTIP, ABL:MASTER:@"스킬{LCOUNT}"
+		SHOW_LINE += "초기:" + @"<button value = '' title = '%RESULTS%'>" + SKILL_NAME_F(ABL:MASTER:@"스킬{LCOUNT}") + "</button>"
+		SHOW_LINE += " " * (SKILLNAMELENS - STRLENS(SKILL_NAME_F(ABL:MASTER:@"스킬{LCOUNT}")))
+	NEXT
+	HTML_PRINT SHOW_LINE
+	SHOW_LINE = 
+	;습득스킬
+	FOR LCOUNT,1, 21
+		SIF ABL:MASTER:@"습득스킬{LCOUNT}" == 0
+			BREAK
+		SIF SHOW_LINE == ""
+			SHOW_LINE += "　"
+		CALL GET_SKILL_EXPLAIN_TOOLTIP, ABL:MASTER:@"습득스킬{LCOUNT}"
+		SHOW_LINE += @"Lv{ABL:MASTER:@"습득LV{LCOUNT}", 2}:" + @"<button value = '' title = '%RESULTS%'>" + SKILL_NAME_F(ABL:MASTER:@"습득스킬{LCOUNT}") + "</button>"
+		SHOW_LINE += " " * MAX((SKILLNAMELENS - STRLENS(SKILL_NAME_F(ABL:MASTER:@"습득스킬{LCOUNT}"))), 0)
+		IF LCOUNT % 4 == 0
+			HTML_PRINT SHOW_LINE
+			SHOW_LINE = 
+		ENDIF
+	NEXT
+	SIF SHOW_LINE != ""
+		HTML_PRINT SHOW_LINE
+	DRAWLINE
+	PRINTFORML 　[0] 결정　　　　[9] 돌아간다
+	CALL INPUTINT(0, 9)
+	SIF RESULT
+		GOTO START
+	DELCHARA STOCK_MASTER:1
+	RETURN 1
+ELSE
+	;達人クラス
+	IF INRANGE(RESULT, 1, TECNUM + 1)
+		SIF TECHNIC_LIST:(RESULT - 1) > 0
+			SELECT_CLASS:0 = TECHNIC_LIST:(RESULT - 1)
+	;通常クラス
+	ELSEIF INRANGE(RESULT, 51, CLASSNUM + 51)
+		SELECT_CLASS:1 = CLASS_LIST:(RESULT - 51)
+	ENDIF
+ENDIF
+GOTO START
+
+;========================================================================
+;主人の初期ペルソナ
+;========================================================================
+@SET_MASTER_MAJORING_PERSONA, STOCK_MASTER
+#DIM STOCK_MASTER
+#DIM LCOUNT, 2
+#DIM L_RESULT
+#DIM TEMP
+#DIMS TEMPS
+#DIMS L_SKILLS
+#DIM L_LINE
+#DIM CONST L_SHOWNUM = 32
+#DIMS SHOW_LINE, 34
+#DIM L_LINENUM
+#DIM SELECT_PERSONA
+#DIM SELECT_ABLE, 61
+#DIM PERSONA_NO, 2
+#DIM PERSONA_SKILL, 8
+#DIM PERSONA_LEARN, HAVEABLE_SKILLNUM
+#DIM PERSONA_LEARN_LV, HAVEABLE_SKILLNUM
+#DIM PERSONA_SUCCESSION, SUCCESSIONNUM
+#DIM PERSONA_BASESTATUS, BASESTATUSNUM
+#DIM PERSONA_TYPE, TYPENUM
+#DIM PERSONA_ALI, 2
+#DIMS PERSONA_EXPLAIN, 2
+#DIM L_LV_FIXED, SUB_ROLENUM
+#DIMS L_TALENTS_FIXED, SUB_ROLENUM
+#DIM L_HAVE_SUCCESSIONNUM
+L_LINE = LINECOUNT
+
+VARSET SELECT_ABLE
+;選択可能なペルソナの設定
+FOR LCOUNT, 0, 50
+	SIF !GET_MASTER_PERSONA_NO(LCOUNT)
+		CONTINUE
+	SIF FINDELEMENT(SELECT_ABLE, 0) == -1
+		CONTINUE
+	SELECT_ABLE:FINDELEMENT(SELECT_ABLE, 0) = LCOUNT
+NEXT
+
+;周回での持ち越しペルソナは51~60として配列に入れる
+FOR LCOUNT, 1, 11
+	SIF !DITEMTYPE:LCOUNT:페르소나("NO")
+		CONTINUE
+	SIF FINDELEMENT(SELECT_ABLE, 0) == -1
+		CONTINUE
+	SELECT_ABLE:FINDELEMENT(SELECT_ABLE, 0) = LCOUNT + 50
+NEXT
+SIF CFLAG:MASTER:초기페르소나넘버
+	SELECT_ABLE:FINDELEMENT(SELECT_ABLE, 0) = 61
+$START
+CLEARLINE LINECOUNT - L_LINE
+
+DRAWLINE
+PRINTL 초기페르소나를 선택해주세요。
+DRAWLINE
+
+;-----------------------------------------------------
+;左選択欄
+;-----------------------------------------------------
+SHOW_LINE:0 = %"┌" + "─" * 15 + "┐"%
+FOR LCOUNT, 0, L_SHOWNUM
+	L_LINENUM = LCOUNT + 1
+	IF SELECT_ABLE:LCOUNT
+		TEMPS = %GET_MASTER_PERSONA_NAME(SELECT_ABLE:LCOUNT)%
+		SHOW_LINE:L_LINENUM = [{LCOUNT + 1, 2}] %TEMPS, 25, LEFT%
+		SHOW_LINE:L_LINENUM = <font color = '%TOSTR_HTML(SELECT_PERSONA == SELECT_ABLE:LCOUNT ? COLOR("aqua") # GETDEFCOLOR())%'>%SHOW_LINE:L_LINENUM%</font>
+		SHOW_LINE:L_LINENUM = <button value = '{LCOUNT + 1}'>%SHOW_LINE:L_LINENUM%</button>
+	ELSE
+		SHOW_LINE:L_LINENUM = %" " * 30%
+	ENDIF
+	SHOW_LINE:L_LINENUM = %"│" + SHOW_LINE:L_LINENUM + "│" %
+NEXT
+SHOW_LINE:(L_SHOWNUM + 1) = %"└" + "─" * 15 + "┘"%
+;-----------------------------------------------------
+;ペルソナ欄
+;----------------------------------------------------―
+SHOW_LINE:0 += "┌" + "─" * 40 + "┐"
+L_LINENUM = 1
+IF SELECT_PERSONA > 0
+	CALL SET_VAR_MASTER_PERSONA, SELECT_PERSONA, PERSONA_NO, PERSONA_SKILL, PERSONA_LEARN, PERSONA_LEARN_LV, PERSONA_BASESTATUS, PERSONA_SUCCESSION, PERSONA_TYPE, PERSONA_ALI, PERSONA_EXPLAIN
+
+	SHOW_LINE:(L_LINENUM + 0) += "│"  + @"%"□" + CSVCALLNAME(PERSONA_NO) + "(" + TOALIGNMENT(GET_ALI1(PERSONA_ALI:1),7,"RIGHT") + "/" + TOALIGNMENT(GET_ALI2(PERSONA_ALI:0),7,"RIGHT") + ")", 80, LEFT%" + "│"  
+	SHOW_LINE:(L_LINENUM + 1) += "│"  + " " * 80 + "│"
+
+	L_LINENUM += 2
+
+	;ステータス表示
+	SHOW_LINE:(L_LINENUM + 0) += "│"  + @"%"□" + "스테이터스", 80, LEFT%" + "│" 
+	FOR LCOUNT:1, 0, 3
+		L_LINENUM += 1
+		SHOW_LINE:L_LINENUM += "│"
+		FOR LCOUNT, 0, 2
+			TEMP = LCOUNT * 2 + LCOUNT:1 + 1
+			DEBUGPRINTFORML TEMP = {TEMP}
+			SHOW_LINE:L_LINENUM += "　" + @"%GET_BASESTATUS(TEMP), 4%" + ":" + @"{MIN(PERSONA_BASESTATUS:TEMP, 30), 2}"
+			SHOW_LINE:L_LINENUM += @"<font color = '%TOSTR_HTML(COLOR("パ緑"))%'>%" " + PERSONA_BASESTATUS:TEMP * UNICODE(0x258B)%</font>"
+			SHOW_LINE:L_LINENUM += (40 - 10 - MIN(PERSONA_BASESTATUS:TEMP, 30)) * " "
+		NEXT
+		SHOW_LINE:L_LINENUM += "│"
+	NEXT
+	SHOW_LINE:(L_LINENUM + 1) += "│" + " " * 80 + "│"
+
+	L_LINENUM += 2
+	SHOW_LINE:(L_LINENUM + 0) += "│"  + @"%"□" + "상성", 80, LEFT%" + "│" 
+
+	FOR LCOUNT, 0, TYPENUM / 6 + (TYPENUM % 6 > 0); (80 - 2 / 6) = 13
+		L_LINENUM += 1
+		SHOW_LINE:L_LINENUM += "│　"
+		FOR LCOUNT:1, 0, 6
+			IF LCOUNT * 6 + LCOUNT:1 < TYPENUM
+				SHOW_LINE:L_LINENUM += GET_TYPE(LCOUNT * 6 + LCOUNT:1) + ":";6
+				TEMP =  CSVBASE(PERSONA_NO, GETNUM(BASE,GET_TYPE(LCOUNT * 6 + LCOUNT:1)),0)
+				SELECTCASE CHECK_WEAKNESS(TEMP)
+					CASE 1
+						TEMPS = %TOSTR_HTML(COLOR("aqua"))%
+					CASE 0
+						TEMPS = %TOSTR_HTML(COLOR("デフォルト"))%
+					CASEELSE
+						TEMPS = %TOSTR_HTML(COLOR("red"))%
+				ENDSELECT
+				SHOW_LINE:L_LINENUM += @"<font color = '%TEMPS%'>" + @"{TEMP,4}\%" + "</font>";5
+				SHOW_LINE:L_LINENUM += " 　"
+			ENDIF
+		NEXT
+		SHOW_LINE:L_LINENUM += "│"
+	NEXT
+	SHOW_LINE:(L_LINENUM + 1) += "│" + " " * 80 + "│"
+	SHOW_LINE:(L_LINENUM + 2) += "│"  + @"%"□" + "계승소질", 80, LEFT%" + "│" 
+	TEMPS = 
+	FOR LCOUNT, 0, SUCCESSIONNUM
+		SIF PERSONA_SUCCESSION:LCOUNT
+			TEMPS += "【" + GET_SUCCESSION(LCOUNT) + "】　"
+	NEXT
+	SHOW_LINE:(L_LINENUM + 3) += "│" + @"%TEMPS, 80, LEFT%" + "│"
+	SHOW_LINE:(L_LINENUM + 4) += "│" + " " * 80 + "│"
+	SHOW_LINE:(L_LINENUM + 5) += "│"  + @"%"□" + "스킬", 80, LEFT%" + "│" 
+	L_LINENUM += 5
+	FOR LCOUNT, 0, GET_ROLE_PROP("SKILLCOUNT", , "ペルソナ使い", "通常形態") / 2 + GET_ROLE_PROP("SKILLCOUNT", , "ペルソナ使い", "通常形態") % 2
+		L_LINENUM += 1
+		TEMPS = 
+		FOR LCOUNT:1, 0, 2
+			IF PERSONA_SKILL:(LCOUNT * 2 + LCOUNT:1)
+				L_SKILLS = %SKILL_NAME_F(PERSONA_SKILL:(LCOUNT * 2 + LCOUNT:1))%
+				TEMP = 40 - STRLENS(L_SKILLS) - 4
+				CALL GET_SKILL_EXPLAIN_TOOLTIP,  PERSONA_SKILL:(LCOUNT * 2 + LCOUNT:1)
+				TEMPS += @"<button value = '' title = '%RESULTS%'>" + "【" + L_SKILLS + "】" + " " * TEMP + "</button>"
+			ELSE
+				TEMPS += " " * 40
+			ENDIF
+		NEXT
+		;空行なら行をすすめない
+		IF STRCOUNT(TEMPS, "【")
+			SHOW_LINE:L_LINENUM += "│" + TEMPS + "│"
+		ELSE
+			L_LINENUM -= 1
+		ENDIF
+	NEXT
+	SHOW_LINE:(L_LINENUM + 1) += "│" + " " * 80 + "│"
+	SHOW_LINE:(L_LINENUM + 2) += "│"  + @"%"□" + "습득스킬", 80, LEFT%" + "│" 
+	L_LINENUM += 2
+	FOR LCOUNT, 0, HAVEABLE_SKILLNUM / 2 + HAVEABLE_SKILLNUM % 2
+		L_LINENUM += 1
+		TEMPS = 
+		FOR LCOUNT:1, 0, 2
+			IF PERSONA_LEARN:(LCOUNT * 2 + LCOUNT:1)
+				L_SKILLS = %SKILL_NAME_F(PERSONA_LEARN:(LCOUNT * 2 + LCOUNT:1))%
+				TEMP = 40 - STRLENS(L_SKILLS) - 4
+				CALL GET_SKILL_EXPLAIN_TOOLTIP,  PERSONA_LEARN:(LCOUNT * 2 + LCOUNT:1)
+				TEMPS += @"<button value = '' title = '%RESULTS%'>" + "【" + L_SKILLS + "】" + " " * TEMP + "</button>"
+			ELSE
+				TEMPS += " " * 40
+			ENDIF
+		NEXT
+		SHOW_LINE:L_LINENUM += "│" + TEMPS + "│"
+	NEXT
+	FOR LCOUNT, L_LINENUM + 1, L_SHOWNUM + 1
+		SHOW_LINE:LCOUNT += "│" + " " * 80 + "│"
+	NEXT
+ELSE
+	FOR LCOUNT, 1, L_SHOWNUM + 1
+		SHOW_LINE:LCOUNT += "│" + " " * 80 + "│"
+	NEXT
+ENDIF
+SHOW_LINE:(L_SHOWNUM + 1) += "└" + "─" * 40 + "┘"
+FOR LCOUNT, 0, L_SHOWNUM + 2
+	HTML_PRINT SHOW_LINE:LCOUNT
+NEXT
+DRAWLINE
+PRINTFORML 초기페르소나를 설정합니다。
+PRINTFORML 페르소나구사자는 페르소나를 적절히 활용함으로써、다양한 스킬과 스테이터스를 이용해 전투할 수 있습니다。
+PRINTFORML 페르소나는 나중에 작성하여、장비할 수 있지만 초기페르소나는 캐릭터 고유의 것으로、변경할 수 없습니다。
+PRINTFORML 또한、장비페르소나와의 캐릭터상성은 초기페르소나의 얼라인먼트 속성과 어느 정도 일치하는지에 따라 결정됩니다。
+PRINTL
+PRINTL 페르소나 결정 후、인간시의 추가 서브소질 설정을 실행합니다。
+PRINTL 
+PRINTL 스킬에 마우스를 올리면 간단한 해설을 볼 수 있습니다。
+DRAWLINE
+CALL PRINT_COLOR, "[0] 결정", SELECT_PERSONA ? GETDEFCOLOR() # COLOR("DARK-GRAY")
+PRINTFORML 　　　　[99] 돌아간다
+INPUT
+SIF RESULT == 99
+	RETURN 0
+IF RESULT == 0 && SELECT_PERSONA > 0
+	L_RESULT = RESULT
+	TALENT:MASTER:페르소나구사자 = 1
+	ABL:MASTER:초기페르소나 = PERSONA_NO:0
+	ABL:MASTER:초기페르소나2 = PERSONA_NO:1
+	CFLAG:MASTER:당신의전공분야  = GET_MASTER_MAJORING_NUM("페르소나구사자")
+	CFLAG:MASTER:당신의전공분야1 = SELECT_PERSONA
+	CALL SYNC_STATUS, MASTER
+	DRAWLINE
+	PRINTL 서브소질을 선택해주세요。
+	DRAWLINE
+	CALL ENHANCE_ROLE, MASTER, , "스킬적성_3/도구지식_3/서머너_3/석세서/건슬링거_2"
+	SIF !RESULT
+		GOTO START
+	DRAWLINE
+	;ペルソナ番号の捜索
+	IF CFLAG:MASTER:초기페르소나넘버 == 0
+		CFLAG:MASTER:초기페르소나넘버 = 50
+		WHILE 1
+			SIF !DITEMTYPE:(CFLAG:MASTER:초기페르소나넘버):페르소나("装備状態")
+				BREAK
+			CFLAG:MASTER:초기페르소나넘버++
+		WEND
+	ENDIF
+
+	;引き継ぎでないペルソナを指定する場合は一旦クリアーする。
+	IF INRANGE(SELECT_PERSONA, 1, 50)
+		FOR LCOUNT, 0, 100
+			DITEMTYPE:(CFLAG:MASTER:초기페르소나넘버):LCOUNT = 0
+		NEXT
+	ENDIF
+	DITEMTYPE:(CFLAG:MASTER:초기페르소나넘버):페르소나("NO") = PERSONA_NO:0
+	FOR LCOUNT, 0, BASESTATUSNUM
+		DITEMTYPE:(CFLAG:MASTER:초기페르소나넘버):페르소나(GET_BASESTATUS(LCOUNT)) = PERSONA_BASESTATUS:LCOUNT
+	NEXT
+	DITEMTYPE:(CFLAG:MASTER:초기페르소나넘버):페르소나("속성LC") = PERSONA_ALI:0
+	DITEMTYPE:(CFLAG:MASTER:초기페르소나넘버):페르소나("속성LD") = PERSONA_ALI:1
+
+	FOR LCOUNT, 0, VARSIZE("PERSONA_SKILL")
+		DITEMTYPE:(CFLAG:MASTER:초기페르소나넘버):페르소나(@"스킬{LCOUNT+1}") = PERSONA_SKILL:LCOUNT
+	NEXT
+	;---- EDIT 002 MOD END ---------------------------
+	FOR LCOUNT, 0, VARSIZE("PERSONA_LEARN")
+		DITEMTYPE:(CFLAG:MASTER:초기페르소나넘버):페르소나(@"습득스킬{LCOUNT+1}") = PERSONA_LEARN:LCOUNT
+		DITEMTYPE:(CFLAG:MASTER:초기페르소나넘버):페르소나(@"습득LV{LCOUNT+1}") = PERSONA_LEARN_LV:LCOUNT
+	NEXT
+
+	DITEMTYPE:(CFLAG:MASTER:초기페르소나넘버):페르소나("装備状態") = 3
+	DITEMTYPE:(CFLAG:MASTER:초기페르소나넘버):페르소나("ペルソナ所持者") = CFLAG:MASTER:캐릭터고유번호
+	RETURN 1
+ELSE
+	IF INRANGE(RESULT, 1, L_SHOWNUM + 1)
+		RESULT--
+		SIF SELECT_ABLE:RESULT > 0
+			SELECT_PERSONA = SELECT_ABLE:RESULT
+	ENDIF
+ENDIF
+GOTO START
+
+;========================================================================
+;主人の変身悪魔_デビルシフター
+;========================================================================
+@SET_MASTER_MAJORING_SHIFTER, STOCK_MASTER, ARGS = "데빌시프터"
+#DIM STOCK_MASTER
+#DIM LCOUNT, 2
+#DIM TEMP
+#DIMS TEMPS
+#DIMS L_SKILLS
+#DIM L_LINE
+#DIM CONST L_SHOWNUM = 34
+#DIMS SHOW_LINE, 36
+#DIM L_LINENUM
+#DIM SELECT_DEVIL
+#DIM SELECT_ABLE, 34
+#DIM LINK_DEVIL_NO
+#DIM LINK_DEVIL_SKILL, HAVEABLE_SKILLNUM
+#DIM LINK_DEVIL_LEARN, HAVEABLE_SKILLNUM
+#DIM LINK_DEVIL_LEARN_LV, HAVEABLE_SKILLNUM
+#DIM LINK_DEVIL_SUCCESSION, SUCCESSIONNUM
+#DIM LINK_DEVIL_MANTRA, 5
+#DIMS LINK_DEVIL_EXPLAIN, 2
+#DIM L_BASE_ST, BASESTATUSNUM
+#DIM L_LV_FIXED, SUB_ROLENUM
+#DIMS L_TALENTS_FIXED, SUB_ROLENUM
+
+L_LINE = LINECOUNT
+
+SELECT_DEVIL = 0
+VARSET SELECT_ABLE:LCOUNT, 0
+FOR LCOUNT, 0, VARSIZE("SELECT_ABLE")
+	SELECTCASE ARGS
+		CASE "데빌시프터", "아웃사이더"
+			SIF IS_ABLE_MASTER_LINK_DEVIL(LCOUNT, MASTER)
+				SELECT_ABLE:FINDELEMENT(SELECT_ABLE, 0) = LCOUNT
+		CASE "식노"
+			SIF IS_ABLE_MASTER_AVATAR(LCOUNT, MASTER)
+				SELECT_ABLE:FINDELEMENT(SELECT_ABLE, 0) = LCOUNT
+	ENDSELECT
+NEXT
+$START
+CLEARLINE LINECOUNT - L_LINE
+
+DRAWLINE
+PRINTL 변신할 악마를 선택해주세요。
+DRAWLINE
+
+;-----------------------------------------------------
+;左選択欄
+;-----------------------------------------------------
+SHOW_LINE:0 = %"┌" + "DEVIL " + "─" * 9 + "┐"%
+FOR LCOUNT, 0, L_SHOWNUM
+	L_LINENUM = LCOUNT + 1
+	IF SELECT_ABLE:LCOUNT
+		SELECTCASE ARGS
+			CASE "데빌시프터", "아웃사이더"
+				TEMPS = %GET_MASTER_LINK_DEVIL_NAME(SELECT_ABLE:LCOUNT)%
+			CASE "식노"
+				TEMPS = %GET_MASTER_AVATAR_NAME(SELECT_ABLE:LCOUNT)%
+				SIF TEMPS == "女神マーラ"
+					TEMPS = マーラ
+		ENDSELECT
+		SHOW_LINE:L_LINENUM = [{LCOUNT + 1, 2}] %TEMPS, 19, LEFT%
+		SHOW_LINE:L_LINENUM = <font color = '%TOSTR_HTML(SELECT_DEVIL == SELECT_ABLE:LCOUNT ? COLOR("aqua") # GETDEFCOLOR())%'>%SHOW_LINE:L_LINENUM%</font>
+		SHOW_LINE:L_LINENUM = <button value = '{LCOUNT + 1}'>%SHOW_LINE:L_LINENUM%</button>
+	ELSE
+		SHOW_LINE:L_LINENUM = %" " * 24%
+	ENDIF
+	SHOW_LINE:L_LINENUM = %"│" + SHOW_LINE:L_LINENUM + "│" %
+NEXT
+SHOW_LINE:(L_SHOWNUM + 1) = %"└" + "─" * 12 + "┘"%
+
+;-----------------------------------------------------
+;悪魔欄
+;----------------------------------------------------―
+SHOW_LINE:0 += "┌" + "─" * 40 + "┐"
+L_LINENUM = 1
+IF SELECT_DEVIL > 0
+	SELECTCASE ARGS
+		CASE "데빌시프터", "아웃사이더"
+			CALL SET_VAR_MASTER_LINK_DEVIL, SELECT_DEVIL, LINK_DEVIL_NO, LINK_DEVIL_SKILL, LINK_DEVIL_LEARN, LINK_DEVIL_LEARN_LV, LINK_DEVIL_EXPLAIN
+		CASE "식노"
+			CALL SET_VAR_MASTER_AVATAR, SELECT_DEVIL, LINK_DEVIL_NO, LINK_DEVIL_SKILL, LINK_DEVIL_LEARN, LINK_DEVIL_LEARN_LV, LINK_DEVIL_EXPLAIN, LINK_DEVIL_MANTRA
+	ENDSELECT
+	SHOW_LINE:(L_LINENUM + 0) += "│"  + @"%"□" + CSVNAME(LINK_DEVIL_NO), 80, LEFT%" + "│"  
+	SHOW_LINE:(L_LINENUM + 1) += "│"  + @"%"　" +  LINK_DEVIL_EXPLAIN:0, 80, LEFT%" + "│" 
+	SHOW_LINE:(L_LINENUM + 2) += "│"  + @"%"　" +  LINK_DEVIL_EXPLAIN:1, 80, LEFT%" + "│" 
+
+	L_LINENUM += 3
+
+	;ステータス比率は108レベル相当の数値に直した状態で提示する
+	L_BASE_ST = 0
+	FOR LCOUNT, 1, BASESTATUSNUM
+		L_BASE_ST:LCOUNT = CSVBASE(LINK_DEVIL_NO, GETNUM(BASE,GET_BASESTATUS(LCOUNT)),0)
+		L_BASE_ST += L_BASE_ST:LCOUNT
+	NEXT
+	FOR LCOUNT, 1, BASESTATUSNUM
+		L_BASE_ST:LCOUNT = L_BASE_ST:LCOUNT * (18 + 108 * 3 / 2) / L_BASE_ST
+	NEXT
+	WHILE SUMARRAY(L_BASE_ST, 1, BASESTATUSNUM) != (18 + 108 * 3 / 2)
+		IF SUMARRAY(L_BASE_ST, 1, BASESTATUSNUM) > (18 + 108 * 3 / 2)
+			L_BASE_ST:FINDELEMENT(L_BASE_ST, MAXARRAY(L_BASE_ST, 1, BASESTATUSNUM)) -= 1
+		ELSE
+			L_BASE_ST:FINDELEMENT(L_BASE_ST, MINARRAY(L_BASE_ST, 1, BASESTATUSNUM)) += 1
+		ENDIF
+	WEND
+	SHOW_LINE:(L_LINENUM + 0) += "│"  + @"%"□" + "스테이터스 비율", 80, LEFT%" + "│" 
+	FOR LCOUNT, 1, BASESTATUSNUM
+		L_LINENUM += 1
+		SHOW_LINE:L_LINENUM += "│"
+		SHOW_LINE:L_LINENUM += "　" + @"%GET_BASESTATUS(LCOUNT), 4%" + ":" + @"{MIN(L_BASE_ST:LCOUNT, 68), 2}"
+		SHOW_LINE:L_LINENUM += @"<font color = '%TOSTR_HTML(COLOR("パ緑"))%'>%" " + L_BASE_ST:LCOUNT * UNICODE(0x258B)%</font>"
+		SHOW_LINE:L_LINENUM += (80 - 10 - MIN(L_BASE_ST:LCOUNT, 68)) * " "
+		SHOW_LINE:L_LINENUM += "│"
+	NEXT
+	SHOW_LINE:(L_LINENUM + 1) += "│" + " " * 80 + "│"
+
+	L_LINENUM += 2
+	SHOW_LINE:(L_LINENUM + 0) += "│"  + @"%"□" + "상성", 80, LEFT%" + "│" 
+
+	FOR LCOUNT, 0, TYPENUM / 6 + (TYPENUM % 6 > 0); (80 - 2 / 6) = 13
+		L_LINENUM += 1
+		SHOW_LINE:L_LINENUM += "│　"
+		FOR LCOUNT:1, 0, 6
+			IF LCOUNT * 6 + LCOUNT:1 < TYPENUM
+				SHOW_LINE:L_LINENUM += GET_TYPE(LCOUNT * 6 + LCOUNT:1) + ":";6
+				TEMP =  CSVBASE(LINK_DEVIL_NO, GETNUM(BASE,GET_TYPE(LCOUNT * 6 + LCOUNT:1)),0)
+				SELECTCASE CHECK_WEAKNESS(TEMP)
+					CASE 1
+						TEMPS = %TOSTR_HTML(COLOR("aqua"))%
+					CASE 0
+						TEMPS = %TOSTR_HTML(COLOR("デフォルト"))%
+					CASEELSE
+						TEMPS = %TOSTR_HTML(COLOR("red"))%
+				ENDSELECT
+				SHOW_LINE:L_LINENUM += @"<font color = '%TEMPS%'>" + @"{TEMP,4}\%" + "</font>";5
+				SHOW_LINE:L_LINENUM += " 　"
+			ELSE
+			ENDIF
+		NEXT
+		SHOW_LINE:L_LINENUM += "│"
+	NEXT
+	SHOW_LINE:(L_LINENUM + 1) += "│" + " " * 80 + "│"
+
+	FOR LCOUNT, 0, SUCCESSIONNUM
+		LINK_DEVIL_SUCCESSION:LCOUNT = CSVTALENT(LINK_DEVIL_NO, GETNUM(TALENT, GET_SUCCESSION(LCOUNT)))
+	NEXT
+	SHOW_LINE:(L_LINENUM + 2) += "│"  + @"%"□" + "계승소질", 80, LEFT%" + "│" 
+	TEMPS = 
+	FOR LCOUNT, 0, SUCCESSIONNUM
+		SIF LINK_DEVIL_SUCCESSION:LCOUNT
+			TEMPS += "【" + GET_SUCCESSION(LCOUNT) + "】　"
+	NEXT
+	SHOW_LINE:(L_LINENUM + 3) += "│" + @"%TEMPS, 80, LEFT%" + "│"
+	SHOW_LINE:(L_LINENUM + 4) += "│" + " " * 80 + "│"
+	SHOW_LINE:(L_LINENUM + 5) += "│"  + @"%"□" + "스킬", 80, LEFT%" + "│" 
+	L_LINENUM += 5
+	FOR LCOUNT, 0, GET_ROLE_PROP("SKILLCOUNT", , ARGS, "変身形態") / 2 + GET_ROLE_PROP("SKILLCOUNT", , ARGS, "変身形態") % 2
+		L_LINENUM += 1
+		TEMPS = 
+		FOR LCOUNT:1, 0, 2
+			IF LINK_DEVIL_SKILL:(LCOUNT * 2 + LCOUNT:1)
+				L_SKILLS = %SKILL_NAME_F(LINK_DEVIL_SKILL:(LCOUNT * 2 + LCOUNT:1))%
+				TEMP = 40 - STRLENS(L_SKILLS) - 4
+				CALL GET_SKILL_EXPLAIN_TOOLTIP,  LINK_DEVIL_SKILL:(LCOUNT * 2 + LCOUNT:1)
+				TEMPS += @"<button value = '' title = '%RESULTS%'>" + "【" + L_SKILLS + "】" + " " * TEMP + "</button>"
+			ELSE
+				TEMPS += " " * 40
+			ENDIF
+		NEXT
+		;空行なら行をすすめない
+		IF STRCOUNT(TEMPS, "【")
+			SHOW_LINE:L_LINENUM += "│" + TEMPS + "│"
+		ELSE
+			L_LINENUM -= 1
+		ENDIF
+	NEXT
+	SHOW_LINE:(L_LINENUM + 1) += "│" + " " * 80 + "│"
+	SHOW_LINE:(L_LINENUM + 2) += "│"  + @"%"□" + "습득스킬", 80, LEFT%" + "│" 
+	L_LINENUM += 2
+	FOR LCOUNT, 0, HAVEABLE_SKILLNUM / 2 + HAVEABLE_SKILLNUM % 2
+		L_LINENUM += 1
+		TEMPS = 
+		FOR LCOUNT:1, 0, 2
+			IF LINK_DEVIL_LEARN:(LCOUNT * 2 + LCOUNT:1)
+				L_SKILLS = %SKILL_NAME_F(LINK_DEVIL_LEARN:(LCOUNT * 2 + LCOUNT:1))%
+				TEMP = 40 - STRLENS(L_SKILLS) - 4
+				CALL GET_SKILL_EXPLAIN_TOOLTIP,  LINK_DEVIL_LEARN:(LCOUNT * 2 + LCOUNT:1)
+				TEMPS += @"<button value = '' title = '%RESULTS%'>" + "【" + L_SKILLS + "】" + " " * TEMP + "</button>"
+			ELSE
+				TEMPS += " " * 40
+			ENDIF
+		NEXT
+		SHOW_LINE:L_LINENUM += "│" + TEMPS + "│"
+	NEXT
+ELSE
+	FOR LCOUNT, 1, L_SHOWNUM + 1
+		SHOW_LINE:LCOUNT += "│" + " " * 80 + "│"
+	NEXT
+ENDIF
+SHOW_LINE:(L_SHOWNUM + 1) += "└" + "─" * 40 + "┘"
+FOR LCOUNT, 0, L_SHOWNUM + 2
+	HTML_PRINT SHOW_LINE:LCOUNT
+NEXT
+DRAWLINE
+PRINTFORML 초기변신악마를 설정합니다。
+PRINTFORML %ARGS%는 악마변신을 사용하여 인간형태와 악마형태에서 다른 스킬과 스테이터스를 사용해 싸울 수 있습니다。
+SELECTCASE ARGS
+	CASE "데빌시프터"
+		PRINTFORML 또한、%ARGS%의 초기변신악마 뿐만 아니라、동료마와 링크하여 변신악마를 변경할 수 있습니다。
+		PRINTFORML 그 경우에도 언제든지 변신악마를 초기변신악마로 변경할 수 있습니다。
+	CASE "식노"
+		PRINTFORML %ARGS%의 악마형태에서는 만트라를 통해 스킬을 습득하거난 스테이터스를 변경할 수 있습니다。
+ENDSELECT
+PRINTL 
+PRINTL 악마 결정 후、인간시의 추가 서브소질 설정을 실행합니다。
+PRINTL 
+PRINTL 스킬에 마우스를 올리면 간단한 해설을 볼 수 있습니다。
+DRAWLINE
+CALL PRINT_COLOR, "[0] 결정", SELECT_DEVIL ? GETDEFCOLOR() # COLOR("DARK-GRAY")
+PRINTFORML 　　　　[99] 돌아간다
+
+INPUT
+SIF RESULT == 99
+	RETURN 0
+IF RESULT == 0 && SELECT_DEVIL > 0
+	TALENT:MASTER:ARGS = 1
+	CALL SYNC_STATUS, MASTER
+	CALL SET_FIXED_BTL_TALENT, MASTER, "通常形態", L_LV_FIXED, L_TALENTS_FIXED
+	CALL SET_FIXED_BTL_TALENT, MASTER, "変身形態", L_LV_FIXED, L_TALENTS_FIXED
+	DRAWLINE
+	PRINTL 인간 시의 서브소질을 선택해주세요。
+	DRAWLINE
+	SELECTCASE ARGS
+		CASE "데빌시프터"
+			CALL ENHANCE_ROLE, MASTER, , "도구지식_3/서머너_3/건슬링거_1/무도의마음가짐_3/나락의마스크_3/이능자_1"
+		CASE "아웃사이더"
+			CALL ENHANCE_ROLE, MASTER, , "도구지식_3/아이템숙련/서머너_3/석세서/건슬링거_3/무도의마음가짐_3/방어의심득_3/바스테부스터_3/나락의마스크_3/이능자_1"
+		CASE "식노"
+			CALL ENHANCE_ROLE, MASTER, , "도구지식_3/서머너_3/건슬링거_3"
+	ENDSELECT
+	DRAWLINE
+	SIF !RESULT
+		GOTO START
+	CFLAG:MASTER:초기링크악마 = LINK_DEVIL_NO
+	IF ARGS == "식노"
+		FOR LCOUNT, 0, VARSIZE("LINK_DEVIL_MANTRA")
+			SIF LINK_DEVIL_MANTRA:LCOUNT
+				CDFLAG:MASTER:만트라:(LINK_DEVIL_MANTRA:LCOUNT) = 10000
+		NEXT
+	ENDIF
+	FOR LCOUNT, 0, SUCCESSIONNUM
+		TALENT:MASTER:GET_SUCCESSION(LCOUNT) = LINK_DEVIL_SUCCESSION:LCOUNT
+	NEXT
+	CSTR:MASTER:해설1 = 팬텀・소사이어티에 소속된 %ARGS%。
+	CFLAG:MASTER:당신의전공분야  = GET_MASTER_MAJORING_NUM(ARGS)
+	CFLAG:MASTER:당신의전공분야1  = SELECT_DEVIL
+	FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+		ABL:MASTER:@"초기변신악마스킬{LCOUNT + 1}" = LINK_DEVIL_SKILL:LCOUNT
+		SIF ARGS == "식노"
+			CDFLAG:MASTER:식노습득스킬:(LINK_DEVIL_SKILL:LCOUNT) = 1
+		ABL:MASTER:@"초기변신악마습득스킬{LCOUNT + 1}" = LINK_DEVIL_LEARN:LCOUNT
+		ABL:MASTER:@"초기변신악마습득LV{LCOUNT + 1}" = LINK_DEVIL_LEARN_LV:LCOUNT
+	NEXT
+	ABL:MASTER:초기링크악마공격상성 = CSVABL(LINK_DEVIL_NO, GETNUM(ABL, "공격상성"))
+	ABL:MASTER:초기링크악마최저공격횟수 = CSVABL(LINK_DEVIL_NO, GETNUM(ABL, "최저공격횟수"))
+	ABL:MASTER:초기링크악마최대공격횟수 = CSVABL(LINK_DEVIL_NO, GETNUM(ABL, "최대공격횟수"))
+	ABL:MASTER:초기링크악마사거리 = CSVABL(LINK_DEVIL_NO, GETNUM(ABL, "사거리"))
+	ABL:MASTER:초기링크악마공격범위 = CSVABL(LINK_DEVIL_NO, GETNUM(ABL, "공격범위"))
+	RETURN 1
+ELSE
+	IF INRANGE(RESULT, 1, L_SHOWNUM + 1)
+		RESULT--
+		SIF SELECT_ABLE:RESULT >= 0
+			SELECT_DEVIL = SELECT_ABLE:RESULT
+	ENDIF
+ENDIF
+GOTO START
+
+;---- EDIT P 001 ADD START -------------------------
+;========================================================================
+;主人の合一神としての技能
+;========================================================================
+@SET_MASTER_MAJORING_NAHOBINO, STOCK_MASTER
+#DIM STOCK_MASTER
+#DIM LCOUNT, 2
+#DIM TEMP
+#DIMS TEMPS
+#DIMS L_SKILLS
+#DIM L_LINE
+#DIM CONST L_SHOWNUM = 23
+#DIMS SHOW_LINE, 25
+#DIM CONST L_LEFT_WINDOW_LENS = 26
+#DIM CONST L_RIGHT_WINDOW_LENS = 92
+#DIM L_LINENUM
+#DIM SELECT_PORTRAIT
+#DIM SELECT_ABLE, 34
+#DIM L_SUCCESSION, SUCCESSIONNUM
+
+L_LINE = LINECOUNT
+
+SELECT_PORTRAIT = 0
+VARSET SELECT_ABLE:LCOUNT, 0
+FOR LCOUNT, 0, VARSIZE("SELECT_ABLE")
+	SIF GET_MASTER_PORTRAIT_NAME(LCOUNT) != ""
+		SELECT_ABLE:FINDELEMENT(SELECT_ABLE, 0) = LCOUNT
+NEXT
+$START
+CLEARLINE LINECOUNT - L_LINE
+
+DRAWLINE
+PRINTL 최초로 사용할 허물을 선택해주세요。
+DRAWLINE
+
+;-----------------------------------------------------
+;左選択欄
+;-----------------------------------------------------
+VARS TEMP_NAME
+SHOW_LINE:0 = %"┌" + "DEVIL " + "─" * ((L_LEFT_WINDOW_LENS - 6) / 2) + "┐"%
+FOR LCOUNT, 0, L_SHOWNUM
+	L_LINENUM = LCOUNT + 1
+	IF SELECT_ABLE:LCOUNT
+		TEMP_NAME = %GET_MASTER_PORTRAIT_NAME(SELECT_ABLE:LCOUNT)%
+
+		SHOW_LINE:L_LINENUM = [{LCOUNT + 1, 2}] %TEMP_NAME, L_LEFT_WINDOW_LENS - 5, LEFT%
+		SHOW_LINE:L_LINENUM = <font color = '%TOSTR_HTML(SELECT_PORTRAIT == SELECT_ABLE:LCOUNT ? COLOR("aqua") # GETDEFCOLOR())%'>%SHOW_LINE:L_LINENUM%</font>
+		SHOW_LINE:L_LINENUM = <button value = '{LCOUNT + 1}'>%SHOW_LINE:L_LINENUM%</button>
+	ELSE
+		SHOW_LINE:L_LINENUM = %" " * L_LEFT_WINDOW_LENS%
+	ENDIF
+	SHOW_LINE:L_LINENUM = %"│" + SHOW_LINE:L_LINENUM + "│" %
+NEXT
+SHOW_LINE:(L_SHOWNUM + 1) = %"└" + "─" * (L_LEFT_WINDOW_LENS / 2) + "┘"%
+
+
+;-----------------------------------------------------
+;悪魔欄
+;----------------------------------------------------―
+SHOW_LINE:0 += "┌" + "─" * (L_RIGHT_WINDOW_LENS / 2) + "┐"
+L_LINENUM = 1
+IF SELECT_PORTRAIT > 0
+	VARS SELECT_PORTRAIT_NAME
+	SELECT_PORTRAIT_NAME '= GET_MASTER_PORTRAIT_NAME(SELECT_PORTRAIT)
+	VARI SELECT_PORTRAIT_NO
+	SELECT_PORTRAIT_NO = GET_MASTER_PORTRAIT_NO(SELECT_PORTRAIT_NAME)
+	VARS L_EXPLAIN, 3
+	CALL SET_VAR_PORTRAIT_EXPLAIN, SELECT_PORTRAIT, L_EXPLAIN
+	SHOW_LINE:(L_LINENUM + 0) += "│"  + @"%"□" + CSVNAME(SELECT_PORTRAIT_NO), L_RIGHT_WINDOW_LENS, LEFT%" + "│"  
+	FOR LCOUNT, 0, 3
+		SHOW_LINE:(L_LINENUM + 1 + LCOUNT) += "│"  + @"%L_EXPLAIN:LCOUNT +  "", L_RIGHT_WINDOW_LENS, LEFT%" + "│" 
+	NEXT
+	L_LINENUM += 4
+	SHOW_LINE:L_LINENUM += "│" + " " * L_RIGHT_WINDOW_LENS + "│"
+	L_LINENUM += 1
+
+	SHOW_LINE:(L_LINENUM + 0) += "│"  + @"%"□" + "상성", L_RIGHT_WINDOW_LENS, LEFT%" + "│" 
+
+	FOR LCOUNT, 0, TYPENUM / 6 + (TYPENUM % 6 > 0)
+		L_LINENUM += 1
+		SHOW_LINE:L_LINENUM += "│　"
+		VARI COUNT_LENS = 2
+		FOR LCOUNT:1, 0, 6
+			IF LCOUNT * 6 + LCOUNT:1 < TYPENUM
+				SHOW_LINE:L_LINENUM += GET_TYPE(LCOUNT * 6 + LCOUNT:1) + ":"
+				COUNT_LENS += 5
+				TEMP =  CSVBASE(SELECT_PORTRAIT_NO, GETNUM(BASE,GET_TYPE(LCOUNT * 6 + LCOUNT:1)),0)
+				SELECTCASE CHECK_WEAKNESS(TEMP)
+					CASE 1
+						TEMPS = %TOSTR_HTML(COLOR("aqua"))%
+					CASE 0
+						TEMPS = %TOSTR_HTML(COLOR("デフォルト"))%
+					CASEELSE
+						TEMPS = %TOSTR_HTML(COLOR("red"))%
+				ENDSELECT
+				SHOW_LINE:L_LINENUM += @"<font color = '%TEMPS%'>" + @"{TEMP,4}\%" + "</font>";5
+				COUNT_LENS += 5
+				SHOW_LINE:L_LINENUM += "　　"
+				COUNT_LENS += 4
+			ELSE
+				COUNT_LENS += 13
+			ENDIF
+		NEXT
+		SHOW_LINE:L_LINENUM += (L_RIGHT_WINDOW_LENS - COUNT_LENS) * " "
+		SHOW_LINE:L_LINENUM += "│"
+	NEXT
+	SHOW_LINE:(L_LINENUM + 1) += "│" + " " * L_RIGHT_WINDOW_LENS + "│"
+	FOR LCOUNT, 0, SUCCESSIONNUM
+		L_SUCCESSION:LCOUNT = CSVTALENT(SELECT_PORTRAIT_NO, GETNUM(TALENT, GET_SUCCESSION(LCOUNT)))
+	NEXT
+	SHOW_LINE:(L_LINENUM + 2) += "│"  + @"%"□" + "계승소질", L_RIGHT_WINDOW_LENS, LEFT%" + "│" 
+	TEMPS = 
+	FOR LCOUNT, 0, SUCCESSIONNUM
+		SIF L_SUCCESSION:LCOUNT
+			TEMPS += "【" + GET_SUCCESSION(LCOUNT) + "】　"
+	NEXT
+	SHOW_LINE:(L_LINENUM + 3) += "│" + @"%TEMPS, L_RIGHT_WINDOW_LENS, LEFT%" + "│"
+	SHOW_LINE:(L_LINENUM + 4) += "│" + " " * L_RIGHT_WINDOW_LENS + "│"
+	L_LINENUM += 4
+	L_LINENUM += 1
+	VARI L_SKILL, 3
+	VARI L_LEARN, 3
+	CALL SET_VAR_PORTRAIT_SKILL, SELECT_PORTRAIT, L_SKILL, L_LEARN
+	VARI L_SKILL_NO
+	FOR LCOUNT:1, 0, 2
+		IF LCOUNT:1 == 0
+			SHOW_LINE:L_LINENUM += "│"  + @"%"□" + "스킬", L_RIGHT_WINDOW_LENS, LEFT%" + "│" 
+		ELSE
+			SHOW_LINE:L_LINENUM += "│" + " " * L_RIGHT_WINDOW_LENS + "│"
+			L_LINENUM += 1
+			SHOW_LINE:L_LINENUM += "│"  + @"%"□" + "습득스킬", L_RIGHT_WINDOW_LENS, LEFT%" + "│" 
+		ENDIF
+		L_LINENUM += 1
+		FOR LCOUNT, 0, 3
+			L_SKILL_NO = LCOUNT:1 == 0 ? L_SKILL:LCOUNT # L_LEARN:LCOUNT
+			TEMPS = 
+			IF L_SKILL_NO
+				VARS L_SKILLNAME
+				L_SKILLNAME '= SKILL_NAME_F(L_SKILL_NO)
+				VARI L_BLANKLENS = L_RIGHT_WINDOW_LENS - STRLENS(L_SKILLNAME) - 4
+				CALL GET_SKILL_EXPLAIN_TOOLTIP,  L_SKILL_NO
+				TEMPS += @"<button value = '' title = '%RESULTS%'>" + "【" + L_SKILLNAME + "】" + " " * L_BLANKLENS + "</button>"
+			ELSE
+				TEMPS += " " * L_RIGHT_WINDOW_LENS
+			ENDIF
+			SHOW_LINE:L_LINENUM += "│" + TEMPS + "│"
+			L_LINENUM += 1
+		NEXT
+	NEXT
+	SHOW_LINE:L_LINENUM += "│" + " " * L_RIGHT_WINDOW_LENS + "│"
+ELSE
+	FOR LCOUNT, 1, L_SHOWNUM + 1
+		SHOW_LINE:LCOUNT += "│" + " " * L_RIGHT_WINDOW_LENS + "│"
+	NEXT
+ENDIF
+SHOW_LINE:(L_SHOWNUM + 1) += "└" + "─" * (L_RIGHT_WINDOW_LENS / 2) + "┘"
+
+
+;-----------------------------------------------------
+;出力
+;-----------------------------------------------------
+FOR LCOUNT, 0, L_SHOWNUM + 2
+	HTML_PRINT SHOW_LINE:LCOUNT
+NEXT
+DRAWLINE
+PRINTFORML 합일신의 초기스킬 초기방어상성 그리고 계승소질을 설정합니다。
+PRINTFORML 합일신은 통상적인 스킬 취득 수단 외에도、악마전서에 등록된 악마라를 허물로 불러냄으로써
+PRINTFORML 스킬을 추가할 수 있습니다。
+PRINTFORML 또한、마찬가지로 악마전서에 등록된 악마의 방어상성과 계승소질을 카피하는 방식으로 변경할 수 있습니다。
+PRINTFORML 
+PRINTL 
+PRINTL 초기성능 결정 후、추가 서브소질 설정을 실행합니다。
+PRINTL 
+PRINTL 스킬에 마우스를 올리면 간단한 해설을 볼 수 있습니다。
+DRAWLINE
+CALL PRINT_COLOR, "[0] 결정", SELECT_PORTRAIT ? GETDEFCOLOR() # COLOR("DARK-GRAY")
+PRINTFORML 　　　　[99] 돌아간다
+INPUT
+SIF RESULT == 99
+	RETURN 0
+IF RESULT == 0 && SELECT_PORTRAIT > 0
+	CUSTOMDRAWLINE =
+	TALENT:MASTER:합일신 = 1
+	CALL SET_ROLE, MASTER
+	CALL SET_BTL_TALENT_NEW, MASTER
+	CALL ROLE_EXPLAIN_ABILITY, MASTER, , ,"メイン"
+	WAIT
+	CALL ENHANCE_ROLE, MASTER, , "도구지식_3/서머너_3/마술의소양_3/공격의심득_1/방어의심득_3/무도의마음가짐_3/나락의마스크_3/신들의가호_3"
+	SIF !RESULT
+		GOTO START
+	EQUIP:MASTER:허물 = SELECT_PORTRAIT_NO
+	
+	;---- EDIT P 002 ADD START -------------------------
+	C_EQUIPED_KAMUI:MASTER:0 '= "神の理・伍"
+	C_EQUIPED_KAMUI:MASTER:1 '= "反攻準備・無効"
+	C_EQUIPED_KAMUI:MASTER:2 '= "一気呵成・弱点"
+	;---- EDIT P 002 ADD END ---------------------------
+
+	CSTR:MASTER:해설1 = 팬텀・소사이어티에 소속된 합일신。
+	CFLAG:MASTER:당신의전공분야  = GET_MASTER_MAJORING_NUM("합일신")
+	CFLAG:MASTER:당신의전공분야1  = SELECT_PORTRAIT
+
+	CSTR:MASTER:종족명 = 합일신
+
+	ABL:MASTER:스킬1 = L_SKILL:0
+	ABL:MASTER:스킬2 = L_SKILL:1
+	ABL:MASTER:스킬3 = L_SKILL:2
+	ABL:MASTER:습득스킬1 = L_LEARN:0
+	ABL:MASTER:습득스킬2 = L_LEARN:1
+	ABL:MASTER:습득스킬3 = L_LEARN:2
+	ABL:MASTER:습득LV1 = 8
+	ABL:MASTER:습득LV2 = 12
+	ABL:MASTER:습득LV3 = 15	
+	RETURN 1
+ELSE
+	IF INRANGE(RESULT, 1, L_SHOWNUM + 1)
+		RESULT--
+		SIF SELECT_ABLE:RESULT >= 0
+			SELECT_PORTRAIT = SELECT_ABLE:RESULT
+	ENDIF
+ENDIF
+GOTO START
+;---- EDIT P 001 ADD END ---------------------------
+;========================================================================
+;主人の半魔人としての技能
+;========================================================================
+@SET_MASTER_HALF_AKUMA, STOCK_MASTER
+#DIM DYNAMIC LCOUNT, 3
+#DIM DYNAMIC L_LINE
+#DIM DYNAMIC L_LINENUM
+#DIMS DYNAMIC SHOW_LINE, 40
+#DIMS DYNAMIC L_COLOR
+#DIM DYNAMIC SELECT_CLASS
+#DIM DYNAMIC SELECT_DEVIL
+#DIM DYNAMIC CLASS_PAGE
+#DIM DYNAMIC CLASS_MAXPAGE
+#DIM DYNAMIC DEVIL_PAGE
+#DIM DYNAMIC DEVIL_MAXPAGE
+#DIM DYNAMIC CLASS_LIST, 30
+#DIM DYNAMIC DEVIL_LIST, 30
+#DIM CONST CLASS_SHOWNUM = 15
+#DIM CONST DEVIL_SHOWNUM = 15
+#DIM DYNAMIC TEMP, 2
+#DIMS DYNAMIC TEMPS, 2
+#DIM DYNAMIC STOCK_MASTER, 2
+#DIM DYNAMIC L_ST
+#DIM DYNAMIC L_SKILL, HAVEABLE_SKILLNUM
+#DIM DYNAMIC CLASS_SKILL, HAVEABLE_SKILLNUM
+#DIM DYNAMIC CLASS_LEARN, HAVEABLE_SKILLNUM
+#DIM DYNAMIC CLASS_LEARN_LV, HAVEABLE_SKILLNUM
+#DIM DYNAMIC CLASS_BASE_STATUS, BASESTATUSNUM
+#DIM DYNAMIC CLASS_SUCCESSION, SUCCESSIONNUM
+#DIMS DYNAMIC CLASS_ALI, 2
+#DIMS DYNAMIC CLASS_BTL_TALENT
+#DIMS DYNAMIC CLASS_EXPLAIN,2
+#DIMS DYNAMIC L_TALENT
+#DIMS DYNAMIC L_TITLE, 4
+#DIMS DYNAMIC L_TALENTS, 4
+#DIMS DYNAMIC CAN_ADD_TALENT
+#DIM DYNAMIC DEVIL_CLASS_BASE_STATUS, BASESTATUSNUM
+#DIMS DYNAMIC DEVIL_CLASS_ALI
+#DIM DYNAMIC DEVIL_CLASS_SKILL, HAVEABLE_SKILLNUM
+#DIM DYNAMIC DEVIL_CLASS_LEARN, HAVEABLE_SKILLNUM
+#DIM DYNAMIC DEVIL_CLASS_LEARN_LV, HAVEABLE_SKILLNUM
+#DIM DYNAMIC DEVIL_CLASS_SUCCESSION, SUCCESSIONNUM
+#DIMS DYNAMIC DEVIL_BTL_TALENT
+#DIMS DYNAMIC DEVIL_CLASS_EXPLAIN,2
+#DIM DYNAMIC L_LV_FIXED, SUB_ROLENUM
+#DIMS DYNAMIC L_TALENTS_FIXED, SUB_ROLENUM
+
+;防御相性の設定
+CALL SET_MASTER_DEF_TYPE
+SIF RESULT == 0
+	RETURN 0
+;選択可能クラスのリスト作成
+FOR LCOUNT, 1, VARSIZE("CLASS_LIST")
+	SIF !IS_ABLE_CLASS(LCOUNT)
+		CONTINUE
+	CALL PUSH_ARRAY_INT, CLASS_LIST, LCOUNT
+NEXT
+
+CLASS_MAXPAGE = (VARSIZE("CLASS_LIST") - MATCH(CLASS_LIST, 0) - 1) / CLASS_SHOWNUM
+
+VARSET DEVIL_LIST
+FOR LCOUNT, 0, VARSIZE("DEVIL_LIST")
+	SIF IS_ABLE_DEVIL_CLASS(LCOUNT)
+		DEVIL_LIST:FINDELEMENT(DEVIL_LIST, 0) = LCOUNT + IS_ABLE_DEVIL_CLASS(LCOUNT) * 1000
+NEXT
+DEVIL_MAXPAGE = (VARSIZE("DEVIL_LIST") - MATCH(DEVIL_LIST, 0) - 1) / DEVIL_SHOWNUM
+ARRAYSORT DEVIL_LIST, FORWARD, 0, FINDELEMENT(DEVIL_LIST, 0)
+
+FOR LCOUNT, 0, VARSIZE("DEVIL_LIST")
+	DEVIL_LIST:LCOUNT %= 1000
+NEXT
+
+;ステータスを0に
+FOR LCOUNT, 1, BASESTATUSNUM
+	BASE:MASTER:GET_BASESTATUS(LCOUNT) = 0
+NEXT
+
+ADDCOPYCHARA MASTER
+STOCK_MASTER:1 = CHARANUM - 1
+
+L_LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - L_LINE
+COPYCHARA STOCK_MASTER:1, MASTER
+
+;基本設定
+ABL:MASTER:종족 = GET_RACE_NUM("반마인")
+CSTR:MASTER:종족명 = 반마인
+CFLAG:MASTER:당신의전공분야1  = SELECT_CLASS
+CFLAG:MASTER:당신의전공분야2  = SELECT_DEVIL
+CSTR:MASTER:30 = 팬텀・소사이어티에 소속된 반마인。
+CFLAG:MASTER:소속ＣＯＭＰ = -1
+CFLAG:MASTER:합체소재사용금지 = 1
+CFLAG:MASTER:당신의전공분야  = GET_MASTER_MAJORING_NUM("반마인")
+CALL SET_ROLE, MASTER
+
+CUSTOMDRAWLINE =
+PRINTFORML 당신의 출신을 선택해주세요
+CUSTOMDRAWLINE =
+;-----------------------------------------------------
+;左選択欄
+;-----------------------------------------------------
+VARSET SHOW_LINE
+
+CAN_ADD_TALENT = 서머너_3/스킬적성_3
+
+VARSET CLASS_SKILL
+VARSET CLASS_LEARN
+VARSET CLASS_LEARN_LV
+
+L_LINENUM = 0
+SHOW_LINE:L_LINENUM = %"┌" + "CLASS " + "─" * 7 + "┐"%
+FOR LCOUNT, 0, CLASS_SHOWNUM
+	L_LINENUM += 1
+	TEMP = CLASS_PAGE * CLASS_SHOWNUM + LCOUNT
+	IF CLASS_LIST:TEMP
+		TEMPS '= GET_CLASS_NAME(CLASS_LIST:TEMP)
+		SIF TEMPS == "アームチェア・ディテクティブ"
+			TEMPS = 安楽椅子探偵
+		SHOW_LINE:L_LINENUM += @"<button value = '{TEMP+1}' >" + @"[{TEMP+1,2}] %TEMPS, 15, LEFT%" + "</button>"
+		SIF SELECT_CLASS == CLASS_LIST:TEMP
+			SHOW_LINE:L_LINENUM = %@"<font color = '%TOSTR_HTML(COLOR("aqua"))%'>" + SHOW_LINE:L_LINENUM + "</font>" %
+		SHOW_LINE:L_LINENUM = %"│" + SHOW_LINE:L_LINENUM + "│" %
+	ELSE
+		SHOW_LINE:L_LINENUM = %"│" + " " * 20 + "│" %
+	ENDIF
+NEXT
+SHOW_LINE:(L_LINENUM+1) += "└"
+SHOW_LINE:(L_LINENUM+1) += "<button value = '-'>" + "[ -] " + "</button>"
+SHOW_LINE:(L_LINENUM+1) += @"Page.{CLASS_PAGE}"
+SHOW_LINE:(L_LINENUM+1) += "<button value = '+'>" + " [ +]" + "</button>"
+SHOW_LINE:(L_LINENUM+1) += "─" * 2 + "┘"
+L_LINENUM += 2
+SHOW_LINE:L_LINENUM = %"┌" + "D-CLASS " + "─" * 6 + "┐"%
+FOR LCOUNT, 0, DEVIL_SHOWNUM
+	L_LINENUM += 1
+	TEMP = DEVIL_PAGE * DEVIL_SHOWNUM + LCOUNT
+	IF DEVIL_LIST:TEMP
+		TEMPS = %GET_DEVIL_CLASS_NAME(DEVIL_LIST:TEMP)%
+		SHOW_LINE:L_LINENUM += @"<button value = '{50 + TEMP + 1}'>" + @"[{50 + TEMP+1,2}] %TEMPS, 15, LEFT%" + "</button>"
+		SIF SELECT_DEVIL == DEVIL_LIST:TEMP
+			SHOW_LINE:L_LINENUM = %@"<font color = '%TOSTR_HTML(COLOR("aqua"))%'>" + SHOW_LINE:L_LINENUM + "</font>" %
+		SHOW_LINE:L_LINENUM = %"│" + SHOW_LINE:L_LINENUM + "│" %
+	ELSE
+		SHOW_LINE:L_LINENUM = %"│" + " " * 20 + "│" %
+	ENDIF
+NEXT
+IF DEVIL_MAXPAGE
+	SHOW_LINE:(L_LINENUM+1) += "└"
+	SHOW_LINE:(L_LINENUM+1) += "<button value = '--'>" + "[--] " + "</button>"
+	SHOW_LINE:(L_LINENUM+1) += @"Page.{DEVIL_PAGE}"
+	SHOW_LINE:(L_LINENUM+1) += "<button value = '++'>" + " [++]" + "</button>"
+	SHOW_LINE:(L_LINENUM+1) += "─" * 2 + "┘"
+ELSE
+	SHOW_LINE:(L_LINENUM+1) += "└" + "─" * 10 + "┘"
+ENDIF
+
+;-----------------------------------------------------
+;クラス欄
+;-----------------------------------------------------
+FOR LCOUNT:2, 0, 2
+	L_LINENUM = 0
+	IF LCOUNT:2 == 0
+		SHOW_LINE:L_LINENUM += "┌" + @"CLASS " + "─" * 22 + "┐"
+	ELSE
+		SHOW_LINE:L_LINENUM += "┌" + @"D-CLASS " + "─" * 21 + "┐"
+	ENDIF
+	IF (LCOUNT:2 == 0 && SELECT_CLASS) || (LCOUNT:2 == 1 && SELECT_DEVIL)
+		;-----------------------------------------
+		;名称と解説
+		;-----------------------------------------
+		IF LCOUNT:2 == 0
+			CALL SET_VAR_CLASS, SELECT_CLASS, CLASS_BASE_STATUS, CLASS_ALI, CLASS_SKILL, CLASS_LEARN, CLASS_LEARN_LV, CLASS_SUCCESSION, CLASS_EXPLAIN, CLASS_BTL_TALENT
+			SHOW_LINE:(L_LINENUM + 1) += "│"  + @"%"□" + GET_CLASS_NAME(SELECT_CLASS), 50, LEFT%" + "│" 
+			SHOW_LINE:(L_LINENUM + 2) += "│"  + @"%"　" + CLASS_EXPLAIN:0, 50, LEFT%" + "│" 
+			SHOW_LINE:(L_LINENUM + 3) += "│"  + @"%"　" + CLASS_EXPLAIN:1, 50, LEFT%" + "│" 
+		ELSE
+			CALL SET_VAR_DEVIL_CLASS, SELECT_DEVIL, DEVIL_CLASS_BASE_STATUS, DEVIL_CLASS_ALI, DEVIL_CLASS_SKILL, DEVIL_CLASS_LEARN, DEVIL_CLASS_LEARN_LV, DEVIL_CLASS_SUCCESSION, DEVIL_CLASS_EXPLAIN, DEVIL_BTL_TALENT
+			SHOW_LINE:(L_LINENUM + 1) += "│"  + @"%"□" + GET_DEVIL_CLASS_NAME(SELECT_DEVIL), 50, LEFT%" + "│" 
+			SHOW_LINE:(L_LINENUM + 2) += "│"  + @"%"　" + DEVIL_CLASS_EXPLAIN:0, 50, LEFT%" + "│" 
+			SHOW_LINE:(L_LINENUM + 3) += "│"  + @"%"　" + DEVIL_CLASS_EXPLAIN:1, 50, LEFT%" + "│" 
+		ENDIF
+		SHOW_LINE:(L_LINENUM + 4) += "│"  + " " * 50 + "│"
+		L_LINENUM += 5
+
+		;-------------------------------------------
+		;基本ステータス
+		;-------------------------------------------
+		SHOW_LINE:(L_LINENUM + 0) += "│"  + @"%"□" + "ステータス", 50, LEFT%" + "│" 
+		FOR LCOUNT, 0, (BASESTATUSNUM - 1) / 2 + (BASESTATUSNUM - 1) % 2
+			L_LINENUM++
+			SHOW_LINE:L_LINENUM += "│"
+			FOR LCOUNT:1, 0, 2
+				L_ST = LCOUNT * 2 + LCOUNT:1 + 1
+				IF LCOUNT:2 == 0
+					TEMP = CLASS_BASE_STATUS:L_ST
+				ELSE
+					TEMP = DEVIL_CLASS_BASE_STATUS:L_ST
+				ENDIF
+				;ステータスの加算
+				BASE:MASTER:GET_BASESTATUS(L_ST) += TEMP
+				TEMPS = 　%GET_BASESTATUS(L_ST), 4% {TEMP,2}
+				TEMPS:1 = <font color = '%TOSTR_HTML(COLOR("パ緑"))%'>%" " + TEMP * UNICODE(0x258B)%</font>
+				TEMPS:1 += " " * (25 - TEMP - 10)
+				SHOW_LINE:L_LINENUM += TEMPS + TEMPS:1
+			NEXT
+			SHOW_LINE:L_LINENUM += "│"
+		NEXT
+		SHOW_LINE:(L_LINENUM + 1) += "│"  + " " * 50 + "│"
+
+		;-------------------------------------------
+		;継承素質
+		;-------------------------------------------
+		SHOW_LINE:(L_LINENUM + 2) += "│"  + @"%"□" + "계승소질", 50, LEFT%" + "│" 
+		L_LINENUM += 3
+		SHOW_LINE:L_LINENUM  += "│"
+		TEMPS = 
+		IF LCOUNT:2 == 0
+			FOR LCOUNT, 0, SUCCESSIONNUM
+				SIF CLASS_SUCCESSION:LCOUNT < 0
+					CONTINUE
+				TEMPS += "【" + GET_SUCCESSION(CLASS_SUCCESSION:LCOUNT) + "】"
+				TALENT:MASTER:GET_SUCCESSION(CLASS_SUCCESSION:LCOUNT) = 1
+			NEXT
+		ELSE
+			FOR LCOUNT, 0, VARSIZE("DEVIL_CLASS_SUCCESSION")
+				SIF DEVIL_CLASS_SUCCESSION:LCOUNT < 0
+					CONTINUE
+				TEMPS += "【" + GET_SUCCESSION(DEVIL_CLASS_SUCCESSION:LCOUNT) + "】"
+				TALENT:MASTER:GET_SUCCESSION(DEVIL_CLASS_SUCCESSION:LCOUNT) = 1
+			NEXT
+		ENDIF
+		SHOW_LINE:L_LINENUM += @"%TEMPS, 50, LEFT%" + "│"
+		SHOW_LINE:(L_LINENUM + 1) += "│"  + " " * 50 + "│"
+		L_LINENUM += 2
+		
+		;-------------------------------------------
+		;所持・習得スキル
+		;-------------------------------------------
+		SHOW_LINE:(L_LINENUM + 0) += "│"  + @"%"□" + "스킬", 50, LEFT%" + "│"
+		VARSET L_SKILL
+		IF LCOUNT:2 == 0
+			FOR LCOUNT, 0, 3
+				L_SKILL:FINDELEMENT(L_SKILL, 0) = CLASS_SKILL:LCOUNT
+			NEXT
+			FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+				L_SKILL:FINDELEMENT(L_SKILL, 0) = CLASS_LEARN:LCOUNT
+			NEXT
+		ELSE
+			FOR LCOUNT, 0, 3
+				L_SKILL:FINDELEMENT(L_SKILL, 0) = DEVIL_CLASS_SKILL:LCOUNT
+			NEXT
+			FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+				L_SKILL:FINDELEMENT(L_SKILL, 0) = DEVIL_CLASS_LEARN:LCOUNT
+			NEXT
+		ENDIF
+		FOR LCOUNT, 0, 14
+			L_LINENUM++
+			SHOW_LINE:L_LINENUM += "│"
+			IF L_SKILL:LCOUNT
+				TEMPS = %SKILL_NAME_F(L_SKILL:LCOUNT)%
+				TEMPS:1 = %" " * (50 - STRLENS(TEMPS) - 4)%
+				CALL GET_SKILL_EXPLAIN_TOOLTIP, L_SKILL:LCOUNT
+				TEMPS = 【<button value = '' title = '%RESULTS%'>%TEMPS%</button>】
+				SHOW_LINE:L_LINENUM += TEMPS + TEMPS:1
+			ELSE
+				SHOW_LINE:L_LINENUM += " " * 50
+			ENDIF
+			SHOW_LINE:L_LINENUM += "│"
+		NEXT
+
+		L_LINENUM += 1
+		;-------------------------------------------
+		;追加素質
+		;-------------------------------------------
+		SHOW_LINE:L_LINENUM += "│"  + @"%"□" + "추가소질", 50, LEFT%" + "│" 
+		IF LCOUNT:2 == 0
+			L_TALENT = %CLASS_BTL_TALENT%
+		ELSE
+			L_TALENT = %DEVIL_BTL_TALENT%
+		ENDIF
+		VARSET L_TALENTS
+		FOR LCOUNT, 0, 4
+			TEMPS = %AUTO_SPLIT(L_TALENT, "/", LCOUNT)%
+			TEMPS:1 = %AUTO_SPLIT(TEMPS, "_", 0)%
+			;ツールチップが取れるかどうかで戦闘素質かを判定する
+			TRYCCALLFORM SUB_ROLE_EXPLAIN_TOOLTIP_%TEMPS:1%
+				L_COLOR = %TOSTR_HTML(GETDEFCOLOR())%
+				CAN_ADD_TALENT += "/" + TEMPS
+				L_TITLE:LCOUNT = %RESULTS%
+				SIF GET_SUB_ROLE_PROP("MAXLV", TEMPS:1) > 1
+					TEMPS:1 = %TEMPS:1,12,LEFT% Lv{TOINT(AUTO_SPLIT(TEMPS, "_", 1))}
+			CATCH
+				;---- EDIT 050 MOD START -------------------------
+				;調教素質をセットする
+				IF FINDELEMENT(TALENTNAME, TEMPS:1) > 0
+					TALENT:MASTER:(TEMPS:1) = 1
+					CALL GET_TALENT_EXPLAIN, , TEMPS:1
+					L_TITLE:LCOUNT = %RESULTS%
+				ELSE
+					L_TITLE:LCOUNT = 
+				ENDIF
+				;---- EDIT 050 MOD END ---------------------------
+			ENDCATCH
+			L_TALENTS:FINDELEMENT(L_TALENTS, "", , , 1) = %TEMPS:1%
+		NEXT
+		FOR LCOUNT, 0, 4
+			L_LINENUM++
+			IF L_TALENTS:LCOUNT == ""
+				SHOW_LINE:L_LINENUM += "│" + " " * 50 + "│"
+			ELSE
+				;余白の長さを確定しておく
+				TEMP = 50 - STRLENS(HTML_TOPLAINTEXT(L_TALENTS:LCOUNT)) - 4
+				L_TALENTS:LCOUNT = <font color = '%L_COLOR%'>【<button value = '' title = '%L_TITLE:LCOUNT%'>%L_TALENTS:LCOUNT%</button>】</font>
+				SHOW_LINE:L_LINENUM += "│" + L_TALENTS:LCOUNT + " " * TEMP + "│"
+			ENDIF
+		NEXT
+		
+		FOR LCOUNT, L_LINENUM + 1, CLASS_SHOWNUM + DEVIL_SHOWNUM + 3
+			SHOW_LINE:LCOUNT += "│"  + " " * 50 + "│"
+		NEXT
+	ELSE
+		FOR LCOUNT, 0, CLASS_SHOWNUM + DEVIL_SHOWNUM + 2
+			L_LINENUM++
+			SHOW_LINE:L_LINENUM += "│"  + " " * 50 + "│"
+		NEXT
+	ENDIF
+NEXT
+
+;戦闘素質同士の重複強化処理
+CALL MIX_BTL_TALENT_LIST, CAN_ADD_TALENT
+
+SHOW_LINE:(CLASS_SHOWNUM + DEVIL_SHOWNUM + 3) += ("└" + "─" * 25 + "┘") * 2
+FOR LCOUNT, 0, CLASS_SHOWNUM + DEVIL_SHOWNUM + 4
+	HTML_PRINT SHOW_LINE:LCOUNT
+NEXT
+DRAWLINE
+PRINTL 초기 스테이터스는 ２가지 클래스의 스테이터스의 합계값이 됩니다。
+PRINTL 초기스킬과 습득스킬은 ２가지 클래스의 습득스킬에 따라 결정됩니다。
+PRINTL 
+PRINTL 클래스 결정 후、추가 서브소질 설정을 실행합니다。
+PRINTL 선택한 클래스에 따라 추가 전투소질의 선택지가 늘어납니다。동일한 전투소질을 중복하여 추가하면 해당 소질이 강화될 수 있습니다。
+PRINTL 모든 소질을 획득할 수는 없으므로、선택과 집중이 필요하다는 점에 유의해주세요
+PRINTL 
+PRINTL 스킬이나 소질에 마우스를 올리면 간단한 설명을 볼 수 있습니다。
+DRAWLINE
+CALL PRINT_COLOR, "[ 0] 決定", SELECT_CLASS && SELECT_DEVIL ? GETDEFCOLOR() # COLOR("DARK-GRAY")
+PRINTFORML 　　　　[99] 돌아간다
+INPUTS
+SELECTCASE RESULTS
+	CASE "0"
+		IF SELECT_CLASS && SELECT_DEVIL
+			;所持・習得スキルのセット
+			ABL:MASTER:스킬1 = SKILL_NUM_F("사바트마")
+			CALL SET_MASTER_SKILL, MASTER, "通常形態", "CLASS", SELECT_CLASS, "DEVIL", SELECT_DEVIL
+			CALL SET_FIXED_BTL_TALENT, MASTER, "通常形態", L_LV_FIXED, L_TALENTS_FIXED
+
+			CALL SYNC_STATUS, MASTER
+			CUSTOMDRAWLINE =
+			CALL ROLE_EXPLAIN_ABILITY, MASTER, , ,"メイン"
+			CALL ENHANCE_ROLE, MASTER, , CAN_ADD_TALENT
+			SIF !RESULT
+				GOTO START
+			CALL SYNC_STATUS, MASTER
+			CALL ROLE_EXPLAIN_BASE, MASTER
+			CALL ROLE_EXPLAIN_ABILITY, MASTER
+			DRAWLINE
+			PRINTL □스테이터스
+			DRAWLINE
+			FOR LCOUNT:1, 0, 3
+				SHOW_LINE =
+				FOR LCOUNT:2, 0, 2
+					L_ST = LCOUNT:1 * 2 + LCOUNT:2 + 1
+					TEMP = BASE:MASTER:GET_BASESTATUS(L_ST)
+					TEMPS = 　%GET_BASESTATUS(L_ST), 4%　{TEMP,2}
+					TEMPS:1 = <font color = '%TOSTR_HTML(COLOR("パ緑"))%'>%" " + TEMP * UNICODE(0x258B)%</font>
+					TEMPS:1 += " " * (15 - TEMP)
+					SHOW_LINE += TEMPS + TEMPS:1
+				NEXT
+				HTML_PRINT SHOW_LINE
+			NEXT
+			DRAWLINE
+			PRINTL □스킬
+			DRAWLINE
+			;初期スキル
+			SHOW_LINE = 　
+			FOR LCOUNT,1,4
+				SIF ABL:MASTER:@"스킬{LCOUNT}" == 0
+					BREAK
+				CALL GET_SKILL_EXPLAIN_TOOLTIP, ABL:MASTER:@"스킬{LCOUNT}"
+				SHOW_LINE += "초기:" + @"<button value = '' title = '%RESULTS%'>" + SKILL_NAME_F(ABL:MASTER:@"스킬{LCOUNT}") + "</button>"
+				SHOW_LINE += " " * (SKILLNAMELENS - STRLENS(SKILL_NAME_F(ABL:MASTER:@"스킬{LCOUNT}")))
+			NEXT
+			HTML_PRINT SHOW_LINE
+			SHOW_LINE = 
+			;습득스킬
+			FOR LCOUNT,1, 21
+				SIF ABL:MASTER:@"습득스킬{LCOUNT}" == 0
+					BREAK
+				SIF SHOW_LINE == ""
+					SHOW_LINE += "　"
+				CALL GET_SKILL_EXPLAIN_TOOLTIP, ABL:MASTER:@"습득스킬{LCOUNT}"
+				SHOW_LINE += @"Lv{ABL:MASTER:@"습득LV{LCOUNT}", 2}:" + @"<button value = '' title = '%RESULTS%'>" + SKILL_NAME_F(ABL:MASTER:@"습득스킬{LCOUNT}") + "</button>"
+				SHOW_LINE += " " * (SKILLNAMELENS - STRLENS(SKILL_NAME_F(ABL:MASTER:@"습득스킬{LCOUNT}")))
+				IF LCOUNT % 4 == 0
+					HTML_PRINT SHOW_LINE
+					SHOW_LINE = 
+				ENDIF
+			NEXT
+			SIF SHOW_LINE != ""
+				HTML_PRINT SHOW_LINE
+			DRAWLINE
+			PRINTFORML 　[0] 결정　　　　[9] 돌아간다
+			CALL INPUTINT(0, 9)
+			SIF RESULT
+				GOTO START
+			REDRAW 1
+			DELCHARA STOCK_MASTER:1
+			RETURN 1
+		ENDIF
+	CASE "99"
+		DELCHARA STOCK_MASTER:1
+		RETURN 0
+	CASE "-"
+		CLASS_PAGE = !CLASS_PAGE ? CLASS_MAXPAGE # CLASS_PAGE -1
+	CASE "+"
+		CLASS_PAGE = CLASS_PAGE == CLASS_MAXPAGE ? 0 # CLASS_PAGE + 1
+	CASE "--"
+		DEVIL_PAGE = !DEVIL_PAGE ? DEVIL_MAXPAGE # DEVIL_PAGE -1
+	CASE "++"
+		DEVIL_PAGE = DEVIL_PAGE == DEVIL_MAXPAGE ? 0 # DEVIL_PAGE + 1
+	CASEELSE
+		RESULT = TOINT(RESULTS) - 1
+		SELECTCASE RESULT
+			CASE 0 TO VARSIZE("CLASS_LIST")
+				SELECT_CLASS = CLASS_LIST:RESULT
+			CASE 50 TO 50 + VARSIZE("DEVIL_LIST")
+				SELECT_DEVIL = DEVIL_LIST:(RESULT - 50)
+		ENDSELECT
+ENDSELECT
+GOTO START
+
+;========================================================================
+;主人の悪魔人としての技能設定
+;========================================================================
+@SET_MASTER_DEMONOID, STOCK_MASTER
+#DIM DYNAMIC LCOUNT, 3
+#DIM DYNAMIC L_LINE
+#DIM DYNAMIC L_LINENUM
+#DIMS SHOW_LINE, 40
+#DIMS L_COLOR
+#DIM DYNAMIC SELECT_DEVIL, 2
+#DIM DYNAMIC DEVIL_PAGE
+#DIM DYNAMIC DEVIL_MAXPAGE
+#DIM DYNAMIC DEVIL_LIST, 32
+#DIM CONST DEVIL_SHOWNUM = 32
+#DIM DYNAMIC TEMP, 2
+#DIMS TEMPS, 2
+#DIM DYNAMIC STOCK_MASTER, 2
+#DIM DYNAMIC L_ST
+#DIM DYNAMIC L_SKILL, HAVEABLE_SKILLNUM
+#DIMS L_TALENT
+#DIMS L_TITLE, 4
+#DIMS L_TALENTS, 4
+#DIMS CAN_ADD_TALENT
+#DIM DYNAMIC DEVIL_CLASS_BASE_STATUS, BASESTATUSNUM
+#DIMS DEVIL_CLASS_ALI
+#DIM DYNAMIC DEVIL_CLASS_SKILL, HAVEABLE_SKILLNUM
+#DIM DYNAMIC DEVIL_CLASS_LEARN, HAVEABLE_SKILLNUM
+#DIM DYNAMIC DEVIL_CLASS_LEARN_LV, HAVEABLE_SKILLNUM
+#DIM DYNAMIC DEVIL_CLASS_SUCCESSION, SUCCESSIONNUM
+#DIMS DEVIL_BTL_TALENT
+#DIMS DEVIL_CLASS_EXPLAIN,2
+#DIM DYNAMIC L_LV_FIXED, SUB_ROLENUM
+#DIMS L_TALENTS_FIXED, SUB_ROLENUM
+
+;防御相性の設定
+CALL SET_MASTER_DEF_TYPE
+SIF RESULT == 0
+	RETURN 0
+
+VARSET DEVIL_LIST
+FOR LCOUNT, 0, VARSIZE("DEVIL_LIST")
+	SIF IS_ABLE_DEVIL_CLASS(LCOUNT)
+		DEVIL_LIST:FINDELEMENT(DEVIL_LIST, 0) = LCOUNT + IS_ABLE_DEVIL_CLASS(LCOUNT) * 1000
+NEXT
+DEVIL_MAXPAGE = (VARSIZE("DEVIL_LIST") - MATCH(DEVIL_LIST, 0) - 1) / DEVIL_SHOWNUM
+ARRAYSORT DEVIL_LIST, FORWARD, 0, FINDELEMENT(DEVIL_LIST, 0)
+
+FOR LCOUNT, 0, VARSIZE("DEVIL_LIST")
+	DEVIL_LIST:LCOUNT %= 1000
+NEXT
+
+;ステータスを0に
+FOR LCOUNT, 1, BASESTATUSNUM
+	BASE:MASTER:GET_BASESTATUS(LCOUNT) = 0
+NEXT
+
+ADDCOPYCHARA MASTER
+STOCK_MASTER:1 = CHARANUM - 1
+
+L_LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - L_LINE
+COPYCHARA STOCK_MASTER:1, MASTER
+
+CAN_ADD_TALENT = 서머너_3/스킬적성_3
+
+CUSTOMDRAWLINE =
+PRINTFORML 당신에게 깃든 힘을 ２가지 선택해주세요
+CUSTOMDRAWLINE =
+;-----------------------------------------------------
+;左選択欄
+;-----------------------------------------------------
+VARSET SHOW_LINE
+
+L_LINENUM = 0
+SHOW_LINE:L_LINENUM = %"┌" + "D-CLASS " + "─" * 6 + "┐"%
+FOR LCOUNT, 0, DEVIL_SHOWNUM
+	L_LINENUM += 1
+	TEMP = DEVIL_PAGE * DEVIL_SHOWNUM + LCOUNT
+	IF DEVIL_LIST:TEMP
+		TEMPS = %GET_DEVIL_CLASS_NAME(DEVIL_LIST:TEMP)%
+		SHOW_LINE:L_LINENUM += @"<button value = '{TEMP + 1}'>" + @"[{TEMP+1,2}] %TEMPS, 15, LEFT%" + "</button>"
+		SIF MATCH(SELECT_DEVIL, DEVIL_LIST:TEMP)
+			SHOW_LINE:L_LINENUM = %@"<font color = '%TOSTR_HTML(COLOR("aqua"))%'>" + SHOW_LINE:L_LINENUM + "</font>" %
+		SHOW_LINE:L_LINENUM = %"│" + SHOW_LINE:L_LINENUM + "│" %
+	ELSE
+		SHOW_LINE:L_LINENUM = %"│" + " " * 20 + "│" %
+	ENDIF
+NEXT
+IF DEVIL_MAXPAGE
+	SHOW_LINE:(L_LINENUM+1) += "└"
+	SHOW_LINE:(L_LINENUM+1) += "<button value = '--'>" + "[--] " + "</button>"
+	SHOW_LINE:(L_LINENUM+1) += @"Page.{DEVIL_PAGE}"
+	SHOW_LINE:(L_LINENUM+1) += "<button value = '++'>" + " [++]" + "</button>"
+	SHOW_LINE:(L_LINENUM+1) += "─" * 2 + "┘"
+ELSE
+	SHOW_LINE:(L_LINENUM+1) += "└" + "─" * 10 + "┘"
+ENDIF
+;-----------------------------------------------------
+;クラス欄
+;-----------------------------------------------------
+FOR LCOUNT:2, 0, 2
+	L_LINENUM = 0
+	SHOW_LINE:L_LINENUM += "┌" + @"D-CLASS{LCOUNT:2+1}" + "─" * 21 + "┐"
+	IF SELECT_DEVIL:(LCOUNT:2)
+		;-----------------------------------------
+		;名称と解説
+		;-----------------------------------------
+		CALL SET_VAR_DEVIL_CLASS, SELECT_DEVIL:(LCOUNT:2), DEVIL_CLASS_BASE_STATUS, DEVIL_CLASS_ALI, DEVIL_CLASS_SKILL, DEVIL_CLASS_LEARN, DEVIL_CLASS_LEARN_LV, DEVIL_CLASS_SUCCESSION, DEVIL_CLASS_EXPLAIN, DEVIL_BTL_TALENT
+
+		SHOW_LINE:(L_LINENUM + 1) += "│"  + @"%"□" + GET_DEVIL_CLASS_NAME(SELECT_DEVIL:(LCOUNT:2)), 50, LEFT%" + "│" 
+		SHOW_LINE:(L_LINENUM + 2) += "│"  + @"%"　" + DEVIL_CLASS_EXPLAIN:0, 50, LEFT%" + "│" 
+		SHOW_LINE:(L_LINENUM + 3) += "│"  + @"%"　" + DEVIL_CLASS_EXPLAIN:1, 50, LEFT%" + "│" 
+		SHOW_LINE:(L_LINENUM + 4) += "│"  + " " * 50 + "│"
+		L_LINENUM += 5
+
+		;-------------------------------------------
+		;基本ステータス
+		;-------------------------------------------
+		SHOW_LINE:(L_LINENUM + 0) += "│"  + @"%"□" + "스테이터스", 50, LEFT%" + "│" 
+		FOR LCOUNT, 0, (BASESTATUSNUM - 1) / 2 + (BASESTATUSNUM - 1) % 2
+			L_LINENUM++
+			SHOW_LINE:L_LINENUM += "│"
+			FOR LCOUNT:1, 0, 2
+				L_ST = LCOUNT * 2 + LCOUNT:1 + 1
+				TEMP = DEVIL_CLASS_BASE_STATUS:L_ST
+				;ステータスの加算
+				BASE:MASTER:GET_BASESTATUS(L_ST) += TEMP
+				TEMPS = 　%GET_BASESTATUS(L_ST), 4% {TEMP,2}
+				TEMPS:1 = <font color = '%TOSTR_HTML(COLOR("パ緑"))%'>%" " + TEMP * UNICODE(0x258B)%</font>
+				TEMPS:1 += " " * (25 - TEMP - 10)
+				SHOW_LINE:L_LINENUM += TEMPS + TEMPS:1
+			NEXT
+			SHOW_LINE:L_LINENUM += "│"
+		NEXT
+		SHOW_LINE:(L_LINENUM + 1) += "│"  + " " * 50 + "│"
+
+		;-------------------------------------------
+		;継承素質
+		;-------------------------------------------
+		SHOW_LINE:(L_LINENUM + 2) += "│"  + @"%"□" + "계승소질", 50, LEFT%" + "│" 
+		L_LINENUM += 3
+		SHOW_LINE:L_LINENUM  += "│"
+		TEMPS = 
+		FOR LCOUNT, 0, VARSIZE("DEVIL_CLASS_SUCCESSION")
+			SIF DEVIL_CLASS_SUCCESSION:LCOUNT < 0
+				CONTINUE
+			TEMPS += "【" + GET_SUCCESSION(DEVIL_CLASS_SUCCESSION:LCOUNT) + "】"
+			TALENT:MASTER:GET_SUCCESSION(DEVIL_CLASS_SUCCESSION:LCOUNT) = 1
+		NEXT
+		SHOW_LINE:L_LINENUM += @"%TEMPS, 50, LEFT%" + "│"
+		SHOW_LINE:(L_LINENUM + 1) += "│"  + " " * 50 + "│"
+		L_LINENUM += 2
+		
+		;-------------------------------------------
+		;所持・習得スキル
+		;-------------------------------------------
+		SHOW_LINE:(L_LINENUM + 0) += "│"  + @"%"□" + "스킬", 50, LEFT%" + "│"
+		VARSET L_SKILL
+		FOR LCOUNT, 0, 3
+			L_SKILL:FINDELEMENT(L_SKILL, 0) = DEVIL_CLASS_SKILL:LCOUNT
+		NEXT
+		FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+			L_SKILL:FINDELEMENT(L_SKILL, 0) = DEVIL_CLASS_LEARN:LCOUNT
+		NEXT
+		FOR LCOUNT, 0, 14
+			L_LINENUM++
+			SHOW_LINE:L_LINENUM += "│"
+			IF L_SKILL:LCOUNT
+				TEMPS = %SKILL_NAME_F(L_SKILL:LCOUNT)%
+				TEMPS:1 = %" " * (50 - STRLENS(TEMPS) - 4)%
+				CALL GET_SKILL_EXPLAIN_TOOLTIP, L_SKILL:LCOUNT
+				TEMPS = 【<button value = '' title = '%RESULTS%'>%TEMPS%</button>】
+				SHOW_LINE:L_LINENUM += TEMPS + TEMPS:1
+			ELSE
+				SHOW_LINE:L_LINENUM += " " * 50
+			ENDIF
+			SHOW_LINE:L_LINENUM += "│"
+		NEXT
+
+		L_LINENUM += 1
+		;-------------------------------------------
+		;追加素質
+		;-------------------------------------------
+		SHOW_LINE:L_LINENUM += "│"  + @"%"□" + "추가소질", 50, LEFT%" + "│" 
+		L_TALENT = %DEVIL_BTL_TALENT%
+		VARSET L_TALENTS
+		FOR LCOUNT, 0, 4
+			TEMPS = %AUTO_SPLIT(L_TALENT, "/", LCOUNT)%
+			TEMPS:1 = %AUTO_SPLIT(TEMPS, "_", 0)%
+			TEMP:1 = GETNUM(TALENT, TEMPS:1);EDIT 50 ADD
+			;ツールチップが取れるかどうかで戦闘素質かを判定する
+			TRYCCALLFORM SUB_ROLE_EXPLAIN_TOOLTIP_%TEMPS:1%
+				L_TITLE:LCOUNT = %RESULTS%
+
+				L_TALENTS:LCOUNT = %TEMPS:1%
+				L_COLOR = %TOSTR_HTML(GETDEFCOLOR())%
+				CAN_ADD_TALENT += "/" + TEMPS
+				SIF GET_SUB_ROLE_PROP("MAXLV", TEMPS:1) > 1
+					TEMPS:1 = %TEMPS:1,12,LEFT% Lv{TOINT(AUTO_SPLIT(TEMPS, "_", 1))}
+			CATCH
+				;調教素質をセットする
+				IF FINDELEMENT(TALENTNAME, TEMPS:1) > 0
+					L_TALENTS:LCOUNT = %TEMPS:1%
+					TALENT:MASTER:(TEMPS:1) = 1
+					
+					CALL GET_TALENT_EXPLAIN, , TEMPS:1 
+					L_TITLE:LCOUNT = %RESULTS%
+				ENDIF
+			ENDCATCH
+		NEXT
+		FOR LCOUNT, 0, 4
+			L_LINENUM++
+			IF L_TALENTS:LCOUNT == ""
+				SHOW_LINE:L_LINENUM += "│" + " " * 50 + "│"
+			ELSE
+				;余白の長さを確定しておく
+				TEMP = 50 - STRLENS(HTML_TOPLAINTEXT(L_TALENTS:LCOUNT)) - 4
+				L_TALENTS:LCOUNT '= SET_BUTTON_TAG("【"+ L_TALENTS:LCOUNT + "】", , L_TITLE:LCOUNT)
+				L_TALENTS:LCOUNT '= SET_COLOR_TAG(L_TALENTS:LCOUNT, L_COLOR)
+				SHOW_LINE:L_LINENUM += "│" + L_TALENTS:LCOUNT + " " * TEMP + "│"
+			ENDIF
+		NEXT
+		
+		FOR LCOUNT, L_LINENUM + 1, DEVIL_SHOWNUM
+			SHOW_LINE:LCOUNT += "│"  + " " * 50 + "│"
+		NEXT
+	ELSE
+		FOR LCOUNT, 0, DEVIL_SHOWNUM
+			L_LINENUM++
+			SHOW_LINE:L_LINENUM += "│"  + " " * 50 + "│"
+		NEXT
+	ENDIF
+NEXT
+SHOW_LINE:(DEVIL_SHOWNUM + 1) += ("└" + "─" * 25 + "┘") * 2
+FOR LCOUNT, 0, DEVIL_SHOWNUM + 2
+	HTML_PRINT SHOW_LINE:LCOUNT
+NEXT
+
+;戦闘素質同士の重複強化処理
+CALL MIX_BTL_TALENT_LIST, CAN_ADD_TALENT
+DRAWLINE
+PRINTL 초기 스테이터스는 ２가지 클래스의 스테이터스의 합계값이 됩니다。
+PRINTL 초기스킬과 습득스킬은 ２가지 클래스의 습득스킬에 따라 결정됩니다。
+PRINTL 
+PRINTL 클래스 결정 후、추가 서브소질 설정을 실행합니다。
+PRINTL 선택한 클래스에 따라 추가 전투소질의 선택지가 늘어납니다。동일한 전투소질을 중복하여 추가하면 해당 소질이 강화될 수 있습니다。
+PRINTL 모든 소질을 획득할 수는 없으므로、선택과 집중이 필요하다는 점에 유의해주세요
+PRINTL 
+PRINTL 스킬이나 소질에 마우스를 올리면 간단한 설명을 볼 수 있습니다。
+DRAWLINE
+CALL PRINT_COLOR, "[ 0] 決定", SELECT_DEVIL:0 && SELECT_DEVIL:1 ? GETDEFCOLOR() # COLOR("DARK-GRAY")
+PRINTFORML 　　　　[99] 돌아간다
+INPUTS
+SELECTCASE RESULTS
+	CASE "0"
+		IF SELECT_DEVIL:0 && SELECT_DEVIL:1
+			TALENT:MASTER:갈퀴 = 1
+			CSTR:MASTER:30 = 팬텀・소사이어티에 소속된 악마인간。
+			CFLAG:MASTER:당신의전공분야  = GET_MASTER_MAJORING_NUM("악마인")
+			CFLAG:MASTER:소속ＣＯＭＰ = -1
+			CFLAG:MASTER:합체소재사용금지 = 1
+			ABL:MASTER:종족 = GET_RACE_NUM("악마인")
+			CSTR:MASTER:클래스설명1 = 악마인/悪魔と人間が合体し、人間の自我を残した稀有な存在。/その身に宿した悪魔の力を用いて超常の力を扱うことが出来る/なぜ、こんなことになってしまったのかはわからない…
+			CALL SET_ROLE, MASTER
+			;所持・習得スキルのセット
+			ABL:MASTER:스킬1 = SKILL_NUM_F("사바트마")
+			CALL SET_MASTER_SKILL, MASTER, "通常形態","DEVIL", SELECT_DEVIL:0, "DEVIL", SELECT_DEVIL:1
+
+			CALL SYNC_STATUS, MASTER
+			CALL SET_FIXED_BTL_TALENT, MASTER, "通常形態", L_LV_FIXED, L_TALENTS_FIXED
+			CALL SYNC_STATUS, MASTER
+			CUSTOMDRAWLINE =
+			CALL ROLE_EXPLAIN_ABILITY, MASTER, , ,"メイン"
+			CALL ENHANCE_ROLE, MASTER, , CAN_ADD_TALENT
+			SIF !RESULT
+				GOTO START
+			CALL ROLE_EXPLAIN_BASE, MASTER
+			CALL ROLE_EXPLAIN_ABILITY, MASTER
+			DRAWLINE
+			PRINTL □스테이터스
+			DRAWLINE
+			FOR LCOUNT:1, 0, 3
+				SHOW_LINE =
+				FOR LCOUNT:2, 0, 2
+					L_ST = LCOUNT:1 * 2 + LCOUNT:2 + 1
+					TEMP = BASE:MASTER:GET_BASESTATUS(L_ST)
+					TEMPS = 　%GET_BASESTATUS(L_ST), 4%　{TEMP,2}
+					TEMPS:1 = <font color = '%TOSTR_HTML(COLOR("パ緑"))%'>%" " + TEMP * UNICODE(0x258B)%</font>
+					TEMPS:1 += " " * (15 - TEMP)
+					SHOW_LINE += TEMPS + TEMPS:1
+				NEXT
+				HTML_PRINT SHOW_LINE
+			NEXT
+			DRAWLINE
+			PRINTL □스킬
+			DRAWLINE
+			;初期スキル
+			SHOW_LINE = 　
+			FOR LCOUNT,1,4
+				SIF ABL:MASTER:@"스킬{LCOUNT}" == 0
+					BREAK
+				CALL GET_SKILL_EXPLAIN_TOOLTIP, ABL:MASTER:@"스킬{LCOUNT}"
+				SHOW_LINE += "초기:" + @"<button value = '' title = '%RESULTS%'>" + SKILL_NAME_F(ABL:MASTER:@"스킬{LCOUNT}") + "</button>"
+				SHOW_LINE += " " * (SKILLNAMELENS - STRLENS(SKILL_NAME_F(ABL:MASTER:@"스킬{LCOUNT}")))
+			NEXT
+			HTML_PRINT SHOW_LINE
+			SHOW_LINE = 
+			;습득스킬
+			FOR LCOUNT,1, 21
+				SIF ABL:MASTER:@"습득스킬{LCOUNT}" == 0
+					BREAK
+				SIF SHOW_LINE == ""
+					SHOW_LINE += "　"
+				CALL GET_SKILL_EXPLAIN_TOOLTIP, ABL:MASTER:@"습득스킬{LCOUNT}"
+				SHOW_LINE += @"Lv{ABL:MASTER:@"습득LV{LCOUNT}", 2}:" + @"<button value = '' title = '%RESULTS%'>" + SKILL_NAME_F(ABL:MASTER:@"습득스킬{LCOUNT}") + "</button>"
+				SHOW_LINE += " " * (SKILLNAMELENS - STRLENS(SKILL_NAME_F(ABL:MASTER:@"습득스킬{LCOUNT}")))
+				IF LCOUNT % 4 == 0
+					HTML_PRINT SHOW_LINE
+					SHOW_LINE = 
+				ENDIF
+			NEXT
+			SIF SHOW_LINE != ""
+				HTML_PRINT SHOW_LINE
+			DRAWLINE
+			PRINTFORML 　[0] 결정　　　　[9] 돌아간다
+			CALL INPUTINT(0, 9)
+			SIF RESULT
+				GOTO START
+			REDRAW 1
+			DELCHARA STOCK_MASTER:1
+			RETURN 1
+		ENDIF
+	CASE "99"
+		DELCHARA STOCK_MASTER:1
+		RETURN 0
+	CASE "-"
+		DEVIL_PAGE = !DEVIL_PAGE ? DEVIL_MAXPAGE # DEVIL_PAGE -1
+	CASE "+"
+		DEVIL_PAGE = DEVIL_PAGE == DEVIL_MAXPAGE ? 0 # DEVIL_PAGE + 1
+	CASEELSE
+		RESULT = TOINT(RESULTS) - 1
+		IF INRANGE(RESULT, 0, VARSIZE("DEVIL_LIST"))
+			IF FINDELEMENT(SELECT_DEVIL, DEVIL_LIST:RESULT) >= 0
+				SELECT_DEVIL:FINDELEMENT(SELECT_DEVIL, DEVIL_LIST:RESULT) = 0
+			ELSE
+				SIF FINDELEMENT(SELECT_DEVIL, 0) >= 0
+					SELECT_DEVIL:FINDELEMENT(SELECT_DEVIL, 0) = DEVIL_LIST:RESULT
+			ENDIF
+			SIF SELECT_DEVIL:1 && (!SELECT_DEVIL:0 || (SELECT_DEVIL:0 > SELECT_DEVIL:1))
+				SWAP SELECT_DEVIL:0, SELECT_DEVIL:1
+		ENDIF
+ENDSELECT
+GOTO START
+
+;========================================================================
+;主人の半魔人としての技能
+;========================================================================
+@SET_MASTER_DEVIL_HUNTER, STOCK_MASTER
+#DIM STOCK_MASTER
+#DIM LCOUNT, 2
+#DIMS SHOW_LINE
+#DIM TEMP
+#DIMS TEMPS
+#DIM IS_EX_TALENT
+#DIM L_LINE
+
+L_LINE = LINECOUNT
+$START
+CLEARLINE L_LINE - LINECOUNT
+
+;とりあえず劣化ダンテ風にしておく
+ABL:MASTER:종족 = 36
+CSTR:MASTER:종족명 = 반마인
+BASE:MASTER:검격 = 75
+BASE:MASTER:비구 = 75
+BASE:MASTER:타격 = 75
+BASE:MASTER:전술 = 75
+BASE:MASTER:화염 = 75
+BASE:MASTER:빙결 = 75
+BASE:MASTER:전격 = 75
+BASE:MASTER:충격 = 75
+BASE:MASTER:신경 = 0
+BASE:MASTER:정신 = 0
+BASE:MASTER:파마 = 50
+BASE:MASTER:주살 = 0
+BASE:MASTER:지변 = 150
+BASE:MASTER:수격 = 125
+BASE:MASTER:질풍 = 75
+BASE:MASTER:중력 = 150
+BASE:MASTER:핵열 = 125
+BASE:MASTER:만능 = 100
+BASE:MASTER:사이코 = 0
+
+TALENT:MASTER:악마사냥꾼 = 1
+CALL SET_ROLE, MASTER
+CALL SET_MASTER_SKILL, MASTER, "通常形態", "DEVIL_HUNTER", 0
+
+IF IS_EX_TALENT
+	TALENT:MASTER:석세서 = 1
+	TALENT:MASTER:도구지식 = 3
+	TALENT:MASTER:건슬링거 = 3
+ELSE
+	TALENT:MASTER:건슬링거 = 2
+	TALENT:MASTER:석세서 = 0
+	TALENT:MASTER:도구지식 = 0
+ENDIF
+	
+CSTR:MASTER:30 = 팬텀・소사이어티에 고용된 악마도 "울리는"악마사냥꾼。
+CFLAG:MASTER:당신의전공분야  = 7
+CFLAG:MASTER:소속ＣＯＭＰ = -1
+CFLAG:MASTER:합체소재사용금지 = 1
+
+ITEM:칼리번 = 1
+ITEM:Ｗ＆Ｓ = 1
+ITEM:악마사냥꾼의코트 = 1
+;ステータス同期
+CALL SYNC_STATUS, MASTER
+CALL ROLE_EXPLAIN_BASE, MASTER
+CALL ROLE_EXPLAIN_ABILITY, MASTER
+DRAWLINE
+PRINTL □스킬
+DRAWLINE
+;初期スキル
+SHOW_LINE = 　
+FOR LCOUNT,1,4
+	SIF ABL:MASTER:@"스킬{LCOUNT}" == 0
+		BREAK
+	CALL GET_SKILL_EXPLAIN_TOOLTIP, ABL:MASTER:@"스킬{LCOUNT}"
+	SHOW_LINE += "초기:" + @"<button value = '' title = '%RESULTS%'>" + SKILL_NAME_F(ABL:MASTER:@"스킬{LCOUNT}") + "</button>"
+	SHOW_LINE += " " * (SKILLNAMELENS - STRLENS(SKILL_NAME_F(ABL:MASTER:@"스킬{LCOUNT}")))
+NEXT
+HTML_PRINT SHOW_LINE
+SHOW_LINE = 
+;습득스킬
+FOR LCOUNT,1, 21
+	SIF ABL:MASTER:@"습득스킬{LCOUNT}" == 0
+		BREAK
+	SIF SHOW_LINE == ""
+		SHOW_LINE += "　"
+	CALL GET_SKILL_EXPLAIN_TOOLTIP, ABL:MASTER:@"습득스킬{LCOUNT}"
+	SHOW_LINE += @"Lv{ABL:MASTER:@"습득LV{LCOUNT}", 2}:" + @"<button value = '' title = '%RESULTS%'>" + SKILL_NAME_F(ABL:MASTER:@"습득스킬{LCOUNT}") + "</button>"
+	SHOW_LINE += " " * (SKILLNAMELENS - STRLENS(SKILL_NAME_F(ABL:MASTER:@"습득스킬{LCOUNT}")))
+	IF LCOUNT % 4 == 0
+		HTML_PRINT SHOW_LINE
+		SHOW_LINE = 
+	ENDIF
+NEXT
+SIF SHOW_LINE != ""
+	HTML_PRINT SHOW_LINE
+DRAWLINE
+PRINTL □防御相性
+DRAWLINE
+FOR LCOUNT, 0, TYPENUM / 6 + (TYPENUM % 6 > 0); (80 - 2 / 6) = 13
+	SHOW_LINE = 　
+	FOR LCOUNT:1, 0, 6
+		IF LCOUNT * 6 + LCOUNT:1 < TYPENUM
+			SHOW_LINE += GET_TYPE(LCOUNT * 6 + LCOUNT:1) + ":";6
+			TEMP =  BASE:MASTER:GET_TYPE(LCOUNT * 6 + LCOUNT:1)
+			SELECTCASE CHECK_WEAKNESS(TEMP)
+				CASE 1
+					TEMPS = %TOSTR_HTML(COLOR("aqua"))%
+				CASE 0
+					TEMPS = %TOSTR_HTML(COLOR("デフォルト"))%
+				CASEELSE
+					TEMPS = %TOSTR_HTML(COLOR("red"))%
+			ENDSELECT
+			SHOW_LINE += @"<font color = '%TEMPS%'>" + @"{TEMP,4}\%" + "</font>";5
+			SHOW_LINE += " 　"
+		ENDIF
+	NEXT
+	HTML_PRINT SHOW_LINE
+NEXT
+DRAWLINE
+IF FLAG:CP제한무효화
+	CALL PRINT_COLOR, "　[1] 밸런스 조정판 소질", !IS_EX_TALENT ? COLOR("aqua") # GETDEFCOLOR()
+	PRINT 　　
+	CALL PRINT_COLOR, "　[2] ＣＰ무제한소질", IS_EX_TALENT ? COLOR("aqua") # GETDEFCOLOR(), "L"
+	DRAWLINE
+ENDIF
+PRINTFORML 　[0] 결정　　　　[9] 돌아간다
+CALL INPUTINT(0, 9, FLAG:CP제한무효화 * 1, FLAG:CP제한무효화 * 2)
+SELECTCASE RESULT
+	CASE 0
+		RETURN 1
+	CASE 1, 2
+		IS_EX_TALENT = RESULT - 1
+	CASE 9
+		RETURN 0
+ENDSELECT
+GOTO START
+
+;========================================================================
+;観光客(一般人)
+;========================================================================
+@SET_MASTER_TOURIST
+#DIM LCOUNT
+CALL SET_MASTER_RECHECK
+SIF RESULT
+	RETURN 0
+FOR LCOUNT,0,20
+	PRINTL 
+NEXT
+PRINTW 「어머나. 들켜버렸네」
+PRINTL 
+PRINTW 비일상의 세계에서 도망치기로 한 당신의 앞에, 어느 틈엔가 화려한 옷을 입은 미녀가 서 있었다.
+PRINTL 
+PRINTL 「후후… 이런 평범한 장소가 아지트일 줄은 몰랐네요. 사람들을 물리치느라 고생했답니다.
+PRINTL 　저는 마요네.
+PRINTW 　눈에 거슬리는 파리를, 처리하라는 명령을 받고 왔답니다」
+PRINTL 
+PRINTL ……아니, 잠깐.
+PRINTL 순간 절망했지만, 잘 보니 상대는 가냘픈 여자 한 명뿐이다.
+PRINTW 어떻게든 이 여자를 쓰러뜨려 제압한다면, 아직 살아남을 기회는 있다.
+PRINTL 
+PRINTL 「……그런 생각이었나요.
+PRINTL 　사실 생각만큼 깊이 관여하지는 않았던 모양이네요.
+PRINTW 　모처럼이니, 화려하게 폭사시켜 드릴까 생각하고 있었습니다만」
+PRINTL 
+PRINTL 미녀가 기묘한 무늬의 양산을 펼치자, 그 등 뒤로 녹황색 빛이 넘쳐흘렀다.
+PRINTW ……그 직후 눈앞에 나타난 광경에, 당신은 처절한 비명을 지르며 주저앉고 말았다.
+PRINTL 
+PRINTL 그곳에는 원념에 찬 표정의 여자를 비추는 거대한 보라색 거울이 있었다.
+PRINTL 하반신과 오른쪽 몸이 무참히 뜯겨 나간 듯한 모습의 추괴한 거인이 있었다.
+PRINTL 온몸에서 물방울을 뿜어내며 맹금류 같은 부리를 지닌, 너무나도 거대한 뱀이 있었다.
+PRINTW 활활 소리를 내며 불타오르는 털가죽에 싸인, 쥐 같은 기묘한 생물이 그것도 두 마리나 있었다.
+;PRINTL 
+;PRINTL 光の背後から次々と、世にもおぞましく冒涜的にして容貌魁偉な……。
+;PRINTW ……悪魔、としか言いようのない、正体のつかめない何かが続々と出現していた。
+;むらさきカガミ、ミズチ、ヴェータラ、カソ×２。
+PRINTL 
+PRINTW 「그렇게 된 바에야 편하게 가죠. 제 손으로 직접 노예로 만들어 드리겠어요」
+PRINTL
+PRINTL 저항하겠습니까?
+CALL INPUT_YN,"Yes","No"
+IF RESULT == 0
+	PRINTL 정말로, 저항하겠습니까?
+	CALL INPUT_YN,"Yes","No"
+	PRINTL
+	IF RESULT == 0
+		;ここで戦闘を挿入して、万が一勝てたらマヨーネを奴隷にした状態でスタートできるとかどうだろう。
+		PRINTL 마음을 다잡고 여자에게 달려들려 한 다음 순간, 여자가 입가에 손을 대고 무언가를 중얼거렸다.
+		PRINTW 그 즉시 당신은 쓰러졌고, 그대로 다시 일어나지 못했다.
+		PRINTL 
+		PRINTW 「어머나, 그만 깜빡 주살해 버렸네. 반혼향 재고가 아직 남아있었으려나」
+	ENDIF
+ENDIF
+PRINTW ………
+PRINTL
+PRINTW 「그러고 보니, 죽일 생각이었어서 이름을 잊어버렸네. 분명 자료에 따르면……」
+PRINTL 
+
+;---- EDIT 048 ADD START -------------------------
+CFLAG:MASTER:당신의전공분야 = 4
+CSTR:MASTER:30 = 그저 평범한 사람일 뿐이지만 팬텀・소사이어티에 소속된 수수께끼가 많은 일반인。
+CSTR:MASTER:롤설명1 = 일반인/전투력이 없는 일반적인 인간…일 테지만/어쩌면 잠들어 있는 힘이 있을지도 모르고、없을지도 모른다。/어느쪽이든、이 세계에서 살아남을 수 있을지는 앞으로 명확해질 것이다。
+;---- EDIT 048 ADD END ---------------------------
+
+EXP:MASTER:펠라경험 = EXP:MASTER:펠라경험 * 2
+EXP:MASTER:Ａ경험 = EXP:MASTER:Ａ경험 * 2
+EXP:MASTER:이상경험 += 2
+MARK:MASTER:굴복각인 = 3
+IF ABL:MASTER:기교 < 10
+	ABL:MASTER:기교 += 1
+ENDIF
+IF ABL:MASTER:욕망 < 10
+	ABL:MASTER:욕망 += 1
+ENDIF
+IF ABL:MASTER:마조끼 < 10
+	ABL:MASTER:마조끼 += 1
+ENDIF
+IF TALENT:MASTER:남자 == 0
+	EXP:MASTER:Ｖ경험 = EXP:MASTER:Ｖ경험 * 2
+ENDIF
+EXP:MASTER:성교경험 = EXP:MASTER:Ｖ경험 + EXP:MASTER:Ａ경험
+RETURN 1
+
+;========================================================================
+;たけし
+;========================================================================
+@SET_MASTER_TAKESI
+#DIM LCOUNT, 2
+#DIMS SHOW_LINE
+#DIM TEMP
+#DIMS TEMPS
+BASE:MASTER:힘 = 1
+BASE:MASTER:지혜 = 1
+BASE:MASTER:마력 = 1
+BASE:MASTER:내구 = 1
+BASE:MASTER:속도 = 1
+BASE:MASTER:운 = 1
+ABL:MASTER:종족 = 10
+CSTR:MASTER:종족명 = 愚者
+BASE:MASTER:검격 = 500
+BASE:MASTER:비구 = 500
+BASE:MASTER:타격 = 500
+BASE:MASTER:전술 = 500
+BASE:MASTER:화염 = 500
+BASE:MASTER:빙결 = 500
+BASE:MASTER:전격 = 500
+BASE:MASTER:충격 = 500
+BASE:MASTER:신경 = 500
+BASE:MASTER:정신 = 500
+BASE:MASTER:파마 = 500
+BASE:MASTER:주살 = 500
+BASE:MASTER:지변 = 500
+BASE:MASTER:수격 = 500
+BASE:MASTER:질풍 = 500
+BASE:MASTER:중력 = 500
+BASE:MASTER:핵열 = 500
+BASE:MASTER:만능 = 500
+BASE:MASTER:사이코 = 500
+CSTR:MASTER:30 = 그저 평범한 사람일 뿐이지만 팬텀・소사이어티에 소속된 수수께끼가 많은《광대愚者》。
+CFLAG:MASTER:당신의전공분야 = 9
+CFLAG:MASTER:소속ＣＯＭＰ = -1
+CFLAG:MASTER:합체소재사용금지 = 1
+
+;ステータス同期
+CALL SYNC_STATUS, MASTER
+CALL ROLE_EXPLAIN_BASE, MASTER
+CALL ROLE_EXPLAIN_ABILITY, MASTER
+DRAWLINE
+PRINTL □스킬
+DRAWLINE
+;初期スキル
+SHOW_LINE = 　
+	PRINTL 　없음
+DRAWLINE
+PRINTL □방어상성
+DRAWLINE
+FOR LCOUNT, 0, TYPENUM / 6 + (TYPENUM % 6 > 0); (80 - 2 / 6) = 13
+	SHOW_LINE = 　
+	FOR LCOUNT:1, 0, 6
+		IF LCOUNT * 6 + LCOUNT:1 < TYPENUM
+			SHOW_LINE += GET_TYPE(LCOUNT * 6 + LCOUNT:1) + ":";6
+			TEMP =  BASE:MASTER:GET_TYPE(LCOUNT * 6 + LCOUNT:1)
+			SELECTCASE CHECK_WEAKNESS(TEMP)
+				CASE 1
+					TEMPS = %TOSTR_HTML(COLOR("aqua"))%
+				CASE 0
+					TEMPS = %TOSTR_HTML(COLOR("デフォルト"))%
+				CASEELSE
+					TEMPS = %TOSTR_HTML(COLOR("red"))%
+			ENDSELECT
+			SHOW_LINE += @"<font color = '%TEMPS%'>" + @"{TEMP,4}\%" + "</font>";5
+			SHOW_LINE += " 　"
+		ENDIF
+	NEXT
+	HTML_PRINT SHOW_LINE
+NEXT
+DRAWLINE
+PRINTFORML 　[0] 결정　　　　[9] 돌아간다
+CALL INPUTINT(0, 9)
+SELECTCASE RESULT
+	CASE 0
+		RETURN 1
+	CASE 9
+		RETURN 0
+ENDSELECT
+
+;========================================================================
+;主人の専攻分野リセット
+;マスターの血統のようにあとから参照したい場合は予め作っておいたコピーキャラから取る
+;========================================================================
+@SET_MASTER_MAJORING_RESET
+#DIM CSV_あなた = 4999
+#DIM LCOUNT
+;戦闘素質をクリア
+CALL CLEAR_ROLE_TALENT, MASTER
+CSTR:MASTER:잠재전투소질 '= ""
+;---- EDIT 052 ADD START -------------------------
+CALL SET_ROLE, MASTER
+CALL CLEAR_LEARNED_SKILL_ALL, MASTER
+;---- EDIT 052 ADD END ---------------------------
+CFLAG:MASTER:당신의전공분야1 = 0
+CFLAG:MASTER:당신의전공분야2 = 0
+
+;継承タイプを消去(剣撃からサイコまで)
+FOR LOCAL, 320, 342
+	TALENT:MASTER:LOCAL = 0
+NEXT
+
+;種族・耐性を元に戻す(種族と剣撃からサイコまでの耐性)
+ABL:MASTER:종족 = 0
+CSTR:MASTER:종족명 = 인간 
+FOR LOCAL, 40, 59
+	BASE:MASTER:LOCAL = CSVBASE(CSV_あなた, LOCAL)
+NEXT
+CALL RESET_MAG_ENHANCE_DEFTYPE, MASTER
+
+;レベルと能力値も戻す(異能者とか選んでやめたときのために)
+FOR LOCAL, 30, 37
+	BASE:MASTER:LOCAL = CSVBASE(CSV_あなた, LOCAL)
+NEXT
+
+;ペルソナはがし
+FOR LOCAL, 1, 3
+	LOCALS = 소지페르소나{LOCAL}
+	SIF EQUIP:MASTER:LOCALS
+		CALL PERSONA_UNEQUIPMENT(MASTER, EQUIP:MASTER:LOCALS)
+NEXT
+;스킬
+FOR LCOUNT,60,67,1
+	ABL:MASTER:LCOUNT = 0
+NEXT
+
+;---- EDIT 054 ADD START -------------------------
+CFLAG:MASTER:소속ＣＯＭＰ = 0
+;---- EDIT 054 ADD END ---------------------------
+
+;---- EDIT 048 ADD START -------------------------
+CSTR:MASTER:롤설명1 = 
+CSTR:MASTER:롤설명2 = 
+;---- EDIT 048 ADD END ---------------------------
+
+;습득스킬
+FOR LCOUNT,101,140,1
+	ABL:MASTER:LCOUNT = 0
+NEXT
+;香使用回数をリセット
+FOR LCOUNT,1,7
+	CFLAG:MASTER:("향사용횟수_" + GET_BASESTATUS(LCOUNT)) = 0
+NEXT
+
+;---- EDIT 056 ADD START -------------------------
+;スキルエミュレータ
+FOR LCOUNT, 0 , 5
+	EQUIP_SKILL_EMULATOR:MASTER:LCOUNT = 0
+NEXT
+;同期
+CALL SET_LEADER_SKILL
+
+;---- EDIT 056 ADD END ---------------------------
+;========================================================================
+;高難度専攻分野用の再確認
+;========================================================================
+@SET_MASTER_RECHECK
+PRINTW 엄청나게 흉악한 난이도의 기운이 느껴진다……。
+PRINTL 이대로 시작하시겠습니까？
+CALL INPUT_YN,"Yes","No"
+SIF RESULT == 1
+	RETURN 1
+
+PRINTL 정말로、이대로 시작하시겠습니까？
+CALL INPUT_YN,"Yes","No"
+SIF RESULT == 1
+	RETURN 1
+
+;SIF CFLAG:MASTER:당신의전공분야 == 4
+;	CALL SET_MASTER_TOURIST
+;RETURN 0
+
+;--------------------------------------------
+;2クラス複合型キャラメイクによるスキルのセット関数
+;スキル関連の内容を配列にいれて送って使う
+;ARG = セットするキャラクター
+;SKILL		初期スキル
+;LEARN		습득스킬
+;LEARN_LV	習得レベル
+;--------------------------------------------
+@SET_MASTER_SKILL, ARG, ARGS = "通常形態", ARGS:1, ARG:1, ARGS:2, ARG:2
+#DIM LCOUNT, 2
+#DIM BLANK_NUM,2
+#DIMS L_SKILLS
+#DIM TEMP, 2
+#DIM TEMP_SKILL
+#DIM TEMP_LV
+#DIM L_SKILL, 30
+#DIM L_LEARN, HAVEABLE_SKILLNUM
+#DIM L_LEARN_LV, HAVEABLE_SKILLNUM
+#DIM SKILL_0, HAVEABLE_SKILLNUM
+#DIM LEARN_0, HAVEABLE_SKILLNUM
+#DIM LEARN_LV_0, HAVEABLE_SKILLNUM
+#DIM SKILL_1, HAVEABLE_SKILLNUM
+#DIM LEARN_1, HAVEABLE_SKILLNUM
+#DIM LEARN_LV_1, HAVEABLE_SKILLNUM
+VARSET L_SKILL
+VARSET L_LEARN
+VARSET L_LEARN_LV
+VARSET SKILL_0
+VARSET LEARN_0
+VARSET LEARN_LV_0
+VARSET SKILL_1
+VARSET LEARN_1
+VARSET LEARN_LV_1
+CALL CLEAR_LEARNED_SKILL_ALL, ARG
+FOR LCOUNT, 0, 2
+	IF !LCOUNT
+		TRYCALLFORM SET_VAR_%ARGS:(LCOUNT+1)%_SKILL, ARG:1,SKILL_0,LEARN_0,LEARN_LV_0
+	ELSE
+		TRYCALLFORM SET_VAR_%ARGS:(LCOUNT+1)%_SKILL, ARG:2,SKILL_1,LEARN_1,LEARN_LV_1
+	ENDIF
+NEXT
+FOR LCOUNT:1, 0 , 2
+	FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+		IF ARGS == "変身形態"
+			BLANK_NUM = FINDELEMENT(ABL:ARG:0, 0, GETNUM(ABL, "초기변신악마스킬1"), GETNUM(ABL, @"초기변신악마스킬{CHARA_SKILLCOUNT(ARG)}"))
+		ELSE
+			BLANK_NUM = FINDELEMENT(ABL:ARG:0, 0, GETNUM(ABL, "스킬1"), GETNUM(ABL, @"스킬{CHARA_SKILLCOUNT(ARG)}"))
+		ENDIF
+		SIF BLANK_NUM < 0
+			BREAK
+		;重複チェック
+		TEMP_SKILL = LCOUNT:1 ? SKILL_1:LCOUNT # SKILL_0:LCOUNT
+		SIF FINDELEMENT(ABL:ARG:0, TEMP_SKILL, GETNUM(ABL, "스킬1"), GETNUM(ABL, @"스킬{CHARA_SKILLCOUNT(ARG)}")) >= 0
+			CONTINUE
+		ABL:ARG:BLANK_NUM = TEMP_SKILL
+	NEXT
+	;この関数に来る前に設定されているスキル、というかサバトマがあるのでスキルが確定したあとで入れる
+	;---- EDIT 055 ADD START -------------------------
+	;自力習得スキルとして初期スキルを登録
+	FOR LCOUNT, 1, HAVEABLE_SKILLNUM + 1
+		IF ARGS == "変身形態"
+			TEMP_SKILL = ABL:ARG:@"초기변신악마스킬{LCOUNT}"
+		ELSE
+			TEMP_SKILL = ABL:ARG:@"스킬{LCOUNT}"
+		ENDIF
+		SIF TEMP_SKILL
+			CALL SET_LEARNED_SKILL, ARG, TOSTR(TEMP_SKILL), ARGS
+	NEXT
+	;---- EDIT 055 ADD END ---------------------------
+NEXT
+TEMP = 10000 * 10000
+VARSET L_LEARN, TEMP
+VARSET L_LEARN_LV, TEMP
+FOR LCOUNT:1, 0, 2
+	FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+		TEMP:1 = FINDELEMENT(L_LEARN, TEMP)
+		SIF TEMP == -1
+			BREAK
+		TEMP_SKILL = LCOUNT:1 ? LEARN_1:LCOUNT # LEARN_0:LCOUNT
+		TEMP_LV = LCOUNT:1 ? LEARN_LV_1:LCOUNT # LEARN_LV_0:LCOUNT
+	
+		;所持スキルとの重複チェック
+		SIF FINDELEMENT(ABL:ARG:0, TEMP_SKILL, GETNUM(ABL, "스킬1"), GETNUM(ABL, @"스킬{CHARA_SKILLCOUNT(ARG)}")) >= 0
+			CONTINUE
+		
+		;習得スキルの重複チェック
+		IF MATCH(L_LEARN, TEMP_SKILL)
+			L_LEARN_LV:FINDELEMENT(L_LEARN, TEMP_SKILL) = MIN(TEMP_LV, L_LEARN_LV:FINDELEMENT(L_LEARN, TEMP_SKILL))
+		ELSE
+			L_LEARN:(TEMP:1) = TEMP_SKILL
+			L_LEARN_LV:(TEMP:1) = TEMP_LV
+			;---- EDIT 055 DEL START -------------------------
+			;自力習得スキルとして登録
+			;CALL SET_LEARNED_SKILL, ARG, TOSTR(TEMP_SKILL)
+			;---- EDIT 055 DEL END ---------------------------
+		ENDIF
+	NEXT
+NEXT
+ARRAYMSORT L_LEARN_LV, L_LEARN
+IF ARGS == "変身形態"
+	L_SKILLS = 초기변신악마습득
+ELSE
+	L_SKILLS = 습득
+ENDIF
+FOR LCOUNT, 0, 20
+	ABL:ARG:@"%L_SKILLS%스킬{LCOUNT+1}" = L_LEARN:LCOUNT % 10000
+	ABL:ARG:@"%L_SKILLS%LV{LCOUNT+1}" = L_LEARN_LV:LCOUNT % 10000
+NEXT
+;習得レベルをずらす
+FOR LCOUNT, 1, 20
+	SIF ABL:ARG:@"%L_SKILLS%LV{LCOUNT+1}" == 0
+		CONTINUE
+	SIF ABL:ARG:@"%L_SKILLS%LV{LCOUNT}" != ABL:ARG:@"%L_SKILLS%LV{LCOUNT+1}"
+		CONTINUE
+	ABL:ARG:@"%L_SKILLS%LV{LCOUNT+1}" += 2
+NEXT
+
+;========================================================================
+;主人の耐性セット関数(반마인/悪魔人用)
+;========================================================================
+@SET_MASTER_DEF_TYPE
+#DIM LCOUNT, 2
+#DIM L_LINE
+#DIM TEMP
+#DIMS TEMPS
+#DIMS SHOW_LINE
+#DIMS L_COLOR
+#DIM L_TYPE, TYPENUM + 1;設定中の相性値
+#DIM CONST TYPE_VALUE = 150, 100, 75, 50, 0, -50, 999
+#DIMS CONST TYPE_VALUES = "약점", "보통", "약내성", "강내성", "무효", "흡수", "반사"
+#DIM COUNT_WEAK;弱点数
+#DIM COUNT_BLOCK;無効以上の数
+#DIM TYPE_STRENGTH;耐性の総合評価値
+#DIM CONST TYPE_STRENGTH_VALUE = -3, 0, 1, 2, 3, 4, 4
+#DIM CLEAR_RULE, 3
+
+VARSET L_TYPE, 100
+
+L_LINE = LINECOUNT
+WHILE 1
+	CLEARLINE LINECOUNT - L_LINE
+	VARSET COUNT_WEAK
+	VARSET COUNT_BLOCK
+	VARSET TYPE_STRENGTH
+	;------------------------------------------
+	;耐性の査定
+	;------------------------------------------
+	FOR LCOUNT, 0, TYPENUM - 1
+		TYPE_STRENGTH +=  TYPE_STRENGTH_VALUE:FINDELEMENT(TYPE_VALUE, L_TYPE:LCOUNT)
+		SELECTCASE TYPE_VALUES:FINDELEMENT(TYPE_VALUE, L_TYPE:LCOUNT)
+			CASE "약점"
+				COUNT_WEAK++
+			CASE "무효", "반사", "흡수"
+				COUNT_BLOCK++
+		ENDSELECT
+	NEXT
+	;条件1~3を満たしているかを取得
+	CLEAR_RULE:0 = TYPE_STRENGTH <= 5
+	CLEAR_RULE:1 = COUNT_WEAK >= 3
+	CLEAR_RULE:2 = COUNT_BLOCK <= (COUNT_WEAK * 2 / 3)
+	DRAWLINE
+	PRINTFORML 방어상성을 설정해주세요。
+	PRINTFORML 규칙①…상성의 이하 코스트 합계가 ５이하　일 것
+	PRINTFORML 　약점(-3P)、가벼운내성(1P)、내성(2P)、무효(3P)、반사(4P)、흡수(4P)
+	PRINTFORML 규칙②…약점의 수가 ３개 이상　일 것
+	PRINTFORML 규칙③…무효・반사・흡수는 약점 수의 ２／３까지　일 것
+	PRINTFORML 규칙④…만능 100％ 고정
+	DRAWLINE
+	CALL PRINT_COLOR, @"①상성코스트　：{TYPE_STRENGTH,3} (최대５까지)　　　　　　 …" + \@ CLEAR_RULE:0 ? ＯＫ # ＮＧ\@, CLEAR_RULE:0 ? GETDEFCOLOR() # COLOR("red"), "L"
+	CALL PRINT_COLOR, @"②약점수　　　：{COUNT_WEAK,3} (최저３개이상)　　　　　 …" + \@ CLEAR_RULE:1 ? ＯＫ # ＮＧ\@, CLEAR_RULE:1 ? GETDEFCOLOR() # COLOR("red"), "L"
+	CALL PRINT_COLOR, @"③무효내성수　：{COUNT_BLOCK,3}（지금의약점수는{COUNT_WEAK * 2 / 3}개까지） …" + \@ CLEAR_RULE:0 ? ＯＫ # ＮＧ\@, CLEAR_RULE:2 ? GETDEFCOLOR() # COLOR("red"), "L"
+
+	SETCOLOR BGCOLOR("LIGHT-BLACK")
+	PRINTFORM %UNICODE(0x000D) * 2%
+	FOR LCOUNT, 0, (TYPENUM - 1)
+		PRINTFORM %UNICODE(0x000D)%
+		SIF LCOUNT % 2 == 0
+			PRINTFORM %UNICODE(0x2588) * LINELENS()%
+	NEXT
+	PRINTL 
+	RESETCOLOR
+	DRAWLINE
+	PRINTFORM 相性 　　　　　　\@IS_MOUSEUI ?  # 　\@
+	FOR LCOUNT, 0, VARSIZE("TYPE_VALUE")
+		IF IS_MOUSEUI
+			PRINTFORM 　{TYPE_STRENGTH_VALUE:LCOUNT, 2}pt　　
+		ELSE
+			PRINTFORM 　　{TYPE_STRENGTH_VALUE:LCOUNT, 2}pt　　　
+		ENDIF
+	NEXT
+	PRINTL 
+	FOR LCOUNT, 0, TYPENUM - 1
+		SHOW_LINE = %GET_TYPE(LCOUNT) + " "%
+		L_COLOR = %TOSTR_HTML(COLOR(GET_WEAKNESS(L_TYPE:LCOUNT) + "컬러"))%
+		SHOW_LINE += @"<font color = '%L_COLOR%'>" + \@L_TYPE:LCOUNT < 0 ?吸#　\@ + \@L_TYPE:LCOUNT == 999 ? %" 반사"% # {ABS(L_TYPE:LCOUNT), 4}\%\@ + "</font>"
+		SHOW_LINE += "　　　"
+		FOR LCOUNT:1, 0, VARSIZE("TYPE_VALUE")
+			IF IS_MOUSEUI
+				TEMPS = %"[" + TYPE_VALUES:(LCOUNT:1) + "]", 8, LEFT%
+			ELSE
+				TEMPS = [{LCOUNT * 10 + LCOUNT:1, 3}] %TYPE_VALUES:(LCOUNT:1), 6, LEFT%
+			ENDIF
+			TEMPS = <button value = '{LCOUNT * 10 + LCOUNT:1}' title = '%GET_TYPE(LCOUNT)%'>%TEMPS%</button>
+			SIF L_TYPE:LCOUNT == TYPE_VALUE:(LCOUNT:1)
+				TEMPS = <font color = '%TOSTR_HTML(COLOR("aqua"))%'>%TEMPS%</font>
+			SHOW_LINE += TEMPS + "　"
+		NEXT
+		HTML_PRINT SHOW_LINE
+	NEXT
+	DRAWLINE
+	PRINTL □힌트
+	PRINTL 　게임 초기에는 주인공이 사망하면 게임오버가 되므로、
+	PRINTL 　익숙해지기 전까지는 즉사공격이 존재하는 주살과 파마는 무효 이상이 안정적입니다。
+	PRINTL 
+	PRINTL 　약점은 단순히 데미지가 증가할 뿐만 아니라、적의 추가행동을 유발합니다。
+	PRINTL 　따라서、리스크가 매우 크기 때문에、내성이 많은 것보다 약점이 적은 적은 편이 안정도가 높습니다。
+	PRINTL 
+	PRINTL 　신경・정신에 의한 상태이상은 일격에 행동불능이 되지만、데미지가 증가할 기회가 적고、
+	PRINTL 　게다가 추가공격도 발생하기 어려워 파티단위로 데미지가 줄어듭니다。
+	PRINTL 　따라서、주인공에게 맡기고 싶은 역할에 따라서는 약점으로 설정하기 쉬운 상성이 됩니다。
+	PRINTL 
+	PRINTL 　추천설정은 기본적으로 약간의 랜덤요소가 있습니다。
+	DRAWLINE
+	TEMPS = <font color = '%TOSTR_HTML(!MINARRAY(CLEAR_RULE) ? COLOR("DARK-GRAY") # GETDEFCOLOR())%'><button value = '200'>[200] 세트완료</button></font>　　　
+	TEMPS += "<button value = '201'>" + "[201] 돌아간다" + "</button>" + "　　　　　　"
+	TEMPS += "<button value = '202'>" + "[202] 리셋" + "</button>" + "　　　　"
+	TEMPS += "<button value = '203'>" + "[203] UI변경" + "</button>" + "　　　　　　"
+	TEMPS += "<button value = '204'>" + "[204] 추천설정" + "</button>" + "　　　　　　"
+	HTML_PRINT TEMPS
+	INPUT
+	SELECTCASE RESULT
+		CASE 200
+			SIF !CLEAR_RULE:0
+				CONTINUE
+			SIF !CLEAR_RULE:1
+				CONTINUE
+			SIF !CLEAR_RULE:2
+				CONTINUE
+			FOR LCOUNT, 0, TYPENUM
+				BASE:MASTER:GET_TYPE(LCOUNT) = L_TYPE:LCOUNT
+			NEXT
+			RETURN 1
+		CASE 201
+			RETURN 0
+		CASE 202
+			VARSET L_TYPE, 100
+		CASE 203
+			IS_MOUSEUI = !IS_MOUSEUI
+		CASE 204
+			VARSET L_TYPE, 100
+			L_TYPE:GET_TYPE_NUM("파마") = 0
+			L_TYPE:GET_TYPE_NUM("주살") = 0
+			IF RAND:2
+				L_TYPE:GET_TYPE_NUM("검격") = 50
+				L_TYPE:GET_TYPE_NUM("비구") = 50
+				L_TYPE:GET_TYPE_NUM("타격") = 50
+				L_TYPE:GET_TYPE_NUM("전술") = 50
+			ELSE
+				L_TYPE:GET_TYPE_NUM("검격") = 75
+				L_TYPE:GET_TYPE_NUM("비구") = 75
+				L_TYPE:GET_TYPE_NUM("타격") = 75
+				L_TYPE:GET_TYPE_NUM("전술") = 75
+				L_TYPE:GET_TYPE_NUM("빙결") = 50
+				L_TYPE:GET_TYPE_NUM("전격") = 50
+			ENDIF
+			L_TYPE:GET_TYPE_NUM("지변") = 150
+			L_TYPE:GET_TYPE_NUM("중력") = 150
+			L_TYPE:GET_TYPE_NUM("핵열") = 150
+			FOR LCOUNT, 0, 5
+				SWAP L_TYPE:GET_TYPE_NUM(RAND_SPLIT("질풍/지변/수격/중력/핵열", "/")), L_TYPE:GET_TYPE_NUM(RAND_SPLIT("질풍/지변/수격/중력/핵열", "/"))
+			NEXT
+		CASEELSE
+			;2,3桁目がタイプ番号になってるかどうかを確認
+			SIF !INRANGE(RESULT / 10, 0, TYPENUM - 1)
+				CONTINUE
+			;1桁目がタイプ値の設定範囲内か確認
+			SIF !INRANGE(RESULT % 10, 0, VARSIZE("TYPE_VALUE"))
+				CONTINUE
+			;現在の状態をボタンをクリックした場合はリセット
+			IF L_TYPE:(RESULT / 10) == TYPE_VALUE:(RESULT % 10)
+				L_TYPE:(RESULT / 10) = 100
+			ELSE
+				L_TYPE:(RESULT / 10) = TYPE_VALUE:(RESULT % 10)
+			ENDIF
+	ENDSELECT
+WEND

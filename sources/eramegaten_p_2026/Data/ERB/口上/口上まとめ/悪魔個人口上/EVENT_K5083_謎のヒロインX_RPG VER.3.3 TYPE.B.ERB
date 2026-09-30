@@ -1,0 +1,641 @@
+﻿;-------------------------------------------------
+;謎のヒロインX口上
+;現状は戦闘口上だけ
+;調教口上誰か作ってくれないかなーﾁﾗｯﾁﾗｯと浅い期待をしながら調教口上を作る準備だけはしておく
+;-------------------------------------------------
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_K[[キャラ:수수께끼의히로인X]]_ASSI.ERB
+;	Facility	:会話タイプ：助手時口上
+;
+;	Modification Data:
+;	Edit	Date			Author					Reason
+;	001		2021/05/17		しゃけ					新規作成　戦闘口上のみ
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;ライセンスについて
+;	・基本項目(許可する項目を"○"に、許可しない項目を"×"に変更してください。)
+;	+----+----+-------------------------------+
+;	|番号|許可|ライセンス内容                 |
+;	+----+----+-------------------------------+
+;	|   1| ○ | 処理上のバグ修正              |
+;	+----+----+-------------------------------+
+;	|   2| ○ | 口上の誤字・脱字の修正        |
+;	+----+----+-------------------------------+
+;	|   3| ○ | 口上まとめへの収録            |
+;	+----+----+-------------------------------+
+;	|   4| ○ | 口上の新規追加                |
+;	+----+----+-------------------------------+
+;	|   5| ○ | 既存口上の改変                |
+;	+----+----+-------------------------------+
+;	|   6| ▲ | 改変した口上の自由な再配布    |
+;	+----+----+-------------------------------+
+;	|   7| X | 口上内容の転載                |
+;	+----+----+-------------------------------+
+
+@KOJO_BATTLE_EVENT_K[[キャラ:수수께끼의히로인X]], ARG, ARG:1, ARG:2
+;■台詞の行数を増やしたいときは
+;			LOCALS:10 = 一行目
+;			LOCALS:11 = 二行目
+;			LOCALS:12 = 三行目
+;			LOCALS:13 = 四行目
+;			LOCALS:14 = 五行目
+;と増やしていく
+SIF ARG < 0 && NO:ARG != 5083
+	RETURN 0
+VARSET LOCALS
+VARSET KSTR
+
+SELECTCASE TFLAG:전투이벤트
+	;COOP発動 ARGは発動者
+	CASE 1
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 崩しました！ 後詰めお願いしますね！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = アタック、チャーンス！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ボッコボコにしてやりますよ、ええ！
+		ENDSELECT
+	;COOP参加
+	CASE 2
+		;主人がCOOP発動
+		IF FLAG:행동순1 != -1 && FLAG:행동순1 == MASTER
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = マスターさんの次は私です！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 追撃ーッ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 後ろから正々堂々不意打ち！
+			ENDSELECT
+		;それ以外
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					IF FLAG:행동순1 != -1
+						IF NO:(FLAG:행동순1) == [[キャラ:앙리마유]]
+							BTL_KOJO_RESULTS:0 = えっちゃん、後ろは任せてください！
+						ELSEIF NO:(FLAG:행동순1) == [[キャラ:빨강세이버]]
+							BTL_KOJO_RESULTS:0 = ネロさんの後に続くのは癪ですが……！！
+						ELSEIF NO:(FLAG:행동순1) == [[キャラ:파랑세이버]]
+							BTL_KOJO_RESULTS:0 = わたｺﾞﾎﾝ……セイバーの次はまたセイバー、です！！
+						ELSE
+							BTL_KOJO_RESULTS:0 = %CALLNAME:(FLAG:행동순1)%さんに続きますよ！
+						ENDIF
+					ELSE
+						IF RAND:2
+							BTL_KOJO_RESULTS:0 = リンチの時間です！
+						ELSE
+							BTL_KOJO_RESULTS:0 = 横殴りですよ、横殴り！
+						ENDIF
+					ENDIF
+				CASE 1
+					BTL_KOJO_RESULTS:0 = リンチの時間です！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 横殴りですよ、横殴り！
+			ENDSELECT
+		ENDIF
+	;被召喚時
+	CASE 3
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = よし、出番ですね！
+			CASE 1
+				BTL_KOJO_RESULTS:0 =　業務的に処理します！ うぬの運命を呪うがいい！
+		ENDSELECT
+	;공격　ARGが攻撃をする仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 11
+		;相手が死んだ
+		IF BASE:(ARG:1):ＨＰ <= 0
+			SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = よし、次です、次！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 成敗！！
+			ENDSELECT
+		;弱点をついた。つまりCOOP
+		ELSEIF GET_CREC_ACT(ARG, ARG:1, "WEAK")
+			IF CFLAG:(ARG:1):방어플래그
+				BTL_KOJO_RESULTS:0 = むむっ、崩せなかったとは……！
+			ELSE
+				;こっちはCOOP発動に回すためにカット
+				RETURN 0
+			ENDIF
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 50
+			BTL_KOJO_RESULTS:0 = さぁ、大人しく滅べ！
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 25
+			BTL_KOJO_RESULTS:0 = これぐらいは小手調べの範囲です、決して手を抜いたわけじゃないんですよ？
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 0
+			BTL_KOJO_RESULTS:0 = ぬぉぁー！ か、硬い……！！
+		;無効された
+		ELSEIF ダメージ割合(ARG:1, ARG:2) <= 0
+			BTL_KOJO_RESULTS:0 = む、無効化されるとは……これインチキなんじゃないですか！？
+		ENDIF
+	;被ダメージ
+	;ARGが攻撃を受ける仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 12
+		;死んだ
+		IF BASE:ARG:ＨＰ <= 0
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = セイバーを絶滅させるまで、倒れる訳には……
+				CASE 1
+					BTL_KOJO_RESULTS:0 = セイバーを……倒す……ぐふっ
+			ENDSELECT
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 50 || 現HP割合(ARG) < 25
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = あいたっ！？
+				CASE 1
+					BTL_KOJO_RESULTS:0 = アウチッ！？
+			ENDSELECT
+		;無効
+		ELSEIF ARG:2 == 0
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = この程度、どうってことはありませんよーだ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = あ、私セイバーなのでその攻撃は通りません
+			ENDSELECT
+		;吸収
+		ELSEIF ARG:2 < 0
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 唸れ、コスモリアクター！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = いやぁ、相手の攻撃は強敵でしたね！
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = あいたっ
+			CASE 1
+				BTL_KOJO_RESULTS:0 = うひゃっ
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ぐぇっ
+			ENDSELECT
+		ENDIF
+	;ARGが攻撃をする仲魔、ARG:1が攻撃された敵数、ARG:2が無効数(回避も含む)
+	CASE 13
+		;全弾命中した
+		IF ARG:2 == 0
+			BTL_KOJO_RESULTS:0 = セイバーたるもの、全ヒットは余裕なんですよ！
+		;普通
+		ELSEIF ARG:2 < ARG:1
+			BTL_KOJO_RESULTS:0 = む、幾らか外しましたか
+		;全弾回避された
+		ELSEIF ARG:2 == ARG:1
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = あっ、あーっ！？
+			CASE 1
+				BTL_KOJO_RESULTS:0 = い、いや、これは単に小手調べとしてわかりやすい軌道の攻撃を出しただけですし？？？？
+				BTL_KOJO_RESULTS:1 = 別にぃ？ 全然悔しくありませんしぃ？？？？
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ちょーっ！？ 避けるなーっ！！
+			ENDSELECT
+		ENDIF
+	;範囲攻撃で敵を撃破した
+	;ARGが攻撃をする仲魔、ARG:1が攻撃された敵数、ARG:2が撃破数
+	CASE 14
+		;全員撃破
+		IF GET_CREC_ACT_SUM(ARG, "敵", "ATTACK") == ARG:2
+			LOCAL = RAND:3
+			SELECTCASE LOCAL
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 一掃完了！ いやーこういうのは気持ちいいですね！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 余裕でした！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = セイバー見てから殲滅余裕でした！
+			ENDSELECT
+		ELSE
+			BTL_KOJO_RESULTS:0 = ま、まぁまぁ、これぐらいは生き延びてもらえないと歯ごたえがありませんからね、うん！
+		ENDIF
+	;反射された
+	CASE 15
+		BTL_KOJO_RESULTS:0 = Oh……
+	;反射した
+	CASE 16
+		BTL_KOJO_RESULTS:0 = くぅらぇーい！ コゥスモォ、リィフレェクタゥアー！！
+		BTL_KOJO_RESULTS:1 = ……すいません、今のは忘れてください……！
+	;回避された
+	CASE 17
+		SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = あー、避けられちゃいましたよ？！
+		CASE 1
+			BTL_KOJO_RESULTS:0 = こらーっ、避けるなー！！
+		CASE 2
+			BTL_KOJO_RESULTS:0 = ぐぬぬぬっ……
+		ENDSELECT
+	;回避した
+	CASE 18
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = セイバー忍法、チェンジボディ＝ジツ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = ふっ、私のアホ毛は敵の攻撃を事前に察知できるんですよ！
+				BTL_KOJO_RESULTS:1 = ……いやまぁ、実際どうなのかはわかりませんが
+			CASE 2
+				BTL_KOJO_RESULTS:0 = セイバーを滅ぼす者がこの程度の攻撃に当たるわけないじゃないですかー！
+		ENDSELECT
+	;反撃スキル発動した
+	CASE 20
+			BTL_KOJO_RESULTS:0 = セイバー忍法、アベンジャンス＝ソード！
+	CASE 22
+		SELECTCASE GET_STATE(CFLAG:ARG:상태이상)
+			CASE "HAPPY"
+				BTL_KOJO_RESULTS:0 = こ、これが……幸せ……！？
+			CASE "SHOCK"
+				BTL_KOJO_RESULTS:0 = あばっばっばっ……！？
+			CASE "FREEZE"
+				BTL_KOJO_RESULTS:0 = ぶるぶる……さ、さむっ！！！？
+			CASE "BIND", "PALYZE"
+				BTL_KOJO_RESULTS:0 = あのー！？ すいませーん！？ ヘルプミー！？
+			CASE "PANIC"
+				BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%の貴重なカップ麺を……！！ ゆ”る”さ”ん”っ”！！
+			CASE "SLEEP"
+				BTL_KOJO_RESULTS:0 = ( ?ω?)ｽﾔｧ…
+			CASE "CLOSE"
+				BTL_KOJO_RESULTS:0 = あー！ 私の魔術がーっ！？
+			CASE "POISON"
+				BTL_KOJO_RESULTS:0 = おぇっぷ……びょ、病欠しまーす……
+			CASE "BOMB"
+				BTL_KOJO_RESULTS:0 = はっ、私の頭の中に爆弾が……！？
+			CASE "CHARM"
+				KSTR:(K++) = えっ……ニートになっていいんですか……！？_PH_
+			CASE "CURSE"
+				BTL_KOJO_RESULTS:0 = ぐわーっ、呪われた－！！
+				BTL_KOJO_RESULTS:1 = あの、すいません！？ ここはアヴァなんとかの効力で無効化できる場面だったのでは！？
+			CASE "FLY"
+				BTL_KOJO_RESULTS:0 = ﾌﾞｰﾝﾌﾞｰﾝﾌﾞｰﾝ
+				BTL_KOJO_RESULTS:1 = ぎゃーっ、なんで蠅になっているんですかー！？
+			CASE "STONE"
+				BTL_KOJO_RESULTS:0 = …………（無言のサムズアップ）
+			CASE "FLAME"
+				BTL_KOJO_RESULTS:0 = ガッデムホット！？
+			CASE "SLIP"
+				BTL_KOJO_RESULTS:0 = おぁーっ！？ い、いや、別に恥ずかしくありませんし！
+				BTL_KOJO_RESULTS:1 = 下がブルマだから別に見えてても問題ありませんし！？
+			CASE "BRAND"
+				BTL_KOJO_RESULTS:0 = 聖痕……！ これで私もセイバー殺しとしての箔が───
+				BTL_KOJO_RESULTS:1 = ───えっ、これそういう代物じゃないんですか？
+			;その他の状態異常
+			;CASEELSE
+		ENDSELECT
+	;食いしばり等で耐えた
+	CASE 23
+		BTL_KOJO_RESULTS:0 = うぐぉ……セイバーを滅ぼすまでは、倒れません……！
+	;バトルに勝利した
+	CASE 90
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = ふぅ……また一人、私以外のセイバーが消えました
+			CASE 1
+				BTL_KOJO_RESULTS:0 = セイバーに逢えばセイバーを斬る。
+				BTL_KOJO_RESULTS:1 = 神に逢えば神を斬る……主にセイバーばっかり増やす神を！
+		ENDSELECT
+	;レベルアップした
+	CASE 91
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 私がセイバーの頂点であるためには、鍛練を怠りません
+			CASE 1
+				BTL_KOJO_RESULTS:0 = …………レベルアップしたら胸とか成長しませんかね…？
+		ENDSELECT
+	;逃走に成功した
+	CASE 92
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = にぃげるんですよぉ！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = セイバー忍法、ニンジャ＝ダッシュ！！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = お前たちなど私の相手ではなーい！
+				BTL_KOJO_RESULTS:1 = という訳で、撤退です！
+		ENDSELECT
+	;逃走に失敗した
+	CASE 93
+			BTL_KOJO_RESULTS:0 = くっ、セイバー忍法を見破るとは、侮りがたし……！
+	;戦闘開始時
+	CASE 94
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			BTL_KOJO_RESULTS:0 = なんの……！ セイバーたるもの、これくらいの逆境は……！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 速攻で終わらせますよ！
+		ENDIF
+	;バックアタックを受けた
+	CASE 95
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			BTL_KOJO_RESULTS:0 = なんの……！ セイバーたるもの、これくらいの逆境は……！
+		ELSE
+			BTL_KOJO_RESULTS:0 = あーっ！？ 背後を取るとは、卑怯な奴めー！
+		ENDIF
+	;敵の先制攻撃を受けた
+	CASE 96
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			BTL_KOJO_RESULTS:0 = なんの……！ セイバーたるもの、これくらいの逆境は……！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 先手を取られた程度で負けるほど軟ではありません！	
+		ENDIF
+	;先制攻撃に成功
+	CASE 97
+			BTL_KOJO_RESULTS:0 = セイバーの先制攻撃です！
+	CASE 100
+		IF 0
+		;スキル分岐
+		;ELSEIF CFLAG:(FLAG:행동순1):입력행동 == [[스킬:○○]]
+		ELSE
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = いざ、合体攻撃です！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 合わせていきますよ！
+			ENDSELECT
+		ENDIF
+ENDSELECT
+;SIF !(LOCALS:10 == "")
+;	CALL MESSAGE_B2(CALLNAME:ARG,0, LOCALS:10, LOCALS:11, LOCALS:12, LOCALS:13, LOCALS:14)
+
+
+@KOJO_BATTLE_MESSAGE_K[[キャラ:수수께끼의히로인X]],ARG,ARG:1 = 0
+#DIM 宝具セリフ
+;■台詞の行数を増やしたいときは
+;			LOCALS:10 = 一行目
+;			LOCALS:11 = 二行目
+;			LOCALS:12 = 三行目
+;			LOCALS:13 = 四行目
+;			LOCALS:14 = 五行目
+;と増やしていく
+VARSET LOCALS
+;使用したスキルの名前をLOCALSに代入
+CALL GET_SKILL_PROP, "SKILL_NAME", CFLAG:ARG:입력행동, ARG
+LOCALS = %RESULTS%
+;FLAG:ARG:타겟
+
+;崩壊してる場合は口上表示しないようにもできる
+;SIF TALENT:ARG:9
+;	RETURN 0
+
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+;コメントアウトしやすいように
+IF 1 == 0
+;-------------------------------------------------
+;状態異常時
+;-------------------------------------------------
+;魅了時
+ELSEIF CFLAG:ARG:상태이상 == GET_STATE_NUM("CHARM")
+	;行動不能（ムラムラしている）
+	IF CFLAG:ARG:입력행동 == 2314
+		BTL_KOJO_RESULTS:0 = あー……セイバーもいなくて……エアコンが涼しいですね……
+	ELSE
+		BTL_KOJO_RESULTS:0 = ハッ、セイバー！！
+	ENDIF
+;混乱時
+ELSEIF CFLAG:ARG:상태이상 == GET_STATE_NUM("PANIC")
+	;금전뿌리기
+	IF CFLAG:ARG:입력행동 == 2315
+		BTL_KOJO_RESULTS:0 = マスターさんの財布の中身をゴールにシューッ！
+		BTL_KOJO_RESULTS:1 = 超、エキサイティング！
+	;行動不能（ぼんやりしている）
+	ELSEIF CFLAG:ARG:입력행동 == 2314
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = あぁ、せっかくありあわせのお金で買ったカップ麺なのに……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = うぅ、カップ麺……
+		ENDSELECT
+	ELSE
+		BTL_KOJO_RESULTS:0 = よくも%CSTR:ARG:일인칭%のカップ麺をっ！！
+	ENDIF
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;これは通常攻撃
+ELSEIF CFLAG:ARG:입력행동 == 0
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = はっ！
+		CASE 1
+			BTL_KOJO_RESULTS:0 = やっ！
+		CASE 2
+			BTL_KOJO_RESULTS:0 = せいっ！
+	ENDSELECT
+;ELSEIF CFLAG:ARG:입력행동 == (スキル番号)
+;	BTL_KOJO_RESULTS:0 = 
+;;섹시댄스
+;ELSEIF CFLAG:ARG:입력행동 == 1212
+;	BTL_KOJO_RESULTS:0 = 
+;;캔디보이스
+;ELSEIF CFLAG:ARG:입력행동 == 1213
+;	BTL_KOJO_RESULTS:0 = 
+;;파이널누드
+;ELSEIF CFLAG:ARG:입력행동 == 1214
+;	BTL_KOJO_RESULTS:0 = 
+;-------------------------------------------------
+;銃攻撃（特殊弾丸含む）
+;-------------------------------------------------
+;ELSEIF RANGE(CFLAG:ARG:입력행동,2101, 2200)
+;	;GUN
+;	IF CFLAG:ARG:입력행동 == 2101
+;		BTL_KOJO_RESULTS:0 = 
+;	;その他（特殊弾丸）
+;	ELSE
+;		BTL_KOJO_RESULTS:0 = 
+;	ENDIF
+;-------------------------------------------------
+;基本行動
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,2301, 2400)
+	;ＣＨＡＮＧＥ
+	IF CFLAG:ARG:입력행동 == 2301
+		BTL_KOJO_RESULTS:0 = 移動します！
+	ELSE
+		;BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;-------------------------------------------------
+;アイテム
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,3001, 3500)
+	;BTL_KOJO_RESULTS:0 = 
+;-------------------------------------------------
+;リンケージ
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,4000, 5000)
+	;;메시아라이저
+	;IF CFLAG:ARG:입력행동 == 4160
+	;	BTL_KOJO_RESULTS:0 = 
+	;;Lヒートライザ
+	;ELSEIF CFLAG:ARG:입력행동 == 4200
+	;	BTL_KOJO_RESULTS:0 = 
+	;;사망유희
+	;ELSEIF CFLAG:ARG:입력행동 == 4800
+	;	BTL_KOJO_RESULTS:0 = 
+	;ELSE
+	;	BTL_KOJO_RESULTS:0 = 
+	;ENDIF
+;-------------------------------------------------
+;汎用スキル
+;-------------------------------------------------
+;검격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1, 99)
+	IF CFLAG:ARG:입력행동 == [[스킬:어둠속의기습]]
+		BTL_KOJO_RESULTS:0 = いざっ、正々堂々不意打ち！
+	ELSE
+		BTL_KOJO_RESULTS:0 = 斬り捨てます！
+	ENDIF
+;비구
+;ELSEIF RANGE(CFLAG:ARG:입력행동,101, 199)
+;	BTL_KOJO_RESULTS:0 = 
+;타격
+;ELSEIF RANGE(CFLAG:ARG:입력행동,201, 299)
+;	BTL_KOJO_RESULTS:0 = 
+;전술
+;ELSEIF RANGE(CFLAG:ARG:입력행동,301, 400)
+;	;噛み付き系
+;	IF RANGE(CFLAG:ARG:입력행동,321, 326)
+;		BTL_KOJO_RESULTS:0 = 
+;	;その他
+;	ELSE
+;		BTL_KOJO_RESULTS:0 = 
+;	ENDIF
+;회복
+;ELSEIF RANGE(CFLAG:ARG:입력행동,401, 499)
+;	;全体回復
+;	IF CFLAG:ARG:타겟 > 6
+;		BTL_KOJO_RESULTS:0 = 
+;	ELSE
+;		BTL_KOJO_RESULTS:0 = 
+;	ENDIF
+;지원
+ELSEIF RANGE(CFLAG:ARG:입력행동,501, 599)
+	;強化系
+	;IF RANGE(CFLAG:ARG:입력행동,501, 505) || CFLAG:ARG:입력행동 == 558
+	;	BTL_KOJO_RESULTS:0 = 
+	;弱体系
+	;ELSEIF RANGE(CFLAG:ARG:입력행동,506, 509) || CFLAG:ARG:입력행동 == 541 || CFLAG:ARG:입력행동 == 556
+	;	BTL_KOJO_RESULTS:0 = 
+	;도발
+	;ELSEIF CFLAG:ARG:입력행동 == 515
+	;	BTL_KOJO_RESULTS:0 = 
+	;IF CFLAG:ARG:입력행동 == [[스킬:기합]]
+	;	BTL_KOJO_RESULTS:0 = 
+	;ELSEIF CFLAG:ARG:입력행동 == [[스킬:컨센트레이트]]
+	;	BTL_KOJO_RESULTS:0 = 
+	;その他
+	;ELSE
+	;	BTL_KOJO_RESULTS:0 = 
+	;ENDIF
+;방어
+;ELSEIF RANGE(CFLAG:ARG:입력행동,601, 699)
+;	BTL_KOJO_RESULTS:0 = 
+;화염
+;ELSEIF RANGE(CFLAG:ARG:입력행동,701, 799)
+;	BTL_KOJO_RESULTS:0 =
+;빙결
+;ELSEIF RANGE(CFLAG:ARG:입력행동,801, 899)
+;	BTL_KOJO_RESULTS:0 = 
+;전격
+;ELSEIF RANGE(CFLAG:ARG:입력행동,901, 999)
+	;BTL_KOJO_RESULTS:0 = 
+;충격
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1001, 1099)
+;	BTL_KOJO_RESULTS:0 = 
+;;신경
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1101, 1199)
+;	BTL_KOJO_RESULTS:0 = 
+;;정신
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1201, 1299)
+;	BTL_KOJO_RESULTS:0 = 
+;파마
+ELSEIF RANGE(CFLAG:ARG:입력행동,1301, 1399)
+	BTL_KOJO_RESULTS:0 = 喰らえっ、聖剣の光ー！
+;주살
+ELSEIF RANGE(CFLAG:ARG:입력행동,1401, 1499)
+	BTL_KOJO_RESULTS:0 = セイバーですので、闇の力を扱うぐらい余裕なんですよ！
+;;지변
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1501, 1599)
+;	BTL_KOJO_RESULTS:0 = 
+;;수격
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1601, 1699)
+;	BTL_KOJO_RESULTS:0 = 
+;;질풍
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1701, 1799)
+;	BTL_KOJO_RESULTS:0 = 
+;;중력
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1801, 1899)
+;	BTL_KOJO_RESULTS:0 = 
+;핵열
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1901, 1999)
+;	BTL_KOJO_RESULTS:0 =
+;만능
+ELSEIF RANGE(CFLAG:ARG:입력행동,2001, 2099)
+	;自爆系
+	IF RANGE(CFLAG:ARG:입력행동,2005, 2007)
+		;BTL_KOJO_RESULTS:0 = 
+	ELSE
+		;BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;魔法少女系
+ELSEIF RANGE(CFLAG:ARG:입력행동,2989, 2999)
+	;BTL_KOJO_RESULTS:0 = 
+;-------------------------------------------------
+;その他
+;-------------------------------------------------
+ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム")
+	BTL_KOJO_RESULTS:0 = コスモリアクター、オーバードライブ！
+	BTL_KOJO_RESULTS:1 = ここからは本気と書いてマジでいきます！
+ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG,"無銘勝利剣")
+	IF SKILLGAGE_H_GET(ARG,PU_SKILLNUM_GET(ARG,"無銘勝利剣")) == 0
+		宝具セリフ = RAND:2
+		SELECTCASE 宝具セリフ
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 星光の剣よ！ 赤とか白とか黒とか消し去るべし！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 　　　　　　　　　 ｾｲﾊﾞｰ
+				BTL_KOJO_RESULTS:1 = 今、光と闇が交わり 最 強 に見える！
+		ENDSELECT
+	ELSEIF SKILLGAGE_H_GET(ARG,PU_SKILLNUM_GET(ARG,"無銘勝利剣")) == 6
+		SELECTCASE 宝具セリフ
+			CASE 0
+				BTL_KOJO_RESULTS:0 = みんなにはナイショだよ！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = カタフラクティ・シフト！ 王道の力を知れ！
+		ENDSELECT
+	ELSEIF SKILLGAGE_H_GET(ARG,PU_SKILLNUM_GET(ARG,"無銘勝利剣")) == 11
+		BTL_KOJO_RESULTS:0 = 　ｴｯｸｽ・ｶﾘﾊﾞｰ
+		BTL_KOJO_RESULTS:1 = 『無銘勝利剣』─────ッ！！！！
+	ENDIF
+ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG,"支援砲撃")
+	BTL_KOJO_RESULTS:0 = いざ、尋常に支援砲撃！
+ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG,"直感")
+	BTL_KOJO_RESULTS:0 = むっ、見えた！
+ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG,"セイバーの星")
+	BTL_KOJO_RESULTS:0 = あ、ちょうどカップ麺が出来たころ合いでした！
+	BTL_KOJO_RESULTS:1 = ちょっと失礼して、いただきまーす！
+ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG,"銀河流星剣")
+	BTL_KOJO_RESULTS:0 = いくぞ、第二宝具！ 『銀河流星剣』！
+ENDIF
+;-------------------------------------------------
+;真・その他
+;-------------------------------------------------
+IF BTL_KOJO_RESULTS:0 == ""
+	;必ず何か喋る
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = はっ
+		CASE 1
+			BTL_KOJO_RESULTS:0 = すばやく！
+		CASE 2
+			BTL_KOJO_RESULTS:0 = セイバー！
+	ENDSELECT
+ENDIF
+
+SIF !(LOCALS:10 == "")
+	CALL MESSAGE_B2(CALLNAME:ARG,1, LOCALS:10, LOCALS:11, LOCALS:12, LOCALS:13, LOCALS:14)

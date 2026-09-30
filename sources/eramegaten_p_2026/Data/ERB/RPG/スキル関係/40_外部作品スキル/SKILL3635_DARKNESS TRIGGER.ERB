@@ -1,0 +1,380 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILL3635_DARKNESS TRIGGER.ERB
+;	Facility	:SKILL:3635 (DARKNESS TRIGGER)。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2021/03/15		木綿豆腐				新規作成
+;	002		2021/03/21		木綿豆腐				ゲージ周りの処理を変更。
+;	003		2021/03/30		木綿豆腐				ロックオン周りの処理を変更。
+;	004		2021/06/19		木綿豆腐				他の更新に合わせて文言をちょっとだけ修正。
+;	005		2021/07/10		木綿豆腐				ダークネストリガー中の文言をちょっと弄った
+;	006		2021/08/24		木綿豆腐				念のため継承できないようにした
+;	007		2022/05/12		木綿豆腐				イクス2ルートに対応
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_3635, ARG
+RESULTS = DARKNESS TRIGGER
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3635, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　威力
+@SKILL_POWER_3635, ARG
+RETURN 1000
+
+;　コストの量
+@SKILL_COST_3635, ARG
+IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "다크니스트리거Ｘ")
+	RETURN 70
+ELSE
+	RETURN 50
+ENDIF
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3635
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3635, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+@SKILL_HEAL_TYPE_3635, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("割合")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3635
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+@継承不能_3635
+RETURN 1
+;不可
+
+;スキル変化？用ランク
+@SKILL_RANK_3635, ARG = -1
+RETURN 23
+;変化不可
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3635, ARG, ARG:1, ARG:2
+CALL HEAL_SINGLE, ARG, ARG, 3635
+
+;クードス没収
+SIF SKILLGAGE_F_GET(ARG, [[스킬:블리츠대쉬]]) > 0
+	PRINTFORML ＞%CALLNAME:ARG%의 쿠도스가 리셋되었다!
+CALL SKILLGAGE_F_SET, ARG, [[스킬:블리츠대쉬]], 0
+;モード・ディーヴァ終了（ブリッツダッシュ側で終了させてもいいんだが）
+CALL SKILLGAGE_F_SET, ARG, [[스킬:SONG OF DIVA]], 0
+;====================================================
+;追加コマンド(一番下)
+;====================================================
+
+@INPUT_COM_NAME_3635,ARG
+RESULTS = ダークネストリガー
+RESULTS:1 = Ｄ-ＴＲＩＧＧＥＲ
+RETURN 2
+
+@INPUT_COM_ABLE_ダークネストリガー,ARG
+RESULTS = 効果発動中
+SIF SKILLGAGE_H_GET(ARG,3635)
+	RETURN -1
+CALL CHECK_COST,ARG,3635
+SIF !RESULT
+	RETURN -1
+RESULTS = 모드 어웨이크닝
+SIF HAVE_SKILL(ARG, [[스킬:SONG OF DIVA]]) && SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+	RETURN -1
+RETURN 1
+
+;====================================================
+;コマンド実行
+;====================================================
+@INPUT_COM_ダークネストリガー, ARG
+#LOCALSIZE 1
+#DIMS SKILL_USER
+IF SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+	PRINTW 모드 어웨이크닝 시에는 다크니스 트리거를 발동할 수 없습니다
+	RETURN -1
+ENDIF
+CALL GET_SKILL_COST, 3635, ARG
+PRINTFORML 다크니스 트리거를 사용하시겠습니까? (소비: {RESULT} MP)
+IF SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+	SETCOLOR 0x9933cd
+	PRINTL 【경고】 다크니스 트리거 발동 중에는 모드 디바의 기능이 무효화됩니다.
+	RESETCOLOR
+ENDIF
+CALL INPUT_YN
+IF RESULT == 0
+	LOCAL = CFLAG:ARG:입력행동
+	CFLAG:ARG:입력행동 = 3635
+	CALL PAY_COST, ARG, CFLAG:ARG:입력행동
+	SKILL_USER = ＲｏＲｏ
+	CALL PRINT_ACT_MESSAGE, ARG, 3625
+	CALL SKILLGAGE_H_SET, ARG, [[스킬:DARKNESS TRIGGER]], 1
+	PRINTFORML ＞동력 기관이 폭주한다! RoRo가 모드 다크니스로 변모했다!
+	CALL BATTLE_EVENT_ACT, ARG
+	CFLAG:ARG:입력행동 = LOCAL
+	SIF SKILLGAGE_F_GET(ARG, [[스킬:DARKNESS TRIGGER]]) == 0
+		CALL EXWEAPON_INITIALIZE, ARG
+ENDIF
+RETURN -1
+;====================================================
+;ターン終了時のロック判定
+;====================================================
+@TURNEND_DAMAGE_3635, ARG, ARG:1
+#DIM ROCK_D
+#DIM ROCK_H
+#LOCALSIZE 1
+ROCK_D = SKILLGAGE_D_GET(ARG, [[스킬:블리츠대쉬]])
+;1桁は被弾回数,2桁以上はターゲットを割り当てるようにした
+ROCK_H = SKILLGAGE_H_GET(ARG, [[스킬:블리츠대쉬]]) / 10
+IF BLITZ_TARGET_JUDG(ARG) == 1
+ELSE
+	;HPが最大HPの1/12以下なら1残るようにする
+	IF BASE:(ARG):ＨＰ < MAXBASE:(ARG):ＨＰ/12
+		LOCAL = BASE:(ARG):ＨＰ - 1
+		PRINTFORML DARKNESS TRIGGER %CALLNAME:(ARG)% >>>>> 비록온 상태로 인해 RoRo가 덮쳐든다! { LOCAL } 데미지
+		CALL VAR_HP, ARG, -LOCAL, "食いしばり無効ダメージ", ARG
+	ELSE
+		PRINTFORML DARKNESS TRIGGER %CALLNAME:(ARG)% >>>>> 비록온 상태로 인해 RoRo가 덮쳐든다! { MAX(MAXBASE:(ARG):ＨＰ/12,1) } 데미지
+		CALL VAR_HP, ARG, -MAX(MAXBASE:(ARG):ＨＰ/12, 1), "食いしばり無効ダメージ", ARG
+	ENDIF
+ENDIF
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@SKILLGAGE_DISPLAY_3635, ARG
+#DIM ROCK_D
+#DIM ROCK_H
+#DIM DKTG_H
+#DIM DKTG_F
+ROCK_D = SKILLGAGE_D_GET(ARG, [[스킬:블리츠대쉬]])
+;1桁は被弾回数,2桁以上はターゲットを割り当てるようにした
+ROCK_H = SKILLGAGE_H_GET(ARG, [[스킬:블리츠대쉬]]) / 10
+DKTG_H = SKILLGAGE_H_GET(ARG, [[스킬:DARKNESS TRIGGER]])
+DKTG_F = SKILLGAGE_F_GET(ARG, [[스킬:DARKNESS TRIGGER]])
+IF DKTG_H == 1
+	SETCOLOR 0x9933cd
+	PRINTL 모드 다크니스 발동 중
+	PRINT 선택 중 EX 웨폰: 
+	SELECTCASE DKTG_F
+	CASE 0
+		SETCOLOR 0xed1a72
+		PRINTL 스파크스텔라
+	CASE 1
+		SETCOLOR 0xebe7dc
+		PRINTL 앵커넥서스
+	CASE 2
+		SETCOLOR 0x07df94
+		PRINTL 오비탈에지
+	CASE 3
+		SETCOLOR 0xffb91e
+		PRINTL 루미너리마인
+	CASE 4
+		SETCOLOR 0xff6fe2
+		PRINTL 키스오브디바
+	CASE 5
+		SETCOLOR 0x21a6ff
+		PRINTL 드래프트스파이럴
+	CASE 6
+		SETCOLOR 0xffff3c
+		PRINTL 클로스랜서
+	CASE 7
+		SETCOLOR 0xfaf86d
+		PRINTL 스핀 쵸퍼
+	CASE 8
+		SETCOLOR 0xc374f1
+		PRINTL 메기도 버스트
+	CASE 9
+		SETCOLOR 0x52bad5
+		PRINTL 타임 프리저
+	CASE 10
+		SETCOLOR 0x94bb6a
+		PRINTL 개틀링 스콜
+	CASE 11
+		SETCOLOR 0xf54f4f
+		PRINTL 래피드 리퍼
+	CASE 12
+		SETCOLOR 0xa0acb8
+		PRINTL 옵틱 라운드
+	ENDSELECT
+	SETCOLOR 0x9933cd
+	IF DKTG_H == 1 && BLITZ_TARGET_JUDG(ARG) == 1
+		PRINTFORM 追撃対象：[POS.{CPOS(ROCK_H)}] %CALLNAME:(ROCK_H),20,LEFT%　
+		SELECTCASE DKTG_F
+		CASE 0
+			PRINTL 대상과 그 주위에 전격 상성으로 3회 소 데미지의 추격을 행한다. 감전 부여.
+		CASE 1
+			IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "다크니스트리거Ｘ")
+				PRINTL 타격 상성으로 3회 소 데미지의 추격을 행한다.
+			ELSE
+				PRINTL 타격 상성으로 중 데미지의 추격을 행한다.
+			ENDIF
+		CASE 2
+			PRINTL 검격 상성으로 대 데미지의 추격을 행한다.
+		CASE 3
+			PRINTL 핵열 상성으로 3회 중 데미지의 추격을 행한다.
+		CASE 4
+			PRINTL 정신 상성으로 대 데미지의 추격을 행한다. 행복 부여.
+		CASE 5
+			PRINTL 대상과 그 주위에 충격 상성으로 대 데미지의 추격을 행한다. 전도 부여.
+		CASE 6
+			IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "다크니스트리거Ｘ")
+				PRINTL 비구 상성으로 2회 소 데미지의 추격을 행한다. 긴박 부여.
+			ELSE
+				PRINTL 비구 상성으로 2회 극소 데미지의 추격을 행한다. 긴박 부여.
+			ENDIF
+		CASE 7
+			PRINTL 검격 상성으로 2회 소 데미지의 추격을 행한다.
+		CASE 8
+			PRINTL 화염 상성으로 대 데미지의 추격을 행한다. 연소 부여.
+		CASE 9
+			PRINTL 빙결 상성으로 중 데미지의 추격을 행한다. 동결 부여.
+		CASE 10
+			PRINTL 비구 상성으로 4~6회 소 데미지의 추격을 행한다.
+		CASE 11
+			PRINTL 검격 상성으로 4회 소 데미지의 추격을 행한다.
+		CASE 12
+			PRINTL 핵열과 비구의 복합상성으로 대 데미지의 추격을 행한다.
+		ENDSELECT
+	ELSE
+		PRINTL 추격 대상: 없음　【경고】 턴 종료 시 HP 12% 감소
+	ENDIF
+	RESETCOLOR
+ELSE
+	PRINT 선택 중 EX 웨폰: 
+	SELECTCASE DKTG_F
+	CASE 0
+		SETCOLOR 0xed1a72
+		PRINTL 스파크스텔라
+	CASE 1
+		SETCOLOR 0xebe7dc
+		PRINTL 앵커넥서스
+	CASE 2
+		SETCOLOR 0x07df94
+		PRINTL 오비탈에지
+	CASE 3
+		SETCOLOR 0xffb91e
+		PRINTL 루미너리마인
+	CASE 4
+		SETCOLOR 0xff6fe2
+		PRINTL 키스오브디바
+	CASE 5
+		SETCOLOR 0x21a6ff
+		PRINTL 드래프트스파이럴
+	CASE 6
+		SETCOLOR 0xffff3c
+		PRINTL 클로스랜서
+	CASE 7
+		SETCOLOR 0xfaf86d
+		PRINTL 스핀 쵸퍼
+	CASE 8
+		SETCOLOR 0xc374f1
+		PRINTL 메기도 버스트
+	CASE 9
+		SETCOLOR 0x52bad5
+		PRINTL 타임 프리저
+	CASE 10
+		SETCOLOR 0x94bb6a
+		PRINTL 개틀링 스콜
+	CASE 11
+		SETCOLOR 0xf54f4f
+		PRINTL 래피드 리퍼
+	CASE 12
+		SETCOLOR 0xa0acb8
+		PRINTL 옵틱 라운드
+	ENDSELECT
+	RESETCOLOR
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3635, ARG
+PRINTL 커맨드에서 사용.
+PRINTL 뇌격의 셉티마의 힘으로 RoRo를 폭주시체 스펙을 억지로 끌어올린다.
+;原作ではゲージ無限＝消費0なんだけど流石にそれはまずい
+PRINTL · 일부 스킬의 소비 MP가 경감된다
+PRINTL · 적을 록하고 있는 경우, GUARD, X-ROSS DISASTER를 제외한 행동 시 RoRo가 마지막으로 선택한 EX 웨폰으로 추격을 행한다
+PRINTL 　(한 번도 EX 웨폰을 사용하지 않은 경우는 스파크 스텔라를 사용한다)
+PRINTL · 적을 록하지 않은 상태로 턴을 마치면, HP 12% 자동 감소 (단 0 이하로는 되지 않는다)
+PRINTL ※전투 종료, X-ROSS DISASTER 사용, 또는 전투불능이 되면 종료된다. 이 외에 해제 방법은 존재하지 않는다.
+PRINTL ※사용할 수 있는 것은 전투당 1회뿐.
+PRINTL ※모드 디바 발동 중에 사용하면 모드 디바의 효과를 일시적으로 무효화한다.
+PRINTL ※모드 어웨이크닝 발동 중에는 사용 불가.
+IF ARG > 0 && ARG < CHARANUM && IS_CHARA_EQUIPED(ARG, "다크니스트리거Ｘ")
+	SETCOLOR 0x9933cd
+	PRINTL 다크니스 트리거 X 장비 중　다크니스 트리거에 의한 추격 시 데미지 상승
+	RESETCOLOR
+ENDIF
+
+@SKILL_ACTIONABLE_BATTLE_3635, ARG
+RETURN 0
+
+;継承に必要な部位
+
+
+@EXWEAPON_INITIALIZE, ARG
+IF HAVE_SKILL(ARG, [[스킬:스파크스텔라]])
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:DARKNESS TRIGGER]], 0
+	RETURN 0
+ENDIF
+IF HAVE_SKILL(ARG, [[스킬:앵커넥서스]])
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:DARKNESS TRIGGER]], 1
+	RETURN 0
+ENDIF
+IF HAVE_SKILL(ARG, [[스킬:오비탈에지]])
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:DARKNESS TRIGGER]], 2
+	RETURN 0
+ENDIF
+IF HAVE_SKILL(ARG, [[스킬:루미너리마인]])
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:DARKNESS TRIGGER]], 3
+	RETURN 0
+ENDIF
+IF HAVE_SKILL(ARG, [[스킬:키스오브디바]])
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:DARKNESS TRIGGER]], 4
+	RETURN 0
+ENDIF
+IF HAVE_SKILL(ARG, [[스킬:드래프트스파이럴]])
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:DARKNESS TRIGGER]], 5
+	RETURN 0
+ENDIF
+IF HAVE_SKILL(ARG, [[스킬:클로스랜서]])
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:DARKNESS TRIGGER]], 6
+	RETURN 0
+ENDIF
+IF HAVE_PU_SKILL(ARG, "スピンチョッパー")
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:DARKNESS TRIGGER]], 7
+	RETURN 0
+ENDIF
+IF HAVE_PU_SKILL(ARG, "メギドバースト")
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:DARKNESS TRIGGER]], 8
+	RETURN 0
+ENDIF
+IF HAVE_PU_SKILL(ARG, "タイムフリーザー")
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:DARKNESS TRIGGER]], 9
+	RETURN 0
+ENDIF
+IF HAVE_PU_SKILL(ARG, "ガトリングスコール")
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:DARKNESS TRIGGER]], 10
+	RETURN 0
+ENDIF
+IF HAVE_PU_SKILL(ARG, "ラピッドリッパー")
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:DARKNESS TRIGGER]], 11
+	RETURN 0
+ENDIF
+IF HAVE_PU_SKILL(ARG, "オプティックラウンド")
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:DARKNESS TRIGGER]], 12
+	RETURN 0
+ENDIF

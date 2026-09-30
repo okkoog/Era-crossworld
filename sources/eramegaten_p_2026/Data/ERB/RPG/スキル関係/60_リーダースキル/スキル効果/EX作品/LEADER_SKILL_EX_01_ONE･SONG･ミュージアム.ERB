@@ -1,0 +1,78 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@LEADER_SKILL_CONTROL_NO_EX_1,ARG
+RESULTS = 원·송·뮤지엄
+
+;スキル名
+@SKILL_NAME_LEADER_ONE･SONG･ミュージアム,ARG
+RESULTS = ONE･SONG･뮤지엄
+
+;　 説明文の設定
+@SET_VAR_LEADER_SKILL_EXPLAIN_ONE･SONG･ミュージアム, L_TEXT
+#DIMS REF L_TEXT
+
+L_TEXT = 사용하고 5턴 간、정신 상성의 공격 데미지 관통화＆마법공격 크리티컬 발생
+
+;重複可能な数
+@LEADER_SKILL_COUNT_LIMIT_ONE･SONG･ミュージアム
+RETURN 1
+
+@SKILL_PASSIVE_PENETRATION_RANK_LEADER_ONE･SONG･ミュージアム, L_P, L_T, L_スキル, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM DYNAMIC L_P;このスキルの所持者
+#DIM DYNAMIC L_T;攻撃対象
+#DIMS DYNAMIC L_スキル;スキルの所持者が敵に対して使用しているスキルの関数名称
+#DIM DYNAMIC L_ダメージタイプ
+#DIM DYNAMIC L_攻撃タイプ
+#DIM DYNAMIC L_相性
+#DIM DYNAMIC GIVE_EFFECT_CHARA;リーダースキル等他人からつけられている場合の提供者
+#DIM L_HAJIKE
+
+CALL O_S_MUSEUM_COOP_CHECK, ,0
+IF PU_SKILLNUM_GET(L_P,"ハジケ") > 0 && CFLAG:L_P:입력행동 == PU_SKILLNUM_GET(L_P,"ハジケ")
+	L_HAJIKE = SKILLGAGE_H_GET(L_P,PU_SKILLNUM_GET(L_P,"ハジケ"))
+	IF SKILLGAGE_D_GET(GIVE_EFFECT_CHARA, SKILL_NUM_F("각성스킬")) > 0
+		SETBIT L_HAJIKE,0
+	ELSE
+		CLEARBIT L_HAJIKE,0
+	ENDIF
+	CALL SKILLGAGE_H_SET, L_P, PU_SKILLNUM_GET(L_P,"ハジケ"), L_HAJIKE
+ENDIF
+
+IF SKILLGAGE_D_GET(GIVE_EFFECT_CHARA, SKILL_NUM_F("각성스킬")) > 0 && GET_TYPE_NUM("정신") == L_相性
+	CALL O_S_MUSEUM_COOP_CHECK, ,1
+	RETURN 4
+ENDIF
+RETURN 0
+
+;====================================================
+;ダメージ計算時の追加補正
+;クリティカルダメージ+10%　セット数が増える場合5%づつ強化される
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_LEADER_ONE･SONG･ミュージアム, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "クリティカル有効化"
+			SIF SKILLGAGE_D_GET(GIVE_EFFECT_CHARA, SKILL_NUM_F("각성스킬")) < 1
+				RETURN 0
+			RETURN L_相性名 == "정신"
+	ENDSELECT
+ENDIF
+RETURN 0

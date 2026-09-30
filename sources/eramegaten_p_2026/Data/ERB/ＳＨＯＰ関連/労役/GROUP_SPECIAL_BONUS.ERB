@@ -1,0 +1,203 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:GROUP_SPECIAL_BONUS.ERB
+;	Facility	:特殊編成ボーナスに関するファイル。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2021/08/20		木綿豆腐				新規作成
+;	002		2022/05/05		kamedakeisuke(ﾟдﾟ)		栞ちゃんが追加されていたので、舞台少女ボーナスの算出方法を変更
+;	003		2022/10/12		木綿豆腐				四神相応の修正、レヴュー・エリュシオンの有効化
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+@GROUP_SPECIAL_BONUS, ARG
+#LOCALSIZE 5
+#DIM CAST
+
+グループ特殊編成値:ARG = 0
+;グループ内で特定のメンバー同士の組み合わせが存在したら～みたいなのはここから
+;注意！相性・熟練・特殊編成合計の最大値が300です。あんまり大きくしないでね（滅茶苦茶厳しい条件で100が限度？）
+;例はあくまで例なので指標にし過ぎないように。何かあったら下方修正してもいいんじゃよ
+
+;例1：特定のメンバーが一定数以上いるか調べたい
+VARSET LOCAL
+SIF MATCH(T, GETCHARA([[キャラ:카에데]])) > 0
+	LOCAL += 1
+SIF MATCH(T, GETCHARA([[キャラ:마유]])) > 0
+	LOCAL += 1
+SIF MATCH(T, GETCHARA([[キャラ:란코]])) > 0
+	LOCAL += 1
+SIF MATCH(T, GETCHARA([[キャラ:우즈키]])) > 0
+	LOCAL += 1
+IF MATCH(T, GETCHARA([[キャラ:유카_아이마스]])) > 0
+	LOCAL += 1
+	LOCAL:1 += 1
+ENDIF
+IF MATCH(T, GETCHARA([[キャラ:미즈모토 유카리]])) > 0
+	LOCAL += 1
+	LOCAL:1 += 1
+ENDIF
+IF MATCH(T, GETCHARA([[キャラ:노리코_아이마스]])) > 0
+	LOCAL += 1
+	LOCAL:1 += 1
+ENDIF
+SIF MATCH(T, GETCHARA([[キャラ:후타바 안즈]])) > 0
+	LOCAL += 1
+SIF MATCH(T, GETCHARA([[キャラ:코우메]])) > 0
+	LOCAL += 1
+IF LOCAL > 4
+	;5人要するのはスターライトステージのユニット編成から
+	;タイトルは3rdライブから取ってますがスターライトステージから取って『星光のシンデレラ』とかでも良かったかも
+	グループ特殊編成値:ARG += 20
+	PRINTL 특수 편성 보너스《신데렐라의 무도회》 +20
+ELSEIF LOCAL:1 == 3
+	;Kawaii Make My Day!コミュのタイトルから
+	グループ特殊編成値:ARG += 10
+	PRINTL 특수 편성 보너스《Make Mellow Yellow Day!》 +10
+ENDIF
+VARSET LOCAL
+
+;例2：指定したメンバーが全員いるか調べたい
+IF MATCH(T, GETCHARA([[キャラ:리사]])) > 0 && MATCH(T, GETCHARA([[キャラ:미호]])) > 0 && MATCH(T, GETCHARA([[キャラ:아사미]])) > 0
+	;野外音楽堂のライブで披露した『JOKER』の歌詞から
+	;元祖アイドルユニットってことで多少多めのボーナスです
+	グループ特殊編成値:ARG += 40
+	PRINTL 특수 편성 보너스《Call a JOKER...》 +40
+ENDIF
+
+;例3：メンバーが特定の種族名を持っているかも調べたい
+;種族：舞台少女が5人以上でボーナス
+VARSET LOCAL
+FOR LOCAL, 0, 10
+	SIF T:LOCAL < 0
+		CONTINUE
+	;CASTには生成番号が入っているのでこんな風にチェックできる。もちろんCFLAG:CAST:～も可能
+	CAST = T:LOCAL
+	SIF CSTR:CAST:종족명 == "무대소녀"
+		LOCAL:1 += 1
+NEXT
+IF LOCAL:1 > 4
+	;『舞台少女心得』の歌詞から
+	グループ特殊編成値:ARG += 30
+	PRINTL 특수 편성 보너스《우리는 무대소녀》 +30
+ENDIF
+VARSET LOCAL
+
+;聖翔音楽学園9人全員揃い＋全員舞台少女のままでボーナス
+;同時に《私たちは舞台少女》も満たすので人数に対し倍率は低め
+VARSET LOCAL
+FOR LOCAL, 0, 10
+	SIF T:LOCAL < 0
+		CONTINUE
+	;CASTには生成番号が入っているのでこんな風にチェックできる。もちろんCFLAG:CAST:～も可能
+	CAST = T:LOCAL
+	SIF NO:CAST == [[キャラ:카렌_무대소녀]] && TALENT:CAST:무대소녀
+		LOCAL:1 += 1
+	SIF NO:CAST == [[キャラ:히카리]] && TALENT:CAST:무대소녀
+		LOCAL:1 += 1
+	SIF NO:CAST == [[キャラ:마히루]] && TALENT:CAST:무대소녀
+		LOCAL:1 += 1
+	SIF NO:CAST == [[キャラ:쥰나]] && TALENT:CAST:무대소녀
+		LOCAL:1 += 1
+	SIF NO:CAST == [[キャラ:나나]] && TALENT:CAST:무대소녀
+		LOCAL:1 += 1
+	SIF NO:CAST == [[キャラ:후타바_무대소녀]] && TALENT:CAST:무대소녀
+		LOCAL:1 += 1
+	SIF NO:CAST == [[キャラ:카오루코]] && TALENT:CAST:무대소녀
+		LOCAL:1 += 1
+	SIF NO:CAST == [[キャラ:마야_무대소녀]] && TALENT:CAST:무대소녀
+		LOCAL:1 += 1
+	SIF NO:CAST == [[キャラ:클로딘]] && TALENT:CAST:무대소녀
+		LOCAL:1 += 1
+NEXT
+IF LOCAL:1 == 9
+	;『戯曲：スタァライト』から
+	グループ特殊編成値:ARG += 40
+	PRINTL 특수 편성 보너스《종목: 레뷰 스타라이트》 +40
+ENDIF
+VARSET LOCAL
+
+;なんか栞ちゃんが追加されてたので気を利かせて構文例置いときますね（プレッシャー）
+;シークフェルト音楽学園のエーデル全員揃い＋舞台少女のままでボーナス
+;同時に《私たちは舞台少女》も満たすので人数に対し倍率は低め
+VARSET LOCAL
+FOR LOCAL, 0, 10
+	SIF T:LOCAL < 0
+		CONTINUE
+	;CASTには生成番号が入っているのでこんな風にチェックできる。もちろんCFLAG:CAST:～も可能
+	CAST = T:LOCAL
+	SIF NO:CAST == [[キャラ:아키라_무대소녀]] && TALENT:CAST:무대소녀
+		LOCAL:1 += 1
+	SIF NO:CAST == [[キャラ:미치루]] && TALENT:CAST:무대소녀
+		LOCAL:1 += 1
+	SIF NO:CAST == [[キャラ:메이팡]] && TALENT:CAST:무대소녀
+		LOCAL:1 += 1
+	SIF NO:CAST == [[キャラ:시오리]] && TALENT:CAST:무대소녀
+		LOCAL:1 += 1
+	SIF NO:CAST == [[キャラ:야치요]] && TALENT:CAST:무대소녀
+		LOCAL:1 += 1
+NEXT
+IF LOCAL:1 == 5
+	グループ特殊編成値:ARG += 20
+	PRINTL 특수 편성 보너스《종목: 레뷰 엘리시온》 +20
+ENDIF
+VARSET LOCAL
+
+;四神。アイマスより要求人数は少ないが合体解禁しないと駄目なんでちょっと高めに。
+;悪魔は二体以上いることもあるのでGETCHARAだとダメだった（GETCHARAは先頭か後尾の一体目しか取得できぬ）
+VARSET LOCAL
+FOR LOCAL, 0, 10
+	SIF T:LOCAL < 0
+		CONTINUE
+	;CASTには生成番号が入っているのでこんな風にチェックできる。もちろんCFLAG:CAST:～も可能
+	CAST = T:LOCAL
+	SIF NO:CAST == [[キャラ:청룡]] && LOCAL:1 == 0
+		LOCAL:1 += 1
+	SIF NO:CAST == [[キャラ:주작]] && LOCAL:2 == 0
+		LOCAL:2 += 1
+	SIF NO:CAST == [[キャラ:현무]] && LOCAL:3 == 0
+		LOCAL:3 += 1
+	SIF NO:CAST == [[キャラ:백호]] && LOCAL:4 == 0
+		LOCAL:4 += 1
+NEXT
+IF LOCAL:1 + LOCAL:2 + LOCAL:3 + LOCAL:4 == 4
+	;四神に相応しい配置となる地形のこと
+	グループ特殊編成値:ARG += 30
+	PRINTL 특수 편성 보너스《사신상응》 +30
+ENDIF
+VARSET LOCAL
+
+IF (MATCH(T, GETCHARA([[キャラ:P3남주인공]])) > 0 || MATCH(T, GETCHARA([[キャラ:P3여주인공]])) > 0) && MATCH(T, GETCHARA([[キャラ:아이기스]])) > 0 && MATCH(T, GETCHARA([[キャラ:준페이]])) > 0 && MATCH(T, GETCHARA([[キャラ:사나다]])) > 0 && MATCH(T, GETCHARA([[キャラ:미츠루]])) > 0 && MATCH(T, GETCHARA([[キャラ:후카]])) > 0 && MATCH(T, GETCHARA([[キャラ:아마다]])) > 0 && MATCH(T, GETCHARA([[キャラ:아라가키]])) > 0 && MATCH(T, GETCHARA([[キャラ:유카리]])) > 0
+	;クッソ長いけどP3仲間勢9人がいるかどうかってこと　コロマルは流石に省く
+	;P3Dの主題歌『Our Morment』の歌詞（Till the gradient sky signals closure.）の意訳から　もっといい案があったら教えてくれ
+	;全員集めるのは一周だと無理なのでちょっと多め
+	グループ特殊編成値:ARG += 90
+	PRINTL 특수 편성 보너스《박명의 하늘이 끝을 고할 때까지》 +90
+ENDIF
+
+IF MATCH(T, GETCHARA([[キャラ:리세]])) > 0 && MATCH(T, GETCHARA([[キャラ:나오토]])) > 0 && MATCH(T, GETCHARA([[キャラ:치에]])) > 0 && MATCH(T, GETCHARA([[キャラ:유키코]])) > 0 && MATCH(T, GETCHARA([[キャラ:요스케]])) > 0 && MATCH(T, GETCHARA([[キャラ:칸지]])) > 0 && MATCH(T, GETCHARA([[キャラ:곰]])) > 0 && MATCH(T, GETCHARA([[キャラ:P4주인공]])) > 0
+	;クッソ長いけどP4仲間勢8人がいるかどうかってこと
+	;マヨナカステージはP4Dに登場する単語　だけど未履修なのでよく知らない……
+	グループ特殊編成値:ARG += 70
+	PRINTL 특수 편성 보너스《심야 스테이지, 개막!》 +70
+ENDIF
+
+IF MATCH(T, GETCHARA([[キャラ:류지]])) > 0 && MATCH(T, GETCHARA([[キャラ:안]])) > 0 && MATCH(T, GETCHARA([[キャラ:마코토_P5]])) > 0 && MATCH(T, GETCHARA([[キャラ:유스케]])) > 0 && MATCH(T, GETCHARA([[キャラ:하루_P5]])) > 0 && MATCH(T, GETCHARA([[キャラ:후타바]])) > 0 && MATCH(T, GETCHARA([[キャラ:모르가나]])) > 0 && MATCH(T, GETCHARA([[キャラ:P5주인공]])) > 0
+	;クッソ長いけどP5仲間勢8人がいるかどうかってこと　明智は仲間じゃないのでいない
+	;ＴＡＫＥ ＹＯｕＲ ｈＥａＲＴ　心より舞台を頂く方が良かったかもしれない
+	;P5勢はローカパーラやってれば全員集まるので同じ人数でもP4勢より下げる
+	;明智は仲間じゃないのでいない（二回目）
+	グループ特殊編成値:ARG += 60
+	PRINTL 특수 편성 보너스《오늘 밤, 당신의 마음을 훔치겠습니다》 +60
+ENDIF
+
+
+;他にもオベロン×ティターニアとか、シヴァ×カーリー（宇宙は死ぬ）とか、これ良くね？ってのがあったら自由に追記していってくださいね
+;　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　ここまでで計算するようにしましょう
+SIF グループ特殊編成値:ARG > 300
+	グループ特殊編成値:ARG = 300
+
+RETURN

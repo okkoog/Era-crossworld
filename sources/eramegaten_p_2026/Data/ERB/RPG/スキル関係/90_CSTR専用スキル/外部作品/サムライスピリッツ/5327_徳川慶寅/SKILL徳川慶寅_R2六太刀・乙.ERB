@@ -1,0 +1,197 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+@SKILL_STRGET_六太刀・乙, ARG
+#FUNCTIONS
+#DIM SKILL_NUM
+SKILL_NUM = CHARANUM_CHECK(ARG) ? PU_SKILLNUM_GET(ARG,"六太刀・乙") # 0
+LOCAL = SKILL_NUM < 1 ? 0 # SKILLGAGE_H_GET(ARG,SKILL_NUM)
+SELECTCASE LOCAL
+CASE 1
+	RETURNF "壱の太刀・撫子"
+CASE 2
+	RETURNF "弐の太刀・白百合"
+CASE 3
+	RETURNF "参の太刀・牡丹"
+CASE 4
+	RETURNF "四の太刀・椿"
+CASE 0,5
+	RETURNF "五の太刀・朝顔"
+CASE 6
+	RETURNF "六の太刀・夕顔"
+ENDSELECT
+RETURNF "壱の太刀・撫子"
+
+
+;スキル名
+@SKILL_NAME_六太刀・乙, ARG
+RESULTS = 六太刀・乙
+SIF TFLAG:전투중 != 0 && CHARANUM_CHECK(ARG)
+	RESULTS = %SKILL_STRGET_六太刀・乙(ARG)%
+
+;　명중
+@SKILL_HITRATE_六太刀・乙, ARG
+TRYCALLFORM SKILL_HITRATE_%SKILL_STRGET_六太刀・乙(ARG)%, ARG
+RETURN RESULT
+
+;　威力
+@SKILL_POWER_六太刀・乙, ARG
+TRYCALLFORM SKILL_POWER_%SKILL_STRGET_六太刀・乙(ARG)%, ARG
+RETURN RESULT
+
+@SKILL_CRITICAL_RATE_六太刀・乙, ARG
+RESULT = 5
+TRYCALLFORM SKILL_CRITICAL_RATE_%SKILL_STRGET_六太刀・乙(ARG)%, ARG
+RETURN RESULT
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_六太刀・乙, ARG
+RESULT = 1
+TRYCALLFORM SKILL_MINATTACKNUMBER_%SKILL_STRGET_六太刀・乙(ARG)%, ARG
+RETURN RESULT
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_六太刀・乙, ARG
+RESULT = 1
+TRYCALLFORM SKILL_MAXATTACKNUMBER_%SKILL_STRGET_六太刀・乙(ARG)%, ARG
+RETURN RESULT
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_六太刀・乙, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_六太刀・乙, ARG
+RESULT = 15
+TRYCALLFORM SKILL_COST_%SKILL_STRGET_六太刀・乙(ARG)%, ARG
+RETURN RESULT
+
+;　相性
+@SKILL_TYPE_六太刀・乙, ARG
+RESULT = 0
+TRYCALLFORM SKILL_TYPE_%SKILL_STRGET_六太刀・乙(ARG)%, ARG
+RETURN RESULT
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_六太刀・乙
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_六太刀・乙, ARG
+RESULT = 1
+TRYCALLFORM SKILL_DAMAGETYPE_%SKILL_STRGET_六太刀・乙(ARG)%, ARG
+RETURN RESULT
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_六太刀・乙, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_六太刀・乙, ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_六太刀・乙, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_六太刀・乙, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_六太刀・乙, ARG
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;속도보정
+@SKILL_SPEED_六太刀・乙, ARG = -1
+RESULT = 0
+TRYCALLFORM SKILL_SPEED_%SKILL_STRGET_六太刀・乙(ARG)%, ARG
+RETURN RESULT
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_六太刀・乙, ARG
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_六太刀・乙, ARG = -1
+RETURN 23
+
+
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+@SKILL_DAMAGE_EFFECT_六太刀・乙, ARG, ARG:1, ARG:2
+TRYCALLFORM SKILL_DAMAGE_EFFECT_%SKILL_STRGET_六太刀・乙(ARG)%, ARG, ARG:1, ARG:2
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_六太刀・乙, ARG = -1, ARG:1 = -1
+RESULT = 0
+TRYCALLFORM SKILL_PENETRATION_RANK_%SKILL_STRGET_六太刀・乙(ARG)%, ARG, ARG:1
+RETURN RESULT
+;====================================================
+;スキル及び行動の実行
+;====================================================
+
+@ACTION_六太刀・乙, ARG, ARG:1, SKILL_NUM
+#DIM SKILL_NUM
+LOCAL = POS(ARG:1)
+
+TRYCALLFORM ACTION_%SKILL_STRGET_六太刀・乙(ARG)%, ARG, ARG:1, SKILL_NUM
+
+CALL CHANGE_六太刀(ARG, 2)
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+@SKILL_EXPLAIN_TOOLTIP_六太刀・乙, ARG
+IF TFLAG:전투중 != 0
+	TRYCALLFORM SKILL_EXPLAIN_TOOLTIP_%SKILL_STRGET_六太刀・乙(ARG)%, ARG
+	RESULTS:2 = 使用後、このスキル以外の六太刀スキルを変化
+ELSE
+	LOCAL = 0
+	RESULTS:(LOCAL ++) = 戦闘開始時は「五の太刀・朝顔」になり、六太刀スキルを使う事で
+	RESULTS:(LOCAL ++) = 6つのうち、いずれかのスキルに変化する。
+	RESULTS:(LOCAL ++) = 　　
+	RESULTS:(LOCAL ++) = 壱の太刀・撫子　　敵単体に剣撃相性の大ダメージ。発生が早い
+	RESULTS:(LOCAL ++) = 弐の太刀・白百合　敵単体に剣撃相性の大ダメージ。命中が高い
+	RESULTS:(LOCAL ++) = 参の太刀・牡丹　　敵単体に剣撃相性の大ダメージ。クリティカル率が高い
+	RESULTS:(LOCAL ++) = 四の太刀・椿　　　敵単体に剣撃相性の大ダメージ+相手のクリティカル率低下
+	RESULTS:(LOCAL ++) = 五の太刀・朝顔　　敵単体に剣撃相性の4～6回小ダメージ。
+	RESULTS:(LOCAL ++) = 六の太刀・夕顔　　敵単体に耐性無視の剣撃相性の中ダメージ+剣撃への耐性を無効化する。命中率が低い
+ENDIF
+
+;　 説明文の表示
+@SKILL_EXPLAIN_六太刀・乙, ARG
+PRINTL 전투 개시 시에는 「오의 태도·나팔꽃」이 되며, 육태도 스킬을 사용함으로써
+PRINTL 6가지 중 어느 한 스킬로 변화한다.
+PRINTL 　　
+PRINTL 일의 태도·패랭이꽃　적 단체에 검격 상성의 대데미지. 발동이 빠르다
+PRINTL 이의 태도·흰백합　　적 단체에 검격 상성의 대데미지. 명중이 높다
+PRINTL 삼의 태도·모란　　　적 단체에 검격 상성의 대데미지. 크리티컬률이 높다
+PRINTL 사의 태도·동백　　　적 단체에 검격 상성의 대데미지+상대 크리티컬률 저하
+PRINTL 오의 태도·나팔꽃　　적 단체에 검격 상성의 4~6회 소데미지.
+PRINTL 육의 태도·박꽃　　　적 단체에 내성 무시 검격 상성 중데미지+검격 내성 무효화. 명중률 낮음
+
+
+;継承に必要な部位
+
+;とくにない
+
+@SKILL_ACTIONABLE_BATTLE_六太刀・乙, ARG
+RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_六太刀・乙, ARG
+RETURN 1
+;とくにない
+

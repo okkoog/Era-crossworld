@@ -1,0 +1,132 @@
+﻿;スキル名
+@SKILL_NAME_修補すべき全ての疵,ARG
+RESULTS = 치유해야 할 모든 상처
+
+;　명중
+@SKILL_HITRATE_修補すべき全ての疵, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_修補すべき全ての疵, ARG
+RETURN 160
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_修補すべき全ての疵, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_修補すべき全ての疵, ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_修補すべき全ての疵,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_修補すべき全ての疵,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_修補すべき全ての疵,ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_修補すべき全ての疵,ARG
+RETURN 60
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_修補すべき全ての疵
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_修補すべき全ての疵,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_修補すべき全ての疵,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_修補すべき全ての疵,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_修補すべき全ての疵,ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_修補すべき全ての疵
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_修補すべき全ての疵, ARG = -1
+RETURN 2
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_修補すべき全ての疵
+RETURN 0
+
+;没
+;@SKILL_RANK_修補すべき全ての疵, ARG = -1
+
+
+;拡散攻撃用追加処理
+;ブレスなどの拡散攻撃に使う
+@SKILL_SPREAD_修補すべき全ての疵,ARG
+RETURN 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_修補すべき全ての疵,ARG,ARG:1,SKILL_NUM
+#DIM DYNAMIC SKILL_NUM
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_T
+FOR LCOUNT, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1) + 1
+	L_T = POS(LCOUNT)
+	SIF !IS_TARGET_ABLE(L_T)
+		CONTINUE
+	CALL SKILL_能力低下解除, ARG, L_T, "短縮"
+	CALL SKILL_INVALID_WALL, ARG, L_T, "성스러운가호", "短縮"
+	CALL HEAL_SINGLE, ARG, L_T, 434, 1
+NEXT
+WAIT
+
+CALL SKILLGAGE_D_SET,ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム"),0
+CALL SKILLGAGE_F_SET,ARG,PU_SKILLNUM_GET(ARG,"修補すべき全ての疵"),0
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_修補すべき全ての疵,ARG
+PRINTL 『치유해야 할 모든 상처(페인 브레이커)』
+PRINTFORML %CALLNAME:ARG%(이)가 사용하는 치료 보구.
+PRINTL 엄밀히는 치료가 아니라 본래 있어야 할 상태로 되돌리는 보구.
+PRINTL 
+PRINTL 아군 전체의 HP를 완전 회복하며 저하된 능력을 되돌리고,
+PRINTL 상태이상을 각각 1회 방어하는 장벽을 친다.
+PRINTL 
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_修補すべき全ての疵,ARG
+SIF SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム")) == 0
+	RETURN 0
+RETURN 1
+
+;スキルのタグ、他の処理でこのスキルがどういう物か調べる時に使う
+@SKILL_TAG_修補すべき全ての疵
+RESULTS = 宝具

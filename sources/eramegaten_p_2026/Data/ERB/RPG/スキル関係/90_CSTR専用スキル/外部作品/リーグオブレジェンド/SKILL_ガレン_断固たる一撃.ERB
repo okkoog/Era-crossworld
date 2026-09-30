@@ -1,0 +1,144 @@
+﻿;-----------------------------
+;断固たる一撃
+;-----------------------------
+;スキル名
+@SKILL_NAME_断固たる一撃,ARG
+IF FLAG:총공격중
+	RESULTS = 데마시아를 위하여
+ELSE
+	RESULTS = 결정타
+ENDIF
+;　명중
+@SKILL_HITRATE_断固たる一撃, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_断固たる一撃, ARG
+SIF ARG < 0
+	RETURN 150
+SIF HAVE_PU_SKILL(ARG, "デマーシアの勇士LV15")
+	RETURN 450
+SIF HAVE_PU_SKILL(ARG, "デマーシアの勇士LV10")
+	RETURN 350
+SIF HAVE_PU_SKILL(ARG, "デマーシアの勇士LV5")
+	RETURN 250
+RETURN 150
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_断固たる一撃,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_断固たる一撃,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_断固たる一撃, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_断固たる一撃,ARG
+SIF ARG < 0
+	RETURN 12
+SIF HAVE_PU_SKILL(ARG, "デマーシアの勇士LV15")
+	RETURN 30
+SIF HAVE_PU_SKILL(ARG, "デマーシアの勇士LV10")
+	RETURN 22
+SIF HAVE_PU_SKILL(ARG, "デマーシアの勇士LV5")
+	RETURN 16
+RETURN 12
+
+;　相性
+@SKILL_TYPE_断固たる一撃,ARG
+RETURN GET_TYPE_NUM("검격")
+;검격
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_断固たる一撃
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　攻撃タイプ
+@SKILL_ATTACKTYPE_断固たる一撃,ARG
+RETURN GET_攻撃タイプ_NUM("物理")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_断固たる一撃, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_断固たる一撃,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_断固たる一撃,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_断固たる一撃,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_断固たる一撃, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_断固たる一撃
+RETURN GET_SUCCESSION_NUM("검격")
+;검격
+
+;スキル変化？用ランク
+@SKILL_RANK_断固たる一撃, ARG = -1
+RETURN 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_断固たる一撃,ARG,ARG:1,ARG:2
+IF FLAG:총공격중
+	CALL SKILL_能力低下解除, ARG, ARG, "단체"
+ELSE
+	CALL ATTACK_SKILL, ARG, ARG:1,ARG:2
+	CALL SKILLGAGE_D_SET, ARG, ARG:2, 3
+ENDIF
+;====================================================
+;トリガー発動条件
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_断固たる一撃,ARG,ARG:1
+;自身の行動のみ
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+SIF !IS_PU_SKILL_入力行動(ARG, "断固たる一撃")
+	RETURN 0
+;物理攻撃を与えている
+SIF !GET_CREC_ACT(ARG, ARG:1, "HIT")
+	RETURN 0
+;実際の発動はターンエンド時なので蓄積だけ行う
+RETURN 1, CPOS(ARG)
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_断固たる一撃,ARG
+PRINTL 적 1체에 검격 상성으로 데미지를 준다.
+PRINTL 이 스킬이 사용되는 턴 동안 적에게 표적이 될 확률이 크게 상승한다.
+PRINTL 추가로 이 공격이 성공했을 경우 이하의 연동 효과가 발동한다.
+PRINTL 「자신에게 부여된 능력 저하를 전부 해제한다.」
+PRINTL 
+PRINTL 이 스킬은 사용 후 2턴 동안 사용할 수 없다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_断固たる一撃,ARG
+RESULTS = CT:{PU_SKILLGAGE_D_GET(ARG, "断固たる一撃")}
+SIF PU_SKILLGAGE_D_GET(ARG, "断固たる一撃")
+	RETURN 0
+RETURN 1
+;とくにない
+
+@SKILL_TURNSTART_断固たる一撃, ARG
+SIF CFLAG:ARG:입력행동 != PU_SKILLNUM_GET(ARG, "断固たる一撃")
+	RETURN 0
+IF CFLAG:ARG:변동피타겟율 < 500 || CFLAG:ARG:피타겟비율변동지속턴수 == 0
+	CFLAG:ARG:피타겟비율변동지속턴수 = 1
+	CFLAG:ARG:변동피타겟율 = 500
+ENDIF

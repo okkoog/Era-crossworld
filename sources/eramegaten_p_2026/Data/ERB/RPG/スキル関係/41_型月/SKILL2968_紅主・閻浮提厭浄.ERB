@@ -1,0 +1,176 @@
+﻿;221013		NEO		説明文などを変更、名称変化と演出を追加
+;					対象が複数体いるなら特大威力の後列貫通攻撃に変更（消費60のわりには微妙なスペック）
+;					対象が残り１体なら「タイマン用投げモード」に変化する
+;					タイマンで使うと本領発揮する……という設計に変更
+;					BHは火炎貫通化（これに威力盛るのはちょっと）（貫通も大概だが……）
+;221019		NEO		デバッグプリント残ってたの消した、継承不能追加
+
+;スキル名
+@SKILL_NAME_2968,ARG
+	;ARGがいない、戦闘中でない、行動時に表示するタイミングでない、なら通常のスキル名を返す
+	;あくまで「使用する瞬間に」この名前になる
+	IF ARG == -1 || TFLAG:전투중 == 0 || FLAG:행동순1 != ARG
+		RESULTS = 홍주・염부제염정
+	ELSE
+		IF 0
+		;ブラッドヒート状態ならラストアーク名称に変更
+		;（まあ、わりと違う攻撃なのだけど……）
+		;ラストアーク側名称のほうが優先な
+		ELSEIF 現HP割合(ARG) < 33
+			RESULTS = 夜摩判決
+		;タイマンチェック：タイマンなら投げ名称に
+		;投げになる場合「掌握」とつける（メルブラでは名前変化はしないんだよなー）
+		ELSEIF ENEMY_COUNT() == 1
+			RESULTS = 홍주・염부제염정(掌握)
+		ELSE
+			RESULTS = 홍주・염부제염정
+		ENDIF
+	ENDIF
+
+;　명중
+@SKILL_HITRATE_2968, ARG
+	IF ARG == -1
+		RETURN 80
+	;投げだと命中向上
+	ELSEIF ENEMY_COUNT() == 1
+		RETURN 120
+	;投げでない場合ビミョーに命中不安
+	ELSE
+		RETURN 80
+	ENDIF
+
+
+;　威力
+@SKILL_POWER_2968, ARG
+#DIM SKILL2968_POW
+	;単体対象とはいえダメージ量がデフォ600なのはヤバイわね！
+	;「投げ」を追加したので基礎威力を500に減ずる
+
+	SKILL2968_POW = 500
+
+	SIF ARG == -1
+		RETURN SKILL2968_POW
+
+	;投げモード
+	;敵が単体の場合のみ威力大幅上昇、単体攻撃に変化
+	;消費60なので、威力700つっても「2回アギバリオン撃ったほうがコスパはいい」、そもそも物理型なのでMPがキツい
+	SIF ENEMY_COUNT() == 1
+		SKILL2968_POW += 200
+
+	RETURN SKILL2968_POW
+
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2968,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2968,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2968, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+
+;　コストの量
+@SKILL_COST_2968,ARG
+RETURN 60
+
+;　相性
+@SKILL_TYPE_2968,ARG
+RETURN GET_TYPE_NUM("화염")
+
+;高クリティカル
+@SKILL_CRITICAL_RATE_2968, ARG
+RETURN 30
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2968
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2968, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2968, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2968,ARG
+RETURN 4
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2968,ARG
+RETURN GET_SPHERE_NUM("세로열")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2968, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2968
+RETURN GET_SUCCESSION_NUM("화염")
+;不可
+
+;속도보정
+@SKILL_SPEED_2968, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2968
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2968, ARG = -1
+RETURN 15
+
+@継承不能_2968
+RETURN 1
+
+
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_2968, ARG = -1, ARG:1 = -1
+;ブラッドヒートだと完全貫通
+SIF 現HP割合(ARG) < 33
+	RETURN 4
+RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2968, ARG, ARG:1, ARG:2
+;メッセージ表示
+;HP条件をチェックし、強化状態であったら「BLOOD HEAT!!」を表示する
+CALL MELTY_BLOOD_IS_BLOOD_HEAT_HP_CONDITIONS(ARG)
+CALL ATTACK_SKILL,ARG,ARG:1,2968
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2968, ARG
+PRINTL 적 세로 1열에 화염 상성으로 초특대 위력의 물리 공격을 행한다. 고크리티컬.
+PRINTL 적이 단체일 경우 위력과 명중이 상승한다.
+PRINTL 사용자의 HP가 얼마 남지 않았을 경우, 적의 모든 내성 및 내성 강화 효과를 관통한다.
+PRINTL 　
+PRINTL 적에게 홍적주로서의 이능을 사용하여 화염을 내리꽂는다.
+PRINTL 또는 적을 붙잡아 머리 위로 들어올린 후, 홍적주가 되어 불태워버린다.
+PRINTL 혼혈 키시마 코우마의 필살기
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2968,ARG
+RETURN 1
+

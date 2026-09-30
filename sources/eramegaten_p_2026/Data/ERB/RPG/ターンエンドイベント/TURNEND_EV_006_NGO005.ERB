@@ -1,0 +1,185 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_01.ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2023/05/02		P(bazzile)				作成
+;	002		2023/07/27		Schrott					ベースを元に制作。
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;====================
+;定義名
+;====================
+@TURNEND_EV_NAME_6
+RESULTS = NGO陥落予報
+
+;====================
+;条件
+;====================
+@PLAYABLE_TURNEND_EV_6
+#DIM TENCHAN
+SIF FINDCHARA_B([[キャラ:초텐짱]]) == -1
+	RETURN 0
+TENCHAN = RESULT:1
+SIF TIME != 3
+	RETURN 0
+SIF 依頼フラグ:[[依頼:NGO의뢰]]:0 != 5
+	RETURN 0
+
+SIF 陥落(TENCHAN) == 0
+	RETURN 0
+	
+RETURN 1
+
+;====================
+;内容
+;====================
+@TURNEND_EV_6
+#DIM LCOUNT
+#DIMS L_ANGEL_COMMENT, 3
+#DIMS L_COMMENT, 45
+#DIM TENCHAN
+TENCHAN = GETCHARA([[キャラ:초텐짱]])
+
+CALL RESET_ANNOUNCE_FLAG
+
+REDRAW 0
+PRINTFORMW ………
+PRINTFORMW ……
+PRINTFORMW …
+FOR LCOUNT, 0, 15
+	SETFONT 
+NEXT
+
+依頼フラグ:[[依頼:NGO의뢰]]:0 = 6
+
+CALL 疑似的画面クリア
+CALL NGOハート25行
+ALIGNMENT CENTER
+PRINTFORML ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+PRINTFORML ┃（前略！）　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　┃
+PRINTFORML ┃　　　　　　　　　　　　　 인터넷 엔젤 지금 바로 강림！ 　　　　　　　　　　　　　┃
+PRINTFORML ┃　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　┃
+PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ALIGNMENT LEFT
+CALL NGOハート25行
+FORCEWAIT
+
+L_ANGEL_COMMENT '= @"엔젤하！", "사악한 데빌 서머너에게 함락당한 초절정 귀요미 천사쨩 줄여서 초텐쨩이야！ 굴욕！", "오늘은 간단한 공지 방송이니까 짧게 갈게ー"
+L_COMMENT:FINDELEMENT(L_COMMENT, "", , , 1) = 
+CALL PRINT_SUPER_ANGEL_HAISIN, "超天使", L_ANGEL_COMMENT, L_COMMENT, -2
+
+L_ANGEL_COMMENT '= @"～ 지금까지의 줄거리 ～", "신주쿠에서 조직에게 제거당할 뻔한 초텐쨩！ 아슬아슬한 순간에、데빌 서머너가 구해줬다！", "이걸로 안심하고 방송에 전념할 수 있어…… 그렇게 생각했던 것도 잠시"
+L_COMMENT:FINDELEMENT(L_COMMENT, "", , , 1) = ■아니 라인으로 보내라고
+CALL PRINT_SUPER_ANGEL_HAISIN, "超天使", L_ANGEL_COMMENT, L_COMMENT, -2
+
+
+IF (陥落(TENCHAN) && RESULTS != "신뢰")
+	L_ANGEL_COMMENT '= @"세상에、이 녀석은 성노예를 알선하는 극혐 역겨운 외도 야쿠자였다！？", "모두……미안해……초텐쨩 더럽혀져 버렸어……", "뭐 딱히 나 자신이 깨끗한 여자는 아니지만？ 스테이터스 봤잖아、야한 방송이나 할까、어이？"
+ELSE
+	;信頼を踏んでいるものとみる
+	L_ANGEL_COMMENT '= @"세상에、이 녀석은 성노예를 알선하는 극혐 역겨운 외도 야쿠자였다！？", "모두……미안해……초텐쨩 더럽혀져 버렸어……", "뭐、어째선진 몰라도 나한테 손을 안 대긴 하지만。뭐야 이 녀석 귀엽냐고……♂"
+ENDIF
+L_COMMENT:FINDELEMENT(L_COMMENT, "", , , 1) = ■짜증나
+CALL PRINT_SUPER_ANGEL_HAISIN, "超天使", L_ANGEL_COMMENT, L_COMMENT, -2
+
+L_ANGEL_COMMENT '= @"그보다 나 전령이고。난 인간이 아니니까 생리통도 없고 사랑니도 안 나", "월세를 안 내도 되는 건 최고라고 후ー하하하", "아、위험해、방송 시간 끝나겠다。본론 들어갈게！"
+L_COMMENT:FINDELEMENT(L_COMMENT, "", , , 1) = ■그런 소리 할 거면 일해라
+CALL PRINT_SUPER_ANGEL_HAISIN, "超天使", L_ANGEL_COMMENT, L_COMMENT, -2
+
+L_ANGEL_COMMENT '= @"공지！ 내일부터 「【진실을】설정자료집 전달회【말씀드립니다……】」 개최 결정！", "지금까지 숨겨져 있던 초텐쨩의 설정이 마침내 밝혀진다……！？", "일어나면 SHOP 화면에서 「의뢰」를 꼭 체크！ 참고로 아침엔 안 해、자고 있으니까"
+L_COMMENT:FINDELEMENT(L_COMMENT, "", , , 1) = ■……물어봐 주길 바라는 거야？
+CALL PRINT_SUPER_ANGEL_HAISIN, "超天使", L_ANGEL_COMMENT, L_COMMENT, -2
+
+L_ANGEL_COMMENT '= @"댓글 읽겠습니ー다", "", ""
+L_COMMENT:FINDELEMENT(L_COMMENT, "", , , 1) = ■안 읽어도 돼
+CALL PRINT_SUPER_ANGEL_HAISIN, "超天使", L_ANGEL_COMMENT, L_COMMENT, -2
+
+L_ANGEL_COMMENT '= @"「아니 라인으로 보내라고」", "따스함이 느껴지는 라이브 방송이거든？？？ 게다가 생산자의 얼굴 표정", ""
+L_COMMENT:FINDELEMENT(L_COMMENT, "", , , 1) = ■채소 같은 소리 하네
+CALL PRINT_SUPER_ANGEL_HAISIN, "超天使", L_ANGEL_COMMENT, L_COMMENT, -2
+
+L_ANGEL_COMMENT '= @"「그런 소리 할 거면 일해라」", "찬란하게 빛나는　광　기　의 두 글자에 두려워 떨어라", "뭐、용돈은 필요하고、방에서 할 수 있는 편한 일 있으면 소개해 주든가"
+L_COMMENT:FINDELEMENT(L_COMMENT, "", , , 1) = ■무섭진 않고 그냥 민폐다
+CALL PRINT_SUPER_ANGEL_HAISIN, "超天使", L_ANGEL_COMMENT, L_COMMENT, -2
+
+L_ANGEL_COMMENT '= @"「……물어봐 주길 바라는 거야？」", "네、주도권을 상대에게 넘기려 하는 건 오타쿠의 나쁜 버릇이죠", "뭘 시키고 싶은지가 아니라 뭘 하고 싶은지로 자신을 말하라고、오타쿠가 후회하는 얼굴은 보고 싶지 않으니까 말야……"
+L_COMMENT:FINDELEMENT(L_COMMENT, "", , , 1) = ■너 이젠 배에서 내려라
+CALL PRINT_SUPER_ANGEL_HAISIN, "超天使", L_ANGEL_COMMENT, L_COMMENT, -2
+
+L_ANGEL_COMMENT '= @"이쯤 할까", "이런 쓰레기 똥망 극혐 현실 따위 잊어버리고", "목욕하고 이 닦고 자라！"
+L_COMMENT:FINDELEMENT(L_COMMENT, "", , , 1) = ■그러니까 자고 있었다고
+CALL PRINT_SUPER_ANGEL_HAISIN, "超天使", L_ANGEL_COMMENT, L_COMMENT, -2
+
+L_ANGEL_COMMENT '= "", @"　　　　　　　　　　　　　　　　　　　　　　%UNICODE(0x2020)%승천%UNICODE(0x2020)%", ""
+L_COMMENT:FINDELEMENT(L_COMMENT, "", , , 1) = ■자고 있었다고！
+CALL PRINT_SUPER_ANGEL_HAISIN, "超天使", L_ANGEL_COMMENT, L_COMMENT, -2
+
+CALL 疑似的画面クリア
+CALL NGOハート25行
+ALIGNMENT CENTER
+PRINTFORML ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+PRINTFORML ┃　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　┃
+PRINTFORML ┃　　　　　　　　　　　　　　　　　　　　　 SEE YOU... 　　　　　　　　　　　　　　　　　　　　　┃
+PRINTFORML ┃　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　┃
+PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+CALL NGOハート25行
+PRINTFORMW 
+ALIGNMENT LEFT
+
+CALL 疑似的画面クリア
+
+;スキップフラグを折る　これを宣言しないと次の配信もスキップされるので注意
+CALL RESET_SKIP_SUPER_ANGEL_HAISIN
+REDRAW 1
+;====================
+;フラグ名称定義
+;====================
+;--------------------
+;通常のセーブされ、周回でリセットされる数値型のフラグ
+;--------------------
+@TURNEND_EV_FLAGNAME_6
+RESULTS:0 = イベント進度
+RESULTS:1 = 
+RESULTS:2 = 
+RESULTS:3 = 
+RESULTS:4 = 
+RESULTS:5 = 
+RESULTS:6 = 
+RESULTS:7 = 
+RESULTS:8 = 
+RESULTS:9 = 
+
+;--------------------
+;通常のセーブされ、周回でリセットされる文字列型のフラグ
+;--------------------
+@TURNEND_EV_STRNAME_6
+RESULTS:0 = 
+RESULTS:1 = 
+RESULTS:2 = 
+RESULTS:3 = 
+RESULTS:4 = 
+
+;--------------------
+;周回後も引き継がれる数値型のフラグ
+;--------------------
+@TURNEND_EV_TAKEOVER_FLAGNAME_6
+RESULTS:0 = 
+RESULTS:1 = 
+RESULTS:2 = 
+RESULTS:3 = 
+RESULTS:4 = 
+
+;--------------------
+;周回後も文字列フラグ
+;--------------------
+@TURNEND_EV_TAKEOVER_STRNAME_6
+RESULTS:0 = 
+RESULTS:1 = 
+RESULTS:2 = 
+RESULTS:3 = 
+RESULTS:4 = 

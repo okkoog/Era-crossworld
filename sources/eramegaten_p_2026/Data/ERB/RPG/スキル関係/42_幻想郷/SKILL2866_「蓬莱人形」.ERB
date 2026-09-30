@@ -1,0 +1,73 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2866,ARG
+RESULTS = 「봉래인형」
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2866
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2866, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2866, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+
+;　コストの量
+@SKILL_COST_2866,ARG
+RETURN 32
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2866
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;スキル変化？用ランク
+@SKILL_RANK_2866, ARG = -1
+RETURN 15
+
+@継承不能_2866
+RETURN 2
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2866, ARG
+PRINTL 자동: 턴 종료 시 HP의 10%를 회복한다.
+PRINTL 　　　액티브 상태에서 턴 종료 시 사망해 있을 경우, MP 32를 소비하여 이하의 연동 효과가 발동한다.
+PRINTL 　　　「자신을 부활시키고 HP를 전회복한다.」
+PRINTL 
+PRINTL 봉래의 불사의 인형이 죽음의 저주를 대신 짊어지고 자기 재생 능력을 가져온다.
+PRINTL 霊鳥　후지와라노 모코우의 스펠카드 (계승 불가)
+
+
+@SKILL_TURNEND_2866, ARG
+;死んでいる必要がある
+SIF !IS_BADSTATE(ARG, "DYING")
+	RETURN 0
+;コスト計算
+CALL CHECK_COST, ARG, 2866
+SIF !RESULT
+	RETURN 0
+CALL PRINT_ACT_MESSAGE, ARG,  , , , "リザレクション", "NOWAIT"
+CALL PRINT_HIT_MESSAGE, ARG, "再生", "w"
+
+CFLAG:ARG:상태이상 = 0
+CFLAG:ARG:상태이상경과턴수 = 0
+CALL VAR_HP,ARG,MAXBASE:ARG:ＨＰ
+
+;コスト支払い
+CALL PAY_COST, ARG, 2866
+
+@SKILL_ACTIONABLE_BATTLE_2866, ARG
+RETURN 0
+
+
+
+;RESULT:0 = HP回復量
+;RESULT:1 = MP回復量
+;RESULT:2 = MAG消費量
+@SKILL_REGEN_AT_TURNEND_2866,ARG
+RETURN MAXBASE:ARG:ＨＰ / 10

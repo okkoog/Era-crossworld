@@ -1,0 +1,1418 @@
+﻿;-------------------------------------------------
+;アキュラ個別イベント。
+;彼らが何故こちらの世界に来たのかはこっちで説明するシナリオになるぞ！
+;イベント番号消費するのは気が進まなかったのと
+;ARGでアキュラくんの番号を拾えるのが便利なのでこっち使うぞ
+;-------------------------------------------------
+;「転移先は人類滅亡してました～世界を救った科学者、科学チートで無双する～」こと『白き鋼鉄のＸ２』編も始めたぞ
+;テーマは「アキュラくんとゆくグレイヴピラー攻略の旅」だぞ
+;-------------------------------------------------
+;★使用個別イベントフラグ一覧
+;개별이벤트플래그1:『祈歌－プレイヤー－』で使用　？？？の歌の管理/『交錯－グランドクロス－』『管理者－マザー－』で使用　ライブノベル管理
+;개별이벤트플래그2:『サブイベント』で使用　各イベントの進行状況管理
+;개별이벤트플래그3:X2ルート全体で使用　ルートの進行状況管理
+;개별이벤트플래그4:ヌルちゃん's性別メモリ(bit)
+;　0桁目：アキュラの性別記録（0ならオンナ、1ならオトコ）
+;　1桁目：＠の性別記録（0ならオンナ、1ならオトコ）
+;　2桁目：設定完了の証（済み：1か未済：0）
+;　3桁目：アキュラのイベント確認（0:未確認/1:確認完了）
+;　4桁目：＠のイベント確認（0:未確認/1:確認完了）
+;개별이벤트플래그5(bit):『交錯－グランドクロス－』で使用　戦闘状況管理
+;-------------------------------------------------
+@INDIVIDUAL_EVENT_K5355, ARG, ARG:1 = 0, ARG:2 = -1
+#LOCALSIZE 3
+#LOCALSSIZE 1
+#DIM BLADE
+#DIM GV
+;ARG:0　キャラ番号
+;ARG:1　関数種類　1,開放条件　2,타이틀　3,이벤트
+;ARG:2　イベント番号（0～63まで）
+
+;リストにキャラを表示する条件
+SIF ARG:1 == 0
+	RETURN 1
+SELECTCASE ARG:2
+	CASE 0
+		;解放条件
+		IF ARG:1 == 1
+			;フィルタONにしてたらダメ
+			SIF !GETS_USEABLE_EXTRA_TITLE("白き鋼鉄のX")
+				RETURN 0
+			RETURN 1
+		ELSEIF ARG:1 == 2
+		;타이틀
+			RESULTS = 토크 이벤트
+		;이벤트
+		ELSEIF ARG:1 == 3
+			CALL TALK_ROOM_K5355, ARG
+			RETURN 0
+		ENDIF
+ENDSELECT
+RETURN 0
+
+;サブイベント関連はこの辺りで
+@TALK_ROOM_K5355, ARG
+$TALK_ROOM_TOP
+CALL TALK_ROOM_TIPS, ARG
+;この辺で部屋っぽいAAを張りたかったんだけど
+;なんかずれるので取り止め
+CALL INPUT_SELECT_M, "＞이제부터 무엇을 할까……。//[1] ＴＡＬＫ/[0] ＢＡＣＫ", , , 2, 4, "LEFT", 72
+;CLEARLINE 4
+SELECTCASE RESULT
+	CASE 0
+		RETURN 0
+	CASE 1
+		CALL TALK_EVENT_K5355, ARG
+ENDSELECT
+GOTO TALK_ROOM_TOP
+
+@TALK_ROOM_TIPS, COPEN
+#DIM DYNAMIC LCOUNT
+#DIM CONST CHARA_TABLE = [[キャラ:아큐라_X]], [[キャラ:블레이드_X]], [[キャラ:GV]], [[キャラ:엘리제1_GV]], [[キャラ:엘리제2_GV]], [[キャラ:엘리제3_GV]], [[キャラ:코하쿠_X]], [[キャラ:널_X2]]
+#DIM DYNAMIC COPEN
+#DIMS DYNAMIC L_TALK
+#DIM DYNAMIC 抽選対象, 10
+#DIM DYNAMIC TIPS対象
+FOR LCOUNT, 0, VARSIZE("CHARA_TABLE")
+	SIF GETCHARA(CHARA_TABLE:LCOUNT) < 0
+		CONTINUE
+	CALL PUSH_ARRAY_INT, 抽選対象, CHARA_TABLE:LCOUNT
+NEXT
+TIPS対象 = 抽選対象:RAND(FINDELEMENT(抽選対象, 0))
+SETCOLOR COLOR("FRIEND")
+
+SELECTCASE TIPS対象
+	CASE [[キャラ:아큐라_X]]
+		;アキュラならロロと二択
+		IF RAND:2 == 0
+			L_TALK '= @"ここは本編から独立した空間だ"
+			L_TALK += "_" + @"真面目に時系列を考察しても意味がない。覚えておくといい"
+			CALL PRINT_TALK_BY_CHARA, GETCHARA(TIPS対象), TIPS対象, , L_TALK
+		ELSE
+			L_TALK '= @"ここは本編と関係のない場所だよ"
+			L_TALK += "_" + @"起こるイベントの時系列を気にしちゃいけないぜ？"
+			CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+		ENDIF
+	CASE [[キャラ:블레이드_X]]
+		L_TALK '= @"ここは本編から切り離された空間……"
+		L_TALK += "_" + @"即ち、何が起きてもおかしくない、ということだ"
+		CALL PRINT_TALK_BY_CHARA, GETCHARA(TIPS対象), TIPS対象, , L_TALK
+		PRINTW 
+	CASE [[キャラ:GV]]
+		;GVならシアンと二択
+		IF RAND:2 == 0
+			L_TALK '= @"ここでは本編で扱わないイベントが見られます"
+			L_TALK += "_" + @"何が起きたとしても、本編には影響がありません"
+	
+			CALL PRINT_TALK_BY_CHARA, GETCHARA(TIPS対象), TIPS対象, , L_TALK
+		ELSE
+			L_TALK '= @"ここは本編のオマケみたいなイベントだよ"
+			L_TALK += "_" + @"細かいことは気にしないでね？"
+			
+			CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+		ENDIF
+	CASE [[キャラ:엘리제1_GV]]
+		L_TALK '= @"えっと……ここでは、おまけイベントが見られます"
+		L_TALK += "_" + @"すみません、わたしが出しゃばってすみませぇん……"
+		CALL PRINT_TALK_BY_CHARA, GETCHARA(TIPS対象), TIPS対象, , L_TALK
+		PRINTW 
+	CASE [[キャラ:엘리제2_GV]]
+		L_TALK '= @"キシャシャシャシャッ！！　ヨおこソ、こノ部屋へェ！"
+		L_TALK += "_" + @"アタシと一緒ニ、遊ビまショお！？"
+		CALL PRINT_TALK_BY_CHARA, GETCHARA(TIPS対象), TIPS対象, , L_TALK
+		PRINTW 
+	CASE [[キャラ:엘리제3_GV]]
+		L_TALK '= @"よく来たわね。ここはトークルーム……"
+		L_TALK += "_" + @"細かいことなんて考えずに、精々楽しみなさい"
+		CALL PRINT_TALK_BY_CHARA, GETCHARA(TIPS対象), TIPS対象, , L_TALK
+		PRINTW 
+	CASE [[キャラ:코하쿠_X]]
+		L_TALK '= @"ここはトークルーム！　起きることは何でもありなんだって！"
+		L_TALK += "_" + @"細かい事は考えるだけ無駄だ、ってアキュラくんが言ってた！"
+		CALL PRINT_TALK_BY_CHARA, GETCHARA(TIPS対象), TIPS対象, , L_TALK
+		PRINTW 
+	CASE [[キャラ:널_X2]]
+		L_TALK '= @"お疲れ様です。こちらはトークルームです"
+		L_TALK += "_" + @"どうやら色々なイベントが見られるようですよ？"
+		CALL PRINT_TALK_BY_CHARA, GETCHARA(TIPS対象), TIPS対象, , L_TALK
+		PRINTW 
+ENDSELECT
+RESETCOLOR
+
+@TALK_EVENT_K5355, COPEN
+#DIM DYNAMIC COPEN
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC L_TALK
+#DIMS DYNAMIC L_TEXT, 6
+#LOCALSIZE 2
+#LOCALSSIZE 2
+#DIM BLADE
+#DIM GV
+#DIM 添字
+;今後増えることを見越して。
+#DIMS TALK候補, 64
+;ネタ構想：
+;アキュラ「ブリッツとは？」「ブリッツダッシュについて」「元の世界の話1」「退魔の鈴」「トマト博士」「実装されなかった機能（カゲロウとフラッシュフィールド）」
+;ロロ「希望の歌姫」「クードスについて1」「サメ映画上映中」「ロボっぽくないね」
+;ブレイド「コハクって？」「類稀な剣技」「コハクとロロP」
+;GV「元の世界の話2」「跳ねる戦車」「チャタンヤラクーシャンク」「ダートは髪」「第七波動で節約」「EPとかっこいいポーズ1」
+;シアン「電子の謡精」「クードスについて2」「カップ焼きそば」「頭のおか…恥ずかしい内容のSTG」
+;アキュラ&ブレイド「また戦うことになるとは」
+;アキュラ&GV「ブラスターでマスターな話」「マイティでバーストな話」「二人の歌姫」
+;ブレイド&GV「他人とは思えない」「EPとかっこいいポーズ2」
+;アキュラ&GV&ブレイド「大人びた子供たち」
+CALL 口上変数初期化
+VARSET LOCALS
+
+LOCAL = 0
+;ここに入る時点でアキュラがいるのは確定なのでアキュラとロロ分をセット
+TALK候補:LOCAL = ブリッツとは？
+LOCAL += 1
+TALK候補:LOCAL = ブリッツダッシュについて
+LOCAL += 1
+TALK候補:LOCAL = 元の世界の話1
+LOCAL += 1
+TALK候補:LOCAL = 退魔の鈴
+LOCAL += 1
+TALK候補:LOCAL = トマト博士
+LOCAL += 1
+TALK候補:LOCAL = 実装されなかった機能
+LOCAL += 1
+TALK候補:LOCAL = 希望の歌姫
+LOCAL += 1
+TALK候補:LOCAL = クードスについて1
+LOCAL += 1
+TALK候補:LOCAL = サメ映画上映中
+LOCAL += 1
+TALK候補:LOCAL = ロボっぽくないね
+LOCAL += 1
+
+;ブレイドがいれば更に話題を追加
+BLADE = GETCHARA([[キャラ:블레이드_X]])
+IF BLADE > 0
+	TALK候補:LOCAL = コハクって？
+	LOCAL += 1
+	TALK候補:LOCAL = 類稀な剣技
+	LOCAL += 1
+	TALK候補:LOCAL = コハクとロロP
+	LOCAL += 1
+	TALK候補:LOCAL = また戦うことになるとは
+	LOCAL += 1
+ENDIF
+
+;GVがいれば更に話題を追加
+GV = GETCHARA([[キャラ:GV]])
+IF GV > 0
+	TALK候補:LOCAL = 元の世界の話2
+	LOCAL += 1
+	TALK候補:LOCAL = 跳ぶ戦車、跳ばない戦車
+	LOCAL += 1
+	TALK候補:LOCAL = チャタンヤラクーシャンク
+	LOCAL += 1
+	TALK候補:LOCAL = ダートは髪
+	LOCAL += 1
+	TALK候補:LOCAL = 第七波動で節約
+	LOCAL += 1
+	TALK候補:LOCAL = EPとかっこいいポーズ1
+	LOCAL += 1
+	TALK候補:LOCAL = 電子の謡精
+	LOCAL += 1
+	TALK候補:LOCAL = クードスについて2
+	LOCAL += 1
+	TALK候補:LOCAL = カップ焼きそば
+	LOCAL += 1
+	TALK候補:LOCAL = 頭のおか…恥ずかしい内容のSTG
+	LOCAL += 1
+	TALK候補:LOCAL = ブラスターでマスターな話
+	LOCAL += 1
+	TALK候補:LOCAL = 二人の歌姫
+	LOCAL += 1
+ENDIF
+
+;ブレイドとGVがいれば更に話題を追加
+IF BLADE > 0 && GV > 0
+	TALK候補:LOCAL = 他人とは思えない
+	LOCAL += 1
+	TALK候補:LOCAL = EPとかっこいいポーズ2
+	LOCAL += 1
+	TALK候補:LOCAL = 大人びた子供たち
+	LOCAL += 1
+ENDIF
+
+添字 = RAND:LOCAL
+
+CUSTOMDRAWLINE =
+SELECTCASE TALK候補:添字
+CASE "ブリッツダッシュについて"
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"블리츠대쉬……ブリッツのエネルギーを用い、"
+	L_TALK += "_" + @"瞬間的に強烈な推進力を実現する空中機動だ"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"この銃……ディヴァイドのマーキング機能と組み合わせ、"
+	L_TALK += "_" + @"対象のみに狙いを定めて攻撃を可能とする"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+	L_TEXT:0 '= @"傍で見る度、物凄い勢いだと感心させられるが……"
+	L_TEXT:1 '= @"明らかに受ける衝撃も凄まじいのでは？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"そのためのこの鎧――ヴァイスティーガーだ"
+	L_TALK += "_" + @"……もっとも、常人に扱えるものではないのも確かだがな"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+	L_TEXT:0 '= @"字面だけならば「己が常人ではない」という驕りとも受け取れるが"
+	L_TEXT:1 '= @"%CALLNAME:COPEN%からは寧ろ、自嘲のようなものを感じた……。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+CASE "ブリッツとは？"
+	L_TEXT:0 '= @"そういえば何気なく使っているが、ブリッツとは一体何なのだろうか。"
+	L_TEXT:1 '= @"ブリッツダッシュのたびに切り替えているようだが。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"アームドブルーのセプティマを再現したバッテリーのようなものだ"
+	L_TALK += "_" + @"見た目こそ小さいが、内蔵する電力量は相当のものになる"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"けどさー、なんでわざわざ形状を弾丸になんてしちゃった訳？"
+	L_TALK += "_" + @"しかも『ブリッツ』なんて仰々しい名前まで付けてさ"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	RESETCOLOR
+	L_TEXT:0 '= @"そこはやはり恰好がつかないからでは？"
+	L_TEXT:1 '= @"ＡＢバッテリーではダサいだろう。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"……いいだろう、別に"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+CASE "元の世界の話1"
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"元の世界の話が聞きたい、だと？　愉快な話はできないぞ"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+	L_TEXT:0 '= @"別に笑い話を求めた訳ではない。"
+	L_TEXT:1 '= @"%CALLNAME:COPEN%がどう戦ってきたかを聞きたくなっただけだ。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"……そうだな。基本的には今のように、匿ってもらいながら"
+	L_TALK += "_" + @"セプティマホルダーと戦ってきた形になる、か"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"でも大変だったよねー。酷い時なんて石を投げて"
+	L_TALK += "_" + @"拒否されたこともあったじゃない？"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	RESETCOLOR
+	L_TEXT:0 '= @"……匿うことで、アジトが露見するリスクを恐れた？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"その通りだ。無論、それを責めることなどできるはずがない"
+	L_TALK += "_" + @"……内容としては、これくらいだ"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+CASE "退魔の鈴"
+	L_TEXT:0 '= @"ロロの収納スペースから、何かが飛び出ている……"
+	L_TEXT:1 '= @"紐に結んでいるのは、鈴か……？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"おっと、危ない危ない。これ、とっても大切なやつなんだよ"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	RESETCOLOR
+	L_TEXT:0 '= @"パッと見たところ、霊験あらたかな品に見える。"
+	L_TEXT:1 '= @"お守りの類だろうか。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"うん。アキュラくんの家に代々伝わる、『退魔の鈴』って言うんだ"
+	L_TALK += "_" + @"戦闘の邪魔だー、なんて言ってぼくのボディにしまってるけどね"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	L_TALK '= @"効果を実感したことがないからだ"
+	L_TALK += "_" + @"それに、ロロに収納しておく方が失くすリスクは抑えられるだろう"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+	L_TEXT:0 '= @"ああ……ブリッツダッシュですっ飛んでいくからか。"
+	L_TEXT:1 '= @"こんな紐なら千切れてすぐ飛んでいきそうだ。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"……そういうことではない"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+CASE "トマト博士"
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"突然だが、トマトは摂っているか？"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"トマトには各種ビタミンやカリウムが含まれる他、"
+	L_TALK += "_" + @"抗酸化作用を持つリコピンを多量に含んでいる"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"コレステロールの酸化を防ぐことで血流の改善、"
+	L_TALK += "_" + @"シミの原因となるチロシナーゼを抑制し美肌効果も期待できる……"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"様々な点で益となる野菜だ"
+	L_TALK += "_" + @"もし余裕があるなら、摂取することを勧める"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+	L_TEXT:0 '= @"あ、はい。……随分詳しいね？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"そうか？　一般教養だと思うが"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"そうかなー……？"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	RESETCOLOR
+CASE "実装されなかった機能"
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"システムチェック……カゲロウ、フラッシュフィールドが破損中"
+	L_TALK += "_" + @"やっぱり元の世界に戻らないと機能復元は難しいかなー"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	RESETCOLOR
+	L_TEXT:0 '= @"どうやら二人（一人と一機？）はメンテナンス中だったようだ。"
+	L_TEXT:1 '= @"陽炎に、フラッシュ……何？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"カゲロウは、ブリッツを消費することで残像を生み出し"
+	L_TALK += "_" + @"相手の攻撃を無効化する機能だ"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"基本的に相手を選ばずダメージを抑えられる"
+	L_TALK += "_" + @"極めて便利な機能、だった"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"フラッシュフィールドは、ＥＸウェポン用のエネルギーを利用して"
+	L_TALK += "_" + @"防御フィールドを展開する機能だよ"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	L_TALK '= @"ミサイルや爆弾みたいな、実弾兵器にしか通用しないけれど"
+	L_TALK += "_" + @"案外頼る局面は多かったんだよね"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	RESETCOLOR
+	L_TEXT:0 '= @"何とも反則みたいな性能揃い。"
+	L_TEXT:1 '= @"それだけにロストしてしまったのが痛いところだ……。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+CASE "希望の歌姫"
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"ふんふんふーん、っと。よし、新曲完成！"
+	L_TALK += "_" + @"早速アップロードしちゃうぞー！"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	RESETCOLOR
+	L_TEXT:0 '= @"勝手に人の拠点のネットワーク使って何やってんの。"
+	L_TEXT:1 '= @"これは……オリジナル曲の動画？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"そうだよ。ぼくは向こうでも歌をアップしてマイナーズを勇気づける"
+	L_TALK += "_" + @"ヴァーチャルアイドルＲｏＲｏ、人呼んで『希望の歌姫』なのです！"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	RESETCOLOR
+	L_TEXT:0 '= @"アイドル？　希望の歌姫？　こんな、丸っこい通り越して球体そのものが？"
+	L_TEXT:1 '= @"随分奇特なセンスだな……。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"言ったなー！？　なら、よーく見ててよー……えいっ！"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	L_TALK '= @"じゃーん！　ヴァーチャルアイドルやる時はこっちの姿なの！"
+	L_TALK += "_" + @"……いや、本来は歌のチカラを使う時のための姿なんだけどね"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_ディーヴァ"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	RESETCOLOR
+	L_TEXT:0 '= @"ああ、確かにこの容姿なら人気が出るのも頷ける。"
+	L_TEXT:1 '= @"……と納得している内に元の姿に戻ってしまった。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"あちゃー。この姿、長く維持できないんだよね"
+	L_TALK += "_" + @"次の機会を楽しみにしてね、ってことで！"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	RESETCOLOR
+CASE "クードスについて1"
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"戦闘中に増減するクードスに気を配っているか？"
+	L_TALK += "_" + @"敵を攻撃、撃破することで次第に加算されていく"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"そ・し・て！　戦闘中にクードスが1000を超えると、"
+	L_TALK += "_" + @"なんとぼくはモード・ディーヴァに変身しちゃうんだ！"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	L_TALK '= @"歌の力でアキュラくんを支援して、"
+	L_TALK += "_" + @"戦闘をもっとサポートできちゃうんだよ！"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	L_TALK '= @"ただし、一戦闘で三度被弾するとリセットされてしまう"
+	L_TALK += "_" + @"その辺りを念頭に置いて装備を設定するといい"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+CASE "サメ映画上映中"
+	L_TEXT:0 '= @"そういえば、ロロのメモリには戦闘や歌以外のものも入っているのだろうか。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"藪から棒にどうしたのさ。まあ色々入ってるよ？"
+	L_TALK += "_" + @"例えばぼくオススメの映画セレクションとかね！"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	RESETCOLOR
+	L_TEXT:0 '= @"当たり前だが、向こうの世界にも映画があるんだな。"
+	L_TEXT:1 '= @"具体的にはどんなものが入っているのだろう？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"ちょっと待っててねー、例えばこれはー……"
+	L_TALK += "_" + @"『台風に巻き上げられたサメが市街地を襲う』映画だね！"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	RESETCOLOR
+	L_TEXT:0 '= @"は……！？　他には、どんなものが？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"えっとねー、お次はー……"
+	L_TALK += "_" + @"『サメとタコの合成生物が人々を襲う』映画だね！"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	RESETCOLOR
+	L_TEXT:0 '= @"……そのセレクション、サメ映画しかない訳？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"諦めろ。こいつはこうやって向こうでも布教していた"
+	L_TALK += "_" + @"……それにまあ、悪くはない"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"でしょー？　こっちの世界にも起こしちゃおうよ、サメ旋風"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	RESETCOLOR
+CASE "ロボっぽくないね"
+	L_TEXT:0 '= @"今更な話だが、ロロからは全くロボットらしさが感じられない。"
+	L_TEXT:1 '= @"ＡＩというより人間と話している感覚になる。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"最初からこうだった訳ではない"
+	L_TALK += "_" + @"自己学習型のＡＩを搭載した結果だな"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+	L_TEXT:0 '= @"自己学習型と言えど、ここまで流暢に話すのは至難の業だろう。"
+	L_TEXT:1 '= @"相当の期間、人間と接していたのでは？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"……そうだね。長い間、色んなことを話したよ"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	RESETCOLOR
+	L_TEXT:0 '= @"しかし、ロロはバトルポッド、兵器のはずだ。"
+	L_TEXT:1 '= @"……まさか%CALLNAME:COPEN%は、バトルポッドに日夜話しかけて――"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"%CSTR:COPEN:이인칭%、失礼なことを考えていないか……？"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+CASE "コハクって？"
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"……ふう。コハクは、元気にしているだろうか……"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	RESETCOLOR
+	L_TEXT:0 '= @"%CALLNAME:BLADE%は時折、遠い眼差しをして溜め息を吐く。"
+	L_TEXT:1 '= @"コハクとは一体、何者なのだろう？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"ああ……%CSTR:BLADE:이인칭%か"
+	L_TALK += "_" + @"コハクは……%CSTR:BLADE:일인칭%の妹、のようなものだ"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	
+	L_TALK '= @"血こそ繋がっていないが、家族のように大切に思っているよ"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	RESETCOLOR
+	L_TEXT:0 '= @"コハクを想い、優しい笑みを浮かべる%CALLNAME:BLADE%。"
+	L_TEXT:1 '= @"戦闘の時の苛烈さと比べると別人のようだ。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"……何か、失礼なことを考えているような気がするな"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	RESETCOLOR
+CASE "類稀な剣技"
+	L_TEXT:0 '= @"%CALLNAME:BLADE%の剣技はいつ見ても冴え渡っている。"
+	L_TEXT:1 '= @"やはり、元の世界で鍛えたものなのだろうか？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"その通りだ。強くなければ生きることすらできなかった"
+	L_TALK += "_" + @"それぐらいに、あの世界はマイナーズにとって過酷だった"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	
+	L_TALK '= @"……もっとも、小手先の技を幾ら鍛えたところで多勢に無勢"
+	L_TALK += "_" + @"%CSTR:BLADE:일인칭%はスメラギに捕らえられ、洗脳された訳だが"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	
+	RESETCOLOR
+	L_TEXT:0 '= @"しかし、その剣技が%CALLNAME:COPEN%の助けになったのなら"
+	L_TEXT:1 '= @"やはり意味はあったのではないか？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"……そう、だといいな"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	RESETCOLOR
+CASE "コハクとロロP"
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"コハクちゃんで思い出したんだけど"
+	L_TALK += "_" + @"歌と踊りで皆を元気づけたいって話してたんだよね"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	L_TALK '= @"ああ、コハクの言いそうなことだな"
+	L_TALK += "_" + @"あの子の明るさに、アジトの皆はいつも救われていた"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	
+	L_TALK '= @"ぼくもそう思って、ネットアイドルとしてプロデュースしようと"
+	L_TALK += "_" + @"思ったんだけど逃げられちゃったんだよ"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	L_TALK '= @"今度会うことがあったら、ブレイドからも言ってくれないかなー"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	L_TALK '= @"……なるほど。考えてみよう"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	RESETCOLOR
+CASE "また戦うことになるとは"
+	L_TEXT:0 '= @"初めて%CALLNAME:BLADE%と戦った時は驚かされた。"
+	L_TEXT:1 '= @"%CALLNAME:COPEN%はあんな強敵と一人で渡り合っていたのか……。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"今と比べて装備は万全だったからな"
+	L_TALK += "_" + @"更に言えば、退けない理由もあった"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"それにしても、まさかまた戦うことになるなんてね"
+	L_TALK += "_" + @"どうなることかと思ったよ"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	L_TALK '= @"その節は迷惑をかけた……"
+	L_TALK += "_" + @"自分の至らなさにつくづく呆れる限りだ"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	
+	RESETCOLOR
+	L_TEXT:0 '= @"%CALLNAME:BLADE%が頭を下げる。"
+	L_TEXT:1 '= @"やはりと言うべきか、負い目を感じているらしい……。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"過ぎたことを言及しても意味がない"
+	L_TALK += "_" + @"これから力を貸してもらえばいいだけだ"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"また共に戦うことになるとも思っていなかったが……"
+	L_TALK += "_" + @"味方にすれば頼もしい戦力になると知っているからな"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+CASE "元の世界の話2"
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"ボクの世界の話……ですか？"
+	L_TALK += "_" + @"悪魔がそこら中にいることを除けば、あまり変わらないと思います"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"第七波動《セブンス》の有無で能力者とそうでない人が"
+	L_TALK += "_" + @"いがみ合い、傷つけ合っていますね"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"特に、海外はその度合いも過激化していると聞きます"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+	
+	L_TALK '= @"ボクがここに来る直前に戦っていたのは"
+	L_TALK += "_" + @"能力者差別に苦しめられ、復讐を誓った海外出身の能力者たちでした"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+	L_TEXT:0 '= @"海外の状況が酷いのはよく分かったが、日本はどうなのだろう？"
+	L_TEXT:1 '= @"わざわざ海外と分けたあたり、多少はマシなのだろうか。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"はい。国を背後から操る巨大企業・皇神《スメラギ》が"
+	L_TALK += "_" + @"能力者用のリミッターを用意し、危険性の無さをアピールしたので"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"でも皇神はその裏で貴重と判断した第七波動の持ち主の拉致や"
+	L_TALK += "_" + @"人体実験を行っていました"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"ボクたちは皇神から能力者を解放するため戦っていたんです"
+	L_TALK += "_" + @"……けれど、その結果皇神は力を失い、治安は悪化してしまった"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+	L_TEXT:0 '= @"リミッターの存在も人体実験等の賜物……といったところか。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"恐らくは。でも、平和のために誰かを犠牲にするなんて……"
+	L_TALK += "_" + @"ボクには、納得できなかったんです"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+	L_TEXT:0 '= @"%CALLNAME:COPEN%の世界ほど詰んではいない一方で"
+	L_TEXT:1 '= @"解決しようのない問題を抱えている……どちらも大変なようだ。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+CASE "跳ぶ戦車、跳ばない戦車"
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"こちらの世界の戦車を見ていて気付いたんですが……"
+	L_TALK += "_" + @"跳ばないんですね、戦車"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+	L_TEXT:0 '= @"……一瞬、%CALLNAME:GV%が何を言ったのか、理解できなかった。"
+	L_TEXT:1 '= @"跳ぶ？　戦車が？　なんで？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"あ、いえ……前にやり合ったんです。跳ぶ戦車と"
+	L_TALK += "_" + @"巨体の割に軽やかに空を跳んだので、印象に残っていて"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+	L_TEXT:0 '= @"なにそれこわい。それもう戦車である必要ないのでは……？"
+	L_TEXT:1 '= @"そっちの世界の戦車はそんなのばっかりなのか。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"どうでしょうね……ああ、天井に張り付いて走行する"
+	L_TALK += "_" + @"蜘蛛型の戦車もあったっけ"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+	L_TEXT:0 '= @"……大概だな。そっちの世界も。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+CASE "チャタンヤラクーシャンク"
+	L_TEXT:0 '= @"%CALLNAME:GV%は徒手空拳もそれなりに修めているようだ。"
+	L_TEXT:1 '= @"それにしてもその独特なスタイルは一体？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"師匠曰く、カラテのチャタンヤラクーシャンクをベースにした"
+	L_TALK += "_" + @"オリジナルのマーシャルアーツ……らしいです"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+	L_TEXT:0 '= @"チャタンヤラクーシャンク……確か、琉球空手の型だったか。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"ええ！？　%CALLNAME:MASTER%も知ってるの！？"
+	L_TALK += "_" + @"ちゃらんやた……ちゃたんら……ちゃら……"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	L_TEXT:0 '= @"＞シアンは焦りを感じた"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	L_TALK '= @"感じてないもん！！"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	RESETCOLOR
+CASE "ダートは髪"
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"ボクは避雷針《ダート》を相手に当ててロック、"
+	L_TALK += "_" + @"電撃を相手に誘導して戦うのが基本的な立ち回りになります"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+	L_TEXT:0 '= @"その避雷針は他ならぬ%CALLNAME:GV%の髪を特殊加工したものらしい。"
+	L_TEXT:1 '= @"銃もそれ専用の設計がされている。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	L_TEXT:0 '= @"……ということは、あまり考え無しに撃ち続けていると……？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"や、止ーめーてー！　想像もダメ！　禁止！"
+	L_TALK += "_" + @"そんな……髪の無くなったＧＶなんて……！！"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	L_TALK '= @"あ、で、でも！　ＧＶがどんな姿になったって！"
+	L_TALK += "_" + @"わたしはずっと一緒に居るからね！？"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	L_TALK '= @"……心配しなくても、そんなむやみやたらに撃ったりしないよ"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+	
+	RESETCOLOR
+CASE "第七波動で節約"
+	L_TEXT:0 '= @"今更だが、%CALLNAME:GV%の第七波動は雷撃である。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"ええ、そうですね。それ以外にも色々出来ることはありますけど"
+	L_TALK += "_" + @"……電気代の節約は、出来ませんよ？"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+	L_TEXT:0 '= @"まだ何も言っていないのに。"
+	L_TEXT:1 '= @"いや出来るか聞きたかったのは確かだけれども。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"……懐かしいね。シアンにも昔、尋ねられたっけ"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+	
+	L_TALK '= @"やっぱり誰でも気にするよね。そこは"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	RESETCOLOR
+CASE "EPとかっこいいポーズ1"
+	L_TEXT:0 '= @"%CALLNAME:GV%は戦闘中、時折ポーズを決めることがある。"
+	L_TEXT:1 '= @"あれには何か、意味があってのことなのだろうか。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"そうですね。あれはエネルギーをチャージするための型で……"
+	L_TALK += "_" + @"集中するための自己暗示、のようなものです"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"間違っても、格好つけのためのものじゃないですよ"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+	
+	RESETCOLOR
+	L_TEXT:0 '= @"別にそこまで追求するつもりはなかったのだが。"
+	L_TEXT:1 '= @"もしかして、よく周りから聞かれているのだろうか。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"……多分だけど、わたしのせいかも"
+	L_TALK += "_" + @"ただのカッコイイポーズかなと思って、聞いちゃったことがあるの"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	RESETCOLOR
+	L_TEXT:0 '= @"戦闘のために必要な行為が格好つけと思われること、"
+	L_TEXT:1 '= @"それは%CALLNAME:MASTER%が思ったより深い問題なのかもしれない……。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+CASE "電子の謡精"
+	L_TEXT:0 '= @"戦闘中、シアンの歌声によってＧＶはパワーアップを果たす。"
+	L_TEXT:1 '= @"あれも、第七波動によるものなのだろうか。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"そうだよ。わたしの第七波動……電子の謡精《サイバーディーヴァ》"
+	L_TALK += "_" + @"ＧＶのための力だったのに、敵に奪われちゃって……"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	RESETCOLOR
+	L_TEXT:0 '= @"そう言うなり、シアンはしゅんとしてしまった。"
+	L_TEXT:1 '= @"手のひらサイズに収まる小ささが、より小さく見える……。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"安心して。キミの力は絶対取り戻す"
+	L_TALK += "_" + @"そのためにも早く帰れるよう頑張るから"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+CASE "クードスについて2"
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"戦闘中に増減するクードスに気を配っていますか？"
+	L_TALK += "_" + @"攻撃や敵の撃破で増えますが、雷撃鱗の同時撃破でより増加を狙えます"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"戦闘中にクードスが1000を超えたら、"
+	L_TALK += "_" + @"電子の謡精の力を一時的に取り戻せるの"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	L_TALK '= @"ありったけの力を込めて歌えば、今のわたしだって"
+	L_TALK += "_" + @"ＧＶの翼《チカラ》になれるはずだから"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	L_TALK '= @"けれど、一戦闘で三度被弾するとリセットされてしまいます"
+	L_TALK += "_" + @"速度を重点的に上げるよう心掛けるといいかもしれませんね"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	RESETCOLOR
+CASE "カップ焼きそば"
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"こっちの世界にもあるんだね、カップ焼きそば"
+	L_TALK += "_" + @"そうだ、%CALLNAME:MASTER%なら知ってるのかな"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	L_TALK '= @"３分経って、お湯を捨てて……"
+	L_TALK += "_" + @"どの段階で麺が焼かれるか、知ってる？"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	RESETCOLOR
+	L_TEXT:0 '= @"……？　はい？　仰ることの意味が、よく……"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"そっか、あなたも知らないんだね"
+	L_TALK += "_" + @"うーん、誰か知ってる人いないのかな……"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	RESETCOLOR
+	L_TEXT:0 '= @"シアンは飛び去っていってしまった……。"
+	L_TEXT:1 '= @"そんな勘違いした人間、初めて見た。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"……ボクはもう一人、知ってますよ"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+	
+	RESETCOLOR
+CASE "頭のおか…恥ずかしい内容のSTG"
+	L_TEXT:0 '= @"シアンがテーブルに積み上げられた荷物の山を見つめている……。"
+	L_TEXT:1 '= @"後で整理しようと思って投げ捨てた記憶はあるが、何だったか。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"あ、あの。このゲーム、あなたのものなんだよね？"
+	L_TALK += "_" + @"もし良ければやってるところ、見せてほしいの"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	L_TALK '= @"わたしじゃ、もう触れないから……"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	RESETCOLOR
+	L_TEXT:0 '= @"ああ、そう言えばここには先輩が処分に困って押し付けられたゲームを"
+	L_TEXT:1 '= @"適当に投げ捨てていたのだったか。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	L_TEXT:0 '= @"シアンが指差す先にあるゲームは――"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	L_TEXT:0 '= @"モテモテになった男の子が、迫ってくる女の子を眼力（フェロモンショットと呼称）で"
+	L_TEXT:1 '= @"気絶させていくという、頭のおかし……いや、恥ずかしい内容のシューティングゲームだった。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	L_TEXT:0 '= @"……え？　マジ？　これ見たいの？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"……こっちの世界にもあるんですね。このゲーム"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+	
+	RESETCOLOR
+CASE "ブラスターでマスターな話"
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"先日、変な夢を見たんです"
+	L_TALK += "_" + @"夢の中でボクは地下世界にいて……"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"戦車に乗り込んだり洞窟を探索しながら"
+	L_TALK += "_" + @"地球侵略を目論むミュータントと戦っていました"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"わたしも見たよ、といっても高いところで"
+	L_TALK += "_" + @"ＧＶが来るのを待ってたことしか覚えてないけど……"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	RESETCOLOR
+	L_TEXT:0 '= @"夢は心理状態に影響される、などとよく言われたりするが。"
+	L_TEXT:1 '= @"この場合どういう意味が隠されているのだろう……？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"……オレも似たような夢を見たな"
+	L_TALK += "_" + @"もっとも、オレの場合は戦車で惑星間を移動しながら……"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"惑星侵略を目論むミュータントを討滅して回っていた"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"あ、それぼくも見たよ！"
+	L_TALK += "_" + @"最終決戦はぼくの歌が切札になってたよね！"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	RESETCOLOR
+	L_TEXT:0 '= @"なんで戦車でミュータントと戦うことだけは共通してるんだよ。"
+	L_TEXT:1 '= @"ミュータントに恨みでもあるの？"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+CASE "二人の歌姫"
+	L_TEXT:0 '= @"ロロとシアン。二人のサイバーディーヴァが揃った訳だし、"
+	L_TEXT:1 '= @"今度デュエットでもしてみるのはどうだろうか。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"いいんじゃない？　ずっとアキュラくんとのコンビで戦ってきたから"
+	L_TALK += "_" + @"そういうの、やりたくても出来なかったんだよー！"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	L_TALK '= @"……考えてみたら、わたしも経験ないの"
+	L_TALK += "_" + @"いい機会だし、やってみようかな？"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	RESETCOLOR
+	L_TEXT:0 '= @"どうやら二人（一人と一機？）は乗り気のようだ。"
+	L_TEXT:1 '= @"%CALLNAME:COPEN%と%CALLNAME:GV%の様子はというと……"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"サイバーディーヴァの共鳴か。現状でも原理不明のため"
+	L_TALK += "_" + @"何が起こるか分からんが……試す価値はあるか"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"ボクもいいと思うよ"
+	L_TALK += "_" + @"ところで……二人は何を歌うんだい？"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"……考えてみたらわたしたち……"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	L_TALK '= @"共通のレパートリーって、持ってないっぽい？"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	L_TALK '= @"……まずは曲探しから始めなきゃ、かな"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+	
+	RESETCOLOR
+	L_TEXT:0 '= @"電子の謡精と希望の歌姫、夢のデュエット実現は"
+	L_TEXT:1 '= @"まだまだ先になりそうである……。"
+	FOR LCOUNT, 0, 6
+		PRINTFORML %L_TEXT:LCOUNT%
+	NEXT
+	WAIT
+	VARSET L_TEXT
+
+CASE "他人とは思えない"
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"あなた、たまにＧＶのこと見つめてるけど……"
+	L_TALK += "_" + @"わ、わたしの目の黒い内は許さないんだから！"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	L_TALK '= @"君の思うような理由ではないから、安心してほしい"
+	L_TALK += "_" + @"ただ……時折、他人ではないような感覚を覚えるんだ"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	
+	L_TALK '= @"他人じゃないって……前に言った、並行世界の同一人物かもってこと？"
+	L_TALK += "_" + @"確かに雰囲気は割と似てるかも……？"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	L_TALK '= @"%CSTR:BLADE:일인칭%の雷撃と、\@ TALENT:GV:남자 ? 彼 # 彼女 \@の雷撃。"
+	L_TALK += "_" + @"本当にただ同種の能力が芽生えただけなのか……"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	
+	L_TALK '= @"%CSTR:BLADE:일인칭%には、それ以上の何かがあると思えてならないんだ"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	RESETCOLOR
+CASE "EPとかっこいいポーズ2"
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"ブレイドさんの戦いを見て思ったことがあったんですが"
+	L_TALK += "_" + @"EPエネルギーのチャージ、意識したことはありましたか？"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"EPエネルギー……？　いや、特にそうしたものを考えたことはない"
+	L_TALK += "_" + @"%CSTR:BLADE:일인칭%の場合、剣を振るうことの方が多いからかな"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	
+	L_TALK '= @"そうなんですね……ありがとうございました"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+	
+	L_TALK '= @"あ、ああ……行ってしまった。"
+	L_TALK += "_" + @"何か気に障ることを言ってしまっただろうか……？"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	
+	L_TALK '= @"ううん……多分違うよ。わたしがね、精神を集中する時のポーズを"
+	L_TALK += "_" + @"ただのカッコイイポーズだと思ってたことがあって"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	L_TALK '= @"同じ雷撃能力者だし、同じことをしてる人がいたら"
+	L_TALK += "_" + @"安心したのかもしれないなって"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	L_TALK '= @"%CSTR:BLADE:일인칭%にも精神集中のための型があれば、"
+	L_TALK += "_" + @"悩みを分かち合えたのだが……"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	
+	RESETCOLOR
+CASE "大人びた子供たち"
+	SETCOLOR COLOR("FRIEND")
+	L_TALK '= @"ところでイクス、急な話なんだが……"
+	L_TALK += "_" + @"あなたの年齢は、いくつなんだ？"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	
+	L_TALK '= @"本当に急だね、一体どうしたのさ、ブレイドったら"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), L_TALK, "ＲｏＲｏ" 
+	PRINTW 
+	L_TALK '= @"見た目だけで判断するならばコハクと同じくらいだが……"
+	L_TALK += "_" + @"落ち着き払った精神は見た目相応のそれではない"
+	CALL PRINT_TALK_BY_CHARA, BLADE, , , L_TALK
+	PRINTW 
+	
+	L_TALK '= @"アキュラの年なら、ボクとそう変わらないはずですよ"
+	L_TALK += "_" + @"そうだろう、アキュラ？"
+	CALL PRINT_TALK_BY_CHARA, GV, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"……そうだな。そのぐらいだった、と思う"
+	CALL PRINT_TALK_BY_CHARA, COPEN, , , L_TALK
+	PRINTW 
+
+	L_TALK '= @"思う、って……自分の年でしょ？　興味なさすぎない……？"
+	CALL PRINT_TALK_BY_CSV, [[キャラ:GV]], "FACE_EX_1", L_TALK, "시안"
+	PRINTW 
+	
+	RESETCOLOR
+ENDSELECT
+CUSTOMDRAWLINE =

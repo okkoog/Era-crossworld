@@ -1,0 +1,579 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:アイコンセット_プレイヤー.ERB
+;	Facility	:プレイヤーがアイコンをセットする際のUI
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/05/28		P(bazzile)				MAG.ERBから独立させる形で新設
+;	002		2024/10/07		P(bazzile)				リンク悪魔の顔画像を使う場合、アイコンセット画面で現在の設定が正しく表示されない不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;===================================================
+;顔グラ変更
+;===================================================
+@顔グラ変更, L_CHARA
+#DIM DYNAMIC LCOUNT,2
+#DIM DYNAMIC L_CSVNO, 2
+#DIM DYNAMIC L_LINK
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC SHOW_LINE
+#DIM DYNAMIC L_XPOS
+#DIM DYNAMIC L_YPOS
+#DIM DYNAMIC L_HEIGHT
+#DIMS DYNAMIC L_BORDER_COLOR
+#DIMS DYNAMIC L_BG_COLOR
+#DIMS DYNAMIC SELECT_SITUATION
+#DIMS DYNAMIC SELECT_ICON
+#DIM CONST START_PATTERN_LIST = 10
+#DIMS DYNAMIC L_PATTERN_LIST, FACE_PATTERNNUM
+#DIM CONST START_ICON_LIST = 20
+#DIM DYNAMIC SELECT_ABLE, 200 + 20
+#DIMS DYNAMIC L_ICON_LIST, 200
+#DIM DYNAMIC COUNT_PUSHED_ICON_LIST
+#DIM DYNAMIC IMG_SIZE
+#DIM DYNAMIC LINE, 2
+#DIMS CONST SELECT_TABLE = "基本", "悪魔変身", "調教", "3", "4", "5", "6", "7"
+#DIMS CONST SELECT_NAME_TABLE = "기본", "악마변신", "조교화면", "3", "4", "5", "6", "7"
+#DIM DYNAMIC IS_MINIMUM
+
+L_CSVNO = GET_ICON_CSVNO(NO:L_CHARA), GET_ICON_CSVNO(CFLAG:L_CHARA:초기링크악마)
+CALL 顔グラ追加, L_CSVNO
+SIF L_CSVNO:1 > 0
+	CALL 顔グラ追加, L_CSVNO:1
+
+VARSET LOCAL
+SELECT_SITUATION '= ICON_SITUATION:0
+;==============================================================
+;つかえるアイコンのリスト登録
+;==============================================================
+VARSET COUNT_PUSHED_ICON_LIST
+
+VARS SPLITE_TYPE_TABLE, 6
+SPLITE_TYPE_TABLE '= "ユーザー自作", "통상", "TS", "UNIQUE", "초기링크악마", "初期リンク悪魔_UNIQUE"
+FOR LCOUNT:1, 0, VARSIZE("SPLITE_TYPE_TABLE")
+	FOR LCOUNT, 0, FINDELEMENT(USED_CHARA_GID, 0)
+		SELECTCASE SPLITE_TYPE_TABLE:(LCOUNT:1)
+			CASE "ユーザー自作"
+				SIF !STRCOUNT(CHARA_GID_SPRITENAME:LCOUNT, GET_識別名(L_CSVNO) + "_USER_\\d")
+					CONTINUE
+			CASE "통상"
+				IF TALENT:L_CHARA:남자 == CSVTALENT(L_CSVNO, GETNUM(TALENT, "남자"))
+					SIF !STRCOUNT(CHARA_GID_SPRITENAME:LCOUNT, "\^" + GET_識別名(L_CSVNO) + "_FACE_\\d")
+						CONTINUE
+				ELSE
+					SIF !STRCOUNT(CHARA_GID_SPRITENAME:LCOUNT, "\^" + GET_識別名(L_CSVNO) + "_FACE_TS_\\d")
+						CONTINUE
+				ENDIF
+			CASE "TS"
+				IF TALENT:L_CHARA:남자 != CSVTALENT(L_CSVNO, GETNUM(TALENT, "남자"))
+					SIF !STRCOUNT(CHARA_GID_SPRITENAME:LCOUNT, "\^" + GET_識別名(L_CSVNO) + "_FACE_\\d")
+						CONTINUE
+				ELSE
+					SIF !STRCOUNT(CHARA_GID_SPRITENAME:LCOUNT, "\^" + GET_識別名(L_CSVNO) + "_FACE_TS_\\d")
+						CONTINUE
+				ENDIF
+			CASE "초기링크악마"
+				SIF !L_CSVNO:1
+					BREAK
+				SIF !STRCOUNT(CHARA_GID_SPRITENAME:LCOUNT, GET_識別名(L_CSVNO:1) + "_FACE_\\d")
+					CONTINUE
+			CASE "初期リンク悪魔_UNIQUE"
+				SIF !L_CSVNO:1
+					BREAK
+				SIF !STRCOUNT(CHARA_GID_SPRITENAME:LCOUNT, GET_識別名(L_CSVNO:1) + "_FACE_UNIQUE_\\d")
+					CONTINUE
+			CASEELSE
+				SIF !STRCOUNT(CHARA_GID_SPRITENAME:LCOUNT, "\^" + GET_識別名(L_CSVNO) + @"_FACE_%SPLITE_TYPE_TABLE:(LCOUNT:1)%_\\d")
+					CONTINUE
+		ENDSELECT
+		;条件つきでつかえないもの
+		TRYCCALLFORM DEFINE_UNABLE_ICON_{NO:L_CHARA}, L_CHARA, CHARA_GID_SPRITENAME:LCOUNT
+			SIF RESULT
+				CONTINUE
+		CATCH
+		ENDCATCH
+		L_ICON_LIST:COUNT_PUSHED_ICON_LIST '= CHARA_GID_SPRITENAME:LCOUNT
+		COUNT_PUSHED_ICON_LIST++
+	NEXT
+NEXT
+IF CSTR:L_CHARA:랜덤캐릭터아이콘파일명 != "" && ランダムキャラ_顔グラ追加_F(CSTR:L_CHARA:랜덤캐릭터아이콘파일명)
+	L_ICON_LIST:COUNT_PUSHED_ICON_LIST '= CSTR:L_CHARA:랜덤캐릭터아이콘파일명
+	COUNT_PUSHED_ICON_LIST++
+ENDIF
+
+;種族アイコンと鬼アイコンを末端に追加
+L_ICON_LIST:COUNT_PUSHED_ICON_LIST '= GET_RACE_ICON_ADDRESS_BY_CHARA(L_CHARA)
+COUNT_PUSHED_ICON_LIST++
+
+L_ICON_LIST:COUNT_PUSHED_ICON_LIST '= GET_ONI_MARK("正常")
+COUNT_PUSHED_ICON_LIST++
+
+LINE = LINECOUNT
+RESULT = 0
+
+IMG_SIZE = 6
+$START
+CLEARLINE LINECOUNT - LINE
+
+VARSET SELECT_ABLE
+
+DRAWLINE
+PRINTL 아이콘변경
+DRAWLINE
+
+;==============================================================
+;現在のアイコン表示とボタン作成
+;==============================================================
+VARSET SHOW_LINE
+VARS L_NOW_ICON, 2
+VARS L_SPLITE
+VARS SELECT_SYMBOL
+VARS SELECT_NAME
+VARI COUNT_SHOW_ICON = 0
+VARI COUNT_NOW_ICON_BLANK
+
+SELECT_ICON '= CSTR:L_CHARA:(SELECT_SITUATION + "アイコンファイルネーム")
+FOR LCOUNT, 0, VARSIZE("ICON_SITUATION")
+	SELECTCASE ICON_SITUATION:LCOUNT
+		CASE "悪魔変身"
+			SIF !GET_ROLE_PROP("CAN_USE_TRANS", L_CHARA)
+				CONTINUE
+	ENDSELECT
+
+	;----------------------------------------------------------
+	;情報の取得
+	;----------------------------------------------------------
+	;ボタンとして選べるようにする
+	IF CSTR:L_CHARA:아이콘패턴 == ""
+		SELECT_ABLE:LCOUNT = 1
+	ELSE
+		SELECT_ABLE:LCOUNT = 0
+	ENDIF
+
+	SELECT_SYMBOL '= TOSTR(LCOUNT)
+	SELECT_NAME '= @"%"[" + SELECT_SYMBOL + "] " + SELECT_NAME_TABLE:LCOUNT, 12, LEFT%"
+
+	L_XPOS = (IMG_SIZE * 2 + 4) * 50 * COUNT_SHOW_ICON + 100
+	L_YPOS = 0
+	L_HEIGHT = IMG_SIZE * 100 + 50 * 2
+	;パターン適用中
+	IF CSTR:L_CHARA:아이콘패턴 != ""
+		L_BORDER_COLOR '= TOSTR_HTML(COLOR("gray"))
+		L_BG_COLOR '= TOSTR_HTML(BGCOLOR("DEFAULT"))
+	;選択中なら色を変える
+	ELSEIF SELECT_SITUATION == ICON_SITUATION:LCOUNT
+		L_BORDER_COLOR '= TOSTR_HTML(COLOR("yellow"))
+		;透過が進むまでは封印しておくべきな感
+		L_BG_COLOR '= TOSTR_HTML(BGCOLOR("DEFAULT"))
+		;L_BG_COLOR '= TOSTR_HTML(BGCOLOR("light-black"))
+	ELSE
+		L_BORDER_COLOR '= TOSTR_HTML(COLOR("DEFAULT"))
+		L_BG_COLOR '= TOSTR_HTML(BGCOLOR("DEFAULT"))
+	ENDIF
+
+	;----------------------------------------------------------
+	;アイコン表示
+	;----------------------------------------------------------	
+	;アイコンをHTML形式で取得
+	IF CSTR:L_CHARA:아이콘패턴 == ""
+		L_SPLITE '= GET_FACE_BY_CHARA_AS_HTML(L_CHARA, IMG_SIZE * 100, ICON_SITUATION:LCOUNT, "通常形態")
+	ELSE
+		L_SPLITE '= " " * IMG_SIZE * 2
+	ENDIF
+	SHOW_LINE += MAKE_顔グラ選択肢_F(L_XPOS, L_YPOS, L_HEIGHT, L_SPLITE, SELECT_SYMBOL, SELECT_NAME, L_BORDER_COLOR, L_BG_COLOR, IS_MINIMUM)
+	COUNT_SHOW_ICON++
+	
+	;画像サイズ + PADDING
+	SIF LCOUNT == 0
+		COUNT_NOW_ICON_BLANK += 2 + IMG_SIZE + 1
+NEXT
+
+;==============================================================
+;パターン指定がある場合
+;==============================================================
+VARSET L_PATTERN_LIST
+FOR LCOUNT, 0, FACE_PATTERNNUM
+	VARSET RESULTS_F, "", 0, 3
+	IF EXISTFUNCTION(@"DEFINE_FACE_PATTERN_CHARA_{L_CSVNO}")
+		CALLFORMF DEFINE_FACE_PATTERN_CHARA_{L_CSVNO}, L_CHARA, LCOUNT
+		SIF RESULTS_F == ""
+			CONTINUE
+	ELSE
+		CONTINUE
+	ENDIF
+	L_PATTERN_LIST:LCOUNT '= RESULTS_F
+	IF RESULTS_F:2 == ""
+		L_SPLITE '= RESULTS_F:1
+	ELSE
+		L_SPLITE '= RESULTS_F:2
+	ENDIF
+
+	SELECT_ABLE:(LCOUNT + START_PATTERN_LIST) = 1
+	SELECT_SYMBOL '= TOSTR(LCOUNT + START_PATTERN_LIST)
+	SELECT_NAME '= @"%"[" + SELECT_SYMBOL + "] " + "SET - " + TOSTR(LCOUNT + 1) , 12, LEFT%"
+
+	;選択中なら色を変える
+	IF CSTR:L_CHARA:아이콘패턴 == L_PATTERN_LIST:LCOUNT
+		L_BORDER_COLOR '= TOSTR_HTML(COLOR("yellow"))
+		;透過が進むまでは封印しておくべきな感
+		;L_BG_COLOR '= TOSTR_HTML(BGCOLOR("DEFAULT"))
+		L_BG_COLOR '= TOSTR_HTML(BGCOLOR("light-black"))
+	ELSE
+		L_BORDER_COLOR '= TOSTR_HTML(COLOR("DEFAULT"))
+		L_BG_COLOR '= TOSTR_HTML(BGCOLOR("DEFAULT"))
+	ENDIF
+
+	L_XPOS = (IMG_SIZE * 2 + 4) * 50 * COUNT_SHOW_ICON + 100
+	L_YPOS = 0
+	L_HEIGHT = IMG_SIZE * 100 + 50 * 2
+	L_SPLITE '= SET_IMG_TAG(L_SPLITE, IMG_SIZE * 100)
+
+	SHOW_LINE += MAKE_顔グラ選択肢_F(L_XPOS, L_YPOS, L_HEIGHT, L_SPLITE, SELECT_SYMBOL, SELECT_NAME, L_BORDER_COLOR, L_BG_COLOR, IS_MINIMUM)
+	
+	COUNT_SHOW_ICON++
+NEXT
+
+;リストに入ってないアイコンパターンがセットされてたら解除してやり直し
+IF MATCH(L_PATTERN_LIST, CSTR:L_CHARA:아이콘패턴) == 0
+	PRINTFORMW CSTR:L_CHARA:아이콘패턴 = %CSTR:L_CHARA:아이콘패턴%
+	CSTR:L_CHARA:아이콘패턴 '= ""
+	GOTO START
+ENDIF
+
+;SHOW_LINE += "<br>" * COUNT_NOW_ICON_BLANK
+VARI PATTERN_SELECT_WINDOW_LINE = LINECOUNT + 4
+HTML_PRINT SHOW_LINE
+FOR LCOUNT, 0, COUNT_NOW_ICON_BLANK
+	PRINTL 
+NEXT
+DRAWLINE
+
+;==============================================================
+;選択肢の表示
+;==============================================================
+VARI L_COLUMNNUM = 8
+L_ICON_LIST:COUNT_PUSHED_ICON_LIST '= RESULTS
+;選択肢が3列を越えてしまう場合は縮小表示をかける
+IF COUNT_PUSHED_ICON_LIST > L_COLUMNNUM * 3
+	L_COLUMNNUM = 11
+	IS_MINIMUM = 1
+	IMG_SIZE = 4
+ENDIF
+VARSET COUNT_NOW_ICON_BLANK
+VARSET SHOW_LINE
+FOR LCOUNT, 0, COUNT_PUSHED_ICON_LIST
+	;----------------------------------------------------------
+	;情報の取得
+	;----------------------------------------------------------
+	SELECT_SYMBOL '= TOSTR(LCOUNT + START_ICON_LIST)
+	SELECT_NAME '= @"%"[" + SELECT_SYMBOL + "] " + "", 12, LEFT%"
+
+	;ボタンとして選べるようにする
+	IF CSTR:L_CHARA:아이콘패턴 == ""
+		SELECT_ABLE:(LCOUNT + START_ICON_LIST) = 1
+	ELSE
+		SELECT_ABLE:(LCOUNT + START_ICON_LIST) = 0
+	ENDIF
+	L_XPOS = (IMG_SIZE * 2 + 4) * 50 * (LCOUNT % L_COLUMNNUM) + 100
+	L_YPOS = (2 + 2 + IMG_SIZE * 2 + 2 + 1) * 50 * (LCOUNT / L_COLUMNNUM)
+	L_HEIGHT = IMG_SIZE * 100 + 50 * 2
+
+	IF CSTR:L_CHARA:아이콘패턴 != "" || CFLAG:L_CHARA:유저지정아이콘번호 > 0
+		L_BORDER_COLOR '= TOSTR_HTML(COLOR("gray"))
+		L_BG_COLOR '= TOSTR_HTML(BGCOLOR("DEFAULT"))
+	ELSEIF SELECT_ICON == L_ICON_LIST:LCOUNT
+		L_BORDER_COLOR '= TOSTR_HTML(COLOR("yellow"))
+		;透過が進むまでは封印しておくべきな感
+		L_BG_COLOR '= TOSTR_HTML(BGCOLOR("DEFAULT"))
+		;L_BG_COLOR '= TOSTR_HTML(BGCOLOR("light-black"))
+	ELSE
+		L_BORDER_COLOR '= TOSTR_HTML(COLOR("DEFAULT"))
+		L_BG_COLOR '= TOSTR_HTML(BGCOLOR("DEFAULT"))
+	ENDIF
+
+	;----------------------------------------------------------
+	;アイコン表示
+	;----------------------------------------------------------
+	L_SPLITE '= SET_IMG_TAG(L_ICON_LIST:LCOUNT, IMG_SIZE * 100)
+
+	SHOW_LINE += MAKE_顔グラ選択肢_F(L_XPOS, L_YPOS, L_HEIGHT, L_SPLITE, SELECT_SYMBOL, SELECT_NAME, L_BORDER_COLOR, L_BG_COLOR, IS_MINIMUM)
+	COUNT_SHOW_ICON++
+	
+	;画像サイズ + PADDING
+	IF LCOUNT % L_COLUMNNUM == 0
+		COUNT_NOW_ICON_BLANK += IMG_SIZE
+		IF !IS_MINIMUM
+			COUNT_NOW_ICON_BLANK += 3
+		ELSE
+			COUNT_NOW_ICON_BLANK += 2
+		ENDIF
+		;2列目以降はブランクが1個増える
+		IF LCOUNT
+			COUNT_NOW_ICON_BLANK += 1
+			;ミニマム表示で削りすぎた端数を追加する。
+			SIF (LCOUNT % L_COLUMNNUM * 3) == 0
+				COUNT_NOW_ICON_BLANK += 1
+		ENDIF
+	ENDIF
+NEXT
+;SHOW_LINE += "<br>" * COUNT_NOW_ICON_BLANK
+HTML_PRINT SHOW_LINE
+FOR LCOUNT, 0, COUNT_NOW_ICON_BLANK
+	PRINTL 
+NEXT
+DRAWLINE
+SIF CFLAG:L_CHARA:유저지정아이콘번호 > 0
+	SETCOLOR COLOR("yellow")
+PRINTFORML [8] 캐릭터지정 추가 아이콘
+RESETCOLOR
+DRAWLINE
+HTML_PRINT SET_BUTTON_TAG("[9] 돌아간다", "9")
+VARI INPUTS_LINECOUNT = LINECOUNT
+WHILE 1
+	INPUTS
+	CLEARLINE LINECOUNT - INPUTS_LINECOUNT
+	IF RESULTS == "9"
+		RETURN 0
+	ELSEIF RESULTS == "8"
+		CALL SET_USER_CHARA_ICON, L_CHARA
+		BREAK
+	ELSEIF ISNUMERIC(RESULTS)
+		VARI L_RESULT = TOINT(RESULTS)
+		IF INRANGE(L_RESULT, 0, VARSIZE("SELECT_ABLE") - 1) && SELECT_ABLE:L_RESULT
+			SELECTCASE L_RESULT
+				CASE 0 TO VARSIZE("SELECT_TABLE") - 1
+					SELECT_SITUATION '= ICON_SITUATION:L_RESULT
+				CASE START_PATTERN_LIST TO START_PATTERN_LIST + FACE_PATTERNNUM - 1
+					VARS SELECT_PATTERN
+					SELECT_PATTERN '= L_PATTERN_LIST:(L_RESULT - START_PATTERN_LIST)
+						L_XPOS = 200
+						L_YPOS = (PATTERN_SELECT_WINDOW_LINE - LINECOUNT) * 100
+					IF CSTR:L_CHARA:아이콘패턴 != SELECT_PATTERN
+						{
+						HTML_PRINT_ISLAND @"<div display = 'absolute-leftbottom' border_width = '3px' border_color = '%TOSTR_HTML(COLOR("p-green"))%'
+											width = '5000' height = '800' background_color = '%TOSTR_HTML(GETBGCOLOR())%'
+											div padding = '50' xpos = '{L_XPOS}' ypos = '{L_YPOS}'>"
+											 + "このボタンはアイコンセットとなります。" + "<br>"
+											 + "アイコンセットでは細かい調整はできなくなりますが、システムで指定したアイコンが自動的に適用され、" + "<br>"
+											 + "自動的にゲーム進度やキャラクターの状況などで、予め指定された差分が適用されるようになります。" + "<br>"
+											 + "セットを適用してもよろしいですか？" + "<br>"
+											 + " " + "<br>"
+											 + SET_BUTTON_TAG("[0] 適用する", "0") + "<br>"
+											 + SET_BUTTON_TAG("[1] 適用しない", "1")
+											 + "</div>"
+						}
+						CALL INPUT_YN, "", "", 0
+						SIF RESULT == 0
+							CSTR:L_CHARA:아이콘패턴 '= SELECT_PATTERN
+					ELSE
+						{
+						HTML_PRINT_ISLAND @"<div display = 'absolute-leftbottom' border_width = '3px' border_color = '%TOSTR_HTML(COLOR("p-green"))%'
+											width = '5000' height = '800' background_color = '%TOSTR_HTML(GETBGCOLOR())%'
+											div padding = '50' xpos = '{L_XPOS}' ypos = '{L_YPOS}'>"
+											 + "現在はこのアイコンセットが適用されています。" + "<br>"
+											 + "アイコンセットでは細かい調整はできなくなりますが、システムで指定したアイコンが自動的に適用され、" + "<br>"
+											 + "自動的にゲーム進度やキャラクターの状況などで、予め指定された差分が適用されるようになります。" + "<br>"
+											 + "アイコンセットを解除してもよろしいですか？" + "<br>"
+											 + " " + "<br>"
+											 + SET_BUTTON_TAG("[0] 解除する", "0") + "<br>"
+											 + SET_BUTTON_TAG("[1] 解除しない", "1")
+											 + "</div>"
+						}
+						CALL INPUT_YN, "", "", 0
+						SIF RESULT == 0
+							CSTR:L_CHARA:아이콘패턴 '= ""
+					ENDIF
+					HTML_PRINT_ISLAND_CLEAR
+
+				CASE START_ICON_LIST TO START_ICON_LIST + VARSIZE("L_ICON_LIST") - 1
+					CSTR:L_CHARA:(SELECT_SITUATION + "アイコンファイルネーム") '= L_ICON_LIST:(L_RESULT - START_ICON_LIST)
+			ENDSELECT
+			BREAK
+		ENDIF
+	ENDIF
+WEND
+GOTO START
+
+@MAKE_顔グラ選択肢_F, L_XPOS, L_YPOS, L_HEIGHT, L_SPLITE,SELECT_SYMBOL, SELECT_NAME, L_BORDER_COLOR, L_BG_COLOR, IS_MINIMUM
+#FUNCTIONS 
+#DIMS DYNAMIC L_RESULTS, 3
+#DIM DYNAMIC L_XPOS
+#DIM DYNAMIC L_YPOS
+#DIM DYNAMIC L_HEIGHT
+#DIMS DYNAMIC L_SPLITE
+#DIMS DYNAMIC SELECT_SYMBOL
+#DIMS DYNAMIC SELECT_NAME
+#DIMS DYNAMIC L_BORDER_COLOR
+#DIMS DYNAMIC L_BG_COLOR
+#DIM DYNAMIC IS_MINIMUM
+;----------------------------------------------------------
+;名称と選択欄
+;----------------------------------------------------------
+L_RESULTS:1 '= SELECT_NAME
+IF IS_MINIMUM
+	{
+	L_RESULTS:1 '=	@"<div border_width = '3px' border_color = '%L_BORDER_COLOR%' background_color = '%L_BG_COLOR%' 
+					padding = '35' xpos = '{L_XPOS}' ypos = '{L_YPOS + 15}'>"
+					+ "<font size = '75'>"
+					+ L_RESULTS:1
+					+ "</font>"
+					+ "</div>"
+	}
+	L_YPOS += 75 + 35 * 2;1行 + padding 50 * 2
+ELSE
+	{
+	L_RESULTS:1 '=	@"<div border_width = '3px' border_color = '%L_BORDER_COLOR%' background_color = '%L_BG_COLOR%' 
+					padding = '50' xpos = '{L_XPOS}' ypos = '{L_YPOS}'>"
+					+ L_RESULTS:1 + "</div>"
+	}
+	L_YPOS += 100 + 50 * 2;1行 + padding 50 * 2
+ENDIF
+
+;----------------------------------------------------------
+;アイコン表示
+;----------------------------------------------------------
+L_RESULTS:2 '= L_SPLITE
+{
+L_RESULTS:2 '=	@"<div border_width = '3px' border_color = '%L_BORDER_COLOR%' background_color = '%L_BG_COLOR%'
+				padding = '50' height = '{L_HEIGHT}' xpos = '{L_XPOS}' ypos = '{L_YPOS}'>"
+				 + L_RESULTS:2 + "</div>"
+}
+L_RESULTS:0 '= L_RESULTS:1 + L_RESULTS:2
+L_RESULTS:0 '= SET_BUTTON_TAG(L_RESULTS:0, SELECT_SYMBOL)
+RETURNF L_RESULTS:0
+
+@SET_USER_CHARA_ICON, L_CHARA
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_ICONNUM
+#DIM DYNAMIC GID
+#DIM DYNAMIC L_ROW
+#DIM DYNAMIC L_COLUMN
+#DIMS DYNAMIC SHOW_LINE
+#DIMS DYNAMIC L_ICON
+#DIM DYNAMIC L_PAGE
+#DIM CONST L_MAXPAGE = 10 
+#DIM DYNAMIC L_LINE
+#DIMS DYNAMIC L_BORDER_COLOR
+L_LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - L_LINE
+
+DRAWLINE
+PRINTL 캐릭터 지정 유저 아이콘
+DRAWLINE
+FOR L_COLUMN, 0, 7
+	SHOW_LINE '= ""
+	FOR L_ROW, 0, 15
+		L_ICONNUM = L_COLUMN * 15 + L_ROW
+		SIF L_ICONNUM == 100
+			BREAK
+		L_ICONNUM += L_PAGE * 100
+		SIF L_ICONNUM == 0
+			CONTINUE
+		GID = TEMP_GID_START + L_ICONNUM
+		GDISPOSE GID
+		IF GCREATEFROMFILE(GID,  @"01_キャラ指定追加アイコン\\%TOSTR(L_ICONNUM, "000")%.png")
+			L_ICON '= @"<img src = 'TEMP_USERICON_{GID}' height = '300'>"
+		ELSE
+			L_ICON '= ""
+		ENDIF
+		IF L_ICONNUM == CFLAG:L_CHARA:유저지정아이콘번호
+			L_BORDER_COLOR '= TOSTR_HTML(COLOR("yellow"))
+		ELSE
+			L_BORDER_COLOR '= TOSTR_HTML(GETDEFCOLOR())
+		ENDIF
+		SPRITECREATE @"TEMP_USERICON_{GID}", GID, 0, 0, MIN(GHEIGHT(GID), GWIDTH(GID)), MIN(GHEIGHT(GID), GWIDTH(GID))
+		{
+		SHOW_LINE += 	@"<div xpos = '{L_ROW * 400}' ypos = '0' border_width = '2px' border_color = '%L_BORDER_COLOR%' height = '350' width = '350'padding = '15'>"
+						+ SET_BUTTON_TAG(L_ICON, TOSTR(L_ICONNUM % 100))
+						+ "</div>"
+		}
+		{
+		SHOW_LINE += @"<div xpos = '{L_ROW * 400}' ypos = '0' border_width = '2px' border_color = '%L_BORDER_COLOR%' background_color = '%TOSTR_HTML(GETDEFBGCOLOR())%' padding = '25'>"
+					 + "<font size = '75'>" + "　" + "</font>"
+					 + "</div>"
+		}
+		{
+		SHOW_LINE += @"<div xpos = '{L_ROW * 400 + 30 - (L_ICONNUM % 100 < 10 ? 25 # 0)}' ypos = '40'>"
+					 + SET_COLOR_TAG("<font size = '75'>" + @"{L_ICONNUM % 100, 2}" + "</font>", "p-green")
+					 + "</div>"
+		}
+	NEXT
+	HTML_PRINT SHOW_LINE
+	PRINTL 
+	PRINTL 
+	PRINTL 
+NEXT
+DRAWLINE
+HTML_PRINT SET_BUTTON_TAG("[-]", "-") + @" Page.<{L_PAGE}> " + SET_BUTTON_TAG("[+]", "+")
+DRAWLINE
+PRINTFORML %CALLNAME:L_CHARA%의 아이콘으로 지정할 이미지를 직접 선택해 주십시오.
+PRINTFORML 지정 가능한 아이콘은 『resources\\01_캐릭터지정추가아이콘』 폴더 내에
+PRINTFORML 『001.png』~『999.png』까지의 파일명을 가진 파일을 넣음으로써 추가할 수 있습니다.
+DRAWLINE
+PRINTFORML [101] 폴더 다시 읽기
+PRINTFORML [102] 아이콘 지정을 해제하고 돌아간다
+PRINTFORML [103] 돌아간다
+INPUTS
+WHILE 1
+	IF ISNUMERIC(RESULTS)
+		VARI L_RESULT = TOINT(RESULTS)
+		SELECTCASE L_RESULT
+			CASE 101
+				GOTO START
+			CASE 102
+				SIF GCREATED(CFLAG:L_CHARA:캐릭터고유번호 + USER_SELECT_GIDNUM_START)
+					GDISPOSE CFLAG:L_CHARA:캐릭터고유번호 + USER_SELECT_GIDNUM_START 
+				CFLAG:L_CHARA:유저지정아이콘번호 = 0
+				BREAK
+			CASE 103
+				BREAK
+			CASE 0 TO 100
+				SIF GCREATED(CFLAG:L_CHARA:캐릭터고유번호 + USER_SELECT_GIDNUM_START)
+					GDISPOSE CFLAG:L_CHARA:캐릭터고유번호 + USER_SELECT_GIDNUM_START
+				IF SPRITECREATED(@"TEMP_USERICON_%TOSTR(TEMP_GID_START + L_PAGE * 100 + L_RESULT, "000")%")
+					CFLAG:L_CHARA:유저지정아이콘번호 = L_PAGE * 100 + L_RESULT
+				ENDIF
+		ENDSELECT
+	ELSEIF RESULTS == "+"
+		L_PAGE++
+		SIF L_PAGE >= L_MAXPAGE
+			L_PAGE = 0
+	ELSEIF RESULTS == "-"
+		L_PAGE--
+		SIF L_PAGE < 0
+			L_PAGE = L_MAXPAGE - 1
+	ELSE
+		CONTINUE
+	ENDIF
+	GOTO START
+WEND
+VARI LCOUNT
+FOR LCOUNT, TEMP_GID_START, TEMP_GID_START + L_MAXPAGE * 100
+	GDISPOSE LCOUNT
+NEXT
+RETURN 1
+
+@顔グラ数(ARG,ARG:1 = 0)
+#FUNCTION
+#DIM LCOUNT
+#DIM L_NO
+LOCAL = 0
+LOCAL:1 = -1
+L_NO = NO:ARG
+FOR LCOUNT, 0, 998
+	SIF EXIST_PICTURE(L_NO, 100 * LCOUNT)
+		LOCAL ++
+	SIF LOCAL:1 < 0
+		LOCAL:1 = LCOUNT
+	;SIF LCOUNT == 99
+	;	BREAK
+NEXT
+SIF ARG:1 && LOCAL:1 > -1
+	RESULT:1 = LOCAL:1
+RETURNF LOCAL
+;---- EDIT 011 ADD END -------------------------
+;---- EDIT 002 MOD END ---------------------------

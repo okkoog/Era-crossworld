@@ -1,0 +1,153 @@
+﻿;====================
+;条件
+;====================
+@EVENT_TITLE_202_6
+RESULTS '= "눈동자에 깃든 것은 종언의 불"
+
+@EVENT_EXPLAIN_202_6
+RESULTS:0 '= "보수: 브리게이드 획득"
+IF GETCHARA([[キャラ:브리게이드_X2]]) >= 0
+	RESULTS:1 '= "　　 ※보수 소지 중"
+ELSE
+	RESULTS:1 '= "　　 ※보수를 수령하려면 도리 카드몬이 필요"
+ENDIF
+
+@PLAYABLE_EVENT_202_6
+SIF !GETBIT(FLAG:발견ED2, 11)
+	RETURN 0
+RETURN 1
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_202_6
+PRINTFORML ………
+PRINTFORML ……
+PRINTFORMW …
+PRINTFORMW 그레이브 필러　공장 블록 최심부――
+PRINTFORML 길목보다 희미한 불빛이 방을 비추고 있다. 주변에 널려 있는 것은 기계의 잔해들뿐.
+PRINTFORMW 어둑어둑해서 확실하진 않지만, 파괴된 흔적이라기보다는 부품을 빼낸 흔적으로 보인다.
+PRINTFORML 　
+PRINTFORMW 「설마, 또 여기에 나타날 줄이야. 기쁜 오산이로군요」
+PRINTFORML 　
+PRINTFORML 격납고 너머에는, 헤비 바자르트와――그 조종석에 들어앉은 브리게이드.
+PRINTFORMW ……설마, %CALLNAME:MASTER% 일행이 올 때까지 계속 저곳에서 기다리고 있었던 걸까?
+PRINTFORML 　
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:브리게이드_X2]]), [[キャラ:브리게이드_X2]], "FACE_EX_0" , , "마스크"
+PRINTFORMW 「착안점이 거기였습니까! 그런 건 아무래도 상관없는 일입니다!」
+CLEARLINE 7
+PRINTFORML 「착안점이 거기였습니까! 그런 건 아무래도 상관없는 일입니다!」
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:브리게이드_X2]]), [[キャラ:브리게이드_X2]], "FACE_EX_0" , , "마스크"
+PRINTFORMW 「자아, 돌격!」
+CLEARLINE 7
+PRINTFORML 「자아, 돌격!」
+PRINTFORML 　
+PRINTFORMW 워커　브리게이드가　1체 나타났다!
+
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+CALL SET_BOSS_ENEMY_EVENT_202, "ブリガド"
+CALL BATTLE_START
+
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+SIF FLAG:패배플래그
+	RETURN 0
+
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:브리게이드_X2]]), [[キャラ:브리게이드_X2]]
+PRINTFORMW 「대장님의, 곁으로……」
+CLEARLINE 7
+PRINTFORML 「대장님의, 곁으로……」
+PRINTFORML 　
+PRINTFORML 두 동강 난 브리게이드에게서, 사방팔방으로 흩날리는 Pix.
+IF GETCHARA([[キャラ:브리게이드_X2]]) > 0 || ITEM:도리・카드몬 == 0
+	PRINTFORML 외각이 소실되고, 소체가 드러나자, 내부에서 섬광이 번쩍이더니――대폭발.
+	PRINTFORMW 주위의 탄약에 인화하여, 대장과 마찬가지로 잔불조차 남기지 않는 것이었다.
+ELSE
+	PRINTFORML 이대로 방치하면, 머지않아 소체가 드러나 대폭발할 것이다.
+	PRINTFORML 과연, 도리 카드몬을 써야 할까?
+	CALL INPUT_YN, "예", "아니오"
+	IF RESULT == 0
+		PRINTFORML %CALLNAME:MASTER%은(는) 재빠르게 도리 카드몬을 집어던져,
+		PRINTFORML 소체의 대용품으로서 주위에 흩날린 Pix를 남김없이 흡수시켜 간다.
+		PRINTFORMW ……그렇게 완성된 것은, 악마로 다시 태어난 브리게이드의 모습이었다.
+		PRINTFORML 　
+		CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:브리게이드_X2]]), [[キャラ:브리게이드_X2]]
+		PRINTFORMW 「으냐아!? 네놈, 도대체 자신에게 무슨 짓을 한 것입니까!」
+		CLEARLINE 7
+		PRINTFORML 「으냐아!? 네놈, 도대체 자신에게 무슨 짓을 한 것입니까!」
+		PRINTFORML 　
+		PRINTFORML 경악하기도 하고 격노하기도 하는 틈을 타, 능숙하게 계약을 진행하여――
+		PRINTFORMW 마침내 브리게이드는 %CALLNAME:MASTER%의 악마가 되는 것이었다.
+		PRINTFORML 　
+		PRINTFORMW ＞브리게이드가 동료마가 되었다.
+		ITEM:도리・카드몬 -= 1
+		CALL ADD_NEW_COMPANION, [[キャラ:브리게이드_X2]], 0
+	ELSE
+		PRINTFORML %CALLNAME:MASTER%은(는) 도리 카드몬을 쓰지 않기로 하고, 전말을 지켜보기로 했다.
+		PRINTFORML 외각이 소실되고, 소체가 드러나자, 내부에서 섬광이 번쩍이더니――대폭발.
+		PRINTFORMW 주위의 탄약에 인화하여, 대장과 마찬가지로 잔불조차 남기지 않는 것이었다.
+	ENDIF
+ENDIF
+CUSTOMDRAWLINE =
+RETURN 1
+
+@SET_ACTION_ヘヴィバザルト2, ARG
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIM バフチェック
+#DIM ガーキルチェック
+#DIM TEMP
+#DIM 攻撃配列, 2
+IF CFLAG:ARG:１more플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:기합]]
+ELSE
+	IF CFLAG:ARG:행동한횟수 == 0
+		SELECTCASE FLAG:경과턴수 % 6
+			CASE 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:회심의패기]]
+			CASE 1
+				CALL SET_ACTION_SKILL, ARG, [[스킬:워크라이]]
+			CASE 2
+				IF RAND:2 == 0
+					CALL SET_ACTION_SKILL, ARG, [[스킬:테트라칸]]
+				ELSE
+					CALL SET_ACTION_SKILL, ARG, [[스킬:마카라칸]]
+				ENDIF
+			CASE 3
+				CALL SET_ACTION_SKILL, ARG, [[스킬:파워브레스]]
+			CASE 4
+				CALL SET_ACTION_SKILL, ARG, [[스킬:도발]]
+			CASEELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:앉은비차동굴곰]]
+		ENDSELECT
+	ELSE
+		SELECTCASE FLAG:경과턴수 % 6
+			CASE 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:천경지폭단]]
+			CASE 1
+				CALL SET_ACTION_SKILL, ARG, [[스킬:뉴클리어미사일]]
+			CASE 2
+				CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ジャッジメントブレード")
+			CASE 3
+				CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ガトリングスコール")
+			CASE 4
+				CALL SET_ACTION_SKILL, ARG, [[스킬:원샷킬]]
+			CASEELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:슈퍼노바]]
+		ENDSELECT
+	ENDIF
+ENDIF
+
+@EVENT_BATTLE_ACTEND_ファイナルオペレーション2
+CALL EVENT_BATTLE_ACTEND_EVENT_201_2_6_ブリガド
+
+@FIGHT_IT_OUT_ファイナルオペレーション2
+CALL FIGHT_IT_OUT_EVENT_201_2_6_ブリガド
+RETURN RESULT
+
+@EVENT_BATTLE_LOSE_ファイナルオペレーション2
+RETURN 1

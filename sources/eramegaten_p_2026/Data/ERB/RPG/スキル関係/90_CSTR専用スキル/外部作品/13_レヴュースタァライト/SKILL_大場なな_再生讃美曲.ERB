@@ -1,0 +1,214 @@
+﻿;更新履歴
+;001	2022/05/01		kamedakeisuke(ﾟдﾟ)			新規作成
+;002	2022/06/05		kamedakeisuke(ﾟдﾟ)			非CR時威力調整、エラー避けのおまじない追加
+
+;スキル名
+@SKILL_NAME_再生讃美曲,ARG
+RESULTS = 再生讃美曲
+
+;　명중
+@SKILL_HITRATE_再生讃美曲, ARG
+RETURN 999
+
+;　威力
+@SKILL_POWER_再生讃美曲, ARG
+RETURN 215
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_再生讃美曲, ARG
+RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_再生讃美曲,ARG
+RETURN 3
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_再生讃美曲,ARG
+RETURN 3
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_再生讃美曲, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_再生讃美曲,ARG
+RETURN 0
+
+;　相性
+;複合相性
+@SKILL_TYPE_再生讃美曲,ARG
+RETURN GET_TYPE_NUM("검격"), GET_TYPE_NUM("핵열"), GET_TYPE_NUM("중력")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_再生讃美曲
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_再生讃美曲,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_再生讃美曲,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_再生讃美曲,ARG
+RETURN 2
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_再生讃美曲,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_再生讃美曲,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_再生讃美曲
+RETURN GET_SUCCESSION_NUM("검격")
+
+;속도보정
+@SKILL_SPEED_再生讃美曲, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_再生讃美曲
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_再生讃美曲, ARG = -1
+RETURN 15
+
+@継承不能_再生讃美曲
+RETURN 2
+
+@リンク不能_再生讃美曲
+RETURN 1
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_再生讃美曲, ARG = -1, ARG:1 = -1
+RETURN 4
+
+;====================================================
+;ダメージ発動時
+;ARG:0	行動者のキャラ番号
+;ARG:1	対象のキャラ番号
+;ARG:2	1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;
+;備考:標準の追加効果付与はblock・吸収の場合は発動しない。
+;====================================================
+@SKILL_DAMAGE_EFFECT_再生讃美曲, ARG, ARG:1, ARG:2
+SIF ARG:1 < 0
+	RETURN 0
+;無効以下では発動しない
+SIF ARG:2 <= -2
+	RETURN 0
+CALL SKILL_GUARD_KILL, ARG, "검격", CPOS(ARG:1), 1, "短縮"
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_再生讃美曲,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+ALIGNMENT CENTER
+SETCOLOR 0xfdca57
+PRINTL 【ＣＬＩＭＡＸ　ＡＣＴ】
+RESETCOLOR
+ALIGNMENT LEFT
+;パワーアップイベント中かつボスが最終形態時のみ、ボスの不死フラグを剥がして攻撃
+IF GETBIT(イベントフラグ:93:17, 5) && (イベントフラグ:93:0 == 12 || イベントフラグ:93:0 == 13) && (イベントフラグ:93:10 == [[キャラ:나나]])
+	;HPが1まで削れていたら不死身フラグを外して攻撃
+	SIF BASE:(CHARANUM-1):ＨＰ < 2
+		CFLAG:(CHARANUM-1):불사신플래그 = 0
+ENDIF
+
+TFLAG:필중 = 1
+;何らかの事情によりターゲットが22未満だったら
+IF CFLAG:ARG:타겟 < 22
+	;22（全体）をセット
+	CFLAG:ARG:타겟 = 22
+ENDIF
+
+;全体攻撃処理
+LOCAL = 22
+;ぶん殴る
+CALL ATTACK_FIELD,ARG,LOCAL,SKILL_NUM
+
+;パワーアップイベント中かつボスが最終形態時のみ、撃破時に敵が喋る
+IF GETBIT(イベントフラグ:93:17, 5) && (イベントフラグ:93:0 == 12 || イベントフラグ:93:0 == 13) && (イベントフラグ:93:10 == [[キャラ:나나]])
+	;ボスのHPがぴったり1の場合、『すでに削り切ったけど、攻撃をミスってとどめを刺せていない』状況と見る
+	;という処理が他のCAスキルには入っているのだが、これは必中なので起こりえない
+	;ボス撃破
+	IF BASE:(CHARANUM-1):ＨＰ < 1
+		ALIGNMENT CENTER
+		PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　　　　　　　　┃
+		PRINTL ┃　　　　　　 준나 쨩――호시미, 준나아앗! 　　　　　　┃
+		PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　　　　　　　　┃
+		PRINTL ┃　　　　　　　　　 나는, 네가ッ…… 　　　　　　　　　┃
+		PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　　　　　　　　┃
+		PRINTL ┃　　　　　　　 준나 쨩이 너무 좋아서어엇! 　　　　　　　┃
+		PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　　　　　　　　┃
+		PRINTW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ALIGNMENT LEFT
+		PRINTL
+		SETCOLOR 0x8ac4ec
+		PRINTW 　　　――언젠가 누군가 그 말로――
+		PRINTL
+		
+		ALIGNMENT CENTER
+		PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　　　　　　　　┃
+		PRINTL ┃　　　　　　　　　　무대에서, 기다릴게　　　　　　　　　　　┃
+		PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　　　　　　　　┃
+		PRINTW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		PRINTL 
+		ALIGNMENT LEFT
+		SETCOLOR 0xfdca57
+		PRINTW 　　　――그 온도로 나를　구원하는 거야――
+		SETCOLOR 0x33ffcc
+		
+	ENDIF
+ELSE
+	;クライマックスレヴュー終了。ゲージ取得をとめるために-1で送ってむこうで0にする
+	CALL SET_ROLE_CFLAG_DUNGEON, ARG,  "클라이맥스레뷰지속시간" , -1
+ENDIF
+
+ALIGNMENT CENTER
+SETCOLOR 0xfdca57
+PRINTW 【ＣＬＩＭＡＸ　ＲＥＶＵＥ／ＦＩＮＩＳＨ】
+PRINTL
+RESETCOLOR
+ALIGNMENT LEFT
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_再生讃美曲,ARG
+SETCOLOR 0xfdca57
+PRINTL 【ＣＬＩＭＡＸ　ＡＣＴ】
+RESETCOLOR
+PRINTL 끝없는 재연의 끝에서 얻은 반짝임이, 재생을 구가하는 칼날이 된다
+PRINTL 적 전체에게, 『검격·핵열·중력』 복합 상성에 의한 필중 초특대 데미지
+PRINTL +【무대소녀】 전원의 반짝임을 20 늘린다
+;大場ななパワーアップイベント中かつボスが最終形態時のみ、撃ち放題
+IF GETBIT(イベントフラグ:93:17, 7) && (イベントフラグ:93:0 == 12 || イベントフラグ:93:0 == 13) && (イベントフラグ:93:10 == [[キャラ:나나]])
+	SETCOLOR 0xfdca57
+	PRINTL 혼신의 일격으로 이 레뷰에 결착을!
+	RESETCOLOR
+;通常
+ELSE
+	PRINTL 사용하면 클라이맥스 레뷰는 종료된다
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_再生讃美曲,ARG
+RETURN 1

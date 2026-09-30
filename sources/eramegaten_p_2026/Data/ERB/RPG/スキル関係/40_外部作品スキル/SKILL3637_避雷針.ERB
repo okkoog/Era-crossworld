@@ -1,0 +1,248 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILL3637_避雷針.ERB
+;	Facility	:SKILL:3637 (피뢰침)。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2021/03/30		木綿豆腐				新規作成
+;	002		2021/04/06		木綿豆腐				ロックが切れた後再度ロックする際に、リセットするか聞かれないようにした
+;	003		2021/04/14		木綿豆腐				実行時のSKILL_TYPE呼び出しがおかしかったので修正
+;	004		2021/07/10		木綿豆腐				表示する相性を電撃に変更（攻撃は雷撃鱗で実行するので）
+;	005		2021/08/24		木綿豆腐				一度に三回まで実行できるようにした
+;													念のため継承できないようにした
+;	006		2022/05/12		木綿豆腐				ターゲット処理をより賢くした
+;	007		2023/10/22		木綿豆腐				表示する相性が電撃になってなかったので処理を変更
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_3637, ARG
+RESULTS = 피뢰침
+
+;　명중
+@SKILL_HITRATE_3637, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_3637, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3637, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3637, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3637, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3637, ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_3637, ARG
+RETURN GET_TYPE_NUM("전격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3637
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3637, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3637, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　사거리
+@SKILL_RANGE_3637, ARG
+RETURN 3
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3637, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3637
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+@継承不能_3637
+RETURN 1
+;不可
+
+;スキル変化？用ランク
+@SKILL_RANK_3637, ARG = -1
+RETURN 23
+;変化不可
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3637, ARG, ARG:1, ARG:2
+#LOCALSIZE 1
+#DIM DART_H
+LOCAL = POS(ARG:1)
+CALL SKILLGAGE_H_ADD, ARG, [[스킬:피뢰침]], 1
+DART_H = SKILLGAGE_H_GET(ARG, [[스킬:피뢰침]])
+CFLAG:ARG:("고유게이지D"+TOSTR(DART_H)) = 5
+CFLAG:ARG:("고유게이지H"+TOSTR(DART_H)) = LOCAL
+PRINTFORMW 　　%CALLNAME:LOCAL%을(를) 록했다!
+;====================================================
+;追加コマンド(一番下)
+;====================================================
+@INPUT_COM_NAME_3637,ARG
+RESULTS = 避雷針
+RESULTS:1 = 피뢰침
+RETURN 2
+
+@INPUT_COM_ABLE_避雷針,ARG
+RETURN 1
+
+;====================================================
+;コマンド実行
+;====================================================
+@INPUT_COM_避雷針, ARG
+#LOCALSIZE 1
+#DIM DART_H
+#DIM DART_TARGET
+CALL TARGET_CHECK_3637, ARG
+DART_H = SKILLGAGE_H_GET(ARG, [[스킬:피뢰침]])
+IF DART_H == 3
+	PRINTL 록 수가 상한에 도달했습니다.
+	PRINTL 현재 록 중인 타깃을 리셋하고 피뢰침을 실행하시겠습니까?
+	CALL INPUT_YN
+	IF RESULT == 1
+		PRINTL 록을 리셋하지 않았습니다.
+		RETURN -1
+	ELSE
+		CALL SKILLGAGE_H_SET, ARG, [[스킬:피뢰침]], 0
+	ENDIF
+ENDIF
+DO
+	$INPUT_LOOP
+	LOCAL = CFLAG:ARG:입력행동
+	CFLAG:ARG:입력행동 = 3637
+	DRAWLINE
+	SIF FLAG:스킬속성표시설정 == 1
+		CALL SKILL_EXPLAIN_PERFORMANCE, CFLAG:ARG:입력행동, ARG
+	CALL SKILL_EXPLAIN_3637
+	PRINTL CANCEL로 중단하는 것도 가능.
+	CALL GET_SKILL_PROP, "SKILL_TYPE", 3637, ARG
+	CALL SHOW_NOW_FORMATION_E, 0, 2, -1, "SELECT_TARGET", ARG, 3637
+	PRINTL [0] ＣＡＮＣＥＬ
+	INPUT
+	IF (RESULT < 17 && RESULT > 6) && POS(RESULT) > -1
+	ELSEIF RESULT == 0
+		RETURN -1
+	ELSE
+		CLEARLINE 23
+		SIF FLAG:스킬속성표시설정 == 1
+			CLEARLINE 1
+		GOTO INPUT_LOOP
+	ENDIF
+	DART_TARGET = RESULT
+	CALL PRINT_ACT_MESSAGE, ARG, 3637
+	CALL ACTION_3637, ARG, DART_TARGET
+	CALL BATTLE_EVENT_ACT, ARG
+	CFLAG:ARG:입력행동 = LOCAL
+	DART_H = SKILLGAGE_H_GET(ARG, [[스킬:피뢰침]])
+;DART_H < 3が1(真)である限りDO～LOOPを繰り返す(つまりDART_H=3以上になれば終わるということ)
+LOOP DART_H < 3
+RETURN -1
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@SKILLGAGE_DISPLAY_3637, ARG
+#LOCALSIZE 3
+#DIM DART_H
+#DIM ループ用1
+#DIM ループ用2
+#DIM ターゲット番号
+#DIM ロック時間
+#DIM ロック深度
+#DIM ターゲットリスト, 4
+
+ロック深度 = 0
+VARSET ターゲットリスト,0
+CALL TARGET_CHECK_3637, ARG
+DART_H = SKILLGAGE_H_GET(ARG, [[스킬:피뢰침]])
+SIF DART_H == 0
+	RETURN
+DART_H += 1
+FOR ループ用1, 1, DART_H
+	ターゲット番号 = CFLAG:ARG:("고유게이지H"+TOSTR(ループ用1))
+	ロック時間 = CFLAG:ARG:("고유게이지D"+TOSTR(ループ用1))
+	ロック深度 += 1
+	FOR ループ用2, 1, DART_H
+		SIF CFLAG:ARG:("고유게이지H"+TOSTR(ループ用1)) == CFLAG:ARG:("고유게이지H"+TOSTR(ループ用2)) && ループ用1 != ループ用2
+			ロック深度 += 1
+	NEXT
+	SELECTCASE ロック深度
+	CASE 1
+		SETCOLOR 0x11afe0
+	CASE 2
+		SETCOLOR 0xd2ae40
+	CASE 3
+		SETCOLOR 0xcc365d
+	ENDSELECT
+	IF MATCH(ターゲットリスト, ターゲット番号) == 0
+		PRINTFORML [POS.{CPOS(ターゲット番号), 2}] %CALLNAME:ターゲット番号,20,LEFT%　록온 중(남은 {ロック時間}턴)　심도{ロック深度}
+		ターゲットリスト:ループ用1 = ターゲット番号
+	ENDIF
+	RESETCOLOR
+	ロック深度 = 0
+NEXT
+
+;====================================================
+;ターゲットの生死をチェック
+;====================================================
+@TARGET_CHECK_3637, ARG
+#DIM DART_H
+#DIM ループ用1
+#DIM ループ用2
+#DIM ターゲット番号
+#DIM ロック時間
+
+DART_H = SKILLGAGE_H_GET(ARG, [[스킬:피뢰침]])
+SIF DART_H == 0
+	RETURN
+DART_H += 1
+FOR ループ用1, 1, DART_H
+	ターゲット番号 = CFLAG:ARG:("고유게이지H"+TOSTR(ループ用1))
+	ロック時間 = CFLAG:ARG:("고유게이지D"+TOSTR(ループ用1))
+	IF ターゲット番号 > 0 && GET_STATE(CFLAG:ターゲット番号:상태이상) != "DYING" && CPOS(ターゲット番号) > 0 && ロック時間 > 0
+	ELSE
+		CFLAG:ARG:("고유게이지H"+TOSTR(ループ用1)) = 0
+		CFLAG:ARG:("고유게이지D"+TOSTR(ループ用1)) = 0
+		CALL SKILLGAGE_H_ADD, ARG, [[스킬:피뢰침]], -1
+	ENDIF
+NEXT
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3637, ARG
+PRINTL 커맨드에서 사용.
+PRINTL 머리카락을 가공한 탄환을 상대에게 쏘아 넣어 록을 건다. 데미지는 발생하지 않으며 상성에 의해 무효화되지도 않는다.
+PRINTL 록은 최대 3회까지 걸 수 있으며, 동일한 대상에게 록을 중첩시키는 것도 가능.
+PRINTL 록한 대상은 「뇌격린」의 타깃이 되며, 록 심도가 높을수록 데미지는 증가한다.
+PRINTL 록온 상태는 5턴 동안 지속된다.
+
+@SKILL_ACTIONABLE_BATTLE_3637, ARG
+RETURN 0
+
+;継承に必要な部位
+
+

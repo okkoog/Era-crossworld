@@ -1,0 +1,97 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SHOP_REST.ERB
+;	Facility	:休憩関連の関数群です。
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/04/08		黒天					休憩確認オプション対応 +「朝まで休憩」追加
+;	003		2011/05/05		黒天					休憩確認設定オプション拡張。[휴식]コマンドの[朝まで休憩]変更を追加
+;	004		2020/06/15		JK好き					夜まで休憩するのレイアウトを変更
+;	005		2020/09/21		JK好き					夜まで休憩時に1回分しか休憩していなかった問題を修正
+;	006		2021/01/11		JK好き					夜まで休憩が夕方に使用できなかった問題を修正
+;	007		2022/06/07		Collared				UI整理プロジェクトにより配置変更。
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+@SHOPCOMABLE_103
+SIF !IS_USEABLE_SHOPCOM
+	RETURN 0
+RESULT:1 = 1
+RESULTS = 휴식
+SIF GET_TRAINABLE_NUM() <= 0
+	RETURN 0
+;IF FLAG:휴식확인플래그 == 2
+;	RESULTS = 朝まで休憩
+;ELSE
+;	RESULTS = 휴식
+;ENDIF
+RETURN 1
+
+@SHOP_COM_103, ARG
+IF !FLAG:휴식확인플래그
+	PRINTL 조교횟수를 소모하여 휴식하시겠습니까?
+
+	PRINTL [0] 휴식한다
+	PRINTL [1] 휴식하지 않는다
+	CALL INPUTINT(0, 1)
+	IF RESULT
+		RETURN 0
+	ELSE
+		FLAG:조교실행완료횟수++
+		PRINTW 휴식했습니다
+		FLAG:휴식플래그 = 1
+		BEGIN TURNEND
+		RETURN 1
+	ENDIF
+	;PRINT [1] 朝まで休憩する
+	;IF TIME < 3
+	;	PRINT [2] 夜まで休憩する
+	;ELSE
+	;	SETCOLOR 0x2e2e41
+	;	PRINT [2] 夜まで休憩する
+	;	RESETCOLOR
+	;ENDIF
+	;PRINTL [3] 休憩しない
+;
+	;CALL INPUTINT(0, 1, 2 * (TIME < 3), 3)
+	;;CALL INPUT_YN,"Yes","No",2
+;
+	;SELECTCASE RESULT
+	;	CASE 0
+	;		PRINTW 休憩しました
+	;		;休憩フラグを立てる（ここは特別）
+	;		FLAG:휴식플래그 = 2
+	;		BEGIN TURNEND
+	;		RETURN 1
+	;	CASE 1
+	;		PRINTW 朝まで休憩します
+	;		FLAG:휴식플래그 = 3
+	;		BEGIN TURNEND
+	;		RETURN 1
+	;	CASE 2
+	;		PRINTW 夜まで休憩します
+	;		;TIME = 2
+	;		FLAG:휴식플래그 = 4
+	;		BEGIN TURNEND
+	;		RETURN 1
+	;	CASE 3
+	;		RETURN 0
+	;ENDSELECT
+ELSE
+	FLAG:조교실행완료횟수++
+	PRINTW 휴식했습니다
+	;休憩フラグを立てる（ここは特別）
+	;IF FLAG:휴식확인플래그 == 2
+	;	;朝まで休憩
+	;	FLAG:휴식플래그 = 3
+	;ELSE
+	;	FLAG:휴식플래그 = 2
+	;ENDIF
+	FLAG:휴식플래그 = 1
+	BEGIN TURNEND
+	RETURN 1
+ENDIF

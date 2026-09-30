@@ -1,0 +1,70 @@
+﻿;依頼名===================================================================
+;依頼難易度は敵の最大レベルによって変動
+; 1～10　☆、11～20　☆☆、21～30　☆☆☆、以下略
+;ダンジョン攻略が必要な場合は☆が★になる。
+
+@TITLE_RANDOM_REQUEST_108_31
+RESULTS = 강압적인 권유 저지 (난이도 ☆☆☆☆)
+RETURN 1
+
+;説明===================================================================
+@REQUEST_EXPLAIN_108_31
+PRINTL 
+PRINTL 【의뢰주】어느 신사
+PRINTL 
+PRINTL 　신사 주변에서 수상한 인물이 강압적인 종교 권유를 벌이고 있어 골치를 썩이고 있다고 한다.
+PRINTL 　권유 행위를 어떻게든 그만두게 만들어라.
+PRINTL 
+PRINTL 【작전영역】신사 주변
+PRINTL 【적의 전력】수상한 인물
+PRINTL 【성공조건】권유 저지
+PRINTL 
+
+;内容====================================================================
+@REQUEST_108_31
+CUSTOMDRAWLINE =
+PRINTFORMW ――신사――
+PRINTFORML 
+PRINTFORML 신관
+PRINTFORMW 「딱 이 시간대에 찾아와 참배객들을 억지로 포섭하려 듭니다. 그만두라고 타일러도 듣질 않아서……」
+PRINTFORMW 「부탁드립니다, 부디 그만두도록 설득해 주십시오.」
+PRINTFORML 
+PRINTFORMW ＞사정을 들은 후 주변을 순찰하고 있자 샛길 쪽에서 말소리가 들려왔다.
+PRINTFORML 
+PRINTFORML 메시아교도
+PRINTFORMW 「……그럼 다음 집회는 이곳에서 열리니 꼭 와주셔야 합니다.」
+PRINTFORML 
+PRINTFORMW ＞저자가 강압적인 권유를 벌이는 수상한 인물인가?
+PRINTFORMW ＞온화한 태도로 말하고 있지만 상대의 눈은 흐리멍덩하고 초점도 맞지 않는다. 매료 상태라도 된 것일까?
+PRINTFORMW ＞일단 서둘러 그만두게 만들자.
+PRINTFORML 
+PRINTFORMW 「음, 서머너! 들킨 이상 사라져 주셔야겠습니다!」
+PRINTFORML 
+PRINTFORMW ＞메시아교도가 이쪽으로 덮쳐왔다!
+
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+FOR LOCAL:2, 8, 11
+	CALL SET_ENEMY, LOCAL:2 ,[[キャラ:템플나이트]],30+RAND:5,0,0
+	NAME:(CHARANUM-1) = 메시아교도
+	CALLNAME:(CHARANUM-1) = 메시아교도
+NEXT
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	CALL BATTLE_START
+
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+
+
+PRINTW ＞권유 행위를 그만두게 만들었다.
+
+;報酬
+依頼フラグ:[[依頼:랜덤의뢰]]:5 = 4;難易度
+依頼フラグ:[[依頼:랜덤의뢰]]:7 = 0;0:その他、1:メシア教、2:ガイア教
+CALL PRIZE_REQUEST_108
+
+

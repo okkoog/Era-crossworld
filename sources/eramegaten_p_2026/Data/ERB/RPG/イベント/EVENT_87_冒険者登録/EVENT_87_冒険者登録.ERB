@@ -1,0 +1,5391 @@
+﻿;更新履歴
+;2021/04/18　やぶへび　新規作成
+;2021/04/21　やぶへび　カーチャン取り込み時のスキル競合のずれを修正。土壇場でだしてほんとうにごめんカーチャン……
+;2022/06/08　やぶへび　変数のミスを修正
+;2022/10/21　aroaro 　容姿選択肢の誤記を修正
+;2024/06/01　bazzile　バリスタの型選択の選択肢の名称が間違っていた不具合を修正
+
+;====================
+;条件
+;====================
+@GET_EVENT_NAME_87
+#FUNCTIONS
+RESULTS_F '= "冒険者登録"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_87
+
+;フラグ
+;イベントフラグ:87:1　人数　5人以上にはできない。
+
+;メガテン系イベント以外不許可の場合
+SIF !GETS_USEABLE_EXTRA_TITLE()
+	RETURN 0
+
+SIF BASE:MASTER:LV < 20
+	RETURN 0
+
+RESULTS = （EX:성해의 내방자）모험가 등록
+RETURN 1
+;RETURN 1 でイベント出現
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_87
+IF イベントフラグ:87:1 == 5
+	PRINTFORML 모험가 등록 수가 최대치에 도달했습니다。
+	PRINTFORMW 모험가 등록 이벤트를 종료합니다。
+ELSEIF イベントフラグ:87:1 < 5
+	PRINTFORMW 모험가 등록을 개시합니다。
+	
+	
+	$BOUKENSYA_LOOP
+	PRINTFORML 직업을 선택하세요。
+	
+	PRINTL [1]프린스（프린세스)
+	PRINTL [2]워리어
+	PRINTL [3]팔랑크스
+	PRINTL [4]파이레츠
+	PRINTL [5]시노비
+	PRINTL [6]몽크
+	PRINTL [7]조디악
+	PRINTL [8]비스트킹
+	PRINTL [9]발리스타
+	PRINTL [10]파머
+	;この二つは分岐かなぁ
+	;PRINTL [20]ショーグン				※未実装
+	;PRINTL [30]アンドロ				※未実装
+	PRINTL [998]설명
+	PRINTL [999]등록을 그만둔다
+	INPUT	
+	;プリン（セ）ス
+	IF RESULT == 1
+		PRINTFORML 「호령」으로 아군을 고무시키는 중위직。
+		$ROYAL_LOOP1
+		PRINTFORML 이 직업으로 하시겠습니까？
+		
+		PRINTL [11]네
+		PRINTL [12]자세한 설명을 본다
+		PRINTL [13]돌아가기
+		
+		INPUT
+		IF RESULT == 11
+			$ROYAL_LOOP2
+			PRINTFORML 성별은 무엇으로 하시겠습니까？
+			
+			PRINTL [14]남자
+			PRINTL [15]여자
+			PRINTL [16]이전으로 돌아간다
+			INPUT
+			;男の子の分岐
+			IF RESULT == 14
+				CALL ADD_NEW_COMPANION, [[キャラ:프린스]],0
+				TALENT:(RESULT:1):남자 = 1
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				CSTR:(RESULT:1):33 = 크고 작은 다양한 국가의 혈통을 이어받은「왕자」
+				CSTR:(RESULT:1):40 = 외모는、늠름한 청년과 명랑한 소년、두 가지 패턴이 있다。
+				
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$ROYALBOY_LOOP1
+				PRINTFORML [141]늠름한 청년
+				PRINTFORML [142]명랑한 소년
+				INPUT
+				
+				;ここで衣装設定
+				;凛々しい青年
+				IF RESULT == 141
+					;망토
+					CFLAG:(RESULT:1):초기겉옷 = [[衣装:망토]]
+					CFLAG:(RESULT:1):겉옷 = [[衣装:망토]]
+					TEQUIP:(RESULT:1):겉옷 = [[衣装:망토]]
+					;토시
+					CFLAG:(RESULT:1):초기손 = [[衣装:토시]]
+					CFLAG:(RESULT:1):손 = [[衣装:토시]]
+					TEQUIP:(RESULT:1):손 = [[衣装:토시]]
+					;가슴장갑
+					CFLAG:(RESULT:1):초기옷 = [[衣装:가슴장갑]]
+					CFLAG:(RESULT:1):옷 = [[衣装:가슴장갑]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:가슴장갑]]
+					;허리장갑
+					CFLAG:(RESULT:1):초기하의 = [[衣装:허리장갑]]
+					CFLAG:(RESULT:1):하의 = [[衣装:허리장갑]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:허리장갑]]
+					;트렁크스
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:트렁크스]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					;그리브
+					CFLAG:(RESULT:1):초기신발 = [[衣装:그리브]]
+					CFLAG:(RESULT:1):신발 = [[衣装:그리브]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:그리브]]
+				;朗らかな少年
+				ELSEIF RESULT == 142
+					;왕관
+					CFLAG:(RESULT:1):초기모자 = [[衣装:왕관]]
+					CFLAG:(RESULT:1):모자 = [[衣装:왕관]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:왕관]]
+					;망토
+					CFLAG:(RESULT:1):초기겉옷 = [[衣装:망토]]
+					CFLAG:(RESULT:1):겉옷 = [[衣装:망토]]
+					TEQUIP:(RESULT:1):겉옷 = [[衣装:망토]]
+					;겉옷　マントで見えない…
+					CFLAG:(RESULT:1):초기옷 = [[衣装:겉옷]]
+					CFLAG:(RESULT:1):옷 = [[衣装:겉옷]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:겉옷]]
+					;퀼로트　かぼちゃパンツがない
+					CFLAG:(RESULT:1):초기하의 = [[衣装:퀼로트]]
+					CFLAG:(RESULT:1):하의 = [[衣装:퀼로트]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:퀼로트]]
+					;트렁크스
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:트렁크스]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+					;벨트　肩掛けベルト
+					CFLAG:(RESULT:1):초기그외 = [[衣装:벨트]]
+					CFLAG:(RESULT:1):그외 = [[衣装:벨트]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:벨트]]
+				ELSE
+					GOTO ROYALBOY_LOOP1
+				ENDIF
+				
+				$ROYALBOY_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [143]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [144]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [145]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [146]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [147]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [148]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [149]츤데레(츤데레　헌신적　억압）
+				PRINTL [1410]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 143
+				ELSEIF RESULT == 144
+				ELSEIF RESULT == 145
+				ELSEIF RESULT == 146
+				ELSEIF RESULT == 147
+				ELSEIF RESULT == 148
+				ELSEIF RESULT == 149
+				ELSEIF RESULT == 1410
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO ROYALBOY_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO ROYALBOY_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 143
+					;若者だとなんか違うんだよなぁ
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 144
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 145
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 146
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 317;男・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 147
+					;これがシニカルじゃなかったらなんだというんです？
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 324;男・シニカル
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 148
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 149
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 1410
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = お前
+					ABL:(RESULT:1):회화타입 = 314;男・少年
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$ROYALBOY_LOOP3
+					PRINTFORML [1411]야리친！（Ｃ감각、성교경험＋）
+					PRINTFORML [1412]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [1413]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。女性は精液経験じゃなくて絶頂経験＋10
+					;창놈
+					IF RESULT == 1411
+						PRINTFORML 이 아이는「야리친」입니까？
+					;尻好き
+					ELSEIF RESULT == 1412
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 1413
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO ROYALBOY_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]네
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO ROYALBOY_LOOP3
+					;창놈
+					ELSEIF RESULT / 10 == 1411
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):삽입경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 1412
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 1413
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):정액경험 = 10
+					ENDIF
+				ELSE
+					GOTO ROYALBOY_LOOP2
+				ENDIF
+			;女の子の分岐
+			ELSEIF RESULT == 15
+				CALL ADD_NEW_COMPANION, [[キャラ:프린스]],0
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				TALENT:(RESULT:1):처녀 = 1
+				
+				NAME:(RESULT:1) = 프린세스
+				CALLNAME:(RESULT:1) = 프린세스
+				
+				CSTR:(RESULT:1):33 = 크고 작은 다양한 나라의 혈통을 이어받은「왕녀」
+				CSTR:(RESULT:1):40 = 외모는、명랑한 소녀와 나른한 소녀、두 가지 패턴이 있다。
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$ROYALGIRL_LOOP1
+				PRINTFORML [151]명랑한 소녀
+				PRINTFORML [152]나른한 소녀
+				INPUT
+				
+				;ここで衣装設定
+				;朗らかな少女
+				IF RESULT == 151
+					;티아라
+					CFLAG:(RESULT:1):초기모자 = [[衣装:티아라]]
+					CFLAG:(RESULT:1):모자 = [[衣装:티아라]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:티아라]]
+					;흉갑
+					CFLAG:(RESULT:1):초기겉옷 = [[衣装:흉갑]]
+					CFLAG:(RESULT:1):겉옷 = [[衣装:흉갑]]
+					TEQUIP:(RESULT:1):겉옷 = [[衣装:흉갑]]
+					;드레스
+					CFLAG:(RESULT:1):초기전신복 = [[衣装:드레스]]
+					CFLAG:(RESULT:1):옷 = [[衣装:드레스]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:드레스]]
+					;토시
+					CFLAG:(RESULT:1):초기손 = [[衣装:토시]]
+					CFLAG:(RESULT:1):손 = [[衣装:토시]]
+					TEQUIP:(RESULT:1):손 = [[衣装:토시]]
+					;드로워즈
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:드로워즈]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:드로워즈]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:드로워즈]]
+					;그리브
+					CFLAG:(RESULT:1):초기신발 = [[衣装:그리브]]
+					CFLAG:(RESULT:1):신발 = [[衣装:그리브]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:그리브]]
+				;眠たげな少女
+				ELSEIF RESULT == 152
+					;티아라
+					CFLAG:(RESULT:1):초기모자 = [[衣装:티아라]]
+					CFLAG:(RESULT:1):모자 = [[衣装:티아라]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:티아라]]
+					;드레스
+					CFLAG:(RESULT:1):초기전신복 = [[衣装:드레스]]
+					CFLAG:(RESULT:1):옷 = [[衣装:드레스]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:드레스]]
+					;토시
+					CFLAG:(RESULT:1):초기손 = [[衣装:토시]]
+					CFLAG:(RESULT:1):손 = [[衣装:토시]]
+					TEQUIP:(RESULT:1):손 = [[衣装:토시]]
+					;드로워즈
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:드로워즈]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:드로워즈]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:드로워즈]]
+					;그리브
+					CFLAG:(RESULT:1):초기신발 = [[衣装:그리브]]
+					CFLAG:(RESULT:1):신발 = [[衣装:그리브]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:그리브]]
+				ELSE
+					GOTO ROYALGIRL_LOOP1
+				ENDIF
+				
+				$ROYALGIRL_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [153]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [154]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [155]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [156]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [157]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [158]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [159]츤데레(츤데레　헌신적　억압）
+				PRINTL [1510]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 153
+				ELSEIF RESULT == 154
+				ELSEIF RESULT == 155
+				ELSEIF RESULT == 156
+				ELSEIF RESULT == 157
+				ELSEIF RESULT == 158
+				ELSEIF RESULT == 159
+				ELSEIF RESULT == 1510
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO ROYALGIRL_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO ROYALGIRL_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 153
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 154
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 155
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 306;女・淑女
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 156
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴方
+					ABL:(RESULT:1):회화타입 = 305;女・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 157
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 158
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴様
+					ABL:(RESULT:1):회화타입 = 307;女・古風
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 159
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 1510
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$ROYALGIRL_LOOP3
+					PRINTFORML [1511]야리만！（Ｖ감각、성교경험＋）
+					PRINTFORML [1512]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [1513]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。女性は精液経験じゃなくて絶頂経験＋10
+					;ヤリマン
+					IF RESULT == 1511
+						PRINTFORML 이 아이는「야리만」입니까？
+					;尻好き
+					ELSEIF RESULT == 1512
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 1513
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO ROYALGIRL_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]네
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO ROYALGIRL_LOOP3
+					;ヤリマン
+					;ここで処女を削除する。処女ビッチ誕生阻止。
+					ELSEIF RESULT / 10 == 1511
+						TALENT:(RESULT:1):처녀 = 0
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｖ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 1512
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 1513
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+					ENDIF
+				ELSE
+					GOTO ROYALGIRL_LOOP2
+				ENDIF
+			ELSEIF RESULT == 16
+				GOTO BOUKENSYA_LOOP
+			ELSE
+				GOTO ROYAL_LOOP2
+			ENDIF
+			$ROYAL_LOOP3
+			PRINTFORML 어떤 타입을 선택하시겠습니까？
+			PRINTFORML ※타입의 스킬은 설명에 적혀 있습니다。
+			
+			PRINTL [17]공격호령형
+			PRINTL [18]방어호령형
+			PRINTL [19]자세한 설명을 본다
+			INPUT
+			;ここで習得スキルを追加する。
+			;攻撃号令型
+			IF RESULT == 17
+				;파이어암즈
+				ABL:(RESULT:1):습득스킬2 = 3647
+				ABL:(RESULT:1):습득LV2 = 22
+				;프리즈암즈
+				ABL:(RESULT:1):습득스킬3 = 3648
+				ABL:(RESULT:1):습득LV3 = 24
+				;쇼크암즈
+				ABL:(RESULT:1):습득스킬4 = 3649
+				ABL:(RESULT:1):습득LV4 = 28
+				;이미트웨폰
+				ABL:(RESULT:1):습득스킬9 = 3650
+				ABL:(RESULT:1):습득LV9 = 48
+			;防御号令型
+			ELSEIF RESULT == 18
+				;サマカジャ
+				ABL:(RESULT:1):습득스킬2 = 558
+				ABL:(RESULT:1):습득LV2 = 22
+				;성스러운가호
+				ABL:(RESULT:1):습득스킬3 = 614
+				ABL:(RESULT:1):습득LV3 = 24
+				;레볼루션
+				ABL:(RESULT:1):습득스킬4 = 517
+				ABL:(RESULT:1):습득LV4 = 28
+				;비호의구령
+				ABL:(RESULT:1):습득스킬9 = 3651
+				ABL:(RESULT:1):습득LV9 = 48
+			ELSEIF RESULT == 19
+				PRINTFORMW RPG의「지원계」
+				PRINTFORMW 다양한 지원을 아군에게 제공합니다。
+				PRINTFORMW 「공격호령형」은 내성 파괴 공격을 배우는 공격적인 타입。
+				PRINTFORMW 「방어호령형」은 약간 색다른 지원을 배우는 방어적인 타입。
+				PRINTFORMW 초기 능력은 내성이 높습니다。
+				GOTO ROYAL_LOOP3
+			ELSE
+				GOTO ROYAL_LOOP3
+			ENDIF
+			
+			;妥協
+			PRINTFORMW 프린（세）스가 가입했습니다。
+			;ここでイベントフラグに＋１
+			イベントフラグ:87:1 += 1
+			
+		ELSEIF RESULT == 12
+				PRINTFORMW RPG의「지원계」
+				PRINTFORMW 다양한 지원을 아군에게 제공합니다。
+				PRINTFORMW 「공격호령형」은 내성 파괴 공격을 배우는 공격적인 타입。
+				PRINTFORMW 「방어호령형」은 약간 색다른 지원을 배우는 방어적인 타입。
+				PRINTFORMW 초기 능력은 내성이 높습니다。
+			GOTO ROYAL_LOOP1
+		ELSEIF RESULT == 13
+			GOTO BOUKENSYA_LOOP
+		ELSE
+			GOTO ROYAL_LOOP1
+		ENDIF
+	;ウォリアー
+	ELSEIF RESULT == 2
+		PRINTFORML 「검」과「둔기」로 싸우는 심플한 전위직。
+		$WARRIOR_LOOP1
+		PRINTFORML 이 직업으로 하시겠습니까？
+		
+		PRINTL [21]네
+		PRINTL [22]자세한 설명을 본다
+		PRINTL [23]돌아가기
+		
+		INPUT
+		IF RESULT == 21
+			$WARRIOR_LOOP2
+			PRINTFORML 성별은 무엇으로 하시겠습니까？
+			
+			PRINTL [24]남자
+			PRINTL [25]여자
+			PRINTL [26]이전으로 돌아간다
+			INPUT
+			;男の子の分岐
+			IF RESULT == 24
+				CALL ADD_NEW_COMPANION, [[キャラ:워리어]],0
+				TALENT:(RESULT:1):남자 = 1
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				CSTR:(RESULT:1):40 = 외모는、근엄한 남성과 반다나를 두른 청년、두 가지 패턴이 있다。
+				
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$WARRIORBOY_LOOP1
+				PRINTFORML [241]근엄한 남성
+				PRINTFORML [242]반다나를 두른 청년
+				INPUT
+				
+				;ここで衣装設定
+				;厳つい男性
+				IF RESULT == 241
+					;탱크탑　あれはなんだろう民族衣装風タンクトップ？
+					CFLAG:(RESULT:1):초기옷 = [[衣装:탱크탑]]
+					CFLAG:(RESULT:1):옷 = [[衣装:탱크탑]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:탱크탑]]
+					;허리장갑
+					CFLAG:(RESULT:1):초기하의 = [[衣装:허리장갑]]
+					CFLAG:(RESULT:1):하의 = [[衣装:허리장갑]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:허리장갑]]
+					;트렁크스
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:트렁크스]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+					;벨트
+					CFLAG:(RESULT:1):초기그외 = [[衣装:벨트]]
+					CFLAG:(RESULT:1):그외 = [[衣装:벨트]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:벨트]]
+				;バンダナをした青年
+				ELSEIF RESULT == 242
+					;반다나
+					CFLAG:(RESULT:1):초기모자 = [[衣装:반다나]]
+					CFLAG:(RESULT:1):모자 = [[衣装:반다나]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:반다나]]
+					;겉옷　あれを上着以外で表せるのか
+					CFLAG:(RESULT:1):초기옷 = [[衣装:겉옷]]
+					CFLAG:(RESULT:1):옷 = [[衣装:겉옷]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:겉옷]]
+					;반장갑
+					CFLAG:(RESULT:1):초기손 = [[衣装:반장갑]]
+					CFLAG:(RESULT:1):손 = [[衣装:반장갑]]
+					TEQUIP:(RESULT:1):손 = [[衣装:반장갑]]
+					;허리장갑
+					CFLAG:(RESULT:1):초기하의 = [[衣装:허리장갑]]
+					CFLAG:(RESULT:1):하의 = [[衣装:허리장갑]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:허리장갑]]
+					;트렁크스
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:트렁크스]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					;그리브
+					CFLAG:(RESULT:1):초기신발 = [[衣装:그리브]]
+					CFLAG:(RESULT:1):신발 = [[衣装:그리브]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:그리브]]
+					;벨트
+					CFLAG:(RESULT:1):초기그외 = [[衣装:벨트]]
+					CFLAG:(RESULT:1):그외 = [[衣装:벨트]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:벨트]]
+				ELSE
+					GOTO WARRIORBOY_LOOP1
+				ENDIF
+				
+				$WARRIORBOY_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [243]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [244]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [245]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [246]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [247]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [248]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [249]츤데레(츤데레　헌신적　억압）
+				PRINTL [2410]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 243
+				ELSEIF RESULT == 244
+				ELSEIF RESULT == 245
+				ELSEIF RESULT == 246
+				ELSEIF RESULT == 247
+				ELSEIF RESULT == 248
+				ELSEIF RESULT == 249
+				ELSEIF RESULT == 2410
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO WARRIORBOY_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO WARRIORBOY_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 243
+					;若者だとなんか違うんだよなぁ
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 244
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 245
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 246
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 317;男・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 247
+					;これがシニカルじゃなかったらなんだというんです？
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 324;男・シニカル
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 248
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 249
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 2410
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = お前
+					ABL:(RESULT:1):회화타입 = 314;男・少年
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$WARRIORBOY_LOOP3
+					PRINTFORML [2411]야리친！（Ｃ감각、성교경험＋）
+					PRINTFORML [2412]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [2413]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。女性は精液経験じゃなくて絶頂経験＋10
+					;창놈
+					IF RESULT == 2411
+						PRINTFORML 이 아이는「야리친」입니까？
+					;尻好き
+					ELSEIF RESULT == 2412
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 2413
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO WARRIORBOY_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]네
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO WARRIORBOY_LOOP3
+					;창놈
+					ELSEIF RESULT / 10 == 2411
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):삽입경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 2412
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 2413
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):정액경험 = 10
+					ENDIF
+				ELSE
+					GOTO WARRIORBOY_LOOP2
+				ENDIF
+			;女の子の分岐
+			ELSEIF RESULT == 25
+				CALL ADD_NEW_COMPANION, [[キャラ:워리어]],0
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				TALENT:(RESULT:1):처녀 = 1
+				CSTR:(RESULT:1):40 = 외모는、용감해 보이는 소녀와 땋은 머리의 여성、두 가지 패턴이 있다。
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$WARRIORGIRL_LOOP1
+				PRINTFORML [251]용감해 보이는 소녀
+				PRINTFORML [252]땋은 머리의 여성
+				INPUT
+				
+				;ここで衣装設定
+				;勇ましそうな少女
+				IF RESULT == 251
+					;튜브탑
+					CFLAG:(RESULT:1):초기옷 = [[衣装:튜브탑]]
+					CFLAG:(RESULT:1):옷 = [[衣装:튜브탑]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:튜브탑]]
+					;허리장갑
+					CFLAG:(RESULT:1):초기하의 = [[衣装:허리장갑]]
+					CFLAG:(RESULT:1):하의 = [[衣装:허리장갑]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:허리장갑]]
+					;팬티　みせぱん
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:팬티]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					;그리브
+					CFLAG:(RESULT:1):초기신발 = [[衣装:그리브]]
+					CFLAG:(RESULT:1):신발 = [[衣装:그리브]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:그리브]]
+					;벨트
+					CFLAG:(RESULT:1):초기그외 = [[衣装:벨트]]
+					CFLAG:(RESULT:1):그외 = [[衣装:벨트]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:벨트]]
+				;三つ編みの女性
+				ELSEIF RESULT == 252
+					;비키니탑
+					CFLAG:(RESULT:1):초기옷 = [[衣装:비키니탑]]
+					CFLAG:(RESULT:1):옷 = [[衣装:비키니탑]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:비키니탑]]
+					;허리장갑
+					CFLAG:(RESULT:1):초기하의 = [[衣装:허리장갑]]
+					CFLAG:(RESULT:1):하의 = [[衣装:허리장갑]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:허리장갑]]
+					;스패츠
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:스패츠]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:스패츠]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:스패츠]]
+					;그리브
+					CFLAG:(RESULT:1):초기신발 = [[衣装:그리브]]
+					CFLAG:(RESULT:1):신발 = [[衣装:그리브]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:그리브]]
+					;벨트
+					CFLAG:(RESULT:1):초기그외 = [[衣装:벨트]]
+					CFLAG:(RESULT:1):그외 = [[衣装:벨트]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:벨트]]
+				ELSE
+					GOTO WARRIORGIRL_LOOP1
+				ENDIF
+				
+				$WARRIORGIRL_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [253]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [254]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [255]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [256]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [257]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [258]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [259]츤데레(츤데레　헌신적　억압）
+				PRINTL [2510]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 253
+				ELSEIF RESULT == 254
+				ELSEIF RESULT == 255
+				ELSEIF RESULT == 256
+				ELSEIF RESULT == 257
+				ELSEIF RESULT == 258
+				ELSEIF RESULT == 259
+				ELSEIF RESULT == 2510
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO WARRIORGIRL_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO WARRIORGIRL_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 253
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 254
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 255
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 306;女・淑女
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 256
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴方
+					ABL:(RESULT:1):회화타입 = 305;女・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 257
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 258
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴様
+					ABL:(RESULT:1):회화타입 = 307;女・古風
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 259
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 2510
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$WARRIORGIRL_LOOP3
+					PRINTFORML [2511]야리만！（Ｖ감각、성교경험＋）
+					PRINTFORML [2512]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [2513]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。女性は精液経験じゃなくて絶頂経験＋10
+					;ヤリマン
+					IF RESULT == 2511
+						PRINTFORML 이 아이는「야리만」입니까？
+					;尻好き
+					ELSEIF RESULT == 2512
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 2513
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO WARRIORGIRL_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]네
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO WARRIORGIRL_LOOP3
+					;ヤリマン
+					;ここで処女を削除する。処女ビッチ誕生阻止。
+					ELSEIF RESULT / 10 == 2511
+						TALENT:(RESULT:1):처녀 = 0
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｖ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 2512
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 2513
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+					ENDIF
+				ELSE
+					GOTO WARRIORGIRL_LOOP2
+				ENDIF
+			ELSEIF RESULT == 26
+				GOTO BOUKENSYA_LOOP
+			ELSE
+				GOTO WARRIOR_LOOP2
+			ENDIF
+			$WARRIOR_LOOP3
+			PRINTFORML 어떤 타입을 선택하시겠습니까？
+			PRINTFORML ※타입의 스킬은 설명에 적혀 있습니다。
+			
+			PRINTL [27]검술 타입
+			PRINTL [28]둔기술 타입
+			PRINTL [29]자세한 설명을 본다
+			INPUT
+			;ここで習得スキルを追加する。
+			;剣型
+			IF RESULT == 27
+				;검술
+				TALENT:(RESULT:1):검술 = 1
+				;산바람
+				ABL:(RESULT:1):스킬3 = 1
+				;回転切り
+				ABL:(RESULT:1):습득스킬1 = 3
+				ABL:(RESULT:1):습득LV1 = 7
+				;강절단
+				ABL:(RESULT:1):습득스킬3 = 15
+				ABL:(RESULT:1):습득LV3 = 16
+				;木っ端微塵切り
+				ABL:(RESULT:1):습득스킬7 = 7
+				ABL:(RESULT:1):습득LV7 = 30
+				;블레이드댄스
+				ABL:(RESULT:1):습득스킬9 = 56
+				ABL:(RESULT:1):습득LV9 = 50
+			;槌型
+			ELSEIF RESULT == 28
+				;도끼술　槌、ないんだ。
+				TALENT:(RESULT:1):도끼술 = 1
+				;숏잽
+				ABL:(RESULT:1):스킬3 = 202
+				;아이시클　もしかしたら別のにするかも
+				ABL:(RESULT:1):습득스킬1 = 820
+				ABL:(RESULT:1):습득LV1 = 7
+				;브레인쉐이크
+				ABL:(RESULT:1):습득스킬3 = 213
+				ABL:(RESULT:1):습득LV3 = 16
+				;절묘타　槌の方がスキル少ないので
+				ABL:(RESULT:1):습득스킬7 = 238
+				ABL:(RESULT:1):습득LV7 = 30
+				;육체의악마
+				ABL:(RESULT:1):습득스킬9 = 219
+				ABL:(RESULT:1):습득LV9 = 50
+			ELSEIF RESULT == 29
+				PRINTFORMW RPG의「전사」
+				PRINTFORMW 화력이 높은 물리 공격을 담당합니다。
+				PRINTFORMW 「검술 타입」은 검격 속성을 다루는 타입。
+				PRINTFORMW 「둔기술 타입」은 타격 속성을 다루는 타입。
+				PRINTFORMW 물리 화력에서는 상위권 직업입니다。
+				GOTO WARRIOR_LOOP3
+			ELSE
+				GOTO WARRIOR_LOOP3
+			ENDIF
+			
+			
+			PRINTFORMW 워리어가 가입했습니다。
+			;ここでイベントフラグに＋１
+			イベントフラグ:87:1 += 1
+			
+		ELSEIF RESULT == 22
+			PRINTFORMW RPG의「전사」
+			PRINTFORMW 화력이 높은 물리 공격을 담당합니다。
+			PRINTFORMW 「검술 타입」은 검격 속성을 다루는 타입。
+			PRINTFORMW 「둔기술 타입」은 타격 속성을 다루는 타입。
+			PRINTFORMW 물리 화력에서는 상위권 직업입니다。
+			GOTO WARRIOR_LOOP1
+		ELSEIF RESULT == 23
+			GOTO BOUKENSYA_LOOP
+		ELSE
+			GOTO WARRIOR_LOOP1
+		ENDIF
+	;ファランクス
+	ELSEIF RESULT == 3
+		PRINTFORML 「방패」로 아군을 보호하고「창」으로 적과 싸우는 전위직。
+		$PHALANX_LOOP1
+		PRINTFORML 이 직업으로 하시겠습니까？
+		
+		PRINTL [31]네
+		PRINTL [32]자세한 설명을 본다
+		PRINTL [33]돌아가기
+		
+		INPUT
+		IF RESULT == 31
+			$PHALANX_LOOP2
+			PRINTFORML 성별은 무엇으로 하시겠습니까？
+			
+			PRINTL [34]남자
+			PRINTL [35]여자
+			PRINTL [36]이전으로 돌아간다
+			INPUT
+			;男の子の分岐
+			IF RESULT == 34
+				CALL ADD_NEW_COMPANION, [[キャラ:팔랑크스]],0
+				TALENT:(RESULT:1):남자 = 1
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				CSTR:(RESULT:1):40 = 외모는、무뚝뚝한 인상의 남성과 턱이 갈라진 경박해 보이는 남성、두 가지 패턴이 있다。
+				
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$PHALANXBOY_LOOP1
+				PRINTFORML [341]무뚝뚝한 인상의 남성
+				PRINTFORML [342]경박해 보이는 남성
+				INPUT
+				
+				;ここで衣装設定
+				;渋い印象の男性
+				IF RESULT == 341
+					;전신갑주
+					CFLAG:(RESULT:1):초기전신복 = [[衣装:전신갑주]]
+					CFLAG:(RESULT:1):전신복 = [[衣装:전신갑주]]
+					TEQUIP:(RESULT:1):전신복 = [[衣装:전신갑주]]
+					;트렁크스
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:트렁크스]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					;그리브
+					CFLAG:(RESULT:1):초기신발 = [[衣装:그리브]]
+					CFLAG:(RESULT:1):신발 = [[衣装:그리브]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:그리브]]
+				;ケツ顎
+				ELSEIF RESULT == 342
+					;전신갑주
+					CFLAG:(RESULT:1):초기전신복 = [[衣装:전신갑주]]
+					CFLAG:(RESULT:1):전신복 = [[衣装:전신갑주]]
+					TEQUIP:(RESULT:1):전신복 = [[衣装:전신갑주]]
+					;트렁크스
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:트렁크스]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					;그리브
+					CFLAG:(RESULT:1):초기신발 = [[衣装:그리브]]
+					CFLAG:(RESULT:1):신발 = [[衣装:그리브]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:그리브]]
+				ELSE
+					GOTO PHALANXBOY_LOOP1
+				ENDIF
+				
+				$PHALANXBOY_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [343]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [344]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [345]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [346]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [347]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [348]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [349]츤데레(츤데레　헌신적　억압）
+				PRINTL [3410]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 343
+				ELSEIF RESULT == 344
+				ELSEIF RESULT == 345
+				ELSEIF RESULT == 346
+				ELSEIF RESULT == 347
+				ELSEIF RESULT == 348
+				ELSEIF RESULT == 349
+				ELSEIF RESULT == 3410
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO PHALANXBOY_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO PHALANXBOY_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 343
+					;若者だとなんか違うんだよなぁ
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 344
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 345
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 346
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 317;男・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 347
+					;これがシニカルじゃなかったらなんだというんです？
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 324;男・シニカル
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 348
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 349
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 3410
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = お前
+					ABL:(RESULT:1):회화타입 = 314;男・少年
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$PHALANXBOY_LOOP3
+					PRINTFORML [3411]야리친！（Ｃ감각、성교경험＋）
+					PRINTFORML [3412]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [3413]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。女性は精液経験じゃなくて絶頂経験＋10
+					;창놈
+					IF RESULT == 3411
+						PRINTFORML 이 아이는「야리친」입니까？
+					;尻好き
+					ELSEIF RESULT == 3412
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 3413
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO PHALANXBOY_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]네
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO PHALANXBOY_LOOP3
+					;창놈
+					ELSEIF RESULT / 10 == 3411
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):삽입경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 3412
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 3413
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):정액경험 = 10
+					ENDIF
+				ELSE
+					GOTO PHALANXBOY_LOOP2
+				ENDIF
+			;女の子の分岐
+			ELSEIF RESULT == 35
+				CALL ADD_NEW_COMPANION, [[キャラ:팔랑크스]],0
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				TALENT:(RESULT:1):처녀 = 1
+				CSTR:(RESULT:1):40 = 외모는、단발머리 여성과 트윈테일 여성、두 가지 패턴이 있다。
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$PHALANXGIRL_LOOP1
+				PRINTFORML [351]단발머리 여성
+				PRINTFORML [352]트윈테일 여성
+				INPUT
+				
+				;ここで衣装設定
+				;ショートボブの女性
+				IF RESULT == 351
+					;전신갑주
+					CFLAG:(RESULT:1):초기전신복 = [[衣装:전신갑주]]
+					CFLAG:(RESULT:1):전신복 = [[衣装:전신갑주]]
+					TEQUIP:(RESULT:1):전신복 = [[衣装:전신갑주]]
+					;브래지어
+					CFLAG:(RESULT:1):초기속옷（상） = [[衣装:브래지어]]
+					CFLAG:(RESULT:1):속옷（상） = [[衣装:브래지어]]
+					TEQUIP:(RESULT:1):속옷（상） = [[衣装:브래지어]]
+					;팬티
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:팬티]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					;그리브
+					CFLAG:(RESULT:1):초기신발 = [[衣装:그리브]]
+					CFLAG:(RESULT:1):신발 = [[衣装:그리브]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:그리브]]
+				;ツインテールの女性
+				ELSEIF RESULT == 352
+					;리본
+					CFLAG:(RESULT:1):초기모자 = [[衣装:리본]]
+					CFLAG:(RESULT:1):모자 = [[衣装:리본]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:리본]]
+					;전신갑주
+					CFLAG:(RESULT:1):초기전신복 = [[衣装:전신갑주]]
+					CFLAG:(RESULT:1):전신복 = [[衣装:전신갑주]]
+					TEQUIP:(RESULT:1):전신복 = [[衣装:전신갑주]]
+					;브래지어
+					CFLAG:(RESULT:1):초기속옷（상） = [[衣装:브래지어]]
+					CFLAG:(RESULT:1):속옷（상） = [[衣装:브래지어]]
+					TEQUIP:(RESULT:1):속옷（상） = [[衣装:브래지어]]
+					;팬티
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:팬티]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					;그리브
+					CFLAG:(RESULT:1):초기신발 = [[衣装:그리브]]
+					CFLAG:(RESULT:1):신발 = [[衣装:그리브]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:그리브]]
+				ELSE
+					GOTO PHALANXGIRL_LOOP1
+				ENDIF
+				
+				$PHALANXGIRL_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [353]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [354]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [355]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [356]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [357]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [358]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [359]츤데레(츤데레　헌신적　억압）
+				PRINTL [3510]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 353
+				ELSEIF RESULT == 354
+				ELSEIF RESULT == 355
+				ELSEIF RESULT == 356
+				ELSEIF RESULT == 357
+				ELSEIF RESULT == 358
+				ELSEIF RESULT == 359
+				ELSEIF RESULT == 3510
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO PHALANXGIRL_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO PHALANXGIRL_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 353
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 354
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 355
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 306;女・淑女
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 356
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴方
+					ABL:(RESULT:1):회화타입 = 305;女・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 357
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 358
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴様
+					ABL:(RESULT:1):회화타입 = 307;女・古風
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 359
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 3510
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$PHALANXGIRL_LOOP3
+					PRINTFORML [3511]야리만！（Ｖ감각、성교경험＋）
+					PRINTFORML [3512]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [3513]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。女性は精液経験じゃなくて絶頂経験＋10
+					;ヤリマン
+					IF RESULT == 3511
+						PRINTFORML 이 아이는「야리만」입니까？
+					;尻好き
+					ELSEIF RESULT == 3512
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 3513
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO PHALANXGIRL_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]네
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO PHALANXGIRL_LOOP3
+					;ヤリマン
+					;ここで処女を削除する。処女ビッチ誕生阻止。
+					ELSEIF RESULT / 10 == 3511
+						TALENT:(RESULT:1):처녀 = 0
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｖ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 3512
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 3513
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+					ENDIF
+				ELSE
+					GOTO PHALANXGIRL_LOOP2
+				ENDIF
+			ELSEIF RESULT == 36
+				GOTO BOUKENSYA_LOOP
+			ELSE
+				GOTO PHALANX_LOOP2
+			ENDIF
+			$PHALANX_LOOP3
+			PRINTFORML 어떤 타입을 선택하시겠습니까？
+			PRINTFORML ※타입의 스킬은 설명에 적혀 있습니다。
+			
+			PRINTL [37]방패술 타입
+			PRINTL [38]창술 타입
+			PRINTL [39]자세한 설명을 본다
+			INPUT
+			;ここで習得スキルを追加する。
+			;盾型
+			IF RESULT == 37
+				;테트라칸
+				ABL:(RESULT:1):습득스킬8 = 602
+				ABL:(RESULT:1):습득LV8 = 45
+				;마카라칸
+				ABL:(RESULT:1):습득스킬9 = 603
+				ABL:(RESULT:1):습득LV9 = 50
+			;槍型
+			ELSEIF RESULT == 38
+				;블리츠레인
+				ABL:(RESULT:1):습득스킬8 = 946
+				ABL:(RESULT:1):습득LV8 = 45
+				;작열거가
+				ABL:(RESULT:1):습득스킬9 = 24
+				ABL:(RESULT:1):습득LV9 = 50
+			ELSEIF RESULT == 39
+				PRINTFORMW RPG의「탱커」
+				PRINTFORMW 다양한 종류의 방어 스킬을 다룰 수 있습니다。
+				PRINTFORMW 「방패술 타입」은 방어력을 더욱 강화하는 타입。
+				PRINTFORMW 「창술 타입」은 강력한 공격을 익히는 타입。
+				PRINTFORMW 스킬 습득이 느리며、 대기만성형 클래스입니다
+				GOTO PHALANX_LOOP3
+			ELSE
+				GOTO PHALANX_LOOP3
+			ENDIF
+			
+			
+			PRINTFORMW 팔랑크스가 가입했습니다。
+			;ここでイベントフラグに＋１
+			イベントフラグ:87:1 += 1
+			
+		ELSEIF RESULT == 32
+			PRINTFORMW RPG의「탱커」
+			PRINTFORMW 다양한 종류의 방어 스킬을 다룰 수 있습니다。
+			PRINTFORMW 「방패술 타입」은 방어력을 더욱 강화하는 타입。
+			PRINTFORMW 「창술 타입」은 강력한 공격을 익히는 타입。
+			PRINTFORMW 스킬 습득이 느리며、 대기만성형 클래스입니다
+			GOTO PHALANX_LOOP1
+		ELSEIF RESULT == 33
+			GOTO BOUKENSYA_LOOP
+		ELSE
+			GOTO PHALANX_LOOP1
+		ENDIF
+	;パイレーツ
+	ELSEIF RESULT == 4
+		PRINTFORML 「돌검」과「총」을 다루는 중위직。(돌검은 찌르는 데 특화된 칼을 뜻함)
+		
+		$PIRATES_LOOP1
+		PRINTFORML 이 직업으로 하시겠습니까？
+		
+		PRINTL [41]네
+		PRINTL [42]자세한 설명을 본다
+		PRINTL [43]돌아가기
+		
+		INPUT
+		IF RESULT == 41
+			$PIRATES_LOOP2
+			PRINTFORML 성별은 무엇으로 하시겠습니까？
+			
+			PRINTL [44]남자
+			PRINTL [45]여자
+			PRINTL [46]이전으로 돌아간다
+			INPUT
+			;男の子の分岐
+			IF RESULT == 44
+				CALL ADD_NEW_COMPANION, [[キャラ:파이레츠]],0
+				TALENT:(RESULT:1):남자 = 1
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				CSTR:(RESULT:1):40 = 외모는、눈가리개를 한 남성과 경박해 보이는 청년、두 가지 패턴이 있다。
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$PIRATESBOY_LOOP1
+				PRINTFORML [441]눈가리개를 한 남성
+				PRINTFORML [442]경박해 보이는 청년
+				INPUT
+				
+				;ここで衣装設定
+				;眼帯をかけた男性
+				IF RESULT == 441
+					;트리코르느　あれトリコルヌって言うんだ
+					CFLAG:(RESULT:1):초기모자 = [[衣装:트리코르느]]
+					CFLAG:(RESULT:1):모자 = [[衣装:트리코르느]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:트리코르느]]
+					;うわあああ
+					CFLAG:(RESULT:1):초기옷 = [[衣装:겉옷]]
+					CFLAG:(RESULT:1):옷 = [[衣装:겉옷]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:겉옷]]
+					;바지
+					CFLAG:(RESULT:1):초기하의 = [[衣装:바지]]
+					CFLAG:(RESULT:1):하의 = [[衣装:바지]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:바지]]
+					;트렁크스
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:트렁크스]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+					;안대
+					CFLAG:(RESULT:1):초기그외 = [[衣装:안대]]
+					CFLAG:(RESULT:1):그외 = [[衣装:안대]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:안대]]
+					;벨트
+					CFLAG:(RESULT:1):초기그외2 = [[衣装:벨트]]
+					CFLAG:(RESULT:1):그외2 = [[衣装:벨트]]
+					TEQUIP:(RESULT:1):그외2 = [[衣装:벨트]]
+				;軽薄そうな青年
+				ELSEIF RESULT == 442
+					;드레스셔츠　ワイシャツだとなんか堅い
+					CFLAG:(RESULT:1):초기옷 = [[衣装:드레스셔츠]]
+					CFLAG:(RESULT:1):옷 = [[衣装:드레스셔츠]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:드레스셔츠]]
+					;베스트
+					CFLAG:(RESULT:1):초기겉옷 = [[衣装:베스트]]
+					CFLAG:(RESULT:1):겉옷 = [[衣装:베스트]]
+					TEQUIP:(RESULT:1):겉옷 = [[衣装:베스트]]
+					;바지
+					CFLAG:(RESULT:1):초기하의 = [[衣装:바지]]
+					CFLAG:(RESULT:1):하의 = [[衣装:바지]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:바지]]
+					;트렁크스
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:트렁크스]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+					;벨트
+					CFLAG:(RESULT:1):초기그외 = [[衣装:벨트]]
+					CFLAG:(RESULT:1):그외 = [[衣装:벨트]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:벨트]]
+				ELSE
+					GOTO PIRATESBOY_LOOP1
+				ENDIF
+				
+				$PIRATESBOY_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [443]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [444]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [445]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [446]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [447]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [448]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [449]츤데레(츤데레　헌신적　억압）
+				PRINTL [4410]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 443
+				ELSEIF RESULT == 444
+				ELSEIF RESULT == 445
+				ELSEIF RESULT == 446
+				ELSEIF RESULT == 447
+				ELSEIF RESULT == 448
+				ELSEIF RESULT == 449
+				ELSEIF RESULT == 4410
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO PIRATESBOY_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO PIRATESBOY_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 443
+					;若者だとなんか違うんだよなぁ
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 444
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 445
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 446
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 317;男・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 447
+					;これがシニカルじゃなかったらなんだというんです？
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 324;男・シニカル
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 448
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 449
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 4410
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = お前
+					ABL:(RESULT:1):회화타입 = 314;男・少年
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$PIRATESBOY_LOOP3
+					PRINTFORML [4411]야리친！（Ｃ감각、성교경험＋）
+					PRINTFORML [4412]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [4413]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。女性は精液経験じゃなくて絶頂経験＋10
+					;창놈
+					IF RESULT == 4411
+						PRINTFORML 이 아이는 「남창」입니까?
+					;尻好き
+					ELSEIF RESULT == 4412
+						PRINTFORML 이 아이는 「엉덩이애호」입니까?
+					;自慰好き
+					ELSEIF RESULT == 4413
+						PRINTFORML 이 아이는 「자위광」입니까?
+					ELSE
+						GOTO PIRATESBOY_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]예
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO PIRATESBOY_LOOP3
+					;창놈
+					ELSEIF RESULT / 10 == 4411
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):삽입경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 4412
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 4413
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):정액경험 = 10
+					ENDIF
+				ELSE
+					GOTO PIRATESBOY_LOOP2
+				ENDIF
+			;女の子の分岐
+			ELSEIF RESULT == 45
+				CALL ADD_NEW_COMPANION, [[キャラ:파이레츠]],0
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				TALENT:(RESULT:1):처녀 = 1
+				CSTR:(RESULT:1):40 = 외모는、색기 넘치는 여성과 낙천적인 소녀、두 가지 패턴이 있다。
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$PIRATESGIRL_LOOP1
+				PRINTFORML [451]색기 넘치는 여성
+				PRINTFORML [452]낙천적인 소녀
+				INPUT
+				
+				;ここで衣装設定
+				IF RESULT == 451
+					;ここで巨乳をつける　世界樹3の冒険者の中で一番乳でかくない？
+					TALENT:(RESULT:1):거유 = 1
+					;트리코르느
+					CFLAG:(RESULT:1):초기모자 = [[衣装:트리코르느]]
+					CFLAG:(RESULT:1):모자 = [[衣装:트리코르느]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:트리코르느]]
+					;드레스셔츠　へそ出してるのないんだよ！！！
+					CFLAG:(RESULT:1):초기옷 = [[衣装:드레스셔츠]]
+					CFLAG:(RESULT:1):전신복 = [[衣装:드레스셔츠]]
+					TEQUIP:(RESULT:1):전신복 = [[衣装:드레스셔츠]]
+					;타이트미니스커트
+					CFLAG:(RESULT:1):초기하의 = [[衣装:타이트미니스커트]]
+					CFLAG:(RESULT:1):하의 = [[衣装:타이트미니스커트]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:타이트미니스커트]]
+					;팬티(흑)
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:팬티(흑)]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:팬티(흑)]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:팬티(흑)]]
+					;하이부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:하이부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:하이부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:하이부츠]]
+					;벨트
+					CFLAG:(RESULT:1):초기그외 = [[衣装:벨트]]
+					CFLAG:(RESULT:1):그외 = [[衣装:벨트]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:벨트]]
+				;楽天そうな少女
+				ELSEIF RESULT == 452
+					;ここで貧乳をつける　まな板、片方はあんなに豊かなのに…
+					TALENT:(RESULT:1):빈유 = 1
+					;트리코르느
+					CFLAG:(RESULT:1):초기모자 = [[衣装:트리코르느]]
+					CFLAG:(RESULT:1):모자 = [[衣装:트리코르느]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:트리코르느]]
+					;세일러복
+					CFLAG:(RESULT:1):초기옷 = [[衣装:세일러복]]
+					CFLAG:(RESULT:1):전신복 = [[衣装:세일러복]]
+					TEQUIP:(RESULT:1):전신복 = [[衣装:세일러복]]
+					;베스트
+					CFLAG:(RESULT:1):초기겉옷 = [[衣装:베스트]]
+					CFLAG:(RESULT:1):겉옷 = [[衣装:베스트]]
+					TEQUIP:(RESULT:1):겉옷 = [[衣装:베스트]]
+					;미니스커트
+					CFLAG:(RESULT:1):초기하의 = [[衣装:미니스커트]]
+					CFLAG:(RESULT:1):하의 = [[衣装:미니스커트]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:미니스커트]]
+					;팬티
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:팬티]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					;검은색타이즈
+					CFLAG:(RESULT:1):초기양말 = [[衣装:검은색타이즈]]
+					CFLAG:(RESULT:1):양말 = [[衣装:검은색타이즈]]
+					TEQUIP:(RESULT:1):양말 = [[衣装:검은색타이즈]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+					;벨트
+					CFLAG:(RESULT:1):초기그외 = [[衣装:벨트]]
+					CFLAG:(RESULT:1):그외 = [[衣装:벨트]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:벨트]]
+				ELSE
+					GOTO PIRATESGIRL_LOOP1
+				ENDIF
+				
+				$PIRATESGIRL_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [453]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [454]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [455]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [456]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [457]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [458]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [459]츤데레(츤데레　헌신적　억압）
+				PRINTL [4510]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 453
+				ELSEIF RESULT == 454
+				ELSEIF RESULT == 455
+				ELSEIF RESULT == 456
+				ELSEIF RESULT == 457
+				ELSEIF RESULT == 458
+				ELSEIF RESULT == 459
+				ELSEIF RESULT == 4510
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO PIRATESGIRL_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO PIRATESGIRL_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 453
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 454
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 455
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 306;女・淑女
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 456
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴方
+					ABL:(RESULT:1):회화타입 = 305;女・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 457
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 458
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴様
+					ABL:(RESULT:1):회화타입 = 307;女・古風
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 459
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 4510
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$PIRATESGIRL_LOOP3
+					PRINTFORML [4511]야리만！（Ｖ감각、성교경험＋）
+					PRINTFORML [4512]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [4513]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。
+					;ヤリマン
+					IF RESULT == 4511
+						PRINTFORML 이 아이는「야리만」입니까？
+					;尻好き
+					ELSEIF RESULT == 4512
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 4513
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO PIRATESGIRL_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]네
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO PIRATESGIRL_LOOP3
+					;ヤリマン
+					;ここで処女を削除する。処女ビッチ誕生阻止。
+					ELSEIF RESULT / 10 == 4511
+						TALENT:(RESULT:1):처녀 = 0
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｖ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 4512
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 4513
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+					ENDIF
+				ELSE
+					GOTO PIRATESGIRL_LOOP2
+				ENDIF
+			ELSEIF RESULT == 46
+				GOTO BOUKENSYA_LOOP
+			ELSE
+				GOTO PIRATES_LOOP2
+			ENDIF
+			$PIRATES_LOOP3
+			PRINTFORML 어떤 타입을 선택하시겠습니까？
+			PRINTFORML ※타입의 스킬은 설명에 적혀 있습니다。
+			
+			PRINTL [47]突剣型
+			PRINTL [48]銃型
+			PRINTL [49]자세한 설명을 본다
+			INPUT
+			;ここで習得スキルを追加する
+			
+			;突剣型
+			IF RESULT == 47
+				;팬서
+				TALENT:(RESULT:1):팬서 = 1
+				;번개찌르기
+				ABL:(RESULT:1):습득스킬1 = 9
+				ABL:(RESULT:1):습득LV1 = 13
+				;체이스세이버
+				ABL:(RESULT:1):습득스킬3 = 3652
+				ABL:(RESULT:1):습득LV3 = 23
+				;체이스스러스트
+				ABL:(RESULT:1):습득스킬4 = 3653
+				ABL:(RESULT:1):습득LV4 = 25
+				;체이스블로
+				ABL:(RESULT:1):습득스킬5 = 3654
+				ABL:(RESULT:1):습득LV5 = 27
+				;포이즌블레이드
+				ABL:(RESULT:1):습득스킬9 = 43
+				ABL:(RESULT:1):습득LV9 = 44
+			;サポート型
+			ELSEIF RESULT == 48
+				;퀵드로
+				ABL:(RESULT:1):습득스킬1 = 110
+				ABL:(RESULT:1):습득LV1 = 13
+				;체이스플레임
+				ABL:(RESULT:1):습득스킬3 = 3655
+				ABL:(RESULT:1):습득LV3 = 23
+				;체이스아이스
+				ABL:(RESULT:1):습득스킬4 = 3656
+				ABL:(RESULT:1):습득LV4 = 25
+				;체이스선더
+				ABL:(RESULT:1):습득스킬5 = 3657
+				ABL:(RESULT:1):습득LV5 = 27
+				;連続打ち
+				ABL:(RESULT:1):습득스킬9 = 112
+				ABL:(RESULT:1):습득LV9 = 44
+			ELSEIF RESULT == 49
+				PRINTFORMW RPG의 「경전사」
+				PRINTFORMW 다양한 추격 스킬을 다룹니다。
+				PRINTFORMW 「돌검술 타입」은 검격과 물리 추격 스킬을 다루는 타입。
+				PRINTFORMW 「총술 타입」은 비구와 속성 추격 스킬을 다루는 타입이다。
+				PRINTFORMW 리미트 스킬은 순발력이 중요합니다。
+				GOTO PIRATES_LOOP3
+			ELSE
+				GOTO PIRATES_LOOP3
+			ENDIF
+			
+			
+			PRINTFORMW 파이레츠가 가입했습니다。
+			;ここでイベントフラグに＋１
+			イベントフラグ:87:1 += 1
+			
+		ELSEIF RESULT == 42
+			PRINTFORMW RPG의 「경전사」
+			PRINTFORMW 다양한 추격 스킬을 다룹니다。
+			PRINTFORMW 「돌검술 타입」은 검격과 물리 추격 스킬을 다루는 타입。
+			PRINTFORMW 「총술 타입」은 비구와 속성 추격 스킬을 다루는 타입。
+			PRINTFORMW 리미트 스킬은 순발력이 중요합니다。
+			GOTO PIRATES_LOOP1
+		ELSEIF RESULT == 43
+			GOTO BOUKENSYA_LOOP
+		ELSE
+			GOTO PIRATES_LOOP1
+		ENDIF
+	;シノビ
+	ELSEIF RESULT == 5
+		PRINTFORML 「단검」과「인술」을 다루는 민첩한 전위직。
+		$SINOBI_LOOP1
+		PRINTFORML 이 직업으로 하시겠습니까？
+		
+		PRINTL [51]네
+		PRINTL [52]자세한 설명을 본다
+		PRINTL [53]돌아가기
+		
+		INPUT
+		IF RESULT == 51
+			$SINOBI_LOOP2
+			PRINTFORML 성별은 무엇으로 하시겠습니까？
+			
+			PRINTL [54]남자
+			PRINTL [55]여자
+			PRINTL [56]이전으로 돌아간다
+			INPUT
+			;男の子の分岐
+			IF RESULT == 54
+				CALL ADD_NEW_COMPANION, [[キャラ:시노비]],0
+				TALENT:(RESULT:1):남자 = 1
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				CSTR:(RESULT:1):40 = 외모는、얼굴에 ×자형 흉터가 있는 남성과 위협적인 소년、두 가지 패턴이 있다。
+				
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$SINOBIBOY_LOOP1
+				PRINTFORML [541]×자형 흉터가 있는 남성
+				PRINTFORML [542]위협적인 소년
+				INPUT
+				
+				;ここで衣装設定
+				;×字傷の男性
+				IF RESULT == 541
+					;투구　あれ皮のかぶとでしょう。多分
+					CFLAG:(RESULT:1):초기모자 = [[衣装:투구]]
+					CFLAG:(RESULT:1):모자 = [[衣装:투구]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:투구]]
+					;기모노　男性は前どうなってるかわからないが女性と一緒ってことで。
+					CFLAG:(RESULT:1):초기옷 = [[衣装:기모노]]
+					CFLAG:(RESULT:1):옷 = [[衣装:기모노]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:기모노]]
+					;수갑
+					CFLAG:(RESULT:1):초기손 = [[衣装:수갑]]
+					CFLAG:(RESULT:1):손 = [[衣装:수갑]]
+					TEQUIP:(RESULT:1):손 = [[衣装:수갑]]
+					;몸뻬　あれズボンかなー
+					CFLAG:(RESULT:1):초기하의 = [[衣装:몸뻬]]
+					CFLAG:(RESULT:1):하의 = [[衣装:몸뻬]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:몸뻬]]
+					;훈도시
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:훈도시]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:훈도시]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:훈도시]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+					;마스크
+					CFLAG:(RESULT:1):초기그외 = [[衣装:마스크]]
+					CFLAG:(RESULT:1):그외 = [[衣装:마스크]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:마스크]]
+					;머플러
+					CFLAG:(RESULT:1):초기그외2 = [[衣装:머플러]]
+					CFLAG:(RESULT:1):그외2 = [[衣装:머플러]]
+					TEQUIP:(RESULT:1):그외2 = [[衣装:머플러]]
+				;威圧的な少年
+				ELSEIF RESULT == 542
+					;기모노　男性は前どうなってるかわからないが女性と一緒ってことで。
+					CFLAG:(RESULT:1):초기옷 = [[衣装:기모노]]
+					CFLAG:(RESULT:1):옷 = [[衣装:기모노]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:기모노]]
+					;수갑
+					CFLAG:(RESULT:1):초기손 = [[衣装:수갑]]
+					CFLAG:(RESULT:1):손 = [[衣装:수갑]]
+					TEQUIP:(RESULT:1):손 = [[衣装:수갑]]
+					;몸뻬　あれズボンかなー
+					CFLAG:(RESULT:1):초기하의 = [[衣装:몸뻬]]
+					CFLAG:(RESULT:1):하의 = [[衣装:몸뻬]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:몸뻬]]
+					;훈도시
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:훈도시]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:훈도시]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:훈도시]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+					;마스크
+					CFLAG:(RESULT:1):초기그외 = [[衣装:마스크]]
+					CFLAG:(RESULT:1):그외 = [[衣装:마스크]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:마스크]]
+					;머플러
+					CFLAG:(RESULT:1):초기그외2 = [[衣装:머플러]]
+					CFLAG:(RESULT:1):그외2 = [[衣装:머플러]]
+					TEQUIP:(RESULT:1):그외2 = [[衣装:머플러]]
+				ELSE
+					GOTO SINOBIBOY_LOOP1
+				ENDIF
+				
+				$SINOBIBOY_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [543]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [544]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [545]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [546]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [547]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [548]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [549]츤데레(츤데레　헌신적　억압）
+				PRINTL [5410]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 543
+				ELSEIF RESULT == 544
+				ELSEIF RESULT == 545
+				ELSEIF RESULT == 546
+				ELSEIF RESULT == 547
+				ELSEIF RESULT == 548
+				ELSEIF RESULT == 549
+				ELSEIF RESULT == 5410
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO SINOBIBOY_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO SINOBIBOY_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 543
+					;若者だとなんか違うんだよなぁ
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 544
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 545
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 546
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 317;男・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 547
+					;これがシニカルじゃなかったらなんだというんです？
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 324;男・シニカル
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 548
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 549
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 5410
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = お前
+					ABL:(RESULT:1):회화타입 = 314;男・少年
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$SINOBIBOY_LOOP3
+					PRINTFORML [5411]야리친！（Ｃ감각、성교경험＋）
+					PRINTFORML [5412]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [5413]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。女性は精液経験じゃなくて絶頂経験＋10
+					;창놈
+					IF RESULT == 5411
+						PRINTFORML 이 아이는「야리친」입니까？
+					;尻好き
+					ELSEIF RESULT == 5412
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 5413
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO SINOBIBOY_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]예
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO SINOBIBOY_LOOP3
+					;창놈
+					ELSEIF RESULT / 10 == 5411
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):삽입경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 5412
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 5413
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):정액경험 = 10
+					ENDIF
+				ELSE
+					GOTO SINOBIBOY_LOOP2
+				ENDIF
+			;女の子の分岐
+			ELSEIF RESULT ==55
+				CALL ADD_NEW_COMPANION, [[キャラ:시노비]],0
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				TALENT:(RESULT:1):처녀 = 1
+				CSTR:(RESULT:1):40 = 외모는、냉정해 보이는 여성과 여우 가면을 쓴 소녀、두 가지 패턴이 있다。
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$SINOBIGIRL_LOOP1
+				PRINTFORML [551]냉정해 보이는 여성
+				PRINTFORML [552]여우 가면을 쓴 소녀
+				INPUT
+				
+				;ここで衣装設定
+				;冷静そうな女性
+				IF RESULT == 551
+					;기모노
+					CFLAG:(RESULT:1):초기옷 = [[衣装:기모노]]
+					CFLAG:(RESULT:1):옷 = [[衣装:기모노]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:기모노]]
+					;수갑
+					CFLAG:(RESULT:1):초기손 = [[衣装:수갑]]
+					CFLAG:(RESULT:1):손 = [[衣装:수갑]]
+					TEQUIP:(RESULT:1):손 = [[衣装:수갑]]
+					;몸뻬　あれズボンかなー
+					CFLAG:(RESULT:1):초기하의 = [[衣装:몸뻬]]
+					CFLAG:(RESULT:1):하의 = [[衣装:몸뻬]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:몸뻬]]
+					;무명천
+					CFLAG:(RESULT:1):초기속옷（상） = [[衣装:무명천]]
+					CFLAG:(RESULT:1):속옷（상） = [[衣装:무명천]]
+					TEQUIP:(RESULT:1):속옷（상） = [[衣装:무명천]]
+					;훈도시
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:훈도시]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:훈도시]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:훈도시]]
+					;부츠　女性は下半身わからんがこれでいいかもしれない
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+					;머플러
+					CFLAG:(RESULT:1):초기그외 = [[衣装:머플러]]
+					CFLAG:(RESULT:1):그외 = [[衣装:머플러]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:머플러]]
+				;狐面の少女
+				ELSEIF RESULT == 552
+					;ここで貧乳をつける　ない
+					TALENT:(RESULT:1):빈유 = 1
+					;기모노
+					CFLAG:(RESULT:1):초기옷 = [[衣装:기모노]]
+					CFLAG:(RESULT:1):옷 = [[衣装:기모노]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:기모노]]
+					;수갑
+					CFLAG:(RESULT:1):초기손 = [[衣装:수갑]]
+					CFLAG:(RESULT:1):손 = [[衣装:수갑]]
+					TEQUIP:(RESULT:1):손 = [[衣装:수갑]]
+					;스커트　長着だと長いんだ
+					CFLAG:(RESULT:1):초기하의 = [[衣装:스커트]]
+					CFLAG:(RESULT:1):하의 = [[衣装:스커트]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:스커트]]
+					;무명천
+					CFLAG:(RESULT:1):초기속옷（상） = [[衣装:무명천]]
+					CFLAG:(RESULT:1):속옷（상） = [[衣装:무명천]]
+					TEQUIP:(RESULT:1):속옷（상） = [[衣装:무명천]]
+					;훈도시
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:훈도시]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:훈도시]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:훈도시]]
+					;니삭스
+					CFLAG:(RESULT:1):초기양말 = [[衣装:니삭스]]
+					CFLAG:(RESULT:1):양말 = [[衣装:니삭스]]
+					TEQUIP:(RESULT:1):양말 = [[衣装:니삭스]]
+					;부츠　女性は下半身わからんがこれでいいかもしれない
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+					;머플러
+					CFLAG:(RESULT:1):초기그외 = [[衣装:머플러]]
+					CFLAG:(RESULT:1):그외 = [[衣装:머플러]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:머플러]]
+					;가면「여우」
+					CFLAG:(RESULT:1):초기그외2 = [[衣装:가면「여우」]]
+					CFLAG:(RESULT:1):그외2 = [[衣装:가면「여우」]]
+					TEQUIP:(RESULT:1):그외2 = [[衣装:가면「여우」]]
+				ELSE
+					GOTO SINOBIGIRL_LOOP1
+				ENDIF
+				
+				$SINOBIGIRL_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [553]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [554]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [555]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [556]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [557]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [558]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [559]츤데레(츤데레　헌신적　억압）
+				PRINTL [5510]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 553
+				ELSEIF RESULT == 554
+				ELSEIF RESULT == 555
+				ELSEIF RESULT == 556
+				ELSEIF RESULT == 557
+				ELSEIF RESULT == 558
+				ELSEIF RESULT == 559
+				ELSEIF RESULT == 5510
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO SINOBIGIRL_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO SINOBIGIRL_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 553
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 554
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 555
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 306;女・淑女
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 556
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴方
+					ABL:(RESULT:1):회화타입 = 305;女・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 557
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 558
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴様
+					ABL:(RESULT:1):회화타입 = 307;女・古風
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 559
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 5510
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$SINOBIGIRL_LOOP3
+					PRINTFORML [5511]야리만！（Ｖ감각、성교경험＋）
+					PRINTFORML [5512]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [5513]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。女性は精液経験じゃなくて絶頂経験＋10
+					;ヤリマン
+					IF RESULT == 5511
+						PRINTFORML 이 아이는「야리만」입니까？
+					;尻好き
+					ELSEIF RESULT == 5512
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 5513
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO SINOBIGIRL_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]네
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO SINOBIGIRL_LOOP3
+					;ヤリマン
+					;ここで処女を削除する。処女ビッチ誕生阻止。
+					ELSEIF RESULT / 10 == 5511
+						TALENT:(RESULT:1):처녀 = 0
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｖ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 5512
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 5513
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+					ENDIF
+				ELSE
+					GOTO SINOBIGIRL_LOOP2
+				ENDIF
+			ELSEIF RESULT == 56
+				GOTO BOUKENSYA_LOOP
+			ELSE
+				GOTO SINOBI_LOOP2
+			ENDIF
+			$SINOBI_LOOP3
+			PRINTFORML 어떤 타입을 선택하시겠습니까？
+			PRINTFORML ※타입의 스킬은 설명에 적혀 있습니다。
+			
+			PRINTL [57]단검술 타입
+			PRINTL [58]인술 타입
+			PRINTL [59]자세한 설명을 본다
+			INPUT
+			;ここで習得スキルを追加する。
+			;短剣型
+			IF RESULT == 57
+				;암야검
+				ABL:(RESULT:1):습득스킬1 = 37
+				ABL:(RESULT:1):습득LV1 = 7
+				;번개찌르기
+				ABL:(RESULT:1):습득스킬2 = 9
+				ABL:(RESULT:1):습득LV2 = 12
+				;히트웨이브
+				ABL:(RESULT:1):습득스킬4 = 2
+				ABL:(RESULT:1):습득LV4 = 20
+				;구십구나선격
+				ABL:(RESULT:1):습득스킬7 = 56
+				ABL:(RESULT:1):습득LV7 = 50
+			;忍術型
+			ELSEIF RESULT == 58
+				;몽견침
+				ABL:(RESULT:1):습득스킬1 = 105
+				ABL:(RESULT:1):습득LV1 = 7
+				;무거운한숨
+				ABL:(RESULT:1):습득스킬2 = 518
+				ABL:(RESULT:1):습득LV2 = 12
+				;포이즈마
+				ABL:(RESULT:1):습득스킬4 = 1111
+				ABL:(RESULT:1):습득LV4 = 20
+				;테트라칸
+				ABL:(RESULT:1):습득스킬7 = 602
+				ABL:(RESULT:1):습득LV7 = 50
+			ELSEIF RESULT == 59
+				PRINTFORMW 닌자。
+				PRINTFORMW 「단검술 타입」은 조금 특이한 검격 속성을 다루는 타입。
+				PRINTFORMW 「인술 타입」은 상태이상을 다루는 타입。
+				PRINTFORMW 조숙한 직업으로서。42레벨이면 모든 스킬을 익힙니다。(원작 기준의 이야기)
+				GOTO SINOBI_LOOP3
+			ELSE
+				GOTO SINOBI_LOOP3
+			ENDIF
+			
+			PRINTFORMW 시노비가 가입했습니다。
+			;ここでイベントフラグに＋１
+			イベントフラグ:87:1 += 1
+			
+		ELSEIF RESULT == 52
+			PRINTFORMW 닌자。
+			PRINTFORMW 「단검술 타입」은 조금 특이한 검격 속성을 다루는 타입。
+			PRINTFORMW 「인술 타입」은 상태이상을 다루는 타입。
+			PRINTFORMW 조숙한 직업으로서。42레벨이면 모든 스킬을 익힙니다。(원작 기준의 이야기)
+			GOTO SINOBI_LOOP1
+		ELSEIF RESULT == 53
+			GOTO BOUKENSYA_LOOP
+		ELSE
+			GOTO SINOBI_LOOP1
+		ENDIF
+	;モンク
+	ELSEIF RESULT == 6
+		PRINTFORML 자신의「주먹」으로 싸우고、아군을 치유하는 직업。
+		$MONK_LOOP1
+		PRINTFORML 이 직업으로 하시겠습니까？
+		
+		PRINTL [61]네
+		PRINTL [62]자세한 설명을 본다
+		PRINTL [63]돌아가기
+		
+		INPUT
+		IF RESULT == 61
+			$MONK_LOOP2
+			PRINTFORML 성별은 무엇으로 하시겠습니까？
+			
+			PRINTL [64]남자
+			PRINTL [65]여자
+			PRINTL [66]이전으로 돌아간다
+			INPUT
+			;男の子の分岐
+			IF RESULT == 64
+				CALL ADD_NEW_COMPANION, [[キャラ:몽크]],0
+				TALENT:(RESULT:1):남자 = 1
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				CSTR:(RESULT:1):40 = 외모는、안경을 쓴 소년과 노승、두 가지 패턴이 있다。
+				
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$MONKBOY_LOOP1
+				PRINTFORML [641]안경을 쓴 소년
+				PRINTFORML [642]노승
+				INPUT
+				
+				;ここで衣装設定
+				;眼鏡をかけた少年
+				IF RESULT == 641
+					;겉옷　これ本当は道着に近いけど道着は全身服なので無理。
+					CFLAG:(RESULT:1):초기옷 = [[衣装:겉옷]]
+					CFLAG:(RESULT:1):옷 = [[衣装:겉옷]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:겉옷]]
+					;바지　ふんわりとしたズボン
+					CFLAG:(RESULT:1):초기하의 = [[衣装:바지]]
+					CFLAG:(RESULT:1):하의 = [[衣装:바지]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:바지]]
+					;훈도시
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:훈도시]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:훈도시]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:훈도시]]
+					;펌프스　チャイナシューズがないので代用
+					CFLAG:(RESULT:1):초기신발 = [[衣装:펌프스]]
+					CFLAG:(RESULT:1):신발 = [[衣装:펌프스]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:펌프스]]
+					;안경
+					CFLAG:(RESULT:1):초기그외 = [[衣装:안경]]
+					CFLAG:(RESULT:1):그외 = [[衣装:안경]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:안경]]
+				;老師
+				ELSEIF RESULT == 642
+					;ほぼ裸
+					;바지
+					CFLAG:(RESULT:1):초기하의 = [[衣装:바지]]
+					CFLAG:(RESULT:1):하의 = [[衣装:바지]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:바지]]
+					;훈도시
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:훈도시]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:훈도시]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:훈도시]]
+				ELSE
+					GOTO MONKBOY_LOOP1
+				ENDIF
+				
+				$MONKBOY_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [643]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [644]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [645]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [646]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [647]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [648]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [649]츤데레(츤데레　헌신적　억압）
+				PRINTL [6410]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 643
+				ELSEIF RESULT == 644
+				ELSEIF RESULT == 645
+				ELSEIF RESULT == 646
+				ELSEIF RESULT == 647
+				ELSEIF RESULT == 648
+				ELSEIF RESULT == 649
+				ELSEIF RESULT == 6410
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO MONKBOY_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO MONKBOY_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 643
+					;若者だとなんか違うんだよなぁ
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 644
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 645
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 646
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 317;男・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 647
+					;これがシニカルじゃなかったらなんだというんです？
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 324;男・シニカル
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 648
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 649
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 6410
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = お前
+					ABL:(RESULT:1):회화타입 = 314;男・少年
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$MONKBOY_LOOP3
+					PRINTFORML [6411]야리친！（Ｃ감각、성교경험＋）
+					PRINTFORML [6412]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [6413]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。女性は精液経験じゃなくて絶頂経験＋10
+					;창놈
+					IF RESULT == 6411
+						PRINTFORML 이 아이는「야리친」입니까？
+					;尻好き
+					ELSEIF RESULT == 6412
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 6413
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO MONKBOY_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]네
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO MONKBOY_LOOP3
+					;창놈
+					ELSEIF RESULT / 10 == 6411
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):삽입경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 6412
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 6413
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):정액경험 = 10
+					ENDIF
+				ELSE
+					GOTO MONKBOY_LOOP2
+				ENDIF
+			;女の子の分岐
+			ELSEIF RESULT ==65
+				CALL ADD_NEW_COMPANION, [[キャラ:몽크]],0
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				TALENT:(RESULT:1):처녀 = 1
+				CSTR:(RESULT:1):40 = 외모는、영리해 보이는 소녀와 붉은 머리를 땋은 여성、두 가지 패턴이 있다。
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$MONKGIRL_LOOP1
+				PRINTFORML [651]영리해 보이는 소녀
+				PRINTFORML [652]붉은 머리를 땋은 여성
+				INPUT
+				
+				;ここで衣装設定
+				;利発そうな少女
+				IF RESULT == 651
+					;ここで貧乳をつける
+					TALENT:(RESULT:1):빈유 = 1
+					;겉옷　あれは…なんだろうか…？？？
+					CFLAG:(RESULT:1):초기옷 = [[衣装:겉옷]]
+					CFLAG:(RESULT:1):옷 = [[衣装:겉옷]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:겉옷]]
+					;바지
+					CFLAG:(RESULT:1):초기하의 = [[衣装:바지]]
+					CFLAG:(RESULT:1):하의 = [[衣装:바지]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:바지]]
+					;무명천
+					CFLAG:(RESULT:1):초기속옷（상） = [[衣装:무명천]]
+					CFLAG:(RESULT:1):속옷（상） = [[衣装:무명천]]
+					TEQUIP:(RESULT:1):속옷（상） = [[衣装:무명천]]
+					;팬티
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:팬티]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+				;中性的な女性
+				ELSEIF RESULT == 652
+					;겉옷
+					CFLAG:(RESULT:1):초기옷 = [[衣装:겉옷]]
+					CFLAG:(RESULT:1):옷 = [[衣装:겉옷]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:겉옷]]
+					;반장갑　本当はバンテージなんだろうけど
+					CFLAG:(RESULT:1):초기손 = [[衣装:반장갑]]
+					CFLAG:(RESULT:1):손 = [[衣装:반장갑]]
+					TEQUIP:(RESULT:1):손 = [[衣装:반장갑]]
+					;바지
+					CFLAG:(RESULT:1):초기하의 = [[衣装:바지]]
+					CFLAG:(RESULT:1):하의 = [[衣装:바지]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:바지]]
+					;무명천
+					CFLAG:(RESULT:1):초기속옷（상） = [[衣装:무명천]]
+					CFLAG:(RESULT:1):속옷（상） = [[衣装:무명천]]
+					TEQUIP:(RESULT:1):속옷（상） = [[衣装:무명천]]
+					;팬티
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:팬티]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+				ELSE
+					GOTO MONKGIRL_LOOP1
+				ENDIF
+				
+				$MONKGIRL_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [653]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [654]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [655]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [656]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [657]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [658]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [659]츤데레(츤데레　헌신적　억압）
+				PRINTL [6510]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 653
+				ELSEIF RESULT == 654
+				ELSEIF RESULT == 655
+				ELSEIF RESULT == 656
+				ELSEIF RESULT == 657
+				ELSEIF RESULT == 658
+				ELSEIF RESULT == 659
+				ELSEIF RESULT == 6510
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO MONKGIRL_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO MONKGIRL_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 653
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 654
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 655
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 306;女・淑女
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 656
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴方
+					ABL:(RESULT:1):회화타입 = 305;女・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 657
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 658
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴様
+					ABL:(RESULT:1):회화타입 = 307;女・古風
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 659
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 6510
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$MONKGIRL_LOOP3
+					PRINTFORML [6511]야리만！（Ｖ감각、성교경험＋）
+					PRINTFORML [6512]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [6513]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。女性は精液経験じゃなくて絶頂経験＋10
+					;ヤリマン
+					IF RESULT == 6511
+						PRINTFORML 이 아이는「야리만」입니까？
+					;尻好き
+					ELSEIF RESULT == 6512
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 6513
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO MONKGIRL_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]네
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO MONKGIRL_LOOP3
+					;ヤリマン
+					;ここで処女を削除する。処女ビッチ誕生阻止。
+					ELSEIF RESULT / 10 == 6511
+						TALENT:(RESULT:1):처녀 = 0
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｖ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 6512
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 6513
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+					ENDIF
+				ELSE
+					GOTO MONKGIRL_LOOP2
+				ENDIF
+			ELSEIF RESULT == 66
+				GOTO BOUKENSYA_LOOP
+			ELSE
+				GOTO MONK_LOOP2
+			ENDIF
+			$MONK_LOOP3
+			PRINTFORML 어떤 타입을 선택하시겠습니까？
+			PRINTFORML ※타입의 스킬은 설명에 적혀 있습니다。
+			
+			PRINTL [67]회복술 타입
+			PRINTL [68]맨손 타입
+			PRINTL [69]자세한 설명을 본다
+			INPUT
+			;ここで習得スキルを追加する。
+			;回復型
+			IF RESULT == 67
+				;리캄
+				ABL:(RESULT:1):습득스킬1 = 417
+				ABL:(RESULT:1):습득LV1 = 10
+				;メディラマ
+				ABL:(RESULT:1):습득스킬4 = 405
+				ABL:(RESULT:1):습득LV4 = 22
+				;メディラハン
+				ABL:(RESULT:1):습득스킬9 = 406
+				ABL:(RESULT:1):습득LV9 = 44
+			;素手型
+			ELSEIF RESULT == 68
+				;마구날뛰기
+				ABL:(RESULT:1):습득스킬1 = 203
+				ABL:(RESULT:1):습득LV1 = 10
+				;맹반격
+				ABL:(RESULT:1):습득스킬4 = 2482
+				ABL:(RESULT:1):습득LV4 = 22
+				;닷지카운터
+				ABL:(RESULT:1):습득스킬9 = 2484
+				ABL:(RESULT:1):습득LV9 = 44
+			ELSEIF RESULT == 69
+				PRINTFORMW 권사。회복 역할도 맡고 있습니다。
+				PRINTFORMW 「회복술 타입」은 회복을 더욱 강화하는 타입。
+				PRINTFORMW 「맨손 타입」은 타격을 더욱 강화하는 타입。
+				PRINTFORMW 전투도、회복도 나름대로 쓸만하므로 두 타입 모두 추천합니다。
+				GOTO MONK_LOOP3
+			ELSE
+				GOTO MONK_LOOP3
+			ENDIF
+			
+			
+			PRINTFORMW 몽크가 가입했습니다。
+			;ここでイベントフラグに＋１
+			イベントフラグ:87:1 += 1
+			
+		ELSEIF RESULT == 62
+			PRINTFORMW 권사。회복 역할도 맡고 있습니다。
+			PRINTFORMW 「회복술 타입」은 회복을 더욱 강화하는 타입。
+			PRINTFORMW 「맨손 타입」은 타격을 더욱 강화하는 타입。
+			PRINTFORMW 전투도、회복도 나름대로 쓸만하므로 두 타입 모두 추천합니다。
+			GOTO MONK_LOOP1
+		ELSEIF RESULT == 63
+			GOTO BOUKENSYA_LOOP
+		ELSE
+			GOTO MONK_LOOP1
+		ENDIF
+	;조디악
+	ELSEIF RESULT == 7
+		PRINTFORML 「성술」을 다루는 마법 후방직。
+		
+		$ZODIAC_LOOP1
+		PRINTFORML 이 직업으로 하시겠습니까？
+		
+		PRINTL [71]네
+		PRINTL [72]자세한 설명을 본다
+		PRINTL [73]돌아가기
+		
+		INPUT
+		IF RESULT == 71
+			$ZODIAC_LOOP2
+			PRINTFORML 성별은 무엇으로 하시겠습니까？
+			
+			PRINTL [74]남자
+			PRINTL [75]여자
+			PRINTL [76]이전으로 돌아간다
+			INPUT
+			;男の子の分岐
+			IF RESULT == 74
+				CALL ADD_NEW_COMPANION, [[キャラ:조디악]],0
+				TALENT:(RESULT:1):남자 = 1
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				CSTR:(RESULT:1):40 = 외모는、시크한 소년과 불건전해 보이는 소년、두 가지 패턴이 있다。
+				
+				;ゾディアック男は変わらないけど分岐はつける。
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$ZODIACBOY_LOOP1
+				PRINTFORML [741]어른스러운 청년
+				PRINTFORML [742]눈매가 날카로운 청년
+				INPUT
+				
+				;ここで衣装設定
+				;大人しそうな青年
+				IF RESULT == 741
+					;모자
+					CFLAG:(RESULT:1):초기모자 = [[衣装:모자]]
+					CFLAG:(RESULT:1):모자 = [[衣装:모자]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:모자]]
+					;코트
+					CFLAG:(RESULT:1):초기전신복 = [[衣装:코트]]
+					CFLAG:(RESULT:1):전신복 = [[衣装:코트]]
+					TEQUIP:(RESULT:1):전신복 = [[衣装:코트]]
+					;바지
+					CFLAG:(RESULT:1):초기하의 = [[衣装:바지]]
+					CFLAG:(RESULT:1):하의 = [[衣装:바지]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:바지]]
+					;트렁크스
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:트렁크스]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+				;目つきの悪い青年
+				ELSEIF RESULT == 742
+					;모자
+					CFLAG:(RESULT:1):초기모자 = [[衣装:모자]]
+					CFLAG:(RESULT:1):모자 = [[衣装:모자]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:모자]]
+					;코트
+					CFLAG:(RESULT:1):초기전신복 = [[衣装:코트]]
+					CFLAG:(RESULT:1):전신복 = [[衣装:코트]]
+					TEQUIP:(RESULT:1):전신복 = [[衣装:코트]]
+					;바지
+					CFLAG:(RESULT:1):초기하의 = [[衣装:바지]]
+					CFLAG:(RESULT:1):하의 = [[衣装:바지]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:바지]]
+					;트렁크스
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:트렁크스]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+				ELSE
+					GOTO ZODIACBOY_LOOP1
+				ENDIF
+				
+				$ZODIACBOY_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [743]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [744]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [745]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [746]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [747]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [748]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [749]츤데레(츤데레　헌신적　억압）
+				PRINTL [7410]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 743
+				ELSEIF RESULT == 744
+				ELSEIF RESULT == 745
+				ELSEIF RESULT == 746
+				ELSEIF RESULT == 747
+				ELSEIF RESULT == 748
+				ELSEIF RESULT == 749
+				ELSEIF RESULT == 7410
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO ZODIACBOY_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO ZODIACBOY_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 743
+					;若者だとなんか違うんだよなぁ
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 744
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 745
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 746
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 317;男・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 747
+					;これがシニカルじゃなかったらなんだというんです？
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 324;男・シニカル
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 748
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 749
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 7410
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = お前
+					ABL:(RESULT:1):회화타입 = 314;男・少年
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$ZODIACBOY_LOOP3
+					PRINTFORML [7411]야리친！（Ｃ감각、성교경험＋）
+					PRINTFORML [7412]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [7413]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。女性は精液経験じゃなくて絶頂経験＋10
+					;창놈
+					IF RESULT == 7411
+						PRINTFORML 이 아이는「야리친」입니까？
+					;尻好き
+					ELSEIF RESULT == 7412
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 7413
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO ZODIACBOY_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]예
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO ZODIACBOY_LOOP3
+					;창놈
+					ELSEIF RESULT / 10 == 7411
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):삽입경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 7412
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 7413
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):정액경험 = 10
+					ENDIF
+				ELSE
+					GOTO ZODIACBOY_LOOP2
+				ENDIF
+			;女の子の分岐
+			ELSEIF RESULT == 75
+				CALL ADD_NEW_COMPANION, [[キャラ:조디악]],0
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				TALENT:(RESULT:1):처녀 = 1
+				CSTR:(RESULT:1):40 = 외모는、차분해 보이는 소녀와 도도해 보이는 소녀、두 가지 패턴이 있다。
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$ZODIACGIRL_LOOP1
+				PRINTFORML [751]차분해 보이는 소녀
+				PRINTFORML [752]도도해 보이는 소녀
+				INPUT
+				
+				;ここで衣装設定
+				;物静かそうな少女
+				IF RESULT == 751
+					;모자
+					CFLAG:(RESULT:1):초기모자 = [[衣装:모자]]
+					CFLAG:(RESULT:1):모자 = [[衣装:모자]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:모자]]
+					;코트
+					CFLAG:(RESULT:1):초기전신복 = [[衣装:코트]]
+					CFLAG:(RESULT:1):전신복 = [[衣装:코트]]
+					TEQUIP:(RESULT:1):전신복 = [[衣装:코트]]
+					;브래지어
+					CFLAG:(RESULT:1):초기속옷（상） = [[衣装:브래지어]]
+					CFLAG:(RESULT:1):속옷（상） = [[衣装:브래지어]]
+					TEQUIP:(RESULT:1):속옷（상） = [[衣装:브래지어]]
+					;스패츠
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:스패츠]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:스패츠]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:스패츠]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+				;高飛車そうな少女
+				ELSEIF RESULT == 752
+					;모자
+					CFLAG:(RESULT:1):초기모자 = [[衣装:모자]]
+					CFLAG:(RESULT:1):모자 = [[衣装:모자]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:모자]]
+					;코트
+					CFLAG:(RESULT:1):초기전신복 = [[衣装:코트]]
+					CFLAG:(RESULT:1):전신복 = [[衣装:코트]]
+					TEQUIP:(RESULT:1):전신복 = [[衣装:코트]]
+					;브래지어
+					CFLAG:(RESULT:1):초기속옷（상） = [[衣装:브래지어]]
+					CFLAG:(RESULT:1):속옷（상） = [[衣装:브래지어]]
+					TEQUIP:(RESULT:1):속옷（상） = [[衣装:브래지어]]
+					;팬티
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:팬티]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					;검은색타이즈
+					CFLAG:(RESULT:1):초기양말 = [[衣装:검은색타이즈]]
+					CFLAG:(RESULT:1):양말 = [[衣装:검은색타이즈]]
+					TEQUIP:(RESULT:1):양말 = [[衣装:검은색타이즈]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+				ELSE
+					GOTO ZODIACGIRL_LOOP1
+				ENDIF
+				
+				$ZODIACGIRL_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [753]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [754]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [755]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [756]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [757]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [758]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [759]츤데레(츤데레　헌신적　억압）
+				PRINTL [7510]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 753
+				ELSEIF RESULT == 754
+				ELSEIF RESULT == 755
+				ELSEIF RESULT == 756
+				ELSEIF RESULT == 757
+				ELSEIF RESULT == 758
+				ELSEIF RESULT == 759
+				ELSEIF RESULT == 7510
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO ZODIACGIRL_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO ZODIACGIRL_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 753
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 754
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 755
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 306;女・淑女
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 756
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴方
+					ABL:(RESULT:1):회화타입 = 305;女・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 757
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 758
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴様
+					ABL:(RESULT:1):회화타입 = 307;女・古風
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 759
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 7510
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$ZODIACGIRL_LOOP3
+					PRINTFORML [7511]야리만！（Ｖ감각、성교경험＋）
+					PRINTFORML [7512]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [7513]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。
+					;ヤリマン
+					IF RESULT == 7511
+						PRINTFORML 이 아이는「야리만」입니까？
+					;尻好き
+					ELSEIF RESULT == 7512
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 7513
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO ZODIACGIRL_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]네
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO ZODIACGIRL_LOOP3
+					;ヤリマン
+					;ここで処女を削除する。処女ビッチ誕生阻止。
+					ELSEIF RESULT / 10 == 7511
+						TALENT:(RESULT:1):처녀 = 0
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｖ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 7512
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 7513
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+					ENDIF
+				ELSE
+					GOTO ZODIACGIRL_LOOP2
+				ENDIF
+			ELSEIF RESULT == 76
+				GOTO BOUKENSYA_LOOP
+			ELSE
+				GOTO ZODIAC_LOOP2
+			ENDIF
+			$ZODIAC_LOOP3
+			PRINTFORML 어떤 타입을 선택하시겠습니까？
+			PRINTFORML ※타입의 스킬은 설명에 적혀 있습니다。
+			
+			PRINTL [77]화력 중시 타입
+			PRINTL [78]서포트 중시 타입
+			PRINTL [79]자세한 설명을 본다
+			INPUT
+			;ここで習得スキルを追加する
+			
+			;火力型
+			IF RESULT == 77
+				;마카카쟈오토
+				ABL:(RESULT:1):습득스킬3 = 2412
+				ABL:(RESULT:1):습득LV3 = 17
+				;컨센트레이트
+				ABL:(RESULT:1):습득스킬7 = 512
+				ABL:(RESULT:1):습득LV7 = 30
+				;악마의위협
+				ABL:(RESULT:1):습득스킬11 = 542
+				ABL:(RESULT:1):습득LV11 = 50
+			
+			;サポート型
+			ELSEIF RESULT == 78
+				;気功（中）
+				ABL:(RESULT:1):습득스킬3 = 2412
+				ABL:(RESULT:1):습득LV3 = 17
+				;코칭
+				ABL:(RESULT:1):습득스킬7 = 2418
+				ABL:(RESULT:1):습득LV7 = 30
+				;다크에테르
+				ABL:(RESULT:1):습득스킬11 = 3658
+				ABL:(RESULT:1):습득LV11 = 50
+			ELSEIF RESULT == 79
+				PRINTFORMW RPG의「마법사」
+				PRINTFORMW 아기、부흐、지오의 세 가지 마법을 다룹니다。
+				PRINTFORMW 「화력 중시 타입」은 말 그대로 화력을 추구하는 타입。
+				PRINTFORMW 「서포트 중시 타입」은 SP 회복이 가능한（연비는 매우 나쁜）타입。
+				PRINTFORMW 두 타입이 배우는 스킬에 큰 차이는 없습니다。
+				GOTO ZODIAC_LOOP3
+			ELSE
+				GOTO ZODIAC_LOOP3
+			ENDIF
+			
+			
+			PRINTFORMW 조디악이 가입했습니다。
+			;ここでイベントフラグに＋１
+			イベントフラグ:87:1 += 1
+			
+		ELSEIF RESULT == 72
+				PRINTFORMW RPG의「마법사」
+				PRINTFORMW 아기、부흐、지오의 세 가지 마법을 다룹니다。
+				PRINTFORMW 「화력 중시 타입」은 말 그대로 화력을 추구하는 타입。
+				PRINTFORMW 「서포트 중시 타입」은 SP 회복이 가능한（연비는 매우 나쁜）타입。
+				PRINTFORMW 두 타입이 배우는 스킬에 큰 차이는 없습니다。
+			GOTO ZODIAC_LOOP1
+		ELSEIF RESULT == 73
+			GOTO BOUKENSYA_LOOP
+		ELSE
+			GOTO ZODIAC_LOOP1
+		ENDIF
+	;ビーストキング
+	ELSEIF RESULT == 8
+		PRINTFORML 숲속에서 짐승을 「불러들이는」중위직。
+		
+		$BEASTKING_LOOP1
+		PRINTFORML 이 직업으로 하시겠습니까？
+		
+		PRINTL [81]네
+		PRINTL [82]자세한 설명을 본다
+		PRINTL [83]돌아가기
+		
+		INPUT
+		IF RESULT == 81
+			$BEASTKING_LOOP2
+			PRINTFORML 성별은 무엇으로 하시겠습니까？
+			
+			PRINTL [84]남자
+			PRINTL [85]여자
+			PRINTL [86]이전으로 돌아간다
+			INPUT
+			;男の子の分岐
+			IF RESULT == 84
+				CALL ADD_NEW_COMPANION, [[キャラ:비스트킹]],0
+				TALENT:(RESULT:1):남자 = 1
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				CSTR:(RESULT:1):40 = 외모는、가면을 써서 얼굴이 보이지 않는 남자와 용맹해 보이는 소년、두 가지 패턴이 있다。
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$BEASTKINGBOY_LOOP1
+				PRINTFORML [841]가면의 남성
+				PRINTFORML [842]용맹해 보이는 소년
+				INPUT
+				
+				;ここで衣装設定
+				;仮面で顔が見えない男性
+				IF RESULT == 841
+					;팔찌　수갑？
+					CFLAG:(RESULT:1):초기손 = [[衣装:팔찌]]
+					CFLAG:(RESULT:1):손 = [[衣装:팔찌]]
+					TEQUIP:(RESULT:1):손 = [[衣装:팔찌]]
+					;바지
+					CFLAG:(RESULT:1):초기하의 = [[衣装:바지]]
+					CFLAG:(RESULT:1):하의 = [[衣装:바지]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:바지]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+				;勇猛そうな少年
+				ELSEIF RESULT == 842
+					;팔찌　수갑？
+					CFLAG:(RESULT:1):초기손 = [[衣装:팔찌]]
+					CFLAG:(RESULT:1):손 = [[衣装:팔찌]]
+					TEQUIP:(RESULT:1):손 = [[衣装:팔찌]]
+					;바지
+					CFLAG:(RESULT:1):초기하의 = [[衣装:바지]]
+					CFLAG:(RESULT:1):하의 = [[衣装:바지]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:바지]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+				ELSE
+					GOTO BEASTKINGBOY_LOOP1
+				ENDIF
+				
+				$BEASTKINGBOY_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [843]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [844]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [845]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [846]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [847]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [848]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [849]츤데레(츤데레　헌신적　억압）
+				PRINTL [8410]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 843
+				ELSEIF RESULT == 844
+				ELSEIF RESULT == 845
+				ELSEIF RESULT == 846
+				ELSEIF RESULT == 847
+				ELSEIF RESULT == 848
+				ELSEIF RESULT == 849
+				ELSEIF RESULT == 8410
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO BEASTKINGBOY_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO BEASTKINGBOY_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 843
+					;若者だとなんか違うんだよなぁ
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 844
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 845
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 846
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 317;男・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 847
+					;これがシニカルじゃなかったらなんだというんです？
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 324;男・シニカル
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 848
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 849
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 8410
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = お前
+					ABL:(RESULT:1):회화타입 = 314;男・少年
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$BEASTKINGBOY_LOOP3
+					PRINTFORML [8411]야리친！（Ｃ감각、성교경험＋）
+					PRINTFORML [8412]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [8413]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。女性は精液経験じゃなくて絶頂経験＋10
+					;창놈
+					IF RESULT == 8411
+						PRINTFORML 이 아이는「야리친」입니까？
+					;尻好き
+					ELSEIF RESULT == 8412
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 8413
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO BEASTKINGBOY_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]네
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO BEASTKINGBOY_LOOP3
+					;창놈
+					ELSEIF RESULT / 10 == 8411
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):삽입경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 8412
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 8413
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):정액경험 = 10
+					ENDIF
+				ELSE
+					GOTO BEASTKINGBOY_LOOP2
+				ENDIF
+			;女の子の分岐
+			ELSEIF RESULT == 85
+				CALL ADD_NEW_COMPANION, [[キャラ:비스트킹]],0
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				TALENT:(RESULT:1):처녀 = 1
+				CSTR:(RESULT:1):40 = 외모는、과묵해 보이는 소녀와 활기찬 여성、두 가지 패턴이 있다。
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$BEASTKINGGIRL_LOOP1
+				PRINTFORML [851]과묵해 보이는 소녀
+				PRINTFORML [852]활기찬 여성
+				INPUT
+				
+				;ここで衣装設定
+				;寡黙そうな少女
+				IF RESULT == 851
+					;ここで貧乳をつける
+					TALENT:(RESULT:1):빈유 = 1
+					;머리장식　鳥の羽のやつ
+					CFLAG:(RESULT:1):초기모자 = [[衣装:머리장식]]
+					CFLAG:(RESULT:1):모자 = [[衣装:머리장식]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:머리장식]]
+					;미니원피스
+					CFLAG:(RESULT:1):초기전신복 = [[衣装:미니원피스]]
+					CFLAG:(RESULT:1):전신복 = [[衣装:미니원피스]]
+					TEQUIP:(RESULT:1):전신복 = [[衣装:미니원피스]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+				;元気あふれる女性
+				ELSEIF RESULT == 852
+					;머리장식　鳥の羽のやつ
+					CFLAG:(RESULT:1):초기모자 = [[衣装:머리장식]]
+					CFLAG:(RESULT:1):모자 = [[衣装:머리장식]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:머리장식]]
+					;미니원피스
+					CFLAG:(RESULT:1):초기전신복 = [[衣装:미니원피스]]
+					CFLAG:(RESULT:1):전신복 = [[衣装:미니원피스]]
+					TEQUIP:(RESULT:1):전신복 = [[衣装:미니원피스]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+				ELSE
+					GOTO BEASTKINGGIRL_LOOP1
+				ENDIF
+				
+				$BEASTKINGGIRL_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [853]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [854]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [855]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [856]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [857]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [858]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [859]츤데레(츤데레　헌신적　억압）
+				PRINTL [8510]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 853
+				ELSEIF RESULT == 854
+				ELSEIF RESULT == 855
+				ELSEIF RESULT == 856
+				ELSEIF RESULT == 857
+				ELSEIF RESULT == 858
+				ELSEIF RESULT == 859
+				ELSEIF RESULT == 8510
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO BEASTKINGGIRL_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO BEASTKINGGIRL_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 853
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 854
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 855
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 306;女・淑女
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 856
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴方
+					ABL:(RESULT:1):회화타입 = 305;女・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 857
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 858
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴様
+					ABL:(RESULT:1):회화타입 = 307;女・古風
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 859
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 8510
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$BEASTKINGGIRL_LOOP3
+					PRINTFORML [8511]야리만！（Ｖ감각、성교경험＋）
+					PRINTFORML [8512]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [8513]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。
+					;ヤリマン
+					IF RESULT == 8511
+						PRINTFORML 이 아이는「야리만」입니까？
+					;尻好き
+					ELSEIF RESULT == 8512
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 8513
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO BEASTKINGGIRL_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]네
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO BEASTKINGGIRL_LOOP3
+					;ヤリマン
+					;ここで処女を削除する。処女ビッチ誕生阻止。
+					ELSEIF RESULT / 10 == 8511
+						TALENT:(RESULT:1):처녀 = 0
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｖ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 8512
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 8513
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+					ENDIF
+				ELSE
+					GOTO BEASTKINGGIRL_LOOP2
+				ENDIF
+			ELSEIF RESULT == 86
+				GOTO BOUKENSYA_LOOP
+			ELSE
+				GOTO BEASTKING_LOOP2
+			ENDIF
+			$BEASTKING_LOOP3
+			PRINTFORML 어떤 타입을 선택하시겠습니까？
+			PRINTFORML ※타입의 스킬은 설명에 적혀 있습니다。
+			
+			PRINTL [87]약체화 중시 타입
+			PRINTL [88]강화 중시 타입
+			PRINTL [89]자세한 설명을 본다
+			INPUT
+			;ここで習得スキルを追加する
+			
+			;弱体型
+			IF RESULT == 87
+				;ラクンダ
+				ABL:(RESULT:1):습득스킬4 = 507
+				ABL:(RESULT:1):습득LV4 = 25
+				;포효
+				ABL:(RESULT:1):습득스킬8 = 514
+				ABL:(RESULT:1):습득LV8 = 37
+			;強化型
+			ELSEIF RESULT == 88
+				;治癒促進・中
+				ABL:(RESULT:1):습득스킬4 = 2409
+				ABL:(RESULT:1):습득LV4 = 25
+				;이악물기
+				ABL:(RESULT:1):습득스킬8 = 2406
+				ABL:(RESULT:1):습득LV8 = 37
+			ELSEIF RESULT == 89
+				PRINTFORMW RPG의「소환사」
+				PRINTFORMW 전술 상성 공격을 다룹니다。
+				PRINTFORMW 「약체화 중시 타입」은 약점을 노리는 타입。
+				PRINTFORMW 「강화 중시 타입」은 자신을 강화하는 타입。
+				PRINTFORMW 두 타입이 배우는 기술에 큰 차이는 없습니다。
+				GOTO BEASTKING_LOOP3
+			ELSE
+				GOTO BEASTKING_LOOP3
+			ENDIF
+			
+			
+			PRINTFORMW 비스트킹이 가입했습니다。
+			;ここでイベントフラグに＋１
+			イベントフラグ:87:1 += 1
+			
+		ELSEIF RESULT == 82
+				PRINTFORMW RPG의「소환사」
+				PRINTFORMW 전술 상성 공격을 다룹니다。
+				PRINTFORMW 「약체화 중시 타입」은 약점을 노리는 타입。
+				PRINTFORMW 「강화 중시 타입」은 자신을 강화하는 타입。
+				PRINTFORMW 두 타입이 배우는 기술에 큰 차이는 없습니다。
+			GOTO BEASTKING_LOOP1
+		ELSEIF RESULT == 83
+			GOTO BOUKENSYA_LOOP
+		ELSE
+			GOTO BEASTKING_LOOP1
+		ENDIF
+	;발리스타
+	ELSEIF RESULT == 9
+		PRINTFORML 거대한 「쇠뇌」로 적을 저격하는 후위직。
+		
+		$BALLISTA_LOOP1
+		PRINTFORML 이 직업으로 하시겠습니까？
+		
+		PRINTL [91]네
+		PRINTL [92]자세한 설명을 본다
+		PRINTL [93]돌아가기
+		
+		INPUT
+		IF RESULT == 91
+			$BALLISTA_LOOP2
+			PRINTFORML 성별은 무엇으로 하시겠습니까？
+			
+			PRINTL [94]남자
+			PRINTL [95]여자
+			PRINTL [96]이전으로 돌아간다
+			INPUT
+			;男の子の分岐
+			IF RESULT == 94
+				CALL ADD_NEW_COMPANION, [[キャラ:발리스타]],0
+				TALENT:(RESULT:1):남자 = 1
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				CSTR:(RESULT:1):40 = 외모는、진지한 표정의 남성과 무표정한 남성、두 가지 패턴이 존재한다。
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$BALLISTABOY_LOOP1
+				PRINTFORML [941]진지한 표정의 남성
+				PRINTFORML [942]무표정한 남성
+				INPUT
+				
+				;ここで衣装設定
+				;厳しい表情の男性
+				IF RESULT == 941
+					;겉옷
+					CFLAG:(RESULT:1):초기옷 = [[衣装:겉옷]]
+					CFLAG:(RESULT:1):옷 = [[衣装:겉옷]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:겉옷]]
+					;장갑
+					CFLAG:(RESULT:1):초기손 = [[衣装:장갑]]
+					CFLAG:(RESULT:1):손 = [[衣装:장갑]]
+					TEQUIP:(RESULT:1):손 = [[衣装:장갑]]
+					;바지
+					CFLAG:(RESULT:1):초기하의 = [[衣装:바지]]
+					CFLAG:(RESULT:1):하의 = [[衣装:바지]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:바지]]
+					;트렁크스
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:트렁크스]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+					;고글
+					CFLAG:(RESULT:1):초기그외 = [[衣装:고글]]
+					CFLAG:(RESULT:1):그외 = [[衣装:고글]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:고글]]
+				;飄々とした男性
+				ELSEIF RESULT == 942
+					;겉옷
+					CFLAG:(RESULT:1):초기옷 = [[衣装:겉옷]]
+					CFLAG:(RESULT:1):옷 = [[衣装:겉옷]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:겉옷]]
+					;장갑
+					CFLAG:(RESULT:1):초기손 = [[衣装:장갑]]
+					CFLAG:(RESULT:1):손 = [[衣装:장갑]]
+					TEQUIP:(RESULT:1):손 = [[衣装:장갑]]
+					;바지
+					CFLAG:(RESULT:1):초기하의 = [[衣装:바지]]
+					CFLAG:(RESULT:1):하의 = [[衣装:바지]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:바지]]
+					;트렁크스
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:트렁크스]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+					;안경
+					CFLAG:(RESULT:1):초기그외 = [[衣装:안경]]
+					CFLAG:(RESULT:1):그외 = [[衣装:안경]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:안경]]
+					;고글
+					CFLAG:(RESULT:1):초기그외2 = [[衣装:고글]]
+					CFLAG:(RESULT:1):그외2 = [[衣装:고글]]
+					TEQUIP:(RESULT:1):그외2 = [[衣装:고글]]
+				ELSE
+					GOTO BALLISTABOY_LOOP1
+				ENDIF
+				
+				$BALLISTABOY_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [943]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [944]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [945]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [946]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [947]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [948]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [949]츤데레(츤데레　헌신적　억압）
+				PRINTL [9410]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 943
+				ELSEIF RESULT == 944
+				ELSEIF RESULT == 945
+				ELSEIF RESULT == 946
+				ELSEIF RESULT == 947
+				ELSEIF RESULT == 948
+				ELSEIF RESULT == 949
+				ELSEIF RESULT == 9410
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO BALLISTABOY_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO BALLISTABOY_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 943
+					;若者だとなんか違うんだよなぁ
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 944
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 945
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 946
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 317;男・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 947
+					;これがシニカルじゃなかったらなんだというんです？
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 324;男・シニカル
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 948
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 949
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 9410
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = お前
+					ABL:(RESULT:1):회화타입 = 314;男・少年
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$BALLISTABOY_LOOP3
+					PRINTFORML [9411]야리친！（Ｃ감각、성교경험＋）
+					PRINTFORML [9412]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [9413]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。女性は精液経験じゃなくて絶頂経験＋10
+					;창놈
+					IF RESULT == 9411
+						PRINTFORML 이 아이는「야리친」입니까？
+					;尻好き
+					ELSEIF RESULT == 9412
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 9413
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO BALLISTABOY_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]네
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO BALLISTABOY_LOOP3
+					;창놈
+					ELSEIF RESULT / 10 == 9411
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):삽입경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 9412
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 9413
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):정액경험 = 10
+					ENDIF
+				ELSE
+					GOTO BALLISTABOY_LOOP2
+				ENDIF
+			;女の子の分岐
+			ELSEIF RESULT == 95
+				CALL ADD_NEW_COMPANION, [[キャラ:발리스타]],0
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				TALENT:(RESULT:1):처녀 = 1
+				CSTR:(RESULT:1):40 = 외모는、강인해 보이는 소녀와 활기찬 여성、두 가지 패턴이 있다。
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$BALLISTAGIRL_LOOP1
+				PRINTFORML [951]강인해 보이는 소녀
+				PRINTFORML [952]활기찬 여성
+				INPUT
+				
+				;ここで衣装設定
+				;気が強そうな少女
+				IF RESULT == 951
+					;ここで貧乳をつける
+					TALENT:(RESULT:1):빈유 = 1
+					;비행모
+					CFLAG:(RESULT:1):초기모자 = [[衣装:비행모]]
+					CFLAG:(RESULT:1):모자 = [[衣装:비행모]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:비행모]]
+					;튜브탑
+					CFLAG:(RESULT:1):초기옷 = [[衣装:튜브탑]]
+					CFLAG:(RESULT:1):옷 = [[衣装:튜브탑]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:튜브탑]]
+					;장갑
+					CFLAG:(RESULT:1):초기손 = [[衣装:장갑]]
+					CFLAG:(RESULT:1):손 = [[衣装:장갑]]
+					TEQUIP:(RESULT:1):손 = [[衣装:장갑]]
+					;바지
+					CFLAG:(RESULT:1):초기하의 = [[衣装:바지]]
+					CFLAG:(RESULT:1):하의 = [[衣装:바지]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:바지]]
+					;팬티
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:팬티]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+					;고글
+					CFLAG:(RESULT:1):초기그외 = [[衣装:고글]]
+					CFLAG:(RESULT:1):그외 = [[衣装:고글]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:고글]]
+				;元気あふれる女性
+				ELSEIF RESULT == 952
+					;튜브탑
+					CFLAG:(RESULT:1):초기옷 = [[衣装:튜브탑]]
+					CFLAG:(RESULT:1):옷 = [[衣装:튜브탑]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:튜브탑]]
+					;장갑
+					CFLAG:(RESULT:1):초기손 = [[衣装:장갑]]
+					CFLAG:(RESULT:1):손 = [[衣装:장갑]]
+					TEQUIP:(RESULT:1):손 = [[衣装:장갑]]
+					;바지
+					CFLAG:(RESULT:1):초기하의 = [[衣装:바지]]
+					CFLAG:(RESULT:1):하의 = [[衣装:바지]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:바지]]
+					;팬티
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:팬티]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+					;고글
+					CFLAG:(RESULT:1):초기그외 = [[衣装:고글]]
+					CFLAG:(RESULT:1):그외 = [[衣装:고글]]
+					TEQUIP:(RESULT:1):그외 = [[衣装:고글]]
+				ELSE
+					GOTO BALLISTAGIRL_LOOP1
+				ENDIF
+				
+				$BALLISTAGIRL_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [953]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [954]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [955]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [956]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [957]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [958]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [959]츤데레(츤데레　헌신적　억압）
+				PRINTL [9510]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 953
+				ELSEIF RESULT == 954
+				ELSEIF RESULT == 955
+				ELSEIF RESULT == 956
+				ELSEIF RESULT == 957
+				ELSEIF RESULT == 958
+				ELSEIF RESULT == 959
+				ELSEIF RESULT == 9510
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO BALLISTAGIRL_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO BALLISTAGIRL_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 953
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 954
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 955
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 306;女・淑女
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 956
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴方
+					ABL:(RESULT:1):회화타입 = 305;女・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 957
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 958
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴様
+					ABL:(RESULT:1):회화타입 = 307;女・古風
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 959
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 9510
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$BALLISTAGIRL_LOOP3
+					PRINTFORML [9511]야리만！（Ｖ감각、성교경험＋）
+					PRINTFORML [9512]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [9513]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。
+					;ヤリマン
+					IF RESULT == 9511
+						PRINTFORML 이 아이는「야리만」입니까？
+					;尻好き
+					ELSEIF RESULT == 9512
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 9513
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO BALLISTAGIRL_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]네
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO BALLISTAGIRL_LOOP3
+					;ヤリマン
+					;ここで処女を削除する。処女ビッチ誕生阻止。
+					ELSEIF RESULT / 10 == 9511
+						TALENT:(RESULT:1):처녀 = 0
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｖ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 9512
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 9513
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+					ENDIF
+				ELSE
+					GOTO BALLISTAGIRL_LOOP2
+				ENDIF
+			ELSEIF RESULT == 96
+				GOTO BOUKENSYA_LOOP
+			ELSE
+				GOTO BALLISTA_LOOP2
+			ENDIF
+			$BALLISTA_LOOP3
+			PRINTFORML 어떤 타입을 선택하시겠습니까？
+			PRINTFORML ※타입의 스킬은 설명에 적혀 있습니다。
+			
+			PRINTL [97]공격 특화 타입
+			PRINTL [98]지원 추가 타입
+			PRINTL [99]자세한 설명을 본다
+			INPUT
+			;ここで習得スキルを追加する
+			
+			;攻撃特化型
+			IF RESULT == 97
+				;기합
+				ABL:(RESULT:1):습득스킬2 = 511
+				ABL:(RESULT:1):습득LV2 = 15
+				;추격의심득
+				ABL:(RESULT:1):습득스킬3 = 512
+				ABL:(RESULT:1):습득LV3 = 17
+				;어드바이스
+				ABL:(RESULT:1):습득스킬11 = 542
+				ABL:(RESULT:1):습득LV11 = 44
+			;支援追加型
+			ELSEIF RESULT == 98
+				;スクカジャ
+				ABL:(RESULT:1):습득스킬2 = 502
+				ABL:(RESULT:1):습득LV2 = 15
+				;패닉보이스
+				ABL:(RESULT:1):습득스킬3 = 1224
+				ABL:(RESULT:1):습득LV3 = 17
+				;에스트마
+				ABL:(RESULT:1):습득스킬11 = 522
+				ABL:(RESULT:1):습득LV11 = 44
+			ELSEIF RESULT == 99
+				PRINTFORMW RPG의「궁수」
+				PRINTFORMW 비구 상성의 공격을 다룹니다。
+				PRINTFORMW 「공격 특화 타입」은 기합 등을 익혀 살의를 더욱 강화하는 타입。
+				PRINTFORMW 「지원 추가 타입」은 지원 스킬을 배우는 타입。
+				PRINTFORMW 높은 화력을 자랑하지만、기본적으로 비구 상성만 배우므로、평가는 적의 상성에 따라 달라집니다。
+				GOTO BALLISTA_LOOP3
+			ELSE
+				GOTO BALLISTA_LOOP3
+			ENDIF
+			
+			
+			PRINTFORMW 발리스타가 가입했습니다。
+			;ここでイベントフラグに＋１
+			イベントフラグ:87:1 += 1
+			
+		ELSEIF RESULT == 92
+			PRINTFORMW RPG의「궁수」
+			PRINTFORMW 비구 상성의 공격을 다룹니다。
+			PRINTFORMW 「공격 특화 타입」은 기합 등을 익혀 살의를 더욱 강화하는 타입。
+			PRINTFORMW 「지원 추가 타입」은 지원 스킬을 배우는 타입。
+			PRINTFORMW 높은 화력을 자랑하지만、기본적으로 비구 상성만 배우므로、평가는 적의 상성에 따라 달라집니다。
+			GOTO BALLISTA_LOOP1
+		ELSEIF RESULT == 93
+			GOTO BOUKENSYA_LOOP
+		ELSE
+			GOTO BALLISTA_LOOP1
+		ENDIF
+	;ファーマー
+	ELSEIF RESULT == 10
+		PRINTFORML 「탐색」에 있어서는 어느 누구에게도 뒤처지지 않는 후방직。
+		
+		$FARMER_LOOP1
+		PRINTFORML 이 직업으로 하시겠습니까？
+		
+		PRINTL [101]네
+		PRINTL [102]자세한 설명을 본다
+		PRINTL [103]돌아가기
+		
+		INPUT
+		IF RESULT == 101
+			$FARMER_LOOP2
+			PRINTFORML 성별은 무엇으로 하시겠습니까？
+			
+			PRINTL [104]남자
+			PRINTL [105]여자
+			PRINTL [106]이전으로 돌아간다
+			INPUT
+			;男の子の分岐
+			IF RESULT == 104
+				CALL ADD_NEW_COMPANION, [[キャラ:파머]],0
+				TALENT:(RESULT:1):남자 = 1
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				CSTR:(RESULT:1):40 = 외모는、평범한 청년과 평온해 보이는 청년、두 가지 패턴이 있다。
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$FARMERBOY_LOOP1
+				PRINTFORML [1041]평범한 청년
+				PRINTFORML [1042]평온해 보이는 청년
+				INPUT
+				
+				;ここで衣装設定
+				;平凡な青年
+				IF RESULT == 1041
+					;모자
+					CFLAG:(RESULT:1):초기모자 = [[衣装:모자]]
+					CFLAG:(RESULT:1):모자 = [[衣装:모자]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:모자]]
+					;겉옷
+					CFLAG:(RESULT:1):초기옷 = [[衣装:겉옷]]
+					CFLAG:(RESULT:1):옷 = [[衣装:겉옷]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:겉옷]]
+					;바지
+					CFLAG:(RESULT:1):초기하의 = [[衣装:바지]]
+					CFLAG:(RESULT:1):하의 = [[衣装:바지]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:바지]]
+					;트렁크스
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:트렁크스]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+				;穏やかそうな青年
+				ELSEIF RESULT == 1042
+					;모자
+					CFLAG:(RESULT:1):초기모자 = [[衣装:모자]]
+					CFLAG:(RESULT:1):모자 = [[衣装:모자]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:모자]]
+					;겉옷
+					CFLAG:(RESULT:1):초기옷 = [[衣装:겉옷]]
+					CFLAG:(RESULT:1):옷 = [[衣装:겉옷]]
+					TEQUIP:(RESULT:1):옷 = [[衣装:겉옷]]
+					;바지
+					CFLAG:(RESULT:1):초기하의 = [[衣装:바지]]
+					CFLAG:(RESULT:1):하의 = [[衣装:바지]]
+					TEQUIP:(RESULT:1):하의 = [[衣装:바지]]
+					;트렁크스
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:트렁크스]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:트렁크스]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+				ELSE
+					GOTO FARMERBOY_LOOP1
+				ENDIF
+				
+				$FARMERBOY_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [1043]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [1044]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [1045]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [1046]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [1047]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [1048]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [1049]츤데레(츤데레　헌신적　억압）
+				PRINTL [10410]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 1043
+				ELSEIF RESULT == 1044
+				ELSEIF RESULT == 1045
+				ELSEIF RESULT == 1046
+				ELSEIF RESULT == 1047
+				ELSEIF RESULT == 1048
+				ELSEIF RESULT == 1049
+				ELSEIF RESULT == 10410
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO FARMERBOY_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO FARMERBOY_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 1043
+					;若者だとなんか違うんだよなぁ
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 1044
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 1045
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 1046
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 317;男・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 1047
+					;これがシニカルじゃなかったらなんだというんです？
+					CSTR:(RESULT:1):일인칭 = 俺
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 324;男・シニカル
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 1048
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = 君
+					ABL:(RESULT:1):회화타입 = 318;男・紳士
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 1049
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 316;男・若者
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 10410
+					CSTR:(RESULT:1):일인칭 = 僕
+					CSTR:(RESULT:1):이인칭 = お前
+					ABL:(RESULT:1):회화타입 = 314;男・少年
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$FARMERBOY_LOOP3
+					PRINTFORML [10411]야리친！（Ｃ감각、성교경험＋）
+					PRINTFORML [10412]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [10413]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。女性は精液経験じゃなくて絶頂経験＋10
+					;창놈
+					IF RESULT == 10411
+						PRINTFORML 이 아이는「야리친」입니까？
+					;尻好き
+					ELSEIF RESULT == 10412
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 10413
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO FARMERBOY_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]네
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO FARMERBOY_LOOP3
+					;창놈
+					ELSEIF RESULT / 10 == 10411
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):삽입경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 10412
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 10413
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):정액경험 = 10
+					ENDIF
+				ELSE
+					GOTO FARMERBOY_LOOP2
+				ENDIF
+			;女の子の分岐
+			ELSEIF RESULT == 105
+				CALL ADD_NEW_COMPANION, [[キャラ:파머]],0
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				TALENT:(RESULT:1):처녀 = 1
+				CSTR:(RESULT:1):40 = 외모는、평범한 소녀와 밝은 소녀、두 가지 패턴이 있다。
+				
+				PRINTFORML 외모는 어떻게 하시겠습니까？
+				$FARMERGIRL_LOOP1
+				PRINTFORML [1051]평범한 소녀
+				PRINTFORML [1052]밝은 소녀
+				INPUT
+				
+				;ここで衣装設定
+				;平凡な少女
+				IF RESULT == 1051
+					;후드　頭巾
+					CFLAG:(RESULT:1):초기모자 = [[衣装:후드]]
+					CFLAG:(RESULT:1):모자 = [[衣装:후드]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:후드]]
+					;에이프런드레스
+					CFLAG:(RESULT:1):초기전신복 = [[衣装:에이프런드레스]]
+					CFLAG:(RESULT:1):전신복 = [[衣装:에이프런드레스]]
+					TEQUIP:(RESULT:1):전신복 = [[衣装:에이프런드레스]]
+					;장갑
+					CFLAG:(RESULT:1):초기손 = [[衣装:장갑]]
+					CFLAG:(RESULT:1):손 = [[衣装:장갑]]
+					TEQUIP:(RESULT:1):손 = [[衣装:장갑]]
+					;브래지어
+					CFLAG:(RESULT:1):초기속옷（상） = [[衣装:브래지어]]
+					CFLAG:(RESULT:1):속옷（상） = [[衣装:브래지어]]
+					TEQUIP:(RESULT:1):속옷（상） = [[衣装:브래지어]]
+					;팬티
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:팬티]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+				;明るい少女
+				ELSEIF RESULT == 1052
+					;카츄샤
+					CFLAG:(RESULT:1):초기모자 = [[衣装:카츄샤]]
+					CFLAG:(RESULT:1):모자 = [[衣装:카츄샤]]
+					TEQUIP:(RESULT:1):모자 = [[衣装:카츄샤]]
+					;에이프런드레스
+					CFLAG:(RESULT:1):초기전신복 = [[衣装:에이프런드레스]]
+					CFLAG:(RESULT:1):전신복 = [[衣装:에이프런드레스]]
+					TEQUIP:(RESULT:1):전신복 = [[衣装:에이프런드레스]]
+					;장갑
+					CFLAG:(RESULT:1):초기손 = [[衣装:장갑]]
+					CFLAG:(RESULT:1):손 = [[衣装:장갑]]
+					TEQUIP:(RESULT:1):손 = [[衣装:장갑]]
+					;브래지어
+					CFLAG:(RESULT:1):초기속옷（상） = [[衣装:브래지어]]
+					CFLAG:(RESULT:1):속옷（상） = [[衣装:브래지어]]
+					TEQUIP:(RESULT:1):속옷（상） = [[衣装:브래지어]]
+					;팬티
+					CFLAG:(RESULT:1):초기속옷（하） = [[衣装:팬티]]
+					CFLAG:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					TEQUIP:(RESULT:1):속옷（하） = [[衣装:팬티]]
+					;부츠
+					CFLAG:(RESULT:1):초기신발 = [[衣装:부츠]]
+					CFLAG:(RESULT:1):신발 = [[衣装:부츠]]
+					TEQUIP:(RESULT:1):신발 = [[衣装:부츠]]
+				ELSE
+					GOTO FARMERGIRL_LOOP1
+				ENDIF
+				
+				$FARMERGIRL_LOOP2
+				
+				PRINTFORML 성격은 어떤 느낌입니까？
+				PRINTL [1053]내성적임（겁쟁이　보수적　비관적）
+				PRINTL [1054]순진함（건방짐　호기심　눈에띄고싶어함）
+				PRINTL [1055]성실함(꿋꿋함　자제심　정조관념)
+				PRINTL [1056]쿨함（얌전함　감정결핍　무관심）
+				PRINTL [1057]비뚤어짐（프라이드낮음　저항　부끄럼쟁이）
+				PRINTL [1058]거만함(프라이드높음　일선을넘지않음　쾌감을부정)
+				PRINTL [1059]츤데레(츤데레　헌신적　억압）
+				PRINTL [10510]H한 아이！！！（솔직함　정조관결여　쾌감에솔직　그외）
+				INPUT
+				
+				
+				IF RESULT == 1053
+				ELSEIF RESULT == 1054
+				ELSEIF RESULT == 1055
+				ELSEIF RESULT == 1056
+				ELSEIF RESULT == 1057
+				ELSEIF RESULT == 1058
+				ELSEIF RESULT == 1059
+				ELSEIF RESULT == 10510
+					PRINTFORML 성적 취향은 커스터마이징이 가능합니다。
+				ELSE
+					GOTO FARMERGIRL_LOOP2
+				ENDIF
+				PRINTFORML 이 성격으로 하시겠습니까？
+				PRINTFORML [{RESULT*10+0}]네
+				PRINTFORML [{RESULT*10+1}]아니오
+				INPUT
+				;いいえ分岐
+				IF RESULT % 10 == 1
+					GOTO FARMERGIRL_LOOP2
+				;よわき
+				ELSEIF RESULT / 10 == 1053
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):겁쟁이 = 1
+					TALENT:(RESULT:1):보수적 = 1
+					TALENT:(RESULT:1):비관적 = 1
+				;なまいき
+				ELSEIF RESULT / 10 == 1054
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):건방짐 = 1
+					TALENT:(RESULT:1):호기심 = 1
+					TALENT:(RESULT:1):눈에띄고싶어함 = 1
+				;まじめ
+				ELSEIF RESULT / 10 == 1055
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 306;女・淑女
+					TALENT:(RESULT:1):꿋꿋함 = 1
+					TALENT:(RESULT:1):자제심 = 1
+					TALENT:(RESULT:1):정조관념 = 1
+				;くーる
+				ELSEIF RESULT / 10 == 1056
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴方
+					ABL:(RESULT:1):회화타입 = 305;女・大人
+					TALENT:(RESULT:1):얌전함 = 1
+					TALENT:(RESULT:1):감정결핍 = 1
+					TALENT:(RESULT:1):무관심 = 1
+				;ひねくれ
+				ELSEIF RESULT / 10 == 1057
+					CSTR:(RESULT:1):일인칭 = アタシ
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):프라이드낮음 = 1
+					TALENT:(RESULT:1):저항 = 1
+					TALENT:(RESULT:1):부끄럼쟁이 = 1
+				;高飛車
+				ELSEIF RESULT / 10 == 1058
+					CSTR:(RESULT:1):일인칭 = 私
+					CSTR:(RESULT:1):이인칭 = 貴様
+					ABL:(RESULT:1):회화타입 = 307;女・古風
+					TALENT:(RESULT:1):프라이드높음 = 1
+					TALENT:(RESULT:1):일선을넘지않음 = 1
+					TALENT:(RESULT:1):쾌감을부정 = 1
+				;츤데레
+				ELSEIF RESULT / 10 == 1059
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あんた
+					ABL:(RESULT:1):회화타입 = 303;女・少女
+					TALENT:(RESULT:1):츤데레 = 1
+					TALENT:(RESULT:1):헌신적 = 1
+					TALENT:(RESULT:1):억압 = 1
+				;Ｈな子
+				ELSEIF RESULT / 10 == 10510
+					CSTR:(RESULT:1):일인칭 = あたし
+					CSTR:(RESULT:1):이인칭 = あなた
+					ABL:(RESULT:1):회화타입 = 304;女・若者
+					TALENT:(RESULT:1):솔직함 = 1
+					TALENT:(RESULT:1):정조관결여 = 1
+					TALENT:(RESULT:1):쾌감에솔직 = 1
+					PRINTFORML 이 아이가 어떻길 바라십니까？
+					
+					$FARMERGIRL_LOOP3
+					PRINTFORML [10511]야리만！（Ｖ감각、성교경험＋）
+					PRINTFORML [10512]애널 선호파！　（Ａ감각、Ａ경험、성교경험＋）
+					PRINTFORML [10513]자위 최고！（Ｃ감각、Ｂ감각、자위경험＋）
+					INPUT
+					
+					;全種、欲望と感覚を１上げる。
+					;経験は絶頂経験20を基準に。
+					;ヤリマン
+					IF RESULT == 10511
+						PRINTFORML 이 아이는「야리만」입니까？
+					;尻好き
+					ELSEIF RESULT == 10512
+						PRINTFORML 이 아이는「애널 선호파」입니까？
+					;自慰好き
+					ELSEIF RESULT == 10513
+						PRINTFORML 이 아이는「자위 최고」입니까？
+					ELSE
+						GOTO FARMERGIRL_LOOP3
+					ENDIF
+					
+					PRINTFORML [{RESULT*10+0}]네
+					PRINTFORML [{RESULT*10+1}]아니오
+					INPUT
+					
+					;いいえ分岐
+					IF RESULT % 10 == 1
+						GOTO FARMERGIRL_LOOP3
+					;ヤリマン
+					;ここで処女を削除する。処女ビッチ誕生阻止。
+					ELSEIF RESULT / 10 == 10511
+						TALENT:(RESULT:1):처녀 = 0
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｖ감각 = 1
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):정액경험 = 10
+					;尻好き
+					ELSEIF RESULT / 10 == 10512
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ａ감각 = 1
+						EXP:(RESULT:1):Ａ경험 = 30
+						EXP:(RESULT:1):절정경험 = 20
+						EXP:(RESULT:1):성교경험 = 30
+						EXP:(RESULT:1):Ａ확장경험 = 2
+					;自慰好き
+					ELSEIF RESULT / 10 == 10513
+						ABL:(RESULT:1):욕망 = 1
+						ABL:(RESULT:1):Ｃ감각 = 1
+						ABL:(RESULT:1):Ｂ감각 = 1
+						EXP:(RESULT:1):자위경험 = 10
+						EXP:(RESULT:1):절정경험 = 20
+					ENDIF
+				ELSE
+					GOTO FARMERGIRL_LOOP2
+				ENDIF
+			ELSEIF RESULT == 106
+				GOTO BOUKENSYA_LOOP
+			ELSE
+				GOTO FARMER_LOOP2
+			ENDIF
+			$FARMER_LOOP3
+			PRINTFORML 어떤 타입을 선택하시겠습니까？
+			PRINTFORML ※타입의 스킬은 설명에 적혀 있습니다。
+			
+			PRINTL [107]응급소생 타입
+			PRINTL [108]자장가 타입
+			PRINTL [109]자세한 설명을 본다
+			INPUT
+			;ここで習得スキルを追加する
+			
+			;応急蘇生型
+			IF RESULT == 107
+				;리캄
+				ABL:(RESULT:1):습득스킬5 = 417
+				ABL:(RESULT:1):습득LV5 = 30
+			;子守唄型
+			ELSEIF RESULT == 108
+				;자장가
+				ABL:(RESULT:1):습득스킬5 = 1223
+				ABL:(RESULT:1):습득LV5 = 30
+			ELSEIF RESULT == 109
+				PRINTFORMW RPG의「탐험가」
+				PRINTFORMW 탐험에 필요한 지원을 해줍니다。
+				PRINTFORMW 「응급소생 타입」은 리캄을 배우는 타입。
+				PRINTFORMW 「자장가 타입」는 자장가를 배우는 타입。
+				PRINTFORMW 분명히 전투에는 적합하지 않습니다。
+				GOTO FARMER_LOOP3
+			ELSE
+				GOTO FARMER_LOOP3
+			ENDIF
+			
+			
+			PRINTFORMW 파머가 가입했습니다。
+			;ここでイベントフラグに＋１
+			イベントフラグ:87:1 += 1
+			
+		ELSEIF RESULT == 102
+			PRINTFORMW RPG의「탐험가」
+			PRINTFORMW 탐험에 필요한 지원을 해줍니다。
+			PRINTFORMW 「응급소생 타입」은 리캄을 배우는 타입。
+			PRINTFORMW 「자장가 타입」는 자장가를 배우는 타입。
+			PRINTFORMW 분명히 전투에는 적합하지 않습니다。
+			GOTO FARMER_LOOP1
+		ELSEIF RESULT == 103
+			GOTO BOUKENSYA_LOOP
+		ELSE
+			GOTO FARMER_LOOP1
+		ENDIF
+	;ショーグン
+	ELSEIF RESULT == 20
+	;アンドロ
+	ELSEIF RESULT == 30
+	;説明
+	ELSEIF RESULT == 998
+		PRINTFORMW 「모험가」를 가입시킬 수 있습니다。
+		PRINTFORMW 각각 특수한「반마 이능자」이며、레벨 5로 가입합니다。
+		PRINTFORMW 성장하면서 강력한 스킬을 익히고、고유 스킬을 획득할 수 있습니다
+		PRINTFORMW 직업별 필살기…「리미트 스킬」 을 보유하고 있습니다。
+		PRINTL
+		PRINTFORMW 게임 밸런스를 위해、가입할 수 있는 인원에 제한이 있습니다
+		PRINTFORMW 최대【다섯 명】까지만 동료가 될 수 있습니다。
+		PRINTL
+		;PRINTFORMW また、隠された職業もあるとのこと…ご利用は計画的に。
+		GOTO BOUKENSYA_LOOP
+	;登録中止
+	ELSEIF RESULT == 999
+		PRINTFORMW 수고하셨습니다。
+	ELSE
+		GOTO BOUKENSYA_LOOP
+	ENDIF
+ENDIF

@@ -1,0 +1,1331 @@
+﻿;-------------------------------------------------
+;白き鋼鉄のXからアキュラ口上　例によって戦闘だけ
+;-------------------------------------------------
+;-------------------------------------------------
+;eraMegaten専用口上テンプレート
+;5357とX2をキャラ番号に置換し、Y1を助手のキャラ番号に置換してください
+;ただし、キャラ番号が一桁のキャラの場合、5357,Y1は1、X2は01のように変えてください
+;そしてコマンド内の適当な条件の下のPRINTFORMWの後ろに半角スペースを置いてセリフを追加してください
+;口上を追加しないコマンドは無記入でも構いませんが、CFLAG:XXXの頭に『;』をつけてコメントアウトすると尚良いでしょう
+;エキストラ構文など、コメントアウトされている構文を使う際には、『;』を外してコメントアウトを解除する必要があります
+;最後にread meにも目を通しておくことをお勧めします
+;-------------------------------------------------
+;-------------------------------------------------
+;汎用口上の作成に使用する場合は、5357→キャラ番号ではなく、
+;K[[キャラ:GV]]→PUB会話タイプ番号　へと変換してご使用ください
+;-------------------------------------------------
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_K[[キャラ:GV]]_ASSI.ERB
+;	Facility	:会話タイプ：助手時口上
+;
+;	Modification Data:
+;	Edit	Date			Author					Reason
+;	001		2021/03/30		木綿豆腐				新規作成　ただし戦闘口上のみ
+;	002		2021/04/06		木綿豆腐				個別イベント3用にちょっとだけ追加
+;	003		2021/04/27		木綿豆腐				個別イベント4用にちょっとだけ追加
+;	004		2021/06/19		木綿豆腐				顔グラを作ったので出すようにしたよ
+;	005		2021/06/21		木綿豆腐				避雷針後のメッセージが消えるようになったのでWAIT入れるようにした/調教メッセージが出力される可能性があったので対処
+;	006		2021/08/24		木綿豆腐				個別イベント5用にちょっと追加/その他ちょっと弄ったり
+;	007		2021/10/04		木綿豆腐				SPスキル使用時の台詞をちょっと変えてみたり歌が流れだしたら曲名が出るようにしたり
+;	008		2022/06/07		木綿豆腐				ちょっとしたバグを直したり
+;	009		2022/12/31		木綿豆腐				誤字修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;ライセンスについて
+;	・基本項目(許可する項目を"○"に、許可しない項目を"×"に変更してください。)
+;	+----+----+-------------------------------+
+;	|番号|許可|ライセンス内容                 |
+;	+----+----+-------------------------------+
+;	|   1| ○ | 処理上のバグ修正              |
+;	+----+----+-------------------------------+
+;	|   2| ○ | 口上の誤字・脱字の修正        |
+;	+----+----+-------------------------------+
+;	|   3| ○ | 口上まとめへの収録            |
+;	+----+----+-------------------------------+
+;	|   4| ○ | 口上の新規追加                |
+;	+----+----+-------------------------------+
+;	|   5| ○ | 既存口上の改変                |
+;	+----+----+-------------------------------+
+;	|   6| ○ | 改変した口上の自由な再配布    |
+;	+----+----+-------------------------------+
+;	|   7| ○ | 口上内容の転載                |
+;	+----+----+-------------------------------+
+;-------------------------------------------------
+;【使用CFLAG】
+;　CFLAG:800　シアンの歌判定 for Reincarnation
+;　CFLAG:801　シアンの歌判定 for Indigo Destiny
+;　CFLAG:802　避雷針判定
+;　CFLAG:803　個別イベント用判定
+;--------------------------------------------------
+@KOJO_BATTLE_EVENT_K[[キャラ:GV]], ARG, ARG:1, ARG:2
+SELECTCASE TFLAG:전투이벤트
+	;COOP発動 ARGは発動者
+	CASE 1
+		IF TSTR:전투이벤트패턴 == "EVENT_200_4_ペインフルデターミネーション"
+			BTL_KOJO_RESULTS:0 = 동정해서는 안돼。해방시키기 위해서라도 지금은！
+		ELSEIF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神1"
+			BTL_KOJO_RESULTS:0 = 너만은…… 여기서 멈추겠다！
+		ELSEIF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神2"
+			BTL_KOJO_RESULTS:0 = 끝을 보자…… 아시모프！
+		ELSE
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 좋아、상대가 겁먹었어！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 찬스입니다、여러분 부탁드리겠습니다！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 틈을 만들었습니다、나머지는 맡기겠습니다
+			ENDSELECT
+		ENDIF
+	;COOP参加
+	CASE 2
+		IF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神1"
+			BTL_KOJO_RESULTS:0 = 저녀석만은 봐줄 수 없어……！
+		ELSEIF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神2"
+			BTL_KOJO_RESULTS:0 = 끝내겠어、우리들이…… 여기에서！
+		;主人がCOOP発動
+		ELSEIF FLAG:행동순1 != -1 && FLAG:행동순1 == MASTER
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%도 이어가겠습니다！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 이걸로、끝낸다
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 끝내도록 하죠！
+			ENDSELECT
+		;アキュラがCOOP発動
+		ELSEIF FLAG:행동순1 != -1 && NO:(FLAG:행동순1) == [[キャラ:아큐라_X]]
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 너의 힘을 빌릴 수 있다 생각하니 든든한걸
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 네가 만든 찬스、헛되게 하지 않을게
+			CASE 2
+				BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%도 질 수는 없지……
+			ENDSELECT
+		;ブレイドがCOOP発動
+		ELSEIF FLAG:행동순1 != -1 && NO:(FLAG:행동순1) == [[キャラ:블레이드_X]]
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 예리한 일격이었습니다、블레이드 씨
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 저렇게 쓸 수도 있구나…… 참고하자
+			CASE 2
+				BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%도 질 수는 없지……
+			ENDSELECT
+		;それ以外
+		ELSE
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%도 이어가겠습니다！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 이걸로、끝낸다
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 끝내도록 하죠！
+			ENDSELECT
+		ENDIF
+	;被召喚時
+	CASE 3
+		;BTL_KOJO_RESULTS:0 = 
+	;공격　ARGが攻撃をする仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 11
+		;味方に攻撃した
+		;IF CFLAG:ARG:PT플래그 == CFLAG:(ARG:1):PT플래그
+		;相手が死んだ
+		IF BASE:(ARG:1):ＨＰ <= 0
+			IF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神1"
+				BTL_KOJO_RESULTS:0 = 뭘까、이 위화감은……
+				BTL_KOJO_RESULTS:1 = 이전에 싸웠을 때보다、약한 듯한……？
+			ELSEIF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神2"
+				BTL_KOJO_RESULTS:0 = 능력자《우리들》에게 필요한 건 너의 지배 같은 게 아냐
+			ELSE
+				IF RAND:2 == 0
+					SETCOLOR 0x1d9eff
+					BTL_KOJO_RESULTS:0 = 적을 격파！　해냈구나、ＧＶ！
+					TSTR:전투구상캐릭터명칭 '= "시안"
+					TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+					CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+					SETCOLOR COLOR("FRIEND")
+				ENDIF
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 물러났으면 쫓지 않았을텐데
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 잠시 자고 있어
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 여기는 ＧＶ、타겟을 격파
+				ENDSELECT
+			ENDIF
+		;弱点をついた。つまりCOOP
+		ELSEIF GET_CREC_ACT(ARG, ARG:1, "WEAK")
+			IF CFLAG:(ARG:1):방어플래그
+				BTL_KOJO_RESULTS:0 = 막혔나、그렇다면！
+			ELSE
+				;こっちはCOOP発動に回すためにカット
+				RETURN 0
+			ENDIF
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 50
+			IF RAND:2 == 0
+				SETCOLOR 0x1d9eff
+				BTL_KOJO_RESULTS:0 = 좋은 기세야！　그대로 해치워버려！
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR COLOR("FRIEND")
+			ENDIF
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 어찌되었건 물러설 생각은 없는 것 같네
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 미안하지만、힘조절할 여유는 없어
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ……다음으로 끝을 낸다！
+			ENDSELECT
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 25
+			IF RAND:2 == 0
+				SETCOLOR 0x1d9eff
+				BTL_KOJO_RESULTS:0 = 그럭저럭 먹힌 것 같아。힘내、ＧＶ！
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR COLOR("FRIEND")
+			ENDIF
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 지금이라면 늦지 않았어。물러설 생각은 없는 건가
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 그다지 시간을 잡아먹힐 수는 없어
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 가로막겠다면……！
+			ENDSELECT
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 0
+			IF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神1"
+				BTL_KOJO_RESULTS:0 = 역시 효과가 안 좋은가…… 그래도！
+			ELSEIF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神2"
+				BTL_KOJO_RESULTS:0 = 효과가 안 좋아도 상관없어！
+			ELSE
+				IF RAND:2 == 0
+					SETCOLOR 0x1d9eff
+					BTL_KOJO_RESULTS:0 = 이럴수가、전혀 효과가 없어……
+					TSTR:전투구상캐릭터명칭 '= "시안"
+					TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+					CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+					SETCOLOR COLOR("FRIEND")
+				ENDIF
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 곤란한걸…… 이렇게까지 단단하다니
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 억지로 밀어붙이는 것도 한계가 있어。무언가 방도를 떠올려야 해……
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 이건 힘든 싸움이 되겠는걸……
+				ENDSELECT
+			ENDIF
+		;無効された
+		ELSEIF ダメージ割合(ARG:1, ARG:2) <= 0
+			IF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神1"
+				BTL_KOJO_RESULTS:0 = 역시 효과가 안 좋은가…… 그래도！
+			ELSEIF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神2"
+				BTL_KOJO_RESULTS:0 = 효과가 안 좋아도 상관없어！
+			ELSE
+				IF RAND:2 == 0
+					SETCOLOR 0x1d9eff
+					BTL_KOJO_RESULTS:0 = 거짓말…… ＧＶ의 공격이 먹히지 않아！？
+					TSTR:전투구상캐릭터명칭 '= "시안"
+					TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+					CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+					SETCOLOR COLOR("FRIEND")
+				ENDIF
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 이건 힘든 싸움이 되겠는걸……
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 우는 소리는 할 수 없지
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 떠올려라…… 방법은 있을거야
+				ENDSELECT
+			ENDIF
+		ENDIF
+	;被ダメージ
+	;ARGが攻撃を受ける仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 12
+		;死んだ
+		IF BASE:ARG:ＨＰ <= 0
+			IF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神1" || TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神2"
+				BTL_KOJO_RESULTS:0 = 여기까지、인가……？
+			ELSE
+				BTL_KOJO_RESULTS:0 = 그앗……！
+			ENDIF
+		;味方に攻撃された
+		ELSEIF CFLAG:ARG:PT플래그 == CFLAG:(ARG:1):PT플래그
+			BTL_KOJO_RESULTS:0 = 상대를 제대로 확인해주세요、이쪽은 아군입니다
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 50 || 現HP割合(ARG) < 25
+			IF RAND:2 == 0
+				SETCOLOR 0x1d9eff
+				BTL_KOJO_RESULTS:0 = ＧＶ、괜찮아！？　무리는 하지 마！
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR COLOR("FRIEND")
+			ENDIF
+			IF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神1" || TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神2"
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%는、살해당하거나 하지 않아……！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 네놈에게만은、절대로 질 수 없어！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 시안…… %CSTR:ARG:일인칭%에게、힘을……！
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 괜찮아…… %CSTR:ARG:일인칭%는 아직、할 수 있어
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 포기할 생각은 없어……！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 시안…… %CSTR:ARG:일인칭%에게、힘을……！
+				ENDSELECT
+			ENDIF
+		;無効
+		ELSEIF ARG:2 == 0
+			IF RAND:2 == 0
+				SETCOLOR 0x1d9eff
+				BTL_KOJO_RESULTS:0 = 유감인걸、ＧＶ에게 그런 건 안 통하거든
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR COLOR("FRIEND")
+			ENDIF
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%에게 그건 먹히지 않아
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 피하지 않아도 괜찮다고는 하지만、왠지 불안한걸……
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 수고했어……
+			ENDSELECT
+		;吸収
+		ELSEIF ARG:2 < 0
+			IF RAND:2 == 0
+				SETCOLOR 0x1d9eff
+				BTL_KOJO_RESULTS:0 = 유감인걸、ＧＶ에게 그런 건 안 통하거든
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR COLOR("FRIEND")
+			ENDIF
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%에게 그건 먹히지 않아
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 피하지 않아도 괜찮다고는 하지만、왠지 불안한걸……
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 체력회복、감사를 표하지
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 저쪽이 더 빠르군……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 긋……
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 피할 수 없나……
+			ENDSELECT
+		ENDIF
+	;範囲攻撃
+	;ARGが攻撃をする仲魔、ARG:1が攻撃された敵数、ARG:2が無効数(回避も含む)
+	CASE 13
+		;全弾命中した
+		IF ARG:2 == 0
+			IF RAND:2 == 0
+				SETCOLOR 0x1d9eff
+				BTL_KOJO_RESULTS:0 = 역시 ＧＶ！　전부 다 맞히다니！
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR COLOR("FRIEND")
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 그렇게까지 칭찬받으면、좀 부끄러운걸……
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 고마워、시안。네 덕분이야
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 응…… 상태가 좋은걸
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 좋아、전탄명중
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 탄 낭비할 생각은 없어
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 응…… 상태가 좋은걸
+				ENDSELECT
+			ENDIF
+		;普通
+		ELSEIF ARG:2 < ARG:1
+			IF RAND:2 == 0
+				SETCOLOR 0x1d9eff
+				BTL_KOJO_RESULTS:0 = 적에게 명중！　해냈구나！
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR COLOR("FRIEND")
+			ENDIF
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 이 정도로 만족하지는 않아
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 고분고분 다 맞아주지는 않는 것 같네
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 움직임이 좋은 놈도 있는 것 같아
+			ENDSELECT
+		;全弾回避された
+		ELSEIF ARG:2 == ARG:1
+			IF RAND:2 == 0
+				SETCOLOR 0x1d9eff
+				BTL_KOJO_RESULTS:0 = 이、이럴 때도 있는 법이라고 생각해？
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR COLOR("FRIEND")
+			ENDIF
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 아차……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 너무 조급했나……？
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 좀 더 제대로 노리지 않으면……
+			ENDSELECT
+		ENDIF
+	;範囲攻撃で敵を撃破した
+	;ARGが攻撃をする仲魔、ARG:1が攻撃された敵数、ARG:2が撃破数
+	CASE 14
+		;全員撃破
+		IF GET_CREC_ACT_SUM(ARG, "敵", "ATTACK") == ARG:2
+			IF RAND:2 == 0
+				SETCOLOR 0x1d9eff
+				BTL_KOJO_RESULTS:0 = 대단해…… 한발로 다 쓰러뜨렸어
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR COLOR("FRIEND")
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 그렇게나 칭찬하면 왠지 근질거리는걸
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 시안、네 덕분이야
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 동시격파…… 상태가 좋아！
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 물러났다면 쫓지 않았을텐데
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 잠시 자고 있어
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 여기는 ＧＶ、타겟을 격파
+				ENDSELECT
+			ENDIF
+		ELSE
+			IF RAND:2 == 0
+				SETCOLOR 0x1d9eff
+				BTL_KOJO_RESULTS:0 = 적을 격파！　해냈구나、ＧＶ！
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR COLOR("FRIEND")
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 응…… 하지만、다 쓰러뜨리지는 못했어
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 고마워、시안。네 덕분이야
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 기왕이면 한꺼번에 격파하고 싶었는데
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 나머지는 부탁드립니다
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 죄송합니다、몇 기 남아버렸어요
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 의외로 끈질긴걸
+				ENDSELECT
+			ENDIF
+		ENDIF
+	;反射された
+	CASE 15
+		SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 되돌아왔어……？
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 이쪽 세계에는 이런 것도 가능한 건가……！
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 상식을 벗어난 궤도라는 것에도 정도가 있어！
+		ENDSELECT
+	;反射した
+	CASE 16
+		IF RAND:2 == 0
+			SETCOLOR 0x1d9eff
+			BTL_KOJO_RESULTS:0 = 유감인걸、ＧＶ에게 그런 건 안 통하거든
+			TSTR:전투구상캐릭터명칭 '= "시안"
+			TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+			CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+			SETCOLOR COLOR("FRIEND")
+		ENDIF
+		SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%에게 그건 통하지 않아
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 피하지 않아도 괜찮다고는 해도、왠지 진정이 안 되는걸……
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 어리석었네
+		ENDSELECT
+	;回避された
+	CASE 17
+		SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 뭐랏……！？
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 큭、빨라……！
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 간단하게 맞아주지는 않、나
+		ENDSELECT
+	;回避した
+	CASE 18
+		IF RAND:2 == 0
+			SETCOLOR 0x1d9eff
+			BTL_KOJO_RESULTS:0 = ＧＶ에게 그런 건、맞지 않거든
+			TSTR:전투구상캐릭터명칭 '= "시안"
+			TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+			CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+			SETCOLOR COLOR("FRIEND")
+		ENDIF
+		SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 다음은 이쪽 차례야
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 맞지 않아
+		CASE 2
+			BTL_KOJO_RESULTS:0 = ……느렷！
+		ENDSELECT
+	;バッドステータスを受けた
+	CASE 22
+		SELECTCASE GET_STATE(CFLAG:ARG:상태이상)
+			CASE "HAPPY"
+				BTL_KOJO_RESULTS:0 = 이건…… 환각、정신공격인가！？
+			;GVが痺れる訳なかろう
+			;CASE "SHOCK"
+			CASE "FREEZE", "BIND", "PALYZE"
+				BTL_KOJO_RESULTS:0 = 잡혀버렸나……！
+			CASE "PANIC"
+				BTL_KOJO_RESULTS:0 = 시안、위험해！　이번에야말로、%CSTR:ARG:일인칭%가 너를――！
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR 0x1d9eff
+				BTL_KOJO_RESULTS:0 = ＧＶ！？　정신차려、난 여기 있어！
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+			CASE "SLEEP"
+				BTL_KOJO_RESULTS:0 = 뭐지、갑자기、졸음이……
+			CASE "CLOSE"
+				BTL_KOJO_RESULTS:0 = 힘이、봉해졌어！？
+			CASE "POISON"
+				BTL_KOJO_RESULTS:0 = 신경독……！　어서 치료를 해야 해
+			;CASE "BOMB"
+			CASE "CHARM"
+				BTL_KOJO_RESULTS:0 = 위、위험해…… 명령에、거스를 수가 없어……
+			CASE "CURSE"
+				BTL_KOJO_RESULTS:0 = 섣불리 손을 댔다가는 %CSTR:ARG:일인칭%도 무사하지 못하려나……
+			;CASE "FLY"
+			;CASE "STONE"
+			CASE "FLAME"
+				BTL_KOJO_RESULTS:0 = 아차、빨리 불을 꺼야 해！
+			CASE "SLIP"
+				BTL_KOJO_RESULTS:0 = 우왓！？
+			CASE "BRAND"
+				BTL_KOJO_RESULTS:0 = 회복의 저해？ 귀찮은걸……
+			;その他の状態異常
+			;CASEELSE
+		ENDSELECT
+	;ターン終了時今の状態による口上
+	CASE 51
+		SETCOLOR COLOR("FRIEND")
+		;残りHP関連
+		IF LOCALS:10 == "" && KSTR:0 == ""
+			IF 0
+			ELSEIF 現HP割合(ARG) == 0
+			;HP20%以下
+			ELSEIF 現HP割合(ARG) < 20
+				SETCOLOR 0x1d9eff
+				IF SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]]) == 1 || SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+					BTL_KOJO_RESULTS:0 = 나의 노래로는、이젠 너의 날개《힘》가 될 수 없는거야……？
+				ELSE
+					BTL_KOJO_RESULTS:0 = ＧＶ、괜찮아！？　정신 차려！
+				ENDIF
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR COLOR("FRIEND")
+				BTL_KOJO_RESULTS:0 = 걱정하게 해서 미안…… %CSTR:ARG:일인칭%라면 아직、할 수 있으니까……！
+			;HP50%以下
+			ELSEIF 現HP割合(ARG) < 50
+				BTL_KOJO_RESULTS:0 = 진정하자…… 이 정도의 궁지、몇 번이나 헤쳐나왔을 터야……
+			ENDIF
+		ENDIF
+	;バトルに勝利した
+	CASE 90
+		IF TSTR:전투이벤트패턴 == "EVENT_200_4_ペインフルデターミネーション"
+			BTL_KOJO_RESULTS:0 = 이럴 수밖에는 없었다고는 해도、견딜 수가 없는걸……
+		ELSEIF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神1"
+			BTL_KOJO_RESULTS:0 = 한 번 더、이 손으로 죽이게 될 줄이야……
+			CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+			SETCOLOR 0x1d9eff
+			BTL_KOJO_RESULTS:0 = ＧＶ……
+			TSTR:전투구상캐릭터명칭 '= "시안"
+			TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+			CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		ELSEIF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神2"
+			BTL_KOJO_RESULTS:0 = ……이번에야말로、안녕이야。아시모프
+		ELSE
+			IF RAND:2 == 0
+				SETCOLOR 0x1d9eff
+				BTL_KOJO_RESULTS:0 = 어어…… 끝났구나。수고했어、ＧＶ
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR COLOR("FRIEND")
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 응。고마워、시안
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 너도 말이야、시안。수고했어
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 그럼、다음으로 나아갈까
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 전투 종료。자아、나아가도록 하죠
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 언젠가 너희 곁으로 돌아가기 위해서도、질 수는 없어
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 남은 적은…… 없는 것 같네요
+				ENDSELECT
+			ENDIF
+		ENDIF
+	;レベルアップした
+	CASE 91
+		IF RAND:2 == 0
+			SETCOLOR 0x1d9eff
+			BTL_KOJO_RESULTS:0 = ＧＶ、레벨업한 것 같아
+			TSTR:전투구상캐릭터명칭 '= "시안"
+			TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+			CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+			SETCOLOR COLOR("FRIEND")
+		ENDIF
+		SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 현 상태에 만족할 수는 없으니까 말이야
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 시안의 힘을 되찾기 위해서라도、강해져야 해……
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 싸우는 게 좋은 건 아니지만、싸우지 않을 수도 없으니까
+		ENDSELECT
+	;逃走に成功した
+	CASE 92
+		IF RAND:2 == 0
+			SETCOLOR 0x1d9eff
+			BTL_KOJO_RESULTS:0 = 저쪽이라면 도망칠 수 있을 것 같아、ＧＶ！
+			TSTR:전투구상캐릭터명칭 '= "시안"
+			TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+			CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+			SETCOLOR COLOR("FRIEND")
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 여기는 ＧＶ。철수용 루트를 확인했습니다
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 여러분、이쪽으로。안전한 루트를 발견했습니다！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 고마워、시안。도움이 되었어
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 지금은 물러나도록 하죠
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 무리해서 쓰러뜨릴 필요도 없다、는 건가
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 알겠습니다。철수하겠습니다
+			ENDSELECT
+		ENDIF
+	;逃走に失敗した
+	CASE 93
+		IF RAND:2 == 0
+			SETCOLOR 0x1d9eff
+			BTL_KOJO_RESULTS:0 = 정말、뭐야！？　진짜 끈질기다니까ー！
+			TSTR:전투구상캐릭터명칭 '= "시안"
+			TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+			CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+			SETCOLOR COLOR("FRIEND")
+		ENDIF
+		SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 뿌리칠 수 없었어……！
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 그리 간단히 놓치지는 않겠다는 건가
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 진심인 것은 저쪽도 마찬가지、라는 건가
+		ENDSELECT
+	;戦闘開始時
+	CASE 94
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			IF RAND:2 == 0
+				SETCOLOR 0x1d9eff
+				BTL_KOJO_RESULTS:0 = 체력에 신경써、무리는 금물이라구？
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR COLOR("FRIEND")
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 알고 있어…… 무리한 짓은 하지 않아
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 응。하지만 만일의 경우에는、도움을 받아도 괜찮을까
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 어떻게든、선처하도록 할게
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 회복、부탁드려도 될까요？
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 한계가 가깝습니다…… 지원을 부탁드립니다
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 큭…… 어떻게든 회피해야 해……
+				ENDSELECT
+			ENDIF
+		ELSE
+			IF TSTR:전투이벤트패턴 == "EVENT_200_4_ペインフルデターミネーション"
+				BTL_KOJO_RESULTS:0 = 물러설 수는 없어。%CSTR:ARG:일인칭%들이、해방시키겠어……！
+			ELSEIF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神1"
+				BTL_KOJO_RESULTS:0 = 너의 야망은 반드시 막아내겠어
+			ELSEIF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神2"
+				BTL_KOJO_RESULTS:0 = 아시모프…… 그런 꼴이 되어서까지……！
+			ELSE
+				IF RAND:2 == 0
+					SETCOLOR 0x1d9eff
+					BTL_KOJO_RESULTS:0 = 적이야！　조심해！
+					TSTR:전투구상캐릭터명칭 '= "시안"
+					TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+					CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+					SETCOLOR COLOR("FRIEND")
+				ENDIF
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 온다면 용서는 하지 않겠어
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 도망칠 거라면 쫓지는 않아、라고 말해도 소용없겠지……
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 솟구쳐라！　푸른 뇌정《암드 블루》！！
+					BTL_KOJO_RESULTS:1 = 이계에서 빛나는 한 줄기 광망이 되어라！！
+				ENDSELECT
+			ENDIF
+		ENDIF
+	;バックアタックを受けた
+	CASE 95
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			IF RAND:2 == 0
+				SETCOLOR 0x1d9eff
+				BTL_KOJO_RESULTS:0 = 위험해、ＧＶ！　뒤에서 적이！
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR COLOR("FRIEND")
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 이건 역시、좀 위험할지도 모르겠네……
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 어떻게든 해보겠지만…… 만일의 경우에는、도움을 받아도 될까
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 괜찮아…… 어떻게든 버틸테니까……！
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 이건 역시、좀 위험할지도 모르겠네……
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 질 수는 없어…… 이런 곳에서！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 큭…… 어떻게든 버텨야 해……！
+				ENDSELECT
+			ENDIF
+		ELSE
+			IF RAND:2 == 0
+				SETCOLOR 0x1d9eff
+				BTL_KOJO_RESULTS:0 = 안 돼、뒤에서 적이 왔어！
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR COLOR("FRIEND")
+			ENDIF
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 적의 계책에 말려들었다、라는 건가
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 어떻게 합니까？　태세를 정비하나요？
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 상황은 불리해도…… 결정적인 건 아냐
+			ENDSELECT
+		ENDIF
+	;敵の先制攻撃を受けた
+	CASE 96
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			IF RAND:2 == 0
+				SETCOLOR 0x1d9eff
+				BTL_KOJO_RESULTS:0 = 위험해、ＧＶ！　적의 기습이야！
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR COLOR("FRIEND")
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 이건 역시、좀 위험할지도 모르겠네……
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 가능한 한 발버둥쳐보겠지만…… 만일의 경우에는、도움을 받아도 될까
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 괜찮아…… 어떻게든 버틸테니까……！
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 이건 역시、좀 위험할지도 모르겠네……
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 질 수는 없어…… 이런 곳에서！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 큭…… 어떻게든 버텨야 해……！
+				ENDSELECT
+			ENDIF
+		ELSE
+			IF RAND:2 == 0
+				SETCOLOR 0x1d9eff
+				BTL_KOJO_RESULTS:0 = 적의 기습！？　조심해！
+				TSTR:전투구상캐릭터명칭 '= "시안"
+				TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+				CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+				SETCOLOR COLOR("FRIEND")
+			ENDIF
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 적의 계책에 말려들었다、는 건가
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 진형이 무너지지 않은 게 다행이려나
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 상황은 불리하지만…… 결정적인 건 아냐
+			ENDSELECT
+		ENDIF
+	;先制攻撃に成功
+	CASE 97
+		IF RAND:2 == 0
+			SETCOLOR 0x1d9eff
+			BTL_KOJO_RESULTS:0 = 방심한 쪽이 잘못한 거니까！
+			TSTR:전투구상캐릭터명칭 '= "시안"
+			TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+			CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+			SETCOLOR COLOR("FRIEND")
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 그 방심에 감사를、이라고 해야 하나
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 이쪽도 수단은 가릴 수가 없거든
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 그래、빨리 정리해버리자
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 경계가 풀려있네요。기습、할 수 있을 듯 합니다
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 미안하지만、단숨에 끝내도록 할게
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 선수를 잡았습니다、속공으로 제압하도록 하죠
+			ENDSELECT
+		ENDIF
+	;リンケージに参加した
+	CASE 100
+		IF 0
+		;スキル分岐
+		;ELSEIF CFLAG:(FLAG:행동순1):입력행동 == [[스킬:○○]]
+		;キャラ分岐
+		;ELSEIF NO:(FLAG:행동순1) == [[キャラ:○○]]
+		ELSE
+			SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 솟구쳐라！　푸른 뇌정《암드 블루》！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 알겠습니다、이것으로――！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 타이밍은 맞추겠습니다、언제든지 가주세요！
+			ENDSELECT
+		ENDIF
+ENDSELECT
+IF !(KSTR:0 == "")
+	SIF !(LOCALS:10 == "")
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+	KCOLOR:0 = 0x33ffcc
+	CALL 口上変数表示
+ELSE
+	SIF !(LOCALS:10 == "")
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+ENDIF
+
+@KOJO_BATTLE_MESSAGE_K[[キャラ:GV]], ARG, ARG:1 = 0
+#DIM DIVA_F
+#DIM DIVA_H
+;使用したスキルの名前をLOCALSに代入
+CALL GET_SKILL_PROP, "SKILL_NAME", CFLAG:ARG:입력행동, ARG
+LOCALS = %RESULTS%
+LOCALS:1 = 포지션{(CFLAG:ARG:타겟)}
+;FLAG:ARG:타겟
+DIVA_F = SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]])
+DIVA_H = SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]])
+
+;崩壊してる場合は口上表示しないようにもできる
+;SIF TALENT:ARG:9
+;	RETURN 0
+
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+;コメントアウトしやすいように
+IF 1 == 0
+;-------------------------------------------------
+;状態異常時
+;-------------------------------------------------
+;魅了時
+ELSEIF CFLAG:ARG:상태이상 == GET_STATE_NUM("CHARM")
+	;行動不能（ムラムラしている）
+	IF CFLAG:ARG:입력행동 == 2314
+		BTL_KOJO_RESULTS:0 = 지금은 미션 중이야、집중해야 해……！
+	ELSE
+		BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%는…… 당신을、따르면……？
+	ENDIF
+;混乱時
+ELSEIF CFLAG:ARG:상태이상 == GET_STATE_NUM("PANIC")
+	;금전뿌리기
+	IF CFLAG:ARG:입력행동 == 2315
+		BTL_KOJO_RESULTS:0 = 샤오…… 이 돈으로、장비의 개발을……
+	;行動不能（ぼんやりしている）
+	ELSEIF CFLAG:ARG:입력행동 == 2314
+		BTL_KOJO_RESULTS:0 = 싸움 같은 건 잊어버리고、여행이라도 갈 수 있었으면……
+	ELSE
+		BTL_KOJO_RESULTS:0 = 시안…… 너를、죽게 두지 않겠어
+	ENDIF
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;これは通常攻撃
+ELSEIF CFLAG:ARG:입력행동 == 0
+	CALL SING_CIAN_K[[キャラ:GV]], ARG
+	SELECTCASE RAND:3
+	CASE 0
+		BTL_KOJO_RESULTS:0 = 핫！
+	CASE 1
+		BTL_KOJO_RESULTS:0 = 지금의 형태가 챠탄야라 쿠샨쿠다
+	CASE 2
+		BTL_KOJO_RESULTS:0 = 격투술 정도는、대개는 배워두고 있어！
+	ENDSELECT
+;-------------------------------------------------
+;銃攻撃（特殊弾丸含む）
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,2101, 2200)
+	CALL SING_CIAN_K[[キャラ:GV]], ARG
+	;GUN
+	IF CFLAG:ARG:입력행동 == 2101
+		SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%는 사격이 특기이니까
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 빗맞추지 않겠어！
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 위협사격은 생략이야！
+		ENDSELECT
+	;その他（特殊弾丸）
+	ELSE
+		;BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;-------------------------------------------------
+;基本行動
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,2301, 2400)
+	CALL SING_CIAN_K[[キャラ:GV]], ARG
+	;ＣＨＡＮＧＥ
+	IF CFLAG:ARG:입력행동 == 2301
+		BTL_KOJO_RESULTS:0 = 여기는 %CSTR:ARG:일인칭%에게 맡겨둬
+	ELSE
+		;BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;-------------------------------------------------
+;アイテム
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,3001, 3500)
+	;BTL_KOJO_RESULTS:0 = 
+;-------------------------------------------------
+;リンケージ
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,4000, 5000)
+	CALL SING_CIAN_K[[キャラ:GV]], ARG
+	;메시아라이저
+	IF CFLAG:ARG:입력행동 == 4160
+		BTL_KOJO_RESULTS:0 = 리바이브 볼트！
+	;Lヒートライザ
+	ELSEIF CFLAG:ARG:입력행동 == 4200
+		BTL_KOJO_RESULTS:0 = 굉장한 힘이야…… 이거라면！
+	;사망유희
+	ELSEIF CFLAG:ARG:입력행동 == 4800
+		BTL_KOJO_RESULTS:0 = 네…… %CSTR:ARG:일인칭%가 하겠습니다
+	ELSE
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 여기는 ＧＶ、지원을 부탁드리겠습니다
+		ELSE
+			BTL_KOJO_RESULTS:0 = 여러분의 힘을、%CSTR:ARG:일인칭%에게 빌려주세요！
+		ENDIF
+	ENDIF
+;-------------------------------------------------
+;汎用スキル
+;と言いつつ専用スキルしか搭載しないのだが
+;-------------------------------------------------
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:SONG OF DIVA]]
+	ALIGNMENT RIGHT
+	IF SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+		RESETCOLOR
+		;字を斜めにするアレはできなかった
+		PRINTL ♪ - 輪廻 新章 -　　　　　
+		ALIGNMENT LEFT
+		SETCOLOR 0x1d9eff
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 너는…… 내가 지키겠어！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 너는、내가 죽게 두지 않아！
+		ENDIF
+		CFLAG:ARG:800 = 0
+		TSTR:전투구상캐릭터명칭 '= "시안"
+		TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		IF CFLAG:ARG:803 != 4
+			PRINTL 　　풀리지 않는 마음을　녹여준、다시는 놓지않아　당신의 손――
+			PRINTL 　
+		ENDIF
+	ELSEIF SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+		RESETCOLOR
+		PRINTL ♪ - 쪽빛 운명 -　　　　　
+		ALIGNMENT LEFT
+		SETCOLOR 0x1d9eff
+		BTL_KOJO_RESULTS:0 = 나의 노래가、너의 날개《힘》가 될 거야――
+		CFLAG:ARG:801 = 0
+		TSTR:전투구상캐릭터명칭 '= "시안"
+		TSTR:전투구상캐릭터화상어드레스 '= "GV_FACE_EX_1"
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		SETCOLOR 0x3f60a9`
+		IF CFLAG:ARG:803 != 4
+			PRINTL 　　하늘이 무너지고　동요하기 시작한　세계의 한구석에서
+			PRINTL 　　　조용히 쪽빛을 자아내는 실이　생명을 꿰메고
+			PRINTL 　
+		ENDIF
+	ENDIF
+	RESETCOLOR
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:뇌격린]]
+	CALL SING_CIAN_K[[キャラ:GV]], ARG
+	IF TSTR:전투이벤트패턴 == "EVENT_200_4_ペインフルデターミネーション"
+		SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 솟구쳐라！　푸른 뇌정《암드 블루》！！
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 지금의 %CSTR:ARG:일인칭%가 할 수 있는 것을……！
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 이거라면 통할 거야！
+		ENDSELECT
+	ELSEIF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神1" || TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神2"
+		SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 솟구쳐라！　푸른 뇌정《암드 블루》！！
+		CASE 1
+			BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%의 뇌격으로…… 너의 뇌정을、쳐부순다！
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 뇌격린！　하앗！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 솟구쳐라！　푸른 뇌정《암드 블루》！！
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 뇌격린！　하앗！
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 잡았다！
+		ENDSELECT
+	ENDIF
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:피뢰침]]
+	CFLAG:ARG:802 = 1
+	CALL SING_CIAN_K[[キャラ:GV]], ARG
+	CFLAG:ARG:802 = 0
+	RESETCOLOR
+ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG, "ライトニングスフィア")
+	CALL SING_CIAN_K[[キャラ:GV]], ARG
+	BTL_KOJO_RESULTS:0 = 솟구쳐라！　푸른 뇌정《암드 블루》！！
+	CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+	SETCOLOR 0x144ff4
+	PRINTL 　　　　천체처럼 요동치는 우레
+	PRINTL 　
+	PRINTL 　
+	PRINTL 　
+	PRINTL 　
+	PRINTW 　　　　　　 이에 이르는 모든 것을 떨쳐 내리라
+	SETCOLOR COLOR("FRIEND")
+	IF IS_CHARA_EQUIPED(ARG, "번개의렌즈")
+		IF CFLAG:ARG:気合フラグ > 0
+			BTL_KOJO_RESULTS:0 = 부수어라！　라이트닝 스피어！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 라이트닝 스피어！
+		ENDIF
+	ELSEIF DIVA_F == 1 || DIVA_H == 1
+		BTL_KOJO_RESULTS:0 = 라이트닝 스피어！
+	ELSE
+		BTL_KOJO_RESULTS:0 = 라이트닝 스피어！
+		TSTR:전투구상시추에이션 '= "SPスキル"
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+	ENDIF
+ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG, "スパークカリバー")
+	CALL SING_CIAN_K[[キャラ:GV]], ARG
+	BTL_KOJO_RESULTS:0 = 솟구쳐라！　푸른 뇌정《암드 블루》！！
+	CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+	SETCOLOR 0x144ff4
+	PRINTL 　　　　번쩍이는 것은 우레를 휘감은 성검
+	PRINTL 　
+	PRINTL 　
+	PRINTL 　
+	PRINTL 　
+	PRINTW 　　　　　　　　　　　　　 푸른 우레의 포학이여 적을 꿰뚫어라
+	SETCOLOR COLOR("FRIEND")
+	IF IS_CHARA_EQUIPED(ARG, "번개의렌즈")
+		IF CFLAG:ARG:집중플래그 > 0
+			BTL_KOJO_RESULTS:0 = 찢어발겨라！　스파크 칼리버！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 스파크 칼리버！
+		ENDIF
+	ELSEIF DIVA_F == 1 || DIVA_H == 1
+		BTL_KOJO_RESULTS:0 = 스파크 칼리버！
+	ELSE
+		BTL_KOJO_RESULTS:0 = 스파크 칼리버！
+		TSTR:전투구상시추에이션 '= "SPスキル"
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+	ENDIF
+ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG, "ヴォルティックチェーン")
+	CALL SING_CIAN_K[[キャラ:GV]], ARG
+	BTL_KOJO_RESULTS:0 = 솟구쳐라！　푸른 뇌정《암드 블루》！！
+	CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+	SETCOLOR 0x144ff4
+	PRINTL 　　　　번쩍이는 뇌광은 반역의 길잡이
+	PRINTL 　
+	PRINTL 　　　　　　　　　　　　　　 울려 퍼지는 우레는 혈조의 증표
+	PRINTL 　
+	PRINTL 　
+	PRINTW 　　　　　　　 꿰뚫는 뇌격이야말로 만물의 이치
+	SETCOLOR COLOR("FRIEND")
+	IF IS_CHARA_EQUIPED(ARG, "번개의렌즈")
+		IF CFLAG:ARG:気合フラグ > 0
+			BTL_KOJO_RESULTS:0 = 휘감아라！　볼틱 체인！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 볼틱 체인！
+		ENDIF
+	ELSEIF DIVA_F == 1 || DIVA_H == 1
+		BTL_KOJO_RESULTS:0 = 볼틱 체인！
+	ELSE
+		BTL_KOJO_RESULTS:0 = 볼틱 체인！
+		TSTR:전투구상시추에이션 '= "SPスキル"
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+	ENDIF
+ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG, "グロリアスストライザー")
+	CALL SING_CIAN_K[[キャラ:GV]], ARG
+	BTL_KOJO_RESULTS:0 = 솟구쳐라！　푸른 뇌정《암드 블루》！！
+	CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+	SETCOLOR 0x144ff4
+	PRINTL 　　　　내세운 위신이 집결하는 칼끝
+	PRINTL 　
+	PRINTL 　　　　　　　　　　　　　　 밤하늘을 개척하는 뇌인의 극점
+	PRINTL 　
+	PRINTL 　
+	PRINTW 　　　　　　　 성검을 넘어、가져오는 영광
+	SETCOLOR 0x33ffcc
+	BTL_KOJO_RESULTS:0 = 글로리어스 스트라이저！
+	TSTR:전투구상시추에이션 '= "SPスキル"
+	CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG, "アンリミテッドヴォルト")
+	CALL SING_CIAN_K[[キャラ:GV]], ARG
+	BTL_KOJO_RESULTS:0 = 솟구쳐라！　푸른 뇌정《암드 블루》！！
+	CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+	SETCOLOR 0x144ff4
+	PRINTL 　　　　울려 퍼지는 것은 요정의 노랫소리
+	PRINTL 　
+	PRINTL 　　　　　　　　　　　　　 드날리는 것은 용의 포효
+	PRINTL 　
+	PRINTL 　
+	PRINTW 　　　　　　　　 총신총구、뇌신이 되어라
+	SETCOLOR 0x33ffcc
+	BTL_KOJO_RESULTS:0 = 언리미티드 볼트！
+	TSTR:전투구상시추에이션 '= "SPスキル"
+	CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:대방전]]
+	CALL SING_CIAN_K[[キャラ:GV]], ARG
+	SELECTCASE RAND:3
+	CASE 0
+		BTL_KOJO_RESULTS:0 = 대방전！
+	CASE 1
+		BTL_KOJO_RESULTS:0 = 이만큼이나 뿌린다면！
+	CASE 2
+		BTL_KOJO_RESULTS:0 = 솟구쳐라！　푸른 뇌정《암드 블루》！！
+	ENDSELECT
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:전격가드브레이크]]
+	CALL SING_CIAN_K[[キャラ:GV]], ARG
+	IF TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神1" || TSTR:전투이벤트패턴 == "EVENT_200_5_機械仕掛けの狂神2"
+		SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 너만은 놓치지 않겠어！
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 이 힘으로…… 꿰뚫는다！
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 솟구쳐라！　푸른 뇌정《암드 블루》！！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 그런 방어로는、나의 뇌격을 막을 수 없어
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 반드시 닿게 해보이겠어
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 솟구쳐라！　푸른 뇌정《암드 블루》！！
+		ENDSELECT
+	ENDIF
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:팔색뇌공]]
+	CALL SING_CIAN_K[[キャラ:GV]], ARG
+	SELECTCASE RAND:3
+	CASE 0
+		BTL_KOJO_RESULTS:0 = 맞아라앗！
+	CASE 1
+		BTL_KOJO_RESULTS:0 = 팔색뇌공！
+	CASE 2
+		IF CFLAG:ARG:気合フラグ && IS_CHARA_EQUIPED(ARG, "번개의렌즈")
+			BTL_KOJO_RESULTS:0 = 솟구쳐라！　푸른 뇌정《암드 블루》！！
+			BTL_KOJO_RESULTS:1 = 모든 것을 꿰뚫는、지고의 벽력이 되어라！！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 솟구쳐라！　푸른 뇌정《암드 블루》！！
+		ENDIF
+	ENDSELECT
+;-------------------------------------------------
+;その他
+;アキュラくんの失敗は繰り返さない
+;-------------------------------------------------
+ELSE
+	CALL SING_CIAN_K[[キャラ:GV]], ARG
+	SELECTCASE RAND:3
+	CASE 0
+		BTL_KOJO_RESULTS:0 = 무기에서 스킬을 얻다니…… 이상한 감각인걸
+	CASE 1
+		BTL_KOJO_RESULTS:0 = 감사히 쓰도록 할까나
+	CASE 2
+		BTL_KOJO_RESULTS:0 = %LOCALS%으로라면！
+	ENDSELECT
+ENDIF
+
+@SING_CIAN_K[[キャラ:GV]], ARG
+IF CFLAG:ARG:803 == 4
+	CALL SING_MYTYL
+	SIF CFLAG:ARG:802 == 1
+		WAIT
+;♪輪廻 新章《リインカネーション オルタナティヴ》
+;輪廻はともかく新章でオルタナティヴは無理がないかね
+ELSEIF SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+	SETCOLOR 0x1d9eff
+	IF CFLAG:ARG:800 == 0
+		PRINTL 　　한조각 들어간 달콤한 독과　현혹되고 마는 무력함에
+		PRINTL 　　　이해하지 못하고 내내 서있던　수많은 밤
+		CFLAG:ARG:800 += 1
+	ELSEIF CFLAG:ARG:800 == 1
+		PRINTL 　　틈 사이로 쏟아져내린 빛의 사다리　생명의 이정표《코드》
+		CFLAG:ARG:800 += 1
+	ELSEIF CFLAG:ARG:800 == 2
+		PRINTL 　　받아들이지 못하고 거부해버린　늠름하게 피어난 새하얀 꽃
+		PRINTL 　　　“올바름”의 의미조차 모른 채　말마저 넘쳐흐르고
+		CFLAG:ARG:800 += 1
+	ELSEIF CFLAG:ARG:800 == 3
+		PRINTL 　　가시밭길에서도 상냥함이　여기에 있어 가슴속에
+		PRINTL 　　　풀리지 않는 마음을 녹여준　당신이니까
+		CFLAG:ARG:800 = 0
+	ENDIF
+	IF CFLAG:ARG:802 == 1
+		PRINTW 　
+	ELSE
+		PRINTL 　
+	ENDIF
+;♪藍の運命
+;爪からの参戦なのでこの曲をセレクト
+ELSEIF SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+	SETCOLOR 0x3f60a9
+	IF CFLAG:ARG:801 == 0
+		PRINTL 　　지금 이렇게　거듭나는　두 사람의 운명은
+		PRINTL 　　　조용히 죽어 사라지는 그날까지　비록 괴롭더라도　지금은 보이지 않더라도――
+		CFLAG:ARG:801 += 1
+	ELSEIF CFLAG:ARG:801 == 1
+		PRINTL 　　열을 띠고　무너진 거리는　낮과 밤의　갈림길을 얼버무리고
+		PRINTL 　　　그 날　너는　오른손을 치켜든 채　높이　흔들었지　보이지 않게 될 때까지
+		CFLAG:ARG:801 += 1
+	ELSEIF CFLAG:ARG:801 == 2
+		PRINTL 　　방황하고　고민하다가　도착한 장소
+		PRINTL 　　　현세의 환영　날려버려　끝내 사라질 때까지
+		CFLAG:ARG:801 += 1
+	ELSEIF CFLAG:ARG:801 == 3
+		PRINTL 　　꿰뚫은 암흑도　잊어버리고　잠들어
+		CFLAG:ARG:801 += 1
+	ELSEIF CFLAG:ARG:801 == 4
+		PRINTL 　　지금　다시 만난　세계의 곁에서
+		PRINTL 　　　언젠가 쪽빛으로 바뀔 거라며　하늘을 끌어안고
+		CFLAG:ARG:801 += 1
+	ELSEIF CFLAG:ARG:801 == 5
+		PRINTL 　　또다시 이렇게　내달리기 시작한　두 사람의 운명은
+		PRINTL 　　　조용히 죽어 사라지는 그날까지　비록 잃는다 해도　지금은 너무 멀다 해도
+		CFLAG:ARG:801 = 1
+	ENDIF
+	IF CFLAG:ARG:802 == 1
+		PRINTW 　
+	ELSE
+		PRINTL 　
+	ENDIF
+ELSE
+ENDIF
+SETCOLOR COLOR("FRIEND")
+
+@BATTLE_MESSAGE_K[[キャラ:GV]]_SP, ARG, ARGS
+IF CFLAG:ARG:PT플래그 > 0
+	SETCOLOR COLOR("FRIEND")
+ELSE
+	SETCOLOR 0xff0033
+ENDIF
+IF ARGS == "ライトニングスフィア"
+	LOCALS:0 = 만다라！
+ELSEIF ARGS == "スパークカリバー"
+	LOCALS:0 = シュート！
+ELSEIF ARGS == "ヴォルティックチェーン"
+	LOCALS:0 = サンダー！
+ELSEIF ARGS == "ライトニングスフィア2"
+	LOCALS:0 = 슛！　만다라！
+ELSEIF ARGS == "スパークカリバー2"
+	LOCALS:0 = 슛！　만다라！
+ENDIF
+TSTR:전투구상시추에이션 '= "SPスキル"
+

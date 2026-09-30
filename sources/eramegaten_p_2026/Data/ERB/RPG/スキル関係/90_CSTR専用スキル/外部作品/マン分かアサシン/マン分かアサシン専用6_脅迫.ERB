@@ -1,0 +1,146 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:マン分かアサシン専用6_脅迫.ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	000		20XX/XX/XX		----					テンプレ
+;	001		2021/12/28		軽木					作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;スキル名
+@SKILL_NAME_脅迫,ARG
+RESULTS = 脅迫
+
+;　명중
+@SKILL_HITRATE_脅迫, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_脅迫, ARG
+RETURN 1
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_脅迫,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_脅迫,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_脅迫, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_脅迫,ARG
+RETURN 10
+
+;　相性
+@SKILL_TYPE_脅迫,ARG
+RETURN GET_TYPE_NUM("정신")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_脅迫
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_脅迫,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;　1物理 2魔法 3銃 4アイテム 5割合
+@SKILL_ATTACKTYPE_脅迫, ARG
+RETURN GET_攻撃タイプ_NUM("割合")
+
+@SKILL_RATE_DAMAGETYPE_脅迫,ARG
+RETURN 0
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_脅迫,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_脅迫,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_脅迫,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_脅迫,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_脅迫, ARG = -1
+RETURN 0
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_脅迫
+RETURN 0
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_脅迫, ARG = -1, ARG:1 = -1
+;解析度が最大のとき貫通を得る
+SIF ARG:1 >= 0 && ANALYSIS_RATE:(NO:(ARG:1)) == ANALYSIS_COMPLETED
+	RETURN 4
+RETURN 0
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+@SKILL_DAMAGE_EFFECT_脅迫,ARG,ARG:1,ARG:2
+SIF ARG:2 < -1
+	RETURN 0
+;自分にあてるのは問題があるきがするので
+SIF ARG == ARG:1
+	RETURN 0
+SIF ANALYSIS_RATE:(NO:(ARG:1)) == ANALYSIS_COMPLETED && SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"脅迫"))
+	TFLAG:스킬용1 = 1
+	;PRINTL 　　弱点を暴いた！
+	;大嘘
+;NP時は威力倍
+IF SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム")) > 0
+	CFLAG:(ARG:1):ＣＯＯＰ플래그 = ANALYSIS_RATE:(NO:(ARG:1)) * ANALYSIS_RATE:(NO:(ARG:1)) / 10
+ELSE
+	CFLAG:(ARG:1):ＣＯＯＰ플래그 = ANALYSIS_RATE:(NO:(ARG:1)) * ANALYSIS_RATE:(NO:(ARG:1)) / 20
+ENDIF
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_脅迫,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+IF ANALYSIS_RATE:(NO:(ARG:1)) == ANALYSIS_COMPLETED
+	CALL SKILLGAGE_D_SET,ARG,PU_SKILLNUM_GET(ARG,"脅迫"),1
+	CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+ELSE
+	CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+ENDIF
+SIF TFLAG:스킬용1
+	PRINTL 　　약점을 밝혀냈다!
+	
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_脅迫,ARG
+PRINTL 적 1체에 정신 속성으로 극소 위력의 공격을 1회 가한다. 해석도 최대 시 속성을 관통한다.
+PRINTL 명중 시 해석도에 비례한 위력의 CO-OP을 발생시킨다.
+PRINTL
+PRINTL 
+PRINTL 수집한 정보를 바탕으로 협박하는 스킬.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_脅迫,ARG
+RETURN 1

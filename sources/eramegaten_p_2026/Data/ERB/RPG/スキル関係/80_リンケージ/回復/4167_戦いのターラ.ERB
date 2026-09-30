@@ -1,0 +1,250 @@
+﻿;スキル名
+@SKILL_NAME_4167,ARG
+RESULTS = 전투의탈라
+
+;　명중
+@SKILL_HITRATE_4167, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_4167, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_4167,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_4167,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_4167, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_4167,ARG
+RETURN 15
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_4167
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_4167, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_4167, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_4167,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_4167,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_4167, ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_4167
+RETURN GET_SUCCESSION_NUM("회복")
+
+;속도보정
+@SKILL_SPEED_4167, ARG = -1
+RETURN 22
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_4167
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_4167, ARG = -1
+RETURN 23
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_4167, ARG, ARG:1, ARG:2
+#DIM L_T
+#DIM LCOUNT, 2
+#DIMS L_ENHANCE
+#DIMS L_ENHANCE_TABLE, 5
+#DIM CURE_POWER
+#DIM ENHANCE_POWER
+#DIM ENHANCE_NUM
+#DIMS L_MES
+L_ENHANCE = "공격/방어/마법위력/마법효과/명중률_회피률
+SPLIT L_ENHANCE, "/", L_ENHANCE_TABLE
+
+IF CFLAG:ARG:PT플래그
+	CURE_POWER = ABL:ARG:가창기능 + ABL:(CFLAG:ARG:링케이지참가자1):가창기능 + ((EXP:ARG:라이브경험 + EXP:(CFLAG:ARG:링케이지참가자1):라이브경험) / 100)
+	ENHANCE_POWER = 1 + RAND:MAX(ABL:ARG:노출증 + ABL:(CFLAG:ARG:링케이지참가자1):노출증, 1) + ((EXP:ARG:라이브경험 + EXP:(CFLAG:ARG:링케이지참가자1):라이브경험) / 50)
+ELSE
+	CURE_POWER = 24
+	ENHANCE_POWER = 16
+ENDIF
+FOR LCOUNT, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1) + 1
+	L_T = POS(LCOUNT)
+	SIF !IS_TARGET_ABLE(L_T)
+		CONTINUE
+	SELECTCASE RAND:ENHANCE_POWER
+		CASE IS > 8
+			ENHANCE_NUM = 5
+		CASE IS > 6
+			ENHANCE_NUM = 4
+		CASE IS > 4
+			ENHANCE_NUM = 3
+		CASEELSE
+			ENHANCE_NUM = 2
+	ENDSELECT
+	FOR LCOUNT:1, 0, 5
+		SWAP L_ENHANCE_TABLE:(LCOUNT:1), L_ENHANCE_TABLE:(RAND:5)
+	NEXT
+	L_ENHANCE = 
+	FOR LCOUNT:1, 0, ENHANCE_NUM
+		L_ENHANCE += L_ENHANCE_TABLE:(LCOUNT:1)
+	NEXT
+	TSTR:스킬메시지추가효과 = 
+	CALL SKILL_SET_カジャンダ, ARG, L_T, L_ENHANCE, 4, "短縮"
+	L_MES '= SUBSTRING(TSTR:스킬메시지추가효과, 3, -1)
+	IF CURE_POWER > RAND:24
+		CALL CURE_STATE_SINGLE,ARG, L_T, 4166, 0, 1, 1
+		SIF RESULT
+			L_MES += " & " + RESULTS
+	ENDIF
+	CALL PRINT_HIT_MESSAGE, L_T, L_MES, "L"
+NEXT
+WAIT
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+@ACTION_FIELD_4167,ARG,ARG:1,ARG:2
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_4167, ARG = -1
+IF ARG > 0 && CFLAG:ARG:단독링케이지 == 0
+	PRINTL 두 명이서 노래하고 춤추면서 아군의 능력을 올리고、가끔 상태이상을 회복한다
+	PRINTL 두 명의 가창기능、노출증、라이브경험에 따라 성능 UP
+ELSE
+	PRINTL 아군의 능력을 올리고、상태이상을 회복한다
+ENDIF
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_4167,ARG
+RETURN 1
+;とくにない
+
+;何のバッドステータスを治せるか
+@SKILL_CURE_STATE_4167,ARG
+SELECTCASE GET_STATE(ARG)
+	CASE "FLY","GOOD","DYING","ORGY","HEAT"
+		RETURN 0
+	CASEELSE
+		RETURN 1
+ENDSELECT
+
+;=====================================================
+;リンケージ設定
+;=====================================================
+@LINKAGE_4167
+RETURN 1
+
+@参加人数_4167
+RETURN 1
+
+@参加条件表示_4167,ARG
+SELECTCASE ARG
+	CASE 1
+		PRINTFORM 가창기능 5 이상＆암리타、펨파트라、스리스티、마하바이스디
+	CASE 2
+		PRINTFORM 가창기능 5 이상＆파워브레스、다크브레스、천상의춤、용분의춤
+ENDSELECT
+
+@発動者条件_4167 , ARG
+SIF ABL:ARG:가창기능 < 5
+	RETURN 0
+IF CHECK_SKILL(ARG, [[스킬:파워브레스]])
+	CALL CHECK_ACTIONABLE , ARG , [[스킬:파워브레스]]
+	SIF RESULT
+		RETURN 1
+ENDIF
+IF CHECK_SKILL(ARG, [[스킬:다크브레스]])
+	CALL CHECK_ACTIONABLE , ARG , [[스킬:다크브레스]]
+	SIF RESULT
+		RETURN 1
+ENDIF
+IF CHECK_SKILL(ARG, [[스킬:천상의춤]])
+	CALL CHECK_ACTIONABLE , ARG , [[스킬:천상의춤]]
+	SIF RESULT
+		RETURN 1
+ENDIF
+IF CHECK_SKILL(ARG, [[스킬:용분의춤]])
+	CALL CHECK_ACTIONABLE , ARG , [[스킬:용분의춤]]
+	SIF RESULT
+		RETURN 1
+ENDIF
+RETURN 0
+
+
+@参加者条件_4167, ARG , ARG:1
+SIF CPOS(ARG) < 1 || CPOS(ARG) > 6
+	RETURN 0
+SIF ABL:ARG:가창기능 < 5
+	RETURN 0
+CALL CHECK_COST_LINCAGE, ARG, 4167, ARG:1
+SIF RESULT == 0
+	RETURN 0
+SELECTCASE ARG:1
+	CASE 1
+	IF CHECK_SKILL(ARG, [[스킬:암리타]])
+		CALL CHECK_ACTIONABLE , ARG , [[스킬:암리타]]
+		SIF RESULT
+			RETURN 1
+	ENDIF
+	IF CHECK_SKILL(ARG, [[스킬:펨파트라]])
+		CALL CHECK_ACTIONABLE , ARG , [[스킬:펨파트라]]
+		SIF RESULT
+			RETURN 1
+	ENDIF
+	IF CHECK_SKILL(ARG, [[스킬:스리스티]])
+		CALL CHECK_ACTIONABLE , ARG , [[스킬:스리스티]]
+		SIF RESULT
+			RETURN 1
+	ENDIF
+	IF CHECK_SKILL(ARG, [[스킬:마하바이스디]])
+		CALL CHECK_ACTIONABLE , ARG , [[스킬:마하바이스디]]
+		SIF RESULT
+			RETURN 1
+	ENDIF
+	RETURN 0
+ENDSELECT
+
+@リンケージコストタイプ_4167, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 3
+ENDSELECT
+@リンケージコスト_4167, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 35
+ENDSELECT

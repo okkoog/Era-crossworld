@@ -1,0 +1,167 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2320,ARG
+RESULTS = 잠재특수
+SIF FLAG:카운터중
+	RESULTS = 潜在特殊攻撃
+
+;　명중
+@SKILL_HITRATE_2320, ARG
+RETURN 105
+
+;　威力
+@SKILL_POWER_2320, ARG
+#DIM TOTAL_POW
+TOTAL_POW = 295
+SIF ARG < 0
+	RETURN 295
+SIF GET_P_FITNESS(ARG, 0) >= 3
+	TOTAL_POW = 410
+TOTAL_POW += (MAX(MAXBASE:ARG:힘,MAXBASE:ARG:마력) * 3 / 2)
+RETURN TOTAL_POW
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2320,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2320,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2320, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2320,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_2320,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2320
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2320, ARG
+SIF ARG < 0
+	RETURN 1
+;使用者の攻撃力が魔法威力より低い場合は魔法ダメージタイプになる
+SIF MAXBASE:ARG:힘 < MAXBASE:ARG:마력
+	RETURN 2
+RETURN 1
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2320, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2320,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2320,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2320, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2320
+RETURN GET_SUCCESSION_NUM("만능")
+
+@継承不能_2320
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_2320, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2320
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2320, ARG = -1
+RETURN 0
+
+@SKILL_RANKUP_2320
+D:1 = 2003
+;ランクアップ先は二つ
+RETURN 1
+
+;====================================================
+;カウンター発動条件
+;====================================================
+@SKILL_COUNTER_ACTIONABLE_2320,ARG,ARG:1
+SIF !TALENT:ARG:페르소나구사자
+	RETURN 0
+SIF ABL:ARG:잠재능력 != 4
+	RETURN 0
+;殺されている場合に発動
+SIF !GET_CREC_ACT(ARG:1, ARG, "KILL")
+	RETURN 0
+;PRINTW 攻撃受けフラグをチェック
+;なんか知らんけど本来の処理だとエネミー側では発動しないっぽいので、使用者が味方じゃなければ発動しない
+SIF CFLAG:ARG:PT플래그 == 0
+	RETURN 0
+;PRINTW 味方パーティフラグチェック
+;ペルソナの相性が☆か◎じゃなければ発動不可
+SIF GET_P_FITNESS(ARG,0) < 2
+	RETURN 0
+;PRINTW ペルソナ相性チェック
+;使用者の潜在能力発動回数が3を超えていたら発動しない
+SIF CFLAG:ARG:잠재능력발동횟수 > 3
+	RETURN 0
+;PRINTW 潜在能力発動回数4未満チェック
+;死亡時・COMP内発動は対象+100000で指定する
+RETURN 1, 100000 + 22
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2320, ARG, ARG:1, ARG:2
+#DIM L_経過ターン
+;面倒ごとを避けるために一時的に蘇生する
+BASE:ARG:ＨＰ += 1
+CFLAG:ARG:상태이상 = 0
+L_経過ターン = CFLAG:ARG:상태이상경과턴수
+CFLAG:ARG:상태이상경과턴수 = 0
+;PRINTL
+;SETCOLOR 0x66FFFF
+;PRINTFORML 　　%CALLNAME:ARG% 潜在特殊攻撃
+;RESETCOLOR
+CALL ATTACK_FIELD, ARG, ARG:1,2320
+;もう一回死なせとく
+BASE:ARG:ＨＰ = 0
+CFLAG:ARG:상태이상 = GET_STATE_NUM("DYING")
+CFLAG:ARG:상태이상경과턴수 = L_経過ターン
+L_経過ターン = 0
+CFLAG:ARG:잠재능력발동횟수 ++
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2320, ARG
+PRINTL 적 전체에 상당한 대 데미지
+PRINTL 사용자의 힘과 마력 중 높은 쪽이 위력치에 가산되며, 그에 적합한 데미지 타입이 된다
+PRINTL 또한, 발동 중에는 찰나 동안만 소생되어 순식간에 다시 죽는다
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2320,ARG
+RETURN 1
+;とくにない
+

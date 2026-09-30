@@ -1,0 +1,292 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:今は知らず、無垢なる湖光.ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/09/20		しゃけ					作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_今は知らず、無垢なる湖光,ARG
+;騎士形態でイノセンス・アロンダイト、竜骸形態でホロウハート・アルビオンに名称変化
+RESULTS = \@ GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 0 ? 지금은 모르는、무구한 호광 # 아무도 모르는、무구한 고동 \@
+
+;　명중
+@SKILL_HITRATE_今は知らず、無垢なる湖光, ARG
+SIF !TFLAG:스킬용2
+	RETURN 130
+RETURN TFLAG:스킬용2 == 1 ? 999 # -100
+
+;　威力
+@SKILL_POWER_今は知らず、無垢なる湖光, ARG
+#DIM SKILL_NUM
+#DIM L_DMG
+#DIMS L_DMGS,5
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"今は知らず、無垢なる湖光")
+
+SPLIT \@ GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 0 ? 450_600_675_720_750 # 300_400_450_475_500 \@,"_",L_DMGS
+
+L_DMG = TOINT(L_DMGS:LIMIT(GET_RPG_CFLAG_TAKEOVER(ARG,"宝具再臨（ランサー）"),0,4))
+
+SIF TFLAG:스킬용1
+	RETURN L_DMG
+
+SELECTCASE SKILLGAGE_H_GET(ARG,SKILL_NUM)
+	CASE 1	
+		TIMES L_DMG , 0.06
+	CASE 2
+		TIMES L_DMG , 0.13
+	CASE 3
+		TIMES L_DMG , 0.20
+	CASE 4
+		TIMES L_DMG , 0.26
+	CASE 5
+		TIMES L_DMG , 0.35
+ENDSELECT
+
+RETURN L_DMG
+
+;;クリティカル率
+@SKILL_CRITICAL_RATE_今は知らず、無垢なる湖光, ARG
+SIF !TFLAG:스킬용3
+	RETURN 15
+RETURN TFLAG:스킬용3 == 1 ? 999 # 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_今は知らず、無垢なる湖光,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_今は知らず、無垢なる湖光,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_今は知らず、無垢なる湖光, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_今は知らず、無垢なる湖光,ARG
+RETURN GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 0 ? 40 # 75
+
+;　相性
+@SKILL_TYPE_今は知らず、無垢なる湖光,ARG
+SIF GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 1
+	RETURN GET_TYPE_NUM("검격"),GET_TYPE_NUM("화염"),GET_TYPE_NUM("핵열"),GET_TYPE_NUM("만능")
+RETURN GET_TYPE_NUM("검격"),GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_今は知らず、無垢なる湖光
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_今は知らず、無垢なる湖光,ARG
+RETURN GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 0 ? 1 # 2
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PASSIVE_PENETRATION_RANK_今は知らず、無垢なる湖光, L_P, L_T, L_スキル, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM DYNAMIC L_P;このスキルの所持者
+#DIM DYNAMIC L_T;攻撃対象
+#DIMS DYNAMIC L_スキル;スキルの所持者が敵に対して使用しているスキルの関数名称
+#DIM DYNAMIC L_ダメージタイプ
+#DIM DYNAMIC L_攻撃タイプ
+#DIM DYNAMIC L_相性
+#DIM DYNAMIC GIVE_EFFECT_CHARA;リーダースキル等他人からつけられている場合の提供者
+SIF GET_RPG_CFLAG_TAKEOVER(L_P,"形態換装フラグ") == 0
+	RETURN 0
+SIF PU_SKILLGAGE_D_GET(L_P, "今は知らず、無垢なる湖光") < 1
+	RETURN 0
+RETURN 4
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_今は知らず、無垢なる湖光,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_今は知らず、無垢なる湖光,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_今は知らず、無垢なる湖光,ARG
+RETURN GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 0 ? 1 # 3
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_今は知らず、無垢なる湖光,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_今は知らず、無垢なる湖光, ARG = -1
+RETURN GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 0 ? 5 # 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_今は知らず、無垢なる湖光
+RETURN 0
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_今は知らず、無垢なる湖光,ARG
+RETURN GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 1 ? GET_STATE_NUM("FLAME") # 0
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_今は知らず、無垢なる湖光,ARG
+SIF GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 1
+	RETURN GET_TYPE_NUM("화염"),GET_TYPE_NUM("핵열")
+RETURN 0
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_今は知らず、無垢なる湖光,ARG
+RETURN 80
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_今は知らず、無垢なる湖光,ARG
+RETURN 120
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_今は知らず、無垢なる湖光,ARG
+;RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_今は知らず、無垢なる湖光,ARG,ARG:1,SKILL_NUM
+#LOCALSIZE 1
+#DIM L_T
+#DIM SKILL_NUM
+#DIM トドメまでお前を殴るのを止めないフラグ
+#DIM LCOUNT,3
+#DIMS L_STR,2
+
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"今は知らず、無垢なる湖光")
+
+TFLAG:스킬용1 = GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ")
+
+;竜骸形態で発動時、発動からそのターン内に限り貫通効果を獲得
+SIF TFLAG:스킬용1
+	CALL SKILLGAGE_D_SET(ARG,SKILL_NUM,1)
+L_STR:0 = \@ !TFLAG:스킬용1 ? 0_20_30_30_40_40 # 0_20_30_40_50_60 \@
+LOCAL = AUTO_SPLIT_INT(L_STR,"_",SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム")))
+L_STR:0 = \@ !TFLAG:스킬용1 ? NP獲得量 # 魔法ダメージ\@%TOSTR(LOCAL)%％増加\@ TFLAG:스킬용1 ? （FGO）# \@
+L_STR:1 = \@ !TFLAG:스킬용1 ? ＮＰゲージの獲得量 # 魔法ダメージ\@
+CALL SET_C_BTL_EFFECT_SINGLE, ARG, ARG, @"%L_STR:0%",3,@"３ターンの間、%L_STR:1%増加！"
+
+FOR LCOUNT:0,GET_POS_MIN(ARG:1),GET_POS_MAX(ARG:1) + 1
+	L_T = POS(LCOUNT:0)
+	トドメまでお前を殴るのを止めないフラグ = 0
+	SIF L_T < 0
+		CONTINUE
+	;相手が元から不死身じゃないなら不死身にしてボコボコにしても問題ないな！
+	IF CFLAG:L_T:불사신플래그 < 1
+		CFLAG:L_T:불사신플래그 = 1
+		トドメまでお前を殴るのを止めないフラグ = 1
+	ENDIF
+	LCOUNT:2 = !TFLAG:스킬용1 ? 5 # 1
+	FOR LCOUNT:1,1,LCOUNT:2 + 1
+		CALL SKILLGAGE_H_ADD,ARG,SKILL_NUM,1
+		;トドメまでお前を殴るのを止めないフラグが立ってたら不死身フラグを解除してトドメを刺す
+		IF LCOUNT:1 == LCOUNT:2
+			SIF トドメまでお前を殴るのを止めないフラグ == 1
+				CFLAG:L_T:불사신플래그 = 0
+		ENDIF
+		CALL ATTACK_SINGLE,ARG,L_T,SKILL_NUM
+		;1回目の攻撃の結果に応じて以降の命中と会心率を固定する
+		IF LCOUNT:1 == LCOUNT:2
+			;0ダメでもHIT履歴が登録されない問題があったのでMISSで確認する
+			TFLAG:스킬용2 = !GET_CREC_ACT(ARG,L_T,"MISS") ? 1 # -1
+			TFLAG:스킬용3 = GET_CREC_ACT(ARG,L_T,"CRT") ? 1 # -1
+		ENDIF
+		;今は知らず、無垢なる湖光に限り、被ダメージ増加デバフとクリティカル強化バフ処理が発生する
+		IF LCOUNT:1 == 5 && !TFLAG:스킬용1
+			SIF !GET_CREC_ACT(ARG,L_T,"MISS")
+				CALL SET_C_BTL_EFFECT_SINGLE, ARG, L_T, "被ダメージ10％増加（FGO）",5,"５ターンの間、被ダメージ量が増加！"
+			CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 > 0 ? 19 # 22, "크리티컬", 4, "範囲",,,8,-4
+		ENDIF
+	NEXT
+	CALL SKILLGAGE_H_SET,ARG,SKILL_NUM,0
+	TFLAG:스킬용2 = 0
+	TFLAG:스킬용3 = 0
+NEXT
+CALL SKILLGAGE_D_SET(ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム"),0)
+TFLAG:스킬용1 = 0
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+;メモ：ホロウハート・アルビオンの分の解説を移植する
+@SKILL_EXPLAIN_今は知らず、無垢なる湖光,ARG
+IF GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 0
+	PRINTL 자신에게 3턴 동안 『NP 획득량 증가』 효과를 부여. NP 잔여 턴이 많을수록 효과가 높아진다.
+	PRINTL 단체 고명중, 고크리티컬, 검격/만능 복합 속성의 물리 의존 5연타 소 데미지.
+	PRINTL 데미지 후 상대에게 『받는 데미지 증가』 효과를 부여, 아군 전체의 크리티컬률 상승.
+	PRINTL 
+	PRINTL 양팔의 칼집에 납도된 아론다이트의 칼날을 전개, 마력을 휘감으며 적을 향해 돌진해 꿰뚫는 보구.
+ELSEIF GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 1
+	PRINTL 자신에게 3턴 동안 『마법 데미지 증가』 효과를 부여. NP 잔여 턴이 많을수록 효과가 높아진다.
+	PRINTL 전체 공격, 검격/화염/핵열/만능 복합 속성의 마법 의존 대 데미지.
+	PRINTL 발동 직전부터 1턴 동안 반사 이하 내성에 대한 관통 효과를 획득한다. 고확률로 대상에게 FLAME을 부여.
+	PRINTL 
+	PRINTL 자신의 그릇을 일시적으로 용의 모습으로 승화시켜, 체내에서 마력의 분류를 발사하여 적을 섬멸하는 보구.
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_今は知らず、無垢なる湖光,ARG
+SIF SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム")) > 0
+	RETURN 1
+RETURN 0
+
+;スキルのタグ、他の処理でこのスキルがどういう物か調べる時に使う
+@SKILL_TAG_今は知らず、無垢なる湖光
+RESULTS = 宝具
+
+
+;戦闘効果で処理を行うことになったので没
+;@INNOCCENCE_ARONDIGHT_DEBUFF,ARGS,ARG = -1
+;#DIM LCOUNT
+;#DIMS L_STR,2
+;;ARG		対象
+;;ARGS		処理内容の文字列
+;;LCOUNT		適当な数値保存するところ
+;;L_STR:0	対象の登録番号を保存するところ
+;;L_STR:1	対象のデバフ維持ターンを保存するところ
+;
+;SELECTCASE ARGS
+;	CASE "参照"
+;		SIF !AUTO_SPLIT(L_STR:0,"_",0,TOSTR(ARG))
+;			RETURN 0
+;		RETURN 100
+;	CASE "登録"
+;		LCOUNT = AUTO_SPLIT_NUM(L_STR:0,"_",0,TOSTR(ARG))
+;		IF !LCOUNT
+;			L_STR:0 = %ADD_SPLIT(L_STR:0,"_",TOSTR(ARG))%
+;			L_STR:1 = %ADD_SPLIT(L_STR:1,"_","7")%
+;		ELSE
+;			L_STR:1 = %CHANGE_SPLIT(L_STR:1,"_",LCOUNT,"7")%
+;		ENDIF
+;	CASE "更新"
+;		FOR LCOUNT,0,200
+;			SIF !AUTO_SPLIT(L_STR:0,"_",LCOUNT)
+;				BREAK
+;			L_STR:1 = %CALC_SPLIT(L_STR:1,"_",LCOUNT,,"-=","1")%
+;			;選択中の維持ターンカウントが1になった or 選択中のキャラがDYING なら SHIFT_SPLITで登録キャラ番号とターンカウントを消して配列をずらす
+;			IF AUTO_SPLIT_INT(L_STR:1,"_",LCOUNT) == 1 || GET_STATE(CFLAG:AUTO_SPLIT_INT(L_STR:0,"_",LCOUNT):상태이상) == "DYING"
+;				L_STR:1 = %SHIFT_SPLIT(L_STR:1,"_",-1,"",LCOUNT,200)%
+;				L_STR:0 = %SHIFT_SPLIT(L_STR:0,"_",-1,"",LCOUNT,200)%
+;				LCOUNT -= 1
+;			ENDIF
+;		NEXT
+;	CASE "初期化"
+;		VARSET L_STR
+;		VARSET L_COUNT
+;ENDSELECT

@@ -1,0 +1,47 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:HTML_HEADING.ERB
+;	Facility	:指定した文字列に、指定した色と幅のリボンを被せて、見出し風のHTML文字列として返す式中間数
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/07/15		一ノ瀬				    新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;---------------------------------------------
+;	
+;	
+;---------------------------------------------
+@HTML_HEADING , 見出し , リボン位置 = "上" , リボン色 = -1 , リボン幅 = 30 , 文字サイズ = 100
+#FUNCTIONS
+#DIMS 見出し
+#DIMS リボン位置
+#DIM リボン色
+#DIM リボン幅
+#DIM 文字サイズ
+#DIM DYNAMIC リボン長さ
+#DIMS DYNAMIC 리본
+#DIMS DYNAMIC リボンparam
+SIF リボン色 == -1
+	リボン色 = COLOR("RED")
+;リボンの位置によって処理変更
+SELECTCASE リボン位置
+	CASE "上" , "下"
+		;まずリボンの長さを取得する
+		リボン長さ = STRLENS(HTML_TOPLAINTEXT(見出し)) * 50 * 文字サイズ / 100
+		;リボンの文字列を生成
+		리본 = <div><shape type='rect' param='0,{リボン位置=="上"?0#(100-リボン幅)*文字サイズ/100},{リボン長さ},{リボン幅*文字サイズ/100}' color='%TOSTR_HTML(リボン色)%'></div>
+	CASE "左" , "右"
+		;まずリボンの長さを取得する
+		リボン長さ = 文字サイズ
+		;リボンの文字列を生成
+		리본 = <div><shape type='rect' param='{リボン位置=="左"?0#STRLENS(HTML_TOPLAINTEXT(見出し)) * 50 * 文字サイズ / 100-リボン幅},0,{リボン幅},{リボン長さ}' color='%TOSTR_HTML(リボン色)%'></div>
+ENDSELECT
+IF 文字サイズ != 100
+	RETURNF 리본 + @"<font size='{文字サイズ}'>" + 見出し + "</font>"
+ELSE
+	RETURNF 리본 + 見出し
+ENDIF
+

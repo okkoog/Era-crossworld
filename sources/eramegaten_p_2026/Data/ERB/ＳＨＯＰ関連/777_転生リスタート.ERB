@@ -1,0 +1,1545 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SHOP_NEWGAME.ERB
+;	Facility	:周回ニューゲームに関する関数群です
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/02/15		黒天					キャラの引継ぎで一括選択の項目を追加
+;	003		2011/04/13		黒天					引継ぎ可能キャラが二人未満の場合、一括選択が表示できないよう変更
+;													引継ぎ一括選択に対応する番号を0→999に変更
+;													引継ぎ一括選択時に本当に一括変更を行うかの確認を追加
+;	004		2011/05/01		Ｐ						主人をペルソナ使いからその他の特性に変更した場合、初期ペルソナを削除するように
+;	005		2011/05/23		Ｐ						引継ぎ時にダンジョンフラグ:0-99:100-124(マップサイズ情報)を削除しないように
+;	006		2011/06/24		Ｐ						マテリアルカードの引き継ぎ措置を変更
+;	007		2011/09/02		旅人					デビサバ２用フラグの初期化を追加
+;	008		2012/01/18		Ｐ						初期リンク悪魔習得スキルを引継ぎ時に再設定するように
+;													喰奴のスキル引継ぎの仕様を変更
+;	009		2012/03/26								ＮＴＲフラグ、ＮＴＲイベント進行度の引継ぎリセット修正
+;	010		2013/11/24		ひみつ					リスト表示数設定
+;	011		2014/10/21		ネトリス				デビオクで使用しているデータのリセット処理を追加
+;	012		2016/07/30		（U´・ω・｀）			ランランダンジョンを引き継ぎ可能に
+;	013		2017/06/29		ああああ				元性別の扱いを変更
+;	014		2017/05/10		kuma					周回ボーナスの調整
+;	015		2017/09/19		kuma					周回ボーナスの調整　인기
+;	016		2015/10/02		魔晶拡張パッチ			魔晶武器の引き継ぎ処理を変更
+;	017		2018/05/06		JK好き					FLAG:東方依頼進行度がリセットされていなかったのを修正
+;	018		2018/08/25		名無					呪いのレッドカーペット追加
+;	019		2019/04/20		TR(SAYA)				コスト制周回ボーナスの追加＆全キャラの装備を剥ぐ処理を追加
+;	020		2019/05/29		名無し					ジャンクポイント関連追加(MONEY:4)
+;	021		2019/08/29		空気					周回時、異能者・達人の能力ボーナス計算が間違っていたのを修正
+;	022		2019/09/22		なんとなくの人			EP消費の引き継ぎ要素に経験値を追加
+;	023		2019/10/15		ナナドラMOD				FLAG:ナナドラ依頼進行度のリセット処理を追加
+;	024		2019/10/30		ypa						信頼系陥落追加
+;	025		2019/11/03		131						娘or息子マスター引き継ぎ処理を追加
+;	026		2020/03/14		Jガン					娘or息子マスター引き継ぎ処理の修正
+;	027		2020/06/20								FLAG:マヨナカアリーナ進行度のリセット処理を追加
+;	028		2020/06/20		Schrott					アイテムや武器防具の引き継ぎ時、『引き継げる最大数』が『アイテム引き継ぎ可不可フラグ数値』であったものを、『最大EP』or『10』の低い方に
+;	029		2020/08/08		kamedakeisuke(ﾟдﾟ)		劇場憑き悪魔系フラグのリセット処理
+;	030		2020/08/12		スパロボガスキー		ペルソナ使い引き継ぎ時の初期ペルソナ処理の修正
+;	031		2020/09/01		スパロボガスキー		030の修正を取り消し、初期ペルソナの能力値初期化のみを修正
+;	032		2020/09/22		JK好き					周回ボーナス設定時の分母と分子が逆になっていたのを修正
+;	033		2021/03/05		NEO						単発イベント用のフラグ消去加筆、そういえば以前にも加筆してここに書いてなかったわよ
+;	034		2021/03/05		JK好き					周回時にFLAG:今周回信頼人数及びFLAG:信頼人数のリセット処理を追加
+;	035		2021/03/16		JK好き					引継ぎあなたの能力ボーナス設定前にSYNC_STATUSを追加
+;	036		2021/04/10		NEO						周回ボーナス設定に「受胎アイテムをリセット」「インストールソフト引継ぎ」を追加
+;	037		2021/04/10		jガン					容量の処理追加
+;	038		2021/06/22		軽木					「インストールソフト引継ぎ」を追加……とあったが、追加されてなかったので僭越ながら追加
+;	039		2021/06/25		ロッド@カヤノソト		コロシアムイベント26_ダメージコンテストのフラグ・記録リセットを追加
+;	040		2021/06/30		木綿豆腐				集団ライブ追加に合わせてグループ人気、収入を初期化する
+;	041		2021/07/17		Musue					ペルソナ強化フラグのリセット処理
+;	042		2021/08/31		ロッド@カヤノソト		コロシアムイベント26_ダメージコンテストの特殊イベントの進行状況リセットを追加
+;	043		2022/01/05		ロッド@カヤノソト		キャラ引継ぎを微調整①「一部のキャラを次週に引き継ぎますか？ 」で「いいえ」の場合に再確認を表示②引継ぎの初期設定を「1：契約・陥落素質引継ぎ」に変更
+;	044		2022/02/23		実績中毒者				デビチル炎氷ルートのイベントフラグ(101～104)が周回時消去されないので対応（力技対応なのでもっとスマートな書き換え求む）
+;	045		2022/01/05		ロッド@カヤノソト		「イベントフラグを初期化」について、ダンジョン・イベント・依頼・闘技場番号を1～150まで初期化するように対応　※ランダム依頼を軽子坂高校から分離する対応にて依頼108番に設定したことを契機に修正。
+;	046		2022/07/20		NEO						発見ED枠3を増やしたのでその対応
+;	047		2022/07/26		しゃけ					ねぷねぷ進行のリセット処理を加筆
+;	048		2022/08/25		JK好き					@SELECT_YOME 引き継ぐ奴隷選択画面のレイアウト調整
+;	049		2022/09/19		★						周回時に性別・体格設定を引き継がない場合、体格系設定をリセット
+;	050		2022/11/23								称号発見数による周回時ボーナスを追加（能力、所持金、所持マッカにボーナス）
+;	051		2023/02/06		P(bazzile)				キャラクター引き継ぎ時にキャラクター固有の処理を追加できる処理を作成
+;													陥落以外に独自の条件の追加を可能にする処理を作成
+;													マスターの血統を引き継がせる場合は各種処理を飛ばす形に変更
+;	052		2023/03/06		P(bazzile)				インストールソフトの変数の変更に伴い、引き継ぎ処理を変更
+;													また、無条件引き継ぎの条件も変更
+;													引き継ぎ処理にスキルエミュレータを追加
+;	053		2023/04/16		P(bazzile)				ナビゲーターの解除を追加
+;	054		2023/06/09		P(bazzile)				周回時にダンジョンフィルタのリセットが実行されなくなっていた不具合を修正
+;	055		2023/07/15		P(bazzile)				周回時にマスターのリンク悪魔の解除処理を追加
+;													一部アクセと拡張した武器が引き継ぎ処理の判定から漏れていた不具合を修正し、さらに記述をリファクタリング
+;	056		2023/08/12		P(bazzile)				ラグショップの販売済みフラグの初期化処理を追加
+;	057		2023/09/15		NEO						主人の初期ステータスボーナスを任意の範囲に制限できるように
+;	058		2023/09/16		NEO						057の（アホな）バグを修正
+;	059		2023/09/18		NEO						スタイルDサマナーでボーナスが貰えなかった問題を修正
+;	060		2023/12/24								銃の引き継ぎが武具ボーナスではなく防具ボーナスになっていた不具合を修正
+;	061		2024/02/21		P(bazzile)				引継ぎ処理にストックしたアイテムの処理を追加
+;	062		2024/03/03		P(bazzile)				EPによる引き継ぎが機能していなかった不具合を修正
+;	063		2024/04/01		P(bazzile)				調教アイテムの引継ぎが機能していなかった不具合を修正
+;	064		2024/03/29		P(bazzile)				旧あなたの引継ぎ時に戦闘素質の適正化処理を追加
+;													周回時に悪魔が過剰なことによりCOMP容量が足りない場合、自動的に自宅サーバー送りにする処理を追加
+;	065		2024/04/04		P(bazzile)				ニューゲームを転生リスタートに改称
+;	066		2024/05/26		P(bazzile)				マスターを別キャラとして引き継ぐ際に戦闘素質がすべて失われてしまう不具合を修正
+;	067		2024/06/11		P(bazzile)				全キャラのペルソナを装備から外す処理を追加
+;	068		2024/06/12		P(bazzile)				関数呼び出しに選択肢排除オプションを追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2024/02/22		P(bazzile)				戦闘訓練用の基準レベルの初期化処理を追加
+;	002		2024/06/10		P(bazzile)				デビオクの処理を削除。記述内容は資料の履歴に収納
+;	003		2024/06/13		P(bazzile)				コンサート実行日の初期化処理を追加
+;	004		2024/08/18		P(bazzile)				出現告知履歴の変数を変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=================================================================
+;強くてニューゲーム関連
+;=================================================================
+;引き継ぐ物
+;悪魔解析度、合体解禁フラグ、素質・調教アイテム、衣装、オートマッピング
+;
+;ボーナスが付くもの
+;主人初期能力、初期ＣＯＭＰ容量、初期所持金、初期店人気
+;=================================================================
+
+
+@SHOPCOMABLE_777
+RESULT:1 = 7
+RESULTS = 환생리스타트
+SIF FLAG:게임모드 == 9 || DAY > 50
+	RETURN 1
+RETURN 0
+;---- EDIT 068 MOD START -------------------------
+@SHOP_COM_777, ARG, ARGS
+IF ARGS == "強制ニューゲーム"
+	RESULT = 0
+ELSE
+	PRINTFORML 극히 일부 데이터를 인계하여, 새롭게 게임을 시작하겠습니까?
+	PRINTL [0]시작한다 [1]그만둔다
+	$INPUT_LOOP
+	INPUT
+ENDIF
+IF RESULT == 1
+	RETURN 0
+ELSEIF RESULT == 0
+	CALL START_NEWGAME
+	RETURN 1
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+;---- EDIT 068 MOD END ---------------------------
+
+;=================================================================
+;引継ぎ処理
+;=================================================================
+@START_NEWGAME
+#DIM LCOUNT
+#DIM L_CHARA
+#DIM DYNAMIC ＥＤ発見数
+#DIM DYNAMIC 称号発見数
+#DIM DYNAMIC ステータスボーナス
+#DIM DYNAMIC 最大ステータスボーナス
+#DIM DYNAMIC 繰越所持金
+#DIM DYNAMIC 繰越マッカ
+#DIM TEMP
+;---- EDIT 068 ADD START -------------------------
+FLAG:전생리스타트예약 = 0
+;---- EDIT 068 ADD END ---------------------------
+ＥＤ発見数 = COUNT_ENDING_POINT()
+称号発見数 = COUNT_TITLE_POINT()
+
+;周回回数を+1
+SIF FLAG:게임모드 == 9
+	FLAG:주회횟수 += 1
+FLAG:경험ED수 = 0
+FOR LOCAL,0,64
+	SIF GETBIT(FLAG:발견ED , LOCAL)
+		FLAG:경험ED수 ++
+NEXT
+FOR LOCAL,0,64
+	SIF GETBIT(FLAG:발견ED2 , LOCAL)
+		FLAG:경험ED수 ++
+NEXT
+FOR LOCAL,0,64
+	SIF GETBIT(FLAG:발견ED3 , LOCAL)
+		FLAG:경험ED수 ++
+NEXT
+
+PRINTL 주회 보너스를 설정하시겠습니까？
+IF REQUIRE_ENDING_POINT()
+	PRINTFORML [0] 설정을 변경한다 (현재 EP:{REQUIRE_ENDING_POINT()}/{COUNT_ENDING_POINT()}사용)
+	PRINTFORML [1] 변경하지 않는다
+ELSE
+	PRINTFORML [0] 설정한다 (현재 EP:{COUNT_ENDING_POINT()})
+	PRINTFORML [1] 설정하지 않는다
+ENDIF
+$LOOP_BONUS
+INPUT
+SELECTCASE RESULT
+CASE 0
+	CALL NEWGAME_BONUS
+CASE 1
+CASEELSE
+	CLEARLINE 1
+	GOTO LOOP_BONUS
+ENDSELECT
+
+
+;-----------------------------------------------------------------
+;引き継がないものを初期化
+;主人以外のキャラを削除
+;-----------------------------------------------------------------
+;先に、削除しないキャラを選択することも出来る。
+
+;---- EDIT 067 MOD START -------------------------
+;全員の装備を外す
+;なんらかの理由でいないキャラは除外
+FOR L_CHARA,0,CHARANUM
+	SIF CFLAG:L_CHARA:이자리에없는플래그
+		CONTINUE
+	;装備解除はキャラ削除でも引き継ぎキャラ個別処理でも実行するため、ここでは省略
+	;CALL 全装備解除(L_CHARA)
+	;ペルソナをすべて剥がす
+	IF TALENT:L_CHARA:페르소나구사자
+		;ペルソナはがし
+		FOR LCOUNT, 1, 3
+			IF EQUIP:L_CHARA:@"소지페르소나{LCOUNT}"
+				CALL PERSONA_UNEQUIPMENT(L_CHARA, EQUIP:L_CHARA:@"소지페르소나{LCOUNT}")
+			ENDIF
+		NEXT
+	ENDIF
+NEXT
+;---- EDIT 067 MOD END ---------------------------
+
+CALL SELECT_YOME
+
+FOR LOCAL,CHARANUM-1,0,-1
+	SIF CFLAG:LOCAL:인계플래그 == 0
+		CALL キャラ削除(LOCAL)
+NEXT
+CALL REFRESH_POS
+
+;引き継いだキャラのレベルを人間なら5、悪魔なら1にして能力をＣＳＶから読み込んでからレベルに合わせて増減、習得スキルをＣＳＶから再読み込み。引継ぎフラグに応じて素質や能力変更
+FOR LOCAL,1,CHARANUM
+	CFLAG:LOCAL:인계횟수 += 1
+	CALL SET_TALENT_PARTY_JOINABLE, LOCAL, "参加可能"
+	CALL SHOP_NEWGAME_INITCHARA, LOCAL
+NEXT
+;---- MOD 031 EDIT END   -------------------------
+
+
+;-----------------------------------------------------------------
+;イベントフラグを初期化
+;-----------------------------------------------------------------
+VARSET ダンジョンフラグ
+VARSET イベントフラグ
+VARSET 闘技場フラグ
+VARSET 依頼フラグ
+VARSET TURNEND_EV
+VARSET TURNEND_EV_STR
+VARSET SHOP_EV
+VARSET SHOP_EV_STR
+VARSET REACHED_TERMINAL
+
+FLAG:초기파트너 = 0
+FLAG:속성고정LD = 0
+FLAG:속성고정LC = 0
+FLAG:루트확정 = 0
+FLAG:나오야루트 = 0
+FLAG:백합의꽃루트 = 0
+FLAG:벨신격파 = 0
+;---- EDIT 007 ADD START -------------------------
+FLAG:데빌서바２진행도 = 0
+;---- EDIT 007 ADD END ---------------------------
+FLAG:진IV진행도 = 0
+FLAG:나이트・테일진행도 = 0
+FLAG:트리슈조교 = 0
+FLAG:마인학원의뢰진행도 = 0
+
+VARSET ANNOUNCE_DUNGEON_APPEARED
+VARSET ANNOUNCE_COLOSSEUM_APPEARED
+VARSET ANNOUNCE_REQUEST_APPEARED
+VARSET ANNOUNCE_EVENT_APPEARED
+
+FLAG:턴이행시 = 0
+
+FLAG:동방의뢰진행도 = 0
+FLAG:나나도라의뢰진행도 = 0
+FLAG:마요나카아레나진행도 = 0
+;---- EDIT P 003 ADD START -------------------------
+コンサート実行日 = -1
+;---- EDIT P 003 ADD END ---------------------------
+
+イベントフラグ:101:0 = 0
+イベントフラグ:102:0 = 0
+イベントフラグ:102:1 = 0
+イベントフラグ:103:0 = 0
+イベントフラグ:104:0 = 0
+
+CALL REMOVE_LINK_DEVIL, MASTER
+
+CFLAG:MASTER:주인의질내사정에의한임신판정 = 0
+CFLAG:MASTER:임신시부친판정 = 0
+CFLAG:MASTER:조수의질내사정에의한임신판정 = 0
+CFLAG:MASTER:노예의질내사정에의한임신판정 = 0
+CFLAG:MASTER:고객의질내사정에의한임신판정 = 0
+CFLAG:MASTER:출산예정일 = 0
+CFLAG:MASTER:임신확정후의부친판정 = 0
+CFLAG:MASTER:촉수의질내사정에의한임신판정 = 0
+CFLAG:MASTER:출산일 = 0
+CFLAG:MASTER:부친의고유번호부모 = 0
+CFLAG:MASTER:딸의친부모캐릭터번호부모 = 0
+CFLAG:MASTER:딸의친부모고유번호부모 = 0
+TALENT:MASTER:임신 = 0
+TALENT:MASTER:육아중 = 0
+CFLAG:MASTER:발정임신 = 0
+CFLAG:MASTER:부친실종 = 0
+;ふたごちゃんパッチ：最大受胎人数は記録的な部分があるので初期化しない
+CFLAG:MASTER:이번수태인수 = 0
+CFLAG:MASTER:이자리에없는플래그 = 0
+
+
+;---- EDIT P 001 ADD START -------------------------
+FLAG:누적기준EXP = 0
+FLAG:누적기준LV = 3
+;---- EDIT P 001 ADD END ---------------------------
+;---- EDIT 054 MOD START -------------------------
+;FLAG:던전필터1 = 0
+;FLAG:던전필터2 = 0
+DUNGEON_IS_FILTERED = 
+;---- EDIT 054 MOD END ---------------------------
+
+FLAG:취소된ED = 0
+FLAG:취소된ED2 = 0
+FLAG:취소된ED3 = 0
+FLAG:명성 = 0
+FLAG:조교사명성 = 0
+FLAG:투기장명성 = 0
+FLAG:조직공헌도 = 0
+FLAG:조직공헌LV = 0
+SIF GET_BONUS("조직공헌LV")
+	FLAG:조직공헌LV = FLAG:최대조직공헌LV
+FLAG:소속조직 = 0
+FLAG:투기장랭크 = 0
+
+SAVESTR:랜덤대전팀 =
+CALL SELECT_COLOSSEUM_RANDOMBATTLE
+;---- 闘技場26_ダメージコンテスト！ -------------------------
+YOUR_RANK = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ;現在の順位(レギュレーション1～10)　※レギュレーション4以降は予備です。
+COLOSSEUM_26_RANKING_EVENT_FLG = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ;ランキング1位イベント完了フラグ(レギュレーション1～10)
+COLOSSEUM_26_MAX_DAMAGE = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ;今周回の最大ダメージ(レギュレーションごとにハイスコアを格納する配列)　※次の周回へ進む際にリセットする。
+COLOSSEUM_26_SPECIAL_EVENT_FLG = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ;特殊イベントの進行状況をリセット
+;---- 闘技場26_ダメージコンテスト！ -------------------------
+;---- イベント110_冬眠装置 -------------------------
+CALL EVENT_110_INIT
+;---- イベント110_冬眠装置 -------------------------
+TIME:1 = 0
+
+;ラグショップの販売履歴
+VARSET RAG_SHOP_CHARA_SOLD
+FOR LCOUNT, 0, CHARANUM
+	;ラグから買ったキャラを引き継いでいる場合は改めて販売済みのフラグを立てる
+	SIF CFLAG:LCOUNT:라그숍판매
+		RAG_SHOP_CHARA_SOLD:(NO:LCOUNT) = 1	
+NEXT
+;-----------------------------------------------------------------
+;魔晶装備削除
+;-----------------------------------------------------------------
+;IF GET_BONUS("魔晶武器") == 0
+;	FOR LOCAL,0,50
+;		IF DC:LOCAL:90 != 1
+;			FOR LOCAL:2,0,99
+;				DC:LOCAL:(LOCAL:2) = 0
+;			NEXT
+;		ENDIF
+;	NEXT
+;ENDIF
+;VARSET DC:0:0,0
+
+;-----------------------------------------------------------------
+;店舗解体
+;-----------------------------------------------------------------
+VARSET DE:0:0,0
+
+;-----------------------------------------------------------------
+;文字列フラグ削除
+;一応、文字列フラグ管理で使ってる部分だけに限定
+;-----------------------------------------------------------------
+VARSET SAVESTR, "", 100, 500
+
+;-----------------------------------------------------------------
+;装備品・アイテム・ドリーカドモン削除
+;-----------------------------------------------------------------
+;主人の装備初期化
+CALL 全装備解除,MASTER
+;装備のセットはSET_MASTERで行う
+;FOR LOCAL,0,VARSIZE("EQUIP")
+;	EQUIP:MASTER:LOCAL = CSVEQUIP(NO:MASTER,LOCAL,0)
+;NEXT
+FOR LOCAL,200,6000
+	SIF !ITEM:LOCAL
+		CONTINUE
+	SELECTCASE LOCAL
+		CASE 220 TO 250
+			ITEM:LOCAL = ABS(ITEM:LOCAL)
+		;例外のアイテムはここに記述
+		CASEELSE
+			TRYCCALLFORM 引継ぎ可不可_{LOCAL}
+				IF RESULT > 0
+					ITEM:LCOUNT = MIN(ITEM:LCOUNT, MAX(RESULT, MIN(COUNT_ENDING_POINT(), 10)))
+				ELSE
+					ITEM:LOCAL = 0
+				ENDIF
+			CATCH
+				;周回ボーナス処理を追加
+				SELECTCASE LOCAL
+					;引継不可(能力の香)
+					;CASE 1010,1011,1012,1013,1014,1015
+					;引継不可(황금의벌꿀주,스피릿리브,겨우살이)
+					;CASE 1044,1198,1199
+					;500-600(インストールソフト)
+					;CASE 500 TO 600
+					;	SIF GET_BONUS("インストールソフト")
+					;		CONTINUE
+
+					;250-318(宝石、ペルソナ強化カード、シャドウのドロップ)
+					;1400-1449(合成素材)
+					CASE 248, 250 TO 319 , 1400 TO 1449
+						SIF GET_BONUS("素材アイテム引き継ぎ")
+							CONTINUE
+
+					;1000-1200(消費アイテム)
+					;5500-5599(特殊弾丸)
+					;ヤドリギ等も含まれるがアイテム側のERBで対処
+					CASE 1000 TO 1199 , 5500 TO 5599
+						SIF GET_BONUS("消費アイテム引き継ぎ")
+							CONTINUE
+					;---- EDIT 055 MOD START -------------------------
+					CASE MIN_EQUIPNUM TO MAX_EQUIPNUM
+						IF 魔晶装備(LOCAL)
+							CALL EQUIP_PROPERTY, LOCAL, "装備箇所"
+							IF GET_EQUIP(RESULT) == "검"
+								;工房で強化している場合は無条件で引き継ぐ
+								SIF DC:EQ_GETID_魔晶装備(LOCAL):90 == 1
+									CONTINUE
+								SIF GET_BONUS("魔晶武器引き継ぎ")
+									CONTINUE
+								;引き継がれない場合は内容を削除
+								FOR LOCAL:1,0,99
+									DC:EQ_GETID_魔晶装備(LOCAL):(LOCAL:1) = 0
+								NEXT
+							;防具は現状処理なし
+							ELSE
+							ENDIF
+						ELSE
+							CALL EQUIP_PROPERTY, LOCAL, "装備箇所"
+							;---- EDIT 060 MOD START -------------------------
+							;IF GET_EQUIP(RESULT) == "검"
+							IF GROUPMATCH(GET_EQUIP(RESULT), "검", "총")
+							;---- EDIT 060 MOD END ---------------------------
+								SIF GET_BONUS("武具アイテム引き継ぎ")
+									CONTINUE
+							ELSE
+								SIF GET_BONUS("防具アイテム引き継ぎ")
+									CONTINUE
+							ENDIF
+						ENDIF
+				ENDSELECT
+				ITEM:LOCAL = 0
+				;---- EDIT 061 ADD START -------------------------
+				;使用アイテムのストックをリセット
+				SIF LOCAL < VARSIZE("COUNT_STOCK_ITEM")
+					COUNT_STOCK_ITEM:LOCAL = 0
+				;---- EDIT 061 ADD END ---------------------------
+				SIF 改造装備(LOCAL)
+					CALL 改造装備解除,改造装備番号(LOCAL)
+			ENDCATCH
+	ENDSELECT
+NEXT
+;あまりEPを香に変換
+VARI INCENSE_TABLE, 6
+INCENSE_TABLE = GETNUM(ITEM, "힘의향"), GETNUM(ITEM, "지혜의향"), GETNUM(ITEM, "마력의향"), GETNUM(ITEM, "내구의향"), GETNUM(ITEM, "속도의향"), GETNUM(ITEM, "운의향")
+FOR LCOUNT, 0, VARSIZE("INCENSE_TABLE")
+	CALL GET_ITEM, INCENSE_TABLE:LCOUNT, GET_UNUSE_ENDING_BONUS()
+NEXT
+;---- EDIT 052 ADD START -------------------------
+;-----------------------------------------------------------------
+;インストールソフトの引き継ぎと削除
+;-----------------------------------------------------------------
+VARSET EQUIP_INSTALLSOFT
+FOR LOCAL, 0, INSTALLSOFTNUM
+	RESULT = 0
+	;引き継ぎ不可属性がある場合は引き継げない
+	TRYCALLFORM INSTALLSOFT_UNABLE_TAKEOVER_{LOCAL}
+	SIF RESULT
+		HAVE_INSTALLSOFT:LOCAL = 0
+	;価格が1000未満は無条件に引き継げる
+	RESULT = 0
+	TRYCALLFORM INSTALLSOFT_PRICE_{LOCAL}
+	SIF RESULT < 1000
+		CONTINUE
+	SIF GET_BONUS("インストールソフト引き継ぎ")
+		CONTINUE
+	HAVE_INSTALLSOFT:LOCAL = 0
+NEXT
+;---- EDIT 052 ADD START -------------------------
+;-----------------------------------------------------------------
+;スキルエミュレータの引き継ぎと削除
+;-----------------------------------------------------------------
+FOR LOCAL, 0, SKILL_EMULATOR_NUM
+	RESULT = 0
+	;引き継ぎ不可属性がある場合は引き継げない
+	TRYCALLFORM SKILL_EMULATOR_NUM_UNABLE_TAKEOVER_{LOCAL}
+	SIF RESULT
+		HAVE_SKILL_EMULATOR:LOCAL = 0
+	;価格が1000未満は無条件に引き継げる
+	RESULT = 0
+	TRYCALLFORM SKILL_EMULATOR_PRICE_{LOCAL}
+	SIF RESULT < 1000
+		CONTINUE
+	SIF GET_BONUS("スキルエミュレータ引き継ぎ")
+		CONTINUE
+	HAVE_SKILL_EMULATOR:LOCAL = 0
+NEXT
+;非所持のものを装備から外す
+FOR L_CHARA, 0, CHARANUM
+	FOR LCOUNT, 0 , 5
+		SIF !HAVE_SKILL_EMULATOR:(EQUIP_SKILL_EMULATOR:L_CHARA:LCOUNT)
+			EQUIP_SKILL_EMULATOR:L_CHARA:LCOUNT = 0
+	NEXT
+NEXT
+;同期
+CALL SET_LEADER_SKILL
+;---- EDIT 052 ADD END ---------------------------
+
+;---- EDIT 061 ADD START -------------------------
+IF GET_BONUS("特殊アイテム入手")
+	CALL GET_ITEMS, "신단의영옥", 1
+	CALL GET_ITEMS, "붕괴주", 1
+	CALL GET_ITEMS, "황금의벌꿀주", 1
+ENDIF
+;---- EDIT 061 ADD END ---------------------------
+
+;---- EDIT 063 MOD START -------------------------
+;調教アイテムを破棄するか
+SIF GET_BONUS("調教アイテム引き継ぎ") == 0
+	VARSET ITEM,0,0,100
+;---- EDIT 063 MOD END ---------------------------
+
+;-----------------------------------------------------------------
+;種族ごとの売却回数を初期化
+;-----------------------------------------------------------------
+VARSET COUNT_SOLD_CHARA
+
+;-----------------------------------------------------------------
+;キャンセルしたEDをリセット
+;-----------------------------------------------------------------
+FLAG:취소된ED = 0
+FLAG:취소된ED2 = 0
+FLAG:취소된ED3 = 0
+;-----------------------------------------------------------------
+;日付、時間、調教対象や助手のリセット
+;-----------------------------------------------------------------
+DAY = 1
+DAY:1 = 10
+;MONEY:2 = 50000
+TIME = 0
+TARGET = -1
+ASSI = -1
+NAVIGATOR = -1
+FLAG:게임모드 = 0
+FLAG:지정던전 = -1
+FLAG:조교실행완료횟수 = 0
+FLAG:던전탐색완료 = 0
+FLAG:콜로세움참가완료 = 0
+ADD_DUNGEON_CHANGEABLE_1 = 0
+ADD_DUNGEON_CHANGEABLE_2 = 0
+;SIF FLAG:연모인수 > FLAG:주회횟수*2
+;	FLAG:연모인수 = FLAG:주회횟수*2
+;SIF FLAG:음란인수 > FLAG:주회횟수*2
+;	FLAG:음란인수 = FLAG:주회횟수*2
+;SIF FLAG:복종인수 > FLAG:주회횟수*2
+;	FLAG:복종인수 = FLAG:주회횟수*2
+FLAG:이번주회연모인수 = 0
+FLAG:이번주회음란인수 = 0
+FLAG:이번주회복종인수 = 0
+FLAG:이번주회신뢰인수 = 0
+FLAG:노예매각수 = 0
+
+;今週回の帳簿リセット
+VARSET FLAG, 0, 1403, 1406
+VARSET FLAG, 0, 1413, 1416
+VARSET FLAG, 0, 1423, 1426
+VARSET FLAG, 0, 1433, 1436
+FLAG:매각인수 = 0
+FLAG:매각인수（연모친애） = 0
+FLAG:매각인수（음란창부） = 0
+FLAG:매각인수（복종예속） = 0
+FLAG:식당총이익 = 0
+FLAG:창관총이익 = 0
+FLAG:공중변소총이익 = 0
+FLAG:렌탈총이익 = 0
+FLAG:극장총이익 = 0
+FLAG:콘서트총이익 = 0
+
+;その他独自変数のリセット
+VARSET ヴォーカリスト・セイレーン進行, 0
+VARSET シナリオライター・ジークフリート進行, 0
+VARSET 『観客』ディオニュソス進行, 0
+VARSET ほむほむvsゴトウ進行, 0
+VARSET 料理イベント進行, 0
+VARSET Reconnect_Ragnarok進行, 0
+VARSET ねぷねぷ進行, 0
+VARSET 六本木娼館表フラグ, 0
+VARSET 六本木娼館裏フラグ, 0
+VARSET 六本木娼婦フラグ, 0
+VARSET 六本木娼婦フラグ予備1, 0
+VARSET 六本木娼婦フラグ予備2, 0
+VARSET 六本木娼婦フラグ予備3, 0
+
+;アーミヤのクラスチェンジ先のレベルと能力値保存枠を初期化
+CALL RESET_ALL_CLASS_STATUS_K812
+
+;集団ライブの変数もリセット
+VARSET グループ人気
+VARSET グループ収入
+
+;-----------------------------------------------------------------
+;難易度
+;-----------------------------------------------------------------
+CALL SET_DIFFICULT
+
+;-----------------------------------------------------------------
+;EXイベント
+;-----------------------------------------------------------------
+CALL SET_EXTRAEVENT, 1
+;-----------------------------------------------------------------
+;主人の能力設定
+;-----------------------------------------------------------------
+;CALL NEW_MASTER
+;-----------------------------------------------------------------
+;主人の調教・労役設定
+;-----------------------------------------------------------------
+
+;素質・能力・経験を弄くる
+;周回数が5以上の場合能力リセット時に旧あなたを新規キャラとして加入させるか選択
+PRINTFORML 주인의 소질・능력・경험을 인계합니까？
+CALL INPUT_YN,"Yes","NO"
+
+;---- EDIT 066 MOD START -------------------------
+IF FLAG:경험ED수 > 4
+	IF RESULT == 1
+		PRINTFORML 구 당신(리셋 전의 소질・능력・경험을 가진)을 신규 캐릭터로 가입시킵니까？
+		CALL INPUT_YN,"Yes","NO"
+		;旧あなた加入処理
+		IF RESULT == 0
+			CALL ADD_NEW_COMPANION, [[キャラ:다크서머너_구당신]], 500
+			IF RESULT == 1
+				L_CHARA = RESULT:1
+				LOCAL = CFLAG:L_CHARA:캐릭터고유번호
+				COPYCHARA 0, L_CHARA
+				;呼び名
+				IF CFLAG:L_CHARA:당신의전공분야  == 1
+					NAME:L_CHARA     = 다크서머너
+					CALLNAME:L_CHARA = 서머너
+				ELSEIF CFLAG:L_CHARA:당신의전공분야  == 2
+					NAME:L_CHARA     = 페르소나구사자 서머너
+					CALLNAME:L_CHARA = 페르소나구사자
+				ELSEIF CFLAG:L_CHARA:당신의전공분야  == 3
+					NAME:L_CHARA     = 이능자 서머너
+					CALLNAME:L_CHARA = 이능자
+				ELSEIF CFLAG:L_CHARA:당신의전공분야  == 4
+					NAME:L_CHARA     = 관광객
+					CALLNAME:L_CHARA = 관광객
+				ELSEIF CFLAG:L_CHARA:당신의전공분야  == 5
+					NAME:L_CHARA     = 식노 서머너
+					CALLNAME:L_CHARA = 식노
+				ELSEIF CFLAG:L_CHARA:당신의전공분야  == 6
+					NAME:L_CHARA     = 달인 서머너
+					CALLNAME:L_CHARA = 달인
+				ELSEIF CFLAG:L_CHARA:당신의전공분야  == 7
+					NAME:L_CHARA     = 악마사냥꾼 서머너
+					CALLNAME:L_CHARA = 악마사냥꾼
+				ELSEIF CFLAG:L_CHARA:당신의전공분야  == 8
+					NAME:L_CHARA     = 악마인 서머너
+					CALLNAME:L_CHARA = 악마인
+				ELSEIF CFLAG:L_CHARA:당신의전공분야  == 9
+					NAME:L_CHARA     = 광대
+					CALLNAME:L_CHARA = 광대
+				ELSEIF CFLAG:L_CHARA:당신의전공분야  == 10
+					NAME:L_CHARA     = 시프터
+					CALLNAME:L_CHARA = 시프터
+				ELSE
+					NAME:L_CHARA     = 수수께끼의 사람
+					CALLNAME:L_CHARA = 수수께끼의 사람
+				ENDIF
+				CFLAG:L_CHARA:인계플래그 = 1
+				CFLAG:L_CHARA:인계횟수   = 1
+				CFLAG:L_CHARA:포지션   = 0
+				CFLAG:L_CHARA:소속ＣＯＭＰ = 0
+				CFLAG:L_CHARA:합체소재사용금지     = 0
+
+				CFLAG:L_CHARA:캐릭터고유번호 = LOCAL
+				CFLAG:L_CHARA:실제가입시간 = GETMILLISECOND()
+				NO:L_CHARA = [[キャラ:다크서머너_구당신]]
+				NICKNAME:L_CHARA '= CSVNICKNAME(NO:L_CHARA)
+				;---- EDIT 066 MOD START -------------------------
+				;CALL CHANGE_ROLE, L_CHARA
+				;---- EDIT 066 MOD END ---------------------------
+				CALL SHOP_NEWGAME_INITCHARA, L_CHARA
+			ENDIF
+		ENDIF
+
+		FOR LOCAL,0,26
+			ABL:MASTER:LOCAL = CSVABL(NO:MASTER,LOCAL,0)
+		NEXT
+		FOR LOCAL,0,VARSIZE("EXP")
+			EXP:MASTER:LOCAL = CSVEXP(NO:MASTER,LOCAL,0)
+		NEXT
+		FOR LOCAL,0,101
+			JUEL:MASTER:LOCAL = 0
+		NEXT
+		VARSET CFLAG:MASTER:0 , 0 , 2001 , 2600
+		CFLAG:MASTER:함락캐릭터 = 0
+		;素質
+		TALENT:MASTER:수수께끼의매력 = 0
+		TALENT:MASTER:절륜 = 0
+		TALENT:MASTER:음란 = 0
+		TALENT:MASTER:창부 = 0
+		TALENT:MASTER:모유체질 = 0
+		TALENT:MASTER:인기 = 0
+		FLAG:인기취득자수 = 0
+		CFLAG:MASTER:몇번째아이까지낳았는가 = 0
+		CFLAG:MASTER:송금해주는인수부모 = 0  
+		;ふたごちゃんパッチ：最大人数はリセット
+		CFLAG:MASTER:최대임신인수 = 0
+	;	CFLAG:MASTER:캐릭터고유번호 = FLAG:今までのキャラ数
+	;	FLAG:今までのキャラ数 += 1
+		CFLAG:MASTER:요리인기 = 0
+		CFLAG:MASTER:매춘인기 = 0
+		CFLAG:MASTER:변기인기 = 0
+		CFLAG:MASTER:극장인기 = 0
+		CFLAG:MASTER:아이돌인기 = 0
+		IF TALENT:MASTER:남자 == 0 
+			TALENT:MASTER:처녀 = 1
+		ELSE
+			CFLAG:MASTER:원처녀 = 1
+			CFLAG:MASTER:원Ｖ감각 = 1
+		ENDIF
+		TALENT:MASTER:새드 = 0
+		TALENT:MASTER:마조 = 0
+		TALENT:MASTER:불결무시 = 0
+		ITEM:【불결무시】 = 0
+		TALENT:MASTER:조합지식 = 0
+		ITEM:【조합지식】 = 0
+		TALENT:MASTER:금단의지식 = 0
+		ITEM:【금단의지식】 = 0
+		TALENT:MASTER:사토리（소질） = 0
+		ITEM:【서드・아이】 = 0
+		TALENT:MASTER:촉수사역술 = 0
+		ITEM:【촉수사역술】 = 0
+		TALENT:MASTER:잉태희망 = 0
+
+		EX:MASTER:Ｃ절정 = 0
+		EX:MASTER:Ｖ절정 = 0
+		EX:MASTER:Ａ절정 = 0
+		EX:MASTER:Ｂ절정 = 0
+		FLAG:주인출신 = 0
+		CFLAG:MASTER:이상경험기록 = 0
+	ENDIF
+ELSE
+	IF RESULT == 1
+		FOR LOCAL,0,26
+			ABL:MASTER:LOCAL = CSVABL(NO:MASTER,LOCAL,0)
+		NEXT
+		FOR LOCAL,0,VARSIZE("EXP")
+			EXP:MASTER:LOCAL = CSVEXP(NO:MASTER,LOCAL,0)
+		NEXT
+		FOR LOCAL,0,101
+			JUEL:MASTER:LOCAL = 0
+		NEXT
+		VARSET CFLAG:MASTER:0 , 0 , 2001 , 2600
+		CFLAG:MASTER:함락캐릭터 = 0
+		;素質
+		TALENT:MASTER:수수께끼의매력 = 0
+		TALENT:MASTER:절륜 = 0
+		TALENT:MASTER:음란 = 0
+		TALENT:MASTER:창부 = 0
+		TALENT:MASTER:모유체질 = 0
+		TALENT:MASTER:인기 = 0
+		FLAG:인기취득자수 = 0
+		CFLAG:MASTER:몇번째아이까지낳았는가 = 0
+		CFLAG:MASTER:송금해주는인수부모 = 0  
+		;ふたごちゃんパッチ：最大人数はリセット
+		CFLAG:MASTER:최대임신인수 = 0
+	;	CFLAG:MASTER:캐릭터고유번호 = FLAG:今までのキャラ数
+	;	FLAG:今までのキャラ数 += 1
+		CFLAG:MASTER:요리인기 = 0
+		CFLAG:MASTER:매춘인기 = 0
+		CFLAG:MASTER:변기인기 = 0
+		CFLAG:MASTER:극장인기 = 0
+		CFLAG:MASTER:아이돌인기 = 0
+		IF TALENT:MASTER:남자 == 0 
+			TALENT:MASTER:처녀 = 1
+		ELSE
+			CFLAG:MASTER:원처녀 = 1
+			CFLAG:MASTER:원Ｖ감각 = 1
+		ENDIF
+		TALENT:MASTER:새드 = 0
+		TALENT:MASTER:마조 = 0
+		TALENT:MASTER:불결무시 = 0
+		ITEM:【불결무시】 = 0
+		TALENT:MASTER:조합지식 = 0
+		ITEM:【조합지식】 = 0
+		TALENT:MASTER:금단의지식 = 0
+		ITEM:【금단의지식】 = 0
+		TALENT:MASTER:사토리（소질） = 0
+		ITEM:【서드・아이】 = 0
+		TALENT:MASTER:촉수사역술 = 0
+		ITEM:【촉수사역술】 = 0
+		EX:MASTER:Ｃ절정 = 0
+		EX:MASTER:Ｖ절정 = 0
+		EX:MASTER:Ａ절정 = 0
+		EX:MASTER:Ｂ절정 = 0
+		FLAG:주인출신 = 0
+	ENDIF
+ENDIF
+;---- EDIT 066 MOD END ---------------------------
+;娘or息子マスター引き継ぎ
+;---- EDIT 026 MOD START -------------------------
+LOCAL:1 = 0
+FOR LOCAL,0,CHARANUM
+	IF TALENT:LOCAL:마스터의혈통 && FLAG:경험ED수 > 4
+		LOCAL:1 = 0
+		FOR LOCAL,0,CHARANUM
+			SIF TALENT:LOCAL:마스터의혈통
+				BREAK
+			;SIF LOCAL == CHARANUM - 1
+			;	RETURN 0
+		NEXT
+		;引き継ぐ場合は以降、血統フラグを元に引き継ぎ要素の可否を取る
+		PRINTL 딸 or 아들에게 마스터를 물려줍니까？
+		CALL INPUT_YN
+		SIF RESULT == 0
+			CALL MASTER_MUSUME
+		BREAK
+	ENDIF
+NEXT
+;---- EDIT 026 MOD END -------------------------
+;ＴＳ経験が奇数の場合、元性別と現性別を別にする
+;IF EXP:MASTER:ＴＳ경험 % 2 == 1
+;	CFLAG:MASTER:원성별 = !TALENT:MASTER:남자
+;ELSE
+;	CFLAG:MASTER:원성별 = TALENT:MASTER:남자
+;ENDIF
+
+	;人気を初期化+ボーナス
+	FLAG:요리인기 = MIN(FLAG:주회횟수 * 50,FLAG:요리인기,500)
+	FLAG:매춘인기 = MIN(FLAG:주회횟수 * 50,FLAG:매춘인기,500)
+	CFLAG:MASTER:요리인기 = MIN(FLAG:주회횟수 * 50,CFLAG:MASTER:요리인기,1000)
+	CFLAG:MASTER:매춘인기 = MIN(FLAG:주회횟수 * 50,CFLAG:MASTER:매춘인기,500)
+	CFLAG:MASTER:변기인기 = MIN(FLAG:주회횟수 * 50,CFLAG:MASTER:변기인기,500)
+	CFLAG:MASTER:아이돌인기 = MIN(FLAG:주회횟수 * 50,CFLAG:MASTER:아이돌인기,1000)
+
+IF !TALENT:MASTER:마스터의혈통
+	PRINTW 주인의 속성을…
+	CALL INPUT_YN,"인계한다","초기화한다"
+	IF RESULT == 1
+		CFLAG:MASTER:선악치 = 128
+		CFLAG:MASTER:질혼치 = 128
+		ABL:MASTER:속성LD = 2
+		ABL:MASTER:속성LC = 2
+	ENDIF
+ENDIF
+PRINTL 함락소질을 붙인 인수를 인계합니까？
+PRINTL ※인계한 경우라도、주회 횟수에 따라 감소하는 경우가 있습니다
+CALL INPUT_YN,"Yes","No"
+IF RESULT == 1
+	FLAG:연모인수 = 0
+	FLAG:음란인수 = 0
+	FLAG:복종인수 = 0
+	FLAG:신뢰인수 = 0
+	FLAG:노예매각총수 = 0
+ENDIF
+
+IF !TALENT:MASTER:마스터의혈통
+	PRINTFORML 주인의 성별・체격 등의 설정을 인계합니까？
+	CALL INPUT_YN,"Yes","No"
+	IF RESULT == 1
+		BASE:MASTER:신장 = 0
+		BASE:MASTER:바스트 = 0
+		BASE:MASTER:웨스트 = 0
+		BASE:MASTER:힙사이즈 = 0
+		BASE:MASTER:체중 = 0
+		TALENT:MASTER:小尻 = 0
+		TALENT:MASTER:並尻 = 0
+		TALENT:MASTER:巨尻 = 0
+		TALENT:MASTER:爆尻 = 0
+		TALENT:MASTER:魔尻 = 0
+		TALENT:MASTER:슬렌더 = 0
+		TALENT:MASTER:포동포동 = 0
+		TALENT:MASTER:페니스사이즈 = 0
+		TALENT:MASTER:페니스발광도 = 0
+		TALENT:MASTER:페니스피부타입 = 0
+		CALL SET_MASTER_BASIC
+	ENDIF
+ENDIF
+;-----------------------------------------------------------------
+;主人の戦闘特性
+;-----------------------------------------------------------------
+DRAWLINE
+PRINTL 전투와 관련된 요소는 전부 초기화됩니다
+DRAWLINE
+;スキル初期化
+FOR LOCAL,1,FLAG:이능자스킬수+1
+	LOCALS = 스킬{LOCAL}
+	;例外を作りたければここで逃がす事
+	IF TALENT:MASTER:마스터의혈통
+	ELSE
+		SELECTCASE ABL:MASTER:LOCALS
+			CASEELSE
+				ABL:MASTER:LOCALS = 0
+		ENDSELECT
+	ENDIF
+NEXT
+
+;能力値初期化
+FOR LOCAL,2,VARSIZE("BASE")
+	IF LOCAL != 7
+		IF GET_BONUS("経験値引き継ぎ")
+			MAXBASE:MASTER:LOCAL = CSVBASE(NO:MASTER,LOCAL,0)
+			BASE:MASTER:LOCAL = CSVBASE(NO:MASTER,LOCAL,0)
+		ENDIF
+	ENDIF
+NEXT
+
+;強化回数のリセットをオミット
+;FOR LOCAL,0,8
+;	CFLAG:MASTER:(1170+LOCAL) = 0
+;NEXT
+
+;魔装術・能力＆耐性初期化
+CALL 装備強化_CSTR, "全解除：能力のみ", MASTER
+
+;---- EDIT 031 MOD START -------------------------
+;ペルソナのステ設定 
+FOR LOCAL, 0, VARSIZE("DITEMTYPE")
+	IF DITEMTYPE:LOCAL:페르소나("装備状態")
+		;ペルソナのLvが11以上なら10まで下げる
+		IF DITEMTYPE:LOCAL:페르소나("NO") && DITEMTYPE:LOCAL:페르소나("LV") > 10
+			DITEMTYPE:LOCAL:페르소나("LV") = 10
+			;能力値を再設定。端数は四捨五入
+			FOR LOCAL:7, 1, 7
+				LOCAL:(LOCAL:7) = (CSVBASE(DITEMTYPE:LOCAL:페르소나("NO"), GETNUM(BASE,"힘")-1+LOCAL:7, 0) * (18 + DITEMTYPE:LOCAL:페르소나("LV") * 3 / 2) * 10) / (18 + CSVBASE(DITEMTYPE:LOCAL:페르소나("NO"), GETNUM(BASE,"LV"), 0) * 3 / 2)
+				LOCAL:(LOCAL:7) = LOCAL:(LOCAL:7)%10 > 4 ? (LOCAL:(LOCAL:7)+5)/10 # LOCAL:(LOCAL:7)/10
+			NEXT
+			;それでも既定値未満なら補填
+			WHILE SUMARRAY(LOCAL, 1, 7) < (18 + DITEMTYPE:LOCAL:페르소나("LV") * 3 / 2)
+				LOCAL:((LOCAL:7)%6+1) += 1
+				LOCAL:7++
+			WEND
+			FOR LOCAL:7, 1, 7
+				DITEMTYPE:LOCAL:(페르소나("힘")-1+LOCAL:7) = LOCAL:(LOCAL:7)
+			NEXT
+		ENDIF
+;		DITEMTYPE:LOCAL:페르소나("LV") = 1
+;		DITEMTYPE:LOCAL:페르소나("힘") = 3
+;		DITEMTYPE:LOCAL:페르소나("지혜") = 3
+;		DITEMTYPE:LOCAL:페르소나("마력") = 3
+;		DITEMTYPE:LOCAL:페르소나("내구") = 3
+;		DITEMTYPE:LOCAL:페르소나("속도") = 3
+;		DITEMTYPE:LOCAL:페르소나("운") = 3
+		DITEMTYPE:LOCAL:페르소나("EXP") = 0
+		DITEMTYPE:LOCAL:페르소나("ランク") = 0
+		DITEMTYPE:LOCAL:페르소나("強化可能回数") = 0
+	ENDIF
+NEXT
+;---- EDIT 031 MOD END   -------------------------
+
+;特性初期化
+SIF  !TALENT:MASTER:마스터의혈통
+	CALL SET_MASTER_MAJORING
+;---- EDIT 004 MOD START -------------------------
+;---- EDIT 041 MOD START -------------------------
+IF TALENT:MASTER:페르소나구사자 == 0 && CFLAG:MASTER:초기페르소나넘버
+	FOR LOCAL:1 , 0 , 50
+		DITEMTYPE:(CFLAG:MASTER:초기페르소나넘버):(LOCAL:1) = 0
+	NEXT
+	CFLAG:MASTER:페르소나강화플래그 = 0
+	CFLAG:MASTER:초기페르소나넘버 = 0
+	ABL:MASTER:초기페르소나 = 0
+ELSEIF TALENT:MASTER:페르소나구사자 && ABL:MASTER:초기페르소나 != ABL:MASTER:초기페르소나3 && !ABL:MASTER:초기페르소나2
+	CFLAG:MASTER:페르소나강화플래그 = 0
+ELSEIF TALENT:MASTER:페르소나구사자 && ABL:MASTER:초기페르소나 != ABL:MASTER:초기페르소나2
+	CFLAG:MASTER:페르소나강화플래그 = 0
+ENDIF
+;---- EDIT 041 MOD END -------------------------
+;---- EDIT 004 MOD END -------------------------
+
+;---- EDIT 031 MOD CANCEL -------------------------
+;-----------------------------------------------------------------
+;ペルソナ削除
+;主人公のペルソナ決定に使いたいので、ここでやる
+;よく考えたら0~10まで削除すればいい話でした
+;-----------------------------------------------------------------
+;---- EDIT 065 ADD START -------------------------
+FOR LOCAL, 0, 11
+	CALL DEL_PERSONA2, LOCAL
+NEXT
+;FOR LOCAL, 0, 12
+;	FOR LOCAL:1 , 0 , 50
+;		DITEMTYPE:LOCAL:(LOCAL:1) = 0
+;	NEXT
+;NEXT
+;---- EDIT 027 MOD END   -------------------------
+;---- EDIT 065 ADD END ---------------------------
+
+;-----------------------------------------------------------------
+;主人の特性・まとめ
+;-----------------------------------------------------------------
+SIF !TALENT:MASTER:마스터의혈통
+	CALL SET_MASTER_NAME
+CFLAG:MASTER:노역플래그 = 0
+IF GET_BONUS("経験値引き継ぎ")
+	BASE:MASTER:ＥＸＰ = MAX(200, BASE:MASTER:ＥＸＰ)
+ELSE
+	BASE:MASTER:ＥＸＰ = 200
+ENDIF
+BASE:MASTER:ＭＡＧ = 3000
+
+;次回以降の処理で問題になる血統フラグを廃棄し、血統を来歴にする
+IF TALENT:MASTER:마스터의혈통
+	TALENT:MASTER:마스터의혈통 = 0
+	CFLAG:MASTER:당신의전공분야 = 13
+ENDIF
+
+VARI CNT_BONUS = 30 - SUMARRAY(BASE:MASTER:0, GETNUM(BASE, "힘"), GETNUM(BASE, "운")+1)
+IF CNT_BONUS > 0
+	IF FLAG:레벨업시인터페이스설정 == 1
+		CALLFORM STATUS_BONUS_1, MASTER, CNT_BONUS
+	ELSE
+		CALLFORM STATUS_BONUS_0, MASTER, CNT_BONUS
+	ENDIF
+ENDIF
+;---- EDIT 021 MOD END ---------------------------
+;能力の同期化
+CALL SYNC_STATUS,0
+CALL HEALTH_CHARA,0
+CALL REFRESH_POS
+
+;-----------------------------------------------------------------
+;ＣＯＭＰ容量は8+見たEDの数-周回ボーナスコスト
+;-----------------------------------------------------------------
+FLAG:마카에의한Ｃ용량증가 = 0
+FLAG:ＣＯＭＰ용량 = 4
+VARSET COMP_SIZEUP_BY_EVENT
+IF GET_BONUS("ＣＯＭＰ容量増加1")
+	FLAG:ＣＯＭＰ용량 += 4
+	ARRAYCOPY "COMP_SIZEUP_ACHIEVEMENT", "COMP_SIZEUP_BY_EVENT"
+ENDIF
+SIF GET_BONUS("ＣＯＭＰ容量増加2")
+	FLAG:ＣＯＭＰ용량 += 8
+SIF GET_BONUS("ＣＯＭＰ容量増加3")
+	FLAG:ＣＯＭＰ용량 += 16
+;FLAG:ＣＯＭＰ용량 = 8 + ＥＤ発見数 - REQUIRE_ENDING_POINT()
+;FLAG:마카에의한Ｃ용량증가 = FLAG:ＣＯＭＰ용량 - 7;037
+LOCAL:2 = ＥＤ発見数 - REQUIRE_ENDING_POINT()
+
+;---- EDIT 064 ADD START -------------------------
+FOR LCOUNT, CHARANUM -1, -1, -1
+	SIF ストック空き容量() >= 0
+		BREAK
+	SIF GET_ROLE_PROP("CAN_PUT_IN_COMP", LCOUNT)
+		CFLAG:LCOUNT:소속ＣＯＭＰ = -1
+NEXT
+;---- EDIT 064 ADD END ---------------------------
+
+;---- EDIT 018 ADD START -------------------------
+;呪いのレッドカーペット設定
+;EQUIP:MASTER:저주의레드카펫 = ITEM:저주의레드카펫
+;---- EDIT 018 ADD END -------------------------
+
+;-----------------------------------------------------------------
+;所持金の調整
+;-----------------------------------------------------------------
+;￥
+;1/100処理
+繰越所持金 = MONEY / 100
+;この時点で1,000円以上なら(所持金-1,000)×0.9
+繰越所持金 = TABLE_CALC2(繰越所持金, 1000, 90)
+;この時点で2,500円以上なら(所持金-2,500)×0.8
+繰越所持金 = TABLE_CALC2(繰越所持金, 2500, 80)
+;この時点で5,000円以上なら(所持金-5,000)×0.7
+繰越所持金 = TABLE_CALC2(繰越所持金, 5000, 70)
+;この時点で10,000円以上なら(所持金-10,000)×0.6
+繰越所持金 = TABLE_CALC2(繰越所持金, 10000, 60)
+;この時点で25,000円以上なら(所持金-25,000)×0.5
+繰越所持金 = TABLE_CALC2(繰越所持金, 25000, 50)
+;この時点で50,000円以上なら(所持金-50,000)×0.25
+繰越所持金 = TABLE_CALC2(繰越所持金, 50000, 25)
+;この時点で100,000円以上なら(所持金-100,000)×0.1
+繰越所持金 = TABLE_CALC2(繰越所持金, 100000, 10)
+MONEY = 繰越所持金
+;ＥＤ発見と称号発見毎に+2000の初期所持金
+;周回するたびに+500の初期所持金
+;ただし周回ボーナスの最高額は100万までとする(そこまで周回を重ねるのも困難な話だが)
+;3500円保障
+MONEY += 1000 + 2000 * (ＥＤ発見数 + 称号発見数 + 1)
+MONEY += MIN(500 * FLAG:주회횟수, 1000000)
+
+;マッカ
+;魔貨：基本的に所持金と同じ処理(20, 50, 100, 200, 500, 1000, 2000で倍率変更)
+繰越マッカ = MONEY:1 / 100
+繰越マッカ = TABLE_CALC2(繰越マッカ, 20, 90)
+繰越マッカ = TABLE_CALC2(繰越マッカ, 50, 80)
+繰越マッカ = TABLE_CALC2(繰越マッカ, 100, 70)
+繰越マッカ = TABLE_CALC2(繰越マッカ, 200, 60)
+繰越マッカ = TABLE_CALC2(繰越マッカ, 500, 50)
+繰越マッカ = TABLE_CALC2(繰越マッカ, 1000, 25)
+繰越マッカ = TABLE_CALC2(繰越マッカ, 2000, 10)
+MONEY:1 = 繰越マッカ
+;ＥＤ発見と称号発見毎に+25の初期所持魔貨
+;周回するごとに発見ＥＤ×周回数×5の初期所持魔貨
+;ただし周回ボーナスの最高額は100万までとする(そこまで周回を重ねるのも困難な話だが)
+MONEY:1 += 25 * (ＥＤ発見数 + 称号発見数)
+MONEY:1 += MIN(ＥＤ発見数 * FLAG:주회횟수 * 5, 1000000)
+
+;ジャンクポイント
+;ジャンクポイントは持越しできない
+MONEY:4 = 0
+
+CALL OPENING
+
+;=============================================================================
+;テーブル計算汎用処理
+;=============================================================================
+;-------------------------------------------------
+;テーブル計算その１
+;-------------------------------------------------
+;テーブル計算用
+;ARG:0 = 代入すべき変数(以下元変数)より引き渡された数
+;ARG:1 ・ ARG:2 = 元変数がARG:2より大きいならばARG:1を引いてARG:2を割る
+@TABLE_CALC(ARG, ARG:1, ARG:2)
+#FUNCTION
+LOCAL = ARG
+SIF LOCAL > ARG:1
+	LOCAL = ARG:1 + (LOCAL - ARG:1) / ARG:2
+
+RETURNF LOCAL
+
+;-------------------------------------------------
+;テーブル計算その２
+;-------------------------------------------------
+;テーブル計算用
+;ARG:0 = 代入すべき変数(以下元変数)より引き渡された数
+;ARG:1 ・ ARG:2 = 元変数がARG:2より大きいならばARG:1を引いたそれに、ARG:2の100分の1の値を掛ける
+@TABLE_CALC2(ARG, ARG:1, ARG:2)
+#FUNCTION
+LOCAL = ARG
+SIF LOCAL > ARG:1
+	LOCAL = ARG:1 + (LOCAL - ARG:1) * ARG:2 / 100
+
+RETURNF LOCAL
+
+;=============================================================================
+;引き継ぎ嫁選択
+;=============================================================================
+@SELECT_YOME
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_PAGE
+#DIM DYNAMIC L_YOME
+#DIM DYNAMIC YOME_LIST, MAX_PLAYER_CHARA
+#DIM DYNAMIC LIST_SHOWNUM
+LIST_SHOWNUM = GET_HEIGHTLENS() - 5
+;---- EDIT 051 MOD START -------------------------
+FOR LCOUNT,0,CHARANUM
+	TRYCCALLFORM SELECT_YOME_{NO:LCOUNT}, LCOUNT
+		SIF RESULT > 0
+			BREAK
+		SIF RESULT == 0
+			CONTINUE
+	CATCH
+	ENDCATCH
+	SIF 陥落(LCOUNT) >= 3
+		BREAK
+	SIF CFLAG:LCOUNT:인계횟수
+		BREAK
+	SIF LCOUNT == CHARANUM - 1
+		RETURN 0
+NEXT
+;---- EDIT 051 MOD END ---------------------------
+
+$INPUT_CHARA_HOLD_CHECK_LOOP
+PRINTL 일부 캐릭터를 다음 주차로 인계하시겠습니까？
+CALL INPUT_YN
+IF RESULT == 1
+	PRINTL 모든 캐릭터를 삭제합니다。정말로 괜찮으시겠습니까？
+	CALL INPUT_YN
+	IF RESULT == 0
+		;キャラ引継ぎなしで次へ進む
+		RETURN 0
+	ELSE
+		;直前の選択に戻る
+		DRAWLINE
+		GOTO INPUT_CHARA_HOLD_CHECK_LOOP
+	ENDIF
+ENDIF
+
+;表示させるキャラを抽出（Q:*に表示するキャラの登録番号、LOCAL:2に人数）
+VARSET YOME_LIST, -1
+VARI CNT_YOME = 0
+FOR LCOUNT, 0, CHARANUM
+	SIF LCOUNT == MASTER
+		CONTINUE
+	IF CFLAG:LCOUNT:인계횟수 == 0
+		RESULT = -1
+		;個別条件。-1の場合は通常の条件を見る
+		TRYCALLFORM SELECT_YOME_{NO:LCOUNT}, LCOUNT
+		SIF RESULT == 0
+			CONTINUE
+		IF RESULT == -1
+			SIF 陥落(LCOUNT) < 3
+				CONTINUE
+		ENDIF
+	ENDIF
+	CFLAG:LCOUNT:인계플래그 = 1		;引継ぎフラグの初期設定を「1：契約・陥落素質引継ぎ」に設定する
+	YOME_LIST:CNT_YOME = LCOUNT
+	CNT_YOME += 1
+NEXT
+;---- EDIT 051 MOD END ---------------------------
+VARI L_LINE = LINECOUNT
+$PRINT_LIST
+CLEARLINE LINECOUNT - L_LINE
+DRAWLINE
+PRINTFORML 인계받을 캐릭터를 선택해주세요　＜page.{P + 1}＞
+DRAWLINE
+;対象キャラが二人以上の場合に全員を変更する選択肢を表示する。
+SIF CNT_YOME >= 2
+	PRINTFORML [999] 인계 가능한 모든 캐릭터의 인계를 변경한다。
+DRAWLINE
+
+FOR LCOUNT, L_PAGE * LIST_SHOWNUM, (L_PAGE + 1) * LIST_SHOWNUM
+	L_YOME = YOME_LIST:(LCOUNT)
+	IF L_YOME >= 0
+		PRINTFORM [{L_YOME,3,RIGHT}] %CALLNAME:(L_YOME),16, LEFT%   
+		SELECTCASE CFLAG:L_YOME:인계플래그
+			CASE 1
+				SETCOLOR COLOR("パ赤")
+				PRINTL ○ 계약・함락소질 인계
+			CASE 2
+				SETCOLOR COLOR("パ青")
+				PRINTL ○ 계약・함락소질 리셋
+			CASE 3
+				SETCOLOR COLOR("パ緑")
+				PRINTL ○ 경험 리셋
+			CASE 4
+				SETCOLOR COLOR("パ紫")
+				PRINTL ○ 조교능력 리셋
+			CASEELSE
+				PRINTL × 인계 불가능
+		ENDSELECT
+		RESETCOLOR
+	ELSE
+		PRINTL 
+	ENDIF
+NEXT
+
+DRAWLINE
+PRINTFORM \@YOME_LIST:LIST_SHOWNUM < 0 ? %" " * 20% # [1007] 이전페이지　　　\@
+PRINTFORM [1000] 인계 캐릭터 선택 종료 　　
+PRINTFORML \@YOME_LIST:LIST_SHOWNUM < 0 ? %" " * 20% # [1009] 다음페이지　　　\@
+
+$INPUT_LOOP_1
+INPUT
+IF RESULT == 1000
+	FOR LCOUNT, 0, CHARANUM
+		IF CFLAG:LCOUNT:함락링크
+			SIF FINDCHARA_TIMEID(CFLAG:LCOUNT:피링크캐릭터실제가입시간) >= 0
+				CFLAG:LCOUNT:인계플래그 = CFLAG:FINDCHARA_TIMEID(CFLAG:LCOUNT:피링크캐릭터실제가입시간):인계플래그
+		ENDIF
+	NEXT
+	RETURN 0
+ELSEIF RESULT == 1007
+	IF L_PAGE > 0
+		L_PAGE -= 1
+	ELSE
+		L_PAGE = FINDELEMENT(YOME_LIST, -1) / LIST_SHOWNUM
+	ENDIF
+	GOTO PRINT_LIST
+ELSEIF RESULT == 1009
+	IF (L_PAGE + 1)  * LIST_SHOWNUM +1 < MAX_PLAYER_CHARA && YOME_LIST:((L_PAGE + 1)  * LIST_SHOWNUM +1) >= 0
+		L_PAGE += 1
+	ELSE
+		L_PAGE = 0
+	ENDIF
+	GOTO PRINT_LIST
+ELSEIF FINDELEMENT(YOME_LIST, RESULT) == -1 && RESULT != 999
+	GOTO PRINT_LIST
+ENDIF
+
+VARI L_RESULT = RESULT
+
+;一括引継ぎの場合、間違い対策として確認を追加
+IF RESULT == 999
+	PRINTL 인계 가능한 모든 캐릭터의 인계 설정을 변경합니다。
+ENDIF
+
+PRINTL [0] 인계하지 않는다
+PRINTL [1] 계약・함락소질 인계
+PRINTL [2] 계약・함락소질 리셋
+PRINTL [3] 경험 리셋
+PRINTL [4] 조교능력 리셋
+
+CALL INPUTINT, 0, 1, 2, 3, 4
+;---- EDIT 002 MOD START -------------
+IF L_RESULT == 999 && CNT_YOME > 1
+	;対象キャラが二人未満の場合は無効
+	;一括選択
+	FOR LCOUNT,0,CNT_YOME
+		CFLAG:(YOME_LIST:LCOUNT):인계플래그 = RESULT
+	NEXT
+ELSE
+	;個別選択
+	CFLAG:L_RESULT:인계플래그 = RESULT
+ENDIF
+;---- EDIT 002 MOD END ---------------
+GOTO PRINT_LIST
+
+;周回ボーナスを何個受けてるか計算
+;受けた数に応じて能力とCOMPへのボーナスが下がる
+@REQUIRE_ENDING_POINT
+#FUNCTION
+VARSET LOCAL
+FOR LOCAL:1,0,63
+	SIF !GETBIT(FLAG:주회보너스,LOCAL:1)
+		CONTINUE
+	LOCAL += CHECK_ED_POINT(GETBIT_BONUS_NAME(LOCAL:1))
+NEXT
+RETURNF LOCAL
+
+;発見ED数を計算
+@COUNT_ENDING_POINT
+#FUNCTION
+VARSET LOCAL
+FOR LOCAL,0,64
+	SIF GETBIT(FLAG:발견ED , LOCAL)
+		LOCAL:1++
+	SIF GETBIT(FLAG:발견ED2 , LOCAL)
+		LOCAL:1++
+	SIF GETBIT(FLAG:발견ED3 , LOCAL)
+		LOCAL:1++
+NEXT
+RETURNF LOCAL:1
+
+;発見称号数を計算
+@COUNT_TITLE_POINT
+#FUNCTION
+VARSET LOCAL
+FOR LOCAL,0,64
+	SIF GETBIT (GLOBAL:称号記録1, LOCAL)
+		LOCAL:1++
+	SIF GETBIT (GLOBAL:称号記録2, LOCAL)
+		LOCAL:1++
+	SIF GETBIT (GLOBAL:称号記録3, LOCAL)
+		LOCAL:1++
+	SIF GETBIT (GLOBAL:称号記録4, LOCAL)
+		LOCAL:1++
+NEXT
+RETURNF LOCAL:1
+
+;異常時は-1で返すとTRUE(!=0)扱いされて面倒そうなのでFALSE(0)で返す
+;GET_BONUS("調教アイテム")
+;GET_BONUS("武具アイテム")
+;GET_BONUS("防具アイテム")
+;GET_BONUS("消費アイテム")
+;GET_BONUS("合成素材")
+;GET_BONUS("魔晶武器")
+@GET_BONUS(ARGS)
+#FUNCTION
+LOCAL = GETBIT_BONUS_NO(ARGS)
+SIF LOCAL == -1
+	RETURNF 0
+RETURNF GETBIT(FLAG:주회보너스,LOCAL)
+
+;---- EDIT 000 XXX START -------------------------
+;引継ぎに必要なEDポイント
+;調教アイテム	1点
+;武器アイテム	3点
+;防具アイテム	3点
+;消費アイテム	1点
+;素材アイテム	2点
+;魔晶武器		5点
+;経験値			5点
+;受胎アイテムリセット	10点　追加：受胎アイテム取得状況をリセットする。
+;						要素としてデカめなのでポイントは多めに。たっちゃんをノヴァサイザー産む機械にしないためのポイント
+;インストールソフト 4点 レベル制限がなく、引き継いですぐに使えるのでちょっと増やす。
+;全て取得には20+10+4EP必要
+@CHECK_ED_POINT(ARGS)
+#FUNCTION
+SELECTCASE ARGS
+CASE "調教アイテム引き継ぎ","消費アイテム引き継ぎ","特殊アイテム入手","ＣＯＭＰ容量増加1", "조직공헌LV"
+	RETURNF 1
+CASE "素材アイテム引き継ぎ"
+	RETURNF 2
+CASE "武具アイテム引き継ぎ","防具アイテム引き継ぎ"
+	RETURNF 3
+CASE "インストールソフト引き継ぎ", "スキルエミュレータ引き継ぎ","ＣＯＭＰ容量増加2"
+	RETURNF 4
+CASE "魔晶武器引き継ぎ","経験値引き継ぎ"
+	RETURNF 5
+CASE "受胎アイテムリセット"
+	RETURNF 10
+CASE "ＣＯＭＰ容量増加3"
+	RETURNF 16
+ENDSELECT
+RETURNF 666
+
+@GETBIT_BONUS_NAME(ARG)
+#FUNCTIONS
+VARSET RESULTS_F
+SELECTCASE ARG
+	CASE 0
+		RESULTS_F '= "인계한다", "인계하지 않는다"
+		RETURNF "調教アイテム引き継ぎ"
+	CASE 1
+		RESULTS_F '= "인계한다", "인계하지 않는다", "일부、인계받지 못하는 아이템이 존재합니다。"
+		RETURNF "武具アイテム引き継ぎ"
+	CASE 2
+		RESULTS_F '= "인계한다", "인계하지 않는다", "일부、인계받지 못하는 아이템이 존재합니다。"
+		RETURNF "防具アイテム引き継ぎ"
+	CASE 3
+		RESULTS_F '= "인계한다", "인계하지 않는다", "일부、인계받지 못하는 아이템이 존재합니다。"
+		RETURNF "消費アイテム引き継ぎ"
+	CASE 4
+		RESULTS_F '= "인계한다", "인계하지 않는다", "아이템 합성용 아이템이니 주의해주세요。"
+		RETURNF "素材アイテム引き継ぎ"
+	CASE 5
+		RESULTS_F '= "인계한다", "인계하지 않는다"
+		RETURNF "魔晶武器引き継ぎ"
+	CASE 6
+		RESULTS_F '= "인계한다", "인계하지 않는다", "주인의 경험치만 인계되는 옵션이며", "동료마의 경험치는 인계되지 않습니다。"
+		RETURNF "経験値引き継ぎ"
+	CASE 7
+		RESULTS_F '= "인계한다", "인계하지 않는다", "가격이 1000 마카 미만인 경우는 보너스와 관계없이 인계됩니다", "일부 이벤트에서 입수한 소프트가 인계되지 않을 경우、마카 교환품에 추가됩니다。"
+		RETURNF "インストールソフト引き継ぎ"
+	CASE 8
+		RESULTS_F '= "인계한다", "인계하지 않는다", "가격이 1000 마카 미만인 경우는 보너스와 관계없이 인계됩니다", "일부 이벤트에서 입수한 에뮬레이터가 인계되지 않을 경우、마카 교환품에 추가됩니다。"
+		RETURNF "スキルエミュレータ引き継ぎ"
+	CASE 9
+		RESULTS_F '= "한다", "하지 않는다", "신단의영옥　:아군 전체의 ＨＰ를 100 회복한다。전투중에만、몇 번이라도 사용 가능。", "붕괴주　　　:적 전체에 만능 상성의 소 데미지。전투중에만、몇 번이라도 사용 가능。","황금의벌꿀주:레벨이 낮은 적의 출현을 억제한다。몇 번이라도 사용 가능。"
+		RETURNF "特殊アイテム入手"
+	CASE 10
+		RESULTS_F '= "한다", "하지 않는다"
+		RETURNF "受胎アイテムリセット"
+	CASE 11
+		RESULTS_F '= "ON", "OFF", @"ＣＯＭＰ의 용량이 {4 + MATCH(COMP_SIZEUP_ACHIEVEMENT,1)} 증가합니다。", "증가량은 게임 내에서 용량을 증가하는 이벤트를 클리어하는 것으로 늘어납니다。", @"(현재 추가 보너스:{MATCH(COMP_SIZEUP_ACHIEVEMENT,1)})"
+		RETURNF "ＣＯＭＰ容量増加1"
+	CASE 12
+		RESULTS_F '= "ON", "OFF", "ＣＯＭＰ의 용량이 8 증가합니다。"
+		RETURNF "ＣＯＭＰ容量増加2"
+	CASE 13
+		RESULTS_F '= "ON", "OFF", "ＣＯＭＰ의 용량이 16 증가합니다。"
+		RETURNF "ＣＯＭＰ容量増加3"
+	CASE 14
+		RESULTS_F '= "인계한다", "인계하지 않는다", @"게임 개시 시점부터 조직공헌 LV이 {FLAG:최대조직공헌LV} 이 됩니다。"
+		RETURNF "조직공헌LV"
+ENDSELECT
+RETURNF "NONE"
+
+@GETBIT_BONUS_NO(ARGS)
+#FUNCTION
+FOR LOCAL,0,64
+	SIF GETBIT_BONUS_NAME(LOCAL) == ARGS
+		RETURNF LOCAL
+NEXT
+RETURNF -1
+
+@NEWGAME_BONUS
+#DIM LCOUNT, 2
+#DIM L_LINE
+#DIMS SHOW_LINE
+#DIMS L_TITLE
+#DIM L_SELECT
+REDRAW 0
+L_LINE = LINECOUNT
+L_SELECT = -1
+$BONUS_TOP
+RESETCOLOR
+DRAWLINE
+;PRINTFORML 引き継ぐ要素を選択してください
+PRINTFORML 획득할 보너스를 선택해주세요
+PRINTFORML 현재 EP(Ending Point)를 {COUNT_ENDING_POINT()}점 소유중입니다
+;PRINTFORML 選択中の要素を引き継ぐには{REQUIRE_ENDING_POINT()}ポイント必要です
+PRINTFORML 선택중인 보너스를 획득하려면 {REQUIRE_ENDING_POINT()}포인트 필요합니다
+IF GET_UNUSE_ENDING_BONUS() < 0
+	PRINTFORML 필요한 EP가 부족합니다
+ELSEIF GET_UNUSE_ENDING_BONUS() > 0
+	PRINTFORML 남은 EP는 {GET_UNUSE_ENDING_BONUS()*6}개의 향이 됩니다。
+ELSE
+	PRINTL 
+ENDIF
+DRAWLINE
+IF L_SELECT < 0
+	FOR LCOUNT, 0, 6
+		PRINTL 
+	NEXT
+ELSE
+	PRINTFORML □%GETBIT_BONUS_NAME_KR(L_SELECT)%
+	FOR LCOUNT, 0, 5
+		PRINTFORML %" " * 2 + RESULTS_F:(LCOUNT + 2)%
+	NEXT
+ENDIF
+;SETCOLOR COLOR("RED")
+;PRINTFORML ※条件に依らず引き継がれる／引き継がれないアイテムもあります
+RESETCOLOR
+DRAWLINE
+FOR LCOUNT,0,64
+	SIF GETBIT_BONUS_NAME(LCOUNT) == "NONE"
+		CONTINUE
+	SHOW_LINE = [{LCOUNT, 2}] %GETBIT_BONUS_NAME_KR(LCOUNT),30,LEFT%\({CHECK_ED_POINT(GETBIT_BONUS_NAME(LCOUNT)), 2}EP\)　
+	L_TITLE = 
+	FOR LCOUNT:1, 2, 2 + 5 + 1
+		SIF RESULTS_F:(LCOUNT:1) == ""
+			CONTINUE
+		SIF L_TITLE != ""
+			L_TITLE += UNICODE(0x000D)
+		L_TITLE += RESULTS_F:(LCOUNT:1)
+	NEXT
+	;LOCALS = %GETBIT_BONUS_NAME(LOCAL),12,LEFT%\({CHECK_ED_POINT(GETBIT_BONUS_NAME(LOCAL))}EP\)
+	IF GETBIT(FLAG:주회보너스,LCOUNT)
+		SHOW_LINE += RESULTS_F
+		SHOW_LINE = %SET_COLOR_TAG(SHOW_LINE, "aqua")%
+		;SETCOLOR COLOR("AQUA")
+		;PRINTFORML [{LOCAL,2}] %LOCALS,20,LEFT% 引き継ぐ
+	ELSE
+		SHOW_LINE += RESULTS_F:1
+		;PRINTFORML [{LOCAL,2}] %LOCALS,20,LEFT% 引き継がない
+	ENDIF
+	SHOW_LINE = %SET_BUTTON_TAG(SHOW_LINE, TOSTR(LCOUNT), L_TITLE)%
+	HTML_PRINT SHOW_LINE
+	;RESETCOLOR
+NEXT
+PRINTFORML [98] 리셋
+IF COUNT_ENDING_POINT()-REQUIRE_ENDING_POINT() < 0
+	PRINTFORML [99] EP가 부족합니다
+ELSE
+	PRINTFORML [99] 설정완료
+ENDIF
+$INPUT_LOOP
+INPUT
+IF RESULT == 99 && COUNT_ENDING_POINT()-REQUIRE_ENDING_POINT() >= 0
+	REDRAW 0
+	RETURN
+ELSEIF RESULT == 98
+	FLAG:주회보너스 = 0
+ELSEIF GETBIT_BONUS_NAME(RESULT) != "NONE"
+	L_SELECT = RESULT
+	INVERTBIT FLAG:주회보너스,RESULT
+ENDIF
+CLEARLINE LINECOUNT-L_LINE
+GOTO BONUS_TOP
+;---- EDIT 000 XXX END ---------------------------
+
+@GET_UNUSE_ENDING_BONUS
+#FUNCTION
+RETURNF (COUNT_ENDING_POINT() - REQUIRE_ENDING_POINT())

@@ -1,0 +1,715 @@
+﻿;-------------------------------------------------
+;スルト個人イベント
+;-------------------------------------------------
+@INDIVIDUAL_EVENT_K266, ARG, ARG:1 = 0, ARG:2 = -1
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIM 導入フラグ
+#DIM 現個人イベントバージョン = 101
+;ARG:0　キャラ番号
+;ARG:1　関数種類　1,開放条件　2,타이틀　3,이벤트
+;ARG:2　イベント番号（0～63まで）
+
+;リストにキャラを表示する条件
+;モードチェンジ用なので終了しない
+SIF ARG:1 == 0
+	RETURN 1
+
+SELECTCASE ARG:2
+CASE 0
+	;解放条件
+	IF ARG:1 == 1
+		;アークナイツ版の条件はこっち
+		SIF CSTR:ARG:종족명 == "サルカズ"
+			RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF CSTR:ARG:종족명 == "サルカズ"
+			IF スルト（ＡＮ）個人イベントバージョン < 現個人イベントバージョン && GETBIT(イベントフラグ:19:19, 9) != 1
+				RESULTS = (중요) 데이터 리셋: 수르트(AN)
+			ELSE
+				IF GETBIT(CFLAG:ARG:개별이벤트개방, ARG:2)
+					;타이틀
+					RESULTS = 스킬 훈련: 수르트(AN)
+				ELSE
+					;未開放時のタイトル（解放条件を入れておく）
+					RESULTS = (%CALLNAME:ARG%이(가) 동료마로서 그 자리에 있음으로 해금)
+				ENDIF
+			ENDIF
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		IF CSTR:ARG:종족명 == "サルカズ"
+			IF スルト（ＡＮ）個人イベントバージョン < 現個人イベントバージョン && !GETBIT(CFLAG:ARG:개별이벤트개방, ARG:2)
+				PRINTL
+				PRINTL ※개인 이벤트 버전이 갱신되어, 스킬 강화 및 승화 진행도가 초기화됩니다
+				PRINTW 　이에 따라 강화에 사용된 아이템이 반환됩니다
+				PRINTL
+				PRINTL ※또한 아이템 반환 시, 주회 보너스의
+				PRINTL 『무구 아이템 인계』 『방어구 아이템 인계』
+				PRINTW 　등을 선택하지 않았을 경우, 해당 종류의 아이템이 반환되지 않는 점에 주의해 주십시오.
+				PRINTL
+				PRINTW 초기화를 진행하시겠습니까?
+				CALL INPUT_YN
+				SELECTCASE RESULT
+					CASE 0
+						CALL PU_SKILL_ENHANCE_MATERIAL_ROLLBACK_K266,ARG
+						スルト（ＡＮ）個人イベントバージョン = 現個人イベントバージョン
+						RETURN 0
+					CASE 1
+						RETURN 0
+				ENDSELECT
+			ELSE
+				;アーミヤ加入イベント用に進行度が設定されていない場合、進行度を再設定
+				IF Reconnect_Ragnarok進行 < 1 && GETBIT(イベントフラグ:19:19, 9)
+					Reconnect_Ragnarok進行 = 1
+					CLEARBIT イベントフラグ:19:19,9
+				ENDIF
+				IF ABL:ARG:회화타입 > 0
+					ABL:ARG:회화타입 = 0
+				ENDIF
+				$INDIVIDUAL_EVENT_K266_GOTO
+				CUSTOMDRAWLINE =
+				IF 導入フラグ == 0 
+					導入フラグ = 1
+					PRINTFORMW %CALLNAME:ARG%의 스킬 강화를 위해 훈련실을 찾았다.
+					PRINTFORMW 이곳에서는 %CALLNAME:ARG%의 스킬을 강화, 변경할 수 있다.
+					PRINTL
+					PRINTW 단, 스킬 강화에는 특수한 재료가 필요하다. 찾기엔 꽤나 고생스러운 물건들뿐이지만, 끈기 있게 모아보자.
+					IF 現個人イベントバージョン > スルト（ＡＮ）個人イベントバージョン
+						PRINTL
+						PRINTL ※개인 이벤트 버전이 갱신되어, 스킬 강화 및 승화 진행도의 초기화가 가능해집니다
+						PRINTL 　초기화할 경우 강화에 사용된 아이템이 반환됩니다
+						PRINTW 　초기화를 진행하지 않으면 예기치 않은 오류가 발생할 수 있으므로, 초기화하는 것을 강력히 권장합니다
+						PRINTL
+						PRINTL ※또한 아이템 반환 시, 주회 보너스의
+						PRINTL 『무구 아이템 인계』 『방어구 아이템 인계』
+						PRINTW 　등을 선택하지 않았을 경우, 해당 종류의 아이템이 반환되지 않는 점에 주의해 주십시오.
+						PRINTL
+					ENDIF
+				ENDIF
+				PRINTL
+				PRINTFORML 자, 어떻게 할까?
+				PRINTL
+				PRINTL
+				PRINTFORML [0] 스킬을 변경한다
+				PRINTFORML [1] 승화 의식을 치른다
+				PRINTFORML [2] 전용기 리셋을 진행한다
+				SIF 現個人イベントバージョン > スルト（ＡＮ）個人イベントバージョン
+					PRINTFORML [3] ! 개인 이벤트 버전 갱신에 의한 스킬 강화도 및 승화 초기화, 소재 반환
+				DRAWLINE
+				PRINTFORML [99] 소지품을 확인한다
+				DRAWLINE
+				PRINTFORML [100] 돌아간다
+				CALL INPUTINT(0,1,2,3,99,100)
+				SELECTCASE RESULT
+					CASE 0
+						CALL EVENT_PU_SKILL_CHECK_K266(ARG)
+					CASE 1
+						CALL PROMOTION_K266(ARG)
+					CASE 2
+						CALL PU_SKILL_POSITION_RESET_266,ARG
+					CASE 3
+						IF 現個人イベントバージョン > スルト（ＡＮ）個人イベントバージョン
+							PRINTL
+							PRINTL ※개인 이벤트 버전이 갱신되어, 스킬 강화 및 승화 진행도가 초기화됩니다
+							PRINTW 　이에 따라 강화에 사용된 아이템이 반환됩니다
+							PRINTL
+							PRINTL
+							PRINTL ※또한 아이템 반환 시, 주회 보너스의
+							PRINTL 『무구 아이템 인계』 『방어구 아이템 인계』
+							PRINTW 　등을 선택하지 않았을 경우, 해당 종류의 아이템이 반환되지 않는 점에 주의해 주십시오.
+							PRINTL
+							PRINTW 초기화를 진행하시겠습니까?
+							CALL INPUT_YN
+							SELECTCASE RESULT
+								CASE 0
+									CALL PU_SKILL_ENHANCE_MATERIAL_ROLLBACK_K266,ARG
+									スルト（ＡＮ）個人イベントバージョン = 現個人イベントバージョン
+									GOTO INDIVIDUAL_EVENT_K266_GOTO
+								CASE 1
+									GOTO INDIVIDUAL_EVENT_K266_GOTO
+							ENDSELECT
+						ELSE
+							GOTO INDIVIDUAL_EVENT_K266_GOTO
+						ENDIF
+					CASE 99
+						CALL SHOP_COM_112
+						GOTO INDIVIDUAL_EVENT_K266_GOTO
+					CASE 100
+						PRINTFORMW 볼일은 끝났다. 세이프하우스로 돌아가도록 하자.
+						PRINTL
+						導入フラグ = 0
+						RETURN 0
+				ENDSELECT
+			ENDIF
+		ENDIF
+	ENDIF
+CASE 1
+ENDSELECT
+RETURN 0
+
+@EVENT_PU_SKILL_CHECK_K266,ARG
+#LOCALSIZE 1
+#DIM 計算用変数,5
+#DIM 必要アイテム不足変数
+#DIM 必要アイテム
+#DIMS 確認するスキル
+#DIMS 必要条件 = ""
+
+VARSET 必要アイテム不足変数,0
+VARSET 必要アイテム,-1
+$EVENT_PU_SKILL_CHECK_K266_GOTO
+PRINTFORML 현재 %CALLNAME:ARG%이(가) 사용 중인 전용기는 %CSTR:ARG:전용기1%다.
+PRINTL
+PRINTFORML 어떻게 할까?
+PRINTL
+PRINTFORML [0] 레바테인(AN)을 확인한다
+IF CSTR:ARG:103 == ""
+	SETCOLOR COLOR("GRAY")
+	PRINTFORML [1] -
+	RESETCOLOR
+ELSE
+	PRINTFORML [1] 재앙의 거염을 확인한다
+ENDIF
+IF CSTR:ARG:104 == ""
+	SETCOLOR COLOR("GRAY")
+	PRINTFORML [2] -
+	RESETCOLOR
+ELSE
+	PRINTFORML [2] 라그나로크(AN)를 확인한다
+ENDIF
+PRINTFORML [99] 돌아간다
+$EVENT_PU_SKILL_CHECK_K266_GOTO2
+CALL INPUTINT(0,1,2,99)
+SELECTCASE RESULT
+	CASE 0
+		確認するスキル = レーヴァテイン（ＡＮ）
+		計算用変数 = TOINT(CSTR:ARG:102)
+	CASE 1
+		IF CSTR:ARG:103 != ""
+			確認するスキル = 災厄の巨焔
+			計算用変数 = TOINT(CSTR:ARG:103)
+		ELSE
+			GOTO EVENT_PU_SKILL_CHECK_K266_GOTO2
+		ENDIF
+	CASE 2
+		IF CSTR:ARG:104 != ""
+			確認するスキル = ラグナロク（ＡＮ）
+			計算用変数 = TOINT(CSTR:ARG:104)
+		ELSE
+			GOTO EVENT_PU_SKILL_CHECK_K266_GOTO2
+		ENDIF
+	CASE 99
+		JUMP INDIVIDUAL_EVENT_K266,ARG,3,0
+ENDSELECT
+$EVENT_PU_SKILL_CHECK_K266_GOTO3
+;計算用変数:0 = スキルランク
+;計算用変数:1 = 初期ＳＰ
+;計算用変数:2 = 必要ＳＰ
+;計算用変数:3 = ダメージ倍率（もしくは通常スキルのランク）
+;計算用変数:4 = ダメージ倍率上限（ラグナロクは攻撃対象数）
+FOR COUNT,1,5
+	SELECTCASE COUNT
+		CASE 1
+			SELECTCASE 確認するスキル
+				CASE "レーヴァテイン（ＡＮ）","ラグナロク（ＡＮ）"
+					LOCAL = 0
+				CASE "災厄の巨焔"
+					SELECTCASE 計算用変数
+						CASE 1
+							LOCAL = 7
+						CASE 2
+							LOCAL = 8
+						CASE 3
+							LOCAL = 9
+						CASE 4
+							LOCAL = 12
+					ENDSELECT
+			ENDSELECT
+		CASE 2
+			SELECTCASE 確認するスキル
+				CASE "レーヴァテイン（ＡＮ）"
+					SELECTCASE 計算用変数
+						CASE 1
+							LOCAL = 4
+						CASE 2,3
+							LOCAL = 3
+						CASE 4
+							LOCAL = 2
+					ENDSELECT
+				CASE "災厄の巨焔"
+					SELECTCASE 計算用変数
+						CASE 1
+							LOCAL = 28
+						CASE 2
+							LOCAL = 25
+						CASE 3
+							LOCAL = 22
+						CASE 4
+							LOCAL = 18
+					ENDSELECT
+				CASE "ラグナロク（ＡＮ）"
+					SELECTCASE 計算用変数
+						CASE 1
+							LOCAL = 10
+						CASE 2
+							LOCAL = 9
+						CASE 3
+							LOCAL = 8
+						CASE 4
+							LOCAL = 5
+					ENDSELECT
+			ENDSELECT
+		CASE 3
+			SELECTCASE 確認するスキル
+				CASE "レーヴァテイン（ＡＮ）"
+					SELECTCASE 計算用変数
+						CASE 1
+							LOCAL = 6
+						CASE 2
+							LOCAL = 8
+						CASE 3
+							LOCAL = 10
+						CASE 4
+							LOCAL = 11
+					ENDSELECT
+				CASE "災厄の巨焔"
+					SELECTCASE 計算用変数
+						CASE 1
+							LOCAL = 25
+						CASE 2
+							LOCAL = 33
+						CASE 3
+							LOCAL = 40
+						CASE 4
+							LOCAL = 60
+					ENDSELECT
+				CASE "ラグナロク（ＡＮ）"
+					SELECTCASE 計算用変数
+						CASE 1
+							LOCAL = 90
+						CASE 2
+							LOCAL = 105
+						CASE 3
+							LOCAL = 120
+						CASE 4
+							LOCAL = 165
+					ENDSELECT
+			ENDSELECT
+		CASE 4
+			SELECTCASE 確認するスキル
+				CASE "災厄の巨焔"
+					SELECTCASE 計算用変数
+						CASE 1,2
+							LOCAL = 70
+						CASE 3
+							LOCAL = 75
+						CASE 4
+							LOCAL = 80
+					ENDSELECT
+				CASE "ラグナロク（ＡＮ）"
+					SELECTCASE 計算用変数
+						CASE 1 TO 3
+							LOCAL = 2
+						CASE 4
+							LOCAL = 3
+					ENDSELECT
+			ENDSELECT
+	ENDSELECT
+	計算用変数:(COUNT) = LOCAL
+NEXT
+DRAWLINE
+PRINTL
+PRINTFORML %確認するスキル%　초기 SP:{計算用変数:1}　필수 SP:{計算用変数:2}
+PRINTL
+SELECTCASE 確認するスキル
+	CASE "レーヴァテイン（ＡＮ）"
+		PRINTL 소유자가 공격 행동을 취했을 때 SP가 1 상승.
+		PRINTL 필수 SP를 충족했을 때, 커맨드를 선택하여 MP를 10 소비하는 것으로 기동할 수 있다.
+		PRINTFORML 다음 공격 시, 스킬 랭크 {計算用変数:3}에 상응하는 화염/검격 복합 속성의 데미지를 주는 추격을 행한다.
+		PRINTL 추격 후에는 명중 여부에 관계없이 SP는 0으로 되돌아간다.
+		PRINTL 단, 이 공격으로 적을 격파했을 경우 SP가 즉시 가득 찬다.
+	CASE "災厄の巨焔"
+		PRINTL 턴 경과 시 SP 5 상승.
+		PRINTFORML 스킬 기동 중, 공격 데미지가 {計算用変数:3}% 증가.
+		PRINTL 또한 공격 대상 이외에 적이 있을 경우, 무작위로 대상을 선택하여 재공격을 행한다.
+		PRINTFORML 만약 공격 대상 이외에 적이 없을 경우, 공격 대상에게 주는 데미지가 {計算用変数:4}%까지 증가.
+	CASE "ラグナロク（ＡＮ）"
+		PRINTL 턴 경과 시 SP 5 상승.
+		PRINTFORML 스킬 기동 중 최대 HP가 2500 증가함과 동시에 HP 전회복, 다음 공격의 데미지가 {計算用変数:3}% 증가.
+		PRINTL 대가로 자신을 항상 FLAME 상태로 만들며, 추가로 염상 데미지가 턴 경과마다 증가한다. 피회복량이 10%까지 저하.
+		PRINTFORML 단일 공격 후, 공격 대상 이외의 적을 무작위로 {計算用変数:4}마리까지 선택하여 재공격을 행한다.
+		PRINTL 기동 중 전투 이탈, 혹은 전투 불능이 되었을 때 게이지 리셋, 추가로 쿨타임 게이지 추가.
+		PRINTL 쿨타임 게이지가 소멸할 때까지, 스킬 발동에 필요한 SP는 증가하지 않는다.
+ENDSELECT
+PRINTL
+DRAWLINE
+CALL PU_SKILL_ENHANCE_K266,ARG,確認するスキル,計算用変数:0
+;PRINTFORMW {RESULT}
+IF RESULT != -1
+	必要アイテム = RESULT
+	必要条件 = %PU_SKILL_ENHANCE_REQUIREMENTS_CHECK_K266(ARG,確認するスキル,計算用変数:0)%
+ENDIF
+SIF CSTR:ARG:전용기1 == 確認するスキル
+	SETCOLOR COLOR("GRAY")
+PRINTFORML [0] 이 스킬로 변경한다
+RESETCOLOR
+IF 計算用変数 >= 4
+	SETCOLOR COLOR("GRAY")
+	PRINTFORML [1] 이 스킬은 이미 최대치까지 강화되어 있다
+ELSE
+	SIF ITEM:必要アイテム < 1 || (計算用変数 == 2 && CSTR:ARG:103 == "") || (計算用変数 == 3 && CSTR:ARG:104 == "")
+		SETCOLOR COLOR("GRAY")
+	PRINTFORML [1] 이 스킬을 강화한다　필요 아이템: %ITEMNAME:必要アイテム%　%必要条件%
+ENDIF
+RESETCOLOR
+DRAWLINE
+PRINTFORML [99] 돌아간다
+$EVENT_PU_SKILL_CHECK_K266_GOTO4
+CALL INPUTINT(0,1,99)
+SELECTCASE RESULT
+	CASE 0
+		SIF CSTR:ARG:전용기1 == 確認するスキル
+			GOTO EVENT_PU_SKILL_CHECK_K266_GOTO4
+		PRINTL 
+		PRINTFORMW %CALLNAME:ARG%의 스킬을 %確認するスキル%로 변경했다.
+		CSTR:ARG:전용기1 = %確認するスキル%
+		GOTO EVENT_PU_SKILL_CHECK_K266_GOTO
+	CASE 1
+		SIF 計算用変数 >= 4 || ITEM:必要アイテム < 1 || (計算用変数 == 2 && CSTR:ARG:103 == "") || (計算用変数 == 3 && CSTR:ARG:104 == "")
+			GOTO EVENT_PU_SKILL_CHECK_K266_GOTO4
+		PRINTFORML %ITEMNAME:必要アイテム%을(를) 소비하여 %CALLNAME:ARG%의 %確認するスキル%을(를) 강화하시겠습니까?
+		CALL INPUT_YN
+		SIF RESULT == 1
+			GOTO EVENT_PU_SKILL_CHECK_K266_GOTO3
+		PRINTL 
+		計算用変数 += 1
+		PRINTFORMW %CALLNAME:ARG%의 %確認するスキル%이(가) 강화되어, 스킬 랭크가 {計算用変数}이(가) 되었다.
+		ITEM:必要アイテム -= 1
+		SELECTCASE 確認するスキル
+			CASE "レーヴァテイン（ＡＮ）"
+				CSTR:ARG:102 = %TOSTR(計算用変数)%
+			CASE "災厄の巨焔"
+				CSTR:ARG:103 = %TOSTR(計算用変数)%
+			CASE "ラグナロク（ＡＮ）"
+				CSTR:ARG:104 = %TOSTR(計算用変数)%
+		ENDSELECT
+		GOTO EVENT_PU_SKILL_CHECK_K266_GOTO
+	CASE 99
+		GOTO EVENT_PU_SKILL_CHECK_K266_GOTO
+ENDSELECT
+
+@PU_SKILL_ENHANCE_REQUIREMENTS_CHECK_K266,ARG,ARGS,ARG:1
+#FUNCTIONS
+; ARG   = 対象キャラ
+; ARGS  = 対象スキル
+; ARG:1 = スキルランク
+SELECTCASE ARGS
+	CASE "レーヴァテイン（ＡＮ）"
+		SELECTCASE ARG:1
+			CASE 2
+				RETURNF "必要条件：" + CALLNAME:ARG + "の昇華１到達"
+			CASE 3
+				RETURNF "必要条件：" + CALLNAME:ARG + "の昇華２到達"
+		ENDSELECT
+	CASE "災厄の巨焔"
+		SELECTCASE ARG:1
+			CASE 3
+				RETURNF "必要条件：" + CALLNAME:ARG + "の昇華２到達"
+		ENDSELECT
+ENDSELECT
+
+@PU_SKILL_ENHANCE_K266,ARG,ARGS = "",ARG:1
+#DIM 必要アイテム
+
+必要アイテム = -1
+SELECTCASE ARGS
+	CASE "レーヴァテイン（ＡＮ）"
+		SELECTCASE ARG:1
+			CASE 1
+				必要アイテム = GETNUM(ITEM, "대검・수박바")
+			CASE 2
+				必要アイテム = GETNUM(ITEM, "비상의검")
+			CASE 3
+				必要アイテム = GETNUM(ITEM, "원초의불")
+		ENDSELECT
+	CASE "災厄の巨焔"
+		SELECTCASE ARG:1
+			CASE 1
+				必要アイテム = GETNUM(ITEM, "진・드라우프니르")
+			CASE 2
+				必要アイテム = GETNUM(ITEM, "글레입니르")
+			CASE 3
+				必要アイテム = GETNUM(ITEM, "마창궁니르")
+		ENDSELECT
+	CASE "ラグナロク（ＡＮ）"
+		SELECTCASE ARG:1
+			CASE 1
+				必要アイテム = GETNUM(ITEM, "스킬카드【노바사이저】")
+			CASE 2
+				必要アイテム = GETNUM(ITEM, "스킬카드【니플헤임】")
+			CASE 3
+				必要アイテム = GETNUM(ITEM, "스킬카드【브류나크】")
+		ENDSELECT
+ENDSELECT
+SIF 必要アイテム == -1
+	RETURN -1
+RETURN 必要アイテム
+
+
+@PROMOTION_K266,ARG
+$PROMOTION_K266_GOTO
+PRINTFORML 보아하니 %CALLNAME:ARG%의 영격을 승화시킬 수 있는 것 같다.
+PRINTL 
+PRINTL 어떻게 할까?
+PRINTL
+IF CSTR:ARG:103 == ""
+	CUSTOMDRAWLINE =
+	PRINTFORML 승화 시 이하의 스킬을 습득한다.
+	PRINTL
+	PRINTL 스킬: 재앙의 거염
+	PRINTL
+	PRINTL 효과 발동 중 데미지 25% 상승. 공격 후 공격 대상과는 다른 적을 무작위로 선택하여 재공격을 행한다.
+	PRINTL 무작위 선택할 수 있는 적이 없을 경우 데미지가 70%까지 상승한다.
+	PRINTL
+	PRINTL
+	PRINTL 스킬: 겁화의 여진
+	PRINTL
+	PRINTL 자동효과. 항상 데미지가 12% 상승. 치사 데미지를 받았을 때 자신의 HP를 1로 고정하고, STONE과 DYING을 방어한다.
+	PRINTL 발동 후 1회 행동한 뒤, 라운드 종료 시 즉사한다. 이 효과는 기존의 악물기 계열 스킬보다 우선된다.
+	PRINTFORML 이 스킬을 소지하지 않은 경우, %CALLNAME:ARG%의 레바테인(AN) 이외의 전용 스킬은 사용할 수 없다.
+	CUSTOMDRAWLINE =
+ELSEIF CSTR:ARG:104 == ""
+	CUSTOMDRAWLINE =
+	PRINTFORML 승화 시 이하의 스킬을 습득한다.
+	PRINTL
+	PRINTL 스킬: 라그나로크(AN)
+	PRINTL
+	PRINTL 효과 발동 중 최대 HP 2500 증가, HP 완전 회복, 데미지 90% 상승. 단일 공격 후 공격 대상과는 다른 적을 무작위로 2마리 선택하여 재공격을 행한다.
+	PRINTL 대가로 자신을 항상 FLAME 상태로 만들며, 추가로 염상 데미지가 턴 경과마다 증가한다. 피회복량이 10%까지 저하.
+	PRINTL 기동 중 전투 이탈, 혹은 전투 불능이 되었을 때 게이지 리셋, 추가로 쿨타임 게이지 추가.
+	PRINTL 쿨타임 게이지가 소멸할 때까지, 스킬 발동에 필요한 SP는 증가하지 않는다.
+	PRINTL
+	PRINTL
+	PRINTL 스킬 강화: 겁화의 여진
+	PRINTL
+	PRINTL 자동효과. 항상 데미지가 20% 상승. 치사 데미지를 받았을 때 자신의 HP를 1로 고정하고, STONE과 DYING을 방어한다.
+	PRINTL 발동 후 2라운드가 경과한 뒤, 라운드 종료 시 즉사한다. 이 효과는 기존의 악물기 계열 스킬보다 우선된다.
+	PRINTFORML 이 스킬을 소지하지 않은 경우, %CALLNAME:ARG%의 레바테인(AN) 이외의 전용 스킬은 사용할 수 없다.
+	CUSTOMDRAWLINE =
+ENDIF
+PRINTL
+PRINTL
+IF CSTR:ARG:104 != ""
+	SETCOLOR COLOR("GRAY")
+	PRINTFORML [-] %CALLNAME:ARG%의 영격은 더 이상 승화할 수 없는 것 같다…
+ELSE
+	SIF (CSTR:ARG:103 == "" && (ITEM:레바테인 < 1 || BASE:ARG:LV < 50 || MONEY:1 < 3000)) || (CSTR:ARG:103 != "" && CSTR:ARG:104 == "" && (ITEM:브리싱가멘 < 1 || BASE:ARG:LV < 80 || MONEY:1 < 18000))
+		SETCOLOR COLOR("GRAY")
+	PRINTFORML [0] %CALLNAME:ARG%의 영격을 승화한다　필요 아이템: \@ CSTR:ARG:103 == "" ? 레바테인 # 브리싱가멘 \@　필요 레벨: \@ CSTR:ARG:103 == "" ? 50 # 80 \@　필요 마카: \@ CSTR:ARG:103 == "" ? 3000 # 18000 \@
+ENDIF
+RESETCOLOR
+PRINTFORML [99] 돌아간다
+$PROMOTION_K266_GOTO2
+CALL INPUTINT (0,99)
+SELECTCASE RESULT
+	CASE 0
+		IF CSTR:ARG:103 == ""
+			SIF ITEM:레바테인 < 1 || BASE:ARG:LV < 50 || MONEY:1 < 3000
+				GOTO PROMOTION_K266_GOTO2
+			PRINTFORML 레바테인과 마카를 소비하여 %CALLNAME:ARG%의 영격을 승화하시겠습니까?
+			CALL INPUT_YN
+			SIF RESULT == 1
+				GOTO PROMOTION_K266_GOTO
+			PRINTL
+			PRINTFORMW %CALLNAME:ARG%의 영격을 승화했다!
+			PRINTFORMW %CALLNAME:ARG%은(는) 재앙의 거염을 사용할 수 있게 되었다!
+			PRINTFORMW %CALLNAME:ARG%은(는) 겁화의 여진을 습득했다!
+			PRINTW 재앙의 거염을 사용하려면 한 번 스킬을 변경하고, 추가로 겁화의 여진을 습득하고 있어야 한다. 잊지 않도록 하자.
+			CSTR:ARG:103 = 1
+			CALL LEARN_PU_SKILL(ARG,"劫火の余燼")
+			ITEM:레바테인 -= 1
+			MONEY:1 -= 3000
+			GOTO PROMOTION_K266_GOTO
+		ELSEIF CSTR:ARG:104 == ""
+			SIF ITEM:브리싱가멘 < 1 || BASE:ARG:LV < 80 || MONEY:1 < 18000
+				GOTO PROMOTION_K266_GOTO2
+			PRINTFORML 브리싱가멘과 마카를 소비하여 %CALLNAME:ARG%의 영격을 승화하시겠습니까?
+			CALL INPUT_YN
+			SIF RESULT == 1
+				GOTO PROMOTION_K266_GOTO
+			PRINTL
+			PRINTFORMW %CALLNAME:ARG%의 영격을 더욱 승화했다!
+			PRINTFORMW %CALLNAME:ARG%은(는) 라그나로크(AN)를 사용할 수 있게 되었다!
+			PRINTFORMW %CALLNAME:ARG%의 겁화의 여진이 강화되었다!
+			PRINTW 라그나로크(AN)를 사용하려면 한 번 스킬을 변경하고, 추가로 겁화의 여진을 습득하고 있어야 한다. 잊지 않도록 하자.
+			CSTR:ARG:104 = 1
+			ITEM:브리싱가멘 -= 1
+			MONEY:1 -= 18000
+			GOTO PROMOTION_K266_GOTO
+		ENDIF
+	CASE 99
+		JUMP INDIVIDUAL_EVENT_K266,ARG,3,0
+ENDSELECT
+
+@PU_SKILL_POSITION_RESET_266,ARG
+#LOCALSSIZE 13
+#DIMS 一時確保スキル名,13
+;専用技が1以外に登録されるバグを直すために専用技を一旦初期化して改めて1から順に記入する処理
+;LOCAL:0 = 第一ループ
+;LOCAL:1 = 第二ループ
+;LOCAL:2 = 一時確保スキル名の配列数
+PRINTL
+PRINTL 전용기를 처음부터 순서대로 다시 작성하도록 리셋을 진행합니다
+PRINTL 리셋을 진행하시겠습니까?
+CALL INPUT_YN
+IF RESULT == 0
+	FOR LOCAL:0,0,3
+		FOR LOCAL:1,1,13
+			;最初は専用技のスキル名確保、及び専用技欄のリセット
+			IF LOCAL:0 == 0
+				;専用技欄が空白だった場合は飛ばす
+				IF CSTR:ARG:("전용기"+TOSTR(LOCAL:1)) == ""
+					CONTINUE
+				;専用技欄が記載されていた場合、一旦DIMで確保した上で専用技欄を空欄にする
+				ELSEIF CSTR:ARG:("전용기"+TOSTR(LOCAL:1)) != ""
+					一時確保スキル名:(LOCAL:2) = %CSTR:ARG:("전용기"+TOSTR(LOCAL:1))%
+					CSTR:ARG:("전용기"+TOSTR(LOCAL:1)) = ""
+					LOCAL:2 += 1
+				ENDIF
+			;こちらは専用技を1から埋めなおす処理
+			ELSEIF LOCAL:0 == 1
+				;スキル名確保変数が空白だった場合、その時点で処理を終える
+				IF 一時確保スキル名:(LOCAL:2) == ""
+					BREAK
+				;一旦DIMで確保したスキル名を専用技欄に書き直す
+				ELSE
+					CSTR:ARG:("전용기"+TOSTR(LOCAL:1)) = %一時確保スキル名:(LOCAL:2)%
+					LOCAL:2 += 1
+				ENDIF
+			ENDIF
+		NEXT
+		;第二ループ終了後に一時確保スキル名の配列数をリセット
+		SIF LOCAL:2 != 0
+			LOCAL:2 = 0
+	NEXT
+	;最後に一時確保スキル名をリセットする
+	VARSET 一時確保スキル名,""
+	PRINTL
+	PRINTL 리셋이 완료되었습니다
+	PRINTW 미설정 전용기가 스킬란에 남아있는 경우 번거로우시겠지만 삭제를 부탁드립니다
+	JUMP INDIVIDUAL_EVENT_K266,ARG,3,0
+ELSEIF RESULT == 1
+	JUMP INDIVIDUAL_EVENT_K266,ARG,3,0
+ENDIF
+
+@PU_SKILL_ENHANCE_MATERIAL_ROLLBACK_K266,ARG
+#DIM LOOP_C
+#DIM L_COUNT,3
+#DIM 昇華返却フラグ,2
+
+;強化と昇華に使った素材の返却
+;103と104は0ではなく""にする
+;スキルレベルの初期化
+
+FOR L_COUNT,102,105
+	L_COUNT:1 = TOINT(CSTR:ARG:L_COUNT)
+	IF (スルト（ＡＮ）個人イベントバージョン < 101 && L_COUNT:1 > 1 && 昇華返却フラグ < 2) || (L_COUNT:1 > 2 && 昇華返却フラグ < 2)
+		IF スルト（ＡＮ）個人イベントバージョン < 101
+			SELECTCASE LOCAL:1
+				CASE 3
+					昇華返却フラグ:0 = 1
+					昇華返却フラグ:1 = 1
+				CASE 2
+					昇華返却フラグ:0 = 1
+			ENDSELECT
+		ELSE
+			SELECTCASE LOCAL:1
+				CASE 4
+					昇華返却フラグ:0 = 1
+					昇華返却フラグ:1 = 1
+				CASE 3
+					昇華返却フラグ:0 = 1
+			ENDSELECT
+		ENDIF
+	ENDIF
+	FOR L_COUNT:2,L_COUNT:1,-1,-1
+		;LOOP_C += 1
+		CALL MATERIAL_ROLLBACK_LIST_K266,L_COUNT:0,L_COUNT:2
+		;PRINTFORMW Bループ{LOOP_C}回目
+	NEXT
+	;LOOP_C = 0
+	SIF L_COUNT == 102
+		CSTR:ARG:L_COUNT = 1
+	SIF L_COUNT != 102
+		CSTR:ARG:L_COUNT = 
+NEXT
+IF HAVE_PU_SKILL(ARG,"劫火の余燼",1)
+	RESULT = HAVE_PU_SKILL(ARG,"劫火の余燼",1)
+	ABL:ARG:("스킬" + TOSTR(RESULT)) = 0
+	CSTR:ARG:전용기2 =
+ENDIF
+IF 昇華返却フラグ:0 == 1
+	CALL GET_ITEMS, "레바테인", 1
+ENDIF
+IF 昇華返却フラグ:1 == 1
+	CALL GET_ITEMS, "브리싱가멘", 1
+ENDIF
+PRINTW 초기화가 완료되었습니다
+
+@MATERIAL_ROLLBACK_LIST_K266,ARG,ARG:1
+;ARG:0 = 該当スキル
+;ARG:1 = スキルランク
+
+SELECTCASE スルト（ＡＮ）個人イベントバージョン
+	CASE IS < 101
+		SELECTCASE ARG:1
+			CASE 3
+				SIF ARG == 102
+					CALL GET_ITEMS, "원초의불", 1
+				SIF ARG == 103
+					;よくよく考えれば合成武器は常に引き継がれる代物だった
+					CALL GET_ITEMS, "마창궁니르", 1
+				SIF ARG == 104
+					CALL GET_ITEMS, "스킬카드【브류나크】", 1
+			CASE 2
+				SIF ARG == 102
+					CALL GET_ITEMS, "비상의검", 1
+				SIF ARG == 103
+					CALL GET_ITEMS, "글레입니르", 1
+				SIF ARG == 104
+					CALL GET_ITEMS, "스킬카드【니플헤임】", 1
+			CASE 1
+				SIF ARG == 102
+					CALL GET_ITEMS, "대검・수박바", 1
+				SIF ARG == 103
+					CALL GET_ITEMS, "진・드라우프니르", 1
+				SIF ARG == 104
+					CALL GET_ITEMS, "스킬카드【노바사이저】", 1
+		ENDSELECT
+	CASEELSE
+		SELECTCASE ARG:1
+			CASE 4
+				SIF ARG == 102
+					CALL GET_ITEMS, "원초의불", 1
+				SIF ARG == 103
+					CALL GET_ITEMS, "마창궁니르", 1
+				SIF ARG == 104
+					CALL GET_ITEMS, "스킬카드【브류나크】", 1
+			CASE 3
+				SIF ARG == 102
+					CALL GET_ITEMS, "비상의검", 1
+				SIF ARG == 103
+					CALL GET_ITEMS, "글레입니르", 1
+				SIF ARG == 104
+					CALL GET_ITEMS, "스킬카드【니플헤임】", 1
+			CASE 2
+				SIF ARG == 102
+					CALL GET_ITEMS, "대검・수박바", 1
+				SIF ARG == 103
+					CALL GET_ITEMS, "진・드라우프니르", 1
+				SIF ARG == 104
+					CALL GET_ITEMS, "스킬카드【노바사이저】", 1
+		ENDSELECT
+ENDSELECT

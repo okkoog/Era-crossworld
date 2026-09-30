@@ -1,0 +1,913 @@
+﻿;====================
+;更新履歴
+;2021/03/18　テキスト試作
+;====================
+;イベントフラグ:55:9 忠告フラグ。めしあちゃん襲撃計画を聞いていないとイベントが強制失敗する。
+;イベントフラグ:55:8 バフ成功変数。
+;イベントフラグ:55:7 御使い戦で御使いの討伐数カウント。ターン終了時に増える。
+;イベントフラグ:55:6 御使い戦のめしあちゃんに対するコメントフラグ。
+;イベントフラグ:55:5 ICANFLYフラグ。1がハードモード（火炎ガーキル状態）をはじめ、選択肢で何を選んだかを参照する。
+;イベントフラグ:55:4 戦闘フラグ。1以降、フラグ番号で何戦目かを管理。0が1戦目でいいやんけ？そうだね。
+
+;====================
+;内容
+;====================
+@EVENT_55_4
+
+
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+
+;導入開始
+CUSTOMDRAWLINE =
+PRINTFORML 
+PRINTFORML ＞자, 오늘은 기다리고 기다리던 예배 라이브 날이었을 것이다.
+PRINTFORML （ 주의：이 이벤트를 클리어하면 ED를 맞이하게 됩니다. 또한 이번에는 전투가 발생합니다.
+PRINTFORML 　사전 정보와 재력, 혹은 어느 정도의 인맥이 필요합니다.）
+CALL INPUT_YN("라이브 회장으로 향한다", "잠깐 준비")
+IF RESULT == 0
+	PRINTFORMW ＞출발하자.
+ELSE
+	PRINTFORMW ＞준비를 마치고 가기로 하자.
+	PRINTFORMW ………
+	PRINTFORMW ……
+	PRINTFORMW …
+	RETURN
+ENDIF
+
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+PRINTFORML
+PRINTFORMW ＞드디어 이 날이 찾아왔다.
+PRINTFORML
+PRINTFORMW ＞우리들의 메시아쨩이 카테드랄에서 라이브를 하는 그 날이!!
+PRINTFORML
+PRINTFORMW ＞메시아 교단 수뇌부의 공식 발표에 따르면 카테드랄의 통행을 제어하는 결계가 라이브를 위해 단 하루만 해제된다고 한다.
+PRINTFORMW 　지금까지 고위 신도나 극소수의 언론 관계자만이 입장을 허가받고 일반인은 모니터 너머로만 볼 수 있었던 카테드랄 중앙 대신전,
+PRINTFORMW 　그 입구 바로 앞에 무대가 설치된다고 한다.
+PRINTFORML
+PRINTFORMW ＞당일 아침, 인근 역에서 카테드랄로 통하는 긴자 대지하도는 입장 대기 인파로 북새통을 이루고 있었다.
+PRINTFORMW 　엄청난 인파를 노렸는지 노점도 여럿 나와 있는 모양이다…….
+PRINTFORML
+PRINTFORMW 「이소라 구이 어떠세요ー. 지느러미 술도 있어요ー」
+PRINTFORML 「워」
+PRINTFORMW 「네 매번 감사합니다ー」
+PRINTFORML 
+PRINTFORMW ＞……죽으면 MAG가 되어 소멸할 악마의 지느러미를 대체 어떻게 굽고 어떻게 떼어낸다는 것일까?
+PRINTFORML 
+;菊枝さんが救出されているが仲間になっていないなら、お忍びで来ている。
+	IF FINDCHARA_B([[キャラ:키쿠에]]) == -1 && 依頼フラグ:[[依頼:공주무녀구출의뢰]]:0 > 3
+		PRINTFORML 
+		PRINTFORMW 「팩토리산 데미난디 꼬치구이예요ー. 우설(혓바닥)도 있어요ー」
+		PRINTFORML 「흠…… 쿠쿠리히메 신이여, 한 꼬치 어떠신가요」
+		PRINTFORMW 「……됐습니다. 그리고 그 호칭은 그만두세요. 비밀리에 온 거라니까요?」
+	ENDIF
+;桐条美鶴が仲間になっていないならこっそり来ている
+	IF FINDCHARA_B([[キャラ:미츠루]]) ==-1
+		PRINTFORML 
+		PRINTFORMW 「프라이드 코카트리스 어떠신가요ー」
+		PRINTFORMW 「엑설런트. 식욕을 돋우는 좋은 향기 아닌가…… 그런데 그건 프라이드치킨인가 볶음밥인가 어느 쪽이지?」
+	ENDIF
+PRINTFORML 
+PRINTFORMW ＞줄을 서 있던 %CALLNAME:MASTER%은 긴 지하도를 빠져나와, 거대한 엘리베이터를 타고 한참 위로 올라갔다.
+PRINTFORMW 　엘리베이터 홀에서 밖으로 나오자, 저 멀리 도쿄 타워와 스카이트리의 꼭대기가 비슷한 높이로 내려다보였다…….
+PRINTFORMW 　이토록 거대한 건축물이 서 있는데도 우리들의 눈에 띄지도 않았다니.
+PRINTFORML 
+PRINTFORMW ＞야외 테라스 중심부, 대신전 앞에 건설된 무대는 수많은 관객의 호기심과 기대에 찬 웅성거림으로 가득 차 있다……
+PRINTFORML
+PRINTFORML 
+;前日までに発生するイベントで忠告を聞いていない
+SIF イベントフラグ:55:9 < 2
+	PRINTFORMW ＜카테드랄 야외 테라스　외곽 최변두리＞
+
+	PRINTFORML
+	SETCOLOR 0x65F1FF
+	PRINTFORMW 『여러분ー! 드디어! 여기에! 왔어요ー!! 카ー테ー드ー라ー알ー!!』
+	RESETCOLOR
+;前日までに発生するイベントで忠告を聞いていないとイベントが強制失敗する。
+IF イベントフラグ:55:9 < 2
+	PRINTFORMW ＞드디어 이 순간이 찾아왔다.
+	PRINTFORML 
+	PRINTFORMW ＞%CALLNAME:MASTER%은 지금 광란의 환희와 열광의 소용돌이 한가운데에 있었다.
+	PRINTFORMW 　무대 위에는 눈부신 조명을 받는 메시아쨩의 모습.
+	PRINTFORMW 　구세의 노랫소리에 흠뻑 취해 마음속 깊은 곳에서 메시아쨩을 찬양하는 환호성을 질렀던 그때,
+	PRINTFORMW 　%CALLNAME:MASTER%의 COMP가 요란하게 경계음을 울려 퍼뜨렸다.
+	PRINTFORMW ＞──백태랑(모모타로)이라고?
+	PRINTFORMW 　그렇게 생각한 순간, %CALLNAME:MASTER%은 거센 폭풍에 날아가며 의식을 잃었다.
+	PRINTFORML 
+	PRINTFORMW ………
+	PRINTFORML ……
+	PRINTFORMW …
+	PRINTFORMW ＞%CALLNAME:MASTER%이 눈을 뜬 것은 몇 시간 뒤, 병원 침대 위였다.
+	PRINTFORML 
+	PRINTFORMW ＞검사를 받고 생명에 지장이 없다는 것이 확인되어 풀려난 것은 몇 시간 뒤.
+	PRINTFORMW 　집으로 향하는 %CALLNAME:MASTER%의 머릿속에는 조금 전 대기실에서 흘러나오던 뉴스 멘트가 끊임없이 맴돌고 있었다.
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORMW 『어제 카테드랄을 개방하여 진행된 이벤트 라이브 회장에서 대규모 폭발이 발생,
+	PRINTFORMW 　이벤트 참가자 중 막대한 수의 사상자와 실종자가 발생한 것으로 보입니다.
+	PRINTFORMW 　피해자의 성명 등 상세한 사항은 아직 밝혀지지 않았으나,
+	PRINTFORMW 　실종자 중에는 라이브의 주인공인 메시아쨩도 포함되어 있는 것으로 알려졌습니다.
+	PRINTFORMW 　메시아 교단 템플 나이츠 홍보부는, 폭발이 대립하는 가이아 교단 과격파에 의한 테러라고……』
+	PRINTFORML 
+	PRINTFORMW ＞그 후 미디어에 메시아쨩의 화제가 오르는 일은 두 번 다시 없었다.
+	
+	CUSTOMDRAWLINE =
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+
+	;PRINTFORMW 一日が終了します。
+
+	;- 朝になる処理
+	;FLAG:휴식플래그 = 3
+	;BEGIN TURNEND
+	RETURN
+	
+;フラグが立っているなら何も起こらない。
+ELSE
+
+ENDIF
+
+PRINTFORML
+PRINTFORMW ＞무대에서 압도적인 환호성이 들려온다.
+PRINTFORMW 　그 열기를 등 뒤로 느끼며 %CALLNAME:MASTER%은 홀로 하늘을 올려다보고 있다.
+PRINTFORMW 
+PRINTFORMW ＞카테드랄 상공 구름 사이로 꿈틀거리는 검은 그림자.
+PRINTFORMW 　새나 비행기 따위가 아니다. COMP의 애널라이즈 정보가 알리고 있다── 무장한 대량의 천사들이다.
+PRINTFORML
+PRINTFORMW ＞그들이 메시아쨩에 얽힌 문제를 해결하고자 획책한다면 최대의 호기는 지금 말고는 없다.
+PRINTFORMW 　정보대로 그들은 관객들과 함께 메시아쨩을 이 자리에서 몰살할 셈이다!
+PRINTFORML
+
+PRINTFORMW ＞──메시아쨩이 이 라이브를 완수할 수 있도록, 놈들을 남김없이 격추하겠다.
+PRINTFORML
+PRINTFORML
+
+$ICANFLY_LOOP
+;あなたが羽を持っている
+	IF TALENT:MASTER:날개 == 1
+		PRINTL [0]이 순간을 위해 내 날개가 있는 것이다!
+;体力が25以上
+	ELSEIF BASE:MASTER:내구 > 15
+		PRINTL [0]메시아쨩을 위해서라면 하늘도 날아 보이마. ※하드 모드입니다.
+;それ以外
+	ELSE
+		PRINTL [0]괜찮아, 문제없어. ※능력 부족. 사망합니다.
+	ENDIF
+;一定の資金が必要
+	SIF MONEY > 1000000
+		PRINTL [1]……준비해 뒀던 그 녀석의 차례다!
+;組織貢献度が一定以上かつマヨーネを仲間にしていない
+	SIF FLAG:조직공헌도 >= 350000 && FINDCHARA_B([[キャラ:마요네]]) == -1
+		PRINTL [2]조직에 구원을 요청해 두었다!
+;ユーリアが戦闘参加可能状態で仲間に居る
+	SIF FINDCHARA_B([[キャラ:유리아]]) >= 1 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:유리아]])) > 0 
+		PRINTL [3]유리아 아가씨, 부탁드립니다.
+;シエロが戦闘参加可能状態で仲間に居る
+	SIF FINDCHARA_B([[キャラ:시에로]]) >= 1 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:시에로]])) > 0 
+		PRINTL [4]잘 부탁한다고 브라더!
+		
+	CALL INPUTINT,0,1,2,3,4
+
+SELECTCASE RESULT
+CASE 0
+	;あなたが羽を持っている
+	IF TALENT:MASTER:날개 == 1
+		PRINTFORMW ＞내 등 뒤의 날개는 분명 오늘 이 날, 이 순간을 위해 존재했던 것이다.
+		PRINTFORMW ＞%CALLNAME:MASTER%은 힘차게 날갯짓하며 검은 그림자 무리를 향해 비상했다.
+		イベントフラグ:55:5 = 0
+	;体力が15以上　勇気～一つをともにして～
+	ELSEIF BASE:MASTER:내구 > 15
+		PRINTFORMW ＞%CALLNAME:MASTER%의 양손에는 밀랍으로 굳힌 한 쌍의 날개가 쥐여 있었다.
+		PRINTFORMW ＞――지금, 이 몸은 저 이카로스조차 이루지 못했던 위업을 이루리라!
+		PRINTFORMW 　%CALLNAME:MASTER%은 힘차게 날갯짓하며 검은 그림자 무리를 향해 비상했다.
+
+		PRINTFORM （덧붙여 이후 %CALLNAME:MASTER%에게 이벤트 종료 시까지 강제적으로 
+		SETCOLOR 0xd76c00
+			PRINTFORM 화염가드킬 상태
+		RESETCOLOR
+		PRINTFORMW 상태가 부여됩니다）
+		イベントフラグ:55:5 = 1
+	;それ以外
+	ELSE
+		PRINTFORMW ＞%CALLNAME:MASTER%의 양손에는 밀랍으로 굳힌 한 쌍의 날개가 쥐여 있었다.
+		PRINTFORMW ＞──지금, 이 몸은 저 이카로스가 이루지 못했던 위업을 이루리라!
+		PRINTFORMW ＞%CALLNAME:MASTER%은 힘차게 날갯짓하며 검은 그림자 무리를 향해 비상했다.
+		PRINTFORMW ……는 생각이었다.
+		PRINTFORML
+		PRINTFORMW ＞──몇 초 뒤.
+		PRINTFORMW ＞카테드랄 전망 테라스 난간에서 허공을 향해 뛰쳐나간 %CALLNAME:MASTER%은,
+		PRINTFORMW 　뉴턴의 사과 법칙에 따라 지표면과의 뜨거운 재회를 완수하려 하고 있었다.
+		PRINTFORML
+		PRINTFORMW ＞──역시 안 되는 거였나.
+		PRINTFORMW 　……아니, 내구력이 15 정도 있었다면 통하지 않았을까?
+		PRINTFORMW ＞그것이 %CALLNAME:MASTER%의 마지막 생각이 되었다.
+		PRINTFORML
+			CALL DEADEND
+	ENDIF
+	
+CASE 1
+	IF MONEY > 1000000
+		PRINTFORMW ＞%CALLNAME:MASTER%이 짊어진 백팩이 사납게 포효를 내지른다.
+		PRINTFORMW 　요전 날 터미네이터를 포획했을 때 주운 제트팩…… 정확하게는 그 복제품이다.
+		PRINTFORMW 　롯폰기 대환락가의 매드 사이언티스트에게 거금을 털어 넣어 만든 일품이다.
+		PRINTFORMW ＞……이런 거, 한 번쯤 해보고 싶었단 말이지.
+		PRINTFORMW 　남자의 꿈과 로망을 싣고, %CALLNAME:MASTER%은 다가오는 검은 그림자 무리를 향해 비상했다.
+		イベントフラグ:55:5 = 2
+	ELSE
+		GOTO ICANFLY_LOOP
+	ENDIF
+	
+CASE 2
+	IF FLAG:조직공헌도 >= 350000 && FINDCHARA_B([[キャラ:마요네]]) == -1
+		PRINTFORMW ＞완력에는 자신 있던 %CALLNAME:MASTER%이었으나, 이번에는 상대의 수가 수다.
+		PRINTFORMW 　만약을 위해 상사에게 협력을 요청해 둔 것이 주효했다.
+		PRINTFORMW ＞회장에 관객으로 위장해 잠입해 있던 조직원들의 주살 공격이 무수한 화살처럼 하늘을 가른다.
+		PRINTFORML
+		PRINTFORMW 「빚은 비싸게 먹힐 거예요? ……갚으러 돌아오도록 하세요」
+		PRINTFORML
+		PRINTFORMW ＞돌아보니 당신의 상사가 등골 시린 미소로 이쪽을 바라보고 있었다.
+		PRINTFORMW 　마녀가 빙그르 우산을 돌리자, 빛 속에서 용왕 미즈치가 모습을 드러낸다.
+		PRINTFORMW 「타고 가도록 하세요. ……그리 오래 어울려 주지는 않을 테니까요」
+		PRINTFORMW ＞늠름하게 올라탄 %CALLNAME:MASTER%을 태우고, 용왕 미즈치가 하늘을 내달렸다.
+		
+		イベントフラグ:55:5 = 3
+	ELSE
+		GOTO ICANFLY_LOOP
+	ENDIF
+		
+CASE 3	
+	IF FINDCHARA_B([[キャラ:유리아]]) >= 1 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:유리아]])) > 0 
+		PRINTFORMW ＞「……시대극의 보디가드 같은 부름새, 그만둬 주시지 않겠어요? 정의의 사자한테 두들겨 맞는 역할이잖아요, 그거」
+		PRINTFORMW 　거대한 그림자가 뇌성의 울림 같은 으르렁거림과 함께 모습을 드러낸다.
+		PRINTFORMW 　──적린의 용왕, 펜드래곤.
+		PRINTFORML
+		PRINTFORMW ＞팬클럽 친위대 권한으로 얻어낸 파티 티켓으로 동행을 수락한 그녀의 등 뒤로 잽싸게 올라탄다.
+		PRINTFORMW 「──어디」
+		PRINTFORMW ＞느릿하게 고개를 치켜든 붉은 거룡은 천사들의 무리를 흩뜨리며 날아올랐다.
+		
+		イベントフラグ:55:5 = 4
+	ELSE
+		GOTO ICANFLY_LOOP
+	ENDIF
+	
+CASE 4
+	IF FINDCHARA_B([[キャラ:시에로]]) >= 1 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:시에로]])) > 0 
+		PRINTFORMW ＞이런 일이 있을 줄 알고 시에로에게 동행을 부탁해 두었던 것이다.
+		PRINTFORMW 「브라더, 믿고 있다고」라고 부탁했더니 두말없이 OK해 주었다. 참 쉬운 녀석이다.
+		PRINTFORML
+		PRINTFORMW 「텐션 미터 풀악셀로 간다고오오옷!!」
+		PRINTFORMW ＞디아우스로 변신한 시에로에게 견인되며, %CALLNAME:MASTER%은 카테드랄의 하늘로 솟구쳤다.
+		イベントフラグ:55:5 = 5
+	ELSE
+		GOTO ICANFLY_LOOP
+	ENDIF
+	
+ENDSELECT
+
+;1回目戦闘フラグON
+イベントフラグ:55:4 = 1
+CALL EVENT_55_4_BATTLE
+
+PRINTFORMW 「……신의 말씀을 거역한 자여, 우리들의 심판에서 벗어날 수 있을 거라 생각 마라……!」
+PRINTFORMW ＞구름을 뚫고 한층 더 상공으로 내달려 천사들의 추격을 따돌렸으나,
+PRINTFORMW 　더 높은 곳에서 천사들이 강림해 오는 것이 보인다.
+
+;要は自前の翼だと戦闘回数が増える。
+	IF イベントフラグ:55:5 <= 1
+		PRINTFORMW ＞……아무래도 그리 쉽게 최상층에 도달하게 두지는 않을 모양이다.
+		;2回目戦闘フラグON
+		イベントフラグ:55:4 = 2
+		
+		CALL EVENT_55_4_BATTLE
+		
+	ELSEIF イベントフラグ:55:5 == 2
+		PRINTFORML 
+		PRINTFORMW ＞아무래도 그리 쉽게 최상층에 도달하게 두지는 않을 모양이다.
+		PRINTFORMW ＞COMP를 조작해 백팩의 출력을 한계치까지 끌어올린다.
+		PRINTFORMW ＞앞길을 가로막으려던 프린시펄리티를 속도와 질량의 폭력으로 튕겨 날려버리며, %CALLNAME:MASTER%은 더욱 높은 곳으로 치솟았다.
+
+;ゆるせムラサキカガミ、エロジジイ扱いで本当にすまない
+	ELSEIF イベントフラグ:55:5 == 3
+		PRINTFORML 
+		PRINTFORMW 「뭐 어찌 됐든 신경 쓰지 않으셔도 괜찮사옵니다. 이것도 우리 주군의 명이시니…… 으랏차!」
+		PRINTFORMW ＞미즈치 뒤에 붙어 있던 무라사키카가미가 기합과 함께 %CALLNAME:MASTER% 일행의 허상을 만들어낸다.
+		PRINTFORML 
+		PRINTFORMW 「자아 나아가시지요, 저 가슴에 떼거지로 몰려들어 난폭하게 굴다니 용서받지 못할 폭거이니 말입니다!」
+		PRINTFORMW ＞……이런 곳에도 메시아쨩의 팬이 있었던 모양이다.
+		PRINTFORMW %CALLNAME:MASTER%는 씩 웃으며 대신전의 첨탑으로 뛰어 올라갔다.
+
+;どうしようお嬢様、見せ場が思いつかないよ
+	ELSEIF イベントフラグ:55:5 == 4
+		PRINTFORML 
+		PRINTFORMW ＞홍련의 불길이 카테드랄의 하늘을 붉게 물들이자, 불꽃을 뒤집어쓴 천사들은 종이처럼 타오르며 추락해 간다.
+		PRINTFORMW 　저 상태라면 지표면에 닿을 즈음엔 남김없이 재가 되어 있겠지…….
+		PRINTFORMW 「나의 화염을 두려워하는 자는 속히 물러나거라!!」
+		PRINTFORMW ＞붉은 용의 포효에 천사들은 불리를 깨달았는지 후퇴해 간다.
+		PRINTFORMW 「흥, 천사들이라 해도 졸개들은 이 정도인가요. 꼴사납기 짝이 없군요」
+		PRINTFORMW ＞──말투가 천박하옵니다, 아가씨.
+		PRINTFORMW 「내버려 두세요. 그것보다 어서 끝내도록 하세요. 그러지 않으면 돌아갈 때는 안 태워다 드릴 테니까요?」
+		PRINTFORMW %CALLNAME:MASTER%은 어깨를 으쓱하며 중앙 대신전의 첨탑으로 뛰어내렸다.
+		
+;どうしよう、シエロが死ぬ未来しか見えない
+	ELSEIF イベントフラグ:55:5 == 5
+		PRINTFORML 
+		PRINTFORMW 「……전투기라면 몰라도 날개로 날아다니는 녀석들한테 내가 질까 보냐아아!!」
+		PRINTFORMW ＞급가속한 시에로는 천사들 바로 앞에서 턴하더니, 곡예 같은 기동으로 포위망을 빠져나간다.
+		PRINTFORMW 　꼭대기에 도달한 %CALLNAME:MASTER%은 견인 로프를 풀고 중앙 대신전의 첨탑 위로 깔끔하게 착지했다.
+
+	ENDIF
+
+		PRINTFORMW ………
+		PRINTFORML ……
+		PRINTFORMW …
+		PRINTFORML 
+PRINTFORMW ＜카테드랄 중앙 대신전, 그 최상층 외벽＞
+PRINTFORMW 
+PRINTFORMW ＞포위망을 뚫고 다다른 곳은 카테드랄 중앙 대신전의 정상이다.
+PRINTFORMW 　발아래로는 화려한 조명이 비추는 무대를 에워싼 청중들이 검은 덩어리처럼 내려다보인다…….
+PRINTFORML 
+PRINTFORMW 「용케도 포위망을 뚫고 여기까지 당도하였구나, 사람의 자식이여」
+PRINTFORMW ＞메시아 교도들을 이끄는 세 기의 치천사가 이쪽을 굽어보고 있다…….
+PRINTFORML 
+PRINTFORML 「인간을 지키고자 하는 그대의 의지는 우리 아버지의 뜻에도 부합하는 고귀한 것이다.
+PRINTFORMW 그러나 그들은 위대하신 아버지의 가르침을 거스르는 자들. 이대로 방치할 수는 없다」
+PRINTFORML 
+PRINTFORMW 「그대의 행실, 그대의 기개에 면하여 목숨은 살려주마. 검을 거두고 속히 물러가거라」
+PRINTFORML
+
+PRINTL [0] 관대하신 뜻에 감사드립니다, 위대하신 하늘의 천사시여.
+PRINTL [1] 하지만 거절한다. 메시아쨩에게 영광 있으라!
+PRINTL [2] 당신들이야말로 그녀를 신께서 보내신 구세주로 인정하고 함께 진정한 이상향을 건설해야 마땅하지 않은가.
+
+CALL INPUTINT,0,1,2
+
+SELECTCASE RESULT
+	;ミッション失敗の選択肢
+	CASE 0
+		PRINTFORMW 「현명한 판단이다, 사람의 자식이여…… 잠시 잠들거라」
+		PRINTFORMW ………
+		PRINTFORML ……
+		PRINTFORMW …
+		PRINTFORML 
+		PRINTFORMW ＞정신을 차려보니 %CALLNAME:MASTER%은 자기 방 침대 위에 있었다.
+		PRINTFORMW ＞뭔가 엄청나게 중요한 것에 열중하고 있었던 기분이 드는데 도무지 기억나지 않는다.
+		PRINTFORMW ＞%CALLNAME:MASTER%은 잠시 끙끙대 보았으나 아무것도 기억나지 않아 그냥 자기로 했다.
+		イベントフラグ:55:0 = 8
+		
+		CUSTOMDRAWLINE =
+		FLAG:도주불가플래그 = 0
+		FLAG:회화불능플래그 = 0
+		FLAG:선제기습취소 = 0
+
+		;PRINTFORMW 一日が終了します。
+
+		;- 朝になる処理
+		;FLAG:휴식플래그 = 3
+		;BEGIN TURNEND
+		;RETURN
+	
+	;以下の選択肢では何も起こらず戦闘になる。
+	
+	CASE 1
+
+	CASE 2
+	
+ENDSELECT
+PRINTFORML
+PRINTFORMW 「……오만하구나, 사람의 자식이여」
+PRINTFORMW 「우리에게 맞서는 것만도 모자라 저따위 것을 구세주로 추대하다니 분수도 모르는 처사로다」
+PRINTFORMW 「위대하신 아버지의 뜻을 거역한 그 불손한 행태, 지옥에 떨어져 후회하거라!!」
+PRINTFORMW ＞동의를 얻지 못해 아쉽다. 하지만 우리들의 메시아쨩을 해치려는 자는 설령 천사라 할지라도 남김없이 멸망시켜야만 하리라.
+
+;三戦目呼び出しフラグON
+イベントフラグ:55:4 = 3
+;めしあちゃんの歌声に大天使様のコメントが入るフラグON
+イベントフラグ:55:6 = 1
+
+CALL EVENT_55_4_BATTLE
+
+PRINTFORMW 「오오오, 내 영혼이 오염된다……!!」
+PRINTFORMW 「인간의 기도가 우리의 힘을 능가하다니……」
+PRINTFORMW 「오오오오오…… 이 빛…… 어찌 이리 따스한가…… 메시아쨩…… 어찌 이리 소름 끼치는가…… 메시아쨩 만세이ー……」
+PRINTFORMW ＞세 명의 천사는 거대한 빛에 존재를 침식당하며, 메시아쨩을 찬양하며 소멸했다.
+PRINTFORML 
+PRINTFORMW ＞쓰러진 천사들은 땅으로 떨어지고 남은 자들은 하늘로 되돌아간다.
+PRINTFORMW 　싸움은 끝났다.
+PRINTFORML 
+PRINTFORMW ＞카테드랄 정상에서 내려다본 메시아쨩의 무대는 열광의 소용돌이 속에서 눈부시도록 신성한 빛을 뿜어내고 있다…….
+PRINTFORMW 　……어쩌면 나는 지금 새로운 신화의 순간에 함께하고 있는 것일지도 모른다.
+PRINTFORML 
+PRINTFORML ＞한동안 그 광경을 바라보던 %CALLNAME:MASTER%은 정신을 차리자,
+PRINTFORMW 　품속에서 펜라이트를 꺼내 들고 스스로도 열광의 소용돌이의 일부가 되기 위해 내달렸던 것이다.
+
+PRINTFORMW ………
+PRINTFORMW ……
+PRINTFORMW …
+
+PRINTFORMW ＞이날의 사건은 현장에 함께했던 전 메시아 교단 신도가 웹에 남긴 것으로 보이는 일기에 이렇게 적혀 있다.
+PRINTFORML 
+PRINTFORMW 　――인류는 그날, 새로운 신의 탄생을 목도했다고.
+
+イベントフラグ:55:0 = 5
+
+CALL EVENT_55_4_END
+
+;=================================================
+;   EVENT_55_4_BATTLE
+;=================================================
+;   エンジェルズとの戦闘
+;-------------------------------------------------
+@EVENT_55_4_BATTLE
+PRINTFORML 
+CUSTOMDRAWLINE =
+PRINTFORML 
+
+IF イベントフラグ:55:4 < 3
+	CALL SET_ENEMY,7, [[キャラ:프린시펄리티]],80, 1,0
+		CFLAG:(CHARANUM-1):행동횟수 = 1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 100
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 200
+		BASE:(CHARANUM-1):힘 += 3
+		BASE:(CHARANUM-1):지혜 += 3
+		BASE:(CHARANUM-1):마력 += 3
+		BASE:(CHARANUM-1):내구 += 2
+		BASE:(CHARANUM-1):속도 += 2
+		BASE:(CHARANUM-1):운 += 2
+		ABL:(CHARANUM-1):스킬4 = [[스킬:충의의화염]]
+		
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+
+	CALL SET_ENEMY,8, [[キャラ:도미니온]],80, 1,0
+		CFLAG:(CHARANUM-1):행동횟수 = 1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 100
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 200
+		BASE:(CHARANUM-1):힘 += 3
+		BASE:(CHARANUM-1):지혜 += 3
+		BASE:(CHARANUM-1):마력 += 3
+		BASE:(CHARANUM-1):내구 += 2
+		BASE:(CHARANUM-1):속도 += 2
+		BASE:(CHARANUM-1):운 += 2
+		ABL:(CHARANUM-1):스킬1 = [[스킬:천벌]]
+		ABL:(CHARANUM-1):스킬2 = [[스킬:메기도]]
+		ABL:(CHARANUM-1):스킬3 = [[스킬:충의의충격]]
+		ABL:(CHARANUM-1):스킬4 = [[스킬:데스바운드]]
+		ABL:(CHARANUM-1):스킬5 = [[스킬:코우가온]]
+		ABL:(CHARANUM-1):스킬6 = [[스킬:멸망의빛]]
+		ABL:(CHARANUM-1):스킬7 = [[스킬:마하・라기다인]]
+		ABL:(CHARANUM-1):스킬8 = [[스킬:데들리번]]
+		
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+
+	CALL SET_ENEMY,9, [[キャラ:프린시펄리티]],80, 1,0
+		CFLAG:(CHARANUM-1):행동횟수 = 1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 100
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 200
+		MAXBASE:(CHARANUM-1):주살 = 100
+		BASE:(CHARANUM-1):힘 += 3
+		BASE:(CHARANUM-1):지혜 += 3
+		BASE:(CHARANUM-1):마력 += 3
+		BASE:(CHARANUM-1):내구 += 2
+		BASE:(CHARANUM-1):속도 += 2
+		BASE:(CHARANUM-1):운 += 2
+		ABL:(CHARANUM-1):스킬4 = [[스킬:충의의화염]]
+		
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+
+	CALL SET_ENEMY,10, [[キャラ:도미니온]],80, 1,0
+		CFLAG:(CHARANUM-1):행동횟수 = 1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 100
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 200
+		BASE:(CHARANUM-1):힘 += 3
+		BASE:(CHARANUM-1):지혜 += 3
+		BASE:(CHARANUM-1):마력 += 3
+		BASE:(CHARANUM-1):내구 += 2
+		BASE:(CHARANUM-1):속도 += 2
+		BASE:(CHARANUM-1):운 += 2
+		ABL:(CHARANUM-1):스킬1 = [[스킬:천벌]]
+		ABL:(CHARANUM-1):스킬2 = [[스킬:메기도]]
+		ABL:(CHARANUM-1):스킬3 = [[스킬:충의의충격]]
+		ABL:(CHARANUM-1):스킬4 = [[스킬:데스바운드]]
+		ABL:(CHARANUM-1):스킬5 = [[스킬:코우가온]]
+		ABL:(CHARANUM-1):스킬6 = [[스킬:멸망의빛]]
+		ABL:(CHARANUM-1):스킬7 = [[스킬:마하・라기다인]]
+		ABL:(CHARANUM-1):스킬8 = [[스킬:데들리번]]
+		
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+
+	CALL SET_ENEMY,11, [[キャラ:프린시펄리티]],80, 1,0
+		CFLAG:(CHARANUM-1):행동횟수 = 1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 100
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 200
+		MAXBASE:(CHARANUM-1):주살 = 100
+		BASE:(CHARANUM-1):힘 += 3
+		BASE:(CHARANUM-1):지혜 += 3
+		BASE:(CHARANUM-1):마력 += 3
+		BASE:(CHARANUM-1):내구 += 2
+		BASE:(CHARANUM-1):속도 += 2
+		BASE:(CHARANUM-1):운 += 2
+		ABL:(CHARANUM-1):스킬4 = [[스킬:충의의화염]]
+		
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)	
+		
+	CALL SET_ENEMY,12, [[キャラ:프린시펄리티]],80, 1,0
+		CFLAG:(CHARANUM-1):행동횟수 = 1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 100
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 200
+		MAXBASE:(CHARANUM-1):주살 = 100
+		BASE:(CHARANUM-1):힘 += 3
+		BASE:(CHARANUM-1):지혜 += 3
+		BASE:(CHARANUM-1):마력 += 3
+		BASE:(CHARANUM-1):내구 += 2
+		BASE:(CHARANUM-1):속도 += 2
+		BASE:(CHARANUM-1):운 += 2
+		ABL:(CHARANUM-1):스킬4 = [[스킬:충의의화염]]
+		
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+		
+	CALL SET_ENEMY,13, [[キャラ:프린시펄리티]],80, 1,0
+		CFLAG:(CHARANUM-1):행동횟수 = 1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 100
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 200
+		MAXBASE:(CHARANUM-1):주살 = 100
+		BASE:(CHARANUM-1):힘 += 3
+		BASE:(CHARANUM-1):지혜 += 3
+		BASE:(CHARANUM-1):마력 += 3
+		BASE:(CHARANUM-1):내구 += 2
+		BASE:(CHARANUM-1):속도 += 2
+		BASE:(CHARANUM-1):운 += 2
+		ABL:(CHARANUM-1):스킬4 = [[스킬:충의의화염]]
+
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+		
+		CALL SET_ENEMY,14, [[キャラ:스로네]],80, 1,0
+		CFLAG:(CHARANUM-1):행동횟수 = 2
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 1000
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 200
+		ABL:(CHARANUM-1):스킬3 = 0
+		ABL:(CHARANUM-1):스킬6 = 129
+		ABL:(CHARANUM-1):스킬6 = 154
+		BASE:(CHARANUM-1):힘 += 3
+		BASE:(CHARANUM-1):지혜 += 3
+		BASE:(CHARANUM-1):마력 += 3
+		BASE:(CHARANUM-1):내구 += 2
+		BASE:(CHARANUM-1):속도 += 2
+		BASE:(CHARANUM-1):운 += 2
+		ABL:(CHARANUM-1):스킬1 = [[스킬:메・디아라한]]
+		ABL:(CHARANUM-1):스킬2 = [[스킬:충의의화염]]
+		ABL:(CHARANUM-1):스킬3 = [[스킬:메기도]]
+		ABL:(CHARANUM-1):스킬4 = [[스킬:헤븐즈도어]]
+		ABL:(CHARANUM-1):스킬5 = [[스킬:천우의춤]]
+		ABL:(CHARANUM-1):스킬6 = [[스킬:사마리캄]]
+		ABL:(CHARANUM-1):스킬7 = [[스킬:테트라칸]]
+		ABL:(CHARANUM-1):스킬8 = [[스킬:마카라칸]]
+
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	
+	CALL SET_ENEMY,15, [[キャラ:프린시펄리티]],80, 1,0
+		CFLAG:(CHARANUM-1):행동횟수 = 1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 100
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 200
+		MAXBASE:(CHARANUM-1):주살 = 100
+		BASE:(CHARANUM-1):힘 += 3
+		BASE:(CHARANUM-1):지혜 += 3
+		BASE:(CHARANUM-1):마력 += 3
+		BASE:(CHARANUM-1):내구 += 2
+		BASE:(CHARANUM-1):속도 += 2
+		BASE:(CHARANUM-1):운 += 2
+		ABL:(CHARANUM-1):스킬4 = [[스킬:충의의화염]]
+		
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	
+	CALL SET_ENEMY,16, [[キャラ:프린시펄리티]],80, 1,0
+		CFLAG:(CHARANUM-1):행동횟수 = 1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 100
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 200
+		MAXBASE:(CHARANUM-1):주살 = 100
+		BASE:(CHARANUM-1):힘 += 3
+		BASE:(CHARANUM-1):지혜 += 3
+		BASE:(CHARANUM-1):마력 += 3
+		BASE:(CHARANUM-1):내구 += 2
+		BASE:(CHARANUM-1):속도 += 2
+		BASE:(CHARANUM-1):운 += 2	
+		ABL:(CHARANUM-1):스킬4 = [[스킬:충의의화염]]
+		
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+
+
+ELSEIF イベントフラグ:55:4 == 3
+	
+	CALL SET_ENEMY,8, [[キャラ:라파엘]],80, 0,1
+		CFLAG:(CHARANUM-1):행동횟수 = 1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 2000
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 200
+		BASE:(CHARANUM-1):힘 += 3
+		BASE:(CHARANUM-1):지혜 += 3
+		BASE:(CHARANUM-1):마력 += 3
+		BASE:(CHARANUM-1):내구 += 2
+		BASE:(CHARANUM-1):속도 += 2
+		BASE:(CHARANUM-1):운 += 2
+		ABL:(CHARANUM-1):스킬1 = [[스킬:테트라칸]]
+		ABL:(CHARANUM-1):스킬2 = [[스킬:마카라칸]]
+		ABL:(CHARANUM-1):스킬3 = [[스킬:마하・잔바리온]]
+		ABL:(CHARANUM-1):스킬4 = [[스킬:천벌]]
+		ABL:(CHARANUM-1):스킬5 = [[스킬:파마의뇌광]]
+		ABL:(CHARANUM-1):스킬6 = [[스킬:멸망의빛]]
+		ABL:(CHARANUM-1):스킬7 = [[스킬:묵시록]]
+		ABL:(CHARANUM-1):스킬8 = [[스킬:메・디아라마]]
+		
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+
+	CALL SET_ENEMY,9, [[キャラ:미카엘]],80, 0,1
+		CFLAG:(CHARANUM-1):행동횟수 = 1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 2000
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 200
+		BASE:(CHARANUM-1):힘 += 3
+		BASE:(CHARANUM-1):지혜 += 3
+		BASE:(CHARANUM-1):마력 += 3
+		BASE:(CHARANUM-1):내구 += 2
+		BASE:(CHARANUM-1):속도 += 2
+		BASE:(CHARANUM-1):운 += 2
+
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+
+	CALL SET_ENEMY,10, [[キャラ:우리엘]],80, 0,1
+		CFLAG:(CHARANUM-1):행동횟수 = 1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 2000
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 200
+		BASE:(CHARANUM-1):힘 += 3
+		BASE:(CHARANUM-1):지혜 += 3
+		BASE:(CHARANUM-1):마력 += 3
+		BASE:(CHARANUM-1):내구 += 2
+		BASE:(CHARANUM-1):속도 += 2
+		BASE:(CHARANUM-1):운 += 2
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+ENDIF
+
+
+CALL BATTLE_START
+
+;=================================================
+;   SET_ACTION_三大天使
+;=================================================
+;   三大天使の行動処理
+;-------------------------------------------------
+
+
+
+;=================================================
+;   EVENT_BATTLE_EVENT55_4
+;==================================================
+;天使との戦い   戦闘中・ターン終了時処理
+;-------------------------------------------------	
+@EVENT_BATTLE_TURNEND_EVENT55
+IF イベントフラグ:55:4 > 0
+	PRINTFORML TURN_END処理開始
+	;大天使との戦闘：敵3人のうち誰かが死んだ
+	IF イベントフラグ:55:4 == 3 && ENEMY_COUNT() == 2 && イベントフラグ:55:7 == 0
+		SETCOLOR 0XDC143C
+			PRINTFORML 
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃네놈, 감히……! 　　　　　　　　　　　　　　┃
+			PRINTFORML ┃이제 더 이상의 용서는 없다 　　　　　　　　　┃
+			PRINTFORML ┃신의 적을 도륙하는 우리의 힘, 똑똑히 보아라! ┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+		RESETCOLOR
+	;ラファエル攻撃回数増加
+		CFLAG:(CHARANUM-1):행동횟수 = 2	
+		ABL:(CHARANUM-1):최저공격횟수 = 2
+		ABL:(CHARANUM-1):최대공격횟수 = 2
+	;ミカエル攻撃回数増加	
+		CFLAG:(CHARANUM-2):행동횟수 = 2
+		ABL:(CHARANUM-2):최저공격횟수 = 2
+		ABL:(CHARANUM-2):최대공격횟수 = 2
+	;ウリエル攻撃回数増加	
+		CFLAG:(CHARANUM-3):행동횟수 = 2
+		ABL:(CHARANUM-3):최저공격횟수 = 2
+		ABL:(CHARANUM-3):최대공격횟수 = 2
+	イベントフラグ:55:7 = 1	
+	;敵2人死んだ
+	ELSEIF イベントフラグ:55:4 == 3 && ENEMY_COUNT() == 1 && イベントフラグ:55:7 == 1
+		SETCOLOR 0XDC143C
+			PRINTFORML 
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃이상의 천년왕국을 건설하려 이 땅에 내렸건만　┃
+			PRINTFORML ┃끝내 메시아는 오지 않고, 심지어 저런 자가 　┃
+			PRINTFORML ┃메시아라니, 결단코 인정할 수 없다……!! 　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+		RESETCOLOR
+	;ラファエル攻撃回数増加
+		CFLAG:(CHARANUM-1):행동횟수 = 3
+		ABL:(CHARANUM-1):최저공격횟수 = 2
+		ABL:(CHARANUM-1):최대공격횟수 = 3
+	;ミカエル攻撃回数増加	
+		CFLAG:(CHARANUM-2):행동횟수 = 3
+		ABL:(CHARANUM-2):최저공격횟수 = 2
+		ABL:(CHARANUM-2):최대공격횟수 = 3
+	;ウリエル攻撃回数増加	
+		CFLAG:(CHARANUM-3):행동횟수 = 3
+		ABL:(CHARANUM-3):최저공격횟수 = 2
+		ABL:(CHARANUM-3):최대공격횟수 = 3
+	イベントフラグ:55:7 = 2
+	ENDIF
+	;三大天使生存状況を確認後、敵味方全体に歌声デバフ
+	;PRINTFORML 歌声デバフ処理
+	LOCAL:1 = RAND:100
+	IF LOCAL:1 < 30
+			SETCOLOR 0x65F1FF
+				PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+				PRINTFORML ┃하ー마온온!!　　　　　　　　　　　　　　　　┃
+				PRINTFORML ┃　　　　　마한마온온!!! 　　　　　　　　　　┃
+				PRINTFORML ┃　　　　　　　　　　　　　　　　　　　　　　┃
+				PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+			RESETCOLOR 	
+		;状態異常（歌が聞こえない）キャラ以外を回復する。めしあちゃんスゲエ
+		LOCALS = 메시아쨩의 노랫소리가 청중을 치유한다……!!
+		CALL MESSAGE_B(1, LOCALS)
+		FOR LOCAL,1,16
+			;自軍敵軍パーティーのポジションをチェック
+			IF POS(LOCAL) > -1
+				;状態異常にかかっていたら処理しない
+				IF CFLAG:(POS(LOCAL)):상태이상 > 0 || GET_STATE(CFLAG:LOCAL:상태이상) == "DYING"
+					CONTINUE
+				ELSE
+					PRINTFORMW TARGET:[{LOCAL,2}] %CALLNAME:POS(LOCAL),20,LEFT%　>>>>>>　200 회복
+					CALL VAR_HP, LOCAL, +200, "회복"
+				ENDIF
+			ELSE
+			ENDIF
+		NEXT
+	ELSEIF LOCAL:1 >= 30
+			SETCOLOR 0x65F1FF
+				PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+				PRINTFORML ┃하ー마! 　　　　　　　　　　　　　　　　　　┃
+				PRINTFORML ┃　　　　　하마온!!　　　　　　　　　　　　　┃
+				PRINTFORML ┃　　　　　　　　　　　마한마온온!!! 　　　┃
+				PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+			RESETCOLOR 	
+		;状態異常（歌が聞こえない）キャラ以外をHAPPYに。めしあちゃんヤベエ
+		LOCALS = 메시아쨩의 노랫소리가 청중을 매료한다……!!
+			CALL MESSAGE_B(1, LOCALS)
+			;自軍敵軍パーティーのポジションをチェック
+			FOR LOCAL,1,16
+				IF POS(LOCAL) > -1
+					LOCAL:1 = RAND:100
+					;状態異常にかかっていたら処理しない
+					IF CFLAG:(POS(LOCAL)):상태이상 > 0
+						CONTINUE
+					;とりあえず確率6割で強制HAPPY
+					ELSEIF LOCAL:1 < 60
+						PRINTFORMW TARGET:[{LOCAL,2}] %CALLNAME:POS(LOCAL),20,LEFT%　>>>>>>　HAPPY
+						;●HAPPYになる処理をここに入れる
+						CFLAG:(POS(LOCAL)):상태이상 = GET_STATE_NUM("HAPPY")
+					ELSE
+						PRINTFORMW TARGET:[{LOCAL,2}] %CALLNAME:POS(LOCAL),20,LEFT%　>>>>>>　MISS
+					ENDIF
+				ENDIF
+			NEXT
+		;バステ処理フラグをリセット
+		SIF イベントフラグ:55:8 == 1
+		イベントフラグ:55:8 = 0
+		;御使いはポジション8～10にいるのでそこを検索
+		FOR LOCAL,8,10
+			;空になっていないポジション8～10のナンバーを取得し、HAPPY状態であるかを見る
+			IF POS(LOCAL) > -1 
+				SIF GET_STATE(CFLAG:LOCAL:상태이상) == "HAPPY"
+				イベントフラグ:55:8 += 1
+			ENDIF
+		NEXT
+		;バステ処理フラグが0でない（1以上）とき、御使いのコメントが発生してなければ御使いが喋る
+		IF イベントフラグ:55:8 != 0
+			IF イベントフラグ:55:6 == 1
+				SETCOLOR 0XDC143C
+					PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+					PRINTFORML ┃말도 안 돼, 이 무슨 일인가 　　　　　　　　　┃
+					PRINTFORML ┃사람의 자식의 노랫소리가 우리 영혼을 좀먹다니┃
+					PRINTFORML ┃역시 저 계집아이, 살려둘 수는 없다 　　　　┃
+					PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+				RESETCOLOR 
+					イベントフラグ:55:6 = 2
+			;上記を一度聞いている
+			ELSEIF イベントフラグ:55:6 == 2
+				SETCOLOR 0XDC143C
+					PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+					PRINTFORML ┃오오, 위대하신 가슴(아버지)이시여 　　　　　┃
+					PRINTFORML ┃찌ー찌……　　　　　　　　　　　　　　　　　┃
+					PRINTFORML ┃오오오, 내 영혼을 건드리지 마라……!! 　　　┃
+					PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+				RESETCOLOR 
+					イベントフラグ:55:6 = 3
+			;それ以降（発生しない）
+			ELSEIF イベントフラグ:55:6 == 3
+			
+			ENDIF
+		ENDIF
+	ENDIF
+ELSE
+ENDIF
+;=================================================
+; EVENT_BATTLE_START_EVENT55_4
+;=================================================
+@EVENT_BATTLE_START_EVENT55
+
+;PRINTFORMW 戦闘開始処理
+;このイベントの戦闘中かつハードモードならあなたに火炎ガーキル(される）状態を付与する。
+IF イベントフラグ:55:0 == 4 && イベントフラグ:55:4 > 0 && イベントフラグ:55:5 == 1
+	;PRINTFORMW ガーキル処理開始
+	;バステ処理フラグをリセット
+	SIF イベントフラグ:55:8 == 1  
+		イベントフラグ:55:8 = 0  
+
+	;あなたが死んでなければ
+	IF CFLAG:MASTER:상태이상 != GET_STATE_NUM("DYING")
+		;あなたを火炎ガードキルです
+		CFLAG:MASTER:화염가드킬 = 999
+		;バフの付与に成功したならフラグを立てておく
+		SIF イベントフラグ:55:8 == 0
+			イベントフラグ:55:8 = 1
+	ENDIF
+	
+	;バフ付与に成功したらメッセージ表示
+	IF イベントフラグ:55:8 == 1 
+		PRINTFORM %CALLNAME:MASTER%은 이 전투 동안, 
+		SETCOLOR 0xd76c00
+			PRINTFORM 화염가드킬 상태
+		RESETCOLOR
+		PRINTFORMW 가 되었다!
+	ELSEIF イベントフラグ:55:8 == 0
+		
+	ELSE
+		
+	ENDIF
+ENDIF
+
+;=================================================
+; EVENT_BATTLE_TURNTOP_EVENT55_4
+;=================================================
+@EVENT_BATTLE_TURNTOP_EVENT55
+IF FLAG:경과턴수 > 0
+	;PRINTFORMW ターン開始処理
+	;このイベントの戦闘中かつハードモードならあなたに火炎ガーキル(される）状態を付与する。
+	IF イベントフラグ:55:0 == 4 && イベントフラグ:55:4 > 0 && イベントフラグ:55:5 == 1
+		;PRINTFORMW ガーキル処理開始
+		SIF イベントフラグ:55:8 == 1  
+			イベントフラグ:55:8 = 0  
+
+		;あなたが死んでなければ
+		IF CFLAG:MASTER:상태이상 != GET_STATE_NUM("DYING")
+			;あなたを火炎ガードキルです
+			CFLAG:MASTER:화염가드킬 = 999
+			;バフの付与に成功したならフラグを立てておく
+			SIF イベントフラグ:55:8 == 0
+				イベントフラグ:55:8 = 1
+		ENDIF
+
+		;バフ付与に成功したらメッセージ表示
+		IF イベントフラグ:55:8 == 1 && FLAG:경과턴수 == 0
+			PRINTFORM %CALLNAME:MASTER%은 이 전투 동안, 
+			SETCOLOR 0xd76c00
+				PRINTFORM 화염가드킬 상태
+			RESETCOLOR
+			PRINTFORMW 가 되었다!
+		ELSE
+
+		ENDIF
+	ENDIF
+ENDIF
+;=================================================
+;   EVENT_55_4_END
+;=================================================
+;   依頼の終了:時間経過
+;-------------------------------------------------
+@EVENT_55_4_END
+
+CUSTOMDRAWLINE =
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+;PRINTFORMW 一日が終了します。
+
+;- 朝になる処理
+;FLAG:휴식플래그 = 3
+;BEGIN TURNEND
+RETURN
+

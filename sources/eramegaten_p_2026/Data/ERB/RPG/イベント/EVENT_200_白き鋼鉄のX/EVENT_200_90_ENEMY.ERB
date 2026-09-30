@@ -1,0 +1,219 @@
+﻿;=============================================
+;EVENT_200_ENEMY
+;=============================================
+@SET_BOSS_ENEMY_EVENT_200, L_ENEMY_NAME, L_NO = -1, L_OPT
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_NO
+#DIM DYNAMIC L_ENEMY
+#DIMS DYNAMIC L_ENEMY_NAME
+#DIMS DYNAMIC L_OPT
+#DIMS DYNAMIC L_ENEMY_TABLE, 10
+
+L_ENEMY_TABLE:0 '= "白き鋼鉄", "ライトニングベルセルク", "ペインフルデターミネーション", "アシモフ", "デマーゼル"
+
+IF L_NO >= 0
+	SIF !INRANGE(L_NO, 0, VARSIZE("L_ENEMY_TABLE") - 1)
+		RETURN 0
+	L_ENEMY_NAME '= L_ENEMY_TABLE:L_NO
+ENDIF
+IF L_OPT == "名称取得"
+	SIF L_ENEMY_TABLE:L_NO == ""
+		RETURN 0
+	RESULTS '= L_ENEMY_NAME
+	RETURN 1
+ENDIF
+
+SELECTCASE L_ENEMY_NAME
+	CASE "白き鋼鉄"
+		TSTR:전투이벤트패턴 = EVENT_200_1_白き鋼鉄
+
+		CALL SET_ENEMY, 9, [[キャラ:아큐라_X]], 50, 1, 2
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "アキュラ"
+		NAME:L_ENEMY = 아큐라
+		CALLNAME:L_ENEMY = 아큐라
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		CFLAG:L_ENEMY:COOP피데미지보정 = -50
+
+		CFLAG:L_ENEMY:강제악마화 = 1
+		CSTR:L_ENEMY:사고패턴 = EVENT_200_1_アキュラ
+
+		BASE:L_ENEMY:힘 += 10
+		BASE:L_ENEMY:지혜 += 10
+		BASE:L_ENEMY:마력 += 10
+		BASE:L_ENEMY:내구 += 10
+		BASE:L_ENEMY:속도 += 10
+		BASE:L_ENEMY:운 += 10
+
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		;다크니스 트리거 이외는 전부 습득시킨다
+		CALL SET_SKILL, L_ENEMY, "블리츠대쉬"
+		CALL SET_SKILL, L_ENEMY, "SONG OF DIVA"
+		CALL SET_SKILL, L_ENEMY, "X-ROSS DISASTER"
+		CALL SET_SKILL, L_ENEMY, "스파크스텔라"
+		CALL SET_SKILL, L_ENEMY, "앵커넥서스"
+		CALL SET_SKILL, L_ENEMY, "오비탈에지"
+		CALL SET_SKILL, L_ENEMY, "루미너리마인"
+		CALL SET_SKILL, L_ENEMY, "키스오브디바"
+		CALL SET_SKILL, L_ENEMY, "드래프트스파이럴"
+		CALL SET_SKILL, L_ENEMY, "클로스랜서"
+		CALL SET_SKILL, L_ENEMY, "악셀"
+	CASE "ライトニングベルセルク"
+		TSTR:전투이벤트패턴 = EVENT_200_2_ライトニングベルセルク
+
+		CALL SET_ENEMY, 9, [[キャラ:블레이드_X]], 60, 1, 2
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ブレイド"
+		CFLAG:L_ENEMY:강제악마화 = 1
+
+		NAME:L_ENEMY = 블레이드
+		CALLNAME:L_ENEMY = 블레이드
+		CSTR:L_ENEMY:아이콘패턴 '= ""
+		CSTR:L_ENEMY:基本アイコンファイルネーム '= "ブレイド_X_FACE_EX_1"
+		CFLAG:L_ENEMY:ＨＰ보정 += 5000
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		CFLAG:L_ENEMY:COOP피데미지보정 = -25
+
+		CSTR:L_ENEMY:사고패턴 = ライトニングベルセルク
+		BASE:L_ENEMY:힘 += 10
+		BASE:L_ENEMY:지혜 += 5
+		BASE:L_ENEMY:마력 += 5
+		BASE:L_ENEMY:내구 += 5
+		BASE:L_ENEMY:속도 += 10
+		;이미 세뇌되어 있으므로 정신계는 받지 않는다
+		BASE:L_ENEMY:HAPPY = -50
+		BASE:L_ENEMY:PANIC = -50
+		BASE:L_ENEMY:CHARM = -50
+
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "퀵버스터"
+		CALL SET_SKILL, L_ENEMY, "블리츠레인"
+		CALL SET_SKILL, L_ENEMY, "토르해머"
+		CALL SET_SKILL, L_ENEMY, "썬더볼트"
+		CALL SET_SKILL, L_ENEMY, "대나무베기"
+		CALL SET_SKILL, L_ENEMY, "부월쇄파"
+		CALL SET_SKILL, L_ENEMY, "번개찌르기"
+		CALL SET_SKILL, L_ENEMY, "산산조각베기"
+		CALL SET_SKILL, L_ENEMY, "기합"
+		CALL SET_SKILL, L_ENEMY, "결단"
+		CALL SET_SKILL, L_ENEMY, "검격가드브레이크"
+		CALL SET_SKILL, L_ENEMY, "コレダーデュランダル"
+
+		;쓸데없는 약점이 생겨도 곤란하므로 방어구는 벗긴다
+		EQUIP:L_ENEMY:머리 = 0
+		EQUIP:L_ENEMY:몸통 = 0
+		EQUIP:L_ENEMY:팔 = 0
+		EQUIP:L_ENEMY:발 = 0
+	CASE "ペインフルデターミネーション"
+		TSTR:전투이벤트패턴 = EVENT_200_4_ペインフルデターミネーション
+		CALL SET_ENEMY, 9, [[キャラ:버터플라이이펙트]], 70, 1, 3
+		L_ENEMY = CHARANUM - 1
+
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "バタフライエフェクト"
+		CFLAG:L_ENEMY:강제악마화 = 1
+
+		;이 버터플라이 이펙트에 탑재된 것은 전직 아이돌이었던 이능자
+		;조직으로부터의 보너스로 수령한 것을 소재로 삼았다는 뒷설정
+		CFLAG:L_ENEMY:ＨＰ보정 += 5000
+		CFLAG:L_ENEMY:ＭＰ보정 += 70000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		CFLAG:L_ENEMY:COOP피데미지보정 = -25
+		CSTR:L_ENEMY:사고패턴 = ペインフルデターミネーション
+		;내성은 강화판 버터플라이 이펙트를 참조. 스파크 스텔라・키스 오브 디바만이 약점. 다른 EX 웨폰은 내성.
+		;검격(오비탈 에지)
+		;이미 미쳐 있으므로 정신 이상계는 받지 않는다
+		BASE:L_ENEMY:HAPPY = -100
+		BASE:L_ENEMY:PANIC = -100
+		BASE:L_ENEMY:CHARM = -100
+	CASE "アシモフ"
+		TSTR:전투이벤트패턴 = EVENT_200_5_電気仕掛けの狂神1
+
+		CALL SET_ENEMY, 9, [[キャラ:데머즐]], 80, 1, 3
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "アシモフ"
+
+		NAME:L_ENEMY = 아시모프
+		CALLNAME:L_ENEMY = 아시모프
+		CFLAG:L_ENEMY:ＨＰ보정 += 4500
+		CFLAG:L_ENEMY:ＭＰ보정 += 70000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		CFLAG:L_ENEMY:COOP피데미지보정 = -30
+		CSTR:L_ENEMY:사고패턴 = サンダーストーム
+		BASE:L_ENEMY:지혜 += 35
+		BASE:L_ENEMY:속도 += 15
+		BASE:L_ENEMY:신경 = 100
+		MAXBASE:L_ENEMY:신경 = 100
+		BASE:L_ENEMY:정신 = 100
+		MAXBASE:L_ENEMY:정신 = 100
+		BASE:L_ENEMY:HAPPY = -50
+		BASE:L_ENEMY:PANIC = -50
+		BASE:L_ENEMY:CHARM = -50
+		;허무하게 죽어선 곤란하지만 상대만 유리한 것도 뭣하니
+		CFLAG:L_ENEMY:물리피데미지보정 = -30
+		CFLAG:L_ENEMY:마법피데미지보정 = -30
+		CFLAG:L_ENEMY:비구여데미지보정 = -30
+		CFLAG:L_ENEMY:타격여데미지보정 = -30
+		CFLAG:L_ENEMY:전격여데미지보정 = -30
+
+		TALENT:L_ENEMY:건슬링거 = 1
+
+		;대전차용 레일 라이플 E.A.T.R.을 이미지
+		EQUIP:L_ENEMY:총 = GETNUM(ITEM, "대전차화승총")
+
+		CSTR:L_ENEMY:랜덤선택금지스킬 '= "ヴォルティックチェーン"
+		
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "장비지식Lv5"
+		CALL SET_SKILL, L_ENEMY, "저스티스샷"
+		CALL SET_SKILL, L_ENEMY, "암흑의뇌광"
+		CALL SET_SKILL, L_ENEMY, "썬더피스트"
+		CALL SET_SKILL, L_ENEMY, "원샷킬"
+		CALL SET_SKILL, L_ENEMY, "나루카미"
+		CALL SET_SKILL, L_ENEMY, "집뢰격"
+		CALL SET_SKILL, L_ENEMY, "방전"
+		CALL SET_SKILL, L_ENEMY, "ヴォルティックチェーン"
+		
+	CASE "デマーゼル"
+		TSTR:전투이벤트패턴 = EVENT_200_5_電気仕掛けの狂神2
+		CALL SET_ENEMY, 9, [[キャラ:데머즐]], 85, 1, 4
+		
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "デマーゼル"
+		CSTR:L_ENEMY:基本アイコンファイルネーム '= "デマーゼル_FACE_1"
+		CFLAG:L_ENEMY:ＨＰ보정 += 5000
+		CFLAG:L_ENEMY:ＭＰ보정 += 99999
+		CFLAG:L_ENEMY:행동횟수 = 3
+		CFLAG:L_ENEMY:COOP피데미지보정 = -45
+		CSTR:L_ENEMY:사고패턴 = アヴァランシェブレイクダウン
+		BASE:L_ENEMY:지혜 += 10
+		BASE:L_ENEMY:마력 += 20
+		BASE:L_ENEMY:내구 += 20
+		BASE:L_ENEMY:HAPPY = -75
+		BASE:L_ENEMY:PANIC = -75
+		BASE:L_ENEMY:CHARM = -75
+		CFLAG:L_ENEMY:800 = 99
+		CFLAG:L_ENEMY:물리피데미지보정 = -30
+		CFLAG:L_ENEMY:마법피데미지보정 = -30
+		CFLAG:L_ENEMY:검격여데미지보정 = -30
+		CFLAG:L_ENEMY:전격여데미지보정 = -30
+		CFLAG:L_ENEMY:만능여데미지보정 = -30
+		;전신 전기이기도 하고……
+		ABL:L_ENEMY:공격상성 = GET_TYPE_NUM("전격")
+
+		CSTR:L_ENEMY:랜덤선택금지스킬 '= "ヴォルティックチェーンメテオ"
+		
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "ヴォルティックチェーンメテオ"
+		CALL SET_SKILL, L_ENEMY, "ライトニングスフィア"
+		CALL SET_SKILL, L_ENEMY, "スパークカリバー"
+		CALL SET_SKILL, L_ENEMY, "심판의천둥"
+		CALL SET_SKILL, L_ENEMY, "대방전"
+		CALL SET_SKILL, L_ENEMY, "전격부스터"
+		CALL SET_SKILL, L_ENEMY, "전격가드브레이크"
+		CALL SET_SKILL, L_ENEMY, "나이스・샷"
+		CALL SET_SKILL, L_ENEMY, "엘・지하드"
+ENDSELECT
+;스테이터스 동기화 및 회복
+CALL SET_UP_ENEMY

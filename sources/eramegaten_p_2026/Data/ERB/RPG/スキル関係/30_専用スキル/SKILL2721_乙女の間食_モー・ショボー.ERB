@@ -1,0 +1,134 @@
+﻿;モーショボー専用スキル
+;MAG吸収付き上位吸血
+;習得レベルは20想定でアギラオベースで性能を算定。
+;持ち主を踏まえて物理。
+;万能・物理・吸収なのでコストはかなり高め。
+
+;スキル名
+@SKILL_NAME_2721,ARG
+RESULTS = 소녀의간식
+
+;　명중
+@SKILL_HITRATE_2721, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2721, ARG
+RETURN 150
+
+;　吸収率
+@SKILL_HP_ABSORBER_2721, ARG
+RETURN 100
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2721,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2721,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2721, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2721,ARG
+RETURN 15
+
+;　相性
+@SKILL_TYPE_2721,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2721
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2721, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2721, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2721,ARG
+RETURN 2
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2721,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2721, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2721
+RETURN GET_SUCCESSION_NUM("만능")
+
+;속도보정
+@SKILL_SPEED_2721, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2721
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2721, ARG = -1
+RETURN 5
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2721, ARG, ARG:1, ARG:2
+CALL ATTACK_SINGLE, ARG, POS(ARG:1),2721
+
+
+;====================================================
+;ダメージ発動時
+;ARG:0	行動者のキャラ番号
+;ARG:1	対象のキャラ番号
+;ARG:2	1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;
+;備考:標準の追加効果付与はblock・吸収の場合は発動しない。
+;====================================================
+@SKILL_DAMAGE_EFFECT_2721, ARG, ARG:1, ARG:2
+#DIM DYNAMIC AMOUNT_DRAIN_MAG
+SIF ARG:1 < 0
+	RETURN 0
+;無効以下では発動しない
+SIF ARG:2 <= -2
+	RETURN 0
+;対象の基準MAGの20%
+AMOUNT_DRAIN_MAG = MIN(GET_BASE_ENEMY_MAG(ARG:1) / 5, GET_CHARA_STOCK_MAG((ARG:1)))
+CALL CONTROL_MAG, ARG, AMOUNT_DRAIN_MAG
+CALL CONTROL_MAG, ARG:1, -AMOUNT_DRAIN_MAG
+TSTR:스킬메시지추가효과 = & ＭＡＧ:{AMOUNT_DRAIN_MAG}흡수
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_2721, ARG
+PRINTL 적 １체에 소위력의 만능 상성의 물리데미지를 준다。
+PRINTL 공격 성공시에 추가로 적의 ＨＰ와 ＭＡＧ를 흡수한다。
+PRINTL 흉조 모・쇼보의 필살기。
+
+@SKILL_EXPLAIN_TOOLTIP_2721, ARG
+RESULTS:0 = 적 １체에 소위력의 만능 상성의 물리데미지를 준다。
+RESULTS:2 = 공격 성공시에 추가로 적의 ＨＰ와 ＭＡＧ를 흡수한다。
+@継承不能_2721
+RETURN 1
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2721,ARG
+RETURN 1
+;とくにない
+

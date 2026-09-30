@@ -1,0 +1,1821 @@
+﻿;更新日時　　更新者　　　内容
+;2019/04/04　(ﾟдﾟ)　　　雪子の影（人型）を大改装、この間話題になってたから半魔を使うぜ！！！
+;						 ついでに、ちんちんに任せてテキストも加筆。
+;=======================================================================
+;유키코공주의성
+;ボス　雪子の影＋白馬の王子様
+;ダンジョンナンバー72　ＭＡＰ0~5
+;フラグ
+;FLAG_D13_千枝協力フラグ  1が千枝ちゃん協力 2は千枝ちゃん奴隷
+;FLAG_D13_ワープ設定  4階のワープ設定
+;ダンジョンフラグ:72:3から6 宝箱
+;FLAG_D13_会話フラグ  会話フラグ
+;FLAG_D13_雪子協力フラグ  1雪子協力 ２雪子奴隷 計画性無くて泣ける
+;FLAG_D13_影協力実行_千枝  1:千枝影に協力
+;FLAG_D13_影協力実行_雪子 1:雪子影に協力
+;=======================================================================
+
+
+
+
+;=======================================================================
+;攻略条件
+;=======================================================================
+@PREREQUISITE_DUNGEON_72
+;霧の中のスタジオで依頼を受けると入れる
+IF イベントフラグ:12:0 > 0
+	RETURN 1
+ENDIF
+
+;=======================================================================
+;ダンジョン名
+;=======================================================================
+@GET_DUNGEON_NAME_72
+#FUNCTIONS
+RESULTS_F = 雪子姫の城
+
+
+;=======================================================================
+;フロア名表示
+;=======================================================================
+@FLOORNAME_72
+PRINT 유키코 공주의 성
+SELECTCASE FLAG:현M
+	CASE 0
+		PRINTL   １층
+	CASE 1
+		PRINTL   ２층
+	CASE 2
+		PRINTL   ３층
+	CASE 3
+		PRINTL   ４층
+	CASE 4
+		PRINTL   ５층
+	CASE 5
+		PRINTL   ６층
+	CASEELSE
+		PRINTL 
+ENDSELECT
+
+;=======================================================================
+;ターミナルマップ
+;RESULT:X = 1で階層Mのマップのターミナルを登録できる
+;登録されたターミナル同士は相互で移動が可能になり、スタート地点から選べるようになる
+;
+;RESULTS:100は入り口の名称。入り口のままでいいなら定義する必要はない
+;=======================================================================
+@TERMINAL_MAP_72, IS_START
+#DIM DYNAMIC IS_START
+RESULT:5 = 1
+RESULTS:5 '= "ターミナル"
+RETURN RESULT
+
+;=======================================================================
+;特殊タイル表示
+;=======================================================================
+@TILE_MARK_ID_72_2_19
+SETCOLOR 0x00ff00
+RESULTS = ｍ
+@TILE_MARK_ID_72_3_29
+SETCOLOR 0x00ff00
+RESULTS = ｍ
+@TILE_MARK_ID_72_4_39
+SETCOLOR 0x00ff00
+RESULTS = ｍ
+
+;=======================================================================
+;スタート地点入力
+;=======================================================================
+@START_DUNGEON_72,ARG
+FLAG:현M = 0
+FLAG:현X = 2
+FLAG:현Y = 8
+;CALL AUTOMAP
+
+;=======================================================================
+;スタート時イベント
+;=======================================================================
+@EVENT_DUNGEON_START_72
+	IF ダンジョンフラグ:72:0 == 0
+		PRINTFORML ＞곰이 가르쳐 준 길을 나아가 %MASTER는% 서양풍의 성 같은 장소에 도착했다。
+			PRINTW 
+			PRINTL 　이 성의 안쪽에 유키코라고 불리는 소녀가 있는 모양이다。
+			PRINTL 　그리고 그 유키코라는 아이를 구하러 이곳에 뛰어든 치에라는 아이도…
+			PRINTW 
+			ダンジョンフラグ:72:0 = 1
+	ENDIF
+;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@CAN_ENTER_72,ARG,ARG:1
+CALL CAN_ENTER,ARG,ARG:1
+RETURN RESULT
+;=======================================================================
+;フロアデータ
+;=======================================================================
+@MAKE_FLOOR_72
+SELECTCASE FLAG:현M
+	CASE 0
+	;一階
+		FLAG:최대X = 15
+		FLAG:최대Y = 12
+		;						 012345678901234
+		CALL MAKE_FLOOR_LINE, 0,"               "
+		CALL MAKE_FLOOR_LINE, 1,"    1111111    "
+		CALL MAKE_FLOOR_LINE, 2,"    1     1    "
+		CALL MAKE_FLOOR_LINE, 3," 11 1     1 16 "
+		CALL MAKE_FLOOR_LINE, 4," 1121     1211 "
+		CALL MAKE_FLOOR_LINE, 5,"    1     1    "
+		CALL MAKE_FLOOR_LINE, 6,"    1     1    "
+		CALL MAKE_FLOOR_LINE, 7," 000      1    "
+		CALL MAKE_FLOOR_LINE, 8," 080      2    "
+		CALL MAKE_FLOOR_LINE, 9," 01011111111   "
+		CALL MAKE_FLOOR_LINE,10,"  111          "
+		CALL MAKE_FLOOR_LINE,11,"               "
+		
+		CALL SET_TILE, 1, 4,ダンジョンフラグ:72:3,0,13
+		
+		DA:13:3 += 10
+		
+	CASE 1
+	;２階
+		FLAG:최대X =  5
+		FLAG:최대Y = 15
+		;						 01234
+		CALL MAKE_FLOOR_LINE, 0,"     "
+		CALL MAKE_FLOOR_LINE, 1,"  6  "
+		CALL MAKE_FLOOR_LINE, 2,"  1  "
+		CALL MAKE_FLOOR_LINE, 3,"  1  "
+		CALL MAKE_FLOOR_LINE, 4,"  2  "
+		CALL MAKE_FLOOR_LINE, 5,"  1  "
+		CALL MAKE_FLOOR_LINE, 6," 111 "
+		CALL MAKE_FLOOR_LINE, 7," 111 "
+		CALL MAKE_FLOOR_LINE, 8," 111 "
+		CALL MAKE_FLOOR_LINE, 9,"  1  "
+		CALL MAKE_FLOOR_LINE,10,"  2  "
+		CALL MAKE_FLOOR_LINE,11,"  1  "
+		CALL MAKE_FLOOR_LINE,12,"  1  "
+		CALL MAKE_FLOOR_LINE,13,"  7  "
+		CALL MAKE_FLOOR_LINE,14,"     "
+		
+		CALL SET_TILE, 2, 8,FLAG_D13_千枝協力フラグ,0,14
+
+		DA:2:13 += 10
+		DA:2:1 += 20
+
+	CASE 2
+	;３階
+		FLAG:최대X = 18
+		FLAG:최대Y = 14
+		;						 012345678901234567
+		CALL MAKE_FLOOR_LINE, 0,"                  "
+		CALL MAKE_FLOOR_LINE, 1,"  61              "
+		CALL MAKE_FLOOR_LINE, 2,"  11    1         "
+		CALL MAKE_FLOOR_LINE, 3,"   2    1         "
+		CALL MAKE_FLOOR_LINE, 4," 11111121         "
+		CALL MAKE_FLOOR_LINE, 5," 1      1       7 "
+		CALL MAKE_FLOOR_LINE, 6," 1      1       1 "
+		CALL MAKE_FLOOR_LINE, 7," 1      1    1121 "
+		CALL MAKE_FLOOR_LINE, 8," 11     1       1 "
+		CALL MAKE_FLOOR_LINE, 9,"  1     11 91   1 "
+		CALL MAKE_FLOOR_LINE,10,"  1      1 11   1 "
+		CALL MAKE_FLOOR_LINE,11,"  1      1  2   1 "
+		CALL MAKE_FLOOR_LINE,12,"         11111111 "
+		CALL MAKE_FLOOR_LINE,13,"                  "
+		
+		CALL SET_TILE, 8, 2,ダンジョンフラグ:72:4,0,23
+
+		DA:16:5 += 20
+		DA:2:1 += 30
+
+;カジャ系を教えてくれる悪魔
+		CALL SET_TILE,11, 9,FLAG_D13_会話フラグ,0,19
+	CASE 3
+	;４階
+		FLAG:최대X = 18 
+		FLAG:최대Y = 20 
+		;						 012345678901234567
+		CALL MAKE_FLOOR_LINE, 0,"                  "
+		CALL MAKE_FLOOR_LINE, 1,"        61        "
+		CALL MAKE_FLOOR_LINE, 2,"        11        "
+		CALL MAKE_FLOOR_LINE, 3,"         2        "
+		CALL MAKE_FLOOR_LINE, 4,"      1141111     "
+		CALL MAKE_FLOOR_LINE, 5,"    111     1     "
+		CALL MAKE_FLOOR_LINE, 6,"    1       11    "
+		CALL MAKE_FLOOR_LINE, 7,"    1        1    "
+		CALL MAKE_FLOOR_LINE, 8," 1121        4 19 "
+		CALL MAKE_FLOOR_LINE, 9," 11 4        1211 "
+		CALL MAKE_FLOOR_LINE,10,"    1        1    "
+		CALL MAKE_FLOOR_LINE,11,"    11       1    "
+		CALL MAKE_FLOOR_LINE,12,"     1     111    "
+		CALL MAKE_FLOOR_LINE,13,"     1211411      "
+		CALL MAKE_FLOOR_LINE,14,"     1  2         "
+		CALL MAKE_FLOOR_LINE,15,"    11  11        "
+		CALL MAKE_FLOOR_LINE,16,"    1   11        "
+		CALL MAKE_FLOOR_LINE,17,"    1             "
+		CALL MAKE_FLOOR_LINE,18,"    7             "
+		CALL MAKE_FLOOR_LINE,19,"                  "
+		
+		CALL SET_TILE, 9,13,FLAG_D13_ワープ設定,0,34
+		CALL SET_TILE, 4, 9,FLAG_D13_ワープ設定,0,34
+		CALL SET_TILE, 8, 4,FLAG_D13_ワープ設定,0,34
+		CALL SET_TILE,13, 8,FLAG_D13_ワープ設定,0,34
+		
+		CALL SET_TILE, 1, 9,ダンジョンフラグ:72:5,0,33
+		
+		DA:4:18 += 30
+		DA:8:1 += 40
+
+		;ンダ系を教えてくれる悪魔
+		CALL SET_TILE,16, 8,FLAG_D13_会話フラグ,0,29
+	CASE 4
+		;5階
+		FLAG:최대X = 20
+		FLAG:최대Y = 14
+		;						 01234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"                    "
+		CALL MAKE_FLOOR_LINE, 1,"    1               "
+		CALL MAKE_FLOOR_LINE, 2," 1121             7 "
+		CALL MAKE_FLOOR_LINE, 3," 11 1             1 "
+		CALL MAKE_FLOOR_LINE, 4,"    1            11 "
+		CALL MAKE_FLOOR_LINE, 5,"    111          1  "
+		CALL MAKE_FLOOR_LINE, 6," 1    111111111111  "
+		CALL MAKE_FLOOR_LINE, 7," 1       2     2    "
+		CALL MAKE_FLOOR_LINE, 8," 1       1     11   "
+		CALL MAKE_FLOOR_LINE, 9," 121111111     19   "
+		CALL MAKE_FLOOR_LINE,10," 1   2              "
+		CALL MAKE_FLOOR_LINE,11," 1   11             "
+		CALL MAKE_FLOOR_LINE,12,"     16             "
+		CALL MAKE_FLOOR_LINE,13,"                    "
+		
+		CALL SET_TILE, 1, 3,ダンジョンフラグ:72:6,0,43
+		
+		DA:18:2 += 40
+		DA:6:12 += 50
+		
+;スキルカード作れるよ！
+		CALL SET_TILE,16, 9,FLAG_D13_会話フラグ,0,39
+	CASE 5
+	;６階
+		FLAG:최대X =  5
+		FLAG:최대Y = 10
+;								 01234
+		CALL MAKE_FLOOR_LINE, 0,"     "
+		CALL MAKE_FLOOR_LINE, 1," 111 "
+		CALL MAKE_FLOOR_LINE, 2," 111 "
+		CALL MAKE_FLOOR_LINE, 3," 111 "
+		CALL MAKE_FLOOR_LINE, 4,"  2  "
+		CALL MAKE_FLOOR_LINE, 5,"  1  "
+		CALL MAKE_FLOOR_LINE, 6,"  1T "
+		CALL MAKE_FLOOR_LINE, 7,"  1  "
+		CALL MAKE_FLOOR_LINE, 8,"  7  "
+		CALL MAKE_FLOOR_LINE, 9,"     "
+
+		CALL SET_TILE, 2, 2,FLAG_D13_雪子協力フラグ,0,24
+		
+		DA:2:8 += 50
+
+	CASEELSE
+ENDSELECT
+;=======================================================================
+;[5]調べる　実行時のイベント
+;=======================================================================
+@EVENT_CHECK_DUNGEON_72
+
+;==========
+;出口の処理
+;==========
+IF DA:(FLAG:현X):(FLAG:현Y) == 8
+	CALL DUNGEON_EXIT
+	RETURN 1
+;========
+;宝の処理
+;========
+;% 10は10で割ったあまり、つまり下一桁がでてきます
+;そして、下一桁はタイルの種類を表す
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 3
+	CALL TREASURE_72
+	RETURN RESULT
+;=======
+;階段
+;=======
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 6
+	CALL UPSTAIRS_72
+	RETURN RESULT
+
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 7
+	CALL DOWNSTAIRS_72
+	RETURN RESULT
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) %10 == 9
+	SELECTCASE DA:(FLAG:현X):(FLAG:현Y) /10
+	CASE 0
+		CALL DUNGEON_TERMINAL
+		RETURN 1
+	CASE 1
+		PRINTL 요정 실키：
+		PRINTL 「후훗, 레벨이 낮은 내가 이곳에 있어서 신기하단 표정이구나」
+		PRINTL 「보조 마법이 있으면 레벨이 높은 상대에게 꿀리지 않는답니다」
+		PRINTW 
+		PRINTL 「라쿠·카쟈, 스쿠·카쟈, 카쟈계라고 부르더라」
+		PRINTW 「보조 마법만 있으면, 강적과 맞닥뜨려도 문제없어」
+		PRINTW 「당신에게도 보조 마법을 걸어줄 멋진 상대가 생기면 좋겠어」
+	CASE 2
+		PRINTL 요마 리림：
+		PRINTL 「라쿤·다! 타룬·다！」
+		PRINTL 「음후후후훗. 너무 빨라서 상대도 안 되는걸♪」
+		PRINTW 
+		PRINTL 「살짝 약화 마법만 걸어줬는데 바로 끽해버리니 손쉬워라」
+		PRINTL 「뭐어, 강해보이는 애한테는 공들여서 중첩해서 걸어주지만 말야」
+		PRINTW 
+		PRINTL 「그런데 우리 서머너 못 봤어？」
+		PRINTW 「탐색하라고 그래서 뿔뿔이 흩어져서 움직이고 있는데, 어디 갔는지 몰라？」
+	CASE 3
+		PRINTL 천연 서머너：
+		PRINTL 「실키쨩의 라쿠·카쟈를 카드로 만들어서… 다음은…」
+		PRINTL 「앗, 안녕하세요～」
+		PRINTW 
+		PRINTL 「스킬 카드는 편리하네요～ 좋아하는 스킬을 달기도 하고 지우기도 하고」
+		PRINTL 「별로 안 귀여운 애라도 좋은 스킬이 있으면」
+		PRINTW 「무심코 충성도를 1000까지 키워버리게 되네요～」
+		PRINTL 「좋아! 그럼 릴림쨩! 거기 사교의 관에서 카드를 만들어달… 어라？」
+		PRINTW 
+		PRINTW 「나 방금까지 마을에 있었는데… 에, 저………」
+		PRINTL 「죄, 죄송한데요！」
+ 		PRINTL 「여기는… 어디죠！！！」
+ 		PRINTW 
+	CASEELSE
+		CALL DUNGEON_TERMINAL
+		RETURN 1
+	ENDSELECT
+ELSE
+	PRINTW 아무 것도 없는 것 같다
+	RETURN 0
+ENDIF
+
+
+
+
+
+
+;=======================================================================
+;タイル進入時のイベント
+;=======================================================================
+@EVENT_ENTER_DUNGEON_72,ARG
+;ARG = 進入時の向き　0の場合ワープなど
+;==========
+;出口の処理
+;==========
+IF DA:(FLAG:현X):(FLAG:현Y) % 10 == 8
+	CALL DUNGEON_EXIT
+	RETURN 1
+;========
+;宝の処理
+;========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 3
+	CALL TREASURE_72
+	RETURN RESULT
+;=======
+;階段
+;=======
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 6
+	CALL UPSTAIRS_72
+	RETURN RESULT
+
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 7
+	CALL DOWNSTAIRS_72
+	RETURN RESULT
+
+;==========
+;扉の処理
+;==========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 2
+	CALL DUNGEON_DOOR,ARG
+	RETURN 1
+;========================
+;이벤트
+;========================
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 4
+	SELECTCASE DA:(FLAG:현X):(FLAG:현Y) /10
+		CASE 1
+			CUSTOMDRAWLINE =
+			PRINTL 
+			PRINTW ＞당신이 방에 들어서자 같은 얼굴, 같은 모습을 한 여성이 마주보고 있었다。
+			PRINTL 
+			PRINTW 『유키코는 미인에, 피부도 뽀얗고, 여성스러워서… 남자 따윈 늘 추켜세우고 있어。
+			PRINTW 　그런 유키코가, 때때로 날 비굴한 눈으로 쳐다봐…. 그것이, 참을수 없이 기뻤어。
+			PRINTW 　그래, 유키코 따위 사실은 내가 없으면 아무것도 못해……
+			PRINTW 　내 쪽이……내 쪽이……
+			PRINTW 　내 쪽이！　훨씬 위잖아아아아！！』
+			PRINTL 
+			PRINTW 「아니야! 나, 난, 그런 생각！」
+			PRINTL 
+			PRINTW ＞얼굴이나 모습은 같지만 한 쪽은 인간이 아니다。
+			PRINTL ＞무슨 이야기를 해야할지는 모르겠지만……
+			PRINTW 　“인간이 아닌”쪽이、엷은 미소를 지으며 소녀에게 따진다。
+			PRINTL 
+			PRINTL 「……에？　어、어째서 다른 사람이！？
+			PRINTL 　싫어！　오지마！　보지말라고！
+			PRINTL 　달라……다르다구、이런 거 내가 아니야……！」
+			PRINTW
+			PRINTL 『후후……그렇지？　혼자서는 아무 것도 하지 못하는、진정한 나……
+			PRINTL 　사람으로서도、여자로서도、사실은 이기지 못해、
+			PRINTW 　구제할 수 없을 정도로、나는……。
+			PRINTW 　――그래도 나는、그 유키코가 의지해주는 게 너무 좋아。
+			PRINTW 　후후、그러니까 유키코는“친구”……손댈 수 없어……유키코가 너무 좋으니까……』
+			PRINTL 
+			PRINTW 「닥쳐！！　
+			PRINTW 　너같은 게……너따위는、
+			PRINTL 
+			PRINTL 　・・・・・・・
+			PRINTW 　내가 아니야！！」
+			PRINTL 
+			PRINTL ＞부정된 순간
+			PRINTL 　검고 끈적끈적한 어둠이 주위를 뒤덮었다.、
+			PRINTL 　귀에 거슬리는 웃음소리가、인간이 아닌 소녀의 입으로부터、울려퍼졌다。
+			PRINTW 
+			PRINTW 『우후후、우후、후……꺄하하하！！』
+			PRINTW 「윽！？」
+			PRINTL 
+			PRINTFORMW 순간、소녀의 복장을 한 정체모를 것이
+			PRINTFORMW 회색의 여학생들에게 떠받들어지는、삼각형에 눈이 박힌 마스크와 본디지로 몸을 감싼、천박한 여자로 변모했다。
+			PRINTL 
+			PRINTW 『나는 그림자……진정한 자신……』
+			PRINTL 
+			PRINTFORMW 저것은 악마인가？　아니면 전혀다른 인외인가？
+			PRINTFORMW 제대로 협상할 수 있다면 조직의 평판이 오를지도 모른다。
+			PRINTFORMW ……“그림자”라고 하는 것은、이 소녀의 퇴장을 원하는 것 같다。거들어줄까？
+			CALL INPUT_YN
+			IF RESULT == 0
+				CALL INCREASE_LD, -8
+				CALL INCREASE_LC, -8
+				
+				PRINTL 곰에게는 미안하지만 그림자 쪽을 거들기로 하자。
+				PRINTL 
+				PRINTL 「에？　이、이상하잖아、어째서 나를 향해서――」
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				CUSTOMDRAWLINE =
+				WAIT
+				CALL SET_ENEMY,9,[[キャラ:치에]],15,0,1
+				CFLAG:(CHARANUM-1):행동횟수 = 2
+				MAXBASE:(CHARANUM-1):파마 = 0
+				MAXBASE:(CHARANUM-1):주살 = 0
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+				CALL BATTLE_START
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+				PRINTL 「유키코……미안……미안해……」
+				PRINTW
+				PRINTL ＞정진정명、단순한 인간인 모양이다。
+				PRINTFORML 　완전무장한 %CALLNAME:MASTER%일행에게 가차 없이 공격당해 심신을 제압당한 소녀는、
+				PRINTL 　토라에스트와 비슷한 수수께끼의 힘에 의해 이 던전에서 배제되었다。
+				PRINTW
+				PRINTL 『당신은 나를 알아주는 거야?？
+				PRINTL 　당신은 나를 믿어주는 거야？』
+				PRINTL 
+				PRINTL ＞아무래도 이 도움은 '그림자'에게도 의외였던 것 같다。
+				PRINTL 　그림자는 끈적끈적한 눈으로 이 쪽을 내려다보며、
+				PRINTW 　자신을 짊어지고 있는 회색의 여학생들을 짓밟으며 내려왔다。
+				PRINTL 
+				PRINTL 『당신은 나를 빛나게 해줄 수 있어？』
+				PRINTL 
+				PRINTW ＞입맛을 다시는 소리가 난다。
+				PRINTFORMW 　%CALLNAME:MASTER%는 이끌리는 대로、치에의그림자를 쓰러트렸다。
+				PRINTL 
+				DA:(FLAG:현X):(FLAG:현Y) = 1
+				FLAG_D13_影協力実行_千枝 = 1
+				FLAG_D13_千枝協力フラグ = VALUE_D13_影化
+				CALL ADD_NEW_COMPANION,[[キャラ:치에의그림자]],5000
+				;加入成功の場合、初期からラブラブに
+				IF RESULT
+					LOCAL = RESULT:1
+					MARK:LOCAL:굴복각인 = 3
+					TARGET = LOCAL
+				ELSE
+					TARGET = GETCHARA([[キャラ:치에의그림자]])
+				ENDIF
+				FLAG:던전내조교 = 1
+				PRINTW 『앞으로 잘 부탁해라고 하던가？』
+				RETURN 1
+			ELSEIF RESULT == 1
+				CALL INCREASE_LD, 4
+				CALL INCREASE_LC, 4
+				
+				PRINTL 아니 굳이 예정된 계획에서 벗어나야할 이유는 없다。
+				PRINTFORMW %CALLNAME:MASTER%는、쿠마의 의뢰대로 그녀를 돕기로 했다。
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				CUSTOMDRAWLINE =
+				WAIT
+				CALL SET_ENEMY,9,[[キャラ:치에의그림자]],15,0,1
+				CFLAG:(CHARANUM-1):행동횟수 = 2
+				MAXBASE:(CHARANUM-1):파마 = 0
+				MAXBASE:(CHARANUM-1):주살 = 0
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+				CALL BATTLE_START
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+				WAIT
+			ENDIF
+			PRINTL 
+			PRINTL ＞치에의 그림자를 쓰러트렸다。
+			PRINTL 　쓰러뜨린 그림자는 본래 '치에'의 모습으로 돌아와 가만히 치에를 바라보았다.。
+			PRINTW 
+			PRINTL 「너는 내 안에 있던 다른 나라는.. 거지?……
+			PRINTL 　그러면、나는 너고、너는 나、라는 거겠지……」
+			PRINTW 
+			PRINTL ＞그림자가 창백한 불길에 휩싸인다……。
+			PRINTL 　잠시 뒤 그녀는 오렌지 색 머리의 용감한 여악마로 변하였다。
+			PRINTW ＞그런가、페르소나인가。
+			PRINTW 　치에는 어려움에 맞서기 위한 갑옷, 페르소나 '토모에'를 손에 넣었다。
+			PRINTL 
+			;どちらかと言えば雪子っぽかったかな？
+			PRINTL 「어、으 저기……그……도와주셔서 감사합니다？
+			PRINTL 　그、유키코라는 애가 여기에 붙잡혀 있어서！
+			PRINTW 　도와주시면 안될까요……？」
+			PRINTL 
+			PRINTFORML 어떡할까？
+			PRINTL [0]조교한다
+			PRINTL [1]억지로 범한다
+			PRINTL [2]협력을 약속한다
+			$INPUT_LOOP
+			INPUT
+			IF RESULT == 0
+				CALL INCREASE_LD, -8
+				CALL INCREASE_LC, -8
+				PRINTW 
+				PRINTL 「에！？　싫어、잠깐！　그러지 마앗」
+				PRINTW 
+				DA:(FLAG:현X):(FLAG:현Y) = 1
+				FLAG_D13_千枝協力フラグ = VALUE_D13_奴隷化
+				CALL ADD_NEW_COMPANION,[[キャラ:치에]],100,1
+				TARGET = GETCHARA([[キャラ:치에]])
+				FLAG:던전내조교 = 1
+			ELSEIF RESULT == 1
+				CALL INCREASE_LD, -8
+				CALL INCREASE_LC, -8
+				PRINTL 
+				PRINTL 「에！？　싫어、잠깐！　그러지 마앗」
+				PRINTW 
+				CALL ADD_NEW_COMPANION,[[キャラ:치에]], 100, 2
+				PRINTW ………
+				PRINTW ……
+				PRINTW …
+				PRINTW ＞이미 저항을 그치고 인형처럼 변한 치에를 대충 아무 장소에 숨기고 앞으로 진행하기로 했다。
+				FLAG_D13_千枝協力フラグ = VALUE_D13_奴隷化
+				DA:(FLAG:현X):(FLAG:현Y) = 1
+				RETURN 1
+			ELSE
+				CALL INCREASE_LD, 4
+				CALL INCREASE_LC, 4
+				PRINTL ＞당신은 쾌히 응하기로 했다。
+				PRINTW 
+				PRINTL 「진짜로……！？　고마워！　잘됐다。
+				PRINTL 　나는 사토나카 치에！　잘 부탁해！」
+				PRINTL 
+				PRINTW ＞그렇기 내민 손을 잡는 순간 치에는 그 자리에 주저앉고 말았다。
+				PRINTL 
+				PRINTL 「아……부끄럽네、어째서、발이……
+				PRINTL 　이、이런 걸로 쫄아버리면、유키코가！
+				PRINTL 　아 정말、어째서、이렇게、볼썽 사나운 모습을……！」
+				PRINTW 
+				PRINTL ＞당신은 초조해하는 치에를 타일러 일단 사무소로 돌아가자고 제안했다。
+				PRINTW 
+				PRINTL 「그렇…겠지. 내가 무사하지 않으면 유키코가 슬퍼할 테니 말야……
+				PRINTW 　하지만 유키코를 도와줄 수 있는 건 나뿐이니까… 나만 두고 가지 말아야 해！」 
+				CALL ADD_NEW_COMPANION,[[キャラ:치에]], 200
+				;戦闘参加可能で加入するが、調教で戦闘参加不可能になる
+				SIF RESULT
+					CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				DA:(FLAG:현X):(FLAG:현Y) = 1
+				FLAG_D13_千枝協力フラグ = VALUE_D13_協力
+				PRINTL 
+				PRINTL ＞당신은 피로에 찌든 치에를 부축해 던전에서 탈출했다。
+				PRINTW
+				FLAG:탈출 = 1
+				RETURN 1
+			ENDIF
+		CASE 2
+			PRINTW ＞방 안에는 똑같은 얼굴을 가진 여자 아이가 두 명 있다。
+			PRINTL 
+			PRINTW 『어라？　어라라라라～
+			PRINTW 　당신도 내 왕자님？　뭔가、팟 느낌이 안오는데……。
+			PRINTW 　랄까、유키코 말이야、어디론가、가보고 싶어。
+			PRINTW 　어딘가、아무도 모르는 저 멀리。왕자님이라면、데려다 줄 수 있지？
+			PRINTW 　빨리~』
+			PRINTL 
+			PRINTW ＞성 꼭대기, 왕좌 앞에 있는 분홍색 드레스를 입은 여자가 열렬한 어필을 보내고 있다。
+			PRINTW 　계단 아래서 나타나는 것은、아마기 유키코 그 본인이었다。
+			PRINTW 　눈이 반짝반짝 빛나는“그림자”와는 대조적으로、유키코는、머리를 안고 움츠린채、움직이지 않는다……。
+			IF FLAG_D13_千枝協力フラグ == VALUE_D13_協力
+				FLAG_D13_雪子協力フラグ = VALUE_D13_協力
+				IF FINDCHARA_B([[キャラ:치에]]) == 2
+					PRINTL 
+					PRINTW 「유키코！」
+					PRINTW ＞간신히 찾아낸 유키코의 모습을 보고 걱정한 치에가 한 걸음 앞으로 나섰다。
+					PRINTL
+					PRINTW 『치에… 당신도 나의 왕자님…』
+					PRINTW 　언제나 나를 이끌어주었지……치에는 강해、왕자님…"이었지"……
+					PRINTW 　――결국 、치에로는 안되는 거야！
+					PRINTW 　치에로는 나를、여기서 꺼내줄 수 없어！　구해주지 않았어！』
+					PRINTL 
+					PRINTW 「그、그만둬……」
+					PRINTL 
+					PRINTW 『어딘가、머나먼 곳으로 사라지고 싶어……여기가 아닌、어딘가로……。하지만、혼자서는 나갈 용기도 없지……
+					PRINTW 　그러니까 나는、기다렸던 거야！
+					PRINTW 　그저 쭉、언젠가 왕자님이 나를 구해주는 걸 기다렸다고!！
+					PRINTW 　대대로 내려오는 전통？　마을의 자랑？　
+					PRINTW 　그런 거、엿이나 처먹으라 그래！』
+					PRINTL 
+					PRINTW 「달라！　나는 그런……、당신 같은 건……내가 아니야！」
+					PRINTL 
+					PRINTW ＞부정의 말을 한 직후、
+					PRINTW 　치에 때랑 똑같이、유키코의 그림자에 검은 그림자가 뒤덮이고、그 형태를 바꾸기 시작한다……
+					PRINTL 
+					PRINTW 『멋져어, 힘이 끓어올라아! 그렇게나 그러면 난……
+					PRINTW 　우후… 아하하, 아하하하하하!!』
+					PRINTW 　지금이라면 와줄 거야, 와주겠지 왕자님! …우후후후후후후』
+					PRINTL 
+					PRINTW ＞거대한 얼굴을 가진 새가 된 “그림자”는 날개를 펼치고、
+					PRINTW 　스포트라이트와 함께、제대로 안만들어진 장난감 같은、2.5등신의“왕자님”이 나타났다！
+					PRINTL 
+					PRINTW 「이런게…이런게 유키코의 왕자님이었다고？
+					PRINTW 　이런 건 잘못됐어！　하앗！　투웅！！！」
+					;王子君ぶっとんだー
+					PRINTL 
+					PRINTL 『왕자님! 왕자님!? 어쩜 이럴 수가…』
+					PRINTW 
+					PRINTW 「유키코, 이제 됐어…. 기다리고 있어!! 지금, 구해줄게！！」 
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					CUSTOMDRAWLINE =
+					WAIT
+					CALL SET_ENEMY,9,[[キャラ:유키코의그림자]],18,0,1
+					CFLAG:(CHARANUM-1):행동횟수 = 2
+					MAXBASE:(CHARANUM-1):파마 = 0
+					MAXBASE:(CHARANUM-1):주살 = 0
+					CALL SYNC_STATUS,(CHARANUM-1)
+					CALL HEALTH_CHARA,(CHARANUM-1)
+					CALL BATTLE_START
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					WAIT
+					PRINTL 
+					PRINTL ＞유키코의 그림자를 쓰러트렸다。
+					PRINTW 
+					PRINTL 「유키코！！」 
+					PRINTW 
+					PRINTW 「응, 살짝, 지쳤나 봐…. 구하러 와준 거구나……
+					PRINTW 　고마워……」
+					PRINTW 
+					PRINTL 「됐어, 그런 건…. 무사해서 다행이야…」
+					PRINTW 
+					PRINTL 「저기, 응… 치에, 그 사람은…？」
+					PRINTW 
+					PRINTL 「아차, 그랬지」
+					PRINTW 
+					PRINTL ＞치에는 유키코에게 지금까지의 경위를 설명했다。
+					PRINTW 
+					PRINTL 「그렇구나, 그런 상황이…
+					PRINTL 　당신은 나쁜 사람이 아닌 듯하고… 조금만, 신세를 져볼까」
+					PRINTW 
+					PRINTL 「그치! 제법 괜찮은 구석이 있더라! 사실은 말야…」
+					PRINTW 
+					PRINTL ＞분위기를 탄 두 사람을 데리고 던전에서 탈출했다。
+					PRINTW 
+					CALL ADD_NEW_COMPANION,[[キャラ:유키코]],200
+					;戦闘参加可能で加入するが、調教で戦闘参加不可能になる
+					SIF RESULT
+						CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+					DA:(FLAG:현X):(FLAG:현Y) = 1
+				ELSE
+					PRINTL 
+					PRINTW 『어딘가、머나먼 곳으로 사라지고 싶어……여기가 아닌、어딘가로……。하지만、혼자서는 나갈 용기도 없지……
+					PRINTW 　그러니까 나는、기다렸던 거야！
+					PRINTW 　그저 쭉、언젠가 왕자님이 나를 구해주는 걸 기다렸다고!！
+					PRINTW 　대대로 내려오는 전통？　마을의 자랑？　
+					PRINTW 　그런 거、엿이나 처먹으라 그래！』
+					PRINTL 
+					PRINTL 「아니야! 난 그런 생각…, 너 같은 건… 내가 아니야！」
+					PRINTW 
+					PRINTW ＞부정의 말을 뱉은 직후、
+					PRINTW 　치에 때와 비슷하게 유키코의 그림자에서 검은 안개 같은 것이 퍼져나가고 형태를 바꾸기 시작한다……
+					PRINTL 
+					PRINTW 『멋져어, 힘이 끓어올라아! 그렇게나 그러면 난……
+					PRINTW 　우후… 아하하, 아하하하하하!!』
+					PRINTW 　지금이라면 와줄 거야, 와주겠지 왕자님! …우후후후후후후』
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					CUSTOMDRAWLINE =
+					WAIT
+					CALL SET_ENEMY,8,[[キャラ:유키코의그림자]],18,0,1
+					CFLAG:(CHARANUM-1):행동횟수 = 2
+					MAXBASE:(CHARANUM-1):파마 = 0
+					MAXBASE:(CHARANUM-1):주살 = 0
+					CALL SYNC_STATUS,(CHARANUM-1)
+					CALL HEALTH_CHARA,(CHARANUM-1)
+					
+					CALL SET_ENEMY,10,[[キャラ:백마탄왕자님]],18,0,1
+					CSTR:(CHARANUM-1):사고패턴 = 3341
+					MAXBASE:(CHARANUM-1):파마 = 0
+					MAXBASE:(CHARANUM-1):주살 = 0
+					CALL SYNC_STATUS,(CHARANUM-1)
+					CALL HEALTH_CHARA,(CHARANUM-1)
+					CALL BATTLE_START
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					WAIT
+					PRINTL 
+					PRINTL ＞유키코의 그림자를 쓰러트렸다。
+					PRINTW 
+					PRINTL 「도망치고 싶다…. 누가 도와줬으면 좋겠다…. 그러네…. 확실히 내 마음
+					PRINTL 　당신은, 나로구나…」
+					PRINTW 
+					PRINTW ＞유키코가 끄덕이자, 그림자는 순식간에 모습을 바꾸어
+					PRINTW 　분홍색의 화려한 날개를 가진 가련한 여악마의 모습이 되었다.……
+					PRINTW 　페르소나를 받아들인 유키코는 피로로 그 자리에서 쓰러졌다。
+					PRINTL 
+					PRINTL 「그러고 보니 당신은…？」
+					PRINTW 
+					PRINTL ＞당신은 지금까지의 사정을 설명했다。
+					PRINTW 
+					PRINTL 「그렇구나…. 치에도 함께구나……
+					PRINTL 　당신은 나쁜 사람이 아닌 듯하고… 조금만, 신세를 져볼까」
+					PRINTW 
+					PRINTL ＞왠지 기분 좋아보이는 유키코를 데리고 던전에서 탈출했다。
+					PRINTW 
+					CALL ADD_NEW_COMPANION,[[キャラ:유키코]],100
+					;戦闘参加可能で加入するが、調教で戦闘参加不可能になる
+					SIF RESULT
+						CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				ENDIF
+			ELSEIF FLAG_D13_千枝協力フラグ == VALUE_D13_奴隷化
+				FLAG_D13_雪子協力フラグ = VALUE_D13_奴隷化
+				IF FINDCHARA_B([[キャラ:치에]]) == 2 
+					PRINTL 
+					PRINTW 「유키코！」
+					PRINTW ＞간신히 찾아낸 유키코의 모습을 보고 걱정한 치에가 한 걸음 앞으로 나섰다。
+					PRINTL
+					PRINTW 『치에… 당신도 나의 왕자님…』
+					PRINTW 　언제나 나를 이끌어주었지……치에는 강해、왕자님…"이었지"……
+					PRINTW 　――결국 、치에로는 안되는 거야！
+					PRINTW 　치에로는 나를、여기서 꺼내줄 수 없어！　구해주지 않았어！』
+					PRINTL 
+					PRINTW 「그、그만둬……」
+					PRINTL 
+					PRINTW 『어딘가、머나먼 곳으로 사라지고 싶어……여기가 아닌、어딘가로……。하지만、혼자서는 나갈 용기도 없지……
+					PRINTW 　그러니까 나는、기다렸던 거야！
+					PRINTW 　그저 쭉、언젠가 왕자님이 나를 구해주는 걸 기다렸다고!！
+					PRINTW 　대대로 내려오는 전통？　마을의 자랑？　
+					PRINTW 　그런 거、엿이나 처먹으라 그래！』
+					PRINTL 
+					PRINTW 「달라！　나는 그런……、당신 같은 건……내가 아니야！」
+					PRINTL 
+					PRINTW ＞부정의 말을 한 직후、
+					PRINTW 　치에 때랑 똑같이、유키코의 그림자에 검은 그림자가 뒤덮이고、그 형태를 바꾸기 시작한다……
+					PRINTL 
+					PRINTW 『멋져어, 힘이 끓어올라아! 그렇게나 그러면 난……
+					PRINTW 우후… 아하하, 아하하하하하!!』
+					PRINTW 지금이라면 와줄 거야, 와주겠지 왕자님! …우후후후후후후』
+					PRINTL 
+					PRINTW ＞거대한 얼굴을 가진 새가 된 “그림자”는 날개를 펼치고、
+					PRINTW 　스포트라이트와 함께、제대로 안만들어진 장난감 같은、2.5등신의“왕자님”이 나타났다！
+					PRINTL 
+					PRINTW 「이런게…이런게 유키코의 왕자님이었다고？
+					PRINTW 　이런 모조품이 아냐! 하아악！」
+					;王子君ぶっとんだー
+					PRINTL 
+					PRINTW 토~옹！
+					PRINTW 치에의 분노에 맡긴 일격이 왕자님의 머리를 날려버렸다！
+					PRINTL 
+					PRINTL 『왕자님! 왕자님!? 어쩜 이럴 수가…』
+					PRINTW 
+					PRINTW 「유키코, 이제 됐어…. 기다리고 있어!! 지금, 구해줄게！！」 
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					CUSTOMDRAWLINE =
+					WAIT
+					CALL SET_ENEMY,9,[[キャラ:유키코의그림자]],18,0,1
+					CFLAG:(CHARANUM-1):행동횟수 = 2
+					MAXBASE:(CHARANUM-1):파마 = 0
+					MAXBASE:(CHARANUM-1):주살 = 0
+					CALL SYNC_STATUS,(CHARANUM-1)
+					CALL HEALTH_CHARA,(CHARANUM-1)
+					CALL BATTLE_START
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					WAIT
+					PRINTL 
+					PRINTL ＞유키코의 그림자를 쓰러트렸다。
+					PRINTW 
+					PRINTL 「유키코！！」
+					PRINTW 
+					PRINTW 「응, 살짝, 지쳤나 봐…. 구하러 와준 거구나……
+					PRINTW 　고마워…」
+					PRINTW 
+					PRINTL 「됐어, 그런 건…. 무사해서 다행이야…」
+					PRINTW 
+					PRINTFORML 「그러니까… 그 예쁜 몸… %CALLNAME:MASTER%에게 바치지 않겠어？」
+					PRINTW 
+					PRINTW 「에… 그거 무슨 뜻……
+					PRINTL 　자, 잠깐 그만둬! 치에！？」
+					PRINTW 
+					PRINTFORML 어떡할까？
+					PRINTL [0]조교한다
+					PRINTL [1]억지로 범한다
+					PRINTL [2]데리고 돌아간다
+					CALL INPUTINT(0, 1, 2)
+					IF RESULT == 0
+						CALL INCREASE_LD, -8
+						CALL INCREASE_LC, -8
+						PRINTL ＞첫 교육이 가장 중요할 것이다。
+						PRINTW 　당신은 유키코를 이 자리에서 조교하기로 했다。
+						CALL ADD_NEW_COMPANION,[[キャラ:유키코]],200,1
+						TARGET = GETCHARA([[キャラ:유키코]])
+						CFLAG:이벤트가입 = 1
+						FLAG:던전내조교 = 1
+						RETURN 1
+					ELSEIF RESULT == 1
+						CALL INCREASE_LD, -8
+						CALL INCREASE_LC, -8
+						PRINTW ＞첫 교육이 가장 중요할 것이다。
+						PRINTW 　당신은 치에에게 단단히 잡고 있으라고 명령하고, 유키코를 억지로 범했다。
+						CALL ADD_NEW_COMPANION,[[キャラ:유키코]],100,2
+						PRINTW ………
+						PRINTW ……
+						PRINTW …
+						PRINTW ＞짓누르고 있는 절친에게 도움을 청하는 목소리도 메마르고, 기절한 유키코를 데리고 돌아가기로 했다。
+					ELSEIF RESULT == 2
+						CALL INCREASE_LD, 4
+						CALL INCREASE_LC, 4
+						PRINTFORMW 무리하게 여기서 조교해 체력을 허비할 필요는 없겠지。
+						PRINTFORMW 시간은 충분히 있으니까…
+						CALL ADD_NEW_COMPANION,[[キャラ:유키코]],300
+					ENDIF
+				ELSE
+					PRINTL 
+					PRINTW 『어딘가、머나먼 곳으로 사라지고 싶어……여기가 아닌、어딘가로……。하지만、혼자서는 나갈 용기도 없지……
+					PRINTW 　그러니까 나는、기다렸던 거야！
+					PRINTW 　그저 쭉、언젠가 왕자님이 나를 구해주는 걸 기다렸다고!！
+					PRINTW 　대대로 내려오는 전통？　마을의 자랑？　
+					PRINTW 　그런 거、엿이나 처먹으라 그래！』
+					PRINTL 
+					PRINTW 「달라！　나는 그런……、당신 같은 건……내가 아니야！」
+					PRINTL 
+					PRINTW ＞부정의 말을 한 직후、
+					PRINTW 　치에 때랑 똑같이、유키코의 그림자에 검은 그림자가 뒤덮이고、그 형태를 바꾸기 시작한다……
+					PRINTL 
+					PRINTW 『멋져어, 힘이 끓어올라아! 그렇게나 그러면 난…
+					PRINTW 우후… 아하하, 아하하하하하!!
+					PRINTW 지금이라면 와줄 거야, 와주겠지 왕자님! …우후후후후후후』
+					PRINTL 
+					PRINTW ＞거대한 얼굴을 가진 새가 된 “그림자”는 날개를 펼치고、
+					PRINTW 　스포트라이트와 함께、제대로 안만들어진 장난감 같은、2.5등신의“왕자님”이 나타났다。
+					PRINTL 
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					CUSTOMDRAWLINE =
+					WAIT
+					CALL SET_ENEMY,8,[[キャラ:유키코의그림자]],18,0,1
+					CFLAG:(CHARANUM-1):행동횟수 = 2
+					MAXBASE:(CHARANUM-1):파마 = 0
+					MAXBASE:(CHARANUM-1):주살 = 0
+					CALL SYNC_STATUS,(CHARANUM-1)
+					CALL HEALTH_CHARA,(CHARANUM-1)
+					
+					CALL SET_ENEMY,10,[[キャラ:백마탄왕자님]],18,0,1
+					MAXBASE:(CHARANUM-1):파마 = 0
+					MAXBASE:(CHARANUM-1):주살 = 0
+					CSTR:(CHARANUM-1):사고패턴 = 3341
+					CALL SYNC_STATUS,(CHARANUM-1)
+					CALL HEALTH_CHARA,(CHARANUM-1)
+					CALL BATTLE_START
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					WAIT
+					PRINTL 
+					PRINTW ＞유키코의 그림자를 쓰러트렸다。
+					PRINTL 
+					PRINTW 「도망치고 싶어. 누군가 구해줬으면 해……그렇네……누군가가 아닌 내 마음。
+					PRINTW 　당신은、나였네……」
+					PRINTL 
+					PRINTW ＞유키코가 끄덕이자, 그림자는 순식간에 모습을 바꾸어
+					PRINTW 　분홍색의 화려한 날개를 가진 가련한 여악마의 모습이 되었다.……
+					PRINTW 　페르소나를 받아들인 유키코는 피로로 그 자리에서 쓰러졌다.。
+					PRINTL 
+					PRINTW 「그러고보니 당신은……？」
+					PRINTL 
+					PRINTW ＞당신은 지금까지의 사정을 설명했다
+					PRINTL 
+					PRINTW 「그렇구나…. 치에도 함께구나……
+					PRINTW 당신은 나쁜 사람이 아닌 듯하고… 조금만, 신세를 져볼까」
+					PRINTL 
+					PRINTL ＞왠지 기분 좋아보이는 유키코를 데리고 던전에서 탈출했다。
+					PRINTW 
+					CALL ADD_NEW_COMPANION,[[キャラ:유키코]],100
+					;戦闘参加可能で加入するが、調教で戦闘参加不可能になる
+					SIF RESULT
+						CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				ENDIF
+			ELSEIF FLAG_D13_千枝協力フラグ == VALUE_D13_影化
+				IF FINDCHARA_B([[キャラ:치에의그림자]]) == 2
+					FLAG_D13_雪子協力フラグ = VALUE_D13_影化
+					PRINTL 
+					PRINTFORMW 『유키코, 찾―았다……%UNICODE(0x2661)%』
+					PRINTL ＞히죽히죽 기세등등한 웃음과 함께 치에가 한 걸음 앞으로 나섰다。
+					PRINTW
+					PRINTW 『치에… 당신도 나의 왕자님…
+					PRINTW 　언제나 나를 이끌어주었지……치에는 강해、왕자님…"이었지"……
+					PRINTW 　――결국 、치에로는 안되는 거야！
+					PRINTW 　치에는 나를、여기서 꺼내줄 수 없어！　구해주지 않았어！』
+					PRINTL 
+					PRINTW 「그、그만둬……」
+					PRINTL 
+					PRINTW 『어딘가、머나먼 곳으로 사라지고 싶어……여기가 아닌、어딘가로……。하지만、혼자서는 나갈 용기도 없지……
+					PRINTW 　그러니까 나는、기다렸던 거야！
+					PRINTW 　그저 쭉、언젠가 왕자님이 나를 구해주는 걸 기다렸다고!！
+					PRINTW 　대대로 내려오는 전통？　마을의 자랑？　
+					PRINTW 　그런 거、엿이나 처먹으라 그래！』
+					PRINTL 
+					PRINTL 「아냐! 나는 그런 짓……, 당신 따위…… 내가 아냐!」
+					PRINTW 
+					PRINTW ＞부정의 말을 한 직후、
+					PRINTW 　치에 때랑 똑같이、유키코의 그림자에 검은 그림자가 뒤덮이고、그 형태를 바꾸기 시작한다……
+					PRINTL 
+					PRINTW 『멋져어, 힘이 끓어올라아! 그렇게나 그러면 난…
+					PRINTW 우후… 아하하, 아하하하하하!!』
+					PRINTL 
+					PRINTW ＞거대한 얼굴을 가진 새로 변한“그림자”는、진홍빛 날개를 활짝 펼쳤다.。
+					PRINTL 
+					PRINTFORMW 아무래도 여기도 '그림자'와 대치하고 있는 것 같다。
+					PRINTFORMW “치에”는 어느 쪽이“유키코”인지 지켜보며、양쪽을 바라보고 있었다.。
+					PRINTFORMW ……그러면、이번에도“그림자”를 아군으로 볼까？
+					CALL INPUT_YN
+					IF RESULT == 0
+						CALL INCREASE_LD, -8
+						CALL INCREASE_LC, -8
+						PRINTL
+						PRINTW 곰에게는 미안하지만 그림자 쪽을 거들기로 하자。
+						PRINTW 당신은、절망하고、무릎을 꿇은 소녀를……마음껏 걷어 찼다.。
+						PRINTL
+						PRINTW 「꺅……！？　어、어째서、아팟……
+						PRINTW 　이빨……부러졌……！？」
+						PRINTL 
+						PRINTW 이 행동은、“그림자”도 예상 외였던 것 같다。
+						PRINTW 입을 벌린채、믿을 수 없다는 얼굴로 이 쪽을 바라보았다。
+						PRINTL 
+						PRINTW 『에……정말로、정말로 왕자님！？
+						PRINTW 　그런……진짜？
+						PRINTW 　꿈은、아니지？』
+						;あなた「あ　どうも　王子です」王子「えっ」
+						PRINTL
+						PRINTW 「힛……！？　누구、누구야！？
+						PRINTW 　치에！　부、부탁이야、살려줘！
+						PRINTW 　있는거지！？　찾았다고……찾았다고 방금 들었는데……」
+						PRINTL
+						PRINTW “치에”는 얼굴을 찌뿌리고、“유키코”를 지키듯이、다가섰다。
+						PRINTL
+						PRINTW 『당신같은 쓰레기、잘 모르겠는데？
+						PRINTFORMW 　그렇게 생각하지、유・키・코%UNICODE(0x2661)%』
+						PRINTL
+						PRINTW ＞“치에”의 목소리에 호응하듯、
+						PRINTW 　“유키코”는、진심으로 웃으며、힘차게、새 둥지에서 날아왔다。
+						FLAG:도주불가플래그 = 1
+						FLAG:회화불능플래그 = 1
+						FLAG:선제기습취소 = 1
+						CUSTOMDRAWLINE =
+						WAIT
+						CALL SET_ENEMY,9,[[キャラ:유키코]],18,0,1
+						CFLAG:(CHARANUM-1):행동횟수 = 2
+						MAXBASE:(CHARANUM-1):파마 = 0
+						MAXBASE:(CHARANUM-1):주살 = 0
+						CALL SYNC_STATUS,(CHARANUM-1)
+						CALL HEALTH_CHARA,(CHARANUM-1)
+						CALL BATTLE_START
+						FLAG:도주불가플래그 = 0
+						FLAG:회화불능플래그 = 0
+						FLAG:선제기습취소 = 0
+						WAIT
+						PRINTL 
+						PRINTL 「카훗……게에……에에……」
+						PRINTW 
+						PRINTW ＞역시 이 쪽도 단순한 인간이었다。
+						PRINTW 　엉망으로 망가진 유키코는、검푸르게 부어오른 얼굴을 위로 향한채、
+						PRINTW 　움찔하지도 않고、마루 위에 나뒹굴었다。
+						PRINTL 
+						PRINTW 『우후후후후、나의 왕자님……아아、정말로 맞이하러 와주셨어……
+						PRINTW 　반갑고……기뻐요……』
+						PRINTL 
+						PRINTL 『착각하지마、이 사람은 나의“친구”。아무리 유키코라도 독점하게 두지 않을테니까』
+						PRINTW 
+						PRINTL 『치에……가짜 왕자님는 가만히 있어줄래……？』
+						PRINTW 
+						PRINTL 『뭐？』
+						PRINTW 
+						PRINTW 사이가 나쁜 것일까？
+						PRINTW 두 사람은 만나자마자 서로 싸우기 시작했다。
+						;我の塊がぶつかりあったらこうなることは目に見えていた。
+						PRINTL 
+						PRINTW 『이 사람에 대해서는 내가 가장 잘 알고 있어、최고의、“친구”니까』
+						PRINTL 
+						PRINTW 『아、그래?。이긴 쪽이 어딘지도 모르는 구나。
+						PRINTW 　가죠、왕자님。
+						PRINTW 　멋진 운명으로……후후……저희들、이어져 있으니까요』
+						PRINTL 
+						PRINTW ＞그 뒤、당신은、바락바락 서로 으르렁 거리는 두 사람을 데리고 던전을 탈출했다……
+						CALL ADD_NEW_COMPANION,[[キャラ:유키코의그림자]],500
+						DA:(FLAG:현X):(FLAG:현Y) = 1
+					ELSEIF RESULT == 1
+						CALL INCREASE_LD, 4
+						CALL INCREASE_LC, 4
+						PRINTW ……아마기 유키코、그녀는 쓸모가 있다。여기서는 쿠마의 의뢰를 따르자。
+						PRINTL 
+						PRINTW ＞거대한 얼굴을 가진 새로 변한“그림자”는、진홍빛 날개를 활짝 펼쳤다.。、
+						PRINTW 　스포트라이트와 함께、제대로 안만들어진 장난감 같은、2.5등신의“왕자님”이 나타났다！
+						PRINTL 
+						PRINTW 『하！？　이런게 왕자님……나 대신이라고？
+						PRINTW 　우、웃기지 마！　죽어버렷！』
+						;王子君ぶっとんだー
+						PRINTW 
+						PRINTL 『왕자님！　왕자님！？　어쩜 이럴 수가…』
+						PRINTW 
+						PRINTW 『흠、안되겠어 이녀석、인성이 쓰레기야。
+						PRINTW 　나한테 맡겨둬라、이런 닭대가리、순식간에 물리쳐주지。
+						PRINTW 　사양하지 말라구、우리들、“친구”잖아？』
+						FLAG:도주불가플래그 = 1
+						FLAG:회화불능플래그 = 1
+						FLAG:선제기습취소 = 1
+						CUSTOMDRAWLINE =
+						WAIT
+						CALL SET_ENEMY,9,[[キャラ:유키코의그림자]],18,0,1
+						CFLAG:(CHARANUM-1):행동횟수 = 2
+						MAXBASE:(CHARANUM-1):파마 = 0
+						MAXBASE:(CHARANUM-1):주살 = 0
+						CALL SYNC_STATUS,(CHARANUM-1)
+						CALL HEALTH_CHARA,(CHARANUM-1)
+						CALL BATTLE_START
+						FLAG:도주불가플래그 = 0
+						FLAG:회화불능플래그 = 0
+						FLAG:선제기습취소 = 0
+						WAIT
+						PRINTL 
+						PRINTL ＞유키코의 그림자를 쓰러트렸다。
+						PRINTW 
+						PRINTL 『괜찮니이? 유키코』
+						PRINTW 
+						PRINTW 「응, 살짝, 지쳤나 봐…. 구하러 와준 거구나…」
+						PRINTW 　고마워……치에……」
+						PRINTL 
+						PRINTL 『됐어, 딱히…. 이젠 필요 없고…』
+						PRINTW 
+						PRINTL 「필요 없어？　그런데、그 사람은……？」
+						PRINTW 
+						PRINTL 『아차, 그랬지』
+						PRINTW 
+						PRINTL ＞치에는 유키코에게 그 동안의 경위를 말했다。
+						PRINTW 
+						PRINTW 「그런가、그런 거였구나……
+						PRINTL 　당신 나쁜 사람같지는 않고……조금이지만、신세져도 될까？」
+						PRINTW 
+						PRINTL 『그래、괜찮은 곳이 있어……』
+						PRINTW 
+						PRINTL ＞들떠 있는 둘을 데리고、던전을 탈출했다。
+						PRINTW 
+						CALL ADD_NEW_COMPANION,[[キャラ:유키코]],200
+						;戦闘参加可能で加入するが、調教で戦闘参加不可能になる
+						SIF RESULT
+							CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+						DA:(FLAG:현X):(FLAG:현Y) = 1
+						FLAG_D13_雪子協力フラグ = VALUE_D13_影化
+					ENDIF
+				ELSE
+					PRINTL 
+					PRINTW 『어딘가、머나먼 곳으로 사라지고 싶어……여기가 아닌、어딘가로……。하지만、혼자서는 나갈 용기도 없지……
+					PRINTW 　그러니까 나는、기다렸던 거야！
+					PRINTW 　그저 쭉、언젠가 왕자님이 나를 구해주는 걸 기다렸다고!！
+					PRINTW 　대대로 내려오는 전통？　마을의 자랑？　
+					PRINTW 　그런 거、엿이나 처먹으라 그래！』
+					PRINTL 
+					PRINTW 「아니야! 나는 그런 일..., 당신따위... 내가 아니야！」
+					PRINTL 
+					PRINTW ＞부정의 말을 한 직후、
+					PRINTW 　치에 때랑 똑같이、유키코의 그림자에 검은 그림자가 뒤덮이고、그 형태를 바꾸기 시작한다……
+					PRINTL 
+					PRINTW 『멋져어, 힘이 끓어올라아! 그렇게나 그러면 난……
+					PRINTW 우후… 아하하, 아하하하하하!!』
+					PRINTL 
+					PRINTW ＞거대한 얼굴을 가진 새로 변한“그림자”는、진홍빛 날개를 활짝 펼쳤다。
+					PRINTL 
+					PRINTW 「아앗!?」
+					PRINTL 
+					PRINTFORMW 거대한 힘이 느껴진다。
+					PRINTFORMW 섀도라는 것은 모두 특수한 개체들뿐인 모양이다.
+					PRINTFORMW ……그러면、이번에도“그림자”를 아군으로 볼까？
+					CALL INPUT_YN
+					IF RESULT == 0
+						FLAG_D13_雪子協力フラグ = VALUE_D13_影化
+						FLAG_D13_影協力実行_雪子 = 1
+						CALL INCREASE_LD, -8
+						CALL INCREASE_LC, -8
+						PRINTW 곰에게는 미안하지만 그림자 쪽을 거들기로 하자。
+						PRINTL 당신은、절망하고、무릎을 꿇은 소녀를……마음껏 걷어 찼다.。
+						PRINTW
+						PRINTW 「꺅……！？　어、어째서、아팟……
+						PRINTW 　이빨……부러졌……！？」
+						PRINTL 
+						PRINTW 이 행동은、“그림자”도 예상 외였던 것 같다。
+						PRINTW 입을 벌린채、믿을 수 없다는 얼굴로 이 쪽을 바라보았다。
+						PRINTL 
+						PRINTW 『에……정말로、진짜로 왕자님！？ 나의 왕자님！？
+						PRINTW 　당신、정말로 왕자님이었던거네！？　나를 시시한 세계에서 구해줄 왕자님이었어！？
+						PRINTW 　아아……최고야！
+						PRINTW 　좋아해요、정말로 좋아해！　당신을 기다렸어요！
+						PRINTW 　자 빨리、도와줘！　훅하고 부셔버려！
+						PRINTW 　더러운 나를、부셔버려！』
+						;あなた「あ　どうも　王子です」王子「えっ」
+						PRINTL
+						PRINTW 「히익……！？　누구、누구야！？
+						PRINTW 　치에！　부、부탁이야、구해줘！
+						PRINTW 　치에！　아아、아아아아、아아아아아아！？」
+						
+						FLAG:도주불가플래그 = 1
+						FLAG:회화불능플래그 = 1
+						FLAG:선제기습취소 = 1
+						CUSTOMDRAWLINE =
+						WAIT
+						CALL SET_ENEMY,8,[[キャラ:유키코]],18,0,1
+						CFLAG:(CHARANUM-1):행동횟수 = 2
+						MAXBASE:(CHARANUM-1):파마 = 0
+						MAXBASE:(CHARANUM-1):주살 = 0
+						CALL SYNC_STATUS,(CHARANUM-1)
+						CALL HEALTH_CHARA,(CHARANUM-1)
+						CALL BATTLE_START
+						FLAG:도주불가플래그 = 0
+						FLAG:회화불능플래그 = 0
+						FLAG:선제기습취소 = 0
+						PRINTL 
+						PRINTW 『아아…… 왕자님! 당신은 왕자님이시군요!
+						PRINTW 　저는, 저는 당신을 만나기 위해 태어난 거군요!
+						PRINTW 　얼굴을 좀 더 잘 보여주세요…… 영차』
+						PRINTL 
+						PRINTW ＞“유키코”는, 말 그대로 얻어맞아 숨이 턱에 닿은 유키코를,
+						PRINTW 　일부러 거대한 갈고리발톱으로 짓밟았다.
+						PRINTL 
+						PRINTW 「커헉……!」
+						PRINTW 『어머? 아직 있었니, 나의 찌꺼기야.
+						
+						DA:(FLAG:현X):(FLAG:현Y) = 1
+						;雪子の影を所持していない場合、加入イベント & 処理
+						IF GETCHARA([[キャラ:유키코의그림자]]) < 0
+							PRINTW 　……저기、이거、먹어도 될까？
+							PRINTW 　아니면 그냥 죽을때까지 굴릴까？
+							PRINTFORMW 　나는 왕자님의 말이라면 무조건 따를게……%UNICODE(0x2661)%』
+							PRINTL 
+							
+							PRINTL [100]먹인다
+							PRINTL [200]박살내다
+							CALL INPUTINT, 0, 1
+							IF RESULT == 0
+								CALL ADD_NEW_COMPANION,[[キャラ:유키코의그림자]],5000, 1
+								PRINTW ＞“유키코”는、새가 물고기를 삼키듯、빈사 상태의 유키코를 입에 물었다。
+								PRINTL 
+								PRINTW 「아……아아……！？」
+								PRINTW 『기분 좋지？　내가 원했던 결말인 걸、
+								PRINTW 　자、너는 나、나는 너……
+								PRINTW 　하나가……되는거야？』
+								IF RAND:3 == 0
+									PRINTL 
+									PRINTW 뿌득、치아와 뼈가 부딪치는 소리가 났다。
+									PRINTW 푸슉하고 짙은 피와 고약한 냄새가 나는 바람이 유키코의 배에서 뿜어져 나왔다。
+									PRINTW 경련하는 그녀는 동시에 황홀한 얼굴로 웃으며 검은 피를 내뿜었다。
+									PRINTL 
+									PRINTW 『자、안녕
+									PRINTW 　어떻게해도、구제할 길 없는、쓰레기 같은 인생이었던、
+									PRINTW 　유・키・코』
+									PRINTL 
+									PRINTW 챠릉。
+									PRINTW 검은 머리카락이, 국수처럼 꽂혔다。
+									PRINTW 붉은 불길이 풍경을 물들였다。
+									PRINTW 이형의 새가 줄어들며 존재가 농축되어가는 ……
+									PRINTL 
+									PRINTW 빛이 사그라들자 눈부시게 아름다운 미소녀가 모습을 보였다。
+									PRINTL 
+									PRINTW 『후후、어때、귀여워？
+									PRINTW 　당신이 왕자님이라면, 나는 공주님。
+									PRINTFORMW 　공주님이니까……이정도로 가련하지 않으면、말이 안되지%UNICODE(0x2661)%』
+									PRINTL 
+									PRINTW “유키코”는、가련한 드레스로 몸을 감싼、공주님의 모습으로 변했다。
+									PRINTW 그 못브은、이형이 되기 전의 모습과 닮았지만、
+									PRINTW 화려한 분홍색 날개와 역시 기다란 꼬리가 활활타는 불길 속에서도 빛나고 있었다.。
+									PRINTL 
+									PRINTFORMW 『그럼、가볼가요、저의 왕자님%UNICODE(0x2661)%
+									PRINTW 　아、설레여요、두근거려요！
+									PRINTW 　이런 즐거운 일、태어나서、처음이에요。우후후、후후후、후후후후！』
+								ELSEIF RAND:2 == 0
+									;足立「ボクはさぁ、こう言うＲ－１８Ｇって良くないと思うよぉ、女の子相手にひどいなぁ」
+									PRINTW “유키코”에게 머리를 통째로 물린 유키코는 어디에 그런 힘이 남아있었는지 마지막 힘을 쥐어짜 구속에서 벗어나려 “유키코”의 입가로 비치는 긴 흑발을 흩날리며 꼴사납게 저항한다.
+									PRINTW 염치없이 뺨을 손바닥으로 몇 번이고 맞은 “유키코”는 기분이 상한 모양이다.
+									PRINTW 답례라도 하듯 기세 좋게 고개를 쳐들고 한입에 삼키지 않은 채 물고 있던 빈사의 유키코(먹잇감)를 힘껏 몇 번이고 몇 번이고 바닥에 패대기쳤다.
+									PRINTW 대리석 흰 바닥은 피로 새빨갛게 물들고, 뼈가 부서지는 불쾌한 소리와 함께 유키코의 도움을 청하는 오열과 짓눌린 비명이 울려 퍼진다.
+									PRINTW 이윽고 괴롭히는 데 질린 것인지 “유키코”가 딱 하고 이를 맞물린다.
+									PRINTW 하얗고 날카로운 단두대의 칼날이 파고들며 가련한 소녀의 목숨이 스러졌다.
+									PRINTW 가녀린 체구가 바닥으로 툭 하고 떨어져 꽃잎을 잃은 아름다운 꽃은 검붉은 피로 융단을 물들여간다……
+									PRINTL
+									PRINTW 『편하게 해 주려고 했는데 말이야
+									PRINTW 　어쩜 이리도 미련이 많은지, 마지막까지 저항하다니……
+									PRINTW 　정말로 비참하고 구제불능인, 어쩜 이리도 가련한 나
+									PRINTW 　그런 추악한 네가 왕자님에게 선택받을 리 없잖아. 정말로 바보 같은 나……』
+									PRINTL 
+									PRINTW 이형의 새는 조소를 띠며 남겨진 소녀였던 것을 츄릅, 하고 지저분한 소리를 내며 긴 혀로 휘감아
+									PRINTW 우두둑 우두둑 딱딱한 것이 산산이 부서지는 소리를 내며 천천히 여운에 젖어 황홀한 표정으로, 자신이었던 소녀를 음미하며 삼켜나갔다.
+									PRINTW “유키코”가 모든 것을 집어삼키자 이형 괴물의 거대한 체구와 그 새장은 검붉은 불꽃에 휩싸였다.
+									PRINTL 
+									PRINTW 『후후, 왕자님에게 어울리는 건 바로 나
+									PRINTW 　방해되는 것은 전부 다 불태워 없애줄게』
+									PRINTW 
+									PRINTW 단정하고 아름다운 얼굴 입가를 흉측하게 일그러뜨리며 유키코는 미소 짓고 탄화해간다……
+									PRINTW 이윽고 활활 타오르던 불꽃이 가라앉자 그곳에는 방금 전 목숨을 잃은 유키코와 똑같이 생긴 한 소녀가 모습을 드러낸다.
+									PRINTL
+									PRINTW 『……나, 예쁘죠?
+									PRINTW 　저기…… 왕자님, 다음엔 어떤 아이를 제게 맛보게 해주고 즐겁게 해 주시려나요.
+									PRINTFORMW 　당신이 나를 만족시켜 주는 한, 당신을 먹는 건 제일 마지막으로 해줄게요%UNICODE(0x2661)%』
+									PRINTW “유키코”는 유키코로 다시 태어나 웅장한 날개를 본뜬 부채로 입가를 가리고 눈을 가늘게 뜨며 사악한 미소를 짓고 있었다……
+									PRINTL 
+								ELSE
+									PRINTL 빠드득, 하고 턱이 삐걱거리는 소리가 난 뒤
+									PRINTW 유키코의 머리는 크게 벌어진 “유키코”의 입에 물렸다.
+									PRINTL 
+									PRINTW 「～～～～ッ！？」
+									PRINTL 
+									PRINTL 마치 목을 매달듯 “유키코”의 이에 끼인 유키코.
+									PRINTL 하지만 아직 살아가는 것을 포기하지 않은 모양이다. 마지막 힘을 쥐어짜 “유키코”의 얼굴에 손톱을 세운다.
+									PRINTW 유키코의 무력한 신체로는 “유키코”의 두터운 낯가죽에 상처를 입히기엔 역부족이다. 하지만……
+									PRINTL 
+									PRINTW 『이 빌어먹을 못난년이이이이익!!』
+									PRINTL 
+									PRINTL “유키코”는 유키코를 문 채 기세 좋게 고개를 쳐들고,
+									PRINTW 얼굴에 들러붙는 불쾌한 사냥감《자신》을 바닥에 내동댕이쳤다.
+									PRINTL 
+									PRINTL 『들리지, 나. 아직 안 죽였는걸!?
+									PRINTL 　얼굴이란 중요한 거라구? 특히 나처럼 젊고 아름다운 여자아이는 말이지.
+									PRINTW 　나는 아름다움을, 자신을 소중히 여기지 못하니까…… 나는 내가 되어버렸어! 되어버렸어! 되어버렸어!』
+									PRINTL 
+									PRINTL 힘이 빠진 가느다란 몸이 철썩철썩 바닥에 패대기쳐진다.
+									PRINTW 그럴 때마다 폐에 남은 공기가 밀려 나와 “유키코”의 이빨 사이에서 꺽꺽 하고 황소개구리 같은 소리가 났다.
+									PRINTL 
+									PRINTW 『되어 버렸다！　되어 버렸다！　되어 버렸다！』
+									PRINTL 
+									PRINTL 뼈가 부서지고 피부를 찢으며 피를 흩뿌리면서 눈 깜짝할 사이에 유키코의 신체가 일그러져간다.
+									PRINTL 한동안 “유키코”는 정신없이 유키코를 바닥에 내동댕이치고 있었지만,
+									PRINTW 점차 꺽꺽거리던 소리도 잦아들어 마침내 들리지 않게 되었다.
+									PRINTL 
+									PRINTW 『되어버린 거야』
+									PRINTL 
+									PRINTL “유키코”의 이가 슬금슬금 닫혀간다.
+									PRINTL 척수가 부서져 부자연스럽게 길게 늘어난 유키코의 목에 하얀 앞니가 파고든 뒤,
+									PRINTW 툭 하고 끊어져 가녀린 체구가 털썩 떨어졌다.
+									PRINTL
+									PRINTL 『편하게 죽여주려고 했는데.
+									PRINTL 　정말로 비참하고 구제불능인, 어쩜 이리도 가련한 나
+									PRINTW 　모든 게 너무 늦어버렸어. 자신조차 아끼지 못하는 나한테 왕자님 따위 올 리가 없잖아……』
+									PRINTL 
+									PRINTL “유키코”는 사탕을 핥듯 입을 움직여 타이르듯 중얼거린 뒤,
+									PRINTL 우지끈 어금니로 부수고,
+									PRINTL 꼭꼭 씹고 나서 위장 속으로 흘려보낸다.
+									PRINTW 그 발치에서는 내던져진 유키코의 몸이 붉고 검은 혈액을 흰 바닥에 문질러 넓히고 있다.
+									PRINTL
+									PRINTW 『아아, 역시 난 아름다워』
+									PRINTL
+									PRINTL 마치 커다란 새가 새장에서 풀려난 것처럼 빛나는 명화 같은 그 모습을,
+									PRINTL “유키코”는 어루만지듯 쪼아먹고 홀짝이며 그 모든 것을 삼켰다.
+									PRINTW “유키코”의 이형이 눈부시게 빛난 것은 바로 직후였다.
+									PRINTL 
+									PRINTL 「――당신은、나。
+									PRINTW 　나는、나」
+									PRINTL 
+									PRINTL 빛 속에서 금빛 눈을 한 아름다운 소녀가 걸어 나왔다.
+									PRINTL 가련한 드레스를 두른 그 모습은 이형이 되기 전 “유키코”의 모습과 꼭 닮아있었으나,
+									PRINTW 붉게 타오르는 호화로운 분홍빛 날개와 꽁지깃이 이제는 사람이 아님을 여실히 드러내고 있었다.
+									PRINTL 
+									PRINTW 「앞으로도 잘 부탁해, 나의 왕자님」
+									PRINTL 
+								ENDIF
+							ELSE
+								CALL ADD_NEW_COMPANION,[[キャラ:유키코의그림자]],5000, 2
+								PRINTFORMW 『아아……그게 최초로 하는 명령이네……%UNICODE(0x2661)%
+								PRINTW 　그럼、一단숨에……에잇！』
+								PRINTL 
+								PRINTW 털썩.
+								PRINTW 둔탁한 소리와 함께 유키코의 배를 거대한 갈고리 손톱이 뚫고 들어갔다。
+								PRINTW 그것만으로 가는 몸은 쉽게 끊어졌고 그 단면은 힘차게 날아갔다。
+								PRINTL 
+								PRINTW 『아하하하하！　정말 굉장해！　봣어？　봤지？
+								PRINTW 　가늘고 긴 장이 휙휙 돌아가면서 벽까지 날아갔어！
+								PRINTW 　즐거워……
+								PRINTW 　자유롭다는 것은、이렇게나 즐겁구나！』
+								PRINTL 
+								PRINTW “유키코”는、커다란 날개를 펼치고、가슴을 펼치고서、
+								PRINTW 　반짝반짝한 눈으로 천장을 들이받았다.。
+								PRINTL 
+								PRINTW 『왕자님！　고마워요ー！』
+								PRINTL 
+								PRINTW 　아이같이 수줍음도 창피함도 없이 뛰놀며 '유키코'는 당신이 부를 때까지 쭉 파란 하늘 속을 누비고 있다……。
+								PRINTL 
+							ENDIF
+						;すでに加入済みのパターン
+						ELSE
+							PRINTW 　응？　방해되니까 치운다？
+							PRINTFORMW 　아아……그게 최초로 하는 명령이네……%UNICODE(0x2661)%
+							PRINTW 　그럼、一단숨에……에잇！』
+							PRINTL 
+							PRINTW 털썩.
+							PRINTW 둔탁한 소리와 함께 유키코의 배를 거대한 갈고리 손톱이 뚫고 들어갔다.。
+							PRINTW 그것만으로 가는 몸은 쉽게 끊어졌고 그 단면은 힘차게 날아갔다。
+							PRINTL 
+							PRINTW 『아하하하하！　정말 굉장해！　봣어？　봤지？
+							PRINTW 　가늘고 긴 장이 휙휙 돌아가면서 벽까지 날아갔어！
+							PRINTW 　즐거워……
+							PRINTW 　자유롭다는 것은、이렇게나 즐겁구나！』
+							PRINTL 
+							PRINTW “유키코”는、커다란 날개를 펼치고、가슴을 펼치고서、
+							PRINTW 　반짝반짝한 눈으로 천장을 들이받았다.。
+							PRINTL 
+							PRINTW 『왕자님！　고마워요ー！』
+							PRINTL 
+							PRINTW 　아이같이 수줍음도 창피함도 없이 뛰놀며 '유키코'는 당신이 부를 때까지 쭉 파란 하늘 속을 누비고 있다……。
+							PRINTL 
+						ENDIF
+						;CALL ADD_NEW_COMPANION,[[キャラ:유키코의그림자]],5000
+						;加入成功の場合、初期からラブラブかつ人化
+						;IF RESULT
+						;	LOCAL = RESULT:1
+						;	MARK:LOCAL:굴복각인 = 3
+						;	
+						;	PRINTW 　……ねえ、コレ、食べてもいいかしら？
+						;	PRINTW 　それとも勝手に死ぬまで転がしておく？
+						;	PRINTFORMW 　私は王子様の言うことなら何でも従うわ……%UNICODE(0x2661)%』
+						;	PRINTL 
+							
+						;	$LOOP_TABERU
+						;	PRINTL [100]食わせる
+						;	PRINTL [200]始末する
+						;	INPUT
+							
+						;	IF RESULT == 100
+						;		;TARGET = LOCAL
+						;		TALENT:LOCAL:새 = 0
+						;		TALENT:LOCAL:모피 = 0
+						;		TALENT:LOCAL:인간화 = 1
+						;		TALENT:LOCAL:머리 = 1
+						;		TALENT:LOCAL:눈 = 1
+						;		TALENT:LOCAL:입 = 1
+						;		TALENT:LOCAL:팔 = 1
+						;		TALENT:LOCAL:갈퀴발 = 1
+						;		TALENT:LOCAL:거체 = 0
+						;		
+						;		TALENT:LOCAL:솔직함 = 1
+						;		TALENT:LOCAL:일선을넘지않음 = 0
+						;		TALENT:LOCAL:억압 = 0
+						;		
+						;		;半魔にしてみっか？
+						;		ABL:LOCAL:종족 = 36
+						;		CSTR:LOCAL:종족명 = シャドウ
+								
+						;		CALL SET_TALENT_PARTY_JOINABLE, LOCAL, "신용"
+						;		EQUIP:LOCAL:검 = 2093;生得武器（カギ爪）
+						;		
+						;		CSTR:LOCAL:타이틀 = 桃羽根の美少女
+								
+						;		NAME:LOCAL = 天城 雪子
+						;		CALLNAME:LOCAL = 雪子
+						;		
+						;		CSTR:LOCAL:40 = 本来なら、調伏され、雪子のペルソナと成るべき存在であったが、
+						;		CSTR:LOCAL:41 = あなたの介入により、逆にオリジナルを呑み込んでしまった。
+						;		
+						;		CSTR:LOCAL:43 = “雪子”は、今や、自由である。
+						;		CSTR:LOCAL:44 = 何物にも縛られず、他人を踏みにじり、わがままの限りを尽くす。
+						;		CSTR:LOCAL:45 = その姿は、吐き気がするほど邪悪であったが、同時に、誰よりも美しかった。
+						;		
+						;		PRINTW ＞“雪子”は、鳥が魚を呑むしぐさで、瀕死の雪子を口に咥えた。
+						;		PRINTL 
+						;		PRINTW 「あ……ああ……！？」
+						;		PRINTW 『気持ちいいでしょう？　私が望んだ結末だもの、
+						;		PRINTW 　さあ、あなたは私、私はあなた……
+						;		PRINTW 　一つに……なりましょう？』
+						;		IF RAND:1 == 0
+						;			PRINTL 
+						;			PRINTW がちり、と、歯と骨がぶつかる音がした。
+						;			PRINTW ぶしゅーと濃い血と臭いが噛み破られた雪子の腹から吹き出した。
+						;			PRINTW 神経を抉られ痙攣する彼女は、しかし恍惚とした顔で、微笑みながら黒い血を吐いていた。
+						;			PRINTL 
+						;			PRINTW 『じゃ、バイバイ
+						;			PRINTW 　どうしようもない、救いようのない、ゴミカスみたいな人生の、
+						;			PRINTW 　わ・た・し』
+						;			PRINTL 
+						;			PRINTW ちゅるん、と。
+						;			PRINTW 黒髪が、素麺みたいに吸い込まれた。
+						;			PRINTW 赤い炎が景色を包む。
+						;			PRINTW 異形の鳥が縮んでいく、その存在が濃縮されていく……
+						;			PRINTL 
+						;			PRINTW 光が収まると、眩いほどの美少女が、姿を現していた。
+						;			PRINTL 
+						;			PRINTW 『ふふ、どう、かわいい？
+						;			PRINTW 　あなたが王子様なら、私はお姫様。
+						;			PRINTFORMW 　お姫様なのだから……このくらい可憐でなくては、ねェ%UNICODE(0x2661)%』
+						;			PRINTL 
+						;			PRINTW “雪子”は、可憐なドレスに身を包んだ、プリンセスの姿に変わっていた。
+						;			PRINTW その姿は、異形となる前の姿によく似ていたが、
+						;			PRINTW 豪奢な桃色の羽と、同じく長く雄大な尾羽が、燃え盛る炎の中で美しく輝いていた。
+						;			PRINTL 
+						;			PRINTFORMW 『じゃ、行こっか、私の王子様%UNICODE(0x2661)%
+						;			PRINTW 　ああ、ワクワクするわ、ドキドキするわ！
+						;			PRINTW 　こんな楽しいこと、産まれて、初めて。うふふ、ふふふ、ふふふふ！』
+						;		ELSE
+						;			;足立「ボクはさぁ、こう言うＲ－１８Ｇって良くないと思うよぉ、女の子相手にひどいなぁ」
+						;			PRINTW “유키코”에게 머리를 통째로 물린 유키코는 어디에 그런 힘이 남아있었는지 마지막 힘을 쥐어짜 구속에서 벗어나려 “유키코”의 입가로 비치는 긴 흑발을 흩날리며 꼴사납게 저항한다.
+						;			PRINTW 염치없이 뺨을 손바닥으로 몇 번이고 맞은 “유키코”는 기분이 상한 모양이다.
+						;			PRINTW 답례라도 하듯 기세 좋게 고개를 쳐들고 한입에 삼키지 않은 채 물고 있던 빈사의 유키코(먹잇감)를 힘껏 몇 번이고 몇 번이고 바닥에 패대기쳤다.
+						;			PRINTW 대리석 흰 바닥은 피로 새빨갛게 물들고, 뼈가 부서지는 불쾌한 소리와 함께 유키코의 도움을 청하는 오열과 짓눌린 비명이 울려 퍼진다.
+						;			PRINTW 이윽고 괴롭히는 데 질린 것인지 “유키코”가 딱 하고 이를 맞물린다.
+						;			PRINTW 하얗고 날카로운 단두대의 칼날이 파고들며 가련한 소녀의 목숨이 스러졌다.
+						;			PRINTW 가녀린 체구가 바닥으로 툭 하고 떨어져 꽃잎을 잃은 아름다운 꽃은 검붉은 피로 융단을 물들여간다……
+						;			PRINTL
+						;			PRINTW 『편하게 해 주려고 했는데 말이야
+						;			PRINTW 　어쩜 이리도 미련이 많은지, 마지막까지 저항하다니……
+						;			PRINTW 　정말로 비참하고 구제불능인, 어쩜 이리도 가련한 나
+						;			PRINTW 　そんな醜いあなたが王子様に選ばれるわけがないじゃない　本当にバカなわたし……』
+						;			PRINTL 
+						;			PRINTW 이형의 새는 조소를 띠며 남겨진 소녀였던 것을 츄릅, 하고 지저분한 소리를 내며 긴 혀로 휘감아
+						;			PRINTW 우두둑 우두둑 딱딱한 것이 산산이 부서지는 소리를 내며 천천히 여운에 젖어 황홀한 표정으로, 자신이었던 소녀를 음미하며 삼켜나갔다.
+						;			PRINTW “유키코”가 모든 것을 집어삼키자 이형 괴물의 거대한 체구와 그 새장은 검붉은 불꽃에 휩싸였다.
+						;			PRINTL 
+						;			PRINTW 『후후, 왕자님에게 어울리는 건 바로 나
+						;			PRINTW 　방해되는 것은 전부 다 불태워 없애줄게』
+						;			PRINTW 
+						;			PRINTW 단정하고 아름다운 얼굴 입가를 흉측하게 일그러뜨리며 유키코는 미소 짓고 탄화해간다……
+						;			PRINTW 이윽고 활활 타오르던 불꽃이 가라앉자 그곳에는 방금 전 목숨을 잃은 유키코와 똑같이 생긴 한 소녀가 모습을 드러낸다.
+						;			PRINTL
+						;			PRINTW 『……나, 예쁘죠?
+						;			PRINTW 　저기…… 왕자님, 다음엔 어떤 아이를 제게 맛보게 해주고 즐겁게 해 주시려나요.
+						;			PRINTFORMW 　당신이 나를 만족시켜 주는 한, 당신을 먹는 건 제일 마지막으로 해줄게요%UNICODE(0x2661)%』
+						;			PRINTW “유키코”는 유키코로 다시 태어나 웅장한 날개를 본뜬 부채로 입가를 가리고 눈을 가늘게 뜨며 사악한 미소를 짓고 있었다……
+						;			PRINTL 
+						;		ENDIF
+						;	ELSEIF RESULT == 200
+						;		
+						;		PRINTFORMW 『ああ……それが最初の命令なのね……%UNICODE(0x2661)%
+						;		PRINTW 　じゃ、一思いに……えーい！』
+						;		PRINTL 
+						;		PRINTW 털썩.
+						;		PRINTW 鈍く曇った音と共に、雪子の腹を、大きなカギ爪が踏みつぶした。
+						;		PRINTW それだけで、細い身体は難なく千切れ、ねずみ花火みたいにクルクルと回りながら勢いよく吹っ飛んでいった。
+						;		PRINTL 
+						;		PRINTW 『アッハッハッハッハ！　すごいすごい！　見た？　ねえ見た？
+						;		PRINTW 　細長い腸をブンブン振り回して、壁まで吹っ飛んでいったわ！
+						;		PRINTW 　楽しい……
+						;		PRINTW 　自由にするのって、こんなに楽しい！』
+						;		PRINTL 
+						;		PRINTW “雪子”は、大きな羽を広げ、胸を広々と張り広げると、
+						;		PRINTW 　キラキラと目を輝かせて天井を突き破った。
+						;		PRINTL 
+						;		PRINTW 『王子様ーっ！　ありがとー！』
+						;		PRINTL 
+						;		PRINTW 　子供のように甲高く、恥も外聞もなくはしゃぎ回る“雪子”は、あなたが呼ぶまでずっと青い空の中を飛び回っていた……。
+						;		PRINTL 
+						;		
+						;		TALENT:LOCAL:솔직함 = 1
+						;		TALENT:LOCAL:일선을넘지않음 = 0
+						;		TALENT:LOCAL:억압 = 0
+						;		
+						;		;とりあえず脱がす
+						;		CFLAG:LOCAL:모자 = 0
+						;		CFLAG:LOCAL:옷 = 0
+						;		CFLAG:LOCAL:속옷（상） = 0
+						;		CFLAG:LOCAL:속옷（하） = 0
+						;		CFLAG:LOCAL:양말 = 0
+						;		CFLAG:LOCAL:신발 = 0
+						;		
+						;	ELSE
+						;		GOTO LOOP_TABERU
+						;	ENDIF
+						;	
+						;ELSE
+						;	PRINTW 　ン？　邪魔だから片付けろ？
+						;	PRINTFORMW 　ああ……それがあなたの、最初の命令なのね……%UNICODE(0x2661)%
+						;		PRINTW 　じゃ、一思いに……えーい！』
+						;		PRINTL 
+						;		PRINTW 털썩.
+						;		PRINTW 鈍く曇った音と共に、雪子の腹を、大きなカギ爪が踏みつぶした。
+						;		PRINTW それだけで、細い身体は難なく千切れ、ねずみ花火みたいにクルクルと回りながら勢いよく吹っ飛んでいった。
+						;		PRINTL 
+						;		PRINTW 『アッハッハッハッハ！　すごいすごい！　見た？　ねえ見た？
+						;		PRINTW 　細長い腸をブンブン振り回して、壁まで吹っ飛んでいったわ！
+						;		PRINTW 　楽しい……
+						;		PRINTW 　自由にするのって、こんなに楽しい！』
+						;		PRINTL 
+						;		PRINTW “雪子”は、大きな羽を広げ、胸を広々と張り広げると、
+						;		PRINTW 　キラキラと目を輝かせて天井を突き破った。
+						;		PRINTL 
+						;		PRINTW 『王子様ーっ！　ありがとー！』
+						;		PRINTL 
+						;		PRINTW 　子供のように甲高く、恥も外聞もなくはしゃぎ回る“雪子”は、あなたが呼ぶまでずっと青い空の中を飛び回っていた……。
+						;		PRINTL 
+						;ENDIF
+						;;FLAG:던전내조교 = 1
+					ELSEIF RESULT == 1
+						FLAG_D13_雪子協力フラグ = VALUE_D13_虚偽
+						CALL INCREASE_LD, 4
+						CALL INCREASE_LC, 4
+						PRINTW ……아마기 유키코、아마기 유키코、그녀는 쓸모가 있다。여기서는 쿠마의 의뢰를 따르자。
+						PRINTL 
+						PRINTL ＞“그림자”가 날개를 펼치자、
+						PRINTW 　스포트라이트와 함께、제대로 안만들어진 장난감 같은、2.5등신의“왕자님”이 나타났다！。
+						PRINTL
+ 						FLAG:도주불가플래그 = 1
+						FLAG:회화불능플래그 = 1
+						FLAG:선제기습취소 = 1
+						CUSTOMDRAWLINE =
+						WAIT
+						CALL SET_ENEMY,8,[[キャラ:유키코의그림자]],18,0,1
+						CFLAG:(CHARANUM-1):행동횟수 = 2
+						MAXBASE:(CHARANUM-1):파마 = 0
+						MAXBASE:(CHARANUM-1):주살 = 0
+						CALL SYNC_STATUS,(CHARANUM-1)
+						CALL HEALTH_CHARA,(CHARANUM-1)
+						
+						CALL SET_ENEMY,10,[[キャラ:백마탄왕자님]],18,0,1
+						CSTR:(CHARANUM-1):사고패턴 = 3341
+						MAXBASE:(CHARANUM-1):파마 = 0
+						MAXBASE:(CHARANUM-1):주살 = 0
+						CALL SYNC_STATUS,(CHARANUM-1)
+						CALL HEALTH_CHARA,(CHARANUM-1)
+						CALL BATTLE_START
+						FLAG:도주불가플래그 = 0
+						FLAG:회화불능플래그 = 0
+						FLAG:선제기습취소 = 0
+						WAIT
+						PRINTL 
+						PRINTL ＞유키코의 그림자를 쓰러트렸다。
+						PRINTW 
+						PRINTW 「도망치고 싶어. 누군가 구해줬으면 해……그렇네……누군가가 아닌 내 마음。
+						PRINTW 　너는、나였네……」
+						PRINTL 
+						PRINTW ＞유키코가 끄덕이자、그림자는 순식간에 모습을 바꾸었다
+						PRINTW 　분홍색의 화려한 날개를 가진、가련한 여악마의 모습으로 바뀌었다.……
+						PRINTW 　페르소나를 받아들인 유키코는 피로로 그 자리에서 쓰러졌다.。
+						PRINTL 
+						PRINTW 「그러고보니 당신은……？」
+						PRINTL 
+						PRINTW ＞당신은 지금까지의 사정을 설명했다。
+						PRINTL 
+						PRINTW 「그렇구나…. 치에도 함께구나……
+						;一緒じゃ無い
+						PRINTW 　당신은 나쁜 사람이 아닌 듯하고… 조금만, 신세를 져볼까」
+						PRINTL 
+						PRINTL ＞왠지 기분 좋아보이는 유키코를 데리고 던전에서 탈출했다。
+						PRINTW 
+						CALL ADD_NEW_COMPANION,[[キャラ:유키코]],100
+						;戦闘参加可能で加入するが、調教で戦闘参加不可能になる
+						SIF RESULT
+							CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+					ENDIF
+				ENDIF
+			ENDIF
+			PRINTL
+			PRINTL ＞보수로 ￥50000 입수했다
+			PRINTW
+			MONEY += 50000
+			DA:(FLAG:현X):(FLAG:현Y) = 1
+			FLAG:탈출 = 1
+			RETURN 1
+		CASE 3
+			IF FLAG:현X == 8 && FLAG:현Y == 4
+				CALL DUNGEON_WORP,3,13,7
+			ELSEIF FLAG:현X == 13 && FLAG:현Y == 8
+				CALL DUNGEON_WORP,3,10,13
+			ELSEIF FLAG:현X == 9 && FLAG:현Y == 13
+				CALL DUNGEON_WORP,3,4,10
+			ELSEIF FLAG:현X == 4 && FLAG:현Y == 9
+				CALL DUNGEON_WORP,3,7,4
+			ENDIF
+	ENDSELECT
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) %10 == 9
+	SELECTCASE DA:(FLAG:현X):(FLAG:현Y) /10
+		CASE 0
+			CALL DUNGEON_TERMINAL
+			RETURN 1
+	ENDSELECT
+ENDIF
+RETURN 0
+
+
+;=======================================================================
+;인카운트율
+;=======================================================================
+@ENCOUNT_RATE_72
+SELECTCASE FLAG:현M
+	CASE 0
+		FLAG:인카운트율 = FLAG:미조우걸음수*5
+	CASE 1
+		FLAG:인카운트율 = FLAG:미조우걸음수*5
+	CASE 2
+		FLAG:인카운트율 = FLAG:미조우걸음수*5
+	CASE 3
+		FLAG:인카운트율 = FLAG:미조우걸음수*5
+	CASE 4
+		FLAG:인카운트율 = FLAG:미조우걸음수*5
+	CASE 5
+		FLAG:인카운트율 = FLAG:미조우걸음수*5
+	CASEELSE
+		FLAG:인카운트율 = FLAG:미조우걸음수*5
+ENDSELECT
+
+;=======================================================================
+;必要レベル目安
+;推奨LV 雑魚最低LV 雑魚最高LV ボスLV 
+;=======================================================================
+@GET_DUNGEON_LV_72
+RETURN 15,  12, 17, 18
+;=======================================================================
+;エンカウント処理
+;=======================================================================
+@CHECK_ENCOUNT_72
+IF RAND:100 < FLAG:인카운트율
+	RETURN 1
+ELSE
+	FLAG:미조우걸음수 += 1
+	RETURN 0
+ENDIF
+;=======================================================================
+;敵の種族の種類数
+;=======================================================================
+@CLASS_NUM_72
+RETURN CLASS_NUM_COMMON("中級")
+;=======================================================================
+;敵の総数
+;ARGは出現する敵の種類です
+;=======================================================================
+@ENEMY_NUM_72, ARG
+RETURN ENEMY_NUM_COMMON("中級", ARG)
+;=======================================================================
+;敵の種類
+;=======================================================================
+@ENEMY_72, ARG
+SELECTCASE RAND:100
+	CASE IS < 10
+		RETURN [[キャラ:풍뢰의밸런서]], 17
+	CASE IS < 20
+		RETURN [[キャラ:T트윈즈]], 12
+	CASE IS < 35
+		RETURN [[キャラ:사갑충]], 13
+	CASE IS < 50
+		RETURN [[キャラ:잭프로스트]], 15
+	CASE IS < 60
+		RETURN [[キャラ:광애의큐피드]], 12
+	CASE IS < 75
+		RETURN [[キャラ:H애니멀]], 13
+	CASE IS < 90
+		RETURN [[キャラ:드라이어드]], 12
+	CASE IS < 100
+		RETURN [[キャラ:다크엘프]], 15
+ENDSELECT
+;=======================================================================
+;特殊調整
+;=======================================================================
+@SET_ENEMY_STATUS_72, ARG
+IF ABL:ARG:종족 == 32
+	SELECTCASE RAND:100
+		CASE IS < 70
+			ABL:ARG:아이템3 = GETNUM(ITEM, "납메달")
+		CASE IS < 90
+			ABL:ARG:아이템3 = GETNUM(ITEM, "강철메달")
+		CASEELSE
+			ABL:ARG:아이템3 = GETNUM(ITEM, "은메달")
+	ENDSELECT
+	ABL:ARG:입수확률3 = ABL:ARG:아이템3 >= 10 ? 0 # 10
+ENDIF
+;=======================================================================
+;宝箱の中身
+;=======================================================================
+@TREASURE_72
+;/10はIDを10で割る。つまり、下一桁をなくして、二桁目と三桁目を二桁の数字として取り出している
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			;IDを示しています。つまり、これはIDが1のとき、2の時で分岐
+			CASE 1
+				;GET_TREASURE,アイテム番号、入手個数、ダンジョンナンバー、あけたときONにするフラグの番号
+				;1001は傷薬で、それを1個、ダンジョンナンバーは宝箱あけるときはよそのダンジョンをあけることがないだろうのでFLAG:現ダンジョンが無難です
+				;そして、フラグはダンジョンフラグ:1(에코빌딩):0を1にするということです
+				;MAPをつくるときにこの宝箱はダンジョンフラグ:1(에코빌딩):0が0のときしか置かないことになってるのでこれで消えます
+				;CALL GETS_TREASURE, "외상약",3,FLAG:현던전,3
+				CALL GETS_TREASURE, "컴뱃드레스",1,FLAG:현던전,3
+			CASE 2
+				CALL GETS_TREASURE, "스킬카드【아기】",1,FLAG:현던전,4
+			CASE 3
+				CALL GETS_TREASURE, "도반옥",2,FLAG:현던전,5
+			CASE 4
+				CALL GETS_TREASURE, "스킬카드【무드】",1,FLAG:현던전,6
+ENDSELECT
+RETURN 1
+
+;=======================================================================
+;階段置き場
+;=======================================================================
+@UPSTAIRS_72
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) /10
+	;IDを示す
+	CASE 1
+			;階層1で、17が入ってるタイル…つまり、IDが1の7（下り階段）に飛ぶ
+			CALL DUNGEON_UPSTAIRS_ID,1,17
+	CASE 2
+			CALL DUNGEON_UPSTAIRS_ID,2,27
+	CASE 3
+			CALL DUNGEON_UPSTAIRS_ID,3,37
+	CASE 4
+			CALL DUNGEON_UPSTAIRS_ID,4,47
+	CASE 5
+			CALL DUNGEON_UPSTAIRS_ID,5,57
+	CASEELSE
+ENDSELECT
+RETURN 1
+
+@DOWNSTAIRS_72
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 1
+			;階層0で、16が入ってるタイル、つまり、IDが1の6（昇り階段）に飛ぶ
+			CALL DUNGEON_DOWNSTAIRS_ID,0,16
+	CASE 2
+			CALL DUNGEON_DOWNSTAIRS_ID,1,26
+	CASE 3
+			CALL DUNGEON_DOWNSTAIRS_ID,2,36
+	CASE 4
+			CALL DUNGEON_DOWNSTAIRS_ID,3,46
+	CASE 5
+			CALL DUNGEON_DOWNSTAIRS_ID,4,56
+ENDSELECT
+RETURN 1
+
+;=================================
+;사고패턴
+;=================================
+;王子様のディアラマウザいお
+@SET_ACTION_3341,ARG
+IF RAND:2 > 0
+	CALL CHECK_ACTIONABLE,ARG,402
+	SIF RESULT == 0
+		GOTO DECIDE_ACTION
+	CFLAG:ARG:입력행동 = 402
+	CFLAG:ARG:타겟 = 8
+	RETURN 1
+ELSE
+	$DECIDE_ACTION
+	CALL ランダム行動, ARG
+ENDIF
+
+;=================================
+;ダンジョン内調教後
+;=================================
+@TRAIN_DUNGEON_72
+	IF FLAG:현M == 1 && FLAG:현X == 2 && FLAG:현Y == 8 && FLAG_D13_影協力実行_千枝 == 0
+		PRINTL 
+		PRINTL ＞이미 저항을 그치고 인형처럼 변한 치에를 대충 아무 장소에 숨기고 앞으로 진행하기로 했다。
+		PRINTW 
+	ELSEIF FLAG:현M == 5 && FLAG:현X == 2 && FLAG:현Y == 3  && FLAG_D13_影協力実行_雪子 == 0
+		PRINTL 
+		PRINTL ＞짓누르고 있는 절친에게 도움을 청하는 목소리도 메마르고, 기절한 유키코를 데리고 돌아가기로 했다。
+		PRINTW 
+		PRINTL 
+		PRINTL ＞보수로 ￥50000 입수했다
+		PRINTW 
+		MONEY += 50000
+		DA:(FLAG:현X):(FLAG:현Y) = 1
+		FLAG:탈출 = 1
+		RETURN 1
+	ENDIF
+
+
+;=======================================================================
+;輪姦参加悪魔
+;=======================================================================
+@DUNGEON_RAPE_DEVIL_72
+;ランダムにどの悪魔が出るか決定
+;RETURN CSV番号 , 人数 , レベル
+SELECTCASE RAND:2
+	CASE 0
+		RETURN [[キャラ:풍뢰의밸런서]] , 3 + RAND:10 , CSVBASE([[キャラ:풍뢰의밸런서]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 1
+		RETURN [[キャラ:사갑충]] , 3 + RAND:10 , CSVBASE([[キャラ:사갑충]] , GETNUM(BASE , "LV") , 0) + RAND:3
+ENDSELECT

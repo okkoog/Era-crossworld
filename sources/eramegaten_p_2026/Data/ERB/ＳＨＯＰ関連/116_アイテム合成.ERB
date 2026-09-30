@@ -1,0 +1,1193 @@
+﻿;-----------------------------------------
+;아이템합성
+;
+;	Edit	Date			Author					Reason
+;	000		20xx/xx/xx		----					新規作成
+;	001		2022/06/07		Collared				UI整理プロジェクトにより配置変更
+;	002		2022/11/27		qqqqq					全体的な改修
+;	003		2023/01/05		P(bazzile)				装備条件の表示に関数をかませるように
+;	004												EXTRA強化の記述方式を変更。また、オプションで容認されていない場合に？？？？？としてでてこないように変更
+;	005		2023/04/16		P(bazzile)				ヘッドセット削除に伴い、注釈を削除
+;	006		2023/05/18		P(bazzile)				魔貨くじの判定の都合で、所持魔貨と消費魔貨が同じ場合のくじがひけなくなっていた不具合を修正
+;	007		2023/12/24								装備解説の表示処理を修正
+;	008		2024/02/13		P(bazzile)				ストックアイテムを参照・処理するように変更
+;	009		2024/06/06		P(bazzile)				範囲:縦列が範囲:なしで表記されていた不具合を修正
+;	010		2024/12/10		jガン					ドワ鍛冶の素材が手に入る御霊くじを追加
+;-----------------------------------------
+@SHOPCOMABLE_116
+SIF !IS_USEABLE_SHOPCOM
+	RETURN 0
+RESULT:1 = 1
+IF FLAG:아이템합성해금 || FLAG:DEBUG
+	RESULTS = 아이템합성
+	RETURN 1
+ELSE
+	;RESULTS = ？？？？？
+	RETURN 0
+ENDIF
+
+
+@SHOP_COM_116, ARG
+#DIM DYNAMIC REDRAW保存
+#DIM DYNAMIC LINE
+#DIMS DYNAMIC GDS, 14, 500
+#DIM DYNAMIC GDN, 12, 500
+#DIM DYNAMIC IDMAX
+#DIM DYNAMIC 表示行数
+#DIM DYNAMIC 表示数
+#DIM DYNAMIC ページ
+#DIM DYNAMIC 現項目
+#DIM DYNAMIC 選択項目
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC 表示個数
+#DIM DYNAMIC 表示項目数
+#DIMS DYNAMIC 素材
+#DIMS CONST カテゴリ = "소비아이템", "무기", "방어구", "악세서리", "특수탄", "의상", "스킬카드"
+#DIM DYNAMIC 表示カテゴリ
+;データのアクセスを多少わかりやすくする用
+#DIM CONST m合成項目名 = 10
+#DIM CONST m前提条件 = 11
+#DIM CONST m結果アイテム = 12
+#DIM CONST m結果個数取得関数 = 13
+#DIM CONST m結果個数 = 10
+#DIM CONST m合成可能状態 = 11
+
+;変数内容
+;GDS:0～9:x   ;素材リスト1～10
+;GDS:10:x     ;合成項目名（これが空文字列なら無効な項目）
+;GDS:11:x     ;前提条件
+;GDS:12:x     ;結果アイテム
+;GDS:13:x     ;合成個数取得関数（不要なら空文字列）
+;GDN:0～9:x   ;素材必要数1～10
+;GDN:10:x     ;合成個数（合成個数取得関数が設定された場合無効）
+;GDN:11:x     ;合成可能状態（-1:条件未達、0:合成不可、1:合成可能）
+
+;todo:合成用の説明文を加えたい？
+
+
+CALL LOAD_GOUSEI_LIST, GDS, GDN
+IDMAX = RESULT
+
+CALL GOUSEI_UPDATE, GDS, GDN, IDMAX
+
+;表示枠定数
+表示行数 = 5
+表示数 = 表示行数 * 4
+
+ページ = 0
+選択項目 = -1
+
+REDRAW保存 = CURRENTREDRAW()
+REDRAW 0
+LINE = LINECOUNT
+
+;ここから入力ループ
+$PRINT_LIST
+CLEARLINE LINECOUNT - LINE
+CUSTOMDRAWLINE =
+
+;選択項目の情報表示
+IF 選択項目 != -1 && GDN:m合成可能状態:選択項目 != -1
+;	PRINTFORMW {選択項目} %GDS:m結果アイテム:選択項目% {GETNUM(ITEM, GDS:m結果アイテム:選択項目)}
+	IF GDS:m合成項目名:選択項目 == "魔貨くじ" || GDS:m合成項目名:選択項目 == "御霊くじ"
+		;pass
+	ELSEIF INRANGE(GETNUM(ITEM, GDS:m結果アイテム:選択項目), 6000, 7999)
+		;衣服
+		;表示するものはない？
+	ELSEIF INRANGE(GETNUM(ITEM, GDS:m結果アイテム:選択項目), 10000, 14999)
+		CALL GOUSEI_スキル詳細, GETNUM(ITEM, GDS:m結果アイテム:選択項目) - 10000
+	ELSE
+		CALL GOUSEI_アイテム詳細, GETNUM(ITEM, GDS:m結果アイテム:選択項目)
+	ENDIF
+ENDIF
+
+CUSTOMDRAWLINE =
+PRINTL 작성하고 싶은 아이템을 선택해주세요(소지수/필요수)
+DRAWLINE
+
+;カテゴリバー
+PRINTPLAIN  표시 카테고리：
+FOR LCOUNT, 0, VARSIZE("カテゴリ")
+	SIF 表示カテゴリ == LCOUNT
+		SETCOLOR COLOR("水色")
+	PRINTS @"[{1010+LCOUNT}]%カテゴリ:LCOUNT%  "
+	RESETCOLOR
+NEXT
+PRINTL
+DRAWLINE
+
+;項目リストの表示
+;表示個数はカテゴリ全体の項目数
+;表示項目数は実際に画面に表示される項目数
+表示個数 = 0
+表示項目数 = 0
+FOR 現項目, 0, IDMAX
+	;表示する項目が一杯になったら（まだカテゴリの表示すべき項目があっても）切り上げる
+	SIF 表示項目数 >= 表示数
+		BREAK
+
+	;空き項目は飛ばす
+	SIF GDS:m合成項目名:現項目 == ""
+		CONTINUE
+
+	;合成可能状態が非表示であれば飛ばす
+;	SIF GDN:m合成可能状態:現項目 == -1
+;		CONTINUE
+
+	;現在のカテゴリ以外は飛ばす
+	SELECTCASE 表示カテゴリ
+	CASE 0  ;消費アイテム（合成素材含む）
+		SIF !INRANGE(GETNUM(ITEM, GDS:m結果アイテム:現項目), 1000, 1999) && GDS:m合成項目名:現項目 != "魔貨くじ" && GDS:m合成項目名:現項目 != "御霊くじ"
+			CONTINUE
+	CASE 1  ;剣・銃
+		SIF !INRANGE(GETNUM(ITEM, GDS:m結果アイテム:現項目), 2000, 2999)
+			CONTINUE
+	CASE 2  ;アクセ以外の防具
+		SIF !INRANGE(GETNUM(ITEM, GDS:m結果アイテム:現項目), 3000, 4999)
+			CONTINUE
+	CASE 3  ;악세서리
+		SIF !INRANGE(GETNUM(ITEM, GDS:m結果アイテム:現項目), 5000, 5499)
+			CONTINUE
+	CASE 4  ;特殊弾
+		SIF !INRANGE(GETNUM(ITEM, GDS:m結果アイテム:現項目), 5500, 5999)
+			CONTINUE
+	CASE 5  ;衣服
+		SIF !INRANGE(GETNUM(ITEM, GDS:m結果アイテム:現項目), 6000, 7999)
+			CONTINUE
+	CASE 6  ;スキルカード
+		SIF !INRANGE(GETNUM(ITEM, GDS:m結果アイテム:現項目), 10000, 14999)
+			CONTINUE
+	ENDSELECT
+
+	表示個数++
+	;이전페이지表示分は飛ばす
+	SIF 表示個数 - 1 < ページ * 表示数
+		CONTINUE
+
+	SIF 表示項目数 != 0 && 表示項目数 % 4 == 0
+		PRINTL
+
+	;合成可能状態が合成不可なら色を変える
+	SIF GDN:m合成可能状態:現項目 <= 0
+		SETCOLOR COLOR("灰色")
+
+	IF GDN:m合成可能状態:現項目 == -1
+		;条件が満たされていない場合も項目自体は表示するようにした
+		PRINTFORM [{現項目,3}]%"？？？？？？",28,LEFT%
+	ELSE
+		PRINTFORM [{現項目,3}]%GDS:m合成項目名:現項目,28,LEFT%
+	ENDIF
+	RESETCOLOR
+	表示項目数++
+NEXT
+PRINTL
+;空きスペースを調整
+FOR LCOUNT, 0, LIMIT(表示行数 - ((表示項目数 - 1) / 4 + 1), 0, 表示行数 - 1)
+	PRINTL
+NEXT
+DRAWLINE
+;合成情報
+IF 選択項目 == -1
+	PRINTL
+	PRINTL
+ELSEIF GDN:m合成可能状態:選択項目 == -1
+	;条件未達の場合は代わりに条件内容を表示
+	LCOUNT = LINECOUNT
+	SETCOLOR COLOR("明桃色")
+	CALL GOUSEI_前提条件表示, 選択項目, GDS, GDN
+	RESETCOLOR
+	SIF LINECOUNT - LCOUNT == 1
+		PRINTL
+ELSE
+	;項目名表示
+	IF GDS:m合成項目名:選択項目 == "魔貨くじ"
+		PRINTL 【마카복권】 ： 필요소재(필요수/소지수)
+	ELSEIF GDS:m合成項目名:選択項目 == "御霊くじ"
+		PRINTL 【미타마복권】 ： 필요소재(필요수/소지수)
+	ELSE
+		;---- EDIT 008 MOD START -------------------------
+		PRINTFORML 【%GDS:m合成項目名:選択項目%】소지수 {GETS_HAVE_ITEM_NUM(GDS:m結果アイテム:選択項目)} ： 필요소재(필요수/소지수)
+		;PRINTFORML 【%GDS:m合成項目名:選択項目%】所持数 {ITEM:(GDS:m結果アイテム:選択項目)} ： 必要素材(必要数/所持数)
+		;---- EDIT 008 MOD END ---------------------------
+	ENDIF
+	;素材表示
+	FOR LCOUNT, 0, 10
+		素材 '= GDS:LCOUNT:選択項目
+		SIF 素材 == ""
+			BREAK
+		IF MAX(GDN:LCOUNT:選択項目, 1) <= GOUSEI_ITEM_HAVE_NUMBER(素材)
+			SETCOLOR COLOR("AQUA")
+		ELSE
+			SETCOLOR COLOR("灰色")
+		ENDIF
+		PRINTFORM   %素材%({GDN:LCOUNT:選択項目}/{GOUSEI_ITEM_HAVE_NUMBER(素材)})
+		RESETCOLOR
+	NEXT
+	PRINTL
+ENDIF
+CUSTOMDRAWLINE =
+;合成ボタン
+SIF 選択項目 == -1 || GDN:m合成可能状態:選択項目 <= 0
+	SETCOLOR COLOR("灰色")
+PRINTL [500]합성
+RESETCOLOR
+DRAWLINE
+;ページング
+PRINTFORMLC \@ 0 < ページ ? [1001]이전페이지 # [----] \@
+PRINTFORMLC [1000]돌아간다
+PRINTFORMLC \@ 表示項目数 >= 表示数 && ページ < (IDMAX - 1) / 表示数 ? [1002]다음페이지 # [----] \@
+SIF ITEM:[[アイテム:합성가이드북]] > 0
+	PRINTLC [1003] 합성가이드북(해설)
+PRINTL 
+
+$INPUT_LOOP
+INPUT
+
+;実行処理
+SELECTCASE RESULT
+CASE 1000
+	REDRAW REDRAW保存
+	RETURN 0
+CASE 1001
+	ページ = MAX(ページ - 1, 0)
+CASE 1002
+	ページ = MIN(ページ + 1, (IDMAX - 1) / 表示数)
+CASE 1003
+	SIF ITEM:[[アイテム:합성가이드북]]
+		CALL SHOW_GOUSEI_GUIDE
+CASE 1010 TO 1016
+	表示カテゴリ = RESULT - 1010
+	ページ = 0
+CASE 0 TO 499
+	SIF GDS:m合成項目名:RESULT != ""
+		選択項目 = RESULT
+CASE 500
+	IF 選択項目 == -1 || GDN:m合成可能状態:選択項目 <= 0
+		CLEARLINE 1
+		REUSELASTLINE
+		GOTO INPUT_LOOP
+	ELSEIF GDS:m合成項目名:選択項目 == "魔貨くじ"
+		CALL GOUSEI_LOTTERY
+	ELSEIF GDS:m合成項目名:選択項目 == "御霊くじ"
+		CALL GOUSEI_MITAMA
+	ELSE
+		CALL GOUSEI_EXEC, 選択項目, GDS, GDN
+	ENDIF
+	;合成実行したら素材消費反映のため状態を更新
+	SIF RESULT
+		CALL GOUSEI_UPDATE, GDS, GDN, IDMAX
+CASEELSE
+	CLEARLINE 1
+	REUSELASTLINE
+	GOTO INPUT_LOOP
+ENDSELECT
+GOTO PRINT_LIST
+
+
+
+
+;前提条件が満たされていない場合の条件表示
+@GOUSEI_前提条件表示, ID, GDS, GDN
+#DIM DYNAMIC ID
+#DIMS REF GDS, 0, 0
+#DIM REF GDN, 0, 0
+
+IF GDS:11:ID != ""
+	CALL GOUSEI_CONDITION, GDS:11:ID
+	PRINTFORML 합성조건：%RESULTS%
+ENDIF
+
+
+;合成可能かどうかの状態を更新する
+@GOUSEI_UPDATE, GDS, GDN, IDMAX
+#DIMS REF GDS, 0, 0
+#DIM REF GDN, 0, 0
+#DIM DYNAMIC IDMAX
+#DIM DYNAMIC LCOUNT
+
+FOR LCOUNT, 0, IDMAX
+	IF GDS:10:LCOUNT != ""
+		CALL TEST_GOUSEI_CONDITION(LCOUNT, GDS, GDN)
+		GDN:11:LCOUNT = RESULT
+	ENDIF
+NEXT
+
+
+;合成条件のテスト
+;合成可能なら1、素材が不足なら0、前提条件が満たされていないなら-1
+@TEST_GOUSEI_CONDITION, ID, GDS, GDN
+#DIM ID
+#DIMS REF GDS, 0, 0
+#DIM REF GDN, 0, 0
+#DIM LCOUNT
+
+;前提条件チェック
+IF GDS:11:ID != ""
+	CALL GOUSEI_CONDITION, GDS:11:ID
+	SIF !RESULT
+		RETURN -1
+ENDIF
+
+;素材の所持数チェック
+FOR LCOUNT, 0, 10
+	SIF GDS:LCOUNT:ID == ""
+		BREAK
+	SIF GOUSEI_ITEM_HAVE_NUMBER(GDS:LCOUNT:ID) < MAX(GDN:LCOUNT:ID, 1)  ;素材必要数が0の場合でも1個は持っている必要がある
+		RETURN 0
+NEXT
+RETURN 1
+
+
+;条件文を処理してテスト結果と解説文を返す
+;テストにパスしたら真、駄目なら偽を返す
+;解説文はRESULTSに入れる
+@GOUSEI_CONDITION, COND
+#DIMS COND
+#DIMS TEMPS, 10
+#DIM LCOUNT
+#DIM LCOUNT2
+#DIM NUM
+#DIMS 条件
+#DIM 引数
+#DIM 結果
+#DIMS 解説文
+
+結果 = 1
+VARSET 解説文
+SPLIT COND, ",", TEMPS
+FOR LCOUNT, 0, RESULT / 2
+	条件 '= TEMPS:(LCOUNT * 2)
+	引数 = TOINT(TEMPS:(LCOUNT * 2 + 1))
+	SIF LCOUNT != 0
+		解説文 += "、"
+	FOR LCOUNT2, 0, 4
+		SELECTCASE LCOUNT2
+		CASE 0
+			;条件がTALENTの項目と一致したらそれで判定
+			NUM = GETNUM(TALENT, 条件)
+			IF NUM != -1
+				解説文 += @"[%条件%]"
+				SIF 引数 > 1
+					解説文 += @"{引数} 이상
+				結果 = 結果 && (TALENT:MASTER:NUM >= 引数)
+				GOTO NEXTLOOP
+			ENDIF
+		CASE 1
+			;条件がABLの項目と一致したらそれで判定
+			NUM = GETNUM(ABL, 条件)
+			IF NUM != -1
+				解説文 += @"%条件% {引数} 이상"
+				結果 = 結果 && (ABL:MASTER:NUM >= 引数)
+				GOTO NEXTLOOP
+			ENDIF
+		CASE 2
+			;アイテム名と解釈して所持個数を判定
+			NUM = GETNUM(ITEM, 条件)
+			IF NUM != -1
+				解説文 += @"%条件% {引数}개 소지"
+				結果 = 結果 && (ITEM:NUM >= 引数)
+				GOTO NEXTLOOP
+			ENDIF
+		CASE 3
+			;アイテム名でもなかったら関数指定と見なして呼び出す
+			CALLFORM %条件%, 引数
+			解説文 += RESULTS
+			結果 = 結果 && RESULT
+		CASEELSE
+			THROW 아마도 편집 미스
+		ENDSELECT
+	NEXT
+	$NEXTLOOP
+NEXT
+RESULTS '= 解説文
+RETURN 結果
+
+
+
+
+;アイテムを持っている数
+@GOUSEI_ITEM_HAVE_NUMBER, アイテム
+#FUNCTION
+#DIMS アイテム
+#DIM L_ITEMNUM
+IF アイテム == "마카"
+	RETURNF MONEY:1
+ELSEIF アイテム == "￥"
+	RETURNF MONEY
+ELSE
+	;---- EDIT 008 MOD START -------------------------
+	IF GETNUM(ITEM, アイテム) < VARSIZE("COUNT_STOCK_ITEM")
+		RETURNF ITEM:(アイテム) + COUNT_STOCK_ITEM:GETNUM(ITEM, アイテム)
+	ELSE
+		RETURNF ITEM:(アイテム)
+	ENDIF
+	;---- EDIT 008 MOD END ---------------------------
+ENDIF
+
+@GOUSEI_ITEM_CONSUME, アイテム, 個数
+#DIMS アイテム
+#DIM 個数
+IF アイテム == "마카"
+	MONEY:1 -= 個数
+ELSEIF アイテム == "￥"
+	MONEY -= 個数
+ELSE
+	ITEM:(アイテム) -= 個数
+ENDIF
+
+
+
+@GOUSEI_LOTTERY
+#LOCALSIZE 1
+IF MONEY:1 >= 200;EDIT 006 MOD
+	PRINTFORML 복권을 뽑을 횟수를 입력해주세요。 (MAX {MIN(99,MONEY:1 / 100)})
+	INPUT
+	RESULT = MIN(RESULT, 99)
+	IF RESULT < 1
+		RETURN 0
+	ELSEIF RESULT * 100 >= MONEY:1;EDIT 006 MOD
+		LOCAL = MONEY:1 / 100
+		MONEY:1 -= LOCAL * 100
+		CALL GOUSEI_KUZI,LOCAL
+	ELSE
+		MONEY:1 -= RESULT * 100
+		CALL GOUSEI_KUZI,RESULT
+	ENDIF
+ELSEIF MONEY:1 >= 100;EDIT 006 MOD
+	CALL GOUSEI_KUZI,1
+	MONEY:1 -= 100
+ELSE
+	PRINTW 마카가 부족합니다。
+	RETURN 0
+ENDIF
+RETURN 1
+
+
+@GOUSEI_KUZI,ARG
+#DIM CONST ITEMID = 3204,3608,5203,1402,1010,1011,1012,1013,1014,1015,1029,1025,1026,1027,1104,1106,1108,1122,1124,1126,1128,1130,1132,1007,1050,1051,1052,1053,1041,1047,1100,1030,1008,1009,1007,1004,1031,1032,1033,1034,1035,1036,1040,1103,1105,1107,1109,1110,1111,1112,1120,1115,1116,1117,1118,5512,5521,41,40,5503,5504,5509,5510,5505,5506,5507,5508,5515,5500,5501,5502,5511,5513,5514,5516,5517,5518,5519,5520,1412
+#DIM DYNAMIC L_ITEMNUM,80
+#DIM DYNAMIC LCOUNT
+#LOCALSIZE 1
+
+VARSET L_ITEMNUM,0
+LOCAL = 0
+FOR LCOUNT,0,ARG
+	LOCAL = RAND:100
+	SELECTCASE LOCAL
+		CASE IS < 5
+			;5/100でレア装備
+			LOCAL = RAND:3
+			SELECTCASE LOCAL
+				CASE 0
+					;휴대용헤드폰
+					L_ITEMNUM:0 += 1
+				CASE 1
+					;프로스트수트
+					L_ITEMNUM:1 += 1
+				CASEELSE
+					;눈꽃
+					L_ITEMNUM:2 += 1
+			ENDSELECT
+		CASE IS < 15
+			;10/100 で装備箱
+			L_ITEMNUM:3 += 1
+		CASE IS < 65
+			;50/100 で何かアイテム
+			;25％で（＝総計10％で）レアアイテムを含むテーブル
+			IF RAND:5 == 0
+				LOCAL = RAND:76 + 4
+			ELSE
+				LOCAL = RAND:52 + 28
+			ENDIF
+
+			SELECTCASE LOCAL
+				CASE 55 TO 57
+					;万能弾、天魔の弾丸、媚薬
+					L_ITEMNUM:LOCAL += 10
+				CASE 58 TO 67
+					;ローション、破魔呪殺、状態異常系弾丸
+					L_ITEMNUM:LOCAL += 50
+				CASE 68 TO 78
+					;属性系弾丸
+					L_ITEMNUM:LOCAL += 25
+				CASEELSE
+					;そのほか  x1
+					L_ITEMNUM:LOCAL += 1
+			ENDSELECT
+		;10/100で 1 MORE!
+		CASE IS < 75
+			PRINTL 1 MORE！
+			LCOUNT -= 2
+		CASEELSE
+			;25/100ではずれくじ
+			L_ITEMNUM:79 += 1
+	ENDSELECT
+NEXT
+
+WAIT
+FOR LCOUNT,0,80
+	IF L_ITEMNUM:LCOUNT > 0
+		PRINTFORML %ITEMNAME:(ITEMID:LCOUNT)%ｘ{L_ITEMNUM:LCOUNT} %조사만처리(ITEMNAME:(ITEMID:LCOUNT),"가")% 당첨되었다！
+		;---- EDIT 008 DEL START -------------------------
+		;GET_ITEM自体に最大数の参照処理があるので
+		;CALL CHECK_ITEMMAX,ITEMID:LCOUNT
+		;SIF RESULT == 0
+		;---- EDIT 008 DEL END ---------------------------
+		CALL GET_ITEM,ITEMID:LCOUNT,L_ITEMNUM:LCOUNT
+	ELSE
+		CONTINUE
+	ENDIF
+NEXT
+PRINTW
+
+RETURN 0
+
+;EDIT 010 MOD
+@GOUSEI_MITAMA
+#LOCALSIZE 1
+IF ITEM:미타마의조각 >= 10
+	PRINTFORML 제비를 뽑을 횟수를 입력해 주십시오. (MAX {MIN(99,ITEM:미타마의조각 / 10)})
+	INPUT
+	RESULT = MIN(RESULT, 99)
+	IF RESULT < 1
+		RETURN 0
+	ELSEIF RESULT * 10 >= ITEM:미타마의조각
+		LOCAL = ITEM:미타마의조각 / 10
+		ITEM:미타마의조각 -= LOCAL * 10
+		CALL GOUSEI_MKUZI,LOCAL
+	ELSE
+		ITEM:미타마의조각 -= RESULT * 10
+		CALL GOUSEI_MKUZI,RESULT
+	ENDIF
+ELSEIF ITEM:미타마의조각 >= 10
+	CALL GOUSEI_MKUZI,1
+	ITEM:미타마의조각 -= 10
+ELSE
+	PRINTW 미타마의조각이 부족합니다。
+	RETURN 0
+ENDIF
+RETURN 1
+
+;EDIT 010 MOD
+@GOUSEI_MKUZI,ARG
+#DIM DYNAMIC ITEMID,24
+#DIM DYNAMIC L_ITEMNUM,80
+#DIM DYNAMIC LCOUNT
+#LOCALSIZE 1
+FOR LCOUNT,0,24
+	ITEMID:LCOUNT = [[アイテム:어령즙・황]] + LCOUNT
+NEXT
+
+VARSET L_ITEMNUM,0
+LOCAL = 0
+FOR LCOUNT,0,ARG
+	LOCAL = RAND:100
+	SELECTCASE LOCAL
+		CASE IS < 10
+			;10/100で卦玉
+			L_ITEMNUM:(16 + RAND:8) += 1
+		CASE IS < 40
+			;30/100 で魔晶石　2つ
+			L_ITEMNUM:(8 + RAND:8) += 1
+			L_ITEMNUM:(8 + RAND:8) += 1
+		CASEELSE
+			;60/100で御霊汁
+			L_ITEMNUM:(0 + RAND:8) += 1
+	ENDSELECT
+NEXT
+
+WAIT
+FOR LCOUNT,0,80
+	IF L_ITEMNUM:LCOUNT > 0
+		PRINTFORML %ITEMNAME:(ITEMID:LCOUNT)% x {L_ITEMNUM:LCOUNT}에 당첨되었습니다!
+		;---- EDIT 008 DEL START -------------------------
+		;GET_ITEM自体に最大数の参照処理があるので
+		;CALL CHECK_ITEMMAX,ITEMID:LCOUNT
+		;SIF RESULT == 0
+		;---- EDIT 008 DEL END ---------------------------
+		CALL GET_ITEM,ITEMID:LCOUNT,L_ITEMNUM:LCOUNT
+	ELSE
+		CONTINUE
+	ENDIF
+NEXT
+PRINTW
+
+RETURN 0
+
+@GOUSEI_EXEC, ID, GDS, GDN
+#DIM DYNAMIC ID
+#DIMS REF GDS, 0, 0
+#DIM REF GDN, 0, 0
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC 素材
+#DIMS DYNAMIC 非消費素材, 10
+#DIM DYNAMIC 非消費素材数
+#DIM DYNAMIC 個数
+#DIM DYNAMIC 作成可能数
+#DIM CONST 作成個数プリセット = 1, 2, 3, 4, 5, 10, 20, 50
+#DIM DYNAMIC 作成回数
+
+;所持数の空きチェック
+CALL CHECK_ITEMMAX, GETNUM(ITEM, GDS:12:ID)
+IF RESULT
+	PRINTFORMW %GDS:12:ID%은(는) 더 이상 지닐 수 없습니다.
+	RETURN 0
+ENDIF
+作成可能数 = 99
+;素材表示
+PRINTL 소비소재：
+PRINTS "  "
+FOR LCOUNT, 0, 10
+	素材 '= GDS:LCOUNT:ID
+	SIF 素材 == ""
+		BREAK
+	SIF LCOUNT != 0
+		PRINTS ", "
+	IF GDN:LCOUNT:ID == 0
+		非消費素材:(非消費素材数++) '= 素材
+	ELSE
+		作成可能数 = MIN(GOUSEI_ITEM_HAVE_NUMBER(素材) / GDN:LCOUNT:ID, 作成可能数)
+	ENDIF
+	PRINTFORM %素材% {GDN:LCOUNT:ID}개 (소지수{GOUSEI_ITEM_HAVE_NUMBER(素材)})
+NEXT
+PRINTL
+PRINTL
+PRINTFORML 이상의 소재를 소비해【%GDS:12:ID%】%조사만처리(GDS:12:ID,"를")% 제작합니다。
+IF 非消費素材数 != 0
+	SETCOLOR COLOR("明桃色")
+	PRINT ※
+	FOR LCOUNT, 0, 非消費素材数
+		SIF LCOUNT != 0
+			PRINT 、
+		PRINTFORM %非消費素材:LCOUNT%
+	NEXT
+	PRINTL 은(는) 소비되지 않습니다
+ENDIF
+IF GDS:13:ID != ""
+	SETCOLOR COLOR("明桃色")
+	PRINTFORML ※1개당 아이템 복수 단위가 작성될 가능성이 있습니다.
+ELSEIF GDN:10:ID != 1
+	SETCOLOR COLOR("明桃色")
+	PRINTFORML ※1개당 아이템 {GDN:10:ID} 단위가 작성됩니다.
+ENDIF
+RESETCOLOR
+PRINTL
+;確認
+PRINTL 작성할 개수를 지정해 주십시오 (직접 개수를 입력할 수도 있습니다):
+PRINTS "[0]작성하지 않는다 "
+FOR LCOUNT, 0, VARSIZE("作成個数プリセット")
+	SIF 作成可能数 <= 作成個数プリセット:LCOUNT
+		BREAK
+	PRINTFORM  [{作成個数プリセット:LCOUNT,2}]
+NEXT
+PRINTFORM  [{作成可能数,2}]
+PRINTPLAINFORM  -- (최대{作成可能数})
+PRINTL
+;入力
+$INPUT_LOOP
+INPUT
+IF !INRANGE(RESULT, 0, 作成可能数)
+	CLEARLINE 1
+	REUSELASTLINE
+	GOTO INPUT_LOOP
+ENDIF
+SIF RESULT == 0
+	RETURN 0
+作成回数 = RESULT
+
+;素材消費
+FOR LCOUNT, 0, 10
+	素材 '= GDS:LCOUNT:ID
+	SIF 素材 == ""
+		BREAK
+	SIF SUBSTRING(素材, 0, 1) == "*"
+		CONTINUE
+	CALL GOUSEI_ITEM_CONSUME, 素材, GDN:LCOUNT:ID * 作成回数
+NEXT
+;個数 = 合成個数
+IF GDS:13:ID == ""
+	個数 = GDN:10:ID * 作成回数
+ELSE
+	個数 = 0
+	FOR LCOUNT, 0, 作成回数
+		CALLFORM %GDS:13:ID%
+		個数 += RESULT
+	NEXT
+ENDIF
+SIF 個数 <= 0
+	THROW 합성 결과의 개수 지정이 비정상입니다.({GDN:10:ID}/%GDS:13:ID%)
+;入手
+CALL GET_ITEMS, GDS:12:ID, 個数
+PRINTFORMW %GDS:12:ID%을(를) {個数}개 작성했습니다.
+RETURN 1
+
+
+
+;合成項目登録用
+;ITEM_GOUSEI2.ERBで使用
+@GOUSEI_REG, GDS, GDN, ID, 結果, 素材, 条件="", 명칭=""
+#DIMS REF GDS, 0, 0
+#DIM REF GDN, 0, 0
+#DIM ID
+#DIMS 結果
+#DIMS 素材
+#DIMS 条件
+#DIMS 명칭
+#DIMS TEMPS, 20
+#DIM LCOUNT
+
+SIF GDS:10:ID != ""
+	THROW 합성 항목 번호[{ID}]는 이미 정의되어 있습니다.(%GDS:10:ID% → %결과%)
+
+;変数内容
+;GDS:0～9:x   ;素材リスト1～10
+;GDS:10:x     ;合成項目名
+;GDS:11:x     ;前提条件
+;GDS:12:x     ;結果アイテム
+;GDS:13:x     ;合成個数取得関数（不要なら空文字列）
+;GDN:0～9:x   ;素材必要数1～10
+;GDN:10:x     ;合成個数（合成個数取得関数が設定された場合無効）
+;GDN:11:x     ;合成可能状態（-1:条件未達、0:合成不可、1:合成可能）
+
+SPLIT 結果, ",", TEMPS
+GDS:12:ID '= TEMPS:0
+IF RESULT == 1
+	GDN:10:ID = 1
+ELSEIF ISNUMERIC(TEMPS:1)
+	GDN:10:ID = TOINT(TEMPS:1)
+ELSE
+	GDS:13:ID '= TEMPS:1
+ENDIF
+
+GDS:10:ID '= 명칭
+SIF 명칭 == ""
+	GDS:10:ID '= GDS:12:ID
+GDS:11:ID '= 条件
+
+SPLIT 素材, ",", TEMPS
+SIF RESULT % 2 != 0
+	THROW 합성 소재의 정의가 잘못되었습니다. 쉼표 오기 등을 확인해 주십시오.(%소재%)
+SIF RESULT > 20
+	THROW 설정된 필요 소재의 종류가 너무 많습니다. 10종류 이하로 해 주십시오.({RESULT})
+
+FOR LCOUNT, 0, RESULT / 2
+	GDS:LCOUNT:ID '= TEMPS:(LCOUNT * 2)
+	GDN:LCOUNT:ID = TOINT(TEMPS:(LCOUNT * 2 + 1))
+NEXT
+
+
+
+@GOUSEI_スキル詳細,ARG
+#LOCALSIZE 4
+LOCAL = ARG
+
+CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", LOCAL, -1
+CALL GET_SKILL_PROP, "SKILL_RANK", LOCAL, -1		
+PRINTFORM 랭크:{RESULT,2}　
+RESULT = 0
+CALL GET_SKILL_PROP, "SKILL_HITRATE", LOCAL, -1
+PRINTFORM 명중:{RESULT,4}　
+RESULT = 0
+CALL GET_SKILL_PROP, "SKILL_POWER", LOCAL, -1
+PRINTFORM 마력:{RESULT,4}　
+RESULT = 0
+CALL GET_SKILL_PROP, "SKILL_COSTTYPE", LOCAL
+LOCAL:1 = RESULT
+RESULT = 0
+TRYCALL GET_SKILL_PROP, "SKILL_COST", LOCAL
+PRINTFORML 코스트:%RESULTS%
+
+RESULT = -1
+CALL GET_SKILL_PROP, "SKILL_TYPE", LOCAL, -1
+PRINTFORM 상성:%GET_TYPE(RESULT), 6%　
+
+TRYCALL GET_SKILL_PROP, "SKILL_DECIDE_TYPE", LOCAL, -1
+PRINTFORM \@RESULT == 1 ? EX # MA\@　
+
+CALL GET_SKILL_TARGET_STR, LOCAL, -1
+PRINTFORM 범위:%RESULTS, 8, LEFT%
+CALL GET_SKILL_PROP, "SKILL_EFECT", LOCAL, -1
+PRINTFORM 종별:%GET_SKILL_EFFECT(RESULT), 12, LEFT%
+CALL GET_SKILL_PROP, "SKILL_MINATTACKNUMBER", LOCAL,-1
+VARI MINATK_NUMBER = RESULT
+CALL GET_SKILL_PROP, "SKILL_MAXATTACKNUMBER", LOCAL,-1
+VARI MAXATK_NUMBER = RESULT
+IF MINATK_NUMBER == MAXATK_NUMBER
+	PRINTFORM 공격횟수:{MINATK_NUMBER}
+ELSE
+	PRINTFORM 공격횟수:{MINATK_NUMBER}～{MAXATK_NUMBER}
+	CALL GET_SKILL_PROP, "SKILL_MAXATK_PER", LOCAL,-1
+	VARI MAXATK_PER = RESULT
+	SIF MAXATK_PER != MAXATK_NUMBER
+		PRINTFORM 　1체당 {RESULT}HIT까지
+ENDIF
+
+CALL GET_SKILL_PROP, "SKILL_EXPLAIN", LOCAL, -1
+PRINTL 
+
+
+
+@GOUSEI_アイテム詳細,ARG
+#LOCALSIZE 4
+LOCAL = ARG
+
+IF LOCAL < 2000
+	PRINTFORML (사용아이템)
+ELSEIF LOCAL < 2500
+	PRINTFORML (검)
+ELSEIF LOCAL < 3000
+	PRINTFORML (총)
+ELSEIF LOCAL < 3500
+	PRINTFORML (머리방어구)
+ELSEIF LOCAL < 4000
+	PRINTFORML (몸통방어구)
+ELSEIF LOCAL < 4500
+	PRINTFORML (다리방어구)
+ELSEIF LOCAL < 5000
+	PRINTFORML (발방어구)
+ELSEIF LOCAL < 5500
+	PRINTFORML (악세서리)
+ELSEIF LOCAL < 5600
+	PRINTFORML (특수탄)
+ELSEIF LOCAL < 9000
+	PRINTFORML (플러그인)
+ENDIF
+
+SELECTCASE LOCAL
+	CASE 5500 TO 5600
+		;pass
+	CASE 2000 TO 9000
+		FOR LOCAL:3,1,BASESTATUSNUM
+			TRYCALLFORM 基本能力修正_{LOCAL},LOCAL:3
+			LOCAL:1 = RESULT
+			PRINTS @"%GET_BASESTATUS(LOCAL:3)% "
+			IF LOCAL:1 > 0
+				SETCOLOR COLOR("AQUA")
+				PRINT +
+			ELSEIF LOCAL:1 < 0
+				SETCOLOR COLOR("RED")
+			ENDIF
+			PRINTFORM {LOCAL:1}　
+			RESETCOLOR
+		NEXT
+		PRINTFORML 
+ENDSELECT
+
+IF LOCAL < 2000
+	SELECTCASE LOCAL
+		CASE 1100 TO 1240
+			CALL GET_SKILL_PROP, "SKILL_HITRATE", LOCAL+2000
+			PRINTFORM 명중:{RESULT,4}　
+			RESULT = 0
+			CALL GET_SKILL_PROP, "SKILL_POWER", LOCAL+2000
+			PRINTFORM 위력:{RESULT,4}　
+			RESULT = 0
+			CALL GET_SKILL_PROP, "SKILL_COSTTYPE", LOCAL+2000
+			LOCAL:1 = RESULT
+			RESULT = 0
+	ENDSELECT
+	CALL GET_SKILL_TARGET_STR, LOCAL + 2000, -1
+	PRINTFORM 범위:%RESULTS, 8, LEFT%
+	CALL GET_SKILL_PROP, "SKILL_EFECT", LOCAL+2000, -1
+	PRINTFORM 종별:%GET_SKILL_EFFECT(RESULT), 10, LEFT%
+	CALL GET_ITEMMAX, LOCAL
+	SIF RESULT:1
+		PRINTFORM 휴대가능수 {RESULT:1}　
+	CALL GET_SKILL_PROP, "SKILL_SPEED", LOCAL+2000, -1
+	PRINTFORML 속도보정 {RESULT}　
+	CALL GET_SKILL_PROP, "SKILL_EXPLAIN", LOCAL+2000, -1
+ELSEIF LOCAL < 5500
+	IF LOCAL < 3000
+		TRYCALLFORM 攻撃相性_{LOCAL} 
+		PRINTFORM 상성 [%GET_TYPE(RESULT),4%]　
+	ENDIF
+	TRYCALLFORM 戦闘能力修正_{LOCAL}, 0
+	PRINTFORM 공격 {RESULT,3}　
+	TRYCALLFORM 戦闘能力修正_{LOCAL}, 1
+	PRINTFORM 명중 {RESULT,3}　
+	TRYCALLFORM 戦闘能力修正_{LOCAL}, 2
+	PRINTFORM 방어 {RESULT,3}　
+	TRYCALLFORM 戦闘能力修正_{LOCAL}, 3
+	PRINTFORM 회피 {RESULT,3}　
+	TRYCALLFORM 戦闘能力修正_{LOCAL}, 4
+	PRINTFORM 마위 {RESULT,3}　
+	TRYCALLFORM 戦闘能力修正_{LOCAL}, 5
+	PRINTFORML 마효 {RESULT,3}　
+	IF LOCAL < 3000 && LOCAL >= 2500
+		TRYCALLFORM 銃攻撃_{LOCAL}
+		PRINTFORM 총공격 {RESULT,3}　
+		TRYCALLFORM 銃命中_{LOCAL}
+		PRINTFORML 총명중 {RESULT,3}　
+	ENDIF
+	LOCAL:2 = 0
+	FOR LOCAL:1 , 0 , TYPENUM
+		TRYCALLFORM 防御相性_{LOCAL}, LOCAL:1
+		IF RESULT != 100
+			LOCAL:2 += 1
+			IF LOCAL:2 % 7 == 1
+				PRINTL 
+			ENDIF
+			IF RESULT < 100 || RESULT == 999
+				SETCOLOR 51, 255, 255
+			ELSE
+				SETCOLOR 204, 0, 0
+			ENDIF
+			IF RESULT == 999
+				PRINTFORM [%GET_TYPE(LOCAL:1),4%:반사]　
+			ELSEIF RESULT == 50
+				PRINTFORM [%GET_TYPE(LOCAL:1),4%:반감]　
+			ELSEIF RESULT == 0
+				PRINTFORM [%GET_TYPE(LOCAL:1),4%:무효]　
+			ELSE
+				PRINTFORM [%GET_TYPE(LOCAL:1),4%:{RESULT,4}]　
+			ENDIF
+		ENDIF
+		RESETCOLOR
+	NEXT
+	IF LOCAL < 3000
+		PRINTL
+		TRYCALLFORM 最低攻撃回数_{LOCAL}
+		PRINTFORM 공격횟수 {RESULT}
+		TRYCALLFORM 最大攻撃回数_{LOCAL}
+		PRINTFORM -{RESULT}　
+		TRYCALLFORM 射程_{LOCAL}
+		LOCAL:1 = RESULT
+		PRINT 사거리:
+		PRINTFORM \@ INRANGE(LOCAL:1, 1, 4) ? %GET_RANGE(LOCAL:1)% # ？ \@　
+		TRYCALLFORM 攻撃範囲_{LOCAL},
+		LOCAL:1 = RESULT
+		PRINT 범위:
+		PRINTFORM %GET_SPHERE(LOCAL:1),8,LEFT%
+	ENDIF
+	SELECTCASE LOCAL
+		CASE 2500 TO 3000
+		TRYCALLFORM 特殊弾倉_{LOCAL}
+		PRINTFORM 특수탄창 {RESULT}　
+	ENDSELECT
+	IF LOCAL < 3000
+		TRYCALLFORM 速度補正_{LOCAL}
+		PRINTFORM 속도보정 {RESULT}　
+	ENDIF
+	SELECTCASE LOCAL
+		CASE 2000 TO 2499
+		TRYCALLFORM 剣タイプ_{LOCAL}
+		PRINTFORML %GET_WEAPON_TYPE(RESULT)%
+		CASE 2500 TO 2999
+		TRYCALLFORM 銃タイプ_{LOCAL}
+		PRINTFORM %GET_GUNTYPE(RESULT)%　
+	ENDSELECT
+ELSEIF LOCAL < 5600
+	;pass
+ELSEIF LOCAL < 9000
+	TRYCALLFORM 増加CP_{LOCAL}
+	PRINTFORM 증가CP {RESULT}　
+	TRYCALLFORM 必要レベル_{LOCAL}
+	PRINTFORM 필요레벨 {RESULT}　
+ENDIF
+PRINTL 
+;---- EDIT 003 MOD START -------------------------
+;TRYCALLFORM 装備条件説明_{LOCAL}
+CALL EQ_装備条件説明, LOCAL
+;---- EDIT 007 MOD START -------------------------
+;TRYCALLFORM 装備解説_{LOCAL}
+CALL EQ_装備解説, LOCAL
+;---- EDIT 007 MOD END ---------------------------
+PRINTL 
+;---- EDIT 003 MOD END ---------------------------
+
+
+@SHOW_GOUSEI_GUIDE
+#DIM DYNAMIC LINE
+
+LINE = LINECOUNT
+$MENU
+CLEARLINE LINECOUNT - LINE
+
+PRINTL [0]소재의 입수 방법
+PRINTL [1]합성 아이템 정보(아이템)
+PRINTL [2]합성 아이템 정보(무기)
+PRINTL [3]합성 아이템 정보(무기 2)
+PRINTL [4]합성 아이템 정보(방어구)
+PRINTL [9]돌아간다
+
+CALL INPUTINT, 0, 1, 2, 3, 4, 9
+SELECTCASE RESULT
+CASE 0
+	PRINTL 소재의 이름            입수 장소
+	PRINTL 비밀의방어구상자          마카 제비
+	PRINTL 티타노마키아        타르타로스에 출현하는 피의 헤카톤케일이 드롭
+	PRINTL 네코마타의목방울        네코마타가 드롭
+	PRINTL 네코마타의모옥        네코마타가 드롭
+	PRINTL 오래된헝겊조각            타르타로스 2~5층의 적이 드롭
+	PRINTL 장인의꿰메는바늘          타르타로스 6~10층의 적이 드롭
+	PRINTL 격투의흔적            신주쿠의 적이 드롭
+	PRINTL 갈등의흔적            신주쿠의 적이 드롭
+	PRINTL 낡은옷            신주쿠의 적이 드롭
+	PRINTL 전사의증거              신주쿠의 적이 드롭
+	PRINTL 업무용자재            신주쿠의 적이 드롭
+	PRINTL 꽝인복권            마카 제비
+	PRINTL 백은의투구조각            슈발츠바스의 적이 드롭
+	PRINTL 백은의갑옷조각            슈발츠바스의 적이 드롭
+	PRINTL 기계의조각Ａ          에코 빌딩의 적이 드롭
+	PRINTL 기계의조각Ｂ          에코 빌딩의 적이 드롭
+	PRINTL 기계의조각Ｃ          에코 빌딩의 적이 드롭
+	PRINTL 운철                  래그의 가게에서 보석과 교환
+	PRINTL 다마스커스동          래그의 가게에서 보석과 교환
+	PRINTL 미스릴은            래그의 가게에서 보석과 교환
+	PRINTL 흑요석        래그의 가게에서 보석과 교환
+	PRINTL 무지개조각            래그의 가게에서 보석과 교환
+	PRINTL 꿈의물방울                래그의 가게에서 보석과 교환
+	PRINTL 달의돌                래그의 가게에서 보석과 교환
+	PRINTL 태양의돌              래그의 가게에서 보석과 교환
+	PRINTL 오리하르콘          래그의 가게에서 보석과 교환
+	PRINTL 히히이로카네          래그의 가게에서 보석과 교환
+	PRINTL 비욘다이트          래그의 가게에서 보석과 교환
+	PRINTL 메테오라이트s         래그의 가게에서 보석과 교환
+	PRINTL 태그링            로카팔라의 적이 저확률로 드롭 (점괘 효과)
+	;PRINTL ヘッドセットについて	ヘッドセットは助手指定したキャラに持たせることで
+	;PRINTL           戦闘時にアナウンスをしてくれるようになる装備です
+	;PRINTL           ただし助手がＰＴ内にいるとアナウンスはできません
+	;PRINTL           ＰＴリーダーをどう呼ぶかは、助手のリーダーに対する二人称がそのまま適用されます
+	PRINTW
+CASE 1
+	PRINTL 고급상약, 메디컬 키트
+	PRINTL 한 번의 합성으로 2개 입수할 수 있다.
+	PRINTL 또한 주인의 기교・레벨・운에 따라 무작위로 생성 수가 최대 +3개까지 늘어난다.
+	PRINTL
+	PRINTL 보옥
+	PRINTL 고급상약과 마찬가지로, 주인의 기교・레벨・운에 따라 무작위로 생성 수가 최대 +3개까지 늘어난다.
+	PRINTL
+	PRINTL 마카 제비
+	PRINTL 마카를 소비해 다양한 아이템을 입수할 수 있다.
+	PRINTL 당첨 목록:
+	PRINTL    5% 레어 장비 (포터블 헤드폰, 프로스트 수트, 설화)
+	PRINTL   10% 1 MORE!
+	PRINTL   15% 비밀의방어구상자
+	PRINTL   25% 꽝인복권
+	PRINTL   50% 향, 사용 아이템, 특수탄 등
+	PRINTW
+CASE 2
+	PRINTL 리빙・엣지
+	PRINTL 장비자의 능력에 따라 위력이 변한다.
+	PRINTL 단, MAG 강화 수치가 비율로 감소하는 페널티 포함.
+	PRINTL 
+	PRINTL 야타의거울
+	PRINTL 마법에 치중된 무구. 강력하므로 레벨・마력이 높지 않으면 장비할 수 없다.
+	PRINTL 
+	PRINTL 인간무골
+	PRINTL 물리 계열 무구.
+	PRINTL 공격・명중은 매우 높지만, 힘이 부족하면 장비할 수 없다.
+	PRINTL 
+	PRINTL 아메노누보코
+	PRINTL 올마이티한 무구. 지혜가 높지 않으면 장비할 수 없다.
+	;PRINTL 特技が使える者には多数の攻撃スキルが付き、使えない者は通常攻撃が強化される
+	PRINTL 
+	PRINTL 톤보기리・改
+	PRINTL 명중 위주로 능력치가 상승한다.
+	PRINTL 발 이외의 장비를 벗으면, 회피・명중이 오른다.
+	PRINTL 
+	PRINTL 방천화극・改
+	PRINTL 마법위력・마법효과가 전혀 오르지 않지만, 그만큼 공격・명중이 상당히 높다.
+	PRINTL 힘이 부족하면 장비할 수 없다.
+	PRINTL 
+	PRINTL 삼고저, 오고저, 갈마
+	PRINTL 마법에 치중된 무구 (제구). 뒤의 것일수록 더 강력.
+	PRINTL 마력이 부족하면 장비할 수 없다.
+	PRINTL 
+	PRINTL 진・방천화극
+	PRINTL 마법위력・마법효과가 전혀 오르지 않지만, 그만큼 공격・명중이 크게 오르는 창.
+	PRINTL 힘이 부족하면 장비할 수 없다.
+	PRINTL 
+	PRINTL 사모
+	PRINTL 공격에 치중된 무구. 힘이 부족하면 장비할 수 없다.
+	;PRINTL 半魔人が装備すると雄叫びを覚える。
+	PRINTW
+CASE 3
+	PRINTL 청홍검
+	PRINTL 명중・마법효과에 치중된 무구. 지혜가 부족하면 장비할 수 없다.
+	PRINTL 스쿠카자 오토를 배운다.
+	PRINTL 
+	PRINTL 의천검
+	PRINTL 명중・마법효과에 치중된 무구. MP가 있으면 파워 브레스, 없으면 카자 오토를 배운다.
+	PRINTL 지혜가 부족하면 장비할 수 없다.
+	PRINTL 
+	PRINTL 바쥬라・改
+	PRINTL 마법에 치중된 무구 (제구).
+	;PRINTL 半魔人が装備すると真理の雷を覚える。
+	PRINTL 
+	PRINTL 청룡언월도・改
+	PRINTL 다소 물리 계열인 창.
+	PRINTL 장비하면 수격 내성이 붙는다.
+	PRINTL 
+	PRINTL 자웅일대검
+	PRINTL 명중이 매우 높고 공격 횟수가 2회인 검. 총을 미장비한 상태에서 공격이 상승한다.
+	PRINTL 속도가 부족하면 장비할 수 없다.
+	PRINTL 
+	PRINTL 무왕의현옹
+	PRINTL 공격력이 매우 높은 둔기. 명중은 매우 낮지만 명중이 상승하는 스킬을 배운다.
+	PRINTL 힘이 부족하면 장비할 수 없다.
+	PRINTL 
+	PRINTL 동악태산
+	PRINTL 방어력이 오르는 톤파(곤봉). 장비하면 물리에 내성이 붙는다.
+	PRINTL 내구가 부족하면 장비할 수 없다.
+	PRINTL 
+	PRINTL 풍화륜
+	PRINTL 회피 상승량이 높은 발 장비. 그 밖에도 속성에 내성이 붙고, 약점이 없다.
+	PRINTL 속도가 부족하면 장비할 수 없다.
+	PRINTL 검을 장비하지 않고, 수련으로 마셜 아츠를 취득하면 무기로서의 성능을 발휘한다.
+	PRINTL 
+	PRINTL 구중뇌신포
+	PRINTL 엄청난 공격 횟수를 자랑하는 총.
+	PRINTL 매우 무겁기 때문에 사용하려면 높은 힘과 내구가 필요.
+	PRINTL 
+	PRINTL 브라흐마스트라
+	PRINTL 총공격과 총명중이 매우 높은 총. 한 번에 적 전체를 동시에 공격할 수 있다.
+	PRINTL 남다른 힘과 지혜가 없으면 장비할 수 없다.
+	PRINTW 
+CASE 4
+	PRINTL 티타니아 방어구
+	PRINTL 방어력이 높은 데다, 티타니아의 뛰어난 내성을 얻을 수 있다.
+	PRINTL 
+	PRINTL 프레이야 장비
+	PRINTL 방어력・회피 모두 뛰어난 데다, 가슴 크기에 비례해 마법위력이 상승한다.
+	PRINTL 게다가 프레이야와 같은 내성을 얻을 수 있다.
+	PRINTL 
+	PRINTL 위치 레이디 장비
+	PRINTL 장비자의 각종 감각 개발 상태에 따라 방어력과 마법위력이 상승한다.
+	PRINTL 약점 속성이 조금 늘어난다.
+	PRINTL 
+	PRINTL 네코마타 장비
+	PRINTL 가슴이 크면 방어력이, 작으면 회피가 상승한다.
+	PRINTL 내성이 네코마타와 같아져 버린다.
+	PRINTL 
+	PRINTL 메이드 장비
+	PRINTL 방어력・회피 모두 뛰어나지만, 마법위력・마법효과가 전혀 오르지 않는다.
+	PRINTL 
+	PRINTL 쿠 훌린 장비
+	PRINTL 방어력 기본 수치가 높고, 내성이 변화하지도 않으므로 다루기 쉽다.
+	PRINTL 단, 마법위력・마법효과가 전혀 오르지 않는다.
+	PRINTL 
+	PRINTL 데빌 서바이버 세트 (데빌 서바이버 & 골판지 상자)
+	PRINTL 특화된 스탯에 추가로 +보정이 적용된다.
+	PRINTL 힘을 올렸을 경우에는 방어력이 상승한다.
+	PRINTL 이능자이면서 서머너라면 성능이 더욱 상승한다.
+	PRINTL
+	PRINTL 프로스트 세트 (프로스트 수트 & 설화)
+	PRINTL 빙결 저항을 얻는 대신에 화염 속성이 약점이 된다.
+	PRINTL
+	PRINTL 트라이브수트・改
+	PRINTL 레벨・스탯에 따라 강력해진다.
+	PRINTL 세트를 전부 맞추지 않아도 효과는 있지만 제작하기 어렵다.
+	PRINTL 
+	PRINTL 이상의 장비는 장비자의 레벨에 맞추어 능력이 상승한다.
+	PRINTL 또한 세트 장비이므로, 한 부위만 장비해서는 효과가 나지 않는다.
+	PRINTW
+CASE 9
+	RETURN
+ENDSELECT
+
+GOTO MENU
+
+
+
+

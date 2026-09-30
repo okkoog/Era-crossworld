@@ -1,0 +1,5894 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:0マップなど_DMC1.ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author			Reason
+;	000		20XX/XX/XX		----			テンプレ
+;	001		2020/09/18		SUIHOU			作成
+;	002		2022/08/23		SUIHOU			戦闘なしエリアのエンカウント率修正。ヘッダーつけ。
+;	003		2023/01/07		SUIHOU			漂着地の探索ポイントをわかりやすいように案内追記
+;	004		2023/02/21		JK好き			誤字修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;ダンジョンフラグ:99:0 ダンジョンクリアフラグ　0未クリア　1クリア
+;↑使ってないのでダンジョンフラグ:99:1 == 37 で判断
+
+;ダンジョンフラグ:99:1 イベント進行度:古城を出るまで
+;　01　複葉機の部屋、地下闘技場で戦闘終了
+;　02　アラストルイベント終了
+;　03　シンシザーズ出現（敵）
+;　04　海中通路戦終了
+;　05　ファントム戦終了
+;　06　獅子の像バリア解除
+;　07　獅子の像破壊、シャドウ戦
+;　08　吹き抜け階段 地下スイッチ起動
+;　09　ネロ・アンジェロ登場
+;　10　ネロ・アンジェロ戦終了　シャドウ出現（敵強化）
+;　11　地下水路　ベルゼバブ出現（敵強化）
+;　12　シン・サイズ戦終了
+;　13　ファントム戦2終了
+;　14　跳ね橋装置作動
+;　15　三叉の矛を使用　1F入り口鉄格子開放
+;　16　跳ね橋が再び上がる
+;　17　
+;　18　
+;　19　
+;　20　
+
+;ダンジョンフラグ:99:2 サブイベント開放状況管理
+;　01　Sミッション1
+;　02　Sミッション2
+;　03　Sミッション3
+;　04　Sミッション4
+;　05　Sミッション5
+
+;ダンジョンフラグ:99:3 鍵フラグ
+;　01　마리오네트の持つ古びた鍵(エンカウント開始)
+;　02　死神の絵に埋め込まれた古びた鍵
+;　03　裁きの宝杖
+;　04　獅子の誇り
+;　05　死の宣告
+;　06　憂鬱なる魂
+;　07　地下水路　古びた鍵
+;　08　陽光の輝き
+;　09　三叉の矛
+;　10　
+;　11　
+;　12　
+
+
+;ダンジョンフラグ:99:4 扉解錠管理
+;　01　1F階段前の扉解錠
+;　02　複葉機の部屋への扉解錠
+;　03　獅子の像広場への扉解錠
+;　04　獅子の間2F　祭壇階下への蓋開放
+;　05　聖堂への扉解錠
+;　06　獅子の扉解錠
+;　07　地下水路への扉解錠
+;　08　地下水路内の扉解錠
+;　09　太陽の紋章の扉開放
+;　10　
+;　11　
+
+;ダンジョンフラグ:99:5 メッセージ管理
+;　1　外縁部上段で宝箱を取る
+;　2　1後メッセージ確認
+;　3　古城へ侵入(1と2消滅)
+;　4　アラストル入手イベント後の会話
+;　5　グリフォン戦後、ダンテ会話
+;　6　トリッシュ合流
+;　7　ドリーグ説明
+
+;ダンジョンフラグ:99:6 レッドオーブ取得フラグ(BIT計算 0:未入手 1:入手済)
+;ダンジョンフラグ:99:7 レッドオーブ取得フラグ(BIT計算 0:未入手 1:入手済)
+
+;■ダンジョンフラグ:99:11 エネミー管理
+;　1　마리오네트の部屋で鍵を取りエンカウント開始 30
+;　2　シンシザーズ出現 35
+;　3　ネロ・アンジェロ戦終了 40
+;　4　ベルゼバブ出現 45
+;　5　ブレイド出現 50
+;　6　フェティッシュ出現 55
+
+;ダンジョンフラグ:99:8 ギミックフラグ(BIT管理)
+;　00　闘技場　地下A 9,13
+;　01　闘技場　地下B 11,15
+;　02　闘技場　地下C 5,19
+;　03　闘技場　地下D 7.21
+;　04　
+;　05　
+
+;ダンジョンフラグ:99:9 霧深き渓谷ギミック
+;　1　右通路
+;　2　左通路
+
+;!GETBIT(ダンジョンフラグ:99:10,)
+;SETBIT ダンジョンフラグ:99:10,
+;ダンジョンフラグ:99:9 その他アイテム取得(BIT管理)
+;　1　魔光石
+;　2　ナイトメアβ
+
+;ダンジョンフラグ:99:70 進入不可箇所　とりあえず閉じとく用
+;ダンジョンフラグ:99:80~ 宝箱管理用変数（ビット演算）
+
+;=======================================================================
+;DMC1
+;=======================================================================
+
+;=======================================================================
+;攻略条件
+;=======================================================================
+@PREREQUISITE_DUNGEON_99
+
+SIF イベントフラグ:92:0 == 1
+	RETURN 1
+
+
+
+;=======================================================================
+;ダンジョン名
+;=======================================================================
+@GET_DUNGEON_NAME_99
+#FUNCTIONS
+RESULTS_F = マレット島
+
+
+;=======================================================================
+;フロア名表示
+;=======================================================================
+@FLOORNAME_99
+SELECTCASE FLAG:현M
+	CASE 0
+		PRINTL 말렛섬　외곽부
+	CASE 1
+		PRINTL 말렛섬　외곽부：상단
+	CASE 2
+		PRINTL 고성 1F
+	CASE 3
+		PRINTL 고성 로비 중앙홀　2F
+	CASE 4
+		PRINTL 고성 로비 중앙홀　3F
+	CASE 5
+		PRINTL 복엽기의 방　지하
+	CASE 6
+		PRINTL 사자상의 방　2F
+	CASE 7
+		PRINTL 고성　해중 통로
+	CASE 8
+		PRINTL 중앙홀 계단 - 침실
+	CASE 9
+		PRINTL 5F　침실 지붕 위
+	CASE 10
+		PRINTL 지하 수로
+	CASE 11
+		PRINTL 태양의 문장 너머
+	CASE 12
+		PRINTL 기계실
+	CASE 13
+		PRINTL 고성 앞　도개교
+	CASE 14
+		PRINTL 투기장
+	CASE 15
+		PRINTL 투기장　2F
+	CASE 16
+		PRINTL 안개 짙은 계곡
+	CASE 17
+		PRINTL 성배당 앞
+	CASE 18
+		PRINTL 성배당
+	CASE 19
+		PRINTL 해적선으로
+	CASE 20
+		PRINTL 해적선　선저
+	CASE 21
+		PRINTL 해적선　선상
+	CASE 22
+		PRINTL 표착지
+	CASE 23
+		PRINTL 산악지
+	CASE 24
+		PRINTL 투기장　지하
+	CASE 25
+		PRINTL 투기장　하단
+	CASE 26
+		PRINTL 고성・후편
+	CASE 27
+		PRINTL 작은 방의 그림
+	CASE 28
+		PRINTL 투기장의 그림
+	CASE 29
+		PRINTL 침수 감옥
+	CASE 30
+		PRINTL 중앙홀 계단
+	CASE 31
+		PRINTL 변성의 방
+	CASE 32
+		PRINTL 침실～거울 세계
+	CASE 33
+		PRINTL 거울 세계　옥상
+	CASE 34
+		PRINTL 마계문
+	CASE 35
+		PRINTL 마계　산제물의 방
+	CASE 36
+		PRINTL 마계　최심부
+	CASE 37
+		PRINTL 심장의 방　하단
+	CASE 38
+		PRINTL 심장의 방　상단
+	CASE 39
+		PRINTL 알현의 방
+ENDSELECT
+
+;=======================================================================
+;スタート地点入力
+;=======================================================================
+@START_DUNGEON_99,ARG
+IF ダンジョンフラグ:99:1 >= 16
+	FLAG:현M = 13
+	FLAG:현X = 6
+	FLAG:현Y = 17
+ELSE
+	FLAG:현M = 0
+	FLAG:현X = 27
+	FLAG:현Y = 14
+ENDIF
+;CALL AUTOMAP
+
+;=======================================================================
+;攻略開始時のイベント
+;=======================================================================
+@EVENT_DUNGEON_START_99
+
+
+;=======================================================================
+;脱出時のイベント
+;=======================================================================
+@EVENT_DUNGEON_END_99
+
+
+;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+;DA:ARG:(ARG:1)
+;ARG、ARG:1はそれぞれ対象のマスのX、Y座標を表しています。
+;このダンジョンではエレベーターの扉が一度右側から開けておかないと左側からは開けられない、という処理に使用しています。
+;どのマップでも座標(2,7)がエレベータの扉。ダンジョンフラグ:1:13 ＝ エレベータフラグ管理用変数の{現在のマップ番号}番目のビットが立っていなければ開けられるかどうかの判定を行う
+@CAN_ENTER_99, ARG, ARG:1
+;#LOCALSIZE 1
+LOCAL = DA:ARG:(ARG:1)
+
+
+CALL 高低差_99,(FLAG:현X),(FLAG:현Y)
+LOCAL:0 = RESULT
+CALL 高低差_99,ARG,ARG:1
+LOCAL:1 = RESULT
+
+IF LOCAL:1 != 99
+	IF LOCAL:1 - LOCAL:0 > 1
+		IF LOCAL:1 == 10
+			CALL ENTER_DUNGEON_99_ORB_NON_ENTER,ARG,ARG:1
+			RETURN 0
+		ELSEIF LOCAL:1 == 20
+			SELECTCASE FLAG:현M
+				CASE 26
+					IF ARG == 39 && ARG:1 == 3
+						SIF !GETBIT(ダンジョンフラグ:99:4,26)
+							RETURN 0
+					ELSEIF ARG == 39 && ARG:1 == 7 && !GETBIT(ダンジョンフラグ:99:4,31)
+							RETURN 0
+					ENDIF
+				CASE 34
+					IF (ARG >= 3 && ARG <= 7) && (ARG:1 >= 2 && ARG:1 <=6)
+						SIF !GETBIT(ダンジョンフラグ:99:4,33)
+							RETURN 0
+					ENDIF
+				CASE 35
+					IF ARG == 7 && ARG:1 == 1
+						IF !GETBIT(ダンジョンフラグ:99:4,34)
+							CALL MESSAGE_WINDOW_D, "", "＞　강한 마력으로 봉인되어 있다 "
+							RETURN 0
+						ENDIF
+					ENDIF
+				CASE 36
+					IF ARG == 18 && ARG:1 == 1
+						IF !GETBIT(ダンジョンフラグ:99:4,38)
+							CALL MESSAGE_WINDOW_D, "", "＞　거대한 문이다/　　강한 마력으로 봉인되어 있다 "
+							RETURN 0
+						ENDIF
+					ENDIF
+				
+				CASEELSE
+					RETURN 1
+			ENDSELECT
+		ELSE
+			PRINTW 너무 높아서 기어올라갈 수 없다…
+			RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+
+
+SELECTCASE DA:ARG:(ARG:1)
+	CASE 2
+		;■ロビー扉
+		IF FLAG:현M == 2 && ARG == 8 && ARG:1 == 34 && !GETBIT(ダンジョンフラグ:99:4,1)
+			CALL MESSAGE_WINDOW_D, "", @"＞　이 문은 봉인되어 있다/45개의 레드 오브가 필요하다/레드 오브 소지수：{MONEY:99} "
+			IF MONEY:99 >=45
+				CALL MESSAGE_WINDOW_D, "", "＞　레드 오브를 소비해서 문을 개방했다. "
+				MONEY:99 -= 45
+				SETBIT ダンジョンフラグ:99:4,1
+			ENDIF
+			RETURN 0
+		;■複葉機の部屋扉
+		ELSEIF FLAG:현M == 2 && ARG == 16 && ARG:1 == 30 && !GETBIT(ダンジョンフラグ:99:4,2)
+			CALL MESSAGE_WINDOW_D, "", "＞　이 문은 닫혀 있다 /　　열기 위해서는 낡은 열쇠가 필요하다 "
+			IF ダンジョンフラグ:99:3 == 1
+				CALL MESSAGE_WINDOW_D, "", "＞　낡은 열쇠를 사용합니까？ "
+				CALL INPUT_YN_D, "YES", "NO"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞ 열쇠로 문을 열었다. "
+						SETBIT ダンジョンフラグ:99:4,2
+					ENDIF
+			ENDIF
+			RETURN 0
+		;■玄関前
+		ELSEIF FLAG:현M == 2 && ARG == 8 && ARG:1 == 38
+			IF ダンジョンフラグ:99:1 < 15
+				CALL MESSAGE_WINDOW_D, "", "＞　무거운 쇠창살이 내려져 있다 "
+				RETURN 0
+			ENDIF
+		ELSEIF FLAG:현M == 2 && ARG == 8 && ARG:1 == 42 && ダンジョンフラグ:99:1 < 6
+			IF ダンジョンフラグ:99:1 < 14
+				CALL MESSAGE_WINDOW_D, "", "＞　도개교가 올려져 있어서 지금 밖에 나갈 방법은 없는 것 같다 "
+				RETURN 0
+			ENDIF
+		;■複葉機の部屋내부扉
+		ELSEIF FLAG:현M == 2 && ARG == 18 && ARG:1 == 27 && ダンジョンフラグ:99:1 == 0
+			CALL MESSAGE_WINDOW_D, "", "＞　이 문은 잠겨 있다 "
+			RETURN 0
+		;■書庫の扉
+		ELSEIF FLAG:현M == 2 && ARG == 23 && ARG:1 == 11 && ダンジョンフラグ:99:1 < 2
+			CALL MESSAGE_WINDOW_D, "", "＞　이 문은 잠겨 있다 "
+			RETURN 0
+		;■獅子の間扉
+		ELSEIF FLAG:현M == 2 && ARG == 30 && ARG:1 == 19 && !GETBIT(ダンジョンフラグ:99:4,3)
+			CALL MESSAGE_WINDOW_D, "", "＞　이 문은 잠겨 있다/　　열려면 낡은 열쇠가 필요하다 "
+			IF ダンジョンフラグ:99:3 == 2
+				CALL MESSAGE_WINDOW_D, "", "＞　낡은 열쇠를 사용합니까？ "
+				CALL INPUT_YN_D, "YES", "NO"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞ 열쇠로 문을 열었다. "
+						SETBIT ダンジョンフラグ:99:4,3
+					ENDIF
+			ENDIF
+			RETURN 0
+		;■聖堂扉
+		ELSEIF FLAG:현M == 2 && ARG == 25 && ARG:1 == 8 && !GETBIT(ダンジョンフラグ:99:4,5)
+			CALL MESSAGE_WINDOW_D, "", "＞　죽음의 재판관 석상이다/　　지팡이를 끼워 넣는 장소가 있다 "
+			IF ダンジョンフラグ:99:3 == 3
+				CALL MESSAGE_WINDOW_D, "", "＞　심판의 보장을 사용하시겠습니까？ "
+			CALL INPUT_YN_D, "YES", "NO"
+				IF !RESULT
+					CALL MESSAGE_WINDOW_D, "", "＞ 열쇠로 문을 열었다. "
+					SETBIT ダンジョンフラグ:99:4,5
+				ENDIF
+			ENDIF
+			RETURN 0
+		;■獅子の間2F扉
+		ELSEIF FLAG:현M == 6 && ARG == 13 && ARG:1 == 9 && !GETBIT(ダンジョンフラグ:99:4,6)
+			CALL MESSAGE_WINDOW_D, "", "＞　이 문은 잠겨 있다 "
+			RETURN 0
+		;■吹き抜け階段　最下層　地下水路への扉
+		ELSEIF FLAG:현M == 8 && ARG == 2 && ARG:1 == 4 && !GETBIT(ダンジョンフラグ:99:4,7)
+			CALL MESSAGE_WINDOW_D, "", "＞　강력한 힘으로 봉인되어 있다 "
+			CALL MESSAGE_WINDOW_D, "", "『이 길은 영의 인도로 열린다』 "
+			IF ダンジョンフラグ:99:3 == 6
+				CALL MESSAGE_WINDOW_D, "", "＞　우울한 영혼을 사용하시겠습니까？ "
+				CALL INPUT_YN_D, "YES", "NO"
+				IF !RESULT
+					CALL MESSAGE_WINDOW_D, "", "＞ 봉인이 풀렸다 "
+					SETBIT ダンジョンフラグ:99:4,7
+				ENDIF
+			ENDIF
+			RETURN 0
+		;■地下水路
+		ELSEIF FLAG:현M == 10 && ARG == 19 && ARG:1 == 11 && !GETBIT(ダンジョンフラグ:99:4,8)
+			CALL MESSAGE_WINDOW_D, "", "＞　이 문은 닫혀 있다 /　　열기 위해서는 낡은 열쇠가 필요하다 "
+			IF ダンジョンフラグ:99:3 == 7
+				CALL MESSAGE_WINDOW_D, "", "＞　낡은 열쇠를 사용합니까？ "
+				CALL INPUT_YN_D, "YES", "NO"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞ 열쇠로 문을 열었다. "
+						SETBIT ダンジョンフラグ:99:4,8
+					ENDIF
+			ENDIF
+			RETURN 0
+		;■太陽の紋章先
+		ELSEIF FLAG:현M == 11 && ARG == 12 && ARG:1 == 11 && ダンジョンフラグ:99:1 < 13
+			CALL MESSAGE_WINDOW_D, "", "＞　무거운 쇠창살이 내려져 있다 "
+			RETURN 0
+		;■闘技場　盾の扉：赤
+		ELSEIF FLAG:현M == 14 && ARG == 24 && ARG:1 == 6 && !GETBIT(ダンジョンフラグ:99:4,18)
+			CALL MESSAGE_WINDOW_D, "", "＞　문에 붉은 빛을 발하는 방패 문양이 새겨져 있다 "
+			IF ダンジョンフラグ:99:3 >= 13
+				CALL MESSAGE_WINDOW_D, "", "＞　작은 문장의 방패를 사용하시겠습니까？ "
+				CALL INPUT_YN_D, "YES", "NO"
+				IF !RESULT
+					CALL MESSAGE_WINDOW_D, "", "＞ 열쇠로 문을 열었다. "
+					SETBIT ダンジョンフラグ:99:4,18
+				ENDIF
+			ENDIF
+			RETURN 0
+		;■闘技場　盾の扉：青
+		ELSEIF FLAG:현M == 14 && ARG == 24 && ARG:1 == 18 && !GETBIT(ダンジョンフラグ:99:4,19)
+			CALL MESSAGE_WINDOW_D, "", "＞　문에 푸른 빛을 발하는 방패 문양이 새겨져 있다 "
+			IF ダンジョンフラグ:99:3 >= 13
+				CALL MESSAGE_WINDOW_D, "", "＞　작은 문장의 방패를 사용하시겠습니까？ "
+				CALL INPUT_YN_D, "YES", "NO"
+				IF !RESULT
+					CALL MESSAGE_WINDOW_D, "", "＞ 열쇠로 문을 열었다. "
+					SETBIT ダンジョンフラグ:99:4,19
+				ENDIF
+			ENDIF
+			RETURN 0
+		;■闘技場　騎士の扉
+		ELSEIF FLAG:현M == 14 && ARG == 24 && ARG:1 == 12 && !GETBIT(ダンジョンフラグ:99:4,20)
+			CALL MESSAGE_WINDOW_D, "", "＞　조각에 기사가 새겨져 있다/　　짝을 이룬 것 같다 "
+			CALL MESSAGE_WINDOW_D, "", "＞　무언가 걸 수 있게 되어 있고/　　그 밑에는 글자가 새겨져 있다 "
+			CALL MESSAGE_WINDOW_D, "", "『빛을 발하는 방패와 맞서는 두 개의 창/　　　모든 것은 싸움터로 이어진다』 "
+			IF ダンジョンフラグ:99:3 >= 14
+				CALL MESSAGE_WINDOW_D, "", "＞　한 쌍의 창을　사용하시겠습니까？ "
+				CALL INPUT_YN_D, "YES", "NO"
+				IF !RESULT
+					CALL MESSAGE_WINDOW_D, "", "＞ 열쇠로 문을 열었다. "
+					SETBIT ダンジョンフラグ:99:4,20
+				ENDIF
+			ENDIF
+			RETURN 0
+		;■闘技場　篝火の扉
+		ELSEIF FLAG:현M == 14 && ARG == 24 && ARG:1 == 23 && !GETBIT(ダンジョンフラグ:99:4,10)
+			CALL MESSAGE_WINDOW_D, "", "＞　글자가 새겨져 있다 "
+			CALL MESSAGE_WINDOW_D, "", "『힘이 깃든 두 개의 불꽃이 길을 연다』 "
+			IF ダンジョンフラグ:99:1 == 19
+				CALL MESSAGE_WINDOW_D, "", "＞　이프리트의 힘을 사용하여 화톳불을 밝히자 문이 열렸다 "
+				SETBIT ダンジョンフラグ:99:4,10
+			ENDIF
+			RETURN 0
+		;■海賊船　船上
+		ELSEIF FLAG:현M == 21 && ARG == 4 && ARG:1 == 3
+			IF ダンジョンフラグ:99:1 > 23
+				CALL MESSAGE_WINDOW_D, "", "＞　수압때문에 문이 열릴 것 같지 않다 "
+				RETURN 0
+			ELSEIF ダンジョンフラグ:99:1 < 22
+				CALL MESSAGE_WINDOW_D, "", "＞　선장실로 가는 문이 굳게 닫혀 있다/　　뭔가 적혀 있다 "
+				CALL MESSAGE_WINDOW_D, "", "「우리는 저승길에 있는 망자의 배」"
+				CALL MESSAGE_WINDOW_D, "", "「뱃사람을 쓰러뜨려라 그때야말로/　　세인트 엘모의 불을 내리자」 "
+				CALL MESSAGE_WINDOW_D, "", "＞　그 글자를 읽는 순간、상공에 기척이 생겼다 "
+				CALL MESSAGE_WINDOW_D, "", "＞　데스사이즈가 덮쳐왔다！ "
+				
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				
+				CALL SET_ENEMY,9,[[キャラ:체르노보그]],60,0,1
+				NAME:(CHARANUM-1) = 데스 사이즈
+				CALLNAME:(CHARANUM-1) = 데스 사이즈
+				CFLAG:(CHARANUM-1):ＨＰ보정 += 1000
+				CFLAG:(CHARANUM-1):ＭＰ보정 += 5000
+				CALL SYNC_STATUS, (CHARANUM-1)
+				CALL HEALTH_CHARA, (CHARANUM-1)
+				
+				CALL BATTLE_START
+				
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+				FLAG:미조우걸음수 = 0
+				
+				CALL MESSAGE_WINDOW_D, "", "＞　레드 오브 +100 "
+				MONEY:99 += 100
+				
+				FORCEWAIT
+				ダンジョンフラグ:99:1 = 22
+				CALL MESSAGE_WINDOW_D, "", "＞　뱃사람을 쓰러뜨리자 뱃머리, 돛대, 배꼬리 등 네 곳에 흰 불이 켜지고 배가 움직이기 시작했다 "
+				RETURN 0
+			ENDIF
+		;■山岳地
+		ELSEIF FLAG:현M == 23 && ARG == 14 && ARG:1 == 25 && !GETBIT(ダンジョンフラグ:99:4,15)
+			CALL MESSAGE_WINDOW_D, "", @"＞　이 문은 봉인되어 있다 / 200개의 레드 오브가 필요하다 / 레드 오브 소지수：{MONEY:99} "
+			IF MONEY:99 >=200
+				CALL MESSAGE_WINDOW_D, "", "＞　레드 오브를 소비하여 문을 열었다 "
+				MONEY:99 -= 200
+				SETBIT ダンジョンフラグ:99:4,15
+			ENDIF
+			RETURN 0
+		ELSEIF FLAG:현M == 23 && ARG == 5 && ARG:1 == 27 && !GETBIT(ダンジョンフラグ:99:4,16)
+			CALL MESSAGE_WINDOW_D, "", @"＞　이 문은 봉인되어 있다 / 100개의 레드 오브가 필요하다 / 레드 오브 소지수：{MONEY:99} "
+			IF MONEY:99 >=100
+				CALL MESSAGE_WINDOW_D, "", "＞　레드 오브를 소비하여 문을 열었다 "
+				MONEY:99 -= 100
+				SETBIT ダンジョンフラグ:99:4,16
+			ENDIF
+			RETURN 0
+		;■古城・後編　1F
+		ELSEIF FLAG:현M == 26 && ARG == 16 && ARG:1 == 30 && !GETBIT(ダンジョンフラグ:99:4,24)
+			CALL MESSAGE_WINDOW_D, "", "＞　이 문은 봉인되어 있다 "
+			RETURN 0
+		ELSEIF FLAG:현M == 26 && ARG == 27 && ARG:1 == 5 && !GETBIT(ダンジョンフラグ:99:4,25)
+			CALL MESSAGE_WINDOW_D, "", "＞　이 문은 봉인되어 있다 "
+			RETURN 0
+		;■闘技場の絵
+		ELSEIF FLAG:현M == 28 && ARG == 6 && ARG:1 == 21 && !GETBIT(ダンジョンフラグ:99:4,28)
+			CALL MESSAGE_WINDOW_D, "", "＞　굳게 닫혀 있다/　　문 중앙에 둥근 구멍이 뚫려 있다 "
+			CALL MESSAGE_WINDOW_D, "", "「달빛을 가두어 진주를 보여라」 "
+			IF ダンジョンフラグ:99:3 >= 16
+				CALL MESSAGE_WINDOW_D, "", "＞　월광수 를 사용합니까？ "
+				CALL INPUT_YN_D, "YES", "NO"
+				IF !RESULT
+					CALL MESSAGE_WINDOW_D, "", "＞ 월광수 를 열쇠로 사용하여 문을 열었다 "
+					SETBIT ダンジョンフラグ:99:4,28
+				ENDIF
+			ENDIF
+			RETURN 0
+		;■魔界　最深部
+		ELSEIF FLAG:현M == 36 && ARG == 15 && ARG:1 == 16
+			IF !GETBIT(ダンジョンフラグ:99:4,35)
+				CALL MESSAGE_WINDOW_D, "", "＞　거대한 손톱 같은 것이 입구를 막고 있다/　　자력으로는 움직일 수 없을 것 같다 "
+				RETURN 0
+			ENDIF
+		
+		
+		
+		ENDIF
+		
+		
+		
+		
+		
+	;■聖堂内部　獅子の誇り
+	CASE 2004
+		IF ダンジョンフラグ:99:1 < 4
+			CALL MESSAGE_WINDOW_D, "", "＞　강력한 힘에 의해 이 이상 접근할 수 없다 "
+			RETURN 0
+		ENDIF
+	;■書庫内部　隠し扉
+	CASE 2054
+		SIF ダンジョンフラグ:99:3 < 3
+			RETURN 0
+	;■海中通路先　塔
+	CASE 2014
+			CALL MESSAGE_WINDOW_D, "", "＞　「길을 되돌아와、네가 용맹함으로 나락의 밑바닥에서 돌아와라」 "
+			RETURN 0
+	;■獅子の間　獅子の像
+	CASE 2139
+		IF ダンジョンフラグ:99:1 < 6
+			IF ダンジョンフラグ:99:1 < 6
+				CALL MESSAGE_WINDOW_D, "", "＞　강력한 힘에 의해 이 이상 접근할 수 없다 "
+				CALL MESSAGE_WINDOW_D, "", "＞　사자와 대면하려면「증표」가 필요하다 "
+				IF ダンジョンフラグ:99:3 == 4
+					CALL MESSAGE_WINDOW_D, "", "＞ 사자의 긍지를 이용하시겠습니까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+					SIF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞ 사자상을 덮는 역장이 소멸했다 "
+						ダンジョンフラグ:99:1 = 6
+				ENDIF
+			ENDIF
+		ELSEIF ダンジョンフラグ:99:1 == 6
+			CALL MESSAGE_WINDOW_D, "", "『여기에 문지기를 봉하든지 / 마의 힘으로의 파괴하여 문지기를 해방시킨다』 "
+			CALL MESSAGE_WINDOW_D, "", "＞　사자상을 파괴하시겠습니까？ "
+				CALL INPUT_YN_D, "YES", "NO"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞사자상을 파괴하자 흔적에서 그림자가 스며나와 덤벼들었다！ "
+						CALL MESSAGE_WINDOW_D, "", "＞섀도우　가 1체 나타났다！ "
+						
+						FLAG:도주불가플래그 = 1
+						FLAG:회화불능플래그 = 1
+						FLAG:선제기습취소 = 1
+						
+						CALL SET_ENEMY,9,[[キャラ:데스그리폰]],50,0,1
+						NAME:(CHARANUM-1) = シャドウ
+						CALLNAME:(CHARANUM-1) = シャドウ
+						CFLAG:(CHARANUM-1):ＨＰ보정 += 1000
+						CFLAG:(CHARANUM-1):ＭＰ보정 += 5000
+						ABL:(CHARANUM-1):스킬1 = 326 ;베어먹기
+						ABL:(CHARANUM-1):스킬2 =48 ;자벨린레인
+						ABL:(CHARANUM-1):스킬3 =328 ;어설트다이브
+						;ABL:(CHARANUM-1):스킬4 =2005 ;자폭
+						CALL SYNC_STATUS, (CHARANUM-1)
+						CALL HEALTH_CHARA, (CHARANUM-1)
+						
+						CALL BATTLE_START
+						FORCEWAIT
+						CALL MESSAGE_WINDOW_D, "", "＞악마를 쓰러뜨리자 봉했던 힘이 사라진 기미가 보인다…… "
+						FLAG:선제공격플래그 = 0
+						FLAG:도주불가플래그 = 0
+						FLAG:회화불능플래그 = 0
+						FLAG:선제기습취소 = 0
+						FLAG:인카운트율 = 0
+						FLAG:미조우걸음수 = 0
+						
+						CALL MESSAGE_WINDOW_D, "", "＞　레드 오브 +100 "
+						MONEY:99 += 100
+						
+						ダンジョンフラグ:99:1 = 7
+						SETBIT ダンジョンフラグ:99:4,6
+					ENDIF
+		ELSEIF ダンジョンフラグ:99:1 == 7
+			CALL MESSAGE_WINDOW_D, "", "＞　이젠 아무것도 없는 것 같다 "
+		ENDIF
+		RETURN 0
+	;■獅子の間　中央　隠しRオーブ
+	CASE 2149
+		IF !GETBIT(ダンジョンフラグ:99:6,12)
+			CALL MESSAGE_WINDOW_D, "", "＞　레드 오브 +100 "
+			MONEY:99 += 100
+			SETBIT ダンジョンフラグ:99:6,12
+		ENDIF
+		RETURN 0
+	;■古城ロビー吹き抜け　2F
+	CASE 3044
+		SIF ダンジョンフラグ:99:1 >= 15
+			RETURN 0
+	;■
+	CASE 11069
+		IF !GETBIT(ダンジョンフラグ:99:6,38)
+			CALL MESSAGE_WINDOW_D, "", "＞　레드 오브 +100 "
+			MONEY:99 += 100
+			SETBIT ダンジョンフラグ:99:6,38
+		ENDIF
+		RETURN 0
+	;■古城前
+	CASE 13019
+		SIF ダンジョンフラグ:99:1 >= 16 && !GETBIT(ダンジョンフラグ:99:4,23)
+			RETURN 0
+	;■闘技場　霧深き渓谷への扉
+	CASE 14029
+		IF !GETBIT(ダンジョンフラグ:99:4,17)
+			CALL MESSAGE_WINDOW_D, "", "＞　이 문은 봉인되어 있다 "
+			RETURN 0
+		ENDIF
+	CASE 14049
+		IF !GETBIT(ダンジョンフラグ:99:4,11)
+			CALL MESSAGE_WINDOW_D, "", "＞　이 문은 봉인되어 있다/　　이 봉인을 풀기 위해서는 200개의 레드 오브가 필요하다 "
+			IF MONEY:99 >=200
+				CALL MESSAGE_WINDOW_D, "", "＞　레드 오브를 소비하여 문을 개방했다 "
+				MONEY:99 -= 200
+				SETBIT ダンジョンフラグ:99:4,11
+			ENDIF
+			RETURN 0
+		ENDIF
+	;■聖杯堂前
+	CASE 17009
+		IF ダンジョンフラグ:99:1 < 20
+			CALL MESSAGE_WINDOW_D, "", "＞　이 문은 봉인되어 있다 "
+			RETURN 0
+		ENDIF
+	;■聖杯堂	
+	CASE 18004
+		IF ダンジョンフラグ:99:1 < 21
+			CALL MESSAGE_WINDOW_D, "", "＞　강력한 힘으로 더 이상 접근할 수 없다"
+			RETURN 0
+		ENDIF
+	CASE 18014
+		IF !GETBIT(ダンジョンフラグ:99:4,12)
+			CALL MESSAGE_WINDOW_D, "", "＞　붕괴되어 있는 벽을 부쉈다 "
+			SETBIT ダンジョンフラグ:99:4,12
+		ENDIF
+	CASE 18009
+		SIF !GETBIT(ダンジョンフラグ:99:4,13)
+			RETURN 0
+	;■海賊船　船底
+	CASE 20014
+		CALL MESSAGE_WINDOW_D, "", "＞　선체를 고정시키는 거대한 닻을/　　감아 올리기 위한 캡스턴이다 "
+		RETURN 0
+	CASE 20006
+		IF ダンジョンフラグ:99:1 >= 24
+			CALL MESSAGE_WINDOW_D, "", "＞　침몰의 영향인지 무너져있다/　　다른 길을 찾을 수 밖에 없는 것 같다 "
+			RETURN 0
+		ENDIF
+	;■漂流地
+	CASE 22029
+		IF ダンジョンフラグ:99:1 < 25
+			CALL MESSAGE_WINDOW_D, "", "＞　철책이 내려져 있어서 나아갈 수 없다 "
+			RETURN 0
+		ENDIF
+	;■山岳地
+	CASE 23059
+		IF !GETBIT(ダンジョンフラグ:99:4,17)
+			CALL MESSAGE_WINDOW_D, "", "＞　봉인을 풀었다 "
+			SETBIT ダンジョンフラグ:99:4,17
+		ENDIF
+	;■闘技場　地下
+	CASE 24004
+		IF !GETBIT(ダンジョンフラグ:99:4,21)
+			CALL MESSAGE_WINDOW_D, "", "＞　붕괴되어 있는 벽을 부쉈다 "
+			SETBIT ダンジョンフラグ:99:4,21
+		ENDIF
+	CASE 24134
+		IF !GETBIT(ダンジョンフラグ:99:4,22)
+			CALL MESSAGE_WINDOW_D, "", "＞　붕괴되어 있는 벽을 부쉈다 "
+			SETBIT ダンジョンフラグ:99:4,22
+		ENDIF
+	;■闘技場の絵
+	CASE 28009,28019,28039,28049
+		IF !GETBIT(ダンジョンフラグ:99:4,27)
+			CALL MESSAGE_WINDOW_D, "", "＞　용의 힘으로 봉쇄되어 앞으로 나아갈 수 없다 "
+			RETURN 0
+		ENDIF
+	;■浸水牢獄
+	CASE 29019
+		SIF !GETBIT(ダンジョンフラグ:99:4,30)
+			RETURN 0
+	
+ENDSELECT
+
+CALL CAN_ENTER,ARG,ARG:1
+RETURN RESULT
+
+;=======================================================================
+;タイル定義
+;=======================================================================
+;ARGS  フロアデータで得た1マスの文字
+;ARG   X軸
+;ARG:1 Y軸
+;ARGSとタイル文字が合えば指定のタイル番号をRETURNする
+;使い方
+;SIF ARGS == "S"
+;	RETURN 22
+
+@DEFINE_TILES_99, ARGS, ARG, ARG:1
+#LOCALSIZE 1
+
+
+;-----------------------------------------------------------------------
+;共通
+;-----------------------------------------------------------------------
+;S 高低差1
+SIF ARGS == "S"
+	RETURN 11
+;M 高低差2
+SIF ARGS == "M"
+	RETURN 21
+;L 高低差3
+SIF ARGS == "L"
+	RETURN 31
+
+;↑滑り
+SIF ARGS == "A"
+	RETURN 41
+;↓滑り
+SIF ARGS == "V"
+	RETURN 51
+;→滑り
+SIF ARGS == ">"
+	RETURN 61
+;←滑り
+SIF ARGS == "<"
+	RETURN 71
+
+;滑る床
+SIF ARGS == "*"
+	RETURN 81
+
+;ループ床
+SIF ARGS == "ﾙ"
+	RETURN 101
+
+;↑扉
+SIF ARGS == "ﾍ"
+	RETURN 12
+;↓扉
+SIF ARGS == "Y"
+	RETURN 22
+;→扉
+SIF ARGS == "}"
+	RETURN 32
+;←扉
+SIF ARGS == "{"
+	RETURN 42
+;特殊処理
+SIF ARGS == "F"
+	RETURN 91
+;特殊床
+SIF ARGS == "I"
+	RETURN 92
+
+;レッドオーブの床(高低差有)
+;S 高低差1
+SIF ARGS == "A"
+	RETURN 111
+;M 高低差2
+SIF ARGS == "B"
+	RETURN 121
+;L 高低差3
+SIF ARGS == "C"
+	RETURN 131
+;時空神像
+SIF ARGS == "J"
+	RETURN 181
+
+;空白(落下可能)
+SIF ARGS == "H"
+	RETURN 171
+
+;レッドオーブ
+SIF ARGS == "P"
+	RETURN 191
+
+;進入禁止・隠しレッドオーブ有り
+SIF ARGS == "R"
+	RETURN 201
+
+;=======================================================================
+;タイル調整
+;=======================================================================
+;ARG:1、ARG:2はそれぞれX座標とY座標
+;ARGはその座標に現在代入されている番号
+;0：壁　1：床もしくは通路　2：扉　3：宝箱　4：イベント　5：罠　6：上り階段 7：下り階段　8：出口　9：その他特殊処理等
+;これらの内、3～9が代入されているマスに、個別の番号を与える処理を実行します。
+;この処理を行った後、これらのマスには 「マップ番号*1000 + そのマスがそのマップで左上から数えて何個目のARGタイプのマスか*10 + ARG」が代入されます
+;例えば 2003 であった場合、「2番のマップ＝３Ｆで、左上から数えて0個目の3＝宝箱である」という事を意味しています
+;尚、0～2はどのマップにも大量に設置されるので、ここでは基本的に個別の番号を与えません。
+;
+;何個目のARGタイプのマスなのか、は左上の(0,0)から右まで探し、その後一つ下の段に移って同様に探す、というのを右下まで繰り返して数えます。
+@MAKE_FLOOR_LINE_COMMON_99, ARG, ARG:1, ARG:2
+#LOCALSIZE 100
+;ARG:3(LOCAL:3) 宝箱 DB:75~99(현M+75)の1ビット目から、自動的に使う
+;LOCAL:4 이벤트
+;LOCAL:6 昇り階段　端に6を置くと自動的に置き換わる
+;LOCAL:7 降り階段　端に7を置くと自動的に置き換わる
+
+;指定された座標が(0,0)である場合、つまり新しいマップを読み込んだ時はLOCALを消去します
+SIF ARG:1 == 0 && ARG:2 == 0
+	VARSET LOCAL
+
+
+SELECTCASE ARG
+	CASE 3
+		;宝箱は多くの場合、開けたフラグが立っていると床を代入します
+		;そのマップでどの宝箱を開けたかは、そのマップの宝箱管理用変数の何番目のビットが立っているかで判断します
+		DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:3 * 10 + 3
+		IF GETBIT(ダンジョンフラグ:(FLAG:현던전):(FLAG:현M / 5 + 80), (FLAG:현M % 5 * 10 + LOCAL:3))
+			SELECTCASE DA:(ARG:1):(ARG:2) / 10
+				;高さMの場所においてある宝箱
+				CASE 206, 1802, 2100, 2300
+					DA:(ARG:1):(ARG:2) = 21
+				CASEELSE
+					DA:(ARG:1):(ARG:2) = 1
+			ENDSELECT
+		ENDIF
+		LOCAL:3++
+	CASE 6
+		IF ARG:1 == (FLAG:최대X -1) || ARG:2 == (FLAG:최대Y - 1) || ARG:1 == 0 || ARG:2 == 0
+			DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:16 * 10 + 506
+			LOCAL:16++
+		ELSE
+			DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:6 * 10 + 6
+			LOCAL:6++
+		ENDIF
+	CASE 7
+		IF ARG:1 == (FLAG:최대X -1) || ARG:2 == (FLAG:최대Y - 1) || ARG:1 == 0 || ARG:2 == 0
+			DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:17 * 10 + 507
+			LOCAL:17++
+		ELSE
+			DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:7 * 10 + 7
+			LOCAL:7++
+		ENDIF
+	CASE 4 TO 9
+		DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:ARG * 10 + ARG
+		LOCAL:ARG++
+	CASE IS > 9
+		DA:(ARG:1):(ARG:2) = ARG
+ENDSELECT
+
+
+;=======================================================================
+;ターミナル名前
+;=======================================================================
+;@GET_FLOORNAME_99
+
+
+
+
+
+;=======================================================================
+;特殊タイル表示
+;=======================================================================
+;ARG:1がX座標、ARG:2がY座標
+;ARGはそこに代入されている値
+;RESULTSに代入した文字がマップに表示されますが、必ず全角1文字分になるようにしてください。そうでないと表示が崩れます。
+;IF GET_FLOOR_ANALYZE_T(ARG:1, ARG:2) == 2
+
+
+@TILE_MARK_COMMON_99_1, ARG, ARG:1, ARG:2
+
+;オーブ付き、高低差有りの場合
+CALL TILE_MARK_COMMON_99_ORB, ARG, ARG:1, ARG:2
+SIF RESULT
+	RETURN 0
+
+;それ以外の高低差有りの場合
+IF ARG ==11 || ARG == 111
+	RESULTS = Ｓ
+ELSEIF ARG == 21 || ARG == 121
+	RESULTS = Ｍ
+ELSEIF ARG == 31 || ARG == 131
+	RESULTS = Ｌ
+ELSEIF ARG == 91
+	RESULTS = □	
+ELSEIF ARG == 201
+	RESULTS = ■
+ELSEIF ARG == 181
+	RESULTS = Ω
+ELSEIF ARG == 171
+	SELECTCASE FLAG:현M
+		CASE 26
+			IF ARG:1 == 8 && ARG:2 == 42
+				RESULTS = 扉
+			ELSEIF ARG:1 == 30 && ARG:2 == 5
+				RESULTS = 　
+			ELSEIF ARG:1 == 31 && ARG:2 == 5
+				RESULTS = 　
+			ELSEIF ARG:1 == 39 && ARG:2 == 3
+				IF !GETBIT(ダンジョンフラグ:99:4,26)
+					RESULTS = ■
+				ELSE
+					RESULTS = ！
+				ENDIF
+			ELSEIF ARG:1 == 39 && ARG:2 == 7
+				IF !GETBIT(ダンジョンフラグ:99:4,32)
+					RESULTS = ■
+				ELSE
+					RESULTS = ！
+				ENDIF
+			ENDIF
+		CASE 27
+			IF ARG:1 == 2 && ARG:2 == 1
+				RESULTS = ↑
+			ELSEIF ARG:1 == 2 && ARG:2 == 14
+				RESULTS = ！
+			ELSEIF ARG:1 == 8 && ARG:2 == 1
+				RESULTS = ↑
+			ELSEIF ARG:1 == 10 && ARG:2 == 1
+				RESULTS = ↓
+			ELSEIF ARG:1 == 15 && ARG:2 == 13
+				IF !GETBIT(ダンジョンフラグ:99:4,29)
+					RESULTS = □
+				ELSE
+					RESULTS = ！
+				ENDIF
+			ELSEIF ARG:1 == 17 && ARG:2 == 1
+				RESULTS = ↓
+			ELSEIF ARG:1 == 17 && ARG:2 == 13
+				RESULTS = ！
+			ENDIF
+		CASE 28
+			IF ARG:1 == 8 && ARG:2 == 10
+				RESULTS = ↑
+			ELSEIF ARG:1 == 13 && ARG:2 == 28
+				RESULTS = ！
+			ELSE
+				RESULTS = 　
+			ENDIF
+		CASE 29
+			IF ARG:1 == 3 && ARG:2 == 17
+				RESULTS = ↑
+			ELSEIF ARG:1 == 20 && ARG:2 == 2
+				RESULTS = ！
+			ELSE
+				RESULTS = 　
+			ENDIF
+		CASE 30
+			IF ARG:1 == 1 && ARG:2 == 4
+				RESULTS = 扉
+			ELSE
+				RESULTS = 　
+			ENDIF
+		CASE 31
+			IF ARG:1 == 9 && ARG:2 == 7
+				RESULTS = 扉
+			ELSE
+				RESULTS = 　
+			ENDIF
+		CASE 32
+			IF ARG:1 == 2 && ARG:2 == 6
+				RESULTS = ↑
+			ELSEIF ARG:1 == 17 && ARG:2 == 3
+				RESULTS = ↑
+			ELSE
+				RESULTS = ！
+			ENDIF
+		CASE 33
+			RESULTS = ↓
+		CASE 34
+			IF ARG:1 == 1 && ARG:2 == 4
+				RESULTS = ↑
+			ELSE
+				RESULTS = 　
+			ENDIF
+		CASE 35
+			IF ARG:1 == 7 && ARG:2 == 1
+				RESULTS = 扉
+			ELSE
+				RESULTS = ↑
+			ENDIF
+		CASE 36
+			IF ARG:1 == 18 && ARG:2 == 1
+				RESULTS = 扉
+			ELSEIF ARG:1 == 12 && ARG:2 == 7
+				RESULTS = 扉
+			ELSEIF ARG:1 == 9 && ARG:2 == 10
+				RESULTS = ！
+			ELSEIF ARG:1 == 8 && ARG:2 == 14
+				RESULTS = ！
+			ELSEIF ARG:1 == 18 && ARG:2 == 19
+				RESULTS = 扉
+			ELSE
+				RESULTS = 　
+			ENDIF
+		CASE 38
+			IF ARG:1 == 1 && ARG:2 == 7
+				RESULTS = 扉
+			ELSE
+				RESULTS = 　
+			ENDIF
+		CASE 39
+			RESULTS = 扉
+		CASEELSE
+			RESULTS = 　
+	ENDSELECT
+ELSE
+	RESULTS = □
+ENDIF
+
+
+@TILE_MARK_COMMON_99_2, ARG, ARG:1, ARG:2
+SELECTCASE ARG / 10
+	CASE 201
+		SIF !GETBIT(ダンジョンフラグ:99:4,4)
+			RESULTS = ！
+	CASEELSE
+		RETURN 1
+ENDSELECT
+
+@TILE_MARK_COMMON_99_3, ARG, ARG:1, ARG:2
+SELECTCASE ARG / 10
+	CASE 202,204,205
+		SIF ダンジョンフラグ:99:1 < 16
+			RESULTS = □
+	CASEELSE
+		RETURN 1
+ENDSELECT
+
+
+@TILE_MARK_COMMON_99_4, ARG, ARG:1, ARG:2
+SELECTCASE ARG / 10
+	CASE 0,206,300,301,302,305,402,505,808
+		SETCOLOR 0x00ff00
+		RESULTS = Ｕ
+	CASE 100,400,401,402,404,905,906
+		SETCOLOR 0x00ff00
+		RESULTS = Ｄ
+	CASE 200
+		IF ダンジョンフラグ:99:1 < 5
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	CASE 203
+		IF ダンジョンフラグ:99:3 < 3
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	CASE 205
+		IF ダンジョンフラグ:99:3 < 3
+			RESULTS = ■
+		ELSE
+			RESULTS = □
+		ENDIF
+	CASE 207,303,1100
+		RESULTS = Ω
+	CASE 304
+		IF ダンジョンフラグ:99:1 >= 15
+			RESULTS = ■
+		ELSE
+			RESULTS = □
+		ENDIF
+	CASE 308
+		RESULTS = ！
+	CASE 403
+		IF ダンジョンフラグ:99:3 == 0
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	CASE 800
+		IF ダンジョンフラグ:99:1 < 8
+			RESULTS = □
+		ELSE
+			RESULTS = ！
+		ENDIF
+	CASE 805
+		IF !GETBIT(ダンジョンフラグ:99:4,9)
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	;■地下水路　陽光の導き
+	CASE 1000
+		IF ダンジョンフラグ:99:3 < 8
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	;■地下水路　古びた鍵
+	CASE 1001
+		IF ダンジョンフラグ:99:3 < 7
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	;■闘技場
+	CASE 1400
+		IF !GETBIT(ダンジョンフラグ:99:10,1)
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	CASE 1401
+		RESULTS = ！
+	CASE 1402
+		SETCOLOR 0x00ff00
+		RESULTS = Ｕ
+	CASE 1403
+		IF ダンジョンフラグ:99:1 < 26
+			RESULTS = ！
+		ELSE
+			SETCOLOR 0x00ff00
+			RESULTS = Ｄ
+		ENDIF
+	CASE 1404
+		IF ダンジョンフラグ:99:1 == 26 && ダンジョンフラグ:99:5 < 5
+			SETCOLOR 0x00ff00
+			RESULTS = ｍ
+		ENDIF
+	CASE 1405
+		SETCOLOR 0x00ff00
+		RESULTS = Ｄ
+	CASE 1406
+		SETCOLOR 0x00ff00
+		RESULTS = Ｕ
+	;■聖杯堂
+	CASE 1801
+		IF !GETBIT(ダンジョンフラグ:99:4,12)
+			RESULTS = ■
+		ELSE
+			RESULTS = □
+		ENDIF
+	CASE 1803
+		IF ダンジョンフラグ:99:3 >= 10
+			RESULTS = □
+		ELSE
+			RESULTS = ！
+		ENDIF
+	;■海賊船　船底
+	CASE 2000
+		RESULTS = ！
+	CASE 2001
+		RESULTS = ●
+	;■漂着地
+	CASE 2200
+		IF ダンジョンフラグ:99:1 < 25
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	;■闘技場　地下
+	CASE 2400
+		IF !GETBIT(ダンジョンフラグ:99:4,21)
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	;ギミックAスイッチ
+	CASE 2401
+		IF !GETBIT(ダンジョンフラグ:99:8,00)
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	CASE 2402,24011
+		RESULTS = ！
+	;対なる二槍入手
+	CASE 2403
+		IF ダンジョンフラグ:99:3 < 14
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	;ギミックBスイッチ
+	CASE 2404
+		IF !GETBIT(ダンジョンフラグ:99:8,01)
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	;ギミックA
+	CASE 2405
+		IF !GETBIT(ダンジョンフラグ:99:8,00)
+			RESULTS = 　
+		ELSE
+			RESULTS = ！
+		ENDIF
+	;ギミックC
+	CASE 2406
+		IF !GETBIT(ダンジョンフラグ:99:8,02)
+			RESULTS = 　
+		ELSE
+			RESULTS = ！
+		ENDIF
+	;ギミックB
+	CASE 2407
+		IF !GETBIT(ダンジョンフラグ:99:8,01)
+			RESULTS = 　
+		ELSE
+			RESULTS = ！
+		ENDIF
+	;ギミックD
+	CASE 2408
+		IF !GETBIT(ダンジョンフラグ:99:8,03)
+			RESULTS = 　
+		ELSE
+			RESULTS = ！
+		ENDIF
+	;ギミックCスイッチ
+	CASE 2408
+		IF !GETBIT(ダンジョンフラグ:99:8,02)
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	;ナイトメアβ入手
+	CASE 2410
+		IF !GETBIT(ダンジョンフラグ:99:10,2)
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	;ギミックDスイッチ
+	CASE 2412
+		IF !GETBIT(ダンジョンフラグ:99:8,03)
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	CASE 2413
+		IF !GETBIT(ダンジョンフラグ:99:4,22)
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+;■古城・後編
+	;ヘルメスの杖
+	CASE 2601
+		IF !GETBIT(ダンジョンフラグ:99:4,26)
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+;■浸水牢獄
+	CASE 2900
+		IF !GETBIT(ダンジョンフラグ:99:4,31)
+			RESULTS = □
+		ELSE
+			RESULTS = ！
+		ENDIF
+	CASE 2901
+		IF !GETBIT(ダンジョンフラグ:99:4,31)
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+;■吹き抜け階段
+	CASE 3000
+		IF ダンジョンフラグ:99:3 < 17
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+;■変成の間
+	CASE 3100
+		IF ダンジョンフラグ:99:3 < 18
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+		
+		
+	CASEELSE
+		RETURN 1
+ENDSELECT
+
+
+@TILE_MARK_COMMON_99_5, ARG, ARG:1, ARG:2
+SELECTCASE ARG / 10
+	CASE 2200,2201,2202,2203,2204,2206,2207,2209,2210,2211,2212,2213,2214,2215,2216,2217,2218,2219,2220,2221,2222,2223,2224,2225,2226,2227,2228,2229,2230
+		IF ダンジョンフラグ:99:1 < 25
+			RESULTS = □
+		ELSE
+			RESULTS = 罠
+		ENDIF
+	CASEELSE
+		RETURN 1
+ENDSELECT
+
+
+@TILE_MARK_COMMON_99_6, ARG, ARG:1, ARG:2
+SELECTCASE ARG / 10
+	CASE 200,201,202,203
+		RESULTS = ↑
+	CASE 300
+		IF ダンジョンフラグ:99:1 < 13
+			RESULTS = ？
+		ELSE
+			RESULTS = ↑
+		ENDIF
+	CASE 500
+		RESULTS = ↑
+	CASEELSE
+		RESULTS = ↑
+ENDSELECT
+
+@TILE_MARK_COMMON_99_7, ARG, ARG:1, ARG:2
+SELECTCASE ARG / 10
+	CASE 200,300,301,302,303,801,802,900
+		RESULTS = ↓
+	CASE 1200
+		IF ダンジョンフラグ:99:1 >= 13
+			RESULTS = ↓
+		ELSE
+			RESULTS = □
+		ENDIF
+	CASEELSE
+		RESULTS = ↓
+ENDSELECT
+
+@TILE_MARK_COMMON_99_9, ARG, ARG:1, ARG:2
+
+CALL TILE_MARK_COMMON_99_ORB, ARG, ARG:1, ARG:2
+SIF RESULT
+	RETURN 0
+
+SELECTCASE ARG / 10
+	CASE 0
+		IF ダンジョンフラグ:99:5 == 0
+			SETCOLOR 0x00ff00
+			RESULTS = ｍ
+		ELSE
+			RESULTS = □
+		ENDIF
+	CASE 001
+		RESULTS = ↓
+	CASE 100
+		IF ダンジョンフラグ:99:5 == 1
+			SETCOLOR 0x00ff00
+			RESULTS = ｍ
+		ELSE
+			RESULTS = □
+		ENDIF
+	CASE 203,204
+		RESULTS = □
+	CASE 208
+		IF ダンジョンフラグ:99:1 < 2
+			RESULTS = ！
+		ENDIF
+	CASE 209
+		IF ダンジョンフラグ:99:1 == 2 && ダンジョンフラグ:99:3 == 3
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	CASE 210
+		IF ダンジョンフラグ:99:1 == 2 && ダンジョンフラグ:99:5 < 4
+			SETCOLOR 0x00ff00
+			RESULTS = ｍ
+		ELSE
+			RESULTS = □
+		ENDIF
+	;■ロビー　開始地点へ
+	CASE 212
+		RESULTS = ↑
+	;■獅子の像
+	CASE 213
+		IF ダンジョンフラグ:99:1 < 7
+			RESULTS = Ω
+		ELSE
+			RESULTS = □
+		ENDIF
+	;■獅子の間　中央　隠しRオーブ
+	CASE 214
+		RESULTS = ■
+	;■獅子の間　中央　隠しRオーブ
+	CASE 221
+		RESULTS = ■
+	;■古城ロビー吹き抜け　2F
+	CASE 305,306
+		RESULTS = ！
+	;■複葉機の部屋　地下　Sミッション有
+	CASE 500
+		IF ダンジョンフラグ:99:1 == 0
+			RESULTS = ！
+		ELSEIF ダンジョンフラグ:99:2 == 4
+			RESULTS = Ｂ
+		ELSE
+			RESULTS = □
+		ENDIF
+	;■獅子像の間　2F　ワープ
+	CASE 600
+		RESULTS = ■
+	;■吹き抜け階段　吹き抜け部分
+	CASE 800,801,802,803,804,805,806,809,810,811,812,813,814,815,816,817,818,819,820,821
+		RESULTS = 　
+	CASE 900,901,902,903,904,905,906,907,908,909
+		RESULTS = 　
+	;■吹き抜け階段 - 寝室のワープ箇所
+	CASE 807,808
+		RESULTS = ■
+	;■吹き抜け階段　陽光の導きの扉
+	CASE 822
+		IF !GETBIT(ダンジョンフラグ:99:4,9)
+			RESULTS = ■
+		ELSE
+			RESULTS = 扉
+		ENDIF
+	;■ネロ・アンジェロ戦
+	CASE 825
+		IF ダンジョンフラグ:99:1 == 9
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	;■吹き抜け階段　最下層へ戻る
+	CASE 1002
+		RESULTS = ■
+	;■地下水路　シン・サイズ戦
+	CASE 1000
+		IF ダンジョンフラグ:99:1 < 12
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	;■太陽の紋章先　ワープ
+	CASE 1100
+		RESULTS = ■
+	CASE 1101,1102,1105
+		RESULTS = ！
+	;■太陽の紋章先　寝室への扉
+	CASE 1103
+		RESULTS = 扉
+	;■太陽の紋章先　ファントム戦
+	CASE 1104
+		IF ダンジョンフラグ:99:1 < 13
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	;■太陽の紋章先　隠しRオーブ
+	CASE 1106
+		RESULTS = ■
+	;■太陽の紋章先
+	CASE 1108
+		RESULTS = ↓
+	;■古城前　古城内部へ
+	CASE 1300
+		RESULTS = ■
+	;■古城前　跳ね橋　跳ね橋が上がった後
+	CASE 1301
+		IF ダンジョンフラグ:99:1 >= 16 && !GETBIT(ダンジョンフラグ:99:4,23)
+			RESULTS = 　	
+		ELSE
+			RESULTS = □
+		ENDIF
+	;■古城前　脱出口
+	CASE 1303
+		IF ダンジョンフラグ:99:1 >= 16
+			RESULTS = 出
+		ENDIF
+	;■闘技場　ブレイド出現
+	CASE 1400
+		SIF ダンジョンフラグ:99:11 < 5
+			RESULTS = ！
+	;■闘技場　グリフォン戦
+	CASE 1401
+		SIF ダンジョンフラグ:99:1 == 18
+			RESULTS = ！
+	;■闘技場　フェティッシュ出現
+	CASE 1403
+		SIF ダンジョンフラグ:99:11 < 6
+			RESULTS = ！
+	;■闘技場　山岳地/霧深き渓谷への扉
+	CASE 1402,1404
+		RESULTS = 扉
+	;■闘技場2F　仕掛け通路
+	CASE 1500,1501
+		IF ダンジョンフラグ:99:1 >=17
+			RESULTS = □
+		ELSE
+			RESULTS = 　
+		ENDIF
+	;이프리트
+	CASE 1502
+		IF ダンジョンフラグ:99:1 < 18
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+	;■霧深き渓谷
+	CASE 1600,1601
+		RESULTS = ↑
+	CASE 1602
+		RESULTS = 扉
+	;■聖杯堂前
+	CASE 1700
+		RESULTS = 扉
+	CASE 1701
+		SIF ダンジョンフラグ:99:1 < 20
+			RESULTS = ！
+	CASE 1702
+		RESULTS = ↓
+	;聖杯堂
+	CASE 1800
+		IF !GETBIT(ダンジョンフラグ:99:4,13)
+			RESULTS = ■
+		ELSE
+			RESULTS = 扉
+		ENDIF
+	CASE 1801
+		SETCOLOR 0x00ff00
+		RESULTS = Ｕ
+	CASE 1802
+		SETCOLOR 0x00ff00
+		RESULTS = Ｕ
+	CASE 1803
+		SETCOLOR 0x00ff00
+		RESULTS = ○
+	CASE 1804
+		SETCOLOR 0x00ff00
+		RESULTS = ○
+	CASE 1805
+		RESULTS = 扉
+	;■海賊船へ
+	CASE 1900,1901
+		SETCOLOR COLOR("PASTEL-BLUE")
+		RESULTS = Ｄ
+	CASE 1902
+		RESULTS = 扉
+	;■海賊船　船底
+	CASE 2000,2001
+		SETCOLOR 0x00ff00
+		RESULTS = Ｄ
+	CASE 2003,2004,2005,2006,2007
+		SETCOLOR 0x00ff00
+		RESULTS = Ｕ
+	CASE 2002
+		SIF ダンジョンフラグ:99:1 >= 24
+			RESULTS = ←
+	;■海賊船　船上
+	CASE 2100
+		SIF ダンジョンフラグ:99:1 == 22
+			RESULTS = ！
+	CASE 2101
+		IF ダンジョンフラグ:99:1 >= 24
+			SETCOLOR 0x00ff00
+			RESULTS = Ｄ
+		ENDIF
+	;■漂着地
+	CASE 2200,2201
+		SETCOLOR COLOR("PASTEL-BLUE")
+		RESULTS = Ｄ
+	CASE 2202
+		SIF ダンジョンフラグ:99:1 < 25
+			RESULTS = ！
+	;■山岳地
+	CASE 2300
+		RESULTS = ↑
+	CASE 2301
+		RESULTS = 扉
+	CASE 2302
+		RESULTS = ↑
+	CASE 2303
+		RESULTS = 扉
+	CASE 2304
+		RESULTS = ↓
+	CASE 2305
+		RESULTS = 扉
+	CASE 2306
+		RESULTS = ↑
+	;■古城・後編
+	CASE 2601
+		SIF ダンジョンフラグ:99:5 < 6
+			RESULTS = ！
+	;■闘技場の絵
+	CASE 2805
+		SIF ダンジョンフラグ:99:1 >= 30
+			RESULTS = ！
+	CASE 2807
+		SIF ダンジョンフラグ:99:1 < 30
+			RESULTS = ！
+	;■吹き抜け階段
+	CASE 3000
+		RESULTS = ↑
+	CASE 3001
+		RESULTS = ↓
+	CASE 3002
+		RESULTS = ↑
+	CASE 3003
+		RESULTS = ↓
+	CASE 3004
+		RESULTS = ↓
+	CASE 3005
+		RESULTS = ！
+	;■浸水牢獄
+	CASE 2900
+		SIF !GETBIT(ダンジョンフラグ:99:4,30)
+			RESULTS = ！
+	CASE 2901
+		SIF !GETBIT(ダンジョンフラグ:99:4,30)
+			RESULTS = ■
+	;■変成の間
+	CASE 3100,3102,3103
+		RESULTS = ↑
+	CASE 3101
+		SIF ダンジョンフラグ:99:1 == 31 ||ダンジョンフラグ:99:3 >= 18 
+			RESULTS = ！
+	;■寝室～鏡の世界
+	CASE 3200
+		SIF ダンジョンフラグ:99:3 < 19
+			RESULTS = ！
+	;■魔界　生贄の間
+	CASE 3500
+		IF !GETBIT(ダンジョンフラグ:99:4,34)
+			RESULTS = ！
+		ELSE
+			RESULTS = □
+		ENDIF
+;■魔界　最深部
+	;仕掛け2起動後
+	CASE 3600,3601
+		IF !GETBIT(ダンジョンフラグ:99:4,37)
+			RESULTS = Ｍ
+		ELSE
+			RESULTS = ！
+		ENDIF
+	;仕掛け1起動後
+	CASE 3603
+		IF !GETBIT(ダンジョンフラグ:99:4,36)
+			RESULTS = Ｌ
+		ELSE
+			RESULTS = ！
+		ENDIF
+	;心臓稼働
+	CASE 3607
+		IF !GETBIT(ダンジョンフラグ:99:4,38)
+			RESULTS = □
+		ELSE
+			RESULTS = ！
+		ENDIF
+	;移動処理
+	CASE 3602,3604,3605,3606,3608,3609,3610,3611
+		RESULTS = ！
+	;■心臓の間　上段
+	CASE 3800,3801
+		RESULTS = ！
+	;■謁見の間
+	CASE 3900
+		RESULTS = ！
+	
+	CASEELSE
+		RESULTS = □
+ENDSELECT
+
+
+
+;=======================================================================
+;[5]調べる　実行時のイベント
+;=======================================================================
+@EVENT_CHECK_DUNGEON_99,ARG
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y)% 10
+	;==========
+	;時空神像
+	;==========
+	CASE 1
+		SIF DA:(FLAG:현X):(FLAG:현Y) == 181
+			CALL JIKU_GOD_STATUE
+
+	;==========
+	;扉の処理
+	;==========
+	CASE 2
+		CALL DUNGEON_DOOR,ARG
+		RETURN 1
+	;========
+	;宝の処理
+	;========
+	CASE 3
+		IF FLAG:현M == 2
+			SELECTCASE ARG / 10
+				CASE 202,204,205
+					SIF ダンジョンフラグ:99:1 >= 8
+						RETURN 0
+			ENDSELECT
+		ELSE
+			CALL TREASURE_99
+			RETURN 1
+		ENDIF
+		
+	;========================
+	;イベント、メッセンジャー
+	;========================
+	CASE 4
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+		;---------
+		;　開始地点
+		;---------
+			;■開始地点　登攀
+			CASE 0
+				CALL MESSAGE_WINDOW_D, "", "＞ 여기서 위로 기어오를 수 있을 것 같은데…… "
+				CALL INPUT_YN_D, "기어오른다", "기어오르지 않는다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,1,12,6
+			;■開始地点：上段　降り
+			CASE 100
+				CALL MESSAGE_WINDOW_D, "", "＞ 여기서 아래로 뛰어내릴 수도 있지만…… "
+				CALL INPUT_YN_D, "뛰어내린다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,0,13,6
+		;---------
+		;　古城1F
+		;---------
+			;■聖堂　獅子の誇り
+			CASE 200
+				IF ダンジョンフラグ:99:1 == 4
+					CALL MESSAGE_WINDOW_D, "", "【사자의 긍지】/＞　사자 문지기와의 대면이 허용되는 강자의 증거 "
+					CALL INPUT_YN_D, "취한다", "취하지 않는다"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　사자의 긍지　를 손에 넣었다 "
+						CALL MESSAGE_WINDOW_D, "", @"＞　%CALLNAME:MASTER%이 사자를 본뜬 문장을 손에 쥐는 동시에/　　그 거구는 등뒤에 내려와 엄청난 열과 함께 거대한 위압감을 내뿜는다 "
+						CALL MESSAGE_WINDOW_D, "단테", "「나원참、서비스 정신이 투철하구만」/　단테는 휘파람을 불며 여유로운 표정이다. /　아무래도 이것도 예전과 같을 것이다………라는 것인가, 물론 그 강함도 포함해서 "
+						CALL MESSAGE_WINDOW_D, "팬텀", "「뭐야 이 꼬맹이들은？」 "
+						CALL MESSAGE_WINDOW_D, "팬텀", "「큰 투기를 느꼈지만……/　　　그냥 인간인가」 "
+						CALL MESSAGE_WINDOW_D, "", "＞　거구에 걸맞은 얼굴을 이쪽으로 기대고 일행을 지켜보는 모양새는/　　자못 힘자랑이라는 오만한 자신감이 넘친다 "
+						CALL MESSAGE_WINDOW_D, "단테", "「어이 괴물　여전히 덥구나」/「이번에는 제대로 근육 이외에도 잘 채워왔나？」 "
+						CALL MESSAGE_WINDOW_D, "팬텀", "「지껄였겠다　버러지가」/「밟아 뭉개버려주마！」 "
+						CALL MESSAGE_WINDOW_D, "", "＞　악마　팬텀이 덤벼들기 시작했다！ "
+						FLAG:도주불가플래그 = 1
+						FLAG:회화불능플래그 = 1
+						FLAG:선제기습취소 = 1
+						CALL PHANTOM_1
+						
+						CALL BATTLE_START
+						
+						FLAG:도주불가플래그 = 0
+						FLAG:회화불능플래그 = 0
+						FLAG:선제기습취소 = 0
+						FLAG:미조우걸음수 = 0
+						FORCEWAIT
+						CALL MESSAGE_WINDOW_D, "", "＞　용암 거미는 열세가 되자 몸을 돌려 도망쳤다…… "
+						CALL MESSAGE_WINDOW_D, "단테", "「뭐、중간보스라는 녀석이다/어트랙션은 드디어 본방、이라는 거야」 "
+						CALL MESSAGE_WINDOW_D, "", @"＞　%CALLNAME:MASTER%은 가볍게 맞장구를 치면서 앞으로 걸음을 옮겼다…… "
+						CALL MESSAGE_WINDOW_D, "", "＞　레드 오브 +500 "
+						MONEY:99 += 500
+						
+						ダンジョンフラグ:99:1 = 5
+						ダンジョンフラグ:99:3 = 4
+					ENDIF
+				ENDIF
+			;■海中通路先　ヘルメスの杖
+			CASE 202
+				CALL MESSAGE_WINDOW_D, "", "＞「연금술에 쓰이는 헤르메스 지팡이를 본뜬 것 같다」 "
+				CALL MESSAGE_WINDOW_D, "", "＞「뭔가 마력 같은 것이 느껴지지만 지금은 어쩔 도리가 없다」 "
+			;■書庫　裁きの宝杖
+			CASE 203
+				IF ダンジョンフラグ:99:3 < 3
+					CALL MESSAGE_WINDOW_D, "", "【심판의 보장】/＞　신기한 빛을 발하는 보석 "
+					CALL INPUT_YN_D, "취한다", "취하지 않는다"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞심판의 보장　을 손에 넣었다 "
+						CALL MESSAGE_WINDOW_D, "", "＞등뒤에서 벽이 움직이는 듯한 소리가 들렸다…… "
+						ダンジョンフラグ:99:3 = 3
+					ENDIF
+				ENDIF
+			;■書庫　死神の絵
+			CASE 204
+				IF ダンジョンフラグ:99:3 >= 2
+					CALL MESSAGE_WINDOW_D, "", "＞사신처럼 보이는 악마가 그려져 있다 "
+				ELSEIF ダンジョンフラグ:99:3 < 2
+					CALL MESSAGE_WINDOW_D, "", "＞사신처럼 보이는 악마가 그려져 있다 /　그림에는 열쇠가 박혀 있다 "
+					CALL INPUT_YN_D, "취한다", "취하지 않는다"
+					SIF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞낡은 열쇠 를 손에 넣었다 "
+						ダンジョンフラグ:99:3 = 2
+				ENDIF
+			;■獅子の間　登攀
+			CASE 206
+				CALL MESSAGE_WINDOW_D, "", "＞여기서 위로 기어오를 수 있을 것 같은데…… "
+				CALL MESSAGE_WINDOW_D, "", "＞어느 쪽으로 올라갈까？ "
+				PRINTFORML [ 0] 사자의 문
+				PRINTFORML [ 1] 2F 통로
+				PRINTFORML [ 2] 역시 그만둔다
+				INPUT
+				IF RESULT == 0
+					CALL DUNGEON_WORP, 6,14,10
+				ELSEIF RESULT == 1
+					CALL DUNGEON_WORP, 6,14,12
+				ELSE
+					RETURN 1
+				ENDIF
+			;■小部屋　時空神像
+			CASE 207
+				CALL JIKU_GOD_STATUE
+			;■複葉機の間
+			CASE 208
+				CALL MESSAGE_WINDOW_D, "", "＞여기서 위로 기어오를 수 있을 것 같은데…… "
+				CALL INPUT_YN_D, "기어오른다", "기어오르지 않는다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,2,25,32
+			
+			
+		;---------
+		;　古城　吹き抜け
+		;---------
+			;■古城ロビー吹き抜け　2F
+			CASE 300
+				CALL MESSAGE_WINDOW_D, "", "＞여기서 위로 기어오를 수 있을 것 같은데…… "
+				CALL INPUT_YN_D, "기어오른다", "기어오르지 않는다"
+				SIF !RESULT
+					CALL DUNGEON_WORP, 4,11,2
+			;■古城ロビー吹き抜け　2F
+			CASE 301
+				CALL MESSAGE_WINDOW_D, "", "＞여기서 위로 기어오를 수 있을 것 같은데…… "
+				CALL INPUT_YN_D, "기어오른다", "기어오르지 않는다"
+				SIF !RESULT
+					CALL DUNGEON_WORP, 4,15,4
+			;■古城ロビー吹き抜け　2F
+			CASE 302
+				CALL MESSAGE_WINDOW_D, "", "＞여기서 위로 기어오를 수 있을 것 같은데…… "
+				CALL INPUT_YN_D, "기어오른다", "기어오르지 않는다"
+				SIF !RESULT
+					CALL DUNGEON_WORP, 4,15,9
+			;■古城ロビー吹き抜け　2F　時空神像
+			CASE 303
+				CALL JIKU_GOD_STATUE
+			;■古城ロビー吹き抜け　2F　마리오네트の部屋
+			CASE 305
+				CALL MESSAGE_WINDOW_D, "", "＞여기서 위로 기어오를 수 있을 것 같은데…… "
+				CALL INPUT_YN_D, "기어오른다", "기어오르지 않는다"
+				SIF !RESULT
+					CALL DUNGEON_WORP, 4,15,26
+			;■古城ロビー吹き抜け　2F
+			CASE 306
+				CALL MESSAGE_WINDOW_D, "", "＞여기서 반대편으로 뛰어넘을 수도 있을 것 같은데…… "
+				CALL INPUT_YN_D, "뛰어넘는다", "이 자리에 머무른다"
+				SIF !RESULT
+					CALL DUNGEON_WORP, 3,5,26
+			;■古城ロビー吹き抜け　2F
+			CASE 307
+				CALL MESSAGE_WINDOW_D, "", "＞여기서 반대편으로 뛰어넘을 수도 있을 것 같은데…… "
+				CALL INPUT_YN_D, "뛰어넘는다", "이 자리에 머무른다"
+				SIF !RESULT
+					CALL DUNGEON_WORP, 3,11,26
+			;■古城ロビー吹き抜け　2F　矛の間
+			CASE 308
+				CALL MESSAGE_WINDOW_D, "", "＞무언가를 찔러 넣을 수 있는 세 개의 구멍이 뚫려 있다 "
+				IF ダンジョンフラグ:99:3 == 9 && ダンジョンフラグ:99:1 < 15
+					CALL MESSAGE_WINDOW_D, "", "＞삼지창으로 찌릅니까？ "
+					CALL INPUT_YN_D, "찌른다", "그만둔다"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　삼지창을 찌르자 장치가 작동하여 오브제에서 물이 배출되고/　　그것을 동력으로 양쪽 톱니바퀴가 움직이기 시작했다 "
+						CALL MESSAGE_WINDOW_D, "", "＞　아래층에서 무거운 물건이 움직이는 소리가 났다…… "
+						ダンジョンフラグ:99:1 = 15
+					ENDIF
+				ENDIF
+			;■古城ロビー吹き抜け　3F
+			CASE 400
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서 아래로 뛰어내릴 수도 있지만…… "
+				CALL INPUT_YN_D, "뛰어내린다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,3,10,2
+			;■古城ロビー吹き抜け　3F
+			CASE 401,402
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서 아래로 뛰어내릴 수도 있지만…… "
+				CALL INPUT_YN_D, "뛰어내린다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,3,15,7
+			;■古城ロビー吹き抜け　3F　마리오네트の部屋
+			CASE 403
+				IF ダンジョンフラグ:99:3 == 0
+					CALL MESSAGE_WINDOW_D, "", "＞　마리오네트가 열쇠를 손에 들고 있다…… "
+					CALL INPUT_YN_D, "취한다", "취하지 않는다"
+					SIF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　낡은 열쇠　를 손에 넣었다 "
+						CALL MESSAGE_WINDOW_D, "", "＞　열쇠를 손에 쥐자、주위의 공기가 변하고 악마의 기운도 풍겨왔다/　　아무래도 이제부터가 어트랙션의 시작이라는 거겠지. "
+						ダンジョンフラグ:99:3 = 1
+						ダンジョンフラグ:99:11 = 1
+				ENDIF
+			;■古城ロビー吹き抜け　3F
+			CASE 404
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서 아래로 뛰어내릴 수도 있지만…… "
+				CALL INPUT_YN_D, "뛰어내린다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,3,15,25
+		;---------
+		;　古城2F
+		;---------
+			;■獅子像の間　2F　祭壇
+			CASE 600
+				IF !GETBIT(ダンジョンフラグ:99:4,4)
+					CALL MESSAGE_WINDOW_D, "", "＞　제단이 있다 "
+					CALL MESSAGE_WINDOW_D, "", "＞『길을 내고 싶다면、네 힘으로 신을 물리쳐라』/『신은 너의 눈앞에 있다』 "
+					CALL INPUT_YN_D, "제단을 움직인다", "움직이지 않는다"
+					IF !RESULT
+						SETBIT ダンジョンフラグ:99:4,4
+						CALL MESSAGE_WINDOW_D, "", "＞　제단이 안쪽으로 젖혀져 숨겨져 있던 뚜껑을 열었다 "
+						CALL MESSAGE_WINDOW_D, "", "＞　아무래도 아래층으로 뛰어내릴 수 있을 것 같다 "
+						CALL MESSAGE_WINDOW_D, "", "＞　여기서 아래로 뛰어내릴 수도 있지만…… "
+						CALL INPUT_YN_D, "뛰어내린다", "그만둔다"
+						SIF !RESULT
+							CALL DUNGEON_WORP,2,12,11
+					ENDIF
+				ELSE
+					CALL MESSAGE_WINDOW_D, "", "＞　아무래도 아래층으로 뛰어내릴 수 있을 것 같은데…… "
+					CALL INPUT_YN_D, "뛰어내린다", "그만둔다"
+					SIF !RESULT
+						CALL DUNGEON_WORP,2,12,12
+				ENDIF
+			;■獅子像の間　2F　導きの魂の像
+			CASE 601
+				CALL MESSAGE_WINDOW_D, "", "＞오브제가 있다 / 구멍 밑에 뭔가 조각되어 있다 "
+				CALL MESSAGE_WINDOW_D, "", "＞『인도의 영혼은 여기에 모인다』 "
+			;■獅子像の間　2F
+			CASE 602,
+				CALL MESSAGE_WINDOW_D, "", "＞여기서 아래로 뛰어내릴 수도 있지만…… "
+				CALL MESSAGE_WINDOW_D, "", "＞어디로 이동하시겠습니까？ "
+				PRINTFORML [ 0] 맞은편 통로로
+				PRINTFORML [ 1] 사자의 길 1F로
+				PRINTFORML [ 2] 역시 그만둔다
+				INPUT
+				IF RESULT == 0
+					CALL DUNGEON_WORP, 6,14,12
+				ELSEIF RESULT == 1
+					CALL DUNGEON_WORP, 2,22,21
+				ELSE
+					RETURN 1
+				ENDIF
+			;■獅子像の間　2F
+			CASE 603
+				CALL MESSAGE_WINDOW_D, "", "＞여기서 아래로 뛰어내릴 수도 있지만…… "
+				CALL MESSAGE_WINDOW_D, "", "＞어디로 이동하시겠습니까？ "
+				PRINTFORML [ 0] 사자의 문으로
+				PRINTFORML [ 1] 사자의 길 1F로
+				PRINTFORML [ 2] 역시 그만둔다
+				INPUT
+				IF RESULT == 0
+					CALL DUNGEON_WORP, 6,14,9
+				ELSEIF RESULT == 1
+					CALL DUNGEON_WORP, 2,22,21
+				ELSE
+					RETURN 1
+				ENDIF
+			;■海中通路　전투フラグ　帰還用ワープ
+			CASE 700
+				;海中通路から聖堂先の塔へ移動
+				IF ダンジョンフラグ:99:1 < 4
+					CALL MESSAGE_WINDOW_D, "", "＞　바닷물을 밀어낼 수 있게 만든 원형 방/　　그 중앙으로 걸음을 옮기자 바닥 중앙이 빛난다 "
+					ダンジョンフラグ:99:1 = 4
+					CALL MESSAGE_WINDOW_D, "", "＞　아무래도 여기서 위로 돌아갈 수 있을 것 같다 "
+					CALL INPUT_YN_D, "돌아간다", "잠깐 기다린다"
+					SIF !RESULT
+						CALL DUNGEON_WORP,2,36,5
+				ELSE
+					CALL MESSAGE_WINDOW_D, "", "＞여기서부터 돌아갈 수 있을 것 같다…… "
+					CALL INPUT_YN_D, "돌아간다", "잠깐 기다린다"
+					IF !RESULT
+						IF !GETBIT(ダンジョンフラグ:99:4,24)
+							CALL DUNGEON_WORP,2,36,5
+						ELSE
+							CALL DUNGEON_WORP,26,36,5
+						ENDIF
+					ENDIF
+				ENDIF
+		;---------
+		;　吹き抜け階段 - 寝室
+		;---------
+			;■最下層　昇降機
+			CASE 800
+				IF ダンジョンフラグ:99:1 >= 8
+					CALL MESSAGE_WINDOW_D, "", "＞기동하면 위까지 올라갈 수 있을 것 같다…… "
+					CALL INPUT_YN_D, "기동한다", "잠깐 기다린다"
+						SIF !RESULT
+							CALL DUNGEON_WORP,9,13,4
+				ENDIF
+			;■最下層　スイッチ
+			CASE 801
+				IF ダンジョンフラグ:99:1 < 8
+					CALL MESSAGE_WINDOW_D, "", "＞　마법진이 그려져 있는 심볼이 있다/　　어쩐지 뭔가 스위치가 되고 있는 것 같다…… "
+					CALL INPUT_YN_D, "기동한다", "잠깐 기다린다"
+						IF !RESULT
+							CALL MESSAGE_WINDOW_D, "", "＞배후의 지면이 빛나기 시작했다…… "
+							ダンジョンフラグ:99:1 = 8
+						ENDIF
+				ELSE
+					CALL MESSAGE_WINDOW_D, "", "＞이 이상의 조작이 필요한 것 같다 "
+				ENDIF
+			;■女性の像
+			CASE 802
+				CALL MESSAGE_WINDOW_D, "", "＞　우울한 표정을 한 여성의 상이다/　　가슴에 무언가를 찔러 넣을 구멍이 있다 "
+				IF ダンジョンフラグ:99:3 == 5
+					CALL MESSAGE_WINDOW_D, "", "＞　죽음의 선고를 사용하시겠습니까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+						IF !RESULT
+							CALL MESSAGE_WINDOW_D, "", "＞　우울한 영혼/　　영혼을 본뜬 장식품/　　사람이 만지자、그 힘은 시간이 지남에 따라 상실된다 "
+							CALL MESSAGE_WINDOW_D, "", @"＞　%CALLNAME:MASTER%이 장식품을 손에 쥐자 곁에서 기척을 느꼈다 "
+							CALL MESSAGE_WINDOW_D, "", "＞　하지만 시선의 끝에는 거울밖에 없었고/――그 거울에 비친 모습들이、이쪽을 분명히 바라보고 있었다"
+							CALL MESSAGE_WINDOW_D, "단테", "「과연、그런건가」 "
+							CALL MESSAGE_WINDOW_D, "", "＞　　혼자 납득하는 단테와 함께 거울에서 벗어나자/무려 거울에 비친 모습들이 이쪽으로 나왔다！ "
+							CALL MESSAGE_WINDOW_D, "단테", "「Hey、이번에는 친구를 데리고 와서 떠들썩하구나/　종교라도 바꾼거냐？」 "
+							CALL MESSAGE_WINDOW_D, "", "＞　단테가 스스럼없이 자신에게 말을 건다/하지만 상대방은 검은악마 기사로 모습을 바꾸고 밖으로 나오라는 제스처를 취했다. "
+							CALL MESSAGE_WINDOW_D, "단테", "「뭐 보다시피、자신과 싸울 수 있는 서비스가 딸려 있다」 "
+							CALL MESSAGE_WINDOW_D, "", "＞　이것도 마찬가지인 것 같다 /　　어트랙션에 딸린 호러하우스는 무섭구나 "
+						ENDIF
+						ダンジョンフラグ:99:1 = 9
+						ダンジョンフラグ:99:3 = 6
+				ENDIF
+			;■時空神像
+			CASE 803
+				CALL JIKU_GOD_STATUE
+			;■鏡
+			CASE 804
+				CALL MESSAGE_WINDOW_D, "", "＞　빨려 들어갈 것처럼 예쁜 거울이다 "
+				CALL MESSAGE_WINDOW_D, "", "＞　거울 속에 암흑의 파동을 느끼지만/　　지금은 어찌할 도리가 없다 "
+			;■太陽の紋章
+			CASE 805
+				IF !GETBIT(ダンジョンフラグ:99:4,9)
+					CALL MESSAGE_WINDOW_D, "", "＞　태양의 문장이 새겨져 있다/　　그 밑에 뭔가 적혀 있다 "
+					CALL MESSAGE_WINDOW_D, "", "『빛나는 햇빛의 인도는/　　너를 구워서 태워버릴 것이다』"
+					CALL MESSAGE_WINDOW_D, "", "『빛을 견디는 힘을 가진 자만이/　　　　　　새로운 길을 연다』 "
+					IF ダンジョンフラグ:99:3 == 8
+						CALL MESSAGE_WINDOW_D, "", "＞　양광의 인도　를 사용 합니까？ "
+						CALL INPUT_YN_D, "YES", "NO"
+						IF !RESULT
+							CALL MESSAGE_WINDOW_D, "", "＞　문장이 위로 슬라이드하자、문이 출현했다 "
+							SETBIT ダンジョンフラグ:99:4,9
+						ENDIF
+					ENDIF
+				ENDIF
+			;■ベッド
+			CASE 806
+				CALL MESSAGE_WINDOW_D, "", "＞　영주가 썼을 침대다 "
+			;■紋章横の机
+			CASE 807
+				CALL MESSAGE_WINDOW_D, "", "＞　이웃 나라와의 교섭에 사용되었을 것인/　　서면 등이 놓여 있다 "
+			;■5F登攀
+			CASE 808
+				CALL MESSAGE_WINDOW_D, "", "＞여기서 위로 기어오를 수 있을 것 같은데…… "
+				CALL INPUT_YN_D, "기어오른다", "기어오르지 않는다"
+				SIF !RESULT
+					CALL DUNGEON_WORP, 9,15,10
+			;■外壁　登り
+			CASE 809
+				CALL MESSAGE_WINDOW_D, "", "＞여기서 위로 기어오를 수 있을 것 같은데…… "
+				CALL INPUT_YN_D, "기어오른다", "기어오르지 않는다"
+				SIF !RESULT
+					CALL DUNGEON_WORP, 8,4,23
+			;■外壁　降り
+			CASE 810
+				CALL MESSAGE_WINDOW_D, "", "＞여기서 뛰어내릴 수 있을 것 같은데…… "
+				CALL INPUT_YN_D, "뛰어내린다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP, 8,4,21
+		;---------
+		;　5F　寝室屋根上
+		;---------
+			;■最上階ジャンプ판정
+			CASE 900
+				CALL MESSAGE_WINDOW_D, "", "＞　뛰어넘어서 갈 수 있는 장소가 두 군데 있다 "
+				CALL MESSAGE_WINDOW_D, "", "＞어디로 이동합니까？ "
+				PRINTFORML [ 0] 동쪽 계단으로
+				PRINTFORML [ 1] 남쪽 발판으로
+				PRINTFORML [ 2] 역시 그만둔다
+				INPUT
+				IF RESULT == 0
+					CALL DUNGEON_WORP, 9,15,4
+				ELSEIF RESULT == 1
+					CALL DUNGEON_WORP, 9,13,6
+				ELSE
+					RETURN 1
+				ENDIF
+			CASE 901
+				CALL MESSAGE_WINDOW_D, "", "＞　뛰어오를까？ "
+				CALL INPUT_YN_D, "뛰어오른다", "그만둔다"
+					SIF !RESULT
+						CALL DUNGEON_WORP,9,13,4
+			;■最上階で死の宣告入手
+			CASE 902
+				IF ダンジョンフラグ:99:3 < 5
+					CALL MESSAGE_WINDOW_D, "", "＞　죽음의 선고/　　아름다운 장식이 된 검/　　의식용 장식물로 만들어졌기 때문에/　　무기로서는 사용할 수 없다 "
+					CALL INPUT_YN_D, "취한다", "취하지 않는다"
+						IF !RESULT
+							CALL MESSAGE_WINDOW_D, "", "＞죽음의 선고　를  손에 넣었다 "
+							ダンジョンフラグ:99:3 = 5
+						ENDIF
+				ENDIF
+			;■5F　寝室屋根上
+			CASE 903
+				CALL MESSAGE_WINDOW_D, "", "＞　뛰어오를까？ "
+				CALL INPUT_YN_D, "뛰어오른다", "그만둔다"
+					SIF !RESULT
+						CALL DUNGEON_WORP,9,10,9
+			CASE 904
+				CALL MESSAGE_WINDOW_D, "", "＞여기서 위로 기어오를 수 있을 것 같은데…… "
+				CALL INPUT_YN_D, "기어오른다", "기어오르지 않는다"
+				SIF !RESULT
+					CALL DUNGEON_WORP, 9,8,9
+			;■寝室前へ
+			CASE 905
+				CALL MESSAGE_WINDOW_D, "", "＞　뛰어오를까？ "
+				CALL INPUT_YN_D, "뛰어오른다", "그만둔다"
+					SIF !RESULT
+						CALL DUNGEON_WORP,8,6,18
+			;■屋根上へ戻る
+			CASE 906
+				CALL MESSAGE_WINDOW_D, "", "＞　뛰어오를까？ "
+				CALL INPUT_YN_D, "뛰어오른다", "그만둔다"
+					SIF !RESULT
+						CALL DUNGEON_WORP,8,12,16
+		;---------
+		;　5F　寝室屋根上
+		;---------
+			;■陽光の導き
+			CASE 1000
+				IF ダンジョンフラグ:99:3 < 8
+					CALL MESSAGE_WINDOW_D, "", "【양광의 인도】/＞　달과 짝을 이루는 작열의 빛을 발하는 열쇠/　　소지하다 보면 체력을 서서히 빼앗긴다 "
+					ダンジョンフラグ:99:3 = 8
+				ENDIF
+			;■地下水路　大部屋
+			CASE 1001
+				IF ダンジョンフラグ:99:3 < 7
+					CALL MESSAGE_WINDOW_D, "", "【낡은 열쇠】/＞　녹이 슬긴 했지만、/　　사용하는 데 문제는 없다 "
+					CALL INPUT_YN_D, "취한다", "취하지 않는다"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞낡은 열쇠　를 손에 넣었다 "
+						CALL MESSAGE_WINDOW_D, "", "＞　배관 안쪽에서 기척을 느끼다/　　보면 대형견만한 파리 같은 녀석이 기어 나오고 있다/　　더욱 방심할 수 없게 된 것 같다…… "
+						ダンジョンフラグ:99:1 = 11
+						ダンジョンフラグ:99:3 = 7
+						ダンジョンフラグ:99:11 = 4
+					ENDIF
+				ENDIF
+		;---------
+		;　太陽の紋章先
+		;---------
+			;■時空神像
+			CASE 1100
+				CALL JIKU_GOD_STATUE
+			;■
+			CASE 1101
+				IF ダンジョンフラグ:99:3 < 9
+					CALL MESSAGE_WINDOW_D, "", @"【삼지창】/＞　중후하게 장식된 삼지창/　　의식용품이므로 무기로서는 사용할 수 없다 "
+					CALL INPUT_YN_D, "취한다", "취하지 않는다"
+						IF !RESULT
+							CALL MESSAGE_WINDOW_D, "", "＞삼지창　을 손에 넣었다 "
+							ダンジョンフラグ:99:3 = 9
+						ENDIF
+				ENDIF
+		;---------
+		;　太陽の紋章先
+		;---------
+			;■仕掛け
+			CASE 1200
+				IF ダンジョンフラグ:99:1 < 14
+					CALL MESSAGE_WINDOW_D, "", "＞　도개교를 감아 올리는 기계의 레버다./　　마력으로 봉쇄되어 있다. "
+					CALL MESSAGE_WINDOW_D, "", "＞　강한 충격을 주면 움직일 것 같다 "
+					CALL INPUT_YN_D, "움직인다", "그만둔다"
+						IF !RESULT
+							CALL MESSAGE_WINDOW_D, "", "＞기계가 작동하고、감겨 있던 쇠사슬이 힘차게 내려간다/　　잠시 후、밖에서 큰 소리가 나면서 움직임이 멈췄다 "
+							CALL MESSAGE_WINDOW_D, "", "＞　아마 이것으로 앞의 도개교는 내려갔을 것이다. "
+							ダンジョンフラグ:99:1 = 14
+						ENDIF
+				ENDIF
+			;■骸뼈
+			CASE 1201
+				CALL MESSAGE_WINDOW_D, "", "＞이 성에 빠져 힘이 다하여/　　쓰러진 전사의 시체다 "
+				CALL MESSAGE_WINDOW_D, "", "＞뭔가 가지고 있다 "
+				CALL MESSAGE_WINDOW_D, "", "【그레네이드건】/＞ 폭발하는 유탄을 쏘아낸다/　　파괴력은 지극히 크다 "
+				CALL MESSAGE_WINDOW_D, "", "＞하지만、이계도 세부까지는 재현되지 않은 것 같다/　　전투에 사용할 수는 없을 것 같다 "
+		;---------
+		;　古城前　跳ね橋
+		;---------
+			;■발元の文字
+			CASE 1300
+				CALL MESSAGE_WINDOW_D, "", "＞구덩이에 글자가 새겨져 있다 "
+				CALL MESSAGE_WINDOW_D, "", "『운명의 바퀴가 시작점으로 이끈다』 "
+				IF !GETBIT(ダンジョンフラグ:99:4,23)  && ダンジョンフラグ:99:3 == 15
+					CALL MESSAGE_WINDOW_D, "", "＞　운명의 바퀴를 사용합니까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+						IF !RESULT
+							CALL MESSAGE_WINDOW_D, "", "＞　장치가 작동하고、도개교가 다시 내려왔다 "
+							ダンジョンフラグ:99:1 = 27
+							SETBIT ダンジョンフラグ:99:4,23
+						ENDIF
+				ENDIF
+			CASE 1301
+				CALL MESSAGE_WINDOW_D, "", "＞석판에 글자가 새겨져 있다/　 무슨 수수께끼 같은 것 같다 "
+				CALL MESSAGE_WINDOW_D, "", "『붉은 돌이 감추고 있는 비밀공간은/　비상시에 열리는 일이 있다』 "
+			CASE 1302
+				CALL MESSAGE_WINDOW_D, "", "＞석판에 글자가 새겨져 있다/　 무슨 이야기 같다…… "
+				CALL MESSAGE_WINDOW_D, "", "『운명은 콜로세움의/　　깊숙한 땅에서 주인을 기다리고 있다』 "
+		;---------
+		;　闘技場
+		;---------
+			CASE 1400
+				IF !GETBIT(ダンジョンフラグ:99:10,1)
+					CALL MESSAGE_WINDOW_D, "", "【마광석】/＞　어둠 속에서 빛나는 이상한 돌/　　마계에 존재하는 변하지않는 돌、/　　인간 세계에 방치돼 변화된 것으로 보인다 "
+					SETBIT ダンジョンフラグ:99:10,1
+				ENDIF
+			CASE 1401
+				CALL MESSAGE_WINDOW_D, "", "『아발론의 왕、운명의 바퀴를 사용하여/　　이야기를 시작의 땅으로 되돌린다』 "
+				IF ダンジョンフラグ:99:3 < 15
+					CALL MESSAGE_WINDOW_D, "", "【운명의 바퀴】/＞　운명의 반복을 상징한다/　　원반 모양의 플레이트 "
+					CALL MESSAGE_WINDOW_D, "", "＞　운명의 바퀴 를 입수했다. "
+					ダンジョンフラグ:99:3 = 15
+				ENDIF
+			CASE 1402
+				CALL MESSAGE_WINDOW_D, "", "＞콜로세움으로 이동하시겠습니까？ "
+				CALL INPUT_YN_D, "이동한다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,14,16,12
+			CASE 1403
+				IF ダンジョンフラグ:99:1 >= 26
+					CALL MESSAGE_WINDOW_D, "", "＞이동하시겠습니까？ "
+					CALL INPUT_YN_D, "이동한다", "그만둔다"
+					SIF !RESULT
+						CALL DUNGEON_WORP,14,3,12
+				ENDIF
+			;グリフォン討伐後、단테회화
+			CASE 1404
+				IF ダンジョンフラグ:99:1 == 26 && ダンジョンフラグ:99:5 < 5
+					CALL MESSAGE_WINDOW_D, "", "＞　단테는 기척이 사라진 하늘을 노려보고 있다 "
+					CALL MESSAGE_WINDOW_D, "단테", "「알고는 있지만、 여전히 지저분한 짓을 저지르는구만」 "
+					CALL MESSAGE_WINDOW_D, "", "＞　동료를 쓰고 버리는、확실히 그런 조직은 나라도 사양할 참이다 "
+					CALL MESSAGE_WINDOW_D, "단테", @"「자、드디어 종반전이다/가자구、%CALLNAME:MASTER%」 "
+					CALL MESSAGE_WINDOW_D, "단테", "「몇번을 해도 변하지 않아/아버지의 이름에 맹세코――놈에게 죽음을！」 "
+					ダンジョンフラグ:99:5 = 5
+				ENDIF
+			CASE 1405
+				CALL MESSAGE_WINDOW_D, "", "＞　뛰어내립니까？ "
+				CALL INPUT_YN_D, "뛰어내린다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,14,5,28
+			CASE 1406
+				CALL MESSAGE_WINDOW_D, "", "＞여기서 위로 기어오를 수 있을 것 같은데…… "
+				CALL INPUT_YN_D, "기어오른다", "기어오르지 않는다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,14,5,26
+		;---------
+		;　闘技場　2F
+		;---------
+			CASE 1500
+				IF ダンジョンフラグ:99:1 == 16
+					CALL MESSAGE_WINDOW_D, "", "＞장치를 움직입니까？ "
+					CALL INPUT_YN_D, "움직인다", "그만둔다"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞등 뒤에서 뭔가 움직이는 소리가 났다…… "
+						ダンジョンフラグ:99:1 = 17
+					ENDIF
+				ELSE
+					CALL MESSAGE_WINDOW_D, "", "＞이제 조작할 필요는 없는 것 같다 "
+				ENDIF
+		;---------
+		;　霧深き渓谷
+		;---------
+			CASE 1600
+				IF ダンジョンフラグ:99:9 == 0
+					CALL MESSAGE_WINDOW_D, "", "＞　비석에 글자가 새겨져 있다/　　무슨 수수께끼 같은 것 같다 "
+					CALL MESSAGE_WINDOW_D, "", "『안개의 계곡。바른 길로 가야만 /　 환상의 땅에 발을 디딜 수 있다』 "
+					CALL MESSAGE_WINDOW_D, "", "『연약한 빛의 수호자만이/　바른 길을 아는 힘을 준다』 "
+					IF RAND:2 ==0
+						;右が正解
+						CALL MESSAGE_WINDOW_D, "", "＞　비석에서 빛이 출현하여、오른쪽 통로를 비추고 있다…… "
+						ダンジョンフラグ:99:9 = 1
+					ELSE
+						;左が正解
+						CALL MESSAGE_WINDOW_D, "", "＞　비석에서 빛이 출현하여、왼쪽 통로를 비추고 있다…… "
+						ダンジョンフラグ:99:9 = 2
+					ENDIF
+				ELSEIF ダンジョンフラグ:99:9 == 1
+					CALL MESSAGE_WINDOW_D, "", "＞　빛은 오른쪽 통로를 비추고 있다…… "
+				ELSE
+					CALL MESSAGE_WINDOW_D, "", "＞　빛은 왼쪽 통로를 비추고 있다…… "
+				ENDIF
+		;---------
+		;　성배堂
+		;---------
+			CASE 1800
+				CALL MESSAGE_WINDOW_D, "", "＞　금색 기사의 상이 있다 "
+				CALL MESSAGE_WINDOW_D, "", "＞　뭔가 놓여 있던 모양이다 "
+				IF !GETBIT(ダンジョンフラグ:99:4,13)
+					CALL MESSAGE_WINDOW_D, "", "＞　성배를 사용합니까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+						SIF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　뭔가가 움직이는 소리가 났다…… "
+						SETBIT ダンジョンフラグ:99:4,13
+				ELSEIF GETBIT(ダンジョンフラグ:99:4,13)
+					CALL MESSAGE_WINDOW_D, "", "＞　이제 여기에는 볼일이 없다 "
+				ENDIF
+			CASE 1802
+				IF ダンジョンフラグ:99:1 < 21
+					CALL MESSAGE_WINDOW_D, "", "＞　힘있는 빛에 지켜진 받침대 위에/　　술잔이 올려져 있다 "
+					CALL MESSAGE_WINDOW_D, "", "『증거를 내게 보여라』 "
+					CALL MESSAGE_WINDOW_D, "", "＞　순혈의 증거를 사용하시겠습니까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+						IF !RESULT
+							CALL MESSAGE_WINDOW_D, "", "【성배】/＞　성인의 죽음을 기리고、/　　삶으로부터의 개방을 기원하며 그 생피를 받은 성배 "
+							CALL MESSAGE_WINDOW_D, "", "＞　성배　을 손에 넣음과 동시에、배후에 기척이 생겼다 "
+							CALL MESSAGE_WINDOW_D, "", "＞　뒤돌아보니、고성에서 싸운 넬로・안젤로가 다시 나타나 이쪽을 바라보고 있다. "
+							CALL MESSAGE_WINDOW_D, "단테", @"「자아 %CALLNAME:MASTER%、라운드 2의 시작이다！」 "
+							CALL MESSAGE_WINDOW_D, "", "＞　넬로・안젤로가 덤벼들었다！ "
+							FLAG:도주불가플래그 = 1
+							FLAG:회화불능플래그 = 1
+							FLAG:선제기습취소 = 1
+							CALL NERO_2
+							
+							CALL BATTLE_START
+							
+							FLAG:도주불가플래그 = 0
+							FLAG:회화불능플래그 = 0
+							FLAG:선제기습취소 = 0
+							FLAG:미조우걸음수 = 0
+							FORCEWAIT
+							
+							CALL MESSAGE_WINDOW_D, "", @"＞　%CALLNAME:MASTER% 들에게 패배하자、넬로 안젤로는 다시 사라졌다 "
+							CALL MESSAGE_WINDOW_D, "", "＞　아직 결말을 지을 때는 아닌 것 같다"
+							CALL MESSAGE_WINDOW_D, "", "＞　레드 오브 +500 "
+							MONEY:99 += 500
+							ダンジョンフラグ:99:1 = 21
+							ダンジョンフラグ:99:3 = 11
+						ENDIF
+				ENDIF
+			CASE 1803
+				IF ダンジョンフラグ:99:3 < 10
+					CALL MESSAGE_WINDOW_D, "", "【순결의 증표】/＞　수정으로 된 막으로 코팅된 박제/　　성배 탐색에 불가결한『순결의 의사』가 봉해져 있다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　순결의 증표　를  입수했다 "
+					ダンジョンフラグ:99:3 = 10
+				ENDIF
+			CASE 1804
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서 저쪽 발판으로 뛰어넘을 수 있을 것 같다/　　뛰어 넘습니까？ "
+				CALL INPUT_YN_D, "뛰어오른다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,18,16,21
+		;---------
+		;　海賊船　船底
+		;---------
+			CASE 2000
+				CALL MESSAGE_WINDOW_D, "", "【니들 건】/＞　수중에서 사용할 수 있는 유일한 무기 "
+				CALL MESSAGE_WINDOW_D, "", "＞　하지만、이계도 세부까지는 재현되지 않은 것 같다/　　전투에 사용할 수는 없을 것 같다 "
+		;---------
+		;　海賊船　船上
+		;---------
+			CASE 2100
+				IF ダンジョンフラグ:99:3 < 12
+					CALL MESSAGE_WINDOW_D, "", "【헤르메스의 지팡이】/＞　2마리의 뱀이 얽혀있는 의장이 되어 있다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　헤르메스의 지팡이　를 입수했다 "
+					ダンジョンフラグ:99:3 = 12
+					CALL MESSAGE_WINDOW_D, "", "＞　헤르메스의 지팡이를 집어들자、마치 신호인 것처럼/　　해적선이 침몰하기 시작했다！ "
+					CALL MESSAGE_WINDOW_D, "", "＞　눈 깜짝할 사이에 물에 잠길 것 같다/　　급히 탈출하지 않으면 안 된다 "
+					ダンジョンフラグ:99:1 = 24
+				ENDIF
+			CASE 2101
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서부터 위로 발판에 오를 수 있을 것 같다/　　올라갑니까？ "
+				CALL INPUT_YN_D, "올라간다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,21,7,11
+			CASE 2102
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서부터 위로 발판에 오를 수 있을 것 같다/　　올라갑니까？ "
+				CALL INPUT_YN_D, "올라간다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,21,12,11
+			CASE 2103
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서부터 위로 발판에 오를 수 있을 것 같다/　　올라갑니까？ "
+				CALL INPUT_YN_D, "올라간다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,21,22,11
+			CASE 2104
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서부터 위로 발판에 오를 수 있을 것 같다/　　올라갑니까？ "
+				CALL INPUT_YN_D, "올라간다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,21,6,22
+			CASE 2105
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서부터 위로 발판에 오를 수 있을 것 같다/　　올라갑니까？ "
+				CALL INPUT_YN_D, "올라간다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,21,13,22
+			CASE 2106
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서부터 위로 발판에 오를 수 있을 것 같다/　　올라갑니까？ "
+				CALL INPUT_YN_D, "올라간다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,21,21,22
+		;---------
+		;　漂着地
+		;---------
+			CASE 2200
+				IF ダンジョンフラグ:99:1 < 25 && ダンジョンフラグ:99:3 < 13
+					CALL MESSAGE_WINDOW_D, "", "「방패에 새겨져 공명하는 문장/　　　문을 봉하고 방패를 물리치다」 "
+					CALL MESSAGE_WINDOW_D, "", "작은 문장의 방패/＞　작은 방패 모양을 본뜬 조각이다 /　　콜로세움에 있는 문을 봉하고 있는 문장과 같다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　작은 문장의 방패　를 입수했다 "
+					ダンジョンフラグ:99:3 = 13
+					;---- EDIT 003 ADD START ---------------------------
+					CALL MESSAGE_WINDOW_D, "", "＞　……방패를 떼어내자 해골의 팔이 레버로 되어 있음을 깨달았다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　레버를 당기겠습니까? "
+					CALL INPUT_YN_D, "YES", "NO"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　어디선가 무언가 움직이는 소리가 났다……/　　그와 동시에 장치가 작동하여 바닥의 함정이 움직이기 시작했다 "
+						ダンジョンフラグ:99:1 = 25
+					ENDIF
+					;---- EDIT 003 ADD END -----------------------------
+				ELSEIF ダンジョンフラグ:99:1 < 25
+					CALL MESSAGE_WINDOW_D, "", "＞　해골의 팔로 된 레버가 있다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　레버를 당깁니까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　어딘가에서 뭔가 움직인 소리가 났다……/　　그와 동시에 장치가 작동하고、바닥의 덫이 움직이기 시작했다 "
+						ダンジョンフラグ:99:1 = 25
+					ENDIF
+				ENDIF
+		;---------
+		;　闘技場　地下
+		;---------
+			;スイッチA
+			CASE 2401
+				IF !GETBIT(ダンジョンフラグ:99:8,0)
+					CALL MESSAGE_WINDOW_D, "", "＞　장치를 작동시키겠습니까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　어딘가에서 뭔가 움직이는 소리가 났다…… "
+						SETBIT ダンジョンフラグ:99:8,0
+					ENDIF
+				ENDIF
+			CASE 2402
+				IF GETBIT(ダンジョンフラグ:99:8,2)
+					CALL MESSAGE_WINDOW_D, "", "＞　발판으로 뛰어오를까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+					SIF !RESULT
+						CALL DUNGEON_WORP,24,6,17
+				ENDIF
+			;対なる二창입수
+			CASE 2403
+				IF ダンジョンフラグ:99:3 < 14
+					CALL MESSAGE_WINDOW_D, "", "【짝을 이루는 두 자루의 창】/　　『여행자에게 파멸의 창을 맡긴다 /콜로세움의 문이 이제야말로 열릴 것이다』 "
+					CALL MESSAGE_WINDOW_D, "", "＞　짝을 이루는 두 자루의 창　을 손에 넣었다 "
+					ダンジョンフラグ:99:3 = 14
+					CLEARBIT ダンジョンフラグ:99:8,00
+					CLEARBIT ダンジョンフラグ:99:8,01
+				ENDIF
+			;スイッチB
+			CASE 2404
+				IF !GETBIT(ダンジョンフラグ:99:8,1)
+					CALL MESSAGE_WINDOW_D, "", "＞　장치를 작동시키겠습니까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　어딘가에서 뭔가 움직이는 소리가 났다…… "
+						SETBIT ダンジョンフラグ:99:8,1
+					ENDIF
+				ENDIF
+			;ギミックA
+			CASE 2405
+				IF GETBIT(ダンジョンフラグ:99:8,0)
+					CALL MESSAGE_WINDOW_D, "", "＞　발판 위에 올라섭니까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+					SIF !RESULT
+						CALL DUNGEON_WORP,24,8,15
+				ENDIF
+			;ギミックC
+			CASE 2406
+				IF GETBIT(ダンジョンフラグ:99:8,3)
+					CALL MESSAGE_WINDOW_D, "", "＞　발판 위에 올라섭니까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+					SIF !RESULT
+						CALL DUNGEON_WORP,24,7,18
+				ENDIF
+			;ギミックB
+			CASE 2407
+				IF GETBIT(ダンジョンフラグ:99:8,0)
+					CALL MESSAGE_WINDOW_D, "", "＞　발판 위에 올라섭니까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+					SIF !RESULT
+						CALL DUNGEON_WORP,24,9,16
+				ENDIF
+			;ギミックD
+			CASE 2408
+				IF GETBIT(ダンジョンフラグ:99:8,3)
+					CALL MESSAGE_WINDOW_D, "", "＞　발판 위에 올라섭니까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+					SIF !RESULT
+						CALL DUNGEON_WORP,24,8,19
+				ENDIF
+			;スイッチC
+			CASE 2409
+				IF !GETBIT(ダンジョンフラグ:99:8,2)
+					CALL MESSAGE_WINDOW_D, "", "＞　장치를 작동시키겠습니까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　어딘가에서 뭔가 움직이는 소리가 났다…… "
+						SETBIT ダンジョンフラグ:99:8,2
+					ENDIF
+				ENDIF
+			;나이트메어β입수
+			CASE 2410
+				IF !GETBIT(ダンジョンフラグ:99:10,2)
+					CALL MESSAGE_WINDOW_D, "", "【나이트메어β】/＞　마계에서 만들어진 무기/　　그 위력은 미지수이다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　아무래도 이쪽도 완전 재현이라고는 할 수 없는 것 같다 /　　뭔가 계기가 필요할지도 모르겠다…… "
+					
+					SETBIT ダンジョンフラグ:99:10,2
+					CLEARBIT ダンジョンフラグ:99:8,02
+					CLEARBIT ダンジョンフラグ:99:8,03
+				ENDIF
+			CASE 2411
+				IF GETBIT(ダンジョンフラグ:99:8,1)
+					CALL MESSAGE_WINDOW_D, "", "＞　발판 위에 올라섭니까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+					SIF !RESULT
+						CALL DUNGEON_WORP,24,10,17
+				ENDIF
+			;スイッチD
+			CASE 2412
+				IF !GETBIT(ダンジョンフラグ:99:8,3)
+					CALL MESSAGE_WINDOW_D, "", "＞　장치를 작동시키겠습니까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　어딘가에서 뭔가 움직이는 소리가 났다…… "
+						SETBIT ダンジョンフラグ:99:8,3
+					ENDIF
+				ENDIF
+		;---------
+		;　闘技場　地下下段
+		;---------
+			CASE 2500
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서부터 위로 발판에 오를 수 있을 것 같다/　　올라갑니까？ "
+				CALL INPUT_YN_D, "올라간다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,24,6,15
+			CASE 2501
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서부터 위로 발판에 오를 수 있을 것 같다/　　올라갑니까？ "
+				CALL INPUT_YN_D, "올라간다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,24,10,19
+		;---------
+		;　古城・後半　1F
+		;---------
+			CASE 2600
+				CALL MESSAGE_WINDOW_D, "", "＞　웅덩이가 거울처럼 투명하다/　　여기서 마의 파동이 느껴진다 "
+				CALL MESSAGE_WINDOW_D, "", "＞　머릿속에 목소리가 울려온다 "
+				CALL MESSAGE_WINDOW_D, "", "『마의 문을 열려는 자여/ 　　　　　푸른 영석의 힘을 빌려라』"
+					IF !GETBIT(ダンジョンフラグ:99:4,25)
+						CALL MESSAGE_WINDOW_D, "", "＞　맑은 물속에 꿈틀거리는 무언가가 비치고、이쪽으로 기어 나오려고 하고 있다 "
+						CALL MESSAGE_WINDOW_D, "", "＞　그것은 슬라임처럼 꿈틀거리며 점차 형태를 이루어 가고/　　거대한 벌레를 연상시키는 듯한 모습이 되어、이쪽으로 적의를 향했다 "
+						CALL MESSAGE_WINDOW_D, "", "＞　나이트메어가 덮쳐왔다！ "
+						SETBIT ダンジョンフラグ:99:8,4
+						FLAG:도주불가플래그 = 1
+						FLAG:회화불능플래그 = 1
+						FLAG:선제기습취소 = 1
+						CALL NIGTHMARE
+						
+						CALL PHANTOM_2
+						
+						CALL BATTLE_START
+						
+						FLAG:도주불가플래그 = 0
+						FLAG:회화불능플래그 = 0
+						FLAG:선제기습취소 = 0
+						FLAG:미조우걸음수 = 0
+						FORCEWAIT
+						CALL MESSAGE_WINDOW_D, "", "＞　나이트메어는 외침과 함께 증발하듯 사라져 갔다‥‥‥ "
+						CALL MESSAGE_WINDOW_D, "", "＞　레드 오브+500 "
+						MONEY:99 += 500
+						ダンジョンフラグ:99:1 = 28
+						CLEARBIT ダンジョンフラグ:99:8,4
+						SETBIT ダンジョンフラグ:99:4,25
+					ENDIF
+			CASE 2601
+				CALL MESSAGE_WINDOW_D, "", "＞　연금술에 쓰이는 헤르메스의 지팡이를 본뜬 것/　　암야의 마력을 받아 마력이 넘치는 것 같다 "
+				IF !GETBIT(ダンジョンフラグ:99:4,26)
+					CALL MESSAGE_WINDOW_D, "", "＞　헤르메스의 지팡이를 사용하시겠습니까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　양쪽 오브제에 골방 그림과、침실 그림이 떠올랐다 "
+						SETBIT ダンジョンフラグ:99:4,26
+					ENDIF
+				ENDIF
+			CASE 2602
+				IF !GETBIT(ダンジョンフラグ:99:4,24)
+					CALL MESSAGE_WINDOW_D, "", "＞　장치를 작동시키겠습니까？ "
+					CALL INPUT_YN_D, "YES", "NO"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　기동하자마자 등뒤에 번개가 치고/　　굉음과 함께 기사상이 파괴되었다 "
+						CALL MESSAGE_WINDOW_D, "", "＞　파괴된 상이 있던 곳에는 뇌광을 두른 박쥐가 날갯짓을 해오더니‥‥그 모습이 인간의 형태로 변했다/　　아무래도 탐색은 더욱 어려움을 가중시키는 것 같다‥‥‥ "
+						SETBIT ダンジョンフラグ:99:4,24
+						ダンジョンフラグ:99:11 = 7
+					ENDIF
+				ENDIF
+		;---------
+		;　小部屋の絵
+		;---------
+			CASE 2700
+				IF ダンジョンフラグ:99:1 == 30 && !GETBIT(ダンジョンフラグ:99:4,29)
+					CALL MESSAGE_WINDOW_D, "", "＞　문득 보니、투기장 그림과는 반대쪽에 감옥 같은 그림이 떠오르고 있다 "
+					SETBIT ダンジョンフラグ:99:4,29
+				ENDIF
+		;---------
+		;　闘技場の絵
+		;---------
+			;移動
+			CASE 2800
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서 발판으로 뛰어넘을 수 있을 것 같다/　　뛰어오를까？ "
+				CALL INPUT_YN_D, "뛰어오른다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,28,7,3
+			;移動
+			CASE 2801
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서 발판으로 뛰어넘을 수 있을 것 같다/　　뛰어오를까？ "
+				CALL INPUT_YN_D, "뛰어오른다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,28,1,4
+			;移動
+			CASE 2802
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서 발판으로 뛰어넘을 수 있을 것 같다/　　뛰어오를까？ "
+				CALL INPUT_YN_D, "뛰어오른다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,28,3,4
+			;移動
+			CASE 2803
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서 발판으로 뛰어넘을 수 있을 것 같다/　　뛰어오를까？ "
+				CALL INPUT_YN_D, "뛰어오른다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,28,7,6
+			;月光水
+			CASE 2804
+				IF ダンジョンフラグ:99:1 == 29 && ダンジョンフラグ:99:3 < 16
+					CALL MESSAGE_WINDOW_D, "", "【월광수】/＞　안을 수은으로 채운 수정 구슬/　　수은에는 달의 힘이 깃들어 있어、굳게 닫힌 문을 열어젖히는 힘이 있다 "
+					ダンジョンフラグ:99:3 = 16
+				ELSE
+					CALL MESSAGE_WINDOW_D, "", "＞　오브제가 있다‥‥‥ "
+				ENDIF
+			;移動
+			CASE 2805
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서 발판으로 뛰어넘을 수 있을 것 같다/　　뛰어오를까？ "
+				CALL INPUT_YN_D, "뛰어오른다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,28,5,4
+			;移動
+			CASE 2806
+				CALL MESSAGE_WINDOW_D, "", "＞　여기서 발판으로 뛰어넘을 수 있을 것 같다/　　뛰어오를까？ "
+				CALL INPUT_YN_D, "뛰어오른다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,28,5,6
+			;仕掛け
+			CASE 2807
+				CALL MESSAGE_WINDOW_D, "", "＞　수동식 핸들이 있다 "
+				IF !GETBIT(ダンジョンフラグ:99:4,27)
+					CALL MESSAGE_WINDOW_D, "", "＞　용의 힘으로 봉해져 있는 것 같다/　　이대로는 움직일 수 없다 "
+				ELSE
+					CALL MESSAGE_WINDOW_D, "", "＞　움직입니까？ "
+					CALL INPUT_YN_D, "움직인다", "그만둔다"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　핸들을 돌리자、연동되어 거울의 방향이 바뀐다 "
+						CALL MESSAGE_WINDOW_D, "", "＞　180도 회전하면、거울에 반사된 달빛이 천장에도 설치되어 있던 거울에 반사되어/　　안쪽에 설치된 오브제를 비춘다 "
+						CALL MESSAGE_WINDOW_D, "", "＞　오브제에 빛이 모여 구슬이 만들어진 것 같다 "
+						ダンジョンフラグ:99:1 = 29
+					ENDIF
+				ENDIF
+			;鏡
+			CASE 2808
+				CALL MESSAGE_WINDOW_D, "", "＞　거울이 천장에서 들어오는 달빛을 반사하고 있다 "
+			;石碑
+			CASE 2809
+				CALL MESSAGE_WINDOW_D, "", "『앞길을 가로막는 명계의 용』/『검으로 용기의 증거를 보여라/　　　용은 스스로의 불길로 멸망할 것이다』 "
+				CALL MESSAGE_WINDOW_D, "", "『달의 물방울은 거울을 건너 진주가 된다』/『천상의 길을 아는 자만이/　　　　　주옥같은 빛을 손에 넣는다』 "
+		;---------
+		;　浸水牢獄
+		;---------
+			;移動
+			CASE 2900
+				IF GETBIT(ダンジョンフラグ:99:4,31)
+					CALL MESSAGE_WINDOW_D, "", "＞　불어나는 계단 윗부분으로 헤엄쳐 이동합니까？ "
+					CALL INPUT_YN_D, "이동한다", "그만둔다"
+					SIF !RESULT
+						CALL DUNGEON_WORP,30,20,5
+				ENDIF
+			;装置
+			CASE 2901
+				IF !GETBIT(ダンジョンフラグ:99:4,31)
+					CALL MESSAGE_WINDOW_D, "", "＞　장치를 기동시키시겠습니까？ "
+					CALL INPUT_YN_D, "움직인다", "그만둔다"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　장치를 기동시키자 、주위가 물로 채워진다 "
+						CALL MESSAGE_WINDOW_D, "", "＞　이것이라면、높은 곳에도 자유롭게 헤엄쳐 갈 수 있을 것 같다 "
+						SETBIT ダンジョンフラグ:99:4,31
+					ENDIF
+				ENDIF
+		;---------
+		;　吹き抜け階段
+		;---------
+			;哲学者の卵입수
+			CASE 3000
+				IF ダンジョンフラグ:99:3 < 17
+					CALL MESSAGE_WINDOW_D, "", "【철학자의 알】/＞　연금술에 사용하는 물질 "
+					ダンジョンフラグ:99:3 = 17
+				ENDIF
+			CASE 3001
+				CALL MESSAGE_WINDOW_D, "", "＞　무사한 통로로 뛰어넘어 갈 수 있을 것 같다/　　뛰어오를까？ "
+				CALL INPUT_YN_D, "뛰어오른다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,30,19,5
+			CASE 3002
+				CALL MESSAGE_WINDOW_D, "", "＞　무사한 통로로 뛰어넘어 갈 수 있을 것 같다/　　뛰어오를까？ "
+				CALL INPUT_YN_D, "뛰어오른다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,30,18,4
+			CASE 3003
+				CALL MESSAGE_WINDOW_D, "", "＞　무사한 통로로 뛰어넘어 갈 수 있을 것 같다/　　뛰어오를까？ "
+				CALL INPUT_YN_D, "뛰어오른다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,30,22,4
+		;---------
+		;　変成の間
+		;---------
+			CASE 3100
+				IF ダンジョンフラグ:99:1 == 32 && ダンジョンフラグ:99:3 == 17
+					CALL MESSAGE_WINDOW_D, "", "＞　변성이 끝난 것 같다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　변성된 돌에서 이상한 목소리가/　　머릿속에 울려온다 "
+					CALL MESSAGE_WINDOW_D, "", "『나는 마의 문을 여는 제 1의 열쇠다 /두 번째 열쇠는 비춘 세상에 있다』 "
+					CALL MESSAGE_WINDOW_D, "", "【영석 엘릭서】/＞　「철학자의 알」을 변성하여 생긴 신비의 돌/　　거울의 봉인을 풀 수 있다. "
+					ダンジョンフラグ:99:3 = 18
+				ELSEIF ダンジョンフラグ:99:1 == 31
+					CALL MESSAGE_WINDOW_D, "", "＞　변성에는 다소 시간이 걸릴 것 같다 "
+				ELSEIF ダンジョンフラグ:99:1 < 31
+					CALL MESSAGE_WINDOW_D, "", "＞　무엇인가 조각되어 있다 "
+					CALL MESSAGE_WINDOW_D, "", "『심리를 추구하는 자여 달걀을 던져라/　　천천히 조심스럽게 달궈라』 "
+					CALL MESSAGE_WINDOW_D, "", "『그것은 푸른 영석이 되고/험한 길로 가는 이정표가 된다』 "
+					IF ダンジョンフラグ:99:3 == 17
+						CALL MESSAGE_WINDOW_D, "", "＞　철학자의 알을 사용하시겠습니까？ "
+						CALL INPUT_YN_D, "사용한다", "그만둔다"
+						IF !RESULT
+							CALL MESSAGE_WINDOW_D, "", "＞　변성에는 다소 시간이 걸릴 것 같다 "
+							ダンジョンフラグ:99:1 = 31
+						ENDIF
+					ENDIF
+				ELSE
+				ENDIF
+		;---------
+		;　寝室～鏡の世界
+		;---------
+			CASE 3200
+				CALL MESSAGE_WINDOW_D, "", "＞　거울의 세계에서 나옵니까？ "
+				CALL INPUT_YN_D, "나온다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,32,14,2
+			
+			CASE 3201
+				CALL MESSAGE_WINDOW_D, "", "＞　엘릭서의 영향을 받아/　　거울이 섬뜩한 빛을 더하고 있다 "
+				CALL MESSAGE_WINDOW_D, "", "＞　거울 속으로 들어갑니까？ "
+				CALL INPUT_YN_D, "들어간다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,32,10,2
+			CASE 3202
+				CALL MESSAGE_WINDOW_D, "리림", "「거기 있는 거울에서 거울의 세계로 갈 수 있게 되었다네요」 "
+				CALL MESSAGE_WINDOW_D, "리림", "「모처럼 호화로운 침대에서 쉬고 있었는데/　이래서는 안심하고 쉴 수 없잖아！」 "
+		;---------
+		;　魔界門
+		;---------
+			CASE 3400
+				IF !GETBIT(ダンジョンフラグ:99:4,33)
+					CALL MESSAGE_WINDOW_D, "", "＞　요란한 어둠이 드리워지고 있다/　　이것이 마계로 가는 문이다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　현자의 돌을 사용하시겠습니까？ "
+					CALL INPUT_YN_D, "사용한다", "그만둔다"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　문을 덮고 있던 역장이 파괴되고、마계의 문이 열렸다 "
+						SETBIT ダンジョンフラグ:99:4,33
+					ENDIF
+				ENDIF
+		;---------
+		;　魔界　最深部
+		;---------
+			;仕掛け2
+			CASE 3600
+				IF !GETBIT(ダンジョンフラグ:99:4,37)
+					CALL MESSAGE_WINDOW_D, "", "＞　장치를 기동시키시겠습니까？ "
+					CALL INPUT_YN_D, "움직인다", "그만둔다"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　장치를 기동시키자、아래에서 기둥이 뻗어 나왔다/　　이걸로 앞으로 나아갈 수 있을 것 같다 "
+						SETBIT ダンジョンフラグ:99:4,37
+					ENDIF
+				ENDIF
+			;爪
+			CASE 3601
+				IF !GETBIT(ダンジョンフラグ:99:4,35)
+					CALL MESSAGE_WINDOW_D, "", "＞　장치를 기동시키시겠습니까？ "
+					CALL INPUT_YN_D, "움직인다", "그만둔다"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　장치를 기동시키자、어딘가에서 뭔가 움직이는 기미가 보였다 "
+						SETBIT ダンジョンフラグ:99:4,35
+					ENDIF
+				ENDIF
+			;仕掛け1
+			CASE 3602
+				IF !GETBIT(ダンジョンフラグ:99:4,36)
+					CALL MESSAGE_WINDOW_D, "", "＞　장치를 기동시키시겠습니까？ "
+					CALL INPUT_YN_D, "움직인다", "그만둔다"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　장치를 기동시키자 、아래에서 기둥이 뻗어 나왔다/　　이걸로 앞으로 나아갈 수 있을 것 같다 "
+						SETBIT ダンジョンフラグ:99:4,36
+					ENDIF
+				ENDIF
+		;---------
+		;　心臓の間　下段
+		;---------
+			CASE 3700,3701
+				CALL MESSAGE_WINDOW_D, "", "＞　위로 올라가시겠습니까？ "
+				CALL INPUT_YN_D, "올라간다", "그만둔다"
+				SIF !RESULT
+					CALL DUNGEON_WORP,36,18,8
+		;---------
+		;　心臓の間　上段
+		;---------
+			CASE 3800
+				IF !GETBIT(ダンジョンフラグ:99:4,38)
+					CALL MESSAGE_WINDOW_D, "", "＞　장치를 기동시키시겠습니까？ "
+					CALL INPUT_YN_D, "움직인다", "그만둔다"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", "＞　장치를 작동시키자 방 한가운데 심장이 뛰기 시작했다 "
+						CALL MESSAGE_WINDOW_D, "", "＞　그에 따라、안쪽에 있는 대문의 봉인이 해제된 것 같다 "
+						SETBIT ダンジョンフラグ:99:4,38
+					ENDIF
+				ENDIF
+				
+				
+		
+		
+		
+		
+		
+		
+			
+		ENDSELECT
+		
+		RETURN 0
+	
+	;=======
+	;フロア移動
+	;=======
+	CASE 6
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			CASE 300
+				IF ダンジョンフラグ:99:1 < 14
+					CALL MESSAGE_WINDOW_D, "", "＞　위로 올라가는 사다리가 있다/　　하지만 뚜껑이 닫혀 있어서 지나갈 수 없다 "
+					RETURN 0
+				ELSE
+					CALL STAIRS_99
+					RETURN RESULT
+				ENDIF
+			ENDSELECT
+	CASE 7
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			CASE 1200
+				IF ダンジョンフラグ:99:1 < 14
+					CALL MESSAGE_WINDOW_D, "", "＞　　뚜껑이 닫혀 있어서 지나갈 수 없다 "
+					RETURN 0
+				ELSE
+					CALL STAIRS_99
+					RETURN RESULT
+				ENDIF
+			CASEELSE
+				CALL STAIRS_99
+				RETURN RESULT
+		ENDSELECT
+	
+	;=======
+	;出口
+	;=======
+	CASE 8
+		CALL DUNGEON_EXIT
+		RETURN 1
+	;=======
+	;イベント2
+	;=======
+	CASE 9
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			CASE 1303
+				IF ダンジョンフラグ:99:1 >= 16
+					CALL MESSAGE_WINDOW_D, "", "＞　이계의 구멍이 있다/　　여기서 귀환할 수 있을 것 같은데 어떻게 할까…… "
+					CALL INPUT_YN_D, "귀환한다", "탐색을 계속한다"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", @"＞　%CALLNAME:MASTER%들은 자기 방으로 귀환했다. "
+						FLAG:탈출 = 1
+						RETURN 1
+					ENDIF
+				ENDIF
+		ENDSELECT
+	CASEELSE
+	RETURN 1
+ENDSELECT
+	
+
+@高低差_99,ARG,ARG:1
+SELECTCASE DA:(ARG):(ARG:1) % 10
+	CASE 0,2,6,7,8,3,4,9
+		;霧深き渓谷の4は高さ0
+		SIF DA:(ARG):(ARG:1) == 16004
+			RETURN 0
+		;魔界門の4は高さ0
+		SIF DA:(ARG):(ARG:1) == 34004
+			RETURN 0
+		;封印扉を出た先のイベントマスの高さは0
+		SIF DA:(ARG):(ARG:1) == 2099
+			RETURN 0
+		;騎士像前の9は高さ0にしておく
+		SIF DA:(ARG):(ARG:1) == 2179
+			RETURN 0
+		;聖杯堂の奥の扉9は高さ0
+		SIF DA:(ARG):(ARG:1) == 18009
+			RETURN 0
+		;古城・後編　ワープマス下の9は高さ0
+		SIF DA:(ARG):(ARG:1) == 26009
+			RETURN 0
+		;魔界　最深部　高さ2
+		SIF DA:(ARG):(ARG:1) == 36004
+			RETURN 2
+		;魔界　最深部　高さ2
+		SIF DA:(ARG):(ARG:1) == 36009
+			RETURN 2
+		;魔界　最深部　高さ2
+		SIF DA:(ARG):(ARG:1) == 36019
+			RETURN 2
+		;魔界　最深部　高さ3
+		SIF DA:(ARG):(ARG:1) == 36039
+			RETURN 3
+		RETURN 99
+	CASE 1
+		;ドリーグ用
+		IF DA:(ARG):(ARG:1) == 91
+			RETURN 0
+		;ワープ・落下処理
+		ELSEIF DA:(ARG):(ARG:1) == 171
+			IF FLAG:현M == 29 && ARG == 3 && ARG:1 == 17
+				RETURN 3
+			ELSE
+				RETURN 20
+			ENDIF
+		ENDIF
+		;時空神像
+		SIF DA:(ARG):(ARG:1) == 181
+			RETURN 0
+		;床配置のオーブ
+		SIF DA:(ARG):(ARG:1) == 191
+			RETURN 0
+		;進入禁止地点の隠しオーブ
+		SIF DA:(ARG):(ARG:1) == 201
+			RETURN 10
+		;高低差
+		SIF DA:(ARG):(ARG:1) == 31
+			RETURN 3
+		SIF DA:(ARG):(ARG:1) == 131
+			RETURN 3
+		SIF DA:(ARG):(ARG:1) == 21
+			RETURN 2
+		SIF DA:(ARG):(ARG:1) == 121
+			RETURN 2
+		SIF DA:(ARG):(ARG:1) == 11
+			RETURN 1
+		SIF DA:(ARG):(ARG:1) == 111
+			RETURN 1
+		RETURN 0
+	CASE 5
+		RETURN 0
+	CASEELSE
+		RETURN 99
+ENDSELECT
+
+
+;=======================================================================
+;タイル進入時のイベント
+;=======================================================================
+@EVENT_ENTER_DUNGEON_99,ARG
+;ARG = 進入時の向き　0の場合ワープなど
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 10
+	CASE 1
+		;ドリーグ
+		IF DA:(FLAG:현X):(FLAG:현Y) == 91
+			IF !GETBIT(ダンジョンフラグ:99:4,27)
+				CALL D_LEAGUE
+			ENDIF
+			RETURN 1
+		;レッドオーブ取得処理
+		ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 191
+			CALL ENTER_DUNGEON_99_ORB,ARG
+			RETURN 1
+		;落下/移動処理
+		ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 171
+			SELECTCASE FLAG:현M
+				CASE 15
+					CALL DUNGEON_WORP,FLAG:현M-1,FLAG:현X+26,FLAG:현Y+24
+				CASE 18
+					CALL DUNGEON_WORP,FLAG:현M,FLAG:현X-11,FLAG:현Y
+				CASE 20
+					CALL DUNGEON_WORP,FLAG:현M,FLAG:현X,FLAG:현Y+7
+				CASE 21
+					IF DA:(FLAG:현X):(FLAG:현Y-7) % 10 == 1
+						CALL DUNGEON_WORP,FLAG:현M,FLAG:현X,FLAG:현Y-7
+					ELSEIF DA:(FLAG:현X-1):(FLAG:현Y-7) % 10 == 1
+						CALL DUNGEON_WORP,FLAG:현M,FLAG:현X-1,FLAG:현Y-7
+					ELSEIF DA:(FLAG:현X+1):(FLAG:현Y-7) % 10 == 1
+						CALL DUNGEON_WORP,FLAG:현M,FLAG:현X+1,FLAG:현Y-7
+					ELSEIF DA:(FLAG:현X):(FLAG:현Y-8) % 10 == 1
+						CALL DUNGEON_WORP,FLAG:현M,FLAG:현X,FLAG:현Y-8
+					ELSE
+						CALL DUNGEON_WORP,FLAG:현M,FLAG:현X,FLAG:현Y-6
+					ENDIF
+				CASE 23
+					IF DA:(FLAG:현X+21):(FLAG:현Y+5) % 10 == 1
+						CALL DUNGEON_WORP,FLAG:현M,FLAG:현X+21,FLAG:현Y+5
+					ELSE
+						CALL DUNGEON_WORP,FLAG:현M,FLAG:현X+20,FLAG:현Y+5
+					ENDIF
+				CASE 24
+					CALL DUNGEON_WORP,FLAG:현M+1,FLAG:현X-5,FLAG:현Y-14
+				CASE 26
+					;古城→古城前
+					IF FLAG:현X == 8 && FLAG:현Y == 42
+						CALL DUNGEON_WORP,13,4,3
+					;古城→水中回廊
+					ELSEIF FLAG:현X == 30 && FLAG:현Y == 5
+						CALL DUNGEON_WORP,7,1,5
+					;聖堂前へジャンプ
+					ELSEIF FLAG:현X == 31 && FLAG:현Y == 5
+						CALL DUNGEON_WORP,26,29,5
+					;古城→小部屋の絵
+					ELSEIF FLAG:현X == 39 && FLAG:현Y == 3
+						CALL DUNGEON_WORP,27,2,13
+					;古城→寝室の絵
+					ELSEIF FLAG:현X == 39 && FLAG:현Y == 7
+						CALL DUNGEON_WORP,32,16,3
+					ENDIF
+				CASE 27
+					IF FLAG:현X == 2 && FLAG:현Y == 1
+						CALL DUNGEON_WORP,27,10,2
+					;小部屋の絵→古城
+					ELSEIF FLAG:현X == 2 && FLAG:현Y == 14
+						CALL DUNGEON_WORP,26,39,4
+					ELSEIF FLAG:현X == 8 && FLAG:현Y == 1
+						CALL DUNGEON_WORP,27,17,2
+					ELSEIF FLAG:현X == 10 && FLAG:현Y == 1
+						CALL DUNGEON_WORP,27,1,1
+					;小部屋の絵→浸水牢獄
+					ELSEIF FLAG:현X == 15 && FLAG:현Y == 13 
+						SIF GETBIT(ダンジョンフラグ:99:4,29)
+							CALL DUNGEON_WORP,29,19,2
+					ELSEIF FLAG:현X == 17 && FLAG:현Y == 1
+						CALL DUNGEON_WORP,27,8,2
+					;小部屋の絵→闘技場の絵
+					ELSEIF FLAG:현X == 17 && FLAG:현Y == 13
+						CALL DUNGEON_WORP,28,13,27
+					ENDIF
+				CASE 28
+					;竜の間　下段→上段へ
+					IF FLAG:현X == 8 && FLAG:현Y == 10
+						CALL DUNGEON_WORP,28,9,3
+					;闘技場の絵→小部屋の絵
+					ELSEIF FLAG:현X == 13 && FLAG:현Y == 28
+						CALL DUNGEON_WORP,27,16,13
+					ELSE
+						CALL DUNGEON_WORP,FLAG:현M,FLAG:현X,FLAG:현Y+7
+					ENDIF
+				CASE 29
+					;浸水牢獄→吹き抜け階段2
+					IF FLAG:현X == 3 && FLAG:현Y == 17
+						CALL DUNGEON_WORP,30,6,1
+					;浸水牢獄→小部屋の絵
+					ELSEIF FLAG:현X == 20 && FLAG:현Y == 2
+						CALL DUNGEON_WORP,27,16,13
+					ENDIF
+				CASE 30
+					;変成の間へ
+					IF FLAG:현X == 1 && FLAG:현Y == 4
+						CALL DUNGEON_WORP,31,8,7
+					;■個別落下処理（ワープに落ちるので場所をずらす）
+					ELSEIF FLAG:현X == 4 && FLAG:현Y == 1
+						CALL DUNGEON_WORP,29,3,18
+					ELSEIF FLAG:현X == 11 && FLAG:현Y == 1
+						CALL DUNGEON_WORP,29,2,18
+					ELSEIF FLAG:현X == 18 && FLAG:현Y == 5
+						CALL DUNGEON_WORP,29,1,21
+					ELSEIF FLAG:현X == 19 && FLAG:현Y == 1
+						CALL DUNGEON_WORP,29,2,18
+					ELSEIF FLAG:현X == 22 && FLAG:현Y == 5
+						CALL DUNGEON_WORP,29,5,21
+					;■範囲落下処理1（左上が2,18へ落ちるように）
+					ELSEIF (FLAG:현X >= 3 && FLAG:현X <= 5) && (FLAG:현Y >= 2 && FLAG:현Y <= 4)
+						CALL DUNGEON_WORP,29,FLAG:현X-1,FLAG:현Y+16
+					ELSEIF (FLAG:현X >= 11 && FLAG:현X <= 13) && (FLAG:현Y >= 2 && FLAG:현Y <= 5)
+						CALL DUNGEON_WORP,29,FLAG:현X-9,FLAG:현Y+16
+					ELSEIF (FLAG:현X >= 19 && FLAG:현X <= 21) && (FLAG:현Y >= 2 && FLAG:현Y <= 4)
+						CALL DUNGEON_WORP,29,FLAG:현X-17,FLAG:현Y+16
+					ENDIF
+				CASE 31
+					IF FLAG:현X == 9 && FLAG:현Y == 7
+						CALL DUNGEON_WORP,30,2,4
+					ELSEIF (FLAG:현X >= 2 && FLAG:현X <= 8) && (FLAG:현Y >= 3 && FLAG:현Y <= 11)
+						CALL DUNGEON_WORP,FLAG:현M,FLAG:현X,FLAG:현Y+12
+					ENDIF
+				CASE 32
+					;ジャンプ
+					IF FLAG:현X == 1 && FLAG:현Y == 8
+						CALL DUNGEON_WORP,32,1,11
+					;ジャンプ
+					ELSEIF FLAG:현X == 1 && FLAG:현Y == 10
+						CALL DUNGEON_WORP,32,1,7
+					;屋上へ
+					ELSEIF FLAG:현X == 2 && FLAG:현Y == 6
+						CALL DUNGEON_WORP,33,6,2
+					;ジャンプ
+					ELSEIF FLAG:현X == 8 && FLAG:현Y == 9
+						CALL DUNGEON_WORP,32,8,11
+					;ジャンプ
+					ELSEIF FLAG:현X == 9 && FLAG:현Y == 11
+						CALL DUNGEON_WORP,32,9,9
+					;古城へ
+					ELSEIF FLAG:현X == 17 && FLAG:현Y == 3
+						CALL DUNGEON_WORP,26,39,6
+					ENDIF
+				CASE 33
+					;落下
+					IF FLAG:현X == 6 && FLAG:현Y == 3
+						CALL DUNGEON_WORP,32,1,6
+					;落下
+					ELSEIF FLAG:현X == 10 && FLAG:현Y == 3
+						CALL DUNGEON_WORP,32,6,6
+					ENDIF
+				CASE 34
+					;聖堂へ
+					IF FLAG:현X == 1 && FLAG:현Y == 4
+						CALL DUNGEON_WORP,26,20,5
+					;魔界へ
+					ELSE
+						CALL DUNGEON_WORP,35,11,18
+					ENDIF
+				CASE 35
+					;魔界　最深部へ
+					IF FLAG:현X == 7 && FLAG:현Y == 1
+						CALL DUNGEON_WORP,36,18,18
+					;魔界門へ
+					ELSEIF FLAG:현X == 12 && FLAG:현Y == 18
+						CALL DUNGEON_WORP,34,3,4
+					ENDIF
+				CASE 36
+					;通路
+					IF FLAG:현X == 8 && FLAG:현Y == 14
+						CALL DUNGEON_WORP,36,9,9
+					;通路
+					ELSEIF FLAG:현X == 9 && FLAG:현Y == 10
+						CALL DUNGEON_WORP,36,7,14
+					;心臓の間　上段へ
+					ELSEIF FLAG:현X == 12 && FLAG:현Y == 7
+						CALL DUNGEON_WORP,38,2,7
+					;謁見の間へ
+					ELSEIF FLAG:현X == 18 && FLAG:현Y == 1
+						CALL DUNGEON_WORP,39,3,8
+					;落下処理
+					ELSEIF (FLAG:현X >= 14 && FLAG:현X <= 22) && (FLAG:현Y >= 2 && FLAG:현Y <= 8)
+						CALL DUNGEON_WORP,FLAG:현M+1,FLAG:현X-13,FLAG:현Y
+					;魔界へ
+					ELSEIF FLAG:현X == 18 && FLAG:현Y == 19
+						CALL DUNGEON_WORP,35,7,2
+					ENDIF
+				CASE 38
+					;魔界　最深部へ
+					IF FLAG:현X == 1 && FLAG:현Y == 7
+						CALL DUNGEON_WORP,36,12,6
+					;落下処理
+					ELSEIF (FLAG:현X >= 2 && FLAG:현X <= 10) && (FLAG:현Y >= 1 && FLAG:현Y <= 8)
+						CALL DUNGEON_WORP,FLAG:현M-2,FLAG:현X+12,FLAG:현Y
+					ENDIF
+				CASE 39
+					;魔界　最深部へ
+					IF FLAG:현X == 3 && FLAG:현Y == 9
+						CALL DUNGEON_WORP,36,18,2
+					ENDIF
+			
+			ENDSELECT
+		ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 11
+			SIF FLAG:현M == 18 && (FLAG:현Y > 19 && FLAG:현Y < 25)
+				CALL DUNGEON_WORP,FLAG:현M,FLAG:현X+11,FLAG:현Y
+		ELSE
+			CALL ENTER_DUNGEON_99_ORB,ARG
+			RETURN 0
+		ENDIF
+	;==========
+	;扉の処理
+	;==========
+	CASE 2
+		CALL DUNGEON_DOOR,ARG
+		RETURN 1
+	;========
+	;宝の処理
+	;========
+	CASE 3
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			;高低差レクチャーイベント用にメッセージフラグ
+			CASE 100
+				SIF ダンジョンフラグ:99:5 == 0
+					ダンジョンフラグ:99:5 = 1
+				CALL TREASURE_99
+				RETURN 1
+			;後半に設置
+			CASE 202,204,205
+				SIF ダンジョンフラグ:99:1 <= 20
+						RETURN 0
+			CASEELSE
+				CALL TREASURE_99
+				RETURN 1
+		ENDSELECT
+		
+		
+	;========================
+	;이벤트
+	;========================
+	CASE 4
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+		;---------
+		;　吹き抜け階段 - 寝室
+		;---------
+			;■寝室　太陽の紋章先へ
+			CASE 800
+				IF GETBIT(ダンジョンフラグ:99:4,9)
+					CALL DUNGEON_WORP,11,11,1
+				ENDIF
+			;■闘技場　グリフォン(3)戦
+			CASE 1403
+				IF ダンジョンフラグ:99:1 == 25
+					CALL MESSAGE_WINDOW_D, "", "＞　머릿속에 누군가 속삭여 온다 "
+					CALL MESSAGE_WINDOW_D, "", "『콜로세움에 제물을 바쳐라/제물은 운명의 바퀴로 길을 잇는다』 "
+					CALL MESSAGE_WINDOW_D, "", "＞　상공에 번개가 치고、다시 그리폰이 휙 하고 내려왔다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　그리폰이 덤벼들었다！ "
+					
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					CALL GIRFFON_3
+					
+					CALL BATTLE_START
+					
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					FLAG:미조우걸음수 = 0
+					
+					FORCEWAIT
+					CALL MESSAGE_WINDOW_D, "", "＞　한쪽 날개가 떨어진 그리폰은 중앙 마법진 위로 쓰러진다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　그러자 마법진이 빛나고、독수리 사자의 거구가 허공에 뜬다/　　――하늘이 흔들리고 큰 기둥이 땅에 꽂혔다 "
+					CALL MESSAGE_WINDOW_D, "그리폰", "「확실히 마검사 스파다……아니、그 이상인가」 "
+					CALL MESSAGE_WINDOW_D, "그리폰", "「하지만 나도 문두스님을 섬기는 몸/　　　　　이것으로는 끝나지 않는다」 "
+					CALL MESSAGE_WINDOW_D, "", @"＞　이제 승부는 났다。 %CALLNAME:MASTER%은 제지하려하나 /　　그리폰은 멈추는 기색이 없다 "
+					CALL MESSAGE_WINDOW_D, "그리폰", "「위대한 우리의 주인이여」 "
+					CALL MESSAGE_WINDOW_D, "그리폰", "「나에게 힘을 주십시오/　이 자를 쓰러뜨릴 힘을！」 "
+					CALL MESSAGE_WINDOW_D, "", "＞　피를 토하며 주인을 호소하는 모습에 호응하여、하늘에 세 개의 붉은 빛과 뇌광이 나타났다 "
+					CALL MESSAGE_WINDOW_D, "그리폰", "「오오  문두스님」 "
+					CALL MESSAGE_WINDOW_D, "문두스", "「그리폰 실망했다/너는 살려둘 가치도 없다」 "
+					CALL MESSAGE_WINDOW_D, "", "＞　문두스의 힘이 그리폰을 덮쳤고/그리폰은 단말마의 외침과 함께 괴로워하며 소멸하고 말았다…… "
+					CALL MESSAGE_WINDOW_D, "", "＞　레드 오브+500 "
+					MONEY:99 += 500
+					ダンジョンフラグ:99:1 = 26
+				ENDIF
+		;---------
+		;　古城・後編
+		;---------
+			CASE 2600
+				IF ダンジョンフラグ:99:3 >= 18 && ダンジョンフラグ:99:5 < 8
+					CALL MESSAGE_WINDOW_D, "", "＞　엘릭서의 영향을 받아/　　마의 파동이 활성화되어 있다 "
+					CALL DUNGEON_WORP,34,2,4
+				ELSEIF ダンジョンフラグ:99:3 >= 18 && ダンジョンフラグ:99:5 == 8
+					CALL DUNGEON_WORP,34,2,4
+				ELSE
+				ENDIF
+		ENDSELECT
+	;=======
+	;罠処理
+	;=======
+	CASE 5
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			;10％のダメージ床(２階)
+			CASE 2200,2201,2202,2203,2204,2206,2207,2209,2210,2211,2212,2213,2214,2215,2216,2217,2218,2219,2220,2221,2222,2223,2224,2225,2226,2227,2228,2229,2230
+				SIF ダンジョンフラグ:99:1 >= 25
+					CALL DUNGEON_TRAP_HP,10
+			CASE 2205,2208
+				CALL DUNGEON_TRAP_HP,10
+			CASE 2400,2401,2402,2403,2404,2405
+				CALL DUNGEON_TRAP_HP,10
+			CASE 2500,2501,2502,2503
+				CALL DUNGEON_TRAP_HP,10
+				;25％の毒床(３階)
+;				CALL DUNGEON_TRAP_POISON,25
+		ENDSELECT
+		SELECTCASE FLAG:현M
+			CASE 36
+				CALL DUNGEON_TRAP_HP,10
+		ENDSELECT
+		RETURN 1
+
+	;=======
+	;フロア移動
+	;=======
+	CASE 6
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			CASE 300
+				IF ダンジョンフラグ:99:1 >= 15
+					RETURN 0
+				ENDIF
+			CASE 1300
+				RETURN 0
+			CASEELSE
+				CALL STAIRS_99
+				RETURN RESULT
+		ENDSELECT
+	CASE 7
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			CASE 1200
+				IF ダンジョンフラグ:99:1 < 14
+					RETURN 0
+				ELSE
+					CALL STAIRS_99
+					RETURN RESULT
+				ENDIF
+			CASEELSE
+			CALL STAIRS_99
+			RETURN RESULT
+		ENDSELECT
+	;=======
+	;出口
+	;=======
+	CASE 8
+		CALL DUNGEON_EXIT
+		RETURN 1
+		
+	;=======
+	;イベント2
+	;=======
+	CASE 9
+		CALL ENTER_DUNGEON_99_ORB,ARG
+		
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			;■開始地点　ダンテからのアドバイス
+			CASE 0
+				IF ダンジョンフラグ:99:5 == 0
+					CALL MESSAGE_WINDOW_D, "단테", "「이 섬에 대해 가르쳐 둘 것이 하나 있다」 "
+					CALL MESSAGE_WINDOW_D, "단테", "「여기는 노후화가 심하고、악마는 보수작업 따위는 해주지 않는다」 "
+					CALL MESSAGE_WINDOW_D, "단테", "「반대로 그것을 거꾸로 잡고、도처에 악마가 물건을 숨기고 있는 일이 있어서 말이야」 "
+					CALL MESSAGE_WINDOW_D, "단테", "「비상금이라면 좋겠지만、열쇠가 필요한 는 것도 있을 것이다」 "
+					CALL MESSAGE_WINDOW_D, "단테", @"「자 그럼 %CALLNAME:MASTER%、클라이밍은 좋아하냐？/시작하기에 앞서 이 앞을 올라가 보아라」 "
+				ENDIF
+			;■開始地点から1F玄関ホールへ移動
+			CASE 1
+				CALL DUNGEON_WORP,2,4,15
+				;古城に初進入時にイベント。フラグ99を1でなければ2にして登攀アドバイスを消す
+				IF ダンジョンフラグ:99:5 == 0 || ダンジョンフラグ:99:5 == 2
+					CALL MESSAGE_WINDOW_D, "", @"＞　고성에 침입했다/＞　무너진 곳도 있지만、악마의 기색은 없다 "
+					CALL MESSAGE_WINDOW_D, "", @"＞　일반적인 이계와는 사정이 다른지도 모른다/＞　%CALLNAME:MASTER%은 정신을 차리고 앞으로 나아갔다…… "
+					ダンジョンフラグ:99:5 = 3
+				ENDIF
+			;■開始地点：上段　宝箱を取った後のダンテの解説
+			CASE 100
+				IF ダンジョンフラグ:99:5 == 1
+					CALL MESSAGE_WINDOW_D, "단테", "「세상에、이런 형편이다」 "
+					CALL MESSAGE_WINDOW_D, "단테", "「모처럼의 프레젠트다 유효 활용해 줘/뭐, 대금이 청구되면 납구슬로 예를 들면 돼」 "
+					CALL MESSAGE_WINDOW_D, "단테", "「다만 너무 달라붙으면 따가운 눈으로 보는 것은 여자와 같다/조심해라」 "
+					ダンジョンフラグ:99:5 = 2
+				ENDIF
+			;■聖堂先の橋から海中通路へ強制移動
+			CASE 203
+				CALL DUNGEON_WORP,7,1,5
+			;■海中通路帰還後、聖堂へ戻る
+			CASE 204
+				CALL DUNGEON_WORP,2,28,5
+			;■アラストル入手イベント
+			CASE 208
+				IF ダンジョンフラグ:99:1 < 2
+					CALL MESSAGE_WINDOW_D, "", "＞　고통에 시달리는 여성의 조각에/　　대검이 꽂혀 있다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　머리 속에 누군가 속삭여 온다 "
+					CALL MESSAGE_WINDOW_D, "", "『내 이름은 알라스토르』 "
+					CALL MESSAGE_WINDOW_D, "", "『힘없는 자는 그 심장을 제물로 삼고/　　　　　나에게 영원한 복종을 맹세하라』 "
+					CALL MESSAGE_WINDOW_D, "", @"＞　목소리가 들리자마자 여성의 조각이 사라지고、대검이 떠올랐다/　　%CALLNAME:MASTER%에게 불쑥 다가왔다！ "
+					CALL MESSAGE_WINDOW_D, "단테", "「이런、그건 NG다」/＞　이것도 기억대로겠지/　　단테는 옆에서 손을 뻗어 여유롭게 검을 멈춘다. "
+					CALL MESSAGE_WINDOW_D, "", "＞　의사 있는 마검은 불의를 호소하듯 그 몸에 벼락을 두르고 단테를 굽지만/　　정작 본인은 아랑곳하지 않는 눈치다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　그대로 단테가 검을 흔들어 보이자/　　검은 납득한 듯 가라앉았다. "
+					CALL MESSAGE_WINDOW_D, "단테", @"「오케이、착하지 착해。　%CALLNAME:MASTER%、이녀석을 써라」 "
+					CALL MESSAGE_WINDOW_D, "", "＞　손쉽게 전달되는 마검 본인(？)도 놀랐는지/잠시 후에 찌릿찌릿 불의를 표명했다」 "
+					CALL MESSAGE_WINDOW_D, "단테", "「나에게는 익숙한 전리품이 있으니까 말이야/그 녀석의 오리지널은 이 섬에서의 싸움에서 사용하고 있었어. 하지만」 "
+					CALL MESSAGE_WINDOW_D, "단테", "「아～……전당포에 넣은 후、건강하게 싸움을 하러 떠난 모양이야、안심해」 "
+					CALL MESSAGE_WINDOW_D, "", @"＞　즉, 전당 잡히는 것보다 낫겠지？ 그런 것이다/　　검도 마지못해하는 감은 있지만、결국은 %CALLNAME:MASTER%의 손에 익숙해졌다/　　……친해질 수 있을 것 같다고、그렇게 생각한다 "
+					CALL MESSAGE_WINDOW_D, "", "　　『나의 이름은 알라스토르　앞으로도 잘 부탁한다……』 "
+					CALL GET_ITEMS,"아라스톨",1
+					ダンジョンフラグ:99:1 = 2
+				ENDIF
+			;■裁きの宝杖　入手後、扉の前で死神登場描写
+			CASE 209
+				;以降、敵のレベル上昇
+				IF ダンジョンフラグ:99:1 == 2 && ダンジョンフラグ:99:3 == 3
+					CALL MESSAGE_WINDOW_D, "", @"＞　%CALLNAME:MASTER%은 문고리에 손을 댄 곳에서 위화감을 느꼈다 "
+					CALL MESSAGE_WINDOW_D, "", @"＞　그 위화감의 원인――상단에 있던 사신 그림을 보자/무려 그림 속에서 낫을 든 사신이 나왔다！ "
+					CALL MESSAGE_WINDOW_D, "", @"＞　날아다니고、벽을 뚫으면서 나타나는 적의 등장이、/앞으로의 탐색이 더욱 어려워질 것을 예감케 한다…… "
+					ダンジョンフラグ:99:1 = 3
+					ダンジョンフラグ:99:11 = 2
+				ENDIF
+			;■アラストルイベント後、ダンテと会話
+			CASE 210
+				IF ダンジョンフラグ:99:1 == 2 && ダンジョンフラグ:99:5 < 4
+					CALL MESSAGE_WINDOW_D, "단테", "「마구라는 것은、원래 거대한 악마가 모습을 바꾼 것이다。」 "
+					CALL MESSAGE_WINDOW_D, "단테", "「그 녀석은 물론 오리지널이 아니다/이 이계가 재현한 존재인 것은 틀림없다.하지만」 "
+					CALL MESSAGE_WINDOW_D, "단테", "「위작이 진작에 뒤떨어지진다고 결정되진 않는 것 같다/상당한 놈이야、그놈」 "
+					CALL MESSAGE_WINDOW_D, "", "＞　아무래도 자신이 손에 쥐는 마검은 레플리카라고 할 수는 있겠지만/　　손색없는 거대한 힘을 간직하고 있는 것 같다 "
+					CALL MESSAGE_WINDOW_D, "단테", "「뭐、너라면 언제나와 같아/자주 듣지？/휴가때는 악마에게 몸을 빼앗기지 않도록 조심하라구」 "
+					CALL MESSAGE_WINDOW_D, "", "＞　단테는 그러면서 힐끗 손을 흔들며 걸음을 옮긴다/　　이 마구에 걸맞은 주인이 된다. 아무래도 즐거움이 늘어난 것 같다」 "
+					ダンジョンフラグ:99:5 = 4
+				ENDIF
+			;■古城入り口
+			CASE 212
+				;侵入地点　開始地点へ戻れるように設定
+				CALL DUNGEON_WORP,0,2,11
+			;■古城前　跳ね橋へ
+			CASE 221
+				CALL DUNGEON_WORP,13,4,3
+	;=======
+	;2F吹き抜け
+	;=======
+			;■2F吹き抜け　左上通路　行き　306へ
+			CASE 305
+				CALL DUNGEON_WORP,3,5,6
+			;■2F吹き抜け　左上通路　戻り　305へ
+			CASE 306
+				CALL DUNGEON_WORP,3,1,5
+	;=======
+	;3F吹き抜け
+	;=======
+			;■吹き抜け　3F　
+			CASE 407
+				CALL DUNGEON_WORP,4,6,18
+			;■吹き抜け　3F　
+			CASE 408
+				CALL DUNGEON_WORP,4,2,18
+			;■吹き抜け　3F　
+			CASE 409
+				CALL DUNGEON_WORP,4,14,18
+			;■吹き抜け　3F　
+			CASE 410
+				CALL DUNGEON_WORP,4,10,18
+			;■複葉機の部屋　地下　전투이벤트
+	;=======
+	;複葉機の部屋地下
+	;=======
+			CASE 500
+				IF ダンジョンフラグ:99:1 == 0
+					CALL MESSAGE_WINDOW_D, "", "＞　기다렸다는 듯이、공간을 가르며 악마가 덮쳐왔다！ "
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					
+					CALL SET_ENEMY,7,[[キャラ:마카브르]],33,0,1
+					NAME:(CHARANUM-1) = 블러디메리
+					CALLNAME:(CHARANUM-1) = 블러디메리
+					CALL SYNC_STATUS, (CHARANUM-1)
+					CALL HEALTH_CHARA, (CHARANUM-1)
+					
+					CALL SET_ENEMY,8,[[キャラ:목없는라이더]],33,0,1
+					NAME:(CHARANUM-1) = 마리오네트
+					CALLNAME:(CHARANUM-1) = 마리오네트
+					CALL SYNC_STATUS, (CHARANUM-1)
+					CALL HEALTH_CHARA, (CHARANUM-1)
+					
+					CALL SET_ENEMY,9,[[キャラ:마카브르]],33,0,1
+					NAME:(CHARANUM-1) = 블러디메리
+					CALLNAME:(CHARANUM-1) = 블러디메리
+					CALL SYNC_STATUS, (CHARANUM-1)
+					CALL HEALTH_CHARA, (CHARANUM-1)
+					
+					CALL SET_ENEMY,10,[[キャラ:목없는라이더]],33,0,1
+					NAME:(CHARANUM-1) = 마리오네트
+					CALLNAME:(CHARANUM-1) = 마리오네트
+					CALL SYNC_STATUS, (CHARANUM-1)
+					CALL HEALTH_CHARA, (CHARANUM-1)
+					
+					CALL SET_ENEMY,11,[[キャラ:마카브르]],33,0,1
+					NAME:(CHARANUM-1) = 블러디메리
+					CALLNAME:(CHARANUM-1) = 블러디메리
+					CALL SYNC_STATUS, (CHARANUM-1)
+					CALL HEALTH_CHARA, (CHARANUM-1)
+					
+					CALL BATTLE_START
+					
+					FLAG:선제공격플래그 = 0
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					FLAG:인카운트율 = 0
+					FLAG:미조우걸음수 = 0
+					FORCEWAIT
+					CALL MESSAGE_WINDOW_D, "", "＞　레드 오브 +100 "
+					MONEY:99 += 100
+					
+					CALL MESSAGE_WINDOW_D, "", "＞　어딘가를 봉하던 힘이 사라진 기미가 보인다…… "
+					ダンジョンフラグ:99:1 = 1
+				ENDIF
+			;■獅子の間2F　吹き抜け階段へ
+			CASE 600
+				CALL DUNGEON_WORP,8,13,3
+	;=======
+	;吹き抜け階段 - 寝室
+	;=======
+			;■獅子の間2Fへ
+			CASE 807
+				CALL DUNGEON_WORP,6,14,9
+			;■吹き抜け階段　地下水路へ
+			CASE 808
+				CALL DUNGEON_WORP,10,1,11
+			;■吹き抜け階段　脚を踏み外せば最下層へ
+			CASE 800,801,813
+				CALL DUNGEON_WORP,8,4,2
+			CASE 802,806,811,815,818,821
+				CALL DUNGEON_WORP,8,6,3
+			CASE 809,810,816,819,820
+				CALL DUNGEON_WORP,8,4,4
+			;■寝室　太陽の紋章の扉先へ
+			CASE 822
+				CALL DUNGEON_WORP,11,12,1
+			;■崩れた足場　跳躍
+			CASE 824
+				CALL DUNGEON_WORP,8,12,22
+			;■ネロ・アンジェロ戦
+			CASE 825
+				IF ダンジョンフラグ:99:1 == 9
+					CALL MESSAGE_WINDOW_D, "", @"＞　흑기사와 %CALLNAME:MASTER%들을 본뜬 악마들은/　　당당하게 %CALLNAME:MASTER%들이 내려오기를 기다리고 있었다 "
+					CALL MESSAGE_WINDOW_D, "단테", "「재현체든 본인이든 지는 주의가 아니다/자 그럼、화려하게 갈볼까！」　 "
+					CALL MESSAGE_WINDOW_D, "", "＞　흑기사들이 덤벼들었다！ "
+					
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					CALL NERO_1
+					
+					CALL BATTLE_START
+					
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					FLAG:미조우걸음수 = 0
+					FORCEWAIT
+					CALL MESSAGE_WINDOW_D, "", @"＞　%CALLNAME:MASTER%들의 투영체는 힘을 다했다/　　이 자리에는 흑기사가 홀로 남겨졌다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　흑기사는 무릎을 꿇고 있지만、아직 투지를 잃지는 않았다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　그렇다고 해도 열세는 인정하지 않을 수 없다고 판단했을 것이다/　　이쪽을 강한 눈빛으로 바라본 후、퇴각해 갔다 "
+					CALL MESSAGE_WINDOW_D, "단테", "「인원수가 늘어나도 몰아붙일 수 없는가/……뭐、그래줘야지」 "
+					CALL MESSAGE_WINDOW_D, "", @"＞　왠지 기쁜 듯한 단테를 재촉하고/　　%CALLNAME:MASTER%는 앞으로 나아가기로 했다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　문득 기척을 느껴 침실을 바라보니、그림자의 문지기가 있다/　　별개의 개체겠지만、더욱 방심할 수 없게 된 것 같다 "
+					
+					CALL MESSAGE_WINDOW_D, "", "＞　레드 오브 +200 "
+					MONEY:99 += 200
+					
+					ダンジョンフラグ:99:1 = 10
+					ダンジョンフラグ:99:11 = 3
+				ENDIF
+			CASE 826
+				CALL DUNGEON_WORP,8,12,18
+			;■吹き抜け階段　脚を踏み外せば最下層へ
+			CASE 900,901
+				CALL DUNGEON_WORP,8,4,2
+			CASE 902,904,907
+				CALL DUNGEON_WORP,8,6,3
+			CASE 906
+				CALL DUNGEON_WORP,8,4,4
+	;=======
+	;地下水道
+	;=======
+			;■シン・サイズ戦
+			CASE 1000
+				IF ダンジョンフラグ:99:1 < 12
+					CALL MESSAGE_WINDOW_D, "", "＞　그 자리에 발을 들여놓자、주위를 마력이 에워싸고 갇혔다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　기척을 느껴、수로 벽면을 보니/왠지 벽에 걸려있는 해골에서 배어나오듯 저승사자가 출현하여 이쪽으로 다가온다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　 신・사이즈　가 덤벼들었다！ "
+					
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					
+					CALL SET_ENEMY,9,[[キャラ:카마조츠]],50,0,1
+					NAME:(CHARANUM-1) = 신 사이즈
+					CALLNAME:(CHARANUM-1) = 신 사이즈
+					CFLAG:(CHARANUM-1):ＨＰ보정 += 1000
+					CFLAG:(CHARANUM-1):ＭＰ보정 += 5000
+					ABL:(CHARANUM-1):스킬1 = 2 ;ヒートフェイブ
+					ABL:(CHARANUM-1):스킬2 =304 ;메가클로
+					ABL:(CHARANUM-1):스킬3 =508 ;스쿤・다
+					ABL:(CHARANUM-1):스킬4 =2013 ;흡혈
+					CALL SYNC_STATUS, (CHARANUM-1)
+					CALL HEALTH_CHARA, (CHARANUM-1)
+					
+					CALL BATTLE_START
+					
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					FLAG:미조우걸음수 = 0
+					
+					CALL MESSAGE_WINDOW_D, "", "＞　레드 오브 +100 "
+					MONEY:99 += 100
+					
+					ダンジョンフラグ:99:1 = 12
+				ENDIF
+			;■吹き抜け階段 - 寝室へ戻る
+			CASE 1002
+				CALL DUNGEON_WORP,8,3,4
+	;=======
+	;太陽の紋章先
+	;=======
+			CASE 1100
+				CALL DUNGEON_WORP,11,3,7
+			CASE 1101
+				CALL DUNGEON_WORP,11,10,1
+			CASE 1102
+				CALL DUNGEON_WORP,11,4,1
+			CASE 1103
+				CALL DUNGEON_WORP,8,3,15
+			CASE 1104
+				IF ダンジョンフラグ:99:1 < 13
+					CALL MESSAGE_WINDOW_D, "", @"＞　앞으로 나아가려는 %CALLNAME:MASTER%들 앞에、다시 용암거미가 가로막았다 "
+					CALL MESSAGE_WINDOW_D, "팬텀", "「쉬는 시간은 끝났다 아가야！」 "
+					CALL MESSAGE_WINDOW_D, "팬텀", "「애들 놀이는 이제 그만이다」/「하고 싶은 대로 해 주마！」 "
+					CALL MESSAGE_WINDOW_D, "", "＞　꼬리를 눈앞의 바닥에 내려치고、기백은 충분한 모습이지만/단테는 여전히 여유를 잃지 않는다 "
+					CALL MESSAGE_WINDOW_D, "단테", "「해봐라/진짜 놀이를 하자구！」 "
+					CALL MESSAGE_WINDOW_D, "", "＞　팬텀　가 덤벼들기 시작했다！ "
+					
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					CALL PHANTOM_2
+					
+					CALL BATTLE_START
+					
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					FLAG:미조우걸음수 = 0
+					FORCEWAIT
+					
+					CALL MESSAGE_WINDOW_D, "", "＞　최후의 일격이 결정되어져、거미는 단말마를 올리며 날아간다/　　착지점에 있던 스테인드글라스가 그 하중을 견디지 못하고 깨져、큰 거미와 함께 아래층으로 쏟아지면서/　　――거미는 바로 아래에 있는 기마병의 상、그 내건 창에 꿰뚫렸다 "
+					CALL MESSAGE_WINDOW_D, "", @"＞　거미는 몸부림치며 괴로워하면서도 %CALLNAME:MASTER%들을 내려다보고 있다/　　――특히 단테를 계속 노려보고 있다 "
+					CALL MESSAGE_WINDOW_D, "팬텀", "「네놈들 평범한 인간이 아니구나？」/「특히 거기의 남자、네녀석 뭐하는놈이냐」 "
+					CALL MESSAGE_WINDOW_D, "팬텀", "「설마 전설의 마검사 스파다？」/「그런 바보같은 일이 있을리가」 "
+					CALL MESSAGE_WINDOW_D, "", "＞　단테의 모습이 그의 아버지에게 겹쳤을 것이다/　　악마는 경악의 말을 남기고 소멸되었다 "
+					CALL MESSAGE_WINDOW_D, "단테", "「나이가 들어서 더 댄디해졌겠냐？　그의 아들 단테다」/「이제 리벤지는 없다　그대로 잠이나 자라」 "
+					CALL MESSAGE_WINDOW_D, "", "＞　말을 건네고、일행은 앞으로 나아간다/　　그 모습을、아래층에서 보고 있는 그림자가 있다는 것을 깨닫지 못하고 있었다…… "
+					CALL MESSAGE_WINDOW_D, "", "＞　레드 오브+500 "
+					MONEY:99 += 500
+					ダンジョンフラグ:99:1 = 13
+				ENDIF
+			CASE 1105
+				CALL DUNGEON_WORP,11,3,1
+			CASE 1108
+				SIF ダンジョンフラグ:99:3 == 9
+					CALL DUNGEON_WORP,12,3,1
+	;=======
+	;古城前　跳ね橋
+	;=======
+			;■古城へ戻る
+			CASE 1300
+				IF !GETBIT(ダンジョンフラグ:99:4,23)
+					CALL DUNGEON_WORP,2,8,41
+				ELSE
+					CALL DUNGEON_WORP,26,8,41
+				ENDIF
+			CASE 1302
+				IF ダンジョンフラグ:99:1 < 16
+					CALL MESSAGE_WINDOW_D, "", "＞　도개교를 다 건너가려하니、도개교가 다시 올라가 버렸다/　　고성으로 돌아가려면、다른 방법을 찾아야 할 것 같다 "
+					ダンジョンフラグ:99:1 = 16
+				ELSEIF !GETBIT(ダンジョンフラグ:99:4,23)
+					CALL MESSAGE_WINDOW_D, "", "＞　도개교가 올라가 버려서 건널 수가 없다 "
+				ELSE
+				ENDIF
+			CASE 1303
+				IF ダンジョンフラグ:99:1 >= 16
+					CALL MESSAGE_WINDOW_D, "", "＞　이계의 구멍이 있다/　　여기서 귀환할 수 있을 것 같은데 어떻게 할까…… "
+					CALL INPUT_YN_D, "귀환한다", "다시 탐색을 계속한다"
+					IF !RESULT
+						CALL MESSAGE_WINDOW_D, "", @"＞　%CALLNAME:MASTER%들은 자기 방으로 귀환했다"
+						FLAG:탈출 = 1
+						RETURN 1
+					ENDIF
+				ENDIF
+	;=======
+	;闘技場
+	;=======
+			;ブレイド出現
+			CASE 1400
+				IF ダンジョンフラグ:99:11 < 5
+					CALL MESSAGE_WINDOW_D, "", "＞　광장에 들어서자、지면에서 리자드맨 같은/　　나리의 악마가 튀어어나왔다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　재차 탐색의 어려움이 가중된 것 같다…… "
+					ダンジョンフラグ:99:11 = 5
+				ENDIF
+			;グリフォン戦
+			CASE 1401
+				IF ダンジョンフラグ:99:1 == 18
+					CALL MESSAGE_WINDOW_D, "", "＞　갑자기 바람이 거세지고、하늘에 천둥소리가 울리기 시작한다/　　천둥이 모여 빛을 발하자、그곳에는 거대한 독수리 사자가 출현하고 있었다 "
+					CALL MESSAGE_WINDOW_D, "그리폰", "「네놈이냐」 "
+					CALL MESSAGE_WINDOW_D, "그리폰", "「문두스님께 맞서는/  스파다의 아들이라는 녀석은」 "
+					CALL MESSAGE_WINDOW_D, "단테", "「사라져라 새대가리/　아니면 뜨거운 맛 좀 볼테냐？」 "
+					CALL MESSAGE_WINDOW_D, "", "＞　그리폰이 덤벼들었다！ "
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					CALL GIRFFON_1
+					
+					CALL BATTLE_START
+					
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					FLAG:미조우걸음수 = 0
+					FORCEWAIT
+					CALL MESSAGE_WINDOW_D, "", "＞　불리함을 깨달았는지、큰 독수리 사자는 날아가 버렸다…… "
+					CALL MESSAGE_WINDOW_D, "", "＞　레드 오브+500 "
+					MONEY:99 += 500
+					ダンジョンフラグ:99:1 = 19
+				ENDIF
+			;山岳地へ移動
+			CASE 1402
+				CALL DUNGEON_WORP,23,3,20
+			;フェティッシュ出現
+			CASE 1403
+				IF ダンジョンフラグ:99:11 < 6
+					CALL MESSAGE_WINDOW_D, "", "＞　그 자리에 발을 디디자、불꽃을 두른 무기를 든 인형이 나타났다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　재차 탐색의 어려움이 가중된 것 같다…… "
+					ダンジョンフラグ:99:11 = 6
+				ENDIF
+			;霧深き渓谷へ移動
+			CASE 1404
+				CALL DUNGEON_WORP,16,4,26
+	;=======
+	;闘技場
+	;=======
+			CASE 1500
+				SIF ダンジョンフラグ:99:1 < 17
+					CALL DUNGEON_WORP,14,32,27
+			CASE 1502
+				IF ダンジョンフラグ:99:1 < 18
+					CALL MESSAGE_WINDOW_D, "", "＞　한쌍의 건틀렛이 보관되어있다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　받침대에 비문이 새겨져 있다 "
+					CALL MESSAGE_WINDOW_D, "", "『나의 이름은 이프리트』 "
+					CALL MESSAGE_WINDOW_D, "", "『나를 깨우는 어리석은 자여/지옥의 업화를 그 몸으로 알라』 "
+					CALL MESSAGE_WINDOW_D, "", @"＞　목소리가 울림과 동시에、보관되어 있던 건틀렛이 공중을 날아/――그대로 、%CALLNAME:MASTER%의 팔에 장착되어 버린다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　그러자 건틀렛에서 마력과 함께 불길이 쏟아져 나오고/　　순식간에 그 몸을 감싸며 타올랐다！ "
+					CALL MESSAGE_WINDOW_D, "단테", @"「%CALLNAME:MASTER%、근성이다/　네 녀석의 근성을 그놈에게 보여줘라！」 "
+					CALL MESSAGE_WINDOW_D, "", @"＞　%CALLNAME:MASTER%은 자신이 보유한 마그네타이트를 이용하여 이프리트와 다투고/　　보기 좋게 억제하는 데 성공했다 "
+					CALL MESSAGE_WINDOW_D, "단테", "「나이스 근성이다/　봐봐라、그녀석도 나쁜것만은 아니다」 "
+					CALL MESSAGE_WINDOW_D, "", @"＞　듣고 보니、이프리트는 마력의 불꽃으로 자신을 나타내면서도/　　%CALLNAME:MASTER%에 잘 따르고 있다 "
+					CALL MESSAGE_WINDOW_D, "", @"＞　과묵한 인상을 받는 믿음직한 건틀렛을 새로운 동반자로 하고/　　%CALLNAME:MASTER%은 앞으로의 길을 서둘렀다 "
+					CALL GET_ITEMS,"이프리트",1
+					ダンジョンフラグ:99:1 = 18
+				ENDIF
+	;=======
+	;霧深き渓谷
+	;=======
+			CASE 1600
+				IF ダンジョンフラグ:99:9 == 2
+					CALL DUNGEON_WORP,17,9,9
+				ELSE
+					ダンジョンフラグ:99:9 = 0
+					CALL DUNGEON_WORP,16,4,26
+				ENDIF
+			CASE 1601
+				IF ダンジョンフラグ:99:9 == 1
+					CALL DUNGEON_WORP,17,9,9
+				ELSE
+					ダンジョンフラグ:99:9 = 0
+					CALL DUNGEON_WORP,16,4,26
+				ENDIF
+			CASE 1602
+				CALL DUNGEON_WORP,14,2,30
+	;=======
+	;聖杯堂前
+	;=======
+			CASE 1700
+				CALL DUNGEON_WORP,18,5,23
+			CASE 1701
+				IF ダンジョンフラグ:99:1 < 20
+					CALL MESSAGE_WINDOW_D, "", @"＞　성당으로 가려는 %CALLNAME:MASTER%의 앞을、큰 거미 두마리가 가로막는다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　아까의 팬텀만큼은 아니지만、이쪽도 무시하기에는 어려운 상대인 것 같다…… "
+					CALL MESSAGE_WINDOW_D, "", "＞　사이클롭스가 2체、덤벼들었다！ "
+					
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					
+					CALL SET_ENEMY,8,[[キャラ:츠치구모]],55,0,1
+					NAME:(CHARANUM-1) = 사이클롭스
+					CALLNAME:(CHARANUM-1) = 사이클롭스
+					;CFLAG:(CHARANUM-1):ＨＰ보정 += 1000
+					CALL SYNC_STATUS, (CHARANUM-1)
+					CALL HEALTH_CHARA, (CHARANUM-1)
+					
+					CALL SET_ENEMY,10,[[キャラ:츠치구모]],55,0,1
+					NAME:(CHARANUM-1) = 사이클롭스
+					CALLNAME:(CHARANUM-1) = 사이클롭스
+					;CFLAG:(CHARANUM-1):ＨＰ보정 += 1000
+					CALL SYNC_STATUS, (CHARANUM-1)
+					CALL HEALTH_CHARA, (CHARANUM-1)
+					
+					CALL BATTLE_START
+					
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					FLAG:미조우걸음수 = 0
+					
+					CALL MESSAGE_WINDOW_D, "", "＞　레드 오브 +100 "
+					MONEY:99 += 100
+					ダンジョンフラグ:99:1 = 20
+				ENDIF
+			CASE 1702
+				ダンジョンフラグ:99:9 = 0
+				CALL DUNGEON_WORP,16,4,26
+	;=======
+	;聖杯堂
+	;=======
+			CASE 1800
+				CALL DUNGEON_WORP,19,2,11
+			CASE 1801
+				CALL DUNGEON_WORP,18,9,17
+			CASE 1802
+				CALL DUNGEON_WORP,18,5,23
+			CASE 1803
+				CALL DUNGEON_WORP,18,17,3
+			CASE 1804
+				CALL DUNGEON_WORP,18,14,11
+			CASE 1805
+				CALL DUNGEON_WORP,17,9,5
+	;=======
+	;海賊船へ
+	;=======
+			CASE 1900,1901
+				CALL DUNGEON_WORP,20,16,23
+			CASE 1902
+				CALL DUNGEON_WORP,18,5,4
+	;=======
+	;海賊船　船底
+	;=======
+			CASE 2000
+				CALL DUNGEON_WORP,20,19,8
+			CASE 2001
+				CALL DUNGEON_WORP,20,8,17
+			;船長室へ
+			CASE 2002
+				SIF ダンジョンフラグ:99:1 >= 24
+					CALL DUNGEON_WORP,21,3,4
+			CASE 2003
+				CALL DUNGEON_WORP,20,17,1
+			CASE 2004
+				CALL DUNGEON_WORP,20,10,3
+			CASE 2005
+				CALL DUNGEON_WORP,20,19,10
+			CASE 2006
+				IF ダンジョンフラグ:99:1 >=24
+					CALL DUNGEON_WORP,22,3,3
+				ELSE
+					CALL DUNGEON_WORP,19,4,2
+				ENDIF
+	;=======
+	;海賊船　船上
+	;=======
+			CASE 2100
+				IF ダンジョンフラグ:99:1 == 22
+					CALL MESSAGE_WINDOW_D, "", "＞　배가 순조롭게 나아가고 있을 때、그리폰이 다시 나타난다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　독수리 사자가 날개짓을 하자 등불이 꺼지고、배가 멈춰 버렸다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　아무래도、그리폰을 어떻게든 하지 않으면 더 이상은 진행할 수 없을 것 같다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　그리폰이 덤벼들었다！ "
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					CALL GIRFFON_2
+					
+					CALL BATTLE_START
+					
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					FLAG:미조우걸음수 = 0
+					FORCEWAIT
+					CALL MESSAGE_WINDOW_D, "", "＞　불리함을 깨달았는지、큰 독수리 사자는 날아가 버렸다…… "
+					CALL MESSAGE_WINDOW_D, "", "＞　레드 오브+500 "
+					MONEY:99 += 500
+					ダンジョンフラグ:99:1 = 23
+					CALL MESSAGE_WINDOW_D, "", "＞　그리폰을 격퇴하는 데 성공했다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　독수리 사자가 날아가자 다시 불이 켜지고、배가 나아가기 시작한다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　다시、선장실 쪽에서 뭔가 움직이는 소리가 들렸다…… "
+					CALL MESSAGE_WINDOW_D, "", "＞　레드 오브+500 "
+					MONEY:99 += 500
+					SETBIT ダンジョンフラグ:99:4,14
+				ENDIF
+			CASE 2101
+				SIF ダンジョンフラグ:99:1 >= 24
+					CALL DUNGEON_WORP,20,6,4
+	;=======
+	;漂着地
+	;=======
+			CASE 2200,2201
+				CALL DUNGEON_WORP,20,16,23
+	;=======
+	;山岳地
+	;=======
+			CASE 2300
+				CALL DUNGEON_WORP,23,30,4
+			CASE 2301
+				CALL DUNGEON_WORP,23,23,17
+			CASE 2302
+				CALL DUNGEON_WORP,23,9,6
+			CASE 2303
+				CALL DUNGEON_WORP,23,26,14
+			CASE 2304
+				CALL DUNGEON_WORP,23,21,25
+			CASE 2305
+				CALL DUNGEON_WORP,14,40,20
+			CASE 2306
+				CALL DUNGEON_WORP,23,17,16
+	;=======
+	;古城・後編
+	;=======
+		;霊石・エリキサ入手した帰還時　寝室の絵出現
+			CASE 2600
+				IF ダンジョンフラグ:99:3 == 18 && !GETBIT(ダンジョンフラグ:99:4,32)
+					CALL MESSAGE_WINDOW_D, "", "＞　엘릭서는 다른 그림에 대해 강한 반응을 보이고 있다 "
+					SETBIT ダンジョンフラグ:99:4,32
+				ENDIF
+		;トリッシュ合流・Dr.ファウスト入手
+			CASE 2601
+				IF ダンジョンフラグ:99:5 < 6
+					CALL MESSAGE_WINDOW_D, "", @"＞　다시 고성으로 돌아온 %CALLNAME:MASTER%들을、한 여성이「잘 다녀왔어요」라고 맞이했다 "
+					CALL MESSAGE_WINDOW_D, "트리쉬", @"「네가 %CALLNAME:MASTER%이구나？/　단테한테 들었어、그를 이긴 플레이메이트라고」"
+					CALL MESSAGE_WINDOW_D, "", "＞　트리쉬는 손에 들고 있는 하얀 카우보이 모자를 만지작거리며/　「그는、즐거운듯이 말했어」라고 말한다 "
+					CALL MESSAGE_WINDOW_D, "단테", "「Hey、착각하지마。진게 아니야、무승부다」/　그렇지？　라고 지기 싫어하는 사람이 주장하지만、그녀는 익숙한 모습이라는 듯 대하고 있다"
+					CALL MESSAGE_WINDOW_D, "트리쉬", "「그 이야기는 나중에 사이좋게 상의해줘/　나도 여기랑은 인연이 깊어서。늦었지만、동행해주도록 할께」"
+					SIF FINDCHARA_B([[キャラ:버질]]) == 2
+						CALL MESSAGE_WINDOW_D, "", "「서로 사냥감을 양보할 생각은 없을 테고、사이좋게 지내자구요？」/＞　그녀는 왠지 눈에 띄지 않게 입을 다물고 있는 버질에게도 상냥하게 말하고 있다/　　그녀는 재현체인 것 같지는 않고、그녀 역시 말렛 섬의 관계자라는 듯 하다 "
+					CALL MESSAGE_WINDOW_D, "", @"＞　그리고 단테 분실물이니 유용하게 활용하면 좋겠다고、%CALLNAME:MASTER%에게 말하고 모자를 전달했다 "
+					CALL MESSAGE_WINDOW_D, "트리쉬", "「데빌헌터　트리쉬야　앞으로도 잘 부탁해？」"
+					CALL MESSAGE_WINDOW_D, "", "＞　트리쉬이(가) 동료가 되었다/　　Dr.파우스트　를 입수했다 "
+					SIF FINDCHARA_B([[キャラ:트리쉬_DMC]]) == -1
+						CALL ADD_NEW_COMPANION, [[キャラ:트리쉬_DMC]],500
+					CALL GET_ITEMS,"Dr.파우스트",1
+					ダンジョンフラグ:99:5 = 6
+				ENDIF
+	;=======
+	;闘技場の絵
+	;=======
+		;ネロ・アンジェロ(3)戦終了後、浸水牢獄の絵出現
+			CASE 2700
+				IF ダンジョンフラグ:99:1 == 30 && !GETBIT(ダンジョンフラグ:99:4,29)
+					CALL MESSAGE_WINDOW_D, "", "＞　투기장 방과 반대쪽에、감옥의 그림이 출현했다 "
+					SETBIT ダンジョンフラグ:99:4,29
+				ENDIF
+	;=======
+	;闘技場の絵
+	;=======
+		;ドリーグ説明
+			CASE 2802
+				IF ダンジョンフラグ:99:5 < 7
+					CALL MESSAGE_WINDOW_D, "", "＞　방에 발을 들여놓자、방에 장식되어 있는 용의 뼈 표본이 움직이기 시작했다！ "
+					CALL MESSAGE_WINDOW_D, "", "＞　아무래도 악마가 빙의하고 있는 듯 이쪽으로 적의를 돌리고 있다/　　뭔가 대처를 하지 않으면 안 될 것이다‥‥‥ "
+					ダンジョンフラグ:99:5 = 7
+				ENDIF
+		;転移（小部屋の絵へ）
+			CASE 2805
+				SIF ダンジョンフラグ:99:1 >= 30
+					CALL DUNGEON_WORP,27,16,13
+		;フロスト出現
+			CASE 2806
+				IF ダンジョンフラグ:99:11 < 8
+					CALL MESSAGE_WINDOW_D, "", @"＞　문에 손을 대려는데　%CALLNAME:MASTER%은 등뒤에 기척을 느끼고 뒤돌아보았다 "
+					CALL MESSAGE_WINDOW_D, "", @"＞　그것은 투기장 벽위에서 %CALLNAME:MASTER%들을 관찰하고 있으며/　　눈을 마주치자 주위에 냉기를 풍기며　가볍게 뛰어내려 이쪽으로 왔다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　아무래도 만만치 않은 적인 것 같다　탐색은 한층 더 어려움을 더해 간다‥‥‥ "
+					ダンジョンフラグ:99:11 = 8
+				ENDIF
+		;ネロ・アンジェロ(3)
+			CASE 2807
+				IF ダンジョンフラグ:99:1 < 30
+					CALL MESSAGE_WINDOW_D, "", @"＞　시선의 끝에는、몇 번이나 본 뒷모습이 %CALLNAME:MASTER%들을 기다리고 있었다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　넬로・안젤로는 망토를 휘날리며、이쪽으로 돌아 검을 뽑는다 "
+					;PTに鬼ぃちゃんIN
+					IF FINDCHARA_B([[キャラ:버질]]) == 2
+						CALL MESSAGE_WINDOW_D, "단테", "「여전히 좋은 근성이다/　너도 그렇게 생각하지？」 "
+						CALL MESSAGE_WINDOW_D, "버질", "「‥‥비아냥거릴 작정이냐？」/＞　버질은 쓴 벌레 씹은 듯한 표정이다 "
+						CALL MESSAGE_WINDOW_D, "단테", "「에이 설마！/ 그 상황에서도 굽히지 않았다는 것을 순수하게 칭찬하고 있는 거야」 "
+						CALL MESSAGE_WINDOW_D, "", "＞　형제의 만담은 안중에도 없는듯、넬로・안젤로는 지면에 검을 꼽고/　　양손을 교차시켜 힘을 개방해 간다 "
+						CALL MESSAGE_WINDOW_D, "", "＞　――거기에는、 버질의 얼굴을 한 마검사 본연의 모습이 있었다/　　마검사는 다시 검을 들고、이쪽으로 검기를 돌린다 "
+						CALL MESSAGE_WINDOW_D, "버질", "「비켜라。/그렇게 나온다면 진짜와의 차이를 보여 주겠다」 "
+					;PTにいないけど鬼ぃちゃん加入済み
+					ELSEIF FINDCHARA_B([[キャラ:버질]]) == 1 || FINDCHARA_B([[キャラ:버질]]) == 12
+						CALL MESSAGE_WINDOW_D, "단테", "「여전히 좋은 근성이다/　너도 그렇게 생각하지？」 "
+						CALL MESSAGE_WINDOW_D, "", @"＞　확실히 이 마검사에게서는、다른 악마에게는 없는 힘에 대한 집념을 %CALLNAME:MASTER%도 느끼고 있었다 "
+						CALL MESSAGE_WINDOW_D, "단테", "「하지만、라스트 스테이지다。/　보면 알겠지만、지금까지와 같다고 생각했다면――」 "
+						CALL MESSAGE_WINDOW_D, "", "＞　그렇게 말하는 단테의 시선 앞에서、넬로・안젤로가 양손을 교차시켜 힘을 개방하고 있다 "
+						CALL MESSAGE_WINDOW_D, "", "＞　폭풍을 동반하여、본래의 힘을 개방시킨 마검사/　　그 얼굴은 지금은 없는、옆에 있는 남자의 형의 것이었다 "
+						CALL MESSAGE_WINDOW_D, "단테", "「눈 깜짝할 사이에 목과 몸통이 안녕、이다./　자 그럼、라스트 댄스도 화려하게 가볼까！」 "
+					ELSE
+						CALL MESSAGE_WINDOW_D, "단테", "「여전히 좋은 근성이다/　너도 그렇게 생각하지？」 "
+						CALL MESSAGE_WINDOW_D, "", @"＞　확실히 이 마검사에게서는、다른 악마에게는 없는 힘에 대한 집념을 %CALLNAME:MASTER%도 느끼고 있었다 "
+						CALL MESSAGE_WINDOW_D, "단테", "「하지만、라스트 스테이지다。/　보면 알겠지만、지금까지와 같다고 생각했다면――」 "
+						CALL MESSAGE_WINDOW_D, "", "＞　그렇게 말하는 단테의 시선 앞에서、넬로・안젤로가 양손을 교차시켜 힘을 개방하고 있다 "
+						CALL MESSAGE_WINDOW_D, "", "＞　폭풍을 동반하여、본래의 힘을 개방시킨 마검사/　　그 얼굴은、어딘가 옆의 남자를 떠올리게 하는 것이었다 "
+						CALL MESSAGE_WINDOW_D, "단테", "「눈 깜짝할 사이에 목과 몸통이 안녕、이다./　자 그럼、라스트 댄스도 화려하게 가볼까！」 "
+					ENDIF
+					CALL MESSAGE_WINDOW_D, "", "＞　넬로・안젤로가 덤벼들었다！ "
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					CALL NERO_3
+					
+					CALL SYNC_STATUS, (CHARANUM-1)
+					CALL HEALTH_CHARA, (CHARANUM-1)
+					CALL BATTLE_START
+					
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					FLAG:미조우걸음수 = 0
+					FORCEWAIT
+					CALL MESSAGE_WINDOW_D, "", "＞　전력을 다하고 패배한 마검사는/　　소리도 없이 무릎부터 무너져 내리고、환상이었던 것 처럼 사라져 갔다‥‥‥ "
+					IF FINDCHARA_B([[キャラ:버질]]) == 2
+						CALL MESSAGE_WINDOW_D, "", "＞　아마도 과거의 자신이였을 마검사에게、몸소 숨통을 끊는 버질/　　그 기술의 탁월함에、단테가 옆에서 휘파람을 불고 있다. "
+						CALL MESSAGE_WINDOW_D, "버질", "「흥‥‥‥인정하지。/　　확실히 나는 한번 문두스에게 졌고、꼭두각시가 되었었다」 "
+						IF GETCHARA([[キャラ:버질]]) > -1 &&(IS_LOVER(GETCHARA([[キャラ:버질]])) || TALENT:(GETCHARA([[キャラ:버질]])):신뢰 || TALENT:(GETCHARA([[キャラ:버질]])):동료 || TALENT:(GETCHARA([[キャラ:버질]])):맹우)
+							CALL MESSAGE_WINDOW_D, "버질", @"「――좋은 기회다。/　　%CALLNAME:MASTER%、옆에서 보고 있어라」 "
+							CALL MESSAGE_WINDOW_D, "버질", "「지금의 나는、이런 녀석은 안중에도 없다。그것을 증명해보이겠다」 "
+						ELSE
+							CALL MESSAGE_WINDOW_D, "버질", "「――남겨줄 생각은 없어。/　　내가 놈을 사냥하는 모습을、얌전히 보고 있어라」 "
+						ENDIF
+					ELSEIF FINDCHARA_B([[キャラ:버질]]) == 1
+						CALL MESSAGE_WINDOW_D, "단테", "「수고했어。본인을 상대하는 것 보다는 덜하겠지만、최고의 춤을 즐길 수 있었지？ "
+						CALL MESSAGE_WINDOW_D, "", "＞　확실히、투기장에서 검을 겨누던 그때보다는 낫긴 하지만/　　즐거웠는지는 코멘트를 삼가도록 하겠습니다"
+						CALL MESSAGE_WINDOW_D, "단테", "「그러냐？　뭐、여기까지 오면 이제 한숨 돌려도 돼./　　어트랙션은 끝까지 즐기지 않으면 손해야」 "
+						CALL MESSAGE_WINDOW_D, "", @"＞　즐기느냐는 차치하고、이쯤 되면 할 수밖에 없을 것이다/　　%CALLNAME:MASTER%들은 앞으로 나아가기로 했다 "
+					ELSE
+						CALL MESSAGE_WINDOW_D, "단테", "「수고했어。본인을 상대하는 것과 비교하면 덜하겠지만/　이쪽도 최고의 춤을 즐길 수 있었지？」 "
+						CALL MESSAGE_WINDOW_D, "", "＞　그 말투로 보아 아마도 해당 인물은 아직도 생존해 있고/　저것 이상으로 기량이 뛰어난 것은 틀림없는 것 같다‥‥‥ "
+						CALL MESSAGE_WINDOW_D, "단테", "「어쩌면、언젠가 너네 집에도 놀러올지도 모르니까、기억해둬서 손해는 없어/　어이어이、뭘 또 똥씹은 표정이야？」 "
+						CALL MESSAGE_WINDOW_D, "", "＞　이것도 이 악마 사냥꾼과 인연이 생긴 결과로 받아들일 수밖에 없는 것 같다‥‥‥/　　일단 앞일은 제쳐두고 지금은 앞으로 나아가기로 했다"
+					ENDIF
+					CALL MESSAGE_WINDOW_D, "", "＞　레드 오브 +1500 "
+						MONEY:99 += 1500
+					ダンジョンフラグ:99:1 = 30
+				ENDIF
+	;=======
+	;浸水牢獄
+	;=======
+		;戦闘
+			CASE 2900
+				IF !GETBIT(ダンジョンフラグ:99:4,30)
+					CALL MESSAGE_WINDOW_D, "", @"＞　중앙까지 헤엄쳐 나아간 %CALLNAME:MASTER%들을、벽을 뚫는 사신들이 에워싼다/　　그냥 지나쳐 가는 것은 불가능할 것 같다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　신 시저스가 덤벼들기 시작했다！ "
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					
+					CALL SET_ENEMY,8,[[キャラ:그르르]],80,0,1
+					NAME:(CHARANUM-1) = 신 시저스
+					CALLNAME:(CHARANUM-1) = 신 시저스
+					;CFLAG:(CHARANUM-1):ＨＰ보정 += 1000
+					CALL SYNC_STATUS, (CHARANUM-1)
+					CALL HEALTH_CHARA, (CHARANUM-1)
+					
+					CALL SET_ENEMY,9,[[キャラ:그르르]],80,0,1
+					NAME:(CHARANUM-1) = 신 시저스
+					CALLNAME:(CHARANUM-1) = 신 시저스
+					;CFLAG:(CHARANUM-1):ＨＰ보정 += 1000
+					CALL SYNC_STATUS, (CHARANUM-1)
+					CALL HEALTH_CHARA, (CHARANUM-1)
+					
+					CALL SET_ENEMY,10,[[キャラ:그르르]],80,0,1
+					NAME:(CHARANUM-1) = 신 시저스
+					CALLNAME:(CHARANUM-1) = 신 시저스
+					;CFLAG:(CHARANUM-1):ＨＰ보정 += 1000
+					CALL SYNC_STATUS, (CHARANUM-1)
+					CALL HEALTH_CHARA, (CHARANUM-1)
+					
+					CALL BATTLE_START
+					
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					FLAG:미조우걸음수 = 0
+					FORCEWAIT
+					CALL MESSAGE_WINDOW_D, "", "＞　사신을 물리치자、벽이 일부 사라지고 통로가 나타났다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　레드 오브 +100 "
+					MONEY:99 += 100
+					SETBIT ダンジョンフラグ:99:4,30
+				ENDIF
+	;=======
+	;吹き抜け階段
+	;=======
+			CASE 3000
+				CALL DUNGEON_WORP,30,13,1
+			CASE 3001
+				CALL DUNGEON_WORP,29,2,17
+			CASE 3002
+				CALL DUNGEON_WORP,30,21,1
+			CASE 3003
+				CALL DUNGEON_WORP,30,2,1
+			CASE 3004
+				CALL DUNGEON_WORP,30,10,2
+			CASE 3005
+				CALL DUNGEON_WORP,30,14,5
+	;=======
+	;変成の間
+	;=======
+			CASE 3100
+				CALL DUNGEON_WORP,31,8,3
+			CASE 3101
+				;ナイトメア(2)戦
+				IF ダンジョンフラグ:99:1 == 31
+					CALL MESSAGE_WINDOW_D, "", "＞　철학자의 알을 변성시키는 것을 알아냈는지、다시 지면에서 나이트메어가 솟아났다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　변성은 아직 끝나지 않을 것 같다/　　여기서 방해받을 수는 없다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　나이트메어가 덤벼들기 시작했다！ "
+					SETBIT ダンジョンフラグ:99:8,4
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					CALL NIGTHMARE
+					
+					CALL GIRFFON_3
+					
+					CALL BATTLE_START
+					
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					FLAG:미조우걸음수 = 0
+					
+					FORCEWAIT
+					CALL MESSAGE_WINDOW_D, "", "＞　나나이트메어는 외침과 함께 증발하듯 사라져 갔다‥‥‥ "
+					CALL MESSAGE_WINDOW_D, "", "＞　레드 오브+500 "
+					MONEY:99 += 500
+					CLEARBIT ダンジョンフラグ:99:8,4
+					ダンジョンフラグ:99:1 = 32
+				;霊石 エリキサー入手
+				ELSEIF ダンジョンフラグ:99:3 >= 18
+					CALL DUNGEON_WORP,27,16,13
+				ENDIF
+			CASE 3102
+				CALL DUNGEON_WORP,31,8,8
+			CASE 3103
+				CALL DUNGEON_WORP,31,8,11
+	;=======
+	;寝室～鏡の世界
+	;=======
+		;賢者の石
+			CASE 3200
+				IF ダンジョンフラグ:99:3 < 19
+					CALL MESSAGE_WINDOW_D, "", "【현자의 돌】/＞　마계로 가는 문을 여는 열쇠 역할을 한다 "
+					CALL MESSAGE_WINDOW_D, "", @"＞　현자의 돌을 입수하자、3체의 이형이 %CALLNAME:MASTER%들을 에워싼다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　찌그러진 사람의 머리、다리 대신 사람의 손이 있는 네 발 짐승이 섬뜩한 웃음소리를 낸다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　노바디가 덤벼들기 시작했다！ "
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					
+					CALL SET_ENEMY,8,[[キャラ:키메라]],80,0,1
+					NAME:(CHARANUM-1) = 노바디
+					CALLNAME:(CHARANUM-1) = 노바디
+					ABL:(CHARANUM-1):스킬1 = 305 ;아이언클로
+					ABL:(CHARANUM-1):스킬2 = 2034 ;만마의난무
+					ABL:(CHARANUM-1):스킬3 = 2005 ;자폭
+					ABL:(CHARANUM-1):스킬4 = 2406 ;이악물기
+					CALL SYNC_STATUS, (CHARANUM-1)
+					CALL HEALTH_CHARA, (CHARANUM-1)
+					
+					CALL SET_ENEMY,9,[[キャラ:키메라]],80,0,1
+					NAME:(CHARANUM-1) = 노바디
+					CALLNAME:(CHARANUM-1) = 노바디
+					ABL:(CHARANUM-1):스킬1 = 305 ;아이언클로
+					ABL:(CHARANUM-1):스킬2 = 2034 ;만마의난무
+					ABL:(CHARANUM-1):스킬3 = 2005 ;자폭
+					ABL:(CHARANUM-1):스킬4 = 2406 ;이악물기
+					CALL SYNC_STATUS, (CHARANUM-1)
+					CALL HEALTH_CHARA, (CHARANUM-1)
+					
+					CALL SET_ENEMY,10,[[キャラ:키메라]],80,0,1
+					NAME:(CHARANUM-1) = 노바디
+					CALLNAME:(CHARANUM-1) = 노바디
+					ABL:(CHARANUM-1):스킬1 = 305 ;아이언클로
+					ABL:(CHARANUM-1):스킬2 = 2034 ;만마의난무
+					ABL:(CHARANUM-1):스킬3 = 2005 ;자폭
+					ABL:(CHARANUM-1):스킬4 = 2406 ;이악물기
+					CALL SYNC_STATUS, (CHARANUM-1)
+					CALL HEALTH_CHARA, (CHARANUM-1)
+					
+					CALL BATTLE_START
+					
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					FLAG:미조우걸음수 = 0
+					
+					CALL MESSAGE_WINDOW_D, "", "＞　레드 오브 +300 "
+					MONEY:99 += 300
+					ダンジョンフラグ:99:3 = 19
+					ダンジョンフラグ:99:11 = 9
+				ENDIF
+	;=======
+	;魔界　生贄の間
+	;=======
+		;ナイトメア(3)戦
+			CASE 3500
+				IF !GETBIT(ダンジョンフラグ:99:4,34)
+					CALL MESSAGE_WINDOW_D, "", "＞　넓은 방 한가운데로 들어서자 주위를 마력의 벽이 에워싸고/　　다시 나이트메어가 솟아 나왔다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　재현해내지 못했는지、멍하니 있다/　　아마도 여성형인듯한 환영체를 데리고 있다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　패배가 겹치면서 연체의 움직임도 더뎌진 것 같다/　　이제 한숨 돌려도 될만한 걸까 "
+					CALL MESSAGE_WINDOW_D, "", "＞　나이트메어가 덤벼들기 시작했다！ "
+					SETBIT ダンジョンフラグ:99:8,4
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					
+					CALL NIGTHMARE
+					
+					CALL TORISH_ILLUSION
+					
+					CALL BATTLE_START
+					
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					FLAG:미조우걸음수 = 0
+					
+					FORCEWAIT
+					CALL MESSAGE_WINDOW_D, "", "＞　나이트메어는 마침내 코어가 부서져、단말마와 함께 녹아내렸다‥‥‥ "
+					CALL MESSAGE_WINDOW_D, "", "＞　레드 오브 +1000 "
+					MONEY:99 += 1000
+					CLEARBIT ダンジョンフラグ:99:8,4
+					ダンジョンフラグ:99:1 = 33
+					SETBIT ダンジョンフラグ:99:4,34
+				ENDIF
+	;=======
+	;魔界　最深部
+	;=======
+		;仕掛け2起動後　移動処理
+			CASE 3600
+				SIF GETBIT(ダンジョンフラグ:99:4,37)
+					CALL DUNGEON_WORP,36,9,1
+			CASE 3601
+				SIF GETBIT(ダンジョンフラグ:99:4,37)
+					CALL DUNGEON_WORP,36,12,3
+		;仕掛け1起動後　移動処理
+			CASE 3603
+				SIF GETBIT(ダンジョンフラグ:99:4,36)
+					CALL DUNGEON_WORP,36,4,2
+		;心臓稼働
+			CASE 3607
+				SIF GETBIT(ダンジョンフラグ:99:4,38)
+					CALL DUNGEON_WORP,36,18,3
+		;移動処理のみ
+			CASE 3602
+				CALL DUNGEON_WORP,36,20,2
+			CASE 3604
+				CALL DUNGEON_WORP,36,6,6
+			CASE 3605
+				CALL DUNGEON_WORP,36,16,2
+			CASE 3606
+				CALL DUNGEON_WORP,36,8,4
+			CASE 3608
+				CALL DUNGEON_WORP,36,21,4
+			CASE 3609
+				CALL DUNGEON_WORP,36,15,5
+			CASE 3610
+				CALL DUNGEON_WORP,36,16,7
+			CASE 3611
+				CALL DUNGEON_WORP,36,20,6
+	;=======
+	;心臓の間　上段
+	;=======
+			CASE 3800
+				CALL DUNGEON_WORP,38,4,6
+			CASE 3801
+				CALL DUNGEON_WORP,38,7,4
+	;=======
+	;謁見の間
+	;=======
+			CASE 3900
+				IF ダンジョンフラグ:99:1 < 34
+					CALL MESSAGE_WINDOW_D, "", @"＞　신전――신을 알현하는 문을 연상시키는 장소/　　그 가장 안쪽의 옥좌에 앉은 마제 문두스는 %CALLNAME:MASTER%들을 기다리고 있었다 "
+					CALL MESSAGE_WINDOW_D, "문두스", "「잘 왔다。스파다의 피、그리고―― "
+					IF FINDCHARA_B([[キャラ:버질]]) == 2
+						CALL MESSAGE_WINDOW_D, "문두스", "오래 되었구나、내 부하여/ 또 나를 섬기러 왔는가」 "
+						CALL MESSAGE_WINDOW_D, "버질", "「시시한 도발을 하는군。그 꼴을 보니 용케도 화가 났구나」 "
+						CALL MESSAGE_WINDOW_D, "", "＞　일찍이 패하여、꼭두각시의 수모를 당한 상대라고는 하나/지금 검귀는 잡스러운 일이라는 듯 마제의 말을 코웃음치며 흘려듣는다 "
+						CALL MESSAGE_WINDOW_D, "", "＞　그나 단테로 미루어 보아、마제는 겉모습은 번지르르 하지만/　　이 이계와 마찬가지로 아무래도 자신도 완전하다고 말하기 어려운 상태인 것 같다 "
+						CALL MESSAGE_WINDOW_D, "", "＞　그 태도가 마음에 들지 않았는지、마제 문두스는 불쾌한 듯이 코를 킁킁거렸다 "
+						IF FINDCHARA_B([[キャラ:트리쉬_DMC]]) == 2
+							CALL MESSAGE_WINDOW_D, "문두스", "「흥、그래서‥‥역할조차 제대로 해내지 못하는 쓸모없는 놈인가/　배신자녀석이 부끄러움도 없이、용케도 다시 얼굴을 내밀었군」 "
+							CALL MESSAGE_WINDOW_D, "트리쉬", "「아 그 말대로군요/　하지만 자신이 세운 계책에서 패배한 것을、부하 탓으로 돌려도 곤란하네요」 "
+							CALL MESSAGE_WINDOW_D, "트리쉬", "「위대한 마제라고 하는 분이 그런 꼴이라면/　태어난 자로서도 부끄러워서 앞을 걸을 수가 없어요？」 "
+							CALL MESSAGE_WINDOW_D, "문두스", "「네놈이――」 "
+						ENDIF
+						CALL MESSAGE_WINDOW_D, "단테", "「미안하지만 감동의 재회는 여기까지야/　어쩐지 다른 것과는 달리、너에게는 기억이 있는 것 같아」 "
+						CALL MESSAGE_WINDOW_D, "단테", "「아니、오히려 기억을 유지하기 위해、다른 것을 재현하지 못한건가？/　뭐、 어쨌건 말이야」 "
+					ELSE
+						IF CFLAG:MASTER:당신의전공분야 == 7
+							CALL MESSAGE_WINDOW_D, "문두스", "악마의 피를 끌어들이는 、왜소한 자여/　여기까지 온 상으로、나의 시중드는 것을 허락하노라」 "
+							CALL MESSAGE_WINDOW_D, "", @"＞　%CALLNAME:MASTER%은 마제로부터、 자신이 상위자라고 의심하지 않는 언동에 부끄럽지 않은 마력을 느꼈다 "
+							CALL MESSAGE_WINDOW_D, "", "＞　그러나、단지 그것만으로 무릎을 꿇는다면、악마 사냥꾼은 하지도 않았을 것이다 "
+							CALL MESSAGE_WINDOW_D, "", @"＞　%CALLNAME:MASTER%은 마제의 위압을 받아넘기며、어떻게 하면 때려눕혀힐 수 있는지 관찰을 시작하였다 "
+							CALL MESSAGE_WINDOW_D, "", "＞　그 태도가 마음에 들지 않았는지、마제 문두스는 불쾌한 듯이 코웃음을 치며 시선을 끊었다 "
+						ELSE
+							CALL MESSAGE_WINDOW_D, "문두스", "하찮은、 인간이여/　스파다의 피에 달라붙어 여기까지 오다니‥‥‥분수를 아는 것이 좋을 것이다」 "
+							CALL MESSAGE_WINDOW_D, "", @"＞　마제 문두스는 사람을、 %CALLNAME:MASTER%을 업신여기고 있다. "
+							CALL MESSAGE_WINDOW_D, "", "＞　그것이 잘못이라는 것은 지금까지의 내가 증명해 온 것이며、그것을 여기서도 증명해 보이자 "
+							CALL MESSAGE_WINDOW_D, "", "＞　그 태도가 마음에 들지 않았는지、마제 문두스는 불쾌한 듯이 코웃음을 치며 시선을 끊었다 "
+						ENDIF
+						IF FINDCHARA_B([[キャラ:트리쉬_DMC]]) == 2
+							CALL MESSAGE_WINDOW_D, "문두스", "「흥、그래서‥‥역할조차 제대로 해내지 못하는 쓸모없는 놈인가/　배신자녀석이 부끄러움도 없이、용케도 다시 얼굴을 내밀었군」 "
+							CALL MESSAGE_WINDOW_D, "트리쉬", "「아 그 말대로군요/　하지만 자신이 세운 계책에서 패배한 것을、부하 탓으로 돌려도 곤란하네요」 "
+							CALL MESSAGE_WINDOW_D, "트리쉬", "「위대한 마제라고 하는 분이 그런 꼴이라면/　태어난 자로서도 부끄러워서 앞을 걸을 수가 없어요？」 "
+							CALL MESSAGE_WINDOW_D, "문두스", "「네놈이――」 "
+							CALL MESSAGE_WINDOW_D, "단테", "「미안하지만 감동의 재회는 여기까지야/　어쩐지 다른 것과는 달리、너에게는 기억이 있는 것 같아」 "
+							CALL MESSAGE_WINDOW_D, "단테", "「아니、오히려 기억을 유지하기 위해、다른 것을 재현하지 못한건가？/　뭐、 어쨌건 말이야」 "
+						ENDIF
+						IF CFLAG:MASTER:당신의전공분야 == 7
+							CALL MESSAGE_WINDOW_D, "단테", "「유감이지만、이녀석을 상대하기에는 너는 버거울거다/　자기가 창조한 악마조차 제대로 못쓰는데、너무 허세 부리면 망신당한다고？"
+						ELSE
+							CALL MESSAGE_WINDOW_D, "단테", "「나의 덤？　이녀석이？/　하、누더기 투성이로 위기감마저 사라진건가？」 "
+							CALL MESSAGE_WINDOW_D, "단테", "「아니、당신은 원래 그랬던건가。전에는 나를 아버지 대신으로 업신여기고――/　이번에는、이 녀석을 업신여겨서 망신당하는거야」 "
+						ENDIF
+						CALL MESSAGE_WINDOW_D, "문두스", "「네놈이――」 "
+						CALL MESSAGE_WINDOW_D, "단테", "「미안하지만 감동의 재회는 여기까지야/　어쩐지 다른 것과는 달리、너에게는 기억이 있는 것 같아」 "
+						CALL MESSAGE_WINDOW_D, "단테", "「아니、오히려 기억을 유지하기 위해、다른 것을 재현하지 못한건가？/　뭐、 어쨌건 말이야」 "
+					ENDIF
+					CALL MESSAGE_WINDOW_D, "단테", @"「Hey、%CALLNAME:MASTER%」/＞　위압이 커져가는 마제를 다른데에 있는 일이라는 듯이、단테는 %CALLNAME:MASTER%을 돌아보며/　　즐거운듯이――영악한 웃음을 지었다 "
+					CALL MESSAGE_WINDOW_D, "단테", "「라스트 스테이지는、패배를 잊지 못하는 마계의 제왕님이 상대다」 "
+					CALL MESSAGE_WINDOW_D, "단테", "「어떻게 부활했는지는 모르겠지만/　무서워서 다시는 인간계에 얼굴을 내밀 수 없게 될 정도로、성대하게 환영해 줄까！」 "
+					CALL MESSAGE_WINDOW_D, "문두스", "「잘도 지껄이는구나」/＞　마제 문두스의 분노의 포효와 함께 신전이 붕괴되고/　　주변에 마그마가 뿜어져 나오자 지옥의 모습이나 다름없게 되었다"
+					CALL MESSAGE_WINDOW_D, "문두스", "「쓸 수 없는 부하 따위는、처음부터 쓰다버릴 생각이었다/　나야말로 유일한 절대의 힘이다。내 힘의 진정한 위대함을、이번에야말로 네놈들에게 새겨 주마！」 "
+					CALL MESSAGE_WINDOW_D, "", "＞　마제 문두스가 덤벼들기 시작했다！ "
+					ダンジョンフラグ:99:1 = 34
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					
+					CALL MUNDUS
+					
+					CALL BATTLE_START
+					
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					FLAG:미조우걸음수 = 0
+				
+					FORCEWAIT
+					CALL MESSAGE_WINDOW_D, "", "＞　몸을 유지하지 못하고、마제 문두스는 아래로부터 무너져 간다 "
+					CALL MESSAGE_WINDOW_D, "", "＞　그럼에도 불구하고、원망과 함께 손을 뻗는 정면에 단테는 당당히 모습을 드러내고―― "
+					CALL MESSAGE_WINDOW_D, "단테", @"「Hey、%CALLNAME:MASTER%、피날레다」/　이번 파트너를 옆으로 불렀다 "
+					IF FINDCHARA_B([[キャラ:버질]]) == 2
+						CALL MESSAGE_WINDOW_D, "버질", "「그것은 말하지 마라」 "
+						CALL MESSAGE_WINDOW_D, "", "＞　미간을 찌푸린 형의 말도 받아 들이고/　두 사람은 서로의 총을 한 자루씩 교차시키며 힘을 쏟는다 "
+					ELSEIF FINDCHARA_B([[キャラ:트리쉬_DMC]]) == 2
+						CALL MESSAGE_WINDOW_D, "트리쉬", "「마무리 대사는？」 "
+					ELSE
+						CALL MESSAGE_WINDOW_D, "", "＞　서로 시선을 맞추고、히죽히죽 웃는다/　　마무리는 이것밖에 없다고 소리를 지르며、동시에 방아쇠를 당겼다―― "
+					ENDIF
+					CALL MESSAGE_WINDOW_D, @"%CALLNAME:MASTER%＆단테", "「Jack Pot！」 "
+					CALL MESSAGE_WINDOW_D, "", " "
+					CALL MESSAGE_WINDOW, "", "………/……/…"
+					CALL MESSAGE_WINDOW, "", "＞　마제 문두스가 다시 멸망하고、주인이 없어진 이계가 소멸되어 간다"
+					CALL MESSAGE_WINDOW, "", "＞　하마터면 말려들뻔 했는데/　　두 번째 겪는 단테를 선두로 무사、탈출한 일행은 말렛섬의 끝을 지켜보았다 "
+					CALL MESSAGE_WINDOW, "", "………/……/…"
+					CALL MESSAGE_WINDOW, "", @"――모처　%CALLNAME:MASTER%의 사무실"
+					CALL MESSAGE_WINDOW, "", "＞　말렛 섬 이계를 공략한 지 얼마 안 된 사무실/　　거기에는 스트로베리 선데이를 맛보는 단테가 있었다 "
+					CALL MESSAGE_WINDOW, "", "왜 여기 있냐고 물으면、딱딱한 소리 하지 말라고 뻔뻔하게 웃는다。거기에――"
+					CALL MESSAGE_WINDOW, "트리쉬", @"「Hi  %CALLNAME:MASTER%、다녀왔어」/＞　완전히 눌러앉아、마음대로 묵게 된 트리쉬가/　　큰 상자를 손에 들고 돌아왔다"
+					CALL MESSAGE_WINDOW, "", "＞　그리고 부탁을 받았을 것인、그 상자를 단테에게 건넨 뒤/　　불쑥 올리브 뺀 피자 한 조각을 집어 들고 먹기 시작한다"
+					CALL MESSAGE_WINDOW, "단테", "「그렇게 떫은 표정 짓지 마。/　전에는 도움받았으니까、자 선물이다」"
+					CALL MESSAGE_WINDOW, "", "＞　어쩌면 이번에는、이것을 건네기 위해 기다리고 있었던 것 같다"
+					CALL MESSAGE_WINDOW, "", "＞　그래놓고는 자기가 가져오지 않는、비정상적인 남자라고 느끼면서 상자를 여니――/　　거기에는『Devil May Cry』로고가 새겨진 표지판이 있었다 "
+					CALL MESSAGE_WINDOW, "단테", "「팬텀이었나에 소속되어있긴 하겠지만 /　데빌 헌터로서의 간판도 필요하겠지？」 "
+					CALL MESSAGE_WINDOW, "", "＞　과연、하고 맞장구를 치면서 간판을 사무실 현관에 걸어 보았다 "
+					IF ABL:MASTER:요리기능 >= 9
+						CALL MESSAGE_WINDOW, "", "＞　――언젠가 손수 만든 요리를 대접했을 때 보였던/　　마요네의 표정이 떠올랐지만、의식해서 곁에 놓아두기로 했다 "
+					ELSE
+						CALL MESSAGE_WINDOW, "", "＞　――소속된 지 얼마 되지 않았을 때 피자를 먹는 자신을 바라보는/　　마요네의 형언할 수 없는 표정이 떠올랐지만、의식해 곁에 놓아두기로 했다 "
+					ENDIF
+					CALL MESSAGE_WINDOW, "", "＞　그리고 오늘도 사무실의 다이얼 전화기가 울리고/　　비밀의뢰와 함께、밤하늘에 악마의 울음소리가 울려 퍼진다.―――― "
+					CALL MESSAGE_WINDOW, "", "―― Ending No.099 (Devil May Cry　마제사냥)" , , , , , , , , , "CENTER"
+					ダンジョンフラグ:99:1 = 37
+					MONEY += 500000
+					MONEY:99 += 5000
+					FLAG:명성 += 300
+					FLAG:5 = 9
+					
+					SETBIT FLAG:취소된ED2,35
+					SETBIT FLAG:발견ED2,35
+					FLAG:탈출 = 1
+					PRINTFORML [0]끝낸다 [1]계속한다 [2]일부 데이터를 인계하여、새롭게 시작한다
+					CALL INPUTINT,0, 1, 2
+					IF RESULT == 0
+						QUIT
+					ELSEIF RESULT == 1
+						CALL REQUEST_50_DAY_END
+					ELSEIF RESULT == 2
+						FLAG:전생리스타트예약 = 1
+						RETURN 1
+					ENDIF
+				ENDIF
+		
+		ENDSELECT
+ENDSELECT
+
+
+
+@GET_ORB_99,ARG
+
+
+;===============================
+;ドリーグ
+;===============================
+@D_LEAGUE
+#DIM 答え
+#DIMS 答え文字列 = "왼쪽", "오른쪽", "위", "아래"
+
+;答えを出しておく
+答え = RAND:4
+
+CALL MESSAGE_WINDOW_D, "", "＞　눈앞의 본드래곤의 입이 반짝이기 시작했고、수렴된 화염구가 이쪽을 향해 뿜어져 나왔다 "
+SETCOLOR COLOR("PASTEL-YELLOW")
+CALL MESSAGE_WINDOW_D, "", @"%答え文字列:答え%을(를) 선택해라！"
+RESETCOLOR
+FOR LOCAL, 0, VARSIZE("答え文字列")
+	PRINTFORML [{LOCAL}] %答え文字列:LOCAL%
+NEXT
+TONEINPUT 2000, -1, 1
+;失敗したパターン
+IF RESULT != 答え
+	CALL DUNGEON_TRAP_HP,10
+;成功時フラグ+1　合計3で撃破
+ELSE
+	IF ダンジョンフラグ:99:10 == 2
+		CALL MESSAGE_WINDOW_D, "", "＞　되받아친 화구가 직격탄을 맞자、마침내 본드래곤이 고함을 지르며 폭산했다/　　아무래도 봉인도 해제된 것 같다 "
+		CALL MESSAGE_WINDOW_D, "", "＞　트릭 제패――뇌리에、그런 말이 지나갔다 "
+		ダンジョンフラグ:99:10 = 3
+		SETBIT ダンジョンフラグ:99:4,27
+	ELSEIF ダンジョンフラグ:99:10 == 1
+		CALL MESSAGE_WINDOW_D, "", "＞　다시 화구를 본드래곤으로 쳐내면 분명히 파괴되어져 있다/　　이제 한숨 돌렸을 것이다 "
+		ダンジョンフラグ:99:10 = 2
+	ELSE
+		CALL MESSAGE_WINDOW_D, "", @"＞　%CALLNAME:MASTER%이 받아친 공은 멋지게 본드래곤에게 직격했다/　　아무래도 자신의 공격으로만 데미지를 받는 것 같다 "
+		ダンジョンフラグ:99:10 = 1
+	ENDIF
+ENDIF
+
+
+
+;===============================
+;宝箱の中身
+;===============================
+@TREASURE_99
+#LOCALSIZE 3
+;ダンジョンフラグの80~99は宝箱用
+;１階ごとに10個まで
+;宝箱のフラグ管理用変数の番号
+LOCAL = FLAG:현M / 5 + 80
+;そのマップの何番目の宝箱か
+LOCAL:1 = (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+LOCAL:1 += FLAG:현M % 5 * 10
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	;■반혼향
+	CASE 0,1401,1500,2001
+		CALL GETS_TREASURE, "반혼향" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	;■마석
+	CASE 1402,1403,1404,1406,1408,1409,1701,1702, 2301
+		CALL GETS_TREASURE, "마석" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	;■파마화살
+	CASE 1700,2201,2302,2304
+		CALL GETS_TREASURE, "파마화살" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	;■블루오브의조각
+	CASE 100,200,201,202,203,204,205,207,208,300,301,700,900,1000,1001,1100,1300,1400,1405,1800,1801,2200,2303,2305,2400,2402,2600,2601,2800,2900,3000,3100,3200,3201,3300
+		CALL GETS_TREASURE, "블루오브의조각" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	;■마석　高低差有
+	CASE 1802, 2300
+		CALL GETS_TREASURE, "마석" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+		SIF RESULT
+			DA:(FLAG:현X):(FLAG:현Y) = 21
+	;■블루오브의조각　高低差有
+	CASE 206,2100
+		CALL GETS_TREASURE, "블루오브의조각" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+		SIF RESULT
+			DA:(FLAG:현X):(FLAG:현Y) = 21
+	;■데빌스타
+	CASE 1407,1501,2000,2306,2401
+		CALL GETS_TREASURE, "데빌스타" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+ENDSELECT
+
+
+;=======================================================================
+;階段置き場
+;=======================================================================
+;6だと上の階層の7、7だと下の階層の6へ移動する処理
+;特に変わった処理を入れない限り何も触らない方がいい
+@STAIRS_99
+LOCAL = DA:(FLAG:현X):(FLAG:현Y)
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 10
+	;=======================================================================
+	;昇り階段(一つ上のフロアへ)
+	;=======================================================================
+	CASE 6
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			CASE 200,201,202
+				CALL DUNGEON_UPSTAIRS_ID, 3, 3017
+			CASE 203
+				CALL DUNGEON_UPSTAIRS_ID, 3, 3037
+			CASE 300
+				CALL DUNGEON_UPSTAIRS_ID, 12, 12007
+			CASE 500
+				CALL DUNGEON_UPSTAIRS_ID, 2, 2007
+			CASE 800
+				CALL DUNGEON_UPSTAIRS_ID, 8, 8007
+			CASE 801
+				CALL DUNGEON_UPSTAIRS_ID, 8, 8017
+			CASE 802
+				CALL DUNGEON_UPSTAIRS_ID, 9, 9007
+			CASE 1400
+				CALL DUNGEON_UPSTAIRS_ID,13, 13007
+			CASE 1401
+				CALL DUNGEON_UPSTAIRS_ID,15, 15007
+			CASE 1402
+				CALL DUNGEON_UPSTAIRS_ID,15, 15017
+			CASE 2000
+				CALL DUNGEON_UPSTAIRS_ID,21, 21007
+			CASE 2400
+				CALL DUNGEON_DOWNSTAIRS_ID,14, 14007
+			CASE 2401
+				CALL DUNGEON_DOWNSTAIRS_ID,14, 14017
+			CASE 2600,2601,2602
+				CALL DUNGEON_UPSTAIRS_ID, 3, 3017
+			CASEELSE
+				;汎用処理
+				IF LOCAL % 1000 < 500
+					CALL DUNGEON_UPSTAIRS_ID, FLAG:현M + 1, LOCAL + 1001
+				ELSE
+					CALL DUNGEON_WORP_ID, FLAG:현M+1, LOCAL+1001, 1
+				ENDIF
+		ENDSELECT
+	;=======================================================================
+	;下り階段(一つ下のフロアへ)
+	;=======================================================================
+	CASE 7
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			CASE 200
+				CALL DUNGEON_DOWNSTAIRS_ID, 5, 5006
+			CASE 300,301,302
+				IF ダンジョンフラグ:99:1 < 27
+					CALL DUNGEON_DOWNSTAIRS_ID, 2, 2016
+				ELSE
+					CALL DUNGEON_DOWNSTAIRS_ID,26, 26016
+				ENDIF
+			CASE 303
+				CALL DUNGEON_DOWNSTAIRS_ID, 2, 2036
+			CASE 800
+				CALL DUNGEON_DOWNSTAIRS_ID, 8, 8006
+			CASE 801
+				CALL DUNGEON_DOWNSTAIRS_ID, 8, 8016
+			CASE 900
+				CALL DUNGEON_DOWNSTAIRS_ID, 8, 8026
+			CASE 1200
+				CALL DUNGEON_DOWNSTAIRS_ID, 3, 3006
+			CASE 1300
+				CALL DUNGEON_DOWNSTAIRS_ID,14, 14006
+			CASE 1400
+				CALL DUNGEON_DOWNSTAIRS_ID,24, 24006
+			CASE 1401
+				CALL DUNGEON_DOWNSTAIRS_ID,24, 24016
+			CASE 1500
+				CALL DUNGEON_DOWNSTAIRS_ID,14, 14016
+			CASE 1501
+				CALL DUNGEON_DOWNSTAIRS_ID,14, 14026
+			CASE 2100
+				CALL DUNGEON_DOWNSTAIRS_ID,20, 20006
+			CASEELSE
+				;汎用処理
+				IF LOCAL % 1000 < 500
+					CALL DUNGEON_DOWNSTAIRS_ID, FLAG:현M - 1, LOCAL - 1001
+				ELSE
+					CALL DUNGEON_WORP_ID, FLAG:현M-1, LOCAL-1001, 1
+				ENDIF
+		ENDSELECT
+ENDSELECT
+;端にいると中に移動（エラー避け）
+IF FLAG:현X == 0
+	FLAG:현X += 1
+	SIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 2
+		FLAG:현X += 1
+ELSEIF FLAG:현Y == 0
+	FLAG:현Y += 1
+	SIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 2
+		FLAG:현Y += 1
+ELSEIF FLAG:현X == FLAG:최대X - 1
+	FLAG:현X -= 1
+	SIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 2
+		FLAG:현X -= 1
+ELSEIF FLAG:현Y == FLAG:최대Y - 1
+	FLAG:현Y -= 1
+	SIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 2
+		FLAG:현Y -= 1
+ENDIF
+
+
+;=======================================================================
+;必要レベル目安
+;推奨LV 雑魚最低LV 雑魚最高LV ボスLV 
+;=======================================================================
+@GET_DUNGEON_LV_99
+IF ダンジョンフラグ:99:11 <= 1
+	RETURN 30, 28, 33, 40
+ELSEIF ダンジョンフラグ:99:11 == 2
+	RETURN 33, 33, 35, 40
+ELSEIF ダンジョンフラグ:99:11 == 3
+	RETURN 38, 35, 40, 50
+ELSEIF ダンジョンフラグ:99:11 == 4
+	RETURN 42, 40, 45, 55
+ELSEIF ダンジョンフラグ:99:11 == 5
+	RETURN 45, 43, 47, 57
+ELSEIF ダンジョンフラグ:99:11 == 6 && ダンジョンフラグ:99:1 < 21
+	RETURN 62, 60, 65, 65
+ELSEIF ダンジョンフラグ:99:11 == 6 && ダンジョンフラグ:99:1 < 23
+	RETURN 62, 60, 65, 70
+ELSEIF ダンジョンフラグ:99:11 == 6 && ダンジョンフラグ:99:1 < 26
+	RETURN 62, 60, 65, 73
+ELSEIF ダンジョンフラグ:99:11 == 7
+	RETURN 65, 63, 70, 75
+ELSEIF ダンジョンフラグ:99:11 == 8
+	RETURN 65, 63, 70, 80
+ELSEIF ダンジョンフラグ:99:11 == 9 && ダンジョンフラグ:99:1 < 33
+	RETURN 68, 66, 75, 83
+ELSEIF ダンジョンフラグ:99:11 == 9 && ダンジョンフラグ:99:1 < 34
+	RETURN 80, 72, 80, 90
+ENDIF
+
+@TRAIN_DUNGEON_99
+
+
+;=======================================================================
+;인카운트율
+;=======================================================================
+@ENCOUNT_RATE_99
+SELECTCASE FLAG:현M
+	CASE 34,39
+		FLAG:인카운트율 = 0
+	CASE IS <= 25
+		IF ダンジョンフラグ:99:11 == 0
+			FLAG:인카운트율 = 0
+		ELSE
+			FLAG:인카운트율 = FLAG:미조우걸음수 * 5
+		ENDIF
+	CASEELSE
+;			FLAG:인카운트율 = 0
+			FLAG:인카운트율 = FLAG:미조우걸음수 * 5
+ENDSELECT
+
+
+;=======================================================================
+;エンカウント処理
+;=======================================================================
+@CHECK_ENCOUNT_99
+;--- EDIT 002 MOD START ---
+;入り口は戦闘なし
+IF FLAG:현M < 2
+	RETURN 0
+;--- EDIT 002 MOD END -----
+ELSEIF RAND:80 < FLAG:인카운트율
+	RETURN 1
+ELSE
+	FLAG:미조우걸음수 += 1
+	RETURN 0
+ENDIF
+
+;=======================================================================
+;敵の種族の種類数
+;RETURN X でXが種類の数になります
+;あまりいろんなのが混ざっているとCOOPがとりにくくなったり
+;敵の攻撃属性が多くなる傾向にあるので、
+;種類の数は1・2種類を主体に時々3種類くらいを基本にするのが望ましいと思われます
+;=======================================================================
+@CLASS_NUM_99
+SELECTCASE FLAG:현M
+	CASE 0
+		RETURN 0
+	CASE 7,17,20
+		RETURN 1
+	CASE 16
+		RETURN 2
+	CASEELSE
+		SELECTCASE RAND:100
+			CASE IS < 35
+				RETURN 1
+			CASE IS < 65
+				RETURN 2
+			CASEELSE
+				RETURN 3
+		ENDSELECT
+ENDSELECT
+
+;SELECTCASE FLAG:현M
+;	CASE IS < 14
+;		RETURN CLASS_NUM_COMMON("中級")
+;	CASE IS >= 14
+;		RETURN CLASS_NUM_COMMON("上級")
+;ENDSELECT
+;RETURN CLASS_NUM_COMMON("中級")
+;RETURN CLASS_NUM_COMMON("上級")
+;RETURN CLASS_NUM_COMMON("最上級")
+
+;=======================================================================
+;敵の総数
+;ARGは出現する敵の種類です
+;RAND(X, Y)はX～Y-1のうちのどれかになるRANDです
+;なお、ここで帰った数字は下限を種族数、上限を10として自動的に調整されます
+;
+;エコービルは最初のダンジョンということで少なめで、最大でも6体ということに
+;=======================================================================
+@ENEMY_NUM_99, ARG
+IF RAND:3 == 0
+	RETURN RAND(ARG, ARG*2+2)
+ELSE
+	RETURN RAND(ARG, ARG*2+4)
+ENDIF
+
+;RETURN ENEMY_NUM_COMMON("中級")
+;RETURN ENEMY_NUM_COMMON("上級")
+;RETURN ENEMY_NUM_COMMON("最上級")
+
+
+;=======================================================================
+;敵の種類
+;=======================================================================
+;エンカウントでダンジョンに出てくる敵を設定
+;RETURN (敵の種類),(レベル)
+;LOCAL = 5とSIF !RAND:(LOCAL --)　はいちいち出現確率をやるのがめんどくさい人用
+@ENEMY_99, ARG
+#LOCALSIZE 1
+
+SELECTCASE FLAG:현M
+	CASE 7
+		IF ダンジョンフラグ:99:11 >= 5
+			RETURN [[キャラ:로아]], 70+RAND:2*3
+		ELSEIF ダンジョンフラグ:99:11 >= 3
+			RETURN [[キャラ:로아]], 45+RAND:2*3
+		ELSEIF ダンジョンフラグ:99:11 == 2
+			RETURN [[キャラ:로아]], 40+RAND:2*3
+		ELSE
+			RETURN [[キャラ:로아]], 35+RAND:2*3
+		ENDIF
+	CASE 10
+		SELECTCASE RAND:100
+			CASE IS <25
+				RETURN [[キャラ:목없는라이더]], 40+RAND:2*3
+			CASE IS <50
+				RETURN [[キャラ:그르르]], 43+RAND:2*3
+			CASE IS <= 100
+				RETURN [[キャラ:혼돈]], 45+RAND:2*3
+		ENDSELECT
+	CASE 1,2,3,4,5,6,8,9,11,12
+		IF ダンジョンフラグ:99:11 == 1
+			SELECTCASE RAND:100
+					CASE IS < 50
+						RETURN [[キャラ:목없는라이더]], 28+RAND:2*3
+					CASE IS < 80
+						RETURN [[キャラ:마카브르]], 30+RAND:2*3
+					CASE IS <= 100
+						RETURN [[キャラ:바포멧트]], 33+RAND:2*3
+			ENDSELECT
+		ELSEIF ダンジョンフラグ:99:11 == 2
+			SELECTCASE RAND:100
+				CASE IS < 50
+					RETURN [[キャラ:목없는라이더]], 30+RAND:2*3
+				CASE IS < 80
+					RETURN [[キャラ:마카브르]], 33+RAND:2*3
+				CASE IS <= 100
+					RETURN [[キャラ:그르르]], 35+RAND:2*3
+			ENDSELECT
+		ELSEIF ダンジョンフラグ:99:11 == 3
+			SELECTCASE RAND:100
+				CASE IS < 25
+					RETURN [[キャラ:목없는라이더]], 30+RAND:2*3
+				CASE IS < 70
+					RETURN [[キャラ:마카브르]], 33+RAND:2*3
+				CASE IS <= 100
+					RETURN [[キャラ:그르르]], 35+RAND:2*3
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:100
+				CASE IS < 25
+					RETURN [[キャラ:목없는라이더]], 40+RAND:2*3
+				CASE IS < 45
+					RETURN [[キャラ:마카브르]], 42+RAND:2*3
+				CASE IS < 60
+					RETURN [[キャラ:그르르]], 43+RAND:2*3
+				CASE IS < 100
+					RETURN [[キャラ:데스그리폰]], 43+RAND:2*3
+			ENDSELECT
+		ENDIF
+	CASE 13,14,15,19,22,23,24,25
+		IF ダンジョンフラグ:99:11 <= 4
+			SELECTCASE RAND:100
+				CASE IS < 25
+					RETURN [[キャラ:목없는라이더]], 42+RAND:2*3
+				CASE IS < 50
+					RETURN [[キャラ:마카브르]], 42+RAND:2*3
+				CASE IS < 80
+					RETURN [[キャラ:그르르]], 43+RAND:2*3
+				CASE IS <= 100
+					RETURN [[キャラ:카마조츠]], 43+RAND:2*3
+			ENDSELECT
+		ELSEIF ダンジョンフラグ:99:11 == 5
+			SELECTCASE RAND:100
+				CASE IS < 25
+					RETURN [[キャラ:목없는라이더]], 43+RAND:2*3
+				CASE IS < 50
+					RETURN [[キャラ:마카브르]], 43+RAND:2*3
+				CASE IS < 80
+					RETURN [[キャラ:베르세르크]], 44+RAND:2*3
+				CASE IS <= 100
+					RETURN [[キャラ:카마조츠]], 47+RAND:2*3
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:100
+				CASE IS < 20
+					RETURN [[キャラ:목없는라이더]], 50+RAND:2*3
+				CASE IS < 40
+					RETURN [[キャラ:마카브르]], 50+RAND:2*3
+				CASE IS < 60
+					RETURN [[キャラ:오시치]], 53+RAND:2*3
+				CASE IS < 80
+					RETURN [[キャラ:베르세르크]], 55+RAND:2*3
+				CASE IS <= 100
+					RETURN [[キャラ:카마조츠]], 55+RAND:2*3
+			ENDSELECT
+		ENDIF
+	CASE 16
+		SELECTCASE RAND:100
+			CASE IS < 25
+				RETURN [[キャラ:마카브르]], 50+RAND:2*3
+			CASE IS < 70
+				RETURN [[キャラ:오시치]], 53+RAND:2*3
+			CASE IS <= 100
+				RETURN [[キャラ:카마조츠]], 55+RAND:2*3
+		ENDSELECT
+	CASE 17
+		RETURN [[キャラ:츠치구모]], 55+RAND:2*3
+	CASE 18,21
+		SELECTCASE RAND:100
+			CASE IS < 25
+				RETURN [[キャラ:목없는라이더]], 50+RAND:2*3
+			CASE IS <50
+				RETURN [[キャラ:베르세르크]], 55+RAND:2*3
+			CASE IS <= 100
+				RETURN [[キャラ:타나토스]], 57+RAND:2*3
+		ENDSELECT
+	CASE 20
+		RETURN [[キャラ:베르세르크]], 60+RAND:2*3
+	CASE 26,27,28,29,30,31,32,33,34,35,36,37,38
+		IF ダンジョンフラグ:99:11 == 9 && ダンジョンフラグ:99:1 >= 33
+			SELECTCASE RAND:100
+				CASE IS < 25
+					RETURN [[キャラ:오시치]], 72+RAND:2*3
+				CASE IS < 50
+					RETURN [[キャラ:페리]], 75+RAND:2*3
+				CASE IS < 70
+					RETURN [[キャラ:하누만]], 77+RAND:2*3
+				CASE IS <= 100
+					RETURN [[キャラ:키메라]], 80+RAND:2*3
+			ENDSELECT
+		ELSEIF ダンジョンフラグ:99:11 == 9 && ダンジョンフラグ:99:1 < 33
+			SELECTCASE RAND:100
+				CASE IS < 25
+					RETURN [[キャラ:오시치]], 66+RAND:2*3
+				CASE IS < 50
+					RETURN [[キャラ:페리]], 68+RAND:2*3
+				CASE IS < 70
+					RETURN [[キャラ:하누만]], 72+RAND:2*3
+				CASE IS <= 100
+					RETURN [[キャラ:키메라]], 75+RAND:2*3
+			ENDSELECT
+		ELSEIF ダンジョンフラグ:99:11 == 8
+			SELECTCASE RAND:100
+				CASE IS < 25
+					RETURN [[キャラ:오시치]], 63+RAND:2*3
+				CASE IS < 70
+					RETURN [[キャラ:페리]], 65+RAND:2*3
+				CASE IS <= 100
+					RETURN [[キャラ:하누만]], 70+RAND:2*3
+			ENDSELECT
+		ELSEIF ダンジョンフラグ:99:11 == 7
+			SELECTCASE RAND:100
+				CASE IS < 25
+					RETURN [[キャラ:마카브르]], 63+RAND:2*3
+				CASE IS < 70
+					RETURN [[キャラ:오시치]], 65+RAND:2*3
+				CASE IS <= 100
+					RETURN [[キャラ:페리]], 70+RAND:2*3
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:100
+				CASE IS < 25
+					RETURN [[キャラ:마카브르]], 60+RAND:2*3
+				CASE IS < 70
+					RETURN [[キャラ:오시치]], 63+RAND:2*3
+				CASE IS <= 100
+					RETURN [[キャラ:카마조츠]], 65+RAND:2*3
+			ENDSELECT
+		ENDIF
+	CASEELSE
+ENDSELECT
+		;LOCALに種類数を入れる
+;		LOCAL = 5
+;		SIF !RAND:(LOCAL --)
+;			RETURN [[キャラ:목없는라이더]], 28
+;		SIF !RAND:(LOCAL --)
+;			RETURN [[キャラ:마카브르]], 30
+;		SIF !RAND:(LOCAL --)
+;			RETURN [[キャラ:シン シザーズ]], 1
+;		SIF !RAND:(LOCAL --)
+;			RETURN [[キャラ:シン サイズ]], 1
+;		SIF !RAND:(LOCAL --)
+;			RETURN [[キャラ:デス サイズ]], 1
+;		SIF !RAND:(LOCAL --)
+;			RETURN [[キャラ:サルガッソー]], 1
+;		SIF !RAND:(LOCAL --)
+;			RETURN [[キャラ:ベルゼバブ]], 1
+;		SIF !RAND:(LOCAL --)
+;			RETURN [[キャラ:ブレイド]], 1
+;	요귀,656,ベルセルク
+;		SIF !RAND:(LOCAL --)
+;			RETURN [[キャラ:フェティッシュ]], 1
+;		SIF !RAND:(LOCAL --)
+;			RETURN [[キャラ:사이클롭스]], 1
+;		SIF !RAND:(LOCAL --)
+;			RETURN [[キャラ:プラズマ]], 1
+;		SIF !RAND:(LOCAL --)
+;			RETURN [[キャラ:フロスト]], 1
+;	요마,456,ハヌマーン
+;		SIF !RAND:(LOCAL --)
+;			RETURN [[キャラ:ノーバディ]], 1
+;ENDSELECT
+
+;=======================================================================
+;敵ステータス設定
+;=======================================================================
+;↑のザコ敵のステータスを変える処理
+;耐性とかスキルとかを変えれる
+@SET_ENEMY_STATUS_99,ARG
+#DIM DYNAMIC L_ENEMY
+#DIM DYNAMIC LCOUNT
+
+ABL:(CHARANUM-1):회화타입 = 331
+
+FOR LCOUNT, 7, 17
+	SIF POS(LCOUNT) < 0
+		CONTINUE
+	L_ENEMY = POS(LCOUNT)
+	BREAK
+NEXT
+IF ABL:L_ENEMY:아이템2 != GETNUM(ITEM, "데빌스타")
+	ABL:L_ENEMY:아이템2 = GETNUM(ITEM, "데빌스타")
+	ABL:L_ENEMY:입수확률2 = 4
+ENDIF
+
+SELECTCASE NO:ARG
+	CASE [[キャラ:목없는라이더]]
+		NAME:(CHARANUM-1) = 마리오네트
+		CALLNAME:(CHARANUM-1) = 마리오네트
+	
+	CASE [[キャラ:마카브르]]
+		NAME:(CHARANUM-1) = 블러디메리
+		CALLNAME:(CHARANUM-1) = 블러디메리
+	
+	CASE [[キャラ:그르르]]
+		NAME:(CHARANUM-1) = 신 시저스
+		CALLNAME:(CHARANUM-1) = 신 시저스
+	
+	;요조,959,カマソッソ
+	CASE [[キャラ:카마조츠]]
+		NAME:(CHARANUM-1) = 신 사이즈
+		CALLNAME:(CHARANUM-1) = 신 사이즈
+		MAXBASE:(CHARANUM-1):비구 = 120
+		BASE:(CHARANUM-1):비구 = 120
+		ABL:(CHARANUM-1):스킬1 = 2 ;ヒートフェイブ
+		ABL:(CHARANUM-1):스킬2 =304 ;메가클로
+		ABL:(CHARANUM-1):스킬3 =508 ;스쿤・다
+		ABL:(CHARANUM-1):스킬4 =2013 ;흡혈
+	
+	CASE [[キャラ:타나토스]]
+		NAME:(CHARANUM-1) = 데스 시저스
+		CALLNAME:(CHARANUM-1) = 데스 시저스
+	
+	;사신,1627,チェルノボグ
+	CASE [[キャラ:체르노보그]]
+		NAME:(CHARANUM-1) = 데스 사이즈
+		CALLNAME:(CHARANUM-1) = 데스 사이즈
+	
+	CASE [[キャラ:로아]]
+		NAME:(CHARANUM-1) = 사르갓소
+		CALLNAME:(CHARANUM-1) = 사르갓소
+	
+	CASE [[キャラ:데스그리폰]]
+		NAME:(CHARANUM-1) = 섀도우
+		CALLNAME:(CHARANUM-1) = 섀도우
+		ABL:(CHARANUM-1):스킬1 = 326 ;베어먹기
+		ABL:(CHARANUM-1):스킬2 =48 ;자벨린레인
+		ABL:(CHARANUM-1):스킬3 =328 ;어설트다이브
+		ABL:(CHARANUM-1):스킬4 =2005 ;자폭
+	
+	CASE [[キャラ:혼돈]]
+		NAME:(CHARANUM-1) = 벨제붑
+		CALLNAME:(CHARANUM-1) = 벨제붑
+	
+	CASE [[キャラ:오시치]]
+		NAME:(CHARANUM-1) = 페티쉬
+		CALLNAME:(CHARANUM-1) = 페티쉬
+	
+	CASE [[キャラ:츠치구모]]
+		NAME:(CHARANUM-1) = 사이클롭스
+		CALLNAME:(CHARANUM-1) = 사이클롭스
+	
+	;요귀,656,ベルセルク
+	CASE [[キャラ:베르세르크]]
+		NAME:(CHARANUM-1) = 블레이드
+		CALLNAME:(CHARANUM-1) = 블레이드
+		MAXBASE:(CHARANUM-1):검격 = 80
+		BASE:(CHARANUM-1):검격 = 80
+		MAXBASE:(CHARANUM-1):빙결 = 100
+		BASE:(CHARANUM-1):빙결 = 100
+	
+	CASE [[キャラ:페리]]
+		NAME:(CHARANUM-1) = 플라즈마
+		CALLNAME:(CHARANUM-1) = 플라즈마
+	
+	;요마,456,ハヌマーン
+	CASE [[キャラ:하누만]]
+		NAME:(CHARANUM-1) = 프로스트
+		CALLNAME:(CHARANUM-1) = 프로스트
+		ABL:(CHARANUM-1):스킬1 = 345 ;앵화섬란
+		ABL:(CHARANUM-1):스킬2 = 805 ;마하・부흐라
+		ABL:(CHARANUM-1):스킬3 = 803 ;부흐다인
+		ABL:(CHARANUM-1):스킬4 = 504;ラクカジャ
+		ABL:(CHARANUM-1):스킬5 = 1708;선풍진
+		ABL:(CHARANUM-1):스킬6 = 0
+		ABL:(CHARANUM-1):스킬7 = 0
+	
+	CASE [[キャラ:키메라]]
+		NAME:(CHARANUM-1) = 노바디
+		CALLNAME:(CHARANUM-1) = 노바디
+		ABL:(CHARANUM-1):스킬1 = 304 ;메가클로
+		ABL:(CHARANUM-1):스킬2 = 2005 ;자폭
+		ABL:(CHARANUM-1):스킬3 = 2406 ;이악물기
+		ABL:(CHARANUM-1):스킬4 = 0
+	
+ENDSELECT
+		
+		
+;=======================================================================
+;ボス設定
+;=======================================================================
+@PHANTOM_1
+
+CALL SET_ENEMY,9,[[キャラ:츠치구모]],40,0,1
+NAME:(CHARANUM-1) = 팬텀
+CALLNAME:(CHARANUM-1) = 팬텀
+CFLAG:(CHARANUM-1):ＨＰ보정 = 1000
+CFLAG:(CHARANUM-1):ＭＰ보정 = 9999
+
+;耐性
+BASE:(CHARANUM-1):검격 = 100
+BASE:(CHARANUM-1):전술 = 100
+BASE:(CHARANUM-1):빙결 = 200
+BASE:(CHARANUM-1):파마 = 0
+BASE:(CHARANUM-1):수격 = 150
+BASE:(CHARANUM-1):핵열 = -200
+
+;スキル構成
+ABL:(CHARANUM-1):스킬1 = 203 ;마구날뛰기
+ABL:(CHARANUM-1):스킬2 = 309 ;데스클로
+ABL:(CHARANUM-1):스킬3 = 725 ;파이어볼
+ABL:(CHARANUM-1):스킬4 = 1902 ;프레이라
+
+CALL SYNC_STATUS, (CHARANUM-1)
+CALL HEALTH_CHARA, (CHARANUM-1)
+
+
+@PHANTOM_2
+IF GETBIT(ダンジョンフラグ:99:8,4)
+	CALL SET_ENEMY,9,[[キャラ:츠치구모]],55,1,1
+	NAME:(CHARANUM-1) = 팬텀(환영체)
+	CALLNAME:(CHARANUM-1) = 팬텀(환영체)
+ELSE
+	CALL SET_ENEMY,9,[[キャラ:츠치구모]],55,0,1
+	NAME:(CHARANUM-1) = 팬텀
+	CALLNAME:(CHARANUM-1) = 팬텀
+ENDIF
+IF !GETBIT(ダンジョンフラグ:99:8,4)
+	CFLAG:(CHARANUM-1):ＨＰ보정 += 3000
+	CFLAG:(CHARANUM-1):ＭＰ보정 = 9999
+ENDIF
+
+;耐性
+BASE:(CHARANUM-1):검격 = 100
+BASE:(CHARANUM-1):전술 = 100
+BASE:(CHARANUM-1):빙결 = 150
+BASE:(CHARANUM-1):파마 = 0
+BASE:(CHARANUM-1):수격 = 150
+BASE:(CHARANUM-1):핵열 = -200
+
+;スキル構成
+ABL:(CHARANUM-1):스킬1 = 205 ;메가톤프레스
+ABL:(CHARANUM-1):스킬2 = 310 ;허공조격
+ABL:(CHARANUM-1):스킬3 = 725 ;파이어볼
+ABL:(CHARANUM-1):스킬4 = 1903 ;프레이다인
+
+CALL SYNC_STATUS, (CHARANUM-1)
+CALL HEALTH_CHARA, (CHARANUM-1)
+
+
+@GIRFFON_1
+CALL SET_ENEMY,9,[[キャラ:헬그리폰]],57,0,1
+NAME:(CHARANUM-1) = グリフォン
+CALLNAME:(CHARANUM-1) = グリフォン
+CFLAG:(CHARANUM-1):ＨＰ보정 += 3000
+CFLAG:(CHARANUM-1):ＭＰ보정 = 9999
+
+ABL:(CHARANUM-1):스킬1 = 328;어설트다이브
+ABL:(CHARANUM-1):스킬2 = 906 ;마하・지오다인
+ABL:(CHARANUM-1):스킬3 = 1038;소닉붐
+ABL:(CHARANUM-1):스킬4 = 1007;림도라
+ABL:(CHARANUM-1):스킬5 = 0
+ABL:(CHARANUM-1):스킬6 = 0
+
+@GIRFFON_2
+CALL SET_ENEMY,9,[[キャラ:헬그리폰]],70,0,1
+NAME:(CHARANUM-1) = 그리폰
+CALLNAME:(CHARANUM-1) = 그리폰
+CFLAG:(CHARANUM-1):ＨＰ보정 += 3000
+CFLAG:(CHARANUM-1):ＭＰ보정 = 9999
+
+ABL:(CHARANUM-1):스킬1 = 328;어설트다이브
+ABL:(CHARANUM-1):스킬2 = 906 ;마하・지오다인
+ABL:(CHARANUM-1):스킬3 = 1038;소닉붐
+ABL:(CHARANUM-1):스킬4 = 1007;림도라
+ABL:(CHARANUM-1):스킬5 = 0
+ABL:(CHARANUM-1):스킬6 = 0
+
+@GIRFFON_3
+IF GETBIT(ダンジョンフラグ:99:8,4)
+	CALL SET_ENEMY,9,[[キャラ:헬그리폰]],73,1,1
+	NAME:(CHARANUM-1) = 그리폰(환영체)
+	CALLNAME:(CHARANUM-1) = 그리폰(환영체)
+ELSE
+	CALL SET_ENEMY,9,[[キャラ:헬그리폰]],73,0,1
+	NAME:(CHARANUM-1) = 그리폰
+	CALLNAME:(CHARANUM-1) = 그리폰
+ENDIF
+IF !GETBIT(ダンジョンフラグ:99:8,4)
+	CFLAG:(CHARANUM-1):ＨＰ보정 += 3000
+	CFLAG:(CHARANUM-1):ＭＰ보정 = 9999
+ENDIF
+
+ABL:(CHARANUM-1):스킬1 = 328;어설트다이브
+ABL:(CHARANUM-1):스킬2 = 906 ;마하・지오다인
+ABL:(CHARANUM-1):스킬3 = 1038;소닉붐
+ABL:(CHARANUM-1):스킬4 = 1007;림도라
+ABL:(CHARANUM-1):스킬5 = 0
+ABL:(CHARANUM-1):스킬6 = 0
+
+@NERO_1
+CALL SET_ENEMY,9,[[キャラ:버질]],47,0,1
+NAME:(CHARANUM-1) = 넬로・안젤로
+CALLNAME:(CHARANUM-1) = 넬로・안젤로
+CFLAG:(CHARANUM-1):ＨＰ보정 += 3000
+CFLAG:(CHARANUM-1):ＭＰ보정 = 9999
+BASE:(CHARANUM-1):검격 = 100
+BASE:(CHARANUM-1):비구 = 100
+BASE:(CHARANUM-1):타격 = 100
+BASE:(CHARANUM-1):전술 = 100
+BASE:(CHARANUM-1):화염 = 100
+BASE:(CHARANUM-1):빙결 = 100
+BASE:(CHARANUM-1):전격 = 100
+;スキル構成
+ABL:(CHARANUM-1):스킬1 = 5 ;대나무베기
+ABL:(CHARANUM-1):스킬2 = 3 ;회전베기
+ABL:(CHARANUM-1):스킬3 = 2955 ; 스팅거
+ABL:(CHARANUM-1):스킬4 = 3607 ; 조금만더힘을
+ABL:(CHARANUM-1):스킬5 = 0
+ABL:(CHARANUM-1):스킬6 = 0
+ABL:(CHARANUM-1):스킬7 = 0
+ABL:(CHARANUM-1):스킬8 = 0
+CALL SYNC_STATUS, (CHARANUM-1)
+CALL HEALTH_CHARA, (CHARANUM-1)
+
+
+@NERO_2
+CALL SET_ENEMY,9,[[キャラ:버질]],65,0,1
+NAME:(CHARANUM-1) = 넬로・안젤로
+CALLNAME:(CHARANUM-1) = 넬로・안젤로
+CFLAG:(CHARANUM-1):ＨＰ보정 += 3000
+CFLAG:(CHARANUM-1):ＭＰ보정 = 9999
+BASE:(CHARANUM-1):검격 = 100
+BASE:(CHARANUM-1):비구 = 100
+BASE:(CHARANUM-1):타격 = 100
+BASE:(CHARANUM-1):전술 = 100
+BASE:(CHARANUM-1):화염 = 100
+BASE:(CHARANUM-1):빙결 = 100
+BASE:(CHARANUM-1):전격 = 100
+;スキル構成
+ABL:(CHARANUM-1):스킬1 = 5 ;대나무베기
+ABL:(CHARANUM-1):스킬2 = 3 ;회전베기
+ABL:(CHARANUM-1):스킬3 = 2955 ; 스팅거
+ABL:(CHARANUM-1):스킬4 = 3610 ; 메테오
+ABL:(CHARANUM-1):스킬5 = 0
+ABL:(CHARANUM-1):스킬6 = 0
+ABL:(CHARANUM-1):스킬7 = 0
+ABL:(CHARANUM-1):스킬8 = 0
+CALL SYNC_STATUS, (CHARANUM-1)
+CALL HEALTH_CHARA, (CHARANUM-1)
+
+
+@NERO_3
+CALL SET_ENEMY,9,[[キャラ:버질]],80,0,1
+NAME:(CHARANUM-1) = 넬로・안젤로
+CALLNAME:(CHARANUM-1) = 넬로・안젤로
+CFLAG:(CHARANUM-1):ＨＰ보정 += 2000
+CFLAG:(CHARANUM-1):ＭＰ보정 = 9999
+BASE:(CHARANUM-1):검격 = 100
+BASE:(CHARANUM-1):비구 = 100
+BASE:(CHARANUM-1):타격 = 100
+BASE:(CHARANUM-1):전술 = 100
+BASE:(CHARANUM-1):화염 = 100
+BASE:(CHARANUM-1):빙결 = 100
+BASE:(CHARANUM-1):전격 = 100
+EQUIP:(CHARANUM-1):검 = GETNUM(ITEM, "염마도")
+EQUIP:(CHARANUM-1):총 = 0
+EQUIP:(CHARANUM-1):머리 = GETNUM(ITEM, "야크트헬름")
+EQUIP:(CHARANUM-1):몸통 = GETNUM(ITEM, "야크트아머")
+EQUIP:(CHARANUM-1):팔 = GETNUM(ITEM, "야크트글러브")
+EQUIP:(CHARANUM-1):발 = GETNUM(ITEM, "야크트레그")
+CSTR:(CHARANUM-1):사고패턴 = ネロ・アンジェロ
+CALL SYNC_STATUS, (CHARANUM-1)
+CALL HEALTH_CHARA, (CHARANUM-1)
+
+@NIGTHMARE
+IF ダンジョンフラグ:99:1 < 28
+	CALL SET_ENEMY,8,[[キャラ:에레보스]],75,0,1
+ELSEIF ダンジョンフラグ:99:1 < 32
+	CALL SET_ENEMY,8,[[キャラ:에레보스]],80,0,1
+ELSE
+	CALL SET_ENEMY,8,[[キャラ:에레보스]],83,0,1
+ENDIF
+
+NAME:(CHARANUM-1) = 나이트메어
+CALLNAME:(CHARANUM-1) = 나이트메어
+MAXBASE:(CHARANUM-1):ＨＰ = 15000
+BASE:(CHARANUM-1):ＨＰ = 15000
+MAXBASE:(CHARANUM-1):ＭＰ = 9999
+
+MAXBASE:(CHARANUM-1):검격 = 0
+BASE:(CHARANUM-1):검격 = 0
+MAXBASE:(CHARANUM-1):비구 = 0
+BASE:(CHARANUM-1):비구 = 0
+MAXBASE:(CHARANUM-1):타격 = 0
+BASE:(CHARANUM-1):타격 = 0
+MAXBASE:(CHARANUM-1):전술 = 0
+BASE:(CHARANUM-1):전술 = 0
+MAXBASE:(CHARANUM-1):화염 = 0
+BASE:(CHARANUM-1):화염 = 0
+MAXBASE:(CHARANUM-1):빙결 = 0
+BASE:(CHARANUM-1):빙결 = 0
+MAXBASE:(CHARANUM-1):전격 = 0
+BASE:(CHARANUM-1):전격 = 0
+MAXBASE:(CHARANUM-1):충격 = 0
+BASE:(CHARANUM-1):충격 = 0
+MAXBASE:(CHARANUM-1):신경 = 0
+BASE:(CHARANUM-1):신경 = 0
+MAXBASE:(CHARANUM-1):정신 = 0
+BASE:(CHARANUM-1):정신 = 0
+MAXBASE:(CHARANUM-1):주살 = 0
+BASE:(CHARANUM-1):주살 = 0
+MAXBASE:(CHARANUM-1):파마 = 0
+BASE:(CHARANUM-1):파마 = 0
+MAXBASE:(CHARANUM-1):지변 = 0
+BASE:(CHARANUM-1):지변 = 0
+MAXBASE:(CHARANUM-1):수격 = 0
+BASE:(CHARANUM-1):수격 = 0
+MAXBASE:(CHARANUM-1):질풍 = 0
+BASE:(CHARANUM-1):질풍 = 0
+MAXBASE:(CHARANUM-1):중력 = 0
+BASE:(CHARANUM-1):중력 = 0
+MAXBASE:(CHARANUM-1):핵열 = 0
+BASE:(CHARANUM-1):핵열 = 0
+MAXBASE:(CHARANUM-1):만능 = 100
+BASE:(CHARANUM-1):만능 = 100
+
+ABL:(CHARANUM-1):스킬1 = 107 ;고천열풍탄
+ABL:(CHARANUM-1):스킬2 = 326 ;베어먹기
+ABL:(CHARANUM-1):스킬3 = 2034 ;만마의난무
+ABL:(CHARANUM-1):스킬4 = 0
+
+CALL SYNC_STATUS, (CHARANUM-1)
+CALL HEALTH_CHARA, (CHARANUM-1)
+
+@TORISH_ILLUSION
+CALL SET_ENEMY,9,[[キャラ:트리쉬_DMC]],75,1,1
+NAME:(CHARANUM-1) = 여성의 환영체
+CALLNAME:(CHARANUM-1) = 여성의 환영체
+ABL:(CHARANUM-1):스킬1 = 0 ;
+ABL:(CHARANUM-1):스킬7 = 0 ;
+
+CALL SYNC_STATUS, (CHARANUM-1)
+CALL HEALTH_CHARA, (CHARANUM-1)
+
+@MUNDUS
+CALL SET_ENEMY, 9, [[キャラ:가짜ＹＨＶＨ]],90,1,1
+NAME:(CHARANUM-1) = 문두스
+CALLNAME:(CHARANUM-1) = 문두스
+CFLAG:(CHARANUM-1):행동횟수 = 2
+
+MAXBASE:(CHARANUM-1):ＨＰ = 15000
+CFLAG:(CHARANUM-1):ＨＰ보정 += 15000
+BASE:(CHARANUM-1):ＨＰ = 9999
+MAXBASE:(CHARANUM-1):ＭＰ = 9999
+
+BASE:(CHARANUM-1):힘 = 35
+BASE:(CHARANUM-1):지혜 = 24
+BASE:(CHARANUM-1):마력 = 36
+BASE:(CHARANUM-1):내구 = 22
+BASE:(CHARANUM-1):속도 = 21
+BASE:(CHARANUM-1):운 = 15
+
+MAXBASE:(CHARANUM-1):검격 = 100
+BASE:(CHARANUM-1):검격 = 100
+MAXBASE:(CHARANUM-1):비구 = 125
+BASE:(CHARANUM-1):비구 = 125
+MAXBASE:(CHARANUM-1):타격 = 100
+BASE:(CHARANUM-1):타격 = 100
+MAXBASE:(CHARANUM-1):전술 = 100
+BASE:(CHARANUM-1):전술 = 100
+MAXBASE:(CHARANUM-1):화염 = 80
+BASE:(CHARANUM-1):화염 = 80
+MAXBASE:(CHARANUM-1):빙결 = 150
+BASE:(CHARANUM-1):빙결 = 150
+MAXBASE:(CHARANUM-1):전격 = 80
+BASE:(CHARANUM-1):전격 = 80
+MAXBASE:(CHARANUM-1):충격 = 100
+BASE:(CHARANUM-1):충격 = 100
+MAXBASE:(CHARANUM-1):신경 = 0
+BASE:(CHARANUM-1):신경 = 0
+MAXBASE:(CHARANUM-1):정신 = 0
+BASE:(CHARANUM-1):정신 = 0
+MAXBASE:(CHARANUM-1):주살 = 999
+BASE:(CHARANUM-1):주살 = 999
+MAXBASE:(CHARANUM-1):파마 = 999
+BASE:(CHARANUM-1):파마 = 999
+MAXBASE:(CHARANUM-1):지변 = 100
+BASE:(CHARANUM-1):지변 = 100
+MAXBASE:(CHARANUM-1):수격 = 100
+BASE:(CHARANUM-1):수격 = 100
+MAXBASE:(CHARANUM-1):질풍 = 100
+BASE:(CHARANUM-1):질풍 = 100
+MAXBASE:(CHARANUM-1):중력 = 100
+BASE:(CHARANUM-1):중력 = 100
+MAXBASE:(CHARANUM-1):핵열 = 50
+BASE:(CHARANUM-1):핵열 = 50
+MAXBASE:(CHARANUM-1):만능 = 100
+BASE:(CHARANUM-1):만능 = 100
+
+ABL:(CHARANUM-1):스킬1 = 718 ;트리스아기온
+ABL:(CHARANUM-1):스킬2 = 912 ;우뢰의세례
+ABL:(CHARANUM-1):스킬3 = 2034 ;만마의난무
+ABL:(CHARANUM-1):스킬4 = 211 ;기간피스트
+ABL:(CHARANUM-1):스킬5 = 108 ;찰나장대비쏘기
+ABL:(CHARANUM-1):스킬6 = 151 ;지고의마탄
+
+;全BS無効
+FOR LOCAL,GETNUM(BASE,"HAPPY"),GETNUM(BASE,"DYING")+1
+	BASE:(CHARANUM-1):LOCAL = 0
+	MAXBASE:(CHARANUM-1):LOCAL = 0
+NEXT
+
+CALL SYNC_STATUS, (CHARANUM-1)
+CALL HEALTH_CHARA, (CHARANUM-1)
+
+;=======================================================================
+;ネロ・アンジェロ(3)の思考パターン
+;=======================================================================
+@SET_ACTION_ネロ・アンジェロ,ARG
+#DIM LCOUNT
+IF CFLAG:ARG:１more플래그 == 0 && CFLAG:ARG:행동한횟수 == 0
+	LOCAL:1 = 0
+	FOR LOCAL,0,6
+		SIF CFLAG:ARG:(GET_BATTLESTATUS(LOCAL) + "강화") < 0
+			LOCAL:1 -= CFLAG:ARG:(GET_BATTLESTATUS(LOCAL) + "강화")
+	NEXT
+	IF RAND:100 < LOCAL:1
+			CFLAG:ARG:입력행동 = 2952
+			CALL RANDOM_TARGET,ARG,2952
+			RETURN 1
+	ENDIF
+	IF !CFLAG:ARG:気合フラグ && CFLAG:ARG:800 && RAND:(CFLAG:800+1)
+				CFLAG:ARG:입력행동 = 511
+				CALL RANDOM_TARGET,ARG,511
+				RETURN 1
+	ENDIF
+ELSEIF CFLAG:ARG:１more플래그 > 0
+	IF !CFLAG:ARG:気合フラグ && !RAND:5
+				CFLAG:ARG:입력행동 = 511
+				CALL RANDOM_TARGET,ARG,511
+				RETURN 1
+	ENDIF
+ENDIF
+
+	FOR LOCAL, 1, 7
+		SIF POS(LOCAL) < 0
+			CONTINUE
+		SIF CFLAG:POS(LOCAL):상태이상 == GET_STATE_NUM("DYING")
+			CONTINUE
+		
+			
+		FOR LCOUNT,0,6
+			SIF CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LCOUNT) + "강화") > 0
+				LOCAL:1 += CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LCOUNT) + "강화")
+			SIF CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LCOUNT) + "강화") == 32
+				LOCAL:2 = 1
+			SIF CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LCOUNT) + "강화") > LOCAL:17
+				LOCAL:17 = CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LCOUNT) + "강화")
+		NEXT
+		SIF LOCAL:3 < LOCAL:1
+			LOCAL:3 = LOCAL:1
+	NEXT
+	$DECIDE_ACTION
+	CALL ランダム行動, ARG
+
+;=======================================================================
+;輪姦参加悪魔
+;=======================================================================
+@DUNGEON_RAPE_DEVIL_99
+;ランダムにどの悪魔が出るか決定
+;RETURN CSV番号 , 人数 , レベル
+SELECTCASE RAND:3
+	CASE 0
+		RETURN [[キャラ:카부소]] , 3 + RAND:10 , CSVBASE([[キャラ:카부소]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 1
+		RETURN [[キャラ:코다마]] , 3 + RAND:10 , CSVBASE([[キャラ:코다마]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 2
+		RETURN [[キャラ:카시]] , 3 + RAND:10 , CSVBASE([[キャラ:카시]] , GETNUM(BASE , "LV") , 0) + RAND:3
+ENDSELECT
+
+
+;---------------------------------------------------------------
+;ターン開始時イベント呼び出し関数
+;---------------------------------------------------------------
+;敵を倒したらレッドオーブを落とすように設定
+;ターン開始時に敵が何人いるか確認
+@EVENT_BATTLE_TURNTOP_DUNGEON99
+IF FINDCHARA_ENEMY([[キャラ:에레보스]])
+	CALL NIGHTMARE_GIMMICK,1
+ELSEIF FINDCHARA_ENEMY([[キャラ:가짜ＹＨＶＨ]])
+	CALL MUNDUS_GIMMICK,1
+ELSE
+	CALL GET_ORB_BATTLE,1
+ENDIF
+
+
+;---------------------------------------------------------------
+;行動終了時イベント呼び出し関数
+;---------------------------------------------------------------
+@EVENT_BATTLE_ACTEND_DUNGEON99
+
+IF FINDCHARA_ENEMY([[キャラ:에레보스]])
+	CALL NIGHTMARE_GIMMICK,2
+ELSEIF FINDCHARA_ENEMY([[キャラ:가짜ＹＨＶＨ]])
+	CALL MUNDUS_GIMMICK,2
+ELSE
+	CALL GET_ORB_BATTLE,2
+ENDIF
+
+;---------------------------------------------------------------
+;ターン終了時イベント呼び出し関数
+;---------------------------------------------------------------
+@EVENT_BATTLE_TURNEND_DUNGEON99
+IF 現HP割合(CHARANUM-1) < 85 && ダンジョンフラグ:99:1 == 34
+	PRINTFORML 
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃숫자만 많은 쓰레기들。모조리 구워버려주마！             　　　　　┃
+	PRINTFORML ┃＞　문두수의 말에 호응하여、용암으로 된 용 2체가 나타났다！　    ┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	FORCEWAIT
+	;マグマ龍召喚X2
+	CALL SET_ENEMY, 8, [[キャラ:청룡]],80,1,0
+	NAME:(CHARANUM-1) = 溶岩龍
+	CALLNAME:(CHARANUM-1) = 溶岩龍
+	
+	MAXBASE:(CHARANUM-1):화염 = 0
+	BASE:(CHARANUM-1):화염 = 0
+	MAXBASE:(CHARANUM-1):빙결 = 200
+	BASE:(CHARANUM-1):빙결 = 200
+	MAXBASE:(CHARANUM-1):전격 = 100
+	BASE:(CHARANUM-1):전격 = 100
+	
+	ABL:(CHARANUM-1):스킬1 = 321;물어뜯기
+	ABL:(CHARANUM-1):스킬2 = 725 ;파이어볼
+	ABL:(CHARANUM-1):스킬3 = 710 ;파이어스톰
+	ABL:(CHARANUM-1):스킬4 = 0
+	ABL:(CHARANUM-1):스킬5 = 0
+	ABL:(CHARANUM-1):스킬6 = 0
+	CALL SYNC_STATUS, (CHARANUM-1)
+	CALL HEALTH_CHARA, (CHARANUM-1)
+	
+	CALL SET_ENEMY, 10, [[キャラ:청룡]],80,1,0
+	NAME:(CHARANUM-1) = 용암룡
+	CALLNAME:(CHARANUM-1) = 용암룡
+	
+	MAXBASE:(CHARANUM-1):화염 = 0
+	BASE:(CHARANUM-1):화염 = 0
+	MAXBASE:(CHARANUM-1):빙결 = 200
+	BASE:(CHARANUM-1):빙결 = 200
+	MAXBASE:(CHARANUM-1):전격 = 100
+	BASE:(CHARANUM-1):전격 = 100
+	
+	ABL:(CHARANUM-1):스킬1 = 321;물어뜯기
+	ABL:(CHARANUM-1):스킬2 = 725 ;파이어볼
+	ABL:(CHARANUM-1):스킬3 = 710 ;파이어스톰
+	ABL:(CHARANUM-1):스킬4 = 0
+	ABL:(CHARANUM-1):스킬5 = 0
+	ABL:(CHARANUM-1):스킬6 = 0
+	CALL SYNC_STATUS, (CHARANUM-1)
+	CALL HEALTH_CHARA, (CHARANUM-1)
+	
+	ダンジョンフラグ:99:1 = 35
+	
+ELSEIF 現HP割合(CHARANUM-3) < 30 && ダンジョンフラグ:99:1 == 35
+	PRINTFORML 
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃네 이놈、다시 여기까지 오다니‥‥‥    　　　　　　　　　　　　┃
+	PRINTFORML ┃＞　궁지에 몰리고、원한을 토로하는 문두스　　　　　　   　　　┃
+	PRINTFORML ┃　　꾸며진 외형에도 균열이 생겨난다 ――　　　    　　　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	FORCEWAIT
+	PRINTFORML 
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃오오‥‥‥내가 무너진다。유지할수가 없다‥‥‥　　　　 　　　　　┃
+	PRINTFORML ┃네 이놈、네 이놈。스파다‥‥‥스파다아！　　　　　　              　┃
+	PRINTFORML ┃＞　외피가 무너져 내리고、거기에 마그마 같은 마력이 들여다보인다┃
+	PRINTFORML ┃　　저주스럽고、 얽히고설켜서 단테에게 팔을 뻗고 있다　 ┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	FORCEWAIT
+	PRINTFORML 
+	PRINTFORML ┏> 단테━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃미안하지만、누추한 초대는 제시간에 맞출 수 있었다。　　　　　　　　　　　　　　　　┃
+	PRINTFORML ┃너한테는 엄마의 포옹보다 좋은 걸 줄게、좋아하던 거잖아？　　　　　　　　　　　　　┃
+	PRINTFORML ┃＞　단테는 두 자루 권총을 교차시켰고、빵! 하고 말하면서 히죽 웃었다　　　　　　　   ┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	FORCEWAIT
+	ダンジョンフラグ:99:1 = 36
+ENDIF
+
+
+;---------------------------------------------------------------
+;ムンドゥス戦：HPが一定量減ると増援
+;増援死亡後2ターンで増援復活
+;ARG　1:ターン開始時、コア処理・幻影復活処理 2:数をカウント
+;---------------------------------------------------------------
+@MUNDUS_GIMMICK,ARG
+;LOCAL:1 ターン終了時の敵総数
+;LOCAL:2 溶岩龍8　生存確認
+;LOCAL:3 溶岩龍10　生存確認
+;LOCAL:4 溶岩龍　全滅
+;LOCAL:5 溶岩龍　復活カウント
+
+;溶岩龍9と10が死亡していないかチェック
+IF ARG == 2
+	LOCAL:1 = 0
+	LOCAL:2 = 0
+	LOCAL:3 = 0
+	
+	SIF 現HP割合(CHARANUM-1) <= 0
+		LOCAL:2 = 1
+	SIF 現HP割合(CHARANUM-2) <= 0
+		LOCAL:3 = 1
+	
+	IF LOCAL:2 + LOCAL:3 == 2
+		LOCAL:1 = 1
+	ENDIF
+	
+;	PRINTFORMW  溶岩龍全滅フラグ【{LOCAL:1 }】
+	
+ELSEIF ARG == 1
+	;ムンドゥス生存時　溶岩龍全滅で復活カウント
+	IF LOCAL:1 == 1 && 現HP割合(CHARANUM-3) >= 0
+		LOCAL:5 ++
+		
+		IF LOCAL:5 == 2
+			PRINTFORML 
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃＞　문두수가 손을 머리 위로 갖다 대었다　　　　　　　　　　　　　┃
+			PRINTFORML ┃그러자 용암의 용이 다시 2 체 나타났다！　　　　　　　　　　　　　┃
+			PRINTFORML ┃　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			FORCEWAIT
+			CFLAG:(CHARANUM-1):상태이상 = 0
+			CFLAG:(CHARANUM-1):상태이상경과턴수 = 0
+			CALL VAR_HP,(CHARANUM-1),MAXBASE:(CHARANUM-1):ＨＰ
+			
+			CFLAG:(CHARANUM-2):상태이상 = 0
+			CFLAG:(CHARANUM-2):상태이상경과턴수 = 0
+			CALL VAR_HP,(CHARANUM-2),MAXBASE:(CHARANUM-2):ＨＰ
+			LOCAL:2 = 0
+			LOCAL:3 = 0
+			LOCAL:4 = 0
+			LOCAL:5 = 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;---------------------------------------------------------------
+;ナイトメア戦：幻影が倒れると、翌ターンまでコアが露出し全属性弱点化
+;翌々ターンにコア収納
+;ARG　1:ターン開始時、コア処理・幻影復活処理 2:数をカウント
+;---------------------------------------------------------------
+@NIGHTMARE_GIMMICK,ARG
+#DIM 残存数
+
+;LOCAL:4 ターン終了時の敵総数
+;LOCAL:5 幻影の種類　1:ファントム 2:グリフォン 3:トリッシュ
+;LOCAL:6 幻影復活カウント　2で復活
+
+IF ダンジョンフラグ:99:1 < 28
+	LOCAL:5 = 1
+ELSEIF ダンジョンフラグ:99:1 < 32
+	LOCAL:5 = 2
+ELSE
+	LOCAL:5 = 3
+ENDIF
+
+
+;敵の数を確認し、LOCAL:4へ収める
+IF ARG == 2
+	LOCAL:4 = 0
+;	FOR LOCAL,7,17
+;		LOCALS = 포지션{LOCAL}
+;		;存在していないポジションは飛ばす
+;		SIF FLAG:LOCALS < 0
+;			CONTINUE
+;		;死亡はとばす
+;		SIF GET_STATE(CFLAG:LOCAL:상태이상) == "DYING"
+;			CONTINUE
+;		LOCAL:4 += 1
+;	NEXT
+;	
+	
+	IF LOCAL:5 == 1
+		SIF FINDCHARA_ENEMY([[キャラ:츠치구모]]) == 3
+			LOCAL:4 = 1
+	ELSEIF LOCAL:5 == 2
+		SIF FINDCHARA_ENEMY([[キャラ:헬그리폰]]) == 3
+			LOCAL:4 = 1
+	ELSE
+		SIF FINDCHARA_ENEMY([[キャラ:트리쉬_DMC]]) == 3
+			LOCAL:4 = 1
+	ENDIF
+
+;PRINTFORMW  敵の数は【{LOCAL:4 }】
+
+;1体のみ、かつナイトメア健在時はコア露出し、幻影復活カウント+1
+ELSEIF ARG == 1
+	IF LOCAL:4 == 1 && FINDCHARA_ENEMY([[キャラ:에레보스]]) != 3
+		SIF !GETBIT(ダンジョンフラグ:99:8,5)
+			SETBIT ダンジョンフラグ:99:8,5
+		LOCAL:6 ++
+		IF LOCAL:6 == 1
+			SETCOLOR 0xff0032
+			PRINTL 
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃＞　나이트메어가 움직임을 멈추고 떨기 시작한다  ┃
+			PRINTFORML ┃액상의 몸이 굳어지고、코어가 노출되었다！         ┃
+			PRINTFORML ┃　　　　　　　　　　　　　　　　　　　　　　　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+			PRINTL 
+			RESETCOLOR
+			
+			MAXBASE:(CHARANUM-2):검격 = 150
+			BASE:(CHARANUM-2):검격 = 150
+			MAXBASE:(CHARANUM-2):비구 = 150
+			BASE:(CHARANUM-2):비구 = 150
+			MAXBASE:(CHARANUM-2):타격 = 150
+			BASE:(CHARANUM-2):타격 = 150
+			MAXBASE:(CHARANUM-2):전술 = 150
+			BASE:(CHARANUM-2):전술 = 150
+			MAXBASE:(CHARANUM-2):화염 = 150
+			BASE:(CHARANUM-2):화염 = 150
+			MAXBASE:(CHARANUM-2):빙결 = 150
+			BASE:(CHARANUM-2):빙결 = 150
+			MAXBASE:(CHARANUM-2):전격 = 150
+			BASE:(CHARANUM-2):전격 = 150
+			MAXBASE:(CHARANUM-2):충격 = 150
+			BASE:(CHARANUM-2):충격 = 150
+			MAXBASE:(CHARANUM-2):신경 = 0
+			BASE:(CHARANUM-2):신경 = 0
+			MAXBASE:(CHARANUM-2):정신 = 0
+			BASE:(CHARANUM-2):정신 = 0
+			MAXBASE:(CHARANUM-2):주살 = 0
+			BASE:(CHARANUM-2):주살 = 0
+			MAXBASE:(CHARANUM-2):파마 = 0
+			BASE:(CHARANUM-2):파마 = 0
+			MAXBASE:(CHARANUM-2):지변 = 150
+			BASE:(CHARANUM-2):지변 = 150
+			MAXBASE:(CHARANUM-2):수격 = 150
+			BASE:(CHARANUM-2):수격 = 150
+			MAXBASE:(CHARANUM-2):질풍 = 150
+			BASE:(CHARANUM-2):질풍 = 150
+			MAXBASE:(CHARANUM-2):중력 = 150
+			BASE:(CHARANUM-2):중력 = 150
+			MAXBASE:(CHARANUM-2):핵열 = 150
+			BASE:(CHARANUM-2):핵열 = 150
+			MAXBASE:(CHARANUM-2):만능 = 150
+			BASE:(CHARANUM-2):만능 = 150
+			
+			ABL:(CHARANUM-2):스킬1 = 2003 ;메기도라온
+			ABL:(CHARANUM-2):스킬2 = 0
+			ABL:(CHARANUM-2):스킬3 = 0
+			ABL:(CHARANUM-2):스킬4 = 0
+			
+		;翌々ターンで幻影復活、コア収納　フラグリセット
+		ELSEIF LOCAL:6 == 2
+		
+			SETCOLOR 0xff0032
+			PRINTL 
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃＞　나이트메어가 다시 액상으로 변해 간다　　　┃
+			PRINTFORML ┃코어가 수납되고、환영이 다시 나타났다‥‥‥　　　┃
+			PRINTFORML ┃　　　　　　　　　　　　　　　　　　　　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+			PRINTL 
+			RESETCOLOR
+			
+			MAXBASE:(CHARANUM-2):검격 = 0
+			BASE:(CHARANUM-2):검격 = 0
+			MAXBASE:(CHARANUM-2):비구 = 0
+			BASE:(CHARANUM-2):비구 = 0
+			MAXBASE:(CHARANUM-2):타격 = 0
+			BASE:(CHARANUM-2):타격 = 0
+			MAXBASE:(CHARANUM-2):전술 = 0
+			BASE:(CHARANUM-2):전술 = 0
+			MAXBASE:(CHARANUM-2):화염 = 0
+			BASE:(CHARANUM-2):화염 = 0
+			MAXBASE:(CHARANUM-2):빙결 = 0
+			BASE:(CHARANUM-2):빙결 = 0
+			MAXBASE:(CHARANUM-2):전격 = 0
+			BASE:(CHARANUM-2):전격 = 0
+			MAXBASE:(CHARANUM-2):충격 = 0
+			BASE:(CHARANUM-2):충격 = 0
+			MAXBASE:(CHARANUM-2):신경 = 0
+			BASE:(CHARANUM-2):신경 = 0
+			MAXBASE:(CHARANUM-2):정신 = 0
+			BASE:(CHARANUM-2):정신 = 0
+			MAXBASE:(CHARANUM-2):주살 = 0
+			BASE:(CHARANUM-2):주살 = 0
+			MAXBASE:(CHARANUM-2):파마 = 0
+			BASE:(CHARANUM-2):파마 = 0
+			MAXBASE:(CHARANUM-2):지변 = 0
+			BASE:(CHARANUM-2):지변 = 0
+			MAXBASE:(CHARANUM-2):수격 = 0
+			BASE:(CHARANUM-2):수격 = 0
+			MAXBASE:(CHARANUM-2):질풍 = 0
+			BASE:(CHARANUM-2):질풍 = 0
+			MAXBASE:(CHARANUM-2):중력 = 0
+			BASE:(CHARANUM-2):중력 = 0
+			MAXBASE:(CHARANUM-2):핵열 = 0
+			BASE:(CHARANUM-2):핵열 = 0
+			MAXBASE:(CHARANUM-2):만능 = 100
+			BASE:(CHARANUM-2):만능 = 100
+			
+			ABL:(CHARANUM-2):스킬1 = 107 ;고천열풍탄
+			ABL:(CHARANUM-2):스킬2 = 326 ;베어먹기
+			ABL:(CHARANUM-2):스킬3 = 2034 ;만마의난무
+			ABL:(CHARANUM-2):스킬4 = 0
+			
+			CLEARBIT ダンジョンフラグ:99:8,5
+			LOCAL:6 = 0
+			
+			CFLAG:(CHARANUM-1):상태이상 = 0
+			CFLAG:(CHARANUM-1):상태이상경과턴수 = 0
+			CALL VAR_HP,(CHARANUM-1),MAXBASE:(CHARANUM-1):ＨＰ
+		ENDIF
+	ENDIF
+ENDIF
+
+
+;---------------------------------------------------------------
+;戦闘時のレッドオーブ取得処理
+;ARG　1:戦闘開始時のカウント　2:ターン終了時のオーブ付与処理　3:戦闘終了時のオーブ付与処理
+;---------------------------------------------------------------
+@GET_ORB_BATTLE,ARG
+#DIM 初期数
+#DIM 残存数
+
+;LOCAL:1 ターン開始時の敵総数
+;LOCAL:2 ターン終了時の敵総数
+;LOCAL:3 ターン開始時と終了時の差分
+
+;ARGが1の時は戦闘開始時。敵の数を数える
+IF ARG == 1
+	LOCAL:1 = 0
+	FOR LOCAL,7,17
+		LOCALS = 포지션{LOCAL}
+		SIF FLAG:LOCALS < 0
+			CONTINUE
+		LOCAL:1 += 1
+	NEXT
+;	PRINTFORMW  敵の初期数は【{LOCAL:1 }】
+;ARGが2の時はターン終了時。残敵数を数え、開始時との差が出ていればレッドオーブ取得
+ELSEIF ARG == 2
+	;敵の現在の数をLOCAL:2に収める
+	LOCAL:2 = 0
+	FOR LOCAL,7,17
+		LOCALS = 포지션{LOCAL}
+		SIF FLAG:LOCALS < 0
+			CONTINUE
+		LOCAL:2 += 1
+	NEXT
+	
+;	PRINTFORMW  敵の残存数は【{LOCAL:2 }】
+	
+	;初期数と残存数で差を算出
+	LOCAL:3 = LOCAL:1 - LOCAL:2
+	
+	;差が生じていればレッドオーブを取得
+	IF LOCAL:3 > 0
+		;進行具合により倍率UP
+		IF ダンジョンフラグ:99:11 >= 4
+			PRINTFORML 레드 오브 +{10 * LOCAL:3}
+			MONEY:99 += 10 * LOCAL:3
+		ELSE
+			PRINTFORML 레드 오브 +{5 * LOCAL:3}
+			MONEY:99 += 5 * LOCAL:3
+		ENDIF
+	LOCAL:1 = LOCAL:2
+	ENDIF
+ELSEIF ARG == 3
+	;最後のターン時に収められていたLOCAL:1が1以上であればオーブの付与処理
+	IF LOCAL:1 > 0
+		;進行具合により倍率UP
+		IF ダンジョンフラグ:99:1 >= 27
+			PRINTFORML 레드 오브 +{10 * LOCAL:1}
+			MONEY:99 += 30 * LOCAL:1
+		ELSEIF ダンジョンフラグ:99:1 >= 11
+			PRINTFORML 레드 오브 +{10 * LOCAL:1}
+			MONEY:99 += 10 * LOCAL:1
+		ELSE
+			PRINTFORML 레드 오브 +{5 * LOCAL:1}
+			MONEY:99 += 5 * LOCAL:1
+		ENDIF
+	ENDIF
+ENDIF
+
+RETURN
+

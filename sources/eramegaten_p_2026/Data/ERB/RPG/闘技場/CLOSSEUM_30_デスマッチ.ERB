@@ -1,0 +1,291 @@
+﻿
+;====================
+;条件
+;====================
+@GET_COLOSSEUM_NAME_30
+#FUNCTIONS
+RESULTS_F '= "デスマッチ"
+RETURNF RESULTS_F
+
+@PLAYABLE_COLOSSEUM_30
+SELECTCASE 闘技場フラグ:30:0
+	CASE 0
+		IF BASE:MASTER:LV >= 20 && FLAG:투기장명성 >= 100 && 闘技場フラグ:30:0 == 0
+			RESULTS = 데스매치의 초대장
+			RETURN 1
+		ENDIF
+	CASE 1
+		IF 闘技場フラグ:30:0 == 1
+			RESULTS = 데스매치 二回戦
+			RETURN 1
+		ENDIF
+	CASE 2
+		IF 闘技場フラグ:30:0 == 2
+			RESULTS = 데스매치 準決勝
+			RETURN 1
+		ENDIF
+	CASE 3
+		IF 闘技場フラグ:30:0 == 3
+			RESULTS = 데스매치 決勝戦
+			RETURN 1
+		ENDIF
+ENDSELECT
+RETURN 0
+
+
+;====================
+;内容
+;====================
+@COLOSSEUM_30
+
+IF 闘技場フラグ:30:0 == 0
+	CALL MESSAGE_WINDOW, "", "＞초대장이 도착해 있다", , , , , 4
+	CALL MESSAGE_WINDOW, "", "＞듣자 하니 인간끼리 1대1로 싸우는 대회가 개최되는 모양이다/＞고액의 상금과 우승자에게는 특별한 포상이 주어진다고 한다", , , , , 4
+	CALL MESSAGE_WINDOW, "", "＞그러나 승패는 상대의 죽음으로 결정되는 데스매치 형식/＞거기에 더해 중도 퇴장은 허용되지 않는다", , , , , 4
+	CALL MESSAGE_WINDOW, "", "＞어설픈 각오로 발을 들였다간 그대로 몸과 목이 영영 작별이지만……", , , , , 4
+
+	CALL MESSAGE_WINDOW, "", "참전하겠습니까？", , , , , 4
+	;CALL INPUT_SELECT_D("[1] はい/[2] いいえ")
+
+	PRINTL 
+	CALL INPUT_YN_M , "Yes" , "No"
+	SIF RESULT == 1
+		RETURN
+ENDIF
+CALL COLOSSEUM_30_NOW
+IF 闘技場フラグ:30:0 == 0
+	CALL COLOSSEUM_30_1
+ELSEIF 闘技場フラグ:30:0 == 1
+	CALL COLOSSEUM_30_2
+ELSEIF 闘技場フラグ:30:0 == 2
+	CALL COLOSSEUM_30_3
+ELSEIF 闘技場フラグ:30:0 == 3
+	CALL COLOSSEUM_30_4
+ENDIF
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+CALL CHANGE_LAST_BATTLE_MEMBERSET
+
+@COLOSSEUM_30_1
+CALL MESSAGE_WINDOW_D, "", "데스매치 1회전", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "＞콜로세움 링 위에서 뻗친 머리의 남자가 기다리고 있다", , , , , 4
+CALL MESSAGE_WINDOW_D, "뻗친 머리의 남자", "너한테 원한은 없지만、돈이 좀 필요해서 말이지", , , , , 4
+CALL MESSAGE_WINDOW_D, "뻗친 머리의 남자", "미안하지만 죽어 줘야겠어！", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "데빌버스터가 1체 나타났다！", , , , , 4
+
+CALL SET_ENEMY,14,[[キャラ:아레스]],25,0,1
+NAME:(CHARANUM-1) = 뻗친 머리의 남자
+CALLNAME:(CHARANUM-1) = 뻗친 머리의 남자
+CSTR:(CHARANUM-1):종족명 = 인간
+CSTR:(CHARANUM-1):30 = 악마 퇴치를 생업으로 삼는 데빌버스터。
+CFLAG:(CHARANUM-1):ＨＰ보정 += 0
+CFLAG:(CHARANUM-1):속도보정 += 5
+CFLAG:(CHARANUM-1):행동횟수 = 1
+;검＋총＋体術
+ABL:(CHARANUM-1):스킬1 = [[스킬:일문자베기]]
+ABL:(CHARANUM-1):스킬2 = [[스킬:회전베기]]
+ABL:(CHARANUM-1):스킬3 = [[스킬:연속사격]]
+ABL:(CHARANUM-1):스킬4 = [[스킬:섬머솔트]]
+MAXBASE:(CHARANUM-1):파마 = 0
+BASE:(CHARANUM-1):파마 = 0
+MAXBASE:(CHARANUM-1):주살 = 100
+BASE:(CHARANUM-1):주살 = 100
+
+CALL SYNC_STATUS, (CHARANUM-1)
+CALL HEALTH_CHARA, (CHARANUM-1)
+CALL BATTLE_START
+CUSTOMDRAWLINE =
+
+CALL MESSAGE_WINDOW_D, "뻗친 머리의 남자", "내가 죽는다고…？ 거짓、말이지…？", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "＞남자는 그 말만을 남기고 절명했다/＞승자를 칭송하는 환성을 뒤로하고 링을 떠났다", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "상금으로 ￥20000을 받고、명성 50을 얻었다", , , , , 4
+MONEY += 20000
+FLAG:명성 += 50
+FLAG:투기장명성 += 100
+闘技場フラグ:30:0 = 1
+SIF FLAG:투기장랭크 < 1
+	FLAG:투기장랭크 = 1
+
+@COLOSSEUM_30_2
+CALL MESSAGE_WINDOW_D, "", "데스매치 2회전", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "＞콜로세움 링 위에서、요염한 여자가 기다리고 있다", , , , , 4
+CALL MESSAGE_WINDOW_D, "요염한 여자", "전 녀석은 너무 약해서 따분했어", , , , , 4
+CALL MESSAGE_WINDOW_D, "요염한 여자", "당신은 어떠려나？ 조금은 뜨겁게 달아오르게 해 줬으면 좋겠는데！", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "데빌버스터가 1체 나타났다！", , , , , 4
+
+CALL SET_ENEMY,14,[[キャラ:야크시니]],30,0,1
+NAME:(CHARANUM-1) = 요염한 여자
+CALLNAME:(CHARANUM-1) = 요염한 여자
+CSTR:(CHARANUM-1):종족명 = 인간
+CSTR:(CHARANUM-1):30 = 악마 퇴치를 생업으로 삼는 데빌버스터。
+CFLAG:(CHARANUM-1):ＨＰ보정 += 0
+CFLAG:(CHARANUM-1):속도보정 += 5
+CFLAG:(CHARANUM-1):행동횟수 = 1
+;검＋정신＋주살
+ABL:(CHARANUM-1):스킬1 = [[스킬:트윈슬래시]]
+ABL:(CHARANUM-1):스킬2 = [[스킬:이검난무]]
+ABL:(CHARANUM-1):스킬3 = [[스킬:섹시댄스]]
+ABL:(CHARANUM-1):스킬4 = [[스킬:마하에이하]]
+MAXBASE:(CHARANUM-1):파마 = 0
+BASE:(CHARANUM-1):파마 = 0
+MAXBASE:(CHARANUM-1):주살 = 100
+BASE:(CHARANUM-1):주살 = 100
+
+CALL SYNC_STATUS, (CHARANUM-1)
+CALL HEALTH_CHARA, (CHARANUM-1)
+CALL BATTLE_START
+CUSTOMDRAWLINE =
+
+CALL MESSAGE_WINDOW_D, "요염한 여자", "추워… 이것이、죽음…？", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "＞여자는 그 말만을 남기고 절명했다/＞승자를 칭송하는 환성을 뒤로하고 링을 떠났다", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "상금으로 ￥25000을 받고、명성 100을 얻었다", , , , , 4
+MONEY += 25000
+FLAG:명성 += 100
+FLAG:투기장명성 += 150
+闘技場フラグ:30:0 = 2
+SIF FLAG:투기장랭크 < 2
+	FLAG:투기장랭크 = 2
+
+@COLOSSEUM_30_3
+CALL MESSAGE_WINDOW_D, "", "데스매치 준결승", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "＞콜로세움 링 위에서、험상궂은 남자가 기다리고 있다", , , , , 4
+CALL MESSAGE_WINDOW_D, "험상궂은 남자", "왔는가……", , , , , 4
+CALL MESSAGE_WINDOW_D, "험상궂은 남자", "오늘 밤의 코테츠는 피에 굶주려 있다！", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "데빌버스터가 1체 나타났다！", , , , , 4
+
+CALL SET_ENEMY,14,[[キャラ:오니]],35,0,1
+NAME:(CHARANUM-1) = 험상궂은 남자
+CALLNAME:(CHARANUM-1) = 험상궂은 남자
+CSTR:(CHARANUM-1):종족명 = 인간
+CSTR:(CHARANUM-1):30 = 악마 퇴치를 생업으로 삼는 데빌버스터。
+CFLAG:(CHARANUM-1):ＨＰ보정 += 0
+CFLAG:(CHARANUM-1):속도보정 += 5
+CFLAG:(CHARANUM-1):행동횟수 = 1
+;一流剣士
+ABL:(CHARANUM-1):스킬1 = [[스킬:대나무베기]]
+ABL:(CHARANUM-1):스킬2 = [[스킬:산산조각베기]]
+ABL:(CHARANUM-1):스킬3 = [[스킬:반격]]
+ABL:(CHARANUM-1):스킬4 = [[스킬:타루카쟈오토]]
+ABL:(CHARANUM-1):스킬5 = [[스킬:스쿠카쟈오토]]
+ABL:(CHARANUM-1):스킬6 = [[스킬:라쿠카쟈오토]]
+MAXBASE:(CHARANUM-1):파마 = 0
+BASE:(CHARANUM-1):파마 = 0
+MAXBASE:(CHARANUM-1):주살 = 100
+BASE:(CHARANUM-1):주살 = 100
+
+CALL SYNC_STATUS, (CHARANUM-1)
+CALL HEALTH_CHARA, (CHARANUM-1)
+CALL BATTLE_START
+CUSTOMDRAWLINE =
+
+CALL MESSAGE_WINDOW_D, "험상궂은 남자", "……원통하도다", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "＞남자는 그 말만을 남기고 절명했다/＞승자를 칭송하는 환성을 뒤로하고 링을 떠났다", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "상금으로 ￥30000을 받고、명성 150을 얻었다", , , , , 4
+MONEY += 30000
+FLAG:명성 += 150
+FLAG:투기장명성 += 200
+闘技場フラグ:30:0 = 3
+SIF FLAG:투기장랭크 < 3
+	FLAG:투기장랭크 = 3
+
+@COLOSSEUM_30_4
+CALL MESSAGE_WINDOW_D, "", "데스매치 결승전", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "＞콜로세움 링 위에서、거구의 남자가 기다리고 있다", , , , , 4
+CALL MESSAGE_WINDOW_D, "거구의 남자", "유서는 쓰고 왔겠지？", , , , , 4
+CALL MESSAGE_WINDOW_D, "거구의 남자", "초특급으로 저세상에 보내 주마", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "데빌버스터가 1체 나타났다！", , , , , 4
+
+CALL SET_ENEMY,14,[[キャラ:탈로스]],40,0,1
+NAME:(CHARANUM-1) = 거구의 남자
+CALLNAME:(CHARANUM-1) = 거구의 남자
+CSTR:(CHARANUM-1):종족명 = 인간
+CSTR:(CHARANUM-1):30 = 악마 퇴치를 생업으로 삼는 데빌버스터。
+CFLAG:(CHARANUM-1):ＨＰ보정 += 0
+CFLAG:(CHARANUM-1):속도보정 += 5
+CFLAG:(CHARANUM-1):행동횟수 = 1
+;타격＋強化
+ABL:(CHARANUM-1):스킬1 = [[스킬:메테오피스트]]
+ABL:(CHARANUM-1):스킬2 = [[스킬:발칸킥]]
+ABL:(CHARANUM-1):스킬3 = [[스킬:관통]]
+ABL:(CHARANUM-1):스킬4 = [[스킬:히트라이저]]
+ABL:(CHARANUM-1):스킬5 = [[스킬:이악물기]]
+MAXBASE:(CHARANUM-1):파마 = 0
+BASE:(CHARANUM-1):파마 = 0
+MAXBASE:(CHARANUM-1):주살 = 100
+BASE:(CHARANUM-1):주살 = 100
+
+CALL SYNC_STATUS, (CHARANUM-1)
+CALL HEALTH_CHARA, (CHARANUM-1)
+CALL BATTLE_START
+CUSTOMDRAWLINE =
+
+CALL MESSAGE_WINDOW_D, "거구의 남자", "……", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "＞남자는 아무 말도 남기지 못한 채 절명했다/＞승자를 칭송하는 환성을 뒤로하고 링을 떠났다", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "상금으로 ￥50000을 받고、명성 200을 얻었다", , , , , 4
+MONEY += 50000
+FLAG:명성 += 200
+FLAG:투기장명성 += 250
+SIF FLAG:투기장랭크 < 4
+	FLAG:투기장랭크 = 4
+
+CALL MESSAGE_WINDOW_D, "", "…………", , , , , 4
+CALL MESSAGE_WINDOW_D, "", @"＞%CALLNAME:MASTER%의 앞에 낯선 여자가 앞을 가로막는다", , , , , 4
+CALL MESSAGE_WINDOW_D, "낯선 여자", "훌륭한 싸움이었습니다", , , , , 4
+CALL MESSAGE_WINDOW_D, "낯선 여자", "이 대회는 아버님의 일계로 용사들을 모으기 위해 개최했습니다/당신이 그들을 쓰러뜨려 준 덕분에、영령으로서 관에 맞이할 수 있게 되었습니다", , , , , 4
+CALL MESSAGE_WINDOW_D, "낯선 여자", "감사드립니다", , , , , 4
+CALL MESSAGE_WINDOW_D, "낯선 여자", "그럼 마지막 마무리를 하도록 하죠", , , , , 4
+CALL MESSAGE_WINDOW_D, "낯선 여자", "가장 강한 용사를 맞이하기 위해、그 목숨을 거두어가겠습니다", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "＞그 한마디를 시작으로 눈부신 빛이 번쩍이며、순식간에 주위가 이계화된다", , , , , 4
+CALL MESSAGE_WINDOW_D, "낯선 여자", "여기라면 누구에게도 방해받지 않습니다", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "＞어느샌가 갑옷 차림이 된 여자가 검을 뽑아 덤벼든다", , , , , 4
+CALL MESSAGE_WINDOW_D, "발키리", "…갑니다！", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "요마：발키리가 1체 나타났다！", , , , , 4
+
+CALL SET_ENEMY,14,[[キャラ:발키리]],40,0,1
+CFLAG:(CHARANUM-1):ＨＰ보정 += 0
+CFLAG:(CHARANUM-1):속도보정 += 5
+CFLAG:(CHARANUM-1):행동횟수 = 1
+ABL:(CHARANUM-1):스킬1 = [[스킬:번개찌르기]]
+ABL:(CHARANUM-1):스킬2 = [[스킬:자벨린레인]]
+ABL:(CHARANUM-1):스킬3 = [[스킬:지오다인]]
+ABL:(CHARANUM-1):스킬4 = [[스킬:맹반격]]
+MAXBASE:(CHARANUM-1):전격 = 50
+BASE:(CHARANUM-1):전격 = 50
+CALL SYNC_STATUS, (CHARANUM-1)
+CALL HEALTH_CHARA, (CHARANUM-1)
+CALL BATTLE_START
+CUSTOMDRAWLINE =
+
+CALL MESSAGE_WINDOW_D, "발키리", "「……윽、아……」", , , , , 4
+CALL MESSAGE_WINDOW_D, "", "＞발키리를 쓰러뜨렸다/＞지금처럼 약해진 상태라면 강제로 계약을 맺을 수 있을 것 같지만……", , , , , 4
+
+CALL INPUT_SELECT_D("[1] 데려간다/[2] 쓰러뜨린다")
+IF RESULT == 1
+	CALL MESSAGE_WINDOW_D, "", "＞숨이 턱 끝까지 찬 발키리와 강제 계약하여 데리고 돌아왔다", , , , , 4
+	CALL ADD_NEW_COMPANION,[[キャラ:발키리]] , 0, 1, 0, 0, 40
+	闘技場フラグ:30:0 = 4
+ELSE
+	CALL MESSAGE_WINDOW_D, "", "＞발키리에게 숨통을 끊어놓고 이 자리를 떠났다", , , , , 4
+	闘技場フラグ:30:0 = 5
+ENDIF
+
+@COLOSSEUM_30_NOW
+CUSTOMDRAWLINE =
+FLAG:현던전 = [[ダンジョン:콜로세움던전]]
+FLAG:현M = 1
+FLAG:현X = 4
+FLAG:현Y = 6
+CALL MAKE_FLOOR, FLAG:현던전
+DA:4:4 = 4
+CALL FLOOR_ANALYZE
+CALL SHOW_FLOOR
+CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+FOR LOCAL, 1, 7
+	SIF POS(LOCAL) > 0
+		CALL REMOVE_POSITION, LOCAL
+NEXT

@@ -1,0 +1,134 @@
+﻿;도핑　HP最大値を補正するスキル。
+
+;スキル名
+@SKILL_NAME_587,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:마라]])
+	RESULTS = 魔羅神式勃起術
+ELSE
+	RESULTS = 도핑
+ENDIF
+
+;　명중
+@SKILL_HITRATE_587, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_587, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_587,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_587,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_587, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_587,ARG
+RETURN 50
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_587
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_587, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_587,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_587,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_587, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_587
+RETURN GET_SUCCESSION_NUM("지원")
+@継承不能_587
+RETURN 0
+;可
+
+;속도보정
+@SKILL_SPEED_587, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_587
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_587, ARG = -1
+RETURN 14
+
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_587, ARG, ARG:1, ARG:2
+#DIM LCOUNT
+#DIM L_T
+#DIM L_POWER
+;IF CFLAG:(ARG):PT플래그 == 0
+;	LOCAL:2 = 7
+;	LOCAL:3 = 17
+;ELSE
+;	LOCAL:2 = 1
+;	LOCAL:3 = 7
+;ENDIF
+
+FOR LCOUNT, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1) + 1
+	L_T = POS(LCOUNT)
+	SIF !IS_TARGET_ABLE(L_T)
+		CONTINUE
+	;L_POWER = (MAXBASE:L_T:ＨＰ - CFLAG:L_T:ＨＰ보정)  / 3
+	IF CFLAG:L_T:최대HP증가 < 33
+		CFLAG:L_T:최대HP증가 = 33
+		CFLAG:L_T:ＨＰ보정 = L_POWER
+		CALL SYNC_STATUS,L_T
+		CALL PRINT_HIT_MESSAGE, L_T, @"최대ＨＰ가 증가했다！"
+	ELSE
+		CALL PRINT_HIT_MESSAGE, L_T, "효과가 없었다"
+	ENDIF
+NEXT
+WAIT
+;PRINTFORMW \@ CFLAG:ARG:PT플래그 == 0 ? 敵 # 味方 \@の最大HPがアップ！
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_587, ARG
+PRINTL 전투 종료시 까지 、모든 아군의 ＨＰ보정（최대HP）을 33% 상승시킨다。
+PRINTL 
+PRINTL 다른 『ＨＰ보정을 부여하는 스킬』과의 중복은 불가。
+PRINTL 33% 보다 높은 ＨＰ보정이 있는 경우 효과가 없다。
+
+@SKILL_EXPLAIN_TOOLTIP_587, ARG
+RESULTS = 아군 전체의 최대ＨＰ를 상승시킨다。
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_587,ARG
+RETURN 1
+;とくにない
+

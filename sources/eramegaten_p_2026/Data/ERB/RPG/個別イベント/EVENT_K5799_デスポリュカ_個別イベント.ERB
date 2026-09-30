@@ -1,0 +1,3317 @@
+﻿;-------------------------------------------------
+;デスポリュカ、ひいてはDemonsRoots全般に関わるイベント
+;-------------------------------------------------
+;デスポリュカの立ち振舞については、イベント中は統一。
+;『%CALLNAME:MASTER%からもたらされたコンタクト内容が結婚でも淫魔化でも首輪でも盟約でも、何であっても仲間のためにという一線だけで持ちこたえている』から。
+
+;ポリュカからリリィまでの主要メンバー中、何人が戦闘可能な状態でイルカをサーチする関数。
+;メビアスはおまけなので一旦除外。
+;2024-03-31　太陽要求をエンディングクリア済みでも許容に緩和。
+;2024-05-15　おまけ追加。
+@DemonsRoots_敗北者点呼
+#DIM DYNAMIC 敗北者点呼
+FOR LOCAL,0,CHARANUM
+	SIF GET_VALUE_TALENT_JOINABLE(LOCAL) == 0
+		CONTINUE
+	SIF GROUPMATCH(NO:LOCAL, [[キャラ:데스포르카_DR]], [[キャラ:앙쥬_DR]], [[キャラ:칼린카_DR]], [[キャラ:사라사_DR]], [[キャラ:다이아나_DR]], [[キャラ:나제지타_DR]], [[キャラ:릴리킬러_DR]])
+		敗北者点呼 ++
+NEXT
+RETURN 敗北者点呼
+
+
+
+@INDIVIDUAL_EVENT_K5799, ARG, ARG:1 = 0, ARG:2 = -1
+#DIM DRネタバレ回避フラグ
+#DIM エネミーレベル
+#DIM LCOUNT
+;ARG:0　キャラ番号
+;ARG:1　関数種類　1,開放条件　2,타이틀　3,이벤트
+;ARG:2　イベント番号（0～63まで）
+
+;リストにキャラを表示する条件
+IF ARG:1 == 0
+	;イベント5で全部終了
+	SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 5)
+		RETURN 0
+	RETURN 1
+ENDIF
+
+SELECTCASE ARG:2
+CASE 0
+	;解放条件
+	IF ARG:1 == 1
+		;新宿衛生病院に侵入可能でない場合出ない。
+		TRYCALLFORM PREREQUISITE_DUNGEON_3
+		SIF !RESULT
+			RETURN 0
+		;EXイベント設定禁止の場合出ない。
+		SIF !GET_USEABLE_EXTRA_TITLE()
+			RETURN 0
+		;起点単発イベントの閲覧済み。２周目以降で引き継いでいる場合はどのルートでもいい。
+		SIF GETBIT(イベントフラグ:19:19, 17) == 0
+			RETURN 0
+		;夜。
+		SIF TIME == 3
+			RETURN 1
+	;타이틀
+	ELSEIF ARG:1 == 2
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			RESULTS = 『노예기사의 애가』(전투・시간 경과 있음)
+		ELSE
+			;未開放時のタイトル。
+			RESULTS = ※조건: 단발 이벤트 『죽음의, 끝으로부터』 클리어. 신주쿠 위생병원 진입 가능. 밤.
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		LOADGLOBAL
+		PRINTFORML 
+		PRINTFORMW 데스폴루카에게서 호출을 받았다.
+		PRINTFORML 
+		PRINTFORMW 『꿈틀거리는 무언가』가 있는 곳을 짐작한 모양이다.
+		PRINTFORML 
+		PRINTL [0] 準備完了
+		PRINTL [1] 準備不足
+		CALL INPUTINT, 0 , 1
+		IF RESULT == 1
+			PRINTFORML 
+			PRINTFORMW 준비를 갖출 필요가 있다.
+			PRINTFORMW 일단 보류하기로 했다.
+		ELSE
+			PRINTFORML 
+			PRINTFORMW 데스폴루카에게 향하자 진지한 표정이 맞이해 주었다.
+			PRINTFORMW 느껴졌다, 라는 방위와 거리로부터 태블릿 단말을 사용하여 위치를 산출한다…….
+			PRINTFORML 
+			PRINTFORMW 「……지도, 편리하군……」
+			PRINTFORML 
+			PRINTFORMW 데스폴루카의 그런 혼잣말이 귀에 들어왔다.
+			PRINTFORML 
+			PRINTFORML 듣자 하니, 『오버드』라고 불리는…… 『이쪽 세계의 사람이나 물건』이
+			PRINTFORMW 그녀들의 대륙에는 흘러들어오는 일이 종종 있어, 그런 자들이 모여 생긴 취락도 존재했다고 한다.
+			PRINTFORML 
+			PRINTFORMW 그런 사람이나 물건은 다양한 시간축에서 날아온다고 하여 테크놀로지 자체에 편차가 심했고,
+			PRINTFORML 현대 기준으로도 구식인 디젤 엔진 차량이 표착했는가 하면,
+			PRINTFORML 다 쓰면 다음 상품이 즉시 차원 전송되어 오는 휴대용 냉장고 등
+			PRINTFORMW 얼마나 발전해야 만들 수 있는 것인지조차 알 수 없는 물건까지 있었다고 한다.
+			PRINTFORML 
+			PRINTFORMW 「과연 병원인가…….
+			PRINTFORMW 　그 녀석은 우리를 집어삼킨 뒤에도 누군가가 죽을 때마다 힘을 불려 나갔다.
+			PRINTFORML 　……목숨이 끝나는 장소를 찾아 헤매다 도달한 걸지도 모르겠군」
+			PRINTFORML 
+			PRINTFORMW 손톱을 갈아 세우며 중얼거리는 데스폴루카와 함께 병원으로 향했다.
+			PRINTFORML 
+			PRINTFORMW …………。
+			PRINTFORML 
+			DRAWLINE
+			PRINTFORML 
+			PRINTFORMW 과연, 『그 녀석』은 그곳에 있었다.
+			PRINTFORML 
+			PRINTFORMW 신주쿠 위생병원의 수로로 둘러싸인 안뜰.
+			PRINTFORML 
+			PRINTFORMW 어둠 속에 녹아들 듯 소용돌이치고 있었다.
+			PRINTFORML 
+			PRINTFORMW 「…… ……읏」
+			PRINTFORML 
+			PRINTFORMW 곁에 선 데스폴루카가 떨고 있는 낌새가 느껴졌다.
+			PRINTFORML 
+			PRINTFORMW 능욕당해 싸우는 것 따윈 도저히 불가능한 상태에서 어쩔 도리도 없이 한 명씩 집어삼켜졌다고,
+			PRINTFORMW 털어놓았을 때의 그녀의 표정이 뇌리를 스친다.
+			PRINTFORML 
+			PRINTFORML 
+			PRINTL [0] 아무것도안한다
+			IF 연모(ARG) || 친애(ARG)
+				PRINTL [1] 손을 잡는다
+			ELSEIF 신뢰(ARG) || 동료(ARG)
+				PRINTL [1] 어깨를 두드린다
+			ELSE
+				PRINTL [1] 말을 건넨다
+			ENDIF
+			CALL INPUTINT, 0 , 1
+			IF RESULT == 0
+				PRINTFORML 
+				PRINTFORMW 「……미안하다. 싸우기도 전에 기가 꺾여 있어서는 도저히 되찾을 수 없겠지」
+				PRINTFORML 
+				PRINTFORMW 몇 초 동안, 데스폴루카는 스스로를 북돋웠다.
+			ELSEIF RESULT == 1
+				IF 연모(ARG) || 친애(ARG)
+					PRINTFORML 
+					PRINTFORMW 「『투기 어린 전율』……이라는 것으로 해두어라」
+					PRINTFORML 
+					PRINTFORMW 떨리는 손이 %CALLNAME:MASTER%의 손을 마주 잡는다.
+				ELSEIF 신뢰(ARG) || 동료(ARG)
+					PRINTFORML 
+					PRINTFORMW 「……괜찮다. 나는 할 수 있어」
+					PRINTFORML 
+					PRINTFORMW 얹었던 손을 어깨짓으로 부드럽게 털어낼 무렵에는 평소의 기세를 되찾고 있었다.
+				ELSE
+					PRINTFORML 
+					PRINTFORMW 「알고 있다. 세 번이나 패배할 수는 없는 노릇이니까」
+					PRINTFORML 
+					PRINTFORMW 고개를 흔드는 바람 소리와 함께 그러한 목소리가 돌아왔다.
+				ENDIF
+			ENDIF
+			PRINTFORML 
+			;PTに参加している場合。
+			SIF FINDCHARA_B([[キャラ:데스포르카_DR]]) > 1 
+				PRINTFORMW 「내 동료를 돌려내라……!!」
+			PRINTFORML 
+			PRINTFORM 전투 태세를 취하는 %CALLNAME:MASTER%
+			SIF FINDCHARA_B([[キャラ:데스포르카_DR]]) > 1 
+				PRINTFORM 과(와) 데스폴루카
+			PRINTFORMW 에게 검은 무언가가 덮쳐왔다!
+			PRINTFORML 
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			CALL SET_ENEMY,9, [[キャラ:앙쥬_DR]], 50, 1, 1
+			CALLNAME:(CHARANUM-1) = 너울
+			CFLAG:(CHARANUM-1):ＨＰ보정 = 3000
+			CFLAG:(CHARANUM-1):ＭＰ보정 += 99999
+			CFLAG:(CHARANUM-1):행동횟수 = 2
+			ABL:(CHARANUM-1):공격상성 = 1
+			ABL:(CHARANUM-1):공격범위 = 1
+			ABL:(CHARANUM-1):사거리 = 3
+			CALL CLEAR_ALL_SKILL, CHARANUM-1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:수호의방패]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:무드다인]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:도무디]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:전용기1]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:전용기2]]
+			ABL:(CHARANUM-1):스킬6 = [[스킬:테트라칸]]
+			ABL:(CHARANUM-1):스킬7 = [[스킬:스쿠카쟈오토]]
+			ABL:(CHARANUM-1):스킬8 = [[스킬:타루카쟈오토]]
+			CSTR:(CHARANUM-1):전용기1 = 超もぎ離し
+			CSTR:(CHARANUM-1):전용기2 = 筆洗
+			BASE:(CHARANUM-1):검격 = 80
+			BASE:(CHARANUM-1):비구 = 80
+			BASE:(CHARANUM-1):타격 = 80
+			BASE:(CHARANUM-1):전술 = 80
+			BASE:(CHARANUM-1):화염 = 110
+			BASE:(CHARANUM-1):빙결 = 110
+			BASE:(CHARANUM-1):전격 = 110
+			BASE:(CHARANUM-1):충격 = 110
+			BASE:(CHARANUM-1):신경 = 100
+			BASE:(CHARANUM-1):정신 = 100
+			BASE:(CHARANUM-1):파마 = 50
+			BASE:(CHARANUM-1):주살 = 50
+			BASE:(CHARANUM-1):지변 = 100
+			BASE:(CHARANUM-1):수격 = 100
+			BASE:(CHARANUM-1):질풍 = 100
+			BASE:(CHARANUM-1):중력 = 100
+			BASE:(CHARANUM-1):핵열 = 100
+			BASE:(CHARANUM-1):만능 = 100
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL BATTLE_START
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			;命令　中出し懇願ダイジェスト編
+			PRINTFORML 
+			PRINTFORMW 『꿈틀거리는 무언가』를 격파했다.
+			PRINTFORML 
+			PRINTFORMW 사방으로 터져나가는 꿈틀거리는 분류에 닿은 순간, 의식 속에 무언가가 흘러들어온다…….
+			PRINTFORML 
+			CUSTOMDRAWLINE =
+			PRINTFORML 
+			PRINTFORMW 『……읏, ~읏……~……읏』
+			PRINTFORML 
+			PRINTFORMW 조교할 때 자주 듣던 누군가의…… 고뇌인가, 헐떡임인가.
+			PRINTFORMW 그러한 목소리가 들려온다.
+			PRINTFORML 
+			PRINTFORMW 어느 미궁일 돌바닥 위에서…… 양팔이 쇠사슬로 묶이고 손끝에는 미튼을 낀 채,
+			PRINTFORMW 깃코시바리로 음란하게 강조된 큰 가슴에 착유기를 달고 있는 여성이,
+			PRINTFORMW 엉덩이에 채찍질을 당하며 후배위로 범해지고 있는 광경이 보였다.
+			PRINTFORML 
+			PRINTFORML 무슨 이유에서인지 그래야만 하는 것인지, 안에 사정해 달라고 간청하는 여성에게,
+			PRINTFORMW 남자는 비열한 미소를 띠며 거리낌 없이 엉덩이를 철썩이며, 해주고 싶다면…… 하고 조건을 흘리고 있다.
+			PRINTFORML 
+			PRINTFORMW 데스폴루카에게서도 들은 적이 있는 『처형 던전』에서의 한 토막.
+			PRINTFORMW 아주 약간의 자원이라도 얻기 위해 존엄성을 내던져야만 하는 모습, 인가.
+			PRINTFORML 
+			PRINTFORMW 그렇다면 그녀가 바로 그 『동료』다.
+			PRINTFORML 
+			PRINTFORMW 생각이 미친 %CALLNAME:MASTER%의 눈앞에서 광경이 흐려져 간다…….
+			PRINTFORML 
+			CUSTOMDRAWLINE =
+			PRINTFORML 
+			PRINTFORMW 「……이봐, ……들리는가?」
+			PRINTFORML 
+			PRINTFORMW ……데스폴루카의 목소리에 현실로 끌려 돌아왔다.
+			PRINTFORML 
+			PRINTFORMW 「……그 녀석이 달아나기 전에 이걸 떨어뜨리고 갔다」
+			PRINTFORML 
+			PRINTFORMW 바라보니, 데스폴루카를 소생시켰을 때와 같은 물건이 그녀의 손아귀에 굴러다니고 있었다.
+			PRINTFORMW 미약하지만 생명의 반응이 있다.
+			PRINTFORML 
+			PRINTFORML 「그놈이 여기서 목숨을 빨아들인 결과의 활력이라 생각하면 분통이 터지지만……
+			PRINTFORMW 　귀환하여 어서 되살려주고 싶군」
+			PRINTFORML 
+			PRINTFORMW 되찾은 목숨을 잃어버리게 해서는 본전도 못 건진다.
+			PRINTFORMW 세이프하우스로 돌아가기로 했다.
+			PRINTFORML 
+			CUSTOMDRAWLINE -
+			PRINTFORML 
+			PRINTFORMW 그렇게 되살아난 것이
+			PRINTFORML 
+			PRINTFORMW 「……너라는 거다, 안쥬」
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:앙쥬_DR]]), [[キャラ:앙쥬_DR]], "FACE_1", , "赤面"
+			PRINTFORMW 「……에에에에엑!?」
+			PRINTFORML 
+			PRINTFORMW 복장은 데스폴루카에게 들은 내용을 바탕으로 다시 만들어 두었다.
+			PRINTFORMW 팔 차꼬만큼은 굳이 채워둘 필요가 없다고 생각해 풀어두었지만……
+			PRINTFORML 
+			PRINTFORMW 「하지만 하지만, 우리들 그 녀석에게 잡아먹혀 버렸잖아!?」
+			PRINTFORMW 　보통 살아있을 리가……!」
+			PRINTFORMW 「나도 끝장이라고 생각했다. 하지만 아직 버림받은 것은 아닌 모양이야.
+			PRINTFORMW 　그리하여 너희를 주워 모아주는 협력자 곁에 몸을 의탁하고 있다는 거다」
+			PRINTFORML 
+			PRINTFORMW 놀라기만 하던 여성…… 안쥬가 이쪽으로 시선을 향한다.
+			PRINTFORML 
+			PRINTFORMW 「아, 저기…… 처음 뵙겠습니다? 폴루카에게서 들었으려나…… 안쥬, 라고 해요」
+			PRINTFORML 
+			PRINTL [0] 「방어와 회피에 능한 기사였다고 들었다」
+			PRINTL [1] 「풍속 왕국의 우수한 돈벌이꾼이었다고 들었다」
+			CALL INPUTINT, 0 , 1
+			IF RESULT == 0
+				PRINTFORML 
+				PRINTFORMW 「앗, 네. 맞아요.
+				PRINTFORMW 　……꽃의 나라 레이스가 패망하기 전까지는 기사를 하고, 있었어요」
+				PRINTFORML 「그 후 노예로 팔려 넘겨져 보헤로스에서 우리 마족에게 사로잡혔고,
+				PRINTFORMW 　얼빠지긴 했어도 기사로서, 동료의 한 사람으로서 마지막까지 싸워준 셈이지」
+				PRINTFORML 
+				PRINTFORMW 뭐, 좋은 녀석이다 이놈은, 이라며
+				PRINTFORMW 이야기하는 데스폴루카의 눈가가 부드럽게 가늘어지는 것이 보였다.
+				PRINTFORML 
+			ELSEIF RESULT == 1
+				PRINTFORML 
+				PRINTFORMW 「엣 잠깐만 싫어! 아닙니다! 폴루카 무슨 소릴 가르쳐 준 거야!!」
+				PRINTFORML 「미안하군…… 저건 농담이다. 이 녀석은 그렇게 정보를 사려고 데려가려 했더니
+				PRINTFORMW 　온갖 생떼를 쓴 끝에 나도 같이 가주지 않으면 싫다느니 하는 소릴 늘어놓아서 말이지……」
+				PRINTFORML 
+				PRINTFORMW 결국 도레미 파킹덤……이라는 이름부터 외설스러운 왕국에는 들어가지 않았던 모양이다.
+				PRINTFORMW 남자들이 좋아할 법한 육체와 비교적 온순한 성격이라 가만히 내버려 둘 남자는 없었을 것임을 짐작할 수 있다.
+				PRINTFORML 
+			ENDIF
+			PRINTFORML 
+			PRINTFORMW 「뭐, 그건 제쳐두고 말이다」
+			PRINTFORML 
+			PRINTFORMW 다소 옆길로 샌 대화를 데스폴루카가 억지로 되돌린다.
+			PRINTFORML 
+			PRINTFORML 「그 『꿈틀거리는 무언가』는 우리를 집어삼킨 뒤 누군가에게 데미지를 입고,
+			PRINTFORMW 　이쪽으로 흘러들어온 것이라 추측된다. 이건 틀림없어」
+			PRINTFORML 
+			PRINTFORMW 당초 조우했을 때는 아련하여 사라질 듯했던 기억이 있지만,
+			PRINTFORMW 이번에 본 바로는 지난번보다 힘을 불려놓은 기색이었다.
+			PRINTFORML 
+			IF TALENT:MASTER:사토리（소질） > 0
+				PRINTFORMW 데스폴루카의 고뇌 어린 목소리가 들려온다…….
+				PRINTFORML 
+				PRINTFORMW (그놈이 적어도 유익한 존재가 아닌 이상 방치하면 피해가 발생할 가능성도 있다.
+				PRINTFORMW 　그 경우 발단인 우리가 도마 위에 오르는 것은 피할 수 없어.
+				PRINTFORMW 　하지만…… 이번처럼 놓쳐버리게 된다 해도……)
+				PRINTFORML 
+			ENDIF
+			PRINTFORMW 「저기, 폴루카. 나도 싸울게」
+			PRINTFORML 
+			PRINTFORMW 마찬가지로 생각에 잠겨 있던 안쥬가 각오를 다졌다는 듯 입을 연다.
+			PRINTFORML 
+			PRINTFORMW 「……진심, 인가? 우려해야 할 마족의 미래 따윈 없다. 노예에게도…… 없어.
+			PRINTFORMW 　네게 새삼 창을 들게 할 이유 따위……」
+			PRINTFORMW 「우리들, 되살아……난 거잖아? 이 사람 덕분에.
+			PRINTFORMW 　우리들 세계에서 흘러들어온 그 검은 놈에게서, 폴루카도 나도」
+			PRINTFORML 
+			;鎖がないため
+			PRINTFORML 양팔을 어색하게 꼈다 쥐었다 하면서도 머리카락 너머로 시선을 똑바로 맞추는 안쥬에게,
+			PRINTFORMW 데스폴루카도 말하려는 바를 눈치챈 모양이다.
+			PRINTFORML 
+			PRINTFORMW 「『은의』인가. 참으로 네 녀석의 물러터진 심성과 깍듯함은 한 번 죽었다 살아나도 고쳐지질 않는군」
+			PRINTFORMW 「그런 폴루카야말로. 우리들을 위해 무리하려는 거 다 알고 있으니까」
+			PRINTFORML 
+			;上から順に嫁・淫魔・玩具・盟友・あと念のため枠
+			IF 계약(ARG) == 1
+				PRINTFORML 『결혼』에 트라우마가 있으면서…… 라는 말을 들은 데스폴루카의 얼굴에 떫은 표정이 떠오른다.
+				PRINTFORML 
+			ELSEIF 계약(ARG) == 2
+				PRINTFORML 이런 몸이 되어서까지…… 라며 향하는 시선을 데스폴루카는 고개를 돌려 얼버무리려 한다.
+				PRINTFORML 
+			ELSEIF 계약(ARG) == 3
+				PRINTFORML 나 같은 목줄…… 이라며 눈을 내리까는 안쥬의 표정은 이쪽에선 읽어낼 수 없었다.
+				PRINTFORML 
+			ELSEIF 계약(ARG) == 4
+				PRINTFORML 함께 싸워줄 동료가 생겨서 기쁜 주제에…… 라며 자신의 옆구리를 쿡쿡 찌르는 안쥬에게 데스폴루카가 응수하고 있다.
+				PRINTFORML 
+			;念のため
+			ELSEIF 계약(ARG) > 0
+				PRINTFORML 설마 릴리 말고 다른 사람과 그런 관계가 될 줄은 몰랐는걸? 이라며 눈을 피하는 데스폴루카를 빤히 바라본다.
+				PRINTFORML 
+			ENDIF
+			PRINTFORMW 「어쨌든! 그 검은 녀석은 내버려 둘 수 없고, 모두가 나처럼 어떻게든 될지도 모르잖아.
+			PRINTFORMW 　그렇다면 그걸 믿고 나아갈 수밖에 없잖아. 그치?」
+			PRINTFORMW 「………… 그, 렇군. 어차피 다른 길은 없나」
+			PRINTFORML 
+			PRINTFORMW 그러니…… 하고 돌아선 안쥬의 얼굴은 결의에 차 있었다.
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:앙쥬_DR]]), [[キャラ:앙쥬_DR]]
+			PRINTFORMW 「전 노예 기사, 안쥬.
+			PRINTFORMW 　폴루카를 위해 당신의 힘이 되어…… 싸울게요!」
+			PRINTFORML 
+			;FINDCHARA関数は健在な戦闘参加メンバー(2) > 健在でない戦闘参加メンバー(12) > 健在なCOMP内悪魔OR探索不参加人間(1) > 健在でない～(11) > 自宅サーバーに保存してある悪魔(0)
+			;加入する予定の対象が居ない場合。
+			IF FINDCHARA_B([[キャラ:앙쥬_DR]]) < 0
+				;加入処理に成功した場合。　呼び名から（DR）を削除、戦闘参加不可能は-1。触ったらやだーに
+				CALL ADD_NEW_COMPANION, [[キャラ:앙쥬_DR]], 1000
+				IF RESULT > 0
+					CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+					PRINTFORML 노예 기사 안쥬가 동료로 가입했습니다.
+				ENDIF
+				PRINTFORML 
+				PRINTFORMW 「……그건 그렇고 싸우는 것만으로 충분한 거지?
+				PRINTFORMW 　파킹덤 때처럼 야한 짓도 하라든가…… 그런 말은 안 할 거지?」
+				PRINTFORML 
+				PRINTFORMW 지금의 그녀는 데스폴루카와 마찬가지로 되살아난 지 얼마 안 된 상태다.
+				PRINTFORMW 원한다면 난데없이 개통해 주어도 좋지만…….
+				PRINTFORML 
+				PRINTFORMW 「시, 싫어…… 이젠 창보다 자…… 쥐고 있는 쪽이 더 어울린다는 소릴 듣는 건 싫어……」
+				PRINTFORML 
+				PRINTFORMW 가능성이 있다는 말을 듣자마자 얼굴을 찡그리며 뒤로 물러서 버렸다.
+				PRINTFORMW ……그녀는 손을 댔다간 싸울 기력을 유지하지 못하게 될지도 모른다.
+				PRINTFORML 
+			ENDIF
+			CALL EVENT_97_TURN_END
+			RETURN 1
+		ENDIF
+	ENDIF
+CASE 1
+	;解放条件
+	IF ARG:1 == 1
+		;アンジュが居ないとNG。……引き継いでたら仲間のウチ２人いればいい。（点呼による）
+		CALL DemonsRoots_敗北者点呼
+		SIF RESULT <= 1 || FINDCHARA_B([[キャラ:앙쥬_DR]]) < 0
+			RETURN 0
+		;朝
+		SIF TIME != 0
+			RETURN 0
+		;コロシアムダンジョン侵入可能フラグ
+		SIF 闘技場フラグ:19:0 == 0
+			RETURN 0
+		;前イベント（アンジュ）終了後
+		SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+			RETURN 1
+	;타이틀
+	ELSEIF ARG:1 == 2
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			RESULTS = 『검투사와 마법장치를 위한 자장가』(전투・시간 경과 있음)
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			;直前のイベントをクリアしている場合ガイド。そうでなければマスク
+			IF GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+				RESULTS = ※이전 이벤트 종료・안쥬 보유・콜로세움 던전 진입 조건 충족・아침.
+			ELSE
+				RESULTS = LOCKED
+			ENDIF
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		PRINTFORML 
+		PRINTFORML 데스폴루카와 안쥬가 부르고 있다…….
+		PRINTFORML 아무래도 움직임이 있었던 모양이다.
+		PRINTFORML 
+		PRINTL [0] 準備完了
+		PRINTL [1] 準備不足
+		CALL INPUTINT, 0 , 1
+		IF RESULT == 1
+			PRINTFORML 
+			PRINTFORMW 준비를 갖출 필요가 있다.
+			PRINTFORMW 일단 보류하기로 했다.
+		ELSE
+			PRINTFORML 
+			PRINTFORMW 「……투기장에 짚이는 바는 없는가?」
+			PRINTFORML 
+			PRINTFORMW 데스폴루카에게서 그러한 말이 나왔다.
+			PRINTFORML 
+			PRINTFORMW 「익숙한 마력의 기척을 느꼈다. 그 아이는 검투사였지」
+			PRINTFORMW 「카린카……려나」
+			PRINTFORML 
+			PRINTFORMW 콜로세움이라면 존재한다. %CALLNAME:MASTER%도 이용한 적이 있다.
+			PRINTFORMW 이기면 상금과 명성을 얻는 한편, 패배하면 능욕을 피할 수 없는 악랄한 곳이다.
+			PRINTFORML 
+			PRINTFORMW 「어느 세계든 『구경거리』는 매한가지라는 건가……」
+			PRINTFORML 
+			PRINTFORML 주먹을 꽉 쥔 데스폴루카의 중얼거림은,
+			PRINTFORMW 그러한 취급을 받던 자를 짐작하고 있음을 말해준다.
+			PRINTFORML 
+			PRINTL [0] 『투기장』에 대해
+			PRINTL [1] 『카린카』에 대해
+			PRINTL [2] 딱히 물어볼 것은 없다
+			CALL INPUTINT, 0 , 1 ,2
+			IF RESULT == 0
+				PRINTFORML 
+				PRINTFORML 「뭐, 승리한 자가 살아남고 패자는 죽는 오래된 형식의 위험한 콜로세움이다.
+				PRINTFORML 　다만 이곳에서 승자에게 주어지는 명성이나 상금 따위는 없고,
+				PRINTFORMW 　능욕 구경거리 유린 쇼 등 무엇이든 벌어지는 데다 배당금은 흥행주가 독식하여
+				PRINTFORMW 　검투사에게는 1일도 들어오지 않는, 구경거리를 위해 소모품처럼 갈아 넣는 곳이었지만 말이지」
+				PRINTFORML 
+				PRINTFORML 녀석들에게는 10일을 넘기면 무엇이든 거금이었을 정도였으니 말이다, 라며
+				PRINTFORMW 데스폴루카의 추억담에 응, 응 하고 끄덕이는 안쥬.
+			ELSEIF RESULT == 1
+				PRINTFORML 
+				PRINTFORMW 「카린카인가…… 아까도 가볍게 언급했지만 『투기장』에서 억지로 싸우게 되던 검투사 중 한 명이다」
+				PRINTFORMW 「처음 만났을 때는 놀랐었지…… 『친구는 없다』는 말의 의미를 몰랐었거든」
+				PRINTFORML 
+				PRINTFORML 플라나라 불리는, 투기장을 활용한 흥행 수입으로 폭리를 취하던 상국에서 싸우고 있던 그녀는,
+				PRINTFORMW 최종적으로 데스폴루카와 함께 그 왕을 토벌하고 입장상 왕의 자리를 손에 넣었다고 한다.
+				PRINTFORML 
+				PRINTFORMW 인물상에 대해 묻자 『바보』 『어려운 이야기에 젬병』이라는 꽤나 직설적인 답변이 돌아왔다.
+				PRINTFORML 
+			ENDIF
+			PRINTFORML 
+			PRINTFORMW ……머지않아 팬텀으로부터 (경영자가 한탄하고 있다는 쓸데없는 정보와 함께),
+			PRINTFORML 투기장의 이상을 알리는 연락이 왔다. 콜로세움 던전에서
+			PRINTFORMW 해석 불능의 검은 안개 같은 것이 뿜어져 나오고 있어 위험하여 봉쇄 중이라는 모양이다.
+			PRINTFORML 
+			PRINTFORMW 이야기를 종합해 볼 때 그 검은 『무언가』의 짓이라는 것은 짐작하기 어렵지 않다.
+			PRINTFORMW 콜로세움 던전으로 향하기로 했다.
+			PRINTFORML 
+			PRINTFORMW ＞투기장, 지하 던전 구획.
+			PRINTFORML 
+			PRINTFORMW ……검은 안개처럼 변한 꿈틀거리는 무언가가 입구를 뒤덮고 있다.
+			PRINTFORMW 검은 것에 시야가 가로막혀 안쪽을 내다볼 수 없다.
+			PRINTFORML 
+			PRINTFORMW 「……」
+			PRINTFORML 
+			PRINTFORMW 무언으로 공간…… 혹은 그 안쪽……을 노려보는 데스폴루카.
+			PRINTFORMW 미간에 깊게 패인 주름이 그녀의 속마음을 말해준다.
+			PRINTFORML 
+			PRINTFORMW ……기어코 여기에 돌입해야만 하는 것인가.
+			PRINTFORML 
+			PRINTFORMW 「아마도 그럴 것이다.
+			PRINTFORMW 　바보 같고, 남의 말을 안 듣고, 귀여운 그 녀석이…… 기다리고 있어」
+			PRINTFORML 
+			PRINTFORMW 이미 올라탄 배……는 아니지만, 자신이 불러들인 선원의 소원이다.
+			PRINTFORMW 함께 요동치는 안개 속으로 발을 들이자 순식간에 시야가 검게 물들며 아무것도 보이지 않게 되었다.
+			PRINTFORML 
+			PRINTFORMW …………。
+			PRINTFORML 
+			PRINTFORMW ……
+			PRINTFORML 
+			PRINTFORMW …
+			PRINTFORML 
+			CUSTOMDRAWLINE =
+			PRINTFORML 
+			PRINTFORMW 어둠 속에서 광경이 흘러 지나가는 것이 보인다…….
+			PRINTFORML 
+			PRINTFORMW 『응그으으으아아아아아아앗!!!』
+			PRINTFORML 
+			PRINTFORMW ……뱃속 깊은 곳에서 쥐어짜 내는 듯한, 소녀가 내기엔 너무나 굵고 낮은, 목숨의 위기에 처한 듯한 비명.
+			PRINTFORML 
+			PRINTFORML 허리에 강철 정조대 같은 것을 차고 양팔이 삼엄하게 묶인 소녀가,
+			PRINTFORMW 고양이의 성기를 인간 크기화한 듯한 흉악한 딜도를 앞구멍에 물고……
+			PRINTFORMW 1만 번에 달하는 스쿼트를 강요당하고 있었다.
+			;普通のスクワットなら１０分で７，８０らしいですよ。１万だとほぼ１日かかりますよ作者どのぉ！？
+			PRINTFORML 
+			PRINTFORMW 아마도 안쥬의 것과 마찬가지인 것일까.
+			PRINTFORML 싸움에서 패배하고 남은 것은 죽음뿐인 소녀들이 도망칠 길을 찾아 뛰어든 처형장에서,
+			PRINTFORMW 근소한 연명을 위해 잡동사니를 미끼로 터무니없는 난제를 강요당하고 있는 모습이다.
+			;濁った蘇生薬っていう、かろうじて戦闘不能回復できるゴミ。ないよりマシ程度の価値だが、取るためにみんな尊厳を切り崩されたりしてる。辛いね。
+			PRINTFORML 
+			PRINTFORMW 난제를 수행하는 소녀를 지켜보는 자들도 처참한 상태다.
+			PRINTFORML 
+			PRINTFORML 온몸에 채찍질 자국이 남은 데스폴루카와 착유기가 달린 안쥬,
+			PRINTFORML 부유하는 벽에 파묻힌 상반신을 벽에서 자라난 무수한 손에 희롱당하고 있는 또 다른 소녀.
+			PRINTFORML 하반신에 완강한 정조대를 차고 목과 손의 목줄이 쇠봉으로 이어진…… 소녀? 와,
+			PRINTFORML 포박당한 채 약물 주사기가 온몸에 꽂혀 눈빛이 이상해진 여성에,
+			PRINTFORMW 입과 눈이 완전히 틀어막히고 손목이 겨드랑이 근처에 결박된 갈색 머리의 여성…….
+			PRINTFORML 
+			PRINTFORMW 너 나 할 것 없이 만신창이임을 엿볼 수 있었다.
+			PRINTFORML 
+			PRINTFORMW 꿀럭꿀럭 소리가 들려올 듯한 광경이 스쳐 지나간다…….
+			PRINTFORML 
+			PRINTFORMW ……
+			PRINTFORML 
+			PRINTFORMW 『……윽……읏, 읍…… 으으……』
+			PRINTFORML 
+			PRINTFORMW 그리고…… 또 다른 광경도 보이기 시작했다.
+			PRINTFORML 
+			PRINTFORMW 아까 무수한 손에 희롱당하던 벽 소녀가 난제를 강요받고 있는 모양이다.
+			PRINTFORML 
+			PRINTFORMW 그 몸에는 팔 대신 고깃덩어리 같은 것이 들러붙어 눈을 제외한 온몸의 구멍에 촉수가 파고들어 있다.
+			PRINTFORMW 살점이 맥동할 때마다 눈에서 생기가 사라져 간다…… 생명력을 빼앗기고 있는 것이다.
+			PRINTFORML 
+			PRINTFORMW 그 살점 끝은…… 검게 번쩍이는 거대한 검의 형상으로 변해 마주친 괴물을 무시무시한 기세로 난도질해 간다.
+			PRINTFORMW 일격에 베어 넘기며 석조 건물 안을 거침없이 돌진하는 검과, 그에 끌려가는 형태의 벽 소녀.
+			PRINTFORML 
+			PRINTFORMW 사형수의 몸을 이용한 생체병기 인체실험……이라는 것일까.
+			PRINTFORMW 합리적이긴 하나 사악하고 냉혹한 발상이다.
+			PRINTFORML 
+			PRINTFORMW 벽 소녀가 흰자위를 드러내며 기절한 후에도 고깃덩이 검은 날뛸 줄 알았으나…….
+			PRINTFORMW 갑자기 검이 시들해지는가 싶더니 체내에 침입해 있던 고깃덩어리째 소녀에게서 빠져나왔다.
+			PRINTFORML 
+			PRINTFORML 고깃덩이 검이 이내 움직이지 않게 되자 벽 너머에서 돋아난 무수한 팔들이 벽 소녀의 몸을
+			PRINTFORMW 목을 조르고, 머리채를 잡고, 유두를 꼬집으며…… 제멋대로 농락하기 시작했다.
+			PRINTFORML 
+			PRINTFORMW 광경은 처형장을 나아가려는 소녀들과 함께 어딘가로 흘러 지나간다…….
+			PRINTFORML 
+			CUSTOMDRAWLINE -
+			PRINTFORML 
+			PRINTFORMW 어느샌가 콜로세움 던전이어야 할 바닥은 어딘가 다른 곳으로 이어져 있었다.
+			PRINTFORML 
+			PRINTFORMW 「……이 모래는…… 플라나……?」
+			PRINTFORML 
+			;ポリュちゃん戦闘参加中か
+			SIF FINDCHARA_B([[キャラ:데스포르카_DR]]) > 1 
+				PRINTFORM %CALLNAME:MASTER%과(와) 함께 방금 전 광경을 바라보던
+			PRINTFORMW 데스폴루카가 나지막이 중얼거린다.
+			PRINTFORML 
+			PRINTFORMW 어둠 속에 서 있는 자가 있다.
+			PRINTFORML 
+			PRINTFORMW 사람의 형상을 한 검은 무언가였다.
+			PRINTFORML 
+			PRINTFORMW 두 사람의 그림자는 이쪽이 다가서는 것에 반응했는지,
+			PRINTFORMW 문답무용으로 덮쳐왔다……!!
+			PRINTFORML 
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			CALL SET_ENEMY,9, [[キャラ:칼린카_DR]], 60, 1, 1
+			CALLNAME:(CHARANUM-1) = 너울
+			CFLAG:(CHARANUM-1):ＨＰ보정 = 5000
+			CFLAG:(CHARANUM-1):ＭＰ보정 += 99999
+			CFLAG:(CHARANUM-1):행동횟수 = 2
+			ABL:(CHARANUM-1):공격상성 = 1
+			ABL:(CHARANUM-1):공격범위 = 1
+			ABL:(CHARANUM-1):사거리 = 1
+			CALL CLEAR_ALL_SKILL, CHARANUM-1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:관통의일격]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:예광구리가라축]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:기합]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:전용기1]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:전용기2]]
+			ABL:(CHARANUM-1):스킬6 = [[스킬:타루카쟈오토]]
+			ABL:(CHARANUM-1):스킬7 = [[스킬:스쿠카쟈오토]]
+			ABL:(CHARANUM-1):스킬8 = [[스킬:라쿠카쟈오토]]
+			CSTR:(CHARANUM-1):전용기1 = ギガバスター
+			CSTR:(CHARANUM-1):전용기2 = パリィ（DR）
+			BASE:(CHARANUM-1):검격 = 50
+			BASE:(CHARANUM-1):비구 = 50
+			BASE:(CHARANUM-1):타격 = 50
+			BASE:(CHARANUM-1):전술 = 50
+			BASE:(CHARANUM-1):화염 = 110
+			BASE:(CHARANUM-1):빙결 = 110
+			BASE:(CHARANUM-1):전격 = 110
+			BASE:(CHARANUM-1):충격 = 110
+			BASE:(CHARANUM-1):신경 = 100
+			BASE:(CHARANUM-1):정신 = 100
+			BASE:(CHARANUM-1):파마 = 50
+			BASE:(CHARANUM-1):주살 = 50
+			BASE:(CHARANUM-1):지변 = 100
+			BASE:(CHARANUM-1):수격 = 100
+			BASE:(CHARANUM-1):질풍 = 100
+			BASE:(CHARANUM-1):중력 = 100
+			BASE:(CHARANUM-1):핵열 = 100
+			BASE:(CHARANUM-1):만능 = 100
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,14, [[キャラ:사라사_DR]], 60, 1, 1
+			CALLNAME:(CHARANUM-1) = 너울
+			CFLAG:(CHARANUM-1):ＨＰ보정 = 2000
+			CFLAG:(CHARANUM-1):ＭＰ보정 += 99999
+			CFLAG:(CHARANUM-1):행동횟수 = 2
+			ABL:(CHARANUM-1):공격상성 = 1
+			ABL:(CHARANUM-1):공격범위 = 1
+			ABL:(CHARANUM-1):사거리 = 1
+			CALL CLEAR_ALL_SKILL, CHARANUM-1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:메기도라]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:이악물기]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:컨센트레이트]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:전용기1]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:마카카쟈오토]]
+			ABL:(CHARANUM-1):스킬6 = [[스킬:스쿠카쟈오토]]
+			ABL:(CHARANUM-1):스킬7 = [[스킬:사마카쟈오토]]
+			ABL:(CHARANUM-1):스킬8 = [[스킬:아기바리온]]
+			ABL:(CHARANUM-1):스킬9 = [[스킬:부흐바리온]]
+			ABL:(CHARANUM-1):스킬10 = [[스킬:지오바리온]]
+			ABL:(CHARANUM-1):스킬11 = [[스킬:잔바리온]]
+			CSTR:(CHARANUM-1):전용기1 = プリズムトリズム_ENEMY
+			BASE:(CHARANUM-1):검격 = 150
+			BASE:(CHARANUM-1):비구 = 150
+			BASE:(CHARANUM-1):타격 = 150
+			BASE:(CHARANUM-1):전술 = 150
+			BASE:(CHARANUM-1):화염 = 50
+			BASE:(CHARANUM-1):빙결 = 50
+			BASE:(CHARANUM-1):전격 = 50
+			BASE:(CHARANUM-1):충격 = 50
+			BASE:(CHARANUM-1):신경 = 50
+			BASE:(CHARANUM-1):정신 = 50
+			BASE:(CHARANUM-1):파마 = 50
+			BASE:(CHARANUM-1):주살 = 50
+			BASE:(CHARANUM-1):지변 = 100
+			BASE:(CHARANUM-1):수격 = 100
+			BASE:(CHARANUM-1):질풍 = 100
+			BASE:(CHARANUM-1):중력 = 100
+			BASE:(CHARANUM-1):핵열 = 100
+			BASE:(CHARANUM-1):만능 = 100
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL BATTLE_START
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			PRINTFORML 
+			PRINTFORMW 두 사람의 그림자를 격파했다.
+			PRINTFORML 
+			PRINTFORMW 쓰러진 두 개의 그림자는 이윽고 작은 덩어리가 되어 발치에 굴러떨어졌다.
+			PRINTFORMW 주워 들자 어둠이 걷히며…… 대신 모래가 흩날리기 시작했다.
+			PRINTFORML 
+			PRINTFORMW 모래를 날리는 바람과 타격음…… 안쪽에서 『싸우고 있는 자』가 있다.
+			PRINTFORML 
+			PRINTFORMW 게다가 모래에 섞여 피비린내가…….
+			PRINTFORML 
+			PRINTFORMW 「읏……!」
+			PRINTFORML 
+			PRINTFORMW 뛰쳐나가는 데스폴루카를 쫓아 %CALLNAME:MASTER%도 향한다.
+			PRINTFORMW 모래를 밟는 소리가 유난히 크게 울려 퍼졌다.
+			PRINTFORML 
+			PRINTFORMW 도착하자 붉은 머리의 소녀와 붉은 머리의 여성이,
+			PRINTFORMW 주먹 하나로 치고받고 싸우고 있었다.
+			PRINTFORML 
+			PRINTFORMW 아니, 결판이 난 참인 것일까.
+			PRINTFORML 
+			PRINTFORMW 『　　　……　　……　꿰뚫었다……
+			PRINTFORMW 　이것으로, 　　은…… 죽는다』
+			PRINTFORML 
+			PRINTFORMW 『엄마……!!』
+			PRINTFORML 
+			PRINTFORMW 단편적으로밖에 들리지 않는 목소리와 그 주인을 부르는 외침.
+			PRINTFORML 
+			PRINTFORMW 「……읏. 카린카의……」
+			PRINTFORML 
+			PRINTFORML 다가가지 못한 채 굳어있는 데스폴루카에게 다가가자,
+			PRINTFORML 
+			PRINTFORMW 「읏, 아아…… 이야기로만 들었지만 틀림없어, 어머니로군.
+			PRINTFORMW 　어린 나이에 전투의 천재였던 딸 카린카와 강제로 싸우게 되어 죽었다고 들었다……」
+			PRINTFORML 
+			PRINTFORMW 그러한 설명이 돌아왔다.
+			PRINTFORML 
+			PRINTFORMW 『귀여운 카린카…… 웃으렴……』
+			PRINTFORML 
+			PRINTFORML 쓰러지는 어머니와 그녀에게 매달려 통곡하는 피투성이가 된 카린카가,
+			PRINTFORMW 머지않아 환영처럼 사라져 간다…….
+			PRINTFORML 
+			PRINTFORMW 모래폭풍도, 모래도 모든 것이 사라지며 익숙한 콜로세움의 풍경으로 되돌아온다…….
+			PRINTFORML 
+			PRINTFORMW 그 도중.
+			PRINTFORML 
+			PRINTFORMW (……꽃이여, 꽃이여……)
+			PRINTFORML 
+			PRINTFORMW 희미하게 목소리가 들려왔다.
+			PRINTFORML 
+			PRINTFORMW (나를…… 그곳으로……)
+			PRINTFORML 
+			PRINTFORMW 깊은 체념과 절망이 서린 노랫소리 같은 음성이.
+			PRINTFORML 
+			PRINTFORML 목소리를 듣고 멈춰 서 있던 데스폴루카를 데리고,
+			PRINTFORMW 세이프하우스로 돌아가기로 했다.
+			PRINTFORML 
+			CUSTOMDRAWLINE =
+			PRINTFORML 
+			PRINTFORMW ＞세이프하우스.
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:칼린카_DR]]), [[キャラ:칼린카_DR]]
+			PRINTFORMW 「……」
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:사라사_DR]]), [[キャラ:사라사_DR]]
+			PRINTFORMW 「……」
+			PRINTFORML 
+			PRINTFORMW 소생 처리를 마치고 본인들이 원하는 옷을 입힌 뒤 응접실로 안내했다.
+			PRINTFORMW 데스폴루카뿐만 아니라 안쥬도 함께였다.
+			PRINTFORML 
+			PRINTFORML 상황을 잘 이해하지 못한 상태의 카린카와 안쥬가 응접 소파 한쪽에,
+			PRINTFORMW 반대편에서는 벽 소녀……였을 소녀가 데스폴루카에게 꼬옥 안겨 있다.
+			PRINTFORML 
+			PRINTFORMW 「그러고 보니 소개가 아직이었군…… 카린카와 이쪽은 사라사다」
+			PRINTFORMW 「폴루카한테 들었어. 우리들이 오버드? 의 나라에 오게 될 줄이야~」
+			PRINTFORMW 「……그렇네」
+			PRINTFORML 
+			PRINTFORML ……그 벽에 파묻힌 상태로 어떻게 생활하고 있었을까 싶었는데,
+			PRINTFORMW 그 벽은 자신의 의지로 조작하여 이동시킬 수 있었다……는 모양이다.
+			PRINTFORML 
+			PRINTFORMW ……잠깐의 휴식 중. 원한다면 그녀들의 모습을 살펴볼 수 있다.
+			PRINTFORML 
+			PRINTL [0] 안쥬와 카린카를 본다
+			PRINTL [1] 데스폴루카와 사라사를 본다
+			PRINTL [2] 보지 않는다
+			CALL INPUTINT, 0 , 1 , 2
+			IF RESULT == 0
+				PRINTFORML 
+				PRINTFORMW 『혼자서 화장실에 갈 수 있다는 건 중요한 거였구나……』 하고 중얼거리는 카린카에 대해,
+				PRINTFORMW 『역시 결박 같은 건 사람한테 해선 안 될 짓이야』라며 동조하는 안쥬.
+				PRINTFORML 
+				PRINTFORMW 그때의 상황을 그녀들도 똑똑히 기억하고 있는 모양이다.
+				PRINTFORML 
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:칼린카_DR]]), [[キャラ:칼린카_DR]]
+				PRINTFORML 「대단하다고 들어봐 %CALLNAME:MASTER%! 오줌이랑 똥 구멍이 막혀서 못 내보내면
+				PRINTFORMW 　깜짝 놀랄 만큼 힘이 안 들어간다고! 아프고 괴롭고, 나 그대로 앞을……」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:앙쥬_DR]]), [[キャラ:앙쥬_DR]], "FACE_1", , "赤面"
+				PRINTFORMW 「안, 안 돼 카린카, 여자아이잖아……」
+				PRINTFORML 
+				PRINTFORMW 『배설하지 못하게 한다』는 것은 강렬한 존엄성 파괴의 일종이다. 몹시 괴로웠겠지만…….
+				PRINTFORMW 하지만 지금은 그렇지 않은 거겠지?
+				PRINTFORML 
+				PRINTFORMW 「물론이지! 밥 잘 먹고 푹 잘 수만 있다면 난 무적이다!」
+				PRINTFORMW 「응, 나도…… 카린카가 있어 주면 든든해」
+				PRINTFORML 
+				PRINTFORMW 눈길을 돌리자 데스폴루카와 사라사도 저마다 재회를 되새기고 있는 듯했다.
+			ELSEIF RESULT == 1
+				PRINTFORML 
+				PRINTFORMW 『나, 이젠 걸어 다녀야만 하게 됐는데?』라며 반눈으로 중얼거리는 벽 소녀 사라사를,
+				PRINTFORMW 『살아있을 때 굴레를 벗겨주지 못해 미안했다』라며 데스폴루카가 끌어안고 있다.
+				PRINTFORML 
+				PRINTFORMW 「아아, %CALLNAME:MASTER%인가……」
+				PRINTFORML 
+				PRINTFORMW 빈정거림을 들으면서도 제법 따르고 있는 듯하지만.
+				PRINTFORML 
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:사라사_DR]]), [[キャラ:사라사_DR]]
+				PRINTFORMW 「……約束」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:데스포르카_DR]]), [[キャラ:데스포르카_DR]], "FACE_0"
+				PRINTFORMW 「……예전에 내가 격정에 사로잡혀 길을 잘못 들 뻔했을 때, 녀석이 몹시도 울어댔었지」
+				PRINTFORMW 「결국 폴루카와 같이 잘 기회가 오기도 전에 져버렸으니까……」
+				PRINTFORML 
+				PRINTFORMW 그 후엔 밤새도록 꼭 껴안고 자는 것……으로 끝나지 않았다는 뜻이다.
+				PRINTFORML 
+				PRINTFORMW 이 사라사뿐만 아니라 안쥬도 수갑과 사슬이 사라져 자유롭게 옷을 입을 수 있게 되었다.
+				PRINTFORMW 하지만…… 정작 싸울 때가 되자 몸통을 보호하는 중장 갑주 차림으로는 잘 움직이지 못한다며 풀이 죽어 있었다.
+				;このMODでは全員ボディは再生、衣装は当人の趣味を元に再現したものなので微妙に細部が異なる。という便宜
+				PRINTFORML 
+				PRINTFORMW 사라사에게도 차차 자신의 손발로 행동하는 신체에 적응하게 해야 할 것이다.
+				PRINTFORML 
+				PRINTFORMW 저편에서는 안쥬와 카린카가 손을 맞잡고 재회를 기뻐하고 있다.
+			ENDIF
+			PRINTFORML 
+			PRINTFORMW 자, 앞으로의 전망인데…….
+			PRINTFORML 
+			PRINTFORMW 「알고 있다. 소용돌이 속에는 아직 세 명이 삼켜진 채로 있어.
+			PRINTFORMW 　하지만 그 녀석 자체의 움직임에도 변화가 있는 듯한…… 그런 느낌이 드는군」
+			PRINTFORML 
+			PRINTFORMW 처음엔 눈에 띄지 않던 뒷골목에서 병원, 그리고 콜로세움으로 점점 남의 눈에 띄기 쉬운 방식으로 출몰하고 있다.
+			PRINTFORMW 그 녀석 자신이 품은 의지가 무엇을 노리고 있는지는 헤아릴 수 없지만…….
+			PRINTFORML 
+			PRINTFORMW 「릴리랑 다이애나 녀석들도 구해내야 하니까 말야.
+			PRINTFORMW 　폴루카를 도와 우리들을 주워준 거지? 카린카도 힘낼 거다!」
+			PRINTFORML 
+			PRINTFORMW 일어서는 카린카와 안쥬와 대조적으로 사라사는 반눈…… 아니, 씁쓸한 표정 그대로다.
+			PRINTFORMW 쓰다듬으며 눈길을 돌려 말을 기다리는 데스폴루카에게 사라사가 입을 연다.
+			PRINTFORML 
+			PRINTFORMW 「폴루카…… 우리들은 패배해 죽어서…… 이 『악마』의 세계에 서게 됐어. 기댈 곳은 이 사람뿐이야.
+			PRINTFORMW 　앞으로 다이애나나 릴리 킬러까지 용케 건져 올렸다…… 치더라도, 어쩔 건데?
+			PRINTFORMW 　복수를 하려 해도 애초에 제국에 도달할 방법이 없어.
+			PRINTFORMW 　도달했다 쳐도 이길 보장도 없고. ……토데이러나 자나하리, 모두 그 결전에서 죽어버렸잖아」
+			PRINTFORML 
+			PRINTFORMW 그녀가 떫은 표정을 짓고 있던 것은 그런 연유였던 모양이다.
+			PRINTFORML 
+			PRINTFORMW 일단 짚이는 구석은 있다.
+			PRINTFORML 다른 세계의 정보 또한 태양에 집적되어 있는 경우가 있다고 한다.
+			;Rabi-Ribiで起きたように。
+			PRINTFORML 태양과의 교신을 가능케 하는 방법이 있다면 전송 데이터상의 단서, 혹은 세계를 잇는 발판……
+			PRINTFORMW 그것들을 붙잡을 수 있다. 그러한 것이 있다면 터미널을 이용하여 세계를 이동하는 것도 가능하다.
+			PRINTFORML 
+			PRINTFORMW 어찌 되었든 원한다면 방법이 없는 것은 아니라고 전했다.
+			PRINTFORML 
+			PRINTFORML 「첫 번째 불확정 요소에 희망이 보였을 뿐이야. 게다가 완전히 믿은 것도 아니지만……
+			PRINTFORMW 　……동료로서 폴루카가 몸을 의탁하기로 한 그 선택을 존중할게」
+			PRINTFORMW 「솔직히 우리도 이쪽의 테크놀로지에는 문외한이다. 다이애나가 있다면 좋을 텐데……」
+			PRINTFORML 
+			PRINTFORMW 그 다이애나라는 자도 이곳처럼 악마와 다크 서머너가 발호하는 세계에 있었던 걸까.
+			PRINTFORML 
+			PRINTFORMW 「다이애나 본인에게서도 그런 이야기는 듣지 못했다만…….
+			PRINTFORMW 　분명 『아메리카 합중국』이라고 했던가, 의 『FBI』 출신이라고 하더군」
+			PRINTFORML 
+			;異世界人の異世界からの別異世界へ出戻りってこれもうわかんねぇな。
+			PRINTFORMW 악마에 관한 지식이 있을지는 미심쩍지만…… 남은 세 명을 구출해야 한다는 점은 변함없다.
+			PRINTFORML 
+			PRINTFORMW 「그런 연유다. 카린카, 사라사. 잘 부탁하마」
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:칼린카_DR]]), [[キャラ:칼린카_DR]]
+			PRINTFORMW 「물론이지! 나는 검투사 카린카!」
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:사라사_DR]]), [[キャラ:사라사_DR]]
+			PRINTFORMW 「그래, 나는…… 맞아, 전 마법장치 사라사」
+			PRINTFORML 
+			PRINTFORMW ――지금 다시금 마족 데스폴루카의 동료가 되어 싸우겠어!
+			PRINTFORML 
+			IF FINDCHARA_B([[キャラ:칼린카_DR]]) < 0
+				;加入処理に成功した場合。　呼び名から（DR）を削除、戦闘参加不可能は0。
+				CALL ADD_NEW_COMPANION, [[キャラ:칼린카_DR]], 1000
+				IF RESULT > 0
+					CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "参加可能"
+					PRINTFORML 검투사 카린카가 동료로 가입했습니다.
+				ENDIF
+				PRINTFORML 
+				PRINTFORMW 「……응? 카린카랑 야한 짓 하고 싶은 거야?
+				PRINTFORMW 　네가 엄청 강한 녀석이라면…… 좋아!」
+				PRINTFORML 
+			ENDIF
+			IF FINDCHARA_B([[キャラ:사라사_DR]]) < 0
+				;加入処理に成功した場合。　呼び名から（DR）を削除、戦闘参加不可能は-1。
+				CALL ADD_NEW_COMPANION, [[キャラ:사라사_DR]], 1000
+				IF RESULT > 0
+					CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+					PRINTFORML 전 마법장치 사라사가 동료로 가입했습니다.
+				ENDIF
+				PRINTFORML 
+				PRINTFORMW 「……성적인 거? ……패스. 절대 패스.
+				PRINTFORMW 　만약 건드렸다간 다 태워버릴 테니까!」
+				PRINTFORML 
+			ENDIF
+			CALL EVENT_97_TURN_END
+			RETURN 1
+		ENDIF
+	ENDIF
+CASE 2
+	;解放条件
+	IF ARG:1 == 1
+		;戦闘可能なデスポリュカ含めアンジュ・カリンカ・サラーサで４人以上居ないとNG。つまり引き継いでたら戦闘可能な仲間のウチ4人いること。（点呼による）
+		;何故拾った仲間が戦闘可能かをみるのかは、売却・処分・戦闘不可能に追い込んでいる場合デスポリュカが%CALLNAME:MASTER%の不義に対し、持ちかける気をなくすため。
+		CALL DemonsRoots_敗北者点呼
+		SIF RESULT <= 3
+			RETURN 0
+		;夕
+		SIF TIME != 2
+			RETURN 0
+		;禍津稲羽市への侵入が可能でないとだめ
+		TRYCALLFORM PREREQUISITE_DUNGEON_75
+		SIF !RESULT
+			RETURN 0
+		;前イベント（カリンカ・サラーサ）終了後
+		SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 1)
+			RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			RESULTS = 『이세계인과 노예 왕자를 향한 만가』(전투・시간 경과 있음)
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			;直前のイベントをクリアしている場合ガイド。そうでなければマスク
+			IF GETBIT(CFLAG:ARG:개별이벤트읽음, 1)
+				RESULTS = ※이전 이벤트 종료・DR팀 전투 가능자 4명 이상 존재・마가츠이나바 시 진입 조건 충족・황혼.
+			ELSE
+				RESULTS = LOCKED
+			ENDIF
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		PRINTFORML 
+		PRINTFORML 데스폴루카가 부르고 있다…….
+		PRINTFORML 
+		PRINTL [0] 準備完了
+		PRINTL [1] 準備不足
+		CALL INPUTINT, 0 , 1
+		IF RESULT == 1
+			PRINTFORML 
+			PRINTFORMW 준비를 갖출 필요가 있다.
+			PRINTFORMW 보류하겠다는 답을 보내자, 『가급적 서둘러 달라』는 회신이 날아왔다.
+		ELSE
+			PRINTFORML 
+			PRINTFORMW 「아무래도 『심야 텔레비전』이라는 곳인 모양이다」
+			PRINTFORML 
+			PRINTFORMW 입을 열자마자 데스폴루카는 그렇게 말했다.
+			PRINTFORMW ……미묘하게 기분이 언짢아 보인다.
+			PRINTFORML 
+			PRINTFORMW 「제국의 언론 선동에는 제법 시달렸으니까 말이다.
+			PRINTFORMW 　일반 인간과 『노예』, 그리고 『마족』 사이의 골을 깊게 파는 솜씨가 쓸데없이 교묘했지」
+			PRINTFORML 
+			PRINTFORML 매스미디어를 권력자의 뜻대로 얼마든지 주무를 수 있는 대륙에서는,
+			PRINTFORMW 전력과 인재에서 뒤처지는 당랑거철 측은 필시 끔찍하게 고통받았을 것이다.
+			PRINTFORML 
+			PRINTFORMW ……뭐, 이쪽에서도 비슷한 처지이긴 하지만.
+			PRINTFORMW 정말 위험한 것들은 언론의 감시망을 빠져나가 어둠 속을 살아가는 자들이 아직도 수두룩하다.
+			PRINTFORMW ……그렇기에 밥줄이 끊기지 않는 자들도 있다는 뜻이다.
+			PRINTFORML 
+			PRINTFORMW 「네 녀석처럼…… 말인가」
+			PRINTFORML 
+			PRINTFORMW 어찌 되었든 『심야 텔레비전』은 일반 미디어와는 달리 인간 마음속 깊은 곳을 비추는 세계다.
+			PRINTFORML 사람이라 생각할 수 없는 그 검은 존재가 그곳으로 들어갔다면 어찌 될지는 모르겠지만,
+			PRINTFORMW 집어삼켜진 사람들은…… 마음속에 감춰두었던 것이 제멋대로 뛰쳐나올 가능성이 있다.
+			PRINTFORMW ……즉, 『붙잡힌 자의 섀도』가 출현할 가능성이다.
+			PRINTFORML 
+			PRINTFORMW 「이야기 내용은 잘 모르겠지만 서두르는 편이 좋으리라는 건 알겠다」
+			PRINTFORML 
+			PRINTFORMW 손톱을 날카롭게 갈아 세운 데스폴루카가 주먹을 꽉 쥔다.
+			PRINTFORML 
+			IF TALENT:MASTER:사토리（소질） > 0
+				PRINTFORMW (황혼인가…… 안쥬가 펑펑 울었을 때의 하늘도 이런 색이었지……)
+				PRINTFORML 
+			ENDIF
+			PRINTFORMW 창문으로 비쳐 드는 석양에 눈을 가늘게 뜨는 데스폴루카에게 말을 건네자 출발 준비에 착수했다.
+			PRINTFORMW ……눈가에 맺힌 반짝임을 보지 못한 척하면서.
+			PRINTFORML 
+			CUSTOMDRAWLINE =
+			PRINTFORML 
+			PRINTFORMW ＞마가츠이나바시
+			PRINTFORML 
+			;まがついなばクリア済みかどうか
+			IF ダンジョンフラグ:75:1 == 2
+				PRINTFORMW 「이나바 시, 라고 했던가.
+				PRINTFORMW 　……마치 사라사의 기억 공간 같군. 이곳에서는 무슨 일이 있었던 거지?」
+				PRINTFORML 
+				PRINTFORMW 최근 들어 해방된, 『TV 속』의 또 다른 구획이다.
+				PRINTFORMW 안쪽에 도사리고 있던 세상을 혼란에 빠뜨리려 하던 녀석과 그 배후의 무언가를 쓰러뜨렸다.
+				PRINTFORML 
+				PRINTFORMW 「남모르게 세상을 구했다, 라는 느낌인가.
+				PRINTFORMW 　의외로 영웅 일도 적성에 맞는 것 아닌가?」
+				PRINTFORML 
+				SELECTCASE GET_ALI1(ABL:MASTER:속성LD)
+				CASE "Light"
+					PRINTFORMW 그쪽으로 전직하게 되는 날에는 부디 데스폴루카에게도 일해 주어야겠군.
+					PRINTFORML 
+					PRINTFORMW 「사양하마, 성녀 노릇은 해본 적이 있다만 네임밸류가 높으면 여러모로 피곤하거든」
+					PRINTFORML 
+					PRINTFORM 데스폴루카로서는 그런 모양이다. 묘하게 실감이 담긴 말을 들으며
+				CASE "Neutral"
+					PRINTFORMW 농담조인 데스폴루카의 목소리에 시선을 돌리자 추가로 말이 이어졌다.
+					PRINTFORML 
+					PRINTFORMW 「청렴결백이라는 것도 가끔은 좋은 법이다. 난 그런 성미는 못 되지만」
+					PRINTFORML 
+					PRINTFORM 적당히 고개를 끄덕여 주고,
+				CASE "Dark"
+					PRINTFORMW 그만두지 않겠나. ……성미에 맞지도 않다.
+					PRINTFORML 
+					PRINTFORMW 「뭐…… 악당이라 할지라도 그놈이 더 나쁜 녀석에게 시비를 터는 모습은 제법 그림이 되는 법이지」
+					PRINTFORML 
+					PRINTFORM 더 이상의 언급을 피하듯,
+				ENDSELECT
+				PRINTFORMW 입구보다 안쪽으로 눈길을 돌린다.
+				PRINTFORML 
+			ELSE
+				PRINTFORMW 「이나바 시, 라고 했던가.
+				PRINTFORMW 　……마치 사라사의 기억 세계 같군. 여기서는 무슨 일이 일어나고 있는 거지?」
+				PRINTFORML 
+				PRINTFORMW 최근 들어 해방된, 『TV 속』의 또 다른 구획이다.
+				PRINTFORMW 가장 깊은 곳에 무언가가 있다…… 그 이상의 것은 아직 밝혀지지 않았다.
+				PRINTFORML 
+			ENDIF
+			PRINTFORMW 어쨌든 이번에 볼일이 있는 것은 깊은 곳에 있는 것이 아니다.
+			PRINTFORMW 데스폴루카가 감지한 것은 그 옆쪽에 있는 무언가다.
+			PRINTFORML 
+			PRINTFORMW 「……이쪽, 인가」
+			PRINTFORML 
+			PRINTFORMW 데스폴루카의 뒤를 따라가자 붕괴된 거리 풍경에 가려지듯 자라난 나무 같은 곳에 도달했다.
+			PRINTFORML 묘한 위화감을 자아내는 그 나무는 갈라지고 쪼개져 옹이가 파여 있었고,
+			PRINTFORMW 그 안으로 마침 들어갈 수 있을 듯했다.
+			PRINTFORML 
+			PRINTFORMW 「이 『나무』는……」
+			PRINTFORML 
+			PRINTFORMW 낯이 익은 듯한 어조와 함께 데스폴루카가 앞장서서 들어간다.
+			PRINTFORMW 뒤를 쫓아 들어가자 이전과 마찬가지로 검은 기운에 휩싸였다.
+			PRINTFORML 
+			CUSTOMDRAWLINE =
+			PRINTFORML 
+			PRINTFORMW 『하아, 하아……! 나제 군! 나제 군!!』
+			PRINTFORML 
+			PRINTFORMW ……여자의 목소리가 들려온다.
+			PRINTFORML 
+			PRINTFORMW 올라타 격렬하게 허리를 흔드는 금발의 여자와 그녀에게 깔려 짓눌린 분홍 머리의…… 이것은 소년이다.
+			PRINTFORML 
+			PRINTFORML 여자에게는 온몸에 약물 주사기가 꽂혀 있었고,
+			PRINTFORMW 끊임없이 주입되는 약물이 몸과 마음을 좀먹고 있음을 쉽게 알아챌 수 있었다.
+			PRINTFORMW 여자의 허리 놀림이 심상치 않다. 표정은 읽을 수 없으나 머리칼을 흩날리는 모습 또한 그러하다.
+			PRINTFORML 
+			PRINTFORMW 그에 반해 소년이 할 수 있는 일은 아무것도 없다.
+			PRINTFORMW 양 손목과 목, 3개의 『개목줄』은 쇠봉으로 용접되어 있어 전혀 움직일 수 없다.
+			PRINTFORML 가랑이에도 마찬가지로 용접된 정조대가 채워져 있었고,
+			PRINTFORMW 쓰일 일 없는 음경 위에 장착된 딜도를 향해 여자는 허리를 흔들어대고 있었다.
+			PRINTFORML 
+			PRINTFORMW 올라탄 여자의 육체는 진짜, 미쳐 날뛰고 있다곤 하나 마음 또한 진심이리라.
+			PRINTFORMW 하지만 소년에게는 끌어안을 손도, 기쁘게 해줄 가랑이도 봉인되어 있다.
+			PRINTFORML 
+			PRINTFORML 실제로 몸을 포개고 있는 듯하면서도 그 거리는 아득히 멀다.
+			PRINTFORMW 지극히 교묘하고도 직설적인, 소년의 마음을 파괴하기 위한 구조였다.
+			PRINTFORML 
+			PRINTFORMW 나제 군이라 불린 소년의 이름을 외치며 여자가 몸을 뒤로 젖힘과 동시에 광경이 사라져 간다…….
+			PRINTFORML 
+			PRINTFORMW 『……아…… 다이애나……읏』
+			PRINTFORML 
+			CUSTOMDRAWLINE =
+			PRINTFORML 
+			PRINTFORMW 「처형장…… 훈계의 수옥은 마지막까지 위치를 특정하지 못했다」
+			PRINTFORML 
+			PRINTFORMW 광경이 사라지자 다시 되돌아오는 어둠. 앞서 걷던 데스폴루카가 돌연 입을 연다.
+			PRINTFORML 
+			PRINTFORMW 「반기를 드는 데 실패하면 훈계의 수옥의 광경을 우리 자신이 맛보게 된다.
+			PRINTFORMW 　안쥬를 비롯해 다들 저걸 방송하는 마법장치를 볼 때마다 긴장하곤 했었지」
+			PRINTFORML 
+			PRINTFORMW 데스폴루카 일행이 싸우기 전에도 그 처형장을 어떻게든 하고 싶다고 생각한 자는 있었던 모양이지만…….
+			PRINTFORMW 결과는 안 봐도 뻔하다.
+			PRINTFORML 
+			PRINTFORML 저 수옥의 능욕 풍경은 일찍이 행해졌던 것이겠지만
+			PRINTFORMW 어째서 이것이 떠오르고 있는 것일까.
+			PRINTFORML 
+			PRINTFORMW 「누군가가, 보여주려 하고 있는 건가……?」
+			PRINTFORML 
+			PRINTFORMW 생각에 잠긴 데스폴루카와 함께 걷자 돌연 어둠이 걷혀 간다…….
+			PRINTFORMW 어둠 안쪽에 자리한 것은……
+			PRINTFORML 
+			PRINTFORMW 「……수옥, 이라고……?」
+			PRINTFORML 
+			PRINTFORMW 방금 보았던 수옥과도 같은, 삼엄한 무언가의 방이었다.
+			PRINTFORML 
+			PRINTFORMW 「아니, 조금 분위기가 다르군. 우리가 보내졌던 수용소가 아니야…… 여긴 대체」
+			PRINTFORML 
+			PRINTFORMW ……아마도 『노예로서의 마음가짐을 주입하는』 용도의 방이다.
+			PRINTFORML 
+			PRINTFORMW 처형 구획처럼 망가져도 상관없다는 식의 독기는 없다.
+			PRINTFORML 『사람』을 효율적으로 괴롭히면서도 파괴에 이르지는 않을 정도의 도구들이,
+			PRINTFORMW 선반이나 침대, 벽에 갖추어져 있다.
+			PRINTFORML 
+			PRINTFORMW 「과연 조교에 관해서는 전문가로군……
+			PRINTFORMW 　네 녀석이 저쪽에 있었다고 생각하면 등골이 오싹해지는군」
+			PRINTFORML 
+			PRINTFORMW 진심인지 가벼운 농담인지를 들으며 거듭 방을 살피고 있자 스르륵 모습을 드러낸 인영이 둘.
+			PRINTFORML 금발의 여자…… 방금 전 광경에서 허리를 흔들고 있던 쪽과,
+			PRINTFORMW 분홍 머리의 소년…… 방금 전 광경에서 깔려 있던 쪽이다.
+			PRINTFORML 
+			PRINTFORML 금발의 여자는 옷차림과 이목구비로 보아 미국인일까……
+			PRINTFORMW 편안한 복장과 홀스터에 꽂힌 총, 애니메이션 등에서 활약할 법한 풍모.
+			PRINTFORML ……소년 쪽으로 말하자면 여장이 아주 판에 박혀 있었다.
+			PRINTFORMW 그 얼굴은 남자아이답지 않은 또렷한 이목구비, 여성스러운 그것이었다.
+			PRINTFORML 
+			PRINTFORML 그리고 그 둘 다…… 옷차림이 흐트러지고 뺨을 붉힌 채,
+			PRINTFORMW 무엇보다…… 이질적인 분위기를 두르고 있었다.
+			PRINTFORML 
+			PRINTFORMW 「……너희들…… 다이애나와 나제지타가 『아니로군』?」
+			PRINTFORML 
+			PRINTFORMW 데스폴루카 또한 마찬가지로 『다르다』는 것을 눈치챈 모양이다.
+			PRINTFORMW 말을 건네자 이쪽을 향한 두 쌍의 눈동자는,
+			PRINTFORML 
+			PRINTFORMW 「…………」
+			PRINTFORML 
+			PRINTFORMW 지금까지 마주쳤던 치에, 유키코, 칸지 일행의 그림자처럼 요사스러운 금빛을 띠고 있었다.
+			PRINTFORML 
+			PRINTFORMW 「오오, 데스폴루카」「드디어 왔구나」
+			PRINTFORML 
+			PRINTFORMW 「읏……」
+			PRINTFORML 
+			PRINTFORMW 번갈아 가며 말하는 그림자(섀도)와 그에 압도당하는 데스폴루카.
+			PRINTFORML 
+			PRINTFORMW 그림자는 본래라면 그 사람이 숨기고 있는…… 혹은 인정하고 싶지 않은…… 자신을 주인에게 들이대며,
+			PRINTFORMW 그 자리를 대신 차지하려 드는 법인데…….
+			PRINTFORML 
+			PRINTFORMW 「여기엔 아무것도 없어서 말이지……」「아무도 안 오고 밖으로 나갈 수도 없었어」
+			PRINTFORMW 「어쩔 수 없이 다이애나와」「나제 군과 즐거운 시간을 보내고 있었는데」
+			PRINTFORML 
+			PRINTFORMW 「좋다, 알았으니 더 이상 지껄이지 마라」
+			PRINTFORML 
+			PRINTFORMW 듣기 민망하다는 듯 섀도의 말을 가로막는 마족 소녀.
+			PRINTFORML 
+			PRINTFORMW 「……이 녀석들은 그림자인가 뭔가이고 본인이 아니다. 맞지?」
+			PRINTFORML 
+			PRINTFORMW 평소보다 현격히 온도가 내려간 목소리에 아마도 그렇다고 긍정을 돌려준다.
+			PRINTFORML 
+			PRINTFORML 이 그림자의 주인들이 어디에 있는지는 모르겠지만……,
+			PRINTFORMW 그림자 자체를 격파해도 본인에게 딱히 해는 없다는 것은 확실하다.
+			PRINTFORML 
+			PRINTFORMW 「그것만 들었으면 충분하다!」
+			PRINTFORML 
+			PRINTFORMW 대거리할 생각도 사라졌는지 덤벼드는 데스폴루카와 자세를 취하는 그림자들.
+			PRINTFORMW ……마족 소녀의 뒤를 이어 %CALLNAME:MASTER%도 뒤따랐다.
+			PRINTFORML 
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			CALL SET_ENEMY,9, [[キャラ:나제지타_DR]], 70, 1, 1
+			CALLNAME:(CHARANUM-1) = 나제의 그림자
+			CFLAG:(CHARANUM-1):ＨＰ보정 = 7000
+			CFLAG:(CHARANUM-1):ＭＰ보정 += 99999
+			CFLAG:(CHARANUM-1):행동횟수 = 2
+			ABL:(CHARANUM-1):공격상성 = 1
+			ABL:(CHARANUM-1):공격범위 = 1
+			ABL:(CHARANUM-1):사거리 = 2
+			EQUIP:(CHARANUM-1):검 = GETNUM(ITEM, "세라믹스인의장도")
+			EQUIP:(CHARANUM-1):총 = GETNUM(ITEM, "Ｃａｌ’Ｍａｒｉａ")
+			EQUIP:(CHARANUM-1):머리 = GETNUM(ITEM, "퍼레이드헬름")
+			EQUIP:(CHARANUM-1):몸통 = GETNUM(ITEM, "퍼레이드아머")
+			EQUIP:(CHARANUM-1):팔 = GETNUM(ITEM, "퍼레이드글러브")
+			EQUIP:(CHARANUM-1):발 = GETNUM(ITEM, "퍼레이드부츠")
+			CALL CLEAR_ALL_SKILL, CHARANUM-1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:밤벚꽃의춤]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:브레이브재퍼]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:기합]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:전용기1]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:전용기2]]
+			ABL:(CHARANUM-1):스킬6 = [[스킬:타루카쟈오토]]
+			ABL:(CHARANUM-1):스킬7 = [[스킬:스쿠카쟈오토]]
+			ABL:(CHARANUM-1):스킬8 = [[스킬:라쿠카쟈오토]]
+			CSTR:(CHARANUM-1):전용기1 = エレメントブレード
+			CSTR:(CHARANUM-1):전용기2 = エンパイアタクティクス
+			BASE:(CHARANUM-1):검격 = 50
+			BASE:(CHARANUM-1):비구 = 50
+			BASE:(CHARANUM-1):타격 = 50
+			BASE:(CHARANUM-1):전술 = 50
+			BASE:(CHARANUM-1):화염 = 100
+			BASE:(CHARANUM-1):빙결 = 100
+			BASE:(CHARANUM-1):전격 = 100
+			BASE:(CHARANUM-1):충격 = 100
+			BASE:(CHARANUM-1):신경 = 100
+			BASE:(CHARANUM-1):정신 = 100
+			BASE:(CHARANUM-1):파마 = 50
+			BASE:(CHARANUM-1):주살 = 50
+			BASE:(CHARANUM-1):지변 = 120
+			BASE:(CHARANUM-1):수격 = 120
+			BASE:(CHARANUM-1):질풍 = 120
+			BASE:(CHARANUM-1):중력 = 120
+			BASE:(CHARANUM-1):핵열 = 100
+			BASE:(CHARANUM-1):만능 = 100
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,14, [[キャラ:다이아나_DR]], 70, 1, 1
+			CALLNAME:(CHARANUM-1) = 다이애나의 그림자
+			CFLAG:(CHARANUM-1):ＨＰ보정 = 4000
+			CFLAG:(CHARANUM-1):ＭＰ보정 += 99999
+			CFLAG:(CHARANUM-1):행동횟수 = 2
+			ABL:(CHARANUM-1):공격상성 = 2
+			ABL:(CHARANUM-1):공격범위 = 1
+			ABL:(CHARANUM-1):사거리 = 3
+			EQUIP:(CHARANUM-1):검 = GETNUM(ITEM, "셀티스")
+			EQUIP:(CHARANUM-1):총 = GETNUM(ITEM, "황금총")
+			EQUIP:(CHARANUM-1):머리 = GETNUM(ITEM, "퍼레이드헬름")
+			EQUIP:(CHARANUM-1):몸통 = GETNUM(ITEM, "퍼레이드아머")
+			EQUIP:(CHARANUM-1):팔 = GETNUM(ITEM, "퍼레이드글러브")
+			EQUIP:(CHARANUM-1):발 = GETNUM(ITEM, "퍼레이드부츠")
+			CALL CLEAR_ALL_SKILL, CHARANUM-1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:스쿠・카쟈]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:이악물기]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:기합]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:전용기1]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:전용기2]]
+			ABL:(CHARANUM-1):스킬6 = [[스킬:마카카쟈오토]]
+			ABL:(CHARANUM-1):스킬7 = [[스킬:스쿠카쟈오토]]
+			ABL:(CHARANUM-1):스킬8 = [[스킬:사마카쟈오토]]
+			CSTR:(CHARANUM-1):전용기1 = ヘビーマシンガン
+			CSTR:(CHARANUM-1):전용기2 = ジャベリン
+			BASE:(CHARANUM-1):검격 = 150
+			BASE:(CHARANUM-1):비구 = 150
+			BASE:(CHARANUM-1):타격 = 150
+			BASE:(CHARANUM-1):전술 = 150
+			BASE:(CHARANUM-1):화염 = 50
+			BASE:(CHARANUM-1):빙결 = 50
+			BASE:(CHARANUM-1):전격 = 50
+			BASE:(CHARANUM-1):충격 = 50
+			BASE:(CHARANUM-1):신경 = 50
+			BASE:(CHARANUM-1):정신 = 50
+			BASE:(CHARANUM-1):파마 = 0
+			BASE:(CHARANUM-1):주살 = 0
+			BASE:(CHARANUM-1):지변 = 100
+			BASE:(CHARANUM-1):수격 = 100
+			BASE:(CHARANUM-1):질풍 = 100
+			BASE:(CHARANUM-1):중력 = 100
+			BASE:(CHARANUM-1):핵열 = 100
+			BASE:(CHARANUM-1):만능 = 100
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL BATTLE_START
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			PRINTFORML 
+			PRINTFORMW 나제지타의 그림자와 다이애나의 그림자를 격파했다.
+			PRINTFORML 
+			PRINTFORML 「……느닷없이 때려눕히는 녀석이……」
+			PRINTFORMW 「어디 있어……?」
+			PRINTFORML 
+			PRINTFORMW 겹쳐 쓰러지는 두 개의 그림자.
+			PRINTFORML 
+			PRINTFORML 「닥쳐라 그림자 놈들! 피치 못할 사정이었던 훈계의 수옥이라면 몰라도,
+			PRINTFORMW 　아는 사람의 정사장 면을 생생하게 전해 들어야 하는 내 입장도 되어봐라!」
+			PRINTFORML 
+			PRINTFORMW 아직 가쁜 숨을 몰아쉬는 데스폴루카의 눈이 새빨갛게 물들어 있었다.
+			PRINTFORMW ……상당히 뚜껑이 열린 모습이었다.
+			PRINTFORML 
+			PRINTFORMW 「기, 기다려! 끝까지 들어줘」
+			PRINTFORMW 「……우리들은 돌아가고 싶은 거야」
+			PRINTFORML 
+			PRINTFORMW ……손톱을 겨눈 자세 그대로 다음을 재촉하듯 노려보는 마족 소녀.
+			PRINTFORMW 들을 테면 들어보겠다는 태도지만 그 표정은 언제 참을성의 끈이 끊겨도 이상하지 않다.
+			PRINTFORML 
+			PRINTFORMW 「황제와의 결전과 패배, 수용소에서의 나날……」
+			PRINTFORMW 「그때 이렇게 했다면, 그걸 다 떨어뜨리지 않았더라면…… 그렇게 생각한 적, 분명 있을 거야」
+			PRINTFORML 
+			PRINTFORMW 「우리들은 그 수많은 후회 중에서도 특히…… 다이애나를」
+			PRINTFORMW 「나제 군을 끝까지 지키지 못했던 것이 깊이 남아있어」
+			PRINTFORML 
+			PRINTFORML 억압하고 있던 것, 외면하고 싶었던 것이 아니라,
+			PRINTFORMW 미련이 형태를 이룬 섀도라는 것은 들어본 적이 없지만…….
+			PRINTFORML 
+			PRINTFORMW 생각을 아랑곳하지 않고 데스폴루카가 다음을 재촉한다.
+			PRINTFORML 
+			PRINTFORMW 「아무래도 우리들은 그 『마음』과 이 장소를 이용해 누군가가 만들어낸 모양이야」
+			PRINTFORMW 「우리들의 본체는 이 몸 안에 있어. ……매우 미약하지만 아직 살아있어」
+			PRINTFORML 
+			PRINTFORMW 「그래서 서두의 이야기로 되돌아가는 건가……」
+			PRINTFORML 
+			PRINTFORMW 말을 이어받은 마족 소녀의 성난 얼굴은 어처구니없다는 표정으로 바뀌어 있었다.
+			PRINTFORML 
+			PRINTFORMW 「그래. 그래서 네놈에게 부탁이 있다」
+			PRINTFORMW 「나와 이 아이를 되돌려주었으면 해」
+			PRINTFORML 
+			PRINTFORMW 돌연 이쪽으로 화살이 향했다.
+			PRINTFORMW 그건 그렇고 참으로…… 주인을 끔찍이 생각하는 그림자로군.
+			PRINTFORMW 생각하는 대상이 주인이라기보다 그 상대라는 점이 마음에 걸리지만.
+			PRINTFORML 
+			PRINTFORMW 「당연하잖아? 그야 우리들은」
+			PRINTFORMW 「사랑하는 이가 한 번 죽고 또다시 죽는 것 따윈 바라지 않으니까」
+			PRINTFORML 
+			PRINTFORMW 「……알았다, 뒤는 맡겨둬라」
+			PRINTFORML 
+			PRINTFORMW 떨떠름한――혹은 낯간지러운――얼굴로 끄덕이는 데스폴루카에게 두 그림자는 미소를 짓더니,
+			PRINTFORMW 모습을 어두운 빛깔의 씨앗 모양 덩어리로 바꾸며 떠올라 손안으로 날아들었다.
+			PRINTFORML 
+			PRINTFORMW (『페르소나』인가 하는 건 되지 못할 것 같지만)
+			PRINTFORMW (『우리들』을 부탁할게. 데스폴루카, 그리고 당신에게 맡길게)
+			PRINTFORML 
+			PRINTFORMW ……목소리는 그것을 끝으로 들리지 않게 되었다.
+			PRINTFORMW 그림자가 지키고 있었다면 이 두 사람의 소생도 서둘러야 한다.
+			PRINTFORML 
+			PRINTFORMW 「……알고 있다, 서두르자」
+			PRINTFORML 
+			CUSTOMDRAWLINE =
+			PRINTFORML 
+			PRINTFORMW ＞세이프하우스, 회의실.
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:다이아나_DR]]), [[キャラ:다이아나_DR]]
+			PRINTFORMW 「……그래서 여기가 일본이고, 게다가 내가 모르는 『악마』가 판을 치며,
+			PRINTFORMW 　당신은 그것을 사역해 싸우게 하는 서머너 겸 악마 조교사……라고」
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:나제지타_DR]]), [[キャラ:나제지타_DR]]
+			PRINTFORMW 「우리들은 이를테면 역 오버드, 라는 셈인가.
+			PRINTFORMW 　그 괴물에게 먹혔을 때는 틀림없이 여기서 끝장이라 생각했었는데……」
+			PRINTFORML 
+			PRINTFORMW 안쥬, 카린카, 사라사, 그리고 데스폴루카와 함께,
+			PRINTFORMW 상황 설명을 마치자 다이애나와 나제지타 두 사람은 그러한 말을 흘렸다.
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:앙쥬_DR]]), [[キャラ:앙쥬_DR]]
+			PRINTFORMW 「역시 다들 그런 반응이 되는구나.
+			PRINTFORMW 　지금도 그 괴물, 꿈에 나오는걸……」
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:사라사_DR]]), [[キャラ:사라사_DR]]
+			PRINTFORMW 「어째서 살아있는 건지 아직도 의문이지만……
+			PRINTFORMW 　일단 제 손으로 먹는 밥은 의외로 맛있네. ……젓가락이 쓰기 몹시 불편하다는 점만 빼면」
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:칼린카_DR]]), [[キャラ:칼린카_DR]]
+			PRINTFORMW 「……하지만 잔뜩 먹어대는 릴리가 없으니 역시 섭섭한걸」
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:데스포르카_DR]]), [[キャラ:데스포르카_DR]], "FACE_0"
+			;主人とポリュカが両方技能10。あるいはそれ以上【念のため】
+			IF ABL:MASTER:요리기능 >= 10 && ABL:ARG:요리기능 >= 10
+				PRINTFORMW 「세이프하우스의 비축량은 완벽하게 파악해 두었다. 자유롭게 쓰게 해주는 양은 실로 반석과도 같지.
+				PRINTFORMW 　릴리가 찾아와도 문제없을 정도다. ……다음번에야말로」
+			;主人の方が料理技能が上。
+			ELSEIF ABL:MASTER:요리기능 > ABL:ARG:요리기능
+				PRINTFORMW 「나도 요리에 대해선 틈틈이 배우고는 있다만 아직 멀어서 말이지…….
+				PRINTFORMW 　릴리뿐만 아니라 모두에게도 만족받을 수 있을 정도가 되어야만 해」
+			;他ケース。主人が料理に興味がないとみなす。
+			ELSE
+				PRINTFORMW 「세이프하우스의 주인이 요리에 그다지 흥미가 없는 듯해서…….
+				PRINTFORMW 　다행히 식재료는 보헤로스의 저택 이상으로 윤택하니 연습은 하고 있다」
+				PRINTFORMW 
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:다이아나_DR]]), [[キャラ:다이아나_DR]]
+				PRINTFORMW 「보헤로스 왕국의 재정도 극도로 빠듯했었다고 하더군……」
+			ENDIF
+			PRINTFORML 
+			PRINTFORMW ……각자 한마디씩 떠드니 실로 시끌벅적하다.
+			PRINTFORMW 죽일 기세의 포크질이었다느니, 저장고를 거덜 내던 기세가 그립다느니 하며 한동안 담소를 나누는 여섯 사람.
+			PRINTFORML 
+			PRINTL [0] 『다이애나』에 대해 묻는다
+			PRINTL [1] 『나제지타』에 대해 묻는다
+			PRINTL [2] 『릴리』에 대해 묻는다
+			PRINTL [3] 딱히 물어볼 것은 없다
+			CALL INPUTINT, 0 , 1 , 2 , 3
+			IF RESULT == 0
+				PRINTFORML 
+				PRINTFORMW 다이애나라고 불리던 여성에게 이야기를 물어본다.
+				PRINTFORML 
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:다이아나_DR]]), [[キャラ:다이아나_DR]]
+				PRINTFORMW 「나? 글쎄…… 당신이 생각하는 미국인과 거의 다를 바 없어.
+				PRINTFORMW 　……죽었을 텐데 다른 세계로 온 게 이걸로 두 번째라는 점만 빼면 말이지만」
+				PRINTFORML 
+				PRINTFORMW 다이애나에게 말을 걸자 그러한 답변이 돌아왔다.
+				PRINTFORMW ……설마 다른 세계에도 마법이 있는 건 아닐 테고.
+				PRINTFORML 
+				PRINTFORMW 「첫 번째는…… 시간 밀렵꾼의 초첨단 과학기술이었지. 이번엔 악마의 힘이지만.
+				PRINTFORMW 　……약물과 세뇌 마법에 찌들어 있던 내 머릿속을 이렇게나 맑게 해주다니 얕볼 수 없겠는걸」
+				PRINTFORML 
+				PRINTFORMW 일단 완전히 사망했었기 때문이리라.
+				PRINTFORMW 심신에 이상을 초래하는 공격을 받았을 때 한 번 사망시킨 뒤 되살리는 극약 처방이 존재한다.
+				PRINTFORML 
+				PRINTFORMW 「사람 목숨이 너무 가벼운 거 아냐?」
+				PRINTFORML 
+				PRINTFORMW 안심해라. 악마의 목숨도 가볍다. 정조는 무겁지만.
+				PRINTFORML 
+				PRINTFORMW 「……안심할 수 있는 구석이 단 하나도 없는 답변 고마워」
+				PRINTFORML 
+				PRINTFORMW 기가 막힌 듯 질린 표정은 두말할 나위 없이 전혀 안심하지 못한 기색이었다.
+			ELSEIF RESULT == 1
+				PRINTFORML 
+				PRINTFORMW 나제지타에게 화제를 돌린다.
+				PRINTFORML 
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:나제지타_DR]]), [[キャラ:나제지타_DR]]
+				PRINTFORMW 「흠…… 짐이라 해야 할지 나라고 해야 할지…… 뭐 아무렴 어떠냐.
+				PRINTFORMW 　이름은 나제지타. 제국의 전 왕자였던 노예……였던 자다」
+				PRINTFORML 
+				PRINTFORMW 전 왕자가 황제에게 반기를 들었던 것인가.
+				PRINTFORML 
+				PRINTFORMW 「뭐, 여러 사정이 있어서 말이다. 『황제』에게 있어 『왕자』 따윈 자기 계획의 부품에 지나지 않았던 것이지.
+				PRINTFORMW 　……그리고 그걸 알아챘을 때는 이미 돌이킬 수 없는 상황이었을 뿐이다」
+				PRINTFORML 
+				PRINTFORMW 그렇게 말하며 나제지타는 옛일을 회상하듯 눈을 감았다.
+				PRINTFORMW 단순한 황제와 왕자의 관계로는 가늠할 수 없는 모종의 사정이 있는 듯하다.
+				PRINTFORML 
+				PRINTFORMW 「한 걸음만 더…… 앞으로 한 걸음만 더 나아갔다면 그 『황제』를 베어 넘길 수 있었거늘……
+				PRINTFORMW 　무엇이 화가 되고 무엇이 복이 될지는 참으로 알 수 없는 노릇이로군.
+				PRINTFORMW 　패배하여 능욕당하고 죽은 줄 알았더니 이렇게 목숨을 건졌으니 말이다」
+				PRINTFORML 
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:다이아나_DR]]), [[キャラ:다이아나_DR]]
+				PRINTFORMW 「그건 그렇고 나제 군, 아직도 여장할 생각이었던 거야?」
+				PRINTFORML 
+				PRINTFORMW 재생한 의상의 주문이 여장이었던 것에 다이애나가 의문을 표한다.
+				PRINTFORML 
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:나제지타_DR]]), [[キャラ:나제지타_DR]]
+				PRINTFORMW 「………………」
+				PRINTFORML 
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:다이아나_DR]]), [[キャラ:다이아나_DR]]
+				PRINTFORMW 「………………」
+				PRINTFORML 
+				PRINTFORMW 잠시의 침묵 후. 굳어있던 나제지타가 입을 연다.
+				PRINTFORML 
+				PRINTFORMW 「저………… 내가, 움직이기, 편하다는…… 것으로…… 해두어라」
+				;BADENDでメス落ち少年やらされてるからね。女装が板についちゃったんだね、しょうがないね。
+				PRINTFORML 
+				PRINTFORMW 지적해선 안 될 것을 지적해 버린 것이 아닐까.
+				PRINTFORMW 다이애나도 어색한 눈길로 이쪽을 쳐다보았다.
+				PRINTFORML 
+				PRINTFORMW 「방금 거, 안 들은 걸로 치는 게 좋을까?」
+				PRINTFORML 
+				PRINTFORMW 아마도 그 편이 평화로울 것이다.
+				PRINTFORML 
+			ELSEIF RESULT == 2
+				PRINTFORML 
+				PRINTFORMW 『릴리』라고 불리던 여성에 대해 물어본다.
+				PRINTFORML 
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:데스포르카_DR]]), [[キャラ:데스포르카_DR]], "FACE_0"
+				PRINTFORMW 「……그렇, 군. 네 녀석도 신경이 쓰이나. …………」
+				PRINTFORML 
+				PRINTFORMW 개운치 못한 기색을 숨기지 못한 채 데스폴루카가 침묵한다.
+				PRINTFORML 
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:사라사_DR]]), [[キャラ:사라사_DR]]
+				PRINTFORMW 「……우리 대륙에서 그녀는 이렇게 불렸어. 『연쇄 엽기 살인마 릴리 킬러』」
+				PRINTFORML 
+				PRINTFORMW 구원의 손길일까. 대신 사라사가 입을 연다.
+				PRINTFORML 
+				PRINTFORMW 「대륙 각국의 여러 나라에 나타나 부유한 가정의 소녀들만을 골라 죽였지.
+				PRINTFORMW 　온몸이 토막 날 때까지 난도질하여 현장에는 피와 살점밖에 남지 않아.
+				PRINTFORMW 　그 참상과 풍모 탓에 누군가가 붙인 별명이 바로 『릴리 킬러』였어」
+				PRINTFORML 
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:다이아나_DR]]), [[キャラ:다이아나_DR]]
+				PRINTFORMW 「……대륙의 세간 일반에서는 그런 인식이었지」
+				PRINTFORML 
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:앙쥬_DR]]), [[キャラ:앙쥬_DR]]
+				PRINTFORMW 「하지만 폴루카에게 있어서는……」
+				PRINTFORML 
+				PRINTFORMW 안쥬가 데스폴루카를 바라보며 말을 잇지 못한다.
+				PRINTFORML 
+				PRINTFORMW 「미안하다. 다시 때를 보아 이야기하게 해주어라」
+				PRINTFORML 
+				PRINTFORMW 이야기하기 곤란한 일이라면 억지로 털어놓지 않아도 좋다.
+				PRINTFORMW 설명할 필요가 없어지자 팽팽하던 공기가 부드러워진다.
+				PRINTFORML 
+			ENDIF
+			PRINTFORMW 「……그래서 말이다」
+			PRINTFORML 
+			PRINTFORMW 자유 담소가 끝난 시점에서 데스폴루카가 지휘를 잡는다.
+			PRINTFORMW 안쥬 이하 다섯 사람이 일제히 조용해지며 시선이 집중되었다.
+			PRINTFORML 
+			PRINTFORMW 「『이나바 시』에서 찾아낸 『나무』 말이다만, 그곳에서 익숙한 기척을 느꼈다.
+			PRINTFORMW 　그놈뿐만이 아니라 뫼비우스…… 저쪽에서 죽었을 터인 『잔재(뫼비우스)』의 기척이」
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:나제지타_DR]]), [[キャラ:나제지타_DR]]
+			PRINTFORMW 「우리들의 그림자……가 있던 곳인가」
+			PRINTFORML 
+			PRINTFORMW 「『집단적 무의식』? 이라는 모양이다만…….
+			PRINTFORMW 　사람의 의식 깊은 곳에는 온갖 것의 정보(언어)가 들어차 있다? 고 하던가」
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:다이아나_DR]]), [[キャラ:다이아나_DR]]
+			PRINTFORMW 「심리학도 힌두 사상도 전문 밖이긴 한데…… 즉?」
+			PRINTFORML 
+			;ローカパーラ、プラントまでクリア以上あるいはアバチュ２エンディング到達済み
+			IF ダンジョンフラグ:13:1 >= 9 || GETBIT(FLAG:발견ED, 45) != 0
+				PRINTFORMW 간단히 요약하자면…….
+				PRINTFORML 1: 이 세계의 태양은 모든 정보를 관장하는 회로이다
+				PRINTFORML 2: 완전히 죽은 자의 정보는 태양으로 순환해 간다
+				PRINTFORML 3: 정보 중에는 이세계의 것도 포함되어 있다
+				PRINTFORML 
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:사라사_DR]]), [[キャラ:사라사_DR]]
+				PRINTFORML 「오버드 관련 서적을 최소한밖에 안 읽었던 게 후회되네.
+				PRINTFORMW 　드문드문 단어는 이해가 가는데 전체 맥락을 모르겠어……」
+				PRINTFORML 
+			ENDIF
+			PRINTFORML ……즉, 태양과 접촉할 수 있다면,
+			PRINTFORMW 완전히 죽은 자와 다시 만난다 해도 이상하지 않다.
+			PRINTFORMW 나아가 『대륙』으로 향할 단서가 있을지도 모른다, 는 뜻이다.
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:나제지타_DR]]), [[キャラ:나제지타_DR]]
+			PRINTFORMW 「그렇다곤 하나 그 뜨거운 곳에 어떻게 갈 셈이지?
+			PRINTFORMW 　하늘을 난다 해도 한계가 있을 텐데. 가데몬 대도 없는 마당에」
+			PRINTFORML 
+			;太陽解禁済みかアバチュ２エンディングクリア済み
+			IF ダンジョンフラグ:13:1 >= 16 && GETBIT(FLAG:발견ED,45) != 0
+				PRINTFORMW 문제는 없다, 수단은 이미 확립되어 있다.
+				PRINTFORMW 가보면 안다.
+				PRINTFORML 
+				PRINTFORMW 「으음, 뭐 그렇다면 맡겨둘 만하겠군」
+				PRINTFORML 
+				PRINTFORMW 즉, 당장 해야 할 일은 전력을 정비하는 것.
+				PRINTFORML 
+			ELSE
+				PRINTFORMW 확정된 것은 아니지만…… 태양과 교신해야만 하는 자들이 있다.
+				PRINTFORMW 그들의 발자취를 뒤쫓아 간다면 머지않아 길은 열릴 것이다.
+				PRINTFORML 
+				PRINTFORMW 「다소 미덥지 못한 이야기이긴 하지만 현 상황에서 기댈 수 있는 건 네 녀석뿐이니…… 맡기마」
+				PRINTFORML 
+				PRINTFORMW 즉, 당장 해야 할 일은 그 뒤를 쫓기 위해 전력을 갖추는 것.
+				PRINTFORML 
+			ENDIF
+			PRINTFORMW 「그리하여…… 다이애나, 나제지타. 힘을 보태주겠나?」
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:나제지타_DR]]), [[キャラ:나제지타_DR]]
+			PRINTFORMW 「아아, 맡겨두어라. 제국 제123왕자, 나제지타」
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:다이아나_DR]]), [[キャラ:다이아나_DR]]
+			;誤って覚えていたことが判明したので修正。ファーガソンではなかった。
+			PRINTFORMW 「좋아. 전 FBI 수사관, 다이애나 퍼거슨」
+			PRINTFORML 
+			PRINTFORMW ――다시 한번, 마족 데스폴루카의 곁으로.
+			PRINTFORML 
+			PRINTFORML 
+			IF FINDCHARA_B([[キャラ:다이아나_DR]]) < 0
+				;加入処理に成功した場合、呼び名から（DR）を削除、戦闘参加不可能は-1。
+				CALL ADD_NEW_COMPANION, [[キャラ:다이아나_DR]], 1000
+				IF RESULT > 0
+					CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+					PRINTFORML 이세계인 다이애나가 동료로 가입했습니다.
+				ENDIF
+				PRINTFORML 
+				PRINTFORMW 「만약을 위해 말해두지만 섹슈얼한 의미로는 거절이니까.
+				PRINTFORMW 　특히 SM이나 구속 같은 짓. 만약 했다간 쏴버릴 거야」
+				PRINTFORML 
+			ENDIF
+			IF FINDCHARA_B([[キャラ:나제지타_DR]]) < 0
+				;加入処理に成功した場合、呼び名から（DR）を削除、戦闘参加不可能は0
+				CALL ADD_NEW_COMPANION, [[キャラ:나제지타_DR]], 1000
+				IF RESULT > 0
+					CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "参加可能"
+					PRINTFORML 전 제국 왕자 나제지타가 동료로 가입했습니다.
+				ENDIF
+				PRINTFORML 
+				PRINTFORMW 「뭐냐, 너도 내 몸을 노리고 있는 건가?
+				PRINTFORMW 　파시아스에 있던 영감탱이도 그렇고 너도 그렇고…… 절개라곤 없는 거냐」
+				PRINTFORML 
+				PRINTFORML 이곳은 성적 지향의 다양성이 존중받는 세계이기에……
+				PRINTFORMW 나제지타 정도의 외모라면 성별을 불문하고 가만히 내버려 둘 자는 없다.
+				PRINTFORMW 물론 여성과 사귀든 남성과 사귀든 자유다.
+				PRINTFORML 
+				PRINTFORMW 「적어도 아프지 않게 해다오……」
+				PRINTFORML 
+			ENDIF
+			CALL EVENT_97_TURN_END
+			RETURN 1
+		ENDIF
+	ENDIF
+;解放条件
+CASE 3
+	IF ARG:1 == 1
+		;戦闘可能なデスポリュカ含めアンジュ・カリンカ・サラーサ・ダイアナ・ナージェジタ、６人以上居ないとNG。
+		CALL DemonsRoots_敗北者点呼
+		SIF RESULT <= 5
+			RETURN 0
+		;太陽への移動が可能か、アバチュ２エンディング済みでない場合ダメ。
+		SIF ダンジョンフラグ:13:1 < 16 && GETBIT(FLAG:발견ED,45) == 0
+			RETURN 0
+		;前イベント（ダイアナ・ナージェジタ）終了後
+		SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 2)
+			RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			RESULTS = 『백합 공주를 향한 헌가』(전투・시간 경과 있음)
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			;直前のイベントをクリアしている場合ガイド。そうでなければマスク
+			IF GETBIT(CFLAG:ARG:개별이벤트읽음, 2)
+				RESULTS = ※이전 이벤트 종료・DR조 전투 가능자 6명 이상 존재・태양 침입 조건을 만족 or 아바타 튜너 2 엔딩 완료.
+			ELSE
+				RESULTS = LOCKED
+			ENDIF
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		PRINTFORML 
+		PRINTFORML 데스폴루카가 부르고 있다.
+		PRINTFORML 태양으로 돌입할 때라고 여기는 듯하지만……
+		PRINTFORML 
+		PRINTFORMW 선택을 강요받을 예감이 든다.
+		PRINTFORML 
+		PRINTL [0] 準備完了
+		PRINTL [1] 準備不足
+		CALL INPUTINT, 0 , 1
+		IF RESULT == 1
+			PRINTFORML 
+			PRINTFORMW 태양에 모이는 정보들은 강하다. 준비를 갖출 필요가 있다.
+			PRINTFORMW 보류하겠다고 대답했다.
+			PRINTFORML 
+		ELSE
+			PRINTFORMW 준비는 완료되었다. 출격한다.
+			PRINTFORML 
+			PRINTFORMW …………
+			PRINTFORML 
+			PRINTFORMW ……
+			PRINTFORML 
+			SETBGCOLOR 0xFFFFFF
+			SETCOLOR 0x000000
+			CUSTOMDRAWLINE =
+			ALIGNMENT CENTER
+			PRINTFORML 
+			PRINTFORML ――당신을――――알 필요가 있어――――
+			PRINTFORML 
+			PRINTFORML ―――――――우리와――――――싸워줘……!?
+			PRINTFORML 
+			PRINTFORML 기다려, 무슨 일이야? 이 데스폴루카, 죽어……!?
+			PRINTFORML 
+			PRINTFORML ………………아니, 이 데스폴루카가 아니야. 그럼 이 혼은……
+			PRINTFORML 
+			PRINTFORMW 
+			ALIGNMENT LEFT
+			CUSTOMDRAWLINE =
+			RESETCOLOR
+			RESETBGCOLOR
+			PRINTFORML 
+			;まだ侵入できていない＝エンディングクリアからの到達
+			IF ダンジョンフラグ:13:1 < 16
+				PRINTFORMW ＞太陽　対流層　裏道
+				PRINTFORML 
+				PRINTFORMW 터미널을 이용한 백도어로 침입한, 정보가 모이는 최대의 집적회로, 태양.
+				PRINTFORMW 발을 디딜 수 있는 곳에 데스폴루카와 함께 내려섰다.
+				PRINTFORML 
+				PRINTFORMW 「……말이 안 나오는군. 『정보』란, 이렇게나 아름답게 보이는 것인가」
+				PRINTFORML 
+				PRINTFORMW 정보(말)가 끊임없이 흘러, 한곳에 머무르지 않는 이곳은 태양의 뒷구획이다.
+			;順当に到達した人へ。旧仕様。
+			ELSE
+				PRINTFORMW ＞太陽　対流層
+				PRINTFORML 
+				PRINTFORMW 정보가 모이는 최대의 집적회로, 태양.
+				PRINTFORMW 발을 디딜 수 있는 곳에 데스폴루카와 함께 내려섰다.
+				PRINTFORML 
+				PRINTFORMW 「……말이 안 나오는군. 『정보』란, 이렇게나 아름답게 보이는 것인가」
+				PRINTFORML 
+				PRINTFORMW 정보(말)가 끊임없이 흘러, 한곳에 머무르지 않는 이곳은 아직 표층부다.
+				;太陽クリア済みである
+				SIF ダンジョンフラグ:13:1 > 17
+					PRINTFORMW 원래대로라면, 이대로 위로 올라가는 형태로 중심부를 목표로 삼겠지만…….
+			ENDIF
+			PRINTFORML 
+			PRINTFORMW 「여기까지 다가선 덕분에 똑똑히 지각할 수 있겠어.
+			PRINTFORMW 　이쪽이다. ……이 한구석에, 그 『나무』와 같은 특수한 장소가 있다」
+			PRINTFORML 
+			PRINTFORMW 정보의 소용돌이 구덩이라고 해야 할까, 눈을 응시하지 않으면 모를 작은 웅덩이가 있다.
+			PRINTFORML 웅덩이를 억지로 비집어 열듯이 먼저 데스폴루카가 들어가고, %CALLNAME:MASTER%도 뒤를 따……
+			PRINTFORML 
+			PRINTFORMW 【……기다려 주실까. 마족 데스폴루카의 협력자】
+			PRINTFORML 
+			PRINTFORMW 문득 들린 목소리에 걸음을 멈췄다.
+			PRINTFORML 
+			PRINTFORML 【솔직히…… 당신의 『각오』를 묻겠다.
+			SETCOLOR 0x33ffcc
+				PRINTFORM 　그녀들의 과거, 그리고 결말
+			RESETCOLOR
+			PRINTFORML 에, 어디까지 파고들 생각인가……】
+			PRINTFORML 
+			PRINTFORMW 즉, 그렇게까지 깊이 관여할 셈인가, 하고 묻고 싶은 모양이다.
+			PRINTL 
+			PRINT [0] 각오는 되어 있다
+			SETCOLOR 0x000000
+				PRINTFORML (DemonsRoots 원작 스포일러 있음 + 긴 이야기)
+			RESETCOLOR
+			PRINT [1] 들을 생각은 없다
+			SETCOLOR 0x000000
+				PRINTFORML (스포일러를 회피합니다)
+			RESETCOLOR
+			CALL INPUTINT, 0 , 1 
+			IF RESULT == 1
+				DRネタバレ回避フラグ = 1
+				PRINTFORML 
+				PRINTFORMW 【……그런가, 알았다.
+				PRINTFORMW 　거기서 잠시 기다려 줘. 그녀와 『이야기』가 있다】
+				PRINTFORML 
+				PRINTFORMW 알려지고 싶지 않은 과거도 있겠지. 파고들지 않겠다고 대답하자,
+				PRINTFORMW 그런 목소리와 함께 잠시 시간이 흘렀다.
+				PRINTFORML 
+				PRINTFORMW ……
+				PRINTFORML 
+				PRINTFORMW …
+				PRINTFORML 
+				PRINTFORMW 이윽고 기다리게 했다는 듯 웅덩이의 입구가 열린다.
+				PRINTFORML 
+				PRINTFORMW ……빠져나간 곳은 어느 발코니일까.
+				PRINTFORMW 데스폴루카와, 섬광이 모여 형상화된 듯한 인간형의 무언가가 대치하고 있다.
+				PRINTFORML 
+				PRINTFORMW 「왔는가…… 우리에게는 아직 해야 할 일이 남아 있던 모양이다」
+				PRINTFORML 
+				PRINTFORMW 인간형 무언가로부터 이쪽으로 시선을 돌리는 데스폴루카. 이마에 땀이 흐르고 있다.
+				PRINTFORML 
+				PRINTFORMW 【협력자도 왔으니 다시 말하지. 당신들의 세계에 『황제』의 잔해가 표류해 있다】
+				PRINTFORML 
+				PRINTFORMW 『황제』, 그것은 데스폴루카 일행이 싸워야 할 상대였던 『제국』의 최고 지도자.
+				PRINTFORMW ……데스폴루카 일행은 패했을 텐데 타도당한 건가?
+				PRINTFORML 
+				PRINTFORMW 【……적어도, 『우리』의 세계에서는 말이지.
+				PRINTFORMW 　어째서 그런 인식의 차이가 있는지는 어느 정도 추측할 수 있지만 확정할 수는 없다】
+				PRINTFORML 
+				PRINTFORMW 「그래서 말이다. 몰아넣을 방책도 이 녀석이 생각하고 있다는데…….
+				PRINTFORMW 　『한 번 황제에게 패배한 당신들을, 그대로 다시 사지로 보낼 수는 없다』라고 하더군」
+				PRINTFORML 
+			ELSE
+				DRネタバレ回避フラグ = 0
+				PRINTFORML 
+				PRINTFORMW 【……좋다. 와 다오. 차례대로 이야기하마】
+				PRINTFORML 
+				PRINTFORMW 데스폴루카 일행에게 무슨 일이 있었는가. 그리고 무슨 일이 일어날 것인가.
+				PRINTFORMW 그것들을 파고들겠다고 전하자, 웅덩이의 입구가 열렸다.
+				PRINTFORML 
+				PRINTFORMW ……빠져나간 곳은 어느 발코니일까.
+				PRINTFORMW 먼저 와 있던 데스폴루카의 시선 끝에 있는 것은, 섬광이 모여 형상화된 듯한 인간형의 무언가.
+				PRINTFORML 
+				PRINTFORMW 【자기소개보다 먼저 이야기해 둘 것이 있다.
+				PRINTFORMW 　사실, 『우리』의 세계축에서는 데스폴루카, 당신은 『황제』를 쓰러뜨린 자로 되어 있다】
+				PRINTFORML 
+				PRINTFORMW 뭐라고? 하며 눈살을 찌푸리는 데스폴루카를 아랑곳하지 않고, 인간형은 이야기를 계속했다.
+				PRINTFORMW 인간형의 세계에서 일어난 『마족 데스폴루카』의 역사는, 마치 한 번 본 것처럼
+				PRINTFORMW 줄타기나 다름없는 싸움을 헤쳐 나가며, 무모하다고 여겨졌던 황제 타도를 이뤄냈다.
+				PRINTFORMW 『마족 데스폴루카』의 활약으로 제국은 해체되고, 노예 제도는 폐지되었다고 한다.
+				PRINTFORML 
+				PRINTFORML 「즉, 『나』――가령 알파라 하자――와,
+				PRINTFORMW 　이 목소리의 주인이 말하는 『데스폴루카』――이쪽은 베타다――는 걸어온 운명이 다르다.
+				PRINTFORML 　마치, 『알파』의 실패를 누군가가 기록하여…… 『베타』에게 전한 것 같다는 이야기인가」
+				PRINTFORML 
+				PRINTFORMW 바로 그렇다, 라며 섬광이 고개를 끄덕이는 듯한 기척이 들었다.
+				PRINTFORML 
+				PRINTFORMW 【『베타』 즉, 내가 아는 마족 데스폴루카는 분명 황제를 토벌했다. 하지만…….
+				PRINTFORML 　내가 『베타』에 대해 알려고 하여…… 결계를 이용해 교신하려 한 결과,
+				PRINTFORMW 　『베타』가 아니라 『알파』의 데스폴루카…… 즉 당신과 이어져 버렸다】
+				PRINTFORML 
+				PRINTFORMW 요컨대 불러내려다 혼선되었다는 설명에 골똘히 생각하는 데스폴루카.
+				PRINTFORMW 『베타』 자체는 어떤 이유로 없는 것일까.
+				PRINTFORML 
+				PRINTFORMW 【덕분에 그쪽 세계에 성가신 것이 숨어들었다는 것도 알게 되었다.
+				PRINTFORMW 　……본론으로 돌아가지. 우리 쪽에서 그쪽 세계로 표류해 온 것은 데스폴루카뿐만이 아니라는 건 알고 있는가?】
+				PRINTFORML 
+				PRINTFORMW 「……우리를 집어삼킨, 그 검은 괴물을 말하는 건가」
+				PRINTFORML 
+				PRINTFORMW 【그렇기도 하고, 그뿐만이 아니다…… 『베타』가 토벌했을 터인 『황제』의 잔해가 그쪽에 있다】
+				PRINTFORML 
+				PRINTFORMW 「무, 뭐라고! 황제, 아니 『블레스커스』가!? 어이, 정말이겠지!?」
+				PRINTFORML 
+				PRINTFORMW 생각지도 못한 말에 말투가 거칠어지는 데스폴루카.
+				PRINTFORMW 태양에 모이는 이세계의 정보(말)를 생각하면 불가능한 이야기는 아니지만…….
+				PRINTFORMW 『블레스커스』라는 새로운 단어가 나왔다.
+				PRINTFORML 
+				PRINTFORMW 「『블레스커스』라는 것은 황제의 정체다……. 아주 옛날, 우리 이전의 마족이었던 자.
+				PRINTFORML 　『인류를 존속시키고 영원히 축복하는 것』에 얽매인, 고대 마족과 인류 희생자들의 말로다……」
+				PRINTFORML 
+				PRINTFORMW 【『알파』와 『베타』의 차이점 중 하나로 현저한 것이 있다.
+				PRINTFORMW 　『베타』는 훈계의 수옥을 찾아냈다. 그리고 훈계의 수옥을 흔적도 없이 분쇄했다…….
+				PRINTFORMW 　그 수옥의 파수꾼이었던 이형의 몬스터도 『베타』에 의해 격파되었다고 기록에 있다】
+				PRINTFORML 
+				PRINTFORML 『알파』를 집어삼킨 이형의 몬스터…… 너울이 『베타』에 의해 격파되어,
+				PRINTFORMW 표류하는 사이에 태양으로 흘러들어…… 그런 셈인가.
+				PRINTFORML 
+				PRINTFORMW 【황제…… 블레스커스의 잔해는 그 연결에 이끌리듯 함께 흘러들어온 모양이다.
+				PRINTFORMW 　그리하여 먼저 표류해 온 너울로부터 친화성 있는 마력을 빼앗는 형태로 힘을 비축하고 있다……】
+				PRINTFORML 
+				PRINTFORMW 「하지만…… 『황제』…… 아니, 『블레스커스』가 『축복』해야 할 인류는 없지 않은가!
+				PRINTFORMW 　되살아났다 한들, 이세계의 인류에게까지 『축복』을 내리려 하다니……!」
+				PRINTFORML 
+				PRINTFORMW 【끝났을 터인 일을 다시 시작할 수 있다. 지금은 아직 『블레스커스』도 그 생각밖에 하지 못하고 있는 것이겠지.
+				PRINTFORMW 　궁지에서 생물은 근원적인 욕구의 충족이 최우선이 되지만, 『블레스커스』는 단순한 생물이 아니다……】
+				PRINTFORML 
+				PRINTFORMW 「한 번 소멸하고도 아직 『인류의 축복』에 계속 얽매여 있는 것인가……」
+				PRINTFORML 
+				PRINTFORMW 즉……
+				PRINTFORML 
+				PRINTFORML 1：데스폴루카와 함께 원수인 『황제』도 흘러들어왔다
+				PRINTFORMW 2：살려둬서는 좋은 영향을 낳지 않으므로, 배제해야 한다.
+				PRINTFORML 
+				PRINTFORMW ……이런 뜻인가.
+				PRINTFORML 
+				PRINTFORMW 【엄청 거칠게 말하자면 그렇다. 하지만…… 그 전에 한 가지, 해야 할 일이 있다】
+				FORCEWAIT
+				PRINTFORML 
+				PRINTFORMW 【……한 번 황제에게 패배한 당신들을, 그대로 다시 사지로 보낼 수는 없다】
+				PRINTFORML 
+			ENDIF
+			PRINTFORML 
+			PRINTFORMW 즉, 맡길 수 있을 만한 힘이라는 것을 보이라는 건가.
+			PRINTFORML 
+			PRINTFORMW 【그렇다, 협력자, 그리고 데스폴루카.
+			PRINTFORMW 　『왕』의 힘을 갖고…… 당신의 마음과 힘을 다시 한번 시험해 보겠다……!】
+			PRINTFORML 
+			PRINTFORMW 인간형의 섬광이 더욱 빛을 더했다.
+			PRINTFORMW ……할 수밖에 없는 모양이다.
+			PRINTFORML 
+			PRINTFORMW ＞『왕』이 나타났다!
+			PRINTFORML 
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			エネミーレベル = LIMIT(BASE:MASTER:LV, 70, 90)
+			CALL SET_ENEMY, 9, [[キャラ:데스포르카_DR]], エネミーレベル, 1, 1
+			NAME:(CHARANUM-1) = 『王』
+			CALLNAME:(CHARANUM-1) = 『王』
+			CFLAG:(CHARANUM-1):ＨＰ보정 += 10000
+			CFLAG:(CHARANUM-1):ＭＰ보정 += 50000
+			CFLAG:(CHARANUM-1):행동횟수 = 3
+			CALL CLEAR_ALL_SKILL, CHARANUM-1
+			EQUIP:(CHARANUM-1):검 = GETNUM(ITEM, "셀티스")
+			EQUIP:(CHARANUM-1):총 = GETNUM(ITEM, "사초총・윤회")
+			EQUIP:(CHARANUM-1):머리 = GETNUM(ITEM, "퍼레이드헬름")
+			EQUIP:(CHARANUM-1):몸통 = GETNUM(ITEM, "퍼레이드아머")
+			EQUIP:(CHARANUM-1):팔 = GETNUM(ITEM, "퍼레이드글러브")
+			EQUIP:(CHARANUM-1):발 = GETNUM(ITEM, "퍼레이드부츠")
+			;速を下げる。回避性能をある程度落としたい。
+			BASE:(CHARANUM-1):속도 -= 10
+			CFLAG:(CHARANUM-1):속도보정 += 10
+			ABL:(CHARANUM-1):스킬1  = [[스킬:기합]]
+			ABL:(CHARANUM-1):스킬2  = [[스킬:만마의일격]]
+			ABL:(CHARANUM-1):스킬3  = [[스킬:허공참파]]
+			ABL:(CHARANUM-1):스킬4  = [[스킬:뇌진왕모의발차기]]
+			ABL:(CHARANUM-1):스킬5  = [[스킬:이악물기]]
+			ABL:(CHARANUM-1):스킬6  = [[스킬:이신의잔영]]
+			ABL:(CHARANUM-1):스킬7  = [[스킬:타루카쟈오토]]
+			ABL:(CHARANUM-1):스킬8  = [[스킬:라쿠카쟈오토]]
+			ABL:(CHARANUM-1):스킬9  = [[스킬:스쿠카쟈오토]]
+			;稀にとんでもないものをランダム行動で打ち込んでくるぞ
+			ABL:(CHARANUM-1):스킬10  = [[스킬:전용기1]]
+			CSTR:(CHARANUM-1):전용기1 = パリィ（DR）
+			ABL:(CHARANUM-1):스킬11  = [[스킬:전용기2]]
+			CSTR:(CHARANUM-1):전용기2 = サンダーボルト（LT）
+			ABL:(CHARANUM-1):스킬12  = [[스킬:전용기3]]
+			CSTR:(CHARANUM-1):전용기3 = コレダーデュランダル
+			CSTR:(CHARANUM-1):사고패턴 = ExitedKing
+			BASE:(CHARANUM-1):비구 = 100
+			BASE:(CHARANUM-1):타격 = 100
+			BASE:(CHARANUM-1):전술 = 100
+			BASE:(CHARANUM-1):화염 = 100
+			BASE:(CHARANUM-1):빙결 = 100
+			BASE:(CHARANUM-1):충격 = 100
+			BASE:(CHARANUM-1):지변 = 100
+			BASE:(CHARANUM-1):질풍 = 100
+			BASE:(CHARANUM-1):중력 = 100
+			BASE:(CHARANUM-1):핵열 = 100
+			;万能列全体
+			ABL:(CHARANUM-1):공격상성 = 17
+			ABL:(CHARANUM-1):공격범위 = 2
+			ABL:(CHARANUM-1):사거리 = 3
+			;毒８倍、とスリップ４倍弱点……ボス補正1/4を加味して２倍と等倍だよ。知らなきゃわからん弱点だ！
+			BASE:(CHARANUM-1):POISON = 700
+			BASE:(CHARANUM-1):SLIP = 300
+			CALL SYNC_STATUS, (CHARANUM-1)
+			CALL HEALTH_CHARA, (CHARANUM-1)
+			CALL BATTLE_START
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			PRINTFORML 
+			PRINTFORMW ＞『왕』을 쓰러뜨렸다.
+			PRINTFORML 
+			PRINTFORMW 【……충분하다. 당신들이라면 분명 완수할 수 있겠지】
+			PRINTFORML 
+			IF BASE:ARG:LV >= 70
+				PRINTFORML 「무뎌졌던 내 몸도 덕분에 힘을 되찾고 있다.
+				PRINTFORMW 　네 곁에서 기를 쓰고 발톱을 갈아왔던 것도 헛되지 않았다는 뜻이겠지」
+				PRINTFORML 
+			ENDIF
+			IF DRネタバレ回避フラグ == 1
+				PRINTFORMW 「…………『황제』는 태양 속에 있다고 한다.
+				PRINTFORML 　방책은 방금 전 네가 오기 전에 세워 두었다. 하지만……
+				PRINTFORMW 　일단 돌아가서 결전의 준비를 갖추는 편이 좋겠지」
+				PRINTFORML 
+			ELSE
+				PRINTFORMW 낯익은 기술과 낯선 기술이 뒤섞여 있던 느낌인데…….
+				PRINTFORML 
+				PRINTFORML 【당신들은 『베타』와 달리 완전히 이쪽 결계 안으로 불러들일 수가 없기에,
+				PRINTFORMW 　원격으로 결계를 만들고 통신하는 형태로 접촉하고 있다. 예를 들면 전격을 일으키는 법도 요령이 달라.
+				PRINTFORMW 　……그럭저럭의 형태로 재현되었을 거다. 문장이 제 역할을 하고 있다면 말이지】
+				PRINTFORML 
+				PRINTFORMW 『왕』이 고민하는 듯한 기색을 언뜻 보였으나, 그건 중요하지 않다는 듯 고개를 젓는 기척.
+				PRINTFORML 
+				PRINTFORMW 【이야기를 되돌리지. 『블레스커스』는 태양의 흐름 속에 있다.
+				PRINTFORMW 　그대로 두면 도망치겠지만, 이 결계라면 구속할 수 있다. ……하지만】
+				PRINTFORML 
+				PRINTFORMW 「생각지도 못한 소모를 강요당했으니까…… 일단 돌아가야 해.
+				PRINTFORMW 　시험이라고 하기엔 살의가 너무 높았어」
+				PRINTFORML 
+			ENDIF
+			PRINTFORML 
+			PRINTFORMW 【한 가지 낭보가 있다. 당신과 마찬가지로 그쪽에 구축한 결계 안에서 건져 올릴 수 있었던 자가 있다.
+			PRINTFORMW 　당신의 동료는 한 명 더 있는 것 같지만…… 먼저 그 자를 초빙하지】
+			PRINTFORML 
+			PRINTFORMW 인간형의 목소리와 함께 나타난 것은, 하얀 베이비돌 같은 속옷 차림의 여성.
+			PRINTFORMW 분위기는 내팽개쳐진 날선 칼날 같은 인상을 풍겼다.
+			PRINTFORML 
+			PRINTFORMW 「…………어머? 나 왜 여기에…… 앗!」
+			PRINTFORML 
+			PRINTFORMW 어둠이 굳어진 것처럼 속을 꿰뚫어 볼 수 없는 눈동자가 데스폴루카를 포착하자……
+			PRINTFORML 
+			PRINTFORMW 「아아아아아아아아아아아앗!! 폴루카 님!! 폴루카 님아아아앗!!!
+			PRINTFORMW 　살아서!! 살아 계셨군요!!!! 그 아이에게 삼켜져서 이제 틀렸다고 생각했었는데 말이에요!!!!!」
+			PRINTFORML 
+			PRINTFORMW 순간온수기처럼 텐션이 폭발하며 덥석 안겨 왔다.
+			PRINTFORML 이 여성, 상당한 장신이지만…… 데스폴루카의 몸에 온몸을 샅샅이 비벼대는 듯한 형태로,
+			PRINTFORMW 꿈틀꿈틀 휘감기며 감싸고 있으니 마족 소녀도 견딜 재간이 없다.
+			PRINTFORML 
+			PRINTFORMW 「리, 릴리……! 기다려! 조여든다!」
+			PRINTFORML 
+			PRINTFORMW 「아니요 안 기다려요 폴루카 님!! 폴루카 님의 명령이라도 못 들어요!!!
+			PRINTFORMW 　눈도 가려지고 팔도 묶여 말도 못 했습니다만! 폴루카 님께 그런 짓을 하다니!!!
+			PRINTFORMW 　도저히 견딜 수 없었습니다!! 아아아 무사하셔서 다행이에요오오오오오오오오옷!!!!」
+			PRINTFORML 
+			PRINTFORMW 「우그…… 윽……」
+			PRINTFORML 
+			PRINTFORMW 제지도 듣지 않고, 더욱 몸을 비틀면서 얽힌 몸을 풀지 않는 여성.
+			PRINTFORMW 아마 이 녀석이 종종 화제에 오르던 『릴리』일 텐데…….
+			SELECTCASE GET_ALI1(ABL:MASTER:속성LD)
+			CASE "Light"
+				PRINTFORMW 데스폴루카가 슬슬 숨이 넘어갈 것 같기에, 봐주지 않겠냐며 구원의 손길을 내밀기로 했다.
+			CASE "Neutral"
+				PRINTFORMW 감동의 재회에 젖는 것은 일단 돌아가서 하는 게 어떻겠냐며 분위기 전환을 유도했다.
+			CASE "Dark"
+				PRINTFORMW 잠시 내버려두면 진정되겠지.
+				PRINTFORMW ……그렇게 판단한 결과, 진정될 때까지 상당한 시간이 걸렸다.
+			ENDSELECT
+			PRINTFORML 
+			PRINTFORMW 【그녀…… 이런 인품이었구나……】
+			PRINTFORML 
+			PRINTFORMW 압도당한 『왕』에게 훗날 다시 올 것을 전한 뒤 세이프하우스로 돌아가기로 했다.
+			PRINTFORML 
+			PRINTFORMW ……
+			PRINTFORML 
+			CUSTOMDRAWLINE =
+			PRINTFORML 
+			PRINTFORMW ＞세이프하우스 회의실.
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:릴리킬러_DR]]), [[キャラ:릴리킬러_DR]]
+			PRINTFORMW 「…………하에~~」
+			PRINTFORML 
+			PRINTFORMW 텐션이 가라앉은 릴리 킬러를 포함해 모두를 앉혀 두고 상황을 설명하자,
+			PRINTFORMW 영문을 모르겠다는 얼굴을 하고 있었다.
+			PRINTFORML 
+			IF DRネタバレ回避フラグ == 1
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:칼린카_DR]]), [[キャラ:칼린카_DR]]
+				PRINTFORMW 「『황제』는 그렇다 치고…… 『왕』은 누구였던 거야?」
+				PRINTFORML 
+				PRINTFORMW ……이해하지 못했을 아이가 또 한 명.
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:앙쥬_DR]]), [[キャラ:앙쥬_DR]]
+				PRINTFORMW 「폴루카…… 괜찮아?」
+				PRINTFORML 
+			ELSE
+				PRINTFORML 
+				PRINTFORMW 「릴리는 내가 태어난 직후 처음으로 사귄 『친구』였어.
+				PRINTFORML 　문득 보았을 때는…… 다 큰 어른들이 말도 듣지 않고, 작았던 그녀를 죽이려 하고 있었지.
+				PRINTFORMW 　그걸 참을 수가 없어서 싸우고, 손을 잡고 달아났다」
+				PRINTFORML 
+				PRINTFORMW 그것은 마족과 철부지 소녀의 작은 도피행이었다.
+				PRINTFORMW 식물을 조종하며 온갖 곳으로 도망쳤다…….
+				PRINTFORMW 도망치고 도망쳐…… 은신처를 발견하기 직전에 각자의 적에게 떼어놓아졌다.
+				PRINTFORML 
+				PRINTFORMW ……다시 만났을 때는 서로 딴사람처럼 변해 있었고,
+				PRINTFORML 데스폴루카 자신도 기억에 영향이 있어 눈치채지 못했다고 한다.
+				PRINTFORML 
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:나제지타_DR]]), [[キャラ:나제지타_DR]]
+				PRINTFORMW 「하지만 『블레스커스』…… 그 이름을 듣게 될 줄이야」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:다이아나_DR]]), [[キャラ:다이아나_DR]]
+				PRINTFORMW 「더 충격적인 건 『평행세계』의 존재지만……」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:사라사_DR]]), [[キャラ:사라사_DR]]
+				PRINTFORML 「대륙에서 패배한 우리의 일을 다른 세계의 폴루카 일행에게 전한 자가 있고,
+				PRINTFORMW 　그 폴루카 일행이 쓰러뜨린 『블레스커스』가 이쪽에 다다랐다……?
+				PRINTFORMW 　아무리 그래도 생각이 미치지 못하겠네…… 폴루카, 어떻게 할 거야?」
+				PRINTFORML 
+			ENDIF
+			PRINTFORMW 「……그 녀석을 토벌해야 하는 건 틀림없다.
+			PRINTFORMW 　내버려 두면 이 세계의 인류를 상대로 위험한 획책을 벌이겠지」
+			PRINTFORML 
+			PRINTFORMW 말투와는 달리 데스폴루카의 표정 뒤에는 망설이는 기색이 있었다.
+			PRINTFORMW 그 녀석에게 이기기만 하면 길이 열린다…… 그 일생일대의 승부를 놓치고, 게다가 능욕 끝에 목숨을 잃은 것이다.
+			PRINTFORMW 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:릴리킬러_DR]]), [[キャラ:릴리킬러_DR]]
+			PRINTFORMW 「……폴루카 님이 계신 곳이 제가 있을 곳이라는 점에는 변함이 없습니다만…….
+			PRINTFORMW 　『황제』도 있다면 좋은 전환점이라고 생각해요」
+			PRINTFORML 
+			PRINTFORMW 깊이 고민하는 마족 소녀를 향해 릴리 킬러가 목소리를 낸다.
+			PRINTFORMW 처음 봤을 때와는 달리 그 어두운 눈동자에는 본인의 생각과 배려가 엿보였다.
+			PRINTFORML 
+			PRINTFORMW 「무의미한 소생이 아니에요, 해야 할 일이 있었던 거죠. 나중에 이유는 얼마든지 댈 수 있겠지만
+			PRINTFORMW 　무엇보다 먼저, 이세계에서 숨어든 이물질끼리. 그리고 악연이 있는 자들끼리.
+			PRINTFORMW 　……우리 손으로 결착을 지어야 한다고 생각해요」
+			PRINTFORML 
+			PRINTFORMW 「그렇, 군……」
+			PRINTFORML 
+			IF TALENT:MASTER:사토리（소질） > 0
+				PRINTFORMW 주저하는 데스폴루카의 여러 감정의 교차가 손에 잡힐 듯 전해진다.
+				PRINTFORML 전사한 마족, 믿고 따라와 준 동료, 남겨진 것들에 미래를 마련해주지 못한 『후회』와
+				PRINTFORML 마족 존속의 싹을 꺾어버린 황제를 향한…… 작은 『복수』. 그리고,
+				PRINTFORMW 생각지도 못한 곳에서 칼날이 닿은 것에 대한 『놀라움』과,
+				PRINTFORMW 가장 큰 것은 이길 수 있을까 하는 『불안』과 동료들을 다시 사지로 뛰어들게 만드는 것에 대한 『망설임』일까.
+				PRINTFORML 
+			ENDIF
+			PRINTL [0] 결심을 기다린다
+			IF 연모(ARG) || 친애(ARG)
+				PRINTL [1] 어깨를 안아준다
+			ELSEIF 신뢰(ARG) || 동료(ARG)
+				PRINTL [1] 손을 내민다
+			ELSE
+				PRINTL [1] 시선을 보낸다
+			ENDIF
+			CALL INPUTINT, 0 , 1
+			IF RESULT == 0
+				PRINTFORML 
+				PRINTFORMW 이럴 때는 본인 스스로 답을 내리게 하는 것이 가장 좋다.
+				PRINTFORML 
+				PRINTFORMW 「……네게는 줄곧 폐만 끼치는군」
+				PRINTFORML 
+				PRINTFORMW 결의를 굳히려는 데스폴루카의 시선이 느껴졌다.
+				PRINTFORML 
+			ELSEIF RESULT == 1
+				IF 연모(ARG) || 친애(ARG)
+					PRINTFORML 
+					PRINTFORMW 어깨를 안아주자 깊이 고민하던 마족 소녀의 긴장이 어깨 너머로 전해진다.
+					PRINTFORMW 일은 데스폴루카만의 문제가 아니지만 본인이 마음을 먹어야만 한다.
+					PRINTFORML 
+					PRINTFORMW 「미안하다, 또다시 네게 기대게 되는군」
+					PRINTFORML 
+					PRINTFORMW 주변의 웅성거림을 뒤로하고 잠시 데스폴루카에게 가슴을 빌려주었다.
+					PRINTFORML 
+				ELSEIF 신뢰(ARG) || 동료(ARG)
+					PRINTFORML 
+					PRINTFORMW 손을 내밀자 데스폴루카는 쑥스러운 듯한 표정을 지었다.
+					PRINTFORML 
+					PRINTFORMW 「물론 네 존재를 잊고 있던 건 아니지만……」
+					PRINTFORML 
+					PRINTFORMW 손을 잡기까지는 그리 오랜 시간이 걸리지 않았다.
+					PRINTFORML 
+				ELSE
+					PRINTFORMW 이럴 때는 본인 스스로 답을 내리게 하는 것이 가장 좋다.
+					PRINTFORML 
+					PRINTFORMW 「……네게는 줄곧 폐만 끼치는군」
+					PRINTFORML 
+					PRINTFORMW 결의를 굳히려는 데스폴루카가 마주보아 온다.
+					PRINTFORML 
+				ENDIF
+			ENDIF
+			PRINTFORML 
+			PRINTFORMW 안쥬, 카린카, 사라사, 다이애나, 나제지타, 릴리 킬러.
+			PRINTFORML 그 자리의 전원이 데스폴루카의 말을 기다린다.
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:데스포르카_DR]]), [[キャラ:데스포르카_DR]], "FACE_0"
+			PRINTFORMW 「나는 너희를 한 번 사지로 몰아넣었고, 패배하여 죽게 만들었다.
+			PRINTFORMW 　……『다시 한번 싸우자』라고 말해 주겠는가?」
+			PRINTFORML 
+			PRINTFORMW 그리고 그 자리의 전원이,
+			PRINTFORMW 그것을 기다리고 있었다는 듯이 고개를 끄덕였다.
+			PRINTFORML 
+			PRINTFORMW 「……고맙다」
+			PRINTFORML 
+			;FINDCHARA関数は健在な戦闘参加メンバー(2) > 健在でない戦闘参加メンバー(12) > 健在なCOMP内悪魔OR探索不参加人間(1) > 健在でない～(11) > 自宅サーバーに保存してある悪魔(0)
+			;加入する予定の対象が居ない場合。
+			IF FINDCHARA_B([[キャラ:릴리킬러_DR]]) < 0
+				;加入処理に成功した場合。　呼び名から（DR）を削除、戦闘参加不可能は0
+				CALL ADD_NEW_COMPANION, [[キャラ:릴리킬러_DR]], 500
+				IF RESULT > 0
+					CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "参加可能"
+					IF DRネタバレ回避フラグ == 1
+						PRINTFORML 살인귀 릴리 킬러가 동료로 들어왔습니다.
+					ELSE
+						PRINTFORML 천년공주 릴리 킬러가 동료로 들어왔습니다.
+					ENDIF
+				ENDIF
+				PRINTFORML 
+				PRINTFORMW 「저와 야한 짓, 말인가요?
+				PRINTFORMW 　뭐, 폴루카 님이 좋다고 하신다면야……」
+				PRINTFORMW 「릴리는 온갖 수완은 있지만…… 그런 건 그만두는 편이 좋다고 보는데?
+				PRINTFORMW 　뭐, 절대 안 된다고까지는 안 하겠지만…… 아마 여러 가지로 문제가 생길 거다」
+				;驚異の狂気＋即落ちで売却額はガタガタ
+				PRINTFORML 
+			ENDIF
+			PRINTFORML 
+			PRINTFORMW 「……우선은 다들 몸을 쉬어 둬.
+			PRINTFORML 　아마도…… 다음이 마지막이다」
+			PRINTFORML 
+			IF CSTR:ARG:종족명 == "魔族"
+				IF DRネタバレ回避フラグ == 1
+					PRINTFORMW 「그리고 또 하나 이야기해 둘 것이 있다. 내 힘에 관한 이야기다」
+					PRINTFORML 
+					PRINTFORMW 듣자 하니…… 싸움 속에서 잃어버렸던 마족의 힘이 릴리 킬러의 협력으로 되살아났다고 한다.
+					PRINTFORMW 앞으로는 전투 중 임의의 타이밍에 변화하여 전술의 폭을 넓힐 수 있는 모양이다.
+					PRINTFORML 
+					CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:데스포르카_DR]]), [[キャラ:데스포르카_DR]], "FACE_EX_0", , "使徒変身"
+					PRINTFORMW ――데스폴루카가 각성했다――
+					PRINTFORML 
+					PRINTFORML 전투 중 커맨드에서 사용할 수 있으며, 발동하면 강화 상태가 됩니다.
+					PRINTFORML 주는 데미지 상승, 최대 HP 증가, 게이지 스킬이 『오리진 루츠』로 변경됩니다.
+					PRINTFORML 단, 이 기능의 사용에는 게이지 스킬 『데몬즈 루츠』를 유지해야 하며,
+					PRINTFORMW 대가로 메이의 이슬의 HP 회복력이 절반으로 저하됩니다.
+					PRINTFORML 
+					CSTR:ARG:종족명 = 魔族＋
+				ELSE
+					PRINTFORMW 「그리고 또 하나 이야기해 둘 것이 있다. 내…… 『사도』의 힘에 대해서다」
+					PRINTFORML 
+					PRINTFORML ……과거, 마왕 마지막 사도로 각성했던 데스폴루카의 능력은,
+					PRINTFORMW 패배와 능욕을 겪으며 상처입고 잃어버린 상태였다.
+					PRINTFORMW 그러나 릴리 킬러가 되살아남으로써, 재봉기와 함께 다시금 꽃을 피웠다고 한다.
+					PRINTFORMW 앞으로는 전투 중 임의의 타이밍에 변화하여 전술의 폭을 넓힐 수 있는 모양이다.
+					;ネタバレ回避も兼ねて分岐を作り直し。
+					PRINTFORML 
+					CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:데스포르카_DR]]), [[キャラ:데스포르카_DR]], "FACE_EX_0", , "使徒変身"
+					PRINTFORMW ――데스폴루카의 『사도』 능력이 되살아났다――
+					PRINTFORML 
+					PRINTFORML 전투 중 커맨드에서 사용할 수 있으며, 발동하면 『사도』 상태가 됩니다.
+					PRINTFORML 주는 데미지 상승, 최대 HP 증가, 게이지 스킬이 『오리진 루츠』로 변경됩니다.
+					PRINTFORML 단, 이 기능의 사용에는 게이지 스킬 『데몬즈 루츠』를 유지해야 하며,
+					PRINTFORMW 대가로 메이의 이슬의 HP 회복력이 절반으로 저하됩니다.
+					PRINTFORML 
+					CSTR:ARG:종족명 = 使徒
+				ENDIF
+			;２周め以降の場合。ネタバレ回避がオフだったら使徒としてちゃんと話す。
+			ELSEIF CSTR:ARG:종족명 == "魔族＋"
+				IF DRネタバレ回避フラグ == 0
+					PRINTFORMW 「……새삼스럽긴 하지만, 또 하나 이야기해 둘 것이 있다. 내…… 『사도』의 힘에 대해서다」
+					PRINTFORML 
+					PRINTFORML 어떤 것인지 수수께끼에 싸여 있던 데스폴루카의 능력……
+					PRINTFORMW 그것은 과거 마왕 마지막 사도로 각성했던 것이었다.
+					PRINTFORML 
+					PRINTFORMW 「뭐 실태는 다르지 않다. 릴리의 꽃의 노래의 힘으로 변신해 보다 공격적으로 된다는 점은 말이지」
+					PRINTFORML 
+					CSTR:ARG:종족명 = 使徒
+				ENDIF
+			ENDIF
+			CALL EVENT_97_TURN_END
+			RETURN 1
+		ENDIF
+	ENDIF
+CASE 4
+	IF ARG:1 == 1
+		;戦闘可能なデスポリュカ含めアンジュ・カリンカ・サラーサ・ダイアナ・ナージェジタ・リリィキラー、７人居ないとNG。
+		CALL DemonsRoots_敗北者点呼
+		SIF RESULT <= 6
+			RETURN 0
+		;最後ぐらいは。デスポリュカ戦闘参加必須
+		SIF FINDCHARA_B([[キャラ:데스포르카_DR]]) < 2
+			RETURN 0
+		;太陽への移動が可能か、アバチュ２エンディング済みでない場合ダメ。
+		SIF ダンジョンフラグ:13:1 < 16 && GETBIT(FLAG:발견ED,45) == 0
+			RETURN 0
+		;前イベント（リリィキラー）終了後
+		SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 3)
+			RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			RESULTS = 『죽어간 데몬들에게 바치는 노래』(결전)
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			;直前のイベントをクリアしている場合ガイド。そうでなければマスク
+			IF GETBIT(CFLAG:ARG:개별이벤트읽음, 3)
+				RESULTS = ※이전 이벤트 종료・DR조 전투 가능자 7명 이상 존재・데스폴루카 전투 참가 중.
+			ELSE
+				RESULTS = LOCKED
+			ENDIF
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		PRINTFORML 
+		PRINTFORML ……데스폴루카가 부르고 있다.
+		PRINTFORML 
+		PRINTL [0] 準備完了
+		PRINTL [1] 準備不足
+		CALL INPUTINT, 0 , 1
+		IF RESULT == 1
+			PRINTFORML 
+			PRINTFORMW 준비는, 필요하다.
+			PRINTFORML 
+		ELSE
+			PRINTFORML 
+			PRINTFORMW 결전의 시각이다.
+			PRINTFORML 
+			CUSTOMDRAWLINE =
+			PRINTFORML 
+			PRINTFORMW ＞태양 대류층 『왕』의 결계 안
+			PRINTFORML 
+			IF DRネタバレ回避フラグ == 1
+				PRINTFORMW 【……지금부터 『황제』를 불러들여, 이 결계 안에 가두겠다.
+				PRINTFORML 　지금 상태라면 『황제』와 함께, 당신들을 삼킨 『이형』도 끌어들일 수 있겠지.
+				PRINTFORMW 　상대의 도망칠 곳은 없어지지만, 반대로 당신들의 퇴로도 없어진다. ……준비는 되었는가?】
+				PRINTFORML 
+				PRINTFORMW 「아아, 부탁하지. 가자」
+				PRINTFORML 
+				PRINTFORMW 긴장된 표정의 데스폴루카의 수긍에 『왕』도 고개를 끄덕이는 기색을 보인다.
+				PRINTFORMW 이윽고 발코니 같았던 주위 풍경이 모래처럼 바스러져 감과 동시에 『왕』의 모습도 옅어지고
+				PRINTFORML 
+				PRINTFORMW 아무것도 보이지 않는 어둠이 그곳을 지배했다.
+				PRINTFORML 
+				PRINTFORMW 【저 『이형』이, 『황제』를 유지하고 있는 핵인 것 같다.
+				PRINTFORMW 　양쪽 모두를 동시에 활동 불능까지 몰아넣어 다오】
+				PRINTFORML 
+				PRINTFORMW 마지막으로 『왕』의 목소리가 끊어지고…… 앞쪽 공간에서 살기를 두른 무언가가 다가왔다.
+				PRINTFORML 
+				PRINTFORMW 몇 번인가 보았던 검게 요동치는 무언가와…… 검은 옷차림의 인간형.
+				PRINTFORML 얼굴이 검어 표정을 엿볼 수 없으나…… 이쪽을 이미 인식하고 있어,
+				PRINTFORMW 드러난 살기만이 휘황하게 빛나는 붉은 눈에서 엿보였다.
+				PRINTFORML 
+				PRINTFORMW 이것이 『황제』……의 말로인가.
+				PRINTFORML 
+				PRINTFORMW 「나와 네 입장은 같았다. 만약 내가 네가 처한 상황에 놓였다면…….
+				PRINTFORMW 　틀림없이 같은 짓을 했겠지. 이런 곳까지 와서도 아직 포기하지 않는 점도 동질감을 느끼지 않는 것은 아니다」
+				PRINTFORML 
+				PRINTFORMW 하지만, 이라며 자세를 취하는 데스폴루카.
+				PRINTFORML 
+				PRINTFORML 「서로 패배자가 나대고 있어서는 현지인들에게 미안하니까 말이지.
+				PRINTFORMW 　다시 한번, 끝을 맺자…… 『황제』여!」
+				PRINTFORML 
+				PRINTFORMW ＞『황제』가 나타났다.
+				PRINTFORML 
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				エネミーレベル = LIMIT(BASE:MASTER:LV, 80, 99)
+				;メビアスなのは男の便宜上の都合
+				CALL SET_ENEMY, 8, [[キャラ:잔재메비우스_DR]], エネミーレベル, 2, 1
+				NAME:(CHARANUM-1) = 『皇帝』
+				CALLNAME:(CHARANUM-1) = 『皇帝』
+				CFLAG:(CHARANUM-1):ＭＰ보정 += 50000
+				CFLAG:(CHARANUM-1):행동횟수 = 3
+				EQUIP:(CHARANUM-1):검 = GETNUM(ITEM, "셀티스")
+				EQUIP:(CHARANUM-1):총 = GETNUM(ITEM, "사초총・윤회")
+				EQUIP:(CHARANUM-1):머리 = GETNUM(ITEM, "퍼레이드헬름")
+				EQUIP:(CHARANUM-1):몸통 = GETNUM(ITEM, "퍼레이드아머")
+				EQUIP:(CHARANUM-1):팔 = GETNUM(ITEM, "퍼레이드글러브")
+				EQUIP:(CHARANUM-1):발 = GETNUM(ITEM, "퍼레이드부츠")
+				;速を上げ、行動速度を下げる。回避を上げる。Lv20詐欺
+				BASE:(CHARANUM-1):힘 += 10
+				BASE:(CHARANUM-1):마력 += 10
+				BASE:(CHARANUM-1):속도 += 10
+				CFLAG:(CHARANUM-1):속도보정 -= 30
+				CALL CLEAR_ALL_SKILL, CHARANUM-1
+				ABL:(CHARANUM-1):스킬1  = [[스킬:기합]]
+				ABL:(CHARANUM-1):스킬2  = [[스킬:허공참파]]
+				ABL:(CHARANUM-1):스킬3  = [[스킬:선회속탄]]
+				ABL:(CHARANUM-1):스킬4  = [[스킬:브레이브재퍼]]
+				ABL:(CHARANUM-1):스킬5  = [[스킬:오절절우]]
+				ABL:(CHARANUM-1):스킬6  = [[스킬:악셀]]
+				ABL:(CHARANUM-1):스킬7  = [[스킬:타루카쟈오토]]
+				ABL:(CHARANUM-1):스킬8  = [[스킬:라쿠카쟈오토]]
+				ABL:(CHARANUM-1):스킬9  = [[스킬:스쿠카쟈오토]]
+				;稀にとんでもないものをランダム行動で打ち込んでくるぞ
+				ABL:(CHARANUM-1):스킬10  = [[스킬:전용기1]]
+				CSTR:(CHARANUM-1):전용기1 = 筆洗
+				ABL:(CHARANUM-1):스킬11  = [[스킬:전용기2]]
+				CSTR:(CHARANUM-1):전용기2 = ギガバスター
+				ABL:(CHARANUM-1):스킬12  = [[스킬:전용기3]]
+				CSTR:(CHARANUM-1):전용기3 = 凄惨
+				CSTR:(CHARANUM-1):사고패턴 = Emperor_DR
+				BASE:(CHARANUM-1):검격 = 150
+				BASE:(CHARANUM-1):비구 = 150
+				BASE:(CHARANUM-1):타격 = 120
+				BASE:(CHARANUM-1):전술 = 100
+				BASE:(CHARANUM-1):화염 = 90
+				BASE:(CHARANUM-1):빙결 = 90
+				BASE:(CHARANUM-1):전격 = 150
+				BASE:(CHARANUM-1):충격 = 90
+				BASE:(CHARANUM-1):지변 = 90
+				BASE:(CHARANUM-1):파마 = 150
+				BASE:(CHARANUM-1):주살 = 90
+				BASE:(CHARANUM-1):신경 = 90
+				BASE:(CHARANUM-1):정신 = 90
+				BASE:(CHARANUM-1):질풍 = 100
+				BASE:(CHARANUM-1):중력 = 100
+				BASE:(CHARANUM-1):핵열 = 100
+				;万能列全体
+				ABL:(CHARANUM-1):공격상성 = 17
+				ABL:(CHARANUM-1):공격범위 = 2
+				ABL:(CHARANUM-1):사거리 = 3
+				CALL SYNC_STATUS, (CHARANUM-1)
+				CALL HEALTH_CHARA, (CHARANUM-1)
+				;うねり
+				CALL SET_ENEMY, 10, [[キャラ:데스포르카_DR]], エネミーレベル, 2, 1
+				NAME:(CHARANUM-1) = 『너울』
+				CALLNAME:(CHARANUM-1) = 『너울』
+				CFLAG:(CHARANUM-1):ＨＰ보정 -= 5000
+				CFLAG:(CHARANUM-1):ＭＰ보정 += 50000
+				CFLAG:(CHARANUM-1):행동횟수 = 1
+				EQUIP:(CHARANUM-1):검 = GETNUM(ITEM, "셀티스")
+				EQUIP:(CHARANUM-1):총 = GETNUM(ITEM, "사초총・윤회")
+				EQUIP:(CHARANUM-1):머리 = GETNUM(ITEM, "퍼레이드헬름")
+				EQUIP:(CHARANUM-1):몸통 = GETNUM(ITEM, "퍼레이드아머")
+				EQUIP:(CHARANUM-1):팔 = GETNUM(ITEM, "퍼레이드글러브")
+				EQUIP:(CHARANUM-1):발 = GETNUM(ITEM, "퍼레이드부츠")
+				CALL CLEAR_ALL_SKILL, CHARANUM-1
+				ABL:(CHARANUM-1):스킬1  = [[스킬:타루・카쟈]]
+				ABL:(CHARANUM-1):스킬2  = [[스킬:스쿠・카쟈]]
+				ABL:(CHARANUM-1):스킬3  = [[스킬:라쿠・카쟈]]
+				ABL:(CHARANUM-1):스킬4  = [[스킬:마카・카쟈]]
+				ABL:(CHARANUM-1):스킬5  = [[스킬:베어먹기]]
+				ABL:(CHARANUM-1):스킬6  = [[스킬:사마카쟈오토]]
+				ABL:(CHARANUM-1):스킬7  = [[스킬:타루카쟈오토]]
+				ABL:(CHARANUM-1):스킬8  = [[스킬:라쿠카쟈오토]]
+				ABL:(CHARANUM-1):스킬9  = [[스킬:스쿠카쟈오토]]
+				;稀にとんでもないものをランダム行動で打ち込んでくるぞ
+				ABL:(CHARANUM-1):스킬10  = [[스킬:전용기1]]
+				CSTR:(CHARANUM-1):전용기1 = パリィ（DR）
+				ABL:(CHARANUM-1):스킬11  = [[스킬:전용기2]]
+				CSTR:(CHARANUM-1):전용기2 = ギイの種
+				ABL:(CHARANUM-1):스킬12  = [[스킬:전용기3]]
+				CSTR:(CHARANUM-1):전용기3 = メイの露
+				BASE:(CHARANUM-1):검격 = 80
+				BASE:(CHARANUM-1):비구 = 80
+				BASE:(CHARANUM-1):타격 = 80
+				BASE:(CHARANUM-1):전술 = 100
+				BASE:(CHARANUM-1):화염 = 150
+				BASE:(CHARANUM-1):빙결 = 150
+				BASE:(CHARANUM-1):전격 = 150
+				BASE:(CHARANUM-1):충격 = 150
+				BASE:(CHARANUM-1):지변 = 150
+				BASE:(CHARANUM-1):파마 = 150
+				BASE:(CHARANUM-1):주살 = 90
+				BASE:(CHARANUM-1):신경 = 90
+				BASE:(CHARANUM-1):정신 = 90
+				BASE:(CHARANUM-1):질풍 = 100
+				BASE:(CHARANUM-1):중력 = 100
+				BASE:(CHARANUM-1):핵열 = 100
+				;万能列全体
+				ABL:(CHARANUM-1):공격상성 = 17
+				ABL:(CHARANUM-1):공격범위 = 2
+				ABL:(CHARANUM-1):사거리 = 3
+				;感電凍結スリップ４倍弱点……ボス補正1/4を加味して等倍だよ。わからん弱点だ！
+				BASE:(CHARANUM-1):SHOCK = 300
+				BASE:(CHARANUM-1):FREEZE = 300
+				BASE:(CHARANUM-1):SLIP = 300
+				CALL SYNC_STATUS, (CHARANUM-1)
+				CALL HEALTH_CHARA, (CHARANUM-1)
+			ELSE
+				PRINTFORMW 【『블레스커스』는 당신들을 삼킨 『이형』을 흡수해 두고 있는 모양이다.
+				PRINTFORML 　황제와는 면식이 있다. 즉, 이쪽으로 끌어들일 수가 있지.
+				PRINTFORMW 　상대의 도망칠 곳은 없어지지만, 반대로 당신들의 퇴로도 없어진다. ……준비는 되었는가?】
+				PRINTFORML 
+				PRINTFORMW 「아아, 부탁하지. 가자」
+				PRINTFORML 
+				PRINTFORMW 긴장된 표정의 데스폴루카의 수긍에 『왕』도 고개를 끄덕이는 기색을 보인다.
+				PRINTFORMW 이윽고 발코니 같았던 주위 풍경이 모래처럼 바스러져 감과 동시에 『왕』의 모습도 옅어지고
+				PRINTFORML 
+				PRINTFORMW 아무것도 보이지 않는 어둠이 그곳을 지배했다.
+				PRINTFORML 
+				PRINTFORMW 【지금 상태라면 『블레스커스』를, 흡수한 『이형』째로 토벌하면 된다. 부탁하마】
+				PRINTFORML 
+				PRINTFORMW 마지막으로 『왕』의 목소리가 끊어지고…… 앞쪽 공간에 누군가가 있었다.
+				PRINTFORML 
+				PRINTFORMW ……검은 꼬마 도깨비 같은, 악마.
+				PRINTFORMW 뻐끔히 벌어진 입과 앙상하게 마른 몸.
+				PRINTFORML 
+				PRINTFORMW 다만 눈만이 하얗게 빛나며, 말없는 『집념』이 서려 있었다.
+				PRINTFORML 
+				PRINTFORML 「『블레스커스』…… 과거 제물로 바쳐진 인간과, 고독한 죽음을 꺼렸던 마족의 말로여.
+				PRINTFORMW 　나와 네 입장은 같았다. 만약 내가 네가 처한 상황에 놓였다면…….
+				PRINTFORMW 　틀림없이 같은 짓을 했겠지. 이런 곳까지 와서도 아직 포기하지 않는 점도 동질감을 느끼지 않는 것은 아니다」
+				PRINTFORML 
+				PRINTFORMW 하지만, 이라며 자세를 취하는 데스폴루카.
+				PRINTFORML 
+				PRINTFORMW 「나는 네 손에, 너 역시 또 다른 내 손에 한 번 끝났다.
+				PRINTFORML 　……서로 패배자가 나대고 있어서는 현지인들에게 미안하니까 말이지.
+				PRINTFORMW 　그 망념도, 다시 한번 끝을 맺자…… 『블레스커스』!」
+				PRINTFORML 
+				PRINTFORMW ＞『블레스커스』가 나타났다.
+				PRINTFORML 
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				エネミーレベル = LIMIT(BASE:MASTER:LV, 80, 120)
+				;メビアスなのは男の便宜上の都合
+				CALL SET_ENEMY, 9, [[キャラ:잔재메비우스_DR]], エネミーレベル, 2, 1
+				NAME:(CHARANUM-1) = 『블레스커스』
+				CALLNAME:(CHARANUM-1) = 『블레스커스』
+				CFLAG:(CHARANUM-1):ＨＰ보정 += 20000
+				CFLAG:(CHARANUM-1):ＭＰ보정 += 50000
+				CFLAG:(CHARANUM-1):행동횟수 = 3
+				EQUIP:(CHARANUM-1):검 = GETNUM(ITEM, "셀티스")
+				EQUIP:(CHARANUM-1):총 = GETNUM(ITEM, "사초총・윤회")
+				EQUIP:(CHARANUM-1):머리 = GETNUM(ITEM, "퍼레이드헬름")
+				EQUIP:(CHARANUM-1):몸통 = GETNUM(ITEM, "퍼레이드아머")
+				EQUIP:(CHARANUM-1):팔 = GETNUM(ITEM, "퍼레이드글러브")
+				EQUIP:(CHARANUM-1):발 = GETNUM(ITEM, "퍼레이드부츠")
+				;速を上げ、行動速度を下げる。回避を上げる。
+				;ちょっとモノ足りなそうなので少しブースト。Lv40詐欺
+				BASE:(CHARANUM-1):힘 += 10
+				BASE:(CHARANUM-1):마력 += 10
+				BASE:(CHARANUM-1):속도 += 30
+				BASE:(CHARANUM-1):운 += 10
+				CFLAG:(CHARANUM-1):속도보정 -= 30
+				CALL CLEAR_ALL_SKILL, CHARANUM-1
+				ABL:(CHARANUM-1):스킬1  = [[스킬:회전설법]]
+				ABL:(CHARANUM-1):스킬2  = [[스킬:허공참파]]
+				ABL:(CHARANUM-1):스킬3  = [[스킬:선회속탄]]
+				ABL:(CHARANUM-1):스킬4  = [[스킬:이클립스미러]]
+				ABL:(CHARANUM-1):스킬5  = [[스킬:어둠의포미러버]]
+				ABL:(CHARANUM-1):스킬6  = [[스킬:천년의저주]]
+				ABL:(CHARANUM-1):스킬7  = [[스킬:타루카쟈오토]]
+				ABL:(CHARANUM-1):스킬8  = [[스킬:라쿠카쟈오토]]
+				ABL:(CHARANUM-1):스킬9  = [[스킬:스쿠카쟈오토]]
+				;稀にとんでもないものをランダム行動で打ち込んでくるぞ
+				ABL:(CHARANUM-1):스킬10  = [[스킬:전용기1]]
+				CSTR:(CHARANUM-1):전용기1 = パリィ（DR）
+				ABL:(CHARANUM-1):스킬11  = [[스킬:전용기2]]
+				CSTR:(CHARANUM-1):전용기2 = ギガバスター
+				ABL:(CHARANUM-1):스킬12  = [[스킬:전용기3]]
+				CSTR:(CHARANUM-1):전용기3 = 凄惨
+				CSTR:(CHARANUM-1):사고패턴 = Emperor_DREX
+				BASE:(CHARANUM-1):검격 = 120
+				BASE:(CHARANUM-1):비구 = 120
+				BASE:(CHARANUM-1):타격 = 120
+				BASE:(CHARANUM-1):전술 = 100
+				BASE:(CHARANUM-1):화염 = 90
+				BASE:(CHARANUM-1):빙결 = 90
+				BASE:(CHARANUM-1):전격 = 150
+				BASE:(CHARANUM-1):충격 = 90
+				BASE:(CHARANUM-1):지변 = 90
+				BASE:(CHARANUM-1):파마 = 150
+				BASE:(CHARANUM-1):주살 = 150
+				BASE:(CHARANUM-1):신경 = 90
+				BASE:(CHARANUM-1):정신 = 90
+				BASE:(CHARANUM-1):질풍 = 100
+				BASE:(CHARANUM-1):중력 = 100
+				BASE:(CHARANUM-1):핵열 = 100
+				;万能列
+				ABL:(CHARANUM-1):공격상성 = 17
+				ABL:(CHARANUM-1):공격범위 = 2
+				ABL:(CHARANUM-1):사거리 = 3
+				CALL SYNC_STATUS, (CHARANUM-1)
+				CALL HEALTH_CHARA, (CHARANUM-1)
+			ENDIF
+			CALL BATTLE_START
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			IF DRネタバレ回避フラグ == 1
+				PRINTFORML 
+				PRINTFORMW 『황제』를 쓰러뜨렸다.
+				PRINTFORML 
+				PRINTFORMW %CALLNAME:MASTER%의 총탄이 검게 요동치는 무언가의 핵을 파괴한 손맛을 느낌과 동시에,
+				;ポリュカ健在
+				IF FINDCHARA_B([[キャラ:데스포르카_DR]]) == 2
+					PRINTFORM 데스폴루카
+					IF FINDCHARA_B([[キャラ:릴리킬러_DR]]) == 2
+						PRINTFORM 과 릴리가 쥔 거대 결정검
+					ELSEIF FINDCHARA_B([[キャラ:앙쥬_DR]]) == 2
+						PRINTFORM 과, 안쥬의 동시 공격
+					ELSEIF FINDCHARA_B([[キャラ:칼린카_DR]]) == 2
+						PRINTFORM 과, 카린카의 동시 권격
+					ELSEIF FINDCHARA_B([[キャラ:사라사_DR]]) == 2
+						PRINTFORM 와, 사라사의 동시 공격
+					ELSEIF FINDCHARA_B([[キャラ:다이아나_DR]]) == 2
+						PRINTFORM 와, 다이애나의 방아쇠 동시 공격
+					ELSEIF FINDCHARA_B([[キャラ:나제지타_DR]]) == 2
+						PRINTFORM 와, 나제지타의 동시 검극
+					;他も居ないか異常。
+					ELSE
+						PRINTFORM 의 혼신의 일격
+					ENDIF
+				;デスポリュカ行動不能時
+				ELSEIF FINDCHARA_B([[キャラ:데스포르카_DR]]) == 12
+					IF FINDCHARA_B([[キャラ:릴리킬러_DR]]) == 2
+						PRINTFORM 릴리 킬러의 분노의 추격
+					ELSEIF FINDCHARA_B([[キャラ:앙쥬_DR]]) == 2
+						PRINTFORM 안쥬의 찌르기
+					ELSEIF FINDCHARA_B([[キャラ:칼린카_DR]]) == 2
+						PRINTFORM 카린카의 철권
+					ELSEIF FINDCHARA_B([[キャラ:사라사_DR]]) == 2
+						PRINTFORM 사라사의 마도광선
+					ELSEIF FINDCHARA_B([[キャラ:다이아나_DR]]) == 2
+						PRINTFORM 다이애나의 총격
+					ELSEIF FINDCHARA_B([[キャラ:나제지타_DR]]) == 2
+						PRINTFORM 나제지타의 검기
+					;他も居ないか異常。
+					ELSE
+						PRINTFORM 다른 한쪽에도 발사한 총격
+					ENDIF
+				ENDIF
+				PRINTFORMW 에 꿰뚫린 황제도 움직임을 멈춘다.
+				PRINTFORML 
+				PRINTFORMW 이윽고 요동치는 무언가의 갈라진 틈에서 무언가가 뿜어져 나왔다.
+				PRINTFORML 
+				PRINTFORMW 이 세계의 악마나 인간의 생명일까.
+				PRINTFORMW 사로잡혀 있던 것들이 풀려나기 시작한 것이리라.
+				PRINTFORMW 그리고 마찬가지로 『황제』도.
+				PRINTFORML 
+				PRINTFORMW 『…………데스, 폴루카……아……』
+				PRINTFORML 
+				PRINTFORMW 가냘픈 목소리와 함께 부서져, 빛이 되어 사라져 갔다.
+				PRINTFORML 
+				PRINTFORMW 이것으로, 끝나는 것일까.
+				PRINTFORML 
+				SIF FINDCHARA_B([[キャラ:데스포르카_DR]]) == 12
+					PRINTFORM 기진맥진한 데스폴루카를 둘러쳐 업고,
+				PRINTFORMW 『왕』을 부른다.
+				PRINTFORML 
+				CUSTOMDRAWLINE =
+				PRINTFORML 
+				PRINTFORMW 다시 발코니 같은 세계가 구축되어 간다.
+				PRINTFORMW 『왕』이나 데스폴루카에게 낯익은 장소인 것일까.
+				PRINTFORML 
+				PRINTFORMW 【황제는 다시 산산조각 났다. 아마도 이번에야말로 소멸하겠지】
+				PRINTFORMW 「……그렇다면 좋겠지만 말이지」
+				PRINTFORML 
+				PRINTFORMW 숙적의 격파를 완수했으나 데스폴루카의 미간은 찌푸려진 채다.
+				PRINTFORMW 생각하는 바는 황제에 대한 것인가, 이 이후의 일인가…….
+				PRINTFORML 
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:잔재메비우스_DR]]), [[キャラ:잔재메비우스_DR]]
+				PRINTFORMW 「그리 어두운 낯빛을 띠지 마라, 계집아이」
+				PRINTFORMW 「……그 목소리는…… 설마」
+				PRINTFORML 
+				PRINTFORML 등 뒤, 발코니의 옥내에 해당하는 곳에서 모습을 드러낸 것은,
+				PRINTFORMW 초록색 몸에 뿔 하나, 외눈박이인 아마도 남성일 인영.
+				PRINTFORML 
+				PRINTFORMW 「메비우스……인 건가」
+				PRINTFORMW 「그렇고말고. 계집아이가 눈에 밟혀 별로 돌아가지 못했지 뭔가」
+				PRINTFORML 
+				PRINTFORMW 농담인지 진담인지 분간이 안 가는 말투로 데스폴루카 곁으로 다가오더니
+				PRINTFORML 
+				PRINTFORMW 「나는 잔재 메비우스. ……계집아이를 거두어 준 것에 감사를 표하지」
+				PRINTFORML 
+				PRINTFORMW 검사 특유의 목례를 해 보였다.
+				PRINTFORML 
+				PRINTFORMW 【마왕의 사도 메비우스…… 나는 안면이 없었지만,
+				PRINTFORMW 　이전에 이야기했던 또 다른 한 명이 그 사람이다. 자력으로 태양에서 이곳에 도달한 거지】
+				PRINTFORML 
+				PRINTFORMW 「익숙한…… 계집아이와 황제의 낌새가 느껴져서 말이지」
+				PRINTFORML 
+				PRINTFORMW 그렇게 『왕』에게 대답한 메비우스는 데스폴루카 쪽으로 돌아선다.
+				PRINTFORML 
+				PRINTFORMW 「……데스폴루카여.
+				PRINTFORMW 　오랜 우회 끝이지만 황제는 쓰러뜨렸다. 지금 생각해야 할 바는 그것으로 족하다」
+				PRINTFORMW 「하지만 메비우스…… 내가 패배함으로써 대륙의 마족들은……!」
+				PRINTFORML 
+				PRINTFORMW 그것 역시 네놈이 짊어질 일이 아니다, 라며 고개를 젓는 메비우스.
+				PRINTFORMW 그는 이 『윤회』의 장치를 알고 있는 듯했다.
+				PRINTFORML 
+				PRINTFORMW 「이미 지나간 일이다. 우리 싸움의 종극은 여기인 셈이니.
+				PRINTFORMW 　남은 건 어떻게 끝낼 것인가…… 그것뿐이다.
+				PRINTFORMW 　데스폴루카. 네놈들은 이 악마의 세계에서 악착같이 살아남아…… 목숨을 이어가라」
+			;バレOKモード
+			ELSE
+				PRINTFORML 
+				PRINTFORMW 『블레스커스』를 쓰러뜨렸다.
+				PRINTFORML 
+				;ポリュカ健在
+				IF FINDCHARA_B([[キャラ:데스포르카_DR]]) == 2
+					PRINTFORM 데스폴루카
+					IF FINDCHARA_B([[キャラ:릴리킬러_DR]]) == 2
+						PRINTFORM 과 릴리가 쥔 거대 결정검
+					ELSEIF FINDCHARA_B([[キャラ:앙쥬_DR]]) == 2
+						PRINTFORM 과, 안쥬의 동시 공격
+					ELSEIF FINDCHARA_B([[キャラ:칼린카_DR]]) == 2
+						PRINTFORM 과, 카린카의 동시 권격
+					ELSEIF FINDCHARA_B([[キャラ:사라사_DR]]) == 2
+						PRINTFORM 와, 사라사의 동시 공격
+					ELSEIF FINDCHARA_B([[キャラ:다이아나_DR]]) == 2
+						PRINTFORM 와, 다이애나의 방아쇠 동시 공격
+					ELSEIF FINDCHARA_B([[キャラ:나제지타_DR]]) == 2
+						PRINTFORM 와, 나제지타의 동시 검극
+					;他も居ないか異常。
+					ELSE
+						PRINTFORM 의 혼신의 일격
+					ENDIF
+				;デスポリュカ行動不能時
+				ELSEIF FINDCHARA_B([[キャラ:데스포르카_DR]]) == 12
+					IF FINDCHARA_B([[キャラ:릴리킬러_DR]]) == 2
+						PRINTFORM 릴리 킬러의 분노의 추격
+					ELSEIF FINDCHARA_B([[キャラ:앙쥬_DR]]) == 2
+						PRINTFORM 안쥬의 찌르기
+					ELSEIF FINDCHARA_B([[キャラ:칼린카_DR]]) == 2
+						PRINTFORM 카린카의 철권
+					ELSEIF FINDCHARA_B([[キャラ:사라사_DR]]) == 2
+						PRINTFORM 사라사의 마도광선
+					ELSEIF FINDCHARA_B([[キャラ:다이아나_DR]]) == 2
+						PRINTFORM 다이애나의 총격
+					ELSEIF FINDCHARA_B([[キャラ:나제지타_DR]]) == 2
+						PRINTFORM 나제지타의 검기
+					;他も居ないか異常。
+					ELSE
+						PRINTFORM 움직이지 못하는 데스폴루카를 대신해 쏘아 박은 총탄
+					ENDIF
+				ENDIF
+				PRINTFORMW 이 『블레스커스』의 핵을 꿰뚫는다
+				PRINTFORML 
+				PRINTFORMW 『…………祝、福……축복……』
+				PRINTFORML 
+				PRINTFORMW 그것은 의지가 담긴 목소리였는지, 토해내듯 가냘픈 목소리.
+				PRINTFORML 
+				PRINTFORMW 「……너도, 더 이상 계속 존재하지 않아도, 계속 축복하지 않아도 돼. 왜냐하면……
+				PRINTFORM 　『축복』이나 통제한 정도로 버텨낼 수 없을 만큼, 이쪽 세계는 무너져 가고 있으니까……」
+				PRINTFORML 
+				PRINTFORMW 『…………데스, 폴루카……아』
+				PRINTFORML 
+				PRINTFORMW 마지막으로 부서져, 빛이 되어 사라져 갔다.
+				PRINTFORML 
+				PRINTFORMW 이것으로, 끝나는 것일까.
+				PRINTFORML 
+				SIF FINDCHARA_B([[キャラ:데스포르카_DR]]) == 12
+					PRINTFORM 기진맥진한 데스폴루카를 둘러쳐 업고,
+				PRINTFORMW 『왕』을 부른다.
+				PRINTFORML 
+				CUSTOMDRAWLINE =
+				PRINTFORML 
+				PRINTFORMW 다시 발코니 같은 세계가 구축되어 간다.
+				PRINTFORMW 『왕』이나 데스폴루카에게 낯익은 장소인 것일까.
+				PRINTFORML 
+				PRINTFORMW 【블레스커스는 다시 분쇄되었다. 두 번의 격추를 거쳐, 이번에야말로 소멸하겠지】
+				PRINTFORMW 「……그렇다면 좋겠지만 말이지」
+				PRINTFORML 
+				PRINTFORMW 숙적의 격파를 완수했으나 데스폴루카의 미간은 찌푸려진 채다.
+				PRINTFORMW 생각하는 바는…….
+				PRINTFORML 
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:잔재메비우스_DR]]), [[キャラ:잔재메비우스_DR]]
+				PRINTFORMW 「그리 어두운 낯빛을 띠지 마라, 계집아이」
+				PRINTFORMW 「……그 목소리는…… 설마」
+				PRINTFORML 
+				PRINTFORML 등 뒤, 발코니의 옥내에 해당하는 곳에서 모습을 드러낸 것은,
+				PRINTFORMW 초록색 몸에 뿔 하나, 외눈박이인 아마도 남성일 인영.
+				PRINTFORML 
+				PRINTFORMW 「메비우스……인 건가」
+				PRINTFORMW 「그렇고말고. 쿠단과 서로 맞비긴 뒤, 패배한 계집아이가 눈에 밟혀 별로 돌아가지 못했지 뭔가」
+				PRINTFORML 
+				PRINTFORMW 농담인지 진담인지 분간이 안 가는 말투로 데스폴루카 곁으로 다가오더니
+				PRINTFORML 
+				PRINTFORMW 「나는 잔재 메비우스. ……계집아이를 거두어 준 것에 감사를 표하지」
+				PRINTFORML 
+				PRINTFORMW 검사 특유의 목례를 해 보였다.
+				PRINTFORML 
+				PRINTFORMW 「너와 융합했던 기사단장은…… 어떻게 되었지」
+				PRINTFORMW 「최후의 수단으로 분리된 후, 붉은 장군은 한발 앞서 떠나버렸다. 나만이 이쪽으로 왔지.
+				PRINTFORMW 　……마를 얼씬도 못하게 하던 『방패』를 때려 부술 때 무언가를 느꼈던 것이겠지, 평온한 얼굴이었다」
+				PRINTFORML 	
+				PRINTFORMW 【마왕의 사도 뇌정의 메비우스…… 나는 안면이 없었지만,
+				PRINTFORMW 　이전에 이야기했던 또 다른 한 명이 그 사람이다. 자력으로 태양에서 이곳에 도달한 거로군】
+				PRINTFORML 
+				PRINTFORMW 「익숙한…… 계집아이와 황제의 낌새가 느껴져서 말이지」
+				PRINTFORML 
+				PRINTFORMW 그렇게 『왕』에게 대답한 메비우스는 데스폴루카 쪽으로 돌아선다.
+				PRINTFORML 
+				PRINTFORMW 「……데스폴루카여.
+				PRINTFORMW 　오랜 우회 끝이지만 황제는 쓰러뜨렸다. 지금 생각해야 할 바는 그것으로 족하다」
+				PRINTFORMW 「하지만 메비우스…… 내가 패배함으로써 대륙의 마족들은……!」
+				PRINTFORML 
+				PRINTFORMW 그것 역시 네놈이 짊어질 일이 아니다, 라며 고개를 젓는 메비우스.
+				PRINTFORMW 그 역시 이 『윤회』의 장치를 알고 있는 듯했다.
+				PRINTFORML 
+				PRINTFORMW 「이미 지나간 일이다. 우리의 싸움 또한 역사의 일부로 흘러갈 정도의 것이지.
+				PRINTFORMW 　우리의 패배는 또 다른 네놈의 힘이 되었고, 그 또 다른 네놈이 완수해 냈다.
+				PRINTFORMW 　데스폴루카. 네놈들은 이 악마의 세계에서 조금 더 살아남아…… 목숨을 이어가라」
+			ENDIF
+			PRINTFORML 
+			PRINTFORMW 깊이 생각하는 데스폴루카를 곁눈질하며, 메비우스와 눈을 맞춘다.
+			PRINTFORMW 가까이서 보니 정말 거대한 눈이다.
+			PRINTFORML 
+			PRINTFORMW 메비우스는 그 후 어떻게 할 셈일까.
+			PRINTFORML 
+			PRINTFORM 「음…… 나 역시 끝난 존재이기에 말이지
+			;メビアス不在の場合誘う選択肢が出せる
+			IF FINDCHARA_B([[キャラ:잔재메비우스_DR]]) < 0
+				PRINTFORML 　
+				PRINTFORMW 　계집아이의 악연과의 결착이 이루어졌다면, 나 역시 머무를 이유는 없다만……」
+				PRINTFORML 
+				PRINTL [0] 동료마로 권유한다
+				PRINTL [1] 가만히 있는다
+				CALL INPUTINT, 0 , 1
+				IF RESULT == 0
+					PRINTFORML 
+					PRINTFORMW 「음, 나더러도 오라고 하였는가」
+					PRINTFORMW 「……가능한가?」
+					PRINTFORML 
+					PRINTFORMW 태양에 모이는 정보(말)라는 것은 하려고만 하면 그곳에서 복원할 수도 있다.
+					PRINTFORMW 데스폴루카 일행을 소생시켰을 때와 같은 수법이다.
+					PRINTFORML 
+					PRINTFORMW 「……듣자 하니 이곳도 꽤나 마경이라더군.
+					PRINTFORMW 　다른 세계의 검사와 겨룰 기회도 있겠지. 고로 이렇게 답하마. 『그렇고말고』라고」
+					PRINTFORML 
+					CALL ADD_NEW_COMPANION, [[キャラ:잔재메비우스_DR]], 500
+					IF RESULT > 0
+						CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+						;CALL SYNC_STATUS,(RESULT:1)
+						;CALL HEALTH_CHARA,(RESULT:1)
+						PRINTFORMW 뇌정 메비우스가 동료로 들어왔습니다.
+						PRINTFORML 
+						CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:잔재메비우스_DR]]), [[キャラ:잔재메비우스_DR]]
+						PRINTFORMW 「……싸움 이외의 일에는 내몰지 마라?」
+					ENDIF
+				ENDIF
+			ELSE
+				PRINTFORMW ……」
+				PRINTFORML 
+				PRINTFORML 계집아이를 부탁한다. 라며,
+				PRINTFORMW 그것만을 남겨두고 메비우스는 허공으로 사라져 갔다.
+			ENDIF
+			PRINTFORML 
+			PRINTFORMW 【자…… 슬슬 작별이다. 이 결계도 이것으로 닫히게 된다.
+			PRINTFORMW 　……당신들의 목숨은 당신들이 결정하도록 해】
+			PRINTFORMW 「덕분에 죄과를 끊어낼 수 있었다…… 신세 많이 졌군, 『왕』이여」
+			PRINTFORML 
+			PRINTFORMW 점차 풍경과 함께 『왕』의 모습도 흐려져 간다……
+			PRINTFORML 
+			PRINTFORMW 「작별이라고는 했지만…… 만약 너희에게도 뭔가 곤란한 일이 생기면,
+			PRINTFORMW 　다시 이어 다오. 힘을 빌려주마…… 종족의 멸망이니 존속이니 하는 건 이젠 사양이니까」
+			PRINTFORML 
+			PRINTFORMW 한순간 어안이 벙벙해진 듯한 기색을 보인 왕이
+			PRINTFORML 
+			PRINTFORMW 【……그 말, 확실히 들었다, 데스폴루카!】
+			PRINTFORML 
+			PRINTFORMW 마지막으로 그렇게 쏘아붙임과 동시에 『결계』는 사라졌다…….
+			PRINTFORML 
+			CUSTOMDRAWLINE =
+			PRINTFORML 
+			PRINTFORMW ＞세이프하우스 회의실
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:앙쥬_DR]]), [[キャラ:앙쥬_DR]]
+			PRINTFORMW 「스스로의 목숨은 스스로 정해라…… 인가」
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:칼린카_DR]]), [[キャラ:칼린카_DR]]
+			PRINTFORMW 「이 세계에서 살아가면 되는 건가?」
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:다이아나_DR]]), [[キャラ:다이아나_DR]]
+			PRINTFORMW 「그렇다고 해도…… 호적이 없는데 말이야」
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:나제지타_DR]]), [[キャラ:나제지타_DR]]
+			PRINTFORMW 「이 세계에서 그런 인물이 살아가는 것이 가능하긴 한 건가……?」
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:사라사_DR]]), [[キャラ:사라사_DR]]
+			PRINTFORML 「정령이 이제 없으니까 단말기를 빌려서 조사해 봤는데,
+			PRINTFORMW 　언더그라운드 세계에서라면 어쩌면 가능할지도 모르겠다는 느낌이네……」
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:릴리킬러_DR]]), [[キャラ:릴리킬러_DR]]
+			PRINTFORMW 「……어떡할까요, 폴루카 님.
+			PRINTFORMW 　저는 어찌 되든, 폴루카 님 자신은……?」
+			PRINTFORML 
+			PRINTFORMW 「……」
+			PRINTFORML 
+			PRINTFORMW 다소 곤란한 듯한 표정의 릴리 킬러의 질문을 받고 데스폴루카는 침묵한다.
+			PRINTFORML 
+			PRINTFORMW 「……우리는 이미 맨몸뚱이다. 가진 것은 개개의 능력뿐.
+			PRINTFORMW 　생활 기반도 의존하고 있는 형편이다. 결국에는……」
+			PRINTFORML 
+			PRINTFORMW 이쪽을 향하는 7쌍 14개의 눈동자.
+			SIF FINDCHARA_B([[キャラ:잔재메비우스_DR]]) > -1
+				PRINTFORMW ……그리고, 1개의 외눈.
+			PRINTFORML 
+			PRINTFORMW 「네 결정에 달렸다는 뜻이다」
+			PRINTFORML 
+			;上から順に嫁・淫魔・玩具・盟友・あと念のため枠
+			IF 계약(ARG) == 1
+				PRINTFORML 반지를 확인하듯 매만지며,
+			ELSEIF 계약(ARG) == 2
+				PRINTFORML 새겨진 음마의 증표에 눈길을 주며,
+			ELSEIF 계약(ARG) == 3
+				PRINTFORML 예속인을 어루만지며,
+			ELSEIF 계약(ARG) == 4
+				PRINTFORML 싸움의 증표를 떠올리고 있는 것일까,
+			;念のため
+			ELSEIF 계약(ARG) > 0
+				PRINTFORML 계약에 응한 것을 새삼 확인하는 모습으로,
+			ENDIF
+			PRINTFORMW 데스폴루카의 목소리에는 처음 만났을 때와 같은 긴장감이 서려 있었다.
+			PRINTFORML 
+			PRINTL [0] 머물게 한다
+			PRINTL [1] 생각해 본다
+			CALL INPUTINT, 0 , 1
+			IF RESULT == 0
+				PRINTFORML 
+				PRINTFORMW 물론 여기까지 얽힌 상대를 순순히 놓아줄 리 없다.
+				;手前味噌じゃねえか！！！
+				SIF FINDCHARA_B([[キャラ:마르푸샤]]) > 0 || FINDCHARA_B([[キャラ:루나리에]]) > 0 
+					PRINTFORML 이세계 출신의 국적 불명 컴패니언은 이미 전례가 있고,
+				PRINTFORMW 몇 사람 늘어난 정도로 %CALLNAME:MASTER%의 주머니 사정이 악화되지는 않는다. 거절할 이유는 없다.
+				PRINTFORML 
+				PRINTFORMW 「다시 한번 은혜를 입는군」
+			ELSEIF RESULT == 1
+				PRINTFORML 
+				PRINTFORMW ……사색한다.
+				PRINTFORMW 그렇다 쳐도 거주자가 늘어난들 관리 유지비 자체는 있으나 마나 한 수준이다.
+				SIF FINDCHARA_B([[キャラ:마르푸샤]]) > 0 || FINDCHARA_B([[キャラ:루나리에]]) > 0 
+					PRINTFORML 이세계 출신의 국적 불명 컴패니언은 이미 전례가 있고,
+				PRINTFORMW 그녀들을 받아들이면 고스란히 노동력, 전투력으로 손에 넣을 수 있다
+				PRINTFORML 
+				PRINTFORMW 「알고 있다. 노동력은 제공하마」
+			ENDIF
+			PRINTFORML 
+			PRINTFORMW 데스폴루카 일행의 시선을 받아내며 손을 내밀자,
+			PRINTFORMW 전원이 앞다투어 손을 맞잡아 순식간에 악수의 덩어리가 만들어졌다.
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:데스포르카_DR]]), [[キャラ:데스포르카_DR]], "FACE_0"
+			PRINTFORMW 「……우리들은 살아갈 것이다. 네 곁에서.
+			PRINTFORMW 　생명을 싹틔우고 우리들의 보금자리를 만들어, 종을…… 뿌리(루츠)를 남기자.
+			PRINTFORMW 　이것은 우리들…… 패배자들의 새로운…… 세계정복이다!」
+			PRINTFORML 
+			PRINTFORMW 　　　　　　　　―― Ending No.078 (DemonsRoots　END　Dead Demons Rerising)
+			FLAG:5 = 9
+			SETBIT FLAG:취소된ED2, 14
+			SETBIT FLAG:발견ED2, 14
+			PRINTFORML [0]끝낸다 [1]계속한다
+			CALL INPUTINT,0, 1
+			IF RESULT == 0
+				QUIT
+			ELSEIF RESULT == 1
+				CALL EVENT_97_TURN_END
+				RETURN 1
+			ENDIF
+		ENDIF
+	ENDIF
+		
+CASE 5
+	IF ARG:1 == 1
+		;戦闘可能なデスポリュカ含めアンジュ・カリンカ・サラーサ・ダイアナ・ナージェジタ・リリィキラー７人居ないとNG。
+		CALL DemonsRoots_敗北者点呼
+		SIF RESULT <= 6
+			RETURN 0
+		;DemonsRootsENDING閲覧済みであること。
+		SIF GETBIT(FLAG:발견ED2, 14) == 0
+			RETURN 0
+		;個別イベントエンディング後
+		SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 4)
+			RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			RESULTS = 『구세주였던 자』
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			IF GETBIT(CFLAG:ARG:개별이벤트읽음, 4)
+				RESULTS = ※DR조 전투 가능자 7명 이상 존재・DemonsRoots 엔딩 달성.
+			ELSE
+				RESULTS = LOCKED
+			ENDIF
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		PRINTFORML 
+		PRINTFORMW 세이프하우스 앞에 부상자가 쓰러져 있었다.
+		PRINTFORMW 보아하니 금발의 어린 소녀.
+		PRINTFORML 부서진 리모컨, 렌즈가 완전히 깨진 고글, 부러진 단검,
+		PRINTFORMW 온몸의 상처…… 전형적인 객사 직전의 모습이었다.
+		PRINTFORML 
+		PRINTFORMW 이런 시국에 부상자는 드문 일이 아니지만…….
+		PRINTFORMW 자세히 보니 『데스폴루카의 버릇』과 쏙 빼닮은 상처라는 것을 %CALLNAME:MASTER%는 눈치챘다.
+		PRINTFORML 
+		PRINTFORMW 전투원이란 각자 공격 방식, 공격 호흡에 버릇이 있다.
+		PRINTFORMW 예를 들어 데스폴루카라면 식물과 체술을 주체로 삼기 때문에 변칙 공격과 직접 타격의 비율이 높다.
+		PRINTFORML 
+		PRINTFORMW 데스폴루카를 곁에 두고 지켜보는 동안 그녀의 독특한 버릇은 머릿속에 들어와 있다.
+		PRINTFORML 
+		PRINTFORMW 돌이켜 이 부상자를 보니, 타격 흔적, 열상, 찰과상…….
+		PRINTFORMW 마치 『데스폴루카와 사투를 벌이고 그대로 탈진했다』는 듯했다.
+		PRINTFORML 
+		PRINTFORMW 의도적으로 흉내 낸다 한들 식물을 사용한 전투 방식까지 위장하는 것은 어렵다.
+		PRINTFORMW 사태의 전말을 조사할 필요가 있다.
+		PRINTFORML 
+		PRINTFORML ………
+		PRINTFORML ……
+		PRINTFORML …
+		PRINTFORML 
+		PRINTFORMW 세이프하우스 구호실
+		PRINTFORML 
+		CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:데스포르카_DR]]), [[キャラ:데스포르카_DR]], "FACE_0"
+		PRINTFORMW 「그래서 나를 부른 건가」
+		PRINTFORML 
+		PRINTFORMW 금발 소녀를 처치하고 데스폴루카를 불러냈다.
+		PRINTFORML 
+		PRINTFORM 「미리 말해두지만 내가 한 게 아니다
+		IF TALENT:ARG:임신 && CFLAG:ARG:임신시부친판정 == 1
+			PRINTFORM 。최근 네게 호되게 울려진 몸으로 그런 무모한 짓을 할 수 있겠나
+		ELSE
+			PRINTFORM 。『황제』를 굴복시키고 생활 기반을 다지느라 바쁘단 말이다. 그런 짓을 할 틈 따윈 없다
+		ENDIF
+		PRINTFORML 」
+		PRINTFORML 
+		PRINTFORMW 라는 대답이 돌아왔다.
+		PRINTFORML 
+		PRINTFORMW 데스폴루카는 결코 이유 없이 싸울 소녀가 아니다.
+		PRINTFORMW 본질적으로는 싸움을 싫어하면서도 동료를 위해 자신이 껄끄러워하는 선택마저 해버리는 호인이다.
+		PRINTFORML 
+		PRINTFORMW 그것은 %CALLNAME:MASTER%도 잘 알고 있다.
+		PRINTFORML 
+		PRINTFORMW ……하지만, 그렇다면.
+		PRINTFORML 
+		PRINTFORMW 이 소녀는 어째서 이렇게 되었는가, 하는 의문이 떠오른다.
+		PRINTFORML 
+		IF DRネタバレ回避フラグ == 1
+			;回避フラグの場合、王からベータ（世界征服成功した時空）の半生を聞いている。
+			;つまり、金髪のガキが暗殺者として襲ったこととか。
+			PRINTFORMW 「아아, 그 말인데…… %CALLNAME:MASTER%」
+			PRINTFORML 
+			PRINTFORMW 소녀를 관찰하던 데스폴루카가 말을 걸어온다.
+			PRINTFORML 
+			PRINTFORMW 「이 아이는 기억이 난다. 보헤로스에 있던 아이다」
+			PRINTFORML 
+			PRINTFORMW 『보헤로스 왕국』…… 데스폴루카가 최초로 진출했던 왕국이다.
+			PRINTFORMW 노예들과도 손을 맞잡기 전의, 패배자들의 첫 번째 싸움.
+			PRINTFORMW 그때 이 소녀를 본 기억이 있다고 한다.
+			PRINTFORML 
+			PRINTFORMW 「그리고 사태의 전말에 대해서도…… 대강 짐작이 간다」
+			PRINTFORML 
+			PRINTFORMW 온몸에 붕대가 감긴 금발 소녀의 드러난 왼쪽 눈꺼풀이 움직인다.
+			PRINTFORML 
+			PRINTFORMW 「……여기는…………」
+			PRINTFORML 
+			PRINTFORMW 멍한, 가녀린 목소리.
+			PRINTFORMW 방황하는 시선이 데스폴루카와 마주친다.
+			PRINTFORML 
+			PRINTFORMW 「아…… 보, 로…… 님……」
+			PRINTFORML 
+			PRINTFORMW 방타의 눈물.
+			PRINTFORML 
+			PRINTFORMW 「……그런가, 기억하고 있는가…….
+			PRINTFORMW 　하지만 비밀이다. 잊어버리는 편이 좋아」
+			PRINTFORML 
+			PRINTFORMW 스윽 입술에 얹어진 손가락, 그것만으로 소녀의 움직임이 굳어진다.
+			PRINTFORML 
+			PRINTFORMW 「여기는 우리가 있던 곳이 아니다. 나도, 너도 소임을 마쳤다
+			PRINTFORMW 　그러니 우리는 서로 죽고 죽일 것이 아니라 손을 맞잡아야 한다. 그렇겠지?」
+			PRINTFORML 
+			PRINTFORMW 「…………네……」
+			PRINTFORML 
+			PRINTFORMW 당사자들만의 세계가 되어 있지만 이야기는 정리된 모양이다.
+			PRINTFORML 
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:데스포르카_DR]]), [[キャラ:데스포르카_DR]], "FACE_0"
+			PRINTFORMW 「우리 이야기만 해서 미안하군, %CALLNAME:MASTER%.
+			PRINTFORMW 　……하지만 그녀는 적이 아니다. 협력자라는 것은 보증하마」
+			PRINTFORML 
+			PRINTFORMW 다름 아닌 데스폴루카의 보증이 있다면 거절할 이유는 없다.
+			PRINTFORMW 『세계정복』을 위해 싸워 주도록 하자.
+			PRINTFORML 
+		ELSE
+			PRINTFORMW 「잠깐 기다려 줘, %CALLNAME:MASTER%」
+			PRINTFORML 
+			PRINTFORMW 소녀를 관찰하던 데스폴루카가 말을 걸어온다.
+			PRINTFORML 
+			PRINTFORMW 「이 아이, 낯이 익어」
+			PRINTFORML 
+			PRINTFORMW 머리에 손을 얹은 데스폴루카가 무언가를 떠올리려는 듯 끙끙대고 있다.
+			PRINTFORML 
+			PRINTFORMW 「생각났다, 보헤로스에 있던 아이다」
+			PRINTFORML 
+			PRINTFORMW 『보헤로스 왕국』…… 데스폴루카가 최초로 진출했던 왕국이다.
+			PRINTFORMW 노예들과도 손을 맞잡기 전의, 패배자들의 첫 번째 싸움.
+			PRINTFORMW 그때 이 소녀를 본 기억이 있다고 한다.
+			PRINTFORML 
+			PRINTFORMW 「하지만 어째서 여기에…… 이 세계에……?」
+			PRINTFORML 
+			PRINTFORMW 정답은…… 본인이 알고 있을 듯하다.
+			PRINTFORMW 온몸에 붕대가 감긴 금발 소녀의 드러난 왼쪽 눈꺼풀이 움직인다.
+			PRINTFORML 
+			PRINTFORMW 「……여기는…………」
+			PRINTFORML 
+			PRINTFORMW 멍한, 가녀린 목소리.
+			PRINTFORMW 방황하는 시선이 데스폴루카와 마주친다.
+			PRINTFORML 
+			PRINTFORMW 「보헤로스 님…… 보헤로스 님!?」
+			PRINTFORML 
+			PRINTFORMW 벌떡 일어나려……던 동작은 실패로 끝났다.
+			PRINTFORMW 그도 그럴 것이 상당한 중상이라 일부는 보옥을 필요로 할 정도였으니까.
+			PRINTFORML 
+			PRINTFORMW 「저, 저는…… 이러면…… 이제……」
+			PRINTFORMW 「이런이런, 어째서 내 정체를 알고 있는 거지?」
+			PRINTFORML 
+			PRINTFORMW 일어나는 것조차 실패해 침대에서 괴로워하는 소녀와 고개를 갸웃하는 데스폴루카.
+			PRINTFORMW ……『보헤로스』라는 것은 국가명이 아니었던가?
+			PRINTFORML 
+			PRINTFORMW 「정확히는 왕국을 건국한 자의 이름이 보헤로스다.
+			PRINTFORMW 　그리고…… 과거의 나를 가리키는 말이지만……」
+			PRINTFORML 
+			PRINTFORMW 「……죄송해요, 보헤로스 님 죄송해요…… 죄송해요……」
+			PRINTFORML 
+			PRINTFORML 한바탕 절망한 뒤 사죄를 거듭하는 기계로 변해버린 소녀를 앞에 두고,
+			PRINTFORMW 일단 진정되기를 기다리기로 했다…….
+			PRINTFORML 
+			PRINTFORML ………
+			PRINTFORML ……
+			PRINTFORMW …
+			PRINTFORML 
+			PRINTFORMW 「우선, 네가 처치한 『보헤로스』는 내가 아니겠지?」
+			PRINTFORMW 「……아마도, 그렇게 됩니다…… 보헤로스 님이 훈계의 수옥에서 옥사하셨다는 이야기, 들어본 적도……」
+			PRINTFORML 
+			PRINTFORMW 데스폴루카의 질문에 더듬거리며 답하는 소녀.
+			PRINTFORMW 울어서 퉁퉁 부은 눈이 감정이 얼마나 무너져 내렸는지를 말해주고 있다.
+			PRINTFORML 
+			PRINTFORMW 「우리는 수옥에서 괴물에게 잡아먹혀…… 이쪽에 다다랐다.
+			PRINTFORMW 　그 후로도 우여곡절이 있었지만…… 그것은 생략하지.
+			PRINTFORMW 　그렇다면, 네가 어째서 이곳에 오게 되었는가 하는 건데……」
+			PRINTFORML 
+			PRINTFORMW 「……『予言書』」
+			PRINTFORML 
+			PRINTFORMW 마족과 인류의 멸망을 예언하는 신비한 서적이 있었다고 한다.
+			PRINTFORMW 설령 손에서 놓더라도 반드시 소녀의 손에 나타나, 매번 더욱 파멸적인 미래를 그려내는 서적이.
+			PRINTFORML 
+			PRINTFORMW 하지만 『마족이 멸망했을 경우에만 인류는 살아남을 가능성이 있다』고 그 책은 전하고 있었다.
+			PRINTFORML 그리고…… 데스폴루카 일행이 제국과 싸우는 동안 그 서적으로 고민하고 괴로워하던 인간들의 결론이
+			PRINTFORMW 『마족을 멸함으로써 인류가 살아남으려 한다』는 것이었다.
+			PRINTFORML 
+			PRINTFORMW ……그리하여 데스폴루카 암살이 기도되었다.
+			PRINTFORML 황제와의 싸움이 시작되자 데스폴루카의 거점에 덫을 놓고, 소모된 그녀가 귀환한 타이밍에 습격했다.
+			PRINTFORML 
+			PRINTFORMW 결과는………… 『무승부』.
+			PRINTFORML 빈사의 데스폴루카가 릴리 킬러와 함께 탈출한 뒤…… 거기서 소녀의 기억은 끊겼고,
+			PRINTFORMW 눈을 떠보니 이 세계에서 깨어났다고 한다.
+			PRINTFORML 
+			PRINTFORMW 「……그런, 건가」
+			PRINTFORML 
+			PRINTFORMW 『대륙』에 존재했다던 인류와 마족, 그 메울 수 없는 간극을 새삼 들이밀어진 격이다.
+			PRINTFORMW 마족 소녀는 자신의 미간 주름을 매만져 풀고 있다.
+			PRINTFORML 
+			PRINTFORMW 「……저는 미움받아 마땅한 염치없는 암살자예요……」
+			PRINTFORMW 「………………………………」
+			PRINTFORML 
+			PRINTFORMW 오랜 침묵이 내려앉는다.
+			PRINTFORML 
+			PRINTFORMW 「……아니, 용서하마」
+			PRINTFORMW 「네……?」
+			PRINTFORML 
+			PRINTFORMW 「그런 싸움이 생겨나 버린 것은 네 탓이 아니다.
+			PRINTFORMW 　……마족과 인류가 서로의 종족을 증오했기 때문이지」
+			PRINTFORML 
+			PRINTFORMW 손을 내린 데스폴루카의 얼굴은 온화했다.
+			PRINTFORML 
+			PRINTFORML 「종이라는 것은 생명의 뿌리(루츠)다. 동물은 동물로서, 식물은 식물로서……
+			PRINTFORMW 　이 세상에 태어난 시점에서 누구도 바꿀 수 없는 것이지.
+			PRINTFORMW 　그런 근본부터 증오하기 시작하면…… 어느 한쪽이 멸망할 때까지 죽고 죽일 수밖에 없지 않나」
+			PRINTFORMW 「……흑…… 흑…… 윽」
+			PRINTFORML 
+			PRINTFORMW 또다시 오열.
+			PRINTFORML 
+			PRINTFORMW 「하지만 난 그런 세계로 만들고 싶지 않아. 어떤 생명이든 평등하게 살아가기를 바란다.
+			PRINTFORMW 　그러니 널 미워하지 않겠다. 인류의 뿌리(루츠)를…… 난 증오하지 않아」
+			PRINTFORML 
+			PRINTFORMW 가만히 금발 소녀의 손을 잡아주는 마족 소녀.
+			PRINTFORML 
+			PRINTFORML 「게다가…… 애초에 원망할 이유도 없지 않은가.
+			PRINTFORMW 　나는 이렇게나 멀쩡히 살아 있잖나…… 뭐, 이세계라는 점만 빼면 말이지」
+			PRINTFORMW 「당신은 역시…… 『보헤로스 님』, 이시군요……」
+			PRINTFORML 
+			PRINTFORML 「한술 더 떠서, 우리들은 이쪽에 흘러들어온 『블레스커스』를 방금 때려눕힌 참이다.
+			;上から順に嫁・淫魔・玩具・盟友・あとその他
+			IF 계약(ARG) == 1
+				PRINTFORMW 　어서 생활 기반을 다져서 반려와 자손 번영에 힘써야 하거든」
+			ELSEIF 계약(ARG) == 2
+				PRINTFORMW 　어서 생활 기반을 다져서 기분 좋은 일에 힘쓰고 싶거든」
+			ELSEIF 계약(ARG) == 3
+				PRINTFORMW 　어서 생활 기반을 다지지 않으면 주인님이 성화를 부리거든」
+			ELSEIF 계약(ARG) == 4
+				PRINTFORMW 　어서 생활 기반을 다져서 동료와 친구들에게 떳떳할 수 있는 삶을 살아야 하거든」
+			ELSE
+				PRINTFORMW 　어서 생활 기반을 다져서 동료와 친구들에게 떳떳할 수 있는 삶을 살아야 하거든」
+			ENDIF
+			PRINTFORML 
+			PRINTFORMW 그런 말을 지껄이는 데스폴루카를 소녀는 망연히 바라보고 있다.
+			PRINTFORML 
+			PRINTFORMW 「크흠…… 요컨대, 너도 거들어 주었으면 한다는 뜻이다.
+			PRINTFORMW 　우리는 이 세계에서 살아가고 있다. 거친 일은 있어도 이제 빼앗을 필요는 없다.
+			PRINTFORMW 　함께 가자. 생명을 이어가는 세상에서 가장 상냥한 『세계정복』이다!」
+			PRINTFORML 
+			PRINTFORMW …………。
+			PRINTFORML 
+			PRINTFORMW 「……네, 보헤로스 님……」
+			PRINTFORML 
+			PRINTFORMW 그렇게 소녀는 『보헤로스』의 손을 굳게 맞잡았다.
+			PRINTFORML 
+		ENDIF
+		PRINTFORMW 「그렇지, 이름을 묻지 않았군」
+		PRINTFORML 
+		PRINTFORMW 소녀는,
+		PRINTFORML 
+		PRINTFORMW 「귀네」
+		PRINTFORML 
+		PRINTFORMW 눈물로 얼굴을 적시면서도,
+		PRINTFORML 
+		PRINTFORMW 「저의, 이름은……」
+		PRINTFORMW 「제 이름은 귀네예요……」
+		PRINTFORML 
+		PRINTFORMW 그럼에도 웃어 보였다.
+		PRINTFORML 
+		CALL ADD_NEW_COMPANION, [[キャラ:귀네_DR]], 500
+		IF RESULT > 0
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:귀네_DR]]), [[キャラ:귀네_DR]], "FACE_0"
+			CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "参加可能"
+			PRINTFORML 
+			PRINTFORMW 전 구세주 귀네가 동료로 들어왔습니다.
+			PRINTFORML 
+		ENDIF
+		RETURN 1
+	ENDIF
+		;好感度以外は後に上昇値が表示される
+		;CFLAG:ARG:(MASTER + 2100) += (好感度)
+		;TCVAR:ARG:획득의존도 += 
+		;TCVAR:ARG:획득충성도 += 
+		;CALL ADDS_EXP("○○経験", 1, ARG)
+ENDSELECT
+RETURN 
+
+
+
+;『王』。一体何ルイースなんだ。
+;伝聞イメージと作中おまけの言動からいい感じに捏造。
+@SET_ACTION_ExitedKing, ARG
+#DIM ループ用
+IF FLAG:경과턴수 == 0
+	IF CFLAG:ARG:행동한횟수 == 0
+		SETCOLOR 0x770000
+		PRINTFORML 
+		PRINTFORML ┏＞『王』━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃각오와, 힘을 보여라……!　　　　　　　　　┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━┛
+		PRINTFORML 
+		RESETCOLOR
+		CALL SET_ACTION_SKILL, ARG, [[스킬:데・카쟈]]
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		CALL SET_ACTION_SKILL, ARG, [[스킬:검격가드브레이크]]
+	ELSEIF CFLAG:ARG:행동한횟수 == 2
+		CALL SET_ACTION_SKILL, ARG, [[스킬:밤벚꽃의춤]]
+	ENDIF
+ELSEIF (FLAG:경과턴수) % 4 == 1
+;4n+2
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:뇌진왕모의발차기]]
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 2
+		IF RAND:2 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, 0
+		ENDIF
+	ENDIF
+;4n+3
+ELSEIF (FLAG:경과턴수) % 4 == 2
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:고천열풍탄]]
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 2
+		IF RAND:2 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, 0
+		ENDIF
+	ENDIF
+;4n+0
+ELSEIF (FLAG:경과턴수) % 4 == 3
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:허공참파]]
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 2
+		IF RAND:2 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, 0
+		ENDIF
+	ENDIF
+;1以外の4n+1
+ELSEIF (FLAG:경과턴수) % 4 == 0
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:만마의일격]]
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 2
+		IF RAND:2 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:검격가드브레이크]]
+		ENDIF
+	ENDIF
+ENDIF
+
+;皇帝。
+@SET_ACTION_Emperor_DR, ARG
+#DIM ループ用
+IF FLAG:경과턴수 == 0
+	IF CFLAG:ARG:행동한횟수 <= 1
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 2
+		IF RAND:2 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		ELSE
+			IF 現HP割合(ARG) < 50
+				CALL SET_ACTION_SKILL, ARG, [[스킬:데・카쟈]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, 0
+			ENDIF
+		ENDIF
+	ENDIF
+ELSEIF (FLAG:경과턴수) % 4 == 1
+;4n+2
+	IF CFLAG:ARG:행동한횟수 <= 1
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 2
+		IF RAND:2 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		ELSE
+			IF 現HP割合(ARG) < 50
+				CALL SET_ACTION_SKILL, ARG, [[스킬:데・쿤다]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, 0
+			ENDIF
+		ENDIF
+	ENDIF
+;4n+3
+ELSEIF (FLAG:경과턴수) % 4 == 2
+	IF CFLAG:ARG:행동한횟수 <= 1
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 2
+		IF RAND:2 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		ELSE
+			IF 現HP割合(ARG) < 50
+				CALL SET_ACTION_SKILL, ARG, [[스킬:데・카쟈]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, 0
+			ENDIF
+		ENDIF
+	ENDIF
+;4n+0
+ELSEIF (FLAG:경과턴수) % 4 == 3
+	IF CFLAG:ARG:행동한횟수 <= 1
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 2
+		IF RAND:2 == 0
+			IF 現HP割合(ARG) < 50
+				CALL SET_ACTION_SKILL, ARG, [[스킬:데・쿤다]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:메기도라]]
+			ENDIF
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:기합]]
+		ENDIF
+	ENDIF
+;1以外の4n+1
+ELSEIF (FLAG:경과턴수) % 4 == 0
+	IF CFLAG:ARG:행동한횟수 <= 1
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 2
+		IF RAND:2 == 0
+			IF 現HP割合(ARG) < 50
+				CALL SET_ACTION_SKILL, ARG, [[스킬:비구가드브레이크]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, 0
+			ENDIF
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:검격가드브레이크]]
+		ENDIF
+	ENDIF
+ENDIF
+
+
+;『Breath Curse』
+;うねりが居ない強化版。魔法も使うようになり1moreでスマチャ。
+@SET_ACTION_Emperor_DREX, ARG
+#DIM ループ用
+IF CFLAG:ARG:１more플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:스마일차지]]
+ELSEIF FLAG:경과턴수 == 0
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 2
+		IF RAND:2 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		ELSE
+			IF 現HP割合(ARG) < 50
+				CALL SET_ACTION_SKILL, ARG, [[스킬:데・카쟈]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, 0
+			ENDIF
+		ENDIF
+	ENDIF
+ELSEIF (FLAG:경과턴수) % 4 == 1
+;4n+2
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 2
+		IF RAND:2 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		ELSE
+			IF 現HP割合(ARG) < 50
+				CALL SET_ACTION_SKILL, ARG, [[스킬:데・쿤다]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, 0
+			ENDIF
+		ENDIF
+	ENDIF
+;4n+3
+ELSEIF (FLAG:경과턴수) % 4 == 2
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 2
+		IF RAND:2 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		ELSE
+			IF 現HP割合(ARG) < 50
+				CALL SET_ACTION_SKILL, ARG, [[스킬:데・카쟈]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:데・쿤다]]
+			ENDIF
+		ENDIF
+	ENDIF
+;4n+0
+ELSEIF (FLAG:경과턴수) % 4 == 3
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 2
+		IF RAND:2 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		ELSE
+			IF 現HP割合(ARG) < 50
+				CALL SET_ACTION_SKILL, ARG, [[스킬:데・쿤다]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:데・카쟈]]
+			ENDIF
+		ENDIF
+	ENDIF
+;1以外の4n+1
+ELSEIF (FLAG:경과턴수) % 4 == 0
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		CALL ランダム行動 , ARG
+	ELSEIF CFLAG:ARG:행동한횟수 == 2
+		IF RAND:2 == 0
+			IF 現HP割合(ARG) < 50
+				CALL SET_ACTION_SKILL, ARG, [[스킬:주살가드브레이크]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:비구가드브레이크]]
+			ENDIF
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:검격가드브레이크]]
+		ENDIF
+	ENDIF
+ENDIF

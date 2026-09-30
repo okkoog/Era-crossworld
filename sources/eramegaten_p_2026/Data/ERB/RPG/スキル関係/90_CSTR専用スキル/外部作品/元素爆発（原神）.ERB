@@ -1,0 +1,1060 @@
+﻿;スキル名　元素爆発（原神）ゲージを使う、強力なスキルと長いリキャストが特徴のスキル。
+
+@SKILL_NAME_元素爆発（原神）,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:기묘한바르바토스]])
+	RESULTS = 바람신의 시
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한모라쿠스]])
+	RESULTS = 天星
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한바알]])
+	RESULTS = 奥義・夢想真説
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:비묘한부에르]])
+	RESULTS = 心景幻成
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한포칼로스]])
+	RESULTS = 다 함께 카니발
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한하보림]])
+	RESULTS = 하늘을 불태우는 시각
+ELSE
+	RESULTS = 元素爆発（原神）
+ENDIF
+
+;　명중
+@SKILL_HITRATE_元素爆発（原神）, ARG
+RETURN 120
+
+;　威力
+@SKILL_POWER_元素爆発（原神）, ARG
+#DIM 元素スキル継続時間
+#DIM 元素爆発制御変数
+#DIM LCOUNT,3
+#DIM 威力
+#DIM LTARGET = -1
+元素スキル継続時間 = PU_SKILLNUM_GET(ARG,"元素スキル（原神）")
+元素爆発制御変数 = PU_SKILLNUM_GET(ARG,"元素爆発（原神）")
+
+威力 = 0
+
+IF SKILL_CHANGE(ARG, [[キャラ:기묘한바르바토스]])
+	;基本威力
+	威力 = 100
+	;奇妙なバルバトス３重　元素爆発ダメージ量アップ
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 3
+		威力 += 20
+	;非戦闘中ならここまでで威力を返す
+	SIF !TFLAG:전투중
+		RETURN 威力
+	LCOUNT:1 = CFLAG:ARG:PT플래그 > 0 ? 1 # 7
+	LCOUNT:2 = CFLAG:ARG:PT플래그 > 0 ? 7 # 17
+	FOR LCOUNT,LCOUNT:1,LCOUNT:2
+		LTARGET = POS(LCOUNT)
+		;自身と同じパーティでなければ跳ばす
+		SIF LTARGET < 0 || CFLAG:LTARGET:PT플래그 != CFLAG:ARG:PT플래그
+			CONTINUE
+		;バアルでなければ飛ばす。
+		SIF NO:LTARGET != [[キャラ:기묘한바알]]
+			CONTINUE
+		;更にバアルであっても雷罰悪曜の眼がオフである場合飛ばす
+		SIF SKILLGAGE_D_GET(LTARGET,元素スキル継続時間) == 0
+			CONTINUE
+		;ここまで来れば条件を達成したとみなす。該当者が存在した時点で加算処理を終了させる。
+		;雷罰悪曜の眼を起動したバアルがいる場合威力上昇。
+		威力 += 20
+		BREAK
+	NEXT
+	RETURN 威力
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한모라쿠스]])
+	;基本威力
+	威力 = 400
+	;奇妙なモラクス５重　元素爆発ダメージ量アップ
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 5
+		威力 += 80
+	;非戦闘中ならここまでで威力を返す
+	SIF !TFLAG:전투중
+		RETURN 威力
+	LCOUNT:1 = CFLAG:ARG:PT플래그 > 0 ? 1 # 7
+	LCOUNT:2 = CFLAG:ARG:PT플래그 > 0 ? 7 # 17
+	FOR LCOUNT,LCOUNT:1,LCOUNT:2
+		LTARGET = POS(LCOUNT)
+		;自身と同じパーティでなければ跳ばす
+		SIF LTARGET < 0 || CFLAG:LTARGET:PT플래그 != CFLAG:ARG:PT플래그
+			CONTINUE
+		;バアルでなければ飛ばす。
+		SIF NO:LTARGET != [[キャラ:기묘한바알]]
+			CONTINUE
+		;更にバアルであっても雷罰悪曜の眼がオフである場合飛ばす
+		SIF SKILLGAGE_D_GET(LTARGET,元素スキル継続時間) == 0
+			CONTINUE
+		;ここまで来れば条件を達成したとみなす。該当者が存在した時点で加算処理を終了させる。
+		;雷罰悪曜の眼を起動したバアルがいる場合威力上昇。
+		威力 += 100
+		BREAK
+	NEXT
+	RETURN 威力
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한바알]])
+	;基本威力
+	威力 = 400
+	;奇妙なバアル３重　元素爆発ダメージ量アップ
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 3
+		威力 += 90
+	;非戦闘中ならここまでで威力を返す
+	SIF !TFLAG:전투중
+		RETURN 威力
+	;奇妙なバアル１重　元素爆発起動回数に応じて威力アップ。最大60
+	SIF SKILLGAGE_H_GET(ARG,元素爆発制御変数) >= 1
+		威力 += (SKILLGAGE_H_GET(ARG,元素爆発制御変数) * 30) 
+	;自前の雷罰悪曜の眼で爆発威力上がるの反則じゃないかなこの神。
+	SIF SKILLGAGE_D_GET(ARG,元素スキル継続時間) > 0
+		威力 += 100
+	RETURN 威力
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:비묘한부에르]])
+	RETURN 0
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한포칼로스]])
+	RETURN 0
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한하보림]])
+	;基本威力
+	威力 = 400
+	;２重　元素爆発ダメージ量アップ
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 2
+		威力 += 30
+	;３重　元素爆発ダメージ量アップ
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 3
+		威力 += 40
+	;非戦闘中ならここまでで威力を返す
+	SIF !TFLAG:전투중
+		RETURN 威力
+	LCOUNT:1 = CFLAG:ARG:PT플래그 > 0 ? 1 # 7
+	LCOUNT:2 = CFLAG:ARG:PT플래그 > 0 ? 7 # 17
+	FOR LCOUNT,LCOUNT:1,LCOUNT:2
+		LTARGET = POS(LCOUNT)
+		;自身と同じパーティでなければ跳ばす
+		SIF LTARGET < 0 || CFLAG:LTARGET:PT플래그 != CFLAG:ARG:PT플래그
+			CONTINUE
+		;バアルでなければ飛ばす。
+		SIF NO:LTARGET != [[キャラ:기묘한바알]]
+			CONTINUE
+		;更にバアルであっても雷罰悪曜の眼がオフである場合飛ばす
+		SIF SKILLGAGE_D_GET(LTARGET,元素スキル継続時間) == 0
+			CONTINUE
+		;ここまで来れば条件を達成したとみなす。該当者が存在した時点で加算処理を終了させる。
+		;雷罰悪曜の眼を起動したバアルがいる場合威力上昇。
+		威力 += 30
+		BREAK
+	NEXT
+	RETURN 威力
+
+ELSE
+	RETURN 100
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_元素爆発（原神）,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:기묘한바르바토스]])
+	RETURN 4
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한모라쿠스]])
+	RETURN 1
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한바알]])
+	RETURN 1
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:비묘한부에르]])
+	RETURN 0
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한포칼로스]])
+	RETURN 0
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한하보림]])
+	RETURN 1
+ELSE
+	RETURN 1
+ENDIF
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_元素爆発（原神）,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:기묘한바르바토스]])
+	RETURN 4
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한모라쿠스]])
+	RETURN 1
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한바알]])
+	RETURN 1
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:비묘한부에르]])
+	RETURN 0
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한포칼로스]])
+	RETURN 0
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한하보림]])
+	RETURN 1
+ELSE
+	RETURN 1
+ENDIF
+
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_元素爆発（原神）, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_元素爆発（原神）,ARG
+RETURN 50
+
+;　相性
+;　複合相性
+@SKILL_TYPE_元素爆発（原神）,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:기묘한바르바토스]])
+	RETURN GET_TYPE_NUM("충격"), GET_TYPE_NUM("질풍"), GET_TYPE_NUM("만능")
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한모라쿠스]])
+	RETURN GET_TYPE_NUM("지변"), GET_TYPE_NUM("만능")
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한바알]])
+	;奇妙なバアル２重　剣撃・電撃の複合属性化＋完全貫通
+	IF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 2
+		RETURN GET_TYPE_NUM("전격"), GET_TYPE_NUM("검격")
+	ELSE
+		RETURN GET_TYPE_NUM("전격"), GET_TYPE_NUM("만능")
+	ENDIF
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:비묘한부에르]])
+	RETURN GET_TYPE_NUM("만능")
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한포칼로스]])
+	RETURN GET_TYPE_NUM("만능")
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한하보림]])
+	RETURN GET_TYPE_NUM("화염"), GET_TYPE_NUM("검격"), GET_TYPE_NUM("만능")
+ENDIF
+RETURN 0
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_元素爆発（原神）, ARG, ARG:1
+IF SKILL_CHANGE(ARG, [[キャラ:기묘한바알]])
+	;奇妙なバアル２重　夢想の一太刀・一心が剣撃・電撃の複合属性化＋完全貫通
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 2
+		RETURN 4
+ENDIF
+RETURN 0
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_元素爆発（原神）
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_元素爆発（原神）, ARG
+RETURN 1;物理
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_元素爆発（原神）,ARG
+SIF SKILL_CHANGE(ARG, [[キャラ:비묘한부에르]])
+	RETURN GET_SKILL_TARGET_NUM("아군")
+SIF SKILL_CHANGE(ARG, [[キャラ:기묘한포칼로스]])
+	RETURN GET_SKILL_TARGET_NUM("아군")
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;사거리　1:S 2:M 3:L
+@SKILL_RANGE_元素爆発（原神）,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:기묘한바르바토스]])
+	RETURN 3
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한모라쿠스]])
+	RETURN 3
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한바알]])
+	RETURN 3
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:비묘한부에르]])
+	RETURN 3
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한포칼로스]])
+	RETURN 3
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한하보림]])
+	RETURN 3
+ELSE
+	RETURN 3
+ENDIF
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_元素爆発（原神）,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:기묘한바르바토스]])
+	RETURN 3
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한모라쿠스]])
+	RETURN 3
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한바알]])
+	RETURN 2
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:비묘한부에르]])
+	RETURN 3
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한포칼로스]])
+	RETURN 3
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한하보림]])
+	RETURN 2
+ELSE
+	RETURN 3
+ENDIF
+
+
+@SKILL_CRITICAL_RATE_元素爆発（原神）, ARG
+RETURN 20
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_元素爆発（原神）,ARG
+SIF SKILL_CHANGE(ARG, [[キャラ:비묘한부에르]])
+	RETURN 4
+SIF SKILL_CHANGE(ARG, [[キャラ:기묘한포칼로스]])
+	RETURN 4
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_元素爆発（原神）, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_元素爆発（原神）
+RETURN 0
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_元素爆発（原神）,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:기묘한바르바토스]])
+	RETURN GET_STATE_NUM("SLIP")
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한모라쿠스]])
+	RETURN GET_STATE_NUM("STONE")
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한바알]])
+	RETURN GET_STATE_NUM("SHOCK")
+ELSE
+	RETURN 0
+ENDIF
+
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_元素爆発（原神）,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:기묘한바르바토스]])
+	RETURN GET_TYPE_NUM("충격")
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한모라쿠스]])
+	RETURN GET_TYPE_NUM("지변")
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한바알]])
+	RETURN GET_TYPE_NUM("전격")
+ELSE
+	RETURN 0
+ENDIF
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_元素爆発（原神）,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:기묘한바르바토스]])
+	RETURN 15
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한모라쿠스]])
+	;奇妙なモラクス４重　石化の基本付与
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 4
+		RETURN 60
+	RETURN 40
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한바알]])
+	RETURN 60
+ELSE
+	RETURN 0
+ENDIF
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_元素爆発（原神）,ARG
+RETURN 95
+
+;====================================================
+;トリガー発動条件
+;====================================================
+
+;====================================================
+;ヒット後ダメージ前処理
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+@SKILL_DAMAGE_EFFECT_元素爆発（原神）,ARG,ARG:1,ARG:2
+SIF ARG:2 < -1
+	RETURN 0
+IF SKILL_CHANGE(ARG, [[キャラ:기묘한바르바토스]])
+	;奇妙なバルバトス６重　攻撃と魔法威力も追加で破壊。
+	IF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 6
+		CALL SKILL_SET_カジャンダ, ARG, ARG:1, "攻撃_魔法威力_防御_魔法効果", -2, "短縮"
+	ELSE
+		CALL SKILL_SET_カジャンダ, ARG, ARG:1, "防御_魔法効果", -2, "短縮"
+	ENDIF
+	;命中前、守備と魔防を2段階破壊。本当は翠緑の効果なんですけどね。
+;	CFLAG:(ARG:1):방어강화 = MAX(-16, CFLAG:(ARG:1):방어강화 - 2)
+;	CFLAG:(ARG:1):마법효과강화 = MAX(-16, CFLAG:(ARG:1):마법효과강화 - 2)
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한모라쿠스]])
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한바알]])
+ENDIF
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_元素爆発（原神）,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#LOCALSIZE 4
+#DIM 元素爆発制御変数
+#DIM 悪曜の呪詛
+元素爆発制御変数 = PU_SKILLNUM_GET(ARG,"元素爆発（原神）")
+
+;バアルの所在確認。検知＋仲間に居る場合、爆発が使用される度にゲージHを注ぎ込む。
+悪曜の呪詛 = GETCHARA([[キャラ:기묘한바알]])
+IF 悪曜の呪詛 >= 0 && CFLAG:悪曜の呪詛:PT플래그 == 2
+	;奇妙なバアル１重　爆発が使用される度にHゲージをチャージ、最大２段階
+	IF GET_RPG_CFLAG_TAKEOVER(悪曜の呪詛, "命の星座") >= 1
+		CALL SKILLGAGE_H_ADD,悪曜の呪詛,元素爆発制御変数,1
+		SIF SKILLGAGE_H_GET(悪曜の呪詛,元素爆発制御変数) > 2
+			CALL SKILLGAGE_H_SET,悪曜の呪詛,元素爆発制御変数,2
+	ENDIF
+ENDIF
+
+IF SKILL_CHANGE(ARG, [[キャラ:기묘한바르바토스]])
+	ALIGNMENT CENTER
+	SETCOLOR 原神カラー(ARG)
+	IF RAND:2 ==0
+		PRINTFORML ┏━━━━━━━┓
+		PRINTFORML ┃바람이다ーー앗!┃
+		PRINTFORMW ┗━━━━━━━┛
+	ELSE
+		PRINTFORML ┏━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃도망칠 생각 따윈 하지 마!┃
+		PRINTFORMW ┗━━━━━━━━━━━━━━━┛
+	ENDIF
+	RESETCOLOR
+	ALIGNMENT LEFT
+	CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+	CALL SKILLGAGE_F_SET,ARG,元素爆発制御変数,0
+	CALL SET_RPG_CFLAG_BTL, ARG, "元素爆発再使用可能ターン", (FLAG:경과턴수 + 5), "="
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한모라쿠스]])
+	ALIGNMENT CENTER
+	SETCOLOR 原神カラー(ARG)
+	IF RAND:3 == 0
+		PRINTFORML ┏━━━━━━━━━┓
+		PRINTFORML ┃하늘의 이치가 여기 있노라.┃
+		PRINTFORMW ┗━━━━━━━━━┛
+	ELSEIF RAND:2 ==0
+		PRINTFORML ┏━━━━━┓
+		PRINTFORML ┃天動万象！┃
+		PRINTFORMW ┗━━━━━┛
+	ELSE
+		PRINTFORML ┏━━━━━┓
+		PRINTFORML ┃天理長駆！┃
+		PRINTFORMW ┗━━━━━┛
+	ENDIF
+	RESETCOLOR
+	ALIGNMENT LEFT
+	CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+	CALL SKILLGAGE_F_SET,ARG,元素爆発制御変数,0
+	CALL SET_RPG_CFLAG_BTL, ARG, "元素爆発再使用可能ターン", (FLAG:경과턴수 + 5), "="
+	;奇妙なモラクス２重　爆発起動時玉璋シールド全員に配布。
+	IF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 2
+		;範囲の場合の構文例を拝借
+		IF CFLAG:(ARG):PT플래그 == 0
+			LOCAL:1 = 7
+			LOCAL:2 = 17
+		ELSE
+			LOCAL:1 = 1
+			LOCAL:2 = 7
+		ENDIF
+		FOR LOCAL,LOCAL:1,LOCAL:2
+			;奇妙なモラクス６重　玉璋シールドの参照HP量を３３％に
+			IF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 6
+				CALL SKILL_SET_HPバリア, POS(LOCAL), MAXBASE:ARG:ＨＰ / 3, "『玉璋シールド』"
+			;奇妙なモラクス２重時
+			ELSE
+				CALL SKILL_SET_HPバリア, POS(LOCAL), MAXBASE:ARG:ＨＰ / 5, "『玉璋シールド』"
+			ENDIF
+		NEXT
+		WAIT
+	ENDIF
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한바알]])
+	ALIGNMENT CENTER
+	SETCOLOR 原神カラー(ARG)
+	IF RAND:3 == 0
+		PRINTFORML ┏━━━━━━━━━━━━┓
+		PRINTFORML ┃번개는, 영원한 법!┃
+		PRINTFORMW ┗━━━━━━━━━━━━┛
+	ELSEIF RAND:2 ==0
+		PRINTFORML ┏━━━━━━━━━━┓
+		PRINTFORML ┃지금이 바로, 적멸의 시간!┃
+		PRINTFORMW ┗━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏━━━━━━━┓
+		PRINTFORML ┃무아의 경지로.┃
+		PRINTFORMW ┗━━━━━━━┛
+	ENDIF
+	RESETCOLOR
+	ALIGNMENT LEFT
+	CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+	CALL SKILLGAGE_D_SET,ARG,元素爆発制御変数,4
+	CALL SKILLGAGE_F_SET,ARG,元素爆発制御変数,0
+	CALL SET_RPG_CFLAG_BTL, ARG, "元素爆発再使用可能ターン", (FLAG:경과턴수 + 6), "="
+	;奇妙なバアル４重　爆発起動時攻撃力アップ
+	IF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 4
+		CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ? 19 # 22, "攻撃_魔法威力", 4, "範囲", "NOMES"
+		;IF CFLAG:(ARG):PT플래그
+		;	LOCAL:1 = 1
+		;	LOCAL:2 = 7
+		;ELSE
+		;	LOCAL:1 = 7
+		;	LOCAL:2 = 17
+		;ENDIF
+		;FOR LOCAL,LOCAL:1,LOCAL:2
+		;	SIF POS(LOCAL) < 0
+		;		CONTINUE
+		;	CFLAG:POS(LOCAL):마법위력강화 = MIN(32, CFLAG:POS(LOCAL):마법위력강화 + 4)
+		;	CFLAG:POS(LOCAL):공격강화 = MIN(32, CFLAG:POS(LOCAL):공격강화 + 4)
+		;NEXT
+	ENDIF
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:비묘한부에르]])
+	ALIGNMENT CENTER
+	SETCOLOR 原神カラー(ARG)
+	IF RAND:3 == 0
+		PRINTFORML ┏━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃우리 집에 놀러 와.┃
+		PRINTFORMW ┗━━━━━━━━━━━━━━━┛
+	ELSEIF RAND:2 ==0
+		PRINTFORML ┏━━━━━━━━━━┓
+		PRINTFORML ┃지식을, 너에게도.┃
+		PRINTFORMW ┗━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏━━━━━━━━━━━━┓
+		PRINTFORML ┃이것이 바로 지혜의 전당――┃
+		PRINTFORMW ┗━━━━━━━━━━━━┛
+	ENDIF
+	RESETCOLOR
+	ALIGNMENT LEFT
+	IF CFLAG:(ARG):PT플래그 == 0
+		LOCAL:1 = 7
+		LOCAL:2 = 17
+	ELSE
+		LOCAL:1 = 1
+		LOCAL:2 = 7
+	ENDIF
+	FOR LOCAL,LOCAL:1,LOCAL:2
+		SIF POS(LOCAL) < 0
+			CONTINUE
+		SIF CFLAG:POS(LOCAL):마법위력강화 < 4
+			CFLAG:POS(LOCAL):마법위력강화 = 4
+		SIF CFLAG:POS(LOCAL):마법효과강화 < 4
+			CFLAG:POS(LOCAL):마법효과강화 = 4
+		;CFLAG:POS(LOCAL):마법위력강화 = MIN(32, CFLAG:POS(LOCAL):마법위력강화 + 8)
+		;CFLAG:POS(LOCAL):마법효과강화 = MIN(32, CFLAG:POS(LOCAL):마법효과강화 + 8)
+	NEXT
+	CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ? 19 # 22, "魔法威力_魔法効果", 8, "範囲"
+	CALL SKILLGAGE_D_SET,ARG,元素爆発制御変数,5
+	;奇妙なブエル１重　元素爆発継続時間＋１
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 1
+		CALL SKILLGAGE_D_SET,ARG,元素爆発制御変数,6
+	CALL SKILLGAGE_F_SET,ARG,元素爆発制御変数,0
+	CALL SET_RPG_CFLAG_BTL, ARG, "元素爆発再使用可能ターン", (FLAG:경과턴수 + 5), "="
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한포칼로스]])
+	ALIGNMENT CENTER
+	SETCOLOR 原神カラー(ARG)
+	IF RAND:3 == 0
+		PRINTFORML ┏━━━━━━━━━━━━┓
+		PRINTFORML ┃노래하렴! 내 이름으로!┃
+		PRINTFORMW ┗━━━━━━━━━━━━┛
+	ELSEIF RAND:2 ==0
+		PRINTFORML ┏━━━━━━━━┓
+		PRINTFORML ┃눈부시게 빛나라!┃
+		PRINTFORMW ┗━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏━━━━━━━━━┓
+		PRINTFORML ┃세계를 열광의 도가니로!┃
+		PRINTFORMW ┗━━━━━━━━━┛
+	ENDIF
+	RESETCOLOR
+	ALIGNMENT LEFT
+	IF CFLAG:(ARG):PT플래그 == 0
+		LOCAL:1 = 7
+		LOCAL:2 = 17
+	ELSE
+		LOCAL:1 = 1
+		LOCAL:2 = 7
+	ENDIF
+	FOR LOCAL,LOCAL:1,LOCAL:2
+		SIF POS(LOCAL) < 0
+			CONTINUE
+		SIF CFLAG:POS(LOCAL):공격강화 < 0
+			CFLAG:POS(LOCAL):공격강화 = 0
+		SIF CFLAG:POS(LOCAL):마법위력강화 < 0
+			CFLAG:POS(LOCAL):마법위력강화 = 0
+	NEXT
+	IF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 3
+		CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ? 19 # 22, "攻撃_魔法威力", 12, "範囲"
+	ELSEIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 1
+		CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ? 19 # 22, "攻撃_魔法威力", 8, "範囲"
+	ELSE
+		CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ? 19 # 22, "攻撃_魔法威力", 4, "範囲"
+	ENDIF
+	CALL SKILLGAGE_D_SET,ARG,元素爆発制御変数,6
+	CALL SKILLGAGE_F_SET,ARG,元素爆発制御変数,0
+	CALL SET_RPG_CFLAG_BTL, ARG, "元素爆発再使用可能ターン", (FLAG:경과턴수 + 4), "="
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한하보림]])
+	ALIGNMENT CENTER
+	SETCOLOR 原神カラー(ARG)
+	IF RAND:3 == 0
+		PRINTFORML ┏━━━━━━━━━━━┓
+		PRINTFORML ┃들어라! 태양의 포효를!┃
+		PRINTFORMW ┗━━━━━━━━━━━┛
+	ELSEIF RAND:2 ==0
+		PRINTFORML ┏━━━━━━━━┓
+		PRINTFORML ┃이 천화로 단죄하리라!┃
+		PRINTFORMW ┗━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏━━━━━━━━┓
+		PRINTFORML ┃붉은 불꽃에 매장당해라!┃
+		PRINTFORMW ┗━━━━━━━━┛
+	ENDIF
+	RESETCOLOR
+	ALIGNMENT LEFT
+	CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+	CALL SKILLGAGE_D_SET,ARG,元素爆発制御変数,5
+	CALL SKILLGAGE_F_SET,ARG,元素爆発制御変数,0
+	CALL SET_RPG_CFLAG_BTL, ARG, "元素爆発再使用可能ターン", (FLAG:경과턴수 + 6), "="
+ENDIF
+
+
+
+@SKILL_PASSIVE_BTL_EFFECT_元素爆発（原神）, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+#DIM 元素爆発制御変数
+元素爆発制御変数 = PU_SKILLNUM_GET(L_P,"元素爆発（原神）")
+
+IF SKILL_CHANGE(L_P, [[キャラ:기묘한포칼로스]]) && SKILLGAGE_D_GET(L_P,元素爆発制御変数) > 0
+	SELECTCASE ARGS
+		;小数点以下切り捨て
+		CASE "ダメージ補正加算"
+			IF L_相性名 == "수격"
+				SIF GET_RPG_CFLAG_TAKEOVER(L_P, "命の星座") >= 2
+					RETURN 10
+				RETURN 5
+			ENDIF
+	ENDSELECT
+ELSEIF SKILL_CHANGE(L_P, [[キャラ:기묘한하보림]]) && SKILLGAGE_D_GET(L_P,元素爆発制御変数) > 0
+	SELECTCASE ARGS
+		;小数点以下切り捨て
+		CASE "ダメージ補正加算"
+			IF L_相性名 == "화염"
+				SIF GET_RPG_CFLAG_TAKEOVER(L_P, "命の星座") >= 4
+					RETURN 10
+				RETURN 5
+			ENDIF
+	ENDSELECT
+ENDIF
+
+RETURN 0
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_元素爆発（原神）,ARG
+SETCOLOR 0x33ffcc
+	PRINTL 원소폭발 기동에 필요한 원소 에너지 게이지를 추가하여 평상시의 다양한 행동으로 상승하게 된다.
+	PRINTL 주로 원소전투 스킬로 크게 상승하며, 최대치일 때만 원소폭발을 사용할 수 있게 된다. 탐색 종료 시 리셋.
+RESETCOLOR
+IF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:기묘한바르바토스]]
+	PRINTL 원소폭발 『바람신의 시』
+	PRINTL 적 전체에게 충격·질풍·만능 복합 속성의 소위력 물리 공격을 4회 가한다.
+	PRINT 추가 효과：명중할 때마다 방어·마법효과를 미량 감소시키고, 확률로 다운.
+	SETCOLOR 0x33ffcc
+		PRINTL 쿨타임：4턴.
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 3
+		PRINTL 운명의 자리 3돌파：데미지량 증가.
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 6
+		PRINTL 운명의 자리 6돌파：명중 시 추가로 공격과 마법위력도 저하.
+	RESETCOLOR
+	PRINTL 
+	PRINTL 수천의 바람을 모은 화살을 쏘아 거대한 폭풍의 눈을 만든다.
+	PRINTL 바람의 신 기묘한 바르바토스의 원소폭발기 (CSTR 전용)
+ELSEIF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:기묘한모라쿠스]]
+	PRINTL 元素爆発『天星』
+	PRINTL 적 전체에게 지변과 만능 복합 속성의 특대 위력 물리 공격을 1회 가한다.
+	PRINT 추가 효과：석화를 부여한다.
+	SETCOLOR 0x33ffcc
+		PRINTL 쿨타임：4턴.
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 2
+		PRINTL 운명의 자리 2돌파：발동 시 아군 전체에 자신의 HP의 20% 상당 내구도의 HP 배리어 『옥장의 방패』를 부여한다.
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 4
+		PRINTL 운명의 자리 4돌파：석화의 기본 부여 확률을 더욱 상승. (상한은 불변)
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 5
+		PRINTL 운명의 자리 5돌파：데미지량 증가.
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 6
+		PRINTL 운명의 자리 6돌파：부여되는 『옥장의 방패』의 내구도를 20%에서 33%로 강화한다.
+	RESETCOLOR
+	PRINTL 
+	PRINTL 거대한 성암을 낙하시켜 눈앞의 모든 적을 돌로 만든다.
+	PRINTL 바위의 신 기묘한 모락스의 원소폭발기 (CSTR 전용)
+ELSEIF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:기묘한바알]]
+	PRINTL 元素爆発『奥義・夢想真説』
+	PRINT 적 1열에게
+	IF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 2
+		SETCOLOR 0x33ffcc
+		PRINT 전격·검격의 복합 속성
+		RESETCOLOR
+	ELSE
+		PRINT 전격·만능의 복합 속성
+	ENDIF
+	PRINTL 로 특대 위력의 물리 공격을 1회 가한다.
+	PRINT 추가 효과：감전을 부여한다.
+	SETCOLOR 0x33ffcc
+		PRINTL 쿨타임：5턴.
+	RESETCOLOR
+	PRINTL 
+	PRINTL 발동 후 3턴 동안 일반 공격 『원류』를 『몽상의 일심』에 의한 공격으로 변경한다.
+	PRINTL 이 공격은 명중 후, 자신과 동료의 원소 에너지를 15 회복한다.
+	SETCOLOR 0x33ffcc
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 1
+		PRINTL 운명의 자리 1돌파：전투 중 원소폭발이 사용될 때마다 『오의·몽상진설』 『몽상의 일심』의 위력이 상승 (자신 포함. 최대 2스택)
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 2
+		PRINTL 운명의 자리 2돌파：속성을 『전격·검격』 복합으로 하고, 나아가 모든 전격·검격 상성을 관통한다.
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 3
+		PRINTL 운명의 자리 3돌파：데미지량 증가.
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 4
+		PRINTL 운명의 자리 4돌파：발동 시 아군 전체의 공격·마법위력을 1단계 상승.
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 6
+		PRINTL 운명의 자리 6돌파：『몽상의 일심』 명중 시 운명의 자리 1돌파의 스택 수를 1개 소비하여 아군 전체의 『원소폭발 쿨타임』을 1턴 단축한다.
+	RESETCOLOR
+	PRINTL 
+	PRINTL 모든 저주를 베어 가르는 몽상의 일태도를 내뻗어 일섬한 뒤
+	PRINTL 몽상의 일심을 휘두르며 싸우는 상태로 돌입하는, 공격과 전환을 겸한 스킬.
+	PRINTL 번개의 신 기묘한 바알의 원소폭발기 (CSTR 전용)
+ELSEIF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:비묘한부에르]]
+	;時限式パーティバフが実装されるまでの仮。
+	PRINTL 元素爆発『心景幻成』
+	PRINTL 아군 전체의 마법위력·마법효과를 2단계 상승시키고, 영역 『마야의 궁전』을 형성한다.
+	PRINT 단, 발동 전에 마법위력·마법효과가 +1 미만일 경우, +1로 보정한 뒤 발동한다.
+	SETCOLOR 0x33ffcc
+		PRINTL 쿨타임：4턴.
+	RESETCOLOR
+	PRINTL 
+	PRINTL 『마야의 궁전』
+	PRINTL 효과 시간 중 이하의 효과를 지닌다. 지속 시간 4턴.
+	PRINTL 1：『삼업멸정』의 공격 위력을 상승시킨다.
+	PRINTL 2：『삼업멸정』의 상태이상 대상에 대한 위력 강화량을 더욱 상승시킨다.
+	SETCOLOR 0x33ffcc
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 1
+		PRINTL 운명의 자리 1돌파：지속 턴을 +1턴, 『삼업멸정』의 최대 타격수를 +1, 위력 상승량을 강화.
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 5
+		PRINTL 운명의 자리 5돌파：1·2의 효과를 더욱 강화.
+	RESETCOLOR
+	PRINTL 
+	PRINTL 동료에게 지식을 나누어 주는 몽상의 전당을 구현한다.
+	PRINTL 지혜의 신에게 있어 삼라만상조차 그저 거꾸로 뒤집힌 환상의 마야의 꿈에 불과할지도 모른다.
+	PRINTL 풀의 신 기묘한 부에르의 원소폭발기 (CSTR 전용)
+ELSEIF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:기묘한포칼로스]]
+	PRINTL 원소폭발 『다 함께 카니발』
+	PRINTL 아군 전체의 공격·마법위력을 상승시키고, 『기쁘다 구주 오셨네』 상태로 돌입한다.
+	PRINT 단, 발동 전에 공격·마법위력이 0 미만일 경우, 0으로 보정한 뒤 발동한다.
+	SETCOLOR 0x33ffcc
+		PRINTL 쿨타임：4턴.
+	RESETCOLOR
+	PRINTL 
+	;もろびとがこぞれてないので暫定
+	PRINTL 『기쁘다 구주 오셨네』
+	IF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 2
+		SETCOLOR 0x33ffcc
+		PRINTL 효과 시간 중 자신이 주는 수격 데미지를 10% 가산한다. 지속 시간 6턴.
+		RESETCOLOR
+	ELSE
+		PRINTL 효과 시간 중 자신이 주는 수격 데미지를 5% 가산한다. 지속 시간 6턴.
+	ENDIF
+	SETCOLOR 0x33ffcc
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 1
+		PRINTL 운명의 자리 1돌파：발동 시의 공격·마법위력 상승량을 증가
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 2
+		PRINTL 운명의 자리 2돌파：『기쁘다 구주 오셨네』 상태에서의 데미지 가산 효과를 증가.
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 3
+		PRINTL 운명의 자리 3돌파：발동 시의 공격·마법위력 상승량을 더욱 증가.
+	RESETCOLOR
+	PRINTL 
+	PRINTL 「갈채하라! 찬양하라! 괄목하라! 자, 잔을 들어라! 잔치 없는 밤이란 메마르고 고통스러운 낮을 낭비하는 것에 지나지 않는다.
+	PRINTL 　……아, 저기, 그……미성년자는 대신 포도 주스를 마시는 게 좋을 것 같아!」
+	PRINTL 물의 신 기묘한 포칼로스의 원소폭발기 (CSTR 전용)
+ELSEIF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:기묘한하보림]]
+	PRINTL 원소폭발 『하늘을 불태우는 시각』
+	PRINTL 적 1열에 화염·검격·만능 복합 속성의 특대 위력 물리 공격을 1회 가하고, 『사생의 화로』 상태로 돌입한다.
+	SETCOLOR 0x33ffcc
+		PRINTL 쿨타임：5턴.
+	RESETCOLOR
+	PRINTL 
+	PRINTL 『사생의 화로』
+	IF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 4
+		SETCOLOR 0x33ffcc
+		PRINTL 효과 시간 중 자신이 주는 화염 데미지를 10% 가산한다. 지속 시간 4턴.
+		RESETCOLOR
+	ELSE
+		PRINTL 효과 시간 중 자신이 주는 화염 데미지를 5% 가산한다. 지속 시간 4턴.
+	ENDIF
+	SETCOLOR 0x33ffcc
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 2
+		PRINTL 운명의 자리 2돌파：데미지량 증가.
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 3
+		PRINTL 운명의 자리 3돌파：데미지량 증가.
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 4
+		PRINTL 운명의 자리 4돌파：『사생의 화로』의 효과량 증가.
+	RESETCOLOR
+	PRINTL 
+	PRINTL 고조된 전의를 품고, 『쌍구륜』에 올라타 공중으로 날아올라,
+	PRINTL 강력한 「추양참」을 내뻗어 불 원소 범위 공격을 가한다.
+	PRINTL 「――하지만 이번 싸움에서 그 운명을 깨부수고 싶다」
+	PRINTL 불의 신 기묘한 하보림의 원소폭발기 (CSTR 전용)
+ELSE
+	PRINTL 해당하는 캐릭터가 습득하지 않았을 때의 설명문. 버그이므로 보고해 주새오.
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_元素爆発（原神）,ARG
+#DIM 元素爆発制御変数
+元素爆発制御変数 = PU_SKILLNUM_GET(ARG,"元素爆発（原神）")
+;元素爆発リキャスト中は不可（共通）
+SIF GET_RPG_CFLAG_BTL(ARG, "元素爆発再使用可能ターン") > FLAG:경과턴수
+	RETURN 0
+;各々の必要な元素エネルギーが既定値溜まっていなければ不可。
+SIF SKILLGAGE_F_GET(ARG,元素爆発制御変数) < GET_元素爆発_ゲージ上限(ARG)
+	RETURN 0
+RETURN 1
+
+@SKILLGAGE_DISPLAY_元素爆発（原神）,ARG
+SIF !HAVE_PU_SKILL(ARG, "元素スキル（原神）")
+	CALL SKILLGAGE_DISPLAY_元素スキル（原神）,ARG
+
+@GET_元素爆発_ゲージ上限, ARG
+#FUNCTION
+SELECTCASE NO:ARG
+	CASE [[キャラ:기묘한바르바토스]]
+		RETURNF 60
+	CASE [[キャラ:기묘한모라쿠스]]
+		RETURNF 40
+	CASE [[キャラ:기묘한바알]]
+		RETURNF 90
+	CASE [[キャラ:비묘한부에르]]
+		RETURNF 50
+	CASE [[キャラ:기묘한포칼로스]]
+		RETURNF 60
+	CASE [[キャラ:기묘한하보림]]
+		RETURNF 80
+ENDSELECT
+
+;@GET_元素爆発_持続時間, ARG
+;#FUNCTION
+;SELECTCASE NO:ARG
+;	CASE [[キャラ:기묘한바르바토스]]
+;		RETURNF 60
+;	CASE [[キャラ:기묘한모라쿠스]]
+;		RETURNF 40
+;	CASE [[キャラ:기묘한바알]]
+;		RETURNF 90
+;	CASE [[キャラ:비묘한부에르]]
+;		RETURNF 50
+;	CASE [[キャラ:기묘한포칼로스]]
+;		RETURNF 60
+;ENDSELECT
+
+@原神カラー, ARG
+#FUNCTION
+SELECTCASE NO:ARG
+	CASE [[キャラ:기묘한바르바토스]]
+		RETURNF 0x009e25
+	CASE [[キャラ:기묘한모라쿠스]]
+		RETURNF 0xffaa00 
+	CASE [[キャラ:기묘한바알]]
+		RETURNF 0x782069
+	CASE [[キャラ:비묘한부에르]]
+		RETURNF 0xa6cf00
+	CASE [[キャラ:기묘한포칼로스]]
+		RETURNF 0x00ffff
+	CASE [[キャラ:기묘한하보림]]
+		RETURNF 0xff6c00
+ENDSELECT
+@SKILL_EX_DISPLAY_元素爆発（原神）, ARG, ARGS
+#DIM BAR_LENS, 2
+#DIM BAR_COLOR, 2
+#DIM EFFECT_TURN
+SELECTCASE NO:ARG
+	CASE [[キャラ:기묘한바알]], [[キャラ:비묘한부에르]], [[キャラ:기묘한포칼로스]]
+		BAR_LENS = SKILL_EX_DISPLAY_LENS / 2 + SKILL_EX_DISPLAY_LENS % 2, SKILL_EX_DISPLAY_LENS / 2
+		IF PU_SKILLGAGE_F_GET(ARG, "元素爆発（原神）") >= GET_元素爆発_ゲージ上限(ARG)
+			IF GET_RPG_CFLAG_BTL(ARG, "元素爆発再使用可能ターン") > FLAG:경과턴수
+				RESULTS += GET_GENSHIN_SKILL_ICON(ARG, "元素爆発（原神）", "STAND")
+				RESULTS += " " * (BAR_LENS - 8)
+				RESULTS += HTML_ESCAPE(@"<CT:{GET_RPG_CFLAG_BTL(ARG, "元素爆発再使用可能ターン") - FLAG:경과턴수}>")
+			ELSE
+				RESULTS += GET_GENSHIN_SKILL_ICON(ARG, "元素爆発（原神）", "ACT")
+				RESULTS +=  " " * (BAR_LENS - 8) + SET_COLOR_TAG("Ready", TOSTR(原神カラー(ARG))) +  " "
+			ENDIF
+		ELSE
+			BAR_COLOR = BARCOLORSET("緑"), RESULT:1
+			IF GET_RPG_CFLAG_BTL(ARG, "元素爆発再使用可能ターン") > FLAG:경과턴수
+				RESULTS += GET_GENSHIN_SKILL_ICON(ARG, "元素爆発（原神）", "STAND")
+			ELSE
+				RESULTS += GET_GENSHIN_SKILL_ICON(ARG, "元素爆発（原神）", "ACT")
+			ENDIF
+			RESULTS += HTML_RECT_BAR(PU_SKILLGAGE_F_GET(ARG, "元素爆発（原神）"), GET_元素爆発_ゲージ上限(ARG), BAR_LENS:1 - 2, BAR_COLOR, BAR_COLOR:1)
+		ENDIF
+		IF PU_SKILLGAGE_D_GET(ARG, "元素爆発（原神）")
+			EFFECT_TURN = NO:ARG == [[キャラ:기묘한바알]] ? 3 # (GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 1 ? 5 # 4) 
+			BAR_COLOR = BARCOLORSET("赤"), RESULT:1
+			RESULTS += GET_GENSHIN_SKILL_ICON(ARG, "元素爆発（原神）", "ACT")
+			RESULTS += HTML_RECT_SPLIT_BAR(PU_SKILLGAGE_D_GET(ARG, "元素爆発（原神）"), EFFECT_TURN, BAR_LENS:1 - 2, BAR_COLOR, BAR_COLOR:1)
+		ELSE
+			RESULTS += " " * BAR_LENS:1
+		ENDIF
+		RESULTS:1 = 元素爆発
+		RETURN 1
+	CASEELSE
+		IF HAVE_PU_SKILL(ARG, "元素スキル（原神）")
+			RETURN 0
+		ELSE
+			CALL SKILL_EX_DISPLAY_元素スキル（原神）, ARG, ARGS
+			RETURN 1
+		ENDIF
+ENDSELECT
+
+;====================================================
+;行動によるスキルゲージ操作
+;各キャラクターの通常の行動後に全キャラで呼び出される
+;ARG:		このスキルの持ち主のキャラ番号
+;ARG:1		行動したキャラクターのキャラ番号
+;
+;RESULT 		獲得したゲージの量を返すことで獲得量を表示させる。つまり、他人の行動に反応させることなども可能。
+;RESULT:1		獲得表示のときの文字色を指定できる。ゲージが溜まったときの表示わけなどに
+;RESULTS		ゲージの名称 「<<XXXX>>」という形で表示される
+;RESULTS:1		ゲージの単位。半角の%を使いたい場合は「\%」と言うかたちで退避記号を使うと良い
+;RESULTS;2		色指定以外の要素を使わずに文字列を返す。ゲージ式の獲得量で表現したい場合などに
+;====================================================
+@SKILLGAGE_CHARGE_元素爆発（原神）,ARG,ARG:1
+#DIM 元素スキル継続時間
+#DIM 元素爆発制御変数
+#LOCALSIZE 1
+#DIM L_T
+#DIM L_GP
+#DIM L_GP_LIMIT
+#DIM L_COLOR
+元素スキル継続時間 = PU_SKILLNUM_GET(ARG,"元素スキル（原神）")
+元素爆発制御変数 = PU_SKILLNUM_GET(ARG,"元素爆発（原神）")
+
+;スキルゲージDがある＝発動中の場合でも貯まる。
+;SIF SKILLGAGE_D_GET(ARG,元素爆発制御変数) > 0
+;RETURN 0
+;自分の行動の場合
+L_GP = 0
+L_GP_LIMIT = GET_元素爆発_ゲージ上限(ARG)
+L_COLOR = 原神カラー(ARG)
+;ゲージはキャラごとに上限が違う
+;SELECTCASE NO:ARG
+;	CASE [[キャラ:기묘한바르바토스]]
+;		L_GP_LIMIT = 60
+;		L_COLOR = 0x009e25
+;	CASE [[キャラ:기묘한모라쿠스]]
+;		L_GP_LIMIT = 40
+;		L_COLOR = 0xffaa00 
+;	CASE [[キャラ:기묘한바알]]
+;		L_GP_LIMIT = 90
+;		L_COLOR = 0x782069
+;	CASE [[キャラ:비묘한부에르]]
+;		L_GP_LIMIT = 50
+;		L_COLOR = 0xa6cf00
+;ENDSELECT
+;上限に到達している場合はリターン
+SIF SKILLGAGE_F_GET(ARG,元素爆発制御変数) == L_GP_LIMIT
+	RETURN 0
+IF ARG == ARG:1
+	L_GP += 5
+	;行動者がフォカロルス４重以上の場合、スキル追撃を伴う行動を行うたびに４回復
+	SIF NO:(ARG:1) == [[キャラ:기묘한포칼로스]] && SKILLGAGE_D_GET(ARG,元素スキル継続時間) < 1 && GET_RPG_CFLAG_TAKEOVER(ARG, "命の星座") >= 4
+		L_GP += 4
+	FOR LOCAL, 0, BCHARANUM
+		L_T = BCHARA:LOCAL
+		SIF IS_FRIEND(ARG, L_T)
+			CONTINUE
+		SIF GET_CREC_ACT(ARG, L_T, "HIT")
+			L_GP += 5
+		SIF GET_CREC_ACT(ARG, L_T, "CRT")
+			L_GP += 15
+		SIF GET_CREC_ACT(ARG, L_T, "WEAK")
+			L_GP += 15
+	NEXT
+	
+	;ダメージを受けた敵の数に応じてスキルゲージアップ
+	;FOR LOCAL,0,CHARANUM
+	;	SIF CFLAG:LOCAL:PT플래그 == CFLAG:ARG:PT플래그
+	;		CONTINUE
+	;	IF CFLAG:LOCAL:현데미지 > 0
+	;		CALL SKILLGAGE_F_ADD,ARG,元素爆発制御変数,5
+	;	ELSE
+	;		CONTINUE
+	;	ENDIF
+	;	;会心、弱点を出すとさらにアップ
+	;	SIF GETBIT(CFLAG:LOCAL:受けフラグ,21)
+	;		CALL SKILLGAGE_F_ADD,ARG,元素爆発制御変数,15
+	;	SIF GETBIT(CFLAG:LOCAL:受けフラグ,22)
+	;		CALL SKILLGAGE_F_ADD,ARG,元素爆発制御変数,15
+	;NEXT
+	;気合を入れても上がる
+	SIF CFLAG:ARG:입력행동 == [[스킬:기합]]
+		L_GP += 10
+	;集中しても上がる
+	SIF CFLAG:ARG:입력행동 == [[스킬:컨센트레이트]]
+		L_GP += 10
+	;雄叫びしても上がる
+	SIF CFLAG:ARG:입력행동 == [[스킬:포효]]
+		L_GP += 10
+	;挑発しても上がる
+	SIF CFLAG:ARG:입력행동 == [[스킬:도발]]
+		L_GP += 10
+	;元素スキルで大きく上昇する
+	SIF IS_PU_SKILL_入力行動(ARG, "元素スキル（原神）")
+		L_GP += 30
+	;気合を入れても上がる
+	;SIF CFLAG:ARG:입력행동 == 511
+	;	CALL SKILLGAGE_F_ADD,ARG,元素爆発制御変数,10
+	;集中しても上がる
+	;SIF CFLAG:ARG:입력행동 == 512
+	;	CALL SKILLGAGE_F_ADD,ARG,元素爆発制御変数,10
+	;雄叫びしても上がる
+	;SIF CFLAG:ARG:입력행동 == 514
+	;	CALL SKILLGAGE_F_ADD,ARG,元素爆発制御変数,10
+	;挑発しても上がる
+	;SIF CFLAG:ARG:입력행동 == 515
+	;	CALL SKILLGAGE_F_ADD,ARG,元素爆発制御変数,10
+	;元素スキルで大きく上昇する
+	;SIF CFLAG:ARG:입력행동 == 3905
+	;	CALL SKILLGAGE_F_ADD,ARG,元素爆発制御変数,30
+
+ENDIF
+;味方のバアルの夢想の一心でゲージ+15
+IF IS_FRIEND(ARG, ARG:1) && NO:(ARG:1) == [[キャラ:기묘한바알]]
+	SIF IS_PU_SKILL_入力行動(ARG:1, "通常攻撃（原神）") && SKILLGAGE_D_GET(ARG:1, PU_SKILLNUM_GET(ARG:1, "元素爆発（原神）")) > 0 && GET_CREC_ACT_SUM(ARG:1, "적", "HIT")
+		L_GP += 15
+ENDIF
+
+;ダメージを受けた又はカウンター、トリガー以外の攻撃を受けたら
+;ゲージが増える。増加量は最大体力に対するダメージ割合の２倍
+SIF GET_CREC_ACT(ARG:1, ARG, "HIT")
+	L_GP += MAX(200 * CFLAG:ARG:현데미지 / MAXBASE:ARG:ＨＰ, 2)
+;IF CFLAG:ARG:현데미지 > 0 || GETBIT(CFLAG:ARG:受けフラグ,18) || GETBIT(CFLAG:ARG:受けフラグ,19)
+;	LOCAL = 200 * CFLAG:ARG:현데미지 / MAXBASE:ARG:ＨＰ
+;	LOCAL = LOCAL < 2 ? 2 # LOCAL
+;	CALL SKILLGAGE_F_ADD,ARG,元素爆発制御変数,LOCAL
+;ENDIF
+;SIF SKILL_CHANGE(ARG, [[キャラ:기묘한바르바토스]])
+;	CALL SKILLGAGE_F_SET,ARG,元素爆発制御変数,MIN(60, L_GP + SKILLGAGE_F_GET(ARG, 元素爆発制御変数))
+;SIF SKILL_CHANGE(ARG, [[キャラ:기묘한모라쿠스]])
+;	CALL SKILLGAGE_F_SET,ARG,元素爆発制御変数,MIN(40, L_GP + SKILLGAGE_F_GET(ARG, 元素爆発制御変数))
+;SIF SKILL_CHANGE(ARG, [[キャラ:기묘한바알]])
+;	CALL SKILLGAGE_F_SET,ARG,元素爆発制御変数,MIN(90, L_GP + SKILLGAGE_F_GET(ARG, 元素爆発制御変数))
+;IF SKILL_CHANGE(ARG, [[キャラ:기묘한바르바토스]])
+;	SIF SKILLGAGE_F_GET(ARG,元素爆発制御変数) > 60
+;		CALL SKILLGAGE_F_SET,ARG,元素爆発制御変数,60
+;ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한모라쿠스]])
+;	SIF SKILLGAGE_F_GET(ARG,元素爆発制御変数) > 40
+;		CALL SKILLGAGE_F_SET,ARG,元素爆発制御変数,40
+;ELSEIF SKILL_CHANGE(ARG, [[キャラ:기묘한바알]])
+;	SIF SKILLGAGE_F_GET(ARG,元素爆発制御変数) > 90
+;		CALL SKILLGAGE_F_SET,ARG,元素爆発制御変数,90
+;ENDIF
+CALL SKILLGAGE_F_SET,ARG,元素爆発制御変数, MIN(L_GP + SKILLGAGE_F_GET(ARG,元素爆発制御変数), L_GP_LIMIT)
+IF SKILLGAGE_F_GET(ARG,元素爆発制御変数) == L_GP_LIMIT
+	RESULTS = ＥＬＥＭＥＮＴＡＬ ＢＵＲＳＴ ＲＥＡＤＹ！
+	RESULT:1 = L_COLOR
+ELSE
+	RESULTS = 원소 에너지
+ENDIF
+RESULTS:1 = %" "%
+RETURN L_GP

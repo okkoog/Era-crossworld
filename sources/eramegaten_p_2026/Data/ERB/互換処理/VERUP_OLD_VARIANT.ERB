@@ -1,0 +1,3173 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:VERUP_OLD_VAERIANT.ERB
+;	Facility	:私家版以前の互換処理
+;
+;	Licence		:ライセンスフリー。
+;
+;	Edit	Date			Author					Reason
+;	001		2024/10/08		P(bazzile)				VERUP.ERBから分離させる形で新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;全口上が口上セレクト機能新仕様に変更されるまでの間
+;変更を確認したら削除すること
+@EVENTTRAIN_VERUP
+SIF TARGET > -1 && CFLAG:구상셀렉트 == -1
+	CFLAG:구상셀렉트 = 50
+
+@VERUP_OLD_VAERIANT
+#DIM DYNAMIC LCOUNT, 3
+#DIMS DYNAMIC L_BTL_TALENT
+
+SIF FLAG:소프트용량 < 8
+	FLAG:소프트용량 = 8
+FLAG:합체소재악마1 = -1
+FLAG:합체소재악마2 = -1
+IF ITEM:25 == 1 && TALENT:MASTER:158 == 0
+	ITEM:25 = 0
+	TALENT:MASTER:158 = 1
+ENDIF
+
+IF LASTLOAD_VERSION < 0201
+	FOR LCOUNT, 0, CHARANUM
+		SIF ABL:LCOUNT:종족 == 46 || ABL:LCOUNT:종족 == 47
+			ABL:LCOUNT:종족 = 0
+		IF ABL:LCOUNT:종족 == 0
+			TALENT:LCOUNT:서머너 = CSVTALENT(NO:LCOUNT,GETNUM(TALENT,"서머너"),0)
+			TALENT:LCOUNT:석세서 = CSVTALENT(NO:LCOUNT,GETNUM(TALENT,"석세서"),0)
+			TALENT:LCOUNT:데빌시프터 = CSVTALENT(NO:LCOUNT,GETNUM(TALENT,"데빌시프터"),0)
+			TALENT:LCOUNT:이능자 = CSVTALENT(NO:LCOUNT,GETNUM(TALENT,"이능자"),0)
+			TALENT:LCOUNT:페르소나구사자 = CSVTALENT(NO:LCOUNT,GETNUM(TALENT,"페르소나구사자"),0)
+			TALENT:LCOUNT:도구지식 = CSVTALENT(NO:LCOUNT,GETNUM(TALENT,"도구지식"),0)
+			TALENT:LCOUNT:아이템숙련 = CSVTALENT(NO:LCOUNT,GETNUM(TALENT,"아이템숙련"),0)
+			TALENT:LCOUNT:건슬링거 = CSVTALENT(NO:LCOUNT,GETNUM(TALENT,"건슬링거"),0)
+
+		ENDIF
+		IF LCOUNT != MASTER && ABL:LCOUNT:종족 != 45
+			FOR LOCAL,1,7
+				BASE:LCOUNT:(GET_BASESTATUS(LOCAL)) = CSVBASE(NO:LCOUNT,GETNUM(BASE,GET_BASESTATUS(LOCAL)),0)
+			NEXT
+			CFLAG:LCOUNT:초기LV = CSVBASE(NO:LCOUNT,GETNUM(BASE,"LV"),0)
+		ENDIF
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0244
+	IF STRLENS(SAVESTR:400)
+		SAVESTR:405 = SAVESTR:400
+		SAVESTR:400 = 
+	ENDIF
+	FOR LOCAL, 90, 100
+		FOR LOCAL:1, 0, 33
+			SWAP DITEMTYPE:LOCAL:(LOCAL:1), DITEMTYPE:(LOCAL-89):(LOCAL:1)
+		NEXT
+	NEXT
+	FOR LOCAL,0 , CHARANUM
+		SIF TALENT:LOCAL:페르소나구사자 == 0
+			CONTINUE
+		PRINTS CALLNAME:LOCAL
+		FOR LOCAL:1, 100, 105
+			SIF EQUIP:LOCAL:(LOCAL:1)
+				EQUIP:LOCAL:(LOCAL:1) -= 89
+			PRINTFORML EQUIP:LOCAL:({LOCAL:1}) = {EQUIP:LOCAL:(LOCAL:1)}
+		NEXT
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0257
+	SIF TARGET:1 == 0
+		TARGET:1 = -1
+	SIF TARGET:2 == 0
+		TARGET:2 = -1
+	SIF TARGET:3 == 0
+		TARGET:3 = -1
+	SIF ASSI:1 == 0
+		ASSI:1 = -1
+	SIF ASSI:2 == 0
+		ASSI:2 = -1
+	IF DB:34:8 == 1 && ITEM:540 == 0
+		CALL MESSAGE_B(3, "セーブデータ互換処理", "初台シェルタークリア報酬として", "インストールソフト「고에티아」を獲得！")
+		CALL GETS_INSTALLSOFT, "고에티아"
+	ENDIF
+	;堕天使勢の移動
+	FOR LOCAL, 0, CHARANUM
+		SELECTCASE NO:LOCAL
+			CASE 352
+				NO:LOCAL = 1701
+			CASE 353
+				NO:LOCAL = 1702
+			CASE 354
+				NO:LOCAL = 1703
+			CASE 351
+				NO:LOCAL = 1704
+			CASE 356
+				NO:LOCAL = 1705
+			CASE 357
+				NO:LOCAL = 1706
+			CASE 358
+				NO:LOCAL = 1707
+		ENDSELECT
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0261
+	IF DB:[[ダンジョン:SEBEC빌딩]]:9 == 1 && ITEM:527 == 0
+		CALL MESSAGE_B(4, "セーブデータ互換処理", "SEBECビルクリア報酬として", "インストールソフト「싱크로나이즈기어」を獲得！", "インストールソフト「어져스트먼트기어」を獲得！")
+		CALL GETS_INSTALLSOFT, "싱크로나이즈기어"
+		CALL GETS_INSTALLSOFT, "어져스트먼트기어"
+	ENDIF
+	FOR LOCAL,0, CHARANUM
+		SIF TALENT:LOCAL:페르소나구사자 == 0
+			CONTINUE
+		SIF NO:LOCAL == [[キャラ:리세]]
+			TALENT:LOCAL:페르소나구사자 = 2
+		IF NO:LOCAL == [[キャラ:아이기스]]
+			ABL:LOCAL:초기페르소나 = [[キャラ:팔라디온_페르소나]]
+			TALENT:LOCAL:페르소나구사자 = 2
+		ENDIF
+		SIF NO:LOCAL == [[キャラ:P3남주인공]]
+			ABL:LOCAL:초기페르소나 = [[キャラ:오르페우스_페르소나]]
+		SIF NO:LOCAL == [[キャラ:P3여주인공]]
+			ABL:LOCAL:초기페르소나 = [[キャラ:오르페우스_페르소나]]
+		SELECTCASE ABL:LOCAL:초기페르소나
+			CASE 110
+				ABL:LOCAL:초기페르소나 = [[キャラ:베르단디_페르소나]]
+			CASE 211
+				ABL:LOCAL:초기페르소나 = [[キャラ:아에슈마2]]
+			CASE 212
+				ABL:LOCAL:초기페르소나 = [[キャラ:아에슈마3]]
+			CASE 320
+				ABL:LOCAL:초기페르소나 = [[キャラ:가브리엘_페르소나]]
+			CASE 412
+				ABL:LOCAL:초기페르소나 = [[キャラ:파리카2]]
+			CASE 413
+				ABL:LOCAL:초기페르소나 = [[キャラ:파리카3]]
+			CASE 1510
+				ABL:LOCAL:초기페르소나 = [[キャラ:프레이아_페르소나]]
+			CASE 4051
+				ABL:LOCAL:초기페르소나 = [[キャラ:불카누스・개_페르소나]]
+			CASE 4052
+				ABL:LOCAL:초기페르소나 = [[キャラ:아폴로_페르소나]]
+			CASE 4053
+				ABL:LOCAL:초기페르소나 = [[キャラ:에로스・개_페르소나]]
+			CASE 4054
+				ABL:LOCAL:초기페르소나 = [[キャラ:비너스_페르소나]]
+			CASE 4055
+				ABL:LOCAL:초기페르소나 = [[キャラ:마이아・개_페르소나]]
+			CASE 4056
+				ABL:LOCAL:초기페르소나 = [[キャラ:아르테미스_페르소나]]
+			CASE 4057
+				ABL:LOCAL:초기페르소나 = [[キャラ:니알랏토텝_약]]
+		ENDSELECT
+	NEXT
+	FOR LOCAL, 1, 11
+		SIF DITEMTYPE:LOCAL:페르소나("NO") == 4051
+			DITEMTYPE:LOCAL:페르소나("NO") = [[キャラ:불카누스・개_페르소나]]
+		SIF DITEMTYPE:LOCAL:페르소나("NO") == 4053
+			DITEMTYPE:LOCAL:페르소나("NO") = [[キャラ:에로스・개_페르소나]]
+		SIF DITEMTYPE:LOCAL:페르소나("NO") == 4055
+			DITEMTYPE:LOCAL:페르소나("NO") = [[キャラ:마이아・개_페르소나]]
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0266
+	;最終ペルソナフラグ廃棄 & 所持ペルソナを2個に
+	FOR LOCAL, 0, CHARANUM
+		IF TALENT:LOCAL:페르소나구사자
+			DITEMTYPE:(EQUIP:LOCAL:소지페르소나3):0 = 1
+			SIF CFLAG:LOCAL:초기페르소나넘버 == 1
+				CFLAG:LOCAL:초기페르소나넘버 = 0
+			EQUIP:LOCAL:장비페르소나 = 0
+			EQUIP:LOCAL:소지페르소나3 = 0
+		ENDIF
+		LOCAL:1 = HAVE_SKILL(LOCAL,714)
+		IF LOCAL:1
+			FOR LOCAL:2, LOCAL:1, 9
+				LOCALS = 스킬{LOCAL:2}
+				LOCALS:1 = 스킬{LOCAL:2+1}
+				ABL:LOCAL:LOCALS = ABL:LOCAL:(LOCALS:1)
+			NEXT
+		ENDIF
+	NEXT
+	FOR LOCAL, 0, 100
+		FOR LOCAL:1, 1, 7
+			LOCALS = 스킬{LOCAL:1}
+			LOCALS:1 = 스킬{LOCAL:1+1}
+			SIF DITEMTYPE:LOCAL:페르소나(LOCALS) == 714
+				LOCAL:2 = 1
+			SIF LOCAL:2 && LOCAL:1 < 7
+				DITEMTYPE:LOCAL:페르소나(LOCALS) = DITEMTYPE:LOCAL:페르소나(LOCALS:1)
+		NEXT
+		LOCAL:2 = 0
+	NEXT
+	;空博＆ゾディアック番号移動
+	FOR LOCAL, 0, 100
+		DB:13:LOCAL = 0
+		DB:14:LOCAL = 0
+	NEXT
+	SAVESTR:114 = 
+ENDIF
+
+IF LASTLOAD_VERSION < 0267
+	FOR LOCAL, 0, CHARANUM
+		SELECTCASE NO:LOCAL
+			;ナーガの変異をナーガラジャに
+			CASE 754
+				SIF ABL:LOCAL:변이 == 452
+					ABL:LOCAL:변이 = 755
+			CASE 956
+				SIF NAME:LOCAL == "ヒッポウ"
+					NO:LOCAL = 955
+		ENDSELECT
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0272
+	FOR LOCAL,0,CHARANUM
+		CFLAG:LOCAL:피링크캐릭터실제가입시간 = 0
+		CFLAG:LOCAL:링크캐릭터실제가입시간0 = 0
+		;☆りせ、直斗の初期ペルソナを変更
+		SELECTCASE NO:LOCAL
+			CASE 4531
+				ABL:LOCAL:초기페르소나 = [[キャラ:히미코_페르소나]]
+			CASE 4541
+				ABL:LOCAL:초기페르소나 = [[キャラ:스쿠나히코나]]
+				TALENT:LOCAL:페르소나구사자 = 2
+			;正規加入条件を満たしているものとしてイベントフラグ追加
+			CASE 4501, 4502, 4503, 4508
+				CFLAG:LOCAL:이벤트가입 = 1
+		ENDSELECT
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0274
+	LOCAL = GETCHARA([[キャラ:리세]])
+	SIF LOCAL >= 0
+		ABL:LOCAL:초기페르소나 = [[キャラ:히미코_페르소나]]
+	FOR LOCAL, 0, CHARANUM
+		IF TALENT:LOCAL:페르소나구사자
+			SIF EQUIP:LOCAL:소지페르소나1
+				DITEMTYPE:(EQUIP:LOCAL:소지페르소나1):페르소나("ペルソナ所持者") = CFLAG:LOCAL:캐릭터고유번호
+			SIF EQUIP:LOCAL:소지페르소나2
+				DITEMTYPE:(EQUIP:LOCAL:소지페르소나2):페르소나("ペルソナ所持者") = CFLAG:LOCAL:캐릭터고유번호
+		ENDIF
+	NEXT
+ENDIF
+
+;固有番号を振り直す
+IF LASTLOAD_VERSION < 0275
+	IF FLAG:41
+		;固有番号の大きい順に並べ直す
+		FOR LOCAL, 0, CHARANUM
+			FOR LOCAL:1, 0, CHARANUM-1
+				SIF CFLAG:(LOCAL:1):캐릭터고유번호 > CFLAG:(LOCAL:1 + 1):캐릭터고유번호
+					SWAPCHARA LOCAL:1, LOCAL:1+1
+			NEXT
+		NEXT
+		;RESULT配列に使われてる固有の番号を全部書きだしつつ、NO順に置き換える
+		VARSET RESULT, -2
+		FOR LOCAL, 0 , CHARANUM
+			IF CFLAG:LOCAL:캐릭터고유번호 > 0
+				RESULT:LOCAL = CFLAG:LOCAL:캐릭터고유번호
+				CFLAG:LOCAL:캐릭터고유번호 = LOCAL
+			ENDIF
+		NEXT
+		;最後に0に主人を入れる
+		RESULT = 0
+		;ペルソナの固有ナンバー調整
+		FOR LOCAL, 1 , 11
+			FOR LOCAL:1, 0, 200
+				SIF RESULT:(LOCAL:1) > -1 && DITEMTYPE:LOCAL:페르소나("ペルソナ所持者") == RESULT:(LOCAL:1)
+					DITEMTYPE:LOCAL:페르소나("ペルソナ所持者") = LOCAL:1
+			NEXT
+		NEXT
+		FOR LOCAL, 50 , 100
+			FOR LOCAL:1, 0, 200
+				SIF RESULT:(LOCAL:1) > -1 && DITEMTYPE:LOCAL:페르소나("ペルソナ所持者") == RESULT:(LOCAL:1)
+					DITEMTYPE:LOCAL:페르소나("ペルソナ所持者") = LOCAL:1
+			NEXT
+		NEXT
+		FOR LOCAL, 0, CHARANUM
+			IF CFLAG:LOCAL:딸의부친고유번호딸 > -1
+				FOR LOCAL:1, 0, 200
+					IF CFLAG:LOCAL:딸의친부모고유번호딸 == RESULT:(LOCAL:1)
+						CFLAG:LOCAL:딸의친부모고유번호딸 = LOCAL:1
+						BREAK
+					ENDIF
+				NEXT
+			ENDIF
+			IF CFLAG:LOCAL:딸의부친고유번호딸 > -1
+				FOR LOCAL:1, 0, 200
+					IF CFLAG:LOCAL:딸의부친고유번호딸 == RESULT:(LOCAL:1)
+						CFLAG:LOCAL:딸의부친고유번호딸 = LOCAL:1
+						BREAK
+					ENDIF
+				NEXT
+			ENDIF
+		NEXT
+		FLAG:41 = 0
+	ENDIF
+ENDIF
+
+IF LASTLOAD_VERSION < 0276
+	;固有番号がおかしい場合になおす処置
+	FOR LOCAL, 1, 11
+		SIF DITEMTYPE:LOCAL:0 == 0
+			CONTINUE
+		IF DITEMTYPE:LOCAL:페르소나("ペルソナ所持者") >= 0 && FINDCHARA_ID(DITEMTYPE:LOCAL:페르소나("ペルソナ所持者")) == -1
+			IF DITEMTYPE:LOCAL:페르소나("装備状態") > 0
+				DITEMTYPE:LOCAL:페르소나("ペルソナ所持者") = -1
+			ELSE
+				LOCAL:3 = 0
+				FOR LOCAL:1, 0, CHARANUM
+					FOR LOCAL:2, GETNUM(EQUIP, "장비페르소나"), GETNUM(EQUIP, "소지페르소나3")+1
+						IF EQUIP:(LOCAL:1):(LOCAL:2) == LOCAL
+							DITEMTYPE:LOCAL:페르소나("ペルソナ所持者") = CFLAG:(LOCAL:1):캐릭터고유번호
+							LOCAL:3 = 1
+						ENDIF
+					NEXT
+				NEXT
+				SIF LOCAL:3 == 0
+					DITEMTYPE:LOCAL:페르소나("ペルソナ所持者") = -1
+			ENDIF
+		ENDIF
+	NEXT
+	FOR LOCAL, 50, 100
+		SIF DITEMTYPE:LOCAL:0 == 0
+			CONTINUE
+		IF DITEMTYPE:LOCAL:페르소나("ペルソナ所持者") >= 0 && FINDCHARA_ID(DITEMTYPE:LOCAL:페르소나("ペルソナ所持者")) == -1
+			LOCAL:3 = 0
+			FOR LOCAL:1, 0, CHARANUM
+				IF CFLAG:(LOCAL:1):초기페르소나넘버 == LOCAL
+					DITEMTYPE:LOCAL:페르소나("ペルソナ所持者") = CFLAG:(LOCAL:1):캐릭터고유번호
+					LOCAL:3 = 1
+				ENDIF
+			NEXT
+			SIF LOCAL:3 == 0
+				DITEMTYPE:LOCAL:페르소나("ペルソナ所持者") = -1
+		ENDIF
+	NEXT
+	SIF ITEM:529
+		FLAG:벨신격파 |= 32
+	SIF FLAG:나오야루트 >= 4
+		FLAG:벨신격파 |= 8
+	FOR LOCAL,0,CHARANUM
+		VARSET RESULT
+		ENCODETOUNI %NAME:LOCAL%
+		LOCAL:1 = RESULT+1
+		IF ABL:LOCAL:종족 == 0 || ABL:LOCAL:종족 == 45
+			CFLAG:LOCAL:위험일 = (SUMARRAY(RESULT , 1 , LOCAL:1) + DAY*4 + TIME)%16
+		ELSE
+			CFLAG:LOCAL:위험일 = (SUMARRAY(RESULT , 1 , LOCAL:1) + DAY*4 + TIME)%15
+			SIF CFLAG:LOCAL:위험일 >= 8
+				CFLAG:LOCAL:위험일 += 1
+		ENDIF
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0277
+	;IDに0が振られちゃったキャラを戻す
+	FOR LOCAL , 1 , CHARANUM
+		IF CFLAG:LOCAL:캐릭터고유번호 == 0
+			;RESULT配列に使われてる固有の番号を全部書きだす
+			VARSET RESULT, -1
+			FOR LOCAL:2, 0 , CHARANUM
+				SIF CFLAG:(LOCAL:2):캐릭터고유번호 > 0
+					RESULT:(CFLAG:(LOCAL:2):캐릭터고유번호) = LOCAL:2
+			NEXT
+			;主人は0固定のはずなので、0にする
+			RESULT = 0
+			;書きだしたリストから、開いている一番若い番号を探しす
+			FOR LOCAL:2, 0 , 201
+				SIF RESULT:(LOCAL:2) >= 0
+					CONTINUE
+				BREAK
+			NEXT
+			CFLAG:LOCAL:캐릭터고유번호 = LOCAL:2
+		ENDIF
+	NEXT
+	;ターゲットから外す
+	FOR LOCAL, 0, 4
+		IF LOCAL == 0
+			SIF TARGET >= CHARANUM
+				TARGET = -1
+			SIF TARGET >= 0 && CFLAG:TARGET:필터링플래그
+				TARGET = -1
+			SIF ASSI >= CHARANUM
+				ASSI = -1
+			SIF ASSI>= 0 && CFLAG:ASSI:필터링플래그
+				ASSI = -1
+		ENDIF
+		SIF FINDCHARA_ID(TARGET:LOCAL) >= 0 && (CFLAG:FINDCHARA_ID(TARGET:LOCAL):필터링플래그 || CFLAG:FINDCHARA_ID(TARGET:LOCAL):이자리에없는플래그)
+			TARGET:LOCAL = -1
+		SIF FINDCHARA_ID(ASSI:LOCAL) >= 0 && (CFLAG:FINDCHARA_ID(ASSI:LOCAL):필터링플래그 || CFLAG:FINDCHARA_ID(ASSI:LOCAL):이자리에없는플래그) && LOCAL < 3
+			ASSI:LOCAL -= 1
+	NEXT
+	;初期ペルソナ調整処理
+	FOR LOCAL, 50, 100
+		SIF !DITEMTYPE:LOCAL:페르소나("NO")
+			CONTINUE
+		SIF ABL:FINDCHARA_ID(DITEMTYPE:LOCAL:페르소나("ペルソナ所持者")):초기페르소나 == DITEMTYPE:LOCAL:페르소나("NO")
+			CONTINUE
+		LOCAL:2 = 0
+		FOR LOCAL:1, 0, CHARANUM
+			IF ABL:(LOCAL:1):초기페르소나 == DITEMTYPE:LOCAL:페르소나("NO")
+				CFLAG:(LOCAL:1):초기페르소나넘버 = LOCAL
+				DITEMTYPE:LOCAL:페르소나("ペルソナ所持者") = CFLAG:(LOCAL:1):캐릭터고유번호
+				LOCAL:2 = 1
+			ENDIF
+		NEXT
+		FOR LOCAL:1,0,100
+			DITEMTYPE:LOCAL:(LOCAL:1) = 0
+		NEXT
+	NEXT
+	;ペルソナ使いの持ってる情報からペルソナの情報を書き換える
+	FOR LOCAL, 0, CHARANUM
+		SIF !TALENT:LOCAL:페르소나구사자
+			CONTINUE
+		SIF EQUIP:LOCAL:소지페르소나1 > 0
+			DITEMTYPE:(EQUIP:LOCAL:소지페르소나1):페르소나("ペルソナ所持者") = CFLAG:LOCAL:캐릭터고유번호
+		SIF EQUIP:LOCAL:소지페르소나2 > 0
+			DITEMTYPE:(EQUIP:LOCAL:소지페르소나1):페르소나("ペルソナ所持者") = CFLAG:LOCAL:캐릭터고유번호
+		SIF CFLAG:LOCAL:초기페르소나넘버 > 0
+			DITEMTYPE:(CFLAG:LOCAL:초기페르소나넘버):페르소나("ペルソナ所持者") = CFLAG:LOCAL:캐릭터고유번호
+	NEXT
+	;漏れたのをチェックして、ペルソナ使いでないものが所持か存在しないキャラ所持しているペルソナの情報をなおす
+	FOR LOCAL,1, 11
+		IF DITEMTYPE:LOCAL:페르소나("NO")
+			SIF FINDCHARA_ID(DITEMTYPE:LOCAL:페르소나("ペルソナ所持者")) == -1 || TALENT:FINDCHARA_ID(DITEMTYPE:LOCAL:페르소나("ペルソナ所持者")):페르소나구사자 == 0
+				DITEMTYPE:LOCAL:페르소나("ペルソナ所持者") = -1
+		ENDIF
+	NEXT
+	FOR LOCAL,50, 100
+		IF DITEMTYPE:LOCAL:페르소나("ペルソナ所持者")
+			IF FINDCHARA_ID(DITEMTYPE:LOCAL:페르소나("ペルソナ所持者")) == -1 || !TALENT:FINDCHARA_ID(DITEMTYPE:LOCAL:페르소나("ペルソナ所持者")):페르소나구사자
+				FOR LOCAL:1,0,100
+					DITEMTYPE:LOCAL:(LOCAL:1) = 0
+				NEXT
+			ENDIF
+		ENDIF
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0278
+	;ヤマトタケルの番号を修正する
+	FOR LOCAL, 0, CHARANUM
+		SIF ABL:LOCAL:초기페르소나 == 4180
+			ABL:LOCAL:초기페르소나= 3980
+	NEXT
+	;ペルソナに相性を持たせる このタイミングでは削除
+	;IF LASTLOAD_VERSION < 0278
+	;	FOR LOCAL, 0, 100
+	;		SIF DITEMTYPE:LOCAL:페르소나("NO") <= 0
+	;			CONTINUE
+	;		CALL GET_CP_PERSONA, DITEMTYPE:LOCAL:페르소나("NO"), LOCAL
+	;	NEXT
+	;ENDIF
+ENDIF
+
+IF LASTLOAD_VERSION < 0280
+	FOR LOCAL,0, CHARANUM
+		FOR LOCAL:1, 1, 21
+			LOCALS = 스킬{LOCAL:1}
+			LOCALS:1 = 습득스킬{LOCAL:1}
+			SIF ABL:LOCAL:LOCALS == 239
+				ABL:LOCAL:LOCALS = 333
+			SIF ABL:LOCAL:(LOCALS:1) == 239
+				ABL:LOCAL:(LOCALS:1) = 333
+			SIF ABL:LOCAL:LOCALS == 1326
+				ABL:LOCAL:LOCALS = 326
+			SIF ABL:LOCAL:(LOCALS:1) == 1326
+				ABL:LOCAL:(LOCALS:1) = 326
+		NEXT
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0281
+	FOR LOCAL,0,CHARANUM
+		SIF CFLAG:LOCAL:초기링크악마 == 3905
+			CFLAG:LOCAL:초기링크악마 = 3801
+		SIF CFLAG:LOCAL:초기링크악마 == 3905
+			CFLAG:LOCAL:초기링크악마 = 3801
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0282
+	;ゆりこの番号変更
+	CALL CONVERT_CHARA_NO,663,424
+	FOR LOCAL, 0, CHARANUM
+		IF NO:LOCAL == [[キャラ:아마네]] || NO:LOCAL == [[キャラ:마인드아마네]]
+			ABL:LOCAL:종족 = 0
+			BASE:LOCAL:CP = 0
+			FOR LOCAL:1, 0, TYPENUM
+				BASE:LOCAL:GET_TYPE(LOCAL:1) = 100
+			NEXT
+			BASE:LOCAL:파마 = 0
+			;一応ロキの番号変更
+		ELSEIF NO:LOCAL == 1509
+			NO:LOCAL = 261
+			;ゆりこのフラグを立てる
+		ELSEIF NO:LOCAL == 424
+			CFLAG:LOCAL:합체소재사용금지 = 1
+			CFLAG:LOCAL:용량미사용 = 1
+		ENDIF
+			;サマナーと道具知識のレベル制、アイテム習熟の実装に伴う同期とり
+		IF LOCAL == MASTER
+			IF TALENT:MASTER:페르소나구사자 || TALENT:MASTER:이능자
+				TALENT:MASTER:서머너 = 0
+				TALENT:MASTER:도구지식 = 0
+			ELSEIF (TALENT:MASTER:서머너 + TALENT:MASTER:석세서 + TALENT:MASTER:건슬링거 + TALENT:MASTER:도구지식) == 0
+					;観光客はそれぞれ1Lvでもいーかなとも思ったけど、とりあえず両方0で。
+				TALENT:MASTER:서머너 = 0
+				TALENT:MASTER:도구지식 = 0
+			ELSE
+				TALENT:LOCAL:서머너 = CSVTALENT(NO:LOCAL,GETNUM(TALENT,"서머너"),0)
+				TALENT:LOCAL:도구지식 = CSVTALENT(NO:LOCAL,GETNUM(TALENT,"도구지식"),0)
+			ENDIF
+		ELSEIF NO:LOCAL == 3501 || NO:LOCAL == 3502
+			SIF TALENT:LOCAL:서머너 == 1 && (TALENT:MASTER:페르소나구사자 + TALENT:MASTER:이능자) == 0
+				TALENT:LOCAL:서머너 = 5
+			SIF TALENT:LOCAL:도구지식 == 1 && (TALENT:MASTER:페르소나구사자 + TALENT:MASTER:이능자) == 0
+				TALENT:LOCAL:도구지식 = 3
+		ELSE
+			TALENT:LOCAL:서머너 = CSVTALENT(NO:LOCAL,GETNUM(TALENT,"서머너"),0)
+			TALENT:LOCAL:도구지식 = CSVTALENT(NO:LOCAL,GETNUM(TALENT,"도구지식"),0)
+			TALENT:LOCAL:아이템숙련 = CSVTALENT(NO:LOCAL,GETNUM(TALENT,"아이템숙련"),0)
+			TALENT:LOCAL:석세서 = CSVTALENT(NO:LOCAL,GETNUM(TALENT,"석세서"),0)
+		ENDIF
+	NEXT
+	FOR LOCAL,0,11
+		SIF DITEMTYPE:LOCAL:페르소나("NO") == 1509
+			DITEMTYPE:LOCAL:페르소나("NO") = 261
+	NEXT
+	FOR LOCAL,0, CHARANUM
+			;CSVから初期ペルソナを取得する
+		IF TALENT:LOCAL:페르소나구사자
+			ABL:LOCAL:초기페르소나2 = CSVABL(NO:LOCAL, GETNUM(ABL, "초기페르소나2"), 0)
+			ABL:LOCAL:초기페르소나3 = CSVABL(NO:LOCAL, GETNUM(ABL, "초기페르소나3"), 0)
+		ENDIF
+		CALL ADJUST_CHARA_ALI, LOCAL
+		CALL SYNC_STATUS, LOCAL
+	NEXT
+	;ビエンの地図データを抹消
+	;FOR LOCAL:2, 19, 25
+	;	FOR LOCAL:1, 0, 20
+	;		FOR LOCAL, 0, 20
+	;			TA:((LOCAL:2*100+5)):(LOCAL):(LOCAL:1) = 0
+	;		NEXT
+	;	NEXT
+	;NEXT
+	;FOR LOCAL:2, 0, 2
+	;	FOR LOCAL:1, 0, 20
+	;		FOR LOCAL, 0, 20
+	;			TA:((LOCAL:2*100+97)):(LOCAL):(LOCAL:1) = 0
+	;		NEXT
+	;	NEXT
+	;NEXT
+	CALLF STRFLAG_D("D5M24", -1, [[ダンジョン:대마궁]])
+	FOR LOCAL,0,11
+		SIF DITEMTYPE:LOCAL:페르소나("NO") == 1509
+			DITEMTYPE:LOCAL:페르소나("NO") = 261
+	NEXT
+	FOR LOCAL,0, CHARANUM
+		;CSVから初期ペルソナを取得する
+		IF TALENT:LOCAL:페르소나구사자
+			ABL:LOCAL:초기페르소나2 = CSVABL(NO:LOCAL, GETNUM(ABL, "초기페르소나2"), 0)
+			ABL:LOCAL:초기페르소나3 = CSVABL(NO:LOCAL, GETNUM(ABL, "초기페르소나3"), 0)
+		ENDIF
+		CALL ADJUST_CHARA_ALI, LOCAL
+		CALL SYNC_STATUS, LOCAL
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0283
+	;絶縁状のミスを修正
+	SIF DB:101:6 == -10
+		FLAG:나오야루트 = -1 * ABS(FLAG:나오야루트)
+	;すでに出ているものは出現履歴を取っていく
+	FOR LOCAL, 1, 100
+		TRYCCALLFORM PREREQUISITE_DUNGEON_{LOCAL}
+			IF RESULT
+				IF LOCAL <= 63
+					SIF GETBIT(FLAG:던전출현1,LOCAL)
+						CONTINUE
+					SETBIT FLAG:던전출현1,LOCAL
+				ELSE
+					SIF GETBIT(FLAG:던전출현2,LOCAL - 64)
+						CONTINUE
+					SETBIT FLAG:던전출현2,LOCAL - 64
+				ENDIF
+			ENDIF
+		CATCH
+		ENDCATCH
+	NEXT
+	FOR LOCAL, 1, 100
+		TRYCCALLFORM PLAYABLE_COLOSSEUM_{LOCAL}
+			IF RESULT
+				IF LOCAL <= 63
+					SIF GETBIT(FLAG:투기장출현1,LOCAL)
+						CONTINUE
+					SETBIT FLAG:투기장출현1,LOCAL
+				ELSE
+					SIF GETBIT(FLAG:투기장출현2,LOCAL - 64)
+						CONTINUE
+					SETBIT FLAG:투기장출현2,LOCAL - 64
+				ENDIF
+			ENDIF
+		CATCH
+
+		ENDCATCH
+	NEXT
+	FOR LOCAL, 1, 100
+		TRYCCALLFORM PLAYABLE_EVENT_{LOCAL}
+			IF RESULT
+				IF LOCAL <= 63
+					SIF GETBIT(FLAG:이벤트출현1,LOCAL)
+						CONTINUE
+					SETBIT FLAG:이벤트출현1,LOCAL
+				ELSE
+					SIF GETBIT(FLAG:이벤트출현2,LOCAL - 64)
+						CONTINUE
+					SETBIT FLAG:이벤트출현2,LOCAL - 64
+				ENDIF
+			ENDIF
+		CATCH
+		ENDCATCH
+	NEXT
+	FOR LOCAL, 1, 100
+		TRYCCALLFORM PLAYABLE_REQUEST_{LOCAL}
+			IF RESULT
+				IF LOCAL <= 63
+					SIF GETBIT(FLAG:의뢰출현1,LOCAL)
+						CONTINUE
+					SETBIT FLAG:의뢰출현1,LOCAL
+				ELSE
+					SIF GETBIT(FLAG:의뢰출현2,LOCAL - 64)
+						CONTINUE
+					SETBIT FLAG:의뢰출현2,LOCAL - 64
+				ENDIF
+			ENDIF
+		CATCH
+
+		ENDCATCH
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0284
+	FOR LOCAL,0,CHARANUM
+		;古代ちゃんの民俗学習得処理
+		IF NO:LOCAL == [[キャラ:코시로]]
+			ABL:LOCAL:인간시스킬1 = [[스킬:민속학]]
+			SIF CFLAG:LOCAL:악마변신 == 0
+				ABL:LOCAL:스킬1 = [[스킬:민속학]]
+		ENDIF
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0286
+	FOR LOCAL,0,CHARANUM
+		IF NO:LOCAL == [[キャラ:코시로]]
+			ABL:LOCAL:인간시스킬1 = [[스킬:민속학]]
+		ENDIF
+	NEXT
+	;デモニカスーツを持っててデモニカ(ソフト)を持っていない場合
+	;데모니카(ソフト)を追加
+	IF ITEM:531 == 0 &&  ITEM:5019 > 0
+		CALL MESSAGE_B(3, "セーブデータ互換処理", "デモニカがスーツからインストールソフトに変わりました。", "インストールソフト「데모니카」を獲得！")
+		ITEM:531 = 1
+	ENDIF
+ENDIF
+
+SIF LASTLOAD_VERSION < 0287
+	FLAG:잭팟 = MAX(FLAG:잭팟, 10000 * 100)
+
+IF LASTLOAD_VERSION < 0288
+	;全コマンド系統フィルタＯＮ
+	FOR LOCAL,0,CHARANUM
+		FOR LOCAL:1 , 0 , 13
+			CFLAG:LOCAL:(170+LOCAL:1) = 1
+		NEXT
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0289
+	SIF GETCHARA([[キャラ:유리아]] , 0) > -1 && ABL:GETCHARA([[キャラ:유리아]] , 0):습득LV4 > 0
+		ABL:GETCHARA([[キャラ:유리아]] , 0):습득스킬4 = [[스킬:유혹]]
+	;ＮＴＲ機能追加により、主人への陥落記憶
+	FOR LOCAL,1,CHARANUM
+		IF TALENT:LOCAL:연모
+			CFLAG:LOCAL:(2400) = 1
+		ELSEIF TALENT:LOCAL:친애
+			CFLAG:LOCAL:(2400) = 4
+		ELSEIF TALENT:LOCAL:음란
+			CFLAG:LOCAL:(2400) = 2
+		ELSEIF TALENT:LOCAL:창부
+			CFLAG:LOCAL:(2400) = 5
+		ELSEIF TALENT:LOCAL:복종
+			CFLAG:LOCAL:(2400) = 3
+		ELSEIF TALENT:LOCAL:예속
+			CFLAG:LOCAL:(2400) = 6
+		ENDIF
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0290
+	FOR LOCAL , 2390 , 2399
+		CVARSET CFLAG , LOCAL , 0
+	NEXT
+	FOR LOCAL , 0,CHARANUM
+		CFLAG:LOCAL:24 = CFLAG:LOCAL:23
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0291
+	FOR LOCAL, 1, 100
+		SIF GROUPMATCH(LOCAL, 4, 5, 50, 51, 70)
+			CONTINUE
+		LOCALS = %GET_DUNGEON_NAME(LOCAL, 1)%
+		SIF LOCALS == "名称未定義"
+			CONTINUE
+		FOR LOCAL:1, 0, 25
+			FLAG:최대X = -1
+			FLAG:현M = LOCAL:1
+			CALLFORM MAKE_FLOOR_{LOCAL}
+			SIF FLAG:최대X == -1
+				CONTINUE
+			SIF FLAG:최대Y == -1
+				CONTINUE
+			CALL SET_FLOOR_ANALYZE_DEFAULT, LOCAL, LOCAL:1
+			LOCAL:4 = 0
+			FOR LOCAL:3, 0, MIN(FLAG:최대Y,20)
+				FOR LOCAL:2, 0, MIN(FLAG:최대X,20)
+					SIF TA:((FLAG:현M*100+LOCAL)):(LOCAL:2):(LOCAL:3) == 0
+						CONTINUE
+					LOCAL:4 = 1
+					BREAK
+				NEXT
+			NEXT
+			SIF LOCAL:4 == 0
+				CONTINUE
+			FOR LOCAL:3, 0, MIN(FLAG:최대Y,20)
+				FOR LOCAL:2, 0, MIN(FLAG:최대X,20)
+					CALL SET_FLOOR_ANALYZE, TA:((FLAG:현M*100+LOCAL)):(LOCAL:2):(LOCAL:3), LOCAL, LOCAL:1, LOCAL:2, LOCAL:3
+					CONTINUE
+				NEXT
+			NEXT
+		NEXT
+		CALL MESSAGE_BL(1, @"[{LOCAL}]%LOCALS%互換完了")
+	NEXT
+	FLAG:최대X = 1
+	FLAG:최대X = 1
+	VARSET TA:0:0:0
+	SAVESTR:105 += SUBSTRING(SAVESTR:197,1) + SUBSTRING(SAVESTR:198,1) + SUBSTRING(SAVESTR:199,1)
+ENDIF
+
+IF LASTLOAD_VERSION < 0294
+	FLAG:경험ED수 = 0
+	FOR LOCAL,0,64
+		SIF GETBIT(FLAG:발견ED , LOCAL)
+			FLAG:경험ED수 ++
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0295
+	FOR LOCAL , 0 , CHARANUM
+		IF NO:LOCAL == [[キャラ:조마]]
+			TALENT:LOCAL:천사 = 0
+			TALENT:LOCAL:타천사 = 0
+			TALENT:LOCAL:새 = 0
+			TALENT:LOCAL:파충류 = 0
+			TALENT:LOCAL:짐승 = 0
+			TALENT:LOCAL:부정형 = 0
+			TALENT:LOCAL:인간화 = 0
+			TALENT:LOCAL:날개 = 0
+			TALENT:LOCAL:꼬리 = 0
+			TALENT:LOCAL:동물귀 = 0
+			TALENT:LOCAL:모피 = 0
+			TALENT:LOCAL:갈퀴 = 0
+			TALENT:LOCAL:촉수 = 0
+			TALENT:LOCAL:부리 = 0
+			IF TALENT:LOCAL:갈퀴발
+				TALENT:LOCAL:갈퀴발 = 0
+				TALENT:LOCAL:발 = 1
+			ENDIF
+			BASE:LOCAL:검격 = 100
+			BASE:LOCAL:비구 = 100
+			BASE:LOCAL:타격 = 100
+			BASE:LOCAL:전술 = 100
+			BASE:LOCAL:화염 = 100
+			BASE:LOCAL:빙결 = 100
+			BASE:LOCAL:전격 = 100
+			BASE:LOCAL:충격 = 100
+			BASE:LOCAL:신경 = 0
+			BASE:LOCAL:정신 = 0
+			BASE:LOCAL:파마 = 0
+			BASE:LOCAL:주살 = 0
+			BASE:LOCAL:지변 = 100
+			BASE:LOCAL:수격 = 100
+			BASE:LOCAL:질풍 = 100
+			BASE:LOCAL:중력 = 100
+			BASE:LOCAL:핵열 = 100
+			BASE:LOCAL:만능 = 100
+			BASE:LOCAL:사이코 = 100
+		ENDIF
+	NEXT
+	;悪魔全書に素質登録
+	FOR LOCAL , 2000 , 8000
+		SIF SAVESTR:LOCAL == ""
+			BREAK
+		LOCAL:2 = TOINT(AUTO_SPLIT(SAVESTR:LOCAL , "," , 1))
+		SIF EXISTCSV(LOCAL:2,0) == 0
+			CONTINUE
+		SIF LOCAL % 50 == 49
+			PRINTW 버전업 시의 갱신 작업을 진행하고 있습니다...[클릭해 주십시오]
+		;素質の書き込み
+		FOR LOCAL:1 , 0 , 159
+			SIF CSVTALENT(LOCAL:2 , LOCAL:1 , 0)
+				SAVESTR:(LOCAL) += "," + TALENTNAME:(LOCAL:1)
+		NEXT
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0296
+	SIF CFLAG:MASTER:당신의표면적인직업 == 0
+		CFLAG:MASTER:당신의표면적인직업 = 1
+	IF CFLAG:MASTER:당신의전공분야 == 0
+		IF TALENT:MASTER:페르소나구사자
+			CFLAG:MASTER:당신의전공분야 = 2
+		ELSEIF TALENT:MASTER:이능자
+			CFLAG:MASTER:당신의전공분야 = 3
+		ELSEIF TALENT:MASTER:서머너
+			CFLAG:MASTER:당신의전공분야 = 1
+		ELSE
+			CFLAG:MASTER:당신의전공분야 = 4
+		ENDIF
+	ENDIF
+ENDIF
+
+IF LASTLOAD_VERSION < 0297
+	IF FLAG:ＮＴＲ기능
+		FOR LCOUNT, 0, 9
+			SETBIT FLAG:ＮＴＲ기능 , LCOUNT
+		NEXT
+	ENDIF
+ENDIF
+
+IF LASTLOAD_VERSION < 0298
+	CALL SET_TALENT_PARTY_JOINABLE, MASTER, "参加可能"
+	FOR LOCAL , 0 , CHARANUM
+		FOR LOCAL:1 , 0 , 24
+			SIF ABL:LOCAL:(LOCAL:1) > 10
+				ABL:LOCAL:(LOCAL:1) = 10
+		NEXT
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0299
+	FOR LOCAL, 0, CHARANUM
+		;EXPの補填処理はSYNC_STATUS内に存在するので省けるように
+		;SIF BASE:LOCAL:ＥＸＰ < GET_NEXT_EXP(BASE:LOCAL:LV-1, ABL:LOCAL:종족 != 0 && !陥落(LOCAL))
+		;	BASE:LOCAL:ＥＸＰ = GET_NEXT_EXP(BASE:LOCAL:LV-1, ABL:LOCAL:종족 != 0 && !陥落(LOCAL))
+		FOR LOCAL:1, 1, 9
+			;물고늘어지기
+			SIF ABL:LOCAL:@"스킬{LOCAL:1}" == 331
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:물고늘어지기]]
+			;최후의만찬
+			SIF ABL:LOCAL:@"스킬{LOCAL:1}" == 332
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:최후의만찬]]
+			;대상제
+			SIF ABL:LOCAL:@"스킬{LOCAL:1}" == 221
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:대상제]]
+			;食い散らし
+			SIF ABL:LOCAL:@"스킬{LOCAL:1}" == 222
+				ABL:LOCAL:@"스킬{LOCAL:1}" =  [[스킬:씹어흩뿌리기]]
+			SIF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:흡혈장기]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" =  0
+		NEXT
+		FOR LOCAL:1, 1, 21
+			;물고늘어지기
+			SIF ABL:LOCAL:@"습득스킬{LOCAL:1}" == 331
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:물고늘어지기]]
+			;최후의만찬
+			SIF ABL:LOCAL:@"습득스킬{LOCAL:1}" == 332
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:최후의만찬]]
+			;대상제
+			SIF ABL:LOCAL:@"습득스킬{LOCAL:1}" == 221
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:대상제]]
+			;食い散らし
+			SIF ABL:LOCAL:@"습득스킬{LOCAL:1}" == 222
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" =  [[스킬:씹어흩뿌리기]]
+		NEXT
+		FOR LOCAL:1, 1, 9
+			;물고늘어지기
+			SIF ABL:LOCAL:@"초기변신악마스킬{LOCAL:1}" == 331
+				ABL:LOCAL:@"초기변신악마스킬{LOCAL:1}" = [[스킬:물고늘어지기]]
+			;최후의만찬
+			SIF ABL:LOCAL:@"초기변신악마스킬{LOCAL:1}" == 332
+				ABL:LOCAL:@"초기변신악마스킬{LOCAL:1}" = [[스킬:최후의만찬]]
+			;대상제
+			SIF ABL:LOCAL:@"초기변신악마스킬{LOCAL:1}" == 221
+				ABL:LOCAL:@"초기변신악마스킬{LOCAL:1}" = [[스킬:대상제]]
+			;食い散らし
+			SIF ABL:LOCAL:@"초기변신악마스킬{LOCAL:1}" == 222
+				ABL:LOCAL:@"초기변신악마스킬{LOCAL:1}" =  [[스킬:씹어흩뿌리기]]
+			SIF ABL:LOCAL:@"초기변신악마스킬{LOCAL:1}" == [[스킬:흡혈장기]]
+				ABL:LOCAL:@"초기변신악마스킬{LOCAL:1}" =  0
+		NEXT
+		FOR LOCAL:1, 1, 21
+			;물고늘어지기
+			SIF ABL:LOCAL:@"초기변신악마습득스킬{LOCAL:1}" == 331
+				ABL:LOCAL:@"초기변신악마습득스킬{LOCAL:1}" = [[스킬:물고늘어지기]]
+			;최후의만찬
+			SIF ABL:LOCAL:@"초기변신악마습득스킬{LOCAL:1}" == 332
+				ABL:LOCAL:@"초기변신악마습득스킬{LOCAL:1}" = [[스킬:최후의만찬]]
+			;대상제
+			SIF ABL:LOCAL:@"초기변신악마습득스킬{LOCAL:1}" == 221
+				ABL:LOCAL:@"초기변신악마습득스킬{LOCAL:1}" = [[스킬:대상제]]
+			;食い散らし
+			SIF ABL:LOCAL:@"초기변신악마습득스킬{LOCAL:1}" == 222
+				ABL:LOCAL:@"초기변신악마습득스킬{LOCAL:1}" =  [[스킬:씹어흩뿌리기]]
+		NEXT
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0300
+	FOR LOCAL , 0 , CHARANUM
+		SIF DB:102:31 == 0
+			TALENT:LOCAL:아내납치 = 0
+		SIF DB:102:32 == 0
+			TALENT:LOCAL:악덕스카우트 = 0
+	NEXT
+	GLOBAL:メッセージ速度 = 1
+	GLOBAL:オート時ウェイト = 500
+	GLOBAL:右クリック時ウェイト = 1000
+	FLAG:자동넘기기 = 0
+	GLOBAL:メッセージアニメ利用 = 1
+	SAVEGLOBAL
+	IF !ITEM:정옥 && STRFLAG_D("ミノタウロス撃破",,5)
+		CALL MESSAGE_B(3, "セーブデータ互換処理", "ミノタウロス撃破報酬として", "イベントアイテム「정옥」を獲得！")
+		ITEM:정옥 = 1
+	ENDIF
+	IF !ITEM:황옥 && STRFLAG_D("ロキ撃破",,5)
+		CALL MESSAGE_B(3, "セーブデータ互換処理", "ロキ撃破報酬として", "イベントアイテム「황옥」を獲得！")
+		ITEM:황옥 = 1
+	ENDIF
+	IF !ITEM:고옥 && STRFLAG_D("ヘカーテ撃破",,5)
+		CALL MESSAGE_B(3, "セーブデータ互換処理", "ヘカーテ撃破報酬として", "イベントアイテム「고옥」を獲得！")
+		ITEM:고옥 = 1
+	ENDIF
+ENDIF
+
+IF LASTLOAD_VERSION < 0301
+	SIF GETCHARA([[キャラ:미츠루]], 0) >= 0
+		ABL:GETCHARA([[キャラ:미츠루]], 0):초기페르소나3 = CSVABL([[キャラ:미츠루]], GETNUM(ABL, "초기페르소나3"),0)
+	SIF GETCHARA([[キャラ:유카리]], 0) >= 0
+		ABL:GETCHARA([[キャラ:유카리]], 0):초기페르소나3 = CSVABL([[キャラ:유카리]], GETNUM(ABL, "초기페르소나3"),0)
+	FOR LOCAL , 0 , CHARANUM
+		SIF CFLAG:LOCAL:구상셀렉트 == -1
+			CFLAG:LOCAL:구상셀렉트 = 10
+		SIF CFLAG:LOCAL:구상셀렉트 == 10
+			CFLAG:LOCAL:구상셀렉트 = 50
+		SIF CFLAG:LOCAL:구상셀렉트 == 99
+			CFLAG:LOCAL:구상셀렉트 = 0
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0302
+	IF GETCHARA([[キャラ:해리Ｑ]], 0) >= 0
+		TALENT:GETCHARA([[キャラ:해리Ｑ]], 0):화염 = 1
+		FOR LOCAL, 1, 21
+			IF ABL:GETCHARA([[キャラ:해리Ｑ]], 0):@"초기변신악마습득스킬{LOCAL}"
+				ABL:GETCHARA([[キャラ:해리Ｑ]], 0):@"초기변신악마습득스킬{LOCAL}" = CSVABL([[キャラ:해리Ｑ]], GETNUM(ABL, @"초기변신악마습득스킬{LOCAL}"),0)
+				ABL:GETCHARA([[キャラ:해리Ｑ]], 0):@"초기변신악마습득LV{LOCAL}" = CSVABL([[キャラ:해리Ｑ]], GETNUM(ABL, @"초기변신악마습득LV{LOCAL}"),0)
+			ENDIF
+		NEXT
+	ENDIF
+	IF GETCHARA([[キャラ:지나나]], 0) >= 0
+		FOR LOCAL, 1, 21
+			TALENT:GETCHARA([[キャラ:지나나]], 0):파마 = 1
+			IF ABL:GETCHARA([[キャラ:지나나]], 0):@"초기변신악마습득스킬{LOCAL}"
+				ABL:GETCHARA([[キャラ:지나나]], 0):@"초기변신악마습득스킬{LOCAL}" = CSVABL([[キャラ:지나나]], GETNUM(ABL, @"초기변신악마습득스킬{LOCAL}"),0)
+				ABL:GETCHARA([[キャラ:지나나]], 0):@"초기변신악마습득LV{LOCAL}" = CSVABL([[キャラ:지나나]], GETNUM(ABL, @"초기변신악마습득LV{LOCAL}"),0)
+			ENDIF
+		NEXT
+	ENDIF
+ENDIF
+
+IF LASTLOAD_VERSION < 0303
+	FLAG:10 = 0
+ENDIF
+
+IF LASTLOAD_VERSION < 0304
+	;クドラクの番号を変更
+	SIF LASTLOAD_VERSION < 0303 || FLAG:버전관리보조 == 0
+		CALL CONVERT_CHARA_NO, 665 , 1085
+	;妻の救出とアイドルの末路のフラグを102→101
+	SIF DB:102:31
+		SWAP DB:102:31 , DB:101:31
+	SIF DB:102:32
+		SWAP DB:102:32 , DB:101:32
+	;千枝と雪子が引継ぎ済みでかつ-1にされた場合の処理
+	FOR LOCAL , 0 , CHARANUM
+		SIF (NO:LOCAL == [[キャラ:치에]] || NO:LOCAL == [[キャラ:유키코]]) && CFLAG:LOCAL:인계횟수 > 0 && CFLAG:LOCAL:1007 == -1
+			CALL SET_TALENT_PARTY_JOINABLE, LOCAL, "参加可能"
+	NEXT
+	;品川とT.D.Lのフラグをリセット
+	IF LASTLOAD_VERSION < 0303 || FLAG:버전관리보조 < 4
+		FOR LOCAL , 0 , 100
+			DB:35:LOCAL = 0
+			DB:47:LOCAL = 0
+		NEXT
+	ENDIF
+	CVARSET CFLAG , 3 , 0
+	CVARSET CFLAG , 4 , 0
+	CVARSET CFLAG , 5 , 0
+	CVARSET CFLAG , 8 , 0
+	;
+ENDIF
+
+IF LASTLOAD_VERSION < 0305
+	DB:[[ダンジョン:T.D.L.]]:0 = MIN(DB:[[ダンジョン:T.D.L.]]:0, 3)
+	DB:[[ダンジョン:시나가와]]:0 = MIN(DB:[[ダンジョン:시나가와]]:0, 3)
+	LOCAL = FINDCHARA(NO , [[キャラ:코시로]])
+	IF LOCAL > 0
+		ABL:LOCAL:인간시스킬1 = [[스킬:민속학]]
+	ENDIF
+	FOR LOCAL , 0 , CHARANUM
+		IF !GROUPMATCH(NO:LOCAL , [[キャラ:당신의딸]] , [[キャラ:노예의딸]])
+			CFLAG:LOCAL:딸의부친고유번호딸 = -1
+			CFLAG:LOCAL:딸의친부모고유번호딸 = -1
+		ENDIF
+	NEXT
+	FOR LOCAL , 0 , CHARANUM
+		IF TALENT:LOCAL:데빌시프터 || TALENT:LOCAL:식노 || TALENT:LOCAL:아웃사이더
+			FOR LOCAL:1 , 1 , 9
+				ABL:LOCAL:@"인간시스킬{LOCAL:1}" = CSVABL(NO:LOCAL , GETNUM(ABL , @"인간시스킬{LOCAL:1}") , 0)
+			NEXT
+		ENDIF
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0306
+	FOR LOCAL , 0 , 500
+		SIF DC:LOCAL:45 == GET_STATE_NUM("BOMB")
+			DC:LOCAL:45 = GET_STATE_NUM("CHARAM")
+	NEXT
+	DB:[[ダンジョン:T.D.L.]]:0 = MIN(DB:[[ダンジョン:T.D.L.]]:0, 3)
+	CFLAG:MASTER:딸의부친고유번호딸 = -1
+	CFLAG:MASTER:딸의친부모고유번호딸 = -1
+	IF GETCHARA([[キャラ:해리Ｑ]], 0) >= 0
+		FOR LOCAL, 1, 21
+			CFLAG:GETCHARA([[キャラ:해리Ｑ]], 0):@"相性{LOCAL}" = CSVCFLAG([[キャラ:해리Ｑ]], GETNUM(CFLAG, @"相性{LOCAL}"), 0)
+			CFLAG:GETCHARA([[キャラ:해리Ｑ]], 0):@"相性値{LOCAL}" = CSVCFLAG([[キャラ:해리Ｑ]], GETNUM(CFLAG, @"相性値{LOCAL}"), 0)
+		NEXT
+	ENDIF
+	IF GETCHARA([[キャラ:지나나]], 0) >= 0
+		FOR LOCAL, 1, 21
+			CFLAG:GETCHARA([[キャラ:지나나]], 0):@"相性{LOCAL}" = CSVCFLAG([[キャラ:지나나]], GETNUM(CFLAG, @"相性{LOCAL}"), 0)
+			CFLAG:GETCHARA([[キャラ:지나나]], 0):@"相性値{LOCAL}" = CSVCFLAG([[キャラ:지나나]], GETNUM(CFLAG, @"相性値{LOCAL}"), 0)
+		NEXT
+	ENDIF
+	FOR LOCAL, 0, CHARANUM
+		FOR LOCAL:1,80,93
+			CSTR:LOCAL:(LOCAL:1) = %CSVCSTR(NO:LOCAL, LOCAL:1, 0)%
+		NEXT
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 0307
+	;不正なキャラ相性を持っている場合修正
+	IF LASTLOAD_VERSION < 306 || FLAG:버전관리보조 == 0 
+		FOR LOCAL, 0, CHARANUM
+			FOR LOCAL:1, 1, 21
+				SIF CFLAG:LOCAL:@"캐릭터상성{LOCAL:1}" == 0
+					CFLAG:LOCAL:@"캐릭터상성{LOCAL:1}" = -1
+			NEXT
+		NEXT
+	ENDIF
+	SIF SAVESTR:랜덤대전팀 == ""
+		CALL SELECT_COLOSSEUM_RANDOMBATTLE
+ENDIF
+
+IF LASTLOAD_VERSION < 0308
+	;悪魔変身に異常値が入ってる場合0に
+	FOR LOCAL, 0, CHARANUM
+		SIF CFLAG:LOCAL:악마변신 > 1
+			CFLAG:LOCAL:악마변신 = 0
+		CSTR:LOCAL:상성그룹 = %CSVCSTR(NO:LOCAL , GETNUM(CSTR , "상성그룹") , 0)%
+	NEXT
+	IF !(FLAG:버전관리보조 == 1 && LASTLOAD_VERSION == 0307 )
+		LOCAL = FINDCHARA(NO , [[キャラ:코시로]])
+		IF LOCAL > 0
+			ABL:LOCAL:인간시스킬1 = [[스킬:민속학]]
+		ENDIF
+		FOR LOCAL , 0 , CHARANUM
+			IF TALENT:LOCAL:데빌시프터 || TALENT:LOCAL:식노 || TALENT:LOCAL:아웃사이더
+				FOR LOCAL:1 , 1 , 9
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = CSVABL(NO:LOCAL , GETNUM(ABL , @"인간시스킬{LOCAL:1}") , 0)
+				NEXT
+			ENDIF
+		NEXT
+	ENDIF
+	;フラグ変数新設につき移行
+	FOR LOCAL , 0 , 100
+		FOR LOCAL:1 , 0 , 100
+			ダンジョンフラグ:LOCAL:(LOCAL:1) = DB:LOCAL:(LOCAL:1)
+		NEXT
+		闘技場フラグ:LOCAL:0 = DB:100:LOCAL
+		イベントフラグ:LOCAL:0 = DB:101:LOCAL
+		依頼フラグ:LOCAL:0 = DB:102:LOCAL
+	NEXT
+
+	;マッピング変数新設につき移行?
+	PRINTL 던전 오토매핑 처리 데이터 저장 형식이 문자열 형식에서 정수 방식으로 변경되었습니다
+	PRINTL 이전 데이터를 현재 데이터 형식으로 변환할 경우, 오랜 시간이 걸릴 가능성이 있습니다
+	PRINTL 던전 오토매핑 데이터를 인계하시겠습니까？
+	CALL INPUT_YN , "Yes" , "No"
+	IF RESULT == 0
+		FOR LOCAL , 1 , 100
+			SIF LOCAL == [[ダンジョン:타르타로스]]
+				CONTINUE
+			LOCALS = %GET_DUNGEON_NAME(LOCAL)%
+			SIF LOCALS == "名称未定義"
+				CONTINUE
+			FOR LOCAL:1, 0, 25
+				FLAG:최대X = -1
+				FLAG:현M = LOCAL:1
+				CALLFORM MAKE_FLOOR_{LOCAL}
+				SIF FLAG:최대X == -1 || FLAG:최대Y == -1
+					CONTINUE
+				;CALL SET_FLOOR_ANALYZE_DEFAULT, LOCAL, LOCAL:1
+				LOCAL:4 = 0
+				;データ取得
+				FOR LOCAL:3, 0, MIN(FLAG:최대Y,20)
+					FOR LOCAL:2, 0, MIN(FLAG:최대X,20)
+						;SIF TA:((FLAG:현M*100+LOCAL)):(LOCAL:2):(LOCAL:3) == 0
+						SIF VERUP_FLOOR_ANALYZE(LOCAL, FLAG:현M, LOCAL:2, LOCAL:3) == 0
+							CONTINUE
+						LOCAL:4 = 1
+						BREAK
+					NEXT
+				NEXT
+				;マッピングデータ作られてないダンジョンはスルー
+				SIF LOCAL:4 == 0
+					CONTINUE
+				;代入
+				FOR LOCAL:3, 0, MIN(FLAG:최대Y,20)
+					FOR LOCAL:2, 0, MIN(FLAG:최대X,20)
+						CALL SET_FLOOR_ANALYZE, VERUP_FLOOR_ANALYZE(LOCAL, FLAG:현M, LOCAL:2, LOCAL:3) , LOCAL , FLAG:현M , LOCAL:2 , LOCAL:3
+						;TA:((FLAG:현M*100+LOCAL)):(LOCAL:2):(LOCAL:3), LOCAL, LOCAL:1, LOCAL:2, LOCAL:3
+					NEXT
+				NEXT
+			NEXT
+			CALL MESSAGE_BL(1, @"[{LOCAL}]%LOCALS%互換完了")
+		NEXT
+	ENDIF
+ENDIF
+
+IF LASTLOAD_VERSION < 0309
+	SIF FLAG:최대X == -1 
+		FLAG:최대X = 1
+	SIF FLAG:최대Y == -1
+		FLAG:최대Y = 1
+
+	;PALAMLV・EXPLVを定義
+	PALAMLV:10 = 1000000
+	PALAMLV:11 = 5000000
+	PALAMLV:12 = 30000000
+	PALAMLV:13 = 100000000
+	PALAMLV:14 = 250000000
+	PALAMLV:15 = 450000000
+	PALAMLV:16 = 650000000
+	PALAMLV:17 = 900000000
+	EXPLV:6 = 500
+	EXPLV:7 = 1000
+	EXPLV:8 = 1500
+	EXPLV:9 = 2000
+	EXPLV:10 = 3000
+	依頼フラグ:[[依頼:데빌서머너]]:0 = DB:103:0
+	FLAG:(20000+3812) = 0
+	FOR LCOUNT, 0, CHARANUM
+		IF ABL:LCOUNT:변이 == 862
+			PRINTFORML %CALLNAME:LCOUNT%의 변이처를 변경했습니다
+			ABL:LCOUNT:변이 = 3719
+		ELSEIF ABL:LCOUNT:변이 == 863
+			PRINTFORML %CALLNAME:LCOUNT%의 변이처를 변경했습니다
+			ABL:LCOUNT:변이 = 3720
+		ELSEIF ABL:LCOUNT:변이 == 864
+			PRINTFORML %CALLNAME:LCOUNT%의 변이처를 변경했습니다
+			ABL:LCOUNT:변이 = 3721
+		ELSEIF ABL:LCOUNT:변이 == 866
+			PRINTFORML %CALLNAME:LCOUNT%의 변이처를 변경했습니다
+			ABL:LCOUNT:변이 = 3722
+		ELSEIF ABL:LCOUNT:변이 == 867
+			PRINTFORML %CALLNAME:LCOUNT%의 변이처를 변경했습니다
+			ABL:LCOUNT:변이 = 3723
+		ELSEIF ABL:LCOUNT:변이 == 868
+			PRINTFORML %CALLNAME:LCOUNT%의 변이처를 변경했습니다
+			ABL:LCOUNT:변이 = 3724
+		ENDIF
+		IF ABL:LCOUNT:종족 == 0
+			IF !IS_RANDOMCHARA(LCOUNT) && NO:LCOUNT != 4530
+				TALENT:LCOUNT:머리 = CSVTALENT(NO:LCOUNT,GETNUM(TALENT,"머리"),0)
+				TALENT:LCOUNT:눈 = CSVTALENT(NO:LCOUNT,GETNUM(TALENT,"눈"),0)
+				TALENT:LCOUNT:입 = CSVTALENT(NO:LCOUNT,GETNUM(TALENT,"입"),0)
+				TALENT:LCOUNT:팔 = CSVTALENT(NO:LCOUNT,GETNUM(TALENT,"팔"),0)
+				TALENT:LCOUNT:발 = CSVTALENT(NO:LCOUNT,GETNUM(TALENT,"발"),0)
+			ENDIF
+		ENDIF
+	NEXT
+	SIF FLAG:전투난이도 == 0
+		FLAG:전투난이도 = FLAG:조교난이도
+	;相性カラー初期設定
+	SIF FLAG:통상컬러 == 0
+		FLAG:통상컬러 = 192192192
+	SIF FLAG:약점컬러 == 0
+		FLAG:약점컬러 = 102255255
+	SIF FLAG:내성컬러 == 0
+		FLAG:내성컬러 = 102102102
+	SIF FLAG:무효컬러 == 0
+		FLAG:무효컬러 = 153000000
+	SIF FLAG:흡수컬러 == 0
+		FLAG:흡수컬러 = 153000000
+	SIF FLAG:반사컬러 == 0
+		FLAG:반사컬러 = 153000000
+ENDIF
+
+;邪神カテゴリ追加対応
+IF LASTLOAD_VERSION < 00309121
+	FOR LOCAL, 0, CHARANUM
+		SELECTCASE NO:LOCAL
+			;Chara202_ペルセポネ
+			CASE 202
+				NO:LOCAL = 1601
+			;Chara203_ヘル
+			CASE 203
+				NO:LOCAL = 1615
+			;Chara212_イシュタム
+			CASE 212
+				NO:LOCAL = 1602
+			;Chara218_シュブ＝ニグラス
+			CASE 218
+				NO:LOCAL = 1603
+			;Chara221_タナトス
+			CASE 221
+				NO:LOCAL = 1631
+			;Chara224_ダゴン(デビチル)
+			CASE 224
+				NO:LOCAL = 1622
+			;Chara228_イタクァ
+			CASE 228
+				NO:LOCAL = 1604
+			;Chara229_クトゥグァ
+			CASE 229
+				NO:LOCAL = 1605
+			;Chara231_マンモン
+			CASE 231
+				NO:LOCAL = 1607
+			;Chara237_ハスター
+			CASE 237
+				NO:LOCAL = 1606
+			;Chara240_モト
+			CASE 240
+				NO:LOCAL = 1608
+			;Chara241_アルシエル
+			CASE 241
+				NO:LOCAL = 1609
+			;Chara245_サトゥルヌス
+			CASE 245
+				NO:LOCAL = 1610
+			;Chara246_カナロア
+			CASE 246
+				NO:LOCAL = 1611
+			;Chara247_パレス
+			CASE 247
+				NO:LOCAL = 1612
+			;Chara248_ゲーデ
+			CASE 248
+				NO:LOCAL = 1613
+			;Chara249_オルクス
+			CASE 249
+				NO:LOCAL = 1614
+			;Chara253_ケルヌンノス
+			CASE 253
+				NO:LOCAL = 1616
+			;Chara255_パズス
+			CASE 255
+				NO:LOCAL = 1617
+			;Chara256_バフォメット
+			CASE 256
+				NO:LOCAL = 1618
+			;Chara257_ロア
+			CASE 257
+				NO:LOCAL = 484
+			;Chara258_テスカトリポカ
+			CASE 258
+				NO:LOCAL = 1919
+			;Chara269_クトゥルー
+			CASE 269
+				NO:LOCAL = 1620
+			;Chara271_ダゴン
+			CASE 271
+				NO:LOCAL = 1621
+			;Chara272_パチャカマク
+			CASE 272
+				NO:LOCAL = 1623
+			;Chara276_マダ
+			CASE 276
+				NO:LOCAL = 1624
+			;Chara277_トウテツ
+			CASE 277
+				NO:LOCAL = 1625
+			;Chara281_デミウルゴス
+			CASE 281
+				NO:LOCAL = 1626
+			;Chara291_セト
+			CASE 291
+				NO:LOCAL = 1629
+			;Chara1418_チェルノボグ
+			CASE 1418
+				NO:LOCAL = 1627
+			;Chara1511_ミシャグジさま
+			CASE 1511
+				NO:LOCAL = 1628
+		ENDSELECT
+	NEXT
+ENDIF
+
+IF LASTLOAD_VERSION < 00309125
+	PRINTL 캐릭터 상한 변경 사전 준비를 위해 호감도 처리가 변경되었습니다
+	PRINTL 세이브 데이터의 CFLAG를 CDFLAG로 이행합니다。
+
+	;好感度のCFLAGをCDFLAGに
+	FOR LOCAL, 0, CHARANUM
+		FOR LOCAL:1, 2000, 2300
+			CDFLAG:LOCAL:캐릭터간호감도:(LOCAL:1-2000) = CFLAG:LOCAL:(LOCAL:1)
+		NEXT
+		FOR LOCAL:1, 2301, 2600
+			CDFLAG:LOCAL:캐릭터간함락소질:(LOCAL:1-2301) = CFLAG:LOCAL:(LOCAL:1)
+		NEXT
+	NEXT
+ENDIF
+
+;무대소녀　スキル変化でやってた専用スキルをCSTRスキルに入れ替え処理
+;ループ数はRev134におけるABL:スキルxxの数だけ、つまり20。習得スキルxxも同じ20なのでこれで動くはず。
+IF LASTLOAD_VERSION < 00309135
+	;愛城華恋
+	LOCAL = GETCHARA([[キャラ:카렌_무대소녀]])
+	IF GETCHARA([[キャラ:카렌_무대소녀]]) > -1
+		PRINTL ※아이죠 카렌의 존재를 확인: 변화 스킬이 전용 스킬로 업데이트됩니다
+		FOR LOCAL:1, 1, 21, 1
+			;イナズマ突きを覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:번개찌르기]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기1]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			;イナズマ突きを覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:번개찌르기]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			
+			;万魔の一撃を覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:만마의일격]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기2]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			;万魔の一撃を覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:만마의일격]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			
+		NEXT
+		;CSTRで専用技定義
+		CSTR:LOCAL:전용기1 = P．of．Puberty
+		CSTR:LOCAL:전용기2 = 約束タワーブリッジ
+	ENDIF
+
+	;神楽ひかり
+	LOCAL = GETCHARA([[キャラ:히카리]])
+	IF GETCHARA([[キャラ:히카리]]) > -1
+		PRINTL ※카구라 히카리의 존재를 확인: 변화 스킬이 전용 스킬로 업데이트됩니다
+		FOR LOCAL:1, 1, 21, 1
+			;柔の波を覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:부드러운파도]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기1]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			;柔の波を覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:부드러운파도]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			
+			;テトラプリズンを覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:테트라프리즌]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기2]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			;テトラプリズンを覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:테트라프리즌]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			
+		NEXT
+		;CSTRで専用技定義
+		CSTR:LOCAL:전용기1 = C．Bright
+		CSTR:LOCAL:전용기2 = 星罪のレヴュー
+	ENDIF
+	
+	;露崎まひる
+	LOCAL = GETCHARA([[キャラ:마히루]])
+	IF GETCHARA([[キャラ:마히루]]) > -1
+		PRINTL ※츠유자키 마히루의 존재를 확인: 변화 스킬이 전용 스킬로 업데이트됩니다
+		FOR LOCAL:1, 1, 21, 1
+			;大暴れを覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:마구날뛰기]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기1]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			;大暴れを覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:마구날뛰기]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			
+			;曳光倶梨伽羅蹴を覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:예광구리가라축]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기2]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			;曳光倶梨伽羅蹴を覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:예광구리가라축]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			
+		NEXT
+		;CSTRで専用技定義
+		CSTR:LOCAL:전용기1 = L．judgement
+		CSTR:LOCAL:전용기2 = 恋の魔球・ﾊｲﾗｲﾄ
+	ENDIF
+	
+	;星見純那
+	LOCAL = GETCHARA([[キャラ:쥰나]])
+	IF GETCHARA([[キャラ:쥰나]]) > -1
+		PRINTL ※호시미 쥰나의 존재를 확인: 변화 스킬이 전용 스킬로 업데이트됩니다
+		FOR LOCAL:1, 1, 21, 1
+			;切なさ乱れうちを覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:안타까움난사]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기1]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			;切なさ乱れうちを覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:안타까움난사]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			
+			;Burn my Dreadを覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:Burn my Dread]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기2]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			;Burn my Dreadを覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:Burn my Dread]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			
+		NEXT
+		;CSTRで専用技定義
+		CSTR:LOCAL:전용기1 = 翡翠弓
+		CSTR:LOCAL:전용기2 = 자신만의별
+	ENDIF
+		
+	;大場なな
+	LOCAL = GETCHARA([[キャラ:나나]])
+	IF GETCHARA([[キャラ:나나]]) > -1
+		PRINTL ※다이바 나나의 존재를 확인: 변화 스킬이 전용 스킬로 업데이트됩니다
+		FOR LOCAL:1, 1, 21, 1
+			;浮月砕破を覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:부월쇄파]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기1]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			;浮月砕破を覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:부월쇄파]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			
+			;アイアンクロウを覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:아이언클로]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기2]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			;アイアンクロウを覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:아이언클로]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			
+			;黙示録を覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:묵시록]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기3]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기3]]
+			ENDIF
+			;黙示録を覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:묵시록]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기3]]
+			ENDIF
+			
+			;正義の盾を覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:정의의방패]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기4]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기4]]
+			ENDIF
+			;正義の盾を覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:정의의방패]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기4]]
+			ENDIF
+			
+		NEXT
+		;CSTRで専用技定義
+		CSTR:LOCAL:전용기1 = 大太刀・輪
+		CSTR:LOCAL:전용기2 = 小太刀・舞
+		CSTR:LOCAL:전용기3 = 輪＆舞
+		CSTR:LOCAL:전용기4 = 第99回聖翔祭（再演）
+	ENDIF
+	
+	;石動双葉
+	LOCAL = GETCHARA([[キャラ:후타바_무대소녀]])
+	IF GETCHARA([[キャラ:후타바_무대소녀]]) > -1
+		PRINTL ※이Surugi 후타바의 존재를 확인: 변화 스킬이 전용 스킬로 업데이트됩니다
+		FOR LOCAL:1, 1, 21, 1
+			;烈風撃を覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:열풍격]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기1]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			;烈風撃を覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:열풍격]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			
+			;風神撃を覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:풍신격]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기2]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			;風神撃を覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:풍신격]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			
+		NEXT
+		;CSTRで専用技定義
+		CSTR:LOCAL:전용기1 = Determinater
+		CSTR:LOCAL:전용기2 = 咲き誇るその瞬間
+	ENDIF
+	
+	;花柳香子
+	LOCAL = GETCHARA([[キャラ:카오루코]])
+	IF GETCHARA([[キャラ:카오루코]]) > -1
+		PRINTL ※하나야기 카오루코의 존재를 확인: 변화 스킬이 전용 스킬로 업데이트됩니다
+		FOR LOCAL:1, 1, 21, 1
+			;テンタラフーを覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:텐타라후]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기1]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			;テンタラフーを覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:텐타라후]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			
+			;風の舞を覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:바람의춤]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기2]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			;風の舞を覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:바람의춤]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			
+			;クロスフォーチューンを覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:크로스포츈]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기3]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기3]]
+			ENDIF
+			;クロスフォーチューンを覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:크로스포츈]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기3]]
+			ENDIF
+			
+		NEXT
+		;CSTRで専用技定義
+		CSTR:LOCAL:전용기1 = 水仙花／優雅に
+		CSTR:LOCAL:전용기2 = 水仙花／大胆に
+		CSTR:LOCAL:전용기3 = 花咲か唄
+	ENDIF
+	
+	;天堂真矢
+	LOCAL = GETCHARA([[キャラ:마야_무대소녀]])
+	IF GETCHARA([[キャラ:마야_무대소녀]]) > -1
+		PRINTL ※텐도 마야의 존재를 확인: 변화 스킬이 전용 스킬로 업데이트됩니다
+		FOR LOCAL:1, 1, 21, 1
+			;夜桜の舞いを覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:밤벚꽃의춤]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기1]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			;夜桜の舞いを覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:밤벚꽃의춤]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			
+			;ブレイブザッパーを覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:브레이브재퍼]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기2]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			;ブレイブザッパーを覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:브레이브재퍼]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			
+		NEXT
+		;CSTRで専用技定義
+		CSTR:LOCAL:전용기1 = O．t．Marvericks
+		CSTR:LOCAL:전용기2 = This_is_天堂真矢
+	ENDIF
+	
+	
+	;西條クロディーヌ
+	LOCAL = GETCHARA([[キャラ:클로딘]])
+	IF GETCHARA([[キャラ:클로딘]]) > -1
+		PRINTL ※사이죠 클로딘의 존재를 확인: 변화 스킬이 전용 스킬로 업데이트됩니다
+		FOR LOCAL:1, 1, 21, 1
+			;集雷撃を覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:집뢰격]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기1]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			;集雷撃を覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:집뢰격]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기1]]
+			ENDIF
+			
+			;ノヴァサイザーを覚えている場合、専用技1に差し替え
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:노바사이저]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:전용기2]]
+				;デビルシフターとなっている場合は同様に人間時スキルの項目も差し替え
+				SIF TALENT:LOCAL:데빌시프터
+					ABL:LOCAL:@"인간시스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			;ノヴァサイザーを覚える予定の場合、専用技1に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:노바사이저]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:전용기2]]
+			ENDIF
+			
+		NEXT
+		;CSTRで専用技定義
+		CSTR:LOCAL:전용기1 = E．de．Fierte
+		CSTR:LOCAL:전용기2 = C’est_moi，la_star
+	ENDIF
+ENDIF
+
+;キャラ番号の移動
+;空いた枠が書き換えられないように1回だけ処理
+IF LASTLOAD_VERSION < 00309136
+	;Chara862_クール2
+	SIF FLAG:(20000+3719) == 0 && FLAG:(20000+862) != 0
+		CALL CONVERT_CHARA_NO,862,3719
+	;Chara863_クール3
+	SIF FLAG:(20000+3720) == 0 && FLAG:(20000+863) != 0
+		CALL CONVERT_CHARA_NO,863,3720
+	;Chara864_クール4
+	SIF FLAG:(20000+3721) == 0 && FLAG:(20000+864) != 0
+		CALL CONVERT_CHARA_NO,864,3721
+	;Chara866_ベール2
+	SIF FLAG:(20000+3722) == 0 && FLAG:(20000+866) != 0
+		CALL CONVERT_CHARA_NO,866,3722
+	;Chara867_ベール3
+	SIF FLAG:(20000+3723) == 0 && FLAG:(20000+867) != 0
+		CALL CONVERT_CHARA_NO,867,3723
+	;Chara868_ベール4
+	SIF FLAG:(20000+3724) == 0 && FLAG:(20000+868) != 0
+		CALL CONVERT_CHARA_NO,868,3724
+	
+	;Chara1020_オブスィーン
+	SIF FLAG:(20000+3316) == 0 && FLAG:(20000+1020) != 0
+		CALL CONVERT_CHARA_NO,1020,3316
+	;Chara1021_グリード
+	SIF FLAG:(20000+3317) == 0 && FLAG:(20000+1021) != 0
+		CALL CONVERT_CHARA_NO,1021,3317
+	;Chara1022_ジェラシー
+	SIF FLAG:(20000+3318) == 0 && FLAG:(20000+1022) != 0
+		CALL CONVERT_CHARA_NO,1022,3318
+	;Chara1023_ベリカシティ
+	SIF FLAG:(20000+3319) == 0 && FLAG:(20000+1023) != 0
+		CALL CONVERT_CHARA_NO,1023,3319
+	;Chara1024_レイジネス
+	SIF FLAG:(20000+3320) == 0 && FLAG:(20000+1024) != 0
+		CALL CONVERT_CHARA_NO,1024,3320
+	;Chara1025_アラガンス
+	SIF FLAG:(20000+3321) == 0 && FLAG:(20000+1025) != 0
+		CALL CONVERT_CHARA_NO,1025,3321
+	
+	;Chara3210_プリーステス
+	SIF FLAG:(20000+3322) == 0 && FLAG:(20000+3210) != 0
+		CALL CONVERT_CHARA_NO,3210,3322
+	;Chara3211_エンプレス
+	SIF FLAG:(20000+3323) == 0 && FLAG:(20000+3211) != 0
+		CALL CONVERT_CHARA_NO,3211,3323
+	;Chara3255_エンペラー
+	SIF FLAG:(20000+3324) == 0 && FLAG:(20000+3255) != 0
+		CALL CONVERT_CHARA_NO,3255,3324
+	;Chara3256_ハイエロファント
+	SIF FLAG:(20000+3325) == 0 && FLAG:(20000+3256) != 0
+		CALL CONVERT_CHARA_NO,3256,3325
+	;Chara3212_ラヴァーズ
+	SIF FLAG:(20000+3326) == 0 && FLAG:(20000+3212) != 0
+		CALL CONVERT_CHARA_NO,3212,3326
+	;Chara3261_チャリオッツ
+	SIF FLAG:(20000+3327) == 0 && FLAG:(20000+3261) != 0
+		CALL CONVERT_CHARA_NO,3261,3327
+	;Chara3262_ジャスティス
+	SIF FLAG:(20000+3328) == 0 && FLAG:(20000+3262) != 0
+		CALL CONVERT_CHARA_NO,3262,3328
+	;Chara3219_ハーミット
+	SIF FLAG:(20000+3329) == 0 && FLAG:(20000+3219) != 0
+		CALL CONVERT_CHARA_NO,3219,3329
+	;Chara3220_フォーチュン
+	SIF FLAG:(20000+3330) == 0 && FLAG:(20000+3220) != 0
+	CALL CONVERT_CHARA_NO,3220,3330
+	;Chara3221_ストレングス
+	SIF FLAG:(20000+3331) == 0 && FLAG:(20000+3221) != 0
+		CALL CONVERT_CHARA_NO,3221,3331
+	;Chara3277_ハングドマン
+	SIF FLAG:(20000+3332) == 0 && FLAG:(20000+3277) != 0
+		CALL CONVERT_CHARA_NO,3277,3332
+	;Chara3230_石像
+	SIF FLAG:(20000+3333) == 0 && FLAG:(20000+3230) != 0
+		CALL CONVERT_CHARA_NO,3230,3333
+		
+	;Chara3263_マインドアマネ
+	SIF FLAG:(20000+3334) == 0 && FLAG:(20000+3263) != 0
+		CALL CONVERT_CHARA_NO,3263,3334
+	;Chara4211_シャドウりせ
+	SIF FLAG:(20000+3335) == 0 && FLAG:(20000+4211) != 0
+		CALL CONVERT_CHARA_NO,4211,3335
+	;Chara3266_完二の影
+	SIF FLAG:(20000+3336) == 0 && FLAG:(20000+3266) != 0
+		CALL CONVERT_CHARA_NO,3266,3336
+	;Chara3267_ナイスガイ
+	SIF FLAG:(20000+3337) == 0 && FLAG:(20000+3267) != 0
+	CALL CONVERT_CHARA_NO,3267,3337
+	;Chara3268_タフガイ
+	SIF FLAG:(20000+3338) == 0 && FLAG:(20000+3268) != 0
+		CALL CONVERT_CHARA_NO,3268,3338
+	;Chara3270_千枝の影
+	SIF FLAG:(20000+3339) == 0 && FLAG:(20000+3270) != 0
+		CALL CONVERT_CHARA_NO,3270,3339
+	;Chara3271_雪子の影
+	SIF FLAG:(20000+3340) == 0 && FLAG:(20000+3271) != 0
+		CALL CONVERT_CHARA_NO,3271,3340
+	;Chara3272_白馬の王子様
+	SIF FLAG:(20000+3341) == 0 && FLAG:(20000+3272) != 0
+		CALL CONVERT_CHARA_NO,3272,3341
+	;Chara3274_影に呑まれた男
+	SIF FLAG:(20000+3342) == 0 && FLAG:(20000+3274) != 0
+		CALL CONVERT_CHARA_NO,3274,3342
+		
+	;Chara298_悪魔ほむら
+	SIF FLAG:(20000+3384) == 0 && FLAG:(20000+298) != 0
+		CALL CONVERT_CHARA_NO,298,3384
+ENDIF
+
+;好感度処理の不具合修正
+IF LASTLOAD_VERSION < 00309137
+	;LOCAL:1 = 0
+	FOR LOCAL,1,CHARANUM
+		SIF !陥落(LOCAL)
+			CONTINUE
+		;好感度反転
+		IF CDFLAG:LOCAL:캐릭터간호감도:(CFLAG:MASTER:캐릭터고유번호 + 100) < 0
+			CDFLAG:LOCAL:캐릭터간호감도:(CFLAG:MASTER:캐릭터고유번호 + 100) = CDFLAG:LOCAL:캐릭터간호감도:(CFLAG:MASTER:캐릭터고유번호 + 100) * -1
+			;LOCAL:1 ++
+		ENDIF
+	NEXT
+	;IF LOCAL:1
+	;	PRINTL あなた「好感度反転スイッチ？」
+	;	PRINTL 璃奈「うん」
+	;ENDIF
+ENDIF
+
+;スピアザグングニル専用技化（習得済みのキャラは神槍グングニルに置換）
+;IF LASTLOAD_VERSION < 00309140
+;	FOR LOCAL,0, CHARANUM
+;		FOR LOCAL:1, 1, 21
+;			LOCALS = 스킬{LOCAL:1}
+;			LOCALS:1 = 습득스킬{LOCAL:1}
+;			SIF ABL:LOCAL:LOCALS == 2845
+;				ABL:LOCAL:LOCALS = 50
+;		NEXT
+;	NEXT
+;ENDIF
+
+;Schrott
+IF LASTLOAD_VERSION < 00309141
+;専用技になっていないただの剣撃グングニルへの統合を差し戻し。
+	LOCAL = GETCHARA([[キャラ:레밀리아]])
+	IF GETCHARA([[キャラ:레밀리아]]) > -1
+		FOR LOCAL:1, 1, 21, 1
+			IF ABL:LOCAL:@"스킬{LOCAL:1}" == [[스킬:신창궁니르]]
+				ABL:LOCAL:@"스킬{LOCAL:1}" = [[스킬:신창「스피어･더･궁니르」]]
+			ENDIF
+			;ただの剣撃グングを覚える予定の場合に差し替え
+			IF ABL:LOCAL:@"습득스킬{LOCAL:1}" == [[스킬:신창궁니르]]
+				ABL:LOCAL:@"습득스킬{LOCAL:1}" = [[스킬:신창「스피어･더･궁니르」]]
+			ENDIF
+		NEXT
+	ENDIF
+	LOCAL = GETCHARA([[キャラ:케이네]])
+	IF GETCHARA([[キャラ:케이네]]) > -1
+		TALENT:LOCAL:식노 = 0
+	ENDIF
+	LOCAL = GETCHARA([[キャラ:미코]])
+	IF GETCHARA([[キャラ:미코]]) > -1
+		TALENT:LOCAL:석세서 = 0
+		TALENT:LOCAL:건슬링거 = 0
+	ENDIF
+	LOCAL = GETCHARA([[キャラ:요리히메]])
+	IF GETCHARA([[キャラ:요리히메]]) > -1
+		TALENT:LOCAL:페르소나구사자 = 0
+	ENDIF
+	LOCAL = GETCHARA([[キャラ:마미조우]])
+	IF GETCHARA([[キャラ:마미조우]]) > -1
+		TALENT:LOCAL:데빌시프터 = 0
+	ENDIF
+ENDIF
+
+
+
+;エンディングナンバーを再編(ハーレム系ENDを調教師ENDの次に、まどマギENDをエンディングリスト2に移動）
+IF LASTLOAD_VERSION < 00309141
+	PRINTW 엔딩 넘버가 일부 재편되었습니다...[클릭해 주십시오]
+	IF GETBIT(FLAG:발견ED , 20)
+		SETBIT FLAG:발견ED , 1
+		CLEARBIT FLAG:발견ED , 20
+	ENDIF
+	IF GETBIT(FLAG:발견ED , 21)
+		SETBIT FLAG:발견ED , 4
+		CLEARBIT FLAG:발견ED , 21
+	ENDIF
+	IF GETBIT(FLAG:발견ED , 22)
+		SETBIT FLAG:발견ED , 5
+		CLEARBIT FLAG:발견ED , 22
+	ENDIF
+	IF GETBIT(FLAG:발견ED , 17)
+		SETBIT FLAG:발견ED , 6
+		CLEARBIT FLAG:발견ED , 17
+	ENDIF
+	IF GETBIT(FLAG:발견ED , 18)
+		SETBIT FLAG:발견ED2 , 8
+		CLEARBIT FLAG:발견ED , 18
+	ENDIF
+	IF GETBIT(FLAG:발견ED , 63)
+		SETBIT FLAG:발견ED2 , 9
+		CLEARBIT FLAG:발견ED , 63
+	ENDIF
+ENDIF
+
+;;コドクノマレビトルートの漂白に伴うエンディング削除
+;IF LASTLOAD_VERSION < 00309142
+;	SIF GETBIT(FLAG:발견ED , 27)
+;		CLEARBIT FLAG:발견ED , 27
+;ENDIF
+
+
+;↑のエンディングナンバーをさらに再チェック
+IF LASTLOAD_VERSION < 00309143
+
+	PRINTW 엔딩 넘버가 일부 재편되었습니다...[클릭해 주십시오]
+	IF GETBIT(FLAG:발견ED , 16)
+		SETBIT FLAG:발견ED , 38
+		CLEARBIT FLAG:발견ED , 16
+	ENDIF
+
+	;ヤマタイカエンドの削除
+	CLEARBIT FLAG:발견ED , 59
+
+	;秋山ノブの受胎アイテム修正
+	;ノブが仲間にいるかチェック
+	LOCAL = GETCHARA([[キャラ:노부]])
+	;ノブがいる場合、受胎アイテムを無から「마신황죽이기」に変更
+	IF GETCHARA([[キャラ:노부]]) > -1
+		ABL:LOCAL:수태아이템 = 2373
+	ENDIF
+
+ENDIF
+
+
+IF LASTLOAD_VERSION < 0309145
+	FLAG:디폴트툴팁시간 = 500
+	FOR LCOUNT, 0, CHARANUM
+		IF GROUPMATCH(NO:LCOUNT, [[キャラ:노아_라비리비]], [[キャラ:쿠도라_단도라]])
+			CFLAG:LCOUNT:3093 = 0
+			CFLAG:LCOUNT:3094 = 0
+			CFLAG:LCOUNT:3095 = 0
+			CFLAG:LCOUNT:3096 = 0
+			CFLAG:LCOUNT:3097 = 0
+			CFLAG:LCOUNT:3098 = 0
+			CFLAG:LCOUNT:3099 = 0
+			;3094,특수변신얼굴이미지
+			;3095,범용악마변신얼굴이미지
+			;3096,악마변신얼굴이미지
+			;3097,SHOP얼굴이미지
+			;3098,조교얼굴이미지
+			;3099,얼굴이미지
+		ENDIF
+	NEXT
+	IF FLAG:버전관리보조 == 0
+		FLAG:버전관리보조 = 1
+		;LEARN_PU_SKILLに問題があったので利用する可能性があるキャラ全員の専用スキルを確認する
+		FOR LCOUNT, 0, CHARANUM
+			IF NO:LCOUNT == [[キャラ:수르트]]
+				SIF CSTR:LCOUNT:종족명 != "サルカズ"
+					CONTINUE
+				SIF CSTR:LCOUNT:103 == ""
+					CONTINUE
+				CALL SET_ROLE, LCOUNT
+				CALL SET_ROLE_CP, LCOUNT
+				CALL SET_CHARA_SKILLCOUNT, LCOUNT
+
+				CALL DEL_BROKEN_PU_SKILL, LCOUNT
+				CALL LEARN_PU_SKILL(LCOUNT, "劫火の余燼")
+				CONTINUE
+			ENDIF
+		NEXT
+		FOR LCOUNT, 0, CHARANUM
+			IF NO:LCOUNT == [[キャラ:이둔]]
+				SIF CFLAG:LCOUNT:900 == 0
+					CONTINUE
+				CALL SET_ROLE, LCOUNT
+				CALL SET_ROLE_CP, LCOUNT
+				CALL SET_CHARA_SKILLCOUNT, LCOUNT
+
+				CALL DEL_BROKEN_PU_SKILL, LCOUNT
+				CALL LEARN_PU_SKILL(LCOUNT,"黄金のリンゴ")
+				CONTINUE
+			ENDIF
+		NEXT
+		FOR LCOUNT, 0, CHARANUM
+			IF GROUPMATCH(NO:LCOUNT, [[キャラ:안젤라]], [[キャラ:리스]], [[キャラ:샤를로트]])
+				;クラス2に覚醒していないなら無問題
+				SIF CFLAG:LCOUNT:900 == 0
+					CONTINUE
+				CALL SET_ROLE, LCOUNT
+				CALL SET_ROLE_CP, LCOUNT
+				CALL SET_CHARA_SKILLCOUNT, LCOUNT
+
+				CALL DEL_BROKEN_PU_SKILL, LCOUNT
+				CALL LEARN_PU_SKILL(LCOUNT,"クラス２スキル（聖剣３）")
+				SIF CFLAG:LCOUNT:901
+					CALL LEARN_PU_SKILL(LCOUNT,"クラス３スキル（聖剣３）")
+				SIF CFLAG:LCOUNT:902
+					CALL LEARN_PU_SKILL(LCOUNT,"クラス４スキル（聖剣３）")
+				CONTINUE
+			ENDIF
+		NEXT
+		FOR LCOUNT, 0, CHARANUM
+			;再習得がリラックスをもってるかどうかなので不正なスキルを削除するだけで大丈夫なはず
+			IF NO:LCOUNT == [[キャラ:마르푸샤]]
+				SIF CFLAG:LCOUNT:900 == 0
+					CONTINUE
+				CALL SET_ROLE, LCOUNT
+				CALL SET_ROLE_CP, LCOUNT
+				CALL SET_CHARA_SKILLCOUNT, LCOUNT
+
+				CALL DEL_BROKEN_PU_SKILL, LCOUNT
+				CONTINUE
+			ENDIF
+		NEXT
+		
+		;MASTERが人魚になっていた場合に足が生えてきてしまっていた場合があったので消去
+		SIF TALENT:MASTER:물고기
+			TALENT:MASTER:발 = 0
+		LOCAL = FINDCHARA(NO, [[キャラ:코로마루]])
+		SIF LOCAL >= 0
+			TALENT:LOCAL:동물귀 = CSVTALENT(NO:LOCAL, GETNUM(TALENT, "동물귀"), 0)
+		LOCAL = FINDCHARA(NO, [[キャラ:니알라토텝_P2]])
+		IF LOCAL >= 0
+			TALENT:LOCAL:머리 = 1
+			TALENT:LOCAL:눈 = 1
+			TALENT:LOCAL:입 = 1
+			TALENT:LOCAL:팔 = 1
+			TALENT:LOCAL:발 = 1
+		ENDIF
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FLAG:버전관리보조 = 2
+		FOR LCOUNT:1, 0, CHARANUM
+			IF NO:(LCOUNT:1) == [[キャラ:쿠훌린_창]]
+				FOR LCOUNT, 1, 1 + PU_NUM()
+					SIF CSTR:(LCOUNT:1):@"전용기{LCOUNT}" == "刺し穿つ刺棘の槍"
+						CSTR:(LCOUNT:1):@"전용기{LCOUNT}" = 刺し穿つ死棘の槍
+				NEXT
+			ENDIF
+		NEXT
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FLAG:버전관리보조 = 3
+		FOR LCOUNT, 0, CHARANUM
+			IF GROUPMATCH(NO:LCOUNT, [[キャラ:리스]], [[キャラ:샤를로트]], [[キャラ:안젤라]])
+				SIF CFLAG:LCOUNT:900 == 1
+					CALL SET_RPG_CSTR_TAKEOVER, LCOUNT, "クラス2属性", "光"
+				SIF CFLAG:LCOUNT:900 == 2
+					CALL SET_RPG_CSTR_TAKEOVER, LCOUNT, "クラス2属性", "闇"
+				SIF CFLAG:LCOUNT:901 == 1
+					CALL SET_RPG_CSTR_TAKEOVER, LCOUNT, "クラス3属性", "光"
+				SIF CFLAG:LCOUNT:901 == 2
+					CALL SET_RPG_CSTR_TAKEOVER, LCOUNT, "クラス3属性", "闇"
+				SIF CFLAG:LCOUNT:902 == 1
+					CALL SET_RPG_CSTR_TAKEOVER, LCOUNT, "クラス4属性", "光"
+				SIF CFLAG:LCOUNT:902 == 2
+					CALL SET_RPG_CSTR_TAKEOVER, LCOUNT, "クラス4属性", "闇"
+				CFLAG:LCOUNT:900 = 0
+				CFLAG:LCOUNT:901 = 0
+				CFLAG:LCOUNT:902 = 0
+			ENDIF
+		NEXT
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF LASTLOAD_VERSION < 0309146
+	SIF GETCHARA([[キャラ:메데이아릴리]]) >= 0
+		TALENT:GETCHARA([[キャラ:메데이아릴리]]):회복 = 1
+ENDIF
+
+
+IF LASTLOAD_VERSION < 0309147
+	;ロールが付与されているキャラがいるならここは抜けているはずなんで
+	SIF CSTR:MASTER:롤 != ""
+		FLAG:버전관리보조 = MAX(1, FLAG:버전관리보조)
+	IF FLAG:버전관리보조 == 0
+		FOR LCOUNT, 0, CHARANUM
+			FOR LCOUNT:1, 1, 21
+				SIF GROUPMATCH(ABL:LCOUNT:@"스킬{LCOUNT:1}", [[스킬:P・체인지]], [[스킬:악마변신]], [[스킬:변신악마변경]])
+					ABL:LCOUNT:@"스킬{LCOUNT:1}" = 0
+				SIF GROUPMATCH(ABL:LCOUNT:@"인간시스킬{LCOUNT:1}", [[스킬:P・체인지]], [[스킬:악마변신]], [[스킬:변신악마변경]])
+					ABL:LCOUNT:@"인간시스킬{LCOUNT:1}" = 0
+			NEXT
+			CALL SET_ROLE, LCOUNT
+		NEXT
+
+		;番号移動処理
+		CALL CONVERT_SKILL_NUMBER, 2480, [[스킬:기합부스터]]
+		CALL CONVERT_SKILL_NUMBER, 3920, 0
+		CALL CONVERT_SKILL_NUMBER, 3921, 0
+		CALL CONVERT_SKILL_NUMBER, 3922, 0
+		CALL CONVERT_SKILL_NUMBER, 3923, [[스킬:인사이트]]
+		CALL CONVERT_SKILL_NUMBER, 3924, [[스킬:인간특효]]
+		CALL CONVERT_SKILL_NUMBER, 3925, [[스킬:지모신특효]]
+		CALL CONVERT_SKILL_NUMBER, 3926, [[스킬:여신특효]]
+		CALL CONVERT_SKILL_NUMBER, 3927, [[스킬:마왕특효]]
+		CALL CONVERT_SKILL_NUMBER, 3928, [[스킬:천사특효]]
+		CALL CONVERT_SKILL_NUMBER, 3929, [[스킬:요마특효]]
+		CALL CONVERT_SKILL_NUMBER, 3930, [[스킬:요정특효]]
+		CALL CONVERT_SKILL_NUMBER, 3931, [[스킬:요귀특효]]
+		CALL CONVERT_SKILL_NUMBER, 3932, [[스킬:용왕특효]]
+		CALL CONVERT_SKILL_NUMBER, 3933, [[스킬:마수특효]]
+		CALL CONVERT_SKILL_NUMBER, 3934, [[스킬:요조특효]]
+		CALL CONVERT_SKILL_NUMBER, 3935, [[스킬:외도특효]]
+		CALL CONVERT_SKILL_NUMBER, 3936, [[스킬:기계특효]]
+		CALL CONVERT_SKILL_NUMBER, 3937, [[스킬:정령특효]]
+		CALL CONVERT_SKILL_NUMBER, 3938, [[스킬:귀신특효]]
+		CALL CONVERT_SKILL_NUMBER, 3939, [[스킬:마신특효]]
+		CALL CONVERT_SKILL_NUMBER, 3940, [[스킬:사신특효]]
+		CALL CONVERT_SKILL_NUMBER, 3941, [[스킬:타천사특효]]
+		CALL CONVERT_SKILL_NUMBER, 3942, [[스킬:괴이특효]]
+		CALL CONVERT_SKILL_NUMBER, 3943, [[스킬:반마특효]]
+		CALL CONVERT_SKILL_NUMBER, 3944, [[스킬:마인특효]]
+		CALL CONVERT_SKILL_NUMBER, 3945, [[스킬:영웅특효]]
+		CALL CONVERT_SKILL_NUMBER, 3946, [[스킬:조마특효]]
+		CALL CONVERT_SKILL_NUMBER, 3970, [[스킬:회심전심]]
+		CALL CONVERT_SKILL_NUMBER, 3971, [[스킬:생명소모(소)]]
+		CALL CONVERT_SKILL_NUMBER, 3972, [[스킬:생명소모(중)]]
+		CALL CONVERT_SKILL_NUMBER, 3973, [[스킬:생명소모(대)]]
+		CALL CONVERT_SKILL_NUMBER, 3974, [[스킬:생명소모(착유)]]
+		CALL CONVERT_SKILL_NUMBER, 3975, [[스킬:생명소모(착정)]]
+
+		PRINTL 　アップデートで戦闘用の素質に点数をつけ、
+		PRINTL 　各ロール毎に定められた数値におさめるように設定するという形でキャラクターの素質を整理しました。
+		PRINTW これにより、多くのキャラクターの素質が変化し、キャラ性能が一部変わっています。
+		PRINTL 
+		PRINTL 例:
+		PRINTL 　一般的な異能者は[スキル所持数12 / 소비MP-30%]となっていましたが、
+		PRINTL 　ドリーはサマナーLv1を持っているので[소비MP-30%]を持っていませんでした。
+		PRINTW 　デビサバ2主人公はサマナーLv3・道具知識3を持っており、[소비MP-30%]を持っていませんでした。
+		PRINTL 
+		PRINTL 　新仕様ではMP消費もLv素質化し、以下のようになっています。
+		PRINTL 　純異能者 [スキル所持数12 / 소비MP-30%]
+		PRINTL 　ドリー　 [スキル所持数12 / 소비MP-20% / サマナーLv1]
+		PRINTW 　２主人公 [スキル所持数12 / 소비MP- 0% / サマナーLv3 / 道具知識Lv3]
+		PRINTL 
+		PRINTW 　基本的にはこのように同ロール内で要素ごとに一長一短になるようにして各自の格差の解消を目指しています。
+		PRINTL 　
+		PRINTL 　大半のキャラクターは設定した数値設定をオーバーせずに、一部の変更でとどまっていますが
+		PRINTW 　一部の非常に強力なキャラクターの素質は要素内におさめられるように明確に弱くなっています。
+		PRINTL 　
+		PRINTL 　例:
+		PRINTL 　P5主人公はペルソナ使いに加えて現バージョンでは非常に強力な素質である[건슬링거]を持っており、
+		PRINTW 　ほかのペルソナ使い、あるいは他のロールキャラと比較しても明らかに強いキャラクターになっています。
+		PRINTL 　
+		PRINTL 　これを新仕様では[건슬링거]をレベル化し、銃の装備レベルを緩和し、さらに一部の特殊弾を使えるにする効果を持つLv1をもたせ、
+		PRINTW 　さらにペルソナ使いが持っている継承素質によるボーナスを[스킬적성]とし、他のキャラクターより効果が劣るLv1に設定しています。
+		PRINTL 
+		PRINTL 　このような強すぎると判断した素質を持っているキャラクターの素質をなるべく仕様変更前の強さに合わせるためのオプションとして
+		PRINTL 　EXTRA強化[CP제한무효화]を用意しました。
+		PRINTW 　これを利用することでP5主人公の素質を[ガンスリンガーLv3 / 스킬적성 Lv3]にすることを選べます。
+		IF GETBIT(FLAG:656, 1)
+			PRINTL 
+			PRINTL 　[CP제한무효화]를 이용하시겠습니까？
+			PRINTL 
+			CALL INPUT_YN
+			IF !RESULT
+				FLAG:CP제한무효화 = 1
+				;CLEARBIT FLAG:EXTRA強化フィルタ, GETNUM_FLAG:CP제한무효화
+			ELSE
+				FLAG:CP제한무효화 = 0
+				;SETBIT FLAG:EXTRA強化フィルタ, GETNUM_FLAG:CP제한무효화
+			ENDIF
+		ELSE
+			PRINTL 
+			PRINTL 　このオプションを利用するにはゲーム開始時あるいは周回時に設定する必要があるので
+			PRINTW 　旧仕様に近くしたい場合はEXTRA強化オプションを設定してください。
+		ENDIF
+		FOR LCOUNT, 0, CHARANUM
+			;キャラ説明がはみ出ていたキャラのCSTRをなおす
+			IF (CSTR:LCOUNT:클래스설명1 != "" && CSVCSTR(NO:LCOUNT, GETNUM(CSTR, "클래스설명1")) == "") || (CSTR:LCOUNT:클래스설명2 != "" && CSVCSTR(NO:LCOUNT, GETNUM(CSTR, "클래스설명2")) == "")
+				FOR LCOUNT:1, 0, 23
+					CSTR:LCOUNT:(30 + LCOUNT:1) = %CSVCSTR(NO:LCOUNT, 30 + LCOUNT:1)%
+				NEXT
+			ENDIF
+			;CSVのCSTRをセットする
+			CSTR:LCOUNT:롤설명1 = %CSVCSTR(NO:LCOUNT, GETNUM(CSTR, "롤설명1"))%
+			CSTR:LCOUNT:롤설명2 = %CSVCSTR(NO:LCOUNT, GETNUM(CSTR, "롤설명2"))%
+			SELECTCASE NO:LCOUNT
+				CASE [[キャラ:터미네이터]]
+					SIF GET_RACE(ABL:LCOUNT:종족) == "반마인"
+						CFLAG:LCOUNT:이벤트가입 = 1
+				CASE [[キャラ:롱기누스１３]] TO ([[キャラ:롱기누스１]])
+					SIF TALENT:LCOUNT:기계의처녀
+						CFLAG:LCOUNT:이벤트가입 = 1
+				CASE [[キャラ:식스]]
+					SIF TALENT:LCOUNT:페르소나구사자
+						CFLAG:LCOUNT:이벤트가입 = 1
+				CASE [[キャラ:쿠미코]], [[キャラ:요시코]]
+					SIF TALENT:LCOUNT:데빌시프터
+						CFLAG:LCOUNT:이벤트가입 = 1
+				CASE [[キャラ:카야]]
+					SELECTCASE CSTR:LCOUNT:종족명
+						CASE "夜魔"
+							CFLAG:LCOUNT:이벤트가입 = 1
+						CASE "凶鳥"
+							CFLAG:LCOUNT:이벤트가입 = 2
+						CASE "地霊"
+							CFLAG:LCOUNT:이벤트가입 = 3
+						CASE "기계의처녀"
+							CFLAG:LCOUNT:이벤트가입 = 4
+					ENDSELECT
+				CASE [[キャラ:키쿠에]]
+					SIF TALENT:LCOUNT:도구지식 == 3
+						CFLAG:LCOUNT:이벤트가입 = 1
+					SIF GET_RACE(ABL:LCOUNT:종족) == "반마인"
+						CFLAG:LCOUNT:이벤트가입 = 2
+				CASE [[キャラ:돌연변이데미난디]]
+					SIF GET_RACE(ABL:LCOUNT:종족) == "반마인"
+						CFLAG:LCOUNT:이벤트가입 = 1
+				CASE [[キャラ:에리나_라비리비]], [[キャラ:노아_라비리비]]
+					SIF !TALENT:LCOUNT:비전투원
+						CFLAG:LCOUNT:이벤트가입 = 1
+				CASE [[キャラ:우즈키]], [[キャラ:마유]]
+					SIF !TALENT:LCOUNT:비전투원
+						CFLAG:LCOUNT:이벤트가입 = 1
+				CASE [[キャラ:린Fate]]
+					SIF CFLAG:LCOUNT:초기링크악마 == [[キャラ:에레쉬키갈]]
+						CFLAG:LCOUNT:이벤트가입 = 1
+					SIF CFLAG:LCOUNT:초기링크악마 == [[キャラ:이슈타르]]
+						CFLAG:LCOUNT:이벤트가입 = 2
+				CASE [[キャラ:신지]]
+					SIF TALENT:LCOUNT:비전투원
+						CFLAG:LCOUNT:이벤트가입 = 1
+					SIF TALENT:LCOUNT:서머너 == 3
+						CFLAG:LCOUNT:이벤트가입 = 2
+				CASE ([[キャラ:메시아교도]])
+					SIF TALENT:LCOUNT:건슬링거 && TALENT:LCOUNT:석세서 && !TALENT:LCOUNT:이능자 
+						TALENT:LCOUNT:이능자 = 1
+			ENDSELECT
+			;CSVが人間で、現在の種族が悪魔人である場合はデモノイドとみなして処置
+			IF CSVABL(NO:LCOUNT, GETNUM(ABL, "종족")) == 0 && GET_RACE(ABL:LCOUNT:종족) == "악마인"
+				TALENT:LCOUNT:이능자 = 0
+				TALENT:LCOUNT:달인 = 0
+			;ランダムキャラ・あなたはCSVを見ない
+			;非戦闘員も戦闘員かしている場合、差し戻されてしまうのでCSVを見ない
+			ELSEIF IS_RANDOMCHARA(LCOUNT) || NO:LCOUNT == 4998 || NO:LCOUNT == 4999 || NO:LCOUNT == 0 || CSVTALENT(NO:LCOUNT, GETNUM(TALENT, "비전투원"))
+				IF TALENT:LCOUNT:이능자
+					IF TALENT:LCOUNT:데빌시프터
+						TALENT:LCOUNT:데빌시프터 = 0
+						TALENT:LCOUNT:아웃사이더 = 1
+						TALENT:LCOUNT:이능자 = 3
+					ELSE
+						TALENT:LCOUNT:이능자 = 5
+					ENDIF
+				ENDIF
+				IF TALENT:LCOUNT:건슬링거
+					IF TALENT:LCOUNT:달인
+						TALENT:LCOUNT:건슬링거 = 5
+					ELSE
+						TALENT:LCOUNT:건슬링거 = 3
+					ENDIF
+				ENDIF
+				SIF TALENT:LCOUNT:달인
+					TALENT:LCOUNT:공격의심득 = 3
+			ELSE
+				SELECTCASE NO:LCOUNT
+					CASE [[キャラ:호무라]]
+						TALENT:LCOUNT:건슬링거 = 3
+						TALENT:LCOUNT:과부하 = 20
+						BASE:LCOUNT:힘 += 3 -2
+						BASE:LCOUNT:지혜 += 10 - 5
+						BASE:LCOUNT:마력 += 2 - 1
+						BASE:LCOUNT:내구 += 7 - 4
+						BASE:LCOUNT:속도 += 8 - 5
+						BASE:LCOUNT:운 += 4 - 2
+					CASE [[キャラ:호무라_U-U]]
+						TALENT:LCOUNT:과부하 = 20
+						BASE:LCOUNT:힘 += 3 - 1
+						BASE:LCOUNT:지혜 += 5 - 1
+						BASE:LCOUNT:마력 += 3 - 1
+						BASE:LCOUNT:내구 += 6 - 4
+						BASE:LCOUNT:속도 += 5 - 1
+						BASE:LCOUNT:운 += 3 - 1
+						CALL EVENT_LEVELUP_[[キャラ:호무라_U-U]], LCOUNT
+					CASE [[キャラ:후타바 안즈]]
+						SELECTCASE 1
+							CASE TALENT:LCOUNT:이능자 && TALENT:LCOUNT:데빌시프터
+								IF FLAG:CP제한무효화
+									PRINTFORML %CALLNAME:LCOUNT%의 소질 호환 처리를 진행합니다。
+									PRINTFORML 이 처치에 의해 스킬 소지 수가 감소하게 됩니다。
+									PRINTFORMW 그 경우, 일부 소지 스킬이 MAG와 스킬 카드로 변환됩니다。
+									PRINTL 
+									PRINTFORMW 혹은 CP 제한을 무효화하고 있으므로, 캐릭터별 규정 성능을 무시하고 스킬 칸을 12칸으로 하는 조치를 선택하는 것도 가능합니다。
+									PRINTL 
+									PRINTL [0] 인간 시의 스킬 소지 가능 수를 8칸으로 한다。
+									PRINTL [1] 인간 시의 스킬 소지 가능 수를 12칸으로 한다。
+									CALL INPUTINT, 0, 1
+									IF RESULT == 0
+										CFLAG:LCOUNT:이벤트가입 = 3
+									ELSE
+										CFLAG:LCOUNT:이벤트가입 = 2
+									ENDIF
+								ELSE
+									PRINTFORML %CALLNAME:LCOUNT%의 소질 호환 처리를 진행합니다。
+									PRINTFORMW 이 처치에 의해 스킬 소지 수가 감소한 경우, 일부 소지 스킬이 MAG와 스킬 카드로 변환됩니다。
+									CFLAG:LCOUNT:이벤트가입 = 2
+								ENDIF
+							CASE TALENT:LCOUNT:이능자
+								CFLAG:LCOUNT:이벤트가입 = 1
+							CASE TALENT:LCOUNT:비전투원
+								CFLAG:LCOUNT:이벤트가입 = 0
+						ENDSELECT
+						CALL SET_BTL_TALENT_5608, LCOUNT, CFLAG:LCOUNT:이벤트가입
+					CASE [[キャラ:이오]]
+						IF TALENT:LCOUNT:데빌시프터
+							IF FLAG:CP제한무효화
+								PRINTFORML %CALLNAME:LCOUNT%의 소질 호환 처리를 진행합니다。
+								PRINTFORML 이 처치에 의해 스킬 소지 수가 감소하게 됩니다。
+								PRINTFORMW 그 경우, 일부 소지 스킬이 MAG와 스킬 카드로 변환됩니다。
+								PRINTL 
+								PRINTFORMW 혹은 CP 제한을 무효화하고 있으므로, 캐릭터별 규정 성능을 무시하고 스킬 칸을 12칸으로 하는 조치를 선택하는 것도 가능합니다。
+								PRINTL 
+								PRINTL [0] 인간 시의 스킬 소지 가능 수를 8칸으로 한다。
+								PRINTL [1] 인간 시의 스킬 소지 가능 수를 12칸으로 한다。
+								CALL INPUTINT, 0, 1
+								IF RESULT
+									CFLAG:LCOUNT:이벤트가입 = 2
+								ELSE
+									CFLAG:LCOUNT:이벤트가입 = 1
+								ENDIF
+							ELSE
+								PRINTFORML %CALLNAME:LCOUNT%의 소질 호환 처리를 진행합니다。
+								PRINTFORMW 이 처치에 의해 스킬 소지 수가 감소한 경우, 일부 소지 스킬이 MAG와 스킬 카드로 변환됩니다。
+								CFLAG:LCOUNT:이벤트가입 = 1
+							ENDIF
+							CALL SET_BTL_TALENT_[[キャラ:이오]], LCOUNT, CFLAG:LCOUNT:이벤트가입
+						ELSE
+							TALENT:LCOUNT:이능자 = 5
+							TALENT:LCOUNT:서머너 = 1
+						ENDIF
+					CASE [[キャラ:카렌_무대소녀]], [[キャラ:히카리]], [[キャラ:마히루]], [[キャラ:쥰나]], [[キャラ:후타바_무대소녀]], [[キャラ:카오루코]], [[キャラ:클로딘]], [[キャラ:나나]], [[キャラ:마야_무대소녀]]
+						DRAWLINE
+						PRINTFORML %CALLNAME:LCOUNT%의 롤을 무대소녀로 변경합니다。
+						PRINTFORML 변경에 따라 달인이 아닌 무대소녀의 스킬 소지 가능 수는 8이 됩니다。
+						PRINTFORMW 또한 변신 능력을 얻은 경우 변신 시 계승소질이 없는 스킬을 잃고, 장비 사용 능력과 데미지 보정 등을 얻습니다。
+						DRAWLINE
+						IF !TALENT:LCOUNT:비전투원
+							TALENT:LCOUNT:이능자 = 0
+							TALENT:LCOUNT:무대소녀 = 1
+							
+							FOR LCOUNT:1, 1, 21
+								SIF CSVABL(NO:LCOUNT, GETNUM(ABL, @"스킬{LCOUNT:1}")) >= 0
+									CALL SET_LEARNED_SKILL, LCOUNT, TOSTR(CSVABL(NO:LCOUNT, GETNUM(ABL, @"스킬{LCOUNT:1}")))
+								SIF CSVABL(NO:LCOUNT, GETNUM(ABL, @"습득스킬{LCOUNT:1}")) >= 0 && CSVABL(NO:LCOUNT, GETNUM(ABL, @"습득LV{LCOUNT:1}")) >= BASE:LCOUNT:LV
+									CALL SET_LEARNED_SKILL, LCOUNT, TOSTR(CSVABL(NO:LCOUNT, GETNUM(ABL, @"습득스킬{LCOUNT:1}")))
+							NEXT
+							IF TALENT:LCOUNT:데빌시프터
+								;トップスタァは自力習得できるがカード習得できないスキルを習得するので先に習得済みスキルに追加して対応する
+								SELECTCASE NO:LCOUNT
+									CASE [[キャラ:카렌_무대소녀]]
+										FOR LCOUNT:1, 0, 8
+											CALL SET_LEARNED_SKILL, LCOUNT, AUTO_SPLIT(@"{SKILL_NUM_F("기절의참격")}/{SKILL_NUM_F("기합")}/{SKILL_NUM_F("러브・하트")}/{SKILL_NUM_F("메・디아라한")}/{SKILL_NUM_F("라쿠・카쟈")}/{SKILL_NUM_F("라쿠카쟈오토")}/{SKILL_NUM_F("불굴의투지")}/{SKILL_NUM_F("기공(소)")}", "/", LCOUNT:1), "変身形態"
+										NEXT
+									CASE [[キャラ:히카리]]
+										FOR LCOUNT:1, 0, 8
+											CALL SET_LEARNED_SKILL, LCOUNT, AUTO_SPLIT(@"{SKILL_NUM_F("재생의협주곡")}/{SKILL_NUM_F("컨센트레이트")}/{SKILL_NUM_F("프레이다인")}/{SKILL_NUM_F("다무도라온")}/{SKILL_NUM_F("라이트마")}/{SKILL_NUM_F("사마리캄")}/{SKILL_NUM_F("레볼루션")}/{SKILL_NUM_F("삼할의마맥")}", "/", LCOUNT:1), "変身形態"
+										NEXT
+									CASE [[キャラ:마히루]]
+										FOR LCOUNT:1, 0, 8
+											CALL SET_LEARNED_SKILL, LCOUNT, AUTO_SPLIT(@"{SKILL_NUM_F("인어공주의연심")}/{SKILL_NUM_F("부드러운파도")}/{SKILL_NUM_F("컨센트레이트")}/{SKILL_NUM_F("갈다인")}/{SKILL_NUM_F("질풍가드킬")}/{SKILL_NUM_F("최면파")}/{SKILL_NUM_F("이악물기")}/{SKILL_NUM_F("이할의마맥")}", "/", LCOUNT:1), "変身形態"
+										NEXT
+									CASE [[キャラ:쥰나]]
+										FOR LCOUNT:1, 0, 8
+											CALL SET_LEARNED_SKILL, LCOUNT, AUTO_SPLIT(@"{SKILL_NUM_F("맹독의협주곡")}/{SKILL_NUM_F("기합")}/{SKILL_NUM_F("전광석화")}/{SKILL_NUM_F("스쿠・카쟈")}/{SKILL_NUM_F("플래시봄")}/{SKILL_NUM_F("테트라칸")}/{SKILL_NUM_F("트라프리")}/{SKILL_NUM_F("닷지카운터")}", "/", LCOUNT:1), "変身形態"
+										NEXT
+									CASE [[キャラ:후타바_무대소녀]]
+										FOR LCOUNT:1, 0, 8
+											CALL SET_LEARNED_SKILL, LCOUNT, AUTO_SPLIT(@"{SKILL_NUM_F("분기의합주")}/{SKILL_NUM_F("포효")}/{SKILL_NUM_F("참철파")}/{SKILL_NUM_F("회전베기")}/{SKILL_NUM_F("스쿠・카쟈")}/{SKILL_NUM_F("삼할의활천")}/{SKILL_NUM_F("바이쳐・더스트")}/{SKILL_NUM_F("만력의벽")}", "/", LCOUNT:1), "変身形態"
+										NEXT
+									CASE [[キャラ:카오루코]]
+										FOR LCOUNT:1, 0, 8
+											CALL SET_LEARNED_SKILL, LCOUNT, AUTO_SPLIT(@"享楽の奇想曲/情愛の奇想曲/{SKILL_NUM_F("기합")}/{SKILL_NUM_F("불굴의투지")}/{SKILL_NUM_F("브레이브스텝")}/{SKILL_NUM_F("도발")}/{SKILL_NUM_F("끝없는도발")}/{SKILL_NUM_F("체인업")}", "/", LCOUNT:1), "変身形態"
+										NEXT
+									CASE [[キャラ:클로딘]]
+										FOR LCOUNT:1, 0, 8
+											CALL SET_LEARNED_SKILL, LCOUNT, AUTO_SPLIT(@"{SKILL_NUM_F("질풍의상동곡")}/{SKILL_NUM_F("포효")}/{SKILL_NUM_F("썬더볼트")}/{SKILL_NUM_F("바이스샷")}/{SKILL_NUM_F("가이아브레이크")}/{SKILL_NUM_F("기간트마키아")}/{SKILL_NUM_F("마카라칸")}/{SKILL_NUM_F("테트라쟈")}", "/", LCOUNT:1), "変身形態"
+										NEXT
+									CASE [[キャラ:나나]]
+										FOR LCOUNT:1, 0, 8
+											CALL SET_LEARNED_SKILL, LCOUNT, AUTO_SPLIT(@"呼応の斬撃/皆殺しのレヴュー/{SKILL_NUM_F("기합")}/{SKILL_NUM_F("서드아이")}/{SKILL_NUM_F("불굴의투지")}/{SKILL_NUM_F("결단")}/{SKILL_NUM_F("닷지카운터")}/{SKILL_NUM_F("데스카운터")}", "/", LCOUNT:1), "変身形態"
+										NEXT
+									CASE [[キャラ:마야_무대소녀]]
+										FOR LCOUNT:1, 0, 8
+											CALL SET_LEARNED_SKILL, LCOUNT, AUTO_SPLIT(@"{SKILL_NUM_F("추토의참격")}/{SKILL_NUM_F("기합")}/{SKILL_NUM_F("꼬치꿰기")}/{SKILL_NUM_F("파마의뇌광")}/{SKILL_NUM_F("썬더볼트")}/{SKILL_NUM_F("갓핸드")}/{SKILL_NUM_F("토르해머")}/{SKILL_NUM_F("뉴클리어미사일")}", "/", LCOUNT:1), "変身形態"
+										NEXT
+								ENDSELECT
+								TALENT:LCOUNT:데빌시프터 = 0
+								CFLAG:LCOUNT:이벤트가입 = 1
+								CALLFORM SET_BASE_{NO:LCOUNT}, LCOUNT, 1
+								CALLFORM SET_BTL_TALENT_{NO:LCOUNT}, LCOUNT, 1
+								CALLFORM SET_LEARN_SKILL_{NO:LCOUNT}, LCOUNT, 1
+							ENDIF
+						ENDIF
+					CASEELSE
+						CALL SET_CSV_ROLE_FLAG,LCOUNT
+						TRYCALLFORM SET_BTL_TALENT_{NO:LCOUNT}, LCOUNT, CFLAG:LCOUNT:이벤트가입
+				ENDSELECT
+			ENDIF
+			CALL SET_ROLE, LCOUNT
+			CALL SET_BTL_TALENT_NEW, LCOUNT
+			CALL SET_CHARA_SKILLCOUNT, LCOUNT
+			CALL SET_ROLE_CP, LCOUNT
+			;加入時選択がある場合
+			TRYCALLFORM SELECT_BTL_TALENT_{NO:LCOUNT}, LCOUNT
+			IF !FLAG:CP제한무효화
+				IF GET_ROLE_CP(LCOUNT, "通常形態") < 0
+					DRAWLINE
+					PRINTFORML %CALLNAME:LCOUNT%의 소질 코스트가 캐퍼시티 상한을 초과하고 있습니다。
+					PRINTFORMW 남길 소질을 선택해 주십시오。
+					DRAWLINE
+					CALL SET_VAR_HAVE_SUB_ROLE, LCOUNT, "通常形態", L_BTL_TALENT
+					;サブ素質を設定
+					CALL ENHANCE_ROLE, LCOUNT, "通常形態", L_BTL_TALENT, , "戻る不可"
+				ENDIF
+				IF GET_ROLE_PROP("CAN_USE_TRANS", LCOUNT) && GET_ROLE_CP(LCOUNT, "変身形態") < 0
+					DRAWLINE
+					PRINTFORML %CALLNAME:LCOUNT%의 소질 코스트가 캐퍼시티 상한을 초과하고 있습니다。
+					PRINTFORMW 남길 소질을 선택해 주십시오。
+					DRAWLINE
+					CALL SET_VAR_HAVE_SUB_ROLE, LCOUNT, "変身形態", L_BTL_TALENT
+					;サブ素質を設定
+					CALL ENHANCE_ROLE, LCOUNT, "変身形態", L_BTL_TALENT, , "戻る不可"
+				ENDIF
+			ENDIF
+			CALL FIX_ROLE_HAVESKILL, LCOUNT, "枠数"
+			;リンク悪魔がセットされていてリンク能力がなくなっている場合はリンクを外す
+			IF FINDCHARA_LINK(LCOUNT) >= 0 && !GET_ROLE_PROP("CAN_USE_LINK", LCOUNT)
+				CALL REMOVE_LINK_DEVIL, LCOUNT
+				TRYCALLFORM ROLE_LINK_ACT_%CSTR:LCOUNT:롤%, LCOUNT
+			ENDIF
+		NEXT
+		CALL EXCLUDE_UNABLE_SKILL_ALL_CHARA
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FOR LCOUNT, 0, 5
+	 		LOCAL = GETCHARA(TOINT(AUTO_SPLIT("[[キャラ:시오리]]/[[キャラ:메이팡]]/[[キャラ:아키라_무대소녀]]/[[キャラ:미치루]]/[[キャラ:야치요]]", "/", LCOUNT)))
+			IF LOCAL >= 0
+				CALL SET_CSV_ROLE_FLAG, LOCAL
+				CALL SYNC_STATUS, LOCAL
+			ENDIF
+		NEXT
+ 		LOCAL = GETCHARA([[キャラ:입실론_X2]])
+		IF LOCAL >= 0
+			CALL SET_BTL_TALENT_[[キャラ:입실론_X2]], LOCAL
+			CALL SYNC_STATUS, LOCAL
+		ENDIF
+ 		LOCAL = GETCHARA([[キャラ:창조주_X2]])
+		IF LOCAL >= 0
+			CALL SET_BTL_TALENT_[[キャラ:창조주_X2]], LOCAL
+			CALL SYNC_STATUS, LOCAL
+		ENDIF		
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		LOCAL = GETCHARA([[キャラ:링고_소울해커즈2]])
+		IF LOCAL >= 0
+			CALL SET_CSV_ROLE_FLAG, LOCAL
+			CALL SET_ROLE, LOCAL
+			CALL SET_BTL_TALENT_NEW, LOCAL
+			CALL SYNC_STATUS, LOCAL
+		ENDIF
+		LOCAL = GETCHARA([[キャラ:피그]])
+		IF LOCAL >= 0
+			CALL SET_CSV_ROLE_FLAG, LOCAL
+			CALL SET_ROLE, LOCAL
+			CALL SET_BTL_TALENT_NEW, LOCAL
+			CALL SYNC_STATUS, LOCAL
+		ENDIF
+		FLAG:버전관리보조 = 3
+	ENDIF
+	IF FLAG:버전관리보조 == 3
+		FOR LCOUNT, 0, 9
+	 		LOCAL = GETCHARA(TOINT(AUTO_SPLIT("[[キャラ:카렌_무대소녀]]/[[キャラ:히카리]]/[[キャラ:마히루]]/[[キャラ:쥰나]]/[[キャラ:후타바_무대소녀]]/[[キャラ:카오루코]]/[[キャラ:클로딘]]/[[キャラ:나나]]/[[キャラ:마야_무대소녀]]", "/", LCOUNT)))
+			SIF LOCAL >= 0
+				CALLFORM SET_BASE_{NO:LOCAL}, LOCAL, CFLAG:LOCAL:이벤트가입
+		NEXT
+
+		LOCAL = GETCHARA([[キャラ:유키코의그림자]])
+		IF LOCAL >= 0
+			IF GET_RACE(ABL:LOCAL:종족) == "반마인"
+				CFLAG:LOCAL:이벤트가입 = 1
+			ELSE
+				SIF TALENT:LOCAL:솔직함
+					CFLAG:LOCAL:이벤트가입 = 2
+			ENDIF
+		ENDIF
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("에너미소나") = MAX(ITEM:501, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("에너미소나"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("허니・비") = MAX(ITEM:503, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("허니・비"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("걸리버・매직") = MAX(ITEM:505, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("걸리버・매직"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("백어퍼") = MAX(ITEM:508, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("백어퍼"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("캡스・락") = MAX(ITEM:512, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("캡스・락"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("다크스캐너") = MAX(ITEM:530, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("다크스캐너"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("게이트서치") = MAX(ITEM:538, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("게이트서치"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("에너미바이바이") = MAX(ITEM:550, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("에너미바이바이"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("에너미호이호이") = MAX(ITEM:551, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("에너미호이호이"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("미타마코이코이") = MAX(ITEM:575, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("미타마코이코이"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("런런던전") = MAX(ITEM:559, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("런런던전"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("데모니카") = MAX(ITEM:531, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("데모니카"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("ＤＤＭ") = MAX(ITEM:533, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("ＤＤＭ"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("삼히타") = MAX(ITEM:539, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("삼히타"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("우파니샤드") = MAX(ITEM:584, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("우파니샤드"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("하쿠타로우") = MAX(ITEM:509, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("하쿠타로우"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("Mr.서프라이즈") = MAX(ITEM:510, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("Mr.서프라이즈"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("호프・아이즈") = MAX(ITEM:515, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("호프・아이즈"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("마인드시커") = MAX(ITEM:571, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("마인드시커"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("데스마치") = MAX(ITEM:590, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("데스마치"))
+		ITEM:553 = 0
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("히로에몽") = MAX(ITEM:504, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("히로에몽"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("아르센") = MAX(ITEM:549, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("아르센"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("골드EXP") = MAX(ITEM:585, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("골드EXP"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("화이트앨범") = MAX(ITEM:532, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("화이트앨범"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("어져스트먼트기어") = MAX(ITEM:528, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("어져스트먼트기어"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("싱크로나이즈기어") = MAX(ITEM:527, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("싱크로나이즈기어"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("뮤테이션기어") = MAX(ITEM:535, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("뮤테이션기어"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("너스・콜") = MAX(ITEM:502, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("너스・콜"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("DDS-DUO") = MAX(ITEM:516, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("DDS-DUO"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("ＣＯ－ＯＰ강화R") = MAX(ITEM:577, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("ＣＯ－ＯＰ강화R"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("ＣＯ－ＯＰ강화C") = MAX(ITEM:578, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("ＣＯ－ＯＰ강화C"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("ＣＯ－ＯＰ강화W") = MAX(ITEM:579, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("ＣＯ－ＯＰ강화W"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("헬즈게이트") = MAX(ITEM:576, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("헬즈게이트"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("허니문") = MAX(ITEM:524, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("허니문"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("엑스링케이지") = MAX(ITEM:573, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("엑스링케이지"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("바・벨") = MAX(ITEM:529, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("바・벨"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("하모나이저") = MAX(ITEM:574, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("하모나이저"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("EXP레퀴엠D") = MAX(ITEM:586, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("EXP레퀴엠D"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("EXP레퀴엠H") = MAX(ITEM:587, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("EXP레퀴엠H"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("EXP레퀴엠A") = MAX(ITEM:588, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("EXP레퀴엠A"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("데드엔드") = MAX(ITEM:589, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("데드엔드"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("리라쿠제스프레이") = MAX(ITEM:552, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("리라쿠제스프레이"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("더블・밸류") = MAX(ITEM:514, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("더블・밸류"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("레이디・킬러즈") = MAX(ITEM:513, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("레이디・킬러즈"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("그린・글라스") = MAX(ITEM:554, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("그린・글라스"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("섹스프렌드") = MAX(ITEM:555, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("섹스프렌드"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("섹스아이템") = MAX(ITEM:556, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("섹스아이템"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("쿠쿠러버") = MAX(ITEM:581, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("쿠쿠러버"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("세컨드헬로") = MAX(ITEM:565, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("세컨드헬로"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("아미티프로텍터") = MAX(ITEM:580, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("아미티프로텍터"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("알버트") = MAX(ITEM:500, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("알버트"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("코페르니쿠스") = MAX(ITEM:537, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("코페르니쿠스"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("해피버스데이") = MAX(ITEM:526, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("해피버스데이"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("파라켈수스") = MAX(ITEM:534, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("파라켈수스"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("라플라스") = MAX(ITEM:536, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("라플라스"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("프라이데이") = MAX(ITEM:506, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("프라이데이"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("스티븐") = MAX(ITEM:507, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("스티븐"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("데비다스'XX") = MAX(ITEM:583, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("데비다스'XX"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("크래프트다이어리") = MAX(ITEM:557, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("크래프트다이어리"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("스킬키퍼") = MAX(ITEM:558, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("스킬키퍼"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("마장의공방") = MAX(ITEM:567, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("마장의공방"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("고에티아") = MAX(ITEM:540, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("고에티아"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("타르타로스") = MAX(ITEM:541, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("타르타로스"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("라지엘의서") = MAX(ITEM:542, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("라지엘의서"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("라비스질") = MAX(ITEM:543, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("라비스질"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("인큐베이터") = MAX(ITEM:560, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("인큐베이터"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("동방구문사기") = MAX(ITEM:561, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("동방구문사기"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("요악단의역사") = MAX(ITEM:566, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("요악단의역사"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("후호의문") = MAX(ITEM:568, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("후호의문"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("컬라이더스코프") = MAX(ITEM:562, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("컬라이더스코프"))
+		HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("HolyChalice") = MAX(ITEM:564, HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM("HolyChalice"))
+
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("에너미소나") = EQUIP:MASTER:151
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("허니・비") = EQUIP:MASTER:153
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("걸리버・매직") = EQUIP:MASTER:155
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("백어퍼") = EQUIP:MASTER:158
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("캡스・락") = EQUIP:MASTER:162
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("다크스캐너") = EQUIP:MASTER:180
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("게이트서치") = EQUIP:MASTER:188
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("에너미바이바이") = EQUIP:MASTER:200
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("에너미호이호이") = EQUIP:MASTER:201
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("미타마코이코이") = EQUIP:MASTER:225
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("런런던전") = EQUIP:MASTER:209
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("데모니카") = EQUIP:MASTER:181
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("ＤＤＭ") = EQUIP:MASTER:183
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("삼히타") = EQUIP:MASTER:189
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("우파니샤드") = EQUIP:MASTER:234
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("하쿠타로우") = EQUIP:MASTER:159
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("Mr.서프라이즈") = EQUIP:MASTER:160
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("호프・아이즈") = EQUIP:MASTER:165
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("마인드시커") = EQUIP:MASTER:221
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("데스마치") = EQUIP:MASTER:240
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("히로에몽") = EQUIP:MASTER:154
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("아르센") = EQUIP:MASTER:199
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("골드EXP") = EQUIP:MASTER:235
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("화이트앨범") = EQUIP:MASTER:182
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("어져스트먼트기어") = EQUIP:MASTER:178
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("싱크로나이즈기어") = EQUIP:MASTER:177
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("뮤테이션기어") = EQUIP:MASTER:185
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("너스・콜") = EQUIP:MASTER:152
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("DDS-DUO") = EQUIP:MASTER:166
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("ＣＯ－ＯＰ강화R") = EQUIP:MASTER:227
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("ＣＯ－ＯＰ강화C") = EQUIP:MASTER:228
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("ＣＯ－ＯＰ강화W") = EQUIP:MASTER:229
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("헬즈게이트") = EQUIP:MASTER:226
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("허니문") = EQUIP:MASTER:174
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("엑스링케이지") = EQUIP:MASTER:223
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("바・벨") = EQUIP:MASTER:179
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("하모나이저") = EQUIP:MASTER:224
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("EXP레퀴엠D") = EQUIP:MASTER:236
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("EXP레퀴엠H") = EQUIP:MASTER:237
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("EXP레퀴엠A") = EQUIP:MASTER:238
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("데드엔드") = EQUIP:MASTER:239
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("리라쿠제스프레이") = EQUIP:MASTER:202
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("더블・밸류") = EQUIP:MASTER:164
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("레이디・킬러즈") = EQUIP:MASTER:163
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("그린・글라스") = EQUIP:MASTER:204
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("섹스프렌드") = EQUIP:MASTER:205
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("섹스아이템") = EQUIP:MASTER:206
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("쿠쿠러버") = EQUIP:MASTER:231
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("세컨드헬로") = EQUIP:MASTER:215
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("아미티프로텍터") = EQUIP:MASTER:230
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("알버트") = EQUIP:MASTER:150
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("코페르니쿠스") = EQUIP:MASTER:187
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("해피버스데이") = EQUIP:MASTER:176
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("파라켈수스") = EQUIP:MASTER:184
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("라플라스") = EQUIP:MASTER:186
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("프라이데이") = EQUIP:MASTER:156
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("스티븐") = EQUIP:MASTER:157
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("데비다스'XX") = EQUIP:MASTER:233
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("크래프트다이어리") = EQUIP:MASTER:207
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("스킬키퍼") = EQUIP:MASTER:208
+		EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM("마장의공방") = EQUIP:MASTER:217
+
+		FLAG:버전관리보조 = 4
+	ENDIF
+	IF FLAG:버전관리보조 == 4
+		CALL CONVERT_SKILL_NUMBER, 2480, [[스킬:기합부스터]]
+		CALL SET_NEW_LEARNSKILL_VERUP, "체인업"
+		CALL SET_NEW_LEARNSKILL_VERUP, "도트사이트"
+		CALL SET_NEW_LEARNSKILL_VERUP, "집중부스터"
+		FOR LCOUNT, 0, CHARANUM
+			IF GROUPMATCH(NO:LCOUNT, [[キャラ:쇼고]], [[キャラ:아마네]], [[キャラ:후미]])
+				PRINTFORMW %CALLNAME:LCOUNT%에게 새롭게 수태 아이템을 추가합니다
+				ABL:LCOUNT:수태아이템 = CSVABL(NO:LCOUNT, GETNUM(ABL, "수태아이템"))
+			ENDIF
+			SIF TALENT:LCOUNT:톱스타
+				ABL:LCOUNT:초기링크악마공격상성 = CSVABL(CFLAG:LCOUNT:초기링크악마, GETNUM(ABL, "공격상성"))
+			IF GROUPMATCH(NO:LCOUNT, [[キャラ:링고_소울해커즈2]], [[キャラ:피그]], [[キャラ:리카_D2]], [[キャラ:손샨]])
+				CALL CLEAR_ALL_LEARN_SKILL, LCOUNT
+				CALL CLEAR_LEARNED_SKILL_ALL, LCOUNT
+				FOR LCOUNT:1, 1, 21
+					SIF CSVABL(NO:LCOUNT, GETNUM(ABL, @"스킬{LCOUNT:1}")) > 0
+						CALL SET_LEARN_SKILL, LCOUNT, TOSTR(CSVABL(NO:LCOUNT, GETNUM(ABL, @"스킬{LCOUNT:1}"))), 1
+				NEXT			
+				FOR LCOUNT:1, 1, 21
+					SIF CSVABL(NO:LCOUNT, GETNUM(ABL, @"습득스킬{LCOUNT:1}")) > 0
+						CALL SET_LEARN_SKILL, LCOUNT, TOSTR(CSVABL(NO:LCOUNT, GETNUM(ABL, @"습득스킬{LCOUNT:1}"))), CSVABL(NO:LCOUNT, GETNUM(ABL, @"습득LV{LCOUNT:1}"))
+				NEXT			
+				CALL SET_CSV_ROLE_FLAG, LCOUNT
+				CALL SET_ROLE, LCOUNT
+				CALL SET_BTL_TALENT_NEW, LCOUNT
+				CALL SYNC_STATUS, LCOUNT
+			ENDIF
+		NEXT
+		FLAG:버전관리보조 = 5
+	ENDIF
+	IF FLAG:버전관리보조 == 5
+		IF FLAG:임신기능
+			LOCAL = 0
+			FOR LCOUNT, 0, CHARANUM
+				IF !LOCAL && (TALENT:LCOUNT:임신 || TALENT:LCOUNT:육아중)
+					CALL MESSAGE_B, 3, "妊娠出産機能の変更に合わせて", "一旦すべてのキャラクターの妊娠状況をリセットします。"
+					LOCAL = 1
+				ENDIF
+				TALENT:LCOUNT:임신 = 0
+				TALENT:LCOUNT:육아중 = 0
+				CALL CLEAR_PREGNANCY_FLAG, LCOUNT
+			NEXT
+		ENDIF
+		FLAG:버전관리보조 = 6
+	ENDIF
+	IF FLAG:버전관리보조 == 6
+		LOCAL = 0
+		FOR LCOUNT, 0, CHARANUM
+			IF NO:LCOUNT == [[キャラ:메시아교도]]
+				SIF TALENT:LCOUNT:건슬링거 && TALENT:LCOUNT:석세서 && !TALENT:LCOUNT:이능자 
+					TALENT:LCOUNT:이능자 = 1
+			ENDIF
+			IF NO:LCOUNT == [[キャラ:동기다크서머너]]
+				SIF !GROUPMATCH(CSTR:LCOUNT:종족명, "인간", "攻勢指揮官", "迷宮案内人")
+					CONTINUE
+				SELECTCASE CSTR:LCOUNT:종족명
+					CASE "인간"
+						CALL MESSAGE_B, 1, @"素質の仕様変更に伴って、%CALLNAME:LCOUNT%は【異能者Lv1】を獲得しました。"
+					CASE "攻勢指揮官"
+						CALL MESSAGE_B, 2, @"素質の仕様変更に伴って、", @"%CALLNAME:LCOUNT%は【異能者Lv1】と【컴퓨터기능】を獲得しました。"
+					CASE "迷宮案内人"
+						CALL MESSAGE_B, 1, @"素質の仕様変更に伴って、%CALLNAME:LCOUNT%の【도구지식】はLv3からLv1に変更されました。"
+				ENDSELECT
+				CALLFORM SET_BTL_TALENT_{NO:LCOUNT}, LCOUNT
+			ENDIF
+			IF GROUPMATCH(EQUIP:LCOUNT:악세서리, 5204, 8103)
+				EQUIP:LCOUNT:악세서리 = 0
+				CALL SYNC_STATUS, LCOUNT
+				LOCAL = 1
+			ENDIF
+		NEXT
+		SIF LOCAL || ITEM:5204 || ITEM:8103
+			CALL MESSAGE_B, 2, "ナビゲーターの仕様変更に伴い、", "ヘッドセットとライクバロウズが廃止されました。"
+		IF ITEM:8103
+			CALL MESSAGE_B, 2, "ナビゲーターの利用条件を満たしているので自動的に開放されます。", "ナビゲーターを指定する場合はセットアップ画面から実行してください。"
+			CAN_USE_NAVIGATOR = 1
+		ENDIF
+		ITEM:5204 = 0
+		ITEM:8103 = 0
+		FLAG:버전관리보조 = 7
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF LASTLOAD_VERSION < 0309148
+	;絶縁状を自動イベントに変更
+	SIF イベントフラグ:6:0 == 2
+		CALL SET_FLAG_TURNEND_EV, "絶縁状", "絶縁済み" , 1
+	SIF イベントフラグ:6:0 == 1
+		CALL SET_FLAG_TURNEND_EV, "絶縁状", "警告済み" , 1
+	IF FLAG:버전관리보조 == 0
+		FOR LCOUNT, 0, CHARANUM
+			IF NO:LCOUNT == [[キャラ:호무라_U-U]]
+				TALENT:LCOUNT:커패시티확대 = MAX(GET_SUB_ROLE_PROP("COST", "건슬링거", LCOUNT, "通常形態") + GET_SUB_ROLE_PROP("COST", "도구지식", LCOUNT, "通常形態") - 20, 0)
+				CALL SET_ROLE_CP, LCOUNT
+			ENDIF
+		NEXT
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		LOCAL = GETCHARA([[キャラ:이오]])
+		SIF LOCAL >= 0 && TALENT:LOCAL:아웃사이더 == 0 
+			TALENT:LOCAL:이능자 = 5
+		LOCAL = GETCHARA([[キャラ:사쿠라코]])
+		IF LOCAL >= 0
+			CSTR:LOCAL:롤설명1 = %CSVCSTR(NO:LOCAL, GETNUM(CSTR, "롤설명1"))%
+			CSTR:LOCAL:롤설명2 = %CSVCSTR(NO:LOCAL, GETNUM(CSTR, "롤설명2"))%
+		ENDIF
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FOR LCOUNT, 0, 4
+			LOCAL = GETCHARA(TOINT(AUTO_SPLIT("[[キャラ:기묘한바르바토스]]/[[キャラ:기묘한모라쿠스]]/[[キャラ:비묘한부에르]]/[[キャラ:기묘한바알]]", "/", LCOUNT)))
+			SIF LOCAL >= 0
+				CSTR:LOCAL:롤설명1 = %CSVCSTR(NO:LOCAL, GETNUM(CSTR, "롤설명1"))%
+		NEXT
+		FLAG:버전관리보조 = 3
+	ENDIF
+	IF FLAG:버전관리보조 == 3
+		FOR LCOUNT, 0, CHARANUM
+			SIF !INRANGE(NO:LCOUNT, [[キャラ:프린스]], [[キャラ:파머]])
+				CONTINUE
+			FOR LCOUNT:1, 1, 21
+				SIF ABL:LCOUNT:@"스킬{LCOUNT:1}" == 3646
+					ABL:LCOUNT:@"스킬{LCOUNT:1}" = 0
+				SIF ABL:LCOUNT:@"습득스킬{LCOUNT:1}" == 3646
+					ABL:LCOUNT:@"습득스킬{LCOUNT:1}" = 0
+			NEXT
+			ABL:LCOUNT:종족 = 0
+			CALL SYNC_STATUS, LCOUNT
+		NEXT
+		FLAG:버전관리보조 = 4
+	ENDIF
+	IF FLAG:버전관리보조 == 4
+		FOR LCOUNT:1, 1, 3
+			FOR LCOUNT, 0, 64
+				SIF GETBIT(FLAG:@"던전필터{LCOUNT:1}", LCOUNT)
+					DUNGEON_IS_FILTERED = %ADD_SPLIT(DUNGEON_IS_FILTERED, "/", TOSTR(LCOUNT + (LCOUNT:1 -1) * 64))%
+			NEXT
+			FLAG:@"던전필터{LCOUNT:1}" = 0
+		NEXT
+		LOCAL = GETCHARA([[キャラ:리린]])
+		IF LOCAL >= 0
+			FOR LCOUNT, 1, 21
+				SIF ABL:LOCAL:@"스킬{LCOUNT}" == SKILL_NUM_F("신탁")
+					ABL:LOCAL:@"스킬{LCOUNT}" = 0
+				IF ABL:LOCAL:@"습득스킬{LCOUNT}" == SKILL_NUM_F("신탁")
+					ABL:LOCAL:@"습득스킬{LCOUNT}" = 0
+					ABL:LOCAL:@"습득LV{LCOUNT}" = 0
+				ENDIF
+			NEXT
+		ENDIF
+		LOCAL = GETCHARA([[キャラ:후카]])
+		IF LOCAL >= 0 && TALENT:LOCAL:페르소나구사자
+			FOR LCOUNT, 1, 9
+				SIF DITEMTYPE:(CFLAG:LOCAL:초기페르소나넘버):페르소나(@"스킬{LCOUNT}") == SKILL_NUM_F("신탁")
+					DITEMTYPE:(CFLAG:LOCAL:초기페르소나넘버):페르소나(@"스킬{LCOUNT}") = 0
+			NEXT
+			FOR LCOUNT, 1, 21
+				SIF DITEMTYPE:(CFLAG:LOCAL:초기페르소나넘버):페르소나(@"습득스킬{LCOUNT}") == SKILL_NUM_F("신탁")
+					DITEMTYPE:(CFLAG:LOCAL:초기페르소나넘버):페르소나(@"습득스킬{LCOUNT}") = SKILL_NUM_F("오라클")
+			NEXT
+		ENDIF
+		FOR LCOUNT, 0, CHARANUM
+			FOR LCOUNT:1, GETNUM(CSTR, "상성_최고"), GETNUM(CSTR, "상성그룹") + 1
+				CSTR:LCOUNT:(LCOUNT:1) = %CSVCSTR(NO:LCOUNT, LCOUNT:1)%
+			NEXT
+			SIF 陥落(LCOUNT)
+				CALL EVENT_CHANGE_TRAIN_TALENT, LCOUNT, "연모"
+		NEXT
+		FLAG:버전관리보조 = 5
+	ENDIF
+	IF FLAG:버전관리보조 == 5
+		FOR LCOUNT, 0, CHARANUM
+			FOR LCOUNT:1, 1, 21
+				IF ABL:LCOUNT:@"초기변신악마습득LV{LCOUNT:1}" == -1
+					ABL:LCOUNT:@"초기변신악마습득스킬{LCOUNT:1}" = 0
+					ABL:LCOUNT:@"초기변신악마습득LV{LCOUNT:1}" = 0
+				ENDIF
+			NEXT
+		NEXT
+		IF ITEM:512
+			ITEM:512 = 0
+			HAVE_INSTALLSOFT:12 = 0
+		ENDIF
+		FLAG:버전관리보조 = 6
+	ENDIF
+	IF FLAG:버전관리보조 == 6
+		FOR LCOUNT, 0, CHARANUM
+			CFLAG:LCOUNT:매각불가플래그 = MAX(CFLAG:LCOUNT:매각불가플래그, CFLAG:LCOUNT:1003)
+			CFLAG:LCOUNT:1003 = 0
+			IF 陥落(LCOUNT)
+				SELECTCASE RESULTS
+					CASE "연모"
+						CFLAG:LCOUNT:함락인수가산완료 = 1
+					CASE "음란"
+						CFLAG:LCOUNT:함락인수가산완료 = 2
+					CASE "복종"
+						CFLAG:LCOUNT:함락인수가산완료 = 3
+					CASE "신뢰"
+						CFLAG:LCOUNT:함락인수가산완료 = 4
+				ENDSELECT
+			ENDIF
+		NEXT
+		FLAG:버전관리보조 = 7
+	ENDIF
+	IF FLAG:버전관리보조 == 7
+		FOR LCOUNT, 0, CHARANUM
+			SIF NO:LCOUNT ==[[キャラ:호무라]]
+				TALENT:LCOUNT:커패시티확대 = 20
+			;未実装装備ということなのでニードルレイピアを抹消
+			SIF EQUIP:LCOUNT:검 == 2329
+				EQUIP:LCOUNT:검 = 0
+			SIF CSTR:LCOUNT:롤 == "悪魔"
+				TALENT:LCOUNT:스킬적성 = 3
+		NEXT
+		ITEM:2329 = 0
+		FLAG:버전관리보조 = 8
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF LASTLOAD_VERSION < 0309149
+	IF FLAG:버전관리보조 == 0
+		FOR LCOUNT, 0, CHARANUM
+			IF NO:LCOUNT == [[キャラ:Homulilly]]
+				TALENT:LCOUNT:서머너 = 0
+				BASE:LCOUNT:힘 += 1
+				BASE:LCOUNT:지혜 += 1
+				BASE:LCOUNT:내구 += 1
+				BASE:LCOUNT:마력 += 1
+				BASE:LCOUNT:속도 += 1
+				BASE:LCOUNT:만능 = 100
+			ENDIF
+		NEXT
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		SIF !GET_ROLE_PROP("CAN_USE_LINK", MASTER)
+			CFLAG:MASTER:링크캐릭터실제가입시간0 = 0
+		SIF !GET_ROLE_PROP("CAN_PUT_IN_COMP", MASTER)
+			CFLAG:MASTER:소속ＣＯＭＰ = 0
+		FOR LCOUNT, 0, CHARANUM
+			BASE:LCOUNT:ＭＡＧ = LIMIT(BASE:LCOUNT:ＭＡＧ, 0, GET_CHARA_MAXMAG(LCOUNT))
+		NEXT
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		SIF GETCHARA([[キャラ:마를로네]]) >= 0
+			TALENT:GETCHARA([[キャラ:마를로네]]):이능자 = 5
+		FLAG:버전관리보조 = 3
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+IF LASTLOAD_VERSION < 0309150
+	;前バージョンでリセット処理を忘れたまま、更新Verを出してしまったので最低値を引き継ぐ
+	FLAG:버전관리보조 = MAX(4, FLAG:버전관리보조)
+	IF FLAG:버전관리보조 == 4
+		CALL CONVERT_SKILL_NUMBER, 2820, [[스킬:장기의난무]]
+		CALL CONVERT_SKILL_NUMBER, 2821, [[스킬:염파의난무]]
+		CALL CONVERT_SKILL_NUMBER, 2822, [[스킬:열광의난무]]
+		CALL CONVERT_SKILL_NUMBER, 2823, [[스킬:암흑의난무]]
+		CALL CONVERT_SKILL_NUMBER, 2824, [[스킬:중력의난무]]
+		CALL CONVERT_SKILL_NUMBER, 2825, [[스킬:대지의난무]]
+		CALL CONVERT_SKILL_NUMBER, 2826, [[스킬:격류의난무]]
+		CALL CONVERT_SKILL_NUMBER, 62, [[스킬:롱기누스카피]]
+		CALL CONVERT_SKILL_NUMBER, 947, [[스킬:가이스티브블릿츠]]
+		CALL CONVERT_SKILL_NUMBER, 117, [[스킬:모코이부메랑]]
+		FLAG:버전관리보조 = 5
+		SIF GETCHARA([[キャラ:후우]]) >= 0
+			CSTR:GETCHARA([[キャラ:후우]]):전용기3 = 独眼竜乙女斬り
+	ENDIF
+	IF FLAG:버전관리보조 == 5
+		FLAG:버전관리보조 = 6
+		SIF GETCHARA([[キャラ:나나]]) >= 0
+			TALENT:GETCHARA([[キャラ:나나]]):데빌시프터 = 0
+	ENDIF
+	IF FLAG:버전관리보조 == 6
+		FLAG:버전관리보조 = 7
+		FOR LCOUNT, 0, CHARANUM
+			SIF NO:LCOUNT == ([[キャラ:유키코의그림자]]) && (CFLAG:LCOUNT:이벤트가입 == 1 || CFLAG:LCOUNT:이벤트가입 == 2)
+				TALENT:LCOUNT:데빌암즈 = 1
+		NEXT
+	ENDIF
+	IF FLAG:버전관리보조 == 7
+		FLAG:버전관리보조 = 8
+		FOR LCOUNT, 0, CHARANUM
+			SIF NO:LCOUNT == [[キャラ:비트볼]]
+				CFLAG:LCOUNT:매각불가능 = 1
+			SIF NO:LCOUNT == [[キャラ:라비]]
+				CFLAG:LCOUNT:매각불가능 = 1
+			SIF NO:LCOUNT == [[キャラ:세이렌]]
+				ABL:LCOUNT:코딩 = CSVABL(NO:LCOUNT, GETNUM(ABL, "코딩"))
+		NEXT
+	ENDIF
+	FLAG:버전관리보조 = 0
+ENDIF
+
+IF LASTLOAD_VERSION < 0309152
+	IF FLAG:버전관리보조 == 0
+		FOR LCOUNT, 0, CHARANUM
+			SIF !INRANGE(ABL:LCOUNT:공격상성, 0, TYPENUM - 1)
+				ABL:LCOUNT:공격상성 = CSVABL(NO:LCOUNT, GETNUM(ABL, "공격상성"))
+		NEXT
+		FLAG:버전관리보조 = 1
+	ENDIF
+ENDIF
+
+IF LASTLOAD_VERSION < 0309153
+	;Gamebaseだけ更新されていたので帳尻をあわせる
+	SIF FLAG:버전관리보조 < 2
+		FLAG:버전관리보조 = 1
+	IF FLAG:버전관리보조 == 1
+		;品川でハニエルから依頼を受けている場合カテドラルのフラグを立てる
+		SIF ダンジョンフラグ:[[ダンジョン:시나가와]]:1 == 2
+			ダンジョンフラグ:[[ダンジョン:시나가와]]:2 = 1
+		FLAG:버전관리보조 = 2
+
+		LOCAL = GETCHARA([[キャラ:후타바 안즈]])
+		IF LOCAL >= 0
+			IF TALENT:LOCAL:비전투원
+				CFLAG:LOCAL:이벤트가입 = 0
+			ELSEIF TALENT:LOCAL:이능자 == 5
+				CFLAG:LOCAL:이벤트가입 = 1
+			ELSEIF TALENT:LOCAL:아웃사이더
+				IF TALENT:LOCAL:마도의재능 == 3
+					CFLAG:LOCAL:이벤트가입 = 3
+				ELSE
+					CFLAG:LOCAL:이벤트가입 = 2
+				ENDIF
+			ENDIF
+		ENDIF
+		FLAG:버전관리보조 = 2
+	ENDIF
+	IF FLAG:버전관리보조 == 2
+		FOR LCOUNT, 0, CHARANUM
+			SIF CFLAG:LCOUNT:초기페르소나넘버 > 0 && !TALENT:LCOUNT:페르소나구사자
+				CALL REMOVE_PERSONA, LCOUNT
+		NEXT
+		FLAG:버전관리보조 = 3
+	ENDIF
+	IF FLAG:버전관리보조 == 3
+		FOR LCOUNT, 0, CHARANUM
+			;IF CSTR:LCOUNT:롤 == "CSVCSTR([[キャラ:아마네]], (LOCAL:2))"
+			IF NO:LCOUNT == [[キャラ:아마네]]
+				FOR LCOUNT:1,0,99
+					;個別調教メニュー設定を除外
+					;SIF INRANGE(LCOUNT:1,71,73)
+					;	CONTINUE
+					;画像設定を除外
+					;SIF INRANGE(LCOUNT:1,75,78)
+					;	CONTINUE
+					SIF CSTR:LCOUNT:(LCOUNT:1) == "CSVCSTR([[キャラ:아마네]], (LOCAL:2))"
+						CSTR:LCOUNT:(LCOUNT:1) = %CSVCSTR([[キャラ:아마네]], LCOUNT:1)%
+				NEXT
+				TALENT:LCOUNT:스킬적성 = 0
+				CALL SYNC_STATUS, LCOUNT
+			ENDIF
+			IF INRANGE(NO:LCOUNT, [[キャラ:프린스]], [[キャラ:파머]]+1)
+				SIF HAVE_SKILL(LCOUNT, 3646)
+					ABL:LCOUNT:@"스킬{HAVE_SKILL(LCOUNT, 3646, 1)}" = 0
+				CALL CLEAR_LEARNED_SKILL, LCOUNT, "3646"
+				SELECTCASE NO:LCOUNT
+					CASE [[キャラ:프린스]]
+						CALL SET_LEARN_SKILL, LCOUNT, "CSTR専用スキル/リセットウェポン"
+					CASE [[キャラ:워리어]]
+						CALL SET_LEARN_SKILL, LCOUNT, "CSTR専用スキル/戦士の誓い"
+					CASE [[キャラ:팔랑크스]]
+						CALL SET_LEARN_SKILL, LCOUNT, "CSTR専用スキル/오버가드"
+					CASE [[キャラ:파이레츠]]
+						CALL SET_LEARN_SKILL, LCOUNT, "CSTR専用スキル/ミリオンスラスト"
+					CASE [[キャラ:시노비]]
+						CALL SET_LEARN_SKILL, LCOUNT, "CSTR専用スキル/多元抜刀"
+					CASE [[キャラ:몽크]]
+						CALL SET_LEARN_SKILL, LCOUNT, "CSTR専用スキル/暗黒拳"
+					CASE [[キャラ:조디악]]
+						CALL SET_LEARN_SKILL, LCOUNT, "CSTR専用スキル/메테오"
+					CASE [[キャラ:비스트킹]]
+						CALL SET_LEARN_SKILL, LCOUNT, "CSTR専用スキル/獅子王招来"
+					CASE [[キャラ:발리스타]]
+						CALL SET_LEARN_SKILL, LCOUNT, "CSTR専用スキル/高速徹甲弾"
+					CASE [[キャラ:파머]]
+						CALL SET_LEARN_SKILL, LCOUNT, "CSTR専用スキル/不思議な種"
+				ENDSELECT
+				CALL SET_LEARN_SKILL, LCOUNT, "CSTR専用スキル/リミットスキル"
+			ENDIF
+			IF NO:LCOUNT == [[キャラ:에리나_라비리비]] && TALENT:LCOUNT:이능자 && !TALENT:LCOUNT:마술의소양
+				CALL SET_BTL_TALENT_NEW, LCOUNT
+				CALL SYNC_STATUS, LCOUNT
+			ENDIF
+		NEXT
+		FLAG:버전관리보조 = 4
+	ENDIF
+	IF FLAG:버전관리보조 == 4
+		LOCAL = GETMILLISECOND()
+		FOR LCOUNT, 0, CHARANUM
+			CFLAG:LCOUNT:실제가입시간 = LOCAL + LCOUNT
+		NEXT
+		;ラグショップ撤去にあわせてマッピング情報を修正
+		ダンジョン31:1:8:12 = 0
+		ダンジョン31:1:9:12 = 0
+		ダンジョン31:1:10:12 = 0
+		ダンジョン31:1:8:13 = 0
+		ダンジョン31:1:9:13 = 0
+		ダンジョン31:1:10:13 = 0
+		FLAG:버전관리보조 = 5
+	ENDIF
+	IF FLAG:버전관리보조 == 5
+		CALL SET_NEW_LEARNSKILL_VERUP, "맵퍼"
+		FLAG:버전관리보조 = 6
+	ENDIF
+	IF FLAG:버전관리보조 == 6
+		SIF CFLAG:MASTER:실제가입시간 == 0	
+			CFLAG:MASTER:실제가입시간 = GETMILLISECOND()
+		FOR LCOUNT, 0, BATTLE_MEMBERSETNUM
+			BATTLE_MEMBERSET:LCOUNT:2 = CFLAG:0:실제가입시간
+		NEXT
+		CALL SET_LAST_BATTLE_MEMBERSET
+		FLAG:버전관리보조 = 7
+		FOR LCOUNT, 0, CHARANUM
+			SIF NO:LCOUNT == [[キャラ:큐리오테스]]
+				ABL:LCOUNT:변이 = [[キャラ:메르카바]]
+		NEXT
+	ENDIF
+ENDIF
+IF LASTLOAD_VERSION < 0309154
+	IF FLAG:버전관리보조 == 0
+		RESETBGCOLOR
+		SIF FLAG:조교파라미터의나열수 == 0
+			FLAG:조교파라미터의나열수 = PRINTCPERLINE() > 0 ? PRINTCPERLINE() # 4
+		SIF FLAG:조교커맨드의나열수 == 0
+			FLAG:조교커맨드의나열수 = PRINTCPERLINE() > 0 ? PRINTCPERLINE() # 3
+		CALL CONFIG_ELEMENT_NUM
+
+		;CSVやERBに変更があった場合等用の基本処理
+		FOR LCOUNT, 0, CHARANUM
+			IF ABL:LCOUNT:종족 == 0
+				IF !IS_RANDOMCHARA(LCOUNT)
+					FOR LOCAL,0,22
+						TALENT:LCOUNT:GET_SUCCESSION(LOCAL) = 0
+					NEXT
+				ENDIF
+			ENDIF
+			SIF (NO:LCOUNT == 3501 || NO:LCOUNT == 3502) && (ABL:LCOUNT:종족 != 0) && BASE:LCOUNT:CP == 0
+				BASE:LCOUNT:CP = 1
+			SIF BASE:LCOUNT:LV <= 0
+				BASE:LCOUNT:LV = 1
+		NEXT
+
+		FOR LOCAL, 100, 500
+			SIF SAVESTR:LOCAL == ""
+				CONTINUE
+			IF SUBSTRING(SAVESTR:LOCAL, 0, 1) != "/" || STRFIND(SAVESTR:LOCAL, "||") >= 0
+				PRINTFORML %SAVESTR:LOCAL%
+				CALL MESSAGE_B(3, @"%AUTO_SPLIT("ダンジョン/이벤트/闘技場/依頼", "/", LOCAL/100-1)%番号<{LOCAL%100}>のフラグデータが異常です", "該当フラグを破棄します", "該当イベント周辺の動作の異常を来す場合がありますがご了承ください")
+				SAVESTR:LOCAL = 
+			ENDIF
+		NEXT
+
+		FOR LCOUNT, 0, CHARANUM
+			SIF NO:LCOUNT == [[キャラ:나나코]]
+				CONTINUE
+			FOR LCOUNT:1, 1, 21
+				LOCALS '= "스킬", "습득스킬", "초기변신악마스킬", "초기변신악마습득스킬"
+				FOR LCOUNT:2, 0, 4
+					SIF ABL:LCOUNT:@"%LOCALS:(LCOUNT:2)%{LCOUNT:1}" == [[스킬:파사의영도향]]
+						ABL:LCOUNT:@"%LOCALS:(LCOUNT:2)%{LCOUNT:1}" = [[스킬:맵퍼]]
+				NEXT
+			NEXT
+			IF TALENT:LCOUNT:페르소나구사자
+				FOR LCOUNT:1, 1, 9
+					SIF DITEMTYPE:(CFLAG:LCOUNT:초기페르소나넘버):페르소나(@"스킬{LCOUNT:1}") == [[스킬:파사의영도향]]
+						DITEMTYPE:(CFLAG:LCOUNT:초기페르소나넘버):페르소나(@"스킬{LCOUNT:1}") = [[스킬:맵퍼]]
+				NEXT
+				FOR LCOUNT:1, 1, 21
+					SIF DITEMTYPE:(CFLAG:LCOUNT:초기페르소나넘버):페르소나(@"습득스킬{LCOUNT:1}") == [[스킬:파사의영도향]]
+						DITEMTYPE:(CFLAG:LCOUNT:초기페르소나넘버):페르소나(@"습득스킬{LCOUNT:1}") = [[스킬:맵퍼]]
+				NEXT
+			ENDIF
+		NEXT
+		FOR LCOUNT:1, 1, 11
+			FOR LCOUNT:2, 1, 9
+				SIF DITEMTYPE:(LCOUNT:1):페르소나(@"스킬{LCOUNT:2}") == [[스킬:파사의영도향]]
+					DITEMTYPE:(LCOUNT:1):페르소나(@"스킬{LCOUNT:2}") = [[스킬:맵퍼]]
+			NEXT
+			FOR LCOUNT:2, 1, 21
+				SIF DITEMTYPE:(LCOUNT:1):페르소나(@"습득스킬{LCOUNT:2}") == [[스킬:파사의영도향]]
+					DITEMTYPE:(LCOUNT:1):페르소나(@"습득스킬{LCOUNT:2}") = [[스킬:맵퍼]]
+			NEXT
+		NEXT
+		FLAG:버전관리보조 = 1
+	ENDIF
+	IF FLAG:버전관리보조 == 1
+		FLAG:RESULT스킵 = 0
+		LOCAL = GETCHARA([[キャラ:헤르만]])
+		IF LOCAL >= 0 && TALENT:LOCAL:이능자 == 5 && TALENT:LOCAL:데빌시프터
+			CALL SET_CSV_ROLE_FLAG, LOCAL
+			CALL CHANGE_ROLE, LOCAL, "아웃사이더/이능자_3"
+			CALL SYNC_STATUS, LOCAL
+			FLAG:버전관리보조 = 2
+		ENDIF
+	ENDIF
+	IF FLAG:버전관리보조 < 3
+		;超てんちゃんのフラグ修正
+		FLAG:버전관리보조 = 3
+	ENDIF
+	IF FLAG:버전관리보조 < 4
+		CALL CONVERT_CHARA_NO, 424, [[キャラ:유리코]]
+		CALL CONVERT_CHARA_NO, 425, [[キャラ:리리스_진]]
+		CALL CONVERT_CHARA_NO, 840, [[キャラ:사사즈카치요_네코마타]]
+		CALL CONVERT_CHARA_NO, 841, [[キャラ:사사즈카치요_바스테드]]
+		FLAG:버전관리보조 = 4
+	ENDIF
+	IF FLAG:버전관리보조 < 5
+		FLAG:버전관리보조 = 5
+	ENDIF
+	IF FLAG:버전관리보조 == 5
+		FLAG:던전탐색완료 = 0
+		FLAG:지정던전=-1
+		FLAG:누적기준LV = 3
+		FLAG:버전관리보조 = 6
+	ENDIF
+ENDIF
+FLAG:버전관리보조 = 0
+
+FOR LCOUNT, 1, CHARANUM
+	SIF LCOUNT == MASTER
+		CONTINUE
+	IF NO:LCOUNT == 4999 || NO:LCOUNT == 0
+		NO:LCOUNT = 4998
+		NICKNAME:LCOUNT '= "다크서머너_구아나타"
+	ENDIF
+NEXT

@@ -1,0 +1,338 @@
+﻿;-------------------------------------------------
+;妖精騎士ランスロット個人イベント
+;-------------------------------------------------
+@INDIVIDUAL_EVENT_K5098, ARG, ARG:1 = 0, ARG:2 = -1
+#LOCALSIZE 2
+#LOCALSSIZE 1
+#DIM 導入フラグ
+#DIM LCOUNT,2
+#DIMS L_STR,2
+;ARG:0　キャラ番号
+;ARG:1　関数種類　1,開放条件　2,타이틀　3,이벤트
+;ARG:2　イベント番号（0～63まで）
+
+IF ARG:1 == 0
+	;イベント1で全部終了
+	SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+		RETURN 0
+	RETURN 1
+ENDIF
+
+SELECTCASE ARG:2
+CASE 0
+	;解放条件
+	IF ARG:1 == 1
+		SIF GET_VALUE_TALENT_JOINABLE(ARG) == 0
+			RETURN 0
+		SIF BASE:ARG:LV < 70
+			RETURN 0
+		SIF 陥落(ARG) < 1
+			RETURN 0
+		SIF CFLAG:ARG:PT플래그 > 1
+			RETURN 0
+		SIF CFLAG:ARG:소속ＣＯＭＰ == 0
+			RETURN 0
+		RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방, ARG:2)
+			;타이틀
+			RESULTS = 스킬 개방：요정기사 랜슬롯
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			RESULTS = (%CALLNAME:ARG%의 LV70 이상、함락 완료、파티 외、ＣＯＭＰ 미소속으로 해방)
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		$EVENT_LOOP_1
+		CUSTOMDRAWLINE =
+		PRINTL
+		PRINTL
+		PRINTFORMW  　문득、%CALLNAME:ARG%에게서 개인적인 용무가 있다는 말을 들었던 것을 떠올렸다。
+		PRINTFORMW  　시간이 있을 때라도 상관없다고 했으니、서둘러 갈 필요는 없지만…
+		CALL INPUT_YN("가본다(전투 있음)","다음에 하기로 한다",2)
+		IF RESULT == 1
+			PRINTW  　공교롭게도 지금은 시간 여유가 없다… 다음 기회로 미루자。
+			RETURN 0
+		ELSE
+			PRINTW  　다행히 오늘은 시간이 비어 있다。일단、그대로 갈 수 없지는 않다。
+			PRINTW  　…하지만 은근히 불길한 예감이 드니、동료마를 부를 수 있도록 준비하고 가기로 했다。
+			PRINTL
+			PRINTL
+			PRINTL  　………………
+			PRINTL  　…………
+			PRINTL  　……
+			PRINTL
+			PRINTL
+			PRINTFORMW  「미안해 %CALLNAME:MASTER%、바쁜데 시간 내게 해서」
+			PRINTL
+			PRINTW  　신경 쓸 필요 없다。
+			PRINTL
+			PRINTW  「후훗、그렇게 말해주니 안심이네」
+			PRINTL
+			PRINTFORMW  　%CALLNAME:ARG%은(는) 기분이 좋아 보인다。
+			PRINTW  　…이 대화 장소가 세이프하우스의 훈련장만 아니었다면、당신도 마음이 편했을 텐데…
+			PRINTL
+			PRINTW  「영ー차、하나 둘、하나 둘」
+			PRINTL
+			PRINTFORMW  　무슨 일인가 했더니 %CALLNAME:ARG%이(가) 뜬금없이 준비운동을 시작했다。
+			PRINTW  　이건 이미 글렀다… 아니 하지만、아직 귀찮은 일이라고 단정 지을 순 없다。그저 몸이 뻐근해서 스트레칭을 하고 있을 뿐일지도 모른다。
+			PRINTFORMW  　그런 일말의 희망을 품으며、%CALLNAME:ARG%에게 무얼 하고 있는지 물어보기로 했다。
+			PRINTL
+			PRINTW  「뭐냐니、준비운동이지。이제부터 싸울 거니까、컨디션을 조절하는 건 당연하잖아?」
+			PRINTL
+			PRINTW  　불길한 예감이 적중하고 말았다。아무래도 이번 분기 운빨은 쓰레기 같은 컨디션인 모양이다。
+			PRINTW  　당신은 운명의 여신과、덤으로 창조신을 저주했다。역시 운명을 관장하는 놈이나 대머리 같은 녀석은 글러먹었다。
+			PRINTL
+			PRINTFORMW  「그런 %CALLNAME:MASTER%는、전투 준비、안 하는 거야?」
+			PRINTL
+			PRINTFORMW  　%CALLNAME:ARG%은(는) 그렇게 말하면서、스트레칭을 계속하고 있다。
+			PRINTW  　요염한 목소리를 흘리며、나긋나긋한 사지를 쭉 뻗는 그 모습은 어딘가 아름답고 선정적으로 보였다。
+			IF MAXBASE:ARG:힘 > MAXBASE:MASTER:힘
+				PRINTW  　이대로 밀쳐 넘어뜨려 그 가녀린 육체를 쥐어짜듯 옭아매어、기사답지 않은 천박한 교성을 내지르게 하고 싶다。
+				PRINTFORMW  　하지만 슬프게도、%CALLNAME:MASTER%의 완력으로는 %CALLNAME:ARG%의 몸을 갑자기 밀쳐 넘어뜨리는 건 어림도 없다。
+				SIF MAXBASE:ARG:힘 > MAXBASE:MASTER:힘 * 3 / 2
+					PRINTW 오히려 밀쳐 넘어뜨리려 했다간 역으로 깔려 농락당하는 게 뻔한 결말이다。
+			ELSE
+				PRINTW  　지금 당장 쓰러뜨려 실컷 범하고 싶은 심정이지만、볼일이 끝난 뒤에 전투가 시작될 걸 생각하면、도저히 밀쳐 넘어뜨릴 엄두가 나지 않았다。
+				PRINTW  　행위 후의 여운에는 젖겠지만、그건 그거고 태연하게 덤벼들 녀석이 바로 %CALLNAME:ARG%이다。
+				PRINTW  　어차피 싸울 거라면、적어도 만반의 준비를 갖추고 싶다。성행위는 이기고 나서 해도 되리라。
+			ENDIF
+			  
+			PRINTW  「후우… 좋아、준비운동 끝！ 그럼、슬슬 시작해볼까」
+			PRINTL  
+			PRINTFORMW  　그러는 사이에 %CALLNAME:ARG%은(는) 준비를 마친 모양이다。
+			PRINTL  　상대가 만족할 때까지 어떻게든 버텨내야 하는 걸까…
+			PRINTL  　
+			PRINTW  「아、맞다。이쪽은 뿌리까지 뽑아버릴 생각으로 갈 테니까、그렇게 알고 있어」
+			PRINTL  
+			PRINTL  　살해를 건너뛰고 절멸 선언을 내동댕이쳐지고 말았다。
+			PRINTW  　…아무래도 전력으로 싸우지 않으면 안 될 모양이다！
+			PRINTL
+			PRINTW  ＞ 영령 요정기사 랜슬롯 이(가) 나타났다！
+			PRINTL
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			
+			CALL SET_ENEMY,9,[[キャラ:ＦＫ・랜슬롯]],70,1,3
+			CFLAG:(CHARANUM-1):행동횟수 = 1
+			CFLAG:(CHARANUM-1):ＨＰ보정 = (MAXBASE:(CHARANUM-1):ＨＰ / 2)
+			CFLAG:(CHARANUM-1):ＭＰ보정 += 99999
+			CFLAG:(CHARANUM-1):불사신플래그 = 1
+			
+			ABL:(CHARANUM-1):스킬8 = [[스킬:관통]]
+			ABL:(CHARANUM-1):스킬9 = [[스킬:전용기5]]
+			ABL:(CHARANUM-1):스킬10 = [[스킬:기공(대)]]
+			ABL:(CHARANUM-1):스킬11 = [[스킬:전용기6]]
+			CSTR:(CHARANUM-1):전용기6 = レイ・ホライゾン
+			ABL:(CHARANUM-1):스킬12 = [[스킬:전용기7]]
+			CSTR:(CHARANUM-1):전용기7 = 竜炎励起
+			
+			CSTR:(CHARANUM-1):사고패턴 = メリュ子個別１
+			VARSET LCOUNT
+			VARSET L_STR
+			FOR LCOUNT:0, 1, CHARA_SKILLCOUNT(CHARANUM-1) + 1
+				SIF IS_PU_SKILLNUM(ABL:(CHARANUM-1):@"스킬{LCOUNT:0}")
+					CONTINUE
+				L_STR:0 = %AUTO_SPLIT(@"{[[스킬:집중부스터]]}/{[[스킬:프로미넌스]]}/{[[스킬:코즈믹플레어]]}/{[[스킬:메기도라온]]}/{[[스킬:삼할의마맥]]}","/",LCOUNT:1)%
+				LCOUNT:1 += 1
+				L_STR:1 = %L_STR:1%\@L_STR:1 != "" ? / #\@%L_STR:0%
+			NEXT
+			CALL SET_RPG_CSTR_TAKEOVER((CHARANUM-1),"スキル（竜骸形態）",L_STR:1)
+			CALL SYNC_STATUS(CHARANUM-1)
+			CALL HEALTH_CHARA(CHARANUM-1)
+			CALL BATTLE_START
+			PRINTL
+			PRINTL  ……
+			PRINTL  …………
+			PRINTL  ………………
+			PRINTL
+			ARG = GETCHARA([[キャラ:ＦＫ・랜슬롯]])
+			PRINTFORMW 격투 끝에、어떻게든 %CALLNAME:ARG%에게 승리할 수 있었다。
+			PRINTFORMW \@ !HAVE_PU_SKILL(ARG,"레이・호라이즌") ? 자신의 본래 모습을 선보일 수 있어서 %CALLNAME:ARG%도 만족한 모양이다… # 마음껏 싸울 수 있어서인지、%CALLNAME:ARG%도 매우 흡족해하는 모양이다…\@
+			IF !HAVE_PU_SKILL(ARG,"レイ・ホライゾン") || !HAVE_PU_SKILL(ARG,"竜炎励起")
+				PRINTFORMW  %CALLNAME:ARG%은(는) 전투를 거쳐 새로운 스킬을 배운 모양이다。
+				CALL LEARN_PU_SKILL(ARG,"レイ・ホライゾン")
+				CALL LEARN_PU_SKILL(ARG,"竜炎励起")
+				SIF GET_RPG_CSTR_TAKEOVER(ARG,"各形態時の名前") == ""
+					CALL SET_RPG_CSTR_TAKEOVER(ARG,"各形態時の名前",@"%NAME:ARG%_%CALLNAME:ARG%/メリュジーヌ_メリュジーヌ")
+				IF GET_RPG_CSTR_TAKEOVER(ARG,"スキル（竜骸形態）") == ""
+					VARSET LCOUNT
+					VARSET L_STR
+					FOR LCOUNT:0, 1, CHARA_SKILLCOUNT(ARG) + 1
+						;専用技は保存対象外
+						SIF IS_PU_SKILLNUM(ABL:ARG:@"스킬{LCOUNT:0}")
+							CONTINUE
+						L_STR:0 = %AUTO_SPLIT(@"{[[스킬:집중부스터]]}/{[[스킬:프로미넌스]]}/{[[스킬:코즈믹플레어]]}/{[[스킬:메기도라온]]}/{[[스킬:삼할의마맥]]}","/",LCOUNT:1)%
+						LCOUNT:1 += 1
+						L_STR:1 = %L_STR:1%\@L_STR:1 != "" ? / #\@%L_STR:0%
+					NEXT
+					CALL SET_RPG_CSTR_TAKEOVER(ARG,"スキル（竜骸形態）",L_STR:1)
+				ENDIF
+			ENDIF
+			PRINTFORMW ※%CALLNAME:ARG%의 프로필이 갱신됩니다。스포일러가 되는 부분을 가리시겠습니까?
+			CALL INPUT_YN
+			CALL SET_PROFILE_5098,ARG,!RESULT ? 10000 # 0
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDSELECT
+
+;--------------------
+;バトル設定
+;--------------------
+;@EVENT_BATTLE_START_INDIVIDUALEVENT_K5098
+
+;スキル使用直後に行う処理
+@EVENT_BATTLE_SKILLEND_INDIVIDUALEVENT_K5098,ARG
+
+;敵の妖精騎士ランスロットのスキル使用直後に処理を行う
+IF NO:ARG == [[キャラ:ＦＫ・랜슬롯]] && !CFLAG:ARG:PT플래그
+	;竜骸形態中、自身の攻撃で無効/吸収/反射 等が発生した場合、メギドラオン使用フラグを立てる
+	SIF GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 1 && GET_CREC_ACT(ARG,-1,"BLOCK/DRAIN/REFLECT")
+		SETBIT TFLAG:435,0
+ENDIF
+
+;行動終了後に行う処理
+@EVENT_BATTLE_ACTEND_INDIVIDUALEVENT_K5098
+#DIM LCOUNT
+#DIM L_CHARA
+#DIM SKILL_NUM
+#DIMS L_STR,5
+
+SIF !FINDCHARA_ENEMY([[キャラ:ＦＫ・랜슬롯]])
+	RETURN 0
+L_CHARA = RESULT:1
+SKILL_NUM = PU_SKILLNUM_GET(L_CHARA,"ノウブル・ファンタズム")
+
+IF 現HP割合(L_CHARA) <= 70 && !GET_RPG_CFLAG_TAKEOVER(L_CHARA,"形態換装フラグ")
+	L_STR:0 = さすが%CALLNAME:MASTER%、この世界における僕のマスターとして認められるだけのことはある！
+	L_STR:1 = ならばこちらも本気を出そう…！ 妖精騎士としてではなく───、
+	L_STR:2 = ───極光に焦がれ果てた竜の残骸、メリュジーヌとして！
+	SETCOLOR COLOR("ENEMY")
+	FOR LCOUNT,0,3
+		CALL MESSAGE_B2(CALLNAME:L_CHARA,0,L_STR:LCOUNT)
+	NEXT
+	RESETCOLOR
+	NAME:L_CHARA = メリュジーヌ
+	CALLNAME:L_CHARA = メリュジーヌ
+	CFLAG:L_CHARA:불사신플래그 = 0
+	CFLAG:L_CHARA:ＨＰ보정 *= 2
+	CALL INPUT_COM_レイ・ホライゾン,L_CHARA
+	PRINTFORMW 　　TARGET:[{CPOS(L_CHARA),2}] %CALLNAME:L_CHARA,20,LEFT%　>>>>>>　{MAXBASE:L_CHARA:ＨＰ - BASE:L_CHARA:ＨＰ}회복
+	CALL HEALTH_CHARA(L_CHARA)
+	CALL SKILLGAGE_F_SET(L_CHARA,SKILL_NUM,100)
+	CFLAG:L_CHARA:행동횟수 = 2
+ENDIF
+
+;4の倍数のターン終了時、魔力放出未起動なら強制発動
+IF (FLAG:경과턴수 % 4 == 2 || SKILLGAGE_F_GET(L_CHARA,SKILL_NUM) == 100) && SKILLGAGE_D_GET(L_CHARA,SKILL_NUM) == 0
+	;竜骸形態時、最後の行動終了までは魔力放出は発生しない
+	SIF GET_RPG_CFLAG_TAKEOVER(L_CHARA,"形態換装フラグ") == 1 && (CFLAG:L_CHARA:행동횟수 - CFLAG:L_CHARA:행동한횟수) != 1
+		RETURN 0
+	CFLAG:L_CHARA:입력행동 = SKILL_NUM
+	CALL PRINT_ACT_MESSAGE,L_CHARA,SKILL_NUM,-1,,"魔力放出"
+	PRINTFORMW %CALLNAME:L_CHARA%은(는) 마력을 개방했다！
+	CALL SKILLGAGE_F_SET,L_CHARA,SKILL_NUM,0
+	;魔力放出は発動から2ターン経過で切れる
+	CALL SKILLGAGE_D_SET,L_CHARA,SKILL_NUM,3
+	SETCOLOR CFLAG:L_CHARA:PT플래그 == 0 ? 0xff0033 # 0x33ffcc
+	CALL 口上呼び出し , "BATTLE_MESSAGE" , L_CHARA , L_CHARA
+	RESETCOLOR
+	WAIT
+ENDIF
+
+@EVENT_BATTLE_TURNEND_INDIVIDUALEVENT_K5098
+#DIM L_CHARA
+#DIM SKILL_NUM
+
+SIF !FINDCHARA_ENEMY([[キャラ:ＦＫ・랜슬롯]])
+	RETURN 0
+L_CHARA = RESULT:1
+
+SIF PU_SKILLGAGE_F_GET(L_CHARA,"竜炎励起") >= 5
+	RETURN 0
+CALL PRINT_ACT_MESSAGE,L_CHARA,SKILL_NUM,-1,,"竜炎励起"
+PRINTFORMW %CALLNAME:L_CHARA%의 몸속에 축적된 불꽃이 증대되고 있다！
+SIF GETBIT(TFLAG:435,1)
+	RETURN 0
+PRINTL
+PRINTW 아무래도 저 불꽃을 두르고 있는 동안에는 사용자의 공격력을 증대시키고、받는 데미지를 경감시키는 모양이다。
+PRINTW 게다가 저 기세로 보아、불꽃의 규모가 커짐에 비례해 효과도 강해질 가능성이 있다。
+PRINTW 어설픈 공격을 맞히는 것만으로는、상대에게 통하지 않을지도 모른다…！
+SETBIT TFLAG:435,1
+
+;--------------------
+;思考パターン設定
+;--------------------
+@SET_ACTION_メリュ子個別１, ARG
+#DIM SKILL_NUM,3
+#DIM LCOUNT,2
+#DIM L_CHARGE
+#DIM L_RATE
+
+SKILL_NUM:0 = PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム")
+SKILL_NUM:1 = PU_SKILLNUM_GET(ARG,"今は知らず、無垢なる湖光")
+SKILL_NUM:2 = PU_SKILLNUM_GET(ARG,"竜炎励起")
+
+IF GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 0
+	;騎士形態時の行動パターン
+	SELECTCASE FLAG:경과턴수 % 4
+		CASE 0,1
+			CALL SET_ACTION_SKILL, ARG, !RAND:2 ? [[스킬:백열찌르기]] # [[스킬:브레이브재퍼]]
+		CASE 2
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG,\@!RAND:2 ? ドラゴンハート # ペリー・ダンサー\@)
+		CASE 3
+			CALL SKILLGAGE_D_SET(ARG,SKILL_NUM:0,5)
+			CALL SET_ACTION_SKILL, ARG, SKILL_NUM:1
+	ENDSELECT
+ELSE
+	;竜骸形態時の行動パターン
+	;1回目の行動で集中状態だった場合、ターン終了時まで集中が持続するフラグを立てる
+	SIF CFLAG:ARG:행동한횟수 == 0
+		L_CHARGE = CFLAG:ARG:집중플래그 ? 1 # 0
+
+	;集中持続フラグが真なら集中フラグを立てる
+	SIF L_CHARGE == 1
+		CFLAG:ARG:집중플래그 = 1
+
+	;基本はプロミネンス、コズミックフレアのいずれかを使用
+	CALL SET_ACTION_SKILL, ARG, !RAND:2 ? [[스킬:프로미넌스]] # [[스킬:코즈믹플레어]]
+
+	;上のスキルが無効、反射、吸収などで無効化されてた場合、50%の確率でメギドラオンを使用　難易度がHARD以上だと刻の車輪に変化
+	SIF GETBIT(TFLAG:435,0) && !RAND:2
+		CALL SET_ACTION_SKILL, ARG, FLAG:전투난이도 < 3 ? [[스킬:메기도라온]] # [[스킬:시간의수레바퀴]]
+
+	;2回目の行動時、集中未適用なら確率でドラゴンハートを使用する
+	SIF CFLAG:ARG:행동한횟수 == 1 && !CFLAG:ARG:집중플래그 && !RAND:2
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG,"ドラゴンハート")
+
+	;自身にバステ、能力低下デバフが付与されている場合、確率で竜気放出を使用
+	L_RATE = !IS_BADSTATE(ARG,"GOOD") ? 50 # 0
+	FOR LCOUNT,0,VARSIZE("BASE_KAJA_TABLE")
+		SELECTCASE CFLAG:ARG:(BASE_KAJA_TABLE:LCOUNT + "강화")
+			CASE -4 TO -1
+				L_RATE += 10
+			CASE -8 TO -5
+				L_RATE += 20
+			CASE -12 TO -9
+				L_RATE += 30
+			CASE -16 TO -13
+				L_RATE += 40
+		ENDSELECT
+	NEXT
+	SIF L_RATE > RAND:100 + 1 && PU_SKILLGAGE_F_GET(ARG,"竜炎励起") > 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG,"竜炎励起")
+
+	;魔力放出中なら宝具使用
+	IF SKILLGAGE_D_GET(ARG,SKILL_NUM:0) > 0
+		CALL SKILLGAGE_D_SET(ARG,SKILL_NUM:0,5)
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG,"今は知らず、無垢なる湖光")
+	ENDIF
+
+	;ワンモアでメギドラオンを使用 難易度HARD以上だと刻の車輪に変化
+	SIF CFLAG:ARG:１more플래그 > 0
+		CALL SET_ACTION_SKILL, ARG, FLAG:전투난이도 < 3 ? [[스킬:메기도라온]] # [[스킬:시간의수레바퀴]]
+
+ENDIF

@@ -1,0 +1,1832 @@
+﻿;-------------------------------------------------
+;원격조교
+;-------------------------------------------------
+@CHECK_COM_ABLE203
+;イヤホンマイク実行判定
+;アイテムを持っているか、アイテムなし設定でないとダメ
+SIF !EXIST_ITEM(30)
+	RETURN 0
+SIF !陥落(TARGET)
+	RETURN 0
+;オトコもダメ
+SIF TALENT:남자 && TALENT:오토코노코 == 0
+	RETURN 0
+;ダンジョン内もダメ
+SIF FLAG:던전내조교
+	RETURN 0
+;対象が吸血鬼で、時間が昼だとダメ←いらない気もするけど一応
+SIF TALENT:TARGET:흡혈귀 && TIME < 2
+	RETURN 0
+
+;以下、絵面が変だし補正処理もややこしくなるのでダメ
+;縄はダメ
+SIF TEQUIP:밧줄
+	RETURN 0
+;羞恥プレイ中はダメ
+SIF TEQUIP:수치플레이
+	RETURN 0
+;お風呂場中はダメ
+SIF TEQUIP:목욕탕
+	RETURN 0
+;触手調教中はダメ
+SIF TEQUIP:촉수
+	RETURN 0
+;三角木馬騎乗中はダメ
+SIF TEQUIP:삼각목마
+	RETURN 0
+;野外プレイ中はダメ
+SIF TEQUIP:야외플레이
+	RETURN 0
+;新妻プレイ中はダメ←エプロンくらいは解禁してもいいかも服だしエッチだし
+SIF TEQUIP:에이프런
+	RETURN 0
+RETURN 1
+
+;最初に表示
+@ACT_COM203
+#DIM LCOUNT
+;散歩させる
+
+PRINTL 원격조교
+TSTR:0 = 원격조교
+
+;-------------------------------------------------
+;ソースの計算
+;-------------------------------------------------
+
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;行為回数
+LOCAL:1 = 0
+;펠라횟수
+LOCAL:2 = 0
+;Ａ경험
+LOCAL:3 = 0
+;Ｖ경험
+LOCAL:4 = 0
+;성교경험
+LOCAL:5 = 0
+;정액경험
+LOCAL:6 = 0
+;輪姦回数
+LOCAL:7 = 0
+
+;CALL KOJO_MESSAGE_COM
+;関数まとめ
+;A:イベントの種類　B:男の番号　C:射精ポイント D:痴漢ポイント　E:질내사정횟수　F:痴漢挿入フラグ
+;G:イベント回数　H:追加人数　I:펠라횟수　J:精飲回数
+;男をランダムで決定
+LOCALS:1 = 날라리 남
+LOCALS:2 = 기름기 번들거리는 아저씨
+LOCALS:3 = 노신사
+LOCALS:4 = 양아치
+LOCALS:5 = 뚱뚱한 오타쿠
+LOCALS:6 = 부랑자
+LOCALS:7 = 폭주족
+LOCALS:8 = 경비원
+LOCALS:9 = 왜소한 소년
+LOCALS:0 = 젊은 학생
+;イベント回数
+G = RAND:5 + 3
+;A = 
+;1 ナンパSEX
+;2 レイプ
+;3 痴漢プレイ受け
+;4 痴漢プレイ攻め
+;5 乱暴に輪姦
+;6 輪姦、長時間＆ハード
+;7 妖しい注射
+;8 少年を逆レイプ
+;9 巨根少年
+
+
+PRINTFORML ＞어느 루트를 걷게 할까?
+IF (TEQUIP:음순노출 != -1 && TALENT:오토코노코 == 0) || TEQUIP:둔부노출 != -1
+	CALL INPUT_SELECT(1, "번화가 루트",2, "전철 루트", 3, "공원 루트", 4, "창고가 루트")
+ELSE
+	CALL INPUT_SELECT(5, "공원 루트", 6, "창고가 루트", 7, "수영복 바다 루트")
+ENDIF
+SELECTCASE RESULT
+	CASE 1
+		PRINTFORMW %CALLNAME:TARGET%에게 번화가를 통과하는 루트로 가도록 지시했다
+		FOR LCOUNT,0,G
+			PRINTFORML  
+			;ナンパ
+			IF RAND:3 == 0
+				;B = (RAND:4 + 1)
+				B = (RAND:5)
+				PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%에게 말을 걸리고 있다
+				PRINTFORMW 아무래도 헌팅인 모양이다
+				CALL INPUT_SELECT(1, "따라가게 한다",2, "거절하게 한다", 3, "무시하게 한다")
+				SELECTCASE RESULT
+					CASE 1
+						;ナンパSEXへ
+						IF RAND:100 < 60
+							PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%의 유혹에 이끌리는 대로 호텔로 들어갔다
+							A = 1
+							BREAK
+						;お茶
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%과(와) 차를 마시고 헤어졌다
+						ENDIF
+					CASE 2
+						;断りきれずナンパSEXへ
+						IF RAND:100 < 10
+							PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%의 억지에 떠밀려, 호텔로 들어갔다
+							A = 1
+							BREAK
+						;サヨナラ
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%이(가) 거절하자 투덜거리며 떠나갔다
+						ENDIF
+					CASE 3
+						;逆切れされて路地裏レイプへ
+						IF RAND:100 < 30
+							PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%을(를) 무시하고 걸음을 옮겼다
+							PRINTFORMW 그러자 무시당한 것에 화가 난 %LOCALS:B%에게 억지로 골목길로 끌려 들어가고 말았다
+							A = 2
+							BREAK
+						;サヨナラ
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%을(를) 무시하고 걸음을 옮겼다
+						ENDIF
+				ENDSELECT
+			;路地裏から声
+			ELSEIF RAND:2 == 0
+				;B = (RAND:6 + 1)
+				B = (RAND:7)
+				PRINTFORMW 지나가던 골목길에서 소리가 들린 것 같았다
+				CALL INPUT_SELECT(1, "보러 가게 한다",2, "무시하게 한다",3, "엿보게 한다")
+				SELECTCASE RESULT
+					CASE 1
+						;路地裏レイプへ
+						IF RAND:100 < 60
+							PRINTFORMW 골목길 안으로 들어가자 그곳에는…
+							PRINTFORMW 공허한 눈을 한 여성이, 은밀한 곳에서 백탁액을 흘리며 주저앉아 있었다
+							PRINTFORMW %CALLNAME:TARGET%은(는) 도망칠 틈도 없이, 뒤에 숨어 있던 %LOCALS:B%에게 밀쳐 쓰러졌다
+							A = 2
+							BREAK
+						;ネコネコ
+						ELSE
+							PRINTFORMW 골목길 안으로 들어가자 그곳에는…
+							PRINTFORMW 사랑스러운 고양이가 빈 캔을 상대로 장난치고 있었다
+						ENDIF
+					CASE 2
+						;路地裏レイプへ
+						IF RAND:100 < 10
+							PRINTFORMW %CALLNAME:TARGET%은(는) 골목길에 등을 돌렸다…
+							PRINTFORMW 그러자, 갑자기 등 뒤에서 %LOCALS:B%에게 붙잡혀, 골목길로 끌려 들어갔다
+							A = 2
+							BREAK
+						;ネコネコ
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 골목길에 등을 돌렸다…
+							PRINTFORMW 뒤쪽에서 고양이 울음소리가 들렸다
+						ENDIF
+					CASE 3
+						;路地裏レイプへ
+						IF RAND:100 < 30
+							PRINTFORMW %CALLNAME:TARGET%이(가) 골목길 안을 들여다보자 그곳에는…
+							PRINTFORML 지금 바로 %LOCALS:B%에게 덮쳐지려 하는 여성의 모습이 있었다
+							PRINTFORMW 틈을 보아 도망친 여성이 %CALLNAME:TARGET%의 옆을 달려 지나가자,
+							PRINTFORMW 멍하니 서 있던 %CALLNAME:TARGET%을(를) %LOCALS:B%이(가) 넘어뜨렸다
+							A = 2
+							BREAK
+						;レイプ後の女性発見
+						ELSE
+							PRINTFORMW 공허한 눈을 한 여성이, 은밀한 곳에서 백탁액을 흘리며 주저앉아 있었다
+							PRINTFORMW 주변에는 인기척이 없고, 여성은 허공을 바라보며 힘없이 신음하고 있다
+						ENDIF
+
+				ENDSELECT
+			;特になし
+			ELSE
+				PRINTFORMW 번화가는 활기로 가득 차 있다
+			ENDIF
+		NEXT
+	CASE 2
+		PRINTFORMW %CALLNAME:TARGET%에게 전철을 이용하는 루트로 가도록 지시했다
+		FOR LCOUNT,0,G
+			PRINTFORML  
+			DRAWLINE
+			;痴漢
+			IF RAND:3 == 0
+				;B = (RAND:5 + 1)
+				B = (RAND:6)
+				PRINTFORMW 출입문 부근에서 바깥 풍경을 바라보고 있자니, 등 뒤에서 엉덩이를 쓰다듬어졌다
+				PRINTFORMW 아무래도 뒤에 있는 %LOCALS:B%이(가) 치한 짓을 하고 있는 모양이다
+				CALL INPUT_SELECT(1, "견디게 한다",2, "저항하게 한다", 3, "유혹하게 한다")
+				SELECTCASE RESULT
+					CASE 1
+						;レッツ痴漢プレイ受け
+						IF RAND:100 < 60
+							PRINTFORMW %CALLNAME:TARGET%은(는) 몸을 쓰다듬는 %LOCALS:B%의 손가락을 참고 견디고 있다…
+							PRINTFORMW 그러자, 기고만장해진 %LOCALS:B%의 손가락이 옷 속으로까지 침입해 들어왔다
+							A = 3
+							BREAK
+						;この人、痴漢です
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 몸을 쓰다듬는 %LOCALS:B%의 손가락을 참고 견디고 있다…
+							PRINTFORMW 그러자, 만족한 것인지 %LOCALS:B%은(는) 정차한 역에서 내려 떠나갔다
+						ENDIF
+					CASE 2
+						;レッツ痴漢プレイ受け
+						IF RAND:100 < 10
+							PRINTFORMW %CALLNAME:TARGET%은(는) 몸을 쓰다듬는 %LOCALS:B%에게 저항하고 있다…
+							PRINTFORMW 그러자, %LOCALS:B%은(는) 손으로 %CALLNAME:TARGET%의 입을 틀어막고, 옷 속으로 손을 찔러 넣었다
+							A = 3
+							BREAK
+						;この人、痴漢です
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 몸을 쓰다듬는 %LOCALS:B%에게 저항하고 있다…
+							PRINTFORMW 그러자, %LOCALS:B%의 손은 %CALLNAME:TARGET%에게서 떨어져 나갔다
+						ENDIF
+					CASE 3
+						;レッツ痴漢プレイ攻め
+							PRINTFORMW %CALLNAME:TARGET%은(는) 엉덩이를 %LOCALS:B%의 사타구니에 밀착시키더니,
+							PRINTFORMW 온몸을 기어 다니는 손 중 하나를 은밀한 곳으로 이끌었다
+							A = 4
+							BREAK
+				ENDSELECT
+			;目の前の男と密着
+			ELSEIF RAND:2 == 0
+				;B = (RAND:5 + 1)
+				B = (RAND:6)
+				PRINTFORMW %CALLNAME:TARGET%은(는) 출입문을 등지고 있자, 주변의 혼잡에 떠밀려 %LOCALS:B%과(와) 밀착하는 자세가 되어버렸다
+				CALL INPUT_SELECT(1, "유혹하게 한다",2, "아무것도안한다")
+				SELECTCASE RESULT
+					CASE 1
+						;レッツ痴漢プレイ攻め
+							PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%에게 더욱 밀착하더니,
+							PRINTFORMW 눈을 바라보며 사타구니의 부푼 곳을 음란하게 쓰다듬었다
+							A = 4
+							BREAK
+					CASE 2
+						;レッツ痴漢プレイ受け
+						IF RAND:100 < 20
+							PRINTFORMW 몸에 닿는 감촉에 시선을 내리자, %LOCALS:B%의 사타구니의 불룩함이 밀착되는 꼴이 되어 있었다…
+							PRINTFORML %LOCALS:B%은(는) 시선을 알아채자, 더욱 사타구니를 밀어붙였다
+							PRINTFORMW 그리고 %CALLNAME:TARGET%의 맨살에 손을 기어 다니게 하기 시작했다
+							A = 3
+							BREAK
+						;この人、起っきしてる
+						ELSE
+							PRINTFORMW 몸에 닿는 감촉에 시선을 내리자, %LOCALS:B%의 사타구니의 불룩함이 밀착되는 꼴이 되어 있었다…
+							PRINTFORMW %LOCALS:B%은(는) 시선을 알아채자, 겸연쩍은 듯 허리를 뺐다
+						ENDIF
+				ENDSELECT
+			;特になし
+			ELSE
+				PRINTFORMW 차량 내부는 딱히 붐비지 않는 모양이다
+			ENDIF
+		NEXT
+	CASE 3
+		PRINTFORMW %CALLNAME:TARGET%에게 공원을 통과하는 루트로 가도록 지시했다
+		FOR LCOUNT,0,G
+			PRINTFORML  
+			DRAWLINE
+			;前方に人が
+			IF RAND:3 == 0
+				;B = (RAND:6 + 1)
+				B = (RAND:7)
+				PRINTFORMW 공원 안을 걷고 있자니 전방에서 %LOCALS:B%이(가) 걸어왔다
+				CALL INPUT_SELECT(1, "유혹하게 한다",2, "무시하게 한다")
+				SELECTCASE RESULT
+					CASE 1
+						;ご奉仕
+						IF RAND:100 < 70
+							PRINTFORMW %CALLNAME:TARGET%은(는) 음란한 말로 %LOCALS:B%을(를) 유혹했다…
+							PRINTFORML 그러자, %LOCALS:B%은(는) 비열한 미소를 띠며 %CALLNAME:TARGET%의 어깨에 팔을 두르고,
+							PRINTFORMW 호텔로 걸어가기 시작했다
+							A = 1
+							BREAK
+						;逃げられる…
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 음란한 말로 %LOCALS:B%을(를) 유혹했다…
+							PRINTFORMW 그러자, %LOCALS:B%은(는) 깜짝 놀라 도망쳐 버렸다
+						ENDIF
+					CASE 2
+						;レイプ
+						IF RAND:100 < 10
+							PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%과(와) 눈을 마주치지 않고 지나치려 했다…
+							PRINTFORMW 그러자, 불시에 등 뒤에서 껴안기며 근처 풀숲으로 끌려 들어가고 말았다
+							A = 2
+							BREAK
+						;すれ違う
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%과(와) 눈을 마주치지 않고 지나치려 했다…
+							PRINTFORMW 아무 일 없이 스쳐 지나갔다
+						ENDIF
+				ENDSELECT
+			;藪から物音
+			ELSEIF RAND:2 == 0
+				;B = (RAND:6 + 1)
+				B = (RAND:7)
+				PRINTFORMW 근처 풀숲에서 부스럭거리는 소리가 들린다
+				CALL INPUT_SELECT(1, "보러 가게 한다",2, "무시하게 한다")
+				SELECTCASE RESULT
+					CASE 1
+						;レイプ
+						IF RAND:100 < 50
+							PRINTFORMW %CALLNAME:TARGET%은(는) 풀숲을 헤치려고 손을 뻗었다…
+							PRINTFORMW 그러자, 불쑥 튀어나온 손에 붙잡혀, 풀숲 안으로 끌려 들어갔다
+							A = 2
+							BREAK
+						;ニャンコ逃げる
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 풀숲을 헤치려고 손을 뻗었다…
+							PRINTFORMW 그러자, %CALLNAME:TARGET%에게 놀란 고양이가 뛰쳐나와, 저편으로 달려갔다
+						ENDIF
+					CASE 2
+						;後ろからレイプ
+						IF RAND:100 < 10
+							PRINTFORMW %CALLNAME:TARGET%은(는) 흔들리는 풀숲을 곁눈질하며 지나쳤다…
+							PRINTFORMW 그러나, 등 뒤의 인기척과 함께 나타난 %LOCALS:B%에게 껴안겨, 풀숲 안으로 끌려 들어갔다
+							A = 2
+							BREAK
+						;後ろからニャンコの声
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 흔들리는 풀숲을 곁눈질하며 지나쳤다…
+							PRINTFORMW 뒤쪽에서 어리광 부리는 듯한 고양이 울음소리가 들렸다
+						ENDIF
+				ENDSELECT
+			ELSEIF RAND:2 == 0
+				B = 9
+				PRINTFORMW 공원 안을 걷고 있자니 전방에서 %LOCALS:B%이(가) 걸어왔다
+				CALL INPUT_SELECT(1, "유혹하게 한다",2, "무시하게 한다")
+				SELECTCASE RESULT
+					CASE 1
+						;ご奉仕
+						IF RAND:100 < 70
+							PRINTFORMW %CALLNAME:TARGET%은(는) 음란한 말로 %LOCALS:B%을(를) 유혹했다…
+							PRINTFORML 그러자, %LOCALS:B%은(는) 얼굴을 새빨갛게 붉힌 채 고개를 푹 숙여버렸다
+							PRINTFORMW %CALLNAME:TARGET%은(는) 굳어버린 %LOCALS:B%의 손을 이끌고 공원 화장실로 들어갔다…
+							IF RAND:100 < 5
+								A = 9
+								PRINTFORMW %LOCALS:B%의 속옷을 벗기자, 어른의 것보다 거대한 페니스가 튀어나왔다
+								PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%의 늠름하게 우뚝 솟은 남근에 눈이 못 박혀 있다
+							ELSE
+								A = 8
+							ENDIF
+						BREAK
+						;逃げられる…
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 음란한 말로 %LOCALS:B%을(를) 유혹했다…
+							PRINTFORMW 그러자, %LOCALS:B%은(는) 깜짝 놀라 도망쳐 버렸다
+						ENDIF
+					CASE 2
+							PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%과(와) 눈을 마주치지 않고 지나치려 했다…
+							PRINTFORMW 아무 일 없이 스쳐 지나갔다
+				ENDSELECT
+			;特になし
+			ELSE
+				PRINTFORMW 딱히 눈길을 끄는 것은 없는 모양이다
+			ENDIF
+		NEXT
+	CASE 4
+		PRINTFORMW %CALLNAME:TARGET%에게 창고가를 통과하는 루트로 가도록 지시했다
+		FOR LCOUNT,0,G
+			PRINTFORML  
+			DRAWLINE
+			;暴走族
+			IF RAND:3 == 0
+				B = 7
+				PRINTFORMW 눈앞에 오토바이에 걸터앉은 남자들이 무리 지어 있다
+				PRINTFORMW %CALLNAME:TARGET%을(를) 알아채자 슬금슬금 다가왔다
+				CALL INPUT_SELECT(1, "도발하게 한다",2, "도망치게 한다", 3, "매도하게 한다")
+				SELECTCASE RESULT
+					CASE 1
+						;乱暴に輪姦
+						IF RAND:100 < 90
+							PRINTFORMW %CALLNAME:TARGET%은(는) 다가오는 남자들을 도발했다…
+							PRINTFORMW 그러자, 남자들은 비웃으며 %CALLNAME:TARGET%을(를) 덮쳐누르고 몸을 포갰다
+							A = 5
+							BREAK
+						;怖気ついて逃げちゃった…
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 다가오는 남자들을 도발했다…
+							PRINTFORMW 그러자, 남자들은 서로 눈짓을 주고받더니, 욕설을 뱉고는 자리를 떴다
+						ENDIF
+					CASE 2
+						;転んで輪姦
+						IF RAND:100 < 50
+							PRINTFORMW %CALLNAME:TARGET%은(는) 도망쳤다…
+							PRINTFORMW ………넘어졌다
+							PRINTFORMW 정신을 차리자 주변은 남자들에게 둘러싸여 있었고, 뻗어오는 여러 손이 %CALLNAME:TARGET%의 눈에 비쳤다
+							A = 5
+							BREAK
+						;逃走成功
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 도망쳤다…
+							PRINTFORMW ………용케 도망쳤다
+						ENDIF
+					CASE 3
+						;輪姦、長時間＆ハード
+						IF RAND:100 < 90
+							PRINTFORMW %CALLNAME:TARGET%은(는) 다가오는 남자들에게 생각나는 온갖 말로 매도했다…
+							PRINTFORMW 격노한 남자들은 %CALLNAME:TARGET%을(를) 난폭하게 밀쳐 쓰러뜨리고, 앞다투어 몰려들었다
+							A = 6
+							BREAK
+						;凹んで帰っちゃった…
+						ELSE
+							PRINTFORMW 남자들은 울며 도망쳐 버렸다
+						ENDIF
+				ENDSELECT
+			;警備員
+			ELSEIF RAND:2 == 0
+				B = 8
+				PRINTFORMW 창고 안을 걷고 있자니 경비 남성과 마주쳤다
+				PRINTFORMW 남자는 %CALLNAME:TARGET%을(를) 나무라지 않고, 『담배 한 대 피우고 가지 않겠나』라며 권유해 왔다
+				CALL INPUT_SELECT(1, "따라간다",2, "도망치게 한다")
+				SELECTCASE RESULT
+					CASE 1
+						;休憩所でレイプ
+						IF RAND:100 < 60
+							PRINTFORMW %CALLNAME:TARGET%은(는) 호의에 기대어, 휴게실로 따라갔다…
+							PRINTFORMW 그러나, 휴게실 문이 닫히는 순간, 짐승의 본성을 드러낸 남자에게 밀쳐 쓰러졌다
+							A = 2
+							BREAK
+						;お茶
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 호의에 기대어, 휴게실로 따라갔다…
+							PRINTFORMW 따뜻한 차와 과자를 대접받았다
+						ENDIF
+					CASE 2
+						;逃げ場を失いレイプ
+						IF RAND:100 < 10
+							PRINTFORMW %CALLNAME:TARGET%은(는) 그 자리에서 도망치려 했다…
+							PRINTFORMW 그러나, 남자는 도망치는 %CALLNAME:TARGET%을(를) 뒤쫓아, 막다른 골목으로 몰아넣었다
+							PRINTFORMW 그리고, 입맛을 다시며 %CALLNAME:TARGET%의 옷에 손을 댔다
+							A = 2
+							BREAK
+						;逃走成功
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 그 자리에서 도망치려 했다…
+							PRINTFORMW 남자는 쫓아올 기색도 없이, 자리를 떠났다
+						ENDIF
+				ENDSELECT
+			;特になし
+			ELSE
+				PRINTFORMW 주변에는 인기척이 없다
+			ENDIF
+		NEXT
+	CASE 5
+		;裸です
+		PRINTFORMW %CALLNAME:TARGET%을(를) 공원 앞에서 차에서 내리게 한 뒤, 한 바퀴 돌고 오도록 지시했다
+		FOR LCOUNT,0,G
+			PRINTFORML  
+			DRAWLINE
+			;複数の男発見
+			IF RAND:3 == 0
+				;B = (RAND:6 + 1)
+				B = (RAND:7)
+				PRINTFORMW 전방에서 여러 명의 %LOCALS:B%이(가) 걸어왔다
+				PRINTFORMW 맨살을 드러낸 %CALLNAME:TARGET%의 모습을 알아채자 씩 웃으며 입꼬리를 끌어올렸다
+				CALL INPUT_SELECT(1, "유혹하게 한다",2, "도망치게 한다")
+				SELECTCASE RESULT
+					CASE 1
+						;輪姦ハード
+						IF RAND:100 < 90
+							PRINTFORMW %CALLNAME:TARGET%은(는) 선정적인 걸음걸이로 %LOCALS:B%들에게 다가갔다…
+							PRINTFORMW 그러자, %LOCALS:B% 중 한 명이 %CALLNAME:TARGET%을(를) 밀쳐 쓰러뜨리고, 그 몸에 게걸스럽게 달라붙었다
+							PRINTFORMW 그것이 신호라도 되듯 다른 %LOCALS:B%들도 일제히 덤벼들었다
+							A = 6
+							BREAK
+						;ビッチ呼ばわりで無視
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 선정적인 걸음걸이로 %LOCALS:B%들에게 다가갔다…
+							PRINTFORMW 그러자, %LOCALS:B%들은 %CALLNAME:TARGET%을(를) 걸레 취급하며 떠나갔다
+						ENDIF
+					CASE 2
+						;逃げられずに輪姦
+						IF RAND:100 < 50
+							PRINTFORMW %CALLNAME:TARGET%은(는) 도망쳤다…
+							PRINTFORMW ………넘어졌다
+							PRINTFORMW 정신을 차리자 주변은 %LOCALS:B%들에게 둘러싸여 있었고, 뻗어오는 여러 손이 %CALLNAME:TARGET%의 눈에 비쳤다
+							A = 5
+							BREAK
+						;逃走成功
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 도망쳤다…
+							PRINTFORMW ………용케 도망쳤다
+						ENDIF
+				ENDSELECT
+			;林から物音
+			ELSEIF RAND:2 == 0
+				;B = (RAND:6 + 1)
+				B = (RAND:7)
+				PRINTFORMW 근처 풀숲에서 부스럭거리는 소리가 들린다
+				CALL INPUT_SELECT(1, "보러 가게 한다",2, "다음으로 향하게 한다", 3, "포즈를 취한다")
+				SELECTCASE RESULT
+					CASE 1
+						;引き込まれて輪姦
+						IF RAND:100 < 60
+							PRINTFORMW %CALLNAME:TARGET%은(는) 풀숲을 헤치려고 손을 뻗었다…
+							PRINTFORMW 그러자, 불쑥 튀어나온 손에 붙잡혀, 풀숲 안으로 끌려 들어갔다
+							PRINTFORMW 그곳에는, 사타구니를 바짝 곤두세운 %LOCALS:B%들이 도사리고 있었다
+							A = 5
+							BREAK
+						;ニャンコ
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 풀숲을 헤치려고 손을 뻗었다…
+							PRINTFORMW 그러자, %CALLNAME:TARGET%에게 놀란 고양이가 뛰쳐나와, 저편으로 달려갔다
+						ENDIF
+					CASE 2
+						;後ろから襲われて輪姦
+						IF RAND:100 < 30
+							PRINTFORMW %CALLNAME:TARGET%은(는) 흔들리는 풀숲을 곁눈질하며 지나쳤다…
+							PRINTFORMW 그러나, 등 뒤의 인기척과 함께 나타난 %LOCALS:B%들에게 껴안겨, 풀숲 안으로 끌려 들어갔다
+							A = 5
+							BREAK
+						;逃走成功
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 흔들리는 풀숲을 곁눈질하며 지나쳤다…
+							PRINTFORMW 뒤쪽에서 어리광 부리는 듯한 고양이 울음소리가 들렸다
+						ENDIF
+					CASE 3
+						;群がるデバガメ達に輪姦
+						IF RAND:100 < 50
+							PRINTFORMW %CALLNAME:TARGET%은(는) 섹시한 포즈를 취했다…
+							PRINTFORMW 그 순간, 풀숲에서 눈에 핏발을 세운 엿보기꾼들이 뛰쳐나와 앞다투어 덤벼들었다
+							A = 5
+							BREAK
+						;フラッシュの雨あられ
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 섹시한 포즈를 취했다…
+							PRINTFORMW 그러자, 주위가 무수한 플래시에 휩싸였다
+							PRINTFORMW %CALLNAME:TARGET%의 섹시한 포즈는 그들의 밤 반찬거리가 된 모양이다
+						ENDIF
+				ENDSELECT
+			;特になし
+			ELSE
+				PRINTFORMW %CALLNAME:TARGET%은(는) 사람들에게 들키지 않도록 빠른 걸음으로 걷고 있다
+			ENDIF
+		NEXT
+	CASE 6
+		;裸です
+		PRINTFORMW %CALLNAME:TARGET%을(를) 창고가에서 차에서 내리게 한 뒤, 한 바퀴 돌고 오도록 지시했다
+		FOR LCOUNT,0,G
+			PRINTFORML  
+			DRAWLINE
+			;暴走族
+			IF RAND:3 == 0
+				B = 7
+				PRINTFORMW 눈앞에 폭주족이 무리 지어 있다
+				PRINTFORMW 맨살을 드러낸 %CALLNAME:TARGET%을(를) 알아채자 슬금슬금 다가왔다
+				CALL INPUT_SELECT(1, "저항시키지 않는다",2, "도망치게 한다", 3, "매도하게 한다")
+				SELECTCASE RESULT
+					CASE 1
+						;乱暴に輪姦
+							PRINTFORMW 리더로 보이는 남자가, 멍하니 서 있는 %CALLNAME:TARGET%을(를) 조롱하며 밀쳐 넘어뜨렸다
+							PRINTFORMW 그러자 다른 남자들도 일제히 몰려들었다
+							A = 5
+							BREAK
+					CASE 2
+						;転んで輪姦
+						IF RAND:100 < 60
+							PRINTFORMW %CALLNAME:TARGET%은(는) 도망쳤다…
+							PRINTFORMW ………넘어졌다
+							PRINTFORMW 정신을 차리자 주변은 남자들에게 둘러싸여 있었고, 뻗어오는 여러 손이 %CALLNAME:TARGET%의 눈에 비쳤다
+							A = 5
+							BREAK
+						;逃走成功
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 도망쳤다…
+							PRINTFORMW ………용케 도망쳤다
+						ENDIF
+					CASE 3
+						;輪姦、長時間＆ハード
+						IF RAND:100 < 90
+							PRINTFORMW %CALLNAME:TARGET%은(는) 다가오는 남자들에게 생각나는 온갖 말로 매도했다…
+							PRINTFORMW 격노한 남자들은 %CALLNAME:TARGET%을(를) 난폭하게 밀쳐 쓰러뜨리고, 앞다투어 몰려들었다
+							A = 6
+							BREAK
+						;凹んで帰っちゃった…
+						ELSE
+							PRINTFORMW 남자들은 울며 도망쳐 버렸다
+						ENDIF
+				ENDSELECT
+			;警備員
+			ELSEIF RAND:2 == 0
+				B = 8
+				PRINTFORMW 창고 안을 걷고 있자니 경비 남성과 마주쳤다
+				PRINTFORMW 남자는 맨살을 드러낸 %CALLNAME:TARGET%을(를) 알아채자 단숨에 덮쳐왔다
+				CALL INPUT_SELECT(1, "저항시키지 않는다",2, "도망치게 한다")
+				SELECTCASE RESULT
+					CASE 1
+						;その場でレイプ
+							PRINTFORMW 경비 남성은 멍하니 선 %CALLNAME:TARGET%을(를) 밀쳐 쓰러뜨리더니,
+							PRINTFORMW 거친 숨을 몰아쉬며 벨트를 풀고, 바짝 발기한 페니스를 %CALLNAME:TARGET%의 눈앞에 드러냈다
+							A = 2
+							BREAK
+					CASE 2
+						;逃げ場を失いレイプ
+						IF RAND:100 < 60
+							PRINTFORMW %CALLNAME:TARGET%은(는) 그 자리에서 도망치려 했다…
+							PRINTFORMW 그러나, 남자는 도망치는 %CALLNAME:TARGET%을(를) 뒤쫓아, 막다른 골목으로 몰아넣었다
+							PRINTFORMW 그리고, 입맛을 다시며 벨트를 풀기 시작했다
+							A = 2
+							BREAK
+						;逃走成功
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 그 자리에서 도망치려 했다…
+							PRINTFORMW 남자가 쫓아올 기척도 없어, 자리를 뒤로했다
+						ENDIF
+				ENDSELECT
+			;特になし
+			ELSE
+				PRINTFORMW 주변에는 인기척이 없다
+			ENDIF
+		NEXT
+	CASE 7
+		;水着です
+		PRINTFORMW 아슬아슬한 수영복 차림의 %CALLNAME:TARGET%을(를) 해변에서 차에서 내리게 한 뒤, 한 바퀴 돌고 오도록 지시했다
+		FOR LCOUNT,0,G
+			PRINTFORML  
+			DRAWLINE
+			;ナンパ
+			IF RAND:5 == 0
+				B = 1
+				PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%에게 말을 걸리고 있다
+				PRINTFORMW 아무래도 헌팅인 모양이다
+				CALL INPUT_SELECT(1, "따라가게 한다",2, "거절하게 한다", 3, "무시하게 한다")
+				SELECTCASE RESULT
+					CASE 1
+						;ナンパSEXへ
+						IF RAND:100 < 60
+							PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%의 유혹에 이끌리는 대로 근처 바위 그늘로 끌려 들어갔다
+							A = 1
+							BREAK
+						;お茶
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%과(와) 바닷가 식당에서 식사하고 헤어졌다
+						ENDIF
+					CASE 2
+						;断りきれずナンパSEXへ
+						IF RAND:100 < 10
+							PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%의 억지에 떠밀려, 근처 바위 그늘로 끌려 들어갔다
+							A = 1
+							BREAK
+						;サヨナラ
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%이(가) 거절하자 투덜거리며 떠나갔다
+						ENDIF
+					CASE 3
+						;逆切れされて路地裏レイプへ
+						IF RAND:100 < 30
+							PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%을(를) 무시하고 걸음을 옮겼다
+							PRINTFORMW 그러자 무시당한 것에 화가 난 %LOCALS:B%에게 억지로 바위 그늘로 끌려 들어갔다
+							A = 2
+							BREAK
+						;サヨナラ
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%을(를) 무시하고 걸음을 옮겼다
+						ENDIF
+				ENDSELECT
+			;少年を逆レイプ
+			ELSEIF RAND:4 == 0
+				B = 9
+				PRINTFORMW 모래사장을 걷고 있자니 전방에서 %LOCALS:B%이(가) 혼자 걸어왔다
+				CALL INPUT_SELECT(1, "유혹하게 한다",2, "무시하게 한다")
+				SELECTCASE RESULT
+					CASE 1
+						;ご奉仕
+						IF RAND:100 < 70
+							PRINTFORMW %CALLNAME:TARGET%은(는) 음란한 말로 %LOCALS:B%을(를) 유혹했다…
+							PRINTFORML 그러자, %LOCALS:B%은(는) 얼굴을 새빨갛게 붉힌 채 고개를 푹 숙여버렸다
+							PRINTFORMW %CALLNAME:TARGET%은(는) 굳어버린 %LOCALS:B%의 손을 이끌고 바닷가 휴게소 화장실로 들어갔다…
+							IF RAND:100 < 5
+								A = 9
+								PRINTFORMW %LOCALS:B%의 수영복을 벗기자, 어른의 것보다 거대한 페니스가 튀어나왔다
+								PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%의 늠름하게 우뚝 솟은 남근에 눈이 못 박혀 있다
+							ELSE
+								A = 8
+							ENDIF
+							BREAK
+						;逃げられる…
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 음란한 말로 %LOCALS:B%을(를) 유혹했다…
+							PRINTFORMW 그러자, %LOCALS:B%은(는) 깜짝 놀라 도망쳐 버렸다
+						ENDIF
+					CASE 2
+						PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%과(와) 눈을 마주치지 않고 지나치려 했다…
+						IF RAND:100 < 70
+							PRINTFORMW 아무 일 없이 스쳐 지나갔다
+						ELSE
+							PRINTFORMW %LOCALS:B%은(는) 가족이나 친구를 잃어버렸는지 울 것 같은 얼굴로 %CALLNAME:TARGET%을(를) 바라보았다
+							PRINTFORMW %CALLNAME:TARGET%은(는) 모른 척하지 못하고 %LOCALS:B%에게 말을 걸어 바닷가 휴게소 화장실로 데려가 버렸다…
+							A = 8
+							BREAK
+						ENDIF
+				ENDSELECT
+			;チンピラ輪姦
+			ELSEIF RAND:3 == 0
+				B = 4
+				PRINTFORMW 눈앞에 양아치들이 무리 지어 있다
+				PRINTFORMW 맨살을 드러낸 %CALLNAME:TARGET%을(를) 알아채자 슬금슬금 다가왔다
+				CALL INPUT_SELECT(1, "저항시키지 않는다",2, "도망치게 한다", 3, "매도하게 한다")
+				SELECTCASE RESULT
+					CASE 1
+						;乱暴に輪姦
+						PRINTFORMW 리더로 보이는 남자가, 멍하니 서 있는 %CALLNAME:TARGET%을(를) 조롱하며 밀쳐 넘어뜨렸다
+						PRINTFORMW 그러자 다른 남자들도 일제히 몰려들었다
+						A = 5
+						BREAK
+					CASE 2
+						;転んで輪姦
+						IF RAND:100 < 60
+							PRINTFORMW %CALLNAME:TARGET%은(는) 도망쳤다…
+							PRINTFORMW ………넘어졌다
+							PRINTFORMW 정신을 차리자 주변은 남자들에게 둘러싸여 있었고, 뻗어오는 여러 손이 %CALLNAME:TARGET%의 눈에 비쳤다
+							A = 5
+							BREAK
+						;逃走成功
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%은(는) 도망쳤다…
+							PRINTFORMW ………용케 도망쳤다
+						ENDIF
+					CASE 3
+						;輪姦、長時間＆ハード
+						IF RAND:100 < 90
+							PRINTFORMW %CALLNAME:TARGET%은(는) 다가오는 남자들에게 생각나는 온갖 말로 매도했다…
+							PRINTFORMW 격노한 남자들은 %CALLNAME:TARGET%을(를) 난폭하게 밀쳐 쓰러뜨리고, 앞다투어 몰려들었다
+							A = 6
+							BREAK
+						;凹んで帰っちゃった…
+						ELSE
+							PRINTFORMW 남자들은 울며 도망쳐 버렸다
+						ENDIF
+				ENDSELECT
+			;逆ナン
+			ELSEIF RAND:2 == 0
+				B = 0
+				PRINTFORMW 해변을 걷고 있자니 %LOCALS:B% 남성과 마주쳤다
+				PRINTFORMW 남자는 아슬아슬한 수영복 차림을 드러낸 %CALLNAME:TARGET%에게 시선이 못 박혀 있다
+				CALL INPUT_SELECT(1, "역헌팅하게 한다",2, "여기서 섹시 포즈")
+				SELECTCASE RESULT
+					CASE 1
+						;その場でレイプ
+						PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%의 귓가에 달콤한 유혹을 속삭였고,
+						PRINTFORMW %LOCALS:B%은(는) 고개를 마구 끄덕이며 %CALLNAME:TARGET%의 어깨에 손을 두르고 숙소로 데려갔다
+						A = 1
+						BREAK
+					CASE 2
+						;逃げ場を失いレイプ
+						IF RAND:100 < 60
+							PRINTFORMW %CALLNAME:TARGET%의 섹시한 포즈에 %LOCALS:B%은(는) 참지 못하고 덮쳐왔다
+							PRINTFORMW 주위에 있던 다른 남자들도 모여들기 시작한다…
+							A = 5
+							BREAK
+						;逃走成功
+						ELSE
+							PRINTFORMW %CALLNAME:TARGET%의 섹시한 포즈에 %LOCALS:B%은(는) 넋이 나가 쓰러지고 말았다…
+						ENDIF
+				ENDSELECT
+			;特になし
+			ELSE
+				PRINTFORMW 주변에는 인기척이 없다
+			ENDIF
+		NEXT
+ENDSELECT
+
+;射精ポイント
+C = 0
+;痴漢ポイント
+D = 0
+;질내사정횟수
+E = 0
+;痴漢挿入フラグ
+F = 0
+;イベント回数
+G = 10
+;追加人数
+H = 0
+;펠라횟수
+I = 0
+;精飲回数
+J = 0
+FOR LCOUNT,0,G
+	PRINTL 
+	PRINTL 
+	;PRINTFORML 
+	;PRINTFORML 
+	;ナンパSEX
+	IF A == 1
+		C += RAND:3 + 1
+		;정상위
+		IF RAND:5 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는) 위를 보고 누운 자신을 덮쳐누른 %LOCALS:B%의 허리놀림에 달콤한 교성을 지르고 있다
+			LOCAL:4 += 1
+			IF C > 3
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM %CALLNAME:TARGET%은(는) %LOCALS:B%에게 안긴 채, \@TALENT:남자 ? 애널 # 질내\@에 %LOCALS:B%의 
+				SETCOLOR COLOR("pink")
+				PRINTFORM 유전자
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW 을(를) 깊이 새겨졌다
+				RESETCOLOR
+				C = 0
+				E += 1
+			ENDIF
+		;バック
+		ELSEIF RAND:4 == 0
+			PRINTFORMW 엎드려 기어 다니는 자세가 된 %CALLNAME:TARGET%은(는), 엉덩이 살에 %LOCALS:B%의 허리가 부딪힐 때마다 쾌락의 신음을 내지르고 있다
+			LOCAL:4 += 1
+			IF C > 3
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM %CALLNAME:TARGET%은(는) %LOCALS:B%에게 허리를 꽉 잡힌 채, \@TALENT:남자 ? 애널 # 질\@ 깊숙이 밀어 넣어진 페니스로부터 
+				SETCOLOR COLOR("pink")
+				PRINTFORM 농후한 정액
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW 을(를) 듬뿍 흘려 넣음 당했다
+				RESETCOLOR
+				C = 0
+				E += 1
+			ENDIF
+		;대면좌위
+		ELSEIF RAND:3 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는) 마주 본 %LOCALS:B%에게 매달려, 감미롭게 찔러 올리는 감각에 교성을 지르고 있다
+			LOCAL:4 += 1
+			IF C > 3
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM %CALLNAME:TARGET%은(는) %LOCALS:B%
+				IF BUST(TARGET) >= 5
+					PRINTFORM 의 얼굴을 폭유에 파묻으며
+				ELSEIF BUST(TARGET) == 4
+					PRINTFORM 에게 거유를 핥아 돌려지면서
+				ELSEIF BUST(TARGET) == 3
+					PRINTFORM 에게 가슴 끝을 빨아 올려지면서
+				ELSE
+					PRINTFORM 에게 유두를 빨아 먹히면서
+				ENDIF
+				PRINTFORM 강하게 안기며, 분수 같은 사정으로 \@TALENT:남자 ? 직장 # 자궁 안\@을 
+				SETCOLOR COLOR("pink")
+				PRINTFORM 정액
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW (으)로 가득 채워졌다
+				RESETCOLOR
+				C = 0
+				E += 1
+			ENDIF
+		;フェラ
+		ELSEIF RAND:2 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는), 우뚝 솟은 %LOCALS:B%의 남근에 혀를 놀리고 있다
+			I += 2
+			IF C > 3
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM %CALLNAME:TARGET%은(는) %LOCALS:B%에게 머리를 붙잡힌 채, 그대로 입안에 
+				SETCOLOR COLOR("pink")
+				PRINTFORM 풋내 나는 수액
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW 을(를) 뿜어졌다
+				RESETCOLOR
+				C = 0
+				J += 1
+			ENDIF
+		;キス
+		ELSE
+			PRINTFORMW %CALLNAME:TARGET%은(는), %LOCALS:B%과(와) 입술을 겹치며, 혀를 서로 얽고 있다
+			C += 1
+		ENDIF
+	;レイプ
+	ELSEIF A == 2
+		C += RAND:3
+		;정상위
+		IF RAND:3 == 0
+			C += RAND:3
+			PRINTFORMW %CALLNAME:TARGET%은(는), 위에서 덮쳐누른 %LOCALS:B%의 욕망대로 허리를 마구 부딪치고 있다
+			LOCAL:4 += 1
+			IF C > 3
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM %CALLNAME:TARGET%은(는) %LOCALS:B%을(를) 밀쳐내지 못하고, 비열한 웃음과 함께 \@TALENT:남자 ? 애널 # 질내\@에 
+				SETCOLOR COLOR("pink")
+				PRINTFORM 사정
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW 당했다
+				RESETCOLOR
+				C = 0
+				E += 1
+			ENDIF
+		;バック
+		ELSEIF RAND:2 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%에게 뒤에서 개처럼 범해지고 있다
+			LOCAL:4 += 1
+			IF C > 3
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM %CALLNAME:TARGET%은(는) %LOCALS:B%에게 유독 강하게 허리를 부딪침과 동시에, \@TALENT:남자 ? 애널 # 질내\@에 
+				SETCOLOR COLOR("pink")
+				PRINT 정액
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW 을(를) 토해내어졌다
+				RESETCOLOR
+				C = 0
+				E += 1
+			ENDIF
+		;이라마치오
+		ELSE
+			PRINTFORMW %CALLNAME:TARGET%은(는) 입안에 %LOCALS:B%의 페니스를 억지로 쑤셔 넣어진 채, 머리를 앞뒤로 뒤흔들리고 있다
+			I += 3
+			IF C > 3
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM 괴로워하는 %CALLNAME:TARGET%의 목구멍 깊숙이에서, %LOCALS:B%의 
+				SETCOLOR COLOR("pink")
+				PRINTFORM 사정
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW 이(가) 무자비하게 시작되었다
+				RESETCOLOR
+				C = 0
+				J += 1
+			ENDIF
+		ENDIF
+	;痴漢プレイ受け
+	ELSEIF A == 3
+		;挿入
+		IF D > 5
+			;回数は痴漢ポイント
+			FOR LCOUNT,0,D
+				PRINTFORML 
+				PRINTFORML 
+				C += RAND:3
+				IF F == 0 
+					SETCOLOR COLOR("pink")
+					PRINTFORMW 혼잡한 차내에서 %LOCALS:B%의 물건이 %CALLNAME:TARGET%의 \@TALENT:남자 ? 애널 # 질내\@로 비틀어 쑤셔 넣어졌다
+					RESETCOLOR
+					F = 1
+					G +=5
+				ENDIF
+				;背面立位
+				IF RAND:3 == 0
+					PRINTFORMW %CALLNAME:TARGET%은(는) 필사적으로 소리를 죽이며, %LOCALS:B%의 허리놀림을 견디고 있다
+					LOCAL:4 += 1
+					IF C > 3
+						SETCOLOR COLOR("DARK-PINK")
+						PRINTFORM %CALLNAME:TARGET%은(는) %LOCALS:B%에게 출입문에 짓눌린 채, 만원 전철 안에서 
+						SETCOLOR COLOR("pink")
+						PRINTFORM 교미
+						SETCOLOR COLOR("DARK-PINK")
+						PRINTFORMW 당하고 말았다
+						RESETCOLOR
+						C = 0
+						E += 1
+					ENDIF
+				;挿入胸揉み
+				ELSEIF RAND:2 == 0
+					PRINTFORM %CALLNAME:TARGET%은(는) 안쪽을 %LOCALS:B%의 강직한 물건으로 헤집어지면서, 
+					IF BUST(TARGET) >= 5
+						PRINTFORMW 폭유를 끝에 달린 돌기째로 농락당하고 있다
+					ELSEIF BUST(TARGET) == 4
+						PRINTFORMW 거유의 끝에 달린 돌기를 주무르듯이 희롱당하고 있다
+					ELSEIF BUST(TARGET) == 3
+						PRINTFORMW \@TALENT:남자 ? 유두 # 유방의 돌기\@를 주무르듯이 희롱당하고 있다
+					ELSE
+						PRINTFORMW 확실히 부풀어 오른 가슴의 돌기를 주무르듯이 희롱당하고 있다
+					ENDIF
+					LOCAL:4 += 1
+					IF C > 3
+					SETCOLOR COLOR("DARK-PINK")
+						PRINTFORMW %CALLNAME:TARGET%은(는) 집요한 유두 애무에, 작게 소리를 흘리고 말았다
+						PRINTFORM 그러자, %LOCALS:B%에게 꾹 허리를 찔러 올려지며, 그대로 \@TALENT:남자 ? 애널 # 뱃속\@에 
+						SETCOLOR COLOR("pink")
+						PRINTFORM 정액
+						SETCOLOR COLOR("DARK-PINK")
+						PRINTFORMW 을(를) 쏟아부어지고 말았다
+						RESETCOLOR
+						C = 0
+						E += 1
+					ENDIF
+				;挿入クリ弄り
+				ELSE
+					PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%의 물건으로 \@TALENT:남자 ? 직장 # 자궁구\@를 밀어 올려지며, \@TALENT:남자 ? 페니스를 # 음핵을 손가락 끝으로 튕기듯이\@ 농락당하고 있다
+					LOCAL:4 += 1
+					IF C > 3
+					SETCOLOR COLOR("DARK-PINK")
+						PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%에게 \@TALENT:남자 ? 페니스를 비벼지며 # 음핵을 꼬집히며\@, 손으로 입을 틀어막은 채 절정에 달하고 있다
+						PRINTFORM 그러자, 안쪽에 삽입되어 있던 %LOCALS:B%의 물건이 펄쩍 튀어 오르더니, \@TALENT:남자 ? 애널 # 질내\@를 
+						SETCOLOR COLOR("pink")
+						PRINTFORM 정액
+						SETCOLOR COLOR("DARK-PINK")
+						PRINTFORMW (으)로 더럽혀지고 말았다
+						RESETCOLOR
+						C = 0
+						E += 1
+					ENDIF
+				ENDIF
+			NEXT
+			BREAK
+		;尻撫で
+		ELSEIF RAND:3 == 0
+			D += RAND:3
+			C += 1
+			PRINTFORMW %CALLNAME:TARGET%은(는) 목덜미에 거친 숨결을 느끼며, %LOCALS:B%에게 엉덩이를 주무르듯 쓰다듬어지고 있다
+		;가슴주무르기
+		ELSEIF RAND:2 == 0
+			D += RAND:3
+			C += 1
+			PRINTFORM %CALLNAME:TARGET%은(는) 끈적한 혀로 목덜미를 핥아 올려지며, %LOCALS:B% 
+			IF BUST(TARGET) >= 5
+				PRINTFORMW 에게 폭유를 농락당하고 있다
+			ELSEIF BUST(TARGET) == 4
+				PRINTFORMW 에게 거대한 \@TALENT:남자 ? 가슴 # 가슴의 부풂\@을 농락당하고 있다
+			ELSEIF BUST(TARGET) == 3
+				PRINTFORMW 에게 \@TALENT:남자 ? 가슴 # 가슴의 부풂\@을 농락당하고 있다
+			ELSE
+				PRINTFORMW 에게 앙증맞은 \@TALENT:남자 ? 가슴 # 가슴의 부풂\@을 농락당하고 있다
+			ENDIF
+		;秘所愛撫
+		ELSE
+			D += RAND:3
+			C += 1
+			PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%의 물건의 감촉을 온몸으로 느끼며, %LOCALS:B%에게 \@TALENT:남자 ? 남자 # 여자\@의 부위를 제멋대로 농락당하고 있다
+		ENDIF
+	;痴漢プレイ攻め
+	ELSEIF A == 4
+		C += RAND:3
+		PRINTFORML 
+		;挿入
+		IF D > 5
+			SETCOLOR COLOR("pink")
+			PRINTFORMW %CALLNAME:TARGET%은(는) 혼잡한 전철 안에서 %LOCALS:B%의 물건을 자신의 \@TALENT:남자 ? 엉덩이 구멍 # 갈라진 틈\@에 대더니, 천천히 \@TALENT:남자 ? 속 # 질내\@로 밀어 넣었다
+			RESETCOLOR
+			FOR LCOUNT,0,D
+				PRINTFORML 
+				PRINTFORML 
+				C += RAND:3
+				;対面立位（責め）
+				IF RAND:3 == 0
+					PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%에게 밀착하면서, 완급을 조절하는 질벽의 움직임으로 \@TALENT:남자 ? 속 # 질내\@의 육봉을 쥐어짜고 있다
+					LOCAL:4 += 1
+					IF C > 3
+						SETCOLOR COLOR("DARK-PINK")
+						PRINTFORM %LOCALS:B%은(는) 참지 못하고 %CALLNAME:TARGET%의 안에 
+						SETCOLOR COLOR("pink")
+						PRINTFORM 정액
+						SETCOLOR COLOR("DARK-PINK")
+						PRINTFORMW 을(를) 뿜어냈다
+						RESETCOLOR
+						C = 0
+						E += 1
+					ENDIF
+				;対面座位（受け）
+				ELSEIF RAND:2 == 0
+					PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%의 초조한 듯한 찌르기에, \@TALENT:남자 ? 전립선 # 질 깊숙한 곳\@을 쿡쿡 찔리고 있다
+					LOCAL:4 += 1
+					IF C > 3
+						SETCOLOR COLOR("DARK-PINK")
+						PRINTFORM %CALLNAME:TARGET%은(는) 눈앞에서 거친 숨을 몰아쉬는 %LOCALS:B%에게 
+						SETCOLOR COLOR("pink")
+						PRINTFORM 질내사정
+						SETCOLOR COLOR("DARK-PINK")
+						PRINTFORMW 당하고 있다
+						RESETCOLOR
+						C = 0
+						E += 1
+					ENDIF
+				;フェラ
+				ELSE
+					PRINTFORMW %CALLNAME:TARGET%은(는) 바닥에 무릎을 꿇고 %LOCALS:B%의 물건을 입에 물었다
+					IF C > 3
+						SETCOLOR COLOR("DARK-PINK")
+						PRINTFORM %CALLNAME:TARGET%은(는) 머리에 손을 얹힌 채, %LOCALS:B%의 
+						SETCOLOR COLOR("pink")
+						PRINTFORM 끈적한 정액
+						SETCOLOR COLOR("DARK-PINK")
+						PRINTFORMW 을(를) 입안에 토해내어졌다
+						RESETCOLOR
+						C = 0
+						J += 1
+					ENDIF
+				ENDIF
+			NEXT
+			BREAK
+		;ペニス撫で
+		ELSEIF RAND:3 == 0
+			D += RAND:3
+			PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%의 음경 뒷면을 손으로 감싸고, 귀두 밑부분을 손바닥으로 부드럽게 쓰다듬고 있다
+				IF C > 3
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORM %LOCALS:B%은(는) 작게 신음하더니, 음경 끝에서 뿜어져 나온 
+					SETCOLOR COLOR("pink")
+					PRINTFORM 정액
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORMW 이(가) %CALLNAME:TARGET%을(를) 하얗게 더럽혔다
+					RESETCOLOR
+					C = 0
+				ENDIF
+		;亀頭擦り
+		ELSEIF RAND:2 == 0
+			D += RAND:3
+			PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%의 귀두를 손바닥으로 살며시 감싸더니, 귀두 목을 축으로 원을 그리듯 움직였다
+				IF C > 3
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORM %LOCALS:B%은(는) 허리를 떨며, %CALLNAME:TARGET%의 손안에서 
+					SETCOLOR COLOR("pink")
+					PRINTFORM 사정
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORMW 사정했다
+					RESETCOLOR
+					C = 0
+				ENDIF
+		ENDIF
+	;乱暴に輪姦
+	ELSEIF A == 5
+		PRINTFORML 
+		C += RAND:3 + 1
+		;行為
+		LOCAL:4 += 1
+		IF RAND:8 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는), 욕설을 뒤집어쓰며 범해지고 있다
+		ELSEIF RAND:7 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는) 『안에 싸달라』고 조르는 말을 강요당하면서, 억센 물건에 꿰뚫리고 있다
+		ELSEIF RAND:6 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는) 입안을 난폭하게 범해졌다
+		ELSEIF RAND:5 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는) 정액 범벅이 된 페니스를 입에 비틀어 쑤셔 넣어졌다
+		ELSEIF RAND:4 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%과(와) 결합된 모습을 주위에 드러낸 채 범해지고 있다
+		ELSEIF RAND:3 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는) 머리를 바닥에 짓눌린 채, 허리를 마구 쳐올려지고 있다
+		ELSEIF RAND:2 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는) 양팔을 짓눌린 채 능욕당하고 있다
+		ELSE
+			PRINTFORMW %CALLNAME:TARGET%은(는) 거칠게 허리를 부딪치고 있다
+		ENDIF
+		;事後
+		IF C > 1
+			IF RAND:6 == 0
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM %CALLNAME:TARGET%의 \@TALENT:남자 ? 애널 # 질내\@에 %LOCALS:B%의 
+				SETCOLOR COLOR("pink")
+				PRINTFORM 정액
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW 이(가) 쏟아져 들어갔다
+				RESETCOLOR
+			ELSEIF RAND:5 == 0
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM %CALLNAME:TARGET%의 안에 %LOCALS:B%의 
+				SETCOLOR COLOR("pink")
+				PRINTFORM 정액
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW (으)로 가득 찼다
+				RESETCOLOR
+			ELSEIF RAND:4 == 0
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM %CALLNAME:TARGET%의 입안에 
+				SETCOLOR COLOR("pink")
+				PRINTFORM 풋내 나는 정액
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW 이(가) 쏟아져 들어갔다
+				RESETCOLOR
+				J += 1
+			ELSEIF RAND:3 == 0
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM %CALLNAME:TARGET%은(는) 입안에 발사된 
+				SETCOLOR COLOR("pink")
+				PRINTFORM 끈적한 정액
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW 에 사레들려 켁켁거리고 있다
+				RESETCOLOR
+				J += 1
+			ELSEIF RAND:2 == 0
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM %CALLNAME:TARGET%은(는) 『임신해라』라는 폭언을 들으며, 
+				SETCOLOR COLOR("pink")
+				PRINTFORM \@TALENT:남자 ? 항문 안 # 질내\@사정
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW 당했다
+				RESETCOLOR
+			ELSE
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM 주저앉은 %CALLNAME:TARGET%의 \@TALENT:남자 ? 애널 # 갈라진 틈\@에서는 대량의 
+				SETCOLOR COLOR("pink")
+				PRINTFORM 정액
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW 이(가) 넘쳐흐르고 있다
+				RESETCOLOR
+			ENDIF
+			C = 0
+			E += 1
+		ENDIF
+;		;정상위
+;		IF RAND:2 == 0
+;		C += RAND:3 + 1
+;		PRINTFORMW 仰向けにされた%CALLNAME:TARGET%は、覆い被さる%LOCALS:B%に乱暴に腰を打ち付けられている
+;		PRINTFORMW 空いた手には他の男のペニスを握らされ、手淫奉仕を強制されていた
+;		IF C > 3
+;			PRINTFORMW %CALLNAME:TARGET%は%LOCALS:B%に両脚を抱え込まれるように引き付けられ、濁流のような精液の奔流を膣内へと放たれた
+;			PRINTFORMW それに合わせるかのように、両手の中のペニスから白濁が浴びせ掛けられた
+;			C = 0
+;		ENDIF
+;		;バック
+;		ELSE
+;		C += RAND:3 + 1
+;		PRINTFORMW %CALLNAME:TARGET%は後ろから%LOCALS:B%に尻を掴まれ、荒々しく犯されている
+;		PRINTFORMW さらに、髪を掴み上げられ、異臭を放つ男根を口内にねじ込まれた
+;		IF C > 3
+;			PRINTFORMW %LOCALS:B%が何度か身体を震わせてから、ペニスを抜き去ると%CALLNAME:TARGET%のワレメから犯された証が流れ出してきた
+;			PRINTFORMW そして、口内にねじ込まれたペニスからも精が放たれ、青臭い粘液が喉を犯していった
+;			C = 0
+;		ENDIF
+;		
+	;輪姦、長時間＆ハード
+	ELSEIF A == 6
+		PRINTFORML 
+		C += RAND:3 + 1
+		;行為
+		IF RAND:8 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는), 욕설을 뒤집어쓰며 범해지고 있다
+		ELSEIF RAND:7 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는) 『안에 싸달라』고 조르는 말을 강요당하면서, 억센 물건에 꿰뚫리고 있다
+		ELSEIF RAND:6 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는) 입안을 난폭하게 범해졌다
+		ELSEIF RAND:5 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는) 정액 범벅이 된 페니스를 입에 비틀어 쑤셔 넣어졌다
+		ELSEIF RAND:4 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%과(와) 결합된 모습을 주위에 드러낸 채 범해지고 있다
+		ELSEIF RAND:3 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는) 머리를 바닥에 짓눌린 채, 허리를 마구 쳐올려지고 있다
+		ELSEIF RAND:2 == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는) 양팔을 짓눌린 채 능욕당하고 있다
+		ELSE
+			PRINTFORMW %CALLNAME:TARGET%은(는) 거칠게 허리를 부딪치고 있다
+		ENDIF
+		;事後
+		IF C > 1
+			IF RAND:6 == 0
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM %CALLNAME:TARGET%의 \@TALENT:남자 ? 애널 # 질내\@에 %LOCALS:B%의 
+				SETCOLOR COLOR("pink")
+				PRINTFORM 정액
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW 이(가) 쏟아져 들어갔다
+				RESETCOLOR
+			ELSEIF RAND:5 == 0
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM %CALLNAME:TARGET%의 안에 %LOCALS:B%의 
+				SETCOLOR COLOR("pink")
+				PRINTFORM 정액
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW (으)로 가득 찼다
+				RESETCOLOR
+			ELSEIF RAND:4 == 0
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM %CALLNAME:TARGET%의 입안에 
+				SETCOLOR COLOR("pink")
+				PRINTFORM 풋내 나는 정액
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW 이(가) 쏟아져 들어갔다
+				RESETCOLOR
+			ELSEIF RAND:3 == 0
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM %CALLNAME:TARGET%은(는) 입안에 발사된 
+				SETCOLOR COLOR("pink")
+				PRINTFORM 끈적한 정액
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW 에 사레들려 켁켁거리고 있다
+				RESETCOLOR
+			ELSEIF RAND:2 == 0
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM %CALLNAME:TARGET%은(는) 『임신해라』라는 폭언을 들으며, 
+				SETCOLOR COLOR("pink")
+				PRINTFORM \@TALENT:남자 ? 항문 안 # 질내\@사정
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW 당했다
+				RESETCOLOR
+			ELSE
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM 주저앉은 %CALLNAME:TARGET%의 \@TALENT:남자 ? 애널 # 갈라진 틈\@에서는 대량의 
+				SETCOLOR COLOR("pink")
+				PRINTFORM 정액
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW 이(가) 넘쳐흐르고 있다
+				RESETCOLOR
+			ENDIF
+			E += RAND:3 + 2
+			SETCOLOR COLOR("DARK-PINK")
+			PRINTFORM %CALLNAME:TARGET%에게 적힌 『교미 횟수』 글자에 
+			SETCOLOR COLOR("RED")
+			PRINTFORM {E}회째
+			SETCOLOR COLOR("DARK-PINK")
+			PRINTFORMW 의 바를 정(正)자가 덧붙여졌다
+			RESETCOLOR
+			IF RAND:100 < 10
+				PRINTFORML 
+				SETCOLOR COLOR("RED")
+				PRINTFORMW %CALLNAME:TARGET%은(는) 수상쩍은 약물을 주사당했다
+				RESETCOLOR
+				PRINTFORML 
+				A = 7
+			ENDIF
+		ENDIF
+		PRINTFORML 
+	;妖しい注射
+	ELSEIF A == 7
+		G = RAND:6 + 5
+		$TYUUSYA
+		SIF H > 1
+			G = 3
+		FOR LCOUNT,0,G
+			PRINTFORML 
+			PRINTFORML 
+			C += RAND:3 + 1
+			;行為
+			PRINTFORML 
+			G += 1
+			IF RAND:8 == 0
+				PRINTFORMW %CALLNAME:TARGET%은(는) 음란한 말을 외치며, %LOCALS:B%의 위에서 허리를 흔들고 있다
+			ELSEIF RAND:7 == 0
+				PRINTFORMW %CALLNAME:TARGET%은(는) 뒤에서 범하는 %LOCALS:B%에게 『안에 싸달라』고 조르고 있다
+			ELSEIF RAND:6 == 0
+				PRINTFORMW %CALLNAME:TARGET%은(는) \@TALENT:남자 ? 항문 # 여음\@을 거칠게 찔리며, 들이밀어진 페니스를 탐욕스럽게 빨고 있다
+			ELSEIF RAND:5 == 0
+				PRINTFORMW %CALLNAME:TARGET%은(는) 범해지는 쾌락에 다리를 벌리고, 도리도리 머리를 흔들며 헐떡이고 있다
+			ELSEIF RAND:4 == 0
+				PRINTFORMW %CALLNAME:TARGET%은(는) 스스로 %LOCALS:B%과(와) 결합된 부위를 드러내며, 음란한 미소를 짓고 있다
+			ELSEIF RAND:3 == 0
+				PRINTFORMW %CALLNAME:TARGET%은(는) 백탁이 넘쳐흐르는 \@TALENT:남자 ? 애널 # 갈라진 틈\@을 벌리며, 음탕하게 페니스를 조르고 있다
+			ELSEIF RAND:2 == 0
+				PRINTFORMW %CALLNAME:TARGET%은(는) 치켜든 엉덩이를 꽉 움켜잡힌 채, 짐승처럼 범해지고 있다
+			ELSE
+				PRINTFORMW %CALLNAME:TARGET%은(는) 도구처럼 범해지면서도, 기쁨에 찬 소리를 내지르고 있다
+			ENDIF
+			;事後
+			IF C > 2
+				SETCOLOR COLOR("DARK-PINK")
+				IF RAND:6 == 0
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORM %CALLNAME:TARGET%은(는) 속을 태우는 
+					SETCOLOR COLOR("pink")
+					PRINTFORM 정액
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORMW 의 열기에 쾌락의 교성을 지르고 있다
+					RESETCOLOR
+				ELSEIF RAND:5 == 0
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORM %CALLNAME:TARGET%은(는) \@TALENT:남자 ? 직장 # 자궁\@을 
+					SETCOLOR COLOR("pink")
+					PRINTFORM 정액
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORMW (으)로 채워지는 황홀감에 젖어 있다
+					RESETCOLOR
+				ELSEIF RAND:4 == 0
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORM %CALLNAME:TARGET%은(는) \@TALENT:남자 ? 직장 # 질\@과 입안을 
+					SETCOLOR COLOR("pink")
+					PRINTFORM 농후한 정액
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORMW (으)로 채워지며, 도취되어 있다
+					RESETCOLOR
+				ELSEIF RAND:3 == 0
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORM %CALLNAME:TARGET%은(는) %LOCALS:B%의 사정과 동시에 다리를 교차시켜, 단단히 
+					SETCOLOR COLOR("pink")
+					PRINTFORM 정액
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORMW 을(를) 쥐어짜 내려고 하고 있다
+					RESETCOLOR
+				ELSEIF RAND:2 == 0
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORM 다리를 Ｍ자로 벌려져, 노출된 %CALLNAME:TARGET%의 \@TALENT:남자 ? 애널 # 갈라진 틈\@에서는 하염없이 
+					SETCOLOR COLOR("pink")
+					PRINTFORM 정액
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORMW 이(가) 흘러나오고 있다
+					RESETCOLOR
+				ELSE
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORM %CALLNAME:TARGET%은(는) \@TALENT:남자 ? 애널 # 질내\@에서 넘쳐흐르는 
+					SETCOLOR COLOR("pink")
+					PRINTFORM 정액
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORMW 을(를) 손가락으로 떠내더니, %LOCALS:B%들에게 과시하듯이 혀로 핥아먹었다
+					RESETCOLOR
+				ENDIF
+				RESETCOLOR
+				C = 0
+				E += RAND:3 + 2 + (H / 2)
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORM %CALLNAME:TARGET%에게 적힌 『교미 횟수』 글자에 
+				SETCOLOR COLOR("RED")
+				PRINTFORM {E}회째
+				SETCOLOR COLOR("DARK-PINK")
+				PRINTFORMW 의 바를 정(正)자가 덧붙여졌다
+				RESETCOLOR
+			ENDIF
+			SIF I == 4
+				BREAK
+			IF RAND:100 < 30
+				H = 5 + RAND:11
+				C += H
+				PRINTFORML 
+				SETCOLOR COLOR("RED")
+				PRINTFORMW 핸드폰으로 불려 나온 {H}명의 %LOCALS:B%들이, 징그럽게 웃으며 능욕에 가담했다
+				RESETCOLOR
+				PRINTFORML 
+				I += 1
+				SIF G < 3
+					GOTO TYUUSYA
+			ENDIF
+			PRINTFORML 
+		NEXT
+		BREAK
+		;少年を逆レイプ
+		ELSEIF A == 8
+			C += RAND:3 + 1
+			;기승위
+			IF RAND:6 == 0
+				PRINTFORMW %CALLNAME:TARGET%은(는) 변기에 앉은 %LOCALS:B%에게 걸터앉아 페니스를 아래쪽 입으로 탐하고 있다
+				LOCAL:4 += 1
+				IF C > 3
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORM %LOCALS:B%은(는) 한심한 비명을 지르며 
+					SETCOLOR COLOR("pink")
+					PRINTFORM 어린 정액
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORMW 을(를) %CALLNAME:TARGET%의 \@TALENT:남자 ? 애널 # 질내\@에 쏟아부었다
+					RESETCOLOR
+					C = 0
+					E += 1
+				ENDIF
+			;정상위
+			ELSEIF RAND:5 == 0
+				PRINTFORMW %LOCALS:B%은(는) %CALLNAME:TARGET%의 유두를 빨아대며 필사적으로 허리를 흔들고 있다
+				LOCAL:4 += 1
+				IF C > 3
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORM %LOCALS:B%은(는) %CALLNAME:TARGET%의 품에 안긴 채 
+					SETCOLOR COLOR("pink")
+					PRINTFORM 미숙한 정액
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORMW 을(를) \@TALENT:남자 ? 애널 # 질내\@에 토해냈다
+					RESETCOLOR
+					C = 0
+					E += 1
+				ENDIF
+			;バック
+			ELSEIF RAND:4 == 0
+				PRINTFORMW 엎드려 뻗친 %CALLNAME:TARGET%을(를) 덮쳐누르듯 하며, %LOCALS:B%이(가) 무아지경으로 허리를 놀리고 있다
+				LOCAL:4 += 1
+				IF C > 3
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORM %CALLNAME:TARGET%의 \@TALENT:남자 ? 애널 # 질\@이 음란하게 꿈틀거리자, %LOCALS:B%은(는) 
+					SETCOLOR COLOR("pink")
+					PRINTFORM 풋내 나는 정액
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORMW 을(를) 착취당하고 말았다
+					RESETCOLOR
+					C = 0
+					E += 1
+				ENDIF
+			;尻穴を弄りながらペニス扱き
+			ELSEIF RAND:3 == 0
+				PRINTFORMW %LOCALS:B%은(는)
+				IF BUST(TARGET) >= 5
+					PRINTFORM 폭유에 얼굴이 짓눌리면서
+				ELSEIF BUST(TARGET) == 4
+					PRINTFORM 거유에 얼굴을 파묻으면서
+				ELSEIF BUST(TARGET) == 3
+					PRINTFORM 유두를 빨아대면서
+				ELSE
+				ENDIF
+				PRINTFORMW %CALLNAME:TARGET%에게 엉덩이 구멍을 농락당하며 페니스를 쥐어짜이고 있다
+			;	LOCAL:4 += 1
+				IF C > 3
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORM %LOCALS:B%은(는) 한심한 교성을 지르며 허리를 경련시키고 
+					SETCOLOR COLOR("pink")
+					PRINTFORM 미숙한 정액
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORMW 을(를) 공중에 마구 흩뿌렸다
+					RESETCOLOR
+					C = 0
+				ENDIF
+			;フェラ
+			ELSEIF RAND:2 == 0
+				PRINTFORMW %LOCALS:B%은(는) 발기한 작은 남근을 %CALLNAME:TARGET%의 입에 물려 있다
+				I += 2
+				IF C > 3
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORM %LOCALS:B%은(는) %CALLNAME:TARGET%의 교묘한 입놀림에 작게 신음을 흘리더니, 울먹거리며 
+					SETCOLOR COLOR("pink")
+					PRINTFORM 묽은 정액
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORMW 을(를) %CALLNAME:TARGET%의 입안에 질질 흘려 넣었다
+					RESETCOLOR
+					C = 0
+					J += 1
+				ENDIF
+			;キス
+			ELSE
+				PRINTFORMW %CALLNAME:TARGET%은(는), %LOCALS:B%과(와) 입술을 겹치며, 혀를 서로 얽고 있다
+				PRINTFORMW %LOCALS:B%은(는) 속수무책으로 %CALLNAME:TARGET%에게 입안을 농락당하고 있다
+				C += 1
+			ENDIF
+		;少年を逆レイプ…しようと思ったが実は少年が巨根の持ち主だったのだー！な、なんだってー！？
+		ELSEIF A == 9
+			C += RAND:4 + 1
+			;정상위
+			IF RAND:5 == 0
+				PRINTFORM %CALLNAME:TARGET%은(는) %LOCALS:B%에게
+				IF BUST(TARGET) >= 5
+					PRINTFORM 폭유에 얼굴을 파묻힌 채
+				ELSEIF BUST(TARGET) == 4
+					PRINTFORM 거유에 얼굴을 파묻힌 채
+				ELSEIF BUST(TARGET) == 3
+					PRINTFORM 유두를 빨려지면서
+				ELSE
+					PRINTFORM 유두를 빨려지면서
+				ENDIF
+				PRINTFORMW 거대한 페니스에 허덕이고 있다
+				PRINTFORMW %LOCALS:B%이(가) 무자비하게 허리를 흔들 때마다 %CALLNAME:TARGET%의 \@TALENT:남자 ? 애널 # 질내\@가 %LOCALS:B%의 거근 형태로 길들여져 갔다
+				LOCAL:4 += 1
+				IF C > 3
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORM %CALLNAME:TARGET%은(는) %LOCALS:B%을(를) 품에 꼭 끌어안은 채 
+					SETCOLOR COLOR("pink")
+					PRINTFORM 대량의 진한 정액
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORMW 을(를) \@TALENT:남자 ? 직장 # 자궁\@에 흘려 넣음 당했다
+					RESETCOLOR
+					C = 0
+					E += 3
+				ENDIF
+			;バック
+			ELSEIF RAND:4 == 0
+				PRINTFORMW 엎드려 뻗친 %CALLNAME:TARGET%을(를) 덮쳐누르듯 하며, %LOCALS:B%이(가) 무아지경으로 허리를 놀리고 있다
+				PRINTFORMW 어른 팔뚝보다 굵은 페니스를 물고 있는 %CALLNAME:TARGET%의 \@TALENT:남자 ? 애널 # 은밀한 입술\@은 크게 확장되어 버렸다
+				LOCAL:4 += 1
+				IF C > 3
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORM %CALLNAME:TARGET%은(는) \@TALENT:남자 ? S상결장까지 # 자궁에\@ 
+					SETCOLOR COLOR("pink")
+					PRINTFORM 대량으로 내리꽂힌 정액
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORMW 의 감촉에 혀를 쑥 내밀며 교성을 지르고 있다
+					RESETCOLOR
+					C = 0
+					E += 4
+				ENDIF
+			;기승위
+			ELSEIF RAND:3 == 0
+				PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%에게 걸터앉아 격렬하게 허리를 움직이고 있다
+				PRINTFORM %LOCALS:B%이(가) 강하게 찔러 올릴 때마다, 
+				IF BUST(TARGET) >= 5
+					PRINTFORM %CALLNAME:TARGET%의 너무나 무거운 폭유가 출렁인다
+				ELSEIF BUST(TARGET) == 4
+					PRINTFORM %CALLNAME:TARGET%의 거대한 유방이 묵직하게 튕겼다
+				ELSEIF BUST(TARGET) == 3
+					PRINTFORM %CALLNAME:TARGET%의 유방이 부드럽게 튀어 올랐다
+				ELSE
+					PRINTFORMW %CALLNAME:TARGET%의 아랫배에는 거근의 형태가 불룩하게 떠올라 있다
+				ENDIF
+				LOCAL:4 += 1
+				IF C > 3
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORM %CALLNAME:TARGET%은(는)
+					SETCOLOR COLOR("pink")
+					PRINTFORM 대량의 걸쭉한 정액
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORMW 에 \@TALENT:남자 ? 직장 # 자궁\@을 유린당하고 있다
+					RESETCOLOR
+					C = 0
+					E += 5
+				ENDIF
+			;フェラ
+			ELSEIF RAND:2 == 0
+				PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%의 거근을 목구멍 깊숙이까지 물고 있다
+				I += 3
+				IF C > 3
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORM %CALLNAME:TARGET%의 입안에 
+					SETCOLOR COLOR("pink")
+					PRINTFORM 대량의 끈적한 정액
+					SETCOLOR COLOR("DARK-PINK")
+					PRINTFORMW 이(가) 토해내어졌다
+					RESETCOLOR
+					C = 0
+					J += 3
+				ENDIF
+			;キス
+			ELSE
+				PRINTFORMW %CALLNAME:TARGET%은(는) %LOCALS:B%과(와) 입술을 겹치고 혀를 서로 얽으며
+				PRINTFORMW 바짝 곤두선 거대한 물건을 손으로 흔들고 있다
+				C += 1
+			ENDIF
+		ENDIF
+NEXT
+IF A > 0
+	PRINTFORML ·
+	PRINTFORML ··
+	PRINTFORMW ···
+	SETCOLOR COLOR("LIGHT-GRAY")
+	IF A == 1
+		PRINTFORML %LOCALS:B%은(는) 만족스러운 얼굴로 연락처를 건네고는, 방을 떠나갔다
+		PRINTFORMW %CALLNAME:TARGET%은(는) 샤워로 %LOCALS:B%의 냄새를 씻어내고, 호텔을 뒤로했다
+	ELSEIF A == 2
+		PRINTFORMW %CALLNAME:TARGET%은(는) 더럽혀진 모습 그대로, 멍하니 주저앉아 있다
+		IF E > 0
+			PRINTFORM \@TALENT:남자 ? 엉덩이 구멍 # 질내\@에서는 %LOCALS:B%에게 주입당한 
+			SETCOLOR COLOR("RED")
+			PRINTFORM {E}발 분량의
+			SETCOLOR COLOR("pink")
+			PRINTFORM 정액
+			SETCOLOR COLOR("LIGHT-GRAY")
+			PRINTFORMW 이(가), 뚝뚝 떨어져 지면에 웅덩이를 만들고 있다
+		ENDIF
+	ELSEIF A == 3
+		PRINTFORMW %CALLNAME:TARGET%은(는) 서둘러 옷매무새를 가다듬고는, 종종걸음으로 전철에서 내렸다
+		IF E > 0
+			PRINTFORM \@TALENT:남자 ? 엉덩이 구멍 # 질내\@에서는 %LOCALS:B%에게 쏟아부어진 
+			SETCOLOR COLOR("RED")
+			PRINTFORM {E}발 분량의
+			SETCOLOR COLOR("pink")
+			PRINTFORM 정액
+			SETCOLOR COLOR("LIGHT-GRAY")
+			PRINTFORMW 이(가), 허벅지를 타고 흘러내리고 있다
+		ENDIF
+	ELSEIF A == 4
+		PRINTFORMW %CALLNAME:TARGET%은(는) 천천히 옷을 바로 입고, 역으로 내려갔다
+		IF E > 0
+			PRINTFORM \@TALENT:남자 ? 엉덩이 구멍 # 질내\@에서
+			SETCOLOR COLOR("RED")
+			PRINTFORM {E}회
+			SETCOLOR COLOR("LIGHT-GRAY")
+			PRINTFORM 쥐어짜 낸 %LOCALS:B%의
+			SETCOLOR COLOR("pink")
+			PRINTFORM 정액
+			SETCOLOR COLOR("LIGHT-GRAY")
+			PRINTFORMW 이(가), 허벅지를 타고 흘러내리고 있다
+		ENDIF
+	ELSEIF A == 5
+		PRINTFORMW %CALLNAME:TARGET%은(는) 백탁 범벅이 된 채, 버려진 인형처럼 쓰러져 있다
+		PRINTFORM \@TALENT:남자 ? 엉덩이 구멍 # 질내\@에서는, 토해내어진 %LOCALS:B%들의 
+		SETCOLOR COLOR("pink")
+		PRINTFORM 정액
+		SETCOLOR COLOR("LIGHT-GRAY")
+		PRINTFORMW 이(가) 음란한 소리를 내며 흘러나오고 있다
+	ELSEIF A == 6
+		PRINTFORMW 만신창이로 범해진 %CALLNAME:TARGET%은(는) %LOCALS:B%들에게 다리를 쩍 벌린 채 벤치에 묶였다
+		PRINTFORM 『사용당한 구멍』에서는, 
+		SETCOLOR COLOR("pink")
+		PRINTFORM 정액
+		SETCOLOR COLOR("LIGHT-GRAY")
+		PRINTFORM 이(가) 뚝뚝 방울져 떨어지고 있다
+	ELSEIF A == 7
+		PRINTFORMW %LOCALS:B%들은 만족하자, %CALLNAME:TARGET%을(를) 방치하고 떠나갔다
+		PRINTFORMW 약효가 남아 있는 %CALLNAME:TARGET%은(는) 교성을 지르며 \@TALENT:남자 ? 애널 # 여음\@을 마구 휘젓고 있다
+	ELSEIF A == 8
+		PRINTFORMW 기절해버린 %LOCALS:B%의 뺨에 가볍게 키스하고, %CALLNAME:TARGET%은(는) 공원을 뒤로했다
+		IF E > 0
+			PRINTFORMW %LOCALS:B%에게서
+			SETCOLOR COLOR("pink")
+			PRINTFORM {E}회 쥐어짜 낸 정액
+			SETCOLOR COLOR("LIGHT-GRAY")
+			PRINTFORMW 이(가) 허벅지에 하얀 줄기를 남기며 흘러내리고 있다
+		ENDIF
+	ELSEIF A == 9
+		PRINTFORMW 완전히 %LOCALS:B%의 거대한 물건에 포로가 되어버린 %CALLNAME:TARGET%은(는)
+		PRINTFORMW 녹아내린 미소를 띠며 %LOCALS:B%의 위에서 허리를 흔들고 있다
+		PRINTFORMW %LOCALS:B%의 물건에 길들여진 \@TALENT:남자 ? 엉덩이 구멍 # 질내\@에서는
+		SETCOLOR COLOR("pink")
+		PRINTFORM {E}회 사정된 풋내 나는 정액
+		SETCOLOR COLOR("LIGHT-GRAY")
+		PRINTFORMW 이(가) 대량으로 흘러넘치고 있다
+	ENDIF
+	RESETCOLOR
+ENDIF
+IF A == 0
+	PRINTFORMW %CALLNAME:TARGET%은(는) 아무 일도 없었다는 듯 돌아왔다
+	G = 0
+ENDIF
+
+;行為回数
+IF INRANGE(A, 5, 7)
+	LOCAL:1 = E + RAND:(1 + E / 10)
+ELSE
+	LOCAL:1 = G
+ENDIF
+;펠라횟수
+IF INRANGE(A, 5, 7)
+	LOCAL:2 += E / 3
+ELSE
+	LOCAL:2 += I + (E / 4)
+ENDIF
+;Ａ경험
+SIF INRANGE(A, 5, 7)
+	LOCAL:3 = E / 5
+;Ｖ경험
+SIF INRANGE(A, 5, 7) && TALENT:남자 == 0
+	LOCAL:4 += E + RAND:(1 + E / 2)
+;성교경험
+LOCAL:5 = LOCAL:4 + LOCAL:3
+;정액경험
+IF INRANGE(A, 5, 7)
+	LOCAL:6 = E + (LOCAL:2 / 5)
+ELSE
+	LOCAL:6 = E + LOCAL:2
+ENDIF
+;질사경험=E
+;輪姦回数
+SIF INRANGE(A, 5, 7)
+	LOCAL:7 = LOCAL:5 / 10
+
+
+;消費体力、気力
+LOSEBASE:체력 += 45 * LOCAL:1
+LOSEBASE:기력 += 100 * LOCAL:1
+
+
+
+CALL ADDS_EXP("펠라경험", LOCAL:2, TARGET)
+CALL ADDS_EXP("Ａ경험", LOCAL:3, TARGET)
+SIF TALENT:남자 == 0
+	CALL ADDS_EXP("Ｖ경험", LOCAL:4, TARGET)
+IF TALENT:처녀 && G > 0
+	;PRINTFORML 처녀상실
+	IF A == 1 || A == 4 || A == 8 || A == 9
+		CALL ADDS_ABNORMAL_EXP("処女喪失（行きずり）", TARGET)
+	ELSEIF A == 2 || A == 3
+		CALL ADDS_ABNORMAL_EXP("処女喪失（強姦）", TARGET)
+	ELSE
+		CALL ADDS_ABNORMAL_EXP("処女喪失（輪姦）", TARGET)
+	ENDIF
+	SIF TEQUIP:비디오카메라
+		CALL ADDS_ABNORMAL_EXP, "処女喪失（撮影）", TARGET
+ELSEIF TALENT:재생처녀
+	;PRINTFORML 재생처녀상실
+ENDIF
+
+;V経験を伴うコマンドのフラグ(処女膜再生対応)
+IF G > 0
+	TFLAG:19 = 1
+	CALL ADDS_EXP("성교경험", LOCAL:5, TARGET)
+	CALL ADDS_EXP("정액경험", LOCAL:6, TARGET)
+	IF TALENT:남자 == 0
+		IF CFLAG:자궁내피임결계 == 0
+			CALL ADDS_EXP("질사경험", E, TARGET)
+			CFLAG:고객의질내사정에의한임신판정 += E
+		ELSE
+			PRINTFORML <피임결계>
+		ENDIF
+	ENDIF
+	SIF A == 5 || A == 6 || A == 7
+		CALL ADDS_EXP("윤간경험", LOCAL:7, TARGET)
+	SOURCE:쾌Ｃ += LOCAL:5*15
+	SIF TALENT:남자 == 0
+		SOURCE:쾌Ｖ += LOCAL:5*45
+	SOURCE:쾌Ａ += LOCAL:5*25
+	SIF TALENT:남자
+		SOURCE:쾌Ａ += LOCAL:5*20
+	SOURCE:쾌Ｂ += LOCAL:5*35
+	SOURCE:복종 += LOCAL:1*100*(1+ABL:순종)
+	SOURCE:굴종 += ((E*10*(1+ABL:Ｖ감각)+E*10*(1+ABL:Ａ감각)+E*10*(1+ABL:봉사정신)+E*10*(1+ABL:Ｂ감각)+E*10*(1+ABL:Ｃ감각))/(11-(ABL:욕망)))*10
+	SOURCE:욕정 += (E*10*(1+ABL:Ｖ감각)+E*10*(1+ABL:Ａ감각)+E*10*(1+ABL:Ｂ감각)+E*10*(1+ABL:Ｃ감각))*10
+	SOURCE:성행위 += (LOCAL:2*50+LOCAL:2*60+LOCAL:2*40+LOCAL:2*40)*10
+	SOURCE:노출 += ((LOCAL:1*2+LOCAL:1+LOCAL:1+LOCAL:1*3)*10*(1+ABL:노출증))*10
+	SIF A == 1 || A == 8
+		SOURCE:달성 += E*30*((1+ABL:새드끼)+(1+ABL:봉사정신)+(1+ABL:키스중독))*10
+	SIF A != 8
+		SOURCE:아픔 += (LOCAL:4*5*(10-ABL:Ｖ감각)+LOCAL:4*5*(10-ABL:Ａ감각))*10
+	SIF A == 2 || A == 9
+		SOURCE:아픔 += (LOCAL:4*5*(11-ABL:섹스중독)+LOCAL:4*5*(11-ABL:윤간중독))*5
+	SIF A == 5 || A == 6 || A == 7
+		SOURCE:아픔 += (LOCAL:4*5*(11-ABL:섹스중독)+LOCAL:4*5*(11-ABL:윤간중독))*10
+	SOURCE:무서움 += (E*5*(10-ABL:Ｖ감각)+E*5*(10-ABL:Ａ감각))*10
+	SOURCE:반감 += E*(1+MARK:반발각인)*(1+MARK:반발각인)*1000
+ENDIF
+
+;PRINTFORML ＭＡＧ +{(LOCAL:35*2+LOCAL:34*2+LOCAL:36*1)*BASE:LV}
+;CALL CONTROL_MAG,TARGET,(LOCAL:35*2+LOCAL:34*2+LOCAL:36*1)*BASE:LV
+
+PRINTFORML ＭＡＧ +{((E + J) * 10)*BASE:LV}
+CALL CONTROL_MAG, TARGET, ((E + J) * 10)*BASE:LV
+
+;依存度ベクトル
+TFLAG:33 = 5
+
+;撮影中ならビデオの内容を遠隔調教で埋める
+SIF TEQUIP:비디오카메라
+	PRINTFORML 모든 전말을 비디오카메라에 담았다
+;何も起こらなかったら
+IF A == 0
+	;何もしないだったことにしてしまう
+	SELECTCOM = 21
+ENDIF
+$VIDEO_LOOP
+IF TEQUIP:비디오카메라
+	CALL EQUIP_COM183
+	GOTO VIDEO_LOOP
+ENDIF
+IF A == 0
+	;元に戻しておく
+	SELECTCOM = 203
+ENDIF
+RETURN 1
+
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_203
+RETURN COMTYPE("特殊コマンド系")

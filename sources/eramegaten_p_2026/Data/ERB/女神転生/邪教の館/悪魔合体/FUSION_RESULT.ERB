@@ -1,0 +1,757 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:FUSION_RESULT.ERB
+;	Facility	:悪魔合体の結果を出力するための関数群です
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/01/28		P						ジェンダーフリーの処理を追加
+;	003		2011/02/10		P						リスト作成の処理を変更。怪異合体で一部ランダムが残っていたのを排除
+;	003		2011/05/08		Ｎ鳥					３身合体追加
+;	004		2012/03/30		黒天					合体事故で仲魔と同じ悪魔が作成される問題の対処
+;	005		2023/07/10		P						MAG強化の引き継ぎ処理の変更に合わせて処理を追加
+;	006		2023/08/06		P(bazzile)				コンバーターで作成予定の悪魔の合体条件を満たしていない場合にコンバート処理を差し戻すように変更
+;	007		2023/08/24		P(bazzile)				エコーチェンバーとバブルフィルターの処理を追加
+;	008		2024/07/19		P(bazzile)				コンバータの処理を変更して表示方式を調整
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;================================================================
+;通常/精霊合体のテーブル作成
+;================================================================
+@MAKE_NORMAL_FUSION_TABLE
+#DIM DYNAMIC CSV_NO
+#DIM DYNAMIC L_CONVERTER
+#DIM DYNAMIC L_RACE
+#DIM DYNAMIC IS_ACTIVE_ECHO
+#DIM DYNAMIC IS_ACTIVE_BUBBLE
+#DIM DYNAMIC TEMP_ALI
+VARSET FUSION_RACE_LIST_MALE
+VARSET FUSION_RACE_LIST_FEMALE
+;速度のためにSOFT_ON関数の通過回数を減らす
+IS_ACTIVE_ECHO = SOFT_ON("에코챔버")
+IS_ACTIVE_BUBBLE = SOFT_ON("버블필터")
+FOR CSV_NO, 0, CSVCHARANUM
+	SIF !EXISTCSV(CSV_NO)
+		CONTINUE
+	L_RACE = CSVABL(CSV_NO, GETNUM(ABL, "종족"))
+	SIF !INRANGE(L_RACE, 1, NORMAL_RACENUM-1)
+		CONTINUE
+	SIF CSVCFLAG(CSV_NO,(GETNUM(CFLAG,"합체조건있음")),0) == 1 && REMOVED_FUSION_LIMIT:CSV_NO == 0
+		CONTINUE
+	SIF CSVCFLAG(CSV_NO,(GETNUM(CFLAG,"특수합체만")),0) == 1
+		CONTINUE
+	L_CONVERTER = FINDELEMENT(NORMAL_CONVERTER_TABLE, CSVCFLAG(CSV_NO,(GETNUM(CFLAG,"컨버터")),0))
+	SIF L_CONVERTER == -1
+		CONTINUE
+	IF IS_ACTIVE_ECHO
+		IF CSVABL(CSV_NO, GETNUM(ABL, "속성LD")) > 0
+			TEMP_ALI = CSVABL(CSV_NO, GETNUM(ABL, "속성LD"))
+		ELSE
+			SELECTCASE CSVABL(CSV_NO, GETNUM(ABL, "선악치"))
+				CASE IS > 170
+					TEMP_ALI = 1
+				CASE IS > 84
+					TEMP_ALI = 2
+				CASEELSE
+					TEMP_ALI = 3
+			ENDSELECT
+		ENDIF
+		SIF ABL:MASTER:속성LD != TEMP_ALI
+			CONTINUE
+	ENDIF
+	IF IS_ACTIVE_BUBBLE
+		IF CSVABL(CSV_NO, GETNUM(ABL, "속성LC")) > 0
+			TEMP_ALI = CSVABL(CSV_NO, GETNUM(ABL, "속성LC"))
+		ELSE
+			SELECTCASE CSVABL(CSV_NO, GETNUM(ABL, "선악치"))
+				CASE IS > 170
+					TEMP_ALI = 1
+				CASE IS > 84
+					TEMP_ALI = 2
+				CASEELSE
+					TEMP_ALI = 3
+			ENDSELECT
+		ENDIF
+		SIF ABL:MASTER:속성LC != TEMP_ALI
+			CONTINUE
+	ENDIF
+	;4次元を作れないので男女テーブルをわける
+	;性別指定種族は全て女のテーブルにいれる
+	IF GROUPMATCH(GET_RACE(L_RACE), "여신", "지모신", "귀신", "마신")
+		FUSION_RACE_LIST_FEMALE:L_CONVERTER:L_RACE:(CSVBASE(CSV_NO,GETNUM(BASE,"LV"),0)) = CSV_NO
+	ELSEIF CSVTALENT(CSV_NO,GETNUM(TALENT,"남자"),0)
+		;컨버터/종족/レベルの3次元
+		FUSION_RACE_LIST_MALE:L_CONVERTER:L_RACE:(CSVBASE(CSV_NO,GETNUM(BASE,"LV"),0)) = CSV_NO
+	ELSE
+		FUSION_RACE_LIST_FEMALE:L_CONVERTER:L_RACE:(CSVBASE(CSV_NO,GETNUM(BASE,"LV"),0)) = CSV_NO
+	ENDIF
+NEXT
+
+;=====================================================
+;合体結果
+;=====================================================
+@RESULT_FUSION, L_MATERIAL:0, L_MATERIAL:1, L_MATERIAL:2 = -1, L_CONVERTER, IS_MALE, L_RESULT_RACE = -1
+#DIM DYNAMIC LCOUNT, 3
+#DIM DYNAMIC L_CONVERTER, 2
+#DIM DYNAMIC L_MATERIAL, 3
+#DIM DYNAMIC IS_MALE
+#DIM DYNAMIC L_RACE, 3
+#DIM DYNAMIC L_RESULT_RACE
+#DIM DYNAMIC L_LV
+#DIM DYNAMIC L_ADD_LV
+
+RESULT:1 = 0
+;種族が指定されていた場合、そこまで飛ばす
+IF L_RESULT_RACE < 0
+	;通常合体コンバーターが終わってたら終わる
+	SIF L_CONVERTER >= VARSIZE("NORMAL_CONVERTER_TABLE")
+		RETURN 0
+	L_RACE:2 = -1
+	;レベルを取っておく
+	L_LV = FUSION_BASE_LV(L_MATERIAL:0, L_MATERIAL:1, L_MATERIAL:2)
+	L_ADD_LV = FUSION_PLUS_LV(FLAG:합체인수)
+	FOR LCOUNT, 0, FLAG:합체인수
+		;怪異の種族はNOから一般種族にする。
+		IF GET_RACE(ABL:(L_MATERIAL:LCOUNT):종족) == "괴이"
+			L_RACE:LCOUNT = NO:(L_MATERIAL:LCOUNT) % 11 + 1
+		ELSE
+			L_RACE:LCOUNT = ABL:(L_MATERIAL:LCOUNT):종족
+		ENDIF
+	NEXT
+
+	;精霊合体は２身合体の時のみ判定
+	IF FLAG:합체인수 == 2
+		;==================================================
+		;片方（種族ナンバーが大きい方）が精霊なら精霊合体()
+		;==================================================
+		IF GET_RACE(L_RACE:1) == "정령"
+			IF GET_RACE(L_RACE:0) != "정령" &&  GET_RACE(L_RACE:0) != "어령"
+				;精霊合体処理
+				CALL RESULT_ELEMENT_FUSION, NO:L_MATERIAL, NO:(L_MATERIAL:1), L_CONVERTER, IS_MALE
+				;結果の悪魔を返す
+				;RESULT:1は精霊合体のベクトル
+				RETURN RESULT, L_CONVERTER > 0, RESULT:1
+			ENDIF
+		ENDIF
+	ELSEIF FLAG:합체인수 == 3
+		;3身合体の精霊合体は精霊以外で2身をしたあと、精霊合体を行う
+		SELECTCASE MATCH(L_RACE, GET_RACE_NUM("정령"))
+			CASE 1
+				L_RESULT_RACE = SEARCH_RACE(L_RACE:0, L_RACE:1, IS_MALE)
+				SIF L_RESULT_RACE == 0
+					RETURN 0
+				CALL OUTPUT_DEVIL, L_LV, L_ADD_LV, L_RESULT_RACE, L_CONVERTER, IS_MALE
+				SIF RESULT == 0
+					RETURN 0
+				CALL RESULT_ELEMENT_FUSION, RESULT,  NO:(L_MATERIAL:2), L_CONVERTER, IS_MALE
+				RETURN RESULT, L_CONVERTER > 0, RESULT:1
+			;精霊が2以上の合体は未実装
+			CASE 2, 3
+				RETURN 0
+		ENDSELECT
+	ENDIF
+
+	;=================================================
+	;以上のいずれかにもひっからなかったら通常合体
+	;=================================================
+	;合体結果の種族を検索
+	IF FLAG:합체인수 == 3
+		L_RESULT_RACE = 0
+		VARI TEMP, 2
+		;3種族同一は作れない
+		IF L_RACE:0 == L_RACE:1 && L_RACE:1 == L_RACE:2
+			RETURN 0
+		;3身合体で精霊が作れる組み合わせが混ざってる場合
+		ELSEIF L_RACE:0 == L_RACE:1
+			;精霊の素材・残った素材
+			TEMP = 0, 2
+			L_RESULT_RACE = SEARCH_RACE(L_RACE:0, L_RACE:1, , IS_MALE)
+		ELSEIF L_RACE:1 == L_RACE:2
+			TEMP = 1, 0
+			L_RESULT_RACE = SEARCH_RACE(L_RACE:1, L_RACE:2, , IS_MALE)
+		ENDIF
+		IF GET_RACE(L_RESULT_RACE) == "정령"
+			SELECTCASE GET_RACE(L_RACE:TEMP)
+				CASE "지모신", "여신", "요마", "요귀", "용왕", "귀신", "마신"
+					IF IS_MALE
+						CALL RESULT_ELEMENT_FUSION, NO:(L_MATERIAL:(TEMP:1)), [[キャラ:살라만더]], L_CONVERTER, IS_MALE
+					ELSE
+						CALL RESULT_ELEMENT_FUSION, NO:(L_MATERIAL:(TEMP:1)), [[キャラ:운디네]], L_CONVERTER, IS_MALE
+					ENDIF
+				CASEELSE
+					IF IS_MALE
+						CALL RESULT_ELEMENT_FUSION, NO:(L_MATERIAL:(TEMP:1)), [[キャラ:놈]], L_CONVERTER, IS_MALE
+					ELSE
+						CALL RESULT_ELEMENT_FUSION, NO:(L_MATERIAL:(TEMP:1)), [[キャラ:실프]], L_CONVERTER, IS_MALE
+					ENDIF
+			ENDSELECT
+			RETURN RESULT, L_CONVERTER > 0, RESULT:1
+		ELSE
+			L_RESULT_RACE = SEARCH_RACE(L_RACE:0, L_RACE:1, L_RACE:2, IS_MALE)
+		ENDIF
+	ELSE
+		;精霊作成は２身のときのみ
+		L_RESULT_RACE = SEARCH_RACE(L_RACE:0, L_RACE:1, , IS_MALE)
+		IF GET_RACE(L_RESULT_RACE) == "정령"
+			SIF FLAG:합체인수 == 3
+				RETURN 0
+			SIF L_CONVERTER > 0
+				RETURN 0
+			SELECTCASE GET_RACE(L_RACE)
+				CASE "지모신", "여신", "요마", "요귀", "용왕", "귀신", "마신"
+					IF IS_MALE
+						RETURN [[キャラ:살라만더]]
+					ELSE
+						RETURN [[キャラ:운디네]]
+					ENDIF
+				CASEELSE
+					IF IS_MALE
+						RETURN [[キャラ:놈]]
+					ELSE
+						RETURN [[キャラ:실프]]
+					ENDIF
+			ENDSELECT
+		ENDIF
+	ENDIF
+	;合体素材利用不可の組み合わせなら0を返す
+	SIF L_RESULT_RACE == 0
+		RETURN 0
+ELSE
+	;レベルを取っておく
+	L_LV = FUSION_BASE_LV(L_MATERIAL:0, L_MATERIAL:1, L_MATERIAL:2)
+	L_ADD_LV = FUSION_PLUS_LV(FLAG:합체인수)
+ENDIF
+CALL OUTPUT_DEVIL, L_LV, L_ADD_LV, L_RESULT_RACE, L_CONVERTER, IS_MALE
+;結果の悪魔を返す
+RETURN RESULT, L_CONVERTER > 0, 0
+;================================================================
+;基礎レベル算出
+;四身も五身も十五身合体もここに追加していきゃ管理が楽
+;いや、ごめん。OUTPUT_DEVILの中に入れても良かったかも。
+;================================================================
+@FUSION_BASE_LV(L_MATERIAL, L_MATERIAL:1, L_MATERIAL:2 = -1)
+#FUNCTION
+#DIM DYNAMIC L_MATERIAL, 3
+#DIM DYNAMIC L_LV
+IF L_MATERIAL:2 > 0
+	IF SOFT_ON("파라켈수스") == 0
+		L_LV = CSVBASE(NO:L_MATERIAL,GETNUM(BASE,"LV"),0)
+		L_LV += CSVBASE(NO:(L_MATERIAL:1),GETNUM(BASE,"LV"),0)
+		L_LV += CSVBASE(NO:(L_MATERIAL:2),GETNUM(BASE,"LV"),0)
+	ELSE
+		L_LV = BASE:L_MATERIAL:LV
+		L_LV += BASE:(L_MATERIAL:1):LV
+		L_LV += BASE:(L_MATERIAL:2):LV
+	ENDIF
+	L_LV /= 3
+ELSE
+	IF SOFT_ON("파라켈수스") == 0
+		L_LV = CSVBASE(NO:L_MATERIAL,GETNUM(BASE,"LV"),0)
+		L_LV += CSVBASE(NO:(L_MATERIAL:1),GETNUM(BASE,"LV"),0)
+	ELSE
+		L_LV = BASE:L_MATERIAL:LV
+		L_LV += BASE:(L_MATERIAL:1):LV
+	ENDIF
+	L_LV /= 2
+ENDIF
+RETURNF L_LV
+;================================================================
+;加算レベル算出
+;四身も五身も十五身合体もここに追加していきゃ管理が楽
+;いや、ごめん。OUTPUT_DEVILの中に入れても良かったかも。
+;================================================================
+@FUSION_PLUS_LV(ARG)
+#FUNCTION
+#LOCALSIZE 1
+; ARG = 合体数（２身合体なら２）
+LOCAL = 0
+; ２身なら平均レベル＋４
+SIF ARG == 2
+	LOCAL = 4
+; ３身なら平均レベル＋４
+SIF ARG == 3
+	LOCAL = 8
+; ラブプラス間違えたラプラスが付いてると＋４
+SIF SOFT_ON("라플라스") == 1 && LOCAL > 0
+	LOCAL = LOCAL + 4
+RETURNF LOCAL
+
+;================================================================
+;検索結果の種族をリスト化
+;================================================================
+@MAKE_RACE_LIST, L_RACE, L_SEX, L_CONVERTER
+#DIM TEMP_ALI
+#DIM DYNAMIC L_CONVERTER
+#DIM DYNAMIC CSV_NO
+#DIM DYNAMIC L_RACE
+#DIM DYNAMIC L_SEX
+;ARG:1　性別　0　オンナ　1　남자
+VARSET D, -1
+LOCAL:3 = 0
+FOR CSV_NO, 0, CSVCHARANUM
+	SIF EXISTCSV(CSV_NO,0) != 1
+		CONTINUE
+	SIF CSVABL(CSV_NO, GETNUM(ABL, "종족"), 0) != L_RACE
+		CONTINUE
+	SIF CSVCFLAG(CSV_NO,(GETNUM(CFLAG,"합체조건있음")),0) == 1 && REMOVED_FUSION_LIMIT:CSV_NO == 0
+		CONTINUE
+	SIF CSVTALENT(CSV_NO,GETNUM(TALENT,"남자"),0) != L_SEX
+		CONTINUE
+	SIF CSVCFLAG(CSV_NO,(GETNUM(CFLAG,"특수합체만")),0) == 1
+		CONTINUE
+	SIF CSVCFLAG(CSV_NO,(GETNUM(CFLAG,"컨버터")),0) != L_CONVERTER
+		CONTINUE
+	SIF !IS_PLAYABLE_EXTRA_CHARA(CSV_NO)
+		CONTINUE
+	;---- EDIT 007 ADD START -------------------------
+	IF SOFT_ON("에코챔버")
+		IF CSVABL(CSV_NO, GETNUM(ABL, "속성LD")) > 0
+			TEMP_ALI = CSVABL(CSV_NO, GETNUM(ABL, "속성LD"))
+		ELSE
+			SELECTCASE CSVABL(CSV_NO, GETNUM(ABL, "선악치"))
+				CASE IS > 170
+					TEMP_ALI = 1
+				CASE IS > 84
+					TEMP_ALI = 2
+				CASEELSE
+					TEMP_ALI = 3
+			ENDSELECT
+		ENDIF
+		SIF ABL:MASTER:속성LD != TEMP_ALI
+			CONTINUE
+	ENDIF
+	IF SOFT_ON("버블필터")
+		IF CSVABL(CSV_NO, GETNUM(ABL, "속성LC")) > 0
+			TEMP_ALI = CSVABL(CSV_NO, GETNUM(ABL, "속성LC"))
+		ELSE
+			SELECTCASE CSVABL(CSV_NO, GETNUM(ABL, "선악치"))
+				CASE IS > 170
+					TEMP_ALI = 1
+				CASE IS > 84
+					TEMP_ALI = 2
+				CASEELSE
+					TEMP_ALI = 3
+			ENDSELECT
+		ENDIF
+		SIF ABL:MASTER:속성LC != TEMP_ALI
+			CONTINUE
+	ENDIF
+	D:(CSVBASE(CSV_NO,GETNUM(BASE,"LV"),0)) = CSV_NO
+NEXT
+
+@MAKE_FUSION_RESULT_LIST
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_MATERIAL, 3
+#DIM DYNAMIC L_CONVERTER, 2
+#DIM DYNAMIC TEMP_SORT_KEY, 3
+#DIM DYNAMIC FUSION_DEVIL
+#DIM DYNAMIC ELEMENTAL_FUSION_VECTOR
+#DIM DYNAMIC L_RACE
+#DIM DYNAMIC CASTING_RESULT
+CALL MAKE_NORMAL_FUSION_TABLE
+
+VARSET FUSION_RESULT_LIST
+VARSET FUSION_RESULT_LISTCOUNT
+FOR L_CHARA, 0, CHARANUM
+	CALL CASTING_FUSION_NORMAL, L_CHARA
+	;保留が存在するので記録を取っておく
+	CASTING_RESULT = RESULT
+	;判別用フラグを初期化
+	IS_USEABLE_FOR_SPECIAL_FUSION:L_CHARA:0 = 0
+	SIF !RESULT
+		CONTINUE
+	IF FLAG:합체인수 == 2
+		L_MATERIAL = FLAG:합체소재악마1, L_CHARA, -1
+	ELSE
+		L_MATERIAL = FLAG:합체소재악마1, FLAG:합체소재악마2, L_CHARA
+	ENDIF
+	;素材の配列を種族順 + NO順にソートする。
+	FOR LCOUNT, 0, 3
+		IF L_MATERIAL:LCOUNT < 0
+			TEMP_SORT_KEY:LCOUNT = 999999999
+		ELSE
+			SELECTCASE GET_RACE(ABL:(L_MATERIAL:LCOUNT):종족)
+				CASE "정령"
+					TEMP_SORT_KEY:LCOUNT = 90 * 1000000 + NO:(L_MATERIAL:LCOUNT)
+				CASE "어령"
+					TEMP_SORT_KEY:LCOUNT = 91 * 1000000 + NO:(L_MATERIAL:LCOUNT)
+				CASEELSE
+					TEMP_SORT_KEY:LCOUNT = ABL:(L_MATERIAL:LCOUNT):종족 * 1000000 + NO:(L_MATERIAL:LCOUNT)
+			ENDSELECT
+		ENDIF
+	NEXT
+	ARRAYMSORT TEMP_SORT_KEY, L_MATERIAL
+	;保留が発生していた場合はチェック
+	IF CASTING_RESULT == -1
+		;使用フラグが立ってないので落とす
+		SIF !IS_USEABLE_FOR_SPECIAL_FUSION:L_CHARA:0
+			CONTINUE
+	ENDIF
+	FOR L_CONVERTER, 0, VARSIZE("CONVERTER_TABLE")
+		IF L_CONVERTER == 0
+			L_CONVERTER:0 = 0
+		ELSE
+			SIF !SOFT_ON(GET_INSTALLSOFT_NAME(CONVERTER_TABLE:L_CONVERTER))
+				CONTINUE
+		ENDIF
+		CALL RESULT_FUSION, L_MATERIAL:0, L_MATERIAL:1, L_MATERIAL:2, L_CONVERTER, TALENT:(FLAG:합체소재악마1):남자
+		FUSION_DEVIL = RESULT
+		ELEMENTAL_FUSION_VECTOR = RESULT:2
+		IF FUSION_DEVIL == 0
+			SIF L_CONVERTER > 0
+				CONTINUE
+		ENDIF
+		IF FLAG:합체인수 == 2
+			FUSION_RESULT_LIST:FUSION_RESULT_LISTCOUNT:0 = FUSION_DEVIL, L_CONVERTER > 0, ELEMENTAL_FUSION_VECTOR, FLAG:합체소재악마1, L_CHARA, -1
+		ELSE
+			FUSION_RESULT_LIST:FUSION_RESULT_LISTCOUNT:0 = FUSION_DEVIL, L_CONVERTER > 0, ELEMENTAL_FUSION_VECTOR, FLAG:합체소재악마1, FLAG:합체소재악마2, L_CHARA
+		ENDIF
+		;リストの上限をたたいたらそこで終わらせる
+		FUSION_RESULT_LISTCOUNT++
+		;リスト上限打ち切り
+		SIF FUSION_RESULT_LISTCOUNT >= VARSIZE("FUSION_RESULT_LIST")
+			RETURN 0
+		IF FUSION_DEVIL == [[キャラ:운디네]] && SOFT_ON("라지엘의서")
+			FUSION_RESULT_LIST:FUSION_RESULT_LISTCOUNT:0 = [[キャラ:뷔디네]], 1, ELEMENTAL_FUSION_VECTOR, FLAG:합체소재악마1, L_CHARA, -1
+			FUSION_RESULT_LISTCOUNT++
+			SIF FUSION_RESULT_LISTCOUNT >= VARSIZE("FUSION_RESULT_LIST")
+				RETURN 0
+		ENDIF
+		;ゴエティアとタルタロスの処理
+		IF L_CONVERTER < VARSIZE("NORMAL_CONVERTER_TABLE") && !ELEMENTAL_FUSION_VECTOR
+			FOR LCOUNT, 0, 2
+				L_RACE = 0
+				IF LCOUNT == 0
+					SIF GET_RACE(CSVABL(FUSION_DEVIL, GETNUM(ABL, "종족"))) != "천사"
+						CONTINUE
+					SIF !SOFT_ON("고에티아")
+						CONTINUE
+					L_RACE = GET_RACE_NUM("타천사")
+				ELSE
+					SIF GET_RACE(CSVABL(FUSION_DEVIL, GETNUM(ABL, "종족"))) != "마왕"
+						CONTINUE
+					SIF !SOFT_ON("타르타로스")
+						CONTINUE
+					L_RACE = GET_RACE_NUM("사신")
+				ENDIF
+				CALL RESULT_FUSION, L_MATERIAL:0, L_MATERIAL:1, L_MATERIAL:2, L_CONVERTER, TALENT:(FLAG:합체소재악마1):남자, L_RACE
+				SIF !RESULT
+					CONTINUE
+				IF FLAG:합체인수 == 2
+					FUSION_RESULT_LIST:FUSION_RESULT_LISTCOUNT:0 = RESULT, 1, 0, FLAG:합체소재악마1, L_CHARA, -1
+				ELSE
+					FUSION_RESULT_LIST:FUSION_RESULT_LISTCOUNT:0 = RESULT, 1, 0, FLAG:합체소재악마1, FLAG:합체소재악마2, L_CHARA
+				ENDIF
+				FUSION_RESULT_LISTCOUNT++
+				;リスト上限打ち切り
+				SIF FUSION_RESULT_LISTCOUNT >= VARSIZE("FUSION_RESULT_LIST")
+					RETURN 0
+			NEXT
+		ENDIF
+	NEXT
+NEXT
+
+;================================================================
+;リストから条件を満たす最もレベルの高い悪魔を出力
+;ARG:2 = コンバーター出の判定
+;================================================================
+@OUTPUT_DEVIL,L_LV, L_ADD_LV, L_RACE, L_CONVERTER, IS_MALE
+#DIM DYNAMIC L_LV
+#DIM DYNAMIC L_ADD_LV
+#DIM DYNAMIC L_RACE
+#DIM DYNAMIC L_PLUS_LV
+#DIM DYNAMIC L_MINUS_LV
+#DIM DYNAMIC L_CONVERTER
+#DIM DYNAMIC IS_MALE
+#DIM DYNAMIC L_VECTOR
+#DIM DYNAMIC L_MAXLV = VARSIZE("FUSION_RACE_LIST_MALE", 2)
+
+;性別指定種族は常に女性テーブルを使う
+SIF GROUPMATCH(GET_RACE(L_RACE), "여신", "지모신", "귀신", "마신")
+	IS_MALE = 0
+
+;---- EDIT 003 ADD START -------------------------
+;テーブル登録の変更にあわせて、基準LVから開始し、一つ減らすのと増やすのを交互に実行し、最初に引っかかった番号を返すように
+;条件のうち最大レベル
+;ただし、もともとのレベルよりは低くしない
+L_PLUS_LV = L_LV + L_ADD_LV
+L_MINUS_LV = L_LV + L_ADD_LV
+IF IS_MALE
+	DO
+		IF L_PLUS_LV < L_MAXLV
+			SIF FUSION_RACE_LIST_MALE:L_CONVERTER:L_RACE:L_PLUS_LV > 0
+				RETURN FUSION_RACE_LIST_MALE:L_CONVERTER:L_RACE:L_PLUS_LV
+			L_PLUS_LV++
+		ENDIF
+		IF L_MINUS_LV > L_LV
+			SIF L_MAXLV > L_MINUS_LV && FUSION_RACE_LIST_MALE:L_CONVERTER:L_RACE:L_MINUS_LV > 0
+				RETURN FUSION_RACE_LIST_MALE:L_CONVERTER:L_RACE:L_MINUS_LV
+			L_MINUS_LV--
+		ENDIF
+		;コンバーターは対象と6レベル以上はなれたら外す
+		;候補数が多くなりすぎるとリスト上限的な問題での困るので処置
+		;今後種族内密度が落ちて組み合わせが難しくなったら考え直す
+		SIF L_CONVERTER && (L_PLUS_LV - L_LV - L_ADD_LV) >= 7
+			RETURN 0
+	LOOP L_PLUS_LV < 100 || L_MINUS_LV > L_LV
+ELSE
+	DO 
+		IF L_PLUS_LV < L_MAXLV
+			SIF FUSION_RACE_LIST_FEMALE:L_CONVERTER:L_RACE:L_PLUS_LV > 0
+				RETURN FUSION_RACE_LIST_FEMALE:L_CONVERTER:L_RACE:L_PLUS_LV
+			L_PLUS_LV++
+		ENDIF
+		IF L_MINUS_LV > L_LV
+			SIF L_MAXLV > L_MINUS_LV && FUSION_RACE_LIST_FEMALE:L_CONVERTER:L_RACE:L_MINUS_LV > 0
+				RETURN FUSION_RACE_LIST_FEMALE:L_CONVERTER:L_RACE:L_MINUS_LV
+			L_MINUS_LV--
+		ENDIF
+		SIF L_CONVERTER && (L_PLUS_LV - L_LV - L_ADD_LV) >= 7
+			RETURN 0
+	LOOP L_PLUS_LV < L_MAXLV || L_MINUS_LV > L_LV
+ENDIF
+RETURN 0
+
+;================================================================
+;合体結果の種族を検索
+;================================================================
+@SEARCH_RACE, L_RACE, L_RACE:1, L_RACE:2 = -1, IS_MALE
+#FUNCTION
+#DIM DYNAMIC IS_MALE
+#DIM DYNAMIC L_RACE, 3
+IF L_RACE:2 >= 0
+	L_RACE = SEARCH_RACE(L_RACE, L_RACE:1, -1, IS_MALE)
+	L_RACE:1 = L_RACE:2
+	SIF L_RACE > L_RACE:1
+		SWAP L_RACE, L_RACE:1
+ENDIF
+;ARGが通常の悪魔合体法則に入ってる種族じゃない場合
+;特殊種族の種族番号置き換えが怪異の処理のあとになってたのを前に移動
+;これで鬼神などでも新しい怪異の法則にならうように
+SELECTCASE GET_RACE(L_RACE)
+	CASE "귀신", "마신", "사신", "타천사"
+		L_RACE -= 14
+	CASE "여마"
+		L_RACE = GET_RACE_NUM("요마")
+ENDSELECT
+SELECTCASE GET_RACE(L_RACE:1)
+	CASE "귀신", "마신", "사신", "타천사"
+		L_RACE:1 -= 14
+	CASE "여마"
+		L_RACE:1 = GET_RACE_NUM("요마")
+		SIF L_RACE == L_RACE:1
+			RETURNF 0
+ENDSELECT
+SIF L_RACE > L_RACE:1
+	SWAP L_RACE,L_RACE:1
+;精霊・御魂合体につきキャンセル
+IF L_RACE == L_RACE:1
+	SIF L_RACE == 13
+		RETURNF 0
+	RETURNF 13
+ENDIF
+SIF !INRANGE(L_RACE:0, 1, 11)
+	RETURNF 0
+SIF !INRANGE(L_RACE:1, 1, 11)
+	RETURNF 0
+RETURNF GET_RACE_BY_NOMAL_TABLE(L_RACE, L_RACE:1, IS_MALE)
+
+@GET_RACE_BY_NOMAL_TABLE, ARG, ARG:1, IS_MALE
+#FUNCTION
+#DIM FUSION_TABLE, 11, 11 ;DYNAMICにはしないこと
+#DIM DYNAMIC IS_MALE
+
+IF FUSION_TABLE:0:1 == 0
+	;ローカル変数は再初期化されないのでここは一度しか実行されないはず
+	FUSION_TABLE:0:0 =  0, 4, 11, 2, 3, 5, 11, 9,  5,  9,  3
+	FUSION_TABLE:1:0 =  0, 0,  1, 1, 4, 7,  8, 10, 6,  6,  4
+	FUSION_TABLE:2:0 =  0, 0,  0, 8, 7, 8,  6, 9,  5,  4,  1
+	FUSION_TABLE:3:0 =  0, 0,  0, 0, 1, 2, 11, 5, 10,  2,  7
+	FUSION_TABLE:4:0 =  0, 0,  0, 0, 0, 7,  6, 3, 10, 11,  6
+	FUSION_TABLE:5:0 =  0, 0,  0, 0, 0, 0,  9, 7,  2,  4,  9
+	FUSION_TABLE:6:0 =  0, 0,  0, 0, 0, 0,  0, 11, 3,  5, 10
+	FUSION_TABLE:7:0 =  0, 0,  0, 0, 0, 0,  0, 0, 10,  9,  2
+	FUSION_TABLE:8:0 =  0, 0,  0, 0, 0, 0,  0, 0,  0,  8,  8
+	FUSION_TABLE:9:0 =  0, 0,  0, 0, 0, 0,  0, 0,  0,  0,  5
+	FUSION_TABLE:10:0 = 0, 0,  0, 0, 0, 0,  0, 0,  0,  0,  0
+ENDIF
+SELECTCASE GET_RACE(FUSION_TABLE:(ARG-1):(ARG:1-1))
+	CASE "지모신"
+		SIF IS_MALE
+			RETURNF GET_RACE_NUM("귀신")
+	CASE "여신"
+		SIF IS_MALE
+			RETURNF GET_RACE_NUM("마신")
+ENDSELECT
+RETURNF FUSION_TABLE:(ARG-1):(ARG:1-1)
+
+;SELECTCASE ARG
+;	CASE 1
+;		SPLIT ";　　,　　,천사,외도,神族,마왕,요마,외도,마수,요마,마수,마왕", ",", LOCALS
+;	CASE 2
+;		SPLIT ";　　,　　,　　,귀신,귀신,천사,요귀,용왕,요조,요정,요정,천사", ",", LOCALS
+;	CASE 3
+;		SPLIT ";　　,　　,　　,　　,용왕,요귀,용왕,요정,마수,요마,천사,귀신", ",", LOCALS
+;	CASE 4
+;		SPLIT ";　　,　　,　　,　　,　　,귀신,神族,외도,요마,요조,神族,요귀", ",", LOCALS
+;	CASE 5
+;		SPLIT ";　　,　　,　　,　　,　　,　　,요귀,요정,마왕,요조,외도,요정", ",", LOCALS
+;	CASE 6
+;		SPLIT ";　　,　　,　　,　　,　　,　　,　　,마수,요귀,神族,천사,마수", ",", LOCALS
+;	CASE 7
+;		SPLIT ";　　,　　,　　,　　,　　,　　,　　,　　,외도,마왕,요마,요조", ",", LOCALS
+;	CASE 8
+;		SPLIT ";　　,　　,　　,　　,　　,　　,　　,　　,　　,요조,마수,神族", ",", LOCALS
+;	CASE 9
+;		SPLIT ";　　,　　,　　,　　,　　,　　,　　,　　,　　,　　,용왕,용왕", ",", LOCALS
+;	CASE 10
+;		SPLIT ";　　,　　,　　,　　,　　,　　,　　,　　,　　,　　,　　,요마", ",", LOCALS
+;	CASEELSE
+;		SPLIT ";　　,　　,　　,　　,　　,　　,　　,　　,　　,　　,　　,　　", ",", LOCALS
+;ENDSELECT
+
+;================================================================
+;精霊合体検索
+;================================================================
+
+@RESULT_ELEMENT_FUSION, L_DEVIL, L_ELEMENT, L_CONVERTER, IS_MALE
+#DIM DYNAMIC L_DEVIL
+#DIM DYNAMIC L_ELEMENT
+#DIM DYNAMIC L_CONVERTER
+#DIM DYNAMIC IS_MALE
+#DIM DYNAMIC L_RACE
+#DIM DYNAMIC L_LV
+#DIM DYNAMIC L_VECTOR
+;引数：悪魔番号、精霊の悪魔番号
+;戻り値：合体結果
+
+;種族の取得
+L_RACE = CSVABL(L_DEVIL,GETNUM(ABL,"종족"),0)
+
+;性別指定種族は常に女性テーブルを使う
+SIF GROUPMATCH(GET_RACE(L_RACE), "여신", "지모신", "귀신", "마신")
+	IS_MALE = 0
+
+;変化の方向を定義
+SELECTCASE GET_RACE(L_RACE)
+	CASE "지모신","여신","요마","요귀","용왕","귀신","마신"
+		L_VECTOR = 1
+	CASE "마왕","천사","요정","마수","요조","외도","사신","타천사"
+		L_VECTOR = -1
+	;精霊合体非対応種族
+	CASEELSE
+		RETURN 0
+ENDSELECT
+SELECTCASE L_ELEMENT
+	;ウンディーネorサラマンダー
+	CASE [[キャラ:운디네]], [[キャラ:뷔디네]],[[キャラ:살라만더]]
+		L_VECTOR = L_VECTOR
+	;シルフorノーム
+	CASE [[キャラ:실프]], [[キャラ:놈]]
+		L_VECTOR *= -1
+	;精霊合体非対応精霊
+	CASEELSE
+		RETURN 0
+ENDSELECT
+
+L_LV = CSVBASE(L_DEVIL, GETNUM(BASE, "LV"),0)
+IF IS_MALE
+	WHILE INRANGE(L_LV, 1, 98)
+		L_LV += L_VECTOR
+		SIF FUSION_RACE_LIST_MALE:L_CONVERTER:L_RACE:L_LV > 0
+			RETURN FUSION_RACE_LIST_MALE:L_CONVERTER:L_RACE:L_LV, L_VECTOR
+	WEND
+ELSE
+	WHILE INRANGE(L_LV, 1, 98)
+		L_LV += L_VECTOR
+		SIF FUSION_RACE_LIST_FEMALE:L_CONVERTER:L_RACE:L_LV > 0
+			RETURN FUSION_RACE_LIST_FEMALE:L_CONVERTER:L_RACE:L_LV, L_VECTOR
+	WEND
+ENDIF
+RETURN 0
+
+;================================================================
+;合体事故
+;================================================================
+@FUSION_ACCIDENT,ARG,ARG:1,ARG:2,ARG:3 = -1,L_SUCCESS_LIST
+#LOCALSIZE 5
+#DIM カウント , 1
+#DIM 作成種族 , 1
+#DIM REF L_SUCCESS_LIST
+#DIM DYNAMIC LCOUNT, 2
+LOCAL:4 = 0
+FOR カウント , 0 , 10
+	;種族を決定
+	$LOOP_RACE
+	LOCAL:1 = RAND(1,19)
+	;一部の種族を除外
+	SIF GROUPMATCH(LOCAL:1 , 12 , 14)
+		GOTO LOOP_RACE
+	;神族・鬼神族の調整
+	SIF GROUPMATCH(LOCAL:1 , 15 , 16) && TALENT:ARG:남자 == 0
+		LOCAL:1 -= 14
+	SIF GROUPMATCH(LOCAL:1 , 1 , 2) && TALENT:ARG:남자
+		LOCAL:1 += 14
+	;種族リスト作成
+	CALL MAKE_RACE_LIST,LOCAL:1,TALENT:ARG:남자
+	LOCAL:2 = D:LIMIT(RAND:21 + CSVBASE(NO:ARG , GETNUM(BASE,"LV") , 0) -15 , 1 , VARSIZE("D"))
+	;事故結果の悪魔が合体素材悪魔と異なり、仲魔(未契約かつＣＯＭＰに居る)でない
+	IF LOCAL:2 > 0 && NO:ARG != LOCAL:2 && (FINDCHARA_NO_C(LOCAL:2) == -1 || FLAG:SHOP커맨드 == [[ショップ:사교의관]])
+		作成種族 = LOCAL:2
+		SIF FINDCHARA_NO_C(LOCAL:2) > -1
+			LOCAL:4 = 1
+		BREAK
+	ELSEIF カウント == 9
+		作成種族 = [[キャラ:슬라임]]
+	ENDIF
+NEXT
+LOCAL:3 = TALENT:ARG:남자
+;作られるはずだったキャラを削除
+CALL キャラ削除,ARG
+;合体結果の悪魔をキャラ登録
+IF ARG:3 < 1
+	CALL ADD_NEW_COMPANION,作成種族,MAX(100 , (GET_CHARA_LOYALTY((ARG:1)) + GET_CHARA_LOYALTY((ARG:2)))/2), -1
+ELSE
+	CALL ADD_NEW_COMPANION,作成種族,MAX(100 , (GET_CHARA_LOYALTY((ARG:1)) + GET_CHARA_LOYALTY((ARG:2)) + GET_CHARA_LOYALTY((ARG:3)))/3), -1
+ENDIF
+
+;女体化処理
+IF LOCAL:3 == 0 && 作成種族 == [[キャラ:슬라임]]
+	TALENT:ARG:남자 = 0
+	TALENT:ARG:팔 = 1
+	TALENT:ARG:발 = 1
+	TALENT:ARG:후타나리 = 1
+ENDIF
+;スキル継承
+VARI L_SKILL
+;選んでいたスキルをいれられるだけいれる
+FOR LCOUNT, 1, CHARA_SKILLCOUNT(ARG)+1
+	SIF ABL:ARG:@"스킬{LCOUNT}" > 0
+		CONTINUE
+	FOR LCOUNT:1, 0, VARSIZE("L_SUCCESS_LIST")
+		SIF L_SUCCESS_LIST:(LCOUNT:1) == 0
+			BREAK
+		CALL GET_REPLACE_SKILL, L_SUCCESS_LIST:(LCOUNT:1), ARG
+		L_SKILL = RESULT
+		CALL IS_SUCCESSABLE_FUSION_SKILL, ARG, L_SKILL
+		SIF !RESULT
+			CONTINUE
+		SIF MATCH(ABL:ARG:0, L_SKILL, GETNUM(ABL, "스킬1"), GETNUM(ABL, "스킬1") + CHARA_SKILLCOUNT(ARG))
+			CONTINUE
+		ABL:ARG:@"스킬{LCOUNT}" = L_SKILL
+		BREAK
+	NEXT
+NEXT
+;邪教の館扱いで素質継承
+CALL FUSION_SUCCESS_BASE,ARG,ARG:1,ARG:2,ARG:3,1
+SIF LOCAL:4 
+	CFLAG:ARG:소속ＣＯＭＰ = -1
+CALL SYNC_STATUS,ARG
+RETURN 1
+
+
+

@@ -1,0 +1,207 @@
+﻿;-------------------------------------------------
+;유두캡쓴다
+;道具使用コマンド、レベル2
+;촉수유두자극시킨다
+;-------------------------------------------------
+@CHECK_COM_ABLE55
+
+;ニプルキャップ実行判定
+;触手調教中はダメ
+SIF TEQUIP:촉수
+	RETURN 0
+
+;解除はいつでも可能
+SIF TEQUIP:PLAYER:16
+	RETURN 1
+;アイテムを持っているか、アイテムなし設定でないとダメ
+SIF !EXIST_ITEM(10)
+	RETURN 0
+
+SIF !USE_NIPLE(PLAYER)
+	RETURN 0
+
+;シャワー中はダメ
+SIF TEQUIP:32
+	RETURN 0
+RETURN 1
+
+@CHECK_COM_ABLE173
+
+;촉수유두자극
+SIF TEQUIP:촉수 == 0
+	RETURN 0
+
+;触手搾乳中は不可
+SIF TEQUIP:PLAYER:17
+	RETURN 0
+RETURN 1
+
+@ACT_COM55
+IF TEQUIP:촉수
+	PRINTL 촉수유두자극시킨다
+	TSTR:0 = 촉수유두자극시킨다
+	SELECTCOM = 173
+ELSE
+	PRINTL 유두캡쓴다
+	TSTR:0 = 유두캡쓴다
+ENDIF
+;CALL KOJO_MESSAGE_COM
+
+;着脱の処理
+IF TEQUIP:PLAYER:16 == 0
+	TEQUIP:PLAYER:16 = 1
+ELSE
+	TEQUIP:PLAYER:16 = 0
+ENDIF
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+LOSEBASE:체력 += 10
+LOSEBASE:기력 += 10
+
+SOURCE:TARGET:정애 = 10
+SOURCE:TARGET:노출 = 10
+SOURCE:TARGET:일탈 = 10
+
+SOURCE:PLAYER:도구쾌Ｂ = 200
+
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;触手乳首責めなら、触手体液が胸に付く
+SIF TEQUIP:촉수
+	CALL SET_STAIN("가슴", "粘液", PLAYER)
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+A = 1
+IF IS_LESBIAN(TARGET,PLAYER)
+;	PRINTFORML %EXPNAME:40%+{A}
+;	PRINTFORML %EXPNAME:40%(調教者)+{A}
+;	EXP:40 += A
+;	EXP:PLAYER:40 += A
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, PLAYER)
+ELSEIF IS_GAY(TARGET,PLAYER)
+;	PRINTFORML %EXPNAME:41%+{A}
+;	PRINTFORML %EXPNAME:41%(調教者)+{A}
+;	EXP:41 += A
+;	EXP:PLAYER:41 += A
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+	
+	
+ENDIF
+
+;触手召喚時、触手経験のリセットをする
+;SIF TEQUIP:촉수 == 1
+;	T = 0
+
+;依存度ベクトル
+TFLAG:33 = 0
+
+
+RETURN 1
+
+
+;-------------------------------------------------
+;装着継続の処理
+;-------------------------------------------------
+@EQUIP_COM55
+;ニプルキャップ装備中
+IF TEQUIP:촉수
+	PRINTL ＜촉수유두괴롭힘 중(조교자)＞
+ELSE
+	PRINTL ＜유두캡 장착 중(조교자)＞
+ENDIF
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+SOURCE:PLAYER:도구쾌Ｂ += 100
+
+RETURN 1
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+;触手経験加算
+SIF TEQUIP:촉수 == 1
+	CALL ADDS_EXP("촉수경험", 1, PLAYER)
+;	T += 1
+
+
+;-------------------------------------------------
+;調教時テキスト
+;-------------------------------------------------
+;55,유두캡쓴다
+;-------------------------------------------------
+@MESSAGE_COM55
+;装着時
+IF TEQUIP:PLAYER:16
+	PRINTFORMW %CALLNAME:PLAYER%은(는) 유두에 클립 로터를 붙였다
+;解除時
+ELSE
+	PRINTFORMW %CALLNAME:PLAYER%은(는) 클립 로터를 떼어냈다
+ENDIF
+
+;-------------------------------------------------
+;173,촉수유두자극시킨다
+;-------------------------------------------------
+@MESSAGE_COM173
+;装着時
+IF TEQUIP:PLAYER:16
+	PRINTFORM 잘게 꿈틀거리는 촉수가 
+	IF TEQUIP:PLAYER:유방노출 != -1 || (TEQUIP:PLAYER:유방노출 == -1 && TEQUIP:PLAYER:속옷（상） == 520)
+		IF TEQUIP:PLAYER:옷 > 0
+			CALL CLOTHES_NAME,1,PLAYER
+			PRINT 의 옷감 너머로 
+		ELSEIF TEQUIP:PLAYER:전신복 > 0
+			CALL CLOTHES_NAME,3,PLAYER
+			PRINT 의 옷감 너머로 
+		ELSEIF TEQUIP:PLAYER:속옷（상） > 0
+			CALL CLOTHES_NAME,5,PLAYER
+			PRINTFORM \@ TEQUIP:PLAYER:속옷（상） == 520 ? 을(를) 만지작거리면서 # 의 위에서\@ 
+		ELSEIF TEQUIP:PLAYER:그외 > 0
+			CALL CLOTHES_NAME,10,PLAYER
+			PRINT 의 안쪽으로 파고들어 
+		ENDIF
+	ELSE
+		IF TEQUIP:PLAYER:옷 > 0
+			CALL CLOTHES_NAME,1,PLAYER
+			PRINT 의 벌어진 가슴께에서 넘쳐흐른, 
+		ELSEIF TEQUIP:PLAYER:전신복 > 0
+			CALL CLOTHES_NAME,3,PLAYER
+			PRINT 의 벌어진 가슴께에서 넘쳐흐른, 
+		ENDIF
+	ENDIF
+	PRINTFORM %CALLNAME:PLAYER%의 
+	;유아체형＋貧乳、絶壁
+	IF (TALENT:PLAYER:유아체형 && TALENT:PLAYER:빈유) || TALENT:PLAYER:절벽
+		PRINT 겨우 부풀어 오른 정도의 
+	;빈유
+	ELSEIF TALENT:PLAYER:빈유
+		PRINT 앙증맞은 
+	;거유
+	ELSEIF TALENT:PLAYER:111
+		PRINT 손에서 넘쳐흐를 정도의 
+	;폭유
+	ELSEIF TALENT:PLAYER:112 || TALENT:PLAYER:마유
+		PRINT 손으로 감당하지 못할 만큼 거대한 
+	ENDIF
+	PRINTFORMW 가슴 끝의, 돌기를 \@ TEQUIP:PLAYER:속옷（상） == 520 ? 괴롭혔다 # 꼬집어 올렸다\@……
+;解除時
+ELSE
+	PRINTFORMW 촉수는 %CALLNAME:PLAYER%의 유두에서 떨어졌다
+ENDIF
+
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_55
+RETURN COMTYPE("対調教者道具系")
+

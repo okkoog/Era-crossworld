@@ -1,0 +1,457 @@
+﻿@EVENT_93_5
+
+CUSTOMDRAWLINE =
+
+	PRINTL
+SETCOLOR 0xdc7b8c
+	PRINTW 「노래로 춤으로 오고 가며, 함께 걸어온 두 사람의 길」
+RESETCOLOR
+SETCOLOR 0x815ca1
+	PRINTW 「하지만 나도 찾아버렸다고, 밤하늘에 우뚝 솟은 외길을!
+	PRINTW 　99기생, 이스루기 후타바! 기합 넣고 내달리겠습니다!」
+RESETCOLOR
+SETCOLOR 0xdc7b8c
+	PRINTW 「99기생, 하나야기 카오루코! 끝까지 함께해 줘야겠데이!」
+RESETCOLOR
+	PRINTL
+	PRINTW ……이미 싸움이 시작되어 있었다.
+	PRINTL
+	PRINTW 「내가 이기면, 이번엔 카오루코 네가 날 시중드는 거다!
+	PRINTW 　과자 사 오고, 다리 주무르고, 바이크로 학교까지 바래다줘야 할 테니까아!」
+	PRINTL
+	PRINTW 이스루기 후타바, 할버드의 무대소녀.
+	PRINTW 체구는 작지만, 허스키한 목소리를 내지르며 장대한 무기를 휘두르고 있다.
+	PRINTL
+	PRINTW 「그라믄, 내가 이기면, 같이 교토로 돌아가는 기데이!」
+	PRINTL
+	PRINTW 하나야기 카오루코, 나기나타의 무대소녀.
+	PRINTW 지극히 간드러진 교토 사투리를 구사하며, 나기나타를 휘둘러 후타바의 살진을 뒤쫓고 있다.
+	PRINTL
+	PRINTW 「할 수 있으면 해 보시지!
+	PRINTW 　카오루코, 네 근성――내가 뜯어고쳐 주마!」
+	PRINTL
+	PRINTW 두 사람은 전혀 이쪽을 보지 않고 있지만…….
+	PRINTW 들여보내 주었다는 것은, 옆에서 끼어들어 후려쳐도 된다는 뜻이리라.
+	PRINTW 당신은 무기를 겨누고 두 사람에게 덤벼들었다.
+	PRINTL
+	PRINTL 무대소녀 이스루기 후타바가 나타났다!
+	PRINTW 무대소녀 하나야기 카오루코가 나타났다!
+	PRINTL
+SETCOLOR 0xdc7b8c
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃하아?　　　　　　　　　　　　　　　　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+SETCOLOR 0x815ca1
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃카오루코! 위험해ッ!　　　　　　　　　　　　┃
+	PRINTFORML ┃……쳇. 당신, 무대장치는 아닌 것 같은데? ┃
+	PRINTFORML ┃난입 참가인 것 같지도 않고　　　　　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+RESETCOLOR
+	PRINTL
+
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+	
+	;※方針　打撃・衝撃、ちょっと疾風・呪殺
+	;最初：双葉はんを魔法でシメとけばＯＫ。即死だけ注意
+	;中盤：デ・カジャ持参して衝撃対策でＦＡ
+	;最後：ハイパーカウンタ対策＆ぶぶ漬けが息切れしない
+	;ぶぶ漬けはレベルの影響が大きいのでゲーム後半まで放っておくと苦労する
+	
+	;6戦目　★★★★★
+	IF イベントフラグ:93:0 > 6
+		LOCAL:99 = 6
+		LOCAL:97 = 3
+	;5戦目　★★★★☆
+	ELSEIF イベントフラグ:93:0 > 5
+		LOCAL:99 = 5
+		LOCAL:97 = 3
+	;4戦目　★★★☆☆
+	ELSEIF イベントフラグ:93:0 > 4
+		LOCAL:99 = 4
+		LOCAL:97 = 2
+	;3戦目　★★★☆☆
+	ELSEIF イベントフラグ:93:0 > 3
+		LOCAL:99 = 3
+		LOCAL:97 = 2
+	;2戦目　★★☆☆☆
+	ELSEIF イベントフラグ:93:0 > 2
+		LOCAL:99 = 2
+		LOCAL:97 = 1
+	;1戦目　★☆☆☆☆
+	ELSEIF イベントフラグ:93:0 > 1
+		LOCAL:99 = 1
+		LOCAL:97 = 1
+	ENDIF
+	
+	;レベルは自軍最大値（最低値10）
+	LOCAL:98 = 0
+	FOR LOCAL , 0 , CHARANUM
+		SIF IS_JOINABLE_BATTLE(LOCAL) < 1
+			CONTINUE
+		LOCAL:98 = MAX(LOCAL:98 , BASE:LOCAL:LV)
+	NEXT
+	SIF LOCAL:98 < 10
+		LOCAL:98 = 10
+	
+		
+	;- SET:双葉
+		CALL SET_ENEMY,9,[[キャラ:후타바_무대소녀]],LOCAL:98,1,LOCAL:97
+		CALLNAME:(CHARANUM-1) = 双葉
+		;CFLAG:(CHARANUM-1):ＨＰ보정 = MAXBASE:ARG:ＨＰ*3
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 5000
+		CFLAG:(CHARANUM-1):행동횟수 = 2
+		ABL:(CHARANUM-1):공격상성 = 0
+		ABL:(CHARANUM-1):사거리 = 2
+		CALL SYNC_STATUS,(CHARANUM-1)
+		ABL:(CHARANUM-1):스킬1 = [[스킬:소닉펀치]]
+		ABL:(CHARANUM-1):스킬2 = [[스킬:물어-뜯기]]
+		ABL:(CHARANUM-1):스킬3 = [[스킬:마구날뛰기]]
+		ABL:(CHARANUM-1):스킬4 = [[스킬:자애의맹반격（보스용）]]
+		ABL:(CHARANUM-1):스킬6 = 0
+		ABL:(CHARANUM-1):스킬7 = 0
+		ABL:(CHARANUM-1):스킬8 = 0
+		;小柄体系を外さないとポカポカ叩き始めるから……
+		TALENT:(CHARANUM-1):유아체형 = 0
+		;超人扱いに
+		;ABL:(CHARANUM-1):종족 = 43
+		;式算出の都合でロールを強制的に悪魔に変更する
+		CFLAG:(CHARANUM-1):강제악마화 = 1
+		CSTR:(CHARANUM-1):종족명 = 무대소녀
+		LOCAL = CHARANUM-1
+		CALL HEALTH_CHARA,(CHARANUM-1)
+
+		;強すぎるんで出禁
+		;ABL:(CHARANUM-1):스킬4 = [[스킬:열풍격]]
+
+
+	;- SET:香子
+		CALL SET_ENEMY,14,[[キャラ:카오루코]],LOCAL:98,1,LOCAL:97
+		;CFLAG:(CHARANUM-1):ＨＰ보정 = MAXBASE:ARG:ＨＰ*2
+		;ぶぶ漬けはＭＰ補正無しで
+		CFLAG:(CHARANUM-1):행동횟수 = 2
+		ABL:(CHARANUM-1):공격상성 = 0
+		ABL:(CHARANUM-1):사거리 = 2
+		CALL SYNC_STATUS,(CHARANUM-1)
+		ABL:(CHARANUM-1):스킬1 = [[스킬:용분의춤]]
+		ABL:(CHARANUM-1):스킬2 = [[스킬:타루・카쟈]]
+		ABL:(CHARANUM-1):스킬3 = [[스킬:갈라]]
+		ABL:(CHARANUM-1):스킬4 = [[스킬:저주의언령]]
+		ABL:(CHARANUM-1):스킬5 = [[스킬:마하・갈라]]
+		ABL:(CHARANUM-1):스킬6 = [[스킬:기공(대)]]
+		ABL:(CHARANUM-1):스킬7 = 0
+		ABL:(CHARANUM-1):스킬8 = 0
+		;超人扱いに
+		;ABL:(CHARANUM-1):종족 = 43
+		;式算出の都合でロールを強制的に悪魔に変更する
+		CFLAG:(CHARANUM-1):강제악마화 = 1
+		CSTR:(CHARANUM-1):종족명 = 무대소녀
+		LOCAL = CHARANUM-1
+		CALL HEALTH_CHARA,(CHARANUM-1)
+
+		;6戦目　★★★★★
+		IF イベントフラグ:93:0 > 6
+			;ギミックで対応
+		;5戦目　★★★★★
+		ELSEIF イベントフラグ:93:0 > 5
+			;素
+		;4戦目　★★★★☆
+		ELSEIF イベントフラグ:93:0 > 4
+			ABL:(CHARANUM-1):스킬1 = [[스킬:타루・카쟈]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:라쿠・카쟈]]
+			;行動回数1
+			CFLAG:(CHARANUM-2):행동횟수 = 1
+			;行動回数2
+			CFLAG:(CHARANUM-1):행동횟수 = 2
+		;3戦目　★★★☆☆
+		ELSEIF イベントフラグ:93:0 > 3
+			;行動回数1
+			CFLAG:(CHARANUM-2):행동횟수 = 1
+		
+			;行動回数１・死ねどす・タルカジャ以外削除。ひたすら罵倒する京都人
+			CFLAG:(CHARANUM-1):행동횟수 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:저주의언령]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:타루・카쟈]]
+			ABL:(CHARANUM-1):스킬3 = 0
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+		;2戦目　★★☆☆☆
+		ELSEIF イベントフラグ:93:0 > 2
+			;行動回数1・反撃削除
+			CFLAG:(CHARANUM-2):행동횟수 = 1
+			ABL:(CHARANUM-2):스킬4 = 0
+		
+			;行動回数１・死ねどす以外削除。ひたすら罵倒する京都人
+			CFLAG:(CHARANUM-1):행동횟수 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:저주의언령]]
+			ABL:(CHARANUM-1):스킬2 = 0
+			ABL:(CHARANUM-1):스킬3 = 0
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			
+		;1戦目　★☆☆☆☆
+		ELSEIF イベントフラグ:93:0 > 1
+			;行動回数1・ソニックパンチ、牙折り以外削除
+			CFLAG:(CHARANUM-2):행동횟수 = 1
+			ABL:(CHARANUM-2):스킬3 = 0
+			ABL:(CHARANUM-2):스킬4 = 0
+			ABL:(CHARANUM-2):스킬5 = 0
+			
+			;行動回数１・スキル全消し。頑張って素殴りするぶぶ漬け
+			CFLAG:(CHARANUM-1):행동횟수 = 1
+			ABL:(CHARANUM-1):스킬1 = 0
+			ABL:(CHARANUM-1):스킬2 = 0
+			ABL:(CHARANUM-1):스킬3 = 0
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+		ENDIF
+		
+		CALL SYNC_STATUS,(CHARANUM-2)
+		CALL SYNC_STATUS,(CHARANUM-1)
+		CALL HEALTH_CHARA,(CHARANUM-2)
+		CALL HEALTH_CHARA,(CHARANUM-1)
+		
+		;解析度MAX処理
+		CALL INCREASE_ANALYZE, [[キャラ:후타바_무대소녀]], ANALYSIS_COMPLETED
+		CALL INCREASE_ANALYZE, [[キャラ:카오루코]], ANALYSIS_COMPLETED
+
+	;ふたかお復活フラグ
+	SETBIT イベントフラグ:93:15, 1
+	CALL BATTLE_START
+	CLEARBIT イベントフラグ:93:15, 1
+
+	CUSTOMDRAWLINE =
+
+	PRINTW 「젠장, 면목 없다, 카오루코……」
+	PRINTW 「당신! 우리 후타바 씨한테 몹쓸 짓 할 셈이제!
+	PRINTW 　불결타, 손놀림이 불결해! 그 더러운 손으로 만지지 마라!」
+	;最初のver、ナチュラルに薄い本発言が出ておりましたが、
+	;ぶぶ漬けはそんなこと言わない（戒め）
+	;この場を借りてお詫びと訂正を致します。
+	PRINTL
+	PRINTW 고래고래 악을 쓰는 교토인을 달래며, 당신은 두 사람에게 악마 퇴치를 도울 것을 요구했다.
+	PRINTL
+	PRINTW 「……하아, 당신, 헛소리 한번 구성지게 하네예?
+	PRINTW 　세이쇼가 인제 없다고? 우리들이 반짝임의 찌꺼기이?
+	PRINTW 　되도 않는 삼류 소설, 자~알 들었심더.
+	PRINTW 　후타바 씨, 이런 놈 냅두고 얼른 결판이나 냅시다.」
+	PRINTW 「……카오루코, 진정하고 들어 봐.」
+	PRINTW 「하아?」
+	PRINTW 「나도, 너도…… 몸이, 투명해.」
+	PRINTW 「꺄아아아악!?」
+	PRINTL
+	PRINTW 무대소녀 이스루기 후타바가 동료가 되었다.
+	PRINTW 무대소녀 하나야기 카오루코가 동료가 되었다.
+	PRINTL
+	PRINTW 「이것도 저것도 다 후타바 씨 탓이다!
+	PRINTW 　후타바 씨가 내를 붙잡고 안 놔줘서 그렇다 아이가!」
+	PRINTW 「――미안, 그럴지도 몰라.
+	PRINTW 　그때, 널 붙잡지 않았더라면.
+	PRINTW 　악마와 싸우는 건 나 하나로 족했을지도 몰라.」
+	PRINTW 「으…….
+	PRINTW 　뭐꼬, 그기.
+	PRINTW 　그런 표정 지어가, 내를 나쁜 년 만들고 싶은 기가!?」
+	PRINTW 「정말로, 미안해. 이럴 생각은 아니었어. 왜냐면 넌……」
+	PRINTW 「고마 하라 안 카나!?」
+	PRINTL
+	PRINTW 당신은 어색한 침묵에 빠진 두 사람을 데리고 사무소로 돌아갔다…….
+	PRINTL
+
+	CALL ADD_NEW_COMPANION, [[キャラ:후타바_무대소녀]],200
+	SIF RESULT > 0
+		CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+
+	CALL ADD_NEW_COMPANION, [[キャラ:카오루코]],200
+	SIF RESULT > 0
+		CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+
+	イベントフラグ:93:0 += 1
+	SIF イベントフラグ:93:5 == 0
+		SETBIT イベントフラグ:93:5, 1
+	SIF イベントフラグ:93:6 == 0
+		SETBIT イベントフラグ:93:6, 1
+	CALL EVENT_93_TURN_END
+
+
+@EVENT_BATTLE_ACTEND_EVENT_93_5
+;最終戦かつぶぶ漬けが先に死んだ
+;双葉はん行動回数爆上げ
+IF イベントフラグ:93:0 > 6 && BASE:(CHARANUM-1):ＨＰ < 1 && イベントフラグ:93:5 == 0
+	PRINTFORML 
+SETCOLOR 0x815ca1
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃그 녀석은, 약속했어.　　　　　　　　　　　　┃
+	PRINTFORML ┃나한테, 가장, 반짝이는 모습을,　　　　　　 ┃
+	PRINTFORML ┃가장 먼저 보여주겠다고. 그러니까――!　　　 ┃
+	PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━┛
+RESETCOLOR
+	PRINTFORMW ＞후타바의 행동 횟수가 증가했다.
+	CFLAG:(CHARANUM-2):행동횟수 = 3
+	CSTR:(CHARANUM-2):사고패턴 = 격노한후타바
+	
+	SETBIT イベントフラグ:93:5, 1
+	SETBIT イベントフラグ:93:6, 1
+;最終戦かつ双葉が先に死んだ
+;花柳香子スキル追加＋ＭＰ爆上げ＆회복
+;万能相性の状態異常を撒き散らすようになるので、死ぬ
+ELSEIF イベントフラグ:93:0 > 6 && BASE:(CHARANUM-2):ＨＰ < 1 && イベントフラグ:93:6 == 0
+	PRINTFORML 
+SETCOLOR 0xdc7b8c
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃후타바 씨는…… 말해 줬던 기다.　　　　　　┃
+	PRINTFORML ┃내가 제일 반짝이는 모습을 제일 먼저 보겠다고┃
+	PRINTFORML ┃――똑똑히 봐라. 내도 엄연한, 무대소녀다.　┃
+	PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━┛
+RESETCOLOR
+	PRINTFORMW ＞카오루코의 공기가 일변한다.
+	PRINTFORMW ＞카오루코의 MP가 완전히 회복되었다!
+	
+	ABL:(CHARANUM-1):스킬1 = [[스킬:저주의언령]]
+	ABL:(CHARANUM-1):스킬2 = [[스킬:저주의언령]]
+	ABL:(CHARANUM-1):스킬3 = [[스킬:갈라]]
+	ABL:(CHARANUM-1):스킬4 = [[스킬:저주의언령]]
+	ABL:(CHARANUM-1):스킬5 = [[스킬:마하・갈라]]
+	ABL:(CHARANUM-1):스킬6 = [[스킬:기공(대)]]
+	
+	CSTR:(CHARANUM-1):사고패턴 = 오차즈케라도드시지요
+	
+	ABL:(CHARANUM-1):가창기능 = 10
+	CFLAG:(CHARANUM-1):행동횟수 = 3
+	MAXBASE:(CHARANUM-1):ＭＰ = 99999
+	BASE:(CHARANUM-1):ＭＰ = 99999
+	SETBIT イベントフラグ:93:5, 1
+	SETBIT イベントフラグ:93:6, 1
+ENDIF
+
+
+@SET_ACTION_격노한후타바, ARG
+#DIM ガード殺すマン
+#DIM ループ用
+;殺すマンゼロクリア
+ガード殺すマン = 0
+
+IF CFLAG:ARG:행동한횟수 == 0
+	FOR ループ用, 1, 7
+		;ガードしている誰かを探してガード殺すマンを保存
+		IF POS(ループ用) >= 0 && GET_STATE(CFLAG:POS(ループ用):상태이상) != "DYING" && CFLAG:POS(ループ用):방어플래그
+			ガード殺すマン = ループ用
+			BREAK
+		ENDIF
+	NEXT
+	;誰もガードしていないのなら暴れまくり
+	IF ガード殺すマン == 0
+		CFLAG:ARG:입력행동 = [[스킬:마구날뛰기]]
+	;ガードしてたらそいつを殺す
+	ELSE
+		SETCOLOR 0x815ca1
+		;みんな大好きバルバドス
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃가드 따위…… 올리고 앉았냐!　　　　　　　　┃
+		PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+		RESETCOLOR
+		CFLAG:ARG:타겟 = ガード殺すマン
+		CFLAG:ARG:입력행동 = [[스킬:방어부수기]]
+	ENDIF
+	
+ELSEIF CFLAG:ARG:행동한횟수 == 1
+	CFLAG:ARG:입력행동 = [[스킬:질풍격]]
+	
+ELSE
+	IF CFLAG:ARG:행동한횟수 == 2 && RAND:2 == 0
+		SETCOLOR 0x815ca1
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃숨 좀 가다듬어야겠어!　　　　　　　　　　　┃
+		PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+		RESETCOLOR
+		CFLAG:ARG:입력행동 = [[스킬:기합]]
+	ELSE
+		CALL ランダム行動 , ARG
+	ENDIF
+	
+ENDIF
+
+
+@SET_ACTION_오차즈케라도드시지요, ARG
+#DIM 不健康カウント
+#DIM ループ用
+
+
+;奇数ターンは疾風物理
+IF CFLAG:ARG:행동한횟수 == 0 && FLAG:경과턴수 % 2 == 0
+	SETCOLOR 0xdc7b8c
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃그라믄, 대담하게~♪　　　　　　　　　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+	CFLAG:ARG:입력행동 = [[스킬:전용기2]]
+;偶数ターンはテンタラフー互換
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	SETCOLOR 0xdc7b8c
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃그라믄, 우아하게…… 가볼까예?　　　　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+	CFLAG:ARG:입력행동 = [[스킬:전용기1]]
+	
+	
+ELSEIF CFLAG:ARG:행동한횟수 == 1
+	CFLAG:ARG:입력행동 = [[스킬:바리언트댄스]]
+	
+ELSE
+	不健康カウント = 0
+	FOR ループ用, 1, 7
+		;状態異常（死亡・魅了以外）をカウント
+		IF POS(ループ用) >= 0 && GET_STATE(CFLAG:POS(ループ用):상태이상) != "DYING" && GET_STATE(CFLAG:POS(ループ用):상태이상) != "GOOD"
+			不健康カウント ++
+		ENDIF
+	NEXT
+	;バステを溜めると壊滅
+	IF CFLAG:ARG:행동한횟수 == 2 && 不健康カウント > 3
+		;全体確定魅了
+		SETCOLOR 0xdc7b8c
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃서면 작약, 앉으면 모란, 춤추는 자태는 월하미인……┃
+		PRINTFORML ┃99기생, 하나야기 카오루코!　　　　　　　　　┃
+		PRINTFORML ┃끝까지 함께해 줘야겠데이!　　　　　　　　　┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━┛
+		RESETCOLOR
+		PRINTFORMW ＞큰일이다, 배드 스테이터스를 너무 많이 쌓았다!
+		
+		FOR ループ用, 1, 7
+			;死亡者以外を強制的にCHARMへ
+			IF POS(ループ用) >= 0 && GET_STATE(CFLAG:POS(ループ用):상태이상) != "DYING"
+				;実際にHAPPYする処理
+				PRINTFORML 　　TARGET:[{ループ用,2}] %CALLNAME:POS(ループ用),20,LEFT%　>>>>>>　그라믄, 『CHARM』이라예%UNICODE(0x2661)%
+				CFLAG:POS(ループ用):상태이상 = GET_STATE_NUM("CHARM")
+				CFLAG:POS(ループ用):상태이상경과턴수 = 0
+				CALL SYNC_STATUS,POS(ループ用)
+			ENDIF
+		NEXT
+		WAIT
+		
+	ELSEIF CFLAG:ARG:행동한횟수 == 2 && RAND:10 == 0
+		SETCOLOR 0xdc7b8c
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃내 이름은 하나야기 카오루코… 언젠가 세계를 쥘 여자라 카이!┃
+		PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+		RESETCOLOR
+		CFLAG:ARG:입력행동 = [[스킬:스마일차지]]
+		IF 不健康カウント > 1
+			PRINTFORML ＞어서 배드 스테이터스를 해제해야 한다……!
+			FORCEWAIT
+		ENDIF
+	ELSE
+		CALL ランダム行動 , ARG
+		IF 不健康カウント > 1
+			PRINTFORML ＞어서 배드 스테이터스를 해제해야 한다……!
+			FORCEWAIT
+		ENDIF
+	ENDIF
+	
+ENDIF
+
+;覚書　敵味方の判定は
+;CFRAGのPTフラグ
+;で出来る

@@ -1,0 +1,113 @@
+﻿;拡散型戦技特大
+;名前被りが怖いので関数の上では識別子を付けておく
+
+;スキル名
+@SKILL_NAME_荷電粒子砲OR,ARG
+RESULTS = 荷電粒子砲
+
+;　명중
+@SKILL_HITRATE_荷電粒子砲OR, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_荷電粒子砲OR, ARG
+RETURN 500
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_荷電粒子砲OR,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_荷電粒子砲OR,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_荷電粒子砲OR, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_荷電粒子砲OR,ARG
+RETURN 35
+
+;　相性
+@SKILL_TYPE_荷電粒子砲OR,ARG
+RETURN GET_TYPE_NUM("전술")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_荷電粒子砲OR
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2物理ダメージで計算するか
+@SKILL_DAMAGETYPE_荷電粒子砲OR, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_荷電粒子砲OR, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_荷電粒子砲OR,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_荷電粒子砲OR,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_荷電粒子砲OR, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_荷電粒子砲OR
+RETURN GET_SUCCESSION_NUM("전술")
+
+;속도보정
+@SKILL_SPEED_荷電粒子砲OR, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_荷電粒子砲OR
+RETURN 0
+
+;拡散攻撃用追加処理
+@SKILL_SPREAD_荷電粒子砲OR,ARG
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_荷電粒子砲OR, ARG = -1
+RETURN 13
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_荷電粒子砲OR, ARG, ARG:1, ARG:2
+#DIM SKILL_NUM
+PRINTFORMW ＞오메가 렉스의 입이 열리고, 빛의 분류가 용솟음친다……!
+CALL ATTACK_SPREAD,ARG,ARG:1,ARG:2
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_荷電粒子砲OR, ARG
+PRINTL 적 1체와 그 주위에 전기술 상성의 물리 특대 데미지. 본능해방 시에만 사용 가능.
+PRINTL 체내에 흡수한 입자를 가속시켜 발사하는 오메가 렉스의 필살기.
+
+@SKILL_EXPLAIN_TOOLTIP_荷電粒子砲OR, ARG
+RESULTS:0 = 적 1체와 그 주위에 전기술 상성의 물리 특대 데미지.
+RESULTS:1 = 본능해방 시에만 사용 가능.
+
+;使用条件：本能解放の効果ターンのみ使用可能
+@SKILL_SPECIAL_ACTIONABLE_荷電粒子砲OR, ARG
+RESULTS = 本能解放未所持
+SIF !HAVE_PU_SKILL(ARG, "本能解放")
+	RETURN 0
+RESULTS = 使用条件:本能解放
+SIF !PU_SKILLGAGE_D_GET(ARG, "本能解放")
+	RETURN 0
+RETURN 1
+

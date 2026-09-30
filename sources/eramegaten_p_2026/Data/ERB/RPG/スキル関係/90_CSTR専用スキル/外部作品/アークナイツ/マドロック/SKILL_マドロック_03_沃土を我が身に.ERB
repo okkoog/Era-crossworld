@@ -1,0 +1,182 @@
+﻿;スキル名
+@SKILL_NAME_沃土を我が身に,ARG
+RESULTS = 비옥한 토양을 내 몸에
+
+;　명중
+@SKILL_HITRATE_沃土を我が身に, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_沃土を我が身に, ARG
+RETURN 200
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_沃土を我が身に, ARG
+RETURN 5
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_沃土を我が身に, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_沃土を我が身に,ARG
+RETURN 0
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_沃土を我が身に
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_沃土を我が身に,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_沃土を我が身に,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_沃土を我が身に,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_沃土を我が身に,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_沃土を我が身に,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;戦闘中に使用可能か
+@SKILL_ACTIONABLE_BATTLE_沃土を我が身に, ARG
+RETURN 0
+
+@SKILL_HEAL_TYPE_沃土を我が身に, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("割合")
+
+@SKILL_SPEED_沃土を我が身に, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_沃土を我が身に
+RETURN 0
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_沃土を我が身に,ARG
+;RETURN GET_STATE_NUM("SLIP")
+RETURN 0
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_沃土を我が身に,ARG
+;RETURN GET_TYPE_NUM("검격")
+RETURN 0
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_沃土を我が身に,ARG
+RETURN 0
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_沃土を我が身に,ARG
+RETURN 0
+
+;====================================================
+;トリガー発動条件
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_沃土を我が身に,ARG,ARG:1
+;自身の時のみ判定
+SIF ARG != ARG:1
+	RETURN 0
+SIF !GET_RPG_CFLAG_BTL(ARG, "バリア消費")
+	RETURN 0
+RETURN 1, CPOS(ARG)
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_沃土を我が身に,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL HEAL_SINGLE,ARG,POS(ARG:1),SKILL_NUM
+CALL SET_RPG_CFLAG_BTL, ARG, "バリア消費", 0
+CALL SET_RPG_CFLAG_BTL, ARG, "沃土バリア数", -1, "ADD"
+
+;　説明文の表示
+@SKILL_EXPLAIN_沃土を我が身に,ARG
+PRINTL 3턴마다 턴 시작 시 한 번만 데미지를 크게 경감하는 배리어를 얻는다.
+PRINTL 배리어는 최대 2장까지 누적되며, 다음 배리어가 전개되는 것은 이전으로부터 3턴 경과 이후.
+PRINTL 배리어가 소비되었을 때, 이하의 연동 효과가 발동한다.
+PRINTL 「자신의 HP를 최대 HP의 20%만큼 회복한다.」
+
+@SKILL_EXPLAIN_TOOLTIP_沃土を我が身に, ARG
+RESULTS:0 = 3턴마다 턴 시작 시 한 번만 데미지를 크게 경감하는 배리어를 얻는다.
+RESULTS:1 = 배리어는 최대 2장까지 누적되며, 다음 배리어가 전개되는 것은 이전으로부터 3턴 경과 이후.
+RESULTS:2 = バリアが消費された時、以下の連動効果が発動する。
+RESULTS:3 = 「自身のＨＰを最大ＨＰの２０％分回復する。」
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_沃土を我が身に,ARG
+RETURN 0
+
+;@SKILL_BATTLE_START_沃土を我が身に,ARG
+;CALL SET_RPG_CFLAG_BTL, ARG, "沃土バリア数", 1, "ADD"
+
+;@SKILL_TURNEND_沃土を我が身に,ARG
+;SIF GET_RPG_CFLAG_BTL(ARG, "沃土バリア数") < 2 && GET_STATE(CFLAG:LOCAL:상태이상) != "DYING"
+;	CALL SET_RPG_CFLAG_BTL, ARG, "沃土バリア数", 1, "ADD"
+
+@SKILL_BATTLE_START_沃土を我が身に,ARG
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+    RETURN 0
+CALL SET_RPG_CFLAG_BTL, ARG, "沃土バリア数", 1, "ADD"
+CALL SET_RPG_CFLAG_BTL, ARG, "沃土バリア貼付ターン", 1, "SET"
+
+@SKILL_TURNEND_沃土を我が身に,ARG
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+    RETURN 0
+IF FLAG:경과턴수 >= GET_RPG_CFLAG_BTL(ARG, "沃土バリア貼付ターン")
+    IF GET_RPG_CFLAG_BTL(ARG, "沃土バリア数") < 2
+        CALL SET_RPG_CFLAG_BTL, ARG, "沃土バリア数", 1, "ADD"
+        CALL SET_RPG_CFLAG_BTL, ARG, "沃土バリア貼付ターン", FLAG:경과턴수 + 3, "SET"
+    ENDIF
+ENDIF
+
+@SKILL_EX_DISPLAY_沃土を我が身に, ARG, ARGS
+#DIM L_VALUE
+#DIM L_MAX_VALUE
+RESULTS '= "BARRIER:" + "<img src = 'SKILL_ICON_EX_12_MUDROCK_BARRIER'>" * GET_RPG_CFLAG_BTL(ARG, "沃土バリア数")
+RESULTS:1 = 배리어 잔여수
+RETURN 1
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_沃土を我が身に, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+;自分が防御側
+ELSE
+	SELECTCASE ARGS
+		CASE "ダメージ倍率"
+			IF CHECK_WEAKNESS(L_相性値) >= -1 && GET_RPG_CFLAG_BTL(L_P, "沃土バリア数") > 0
+				CALL SET_RPG_CFLAG_BTL, L_P, "バリア消費", 1
+				RETURN -100
+			ENDIF
+	ENDSELECT
+ENDIF
+RETURN 0

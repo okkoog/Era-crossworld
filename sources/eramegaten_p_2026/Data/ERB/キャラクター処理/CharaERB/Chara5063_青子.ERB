@@ -1,0 +1,66 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5063_青子.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/03/13		epizo				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:아오코]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("青子_FACE_0")
+			RETURNF ""
+		SIF !SPRITECREATED("青子_FACE_1")
+			RETURNF ""
+		SIF !SPRITECREATED("青子_FACE_2")
+			RETURNF ""
+		RESULTS_F = デフォルト
+		RESULTS_F:1 = 青子_FACE_0
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:아오코]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "デフォルト"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+				RESULTS_F = 青子_FACE_1
+			CASEELSE
+				IF IS_BADSTATE(L_CHARA, "CHARM")
+					RESULTS_F = 青子_FACE_1
+				ELSEIF L_SITUATION:1 == "DYING"
+					RESULTS_F = 青子_FACE_2
+					;DYINGでの色相変換を回避させるための指定
+					RESULT_F:1 = 1
+				ELSE
+					RESULTS_F = 青子_FACE_0
+				ENDIF
+		ENDSELECT
+	CASEELSE
+ENDSELECT

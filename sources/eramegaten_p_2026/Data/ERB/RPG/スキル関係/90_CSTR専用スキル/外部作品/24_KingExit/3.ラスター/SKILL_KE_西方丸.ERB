@@ -1,0 +1,139 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_KE_西方丸, ARG
+RESULTS = 西方丸
+
+;　명중
+@SKILL_HITRATE_KE_西方丸, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_KE_西方丸, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_KE_西方丸, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_KE_西方丸, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_KE_西方丸, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_KE_西方丸, ARG
+RESULTS = %" 10ＴＰ"%
+RETURN 0
+
+;　相性
+@SKILL_TYPE_KE_西方丸, ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_KE_西方丸
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_KE_西方丸, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_KE_西方丸, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_KE_西方丸, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_KE_西方丸, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_KE_西方丸, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;속도보정
+@SKILL_SPEED_KE_西方丸, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_KE_西方丸
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_KE_西方丸, ARG, ARG:1, SKILL_NUM
+#LOCALSIZE 4
+#DIM SKILL_NUM
+
+;TP10消費。
+CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", 10, "-="
+IF GROUPMATCH(NO:(POS(ARG:1)), [[キャラ:아벤트_KE]], [[キャラ:빌로우_KE]], [[キャラ:브루_KE]], [[キャラ:레스터_KE]], [[キャラ:사미다레_KE]], [[キャラ:스티아라_KE]], [[キャラ:귀네_KE]], [[キャラ:게오루이스_KE]])
+	;対象のTP10増加
+	CALL SET_RPG_CFLAG_DUNGEON, POS(ARG:1), "KE_TPゲージ", MIN(GET_RPG_CFLAG_DUNGEON(POS(ARG:1), "KE_TPゲージ") + 10, 100) 
+	IF GET_RPG_CFLAG_DUNGEON(POS(ARG:1), "KE_TPゲージ") == 100
+		SETCOLOR 0xffef00
+		PRINTFORM 　　[{ARG:1,2}] %CALLNAME:POS(ARG:1), LOCAL:1, LEFT%    :  +10 　
+		PRINTFORML <<ＴＰ　ＦＵＬＬＹ　ＣＨＡＲＧＥＤ！>>
+		RESETCOLOR
+	ELSE
+		PRINTFORM 　　[{ARG:1,2}] %CALLNAME:POS(ARG:1), LOCAL:1, LEFT%    :  +10 　
+		PRINTFORML <<TP:{GET_RPG_CFLAG_DUNGEON(POS(ARG:1), "KE_TPゲージ")}>>
+	ENDIF
+ELSE
+	;効果対象がKEキャラではなかった場合、自分のをTP10増加
+	CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", MIN(GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") + 10, 100) 
+	PRINTFORML 대상에게 서방환을 쓸 수 없었기에 자신에게 사용했습니다
+	IF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") == 100
+		SETCOLOR 0xffef00
+		PRINTFORM 　　[{ARG,2}] %CALLNAME:ARG, LOCAL:1, LEFT%    :  +10 　
+		PRINTFORML <<ＴＰ　ＦＵＬＬＹ　ＣＨＡＲＧＥＤ！>>
+		RESETCOLOR
+	ELSE
+		PRINTFORM 　　[{ARG,2}] %CALLNAME:ARG, LOCAL:1, LEFT%    :  +10 　
+		PRINTFORML <<TP:{GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ")}>>
+	ENDIF
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_KE_西方丸, ARG
+PRINTL 
+PRINTL 식물을 조합해 만든 약.
+PRINTL 아군 1체의 TP 게이지(KE)를 10 상승시킨다.
+PRINTL 
+PRINTL 식물명예박사 라스터의 스킬(CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_KE_西方丸, ARG
+;ゲージが10以上のときのみ
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 10
+	RETURN 0
+RETURN 1
+
+;ターゲット条件;
+@SKILL_TARGETABLE_KE_西方丸, ARG, ARG:1
+;KEキャラじゃなければNG
+SIF !(GROUPMATCH(NO:(POS(ARG:1)), [[キャラ:아벤트_KE]], [[キャラ:빌로우_KE]], [[キャラ:브루_KE]], [[キャラ:레스터_KE]], [[キャラ:사미다레_KE]], [[キャラ:스티아라_KE]], [[キャラ:귀네_KE]], [[キャラ:게오루이스_KE]]))
+	RETURN 0
+;KE_TPゲージが満タンなら対象外
+SIF GET_RPG_CFLAG_DUNGEON(POS(ARG:1),　"KE_TPゲージ") >= 100
+	RETURN 0
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_KE_西方丸, ARG
+RESULTS:0 = 식물을 조합해 만든 약. 아군 1체의 TP 게이지(KE)를 10 상승시킨다.
+RESULTS:1 = TP消費 10
+SIF ARG >= 0 && GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 10
+	RESULTS:1 = %RESULTS:1%(不足)

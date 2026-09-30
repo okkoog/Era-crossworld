@@ -1,0 +1,985 @@
+﻿;-------------------------------------------------
+;聖剣伝説３　リース個別イベント
+;-------------------------------------------------
+@INDIVIDUAL_EVENT_K5210, ARG, ARG:1 = 0, ARG:2 = -1
+#DIM CLASS_RANK
+#DIM CHOICE_CLASS_RANK
+#DIM L_LINE, 2
+#DIM IS_AWAKEN
+;ARG:0　キャラ番号
+;ARG:1　関数種類　1,開放条件　2,타이틀　3,이벤트
+;ARG:2　イベント番号（0～63まで）
+
+;リストにキャラを表示する条件
+;強化選択のために常に表示
+SIF ARG:1 == 0
+	RETURN 1
+;最初にデビオクで売られていた戦闘素質のない方のアップデート処理。
+;条件は異能者の有無。
+IF TALENT:ARG:이능자 == 0
+	PRINTFORML 이능자 소질이 없는, 초기형 상태인 『%CALLNAME:ARG%』의 업데이트 처리를 진행합니다.
+	PRINTFORML 
+	PRINTFORML ＞업데이트로 변경되는 내용
+	PRINTFORML 　조교 후천소질・함락・계약・함락 이력 이외의 전 소질(전투 소질을 포함)
+	PRINTFORML 　CSTR：悪魔解説
+	PRINTFORML 　습득 스킬(인간 이능자용 전투 소질에 맞춘 습득 라인업)
+	PRINTFORML 　종족(인간으로 리셋)
+	PRINTFORML 　전투 참가 불능 상태인 경우, 조교할 때까지 전투 참가 가능화
+	PRINTFORML 
+	PRINTFORML ＞덮어쓰지 않는 내용
+	PRINTFORML 　ABL・EXP(조교 스테이터스・경험・체력 등)
+
+		SIF GET_VALUE_TALENT_JOINABLE((ARG)) == 0
+			CALL SET_TALENT_PARTY_JOINABLE, (ARG), "신용"
+		
+		;종족(ABL80)の人間化リセット
+		ABL:ARG:종족 = CSVABL(NO:ARG,GETNUM(ABL,"종족"),0)
+
+		;素質をCSVから読み込んだステータスで上書き。
+		;ただし、陥落素質3-8と契約素質170-173、信頼系素質180-182、陥落履歴270-273は対象外！
+		FOR LOCAL,0,343
+			SIF LOCAL >= 3 && LOCAL <= 8
+				CONTINUE
+			SIF LOCAL >= 74 && LOCAL <= 77
+				CONTINUE
+			SIF LOCAL >= 170 && LOCAL <= 173
+				CONTINUE
+			SIF LOCAL >= 180 && LOCAL <= 182
+				CONTINUE
+			SIF LOCAL >= 270 && LOCAL <= 273
+				CONTINUE
+			TALENT:ARG:(LOCAL) = CSVTALENT(NO:ARG,LOCAL,0)
+		NEXT
+
+		;悪魔解説のCSVからの読み込みで上書き。
+		FOR LOCAL, 1, 21
+			CSTR:ARG:@"해설{LOCAL}" '= CSVCSTR(NO:ARG, GETNUM(CSTR, @"해설{LOCAL}"))
+		NEXT
+		
+		;習得予定スキルをCSVから読み直し。
+		FOR LOCAL,1,21
+			ABL:ARG:("습득스킬" + TOSTR(LOCAL)) = CSVABL(NO:ARG,(GETNUM(ABL,"습득스킬" + TOSTR(LOCAL))),0)
+			ABL:ARG:("습득LV" + TOSTR(LOCAL)) = CSVABL(NO:ARG,(GETNUM(ABL,"습득LV" + TOSTR(LOCAL))),0)
+			;ABL:LOCAL:("초기변신악마습득스킬" + TOSTR(LOCAL:1)) = CSVABL(NO:LOCAL,(GETNUM(ABL,"초기변신악마습득스킬" + TOSTR(LOCAL:1))),0)
+			;ABL:LOCAL:("초기변신악마습득LV" + TOSTR(LOCAL:1)) = CSVABL(NO:LOCAL,(GETNUM(ABL,"초기변신악마습득LV" + TOSTR(LOCAL:1))),0)
+		NEXT
+	PRINTFORML 
+	PRINTFORMW 처리를 완료했습니다. 자세한 내용은 능력 확인에서 확인해 주십시오.
+ENDIF
+
+SELECTCASE ARG:2
+CASE 0
+	;解放条件
+	;リース陥落済みであり、Lv30以上
+	IF ARG:1 == 1
+		SIF 陥落(ARG) == 0
+			RETURN 0
+		SIF BASE:ARG:LV < 30
+			RETURN 0
+		RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			RESULTS = 『로란트의 왕녀・리스』
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			RESULTS = ※%CALLNAME:ARG%의 함락과, 전투 Lv30 이상이 필요.
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		;どう陥落させたか１
+		IF TALENT:ARG:신뢰 || TALENT:ARG:동료 || TALENT:ARG:연모 || TALENT:ARG:친애
+			PRINTFORMW 문득 생각이 나서 %CALLNAME:ARG%의 방을 방문했다.
+			PRINTFORML 
+			PRINTFORMW 「아아, %CALLNAME:MASTER%. 오셨어요?」
+			PRINTFORML 
+			PRINTFORMW 노크를 하자 마중 나온 %CALLNAME:ARG%이(가) 미소를 지었다.
+			PRINTFORML 
+			PRINTFORML 「당신은 어디까지나 이곳의 주인이시니,
+			PRINTFORMW 　딱히 노크 등으로 양해를 구할 필요도 없으신데요」
+			PRINTFORML 
+			PRINTFORMW 그렇게 말하더니 쥐고 있던 천을 등 뒤로 감춘 %CALLNAME:ARG%은(는) 손을 잡아끌어 %CALLNAME:MASTER%을(를) 방으로 맞아들인다.
+			PRINTFORMW 책상 위의 상황으로 미루어 보아 마침 창을 손질하던 참인 듯했다.
+			PRINTFORML 
+			PRINTFORML 사들인 %CALLNAME:ARG%의 부속품 취급으로 딸려 온
+			PRINTFORMW ……끝부분이 비스듬히 잘려 나간 트라이던트였다.
+			PRINTFORML 
+			PRINTFORMW 「……부끄럽지만 당신을 만나기 전의 일이에요」
+			PRINTFORML 
+			PRINTFORMW 창을 세우고 날끝이 하나밖에 남지 않은 칼날을 바라보며 중얼거린다.
+			PRINTFORML 
+			PRINTFORMW 「죄송해요, 옛날이야기 좀 들어주시겠어요?」
+			PRINTFORML 
+			PRINTFORMW 그렇게 말하자 %CALLNAME:ARG%은(는) 차근차근 털어놓기 시작했다.
+			PRINTFORML 
+			PRINTFORMW 그녀의 고향이었던 로란트 왕국은 기습해 온 나바르 닌자군의 손에 하루아침에 멸망했다.
+			PRINTFORMW 남동생 엘리엇을 납치당하고 아버지는 살해당해, 복수와 동생의 단서를 찾아 그녀는 여행을 떠났다.
+			PRINTFORML 
+			PRINTFORML 인도를 찾아 웬델이라 불리는 성도에 도착했을 무렵에는 한발 앞서
+			PRINTFORMW 『페어리에게 선택받은 자』도 방문해 있었다고 하지만 끝내 만날 수는 없었다고 한다.
+			PRINTFORML 
+			PRINTFORMW 그 후의 로란트는 나바르 닌자군에 의해 점거되어 있었고,
+			PRINTFORML 간신히 살아남은 아마조네스들을 긁어모아 성을 탈환하기 위해
+			PRINTFORMW 준비를 진행하고 있었지만…….
+
+			PRINTFORML 
+			PRINTFORMW 「힘이 미치지 못해 %CSTR:일인칭%은(는) 사로잡힌 몸이 되고 말았습니다」
+			PRINTFORML 
+			PRINTFORMW 블랙마켓의 노예시장에 팔려가고, 또 팔려가고……
+			PRINTFORMW 그런 일을 되풀이하는 사이에 낯선 곳에 다다르게 된 것이라 한다.
+			PRINTFORML 
+			PRINTFORMW ……그녀는 전설에 칭송받는 용사가 아니었다.
+			PRINTFORMW 소중한 것들을 빼앗겨 그저 그것을 되찾고 싶었을 뿐이지만 이루지 못했던 것이다.
+			PRINTFORML 
+			;状況的には多分無いはずなんだが、一応。戦闘参加可能であること。
+			IF GET_VALUE_TALENT_JOINABLE(ARG) == 0
+				PRINTFORMW 「……지금에서야 당신 곁에서 무기를 들고 싸울 수 있게 되었습니다만……
+				PRINTFORMW 　밤이 되면 아직도 그때 패배했을 때와 밧줄의 감촉이 떠오르고 마는 것입니다」
+				PRINTFORML 
+				PRINTFORMW 양팔을 앞으로 내밀고 손목을 맞대면서,
+			ENDIF
+			PRINTFORMW 눈을 내리까는 %CALLNAME:ARG%의 얼굴에 드리운 그림자는 어둡고, 또 깊었다.
+			PRINTFORML 
+			WAIT
+			PRINTFORMW 지금, 건넬 수 있는 말이 한마디라도 있을까…….
+			PRINTFORML 
+			IF 陥落(ARG) > 2
+				PRINTFORML [0] 「반려에게 기대는 것쯤은 해라」
+			ELSE
+				PRINTFORML [0] 「주인에게 기대는 것쯤은 해라」
+			ENDIF
+			PRINTFORML [1] 「수련이 부족한 모양이군!」
+			PRINTFORML [2] ……안아주기라도 할까
+			;계약
+			CALL INPUTINT, 0, 1, 2
+			;頼るぐらいしろ
+			IF RESULT == 0
+				PRINTFORML 꺾여서 팔려나갔을 뿐만 아니라 남동생이 마음에 걸리는 것도 있을 것이다.
+				PRINTFORMW 발자취를 더듬어서라도 미련을 해소해 주는 것쯤은 할 수 있다.
+				PRINTFORML 
+				IF 陥落(ARG) > 2
+					PRINTFORMW 그러니 반려에게 기대는 것쯤은 해라.
+					PRINTFORML 
+					PRINTFORMW 그렇게 말하자 %CALLNAME:ARG%은(는) 약지에서 빛나는 것에 손을 대었다.
+				ELSE
+					PRINTFORMW 그러니 주인에게 기대는 것쯤은 해라.
+					PRINTFORML 
+					PRINTFORMW 그렇게 말하자 %CALLNAME:ARG%은(는) 쑥스러운 듯 뺨을 긁적였다.
+				ENDIF
+				PRINTFORML 
+				PRINTFORMW 이세계 노예상이라고 하면 라그다.
+				PRINTFORML 
+				PRINTFORMW 『네네, 여기는 긴자 쥬와이오쿠츄르 라그…… 어라 당신인가?』
+				PRINTFORML 
+				PRINTFORMW 눈을 크게 뜨고 입체영상 통신에 손을 얹거나 붙잡으려 하는
+				PRINTFORMW %CALLNAME:ARG%을(를) 뒤로하고 문의를 진행하기로 했다.
+				PRINTFORML 
+				PRINTFORMW …………。
+				PRINTFORML 
+				PRINTFORMW 『입고』 실패로 입고 시기 미정, 이라고 한다.
+				PRINTFORMW 발자취를 더듬어 달라고 했더니 정보가 엇갈리고 있는 듯하여
+				PRINTFORMW 단편적인 정보밖에 들어오지 않았다.
+				;便利に使ってすまんなラグくん。
+				PRINTFORML 
+				PRINTFORML 1: %CALLNAME:ARG%의 남동생은 일단 블랙마켓에 팔렸었지만,
+				PRINTFORMW 　　현지의 동업 타사에 먼저 팔려 나갔다.
+				PRINTFORML 
+				PRINTFORML 2: 이 세상의 파괴를 꾀하는 삼파 세력 어딘가에 있었던 모양이지만,
+				PRINTFORMW 　　다툼에서 패배한 2곳 중 하나였던 것으로 추측되어 지금은 양지바른 곳으로 돌아가 있다.
+				PRINTFORML 
+				PRINTFORMW 3: 참고로 이 %CALLNAME:ARG%이(가) 있던 원래 세계에서는 지금 마나를 둘러싼 대결전의 한복판. 이라는 듯하다
+				PRINTFORML 
+				PRINTFORML ……일련의 통신 동안 일의 전말을 곁에서 들으며,
+				PRINTFORMW 슬퍼했다가, 분노했다가, 눈물을 글썽였다가 조마조마해하는 등 시시각각 표정을 바꾸던 %CALLNAME:ARG%이었지만
+				PRINTFORML 
+				PRINTFORMW 「그렇다면 엘리엇은…… 무사한가요?」
+				PRINTFORML 
+				PRINTFORMW 통화가 끝나자마자 말참견을 해왔다.
+				PRINTFORML 
+				PRINTFORMW ……로란트 왕국은 마나의 용사들의 활약으로 탈환되었다고도 했다.
+				PRINTFORMW 아마도 그런 뜻일 터다.
+				PRINTFORML 
+				PRINTFORMW 「알마…… 엘리엇……」
+				PRINTFORML 
+				PRINTFORMW 맞잡은 양손과 새어 나오는 목소리가 떨리고 있었다.
+				PRINTFORMW ……이윽고 들어 올린 얼굴은,
+				PRINTFORML 
+				PRINTFORMW 「감사, 합니다」
+				PRINTFORML 
+				PRINTFORMW 「엘리엇이 있다면 로란트는 끊어지지 않아요.
+				PRINTFORMW 　성장을 지켜봐 줄 수 없는 것은 아쉽지만……」
+				PRINTFORML 
+				IF 陥落(ARG) > 2
+					PRINTFORMW 『계약』이란 건 처음이었으니까요, 라며
+					PRINTFORMW 그렇게 미소를 지어 보인 %CALLNAME:ARG%에게 망설임은 없었다.
+				ELSEIF 陥落(ARG) > 1
+					PRINTFORMW 이래 봬도 신원 보증을 서 준 은의는 느끼고 있거든요, 라며
+					PRINTFORMW 그렇게 미소를 지어 보인 %CALLNAME:ARG%에게 망설임은 없었다.
+				ENDIF
+				PRINTFORML 
+				PRINTFORMW 「……여기 와서야 비로소 상쾌한 기분이 된 것 같아요」
+				PRINTFORML 
+				PRINTFORMW 말한 대로 %CALLNAME:ARG%이(가) 마치 활짝 갠 하늘처럼 빛에 휩싸여…… 어라?
+				PRINTFORML 
+				PRINTFORMW 본인도 놀라 양손을 바라보는…… 사이에 빛은 흩어져 사라졌다.
+				PRINTFORMW 뭐였지 방금 건.
+				PRINTFORML 
+				PRINTFORMW 「……클래스, 체인지……일까요?」
+				PRINTFORML 
+				PRINTFORMW %CALLNAME:ARG%에게서 그런 단어가 튀어나왔다.
+				PRINTFORML 
+				PRINTFORMW 「저희 쪽에 전해지는…… 뭐랄까, 비술? 인데요……
+				PRINTFORMW 　듣자 하니 충분한 경험을 쌓고 마나스톤으로부터 힘을 받는다고 하더군요」
+				PRINTFORML 
+				PRINTFORMW 마나스톤이란 요컨대 어떠한 『힘』이 깃든 돌일 것이다.
+				PRINTFORMW 그리고 그 『힘』은 아무래도 마그네타이트와 유사한 성질을 띠는 모양이다.
+				PRINTFORML 
+				PRINTFORMW ……합당한 방법으로 시험해 본다면 어쩌면 길이 열릴지도 모른다.
+				PRINTFORML 
+				RETURN 1
+			;修行が足りないようだな
+			ELSEIF RESULT == 1
+				PRINTFORML 
+				PRINTFORMW 좋아 알았다. %CALLNAME:ARG%에게는 수행이 부족한 것이다!
+				PRINTFORML 
+				PRINTFORMW 「…….? ……네?」
+				PRINTFORML 
+				PRINTFORMW 목숨과 마음만 남아 있다면 무엇이든 할 수 있다!
+				PRINTFORML 
+				PRINTFORMW 한두 번의 패배로 꺾이다니 젊다는 증거다!
+				SIF TALENT:MASTER:복종
+					PRINTFORMW 실제로 이렇게 목숨이 붙어 있는 %CALLNAME:MASTER% 자신이 그것을 증명하고 있다!
+				PRINTFORML 
+				PRINTFORMW 그러니…… 꺾여 있을 때가 아니다, 지금부터라도 다시 단련해라!
+				PRINTFORML 
+				PRINTFORML 『그, 그런 흐름이었나요……?』라고 얼굴에 쓰여 있는 %CALLNAME:ARG%의 손을 잡고
+				PRINTFORMW 지하 훈련장으로 처넣고는 손이 비는 동료와 중마를 불러 모았다.
+				PRINTFORML 
+				PRINTFORMW …………
+				PRINTFORML 
+				PRINTFORMW ………
+				PRINTFORML 
+				PRINTFORMW ……
+				PRINTFORML 
+				PRINTFORMW …
+				PRINTFORML 
+				CUSTOMDRAWLINE =
+				PRINTFORML 
+				PRINTFORMW 「크, 윽……」
+				PRINTFORML 
+				PRINTFORML 번갈아 가며 중마 교대・회복을 끼워가며,
+				PRINTFORMW %CALLNAME:ARG% 100판 덤벼들기 대련을 거행했다.
+				IF BASE:ARG:LV >= 99
+					PRINTFORMW 전원 몫이 끝날 무렵에는 %CALLNAME:ARG%은(는) 어깨로 숨을 몰아쉬고 있었다.
+				ELSEIF BASE:ARG:LV >= 70
+					PRINTFORMW ……아쉽게도 90판째에 탈진한 모양이다.
+				ELSEIF BASE:ARG:LV >= 55
+					PRINTFORMW ……60판째쯤에 튕겨 나간 창이 허공을 갈랐다.
+				ELSE
+					PRINTFORMW ……절반도 가지 못하고 쓰러져 버렸다.
+				ENDIF
+				PRINTFORML 
+				PRINTFORML 대련을 중단하고 휴식이라고 전하자,
+				PRINTFORMW 마그네타이트를 담은 마석을 억지로 입에 쑤셔 넣어 준다.
+				PRINTFORML 
+				PRINTFORML 「우물우물…… 윽. 이런 맛없는 돌멩이라니 너무해요
+				PRINTFORMW 　드링크나 초콜릿…… 적어도 사탕이라도……」
+				;レギュレーションが違うからね、仕方ないね。
+				PRINTFORML 
+				PRINTFORMW 듣기만 해도 단맛 100%인 조합이다. 회복 수단으로 상용하다간 살찌지 않겠는가?
+				PRINTFORML 
+				PRINTFORMW 「우, 운동…… 했으니까요……」
+				PRINTFORML 
+				PRINTFORMW 땀을 흘리며 면구스러운 듯 마석을 빠는 %CALLNAME:ARG%.
+				PRINTFORMW 마석의 사용법으로서는 틀렸지만 쓰면 깨지면서 마력을 방출하고 사라지니 사탕 같은 셈이다.
+				PRINTFORMW ……물론 맛 따윈 없다.
+				PRINTFORML 
+				PRINTFORMW 그래서, 어쩔 텐가. 벌써 항복인가?
+				PRINTFORML 
+				PRINTFORMW 「……아뇨. 아직, 더 하겠습니다」
+				PRINTFORML 
+				PRINTFORMW 실전과 훈련의 차이점 중 하나는 『안전하게 질 수 있다』는 것이다.
+				PRINTFORML 일어서는 것조차 허락되지 않고 짓눌리는 패배를 맛본 %CALLNAME:ARG%이었지만,
+				PRINTFORMW 여기에 이르러 불이 붙었다. 이 나이에 실질적인 군대의 리더를 맡고 있었던 만큼의 배짱은 있다.
+				PRINTFORML 
+				PRINTFORMW 「%CSTR:일인칭%이(가) 해내겠어요…… %CSTR:일인칭%이(가)…… 앗!?」
+				PRINTFORML 
+				PRINTFORMW 그러자 %CALLNAME:ARG%에게 변화가 일어났다.
+				WAIT
+				PRINTFORML ……아무래도 방금 먹인 마석의 마그네타이트에 %CALLNAME:ARG%의 육체가 반응하고 있는 모양이다.
+				PRINTFORMW 무언가 잠들어 있던 것이 깨어나는 듯한,
+				PRINTFORMW 부화를 기다리는 알을 보고 있는 듯한 술렁거림이 느껴진다.
+				PRINTFORML 
+				PRINTFORMW 「……클래스, 체인지……일까요?」
+				PRINTFORML 
+				PRINTFORMW %CALLNAME:ARG%에게서 그런 단어가 튀어나왔다.
+				PRINTFORML 
+				PRINTFORMW 「저희 쪽에 전해지는…… 뭐랄까, 비술? 인데요……
+				PRINTFORMW 　듣자 하니 충분한 경험을 쌓고 마나스톤으로부터 힘을 받는다고 하더군요」
+				PRINTFORML 
+				PRINTFORMW 마나스톤이란 요컨대 어떠한 『힘』이 깃든 돌일 것이다.
+				PRINTFORMW 그리고 그 『힘』은 아무래도 마그네타이트와 유사한 성질을 띠는 모양이다.
+				PRINTFORML 
+				PRINTFORMW ……합당한 방법으로 시험해 본다면 어쩌면 길이 열릴지도 모른다.
+				PRINTFORML 
+				PRINTFORMW 「……그건 그렇고, 저기……」
+				PRINTFORML 
+				PRINTFORMW %CALLNAME:ARG%의 목소리에 생각에서 깨어났다.
+				PRINTFORML 
+				PRINTFORMW 「계속, 안 하시나요?」
+				PRINTFORML 
+				PRINTFORMW 눈을 돌려보니 전직 아마조네스 리더는 완전히 기운을 차려 있었다.
+				PRINTFORML 
+				PRINTFORMW ……이번에는 봐주지 않겠다고 전하고 100판 덤벼들기 대련을 재개했다.
+				PRINTFORML 
+				CUSTOMDRAWLINE =
+				PRINTFORMW 
+				RETURN 1
+			;抱っこ
+			ELSEIF RESULT == 2
+				PRINTFORML 
+				PRINTFORMW 이럴 때는 말 이외의 방법도 있다.
+				PRINTFORML 
+				PRINTFORML %CALLNAME:ARG%의 팔을 잡아끌어 날개 투구를 벗기고 침대까지 끌어당긴다.
+				SIF TALENT:ARG:신뢰 || TALENT:ARG:동료
+					PRINTFORML 지금껏 겪어본 적 없는 직접적인 신체 접촉에 굳어지는 것을 무시하고,
+				PRINTFORMW 머리를 쓰다듬고 가슴에 품어 안으며 침대에 앉자,
+				PRINTFORMW 곤두설 뻔했던 머리카락이 기척과 함께 원래대로 가라앉아 간다.
+				PRINTFORML 
+				PRINTFORMW 「…………」
+				PRINTFORML 
+				PRINTFORMW …………。
+				PRINTFORML 
+				PRINTFORMW 누워있는 %CALLNAME:MASTER%의 가슴팍에 꼭 안겨진 자세 그대로,
+				PRINTFORMW %CALLNAME:ARG%은(는) 버둥거리지도 않고 가만히 있다.
+				PRINTFORML 
+				PRINTFORML 이윽고 부비부비 뺨을 비벼보거나,
+				PRINTFORMW 얼굴을 들고 눈을 맞춰보려 하거나,
+				;＠の胸が巨乳かそれよりデカイ
+				SIF BUST(MASTER) >= 4
+					PRINTFORML %CALLNAME:MASTER%의 가슴을 주물러 보거나 움켜쥐어 보거나,
+				PRINTFORMW 팔을 둘러 매달려 보거나…….
+
+				PRINTFORML 
+				PRINTFORML 부드러운 금발을 빗어 넘기며 등을 가볍게 토닥여주고 있자,
+				;친애＝愛情経験積み込み済み
+				IF TALENT:ARG:친애
+					PRINTFORMW 안심……이 돼요, 라며 평소보다 가냘픈 속삭임이 가슴을 통해 울려 퍼졌다.
+				ELSE
+					PRINTFORMW 느긋한 숨결이 가슴을 간질였다.
+				ENDIF
+				PRINTFORML 
+				PRINTFORMW 평소 상황이 상황인 만큼 가끔은 이렇게 긴장을 늦추는 시간이 있어도 좋다.
+				PRINTFORML 
+				PRINTFORMW 그렇게 %CALLNAME:ARG%이(가) 깜빡깜빡 졸다가 이윽고 눈을 감을 때까지,
+				PRINTFORMW %CALLNAME:MASTER%은(는) 등을 계속 쓸어내려 주었다.
+				PRINTFORML 
+				PRINTFORMW …………
+				PRINTFORML 
+				PRINTFORMW ………
+				PRINTFORML 
+				PRINTFORMW ……
+				PRINTFORML 
+				PRINTFORMW …
+				PRINTFORML 
+				PRINTFORMW 잠시 후 고른 숨소리를 내기 시작한 %CALLNAME:ARG%이(가) 은은하게 빛을 띠고 있었다.
+				PRINTFORML 
+				PRINTFORMW ……아직 어떠한 숨겨진 힘이 있는 것일지도 모른다.
+				PRINTFORML 
+				CUSTOMDRAWLINE =
+				PRINTFORML 
+				PRINTFORMW 그 후 눈을 뜬 %CALLNAME:ARG%와(과) 이야기를 나누다 어떤 가능성이 부상했다.
+				PRINTFORML 
+				PRINTFORMW 『클래스 체인지』라 불리는, %CALLNAME:ARG%의 세계의 비술인 듯하다.
+				PRINTFORMW 경험과, 마나스톤이라는 돌로부터 힘을 하사받음으로써 힘을 얻는 것이라고.
+				PRINTFORML 
+				PRINTFORMW 그리고 그 마나스톤의 힘은
+				PRINTFORMW 마그네타이트로 대체하는 것이 가능한 모양이었다.
+				PRINTFORML 
+				RETURN 1
+			ENDIF
+		;どう陥落させたか２
+		ELSEIF TALENT:ARG:음란 || TALENT:ARG:창부 || TALENT:ARG:복종 || TALENT:ARG:예속
+			PRINTFORML 
+			PRINTFORMW 「읏…… 아, 윽……」
+			PRINTFORML 
+			PRINTFORMW 옷이 찢긴 %CALLNAME:ARG%의 몸에 휘감기는 무수한 촉수.
+			PRINTFORML 신음에도 아랑곳하지 않고 전신을 농락하며 때로는 조여대는 녹색의 그것은,
+			PRINTFORMW 마왕 마라의 촉수였다.
+			PRINTFORML 
+			PRINTFORMW 「힉, 으아아, 그만…… 둬」
+			PRINTFORML 
+			PRINTFORML 그리고 희미한 구동음을 내며 촉수에 가슴을 농락당하고,
+			PRINTFORMW 가랑이를 희롱당하는 모습을 끈적한 소리와 함께 영상에 담아내는 카메라.
+			PRINTFORML 
+			PRINTFORML 「히히히…… 참 귀여운 아가씨로구먼.
+			PRINTFORMW 　내가 듬뿍, 끈적하게 귀여워해 주마」
+			PRINTFORMW 「응…… 아. 싫어…… 싫어어엇」
+			PRINTFORML 
+			PRINTFORML 대여 남배우로서의 역할을 훌륭히 수행하며,
+			PRINTFORML 훌륭한 귀두를 소녀 특유의 매끄러운 뺨에 문질러대는 기분 나쁜 악마를 기세등등하게 연기하는 마라와,
+			PRINTFORMW 굴복시켜 선을 넘게 했다고는 하나 제법 진심으로 싫어하며 도리도리 고개를 젓는 %CALLNAME:ARG%.
+			PRINTFORML 
+			PRINTFORMW 그렇다, 이것은 악마 AV 촬영 현장이다.
+			PRINTFORML 
+			PRINTFORML %CALLNAME:ARG%에게는 전혀 알리지 않고(사전 리허설 없이 실전) 갑작스럽게 조교 촉수를 소환한 것이지만,
+			PRINTFORMW R-18에 G가 붙으면 수요층이 좁아지므로 마라와만 확실히 사전 조율을 해 두었다.
+			PRINTFORML 
+			PRINTFORML 1: 반혼향 금지(속을 파내선 안 된다. 흉터가 남을 상처를 입혀선 안 된다)
+			PRINTFORML 2: 신체에 이상을 초래하는 기술 금지(석화 금지. 마봉으로 말 못 하게 하기 금지)
+			PRINTFORM 3: 관통식 금지(소화기관을 역류해선 안 된다.
+			SIF TALENT:ARG:처녀
+				PRINTFORM 앞구멍에 넣어서는 안 된다
+			PRINTFORML ）
+			PRINTFORML 
+			PRINTFORMW 라는 식이다.
+			PRINTFORML 
+			PRINTFORMW 「아아, 다 말하지 않아도 안단다, 싫다는 것도 좋다는 뜻의 일부니라」
+			PRINTFORMW 「아니…… %CSTR:일인칭%은(는) 정말로…… 꺄앗!」
+			PRINTFORML 
+			PRINTFORML 일부러 부정하고 싶어질 법한 굴욕적인 말을 내뱉고,
+			PRINTFORMW 부정하느라 정신이 팔린 틈에 막으려던 곳을 집중 공략하는 수법으로 수치심을 부추기며,
+			PRINTFORML 그러면서도(%CALLNAME:ARG%은(는) 전력으로 벗어나려 하고 있지만) 능숙하게 억누르고,
+			PRINTFORMW 게다가 국부가 버둥거리는 다리에 가려지지 않도록 교묘하게 벌려 카메라를 향하게 하고 있다.
+			PRINTFORMW 이 부분은 과연 다완 악마다운 솜씨라 할 수 있겠다.
+			;PRINTFORMW それにしてもオーダー通りとは言え本当に気持ち悪いなこのマーラ。AVの爺か。AVだ。
+			PRINTFORML 
+			PRINTFORMW 「이것 보아라, 이쪽의 열심히 지키려 애쓰는 입구가 약한 게로구나」
+			PRINTFORML 
+			PRINTFORMW 친절하게도 남근을 쏙 빼닮은 촉수를 대고서 끈적하게 비벼대고 있다.
+			PRINTFORML 
+			PRINTFORML 촉수에서는 녹색의 끈적끈적한 액체가 분비되기 시작했고,
+			PRINTFORMW 그것이 발라진 %CALLNAME:ARG%의 반응은 확연히 이상해졌다.
+			PRINTFORML 
+			PRINTFORMW 「힉!? 아……! 뜨거…… 엇!?」
+			PRINTFORML 
+			PRINTFORMW 마왕 마라의 특기인 마라라기다인이라 불리는 마술이다.
+			PRINTFORML 
+			PRINTFORML 원래는 적을 태우는 데 쓰는 기술이지만,
+			PRINTFORML 화염인데도 점액 형태에 저온 촛농에 가까운 열량,
+			PRINTFORMW 게다가 몸에 침투하여 정신 공격까지 덤으로 붙어 있다.
+			PRINTFORML 
+			PRINTFORML 『온도 따위를 잘 조절하면, 이 꼴이 된다네』
+			PRINTFORMW 라며 사전 미팅 때 소량 내어주긴 했는데, 살짝 닿은 것만으로도 큰일 날 뻔했다.
+			PRINTFORMW %CALLNAME:ARG%은 지금 그걸 원액으로, 대량으로 점막에 발리고 있다.
+			PRINTFORML 
+			PRINTFORMW ……괴롭겠구나.
+			PRINTFORML 
+			PRINTFORMW 「뭐예요, 이거……! 타는 것…… 처럼」
+			PRINTFORMW 「자자, 곧 기분 좋아질 게다. 잘 스며들게 해 주마」
+			PRINTFORML 
+			PRINTFORML 국부를 태우는 영문 모를 뜨거운 물체에 더해,
+			PRINTFORMW 그런 소리를 지껄이는 마라의 혀로 귓전을 핥아 올려지자 몸을 부르르 떠는 %CALLNAME:ARG%.
+			PRINTFORML 
+			PRINTFORML 『이제 전희는 끝내도 좋다』고 손짓 사인을 보낸다.
+			;淫乱・服従で尻も前もやってないってありうるんだろうか？
+			IF TALENT:ARG:처녀 && ABL:ARG:Ａ감각 == 0
+				PRINTFORMW 『그렇구먼, 입이랑 강제 스마타 정도이려나』 하며 거시기 사인이 몸통 뒤편에서 되돌아왔다. 재주도 좋다.
+				PRINTFORML 
+				PRINTFORML 개통식은 앞뒤 모두 금지되어 있어 어쩔 수 없긴 하지만,
+				PRINTFORMW 까다로운 요구에 부응하는 모습은 틀림없는 AV남배우 악마의 프로페셔널이었다.
+				PRINTFORML 
+				PRINTFORMW 「슬슬 내 물건도 귀여워해 주지 않겠니, 아가씨?」
+				PRINTFORMW 「……힉!!」
+				PRINTFORML 
+				PRINTFORML 조절해서 수축시킨 것이겠지만, 입에 넣기에는 꽤 거대한 프랑크푸르트 소시지 같은 촉수가 튀어나왔다
+				PRINTFORMW ……턱 빠지면 NG니까 말이지?
+				PRINTFORML 
+				PRINTFORMW 「응, 으으~~~읏」
+				PRINTFORML 
+				PRINTFORML 입을 다물고 저항하는 %CALLNAME:ARG%에게 또다시 마라라기다인 로션을 입술에 처바르는 마라.
+				PRINTFORMW 슬프게도 입술은 구강 점막의 노출 부위라 그런 것은 침투해 버리는 법이다.
+				PRINTFORMW 그렇기 때문에……
+				PRINTFORML 
+				PRINTFORMW 「크, 아…… 으으읍!」
+				PRINTFORML 
+				PRINTFORMW 저항도 헛되이 마라의 남근은 입속으로 가차 없이 밀고 들어간다.
+				PRINTFORML 
+				PRINTFORMW 「읍, 웁. 윽…… 커헉, 츕! 컥!!」
+				PRINTFORML 
+				PRINTFORML 격렬하게 삽입당해 기침하며 입가로 타액이 새어 나오는 것도
+				PRINTFORMW 아랑곳하지 않고, 다른 촉수가 %CALLNAME:ARG%의 가랑이에 대어졌다. ……『길다』.
+				PRINTFORML 
+				PRINTFORMW 「아래쪽도 비어있으니…… 이런 건 어떠냐?」
+				PRINTFORML 
+				PRINTFORML 조금 전과 마찬가지로 온통 점액 투성이인 그것이
+				PRINTFORMW 질척 소리를 내며 기세 좋게 가랑이를 문질러 올린다.
+				PRINTFORMW 튕겨 나가듯 전신을 크게 젖히는 것을 보니, 그 점액의 효능이 대단한 모양이다.
+				PRINTFORML 
+				PRINTFORMW 「으으읍……! 윽!! 으윽!」
+				PRINTFORML 「즐기고 있는 도중에 미안하지만, 내 거 아까부터 팽팽하게 서서 말여……
+				PRINTFORMW 　일단 인사치레로 석 잔, 듬뿍 마셔줘야겠구먼」
+				PRINTFORML 
+				PRINTFORMW 그러는 사이에 첫 발이 뿜어져 나왔다.
+				PRINTFORML 
+				PRINTFORMW 범인은 감당할 수 없을 정도의 양이 %CALLNAME:ARG%의 목구멍과 전신에 쏟아부어진다.
+				;まぁ＠なら行けます行けます。
+				PRINTFORMW 친절하게도 사정 도중에 입에서 빼내 얼굴에도 뿌려주는, 부카케 수요까지 충족하는 서비스까지 딸렸다.
+				PRINTFORMW 입담 센스만 빼면 나름 완벽하긴 한데…….
+				PRINTFORML 
+				PRINTFORMW 「커헉! 쿨럭! 하아, 하아…… 컥……!」
+				PRINTFORML 
+				PRINTFORMW 입에서 정액을 흘리며 필사적으로 숨을 들이쉬는 %CALLNAME:ARG%.
+				PRINTFORML 
+			;お尻がNG
+			ELSEIF ABL:ARG:Ａ감각 == 0
+				PRINTFORMW 『그렇구먼, 슬슬 들어가 볼까나』 하며 거시기 사인이 몸통 뒤편에서 되돌아왔다. 재주도 좋다.
+				PRINTFORML 
+				PRINTFORMW 「그럼 다음은 마침내 본방이란다. 나와 아기 만들기라도 해볼까나?」
+				PRINTFORMW 「윽……!」
+				PRINTFORML 
+				PRINTFORML 말이 떨어지기 무섭게 몸통에 감겨 있던, 딱 봐도 늠름하고 거대한 마라가
+				PRINTFORMW 스르르 꿈틀거리며 가랑이에 대어졌다.
+				PRINTFORML 
+				PRINTFORMW ……저렇게 개통당했어도 역시 이형의 악마에게 삽입당하는 건 싫은 모양이다.
+				PRINTFORML 발버둥 쳐봤자 도망칠 수는 없지만,
+				PRINTFORMW 고개를 돌리며 어떻게든 다리를 오므리려 하고 있다.
+				PRINTFORML 
+				PRINTFORMW 「그만…… 싫어, 무서워……」
+				PRINTFORMW 「괜찮단다, 금방 좋아질 게야!」
+				PRINTFORML 
+				PRINTFORMW 하지만 저항도 헛되이 다리는 활짝 벌려지고 입구를 질척질척하게
+				PRINTFORML 
+				PRINTFORML 본인에게도 잘 보이도록 일부러 몸을 들어 올려 진행되는,
+				PRINTFORML 굴욕적이고 수치심을 부추기는 결합에 %CALLNAME:ARG%이 눈물을 뚝뚝 흘리는 것에도 아랑곳하지 않고,
+				PRINTFORMW 녹색 촉수는 푹푹 %CALLNAME:ARG%의 여음으로 파고들어 간다.
+				PRINTFORML 
+				PRINTFORMW 「아아앗! ~~~으으응!! ……! ~~읏!!」
+				PRINTFORML 
+				PRINTFORML 점액으로 인해 애간장이 타고 정욕이 부추겨진 몸에
+				PRINTFORMW 말 그대로 꽂혀 들어간 남근의 효과는 절대적이었고,
+				PRINTFORMW 신음인지 비명인지 모를 소리를 지르며 결박당한 몸이 미친 듯이 날뛰었다.
+				PRINTFORML 
+				PRINTFORML 「음~~ 좋은 반응이로구나! 나도 더욱 팽팽해져서,
+				PRINTFORMW 　나잇값도 못 하고 금방 한 발 발사할 수 있겠어!」
+				PRINTFORML 
+				PRINTFORML 말이 떨어지기 무섭게 갑자기 결합 중인 마라와
+				PRINTFORMW 묶어두고 있는 마라가 일제히 고동치기 시작했다.
+				PRINTFORML 
+				PRINTFORMW ……잠깐만, 이 타이밍에 가버리면 시청자가 곤란한데?
+				PRINTFORMW 뭐, 마라 녀석이니 중간에 풀 죽거나 하진 않겠지만…….
+				PRINTFORML 
+				PRINTFORML 우려를 뒤로하고 %CALLNAME:ARG%의 눈앞에, 몸에, 가슴에 들이대듯
+				PRINTFORMW 준비하고 있던 촉수는 사양 없이 %CALLNAME:ARG%에게 즙을 뿌려댔다.
+				PRINTFORML 
+				PRINTFORMW 「응극, 으앙……! 읏! 윽……!」
+				PRINTFORML 
+				PRINTFORMW 물론 꽂혀있는 물건에서도 역류할 정도로 콸콸 쏟아져 나오고 있다.
+				PRINTFORMW 아니, 뿜어져 나오는 중에도 계속 쑤셔 넣고 있어 복부는 난리가 나 있다.
+				PRINTFORML 
+			;前処女⇒お尻のみ
+			ELSEIF TALENT:ARG:처녀
+				PRINTFORMW 『좋아좋아, 앞이 안 되니…… 엉덩이나 괴롭혀볼까나』 하며 거시기 사인이 몸통 뒤편에서 되돌아왔다. 재주도 좋다.
+				PRINTFORML 
+				PRINTFORMW 「그럼 다음은…… 엉덩이 놀이 시간이다!!」
+				PRINTFORMW 「윽……!!??!」
+				PRINTFORML 
+				PRINTFORML 말이 끝나기 무섭게 몸통에 감겨 있던 우람한 크기의 남근이,
+				PRINTFORMW 하반신을 매달 듯이 들어 올려진 %CALLNAME:ARG%의 엉덩이 사이에 끼어들기 시작했다.
+				PRINTFORMW 요도구 같은 것 안쪽에 안구 같은 것이 보이는 것은 기분 탓인가?
+				PRINTFORML 
+				PRINTFORMW 「그, 그만두세요! 이런 게 들어가면……!」
+				PRINTFORML 
+				PRINTFORMW 지금까지 %CALLNAME:ARG%의 엉덩이를 제법 괴롭혀왔지만 취향을 조금 바꾸니 이 모양이다.
+				PRINTFORML 
+				PRINTFORMW 『찢어져 버려요』까지는 말하지 않았지만 방금 앞을 괴롭힘당할 때보다 말이 빠르다.
+				PRINTFORMW 뭐 보통이라면 찢어진다. 마라만큼 신축성 있는 촉수이기에 가능한 일이다.
+				SIF ABL:MASTER:Ａ감각 != 0
+					PRINTFORMW ……괜찮아. 익숙해지면 기분 좋으니까.
+				PRINTFORML 
+				PRINTFORMW 「살려줘요, 용서해 줘요…… 이런 건 너무해……」
+				PRINTFORMW 「괜찮단다, 금방 좋아질 게야!」
+				PRINTFORML 
+				PRINTFORMW 일그러진 얼굴이 삽입으로 굳어지는 것은 시간문제였다.
+				PRINTFORML 푹푹, 소리가 들려올 듯한 기세로 파고드는 촉수와,
+				PRINTFORMW 이물감에 전신을 경직시키며 움직이지 못하게 되는 %CALLNAME:ARG%.
+				PRINTFORML 
+				PRINTFORMW 「아…… 아아…… 읏 크, 커헉」
+				PRINTFORML 
+				PRINTFORMW 아무래도 직장을 지나 대장까지 들어간 모양이다.
+				PRINTFORML 아마 무리하게 움직이면 메스껍겠지만,
+				PRINTFORMW 얕은 호흡밖에 하지 못한 채 반사적으로 튕겨 오르는 것조차 괴로워 보이는 표정을 짓고 있다.
+				PRINTFORML 
+				PRINTFORMW 눈물을 글썽이며 고뇌하는 표정을 눈없는 귀두가 관찰하듯 핥아 돌린다.
+				PRINTFORML 
+				PRINTFORML 「유감스럽게도 아가씨처럼 귀여운 아이가 괴로워하는 표정도 나는 좋아해서 말이지……
+				PRINTFORMW 　끓어오르는구나, 더 다양한 얼굴을 내게 보여주려무나」
+				PRINTFORMW 「으…… 아직……? 이제 빼줘요…… 괴로워……」
+				PRINTFORML 
+				PRINTFORML 말이 떨어지기 무섭게 삽입 중인 마라와 묶어두고 있는 마라가 일제히 고동치기 시작했다.
+				PRINTFORMW 다음 컨셉은 『억지로 즙을 뿌려져 혐오하는 모습』이다.
+				PRINTFORML 
+				PRINTFORMW ……사전 미팅 때 마라는 이 대목에서 제법 떨떠름한 표정을 지었다는 것을 여기에 덧붙여둔다.
+				PRINTFORML 
+				PRINTFORMW 「빼주어도 좋다만, 우선 듬뿍 내보내고 난 다음이니라……!」
+				PRINTFORML 
+				PRINTFORML %CALLNAME:ARG%의 눈앞에, 몸에, 가슴에 들이대듯
+				PRINTFORMW 준비하고 있던 촉수는 사양 없이 %CALLNAME:ARG%에게 즙을 뿌려댔다.
+				PRINTFORML 
+				PRINTFORMW 「응극, 으앙……! 읏! 윽 으, 엑……!」
+				PRINTFORML 
+				PRINTFORML 장 속에 직접 액체가 뿜어져 들어오는 형용하기 힘든 감촉에
+				PRINTFORMW 몸부림치는 %CALLNAME:ARG%의 몸을 백탁액이 온통 더럽혀 간다…….
+
+				PRINTFORML 
+			ENDIF
+			PRINTFORML 
+			WAIT
+			PRINTFORMW 그런데 그런 일을 벌이고 있던 도중이었다.
+			PRINTFORML 
+			PRINTFORMW 전신이 녹색과 백색의 점액투성이가 된 %CALLNAME:ARG%의 몸이 희미한 빛을 띠기 시작한 것을 알아챘다.
+			PRINTFORML 
+			PRINTFORMW 『……이보시오 감독. 이 계집아이, 무언가 각성하려 하고 있는뎁쇼?』
+			PRINTFORML 
+			PRINTFORMW 마찬가지로 눈치챈 듯 촬영 중이라 그림자 속에서 보내오는 마라의 사인에도 초조함이 엿보였다.
+			PRINTFORML 본래는 계속 콸콸 쏟아부으며 8컷 6시간 정도 진행할 예정이었지만……
+			PRINTFORMW 어쩔 수 없다. 일정을 변경하여 적당히 유혹의 안개로 정신 오염을 버무려 컷이다.
+			PRINTFORML 
+			PRINTFORMW 「착한 아이니까 이 안개를 들이마시렴. 금방 편해질 게다」
+			PRINTFORMW 「윽! 컥 쿨럭쿨럭…… 크…… 아……」
+			PRINTFORML 
+			PRINTFORML 『촬영 종료』 사인을 알아챈 마라가 안개를 뿜어내자,
+			PRINTFORMW 그것을 들이마시고 축 늘어지는 %CALLNAME:ARG%.
+			PRINTFORML 
+				CUSTOMDRAWLINE =
+			PRINTFORML 
+			PRINTFORMW 그 후에도 %CALLNAME:ARG%의 몸을 만지작거리며 희롱하다 보니 흥미로운 사실을 알게 되었다.
+			PRINTFORMW 듣자 하니 %CALLNAME:ARG% 같은 자는 충분한 경험과 마그네타이트로 힘을 각성시킬 바탕이 있는 모양이다.
+			PRINTFORML 
+			PRINTFORMW 그것은 즉 전투 말로서도 쓸모가 있다는 것을 의미했다.
+			PRINTFORML 
+			PRINTFORMW ……비디오의 수익은 남배우 마라에게 지급할 출연료로 똔똔이 되었다.
+			PRINTFORML 
+			RETURN 1
+		ELSE
+			PRINTL 함락되어 있는데 참조되지 않은 항목이 나타났으므로 버그일 수 있습니다. 보고해 주십시오.
+		ENDIF
+	ENDIF
+	RETURN 1
+CASE 1
+	;解放条件
+	IF ARG:1 == 1
+		;前イベント既読後
+		SIF GETBIT(CFLAG:ARG:개별이벤트읽음,0)
+			RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			RESULTS = 『클래스 체인지』
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			;RESULTS = ※第１イベントを閲覧し、一度ショップへ戻る必要がある。
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		CLASS_RANK = 1 + (GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") != "") + (GET_RPG_CSTR_TAKEOVER(ARG, "クラス3属性") != "") + (GET_RPG_CSTR_TAKEOVER(ARG, "クラス4属性") != "")
+		PRINTFORMW 『클래스 체인지』 준비가 갖추어졌다.
+		SETCOLOR 0x33ffcc
+		PRINTFORML 
+		IF CLASS_RANK == 4
+			PRINTFORML 클래스 체인지를 통해 클래스 고유 스킬의 성능을 변화시킬 수 있습니다.
+		ELSE
+			SIF CLASS_RANK < 2
+				PRINTFORML 「Lv30 이상」에서 제2클래스가,
+			SIF CLASS_RANK < 3
+				PRINTFORML 「Lv55 이상＋제2클래스 각성」에서 제3클래스가,
+			PRINTFORML 「Lv70 이상＋제3클래스 각성」에서 제4클래스가 각성 가능해집니다.
+			PRINTFORML 
+			PRINTFORML ＊각성과 동시에 새로운 클래스 고유 스킬을 습득하며,
+			PRINTFORML 또한 이미 습득한 클래스 고유 스킬의 성능이 상승합니다.
+			;PRINTFORML 　クラス３は２との組み合わせによって固有スキルの性能が変化します。
+		ENDIF
+		RESETCOLOR
+		PRINTFORMW 어떻게 할까.
+		L_LINE = LINECOUNT
+		$INPUT_LOOP_EVENT_K5210CC
+		CLEARLINE LINECOUNT - L_LINE
+		PRINTFORML 
+		DRAWLINE
+		PRINTFORML 클래스 2 스킬
+		DRAWLINE
+		SETCOLOR (GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "光") ? 0x33ffcc # COLOR("デフォルト")
+		PRINTFORML 光
+		PRINTFORML 적 1열에 충격・검격의 복합 속성으로 물리 공격을 1회 행하고, 충격 속성의 다운을 부여한다.
+		PRINTFORML 추가효과: 공격 전, 아군 전체의 공격・회피를 1단계 강화.
+		PRINTL 
+		SETCOLOR (GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "闇") ? 0x33ffcc # COLOR("デフォルト")
+		PRINTFORML 闇
+		PRINTFORML 적 1열에 충격・검격의 복합 속성으로 중위력의 물리 공격을 1회 행한다.
+		PRINTFORML 추가효과: 명중 시, 방어・마법효과를 1단계 저하.
+		RESETCOLOR
+		DRAWLINE
+		IF BASE:ARG:LV >= 55
+			PRINTFORML 클래스 3 스킬
+			DRAWLINE
+			SETCOLOR ((GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "光") &&  (GET_RPG_CSTR_TAKEOVER(ARG, "クラス3属性") != "")) ? 0x33ffcc # COLOR("デフォルト")
+			PRINTFORML 光光/光闇
+			PRINTFORML 적 전체에 비구・질풍・만능의 물리 공격을 1회 행한다.
+			PRINTFORML 추가효과: 공격 전, 아군 전체의 마법위력・방어력을 2단계 강화.
+			PRINTL 
+			SETCOLOR ((GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "闇") &&  (GET_RPG_CSTR_TAKEOVER(ARG, "クラス3属性") != "")) ? 0x33ffcc # COLOR("デフォルト")
+			PRINTFORML 闇闇/闇光
+			PRINTFORML 적 전체에 비구・질풍・만능의 물리 공격을 1회 행한다.
+			PRINTFORML 추가효과: 명중한 적의 명중・회피를 2단계 저하.
+		RESETCOLOR
+			DRAWLINE
+		ENDIF
+		IF BASE:ARG:LV >= 70
+			PRINTFORML 클래스 4 스킬
+			DRAWLINE
+			SETCOLOR (GET_RPG_CSTR_TAKEOVER(ARG, "クラス4属性") == "光") ? 0x33ffcc # COLOR("デフォルト")
+			PRINTFORML 光
+			PRINTFORML 적 전체에 중력・핵열・만능의 복합 속성으로 특대위력의 물리 공격을 1회 행한다. 높은 필살률.
+			PRINTL 
+			SETCOLOR (GET_RPG_CSTR_TAKEOVER(ARG, "クラス4属性") == "闇") ? 0x33ffcc # COLOR("デフォルト")
+			PRINTFORML 闇
+			PRINTFORML 적 전체에 비구・전격・만능의 복합 속성으로 특대위력의 물리 공격을 1회 행한다. 높은 필살률.
+		RESETCOLOR
+			DRAWLINE
+		ENDIF
+		L_LINE:1 = LINECOUNT
+		IF GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == ""
+			SETCOLOR 0x33ffcc
+				PRINTFORML [0] 『클래스 2의 각성』
+			RESETCOLOR
+		ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "光"
+			PRINTFORM [0] 『클래스 2 변경』（
+			SETCOLOR 0x33ffcc
+				PRINTFORM 발키리
+			RESETCOLOR
+			PRINTFORML ／룬 메이든）
+		ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "闇"
+			PRINTFORM [0] 『클래스 2 변경』（발키리／
+			SETCOLOR 0x33ffcc
+				PRINTFORM 룬 메이든
+			RESETCOLOR
+			PRINTFORML ）
+		ENDIF
+		IF GET_RPG_CSTR_TAKEOVER(ARG, "クラス3属性") == "" && BASE:ARG:LV < 55 || GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == ""
+			SETCOLOR 0x999999
+				PRINTFORML [1] （클래스 3 각성에는 Lv55 이상＋클래스 2의 각성이 필요）
+			RESETCOLOR
+		ELSEIF (GET_RPG_CSTR_TAKEOVER(ARG, "クラス3属性") == "") && (BASE:ARG:LV >= 55)
+			SETCOLOR 0x33ffcc
+				PRINTFORML [1] 『클래스 3의 각성』
+			RESETCOLOR
+		ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "光" && GET_RPG_CSTR_TAKEOVER(ARG, "クラス3属性") == "光"
+			PRINTFORM [1] 『클래스 3 변경』（
+			SETCOLOR 0x33ffcc
+				PRINTFORM 바나디스
+			RESETCOLOR
+			PRINTFORML ／스타 랜서）
+		ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "光" && GET_RPG_CSTR_TAKEOVER(ARG, "クラス3属性") == "闇"
+			PRINTFORM [1] 『클래스 3 변경』（바나디스／
+			SETCOLOR 0x33ffcc
+				PRINTFORM 스타 랜서
+			RESETCOLOR
+			PRINTFORML ）
+		ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "闇" && GET_RPG_CSTR_TAKEOVER(ARG, "クラス3属性") == "光"
+			PRINTFORM [1] 『클래스 3 변경』（
+			SETCOLOR 0x33ffcc
+				PRINTFORM 드래곤 마스터
+			RESETCOLOR
+			PRINTFORML ／펜릴 나이트）
+		ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "闇" && GET_RPG_CSTR_TAKEOVER(ARG, "クラス3属性") == "闇"
+			PRINTFORM [1] 『클래스 3 변경』（드래곤 마스터／
+			SETCOLOR 0x33ffcc
+				PRINTFORM 펜릴 나이트
+			RESETCOLOR
+			PRINTFORML ）
+		ENDIF
+		IF GET_RPG_CSTR_TAKEOVER(ARG, "クラス4属性") == "" &&  BASE:ARG:LV < 70 || GET_RPG_CSTR_TAKEOVER(ARG, "クラス3属性") == ""
+			SETCOLOR 0x999999
+				PRINTFORML [2] （클래스 4 각성에는 Lv70 이상＋클래스 3의 각성이 필요）
+			RESETCOLOR
+		ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス4属性") == "" &&  BASE:ARG:LV >= 70
+			SETCOLOR 0x33ffcc
+				PRINTFORML [2] 『클래스 4의 각성』
+			RESETCOLOR
+		ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス4属性") == "光"
+			PRINTFORM [2] 『클래스 4 변경』（
+			SETCOLOR 0x33ffcc
+				PRINTFORM 미티어
+			RESETCOLOR
+			PRINTFORML ／흐레스벨그）
+		ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス4属性") == "闇"
+			PRINTFORM [2] 『클래스 4 변경』（미티어／
+			SETCOLOR 0x33ffcc
+				PRINTFORM 흐레스벨그
+			RESETCOLOR
+			PRINTFORML ）
+		ENDIF
+			PRINTFORML [3] 종료한다
+			;５５以下あるいはクラス２未覚醒だと２のみ
+			IF BASE:ARG:LV < 55 || GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == ""
+				CALL INPUTINT, 0 , 3
+			;７０以下あるいはクラス３未覚醒だと２，３まで
+			ELSEIF BASE:ARG:LV < 70 || GET_RPG_CSTR_TAKEOVER(ARG, "クラス3属性") == ""
+				CALL INPUTINT, 0 , 1 , 3
+			ELSE
+				CALL INPUTINT, 0 , 1 , 2 , 3
+			ENDIF
+			;メッセージのために覚醒かどうかを取得しておく
+			IF RESULT < 3
+				CHOICE_CLASS_RANK = RESULT + 2
+				IF GET_RPG_CSTR_TAKEOVER(ARG, @"クラス{CHOICE_CLASS_RANK}属性") == ""
+					IS_AWAKEN = 1
+				ELSE
+					IS_AWAKEN = 0
+				ENDIF
+			ENDIF
+			IF RESULT == 0
+				IF GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == ""
+					PRINTFORMW 『클래스 2』를 각성시킵니다.
+					PRINTFORML 
+					PRINTFORML 빛, 어둠의 2종 중에서 클래스를 선택할 수 있으며, 선택은 개별 이벤트에서 언제든 변경 가능합니다.
+					PRINTFORML 
+					PRINTFORML [0] 빛・발키리
+					PRINTFORML [1] 어둠・룬 메이든
+					CALL INPUTINT, 0 , 1
+					IF RESULT == 0
+						PRINTFORML 
+						PRINTFORML %CALLNAME:ARG%은(는) 발키리로 각성했습니다.
+						CALL SET_RPG_CSTR_TAKEOVER, ARG, "クラス2属性", "光" 
+					ELSEIF RESULT == 1
+						PRINTFORML 
+						PRINTFORML %CALLNAME:ARG%은(는) 룬 메이든으로 각성했습니다.
+						CALL SET_RPG_CSTR_TAKEOVER, ARG, "クラス2属性", "闇" 
+					ENDIF
+					;クラス２スキルの定義付与。
+					;CSTR:ARG:전용기1 = クラス２スキル（聖剣３）
+				ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "光"
+					CALL SET_RPG_CSTR_TAKEOVER, ARG, "クラス2属性", "闇" 
+				ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "闇"
+					CALL SET_RPG_CSTR_TAKEOVER, ARG, "クラス2属性", "光" 
+				ENDIF
+				;何れの分岐もこちらに戻る。同時にクラス２スキル削除時は再習得する為に分岐統合後のここへ置く。
+				CALL LEARN_PU_SKILL(ARG,"クラス２スキル（聖剣３）")
+			ELSEIF RESULT == 1
+				;光・３未覚醒
+				IF GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "光" && GET_RPG_CSTR_TAKEOVER(ARG, "クラス3属性") == ""
+					PRINTFORMW 『클래스 3』을 각성시킵니다.
+					PRINTFORML 
+					PRINTFORML 빛을 기준으로 한 추가 2분기를 선택할 수 있으며, 선택은 개별 이벤트에서 언제든 변경 가능합니다.
+					PRINTFORML 
+					PRINTFORML [0] 빛빛・바나디스
+					PRINTFORML [1] 빛어둠・스타 랜서
+					CALL INPUTINT, 0 , 1
+					IF RESULT == 0
+						PRINTFORML 
+						PRINTFORML %CALLNAME:ARG%은(는) 바나디스로 각성했습니다.
+						CALL SET_RPG_CSTR_TAKEOVER, ARG, "クラス3属性", "光" 
+					ELSEIF RESULT == 1
+						PRINTFORML 
+						PRINTFORML %CALLNAME:ARG%은(는) 스타 랜서로 각성했습니다.
+						CALL SET_RPG_CSTR_TAKEOVER, ARG, "クラス3属性", "闇" 
+					ENDIF
+					;クラス３スキルの定義。
+					;CSTR:ARG:전용기2 = クラス３スキル（聖剣３）
+				;闇・３未覚醒
+				ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "闇" && GET_RPG_CSTR_TAKEOVER(ARG, "クラス3属性") == ""
+					PRINTFORMW 『클래스 3』을 각성시킵니다.
+					PRINTFORML 
+					PRINTFORML 어둠을 기준으로 한 추가 2분기를 선택할 수 있으며, 선택은 개별 이벤트에서 언제든 변경 가능합니다.
+					PRINTFORML 
+					PRINTFORML [0] 어둠빛・드래곤 마스터
+					PRINTFORML [1] 어둠어둠・펜릴 나이트
+					CALL INPUTINT, 0 , 1
+					IF RESULT == 0
+						PRINTFORML 
+						PRINTFORML %CALLNAME:ARG%은(는) 드래곤 마스터로 각성했습니다.
+						CALL SET_RPG_CSTR_TAKEOVER, ARG, "クラス3属性", "光" 
+					ELSEIF RESULT == 1
+						PRINTFORML 
+						PRINTFORML %CALLNAME:ARG%은(는) 펜릴 나이트로 각성했습니다.
+						CALL SET_RPG_CSTR_TAKEOVER, ARG, "クラス3属性", "闇" 
+					ENDIF
+				;光光⇒光闇
+				ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "光" && GET_RPG_CSTR_TAKEOVER(ARG, "クラス3属性") == "光"
+					CALL SET_RPG_CSTR_TAKEOVER, ARG, "クラス3属性", "闇" 
+				;光闇⇒光光
+				ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "光" && GET_RPG_CSTR_TAKEOVER(ARG, "クラス3属性") == "闇"
+					CALL SET_RPG_CSTR_TAKEOVER, ARG, "クラス3属性", "光" 
+				;闇光⇒闇闇
+				ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "闇" && GET_RPG_CSTR_TAKEOVER(ARG, "クラス3属性") == "光"
+					CALL SET_RPG_CSTR_TAKEOVER, ARG, "クラス3属性", "闇" 
+				;闇闇⇒闇光
+				ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス2属性") == "闇" && GET_RPG_CSTR_TAKEOVER(ARG, "クラス3属性") == "闇"
+					CALL SET_RPG_CSTR_TAKEOVER, ARG, "クラス3属性", "光" 
+				ENDIF
+				CALL LEARN_PU_SKILL(ARG,"クラス３スキル（聖剣３）")
+			ELSEIF RESULT == 2
+				;クラス４分岐未定義時
+				IF GET_RPG_CSTR_TAKEOVER(ARG, "クラス4属性") == ""
+					PRINTFORMW 『클래스 4』를 각성시킵니다.
+					PRINTFORML 
+					PRINTFORML 클래스 2, 3과는 독립된 2분기를 선택할 수 있으며, 선택은 개별 이벤트에서 언제든 변경 가능합니다.
+					PRINTFORML 
+					PRINTFORML [0] 빛4・미티어
+					PRINTFORML [1] 어둠4・흐레스벨그
+					CALL INPUTINT, 0 , 1
+					IF RESULT == 0
+						PRINTFORML 
+						PRINTFORML %CALLNAME:ARG%은(는) 미티어로 각성했습니다.
+						CALL SET_RPG_CSTR_TAKEOVER, ARG, "クラス4属性", "光" 
+					ELSEIF RESULT == 1
+						PRINTFORML 
+						PRINTFORML %CALLNAME:ARG%은(는) 흐레스벨그로 각성했습니다.
+						CALL SET_RPG_CSTR_TAKEOVER, ARG, "クラス4属性", "闇" 
+					ENDIF
+					CSTR:ARG:전용기3 = クラス４スキル（聖剣３）
+				ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス4属性") == "光"
+					CALL SET_RPG_CSTR_TAKEOVER, ARG, "クラス4属性", "闇" 
+				ELSEIF GET_RPG_CSTR_TAKEOVER(ARG, "クラス4属性") == "闇"
+					CALL SET_RPG_CSTR_TAKEOVER, ARG, "クラス4属性", "光" 
+				ENDIF
+				CALL LEARN_PU_SKILL(ARG,"クラス４スキル（聖剣３）")
+			ELSEIF RESULT == 3
+				PRINTFORMW 처리를 마쳤다.
+				RETURN 0
+			ENDIF
+			IF IS_AWAKEN == 0
+				CLEARLINE LINECOUNT - L_LINE:1
+				IF GET_RPG_CSTR_TAKEOVER(ARG, @"クラス{CHOICE_CLASS_RANK}属性") == "光"
+					SELECTCASE CHOICE_CLASS_RANK
+						CASE 2
+							PRINTFORML 발키리의 힘이 깃들었습니다.
+						CASE 3
+							IF GET_RPG_CSTR_TAKEOVER(ARG, @"クラス2属性") == "光"
+								PRINTFORML 바나디스의 힘이 깃들었습니다.
+							ELSE
+								PRINTFORML 스타 랜서의 힘이 깃들었습니다.
+							ENDIF
+						CASE 4
+							PRINTFORML 미티어의 힘이 깃들었습니다.
+					ENDSELECT
+				ELSE
+					SELECTCASE CHOICE_CLASS_RANK
+						CASE 2
+							PRINTFORML 룬 메이든의 힘이 깃들었습니다.
+						CASE 3
+							IF GET_RPG_CSTR_TAKEOVER(ARG, @"クラス2属性") == "光"
+								PRINTFORML 드래곤 마스터의 힘이 깃들었습니다.
+							ELSE
+								PRINTFORML 펜릴 나이트의 힘이 깃들었습니다.
+							ENDIF
+						CASE 4
+							PRINTFORML 흐레스벨그의 힘이 깃들었습니다.
+					ENDSELECT
+				ENDIF
+				PRINTL 
+				PRINTL 
+				PRINTL 
+				WAIT
+			ENDIF
+			GOTO INPUT_LOOP_EVENT_K5210CC
+		;好感度以外は後に上昇値が表示される
+		;CFLAG:ARG:(MASTER + 2100) += (好感度)
+		;TCVAR:ARG:획득의존도 += 
+		;TCVAR:ARG:획득충성도 += 
+		;CALL ADDS_EXP("○○経験", 1, ARG)
+	ENDIF
+ENDSELECT
+RETURN 0

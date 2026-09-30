@@ -1,0 +1,1668 @@
+﻿;001	20YY/MM/DD	？？？		（新規作成）
+;002	2022/08/17	NEO			「コマンド群全開放」「コマンド群全閉じ」「全脱衣」「全着衣」ボタンを追加
+;								オプションのコマンド番号を一部入れ替え（調教メニュー関連が一番下に来るように）（ある程度位置が固定になるように）
+;003	2022/08/19	NEO			全脱衣・全着衣の胸解放フラグや下着ずらしフラグをいじってなかったので修正
+;004	2022/08/25	JK好き		全コマンド解放を全コマンド開放に修正
+;005	2022/11/01	P(bazzile)	調教コマンド履歴を拡張
+;006	2022/11/21	JK好き		@USERCOM 全員全着衣及び全員全脱衣時に助手も着替えるように修正
+;007	2024/03/23	P(bazzile)	一時陥落素質変更の処理を削除
+;008	2024/05/06	一ノ瀬		GUIを変更（基本的な操作には変更なし
+;009	2024/05/09	一ノ瀬		@SHOW_EQUIP 内の絶頂回数表示処理のマジックナンバーを減らす
+;								NUM_COMLINEをグローバル変数化し、増減させるボタンをSHOW_USERCOMとUSERCOM内に追加
+;010	2024/06/09	一ノ瀬		新GUIの表示方式を<div>を使用するタイプに変更
+;011	2024/06/19	一ノ瀬		BEGIN_TRAIN抹消に付き、新フローに準じて処理をいくつか変更
+;011	2024/07/04	一ノ瀬		オプションコマンドウィンドウの位置を変更可能にする
+@CALLTRAINEND
+TFLAG:CALLTRAIN = 0
+
+@SHOW_USERCOM
+#LOCALSSIZE 10
+#DIM LCOUNT
+#DIM L_COM ;005 一時的なコマンド番号を保存
+#DIM STOCK_前回の調教者;005 一時的にTFLAG:前回の調教者の数値を保存しておく
+#DIM FILTERCOUNT
+
+;---- EDIT 010 MOD START -------------------------
+#DIM L_PREVPAGE
+#DIM L_WIDTH , 2 ;ウィンドウ幅
+#DIM L_COMSTRLENS ;1項目当たりの文字数
+;#DIM L_LEFTSTRLENS = 22 ;左側の文字数(半角)
+#DIM L_FILTERSTRLENS = 22 ;フィルター名の文字数(半角)
+;#DIM L_RIGHTSTRLENS = 24 ;右側の文字数(半角)
+#DIM DYNAMIC L_OPTIONSTRLENS = 24 ;オプションコマンド名の文字数(半角)
+#DIM L_SEP , 2 ;区切り棒の位置
+#DIM L_RAW_COM ;1行あたりの項目数=列数
+#DIM DYNAMIC L_RAW_OPTION = 1 ;1行あたりのオプション項目数
+#DIM L_ウィンドウ内行数 , 2 ;0=調教コマンドウィンドウの行数 1=オプションコマンドウィンドウの行数
+#DIMS TYPELIST , 100
+#DIMS COMLIST_TYPE , 16 , 100 ;調教コマンド系統ごとの表示するコマンドのリスト（文字列）
+#DIMS COMLIST , 100 , 10 ;リスト化された調教コマンド群の表示
+#DIMS TRAINMENU_LIST , 10 ;調教メニュー登録分の表示領域
+#DIMS USERCOM_HTML , 100
+#DIMS USERCOM_LIST , 100 ;リスト化されたオプション系コマンドの表示用変数
+#DIMS COM_WINDOW ;調教コマンドのウィンドウ格納用変数
+#DIMS USERCOM_WINDOW ;オプションコマンドのウィンドウ格納用変数
+#DIM COUNT_COMTYPE , 16
+
+#DIM 調教コマンドウィンドウ左端位置
+#DIM 調教コマンドウィンドウ上端位置
+#DIM オプションコマンドウィンドウ左端位置
+#DIM オプションコマンドウィンドウ上端位置
+
+;ページ変えただけなら実行可能なコマンドを一々取得しに行く処理はスキップして高速化(必要ある？)
+;SIF PREVPAGE != COMLIST_PAGE
+;GOTO hoge
+
+
+;調教コマンドリスト・オプションコマンドリストの各サイズを取得
+
+;1コマンドあたりの許容される長さ、項目数を取得。
+L_RAW_COM = FLAG:조교커맨드의나열수
+SELECTCASE 調教オプション表示位置
+	CASE "右" , "左"
+		;まず最初にオプションコマンドウィンドウの幅を取得しに行く。paddingは20を想定。
+		L_WIDTH:1 = L_OPTIONSTRLENS * 50 + 20*2
+		L_RAW_OPTION = 1
+		;調教コマンドウィンドウとオプションコマンドウィンドウの高さを取得する。
+		L_ウィンドウ内行数:0 = NUM_COMLINE , NUM_COMLINE + 3
+		;次に画面の横幅から、調教コマンドのウィンドウ幅を取得しに行く。paddingは20を想定。
+		L_WIDTH = LINELENS()*50 - L_WIDTH:1 - 160 + 20*2
+		;調教コマンドのウィンドウ幅から、調教コマンドの文字数(半角)を取得
+		L_COMSTRLENS = ((L_WIDTH-L_FILTERSTRLENS*50-100) / L_RAW_COM) / 50
+		LCOUNT = 80
+		調教コマンドウィンドウ左端位置 = (調教オプション表示位置 == "右"  ? LCOUNT # L_WIDTH:1 + LCOUNT)
+		調教コマンドウィンドウ上端位置 = 0
+		オプションコマンドウィンドウ左端位置 = (調教オプション表示位置 == "右"  ? L_WIDTH + LCOUNT # LCOUNT)
+		オプションコマンドウィンドウ上端位置 = 0
+	CASE "上" , "下"
+		L_WIDTH = LINELENS()*50 - 160 + 20*2
+		L_WIDTH:1 = L_WIDTH
+		L_OPTIONSTRLENS = 26
+		;調教コマンドウィンドウとオプションコマンドウィンドウの高さはこの時点では取得できない。
+		L_ウィンドウ内行数:0 = NUM_COMLINE , -1
+		;オプションを並べられる数を取得		
+		L_RAW_OPTION = (L_WIDTH:1 / (L_OPTIONSTRLENS*50))
+		;調教コマンドのウィンドウ幅から、調教コマンドの文字数(半角)を取得
+		L_COMSTRLENS = ((L_WIDTH-L_FILTERSTRLENS*50-200) / L_RAW_COM) / 50
+		調教コマンドウィンドウ左端位置 = 80
+		;上端位置はこの時点では取得できないのでひとまず0
+		調教コマンドウィンドウ上端位置 = 0
+		オプションコマンドウィンドウ左端位置 = 80
+		オプションコマンドウィンドウ上端位置 = 0
+ENDSELECT
+;幅に足りない分の長さを取得しておく
+VARI 幅埋めLENS = 0
+幅埋めLENS = ((L_WIDTH - L_FILTERSTRLENS*50 - 200 ) - (L_COMSTRLENS * 50 * L_RAW_COM) ) / 50
+
+;余が出ていた場合は長すぎるはずなので-1
+;SIF (L_WIDTH-L_LEFTSTRLENS-L_RIGHTSTRLENS-4) % L_RAW_COM > 0
+;	L_COMSTRLENS--
+;DEBUGPRINTFORML {幅埋めLENS}
+;コマンドの長さを取得したので、ウィンドウ幅をdiv用に再計算。paddingは20で計算。
+;L_WIDTH = (L_WIDTH-L_RIGHTSTRLENS-6)*50 + 20*2
+
+;;セパレート位置割り出し
+;L_SEP = 4+L_LEFTSTRLENS+2+L_COMSTRLENS*L_RAW_COM  , 4+L_LEFTSTRLENS
+;SIF L_SEP % 2 == 1
+;	L_SEP++
+
+
+;CALL SET_PICTURE , , 0, "HTML表示" , NUM_COMLINE+7
+;WAIT
+
+;リストを初期化
+VARSET TYPELIST , ""
+VARSET COMLIST_TYPE , ""
+VARSET COMLIST , ""
+VARSET COUNT_COMTYPE , 0
+
+;---- EDIT 010 MOD END -------------------------
+
+;---------------------------------------------------
+;調教コマンドリストの獲得処理
+;---------------------------------------------------
+;実行可能コマンドの取得用変数を初期化
+VARSET Q, -1
+;派生コマンド用の取得変数を初期化
+VARSET R, -1
+Z= 0
+;CALLTRAIN時は表示しない
+SIF TFLAG:CALLTRAIN
+	RETURN 0
+;コマンドを全てチェック
+LOCAL:1 = -1
+VARS L_LB_COLOR
+L_LB_COLOR = %TOSTR_HTML(BGCOLOR("LIGHT-BLACK"))%
+FOR LOCAL, 0, 1000
+	;名前の長さが0の場合、ないものとみなす
+	SIF STRLENS(TRAINNAME:LOCAL) == 0
+		CONTINUE
+	;派生コマンドは蹴る
+	TRYCCALLFORM COMTYPE_{LOCAL}
+		SIF RESULT == COMTYPE("派生系")
+			CONTINUE
+	CATCH
+	ENDCATCH
+	LOCAL:1++
+	;COMABLEをチェック
+	CALL COM_ABLE_COMMON_D, LOCAL
+	SIF RESULT == 0
+		CONTINUE
+	;派生コマンドになるかどうかをチェック
+	TRYCCALLFORM JUMP_COM{LOCAL}
+		LOCAL:2 = RESULT >= 0 ? RESULT # LOCAL	
+		;COMABLEをチェック
+		CALL COM_ABLE_COMMON_D, LOCAL:2
+		SIF RESULT == 0
+			LOCAL:2 = LOCAL
+	CATCH
+		LOCAL:2 = LOCAL
+	ENDCATCH
+	;MENU配列に実行可能なコマンドを登録していく
+	Q:(LOCAL:1) = LOCAL:2
+	;フィルタ関係は派生前でチェックするので注意
+	SIF GET_COM_FILTERING(LOCAL, TARGET)
+		CONTINUE
+		
+	;---- EDIT 008 MOD START -------------------------
+	;COMTYPE呼び出し
+	LOCAL:3 = -1
+	TRYCCALLFORM COMTYPE_{LOCAL}
+		LOCAL:3 = RESULT
+		SIF CFLAG:(170+RESULT) == 1
+			CONTINUE
+	CATCH
+	ENDCATCH
+	
+	;なんの系統でもない調教コマンドは帰る
+	SIF LOCAL:3 == -1
+		CONTINUE
+	
+	;すでに表示されているコマンドがここまで来た場合は帰る
+	SIF MATCH(R, LOCAL:2)
+		CONTINUE
+	;コマンド表示
+	TRYCCALLFORM COMNAME{LOCAL:2}
+		;その調教系統のCOMリストに放り込む。"_"で区切る。
+		COMLIST_TYPE:(LOCAL:3):(COUNT_COMTYPE:(LOCAL:3)) = <button value='{LOCAL:1}' title='%RESULTS%'>[{LOCAL:1 , 3}]%ARRANGE_STRLENS(RESULTS , L_COMSTRLENS-6) , L_COMSTRLENS-6 , LEFT %</button>
+		;PRINTFORMC %RESULTS%[{LOCAL:1,3}]
+	CATCH
+		LOCALS = %TRAINNAME:(LOCAL:2)%
+		COMLIST_TYPE:(LOCAL:3):(COUNT_COMTYPE:(LOCAL:3)) = <button value='{LOCAL:1}' title='%LOCALS%'>[{LOCAL:1 , 3}]%ARRANGE_STRLENS(LOCALS, L_COMSTRLENS-6) , L_COMSTRLENS-6 , LEFT%</button>
+		;PRINTFORMC %TRAINNAME:(LOCAL:2)%[{LOCAL:1,3}]
+	ENDCATCH
+	;口上などで次のコマンドに指定されている場合光る
+	SIF MATCH(INDICATE_COM , LOCAL:2)
+		COMLIST_TYPE:(LOCAL:3):(COUNT_COMTYPE:(LOCAL:3)) = <div background_color='%L_LB_COLOR%'><b>%COMLIST_TYPE:(LOCAL:3):(COUNT_COMTYPE:(LOCAL:3))%</b></div>
+	;	COMLIST_TYPE:(LOCAL:3):(COUNT_COMTYPE:(LOCAL:3)) =<b><i><u><font color='%TOSTR_HTML(COLOR("パ赤"))%'>%COMLIST_TYPE:(LOCAL:3):(COUNT_COMTYPE:(LOCAL:3))%</font></b></i></u>
+	COUNT_COMTYPE:(LOCAL:3)++
+	;ここまできたら表示されたものとして登録される
+	R:(LOCAL:1) = LOCAL:2
+	;改行処理
+	;CALL CHECK_NEWLINE
+	
+	;---- EDIT 008 MOD END -------------------------
+NEXT
+
+;---------------------------------------------------
+;オプション系コマンドリストの獲得処理
+;---------------------------------------------------
+;USERCOM_LIST →表示されるオプション系コマンドのリスト
+VARSET USERCOM_LIST , ""
+VARSET TRAINMENU_LIST , ""
+LOCAL:3 = 0
+;[750]フィルターを全部イッパツで開閉するボタン
+;いくつ閉じているかをカウント（※フラグが１で閉じる）（半分以上閉じてたら「開放」、そうでなければ閉じる）
+FILTERCOUNT = 0
+FOR LCOUNT, GETNUM(CFLAG , "애무계필터"), GETNUM(CFLAG , "애무계필터")+16
+	SIF CFLAG:TARGET:LCOUNT > 0
+		FILTERCOUNT += 1
+NEXT
+IF FILTERCOUNT > 8
+	USERCOM_LIST:(LOCAL:3++) = <button value='750'>[750]전커맨드개방</button>
+ELSE
+	USERCOM_LIST:(LOCAL:3++) = <button value='750'>[750]전커맨드폐쇄</button>
+ENDIF
+USERCOM_LIST:(LOCAL:3++) = <button value='751'>[751]% 調教画面旧表示 == 0 ? "구" # "신"%조교화면표시</button>
+
+IF !CFLAG:TARGET:옵션필터
+	USERCOM_LIST:(LOCAL:3++) = <button value='800'>[800]이력표시</button>
+	USERCOM_LIST:(LOCAL:3++) = <button value='801'>[801]더러움표시</button>
+	USERCOM_LIST:(LOCAL:3++) = <button value='802'>[802]능력표시</button>
+	USERCOM_LIST:(LOCAL:3++) = <button value='803'>[803]착의설정</button>
+	USERCOM_LIST:(LOCAL:3++) = <button value='804'>[804]전원착의</button>
+	USERCOM_LIST:(LOCAL:3++) = <button value='805'>[805]전원탈의</button>
+	IF HAVE_PENIS(PLAYER) || HAVE_PENIS(TARGET)
+		SIF ITEM:콘돔 > 0
+			USERCOM_LIST:(LOCAL:3++) = <button value='806'>[806]콘돔설정</button>
+		USERCOM_LIST:(LOCAL:3++) = <button value='807'>[807]자동사정대상변경설정</button>
+	ENDIF
+	USERCOM_LIST:(LOCAL:3++) = <button value='808'>[808]능력표시(%(ASSIPLAY ? "조수" # "마스터")%</button>
+	SIF (!(CFLAG:초기주도권 || TALENT:쾌감을부정 || TALENT:저항 || TALENT:억압) && TALENT:남자 ) || ABL:순종 > 2
+		USERCOM_LIST:(LOCAL:3++) = <button value='809'>[809]주도권을 % TEQUIP:주도권 ? "받는다" # "넘긴다" %</button>
+	IF ASSI >= 0
+		IF ASSIPLAY && TEQUIP:촉수 == 0
+			USERCOM_LIST:(LOCAL:3++) = <button value='900'>[900]마스터와 교대</button>
+		ELSEIF TEQUIP:촉수 == 0
+			USERCOM_LIST:(LOCAL:3++) = <button value='900'>[900]조수와 교대</button>
+		ENDIF
+	ENDIF
+	USERCOM_LIST:(LOCAL:3++) = <button value='902'>[902]ＭＡＧ흡수(%(CFLAG:TARGET:ＭＡＧ비피흡수 == 1) ? "OFF" # "ON"%)</button>
+	USERCOM_LIST:(LOCAL:3++) = <button value='906'>[906]ＭＡＧ양도(%(CFLAG:PLAYER:ＭＡＧ비피흡수 == 1) ? "OFF" # "ON"%)</button>
+	USERCOM_LIST:(LOCAL:3++) = <button value='907'>[907]커맨드 필터</button>
+
+	USERCOM_LIST:(LOCAL:3++) = <button value='908'>[908]얼굴그래픽 설정</button>
+	
+	;調教メニュー登録周り
+	;場所は決め打ち オプション表示位置次第
+	IF GROUPMATCH(調教オプション表示位置 , "右" , "左") || 調教画面旧表示
+		LOCAL:3 = NUM_COMLINE-5
+	ELSE
+		;上or下に表示する場合は新しい行にする
+		IF LOCAL:3 % (L_RAW_OPTION) != 0
+			LOCAL:3 += (L_RAW_OPTION) - (LOCAL:3 % (L_RAW_OPTION))
+		ENDIF
+	ENDIF
+
+	USERCOM_LIST:(LOCAL:3++) = <button value='990'>[990]조교메뉴등록</button>
+	;登録メニューごとに表示するかチェック
+	VARI NUM_TRAIN_MENU = 0
+	FOR LOCAL, 0, 5
+		SIF GLOBALS:LOCAL == ""
+			GLOBALS:LOCAL = 調教メニュー{LOCAL+1}
+		SIF !GETBIT(CFLAG:TARGET:조교메뉴표시설정, LOCAL)
+			CONTINUE
+		;旧画面表示か否かで処理を変える
+		IF 調教画面旧表示
+			TRAINMENU_LIST:LOCAL = [{991+LOCAL}]%GLOBALS:LOCAL%
+		ELSE
+			USERCOM_LIST:(LOCAL:3) += @"<button value='{991+LOCAL}'><font color='%TOSTR_HTML(COLOR("パ緑"))%'>[{991+LOCAL}]%SUBSTRINGU("①②③④⑤" , LOCAL , 1)%</font></button>"
+		ENDIF
+		NUM_TRAIN_MENU++
+		SIF NUM_TRAIN_MENU % 3 == 0
+			LOCAL:3++
+	NEXT
+	FOR LOCAL, 0, 3
+		LOCALS = %AUTO_SPLIT(CSTR:(71+LOCAL),"|",10)%
+		SIF LOCALS == "" || !GETBIT(CFLAG:TARGET:조교메뉴표시설정, LOCAL+5)
+			CONTINUE
+		;旧画面表示か否かで処理を変える
+		IF 調教画面旧表示
+			TRAINMENU_LIST:LOCAL = [{996+LOCAL}]%LOCALS%
+		ELSE
+			USERCOM_LIST:(LOCAL:3) += @"<button value='{996+LOCAL}'><font color='%TOSTR_HTML(COLOR("パ緑"))%'>[{996+LOCAL}]%SUBSTRINGU("⑥⑦⑧" , LOCAL , 1)%</font></button>"
+		ENDIF
+		NUM_TRAIN_MENU++
+		SIF NUM_TRAIN_MENU % 3 == 0
+			LOCAL:3++
+	NEXT
+ENDIF
+
+;必ず表示する固定位置のコマンド
+IF GROUPMATCH(調教オプション表示位置 , "右" , "左") || 調教画面旧表示
+	LOCAL:3 = NUM_COMLINE-1
+ELSE
+	;上or下に表示する場合は新しい行にする
+	IF LOCAL:3 % (L_RAW_OPTION) != 0
+		LOCAL:3 += (L_RAW_OPTION) - (LOCAL:3 % (L_RAW_OPTION))
+	ENDIF
+ENDIF
+
+IF !調教画面旧表示
+	USERCOM_LIST:(LOCAL:3++) = <button value='C'>[C]옵션위치변경  </button>
+	USERCOM_LIST:(LOCAL:3++) = <button value='<'>[<]감</button>  %SET_COLOR_TAG("커맨드수" , "パ青" )%  <button value='>'>증[>]</button>
+	USERCOM_LIST:(LOCAL:3++) = <button value='988'>[-]축소↑</button> %SET_COLOR_TAG("표시" , "パ緑")% <button value='989'>확대↓[+]</button>
+ENDIF
+USERCOM_LIST:(LOCAL:3++) = <button value='999'>[999]조교종료</button>
+
+;上下表示にしている場合、ここでオプションウィンドウの行数を取得する。同時に、調教コマンドウィンドウの高さも取得。
+IF GROUPMATCH(調教オプション表示位置 , "上" , "下") && !調教画面旧表示
+	L_ウィンドウ内行数:1 = LOCAL:3 / L_RAW_OPTION + (LOCAL:3 % L_RAW_OPTION > 0)
+	L_ウィンドウ内行数:0 -= L_ウィンドウ内行数:1
+	;更に表示位置も調整
+	IF 調教オプション表示位置 == "上"
+		調教コマンドウィンドウ上端位置 = L_ウィンドウ内行数:1*100+40
+		オプションコマンドウィンドウ上端位置 = 0
+	ELSE
+		調教コマンドウィンドウ上端位置 = 0
+		オプションコマンドウィンドウ上端位置 = (L_ウィンドウ内行数:0 + 3) * 100 + 40
+	ENDIF
+ENDIF
+
+;------------------------------------------
+;調教コマンド履歴のチェック
+;PREVCOMの実行可否を取る
+;------------------------------------------
+VARSET PREVCOMABLE
+FOR LCOUNT, 0, VARSIZE("PREVCOMABLE")
+	SIF PREVCOM:LCOUNT == -1
+		BREAK
+	;PLAYERが同じ場合はQ配列の内容から可否を取る
+	IF PLAYER == PREVPLAYER:LCOUNT
+		PREVCOMABLE:LCOUNT = MATCH(Q, PREVCOM:LCOUNT) > 0
+	ELSE
+		STOCK_前回の調教者 = TFLAG:전회조교자
+		SIF PREVPLAYER:(LCOUNT+1) >= 0
+			TFLAG:전회조교자 = PREVPLAYER:(LCOUNT+1)
+		;違う場合はCOMABLEを走らせる
+		CALL COM_ABLE_COMMON_D, PREVCOM:LCOUNT, PREVPLAYER:LCOUNT
+		PREVCOMABLE:LCOUNT = RESULT
+		TFLAG:전회조교자 = STOCK_前回の調教者
+	ENDIF
+NEXT
+
+;ここまで共通処理
+
+
+SIF 調教画面旧表示
+	GOTO 旧表示
+;ここから新表示処理
+
+;-----------------------------------------------------------------------
+;〇　系統ごとに作られた調教コマンドリストを表示用変数へと格納する
+;-----------------------------------------------------------------------
+;×　フィルタされている系統の表示
+;SETCOLOR COLOR("gray")
+LOCAL:2=0 ;行管理用
+LOCAL:3=0 ;行内の列管理用
+VARS L_AQUA
+VARS L_LG
+L_AQUA = %TOSTR_HTML(COLOR("aqua"))%
+L_LG = %TOSTR_HTML(COLOR("light-gray"))%
+FOR LOCAL,0,16
+	SELECTCASE LOCAL
+		CASE 13,14
+			CONTINUE
+		CASEELSE
+			IF CFLAG:TARGET:(CFLAGNAME:(170+LOCAL)) == 0
+				;表示する場合、系統フィルタボタンを水色で系統フィルタ用リストに放り込む
+				TYPELIST:(LOCAL:2) = <button value='{700+LoCAL}'><font color='%L_AQUA%'>[{700+LOCAL}]%SUBSTRING(CFLAGNAME:(170+LOCAL),,STRLENS(CFLAGNAME:(170+LOCAL))-4)%[-]</button></font>
+
+				;そののち、リストを作成。
+				IF COUNT_COMTYPE:LOCAL >= 1
+					LOCAL:3 = 0
+					FOR LOCAL:1 , 0 , COUNT_COMTYPE:LOCAL
+						COMLIST:(LOCAL:2):(LOCAL:3) = %COMLIST_TYPE:(LOCAL):(LOCAL:1),%
+						LOCAL:3 ++
+						;最後であるか列の最大数になってたら改行
+						IF LOCAL:1 == COUNT_COMTYPE:LOCAL -1
+							;最後である場合は改行に加えて更にハイフンを代入して改行
+							LOCAL:2++
+							LOCAL:3=0
+							;次の行が頁の頭だったらハイフンはキャンセル
+							IF LOCAL:2 % NUM_COMLINE == 0
+							ELSE
+								COMLIST:(LOCAL:2):(LOCAL:3) '= "-"*(L_COMSTRLENS*L_RAW_COM+幅埋めLENS)
+								LOCAL:2++
+							ENDIF
+						ELSEIF LOCAL:3 % (L_RAW_COM) == 0
+							LOCAL:2++
+							LOCAL:3=0
+							;次の行がページの境目を跨ぎそうな場合かつページの頭でないのなら、系統ボタンを更におかわり
+							SIF LOCAL:2 % NUM_COMLINE == 0
+								TYPELIST:(LOCAL:2) = <button value='{700+LoCAL}'><font color='%L_AQUA%'>[{700+LOCAL}]%SUBSTRING(CFLAGNAME:(170+LOCAL),,STRLENS(CFLAGNAME:(170+LOCAL))-8)%[-]</button></font>
+						ENDIF
+					NEXT
+				ELSE
+					;リスト作成しない場合はハイフンだけ入れて改行
+					COMLIST:(LOCAL:2):(LOCAL:3) '= "-"*(L_COMSTRLENS*L_RAW_COM+幅埋めLENS)
+					LOCAL:2++
+				ENDIF
+			ELSE
+				;表示しない場合は灰色で放り込んで改行
+				;SETCOLOR COLOR("light-gray")
+				TYPELIST:(LOCAL:2) = <button value='{700+LoCAL}'><font color='%L_LG%'>[{700+LOCAL}]%SUBSTRING(CFLAGNAME:(170+LOCAL),,STRLENS(CFLAGNAME:(170+LOCAL))-4)%[+]</button></font>
+				COMLIST:(LOCAL:2):(0) '= "-"*(L_COMSTRLENS*L_RAW_COM+幅埋めLENS)
+				;改行するんぬ
+				LOCAL:2++
+			ENDIF
+	ENDSELECT
+NEXT
+;COMLIST_PAGEの最大値を取得
+COMLIST_PAGE_MAX = LOCAL:2/NUM_COMLINE
+;ページ数とボタンをセット
+
+
+;--------------------------------------------
+;ウィンドウ作成
+;--------------------------------------------
+
+;オプション系の表示
+USERCOM_WINDOW =
+FOR LCOUNT, 0,  NUM_COMLINE + 3
+	IF GROUPMATCH(調教オプション表示位置 , "右" , "左" )
+		SIF LCOUNT
+			USERCOM_WINDOW += "<br>"
+		USERCOM_WINDOW += USERCOM_LIST:LCOUNT
+		SIF LCOUNT == NUM_COMLINE + 2
+			USERCOM_WINDOW += "<br>"
+	ELSE
+		SIF LCOUNT % (L_RAW_OPTION) == 0 && LCOUNT
+			USERCOM_WINDOW += "<br>"
+		USERCOM_WINDOW += @"<div xpos='{(L_OPTIONSTRLENS)*(LCOuNT % L_RAW_OPTION)*50}'>" + USERCOM_LIST:LCOUNT + "</div>"
+	ENDIF
+NEXT
+
+;オプションコマンドウィンドウを作成
+VARS U_W_SIZE , 4
+U_W_SIZE:0 = xpos='{オプションコマンドウィンドウ左端位置}'
+U_W_SIZE:1 = ypos='{オプションコマンドウィンドウ上端位置}'
+U_W_SIZE:2 = width='{L_WIDTH:1}'
+U_W_SIZE:3 = height='{L_ウィンドウ内行数:1*100+40}'
+
+USERCOM_WINDOW = <div %U_W_SIZE:0% %U_W_SIZE:1% %U_W_SIZE:2% %U_W_SIZE:3% padding='20' border_width='1'>%USERCOM_WINDOW%</div>
+
+;調教コマンド表示
+;表示する行範囲を取得し、COM_WINDOWに投げる。
+;#DIMS COM_WINDOW ;調教コマンドのウィンドウ格納用変数
+;#DIMS USERCOM_WINDOW ;オプションコマンドのウィンドウ格納用変数
+VARS TYPE_DOMAIN =
+VARS SEP_DOMAIN = 
+VARS COM_DOMAIN = 
+SEP_DOMAIN = %"￤<br>"*(L_ウィンドウ内行数+1)%
+FOR LOCAL , 0 , L_ウィンドウ内行数
+	;カテゴリ領域にカテゴリ投入
+	TYPE_DOMAIN += TYPELIST:(LOCAL+COMLIST_PAGE*L_ウィンドウ内行数) + "<br>"
+	FOR LOCAL:1 , 0 , L_RAW_COM
+		COM_DOMAIN += @"<div xpos='{LOCAL:1*L_COMSTRLENS*50}'>" + COMLIST:(LOCAL+COMLIST_PAGE*L_ウィンドウ内行数):(LOCAL:1) + "</div>"
+	NEXT
+	COM_DOMAIN += "<br>"
+NEXT
+;最後にページ遷移用のボタンと表示をセット
+LOCALS =
+IF COMLIST_PAGE_MAX > 0
+	LOCALS += SET_BUTTON_TAG( SET_COLOR_TAG(" ▲[1007]▲ " , (COMLIST_PAGE > 0 ? "DEF" # "gray" )) , "1007")
+	LOCALS += SET_BUTTON_TAG( SET_COLOR_TAG(" ▼[1009]▼ " , (COMLIST_PAGE < COMLIST_PAGE_MAX ? "DEF" # "gray")) , "1009")
+	LOCALS += @"PAGE.{COMLIST_PAGE+1}/{COMLIST_PAGE_MAX+1}"
+ENDIF
+COM_DOMAIN += @"<div ypos='50'>%LOCALS%</div>"
+TYPE_DOMAIN = <div xpos='0'>%TYPE_DOMAIN%</div>
+SEP_DOMAIN = <div xpos='{L_FILTERSTRLENS*50}' ypos='25'>%SEP_DOMAIN%</div>
+COM_DOMAIN = <div xpos='{L_FILTERSTRLENS*50+100}'>%COM_DOMAIN%</div>
+;調教コマンドウィンドウを作成
+
+
+	;	調教コマンドウィンドウ左端位置 = 100
+	;	調教コマンドウィンドウ上端位置 = 0
+
+COM_WINDOW = <div xpos='{調教コマンドウィンドウ左端位置}' ypos='{調教コマンドウィンドウ上端位置}' width='{L_WIDTH}' height='{(L_ウィンドウ内行数:0+1)*100+100}' padding='30' border_width='1'>%TYPE_DOMAIN+SEP_DOMAIN+COM_DOMAIN%</div>
+
+;コマンド履歴欄
+VARS HIST_DOMAIN =
+FOR LCOUNT, 0,  L_RAW_COM
+	L_COM = PREVCOM:LCOUNT
+	IF L_COM >= 0
+		;実行不可になっている場合はグレー表示
+		LOCALS = DEF
+		SIF !PREVCOMABLE:LCOUNT
+			LOCALS = light-gray
+		IF PREVPLAYER:LCOUNT == ASSI
+			LOCALS:1 = [{-1*(LCOUNT+1) , 3}]%TRAINNAME:L_COM+"(조수)"%
+		ELSE
+			LOCALS:1 = [{-1*(LCOUNT+1) , 3}]%TRAINNAME:L_COM%
+		ENDIF
+		LOCALS:1 = %ARRANGE_STRLENS(LOCALS:1 , L_COMSTRLENS) , L_COMSTRLENS , LEFT%
+		HIST_DOMAIN += @"<button value='{-1*(LCOUNT+1)}'><font color='%TOSTR_HTML(COLOR(LOCALS))%'>%LOCALS:1%</button></font>"
+	ENDIF
+NEXT
+;履歴コマンドウィンドウを作成
+HIST_DOMAIN = <div xpos='0'>조교커맨드이력</div><div xpos='{L_FILTERSTRLENS*50}'>￤%HIST_DOMAIN%</div>
+HIST_DOMAIN = <div xpos='{調教コマンドウィンドウ左端位置}' ypos='{調教コマンドウィンドウ上端位置+(L_ウィンドウ内行数:0+1)*100+100}' width='{L_WIDTH}' height='140' padding='30' border_width='1'>%HIST_DOMAIN%</div>
+
+;全て表示
+LOCALS = <div xpos='0' ypos='-{(NUM_COMLINE+3)*100+40}' width='{LINELENS()*50}' height='{(NUM_COMLINE+4)*100+250}' background_color='%TOSTR_HTML(GETBGCOLOR())%'>%COM_WINDOW + HIST_DOMAIN + USERCOM_WINDOW%</div>
+HTML_PRINT LOCALS
+
+
+
+
+;ここまで新表示
+;ここまで旧表示
+RETURN 0 
+$旧表示
+
+
+;オプション系を全部右側に放り込んでいく
+;行数をクリア
+
+VARSET Q, -1
+;派生用
+VARSET R, -1
+Z= 0
+;CALLTRAIN時は表示しない
+SIF TFLAG:CALLTRAIN
+	RETURN 0
+;コマンドを全てチェック
+LOCAL:1 = -1
+FOR LOCAL, 0, 1000
+	;名前の長さが0の場合、ないものとみなす
+	SIF STRLENS(TRAINNAME:LOCAL) == 0
+		CONTINUE
+	;派生コマンドは蹴る
+	TRYCCALLFORM COMTYPE_{LOCAL}
+		SIF RESULT == COMTYPE("派生系")
+			CONTINUE
+	CATCH
+	ENDCATCH
+	LOCAL:1++
+	;COMABLEをチェック
+	CALL COM_ABLE_COMMON_D, LOCAL
+	SIF RESULT == 0
+		CONTINUE
+	;派生コマンドになるかどうかをチェック
+	TRYCCALLFORM JUMP_COM{LOCAL}
+		LOCAL:2 = RESULT >= 0 ? RESULT # LOCAL
+	CATCH
+		LOCAL:2 = LOCAL
+	ENDCATCH
+	;MENU配列に実行可能なコマンドを登録していく
+	Q:(LOCAL:1) = LOCAL:2
+	;フィルタ関係は派生前でチェックするので注意
+	SIF GET_COM_FILTERING(LOCAL, TARGET)
+		CONTINUE
+	TRYCCALLFORM COMTYPE_{LOCAL}
+		SIF CFLAG:(170+RESULT) == 1
+			CONTINUE
+	CATCH
+	ENDCATCH
+	;すでに表示されているコマンドがここまで来た場合は帰る
+	SIF MATCH(R, LOCAL:2)
+		CONTINUE
+	;コマンド表示
+	TRYCCALLFORM COMNAME{LOCAL:2}
+		PRINTFORMC %RESULTS%[{LOCAL:1,3}]
+	CATCH
+		PRINTFORMC %TRAINNAME:(LOCAL:2)%[{LOCAL:1,3}]
+	ENDCATCH
+	;ここまできたら表示されたものとして登録される
+	R:(LOCAL:1) = LOCAL:2
+	;改行処理
+	CALL CHECK_NEWLINE
+NEXT
+
+;USERCOM表示の前に一度、改行する
+IF (Z % TRAINPRINTCPL())
+	Z = 0
+	PRINTL 
+ENDIF
+
+;フィルタされている系統の表示
+SETCOLOR COLOR("gray")
+FOR LOCAL,0,16
+	SELECTCASE LOCAL
+		CASE 13,14
+			CONTINUE
+		CASEELSE
+			IF CFLAG:TARGET:(CFLAGNAME:(170+LOCAL)) == 0
+				SETCOLOR COLOR("aqua")
+			ELSE
+				SETCOLOR COLOR("light-gray")
+			ENDIF
+			;SIF CFLAG:TARGET:(CFLAGNAME:(170+LOCAL)) == 0 && (LOCAL != 15 && コマンド数:LOCAL > 0)
+			;	CONTINUE
+			;SIF LOCAL == 15 && CFLAG:TARGET:(CFLAGNAME:(170+LOCAL)) == 0
+			;SIF CFLAG:TARGET:(CFLAGNAME:(170+LOCAL)) == 0 && コマンド数:LOCAL == 0
+			;SIF LOCAL == 15 && Z != 0
+			;	PRINTL
+			PRINTFORMC  %SUBSTRING(CFLAGNAME:(170+LOCAL),,STRLENS(CFLAGNAME:(170+LOCAL))-4)%[{700+LOCAL}]
+			CALL CHECK_NEWLINE
+	ENDSELECT
+NEXT
+RESETCOLOR
+
+
+	;ここまでのコマンドを全部イッパツで開閉するボタン
+	;前後から十分に数を離して実装（系統が増えてもいいように＆履歴よりも前に表示するものが増えてもいいように）
+	;/
+	;いくつ閉じているかをカウント（※フラグが１で閉じる）
+	FILTERCOUNT = 0
+	FOR LCOUNT, 170, 186
+		SIF CFLAG:TARGET:LCOUNT > 0
+			FILTERCOUNT += 1
+	NEXT
+
+	;半分以上閉じてたら「開放」
+	;（現状、「183、184」番のフィルタがないため「大半が開いてないと閉鎖は出てこない」仕様）
+	;↑で「CASE 13,14」はコンティニューな、としてる部分な
+	IF FILTERCOUNT > 8
+		PRINTC 전커맨드개방[750]
+	;閉じてるのが半分以下なら「閉鎖」
+	ELSE
+		PRINTC 전커맨드폐쇄[750]
+	ENDIF
+
+;**次からオプション関連なので改行な**
+IF (Z % TRAINPRINTCPL())
+	Z = 0
+	PRINTL 
+ENDIF
+
+
+
+IF !CFLAG:TARGET:옵션필터
+	A = 0
+	Z = 0
+	PRINTFORMC % 調教画面旧表示 == 0 ? "구" # "신"%조교화면표시[751]
+	CALL CHECK_NEWLINE
+	PRINTC 이력표시[800]
+	CALL CHECK_NEWLINE
+	PRINTC 더러움표시[801]
+	CALL CHECK_NEWLINE
+	PRINTC 능력표시[802]
+	CALL CHECK_NEWLINE
+	B = 11
+	FOR LCOUNT, 0, 50
+		C = B+LCOUNT
+		;媚薬、利尿剤、ビデオカメラ、新妻プレイ、羞恥プレイ、強精神薬使用時は覗く
+		SIF C == 26
+			CONTINUE
+		SIF C == 27
+			CONTINUE
+		SIF C == 28
+			CONTINUE
+		SIF C == 30
+			CONTINUE
+		SIF C == 33
+			CONTINUE
+		SIF C == 34
+			CONTINUE
+		SIF C == 40
+			CONTINUE
+	NEXT
+
+	PRINTC 착의설정[803]
+	CALL CHECK_NEWLINE
+	PRINTC 전원전착의[804]
+	CALL CHECK_NEWLINE
+	PRINTC 전원전탈의[805]
+	CALL CHECK_NEWLINE
+
+
+	IF HAVE_PENIS(PLAYER) || HAVE_PENIS(TARGET)
+		IF ITEM:45 > 0
+			PRINTC 커맨드설정[806]
+			CALL CHECK_NEWLINE
+		ENDIF
+		PRINTC 자동사정대상변경[807]
+		CALL CHECK_NEWLINE
+	ENDIF
+	IF ASSIPLAY
+		PRINTC 능력표시(조수)[808]
+		CALL CHECK_NEWLINE
+	ELSE
+		PRINTC 능력표시(마스터)[808]
+		CALL CHECK_NEWLINE
+	ENDIF
+
+	IF (!(CFLAG:초기주도권 || TALENT:쾌감을부정 || TALENT:저항 || TALENT:억압) && TALENT:남자 ) || ABL:순종 > 2
+		PRINTFORMC 주도권을 \@ TEQUIP:주도권 ? 받는다 # 넘긴다 \@[809]
+		CALL CHECK_NEWLINE
+	ENDIF
+
+	IF ASSI >= 0
+		IF ASSIPLAY && TEQUIP:25 == 0
+			PRINTC 마스터와 교대[900]
+		ELSEIF TEQUIP:25 == 0
+			PRINTC 조수와 교대[900]
+		ENDIF
+		CALL CHECK_NEWLINE
+	ENDIF
+
+	PRINTFORMC ＭＡＧ흡수(\@(CFLAG:ＭＡＧ비피흡수 == 1) ? OFF # ON \@)[902]
+	CALL CHECK_NEWLINE
+
+	IF ASSIPLAY
+		PRINTFORMC ＭＡＧ양도(\@(CFLAG:ASSI:ＭＡＧ비피흡수 == 1) ? OFF # ON \@)[906]
+		CALL CHECK_NEWLINE
+	ELSE
+		PRINTFORMC ＭＡＧ양도(\@(CFLAG:MASTER:ＭＡＧ비피흡수 == 1) ? OFF # ON \@)[906]
+		CALL CHECK_NEWLINE
+	ENDIF
+
+
+	PRINTC 커맨드필터[907]
+	CALL CHECK_NEWLINE
+
+	PRINTC 얼굴그래픽 설정[908]
+	RESETCOLOR
+	CALL CHECK_NEWLINE
+
+
+
+
+	;---- EDIT 007 DEL START -------------------------
+	;PRINTFORMC 一時陥落素質変更\@ CFLAG:一時陥落素質変更 ? ON#OFF\@[909]
+	;---- EDIT 007 DEL END ---------------------------
+	CALL CHECK_NEWLINE
+
+
+
+	;調教メニュー登録の前後で一回行を区切りますね
+	;番号も[999] 돌아간다ギリギリにする（990-998を使用）
+	;（オプションの中でも「たくさん押す」ボタンであるため、ある程度位置が固定である方が望ましいと思われるため）
+	IF Z != 0
+		Z = FLAG:조교커맨드의나열수 - 1
+		CALL CHECK_NEWLINE
+	ENDIF
+
+	PRINTC 조교메뉴등록[990]
+	CALL CHECK_NEWLINE
+	FOR LOCAL, 0, 5
+		SIF GLOBALS:LOCAL == ""
+			GLOBALS:LOCAL = 調教メニュー{LOCAL+1}
+		SIF !GETBIT(CFLAG:조교메뉴표시설정, LOCAL)
+			CONTINUE
+		PRINTFORMC %GLOBALS:LOCAL%[{991+LOCAL}]
+		CALL CHECK_NEWLINE
+	NEXT
+	FOR LOCAL, 0, 3
+		LOCALS = %AUTO_SPLIT(CSTR:(71+LOCAL),"|",10)%
+		SIF LOCALS == "" || !GETBIT(CFLAG:조교메뉴표시설정, LOCAL+5)
+			CONTINUE
+		PRINTFORMC %LOCALS%[{996+LOCAL}]
+		CALL CHECK_NEWLINE
+	NEXT
+	;IF FLAG:550 > 0
+	;	PRINTC 調教メニュー表示[991]
+	;	CALL CHECK_NEWLINE
+	;	PRINTC 調教メニュー実行[992]
+	;	CALL CHECK_NEWLINE
+	;ENDIF
+
+
+ENDIF
+
+;次の行がDRAWLINEなので改行を実行な
+IF Z != 0
+	Z = FLAG:조교커맨드의나열수 - 1
+	CALL CHECK_NEWLINE
+ENDIF
+
+DRAWLINE
+;---- EDIT 005 ADD START -------------------------
+;PREVCOMの実行可否を取る
+VARSET PREVCOMABLE
+FOR LCOUNT, 0, VARSIZE("PREVCOMABLE")
+	SIF PREVCOM:LCOUNT == -1
+		BREAK
+	;PLAYERが同じ場合はQ配列の内容から可否を取る
+	IF PLAYER == PREVPLAYER:LCOUNT
+		PREVCOMABLE:LCOUNT = MATCH(Q, PREVCOM:LCOUNT) > 0
+	ELSE
+		STOCK_前回の調教者 = TFLAG:전회조교자
+		SIF PREVPLAYER:(LCOUNT+1) >= 0
+			TFLAG:전회조교자 = PREVPLAYER:(LCOUNT+1)
+		;違う場合はCOMABLEを走らせる
+		CALL COM_ABLE_COMMON_D, PREVCOM:LCOUNT, PREVPLAYER:LCOUNT
+		PREVCOMABLE:LCOUNT = RESULT
+		TFLAG:전회조교자 = STOCK_前回の調教者
+	ENDIF
+NEXT
+;PRINTL
+IF PREVCOM >= 0
+	PRINTL ＜조교커맨드이력＞
+	;PRINTL 
+	;PRINT ＜前回調教コマンド:
+	;PRINTS TSTR:0
+	;SIF TFLAG:전회조교자 == ASSI
+	;	PRINT (助手)
+	;PRINTL ＞
+ELSE
+	PRINTL ＜조교커맨드이력:없음＞
+	;PRINTL 
+	;PRINTL ＜前回調教コマンド:無し＞
+ENDIF
+FOR LCOUNT, 0, FLAG:조교커맨드의나열수
+	L_COM = PREVCOM:LCOUNT
+	IF L_COM >= 0
+		;実行不可になっている場合はグレー表示
+		SIF !PREVCOMABLE:LCOUNT
+			SETCOLOR COLOR("light-gray")
+		IF PREVPLAYER:LCOUNT == ASSI
+			PRINTFORMC %TRAINNAME:L_COM+"(조수)"%[{-1 * (LCOUNT+1), 3}]
+		ELSE
+			PRINTFORMC %TRAINNAME:L_COM%[{-1 * (LCOUNT+1), 3}]
+		ENDIF
+		RESETCOLOR
+	ENDIF
+NEXT
+SIF  PREVCOM >= 0
+	PRINTL 
+DRAWLINE
+PRINTC 조교종료[999]
+;---- EDIT 005 ADD END ---------------------------
+
+;-----------------------------------------------------
+;@USERCOM_TRAIN , ARGS
+;調教中の入力に対して反応を返す関数。
+;調教についての行動決定の本体部分である。
+;-----------------------------------------------------
+@USERCOM_TRAIN , ARGS
+#LOCALSIZE 2
+#DIM LCOUNT
+#DIM L_NUM
+#DIM FILTERCOUNT
+RESULTS = %ARGS%
+RESULT = -999
+SIF ISNUMERIC(RESULTS)
+	RESULT = TOINT(ARGS)
+;---- EDIT 008 MOD START -------------------------
+;---- EDIT 005 ADD START -------------------------
+IF INRANGE(RESULT, -99, -1)
+	;RESULTをPREVCOMの配列に変換する
+	L_NUM = RESULT * -1 -1
+	;中身が入ってないなら通さない
+	SIF PREVCOM:L_NUM == -1
+		RETURN 0
+	;PREVCOMABLE配列で成否を見る
+	SIF !PREVCOMABLE:L_NUM
+		RETURN 0
+	;実行前にPLAYERを保存しつつ、一時的に差し替える
+	TFLAG:PLAYER일시보존 = PLAYER
+	PLAYER = PREVPLAYER:L_NUM
+	ASSIPLAY = PLAYER == ASSI ? 1 # 0
+	SELECTCOM = PREVCOM:L_NUM
+;---- EDIT 005 ADD END ---------------------------
+;オプションウィンドウ位置変更
+ELSEIF RESULTS == "C" || RESULTS == "c"
+	SELECTCASE 調教オプション表示位置
+		CASE "右"
+			調教オプション表示位置 = 左
+		CASE "左"
+			調教オプション表示位置 = 上
+		CASE "上"
+			調教オプション表示位置 = 下
+		CASE "下"
+			調教オプション表示位置 = 右
+	ENDSELECT
+	RETURN 1
+;頁送り 1007なら戻って1009なら進んで再描画
+ELSEIF (RESULT == 1007 && COMLIST_PAGE >= 1) || (RESULT == 1009 && COMLIST_PAGE < COMLIST_PAGE_MAX)
+	COMLIST_PAGE += RESULT - 1008
+	RETURN 1
+;コマンド表示数増加
+ELSEIF (RESULTS == "<" || RESULTS == ">" ) && 調教画面旧表示 == 0
+	FLAG:조교커맨드의나열수 += (RESULTS == ">" ? 1 # -1)
+	FLAG:조교커맨드의나열수 = LIMIT(FLAG:조교커맨드의나열수 , 3 , 10)
+	RETURN 1
+;コマンド範囲外なら戻る。
+ELSEIF !INRANGE(RESULT, 0, 999)
+	RETURN 0
+;「愛撫系」などコマンド群を開放するコマンドの場合、入力ごとに反転
+ELSEIF (RESULT >= 700 && RESULT <= 712) || RESULT == 715
+	INVERTBIT CFLAG:TARGET:(RESULT + 170 - 700), 0
+	RETURN 1
+;「全コマンド開放」の場合
+ELSEIF RESULT == 750
+	;いくつ閉じているかをカウント（※フラグが１で閉じる）
+	FILTERCOUNT = 0
+	FOR LCOUNT, 170, 186
+		SIF CFLAG:TARGET:LCOUNT > 0
+			FILTERCOUNT += 1
+	NEXT
+
+	FOR LCOUNT, 170, 186
+		;現在フィルタとして設定されてない部分は触らない
+		IF LCOUNT == 183 || LCOUNT == 184
+			CONTINUE
+		;半分以上閉じてたら「開放」
+		;（現状、「183、184」番のフィルタがないため「大半が開いてないと閉鎖は出てこない」仕様）
+		ELSEIF FILTERCOUNT > 8
+			CFLAG:TARGET:LCOUNT = 0
+		;閉じてるのが半分以下なら「閉鎖」
+		ELSE
+			CFLAG:TARGET:LCOUNT = 1
+		ENDIF
+	NEXT
+	;戻って再描画
+	RETURN 1
+;「新旧調教画面表示変更」の場合
+ELSEIF RESULT == 751
+	INVERTBIT 調教画面旧表示 , 0
+	SAVEGLOBAL
+	;戻って再描画
+	RETURN 1
+;「COMリスト縮小」の場合
+ELSEIF GROUPMATCH(RESULTS , "988" , "-") && 調教画面旧表示==0
+	NUM_COMLINE -= 1
+	SIF NUM_COMLINE < 10
+		NUM_COMLINE = 10
+	SAVEGLOBAL
+	;戻って再描画
+	RETURN 1
+;「COMリスト拡大」の場合
+ELSEIF GROUPMATCH(RESULTS , "989" , "+") && 調教画面旧表示==0
+	NUM_COMLINE += 1
+	SIF NUM_COMLINE > 60
+		NUM_COMLINE = 60
+	SAVEGLOBAL
+	;戻って再描画
+	RETURN 1
+;履歴表示
+ELSEIF RESULT == 800
+	CALL SHOW_EQUIP
+	RETURN 1
+;汚れ表示
+ELSEIF RESULT == 801
+	CALL STAIN_INFO
+	RETURN 1
+;能力表示
+ELSEIF RESULT == 802
+	CALL SHOW_CHARADATA,TARGET
+	WAIT
+	RETURN 1
+;着衣設定
+ELSEIF RESULT == 803
+	CALL CLOTHES_CHANGE,TARGET
+	RETURN 1
+;全員全着衣
+ELSEIF RESULT == 804
+	;ターゲットとプレイヤーの服を全部着せる
+	FOR LCOUNT, 0, 14
+		TEQUIP:TARGET:(GET_CLOTHESNAME(LCOUNT)) = CFLAG:TARGET:(GET_CLOTHESNAME(LCOUNT))
+		TEQUIP:MASTER:(GET_CLOTHESNAME(LCOUNT)) = CFLAG:MASTER:(GET_CLOTHESNAME(LCOUNT))
+		SIF ASSI > 0
+			TEQUIP:ASSI:(GET_CLOTHESNAME(LCOUNT)) = CFLAG:ASSI:(GET_CLOTHESNAME(LCOUNT))
+	NEXT
+
+	CALL おっぱいオープンチェック(TARGET)
+	CALL CHECK_EXPOSE(TARGET)
+	CALL 股間構造チェック(TARGET)
+	CALL 触覚チェック(TARGET)
+	CALL ずらしチェック(TARGET)
+
+	CALL おっぱいオープンチェック(MASTER)
+	CALL CHECK_EXPOSE(MASTER)
+	CALL 股間構造チェック(MASTER)
+	CALL 触覚チェック(MASTER)
+	CALL ずらしチェック(MASTER)
+
+	IF ASSI > 0
+		CALL おっぱいオープンチェック(ASSI)
+		CALL CHECK_EXPOSE(ASSI)
+		CALL 股間構造チェック(ASSI)
+		CALL 触覚チェック(ASSI)
+		CALL ずらしチェック(ASSI)
+	ENDIF
+
+	;口上チェックは行わない（簡易コマンドであるため）
+
+	RETURN 1
+;全員全脱衣
+ELSEIF RESULT == 805
+	;ターゲットとプレイヤーの服を全部脱がす
+	FOR LCOUNT, 0, 14
+		TEQUIP:TARGET:(GET_CLOTHESNAME(LCOUNT)) = 0
+		TEQUIP:MASTER:(GET_CLOTHESNAME(LCOUNT)) = 0
+		SIF ASSI > 0
+			TEQUIP:ASSI:(GET_CLOTHESNAME(LCOUNT)) = 0
+	NEXT
+
+	CALL おっぱいオープンチェック(TARGET)
+	CALL CHECK_EXPOSE(TARGET)
+	CALL 股間構造チェック(TARGET)
+	CALL 触覚チェック(TARGET)
+	CALL ずらしチェック(TARGET)
+
+	CALL おっぱいオープンチェック(MASTER)
+	CALL CHECK_EXPOSE(MASTER)
+	CALL 股間構造チェック(MASTER)
+	CALL 触覚チェック(MASTER)
+	CALL ずらしチェック(MASTER)
+
+	IF ASSI > 0
+		CALL おっぱいオープンチェック(ASSI)
+		CALL CHECK_EXPOSE(ASSI)
+		CALL 股間構造チェック(ASSI)
+		CALL 触覚チェック(ASSI)
+		CALL ずらしチェック(ASSI)
+	ENDIF
+
+	;口上チェックは行わない（簡易コマンドであるため）
+
+	RETURN 1
+
+;コンドーム設定
+ELSEIF RESULT == 806 && ( HAVE_PENIS(PLAYER) || HAVE_PENIS(TARGET) ) && ITEM:45 > 0
+	;調教者と対象のどちらかにペニスがありコンドームがないとダメ
+	CALL CONDOM_SETTING
+	RETURN 1
+;自動射精先変更
+ELSEIF RESULT == 807 && ( HAVE_PENIS(PLAYER) || HAVE_PENIS(TARGET) )
+	CALL SAMENPLACE_SETTING
+	RETURN 1
+;調教者能力表示
+ELSEIF RESULT == 808
+	CALL SHOW_CHARADATA,PLAYER
+	WAIT
+	RETURN 1
+;主導権の受け渡し
+ELSEIF RESULT == 809 && ((!(CFLAG:초기주도권 || TALENT:쾌감을부정 || TALENT:저항 || TALENT:억압) && TALENT:남자 ) || ABL:순종 > 2)
+	INVERTBIT TEQUIP:주도권 , 0
+	RETURN 1
+;マスター/助手と交代
+ELSEIF RESULT == 900 && ASSI > 0 && TEQUIP:25 == 0
+	IF ASSIPLAY
+		ASSIPLAY = 0
+		PLAYER = MASTER
+	ELSE
+		ASSIPLAY = 1
+		PLAYER = ASSI
+	ENDIF
+	RETURN 1
+;MAG吸収ON/OFF
+ELSEIF RESULT == 902
+	IF CFLAG:ＭＡＧ비피흡수 == 0
+		CFLAG:ＭＡＧ비피흡수 = 1
+	ELSE
+		CFLAG:ＭＡＧ비피흡수 = 0
+	ENDIF
+	RETURN 1
+;MAG譲渡ON/OFF
+ELSEIF RESULT == 906
+	IF ASSIPLAY
+		IF CFLAG:ASSI:ＭＡＧ비피흡수 == 0
+			CFLAG:ASSI:ＭＡＧ비피흡수 = 1
+		ELSE
+			CFLAG:ASSI:ＭＡＧ비피흡수 = 0
+		ENDIF
+	ELSE
+		IF CFLAG:MASTER:ＭＡＧ비피흡수 == 0
+			CFLAG:MASTER:ＭＡＧ비피흡수 = 1
+		ELSE
+			CFLAG:MASTER:ＭＡＧ비피흡수 = 0
+		ENDIF
+	ENDIF
+	RETURN 1
+
+;コマンドフィルタ
+ELSEIF RESULT == 907
+	CALL COM_FILTER, TARGET
+	RETURN 1
+ELSEIF RESULT == 908
+	CALL 顔グラ変更,TARGET
+	RETURN 1
+;---- EDIT 007 DEL START -------------------------
+;ELSEIF RESULT == 909
+;	INVERTBIT CFLAG:一時陥落素質変更 , 0
+;	RETURN 1
+;---- EDIT 007 DEL END ---------------------------
+;調教メニュー関連：登録
+ELSEIF RESULT == 990
+	CALL COMSEQ_REGISTER
+	RETURN 1
+;調教メニュー関連：各種メニュー
+ELSEIF RANGE(RESULT, 991, 998)
+	CALL COMSEQ_TRAIN, RESULT - 991
+	RETURN 1
+;ELSEIF RESULT == 991 && FLAG:550 > 0
+;	CALL COMSEQ_SHOW
+;	RETURN 1
+;ELSEIF RESULT == 992 && FLAG:550 > 0
+;	CALL COMSEQ_TRAIN
+;	RETURN 1
+
+ELSEIF RESULT == 999
+	;BEGIN AFTERTRAIN
+	RETURN 999
+ELSEIF Q:RESULT >= 0
+	IF 調教画面旧表示 != 0
+		PRINTL
+		CUSTOMDRAWLINE "-"
+		PRINTL
+	ENDIF
+	;強調表示用の変数INDICATE_COMを初期化
+	;VARSET INDICATE_COM , -1
+	;DOTRAIN Q:RESULT
+	SELECTCOM:0 = Q:RESULT
+	RETURN 1
+ENDIF
+RETURN 0
+
+@SHOW_EQUIP
+T = TARGET
+CALL SHOW_INFO_JUEL
+IF PREVCOM >= 0
+	PRINT 전회조교커맨드:
+	PRINTS TSTR:0
+	SIF TFLAG:전회조교자 == ASSI
+		PRINT (조수)
+	PRINTL 
+ENDIF
+SIF TEQUIP:26
+	PRINTL [미약효과발휘중]
+SIF TEQUIP:27
+	PRINTL [이뇨제효과발휘중]
+IF TEQUIP:34 == 1
+	PRINTL [강정신약반동중]
+ELSEIF TEQUIP:34 > 1
+	PRINTL [강정신약효과발휘중]
+ENDIF
+
+SIF TEQUIP:28
+	PRINTFORML [비디오촬영중({TFLAG:70 - 1}/10)]
+SIF TEQUIP:29
+	PRINTL [야외플레이중]
+SIF TEQUIP:46 >= 1
+	PRINTFORML [구경꾼{TEQUIP:46}인]
+SIF TEQUIP:30
+	PRINTL [수치심플레이중]
+SIF TEQUIP:31
+	PRINTL [목욕탕플레이중]
+SIF TEQUIP:33
+	PRINTL [새댁플레이중]
+SIF TEQUIP:25
+	PRINTL [촉수조교중]
+
+IF TEQUIP:13 && TEQUIP:25
+	PRINTL [촉수삽입]
+ELSEIF TEQUIP:13
+	PRINTL [바이브장착중]
+ENDIF
+
+IF TEQUIP:14 && TEQUIP:25
+	PRINTL [촉수애널삽입중]
+ELSEIF TEQUIP:14
+	PRINTL [애널바이브삽입중]
+ENDIF
+
+IF TEQUIP:11 && TEQUIP:25
+	PRINTL [촉수클리자극]
+ELSEIF TEQUIP:11
+	PRINTL [클리캡장착중]
+ENDIF
+
+IF TEQUIP:16 && TEQUIP:25
+	PRINTL [촉수유두자극]
+ELSEIF TEQUIP:16
+	PRINTL [유두캡장착중]
+ENDIF
+IF TEQUIP:17 && TEQUIP:25
+	PRINTL [촉수착유]
+ELSEIF TEQUIP:17
+	PRINTL [착유기장착중]
+ENDIF
+SIF TEQUIP:24
+	PRINTL [유방전극장착중]
+
+IF TEQUIP:12 && TEQUIP:25
+	PRINTL [촉수페니스자극]
+ELSEIF TEQUIP:12
+	PRINTL [오나홀장착중]
+ENDIF
+
+IF TEQUIP:32
+	PRINTL [샤워중]
+ENDIF
+
+IF TEQUIP:19 && TEQUIP:25
+	PRINTL [촉수긴박]
+ELSEIF TEQUIP:19
+	PRINTL [밧줄로긴박]
+ENDIF
+
+IF TEQUIP:21 && TEQUIP:25
+	PRINTL [촉수관장]
+ELSEIF TEQUIP:21
+	PRINTL [관장＋애널플러그장착중]
+ENDIF
+
+SIF TEQUIP:36
+	PRINTL [촉수구욕중]
+
+SIF TEQUIP:18
+	PRINTL [아이마스크장착중]
+SIF TEQUIP:20
+	PRINTL [볼개그장착중]
+SIF TEQUIP:15
+	PRINTL [애널비즈장착중]
+SIF TEQUIP:22
+	PRINTL [확장벌룬장착중]
+SIF TEQUIP:23
+	PRINTL [애널전극장착중]
+
+SIF TEQUIP:41
+	PRINTL [삼각목마기승중]
+SIF TEQUIP:42
+	PRINTL [사정억제중]
+	
+SIF TEQUIP:PLAYER:26
+	PRINTL [미약효과발휘중(조교자)]
+	
+IF TEQUIP:PLAYER:13 && TEQUIP:25
+	PRINTL [촉수삽입(조교자)]
+ELSEIF TEQUIP:PLAYER:13
+	PRINTL [바이브장착중(조교자)]
+ENDIF
+
+IF TEQUIP:PLAYER:14 && TEQUIP:25
+	PRINTL [촉수애널삽입(조교자)]
+ELSEIF TEQUIP:PLAYER:14
+	PRINTL [애널바이브장착중(조교자)]
+ENDIF
+
+IF TEQUIP:PLAYER:11 && TEQUIP:25
+	PRINTL [촉수클리자극(조교자)]
+ELSEIF TEQUIP:PLAYER:11
+	PRINTL [클리캡장착중(조교자)]
+ENDIF
+
+IF TEQUIP:PLAYER:16 && TEQUIP:25
+	PRINTL [촉수유두자극(조교자)]
+ELSEIF TEQUIP:PLAYER:16
+	PRINTL [유두캡장착중(조교자)]
+ENDIF
+IF TEQUIP:PLAYER:17 && TEQUIP:25
+	PRINTL [촉수착유(조교자)]
+ELSEIF TEQUIP:PLAYER:17
+	PRINTL [착유기장착중(조교자)]
+ENDIF
+
+IF TEQUIP:PLAYER:12 && TEQUIP:25
+	PRINTL [촉수페니스자극(조교자)]
+ELSEIF TEQUIP:PLAYER:12
+	PRINTL [오나홀장착중(조교자)]
+ENDIF
+
+SIF TEQUIP:PLAYER:15
+	PRINTL [애널비즈장착중(조교자)]
+
+SIF EX:TARGET:Ｃ절정
+	PRINTFORM Ｃ절정:{EX:TARGET:Ｃ절정}회　
+SIF EX:TARGET:Ｖ절정
+	PRINTFORM Ｖ절정:{EX:TARGET:Ｖ절정}회　
+SIF EX:TARGET:Ａ절정
+	PRINTFORM Ａ절정:{EX:TARGET:Ａ절정}회　
+SIF EX:TARGET:Ｂ절정
+	PRINTFORM Ｂ절정:{EX:TARGET:Ｂ절정}회　
+SIF EX:TARGET:분유
+	PRINTFORM 　분유:{EX:TARGET:분유}회　
+SIF EX:TARGET:사정
+	PRINTFORM 　사정:{EX:TARGET:사정}회　
+SIF EX:TARGET:Ｃ절정 + EX:TARGET:Ｖ절정 + EX:TARGET:Ａ절정 + EX:TARGET:Ｂ절정 + EX:TARGET:분유 + EX:TARGET:사정
+	PRINTL 
+SIF EX:PLAYER:Ｃ절정
+	PRINTFORM 조교자Ｃ절정:{EX:PLAYER:Ｃ절정}회　
+SIF EX:PLAYER:Ｖ절정
+	PRINTFORM 조교자Ｖ절정:{EX:PLAYER:Ｖ절정}회　
+SIF EX:PLAYER:Ａ절정
+	PRINTFORM 조교자Ａ절정:{EX:PLAYER:Ａ절정}회　
+SIF EX:PLAYER:Ｂ절정
+	PRINTFORM 조교자Ｂ절정:{EX:PLAYER:Ｂ절정}회　
+SIF EX:PLAYER:분유
+	PRINTFORM 　조교자분유:{EX:PLAYER:분유}회　
+SIF EX:PLAYER:사정
+	PRINTFORM 　조교자사정:{EX:PLAYER:사정}회　
+SIF EX:PLAYER:Ｃ절정 || EX:PLAYER:Ｖ절정 || EX:PLAYER:Ａ절정 || EX:PLAYER:Ｂ절정 || EX:PLAYER:분유 || EX:PLAYER:사정
+	PRINTL 
+
+WAIT
+
+@CONDOM_SETTING
+#DIM LCOUNT
+A = 0
+B = 0
+C = 0
+T = 0
+PRINTW 콘돔설정을 할 대상을 선택해주세요
+PRINTL  
+FOR LCOUNT, 0, 3
+	IF (HAVE_PENIS(MASTER)) && A == 0
+		PRINTFORM [{LCOUNT}] %CALLNAME:MASTER%
+		IF TEQUIP:MASTER:35 && (FLAG:98 & 4)
+			PRINTL (장착완료、상비)
+		ELSEIF TEQUIP:MASTER:35
+			PRINTL (장착완료)
+		ELSE
+			PRINTL (미장착)
+		ENDIF
+			A = 1
+	ELSEIF ASSI >= 0
+		IF HAVE_PENIS(ASSI) && B == 0
+			PRINTFORM [{LCOUNT}] %CALLNAME:ASSI%
+			IF TEQUIP:ASSI:35 && (FLAG:98 & 2)
+				PRINTL (장착완료、상비)
+			ELSEIF TEQUIP:ASSI:35
+				PRINTL (장착완료)
+			ELSE
+				PRINTL (미장착)
+			ENDIF
+			B = 1
+		ENDIF
+	ELSEIF HAVE_PENIS(TARGET) && C == 0
+		PRINTFORM [{LCOUNT}] %CALLNAME:TARGET%
+		IF TEQUIP:TARGET:35 && (FLAG:98 & 1)
+			PRINTL (장착완료、상비)
+		ELSEIF TEQUIP:TARGET:35
+			PRINTL (장착완료)
+		ELSE
+			PRINTL (미장착)
+		ENDIF
+			C = 1
+	ENDIF
+NEXT
+PRINTL [100]돌아간다
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	IF A == 1
+		T = MASTER
+	ELSEIF B == 1
+		T = ASSI
+	ELSEIF C == 1
+		T = TARGET
+	ENDIF
+ELSEIF RESULT == 1
+	IF B == 1
+		T = ASSI
+	ELSEIF C == 1
+		T = TARGET
+	ENDIF
+ELSEIF RESULT == 2
+	T = TARGET
+ELSEIF RESULT == 100
+	RETURN 0
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+PRINTL 콘돔 설정을 해주세요
+PRINTL  
+	PRINTFORM 설정대상：%CALLNAME:T%
+	IF TEQUIP:T:35
+		PRINT (장착완료
+		IF (T == MASTER && (FLAG:98 & 4)) || (T == ASSI && (FLAG:98 & 2)) || (T == TARGET && (FLAG:98 & 1))
+			PRINTL 、상비)
+		ELSE
+			PRINTL )
+		ENDIF
+	ELSE
+		PRINTL (미장착)
+	ENDIF
+PRINTL [0]  콘돔을 항상 장착한다
+PRINTL [1]  콘돔을 장착한다
+PRINTL [2]  콘돔을 벗긴다
+PRINTL [100]돌아간다
+
+$INPUT_LOOP1
+INPUT
+IF RESULT == 0
+	IF TEQUIP:T:35 == 0
+		ITEM:45 -= 1
+		TEQUIP:T:35 = 1
+	ENDIF
+	SIF T == MASTER
+		FLAG:98 |= 4
+	SIF T == ASSI
+		FLAG:98 |= 2
+	SIF T == TARGET
+		FLAG:98 |= 1
+	PRINTFORMW %조사처리(CALLNAME:T,"는")%, 콘돔을 항상 착용하도록 했다
+ELSEIF RESULT == 1
+	IF TEQUIP:T:35 == 0
+		;음란・창부 소유
+		IF TALENT:PLAYER:4 || TALENT:PLAYER:7
+			IF PLAYER != T
+				IF RAND:2 == 0
+					PRINTFORMW %조사처리(CALLNAME:PLAYER,"는")% 음란한 미소를 띠며 콘돔을 꺼내더니, %CALLNAME:T%의 페니스에 입으로 씌웠다…
+				ELSE
+					PRINTFORMW %조사처리(CALLNAME:PLAYER,"는")% 익숙한 솜씨로 콘돔을 물더니, 그대로 입으로 %CALLNAME:T%의 페니스에 씌웠다…
+				ENDIF
+			ELSEIF PLAYER == MASTER && ASSI > 0
+				SELECTCASE RAND:3
+					CASE 0
+						PRINTFORMW %조사처리(CALLNAME:PLAYER,"는")% 콘돔을 꺼내더니, %CALLNAME:ASSI%에게 입으로 %CALLNAME:T%의 페니스에 씌우게 했다…
+					CASE 1
+						PRINTFORMW %조사처리(CALLNAME:ASSI,"는")% 익숙한 솜씨로 콘돔을 물더니, 그대로 입으로 %CALLNAME:T%의 페니스에 씌웠다…
+					CASE 2
+						PRINTFORMW %조사처리(CALLNAME:PLAYER,"는")% 콘돔을 꺼내더니, %CALLNAME:TARGET%에게 입으로 %CALLNAME:T%의 페니스에 씌우게 했다…
+				ENDSELECT
+			ELSE
+				PRINTFORMW %조사처리(CALLNAME:PLAYER,"는")% 콘돔을 꺼내더니, %CALLNAME:TARGET%에게 입으로 %CALLNAME:T%의 페니스에 씌우게 했다…
+			ENDIF
+		ELSE
+			PRINTFORMW %조사처리(CALLNAME:T,"는")%, 콘돔을 착용했다
+		ENDIF
+		ITEM:45 -= 1
+		TEQUIP:T:35 = 1
+	ELSEIF (T == MASTER && (FLAG:98 & 4)) || (T == ASSI && (FLAG:98 & 2)) || (T == TARGET && (FLAG:98 & 1))
+		PRINTFORMW %조사처리(CALLNAME:T,"는")%, 콘돔을 항상 착용하지 않도록 했다
+		SIF T == MASTER
+			FLAG:98 &= 3
+		SIF T == ASSI
+			FLAG:98 &= 5
+		SIF T == TARGET
+			FLAG:98 &= 6
+	ELSE
+		PRINTFORMW %조사처리(CALLNAME:T,"는")%, 이미 콘돔을 착용하고 있다
+	ENDIF
+ELSEIF RESULT == 2
+	PRINTFORMW %조사처리(CALLNAME:T,"는")% 콘돔을 벗었다
+	SIF T == MASTER
+		FLAG:98 &= 3
+	SIF T == ASSI
+		FLAG:98 &= 5
+	SIF T == TARGET
+		FLAG:98 &= 6
+	TEQUIP:T:35 = 0
+ELSEIF RESULT == 100
+	RETURN 0
+ELSE
+	GOTO INPUT_LOOP1
+ENDIF
+
+
+@CHECK_NEWLINE
+Z += 1
+IF Z == TRAINPRINTCPL()
+	PRINTL 
+	Z = 0
+ENDIF
+
+@COM_FILTER, ARG
+;改行用カウントをリセットしておく
+LOCAL:1 = 0
+DRAWLINE
+IF CFLAG:ARG:이용필터 == 1
+	PRINTL 【공통설정1】
+ELSEIF CFLAG:ARG:이용필터 == 2
+	PRINTL 【공통설정2】
+ELSEIF CFLAG:ARG:이용필터 == 3
+	PRINTL 【공통설정3】
+ELSEIF CFLAG:ARG:이용필터 == 4
+	PRINTFORML 【%CALLNAME:ARG%의 개별설정】
+ELSE
+	PRINTFORML 【필터 미사용】
+ENDIF
+;ページの決定で、LOCAL:3は開始のTRAIN、LOCAL:4が終了位置
+IF LOCAL:3 == 0
+	LOCAL:4 = 101
+ELSEIF LOCAL:3 == 101
+	LOCAL:4 = 1000
+;ELSE
+;	LOCAL:4 = 1000
+ENDIF
+;フィルターかかってるコマンドは灰色に
+SETCOLOR 102, 102, 102
+FOR LOCAL, LOCAL:3, LOCAL:4
+	SIF CFLAG:ARG:이용필터 == 0
+		BREAK
+	;名前の長さが0の場合、ないものとみなす
+	SIF STRLENS(TRAINNAME:LOCAL) == 0
+		CONTINUE
+	;共通設定モードの時は共通設定
+	;フィルタリングフラグが立ってないとき、通常表示、つまり立ってる時だけ灰色
+	IF GET_COM_FILTERING(LOCAL, ARG)
+		PRINTFORMC %TRAINNAME:LOCAL%[{LOCAL,3}]
+	ELSE
+		PRINTFORMCD %TRAINNAME:LOCAL%[{LOCAL,3}]
+	ENDIF
+	;改行処理
+	LOCAL:1 += 1
+	SIF (LOCAL:1 % TRAINPRINTCPL()) == 0
+		PRINTL 
+NEXT
+IF (LOCAL:1 % TRAINPRINTCPL())
+	PRINTL 
+	LOCAL:1 = 0
+ENDIF
+RESETCOLOR
+DRAWLINE
+SETCOLOR 102, 255, 255
+;現在ページも色で表す
+IF LOCAL:3 == 0
+	PRINTC [1000] 페이지 1
+ELSE
+	PRINTCD [1000] 페이지 1
+ENDIF
+IF LOCAL:3 == 101
+	PRINTC [1001] 페이지 2
+ELSE
+	PRINTCD [1001] 페이지 2
+ENDIF
+;IF LOCAL:3 == 300
+;	PRINTCD [1002] ページ3
+;ELSE
+;	PRINTC [1002] ページ3
+;ENDIF
+PRINTL 
+;色を戻す
+RESETCOLOR
+DRAWLINE
+PRINTL [1003] 돌아간다
+SETCOLOR 102, 255, 255
+IF CFLAG:ARG:이용필터 == 0
+	PRINTL [1004] 이용하지 않는다
+ELSE
+	PRINTDL [1004] 이용하지 않는다
+ENDIF
+IF CFLAG:ARG:이용필터 == 1
+	PRINTL [1005] 공통설정1
+ELSE
+	PRINTDL [1005] 공통설정1
+ENDIF
+IF CFLAG:ARG:이용필터 == 2
+	PRINTL [1006] 공통설정2
+ELSE
+	PRINTDL [1006] 공통설정2
+ENDIF
+IF CFLAG:ARG:이용필터 == 3
+	PRINTL [1007] 공통설정3
+ELSE
+	PRINTDL [1007] 공통설정3
+ENDIF
+IF CFLAG:ARG:이용필터 == 4
+	PRINTL [1008] 개별설정
+ELSE
+	PRINTDL [1008] 개별설정
+ENDIF
+SIF CFLAG:ARG:이용필터
+	PRINTDL [1009] 리셋
+RESETCOLOR
+$INPUT_LOOP
+INPUT
+IF RESULT == 1000
+	LOCAL:3 = 0
+ELSEIF RESULT == 1001
+	LOCAL:3 = 101
+;ELSEIF RESULT == 1002
+;	LOCAL:3 = 300
+ELSEIF RESULT == 1003
+	RETURN 1
+ELSEIF RESULT == 1004
+	PRINTFORMW 필터를 이용하지 않습니다
+	CFLAG:ARG:이용필터 = 0
+ELSEIF RESULT == 1005
+	PRINTW 공통설정1을 이용합니다
+	CFLAG:ARG:이용필터 = 1
+ELSEIF RESULT == 1006
+	PRINTW 공통설정2를 이용합니다
+	CFLAG:ARG:이용필터 = 2
+ELSEIF RESULT == 1007
+	PRINTW 공통설정3을 이용합니다
+	CFLAG:ARG:이용필터 = 3
+ELSEIF RESULT == 1008
+	PRINTW 개별설정을 이용합니다
+	CFLAG:ARG:이용필터 = 4
+ELSEIF RESULT == 1009 && CFLAG:ARG:이용필터
+	PRINTL 현재 표시되고 있는 설정을 리셋합니다
+	PRINTL 정말로 괜찮겠습니까？
+	CALL INPUT_YN
+	IF RESULT == 0
+		FOR LOCAL, SET_COM_FILTERING_NUM(ARG), SET_COM_FILTERING_NUM(ARG)+13
+			IF CFLAG:ARG:이용필터 == 4
+				CFLAG:ARG:LOCAL = 0
+			ELSE
+				FLAG:LOCAL = 0
+			ENDIF
+		NEXT
+		PRINTW 리셋했습니다
+	ENDIF
+ELSEIF RESULT < 0 || RESULT > 1000 || !CFLAG:ARG:이용필터
+	GOTO INPUT_LOOP
+ELSEIF STRLENS(TRAINNAME:RESULT)
+	CALL INVERT_COM_FILTERING(RESULT, ARG)
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+RESTART
+
+
+@GET_COM_FILTERING(ARG, ARG:1 = -123456789)
+#FUNCTION
+;隠し番号入力で対象をTARGETにもとい、省略でTARGET
+SIF ARG:1 == -123456789
+	ARG:1 = TARGET
+SIF ARG:1 < -1 || ARG:1 >= CHARANUM
+	THROW "ARG:1의 값이 이상합니다"
+SIF ARG < 0 || ARG >1008
+	THROW "ARG의 값이 이상합니다"
+;使うCFLAGの決定
+LOCAL = ARG / 63 + SET_COM_FILTERING_NUM(ARG:1)
+;そのCFLAGの何番目のBITか
+LOCAL:1 = ARG % 63
+;フラグチェック
+IF CFLAG:(ARG:1):이용필터 == 0
+	RETURNF 0
+ELSEIF CFLAG:(ARG:1):이용필터 < 4
+	SIF GETBIT(FLAG:LOCAL, LOCAL:1)
+		RETURNF 1
+ELSE
+	SIF GETBIT(CFLAG:(ARG:1):LOCAL, LOCAL:1)
+		RETURNF 1
+ENDIF
+RETURNF 0
+@INVERT_COM_FILTERING(ARG, ARG:1 = -123456789)
+;隠し番号入力で対象をTARGETにもとい、省略でTARGET
+SIF ARG:1 == -123456789
+	ARG:1 = TARGET
+SIF ARG:1 < -1 || ARG:1 >= CHARANUM
+	PRINTW ARG:1의 값이 이상합니다
+SIF ARG < 0 || ARG >1008
+	PRINTW ARG의 값이 이상합니다
+;使うFLAGの決定
+LOCAL = ARG / 63 + SET_COM_FILTERING_NUM(ARG:1)
+;そのCFLAGの何番目のBITか
+LOCAL:1 = ARG % 63
+;フラグ反転
+IF CFLAG:(ARG:1):이용필터 < 4
+	INVERTBIT FLAG:LOCAL, LOCAL:1
+ELSE
+	INVERTBIT CFLAG:(ARG:1):LOCAL, LOCAL:1
+ENDIF
+RETURN 0
+
+;フィルタリングのFLAGの先頭の位置を返す
+@SET_COM_FILTERING_NUM(ARG)
+#FUNCTION
+IF CFLAG:ARG:이용필터 == 1
+	RETURNF GETNUM(FLAG, "필터공통설정1")
+ELSEIF CFLAG:ARG:이용필터 == 2
+	RETURNF GETNUM(FLAG, "필터공통설정2")
+ELSEIF CFLAG:ARG:이용필터 == 3
+	RETURNF GETNUM(FLAG, "필터공통설정3")
+ELSEIF CFLAG:ARG:이용필터 == 4
+	RETURNF GETNUM(CFLAG, "커맨드필터")
+ELSE
+	RETURNF -1
+ENDIF

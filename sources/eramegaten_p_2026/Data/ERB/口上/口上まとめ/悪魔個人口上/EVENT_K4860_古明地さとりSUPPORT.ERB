@@ -1,0 +1,434 @@
+﻿;eraMegaten専用ナビ口上テンプレート
+;古明地さとり　　作者：アタイ。追記者:eMさ者
+;
+
+;=========================================
+;ナビ口上の存在確認
+;この関数が設定されていないと口上が存在しない扱いになる
+;=========================================
+@IS_EXIST_KOJO_BATTLE_NAVI_K[[キャラ:사토리]], ARG
+RETURN 1
+
+;=========================================
+;以下ナビ口上、京都じゃない方の双葉はんから拝借した古代ちゃん口上から拝借、本当に申し訳ない
+;
+;TSTR:네비_시추에이션_메인		主に呼び出しタイミングを定義(戦闘開始/メイン画面/戦闘終了)
+;TSTR:네비_시추에이션_서버1		状況を定義
+;TSTR:네비_시추에이션_서버2		状況の補足オプション
+;=========================================
+@KOJO_BATTLE_NAVI_K[[キャラ:사토리]], ARG
+SELECTCASE TSTR:네비_시추에이션_메인
+	CASE "戦闘開始"
+		SELECTCASE TSTR:네비_시추에이션_서버1
+			CASE "통상"
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "格下"
+						IF TFLAG:적초기배치수 == 4
+							;敵数4
+							BTL_KOJO_RESULTS:0 = ４체의 격하를 확인。날려버리죠。
+						ELSEIF TFLAG:적초기배치수 == 3
+							;敵数3
+							BTL_KOJO_RESULTS:0 = 적、３체。……뭐어……송사리군요。
+						ELSEIF TFLAG:적초기배치수 == 2
+							;敵数2
+							BTL_KOJO_RESULTS:0 = ２체 나오셨습니다。%CSTR:이인칭%의 기량이면 낙승이네요。
+						ELSEIF TFLAG:적초기배치수 == 1
+							;敵数1
+							BTL_KOJO_RESULTS:0 = 명백히 격하인 1체 입니다。%CSTR:일인칭%의 네비게이트도 필요없는 것 아닌가요？
+						ELSE
+							;敵数5以上
+							BTL_KOJO_RESULTS:0 = 숫자만큼은 많지만、격의 차이를 생각하면 위험도는 낮을 겁니다。
+						ENDIF
+					CASE "格上"
+						;敵数１
+						IF TFLAG:적초기배치수 == 1
+							BTL_KOJO_RESULTS:0 = 이건 수준 높은 적이 나타났군요……。
+							BTL_KOJO_RESULTS:1 = 진심을 다하지 않으면 전멸할 수도 있습니다。무운을 빕니다。
+						ELSE
+							BTL_KOJO_RESULTS:0 = 앗、그녀석 맛 없네요。무슨 뜻이냐면、
+							BTL_KOJO_RESULTS:1 = %CSTR:이인칭%보다 매우 격상입니다。죽지 마세요？
+						ENDIF
+					CASE "同格"
+						IF TFLAG:적초기배치수 == 2
+							BTL_KOJO_RESULTS:0 = 적 ２체、전투 개시。간단히 끝내죠。
+						ELSEIF TFLAG:적초기배치수 == 1
+							BTL_KOJO_RESULTS:0 = 적은 단독입니다。레벨차 경보、반응 없음。전투를 시작하세요。
+						ELSE
+							BTL_KOJO_RESULTS:0 = 적 확인。격은 동등합니다……전략이 중요하겠네요。
+						ENDIF
+				ENDSELECT
+			CASE "先制攻撃"
+				IF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 기습에 성공했습니다。신속하게 공격을 개시해 주세요。
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = 배후를 잡았습니다、호기입니다。
+				ELSE
+					BTL_KOJO_RESULTS:0 = 사실 이럴 때도 마법공격은 쓸 수 있거든요。꽤나 여유로운 기습이네요。
+				ENDIF
+			CASE "バックアタック"
+				IF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 배후에서의 기습입니다。버텨내세요。
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = 통신기 너머라면 마음을 읽을 수 없네요……。
+					BTL_KOJO_RESULTS:1 = 기습의 감지에 실패했습니다。……죄송합니다。
+				ELSE
+					BTL_KOJO_RESULTS:0 = 아、뒤에 있어요……이미 늦었어요？
+				ENDIF
+			CASE "バックアタック阻止"
+				IF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 외부기기는 제대로 활용하지 않으면……。아 하쿠타로우입니다。잘 듣네요。
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = 하쿠타로우가 경보를 울리고 있군요。뒤에요。
+				ELSE
+					BTL_KOJO_RESULTS:0 = 뒤에서 다가오고 있는 것 같습니다만、아직 늦지 않았군요、대처해 주세요。
+				ENDIF
+			CASE "不意打ち"
+				IF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 이건……매복당하고 있었군요。
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = ……%CSTR:일인칭%가 그쪽에 있는 편이 좋았을까요？
+				ELSE
+					BTL_KOJO_RESULTS:0 = 정면、그늘에서 기습을 당했습니다。%CSTR:일인칭%의 잘못입니다。
+				ENDIF
+			CASE "不意打ち阻止"
+				IF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = 저의『눈』을 속여도、하쿠타로우는 속일 수 없어요。
+				ELSE
+					BTL_KOJO_RESULTS:0 = 상황을 지켜보고 있는 사람이 있군요、기습에 경계를……아、왔습니다。
+				ENDIF
+		ENDSELECT
+	CASE "メイン画面"
+		SELECTCASE TSTR:네비_시추에이션_서버1
+			CASE "重度の危機"
+				CASE "重度の危機"
+					SELECTCASE TSTR:네비_시추에이션_서버2
+						CASE "死亡者多数"
+							IF FLAG:도주불가플래그
+								IF RAND:3 == 0
+									BTL_KOJO_RESULTS:0 = 필요한 것은……조언인가요？　아니면 유언장을 쓰는 법？
+									BTL_KOJO_RESULTS:1 = 어느 쪽이든 상관없어요。먼저 소생과 살아남고 싶다는 마음부터 가집시다。
+								ELSEIF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 단적으로 말해서、패색이 짙네요。
+									BTL_KOJO_RESULTS:1 = 리캄드라는……가지고 계십니까？
+								ELSE
+									BTL_KOJO_RESULTS:0 = 상황적으로、『각오』는 되어 있습니까？
+									BTL_KOJO_RESULTS:1 = 이탈할 수 있었다면、다른 방법도 있었겠지만。
+								ENDIF
+							ELSE
+								IF RAND:5 == 0
+									BTL_KOJO_RESULTS:0 = 다시 싸울지、도망갈 수 있다면 도망칠지、지금 생각해 둡시다。
+								ELSEIF RAND:4 == 0
+									BTL_KOJO_RESULTS:0 = 누군가 쓰러진 상태군요……행동 인원이 줄어드는 것은 위험해요。
+								ELSEIF RAND:3 == 0
+									BTL_KOJO_RESULTS:0 = 부끄럽다고 생각할지도 모르지만、『도주』라는 수단도 남아 있습니다。
+									BTL_KOJO_RESULTS:1 = 살아남고、싶다면……결단을 내리는 것도 필요해요？
+								ELSEIF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 벼랑 끝 분말、그런 게 있나요？
+									BTL_KOJO_RESULTS:1 = %CSTR:일인칭%、한 번 그것을 사용해 보고 싶습니다만……。
+								ELSE
+									BTL_KOJO_RESULTS:0 = 우선 첫째、상대의 공격으로 얼마나 피해를 입을 것인가。
+									BTL_KOJO_RESULTS:1 = 다음으로、이 후에 같은 피해를 입고 견딜 수 있을지、저울질해 볼까요。
+								ENDIF
+							ENDIF
+						CASE "マスター瀕死"
+							IF RAND:2 == 0
+								BTL_KOJO_RESULTS:0 = 드디어 공물을 바칠 때군요。
+								BTL_KOJO_RESULTS:1 = ……뭔가요？　싫으면 수비해 주세요。
+							ELSE
+								BTL_KOJO_RESULTS:0 = 만약 스스로 회복할 수 없다면、얌전히 수비를 굳히세요。
+							ENDIF
+						CASE "マスター死亡"
+							IF RAND:2 == 0
+								BTL_KOJO_RESULTS:0 = %CSTR:이인칭%이 제일 먼저 쓰러지면 저도 할 수 있는게 없는데요？
+							ELSE
+								BTL_KOJO_RESULTS:0 = 달리 말을 듣는 사람이 있어서 다행이네요……들리지 않나요。
+							ENDIF
+						CASE "그외"
+							IF FLAG:도주불가플래그
+								IF RAND:3 == 0
+									BTL_KOJO_RESULTS:0 = 와해되기 전에 손을 써주세요。상황은 불리합니다。
+								ELSEIF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 전투불능자는 아직 없습니다만……
+									BTL_KOJO_RESULTS:1 = 간신히 전투를 속행할 수 있다。정도라서、조치를 게을리하면 큰일날거예요。
+								ELSE
+									BTL_KOJO_RESULTS:0 = 아직 마음이 꺾이지 않았나요？　
+									BTL_KOJO_RESULTS:1 = ……좋아요。포기해선 안됩니다。
+								ENDIF
+							ELSE
+								IF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 서둘러 철수 준비를 합시다。……안될까요。
+								ELSE
+									BTL_KOJO_RESULTS:0 = 적들보다 선행할 수 있는 회복역이 있습니까？　한 사람 정도 원합니다。
+								ENDIF
+							ENDIF
+					ENDSELECT
+			CASE "中度の危機"
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "핀치캐릭터"
+						SELECTCASE TSTR:핀치캐릭터위기내용
+							CASE "DYING"
+								SELECTCASE NO:(TFLAG:핀치캐릭터)
+									CASE [[キャラ:오린]]
+										IF RAND:2 == 0
+											BTL_KOJO_RESULTS:0 = 오린이 쓰러졌네요……。혹 떼러 갔다가 혹이 붙어버렸어요。
+										ELSE
+											BTL_KOJO_RESULTS:0 = 이거、오린？　……튼튼한 게 자랑인 당신이 쓰러지면 안되는데요。
+										ENDIF
+									CASE [[キャラ:우츠호]]
+										IF RAND:2 == 0
+											BTL_KOJO_RESULTS:0 = 체력 바보인 오쿠가 쓰러지다니 신기하네……。
+										ELSE
+											BTL_KOJO_RESULTS:0 = 오쿠가 쓰러졌네요。나중에 연료를 추가해주죠。
+										ENDIF
+									CASE [[キャラ:코이시]]
+										IF RAND:2 == 0
+											BTL_KOJO_RESULTS:0 = ……？　……아아。죄송해요、코이시의 반응이 약해서。
+											BTL_KOJO_RESULTS:1 = 쓰러져 있는 것을 깨닫는 데 시간이 걸렸습니다。
+										ELSE
+											BTL_KOJO_RESULTS:0 = 어라 코이시가 당해버렸어。곤란한 아이네……。
+										ENDIF
+									CASEELSE
+										IF RAND:3 == 0
+											BTL_KOJO_RESULTS:0 = 휴대품은 유한해요。여기는 소생의 마법을 쓰죠。
+										ELSEIF RAND:2 == 0
+											BTL_KOJO_RESULTS:0 = 반혼향을 비싸요。여기는 하나 저렴한 쪽으로 쓰죠。
+										ELSE
+											BTL_KOJO_RESULTS:0 = 도반옥은 추격에 휘말리면 두 번 수고스러워집니다。여기선 한 번 분발하죠。
+										ENDIF
+								ENDSELECT
+							CASE "瀕死", "重傷"
+								IF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 혼자 녹초가 되어있네요。도와주세요。
+								ELSE
+									BTL_KOJO_RESULTS:0 = 괜찮지 않은 사람이 한 명 있네요。빨리 회복시켜 주세요。
+								ENDIF
+							CASE "HAPPY"
+								IF RAND:3 == 0
+									BTL_KOJO_RESULTS:0 = 어머어머、너무나 행복하다는 얼굴을 하고 있네요。
+									BTL_KOJO_RESULTS:1 = ……보고 있으면 화가 나니、누군가 %CSTR:일인칭%대신 때려주세요。
+								ELSEIF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 행복으로 움직일 수 없게 된다는 것도、악질이네요。
+									BTL_KOJO_RESULTS:1 = 내버려 둬도 해는 없겠지만、반대로 말하면 이익도 없습니다。
+								ELSE
+									BTL_KOJO_RESULTS:0 = 한 사람、『HAPPY』이상에 걸려 있습니다。기운 차려주세요。
+								ENDIF
+							CASE "STONE"
+								IF RAND:3 == 0
+									BTL_KOJO_RESULTS:0 = 석화된 분들이 있어요。
+									BTL_KOJO_RESULTS:1 = 재미있는 모습으로 굳어져 있습니다만、조속히 대처하는 편이 좋을 것 같아요。
+								ELSEIF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 오오、멋진 석상이。
+									BTL_KOJO_RESULTS:1 = 오브제로 꾸며주면 기뻐할지도 몰라요。어껗게 할까요？
+								ELSE
+									BTL_KOJO_RESULTS:0 = 말할 것도 없는 정보지만『석화』는 내버려두면 전멸에 이릅니다。
+								ENDIF
+							CASE "POISON"
+								IF RAND:3 == 0
+									BTL_KOJO_RESULTS:0 = 안색이 안 좋은 분들이 있는 것 같아요。
+									BTL_KOJO_RESULTS:1 = 전투는 할 수 있을 것 같습니다만、빨리 치료해 주세요。
+								ELSEIF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 약해진 상태의 상대에게 쐐기를 박는 데 적합한 기술이 있다고 들었습니다。
+									BTL_KOJO_RESULTS:1 = 지금의『독』상태는 그야말로 좋은 먹이겠지요……。
+								ELSE
+									BTL_KOJO_RESULTS:0 = 『독』을 맞았네요。행동에 지장은 없다고 해도、체력적으로는 확실히 힘들어질 것입니다。
+								ENDIF
+							CASE "PANIC"
+								IF RAND:3 == 0
+									BTL_KOJO_RESULTS:0 = 상태가 안 좋은 분이 있네요。
+									BTL_KOJO_RESULTS:1 = 보고 있는 쪽은 재미있습니다만、대처하는 것은 어떻습니까？
+								ELSEIF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 『혼란』하고 있군요……。
+									BTL_KOJO_RESULTS:1 = 여러모로 신경을 많이 쓰는 %CSTR:이인칭%도 간과하지 않는 게 좋아요。
+								ELSE
+									BTL_KOJO_RESULTS:0 = 『혼란』으로 정확하게 행동하지 못하는 사람이 있습니다。주의하세요。
+								ENDIF
+							CASE "SLEEP"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:오린]]
+									BTL_KOJO_RESULTS:0 = 오린은……고양이 때부터 잠자는 얼굴이 귀여웠어요。
+									BTL_KOJO_RESULTS:1 = 뭐 지금은 자고 있을 때가 아닙니다만。
+								ELSEIF RAND:4 == 0
+									BTL_KOJO_RESULTS:0 = 푹 자고 있는 아군이 있네요。
+									BTL_KOJO_RESULTS:1 = 좋은 꿈을 꾸고 있는 듯한 얼굴이니、깨워주지 않는 편이 좋을까요？
+								ELSEIF RAND:3 == 0
+									BTL_KOJO_RESULTS:0 = 수마로 의식이 날아간 분들이 있어요。
+									BTL_KOJO_RESULTS:1 = 두들겨 깨워주세요。
+								ELSEIF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 아군이『잠』에 빠진 것 같습니다。
+									BTL_KOJO_RESULTS:1 = 움직일 수 없지만、이적행위를 할 위험은 없네요。
+								ELSE
+									BTL_KOJO_RESULTS:0 = 『수면』상태인 동료마를 확인、조심하세요。
+								ENDIF
+							CASE "CLOSE"
+								IF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 말 못하는 분들이 있네요。
+									BTL_KOJO_RESULTS:1 = 지금이라면 말다툼으로 완전히 이길 수 있을 거예요、재미있을 거 같으니 보여주세요。
+								ELSE
+									BTL_KOJO_RESULTS:0 = 『침묵』을 당한 것 같습니다。고칠 수 없는 경우는 필담으로 해주세요。
+								ENDIF
+							CASE "BIND"
+								IF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 아아、저 분 속박 당해있네요。
+									BTL_KOJO_RESULTS:1 = 그런 사람이라면 기뻐할 것 같습니다만、지금은 전투 중이니、대처합시다。
+								ELSE
+									BTL_KOJO_RESULTS:0 = 『긴박』되어 있는 분이 있습니다。전력이 저하되고 있으니 주의하시기 바랍니다。
+								ENDIF
+							CASE "BOMB"
+								IF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 저기 붙어있는 건……폭탄？
+									BTL_KOJO_RESULTS:1 = 코미디 소설의 마무리처럼 될까요。두근두근하네요。
+								ELSE
+									BTL_KOJO_RESULTS:0 = 『폭탄화』당한 분이 있습니다。화기 엄금이에요。절대。
+								ENDIF
+							CASE "CHARM"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:우츠호]]
+									BTL_KOJO_RESULTS:0 = 오쿠 자체는 아무것도 아닙니다만……그 팔에 있는 물건이 뭔진 아시죠。
+								ELSEIF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 어머어머、우리 편에 송곳니를 드러내는 분이 있어요。
+									BTL_KOJO_RESULTS:1 = 이러다가는 주인의 위엄이 엉망진찬이 되겠네요、벌이라도 주시겠어요？
+								ELSE
+									BTL_KOJO_RESULTS:0 = 『매료』되어 있는 사람이 있습니다。빨리 해제하지 않으면 적이 늘어난 거나 다름없어요。
+								ENDIF
+							CASE "PALYZE"
+								IF RAND:3 == 0
+									BTL_KOJO_RESULTS:0 = 신경에 이상이 생기면 저렁게 되는군요。
+									BTL_KOJO_RESULTS:1 = 불쌍하니까、고쳐주세요。
+								ELSEIF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 저린 분이 있으면、만지고 싶어지네요……。
+									BTL_KOJO_RESULTS:1 = 누군가 만져 주세요。유쾌한 장면을 볼 수 있을 것 같아요。
+								ELSE
+									BTL_KOJO_RESULTS:0 = 『마비』된 것 같습니다。전력에 악영향을 준다는 것을 잊지 마십시오……。
+								ENDIF
+							CASE "CURSE"
+								IF RAND:3 == 0
+									BTL_KOJO_RESULTS:0 = 이건 훌륭한 저주네요。
+									BTL_KOJO_RESULTS:1 = 혹시、무슨 인연이라도 있었던 걸까요？
+								ELSEIF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 홀린 분이 있네요。
+									BTL_KOJO_RESULTS:1 = 저 어깨가 무겁고 답답한 모습은、보던 것과 흡사합니다。
+								ELSE
+									BTL_KOJO_RESULTS:0 = 저주받고 있는 분이 있네요。해주시켜 주세요。
+								ENDIF
+							CASE "BRAND"
+								IF RAND:3 == 0
+									BTL_KOJO_RESULTS:0 = 저쪽의 제멋대로인 법에 의한 낙인이라니、정말 억지스럽네요。
+									BTL_KOJO_RESULTS:1 = 그런거 무시할 수 없나요？　안될까요。실제 피해가 있으니까……。
+								ELSEIF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 낙인은、그곳이 영혼이 빠져나가는 통로처럼 되어 있군요。
+									BTL_KOJO_RESULTS:1 = 즉사를 초래하는 기술이나 물건이 위험하니、사용하지 않는 편이 좋습니다。
+								ELSE
+									BTL_KOJO_RESULTS:0 = 낙인이 찍혀있는 분이 있습니다。이대로라면 치유할 수 없으니、대처를。
+								ENDIF
+							CASE "FLAME"
+								IF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 불이 옮겨졌네요。밝고、눈에 띄어요。
+									BTL_KOJO_RESULTS:1 = ……흐음、불타오르면서 싸우는 모습은、빛나는 것이 멋있네요。
+								ELSE
+									BTL_KOJO_RESULTS:0 = 불타고 있어요。소화해 주세요。
+								ENDIF
+							CASE "SLIP"
+								IF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 헉…………실례헙나다、아뇨、멋지게 넘어질 줄 알아서。
+									BTL_KOJO_RESULTS:1 = 괜찮아요、이번 전투의 기회를 놓쳐도、다음 번이 있어요。
+								ELSE
+									BTL_KOJO_RESULTS:0 = 넘어지셨나요。누군가 서포트 해주세요。
+								ENDIF
+							CASE "FLY"
+								IF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = 파리화……파리화？
+									BTL_KOJO_RESULTS:1 = 그런 소설이 있었죠。좀 찾아보고 올게요。
+								ELSE
+									BTL_KOJO_RESULTS:0 = 『파리화』하고 있는 것 같네요。희귀한 상태이상을 볼 수 있어서、조금 기쁩니다。
+								ENDIF
+							CASEELSE
+								BTL_KOJO_RESULTS:0 = 건강하지 못한 상태의 사람이 있는 것 같네요。대처는 가능한가요？
+						ENDSELECT
+					CASE "異常者複数"
+						IF RAND:3 == 0
+							BTL_KOJO_RESULTS:0 = 심신에 좋지 않은 것이 다수。조치가 필요합니다。
+						ELSEIF RAND:2 == 0
+							BTL_KOJO_RESULTS:0 = ……좋지 않네요。움직일 수 있는 사람부터 조치를 취하죠。
+						ELSE
+							BTL_KOJO_RESULTS:0 = 상태 이상 다수입니다。약해지면、딱 맞는 먹이가 될걸요？
+						ENDIF
+					CASE "그외"
+						IF RAND:2 == 0
+							BTL_KOJO_RESULTS:0 = それなりにケアが必要な状況になっています。
+							BTL_KOJO_RESULTS:1 = 敵を倒してしまえば関係ない？　などと考えては居ませんよね？
+						ELSE
+							BTL_KOJO_RESULTS:0 = 致命的というはことはないですが問題がある感じですね
+							BTL_KOJO_RESULTS:1 = この程度ならと油断して負けたりしたら笑いますよ？
+						ENDIF
+				ENDSELECT
+			CASE "平常"
+				;戦闘中・危険な状態の味方はいない・戦闘開始時よりも敵の数が少ない
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "一部撃破済み"
+						IF RAND:3 == 0
+							BTL_KOJO_RESULTS:0 = 위험한 상태의 동료마가 생기면、알려드릴께요。
+						ELSEIF RAND:2 == 0
+							BTL_KOJO_RESULTS:0 = 상대방이 줄어들고 있습니다。이대로 밀고나가죠。
+						ELSE
+							BTL_KOJO_RESULTS:0 = 순조롭、습니다。이대로 공격을 계속해 주세요。
+						ENDIF
+					CASE "그외"
+						IF FLAG:경과턴수 > 0
+							IF RAND:4 == 0
+								BTL_KOJO_RESULTS:0 = 지금 큰 기술로 한층 더 저질러 버리는 것도、하나의 방법이에요。
+							ELSEIF RAND:3 == 0
+								BTL_KOJO_RESULTS:0 = 갑자기 큰 기술을 당해도 나쁘지 않게 수비를 굳건히 하는 것도、하나의 방법이에요。
+							ELSEIF RAND:2 == 0
+								BTL_KOJO_RESULTS:0 = 머릿수에 변화 없음、부상자 없음、입니다。
+							ELSE
+								BTL_KOJO_RESULTS:0 = {FLAG:경과턴수}턴ー경과를 알려드립니다。
+							ENDIF
+						ELSE
+							IF RAND:2 == 0
+								BTL_KOJO_RESULTS:0 = 戦闘の開始をお知らせします。
+							ELSE
+								BTL_KOJO_RESULTS:0 = さて、%CSTR:이인칭%の活躍をここから観戦させてもらいますね
+								BTL_KOJO_RESULTS:1 = 無様な姿を見せないようにしてくださいね？
+							ENDIF
+						ENDIF
+				ENDSELECT
+		ENDSELECT
+	CASE "戦闘終了"
+		SELECTCASE TSTR:네비_시추에이션_서버1
+			CASE "勝利"
+				IF ナビ_シチュエーション存在取得("格下")
+					IF RAND:3 == 0
+						BTL_KOJO_RESULTS:0 = 전투 종료 확인……부족했나요？
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = 피해가 있으면 곤란하니、확인은 게을리 하지 않도록 해주십시오。
+					ELSE
+						BTL_KOJO_RESULTS:0 = 다음에도 방심하지 말고……그럼 앞으로 나아가 주세요。
+					ENDIF
+				ELSEIF ナビ_シチュエーション存在取得("格上")
+					IF RAND:3 == 0
+						BTL_KOJO_RESULTS:0 = 전투 종료……무사한가요？　그렇군요……다행이다。
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = 강적이었군요……얻을 수 있는 성장이 기대되네요。
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:일인칭%의 추정으로는 상당히 힘들어 보였습니다만……승리했네요。
+					ENDIF
+				ELSE
+					IF RAND:3 == 0
+						BTL_KOJO_RESULTS:0 = 전투를 종료합니다。수고하셨습니다。
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = 추가 전투가 예상되는 경우、케어를 잊지 마십시오。
+					ELSE
+						BTL_KOJO_RESULTS:0 = 순조로운가요？　그렇다면 문제 없겠네요。
+					ENDIF
+				ENDIF
+			CASE "도주"
+			CASE "敗北"
+				IF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 전멸을 확인……。……。이럴 수가、
+					BTL_KOJO_RESULTS:1 = 이렇게 갑작스레 이별이 올 줄은 몰랐습니다。어떤 말을 해야할지――
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = %CSTR:이인칭%도、여기까지인가봐요。
+					BTL_KOJO_RESULTS:1 = ……마지막으로、하실 말이 있으신――
+				ELSE
+					BTL_KOJO_RESULTS:0 = 슬퍼할 필요는 없습니다。다시、내세――
+				ENDIF
+		ENDSELECT
+ENDSELECT

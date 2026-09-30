@@ -1,0 +1,2351 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SYSYTEM_STATUS_CALC.ERB
+;	Facility	:ステータス算出を行う関数群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX								新規作成
+;	002		2011/01/30		P						真・全門耐性の処理を追加
+;	003		2011/02/06		Rsp暇人					CFLAG:アイテム使用能力およびアイテム使用強化の処理を追加
+;	004		2011/03/06		Rsp暇人					CFLAG:アイテム使用能力およびアイテム使用強化の処理を修正。仲魔作成時に初期衣装を設定するように。
+;	005		2011/03/28		P						初期好感度の処理を追加。戦闘員による霊媒体質によってMAG移動が増加するように変更
+;	006		2011/08/31		P						人間がLv80を超えている場合、追加でステ補正が入るように
+;	007		2011/11/09		旅人					統合整備
+;													ファイルが肥大化している為、ダメージ処理を分離
+;	008		2011/05/20		P						半魔人がバステ耐性を装備からとっていたのを修正
+;	009		2012/10/00		(ﾟдﾟ)					プリンキピアに関する記述を追加
+;	010		2012/12/02		ネトリス				瀕死になった場合にCFLAG:ダンジョン内発情用欲情値が半分になり、発情状態が解除されるように
+;	011		2012/12/26		P						식노(데빌시프터)が主人の場合、悪魔変身時に最大MAGが減ってしまうのを修正
+;	012		2013/11/25		ひみつ					NEXT経験値の設定を@GET_NEXT_EXPで行うように(@CHECK_LEVEL_UPの動きに合わせる)
+;													現在経験値が1つ下のLVのNEXT経験値より低い場合、その値まで引き上げる(主に加入時の為)
+;	013		2013/12/11		ひみつ					NEXT経験値の設定を@GET_NEXT_EXPで行うように(@CHECK_LEVEL_UPの動きに合わせる)
+;													現在経験値が1つ下のLVのNEXT経験値より低い場合、その値まで引き上げる(主に加入時の為)
+;	014		2015/01/27		Iz						達人強化パッチとして、「무도의마음가짐」「마술의소양」に対応調整
+;	015		2015/12/11		JK好き					異能者用のスキル数を確保
+;	016		2016/12/11		Jガン					特定のバステで攻撃が必ず命中するように
+;	017		2017/09/23		名無					ガチャモード追加(ガチャ縛り時、非ガチャ産ステータス半減)
+;	018		2018/09/05		sil						相性関係の処理を相性変更複数化用に変更
+;	019		2018/10/23		しぐれみそ				装備追加スキルの処理に魔晶装備用の処理を追加
+;	020		2019/03/17		名無					エクスリンケージに伴うムフフでCOOP時 欲情増加
+;	021		2019/03/29		名無					ハーモナイザーの処理を追加
+;	022		2019/04/12		オレンジスコーン		素質ガンスリンガーがある場合の計算式を追加
+;	023		2019/04/27		名無					CSVに特殊友情を追加し、特殊友情があるとアライメント関係なくCOOP最大になるように
+;	024		2019/08/27		空気					装備知識Lv5の補正が重複していた部分を削除、装備知識持ち悪魔の魔法効果・魔法威力が装備で上がらないように変更
+;	025		2019/08/28		空気					デビルチェンバー使用時の挙動を修正。また、DDMがONなら容量いっぱいでも仲魔になって自動的にストレージに送られるように
+;	026		2019/08/30		空気					悪魔合体時に容量を超えていないのにストレージに送られてしまう問題を修正
+;	027		2019/11/27		Jガン					熱り弱点処理を追加
+;	028		2019/12/20		Jガン					FLYのステータス変更追加
+;	029		2020/01/31		131						世代数をステータスにボーナス
+;	030		2020/02/11		名無し					ペルソナ使いの戦闘ステータスにペルソナの戦闘ステータスに応じた加算
+;	031		2020/03/XX		Jガン					武器素質仕様の変更、追加
+;	032		2020/04/XX		Jガン					盟友取得時能力値が上がるように
+;	033		2020/05/19		がめら					NTR好感度処理をCDFLAGに変更。キャラ上限増加に対応
+;	034		2020/06/24		名無し					半魔の追加相性変更が機能するように
+;	035		2020/07/06		Jガン					COOP被ダメージ制限追加
+;	036		2020/07/18		木綿豆腐				ADD_NEW_COMPANIONにARG:4追加。悪魔を人間にして加入させたい際に使用する。
+;	037		2020/08/02		Jガン					1モアを減らす関数削除(その代わり他に1モア増減する処理追加)、JUDG_HITの処理の変更、修正
+;	038		2020/08/13		春眠					バッドステータス命中判定時にガードブレイクが機能するように修正、能力差・カジャンダ・スキル素質による補正後の値に成功率上限値が適用されるように
+;	039		2020/08/12		kamedakeisuke(ﾟдﾟ)		片キンフラグ増設
+;	040		2020/08/19		Jガン					バステ耐性のブロック判定を移動、他変なところ修正、壁系を消費しやすいように処理を下の方に
+;													FLY状態のパラメータ調整の修正
+;	041		2020/08/27		Jガン					装備スキル変更時のスキルゲージ処理を追加
+;	042		2020/08/26		MkjX					陥落履歴により耐性強化を更に追加で可能に
+;	043		2020/08/28		Jガン					VAR_HPに食いしばりのフラグを自動選出できるように、ネバーギブアップでデビルトリガーできるように、潜在能力発動回数修正
+;	044		2020/09/02		Jガン					エアトリックの処理追加
+;	045		2020/09/05		Jガン					特殊友情の仕様変更、仲間になるとき素のバステ耐性が全て通常になるように
+;	046		2020/09/17		SUIHOU					エアハイクの処理追加
+;	047		2020/09/25		kamedakeisuke(ﾟдﾟ)		ハーモナイザーの仕様をパーティのサマナーレベル合計から出力を算出する形に変更
+;	048		2020/09/17		マリーちゃんの中の人	ADD_NEW_COMPANIONの処理の際にARG:5にLVを指定するだけでLVUPする様に改良
+;	049		2020/09/18		JK好き					@ADD_NEW_COMPANIONを増加したランダムキャラ枠に対応
+;	050		2020/09/18		Jガン					ATTACK_BADSTATEを改行しないように(SKILL TEMPの方で改行するように)
+;	051		2020/12/16		Jガン					ATTACK_BADSTATEにRECEIVE_BADSTATEを追加、バステ無効フラグが機能するように
+;	052		2021/01/05		Jガン					VAR_HPに食いしばり時に口上を出せるように、ATTACK_BADSTATEにバステ付与時に口上が出てくるように
+;													バステの優先度の関数を作ってATTACK_BADSTATEに組み込み、COOP強化Cが正しく行われなかったので新しい関数を入れて正しくなるように
+;													GET_SUMMONER_LV2→GET_SUMMONER_MLV　に名前を変更、ハーモナイザーをサマナーレベル3以上の味方がいないと発動しないように
+;	053		2021/01/07		JK好き					@ATTACK_BADSTATEで３回もバステ付与確率上限計算していたのをBS付与率計算後に１回だけ行うように変更
+;	054		2021/01/29		Rsp暇人					アイテム習熟の効果量をTALENT:+40% SKILL:+20%(最大3枠まで累積)に変更。オプションで切り替えられる道具命中/道具威力を新設
+;	055		2021/02/22		亜人いいよね			@SYNC_STATUSに悪魔強化スキル（陥落の悪魔, ナチュラルボーン, オートファジー）の適用
+;	056		2021/03/02		亜人いいよね			強化オプションのフィルタ適用
+;	057		2021/03/05		JK好き					@SYNC_STATUSでMASTERのステータス計算に今周回信頼人数を加算するように変更
+;	058		2021/03/21		木綿豆腐				SONG OF DIVAに関する処理を追加
+;	059		2021/04/07		Jガン					4行、仲間に入るときに特殊なスキルにロックがかかるように(「スキルロック」で検索すると変更場所がわかります)
+;	060		2021/04/13		NEO						ふたごちゃんパッチで多胎妊娠している場合、妊娠のステータス上昇を補正無しにしたりステが下がるようにしたり
+;	061		2021/04/24		JK好き					@ADD_NEW_COMPANIONにCFLAG子宮最大容量を設定する処理を追加
+;	062		2021/04/25		SUIHOU					Fate専用技実装に伴い、効果を追記(回避、クリティカル、ダメージ補正、食いしばり処理)
+;	063		2021/04/30		しゃけ					ラグナロク（ＡＮ）、劫火の余燼の処理を追加
+;	064		2021/04/13		Jガン					HP処理を簡略化、食いしばり処理忘れ修正
+;	065		2021/06/24		しゃけ					謎のヒロインX'sの処理を追加
+;	066		2021/08/19		SUIHOU					ゲッシュとサーヴァント各クラススキルの効果を追加
+;	067		2021/09/27		軽木					ハーモナイザーの銃性能補正部分の計算式も変更
+;	068		2021/10/23		Collared				ダッジの処理を追加。銃関連の能力をガンスリンガーと非ガンスリンガーで統一
+;	069		2021/11/28		JK好き					喰奴の変身中ステータス分配結果で基本ステータスが0以下になってしまう場合があるのを応急処置的修正
+;													本当はそもそも0以下にならないようにすべき
+;	070		2021/12/19		SUIHOU					ダークネストリガー、ゲッシュ、矢避けの加護の対象が逆転していたのを修正
+;	071		2022/01/03		しゃけ					潜在特殊の処理を変更、ついでに劫火の余燼の処理改修
+;	072		2022/01/04		kamedakeisuke(ﾟдﾟ)		ハーモナイザーの効果が人間による何らかの変身体（シフターなど）にも乗るように修正
+;													倍率は人間体時の半分。やりこみ期において変身体の性能が変身前より見劣りする問題の応急処置（もっと良いやり方があればそっちに変更）
+;													および、ハーモナイザーの発動可能サマナーLvを仕様に合わせLv1に修正（ハーモナイザーに関わる2か所の GET_SUMMONER_MLV > 2 を GET_SUMMONER_MLV > 0 に置き換え）
+;	073		2022/01/27		しゃけ					バイ・バイ・ライジングの回避率上昇の効果を追記
+;	074		2022/04/14		takaya					魔人学園キャラの固有スキルの処理を追記
+;	075		2022/01/27		しゃけ					@SYNC_STATUSにて、使用者の射程と攻撃範囲が0の時は1に設定しなおすように変更
+;	076		2022/06/10		Collared				UI整理プロジェクトにより参照番号をショップ番号に変更
+;	077		2021/08/25		しゃけ					戦術詠唱γ、キメラの効果を追加、劫火の余燼所持分岐が同じ個所に二つもあったのを修正、「아버지의이름에맹세코」が通常の治癒・魔脈より優先されるように修正、ラグナロク（ＡＮ）の処理一部改修
+;	078		2022/09/17		kamedakeisuke(ﾟдﾟ)		Aion式召喚術まわりの仕様を追加
+;	079		2022/10/13		P						ダメージ計算関連の処理をBATTLE_SYSTEM_DAMAGE.ERBに移動、バステ計算関連の関数をBATTLE_SYSTEM_BAD_STATE.ERBに移動。
+;													デバッグ用にTFLAG:HP固定を追加。このフラグが立っている間はVAR_HPの処理がスキップされる形でダメージによる死亡がなくなる。(ダメージ表記や受けフラグの蓄積は通常通り実行される)
+;	080		2022/10/29		P(bazzile)				行動毎・ターン毎に初期化するフラグを追加。及び行動毎の初期化を関数化し追加行動にも適用されるように変更
+;													戦闘時のメッセージ出力に関連して一部メッセージをTSTRに格納してまとめて出力する形に
+;													行動履歴(KILL)の記録処理を追加
+;													キリングリアクトの処理を削除
+;													@MAKE_BCHARA_LIST(戦闘参加キャラリスト作成関数)を追加
+;													@IS_EXIST_ターゲット(ターゲットの存在確認関数)を追加
+;	081		2022/10/31		P(bazzile)				PRINT_SKILL_MESSAGEの内容追加にあわせて引数を仕様を変更。
+;	082		2022/11/25		P(bazzile)				SYSTEM_BATTLE.ERBから独立させる。更新履歴は過去ファイルから引き継ぎ
+;													@SYNC_STATUSの記述を整理。
+;													スキル・キャラ独自処理から基本ステータス・HP・MP・相性・ステート耐性に干渉するための処理を追加
+;													菩薩眼の魔法威力1.1倍、魔法効果1.1倍、宿星：悌星の銃命中1.1倍が全ての人間に無条件で適用されていたのを修正
+;													宿星：情星の速さ補正が戦闘ステータスの算出後に追加されてる関係で、見た目上の数値と行動順にしか影響していなかったのを修正
+;													ガチャモードのHP/MP以外のステータス半減が適用されいてなかったのを修正。また道具命中・道具威力にも適用されるように変更
+;													旧式シフターの基本ステータス計算式で端数処理で消えていたステータスを補填する措置を追加
+;	083		2022/12/05		P(bazzile)				死亡したキャラクターのHPが1になってしまっていたのを修正
+;	084		2022/12/10		P(bazzile)				MPを使用できるかどうか = SKILLを使用できるかどうかを取得する関数を追加
+;	085		2022/12/19		P(bazzile)				SYNC_STATUSにHP/MP割合の保持がうまくいっていなかったのを修正し、オプション化
+;	086		2022/12/24		P(bazzile)				SYNC_STATUSにロールの設定関数を追加
+;													スキルの武道の心得と魔術の素養の名前を大活泉と大魔脈に変更
+;													素質の武術の心得の処理を追加
+;													デビルアームズによるスキル取得処理を追加
+;													@HAVE_MAXMPと@CAN_USE_MPを廃止
+;													ステータスブースタ系の処理を追加
+;													継承素質の所持数を獲得するように変更
+;	087		2023/03/01		P(bazzile)				ペルソナ使いの相性が正しく取得されていなかったのを修正
+;													抗体ポイントの取得をロール属性から決定するように変更し、取得しない場合はBASEも0にするように
+;	088		2023/03/05		P(bazzile)				HPの固定化にミスがあったのを修正。また、現HP/MPの同期をデフォルト化
+;	089		2023/03/18		P(bazzile)				スキルエミュレータから装備スキルを追加する処理を追加
+;													コマンダースキルとアシストスキルを配列に取るように
+;	090		2023/04/13		P(bazzile)				装備知識がオプションで改変版になっている場合の措置を修正
+;													悪魔変身時に体制強化が機能していなかったのを修正
+;	091		2023/04/16		P(bazzile)				道具命中と道具威力の算出が常に０になっていた不具合を修正
+;													最大HPとHPがともに10万を超えるとオーバーフローしてしまっていたので処理を変更
+;	092		2023/04/19		P(bazzile)				HP\MPの同期ミスで端数で増減シてしまっていた不具合を修正
+;	093		2023/04/23		P(bazzile)				武器の射程が反映されない不具合を修正
+;													生得武器等の武器種がその他になっている武器によりデビルアームズで取得されるスキルが異常になる不具合を修正
+;													魔晶武器で属性エンハンスが取得する際にエラーが出るのを修正
+;	093		2023/05/05		P(bazzile)				コマンダースキルとアシストスキルのチャージタイムを個別に持つように変更
+;	094		2023/05/22		P(bazzile)				相性と異常耐性のスキルからの処理部分を軽量化
+;	095		2023/05/28		P(bazzile)				エレウシスの祈り/ドーピングの処理を変更
+;	095		2023/05/28		P(bazzile)				BATTLESTATUS関連の関数に銃・道具関連を追加
+;	096		2023/07/06		P(bazzile)				94の処理のミスで正しく機能していなかった不具合を修正
+;	097		2023/07/15		P(bazzile)				TEMP_HAVE_SKILLの配列数に問題があったので修正
+;													MAGの所持量が不正な値の場合に修正する処理を追加
+;	098		2023/08/13		P(bazzile)				装備のステート耐性変動が0の場合、影響しないように変更
+;	099		2023/08/20		P(bazzile)				デビルアームズスキルがひとつしか記録されていなかった不具合を修正
+;													悪魔変身で装備の基本ステータスの補正を受けられなかった不具合を修正
+;													ステート変動の無視範囲にアクセサリをいれそこねていた不具合を修正
+;	100		2023/08/23		P(bazzile)				プラグインソフトの基本ステータスの変動が反映されない不具合を修正
+;	101		2023/08/23		P(bazzile)				スキルによる防御相性とバステ耐性の処理を装備と一元化
+;	102		2023/09/22		P(bazzile)				通常攻撃と所持スキルによって利用可能な攻撃相性をキャラデータとして保存するように変更
+;													戦闘画面トップで特殊な表示内容があるスキルをリスト化して保持する処理を追加
+;	103		2023/10/15		P(bazzile)				変身状態での射程と範囲の変更が正しく機能していなかった不具合を修正
+;													特例としてMAGを消費しないキャラクターを指定するための仕様を追加
+;	104		2024/03/31		P(bazzile)				スキルエミュレータの追加スキルが重複判定を実行していなかった不具合を修正
+;	105		2024/03/15		P(bazzile)				最大HP/MPの補正処理をスキルから呼び出す形に完全に移行
+;	106		2024/04/05		P(bazzile)				スキルエミュレータの複数スキルセット処理をつぶしてしまっていた不具合を修正
+;	107		2024/05/16		P(bazzile)				低レベル時の所持MAG上限に下駄をはかせる処理を作成
+;	108		2024/05/22		ささ狂					リンク悪魔不在時の変身状態の通常攻撃に関するパラメータ設定部分の判定式を修正
+;=================================================================
+;	ShinEraTenseiP
+;	001		2024/05/23		P(bazzile)				合一神の継承素質と防御相性の処理を追加
+;	002		2024/07/26		P(bazzile)				戦闘難易度による敵ボスのHP追加をチュートリアル進行中に発生しないように変更
+;	003		2024/07/23		P(bazzile)				ハーモナイザーの処理を変更
+;													即戦力プラグインの処理を追加
+;													ハーモナイザーの代替処理としてメシアプロジェクトの処理を作成
+;													調教能力による強化オプションを廃止してデフォルト状態に
+;													子孫の強化を削除
+;	004		2024/09/07		P(bazzile)				即戦力プラグインでCSV上のステータス定義がないキャラを参照する際に落ちる不具合を修正
+;=================================================================
+
+;===============================
+;＊重要＊
+;能力・相性などの数を指定する
+;===============================
+@CONFIG_ELEMENT_NUM
+;相性の数を指定します
+FLAG:상성수 = TYPENUM
+;基本能力値の数を指定します
+FLAG:기본능력수 = BASESTATUSNUM
+;戦闘能力値の数を指定します
+FLAG:전투능력수 = EQUIP_BATTLESTATUSNUM
+;習得できるスキルの数を指定します
+FLAG:스킬수 = 8
+;習得できるスキルの数を指定します(異能者達人用)
+FLAG:이능자스킬수 = 12
+;装備から取得できる追加スキルの数を指定します
+FLAG:추가스킬수 = HAVEABLE_EQ_SKILLNUM
+;バッドステータスの数を指定します
+FLAG:상태이상수 = BADSTATENUM
+
+@SYNC_STATUS,ARG,ARGS
+;todo:どう考えてもLCOUNTでやる仕事じゃないのが混じってる　後できちんと変数を変更できたらいいなぁ・・・
+#DIM LCOUNT,2
+#DIM TEMP
+#DIM LSKILL_COUNT
+#DIMS L_OPT
+;fixme:したの4つの変数、より説明的な変数名にしようとしたが処理が理解できていないため雑な名づけになっている　いっそTEMP,3とかにしてよかったかもしれないしあるいは処理の内容を再考するべき
+#DIM LEQUIP_FIXED_VALUE
+#DIM LSKILL_FIXED_VALUE
+#DIM LFIXED_VALUE
+#DIM LSUM_OF_BASE, 2;ステータス合計値:0=基礎ステータスのみ 1=0+MAG強化
+#DIM LMANTRA_FIXED_STATUS, 7;マントラ補正込みの変身悪魔ステータス(喰奴のステータス振り分けの基準値)
+#DIM L_BASE_STATUS, BASESTATUSNUM;悪魔変身後の基本ステータス(BASEとずれるので参照用に保持)
+#DIM LFIXED_SUM_OF_BASE;ベースステータスの合計値、振り分け処理に使う
+#DIM TEMP_STATUS, BASESTATUSNUM;一時的にステータスの数値を保存
+#DIM STOCK_COMMANDER_SKILL, COMMANDER_SKILL_HAVEABLE_NUM
+#DIM STOCK_ASSIST_SKILL, ASSIST_SKILL_HAVEABLE_NUM
+#DIM TEMP_SKILL, 3
+#DIM TEMP_SKILL_LV
+#DIMS TEMP_SKILLS
+#DIM TEMP_HAVE_SKILL, 80;EDIT 097 MOD
+#DIM CHANGE_STATE_SKILL_VALUE;スキルによる相性変化における相性値
+#DIMS CHANGE_STATE_SKILL_ABLE;スキルによる相性変化における上書き許可リスト(文字列指定)
+#DIM CHANGE_STATE_SKILL_RANK;スキルによる相性変化における優先度ランク
+#DIM CAN_USE_MAGIC
+#DIM L_MP補正_乗算
+#DIM L_MP補正_加算
+#DIM L_MP補正_固定
+#DIM LINK_CHARA;リンクしている悪魔などのキャラ登録番号
+#DIM STOCK_MMP
+
+;戦闘ステータス算出用
+#DIM L_LV
+#DIM L_力
+#DIM L_知
+#DIM L_魔
+#DIM L_耐
+#DIM L_速
+#DIM L_運
+#DIM HARMO_POWER
+;---- EDIT 041 MOD START -------------------------
+#DIM 前装備スキル , HAVEABLE_EQ_SKILLNUM
+;引数の番号のキャラクターの戦闘能力等を現在の能力値と同期化
+;作業しながら考えてたけど戦闘能力値弄る人はここも弄るからここ修正する意味薄かった気がする。
+;LOCAL:6まで使われていたので、7と8を最大HP・MP記録用として利用
+
+;BASEからMAXBASEを計算しなおす
+;調教結果をどう絡めるか思案中
+L_OPT '= ARGS
+;IF STRCOUNT(L_OPT, "HPMP割合保持") || STRCOUNT(L_OPT, "ＨＰＭＰ割合保持")
+;---- EDIT 088 MOD START -------------------------
+;非同期でも取っておく
+STOCK_MMP = MAXBASE:ARG:ＭＰ
+;ENDIF
+;---- EDIT 088 MOD END ---------------------------
+
+;---- EDIT 086 ADD START -------------------------
+;=======================================================
+;ロールのセット
+;=======================================================
+CALL SET_ROLE, ARG
+CALL SET_ROLE_CP, ARG
+
+;所持スキル枠数のセット(速度的な問題で変数に取る必要がある)
+CALL SET_CHARA_SKILLCOUNT, ARG
+;---- EDIT 086 ADD END ---------------------------
+
+;=======================================================
+;装備スキルの取得 及び マガタマによる習得スキルの設定
+;=======================================================
+;-------------------------------------------------------
+;装備追加スキルの登録　各装備に3つまでスキルを設定可能
+;ABL:装備スキルXに取得したスキルを登録していく
+;対応部位は剣/총/머리/몸통/손/발/アクセサリで7部位
+;-------------------------------------------------------
+;一旦装備スキルをクリアー & ゲージの初期化処理のために装備スキル情報を残しておく
+FOR LCOUNT, 1, HAVEABLE_EQ_SKILLNUM + 1
+	LOCALS = 장비스킬{LCOUNT}
+	;---- EDIT 041 MOD -------------------------
+	前装備スキル:(LCOUNT - 1) = ABL:ARG:LOCALS
+	ABL:ARG:LOCALS = 0
+NEXT
+
+VARSET C_DEVIL_ARMS_SKILL:ARG:0
+
+;重複処理の高速化のために所持スキルを配列にまとめる
+VARSET TEMP_HAVE_SKILL
+;重複判定用に所持スキルを習得する
+FOR LCOUNT, 1, CHARA_SKILLCOUNT(ARG) + 1
+	TEMP_HAVE_SKILL:FINDELEMENT(TEMP_HAVE_SKILL, 0) = ABL:ARG:@"스킬{LCOUNT}"
+NEXT
+
+LSKILL_COUNT = 0;取得された装備スキルの数
+
+;デビルアームズからのスキル習得
+IF GET_BTL_TALENT_LV("데빌암즈", ARG) && EQUIP:ARG:검 > 0
+	;武器種からの攻撃スキルの取得
+	CALL GET_DEVIL_ARMS_SKILL, EQUIP:ARG:검
+	TEMP_SKILL = RESULT, RESULT:1, RESULT:2
+	FOR LCOUNT, 0, 3
+		IF TEMP_SKILL:LCOUNT
+			;---- EDIT 099 ADD START -------------------------
+			;デビルアームズ由来のスキルであることを記録する
+			C_DEVIL_ARMS_SKILL:ARG:LCOUNT = TEMP_SKILL:LCOUNT
+			;C_DEVIL_ARMS_SKILL:ARG:0 = TEMP_SKILL:LCOUNT
+			;---- EDIT 099 ADD END ---------------------------
+			SIF MATCH(TEMP_HAVE_SKILL, TEMP_SKILL:LCOUNT)
+				CONTINUE
+			TEMP_HAVE_SKILL:FINDELEMENT(TEMP_HAVE_SKILL, 0) = TEMP_SKILL:LCOUNT
+			ABL:ARG:@"장비스킬{LSKILL_COUNT+1}" = TEMP_SKILL:LCOUNT
+			LSKILL_COUNT++
+		ENDIF
+	NEXT
+	;---- EDIT 093 MOD START -------------------------
+	;属性武器は属性エンハンスを取得する
+	IF 魔晶装備(EQUIP:ARG:검)
+		CALLFORM 攻撃相性_魔晶装備,EQUIP:ARG:검-2450
+	ELSE
+		CALLFORM 攻撃相性_{EQUIP:ARG:검}, ARG
+	ENDIF
+	;---- EDIT 093 MOD END ---------------------------
+	IF !GROUPMATCH(GET_TYPE(RESULT), "검격", "비구", "타격","전술", "만능")
+		TEMP_SKILL = [[스킬:검격인핸스]] + RESULT
+		TEMP_HAVE_SKILL:FINDELEMENT(TEMP_HAVE_SKILL, 0) = TEMP_SKILL
+		ABL:ARG:@"장비스킬{LSKILL_COUNT+1}" = TEMP_SKILL
+		LSKILL_COUNT++
+	ENDIF
+ENDIF
+
+IF GET_ROLE_PROP("CAN_USE_EQUIPSKILL", ARG)
+	;7部位から装備スキルを取得する
+	FOR LCOUNT:1,0,7
+		SELECTCASE GET_EQUIP(LCOUNT:1)
+			CASE "총"
+				SIF !GET_ROLE_PROP("CAN_USE_GUN", ARG)
+					CONTINUE
+			CASE "악세서리"
+				;アクセサリはとりあえず無条件に(悪魔変身で使える)
+				;SIF !GET_ROLE_PROP("CAN_USE_EQUIP", ARG) && !GET_ROLE_PROP("CAN_USE_PLUGIN", ARG)
+				;	CONTINUE
+			CASEELSE
+				SIF !GET_ROLE_PROP("CAN_USE_EQUIP", ARG)
+					CONTINUE
+		ENDSELECT
+		FOR LCOUNT, 0 , 3
+			RESULT = 0
+			IF 魔晶装備(EQUIP:ARG:(GET_EQUIP(LCOUNT:1)))
+				TRYCALLFORM 装備追加スキル_魔晶装備, LCOUNT, EQUIP:ARG:(GET_EQUIP(LCOUNT:1)) - 2450 -450*LCOUNT:1
+			ELSE
+				TRYCALLFORM 装備追加スキル_{EQUIP:ARG:(GET_EQUIP(LCOUNT:1))}, LCOUNT, ARG
+			ENDIF
+			TEMP_SKILL = RESULT
+			SIF !TEMP_SKILL
+				CONTINUE
+			SIF MATCH(TEMP_HAVE_SKILL, TEMP_SKILL)
+				CONTINUE
+			TEMP_HAVE_SKILL:FINDELEMENT(TEMP_HAVE_SKILL, 0) = TEMP_SKILL
+			ABL:ARG:@"장비스킬{LSKILL_COUNT+1}" = TEMP_SKILL
+			LSKILL_COUNT++
+		NEXT
+	NEXT
+ENDIF
+;---- EDIT 089 ADD START -------------------------
+;---- EDIT 104 MOD START -------------------------
+;---- EDIT 106 MOD START -------------------------
+;スキルエミュレータから取得
+FOR LCOUNT, 0, GET_USEABLE_SKILL_EMULATOR_NUM(ARG)
+	VARSET RESULT, 0, 0, 3
+	TRYCCALLFORM SKILL_EMULATOR_EQUIP_SKILL_{EQUIP_SKILL_EMULATOR:ARG:LCOUNT}
+		TEMP_SKILL = RESULT, RESULT:1, RESULT:2
+		FOR LCOUNT:1, 0, 3
+			SIF !TEMP_SKILL:(LCOUNT:1)
+				CONTINUE
+			SIF MATCH(TEMP_HAVE_SKILL, TEMP_SKILL:(LCOUNT:1)) > 0
+				CONTINUE
+			ABL:ARG:@"장비스킬{LSKILL_COUNT+1}" = TEMP_SKILL:(LCOUNT:1)
+			TEMP_HAVE_SKILL:FINDELEMENT(TEMP_HAVE_SKILL, 0) = TEMP_SKILL:(LCOUNT:1)
+			LSKILL_COUNT++
+		NEXT
+	CATCH
+	ENDCATCH
+NEXT
+IF SOFT_ON("Ｈｉ－ＤＡＳ") && GET_BTL_TALENT_LV("서머너", ARG)
+	ABL:ARG:@"장비스킬{LSKILL_COUNT+1}" = [[스킬:Hi-Das]] 
+	LSKILL_COUNT++
+ENDIF
+IF GET_BTL_TALENT_LV("건슬링거", ARG) >= 5
+	ABL:ARG:@"장비스킬{LSKILL_COUNT+1}" = [[스킬:더블탭]] 
+	LSKILL_COUNT++
+ENDIF
+
+;ロールからの追加
+VARSET RESULT
+TRYCALLFORM ADD_SKILL_ROLE_%CSTR:ARG:롤%, ARG, LSKILL_COUNT, TEMP_HAVE_SKILL
+
+;キャラからの追加
+VARSET RESULT
+TRYCALLFORM ADD_SKILL_CHARA_{NO:ARG}, ARG
+FOR LCOUNT, 0, FINDELEMENT(RESULT, 0)
+	ABL:ARG:@"장비스킬{LSKILL_COUNT}" = RESULT:LCOUNT
+	TEMP_HAVE_SKILL:FINDELEMENT(TEMP_HAVE_SKILL, 0) = RESULT:LCOUNT
+	LSKILL_COUNT++
+NEXT
+;---- EDIT 104 MOD END ---------------------------
+;---- EDIT 106 MOD END ---------------------------
+;---- EDIT 102 ADD START -------------------------
+;-------------------------------------------------------
+;所持攻撃・状態変化スキル相性の登録
+;-------------------------------------------------------
+VARSET C_HAVE_SKILL_ATK_TYPE:ARG:0
+VARSET C_HAVE_BOOSTER_STRENGTH:ARG:0
+
+FOR LCOUNT, 0, FINDELEMENT(TEMP_HAVE_SKILL, 0)
+	CALL GET_SKILL_PROP, "SKILL_EFECT", TEMP_HAVE_SKILL:LCOUNT, ARG
+	SELECTCASE GET_SKILL_EFFECT(RESULT)
+		CASE "공격"
+			CALL GET_SKILL_PROP, "SKILL_TYPE", TEMP_HAVE_SKILL:LCOUNT, ARG
+			FOR LCOUNT:1, 0, TYPENUM
+				SIF RESULT:(LCOUNT:1) < 0
+					BREAK
+				C_HAVE_SKILL_ATK_TYPE:ARG:(RESULT:(LCOUNT:1)) = 1
+			NEXT
+		CASE "상태변화"
+			VARSET RESULT, -1, 0, TYPENUM
+			CALL GET_SKILL_PROP, "SKILL_ADDTIONAL_TYPE", TEMP_HAVE_SKILL:LCOUNT, ARG
+			FOR LCOUNT:1, 0, TYPENUM
+				SIF RESULT:(LCOUNT:1) < 0
+					BREAK
+				C_HAVE_SKILL_ATK_TYPE:ARG:(RESULT:(LCOUNT:1)) = 1
+			NEXT
+		CASEELSE
+	ENDSELECT
+	RESULTS '= ""
+	;属性ブースタ 25%
+	TRYCCALLFORM SKILL_ADD_STATUS_%CONVERT_SKILLNUM_TO_STR(ARG, TEMP_HAVE_SKILL:LCOUNT)%, "属性ブースタ", , ARG, , , TRYSKILL_VAR
+		SIF RESULTS != ""
+			C_HAVE_BOOSTER_STRENGTH:ARG:GET_TYPE_NUM(RESULTS) = 25
+	CATCH
+	ENDCATCH
+NEXT
+;---- EDIT 102 ADD END ---------------------------
+
+;---- EDIT 096 MOD START -------------------------
+;-------------------------------------------------------
+;コマンダースキルとアシストスキルの登録
+;-------------------------------------------------------
+FOR LCOUNT, 0, COMMANDER_SKILL_HAVEABLE_NUM
+	STOCK_COMMANDER_SKILL:LCOUNT = C_COMMANDER_SKILL:ARG:LCOUNT
+NEXT
+FOR LCOUNT, 0, ASSIST_SKILL_HAVEABLE_NUM
+	STOCK_ASSIST_SKILL:LCOUNT = C_ASSIST_SKILL:ARG:LCOUNT
+NEXT
+
+VARSET C_COMMANDER_SKILL:ARG:0
+VARSET C_ASSIST_SKILL:ARG:0
+
+FOR LCOUNT, 0, FINDELEMENT(TEMP_HAVE_SKILL, 0)
+	CALL GET_SKILL_PROP, "SKILL_DECIDE_TYPE", TEMP_HAVE_SKILL:LCOUNT, ARG
+	SELECTCASE GET_SKILL_DECIDE_TYPE(RESULT)
+		CASE "CS"
+			;C_COMMANDER_SKILL:ARG:FINDELEMENT(C_COMMANDER_SKILL:ARG:0, 0) = TEMP_HAVE_SKILL:LCOUNT
+			TEMP = FINDELEMENT(C_COMMANDER_SKILL:ARG:0, 0)
+			C_COMMANDER_SKILL:ARG:TEMP = TEMP_HAVE_SKILL:LCOUNT
+			SIF C_COMMANDER_SKILL:ARG:TEMP != STOCK_COMMANDER_SKILL:TEMP
+				C_COMMANDER_SKILL_CT:ARG:TEMP = 0
+		CASE "AS"
+			;C_ASSIST_SKILL:ARG:FINDELEMENT(C_ASSIST_SKILL:ARG:0, 0) = TEMP_HAVE_SKILL:LCOUNT
+			TEMP = FINDELEMENT(C_ASSIST_SKILL:ARG:0, 0)
+			C_ASSIST_SKILL:ARG:TEMP = TEMP_HAVE_SKILL:LCOUNT
+			SIF C_ASSIST_SKILL:ARG:TEMP != STOCK_ASSIST_SKILL:TEMP
+				C_ASSIST_SKILL_CT:ARG:TEMP = 0
+	ENDSELECT
+NEXT
+
+;---- EDIT 102 ADD START -------------------------
+;-------------------------------------------------------
+;戦闘中の画面トップでのスキルゲージ表示スキルの登録
+;-------------------------------------------------------
+VARSET C_SKILL_EX_DISPLAY_LIST:ARG:0
+FOR LCOUNT, 0, TRYSKILLNUM(ARG)
+	RESULT = 0
+	TEMP_SKILLS = %GET_TRYSKILL(ARG, LCOUNT)%
+	TEMP_SKILL = TOINT(TEMP_SKILLS)
+	SIF TEMP_SKILLS == "0"
+		CONTINUE
+	RESULT = 0
+	TRYCALLFORM SKILL_EX_DISPLAY_%TEMP_SKILLS%, ARG
+	SIF RESULT
+		C_SKILL_EX_DISPLAY_LIST:ARG:FINDELEMENT(C_SKILL_EX_DISPLAY_LIST:ARG:0, "", , , 1) = %TEMP_SKILLS%
+NEXT
+
+;選択状態のセット
+IF C_SKILL_EX_DISPLAY_LIST:ARG:0 == ""
+	C_SKILL_EX_DISPLAY:ARG:0 = 
+ELSE
+	IF C_SKILL_EX_DISPLAY:ARG:(CFLAG:ARG:악마변신) != @"CHARA_{NO:ARG}"
+		;未設定or指定スキルがなくなっていた場合は0をセット
+		SIF C_SKILL_EX_DISPLAY:ARG:(CFLAG:ARG:악마변신) == "" || FINDELEMENT(C_SKILL_EX_DISPLAY_LIST:ARG:0, C_SKILL_EX_DISPLAY:ARG:(CFLAG:ARG:악마변신), , , 1) < 0
+			C_SKILL_EX_DISPLAY:ARG:0 = %C_SKILL_EX_DISPLAY_LIST:ARG:0%
+	ENDIF
+ENDIF
+;---- EDIT 102 ADD END ---------------------------
+;---- EDIT 096 MOD END ---------------------------
+;---- EDIT 089 ADD END ---------------------------
+
+;---- EDIT 041 ADD START -------------------------
+;-------------------------------------------------
+;スキルが変わっていたらゲージを初期化する。
+;-------------------------------------------------
+FOR LCOUNT , 0 , HAVEABLE_EQ_SKILLNUM
+	LOCALS = 장비스킬{LCOUNT+1}
+	SIF 前装備スキル:LCOUNT != ABL:ARG:LOCALS
+		CALL SKILLGAGE_DIRECT_CLEAR,ARG,LCOUNT + 30
+NEXT
+;---- EDIT 041 ADD END   -------------------------
+;人修羅のみ、マガタマに応じて習得スキル追加
+;-------------------------------------------------
+IF TALENT:ARG:인수라
+	LSKILL_COUNT = 0
+	FOR LCOUNT:1,0,20
+		RESULT = 0
+		TRYCALLFORM P習得スキル_{EQUIP:ARG:(GET_EQUIP(6))},LCOUNT:1
+		TEMP_SKILL = RESULT
+		TEMP_SKILL_LV = RESULT:1
+		LOCALS = 습득스킬{LSKILL_COUNT+1}
+		LOCALS:2 = 습득LV{LSKILL_COUNT+1}
+		;装備品に習得スキル&LVが存在してて、かつ習得経験が無いことが条件
+		IF TEMP_SKILL > 0 && TEMP_SKILL_LV > 0 && !(CDFLAG:ARG:((EQUIP:ARG:(GET_EQUIP(6)))%5+1):((EQUIP:ARG:(GET_EQUIP(6))-8000)/5) & POWER(2,LCOUNT:1))
+			ABL:ARG:LOCALS = TEMP_SKILL
+			ABL:ARG:(LOCALS:2) = TEMP_SKILL_LV
+			LSKILL_COUNT += 1
+		ELSE
+			ABL:ARG:LOCALS = 0
+			ABL:ARG:(LOCALS:2) = 0
+			LSKILL_COUNT += 1
+		ENDIF
+	NEXT
+ENDIF
+
+;========================================================
+;基本ステータスの計算(LV/힘/知/魔/耐/速/운)
+;BASEはレベル上昇等で得られる基本ステータスで、それに装備・スキル・調教など諸々の補正を加えたものがMAXBASEとなる
+;実際に各種計算に使うのはMAXBASE
+;========================================================
+;------------------------------------------------------
+;即戦力プラグインによるMAG強化調整
+;一定のMAG強化がほどこされてるのとおなじになるようにステータスを割り振っていく
+;------------------------------------------------------
+VARI TEMP_強化回数, 7
+FOR LCOUNT, 1, BASESTATUSNUM
+	TEMP_強化回数:LCOUNT = CFLAG:ARG:(GET_BASESTATUS(LCOUNT) + "강화횟수")
+NEXT
+;引継ぎ制限下では基礎数値の100%までにMAG強化が制限される
+IF CFLAG:ARG:베어내기플래그
+	VARI MAX_STAT_SUM = BASE:ARG:LV * 3/ 2 + 18
+	IF SUMARRAY(TEMP_強化回数) > MAX_STAT_SUM
+		VARI TEMP_SUM
+		TEMP_SUM = SUMARRAY(TEMP_強化回数)
+		FOR LCOUNT, 1, BASESTATUSNUM
+			TEMP_強化回数:LCOUNT = TEMP_強化回数:LCOUNT * (MAX_STAT_SUM) / TEMP_SUM
+		NEXT
+		;端数調整　ふってある箇所を低い順にみて１づつ埋めていく
+		VARI TEMP_KEY, 7
+		VARI TEMP_ARRAY, 7
+		TEMP_KEY = TEMP_強化回数:1, TEMP_強化回数:2, TEMP_強化回数:3, TEMP_強化回数:4, TEMP_強化回数:5, TEMP_強化回数:6
+		TEMP_ARRAY = 1, 2, 3, 4, 5, 6
+		ARRAYMSORT TEMP_KEY, TEMP_ARRAY
+		LCOUNT = 0
+		WHILE MAX_STAT_SUM > SUMARRAY(TEMP_強化回数)
+			TEMP_強化回数:(TEMP_ARRAY:LCOUNT) += 1
+			SIF LCOUNT++ == 5
+				LCOUNT = 0
+		WEND
+	ELSE
+		SIF CFLAG:ARG:능력강화횟수 <= MAX_STAT_SUM
+			CFLAG:ARG:베어내기플래그 = 0
+	ENDIF
+ENDIF
+IF SOFT_ON("즉전력플러그인") && (GETS_ROLE_PROP("BATTLESTATUS_TYPE", ARG) == "悪魔"  || FLAG:전투스테이터스계산식통일)
+	;基本ステータスの33%が最大値
+	VARI SUM_ADD_STAT = BASE:ARG:LV / 2 + 6
+	VARI CSV_STAT, 7
+	;MAG強化が実施されている数だけひいていく。またCSV比率を取っておく
+	FOR LCOUNT, 1, BASESTATUSNUM
+		SUM_ADD_STAT -= TEMP_強化回数:LCOUNT
+		CSV_STAT:LCOUNT = CSVBASE(NO:ARG, GETNUM(BASE, GET_BASESTATUS(LCOUNT)))
+	NEXT
+	SIF SUMARRAY(CSV_STAT) == 0
+		VARSET CSV_STAT, 1, 1, BASESTATUSNUM
+	;CSVの比率にあわせて割り振っていく
+	IF SUM_ADD_STAT > 0
+		VARI ADD_STAT, 7
+		FOR LCOUNT, 1, BASESTATUSNUM
+			ADD_STAT:LCOUNT = SUM_ADD_STAT * CSV_STAT:LCOUNT / SUMARRAY(CSV_STAT)
+			ADD_STAT:LCOUNT = SUM_ADD_STAT * CSV_STAT:LCOUNT / SUMARRAY(CSV_STAT)
+		NEXT
+		;端数調整
+		WHILE SUM_ADD_STAT != SUMARRAY(ADD_STAT)
+			IF SUM_ADD_STAT > SUMARRAY(ADD_STAT)
+				ADD_STAT:FINDELEMENT(ADD_STAT, MINARRAY(ADD_STAT, 1, BASESTATUSNUM), 1, BASESTATUSNUM) += 1
+			ELSE
+				ADD_STAT:FINDELEMENT(ADD_STAT, MAXARRAY(ADD_STAT, 1, BASESTATUSNUM), 1, BASESTATUSNUM) -= 1
+			ENDIF
+		WEND
+		FOR LCOUNT, 1, BASESTATUSNUM
+			TEMP_強化回数:LCOUNT += ADD_STAT:LCOUNT
+		NEXT
+	ENDIF
+ENDIF
+;------------------------------------------------------
+;デビルシフター・喰奴のステータス再計算用の数値を設定
+;------------------------------------------------------
+VARSET LSUM_OF_BASE
+VARSET LMANTRA_FIXED_STATUS
+FOR LCOUNT, 1, BASESTATUSNUM
+	LSUM_OF_BASE += BASE:ARG:(GET_BASESTATUS(LCOUNT))
+	LSUM_OF_BASE:1 += BASE:ARG:(GET_BASESTATUS(LCOUNT)) + TEMP_強化回数:LCOUNT
+	
+	;喰奴の振り分けの参照先はマントラによる補正の影響を受ける
+	;SIF TALENT:ARG:식노
+	SIF GETS_ROLE_PROP("BASESTATUS_TYPE", ARG) == "식노"
+		LMANTRA_FIXED_STATUS:LCOUNT = MAX(CSVBASE(CFLAG:ARG:초기링크악마 , GETNUM(BASE , GET_BASESTATUS(LCOUNT)) , 0) + CFLAG:ARG:((GET_BASESTATUS(LCOUNT)) + "만트라보정"), 0)
+NEXT
+
+;------------------------------------------------------
+;リンクキャラの指定
+;------------------------------------------------------
+LINK_CHARA = FINDCHARA_LINK(ARG)
+
+;------------------------------------------------------
+;ベースになる部分の設定
+;普通のキャラはBASE(LV上昇で獲得したステータス) + MAG強化
+;
+;悪魔変身は上記のステータスを変身先にあわせて再分配あるいは追加ボーナスを獲得する
+;------------------------------------------------------
+FOR LCOUNT,0,BASESTATUSNUM
+	;レベルは共通でそのまま引き写す
+	IF GET_BASESTATUS(LCOUNT) == "LV"
+		MAXBASE:ARG:LV = BASE:ARG:LV + CFLAG:ARG:LV강화횟수
+		L_BASE_STATUS:0 = BASE:ARG:LV
+	ELSE
+		;------------------------------------------------------------------------------------
+		;バニラ設定のデビルシフター:	変身後悪魔のステータス比率になるようにBASEステータスを振り直す
+		;------------------------------------------------------------------------------------
+		;IF CFLAG:ARG:악마변신 && TALENT:ARG:데빌시프터 && FLAG:데빌시프터스탯설정 == 0
+		IF GETS_ROLE_PROP("BASESTATUS_TYPE", ARG) == "데빌시프터"
+			IF LINK_CHARA > 0
+				MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) = LSUM_OF_BASE * BASE:(LINK_CHARA):GET_BASESTATUS(LCOUNT)
+				MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) /= 18 + BASE:(LINK_CHARA):LV * 3 / 2
+			ELSE
+				MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) = LSUM_OF_BASE * CSVBASE(CFLAG:ARG:초기링크악마 , GETNUM(BASE , GET_BASESTATUS(LCOUNT)) , 0)
+				MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) /= 18 + CSVBASE(CFLAG:ARG:초기링크악마 , GETNUM(BASE , "LV") , 0) * 3 / 2
+			ENDIF
+			;割合による変更が加わる可能性を考慮して振り分け後のステータスを残しておく
+			L_BASE_STATUS:LCOUNT = MAXBASE:ARG:(GET_BASESTATUS(LCOUNT))
+			;振り分け終了後に強化回数を加算
+			MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) += TEMP_強化回数:LCOUNT
+		;------------------------------------------------------------------------------------
+		;喰奴の悪魔変身:	変身後悪魔のステータス比率になるようにBASEステータスとMAG強化を振り直す
+		;
+		;ステータスの合計値 * 変身後の各ステータス / 変身後の合計ステータス　って感じの計算です
+		;この時点で0になるのは避けておく
+		;------------------------------------------------------------------------------------
+		;ELSEIF CFLAG:ARG:악마변신 && TALENT:ARG:식노
+		ELSEIF GETS_ROLE_PROP("BASESTATUS_TYPE", ARG) == "식노"
+			;他の強化に渡すためにMAG強化抜きの数値をとっておく
+			L_BASE_STATUS:LCOUNT = LSUM_OF_BASE * LMANTRA_FIXED_STATUS:LCOUNT
+			L_BASE_STATUS:LCOUNT = MAX(L_BASE_STATUS:LCOUNT / SUMARRAY(LMANTRA_FIXED_STATUS), 1)
+			;強化値込みの振り直し
+			MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) = LSUM_OF_BASE:1 * LMANTRA_FIXED_STATUS:LCOUNT
+			MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) = MAX(MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) / SUMARRAY(LMANTRA_FIXED_STATUS), 1)
+		;------------------------------------------------------------------------------------
+		;その他のロールはそのままMAXBASEを算出
+		;------------------------------------------------------------------------------------
+		ELSE
+			MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) = BASE:ARG:(GET_BASESTATUS(LCOUNT)) + TEMP_強化回数:LCOUNT
+			L_BASE_STATUS:LCOUNT = BASE:ARG:(GET_BASESTATUS(LCOUNT))
+			;------------------------------------------------------------------------------------
+			;新式シフターとアイオン式はリンク悪魔のステータスに応じたステータスボーナスを得る
+			;------------------------------------------------------------------------------------
+			IF STRCOUNT(GETS_ROLE_PROP("BASESTATUS_TYPE", ARG), "リンク悪魔加算") && LINK_CHARA >= 0
+				MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) += BASE:(LINK_CHARA):GET_BASESTATUS(LCOUNT) / 10
+			ELSE
+				IF STRCOUNT(GETS_ROLE_PROP("BASESTATUS_TYPE", ARG), "初期悪魔加算")
+					MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) += CSVBASE(CFLAG:ARG:초기링크악마, GETNUM(BASE , GET_BASESTATUS(LCOUNT)) , 0) / 5
+					MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) += BASE:ARG:LV / 30
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+NEXT
+
+;-------------------------------------------------------
+;シフター・喰奴の振り分けの端数処理で消失したステータスを補填
+;-------------------------------------------------------
+IF CFLAG:ARG:악마변신 && ((TALENT:ARG:데빌시프터 && FLAG:데빌시프터스탯설정 == 0) || TALENT:ARG:식노)
+	VARSET TEMP_STATUS
+	FOR LCOUNT:1, 0, 2
+		;作業用に一度TEMP変数に移す
+		FOR LCOUNT, 1, BASESTATUSNUM
+			TEMP_STATUS:LCOUNT = LCOUNT:1 ? MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) # L_BASE_STATUS:LCOUNT
+		NEXT
+		;振り分け元の合計ステータスと現在のステータスの合計が一致していない場合、もっとも低いものに加算、あるいは最も高いものに減算を繰り返して数値をあわせる
+		WHILE SUMARRAY(TEMP_STATUS) != LSUM_OF_BASE:(LCOUNT:1)
+			IF SUMARRAY(TEMP_STATUS) > LSUM_OF_BASE:(LCOUNT:1)
+				TEMP_STATUS:FINDELEMENT(TEMP_STATUS, MAXARRAY(TEMP_STATUS, 1, BASESTATUSNUM), 1, BASESTATUSNUM)--
+			ELSE
+				TEMP_STATUS:FINDELEMENT(TEMP_STATUS, MINARRAY(TEMP_STATUS, 1, BASESTATUSNUM), 1, BASESTATUSNUM)++
+			ENDIF
+		WEND
+		;調整後の数値を代入
+		FOR LCOUNT, 1, BASESTATUSNUM
+			IF LCOUNT:1
+				MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) = TEMP_STATUS:LCOUNT
+			ELSE
+				L_BASE_STATUS:LCOUNT = TEMP_STATUS:LCOUNT
+			ENDIF
+		NEXT
+	NEXT
+ENDIF
+
+;-------------------------------------------------------
+;装備・パッシブスキル・調教による基本ステータス補正
+;-------------------------------------------------------
+FOR LCOUNT, 0, BASESTATUSNUM
+	;装備による補正。なおプラグインもアクセサリーなのでここになる。
+	LEQUIP_FIXED_VALUE = 0
+	;---- EDIT 100 MOD START -------------------------
+	;---- EDIT 099 MOD START -------------------------
+	;IF CFLAG:ARG:악마변신 == 0
+	FOR LCOUNT:1,0,7
+		IF INRANGE(EQUIP:ARG:(GET_EQUIP(LCOUNT:1)), MIN_PLUGINNUM, MAX_PLUGINNUM - 1)
+			SIF !GET_ROLE_PROP("CAN_USE_PLUGIN", ARG)
+				CONTINUE
+		ELSE
+			IF !GET_ROLE_PROP("CAN_USE_EQUIP", ARG)
+				CALL EQUIP_PROPERTY, EQUIP:ARG:(GET_EQUIP(LCOUNT:1)), "装備箇所"
+				IF GET_EQUIP(RESULT) == "총"
+					SIF !GET_ROLE_PROP("CAN_EQUIP_GUN", ARG)
+						CONTINUE
+				ELSE
+					CONTINUE
+				ENDIF
+			ENDIF
+		ENDIF
+		IF 魔晶装備(EQUIP:ARG:(GET_EQUIP(LCOUNT:1)))
+			CALLFORM 基本能力修正_魔晶装備,LCOUNT,EQUIP:ARG:(GET_EQUIP(LCOUNT:1)) - 2450 -450*LCOUNT:1
+		ELSE
+			CALLFORM 基本能力修正_{EQUIP:ARG:(GET_EQUIP(LCOUNT:1))}, LCOUNT, ARG
+		ENDIF
+		LEQUIP_FIXED_VALUE += RESULT
+	NEXT
+	MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) += LEQUIP_FIXED_VALUE
+	;ENDIF
+	;---- EDIT 099 MOD END ---------------------------
+	;---- EDIT 100 MOD END ---------------------------
+	;所持スキルによる補正
+	LSKILL_FIXED_VALUE = 0
+	FOR LCOUNT:1, 0, TRYSKILLNUM(ARG)
+		RESULT = 0
+		TEMP_SKILLS = %GET_TRYSKILL(ARG, LCOUNT:1)%
+		TEMP_SKILL = TOINT(TEMP_SKILLS)
+		SIF TEMP_SKILLS == "0"
+			CONTINUE
+		;ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+		TRYCCALLFORM SKILL_ADD_STATUS_%TEMP_SKILLS%, "基本ステータス", GET_BASESTATUS(LCOUNT), ARG, L_BASE_STATUS:LCOUNT, TEMP_SKILL, TRYSKILL_VAR
+			LSKILL_FIXED_VALUE += RESULT
+		CATCH
+		ENDCATCH
+	NEXT
+	MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) += LSKILL_FIXED_VALUE
+	;---- EDIT P 003 MOD START -------------------------
+	;---- EDIT 056 MOD START -------------------------
+	IF ARG == MASTER
+		SELECTCASE LCOUNT
+			CASE 1,3
+				MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) += FLAG:이번주회음란인수 + (FLAG:이번주회신뢰인수 / 3 )
+			CASE 2,5
+				MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) += FLAG:이번주회복종인수 + (FLAG:이번주회신뢰인수 / 3 )
+			CASE 4,6
+				MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) += FLAG:이번주회연모인수 + (FLAG:이번주회신뢰인수 / 3 )
+		ENDSELECT
+	ELSE
+		IF 陥落(ARG) > 0
+			SELECTCASE LCOUNT
+				CASE 1,3
+					MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) += TALENT:ARG:음란 + TALENT:ARG:창부*2 + 陥落(ARG)/2 + TALENT:ARG:음마
+				CASE 2,5
+					MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) += TALENT:ARG:복종 + TALENT:ARG:예속*2 + 陥落(ARG)/2 + TALENT:ARG:노리개
+				CASE 4,6
+					MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) += TALENT:ARG:연모 + TALENT:ARG:친애*2 + 陥落(ARG)/2 + (TALENT:ARG:아내 || TALENT:ARG:남편)
+			ENDSELECT
+		ENDIF
+		;허니문&ディボース補正
+		IF ABL:ARG:종족 > 0 && LCOUNT > 0
+			MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) += (SOFT_ON("허니문")) * 陥落(ARG) + (SOFT_ON("디보스")) * MARK:ARG:반발각인
+		ENDIF
+	ENDIF
+	;---- EDIT P 003 MOD END ---------------------------
+	;バ・ベル修正
+	IF ARG == MASTER && SOFT_ON("바・벨")
+		IF FLAG:벨신격파 & 64
+			MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) += 5
+		ELSE
+			SIF LCOUNT && GETBIT(FLAG:벨신격파, LCOUNT-1)
+				MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) += 3
+		ENDIF
+	ENDIF
+	;---- EDIT 056 MOD END ---------------------------
+	;---- EDIT 086 ADD START -------------------------
+	;ブースタ系素質
+	IF LCOUNT > 0
+		TEMP = GET_BTL_TALENT_LV(AUTO_SPLIT("파워/인트/매직/바이탈/스피드/럭", "/", LCOUNT - 1) + "부스터", ARG)
+		MAXBASE:ARG:GET_BASESTATUS(LCOUNT) += TEMP * ((BASE:ARG:LV / 25) + (BASE:ARG:LV % 25 > 0))
+		MAXBASE:ARG:GET_BASESTATUS(LCOUNT) += GET_BTL_TALENT_LV("올부스터", ARG) * ((BASE:ARG:LV / 40) + (BASE:ARG:LV % 40 > 0))
+	ENDIF
+	;---- EDIT 086 ADD END ---------------------------
+
+	SIF TALENT:ARG:붕괴 && LCOUNT > 0
+		TIMES MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) , 0.80
+	SIF TALENT:ARG:임신
+		MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) += 1
+	;ふたごちゃんパッチオンの場合：5人以上のわりとヤバい妊娠数だとさすがにステータスが下がる
+	;2以上でプラマイゼロ、5以上でマイナス１
+	SIF FLAG:쌍둥이플래그 > 0 && CFLAG:ARG:이번수태인수 > 1
+		MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) -= 1
+	SIF FLAG:쌍둥이플래그 > 0 && CFLAG:ARG:이번수태인수 > 4
+		MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) -= 1
+
+	;もろもろ計算で0以下になった場合は1に修正
+	SIF MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) < 1
+		MAXBASE:ARG:(GET_BASESTATUS(LCOUNT)) = 1
+NEXT
+;ペルソナ修正
+IF TALENT:ARG:페르소나구사자 && !CFLAG:ARG:악마변신
+	CALL SYNC_STATUS_P(ARG)
+ENDIF
+
+;------------------------------------------------------------
+;調教効果をここに記述・基本能力
+;------------------------------------------------------------
+;---- EDIT 056 MOD START -------------------------
+IF ARG != MASTER && CFLAG:ARG:PT플래그 > 0
+;---- EDIT 056 MOD END ---------------------------
+	MAXBASE:ARG:LV += (MIN(ABL:ARG:순종,10) + MIN(ABL:ARG:욕망,10) + MIN(ABL:ARG:기교,10) +3)/6
+	;---- EDIT 032 MOD START -------------------------
+	IF TALENT:ARG:맹우
+		MAXBASE:ARG:힘 += 7
+		MAXBASE:ARG:마력 += 7
+		MAXBASE:ARG:운 += 7
+		MAXBASE:ARG:내구 += 7
+		MAXBASE:ARG:지혜 += 7
+		MAXBASE:ARG:속도 += 7
+	ELSE
+	;---- EDIT 032 MOD END ---------------------------
+		MAXBASE:ARG:힘 += (MIN(ABL:ARG:욕망,10)+1)/2
+		MAXBASE:ARG:마력 += (MIN(ABL:ARG:욕망,10)+1)/2
+		MAXBASE:ARG:운 += (MIN(ABL:ARG:순종,10)+1)/2
+		MAXBASE:ARG:내구 += (MIN(ABL:ARG:순종,10)+1)/2
+		MAXBASE:ARG:지혜 += (MIN(ABL:ARG:기교,10)+1)/2
+		MAXBASE:ARG:속도 += (MIN(ABL:ARG:기교,10)+1)/2
+	ENDIF
+ENDIF
+
+;装備スキルがステータスに関与する可能性があるので処理順を変更
+
+;---- EDIT 029 MOD START -------------------------
+;武器素質　一ノ型パラメータ補正
+;武器の必要レベルの1/2に、個別の倍率をかけた数値を加算する。
+;-------------------------------------------------
+CALL MATCHING_WEAPON_CHECK(ARG)
+LCOUNT = RESULT
+CALL WEAPON_STYLE_CHECK(ARG,LCOUNT)
+IF RESULT == 1
+	RESULT = 0
+	TRYCALLFORM 必要レベル_{EQUIP:ARG:검}
+	RESULT = MIN(RESULT , 100)
+	RESULT = RESULT/2 + MIN(RESULT%2 , 1)
+	SELECTCASE LCOUNT
+		CASE 1
+			MAXBASE:ARG:힘 += RESULT/3 + MIN(RESULT%3 , 1)
+			MAXBASE:ARG:속도 += RESULT/3 + MIN(RESULT%3 , 1)
+			MAXBASE:ARG:운 += RESULT/3 + MIN(RESULT%3 , 1)
+		CASE 2
+			MAXBASE:ARG:지혜 += RESULT/3 + MIN(RESULT%3 , 1)
+			MAXBASE:ARG:속도 += RESULT/3 + MIN(RESULT%3 , 1)
+			MAXBASE:ARG:운 += RESULT/3 + MIN(RESULT%3 , 1)
+		CASE 3
+			MAXBASE:ARG:힘 += RESULT/3 + MIN(RESULT%3 , 1)
+			MAXBASE:ARG:마력 += RESULT/3 + MIN(RESULT%3 , 1)
+			MAXBASE:ARG:속도 += RESULT/3 + MIN(RESULT%3 , 1)
+		CASE 4
+			MAXBASE:ARG:힘 += RESULT/4 + MIN(RESULT%4 , 1)
+			MAXBASE:ARG:내구 += RESULT/4 + MIN(RESULT%4 , 1)
+			MAXBASE:ARG:속도 += RESULT/4 + MIN(RESULT%4 , 1)
+			MAXBASE:ARG:운 += RESULT/4 + MIN(RESULT%4 , 1)
+		CASE 5
+			MAXBASE:ARG:힘 += RESULT/3 + MIN(RESULT%3 , 1)
+			MAXBASE:ARG:내구 += RESULT/3 + MIN(RESULT%3 , 1)
+			MAXBASE:ARG:운 += RESULT/3 + MIN(RESULT%3 , 1)
+		CASE 6
+			MAXBASE:ARG:힘 += RESULT/2 + MIN(RESULT%2 , 1)
+			MAXBASE:ARG:내구 += RESULT/2 + MIN(RESULT%2 , 1)
+		CASE 7
+			MAXBASE:ARG:지혜 += RESULT/3 + MIN(RESULT%3 , 1)
+			MAXBASE:ARG:마력 += RESULT/3 + MIN(RESULT%3 , 1)
+			MAXBASE:ARG:내구 += RESULT/3 + MIN(RESULT%3 , 1)
+		CASE 8
+			MAXBASE:ARG:지혜 += RESULT/3 + MIN(RESULT%3 , 1)
+			MAXBASE:ARG:마력 += RESULT/3 + MIN(RESULT%3 , 1)
+			MAXBASE:ARG:속도 += RESULT/3 + MIN(RESULT%3 , 1)
+		CASE 9
+			MAXBASE:ARG:지혜 += RESULT/2 + MIN(RESULT%2 , 1)
+			MAXBASE:ARG:마력 += RESULT/2 + MIN(RESULT%2 , 1)
+		CASE 10
+			MAXBASE:ARG:지혜 += RESULT/3 + MIN(RESULT%3 , 1)
+			MAXBASE:ARG:내구 += RESULT/3 + MIN(RESULT%3 , 1)
+			MAXBASE:ARG:속도 += RESULT/3 + MIN(RESULT%3 , 1)
+		CASE 11
+			MAXBASE:ARG:힘 += RESULT/3 + MIN(RESULT%3 , 1)
+			MAXBASE:ARG:내구 += RESULT/3 + MIN(RESULT%3 , 1)
+			MAXBASE:ARG:속도 += RESULT/3 + MIN(RESULT%3 , 1)
+	ENDSELECT
+ENDIF
+
+;--------------------------------------------------
+;状態異常による変化
+;--------------------------------------------------
+;FLYはLvと速さ以外を1にする
+IF IS_BADSTATE(ARG, "FLY")
+	MAXBASE:ARG:LV = MAXBASE:ARG:LV
+	MAXBASE:ARG:힘 = 1
+	MAXBASE:ARG:지혜 = 1
+	MAXBASE:ARG:마력 = 1
+	MAXBASE:ARG:내구 = 1
+	MAXBASE:ARG:속도 = MAXBASE:ARG:속도
+	MAXBASE:ARG:운 = 1
+ENDIF
+
+MAXBASE:ARG:LV += CFLAG:ARG:LV보정
+
+;---- EDIT P 001 ADD START -------------------------
+;========================================================
+;継承素質設定
+;========================================================
+IF GET_ROLE_PROP("CAN_USE_PORTRAIT", ARG)
+	VARI L_TALENT_NO
+	FOR LCOUNT, 0, SUCCESSIONNUM
+		L_TALENT_NO = GETNUM(TALENT, GET_SUCCESSION(LCOUNT))
+		IF EQUIP:ARG:허물
+			TALENT:ARG:L_TALENT_NO = CSVTALENT(EQUIP:ARG:허물, L_TALENT_NO)
+		ELSE
+			TALENT:ARG:L_TALENT_NO = 0
+		ENDIF
+	NEXT
+ELSEIF CSTR:ARG:롤 == "ペルソナ使い"
+	VARI L_TALENT_NO
+	FOR LCOUNT, 0, SUCCESSIONNUM
+		L_TALENT_NO = GETNUM(TALENT, GET_SUCCESSION(LCOUNT))
+		TALENT:ARG:L_TALENT_NO = CSVTALENT(ABL:ARG:초기페르소나, L_TALENT_NO)
+	NEXT
+ELSEIF GET_ROLE_PROP("TRANS_STATUS", ARG, "通常形態") && STRCOUNT(RESULTS_F, "継承素質") 
+	FOR LCOUNT, 0, SUCCESSIONNUM
+		L_TALENT_NO = GETNUM(TALENT, GET_SUCCESSION(LCOUNT))
+		TALENT:ARG:L_TALENT_NO = CSVTALENT(CFLAG:ARG:초기링크악마, L_TALENT_NO)
+	NEXT
+ELSEIF GET_ROLE_PROP("LINK_STATUS", ARG, "通常形態") && STRCOUNT(RESULTS_F, "継承素質")
+	FOR LCOUNT, 0, SUCCESSIONNUM
+		L_TALENT_NO = GETNUM(TALENT, GET_SUCCESSION(LCOUNT))
+		IF LINK_CHARA > 0
+			TALENT:ARG:L_TALENT_NO = TALENT:LINK_CHARA:L_TALENT_NO
+		ELSE
+			TALENT:ARG:L_TALENT_NO = CSVTALENT(CFLAG:ARG:초기링크악마, L_TALENT_NO)
+		ENDIF
+	NEXT
+ENDIF
+;---- EDIT P 001 ADD END ---------------------------
+;========================================================
+;相性設定
+;========================================================
+CALL SYNC_STATUS_TYPE, ARG
+
+;--------------------------------------------------------
+;バステ耐性の設定
+;--------------------------------------------------------
+CALL SYNC_STATUS_STATE, ARG
+
+;====================================================
+;戦闘ステータスの算出
+;HP/MP/공격/방어/마법위력/마법효과/총공격/총명중/도구위력/도구명중
+;====================================================
+;---------------------------------------------------------------------
+;算出に利用する基本ステータスを収納
+;---------------------------------------------------------------------
+L_LV = MAXBASE:ARG:LV
+L_力 = MAXBASE:ARG:힘
+L_知 = MAXBASE:ARG:지혜
+L_魔 = MAXBASE:ARG:마력
+L_耐 = MAXBASE:ARG:내구
+L_速 = MAXBASE:ARG:속도
+L_運 = MAXBASE:ARG:운
+
+
+;---------------------------------------------------------------------
+;HPの算出
+;基本式:((Lv + 힘 * 2 + 耐 * 7 + 5) * 2 + 5) * (100 + Lv * 3)%
+;---------------------------------------------------------------------
+;HP共有の確認
+CALL GET_LINKED_HP_CHARA, ARG
+VARI LINKED_CHARA = RESULT
+IF LINKED_CHARA >= 0
+	CALL SYNC_STATUS_HP, LINKED_CHARA, L_OPT
+	BASE:ARG:ＨＰ = BASE:LINKED_CHARA:ＨＰ
+	MAXBASE:ARG:ＨＰ = MAXBASE:LINKED_CHARA:ＨＰ
+ELSE
+	CALL SYNC_STATUS_HP, ARG, L_OPT
+ENDIF
+
+;---------------------------------------------------------------------
+;MPの算出
+;
+;基本式:((Lv + 知 * 1/2 + 魔 * 3/2) * 2 + 5) * (100 + Lv)%
+;---------------------------------------------------------------------
+;MPを持たないキャラはここで終わる
+;IF !HAVE_MAXMP(ARG)
+IF !GET_ROLE_PROP("HAVE_MP", ARG)
+	MAXBASE:ARG:ＭＰ = 0
+ELSE
+	MAXBASE:ARG:ＭＰ = ((L_LV+L_知/2+(L_魔*3/2))*2 + 5) * (100+L_LV)/100
+
+	;人間と悪魔はボスフラグの倍率だけ違う
+	IF CFLAG:ARG:보스플래그
+		;IF IS_CALC_HUMAN　EDIT 086
+		IF GETS_ROLE_PROP("BATTLESTATUS_TYPE", ARG) == "人間"
+			MAXBASE:ARG:ＭＰ *= 4 + (CFLAG:ARG:보스플래그)
+		ELSE
+			MAXBASE:ARG:ＭＰ *= 5 + CFLAG:ARG:보스플래그
+		ENDIF
+	ENDIF
+	;---------------------------------------------------------------------
+	;スキル・キャラ独自要素による補正呼び出し
+	;---------------------------------------------------------------------
+	L_MP補正_固定 = 0
+	L_MP補正_乗算 = 0
+	L_MP補正_加算 = 0
+
+	FOR LCOUNT:1, 0, TRYSKILLNUM(ARG)
+		RESULT = 0
+		RESULTS = "乗算"
+		TEMP_SKILLS = %GET_TRYSKILL(ARG, LCOUNT:1)%
+		TEMP_SKILL = TOINT(TEMP_SKILLS)
+		SIF TEMP_SKILLS == "0"
+			CONTINUE
+		TRYCCALLFORM SKILL_ADD_STATUS_%GET_TRYSKILL(ARG, LCOUNT:1)%, "MP補正", , ARG, TEMP_SKILL, TRYSKILL_VAR
+			SIF !RESULT
+				CONTINUE
+			SELECTCASE RESULTS
+				CASE "乗算"
+					;戦闘中のスイッチ変化を考慮して現HPも増減させる;EDIT 085 DEL
+					;SIF BASE:ARG:ＭＰ > 0
+					;	BASE:ARG:ＭＰ = BASE:ARG:ＭＰ * (100 + RESULT) / 100
+					MAXBASE:ARG:ＭＰ = MAXBASE:ARG:ＭＰ * (100 + RESULT) / 100
+				CASE "魔脈"
+					L_MP補正_乗算 = MAX(L_MP補正_乗算, RESULT)
+				CASE "加算"
+					L_MP補正_加算 += RESULT
+				CASE "固定"
+					L_MP補正_固定 = L_MP補正_固定 ? MIN(L_MP補正_固定, RESULT) # RESULT
+			ENDSELECT
+		CATCH
+		ENDCATCH
+	NEXT
+	MAXBASE:ARG:ＭＰ = MAXBASE:ARG:ＭＰ * (100 + L_MP補正_乗算) / 100
+
+	;---------------------------------------------------------------------
+	;その他補正
+	;---------------------------------------------------------------------
+	;妊娠している場合、一部の能力にボーナス？
+	;現状では最大ＨＰとＭＰが2割上昇
+	IF TALENT:ARG:임신
+		;ふたごちゃんパッチオンの場合：5人以上のわりとヤバい妊娠数だとさすがにステータスが下がる
+		IF FLAG:쌍둥이플래그 > 0 && CFLAG:ARG:이번수태인수 > 4
+			TIMES MAXBASE:ARG:ＭＰ , 0.80
+		ELSEIF FLAG:쌍둥이플래그 > 0 && CFLAG:ARG:이번수태인수 > 1
+			;2～4だと補正無し
+		ELSE
+			TIMES MAXBASE:ARG:ＭＰ , 1.20
+		ENDIF
+	ENDIF
+	;崩壊している場合、ＨＰとＭＰが7割に
+	SIF TALENT:ARG:붕괴
+		TIMES MAXBASE:ARG:ＭＰ , 0.70
+	SIF IS_CALC_ガチャ(ARG)
+		TIMES MAXBASE:ARG:ＭＰ, 0.50
+	
+	;---------------------------------------------------------------------
+	;固定値加算の処理
+	;---------------------------------------------------------------------
+	MAXBASE:ARG:ＭＰ += CFLAG:ARG:ＭＰ보정
+	;BASE:ARG:ＭＰ = BASE:ARG:ＭＰ * (MAXBASE:ARG:ＭＰ + L_MP補正_加算) / MAXBASE:ARG:ＭＰ;EDIT 085 DEL
+	MAXBASE:ARG:ＭＰ += L_MP補正_加算
+
+	;MPが固定値ならここで固定する
+	IF L_MP補正_固定
+		;BASE:ARG:ＭＰ = BASE:ARG:ＭＰ * L_MP補正_固定 / MAXBASE:ARG:ＭＰ
+		MAXBASE:ARG:ＭＰ = L_MP補正_固定
+	ENDIF
+	BASE:ARG:ＭＰ = MAX(BASE:ARG:ＭＰ, 0)
+	MAXBASE:ARG:ＭＰ = MAX(MAXBASE:ARG:ＭＰ, 0)
+ENDIF
+
+;---- EDIT 085 ADD START -------------------------
+;---- EDIT 088 MOD START -------------------------
+;---- EDIT 091 MOD START -------------------------
+;---- EDIT 092 MOD START -------------------------
+;---------------------------------------------------------------------
+;HPMPの割合保持措置
+;悪魔変身等の変身スキル等はこの処置を通すのを推奨
+;
+;固定処理はHPがえらいことになるので常に割合保持させる
+;---------------------------------------------------------------------
+IF STRCOUNT(L_OPT, "HPMP割合保持") || STRCOUNT(L_OPT, "ＨＰＭＰ割合保持") || L_MP補正_固定
+	;0除算の可能性があるので元々のMMPが0の場合は一応弾いておく
+	IF STOCK_MMP > 0
+		BASE:ARG:ＭＰ *= POWER(10, 5)
+		TEMP = (BASE:ARG:ＭＰ % STOCK_MMP) > 0
+		BASE:ARG:ＭＰ = BASE:ARG:ＭＰ / STOCK_MMP * MAXBASE:ARG:ＭＰ
+		BASE:ARG:ＭＰ /= POWER(10, 5)
+		BASE:ARG:ＭＰ += TEMP
+	ENDIF
+ENDIF
+;---- EDIT 092 MOD END ---------------------------
+;---- EDIT 091 MOD END ---------------------------
+;---- EDIT 088 MOD END ---------------------------
+
+;---- EDIT 085 ADD END ---------------------------
+;================================================================================
+;ベースとなる戦闘ステータスの算出
+;================================================================================
+;---------------------------------------------------------------------
+;基本ステータスからのベースの戦闘ステータス算出
+;ハーモナイザーの計算用に悪魔と人間両方から出しておく
+;---------------------------------------------------------------------
+VARS BTL_STAT_TABLE, 6
+BTL_STAT_TABLE '= "공격", "명중", "방어", "회피", "마법위력", "마법효과"
+
+VARI HUMAN_BTL_STAT, 6
+HUMAN_BTL_STAT:FINDELEMENT(BTL_STAT_TABLE, "공격") = 	L_LV/2 + L_力 + L_耐/2 
+HUMAN_BTL_STAT:FINDELEMENT(BTL_STAT_TABLE, "명중") = 	L_LV   + L_速 + L_運/2 
+HUMAN_BTL_STAT:FINDELEMENT(BTL_STAT_TABLE, "방어") = 	L_LV   + L_耐
+HUMAN_BTL_STAT:FINDELEMENT(BTL_STAT_TABLE, "회피") = 	L_LV   + L_速 + L_運/2
+HUMAN_BTL_STAT:FINDELEMENT(BTL_STAT_TABLE, "마법위력") = L_LV/2 + L_魔 + L_知/2
+HUMAN_BTL_STAT:FINDELEMENT(BTL_STAT_TABLE, "마법효과") = L_LV   + L_知 + L_運/2
+
+VARI DEVIL_BTL_STAT, 6
+DEVIL_BTL_STAT:FINDELEMENT(BTL_STAT_TABLE, "공격") = 	L_LV*2 + L_力*5/2 + L_耐
+DEVIL_BTL_STAT:FINDELEMENT(BTL_STAT_TABLE, "명중") = 	L_LV*2 + L_速*5/2 + L_運
+DEVIL_BTL_STAT:FINDELEMENT(BTL_STAT_TABLE, "방어") = 	L_LV*2 + L_耐*3   + L_力/2
+DEVIL_BTL_STAT:FINDELEMENT(BTL_STAT_TABLE, "회피") = 	L_LV*2 + L_速*5/2 + L_運
+DEVIL_BTL_STAT:FINDELEMENT(BTL_STAT_TABLE, "마법위력") = L_LV*2 + L_魔*5/2 + L_知
+DEVIL_BTL_STAT:FINDELEMENT(BTL_STAT_TABLE, "마법효과") = L_LV*2 + L_知* 2  + L_運 + L_魔/2
+;敵の場合、攻撃力と魔法威力に下駄
+;TODO:本当にこの措置がいるのかは要検討
+IF CFLAG:ARG:PT플래그 == 0
+	DEVIL_BTL_STAT:FINDELEMENT(BTL_STAT_TABLE, "공격") += L_LV
+	DEVIL_BTL_STAT:FINDELEMENT(BTL_STAT_TABLE, "마법위력") += L_LV
+ENDIF
+IF GETS_ROLE_PROP("BATTLESTATUS_TYPE", ARG) == "人間" && !FLAG:전투스테이터스계산식통일 && !CFLAG:ARG:비장착형스테이터스계산지정
+	FOR LCOUNT, 0, VARSIZE("BTL_STAT_TABLE")
+		BASE:ARG:(BTL_STAT_TABLE:LCOUNT) = HUMAN_BTL_STAT:LCOUNT
+	NEXT
+ELSE
+	FOR LCOUNT, 0, VARSIZE("BTL_STAT_TABLE")
+		BASE:ARG:(BTL_STAT_TABLE:LCOUNT) = DEVIL_BTL_STAT:LCOUNT
+	NEXT
+ENDIF
+
+BASE:ARG:도구명중 = L_LV*3/2+MAX(L_速, 3+L_LV/4)*2+MAX(L_魔, 3+L_LV/4)
+BASE:ARG:도구위력 = L_LV*3/2+MAX(L_知, 3+L_LV/4)*2+MAX(L_運, 3+L_LV/4)
+;銃の計算式は共通
+BASE:ARG:총명중 = (L_LV+L_速+L_運+L_知)
+BASE:ARG:총공격 = (L_LV + L_知/2 + L_速/2)
+
+BASE:ARG:도구명중 = (L_LV*2+MAX(L_速, 3+L_LV/4)*5/2+MAX(L_魔, 3+L_LV/4))
+BASE:ARG:도구위력 = (L_LV*2+MAX(L_知, 3+L_LV/4)*5/2+MAX(L_運, 3+L_LV/4))
+SIF CFLAG:ARG:PT플래그 == 0
+	BASE:ARG:도구위력 += L_LV
+
+;SELECTCASE GETS_ROLE_PROP("BATTLESTATUS_TYPE", ARG)
+;	CASE "人間"
+;		;--------------------------------------------------------
+;		;공격/명중/방어/회피/마법위력/魔法効果の基本値設定
+;		;基本ステータスから算出し、ここまでの結果をBASEに格納しておく
+;		;--------------------------------------------------------
+;		IF FLAG:人間戦闘ステ設定 == 2
+;			BASE:ARG:공격 = 	L_LV/2 + L_力*5/2 + L_耐
+;			BASE:ARG:명중 = 	L_LV   + L_速*5/2 + L_運
+;			BASE:ARG:방어 = 	L_LV   + L_耐*3   + L_力/2 
+;			BASE:ARG:회피 = 	L_LV   + L_速*5/2 + L_運
+;			BASE:ARG:마법위력 = L_LV/2 + L_魔*5/2 + L_知
+;			BASE:ARG:마법효과 = L_LV   + L_知*2   + L_運 + L_魔/2
+;		ELSE
+;			BASE:ARG:공격 = 	L_LV/2 + L_力 + L_耐/2 
+;			BASE:ARG:명중 = 	L_LV   + L_速 + L_運/2 
+;			BASE:ARG:방어 = 	L_LV   + L_耐
+;			BASE:ARG:회피 = 	L_LV   + L_速 + L_運/2
+;			BASE:ARG:마법위력 = L_LV/2 + L_魔 + L_知/2
+;			BASE:ARG:마법효과 = L_LV   + L_知 + L_運/2
+;			IF FLAG:人間戦闘ステ設定 == 1
+;				BASE:ARG:명중 = L_LV+L_速*5/2+L_運
+;				BASE:ARG:마법효과 = L_LV+L_知*2+L_運+L_魔/2
+;			ENDIF
+;		ENDIF
+;		BASE:ARG:도구명중 = (L_LV*2+MAX(L_速, 3+L_LV/4)*5/2+MAX(L_魔, 3+L_LV/4))
+;		BASE:ARG:도구위력 = (L_LV*2+MAX(L_知, 3+L_LV/4)*5/2+MAX(L_運, 3+L_LV/4))
+;	CASE "悪魔"	
+;		BASE:ARG:공격 = 	L_LV*2 + L_力*5/2 + L_耐
+;		BASE:ARG:명중 = 	L_LV*2 + L_速*5/2 + L_運
+;		BASE:ARG:방어 = 	L_LV*2 + L_耐*3   + L_力/2
+;		BASE:ARG:회피 = 	L_LV*2 + L_速*5/2 + L_運
+;		BASE:ARG:마법위력 = L_LV*2 + L_魔*5/2 + L_知
+;		BASE:ARG:마법효과 = L_LV*2 + L_知* 2  + L_運 + L_魔/2
+;		BASE:ARG:도구명중 = L_LV*3/2+MAX(L_速, 3+L_LV/4)*2+MAX(L_魔, 3+L_LV/4)
+;		BASE:ARG:도구위력 = L_LV*3/2+MAX(L_知, 3+L_LV/4)*2+MAX(L_運, 3+L_LV/4)
+;ENDSELECT
+;;銃の計算式は共通
+;IF GET_ROLE_PROP("CAN_EQUIP_GUN", ARG)
+;	BASE:ARG:총명중 = (L_LV+L_速+L_運+L_知); + CFLAG:ARG:총명중보정
+;	BASE:ARG:총공격 = (L_LV + L_知/2 + L_速/2); + CFLAG:ARG:총공격보정
+;ENDIF
+
+;-------------------------------------------------------------------
+;CFLAGの補正値を取得
+;-------------------------------------------------------------------
+;FOR LCOUNT, 0, GUN_BATTLESTATUSNUM
+;---- EDIT 095 MOD START -------------------------
+FOR LCOUNT, 0, BATTLESTATUSNUM
+	SELECTCASE GET_BATTLESTATUS(LCOUNT)
+		CASE "도구명중"
+			BASE:ARG:도구명중 += MAX(CFLAG:ARG:명중보정, CFLAG:ARG:마법효과보정)
+		CASE "도구위력"
+			BASE:ARG:도구위력 += MAX(CFLAG:ARG:공격보정, CFLAG:ARG:마법위력보정)
+		CASEELSE
+			BASE:ARG:GET_BATTLESTATUS(LCOUNT) += CFLAG:ARG:(GET_BATTLESTATUS(LCOUNT) + "보정")
+	ENDSELECT
+NEXT
+;---- EDIT 095 MOD END ---------------------------
+;---- EDIT 091 MOD START -------------------------
+;BASE:ARG:도구명중 += MAX(CFLAG:ARG:명중보정, CFLAG:ARG:마법효과보정)
+;BASE:ARG:도구위력 += MAX(CFLAG:ARG:공격보정, CFLAG:ARG:마법위력보정)
+;---- EDIT 091 MOD END ---------------------------
+;---- EDIT 095 MOD END ---------------------------
+
+;---- EDIT P 003 MOD START -------------------------
+;-------------------------------------------------------------------
+;메시아프로젝트(旧ハーモナイザー) + 함락의악마
+;戦闘ステータスに応じてステータスを上乗せする。
+;数値は旧ハーモナイザーの最大出力をそのまま流用、バランス調整外要素
+;悪魔と人間の格差の根源というか、基礎力が揃っている前提を踏まえて全員に等しく加算されるように変更
+;-------------------------------------------------------------------
+VARI L_POWER
+L_POWER += SOFT_ON("메시아프로젝트") * 60
+SIF !GET_ROLE_PROP("CAN_USE_EQUIP", ARG) && !FLAG:전투스테이터스계산식통일 && !CFLAG:ARG:비장착형스테이터스계산지정
+	L_POWER += SOFT_ON("함락의악마") * 陥落(ARG) * 20
+IF L_POWER > 0 && CFLAG:ARG:PT플래그 > 0
+	BASE:ARG:공격 += (L_LV*3/2+L_力*3/2+L_耐*1/2) * L_POWER / 100
+	BASE:ARG:명중 += (L_LV+L_速*3/2+L_運*1/2) * L_POWER / 100
+	BASE:ARG:방어 += (L_LV+L_耐*2+(L_力)/2) * L_POWER / 100
+	BASE:ARG:회피 += (L_LV+L_速*3/2+L_運*1/2) * L_POWER / 100
+	BASE:ARG:마법위력 += (L_LV*3/2+L_魔*3/2+L_知*1/2) * L_POWER / 100
+	BASE:ARG:마법효과 += (L_LV+L_知+L_運/2+L_魔/2) * L_POWER / 100
+	BASE:ARG:총공격 += (L_LV + L_知/2 + L_速/2) * L_POWER / 100
+	BASE:ARG:총명중 += (L_LV+L_速+L_運+L_知) * L_POWER / 100
+	BASE:ARG:도구명중 += (L_LV*2+MAX(L_速, 3+L_LV/4)*5/2+MAX(L_魔, 3+L_LV/4)) * L_POWER / 100
+	BASE:ARG:도구위력 += (L_LV*2+MAX(L_知, 3+L_LV/4)*5/2+MAX(L_運, 3+L_LV/4)) * L_POWER / 100
+ENDIF
+;---- EDIT P 003 MOD END ---------------------------
+SIF TALENT:ARG:페르소나구사자
+	CALL ペルソナ使い戦闘ステータス強化パッチ(ARG)
+;基礎値の確定
+;---- EDIT 095 MOD START -------------------------
+;FOR LCOUNT, 0, GUN_BATTLESTATUSNUM
+FOR LCOUNT, 0, BATTLESTATUSNUM
+	MAXBASE:ARG:GET_BATTLESTATUS(LCOUNT) = BASE:ARG:GET_BATTLESTATUS(LCOUNT)
+NEXT
+;MAXBASE:ARG:도구명중 = BASE:ARG:도구명중
+;MAXBASE:ARG:도구위력 = BASE:ARG:도구위력
+;---- EDIT 095 MOD END ---------------------------
+;================================================================================
+;装備のステータス補正
+;
+;補填措置が重複しているため、補正値が非常に高く算出される
+;人間強化OP・ハーモナイザー・装備の性能向上の3点により人間のステータスは高くでる仕様になっている。
+;================================================================================
+;LVが80を超えている場合、装備部分に相当する補正を追加で与える(装備が存在しなくなることに対する補填1)
+TEMP = MAX(BASE:ARG:LV - 80, 0)
+
+;生得武器でない武器でかつ、オプションで偏りを変更している場合
+IF GET_ROLE_PROP("CAN_USE_EQUIP", ARG)  && !FLAG:전투스테이터스계산식통일 && !CFLAG:ARG:비장착형스테이터스계산지정
+	IF CFLAG:ARG:장비보정변경횟수 > 0 && EQUIP:ARG:검 != GETNUM(ITEM, "리빙・엣지")
+		MAXBASE:ARG:공격 += TEMP * CFLAG:ARG:1040 / 4
+		MAXBASE:ARG:명중 += TEMP * CFLAG:ARG:1041 / 4
+		MAXBASE:ARG:방어 += TEMP * CFLAG:ARG:1042 / 4
+		MAXBASE:ARG:회피 += TEMP * CFLAG:ARG:1043 / 4
+		MAXBASE:ARG:마법위력 += TEMP * CFLAG:ARG:1044 / 4
+		MAXBASE:ARG:마법효과 += TEMP * CFLAG:ARG:1045 / 4
+	ELSE
+		;生得武器はデフォルトの偏りになる
+		MAXBASE:ARG:공격 += TEMP * 9 / 4
+		MAXBASE:ARG:명중 += TEMP * 7 / 4
+		MAXBASE:ARG:방어 += TEMP * 11 / 4
+		MAXBASE:ARG:회피 += TEMP * 7 / 4
+		MAXBASE:ARG:마법위력 += TEMP * 9 / 4
+		MAXBASE:ARG:마법효과 +=TEMP * 7 / 4
+	ENDIF
+	MAXBASE:ARG:도구명중 += TEMP * 7 / 4
+	MAXBASE:ARG:도구위력 += TEMP * 9 / 4
+ENDIF
+
+;装備品の補正(銃ステ以外の6つ)
+FOR LCOUNT,0,EQUIP_BATTLESTATUSNUM
+	LEQUIP_FIXED_VALUE = 0
+	FOR LCOUNT:1,0,7
+		;使用条件の確認
+		SELECTCASE GET_EQUIP(LCOUNT:1)
+			CASE "총"
+				SIF !GET_ROLE_PROP("CAN_EQUIP_GUN", ARG)
+					CONTINUE
+			CASEELSE
+				SIF FLAG:전투스테이터스계산식통일
+					CONTINUE
+				SIF CFLAG:ARG:비장착형스테이터스계산지정
+					CONTINUE
+				SIF !GET_ROLE_PROP("CAN_USE_EQUIP", ARG)
+					CONTINUE
+				;装備知識で装備可能になっている場合、使用改変版だと効果が発生しない
+				SIF GET_ROLE_PROP("CAN_USE_EQUIP", ARG) == 2 && BATTLE_SETTING_IS_EQUIPTHEORY() == 1
+					CONTINUE
+		ENDSELECT
+		IF 魔晶装備(EQUIP:ARG:(GET_EQUIP(LCOUNT:1)))
+			CALLFORM 戦闘能力修正_魔晶装備,LCOUNT,EQUIP:ARG:(GET_EQUIP(LCOUNT:1)) - 2450 -450*LCOUNT:1
+		ELSE
+			CALLFORM 戦闘能力修正_{EQUIP:ARG:(GET_EQUIP(LCOUNT:1))},LCOUNT,ARG
+			CALL 装備強化_展開, ARG, EQUIP:ARG:GET_EQUIP(LCOUNT:1), "戦闘能力修正", GET_BATTLESTATUS(LCOUNT), RESULT
+		ENDIF
+		LFIXED_VALUE = RESULT
+
+		;部位ごとの補正
+		SELECTCASE GET_EQUIP(LCOUNT:1)
+			CASE "검"
+				;武器素質
+				IF GET_ROLE_PROP("CAN_USE_WEAPON_MASTERY", ARG)
+					TRYCCALLFORM 剣タイプ_{EQUIP:ARG:GET_EQUIP(LCOUNT:1)}
+						IF RESULT > 0
+							;---- EDIT 029 MOD
+							SIF TALENT:ARG:(249 + RESULT) && LFIXED_VALUE > 0
+								TIMES LFIXED_VALUE,1.10
+							SIF TALENT:ARG:(249 + RESULT) && LFIXED_VALUE < 0
+								TIMES LFIXED_VALUE,0.50
+						ENDIF
+					CATCH
+					ENDCATCH
+				ENDIF
+			CASEELSE
+		ENDSELECT
+		;LVが100を超えている場合、(Lv-100)%分の補正を追加で与える(装備が存在しなくなることに対する補填2)
+		;魔晶装備は必要レベル関数でレベルを取れないので適用外になっている
+		IF BASE:ARG:LV > 100
+			TRYCCALLFORM 必要レベル_{EQUIP:ARG:GET_EQUIP(LCOUNT:1)}
+				SIF RESULT > 69
+					LFIXED_VALUE = LFIXED_VALUE * BASE:ARG:LV / 100
+			CATCH
+			ENDCATCH
+		ENDIF
+		LEQUIP_FIXED_VALUE += LFIXED_VALUE
+	NEXT
+
+	;装備知識があるときは専用のテーブルに流す
+	IF SKILL_EQUIPTHEORY_IS_HAVE_SKILL(ARG)
+		MAXBASE:ARG:(GET_BATTLESTATUS(LCOUNT)) += SKILL_EQUIPTHEORY_EQUIP_STATUS(ARG, LEQUIP_FIXED_VALUE)
+	ELSE
+		MAXBASE:ARG:(GET_BATTLESTATUS(LCOUNT)) += LEQUIP_FIXED_VALUE
+		;オプションで人間強化がON担っている場合はLV/2%のボーナスを追加する
+		;SIF FLAG:人間戦闘ステ設定 == 3 && GETS_ROLE_PROP("BATTLESTATUS_TYPE", ARG) == "人間"
+		;	MAXBASE:ARG:(GET_BATTLESTATUS(LCOUNT)) += LEQUIP_FIXED_VALUE * (BASE:ARG:LV/2) / 100
+	ENDIF
+NEXT
+
+;---- EDIT P 003 ADD START -------------------------
+;-------------------------------------------------------------------
+;新ハーモナイザー
+;装備込みのステータスを悪魔計算のステータスと比較して、劣っている場合
+;両者の平均までステータスを増やす
+;弱い装備を使っていて本来のスペックを発揮できていない場合の補填となる。
+;-------------------------------------------------------------------
+IF GETS_ROLE_PROP("BATTLESTATUS_TYPE", ARG) == "人間" && SOFT_ON("하모나이저") && CFLAG:ARG:PT플래그 && !FLAG:전투스테이터스계산식통일 && !CFLAG:ARG:비장착형스테이터스계산지정
+	FOR LCOUNT, 0, VARSIZE("BTL_STAT_TABLE")
+		MAXBASE:ARG:(BTL_STAT_TABLE:LCOUNT) = MAX(MAXBASE:ARG:(BTL_STAT_TABLE:LCOUNT), (DEVIL_BTL_STAT:LCOUNT + MAXBASE:ARG:(BTL_STAT_TABLE:LCOUNT)) * 50 / 100)
+	NEXT
+ENDIF
+;---- EDIT P 003 ADD END ---------------------------
+
+;銃攻撃と銃命中の取得
+IF GET_ROLE_PROP("CAN_USE_GUN", ARG)
+	IF 魔晶装備(EQUIP:ARG:총)
+		CALLFORM 銃命中_魔晶装備,EQUIP:ARG:총-2900
+		MAXBASE:ARG:총명중 = BASE:ARG:총명중 + RESULT
+		CALLFORM 銃攻撃_魔晶装備,EQUIP:ARG:총-2900
+		MAXBASE:ARG:총공격 = BASE:ARG:총공격 + RESULT
+	ELSE
+		LFIXED_VALUE = 100
+		IF BASE:ARG:LV > 100
+			TRYCCALLFORM 必要レベル_{EQUIP:ARG:총}
+				SIF RESULT > 69
+					LFIXED_VALUE = BASE:ARG:LV
+			CATCH
+			ENDCATCH
+		ENDIF
+		CALLFORM 銃命中_{EQUIP:ARG:총},ARG
+		CALL 装備強化_展開, ARG, EQUIP:ARG:총, "戦闘能力修正", "총명중", RESULT
+		MAXBASE:ARG:총명중 = BASE:ARG:총명중 + (RESULT * LFIXED_VALUE/100)
+		CALLFORM 銃攻撃_{EQUIP:ARG:총},ARG
+		CALL 装備強化_展開, ARG, EQUIP:ARG:총, "戦闘能力修正", "총공격", RESULT
+		MAXBASE:ARG:총공격 = BASE:ARG:총공격 + (RESULT * LFIXED_VALUE/100)
+	ENDIF
+	TEMP = MAX(BASE:ARG:LV - 80, 0)
+	;LV80以上の追加補正(銃に武器は関係ないが、リビングエッジを装備して銃に全振りみたいなことをすると合計値を増やせてしまうので一緒にみておく)
+	IF CFLAG:ARG:장비보정변경횟수 > 0 && EQUIP:ARG:검 != GETNUM(ITEM, "리빙・엣지")
+		MAXBASE:ARG:총공격 += TEMP * CFLAG:ARG:1046 / 4
+		MAXBASE:ARG:총명중 += TEMP * CFLAG:ARG:1047 / 4
+	ELSE
+		MAXBASE:ARG:총명중 += TEMP * 7 / 4
+		MAXBASE:ARG:총공격 += TEMP * 9 / 4
+	ENDIF
+ELSE
+	MAXBASE:ARG:총명중 = 0
+	MAXBASE:ARG:총공격 = 0
+ENDIF
+
+;================================================================================
+;通常攻撃の設定
+;================================================================================
+IF (COUNT_SPLIT(GETS_ROLE_PROP("LINK_STATUS", ARG), "/", "通常攻撃相性") || COUNT_SPLIT(GETS_ROLE_PROP("LINK_STATUS", ARG), "/", "通常攻撃")) && LINK_CHARA > 0
+	ABL:ARG:공격상성 = ABL:LINK_CHARA:공격상성
+ELSEIF COUNT_SPLIT(GETS_ROLE_PROP("TRANS_STATUS", ARG), "/", "通常攻撃相性") || COUNT_SPLIT(GETS_ROLE_PROP("TRANS_STATUS", ARG), "/", "通常攻撃")
+	ABL:ARG:공격상성 = ABL:ARG:초기링크악마공격상성
+ELSEIF GET_ROLE_PROP("CAN_USE_EQUIP", ARG) == 1 || (GET_ROLE_PROP("CAN_USE_EQUIP", ARG) == 2 && BATTLE_SETTING_IS_EQUIPTHEORY() == 0)
+	IF 魔晶装備(EQUIP:ARG:검)
+		CALLFORM 攻撃相性_魔晶装備,EQUIP:ARG:검-2450
+	ELSE
+		CALLFORM 攻撃相性_{EQUIP:ARG:검},ARG
+	ENDIF
+	ABL:ARG:공격상성 = RESULT
+ENDIF
+
+;---- EDIT 102 ADD START -------------------------
+;通常攻撃の相性を所持攻撃相性として登録する
+C_HAVE_SKILL_ATK_TYPE:ARG:(ABL:ARG:공격상성) = 1
+;---- EDIT 102 ADD END ---------------------------
+
+IF (COUNT_SPLIT(GETS_ROLE_PROP("LINK_STATUS", ARG), "/", "通常攻撃射程") || COUNT_SPLIT(GETS_ROLE_PROP("LINK_STATUS", ARG), "/", "通常攻撃")) && LINK_CHARA > 0
+	ABL:ARG:사거리 = ABL:LINK_CHARA:사거리 > 0 ? ABL:LINK_CHARA:사거리 # 1
+;---- EDIT 108 MOD START -------------------------
+ELSEIF COUNT_SPLIT(GETS_ROLE_PROP("TRANS_STATUS", ARG),"/", "通常攻撃射程") || COUNT_SPLIT(GETS_ROLE_PROP("TRANS_STATUS", ARG), "/", "通常攻撃")
+;---- EDIT 108 MOD END -------------------------
+	ABL:ARG:사거리 = ABL:ARG:초기링크악마사거리 > 0 ? ABL:ARG:초기링크악마사거리 # 1
+ELSEIF GET_ROLE_PROP("CAN_USE_EQUIP", ARG) == 1 || (GET_ROLE_PROP("CAN_USE_EQUIP", ARG) == 2 && BATTLE_SETTING_IS_EQUIPTHEORY() == 0);EDIT 093
+	IF 魔晶装備(EQUIP:ARG:검)
+		CALLFORM 射程_魔晶装備,EQUIP:ARG:검-2450
+	ELSE
+		CALLFORM 射程_{EQUIP:ARG:검},ARG
+	ENDIF
+	ABL:ARG:사거리 = RESULT > 0 ? RESULT # 1
+ENDIF
+
+IF (COUNT_SPLIT(GETS_ROLE_PROP("LINK_STATUS", ARG), "/", "通常攻撃回数") || COUNT_SPLIT(GETS_ROLE_PROP("LINK_STATUS", ARG), "/", "通常攻撃")) && LINK_CHARA > 0
+	ABL:ARG:최저공격횟수 = ABL:LINK_CHARA:최저공격횟수
+	ABL:ARG:최대공격횟수 = ABL:LINK_CHARA:최대공격횟수
+;---- EDIT 108 MOD START -------------------------
+ELSEIF COUNT_SPLIT(GETS_ROLE_PROP("TRANS_STATUS", ARG),"/", "通常攻撃回数") || COUNT_SPLIT(GETS_ROLE_PROP("TRANS_STATUS", ARG), "/", "通常攻撃")
+;---- EDIT 108 MOD END -------------------------
+	ABL:ARG:최저공격횟수 = ABL:ARG:초기링크악마최저공격횟수
+	ABL:ARG:최대공격횟수 = ABL:ARG:초기링크악마최대공격횟수
+ELSEIF GET_ROLE_PROP("CAN_USE_EQUIP", ARG) == 1 || (GET_ROLE_PROP("CAN_USE_EQUIP", ARG) == 2 && BATTLE_SETTING_IS_EQUIPTHEORY() == 0)
+	IF 魔晶装備(EQUIP:ARG:검)
+		CALLFORM 最低攻撃回数_魔晶装備,EQUIP:ARG:검-2450
+		ABL:ARG:최저공격횟수 = RESULT
+		CALLFORM 最大攻撃回数_魔晶装備,EQUIP:ARG:검-2450
+		ABL:ARG:최대공격횟수 = RESULT
+	ELSE
+		CALLFORM 最低攻撃回数_{EQUIP:ARG:검},ARG
+		ABL:ARG:최저공격횟수 = RESULT
+		CALLFORM 最大攻撃回数_{EQUIP:ARG:검},ARG
+		ABL:ARG:최대공격횟수 = RESULT
+	ENDIF
+ENDIF
+
+
+IF (COUNT_SPLIT(GETS_ROLE_PROP("LINK_STATUS", ARG), "/", "通常攻撃範囲") || COUNT_SPLIT(GETS_ROLE_PROP("LINK_STATUS", ARG), "/", "通常攻撃")) && LINK_CHARA > 0
+	ABL:ARG:공격범위 = ABL:LINK_CHARA:공격범위 > 0 ? ABL:LINK_CHARA:공격범위 # 1
+;---- EDIT 108 MOD START -------------------------
+ELSEIF COUNT_SPLIT(GETS_ROLE_PROP("TRANS_STATUS", ARG),"/", "通常攻撃範囲") || COUNT_SPLIT(GETS_ROLE_PROP("TRANS_STATUS", ARG), "/", "通常攻撃")
+;---- EDIT 108 MOD END -------------------------
+	ABL:ARG:공격범위 = ABL:ARG:초기링크악마공격범위 > 0 ? ABL:ARG:초기링크악마공격범위 # 1
+ELSEIF GET_ROLE_PROP("CAN_USE_EQUIP", ARG) == 1 || (GET_ROLE_PROP("CAN_USE_EQUIP", ARG) == 2 && BATTLE_SETTING_IS_EQUIPTHEORY() == 0)
+	IF 魔晶装備(EQUIP:ARG:검)
+		CALLFORM 攻撃範囲_魔晶装備,EQUIP:ARG:검-2450
+	ELSE
+		CALLFORM 攻撃範囲_{EQUIP:ARG:검},ARG
+	ENDIF
+	ABL:ARG:공격범위 = RESULT
+ENDIF
+
+IF (COUNT_SPLIT(GETS_ROLE_PROP("LINK_STATUS", ARG), "/", "通常攻撃追加効果") || COUNT_SPLIT(GETS_ROLE_PROP("LINK_STATUS", ARG), "/", "通常攻撃")) && LINK_CHARA > 0
+	ABL:ARG:추가효과 = ABL:LINK_CHARA:추가효과
+	ABL:ARG:추가효과상성 = ABL:LINK_CHARA:추가효과상성
+	ABL:ARG:추가효과명중률 = ABL:LINK_CHARA:추가효과명중률
+	ABL:ARG:추가효과최대명중률 = ABL:LINK_CHARA:추가효과최대명중률
+;---- EDIT 108 MOD START -------------------------
+ELSEIF COUNT_SPLIT(GETS_ROLE_PROP("TRANS_STATUS", ARG),"/", "通常攻撃追加効果") || COUNT_SPLIT(GETS_ROLE_PROP("TRANS_STATUS", ARG), "/", "通常攻撃")
+;---- EDIT 108 MOD END -------------------------
+	ABL:ARG:추가효과 = ABL:ARG:초기링크악마추가효과
+	ABL:ARG:추가효과상성 = ABL:ARG:초기링크악마추가효과상성
+	ABL:ARG:추가효과명중률 = ABL:ARG:초기링크악마추가효과명중률
+	ABL:ARG:추가효과최대명중률 = ABL:ARG:초기링크악마추가효과최대명중률
+ELSEIF GET_ROLE_PROP("CAN_USE_EQUIP", ARG) == 1 || (GET_ROLE_PROP("CAN_USE_EQUIP", ARG) == 2 && BATTLE_SETTING_IS_EQUIPTHEORY() == 0)
+	ABL:ARG:추가효과 = 0
+	ABL:ARG:추가효과상성 = 0
+	ABL:ARG:추가효과명중률 = 0
+	ABL:ARG:추가효과최대명중률 = 0
+	IF 魔晶装備(EQUIP:ARG:검)
+		TRYCCALLFORM 追加効果_魔晶装備,EQUIP:ARG:검-2450
+			ABL:ARG:추가효과 = RESULT
+			CALLFORM 追加効果相性_魔晶装備,EQUIP:ARG:검-2450
+			ABL:ARG:추가효과상성 = RESULT
+			CALLFORM 追加効果命中率_魔晶装備,EQUIP:ARG:검-2450
+			ABL:ARG:추가효과명중률 = RESULT
+			CALLFORM 追加効果最大命中率_魔晶装備,EQUIP:ARG:검-2450
+			ABL:ARG:추가효과최대명중률 = RESULT
+		CATCH
+		ENDCATCH
+	ELSE
+		TRYCCALLFORM 追加効果_{EQUIP:ARG:검},ARG
+			IF GET_STATE(RESULT) == "GOOD" 
+				CALL 装備強化_展開, ARG, EQUIP:ARG:검, "추가효과", "상태이상"
+				IF GET_STATE(RESULT) != "GOOD"
+					ABL:ARG:추가효과 = RESULT
+					CALL 装備強化_展開, ARG, EQUIP:ARG:검, "추가효과", "効果相性"
+					ABL:ARG:추가효과상성 = RESULT
+					CALL 装備強化_展開, ARG, EQUIP:ARG:검, "추가효과", "基本命中"
+					ABL:ARG:추가효과명중률 = RESULT
+					CALL 装備強化_展開, ARG, EQUIP:ARG:검, "추가효과", "最大命中"
+					ABL:ARG:추가효과최대명중률 = RESULT
+				ENDIF
+			ELSE
+				ABL:ARG:추가효과 = RESULT
+				CALLFORM 追加効果相性_{EQUIP:ARG:검},ARG
+				ABL:ARG:추가효과상성 = RESULT
+				CALLFORM 追加効果命中率_{EQUIP:ARG:검},ARG
+				ABL:ARG:추가효과명중률 = RESULT
+				CALLFORM 追加効果最大命中率_{EQUIP:ARG:검},ARG
+				ABL:ARG:추가효과최대명중률 = RESULT
+			ENDIF
+		CATCH
+			CALL 装備強化_展開, ARG, EQUIP:ARG:검, "추가효과", "상태이상"
+			IF GET_STATE(RESULT) != "GOOD"
+				ABL:ARG:추가효과 = RESULT
+				CALL 装備強化_展開, ARG, EQUIP:ARG:검, "추가효과", "効果相性"
+				ABL:ARG:추가효과상성 = RESULT
+				CALL 装備強化_展開, ARG, EQUIP:ARG:검, "추가효과", "基本命中"
+				ABL:ARG:추가효과명중률 = RESULT
+				CALL 装備強化_展開, ARG, EQUIP:ARG:검, "추가효과", "最大命中"
+				ABL:ARG:추가효과최대명중률 = RESULT
+			ENDIF
+		ENDCATCH
+	ENDIF
+ENDIF
+
+;------------------------------------------------------------
+;戦闘ステータスの補正
+;------------------------------------------------------------
+;戦闘ステータスは基本ステータスからの変換がまずややこしく、
+;さらに計算式に適用する段階でややこしく結果がプレイヤー・製作者ともに分かりづらいという問題があり
+;(ダメージの倍率として計算する際は二次関数になってるんで、130%でも元攻撃力次第で実ダメージが1.6倍になったりする)
+;また、計算式の倍率要素と乗算されてインフレを加速する問題があるので
+;基本的にはダメージ算出式のほうに補正をかけるのを推奨します
+;
+;例:攻撃1.2倍はダメージが1.2~1.44倍になりますが、ダメージ+20%は20%増えるのがわかりやすいです
+;------------------------------------------------------------
+;==============================
+;キャパシティオーバー/過負荷のステータス補正
+;==============================
+TEMP = 100 - GET_ROLE_BTL_ST_PENALTY(ARG)
+IF TEMP < 100
+	;---- EDIT 095 MOD START -------------------------
+	;FOR LCOUNT, 0, GUN_BATTLESTATUSNUM
+	FOR LCOUNT, 0, BATTLESTATUSNUM
+		MAXBASE:ARG:GET_BATTLESTATUS(LCOUNT) = MAXBASE:ARG:GET_BATTLESTATUS(LCOUNT) * TEMP / 100
+	NEXT
+	;MAXBASE:ARG:도구명중 = MAXBASE:ARG:도구명중 * TEMP / 100
+	;MAXBASE:ARG:도구위력 = MAXBASE:ARG:도구위력 * TEMP / 100
+	;---- EDIT 095 MOD END ---------------------------
+ENDIF
+
+;==============================
+;魔人学園専用技に関する処理ここまで
+;==============================
+;ガチャモードがONで、味方なら{(種族悪魔and全書召喚不可でない)or(造魔である)}andガチャ素質が無い　なら色々半減
+IF IS_CALC_ガチャ(ARG)
+	TIMES MAXBASE:ARG:공격 , 0.50
+	TIMES MAXBASE:ARG:명중 , 0.50
+	TIMES MAXBASE:ARG:방어 , 0.50
+	TIMES MAXBASE:ARG:회피 , 0.50
+	TIMES MAXBASE:ARG:마법위력 , 0.50
+	TIMES MAXBASE:ARG:마법효과 , 0.50
+	TIMES MAXBASE:ARG:총공격 , 0.50
+	TIMES MAXBASE:ARG:총명중 , 0.50
+	TIMES MAXBASE:ARG:도구위력 , 0.50 
+	TIMES MAXBASE:ARG:도구명중 , 0.50
+ENDIF
+
+;---- EDIT 086 ADD START -------------------------
+C_HAVE_SUCCESSIONNUM:ARG:0 = 0
+FOR LCOUNT, 0, SUCCESSIONNUM
+	C_HAVE_SUCCESSIONNUM:ARG:0 += 相性素質チェック_F(ARG, LCOUNT)
+NEXT
+
+;---- EDIT 086 ADD END ---------------------------
+;------------------------------------------------------------------
+;必要経験値の設定
+;基本式 5 * Lv * (Lv + 1) * (Lv +2) / 3
+;人間以外の場合は陥落していないときに1.25倍の補正がかかる
+;------------------------------------------------------------------
+CALL SET_NEXT_EXP, ARG
+
+;------------------------------------------------------------------
+;所持可能MAGの設定
+;基本式 15 * Lv * (Lv + 1) * (Lv +2)
+;MASTERと造魔は5倍
+;陥落1段階で+20%
+;------------------------------------------------------------------
+IF ARG == MASTER
+	;--- MOD 039 START---
+	;片キンフラグあり
+	IF GETBIT(イベントフラグ:93:11, 60)
+		MAXBASE:ARG:ＭＡＧ  = (15)*(L_LV)*(L_LV+1)*(L_LV+2)
+	;なし（通常）
+	ELSE
+		MAXBASE:ARG:ＭＡＧ  = (75)*(L_LV)*(L_LV+1)*(L_LV+2)
+	ENDIF
+	;--- MOD 039 END---
+ELSE
+	MAXBASE:ARG:ＭＡＧ  = (15+陥落(ARG)*3)*(L_LV)*(L_LV+1)*(L_LV+2)
+	;造魔は5倍のMAGを持てる
+	SIF ABL:ARG:종족 == 45
+		MAXBASE:ARG:ＭＡＧ *= 5
+	;---- EDIT 107 ADD START -------------------------
+	;非戦闘員や戦闘参加不能などのキャラのMAG上限が低い関係で体力・気力を強化しづらいので
+	;低レベル帯に限って上限を前借りさせる
+	MAXBASE:ARG:ＭＡＧ += MAX(25000 - L_LV * 100, 0)
+	;---- EDIT 107 ADD END ---------------------------
+ENDIF
+
+SIF MAXBASE:ARG:ＭＡＧ < 1
+	MAXBASE:ARG:ＭＡＧ = 1
+;---- EDIT 097 ADD START -------------------------
+;数値が異常な場合、ここでなおす
+BASE:ARG:ＭＡＧ = LIMIT(BASE:ARG:ＭＡＧ, 0, MAXBASE:ARG:ＭＡＧ)
+;---- EDIT 097 ADD END ---------------------------
+
+;------------------------------------------------------------------
+;抗体ポイントの設定(消費MAG)
+;------------------------------------------------------------------
+;---- EDIT 103 MOD START -------------------------
+;IF CSVBASE(NO:ARG,GETNUM(BASE,"CP"),0) != 0 && CFLAG:ARG:PT플래그 > 0
+;IF GET_ROLE_PROP("NEED_MAG", ARG) && CFLAG:ARG:PT플래그 > 0
+IF (GET_ROLE_PROP("NEED_MAG", ARG) || CFLAG:ARG:매각불가능 == -1) && CFLAG:ARG:PT플래그 > 0 && CFLAG:ARG:매각불가능 != 1
+;---- EDIT 103 MOD END ---------------------------
+	LOCAL:1 = 15
+	FOR LOCAL,0,TYPENUM +1
+		SELECTCASE MAXBASE:ARG:(GET_TYPE(LOCAL))
+			CASE 999
+				LOCAL:1 += 55
+			CASE IS < 0
+				LOCAL:1 += 55
+			CASE 0
+				LOCAL:1 += 40
+			CASE IS > 199
+				LOCAL:1 -= 25
+			CASE IS > 100
+				LOCAL:1 -= 15
+			CASE IS <= 50
+				LOCAL:1 += 25
+			CASE IS < 100
+				LOCAL:1 += 15
+		ENDSELECT
+	NEXT
+	BASE:ARG:CP = MAX(1,LOCAL:1/2) + CFLAG:ARG:ＣＰ보정
+	;プラグインによる補正
+	TRYCCALLFORM 増加CP_{EQUIP:ARG:악세서리}
+		RESULT += 100
+	CATCH
+		RESULT = 100
+	ENDCATCH
+	MAXBASE:ARG:CP = MAX(1,BASE:ARG:CP * MAXBASE:ARG:LV / 50 * (100-MIN(10000,GET_CHARA_LOYALTY(ARG))*50/10000) / 100 * RESULT / 100)
+	MAXBASE:ARG:￥ = MAX(1,BASE:ARG:CP * MAXBASE:ARG:LV * (100-MIN(5000,GET_CHARA_LOYALTY(ARG))*90/5000) / 100)
+ELSE
+	;MAXBASE:ARG:CP = BASE:ARG:CP * MAXBASE:ARG:LV / 50
+	BASE:ARG:CP = 0
+	MAXBASE:ARG:CP = 0
+	MAXBASE:ARG:￥ = 0
+ENDIF
+
+;主人の場合、属性が変動する。
+;主人以外も変化するようにしてみる
+;LD
+SELECTCASE CFLAG:ARG:선악치
+	CASE IS > 170
+		ABL:ARG:속성LD = 1
+	CASE IS > 84
+		ABL:ARG:속성LD = 2
+	CASEELSE
+		ABL:ARG:속성LD = 3
+ENDSELECT
+;LC
+SELECTCASE CFLAG:ARG:질혼치
+	CASE IS > 170
+		ABL:ARG:속성LC = 1
+	CASE IS > 84
+		ABL:ARG:속성LC = 2
+	CASEELSE
+		ABL:ARG:속성LC = 3
+ENDSELECT
+
+;------------------------------------------------------------------
+;その他のスキル補正
+;------------------------------------------------------------------
+CFLAG:ARG:기본피타겟율 = 100
+FOR LCOUNT:1, 0, TRYSKILLNUM(ARG)
+	RESULT = 0
+	TEMP_SKILLS = %GET_TRYSKILL(ARG, LCOUNT:1)%
+	TEMP_SKILL = TOINT(TEMP_SKILLS)
+	SIF TEMP_SKILLS == "0"
+		CONTINUE
+	TRYCCALLFORM SKILL_ADD_STATUS_%GET_TRYSKILL(ARG, LCOUNT:1)%, "被ターゲット率", , ARG, TEMP_SKILL, TRYSKILL_VAR
+		SIF !RESULT
+			CONTINUE
+		CFLAG:ARG:기본피타겟율 = LIMIT(CFLAG:ARG:기본피타겟율 * RESULT / 100, 1, 1000)
+	CATCH
+	ENDCATCH
+NEXT
+
+;スキルやロールの特殊なフラグなどのセット措置
+FOR LCOUNT, 0, TRYSKILLNUM(ARG)
+	RESULT = 0
+	TEMP_SKILLS = %GET_TRYSKILL(ARG, LCOUNT)%
+	TEMP_SKILL = TOINT(TEMP_SKILLS)
+	SIF TEMP_SKILLS == "0"
+		CONTINUE
+	TRYCALLFORM SYNC_STAUS_ADD_%TEMP_SKILLS%, ARG
+NEXT
+
+@SYNC_STATUS_HP, L_CHARA, L_OPT
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_OPT
+#DIM DYNAMIC TEMP
+#DIM DYNAMIC TEMP_SKILL
+#DIMS DYNAMIC TEMP_SKILLS
+#DIM DYNAMIC STOCK_MHP
+#DIM DYNAMIC L_HP補正_乗算
+#DIM DYNAMIC L_HP補正_加算
+#DIM DYNAMIC L_HP補正_固定
+#DIM DYNAMIC L_LV
+#DIM DYNAMIC L_力
+#DIM DYNAMIC L_知
+#DIM DYNAMIC L_魔
+#DIM DYNAMIC L_耐
+#DIM DYNAMIC L_速
+#DIM DYNAMIC L_運
+
+STOCK_MHP = MAXBASE:L_CHARA:ＨＰ
+
+L_LV = MAXBASE:L_CHARA:LV
+L_力 = MAXBASE:L_CHARA:힘
+L_知 = MAXBASE:L_CHARA:지혜
+L_魔 = MAXBASE:L_CHARA:마력
+L_耐 = MAXBASE:L_CHARA:내구
+L_速 = MAXBASE:L_CHARA:속도
+L_運 = MAXBASE:L_CHARA:운
+;---------------------------------------------------------------------
+;HPの算出
+;基本式:((Lv + 힘 * 2 + 耐 * 7 + 5) * 2 + 5) * (100 + Lv * 3)%
+;---------------------------------------------------------------------
+IF CFLAG:L_CHARA:PT플래그
+	MAXBASE:L_CHARA:ＨＰ = (L_LV+L_力*2+L_耐*7+5)*(100+L_LV*3)/100
+ELSE
+	MAXBASE:L_CHARA:ＨＰ = (L_LV*3+L_力*2+L_耐*9/2+5)*(100+L_LV*3)/100
+	;ボスフラグの倍率だけ違う
+	IF CFLAG:L_CHARA:보스플래그
+		;IF IS_CALK_HUMAN;EDIT 086 MOD
+		IF GETS_ROLE_PROP("BATTLESTATUS_TYPE", L_CHARA) == "人間"
+			MAXBASE:L_CHARA:ＨＰ *= 4 + (CFLAG:L_CHARA:보스플래그)
+		ELSE
+			MAXBASE:L_CHARA:ＨＰ *= 5 + (CFLAG:L_CHARA:보스플래그)
+		ENDIF
+	ENDIF
+	;---- EDIT 002 MOD START -------------------------
+	IF !FLAG:튜토리얼진행중
+		SIF FLAG:전투난이도 > 3
+			TIMES MAXBASE:L_CHARA:ＨＰ , 1.50
+	ENDIF
+	;---- EDIT 002 MOD END ---------------------------
+ENDIF
+
+;---------------------------------------------------------------------
+;スキル・キャラ独自要素による補正呼び出し
+;---------------------------------------------------------------------
+L_HP補正_固定 = 0
+L_HP補正_乗算 = 0
+L_HP補正_加算 = 0
+FOR LCOUNT:1, 0, TRYSKILLNUM(L_CHARA)
+	RESULT = 0
+	TEMP_SKILLS = %GET_TRYSKILL(L_CHARA, LCOUNT:1)%
+	TEMP_SKILL = TOINT(TEMP_SKILLS)
+	SIF TEMP_SKILLS == "0"
+		CONTINUE
+	RESULTS = "乗算"
+	TRYCCALLFORM SKILL_ADD_STATUS_%TEMP_SKILLS%, "HP補正", , L_CHARA, TEMP_SKILL, TRYSKILL_VAR
+		SIF !RESULT
+			CONTINUE
+		SELECTCASE RESULTS
+			CASE "乗算"
+				;戦闘中のスイッチ変化を考慮して現HPも増減させる;EDIT 085 DEL
+				;SIF BASE:L_CHARA:ＨＰ > 0
+				;	BASE:L_CHARA:ＨＰ = BASE:L_CHARA:ＨＰ * (100 + RESULT) / 100
+				MAXBASE:L_CHARA:ＨＰ = MAXBASE:L_CHARA:ＨＰ * (100 + RESULT) / 100
+			CASE "活泉"
+				L_HP補正_乗算 = MAX(L_HP補正_乗算, RESULT)
+			CASE "加算"
+				L_HP補正_加算 += RESULT
+			CASE "固定"
+				L_HP補正_固定 = L_HP補正_固定 ? MIN(L_HP補正_固定, RESULT) # RESULT
+		ENDSELECT
+	CATCH
+	ENDCATCH
+NEXT
+MAXBASE:L_CHARA:ＨＰ = MAXBASE:L_CHARA:ＨＰ * (100 + L_HP補正_乗算) / 100
+
+;---- EDIT 095 ADD START -------------------------
+;---------------------------------------------------------------------
+;도핑/エレウシスの祈り等の補正
+;---------------------------------------------------------------------
+MAXBASE:L_CHARA:ＨＰ = MAXBASE:L_CHARA:ＨＰ * (CFLAG:L_CHARA:최대HP증가 + 100) / 100
+;---- EDIT 095 ADD END ---------------------------
+
+;---------------------------------------------------------------------
+;サブ素質による補正
+;---------------------------------------------------------------------
+MAXBASE:L_CHARA:ＨＰ = MAXBASE:L_CHARA:ＨＰ * (GET_BTL_TALENT_LV("무도의마음가짐", L_CHARA) * 10 + 100) / 100
+
+;---------------------------------------------------------------------
+;その他システムによる補正
+;---------------------------------------------------------------------
+;妊娠している場合、一部の能力にボーナス？
+;現状では最大ＨＰとＭＰが2割上昇
+IF TALENT:L_CHARA:임신
+	;ふたごちゃんパッチオンの場合：5人以上のわりとヤバい妊娠数だとさすがにステータスが下がる
+	IF FLAG:쌍둥이플래그 > 0 && CFLAG:L_CHARA:이번수태인수 > 4
+		TIMES MAXBASE:L_CHARA:ＨＰ , 0.80
+	ELSEIF FLAG:쌍둥이플래그 > 0 && CFLAG:L_CHARA:이번수태인수 > 1
+		;2～4だと補正無し
+	ELSE
+		TIMES MAXBASE:L_CHARA:ＨＰ , 1.20
+	ENDIF
+ENDIF
+;崩壊している場合、ＨＰとＭＰが7割に
+SIF TALENT:L_CHARA:붕괴
+	TIMES MAXBASE:L_CHARA:ＨＰ , 0.70
+SIF IS_CALC_ガチャ(L_CHARA)
+	TIMES MAXBASE:L_CHARA:ＨＰ , 0.50
+
+;---------------------------------------------------------------------
+;HP補正及び乗算以外の固定値補正の反映
+;---------------------------------------------------------------------
+MAXBASE:L_CHARA:ＨＰ += CFLAG:L_CHARA:ＨＰ보정
+MAXBASE:L_CHARA:ＨＰ += L_HP補正_加算
+
+;HPが固定値ならここで固定する
+IF L_HP補正_固定
+	MAXBASE:L_CHARA:ＨＰ = L_HP補正_固定
+ENDIF
+
+BASE:L_CHARA:ＨＰ = MAX(BASE:L_CHARA:ＨＰ, 0);EDIT 083	補正に減算を入れた関係で発生するHPのマイナス化を防ぐ処理のミスを修正
+MAXBASE:L_CHARA:ＨＰ = MAX(MAXBASE:L_CHARA:ＨＰ, 1)
+
+IF STRCOUNT(L_OPT, "HPMP割合保持") || STRCOUNT(L_OPT, "ＨＰＭＰ割合保持") || L_HP補正_固定
+	;小数点以下を扱えない関係でそのままやると切り捨てが凄まじいことになるケースがあるので桁数を増やす
+	BASE:L_CHARA:ＨＰ *= POWER(10, 5)
+	TEMP = (BASE:L_CHARA:ＨＰ % STOCK_MHP) > 0
+	BASE:L_CHARA:ＨＰ = BASE:L_CHARA:ＨＰ / STOCK_MHP * MAXBASE:L_CHARA:ＨＰ
+	BASE:L_CHARA:ＨＰ /= POWER(10, 5)
+	BASE:L_CHARA:ＨＰ += TEMP
+ENDIF
+;---- EDIT 101 MOD START -------------------------
+@SYNC_STATUS_TYPE, ARG
+#DIM LCOUNT, 2
+#DIM L_TYPE
+#DIM TEMP
+;#DIM TEMP_TYPE, 8
+#DIM STOCK_TYPE
+#DIM TEMP_TYPE_MAX
+#DIM TEMP_TYPE_MIN
+#DIM TEMP_SKILL
+#DIMS TEMP_SKILLS
+#DIM CAN_USE_EQUIP_TYPE;装備の相性をつかえるかどうか
+#DIM CAN_USE_MAG_TYPE;MAG強化の相性をつかえるかどうか
+#DIM CAN_USE_PLUGIN;プラグインの相性をつかえるかどうか
+#DIM CAN_USE_PORTRAIT;写せ身の相性をつかえるかどうか
+#DIM MAG_TYPE_CHARA;MAG強化の相性の参照先
+#DIM BASE_TYPE_TRANS;悪魔変身の相性変化のタイプ
+#DIM TYPE_CHARA_NUM;相性の参照先
+#DIM TYPE_CSV_NUM;基本相性がCSV参照の場合
+#DIM CHANGE_TYPE_SKILL_VALUE;スキルによる相性変化における相性値
+#DIMS CHANGE_TYPE_SKILL_ABLE;スキルによる相性変化における上書き許可リスト(文字列指定)
+#DIM CHANGE_TYPE_SKILL_RANK;スキルによる相性変化における優先度ランク
+#DIM TEMP_HAVE_SKILL, 80;EDIT 096 MOD
+#DIM CONST REFLECT_VAR = -99999;反射を大小比較に使うために一時的にマイナス化するための数値
+
+;--------------------------------------------------------
+;ロール毎にアクセスできる相性変更措置を取得する
+;基本的には悪魔はMAG強化、人間は装備となるが、変身や半魔など例外が絡む
+;--------------------------------------------------------
+CAN_USE_EQUIP_TYPE = GET_ROLE_PROP("CAN_USE_EQUIP_TYPE", ARG);装備による相性変更を使えるか
+CAN_USE_MAG_TYPE = GET_ROLE_PROP("CAN_USE_MAG_TYPE", ARG);MAG強化による相性変更を使えるか
+CAN_USE_PLUGIN = GET_ROLE_PROP("CAN_USE_PLUGIN", ARG);プラグインによる相性変更を使えるか
+CAN_USE_PORTRAIT = GET_ROLE_PROP("CAN_USE_PORTRAIT", ARG);写せ身による相性変更を使えるか
+
+TYPE_CHARA_NUM = -1
+TYPE_CSV_NUM = -1
+
+IF CFLAG:ARG:링크캐릭터실제가입시간0 > 0 && STRCOUNT(GETS_ROLE_PROP("LINK_STATUS", ARG), "防御相性");MAG強化による相性の参照先(リンク悪魔か自分かとなる)
+	TYPE_CHARA_NUM = FINDCHARA_LINK(ARG)
+	SIF !STRCOUNT(GETS_ROLE_PROP("LINK_STATUS", ARG), "装備防御相性")
+		CAN_USE_EQUIP_TYPE = 0
+ELSE
+	IF STRCOUNT(GETS_ROLE_PROP("TRANS_STATUS", ARG), "防御相性")
+		TYPE_CSV_NUM = CFLAG:ARG:초기링크악마
+	ELSE
+		TYPE_CHARA_NUM = ARG
+	ENDIF
+ENDIF
+BASE_TYPE_TRANS = 0;基本の相性をデフォルト変身悪魔からとるかどうか
+CFLAG:ARG:MAG상성변경불가 = 0;相性変更より上位の変更で上書きされていてロックされている状態
+
+;----------------------------------------------------
+;相性の変更処理
+;----------------------------------------------------
+VARSET TEMP_HAVE_SKILL, 1
+FOR LCOUNT, 0, TYPENUM
+    L_TYPE = GETNUM(BASE, "검격") + LCOUNT
+	;----------------------------------------------------
+	;ベースとなる相性を登録する
+	;----------------------------------------------------
+	;非戦闘員はデフォルト値を設定しておく
+	SIF TALENT:ARG:비전투원
+		BASE:ARG:L_TYPE = BASENAME:L_TYPE != "파마" ? 100 # 0
+	;---- EDIT P 001 MOD START -------------------------
+	IF CAN_USE_PORTRAIT
+		IF EQUIP:ARG:허물
+			MAXBASE:ARG:L_TYPE = CSVBASE(EQUIP:ARG:허물, L_TYPE)
+		ELSE
+			MAXBASE:ARG:L_TYPE = 200
+		ENDIF
+	;ペルソナ使いは変更なし
+	ELSEIF CSTR:ARG:롤 == "ペルソナ使い"
+		MAXBASE:ARG:L_TYPE = MAXBASE:ARG:L_TYPE
+	;リンク悪魔参照
+	ELSEIF TYPE_CHARA_NUM >= 0
+		MAXBASE:ARG:L_TYPE = BASE:TYPE_CHARA_NUM:L_TYPE
+	ELSEIF TYPE_CSV_NUM >= 0
+		MAXBASE:ARG:L_TYPE = CSVBASE(TYPE_CSV_NUM, L_TYPE)
+	ELSE
+		MAXBASE:ARG:L_TYPE = BASE:ARG:L_TYPE
+	ENDIF
+	;---- EDIT P 001 MOD END ---------------------------
+	;---- EDIT 090 START -------------------------
+	;----------------------------------------------------
+	;MAG強化による相性変更
+	;陥落状態に応じた数の耐性をMAGによって操作できる。(代入時点で判定されているのでここで条件を見る必要はない)
+	;この耐性は元の耐性に対して無条件で上書きされる
+	;
+	;CFLAGの参照先はARGか、ARGのリンク悪魔。これは先に取得してある(MAG_TYPE_CHARA)
+	;変更相性が相性と一致している場合に、変更相性値を入れるが、変更相性は未設定状態状態に0を使うために実際の相性番号と1ずらして代入しているのに注意
+	;
+	;info 	変更相性2は現在未使用(2022/11/22)
+	;		枠だけ確保してあったのを見落として追加変更を作ってしまったものと思われる
+	;----------------------------------------------------
+	IF CAN_USE_MAG_TYPE
+		;キャラ対象がいなくて見れる場合は自分自身を見る
+		TEMP = TYPE_CHARA_NUM >= 0 ? TYPE_CHARA_NUM # ARG
+		FOR LCOUNT:1, 1, 3 + 4
+			IF LCOUNT:1 < 3
+				SIF CFLAG:TEMP:@"변경상성{LCOUNT:1}" == LCOUNT + 1
+					MAXBASE:ARG:L_TYPE = CFLAG:TEMP:@"변경상성치{LCOUNT:1}"
+			ELSE
+				;陥落履歴による追加
+				SIF CFLAG:TEMP:@"추가변경상성{LCOUNT:1 - 2}" == LCOUNT + 1
+					MAXBASE:ARG:L_TYPE = CFLAG:TEMP:@"추가변경상성치{LCOUNT:1 - 2}"
+			ENDIF
+		NEXT
+	ENDIF
+	;---- EDIT 090 END ---------------------------
+	;----------------------------------------------------
+	;装備とスキルによる相性変更
+	;----------------------------------------------------
+	TEMP_TYPE_MAX = 100
+	TEMP_TYPE_MIN = 100
+	
+	;ここまでの計算上の数値をとっておく
+	STOCK_TYPE = MAXBASE:ARG:L_TYPE
+	;反射の場合、数値をマイナス化
+	STOCK_TYPE = STOCK_TYPE == 999 ? REFLECT_VAR # STOCK_TYPE
+
+	;----------------------------------------------------
+	;装備による相性の取得
+	;----------------------------------------------------
+	IF CAN_USE_EQUIP_TYPE
+		FOR LCOUNT:1,0,7
+			CALL EQUIP_PROPERTY, EQUIP:ARG:(GET_EQUIP(LCOUNT:1)), "防御相性", LCOUNT, ARG
+			SIF RESULT == 100
+				CONTINUE
+			;反射の場合扱いやすいように一旦数値を置き換える
+			TEMP = RESULT == 999 ? REFLECT_VAR # RESULT
+			TEMP_TYPE_MAX = MAX(TEMP_TYPE_MAX, TEMP)
+			TEMP_TYPE_MIN = MIN(TEMP_TYPE_MIN, TEMP)
+		NEXT
+	ENDIF
+	;スキルによる相性の取得
+	FOR LCOUNT:1, 0, TRYSKILLNUM(ARG)
+		;---- EDIT 094 MOD START -------------------------
+		SIF TEMP_HAVE_SKILL:(LCOUNT:1) == 0
+			CONTINUE
+		RESULT = 0
+		RESULTS = 
+		TEMP_SKILLS = %GET_TRYSKILL(ARG, LCOUNT:1)%
+		IF TEMP_SKILLS == "0"
+			TEMP_HAVE_SKILL:(LCOUNT:1) = 0
+			CONTINUE
+		ELSE
+			RESULT = 0
+			TRYCCALLFORM SKILL_ADD_STATUS_%TEMP_SKILLS%, "相性", BASENAME:L_TYPE, ARG, MAXBASE:ARG:L_TYPE, TEMP_SKILL, TRYSKILL_VAR
+				SIF !RESULT
+					CONTINUE
+				TEMP = RESULT:1 == 999 ? REFLECT_VAR # RESULT:1
+				TEMP_TYPE_MAX = MAX(TEMP_TYPE_MAX, TEMP)
+				TEMP_TYPE_MIN = MIN(TEMP_TYPE_MIN, TEMP)
+			CATCH
+				TEMP_HAVE_SKILL:(LCOUNT:1) = 0
+			ENDCATCH
+		ENDIF
+		;---- EDIT 094 MOD END ---------------------------
+	NEXT
+	;------------------------------------------
+	;補正の適用
+	;元々の相性が耐性以上の場合
+	;元々の相性が耐性/無効/吸収/反射
+	;装備に弱点が混ざっていた場合は弱点が優先。ただし、ほかの装備で耐性を得られるならその耐性になる
+	;
+	;元々の相性が通常/弱点 
+	;装備でほぼそのまま動く → 改善する装備がある場合は一番いい相性、ない場合は一番悪い相性が選定される
+	;------------------------------------------
+	;元々の相性が耐性以下の場合
+	IF STOCK_TYPE < 100
+		;補正にひとつでも耐性以上の相性をつけるものがある場合
+		IF TEMP_TYPE_MIN < 100
+			;補正に弱点以上の相性がある場合は本体の相性を使えなくなる
+			IF TEMP_TYPE_MAX > 100
+				;補正の中で一番いい相性を適用する
+				MAXBASE:ARG:L_TYPE = TEMP_TYPE_MIN
+			ELSE
+				;弱点以上の相性が存在していないなら全ての相性のうちもっとも良いものが適用される・
+				MAXBASE:ARG:L_TYPE = MIN(TEMP_TYPE_MIN, STOCK_TYPE)
+			ENDIF
+		;相性をよくする補正がない場合は一番相性が悪い補正が適用される。
+		ELSEIF TEMP_TYPE_MAX > 100
+			MAXBASE:ARG:L_TYPE = TEMP_TYPE_MAX
+		;補正の相性が全て通常の場合はここに来るまでの計算結果がそのまま適用される
+		ELSE
+			MAXBASE:ARG:L_TYPE = STOCK_TYPE
+		ENDIF
+	;元々の相性が通常あるいは弱点
+	ELSE
+		;相性を改善する補正があった場合はもっとも良いものに
+		IF TEMP_TYPE_MIN < 100
+			MAXBASE:ARG:L_TYPE = TEMP_TYPE_MIN
+		ELSE
+			;一番良い相性でも通常以上なら、一番悪い相性を適用する
+			MAXBASE:ARG:L_TYPE = MAX(TEMP_TYPE_MAX, STOCK_TYPE)
+		ENDIF
+	ENDIF
+	;一時的に差し替えていた反射の数値を差し戻す
+	SIF MAXBASE:ARG:L_TYPE == REFLECT_VAR
+		MAXBASE:ARG:L_TYPE = 999
+	;---- EDIT 101 MOD END ---------------------------
+	;----------------------------------------------------
+	;プラグインによる相性変更
+	;----------------------------------------------------
+	IF CAN_USE_PLUGIN
+		;プラグイン（アクセサリ）を見る
+		CALLFORM 防御相性_{EQUIP:ARG:악세서리}, LCOUNT,ARG
+		SIF RESULT != 100
+			MAXBASE:ARG:L_TYPE = RESULT
+	ENDIF
+
+	;----------------------------------------------------
+	;スキルによる変化(タイミング2)
+	;----------------------------------------------------
+	;IF INRANGE(CHANGE_TYPE_SKILL_RANK, 10, 19)
+	;	IF STRCOUNT(CHANGE_TYPE_SKILL_ABLE, GET_WEAKNESS(MAXBASE:ARG:GET_TYPE(LCOUNT)))
+	;		MAXBASE:ARG:GET_TYPE(LCOUNT) = CHANGE_TYPE_SKILL_VALUE
+	;		SETBIT CFLAG:ARG:MAG상성변경불가, LCOUNT
+	;	ENDIF
+	;ENDIF
+
+	;----------------------------------------------------
+	;その他の相性変更
+	;----------------------------------------------------
+	;蠅状態で耐性変更
+	IF GET_STATE(CFLAG:ARG:상태이상) == "FLY"
+		MAXBASE:ARG:L_TYPE = 100
+		SIF GROUPMATCH(BASENAME:L_TYPE, "화염", "충격", "질풍", "핵열")
+			MAXBASE:ARG:L_TYPE = 400
+	ENDIF
+	SIF GETBIT(CFLAG:ARG:분노약점부여,LCOUNT)
+		MAXBASE:ARG:L_TYPE = 150
+NEXT
+
+@SYNC_STATUS_STATE, ARG
+#DIM LCOUNT, 2
+;#DIM TEMP_STATE, 8
+#DIM TEMP_STATE_MAX
+#DIM TEMP_STATE_MIN
+#DIM TEMP_SKILL
+#DIMS TEMP_SKILLS
+#DIM TEMP_HAVE_SKILL, 80;EDIT 096 MOD
+#DIM CAN_USE_EQUIP_STATE;装備のステートをつかえるかどうか
+#DIM CAN_USE_MAG_STATE;MAG強化のステートをつかえるかどうか
+#DIM CAN_USE_PLUGIN;プラグインのステートをつかえるかどうか
+#DIM STATE_CHARA_NUM = -1
+#DIM STATE_CSV_NUM = -1
+;--------------------------------------------------------
+;ロール毎にアクセスできる相性変更措置を取得する
+;基本的には悪魔はMAG強化、人間は装備となるが、変身や半魔など例外が絡む
+;--------------------------------------------------------
+;---- EDIT 101 MOD START -------------------------
+;-----------------------------------------
+;ロールの判定を変数化
+;関数の通過を減らして速度をあげるため
+;-----------------------------------------
+CAN_USE_EQUIP_STATE = GET_ROLE_PROP("CAN_USE_EQUIP_STATE", ARG);装備による相性変更を使えるか
+CAN_USE_MAG_STATE = GET_ROLE_PROP("CAN_USE_MAG_STATE", ARG);MAG強化による相性変更を使えるか
+CAN_USE_PLUGIN = GET_ROLE_PROP("CAN_USE_PLUGIN", ARG);プラグインによる相性変更を使えるか
+
+STATE_CHARA_NUM = -1
+STATE_CSV_NUM = -1
+;ペルソナ使いはすでにMAXBASEが確定している
+IF !TALENT:ARG:페르소나구사자
+	;リンクしている場合はそのキャラ番号
+	IF CFLAG:ARG:링크캐릭터실제가입시간0 > 0 && STRCOUNT(GETS_ROLE_PROP("LINK_STATUS", ARG), "ステート耐性")
+		STATE_CHARA_NUM = FINDCHARA_LINK(ARG)
+	;変身している場合
+	ELSEIF STRCOUNT(GETS_ROLE_PROP("TRANS_STATUS", ARG), "ステート耐性")
+		STATE_CSV_NUM = CFLAG:ARG:초기링크악마
+	;その他は自分自身
+	ELSE
+		STATE_CHARA_NUM = ARG
+	ENDIF
+ENDIF
+
+VARSET TEMP_HAVE_SKILL, 1
+FOR LCOUNT,0,BADSTATENUM
+	;-----------------------------------------
+	;ベースの数値設定
+	;-----------------------------------------
+	SIF STATE_CHARA_NUM >= 0
+		MAXBASE:ARG:GET_STATE(LCOUNT) = BASE:STATE_CHARA_NUM:GET_STATE(LCOUNT)
+	SIF STATE_CSV_NUM >= 0
+		MAXBASE:ARG:GET_STATE(LCOUNT) = CSVBASE(STATE_CSV_NUM, GETNUM(BASE , GET_STATE(LCOUNT)),0)
+
+	;-----------------------------------------
+	;装備及びスキルによる補正の取得
+	;使用するのは最大値と最低値だけなのでそれだけ取っておく
+	;-----------------------------------------
+	TEMP_STATE_MAX = 0
+	TEMP_STATE_MIN = 0
+	;装備の耐性を取る
+	IF CAN_USE_EQUIP_STATE
+		FOR LCOUNT:1,0,7
+			CALL EQUIP_PROPERTY, EQUIP:ARG:(GET_EQUIP(LCOUNT:1)), "バステ耐性", LCOUNT, ARG
+			SIF !RESULT
+				CONTINUE
+			TEMP_STATE_MAX = MAX(TEMP_STATE_MAX, RESULT)
+			TEMP_STATE_MIN = MIN(TEMP_STATE_MIN, RESULT)
+		NEXT
+	ENDIF
+	;スキルの耐性を取る
+	FOR LCOUNT:1, 0, TRYSKILLNUM(ARG)
+		SIF TEMP_HAVE_SKILL:(LCOUNT:1) == 0
+			CONTINUE
+		RESULT = 0
+		RESULTS = 
+		TEMP_SKILLS = %GET_TRYSKILL(ARG, LCOUNT:1)%
+		TEMP_SKILL = TOINT(TEMP_SKILLS)
+		IF TEMP_SKILLS == "0"
+			TEMP_HAVE_SKILL:(LCOUNT:1)	= 0
+			CONTINUE
+		ELSE
+			RESULT = 0
+			TRYCCALLFORM SKILL_ADD_STATUS_%TEMP_SKILLS%, "상태이상", GET_STATE(LCOUNT), ARG, MAXBASE:ARG:GET_STATE (LCOUNT), TEMP_SKILL, TRYSKILL_VAR
+				SIF !RESULT
+					CONTINUE
+				TEMP_STATE_MAX = MAX(TEMP_STATE_MAX, RESULT)
+				TEMP_STATE_MIN = MIN(TEMP_STATE_MIN, RESULT)
+			CATCH
+				TEMP_HAVE_SKILL:(LCOUNT:1) = 0
+				CONTINUE
+			ENDCATCH
+		ENDIF
+	NEXT
+
+	;-----------------------------------------
+	;補正の適用
+	;1.耐性のマイナス(強化)がある場合は最も良い耐性になる。
+	;2.耐性のプラス(弱化)がある場合は元々の耐性がマイナスであってもそれが消える。
+	;3.耐性の候補がプラスだけならそのうちもっとも数値が大きい=悪いものが選ばれる
+	;-----------------------------------------
+	;耐性は100 + X形式なのでマイナスのほうが良い補正になる
+	;元々の耐性がマイナス
+	IF MAXBASE:ARG:(GET_STATE(LCOUNT)) < 0
+		IF TEMP_STATE_MIN < 0
+			;プラスの補正も存在する(これにより元々の補正が消える)
+			IF TEMP_STATE_MAX > 0
+				;補正の中で最も良いものを取る
+				MAXBASE:ARG:(GET_STATE(LCOUNT)) = TEMP_STATE_MIN
+			ELSE
+				;元々の数値も含めて最も良いものを取る
+				MAXBASE:ARG:(GET_STATE(LCOUNT)) = MIN(TEMP_STATE_MAX, MAXBASE:ARG:(GET_STATE(LCOUNT)))
+			ENDIF
+		;マイナスの装備がなくプラスの装備がある
+		ELSEIF TEMP_STATE_MAX > 0
+			;もっとも悪い補正を取る
+			MAXBASE:ARG:(GET_STATE(LCOUNT)) = TEMP_STATE_MAX
+		ENDIF
+	ELSE
+		;マイナスの補正がある
+		IF TEMP_STATE_MIN < 0
+			;最も良い補正になる
+			MAXBASE:ARG:(GET_STATE(LCOUNT)) = TEMP_STATE_MIN
+		ELSE
+			;元々の耐性がマイナスの場合は元々の耐性のままとなる
+			IF MAXBASE:ARG:(GET_STATE(LCOUNT)) < 0
+				MAXBASE:ARG:(GET_STATE(LCOUNT)) = MAXBASE:ARG:(GET_STATE(LCOUNT))
+			;元々の耐性が0以上なら最も悪い耐性になる
+			ELSE
+				MAXBASE:ARG:(GET_STATE(LCOUNT)) = MAX(TEMP_STATE_MAX, MAXBASE:ARG:(GET_STATE(LCOUNT)))
+			ENDIF
+		ENDIF
+	ENDIF
+
+	;;----------------------------------------------------
+	;プラグインによる相性変更
+	;----------------------------------------------------
+	IF CAN_USE_PLUGIN
+		;プラグイン（アクセサリ）を見る
+		RESULT = 0
+		TRYCALLFORM バステ耐性_{EQUIP:ARG:악세서리}, LCOUNT,ARG
+		SIF RESULT != 0
+			MAXBASE:ARG:GET_STATE(LCOUNT) = RESULT
+	ENDIF
+NEXT
+
+;---------------------------------------------------
+;武器の番号からデビルアームズで取得するスキルを取得する
+;ARG = 무기
+;---------------------------------------------------
+@GET_DEVIL_ARMS_SKILL, ARG
+#DIM LCOUNT
+#DIM L_RESULT, 3
+#DIM TEMP_SKILL, 3
+VARSET L_RESULT, 0, 0, 3
+;---- EDIT 093 ADD START -------------------------
+VARSET TEMP_SKILL
+;---- EDIT 093 ADD END ---------------------------
+;武器種から取得する
+TRYCCALLFORM 剣タイプ_{ARG}
+	SELECTCASE GET_ARMS_TYPE(RESULT)
+		CASE "刀"
+			TEMP_SKILL = [[스킬:이검난무]], [[스킬:회전베기]], [[스킬:허공참파]]
+		CASE "레이피어"
+			TEMP_SKILL = [[스킬:안개베기]], [[스킬:데스바운드]], [[스킬:공간살법]]
+		CASE "弓"
+			TEMP_SKILL = [[스킬:연속사격]], [[스킬:찰나장대비쏘기]], [[스킬:오절절우]]
+		CASE "검"
+			TEMP_SKILL = [[스킬:양팔찍기]], [[스킬:낭아천주참]], [[스킬:낙양삼단격]]
+		CASE "槍"
+			TEMP_SKILL = [[스킬:이단찌르기]], [[스킬:용아선회]], [[스킬:작열거가]]
+		CASE "斧・鈍器"
+			TEMP_SKILL = [[스킬:극락왕생파]], [[스킬:대나무베기]], [[스킬:천경지폭단]]
+		CASE "채찍"
+			TEMP_SKILL = [[스킬:사랑의채찍]], [[스킬:구십구나선격]], [[스킬:부월쇄파]]
+		CASE "投具"
+			TEMP_SKILL = [[스킬:더블샷]], [[스킬:암파쌍비조]], [[스킬:고천열풍탄]]
+		CASE "杖・祭具"
+			TEMP_SKILL = [[스킬:메기도]], [[스킬:메기도라]], [[스킬:메기도라온]]
+		CASE "棍"
+			TEMP_SKILL = [[스킬:방어부수기]], [[스킬:절묘타]], [[스킬:팔상발파]]
+		CASE "拳闘具"
+			TEMP_SKILL = [[스킬:소닉펀치]], [[스킬:기간피스트]], [[스킬:메테오피스트]]
+		CASEELSE
+	ENDSELECT
+	RESULT = 1
+	TRYCALLFORM 必要レベル_{ARG}
+	L_RESULT = TEMP_SKILL:((RESULT >= 25) + (RESULT >= 50))
+CATCH
+ENDCATCH
+VARSET RESULT, 0, 0, 3
+;武器固有スキルを確認する
+TRYCCALLFORM デビルアームズ追加スキル_{ARG}
+	;3つ指定されている場合は武器種スキルの枠を潰す
+	;-1を指定した場合は枠を潰す。固有ひとつのみといった形にするならX, -1, -1のように指定
+	IF MATCH(RESULT, 0, 0, 3) == 0
+		L_RESULT = RESULT, RESULT:1, RESULT:2
+	ELSE
+		FOR LCOUNT, 0, 3
+			SIF RESULT:LCOUNT > 0
+				L_RESULT:FINDELEMENT(L_RESULT, 0) = RESULT:LCOUNT
+		NEXT
+	ENDIF
+	FOR LCOUNT, 0, 3
+		L_RESULT:LCOUNT = L_RESULT:LCOUNT < 0 ? 0 # L_RESULT:LCOUNT
+	NEXT
+CATCH
+ENDCATCH
+RETURN L_RESULT, L_RESULT:1, L_RESULT:2
+;---- EDIT 086 ADD END ---------------------------
+
+
+@IS_CALC_ガチャ, ARG
+#FUNCTION
+SIF FLAG:악마가챠모드 < 2
+	RETURNF 0
+SIF CFLAG:ARG:PT플래그 == 0
+	RETURNF 0
+SIF CSTR:ARG:롤 != "悪魔"
+	RETURNF 0
+SIF CFLAG:ARG:전서소환불가 == 0
+	RETURNF 0
+SIF TALENT:ARG:가챠
+	RETURNF 0
+RETURNF 1

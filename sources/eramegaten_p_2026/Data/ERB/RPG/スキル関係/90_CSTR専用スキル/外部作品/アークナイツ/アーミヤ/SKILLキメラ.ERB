@@ -1,0 +1,375 @@
+﻿;スキル名
+@SKILL_NAME_キメラ,ARG
+RESULTS = キメラ
+
+;　명중
+@SKILL_HITRATE_キメラ, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_キメラ, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"アブソープション")
+RESULT = 0
+SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) > 0
+	CALL GET_SKILL_PROP, "SKILL_POWER", SKILLGAGE_F_GET(ARG,SKILL_NUM),ARG
+RETURN RESULT
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_キメラ, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"アブソープション")
+RESULT = 5
+SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) > 0
+	CALL GET_SKILL_PROP, "SKILL_CRITICAL_RATE", SKILLGAGE_F_GET(ARG,SKILL_NUM),ARG
+RETURN RESULT
+
+;　吸収率
+@SKILL_HP_ABSORBER_キメラ, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"アブソープション")
+RESULT = 0
+SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) > 0
+	CALL GET_SKILL_PROP, "SKILL_HP_ABSORBER", SKILLGAGE_F_GET(ARG,SKILL_NUM),ARG
+RETURN RESULT
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_キメラ,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_キメラ,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_キメラ, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"アブソープション")
+RESULT = 0
+SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) > 0
+	CALL GET_SKILL_PROP, "SKILL_COSTTYPE", SKILLGAGE_F_GET(ARG,SKILL_NUM),ARG
+RETURN RESULT
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_キメラ,ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"アブソープション")
+RESULT = 0
+SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) > 0
+	CALL GET_SKILL_PROP, "SKILL_COST", SKILLGAGE_F_GET(ARG,SKILL_NUM), ARG
+RETURN RESULT
+
+;　相性
+@SKILL_TYPE_キメラ,ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"アブソープション")
+RESULT = 0
+SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) > 0
+	CALL GET_SKILL_PROP, "SKILL_TYPE", SKILLGAGE_F_GET(ARG,SKILL_NUM), ARG
+RETURN RESULT
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_キメラ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_キメラ,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_キメラ,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_キメラ,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_キメラ,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_キメラ,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_キメラ
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_キメラ, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_キメラ
+RETURN 0
+
+;没
+;@SKILL_RANK_キメラ, ARG = -1
+
+
+;ターン開始時に行う処理
+@SKILL_TURNSTART_キメラ,ARG
+#DIM SKILL_NUM
+#DIM ABSOURPTION
+SIF !ACTIONABLE_CHARA_F(ARG)
+	RETURN 0
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"キメラ")
+ABSOURPTION = PU_SKILLNUM_GET(ARG,"アブソープション")
+;スキル起動中(キメラのFゲージが-1以下)でなければ終了
+SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) > -1
+	RETURN 0
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+IF RESULT == 1
+	CALL GET_SKILL_PROP, "SKILL_DAMAGETYPE", CFLAG:ARG:입력행동,ARG
+	IF RESULT == 2
+		CALL SKILLGAGE_F_SET,ARG,ABSOURPTION,CFLAG:ARG:입력행동
+		CALL SKILLGAGE_H_SET,ARG,ABSOURPTION,CFLAG:ARG:타겟
+		CFLAG:ARG:입력행동 = SKILL_NUM
+		CFLAG:ARG:타겟 = CFLAG:ARG:PT플래그 == 0 ? 19 # 22
+		;SETCOLOR CFLAG:ARG:PT플래그 == 0 ? 0xff0033 # 0x33ffcc
+	ENDIF
+ENDIF
+RETURN 0
+
+;ターン終了時に行う処理
+@SKILL_TURNEND_キメラ,ARG
+#DIM SKILL_NUM
+#DIM ABSOURPTION
+#DIM L_GAGE
+SIF ARG < 0 || CSTR:ARG:104 == ""
+	RETURN 0
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"キメラ")
+ABSOURPTION = PU_SKILLNUM_GET(ARG,"アブソープション")
+;アブソープションのFゲージがクールタイムゲージとして使われてなければキメラのFゲージを、それ以外ならアブソープションのFゲージを対象にする
+L_GAGE = SKILLGAGE_F_GET(ARG,ABSOURPTION) > -1 ? SKILLGAGE_F_GET(ARG,SKILL_NUM) # SKILLGAGE_F_GET(ARG,ABSOURPTION)
+IF GET_STATE(CFLAG:ARG:상태이상) == "DYING"
+	;スキル起動中ならゲージ初期化&クールタイムゲージセット
+	IF SKILLGAGE_F_GET(ARG,SKILL_NUM) < 0
+		CALL SKILLGAGE_F_SET(ARG,SKILL_NUM,0)
+		CFLAG:ARG:입력행동 = SKILLGAGE_F_GET(ARG,ABSOURPTION)
+		CFLAG:ARG:타겟 = SKILLGAGE_H_GET(ARG,ABSOURPTION)
+		CALL SKILLGAGE_F_SET(ARG,ABSOURPTION,-70)
+		CALL SKILLGAGE_H_SET(ARG,ABSOURPTION,0)
+	ENDIF
+	RETURN 0
+ENDIF
+;Fゲージが0or正の値（起動していない状態）か、負の値（効果発動中 or クールタイムゲージ）で処理を変更
+L_GAGE = L_GAGE > -1 ? MIN(L_GAGE + 5,120) # MIN(L_GAGE + 5 ,0)
+;効果時間が終了した際にメッセージ表示
+IF L_GAGE == 0 && SKILLGAGE_F_GET(ARG,SKILL_NUM) < 0
+	PRINTL
+	PRINTL ……
+	PRINTFORMW 능력을 과도하게 사용한 %CALLNAME:ARG%(은)는 쓰러져 버렸다…
+	CALL DEAD_CHARA, ARG, ARG
+	CALL SKILLGAGE_F_SET(ARG,SKILL_NUM,0)
+	CFLAG:ARG:입력행동 = SKILLGAGE_F_GET(ARG,ABSOURPTION)
+	CFLAG:ARG:타겟 = SKILLGAGE_H_GET(ARG,ABSOURPTION)
+	CALL SKILLGAGE_F_SET(ARG,ABSOURPTION,-70)
+	CALL SKILLGAGE_H_SET(ARG,ABSOURPTION,0)
+	RETURN 0
+ENDIF
+;クールタイムの有無に応じてFゲージをセットするスキルを決定
+CALL SKILLGAGE_F_SET(ARG,SKILLGAGE_F_GET(ARG,ABSOURPTION) > -1 ? SKILL_NUM # ABSOURPTION,L_GAGE)
+RETURN 0
+
+;SHOP画面を開いた時に行う処理
+;@SKILL_INITIALIZE_キメラ,ARG
+;#DIM SKILL_NUM
+;RETURN 0
+
+@SKILL_PASSIVE_PENETRATION_RANK_キメラ, L_P, L_T, L_スキル, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM DYNAMIC L_P;このスキルの所持者
+#DIM DYNAMIC L_T;攻撃対象
+#DIMS DYNAMIC L_スキル;スキルの所持者が敵に対して使用しているスキルの関数名称
+#DIM DYNAMIC L_ダメージタイプ
+#DIM DYNAMIC L_攻撃タイプ
+#DIM DYNAMIC L_相性
+#DIM DYNAMIC GIVE_EFFECT_CHARA;リーダースキル等他人からつけられている場合の提供者
+SIF GET_ダメージタイプ(L_ダメージタイプ) == "魔法" && PU_SKILLGAGE_F_GET(L_P, "キメラ") < 0
+	RETURN 2
+RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_キメラ,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM ABSOURPTION
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"キメラ")
+ABSOURPTION = PU_SKILLNUM_GET(ARG,"アブソープション")
+IF SKILLGAGE_F_GET(ARG,SKILL_NUM) < 0 && SKILLGAGE_F_GET(ARG,ABSOURPTION) > 0
+	CALL ATTACK_RAND,ARG,ARG:1,SKILLGAGE_F_GET(ARG,ABSOURPTION)
+ELSE
+	CALL SKILLGAGE_F_SET,ARG,SKILL_NUM,-30
+	SETCOLOR 0xdc143c
+	PRINTFORML %CALLNAME:ARG%(이)가 『마왕』의 후계자로서의 편린을 드러내기 시작했다……!
+	PRINTFORMW %CALLNAME:ARG%의 마법이 위조되어, 이 세계의 법칙을 일탈하려 하고 있다……!
+	RESETCOLOR
+	CALL SYNC_STATUS,ARG
+	CALL AUTO_PU_SKILL_キメラ(ARG,"最大ＨＰ↑")
+	BASE:ARG:ＨＰ = MIN(BASE:ARG:ＨＰ * (RESULT + 100) / 100,MAXBASE:ARG:ＨＰ)
+ENDIF
+;====================================================
+;追加コマンド(一番下)
+;====================================================
+@INPUT_COM_NAME_キメラ,ARG
+RESULTS = 키메라
+RESULTS:1 = 『키메라』
+RESULTS:2 = 0xffa500
+RETURN 2
+
+@INPUT_COM_ABLE_キメラ,ARG
+RESULTS = 필요: 압솝션
+SIF !HAVE_PU_SKILL(ARG,"アブソープション")
+	RETURN -1
+RESULTS = 게이지 부족
+SIF PU_SKILLGAGE_F_GET(ARG,"キメラ") < 120
+	RETURN -1
+RETURN 1
+
+;====================================================
+;コマンド実行
+;====================================================
+@INPUT_COM_キメラ,ARG
+#LOCALSIZE 1
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"キメラ")
+LOCAL = CFLAG:ARG:입력행동
+CFLAG:ARG:입력행동 = SKILL_NUM
+CALL PRINT_ACT_MESSAGE, ARG, SKILL_NUM
+CALL ACTION_キメラ,ARG
+CALL BATTLE_EVENT_ACT, ARG
+CFLAG:ARG:입력행동 = LOCAL
+RETURN -1
+;-1 再びコマンド選択へ
+; 1 キャラ選択へ
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@SKILLGAGE_DISPLAY_キメラ,ARG
+#DIM SKILL_NUM
+#DIM ABSOURPTION
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"キメラ")
+SIF !HAVE_PU_SKILL(ARG,"アブソープション")
+	RETURN 0
+ABSOURPTION = PU_SKILLNUM_GET(ARG,"アブソープション")
+PRINTFORM \@ SKILLGAGE_F_GET(ARG,ABSOURPTION) > -1 ? ＥＸ―ＳＫＩＬＬ # ＣＯＯＬＴＩＭＥ\@|
+IF SKILLGAGE_F_GET(ARG,ABSOURPTION) > -1
+	CALL PRINT_COLORBAR, ABS(SKILLGAGE_F_GET(ARG,SKILL_NUM)), SKILLGAGE_F_GET(ARG,SKILL_NUM) > -1 ? 120 # 30, 25, UNICODE(0x2585), UNICODE(0x2585), SKILLGAGE_F_GET(ARG,SKILL_NUM) > -1 ? 0x9acd32 # 0xff8c00, 0x696969
+ELSE
+	CALL PRINT_COLORBAR, ABS(SKILLGAGE_F_GET(ARG,ABSOURPTION)), 70, 25, UNICODE(0x2585), UNICODE(0x2585), 0x1e90ff, 0x696969	
+ENDIF
+PRINTL
+
+;　説明文の表示
+@SKILL_EXPLAIN_キメラ,ARG
+PRINTL 스킬 게이지 추가. 턴 경과에 따라 게이지가 차오른다. 게이지 완충 시 기동 가능, 기동에 압솝션 필수
+PRINTL 기동 중, 가하는 마법 데미지가 대폭 증가, 최대 HP 증가, 공격 대상의 마법 효과를 절반 무시, 마법 공격 시 내성과 스킬 무효화 관통, 마법 공격의 데미지 타입이 「없음」으로 변화
+PRINTL 기동 중 마법 공격을 행했을 때, 공격 대상을 적 전체 랜덤 1체로 변경하고, 행동을 키메라로 덮어씌워 발동한다
+PRINTL 키메라의 성능은 턴 시작 전 입력한 행동의 성능을 계승한다. 단 공격 횟수는 1회뿐
+PRINTL 효과 종료 시, 혹은 전투에서 이탈하면 즉사하며 게이지 리셋, 쿨타임 게이지가 설정된다
+PRINTL 쿨타임 게이지가 소멸할 때까지 스킬 게이지가 차지 않는다.
+PRINTL 
+PRINTL 스킬 랭크가 높을수록 가하는 데미지량과 최대 HP 증가량이 상승한다
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_キメラ,ARG
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"キメラ")) < 0 && SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"アブソープション")) > 0
+	RETURN 1
+RETURN 0
+
+@リンク不能_キメラ
+RETURN 1
+
+;====================================================
+;独自処理
+;====================================================
+;（予定）と付けられている方は仮置きの物。実際に採用されるかどうかはわからない。
+@AUTO_PU_SKILL_キメラ,ARG,ARGS,ARG:1,ARG:2
+#DIM SKILL_RANK
+#DIM SKILL_NUM
+;ARG = 使用者
+;ARGS （ダメージ↑、被ダメージ↑、命中↑、回避↑、魔威↑、魔効↑、etc…）といった感じの奴
+;文字列を参考にする都合上、どの文字列を使うか事前に定めておいた方がいいかも
+;CSTR:ARG:100 = EXTRA勢出典作品、『アークナイツ』とでも書き込む（予定）
+;CSTR:ARG:101 = EXTRA勢出典作品でどのキャラなのか、とりあえず『アーミヤ（アークナイツ）』とでも書き込む（予定）
+;CSTR:ARG:102 = 専用スキルその2のスキルランク変数として使用、この場合は『戦術詠唱γ』が対象（予定）
+;CSTR:ARG:103 = 専用スキルその1のスキルランク変数として使用、この場合は『レーヴァテイン（ＡＮ）』が対象（予定）
+;CSTR:ARG:104 = 専用スキルその3のスキルランク変数として使用、この場合は『キメラ』が対象（予定）
+SKILL_RANK = TOINT(CSTR:ARG:104)
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"キメラ")
+;IF ARGS == "Hゲージ最大値"
+;	;スキルHゲージの最大値を決める処理
+;	RETURN 120
+;ELSEIF ARGS == "Hゲージ初期値"
+;	;スキルHゲージの初期値を決める処理
+;	RETURN 0
+;ELSEIF ARGS == "Dゲージ最大値"
+;	;スキルDゲージの最大値を決める処理
+;	RETURN 6
+;ENDIF
+IF SKILLGAGE_F_GET(ARG,SKILL_NUM) < 0
+	SELECTCASE ARGS
+		CASE "ダメージ↑"
+			;与ダメージとかに挟む場合の処理
+			;魔法ダメージを与える処理でなければダメ
+			CALL GET_SKILL_PROP, "SKILL_DAMAGETYPE", PU_SKILLGAGE_F_GET(ARG, "アブソープション"),ARG
+			SIF RESULT != 2
+				RETURN 0
+			SELECTCASE SKILL_RANK
+				CASE 1
+					RETURN 50
+				CASE 2
+					RETURN 65
+				CASE 3
+					RETURN 80
+				CASE 4
+					RETURN 115
+			ENDSELECT
+		CASEELSE
+			RETURN 0
+	ENDSELECT
+ENDIF
+RETURN 0
+
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_キメラ, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	;RESULT = 修正値
+	;RESULTS = 加算/乗算/固定値/活泉/魔脈
+	;加算はそのまま固定値を加算する。乗算は(100+X)/100倍にする。固定値は必ずその数値にする(55ならなにがあろうと最大HP55になる)
+	;活泉/魔脈はそのまま同種スキルと同じ枠となりもっとも効果量が高いものを優先する形になる
+	;HP半減
+	CASE "HP補正"
+		RESULTS = 乗算
+		;固定値ではなく、変動する倍率を指定
+		;固定値を指定する場合は"ＨＰ増加"を使う
+		; 最大ＨＰ（適用後） = 最大ＨＰ（適用前） * (보정 + 100) / 100 の式で行われる点に注意
+		SELECTCASE TOINT(CSTR:ARG:104)
+			CASE 1
+				RETURN 25
+			CASE 2
+				RETURN 50
+			CASE 3
+				RETURN 75
+			CASE 4
+				RETURN 100
+		ENDSELECT
+ENDSELECT
+RETURN 0

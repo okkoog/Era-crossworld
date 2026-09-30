@@ -1,0 +1,237 @@
+﻿;
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_七の太刀・遊蝶華, ARG
+RESULTS = 칠의 태도·유접화
+
+;　명중
+@SKILL_HITRATE_七の太刀・遊蝶華, ARG
+RETURN 150
+
+;　威力
+@SKILL_POWER_七の太刀・遊蝶華, ARG
+RETURN 900
+
+@SKILL_CRITICAL_RATE_七の太刀・遊蝶華, ARG
+RETURN 40
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_七の太刀・遊蝶華, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_七の太刀・遊蝶華, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_七の太刀・遊蝶華, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_七の太刀・遊蝶華, ARG
+RETURN 60
+
+;　相性
+@SKILL_TYPE_七の太刀・遊蝶華, ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_七の太刀・遊蝶華
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_七の太刀・遊蝶華, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_七の太刀・遊蝶華, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_七の太刀・遊蝶華, ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_七の太刀・遊蝶華, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_七の太刀・遊蝶華, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_七の太刀・遊蝶華, ARG
+RETURN GET_SUCCESSION_NUM("검격")
+
+@継承不能_七の太刀・遊蝶華
+RETURN 2
+
+;속도보정
+@SKILL_SPEED_七の太刀・遊蝶華, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_七の太刀・遊蝶華, ARG
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_七の太刀・遊蝶華, ARG = -1
+RETURN 15
+
+
+
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_七の太刀・遊蝶華, ARG = -1, ARG:1 = -1
+RETURN 4
+
+;====================================================
+;ダメージ発動時
+;ARG:0	行動者のキャラ番号
+;ARG:1	対象のキャラ番号
+;ARG:2	1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;
+;備考:標準の追加効果付与はblock・吸収の場合は発動しない。
+;====================================================
+@SKILL_DAMAGE_EFFECT_七の太刀・遊蝶華, ARG, ARG:1, ARG:2
+SIF ARG:1 < 0
+	RETURN 0
+SIF CFLAG:(ARG:1):현데미지 < 1
+	RETURN 0
+CALL SKILL_SET_カジャンダ, ARG, ARG:1, "攻撃_防御_魔法威力_魔法効果_命中_回避", -4, "短縮"
+;PRINT  & 全能力低下
+;FOR LOCAL:1,0,6
+;	CFLAG:(ARG:1):(GET_BATTLESTATUS(LOCAL:1) + "강화") = MAX(-16, CFLAG:(ARG:1):(GET_BATTLESTATUS(LOCAL:1) + "강화") - 4)
+;NEXT
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_七の太刀・遊蝶華, ARG, ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL ATTACK_SINGLE, ARG,POS(ARG:1),SKILL_NUM
+CALL SKILLGAGE_H_SET(ARG,SKILL_NUM,0)
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@SKILLGAGE_DISPLAY_七の太刀・遊蝶華, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"七の太刀・遊蝶華")
+SIF SKILL_NUM < 1
+	RETURN
+
+LOCAL:1 = 0
+FOR LOCAL,1,7
+	IF SKILLGAGE_H_GETBIT(ARG,SKILL_NUM,LOCAL) == 1
+		SELECTCASE LOCAL
+		CASE 1
+			SETCOLOR COLOR("ピンク")
+			PRINT 撫子　
+		CASE 2
+			SETCOLOR COLOR("白")
+			PRINT 白百合　
+		CASE 3
+			SETCOLOR COLOR("明桃色")
+			PRINT 牡丹　
+		CASE 4
+			SETCOLOR COLOR("赤")
+			PRINT 椿　
+		CASE 5
+			SETCOLOR 0xff1cd9
+			PRINT 朝顔　
+		CASE 6
+			SETCOLOR COLOR("明黄色")
+			PRINT 夕顔　
+		ENDSELECT
+		LOCAL:1 = 1
+	ENDIF
+NEXT
+SIF LOCAL:1
+	PRINTL
+RESETCOLOR
+
+;　 説明文の表示
+@SKILL_EXPLAIN_七の太刀・遊蝶華, ARG
+PRINTL 적 단체에 모든 내성과 내성강화 효과를 관통하는 검격 상성의 초절대 데미지+전 능력 저하
+PRINTL 이 스킬은 일의 태도~육의 태도를 전부 맞히지 않으면 쓸 수 없다
+
+;継承に必要な部位
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_七の太刀・遊蝶華, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"七の太刀・遊蝶華")
+SIF SKILL_NUM < 1
+	RETURN
+SIF SKILLGAGE_H_GETBIT(ARG,SKILL_NUM,1) == 0
+	RETURN 0
+SIF SKILLGAGE_H_GETBIT(ARG,SKILL_NUM,2) == 0
+	RETURN 0
+SIF SKILLGAGE_H_GETBIT(ARG,SKILL_NUM,3) == 0
+	RETURN 0
+SIF SKILLGAGE_H_GETBIT(ARG,SKILL_NUM,4) == 0
+	RETURN 0
+SIF SKILLGAGE_H_GETBIT(ARG,SKILL_NUM,5) == 0
+	RETURN 0
+SIF SKILLGAGE_H_GETBIT(ARG,SKILL_NUM,6) == 0
+	RETURN 0
+RETURN 1
+
+@SKILLGAGE_CHARGE_七の太刀・遊蝶華,ARG,ARG:1
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC L_COLOR
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+SIF !PU_SKILLGAGE_D_GET(ARG, "七の太刀・遊蝶華")
+	RETURN 0
+CALL PU_SKILLGAGE_D_SET, ARG, "七の太刀・遊蝶華", 0
+RESULTS:2 '= ""
+FOR LCOUNT, 0, 6
+	IF SKILLGAGE_H_GETBIT(ARG, PU_SKILLNUM_GET(ARG, "七の太刀・遊蝶華"), LCOUNT) > 0
+		SELECTCASE LCOUNT
+			CASE 0
+				L_COLOR '= "ピンク"
+			CASE 1
+				L_COLOR '= "白"
+			CASE 2
+				L_COLOR '= "明桃色"
+			CASE 3
+				L_COLOR '= "赤"
+			CASE 4
+				L_COLOR '= "0xff1cd9"
+			CASE 5
+				L_COLOR '= "明黄色"
+		ENDSELECT
+	ELSE
+		L_COLOR '= "gray"
+	ENDIF	
+	SELECTCASE LCOUNT
+		CASE 0
+			RESULTS += SET_COLOR_TAG("撫子", L_COLOR) + " "
+		CASE 1
+			RESULTS += SET_COLOR_TAG("白百合", L_COLOR) + " "
+		CASE 2
+			RESULTS += SET_COLOR_TAG("牡丹", L_COLOR) + " "
+		CASE 3
+			RESULTS += SET_COLOR_TAG("椿", L_COLOR) + " "
+		CASE 4
+			RESULTS += SET_COLOR_TAG("朝顔", L_COLOR) + " "
+		CASE 5
+			RESULTS += SET_COLOR_TAG("夕顔", L_COLOR)
+	ENDSELECT
+NEXT
+RETURN 1

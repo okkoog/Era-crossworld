@@ -1,0 +1,297 @@
+﻿;-------------------------------------------------
+;シオン・エルトナム・アトラシア戦闘口上
+;テンプレより作成。ライセンスフリー
+;-------------------------------------------------
+;
+;
+
+;-------------------------------------------------
+;■台詞の行数を増やしたいときは
+;			LOCAL:1 = 行数
+;			LOCALS = 一行目
+;			LOCALS:1 = 二行目
+;			LOCALS:2 = 三行目
+;と増やしていく
+;-------------------------------------------------
+
+;-------------------------------------------------
+@KOJO_BATTLE_EVENT_K[[キャラ:시온]], ARG, ARG:1, ARG:2
+;-------------------------------------------------
+SIF ARG < 0 && NO:ARG != 5050
+	RETURN 0
+LOCAL:1 = 1
+;231227:EMPTYと喋っていたケースの対処
+;BTL_KOJO_RESULTS:0 = EMPTY
+
+SELECTCASE TFLAG:전투이벤트
+	;COOP発動 ARGは発動者
+	CASE 1
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 予測通りですね。さあ、追撃を！
+		ELSEIF !RAND:2
+			BTL_KOJO_RESULTS:0 = 凌ぎ切ったと思いましたか？　なら、その惰性はあなたを殺すことになる
+		ELSE
+			BTL_KOJO_RESULTS:0 = 計算通りです
+		ENDIF
+	;COOP参加
+	CASE 2
+		;主人がCOOP発動
+		IF FLAG:행동순1 != -1 && FLAG:행동순1 == MASTER
+			BTL_KOJO_RESULTS:0 = ほう。異世界のメイガスの手並み、中々のものですね
+		;それ以外
+		ELSE
+			IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = 立て直すための時など、作らせはしない
+			ELSEIF !RAND:2
+				BTL_KOJO_RESULTS:0 = 計算できない展開などありません
+			ELSE
+				BTL_KOJO_RESULTS:0 = 最適戦略を構築…　行きます！
+			ENDIF
+		ENDIF
+	;被召喚時
+	CASE 3
+		BTL_KOJO_RESULTS:0 = 高速思考展開。戦闘、開始します
+	;공격　ARGが攻撃をする仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 11
+		;相手が死んだ
+		IF BASE:(ARG:1):ＨＰ <= 0
+			IF RAND:2
+				BTL_KOJO_RESULTS:0 = この結果は必然です
+			ELSE
+				BTL_KOJO_RESULTS:0 = 対象を撃破、連続戦闘への支障は皆無
+			ENDIF
+		;弱点をついた。つまりCOOP
+		ELSEIF GET_CREC_ACT(ARG, ARG:1, "WEAK")
+			IF CFLAG:(ARG:1):방어플래그
+				BTL_KOJO_RESULTS:0 = 耐え凌ぎますか。あまり煩わせないで欲しいものですが
+			ELSE
+				;こっちはCOOP発動に回すためにカット
+				RETURN 0
+			ENDIF
+;		;大ダメージ
+;		ELSEIF ダメージ割合(ARG:1, ARG:2) > 50
+;			BTL_KOJO_RESULTS:0 = 
+;		ELSEIF ダメージ割合(ARG:1, ARG:2) > 25
+;			BTL_KOJO_RESULTS:0 = 
+;		ELSEIF ダメージ割合(ARG:1, ARG:2) <= 0
+;			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;被ダメージ
+	;ARGが攻撃を受ける仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 12
+		;死んだ
+		IF BASE:ARG:ＨＰ <= 0
+			IF RAND:2
+				BTL_KOJO_RESULTS:0 = （…落第だ、私は）
+			ELSE
+				BTL_KOJO_RESULTS:0 = うあああああっ！？　しまっ―――
+			ENDIF
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 50 || 現HP割合(ARG) < 25
+			IF RAND:2
+				BTL_KOJO_RESULTS:0 = （生き延びた以上、まだ可能性は残っている…！）
+			ELSE
+				BTL_KOJO_RESULTS:0 = この程度、致命傷にはならない…！　戦闘、再開します！
+			ENDIF
+		;無効
+		ELSEIF ARG:2 == 0
+			IF RAND:2
+				BTL_KOJO_RESULTS:0 = あなたでは突破できない！
+			ELSE
+				BTL_KOJO_RESULTS:0 = 無駄な抵抗を…
+			ENDIF
+			
+		;吸収
+		ELSEIF ARG:2 < 0
+			BTL_KOJO_RESULTS:0 = あなたの行動は、すべて事前に把握していますよ
+		ENDIF
+	;反射された
+	CASE 15
+			BTL_KOJO_RESULTS:0 = っ！？　データを修正しなければ…
+	;反射した
+	CASE 16
+			BTL_KOJO_RESULTS:0 = それだけの戦術幅では、予測できない筈がない
+	;回避された
+	CASE 17
+			BTL_KOJO_RESULTS:0 = うっ、間違っ…！
+	;回避した
+	CASE 18
+			BTL_KOJO_RESULTS:0 = 亀ですか、あなたは
+ENDSELECT
+;SIF LOCALS != "EMPTY"
+;	CALL MESSAGE_BL(LOCAL:1, LOCALS, LOCALS:1, LOCALS:2, LOCALS:3, LOCALS:4)
+
+;-------------------------------------------------
+@KOJO_BATTLE_MESSAGE_K[[キャラ:시온]],ARG,ARG:1 = 0
+;-------------------------------------------------
+
+LOCAL:1 = 1
+;231227:EMPTYと喋っていたケースの対処
+;BTL_KOJO_RESULTS:0 = "EMPTY"
+
+;崩壊してる場合は口上表示しない
+SIF TALENT:ARG:9
+	RETURN 0
+
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;これは通常攻撃
+IF CFLAG:ARG:입력행동 == 0
+	IF RAND:3 == 0
+		BTL_KOJO_RESULTS:0 = えいっ！
+	ELSEIF !RAND:2
+		BTL_KOJO_RESULTS:0 = シャッ！
+	ELSE
+		BTL_KOJO_RESULTS:0 = もらった…！
+	ENDIF
+;-------------------------------------------------
+;ＣＨＡＮＧＥ
+;-------------------------------------------------
+ELSEIF LOCAL == 2301
+	BTL_KOJO_RESULTS:0 = 最適戦略を再構築…　布陣を変えましょう
+;-------------------------------------------------
+;汎用スキル
+;-------------------------------------------------
+;검격　エーテライト？
+ELSEIF RANGE(CFLAG:ARG:입력행동,1, 99)
+	IF RAND:3 == 0
+		BTL_KOJO_RESULTS:0 = 容易い！
+	ELSEIF !RAND:2
+		BTL_KOJO_RESULTS:0 = チェック！
+	ELSE
+		BTL_KOJO_RESULTS:0 = そこです！
+	ENDIF
+;비구
+ELSEIF RANGE(CFLAG:ARG:입력행동,101, 199)
+	IF RAND:3 == 0
+		BTL_KOJO_RESULTS:0 = 止まれ！
+	ELSEIF !RAND:2
+		BTL_KOJO_RESULTS:0 = 動くな！
+	ELSE
+		BTL_KOJO_RESULTS:0 = 撃ち抜く！
+	ENDIF
+;타격
+ELSEIF RANGE(CFLAG:ARG:입력행동,201, 299)
+	BTL_KOJO_RESULTS:0 = セット…　たぁっ！！
+;噛み付き系
+ELSEIF RANGE(CFLAG:ARG:입력행동,321, 326)
+	BTL_KOJO_RESULTS:0 = （血……喉、喉が、渇いて―――　っ、ダメだ！）
+;회복
+ELSEIF RANGE(CFLAG:ARG:입력행동,401, 499)
+	;全体回復
+	IF CFLAG:ARG:타겟 > 6
+		BTL_KOJO_RESULTS:0 = 全員、そのままで。すぐに回復します
+	ELSE
+		BTL_KOJO_RESULTS:0 = ここで誰かを欠けば、戦略に支障が出る
+	ENDIF
+;지원
+ELSEIF RANGE(CFLAG:ARG:입력행동,501, 599)
+	;強化系
+	IF RANGE(CFLAG:ARG:입력행동,501, 505)
+		BTL_KOJO_RESULTS:0 = 基礎能力を底上げしましょうか
+	;弱体系
+	ELSEIF RANGE(CFLAG:ARG:입력행동,506, 509)
+		BTL_KOJO_RESULTS:0 = この程度の事態に対処できぬようでは、話になりませんよ
+	;도발
+	ELSEIF CFLAG:ARG:입력행동 == 515
+		BTL_KOJO_RESULTS:0 = やれやれ、予測数値以下とは。情けない
+	;その他
+	ELSE
+		BTL_KOJO_RESULTS:0 = ふむ、易しい問題です
+	ENDIF
+;;방어
+;ELSEIF RANGE(CFLAG:ARG:입력행동,601, 699)
+;	BTL_KOJO_RESULTS:0 = 
+;;화염
+;ELSEIF RANGE(CFLAG:ARG:입력행동,701, 799)
+;	BTL_KOJO_RESULTS:0 = 
+;;빙결
+;ELSEIF RANGE(CFLAG:ARG:입력행동,801, 899)
+;	BTL_KOJO_RESULTS:0 = 
+;;전격
+;ELSEIF RANGE(CFLAG:ARG:입력행동,901, 999)
+;	BTL_KOJO_RESULTS:0 = 
+;;충격
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1001, 1099)
+;	BTL_KOJO_RESULTS:0 = 
+;신경
+ELSEIF RANGE(CFLAG:ARG:입력행동,1101, 1199)
+	BTL_KOJO_RESULTS:0 = （エーテライト、神経介入…）
+;;정신
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1201, 1299)
+;	BTL_KOJO_RESULTS:0 = 
+;;파마
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1301, 1399)
+;	BTL_KOJO_RESULTS:0 = 
+;;주살
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1401, 1499)
+;	BTL_KOJO_RESULTS:0 = 
+;;지변
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1501, 1599)
+;	BTL_KOJO_RESULTS:0 = 
+;;수격
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1601, 1699)
+;	BTL_KOJO_RESULTS:0 = 
+;;질풍
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1701, 1799)
+;	BTL_KOJO_RESULTS:0 = 
+;;중력
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1801, 1899)
+;	BTL_KOJO_RESULTS:0 = 
+;;핵열
+;ELSEIF RANGE(CFLAG:ARG:입력행동,1901, 1999)
+;	BTL_KOJO_RESULTS:0 = 
+;;만능
+;ELSEIF RANGE(CFLAG:ARG:입력행동,2001, 2099)
+;	;自爆系
+;	IF RANGE(CFLAG:ARG:입력행동,2005, 2007)
+;		BTL_KOJO_RESULTS:0 = 
+;	ELSE
+;		BTL_KOJO_RESULTS:0 = 
+;	ENDIF
+;魔法少女系
+ELSEIF RANGE(CFLAG:ARG:입력행동,2989, 2999)
+	BTL_KOJO_RESULTS:0 = …これは。まさか、異星文明の技術に由来するモノか
+;-------------------------------------------------
+;リンケージ
+;-------------------------------------------------
+;메시아라이저
+ELSEIF CFLAG:ARG:입력행동 == 4160
+	LOCAL:1 = 2
+	BTL_KOJO_RESULTS:0 = %CSTR:ARG:이인칭%の未来は“私”の未来！
+	BTL_KOJO_RESULTS:1 = 自分の未来を守るために全霊を尽くすのは、極めて合理的な結論だ――！
+;;Lヒートライザ
+;ELSEIF CFLAG:ARG:입력행동 == 4200
+;	BTL_KOJO_RESULTS:0 = 
+;;사망유희
+;ELSEIF CFLAG:ARG:입력행동 == 4800
+;	BTL_KOJO_RESULTS:0 = 
+;;ELSEIF CFLAG:ARG:입력행동 == 
+;	IF RAND:2
+;		BTL_KOJO_RESULTS:0 = 
+;	ELSE
+;		BTL_KOJO_RESULTS:0 = 
+;	ENDIF
+
+;-------------------------------------------------
+;加筆分
+;-------------------------------------------------
+;배럴레플리카
+ELSEIF CFLAG:ARG:입력행동 == 2970
+	IF RAND:2
+		BTL_KOJO_RESULTS:0 = ロック解除…　ガンバレル、フルオープン！
+	ELSE
+		BTL_KOJO_RESULTS:0 = 배럴레플리카――　フルトランス！
+	ENDIF
+
+;-------------------------------------------------
+;その他
+;-------------------------------------------------
+ELSE
+;	LOCALS = 
+ENDIF
+
+;SIF LOCALS != "EMPTY"
+;	CALL MESSAGE_B(LOCAL:1, LOCALS, LOCALS:1, LOCALS:2, LOCALS:3, LOCALS:4)

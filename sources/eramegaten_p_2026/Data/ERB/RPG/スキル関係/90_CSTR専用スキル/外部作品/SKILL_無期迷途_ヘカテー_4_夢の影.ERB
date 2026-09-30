@@ -1,0 +1,148 @@
+﻿;スキル名
+@SKILL_NAME_夢の影,ARG
+RESULTS = 꿈의 그림자
+SIF FLAG:총공격중
+	TSTR:스킬메시지행동자 '= "悪夢"
+;　명중
+@SKILL_HITRATE_夢の影, ARG
+RETURN 100
+
+;　威力(通常攻撃を100%とした倍率となる)
+@SKILL_POWER_夢の影, ARG
+RETURN 80
+
+;基礎クリティカル率(標準は5。乗算されるので10になると200%になる)
+@SKILL_CRITICAL_RATE_夢の影, ARG
+RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_夢の影,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_夢の影,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_夢の影, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+
+;　コストの量
+@SKILL_COST_夢の影,ARG
+RETURN 6
+
+;　相性
+@SKILL_TYPE_夢の影,ARG
+RETURN GET_TYPE_NUM("정신")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_夢の影
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_夢の影, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_夢の影, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리(1 = 後列発動不可・後列指定不可 2 = 後列発動可能・後列指定不可 3 = 後列発動可能・後列指定可能 4 = 後列発動不可・後列指定可能)
+@SKILL_RANGE_夢の影,ARG
+RETURN 3
+
+;　範囲　単体　一列　全体　敵味方全体　縦列
+@SKILL_SPHERE_夢の影,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_夢の影, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_夢の影
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;속도보정
+@SKILL_SPEED_夢の影, ARG = -1
+RETURN 0
+
+;スキルランク
+;スキルの習得時の必要ＭＡＧの算出に主に用いられる
+;また、習得・所持スキルはこのランクの5倍のレベルを基準として設定する。
+@SKILL_RANK_夢の影, ARG = -1
+RETURN 7
+
+;====================================================
+;スキル及び行動の実行
+;ARG = スキルの使用者
+;ARG:1 = スキルの使用対象
+;ARG:2 = スキルの番号
+;====================================================
+@ACTION_夢の影, ARG, ARG:1, ARG:2
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_ENEMY
+#DIM DYNAMIC L_TABLE, 16 = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+CALL SHUFFLE_ARRAY_INT, L_TABLE
+TFLAG:반사후0데미지화 = 1
+FOR LCOUNT, 0, VARSIZE("L_TABLE")
+	L_ENEMY = POS(L_TABLE:LCOUNT)
+	SIF !IS_TARGET_ABLE(L_ENEMY)
+		CONTINUE
+	SIF !GETBIT(PU_SKILLGAGE_H_GET(ARG, "夢の影"), CPOS(L_ENEMY))
+		CONTINUE
+	CALL ATTACK_SKILL, ARG, CPOS(L_ENEMY), ARG:2
+	BREAK
+NEXT
+TFLAG:반사후0데미지화 = 0
+CALL PU_SKILLGAGE_H_SET, ARG, "夢の影", 0
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_夢の影, ARG
+PRINTL 【악몽】이 부여된 아군이 적에게 데미지를 입히는 데 성공할 때마다 이하의 연동 효과가 발동한다.
+PRINTL 「아군이 데미지를 입힌 적 중 무작위 1체에게 정신 상성의 소데미지를 준다」
+
+;ツールチップ版の解説文
+@SKILL_EXPLAIN_TOOLTIP_夢の影, ARG
+RESULTS:0 = 【악몽】이 부여된 아군이 적에게 데미지를 입히는 데 성공할 때마다 이하의 연동 효과가 발동한다.
+RESULTS:1 = 「아군이 데미지를 입힌 적 중 무작위 1체에게 정신 상성의 소데미지를 준다」
+
+;使用条件
+;真の時、使用可能となる。というより特定条件で使用不能にしたい場合は0をいれてかえさせる。
+;RESULTSに文字をいれてもどすことで使えない場合の理由がポップアップするようになる。
+@SKILL_SPECIAL_ACTIONABLE_夢の影,ARG
+RETURN 1
+;とくにない
+
+@SKILL_ACTIONABLE_BATTLE_夢の影, ARG
+RETURN 0
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_夢の影,ARG,ARG:1
+;行動者が味方でないとダメ
+SIF !IS_FRIEND(ARG, FLAG:행동순1)
+	RETURN 0
+;攻撃対象が敵でないとダメ
+SIF IS_FRIEND(ARG, ARG:1)
+	RETURN 0
+SIF CFLAG:(FLAG:행동순1):HP배리어 <= 0
+	RETURN 0
+SIF CSTR:(FLAG:행동순1):HP배리어명 != "悪夢"
+	RETURN 0
+SIF !GET_CREC_ACT(FLAG:행동순1, ARG:1, "HIT")
+	RETURN 0
+SIF CPOS(ARG:1) == 0
+	RETURN 0
+CALL PU_SKILLGAGE_H_ADD, ARG, "夢の影", POWER(2, CPOS(ARG:1))
+;判定は1度通ったらあとはACTION側で条件を見る
+SIF TFLAG:스킬트리거용1
+	RETURN 0
+TFLAG:스킬트리거용1 = 1
+RETURN 1, CPOS(ARG)

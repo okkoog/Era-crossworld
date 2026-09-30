@@ -1,0 +1,140 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:ENAMORED.ERB
+;	Facility	:未調教陥落関連の処理群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2021/11/20		JK好き					戦闘素質を持った非戦闘員を戦闘員化させる処理に不足があった問題を修正
+;	003		2023/05/26		P						信頼陥落位の取り方によって陥落人数に齟齬が出るのを防ぐために専用処理を作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;	P
+;	001		2024/09/10		P						記述を整理し、恋慕陥落に性別制限設定を追加
+;													非戦闘員の戦闘員化が他に方法があるうえでここでもやるのは管理上厄介なのでオミット
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+@ENAMORED_CHECK
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC NEED_LOYALTY_BASE
+#DIM DYNAMIC L_RESULT
+IF FLAG:미조교시함락 > 0
+	FOR L_CHARA,0,CHARANUM
+		SIF L_CHARA == MASTER
+			CONTINUE
+		SIF CFLAG:L_CHARA:피조교횟수 > 0
+			CONTINUE
+		SIF CFLAG:L_CHARA:NTR플래그 > 0
+			CONTINUE
+		SIF CFLAG:L_CHARA:함락링크
+			CONTINUE
+		;陥落判定
+		SIF 陥落(L_CHARA) > 2
+			CONTINUE
+		SIF RESULTS == "음란"
+			CONTINUE
+		SIF RESULTS == "복종"
+			CONTINUE
+		IF FLAG:미조교시함락 == 2
+			IF (GET_CHARA_LOYALTY(L_CHARA) - MAXBASE:L_CHARA:충성도) >= GET_信頼陥落_必要忠誠度(L_CHARA)
+				IF !TALENT:L_CHARA:신뢰 && !TALENT:L_CHARA:동료
+					PRINTL
+					PRINTFORMW %CALLNAME:L_CHARA%의 %CALLNAME:MASTER%에 대한 신뢰는 확고해진 것 같다
+					PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【신뢰】를 얻었다
+					PRINTL
+					CALL SET_陥落素質, L_CHARA, "신뢰"
+					CALL CHECK_LEVEL_UP, L_CHARA
+					L_RESULT = 1
+				ELSEIF TALENT:L_CHARA:신뢰
+					PRINTL
+					PRINTFORMW %CALLNAME:L_CHARA%의 %CALLNAME:MASTER%에 대한 신뢰는 깊어져、굳은 유대가 된 것 같다。
+					PRINTFORMW %NAME:L_CHARA%의【신뢰】는【동료】가 되었다
+					PRINTL
+					CALL SET_陥落素質, L_CHARA, "동료"
+					L_RESULT = 1
+				ENDIF
+			ENDIF
+		ENDIF
+		IF GET_未調教恋慕陥落陥落_必要忠誠度(L_CHARA) >= 0 && (GET_CHARA_LOYALTY(L_CHARA) - MAXBASE:L_CHARA:충성도) >= GET_未調教恋慕陥落陥落_必要忠誠度(L_CHARA)
+			IF !TALENT:L_CHARA:연모
+				PRINTL 
+				PRINTFORMW %CALLNAME:L_CHARA%의 이쪽을 바라보는 눈빛이 이상하다
+				PRINTFORMW %CALLNAME:L_CHARA%의 %CALLNAME:MASTER%에 대한 신뢰는、차곡차곡 쌓여 연모의 정으로 변한 것 같다。
+				PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【연모】를 얻었다
+				PRINTL 
+				MARK:L_CHARA:굴복각인 = MAX(MARK:L_CHARA:굴복각인,3)
+				ABL:L_CHARA:순종 = MAX(ABL:L_CHARA:순종,3)
+				SIF GET_VALUE_TALENT_JOINABLE(L_CHARA) == 1
+					CALL SET_TALENT_PARTY_JOINABLE, L_CHARA, "参加可能"
+				CALL SET_陥落素質, L_CHARA, "연모"
+				CALL CHECK_LEVEL_UP, L_CHARA
+				L_RESULT = 1
+			ENDIF
+		ENDIF
+	NEXT
+	RETURN L_RESULT
+ELSE
+	RETURN 0
+ENDIF
+
+
+@GET_未調教恋慕陥落陥落_必要忠誠度, L_CHARA
+#FUNCTION
+#DIM DYNAMIC L_RESULT
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_TALENT
+;異性制限、あえてこれを選ぶんなら謎の魅力の制限はいらない…と判断
+IF FLAG:신뢰계함락설정 == 4
+	SIF !IS_LESBIAN(L_CHARA,MASTER) && !IS_GAY(L_CHARA,MASTER)
+		RETURNF -1
+	L_RESULT = 15000
+ELSE
+	IF (IS_LESBIAN(L_CHARA,MASTER) || IS_GAY(L_CHARA,MASTER))
+		SELECTCASE FLAG:신뢰계함락설정
+			;同性制限
+			CASE 1
+				SIF IS_LESBIAN(L_CHARA,MASTER)
+					RETURNF -2
+				SIF IS_GAY(L_CHARA,MASTER)
+					RETURNF -2
+			;男性制限
+			CASE 2
+				SIF IS_GAY(L_CHARA,MASTER)
+					RETURNF -2
+			;女性制限
+			CASE 3
+				SIF IS_LESBIAN(L_CHARA,MASTER)
+					RETURNF -2
+		ENDSELECT
+		IF TALENT:L_CHARA:바이
+			L_RESULT = 15000
+		ELSE
+			;謎の魅力が必要
+			SIF !TALENT:MASTER:수수께끼의매력
+				RETURNF -1
+			L_RESULT = 25000
+		ENDIF
+	ELSE
+		L_RESULT = 15000
+	ENDIF
+ENDIF
+SIF TALENT:MASTER:수수께끼의매력
+	L_RESULT = L_RESULT * 80 / 100
+RETURNF L_RESULT
+
+@GET_信頼陥落_必要忠誠度, L_CHARA, L_TALENT
+#FUNCTION
+#DIM DYNAMIC L_RESULT
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_TALENT
+IF L_TALENT == "동료" || (L_CHARA >= 0 && TALENT:L_CHARA:신뢰)
+	L_RESULT = 20000
+ELSE
+	L_RESULT = 10000
+ENDIF
+SIF TALENT:MASTER:수수께끼의매력
+	L_RESULT = L_RESULT * 80 / 100
+RETURNF L_RESULT

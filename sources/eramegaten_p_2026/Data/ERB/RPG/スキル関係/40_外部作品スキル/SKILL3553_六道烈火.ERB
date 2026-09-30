@@ -1,0 +1,141 @@
+﻿;
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_3553,ARG
+RESULTS = 육도열화
+
+;　명중
+@SKILL_HITRATE_3553, ARG
+IF TFLAG:스킬용1 == 0
+	RETURN 100
+ELSE
+	IF TFLAG:스킬용1 == 1
+		TFLAG:스킬용1 = 2
+		RETURN 100 - FLAG:공격횟수 * 14
+	ELSE
+		RETURN -999
+	ENDIF
+ENDIF
+
+;　威力
+@SKILL_POWER_3553, ARG
+RETURN 100
+
+;高クリティカル
+@SKILL_CRITICAL_RATE_3553, ARG
+RETURN 12
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3553,ARG
+RETURN 6
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3553,ARG
+RETURN 6
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3553, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3553,ARG
+RETURN 12
+
+;　相性
+@SKILL_TYPE_3553,ARG
+RETURN GET_TYPE_NUM("타격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3553
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3553, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3553, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_3553,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3553,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3553, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3553
+RETURN GET_SUCCESSION_NUM("타격")
+;빙결
+
+@継承不能_3533
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_3553, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3553
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3553, ARG = -1
+RETURN 15
+
+
+
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+@SKILL_DAMAGE_EFFECT_3553,ARG,ARG:1,ARG:2
+SIF ARG:2 >= -1
+	TFLAG:스킬용1 = 1
+;IF SKILLGAGE_H_GET(ARG,3553) < 6 && ARG != ARG:1
+;	CALL SKILLGAGE_H_ADD,ARG,3553,1
+;	PRINTW
+;	CALL ATTACK_SINGLE,ARG,ARG:1,3553,1
+;ENDIF
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3553, ARG, ARG:1, ARG:2
+;FLAG:확산플래그 = 1
+;CALL SKILLGAGE_H_SET,ARG,3553,0
+TFLAG:스킬용1 = 1
+CALL ATTACK_SINGLE,ARG,POS(ARG:1),3553,1
+WAIT
+
+;FLAG:확산플래그 = 0
+;CALL SKILLGAGE_H_SET,ARG,3553,0
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3553, ARG
+PRINTL 적에게 타격을 통한 연속 공격을 가한다
+PRINTL 적 단체에 타격 속성으로 소위력 물리 공격을 6회 행한다. 크리티컬률이 다소 높다
+PRINTL 단, 2타째부터 명중이 떨어지며 공격이 빗나가거나 무효화되면 남은 공격이 전부 빗나가 버린다.
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3553,ARG
+RETURN 1
+;とくにない
+

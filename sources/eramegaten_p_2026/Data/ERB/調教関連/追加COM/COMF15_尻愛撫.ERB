@@ -1,0 +1,152 @@
+﻿;
+;	Edit	Date			Author					Reason
+;	001		2021/01/28		eMさ者					V挿入継続時の分岐を追加
+;	002		2022/06/27		JK好き					触手調教時の地の文調整
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+
+;-------------------------------------------------
+;엉덩이애무
+;愛撫系コマンド　レベル2
+;-------------------------------------------------
+
+;-------------------------------------------------
+;コマンド実行判定
+;-------------------------------------------------
+@CHECK_COM_ABLE15
+;尻愛撫実行判定
+SIF !USE_HAND(PLAYER)
+	RETURN 0
+
+RETURN 1
+
+@ACT_COM15
+PRINTL 엉덩이애무
+TSTR:0 = 엉덩이애무
+;CALL KOJO_MESSAGE_COM
+
+;調教者→調教対象
+TFLAG:28 = 2
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 5
+DOWNBASE:TARGET:기력 += 30
+
+SOURCE:TARGET:정애 = 75
+SOURCE:TARGET:성행위 = 30
+SOURCE:TARGET:노출 = 10
+SOURCE:TARGET:반감 = 20
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;抑圧、抵抗持ちには、抑鬱ソース追加
+SIF TALENT:억압 || TALENT:저항
+	SOURCE:TARGET:울굴 += 20
+
+;-------------------------------------------------
+;吸精処理
+;-------------------------------------------------
+IF CFLAG:PLAYER:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:3+1) * BASE:LV
+	CALL DRAIN_MAG,PLAYER,LOCAL,TARGET
+ELSEIF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:3+1) * BASE:LV
+	CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+ENDIF
+
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+A = 3
+IF IS_LESBIAN(TARGET,PLAYER)
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, PLAYER)
+ELSEIF IS_GAY(TARGET,PLAYER)
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+ENDIF
+
+;依存度ベクトル
+TFLAG:33 = 2
+
+RETURN 1
+
+@MESSAGE_COM15
+IF TEQUIP:Ｖ섹스 > 0
+	PRINT 결합된 채 허리를 움직이면서, 
+ENDIF
+PRINTFORM %TARGET의% 
+;下衣または全身服を着ている
+IF TEQUIP:하의 || TEQUIP:전신복
+	IF TEQUIP:하의
+		CALL CLOTHES_NAME,2,TARGET
+	ELSE
+		CALL CLOTHES_NAME,3,TARGET
+	ENDIF
+	IF RAND:2 == 0
+		IF TEQUIP:촉수
+			PRINT 에 촉수가 파고들더니, 
+		ELSE
+			PRINT 에 손을 집어넣어, 
+		ENDIF
+		IF TALENT:유아체형
+			PRINT 자그마한 엉덩이를 
+		ELSE
+			PRINT 탄력 있는 엉덩이를 
+		ENDIF
+	ELSE
+		IF TEQUIP:촉수
+			PRINT 너머로 엉덩이살을 
+		ELSE
+			PRINT 너머로 엉덩이살을 쥐고, 
+		ENDIF
+	ENDIF
+;下着（下）または全身下着を着ている
+ELSEIF TEQUIP:속옷（하） || TEQUIP:전신속옷
+	IF TEQUIP:속옷（하）
+		CALL CLOTHES_NAME,6,TARGET
+	ELSE
+		CALL CLOTHES_NAME,7,TARGET
+	ENDIF
+	IF RAND:2 == 0
+		PRINT 을 파고들게 하며, 엉덩이살을 
+	ELSE
+		IF TEQUIP:촉수
+			PRINT 위로 엉덩이를 
+		ELSE
+			PRINT 위로 엉덩이를 쥐고, 
+		ENDIF
+	ENDIF
+ELSE
+	IF RAND:2 == 0
+		IF TEQUIP:촉수
+			PRINT 엉덩이 살점을 
+		ELSE
+			PRINT 엉덩이 살점을 쥐고, 
+		ENDIF
+	ELSE
+		IF TALENT:유아체형
+			PRINT 귀여운 엉덩이를 
+		ELSE
+			PRINT 살집 좋은 엉덩이를 
+		ENDIF
+	ENDIF
+ENDIF
+IF TEQUIP:촉수
+	PRINTW 촉수가 기어 다녔다…
+ELSEIF RAND:2 == 0
+	PRINTW 주물러댔다…
+ELSE
+	PRINTW 쓰다듬었다…
+ENDIF
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_15
+RETURN COMTYPE("愛撫系")
+

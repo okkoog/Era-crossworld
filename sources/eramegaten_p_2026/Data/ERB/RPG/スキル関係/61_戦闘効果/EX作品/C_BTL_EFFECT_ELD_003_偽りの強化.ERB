@@ -1,0 +1,62 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@C_BTL_EFFECT_CONTROL_NO_ELD_3,ARG
+RESULTS = 거짓된 강화
+
+;スキル名
+@SKILL_NAME_C_BTL_EFFECT_偽りの強化,ARG
+RESULTS = 거짓된 강화
+
+;重複可能な数
+@C_BTL_EFFECT_COUNT_LIMIT_偽りの強化
+RETURN 1
+
+;効果時間　最大10ターンまで、0を指定した場合は戦闘中永続
+@C_BTL_EFFECT_CONTINUE_TIME_偽りの強化
+RETURN 0
+
+;排他となる効果
+;戻り値
+; RESULTS = 効果名
+; RESULT
+; 0 = 排他
+;-1 = 上書き不能
+; 1 = 上書き(対象も1なら相互上書き)
+@C_BTL_EFFECT_EXCLUSIVE_偽りの強化
+RESULTS = 
+RETURN 0
+
+;個別の対象条件
+;ARG 	効果を受けるキャラの登録番号
+;ARG:1	効果を与えるキャラの登録番号
+@C_BTL_EFFECT_SPECIAL_TARGET_偽りの強化, ARG, ARG:1
+SIF IS_BADSTATE(ARG, "DYING")
+	RETURN 0
+RETURN 1
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_C_BTL_EFFECT_偽りの強化, ARG, ARG:1, ARG:2
+#DIMS DYNAMIC DOWN_TABLE = "공격", "방어", "마법효과", "마법위력", "명중률", "회피율"
+CALL SHUFFLE_ARRAY_STR, DOWN_TABLE 
+CALL SKILL_SET_カジャンダ, ARG, POS(ARG:1),  DOWN_TABLE:0 + DOWN_TABLE:1, -4, "단체"
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_C_BTL_EFFECT_偽りの強化,ARG,ARG:1
+;判定は一回
+SIF ARG != ARG:1
+	RETURN 0
+SIF CFLAG:ARG:HP회복_ACT == 0
+	RETURN 0
+RESULTS '= "C_BTL_EFFECT_偽りの強化"
+RETURN 1, CPOS(ARG)
+
+@SKILL_BATTLE_MAIN_TOOLTIP_C_BTL_EFFECT_偽りの強化, ARG, ARG:1
+RESULTS = □거짓된 강화
+RESULTS:1 '= "　회복효과를 받을 때마다 능력 저하"
+

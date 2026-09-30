@@ -1,0 +1,50 @@
+﻿;依頼名===================================================================
+;依頼難易度は敵の最大レベルによって変動
+; 1～10　☆、11～20　☆☆、21～30　☆☆☆、以下略
+;ダンジョン攻略が必要な場合は☆が★になる。
+
+@TITLE_RANDOM_REQUEST_108_18
+RESULTS = 가이아교 습격（난이도 ☆☆☆）
+RETURN 1
+;説明===================================================================
+@REQUEST_EXPLAIN_108_18
+	PRINTL 
+	PRINTL 【의뢰주】메시아교
+	PRINTL 
+	PRINTL 　가이아교 거점에 습격을 가할 모양이다。
+	PRINTL 　그들에게 협력하여、습격을 성공시켜라。
+	PRINTL 
+	PRINTL 【작전영역】가이아교 거점
+	PRINTL 【적의전력】가이아교도
+	PRINTL 【성공조건】적 전멸
+	PRINTL 
+
+;内容====================================================================
+@REQUEST_108_18
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"――가이아교 거점――", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞가이아교 경비부대가 있다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "ガイア教徒", "가이아교도", @"「메、메시아 놈들이다아아아！ 되받아 쳐주마아아아！」", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞가이아교도가 이쪽으로 덤벼들었다！", , , , , 4
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+FOR LOCAL, 7, 12
+CALL SET_ENEMY, LOCAL ,[[キャラ:펑크스]],18+RAND:5,1,0
+	NAME:(CHARANUM-1) = ガイア教徒
+	CALLNAME:(CHARANUM-1) = ガイア教徒
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+NEXT
+CALL BATTLE_START
+
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞가이아교도를 전멸시켰다。", , , , , 4
+;報酬
+依頼フラグ:[[依頼:랜덤의뢰]]:5 = 5;難易度
+依頼フラグ:[[依頼:랜덤의뢰]]:7 = 2;ガイア教
+CALL PRIZE_REQUEST_108

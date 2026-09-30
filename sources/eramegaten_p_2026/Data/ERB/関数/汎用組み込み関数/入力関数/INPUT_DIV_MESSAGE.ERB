@@ -1,0 +1,224 @@
+﻿
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;	※未完成ファイルです。
+;	Module		:INPUT_DIV_MESSAGE.ERB
+;	Facility	:<div>制御による選択肢付きのメッセージウィンドウ表示関数
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/07/17		一ノ瀬				    新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;使用方法：使用前に メッセージ_選択肢:0～10に
+
+@INPUT_DIV_MESSEAGE , 発言者 = "" , 얼굴이미지 = "" , 発言内容 = "" , W_ID = 0 , L_オプション
+#DIMS DYNAMIC 発言者
+#DIMS DYNAMIC 얼굴이미지
+#DIMS DYNAMIC 発言内容
+#DIM DYNAMIC W_ID
+#DIMS DYNAMIC L_オプション				;メッセージウィンドウの挙動を制御する
+#DIM CONST L_PAD = 50
+#DIM DYNAMIC L_COORDINATE , 2			;選択肢ウィンドウの、メッセージウィンドウ左上から見た相対位置 X , Y
+#DIM DYNAMIC L_WIDTH					;選択肢ウィンドウの幅
+#DIM DYNAMIC L_HEIGHT					;選択肢ウィンドウの高さ
+#DIM DYNAMIC MAXLENS					;選択肢で最も長い文字数
+#DIM DYNAMIC L_選択肢数					;選択肢が入力済みである数
+#DIMS DYNAMIC L_CONTENT					;選択肢ウィンドウの中身
+#DIM DYNAMIC BUTTON_COORD, 100 , 4		;上記のボタンそれぞれの座標(ボタンごとにx1,x2,y1,y2の範囲を設定)
+#DIMS DYNAMIC BUTTON_VALUE, 100			;上記の範囲に設定するボタンそれぞれの中身 
+
+;表示オプションが空文字列の場合、ウィンドウに設定されているオプションを取得。
+SIF L_オプション == ""
+	L_オプション = %メッセージ_オプション:W_ID%
+;右クリックでここに来たのなら、NOANIMEを追加
+SIF MESSKIP()
+	L_オプション += "/NOANIME"
+;GLOBAL:メッセージアニメ利用が立ってない場合、自動的にオプションに"/NOANIME"を追加する
+SIF GLOBAL:メッセージアニメ利用 == 0
+	L_オプション += "/NOANIME"
+
+;まずメッセージの表示を呼び出す
+CALL DIV_MESSAGE_W , 発言者 , 얼굴이미지 , 発言内容 , W_ID , メッセージ_オプション:W_ID+"/NOWAIT"
+REDRAW 0
+;選択肢の数を取得
+L_選択肢数 = FINDELEMENT(メッセージ_選択肢 , "" , , , 1 )
+
+;選択肢の横並び数と文字数から、最も長い行の長さを取得=幅にする
+VARI LCOUNT
+FOR LCOUNT , 0 , L_選択肢数
+	SIF MAXLENS < STRLENS(HTML_TOPLAINTEXT(メッセージ_選択肢:LCOUNT))
+		MAXLENS = STRLENS(HTML_TOPLAINTEXT(メッセージ_選択肢:LCOUNT))
+NEXT
+
+;ボタン表示用のLENSを足す [xx]←これ&半角スペース、末尾に更に半角スペース
+MAXLENS += 6
+
+;ウィンドウ幅を取得
+L_WIDTH = (MAXLENS * メッセージ_選択肢横並び数 ) * 50 + L_PAD * 2
+;ウィンドウ高さを取得
+L_HEIGHT = ((L_選択肢数) / メッセージ_選択肢横並び数 + (L_選択肢数 % メッセージ_選択肢横並び数 > 0) ) *100 + L_PAD * 2
+
+;X座標とY座標を取得。していなければこの位置
+L_COORDINATE:0 = メッセージ_X:W_ID + メッセージ_幅:W_ID - L_WIDTH + 100
+L_COORDINATE:1 = メッセージ_Y:W_ID + メッセージ_高さ:W_ID - L_HEIGHT + 75
+
+;ウィンドウの中身を作成
+VARS TEMP_STR
+FOR LCOUNT , 0 , L_選択肢数
+	{
+	TEMP_STR '= 
+	@"<div xpos='{(LCOUNT % メッセージ_選択肢横並び数) * MAXLENS * 50}' ypos='{(LCOUNT / メッセージ_選択肢横並び数) * 100}' >"
+	+ SET_BUTTON_TAG( @"[{LCOUNT , 2}]%メッセージ_選択肢:LCOUNT%" , TOSTR(LCOUNT))
+	+ "</div>"
+	}
+	;ボタン座標と中身をセット
+	VARI L_POS , 2
+	L_POS = L_COORDINATE:0 + L_PAD + ((LCOUNT % メッセージ_選択肢横並び数) * MAXLENS) *50 , L_COORDINATE:1 + L_PAD + (LCOUNT / メッセージ_選択肢横並び数) * 100
+	BUTTON_COORD:LCOUNT:0 = (L_POS ) , (L_POS + MAXLENS*50) , (L_POS:1 ) , (L_POS:1 + 100)
+	BUTTON_VALUE:LCOUNT = {LCOUNT}
+	;選択不可メッセージならグレーアウト
+	SIF メッセージ_選択不可:LCOUNT > 0
+		TEMP_STR '= SET_COLOR_TAG(TEMP_STR , "GRAY")
+	L_CONTENT += TEMP_STR
+NEXT
+
+L_CONTENT = %HTML_DIV_WINDOW( L_WIDTH , L_HEIGHT , L_CONTENT , "選択" , L_PAD , メッセージ_枠太さ:W_ID , メッセージ_枠色:W_ID , メッセージ_背景色:W_ID)%
+;디버그용
+;PRINTFORMW %L_CONTENT%
+VARI L_LINE = LINECOUNT ;今の行数を記録して画面リフレッシュ用に
+$INPUT_LOOP
+;UIボタンを取得して中身を入れる
+VARS UIボタン
+UIボタン '= REFRESH_DIV_MESSAGE_GUI_BUTTON(BUTTON_COORD , BUTTON_VALUE , L_オプション , L_選択肢数)
+;;디버그용
+;CALL CLEAR_DISPLAY
+CALL SET_DISPLAY , L_COORDINATE:0 , L_COORDINATE:1　, "選択肢ウィンドウ" , L_CONTENT
+CALL SET_DISPLAY , 0 , 0 , @"メッセージGUI" , UIボタン
+CALL SHOW_DISPLAY
+
+;メッセージウィンドウ内入力処理呼び出し
+CALL INPUTMOUSEKEY_INPUT_MESSAGE, 100 , BUTTON_COORD , BUTTON_VALUE , L_オプション
+;デバッグウィンドウにデバッグ用文書を記入
+DEBUGCLEAR
+DEBUGPRINTFORML X:{MOUSEX()*100/18} Y:{MOUSEY()*100/18} RESULTS：%RESULTS%
+DEBUGPRINTFORML BX:{BUTTON_COORD:1:0}～{BUTTON_COORD:1:1} BY:{BUTTON_COORD:1:2}～{BUTTON_COORD:1:3} 中身：%BUTTON_VALUE%
+CLEARLINE LINECOUNT - L_LINE
+IF RESULTS == "+"
+	;ログ閲覧
+	CALL DIV_MESSAGE_LOG
+ELSEIF RESULTS == "-"
+	;オートモード切替
+	INVERTBIT FLAG:자동넘기기, 0
+ELSEIF RESULTS == "*"
+	;スキップモード切替
+	INVERTBIT FLAG:윈도우메시지스킵, 0
+ELSEIF RESULTS == "/"
+	;コンフィグ呼び出し
+	CALL MESSAGE_WINDOW_CONFIG
+ELSEIF ISNUMERIC(RESULTS) 
+	;ボタンをクリックするか番号を入力するかしてボタンにある数字を取得出来てる場合
+	IF メッセージ_選択不可:TOINT(RESULTS) == 0
+		;選んだ選択肢をログに保存
+		CALL SAVE_DIV_MESSAGE_LOG , "選択" , , @"[%RESULTS%]" + メッセージ_選択肢:TOINT(RESULTS)
+		;設定してある選択肢を初期化
+		CALL INITIALIZE_INPUT_DIV_MESSAGE
+		;選択肢ウィンドウを消す
+		CALL CLEAR_DISPLAY , "選択肢ウィンドウ"
+		REDRAW 1
+		RETURN TOINT(RESULTS)
+	;全部選択不可だったら見せかけの選択肢を表示するだけで終わり
+	ELSEIF MATCH(メッセージ_選択不可 , 0 , 0 , L_選択肢数) == 0
+		;L_選択肢数
+		;設定してある選択肢を初期化
+		$CANNOT_CHOISE
+		CALL INITIALIZE_INPUT_DIV_MESSAGE
+		;選択肢ウィンドウを消す
+		CALL CLEAR_DISPLAY , "選択肢ウィンドウ"
+		REDRAW 1
+		RETURN -1
+	ENDIF
+	;そうでない場合は共通ループに流す
+ELSEIF MATCH(メッセージ_選択不可 , 0 , 0 ,L_選択肢数) == 0
+	;全部選択不可だったら見せかけの選択肢を表示するだけで終わり
+	GOTO CANNOT_CHOISE
+ENDIF
+GOTO INPUT_LOOP
+
+
+;;選択肢ウィンドウを表示する
+;CALL INPUT_DIV_WINDOW , L_COORDINATE:0 , L_COORDINATE:1
+;
+@INPUT_DIV_WINDOW , L_COORDINATE:0 , L_COORDINATE:1
+#DIM DYNAMIC L_COORDINATE , 2			;選択肢ウィンドウの、メッセージウィンドウ左上から見た相対位置 X , Y
+
+
+
+@INITIALIZE_INPUT_DIV_MESSAGE
+VARSET メッセージ_選択肢 , ""
+VARSET メッセージ_選択不可 , 0
+VARSET メッセージ_選択肢横並び数 , 1
+
+
+
+;=====================================================
+;	@INPUTMOUSEKEY_MESSAGE , ARG , ARGS
+;	メッセージウィンドウ内でのユーザーの入力制御
+;=====================================================
+
+@INPUTMOUSEKEY_INPUT_MESSAGE, BASE_START_LINE , BUTTON_COORD , BUTTON_VALUE , L_OPTION 
+#DIM DYNAMIC BASE_START_LINE
+#DIM REF BUTTON_COORD, 0, 0		;ボタンの座標定義
+#DIMS REF BUTTON_VALUE, 0		;ボタンの中身
+#DIMS DYNAMIC L_OPTION			;送られてきたオプション
+RESULTS =
+;+と*を入れようとする挙動を踏まえてSHIFTはループで逃がす
+DO
+	;基本何かが入力されるまで待つ
+	INPUTMOUSEKEY 0
+LOOP CONVERT_KEYCORD_TO_STR(RESULT:1) == "SHIFT"
+;INPUTMOUSEKEYの結果ごとに処理
+VARI IS_CLICKED
+IF RESULT:0 == 1
+	;クリックした場合
+	;クリックフラグをオン
+	IS_CLICKED = 1
+	SELECTCASE RESULT:1
+		CASE 0x100000
+			;クリック座標からRESULTSを取る
+			;CALL CONVERT_CLICK_TO_RESULTS_ABSOLUTE , 0 , BUTTON_COORD, BUTTON_VALUE
+			CALL CONVERT_CLICK_TO_RESULTS , LINECOUNT - 1 , BUTTON_COORD, BUTTON_VALUE , 0
+		CASE 0x200000
+			;右クリックしていた場合はスキップボタンと同様
+			RESULTS '= "*"
+		CASE 0x400000
+			;中クリック(ホイール押下)していた場合はコンフィグボタンと同様
+			RESULTS '= "/"
+	ENDSELECT
+	;関数を呼び出してRESULT変わっちゃってるので再度。
+	RESULT:0 = IS_CLICKED
+;ホイールを動かした場合
+ELSEIF RESULT:0 == 2
+	;下に動かした場合はオートボタンと同様
+	IF RESULT:1 < 0
+		RESULTS '= "-"
+	;上に動かした場合はログボタンと同様
+	ELSEIF RESULT:1 > 0
+		RESULTS '= "+"
+	ENDIF
+ELSEIF RESULT:0 == 3
+	;キーボードを押していた
+	RESULTS '= CONVERT_KEYCORD_TO_STR(RESULT:1)
+	IF MATCH(BUTTON_VALUE , RESULTS)
+		;指定されてるボタンと一致してたらそのまま返す
+	ELSEIF RESULTS == "ESC"
+		;エスケープボタンはスキップボタン扱い
+		RESULTS '= "*"
+	ELSE
+		;指定されてるボタンに一致してないなら空文字列を入れて返す=ENTERとかと同様扱い
+	ENDIF
+ENDIF
+
+;時間切れ(RESULT:0==4)の場合はそのままRESULTを返すだけでよいので省略
+RETURN RESULT:0 , RESULT:1 , RESULT:2 , RESULT:3 , RESULT:4 

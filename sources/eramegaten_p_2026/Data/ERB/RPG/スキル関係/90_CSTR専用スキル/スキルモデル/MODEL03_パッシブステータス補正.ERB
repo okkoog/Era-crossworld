@@ -1,0 +1,155 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:パッシブステータス補正
+;	Facility	:自動効果としてステータスや相性を操作するスキルのモデル
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/10/31		P(bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_パッシブステータス補正,ARG
+RESULTS = 패시브 스테이터스 보정
+
+;　명중
+@SKILL_HITRATE_パッシブステータス補正, ARG
+RETURN 0
+
+;　威力
+@SKILL_POWER_パッシブステータス補正, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_パッシブステータス補正,ARG
+RETURN 0
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_パッシブステータス補正,ARG
+RETURN 0
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_パッシブステータス補正, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_パッシブステータス補正,ARG
+RETURN 0
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_パッシブステータス補正
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_パッシブステータス補正,ARG
+RETURN 0
+
+;　사거리
+@SKILL_RANGE_パッシブステータス補正,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_パッシブステータス補正,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_パッシブステータス補正,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;속도보정
+@SKILL_SPEED_パッシブステータス補正, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_パッシブステータス補正
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_パッシブステータス補正,ARG,ARG:1,ARG:2
+RETURN 0
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_パッシブステータス補正, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	;RESULT = 修正値
+	;RESULTS = 加算/乗算/固定値/活泉/魔脈
+	;加算はそのまま固定値を加算する。乗算は(100+X)/100倍にする。固定値は必ずその数値にする(55ならなにがあろうと最大HP55になる)
+	;活泉/魔脈はそのまま同種スキルと同じ枠となりもっとも効果量が高いものを優先する形になる
+	;HP半減
+	CASE "HP補正"
+		RESULTS = 乗算
+		RETURN -50
+	;MP+100
+	CASE "MP補正"
+		RESULTS = 加算
+		RETURN 100
+	;基本ステータス
+	;ARG:1 に悪魔変身後の配分済みBASEステータスを格納している(悪魔変身をしていない・出来ない場合はBASE:Xとおなじ)
+	;プラグイン等の割合計算はBASEの値を指定しているので、割合での増減を指定したい場合はARG:1に数字をかけて固定値で返してください
+	CASE "基本ステータス"
+		SELECTCASE ARGS:1
+			;힘 +10
+			CASE "힘"
+				RETURN 10
+			;마력 1.5倍
+			CASE "마력"
+				RETURN ARG:1 / 2 
+		ENDSELECT
+	;RESULT   = 変化があるかどうか(基準値が100だがこの項目が指定されていないと0で返してしまうので真偽判定の処理を追加している)
+	;RESULT:1 = 耐性値。基準値が100なのに注意
+	CASE "相性"
+		SELECTCASE ARGS:1
+			;打撃の基本相性を弱点にする
+			CASE "타격"
+				RETURN 1, 200
+			;飛具が通常及び反射の場合強制的に反射にする
+			CASE "비구"
+				RESULTS = 通常/耐性
+				RETURN 1, 999
+		ENDSELECT
+	;RESULT = 相性値。基準値は0でマイナスになると改善、プラスになると悪化になる。
+	;
+	;どちらにしろ、ステート耐性は0のときに通常(100%)のに注意。
+	CASE "상태이상"
+		SELECTCASE ARGS:1
+			;睡眠を200％にする
+			CASE "SLEEP"
+				RETURN 100
+			;混乱を50%にする
+			CASE "PANIC"
+				RETURN -50
+		ENDSELECT
+	;速度補正はそのまま速度補正となる
+	CASE "속도보정"
+		RETURN -20
+ENDSELECT
+
+RETURN 0
+;　説明文の表示
+@SKILL_EXPLAIN_パッシブステータス補正,ARG
+PRINTL 
+
+;使用条件
+;使用不能
+@SKILL_SPECIAL_ACTIONABLE_パッシブステータス補正,ARG
+RETURN 0
+

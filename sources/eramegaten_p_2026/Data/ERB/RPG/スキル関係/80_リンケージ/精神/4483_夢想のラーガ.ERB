@@ -1,0 +1,237 @@
+﻿
+
+;スキル名
+@SKILL_NAME_4483,ARG
+RESULTS = 몽상의라가
+
+;　명중
+@SKILL_HITRATE_4483, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_4483, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_4483,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_4483,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_4483, ARG, ARG:1
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_4483, ARG
+RETURN 30
+
+;　相性
+@SKILL_TYPE_4483,ARG
+RETURN GET_TYPE_NUM("정신")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_4483
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_4483, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_4483, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_4483,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_4483,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_4483, ARG
+RETURN GET_SKILL_EFFECT_NUM("상태변화")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_4483
+RETURN GET_SUCCESSION_NUM("계통없음")
+
+;속도보정
+@SKILL_SPEED_4483, ARG = -1
+SIF CFLAG:(ARG):PT플래그 == 0
+	RETURN 70
+RETURN 20
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_4483
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_4483, ARG = -1
+RETURN 0
+
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_4483,ARG
+RETURN (RAND:3+7)%8 + 3
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_4483,ARG
+RETURN 9
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_4483,ARG
+SIF CFLAG:(ARG):PT플래그 == 0
+	RETURN 80
+RETURN (ABL:ARG:가창기능)*6+10
+    
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_4483,ARG
+RETURN 95
+
+;====================================================
+;ダメージ発動時
+;ARG:0	行動者のキャラ番号
+;ARG:1	対象のキャラ番号
+;ARG:2	1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;
+;備考:標準の追加効果付与はblock・吸収の場合は発動しない。
+;====================================================
+@SKILL_DAMAGE_EFFECT_4483, ARG, ARG:1, ARG:2
+IF ABL:ARG:가창기능 == 10 || CFLAG:(ARG):PT플래그 == 0
+	CALL SKILL_SET_カジャンダ, ARG, ARG:1, "방어_마법효과", -12, "短縮"
+ELSEIF ABL:ARG:가창기능 > 4
+	CALL SKILL_SET_カジャンダ, ARG, ARG:1, "방어_마법효과", -8, "短縮"
+ELSE
+	CALL SKILL_SET_カジャンダ, ARG, ARG:1, "방어_마법효과", -4, "短縮"
+ENDIF
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_4483, ARG, ARG:1, ARG:2
+CALL FIELD_BADSTATE,ARG,ARG:1,4483
+;IF CFLAG:(ARG):PT플래그 == 0
+;	LOCAL:1 = 1
+;	LOCAL:2 = 7
+;ELSE
+;	LOCAL:1 = 7
+;	LOCAL:2 = 17
+;ENDIF
+;FOR LOCAL,LOCAL:1,LOCAL:2
+;	SIF POS(LOCAL) < 0
+;		CONTINUE
+;	IF ABL:ARG:가창기능 == 10 || CFLAG:(ARG):PT플래그 == 0
+;		CFLAG:POS(LOCAL):방어강화 = MAX(-16, CFLAG:POS(LOCAL):방어강화 - 12)
+;		CFLAG:POS(LOCAL):마법효과강화 = MAX(-16, CFLAG:POS(LOCAL):마법효과강화 - 12)
+;	ELSEIF ABL:ARG:가창기능 > 4
+;		CFLAG:POS(LOCAL):방어강화 = MAX(-16, CFLAG:POS(LOCAL):방어강화 - 8)
+;		CFLAG:POS(LOCAL):마법효과강화 = MAX(-16, CFLAG:POS(LOCAL):마법효과강화 - 8)
+;	ELSE
+;		CFLAG:POS(LOCAL):방어강화 = MAX(-16, CFLAG:POS(LOCAL):방어강화 - 4)
+;		CFLAG:POS(LOCAL):마법효과강화 = MAX(-16, CFLAG:POS(LOCAL):마법효과강화 - 4)
+;	ENDIF
+;NEXT
+;PRINTFORMW \@ CFLAG:ARG:PT플래그 == 2 ? 敵 # 味方 \@の防御力と魔法効果を下げた！
+
+
+
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_4483, ARG
+PRINTL 매료、혼란、수면을 부여하고、방어、마법효과를 낮춘다。발동자의 가창기능으로 효과 UP
+PRINTL 무효화、반사、흡수되어도 저하한다
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_4483,ARG
+CALL CHECK_COST,ARG,4483
+SIF RESULT == 0
+	RETURN 0
+RETURN 1
+;とくにない
+
+
+;=====================================================
+;リンケージ設定
+;=====================================================
+@LINKAGE_4483
+RETURN 1
+
+@参加人数_4483
+RETURN 1
+
+@参加条件表示_4483,ARG
+SELECTCASE ARG
+	CASE 1
+		PRINTFORM 방어 or 마법효과 약화 지원스킬
+	CASE 2
+		PRINTFORM 범위 정신계 스킬
+ENDSELECT
+
+@発動者条件_4483 , ARG
+CALL HAVE_SKILL_SEARCH(ARG, "정신", "範囲", "공격", )
+SIF RESULT
+	RETURN 1
+CALL HAVE_SKILL_SEARCH(ARG, "정신", "範囲", "상태변화", )
+SIF RESULT
+	RETURN 1
+RETURN 0
+
+
+@参加者条件_4483, ARG , ARG:1
+SIF CPOS(ARG) < 1 || CPOS(ARG) > 6
+	RETURN 0
+CALL CHECK_COST_LINCAGE, ARG, 4483, ARG:1
+SIF RESULT == 0
+	RETURN 0
+SELECTCASE ARG:1
+	CASE 1
+		;攻撃or魔法威力弱化支援スキルを使えること
+		IF HAVE_SKILL(ARG, 507);라쿤・다
+			CALL CHECK_ACTIONABLE , ARG , 507;
+			SIF RESULT
+				RETURN 1
+		ENDIF
+		IF HAVE_SKILL(ARG, 541);사만・다
+			CALL CHECK_ACTIONABLE , ARG , 541;사만・다
+			SIF RESULT
+				RETURN 1
+		ENDIF
+		IF HAVE_SKILL(ARG, 538);용해브레스
+			CALL CHECK_ACTIONABLE , ARG , 538;용해브레스
+			SIF RESULT
+				RETURN 1
+		ENDIF
+		IF HAVE_SKILL(ARG, 542);악마의위협
+			CALL CHECK_ACTIONABLE , ARG , 542;악마의위협
+			SIF RESULT
+				RETURN 1
+		ENDIF
+		RETURN 0
+ENDSELECT
+
+@リンケージコストタイプ_4483, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 3
+ENDSELECT
+@リンケージコスト_4483, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 30
+ENDSELECT

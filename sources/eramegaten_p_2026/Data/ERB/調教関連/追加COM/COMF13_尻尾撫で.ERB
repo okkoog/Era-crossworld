@@ -1,0 +1,88 @@
+﻿;
+;	Edit	Date			Author					Reason
+;	001		2021/01/28		eMさ者					V挿入継続時の分岐を追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+
+;-------------------------------------------------
+;꼬리애무
+;愛撫系コマンド　レベル2
+;-------------------------------------------------
+@CHECK_COM_ABLE13
+
+SIF !USE_HAND(PLAYER)
+	RETURN 0
+
+SIF !USE_TAIL(TARGET)
+	RETURN 0
+
+	RETURN 1
+
+@ACT_COM13
+
+PRINTL 꼬리애무
+TSTR:0 = 꼬리애무
+;CALL KOJO_MESSAGE_COM
+
+;調教者→調教対象
+TFLAG:28 = 2
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 5
+DOWNBASE:TARGET:기력 += 30
+
+SOURCE:TARGET:정애 = 75
+SOURCE:TARGET:성행위 = 30
+SOURCE:TARGET:노출 = 10
+SOURCE:TARGET:반감 = 20
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;抑圧、抵抗持ちには、抑鬱ソース追加
+SIF TALENT:억압 || TALENT:저항
+	SOURCE:TARGET:울굴 += 20
+
+;-------------------------------------------------
+;吸精処理
+;-------------------------------------------------
+IF CFLAG:PLAYER:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:3+1) * BASE:LV
+	CALL DRAIN_MAG,PLAYER,LOCAL,TARGET
+ELSEIF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:3+1) * BASE:LV
+	CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+ENDIF
+
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+A = 3
+IF IS_LESBIAN(TARGET,PLAYER)
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, PLAYER)
+ELSEIF IS_GAY(TARGET,PLAYER)
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+ENDIF
+
+;依存度ベクトル
+TFLAG:33 = 2
+
+RETURN 1
+
+@MESSAGE_COM13
+IF TEQUIP:50 > 0
+	PRINTFORM 하반신으로 이어진 채, 
+ENDIF
+PRINTFORMW 꼬리를 가볍게 잘근잘근 깨물면서 정성스레 애무했다……
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_13
+RETURN COMTYPE("愛撫系")
+

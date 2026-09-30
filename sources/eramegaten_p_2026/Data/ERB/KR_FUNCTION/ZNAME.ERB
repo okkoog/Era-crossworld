@@ -1,0 +1,179 @@
+﻿;====================================================
+; 받침 종류 판정
+;
+; 1 = 받침 있음
+; 2 = 받침 없음
+; 3 = ㄹ 받침
+;====================================================
+
+@KR_NAME(ARGS)
+#FUNCTION
+#DIM CODE
+#DIM JONG
+
+;빈 문자열은 받침 있음 취급
+SIF ARGS == ""
+	RETURNF 1
+
+;마지막 글자의 유니코드 코드
+CODE = ENCODETOUNI(ARGS, STRLENSU(ARGS) - 1)
+
+;가～힣
+IF CODE >= 44032 && CODE <= 55203
+	JONG = (CODE - 44032) % 28
+
+	;종성 없음
+	SIF JONG == 0
+		RETURNF 2
+
+	;ㄹ 받침
+	SIF JONG == 8
+		RETURNF 3
+
+	RETURNF 1
+ENDIF
+
+;2, 4, 5, 9
+;이, 사, 오, 구이므로 받침 없음
+SELECTCASE CODE
+	;반각 숫자
+	CASE 50, 52, 53, 57
+		RETURNF 2
+
+	;전각 숫자
+	CASE 65298, 65300, 65301, 65305
+		RETURNF 2
+ENDSELECT
+
+;ん / ン / ﾝ은 받침 있음으로 처리
+SELECTCASE CODE
+	CASE 12435, 12531, 65437
+		RETURNF 1
+ENDSELECT
+
+
+
+
+;그 외 문자는 받침 없음 취급
+RETURNF 2
+
+
+
+@조사만처리(ARGS, ARGS:1)
+#FUNCTIONS
+#DIM TYPE
+#DIMS NO_JONG
+#DIMS WITH_JONG
+
+TYPE = KR_NAME(ARGS)
+
+SELECTCASE ARGS:1
+	CASE "는", "은"
+		NO_JONG '= "는"
+		WITH_JONG '= "은"
+
+	CASE "가", "이"
+		NO_JONG '= "가"
+		WITH_JONG '= "이"
+
+	CASE "를", "을"
+		NO_JONG '= "를"
+		WITH_JONG '= "을"
+
+	CASE "와", "과"
+		NO_JONG '= "와"
+		WITH_JONG '= "과"
+
+	CASE "로", "으로"
+		NO_JONG '= "로"
+		WITH_JONG '= "으로"
+
+	CASE "랑", "이랑"
+		NO_JONG '= "랑"
+		WITH_JONG '= "이랑"
+
+	CASE "라", "이라"
+		NO_JONG '= "라"
+		WITH_JONG '= "이라"
+
+	CASE "며", "이며"
+		NO_JONG '= "며"
+		WITH_JONG '= "이며"
+
+	CASE "고", "이고"
+		NO_JONG '= "고"
+		WITH_JONG '= "이고"
+
+	CASE "다", "이다"
+		NO_JONG '= "다"
+		WITH_JONG '= "이다"
+
+	CASE "였", "이었"
+		NO_JONG '= "였"
+		WITH_JONG '= "이었"
+
+	CASE "여", "이여"
+		NO_JONG '= "여"
+		WITH_JONG '= "이여"
+
+	CASE "야", "이야"
+		NO_JONG '= "야"
+		WITH_JONG '= "이야"
+
+	CASE "나", "이나"
+		NO_JONG '= "나"
+		WITH_JONG '= "이나"
+
+	CASE "면", "이면"
+		NO_JONG '= "면"
+		WITH_JONG '= "이면"
+
+	CASE "지만", "이지만"
+		NO_JONG '= "지만"
+		WITH_JONG '= "이지만"
+
+	CASE "겠", "이겠"
+		NO_JONG '= "겠"
+		WITH_JONG '= "이겠"
+
+	CASE "셨", "이셨"
+		NO_JONG '= "셨"
+		WITH_JONG '= "이셨"
+
+	CASE "잖", "이잖"
+		NO_JONG '= "잖"
+		WITH_JONG '= "이잖"
+
+	CASE "니", "이니"
+		NO_JONG '= "니"
+		WITH_JONG '= "이니"
+
+	CASEELSE
+		RETURNF ARGS:1
+ENDSELECT
+
+;받침 없음
+SIF TYPE == 2
+	RETURNF NO_JONG
+
+;ㄹ 받침 + 로/으로 예외
+SIF TYPE == 3 && (ARGS:1 == "로" || ARGS:1 == "으로")
+	RETURNF NO_JONG
+
+RETURNF WITH_JONG
+
+
+@조사처리(ARGS, ARGS:1)
+#FUNCTIONS
+
+LOCALS = %ARGS%%조사만처리(ARGS, ARGS:1)%
+
+SELECTCASE LOCALS
+	CASE "나가"
+		RETURNF "내가"
+
+	CASE "저가"
+		RETURNF "제가"
+ENDSELECT
+
+RETURNF LOCALS

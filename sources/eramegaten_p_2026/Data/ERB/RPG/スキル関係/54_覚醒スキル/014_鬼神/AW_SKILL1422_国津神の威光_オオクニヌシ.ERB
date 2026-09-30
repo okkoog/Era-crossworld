@@ -1,0 +1,196 @@
+﻿;スキル名
+@SKILL_NAME_AW_1422,ARG
+IF (TFLAG:커맨드표시중 || (ARG >= 0 && FLAG:행동순1 == ARG)) && !FLAG:총공격중 
+	RESULTS = 이즈모의 검
+ELSE
+	RESULTS = 쿠니츠카미의 위광
+ENDIF
+;　명중
+@SKILL_HITRATE_AW_1422, ARG
+RETURN 100
+
+@SKILL_POWER_AW_1422, ARG
+RETURN 420
+
+;;クリティカル率
+@SKILL_CRITICAL_RATE_AW_1422, ARG
+RETURN 0
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_AW_1422, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_AW_1422,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_AW_1422,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_AW_1422,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_AW_1422,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_AW_1422, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_AW_1422,ARG
+RETURN 45
+
+;　相性
+@SKILL_TYPE_AW_1422,ARG
+RETURN GET_TYPE_NUM("파마")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_AW_1422
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_AW_1422,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_AW_1422,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_AW_1422,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_AW_1422,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_AW_1422,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_AW_1422, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_AW_1422
+RETURN 0
+
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PASSIVE_PENETRATION_RANK_AW_1422, L_P, L_T, L_スキル, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM DYNAMIC L_P;このスキルの所持者
+#DIM DYNAMIC L_T;攻撃対象
+#DIMS DYNAMIC L_スキル;スキルの所持者が敵に対して使用しているスキルの関数名称
+#DIM DYNAMIC L_ダメージタイプ
+#DIM DYNAMIC L_攻撃タイプ
+#DIM DYNAMIC L_相性
+#DIM DYNAMIC GIVE_EFFECT_CHARA;リーダースキル等他人からつけられている場合の提供者
+SIF GET_TYPE(L_相性) == "파마"
+	RETURN 0, 4
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_AW_1422,ARG,ARG:1,SKILL_NUM
+#DIM LCOUNT
+#DIM SKILL_NUM
+#DIMS TARGET_LIST
+#DIM L_TARGET
+IF FLAG:총공격중
+	PRINTFORMW %CALLNAME:ARG%는 힘을 모아 다음 공격에 대비했다!
+	CFLAG:ARG:気合フラグ = 1
+ELSE
+	CALL ATTACK_SKILL,ARG,ARG:1,SKILL_NUM
+	IF GET_CREC_ACT(ARG, POS(ARG:1), "HIT")
+		CALL PRINT_ACT_MESSAGE, ARG, , , , "약조신의 은덕"
+		CALL CURE_STATE_FIELD, ARG, CFLAG:ARG:PT플래그 ? 19 # 22, SKILL_NUM
+		WAIT
+	ENDIF
+ENDIF
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_AW_1422,ARG,ARG:1
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+	RETURN 0
+;味方同士でなければNG
+SIF !IS_FRIEND(FLAG:행동순1, ARG)
+	RETURN 0
+;判定は1回
+SIF ARG != ARG:1
+	RETURN 0
+;すでに気合がかかってるときは効果がない
+SIF CFLAG:ARG:気合フラグ
+	RETURN 0
+;ステート回復がトリガー
+SIF !GET_CREC_ACT(FLAG:행동순1, , "CURE")
+	RETURN 0
+RETURN 1, -1
+
+;　説明文の表示
+@SKILL_EXPLAIN_AW_1422,ARG
+PRINTL 국진신 오오쿠니누시의 각성 스킬
+PRINTL 자동: 파마 상성 공격이 적의 내성을 50%까지 무시하고 관통하는 효과를 얻는다.
+PRINTL 　　　자신을 포함한 아군이, 아군의 스킬로 상태이상에서 회복했을 때, 이하의 연동 효과가 발동한다.
+PRINTL 　　　「다음 공격력을 대폭 상승시키는 차지 효과를 얻는다」
+PRINTL 　　　파티 멤버 내에 건재한 【토요아시하라】가 4체 이상 있을 경우, 【이즈모의 검】을 사용할 수 있다.
+PRINTL 【이즈모의 검】
+PRINTL 적 1체에 파마 상성의 특대 물리 데미지를 준다.
+PRINTL 이 공격이 성공했을 경우, 이하의 추가 효과가 발동한다.
+PRINTL 「아군 전체의 FLY, DYING, ORGY, HEAT 이외의 상태이상을 회복한다.」
+
+@SKILL_EXPLAIN_TOOLTIP_AW_1422, ARG
+RESULTS:0 = 적 1체에 파마 상성의 특대 물리 데미지를 준다.
+RESULTS:1 = 이 공격이 성공했을 경우, 이하의 추가 효과가 발동한다.
+RESULTS:2 = 「아군 전체의 FLY, DYING, ORGY, HEAT 이외의 상태이상을 회복한다.」
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_AW_1422,ARG
+SIF ARG >= 0 && GET_TOYOASIHARA_COUNT(ARG) > 3
+	RETURN 1
+RETURN 0
+
+@SKILL_ACTIONABLE_BATTLE_AW_1422, ARG
+;選択肢に出るかどうか
+SIF ARG >= 0 && GET_TOYOASIHARA_COUNT(ARG) > 3
+	RETURN 1
+RETURN 0
+
+@GET_TOYOASIHARA_COUNT, ARG
+#FUNCTION
+#DIM LCOUNT
+#DIM L_CNT_TOYOASIHARA
+L_CNT_TOYOASIHARA = 0
+FOR LCOUNT, GET_POS_MIN(CFLAG:ARG:PT플래그 ? 19 # 22), GET_POS_MAX(CFLAG:ARG:PT플래그 ? 19 # 22) + 1
+	SIF !IS_TARGET_ABLE(POS(LCOUNT))
+		CONTINUE
+	SIF CSTR:POS(LCOUNT):상성그룹 != "豊葦原"
+		CONTINUE
+	L_CNT_TOYOASIHARA++
+NEXT
+RETURNF L_CNT_TOYOASIHARA
+
+;何のバッドステータスを治せるか
+@SKILL_CURE_STATE_AW_1422,ARG
+SELECTCASE GET_STATE(ARG)
+	CASE "FLY","GOOD","DYING","ORGY","HEAT"
+		RETURN 0
+	CASEELSE
+		RETURN 1
+ENDSELECT

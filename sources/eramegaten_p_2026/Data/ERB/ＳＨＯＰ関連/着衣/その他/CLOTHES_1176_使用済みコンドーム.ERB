@@ -1,0 +1,73 @@
+﻿@CLOTHES_NAME_1176
+RESULTS = 사용한콘돔
+
+;露出部位
+@CLOTHES_EXPOSE_1176,ARG
+;ARG = 露出する部位
+;1 = 팔노출 2 = 발노출 3 = 다리노출 4 = 유방노출 5 = 유두노출 6 = ヘソ露出 7 = 음순노출 8 = 둔부노출
+
+
+SELECTCASE ARG
+	CASE 0
+		RETURN 0
+	CASEELSE
+		RETURN 1
+ENDSELECT
+
+;装備部位
+@CLOTHES_PART_1176
+RETURN 11
+
+;服の前が開くか
+;1 開けられる、2 開きっぱなし
+@CLOTHES_OPENFRONT_1176
+RETURN 0
+
+;股間の構造
+;1 = ズボン、2 = ビキニタイプ、3 = スカート、4 = 穴開き、5 前開き、6 開閉可能
+@CLOTHES_CROTCH_1176
+RETURN 0
+
+;衣装の属性
+@CLOTHES_TAG_1176
+#FUNCTION
+RESULTS_F = 
+
+
+;装備時の調教効果
+@CLOTHES_SOURCE_1176,ARG = -1
+IF FLAG:SHOP커맨드 == 0
+	SIF ARG == TARGET
+		TFLAG:19 = 1
+	SOURCE:ARG:정애 += (ABL:ARG:정액중독 * 4)
+	SOURCE:ARG:중독충족 += 10 + (ABL:ARG:정액중독 * 4)
+	SOURCE:ARG:불결 += 10 - ABL:ARG:정액중독
+	SOURCE:ARG:일탈 += 25
+	SOURCE:ARG:반감 += 40
+
+	;抑圧、抵抗持ちには、抑鬱ソース追加
+	SIF TALENT:ARG:억압 || TALENT:ARG:저항
+		SOURCE:ARG:울굴 += 10
+ELSE
+ENDIF
+
+;装備時の経験追加
+@CLOTHES_EXP_1176,ARG = -1
+IF FLAG:SHOP커맨드 == 0
+	SIF ARG == -1
+		RETURN 0
+	PRINTFORML <사용한 콘돔 착용 중>\@ ARG == MASTER ? (主人) #\@\@ ARG == ASSI ? (助手) #\@
+		CALL ADDS_EXP("정액경험", 1, ARG)
+	ELSE
+	ENDIF
+
+;装備するための条件
+@CLOTHES_PREREQUISITE_1176,ARG
+SIF ARG == MASTER
+	RETURN 1
+SIF ABL:ARG:정액중독 >= 1
+	RETURN 1
+RETURN 0
+
+@CLOTHES_PRICE_1176
+RETURN 100

@@ -1,0 +1,85 @@
+﻿;セシリア(エルフ)
+@SORP_PLAY_1012, ARGS
+#DIMS DYNAMIC ICON_ADDRESS
+ICON_ADDRESS = 67_セシリア
+SELECTCASE ARGS
+	CASE "娼婦番号"
+		RESULTS = [1012]
+	CASE "キャラ名"
+	RESULTS = 세실리아
+	CASE "指名名"
+	RESULTS = 세실리아(엘프)
+	CASE "所属"
+		;表なら1、裏なら2
+		RETURN 1
+	CASE "判定"
+		;指名可能なら0、不可なら1
+		;シェリー身請け済なら出現
+		CALL SORP_PLAY_1002, "判定"
+		SIF !RESULT
+			RETURN 1
+		RETURN 0
+	CASE "キャラ名"
+	RESULTS = 세실리아
+	CASE "価格"
+		RETURN 500
+	CASE "紹介文"
+		IF 六本木娼婦フラグ:12 == 0
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"과연, 세실리아 양을 희망하십니까/손님, 아주 좋은 곳에 눈을 돌리셨군요/"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그녀는 라이벌 가게에서 스카우트해 온 실력파 엘프입니다/원래는 기사였다고 하며, 그 미모와 지체는 당시와 다름없이 시들지 않았다고 합니다/"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"옛날, 야만족에게 완력으로 범해진 이래, 아무래도 그 몸맛을 잊을 수 없게 된 모양이라/이상적인 상대를 찾아 각지를 전전하던 차에/저희 쪽으로 소개를 받게 된 것입니다"
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"과연, 세실리아 양입니까/손님, 엘프 기사를 굴복시키는 재미에 푹 빠지셨군요？/"
+		ENDIF
+	CASE "確認"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그럼, 세실리아 양입니다만…/하룻밤에 ５００마카가 되겠습니다/"
+	CASE "プレイ口上"
+		CALL DUNGEON_WORP,1,16,2
+		IF 六本木娼婦フラグ:12 == 0
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"세실리아", @"음, 지명 고맙다/세실리아다, 잘 부탁하지/"
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"세실리아", @"그건 그렇고 날 골랐다는 시점에서 알고 있으리라 생각하지만/난 상황극 플레이가 아니면 달아오르지 않는 타입이라서 말이지/"
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"세실리아", @"그런 연유로…//―――큭, 죽여라！%ハート()%"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+			CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"/＞즐겁게 놀았습니다…/"
+			六本木娼婦フラグ:12 = 1
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"세실리아", @"잘 와주었다. 그럼, 곧바로//―――큭, 죽여라！%ハート()%"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+			CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"/＞즐겁게 놀았습니다…/"
+		ENDIF
+		EXP:MASTER:삽입경험 += ABL:MASTER:새드끼 * 5 + 1
+		EXP:MASTER:절정경험 += ABL:MASTER:새드끼 * 10
+		JUEL:MASTER:쾌Ｃ += ABL:MASTER:새드끼 * (1000) + 1000
+		JUEL:MASTER:쾌Ｂ += ABL:MASTER:새드끼 * (1000) + 1000
+		JUEL:MASTER:욕정 += ABL:MASTER:새드끼 * (1000) + 1000
+		IF !TALENT:MASTER:남자
+			EXP:MASTER:레즈경험 += ABL:MASTER:새드끼 * 5 + 1
+		ENDIF
+		IF TALENT:MASTER:남자 || TALENT:MASTER:후타나리
+			EXP:MASTER:질사경험 += ABL:MASTER:새드끼 * 3 + 1
+			EXP:MASTER:사정경험 += ABL:MASTER:새드끼 * 7 + 1
+			CALL CONTROL_MAG, MASTER, -(ABL:MASTER:새드끼 * 5000 + 3000)
+		ENDIF
+		EXP:MASTER:가학쾌락경험 += ABL:MASTER:새드끼 * 10 + 10
+		;CALL INCREASE_LC,10  意図が不明かつ変動量が強烈で、ユーザー側から認識できない場所での変動なので除外します。必要性があって再実装する場合は右記の点に注意して再実装してください。
+	CASE "身受け価格"
+		RETURN 99999
+	CASE "身受け確認"
+		;
+	CASE "身受け口上"
+		;
+	CASE "宣伝"
+		PRINTL
+		PRINTL 세실리아
+		;勝てなかったよ…展開をするためにあえて自分でフラグを立てていくスタイル
+		SETCOLOR COLOR("ハートピンク")
+		PRINTL 『엘프 기사는 인간 따위에게 지지 않는다！ 내가 그걸 증명해 보이지！』
+		RESETCOLOR
+		PRINTW (편집자 주기: 평소에도 기사 갑옷을 입고 있다고 합니다. 본토의 기사는 격이 다르군요！)
+	CASE "リスト"
+		RESULTS '= ICON_ADDRESS
+
+		RESULTS:1 = 엘프 기사는 인간 따위에게 지지 않는다！ 내가 그걸 증명해 보이지！
+ENDSELECT

@@ -1,0 +1,112 @@
+﻿;スキル名
+@SKILL_NAME_祈りの願い,ARG
+RESULTS = 기도의 소원
+
+;　명중
+@SKILL_HITRATE_祈りの願い, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_祈りの願い, ARG
+RETURN 1000
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_祈りの願い,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_祈りの願い,ARG
+RETURN 1
+
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_祈りの願い, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_祈りの願い,ARG
+RETURN 50
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_祈りの願い
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_祈りの願い,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_祈りの願い,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_祈りの願い,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_祈りの願い,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_祈りの願い,ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+@SKILL_HEAL_TYPE_祈りの願い, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("割合")
+
+;속도보정
+@SKILL_SPEED_祈りの願い, ARG = -1
+RETURN -999
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_祈りの願い
+RETURN 0
+
+@継承不能_祈りの願い
+RETURN 2
+
+
+;スキル変化？用ランク
+@SKILL_RANK_祈りの願い, ARG = -1
+RETURN 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_祈りの願い,ARG,ARG:1,ARG:2
+#DIM DYNAMIC L_CHARA
+FOR L_CHARA,0,CHARANUM
+	SIF !IS_COMP内効果有効(L_CHARA)
+		CONTINUE
+	IF CFLAG:(L_CHARA):상태이상 == GET_STATE_NUM("DYING")
+		CFLAG:(L_CHARA):상태이상 = 0
+		CFLAG:(L_CHARA):상태이상경과턴수 = 0
+		CALL VAR_HP,(L_CHARA),MAXBASE:(L_CHARA):ＨＰ
+		PRINTFORML %CALLNAME:(L_CHARA)%(은)는 숨을 되찾았다
+	ELSE
+		CALL HEAL_SINGLE, ARG, L_CHARA, ARG:2, 1
+	ENDIF
+NEXT
+CALL VAR_MP, ARG, -MAXBASE:ARG:ＭＰ, "ダメージ"
+WAIT
+
+@SKILL_EXPLAIN_祈りの願い,ARG
+PRINTL 대기를 포함한 아군 전원을 소생시키고, 추가로 HP와 모든 상태이상을 완전 회복한다.
+PRINTL 스킬 발동 후 모든 MP를 잃는다.
+PRINTL 이 스킬은 매우 발동이 느리다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_祈りの願い,ARG
+#DIM SKILL_NUM
+RETURN 1
+
+;何のバッドステータスを治せるか
+@SKILL_CURE_STATE_祈りの願い,ARG
+SELECTCASE GET_STATE(ARG)
+	CASE "FLY","GOOD","DYING","ORGY","HEAT"
+		RETURN 0
+	CASEELSE
+		RETURN 1
+ENDSELECT
+RETURN 0

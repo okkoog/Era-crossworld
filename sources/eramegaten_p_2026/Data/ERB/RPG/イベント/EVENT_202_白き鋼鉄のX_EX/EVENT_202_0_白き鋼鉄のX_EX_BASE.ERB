@@ -1,0 +1,188 @@
+﻿;====================
+;イベント名称
+;====================
+@GET_EVENT_NAME_202
+#FUNCTIONS
+RESULTS_F '= "하얀강철의X_챌린지배틀"
+RETURNF RESULTS_F
+
+;====================
+;条件
+;====================
+@PLAYABLE_EVENT_202
+RESULTS = (EX:하얀강철의X) 챌린지 배틀
+SIF !GETS_USEABLE_EXTRA_TITLE("白き鋼鉄のX")
+	RETURN 0
+SIF !GETBIT(FLAG:발견ED2, 6)
+	RETURN 0
+SIF FLAG:게임모드 != 9
+	RETURN 0
+RETURN 1
+
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_202
+#DIM DYNAMIC LCOUNT,2
+#DIMS DYNAMIC TEMPS
+#DIM CONST CHARA_TABLE = 0, [[キャラ:블레이드_X]], [[キャラ:아큐라_X]], [[キャラ:데이사이트_X2]], [[キャラ:베스파_X2]], [[キャラ:오토크롬_X2]],　[[キャラ:브리게이드_X2]], [[キャラ:헤일_X2]], [[キャラ:슬러그_X2]], [[キャラ:입실론_X2]], [[キャラ:마더_X2]], [[キャラ:창조주_X2]]
+#DIMS DYNAMIC FACE_TABLE, 20
+#DIM DYNAMIC L_SELECTABLE_ARRAY, 100
+#DIMS DYNAMIC STAGE_NAME, 20
+#DIMS DYNAMIC L_BUTTON, 20
+#DIMS DYNAMIC SHOW_LINE
+#DIM DYNAMIC SELECT_PLACE
+
+CALLF DISPOSE_SPRITE_FORCE_F, TEMP_GID_START, "アキュラ&GV"
+;アイコン設定時の表示に使うアイコン
+VARI GID
+GID = FINDELEMENT(USED_CHARA_GID, 0)
+USED_CHARA_GID:GID = 1, 1, 1
+GCREATE GID, 96, 96
+GCREATE GID + 1, 47, 96
+GCREATE GID + 2, 96, 96
+
+CALL 顔グラ追加, [[キャラ:아큐라_X]]
+CALL 顔グラ追加, [[キャラ:GV]]
+GDRAWSPRITE GID + 1, "アキュラ_X_FACE_0", 0, 0, 96, 96
+GDRAWSPRITE GID + 2, "GV_FACE_0", 0, 0, 96, 96
+
+GCREATE GID, 96, 96
+GDRAWG GID, GID + 1, 0, 0, 96, 96, 0, 0, 96, 96
+GDRAWG GID, GID + 2, 50, 0, 96, 96, 48, 0, 96, 96
+
+SPRITECREATE "アキュラ&GV", GID
+
+CALL DISPOSE_GRAPHICS, "QUEST"
+FOR LCOUNT, 0, VARSIZE("CHARA_TABLE")
+	IF CHARA_TABLE:LCOUNT == [[キャラ:아큐라_X]]
+		FACE_TABLE:LCOUNT '= "アキュラ&GV"
+	ELSE
+		FACE_TABLE:LCOUNT '= GET_FACE_BY_CSV(CHARA_TABLE:LCOUNT)
+	ENDIF
+	GID = QUEST_GIDNUM_START + LCOUNT
+	QUEST_GID_SPRITENAME:LCOUNT '= FACE_TABLE:LCOUNT + "_" + "白抜き"
+	CALL CHANGE_COLOR_MATRIX, GID, FACE_TABLE:LCOUNT, "白抜き"
+	SPRITECREATE FACE_TABLE:LCOUNT + "_" + "白抜き", GID, 0, 0, GWIDTH(GID), GHEIGHT(GID)
+	TRYCCALLFORM PLAYABLE_EVENT_202_{LCOUNT}
+		L_SELECTABLE_ARRAY:LCOUNT = RESULT
+	CATCH
+	ENDCATCH
+	TRYCCALLFORM EVENT_TITLE_202_{LCOUNT}
+		STAGE_NAME:LCOUNT '= RESULTS
+	CATCH
+	ENDCATCH
+NEXT
+
+VARI SHOW_TABLE, 3, 5
+SHOW_TABLE:0:0 = [[キャラ:블레이드_X]], [[キャラ:아큐라_X]], 
+SHOW_TABLE:1:0 = [[キャラ:데이사이트_X2]], [[キャラ:베스파_X2]], [[キャラ:오토크롬_X2]], [[キャラ:브리게이드_X2]], [[キャラ:헤일_X2]]
+SHOW_TABLE:2:0 = [[キャラ:슬러그_X2]], [[キャラ:입실론_X2]], [[キャラ:마더_X2]], [[キャラ:창조주_X2]]
+
+VARI L_LINE = LINECOUNT
+VARI L_CHARA_NO
+VARI L_NO
+VARI SELECT_PLACE
+VARS BORDER_COLOR
+WHILE 1
+	REDRAW 0
+	VARSET SHOW_LINE
+	CLEARLINE LINECOUNT - L_LINE
+	DRAWLINE
+	PRINTFORML 챌린지 배틀
+	DRAWLINE
+	FOR LCOUNT:1, 0, 3
+		FOR LCOUNT, 0, 5
+			L_CHARA_NO = SHOW_TABLE:(LCOUNT:1):LCOUNT
+			SIF L_CHARA_NO == 0
+				CONTINUE
+			L_NO = FINDELEMENT(CHARA_TABLE, L_CHARA_NO)
+			TEMPS '=  FACE_TABLE:L_NO
+			SIF !L_SELECTABLE_ARRAY:L_NO
+				TEMPS += "_白抜き"
+			TEMPS '=  @"<img src = '%TEMPS%' height = '800'>"
+			SIF L_SELECTABLE_ARRAY:L_NO
+				TEMPS '= SET_BUTTON_TAG(TEMPS, TOSTR(L_NO))
+			IF SELECT_PLACE == L_NO
+				BORDER_COLOR '= TOSTR_HTML(COLOR("p-green"))
+			ELSE
+				BORDER_COLOR '= TOSTR_HTML(COLOR("デフォルト"))
+			ENDIF
+			TEMPS '= @"<div xpos = '{LCOUNT * 1000}' ypos = '{(LCOUNT:1) * 1000}' width = '900' height = '900' border_width = '5px' border_color = '%BORDER_COLOR%' padding = '50'>" + TEMPS + "</div>"
+			SHOW_LINE += TEMPS
+			IF EVENT_202_白き鋼鉄のXチャレンジバトル_クリアフラグ:L_NO
+				TEMPS '= SET_COLOR_TAG("<font size = '200'>" + "★" + "</font>", "yellow")
+				TEMPS '= @"<div xpos = '{LCOUNT * 1000 + 700}' ypos = '{(LCOUNT:1) * 1000}'>" + TEMPS + "</div>"
+				SHOW_LINE += TEMPS
+			ENDIF
+		NEXT
+	NEXT
+	FOR LCOUNT, 1, VARSIZE("STAGE_NAME")
+		SIF STAGE_NAME:LCOUNT == ""
+			CONTINUE
+		IF L_SELECTABLE_ARRAY:LCOUNT
+			TEMPS '= @"[{LCOUNT,2}] %STAGE_NAME:LCOUNT%"
+		ELSE
+			TEMPS '= @"[{LCOUNT,2}] ？？？？"
+		ENDIF
+		IF L_SELECTABLE_ARRAY:LCOUNT
+			TEMPS '= SET_BUTTON_TAG(TEMPS, TOSTR(LCOUNT))
+			SIF SELECT_PLACE == LCOUNT
+				TEMPS '= SET_COLOR_TAG(TEMPS, "p-green")
+		ELSE
+			TEMPS '= SET_COLOR_TAG(TEMPS, "gray")
+		ENDIF
+		SHOW_LINE += @"<div xpos = '5000' ypos = {LCOUNT * 100 - 100}>" + TEMPS + "</div>"
+	NEXT
+	HTML_PRINT SHOW_LINE
+	FOR LCOUNT, 0, 28
+		PRINTL 
+	NEXT
+	DRAWLINE
+	VARSET RESULTS, " ", 0, 6
+	TRYCCALLFORM EVENT_EXPLAIN_202_{SELECT_PLACE}
+	CATCH
+		RESULTS:0 '= "챌린지 배틀은 몇 번이든 도전할 수 있습니다."
+		RESULTS:1 '= "또한 이 전투에서 패배해도 게임 오버가 되지 않습니다."
+
+		RESULTS:3 '= "또한, 전생 리스타트를 한 경우에는 하얀 X 루트를 진행하지 않아도"
+		RESULTS:4 '= "어느 엔딩이든 본 시점에서 개방됩니다."
+	ENDCATCH
+	FOR LCOUNT, 0, 6
+		HTML_PRINT RESULTS:LCOUNT
+	NEXT
+	DRAWLINE
+	CALL PRINT_TALK_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド"), "여기에서는 본편에서 싸웠던 이런 적이나 저런 적이 너를 기다리고 있어!_하지만, 엄청나게 강화되어 있으니까 주의해!_훌륭하게 쓰러뜨리면 호화로운 상품을 받을 수 있을…… 지도?", "RoRo"
+	DRAWLINE
+	TEMPS '= "[0] 결정"
+	IF SELECT_PLACE > 0
+		TEMPS '= SET_BUTTON_TAG(TEMPS, "0")
+		L_SELECTABLE_ARRAY:0 = 1
+	ELSE
+		TEMPS '= SET_COLOR_TAG(TEMPS, "gray")
+		L_SELECTABLE_ARRAY:0 = 0
+	ENDIF
+	TEMPS += "　　　"
+	TEMPS += SET_BUTTON_TAG("[99] 돌아간다", "99")
+	L_SELECTABLE_ARRAY:99 = 1
+	HTML_PRINT TEMPS
+	CALL INPUT_ARRAY, L_SELECTABLE_ARRAY
+	SIF SELECT_PLACE == RESULT
+		RESULT = 0
+	SELECTCASE RESULT
+		CASE 0
+			CLEARLINE LINECOUNT - L_LINE
+			CALLFORM SHOPCOM_EVENT_202_{SELECT_PLACE}
+			SIF RESULT
+				EVENT_202_白き鋼鉄のXチャレンジバトル_クリアフラグ:SELECT_PLACE = 1
+			FOR LCOUNT,0,CHARANUM
+				CALL HEALTH_CHARA,LCOUNT
+			NEXT
+			RESTART
+		CASE 1 TO VARSIZE("STAGE_NAME")
+			SELECT_PLACE = RESULT
+		CASE 99
+			RETURN 0
+	ENDSELECT
+	REDRAW 1
+WEND

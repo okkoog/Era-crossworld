@@ -1,0 +1,198 @@
+﻿; 군청색의초대장
+;====================
+;条件
+;====================
+@GET_EVENT_NAME_16
+#FUNCTIONS
+RESULTS_F '= "군청색의초대장"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_16
+[IF_DEBUG]
+	LOCAL = 1
+[ENDIF]
+; P4系イベントの進行+エリザベス撃破
+IF ((イベントフラグ:12:0 == 3 && ダンジョンフラグ:70:(96) == 4) || FLAG:DEBUG || LOCAL) && イベントフラグ:16:0 == 0
+	RESULTS = 군청색의 초대장
+	RETURN 1
+ELSEIF イベントフラグ:16:0 == 1
+	RESULTS = 천국의 가장 끝에서
+	RETURN 1
+ENDIF
+RETURN 0
+
+
+;====================
+;内容
+;====================
+; エリザベスとの戦闘
+; 天上楽土が実装されるようならそっちに引っ越し
+@SHOPCOM_EVENT_16
+IF イベントフラグ:16:0 == 0
+	PRINTW 사무소에 시선을 빼앗는 군청색의 초대장이 와 있었다
+	PRINTW “천국 너머에서 기다리겠다”고 짧막하게 쓰여 있다
+	PRINTW 이것은 결투장인가……？
+	PRINTL  
+	CALL INPUT_YN, "준비하고 간다", "파기하고 잊는다"
+	PRINTL  
+	IF RESULT == 0
+		PRINTFORMW 고민한 끝에 %MASTER는% 가기로 했다
+		PRINTW 확실히 자신있는 인물이 기다리고 있으리라 생각된다
+		PRINTW 가기 전에 준비는 주도면밀하게 하는 편이 좋다
+		イベントフラグ:16:0 = 1
+	ELSE
+		; フラグ折り
+		PRINTW 이런 정체 모를 것에 고민할 필요는 없다
+		PRINTFORMW %MASTER는% 그렇게 판단하고 초대장을 절단기에 넣었다
+		PRINTW 이 사건을 다시 생각하는 것은 아마 두 번 다시 없을 것이다
+		イベントフラグ:16:0 = 4
+	ENDIF
+ELSEIF イベントフラグ:16:0 == 1
+	PRINTW 지정된 장소는 아름다운 풍경의 섀도우가 꿈틀대는 이계였다
+	PRINTFORMW 으스스한 한기를 깨달은 %MASTER는% 천상 낙토를 뛰어 오르기 시작했다
+	PRINTW  
+	PRINTL ……
+	PRINTL …………
+	PRINTL ………………
+	PRINTW 도중에 저울 같이 받침접시를 갖고 있는 거대한 십자가의 섀도우가 가로막고 있었다！
+	PRINTW 이 오솔길을 지키고 있는지 쓰러뜨리지 않으면 통과할 수 없을 것 같다
+	[IF_DEBUG]
+		CALL INPUT_YN("스킵한다", "스킵하지 않는다")
+		SIF !RESULT
+			GOTO MARGARET
+	[ENDIF]
+	; 全能のバランサー 基本HP10000,MP999(毎ターン全快)
+	; マーガレット前の削り役
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+	CALL SET_ENEMY, 9, [[キャラ:전능밸런서]], 68, 0, 1
+	LOCAL = CHARANUM-1
+	LOCAL:1 = FLAG:전투난이도 - 3 > 0 ? 120 + (FLAG:전투난이도 - 3) * 20 # 100
+	CALL SET_BATTLE_STATUS(LOCAL, 100 * LOCAL:1, "ＨＰ")
+	CALL SET_BATTLE_STATUS(LOCAL, 999, "ＭＰ")
+	CSTR:LOCAL:사고패턴 = 全能バランサ
+	CFLAG:LOCAL:행동횟수 = 2
+	MAXBASE:LOCAL:만능 = 50
+	; 状態異常耐性セット
+	FOR LOCAL:1, 0, 14
+		BASE:LOCAL:(61+LOCAL:1) = 0
+	NEXT
+	BASE:LOCAL:SHOCK = 10
+	BASE:LOCAL:FREEZE = 10
+	CALL SYNC_STATUS, LOCAL
+	CALL HEALTH_CHARA, LOCAL
+	PRINTW 전능밸런서가 나타났다！
+	CALL BATTLE_START
+	CUSTOMDRAWLINE =
+	WAIT
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+	PRINTL  
+	PRINTW 전능의밸런서는 소멸했다
+	PRINTW 다른 섀도우에게 들키기 전에 어서 서두르자
+	PRINTW  
+	PRINTL ……
+	PRINTL …………
+	PRINTL ………………
+	PRINTW 간신히 꼭대기로 보이는 플로어에 도착했다
+	PRINTW 문을 열고 앞에 있는 다리를 건너자, 영리할 것 같은 여자가 한 사람이 잠시 멈춰서 있다
+	PRINTW 「처음 뵙겠습니다, 나는 마가렛. 벨벳룸의 수행원이야」
+	PRINTL 벨벳룸의 이름이 나왔으니 페르소나사용자인가, 혹은 거기에 관련되는 사람인가、
+	PRINTW 어떻게 해도 보통사람은 아닌 것은 확실하다
+	PRINTW 「당신이 여동생과 겨뤘었군요. 과연 보통사람은 아니네요」
+	PRINTW 「내 목적은 여동생을 데리고 돌아가는 것, 하지만 당신과 싸우는 일도 재밌을 것 같네요」
+	PRINTL  
+	$MARGARET
+	; マーガレット
+	; E, N, H, = Lv 96, HP15198, MP∞, 힘 60/ 知 50/ 魔 60/ 耐 60/ 速 30/ 운 50,
+	;                                  攻497/ 命321/ 防407/ 回321/ 威495/ 効376,
+	; M,       = Lv107, HP25839, MP∞, 力110/ 知 90/ 魔110/ 耐100/ 速 70/ 운 90,
+	;                                  攻537/ 命350/ 防436/ 回350/ 威535/ 効405,
+	; L,       = Lv119, HP28908, MP∞, 力160/ 知130/ 魔160/ 耐140/ 速110/ 運130,
+	;                                  攻577/ 命377/ 防464/ 回377/ 威574/ 効432,
+	; 悪夢,    = Lv130, HP31878, MP∞, 力210/ 知170/ 魔210/ 耐180/ 速150/ 運170,
+	;                                  攻613/ 命403/ 防489/ 回403/ 威611/ 効458,
+	; 
+	; 参考用	仲魔の最高レベルLv90で妹に挑んだ時の能力
+	; E, N, H, = Lv 100, 全能力52
+	; M,       = Lv 100, 全能力65
+	; L,       = Lv 100, 全能力115
+	; 悪夢,    = Lv 100, 全能力165
+	イベントフラグ:16:0 = 0
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+	; 基本Lv98
+	CALL SET_ENEMY, 9, [[キャラ:마가렛]], 96 * (FLAG:전투난이도 - 3 > 0 ? 100 + (FLAG:전투난이도 - 3) * 12 # 100) / 100, 0, 1
+	LOCAL = CHARANUM-1
+	CFLAG:LOCAL:행동횟수 = 2
+	;ABL:LOCAL:종족 = 33
+	CFLAG:LOCAL:강제악마화 = 1
+	CSTR:LOCAL:사고패턴 = マーガレット
+	; 状態異常耐性セット
+	FOR LOCAL:2, 0, 14
+		BASE:LOCAL:(61+LOCAL:2) = 0
+	NEXT
+	; ステータスセット
+	BASE:LOCAL:힘   = 60 + 50 * (FLAG:전투난이도 - 3 > 0 ? FLAG:전투난이도 - 3 # 0)
+	BASE:LOCAL:지혜 = 50 + 40 * (FLAG:전투난이도 - 3 > 0 ? FLAG:전투난이도 - 3 # 0)
+	BASE:LOCAL:마력 = 60 + 50 * (FLAG:전투난이도 - 3 > 0 ? FLAG:전투난이도 - 3 # 0)
+	BASE:LOCAL:내구 = 60 + 40 * (FLAG:전투난이도 - 3 > 0 ? FLAG:전투난이도 - 3 # 0)
+	BASE:LOCAL:속도 = 30 + 40 * (FLAG:전투난이도 - 3 > 0 ? FLAG:전투난이도 - 3 # 0)
+	BASE:LOCAL:운   = 50 + 40 * (FLAG:전투난이도 - 3 > 0 ? FLAG:전투난이도 - 3 # 0)
+	; スキルセット
+	; カジャオート4種追加。
+	; 弱点無しになったため、CO-OPを取りやすいようハイパーカウンタ削除。
+	; 会心スキル対策に会心スキル追加。
+	; 速攻対策に不屈の闘志追加。最終段階まで進むと消去される。食いしばりフラグが立つと全無効で9999メギドラオン連発モード化。
+	ABL:LOCAL:스킬1 = [[스킬:타루카쟈오토]]
+	ABL:LOCAL:스킬2 = [[스킬:라쿠카쟈오토]]
+	ABL:LOCAL:스킬3 = [[스킬:마카카쟈오토]]
+	ABL:LOCAL:스킬4 = [[스킬:스쿠카쟈오토]]
+	ABL:LOCAL:스킬5 = [[스킬:황천의회심]]
+	ABL:LOCAL:스킬6 = [[스킬:정천의회심]]
+	ABL:LOCAL:스킬7 = [[스킬:코칭]]
+	ABL:LOCAL:스킬8 = [[스킬:불굴의투지]]
+;売値0のアイテムは設定してもドロップされない
+;	IF ITEM:더블히란야스프레드 == 0
+;		ABL:LOCAL:아이템1 = GETNUM(ITEM, "더블히란야스프레드")
+;		ABL:LOCAL:입수확률1 = 100
+;	ENDIF
+;	CALL SET_BATTLE_STATUS(LOCAL, 150 * (FLAG:전투난이도 - 3 > 0 ? 100 + (FLAG:전투난이도 - 3) * 80 # 100), "ＨＰ")
+	; 定型文
+	CALL SYNC_STATUS, LOCAL
+	CALL HEALTH_CHARA, LOCAL
+	PRINTW 힘을 가진 자 마가렛이 나타났다！
+	CALL BATTLE_START
+	CUSTOMDRAWLINE =
+	WAIT
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+	IF ITEM:더블히란야스프레드 == 0
+		PRINTW ＞마테리얼 카드 【더블히란야스프레드】을 입수했습니다
+		PRINTL  
+		ITEM:더블히란야스프레드 = 1
+	ENDIF
+	PRINTW 마가렛은 쓰러졌다
+	PRINTW 생사를 확인하자, 죽일 생각이었는데도 마가렛은 기절하고 있을 뿐인 것 같다
+	PRINTW 지금의 우리 집에 데리고 돌아가도 괜찮을 것 같고, 이대로 내버려 둬도 죽지는 않을 것이다
+	PRINTW 자, 어떻게 할까？
+	PRINTL  
+	CALL INPUT_YN, "데리고 돌아간다", "방치하고 돌아간다"
+	IF RESULT == 0
+		PRINTL  
+		PRINTW 마가렛을 손에 넣었다
+		CALL ADD_NEW_COMPANION, [[キャラ:마가렛]], 200
+		イベントフラグ:16:0 = 2
+	ELSE
+		PRINTL  
+		PRINTW 결국 방치하고 돌아가기로 했다
+		PRINTW 이 사건을 다시 생각하는 일은 아마 두 번 다시 없을 것이다
+		イベントフラグ:16:0 = 3
+	ENDIF
+	
+ENDIF
+RETURN 0

@@ -1,0 +1,884 @@
+﻿;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SET_BATTLE.ERB
+;	Facility	:戦闘するための前準備を行う処理群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/01/14		Ｎ鳥					REPEATをセットする際の条件分岐を一部変更し、可読性の向上を図る
+;	003		2013/03/15		ネトリス				野良悪魔素質ランダム設定の処理を追加
+;	005		2019/04/17		名無					敵強化オプションを追加
+;	006		2019/11/03		Jガン					固有ゲージ処理を追加
+;	007		2019/11/27		Jガン					熱り弱点処理を追加
+;	008		2019/12/30		Jガン					蓄積ダメージを追加
+;	009		2020/07/10		Jガン					スキルゲージを追加
+;	010		2021/04/11		Jガン					一時操作不能追加
+;	011		2021/04/22		Rsp暇人 				WAIT表示が誰のリンケージ参加中かわかるようにするための変更に対応
+;	012		2021/06/24		JK好き					野良悪魔素質ランダム設定を魔乳に対応
+;	013		2021/07/23		名無					戦闘難易度EASYなら解析度0でも名前が表示されるように
+;	014		2021/11/23		kamedakeisuke(ﾟдﾟ)		他人気合フラグ・他人集中フラグに対応
+;	015		2022/01/03		しゃけ					潜在反撃・潜在特殊用の処理を追加
+;	016		2022/09/26		P						デビルシフター・喰奴の自動変身のための処理を追加
+;	017		2022/10/13		P(bazzie)				戦闘用のTFLAGを増加させたのでリセット処理を拡張
+;	018		2022/10/22		P(bazzie)				@SET_ENEMYにリンク悪魔の初期値を代入する処理を追加
+;	019		2022/10/31		P(bazzie)				戦闘開始時にHPバリアのリセット処理を追加
+;	020		2022/12/04		P(bazzie)				戦闘開始時にキャラ独自戦闘用変数のリセット処理を追加
+;	021		2022/12/31		P(bazzie)				戦闘開始時のキャラ毎のフラグ初期化をFLAGとSTATEに分離
+;													基本的には戦闘中にリセットが可能なフラグがSTATE,そうでないものをFLAGにしています
+;	022		2022/03/13		P(bazzie)				HiDASを一時的に封印
+;	023		2022/03/21		P(bazzie)				@REFRESH_BATTLE_CHARA_FLAG・STATEに対応するフラグを追加
+;													召喚攻撃のフラグを追加
+;													蘇生スキルの判定処理を変更
+;													蘇生スキルのランダム対象振り替えが機能していなかったので機能するように
+;	024		2022/04/15		P(bazzie)				戦闘開始時に逃走フラグもおるように追加
+;													ナビの判断用のフラグ取得処理の呼び出しを追加
+;	025		2023/05/28		P(bazzie)				初期化処理にフラグを追加
+;													初期化処理に中断セーブ待機状態を追加
+;	026		2023/08/07		P(bazzie)				縦列攻撃のREPEATが正しくセットされなかった不具合を修正
+;	027		2023/09/22		P(bazzie)				戦闘開始時に敵パーティーの攻撃相性登録処理の呼び出しを追加
+;	028		2024/05/26		P(bazzile)				リンケージによりスキル優先参照者が異常になるケースがある問題に対処
+;	029		2024/06/29		P(bazzile)				リピートコマンドをセットする際に味方後列がいない場合に味方前列に振り替える処理が適切に処理されていなかった不具合を修正
+;													リピートコマンドをセットする際に一部フラグを正しく見れていなかったので場所を移動蓄積ダメージを追加
+;	030		2025/01/19		Jガン					スキルゲージ処理の関数化
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2023/09/22		P(bazzie)				戦闘効果にチャージタイプを追加
+;													敵にMAGを持たせる(MAG吸収の上限設定用)
+;	002		2024/07/05		P(bazzie)				解析度0でアンノウンフラグが立たないように修正
+;	003		2024/07/26		P(bazzie)				チュートリアル進行時に戦闘難易度による敵ステータスの変動処理が発生しないように修正
+;	004		2024/07/29		P(bazzie)				BCHARAのリスト作成部分を変更
+;	005		2025/01/18		P(bazzie)				@SET_ENEMY_TIMEIDと@GET_ENEMYを追加
+;													@SET_ENEMY_BASE_STATを追加
+;	005		2025/01/18		P(bazzie)				リピートをセットする際に所持していないスキルをすべて通してしまっていた不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;===================================
+;敵の設定
+;===================================
+@SET_ENEMY,L_POS,ENEMY_NO,ENEMY_LV,IS_NOT_REMOVE,IS_BOSS = 0,IS_USEABLE_ESTOMA
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_POS
+#DIM DYNAMIC L_ENEMY
+#DIM DYNAMIC ENEMY_NO
+#DIM DYNAMIC ENEMY_LV
+#DIM DYNAMIC IS_NOT_REMOVE
+#DIM DYNAMIC IS_BOSS
+#DIM DYNAMIC IS_USEABLE_ESTOMA
+#DIM DYNAMIC TEMP
+#DIM DYNAMIC ADD_SKILL_LIST, 3000
+#DIM DYNAMIC SKILL_NUM
+;ARG:0 セットするポジション　ENEMY_NO　セットする悪魔　ENEMY_LV セットする悪魔のレベル　IS_NOT_REMOVE　死体残存フラグの有無 IS_BOSSボスフラグ
+;1-6指定してたら面倒なので帰る
+;LOCAL:4 レベルアップによる能力の増加値合計
+
+IF INRANGE(L_POS, 7, 17)
+	SIF POS(L_POS) >= 0
+		THROW すでに敵がいるポジションに敵を配置しようとしています！
+ELSE
+	;ゼロはポジションに配置しない敵セット
+	SIF L_POS != 0
+		RETURN 0
+ENDIF
+
+;レベル設定
+SIF ENEMY_LV == 0
+	ENEMY_LV = CSVBASE(ENEMY_NO, GETNUM(BASE, "LV"))
+IF FLAG:적강화옵션
+	ENEMY_LV += FLAG:적강화옵션*(5+ENEMY_LV)/10
+	;強化値×３の最低レベル保証。
+	ENEMY_LV = MAX(ENEMY_LV, FLAG:적강화옵션*3)
+ENDIF
+;エストマ・キャプスロックの判定
+IF IS_USEABLE_ESTOMA && IS_VALID_ESTOMA()
+	SIF ENEMY_LV <= BASE:MASTER:LV
+		RETURN 0
+ENDIF
+
+ADDCHARA ENEMY_NO
+L_ENEMY = CHARANUM - 1
+
+BCHARA:BCHARANUM = L_ENEMY
+IS_JOINED_BCHARA:L_ENEMY:0 = 1
+BCHARANUM++
+
+;---- EDIT 000 XXX START -------------------------
+;マインドシーカーはボスフラグを持たない相手に対してアンノウンフラグを立てる
+IF SOFT_ON("마인드시커") && IS_BOSS == 0
+	NAME:L_ENEMY = ？？？？
+	CALLNAME:L_ENEMY = ？？？？
+	CFLAG:L_ENEMY:언노운플래그 = 1
+ENDIF
+;---- EDIT 000 XXX END ---------------------------
+CALL CONVERT_SECOND_PERSON, L_ENEMY
+
+CFLAG:L_ENEMY:행동횟수 = 1
+CFLAG:L_ENEMY:캐릭터고유번호 = -2
+
+CFLAG:L_ENEMY:시체잔존 = IS_NOT_REMOVE
+;SYNC関数に移動 20241125
+;攻撃力と魔法威力に下駄
+;CFLAG:L_ENEMY:공격보정 = ENEMY_LV
+;CFLAG:L_ENEMY:마법위력보정 = ENEMY_LV
+
+CALL SET_ENEMY_BASE_STAT, L_ENEMY, ENEMY_LV
+
+;強化ランクを一応セットしておく
+CFLAG:L_ENEMY:강화랭크 = ENEMY_LV - CSVBASE(NO:L_ENEMY,GETNUM(BASE,"LV"),0) 
+;ボスフラグセット
+CFLAG:L_ENEMY:보스플래그 = IS_BOSS
+
+CALL INIT_CHARA_SKILL, L_ENEMY
+FOR LCOUNT,1,21
+	IF ABL:L_ENEMY:("습득스킬"+TOSTR(LCOUNT)) > 0
+		CALL GET_SKILL_PROP, "味方専用", ABL:L_ENEMY:("습득스킬"+TOSTR(LCOUNT)), L_ENEMY
+		IF RESULT == 0
+			IF ABL:L_ENEMY:("습득LV"+TOSTR(LCOUNT)) <= BASE:L_ENEMY:LV
+				CALL LEARN_SKILL_ENEMY,L_ENEMY,ABL:L_ENEMY:("습득스킬"+TOSTR(LCOUNT))
+				ABL:L_ENEMY:("습득스킬"+TOSTR(LCOUNT)) = 0
+				ABL:L_ENEMY:("습득LV"+TOSTR(LCOUNT)) = 0
+			ENDIF
+		ENDIF
+	ENDIF
+NEXT
+
+;---- EDIT 005 ADD START -------------------------
+IF FLAG:적강화옵션 > 0
+	;強化値１０を超えると、１あたり１０％の確率で行動回数が増えてる
+	SIF CFLAG:L_ENEMY:행동횟수 < 2 && RAND:10 < (FLAG:적강화옵션 - 10)
+		CFLAG:(CHARANUM-1):행동횟수 += 1
+	;スキル追加用のリストを作る
+	;20230530
+	;アクティブスキルが絶対に選定されない状態になっていた不具合を修正し、選定のアルゴリズムを変更
+	;旧:Rank1 ~ 強化OP-1のスキルから1/3の確率で選定
+	;新:自動スキルはRank1~強化OP
+	;　 アクティブスキルのランクはレベル/5(10まで) ~ 強化OP+5(仕様上、こうしないと低Rankスキルばかりで逆に弱くなるので)
+	;　 また、1/3を廃してかわりに継承素質の有無を見るように
+	;　 回復スキルは常に排除する(メディアラハンなどが入るとどう考えてもひどいことになるので)
+	IF FLAG:적강화옵션 > 2
+		VARSET ADD_SKILL_LIST
+		FOR SKILL_NUM,1,2600
+			CALL GET_SKILL_PROP, "SKILL_NAME", SKILL_NUM, L_ENEMY
+			SIF RESULTS == ""
+				CONTINUE
+			;デメリットを受けるスキルは排除
+			RESULT = 0
+			CALL GET_SKILL_PROP, "SKILL_IS_DEMERIT", SKILL_NUM, L_ENEMY
+			SIF RESULT
+				CONTINUE
+			;味方専用スキルも追加候補に入らないようにする
+			CALL GET_SKILL_PROP, "味方専用", SKILL_NUM, L_ENEMY
+			SIF RESULT > 0
+				CONTINUE
+			;継承不能スキルは追加候補に入らないようにする
+			CALL GET_SKILL_PROP, "継承不能", SKILL_NUM, L_ENEMY
+			SIF RESULT > 0
+				CONTINUE
+			RESULT = 0
+			CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", SKILL_NUM, L_ENEMY
+			IF INRANGE(RESULT, 0, SUCCESSIONNUM -1)
+				SIF !TALENT:L_ENEMY:GET_SUCCESSION(RESULT)
+					CONTINUE
+			ELSE
+				SIF RESULT != 22
+					CONTINUE
+			ENDIF
+			;難易度7以下では、敵専用スキルは追加候補に入らないようにする
+			IF FLAG:적강화옵션 <= 7
+				RESULT = 0
+				CALL GET_SKILL_PROP, "敵専用", SKILL_NUM, L_ENEMY
+				SIF RESULT > 0 
+					CONTINUE
+				CALL GET_SKILL_PROP, "ロール専用", SKILL_NUM, L_ENEMY
+				SIF RESULT > 0 
+					CONTINUE
+			ENDIF
+			RESULT = 0
+			CALL GET_SKILL_PROP, "SKILL_EFECT", SKILL_NUM, L_ENEMY
+			;자동효과
+			;回復はボスでほぼ確実にバグるので除く
+			IF RESULT == 2
+				CONTINUE
+			ELSEIF RESULT == 6
+				RESULT = 0
+				TRYCALL GET_SKILL_PROP, "SKILL_RANK", SKILL_NUM, L_ENEMY
+				SIF !INRANGE(RESULT, 1, FLAG:적강화옵션)
+					CONTINUE
+			;自動効果以外のスキルの判定
+			ELSE
+				;スキルのランクを見る
+				RESULT = 0
+				TRYCALL GET_SKILL_PROP, "SKILL_RANK", SKILL_NUM, L_ENEMY
+				;アクティブスキルはランクが低いものを持つとかえって弱くなる可能性が高いのでレベルから下限を決める
+				SIF RESULT < MIN(BASE:L_ENEMY:LV / 5, 10)
+					CONTINUE
+				;上限はOPで決める
+				SIF RESULT > FLAG:적강화옵션 + 5
+					CONTINUE
+			ENDIF
+			ADD_SKILL_LIST:FINDELEMENT(ADD_SKILL_LIST, 0) = SKILL_NUM
+			;PRINTFORML %SKILL_NAME_F(SKILL_NUM)%
+		NEXT
+		;WAIT
+		FOR LCOUNT:1,0,FLAG:적강화옵션
+			FOR LCOUNT,1,9
+				LOCALS = 스킬{LCOUNT}
+				IF ABL:L_ENEMY:LOCALS > 0
+					VARSET D
+					CALL GET_SKILL_PROP, "SKILL_RANKUP", ABL:L_ENEMY:LOCALS, L_ENEMY
+					IF RESULT > 0
+						TEMP = RAND:RESULT
+						SIF D:(TEMP) > 0
+							ABL:L_ENEMY:LOCALS = D:(TEMP)
+					ENDIF
+				ELSE
+					WHILE MAXARRAY(ADD_SKILL_LIST) > 0
+						TEMP = RAND:(FINDELEMENT(ADD_SKILL_LIST, 0))
+						SKILL_NUM = ADD_SKILL_LIST:TEMP
+						;所持済みならリストから抜いて再びまわす
+						IF HAVE_SKILL(L_ENEMY, SKILL_NUM)
+							ARRAYREMOVE ADD_SKILL_LIST, TEMP, 1
+							CONTINUE
+						ENDIF
+						ABL:L_ENEMY:LOCALS = SKILL_NUM
+						BREAK
+					WEND
+				ENDIF
+			NEXT
+		NEXT
+	ENDIF
+
+	;相性操作、弱点を３で通常、４で耐性、５で無効、６で吸収、７以上で反射に
+	IF FLAG:적강화옵션 > 2
+		;相性１つを
+		VARSET D,-1
+		TEMP = 0
+		FOR LCOUNT, 0, TYPENUM - 1
+			SIF MAXBASE:L_ENEMY:GET_TYPE(LCOUNT) == 999 || MAXBASE:L_ENEMY:GET_TYPE(LCOUNT) < 100
+				CONTINUE
+			D:(TEMP) = LCOUNT
+			TEMP += 1
+		NEXT
+		IF TEMP > 0
+			CFLAG:L_ENEMY:변경상성1 = D:(RAND:TEMP)
+			CFLAG:L_ENEMY:변경상성치1 = 250-(50*FLAG:적강화옵션)
+			SIF FLAG:적강화옵션 >= 7
+				CFLAG:L_ENEMY:변경상성치1 = 999
+;			SIF FLAG:DEBUG
+;				PRINTFORML ``%CALLNAME:LOCAL%相性{CFLAG:L_ENEMY:변경상성1}`` 
+		ENDIF
+		;更に弱点でない相性１つも、強化値６で通常、７で耐性、８で無効、９で吸収、１０以上で反射に
+		IF FLAG:적강화옵션 > 5
+			VARSET D,-1
+			TEMP = 0
+			FOR LCOUNT, 0, TYPENUM - 1
+				SIF MAXBASE:L_ENEMY:GET_TYPE(LCOUNT) == 999
+					CONTINUE
+				SIF MAXBASE:L_ENEMY:GET_TYPE(LCOUNT) <= 100 && FLAG:적강화옵션 < 7
+					CONTINUE
+				SIF MAXBASE:L_ENEMY:GET_TYPE(LCOUNT) <= 0 && FLAG:적강화옵션 < 8
+					CONTINUE
+				SIF MAXBASE:L_ENEMY:GET_TYPE(LCOUNT) < 0 && FLAG:적강화옵션 < 9
+					CONTINUE
+				D:(TEMP) = LCOUNT
+				TEMP += 1
+			NEXT
+			IF TEMP > 0
+				CFLAG:L_ENEMY:변경상성2 = D:(RAND:(TEMP))
+				CFLAG:L_ENEMY:변경상성치2 = 400-(50*FLAG:적강화옵션)
+				SIF FLAG:적강화옵션 >= 10
+					CFLAG:L_ENEMY:변경상성치2 = 999
+	;			SIF FLAG:DEBUG
+	;				PRINTFORML ``%CALLNAME:LOCAL%相性{CFLAG:L_ENEMY:변경상성2}`` 
+			ENDIF
+		ENDIF
+	ENDIF
+	;強化値９以上から攻撃相性を万能相性に
+	SIF FLAG:적강화옵션 > 8
+		ABL:L_ENEMY:공격상성 = 17
+	;強化値１３以上から最大攻撃回数が２回に
+	SIF FLAG:적강화옵션 > 12 && ABL:L_ENEMY:최대공격횟수 < 2
+		ABL:L_ENEMY:최대공격횟수 += 1
+	;強化値１５以上から最低攻撃回数が２回に
+	SIF FLAG:적강화옵션 > 12 && ABL:L_ENEMY:최저공격횟수 < 2
+		ABL:L_ENEMY:최저공격횟수 += 1
+	;強化値１５を超える１あたり最大攻撃回数が＋１回
+	SIF FLAG:적강화옵션 > 15 && ABL:L_ENEMY:최대공격횟수 < (FLAG:적강화옵션 - 13)
+		ABL:L_ENEMY:최대공격횟수 += (FLAG:적강화옵션 - 15)
+ENDIF
+;---- EDIT 005 ADD END ---------------------------
+
+;味方専用スキルを削除
+FOR LCOUNT,1,FLAG:스킬수+1
+	LOCALS = 스킬{LCOUNT}
+	CALL GET_SKILL_PROP, "味方専用", ABL:L_ENEMY:LOCALS, L_ENEMY
+	SIF RESULT == 1
+		ABL:L_ENEMY:LOCALS = 0
+NEXT
+
+CFLAG:L_ENEMY:ＥＸＰ보정 = 100
+CFLAG:L_ENEMY:ＭＡＧ보정 = 100
+
+;---- EDIT P 001 ADD START -------------------------
+BASE:L_ENEMY:ＭＡＧ = GET_BASE_ENEMY_MAG(LOCAL)
+;---- EDIT P 001 ADD END ---------------------------
+
+;二人称を変換する
+CALL CONVERT_SECOND_PERSON, LOCAL
+;배우자랜덤부여
+;配偶者が設定されている場合はスキップ
+IF CSVCSTR(NO:LOCAL , GETNUM(CSTR , "배우자") , 0) == "" && FLAG:배우자랜덤부여 && RAND:100 < FLAG:배우자랜덤부여
+	IF TALENT:L_ENEMY:남자
+		CSTR:L_ENEMY:배우자 = 아내
+	ELSE
+		CSTR:L_ENEMY:배우자 = 남편
+	ENDIF
+ENDIF
+;야생악마소질랜덤설정
+;とりあえず胸のみ
+IF FLAG:야생악마소질랜덤설정 && RAND:100 < FLAG:야생악마소질랜덤설정
+	IF TALENT:L_ENEMY:남자 == 0
+		TALENT:L_ENEMY:빈유 = 0
+		TALENT:L_ENEMY:절벽 = 0
+		TALENT:L_ENEMY:거유 = 0
+		TALENT:L_ENEMY:폭유 = 0
+		SELECTCASE RAND:6
+			CASE 0
+				TALENT:L_ENEMY:빈유 = 1
+			CASE 1
+				TALENT:L_ENEMY:절벽 = 1
+			CASE 2
+				TALENT:L_ENEMY:거유 = 1
+			CASE 3
+				TALENT:L_ENEMY:폭유 = 1
+			CASE 4
+				TALENT:L_ENEMY:마유 = 1
+			;普乳
+			CASE 5
+
+		ENDSELECT
+	ENDIF
+ENDIF
+
+;==========================================================
+;敵の独自設定
+;==========================================================
+TRYCALLFORM SET_ENEMY_{NO:L_ENEMY}, L_ENEMY
+
+CFLAG:L_ENEMY:실제가입시간 = GETMILLISECOND()
+WHILE CMATCH(CFLAG:L_ENEMY:실제가입시간, CFLAG:L_ENEMY:실제가입시간) > 1
+	CFLAG:L_ENEMY:실제가입시간++
+WEND
+
+CALL ADJUST_CHARA_ALI,L_ENEMY
+CALL SYNC_STATUS,L_ENEMY
+CALL HEALTH_CHARA,L_ENEMY
+SIF L_POS > 0
+	CALL INSERT_POSITION,L_POS,L_ENEMY
+RETURN 1
+
+@IS_VALID_ESTOMA
+#FUNCTION
+RETURNF FLAG:에스트마 || (SOFT_ON("캡스・락") && !IS_DISABLE_CAPSLOCK)
+
+;二人称を変換する
+@CONVERT_SECOND_PERSON, ARG, ARG:1 = -1, IS_CSV
+#DIM DYNAMIC STOCK_MASTER
+#DIM DYNAMIC IS_CSV
+STOCK_MASTER = MASTER
+;キャラ指定がある場合。展開の条件を踏まえてMASTERを入れ替える
+SIF ARG:1 != -1
+	MASTER = ARG:1
+IF IS_CSV
+	CSTR:ARG:이인칭 '= STRFORM(CSVCSTR(NO:ARG, GETNUM(CSTR, "이인칭")))
+ELSE
+	CSTR:ARG:이인칭 '= STRFORM(CSTR:ARG:이인칭)
+ENDIF
+IF TALENT:MASTER:남자 == 0
+	SIF CSTR:ARG:이인칭 == "お兄ちゃん"
+		CSTR:ARG:이인칭 = お姉ちゃん
+	SIF CSTR:ARG:이인칭 == "お兄さん"
+		CSTR:ARG:이인칭 = お姉さん
+	SIF CSTR:ARG:이인칭 == "お兄様"
+		CSTR:ARG:이인칭 = お姉様
+ENDIF
+MASTER = STOCK_MASTER
+
+@LEARN_SKILL_ENEMY,ARG,ARG:1
+;ARG = レベルアップしたキャラ
+;ARG:1 = 習得するスキル
+;まず空のスキル枠を探す
+LOCAL:1 = 0
+LOCALS:1 = 
+FOR LOCAL,1,FLAG:스킬수+1
+	LOCALS = 스킬{LOCAL}
+	;既に習得していたら関数を抜ける
+	SIF ABL:ARG:LOCALS == ARG:1
+		RETURN 0
+	IF ABL:ARG:LOCALS < 1
+		LOCAL:1 = 1
+		LOCALS:1 = %LOCALS%
+		BREAK
+	ENDIF
+NEXT
+
+IF LOCAL:1 > 0
+	;空のスキル枠があれば習得
+	ABL:ARG:(LOCALS:1) = ARG:1
+ENDIF
+
+
+;===============================
+;戦闘初期化
+;===============================
+@REFRESH_BATTLE
+#DIM LCOUNT
+;----EDIT 016 自動悪魔変身 ADD START------------------------------
+;自動悪魔変身用のフラグのリセット処理
+CALL CLEAR_AUTO_TRANSFORM_FLAG
+;----EDIT 016 自動悪魔変身 ADD END------------------------------
+;戦闘関係のTFLAG/TSTRをまとめて初期化
+VARSET TFLAG, 0, 300, 800
+VARSET TSTR ,"",  50, 200
+;FOR LOCAL, 0, VARSIZE("C_RECORDS")
+;	CVARSET C_RECORDS, LOCAL, ""
+;NEXT
+TFLAG:전투중 = 1
+;---- EDIT P 004 MOD START -------------------------
+;実際に戦闘に参加したキャラをリストに登録していく
+CALL INIT_BCHARA_LIST
+;---- EDIT P 004 MOD END ---------------------------
+
+;キャラ毎のフラグ処理
+FOR LCOUNT,0,BCHARANUM
+	SIF !IS_JOINABLE_BATTLE(BCHARA:LCOUNT)
+		CONTINUE
+	CALL REFRESH_BATTLE_CHARA_FLAG, BCHARA:LCOUNT
+	CALL REFRESH_BATTLE_CHARA_STATE, BCHARA:LCOUNT
+	VARSET CFLAG:(BCHARA:LCOUNT):0, 0, 2400, 2600
+NEXT
+
+;---- EDIT 024 ADD START -------------------------
+;戦況判断用にフラグを保存する
+CALL SET_NAVI_DATA_FOR_BATTLE_START
+;---- EDIT 024 ADD END ---------------------------
+
+;パーティ効果の作成
+CALL SET_LEADER_SKILL
+
+;---- EDIT 027 ADD START -------------------------
+;敵の所持相性の作成
+CALL SET_ENEMY_HAVE_SKILL_ATK_TYPE
+;---- EDIT 027 ADD END ---------------------------
+
+;---- EDIT 015 ADD START -------------------------
+;CALL SENZAI_FLAG,-1,"初期化"
+;---- EDIT 015 ADD END   -------------------------
+
+FLAG:승리플래그 = 0
+FLAG:패배플래그 = 0
+FLAG:도주플래그 = 0;EDIT ADD 024
+FLAG:경과턴수 = 0
+FLAG:교섭목적 = 0
+FLAG:총공격중 = 0
+FLAG:카운터중 = 0
+FLAG:연속행동중 = 0;EDIT 023 ADD
+FLAG:소환공격중 = 0;EDIT 023 ADD
+
+FLAG:중단세이브대기상태 = 1
+
+CALL VARSET_KOJO_RPG_FLAG
+
+;===============================
+;戦闘キャラのフラグ初期化
+;戦闘中にリセットされない。あるいはされるべきでないものはここに
+;
+;ARG		キャラの登録番号
+;===============================
+@REFRESH_BATTLE_CHARA_FLAG, ARG
+#DIM LCOUNT
+CFLAG:ARG:ＣＨＡＮＧＥ대상플래그 = 0
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:입수경험치 = 0
+CFLAG:ARG:입수ＭＡＧ = 0
+CFLAG:ARG:입수AP = 0
+CFLAG:ARG:행동한횟수 = 0
+CFLAG:ARG:소환예정캐릭터 = -1
+CFLAG:ARG:ＣＯＯＰ플래그 = 0
+CFLAG:ARG:ＣＯＯＰ참가플래그 = 0
+CFLAG:ARG:잠재능력발동횟수 = 0
+CFLAG:ARG:링케이지참가 = 0
+CFLAG:ARG:링케이지발동 = 0
+CFLAG:ARG:DDS사용횟수 = 0
+CFLAG:ARG:이악물기플래그 = 0
+CFLAG:ARG:일시조작불능 = 0	;010
+CFLAG:ARG:헌트횟수 = 0
+
+;---- EDIT 025 ADD START -------------------------
+SIF !GETBIT(CFLAG:ARG:오토웨이트,0)
+	CFLAG:ARG:오토웨이트 = 0
+CFLAG:ARG:피소환플래그 = 0
+CFLAG:ARG:소환자ID = -1
+	
+;戦闘中のみ有効なバステ
+IF GET_STATE(CFLAG:ARG:상태이상) == "ORGY"
+	CFLAG:ARG:상태이상 = 0
+	CFLAG:ARG:상태이상경과턴수 = 0
+ENDIF
+IF GET_STATE(CFLAG:ARG:상태이상) == "HEAT"
+	CFLAG:ARG:상태이상 = 0
+	CFLAG:ARG:상태이상경과턴수 = 0
+ENDIF
+IF GET_STATE(CFLAG:ARG:상태이상) == "FLY"
+	CFLAG:ARG:상태이상 = 0
+	CFLAG:ARG:상태이상경과턴수 = 0
+ENDIF
+CFLAG:ARG:분노약점부여 = 0
+;---- EDIT 025 ADD END ---------------------------
+
+FOR LCOUNT, 1, 21
+	CFLAG:ARG:("고유게이지D"+ TOSTR(LCOUNT)) = 0
+	CFLAG:ARG:("고유게이지H"+ TOSTR(LCOUNT)) = 0
+NEXT
+;---- EDIT 009 ADD START -------------------------
+;FOR LCOUNT, 1, 51
+;	CFLAG:ARG:("스킬게이지D"+ TOSTR(LCOUNT)) = 0
+;	CFLAG:ARG:("스킬게이지H"+ TOSTR(LCOUNT)) = 0
+;NEXT
+;---- EDIT 030 ADD START -------------------------
+CALL SKILLGAGE_ALL_CLEAR, ARG, 1
+
+VARSET CFLAG:ARG:0, 0, 2600, 2750;EDIT 023 ADD START
+;---- EDIT 020 ADD START -------------------------
+VARSET RPG_CFLAG_BTL:ARG:0
+VARSET RPG_CSTR_BTL:ARG:0
+VARSET ROLE_CFLAG_BTL:ARG:0
+VARSET ROLE_CSTR_BTL:ARG:0
+;---- EDIT 020 ADD END   -------------------------
+VARSET C_RECORDS:ARG:0, ""
+
+;===============================
+;戦闘キャラのステート初期化
+;泡沫の波紋のような広域リセットや死亡時にリセットされるような処理はここに
+;
+;ARG		キャラの登録番号
+;===============================
+@REFRESH_BATTLE_CHARA_STATE, ARG
+#DIM LCOUNT
+CFLAG:ARG:방어플래그 = 0
+CFLAG:ARG:공격강화 = 0
+CFLAG:ARG:명중강화 = 0
+CFLAG:ARG:방어강화 = 0
+CFLAG:ARG:회피강화 = 0
+CFLAG:ARG:마법위력강화 = 0
+CFLAG:ARG:마법효과강화 = 0
+CFLAG:ARG:마법위력강화 = 0
+CFLAG:ARG:크리티컬강화 = 0
+CFLAG:ARG:BS부착률강화 = 0
+CFLAG:ARG:데미지흡수량 = 0
+CFLAG:ARG:롱기누스 = 0
+CFLAG:ARG:HP배리어 = 0
+FOR LCOUNT, 0, TYPENUM
+	CFLAG:ARG:(GET_TYPE(LCOUNT)+"가드킬") = 0
+	CFLAG:ARG:(GET_TYPE(LCOUNT)+"웨이트") = 0
+	CFLAG:ARG:(GET_TYPE(LCOUNT)+"무효화횟수") = 0
+NEXT
+CFLAG:ARG:어택커 = -1
+CFLAG:ARG:물리반사플래그 = 0
+CFLAG:ARG:마법반사플래그 = 0
+CFLAG:ARG:회복불능플래그 = 0
+CFLAG:ARG:분노약점부여 = 0
+;---- EDIT 009 ADD END ---------------------------
+CFLAG:ARG:축적데미지 = 0
+
+VARSET CFLAG:ARG:0, 0, 2750, 2900;EDIT 023 ADD START
+VARSET C_BTL_EFFECT:ARG:0
+VARSET C_BTL_EFFECT_PERMANENCE:ARG:0
+;---- EDIT P 001 ADD START -------------------------
+VARSET C_BTL_EFFECT_CHARGE:ARG:0
+;---- EDIT P 001 ADD END ---------------------------
+;===============================
+;REPEAT入力
+;===============================
+@COMMAND_REPEAT, L_ACTOR = -1
+#DIM DYNAMIC L_ACTOR
+#DIM DYNAMIC LCOUNT
+;行動入力可能でなければ行動不能にして飛ばす
+IF !INPUTABLE_CHARA_F(L_ACTOR)
+	CFLAG:(L_ACTOR):입력행동 = -1
+	CFLAG:(L_ACTOR):방어플래그 = 0
+	RETURN 0
+ENDIF
+;リンケージに参加している場合はセットしない
+SIF CFLAG:L_ACTOR:링케이지참가
+	RETURN 0
+FOR LCOUNT, 0, VARSIZE("C_REPEAT_SKILL")
+	CALL SET_COMMAND_REPEAT, L_ACTOR, LCOUNT
+	SIF RESULT > 0
+		RETURN 1
+	SIF RESULT < 0
+		BREAK
+NEXT
+;リピートをセットできなかったらGUARDに
+CFLAG:(L_ACTOR):입력행동 = -1
+CFLAG:(L_ACTOR):방어플래그 = 1
+RETURN 0
+
+@SET_COMMAND_REPEAT, L_ACTOR = -1, L_REPEAT_NO
+#DIM DYNAMIC L_REPEAT_NO
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_ACTOR
+#DIM DYNAMIC L_SKILL
+#DIMS DYNAMIC L_NOT_HAVE_SKILL
+#DIM DYNAMIC L_LINKAGE_MEMBER, 5
+#DIM DYNAMIC L_TARGET
+#DIM リンケ , 1
+#DIM 人数 , 1
+#LOCALSIZE 1
+#DIM 元参加者 , 5
+
+;変数セット
+L_SKILL = C_REPEAT_SKILL:L_ACTOR:L_REPEAT_NO
+L_NOT_HAVE_SKILL '= C_REPEAT_NOT_HAVE_SKILL:L_ACTOR:L_REPEAT_NO
+L_TARGET = C_REPEAT_TARGET:L_ACTOR:L_REPEAT_NO
+FOR LCOUNT, 0, 5
+	IF C_REPEAT_LINKAGE_MEMBER:L_ACTOR:L_REPEAT_NO:LCOUNT == 0
+		L_LINKAGE_MEMBER:LCOUNT = -2
+	ELSE
+		L_LINKAGE_MEMBER:LCOUNT = FINDCHARA_TIMEID(C_REPEAT_LINKAGE_MEMBER:L_ACTOR:L_REPEAT_NO:LCOUNT)
+	ENDIF
+NEXT
+;------------------------------------------------------------
+;REPEATしないスキルはここで処理
+;------------------------------------------------------------
+;-1はGUARDとして戻す
+SIF L_SKILL < 0
+	RETURN -1
+
+;召還スキルはリピートしない
+CALL GET_SKILL_PROP, "SKILL_IS_SUMMON", L_SKILL, L_ACTOR
+SIF RESULT
+	RETURN 0
+;スキルの存在チェック
+CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, L_ACTOR
+SIF RESULTS == ""
+	RETURN 0
+
+;------------------------------------------------------------
+;スキルの所持チェック
+;------------------------------------------------------------
+VARI IS_USEABLE
+;通常攻撃とリンケージは所持している必要がない
+SIF L_SKILL == 0
+	IS_USEABLE = 1
+SIF L_SKILL == [[스킬:ＧＵＮ]]
+	IS_USEABLE = 1
+SIF HAVE_SKILL(L_ACTOR, L_SKILL)
+	IS_USEABLE = 1
+CALL GET_SKILL_PROP, "SKILL_IS_ITEMSKILL", L_SKILL, L_ACTOR
+SIF RESULT
+	IS_USEABLE = 1
+CALL CHECK_SKILL_TAG, L_ACTOR, L_SKILL, "特殊弾"
+SIF RESULT
+	IS_USEABLE = 1
+SIF L_SKILL == [[스킬:비소지스킬]]
+	IS_USEABLE = 1
+VARI L_CHARA
+;リンケージ
+IF INRANGE(L_SKILL, MIN_LINKAGENUM, MAX_LINKAGENUM)
+	FOR LCOUNT, 0, 5
+		L_CHARA = L_LINKAGE_MEMBER:LCOUNT
+		SIF L_CHARA == -2
+			CONTINUE
+		;参加キャラがいない
+		SIF L_CHARA == -1
+			RETURN 0
+		SIF CFLAG:L_CHARA:PT플래그 != 2
+			RETURN 0
+		SIF !INPUTABLE_CHARA_F(L_CHARA)
+			RETURN 0
+		SIF CFLAG:L_CHARA:링케이지발동
+			RETURN 0
+		;他のリンケージへの参加者
+		SIF !GROUPMATCH(CFLAG:L_CHARA:링케이지참가, 0, L_ACTOR -1)
+			RETURN 0
+		CALL リンケージ参加者条件確認, L_SKILL, L_CHARA, LCOUNT + 1
+		SIF !RESULT
+			RETURN 0
+	NEXT
+	IS_USEABLE = 1
+ENDIF
+;スキル非所持
+SIF !IS_USEABLE
+	RETURN 0
+
+
+;------------------------------------------------------------
+;特殊なスキルはここで処理
+;------------------------------------------------------------
+;単体蘇生は独自の振替工程を行う
+CALL GET_SKILL_PROP, "SKILL_IS_RESUSCITATION", L_SKILL, L_ACTOR
+IF RESULT
+	;単体蘇生対象が存在するかチェック
+	CALL CHECK_TARGET_RESUSCITATION, L_ACTOR
+	SIF RESULT == -1
+		RETURN 0
+	CFLAG:L_ACTOR:입력행동 = L_SKILL
+	CFLAG:L_ACTOR:타겟 = RESULT
+	RETURN 1
+ENDIF
+;------------------------------------------------------------
+;選定条件チェック
+;------------------------------------------------------------
+CALL GET_SKILL_PROP, "SKILL_SELECTABLE_BY_AUTO", L_SKILL, L_ACTOR
+SIF !RESULT
+	RETURN 0
+;------------------------------------------------------------
+;リンケージのフラグセット
+;------------------------------------------------------------
+IF INRANGE(L_SKILL, MIN_LINKAGENUM, MAX_LINKAGENUM)
+	CFLAG:L_ACTOR:사용링케이지 = L_SKILL
+	CFLAG:L_ACTOR:링케이지발동 = 1
+	FOR LCOUNT, 0, 5
+		L_CHARA = L_LINKAGE_MEMBER:LCOUNT
+		SIF L_CHARA < 0
+			CONTINUE
+		CFLAG:L_ACTOR:@"링케이지참가자{LCOUNT + 1}" = L_CHARA
+		CFLAG:L_CHARA:링케이지참가 = L_ACTOR + 1
+		CFLAG:L_CHARA:입력행동 = -1
+		CFLAG:L_CHARA:방어플래그 = 0
+	NEXT
+ENDIF
+;------------------------------------------------------------
+;スキルの対象と範囲が合ってなかったら修正
+;------------------------------------------------------------
+CFLAG:L_ACTOR:입력행동 = L_SKILL
+SIF CFLAG:L_ACTOR:입력행동 == [[스킬:비소지스킬]]
+	CSTR:L_ACTOR:비소지스킬 '= L_NOT_HAVE_SKILL
+CFLAG:L_ACTOR:타겟 = L_TARGET
+CALL CORRECT_ACTION, L_ACTOR, 1
+SIF !RESULT
+	RETURN 0
+CFLAG:L_ACTOR:방어플래그 = 0
+RETURN 1
+
+;-----------------------------------------
+;敵キャラのベースステータス補正関数
+;
+;指定したキャラのステータスを難易度補正こみでセットする
+;引数の並びはキャラ登録番号/힘/지혜/마력/내구/속도/운/전투난이도
+;-----------------------------------------
+@SET_ENEMY_BASE_STAT, L_ENEMY, L_STAT:0 = -1, L_STAT:1 = -1, L_STAT:2 = -1, L_STAT:3 = -1, L_STAT:4 = -1, L_STAT:5 = -1, L_STAT:6 = -1, L_DIFFICULT = -1
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_ENEMY
+#DIM DYNAMIC L_STAT, 7
+#DIM DYNAMIC L_DIFFICULT
+#DIM DYNAMIC SUM_BASESTAT, 2
+SIF L_DIFFICULT == -1
+	L_DIFFICULT = FLAG:전투난이도
+;ステータスが指定されている場合
+FOR LCOUNT,1,7
+	SIF L_STAT:LCOUNT >= 0
+		BASE:L_ENEMY:(GET_BASESTATUS(LCOUNT)) = L_STAT:LCOUNT
+NEXT
+
+;LVによるステータス変化
+IF BASE:L_ENEMY:LV != L_STAT:GET_BASESTATUS_NUM("LV") && L_STAT:GET_BASESTATUS_NUM("LV") >= 0
+	;ステータスの直指定が存在していたらLVによる適正化を行わない
+	IF MAXARRAY(L_STAT, 1, 7) == -1
+		SUM_BASESTAT:0 = (18 + BASE:L_ENEMY:LV * 3 / 2)
+		SUM_BASESTAT:1 = (18 + L_STAT:GET_BASESTATUS_NUM("LV") * 3 / 2)
+		FOR LCOUNT, 1, 7
+			BASE:L_ENEMY:GET_BASESTATUS(LCOUNT) *= SUM_BASESTAT:1
+			BASE:L_ENEMY:GET_BASESTATUS(LCOUNT) /= SUM_BASESTAT:0
+		NEXT
+	ENDIF
+	BASE:L_ENEMY:LV = L_STAT:GET_BASESTATUS_NUM("LV")
+ENDIF
+
+;難易度による補正
+IF BASE:L_ENEMY:LV > 5
+	SELECTCASE  FLAG:튜토리얼진행중 ? 2 # L_DIFFICULT
+		CASE 4
+			IF L_STAT:GET_BASESTATUS_NUM("LV") >= 6
+				FOR LCOUNT, 1, 7
+					BASE:L_ENEMY:GET_BASESTATUS(LCOUNT) *= 4
+					BASE:L_ENEMY:GET_BASESTATUS(LCOUNT) /= 3
+				NEXT
+			ENDIF
+		CASE 5
+			FOR LCOUNT, 1, 7
+				BASE:L_ENEMY:GET_BASESTATUS(LCOUNT) *= 8
+				BASE:L_ENEMY:GET_BASESTATUS(LCOUNT) /= 3
+			NEXT
+		CASE IS >= 6
+			FOR LCOUNT, 1, 7
+				BASE:L_ENEMY:GET_BASESTATUS(LCOUNT) *= 12
+				BASE:L_ENEMY:GET_BASESTATUS(LCOUNT) /= 3
+			NEXT
+		CASEELSE
+	ENDSELECT
+ENDIF
+
+IF FLAG:적강화옵션 > 0
+	FOR LCOUNT, 1, 7
+		BASE:L_ENEMY:GET_BASESTATUS(LCOUNT) += FLAG:적강화옵션*(5+BASE:L_ENEMY:GET_BASESTATUS(LCOUNT))/15
+		SIF CFLAG:L_ENEMY:보스플래그
+			BASE:L_ENEMY:GET_BASESTATUS(LCOUNT) += FLAG:적강화옵션
+	NEXT
+ENDIF
+
+;-----------------------------------------
+;敵のキャラID登録関数
+;L_CHARA	キャラ登録番号
+;L_NAME		登録名
+;特定キャラの時間IDに名前を付けて保存をする。
+;システム側では自動的に実行しないので敵配置時に手動でセットしてください。
+;
+;登録番号は何らかの理由でずれる可能性があるので、時間IDを利用して出し入れする。
+;-----------------------------------------
+@SET_ENEMY_TIMEID, L_CHARA, L_NAME
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_NAME
+#DIM DYNAMIC L_NUM
+L_NUM = FINDELEMENT(ENEMY_TIMEID_LIST, 0)
+ENEMY_TIMEID_LIST:L_NUM = CFLAG:L_CHARA:실제가입시간
+ENEMY_NAME_LIST:L_NUM '= L_NAME
+RETURN L_NUM
+
+;-----------------------------------------
+;敵のキャラID登録関数
+;L_NAME		登録名
+;
+;上記関数でセットした名前から敵の登録番号を取得する。
+;AIや戦闘イベント等、関数を横断して敵キャラの登録番号が必要な場合に使う。
+;-----------------------------------------
+@GET_ENEMY, L_NAME
+#FUNCTION
+#DIMS L_NAME
+SIF FINDELEMENT(ENEMY_NAME_LIST, L_NAME, , , 1) < 0
+	RETURNF -1
+RETURNF FINDCHARA_TIMEID(ENEMY_TIMEID_LIST:FINDELEMENT(ENEMY_NAME_LIST, L_NAME, , , 1))
+
+;-----------------------------------------
+;敵のステータス同期・回復処理関数
+;引数はキャラ登録番号
+;指定していない場合は敵全体に処理をかける
+;-----------------------------------------
+@SET_UP_ENEMY, L_ENEMY = -1
+#DIM DYNAMIC L_ENEMY
+IF L_ENEMY >= 0
+	CALL SYNC_STATUS,L_ENEMY
+	CALL HEALTH_CHARA,L_ENEMY
+ELSE
+	FOR L_ENEMY, 0, CHARANUM
+		SIF CFLAG:L_ENEMY:PT플래그 > 0
+			CONTINUE
+		CALL SYNC_STATUS,L_ENEMY
+		CALL HEALTH_CHARA,L_ENEMY
+	NEXT
+ENDIF

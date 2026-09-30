@@ -1,0 +1,94 @@
+﻿;========================================
+;相性判定関数
+;ARG:1（PLAYER）→ARG（TARGET）に対する相性を返す
+;========================================
+@GET_RELATION(ARG = -1, ARG:1 = -1 , ARG:2 = -1)
+#FUNCTION
+#LOCALSIZE 2
+#DIM L_RELATION
+#DIMS L_GROUP, 10
+SIF ARG == -1
+	ARG = TARGET
+SIF ARG:1 == -1
+	ARG:1 =PLAYER
+;基礎値
+L_RELATION = 100
+;個別のNOによる定義
+IF STRFIND("/" + CSVCSTR(NO:ARG, GETNUM(CSTR, "상성_최고")), "/" + GET_識別名(NO:(ARG:1))) >= 0
+	L_RELATION = 200
+ELSEIF STRFIND("/" + CSVCSTR(NO:ARG, GETNUM(CSTR, "상성_발군")), "/" + GET_識別名(NO:(ARG:1))) >= 0
+	L_RELATION = 150
+ELSEIF STRFIND("/" + CSVCSTR(NO:ARG, GETNUM(CSTR, "상성_양호")), "/" + GET_識別名(NO:(ARG:1))) >= 0
+	L_RELATION = 125
+ELSEIF STRFIND("/" + CSVCSTR(NO:ARG, GETNUM(CSTR, "상성_불량")), "/" + GET_識別名(NO:(ARG:1))) >= 0
+	L_RELATION = 75
+ELSEIF STRFIND("/" + CSVCSTR(NO:ARG, GETNUM(CSTR, "상성_최악")), "/" + GET_識別名(NO:(ARG:1))) >= 0
+	L_RELATION = 50
+;配偶者チェック
+ELSEIF CSV配偶者(ARG, ARG:1)
+	L_RELATION = 200
+;家族関係による相性
+ELSEIF 近親チェック(ARG , ARG:1)
+	L_RELATION = 150
+ELSE
+	;個別 × 相性グループによる相性チェック
+	IF CSTR:(ARG:1):상성그룹 != ""
+		SPLIT CSTR:(ARG:1):상성그룹, "/", L_GROUP
+		FOR LOCAL, 0, RESULT
+			IF STRFIND("/" + CSVCSTR(NO:ARG, GETNUM(CSTR, "상성_최고")), "/" + "【" + L_GROUP:LOCAL + "】") >= 0
+				L_RELATION = 200
+			ELSEIF STRFIND("/" + CSVCSTR(NO:ARG, GETNUM(CSTR, "상성_발군")), "/" + "【" + L_GROUP:LOCAL + "】") >= 0
+				L_RELATION = 150
+			ELSEIF STRFIND("/" + CSVCSTR(NO:ARG, GETNUM(CSTR, "상성_양호")), "/" + "【" + L_GROUP:LOCAL + "】") >= 0
+				L_RELATION = 125
+			ELSEIF STRFIND("/" + CSVCSTR(NO:ARG, GETNUM(CSTR, "상성_불량")), "/" + "【" + L_GROUP:LOCAL + "】") >= 0
+				L_RELATION = 75
+			ELSEIF STRFIND("/" + CSVCSTR(NO:ARG, GETNUM(CSTR, "상성_최악")), "/" + "【" + L_GROUP:LOCAL + "】") >= 0
+				L_RELATION = 50
+			ENDIF
+			SIF L_RELATION != 100
+				BREAK
+		NEXT
+	ENDIF
+	;상성그룹 × 상성그룹
+	IF L_RELATION == 100 && CSTR:ARG:상성그룹 != ""
+		SPLIT CSTR:ARG:상성그룹, "/", L_GROUP
+		FOR LOCAL, 0, RESULT
+			L_RELATION = GET_RELATION_GROUP(ARG, ARG:1, L_GROUP:LOCAL)
+			;100以外のをひいた時点でBREAK
+			SIF L_RELATION != 100
+				BREAK
+		NEXT
+	ENDIF
+ENDIF
+;主にあとから追加することになるキャラIDに対する好感度
+FOR LOCAL, 1, 21
+	IF CFLAG:ARG:@"캐릭터상성{LOCAL}" == CFLAG:(ARG:1):실제가입시간
+		L_RELATION = CFLAG:ARG:@"캐릭터상성치{LOCAL}"
+		BREAK
+	ENDIF
+NEXT
+;第三引数を渡されている場合、属性を省略する
+SIF ARG:2 > -1
+	RETURNF L_RELATION
+;属性による相性変更
+;NはLDにたいして、変更なしだが
+;N同士でも補正が弱い
+IF ABL:ARG:속성LD == 2 && ABL:(ARG:1):속성LD == 2
+	L_RELATION += 10
+;LDは一致してると+25
+ELSEIF ABL:ARG:속성LD == ABL:(ARG:1):속성LD
+	L_RELATION += 25
+;LDはお互いに-25
+ELSEIF (ABL:ARG:속성LD == 1 && ABL:(ARG:1):속성LD == 3) || (ABL:ARG:속성LD == 3 && ABL:(ARG:1):속성LD == 1)
+	L_RELATION -= 25
+ENDIF
+
+IF ABL:ARG:속성LC == 2 && ABL:(ARG:1):속성LC == 2
+	L_RELATION += 10
+ELSEIF ABL:ARG:속성LC == ABL:(ARG:1):속성LC
+	L_RELATION += 25
+ELSEIF (ABL:ARG:속성LC == 1 && ABL:(ARG:1):속성LC == 3) || (ABL:ARG:속성LC == 3 && ABL:(ARG:1):속성LC == 1)
+	L_RELATION -= 25
+ENDIF
+RETURNF L_RELATION

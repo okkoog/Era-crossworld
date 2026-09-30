@@ -1,0 +1,140 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2854, ARG
+IF FLAG:총공격중
+	RESULTS = 疲労
+ELSE
+	RESULTS = 아왕검「아귀십왕의보답」
+ENDIF
+;　명중
+@SKILL_HITRATE_2854, ARG
+RETURN 95
+
+;　威力
+@SKILL_POWER_2854, ARG
+RETURN 240
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2854,ARG
+RETURN 2
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2854,ARG
+RETURN 2
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2854, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2854,ARG
+RETURN 20
+
+;　相性
+@SKILL_TYPE_2854,ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2854
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2854, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2854, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2854,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2854,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2854, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2854
+RETURN GET_SUCCESSION_NUM("검격")
+
+;속도보정
+@SKILL_SPEED_2854, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2854
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2854, ARG = -1
+RETURN 14
+
+
+
+
+;====================================================
+;トリガー発動条件
+;
+;詳しい仕様については資料フォルダの解説を参照してください
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_2854,ARG,ARG:1
+#DIM LCOUNT
+;自分自身の行動でないと誘発しない
+SIF ARG != FLAG:행동순1
+	RETURN 0
+SIF ARG != ARG:1
+	RETURN 0
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+	RETURN 0
+SIF CFLAG:ARG:입력행동 != 2854
+	RETURN 0
+RETURN 1, CPOS(ARG)
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2854, ARG, ARG:1, ARG:2
+IF FLAG:총공격중
+	CALL SKILL_SET_カジャンダ, ARG, ARG, "공격", -4, "단체", , "攻撃力ダウン！"
+ELSE
+	CALL ATTACK_SKILL,ARG,ARG:1,2854
+ENDIF
+;CFLAG:ARG:공격강화 = MAX(-16, CFLAG:ARG:공격강화 - 4)
+;PRINTFORML 　　TARGET:[{CFLAG:ARG:포지션}] %CALLNAME:ARG,20,LEFT%　>>>>>>　物理攻撃力が下がった！
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2854, ARG
+PRINTL 이도에 모든 힘을 담아 적 전열 1체에 건곤일척의 검격 공격. (위력: 특대)
+;PRINTL 攻撃後に物理攻撃力が大幅に下がる。
+PRINTL 공격 후에 물리 공격력이 떨어진다.
+PRINTL 幽鬼　콘파쿠 요우무의 스펠카드
+;性能のわりに低下量が多いと思ったので調整
+
+;継承に必要な部位
+@継承部位_2854,ARG
+RESULTS = 무기
+RETURN 1
+;무기
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2854,ARG
+RETURN 1
+;とくにない
+

@@ -1,0 +1,147 @@
+﻿;타루・카쟈＋스쿠・카쟈
+;コストは初期45MP。歌唱技能Lv6以上から減少し始め、最終値は35MPになります。
+;==========================
+;221019	NEO		ARGついてない時代のモノだったので修正
+;				コストがなんか変だったので修正……6以上から減少というのはカット、消費MPが45～35というのは変えず
+
+;スキル名
+@SKILL_NAME_591, ARG
+RESULTS = 코이카제(GBF)
+
+;　명중
+@SKILL_HITRATE_591, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_591, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_591,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_591,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_591, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_591,ARG
+#DIM SKILL591_COST
+	SKILL591_COST = 45
+	IF ARG == -1
+		;なにもしない
+	ELSE
+		;技能5からマイナスだったのを1からマイナスに（最終値は変わらず）
+		SKILL591_COST -= ABL:ARG:가창기능
+	ENDIF
+
+	RETURN SKILL591_COST
+
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_591
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_591, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_591,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_591,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_591, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_591
+RETURN GET_SUCCESSION_NUM("지원")
+
+;속도보정
+@SKILL_SPEED_591, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_591
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_591, ARG = -1
+RETURN 5
+
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_591, ARG, ARG:1, ARG:2
+CALL SKILL_SET_カジャンダ, ARG, ARG:1, "공격/명중/회피", 4, "範囲"
+
+;#LOCALSIZE 3
+;コストを支払う
+;CALL PAY_COST,ARG,501
+;IF CFLAG:(ARG):PT플래그 == 0
+;	LOCAL:1 = 7
+;	LOCAL:2 = 17
+;ELSE
+;	LOCAL:1 = 1
+;	LOCAL:2 = 7
+;ENDIF
+
+;FOR LOCAL,LOCAL:1,LOCAL:2
+;	SIF POS(LOCAL) < 0
+;		CONTINUE
+;	CFLAG:POS(LOCAL):공격강화 = MIN(32, CFLAG:POS(LOCAL):공격강화 + 4)
+;	CFLAG:POS(LOCAL):명중강화 = MIN(32, CFLAG:POS(LOCAL):명중강화 + 4)
+;	CFLAG:POS(LOCAL):회피강화 = MIN(32, CFLAG:POS(LOCAL):회피강화 + 4)
+;NEXT
+;PRINTFORMW \@ CFLAG:ARG:PT플래그 == 0 ? 敵 # 味方 \@の攻撃力・命中・回避が上がった！
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_591, ARG
+PRINTL 아군 전체의 공격력・명중・회피를 상승시킨다。가창기능에 따라 코스트가 감소한다。
+
+@SKILL_EXPLAIN_TOOLTIP_591, ARG
+RESULTS = 아군 전체의 공격력・명중・회피를 상승시킨다。가창기능에 따라 코스트가 감소한다。
+
+
+
+@継承不能_591
+RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_591,ARG
+RETURN 1
+;とくにない
+

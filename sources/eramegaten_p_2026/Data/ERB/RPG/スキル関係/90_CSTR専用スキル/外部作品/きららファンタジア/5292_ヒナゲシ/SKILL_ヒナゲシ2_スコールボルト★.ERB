@@ -1,0 +1,119 @@
+﻿
+;スキル名
+@SKILL_NAME_スコールボルト★,ARG
+RESULTS = 스콜 볼트★
+
+;　명중
+@SKILL_HITRATE_スコールボルト★, ARG
+RETURN 120
+
+;　威力
+@SKILL_POWER_スコールボルト★, ARG
+RETURN 360
+
+@SKILL_CRITICAL_RATE_スコールボルト★, ARG
+RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_スコールボルト★,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_スコールボルト★,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_スコールボルト★, ARG
+SIF GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 4
+	RETURN 1
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_スコールボルト★,ARG
+IF ARG >= 0 && GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 4
+	RESULTS = %"ＣＨ:4"%
+	RETURN 0
+ENDIF
+RETURN 40
+
+;　相性
+@SKILL_TYPE_スコールボルト★,ARG
+RETURN GET_TYPE_NUM("비구"), GET_TYPE_NUM("질풍")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_スコールボルト★
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_スコールボルト★,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_スコールボルト★,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_スコールボルト★,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_スコールボルト★,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_スコールボルト★,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+@SKILL_SUCCESSION_TYPE_スコールボルト★,ARG
+RETURN GET_SUCCESSION_NUM("비구")
+
+@SKILL_RANK_スコールボルト★, ARG = -1
+RETURN 15
+
+;속도보정
+@SKILL_SPEED_スコールボルト★, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_スコールボルト★
+RETURN 0
+
+@SKILL_DAMAGE_EFFECT_スコールボルト★, ARG, ARG:1, ARG:2
+SIF ARG:1 < 0
+	RETURN 0
+SIF ARG:2 < -1
+	RETURN 0
+CALL SKILL_SET_カジャンダ, ARG, ARG:1, AUTO_SPLIT("攻撃_魔法効果_魔法威力_防御_命中回避", "_", RAND:5), -4, "短縮"
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_スコールボルト★,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+CALL SET_RPG_CFLAG_BTL, ARG, "KFチャージスキル", 4, "-="
+
+CALL ATTACK_FIELD, ARG, ARG:1, SKILL_NUM
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_スコールボルト★,ARG
+PRINTL 적 전체에 비구 속성+질풍 속성의 물리 데미지를 주고, 랜덤한 적의 능력치를 1단계 낮춘다.
+PRINTL 사용 시 차지 4 소비.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_スコールボルト★, ARG
+RESULTS = 차지 부족
+SIF GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 4
+	RETURN 0
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_スコールボルト★, ARG
+RESULTS:0 = 적 전체에 비구 속성+질풍 속성의 물리 데미지를 주고, 랜덤한 적의 능력치를 1단계 낮춘다.
+RESULTS:1 = 사용 시 차지 4 소비.
+
+@SKILL_TAG_スコールボルト★
+RESULTS = KF 차지 스킬

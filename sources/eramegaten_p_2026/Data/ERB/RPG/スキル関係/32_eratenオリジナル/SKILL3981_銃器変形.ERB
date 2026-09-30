@@ -1,0 +1,143 @@
+﻿;======================================================
+;スキルのデータ
+;총기변형
+;
+;複数のモードを切り替える銃器とかあると格好良いだろうなって事で作成。
+;eratenにおいていつか他の誰かが使うことも想定して二段変形は汎用化しておきました。
+;
+;by Collared(非戦闘レポとかミルクガンとか銃オバホとか触装デモニカとかイオ個別の人)
+;======================================================
+
+;スキル名
+@SKILL_NAME_3981,ARG
+RESULTS = 총기변형
+IF ARG > -1
+	IF EQUIP:ARG:총 == 2840
+		SIF SKILLGAGE_F_GET(ARG,3981) == 0
+			RESULTS = 총기변형：화염방사기
+		SIF SKILLGAGE_F_GET(ARG,3981) == 1
+			RESULTS = 총기변형：파일 해머
+		SIF SKILLGAGE_F_GET(ARG,3981) == 2
+			RESULTS = 총기변형：레이저 블레이드
+	ELSE
+		SIF SKILLGAGE_F_GET(ARG,3981) == 0
+			RESULTS = 총기변형：Ａ모드
+		SIF SKILLGAGE_F_GET(ARG,3981) == 1
+			RESULTS = 총기변형：Ｂ모드
+	ENDIF
+ELSE
+	RESULTS = 총기변형
+ENDIF
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3981
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3981, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3981
+RETURN GET_SUCCESSION_NUM("검격")
+;속도보정
+@SKILL_SPEED_3981, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3981
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3981, ARG = -1
+RETURN 0
+
+
+
+;====================================================
+;追加コマンド(一番下)
+;====================================================
+@INPUT_COM_NAME_3981,ARG
+RESULTS = 銃器変形
+RESULTS:1 = 총기변형
+RETURN 2
+
+@INPUT_COM_ABLE_銃器変形,ARG
+SIF !GET_ROLE_PROP("CAN_USE_GUN", ARG)
+	RETURN 0
+RETURN 1
+
+;====================================================
+;コマンド実行
+;====================================================
+@INPUT_COM_銃器変形,ARG
+#LOCALSIZE 2
+
+;現在のモードは文字色を変える。
+;装備している武器を確認し、専用の変形があるならその処理に、そうでないなら0と1、AモードとBモードの2段変形。
+IF EQUIP:ARG:총 == 2840
+	PRINTL 총기를 변형시킵니까？
+	SIF SKILLGAGE_F_GET(ARG,3981) == 0
+		SETCOLOR 0x33ffcc
+	PRINTL [0]화염방사기
+	RESETCOLOR
+	SIF SKILLGAGE_F_GET(ARG,3981) == 1
+		SETCOLOR 0x33ffcc
+	PRINTL [1]파일 해머
+	RESETCOLOR
+	SIF SKILLGAGE_F_GET(ARG,3981) == 2
+		SETCOLOR 0x33ffcc
+	PRINTL [2]레이저 블레이드
+	RESETCOLOR
+	PRINTL [99]그만둔다
+	CALL INPUTINT, 0 , 1 , 2 , 99
+	IF RESULT == 0
+		CALL SKILLGAGE_F_SET,ARG,3981,0
+	ELSEIF RESULT == 1
+		CALL SKILLGAGE_F_SET,ARG,3981,1
+	ELSEIF RESULT == 2
+		CALL SKILLGAGE_F_SET,ARG,3981,2
+	ELSE
+		RETURN -1
+	ENDIF
+ELSE
+	IF SKILLGAGE_F_GET(ARG,3981) == 0
+		CALL SKILLGAGE_F_SET,ARG,3981,1
+	ELSE
+		CALL SKILLGAGE_F_SET,ARG,3981,0
+	ENDIF
+ENDIF
+
+CFLAG:ARG:입력행동 = 3981
+CALL PRINT_ACT_MESSAGE, ARG, 3981
+CALL BATTLE_EVENT_ACT, ARG
+CALL SYNC_STATUS,ARG
+CALL COMMAND_REPEAT, ARG
+RETURN -1
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3981, ARG
+PRINTL  명령어로 사용할 수 있으며、장비하고 있는 총기의 모드를 변경한다。
+IF ARG > -1
+	IF EQUIP:ARG:총 == 2840
+		PRINTL 이 총기의 경우、화염방사기、파일 해머、레이저 블레이드의 세종류를 전환한다。
+	ELSE
+		PRINTL 이 총기의 경우、두가지 모드를 전환한다。
+	ENDIF
+ENDIF
+
+
+;とくにない
+
+@SKILL_ACTIONABLE_BATTLE_3981, ARG
+RETURN 0
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3981,ARG
+SIF EQUIP:ARG:총 == 0 || CFLAG:ARG:악마변신
+	RETURN 0
+RETURN 1
+;とくにない
+

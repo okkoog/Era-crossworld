@@ -1,0 +1,57 @@
+﻿;依頼名===================================================================
+;依頼難易度は敵の最大レベルによって変動
+; 1～10　☆、11～20　☆☆、21～30　☆☆☆、以下略
+;ダンジョン攻略が必要な場合は☆が★になる。
+
+@TITLE_RANDOM_REQUEST_108_19
+RESULTS = 도둑을 쫓아내 줘（난이도 ☆☆）
+RETURN 1
+
+;説明===================================================================
+@REQUEST_EXPLAIN_108_19
+	PRINTL 
+	PRINTL 【의뢰주】농가
+	PRINTL 
+	PRINTL 　작물을 도난당하고 있으나、감시 카메라에는 아무것도 찍히지 않아 악마의 소행으로 추정된다。
+	PRINTL 　노고를 가로채는 놈들에게 응징을 가하라。
+	PRINTL
+	PRINTL 【작전영역】교외 농지
+	PRINTL 【적의전력】채소 도둑(파마、질풍 유효)
+	PRINTL 【성공조건】원인 배제
+	PRINTL 
+
+;内容====================================================================
+@REQUEST_108_19
+CALL MESSAGE_WINDOW, "농협 직원" , @"요즘、수확 직전의 작물을 누군가에게 도난당하고 있습니다。/감시 카메라 등을 설치해 보았지만 아무도 찍히지 않았습니다。", , , , , 4
+CALL MESSAGE_WINDOW, "농협 직원" , @"야생동물일 가능성도 생각해보았지만/작물은 낫으로 벤 것처럼 말끔하게 잘려 있었습니다。", , , , , 4
+CALL MESSAGE_WINDOW, "농협 직원" , @"아마도、악마의 소행으로 생각됩니다。/애지중지 키운 작물을 훔치는 놈의 퇴치를 의뢰하고 싶습니다。", , , , , 4
+CALL MESSAGE_WINDOW, "MESSAGE" , @"――교외 농지――", , , , , 4
+CALL MESSAGE_WINDOW, "MESSAGE" , @"＞농지를 감시하고 있자、발에 낫을 단 악마가 다가왔다。", , , , , 4
+CALL MESSAGE_WINDOW, "빌뷔스" ,@"오늘도 챙겨가 주마아아아~", , , , , 4
+CALL MESSAGE_WINDOW, "MESSAGE" , @"%CALLNAME:MASTER%는 악마의 앞을 가로막아 섰다。", , , , , 4
+CALL MESSAGE_WINDOW, "빌뷔스" ,@"응？ 뭐냐 넌？/그래！ 너도 베어버려 주마아아아！", , , , , 4
+CALL MESSAGE_WINDOW, "MESSAGE" , @"＞빌뷔스가 이쪽으로 덤벼들었다！", , , , , 4
+
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+FOR LOCAL, 7, 17
+	CALL SET_ENEMY, LOCAL ,[[キャラ:빌뷔스]],7+RAND:5,0,0
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+NEXT
+
+CALL BATTLE_START
+
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+CALL MESSAGE_WINDOW, "MESSAGE" , @"＞작물 도둑을 전멸시켰다。", , , , , 4
+
+;報酬
+依頼フラグ:[[依頼:랜덤의뢰]]:5 = 1;難易度
+依頼フラグ:[[依頼:랜덤의뢰]]:7 = 0;그외
+CALL PRIZE_REQUEST_108
+

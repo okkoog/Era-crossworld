@@ -1,0 +1,61 @@
+﻿;スキル名
+@SKILL_NAME_教えられた事,ARG
+RESULTS = 배운 것
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_教えられた事
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_教えられた事,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;　説明文の表示
+@SKILL_EXPLAIN_教えられた事,ARG
+PRINTL 자동: 자신의 회피율이 오른다.
+PRINTL 　　　하카리 아츠코의 전용 스킬.
+
+@SKILL_EXPLAIN_TOOLTIP_教えられた事, ARG
+RESULTS:0 = 자동: 자신의 회피율이 오른다.
+RESULTS:1 = 　　　하카리 아츠코의 전용 스킬.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_教えられた事,ARG
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_教えられた事, ARG = -1
+RETURN 3
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_教えられた事, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM DYNAMIC L_P;スキルの持ち主=自分
+#DIM DYNAMIC L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM DYNAMIC L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM DYNAMIC SKILL_NUM;スキル番号(専用技用)
+#DIMS DYNAMIC L_相性名;ダメージ計算に使用されている相性の名称
+#DIM DYNAMIC L_相性値;相性の倍率(999が反射のあれ)
+#DIMS DYNAMIC L_ダメージタイプ;物理/魔法
+#DIMS DYNAMIC L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS DYNAMIC L_ステート名;バステの名称
+#DIM DYNAMIC L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM DYNAMIC GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_RESULT
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+;自分が防御側
+ELSE
+	SELECTCASE ARGS
+		;回避率強化
+		CASE "追加回避強化"
+			RETURN 4
+	ENDSELECT
+ENDIF
+RETURN 0

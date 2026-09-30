@@ -1,0 +1,124 @@
+﻿@SKILL_SWITCHING_黄金結晶, ARG = -1
+#FUNCTION
+#DIM DYNAMIC TEMP
+SIF HAVE_PU_SKILL(ARG, "奇妙な山羊頭")
+	TEMP += 1
+SIF HAVE_PU_SKILL(ARG, "秤を持った商人")
+	TEMP += 1
+SIF HAVE_PU_SKILL(ARG, "調律の魔物")
+	TEMP += 1
+IF TEMP == 0
+	RESULTS_F '= "黄金結晶"
+ELSE
+	RESULTS_F '= "黄金結晶" + "_" + TOSTR(TEMP)
+ENDIF
+
+;スキル名
+@SKILL_NAME_黄金結晶,ARG
+RESULTS = 黄金結晶
+
+;　명중
+@SKILL_HITRATE_黄金結晶, ARG
+RETURN 90
+
+;　威力
+@SKILL_POWER_黄金結晶, ARG
+RETURN 100
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_黄金結晶,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_黄金結晶,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_黄金結晶, ARG
+RETURN 3
+
+;　コストの量
+@SKILL_COST_黄金結晶,ARG
+RETURN 5
+
+;　相性
+@SKILL_TYPE_黄金結晶,ARG
+RETURN GET_TYPE_NUM("파마")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_黄金結晶,ARG
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_黄金結晶,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_黄金結晶,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_黄金結晶,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_黄金結晶,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_黄金結晶,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_黄金結晶, ARG = -1
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_黄金結晶, ARG = -1
+RETURN 1
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_黄金結晶, ARG = -1
+RETURN 0
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_黄金結晶,ARG
+RETURN GET_STATE_NUM("PANIC")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_黄金結晶,ARG
+RETURN GET_TYPE_NUM("정신")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_黄金結晶,ARG
+RETURN 30
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_黄金結晶,ARG
+RETURN 60
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_黄金結晶,ARG,ARG:1,ARG:2
+#DIM SKILL_NUM
+CALL ATTACK_SKILL,ARG,ARG:1,ARG:2
+
+;　説明文の表示
+@SKILL_EXPLAIN_黄金結晶,ARG
+PRINTL 【리브라 전용 스킬】
+PRINTL 타인을 광기로 이끄는 황금 결정을 적에게 던진다.
+PRINTL 
+PRINTL 적 1열에 파마 상성으로 소데미지를 주고 확률에 따라 PANIC을 부여한다.
+PRINTL 이 스킬은 PANIC 상태일 때 사용할 수 없다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_黄金結晶,ARG
+RESULTS = %CALLNAME:ARG%(은)는 발광하고 있다.
+SIF IS_BADSTATE(ARG, "PANIC")
+	RETURN 0
+RETURN 1
+
+
+

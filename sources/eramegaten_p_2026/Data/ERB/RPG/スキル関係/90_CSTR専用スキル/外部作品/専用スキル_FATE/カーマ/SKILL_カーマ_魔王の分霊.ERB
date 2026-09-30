@@ -1,0 +1,66 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_魔王の分霊,ARG
+RESULTS = 마왕의 분령
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_魔王の分霊
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_魔王の分霊,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_魔王の分霊
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+@継承不能_魔王の分霊
+RETURN 2
+;不可、造魔や子供にも継承せず
+
+;スキル変化？用ランク
+@SKILL_RANK_魔王の分霊, ARG = -1
+RETURN 2
+;変化不可
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_魔王の分霊,ARG
+PRINTL 자동: 자신의 비구/정신/중력 크리티컬률을 올린다
+
+@SKILL_ACTIONABLE_BATTLE_魔王の分霊, ARG
+RETURN 0
+
+@SKILL_DEL_UNABLE_魔王の分霊,ARG
+RETURN 1
+;削除不可
+
+
+@SKILL_PASSIVE_BTL_EFFECT_魔王の分霊, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;乗除の計算後に加算する。上記2つの乗算系は基礎クリティカル率が低いスキルには効果が薄いが、こちらは基礎が低いスキルに強力に働く
+		;基礎クリティカル率が低い技しか持たないキャラの補正用と考えるのならばこれで補正するのがおすすめ
+		CASE "クリティカル加算"
+			IF GROUPMATCH(L_相性名,  "비구", "정신", "중력")
+				RETURN 15
+			ENDIF
+	ENDSELECT
+ENDIF
+RETURN 0

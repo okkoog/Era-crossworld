@@ -1,0 +1,177 @@
+﻿;スキル名
+@SKILL_NAME_リラックス,ARG
+RESULTS = 릴랙스
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_リラックス, ARG
+RETURN 1
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_リラックス,ARG
+RETURN 0
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_リラックス
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_リラックス,ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_リラックス,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_リラックス,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_リラックス
+RETURN 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_リラックス,ARG, ARG:1, ARG:2
+CALL PRINT_リラックス_ANIME, NO:ARG, , 100, -500
+CALL HEAL_リラックス, ARG, "전투중"
+CALL PU_SKILLGAGE_F_ADD, ARG, "リラックス", 1
+
+@HEAL_リラックス, ARG, ARGS
+#DIM DYNAMIC LCOUNT
+;死亡以外の状態異常も回復する
+CALL CURE_STATE_SINGLE, ARG, ARG, PU_SKILLNUM_GET(ARG, "リラックス"), 0, 1
+CALL PRINT_HIT_MESSAGE, ARG, @"MP{MAXBASE:ARG:ＭＰ / 3}회복", "L"
+CALL VAR_MP, ARG, MAXBASE:ARG:ＭＰ / 3, "회복"
+IF ARGS == "전투중"
+	CALL PRINT_HIT_MESSAGE, ARG, @"能力を初期化", "L"
+	;自身の補助効果を全て消す
+	FOR LCOUNT,0, VARSIZE("BASE_KAJA_TABLE")
+		CFLAG:ARG:(BASE_KAJA_TABLE:LCOUNT + "강화") = 0
+	NEXT
+ENDIF
+WAIT
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+@ACTION_FIELD_リラックス,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CLEARLINE 1
+CALL PRINT_リラックス_ANIME, NO:ARG
+CALL HEAL_リラックス, ARG, "フィールド"
+CALL SKILLGAGE_F_ADD,ARG,SKILL_NUM,1
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　説明文の表示
+@SKILL_EXPLAIN_リラックス,ARG
+;イベント用
+PRINTL 자신의 최대 MP의 1/3을 회복하고, 사망 이외의 상태이상도 회복한다
+PRINTL 자신의 보조 효과도 전부 사라져 버리므로 사용할 타이밍을 고려해야 합니다
+PRINTL 스킬은 3회까지 사용 가능하며 상점 화면으로 돌아가면 리셋됩니다
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_リラックス,ARG
+#DIM SKILL_NUM
+RESULTS = 키트 소진
+SIF PU_SKILLGAGE_F_GET(ARG, "リラックス") >= 3
+	RETURN 0
+RETURN 1
+
+@リンク不能_リラックス
+RETURN 1
+
+@CREATE_リラックス_SPRITE, CHARANO, L_SITUATION
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC CHARANO
+#DIMS DYNAMIC L_SITUATION
+#DIMS DYNAMIC L_ADDRESS
+#DIMS DYNAMIC L_SPRITENAME
+#DIM DYNAMIC GID,2
+L_ADDRESS '= "80_スキル画像" + "\\" + "CSTR_リラックス" + "\\" + GET_識別名(CHARANO) + "\\"+ L_SITUATION
+LCOUNT = 1
+WHILE 1
+	L_SPRITENAME '= GET_識別名(CHARANO) + "_" + L_SITUATION + "_" + @"{LCOUNT}"
+	;スプライト作成済みなら終わる
+	SIF SPRITECREATED(L_SPRITENAME)
+		RETURN 1
+	GID = GET_FREE_TEMP_GID()
+	IF CHARANO == [[キャラ:에노스]] && GROUPMATCH(L_SITUATION, "アクション1", "アクション2")
+		IF !SPRITECREATED("エノス_テレビ")
+			SIF !GCREATEFROMFILE(GID, "80_スキル画像" + "\\" + "CSTR_リラックス" + "\\" + GET_識別名(CHARANO) + "\\"+ "エノス_テレビ" + ".png")
+				RETURN 0
+			SPRITECREATE "エノス_テレビ", GID, 0, 0, GWIDTH(GID), GHEIGHT(GID)	
+			CALL PUSH_ARRAY_STR, TEMP_GID_SPRITENAME, "エノス_テレビ"
+			GID = GET_FREE_TEMP_GID()
+		ENDIF
+		;1枚目が作れない場合は失敗として返す
+		SIF !GCREATEFROMFILE(GID, L_ADDRESS + "_" + TOSTR(LCOUNT, "00") + ".png")
+			RETURN (LCOUNT > 1)
+		SPRITECREATE L_SPRITENAME + "_TEMP", GID, 0, 0, GWIDTH(GID), GHEIGHT(GID)
+		CALL PUSH_ARRAY_STR, TEMP_GID_SPRITENAME, L_SPRITENAME + "_TEMP"
+		
+		GID:1 = GET_FREE_TEMP_GID()
+		GCREATE GID:1, GWIDTH(GID) + SPRITEWIDTH("エノス_テレビ"), GHEIGHT(GID)
+		GDRAWSPRITE GID:1, "エノス_テレビ", 0, 0, SPRITEWIDTH("エノス_テレビ"), GHEIGHT(GID:1)
+		GDRAWSPRITE GID:1, L_SPRITENAME + "_TEMP", SPRITEWIDTH("エノス_テレビ"), 0, GWIDTH(GID), GHEIGHT(GID)
+		SPRITECREATE L_SPRITENAME, GID:1, 0, 0, GWIDTH(GID:1), GHEIGHT(GID:1)
+	ELSE
+		;1枚目が作れない場合は失敗として返す
+		SIF !GCREATEFROMFILE(GID, L_ADDRESS + "_" + TOSTR(LCOUNT, "00") + ".png")
+			RETURN (LCOUNT > 1)
+		SPRITECREATE L_SPRITENAME, GID, 0, 0, GWIDTH(GID), GHEIGHT(GID)
+	ENDIF
+	CALL PUSH_ARRAY_STR, TEMP_GID_SPRITENAME, L_SPRITENAME
+	LCOUNT++
+WEND
+
+@PRINT_リラックス_ANIME, CHARANO, L_SITUATION, BASE_XPOS = 100, BASE_YPOS = -100
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC CHARANO
+#DIMS DYNAMIC L_SITUATION
+#DIMS DYNAMIC L_SPRITENAME, 2
+#DIMS DYNAMIC SHOW_RAYER
+#DIM DYNAMIC L_WIDTH
+#DIM DYNAMIC BASE_XPOS
+#DIM DYNAMIC BASE_YPOS
+#DIMS DYNAMIC SITUATION_TABLE = "アクション1", "アクション2", "アクション3", "ドリンク", "샤워", "スリープ"
+IF L_SITUATION == ""
+	;テーブルをSHUFFLEして順番に試す
+	CALL SHUFFLE_ARRAY_STR, SITUATION_TABLE
+	FOR LCOUNT, 0, VARSIZE("SITUATION_TABLE")
+		;シチュが指定されている場合
+		CALL CREATE_リラックス_SPRITE, CHARANO, SITUATION_TABLE:LCOUNT
+		SIF !RESULT
+			CONTINUE
+		L_SITUATION '= SITUATION_TABLE:LCOUNT
+		BREAK
+	NEXT
+ELSE
+	;シチュが指定されている場合
+	CALL CREATE_リラックス_SPRITE, CHARANO, L_SITUATION
+	SIF !RESULT
+		RETURN 0
+ENDIF
+L_SPRITENAME '= GET_識別名(CHARANO) + "_" + L_SITUATION
+LCOUNT = 1
+L_WIDTH = 1250 * SPRITEWIDTH(L_SPRITENAME + "_1") / SPRITEHEIGHT(L_SPRITENAME + "_1") + 50
+WHILE SPRITECREATED(L_SPRITENAME + @"_{LCOUNT}")
+	SHOW_RAYER '= @"<img src = '%L_SPRITENAME%_{LCOUNT}' height = '1250'>"
+	{
+	SHOW_RAYER '= @"<div xpos = '{BASE_XPOS}' ypos = '{BASE_YPOS - 1300}'
+					height = '1300' width = {L_WIDTH}
+					padding = '25' border_width = '3px'
+					background_color = '%TOSTR_HTML(GETBGCOLOR())%' display = 'absolute-leftbottom'
+					>" + SHOW_RAYER + "</div>"
+	}
+	HTML_PRINT_ISLAND SHOW_RAYER
+	INPUTMOUSEKEY 100
+	HTML_PRINT_ISLAND_CLEAR
+	SIF RESULT != 4
+		BREAK
+	LCOUNT++
+WEND

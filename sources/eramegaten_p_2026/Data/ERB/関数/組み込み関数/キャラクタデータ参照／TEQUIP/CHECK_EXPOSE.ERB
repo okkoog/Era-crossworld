@@ -1,0 +1,42 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2022/11/19		っとっとき				CLOTHES.ERBから関数化
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;=================================================
+;露出状況のチェック
+;=================================================
+@CHECK_EXPOSE(ARG)
+#DIM 衣装部位 , 1
+#DIM 調査部位 , 1
+#DIM CONST 調査テーブル = 13, 12, 11, 10, 3, 1, 2, 0, 9, 7, 4, 8, 5, 6
+#DIM DYNAMIC LCOUNT
+#LOCALSIZE 14
+FOR 調査部位,0,8
+	VARSET LOCAL
+	TEQUIP:ARG:(NAME_EXPOSE(調査部位)) = -1
+	
+	SIF (調査部位 == 3 || 調査部位 == 4) && TEQUIP:ARG:가슴앞열림 == 1
+		CONTINUE
+	
+	FOR 衣装部位,0,14
+		TRYCALLFORM CLOTHES_EXPOSE_{TEQUIP:ARG:(GET_CLOTHESNAME(衣装部位))},調査部位+1
+		SIF RESULT == 0
+			LOCAL:衣装部位 = 1
+	NEXT
+
+	;그외→겉옷→전신복→옷→하의→모자→신발→전신속옷→손→양말→下着上下
+	FOR LCOUNT, 0, VARSIZE("調査テーブル")
+		SIF !LOCAL:(調査テーブル:LCOUNT)
+			CONTINUE
+		TEQUIP:ARG:(NAME_EXPOSE(調査部位)) = 調査テーブル:LCOUNT
+		SIF NAME_EXPOSE(調査部位) == "유두노출" || NAME_EXPOSE(調査部位) == "유방노출"
+			TEQUIP:ARG:가슴해방전의상 = 調査テーブル:LCOUNT
+		BREAK
+	NEXT
+NEXT
+

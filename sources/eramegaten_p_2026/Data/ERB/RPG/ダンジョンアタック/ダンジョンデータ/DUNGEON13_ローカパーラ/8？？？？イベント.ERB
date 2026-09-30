@@ -1,0 +1,1350 @@
+﻿;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@DUNGEON_BEFORE_ENTER_EVENT_13_kasou,L_X,L_Y,IS_ROUTE_SEARCH
+#DIM DYNAMIC L_X
+#DIM DYNAMIC L_Y
+#DIM DYNAMIC IS_ROUTE_SEARCH
+SELECTCASE DA:L_X:L_Y
+	CASE 48102
+		IF IS_ROUTE_SEARCH
+			IF IS_AUTORUN_SEARCHING
+				RETURN GET_FLOOR_ANALYZE_T(L_X, L_Y) < 2
+			ELSE
+				RETURN 1
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "", "문 너머에서 기척이 느껴진다 "
+			CALL INPUT_SELECT_D, "[0] 안쪽으로 간다/[1] 가지 않는다 "
+			IF RESULT == 0
+				RETURN 1
+			ELSE
+				RETURN 0
+			ENDIF
+		ENDIF
+	CASE 49102
+		IF IS_ROUTE_SEARCH
+			IF IS_AUTORUN_SEARCHING
+				RETURN GET_FLOOR_ANALYZE_T(L_X, L_Y) < 2
+			ELSE
+				RETURN 1
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "", "＞문이 닫혀있다 "
+			RETURN 0
+		ENDIF
+	CASE 50102
+		IF IS_ROUTE_SEARCH
+			IF IS_AUTORUN_SEARCHING
+				RETURN GET_FLOOR_ANALYZE_T(L_X, L_Y) < 2
+			ELSE
+				RETURN 1
+			ENDIF
+		ELSE
+			IF GETBIT(FLAG_D13_仮想空間その他イベント,16) && GETBIT(FLAG_D13_仮想空間その他イベント,17) && GETBIT(FLAG_D13_仮想空間その他イベント,18)
+				CALL MESSAGE_WINDOW_D, "", "문 너머에서 기척이 느껴진다 "
+				CALL INPUT_SELECT_D, "[0] 안쪽으로 간다/[1] 가지 않는다 "
+				IF RESULT == 0
+					RETURN 1
+				ELSE
+					RETURN 0
+				ENDIF
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "문은 굳게 닫혀 있다 "
+				RETURN 0
+			ENDIF
+		ENDIF
+	CASE 53102
+		IF IS_ROUTE_SEARCH
+			IF IS_AUTORUN_SEARCHING
+				RETURN GET_FLOOR_ANALYZE_T(L_X, L_Y) < 2
+			ELSE
+				RETURN 1
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "", "문 너머에서 엄청난 기척이 느껴진다 "
+			CALL INPUT_SELECT_D, "[0] 안쪽으로 간다/[1] 가지 않는다 "
+			IF RESULT == 0
+				RETURN 1
+			ELSE
+				RETURN 0
+			ENDIF
+		ENDIF
+	CASE 53007
+		IF IS_ROUTE_SEARCH
+			IF IS_AUTORUN_SEARCHING
+				RETURN GET_FLOOR_ANALYZE_T(L_X, L_Y) < 2
+			ELSE
+				RETURN 1
+			ENDIF
+		ELSE
+			IF FLAG_D13_仮想空間イベント進行度 == 9
+				CALL MESSAGE_WINDOW_D, "", "＞빨리 탈출해야 한다 "
+				RETURN 0
+			ENDIF
+		ENDIF
+ENDSELECT
+RETURN 1
+;=======================================================================
+;仮想空間タイル
+;=======================================================================
+;イベントタイル特殊表示4
+@TILE_MARK_COMMON_13_kasou_4, ARG, ARG:1, ARG:2
+SELECTCASE ARG / 10
+	CASE 4600
+		SETCOLOR 0x00ff00
+		RESULTS = 双
+	CASE 4601
+		SETCOLOR 0x00ff00
+		RESULTS = ゲ
+	CASE 4602
+		SETCOLOR 0x00ff00
+		RESULTS = Ｈ
+	CASE 4800,4900,5100,5300
+		SETCOLOR 0x00ff00
+		RESULTS = 戻
+	CASEELSE
+		RESULTS = ！
+		;IF (ARG / 10) % 100 == 0
+		;	SETCOLOR 0x00ff00
+		;	RESULTS = 戻
+		;
+		;ELSE
+		;	RESULTS = ！
+		;ENDIF
+ENDSELECT
+
+;イベントタイル特殊表示9
+@TILE_MARK_COMMON_13_kasou_9, ARG , ARG:1 , ARG:2
+SELECTCASE ARG / 10
+	CASE 4800, 5000, 5300
+		RESULTS = ！
+	CASEELSE
+		RESULTS = □
+ENDSELECT
+
+;=======================================================================
+;仮想空間タイル破棄
+;イベントが終わった床・扉を通常マスに置き換える
+;=======================================================================
+@REPLACE_TILE_DUNGEON_13_kasou,ARG, ARG:1, ARG:2
+SELECTCASE ARG % 10
+	CASE 2
+		SELECTCASE ARG / 10
+			CASE 4810
+				SIF FLAG_D13_仮想空間イベント進行度 >= 3
+					DA:(ARG:1):(ARG:2) = 2
+			CASE 4910
+				SIF GETBIT(FLAG_D13_仮想空間その他イベント,8) && GETBIT(FLAG_D13_仮想空間その他イベント,9)
+					DA:(ARG:1):(ARG:2) = 2
+			CASE 5010
+				SIF FLAG_D13_仮想空間イベント進行度 >= 6
+					DA:(ARG:1):(ARG:2) = 2
+			CASE 5310
+				SIF FLAG_D13_仮想空間イベント進行度 >= 9
+					DA:(ARG:1):(ARG:2) = 2
+		ENDSELECT
+	CASE 9
+		SELECTCASE ARG / 10
+			CASE 4800
+				SIF FLAG_D13_仮想空間イベント進行度 >= 3
+					DA:(ARG:1):(ARG:2) = 1
+			CASE 5000
+				SIF FLAG_D13_仮想空間イベント進行度 >= 6
+					DA:(ARG:1):(ARG:2) = 1
+			CASE 5300
+				SIF FLAG_D13_仮想空間イベント進行度 >= 9
+					DA:(ARG:1):(ARG:2) = 1
+		ENDSELECT
+ENDSELECT
+;=======================================================================
+;仮想空間調べイベント(4)
+;=======================================================================
+@EVENT_CHECK_DUNGEON_13_kasou_4
+#DIM LX
+#DIM LY
+
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 4600
+		IF !GETBIT(FLAG_D13_仮想空間その他イベント,21)
+			CALL MESSAGE_WINDOW_D, "후타바", "가상공간에 가기 전에 이걸 받아줘/ＣＯＭＰ에서 카르마 단말기의 일부 기능을 사용할 수 있게 될 거야 "
+			CALL MESSAGE_WINDOW_D, "", "＞인스톨소프트「우파니샤드」를 입수했다 "
+			IF HAVE_INSTALLSOFT("우파니샤드")
+				CALLFORM INSTALLSOFT_PRICE_{GET_INSTALLSOFT_NUM("우파니샤드")}
+				MONEY:1 += RESULT
+				LOCALS = {RESULT}
+				CALL MESSAGE_WINDOW_D, "", "＞이미 가지고 있었기 때문에" + LOCALS + "마카를 얻었다 "
+			ELSE
+				CALL GETS_INSTALLSOFT, "우파니샤드"
+			ENDIF
+			SETBIT FLAG_D13_仮想空間その他イベント,21
+		ENDIF
+		CALL MESSAGE_WINDOW_D, "후타바", "준비됐어？/가상공간에 갈까？ "
+		CALL INPUT_SELECT_D, "[0]간다/[1]가지 않는다 "
+		IF RESULT == 0
+			SIF FLAG_D13_仮想空間イベント進行度 == 0
+				CALL DUNGEON_WORP,47,1,9
+			SIF FLAG_D13_仮想空間イベント進行度 > 0
+				CALL DUNGEON_WORP,48,8,1
+			SIF FLAG_D13_仮想空間イベント進行度 > 3
+				CALL DUNGEON_WORP,49,8,2
+			SIF FLAG_D13_仮想空間イベント進行度 > 6
+				CALL DUNGEON_WORP,51,8,2
+			SIF FLAG_D13_仮想空間イベント進行度 > 7
+				CALL DUNGEON_WORP,53,1,3
+		ENDIF
+		IF FLAG_D13_仮想空間イベント進行度 > 7 && (GETBIT(FLAG:발견ED, 45) || FLAG_D13_階層踏破度 > 52)
+			CALL INPUT_SELECT_D, "[0] 가장 안쪽까지 스킵한다/[1] 스킵하지 않는다 "
+			SIF RESULT == 0
+				CALL DUNGEON_WORP,53,1,3
+		ENDIF
+	CASE 4601
+		CALL MESSAGE_WINDOW_D, "게일", "저 후타바라는 소녀 상당히 해킹에 능해/ "
+		CALL MESSAGE_WINDOW_D, "게일", "우리도 해킹은 하고 있었지만 이렇게 까지 할 수 있는 사람은 정크야드에도/없었지 "
+		IF FLAG_D13_仮想空間イベント進行度 > 0
+			CALL INPUT_SELECT_D, "[0] 동료를 교체한다/[1] 아무것도 아니다/[2]개인실로 돌아간다"
+		ELSE
+			CALL INPUT_SELECT_D, "[0] 동료를 교체한다/[1] 아무것도 아니다 "
+		ENDIF
+		IF RESULT == 0
+			CALL RECONSTRUCTION
+		ELSEIF RESULT == 2
+			CALL DUNGEON_EXIT
+		ENDIF
+	CASE 4602
+		CALL MESSAGE_WINDOW_D, "로알드", "설마 그 기계/가상공간까지 들어갈줄은 의외인데/언제나 놀래켜 "
+		CALL MESSAGE_WINDOW_D, "로알드", "어쨌든 가상공간으로 들어가서 놈들을 쓰러뜨리자 "
+		IF !GETBIT(FLAG_D13_仮想空間その他イベント,0) || !GETBIT(FLAG_D13_仮想空間その他イベント,1)
+			CALL MESSAGE_WINDOW_D, "로알드", "근데 회복하고 갈까？/도구는 조금밖에 없어서 무작정 사용은 못하지만 "
+			LOCALS = {(!GETBIT(FLAG_D13_仮想空間その他イベント,0) + !GETBIT(FLAG_D13_仮想空間その他イベント,1))}
+			CALL INPUT_SELECT_D, "[0]네(나머지" + LOCALS + "회)/[1]아니오 "
+			IF RESULT == 0
+				PRINTFORMW %CALLNAME:MASTER%들은 회복했다
+				FOR LOCAL, 1, 7
+					SIF POS(LOCAL) > -1
+						CALL HEALTH_CHARA, POS(LOCAL)
+				NEXT
+				SIF GETBIT(FLAG_D13_仮想空間その他イベント,0)
+					SETBIT FLAG_D13_仮想空間その他イベント,1
+				SETBIT FLAG_D13_仮想空間その他イベント,0
+			ENDIF
+		ENDIF
+	CASE 4801
+		IF FLAG_D13_仮想空間イベント進行度 < 2
+			CALL INPUT_SELECT_D, "[0]스위치를 누른다/[1]스위치를 누르지 않는다 "
+			IF RESULT == 0
+				FLAG_D13_仮想空間イベント進行度 = 2
+				CALL DUNGEON_WORP,(FLAG:현M),(FLAG:현X),(FLAG:현Y)
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "", "이미 눌려 있다 "
+		ENDIF
+	CASE 4901
+		CALL INPUT_SELECT_D, "[0]스위치를 누른다/[1]스위치를 누르지 않는다 "
+		IF RESULT == 0
+			CLEARBIT FLAG_D13_仮想空間その他イベント,2
+			CLEARBIT FLAG_D13_仮想空間その他イベント,3
+			CLEARBIT FLAG_D13_仮想空間その他イベント,4
+			CLEARBIT FLAG_D13_仮想空間その他イベント,5
+			CLEARBIT FLAG_D13_仮想空間その他イベント,6
+			CLEARBIT FLAG_D13_仮想空間その他イベント,7
+			FLAG_D13_仮想空間ボタン押し数 += 6
+			CALL DUNGEON_WORP,(FLAG:현M),(FLAG:현X),(FLAG:현Y)
+		ELSE
+		ENDIF
+	CASE 4902
+		CALL MESSAGE_WINDOW_D, "", "스위치를 눌렀다 "
+			IF !GETBIT(FLAG_D13_仮想空間その他イベント,2) && !GETBIT(FLAG_D13_仮想空間その他イベント,3)
+				SETBIT FLAG_D13_仮想空間その他イベント,2
+			ELSEIF GETBIT(FLAG_D13_仮想空間その他イベント,2) && !GETBIT(FLAG_D13_仮想空間その他イベント,3)
+				SETBIT FLAG_D13_仮想空間その他イベント,3
+			ELSE
+				CLEARBIT FLAG_D13_仮想空間その他イベント,2
+				CLEARBIT FLAG_D13_仮想空間その他イベント,3
+			ENDIF
+			FLAG_D13_仮想空間ボタン押し数 ++
+			CALL DUNGEON_WORP,(FLAG:현M),(FLAG:현X),(FLAG:현Y)
+	CASE 4903
+		CALL MESSAGE_WINDOW_D, "", "스위치를 눌렀다 "
+			IF !GETBIT(FLAG_D13_仮想空間その他イベント,4) && !GETBIT(FLAG_D13_仮想空間その他イベント,5)
+				SETBIT FLAG_D13_仮想空間その他イベント,4
+			ELSEIF GETBIT(FLAG_D13_仮想空間その他イベント,4) && !GETBIT(FLAG_D13_仮想空間その他イベント,5)
+				SETBIT FLAG_D13_仮想空間その他イベント,5
+			ELSE
+				CLEARBIT FLAG_D13_仮想空間その他イベント,4
+				CLEARBIT FLAG_D13_仮想空間その他イベント,5
+			ENDIF
+			FLAG_D13_仮想空間ボタン押し数 ++
+			CALL DUNGEON_WORP,(FLAG:현M),(FLAG:현X),(FLAG:현Y)
+	CASE 4904
+		CALL MESSAGE_WINDOW_D, "", "스위치를 눌렀다 "
+			IF !GETBIT(FLAG_D13_仮想空間その他イベント,6) && !GETBIT(FLAG_D13_仮想空間その他イベント,7)
+				SETBIT FLAG_D13_仮想空間その他イベント,6
+			ELSEIF GETBIT(FLAG_D13_仮想空間その他イベント,6) && !GETBIT(FLAG_D13_仮想空間その他イベント,7)
+				SETBIT FLAG_D13_仮想空間その他イベント,7
+			ELSE
+				CLEARBIT FLAG_D13_仮想空間その他イベント,6
+				CLEARBIT FLAG_D13_仮想空間その他イベント,7
+			ENDIF
+			FLAG_D13_仮想空間ボタン押し数 ++
+			CALL DUNGEON_WORP,(FLAG:현M),(FLAG:현X),(FLAG:현Y)
+	CASE 4905
+		IF !GETBIT(FLAG_D13_仮想空間その他イベント,8)
+			CALL INPUT_SELECT_D, "[0]스위치를 누른다/[1]스위치를 누르지 않는다 "
+			IF RESULT == 0
+				SETBIT FLAG_D13_仮想空間その他イベント,8
+				SIF GETBIT(FLAG_D13_仮想空間その他イベント,8) && GETBIT(FLAG_D13_仮想空間その他イベント,9)
+					CALL MESSAGE_WINDOW_D, "", "어딘가에서 문이 열리는 소리가 났다 "
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "", "이미 눌려 있다 "
+		ENDIF
+		FLAG_D13_仮想空間ボタン押し数 = 0
+	CASE 4906
+		IF !GETBIT(FLAG_D13_仮想空間その他イベント,9)
+			CALL INPUT_SELECT_D, "[0]스위치를 누른다/[1]스위치를 누르지 않는다 "
+			IF RESULT == 0
+				SETBIT FLAG_D13_仮想空間その他イベント,9
+				SIF GETBIT(FLAG_D13_仮想空間その他イベント,8) && GETBIT(FLAG_D13_仮想空間その他イベント,9)
+					CALL MESSAGE_WINDOW_D, "", "어딘가에서 문이 열리는 소리가 났다 "
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "", "이미 눌려 있다 "
+		ENDIF
+		FLAG_D13_仮想空間ボタン押し数 = 0
+	CASE 5000
+		IF FLAG_D13_仮想空間イベント進行度 < 5
+			CALL INPUT_SELECT_D, "[0]스위치를 누른다/[1]스위치를 누르지 않는다 "
+			IF RESULT == 0
+				FLAG_D13_仮想空間イベント進行度 = 5
+				CALL DUNGEON_WORP,(FLAG:현M),(FLAG:현X),(FLAG:현Y)
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "", "이미 눌려 있다 "
+		ENDIF
+	CASE 5001
+		IF !GETBIT(FLAG_D13_仮想空間その他イベント,16)
+			CALL INPUT_SELECT_D, "[0]스위치를 누른다/[1]스위치를 누르지 않는다 "
+			IF RESULT == 0
+				SETBIT FLAG_D13_仮想空間その他イベント,16
+				SIF GETBIT(FLAG_D13_仮想空間その他イベント,16) && GETBIT(FLAG_D13_仮想空間その他イベント,17) && GETBIT(FLAG_D13_仮想空間その他イベント,18)
+					CALL MESSAGE_WINDOW_D, "", "어딘가에서 문이 열리는 소리가 났다 "
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "", "이미 눌려 있다 "
+		ENDIF
+		FLAG_D13_仮想空間ボタン押し数 = 0
+	CASE 5002
+		CALL INPUT_SELECT_D, "[0]스위치를 누른다/[1]스위치를 누르지 않는다 "
+		IF RESULT == 0
+				CLEARBIT FLAG_D13_仮想空間その他イベント,10
+				CLEARBIT FLAG_D13_仮想空間その他イベント,11
+				CLEARBIT FLAG_D13_仮想空間その他イベント,12
+				CLEARBIT FLAG_D13_仮想空間その他イベント,13
+				CLEARBIT FLAG_D13_仮想空間その他イベント,14
+				CLEARBIT FLAG_D13_仮想空間その他イベント,15
+				CALL DUNGEON_WORP,(FLAG:현M),(FLAG:현X),(FLAG:현Y)
+				FLAG_D13_仮想空間ボタン押し数 += 6
+		ELSE
+		ENDIF
+	CASE 5003
+		CALL MESSAGE_WINDOW_D, "", "스위치를 눌렀다 "
+			IF !GETBIT(FLAG_D13_仮想空間その他イベント,10) && !GETBIT(FLAG_D13_仮想空間その他イベント,11)
+				SETBIT FLAG_D13_仮想空間その他イベント,10
+			ELSEIF GETBIT(FLAG_D13_仮想空間その他イベント,10) && !GETBIT(FLAG_D13_仮想空間その他イベント,11)
+				SETBIT FLAG_D13_仮想空間その他イベント,11
+			ELSEIF GETBIT(FLAG_D13_仮想空間その他イベント,10) && GETBIT(FLAG_D13_仮想空間その他イベント,11)
+				CLEARBIT FLAG_D13_仮想空間その他イベント,10
+			ELSE
+				CLEARBIT FLAG_D13_仮想空間その他イベント,11
+			ENDIF
+			FLAG_D13_仮想空間ボタン押し数 ++
+			CALL DUNGEON_WORP,(FLAG:현M),(FLAG:현X),(FLAG:현Y)
+	CASE 5004
+		CALL MESSAGE_WINDOW_D, "", "스위치를 눌렀다 "
+			IF !GETBIT(FLAG_D13_仮想空間その他イベント,12) && !GETBIT(FLAG_D13_仮想空間その他イベント,13)
+				SETBIT FLAG_D13_仮想空間その他イベント,12
+			ELSEIF GETBIT(FLAG_D13_仮想空間その他イベント,12) && !GETBIT(FLAG_D13_仮想空間その他イベント,13)
+				SETBIT FLAG_D13_仮想空間その他イベント,13
+			ELSEIF GETBIT(FLAG_D13_仮想空間その他イベント,12) && GETBIT(FLAG_D13_仮想空間その他イベント,13)
+				CLEARBIT FLAG_D13_仮想空間その他イベント,12
+			ELSE
+				CLEARBIT FLAG_D13_仮想空間その他イベント,13
+			ENDIF
+			FLAG_D13_仮想空間ボタン押し数 ++
+			CALL DUNGEON_WORP,(FLAG:현M),(FLAG:현X),(FLAG:현Y)
+	CASE 5005
+		CALL MESSAGE_WINDOW_D, "", "스위치를 눌렀다 "
+			IF !GETBIT(FLAG_D13_仮想空間その他イベント,14) && !GETBIT(FLAG_D13_仮想空間その他イベント,15)
+				SETBIT FLAG_D13_仮想空間その他イベント,14
+			ELSEIF GETBIT(FLAG_D13_仮想空間その他イベント,14) && !GETBIT(FLAG_D13_仮想空間その他イベント,15)
+				SETBIT FLAG_D13_仮想空間その他イベント,15
+			ELSEIF GETBIT(FLAG_D13_仮想空間その他イベント,14) && GETBIT(FLAG_D13_仮想空間その他イベント,15)
+				CLEARBIT FLAG_D13_仮想空間その他イベント,14
+			ELSE
+				CLEARBIT FLAG_D13_仮想空間その他イベント,15
+			ENDIF
+			FLAG_D13_仮想空間ボタン押し数 ++
+			CALL DUNGEON_WORP,(FLAG:현M),(FLAG:현X),(FLAG:현Y)
+	CASE 5006
+		IF !GETBIT(FLAG_D13_仮想空間その他イベント,17)
+			CALL INPUT_SELECT_D, "[0]스위치를 누른다/[1]스위치를 누르지 않는다 "
+			IF RESULT == 0
+				SETBIT FLAG_D13_仮想空間その他イベント,17
+				SIF GETBIT(FLAG_D13_仮想空間その他イベント,16) && GETBIT(FLAG_D13_仮想空間その他イベント,17) && GETBIT(FLAG_D13_仮想空間その他イベント,18)
+					CALL MESSAGE_WINDOW_D, "", "어딘가에서 문이 열리는 소리가 났다 "
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "", "이미 눌려 있다 "
+		ENDIF
+		FLAG_D13_仮想空間ボタン押し数 = 0
+	CASE 5007
+		IF !GETBIT(FLAG_D13_仮想空間その他イベント,18)
+			CALL INPUT_SELECT_D, "[0]스위치를 누른다/[1]스위치를 누르지 않는다 "
+			IF RESULT == 0
+				SETBIT FLAG_D13_仮想空間その他イベント,18
+				SIF GETBIT(FLAG_D13_仮想空間その他イベント,16) && GETBIT(FLAG_D13_仮想空間その他イベント,17) && GETBIT(FLAG_D13_仮想空間その他イベント,18)
+					CALL MESSAGE_WINDOW_D, "", "어딘가에서 문이 열리는 소리가 났다 "
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "", "이미 눌려 있다 "
+		ENDIF
+		FLAG_D13_仮想空間ボタン押し数 = 0
+	CASE 5101,5200
+		IF !GETBIT(FLAG_D13_仮想空間その他イベント,20)
+			CALL MESSAGE_WINDOW_D, "악마", "우~웅　다시 돌아와버렸네/일단　지도를 확인하지않으면 "
+			CALL MESSAGE_WINDOW_D, "악마", "오딘님에게 가려면…/어？ "
+			CALL MESSAGE_WINDOW_D, "악마", "놈들이 왔다！모두！덤벼라！"
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			FOR LOCAL, 8, 11
+				CALL SET_ENEMY,LOCAL,408,66,0,0
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+			FOR LOCAL, 13, 16
+				CALL SET_ENEMY,LOCAL,436,66,0,0
+				NAME:(CHARANUM-1) = 발키리
+				CALLNAME:(CHARANUM-1) = 발키리
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+			CALL BATTLE_START
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			FLAG:인카운트율 = 0
+			FLAG:미조우걸음수 = 0
+			
+			CALL MESSAGE_WINDOW_D, "", "악마는 지도를 떨궜다 "
+			SETBIT FLAG_D13_仮想空間その他イベント,20
+		ELSE
+			CALL MESSAGE_WINDOW_D, "", "여기서 다시 지도를 확인하기로 했다"
+		ENDIF
+		FOR LX, 0, 19
+			FOR LY, 2, 21
+				;SETBIT ダンジョン13:(LM):(LX):(LY) , 1
+				SIF GET_FLOOR_ANALYZE_T(LX,LY) < 1
+					CALL SET_FLOOR_ANALYZE(1, FLAG:현던전, FLAG:현M,LX,LY)
+			NEXT
+		NEXT
+		CALL MESSAGE_WINDOW_D, "", "지도 아래에는/”×두 방향을 뛸 수 있는 장소”/라고 쓰여져 있다。"
+	
+	;CASEELSE
+	CASE 4800,5000,5100,5300
+		IF 4700 < DA:(FLAG:현X):(FLAG:현Y) / 10 && (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100 == 0
+			
+			CALL MESSAGE_WINDOW_D, "후타바", "이쪽으로 돌아갈까？ "
+			CALL MESSAGE_WINDOW_D, "후타바", "이쪽으로 오면 터미널이 있고/로알드에게 말을 걸면 회복도 할 수 있어. "
+			CALL MESSAGE_WINDOW_D, "후타바", "또, 가상공간으로 갈 때는/가장 안쪽으로 전송해 줄게. "
+			CALL INPUT_SELECT_D, "[0] 돌아간다/[1] 돌아가지 않는다 "
+			IF RESULT == 0
+				CALL DUNGEON_WORP,46,4,3
+			ENDIF
+		ENDIF
+ENDSELECT
+
+IF FLAG_D13_仮想空間ボタン押し数 >= 30
+	CALL MESSAGE_WINDOW_D, "게일", "고전하고 있는 것 같군 "
+	CALL MESSAGE_WINDOW_D, "게일", "도저히 안 되겠다면 대신 풀어주마, 어쩔 텐가 "
+	CALL INPUT_SELECT_D, "[0] 맡긴다 (마지막 보스의 레벨 상승)/[1] 자력으로 푼다 "
+	IF RESULT == 0
+		CALL MESSAGE_WINDOW_D, "", "… "
+		CALL MESSAGE_WINDOW_D, "", "…/…… "
+		CALL MESSAGE_WINDOW_D, "", "…/……/……… "
+
+		IF FLAG:현M == 49
+			SETBIT FLAG_D13_仮想空間その他イベント,8
+			SETBIT FLAG_D13_仮想空間その他イベント,9
+
+			
+			CLEARBIT FLAG_D13_仮想空間その他イベント,2
+			CLEARBIT FLAG_D13_仮想空間その他イベント,3
+			SETBIT FLAG_D13_仮想空間その他イベント,4
+			SETBIT FLAG_D13_仮想空間その他イベント,5
+			SETBIT FLAG_D13_仮想空間その他イベント,6
+			CLEARBIT FLAG_D13_仮想空間その他イベント,7
+
+			SETBIT FLAG_D13_仮想空間その他イベント,20
+
+		ELSEIF FLAG:현M == 50
+			SETBIT FLAG_D13_仮想空間その他イベント,16
+			SETBIT FLAG_D13_仮想空間その他イベント,17
+			SETBIT FLAG_D13_仮想空間その他イベント,18
+
+			CLEARBIT FLAG_D13_仮想空間その他イベント,10
+			SETBIT FLAG_D13_仮想空間その他イベント,11
+			SETBIT FLAG_D13_仮想空間その他イベント,12
+			SETBIT FLAG_D13_仮想空間その他イベント,13
+			CLEARBIT FLAG_D13_仮想空間その他イベント,14
+			SETBIT FLAG_D13_仮想空間その他イベント,15
+			
+			SETBIT FLAG_D13_仮想空間その他イベント,21
+		ENDIF
+		CALL MESSAGE_WINDOW_D, "게일", "끝났다 "
+		CALL MESSAGE_WINDOW_D, "게일", "덤으로 다음에 나아갈 수 있도록 해뒀다/빨리 가고 싶으면 아무것도 누르지 말고 그대로 가라 "
+	ELSE
+		CALL MESSAGE_WINDOW_D, "게일", "그런가 "
+		CALL MESSAGE_WINDOW_D, "게일", "우선은 목적지의 높이부터 맞춰봐라/거기서부터 해답을 이끌어낼 수 있을 거다 "
+	ENDIF
+
+	FLAG_D13_仮想空間ボタン押し数 = 0
+ENDIF
+
+
+;=======================================================================
+;仮想空間侵入イベント(4)
+;=======================================================================
+@EVENT_ENTER_DUNGEON_13_kasou_4
+#LOCALSIZE 3
+
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 4800
+		IF FLAG_D13_仮想空間イベント進行度 == 0
+			CALL MESSAGE_WINDOW_D, "", "스마트폰으로 연락이 왔다/전화를 받으니 후타바 목소리가 났다 "
+			CALL MESSAGE_WINDOW_D, "후타바의 목소리", "들려？/아무래도 이 앱을 다운받으면/가상공간을 넘어 통신할 수 있는 것 같아 "
+			CALL MESSAGE_WINDOW_D, "후타바의 목소리", "아무데서나 할 수 있는 건 아닌 것 같아/하지만 할 수 있는 곳에서는 거기에서 돌아가거나 보내거나 할 수 있어 "
+			CALL MESSAGE_WINDOW_D, "후타바의 목소리", "일단 그쪽으로 보낼때는/가장 안쪽으로 보내도록할께 "
+			FLAG_D13_仮想空間イベント進行度 = 1
+		ENDIF
+	CASE 4900
+		SIF FLAG_D13_仮想空間イベント進行度 < 4
+			FLAG_D13_仮想空間イベント進行度 = 4
+	CASE 5100
+		SIF FLAG_D13_仮想空間イベント進行度 < 7
+			FLAG_D13_仮想空間イベント進行度 = 7
+	CASE 5300
+		SIF FLAG_D13_仮想空間イベント進行度 < 8
+			FLAG_D13_仮想空間イベント進行度 = 8
+		IF FLAG_D13_仮想空間イベント進行度 == 9
+			CALL MESSAGE_WINDOW_D, "목소리", "기다려！// "
+			CALL MESSAGE_WINDOW_D, "", "목소리 쪽을 보니 쓰러뜨렸을 브륀힐드와/발키리의 군대가 있다/ "
+			CALL MESSAGE_WINDOW_D, "브륀힐드", "이난나 덕분에 부활한 것은/미륵만이 아니다！/ "
+			CALL MESSAGE_WINDOW_D, "브륀힐드", "다신연합의 야망 실현을 위하여…/그리고 우리 아버지 오딘의 원수！/네 놈들을 쳐죽이겠다 "
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+			FOR LOCAL, 7, 17
+				CALL SET_ENEMY,LOCAL,408,66,0,0
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+			CALL BATTLE_START
+			
+			FOR LOCAL, 7, 17
+				CALL SET_ENEMY,LOCAL,436,66,0,0
+				NAME:(CHARANUM-1) = 발키리
+				CALLNAME:(CHARANUM-1) = 발키리
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+			CALL BATTLE_START
+			CALL MESSAGE_WINDOW_D, "브륀힐드", "호오 역시 우리 아버지 오딘을 쓰러뜨린 만큼의 힘은 있구나/우리 발키리부대를 여기까지 돌파하다니/ "
+
+			CALL SET_BOSS_ENEMY_DUNGEON_13, "ヴリュンヒルド"
+			CALL BATTLE_START
+
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			FLAG:인카운트율 = 0
+			FLAG:미조우걸음수 = 0
+		CALL MESSAGE_WINDOW_D, "브륀힐드", "크핫……　바보같은……/또다시…"
+		CALL MESSAGE_WINDOW_D, "", "악마는 힘이 다했다"
+		CALL MESSAGE_WINDOW_D, "", "어느새 주변 풍경이 많이 허물어져 있다// "
+		CALL MESSAGE_WINDOW_D, "시에로", "어이어이 점점 더 위험해졌잖아！？// "
+		CALL MESSAGE_WINDOW_D, "서프", "빨리 여기서 탈출하자/후타바 부탁한다/ "
+		CALL MESSAGE_WINDOW_D, "후타바", "알았어// "
+		CALL DUNGEON_WORP,46,4,3
+		CALL MESSAGE_WINDOW_D, "", @"%CALLNAME:MASTER% 일행은 원래 세계로 돌아왔다"
+		CALL MESSAGE_WINDOW_D, "서프", "이것으로 크리슈나에게 갈 수 있겠지// "
+		CALL MESSAGE_WINDOW_D, "서프", "하지만 결계는 바로 풀리지 않는 모양이야/결계가 사라질 때까지 기다리자/ "
+				CALL MESSAGE_WINDOW_D, "", @"＞명성 350을 얻었다"
+				FLAG:명성 += 350
+			FLAG_D13_全体イベント進行度 = 13
+				CALL DUNGEON_WORP,0,14,18
+		
+		
+		
+		
+		
+		
+			
+		ENDIF
+	CASE 4602
+	CASE 405
+		IF FLAG_D13_地下街イベント進行度 < 7
+			CALL MESSAGE_WINDOW_D, "프레드", "부탁해！/도와줘… "
+			;この命令でイベントは破壊され、ただの床になる
+			DA:(FLAG:현X):(FLAG:현Y) = 1
+			FLAG_D13_地下街イベント進行度 = 7
+		ENDIF
+ENDSELECT
+;=======================================================================
+;仮想空間侵入イベント（9）
+;=======================================================================
+@EVENT_ENTER_DUNGEON_13_kasou_9
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 4800
+		CALL MESSAGE_WINDOW_D, "", "적이 나타났다 "
+		FLAG:도주불가플래그 = 1
+		FLAG:회화불능플래그 = 1
+		FLAG:선제기습취소 = 1
+				
+		CALL SET_ENEMY, 9, [[キャラ:티탄]],68,0,1
+		CFLAG:(CHARANUM-1):행동횟수 = 2
+		CFLAG:(CHARANUM-1):ＭＰ보정 = 4000
+		CFLAG:(CHARANUM-1):속도보정 = 0
+		CSTR:(CHARANUM-1):사고패턴 = ローカティタ
+		ABL:(CHARANUM-1):스킬1 = [[스킬:즌바라린]];67
+		ABL:(CHARANUM-1):스킬2 = [[스킬:찰나장대비쏘기]];108
+		ABL:(CHARANUM-1):스킬3 = [[스킬:발칸킥]];246
+		ABL:(CHARANUM-1):스킬4 = [[스킬:전광석화]];327
+		ABL:(CHARANUM-1):스킬5 = [[스킬:대나무베기]];5
+		ABL:(CHARANUM-1):스킬6 = [[스킬:만마의일격]];2062
+		;CFLAG:(CHARANUM-1):BS무효플래그 = 1
+		CALL SYNC_STATUS,(CHARANUM-1)
+		CALL HEALTH_CHARA,(CHARANUM-1)
+		CALL BATTLE_START
+		FLAG:도주불가플래그 = 0
+		FLAG:회화불능플래그 = 0
+		FLAG:선제기습취소 = 0
+		FLAG:인카운트율 = 0
+		FLAG:미조우걸음수 = 0
+		FLAG_D13_仮想空間イベント進行度 = 3
+	CASE 5000
+		CALL MESSAGE_WINDOW_D, "", "적이 나타났다 "
+		FLAG:도주불가플래그 = 1
+		FLAG:회화불능플래그 = 1
+		FLAG:선제기습취소 = 1
+				
+		CALL SET_ENEMY, 9, [[キャラ:마리지천]],72,0,1
+		CFLAG:(CHARANUM-1):행동횟수 = 3
+		CFLAG:(CHARANUM-1):ＭＰ보정 = 4000
+		CFLAG:(CHARANUM-1):속도보정 = 0
+		CFLAG:(CHARANUM-1):명중보정 = 100
+		CSTR:(CHARANUM-1):사고패턴 = ローカマリ
+		ABL:(CHARANUM-1):스킬1 = [[스킬:뇌진왕모의발차기]];207
+		ABL:(CHARANUM-1):스킬2 = [[스킬:허공참파]];6
+		ABL:(CHARANUM-1):스킬3 = [[스킬:고천열풍탄]];107
+		ABL:(CHARANUM-1):스킬4 = [[스킬:썬더볼트]];940;썬더볼트
+		ABL:(CHARANUM-1):스킬5 = [[스킬:끝나는세계]];2067
+		ABL:(CHARANUM-1):스킬6 = [[스킬:관통]];2420
+		;CFLAG:(CHARANUM-1):BS무효플래그 = 1
+		CALL SYNC_STATUS,(CHARANUM-1)
+		CALL HEALTH_CHARA,(CHARANUM-1)
+		CALL BATTLE_START
+		FLAG:도주불가플래그 = 0
+		FLAG:회화불능플래그 = 0
+		FLAG:선제기습취소 = 0
+		FLAG:인카운트율 = 0
+		FLAG:미조우걸음수 = 0
+		FLAG_D13_仮想空間イベント進行度 = 6
+	CASE 5300
+		CALL MESSAGE_WINDOW_D, "", "거기에는 본 적이 있는 창잡이 악마가 있었다// "
+		CALL MESSAGE_WINDOW_D, "창을 쥔 악마", "흠 여기까지 오다니/인간도 꽤나 하는구나/ "
+		CALL MESSAGE_WINDOW_D, "오딘", "내 이름은 오딘/북미의 신들을 거느리고 있다/ "
+		CALL MESSAGE_WINDOW_D, "서프", "여기에 올 수 있었던 건 후타바 덕분이야/그녀 덕분에 여기에 올 수 있었어/ "
+		CALL MESSAGE_WINDOW_D, "오딘", "과연… 그 계집애의 지식으로 여기까지 왔구나…/역시 거기서 죽였어야 했어/ "
+		CALL MESSAGE_WINDOW_D, "류지", "시끄러워！/너따위에게 동료를 죽게두지 않아！/ "
+		CALL MESSAGE_WINDOW_D, "히트", "그래 우리는 세라를 구하러 왔어/얼른 불어라/ "
+		CALL MESSAGE_WINDOW_D, "오딘", "재미있구나 한번 해보자 "
+		
+		FLAG:도주불가플래그 = 1
+		FLAG:회화불능플래그 = 1
+		FLAG:선제기습취소 = 1
+		
+		CALL SET_BOSS_ENEMY_DUNGEON_13, "オーディン"
+		CALL BATTLE_START
+		CALL LIFTING_A_BAN, [[キャラ:오딘]], "ウィンドウ"
+		
+				CALL MESSAGE_WINDOW_D, "오딘", "크윽…설마/인간에게 내가 지다니…있을수 없다…앗/　 "
+				CALL MESSAGE_WINDOW_D, "오딘", "구아아아아아아아아…！//　 "
+				CALL MESSAGE_WINDOW_D, "", "오딘을 쓰러트렸다//　 "
+				CALL MESSAGE_WINDOW_D, "마코토", "이제 미트라를 쓰러뜨리는 일만 남았네요// "
+				CALL MESSAGE_WINDOW_D, "서프", "아아 녀석도 여기에 와있으니까/미트라를 쓰러뜨리면 결계가 사라질거야/ "
+				CALL MESSAGE_WINDOW_D, "", "별안간 요란한 파괴음이 울려 퍼졌다// "
+				CALL MESSAGE_WINDOW_D, "하루", "꺄아！// "
+				CALL MESSAGE_WINDOW_D, "알지라", "뭐…뭐야？// "
+				CALL MESSAGE_WINDOW_D, "", "명동의 중심에는 미트라보살이 서 있었다// "
+				CALL MESSAGE_WINDOW_D, "시에로", "젠장/적절한 타이밍에 나왔다/ "
+				CALL MESSAGE_WINDOW_D, "미트라보살", "잘도 왔구나…난 미트라/현세이익을 계약하는 신/ "
+				CALL MESSAGE_WINDOW_D, "미트라보살", "나는 이난나의 힘으로 윤회해/진정한 모습──부처가 되었다/ "
+				CALL MESSAGE_WINDOW_D, "미트라보살", "지금의 나라면 그대들을 무아의 경지로 이끌고/해탈을 이루게 할 수도 있으리라/ "
+				CALL MESSAGE_WINDOW_D, "미트라보살", "그대들의 영혼이 계속 윤회하며 인연을 유지하는 한/우리는 인간의≪구제≫를 가져올 수 없다/ "
+				CALL MESSAGE_WINDOW_D, "미트라보살", "고로 나는 그대들의 윤회의 인연을 끊고 /그대들을 원환하는 환생의 이치로부터 해방시키리라/ "
+				CALL MESSAGE_WINDOW_D, "히트", "쓸데없는 말은 그것뿐이야？/너를 때려눕히는데 말은 필요없어/ "
+				CALL MESSAGE_WINDOW_D, "안", "그래！/한번 부활했다고 우쭐하지 말라고！/ "
+				CALL MESSAGE_WINDOW_D, "게일", "글쎄 미륵…아니 미트라라고 할까// "
+				CALL MESSAGE_WINDOW_D, "게일", "그런 궤변으로 현혹하려 한다면/몇 번을 되살아나더라도 우리를 이길 수 없다/ "
+				
+				CALL MESSAGE_WINDOW_D, "미트라보살", "심외무별법…모든 것은 그대들이 마음의 나타나/윤회 또한 마음에 인연을 이어주었으니/ "
+				CALL MESSAGE_WINDOW_D, "미트라보살", "윤회를 끊는다는 것은 곧 마음을 끊는 것으로 알라…/자 전과 같이는 안 될거다…깨달음을 깨우쳐라/ "
+		
+		CALL SET_BOSS_ENEMY_DUNGEON_13, "ミトラ菩薩"
+		CALL BATTLE_START
+		CALL LIFTING_A_BAN, [[キャラ:미트라보살]], "NOMES"
+		CALL LIFTING_A_BAN, [[キャラ:미륵보살]], "NOMES"
+				CALL MESSAGE_WINDOW_D, "", "미륵보살、미트라보살의 합체가 해금되었습니다 "
+		FLAG:도주불가플래그 = 0
+		FLAG:회화불능플래그 = 0
+		FLAG:선제기습취소 = 0
+		FLAG:인카운트율 = 0
+		FLAG:미조우걸음수 = 0
+		
+		CALL MESSAGE_WINDOW_D, "미트라보살", "인간의 힘이…이토록 무서운 것이라곤…/나머지는 놈에게 모든 것을 맡기기로 하지…/ "
+		CALL MESSAGE_WINDOW_D, "미트라보살", "결계는 풀렸다 크리슈나는 그 안에 있다// "
+		CALL MESSAGE_WINDOW_D, "미트라보살", "우리의 구제와 네놈의 인연/어느 쪽이 옳은지 시험해 보는 것이 좋겠지/ "
+		CALL MESSAGE_WINDOW_D, "", "미트라보살을 쓰러트렸다// "
+		CALL MESSAGE_WINDOW_D, "", "그러자 주위가 흔들리기 시작했다// "
+		CALL MESSAGE_WINDOW_D, "시에로", "우옷 이…이 흔들림은！// "
+		CALL MESSAGE_WINDOW_D, "서프", "안좋아 여기서 바로 탈출하자！// "
+		
+		FLAG_D13_仮想空間イベント進行度 = 9
+ENDSELECT
+
+;=======================================================================
+;仮想空間宝箱
+;=======================================================================
+@kasou_takara
+#LOCALSIZE 3
+;宝箱のフラグ管理用変数の番号
+LOCAL = FLAG:현M / 5 + 80
+;そのマップの何番目の宝箱か
+LOCAL:1 = (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+LOCAL:1 += FLAG:현M % 5 * 10
+
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 4200
+		CALL GETS_TREASURE, "암리타샤워" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 4201
+		CALL GETS_TREASURE, "중압의곡옥" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 4202
+		CALL GETS_TREASURE, "마반경" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 4100
+		CALL GET_TREASURE_MONEY , 0 , 300000 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 4203
+		CALL GET_TREASURE, 11103 , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	;マップ番号*100+そのマップで何番目の宝箱かを示す数値でどの宝箱かを判別します。
+	;例えば0の場合、0版のマップの0番目の宝箱であることを表しています。
+
+ENDSELECT
+RETURN 1
+;=======================================================================
+;仮想空間敵
+;=======================================================================
+@kasou_enemy, ARG
+		IF ARG == 0
+			IF FLAG:현M < 51
+				SIF RAND:17 == 0		
+					RETURN [[キャラ:우샤스]]		
+				SIF RAND:16 == 0		
+					RETURN [[キャラ:펜리르]]		
+				SIF RAND:15 == 0		
+					RETURN [[キャラ:고모리]]		
+				SIF RAND:14 == 0		
+					RETURN [[キャラ:티아마트]]		
+				SIF RAND:13 == 0		
+					RETURN [[キャラ:벨레트]]		
+				SIF RAND:12 == 0		
+					RETURN [[キャラ:아지・다하카]]		
+				SIF RAND:11 == 0		
+					RETURN [[キャラ:제천대성]]		
+				SIF RAND:10 == 0		
+					RETURN [[キャラ:호루스]]		
+				SIF RAND:9 == 0		
+					RETURN [[キャラ:야릴로]]		
+				SIF RAND:8 == 0		
+					RETURN [[キャラ:알시엘]]		
+				SIF RAND:7 == 0		
+					RETURN [[キャラ:보후・마나흐]]		
+				SIF RAND:6 == 0		
+					RETURN [[キャラ:아스테리아]]		
+				SIF RAND:5 == 0		
+					RETURN [[キャラ:이그드라실]]		
+				SIF RAND:4 == 0		
+					RETURN [[キャラ:헤카톤케일]]		
+				SIF RAND:3 == 0		
+					RETURN [[キャラ:바수키]]		
+				SIF RAND:2 == 0		
+					RETURN [[キャラ:쿠단]]		
+				
+					RETURN [[キャラ:올드원]]		
+			ELSEIF FLAG:현M < 54
+			
+			
+			
+				SIF RAND:5 == 0		
+					RETURN [[キャラ:브륀힐드]]		
+				SIF RAND:4 == 0		
+					RETURN [[キャラ:발키리]]		
+				SIF RAND:17 == 0		
+					RETURN [[キャラ:우샤스]]		
+				SIF RAND:16 == 0		
+					RETURN [[キャラ:펜리르]]		
+				SIF RAND:15 == 0		
+					RETURN [[キャラ:고모리]]		
+				SIF RAND:14 == 0		
+					RETURN [[キャラ:티아마트]]		
+				SIF RAND:13 == 0		
+					RETURN [[キャラ:벨레트]]		
+				SIF RAND:12 == 0		
+					RETURN [[キャラ:아지・다하카]]		
+				SIF RAND:11 == 0		
+					RETURN [[キャラ:제천대성]]		
+				SIF RAND:10 == 0		
+					RETURN [[キャラ:호루스]]		
+				SIF RAND:9 == 0		
+					RETURN [[キャラ:야릴로]]		
+				SIF RAND:8 == 0		
+					RETURN [[キャラ:알시엘]]		
+				SIF RAND:7 == 0		
+					RETURN [[キャラ:보후・마나흐]]		
+				SIF RAND:6 == 0		
+					RETURN [[キャラ:아스테리아]]		
+				SIF RAND:5 == 0		
+					RETURN [[キャラ:이그드라실]]		
+				SIF RAND:4 == 0		
+					RETURN [[キャラ:헤카톤케일]]		
+				SIF RAND:3 == 0		
+					RETURN [[キャラ:바수키]]		
+				SIF RAND:2 == 0		
+					RETURN [[キャラ:쿠단]]		
+				
+					RETURN [[キャラ:올드원]]		
+			ENDIF
+				SIF RAND:17 == 0		
+					RETURN [[キャラ:우샤스]]		
+				SIF RAND:16 == 0		
+					RETURN [[キャラ:펜리르]]		
+				SIF RAND:15 == 0		
+					RETURN [[キャラ:고모리]]		
+				SIF RAND:14 == 0		
+					RETURN [[キャラ:티아마트]]		
+				SIF RAND:13 == 0		
+					RETURN [[キャラ:벨레트]]		
+				SIF RAND:12 == 0		
+					RETURN [[キャラ:아지・다하카]]		
+				SIF RAND:11 == 0		
+					RETURN [[キャラ:제천대성]]		
+				SIF RAND:10 == 0		
+					RETURN [[キャラ:호루스]]		
+				SIF RAND:9 == 0		
+					RETURN [[キャラ:야릴로]]		
+				SIF RAND:8 == 0		
+					RETURN [[キャラ:알시엘]]		
+				SIF RAND:7 == 0		
+					RETURN [[キャラ:보후・마나흐]]		
+				SIF RAND:6 == 0		
+					RETURN [[キャラ:아스테리아]]		
+				SIF RAND:5 == 0		
+					RETURN [[キャラ:이그드라실]]		
+				SIF RAND:4 == 0		
+					RETURN [[キャラ:헤카톤케일]]		
+				SIF RAND:3 == 0		
+					RETURN [[キャラ:바수키]]		
+				SIF RAND:2 == 0		
+					RETURN [[キャラ:쿠단]]		
+				
+					RETURN [[キャラ:올드원]]		
+		ELSEIF ARG == 1
+			SIF FLAG:현M < 50
+				RETURN 62 + RAND:4
+				
+				RETURN 65 + RAND:4
+		ENDIF
+;=======================================================================
+;仮想空間敵ステータス設定
+;=======================================================================
+@kasou_ENEMY_STATUS,ARG
+
+SIF FLAG:현M > 45
+	RETURN 0
+SELECTCASE NO:ARG
+	CASE [[キャラ:브륀힐드]]
+		NAME:(CHARANUM-1) = ワルキューレ
+		CALLNAME:(CHARANUM-1) = ワルキューレ
+ENDSELECT
+
+@床崩れ
+LOCAL = 0
+	IF FLAG:현M == 51
+		IF FLAG:현X == 9 && FLAG:현Y == 5
+			LOCAL = 1
+		ELSEIF FLAG:현X == 14 && FLAG:현Y == 6
+			LOCAL = 1
+		ELSEIF FLAG:현X == 4 && FLAG:현Y == 7
+			LOCAL = 1
+		ELSEIF FLAG:현X == 15 && FLAG:현Y == 13
+			LOCAL = 1
+		ELSEIF FLAG:현X == 6 && FLAG:현Y == 14
+			LOCAL = 1
+		ELSEIF FLAG:현X == 4 && FLAG:현Y == 18
+			LOCAL = 1
+		ENDIF
+	ELSEIF FLAG:현M == 52
+		IF FLAG:현X == 12 && FLAG:현Y == 6
+			LOCAL = 1
+		ELSEIF FLAG:현X == 5 && FLAG:현Y == 9
+			LOCAL = 1
+		ELSEIF FLAG:현X == 3 && FLAG:현Y == 10
+			LOCAL = 1
+		ELSEIF FLAG:현X == 8 && FLAG:현Y == 13
+			LOCAL = 1
+		ELSEIF FLAG:현X == 10 && FLAG:현Y == 13
+			LOCAL = 1
+		ENDIF
+		
+	ENDIF
+	IF LOCAL == 1
+		CALL MESSAGE_WINDOW_D, "", "갑자기 바닥이 무너졌다! "
+		DA:(FLAG:현X):(FLAG:현Y) = 1
+	ENDIF
+
+@EVENT_BATTLE_kasou
+IF FINDCHARA_ENEMY([[キャラ:오딘]])
+	LOCAL= RESULT:1
+	LOCAL:1 = CPOS(LOCAL)
+	;SIF 現HP割合(LOCAL) <= 33
+	;	CFLAG:LOCAL:행동횟수 = 4
+	IF FLAG:경과턴수 % 3 == 2
+		IF GET_STATE(CFLAG:POS(7):상태이상) == "DYING"
+			SETCOLOR 0xff0033
+			PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃[ 9] 오딘           ┃　┃사마리캄　　　　　　　　　　　　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+			RESETCOLOR
+			CALL ACTION_418,LOCAL,POS(7)
+		ELSEIF GET_STATE(CFLAG:POS(11):상태이상) == "DYING"
+			SETCOLOR 0xff0033
+			PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃[ 9] 오딘           ┃　┃사마리캄　　　　　　　　　　　　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+			RESETCOLOR
+			CALL ACTION_418,LOCAL,POS(11)
+		ENDIF
+	ENDIF
+	IF CFLAG:LOCAL:800 == 0 && 現HP割合(LOCAL) <= 66
+		CALL MESSAGE_WINDOW, "오딘", "조금은 하는거 같구나…/하지만 진짜 싸움은 이제부터다 "
+		CALL MESSAGE_WINDOW, "오딘", "내 창 궁니르는 필살 필중의 마창/…경들은 견딜 수 있을까？ "
+		CFLAG:LOCAL:명중강화 = MIN(32, CFLAG:LOCAL:명중강화 + 12)
+		CFLAG:LOCAL:800 = 1
+	ENDIF
+ELSEIF FINDCHARA_ENEMY([[キャラ:미트라보살]])
+	LOCAL= RESULT:1
+	LOCAL:1 = CPOS(LOCAL)
+	IF CFLAG:LOCAL:행동횟수 == 2
+			SETCOLOR 0xff0033
+			PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃[ 9] 미트라보살           ┃　┃불합리한 부결　　　　　　　　　　　　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+			RESETCOLOR
+			CFLAG:LOCAL:능력변화봉인플래그 = 3
+			PRINTFORMW 3턴간 능력을 낮출 수 없게 되었다
+			
+		CFLAG:LOCAL:행동횟수 = 3
+	ENDIF
+ELSEIF FLAG_D13_仮想空間イベント進行度 == 9 && FLAG:도주불가플래그 == 1
+			FLAG_D13_仮想空間残りターン++
+			SETCOLOR 0xff0033
+			PRINTFORMW 남은 {20 - FLAG_D13_仮想空間残りターン}턴
+			RESETCOLOR
+			
+			SIF FLAG_D13_仮想空間残りターン > 19
+				FLAG:패배플래그 = 1
+ENDIF
+
+@SET_ACTION_ローカティタ,ARG
+IF CFLAG:ARG:회심의패기플래그 == 1 && 現HP割合(ARG) <= 10
+		CFLAG:ARG:입력행동 = [[스킬:옥쇄파]];2006
+		CALL RANDOM_TARGET,ARG,[[스킬:옥쇄파]];2006
+		RETURN 1
+ENDIF
+IF (CFLAG:ARG:회심의패기플래그 == 0 && !RAND:3) || 現HP割合(ARG) <= 10
+		CFLAG:ARG:입력행동 = [[스킬:회심의패기]];534
+		CALL RANDOM_TARGET,ARG,[[스킬:회심의패기]];534
+		RETURN 1
+ENDIF
+	$DECIDE_ACTION
+	CALL ランダム行動, ARG
+	
+@SET_ACTION_ローカマリ,ARG
+	IF CFLAG:ARG:행동한횟수 == 0
+		IF !RAND:2
+			CFLAG:ARG:입력행동 = [[스킬:파워브레스]];524
+			CALL RANDOM_TARGET,ARG,[[스킬:파워브레스]];524
+			RETURN 1
+		ELSE
+			CFLAG:ARG:입력행동 = [[스킬:포그브레스]];520
+			CALL RANDOM_TARGET,ARG,[[스킬:포그브레스]];520
+			RETURN 1
+		ENDIF
+	ENDIF
+	$DECIDE_ACTION
+	CALL ランダム行動, ARG
+	;CALL SEARCH_ACT,ARG
+	;IF RESULT == 0
+	;	CFLAG:ARG:입력행동 = -1
+	;	CFLAG:ARG:방어플래그 = 1
+	;	RETURN 0
+	;ENDIF
+;	PRINTFORML [{CFLAG:ARG:5}]のスキル数 {RESULT}
+	;LOCAL = RAND:RESULT
+	;スキル番号決定
+	;LOCAL:1 = S:(10+LOCAL)
+;	PRINTFORML [{CFLAG:ARG:5}]のスキル {LOCAL:1}
+	;$TARGET_LOOP
+	
+	;CALL RANDOM_TARGET,ARG,LOCAL:1
+	;CALL{LOCAL:1}
+	;ここでスキル番号を行動内容に代入
+	;SIF CFLAG:ARG:타겟 == -1
+	;	GOTO DECIDE_ACTION
+	;CFLAG:ARG:입력행동 = LOCAL:1
+
+@SET_ACTION_ローカワル,ARG
+LOCAL:1 = 0
+FOR LOCAL, 1, 7
+	SIF POS(LOCAL) < 0
+		CONTINUE
+	SIF GET_STATE(CFLAG:POS(LOCAL):상태이상) == "DYING"
+		CONTINUE
+	IF MAXBASE:POS(LOCAL):검격 < 0 || MAXBASE:POS(LOCAL):검격 == 999
+		LOCAL:1 = 1
+		BREAK
+	ENDIF
+	IF CFLAG:POS(LOCAL):검격무효화횟수 > 0
+		LOCAL:1 = 1
+		BREAK
+	ENDIF
+NEXT
+IF LOCAL:1 == 1
+	CFLAG:ARG:입력행동 = [[스킬:검격가드브레이크]];31
+	CALL RANDOM_TARGET,ARG,[[스킬:검격가드브레이크]];31
+	RETURN 1
+ENDIF
+FOR LOCAL, 1, 7
+	SIF POS(LOCAL) < 0
+		CONTINUE
+	SIF GET_STATE(CFLAG:POS(LOCAL):상태이상) == "DYING"
+		CONTINUE
+	IF MAXBASE:POS(LOCAL):전격 < 0 || MAXBASE:POS(LOCAL):전격 == 999
+		LOCAL:1 = 1
+		BREAK
+	ENDIF
+	IF CFLAG:POS(LOCAL):전격무효화횟수 > 0
+		LOCAL:1 = 1
+		BREAK
+	ENDIF
+NEXT
+IF LOCAL:1 == 1
+	CFLAG:ARG:입력행동 = [[스킬:전격가드브레이크]];933
+	CALL RANDOM_TARGET,ARG,[[스킬:전격가드브레이크]];933
+	RETURN 1
+ENDIF
+LOCAL:3 = 0
+FOR LOCAL, 1, 7
+	SIF POS(LOCAL) < 0
+		CONTINUE
+	SIF CFLAG:POS(LOCAL):공격강화 > 0
+		LOCAL:3 += CFLAG:POS(LOCAL):공격강화
+	SIF CFLAG:POS(LOCAL):방어강화 > 0
+		LOCAL:3 += CFLAG:POS(LOCAL):방어강화
+	SIF CFLAG:POS(LOCAL):마법위력강화 > 0
+		LOCAL:3 += CFLAG:POS(LOCAL):마법위력강화
+	SIF CFLAG:POS(LOCAL):마법효과강화 > 0
+		LOCAL:3 += CFLAG:POS(LOCAL):마법효과강화
+	SIF CFLAG:POS(LOCAL):회피강화 + CFLAG:POS(LOCAL):명중강화 > 0
+		LOCAL:3 += (CFLAG:POS(LOCAL):회피강화 + CFLAG:POS(LOCAL):명중강화) / 2
+NEXT
+IF 1 + RAND:100 < LOCAL:3
+	CFLAG:ARG:입력행동 = [[스킬:데・카쟈]];509
+	CALL RANDOM_TARGET,ARG,[[스킬:데・카쟈]];509
+	RETURN 1
+ENDIF
+IF !RAND:5 && POS(9) > 0
+	CFLAG:ARG:입력행동 = [[스킬:히트라이저]];525
+	CFLAG:ARG:타겟 = 9
+	RETURN 1
+ENDIF
+	$DECIDE_ACTION
+	CALL ランダム行動, ARG
+@SET_ACTION_ローカヴァル,ARG
+LOCAL:1 = 0
+FOR LOCAL, 1, 7
+	SIF POS(LOCAL) < 0
+		CONTINUE
+	SIF GET_STATE(CFLAG:POS(LOCAL):상태이상) == "DYING"
+		CONTINUE
+	IF MAXBASE:POS(LOCAL):전격 < 0 || MAXBASE:POS(LOCAL):전격 == 999
+		LOCAL:1 = 1
+		BREAK
+	ENDIF
+	IF CFLAG:POS(LOCAL):전격무효화횟수 > 0
+		LOCAL:1 = 1
+		BREAK
+	ENDIF
+NEXT
+IF LOCAL:1 == 1
+	CFLAG:ARG:입력행동 = [[스킬:전격가드브레이크]];933
+	CALL RANDOM_TARGET,ARG,[[스킬:전격가드브레이크]];933
+	RETURN 1
+ENDIF
+FOR LOCAL, 1, 7
+	SIF POS(LOCAL) < 0
+		CONTINUE
+	SIF GET_STATE(CFLAG:POS(LOCAL):상태이상) == "DYING"
+		CONTINUE
+	IF MAXBASE:POS(LOCAL):검격 < 0 || MAXBASE:POS(LOCAL):검격 == 999
+		LOCAL:1 = 1
+		BREAK
+	ENDIF
+	IF CFLAG:POS(LOCAL):검격무효화횟수 > 0
+		LOCAL:1 = 1
+		BREAK
+	ENDIF
+NEXT
+IF LOCAL:1 == 1
+	CFLAG:ARG:입력행동 = [[스킬:검격가드브레이크]];31
+	CALL RANDOM_TARGET,ARG,[[스킬:검격가드브레이크]];31
+	RETURN 1
+ENDIF
+;IF POS(9) > 0 && (CFLAG:POS(9):공격강화 < -4 || CFLAG:POS(9):방어강화 < -4 || CFLAG:POS(9):마법위력강화 < -4 || CFLAG:POS(9):명중강화 < -4 || CFLAG:POS(9):회피강화 < -4)
+IF POS(9) > 0 && GET_カジャンダ_MIN(POS(9)) < -8
+	IF !RAND:3
+		CFLAG:ARG:입력행동 = [[스킬:데・쿤다]];505
+		CALL RANDOM_TARGET,ARG,[[스킬:데・쿤다]];505
+		RETURN 1
+	ENDIF
+ENDIF
+IF !RAND:5 && POS(9) > 0
+	CFLAG:ARG:입력행동 = [[스킬:히트라이저]];525
+	CFLAG:ARG:타겟 = 9
+	RETURN 1
+ENDIF
+	$DECIDE_ACTION
+	CALL ランダム行動, ARG
+@SET_ACTION_ローカオーディン,ARG
+FOR LOCAL, 1, 7
+	SIF POS(LOCAL) < 0
+		CONTINUE
+	SIF GET_STATE(CFLAG:POS(LOCAL):상태이상) == "DYING"
+		CONTINUE
+	IF CFLAG:POS(LOCAL):상태이상 == GET_STATE_NUM("SHOCK")
+		LOCAL:1 = 1
+		BREAK
+	ENDIF
+NEXT
+IF CFLAG:ARG:행동한횟수 == 0
+	IF 現HP割合(ARG) <= 33
+		CFLAG:ARG:입력행동 = [[스킬:가군라즈]];2513
+		CALL RANDOM_TARGET,ARG,[[스킬:가군라즈]];2513
+		RETURN 1
+	ENDIF
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET,ARG,0
+	RETURN 1
+;ELSEIF LOCAL:1 == 1 && RAND:9
+;	CFLAG:ARG:입력행동 = [[스킬:나이스・샷]];907
+;	CALL RANDOM_TARGET,ARG,[[스킬:나이스・샷]];907
+;	RETURN 1
+ELSEIF 現HP割合(ARG) <= 66 && RAND:2
+	FOR LOCAL, 1, 7
+		IF POS(LOCAL) > 0
+			SIF CFLAG:POS(LOCAL):상태이상 == GET_STATE_NUM("DYING")
+				CONTINUE
+			IF MAXBASE:POS(LOCAL):검격 > 100 && MAXBASE:POS(LOCAL):검격 != 999
+				;SIF CFLAG:POS(LOCAL):独覚フラグ
+				;	CONTINUE
+				CFLAG:ARG:입력행동 = [[스킬:신창궁니르]];50
+				CFLAG:ARG:타겟 = LOCAL
+				RETURN 1
+			ENDIF
+			IF MAXBASE:POS(LOCAL):전격 > 100 && MAXBASE:POS(LOCAL):전격 != 999
+				;SIF CFLAG:POS(LOCAL):独覚フラグ
+				;	CONTINUE
+				CFLAG:ARG:입력행동 = [[스킬:신창궁니르]];50
+				CFLAG:ARG:타겟 = LOCAL
+				RETURN 1
+			ENDIF
+			
+		ENDIF
+	NEXT
+	LOCAL:1 = 999999
+	LOCAL:2 = 0
+	FOR LOCAL, 1, 7
+		IF POS(LOCAL) > 0
+			SIF CFLAG:POS(LOCAL):상태이상 == GET_STATE_NUM("DYING")
+				CONTINUE
+			;SIF CFLAG:POS(LOCAL):独覚フラグ && ((MAXBASE:POS(LOCAL):검격 > 100 && MAXBASE:POS(LOCAL):검격 != 999) || MAXBASE:POS(LOCAL):전격 > 100 && MAXBASE:POS(LOCAL):전격 != 999)
+			;	CONTINUE
+			IF CFLAG:POS(LOCAL):방어플래그
+				IF LOCAL == 1 || (LOCAL:1 > BASE:POS(LOCAL):ＨＰ * 2)
+					IF LOCAL > 3
+						IF LOCAL:1 > BASE:POS(LOCAL):ＨＰ * 10 / 3
+							LOCAL:1 = BASE:POS(LOCAL):ＨＰ * 10 / 3
+							LOCAL:2 = LOCAL
+						ENDIF
+					ELSE
+						LOCAL:1 = BASE:POS(LOCAL):ＨＰ * 2
+						LOCAL:2 = LOCAL
+					ENDIF
+				ENDIF
+			ELSEIF LOCAL == 1 || (LOCAL:1 > BASE:POS(LOCAL):ＨＰ)
+				IF LOCAL > 3
+					IF LOCAL:1 > BASE:POS(LOCAL):ＨＰ * 10 / 6
+						LOCAL:1 = BASE:POS(LOCAL):ＨＰ * 10 / 6
+						LOCAL:2 = LOCAL
+					ENDIF
+				ELSE
+					LOCAL:1 = BASE:POS(LOCAL):ＨＰ
+					LOCAL:2 = LOCAL
+				ENDIF
+			ENDIF
+		ENDIF
+	NEXT
+	
+	CFLAG:ARG:입력행동 = [[스킬:신창궁니르]];50
+	IF LOCAL:2 == 0
+		CALL RANDOM_TARGET,ARG,[[스킬:신창궁니르]];50
+		RETURN 1
+	ENDIF
+	CFLAG:ARG:타겟 = LOCAL:2
+	RETURN 1
+ENDIF
+	$DECIDE_ACTION
+	CALL ランダム行動, ARG
+
+@SET_ACTION_ローカミトラ,ARG
+IF !RAND:16 && CFLAG:ARG:행동한횟수 < 3 && !CFLAG:ARG:능력변화봉인플래그
+	CFLAG:ARG:행동횟수 = 2
+ENDIF
+IF CFLAG:ARG:행동한횟수 == 0
+	LOCAL = 0
+	SIF CFLAG:ARG:공격강화 < 0
+		LOCAL -= CFLAG:ARG:공격강화
+	SIF CFLAG:ARG:방어강화 < 0
+		LOCAL -= CFLAG:ARG:방어강화
+	SIF CFLAG:ARG:마법위력강화 < 0
+		LOCAL -= CFLAG:ARG:마법위력강화
+	SIF CFLAG:ARG:마법효과강화 < 0
+		LOCAL -= CFLAG:ARG:마법효과강화
+	SIF CFLAG:ARG:명중강화 < 0
+		LOCAL -= CFLAG:ARG:명중강화/2
+	SIF CFLAG:ARG:회피강화 < 0
+		LOCAL -= CFLAG:ARG:회피강화/2
+	IF (FLAG:경과턴수 % 10 == 9) 
+		;(1 + RAND:300 < LOCAL) || 
+		CFLAG:ARG:입력행동 = [[스킬:퓨어블루]];2512
+		CALL RANDOM_TARGET,ARG,[[스킬:퓨어블루]];2512
+		RETURN 1
+	ENDIF
+	LOCAL:2 = 0
+	LOCAL:3 = 0
+	FOR LOCAL, 1, 7
+		SIF POS(LOCAL) < 0
+			CONTINUE
+		LOCAL:2++
+		SIF CFLAG:POS(LOCAL):공격강화 > 0
+			LOCAL:3 += CFLAG:POS(LOCAL):공격강화
+		SIF CFLAG:POS(LOCAL):방어강화 > 0
+			LOCAL:3 += CFLAG:POS(LOCAL):방어강화
+		SIF CFLAG:POS(LOCAL):마법위력강화 > 0
+			LOCAL:3 += CFLAG:POS(LOCAL):마법위력강화
+		SIF CFLAG:POS(LOCAL):마법효과강화 > 0
+			LOCAL:3 += CFLAG:POS(LOCAL):마법효과강화
+		SIF CFLAG:POS(LOCAL):회피강화 + CFLAG:POS(LOCAL):명중강화 > 0
+			LOCAL:3 += (CFLAG:POS(LOCAL):회피강화 + CFLAG:POS(LOCAL):명중강화) / 2
+	NEXT
+	LOCAL:3 = LOCAL:3 / LOCAL:2
+	IF RAND:400 < LOCAL:3
+		CFLAG:ARG:입력행동 = [[스킬:데・카쟈]];509
+		CALL RANDOM_TARGET,ARG,[[스킬:데・카쟈]];509
+		RETURN 1
+	ENDIF
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET,ARG,0
+	RETURN 1
+ENDIF
+
+LOCAL:2 = 0
+FOR LOCAL, 1, 7
+	SIF POS(LOCAL) < 0
+		CONTINUE
+	SIF CFLAG:POS(LOCAL):상태이상 == GET_STATE_NUM("DYING")
+		CONTINUE
+	SIF CFLAG:POS(LOCAL):물리반사플래그 > 0
+		LOCAL:2 = 1
+	SIF CFLAG:POS(LOCAL):마법반사플래그 > 0
+		LOCAL:2 = 1
+	SIF CFLAG:POS(LOCAL):수호의방패 > 0
+		LOCAL:2 = 1
+	SIF LOCAL:2 == 1
+		BREAK
+NEXT
+
+IF (CFLAG:ARG:気合フラグ == 1 && CFLAG:ARG:집중플래그 == 1) || (RAND:2 || LOCAL:2)
+	CFLAG:ARG:입력행동 = [[스킬:엄정한심판]];2070;엄정한심판
+	CALL RANDOM_TARGET,ARG,[[스킬:엄정한심판]];2070;엄정한심판
+	RETURN 1
+ENDIF
+
+IF LOCAL:2 == 1 && !RAND:2
+	IF RAND:3 && CFLAG:ARG:집중플래그 == 0
+		CFLAG:ARG:입력행동 = [[스킬:컨센트레이트]]
+		CALL RANDOM_TARGET,ARG,[[스킬:컨센트레이트]]
+		RETURN 1
+	ELSEIF RAND:3 && CFLAG:ARG:気合フラグ == 0
+		CFLAG:ARG:입력행동 = [[스킬:기합]]
+		CALL RANDOM_TARGET,ARG,[[스킬:기합]]
+		RETURN 1
+	ELSEIF RAND:2 && (CFLAG:ARG:気合フラグ == 1 || CFLAG:ARG:집중플래그 == 1)
+		IF CFLAG:ARG:気合フラグ
+			CFLAG:ARG:입력행동 = [[스킬:끝나는세계]]
+			CALL RANDOM_TARGET,ARG,[[스킬:끝나는세계]]
+			RETURN 1
+		ELSEIF CFLAG:ARG:집중플래그
+			CFLAG:ARG:입력행동 = [[스킬:위대한로고스]];2008
+			CALL RANDOM_TARGET,ARG,[[스킬:위대한로고스]];2008
+			RETURN 1
+		ENDIF
+	ELSE
+		CFLAG:ARG:입력행동 = [[스킬:엄정한심판]];2070;엄정한심판
+		CALL RANDOM_TARGET,ARG,[[스킬:엄정한심판]];2070;엄정한심판
+		RETURN 1
+	ENDIF
+ENDIF
+
+	IF !RAND:10 && CFLAG:ARG:집중플래그 == 0
+		CFLAG:ARG:입력행동 = [[스킬:컨센트레이트]]
+		CALL RANDOM_TARGET,ARG,[[스킬:컨센트레이트]]
+		RETURN 1
+	ELSEIF !RAND:9 && CFLAG:ARG:気合フラグ == 0
+		CFLAG:ARG:입력행동 = [[스킬:기합]]
+		CALL RANDOM_TARGET,ARG,[[스킬:기합]]
+		RETURN 1
+	ENDIF
+	
+	$DECIDE_ACTION
+	CALL ランダム行動, ARG

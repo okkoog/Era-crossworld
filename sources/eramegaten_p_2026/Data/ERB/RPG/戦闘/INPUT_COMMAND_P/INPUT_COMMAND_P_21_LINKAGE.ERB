@@ -1,0 +1,410 @@
+﻿;=================================================
+;入力結果：ＬＩＮＫＡＧＥ
+;=================================================
+@INPUT_COM_NAME_COM_21,ARG
+RESULTS = LINKAGE
+RESULTS:1 = ＬＩＮＫＡＧＥ
+RETURN 1
+
+@INPUT_COM_ABLE_LINKAGE,ARG
+SIF CFLAG:ARG:롱기누스
+	RETURN -1
+RETURN 1
+
+;---- EDIT 038 MOD START ---------------------------
+@INPUT_COM_LINKAGE,ARG,ARG:1
+;---- EDIT 038 MOD END ---------------------------
+#DIM 元リンケージ , 1
+#DIM 元人数 , 1
+#DIM CNT,2;MOD 035 ADD
+#DIM LINK_LOCAL, 1000, 2, 7;MOD 035 ADD
+;LINK_LOCAL:(スキル番号-4000):(0 参加資格があるキャラ全ての配置番号（Bit） 1 実際に成立しうる一例のキャラの配置番号):リンケージ参加枠番号
+;LOCAL:1-5 参加予定者
+;スキル使用者を一文字関数Uに入れておく
+U = ARG
+FOR LOCAL,1,6
+	LOCAL:LOCAL = -1
+NEXT
+元リンケージ = CFLAG:ARG:사용링케이지
+IF 元リンケージ < 4000
+	TRYCALLFORM 参加人数_{元リンケージ}
+	FOR LOCAL, RESULT+1, 6
+		;PRINTFORML %CALLNAME:(CFLAG:ARG:(1253+LOCAL)%リンケージ参加解除
+		CFLAG:ARG:("링케이지참가자"+ TOSTR(LOCAL)) = -1
+	NEXT
+ENDIF
+;元参加予定者
+FOR LOCAL,11,16
+	LOCAL:LOCAL = -1
+	IF CFLAG:ARG:("링케이지참가자"+ TOSTR(LOCAL-10)) > -1 && CFLAG:ARG:("링케이지참가자"+ TOSTR(LOCAL-10)) < CHARANUM && CFLAG:ARG:링케이지발동
+		IF CFLAG:(CFLAG:ARG:("링케이지참가자"+ TOSTR(LOCAL-10))):PT플래그 == 2
+			CFLAG:(CFLAG:ARG:("링케이지참가자"+ TOSTR(LOCAL-10))):링케이지참가 = 0
+			LOCAL:LOCAL = CFLAG:ARG:("링케이지참가자"+ TOSTR(LOCAL-10))
+			CFLAG:ARG:("링케이지참가자"+ TOSTR(LOCAL-10)) = -1
+		ENDIF
+	ENDIF
+NEXT
+;まず、Ｓに使えるリンケージを立てる
+VARSET S , 0
+;---- EDIT 035 MOD START ---------------------------
+VARSET LINK_LOCAL, 0
+CNT = 0
+;FOR LOCAL,4000,5000;EDIT 057 MOD
+FOR LOCAL, MIN_LINKAGENUM, MAX_LINKAGENUM
+	TRYCCALLFORM LINKAGE_{LOCAL}
+		SIF RESULT == 0
+			CONTINUE
+	CATCH
+		CONTINUE
+	ENDCATCH
+	CALL ACTIONABLE_LINKAGE,LOCAL,ARG,LINK_LOCAL
+	S:(LOCAL-4000) = RESULT
+;---- EDIT 035 MOD END ---------------------------
+NEXT
+;---- EDIT 038 MOD START ---------------------------
+IF INRANGE(ARG:1, 4000, 4999)
+	TRYCCALLFORM LINKAGE_{ARG:1}
+		LOCAL:7 = ARG:1
+		SKIPDISP 1
+		GOTO PRINT_MEN
+	CATCH
+	ENDCATCH
+ENDIF
+;---- EDIT 038 MOD END ---------------------------
+
+
+;表示
+$PRINT_LINKAGE
+;LOCAL:20 = 0
+;FOR LOCAL,4000,5000;EDIT 057 MOD
+FOR LOCAL, MIN_LINKAGENUM, MAX_LINKAGENUM
+	;---- EDIT 035 MOD START ---------------------------
+	IF S:(LOCAL-4000)
+		CALL GET_SKILL_PROP, "SKILL_NAME", LOCAL,ARG
+		IF S:(LOCAL-4000) == 1
+			;現在の行動可能メンバーで使用可能
+			SETCOLOR COLOR("水色");041
+			PRINTFORM [{LOCAL}] %RESULTS,20,LEFT%
+			;041
+			RESETCOLOR
+		ELSE
+			;何らかの理由で使用できない
+			SETCOLOR 0x777777
+			PRINTPLAINFORM [{LOCAL}] %RESULTS,20,LEFT%
+		ENDIF
+		;スキル使用者を一文字関数Uに入れておく
+		U = ARG
+		;説明文に書かれてないことがあるので射程・範囲を明記
+		CALL GET_SKILL_PROP, "SKILL_RANGE", LOCAL, ARG
+		PRINTFORM 사거리:%GET_RANGE(RESULT)%　
+		　
+		CALL GET_SKILL_TARGET_STR, LOCAL, ARG
+		PRINTFORM 範囲:%RESULTS%　
+
+		CALL GET_SKILL_PROP, "SKILL_EXPLAIN", LOCAL, ARG
+		PRINT 発動者 　
+	;---- EDIT 035 MOD END ---------------------------
+		CALL GET_SKILL_PROP, "SKILL_COSTTYPE", LOCAL, ARG
+		IF RESULT == 2
+			CALL GET_SKILL_PROP, "SKILL_COST", LOCAL, ARG
+			PRINTFORM ＨＰ{RESULT,3}％　
+		ELSE
+			CALL GET_SKILL_PROP, "SKILL_COST", LOCAL, ARG
+			PRINTFORM ＭＰ{RESULT,3}　　
+		ENDIF
+		CALLFORM 参加人数_{LOCAL}
+		LOCAL:32 = RESULT + 1
+		FOR LOCAL:31, 1, LOCAL:32
+			PRINTFORM 参加者{LOCAL:31}　
+			CALLFORM リンケージコストタイプ_{LOCAL}, LOCAL:31
+			IF RESULT == 2
+				CALLFORM リンケージコスト_{LOCAL}, LOCAL:31
+				PRINTFORM ＨＰ{RESULT,3}％　
+			ELSE
+				CALLFORM リンケージコスト_{LOCAL}, LOCAL:31
+				PRINTFORM ＭＰ{RESULT,3}　　
+			ENDIF
+			IF LOCAL:31 == LOCAL:32 - 1
+				PRINTL 
+			ELSEIF LOCAL:31 == 2
+				PRINTL 
+				PRINTFORM %" "* 27%
+			ENDIF
+		NEXT
+		;---- EDIT 035 MOD START ---------------------------
+		RESETCOLOR
+		;---- EDIT 035 MOD END ---------------------------
+	ENDIF
+NEXT
+PRINTL
+DRAWLINE
+PRINTL [1000]ＣＡＮＣＥＬ [999]ＲＥＰＥＡＴ [1001] ＡＮＡＬＹＺＥ
+
+;---- EDIT 035 MOD START ---------------------------
+PRINTL
+$INPUT_LOOP1
+CLEARLINE 1
+;---- EDIT 035 MOD END ---------------------------
+INPUT
+IF RESULT == 1000
+	;参加予定者関係を元に戻す
+	FOR LOCAL,11,16
+		IF LOCAL:LOCAL > -1
+			;PRINTFORML LOCAL:{LOCAL} = {LOCAL:LOCAL}
+			CFLAG:ARG:("링케이지참가자"+ TOSTR(LOCAL-10)) = LOCAL:LOCAL
+			;CFLAG:(CFLAG:ARG:("링케이지참가자"+ TOSTR(LOCAL-10))):링케이지참가 = 1
+			;---- EDIT 038 MOD START ---------------------------
+			CFLAG:(LOCAL:LOCAL):링케이지참가 = ARG+1
+			;---- EDIT 038 MOD END ---------------------------
+		ENDIF
+		LOCAL:LOCAL = -1
+	NEXT
+	RETURN -1
+ELSEIF RESULT == 999
+	SIF CFLAG:ARG:사용링케이지 < 4000
+		GOTO INPUT_LOOP1
+	;前回使用したメンバーで使用できるかチェック
+	LOCAL:7 = CFLAG:ARG:사용링케이지
+	CALL CHECK_ACTIONABLE,ARG,LOCAL:7
+	SIF RESULT == 0
+		GOTO INPUT_LOOP1
+	CALLFORM 参加人数_{LOCAL:7}
+	LOCAL:8 = RESULT
+	FOR LOCAL , 1 , LOCAL:8+1
+		SIF RANGE(LOCAL:(10+LOCAL), 0 , CHARANUM) == 0
+			GOTO INPUT_LOOP1
+		;---- EDIT 074 MOD START -------------------------
+		;CALLFORM 参加者条件_{LOCAL:7}, LOCAL:(10+LOCAL) , LOCAL
+		CALL リンケージ参加者条件確認, LOCAL:7, LOCAL:(10+LOCAL) , LOCAL
+		SIF RESULT == 0
+			GOTO INPUT_LOOP1
+		;---- EDIT 074 MOD END ---------------------------
+		CALL ACTIONABLE_CHARA,LOCAL:(10+LOCAL)
+		SIF RESULT == 0
+			GOTO INPUT_LOOP1
+		SIF CFLAG:(LOCAL:(10+LOCAL)):PT플래그 < 2
+			GOTO INPUT_LOOP1
+	NEXT
+	
+	;ここまで通ったら、LOCAL:1-6にLOCAL:11-16を投げてPRINT_MENへ
+	FOR LOCAL, 1 , 7
+		LOCAL:LOCAL = LOCAL:(10+LOCAL)
+	NEXT
+	GOTO PRINT_MEN
+ELSEIF RESULT == 1001
+	;---- EDIT 038 MOD START ---------------------------
+	CALL SHOW_LINKAGE, 1, ARG
+	;---- EDIT 038 MOD END ---------------------------
+	GOTO PRINT_LINKAGE
+;---- EDIT 035 MOD START ---------------------------
+ELSEIF RESULT < 4000 || RESULT > 5000 || S:(RESULT-4000) < 1
+;---- EDIT 035 MOD END ---------------------------
+	GOTO INPUT_LOOP1
+ENDIF
+;LOCLA:7のスキルを使用
+LOCAL:7 = RESULT
+;発動者が使用できるかチェック
+CALL CHECK_ACTIONABLE,ARG,LOCAL:7
+SIF RESULT == 0
+	GOTO INPUT_LOOP1
+;参加者表示
+;---- EDIT 035 MOD START ---------------------------
+PRINTL
+$PRINT_MEN
+CLEARLINE 1
+;---- EDIT 035 MOD END ---------------------------
+DRAWLINE
+CALLFORM 参加人数_{LOCAL:7}
+LOCAL:8 = RESULT
+;---- EDIT 010 MOD START -------------------------
+;スキル使用者を一文字関数Uに入れておく
+U = ARG
+CALL GET_SKILL_PROP, "SKILL_EXPLAIN", LOCAL:7, ARG
+;---- EDIT 010 MOD END   -------------------------
+
+;---- EDIT 038 ADD START ---------------------------
+SKIPDISP 0
+;---- EDIT 038 ADD END ---------------------------
+;---- EDIT 035 ADD START ---------------------------
+;成立しうる組み合わせがLINK_LOCAL:X:1:Yに入ってるのでそれを代入
+FOR CNT, 1, LOCAL:8 + 1
+	SIF LOCAL:CNT > -1
+		CONTINUE
+	IF LINK_LOCAL:(LOCAL:7-4000):1:CNT
+		LOCAL:10 = POS(LINK_LOCAL:(LOCAL:7-4000):1:CNT)
+		;入力できないキャラ・ＣＨＡＮＧＥ対象・他リンケージ参加者・本人は弾く
+		SIF LINKAGE_SUB_CHECK(LOCAL:10, ARG, LOCAL)
+			LOCAL:CNT = LOCAL:10
+	ENDIF
+NEXT
+;---- EDIT 035 ADD END ---------------------------
+
+FOR LOCAL,1,LOCAL:8+1
+	PRINTFORM [{LOCAL}]
+	IF LOCAL:LOCAL == -1
+		SETCOLOR 0x404040
+		PRINTFORM ＥＭＰＴＹ　　　　　：
+		RESETCOLOR
+	ELSE
+		PRINTFORM %CALLNAME:(LOCAL:LOCAL),20,LEFT%：
+	ENDIF
+	CALLFORM 参加条件表示_{LOCAL:7},LOCAL
+;---- EDIT 035 MOD START ---------------------------
+	;参加条件を満たす配置番号がLINK_LOCAL:X:0:Yに入ってるのでそれを利用して選択肢表示
+	FOR CNT, 1, 7
+		IF GETBIT(LINK_LOCAL:(LOCAL:7-4000):0:LOCAL, CNT)
+			LOCAL:10 = POS(CNT)
+			;入力できないキャラ・ＣＨＡＮＧＥ対象・他リンケージ参加者・本人・他の枠に入ってるキャラはボタンではなく平文に
+			IF LINKAGE_SUB_CHECK(LOCAL:10, ARG, LOCAL)
+				PRINTFORM 　[{LOCAL*10+CNT}] %CALLNAME:(LOCAL:10)%
+			ELSE
+				IF LOCAL:LOCAL == LOCAL:10
+					SETCOLOR COLOR("aqua")
+				ELSE
+					SETCOLOR 0x777777
+				ENDIF
+				PRINTPLAINFORM 　[{LOCAL*10+CNT}] %CALLNAME:(LOCAL:10)%
+				RESETCOLOR
+			ENDIF
+		ENDIF
+	NEXT
+	PRINTL
+	PRINTL ↓
+NEXT
+;発動者は変更できないので平文化
+PRINTPLAINFORM [{LOCAL:8+1}]%CALLNAME:ARG,20,LEFT%
+;---- EDIT 035 MOD END ---------------------------
+CALLFORM 参加条件表示_{LOCAL:7},LOCAL:8+1
+PRINTL 
+DRAWLINE
+PRINTL [0]ＯＫ      [10]ＣＡＮＣＥＬ
+
+;---- EDIT 035 MOD START ---------------------------
+PRINTL
+$INPUT_LOOP2
+CLEARLINE 1
+;---- EDIT 035 MOD END ---------------------------
+INPUT
+IF RESULT == 10
+	FOR LOCAL, 1, 6
+		LOCAL:LOCAL = -1
+	NEXT
+	;---- EDIT 038 MOD START ---------------------------
+	SIF ARG:1
+		RETURN 0
+	;---- EDIT 038 MOD END ---------------------------
+	GOTO PRINT_LINKAGE
+ELSEIF RESULT == 0
+	;全部埋まってないと駄目
+	IF MATCH(LOCAL,-1,1,LOCAL:8+1)
+		PRINTFORMW 참가자가 부족합니다
+		CLEARLINE 2
+		GOTO INPUT_LOOP2
+	ENDIF
+	;ターゲット決定＋行動入力
+	CALLFORM SELECT_SKILL_TARGET,LOCAL:7,ARG
+	;---- EDIT 038 MOD START ---------------------------
+	IF RESULT == -1
+		SIF ARG:1
+			RETURN 0
+		GOTO PRINT_LINKAGE
+	ENDIF
+	;---- EDIT 038 MOD END ---------------------------
+	CFLAG:(ARG):타겟 = RESULT
+	CFLAG:(ARG):입력행동 = LOCAL:7
+	CFLAG:ARG:사용링케이지 = LOCAL:7
+	CFLAG:ARG:링케이지발동 = 1
+	CFLAG:ARG:방어플래그 = 0
+	;---- EDIT 068 MOD START -------------------------
+	;CFLAG:(ARG):ＲＥＰＥＡＴ行動 = CFLAG:(ARG):입력행동
+	;CFLAG:(ARG):ＲＥＰＥＡＴターゲット = CFLAG:(ARG):타겟
+	;---- EDIT 068 MOD END ---------------------------	
+	FOR LOCAL,1, 6
+		IF LOCAL > LOCAL:8
+			CFLAG:ARG:("링케이지참가자"+ TOSTR(LOCAL)) = -1
+		ELSE
+			;PRINTFORML %CALLNAME:(LOCAL:LOCAL)%が参加者 {LOCAL:LOCAL}
+			CFLAG:ARG:("링케이지참가자"+ TOSTR(LOCAL)) = LOCAL:LOCAL
+			;---- EDIT 038 MOD START ---------------------------
+			CFLAG:(LOCAL:LOCAL):링케이지참가 = ARG+1
+			CFLAG:(LOCAL:LOCAL):방어플래그 = 0
+			CFLAG:(LOCAL:LOCAL):입력행동 = -1
+			;---- EDIT 038 MOD END ---------------------------
+		ENDIF
+	NEXT
+	CALL SET_REPEAT_CHARA, ARG
+	;PRINTFORML %CALLNAME:(ARG)%が発動者 {ARG}
+	RETURN 1
+;---- EDIT 035 ADD START ---------------------------
+ELSEIF INRANGE(RESULT%10, 1, 6) && INRANGE(RESULT/10, 1, LOCAL:8)
+	LOCAL:10 = POS(RESULT%10)
+	CNT = RESULT/10
+	;入力できないキャラ・ＣＨＡＮＧＥ対象・リンケージ参加者・本人は弾く
+	IF LINKAGE_SUB_CHECK(LOCAL:10, ARG, LOCAL)
+		LOCAL:CNT = LOCAL:10
+		GOTO PRINT_MEN
+	ELSE
+		GOTO INPUT_LOOP2
+	ENDIF
+;---- EDIT 035 ADD END ---------------------------
+ELSEIF RESULT < 1 || RESULT > LOCAL:8
+	GOTO INPUT_LOOP2
+ENDIF
+;LOCAL:9番目の参加者
+LOCAL:9 = RESULT
+
+CALL SHOW_NOW_FORMATION_P,0,2
+PRINTL [10]ＣＡＮＣＥＬ
+;---- EDIT 035 MOD START ---------------------------
+PRINTL
+$INPUT_LOOP3
+CLEARLINE 1
+;---- EDIT 035 MOD END ---------------------------
+INPUT
+IF RESULT == 10
+	GOTO PRINT_MEN
+ELSEIF RESULT < 1 || RESULT > 6 || POS(RESULT) == -1
+	GOTO INPUT_LOOP3
+ENDIF
+;LOCAL:10のキャラが参加
+LOCAL:10 = POS(RESULT)
+;---- EDIT 074 MOD START -------------------------
+CALL リンケージ参加者条件確認, LOCAL:7, LOCAL:10 , LOCAL:9
+SIF RESULT == 0
+	GOTO INPUT_LOOP3
+;---- EDIT 074 MOD END ---------------------------
+;---- EDIT 035 MOD START ---------------------------
+SIF !LINKAGE_SUB_CHECK(LOCAL:10, ARG, LOCAL)
+	GOTO INPUT_LOOP3
+LOCAL:(LOCAL:9) = LOCAL:10
+GOTO PRINT_MEN
+
+;今回の改造で何度も使用するようにしたので関数化
+;ARG 協力者 ARG:1 発動者 REF_LOCAL 判定にLOCAL:1~6(リンケージ参加予定者)を使用するためLOCALを指定すること
+@LINKAGE_SUB_CHECK(ARG, ARG:1, REF_LOCAL)
+#FUNCTION
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIM REF REF_LOCAL
+SIF !INRANGE(ARG, 0, CHARANUM-1)
+	RETURNF 0
+;ＣＨＡＮＧＥ対象は弾く
+SIF CFLAG:ARG:ＣＨＡＮＧＥ대상플래그
+	RETURNF 0
+;既に他のリンケージに参加しているキャラは弾く
+SIF CFLAG:ARG:링케이지참가 || CFLAG:ARG:링케이지발동
+	RETURNF 0
+;発動者ははじく
+SIF ARG == ARG:1
+	RETURNF 0
+;他の場所に入ってるキャラも弾く
+SIF MATCH(REF_LOCAL,ARG,1,6)
+	RETURNF 0
+;入力できないキャラも弾く
+SIF !INPUTABLEF_CHARA(ARG)
+	RETURNF 0
+;ＮＰＣだとダメ
+SIF CFLAG:ARG:조작불능플래그 == 1
+	RETURNF 0
+RETURNF 1
+;---- EDIT 035 MOD END ---------------------------

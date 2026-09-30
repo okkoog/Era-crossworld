@@ -1,0 +1,82 @@
+﻿;スキル名
+@SKILL_NAME_パニック適性,ARG
+RESULTS = 패닉 적성
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_パニック適性
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_パニック適性,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;　説明文の表示
+@SKILL_EXPLAIN_パニック適性,ARG
+PRINTL 자동효과:PANIC 내성이 대폭 저하된다.
+PRINTL 　　　　 「PANIC」으로 인한 행동불능 및 타겟 랜덤 변경이 발생하지 않는다.
+PRINTL 　　　　 「PANIC」이 부착되어 있는 동안 주는 데미지가 20% 증가한다.
+
+@SKILL_EXPLAIN_TOOLTIP_パニック適性, ARG
+RESULTS:0 = 자동효과:PANIC 내성이 대폭 저하된다.
+RESULTS:1 = 　　　　 「PANIC」으로 인한 행동불능 및 타겟 랜덤 변경이 발생하지 않는다.
+RESULTS:2 = 　　　　 「PANIC」が付着されている間、与えるダメージが２０％増加する。
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_パニック適性, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM DYNAMIC L_P;スキルの持ち主=自分
+#DIM DYNAMIC L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM DYNAMIC L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM DYNAMIC SKILL_NUM;スキル番号(専用技用)
+#DIMS DYNAMIC L_相性名;ダメージ計算に使用されている相性の名称
+#DIM DYNAMIC L_相性値;相性の倍率(999が反射のあれ)
+#DIMS DYNAMIC L_ダメージタイプ;物理/魔法
+#DIMS DYNAMIC L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS DYNAMIC L_ステート名;バステの名称
+#DIM DYNAMIC L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM DYNAMIC GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_RESULT
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;行動の候補に絶対にATTACKがはいってきてしまうことを踏まえて効果は高めに
+		CASE "ダメージ補正加算"
+			SIF IS_BADSTATE(L_P, "PANIC")
+				RETURN 30
+	ENDSELECT
+ENDIF
+RETURN 0
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;====================================================
+@SKILL_ADD_STATUS_パニック適性, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	;ステート耐性は0のときに通常(100%)のに注意。
+	CASE "상태이상"
+		RESULTS = 代入
+		SIF ARGS:1 == "PANIC"
+			RETURN 100
+ENDSELECT
+RETURN 0
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_パニック適性,ARG
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_パニック適性, ARG = -1
+RETURN 1

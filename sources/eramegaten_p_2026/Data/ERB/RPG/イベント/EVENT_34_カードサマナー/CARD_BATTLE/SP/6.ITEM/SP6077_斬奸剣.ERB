@@ -1,0 +1,60 @@
+﻿
+;特技名
+@CGSP_NAME_6077, ARGS, ARG
+RESULTS = 斬奸剣
+
+;　コストの量
+@CGSP_COST_6077, ARGS, ARG
+RETURN 3
+;1
+
+;　타겟(選択するかしないか)
+@CGSP_TARGET_6077, ARGS, ARG
+RETURN 3
+;0-無し　　　1-味方1体　2-味方1体(自身含む)　3-敵1体　4-敵1体(サマナー含む)
+;5-敵味方1体　6-サマナーどちらか
+;自動発動なので0
+
+;　発動タイミング
+@CGSP_TIMING_6077, ARGS, ARG
+RETURN 0
+;0-アクティブ　1-味方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　2-相手ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　3-両方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ
+
+;====================================================
+;特技発動
+;====================================================
+@CGSP_ACTION_6077, ARGS, ARG, ARG:1
+
+IF ARG % 20 == CS1_ONESELF
+	LOCAL = CS1_OPPONENT
+ELSE
+	LOCAL = CS1_ONESELF
+ENDIF
+LOCAL:1 = FIELD_DEMON_DATE_V:(ARG:1):CBV_B_AP
+
+CALL CS_DICEROLL_STATE(4, ARG, ARG:1, 998, 1)
+SIF RESULT
+    CALL SP_SUMMONER_HEAL, LOCAL, LOCAL:1, ARG
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;発動後どうなるか
+@CGSP_ACTION_AFTER_6077, ARGS, ARG, ARG:1
+RETURN 1
+;0-何もなし　1-フリーズ状態　2-山札に戻る　3-即死する
+
+;　 説明文の表示
+@CGSP_EXPLAIN_6077, ARGS, ARG
+RESULTS = 敵仲魔1体を 3/6（50％）の確率で倒す。成功時、その仲魔の基礎AP分相手サマナーを回復する。『悪人を成敗する、斬首のための剣』
+
+
+;　スキルタイプ
+;　主にこのターンパワーアップとアギとかのダメージ系で使用
+;　それ以外は省略
+;　30 회복
+@CGSP_TYPE_6077, ARGS, ARG
+RETURN 12, 998, 3
+

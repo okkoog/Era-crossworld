@@ -1,0 +1,123 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara4989_まどかマギカ_まどか_NPM.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/04/10		epizo				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;イベントフラグ
+;0 = 通常加入
+;1 = 精液処理人形
+;--------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:마도카_NPM]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+CALL SET_BASE_[[キャラ:마도카_NPM]], ARG, ARG:2
+
+@SET_BASE_[[キャラ:마도카_NPM]], ARG, ARG:1
+SELECTCASE ARG:1
+	CASE 0
+	CASE 1
+		TALENT:ARG:처녀 = 0
+		ABL:ARG:Ｃ감각 = 3
+		ABL:ARG:Ｖ감각 = 2
+		ABL:ARG:Ａ감각 = 2
+		ABL:ARG:Ｂ감각 = 3
+		ABL:ARG:노출증 = 1
+		ABL:ARG:마조끼 = 2
+		ABL:ARG:정액중독 = 1
+		MARK:ARG:반발각인 = 2
+		MARK:ARG:4 = 2
+		EXP:ARG:Ｖ경험 = 20
+		EXP:ARG:Ａ경험 = 10
+		EXP:ARG:절정경험 = 5
+		EXP:ARG:성교경험 = 20
+		EXP:ARG:질사경험 = 10
+		EXP:ARG:자위경험 = 5
+		EXP:ARG:조교자위경험 = 5
+		EXP:ARG:정액경험 = 20
+		EXP:ARG:펠라경험 = 10
+		EXP:ARG:고통쾌락경험 = 5
+		EXP:ARG:윤간경험 = 5
+		CALL ADDS_ABNORMAL_EXP, "処女喪失（輪姦）", ARG
+		CALL SHOW_ABNORMAL_EXP , ARG, 0
+ENDSELECT
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:마도카_NPM]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("まどか_NPM_FACE_1")
+			RETURNF ""
+		SIF !SPRITECREATED("まどか_NPM_FACE_2")
+			RETURNF ""
+		SIF !SPRITECREATED("まどか_NPM_FACE_EX_0")
+			RETURNF ""
+		SIF !SPRITECREATED("まどか_NPM_FACE_EX_1")
+			RETURNF ""
+		SIF !SPRITECREATED("まどか_NPM_FACE_EX_2")
+			RETURNF ""
+		SIF !SPRITECREATED("まどか_NPM_FACE_EX_3")
+			RETURNF ""
+		RESULTS_F = デフォルト
+		RESULTS_F:1 = まどか_NPM_FACE_1
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:마도카_NPM]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "デフォルト"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+				RESULTS_F = まどか_NPM_FACE_2
+			CASEELSE
+				SELECTCASE L_SITUATION:1
+					;戦闘不能になった時
+					CASE "DYING"
+						RESULTS_F = まどか_NPM_FACE_EX_0
+					;魅了にされた時
+					CASE "CHARM"
+						RESULTS_F = まどか_NPM_FACE_EX_1
+					;睡眠にされた時
+					CASE "SLEEP" 
+						RESULTS_F = まどか_NPM_FACE_EX_2
+					;上記以外の状態異常の時
+					CASE "STONE", "FLY", "PALYZE", "BRAND", "CURSE", "FLAME", "BOMB", "POISON", "CLOSE", "BIND", "SLIP", "FREEZE", "PANIC", "SHOCK", "HAPPY"
+						RESULTS_F = まどか_NPM_FACE_EX_3
+					;通常時
+					CASEELSE
+						RESULTS_F = まどか_NPM_FACE_1
+				ENDSELECT
+		ENDSELECT
+	CASEELSE
+ENDSELECT

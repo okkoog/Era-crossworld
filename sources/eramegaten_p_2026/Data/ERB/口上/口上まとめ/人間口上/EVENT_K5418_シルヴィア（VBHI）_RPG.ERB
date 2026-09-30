@@ -1,0 +1,284 @@
+﻿;VenusBlood HOLLOW International　シルヴィア　戦闘口上　ライセンスフリー
+;
+;-------------------------------------------------
+;・更新履歴・
+;日時			更新者						内容
+;2026/02/01		ロココ						新規作成
+;-------------------------------------------------
+;ライセンスについて
+;	・基本項目(許可する項目を"○"に、許可しない項目を"×"に変更してください。)
+;	+----+----+-------------------------------+
+;	|番号|許可|ライセンス内容                 |
+;	+----+----+-------------------------------+
+;	|   1| ○ | 処理上のバグ修正              |
+;	+----+----+-------------------------------+
+;	|   2| ○ | 口上の誤字・脱字の修正        |
+;	+----+----+-------------------------------+
+;	|   3| ○ | 口上まとめへの収録            |
+;	+----+----+-------------------------------+
+;	|   4| ○ | 口上の新規追加                |
+;	+----+----+-------------------------------+
+;	|   5| ○ | 既存口上の改変                |
+;	+----+----+-------------------------------+
+;	|   6| ○ | 改変した口上の自由な再配布    |
+;	+----+----+-------------------------------+
+;	|   7| ○ | 口上内容の転載                |
+;	+----+----+-------------------------------+
+;-------------------------------------------------
+;【性格とか】
+;VBHIにおけるもう一人のメインヒロイン、シルヴィアの戦闘用口上。
+;原作通り、冷徹な軍師の一面もありつつ基本的には温情深い白の皇女…で作ったつもりです。
+;悪落ちしてないので当然ロウストーリー準拠。
+
+@ENEMY_BATTLE_EVENT_K[[キャラ:실비아・하마르티아]], ARG, ARG:1, ARG:2
+IF TFLAG:전투이벤트 == 1
+;敵でのデビルＣＯ－ＯＰ発動時の台詞
+;			BTL_KOJO_RESULTS:0 =
+ENDIF
+IF TFLAG:전투이벤트 == 2
+;敵でのデビルＣＯ－ＯＰ参加時の台詞
+;			BTL_KOJO_RESULTS:0 =
+ENDIF
+
+@KOJO_BATTLE_EVENT_K[[キャラ:실비아・하마르티아]], ARG, ARG:1, ARG:2
+SELECTCASE GET_BATTLE_EVENT(TFLAG:전투이벤트)
+	;味方パーティでのデビルＣＯ－ＯＰ発動時の台詞
+	CASE "COOP発動"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 皆さん、続いて下さい
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 好機です。一気に叩きます
+		ELSE
+			BTL_KOJO_RESULTS:0 = この機を逃すわけにはいきません
+		ENDIF
+	;味方パーティでのデビルＣＯ－ＯＰ参加時の台詞
+	CASE "COOP参加"
+		;あなたが発動
+		IF FLAG:행동순1 != -1 && FLAG:행동순1 == MASTER
+			IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = %CSTR:이인칭%、今です！
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = この機を逃すわけにはいきません
+			ELSE
+				BTL_KOJO_RESULTS:0 = %CSTR:이인칭%の生み出したチャンス
+				BTL_KOJO_RESULTS:1 = 無駄にはできません！
+			ENDIF
+		;それ以外
+		ELSE
+			IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = 続きます。他の方も援護を
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = この機を逃すわけにはいきません
+			ELSE
+				BTL_KOJO_RESULTS:0 = 一気に叩いて下さい！
+			ENDIF
+		ENDIF
+	CASE "与ダメージ_単体"
+		;攻撃して殺害した
+		IF BASE:(ARG:1):ＨＰ <= 0
+			IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = その歪なあり方は認められません
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = この手段しかなかったのでしょうか
+			ELSE
+				BTL_KOJO_RESULTS:0 = 投降していただきたかったのですが
+			ENDIF
+		;攻撃したけど吸収された
+		ELSEIF ARG:2 < 0
+			IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = これは…逆効果だったようですね
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = この攻撃は通じない、ということですか
+			ELSE
+				BTL_KOJO_RESULTS:0 = 別の手段を考えます。
+				BTL_KOJO_RESULTS:1 = どうか皆さん、しばし援護を
+			ENDIF
+		ENDIF
+	CASE "追撃発動"
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = この機を逃すわけにはいきません
+		ELSE
+			BTL_KOJO_RESULTS:0 = 好機です。一気に叩きます
+		ENDIF
+	CASE "被ダメージ_単体"
+		;被弾（死亡）
+		IF BASE:ARG:ＨＰ <= 0
+			IF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 後のことは…頼みました…
+			ELSE
+				BTL_KOJO_RESULTS:0 = きゃあああああ！
+			ENDIF
+		;残り１５％以下
+		ELSEIF 現HP割合(ARG) < 15
+			IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = くぅぅぅっ！
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 倒れるわけはにはいきません…！
+			ELSE
+				BTL_KOJO_RESULTS:0 = もう少し戦線を持たせなければ…
+			ENDIF
+		;被弾
+		ELSE
+			IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = この程度、無視して構いません
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = このくらいならば防げます！
+			ELSE
+				BTL_KOJO_RESULTS:0 = すぐに癒やします。みなさんは攻撃を
+			ENDIF
+		ENDIF
+		
+	;外した
+	CASE "回避された"
+		BTL_KOJO_RESULTS:0 = 避けられた…？すみません。次は当てます
+	;회피
+	CASE "回避した"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 防いで、“月天の雫”＜セレスティア＞！
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 結界はまだ持ちます。安心して下さい
+		ELSE
+			BTL_KOJO_RESULTS:0 = その攻撃は当たりません
+		ENDIF
+	;反射された
+	CASE "反射された"
+		BTL_KOJO_RESULTS:0 = 反射！？いけません、攻撃を中止します！
+	;反射
+	CASE "反射した"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 防いで、“月天の雫”＜セレスティア＞！
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = その攻撃は無意味です
+		ELSE
+			BTL_KOJO_RESULTS:0 = ご自分の力、そのままお返しします！
+		ENDIF
+	;バトルに勝利した
+	CASE "戦闘勝利"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 私はまだ、敗北するわけにはいきません
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 投降して下さい。命までは取りません
+		ELSE
+			BTL_KOJO_RESULTS:0 = %CSTR:이인칭%。どうか配慮ある処遇をお願いします
+		ENDIF
+	;レベルアップした
+	CASE "レベルアップ"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 理想に近づけたでしょうか
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 強くなれたようです
+		ELSE
+			BTL_KOJO_RESULTS:0 = この力が犠牲を減らせることを願います
+		ENDIF
+	;逃走に成功した
+	CASE "逃走成功"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 撤退して下さい。
+			BTL_KOJO_RESULTS:0 = ここで戦う必要はありません
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 一時撤退します
+		ELSE
+			BTL_KOJO_RESULTS:0 = なんとか逃げられたようですね
+		ENDIF
+	;逃走に失敗した
+	CASE "逃走失敗"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 回り込まれた…！？次善の策を練ります！
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = どうやら、敵も撤退は予想済みだったようです
+		ELSE
+			BTL_KOJO_RESULTS:0 = ここで撤退しておきたかったのですが…
+		ENDIF
+	;戦闘開始時
+	CASE "先制攻撃"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 油断しましたね。こちらが先手です
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 今のうちに攻撃を開始して下さい！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 機先は取れました
+		ENDIF
+	CASE "戦闘開始時"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 参ります
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 援護は任せて下さい
+		ELSE
+			BTL_KOJO_RESULTS:0 = 結界を張ります。戦線は任せました
+		ENDIF
+	;戦闘開始時・バックアタックを受けた
+	CASE "バックアタック"
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 後方！？体制を整えます、落ち着いて！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 迂闊でした。急いで陣形を立て直します
+		ENDIF
+	;戦闘開始時・先制攻撃を受けた
+	CASE "不意打ち"
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 体制を整えます、落ち着いて！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 迂闊でした。急いで陣形を立て直します
+		ENDIF
+ENDSELECT
+
+
+
+@KOJO_BATTLE_MESSAGE_K[[キャラ:실비아・하마르티아]],ARG,ARG:1 = 0
+;ターゲットが単体なら事前に対象のキャラをLOCALに保存しておく
+LOCAL = -1
+SIF INRANGE(CFLAG:ARG:타겟, 1, 16)
+	LOCAL = POS(CFLAG:ARG:타겟)
+
+;ちょっとした記憶用の領域を確保
+LOCAL:1 = 0
+
+
+;通常攻撃
+IF CFLAG:ARG:입력행동 == 0
+	IF RAND:3 == 0
+		BTL_KOJO_RESULTS:0 = 応えて、“月天の雫”＜セレスティア＞！
+	ELSEIF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 攻撃はあまり得意ではないのですが
+	ELSE
+		BTL_KOJO_RESULTS:0 = させません！
+	ENDIF
+;GUN
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:ＧＵＮ]]
+	IF RAND:3 == 0
+		BTL_KOJO_RESULTS:0 = 弾幕を張ります
+	ELSEIF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = これなら、私でも有効打を放てます
+	ELSE
+		BTL_KOJO_RESULTS:0 = させません！
+	ENDIF
+;戦術スキル/ヴァルナ・アーディナ
+ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG,"戦術スキル_シルヴィア")
+	IF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 満ち足りた聖なる鼓動、
+		BTL_KOJO_RESULTS:1 = 我らの傷を癒やし救い手とならん
+	ELSE
+		BTL_KOJO_RESULTS:0 = 我が祈りに応えて、月天の雫！
+	ENDIF
+;リカーム、サマリカーム
+ELSEIF GROUPMATCH(CFLAG:ARG:입력행동, [[스킬:리캄]], [[스킬:사마리캄]])
+	IF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = どうか立ち上がって下さい！
+	ELSE
+		BTL_KOJO_RESULTS:0 = まだ終わらせません
+	ENDIF
+;他回復全般
+ELSEIF TSTR:사용스킬계통 == "회복"
+	IF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 我が祈りに応えて、月天の雫！
+	ELSE
+		BTL_KOJO_RESULTS:0 = させません！応えて、月天の雫＜セレスティア＞！
+	ENDIF
+;행동불능
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:행동불능]]
+	BTL_KOJO_RESULTS:0 = 動きが…取れません…！
+;金ばらまき
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:금전뿌리기]]
+	BTL_KOJO_RESULTS:0 = あっはっは！ほーらお金ですよー
+	BTL_KOJO_RESULTS:1 = じゃんじゃんばらまきますよー
+ENDIF

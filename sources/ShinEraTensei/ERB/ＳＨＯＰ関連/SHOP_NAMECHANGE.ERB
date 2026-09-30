@@ -1,0 +1,167 @@
+
+
+@SHOPCOMABLE_107
+RESULTS = 名称/呼び名変更
+RETURN 1
+
+@SHOP_COM_107
+PRINTL
+CUSTOMDRAWLINE =
+;キャラリストを表示
+CALL INPUT_CHARA_LIST("名前や一人称などを変更したいキャラを選択してください","CASTING_NAMECHANGE")
+SIF RESULT == 1000
+	RETURN 0
+CALL NAME_CHANGE,RESULT
+RESTART
+
+@CASTING_NAMECHANGE
+SIF CFLAG:COUNT:フィルタリングフラグ
+	RETURN 0
+RETURN 1
+
+
+@NAME_CHANGE,ARG
+LOCAL = 0
+CUSTOMDRAWLINE = 
+PRINTFORML 名称：%NAME:ARG% 愛称:%CALLNAME:ARG% 一人称:%CSTR:ARG:11% \@ ARG == MASTER ? 称号:%CSTR:MASTER:種族名% # %CALLNAME:MASTER%への二人称：%CSTR:ARG:12% \@
+DRAWLINE
+
+LOCALS = 名称_愛称_名称と愛称_一人称
+SIF ARG != MASTER
+	LOCALS = %LOCALS%_二人称
+SIF ARG == MASTER || NO:ARG == 3501 || NO:ARG == 3502
+	LOCALS = %LOCALS%_プロフィール
+SIF ARG == MASTER
+	LOCALS = %LOCALS%_称号
+CALL INPUT_SPLIT("どれを変更しますか？",LOCALS,"_","戻る")
+SIF RESULT == 0
+	RETURN
+LOCALS = %RESULTS%
+CALLFORM NAME_CHANGE_%LOCALS%,ARG
+PRINTFORMW %LOCALS%を%RESULTS%に変更しました。
+RESTART
+
+;====================================================
+;名称
+;====================================================
+@NAME_CHANGE_名称,ARG
+PRINTFORML %CALLNAME:ARG%の新しい名称を入力してください
+CALL CREATE_RANDOM_NAME_IF
+NAME:ARG = %RESULTS%
+
+;====================================================
+;愛称
+;====================================================
+@NAME_CHANGE_愛称,ARG
+PRINTFORML %CALLNAME:ARG%の新しい愛称を入力してください
+INPUTS
+CALLNAME:ARG = %RESULTS%
+
+;====================================================
+;名称と愛称
+;====================================================
+@NAME_CHANGE_名称と愛称,ARG
+PRINTFORML %CALLNAME:ARG%の新しい名称と愛称を入力してください(同じ文字列に変更されます)
+CALL CREATE_RANDOM_NAME_IF
+NAME:ARG     = %RESULTS%
+CALLNAME:ARG = %RESULTS%
+
+;====================================================
+;一人称
+;====================================================
+@NAME_CHANGE_一人称,ARG
+RESULTS = %CSTR:ARG:11%_あたし_アタシ_わたし_ワタシ_私_あたくし_アタクシ_わたくし_ワタクシ_あたい_アタイ_うち_ウチ_あちき_わっち_わらわ_妾_あだす_あて_あっし_あちし_ボク_僕_オレ_俺_ミー_オレサマ_俺様_ワレ_我_ワシ_儂_吾輩_ワガハイ_己_自分_やつがれ_某_拙者_身ども_小生_余_朕_麿_わっし_あっし_わて_わい_わだす_おいら_おら_おい_おいどん_うら_わー_おれっち_手前_本官_%CALLNAME:ARG%_%CALLNAME:ARG%さん_%CALLNAME:ARG%ちゃん_%CALLNAME:ARG%様_直接入力する
+CALL INPUT_SPLIT(CALLNAME:ARG+"の新しい自分の呼び方を入力してください", RESULTS , "_" , , 4)
+IF RESULTS == "直接入力する"
+	PRINTL 
+	INPUTS
+ENDIF
+CSTR:ARG:11 = %RESULTS%
+
+;====================================================
+;二人称
+;====================================================
+@NAME_CHANGE_二人称,ARG
+RESULTS = %CSTR:ARG:12%_あなた_アナタ_貴方_ご主人様_御主人様_ごしゅじんさま_さまなー_サマナー_召喚師様_召喚士殿_わぬし様_お前さま_主_主さま_あるじさま_ゴシュジン_御主人_お館さま_旦那_ダンナ_旦那さま_お頭_親分_マスター_我が君_上官殿_パパ_お父さん_おとうさん_お父様_父上_親父_ママ_お母さん_おかあさん_母上_お母様_お兄さん_お兄ちゃん_お兄様_兄上_兄さん_兄ちゃん_兄様_アニキ_お姉さん_お姉ちゃん_お姉様_姉上_姉さ_姉ちゃん_姉様_おじさん_おじちゃん_おじ様_おばさん_おばちゃん_おば様_%CALLNAME:MASTER%_%CALLNAME:MASTER%さん_%CALLNAME:MASTER%様_直接入力する
+CALL INPUT_SPLIT(CALLNAME:ARG+"の新しい"+CALLNAME:MASTER+"の呼び方を入力してください", RESULTS , "_" , , 4)
+IF RESULTS == "直接入力する"
+	PRINTL 
+	INPUTS
+ENDIF
+CSTR:ARG:12 = %RESULTS%
+
+;====================================================
+;プロフィール
+;====================================================
+@NAME_CHANGE_プロフィール,ARG
+$RE_START
+CUSTOMDRAWLINE =
+PRINTL 変更したい行を選択してください
+DRAWLINE
+FOR LOCAL,0,20
+	PRINTFORML [{LOCAL}] %CSTR:ARG:(30+LOCAL)%
+NEXT
+PRINTL
+PRINTL [20] ユーザー定義ファイル読み込み
+PRINTL [100]戻る
+$INPUT_LOOP
+INPUT
+SELECTCASE RESULT
+	CASE 100
+		RESULTS = 指定した通り
+		RETURN 0
+	CASE 20
+		SWAP ARG, TARGET
+		TRYCCALLFORM USER_PROFILE_%CALLNAME%
+			PRINTFORMW %CALLNAME:ARG%のプロフィールを読み込みました。
+		CATCH
+			PRINTFORMW %CALLNAME:ARG%のプロフィールを定義した関数は見つかりませんでした。
+		ENDCATCH
+		SWAP ARG , TARGET
+	CASE 0 TO 19
+		PRINTFORML {RESULT}行目に挿入する文字列を入力してください。
+		INPUTS
+		CSTR:ARG:(30+RESULT) = %RESULTS%
+	CASEELSE
+		GOTO INPUT_LOOP
+ENDSELECT
+GOTO RE_START
+
+;====================================================
+;称号
+;====================================================
+@NAME_CHANGE_称号,ARG
+VARSET RESULTS,"????"
+RESULTS:0  = %STR:(ABL:MASTER:種族)%
+RESULTS:1  = %種族名(ARG)%
+RESULTS:2  = \@ TALENT:MASTER:サマナー                  ? 悪魔使い        # %RESULTS:2%  \@
+RESULTS:3  = \@ TALENT:MASTER:サマナー                  ? デビルサマナー  # %RESULTS:3%  \@
+RESULTS:4  = \@ ABL:MASTER:属性LD == 3                  ? ダークサマナー  # %RESULTS:4%  \@
+RESULTS:5  = \@ HAVE_SKILL(ARG,[[スキル:サバトマ]])     ? 悪魔召喚師      # %RESULTS:5%  \@
+RESULTS:6  = \@ TALENT:MASTER:異能者                    ? 異能者          # %RESULTS:6%  \@
+RESULTS:7  = \@ TALENT:MASTER:ペルソナ使い              ? ペルソナ使い    # %RESULTS:7%  \@
+RESULTS:8  = \@ GETBIT(FLAG:発見ED,0)                   ? グリゴリ        # %RESULTS:8%  \@
+RESULTS:9  = \@ GETBIT(FLAG:発見ED,2)                   ? 調教師          # %RESULTS:9%  \@
+RESULTS:10 = \@ SUMARRAY(FLAG,34501,34700) > 10         ? 人攫い          # %RESULTS:10% \@
+RESULTS:11 = \@ SUMARRAY(FLAG,30000,34501) > 30         ? 悪魔調教師      # %RESULTS:11% \@
+RESULTS:12 = \@ GETBIT(FLAG:発見ED,3)                   ? Master of slave # %RESULTS:12% \@
+RESULTS:13 = \@ GETBIT(FLAG:発見ED,10)                  ? オーナー        # %RESULTS:13% \@
+RESULTS:14 = \@ GETBIT(FLAG:発見ED,12) && IS_MALE(ARG)  ? 夜の王          # %RESULTS:14% \@
+RESULTS:15 = \@ GETBIT(FLAG:発見ED,12) && !IS_MALE(ARG) ? 夜の女王        # %RESULTS:15% \@
+RESULTS:16 = \@ GETBIT(FLAG:発見ED,13)                  ? 淫売            # %RESULTS:16% \@
+RESULTS:17 = \@ TALENT:MASTER:喰奴                      ? 喰奴            # %RESULTS:17% \@
+
+;リスト表示
+CUSTOMDRAWLINE =
+FOR LOCAL,0,48
+	PRINTFORMLC [{LOCAL,2}]%RESULTS:LOCAL%
+	SIF LOCAL%3 == 2
+		PRINTL
+NEXT
+DRAWLINE
+DO 
+	INPUT
+LOOP !RANGE(RESULT,0,47) || EQUALCHECK_STR(RESULTS:RESULT,"????")
+CSTR:ARG:種族名 = %RESULTS:RESULT%
+VARSET RESULTS
+RESULTS = %CSTR:ARG:種族名%

@@ -1,0 +1,137 @@
+﻿;-------------------------------------------------
+;服装関連関数
+;自分用に作ったけど使いたかったらどうぞ
+;改変も自由ですというかどんどん改良/追加していってください
+;
+;更新履歴
+; 001	2024/03/08	mid.k			追加：半裸・全裸・ノーブラ・ノーパン
+;									裸コート・スカート・絆創膏・貞操帯・バイブ下着・触手服
+; 002	2024/03/23	mid.k			メインパッチ更新ついでに文字コードをUTF-8に変更
+; 003	2024/06/03	mid.k			全裸・半裸を統合したり一部関数を拡張したり
+; 004	2025/02/22	mid.k			絆創膏同名問題に対応
+;-------------------------------------------------
+
+;裸判定
+@IS_NAKED, ARG
+#FUNCTION
+IF MAX(CFLAG:ARG:옷, CFLAG:ARG:하의, CFLAG:ARG:전신복, CFLAG:ARG:겉옷) <= 0
+	IF MAX(CFLAG:ARG:속옷（상）, CFLAG:ARG:속옷（하）, CFLAG:ARG:전신속옷) <= 0
+		IF MAX(CFLAG:ARG:모자, CFLAG:ARG:손, CFLAG:ARG:양말, CFLAG:ARG:신발) <= 0
+			IF MAX(CFLAG:ARG:그외, CFLAG:ARG:그외2, CFLAG:ARG:그외3) <= 0
+				;完全全裸
+				RETURNF 4
+			ELSE
+				;すっぽんぽん
+				RETURNF 3
+			ENDIF
+		ELSE
+			;靴とか履いてる
+			RETURNF 2
+		ENDIF
+	ELSE
+		;半裸(下着姿)
+		RETURNF 1
+	ENDIF
+ELSE
+	RETURNF 0
+ENDIF
+
+;ノーブラ判定
+;下着のみ判定します
+@IS_NAKED_NOBRA, ARG
+#FUNCTION
+IF MAX(CFLAG:ARG:속옷（상）, CFLAG:ARG:전신속옷) <= 0
+	RETURNF 1
+ELSE
+	RETURNF 0
+ENDIF
+
+;ノーパン判定
+;下着のみ判定します
+@IS_NAKED_NOPAN, ARG
+#FUNCTION
+IF MAX(CFLAG:ARG:속옷（하）, CFLAG:ARG:전신속옷) <= 0
+	RETURNF 1
+ELSE
+	RETURNF 0
+ENDIF
+
+;--------------------------------------------------
+;ここから衣装別
+;--------------------------------------------------
+
+;裸コート判別
+;裸判定2相当、ただし上着のみ着用(コート系)
+@IS_CLOTH_NAKEDCOAT, ARG
+#FUNCTION
+IF MAX(CFLAG:ARG:옷, CFLAG:ARG:하의, CFLAG:ARG:전신복, CFLAG:ARG:속옷（상）, CFLAG:ARG:속옷（하）, CFLAG:ARG:전신속옷) <= 0 && GROUPMATCH(CFLAG:ARG:겉옷, [[衣装:코트]], [[衣装:인버네스]], [[衣装:우비]])
+	RETURNF 1
+ELSE
+	RETURNF 0
+ENDIF
+
+;スカート判別
+;全身服か下のみかで返り値が変化
+@IS_CLOTH_SKIRT, ARG
+#FUNCTION
+IF GROUPMATCH(CFLAG:ARG:전신복, [[衣装:원피스]], [[衣装:드레스]], [[衣装:이브닝드레스(V넥)]], [[衣装:메이드복]], [[衣装:프렌치메이드복]], [[衣装:웨딩드레스]], [[衣装:웨스턴드레스]], [[衣装:키톤]], [[衣装:스팽글드레스]], [[衣装:고딕드레스(V넥)]], [[衣装:고딕원피스]], [[衣装:미니원피스]])
+	RETURNF 2
+ELSEIF GROUPMATCH(CFLAG:ARG:하의, [[衣装:스커트]], [[衣装:롱스커트]], [[衣装:미니스커트]], [[衣装:타이트스커트]], [[衣装:타이트미니스커트]], [[衣装:서스펜더스커트]], [[衣装:점퍼스커트]], [[衣装:파레오]], [[衣装:플리츠스커트]], [[衣装:플레어스커트]], [[衣装:티어드스커트]], [[衣装:머메이드스커트]], [[衣装:피쉬테일스커트]], [[衣装:하이웨스트스커트]], [[衣装:철벽스커트]])
+	RETURNF 1
+ELSE
+	RETURNF 0
+ENDIF
+
+;絆創膏判別
+;着用箇所で返り値が変化
+@IS_CLOTH_BANDAID, ARG
+#FUNCTION
+IF CFLAG:ARG:속옷（상） == [[衣装:반창고]] && CFLAG:ARG:속옷（하） == [[衣装:반창고]]
+	RETURNF 3
+ELSEIF CFLAG:ARG:속옷（하） == [[衣装:반창고]]
+	RETURNF 2
+ELSEIF CFLAG:ARG:속옷（상） == [[衣装:반창고]]
+	RETURNF 1
+ELSE
+	RETURNF 0
+ENDIF
+
+;貞操帯判別
+;バイブ付きは2、無ければ1
+@IS_CLOTH_CHASTITY, ARG
+#FUNCTION
+IF GROUPMATCH(CFLAG:ARG:속옷（하）, [[衣装:바이브달린정조대]], [[衣装:Ａ바이브달린정조대]], [[衣装:Ｗ바이브달린정조대]])
+	RETURNF 2
+ELSEIF CFLAG:ARG:속옷（하）== [[衣装:정조대]]
+	RETURNF 1
+ELSE
+	RETURNF 0
+ENDIF
+
+;バイブ下着判別
+;どの穴に入ってるかで返り値が変化
+@IS_CLOTH_VIBRATOR, ARG
+#FUNCTION
+IF GROUPMATCH(CFLAG:ARG:속옷（하）, [[衣装:Ｗ바이브달린쇼츠]], [[衣装:Ｗ바이브달린정조대]])
+	RETURNF 3
+ELSEIF GROUPMATCH(CFLAG:ARG:속옷（하）, [[衣装:Ａ바이브달린쇼츠]], [[衣装:Ａ바이브달린정조대]])
+	RETURNF 2
+ELSEIF GROUPMATCH(CFLAG:ARG:속옷（하）, [[衣装:바이브달린쇼츠]], [[衣装:바이브달린정조대]])
+	RETURNF 1
+ELSE
+	RETURNF 0
+ENDIF
+
+;触手服判別
+;着衣箇所(責める部位)で返り値が変化
+@IS_CLOTH_LIVING, ARG
+#FUNCTION
+IF CFLAG:ARG:전신복 == [[衣装:촉수갑옷]] || CFLAG:ARG:전신속옷 == [[衣装:촉수수트]] || (CFLAG:ARG:속옷（상） == [[衣装:촉수브라]] && CFLAG:ARG:속옷（하） == [[衣装:촉수팬츠]])
+	RETURNF 3
+ELSEIF CFLAG:ARG:속옷（하） == [[衣装:촉수팬츠]]
+	RETURNF 2
+ELSEIF CFLAG:ARG:속옷（상） == [[衣装:촉수브라]]
+	RETURNF 1
+ELSE
+	RETURNF 0
+ENDIF

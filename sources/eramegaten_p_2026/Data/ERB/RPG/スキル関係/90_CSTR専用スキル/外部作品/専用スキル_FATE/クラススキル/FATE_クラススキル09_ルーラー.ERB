@@ -1,0 +1,101 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:FATE_鯖共通10_ルーラー.ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	000		20XX/XX/XX		----					テンプレ
+;	001		2021/08/12		SUIHOU					作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_ルーラー,ARG
+RESULTS = 룰러
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ルーラー
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ルーラー,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_ルーラー
+RETURN GET_SUCCESSION_NUM("계통없음")
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_ルーラー,ARG
+PRINTL 서번트로서 소환된 자의 증표
+PRINTL 클래스에 맞춘 보정을 받고 있다
+PRINTL 
+PRINTL 자신의 HP를 20% 증가시킨다
+PRINTL 자신이 받는 데미지 감소
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ルーラー,ARG
+RETURN 0
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_ルーラー, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+;自分が攻撃側
+IF L_P == L_ACTOR
+;自分が防御側
+ELSE
+	SELECTCASE ARGS
+		CASE "ダメージ倍率"
+			RETURN -10
+	ENDSELECT
+ENDIF
+RETURN 0
+;PU_SKILLNUM_GET(ARG,"ルーラー")
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_ルーラー, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	;RESULT = 修正値
+	;RESULTS = 加算/乗算/固定値/活泉/魔脈
+	;加算はそのまま固定値を加算する。乗算は(100+X)/100倍にする。固定値は必ずその数値にする(55ならなにがあろうと最大HP55になる)
+	;活泉/魔脈はそのまま同種スキルと同じ枠となりもっとも効果量が高いものを優先する形になる
+	;HP半減
+	CASE "HP補正"
+		RESULTS = 乗算
+		RETURN 20
+ENDSELECT
+RETURN 0

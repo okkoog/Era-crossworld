@@ -1,0 +1,130 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2321,ARG
+RESULTS = 잠재보조
+
+;　명중
+@SKILL_HITRATE_2321, ARG
+RETURN 0
+
+;　威力
+@SKILL_POWER_2321, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2321,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2321,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2321, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2321,ARG
+RETURN 0
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2321
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2321, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2321,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2321,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2321, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2321
+RETURN GET_SUCCESSION_NUM("계통없음")
+
+@継承不能_2321
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_2321, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2321
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2321, ARG = -1
+RETURN 0
+
+
+;====================================================
+;カウンター発動条件
+;====================================================
+@SKILL_COUNTER_ACTIONABLE_2321,ARG,ARG:1
+#DIM L_HP_PER
+SIF !TALENT:ARG:페르소나구사자
+	RETURN 0
+SIF CFLAG:ARG:PT플래그 == 0
+	RETURN 0
+SIF !GET_CREC_ACT(ARG:1, ARG, "HIT")
+	RETURN 0
+;ペルソナの相性が☆か◎じゃなければ発動不可
+SIF GET_P_FITNESS(ARG,0) < 2
+	RETURN 0
+;小数点以下を扱えないおかげで切り下げの影響を激しく受けるので数値を増やして対処する。
+L_HP_PER = (BASE:ARG:ＨＰ * 100 * 100) / MAXBASE:ARG:ＨＰ
+;HP1/4以下時残りＨＰに応じた確率で発動(25%ちょうどで1/4, 12.5%で1/2でキャップ)
+SIF L_HP_PER > 2500
+	RETURN 0
+SIF RAND:MAX(L_HP_PER, 1250) > 625
+	RETURN 0
+;使用者の潜在能力発動回数が3を超えていたら発動しない
+SIF CFLAG:ARG:잠재능력발동횟수 > 3
+	RETURN 0
+;PRINTW 潜在能力発動回数4未満チェック
+;死亡時・COMP内発動は対象+100000で指定する
+RETURN 1, 19
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2321, ARG, ARG:1, ARG:2
+IF GET_P_FITNESS(ARG,0) >= 3
+	CALL SKILL_SET_カジャンダ, ARG, 19, "공격/방어/마법위력/마법효과/명중/회피", 4, "範囲"
+ELSE
+	CALL SKILL_SET_カジャンダ, ARG, 19, "방어/명중/회피", 4, "範囲"
+ENDIF
+CFLAG:ARG:잠재능력발동횟수 ++
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2321, ARG
+PRINTL 아군 전체의 능력을 상승시킨다。
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2321,ARG
+RETURN 1
+;とくにない
+

@@ -1,0 +1,162 @@
+﻿@EXTRA_GAME_OPTION_STARTNUM
+#FUNCTION
+RETURNF 1500
+
+@EXTRA_GAME_OPTIONNUM
+#FUNCTION
+RETURNF 20
+
+@SELECT_USE_EXTRA_GAME_OPTION
+PRINTL ★★강화 옵션 설정을 선택해주세요★★
+PRINTL [0] 없음
+PRINTL 설명　：밸런스를 크게 바꾸는 요소는 허용하지 않습니다。
+PRINTL [1] 있음
+PRINTL 설명　：밸런스를 크게 바꾸는 요소를 허용합니다。
+CALL INPUTINT( 0, 1)
+IF RESULT == 0
+	VARSET FLAG, 0, EXTRA_GAME_OPTION_STARTNUM(), EXTRA_GAME_OPTION_STARTNUM() + EXTRA_GAME_OPTIONNUM()
+ELSE
+	CALL EDIT_EXTRA_GAME_OPTION
+ENDIF
+
+@EDIT_EXTRA_GAME_OPTION, ARGS
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_LINE, 2
+#DIM DYNAMIC SHOW_EXPLAIN
+#DIM DYNAMIC SELECT_ABLE, 101
+#DIM DYNAMIC STOCK_REDRAW
+IF ARGS == "確認モード"
+	SHOW_EXPLAIN = 0
+ELSE
+	SHOW_EXPLAIN = 1
+ENDIF
+L_LINE = LINECOUNT
+STOCK_REDRAW = CURRENTREDRAW()
+$INPUT_EXTRA_EVENT_FILTER
+REDRAW 0
+CLEARLINE LINECOUNT - L_LINE
+;PRINTL ★★性能強化に関する様々なオプションを設定出来ます★★
+IF ARGS == "確認モード"
+	DRAWLINE
+	PRINTL ★★현재 강화 옵션 설정은 다음과 같습니다。변경은 전생 리스타트 시에 실행할 수 있습니다★★
+	DRAWLINE
+ELSE
+	DRAWLINE
+	PRINTL ★★사용할 강화 옵션을 개별적으로 설정해 주세요★★
+	DRAWLINE
+ENDIF
+SETCOLOR COLOR("red")
+PRINTL （주의：예상된 게임 밸런스에서 크게 벗어납니다　　）
+PRINTL （　　　따라서、밸런스 조정에 대한 보증 대상에서 제외됩니다　　）
+PRINTL  (　　　또한、복잡한 처리가 많고、보증할수 없는 동작도 많기 때문에 버그 보고・조정 요청에 대해서는)
+PRINTL  (　　　가능한 한、사용하고 있는 항목을 첨부해 주세요。)
+
+VARI L_FLAGNUM
+FOR LCOUNT, 0, EXTRA_GAME_OPTIONNUM()
+	L_FLAGNUM = EXTRA_GAME_OPTION_STARTNUM() + LCOUNT
+	SIF FLAGNAME:L_FLAGNUM == ""
+		CONTINUE
+	SIF ARGS != "確認モード"
+		SELECT_ABLE:LCOUNT = 1
+	IF FLAG:L_FLAGNUM
+		SETCOLOR GETDEFCOLOR()
+	ELSE
+		SETCOLOR COLOR("DARK-GRAY")
+	ENDIF
+
+	PRINTFORML [{LCOUNT, 2}] %GETNAME_EXTRA_GAME_OPTION(LCOUNT, 1)%
+	SELECT_ABLE:LCOUNT = 1
+	L_LINE:1 = LINECOUNT
+	IF SHOW_EXPLAIN
+		CALL SHOW_EXTRA_GAME_OPTION_EXPLAIN, LCOUNT
+		WHILE LINECOUNT < L_LINE:1 + 3
+			PRINTL 
+		WEND
+	ENDIF
+NEXT
+RESETCOLOR
+PRINTL 
+IF ARGS != "確認モード"
+	PRINTL [99]확인완료
+ELSE
+	PRINTL [99]설정완료
+ENDIF
+SELECT_ABLE:99 = 1
+;IF LOCAL == 0
+IF SHOW_EXPLAIN
+	PRINTL [100] 해설On
+ELSE
+	PRINTL [100] 해설Off
+ENDIF
+SELECT_ABLE:100 = 1
+CALL INPUT_ARRAY, SELECT_ABLE
+SELECTCASE RESULT
+	CASE 100
+		SHOW_EXPLAIN = !SHOW_EXPLAIN
+	CASE 99
+		REDRAW STOCK_REDRAW
+		RETURN 1
+	CASEELSE
+		FLAG:(RESULT + EXTRA_GAME_OPTION_STARTNUM()) = !FLAG:(RESULT + EXTRA_GAME_OPTION_STARTNUM())
+ENDSELECT
+GOTO INPUT_EXTRA_EVENT_FILTER
+
+@SHOW_EXTRA_GAME_OPTION_EXPLAIN, ARG = -1
+SELECTCASE FLAGNAME:(ARG + EXTRA_GAME_OPTION_STARTNUM())
+	CASE "금단의인스톨소프트해금"
+		PRINTL 　　게임 밸런스를 크게 바꾸고、
+		PRINTL 　　난이도를 낮추거나、시간 소모를 줄이기 위한
+		PRINTL 　　인스톨소프트들을 개방합니다
+	CASE "마정장비해금"
+		PRINTL 　　동료마강화로 장비에 매우 강력한 강화를 부여할 수 있게 된다。
+	CASE "오리지널스킬해금"
+		PRINTL 　　자신이 생각한 최강의 스킬을 설정할 수 있다。
+	CASE "전투스테이터스계산식통일"
+		PRINTL 　　모든 캐릭터의 전투 스테이터스 계산을 비장착형으로 통일하고、
+		PRINTL 　　총 이외의 장비에 의한 전투 스테이터스 변동을 없앤다。
+	CASE "아이템합성해금"
+		PRINTL 　　재료를 조합해 장비와 스킬을 만들어낸다。
+	CASE "CP제한무효화"
+		PRINTL 　　캐릭터간의 과도한 격차가 발생하는 것을 방지하기 위해 부여되는 전투소질(서머너나 도구지식등)의 제한에 따른 페널티를 없앤다。
+		PRINTL 　　또한、제한에 맞춰 소질의 내용을 조정된 캐릭터의 소질을 원래대로 되돌리는 것을 선택할 수 있게 한다。
+	CASE "드워프대장장이해금"
+		PRINTL 　　지정된 장비를 독자적인 사양으로 강화할 수 있다。
+	CASE "마장의공방해금"
+		PRINTL 　　마정무기를 더욱 강화할 수 있다。
+	CASE "장비능력보정변경해금"
+		PRINTL 　　동료강화를 통해 Lv80 이상 인간의 장비능력에 대한 보정을 조정할 수 있다。
+		PRINTL 　　파티에서의 역할에 맞춰 장비를 바꾸지 않고도 성능을 조정할 수 있는 기능이라고도 할 수 있다。
+ENDSELECT
+
+@GETNAME_EXTRA_GAME_OPTION, ARG, ARG:1
+#FUNCTIONS
+SELECTCASE FLAGNAME:(ARG + EXTRA_GAME_OPTION_STARTNUM())
+	CASE "금단의인스톨소프트해금"
+		RETURNF  "금단의인스톨소프트해방"
+	CASE "마정장비해금"
+		RETURNF  "마정술해금"
+	CASE "오리지널스킬해금"
+		RETURNF  "오리지널스킬"
+	CASE "전투스테이터스계산식통일"
+		RETURNF "전투스테이터스계산식통일"
+	CASE "아이템합성해금"
+		RETURNF  "아이템합성"
+	CASE "CP제한무효화"
+		IF ARG:1
+			RETURNF "특정 캐릭터가 강력한 소질을 갖도록 허용(용량 제한 무효화)"
+		ELSE
+			RETURNF  "CP제한무효화"
+		ENDIF
+	CASE "드워프대장장이해금"
+		RETURNF  "드워프대장장이"
+	CASE "마장의공방해금"
+		IF ARG:1
+			RETURNF "마장의공방（SOFTWARE）"
+		ELSE
+			RETURNF  "마장의공방"
+		ENDIF
+	CASE "장비능력보정변경해금"
+		RETURNF  "장비능력보정변경"
+	CASEELSE
+		RETURNF ""
+ENDSELECT

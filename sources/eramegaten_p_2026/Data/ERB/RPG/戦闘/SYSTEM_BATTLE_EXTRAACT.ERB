@@ -1,0 +1,536 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SYSTEM_BATTLE_EXTRAACT.ERB
+;	Facility	:追撃・カウンターの実行関数
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/10/30		P(bazzile)				新規作成
+;	002		2022/11/07		P(bazzile)				単体のターゲット調整時に除外されている敵を選んでいるとエラー落ちするのを修正
+;	003		2023/04/15		P(bazzile)				勝敗判定を整理
+;	004		2023/05/01		P(bazzile)				カウンターが機能しなくなっていた不具合を修正
+;	005		2023/07/15		P(bazzile)				反射・魅了・混乱などで自分自身への攻撃が発生した場合にカウンターしないように
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;==========================================
+;カウンター条件の確認 & カウンター予定の作成関数
+;ARG 	行動者
+;ARG:1	攻撃者
+;==========================================
+@COUNTER_CHECK, ARG
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_T
+#DIM DYNAMIC LCOUNT, 3
+#DIMS DYNAMIC L_スキル
+#DIM DYNAMIC L_SKILLCOUNT
+#DIM DYNAMIC IS_ACTABLE
+L_P = ARG
+;予定をクリア
+COUNTER_SKD_LIST = 
+;戦闘に一度でも参加したキャラすべてを対象としてチェックさせる。
+;(すでに死んで画面から消えたキャラがトリガーをひかせてる可能性があるので)
+FOR LCOUNT:1, 0, BCHARANUM
+	L_T = BCHARA:(LCOUNT:1)
+	;---- EDIT 005 ADD START -------------------------
+	;自分自身への攻撃には反撃しない
+	SIF L_P == L_T
+		CONTINUE
+	;---- EDIT 005 ADD END ---------------------------
+	IS_ACTABLE = 0
+	C_COUNTER_SKD:L_T:0 =
+	;L_SKILLCOUNT = CHARA_SKILLCOUNT(L_T)
+	;全部のスキルをチェックする
+	;FOR LCOUNT, 0, L_SKILLCOUNT  + 20
+	FOR LCOUNT, 0, TRYSKILLNUM(L_T)
+		TFLAG:스킬트리거용1 = 0
+		TFLAG:스킬트리거용2 = 0
+		TFLAG:스킬트리거용3 = 0
+		TFLAG:스킬트리거용4 = 0
+		TFLAG:스킬트리거용5 = 0
+		
+		RESULT = 0
+		RESULT:1 = -1
+		RESULT:2 = 0
+		RESULTS '= ""
+		;---- EDIT 004 MOD START -------------------------
+		L_スキル = %GET_TRYSKILL(L_T, LCOUNT)%
+		TRYCCALLFORM SKILL_COUNTER_ACTIONABLE_%L_スキル%, L_T, L_P
+			IF RESULT > 0
+				SIF C_COUNTER_SKD:L_T:0 != ""
+					C_COUNTER_SKD:L_T:0 += "/"
+				;------------------------------------------------------------
+				;スキルの個別チェックが通ったら、キャラ変数に予定を加える。戻り値は対象(ポジション方式)
+				;スキル区分(LSかどうかなど)_スキル番号_対象のポジション/区分_スキル番号_対象のポジション…
+				;と言う形で、追撃実行関数では立てられた予定全てがこなされるまでACTIONを繰り返す
+				;------------------------------------------------------------				;C_COUNTER_SKD:L_T:0 += TOSTR(L_スキル) + "," + TOSTR(RESULT:1) + "," + TOSTR(RESULT:2)
+				IF RESULTS == ""
+					C_COUNTER_SKD:L_T:0 += L_スキル + "," + TOSTR(RESULT:1) + "," + TOSTR(RESULT:2)
+				ELSE
+					C_COUNTER_SKD:L_T:0 += RESULTS + "," + TOSTR(RESULT:1) + "," + TOSTR(RESULT:2)
+				ENDIF
+				IS_ACTABLE = 1
+			ENDIF
+		CATCH
+		ENDCATCH
+		;---- EDIT 004 MOD END ---------------------------
+	NEXT
+	LCOUNT = 0
+	;スキルとして所持されない反撃をチェック
+	WHILE 1
+		CALL COUNTER_CHECK_EX, L_T, L_P, LCOUNT
+		SIF RESULT > 0
+			IS_ACTABLE = 1
+		SIF RESULT < 0
+			BREAK
+		LCOUNT++
+	WEND
+	;追撃が確定したキャラを行動リストにいれる。
+	IF IS_ACTABLE
+		SIF COUNTER_SKD_LIST != ""
+			COUNTER_SKD_LIST += "/"
+		COUNTER_SKD_LIST += TOSTR(L_T)
+	ENDIF
+NEXT
+RETURN IS_ACTABLE
+
+;-------------------------------------------
+;スキル外カウンター登録
+;スキルとしてもたせてないものでカウンター処理が必要ならここで
+;処理を簡略化するために、習得不能なスキルを登録して実行させるという形にしてください
+;-------------------------------------------
+@COUNTER_CHECK_EX, ARG, ARG:1, ARG:2
+#DIM L_P
+#DIM L_T
+#DIM L_スキル
+L_T = ARG
+L_P = ARG:1
+SELECTCASE ARG:2
+	CASE 0
+		SELECTCASE ABL:ARG:잠재능력
+			CASE 0
+				L_スキル = [[스킬:잠재반격]]
+			CASE 1
+				L_スキル = [[스킬:잠재회복]]
+			CASE 4
+				L_スキル = [[스킬:잠재특수]]
+			CASE 5
+				L_スキル = [[스킬:잠재공격]]
+			CASE 6
+				L_スキル = [[스킬:잠재보조]]
+			CASEELSE
+				RETURN 0
+		ENDSELECT
+	CASEELSE
+		RETURN -1
+ENDSELECT
+RESULT = 0
+RESULT:1 = -1
+RESULT:2 = 0
+CALLFORM SKILL_COUNTER_ACTIONABLE_{L_スキル}, L_T, L_P
+IF RESULT > 0
+	SIF C_COUNTER_SKD:L_T:0 != ""
+		C_COUNTER_SKD:L_T:0 += "/"
+	C_COUNTER_SKD:L_T:0 += TOSTR(L_スキル) + "," + TOSTR(RESULT:1) + "," + TOSTR(RESULT:2)
+ENDIF
+RETURN RESULT
+;===================================================
+;カウンター実行関数
+;;チェック関数でリスト化されたカウンタースキルを順番に実行していく
+;
+;ARG		カウンター実行者のキャラ番号
+;ARG:1		何人目の実行者か
+;===================================================
+@SKILL_ACTION_COUNTER, ARG, ARG:1
+#LOCALSSIZE 1
+#DIM DYNAMIC L_P
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_スキル
+#DIMS DYNAMIC L_非所持スキル
+#DIM DYNAMIC L_ターゲット
+#DIM DYNAMIC MESS_SKIP
+#DIM DYNAMIC PREV_スキル
+#DIMS DYNAMIC PREV_非所持スキル
+#DIM DYNAMIC L_FRIENDABLE
+#DIM DYNAMIC L_ENEMYABLE
+#DIM DYNAMIC L_特殊条件
+#DIM DYNAMIC IS_SAME_SKILL
+#DIMS DYNAMIC STOCK_非所持スキル
+IF !ARG:1
+	L_FRIENDABLE = 0
+	L_ENEMYABLE = 0
+ENDIF
+L_P = ARG
+TFLAG:원타겟 = CFLAG:L_P:타겟
+TFLAG:원입력행동 = CFLAG:L_P:입력행동
+STOCK_非所持スキル '= CSTR:L_P:비소지스킬
+
+LCOUNT = 0
+PREV_スキル = -1
+PREV_非所持スキル = 
+DO
+	LOCALS '= AUTO_SPLIT(C_COUNTER_SKD:ARG:0, "/", LCOUNT)
+	;予約行動が終わったらBREAKするが、最後の一回の行動後処理を逃すのでここで行う
+	IF LOCALS == ""
+		SIF PREV_スキル >= 0
+			CALL BATTLE_SKILLEND, L_P
+		BREAK
+	ENDIF
+	IF ISNUMERIC(AUTO_SPLIT(LOCALS, ",", 0))
+		L_スキル = TOINT(AUTO_SPLIT(LOCALS, ",", 0))
+		L_非所持スキル = 
+	ELSE
+		L_スキル = [[스킬:비소지스킬]]
+		L_非所持スキル '= AUTO_SPLIT(LOCALS, ",", 0)
+	ENDIF
+	CFLAG:L_P:입력행동 = L_スキル
+
+	;スキルの一致チェック
+	IF PREV_スキル == -1
+		IS_SAME_SKILL = 0
+	ELSE
+		IF PREV_スキル == L_スキル
+			IF L_スキル == [[스킬:비소지스킬]]
+				IF PREV_非所持スキル == L_非所持スキル
+					IS_SAME_SKILL = 1
+				ELSE	
+					IS_SAME_SKILL = 0
+				ENDIF
+			ELSE		
+				IS_SAME_SKILL = 1
+			ENDIF
+		ELSE
+			IS_SAME_SKILL = 0
+		ENDIF
+	ENDIF
+	
+	L_特殊条件 = TOINT(AUTO_SPLIT(LOCALS, ",", 1))
+	L_ターゲット = L_特殊条件 % 100000
+	;単体指定はポジション変動で対象がずれている可能性があるので調整する
+	;---- EDIT 002 ADD START -------------------------
+	IF INRANGE(L_ターゲット, 1, 16)
+		SIF POS_REC:L_ターゲット == -1
+			CONTINUE
+		L_ターゲット = CPOS(POS_REC:L_ターゲット)
+	ENDIF
+	;---- EDIT 002 ADD END ---------------------------
+	CFLAG:L_P:타겟 = L_ターゲット
+	L_特殊条件 = L_特殊条件 / 100000
+	MESS_SKIP = TOINT(AUTO_SPLIT(LOCALS, ",", 2))
+	;行動毎のフラグ処理.スキルが切り替わった際にリセットをかける
+	SIF !IS_SAME_SKILL || LOCALS == ""
+		CALL BATTLE_SKILLEND, L_P
+	;-----------------------------------------------------
+	;発動判定
+	;------------------------------------------------------
+	;攻撃手が動けない場合は不発
+	IF !ACTIONABLE_CHARA_F(L_P)
+		IF IS_BADSTATE(L_P, "DYING")
+			;ただし、特殊条件が1なら発動する
+			SIF L_特殊条件 != 1
+				CONTINUE
+		ELSE
+			;特殊条件が2の場合は死亡以外の行動不能でも発動する
+			SIF L_特殊条件 != 2
+				CONTINUE
+		ENDIF
+	ENDIF
+	;攻撃者が場にいないなら不発
+	CALL GET_SKILL_PROP, "SKILL_COUNTER_ACTIONABLE_USEABLE_RESERVE", L_スキル, L_P
+	IF RESULT == 0
+		SIF CPOS(L_P) <= 0
+			CONTINUE
+	ENDIF
+	;対象未指定(-1 = 不問)でなく、対象がいない場合は不発
+	IF L_ターゲット != -1
+		SIF L_ターゲット == 0
+			CONTINUE
+		SIF !IS_EXIST_ターゲット(L_ターゲット)
+			CONTINUE
+	ENDIF
+	;---------------------
+	;---------------------------------------------------------
+	;描画　敵と味方で一度づつ切り替え告知を出す
+	;---------------------------------------------------------
+	IF (!L_FRIENDABLE && CFLAG:L_P:PT플래그 > 0) || (!L_ENEMYABLE && CFLAG:L_P:PT플래그 <= 0)
+		IF CFLAG:L_P:PT플래그 > 0
+			SETCOLOR COLOR("FRIEND")
+			L_FRIENDABLE++
+		ELSE
+			SETCOLOR COLOR("ENEMY")
+			L_ENEMYABLE++
+		ENDIF
+		ALIGNMENT CENTER
+		PRINTFORML ┏━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃　　　ＣＯＵＮＴＥＲ ＡＣＴ！ 　　┃
+		PRINTFORMW ┗━━━━━━━━━━━━━━━━━┛
+		RESETCOLOR
+		ALIGNMENT LEFT
+	ENDIF
+
+	CSTR:L_P:비소지스킬 = %L_非所持スキル%
+	;同じスキルが連続で続いた場合、同じスキルが続行しているように見せる
+	SIF !IS_SAME_SKILL && !MESS_SKIP
+		CALL PRINT_ACT_MESSAGE, L_P, L_スキル
+	;---------------------------------------------------------
+	;スキル発動
+	;---------------------------------------------------------
+	;カウンター発動時の口上を呼び出す
+	TFLAG:발동연동스킬 = L_スキル
+;	TFLAG:전투이벤트 = 20
+	SETCOLOR COLOR("BATTLE", L_P)
+	CALL BATTLE_EVENT, "反撃発動", L_P
+	RESETCOLOR
+	CALL BATTLE_ACTSTART, L_P
+	;---------------------------------------------------------
+	;発動後処理
+	;---------------------------------------------------------
+	PREV_スキル = L_スキル
+	PREV_非所持スキル = %L_非所持スキル%
+	;---- EDIT 003 MOD START -------------------------
+	;勝敗をチェック
+	CALL FIGHT_IT_OUT
+	SIF RESULT
+		BREAK
+	;---- EDIT 003 MOD END ---------------------------
+LOOP ++LCOUNT
+CFLAG:L_P:입력행동 = TFLAG:원입력행동
+CFLAG:L_P:타겟 = TFLAG:원타겟
+CSTR:L_P:비소지스킬 '= STOCK_非所持スキル
+RETURN RESULT
+
+;==========================================
+;追撃条件の確認 & 追撃予定の作成関数
+;ARG 	行動者
+;
+;判定者(L_P)と判定対象(L_T)は全部の組み合わせで実行するので注意
+;スキル側で見る場合、ARG(スキルの持ち主)に対してARG:1(判定対象)は戦闘に参加している敵味方全員分まわってくる
+;さらに自分が行動していないケースでもまわってくるので注意
+;==========================================
+@TRIGGER_CHECK, ARG
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_T
+#DIM DYNAMIC LCOUNT, 3
+#DIMS DYNAMIC  L_スキル
+#DIM DYNAMIC L_SKILLCOUNT
+#DIM DYNAMIC IS_ACTABLE
+TRIGGER_SKD_LIST = 
+C_TRIGGER_SKD:ARG:0 = 
+;戦闘に一度でも参加したキャラすべてを対象としてチェックさせる。
+;(すでに死んで画面から消えたキャラがトリガーをひかせてる可能性があるので)
+FOR LCOUNT:2, 0, BCHARANUM
+	L_P = BCHARA:(LCOUNT:2)
+	;予定をクリア
+	C_TRIGGER_SKD:L_P:0 =
+	TFLAG:스킬트리거용1 = 0
+	TFLAG:스킬트리거용2 = 0
+	TFLAG:스킬트리거용3 = 0
+	TFLAG:스킬트리거용4 = 0
+	TFLAG:스킬트리거용5 = 0
+	;追撃が一つでも発動条件をみたしたかどうか
+	IS_ACTABLE = 0 
+	FOR LCOUNT:1, 0, BCHARANUM
+		L_T = BCHARA:(LCOUNT:1)
+		;全部のスキルをチェックする
+		L_SKILLCOUNT = CHARA_SKILLCOUNT(L_P)
+		FOR LCOUNT, 0, TRYSKILLNUM(L_P)
+			RESULT = 0
+			RESULT:1 = -1
+			RESULT:2 = 0
+			RESULTS '= ""
+			L_スキル = %GET_TRYSKILL(L_P, LCOUNT)%
+			TRYCCALLFORM SKILL_TRIGGER_ACTIONABLE_%L_スキル%, L_P, L_T
+				IF RESULT > 0
+					SIF C_TRIGGER_SKD:L_P:0 != ""
+						C_TRIGGER_SKD:L_P:0 += "/"
+					;------------------------------------------------------------
+					;スキルの個別チェックが通ったら、キャラ変数に予定を加える。戻り値は対象(ポジション方式)
+					;スキル区分(LSかどうかなど)_スキル番号_対象のポジション/区分_スキル番号_対象のポジション…
+					;と言う形で、追撃実行関数では立てられた予定全てがこなされるまでACTIONを繰り返す
+					;------------------------------------------------------------
+					IF RESULTS == ""
+						C_TRIGGER_SKD:L_P:0 += L_スキル + "," + TOSTR(RESULT:1) + "," + TOSTR(RESULT:2)
+					ELSE
+						C_TRIGGER_SKD:L_P:0 += RESULTS + "," + TOSTR(RESULT:1) + "," + TOSTR(RESULT:2)
+					ENDIF
+					IS_ACTABLE = 1
+				ENDIF
+			CATCH
+			ENDCATCH
+		NEXT
+	NEXT
+	;追撃が確定したキャラを行動リストにいれる。
+	IF IS_ACTABLE
+		SIF TRIGGER_SKD_LIST != ""
+			TRIGGER_SKD_LIST += "/"
+		TRIGGER_SKD_LIST += TOSTR(L_P)
+	ENDIF
+NEXT
+RETURN IS_ACTABLE
+
+;===================================================
+;追撃実行関数
+;チェック関数でリスト化された追撃スキルを順番に実行していく
+;
+;ARG		追撃実行者のキャラ番号
+;ARG:1		何人目の実行者か
+;===================================================
+@SKILL_ACTION_TRIGGER, ARG, ARG:1
+#LOCALSSIZE 1
+#DIM DYNAMIC L_P
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_スキル
+#DIMS DYNAMIC  L_非所持スキル
+#DIMS DYNAMIC STOCK_非所持スキル
+#DIM DYNAMIC L_ターゲット
+#DIM DYNAMIC MESS_SKIP
+#DIM DYNAMIC PREV_スキル
+#DIMS DYNAMIC  PREV_非所持スキル
+#DIM DYNAMIC L_FRIENDABLE
+#DIM DYNAMIC L_ENEMYABLE
+#DIM DYNAMIC L_特殊条件
+#DIM DYNAMIC IS_SAME_SKILL
+IF !ARG:1
+	L_FRIENDABLE = 0
+	L_ENEMYABLE = 0
+ENDIF
+L_P = ARG
+TFLAG:원타겟 = CFLAG:L_P:타겟
+TFLAG:원입력행동 = CFLAG:L_P:입력행동
+STOCK_非所持スキル '= CSTR:L_P:비소지스킬
+LCOUNT = 0
+PREV_スキル = -1
+PREV_非所持スキル = 
+DO
+	LOCALS '= AUTO_SPLIT(C_TRIGGER_SKD:ARG:0, "/", LCOUNT)
+	;予約行動が終わったらBREAKするが、最後の一回の行動後処理を逃すのでここで行う
+	IF LOCALS == ""
+		SIF PREV_スキル >= 0
+			CALL BATTLE_SKILLEND, L_P
+		BREAK
+	ENDIF
+	IF ISNUMERIC(AUTO_SPLIT(LOCALS, ",", 0))
+		L_スキル = TOINT(AUTO_SPLIT(LOCALS, ",", 0))
+		L_非所持スキル = 
+	ELSE
+		L_スキル = [[스킬:비소지스킬]]
+		L_非所持スキル '= AUTO_SPLIT(LOCALS, ",", 0)
+	ENDIF
+	CFLAG:L_P:입력행동 = L_スキル
+
+	;スキルの一致チェック
+	IF PREV_スキル == -1
+		IS_SAME_SKILL = 0
+	ELSE
+		IF PREV_スキル == L_スキル
+			IF L_スキル == [[스킬:비소지스킬]]
+				IF PREV_非所持スキル == L_非所持スキル
+					IS_SAME_SKILL = 1
+				ELSE	
+					IS_SAME_SKILL = 0
+				ENDIF
+			ELSE		
+				IS_SAME_SKILL = 1
+			ENDIF
+		ELSE
+			IS_SAME_SKILL = 0
+		ENDIF
+	ENDIF
+
+	L_特殊条件 = TOINT(AUTO_SPLIT(LOCALS, ",", 1))
+	L_ターゲット = L_特殊条件 % 100000
+	;---- EDIT 002 ADD START -------------------------
+	;ターゲットを単体指定している場合はポジションがずれている場合があるので調整する
+	IF INRANGE(L_ターゲット, 1, 16)
+		;狙っていた対象がすでに場にいなかったら不発
+		SIF POS_REC:L_ターゲット == -1
+			CONTINUE
+		L_ターゲット = CPOS(POS_REC:L_ターゲット)
+	ENDIF
+	;---- EDIT 002 ADD ENDI ---------------------------
+	CFLAG:L_P:타겟 = L_ターゲット
+	L_特殊条件 = L_特殊条件 / 100000
+	MESS_SKIP = TOINT(AUTO_SPLIT(LOCALS, ",", 2))
+	;行動毎のフラグ処理.スキルが切り替わった際にリセットをかける
+	SIF !IS_SAME_SKILL || LOCALS == ""
+		CALL BATTLE_SKILLEND, L_P
+	
+	;---------------------------------------------------------
+	;発動判定
+	;---------------------------------------------------------
+	;攻撃手が動けない場合は不発
+	IF !ACTIONABLE_CHARA_F(L_P)
+		IF IS_BADSTATE(L_P, "DYING")
+			;ただし、特殊条件が1なら発動する
+			SIF L_特殊条件 != 1
+				CONTINUE
+		ELSE
+			;特殊条件が2の場合は死亡以外の行動不能でも発動する
+			SIF L_特殊条件 != 2
+				CONTINUE
+		ENDIF
+	ENDIF
+	;攻撃者が場にいないなら不発
+	CALL GET_SKILL_PROP, "SKILL_TRIGGER_ACTIONABLE_USEABLE_RESERVE", L_スキル, L_P
+	IF RESULT == 0
+		SIF CPOS(L_P) <= 0
+			CONTINUE
+	ENDIF
+	;対象未指定(-1 = 不問)でなく、
+	IF L_ターゲット != -1
+		SIF L_ターゲット == 0
+			CONTINUE
+		SIF !IS_EXIST_ターゲット(L_ターゲット)
+			CONTINUE
+	ENDIF
+	;---------------------------------------------------------
+	;描画　敵と味方で一度づつ切り替え告知を出す
+	;---------------------------------------------------------
+	IF (!L_FRIENDABLE && CFLAG:L_P:PT플래그 > 0) || (!L_ENEMYABLE&& CFLAG:L_P:PT플래그 <= 0)
+		IF CFLAG:L_P:PT플래그 > 0
+			SETCOLOR COLOR("FRIEND")
+			L_FRIENDABLE++
+		ELSE
+			SETCOLOR COLOR("ENEMY")
+			L_ENEMYABLE++
+		ENDIF
+		ALIGNMENT CENTER
+		PRINTFORML ┏━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃　　　  ＥＸＴＲＡ ＡＣＴ！ 　　　┃
+		PRINTFORMW ┗━━━━━━━━━━━━━━━━━┛
+		RESETCOLOR
+		ALIGNMENT LEFT
+	ENDIF
+
+	CSTR:L_P:비소지스킬 = %L_非所持スキル%
+	;同じスキルが連続で続いた場合、同じスキルが続行しているように見せる
+	SIF !IS_SAME_SKILL && !MESS_SKIP
+		CALL PRINT_ACT_MESSAGE, L_P, L_スキル
+	;---------------------------------------------------------
+	;スキル発動
+	;---------------------------------------------------------
+	;追撃発動時の口上を呼び出す
+	TFLAG:발동연동스킬 = L_スキル
+	;TFLAG:전투이벤트 = 21
+	SETCOLOR COLOR("BATTLE", L_P)
+	CALL BATTLE_EVENT, "追撃発動",L_P
+	RESETCOLOR
+	CALL BATTLE_ACTSTART, L_P
+	
+	;---------------------------------------------------------
+	;発動後処理
+	;---------------------------------------------------------
+	PREV_スキル = L_スキル
+	PREV_非所持スキル = %L_非所持スキル%
+	;---- EDIT 003 MOD START -------------------------
+	;勝敗をチェック
+	CALL FIGHT_IT_OUT
+	SIF RESULT
+		BREAK
+	;---- EDIT 003 MOD END ---------------------------
+LOOP ++LCOUNT
+CFLAG:L_P:입력행동 = TFLAG:원입력행동
+CFLAG:L_P:타겟 = TFLAG:원타겟
+CSTR:L_P:비소지스킬 '= STOCK_非所持スキル
+RETURN RESULT

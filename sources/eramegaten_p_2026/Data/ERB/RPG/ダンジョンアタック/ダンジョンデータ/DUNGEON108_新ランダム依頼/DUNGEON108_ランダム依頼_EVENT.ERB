@@ -1,0 +1,88 @@
+﻿;========================================
+;戦闘開始時の処理
+;========================================
+@EVENT_BATTLE_START_DUNGEON108
+TRYCALLFORM EVENT_BATTLE_START_REQUEST_108_{依頼フラグ:[[依頼:랜덤의뢰]]:1}
+
+
+;========================================
+;ターン終了時の処理
+;========================================
+@EVENT_BATTLE_TURNEND_DUNGEON108
+TRYCALLFORM EVENT_BATTLE_TURNEND_REQUEST_108_{依頼フラグ:[[依頼:랜덤의뢰]]:1}
+
+
+;========================================
+;行動終了時の処理
+;========================================
+@EVENT_BATTLE_ACTEND_DUNGEON108
+#DIM DYNAMIC 行動者
+#DIM DYNAMIC ダメージ量
+#DIMS DYNAMIC 属性
+#DIMS DYNAMIC ダメージテキスト
+#DIMS DYNAMIC ダメージ判定
+#DIMS DYNAMIC ダメージ表示
+
+;特殊勝利==========================================================================================
+SELECTCASE 依頼フラグ:[[依頼:랜덤의뢰]]:1
+	;人魚狩り（敵が氷結になったら勝利）
+	CASE 37
+		FOR LOCAL, 7, 17
+			IF POS(LOCAL) >= 0
+				IF GET_STATE(CFLAG:(POS(LOCAL)):상태이상) == "FREEZE"
+					LOCALS = 人魚を凍結させた。
+					CALL MESSAGE_B(1, LOCALS)
+					依頼フラグ:[[依頼:랜덤의뢰]]:4 = 1
+					FLAG:승리플래그 = 1
+					FLAG:탈출 = 1
+				ENDIF
+			ENDIF
+		NEXT
+ENDSELECT
+
+;行動終了時にダメージ==========================================================
+TRYCALLFORM EVENT_BATTLE_ACTEND_DUNGEON_108_{依頼フラグ:[[依頼:랜덤의뢰]]:1}
+ダメージ判定 = %RESULTS:0%
+属性 = %RESULTS:1%
+ダメージテキスト = %RESULTS:2%
+ダメージ量 = RESULT
+行動者 = FLAG:행동순1
+IF ダメージ判定 == "あり"
+	;ダメージ処理が発生するか否か
+	IF CFLAG:行動者:PT플래그 == 0
+		RETURN 0
+	ELSEIF 行動者 < 0
+		RETURN 0
+	ELSEIF CFLAG:行動者:상태이상 == GET_STATE_NUM("DYING")
+		RETURN 0
+	;34:救助任務は救出するまでダメージは発生しない
+	ELSEIF 依頼フラグ:[[依頼:랜덤의뢰]]:1 == 34 && 依頼フラグ:[[依頼:랜덤의뢰]]:4 == 0
+		RETURN 0
+	ENDIF
+	;ダメージ計算
+	IF MAXBASE:行動者:属性 == 999
+		ダメージ量 = 0
+	ELSE
+		LOCALS = %属性%무효화횟수
+		IF CFLAG:行動者:LOCALS > 0
+			ダメージ量 = 0
+			CFLAG:行動者:LOCALS -= 1
+		ELSE
+			ダメージ量 = ダメージ量 * MAXBASE:行動者:属性 / 100
+		ENDIF
+	ENDIF
+	;ダメージ表示
+	IF ダメージ量 < 0
+		ダメージ表示 = {-(ダメージ量)}회복
+	ELSEIF ダメージ量 == 0
+		ダメージ表示 = BLOCK
+	ELSE
+		ダメージ表示 = {ダメージ量}데미지
+	ENDIF
+	LOCALS = %ダメージテキスト%
+	SETCOLORBYNAME Red
+	CALL MESSAGE_B(1, LOCALS)
+	RESETCOLOR
+	PRINTFORMW 　　TARGET:[{行動者,2}] %CALLNAME:行動者,20,LEFT%　>>>>>>　%ダメージ表示%
+	CALL VAR_HP, 行動者, -(ダメージ量)
+ENDIF

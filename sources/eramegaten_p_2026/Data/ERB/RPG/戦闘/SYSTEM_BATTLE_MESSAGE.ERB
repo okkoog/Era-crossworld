@@ -1,0 +1,159 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SYSTEM_BATTLE_MESSAGE.ERB
+;	Facility	:戦闘中のメッセージ関連の関数群
+;
+;	Licence		:ライセンスフリー。
+;
+;
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/05/03		P(bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;@PRINT_HIT_MESSAGE				対象指定+結果の描写
+;@PRINT_SKILL_MESSAGE			スキルのダメージ表示の描画関数
+;@PRINT_ACT_MESSAGE				行動者と使用スキルのメッセージの表示関数
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;==================================================================
+;対象指定+結果の描写
+;ARG	対象の指定。省略した場合は攻撃関数通過中に取得した対象メッセージを出力する
+;ARGS	結果の指定。省略した場合は攻撃関数通過中に取得した結果メッセージを出力する
+;==================================================================
+@PRINT_HIT_MESSAGE, ARG = -1, ARGS, ARGS:1 = "L"
+IF ARG >= 0
+	PRINTPLAINFORM 　　TARGET:[\@CPOS(ARG) > 0 ? {CPOS(ARG),2} # --\@] %CALLNAME:(ARG),20,LEFT%
+	PRINTPLAINFORM 　>>>>>>　
+ELSE
+	PRINTPLAINFORM %TSTR:스킬메시지대상%%TSTR:스킬메시지화살표%
+ENDIF
+IF ARGS != ""
+	PRINTPLAINFORM %ARGS%
+ELSE
+	PRINTPLAINFORM %TSTR:스킬메시지결과%
+ENDIF
+;---- EDIT 006 関数追加 ADD START -------------------------
+;---- EDIT 009 ADD START -------------------------
+SELECTCASE TOUPPER(ARGS:1)
+	CASE "W"
+		WAIT
+	CASE "L"
+		PRINTL 
+ENDSELECT
+
+;==================================================================
+;スキルのダメージ表示の描画関数
+;ARGS 表示部分の指定。省略した場合は全描写
+;==================================================================
+@PRINT_SKILL_MESSAGE, ARGS = "前置/メイン/追加"
+#LOCALSSIZE 1
+#DIM LCOUNT
+#DIM L_COLOR
+L_COLOR = GETCOLOR()
+
+LCOUNT = 0
+SIF TFLAG:스킬메시지컬러 > 0
+	SETCOLOR TFLAG:스킬메시지컬러
+IF STRFIND(ARGS, "前置") >= 0
+	WHILE 1
+		LOCALS = %AUTO_SPLIT(TSTR:스킬메시지서문, "/", LCOUNT)%
+		SIF LOCALS == ""
+			BREAK
+		SIF AUTO_SPLIT(LOCALS, "_", 2) != ""
+			SETCOLOR TOINT(AUTO_SPLIT(LOCALS, "_", 2))
+		PRINTS AUTO_SPLIT(LOCALS, "_", 0)
+		SELECTCASE AUTO_SPLIT(LOCALS, "_", 1)
+			CASE "L"
+				PRINTL 
+			CASE "W"
+				PRINTW 
+		ENDSELECT
+		LCOUNT++
+	WEND
+ENDIF
+IF STRFIND(ARGS, "メイン") >= 0
+	PRINTPLAINFORM %TSTR:스킬메시지대상%
+	PRINTPLAINFORM %TSTR:스킬메시지화살표%
+	PRINTPLAINFORM %TSTR:스킬메시지결과%
+ENDIF
+LCOUNT = 0
+IF STRFIND(ARGS, "追加") >= 0 && TSTR:스킬메시지추가 != ""
+	SIF !LINEISEMPTY()
+		PRINTL 
+	WHILE 1
+		LOCALS = %AUTO_SPLIT(TSTR:스킬메시지추가, "/", LCOUNT)%
+		SIF LOCALS == ""
+			BREAK
+		SIF AUTO_SPLIT(LOCALS, "_", 2) != ""
+			SETCOLOR TOINT(AUTO_SPLIT(LOCALS, "_", 2))
+		PRINTS AUTO_SPLIT(LOCALS, "_", 0)
+		SELECTCASE AUTO_SPLIT(LOCALS, "_", 1)
+			CASE "L"
+				PRINTL 
+			CASE "W"
+				PRINTW 
+		ENDSELECT
+		LCOUNT++
+	WEND
+	SIF !LINEISEMPTY()
+		PRINTL 
+ENDIF
+SETCOLOR L_COLOR
+
+;----------------------------------------------------------------
+;行動者と使用スキルのメッセージの表示関数
+;ARG:0	行動者のキャラ番号
+;ARG:1	スキル番号
+;ARG:2	色指定
+;ARGS	キャラ名でなく指定の文字列を使う
+;ARGS:1	スキル名でなく指定の文字列を使う
+;ARGS:2 オプション指定
+;----------------------------------------------------------------
+@PRINT_ACT_MESSAGE, ARG, ARG:1, ARG:2 = -1, ARGS, ARGS:1, ARGS:2
+#DIMS L_PNAME
+#DIMS L_PNUM
+#DIMS L_SKILLNAME
+#DIM STCOK_COLOR
+STCOK_COLOR = GETCOLOR()
+IF ARGS:1 != ""
+	L_SKILLNAME '= ARGS:1
+ELSE
+	CALL GET_SKILL_PROP, "SKILL_NAME", ARG:1, ARG
+	L_SKILLNAME '= RESULTS
+ENDIF
+IF TFLAG:스킬행동자컬러 > 0
+	SETCOLOR TFLAG:스킬행동자컬러
+ELSE
+	IF ARG:2 < 0
+		SIF CFLAG:ARG:PT플래그 == 0
+			SETCOLOR COLOR("ENEMY")
+		SIF CFLAG:ARG:PT플래그 > 0
+			SETCOLOR COLOR("FRIEND")
+	ELSE
+		SETCOLOR ARG:2
+	ENDIF
+ENDIF
+IF TSTR:스킬메시지행동자 != ""
+	L_PNAME '= AUTO_SPLIT(TSTR:스킬메시지행동자, "/", 0)
+ELSEIF ARGS != ""
+	L_PNAME '= AUTO_SPLIT(ARGS, "/", 0)
+ELSE
+	L_PNAME '= CALLNAME:ARG
+ENDIF
+IF AUTO_SPLIT(TSTR:스킬메시지행동자, "/", 1) != ""
+	L_PNUM = [%AUTO_SPLIT(TSTR:스킬메시지행동자, "/", 1), 2%]
+ELSEIF AUTO_SPLIT(ARGS, "/", 1) != ""
+	L_PNUM = [%AUTO_SPLIT(ARGS, "/", 1), 2%]
+ELSE
+	L_PNUM = [{CFLAG:ARG:포지션,2}]
+ENDIF
+;---- EDIT 106 MOD START -------------------------
+PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓
+PRINTFORM ┃%L_PNUM% %L_PNAME,21,LEFT%┃　┃
+PRINTFORML %L_SKILLNAME,40,LEFT%┃
+PRINTFORML ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+SIF !COUNT_SPLIT(ARGS:2, "/", "NOWAIT")
+	WAIT
+;---- EDIT 106 MOD END ---------------------------
+SETCOLOR STCOK_COLOR

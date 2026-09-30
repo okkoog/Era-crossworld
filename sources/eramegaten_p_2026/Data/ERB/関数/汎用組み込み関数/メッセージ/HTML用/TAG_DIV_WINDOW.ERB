@@ -1,0 +1,57 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:TAG_DIV_WINDOW.ERB
+;	Facility	:<div>を使用したウィンドウ表示を作成する関数
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/07/02		一ノ瀬				    新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;---------------------------------------------
+;	@TOSTR_HTML_WINDOW
+;	
+;---------------------------------------------
+@HTML_DIV_WINDOW , L_WIDTH = 0 , L_HEIGHT = 0 , L_CONTENT = "" , L_TITLE = "" , L_PAD = 50 ,  L_BW = 20 , L_BC = -1 , L_BGC = -1
+#FUNCTIONS
+#DIMS L_CONTENT
+#DIMS L_TITLE
+#DIM L_WIDTH
+#DIM L_HEIGHT
+#DIM L_PAD
+#DIM L_BW
+#DIM L_BC
+#DIM L_BGC
+LOCALS =
+LOCALS:1 =
+SIF L_WIDTH > 0
+	LOCALS += @" width='{L_WIDTH}'"
+SIF L_HEIGHT > 0
+	LOCALS += @" height='{L_HEIGHT}'"
+SIF L_PAD > 0
+	LOCALS += @" padding='{L_PAD}'"
+IF L_BW > 0
+	LOCALS += @" border_width='{L_BW}'"
+	LOCALS:1 += @" border_width='{L_BW}'"
+	IF L_BC != -1
+		LOCALS += @" border_color='%TOSTR_HTML(L_BC)%'"
+		LOCALS:1 += @" border_color='%TOSTR_HTML(L_BC)%'"
+	ENDIF
+ENDIF
+IF L_BGC != -1
+	LOCALS += @" background_color='%TOSTR_HTML(L_BGC)%'"
+	LOCALS:1 += @" background_color='%TOSTR_HTML(L_BGC)%'"
+ELSE
+	LOCALS += @" background_color='%TOSTR_HTML(GETBGCOLOR())%'"
+	LOCALS:1 += @" background_color='%TOSTR_HTML(GETBGCOLOR())%'"
+ENDIF
+
+IF L_TITLE != ""
+	LOCAL = STRLENS(L_TITLE)
+	L_TITLE '= @"<div xpos='{0}' ypos='{-120-L_BW*2}' padding='10' %LOCALS:1%>%L_TITLE%</div>"
+	;非アクティブ時にかぶせるフィルターを指定して追加。コメントとして追加し、エラーを避ける。
+	L_TITLE += @"<!--nonactive_filter=0,{-100-L_PAD*2-L_BW*2},{L_PAD*2+LOCAL*50},{100+L_PAD*2+L_BW*2}-->"
+ENDIF
+RETURNF @"<div %LOCALS%>%L_CONTENT%</div>%L_TITLE%"

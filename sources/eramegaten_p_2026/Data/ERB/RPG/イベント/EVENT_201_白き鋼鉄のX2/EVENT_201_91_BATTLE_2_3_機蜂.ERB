@@ -1,0 +1,337 @@
+﻿@SET_BOSS_ENEMY_EVENT_201_機蜂, L_ENEMY_NAME
+#DIMS DYNAMIC L_ENEMY_NAME
+#DIM DYNAMIC L_ENEMY
+SELECTCASE L_ENEMY_NAME
+	CASE "機蜂1"
+		TSTR:전투이벤트패턴 = EVENT_201_2_3_機蜂
+		CALL SET_ENEMY, 8, [[キャラ:특공형드론]], 30
+		CALL SET_ENEMY, 9, [[キャラ:미즈치]], 33
+		CALL SET_ENEMY, 10, [[キャラ:개구리형경비메카]], 30
+		CALL SET_ENEMY, 14, [[キャラ:알라우네]], 34
+	CASE "機蜂2"
+		TSTR:전투이벤트패턴 = EVENT_201_2_3_機蜂
+		CALL SET_ENEMY, 7, [[キャラ:특공형드론]], 30
+		CALL SET_ENEMY, 8, [[キャラ:실드캐논]], 32
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CALL SET_ENEMY, 9, [[キャラ:특공형드론]], 30
+		CALL SET_ENEMY, 10, [[キャラ:미즈치]], 33
+		CALL SET_ENEMY, 11, [[キャラ:특공형드론]], 30
+		CALL SET_ENEMY, 15, [[キャラ:모스맨]], 30
+	CASE "機蜂3"
+		TSTR:전투이벤트패턴 = EVENT_201_2_3_機蜂
+		CALL SET_ENEMY, 9, [[キャラ:우드골렘]], 35, 1, 1
+	CASE "ヴェスパ"
+		TSTR:전투이벤트패턴 = EVENT_201_2_3_ヴェスパ
+
+		CALL SET_ENEMY, 9, [[キャラ:베스파_X2]], 35, 1, 1
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ヴェスパ"
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 1000
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 50000
+		CFLAG:(CHARANUM-1):행동횟수 = 2
+		BASE:(CHARANUM-1):SHOCK = -25
+		CSTR:(CHARANUM-1):사고패턴 = スティンガートーレント
+		
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "ＳＰスキル"
+		CALL SET_SKILL, L_ENEMY, "オラージュリーゼ"
+		CALL SET_SKILL, L_ENEMY, "갈라"
+		CALL SET_SKILL, L_ENEMY, "바람의춤"
+		CALL SET_SKILL, L_ENEMY, "선풍진"
+		CALL SET_SKILL, L_ENEMY, "해피트리거"
+		CALL SET_SKILL, L_ENEMY, "마하・갈라"
+		CALL SET_SKILL, L_ENEMY, "하늘의선풍"
+		CALL SET_SKILL, L_ENEMY, "트리플다운"
+		CALL SET_SKILL, L_ENEMY, "갈다인"
+
+		CSTR:L_ENEMY:랜덤선택금지스킬 '= "ＳＰスキル"
+ENDSELECT
+
+;=============================================
+;EVENT_201_2_3_ヴェスパ
+;=============================================
+@SET_ACTION_スティンガートーレント, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:트리플다운]]
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	;ガンヴォルトあるある：HPが1/3切ったらSPスキル使う　5Tに1回打ってくるぞ
+	IF CFLAG:ARG:800 == 3 && PU_SKILLGAGE_D_GET(ARG, "ＳＰスキル") == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+	ELSE
+		IF RAND:6 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:트리플다운]]
+		ELSEIF RAND:5 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:갈다인]]
+		ELSEIF RAND:4 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:바람의춤]]
+		ELSEIF RAND:3 == 0
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "オラージュリーゼ")
+		ELSEIF RAND:2 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:선풍진]]
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:해피트리거]]
+		ENDIF
+	ENDIF
+ELSE
+	IF RAND:5 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:바람의춤]]
+	ELSEIF RAND:4 == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "オラージュリーゼ")
+	ELSEIF RAND:3 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:마하・갈라]]
+	ELSEIF RAND:2 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:하늘의선풍]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:연속사격]]
+	ENDIF
+ENDIF
+
+@CHANGE_ACTION_スティンガートーレント, ARG
+IF CFLAG:ARG:800 == 2 
+	CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+	CFLAG:ARG:800 = 3
+ENDIF
+
+@EVENT_BATTLE_DYING_EVENT_201_2_3_ヴェスパ, L_T, L_P, L_SKIP
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_SKIP
+IF L_T == GET_ENEMY("ヴェスパ") && CFLAG:L_T:800 == 0
+	TSTR:스킬메시지추가 = %CALLNAME:L_T%은(는) 일어섰다!!
+	
+	CFLAG:L_T:상태이상 = GET_STATE_NUM("GOOD")
+	BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ / 3
+	CFLAG:L_T:800 = 1
+	CFLAG:L_T:공격대상제외_ACT = 1
+ENDIF
+
+@EVENT_BATTLE_ACTEND_EVENT_201_2_3_ヴェスパ
+IF CFLAG:GET_ENEMY("ヴェスパ"):800 == 1
+	BTL_KOJO_RESULTS:0 = 이, 내가……!
+	SETCOLOR COLOR("ENEMY")
+	CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("ヴェスパ")
+	CFLAG:GET_ENEMY("ヴェスパ"):800 = 2
+ENDIF
+
+;ヴェスパ戦専用ライブノベル
+@EVENT_BATTLE_TURNSTART_EVENT_201_2_3_ヴェスパ
+#DIM 進行度
+#DIM DYNAMIC COPEN
+SIF 進行度 == 30
+	RETURN 0
+SIF FINDCHARA_B([[キャラ:아큐라_X]])  != 2
+	RETURN 0
+COPEN = RESULT:1
+SELECTCASE 進行度
+	CASE 0
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 아아, 그건 그렇고 아까 그 발언!
+		BTL_KOJO_RESULTS:1 = 떠올리기만 해도 분노가 다시 치밀어 오르네요!
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("ヴェスパ")
+		
+		BTL_KOJO_RESULTS:0 = 프로펠러 장비! 실탄 병기!
+		BTL_KOJO_RESULTS:1 = 이 격조 높은 우아함을 모르는 야만인 주제에!
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("ヴェスパ")
+		
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 아니, 난 바보 취급을 한 게 아니라――
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		進行度 = 10
+		RESETCOLOR
+	CASE 10
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 닥치세요! 제 앞에서 보란 듯이 제트를
+		BTL_KOJO_RESULTS:1 = 장비해 놓고서 잘도 그런 뻔뻔한 소리가 나오네요!
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("ヴェスパ")
+		
+		BTL_KOJO_RESULTS:0 = 제트 엔진의 우수함을 증명해 보이겠다는 속셈이겠죠!?
+		BTL_KOJO_RESULTS:1 = 아무 말 하지 않아도 그 정도는 훤히 꿰뚫어 보고 있어요!
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("ヴェスパ")
+		
+		BTL_KOJO_RESULTS:0 = 하지만 유감이네요! 저의 회전익은 그런 것에
+		BTL_KOJO_RESULTS:1 = 질 정도로 무른 회전 속도가 아니랍니다!!
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("ヴェスパ")
+		
+		進行度 = 20
+		RESETCOLOR
+	CASE 20
+		SETCOLOR COLOR("FRIEND")
+		CALL SET_RORO_KOJO_FLAG, COPEN
+		BTL_KOJO_RESULTS:0 = 안 돼 아큐라 군, 콤플렉스를 자극당하면
+		BTL_KOJO_RESULTS:1 = 남의 말을 전혀 안 듣는 건 사람이나 워커나 똑같나 봐!
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 큭…… 이렇게 되어서는 오해를 풀 겨를이 없겠군
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		進行度 = 30
+		RESETCOLOR
+ENDSELECT
+;ヴェスパ・敵対時の口上
+@KOJO_ENEMY_BATTLE_MESSAGE_K[[キャラ:베스파_X2]], ARG, ARG:1 = 0
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;これは通常攻撃
+SELECTCASE  CFLAG:ARG:입력행동
+	CASE 0
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 테이얏!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 에에잇!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 거기서 꼼짝 마세요!
+		ENDSELECT
+;-------------------------------------------------
+;汎用スキル
+;-------------------------------------------------
+	CASE [[스킬:데・쿤다]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 그 수법은 안 통한다구요!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 마음대로 하게 내버려 둘 리 없잖아요!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 그냥 눈감아줄 줄 알고?
+		ENDSELECT
+	CASE [[스킬:연속사격]], [[스킬:해피트리거]], [[스킬:고천열풍탄]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 도망칠 곳 따위, 있을 거라 생각지 마시길!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 갑니다앗! 자자아!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 이걸 피할 수 있을까요?
+		ENDSELECT
+	CASE [[스킬:트리플다운]], [[스킬:찰나장대비쏘기]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 이걸로 벌집을 만들어 드리겠어요-!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 기껏해야 무사하기만을 기도하시길!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 똑똑히 보세요! 날아가 버려라!
+		ENDSELECT
+	CASE [[스킬:갈다인]], [[스킬:갈바리온]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 폭풍이여, 휘몰아쳐라! %LOCALS%!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 프로펠러에는 이런 사용법도 있답니다!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 피하면 가만 안 둘 거예요!
+		ENDSELECT
+	CASE [[스킬:마하・갈라]], [[스킬:마하・갈다인]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 폭풍이여, 쓸어버려라! %LOCALS%!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 프로펠러에는 이런 사용법도 있답니다!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 한꺼번에 날려버려 드리죠!
+		ENDSELECT
+	CASE [[스킬:하늘의선풍]], [[스킬:땅의열풍]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 더욱, 더욱더! 더욱더 회전하렴, %CSTR:ARG:일인칭%의 프로펠러-!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 머리가 높군요! 고개를 조아리세요!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 어머, 놓칠 줄 알고?
+		ENDSELECT
+	CASE [[스킬:바람의춤]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 춤추는 건 당신들 쪽! 갈팡질팡 춤이겠지만요!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 도망칠 곳 따윈 있을 거라 생각지 마시길!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 갈가리 찢어주겠어요! 맞아라!
+		ENDSELECT
+	CASE [[스킬:선풍진]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 더욱, 더욱더! 더욱더 회전하렴, %CSTR:ARG:일인칭%의 프로펠러-!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 놀라셨나요? 이것이 특수 프로펠러의 실력이랍니다-!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 침입자는 철저하게 청소해 드리죠-!
+		ENDSELECT
+	CASE [[스킬:원샷킬]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 현명하고도 우아한 일격, 똑똑히 보시죠!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 한 방이면 충분하답니다―― 안녕히 계시길!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 명중에 난점이 있긴 하지만…… 저라면 다룰 수 있어요!
+		ENDSELECT
+	CASE [[스킬:크로스포츈]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 더욱, 더욱더! 더욱더 회전하렴, %CSTR:ARG:일인칭%의 프로펠러-!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 폭풍이여…… 휘몰아치며 쓸어버리렴! 우아하게! 철저하게!!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 지금이야말로 한계를 뛰어넘을 때! 운명조차 회전시켜 보이렴, 프로펠러-!
+		ENDSELECT
+	CASE [[스킬:회심의패기]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 자-알 조준해서…… 쏠 뿐이에요!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 이건 확실하게 맞추기 위한 한 수!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 빗맞히지 않아요. 각오하시길!
+		ENDSELECT
+	CASE [[스킬:용분의춤]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 이 화려한 춤사위, 눈에 똑똑히 새겨두시길!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 특별히 저의 춤을 볼 수 있는 영예를 하사해 드리죠
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 준비운동은 끝. 지금부터가 진짜예요!
+		ENDSELECT
+	CASE [[스킬:컨센트레이트]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 슬슬 무도회는 파장이네요!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 어떠신가요? 이 힘의 고양, 두렵지 않나요?
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 후훗, 기껏해야 각오나 해두시길!
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "オラージュリーゼ")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 먹어라! 한 방 더!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 후훗, 도망쳐도 소용없어요!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 꼼짝 마세요!
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+		BTL_KOJO_RESULTS:0 = 각오하시길!
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		ALIGNMENT RIGHT
+		RESETCOLOR
+		PRINTFORML 　　　　The fair maiden looks to the sky　　　　　　　　 
+		PRINTFORML 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+		PRINTFORML
+		PRINTFORML 　　Embraced by the noble storm　　　　　　　　　　　　　
+		SETCOLOR 0xe8307c
+		PRINTFORML 　　　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　
+		RESETCOLOR
+		PRINTFORML
+		PRINTFORML 　　　　A cloudburst of missiles rain down　　　　　　　 
+		PRINTFORMW 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+		ALIGNMENT LEFT
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 황혼의 플뤼이!
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+	TFLAG:전투구상직접출력 = 1
+ENDSELECT

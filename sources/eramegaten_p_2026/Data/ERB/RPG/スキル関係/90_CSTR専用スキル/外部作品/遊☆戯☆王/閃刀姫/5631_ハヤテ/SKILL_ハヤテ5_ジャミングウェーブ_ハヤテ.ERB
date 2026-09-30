@@ -1,0 +1,133 @@
+﻿;スキル名
+@SKILL_NAME_ジャミングウェーブ_ハヤテ,ARG
+RESULTS = 재밍웨이브
+
+;　명중
+@SKILL_HITRATE_ジャミングウェーブ_ハヤテ, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_ジャミングウェーブ_ハヤテ, ARG
+RETURN 300
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ジャミングウェーブ_ハヤテ,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ジャミングウェーブ_ハヤテ,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ジャミングウェーブ_ハヤテ, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+
+;　コストの量
+@SKILL_COST_ジャミングウェーブ_ハヤテ,ARG
+RETURN 36
+
+;　相性
+@SKILL_TYPE_ジャミングウェーブ_ハヤテ,ARG
+SIF FLAG:총공격중
+	RETURN GET_TYPE_NUM("질풍")
+RETURN GET_TYPE_NUM("없음")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ジャミングウェーブ_ハヤテ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ジャミングウェーブ_ハヤテ, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ジャミングウェーブ_ハヤテ, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_ジャミングウェーブ_ハヤテ,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ジャミングウェーブ_ハヤテ,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ジャミングウェーブ_ハヤテ, ARG
+RETURN GET_SKILL_EFFECT_NUM("상태변화")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_ジャミングウェーブ_ハヤテ
+RETURN GET_SUCCESSION_NUM("질풍")
+
+;속도보정
+@SKILL_SPEED_ジャミングウェーブ_ハヤテ, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ジャミングウェーブ_ハヤテ
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_ジャミングウェーブ_ハヤテ, ARG = -1
+RETURN 10
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_ジャミングウェーブ_ハヤテ,ARG,ARG:1
+#DIM LCOUNT
+;判定は一回
+SIF ARG != ARG:1
+	RETURN 0
+;自分自身の行動でないと誘発しない
+SIF ARG != FLAG:행동순1
+	RETURN 0
+SIF !IS_PU_SKILL_入力行動(ARG, "ジャミングウェーブ_ハヤテ")
+	RETURN 0
+SIF !PU_SKILLGAGE_D_GET(ARG, "ジャミングウェーブ_ハヤテ")
+	RETURN 0
+RETURN 1, CFLAG:ARG:PT플래그 ? 22 # 19
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ジャミングウェーブ_ハヤテ, ARG, ARG:1, ARG:2
+IF FLAG:총공격중
+	CALL ATTACK_SKILL, ARG, ARG:1, ARG:2
+ELSE
+	CALL SKILL_SET_カジャンダ, ARG, ARG:1, "명중/회피/마법효과", -4, "範囲"
+	CALL PUSH_CEMETERY_閃刀魔法, ARG, "ジャミングウェーブ"
+	SIF GET_COUNT_閃刀カウンター(ARG) >= 3
+		CALL PU_SKILLGAGE_D_SET, ARG, "ジャミングウェーブ_ハヤテ", 1
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_ジャミングウェーブ_ハヤテ, ARG
+PRINTL 【閃刀魔法】
+PRINTL 적 전체의 명중률, 회피율, 마법 효과를 저하시킨다.
+PRINTL 스킬 발동 후 섬도 카운터를 1개 얻는다.
+PRINTL 
+PRINTL 〈강화 효과〉 섬도 카운터가 3개 이상 있을 경우 이하의 연동효과가 발동한다.
+PRINTL 「적 전체에 질풍 속성의 물리 속성 대 데미지를 가한다.」
+PRINTL 강화 효과 발동 후 섬도 카운터를 얻는 대신 3개 제거한다.
+PRINTL 
+PRINTL 이 스킬은 전투 중 1회만 사용 가능.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ジャミングウェーブ_ハヤテ,ARG
+RESULTS = 스킬 사용 완료
+SIF !IS_USEABLE_閃刀魔法(ARG, "ジャミングウェーブ")
+	RETURN 0
+RETURN 1
+
+@リンク不能_ジャミングウェーブ_ハヤテ
+RETURN 1
+
+@SKILL_TAG_ジャミングウェーブ_ハヤテ
+RESULTS = 閃刀魔法

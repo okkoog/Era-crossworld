@@ -1,0 +1,196 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_82_英霊召喚(メディアリリィ).ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author		Reason
+;	000		20XX/XX/XX		----		テンプレ
+;	001		2022/12/17	takaya		新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;
+;イベントフラグ:82:5の100番台をメディアリリィ用として確保しています。
+;※戦闘がないために実際には使っていませんが、分かりやすさのために100番台の使用はお控え頂けると幸いです。
+;
+;====================
+;召喚イベント条件
+;====================
+@FGO_SUMMON_CHECK_10
+#DIM LCOUNT
+#DIM 達成度
+#DIM 生贄
+
+;■召喚可否条件をここに記載することで読み込んでくれます■
+;※召喚はイベントフラグ:82:1が必ず4以上から。
+IF イベントフラグ:82:1 > 3
+	IF GETCHARA([[キャラ:메데이아릴리]]) > 0
+		RESULTS = 콜키스의 왕녀(메데이아 릴리)
+		RESULTS:1 = 필요 촉매：지모신 헤케트(함락됨)　메데이아 릴리 가입 완료
+		RETURN 0
+	ELSEIF GETCHARA([[キャラ:헤케트]]) > 0
+		IF !陥落(GETCHARA([[キャラ:헤케트]]))
+			RESULTS = 콜키스의 왕녀(메데이아 릴리)
+			RESULTS:1 = 필요 촉매：지모신 헤케트(함락됨)　미함락
+			RETURN 0
+		ELSE
+			RESULTS = 콜키스의 왕녀(메데이아 릴리)
+			RESULTS:1 = 필요 촉매：지모신 헤케트(함락됨)　메데이아 릴리 미가입
+			RETURN 1
+		ENDIF
+	ELSE
+		RESULTS = 콜키스의 왕녀(메데이아 릴리)
+		RESULTS:1 = 필요 촉매：지모신 헤케트(함락됨)　미소지
+		RETURN 0
+	ENDIF
+ELSE
+	;そもこれが出ることはないはずだけど、確認用に一応記載
+	RESULTS = 최초 소환 이벤트 미소화
+	RETURN 0
+ENDIF
+
+;※RETURN 1　で鯖リストのBITがオンになるようにしているため、必ずRETURNを記入してください。
+
+
+;---- EDIT 002 ADD START ---------------------------
+;====================
+;生贄可否の条件確認
+;====================
+@FGO_SUMMON_SACRIFICE_10(ARG:0)
+	;地母神ヘケト以外は不可
+	SIF NO:ARG != [[キャラ:헤케트]]
+		RETURN 0
+	;未陥落は対象外
+	SIF !陥落(ARG)
+		RETURN 0
+	SIF !FGO_SUMMON_SACRIFIE_COMMON(ARG)
+		RETURN 0
+	RETURN 1
+;---- EDIT 002 ADD END -----------------------------
+
+
+;====================
+;メディアリリィ召喚
+;====================
+@FGO_SUMMON_10
+#DIM 対象
+#DIM L_COUNT
+
+;■イベント本文を記載■
+
+	対象 = [[キャラ:메데이아릴리]]
+	;バトルイベント識別のためにイベントフラグを特定値に設定
+	イベントフラグ:82:5 = 90
+	PRINTFORML  「자, 소환술은 다음 단계로!
+	PRINTFORMW  　――우리들의 연구 성과를 보여주도록 하지」
+	PRINTFORML  
+	PRINT  「자, 마음 단단히 먹게나
+	PRINTFORM \@ TALENT:MASTER:서머너 > 0 ? 서머너 # 전사 \@ %CALLNAME:MASTER%.
+	PRINTFORMW  　이것이 새로운 소환 기술, 그 발전이다――――읏읏읏」
+
+
+	CALL 疑似的画面クリア
+	TWAIT 500,1
+	PRINTFORML  
+	PRINTFORML  
+	;■以下、召喚イベント本文をどうぞ■
+	PRINTFORML 　＞ 오늘의 소환 실험은 특정 대상을 선별하여 행하는 듯하다
+	PRINTFORML 　  제물을 선별했기에, 이 정도라면 틀림없이
+	PRINTFORMW 　　콜키스의 왕녀이자 신화 시대 희대의 마녀, 메데이아가 소환될 터라고 한다
+	PRINTFORML 
+	PRINTFORML 　＞ 소환이 진행됨에 따라 마법진의 빛이 점점 강해진다
+	PRINTFORMW 　　이러면 소환 실패는 없을 것이다
+	PRINTFORML 
+	PRINTFORML 　「소환에 따라 참상하였습니다!
+	PRINTFORML 　　캐스터, 메데이아입니다.
+	PRINTFORMW 　　저기, 잘 부탁드립니다!」
+	PRINTFORML 
+	PRINTFORML 　＞ 소환의 마력 빛이 꺼진 마법진 중앙에 서 있던 것은, 푸른 눈동자에 보랏빛이 감도는 푸른 머리의 아름다운 소녀였다
+	PRINTFORML 　　긴 머리를 높은 위치에서 묶어 한 갈래로 늘어뜨리고 있다
+	PRINTFORMW 　　조금 긴장이라도 한 것인지 %CALLNAME:MASTER%를 위아래로 관찰하듯 바라보고 있다
+	PRINTFORML 
+	PRINTFORML 　＞ 무척이나 아름다운 소녀……이지만 정말로 그녀가 마술에 뛰어난 마녀인 것일까
+	PRINTFORML 　　서번트는 겉모습으로 판단할 수 없다지만 아무리 봐도 어려 보인다
+	PRINTFORMW 　　그렇게 생각하며, 시선을 메데이아라 자칭한 소녀에게 향했다
+	PRINTFORML 
+	PRINTFORML 　「저기, 그게!
+	PRINTFORML 　　무슨 착오라도 있었나요?
+	PRINTFORMW 　　어쩐지…… 생각하셨던 결과가 아닌 것처럼 보여요……」
+	PRINTFORML 
+
+	$INPUT_LOOP1
+	PRINTFORML [0]정말로 유명한 마녀 메데이아인가?
+	PRINTFORML [1]그렇지 않다
+	INPUT
+	SELECTCASE RESULT
+		CASE 0
+			PRINTFORML 　「…………앗.
+			PRINTFORML 　　저기, 저는 확실히 콜키스의 왕녀이자,
+			PRINTFORML 　　아마도 당신이 생각하시는 메데이아 본인이에요.
+			PRINTFORML 　　하지만…… 유명하다고 하는 본인보다 어린 시절의 모습이랍니다. 　
+			PRINTFORMW 　　이 모습으로 소환된 것도, 아마 무언가가 영기에 영향을 미쳐서……」
+			PRINTFORML 
+		CASE 1
+			PRINTFORML  
+			PRINTFORML 　「그런, 가요?
+			PRINTFORML 　　저를 노리고 소환하셨다면 저는 메데이아. 실패는 아니라고 생각해요.
+			PRINTFORMW 　　싸우는 힘은 높지 않지만, 회복이라면 맡겨주세요」
+			PRINTFORML  
+		CASEELSE
+			GOTO INPUT_LOOP1
+	ENDSELECT
+
+	PRINTFORML  　＞ 어딘가 수심에 찬 표정의 소녀지만, 그녀는 메데이아가 틀림없는 듯하다
+	PRINTFORML  　　분명 신대의 대마술을 구사해 주어 상당한 전력이 되어줄 것이다
+	PRINTFORMW  　　그렇게 그녀에게 전했으나
+	PRINTFORML 
+	PRINTFORML 　 「――대마술을 능수능란하게 다루는 메데이아?
+	PRINTFORML  　　……지금, 아까부터 느껴지던 괴리의 정체를 깨달았어요.
+	PRINTFORML  　　저는 콜키스의 왕녀 메데이아. 거기엔 틀림이 없어요.
+	PRINTFORMW  　　하지만 아마도 촉매 선별부터 실패하셨던 것이라 생각해요」
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORML  　＞ 무슨 뜻일까
+	PRINTFORML  　　콜키스의 왕녀, 마녀 메데이아를 소환하기 위한 조건은 달성했을 텐데
+	PRINTFORMW  　　그 의문을 표정과 말로 드러내자 메데이아가 답했다
+	PRINTFORML 
+	PRINTFORML  　「저기, 말이죠.
+	PRINTFORML  　　저는 서번트 캐스터, 메데이아이기는 하지만,
+	PRINTFORML  　　이른바 전승에서 노래하는 대마녀 메데이아로서의 서번트는 아니에요.
+	PRINTFORML  　　마술을 다루는 힘에서는 그리 뒤지지 않지만, 영령에게는 제각기 다른 측면이란 것이 존재한답니다.
+	PRINTFORMW  　　저를 소환하는 것에는 성공했더라도, 대마녀 메데이아로서의 저를 소환하기에는 촉매가……」
+	PRINTFORML  　　
+	PRINTFORML  　＞ 준비한 촉매는 헤케트다
+	PRINTFORMW  　　그렇게 전하자 메데이아는 아름다운 모양새의 눈을 크게 떴다
+	PRINTFORML 
+	PRINTFORML  　「――아아, 그런 것이었군요.
+	PRINTFORMW  　　헤케트 님과 헤카테 님. 근본은 같지만 적어도 제가 살던 시대에는 이미 다른 신격이었답니다」　
+	PRINTFORML 
+	PRINTFORML  　「혹시라도 대마녀로서의 저를 소환하는 것이 목적이셨다면,
+	PRINTFORML  　　헤카테 님 쪽이 더 적합했을 거라 생각해요.
+	PRINTFORMW  　　아마 헤케트 님을 촉매로 삼았기에, 대마녀 메데이아와 가장 차이가 적은 제가 소환된 것이겠지요」
+	PRINTFORML 
+	PRINTFORML  　＞ 즉 원래 노리던 소환 대상이라는 점에서는 빗나갔던 모양이다
+	PRINTFORMW  　　눈앞의 메데이아에게 들은 사실에 이마를 짚고 있자 메데이아가 말을 덧붙였다
+	PRINTFORML  
+	PRINTFORML  　「괜찮아요! 전 비록 어린 모습이지만 번듯한 캐스터의 서번트.
+	PRINTFORMW  　　영령으로서 영기의 제약 때문에 사용할 수 있는 마술에 차이는 있어도, 든든하게 서포트할 수 있답니다!」
+	PRINTFORML 
+	PRINTFORML  　＞ 그대로 그녀의 이야기를 들어보니, 대마녀로서의 공격 마술은 서툴지만
+	PRINTFORML  　　이 메데이아는 회복 마술에 특화된 존재인 모양이다
+	PRINTFORMW  　　그렇다면 그것대로 든든한 전력이 되어줄 것이다
+	PRINTFORML  
+	PRINTFORML  　「그런 고로, 저 메데이아도 잘 부탁드려요! 마스터!
+	PRINTFORMW  　　언젠가 대마녀로서의 저를 소환하시더라도, 실망은 쬐끄만큼만 할 테니까요!」
+
+			PRINTFORML 
+			PRINTFORMW  ＞ 영령 메데이아 릴리가 동료마가 되었다!
+			PRINTFORML  
+			CALL ADD_NEW_COMPANION, [[キャラ:메데이아릴리]], 1000
+
+	PRINTFORML 
+
+

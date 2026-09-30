@@ -1,0 +1,115 @@
+﻿;スキル名
+@SKILL_NAME_塵も積もれば,ARG
+RESULTS = 티끌 모아 태산
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_塵も積もれば
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_塵も積もれば,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_塵も積もれば,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_塵も積もれば,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_塵も積もれば,ARG
+RETURN GET_SKILL_EFFECT_NUM("상태변화")
+
+;スキル変化？用ランク
+@SKILL_RANK_塵も積もれば, ARG = -1
+RETURN 15
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_塵も積もれば, ARG = -1
+RETURN 0
+
+;　説明文の表示
+@SKILL_EXPLAIN_塵も積もれば,ARG
+PRINTL 자동: 자신의 공격이 명중할 때마다 파워 게이지를 얻는다.
+PRINTL 　　　현재 파워 게이지 축적량에 따라 자신이 가하는 물리 데미지가 증가한다.
+PRINTL 　　　파워 게이지 축적량에 따라 특수 강화 스킬로 인한 데미지가 크게 증가한다.
+PRINTL 　　　특수 강화 스킬을 발동하면 파워 게이지는 상실된다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_塵も積もれば,ARG
+RETURN 0
+
+@SKILL_SKILLEND_塵も積もれば, ARG
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_PTS
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+FOR LCOUNT, 0, BCHARANUM
+	SIF IS_FRIEND(ARG, BCHARA:LCOUNT)
+		CONTINUE
+	L_PTS += CFLAG:(BCHARA:LCOUNT):피탄횟수
+NEXT
+SIF L_PTS + PU_SKILLGAGE_H_GET(ARG, "塵も積もれば") >= 40
+	L_PTS = 40 - PU_SKILLGAGE_H_GET(ARG, "塵も積もれば")
+SIF L_PTS <= 0
+	RETURN 0
+CALL PU_SKILLGAGE_H_ADD, ARG, "塵も積もれば", L_PTS
+CALL PU_SKILLGAGE_D_ADD, ARG, "塵も積もれば", L_PTS
+
+
+@SKILL_ACTEND_塵も積もれば, ARG
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_PTS
+L_PTS = PU_SKILLGAGE_D_GET(ARG, "塵も積もれば")
+CALL PU_SKILLGAGE_D_SET, ARG, "塵も積もれば", 0
+SIF L_PTS == 0
+	RETURN 0
+CUSTOMDRAWLINE =
+IF CPOS(ARG) > 0
+	PRINTFORM 　　[{CPOS(ARG),2}] 
+ELSE
+	PRINTFORM 　　[--] 
+ENDIF
+PRINTFORMW %CALLNAME:ARG%:+{L_PTS} <<ＰＯＷＥＲ>>
+
+
+@SKILL_EX_DISPLAY_塵も積もれば, ARG, ARGS
+#DIM DYNAMIC L_POWER
+RESULTS '= SET_BUTTON_TAG(@"特:{GET_ROLE_CFLAG_DUNGEON(ARG,"デシベル値"),4}pts", "", "デシベル値&")
+L_POWER = PU_SKILLGAGE_H_GET(ARG, "塵も積もれば")
+RESULTS += "　" + SET_BUTTON_TAG(@"Pow:{L_POWER}", "", @"ＰＯＷＥＲ<br>物理ダメージ+{L_POWER/2}\%<br>特殊強化スキルダメージ+{L_POWER*2}\%")
+RETURN 1
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_塵も積もれば, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			SIF L_ダメージタイプ == "物理"
+				RETURN PU_SKILLGAGE_H_GET(L_P, "塵も積もれば") / 2
+			RETURN 0
+	ENDSELECT
+;自分が防御側
+ELSE
+ENDIF
+RETURN 0

@@ -1,0 +1,149 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_百花繚乱, ARG
+RESULTS = 백화요란
+
+;　명중
+@SKILL_HITRATE_百花繚乱, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_百花繚乱, ARG
+RETURN 140
+
+@SKILL_CRITICAL_RATE_百花繚乱, ARG
+RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_百花繚乱, ARG
+RETURN 6
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_百花繚乱, ARG
+RETURN 6
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_百花繚乱, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_百花繚乱, ARG
+RETURN 25
+
+;　相性
+@SKILL_TYPE_百花繚乱, ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_百花繚乱
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_百花繚乱, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_百花繚乱, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_百花繚乱, ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_百花繚乱, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_百花繚乱, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_百花繚乱, ARG
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;속도보정
+@SKILL_SPEED_百花繚乱, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_百花繚乱, ARG
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_百花繚乱, ARG = -1
+RETURN 23
+
+
+
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+@SKILL_DAMAGE_EFFECT_百花繚乱, ARG, ARG:1, ARG:2
+#DIM L_IKARI
+L_IKARI = PU_SKILLNUM_GET(ARG, "CSTR_怒り爆発")
+
+SIF CFLAG:(ARG:1):현데미지 < 1
+	RETURN 0
+CALL PU_SKILLGAGE_H_SET, ARG, "七の太刀・遊蝶華", 1P6 - 1
+
+SIF CFLAG:LOCAL:현데미지 > 0 && L_IKARI > 0
+	CALL SKILLGAGE_D_SET, ARG,L_IKARI,0
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_百花繚乱, ARG = -1, ARG:1 = -1
+RETURN 4
+;====================================================
+;スキル及び行動の実行
+;====================================================
+
+@ACTION_百花繚乱, ARG, ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM L_IKARI
+L_IKARI = PU_SKILLNUM_GET(ARG, "CSTR_怒り爆発")
+LOCAL = POS(ARG:1)
+
+CALL ATTACK_SINGLE, ARG,LOCAL,SKILL_NUM
+
+SIF CFLAG:LOCAL:현데미지 > 0 && L_IKARI > 0
+	CALL SKILLGAGE_D_SET, ARG,L_IKARI,0
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_百花繚乱, ARG
+PRINTL 적 단체에 검격 상성의 소데미지 6회 공격, 공격마다 유접화 게이지가 찬다
+PRINTL 모든 내성 및 내성강화 효과를 관통한다。
+
+@SKILL_EXPLAIN_TOOLTIP_百花繚乱, ARG
+RESULTS:0 = 적 단체에 검격 상성의 소데미지 6회 공격, 공격마다 유접화 게이지가 찬다
+RESULTS:1 = 모든 내성 및 내성강화 효과를 관통한다。
+
+;継承に必要な部位
+
+;とくにない
+
+@SKILL_ACTIONABLE_BATTLE_百花繚乱, ARG
+RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_百花繚乱, ARG
+RETURN 1
+;とくにない
+
+@SKILL_TAG_百花繚乱
+RESULTS = 칠의 태도 조건 스킬

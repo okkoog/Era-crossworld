@@ -1,0 +1,964 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SHOP.ERB
+;	Facility	:SHOP画面の処理など
+;
+;	Licence		:。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX			N鳥					新規作成
+;	002		2011/01/15			P					ダンジョン内調教においてASSIを排除する条件を追加
+;	003		2011/01/15			P					トリッシュのフラグ操作のタイミングをダンジョン脱出から日付変更に
+;	004		2011/01/15			Ｎ鳥				DEBUG用ショップコマンドを通常時非表示にしておくための処理を追加
+;	005		2011/02/14			P					ダンジョンイベントなどが出現時に告知するように
+;	006		2011/04/25			P					控えの表示形式を変更しつつ、色々変更
+;	007		2011/04/27			Ｎ鳥				ダンジョン内セーブロード後の探索終了時に衣装を保存するようにに
+;	006		2011/05/09			P					TARGETの危険日表示が間違っていたのを修正
+;	008		2013/11/30			ひみつ				위험일/発情中表示のコード圧縮。ハートマークで表示がずれるのを気合で修正
+;	009		2019/02/05			(ﾟдﾟ)				画像表示を伽耶ちゃんズに対応してしまった
+;	010		2019/07/06			名無し				納金の目標金額が常時更新されるように
+;	011		2019/07/06			名無し				SHOPコマンドが種類ごとに分けるように
+;	012		2019/08/03			ypa 				画像表示関連の仕様変更
+;	013		2020/08/04			Jガン 				スキルゲージ処理の追加
+;	014		2021/02/07			Rsp暇人				控えに画像（小）を、ターゲットに画像（大）を表示するように。文字数が多くてレイアウトが崩れる場合に短縮形を使うように
+;	015		2021/02/20			Jガン 				スキル参照関連追加　SHOPからステータスを見る場合でもスキルの情報が間違わないように
+;	016		2021/07/17			JK好き 				@SHOW_SUB_TARGET 画像表示・ストレス値表示時に名前の長いキャラがいると画像がずれる問題を修正
+;	017		2022/02/17			チェリー			ダンジョン、イベント、依頼、闘技場の出現メッセージがフラグの最大値である127（128番目）まで表示されるように修正
+;	018		2022/03/20			しゃけ				SKILL_INITIALIZEを追加。 SHOP到着時にゲージ初期値設定したい時とかに使う
+;	019		2022/05/22			Collared			外見固定処理追加
+;	020		2022/06/10			Collared			UI整理プロジェクトにより配置変更＆名前変更＆ショップ番号参照に変更
+;	021		2022/06/19			Collared			奴隷変更と助手変更ボタンが他のボタンと被っていた問題を修正
+;	022		2022/07/28			Rsp暇人				顔グラフィック簡易追加処理を呼び出すように
+;	023		2022/08/25			匿名				「依頼やダンジョン開放が増えすぎると視覚を圧迫する」との意見を受けて合計数が5件を超えると一覧表示に切り替えるよう変更
+;													また個人的に気になっていた画像を表示すると予備の調教対象の名前が長いと表示がずれる問題を修正
+;	024		2022/08/31			JK好き 				@SHOW_SUB_TARGET 画像表示・ストレス値表示時に名前の長いキャラがいると画像がずれる問題を再修正
+;													@SHOW_SHOP_INFO 名前の長いキャラがいると調教対象の画像がずれる問題を修正
+;	025		2022/10/19			P(bazzile) 			SHOPコマンドの制御変数をTFLAGからSHOP_ABLEに変更。
+;	026		2021/10/20			JK好き 				@SHOW_SUB_TARGET 盟友はサブターゲットから外れる処理を追加
+;	027		2021/11/27			P(bazzile) 			@SHOW_IMG_SUB 顔画像の指定をキャラ番号に変更
+;	028		2022/12/04			P(bazzile) 			キャラ独自探索変数のリセット処理を追加
+;	029		2023/03/21			P(bazzile) 			ショップ画面帰還時にリセットされるCFLAGを追加
+;	030		2023/05/05			P(bazzile) 			コマンダースキル/アシストスキルのチャージタイムのリセットをゲージFと同タイミングに変更
+;	031		2023/05/05			P(bazzile) 			コンティニュー用のデータの削除処理を追加
+;	032		2023/08/25			P(bazzile) 			目標金額が0のときに0と表示されるように
+;	033		2023/10/25			P(bazzile) 			ショップ画面の顔グラ表示処理を調整
+;	034		2023/11/03			P(bazzile) 			FLAG:ウィンドウメッセージスキップを折るタイミングを間違えていたので修正
+;	035		2024/02/12			P(bazzile) 			使用アイテムのストック移動処理を追加
+;	036		2024/04/17			P(bazzile) 			探索・依頼・コロシアム・イベント・個別イベントのショップコマンドの開始前に共通で呼ばれる処理部分を追加
+;	037		2024/04/28			P(bazzile) 			逃走不可等戦闘用の一時フラグを解除する処理をEVENTSHOPに追加
+;	038		2024/05/15			P(bazzile) 			召喚不能フラグを解除する措置を追加
+;													ゲストフラグの解除し忘れの捜査処理を追加
+;	041		2024/05/30			P(bazzile) 			ダンジョン探索終了処理を共通関数化
+;	042		2024/05/30			P(bazzile) 			初めて控えの2列目のサブターゲットを表示させたときにマスターのアイコンの一部が表示されてしまう不具合を修正
+;	043		2025/01/19			Jガン 				スキルゲージFリセット処理を関数化
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2024/02/23			P(bazzile) 			調教可能回数の表示を追加
+;	002		2024/03/03			P(bazzile) 			組織貢献度による調教回数と探索先切り替え回数の追加をする処理を実装
+;	003		2024/05/10			P(bazzile) 			マガツヒゲージのリセット処理を追加
+;	004		2024/06/02			P(bazzile)			顔グラの表示処理を変更し、顔グラ関係のコメントアウトを整理
+;	005		2024/08/18			P(bazzile)			イベント出現告知をリファクタリング
+;	006		2025/01/10			P(bazzile)			ショップ画面のアイコン表示などの処理を整理・変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+
+
+
+@EVENTSHOP
+#PRI
+#DIM LCOUNT
+;FOR LOCAL,0,CHARANUM
+;	CALL SYNC_STATUS,LOCAL
+;NEXT
+;---- EDIT 034 DEL START -------------------------
+;FLAG:윈도우메시지스킵 = 0
+;---- EDIT 034 DEL END ---------------------------
+;DELDATA SAVEDATA_NUM_FOR_CONTINUE;EDIT 031 ADD
+IF FLAG:SHOP커맨드 == [[ショップ:탐색]]
+	;画像データを取り直す
+	CALL RPG画像追加
+	;フロアデータを作り直す
+	CALL MAKE_FLOOR, FLAG:현던전
+	CALL DUNGEON_ATTACK
+	;---- EDIT 041 ADD START -------------------------
+	CALL FINALIZE_DUNGEON
+	SIF FLAG:던전내조교 == 1
+		RETURN 0
+	;---- EDIT 041 ADD END ---------------------------
+	IF FLAG:전생리스타트예약
+		FLAG:SHOP커맨드 = [[ショップ:환생리스타트]]
+		CALL SHOP_COM_[[ショップ:환생리스타트]], , "強制ニューゲーム"
+		RETURN 0
+	ENDIF
+	;BEGIN TURNEND
+ELSE
+	DELDATA SAVEDATA_NUM_FOR_CONTINUE
+ENDIF
+
+FOR LOCAL,0,CHARANUM
+	SIF CFLAG:LOCAL:악마변신 == 1
+		CALL TRANS_DEVIL , LOCAL , 0
+NEXT
+
+FLAG:SHOP커맨드 = 0
+;---- EDIT 037 ADD START -------------------------
+FLAG:튜토리얼진행중 = 0
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+FLAG:RESULT스킵 = 0
+;---- EDIT 037 ADD END ---------------------------
+;---- EDIT 038 ADD START -------------------------
+FLAG:소환불능 = 0
+IF CMATCH(CFLAG:0:게스트가입플래그, 1)
+	DRAWLINE
+	PRINTFORML 어떤 이유로 게스트 가입 플래그가 세워져 있는 캐릭터가 존재합니다
+	PRINTFORML 직전의 공략 던전이나 공략 이벤트 등의 정보를 첨부하여 버그 보고를 부탁드립니다。
+	PRINTL 
+	PRINTFORML 캐릭터 소지 수({CHARANUM})
+	PRINTFORML 이상 플래그 소지자
+	FOR LCOUNT, 0, CHARANUM
+		SIF !CFLAG:LCOUNT:게스트가입플래그
+			CONTINUE
+		PRINTFORML [{LCOUNT, 3}] %CALLNAME:LCOUNT%
+		CFLAG:LCOUNT:게스트가입플래그 = 0
+	NEXT
+	PRINTL 
+	PRINTL [9]를 입력하면 진행합니다
+	DRAWLINE
+	DO
+		ONEINPUTS
+		CLEARLINE 1
+	LOOP RESULTS != "9"
+ENDIF
+;---- EDIT 038 ADD END ---------------------------
+;-------------------------------------------------
+;売り物やショップコマンド表示
+;EVENTSHOPの実行終了後やロードやショップへRETURNしてくると実行される
+;∴セーブデータ互換などはここで行うと良い
+;訂正：@EVENTLOADの方が利便性が高い
+;-------------------------------------------------
+
+@SHOW_SHOP
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CATEGORY
+#DIM DYNAMIC コマンドストック,8,100
+#DIMS DYNAMIC コマンドストック名,8,100
+#DIMS DYNAMIC コマンドストック解説文,8,100
+#DIM DYNAMIC コマンド可能,8,100
+;---- FONT LEAK GUARD START -------------------------
+SETFONT
+;---- FONT LEAK GUARD END ---------------------------
+;---- EDIT 034 ADD START -------------------------
+FLAG:윈도우메시지스킵 = 0
+;---- EDIT 034 ADD END ---------------------------
+
+;---- EDIT 035 ADD START -------------------------
+;-------------------------------------------------
+;使用アイテムをストックから移動させる。
+;-------------------------------------------------
+CALL MOVE_STOCK_ITEM
+
+VARI STOCK_STOCKSIZE
+STOCK_STOCKSIZE = GET_STOCKSIZE()
+VARI STOCK_LV = FLAG:조직공헌LV
+;---- EDIT 035 ADD END ---------------------------
+;貢献度ランクの確認とセット
+IF GET_PAYMENT_RANK() > FLAG:조직공헌LV
+	FLAG:조직공헌LV = GET_PAYMENT_RANK()
+	SIF FLAG:조직공헌LV < 16
+		CALL MESSAGE_B, 3, @"%CALLNAME:MASTER%의 공헌과 활약이 평가되어、", "새로운 장비품의 구입이 허가되었습니다。", @"필요레벨{FLAG:조직공헌LV * 5 + 5}까지의 장비가 정크숍에 진열됩니다。"
+	MONEY:2 = GET_PAYMENT_FOR_NEXT_RANK()
+ENDIF
+FLAG:최대조직공헌LV = MAX(FLAG:조직공헌LV, FLAG:최대조직공헌LV)
+
+;---- EDIT P 002 ADD START -------------------------
+IF !ADD_TRAINABLE_1 && FLAG:조직공헌LV > 4
+	ADD_TRAINABLE_1 = 1
+	SIF STOCK_LV < FLAG:조직공헌LV
+		CALL MESSAGE_B, 3, @"%CALLNAME:MASTER%의 공헌과 활약이 평가되어、", @"시설이 강화되었습니다。", "조교실행가능횟수가 늘어났습니다。"
+ENDIF
+IF !ADD_TRAINABLE_2 && FLAG:조직공헌LV > 11
+	ADD_TRAINABLE_2 = 1
+	SIF STOCK_LV < FLAG:조직공헌LV
+		CALL MESSAGE_B, 3, @"%CALLNAME:MASTER%의 공헌과 활약이 평가되어、", @"시설이 강화되었습니다。", "조교실행가능횟수가 늘어났습니다。"
+ENDIF
+IF !ADD_DUNGEON_CHANGEABLE_1 && FLAG:조직공헌LV > 8
+	ADD_DUNGEON_CHANGEABLE_1 = 1
+	SIF STOCK_LV < FLAG:조직공헌LV
+		CALL MESSAGE_B, 3, @"%CALLNAME:MASTER%의 공헌과 활약이 평가되어、", @"%CALLNAME:MASTER%의 터미널이 개량되었습니다。", "탐색장소변경가능횟수가 늘어났습니다。"
+ENDIF
+IF !ADD_DUNGEON_CHANGEABLE_2 && FLAG:조직공헌LV > 15
+	ADD_DUNGEON_CHANGEABLE_2 = 1
+	SIF STOCK_LV < FLAG:조직공헌LV
+		CALL MESSAGE_B, 3, @"%CALLNAME:MASTER%의 공헌과 활약이 평가되어、", @"%CALLNAME:MASTER%의 터미널이 개량되었습니다。", "탐색장소변경가능횟수가 늘어났습니다。"
+ENDIF
+IF GET_STOCKSIZE() > STOCK_STOCKSIZE
+	CALL MESSAGE_B, 3, @"%CALLNAME:MASTER%의 공헌과 활약이 평가되어、", "귀중한 ＣＯＭＰ의 강화 파츠가 보내져 왔습니다。", @"이로 인해 동료마를 스톡해 둘 수 있는 영역이 확장되었습니다。"
+ENDIF
+MONEY:2 = GET_PAYMENT_FOR_NEXT_RANK()
+;---- EDIT P 002 ADD END ---------------------------
+;---- EDIT 023 ADD START ---------------------------
+;---- EDIT P 005 MOD START -------------------------
+;---------------------------------------------------
+;各種イベントの出現告知
+;---------------------------------------------------
+FOR LCOUNT, 1, DUNGEONNUM
+	SIF ANNOUNCE_DUNGEON_APPEARED:LCOUNT
+		CONTINUE
+	IF IS_USEABLE_SHOPCOM
+		TRYCCALLFORM PREREQUISITE_DUNGEON_{LCOUNT}
+			SIF RESULT
+				ANNOUNCE_DUNGEON_APPEARED:LCOUNT = 1
+		CATCH
+		ENDCATCH
+	ENDIF
+NEXT
+
+FOR LCOUNT, 1, COLOSSEUMNUM
+	SIF ANNOUNCE_COLOSSEUM_APPEARED:LCOUNT
+		CONTINUE
+	IF IS_USEABLE_SHOPCOM
+		TRYCCALLFORM PLAYABLE_COLOSSEUM_{LCOUNT}
+			SIF RESULT
+				ANNOUNCE_COLOSSEUM_APPEARED:LCOUNT = 1
+		CATCH
+		ENDCATCH
+	ENDIF
+NEXT
+
+FOR LCOUNT, 1, REQUESTNUM
+	SIF ANNOUNCE_REQUEST_APPEARED:LCOUNT
+		CONTINUE
+	IF IS_USEABLE_SHOPCOM || LCOUNT == [[依頼:ＣＯＭＰ장인의도움]]
+		TRYCCALLFORM PLAYABLE_REQUEST_{LCOUNT}
+			SIF RESULT
+				ANNOUNCE_REQUEST_APPEARED:LCOUNT = 1
+		CATCH
+		ENDCATCH
+	ENDIF
+NEXT
+
+FOR LCOUNT, 1, EVENTNUM
+	SIF ANNOUNCE_EVENT_APPEARED:LCOUNT
+		CONTINUE
+	IF IS_USEABLE_SHOPCOM || LCOUNT == [[이벤트:이상한손님]]
+		TRYCCALLFORM PLAYABLE_EVENT_{LCOUNT}
+			SIF RESULT
+				ANNOUNCE_EVENT_APPEARED:LCOUNT = 1
+		CATCH
+		ENDCATCH
+	ENDIF
+NEXT
+VARI SUM_ANNOUNCE = MATCH(ANNOUNCE_DUNGEON_APPEARED, 1) + MATCH(ANNOUNCE_COLOSSEUM_APPEARED, 1) + MATCH(ANNOUNCE_REQUEST_APPEARED, 1) + MATCH(ANNOUNCE_EVENT_APPEARED, 1)
+IF SUM_ANNOUNCE > 4
+	SIF MATCH(ANNOUNCE_DUNGEON_APPEARED, 1) > 0
+		CALL MESSAGE_B(1, @"{MATCH(ANNOUNCE_DUNGEON_APPEARED, 1)}곳의 던전이 출현！")
+	SIF MATCH(ANNOUNCE_COLOSSEUM_APPEARED, 1) > 0
+		CALL MESSAGE_B(1, @"{MATCH(ANNOUNCE_COLOSSEUM_APPEARED, 1)}건의 투기장이 출현！")
+	SIF MATCH(ANNOUNCE_REQUEST_APPEARED, 1) > 0
+		CALL MESSAGE_B(1, @"{MATCH(ANNOUNCE_REQUEST_APPEARED, 1)}건의 이벤트가 출현！")
+	SIF MATCH(ANNOUNCE_EVENT_APPEARED, 1) > 0
+		CALL MESSAGE_B(1, @"{MATCH(ANNOUNCE_EVENT_APPEARED, 1)}건의 의뢰가 들어왔습니다。")
+ENDIF
+IF SUM_ANNOUNCE > 0
+	FOR LCOUNT, 1, DUNGEONNUM
+		SIF ANNOUNCE_DUNGEON_APPEARED:LCOUNT != 1
+			CONTINUE
+		ANNOUNCE_DUNGEON_APPEARED:LCOUNT = 2
+		IF SUM_ANNOUNCE < 5
+			CALL MESSAGE_B(1, @"던전【%GET_DUNGEON_NAME_KR(LCOUNT)%】%조사만처리(GET_DUNGEON_NAME_KR(LCOUNT),"이")% 출현！")
+		ENDIF
+	NEXT
+
+	FOR LCOUNT, 1, COLOSSEUMNUM
+		SIF ANNOUNCE_COLOSSEUM_APPEARED:LCOUNT != 1
+			CONTINUE
+		ANNOUNCE_COLOSSEUM_APPEARED:LCOUNT = 2
+		IF SUM_ANNOUNCE < 5
+			CALLFORM PLAYABLE_COLOSSEUM_{LCOUNT}
+			CALL MESSAGE_B(1, @"투기장【%RESULTS%】%조사만처리(RESULTS,"이")% 출현！")
+		ENDIF
+	NEXT
+
+	FOR LCOUNT, 1, REQUESTNUM
+		SIF ANNOUNCE_REQUEST_APPEARED:LCOUNT != 1
+			CONTINUE
+		ANNOUNCE_REQUEST_APPEARED:LCOUNT = 2
+		IF SUM_ANNOUNCE < 5
+			CALLFORM PLAYABLE_REQUEST_{LCOUNT}
+			CALL MESSAGE_B(1, @"의뢰【%RESULTS%】%조사만처리(RESULTS,"이")% 출현！")
+		ENDIF
+	NEXT
+
+	FOR LCOUNT, 1, EVENTNUM
+		SIF ANNOUNCE_EVENT_APPEARED:LCOUNT != 1
+			CONTINUE
+		ANNOUNCE_EVENT_APPEARED:LCOUNT = 2
+		IF SUM_ANNOUNCE < 5
+			CALLFORM PLAYABLE_EVENT_{LCOUNT}
+			CALL MESSAGE_B(1, @"이벤트【%RESULTS%】%조사만처리(RESULTS,"이")% 출현！")
+		ENDIF
+	NEXT
+ENDIF
+;---- EDIT P 005 MOD END ---------------------------
+;---- EDIT 023 ADD END   ---------------------------
+;---- EDIT 005 ADD END   -------------------------
+;---- EDIT 013 ADD START ---------------------------
+;スキルゲージFリセット
+FOR LOCAL,0,CHARANUM
+	;EDIT 043
+	;FOR LOCAL:1, 1, 51
+	;	CFLAG:LOCAL:("스킬게이지F"+TOSTR(LOCAL:1)) = 0
+	;NEXT
+	CALL SKILLGAGE_ALL_CLEAR, LOCAL, 0
+	;---- EDIT 022 ADD END   ---------------------------
+	VARSET CFLAG:LOCAL:0, 0, 2200, 3000;EDIT 029 ADD
+	;---- EDIT 028 ADD START ---------------------------
+
+	;---- EDIT 030 ADD START ---------------------------
+	VARSET C_COMMANDER_SKILL_CT:LOCAL:0
+	VARSET C_ASSIST_SKILL_CT:LOCAL:0
+	;---- EDIT 030 ADD END -----------------------------
+
+	VARSET RPG_CFLAG_DUNGEON:LOCAL:0
+	VARSET RPG_CSTR_DUNGEON:LOCAL:0
+	VARSET ROLE_CFLAG_DUNGEON:LOCAL:0
+	VARSET ROLE_CSTR_DUNGEON:LOCAL:0
+	;---- EDIT 028 ADD END   ---------------------------
+NEXT
+;---- EDIT P 003 ADD START -------------------------
+;マガツヒゲージのリセット
+VARSET MAGATSUHI_GAGE_FRIEND
+VARSET MAGASTUHI_GAGE_ENEMY
+;---- EDIT P 003 ADD END ---------------------------
+
+;---- EDIT 013 ADD END   ---------------------------
+;---- EDIT 018 ADD START ---------------------------
+CALL SKILL_TIMING,"INITIALIZE"
+;---- EDIT 018 ADD END   ---------------------------
+;---- EDIT 015 ADD START ---------------------------
+;行動順リセット
+FOR LOCAL, 0, 16
+	LOCALS = 행동순{LOCAL+1}
+	FLAG:LOCALS = -1
+NEXT
+;---- EDIT 015 ADD END   ---------------------------
+CUSTOMDRAWLINE =
+LOCAL:1 = 0
+LOCAL:2 = 0
+LOCAL:3 = 0
+LOCAL:4 = 0
+LOCAL:5 = 0
+LOCAL:6 = 0
+LOCAL:7 = 0
+LOCAL:8 = 0
+VARSET コマンドストック , 0
+;---- EDIT 025 MOD SHOPコマンド変数変更 START ------
+;戦闘用のフラグも折っておく
+VARSET TFLAG, 0, 100, 800
+VARSET SHOP_ABLE
+;---- EDIT 025 MOD SHOPコマンド変数変更 END --------
+SIF FLAG:대기표시위치 == 0 && FLAG:대기이용설정 < 2
+	CALL SHOW_SUB_TARGET
+;ショップ画面の描写
+CALL SHOW_SHOP_INFO
+
+FOR LOCAL, 100, 1000
+	RESULTS = 
+	RESULT:1 = 0
+	TRYCCALLFORM SHOPCOMABLE_{LOCAL}
+		IF RESULT > -1
+			IF RESULTS != ""
+				IF RESULT:1 < 1
+					SIF LOCAL < 180
+						RESULT:1 = 5
+					SIF LOCAL >= 180 && 200 > LOCAL
+						RESULT:1 = 6
+					SIF LOCAL >= 200
+						RESULT:1 = 7
+				ENDIF
+				IF RESULT > 0
+					SHOP_ABLE:LOCAL = 1
+				ENDIF
+				コマンドストック:(RESULT:1):(LOCAL:(RESULT:1)) = LOCAL
+				コマンドストック名:(RESULT:1):(LOCAL:(RESULT:1)) = %RESULTS%
+				LOCAL:(RESULT:1) ++
+			ENDIF
+		ENDIF
+	CATCH
+		
+	ENDCATCH
+NEXT
+
+VARI L_CNT
+VARS TEMPS
+VARS SHOW_LINE
+FOR L_CATEGORY, 1, 8
+	SIF コマンドストック:L_CATEGORY:0 == 0
+		CONTINUE
+	SELECTCASE L_CATEGORY
+		CASE 1
+			SETCOLOR 0xffaa11
+			PRINTFORML 【RPG・진행】
+		CASE 2
+			SETCOLOR 0xff00ff
+			PRINTFORML 【조교사】
+		CASE 3
+			SETCOLOR 0x0099cc
+			PRINTFORML 【캐릭터확인】
+;			SETCOLOR 0x66cc99
+;			PRINTFORML 【アイテム・装備関連】
+		CASE 4
+			SETCOLOR 0x999999
+			PRINTFORML 【그외】
+		CASE 5
+		CASE 6
+			SETCOLOR 0xff6400
+			PRINTFORML 【DEBUG】
+		CASE 7
+			SETCOLOR 0xffde86
+			PRINTFORML 【시스템】
+	ENDSELECT
+	RESETCOLOR
+	L_CNT = 0
+	FOR LCOUNT, 0, 100
+		IF コマンドストック:L_CATEGORY:LCOUNT == 0
+			IF SHOW_LINE != ""
+				HTML_PRINT SHOW_LINE
+				VARSET SHOW_LINE
+				BREAK
+			ENDIF
+		ELSE
+			TEMPS = %@"[{コマンドストック:L_CATEGORY:LCOUNT}] - %コマンドストック名:L_CATEGORY:LCOUNT%", GETCONFIG("PRINTCの文字数"), LEFT%
+			SIF !SHOP_ABLE:(コマンドストック:L_CATEGORY:LCOUNT)
+				TEMPS '= SET_COLOR_TAG(TEMPS, "gray")
+			TEMPS '= SET_BUTTON_TAG(TEMPS, @"{1000000 + コマンドストック:L_CATEGORY:LCOUNT}", コマンドストック解説文:L_CATEGORY:LCOUNT)
+			SHOW_LINE += TEMPS
+			L_CNT += 1
+			IF L_CNT % SHOPPRINTCPL() == 0
+				HTML_PRINT SHOW_LINE
+				VARSET SHOW_LINE
+			ENDIF
+		ENDIF
+	NEXT
+NEXT
+
+IF FLAG:대기표시위치 == 2 && FLAG:대기이용설정 < 2
+	SIF !LINEISEMPTY()
+		PRINTL
+	DRAWLINE
+	CALL SHOW_SUB_TARGET
+ENDIF
+;-------------------------------------------------
+;ショップコマンド実行
+;-------------------------------------------------
+@USERSHOP
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC IS_CLICK
+IF RESULT >= 1000000
+	IS_CLICK = 1
+	RESULT %= 1000000
+ENDIF
+;デバッグモードON/OFF
+IF RESULT == 121162
+	IF FLAG:DEBUG == 0
+		PRINTFORML 디버그 모드를 ON으로 설정했습니다
+		FLAG:DEBUG = 1
+	ELSEIF FLAG:DEBUG == 1
+		PRINTFORML 디버그 모드를 OFF로 설정했습니다
+		FLAG:DEBUG = 0
+	ENDIF
+ELSEIF RESULT >= 1000 || RESULT < 0
+	RETURN 0
+ELSEIF SHOP_ABLE:RESULT
+	FLAG:튜토리얼진행중 = 0
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+	FLAG:RESULT스킵 = 0
+
+	FLAG:SHOP커맨드 = RESULT
+	;画像の開放措置
+	CALL DISPOSE_GRAPHICS, "TEMP"
+	CALL DISPOSE_GRAPHICS, "QUEST"
+	SIF USED_CHARA_GID:(CHARA_GIDNUM-5000) > 0
+		CALL DISPOSE_GRAPHICS, "CHARA"
+	TRYCALLFORM SHOP_COM_{FLAG:SHOP커맨드}, IS_CLICK
+	FLAG:SHOP커맨드 = 0
+	IF FLAG:전생리스타트예약
+		FLAG:SHOP커맨드 = [[ショップ:환생리스타트]]
+		CALL SHOP_COM_[[ショップ:환생리스타트]], , "強制ニューゲーム"
+	ENDIF
+ELSE
+	RETURN 0
+ENDIF
+
+;同期処理は処理量を踏まえて最低限にしておく
+CALL SET_LEADER_SKILL
+FOR LCOUNT, 1, 7
+	SIF POS(LCOUNT) < 0
+		CONTINUE
+	CALL SYNC_STATUS, POS(LCOUNT), "HPMP割合保持"
+	SIF CFLAG:POS(LCOUNT):이자리에없는플래그
+		CALL REMOVE_POSITION, LCOUNT
+NEXT
+CALL REFRESH_FORMATION
+
+FOR LOCAL,0,CHARANUM
+;	CALL SYNC_STATUS,LOCAL
+	CALL HEALTH_CHARA,LOCAL
+NEXT
+
+FOR LCOUNT, 0, SHOP_EV_NUM
+	TRYCCALLFORM PLAYABLE_SHOP_EV_{LCOUNT}
+		SIF !RESULT
+			CONTINUE
+		;強制WAITを入れてスキップを殺す
+		TWAIT 100, 0
+		CALLFORM SHOP_EV_{LCOUNT}
+
+		CALL SET_LEADER_SKILL
+		FOR LCOUNT, 1, 7
+			SIF POS(LCOUNT) < 0
+				CONTINUE
+			CALL SYNC_STATUS, POS(LCOUNT), "HPMP割合保持"
+			SIF CFLAG:POS(LCOUNT):이자리에없는플래그
+				CALL REMOVE_POSITION, LCOUNT
+		NEXT
+		CALL REFRESH_FORMATION
+
+		FOR LOCAL,0,CHARANUM
+			CALL HEALTH_CHARA,LOCAL
+		NEXT
+	CATCH
+	ENDCATCH
+NEXT
+
+;-------------------------------------------------
+;ショップ画面の描写
+;-------------------------------------------------
+@SHOW_SHOP_INFO
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC TEMPS
+#DIMS DYNAMIC SHOWLINE
+PRINTFORM %@"{DAY}턴 째　",26,LEFT%
+
+IF FLAG:월령 != 0 && FLAG:월령 != 8
+	TEMPS = {FLAG:월령}/8 \@ FLAG:월령벡터 == 0 ? ＹＯＵＮＧ # ＯＬＤ \@ ＭＯＯＮ
+ELSE
+	TEMPS = \@ FLAG:월령 == 8 ? ＦＵＬＬ ＭＯＯＮ # ＮＥＷ ＭＯＯＮ\@
+ENDIF
+PRINTFORM %TEMPS,26,LEFT%
+
+;---- EDIT P 001 MOD START -------------------------
+;---- EDIT 032 MOD START -------------------------
+PRINTFORML 목표금액：￥%TOSTR(GET_PAYMENT_FOR_NEXT_RANK(), "###,0")%　　　조교가능횟수：{GET_TRAINABLE_NUM()}
+;---- EDIT 032 MOD END ---------------------------
+;---- EDIT P 001 MOD END ---------------------------
+DRAWLINE
+IF TARGET >= 0
+	SHOWLINE += "<div xpos = '0' ypos = '0'>"
+	SHOWLINE += @" \@ GET_VALUE_TALENT_JOINABLE(TARGET) == 1 ? 조교대상 # 파트너\@："
+	SHOWLINE += TOALIGNMENT(CALLNAME:TARGET, 30, "LEFT")
+	SHOWLINE += SHOP_危険日表示_F(TARGET)
+	SHOWLINE += "</div>"
+
+	SHOWLINE += "<div xpos = '2650' ypos = '0'>"
+	SHOWLINE += SET_BUTTON_TAG("[202] 변경", "202")
+	SHOWLINE += "</div>"
+	
+	SHOWLINE += "<div xpos = '0' ypos = '100'>"
+	SHOWLINE += @"　체력 "
+	SHOWLINE += HTML_RECT_BAR(BASE:TARGET:체력, MAXBASE:TARGET:체력, 45, BARCOLORSET("赤"), RESULT:1)
+	SHOWLINE += @" (%ADD_KMGT(BASE:TARGET:체력)%/%ADD_KMGT(MAXBASE:TARGET:체력)%) "
+	SHOWLINE += "</div>"
+
+	SHOWLINE += "<div xpos = '0' ypos = '200'>"
+	SHOWLINE += @"　MAG  "
+	SHOWLINE += HTML_RECT_BAR(GET_CHARA_STOCK_MAG(TARGET), GET_CHARA_MAXMAG(TARGET), 45, BARCOLORSET("紫"), RESULT:1)
+	SHOWLINE += @" (%ADD_KMGT(GET_CHARA_STOCK_MAG(TARGET))%/%ADD_KMGT(GET_CHARA_MAXMAG(TARGET))%) "
+	SHOWLINE += "</div>"
+ELSE
+	SHOWLINE '= "<div xpos = '0' ypos = '0'>"
+	SHOWLINE += SET_COLOR_TAG(@" 파트너：%"ＥＭＰＴＹ",40,LEFT%", "light-gray")
+	SHOWLINE += SET_BUTTON_TAG("[202] 변경", "202")
+	SHOWLINE += "</div>"
+	
+	SHOWLINE += "<div xpos = '0' ypos = '100'>"
+	SHOWLINE += @"　체력 "
+	SHOWLINE += HTML_RECT_BAR(0, 1, 45, BARCOLORSET("赤"), RESULT:1)
+	SHOWLINE += @" {0, 5}/{0, 5} "
+	SHOWLINE += "</div>"
+
+	SHOWLINE += "<div xpos = '0' ypos = '200'>"
+	SHOWLINE += @"　MAG  "
+	SHOWLINE += HTML_RECT_BAR(0, 1, 45, BARCOLORSET("紫"), RESULT:1)
+	SHOWLINE += @" {0, 5}/{0, 5} "
+	SHOWLINE += "</div>"
+ENDIF
+
+FOR LCOUNT, 0, CHARANUM
+	SIF !ASSI_ABLE(LCOUNT)
+		CONTINUE
+	SIF CFLAG:LCOUNT:필터링플래그
+		CONTINUE
+	SHOP_ABLE:109 = 1
+	BREAK
+NEXT
+
+IF ASSI >= 0
+	SHOWLINE += "<div xpos = '0' ypos = '300'>"
+	SHOWLINE += " 조수　　　："
+	SHOWLINE += TOALIGNMENT(CALLNAME:ASSI, 30, "LEFT")
+	SHOWLINE += SHOP_危険日表示_F(ASSI)
+	SHOWLINE += "</div>"
+
+	SHOWLINE += "<div xpos = '2650' ypos = '300'>"
+	SHOWLINE += SET_BUTTON_TAG("[203] 변경", "203")
+	SHOWLINE += "</div>"
+	
+	SHOWLINE += "<div xpos = '0' ypos = '400'>"
+	SHOWLINE += @"　체력 "
+	SHOWLINE += HTML_RECT_BAR(BASE:ASSI:체력, MAXBASE:ASSI:체력, 45, BARCOLORSET("赤"), RESULT:1)
+	SHOWLINE += @" (%ADD_KMGT(BASE:ASSI:체력)%/%ADD_KMGT(MAXBASE:ASSI:체력)%) "
+	SHOWLINE += "</div>"
+
+	SHOWLINE += "<div xpos = '0' ypos = '500'>"
+	SHOWLINE += @"　MAG  "
+	SHOWLINE += HTML_RECT_BAR(GET_CHARA_STOCK_MAG(ASSI), GET_CHARA_MAXMAG(ASSI), 45, BARCOLORSET("紫"), RESULT:1)
+	SHOWLINE += @" (%ADD_KMGT(GET_CHARA_STOCK_MAG(ASSI))%/%ADD_KMGT(GET_CHARA_MAXMAG(ASSI))%) "
+	SHOWLINE += "</div>"
+ELSE
+	SHOWLINE += "<div xpos = '0' ypos = '300'>"
+	SHOWLINE += SET_COLOR_TAG(@" 조수　　　：%"ＥＭＰＴＹ",40,LEFT%", "light-gray")
+	SHOWLINE += SET_BUTTON_TAG("[203] 변경", "203")
+	SHOWLINE += "</div>"
+	
+	SHOWLINE += "<div xpos = '0' ypos = '400'>"
+	SHOWLINE += @"　체력 "
+	SHOWLINE += HTML_RECT_BAR(0, 1, 45, BARCOLORSET("赤"), RESULT:1)
+	SHOWLINE += @" {0, 5}/{0, 5} "
+	SHOWLINE += "</div>"
+
+	SHOWLINE += "<div xpos = '0' ypos = '500'>"
+	SHOWLINE += @"　MAG  "
+	SHOWLINE += HTML_RECT_BAR(0, 1, 45, BARCOLORSET("紫"), RESULT:1)
+	SHOWLINE += @" {0, 5}/{0, 5} "
+	SHOWLINE += "</div>"
+ENDIF
+SHOWLINE += "<div xpos = '3300' ypos = '0'>"
+SIF TARGET >= 0
+	SHOWLINE += " " + GET_FACE_BY_CHARA_AS_HTML(TARGET, 600)
+SIF ASSI >= 0
+	SHOWLINE += " " + GET_FACE_BY_CHARA_AS_HTML(ASSI, 600)
+SHOWLINE += "</div>"
+FOR LCOUNT, 0, 5
+	PRINTL 
+NEXT
+HTML_PRINT "<div xpos = '0' ypos = '-500'>" + SHOWLINE + "</div>"
+DRAWLINE
+SIF FLAG:대기표시위치 == 1 && FLAG:대기이용설정 < 2
+	CALL SHOW_SUB_TARGET
+LOCALS = 『%CSTR:MASTER:종족명%』 %NAME:MASTER%
+PRINTFORM %LOCALS,41,LEFT%
+CALL SHOP_危険日表示(MASTER)
+PRINTL
+IF MASTER >= 0
+	SIF FLAG:커스텀게임화면
+		PRINT 　
+	PRINT ＭＡＧ   
+	CALL PRINT_COLORBAR, GET_CHARA_STOCK_MAG(MASTER), GET_CHARA_MAXMAG(MASTER), 44, UNICODE(0x2585), UNICODE(0x2585), BARCOLORSET("紫"), RESULT:1
+	IF FLAG:커스텀게임화면
+		PRINTFORML  (%TOSTR(GET_CHARA_STOCK_MAG(MASTER), "#,##0")%/%TOSTR(GET_CHARA_MAXMAG(MASTER), "#,###")%)
+	ELSE
+		PRINTFORML  (%TOSTR(GET_CHARA_STOCK_MAG(MASTER), "#,##0"),10%/%TOSTR(GET_CHARA_MAXMAG(MASTER), "#,###"),10%)
+	ENDIF
+ENDIF
+
+;ＣＯＭＰ 
+PRINT ＣＯＭＰ 
+VARI LCOUNT
+VARI L_COUNT_MAX
+L_COUNT_MAX = MIN(GET_COMPSIZE(), 44)
+VARI COUNT_USED_SOFT, 2
+COUNT_USED_SOFT:0 = ソフト容量() * L_COUNT_MAX / GET_COMPSIZE()
+COUNT_USED_SOFT:1 = GET_COMPSIZE() * L_COUNT_MAX / GET_COMPSIZE()
+FOR LCOUNT, 0, 44
+	IF LCOUNT < COUNT_USED_SOFT:1
+		IF LCOUNT < COUNT_USED_SOFT:0
+			SETCOLOR 0x7070C0
+		ELSE
+			SETCOLOR 0x502020
+		ENDIF
+		PRINTFORM %UNICODE(0x258B)%
+	ELSE
+		PRINTFORM %" "%
+	ENDIF
+NEXT
+RESETCOLOR
+PRINT  
+PRINTFORML ({ソフト容量()}/{GET_COMPSIZE()})
+SIF FLAG:커스텀게임화면
+	PRINT 　
+LOCALS =  동료마：{NUM_NAKAMA(),2} / {GET_STOCKSIZE(),2}
+PRINTFORM %LOCALS,54,LEFT%
+PRINTFORM 소지금：￥%TOSTR(MONEY, "#,##0")% / %TOSTR(MONEY:1, "#,##0")%마카
+PRINTL
+
+CUSTOMDRAWLINE =
+
+@SHOW_SUB_TARGET
+#DIM DYNAMIC CHARA, 1
+#DIM DYNAMIC L_COLUMN,2
+#DIM DYNAMIC L_ROW
+#DIMS DYNAMIC SHOWLINE
+PRINTBUTTON @"[{500}] 대기표시전환 ", 500
+IF !FLAG:대기격납
+	PRINTBUTTON @"[{501}] 1행표시 ", 501
+	PRINTBUTTON @"[{502}] 2행표시 ", 502
+	PRINTBUTTON @"[{503}] 3행표시 ", 503
+	PRINTBUTTON @"[{504}] 위치변경 ", 504
+ENDIF
+	PRINTPLAIN 　현재 월령：
+IF FLAG:월령 != 0 && FLAG:월령 != 8
+	PRINTFORML {FLAG:월령}/8 \@ FLAG:월령벡터 == 0 ? ＹＯＵＮＧ # ＯＬＤ \@ ＭＯＯＮ
+ELSE
+	PRINTFORML \@ FLAG:월령 == 8 ? ＦＵＬＬ ＭＯＯＮ # ＮＥＷ ＭＯＯＮ\@
+ENDIF
+;PRINTL 
+DRAWLINE
+SHOP_ABLE:500 = 1
+SHOP_ABLE:501 = 1
+SHOP_ABLE:502 = 1
+SHOP_ABLE:503 = 1
+SHOP_ABLE:504 = 1
+IF !FLAG:대기격납
+	FOR L_COLUMN, 0, FLAG:대기표시인수 + 1
+		FOR L_ROW, 0, 3
+			SHOWLINE += @"<div xpos = '{50 + 2200 * L_ROW}'  + ypos = '{500 * L_COLUMN}'>" + BANNER_SUB_TARGET(L_COLUMN * 3 + L_ROW + 1) + "</div>"
+			FOR L_COLUMN:1, 0, 4
+				SIF L_ROW
+					SHOWLINE += @"<div xpos = '{2200 * L_ROW - 25}'  + ypos = '{500 * L_COLUMN + L_COLUMN:1 * 100}'>" + "|" + "</div>"
+			NEXT
+			SHOWLINE += @"<div xpos = '0'  + ypos = '{500 * L_COLUMN + 400}'>" + DRAWLINESTR + "</div>"
+		NEXT
+	NEXT
+ENDIF
+FOR L_COLUMN, 0, 5 * (FLAG:대기표시인수 + 1) - 1
+	PRINTL 
+NEXT
+HTML_PRINT @"<div xpos = '0' ypos = '{-500 * (FLAG:대기표시인수 + 1) + 100}'>" + SHOWLINE + "<div>"
+
+@BANNER_SUB_TARGET, L_NO
+#FUNCTIONS
+#DIMS DYNAMIC L_RESULTS
+#DIM DYNAMIC L_NO
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC TEMPS
+#DIMS DYNAMIC L_COLOR
+L_CHARA = FINDCHARA_TIMEID(TARGET:L_NO)
+IF L_CHARA <= 0 || CFLAG:L_CHARA:이자리에없는플래그 || TALENT:L_CHARA:맹우
+	L_CHARA = -1
+	TARGET:L_NO = -1
+	L_RESULTS '= SET_COLOR_TAG(TOALIGNMENT(@"대기{L_NO}:ＥＭＰＴＹ",34,"LEFT"), "light-gray")
+	L_RESULTS '= "<div xpos = '0' ypos = '0'>" + L_RESULTS + "</div>"
+	L_RESULTS += "<div xpos = '0' ypos = '100'>"
+	L_RESULTS += SET_COLOR_TAG("체력", "light-gray") + " " + HTML_RECT_BAR(0, 1, 14, BARCOLORSET("赤"), RESULT:1)
+	L_RESULTS += SET_COLOR_TAG(" (    0/    0)  ", "light-gray")
+	L_RESULTS += "</div>"
+	L_RESULTS += "<div xpos = '0' ypos = '200'>"
+	L_RESULTS += SET_COLOR_TAG("MAG ", "light-gray") + " " + HTML_RECT_BAR(0, 1, 14, BARCOLORSET("紫"), RESULT:1)
+	L_RESULTS += SET_COLOR_TAG(" (    0/    0)  ", "light-gray")
+	L_RESULTS += "</div>"
+ELSE
+	L_RESULTS '= "<div xpos = '1700' ypos = '0'>" + GET_FACE_BY_CHARA_AS_HTML(L_CHARA, 400) + "</div>"
+	TEMPS = (%TOSTR(CFLAG:L_CHARA:스트레스치)%)
+	IF FlAG:대기스트레스치표시설정 == 0
+		L_RESULTS += TOALIGNMENT(@"{L_NO}."+S_NAME(L_CHARA,22,2),24,"LEFT")
+	ELSE
+		L_RESULTS += TOALIGNMENT(@"{L_NO}."+S_NAME(L_CHARA,20-STRLENS(TEMPS),2)+TEMPS,24,"LEFT")
+	ENDIF
+	L_RESULTS += SHOP_危険日表示_F(L_CHARA)
+	L_RESULTS '= "<div xpos = '0' ypos = '0'>" + L_RESULTS + "</div>"
+	L_RESULTS += "<div xpos = '0' ypos = '100'>"
+	L_RESULTS += "체력" + " " + HTML_RECT_BAR(BASE:L_CHARA:체력, MAXBASE:L_CHARA:체력, 14, BARCOLORSET("赤"), RESULT:1)
+	L_RESULTS += @" (%ADD_KMGT(BASE:L_CHARA:체력)%/%ADD_KMGT(MAXBASE:L_CHARA:체력)%) "
+	L_RESULTS += "</div>"
+	L_RESULTS += "<div xpos = '0' ypos = '200'>"
+	L_RESULTS += "MAG " + " " + HTML_RECT_BAR(GET_CHARA_STOCK_MAG(L_CHARA), GET_CHARA_MAXMAG(L_CHARA), 14, BARCOLORSET("紫"), RESULT:1)
+	L_RESULTS += @" (%ADD_KMGT(GET_CHARA_STOCK_MAG(L_CHARA))%/%ADD_KMGT(GET_CHARA_MAXMAG(L_CHARA))%) "
+	L_RESULTS += "</div>"
+ENDIF
+
+L_RESULTS += "<div xpos = '0' ypos = '300'>"
+TEMPS '= SET_BUTTON_TAG(@" [{510+L_NO}] 조교 ", TOSTR(510+L_NO))
+IF L_CHARA < 0 || TARGET == L_CHARA || !PARTNER_ABLE(L_CHARA) || GET_TRAINABLE_NUM() <= 0
+	TEMPS '= SET_COLOR_TAG(TEMPS, "light-gray")
+ELSE
+	SHOP_ABLE:(510+L_NO) = 1
+ENDIF
+L_RESULTS += TEMPS
+
+TEMPS '= SET_BUTTON_TAG(@" [{520+L_NO}] 조수 ", TOSTR(520+L_NO))
+IF L_CHARA < 0 || ASSI == L_CHARA || !ASSI_ABLE(L_CHARA)
+	TEMPS '= SET_COLOR_TAG(TEMPS, "light-gray")
+ELSE
+	SHOP_ABLE:(520+L_NO) = 1
+ENDIF
+L_RESULTS += TEMPS
+L_RESULTS += SET_BUTTON_TAG(@"[{530+L_NO}] 변경 ", TOSTR(530+L_NO))
+SHOP_ABLE:(530+L_NO) = 1
+L_RESULTS += "</div>"
+RETURNF L_RESULTS
+
+@SHOP_COM_500, ARG
+INVERTBIT FLAG:대기격납, 0
+@SHOP_COM_501, ARG
+FLAG:대기표시인수 = 0
+@SHOP_COM_502, ARG
+FLAG:대기표시인수 = 1
+@SHOP_COM_503, ARG
+FLAG:대기표시인수 = 2
+@SHOP_COM_504, ARG
+SIF FLAG:대기표시위치++ == 2
+	FLAG:대기표시위치 = 0
+
+@SHOP_危険日表示(ARG)
+IF FLAG:커스텀게임화면
+	IF ARG != MASTER && CHECK_CHILD_CARE(ARG) && FLAG:출산기능ONOFF
+		SETCOLOR 0xCC33FF
+		PRINT 육아실
+		RESETCOLOR
+	ELSEIF ARG == MASTER && CHECK_CHILD_CARE(ARG) && FLAG:출산기능ONOFF && !GROUPMATCH(위험일(ARG), -2, 2, 3)
+		SETCOLOR 0xCC33FF
+		PRINT 육아실
+		RESETCOLOR
+	ELSEIF GROUPMATCH(위험일(ARG), -2, 1, 2, 3)
+		IF TALENT:ARG:임신 && 위험일(ARG) == 1
+			SETCOLOR 0xCC33FF
+			PRINT 임신중
+			RESETCOLOR
+		ELSE
+			SETCOLOR 0xCC33FF
+			IF 위험일(ARG) == 1
+				PRINT 위험일
+			ELSE
+				PRINT 발정중
+			ENDIF
+			RESETCOLOR
+		ENDIF
+	ELSEIF TALENT:ARG:임신
+		SETCOLOR 0xCC33FF
+		PRINT 임신중
+		RESETCOLOR
+	ELSE
+		PRINT 　　　
+	ENDIF
+ELSE
+	IF ARG != MASTER && CHECK_CHILD_CARE(ARG) && FLAG:출산기능ONOFF
+		PRINT ［육아실］
+	ELSEIF ARG == MASTER && CHECK_CHILD_CARE(ARG) && FLAG:출산기능ONOFF && !GROUPMATCH(위험일(ARG), -2, 2, 3)
+		PRINT ［육아실］
+	ELSEIF GROUPMATCH(위험일(ARG), -2, 1, 2, 3)
+		IF TALENT:ARG:임신 && 위험일(ARG) == 1
+			PRINT （임신중）
+		ELSE
+			IF CHKFONT("MS UI Gothic")
+				LOCALS '= GETFONT()
+				SETFONT "MS UI Gothic"
+				PRINTFORM %UNICODE(0x2004) * 2%%UNICODE(0x200A) * 2%
+				SETFONT LOCALS
+			ENDIF
+			SETCOLOR 0xCC33FF
+			CALL HEARTB
+			IF 위험일(ARG) == 1
+				PRINT 위험일
+			ELSE
+				PRINT 발정중
+			ENDIF
+			CALL HEARTB
+			RESETCOLOR
+		ENDIF
+	ELSEIF TALENT:ARG:임신
+		PRINT （임신중）
+	ELSE
+		PRINT 　　　　　
+	ENDIF
+ENDIF
+
+@SHOP_危険日表示_F, ARG
+#FUNCTIONS
+#DIMS DYNAMIC L_RESULTS
+IF FLAG:커스텀게임화면
+	IF ARG != MASTER && CHECK_CHILD_CARE(ARG) && FLAG:출산기능ONOFF
+		L_RESULTS += SET_COLOR_TAG("육아실", "#CC33FF")
+	ELSEIF ARG == MASTER && CHECK_CHILD_CARE(ARG) && FLAG:출산기능ONOFF && !GROUPMATCH(위험일(ARG), -2, 2, 3)
+		L_RESULTS += SET_COLOR_TAG("육아실", "#CC33FF")
+	ELSEIF GROUPMATCH(위험일(ARG), -2, 1, 2, 3)
+		IF TALENT:ARG:임신 && 위험일(ARG) == 1
+			L_RESULTS += SET_COLOR_TAG("임신중", "#CC33FF")
+		ELSE
+			IF 위험일(ARG) == 1
+				L_RESULTS += SET_COLOR_TAG("위험일", "#CC33FF")
+			ELSE
+				L_RESULTS += SET_COLOR_TAG("발정중", "#CC33FF")
+			ENDIF
+		ENDIF
+	ELSEIF TALENT:ARG:임신
+		L_RESULTS += SET_COLOR_TAG("임신중", "#CC33FF")
+	ELSE
+		L_RESULTS += "　　　"
+	ENDIF
+ELSE
+	IF ARG != MASTER && CHECK_CHILD_CARE(ARG) && FLAG:출산기능ONOFF
+		L_RESULTS += "［육아실］"
+	ELSEIF ARG == MASTER && CHECK_CHILD_CARE(ARG) && FLAG:출산기능ONOFF && !GROUPMATCH(위험일(ARG), -2, 2, 3)
+		L_RESULTS += "［육아실］"
+	ELSEIF GROUPMATCH(위험일(ARG), -2, 1, 2, 3)
+		IF TALENT:ARG:임신 && 위험일(ARG) == 1
+			L_RESULTS += "（임신중）"
+		ELSE
+			L_RESULTS += " " + HEARTB_HTML(0xCC33FF)
+			IF 위험일(ARG) == 1
+				L_RESULTS += SET_COLOR_TAG("위험일", "#CC33FF")
+			ELSE
+				L_RESULTS += SET_COLOR_TAG("발정중", "#CC33FF")
+			ENDIF
+			L_RESULTS += HEARTB_HTML(0xCC33FF)
+		ENDIF
+	ELSEIF TALENT:ARG:임신
+		L_RESULTS += "（임신중）"
+	ELSE
+		L_RESULTS += "　　　　　"
+	ENDIF
+ENDIF
+RETURNF L_RESULTS
+;=================================================
+;세이브
+;=================================================
+@SHOPCOMABLE_200
+RESULTS = 세이브
+RETURN 1
+
+@SHOP_COM_200, ARG
+CALL TITLE_SAVEGAME
+
+;=================================================
+;로드
+;=================================================
+@SHOPCOMABLE_300
+RESULTS = 로드
+RETURN 1
+
+@SHOP_COM_300, ARG
+CALL TITLE_LOADGAME
+
+;--------------------------------------
+;RPG系のショップコマンド開始前の共通処理
+;--------------------------------------
+@STARTUP_RPG_SHOPCOM
+CALL RPG画像追加
+CALL SET_LAST_BATTLE_MEMBERSET

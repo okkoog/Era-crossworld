@@ -1,0 +1,290 @@
+﻿;闘技場フラグ:60:1
+;闘技場フラグ:60:2
+;闘技場フラグ:60:3
+;闘技場フラグ:60:4
+
+;====================
+;条件
+;====================
+@GET_COLOSSEUM_NAME_60
+#FUNCTIONS
+RESULTS_F '= "斬鬼の対魔忍"
+RETURNF RESULTS_F
+
+@PLAYABLE_COLOSSEUM_60
+;EXフィルタとイベントフィルタチェック
+SIF !GETS_USEABLE_EXTRA_TITLE("対魔忍")
+	RETURN 0
+RESULTS = 시합 랭크Ａ　ＶＳ 참귀의대마인
+
+;ランク4以上、名声600以上
+SIF FLAG:투기장랭크 >= 4 && FLAG:투기장명성 >= 600 && 闘技場フラグ:60:0 == 0
+	RETURN 1
+;RETURN 1 でイベント出現
+
+RETURN 0
+;RETURN 0 でイベント未出現
+
+
+;====================
+;内容
+;====================
+@COLOSSEUM_60
+#DIM LCOUNT
+#DIM CHARA
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+CUSTOMDRAWLINE =
+FLAG:현던전 = [[ダンジョン:콜로세움던전]]
+FLAG:현M = 1
+FLAG:현X = 4
+FLAG:현Y = 6
+CALL MAKE_FLOOR, FLAG:현던전
+DA:4:4 = 4
+CALL FLOOR_ANALYZE
+CALL SHOW_FLOOR
+CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+
+CUSTOMDRAWLINE =
+PRINTW ＞링에 들어가자、가슴이 크게 노출된 형태의 보라색 슈트를 입은 아름다운 장발 거유 여성이 링에 섰다。
+;ゆきかぜが仲間にいる＆（救出後手を出していないか、陥落状態）
+CHARA = GETCHARA([[キャラ:유키카제]])
+IF CHARA != -1 && ((イベントフラグ:63:0 == 1 && GET_VALUE_TALENT_JOINABLE(CHARA) > 0) || 陥落(CHARA))
+	PRINTL 의문의 거유 미녀：
+	PRINTL 「음、당신은 설마、유키카제의…？」
+	PRINTW 아무래도 미즈키 유키카제의 지인인 듯하다
+	PRINTL 의문의 거유 미녀：
+	PRINTL 「흠、유키카제가 신세를 지고 있다더군、감사를 표하지。」
+	PRINTL 「하지만、이런 곳에서 만나다니… 어지간히 실력에 자신이 있는 모양이군。」
+	PRINTL 「서로 좋은 시합을 하자、죽지 않을 정도로 말이지。」
+ELSE
+	PRINTL 의문의 거유 미녀：
+	PRINTL 「음、네놈은… 마의 무리는 아닌 듯하군…？」
+	PRINTW 조금 곤혹스러운 표정을 띄운 것으로 보아、원했던 대전은 아니었던 모양이다。
+	PRINTL 의문의 거유 미녀：
+	PRINTL 「……。」
+	PRINTL 「어쨌든…。 이 자리에 선 이상、이제 와서 그만둘 수도 없겠지。」
+ENDIF
+PRINTW 그렇게 말하며、그녀는 스르륵 도를 뽑아 아름다운 자세를 취했다。
+PRINTL 의문의 거유 미녀：
+PRINTL 「…각오해라！」
+PRINTL 개시 구호와 함께、사라졌다고 착각할 정도의 날카로운 발놀림으로 파고들어 왔다！
+PRINTL 의문의 거유 미녀：
+PRINTW 「대마인　아키야마 린코、간다！」
+
+CUSTOMDRAWLINE =
+WAIT
+
+CALL SET_ENEMY,9,[[キャラ:아키야마린코]],70,0,1
+
+CFLAG:(CHARANUM - 1):ＨＰ보정 = 7000
+CFLAG:(CHARANUM - 1):ＭＰ보정 = 4000
+CFLAG:(CHARANUM - 1):행동횟수 = 2
+BASE:(CHARANUM-1):지혜 += 30
+BASE:(CHARANUM-1):마력 += 30
+BASE:(CHARANUM-1):내구 += 30
+BASE:(CHARANUM-1):속도 += 30
+BASE:(CHARANUM-1):운 += 30
+
+BASE:(CHARANUM-1):검격 = 50
+BASE:(CHARANUM-1):정신 = 50
+BASE:(CHARANUM-1):비구 = 120
+BASE:(CHARANUM-1):질풍 = 120
+BASE:(CHARANUM-1):중력 = 120
+BASE:(CHARANUM-1):핵열 = 120
+
+EQUIP:(CHARANUM-1):검 = GETNUM(ITEM, "이시키리카네미츠")	;이시키리카네미츠　装備スキル：貫通
+
+CALL CLEAR_ALL_SKILL, CHARANUM - 1
+
+ABL:(CHARANUM-1):스킬1 = [[스킬:일도류오의・호접옥문]]	;일도류오의・호접옥문	;敵単体に高クリティカル、完全貫通付きの単発特大ダメージ（体力50％未満から使用）
+ABL:(CHARANUM-1):스킬2 = [[스킬:일도류・바람베기]]		;일도류・바람베기			;敵1列に小ダメージの斬撃を2回与え、確率でバインドさせる
+ABL:(CHARANUM-1):스킬3 = [[스킬:일도류・호접난무]]		;일도류・호접난무		;敵全体に中ダメージの斬撃を3回与え、ダメージ毎に低確率で即死効果を与える（体力50％未満から使用）
+ABL:(CHARANUM-1):스킬4 = [[스킬:일도류・바람의형]]		;일도류・바람의형			;敵単体と周囲の敵に剣撃大ダメージを与える
+ABL:(CHARANUM-1):스킬5 = [[스킬:일도류・제1형]]		;일도류・제1형			;敵1体にクリティカルしやすい小ダメージの斬撃を5回与える
+ABL:(CHARANUM-1):스킬6 = [[스킬:기합]]					;기합					;次に行う物理攻撃の威力が150%増加する。
+
+CSTR:(CHARANUM-1):사고패턴 = 9000
+
+CALL SYNC_STATUS, (CHARANUM-1)
+CALL HEALTH_CHARA, (CHARANUM-1)
+
+CALL BATTLE_START
+
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+PRINTL
+PRINTFORML 아키야마 린코：
+PRINTFORML 「큭…！？」
+PRINTFORML 간신히 공격을 적중시켜 크게 날려버리고 거리를 벌릴 수 있었다。
+PRINTFORML 
+;ゆきかぜが仲間にいる＆（救出後手を出していないか、陥落状態）
+IF CHARA != -1 && ((イベントフラグ:63:0 == 1 && GET_VALUE_TALENT_JOINABLE(CHARA) > 0) || 陥落(CHARA))
+	PRINTFORML 아키야마 린코：
+	PRINTFORML 「…역시、상당한 실력자인 모양이군。」
+	PRINTFORMW 돌연、도를 칼집에 거둔 그녀를 보고 이쪽도 전투태세를 푼다。
+	PRINTFORML 
+	PRINTFORML 아키야마 린코：
+	PRINTFORML 「이 이상은 그만두도록 하지。 항복하겠다。」
+	PRINTFORML 「서로 죽는 건 사양이라서 말이지。 유키카제가 울어버릴 거다。」
+	PRINTFORML 「하지만 나와 호각 이상이라니、놀랍군。 상당한 단련을 거듭했겠지。」
+	PRINTFORML 「어떤가、당신의 단련에 나도 함께하게 해줄 수 있겠나？」
+	PRINTFORML 
+	PRINTFORML 그녀의 돌연한 제안에 놀라지만、방금 전투로 실력은 보증되었고 외모도 최상급이다。
+	PRINTFORML 전력으로서도 노예로서도 대단히 쓸 만하다고 판단하여 승낙의 답을 건넸다。
+	PRINTFORML 
+	PRINTFORML 아키야마 린코：
+	PRINTFORMW 「그런가…！ 나는 린코。 대마인 아키야마 린코다。 검술 실력에는 자신 있다、잘 부탁한다。」
+	PRINTFORML 
+	PRINTFORML 전투 전에도 들었던 것 같은 자기소개를 받고、이쪽도 잘 부탁한다며 신분을 밝힌다。
+	PRINTFORML 
+	PRINTFORML 아키야마 린코：
+	PRINTFORML 「그、그렇군、팬텀의 서머너인가…。」
+	PRINTFORML 「유키카제 녀석…。 하지만 뭐、그 녀석이 신용하고 있다면 나쁜 일은 없겠지。」
+	PRINTFORML 「나에게도 알고 싶은 정보가 있다。 당신의 정보망을 이용하게 될 때도 있을지 모르겠군。」
+	PRINTFORML 「그 몫은 무공으로 갚겠다、맡겨 다오。」
+	PRINTFORML 
+	PRINTFORMW 아키야마 린코와 손을 잡았다。
+ELSE
+	PRINTFORML 아키야마 린코：
+	PRINTFORML 「…상당히 실력자인 모양이군。」
+	PRINTFORMW 돌연、도를 칼집에 거둔 그녀를 보고 이쪽도 전투태세를 푼다。
+	PRINTFORML 
+	PRINTFORML 아키야마 린코：
+	PRINTFORML 「이 이상은 어느 한쪽이 죽을지도 모른다。 그러니 여기까지다。」
+	PRINTFORML 「인간을 죽이기 위해 여기에 온 게 아니다。 적어도 이번엔 말이지。」
+	PRINTFORML 「하지만 나와 호각 이상으로 맞서다니、상당한 실력자로 보이는군。 …어떤 수행을 쌓았는지 흥미가 생기는군。」
+	PRINTFORML 「당신과 단련을 쌓는다면、나는 더욱 강해질 수 있을 것 같다。 어떨까、나와 손을 잡지 않겠나？」
+	PRINTFORML 
+	PRINTFORML 그녀의 돌연한 제안에 놀라지만、방금 전투로 실력은 보증되었고 외모도 최상급이다。
+	PRINTFORML 전력으로서도 노예로서도 대단히 쓸 만하다고 판단하여 승낙의 답을 건넸다。
+	PRINTFORML 
+	PRINTFORML 아키야마 린코：
+	PRINTFORMW 「그런가…！ 나는 린코。 대마인 아키야마 린코다。 검술 실력에는 자신 있다、잘 부탁한다。」
+	PRINTFORML 
+	PRINTFORML 전투 전에도 들었던 것 같은 자기소개를 받고、이쪽도 잘 부탁한다며 신분을 밝힌다。
+	PRINTFORML 
+	PRINTFORML 아키야마 린코：
+	PRINTFORML 「그、그렇군…。」
+	PRINTFORML 「…나는 평소에 모르는 인간과 일하지 않는다。」
+	PRINTFORML 「하물며、팬텀의 서머너와라니…。」
+	PRINTFORML 
+	PRINTFORML 내키지 않는 눈치지만、서로의 실력은 방금 확인했다。
+	PRINTFORMW 서로 여기서 소란을 피워 사망자를 내고 싶지는 않다。
+	PRINTFORML 
+	PRINTFORML 아키야마 린코：
+	PRINTFORML 「…하아…、신분을 밝힌 이상、서로 아무 일도 없었던 걸로 덮을 수는 없겠지…。」
+	PRINTFORML 「기왕이면 나를 유용하게 써 다오。」
+	PRINTFORML 「나도 당신을 이용하도록 하지。」
+	PRINTFORMW 아키야마 린코와 손을 잡았다。
+ENDIF
+
+	CALL ADD_NEW_COMPANION, [[キャラ:아키야마린코]],100
+		SIF RESULT
+			CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+	PRINTW 명성 700을 얻었다
+	FLAG:명성 += 700
+
+闘技場フラグ:60:0 = 1
+
+FOR LOCAL,0,CHARANUM
+	CALL HEALTH_CHARA,LOCAL
+NEXT
+
+@EVENT_BATTLE_ACTEND_COLOSSEUM60
+IF 現HP割合(CHARANUM - 1) <= 50 && LOCAL == 0
+	RESETCOLOR
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃%"큭…、아무래도 당신을 너무 얕본 모양이군…",72,LEFT%┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	SETCOLOR 0x9900FF
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃%"지금부터 방심은 일체 없다！ 자、간다！",72,LEFT%┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃%"도를 겨누는 그녀의 기백에 목덜미에 한기를 느꼈다",72,LEFT%┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	
+	;体力50％未満で行動回数増加・奥義解放・パッシブスキル「인법・공둔의술」해방
+	CFLAG:(CHARANUM - 1):행동횟수 = 3
+	ABL:(CHARANUM-1):스킬7 = [[스킬:인법・공둔의술]]	;인법・공둔의술	;回避率を上げ、回避に成功した際に確率で剣撃ガードブレイクを付与する
+	
+	LOCAL = 1
+
+ENDIF
+
+;====================
+;사고패턴
+;====================
+@SET_ACTION_9000,ARG
+#DIM CHARA
+
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+
+
+SELECTCASE 現HP割合(ARG)
+CASE IS > 50
+	SELECTCASE RAND:100
+		CASE IS < 20
+			;20%で風切り
+			CFLAG:ARG:입력행동 = [[스킬:일도류・바람베기]]
+		CASE IS < 30
+			;10％で楓ノ型
+			CFLAG:ARG:입력행동 = [[스킬:일도류・바람의형]]
+		CASE IS < 40
+			IF !CFLAG:ARG:気合フラグ
+				;10％で気合フラグが無ければ気合
+				CFLAG:ARG:입력행동 = [[스킬:기합]]
+			ELSE
+				;上でなければ楓ノ型
+				CFLAG:ARG:입력행동 = [[스킬:일도류・바람의형]]
+			ENDIF
+		CASE IS < 100
+			;60%で一ノ型
+			CFLAG:ARG:입력행동 = [[스킬:일도류・제1형]]
+	ENDSELECT
+
+CASE IS <= 50
+	;体力50％未満で行動回数増加・奥義解放・パッシブスキル「인법・공둔의술」해방
+	;各ターン最初の行動で、胡蝶獄門と胡蝶乱舞を交互に１回のみ
+	;１more時は通常スキルを発動する
+	IF CFLAG:ARG:행동한횟수 == 0 && CFLAG:ARG:１more플래그 == 0
+		IF (FLAG:경과턴수) % 2 == 0
+			CFLAG:ARG:입력행동 = [[스킬:일도류오의・호접옥문]]
+		ELSE
+			CFLAG:ARG:입력행동 = [[스킬:일도류・호접난무]]
+		ENDIF
+	ELSE
+		SELECTCASE RAND:100
+			CASE IS < 10 && !CFLAG:ARG:気合フラグ
+				;10％で気合フラグが無ければ気合
+				CFLAG:ARG:입력행동 = [[스킬:기합]]
+			CASE IS < 40
+				;30％で楓ノ型
+				CFLAG:ARG:입력행동 = [[스킬:일도류・바람의형]]
+			CASE IS < 70
+				;30%で風切り
+				CFLAG:ARG:입력행동 = [[스킬:일도류・바람베기]]
+			CASE IS < 100
+				;30%で一ノ型
+				CFLAG:ARG:입력행동 = [[스킬:일도류・제1형]]
+		ENDSELECT
+	ENDIF
+ENDSELECT
+
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1

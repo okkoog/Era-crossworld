@@ -1,0 +1,529 @@
+﻿
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:INFO.ERB
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/06/07		一ノ瀬					INFO.ERBから枝分かれさせる形で作成・移植
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;-----------------------------------------------------
+;@TRAININFO_WINDOW , ARG , ARGS
+;
+;   指定されたキャラクターの、調教画面で表示する情報を表示するウィンドウのdiv構文をRESULTSに入れて返す関数
+;   ARG     ：指定するキャラクターのキャラ番号
+;   ARGS    ：調教対象として取得するか、調教者として取得するか
+;
+;-----------------------------------------------------
+@TRAININFO_CHARA_WINDOW , ARG , ARGS = "TARGET"
+#DIM バー色 , 3 ;0：現在値or前の値　1：変動分　2：最大値分
+#DIM バー長さ , 3
+#DIM バー位置 , 3
+#DIM バー描画開始行 = 1000
+#DIM PLV
+#DIM CHARA
+#DIMS CHARA_WINDOW
+
+;ウィンドウ初期化
+CHARA_WINDOW =
+;取得するキャラが調教対象かどうかでCHARAを変更（BASEとPALAMの変動値取得用）
+IF ARGS == "TARGET"
+	CHARA = 0
+ELSE
+	;ASSIPLAYがオンなら2、オフなら1を参照する
+	CHARA = ASSIPLAY+1
+ENDIF
+
+	;-------------------------------------------------
+	;ステップ１：対象の顔グラをセット
+	;-------------------------------------------------
+	VARS FACE_CHARA = 
+	IF !G_OPT_NOT_USE_ICON_AT_TRAIN
+		FACE_CHARA += @"<div xpos='0'>%GET_FACE_BY_CHARA_AS_HTML(ARG, 560, "調教")%</div>"
+	ENDIF
+	;画像表示設定ない場合は空
+	
+	;画像に能力確認用ボタンを付与
+	IF ARGS == "TARGET"
+		FACE_CHARA = %SET_BUTTON_TAG(FACE_CHARA , "802" , "[802]능력확인")%
+	ELSEIF ASSIPLAY 
+		FACE_CHARA = %SET_BUTTON_TAG(FACE_CHARA , "808" , "[808]능력표시（조수）")%
+	ELSE
+		FACE_CHARA = %SET_BUTTON_TAG(FACE_CHARA , "808" , "[808]능력표시（주인）")%
+	ENDIF
+	;枠を作り、ウィンドウ内の相対座標をセット
+	FACE_CHARA = <div xpos='0' ypos='0' border_width='1' height='600' width='600' padding = '10'>%FACE_CHARA%</div>
+	CHARA_WINDOW += FACE_CHARA
+	;-------------------------------------------------
+	;ステップ２：対象の基本情報をセット
+	;-------------------------------------------------
+	VARS INFO_CHARA =
+	VARS ESTRUS_CHARA = 
+	;名前を取得
+	IF ARGS == "TARGET"
+		INFO_CHARA += @"조교대상：%NAME:ARG%"
+	ELSE
+		INFO_CHARA += @"조교자：%NAME:ARG%"
+	ENDIF
+	SELECTCASE 위험일(ARG)
+		CASE 1
+			ESTRUS_CHARA += @"<font color='#CC33FF'>%フルハ()%위험일%フルハ()%</font>"
+		CASE 2
+			ESTRUS_CHARA += @"<font color='#CC33FF'>%フルハ()%발정중%フルハ()%</font>"
+		CASE 3,-2
+			ESTRUS_CHARA += @"<font color='#CC33FF'>%フルハ()%만월발정중%フルハ()%</font>"
+	ENDSELECT
+	SIF ESTRUS_CHARA != ""
+		ESTRUS_CHARA = <div xpos='25' ypos='-130' border_width='1' border_color='#CC33FF' padding='20' background_color='%TOSTR_HTML(GETBGCOLOR())%'>%ESTRUS_CHARA%</div>
+
+	;ウィンドウ内の相対座標をセット
+	INFO_CHARA = <div xpos='650' ypos='0'>%INFO_CHARA%</div>
+	CHARA_WINDOW += INFO_CHARA + ESTRUS_CHARA
+	;-------------------------------------------------
+	;ステップ３：対象のBASEの値・ゲージをセット
+	;-------------------------------------------------
+	VARS BASE_CHARA =
+	VARS BASEBAR_CHARA =
+	;ループ回数は調教対象か調教者かで変わる
+	VARI FEND = (ARGS == "TARGET" ? 5 # 4)
+	;BASEは体力気力ＭＡＧ射精母乳の順
+	FOR LOCAL , 0 , FEND
+		;LOCALSにBASE名を入れていく。
+		;調教者と調教対象で順番と対象が変わる
+		IF ARGS == "TARGET"
+			LOCALS '= SUBSTRINGU("체력기력ＭＡ사정모유" , LOCAL*2 , 2 ) , SUBSTRINGU("赤緑紫黄白" , LOCAL , 1) 
+		ELSE
+			LOCALS '= SUBSTRINGU("사정모유ＭＡ뇨의" , LOCAL*2 , 2) ,SUBSTRINGU("黄白紫黄" , LOCAL , 1) 
+		ENDIF
+		VARI 絶頂チェック箇所 = (ARGS == "TARGET" ? LOCAL+1 # LOCAL+4-LOCAL/3)
+		;ＭＡＧはＭＡしか取得できないのでＧを足す
+		SIF LOCALS == "ＭＡ" 
+			LOCALS += "Ｇ"
+		;ＭＡＧをMAGと表示したいため、項目表示用変数を分け、表示用にはMAGを入れるようにする
+		LOCALS:2 '= REPLACE(LOCALS , "ＭＡＧ" , "MAG ")
+		;尿意は触手である
+		LOCALS:2 '= REPLACE(LOCALS:2 , "뇨의" , "촉수")
+		;ここまでで取得する能力の設定完了
+
+		;バーの作成作業。必要な情報を取得する。
+		;色は取得した文字列のみで処理
+		バー色 = BARCOLORSET(LOCALS:1), 0x000000 , RESULT:1
+		;調教対象と調教者でバーの長さが変わる
+		;체력～ＭＡＧと射精母乳とで、バーの長さが変わる
+		IF ARGS == "TARGET"
+			IF LOCAL <= 2
+				バー長さ = 28
+			ELSE
+				バー長さ = 11
+			ENDIF
+		ELSE
+			バー長さ = 12
+		ENDIF
+		;MAXBASEの無い項目は塗りつぶし
+		IF MAXBASE:ARG:LOCALS == 0
+			BASEBAR_CHARA += @"<shape type='space' param='{バー長さ*50}'>"
+		ELSE
+			;前回射精や乳を出してた場合は現在値が全て変動分の扱い
+			IF　GROUPMATCH(LOCALS , "사정" , "모유" , "뇨의") && 絶頂変動値:CHARA:絶頂チェック箇所
+				BASEBAR_CHARA += @"%HTML_RECT_MATH_BAR( 0 , BASE:ARG:LOCALS , MAXBASE:ARG:LOCALS , バー長さ , バー色:0 , , バー色:2 , 30 , 70)%"
+			ELSE
+				BASEBAR_CHARA += @"%HTML_RECT_MATH_BAR(BASE:ARG:LOCALS , BASE変動値:CHARA:LOCAL , MAXBASE:ARG:LOCALS , バー長さ , バー色:0 , , バー色:2 , 30 , 70)%"
+			ENDIF
+		ENDIF
+		SIF LOCALS == "사정" && ARGS == "TARGET"
+			BASEBAR_CHARA += " " * 7
+		SIF LOCALS != "사정" || ARGS != "TARGET"
+			BASEBAR_CHARA += "<br>"
+		;バー作成終わり
+
+		;ここからBASEの値を記述する処理
+		;対象が調教対象かどうかで長さなどが変わる
+		IF ARGS == "TARGET"
+			;체력～MAGまでは1行に1情報を記入
+			IF LOCAL <= 2
+				BASE_CHARA += @"%LOCALS:2 , 4 , LEFT%："+ @"     %ADD_KMGT(BASE:ARG:LOCALS , 6) % / %ADD_KMGT(MAXBASE:ARG:LOCALS , 6) %<br>"
+			;射精と母乳は1行にまとめる
+			ELSEIF MAXBASE:ARG:LOCALS > 0
+				BASE_CHARA += @"%LOCALS%："+ @"%ADD_KMGT(BASE:ARG:LOCALS , 5) %/%ADD_KMGT(MAXBASE:ARG:LOCALS , 5) % "
+			ELSE
+				BASE_CHARA += " "*18
+			ENDIF
+		ELSE
+			IF 絶頂変動値:CHARA:(LOCAL+4-LOCAL/3)
+				BASE_CHARA += @"<font color='%TOSTR_HTML(0xFFAAFF)%'>%LOCALS:2%</font>：%ADD_KMGT(BASE:ARG:LOCALS , 5)%/%ADD_KMGT(MAXBASE:ARG:LOCALS , 5)%"
+			ELSEIF MAXBASE:ARG:LOCALS == 0
+			ELSE
+				BASE_CHARA += @"%LOCALS:2%：%ADD_KMGT(BASE:ARG:LOCALS , 5)%/%ADD_KMGT(MAXBASE:ARG:LOCALS , 5)%"
+			ENDIF
+			BASE_CHARA += "<br>"
+		ENDIF
+	NEXT
+	;ウィンドウ内の相対座標をセット
+	BASEBAR_CHARA = <div xpos='950' ypos='200' >%BASEBAR_CHARA%</div>	
+	BASE_CHARA = <div xpos='650' ypos='200' >%BASE_CHARA%</div>
+	CHARA_WINDOW += BASEBAR_CHARA + BASE_CHARA
+	;-------------------------------------------------
+	;ステップ４：調教対象の忠誠度・依存度・ストレスの表示ウィンドウ作成
+	;-------------------------------------------------
+	;調教対象でないならスキップ
+	IF ARGS == "TARGET"
+		VARS MENTAL_TARGET
+		MENTAL_TARGET += @"　충성도:%ADD_KMGT(GET_CHARA_LOYALTY(TARGET) , 5)%"
+		IF TALENT:PLAYER:사토리（소질）
+			MENTAL_TARGET += @"<br>　의존도:%ADD_KMGT(CFLAG:TARGET:의존도 , 5)%<br>"
+			MENTAL_TARGET += @"스트레스：{CFLAG:TARGET:스트레스치 , 3}"
+		ENDIF
+		;表示相対位置調整
+		MENTAL_TARGET = <div xpos='2500' ypos='100' border_width='5' width='900' padding='50'>%MENTAL_TARGET%</div>
+		CHARA_WINDOW += MENTAL_TARGET
+	ENDIF
+	;-------------------------------------------------
+	;ステップ５：対象のPALAMの値とゲージを取得
+	;-------------------------------------------------
+	VARS PALAM_CHARA = "" 
+	VARS PALAMBAR_CHARA = ""
+	FEND = (ARGS == "TARGET" ? 15 # 6)
+	VARI NUM_INDENT = (ARGS == "TARGET" ? 5 # 2)
+	FOR LOCAL , 0 , FEND
+		;LOCALSにPALAM名を入れていく。
+		IF ARGS == "TARGET"
+			LOCALS '= SUBSTRINGU("쾌Ｃ쾌Ｖ쾌Ａ쾌Ｂ윤활복종욕정굴복습득치정고통공포반감불쾌억울", LOCAL*2 , 2 )
+		ELSE
+			LOCALS '= SUBSTRINGU("쾌Ｃ쾌Ｖ쾌Ａ쾌Ｂ윤활욕정", LOCAL*2 , 2 )
+		ENDIF
+		IF GROUPMATCH(LOCALS , "반감" , "불쾌" , "억울")
+			バー色 = BARCOLORSET("青"), COLOR("赤") , RESULT:1
+		ELSE
+			バー色 = BARCOLORSET("青"), COLOR("水色") , RESULT:1
+		ENDIF
+		バー長さ = 7
+		PLV = GETPALAMLV(PALAM:ARG:LOCALS, 17)
+		;3色のバーの長さ取得
+		;オプションによって変わる
+		SELECTCASE FLAG:PALAM표시설정
+			;LOCAL:1～3を取得、1：表示する現在値 2：現在値のバーの長さの基準 3：現在のレベルでのバーの最大値の長さの基準 4：変動分のバーの長さの基準
+			;Aパターン
+			CASE 0
+				LOCAL:1 = PALAM:ARG:LOCALS
+				LOCAL:2 = PALAM:ARG:LOCALS-PALAMLV:PLV
+				LOCAL:3 = PALAMLV:(PLV+1)-PALAMLV:PLV
+			;Bパターン
+			CASE 1
+				LOCAL:1 = PALAM:ARG:LOCALS
+				LOCAL:2 = PALAM:ARG:LOCALS
+				LOCAL:3 = PALAMLV:(PLV+1)
+			;Cパターン
+			CASE 2
+				LOCAL:1 = PALAM:ARG:LOCALS - PALAMLV:PLV
+				LOCAL:2 = PALAM:ARG:LOCALS - PALAMLV:PLV
+				LOCAL:3 = PALAMLV:(PLV+1)-PALAMLV:PLV
+		ENDSELECT
+		LOCAL:4 = PALAM変動値:CHARA:LOCAL
+		;快シリーズで前回絶頂してた場合は、見えてるゲージ全部が変動量になる
+		IF LOCAL <= 3 && 絶頂変動値:CHARA:LOCAL > 0
+			LOCAL:4 = LOCAL:2
+			LOCAL:2 = 0
+		ENDIF
+		;PLAYERの快PALAMは絶頂までだけを見る
+		SIF ARGS != "TARGET" && INRANGE(LOCAL , 0 , 3)
+			LOCAL:1 = PALAM:ARG:LOCALS , PALAM:ARG:LOCALS , 10000
+		;MAX表示時の処理
+		IF PLV == 17 || (LOCALS == "윤활" && PLV >= 5) 
+			IF PALAM変動値:0:LOCAL > 0
+				LOCAL:4 = LOCAL:3
+				LOCAL:2 = 0
+			ELSE
+				LOCAL:2 = LOCAL:3
+			ENDIF
+		ENDIF
+
+		;取得した情報からバーを生成
+		PALAMBAR_CHARA += @"%HTML_RECT_MATH_BAR(LOCAL:2 , LOCAL:4 , LOCAL:3 , バー長さ , バー色:0 , バー色:1 , バー色:2 , 30 , 50)%<shape type='space' param='550'>"
+		SIF LOCAL % NUM_INDENT == NUM_INDENT-1
+			PALAMBAR_CHARA += "<br>"
+
+		;バーの作成ここまで
+		;以下PALAMの値の表示処理
+		IF PLV == 17 || (LOCALS == "윤활" && PLV >= 5)
+			PALAM_CHARA += @"%LOCALS%MAX【% "MAX!" , 7%】"
+		ELSEIF LOCAL <= 3 && 絶頂変動値:CHARA:LOCAL > 0
+			PALAM_CHARA += @"<font color='%TOSTR_HTML(0xFFAAFF)%'>%LOCALS%%フルハート()% 【%ADD_KMGT(PALAM:ARG:LOCALS , 7)%】</font>"
+		ELSEIF　PLV上昇済み:CHARA:LOCAL
+			PALAM_CHARA += @"<font color='%TOSTR_HTML(バー色:1)%'>%LOCALS%Lv%SUBSTRINGU("0123456789ABCDEFG?" , PLV , 1)%</font>【%ADD_KMGT(PALAM:ARG:LOCALS , 7)%】"
+		ELSE
+			PALAM_CHARA += @"%LOCALS%Lv%SUBSTRINGU("0123456789ABCDEFG?" , PLV , 1)%【%ADD_KMGT(PALAM:ARG:LOCALS , 7)%】"
+		ENDIF
+		SIF LOCAL % NUM_INDENT == NUM_INDENT-1
+			PALAM_CHARA += "<br>"
+	NEXT
+	;表示相対位置調整
+	PALAMBAR_CHARA = <div xpos='450' ypos='650'>%PALAMBAR_CHARA%</div>
+	PALAM_CHARA = <div xpos='0' ypos='650'>%PALAM_CHARA%</div>
+	CHARA_WINDOW += PALAMBAR_CHARA + PALAM_CHARA
+
+
+	;-------------------------------------------------
+	;ステップ６：調教者のTEQUIPなどの状態を表示
+	;-------------------------------------------------
+	IF ARGS != "TARGET"
+		VARS TEQUIP_PLAYER_ICON = ""
+		;各情報を取得
+		LOCALS:1 '= "薬" , "道具" , "옷"  , "촉수"
+		FOR LOCAL , 0 , 4
+			LOCALS '= SUBSTRINGU("약품도구복장촉수" , LOCAL*2 , 2)
+			CALL GET_TEQUIP_TITLE , LOCALS:(LOCAL+1) , PLAYER
+			IF RESULTS:1 != ""
+				TEQUIP_PLAYER_ICON += RESULTS:1
+			ELSEIF RESULTS != ""
+				TEQUIP_PLAYER_ICON += @"<button value='' title='%RESULTS%'><font color='%TOSTR_HTML(COLOR("WHITE"))%'>%LOCALS%</font></button>"
+			ELSE
+				TEQUIP_PLAYER_ICON += @"<font color='%TOSTR_HTML(COLOR("GRAY"))%'>%LOCALS%</font>"
+			ENDIF
+			SIF LOCAL < 3
+				TEQUIP_PLAYER_ICON += "<br>"
+		NEXT
+		TEQUIP_PLAYER_ICON = <div xpos='1570' ypos='115' border_width='1' padding='20'>%TEQUIP_PLAYER_ICON%</div>
+		CHARA_WINDOW += TEQUIP_PLAYER_ICON
+	ENDIF
+
+	;-------------------------------------------------
+	;ステップ７：大枠を作って中身を放り込む
+	;-------------------------------------------------
+	IF ARGS =="TARGET"
+		CHARA_WINDOW '= @"<div width='4500' height='1020'  border_width='3' padding='50' background_color='%TOSTR_HTML(GETBGCOLOR())%'>" + CHARA_WINDOW + "</div>"
+	ELSE
+		CHARA_WINDOW '= @"<div width='1850' height='1020' border_width='3' padding='50' background_color='%TOSTR_HTML(GETBGCOLOR())%'>" + CHARA_WINDOW + "</div>"
+	ENDIF
+RESULTS = %CHARA_WINDOW%
+RETURN 1
+
+@TRAININFO_TEQUIP_ICON_WINDOW , ARG = -1
+#DIMS DYNAMIC TEQUIP_ICON_WINDOW
+;欲しいもの
+;シャワーアイコン・ビデオカメラアイコン・バイブアイコン・屋外アイコン・服装アイコン・避妊アイコン
+;セックス中アイコン・薬アイコン・触手アイコン・エプロンアイコン
+;水撮具外服
+;交避薬触愛
+;各情報を取得
+LOCALS:1 '= "섹스" , "피임" , "약품" , "촬영" , "도구" , "옷"  , "야외", "특수" , "촉수" , "에이프런"
+FOR LOCAL , 0 , 10
+	LOCALS '= SUBSTRINGU("성교피임약품촬영도구복장야외특수촉수새댁" , LOCAL*2 , 2)
+	CALL GET_TEQUIP_TITLE , LOCALS:(LOCAL+1)
+	SIF LOCALS == "촬영" && RESULT > 0
+		LOCALS += @"(잔여{RESULT})"
+	IF RESULTS:1 != ""
+		TEQUIP_ICON_WINDOW += RESULTS:1
+	ELSEIF RESULTS != ""
+		TEQUIP_ICON_WINDOW += @"<button value='998' title='%RESULTS%'><font color='%TOSTR_HTML(COLOR("WHITE"))%'>%LOCALS%</font></button>"
+	ELSE
+		TEQUIP_ICON_WINDOW += @"<font color='%TOSTR_HTML(COLOR("GRAY"))%'>%LOCALS%</font>"
+	ENDIF
+	SIF LOCAL % 2 == 1
+		TEQUIP_ICON_WINDOW += "<br>"
+NEXT
+TEQUIP_ICON_WINDOW '= @"<div width='650' height=600  border_width='3' padding='50' background_color='%TOSTR_HTML(GETBGCOLOR())%'>" + TEQUIP_ICON_WINDOW + "</div>"
+RESULTS = %TEQUIP_ICON_WINDOW%
+
+
+@GET_TEQUIP_TITLE , ARGS = "" , ARG = -1
+#DIM 残り撮影
+SIF ARG == -1
+	ARG = TARGET
+RESULTS '= "" , ""
+
+;LOCALS:1 '= "セックス" , "避妊" , "薬" , "撮影" , "道具" , "옷"  , "野外", "風呂" , "촉수" , "에이프런"
+SELECTCASE ARGS
+	CASE "撮影"
+		IF TEQUIP:ARG:비디오카메라
+			残り撮影 = 10 - TFLAG:비디오촬영횟수 + 1
+			RESULTS += @"[촬영중 (나머지 {残り撮影}회　촬영자：" + (FLAG:촬영자==2 ? "%CALLNAME:ASSI%" # "%CALLNAME:MASTER%") + ")]"
+			RETURN 残り撮影
+		ELSE
+			RETURN 0
+		ENDIF
+	CASE "セックス"
+		SIF TEQUIP:ARG:Ｖ섹스 > 0
+			RESULTS += @"[Ｖ성행위중]" + "\n"
+		SIF TEQUIP:ARG:Ａ섹스 > 0
+			RESULTS += @"[Ａ성행위중]" + "\n"
+		SIF TEQUIP:ARG:Ｖ손가락삽입 > 0
+			RESULTS += @"[Ｖ손가락삽입중]" + "\n"
+		SIF TEQUIP:ARG:Ａ손가락삽입 > 0
+			RESULTS += @"[Ａ손가락삽입중]" + "\n"
+		SIF RESULTS != ""
+			RESULTS:1 '= @"<button value='804' title='%RESULTS%'><font color='%TOSTR_HTML(COLOR("ハートピンク"))%'>성교</font></button>"
+	CASE "避妊"
+		SIF CFLAG:ARG:자궁내피임결계
+			RESULTS += @"[자궁내피임결계]" + "\n"
+	CASE "薬"
+		SIF TEQUIP:ARG:미약
+			RESULTS += @"[미약효과발휘중]" + "\n"
+		SIF TEQUIP:ARG:이뇨제
+			RESULTS += @"[이뇨제효과발휘중]" + "\n"
+		IF TEQUIP:ARG:강정신약 == 1
+			RESULTS += @"[강정신약반동중]" + "\n"
+		ELSEIF TEQUIP:ARG:강정신약 > 1
+			RESULTS += @"[강정신약효과발휘중]" + "\n"
+		ENDIF
+		SIF RESULTS != ""
+			RESULTS '= CALLNAME:ARG + "복약：" + "\n" + RESULTS
+			
+		SIF RESULTS != ""
+			RESULTS:1 '= @"<button value='804' title='%RESULTS%'><font color='%TOSTR_HTML(COLOR("明緑色"))%'>약품</font></button>"
+	CASE "道具"
+		SIF TEQUIP:ARG:클리캡 && TEQUIP:촉수 == 0
+			RESULTS += @"[클리캡]" + "\n"
+		SIF TEQUIP:ARG:오나홀 && TEQUIP:촉수 == 0
+			RESULTS += @"[오나홀]" + "\n"
+
+		SIF TEQUIP:ARG:카테터 && TEQUIP:촉수 == 0
+			RESULTS += @"[카테터]" + "\n"
+
+		SIF TEQUIP:ARG:요도플러그 && TEQUIP:촉수 == 0
+			RESULTS += @"[요도플러그]" + "\n"
+
+		IF TEQUIP:ARG:바이브 || TEQUIP:ARG:애널바이브
+			IF TEQUIP:ARG:바이브 && TEQUIP:ARG:애널바이브 && TEQUIP:ARG:촉수 == 0
+				RESULTS += @"[양구멍바이브자극]" + "\n"
+			ELSEIF TEQUIP:ARG:바이브
+				RESULTS += @"[바이브]" + "\n"
+			ELSEIF TEQUIP:ARG:애널바이브
+				RESULTS += @"[애널바이브]" + "\n"
+			ENDIF
+		ENDIF
+
+		SIF TEQUIP:ARG:애널비즈
+			RESULTS += @"[애널비즈]" + "\n"
+		IF TEQUIP:ARG:유두캡
+			RESULTS += @"[유두캡]" + "\n"
+		ENDIF
+		IF TEQUIP:ARG:착유기 && TEQUIP:ARG:촉수 == 0
+			RESULTS += @"[착유기]" + "\n"
+		ENDIF
+
+		SIF TEQUIP:ARG:아이마스크
+			RESULTS += @"[아이마스크]" + "\n"
+
+		IF TEQUIP:ARG:밧줄
+			IF TEQUIP:ARG:긴박종류 & 8
+				RESULTS += @"[매달기]" + "\n"
+			ELSEIF TEQUIP:ARG:긴박종류 & 4
+				RESULTS += @"[귀갑묶기]" + "\n"
+			ELSEIF TEQUIP:ARG:긴박종류 & 2
+				RESULTS += @"[사지구속]" + "\n"
+			ELSE
+				IF TEQUIP:ARG:촉수 == 0
+					RESULTS += @"[밧줄로긴박]" + "\n"
+				ENDIF
+			ENDIF
+		ENDIF
+
+		SIF TEQUIP:ARG:볼재갈
+			RESULTS += @"[볼재갈]" + "\n"
+		IF TEQUIP:ARG:관장기＋플러그 && TEQUIP:ARG:촉수
+			RESULTS += @"[촉수관장]" + "\n"
+		ELSEIF TEQUIP:ARG:관장기＋플러그
+			RESULTS += @"[관장＋애널플러그]" + "\n"
+		ENDIF
+		;---- EDIT 010 触手系コマンドを修正 MOD START ----
+		IF TEQUIP:ARG:확장벌룬 && TEQUIP:ARG:촉수
+			RESULTS += @"[애널극태촉수]" + "\n"
+		ELSEIF TEQUIP:ARG:확장벌룬
+			RESULTS += @"[확장벌룬]" + "\n"
+		ENDIF
+		;SIF TEQUIP:ARG:확장벌룬
+		;	RESULTS += @"[확장벌룬]
+		;---- EDIT 010 触手系コマンドを修正 MOD END   ----
+		SIF TEQUIP:ARG:애널전극
+			RESULTS += @"[애널전극]" + "\n"
+		SIF TEQUIP:ARG:유방전극
+			RESULTS += @"[유방전극장착중]"	 + "\n"
+		SIF TEQUIP:ARG:촉수구욕
+			RESULTS += @"[촉수구욕]" + "\n"
+		SIF TEQUIP:ARG:삼각목마
+			RESULTS += @"[삼각목마]" + "\n"
+		SIF TEQUIP:ARG:리본
+			RESULTS += @"[사정억제중]" + "\n"
+		SIF RESULTS != ""
+			RESULTS '= CALLNAME:ARG + "사용자：" + "\n"  + RESULTS
+	CASE "옷"
+		
+		FOR LOCAL,0,12
+			SIF TEQUIP:ARG:GET_CLOTHESNAME(LOCAL) > 0
+				RESULTS += @"[%GET_衣装名(TEQUIP:ARG:GET_CLOTHESNAME(LOCAL))%]\n"
+		NEXT
+		
+		SIF TEQUIP:ARG:가슴앞열림
+			RESULTS += "[가슴개방중]\n"
+		SIF TEQUIP:ARG:고간앞열림
+			RESULTS += "[고간앞열림중]\n"
+		IF RESULTS == ""
+			RESULTS '= "（클릭으로전원전착의）" + "\n" + @"복장(%CALLNAME:ARG%)：\n전라"
+			RESULTS:1 '= @"<button value='804' title='%RESULTS%'><font color='%TOSTR_HTML(COLOR("ハートピンク"))%'>전라</font></button>"
+		ELSE
+			RESULTS '= "（클릭으로전원전탈의）" + "\n"  + @"복장(%CALLNAME:ARG%)"+ "\n"  + RESULTS
+			RESULTS:1 '= @"<button value='805' title='%RESULTS%'><font color='%TOSTR_HTML(COLOR("WHITE"))%'>복장</font></button>"
+		ENDIF
+	CASE "野外"
+		SIF TEQUIP:야외플레이 & 1
+			RESULTS +=  "[폐빌딩]"
+		SIF TEQUIP:야외플레이 & 2
+			RESULTS +=  "[삼림]"
+		SIF TEQUIP:야외플레이 & 4
+			RESULTS +=  "[공원]"
+		SIF TEQUIP:야외플레이 & 8
+			RESULTS +=  "[강변]"
+		SIF TEQUIP:구경꾼수 >= 1
+			RESULTS += @"\n[구경꾼 {TEQUIP:구경꾼수}인]"
+	CASE "특수"
+		SIF TEQUIP:수치플레이 == 1
+			RESULTS += @"[수치플레이중]\n"
+		SIF TEQUIP:목욕탕
+			RESULTS +=  "[목욕탕플레이중]\n"
+		SIF TEQUIP:샤워
+			RESULTS +=  "[샤워]\n"
+	CASE "촉수" 
+		IF TEQUIP:촉수
+			SIF TEQUIP:ARG:클리캡
+				RESULTS += @"[촉수클리자극]" + "\n"
+			
+			SIF TEQUIP:ARG:오나홀 || TEQUIP:ARG:카테터 ||TEQUIP:ARG:요도플러그
+				RESULTS += @"[촉수페니스자극]" + "\n"
+			
+
+			IF TEQUIP:ARG:바이브 && TEQUIP:ARG:애널바이브
+				RESULTS += @"[양구멍촉수삽입]" + "\n"
+			ELSEIF TEQUIP:ARG:바이브
+				RESULTS += @"[촉수삽입]" + "\n"
+			ELSEIF TEQUIP:ARG:애널바이브
+				RESULTS += @"[촉수애널삽입]" + "\n"
+			ENDIF		
+
+			SIF TEQUIP:ARG:착유기
+				RESULTS += @"[촉수착유]" + "\n"
+			
+			SIF TEQUIP:ARG:유두캡
+				RESULTS += @"[촉수유두자극]" + "\n"
+			SIF TEQUIP:ARG:밧줄
+				RESULTS += @"[촉수긴박]" + "\n"
+			SIF RESULTS != ""
+				RESULTS '= CALLNAME:ARG + "사용자："  + "\n" + RESULTS
+			RESULTS '= @"[촉수소환중]\n" + RESULTS
+		ENDIF
+		
+	CASE "에이프런"
+		SIF TEQUIP:에이프런
+			RESULTS += @"[새댁플레이중]"
+ENDSELECT
+
+
+
+
+
+
+
+

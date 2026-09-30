@@ -1,0 +1,81 @@
+﻿;----------------------------------------------
+;サブロール(追加素質)の設定
+;----------------------------------------------
+;----------------------------------------------
+;トリガーになる素質名
+;----------------------------------------------
+@SUB_ROLE_TALENT_1, ARG
+#FUNCTIONS
+RESULTS_F = 이능자
+RETURNF RESULTS_F
+
+;----------------------------------------------
+;表示用の名称変化
+;----------------------------------------------
+@SUB_ROLE_NAME_이능자, ARG = -1, ARGS, ARG:1
+#FUNCTIONS
+#DIM L_LV
+L_LV = ARG >= 0 ? GET_BTL_TALENT_LV("이능자", ARG, ARGS) # ARG:1
+IF L_LV > 0
+	RESULTS_F = 이능자 Lv{L_Lv}
+ELSE
+	RESULTS_F = 이능자
+ENDIF
+RETURNF RESULTS_F
+
+;----------------------------------------------
+;最大レベルの定義
+;----------------------------------------------
+@SUB_ROLE_MAXLV_이능자, ARG = -1, ARGS, ARG:1
+#FUNCTION
+RESULT_F = 5
+RETURNF RESULT_F
+
+;----------------------------------------------
+;素質のコスト設定
+;各キャラのコストは各メインロール毎にもつキャパシティ内に収める必要がある
+;----------------------------------------------
+@SUB_ROLE_COST_이능자, ARG = -1, ARGS, ARG:1
+#FUNCTION
+#DIM L_LV
+L_LV = ARG >= 0 ? GET_BTL_TALENT_LV("이능자", ARG, ARGS) # ARG:1
+SELECTCASE L_LV
+	CASE 5
+		RESULT_F = 999
+	CASE 4
+		RESULT_F = 30
+	CASE 3
+		RESULT_F = 20
+	CASE 2
+		RESULT_F = 15
+	CASE 1
+		RESULT_F = 10
+	CASEELSE
+		RESULT_F = 0
+ENDSELECT
+RETURNF RESULT_F
+
+;----------------------------------------------
+;説明文
+;----------------------------------------------
+@SUB_ROLE_EXPLAIN_이능자, ARG = -1, ARGS, ARG:1
+#DIM L_LV
+;異能をデフォで使えるロールの場合は説明を飛ばす
+SIF ARG >= 0 && GET_ROLE_PROP("CAN_USE_SKILL", ARG, ARGS)
+	RETURN 0
+
+PRINTFORML □이능자
+PRINTFORML 　스킬의 습득가능 수를 4개 늘린다。단 이 소질에 의한 증가로 인해 습득 수가 8을 초과할 수는 없다。
+SELECTCASE GET_BTL_TALENT_LV("이능자", ARG, ARGS)
+	CASE 3, 4
+		PRINTFORML 　또한 모든 스킬카드를 사용하여 스킬을 습득할 수 있게 된다。
+	CASE 2
+		PRINTFORML 　또한 계승소질을 가진 스킬카드를 사용하여 스킬을 습득할 수 있게 된다。
+ENDSELECT
+
+
+;----------------------------------------------
+;説明文2
+;----------------------------------------------
+@SUB_ROLE_EXPLAIN_TOOLTIP_이능자, ARG = -1, ARG:1 = -1
+RESULTS '= "스킬을 습득하고 발동할 수 있게 된다。" + UNICODE(0x000D) + "레벨에 따라 습득 범위와 습득 가능 개수가 변화한다。"

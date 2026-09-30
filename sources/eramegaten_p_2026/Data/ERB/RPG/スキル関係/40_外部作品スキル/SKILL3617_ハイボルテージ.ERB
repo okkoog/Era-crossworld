@@ -1,0 +1,190 @@
+﻿
+;スキル名
+@SKILL_NAME_3617,ARG
+RESULTS = 하이볼티지
+SIF SKILLGAGE_H_GET(ARG, 3617) == 1
+	RESULTS = 롤링 썬더
+SIF SKILLGAGE_H_GET(ARG, 3617) == 2
+	RESULTS = 썬더 블로우
+
+;　명중
+@SKILL_HITRATE_3617, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_3617, ARG
+IF SKILLGAGE_D_GET(ARG, 3600)
+	IF SKILLGAGE_H_GET(ARG, 3617) == 2
+		RETURN 600
+	ELSEIF SKILLGAGE_H_GET(ARG, 3617) == 1
+		RETURN 150
+	ELSE
+		RETURN 200
+	ENDIF
+ELSE
+	IF SKILLGAGE_H_GET(ARG, 3617) == 2
+		RETURN 500
+	ELSEIF SKILLGAGE_H_GET(ARG, 3617) == 1
+		RETURN 120
+	ELSE
+		RETURN 170
+	ENDIF
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3617,ARG
+IF SKILLGAGE_H_GET(ARG, 3617) == 2
+	RETURN 1
+ELSEIF SKILLGAGE_H_GET(ARG, 3617) == 1 && SKILLGAGE_D_GET(ARG, 3600)
+	RETURN 4
+ELSEIF SKILLGAGE_H_GET(ARG, 3617) == 1
+	RETURN 3
+ELSE
+	RETURN 2
+ENDIF
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3617,ARG
+IF SKILLGAGE_H_GET(ARG, 3617) == 2
+	RETURN 1
+ELSEIF SKILLGAGE_H_GET(ARG, 3617) == 1 && SKILLGAGE_D_GET(ARG, 3600)
+	RETURN 4
+ELSEIF SKILLGAGE_H_GET(ARG, 3617) == 1
+	RETURN 3
+ELSE
+	RETURN 2
+ENDIF
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3617, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3617,ARG
+RETURN 12
+
+;　相性
+@SKILL_TYPE_3617,ARG
+RETURN GET_TYPE_NUM("전격"), GET_TYPE_NUM("타격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3617
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3617, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3617, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_3617,ARG
+RETURN 2
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3617,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3617, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3617
+RETURN GET_SUCCESSION_NUM("전격")
+;전격
+
+;속도보정
+@SKILL_SPEED_3617, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3617
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3617, ARG = -1
+RETURN 0
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_3617,ARG
+RETURN GET_STATE_NUM("SHOCK")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_3617,ARG
+RETURN GET_TYPE_NUM("전격")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_3617,ARG
+RETURN 20
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_3617,ARG
+RETURN 66
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3617, ARG, ARG:1, ARG:2
+CALL ATTACK_SINGLE,ARG,POS(ARG:1),3617
+IF SKILLGAGE_H_GET(ARG, 3617) >= 2
+	CALL SKILLGAGE_H_SET,ARG,3617,0
+ELSEIF SKILLGAGE_H_GET(ARG, 3617) == 1
+	CALL SKILLGAGE_H_SET,ARG,3617,2
+ELSE
+	CALL SKILLGAGE_H_SET,ARG,3617,1
+ENDIF
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3617, ARG
+IF SKILLGAGE_H_GET(ARG, 3617) == 2
+	PRINTL 오른 주먹으로 혼신의 스트레이트를 내지른다.
+	PRINTL 적 1체에 전격 속성의 특대 데미지
+	PRINTL 데빌 트리거 발동 중　위력 상승
+ELSEIF SKILLGAGE_H_GET(ARG, 3617) == 1
+	PRINTL 고속 회전하여 연격 후 뒤꿈치 찍기를 내지른다.
+	PRINTL 적 1체에 전격 속성으로 3회 공격
+	PRINTL 데빌 트리거 발동 중　4회 공격 및 위력 상승
+ELSE
+	PRINTL 번개를 두른 회전 올려차기를 하며 공중으로 날아오른다.
+	PRINTL 적 1체에 전격 속성으로 2회 공격을 행한다
+	PRINTL 데빌 트리거 발동 중　위력 상승
+ENDIF
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3617,ARG
+SIF SKILLGAGE_D_GET(ARG, 2953)
+	RETURN 1
+RETURN 0
+
+;■ハイボルテージ派生説明
+;前提としたラウンドトリップを使用し、SKILLGAGE_D_GET(ARG, 2953)がある状態で使用可能
+;当スキル使用毎にSKILLGAGE_H_GET(ARG, 3617)が増加し、段階ごとに性能も変化
+;他スキルと組み合わせも可能
+
+;・スキル組み合わせ例
+;					라운드트립(起点)
+;					↓					↓
+;			하이볼티지			코레다(通常火力)
+;			↓			↓
+;	이나즈마			ローリングサンダー
+;		↓					↓
+;コレダー（火力大)		サンダーブロウ
+
+;サンダーブロウ/コレダーを使用するとゲージリセット
+;コレダーはSKILLGAGE_H_GET(ARG, 3617) == 2で火力大
+;ゲージ+デビルトリガー発動で最大火力を発揮
+

@@ -1,0 +1,87 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_ER_狩人の勘, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	RESULTS = 魔血覚醒
+ELSE
+	RESULTS = 사냥꾼의 감
+ENDIF
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ER_狩人の勘
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ER_狩人の勘, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;====================================================
+;ダメージ計算時の追加補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_ER_狩人の勘, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;ステート名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+;自分が攻撃側
+IF L_P == L_ACTOR
+	IF GET_RPG_CSTR_BTL(L_P, "エデンズリッター変身状態") == "起動"
+		; 変身中攻撃時にクリティカル率に補正
+		SELECTCASE ARGS
+			CASE "クリティカル補正A"
+				; 満月なら確定
+				IF FLAG:월령 == 8
+					RETURN 999
+				ELSE
+					RETURN 10
+				ENDIF
+		ENDSELECT
+	ENDIF
+ELSE
+	IF GET_RPG_CSTR_BTL(L_P, "エデンズリッター変身状態") != "起動"
+		; ノーマルモード中被ダメ時にクリティカル率に補正
+		SELECTCASE ARGS
+			CASE "クリティカル補正A"
+				RETURN -20
+		ENDSELECT
+	ENDIF
+ENDIF
+RETURN 0
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_ER_狩人の勘, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	PRINTL 
+	PRINTL 자신에게 흐르는 음마의 피를 해방.
+	PRINTL 자동: 공격 시 크리티컬률 상승. 보름달일 때는 크리티컬 확정.
+ELSE
+	PRINTL 
+	PRINTL 사냥꾼의 경험에서 우러나온 직감.
+	PRINTL 자동: 자신의 피크리티컬률을 감소.
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ER_狩人の勘, ARG
+RETURN 0
+
+; @SKILL_EXPLAIN_TOOLTIP_ER_狩人の勘, ARG
+; IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+; 	RESULTS:0 = 自身に流れる淫魔の血を解放。
+; 	RESULTS:1 = 自動：攻撃時、クリティカル率を上昇。満月時はクリティカル確定。
+; ELSE
+; 	RESULTS:0 = 狩人の経験からくる直感。
+; 	RESULTS:1 = 自動：自身の被クリティカル率を減少。
+; ENDIF

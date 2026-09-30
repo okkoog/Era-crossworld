@@ -1,0 +1,59 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@LEADER_SKILL_CONTROL_NO_56,ARG
+RESULTS = WEAK 프리크
+
+;スキル名
+@SKILL_NAME_LEADER_WEAKフリーク,ARG
+RESULTS = WEAK프리크
+
+;　 説明文の設定
+@SET_VAR_LEADER_SKILL_EXPLAIN_WEAKフリーク, L_TEXT
+#DIMS REF L_TEXT
+#DIM L_CNT
+L_CNT = COUNT_ACTIVE_LEADER_SKILL("WEAKフリーク")
+IF L_CNT
+	L_TEXT = 아군이 약점을 찔렀을 경우에 자신의 임의의 능력이 최대 %AUTO_SPLIT("1/2/3/4/5/6", "/", L_CNT)%개 UP한다。
+ELSE
+	L_TEXT = 아군이 약점을 찔렀을 경우에 자신의 임의의 능력이 UP한다。
+ENDIF
+;重複可能な数
+@LEADER_SKILL_COUNT_LIMIT_WEAKフリーク
+RETURN 6
+
+@ACTION_LEADER_WEAKフリーク,ARG,ARG:1,ARG:2
+#DIM L_TABLE
+#DIM LCOUNT
+#DIM L_CNT
+#DIMS L_RESULTS
+#DIMS TEMPS
+L_RESULTS = %RAND_SPLIT("공격/방어/마법위력/마법효과/명중/회피", "/")%
+FOR LCOUNT, 1, COUNT_ACTIVE_LEADER_SKILL("WEAKフリーク")
+	IF RAND:100 < 50
+		DO 
+			TEMPS = %RAND_SPLIT("공격/방어/마법위력/마법효과/명중/회피", "/")%
+		LOOP COUNT_SPLIT(L_RESULTS, "/", TEMPS)
+		L_RESULTS = %ADD_SPLIT(L_RESULTS, "/", TEMPS)%
+	ENDIF
+NEXT
+CALL SKILL_SET_カジャンダ, ARG, POS(ARG:1), L_RESULTS, 4, "단체"
+;====================================================
+;追撃
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_LEADER_WEAKフリーク, ARG, ARG:1
+;自分じゃなければNG
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+;判定は1回のみ
+SIF ARG != ARG:1
+	RETURN 0
+;複数登録されている最初の一個目でまとめて判定してあとは飛ばす(LEARDERスキルのTRYSKILL_VARにはLEADERスキルの持ち主が入れられる)
+SIF !IS_FIRST_ACTIVE_LEADER_SKILL("WEAKフリーク", TRYSKILL_VAR, ARG)
+	RETURN 0
+;いずれかの相手に弱点攻撃
+SIF !GET_CREC_ACT(FLAG:행동순1, , "WEAK")
+	RETURN 0
+;自分自身を対象にする
+RETURN 1, CPOS(ARG)
+

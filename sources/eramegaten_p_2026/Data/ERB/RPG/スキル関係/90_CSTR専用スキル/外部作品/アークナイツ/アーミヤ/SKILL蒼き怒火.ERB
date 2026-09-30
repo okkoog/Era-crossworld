@@ -1,0 +1,205 @@
+﻿;スキル名
+@SKILL_NAME_蒼き怒火,ARG
+RESULTS = 푸른 분노
+
+;　명중
+@SKILL_HITRATE_蒼き怒火, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_蒼き怒火, ARG
+RETURN 100
+
+;;クリティカル率
+;@SKILL_CRITICAL_RATE_蒼き怒火, ARG
+;RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_蒼き怒火, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_蒼き怒火,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_蒼き怒火,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_蒼き怒火,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_蒼き怒火,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_蒼き怒火, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_蒼き怒火,ARG
+RETURN 0
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_蒼き怒火
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_蒼き怒火,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_蒼き怒火,ARG
+RETURN GET_SKILL_TARGET_NUM("특수")
+
+;　사거리
+@SKILL_RANGE_蒼き怒火,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_蒼き怒火,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_蒼き怒火,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_蒼き怒火
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_蒼き怒火, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_蒼き怒火
+RETURN 0
+
+;没
+;@SKILL_RANK_蒼き怒火, ARG = -1
+
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_蒼き怒火,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;====================================================
+;@SKILL_TRIGGER_ACTIONABLE_蒼き怒火,ARG,ARG:1
+;RETURN 0
+
+;====================================================
+;カウンター発動条件
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_蒼き怒火,ARG,ARG:1
+;RETURN RESULT
+
+;====================================================
+;ダメージ発動時
+;====================================================
+;@SKILL_DAMAGE_EFFECT_蒼き怒火,ARG,ARG:1
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_蒼き怒火,ARG,ARG:1
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_蒼き怒火,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+;CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+;CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+;CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM;		拡散攻撃
+;CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM;			ランダム攻撃
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_蒼き怒火,ARG
+PRINTFORML 전투에 참가하고 있는 동안, 아군 전체의 가하는 데미지 상승량과 피데미지 경감률이 \@ CSTR:ARG:104 == "" ? 4 # 7\@％ 상승한다
+PRINTL 사용자가 전용 스킬을 발동하고 있는 동안에 한해 효과량이 배증한다
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_蒼き怒火,ARG
+RETURN 0
+
+@リンク不能_蒼き怒火
+RETURN 1
+;====================================================
+;独自処理
+;====================================================
+;（予定）と付けられている方は仮置きの物。実際に採用されるかどうかはわからない。
+@AUTO_PU_SKILL_蒼き怒火,ARG,ARGS,ARG:1,ARG:2
+#DIM SKILL_RANK
+#DIM SKILL_NUM
+#DIM LAMMOUNT = 0
+#DIM LCOUNT
+#DIM L_USER
+;ARG = 攻撃者
+;ARGS （ダメージ↑、被ダメージ↑、命中↑、回避↑、魔威↑、魔効↑、etc…）といった感じの奴
+;ARG:1 = 防御者
+;文字列を参考にする都合上、どの文字列を使うか事前に定めておいた方がいいかも
+;CSTR:ARG:100 = EXTRA勢出典作品、『アークナイツ』とでも書き込む（予定）
+;CSTR:ARG:101 = EXTRA勢出典作品でどのキャラなのか、とりあえず『アーミヤ（前衛）』とでも書き込む（予定）
+;CSTR:ARG:104 = 現在の霊格昇華の度合。 このスキルを習得している時点で空文字の可能性は低いが、念のためにの分岐を用意
+;----------------------------------------------------------------------------------------------
+;この効果は攻撃側がアーミヤでなくても効果が発揮されるので、一回検索する
+L_USER = -1
+FOR LCOUNT,0,CHARANUM
+	;戦闘に参加してないorアーミヤでないなら飛ばす
+	SIF CFLAG:LCOUNT:포지션 < 1 || CSTR:LCOUNT:101 != "アーミヤ（前衛）"
+		CONTINUE
+	SELECTCASE ARGS
+		CASE "ダメージ↑"
+			;ダメージ↑の場合、攻撃者と同PTでなければ飛ばす
+			SIF CFLAG:ARG:PT플래그 != CFLAG:LCOUNT:PT플래그
+				CONTINUE
+		CASE "被ダメージ↓"
+			;被ダメージ↓の場合、防御者と同PTでなければ飛ばす
+			SIF CFLAG:(ARG:1):PT플래그 != CFLAG:LCOUNT:PT플래그
+				CONTINUE
+	ENDSELECT
+	L_USER = LCOUNT
+	BREAK
+NEXT
+;アーミヤが見つからない、専用技1が削除されている、蒼き怒火を習得していない場合は終了
+SIF L_USER == -1 || !HAVE_SKILL(L_USER,[[스킬:전용기1]]) || !HAVE_PU_SKILL(L_USER,"蒼き怒火")
+	RETURN 0
+SKILL_NUM = [[스킬:전용기1]]
+SELECTCASE ARGS
+	CASE "ダメージ↑","被ダメージ↓"
+		SELECTCASE CSTR:L_USER:104
+			CASE ""
+				LAMMOUNT = 4
+			CASEELSE
+				LAMMOUNT = 7
+		ENDSELECT
+		SIF SKILLGAGE_F_GET(L_USER,SKILL_NUM) < 0
+			LAMMOUNT *= 2
+		SIF ARGS == "被ダメージ↓"
+			LAMMOUNT = 100 - LAMMOUNT
+		RETURN LAMMOUNT
+ENDSELECT
+RETURN 0

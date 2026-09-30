@@ -1,0 +1,138 @@
+﻿;スキル名
+@SKILL_NAME_呪うわよ,ARG
+RESULTS = 저주할 거야
+SIF TFLAG:전투중 && ARG >= 0 && FLAG:행동순1 != ARG
+	RESULTS = 저주의 인형
+;　명중
+@SKILL_HITRATE_呪うわよ, ARG
+RETURN 999
+
+;クリティカルしない
+@SKILL_CRITICAL_RATE_呪うわよ, ARG
+RETURN 0
+
+;　威力
+@SKILL_POWER_呪うわよ, ARG
+RETURN 50
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_呪うわよ,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_呪うわよ,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_呪うわよ, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_呪うわよ,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_呪うわよ,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_呪うわよ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　攻撃タイプ
+@SKILL_ATTACKTYPE_呪うわよ,ARG
+RETURN GET_攻撃タイプ_NUM("物理")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_呪うわよ, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_呪うわよ,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_呪うわよ,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_呪うわよ,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_呪うわよ
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_呪うわよ,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;====================================================
+;トリガー発動条件
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_呪うわよ,ARG,ARG:1
+;自身の行動のみ
+IF FLAG:행동순1 == ARG
+	CALL CHECK_SKILL_TAG, ARG, CFLAG:ARG:입력행동, "チグサ_ボンガ"
+	RESULTS '= "呪うわよ"
+	SIF !RESULT
+		RETURN 0
+	SIF CFLAG:ARG:타겟 != CPOS(ARG:1)
+		RETURN 0
+	;物理攻撃を与えている
+	SIF !GET_CREC_ACT(ARG, ARG:1, "HIT")
+		RETURN 0
+	RETURN 1, CPOS(ARG:1)
+ELSE
+	SIF ARG:1 != FLAG:행동순1
+		RETURN 0
+	SIF PU_SKILLGAGE_F_GET(ARG, "呪うわよ") <= 0
+		RETURN 0
+	SIF PU_SKILLGAGE_H_GET(ARG, "呪うわよ") != CFLAG:(FLAG:행동순1):실제가입시간
+		RETURN 0
+	RETURN 1, CPOS(FLAG:행동순1)
+ENDIF
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_呪うわよ,ARG,ARG:1,ARG:2
+IF FLAG:행동순1 == ARG 
+	CALL PU_SKILLGAGE_F_SET, ARG, "呪うわよ", 5
+	CALL PU_SKILLGAGE_H_SET, ARG, "呪うわよ", CFLAG:POS(ARG:1):실제가입시간
+	CALL PRINT_HIT_MESSAGE, POS(ARG:1), @"呪いの人形を付着！", "W"
+ELSE
+	CALL ATTACK_SKILL, ARG, ARG:1,ARG:2
+	CALL PU_SKILLGAGE_F_ADD, ARG, "呪うわよ", -1
+	SIF PU_SKILLGAGE_F_GET(ARG, "呪うわよ") == 0
+		CALL PRINT_HIT_MESSAGE, POS(ARG:1), @"呪いの人形が消えさった", "W"
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_呪うわよ,ARG
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_呪うわよ, ARG = -1
+RETURN 1
+
+@リンク不能_呪うわよ
+RETURN 1
+
+@SKILL_ACTIONABLE_BATTLE_呪うわよ, ARG
+RETURN 0
+
+;　説明文の表示
+@SKILL_EXPLAIN_呪うわよ,ARG
+PRINTL 저주의 인형으로 지속적인 데미지를 계속 준다.
+PRINTL 자동효과: 자신의 전용 스킬로 데미지를 주었을 경우 대상 적에게 이하의 연동 효과가 발동한다.
+PRINTL 　　　　 「공격 대상이 된 적에게 저주의 인형을 부여하고, 그 외의 적의 저주의 인형 상태를 해제한다.」
+PRINTL 　　　　 저주의 인형 효과를 받은 적이 행동할 때마다 이하의 연동 효과가 발동한다.
+PRINTL 　　　　 「만능 상성의 소데미지를 준다. 이 스킬에 의한 데미지는 스킬 소유자의 공격력에 따라 증가한다.」
+
+@SKILL_EXPLAIN_TOOLTIP_呪うわよ, ARG
+RESULTS:0 = 저주의 인형으로 지속적인 데미지를 계속 준다.
+RESULTS:1 = 자동효과: 자신의 전용 스킬로 데미지를 주었을 경우 대상 적에게 이하의 연동 효과가 발동한다.
+RESULTS:2 = 　　　　 「攻撃の対象となった敵に呪いの人形を付着し、それ以外の敵の呪いの人形状態を解除する。」
+RESULTS:3 = 　　　　 呪いの人形をの効果を受けた敵が行動するたびに以下の連動効果が発動する。
+RESULTS:4 = 　　　　 「万能相性の小ダメージをあたえる。このスキルによるダメージはスキルの持ち主の攻撃力に応じて増加する。」

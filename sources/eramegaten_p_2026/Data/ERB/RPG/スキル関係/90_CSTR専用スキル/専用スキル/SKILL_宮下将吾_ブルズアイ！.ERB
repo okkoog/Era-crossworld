@@ -1,0 +1,130 @@
+﻿;元ネタはTRPGのスキル「ブルズアイ」。本来は防御力全無視だが、さすがにそれはマズいので
+;原作における宮下さんの挙動や印象（どんなときでもこれ一本で立ち向かっていた）の再現を優先して設定した
+
+;スキル名
+@SKILL_NAME_ブルズアイ！,ARG
+RESULTS = 【불스아이】!
+
+;　명중
+@SKILL_HITRATE_ブルズアイ！, ARG
+RETURN 999
+
+;　威力
+@SKILL_POWER_ブルズアイ！, ARG
+RETURN 410
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_ブルズアイ！, ARG
+RETURN 999
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ブルズアイ！,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ブルズアイ！,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ブルズアイ！, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ブルズアイ！,ARG
+;残弾式
+RETURN 0
+
+;　相性
+@SKILL_TYPE_ブルズアイ！,ARG
+RETURN GET_TYPE_NUM("비구")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ブルズアイ！
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ブルズアイ！,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ブルズアイ！,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_ブルズアイ！,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ブルズアイ！,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ブルズアイ！,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_ブルズアイ！
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_ブルズアイ！, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ブルズアイ！
+RETURN 0
+
+;没
+;@SKILL_RANK_ブルズアイ！, ARG = -1
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_ブルズアイ！, ARG = -1, ARG:1 = -1
+RETURN 4
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ブルズアイ！, ARG,ARG:1,SKILL_NUM
+#LOCALSIZE 4
+#DIM SKILL_NUM
+CALL SKILLGAGE_F_ADD, ARG, SKILL_NUM,1
+CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　説明文の表示
+@SKILL_EXPLAIN_ブルズアイ！, ARG
+#LOCALSIZE 1
+#DIM ブルズアイ！残弾
+ブルズアイ！残弾 = PU_SKILLNUM_GET(ARG, "ブルズアイ！")
+PRINTL 예리하게 벼려진 감각과 행운으로 필중의 탄환을 상대 급소에 때려 박는 미야시타 쇼고의 필살기
+PRINTL 적 1체에 특대 데미지 모든 내성과 내성강화 효과를 관통 필중·초고크리티컬
+IF CFLAG:(CHARANUM-1):PT플래그 || ARG < 0 || ARG >= CHARANUM
+	PRINTL 1회 출격당 3회까지 사용 가능
+ELSE
+	;残弾なし
+	IF SKILLGAGE_F_GET(ARG, ブルズアイ！残弾) > 4
+		PRINTL 残弾　0発　使用不能
+	;残弾あり
+	ELSE
+		PRINT 残弾　
+		LOCAL = 3 - SKILLGAGE_F_GET(ARG, ブルズアイ！残弾)
+		PRINTV LOCAL
+		PRINTL 発
+	ENDIF
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ブルズアイ！, ARG
+#DIM ブルズアイ！残弾
+ブルズアイ！残弾 = PU_SKILLNUM_GET(ARG, "ブルズアイ！")
+SIF SKILLGAGE_F_GET(ARG, ブルズアイ！残弾) > 2
+	RETURN 0
+RETURN 1

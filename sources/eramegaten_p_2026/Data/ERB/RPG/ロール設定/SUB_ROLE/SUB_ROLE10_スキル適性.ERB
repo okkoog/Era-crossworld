@@ -1,0 +1,131 @@
+﻿;----------------------------------------------
+;サブロール(追加素質)の設定
+;----------------------------------------------
+;----------------------------------------------
+;トリガーになる素質名
+;----------------------------------------------
+@SUB_ROLE_TALENT_10, ARG
+#FUNCTIONS
+RESULTS_F = 스킬적성
+RETURNF RESULTS_F
+
+;----------------------------------------------
+;表示用の名称変化
+;----------------------------------------------
+@SUB_ROLE_NAME_스킬적성, ARG = -1, ARGS, ARG:1
+#FUNCTIONS
+#DIM L_LV
+L_LV = ARG >= 0 ? GET_BTL_TALENT_LV("스킬적성", ARG, ARGS) # ARG:1
+IF L_LV > 0
+	RESULTS_F = 스킬적성 Lv{L_Lv}
+ELSE
+	RESULTS_F = 스킬적성
+ENDIF
+RETURNF RESULTS_F
+
+;----------------------------------------------
+;最大レベルの定義
+;----------------------------------------------
+@SUB_ROLE_MAXLV_스킬적성, ARG = -1, ARGS, ARG:1
+#FUNCTION
+RESULT_F = 3
+RETURNF RESULT_F
+
+;----------------------------------------------
+;素質のコスト設定
+;各キャラのコストは各メインロール毎にもつキャパシティ内に収める必要がある
+;----------------------------------------------
+@SUB_ROLE_COST_스킬적성, ARG = -1, ARGS, ARG:1
+#FUNCTION
+#DIM L_LV
+L_LV = ARG >= 0 ? GET_BTL_TALENT_LV("스킬적성", ARG, ARGS) # ARG:1
+SELECTCASE L_LV
+	CASE 3
+		RESULT_F = 20
+	CASE 2
+		RESULT_F = 15
+	CASE 1
+		RESULT_F = 10
+	CASEELSE
+		RESULT_F = 0
+ENDSELECT
+RETURNF RESULT_F
+;----------------------------------------------
+;説明文
+;----------------------------------------------
+@SUB_ROLE_EXPLAIN_스킬적성, ARG = -1, ARGS, ARG:1
+#DIM L_LV
+#DIM L_RANK
+L_LV = ARG >= 0 ? GET_BTL_TALENT_LV("스킬적성", ARG, ARGS) # ARG:1
+PRINTFORML □스킬적성 Lv{L_LV}
+PRINTFORML 　자신이 계승소질을 가진 스킬에 대해、다음과 같은 효과를 얻는다。
+PRINTFORML 　필요 코스트-{SUB_ROLE_스킬적성효과("コスト軽減", ARG, ARGS, ARG:1)}\%、데미지보정+{SUB_ROLE_스킬적성효과("ダメージ補正", ARG, ARGS, ARG:1)}\%、회복량+{SUB_ROLE_스킬적성효과("回復量", ARG, ARGS, ARG:1)}\%、상태이상 부착률+{SUB_ROLE_스킬적성효과("バステ付着率", ARG, ARGS, ARG:1)}\%
+PRINTFORML 　다른 전투소질로 인해、동일한 종류의 효과를 얻고 있는 경우、효과가 가장 높은 것 하나만 발동한다。
+PRINTFORML 　또한、효과량은 보유하고 있는 계승소질의 개수에 따라 변동한다。
+
+;----------------------------------------------
+;説明文2
+;----------------------------------------------
+@SUB_ROLE_EXPLAIN_TOOLTIP_스킬적성, ARG = -1, ARG:1 = -1
+RESULTS '= "계승소질을 가진 스킬의 효과가 강화되고、또한 코스트가 감소한다。효과량은 보유한 계승소질의 개수에 따라 변동된다。"
+
+@SUB_ROLE_스킬적성효과, ARGS, ARG, ARGS:1, ARG:2
+#FUNCTION
+#DIM L_LV
+#DIM L_RANK
+#DIM L_RESULT
+#DIM L_TABLE, 6
+L_LV = ARG >= 0 ? GET_BTL_TALENT_LV("스킬적성", ARG, ARGS:1) # ARG:2
+L_RANK = SUB_ROLE_스킬적성랭크(ARG)
+L_RANK += MATCH(ACTIVE_LEADER_SKILL, "디플래그")
+;L_RANK += MATCH(ACTIVE_LEADER_SKILL, "スキル適性強化")
+
+SELECTCASE ARGS
+	;30 / 25 / 20 / 15 / 10
+	;24 / 20 / 16 / 12 /  8
+	;18 / 15 / 12 /  9 /  6
+	CASE "コスト軽減"
+		RETURNF MIN((L_LV + 2) * (L_RANK + 1), 50)
+	;25 / 20 / 15 / 10 /  5
+	;20 / 16 / 12 /  8 /  4
+	;15 / 12 /  9 /  6 /  3
+	CASE "ダメージ補正"
+		RETURNF MIN((L_LV + 2) * L_RANK, 35)
+	CASE "回復量"
+		SELECTCASE L_LV
+			CASE 3
+				L_TABLE = 0, 20, 35, 50, 75, 100
+			CASE 2
+				L_TABLE = 0, 15, 25, 40, 60, 80
+			CASE 1
+				L_TABLE = 0, 10, 15, 30, 45, 60
+		ENDSELECT
+		L_RESULT = L_TABLE:MIN(L_RANK, 5)
+		;デフラグによる超過は15 / 10 / 5づつの伸び幅
+		L_RESULT += MAX(L_RANK - 5, 0) * L_LV * 5
+		RETURNF L_RESULT
+		;RETURNF MIN(MAX((L_LV + L_RANK - 2) * 25, 10), 200)
+	;100 /  75 / 50 / 40 / 30
+	; 80 /  60 / 40 / 30 / 20
+	; 60 /  45 / 30 / 20 / 10 
+	CASE "バステ付着率"
+		RETURNF MIN((L_LV + L_RANK - 1) * 10 + MAX(L_RANK - 3, 0) * L_LV * 5, 100)
+ENDSELECT
+@SUB_ROLE_스킬적성랭크, ARG
+#FUNCTION
+;---- EDIT P ADD START -------------------------
+SIF CFLAG:ARG:최적화
+	RETURNF 5
+;---- EDIT P ADD END ---------------------------
+SELECTCASE C_HAVE_SUCCESSIONNUM:ARG:0
+	CASE 1
+		RETURNF 5
+	CASE 2
+		RETURNF 4
+	CASE 3, 4, 5
+		RETURNF 3
+	CASE 6, 7, 8
+		RETURNF 2
+	CASEELSE
+		RETURNF 1
+ENDSELECT

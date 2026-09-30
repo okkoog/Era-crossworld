@@ -1,0 +1,74 @@
+﻿;-------------------------------------------------
+;2択提示関数　@INPUT_YN
+;-------------------------------------------------
+@INPUT_YN_POPUP,L_CHOICE = "네",L_CHOICE:1 = "아니오", L_MESSAGE = "", L_LAYER_NO = 99
+#DIMS DYNAMIC L_CHOICE, 2
+#DIMS DYNAMIC L_MESSAGE
+#DIM DYNAMIC L_LAYER_NO
+#DIM DYNAMIC STOCK_REDRAW
+#DIMS DYNAMIC SELECT_WINDOW
+#DIM DYNAMIC L_XPOS
+#DIM DYNAMIC L_YPOS
+#DIM DYNAMIC L_HEIGHT
+#DIM DYNAMIC L_WIDTH
+
+STOCK_REDRAW = CURRENTREDRAW()
+L_HEIGHT = (2 + 1 + (L_MESSAGE != "")) * GETCONFIG("フォントサイズ")
+L_WIDTH = MAX(STRLENS(L_CHOICE), STRLENS(L_CHOICE:1), STRLENS(L_MESSAGE) + 2) * GETCONFIG("フォントサイズ") / 2
+L_WIDTH = MAX(L_WIDTH, GETCONFIG("フォントサイズ") * 6)
+L_XPOS = MAX((MOUSEX()) - GETCONFIG("フォントサイズ"), 0)
+L_YPOS = MIN((MOUSEY()) - GETCONFIG("フォントサイズ") / 2, -L_HEIGHT)
+
+SIF L_MESSAGE != ""
+	SELECT_WINDOW += L_MESSAGE + "<br>"
+SELECT_WINDOW += SET_BUTTON_TAG("[0] " + L_CHOICE:0, "0") + "<br>"
+SELECT_WINDOW += SET_BUTTON_TAG("[1] " + L_CHOICE:1, "1")
+{
+	HTML_PRINT_ISLAND 
+	@"<div 
+		display = 'absolute-leftbottom'
+		xpos = '{L_XPOS}px' ypos = '{L_YPOS}px'
+		height = '{L_HEIGHT}px' width = '{L_WIDTH}px'
+		padding = '60'
+		border_width = '30' border_color = '%TOSTR_HTML(COLOR("p-green"))%'
+		background_color = '%TOSTR_HTML(GETBGCOLOR())%'
+	  >"
+	+ SELECT_WINDOW
+	+ "</div>", L_LAYER_NO
+}
+;↓2025/3/23 一ノ瀬　画面内のこれ以下のレイヤーをうっすら暗くする
+HTML_PRINT_ISLAND @"<div display = 'absolute-lefttop'><button value='キャンセル'>%不可フィルタ(LINELENS *100 , 10000)%</button></div>" , L_LAYER_NO - 1
+;↓2025/3/23 一ノ瀬　枠外クリックや右クリックでキャンセルするように
+;CALL INPUTINT(0, 1)
+$INPUT_LOOP
+INPUTMOUSEKEY
+SELECTCASE RESULT
+	CASE 1
+		;右クリックはキャンセル
+		IF RESULT:1 == 0x200000
+			RESULT = 1
+		;左クリックはボタン取得
+		ELSEIF RESULT:1 == 0x100000 && (GROUPMATCH(RESULTS:5 , "キャンセル") || RESULT:5 == 1)
+			RESULT = 1
+		ELSEIF RESULT:1 == 0x100000 && RESULT:5 == 0
+			RESULT = 0
+		ELSE
+			GOTO INPUT_LOOP
+		ENDIF
+	CASE 3
+		RESULTS '= CONVERT_KEYCORD_TO_STR(RESULT:1)
+		IF GROUPMATCH(RESULTS , "ESC" , "1")
+			RESULT = 1
+		ELSEIF RESULTS == "0"
+			RESULT = 0
+		ELSE
+			GOTO INPUT_LOOP
+		ENDIF
+	CASEELSE
+		GOTO INPUT_LOOP
+ENDSELECT
+;CLEARLINE 1
+HTML_PRINT_ISLAND_CLEAR L_LAYER_NO
+HTML_PRINT_ISLAND_CLEAR L_LAYER_NO - 1
+REDRAW STOCK_REDRAW
+RETURN RESULT

@@ -1,0 +1,1334 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	ファイル名	:プリントシール機/BASE.ERB
+;	概要		:一部の街ダンジョンにプリントシール機で写真を撮るイベントを追加します。
+;				 いくつかのダンジョンに同じイベントを追加する関係上別ファイルとして独立しました。
+;
+;	ライセンス	:ライセンスフリー。キャラ分岐などの追加も大歓迎です。
+;	(当ファイルへの追加は口上無しの場合の汎用処理のみとしてください)
+;
+;	更新内容	:
+;
+;	VER		更新日			名前					更新内容
+;	000		2024/03/21		mid.k					D42(신주쿠)に追加したイベントを分離。
+;													ついでに特殊分岐追加。
+;	001		2024/04/12		mid.k					追加予定の特殊分岐内部処理用にファイル内で分割。
+;	002		2024/04/15		P						口上の呼び出し処理を追加
+;	002.1	2024/06/03		mid.k					処理微修正、イチゴフロストの口調変更
+;	002.2	2026/06/24		mid.k					条件式ミスを修正、1年以上発覚しなかったってマジかおい
+;
+;
+;	「プリント倶楽部」「プリクラ」はアトラス→セガの登録商標です。
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=======================================================================
+;キャラクターによる特殊分岐を追加される方へ
+;=======================================================================
+;専用口上があるキャラの場合、口上ファイルに以下の関数を使用して文章を作成してください。(####はキャラ番号に修正)
+;あくまでイベントなので、内容・経験に関しては分岐作成者にお任せしています。
+;
+;各種行為によって獲得する経験に関しては、分岐内でADDS_EXP関数を利用して加算してください。
+;被写経験のみ当ファイル内で1プレイ相当分を加算してるので、それ以外のみ記述ください。
+;(連コされる場合は差分量のみ追加してください)
+;依存度も共通で40を加算しているので、独自で追加したい方は個別部分ではその分調整した値を指定してください。
+;
+;・口上ファイルでの関数名
+;　@DUNGEON_EVENT_PURIKURA_K####
+;　口上内で陥落などで更に分離する場合は、末尾に陥落名を付けるなどして下さい。(同梱テンプレート参照)
+;
+;=======================================================================
+;이벤트
+;=======================================================================
+@DUNGEON_EVENT_PURIKURA
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC IS_EXIST_KOJO
+PRINTFORML ＞게임 센터
+PRINTFORML 점내를 둘러보던 %CALLNAME:MASTER%(은)는 스티커 사진기를 발견하고 발걸음을 멈추었다.
+PRINTFORMW 동료와 함께 찍어보는 것도 좋을지도 모른다…
+CALL INPUT_YN("촬영한다", "촬영하지 않는다")
+IF RESULT == 0 && MONEY >= 400
+	PRINTFORMW 누구와 촬영할까…
+
+	LOCAL = 0
+	FOR LCOUNT, 1, 7
+		LOCALS = 포지션{LCOUNT}
+		SIF FLAG:LOCALS >= 0 && 体格(FLAG:LOCALS) <= 3
+			LOCAL++
+	NEXT
+	SIF LOCAL >= 3
+		PRINTFORML [0] 다 함께 촬영한다
+	FOR LCOUNT, 1, 7
+		LOCALS = 포지션{LCOUNT}
+		SIF FLAG:LOCALS < 0
+			CONTINUE
+		IF FLAG:LOCALS == 0
+			PRINTFORML [{LCOUNT}] 혼자서 촬영한다
+		ELSE
+			PRINTFORML [{LCOUNT}] %CALLNAME:(FLAG:LOCALS)%와(과) 촬영한다
+		ENDIF
+	NEXT
+	PRINTFORML [9] 역시 그만둔다
+
+	$DUNGEON_EVENT_PURIKURA_INPUTLOOP
+	INPUT
+
+	SIF RESULT >= 1 && RESULT <= 6
+		LOCALS = 포지션{RESULT}
+
+	IF RESULT == 9
+		PRINTL 지금은 우선해야 할 일이 있다.
+		PRINTFORMW %CALLNAME:MASTER%(은)는 그 자리를 뒤로 했다…
+	ELSEIF LOCAL >= 3 && RESULT == 0
+		;全員 エロ無し
+		PRINTL 촬영 부스에 들어가 안내 방송에 맞춘 포즈로 촬영을 한다.
+		PRINTW 촬영 종료 후, 낙서 부스에 옹기종기 모여 낙서를 즐겼다.
+		PRINTFORMW 인쇄된 스티커를 나누어가진 뒤, %CALLNAME:MASTER% 일행은 게임 센터를 뒤로 했다.
+		FOR LOCAL, 1, 7
+			LOCALS = 포지션{LOCAL}
+			SIF FLAG:LOCALS < 0
+				CONTINUE
+			IF FLAG:LOCALS == 0
+				CALL ADDS_EXP("피사경험", 7, MASTER)
+				PRINTFORML ■%CALLNAME:(MASTER)%
+				CALL SHOW_ADD_EXP(MASTER)
+			ELSEIF 体格(FLAG:LOCALS) >= 4
+				PRINTFORMW ※%CALLNAME:(FLAG:LOCALS)%(은)는 덩치가 너무 커서 촬영 부스에 들어갈 수 없었습니다.
+			ELSE
+				CALL ADDS_EXP("피사경험", 7, FLAG:LOCALS)
+				PRINTFORML ■%CALLNAME:(FLAG:LOCALS)%
+				CALL SHOW_ADD_EXP(FLAG:LOCALS)
+			ENDIF
+		NEXT
+		PRINTL
+		PRINTW 다 함께 촬영을 즐겼다.
+		MONEY -= 400
+	ELSEIF RESULT >= 1 && RESULT <= 6 && FLAG:LOCALS == 0
+		;一人で撮影
+		;下の二人通常処理を分離したのでついでにこっちも
+		CALL DUNGEON_EVENT_PURIKURA_SOLO
+		CALL ADDS_EXP("피사경험", 7, MASTER)
+		PRINTFORML ■%CALLNAME:(MASTER)%
+		CALL SHOW_ADD_EXP(MASTER)
+		PRINTL
+		PRINTW 혼자서 촬영을 즐겼다…
+		MONEY -= 400
+	ELSEIF RESULT >= 1 && RESULT <= 6 && FLAG:LOCALS > 0
+		;誰かと撮影
+		;専用口上がある場合は汎用分岐を飛ばす
+		CALL 口上存在確認, FLAG:LOCALS
+		IS_EXIST_KOJO = (RESULT == 2)
+		IF 体格(FLAG:LOCALS) >= 4
+			;巨体は撮影不可
+			PRINTFORMW %CALLNAME:(FLAG:LOCALS)%(은)는 너무 커서 촬영 부스에 들어갈 수 없는 모양이다…
+			IF IS_EXIST_KOJO
+				TSTR:프린트스티커이벤트내용 = 撮影不可_巨体
+				CALL 口上呼び出し, "DUNGEON_EVENT", FLAG:LOCALS, , , , "PURIKURA"
+			ENDIF
+			GOTO DUNGEON_EVENT_PURIKURA_INPUTLOOP
+		ELSE
+			;巨体以外
+			TSTR:프린트스티커이벤트내용 = 通常撮影
+			CALL 口上呼び出し, "DUNGEON_EVENT", FLAG:LOCALS, , , , "PURIKURA"
+			IF !RESULT
+				;専用口上無しの場合
+				CALLF 陥落(FLAG:LOCALS, MASTER)
+				PRINTFORMW %CALLNAME:(FLAG:LOCALS)%와(과) 촬영 부스에 들어갔다.
+				;キャラごとの特殊分岐
+				IF NO:(FLAG:LOCALS) == [[キャラ:잭프로스트]] && !IS_EXIST_KOJO
+					;プリクラ君がいる時
+					PRINTL 「히호히호! 사진 찍는 호?」
+					PRINTFORMW 「옛날엔 %CSTR:(FLAG:LOCALS):일인칭%가 마스코트였던 적도 있었다 호-」
+					PRINTL 「그럼 촬영하는 호-, 카메라 렌즈를 보는 거다 호-」
+					PRINTFORML 최신 기종임에도 불구하고 %CALLNAME:(FLAG:LOCALS)%(은)는 익숙한 느낌으로 포즈를 취하고 있다.
+					PRINTFORMW %CALLNAME:MASTER%(은)는 감탄하면서 함께 포즈를 취했다.
+				ELSEIF NO:(FLAG:LOCALS) == [[キャラ:딸기프로스트]] && !IS_EXIST_KOJO
+					;ジャックの双子の姉をイメージ
+					PRINTL 「사진 찍는 거야?」
+					PRINTW 「옛날엔 잭이 마스코트였던 적도 있었던 모양이네」
+					PRINTL 「그럼 촬영을 시작할게, 카메라 렌즈를 봐」
+					PRINTFORML 잭 본인은 아니라 해도, %CALLNAME:(FLAG:LOCALS)%(은)는 익숙한 느낌으로 포즈를 취하고 있다.
+					PRINTFORMW %CALLNAME:MASTER%(은)는 감탄하면서 함께 포즈를 취했다.
+				ELSEIF NO:(FLAG:LOCALS) == [[キャラ:프로스트파이브]] && !IS_EXIST_KOJO
+					;わちゃわちゃ
+					PRINTW 「「「「「히호-! 사진 찍는 호-!」」」」」
+					PRINTFORML 「%CSTR:(FLAG:LOCALS):이인칭%가 가운데인 호-」「다 같이 둘러싸는 호-」
+					PRINTW 와글와글 시끌벅적한 프로스트들에게 좌우에서 지시를 받으며, 전원 다 함께 포즈를 취했다.
+				;以下ジャックorフロストファミリー
+				;アイデアが浮かばなかったので保留
+				;ELSEIF NO:(FLAG:LOCALS) == [[キャラ:프로스트에이스]] && !IS_EXIST_KOJO
+				;ELSEIF NO:(FLAG:LOCALS) == [[キャラ:쁘띠프로스트]] && !IS_EXIST_KOJO
+				;ELSEIF GROUPMATCH(NO:(FLAG:LOCALS), [[キャラ:사악프로스트]], [[キャラ:사악프로스트_마인]]) && !IS_EXIST_KOJO
+				;ELSEIF NO:(FLAG:LOCALS) == [[キャラ:킹프로스트]] && !IS_EXIST_KOJO
+				;ELSEIF NO:(FLAG:LOCALS) == [[キャラ:루시퍼프로스트]] && !IS_EXIST_KOJO
+				ELSEIF NO:(FLAG:LOCALS) == [[キャラ:잭랜턴]] && !IS_EXIST_KOJO
+					;フロストに嫉妬するランタン
+					;アイデアくれた「」ありがとう
+					PRINTW 「사진 찍는 호?」
+					PRINTL 「딱히 상관은 없지만, 이것 때문에 프로스트 녀석들만 인기 있어져서 좀 복잡한 호…」
+					PRINTW 「됐으니까 촬영하자고 호? 참 나, 막무가내인 호…」
+					PRINTFORML 약간 씁쓸한 표정을 지으면서도 %CALLNAME:(FLAG:LOCALS)%(은)는 포즈를 취해 주었다.
+				ELSEIF IS_HUMANOID(FLAG:LOCALS) >= 3
+					;相手が人間・もしくは人型悪魔
+					;特殊分岐内からも飛んだりするので分離
+					CALL DUNGEON_EVENT_PURIKURA_NORMAL, (FLAG:LOCALS), RESULTS
+				ELSE
+					;その他悪魔 エロ無し
+					IF RESULT > 0
+						;陥落済み
+						PRINTW 촬영 부스에 들어가 음성 안내에 맞춘 포즈로 촬영을 한다.
+						PRINTFORMW %CALLNAME:(FLAG:LOCALS)%도 나름대로 여러 포즈를 취해 주었다.
+					ELSE
+						;그외(NTR中/未陥落など)
+						CALL DUNGEON_EVENT_PURIKURA_NORMAL_OTHER, (FLAG:LOCALS)
+					ENDIF
+				ENDIF
+			ENDIF
+
+			IF NO:(FLAG:LOCALS) == [[キャラ:잭프로스트]]
+				;ジャックフロストだけちょっと多めに 特殊分岐の有無は問わない
+				CFLAG:(FLAG:LOCALS):의존도 += 60
+			ELSEIF NO:(FLAG:LOCALS) == [[キャラ:딸기프로스트]]
+				;本人ではないのでジャックよりは少なめ 同上
+				CFLAG:(FLAG:LOCALS):의존도 += 50
+			ELSE
+				CFLAG:(FLAG:LOCALS):의존도 += 40
+			ENDIF
+			CALL ADDS_EXP("피사경험", 7, MASTER)
+			CALL ADDS_EXP("피사경험", 7, FLAG:LOCALS)
+			PRINTFORML ■%CALLNAME:MASTER%
+			CALL SHOW_ADD_EXP(MASTER)
+			PRINTFORML ■%CALLNAME:(FLAG:LOCALS)%
+			CALL SHOW_ADD_EXP(FLAG:LOCALS)
+
+			PRINTL
+			PRINTFORMW %CALLNAME:(FLAG:LOCALS)%와(과) 촬영을 즐겼다.
+			MONEY -= 400
+		ENDIF
+	ELSE
+		GOTO DUNGEON_EVENT_PURIKURA_INPUTLOOP
+	ENDIF
+ELSEIF RESULT == 0 && MONEY < 400
+	PRINTL 촬영하고 싶었지만 소지금이 부족하다.
+	PRINTFORMW %CALLNAME:MASTER%(은)는 그 자리를 뒤로 했다…
+ELSE
+	PRINTL 지금은 우선해야 할 일이 있다.
+	PRINTFORMW %CALLNAME:MASTER%(은)는 그 자리를 뒤로 했다…
+ENDIF
+
+@DUNGEON_EVENT_PURIKURA_SOLO
+;一人で撮影
+IF TALENT:MASTER:남자 && !TALENT:MASTER:오토코노코
+	;@が男
+	PRINTFORMW 주변의 "남자 혼자서 촬영?"이라는 시선을 무시하며 부스로 발걸음을 옮긴다.
+	PRINTFORML "난 혼자서 대체 뭘 하고 있는 거지…"라는 생각을 억누르고,
+	PRINTFORMW 안내 방송의 지시대로 포즈를 취해 촬영을 마쳤다.
+ELSE
+	;@が女/후타나리/오토코노코
+	PRINTL 촬영 메뉴를 선택하고 촬영 부스에 발을 들여놓는다.
+	PRINTW 희미하게 풍기는 음란한 냄새는 누군가가 이 부스 안에서 야한 짓을 한 흔적을 보여주고 있다…
+	PRINTW 나도 야한 스티커 사진(에로프리)을 찍어볼까…
+	CALL INPUT_YN("야한 사진으로", "평범한 사진으로")
+	IF RESULT == 0
+		;着用している衣服に応じて分岐
+		IF IS_NAKED(MASTER)
+			PRINTFORML 알몸의 %CALLNAME:MASTER%(은)는 촬영 부스에 들어가자마자 자위를 시작한다.
+			PRINTFORM 플래시가 번쩍일 때마다 %CALLNAME:MASTER%(은)는 
+			IF TALENT:MASTER:오토코노코
+				PRINT 페니스에서 쿠퍼액을 
+			ELSEIF TALENT:MASTER:후타나리
+				PRINT 페니스에서 쿠퍼액을, 갈라진 틈에서 애액을
+			ELSE
+				PRINT 갈라진 틈에서 애액을 
+			ENDIF
+			PRINTL 흘리면서 잘게 절정을 반복한다.
+			PRINTFORMW "다음은 전신 촬영이야"라는 안내 방송이 흘러나오고, %CALLNAME:MASTER%(은)는 손놀림을 빠르게 한다.
+			PRINTFORML 플래시가 터짐과 동시에 %CALLNAME:MASTER%(은)는 촬영 부스 밖까지 들릴 만큼 큰 소리로 신음하며 절정한다.
+			IF TALENT:MASTER:오토코노코
+				PRINT 정액이 
+			ELSEIF TALENT:MASTER:후타나리
+				PRINT 정액과 조수가 
+			ELSE
+				PRINT 뿜어낸 조수가 
+			ENDIF
+			PRINTFORML 흩뿌려지는 가운데, 마지막 한 장을 쩍벌 더블 브이 포즈로 촬영한 %CALLNAME:MASTER%(은)는 낙서 코너로 이동하더니,
+			PRINTFORMW 자신의 이름이나 "정액 모집 중%ハート()%" 등을 마음껏 써넣고, 인쇄가 끝날 때까지 자위를 계속했다.
+			CALL ADDS_EXP("자위경험", 5, MASTER)
+			CALL ADDS_EXP("야외노출경험", 5, MASTER)
+			CALL ADDS_EXP("절정경험", 5, MASTER)
+			SIF HAVE_PENIS(MASTER)
+				CALL ADDS_EXP("사정경험", 7, MASTER)
+			PRINTL
+			PRINTL 가게 안의 손님이 "알몸인 사람이 있다"고 점원에게 신고했는지, 몇 명의 점원이 다가온다.
+			PRINTFORMW 그것을 알아챈 %CALLNAME:MASTER%(은)는 스티커를 회수하고 서둘러 가게에서 도망쳤다.
+		ELSEIF IS_CLOTH_NAKEDCOAT(MASTER)
+			;裸コート
+			PRINTFORMW 촬영 부스에 들어간 %CALLNAME:MASTER%(은)는 입고 있던 코트 앞자락을 열어젖힌다.
+			PRINTFORMW 촬영이 진행되며 어딘가 부족해진 %CALLNAME:MASTER%(은)는 자위를 시작한다.
+			PRINTFORM 플래시가 번쩍일 때마다 %CALLNAME:MASTER%(은)는 
+			IF TALENT:MASTER:오토코노코
+				PRINT 페니스에서 쿠퍼액을 
+			ELSEIF TALENT:MASTER:후타나리
+				PRINT 페니스에서 쿠퍼액을, 갈라진 틈에서 애액을
+			ELSE
+				PRINT 갈라진 틈에서 애액을 
+			ENDIF
+			PRINTL 흘리면서 잘게 절정을 반복한다.
+			PRINTFORMW "다음은 전신 촬영이야"라는 내레이션이 흘러나오고, %CALLNAME:MASTER%(은)는 손놀림을 빠르게 한다.
+			PRINTFORML 플래시가 터짐과 동시에 %CALLNAME:MASTER%(은)는 촬영 부스 밖까지 들릴 만큼 큰 소리로 신음하며 절정한다.
+			IF TALENT:MASTER:오토코노코
+				PRINT 정액이 
+			ELSEIF TALENT:MASTER:후타나리
+				PRINT 정액과 조수가 
+			ELSE
+				PRINT 뿜어낸 조수가 
+			ENDIF
+			PRINTFORML 흩뿌려지는 가운데, 마지막 한 장을 쩍벌 더블 브이 포즈로 촬영한 %CALLNAME:MASTER%(은)는 낙서 코너로 이동하더니,
+			PRINTFORMW 자신의 이름이나 "정액 모집 중%ハート()%" 등을 마음껏 써넣고, 인쇄가 끝날 때까지 자위를 계속했다.
+			CALL ADDS_EXP("자위경험", 5, MASTER)
+			CALL ADDS_EXP("야외노출경험", 5, MASTER)
+			CALL ADDS_EXP("절정경험", 5, MASTER)
+			SIF HAVE_PENIS(MASTER)
+				CALL ADDS_EXP("사정경험", 7, MASTER)
+		ELSE
+			;共通箇所があるので一段下げる
+			IF IS_CLOTH_SKIRT(MASTER)
+				;スカート系衣装
+				PRINTFORMW 촬영 부스에 들어간 %CALLNAME:MASTER%(은)는 입고 있던 스커트를 걷어 올린다.
+				PRINT 스커트 속에서는, 
+				IF IS_NAKED_NOPAN(MASTER)
+					;ノーパンスカート
+					IF HAVE_PENIS(MASTER)
+						PRINTFORM 발기한 
+						SIF TALENT:MASTER:음모없음
+							PRINT 매끈매끈한 
+						PRINTL 육봉이 드러난다.
+					ELSE
+						PRINTFORM 애액에 젖은 
+						SIF TALENT:MASTER:음모없음
+							PRINT 매끈매끈한 
+						PRINTL 치구가 드러난다.
+					ENDIF
+					PRINTFORM 본래 남 앞에서 보여서는 안 될 은밀한 곳을 드러낸 채 %CALLNAME:MASTER%(은)는 
+				ELSEIF IS_CLOTH_CHASTITY(MASTER)
+					;정조대
+					PRINTL 금속으로 된 투박한 정조대가 드러난다.
+					IF IS_CLOTH_VIBRATOR(MASTER)
+						PRINTFORM 정조대에 장착된 바이브가 %CALLNAME:MASTER%의 
+						SELECTCASE IS_CLOTH_VIBRATOR(MASTER)
+							CASE 1
+								PRINT 바기나
+							CASE 2
+								PRINT 애널
+							CASE 3
+								PRINT 양 구멍
+						ENDSELECT
+						PRINT 을(를) 괴롭히는 가운데, 
+					ELSE
+						PRINTFORM 한 번 열쇠를 풀어 엄중히 지켜지던 은밀한 부위를 드러내며 %CALLNAME:MASTER%(은)는 
+					ENDIF
+				ELSEIF IS_CLOTH_VIBRATOR(MASTER)
+					;バイブ下着
+					;貞操帯は上で処理しているのでショーツのみになる
+					PRINTL 막대 모양의 물체가 아래로 뻗어 나온 속옷이 드러난다.
+					PRINTFORM 그 정체인 바이브가 %CALLNAME:MASTER%의 
+					SELECTCASE IS_CLOTH_VIBRATOR(MASTER)
+						CASE 1
+							PRINT 바기나
+						CASE 2
+							PRINT 애널
+						CASE 3
+							PRINT 양 구멍
+					ENDSELECT
+					PRINT 을(를) 괴롭히는 가운데, 
+				ELSEIF CFLAG:MASTER:속옷（하） == [[衣装:촉수팬츠]] || CFLAG:MASTER:전신속옷 == [[衣装:촉수수트]]
+					;触手下着
+					;上は見せないので関数不使用
+					PRINTL 꿈틀꿈틀 기어 다니는 그로테스크한 물체가 드러난다.
+					PRINTFORM 그 정체인 촉수로 된 속옷이 %CALLNAME:MASTER%를 괴롭히는 가운데, 
+				ELSE
+					;それ以外
+					PRINTFORML %CALLNAME:MASTER%(이)가 애용하는 속옷이 드러난다.
+					PRINTFORM 옷으로 가려야 할 속옷을 밖으로 드러낸 모습 그대로 %CALLNAME:MASTER%(은)는 
+				ENDIF
+				PRINTFORMW 내레이션의 지시에 따라 여러 포즈를 사진에 담아 나간다.
+			ELSE
+				;スカート系以外
+				PRINTFORMW 촬영 부스에 들어간 %CALLNAME:MASTER%(은)는 천천히 옷을 벗기 시작한다.
+				IF IS_CLOTH_LIVING(MASTER)
+					;触手服
+					PRINTFORML 입고 있는 것이 촉수복뿐이 되었을 때, %CALLNAME:MASTER%(은)는 일부러 촉수복에도 손을 댄다.
+					PRINTFORMW 그러자 촉수복이 저항하기 시작하고, 쾌락에 휩싸인 %CALLNAME:MASTER%(은)는 교성을 지른다.
+					PRINTFORML 입을 막지도 않고 촉수의 감각에 몸을 뒤틀던 %CALLNAME:MASTER%(은)는,
+					PRINTFORMW 스티커 사진기의 촬영 부스라는 사실조차 잊은 채 쾌락에 빠져들었다.
+				ELSEIF IS_CLOTH_CHASTITY(MASTER)
+					;정조대
+					PRINTL 입고 있던 옷을 벗어가자 그 아래에서 금속으로 된 투박한 정조대가 드러난다.
+					PRINTFORM %CALLNAME:MASTER%(은)는 렌즈를 향해 포즈를 취하면서, 
+					IF IS_CLOTH_VIBRATOR(MASTER)
+						;バイブ付き
+						PRINTW 정조대에 달린 바이브의 스위치를 켠다.
+						PRINTFORMW 움직이기 시작한 바이브에 %CALLNAME:MASTER%(은)는 교성을 지르며, 
+						SELECTCASE IS_CLOTH_VIBRATOR(MASTER)
+							CASE 1
+								PRINT 바기나
+							CASE 2
+								PRINT 애널
+							CASE 3
+								PRINT 양 구멍
+						ENDSELECT
+						PRINTFORMW 을(를) 괴롭히는 감각에 몸을 뒤튼다.
+						PRINTFORML 스티커 사진기의 촬영 부스라는 사실도 잊은 채, %CALLNAME:MASTER%(은)는 쾌락에 빠져들었다.
+					ELSE
+						;バイブなし
+						PRINTW 스스로의 정조대 열쇠를 푼다.
+						PRINTFORM 음란한 냄새가 촬영 부스를 감싸는 가운데, %CALLNAME:MASTER%(은)는 오랜만에 
+						IF HAVE_PENIS(MASTER)
+							PRINT 자유를 얻은 페니스를 발기시키고, 
+						ELSE
+							PRINT 해방된 은밀한 부위를 손가락으로 벌리며, 
+						ENDIF
+						PRINTL 음란한 미소를 짓는 것이었다.
+					ENDIF
+				ELSE
+					;それ以外
+					PRINTFORML 옷을 벗는 모습이 사진에 찍히는 사이, %CALLNAME:MASTER%(은)는 실오라기 하나 걸치지 않은 알몸이 된다.
+					IF HAVE_PENIS(MASTER)
+						PRINTFORM 발기한 
+						SIF TALENT:MASTER:음모없음
+							PRINT 매끈매끈한 
+						PRINT 육봉
+					ELSE
+						PRINTFORM 애액에 젖은 
+						SIF TALENT:MASTER:음모없음
+							PRINT 매끈매끈한 
+						PRINT 치구
+					ENDIF
+					PRINTFORM 을(를) 드러내며 %CALLNAME:MASTER%(은)는 다양한 포즈를 사진에 담아 나간다.
+				ENDIF
+			ENDIF
+			PRINTFORMW 촬영이 끝나고, %CALLNAME:MASTER%(은)는 낙서 코너로 이동한다.
+			PRINTW 자신의 이름이나 외설적인 말을 잔뜩 낙서하고, 출력된 스티커를 회수한 뒤 게임 센터를 떠났다.
+
+			CALL ADDS_EXP("야외노출경험", 7, MASTER)
+
+			EXP:MASTER:야외노출경험 += 7
+			SELECTCASE CFLAG:MASTER:속옷（하）
+				CASE [[衣装:바이브달린정조대]]
+					CALL ADDS_EXP("Ｖ경험", 7, MASTER)
+				CASE [[衣装:Ａ바이브달린정조대]]
+					CALL ADDS_EXP("Ａ경험", 7, MASTER)
+				CASE [[衣装:Ｗ바이브달린정조대]]
+					CALL ADDS_EXP("Ｖ경험", 7, MASTER)
+					CALL ADDS_EXP("Ａ경험", 7, MASTER)
+			ENDSELECT
+			SIF IS_CLOTH_LIVING(MASTER)
+				CALL ADDS_EXP("촉수경험", 7, MASTER)
+		ENDIF
+	ELSE
+		PRINTW 이곳은 공공시설이다.
+		PRINTFORMW 평범하게 촬영을 즐기기로 한 %CALLNAME:MASTER%(은)는 안내 방송의 지시에 맞춘 포즈를 취하며 촬영을 즐겼다.
+	ENDIF
+ENDIF
+
+@DUNGEON_EVENT_PURIKURA_NORMAL, ARG, ARGS
+;誰かと撮影 人型通常処理
+IF TALENT:MASTER:남자 && !TALENT:MASTER:오토코노코 && TALENT:ARG:남자 && !TALENT:ARG:오토코노코
+	;男同士 エロ無し
+	PRINTW 주변의 "남자 둘이서 촬영?"이라는 시선을 무시하며 부스로 발걸음을 옮긴다.
+	IF ARGS == "신뢰" || ARGS == "연모"
+		;신뢰/(一応)恋慕ルート
+		;ルート分割も歓迎します by mid.k
+		PRINTW 여성 손님이 대다수인 가운데 남자 둘이라는 상황임에도 알 바 아니라는 듯, 당당하게 가슴을 펴고 촬영을 시작한다.
+		PRINTL 안내 방송의 지시대로 포즈를 취해 촬영하고, 그 뒤의 낙서도 즐긴다.
+		PRINTFORML 완성된 스티커를 받아 들고 가게를 나설 무렵에는 %CALLNAME:MASTER% 일행에게 쏟아지던 의아한 시선은 사라지고,
+		PRINTW "저 두 사람 진짜 즐거워 보였어"라는 귓속말이 귀에 들려왔다.
+	ELSE
+		;それ以外
+		PRINTL 여성 손님이 대다수인 가운데 남자 둘이라는 상황에 어색함을 느끼면서도,
+		PRINTW 안내 방송의 지시대로 포즈를 취해 촬영을 마쳤다.
+	ENDIF
+ELSEIF TALENT:ARG:남자 && !TALENT:ARG:오토코노코
+	;相手のみ男の場合
+	IF ARGS == "신뢰"
+		;信頼ルート エロ無し
+		CALL DUNGEON_EVENT_PURIKURA_NORMAL_TRUST, ARG
+	ELSEIF ARGS == "연모"
+		;親愛ルート ヤるかは任意
+		PRINTFORML 촬영이 시작되자 플래시가 터지는 타이밍에 %CALLNAME:ARG%(이)가 뺨에 키스를 해왔다.
+		PRINTW 이쪽도 보답을 해줘야 할까…
+
+		PRINTFORML [0] 키스로 보답한다
+		PRINTFORML [1] 꽁냥거린다
+		PRINTFORML [9] 아무것도안한다
+		CALL INPUTINT(0, 1, 9)
+
+		SELECTCASE RESULT
+			CASE 0
+				PRINTFORML %CALLNAME:MASTER%도 보답으로 키스를 돌려주자, %CALLNAME:ARG%(은)는 부끄러운 듯 미소 짓는다.
+				PRINT 마지막 몇 장은, 
+				IF TALENT:MASTER:소인체형 && TALENT:ARG:소인체형
+					PRINTFORM %CALLNAME:MASTER%와(과) %CALLNAME:ARG%(은)는 카메라 렌즈에 바짝 다가가 크게 찍히도록 하더니, 
+				ELSEIF TALENT:MASTER:소인체형
+					PRINTFORM %CALLNAME:ARG%(은)는 %CALLNAME:MASTER%를 감싸 안듯 포옹하고, 
+				ELSEIF TALENT:ARG:소인체형
+					PRINTFORM %CALLNAME:MASTER%(은)는 %CALLNAME:ARG%를 감싸 안듯 포옹하고, 
+				ELSE
+					PRINTFORM %CALLNAME:MASTER%와(과) %CALLNAME:ARG%(은)는 서로를 꼭 껴안더니, 
+				ENDIF
+				PRINTW 깊은 입맞춤을 나누었다.
+				PRINTL 낙서 코너로 이동해 둘이서 낙서를 즐긴다.
+				PRINTW 인쇄되어 나온 스티커를 보며, 두 사람은 다시 쑥스러운 듯 마주 보고 웃었다.
+
+				CALL ADDS_EXP("키스경험", 3, MASTER)
+				CALL ADDS_EXP("키스경험", 3, ARG)
+				IF IS_GAY(MASTER, ARG)
+					CALL ADDS_EXP("ＢＬ경험", 3, MASTER)
+					CALL ADDS_EXP("ＢＬ경험", 3, ARG)
+				ENDIF
+				CALL ADDS_EXP("애정경험", 3, MASTER)
+				CALL ADDS_EXP("애정경험", 3, ARG)
+			CASE 1
+				PRINTFORMW 보답이라는 듯 %CALLNAME:ARG%의 가랑이를 주무르자, %CALLNAME:ARG%(은)는 저항하는 시늉을 하면서도 거친 숨을 내쉬었다.
+				PRINTFORML %CALLNAME:MASTER%(은)는 %CALLNAME:ARG%의 페니스를 입에 물고 얼굴을 앞뒤로 움직이며 카메라 렌즈를 응시한다.
+				PRINTFORMW 플래시가 시야를 하얗게 물들임과 동시에, %CALLNAME:ARG%(이)가 뿜어낸 정액으로 %CALLNAME:MASTER%의 입안도 하얗게 물든다.
+				PRINTL 마지막 한 장.
+				PRINTFORMW 정액이 고인 입을 렌즈를 향해 벌려 보여주며, %CALLNAME:ARG%의 페니스를 한 손으로 쥔 채 촬영을 마쳤다.
+				PRINTL 낙서 코너로 이동해 둘이서 낙서를 즐긴다.
+				PRINTFORMW "%CALLNAME:ARG% 자지 최고%ハート()%"라고 적는 %CALLNAME:MASTER%를 보며 %CALLNAME:ARG%(은)는 몹시 부끄러워했다.
+
+				CALL ADDS_EXP("키스경험", 1, ARG)
+				CALL ADDS_EXP("펠라경험", 5, MASTER)
+				IF IS_GAY(MASTER, ARG)
+					CALL ADDS_EXP("ＢＬ경험", 6, MASTER)
+					CALL ADDS_EXP("ＢＬ경험", 6, ARG)
+				ENDIF
+				CALL ADDS_EXP("애정경험", 5, MASTER)
+				CALL ADDS_EXP("봉사쾌락경험", 5, MASTER)
+				CALL ADDS_EXP("야외노출경험", 5, ARG)
+				CALL ADDS_EXP("사정경험", 1, ARG)
+			CASE 9
+				PRINTFORML 보답으로 %CALLNAME:ARG%의 머리를 쓰다듬는다.
+				IF TALENT:MASTER:소인체형 && TALENT:ARG:소인체형
+					PRINTFORM %CALLNAME:MASTER%와(과) %CALLNAME:ARG%(은)는 카메라 렌즈에 바짝 다가가 크게 찍히도록 하더니, 
+				ELSEIF TALENT:MASTER:소인체형
+					PRINTFORM %CALLNAME:ARG%(은)는 %CALLNAME:MASTER%를 감싸 안듯 포옹하고, 
+				ELSEIF TALENT:ARG:소인체형
+					PRINTFORM %CALLNAME:MASTER%(은)는 %CALLNAME:ARG%를 감싸 안듯 포옹하고, 
+				ELSE
+					PRINTFORM %CALLNAME:MASTER%와(과) %CALLNAME:ARG%(은)는 서로를 꼭 껴안더니, 
+				ENDIF
+				PRINTW 카메라를 향해 브이 사인을 내밀었다.
+				PRINTL 낙서 코너로 이동해 둘이서 낙서를 즐긴다.
+				PRINTW 인쇄되어 나온 스티커를 보며, 두 사람은 다시 쑥스러운 듯 마주 보고 웃었다.
+
+				CALL ADDS_EXP("키스경험", 1, ARG)
+				IF IS_GAY(MASTER, ARG)
+					CALL ADDS_EXP("ＢＬ경험", 1, MASTER)
+					CALL ADDS_EXP("ＢＬ경험", 1, ARG)
+				ENDIF
+				CALL ADDS_EXP("애정경험", 5, MASTER)
+				CALL ADDS_EXP("애정경험", 5, ARG)
+		ENDSELECT
+	ELSEIF ARGS == "음란"
+		;淫乱ルート ヤる
+		PRINTFORML 촬영이 시작되자 %CALLNAME:ARG%(은)는 단단해진 가랑이를 %CALLNAME:MASTER%에게 비벼온다.
+		PRINTFORM 참을 수 없게 된 %CALLNAME:MASTER%(은)는, 
+		IF MAX(CFLAG:MASTER:하의, CFLAG:MASTER:전신복) < 0
+			PRINT 입고 있던 
+			IF IS_CLOTH_SKIRT(MASTER) && IS_NAKED_NOPAN(MASTER)
+				PRINT 스커트를 걷어 올리고, 
+			ELSEIF IS_CLOTH_SKIRT(MASTER)
+				PRINT 스커트를 걷고 속옷을 내리더니, 
+			ELSEIF IS_NAKED_NOPAN(MASTER)
+				PRINT 하의를 벗더니, 
+			ELSE
+				PRINT 하의와 속옷을 벗더니, 
+			ENDIF
+			PRINTFORMW %CALLNAME:ARG%를 향해 엉덩이를 흔들었다.
+		ELSE
+			PRINTFORMW 훤히 드러난 엉덩이를 %CALLNAME:ARG%를 향해 흔든다.
+		ENDIF
+		PRINTFORM "다음은 전신 촬영이야"라는 내레이션이 울려 퍼지는 가운데, %CALLNAME:ARG%(은)는 %CALLNAME:MASTER%의 
+		IF TALENT:MASTER:오토코노코 || TALENT:MASTER:애널광 || ABL:MASTER:Ａ감각 > ABL:MASTER:Ｖ감각
+			PRINT 애널에 
+		ELSE
+			PRINT 바기나에 
+		ENDIF
+		PRINTW 삽입했다.
+		PRINTFORML 촬영 카운트다운이 진행되는 동안 %CALLNAME:ARG%의 허리놀림은 점점 더 빨라지고,
+		PRINTFORM 촬영 플래시가 터짐과 동시에 %CALLNAME:MASTER%의 
+		IF TALENT:MASTER:오토코노코 || TALENT:MASTER:애널광 || ABL:MASTER:Ａ감각 > ABL:MASTER:Ｖ감각
+			PRINT 애널에 
+		ELSE
+			PRINT 바기나에 
+		ENDIF
+		PRINTW 사정했다.
+
+		IF TALENT:MASTER:오토코노코 || TALENT:MASTER:애널광 || ABL:MASTER:Ａ감각 > ABL:MASTER:Ｖ감각
+			CALL ADDS_EXP("Ａ경험", 5, MASTER)
+			SIF TALENT:MASTER:소인체형
+				CALL ADDS_EXP("Ａ확장경험", 5, MASTER)
+			IF IS_GAY(MASTER, ARG)
+				CALL ADDS_EXP("ＢＬ경험", 5, MASTER)
+				CALL ADDS_EXP("ＢＬ경험", 5, ARG)
+			ENDIF
+		ELSE
+			IF TALENT:MASTER:처녀
+				TALENT:MASTER:처녀 = 0
+				CALL ADDS_ABNORMAL_EXP("処女奪取（同性）", ARG)
+				CALL ADDS_ABNORMAL_EXP("処女喪失（同性）", MASTER)
+			ENDIF
+			SIF TALENT:MASTER:재생처녀
+				TALENT:MASTER:재생처녀 = 0
+			CALL ADDS_EXP("Ｖ경험", 5, MASTER)
+			CALL ADDS_EXP("질사경험", 1, MASTER)
+			SIF TALENT:MASTER:소인체형
+				CALL ADDS_EXP("Ｖ확장경험", 5, MASTER)
+		ENDIF
+		IF 近親チェック(ARG , MASTER)
+			CALL ADDS_ABNORMAL_EXP( @"近親相姦（%RESULTS:0%）", ARG)
+			CALL ADDS_ABNORMAL_EXP( @"近親相姦（%RESULTS:1%）", MASTER)
+		ENDIF
+		CALL ADDS_EXP("삽입경험", 5, ARG)
+		CALL ADDS_EXP("성교경험", 5, MASTER)
+		CALL ADDS_EXP("야외노출경험", 5, MASTER)
+		CALL ADDS_EXP("야외노출경험", 5, ARG)
+		CALL ADDS_EXP("절정경험", 1, MASTER)
+		CALL ADDS_EXP("사정경험", 1, ARG)
+
+		PRINTFORML 촬영 종료 후 낙서 부스로 이동해, 음담패설이 가득한 낙서를 시간 꽉 채워 적어 넣은 뒤,
+		PRINTFORMW 인쇄된 스티커를 받았다.
+	ELSEIF ARGS == "복종"
+		;服従ルート ヤる
+		PRINTFORML 촬영이 시작되고, %CALLNAME:MASTER%(은)는 %CALLNAME:ARG%의 페니스를 노출시키더니 자신을 범하라고 명령한다.
+		PRINTFORM 감정 없이 끄덕인 %CALLNAME:ARG%(은)는 훤히 드러난 %CALLNAME:MASTER%의 
+		IF TALENT:MASTER:오토코노코 || TALENT:MASTER:애널광 || ABL:MASTER:Ａ감각 > ABL:MASTER:Ｖ감각
+			PRINT 애널에 
+		ELSE
+			PRINT 바기나에 
+		ENDIF
+		PRINTW 삽입했다.
+		PRINTFORMW 촬영이 진행됨에 따라 %CALLNAME:MASTER%의 몸도 절정을 향해 가…
+		PRINTFORMW 야 했을 터이나, %CALLNAME:ARG%(이)가 사정하는 타이밍이 늦어져 촬영 타이밍에 절정하지 못했다.
+		PRINTFORMW 서둘러 낙서를 마친 %CALLNAME:MASTER%(은)는 %CALLNAME:ARG%에게 "돌아가면 벌을 줄 거야"라고 말하는 것이었다.
+
+		IF TALENT:MASTER:오토코노코 || TALENT:MASTER:애널광 || ABL:MASTER:Ａ감각 > ABL:MASTER:Ｖ감각
+			CALL ADDS_EXP("Ａ경험", 5, MASTER)
+			SIF TALENT:MASTER:소인체형
+				CALL ADDS_EXP("Ａ확장경험", 5, MASTER)
+			IF IS_GAY(MASTER, ARG)
+				CALL ADDS_EXP("ＢＬ경험", 5, MASTER)
+				CALL ADDS_EXP("ＢＬ경험", 5, ARG)
+			ENDIF
+		ELSE
+			IF TALENT:MASTER:처녀
+				TALENT:MASTER:처녀 = 0
+				CALL ADDS_ABNORMAL_EXP("処女奪取（同性）", ARG)
+				CALL ADDS_ABNORMAL_EXP("処女喪失（同性）", MASTER)
+			ENDIF
+			SIF TALENT:MASTER:재생처녀
+				TALENT:MASTER:재생처녀 = 0
+			CALL ADDS_EXP("Ｖ경험", 5, MASTER)
+			CALL ADDS_EXP("질사경험", 1, MASTER)
+			SIF TALENT:MASTER:소인체형
+				CALL ADDS_EXP("Ｖ확장경험", 5, MASTER)
+		ENDIF
+		IF 近親チェック(ARG , MASTER)
+			CALL ADDS_ABNORMAL_EXP( @"近親相姦（%RESULTS:0%）", ARG)
+			CALL ADDS_ABNORMAL_EXP( @"近親相姦（%RESULTS:1%）", MASTER)
+		ENDIF
+		CALL ADDS_EXP("삽입경험", 5, ARG)
+		CALL ADDS_EXP("성교경험", 5, MASTER)
+		CALL ADDS_EXP("봉사쾌락경험", 5, MASTER)
+		CALL ADDS_EXP("야외노출경험", 5, MASTER)
+		CALL ADDS_EXP("야외노출경험", 5, ARG)
+		CALL ADDS_EXP("절정경험", 1, MASTER)
+		CALL ADDS_EXP("사정경험", 1, ARG)
+	ELSE
+		;그외 エロ無し
+		CALL DUNGEON_EVENT_PURIKURA_NORMAL_OTHER, ARG
+	ENDIF
+ELSE
+	;それ以外
+	IF ARGS == "신뢰"
+		;信頼ルート エロ無し
+		CALL DUNGEON_EVENT_PURIKURA_NORMAL_TRUST, ARG
+	ELSEIF ARGS == "연모"
+		;親愛ルート
+		IF IS_NAKED(ARG) >= 2
+			;裸
+			PRINTFORML 알몸의 %CALLNAME:ARG%를 촬영 부스로 끌고 가 자위하라고 명령한다.
+			PRINTFORM %CALLNAME:ARG%(은)는 명령을 받자 주저하지만 거듭된 명령에 
+			IF HAVE_PENIS(ARG)
+				PRINT 페니스
+			ELSE
+				PRINT 은밀한 부위
+			ENDIF
+			PRINTL 에 손을 뻗는다.
+			PRINTFORMW 촬영 플래시에 맞춰 포즈를 바꾸며 자위를 계속하는 %CALLNAME:ARG%에게 흥분한 %CALLNAME:MASTER%(은)는,
+			PRINTL 카메라에 찍히지 않는 위치에서 자신도 자위를 시작한다.
+			PRINTFORMW 마지막으로 플래시가 터짐과 동시에 절정을 맞이한 %CALLNAME:ARG%와(과) %CALLNAME:MASTER%(은)는,
+			PRINTW 낙서 코너로 이동하더니 둘이서 낙서를 즐겼다.
+
+			CALL ADDS_EXP("자위경험", 5, ARG)
+			CALL ADDS_EXP("조교자위경험", 5, ARG)
+			CALL ADDS_EXP("야외노출경험", 5, ARG)
+			CALL ADDS_EXP("절정경험", 1, ARG)
+			SIF HAVE_PENIS(ARG)
+				CALL ADDS_EXP("사정경험", 1, ARG)
+			CALL ADDS_EXP("자위경험", 3, MASTER)
+			CALL ADDS_EXP("야외노출경험", 3, MASTER)
+			CALL ADDS_EXP("절정경험", 1, MASTER)
+			IF IS_LESBIAN(MASTER, ARG)
+				CALL ADDS_EXP("레즈경험", 5, MASTER)
+				CALL ADDS_EXP("레즈경험", 5, ARG)
+			ELSEIF IS_GAY(MASTER, ARG)
+				CALL ADDS_EXP("ＢＬ경험", 5, MASTER)
+				CALL ADDS_EXP("ＢＬ경험", 5, ARG)
+			ENDIF
+
+			PRINTL
+			PRINTL 가게 안의 손님이 "알몸인 사람이 있다"고 점원에게 신고했는지, 몇 명의 점원이 다가온다.
+			PRINTFORMW 그것을 알아챈 %CALLNAME:MASTER% 일행은 스티커를 챙겨 서둘러 가게에서 도망쳤다.
+		ELSE
+			;服は着ている ヤるかは任意
+			PRINTFORML 촬영이 시작되자 플래시가 터지는 타이밍에 %CALLNAME:ARG%(이)가 뺨에 키스를 해왔다.
+			PRINTW 이쪽도 보답을 해줘야 할까…
+
+			PRINTFORML [0] 키스로 보답한다
+			PRINTFORML [1] 가볍게 야한 짓을 한다
+			PRINTFORML [2] 수치심을 준다
+			PRINTFORML [9] 아무것도안한다
+			CALL INPUTINT(0, 1, 2, 9)
+
+			SELECTCASE RESULT
+				CASE 0
+					PRINTFORML %CALLNAME:MASTER%도 보답으로 키스를 돌려주자, %CALLNAME:ARG%(은)는 부끄러운 듯 미소 짓는다.
+					PRINT 마지막 몇 장은, 
+					IF TALENT:MASTER:소인체형 && TALENT:ARG:소인체형
+						PRINTFORM 크게 찍히도록 %CALLNAME:MASTER%와(과) %CALLNAME:ARG%(은)는 카메라 렌즈에 다가가, 
+					ELSEIF TALENT:MASTER:소인체형
+						PRINTFORM %CALLNAME:ARG%(은)는 %CALLNAME:MASTER%를 감싸 안듯 포옹하고, 
+					ELSEIF TALENT:ARG:소인체형
+						PRINTFORM %CALLNAME:MASTER%(은)는 %CALLNAME:ARG%를 감싸 안듯 포옹하고, 
+					ELSE
+						PRINTFORM %CALLNAME:MASTER%와(과) %CALLNAME:ARG%(은)는 서로를 꼭 껴안더니, 
+					ENDIF
+					PRINTW 깊은 입맞춤을 나누었다.
+					PRINTL 낙서 코너로 이동해 둘이서 낙서를 즐긴다.
+					PRINTW 인쇄되어 나온 스티커를 보며, 두 사람은 다시 쑥스러운 듯 마주 보고 웃었다.
+
+					CALL ADDS_EXP("키스경험", 3, MASTER)
+					CALL ADDS_EXP("키스경험", 3, ARG)
+					IF IS_LESBIAN(MASTER, ARG)
+						CALL ADDS_EXP("레즈경험", 3, MASTER)
+						CALL ADDS_EXP("레즈경험", 3, ARG)
+					ELSEIF IS_GAY(MASTER, ARG)
+						CALL ADDS_EXP("ＢＬ경험", 3, MASTER)
+						CALL ADDS_EXP("ＢＬ경험", 3, ARG)
+					ENDIF
+					CALL ADDS_EXP("애정경험", 3, MASTER)
+					CALL ADDS_EXP("애정경험", 3, ARG)
+				CASE 1
+					PRINTFORMW 보답이라는 듯 %CALLNAME:ARG%의 가슴을 주무르자, %CALLNAME:ARG%(은)는 저항하는 척을 하면서도 촉촉한 눈망울로 바라보았다.
+					IF HAVE_PENIS(MASTER)
+						PRINTFORMW %CALLNAME:MASTER%(은)는 페니스를 꺼내며 %CALLNAME:ARG%에게 봉사해 달라고 요구한다.
+						PRINTFORML 처음엔 조금 싫어하던 %CALLNAME:ARG%였지만, %CALLNAME:MASTER%(이)가 재촉하자 마지못해 %CALLNAME:MASTER%의 페니스를 입에 물었다.
+						PRINTFORMW 촬영이 진행될수록 %CALLNAME:ARG%의 봉사에 %CALLNAME:MASTER%의 정액도 요도를 타고 치밀어 오른다.
+						PRINTFORMW 플래시가 시야를 하얗게 물들임과 동시에 %CALLNAME:ARG%의 입안에 정액을 뿜어냈다.
+						PRINTL 마지막 한 장.
+						PRINTFORMW %CALLNAME:ARG%(은)는 정액이 고인 입을 렌즈를 향해 보여주며 %CALLNAME:MASTER%의 페니스를 한 손으로 쥔 채 촬영을 마쳤다.
+						PRINTL 낙서 코너로 이동해 둘이서 낙서를 즐긴다.
+						PRINTFORMW "%CALLNAME:MASTER% 자지 최고%ハート()%"라고 쓰는 %CALLNAME:MASTER%를 보며, %CALLNAME:ARG%(은)는 "스스로 쓰는 거구나…"라며 작게 중얼거렸다.
+
+						CALL ADDS_EXP("키스경험", 1, ARG)
+						CALL ADDS_EXP("펠라경험", 5, ARG)
+						IF IS_LESBIAN(MASTER, ARG)
+							CALL ADDS_EXP("레즈경험", 6, MASTER)
+							CALL ADDS_EXP("레즈경험", 6, ARG)
+						ELSEIF IS_GAY(MASTER, ARG)
+							CALL ADDS_EXP("ＢＬ경험", 6, MASTER)
+							CALL ADDS_EXP("ＢＬ경험", 6, ARG)
+						ENDIF
+						CALL ADDS_EXP("애정경험", 5, ARG)
+						CALL ADDS_EXP("봉사쾌락경험", 5, ARG)
+						CALL ADDS_EXP("야외노출경험", 5, MASTER)
+						CALL ADDS_EXP("사정경험", 1, MASTER)
+					ELSE
+						PRINTFORM "다음은 전신 촬영이야"라는 내레이션이 울려 퍼지는 가운데, %CALLNAME:MASTER%(은)는 %CALLNAME:ARG%의 
+						IF TALENT:ARG:오토코노코 || TALENT:ARG:애널광 || ABL:ARG:Ａ감각 > ABL:ARG:Ｖ감각
+							PRINT 애널에 
+						ELSE
+							PRINT 바기나에 
+						ENDIF
+						PRINTW 손가락을 넣는다.
+						PRINTFORML 기기에서 흘러나오는 음악과 함께 질척한 물소리가 울리는 가운데, %CALLNAME:ARG%(은)는 바들바들 허리를 떨고,
+						PRINTFORM 촬영 플래시가 터짐과 동시에 %CALLNAME:ARG%(은)는 
+						IF TALENT:ARG:오토코노코 || TALENT:ARG:애널광 || ABL:ARG:Ａ감각 > ABL:ARG:Ｖ감각
+							IF HAVE_PENIS(ARG)
+								PRINTW 애널 오르가즘과 함께 사정했다.
+							ELSE
+								PRINTW 애널 오르가즘에 도달했다.
+							ENDIF
+						ELSEIF TALENT:ARG:후타나리
+							PRINTW 절정하며 사정했다.
+						ELSE
+							PRINTW 절정을 맞이하며 조수를 뿜었다.
+						ENDIF
+						PRINTFORMW 촬영이 끝나고 %CALLNAME:MASTER%(은)는 낙서 코너로 홀로 먼저 이동한다.
+						PRINTFORML 잠시 마음을 진정시키고 낙서 코너로 찾아온 %CALLNAME:ARG%의 눈에 들어온 것은,
+						PRINTW 외설적인 말이 잔뜩 적혀 있는 부끄러운 자신의 모습이었다.
+
+						IF TALENT:ARG:오토코노코 || TALENT:ARG:애널광 || ABL:ARG:Ａ감각 > ABL:ARG:Ｖ감각
+							CALL ADDS_EXP("Ａ경험", 5, ARG)
+							SIF TALENT:ARG:소인체형
+								CALL ADDS_EXP("Ａ확장경험", 5, ARG)
+						ELSE
+							CALL ADDS_EXP("Ｖ경험", 5, ARG)
+							SIF TALENT:ARG:소인체형
+								CALL ADDS_EXP("Ｖ확장경험", 5, ARG)
+						ENDIF
+						IF IS_LESBIAN(MASTER, ARG)
+							CALL ADDS_EXP("레즈경험", 5, MASTER)
+							CALL ADDS_EXP("레즈경험", 5, ARG)
+						ENDIF
+						CALL ADDS_EXP("애정경험", 5, ARG)
+						CALL ADDS_EXP("봉사쾌락경험", 5, ARG)
+						CALL ADDS_EXP("야외노출경험", 5, ARG)
+						CALL ADDS_EXP("절정경험", 1, ARG)
+						SIF HAVE_PENIS(ARG)
+							CALL ADDS_EXP("사정경험", 1, MASTER)
+					ENDIF
+				CASE 2
+					;着用している衣服に応じて分岐
+					PRINTFORM 장난기가 발동한 %CALLNAME:MASTER%(은)는 %CALLNAME:ARG%에게 
+					IF IS_CLOTH_NAKEDCOAT(ARG)
+						;裸コート
+						PRINTL 입고 있는 코트 앞을 열라고 말한다.
+						PRINTFORMW 불안한 듯 주변을 둘러보던 %CALLNAME:ARG%였지만, %CALLNAME:MASTER%의 기대 어린 시선에 마지못해 코트를 벗어젖힌다.
+						PRINTFORMW 플래시가 터지는 가운데 얼굴이 새빨개진 %CALLNAME:ARG%(은)는 쑥스러운 듯 브이 사인을 그리고 있었다.
+					ELSEIF IS_CLOTH_SKIRT(ARG)
+						;スカート系衣装
+						PRINTL 입고 있는 스커트를 걷어 올리라고 말한다.
+						PRINTFORMW 무심코 되묻는 %CALLNAME:ARG%에게 재차 스커트를 걷으라고 하자, %CALLNAME:ARG%(은)는 수치심에 떨며 따랐다.
+						PRINT 스커트 속에서는, 
+						IF IS_NAKED_NOPAN(ARG)
+							;ノーパンスカート
+							PRINT 노팬티로 끌려다닌 수치심 때문인지 
+							IF HAVE_PENIS(ARG)
+								PRINT 발기한 
+								SIF TALENT:ARG:음모없음
+									PRINT 매끈매끈한 
+								PRINTL 육봉이 드러난다.
+							ELSE
+								PRINT 애액에 젖은 
+								SIF TALENT:ARG:음모없음
+									PRINT 매끈매끈한 
+								PRINTL 치구가 드러난다.
+							ENDIF
+							PRINTFORM 본래 남 앞에서 보여서는 안 될 은밀한 부위를 드러낸 채, %CALLNAME:ARG%(은)는 
+						ELSEIF IS_CLOTH_CHASTITY(ARG)
+							;정조대
+							PRINTL 금속으로 된 투박한 정조대가 드러난다.
+							IF IS_CLOTH_VIBRATOR(ARG)
+								PRINTFORM 정조대에 부착된 바이브가 %CALLNAME:ARG%의 
+								SELECTCASE IS_CLOTH_VIBRATOR(ARG)
+									CASE 1
+										PRINTFORM 바기나
+									CASE 2
+										PRINTFORM 애널
+									CASE 3
+										PRINTFORM 양 구멍
+								ENDSELECT
+								PRINT 을(를) 괴롭히는 가운데, 
+							ELSE
+								PRINTFORM 엄중히 지켜지던 은밀한 부위를 드러낸 채, %CALLNAME:ARG%(은)는 
+							ENDIF
+						ELSEIF IS_CLOTH_VIBRATOR(ARG)
+							;バイブ下着
+							;貞操帯は上で処理しているのでショーツのみ
+							PRINTL 막대 모양의 물체가 아래로 뻗어 나온 속옷이 드러난다.
+							PRINTFORM 그 정체인 바이브가 %CALLNAME:ARG%의 
+							SELECTCASE IS_CLOTH_VIBRATOR(ARG)
+								CASE 1
+									PRINTFORM 바기나
+								CASE 2
+									PRINTFORM 애널
+								CASE 3
+									PRINTFORM 양 구멍
+							ENDSELECT
+							PRINT 을(를) 괴롭히는 가운데, 
+						ELSEIF CFLAG:ARG:속옷（하） == [[衣装:촉수팬츠]] || CFLAG:ARG:전신속옷 == [[衣装:촉수수트]]
+							;触手下着
+							;上は見せないので関数不使用
+							PRINTL 꿈틀꿈틀 기어 다니는 그로테스크한 물체가 드러난다.
+							PRINTFORM 그 정체인 촉수로 된 속옷이 %CALLNAME:ARG%를 괴롭히는 가운데, 
+						ELSE
+							;それ以外
+							PRINTFORML %CALLNAME:ARG%(이)가 애용하는 속옷이 드러난다.
+							PRINTFORM 옷으로 가려야 마땅할 속옷을 밖으로 노출한 모습 그대로, %CALLNAME:ARG%(은)는 
+						ENDIF
+						PRINTFORMW %CALLNAME:MASTER%의 지시에 따라 다양한 포즈를 사진에 담아 나간다.
+					ELSE
+						;スカート系以外
+						PRINTL 옷을 벗으라고 말한다.
+						PRINTFORMW 무심코 되묻는 %CALLNAME:ARG%에게 다시 옷을 벗으라고 말하자, %CALLNAME:ARG%(은)는 망설이면서도 따랐다.
+						IF IS_CLOTH_LIVING(ARG)
+							;触手服
+							PRINTFORML 입고 있는 것이 촉수복뿐이 되자 %CALLNAME:ARG%(은)는 그 촉수복에도 손을 댔다.
+							PRINTFORMW 그러나 그 순간 촉수복이 저항하기 시작했는지, %CALLNAME:ARG%(은)는 별안간 교성을 질렀다.
+							PRINTFORML 당황해서 입을 틀어막은 %CALLNAME:ARG%였지만 기어 다니는 촉수의 감각에 몸을 비틀었다.
+							PRINTFORMW 스티커 사진기의 촬영 부스라는 사실도 잊은 채, %CALLNAME:ARG%(은)는 쾌락에 빠져들었다.
+						ELSEIF IS_CLOTH_CHASTITY(ARG)
+							;정조대
+							PRINTL 입고 있던 옷을 벗어가자 그 아래에서 금속으로 된 투박한 정조대가 드러난다.
+							PRINTFORM %CALLNAME:ARG%(이)가 정조대 차림으로 렌즈를 향해 포즈를 취하는 동안, 
+							IF IS_CLOTH_VIBRATOR(ARG)
+								;バイブ付き
+								PRINTFORMW %CALLNAME:MASTER%(은)는 정조대에 장착된 바이브의 스위치를 켰다.
+								PRINTFORML 갑자기 작동하기 시작한 바이브에 %CALLNAME:ARG%(은)는 별안간 교성을 내질렀다.
+								PRINTFORM 다급히 입을 틀어막은 %CALLNAME:ARG%였지만, 
+								SELECTCASE IS_CLOTH_VIBRATOR(ARG)
+									CASE 1
+										PRINTFORM 바기나
+									CASE 2
+										PRINTFORM 애널
+									CASE 3
+										PRINTFORM 양 구멍
+								ENDSELECT
+								PRINTFORML 을(를) 괴롭히는 감각에 몸을 뒤튼다.
+								PRINTFORMW 스티커 사진기의 촬영 부스라는 사실도 잊은 채, %CALLNAME:ARG%(은)는 쾌락에 빠져들었다.
+							ELSE
+								;バイブなし
+								PRINTFORML %CALLNAME:MASTER%(은)는 %CALLNAME:ARG%의 정조대 열쇠를 연다.
+								PRINTFORM 음란한 냄새가 촬영 부스를 감싸는 가운데, %CALLNAME:ARG%(은)는 오랜만에 
+								IF HAVE_PENIS(ARG)
+									PRINT 자유를 얻은 페니스를 발기시키고, 
+								ELSE
+									PRINT 해방된 은밀한 부위를 손가락으로 벌리며, 
+								ENDIF
+								PRINTW 음란한 미소를 짓는 것이었다.
+							ENDIF
+						ELSE
+							;それ以外
+							PRINTFORML 옷을 벗는 모습이 사진에 찍히는 사이, %CALLNAME:ARG%(은)는 실오라기 하나 걸치지 않은 알몸이 된다.
+							IF HAVE_PENIS(ARG)
+								PRINTFORM 발기한 
+								SIF TALENT:ARG:음모없음
+									PRINTFORM 매끈매끈한 
+								PRINTFORM 육봉
+							ELSE
+								PRINTFORM 애액에 젖은 
+								SIF TALENT:ARG:음모없음
+									PRINTFORM 매끈매끈한 
+								PRINTFORM 치구
+							ENDIF
+							PRINTFORMW 을(를) 드러내며 %CALLNAME:ARG%(은)는 %CALLNAME:MASTER%의 지시에 따라 다양한 포즈를 사진에 담아 나간다.
+						ENDIF
+					ENDIF
+					PRINTFORMW 촬영이 끝나고 %CALLNAME:MASTER%(은)는 낙서 코너로 홀로 먼저 이동한다.
+					PRINTFORML 잠시 마음을 진정시키고 낙서 코너로 찾아온 %CALLNAME:ARG%의 눈에 들어온 것은,
+					PRINTW 외설적인 말이 잔뜩 적혀 있는 부끄러운 자신의 모습이었다.
+
+					CALL ADDS_EXP("키스경험", 1, ARG)
+					IF IS_LESBIAN(MASTER, ARG)
+						CALL ADDS_EXP("레즈경험", 1, MASTER)
+						CALL ADDS_EXP("레즈경험", 1, ARG)
+					ELSEIF IS_GAY(MASTER, ARG)
+						CALL ADDS_EXP("ＢＬ경험", 1, MASTER)
+						CALL ADDS_EXP("ＢＬ경험", 1, ARG)
+					ENDIF
+					CALL ADDS_EXP("야외노출경험", 7, ARG)
+					SELECTCASE CFLAG:ARG:속옷（하）
+						CASE [[衣装:바이브달린정조대]]
+							CALL ADDS_EXP("Ｖ경험", 7, ARG)
+						CASE [[衣装:Ａ바이브달린정조대]]
+							CALL ADDS_EXP("Ａ경험", 7, ARG)
+						CASE [[衣装:Ｗ바이브달린정조대]]
+							CALL ADDS_EXP("Ｖ경험", 7, ARG)
+							CALL ADDS_EXP("Ａ경험", 7, ARG)
+					ENDSELECT
+					SIF IS_CLOTH_LIVING(ARG)
+						CALL ADDS_EXP("촉수경험", 7, ARG)
+				CASE 9
+					PRINTFORMW 보답으로 %CALLNAME:ARG%의 머리를 쓰다듬는다.
+					IF TALENT:MASTER:소인체형 && TALENT:ARG:소인체형
+						PRINTFORM %CALLNAME:MASTER%와(과) %CALLNAME:ARG%(은)는 카메라 렌즈에 바짝 다가가 크게 찍히도록 하더니, 
+					ELSEIF TALENT:MASTER:소인체형
+						PRINTFORM %CALLNAME:ARG%(은)는 %CALLNAME:MASTER%를 감싸 안듯 포옹하고, 
+					ELSEIF TALENT:ARG:소인체형
+						PRINTFORM %CALLNAME:MASTER%(은)는 %CALLNAME:ARG%를 감싸 안듯 포옹하고, 
+					ELSE
+						PRINTFORM %CALLNAME:MASTER%와(과) %CALLNAME:ARG%(은)는 서로를 꼭 껴안더니, 
+					ENDIF
+					PRINTL 카메라를 향해 브이 사인을 내밀었다.
+					PRINTW 낙서 코너로 이동해 둘이서 낙서를 즐긴다.
+					PRINTL 인쇄되어 나온 스티커를 보며, 두 사람은 다시 쑥스러운 듯 마주 보고 웃었다.
+
+					CALL ADDS_EXP("키스경험", 1, ARG)
+					IF IS_LESBIAN(MASTER, ARG)
+						CALL ADDS_EXP("레즈경험", 1, MASTER)
+						CALL ADDS_EXP("레즈경험", 1, ARG)
+					ELSEIF IS_GAY(MASTER, ARG)
+						CALL ADDS_EXP("ＢＬ경험", 1, MASTER)
+						CALL ADDS_EXP("ＢＬ경험", 1, ARG)
+					ENDIF
+					CALL ADDS_EXP("애정경험", 5, MASTER)
+					CALL ADDS_EXP("애정경험", 5, ARG)
+			ENDSELECT
+		ENDIF
+	ELSEIF ARGS == "음란"
+		;淫乱ルート
+		IF IS_NAKED(ARG)
+			;裸
+			PRINTFORML 알몸의 %CALLNAME:ARG%를 촬영 부스로 끌고 가 자위하라고 명령한다.
+			PRINTFORMW %CALLNAME:ARG%(은)는 명령을 받자마자 자신의 가슴과 가랑이로 손을 뻗었다.
+			PRINTFORM 플래시가 터질 때마다 %CALLNAME:ARG%(은)는 
+			IF TALENT:ARG:오토코노코
+				PRINT 페니스에서 쿠퍼액을 
+			ELSEIF TALENT:ARG:후타나리
+				PRINT 페니스에서 쿠퍼액을, 갈라진 틈에서 애액을
+			ELSE
+				PRINT 갈라진 틈에서 애액을 
+			ENDIF
+			PRINTL 흘리면서 잘게 절정을 반복한다.
+			PRINTFORMW "다음은 전신 촬영이야"라는 내레이션이 울려 퍼지는 가운데 %CALLNAME:ARG%(은)는 %CALLNAME:MASTER%를 촬영 부스 안으로 끌어들여,
+			IF HAVE_PENIS(MASTER)
+				PRINTFORML %CALLNAME:MASTER%의 페니스를 붙잡더니 목구멍 깊숙한 곳까지 물었다.
+				PRINTFORMW 그대로 능숙한 입놀림으로 %CALLNAME:MASTER%를 사정으로 이끌며 얼굴로 정액을 뒤집어썼다.
+			ELSE
+				PRINTFORM %CALLNAME:MASTER%의 손을 자신의 
+				IF TALENT:ARG:오토코노코 || TALENT:ARG:애널광 || ABL:ARG:Ａ감각 > ABL:ARG:Ｖ감각
+					PRINT 애널
+				ELSEIF TALENT:ARG:후타나리
+					PRINT 페니스
+				ELSE
+					PRINT 은밀한 부위
+				ENDIF
+				PRINTW 로 이끌며 마구 희롱해 달라고 애원한다.
+				PRINTFORML %CALLNAME:MASTER%(이)가 그에 응해주자, %CALLNAME:ARG%(은)는 촬영 부스 밖까지 새어나갈 만큼 큰 신음성을 지르며 절정했다.
+				IF TALENT:ARG:오토코노코 || TALENT:ARG:애널광 || ABL:ARG:Ａ감각 > ABL:ARG:Ｖ감각
+					IF TALENT:ARG:오토코노코
+						PRINT 정액이 
+					ELSE
+						PRINT 뿜어낸 조수가 
+					ENDIF
+				ELSEIF TALENT:ARG:후타나리
+					PRINT 정액과 조수가 
+				ELSE
+					PRINT 뿜어낸 조수가 
+				ENDIF
+				PRINT 흩뿌려지는 가운데 
+			ENDIF
+			PRINTFORML 마지막 한 장을 쩍벌 더블 브이 포즈로 촬영한 %CALLNAME:ARG%(은)는 낙서 코너로 이동하더니,
+			PRINTFORMW 자신의 이름이나 "정액 모집 중%ハート()%" 등을 마음껏 써넣고, 인쇄가 끝날 때까지 자위를 계속했다.
+
+			IF TALENT:ARG:오토코노코 || TALENT:ARG:애널광 || ABL:ARG:Ａ감각 > ABL:ARG:Ｖ감각
+				CALL ADDS_EXP("Ａ경험", 5, ARG)
+				SIF TALENT:ARG:소인체형
+					CALL ADDS_EXP("Ａ확장경험", 5, ARG)
+			ELSE
+				CALL ADDS_EXP("Ｖ경험", 5, ARG)
+				SIF TALENT:ARG:소인체형
+					CALL ADDS_EXP("Ｖ확장경험", 5, ARG)
+			ENDIF
+			SIF HAVE_PENIS(ARG)
+				CALL ADDS_EXP("사정경험", 1, MASTER)
+			CALL ADDS_EXP("자위경험", 5, ARG)
+			CALL ADDS_EXP("조교자위경험", 5, ARG)
+			CALL ADDS_EXP("야외노출경험", 5, ARG)
+			CALL ADDS_EXP("절정경험", 5, ARG)
+			SIF HAVE_PENIS(ARG)
+				CALL ADDS_EXP("사정경험", 1, MASTER)
+			IF IS_LESBIAN(MASTER, ARG)
+				CALL ADDS_EXP("레즈경험", 5, MASTER)
+				CALL ADDS_EXP("레즈경험", 5, ARG)
+			ELSEIF IS_GAY(MASTER, ARG)
+				CALL ADDS_EXP("ＢＬ경험", 5, MASTER)
+				CALL ADDS_EXP("ＢＬ경험", 5, ARG)
+			ENDIF
+
+			PRINTL
+			PRINTL 가게 안의 손님이 "알몸인 사람이 있다"고 점원에게 신고했는지, 몇 명의 점원이 다가온다.
+			PRINTFORMW 그것을 알아챈 %CALLNAME:MASTER% 일행은 스티커를 챙겨 서둘러 가게에서 도망쳤다.
+		ELSE
+			;服は着ている ヤる
+			PRINTFORML 촬영이 시작되자 %CALLNAME:MASTER%(은)는 %CALLNAME:ARG%의 엉덩이를 쓰다듬었다.
+			PRINTFORM 참을 수 없게 된 %CALLNAME:ARG%(은)는, 
+			IF MAX(CFLAG:ARG:하의, CFLAG:ARG:전신복) < 0
+				PRINT 입고 있던 
+				IF IS_CLOTH_SKIRT(ARG) && IS_NAKED_NOPAN(ARG)
+					PRINT 스커트를 걷어 올리고, 
+				ELSEIF IS_CLOTH_SKIRT(ARG)
+					PRINT 스커트를 걷고 속옷을 내리더니, 
+				ELSEIF IS_NAKED_NOPAN(ARG)
+					PRINT 하의를 벗더니, 
+				ELSE
+					PRINT 하의와 속옷을 벗더니, 
+				ENDIF
+				PRINTFORMW %CALLNAME:MASTER%를 향해 엉덩이를 흔들었다.
+			ELSE
+				PRINTFORMW 완전히 드러난 엉덩이를 %CALLNAME:MASTER%를 향해 흔든다.
+			ENDIF
+			IF HAVE_PENIS(MASTER)
+				PRINTFORMW %CALLNAME:ARG%를 범해버릴까…
+				CALL INPUT_YN("범한다", "스마타로 참는다")
+				PRINTFORM "다음은 전신 촬영이야"라는 내레이션이 울려 퍼지는 가운데, %CALLNAME:MASTER%(은)는 %CALLNAME:ARG%의 
+				IF RESULT == 0
+					IF TALENT:ARG:오토코노코 || TALENT:ARG:애널광 || ABL:ARG:Ａ감각 > ABL:ARG:Ｖ감각
+						PRINTW 애널에 삽입한다.
+					ELSE
+						PRINTW 바기나에 삽입한다.
+					ENDIF
+				ELSE
+					PRINTW 가랑이에 페니스를 문지른다,
+				ENDIF
+				PRINTFORMW 촬영 카운트다운이 진행되는 동안 %CALLNAME:MASTER%의 허리놀림은 점점 더 빨라지고,
+				PRINTFORM 촬영 플래시가 터짐과 동시에 %CALLNAME:ARG%의 
+				IF RESULT == 0
+					IF TALENT:ARG:오토코노코 || TALENT:ARG:애널광 || ABL:ARG:Ａ감각 > ABL:ARG:Ｖ감각
+						PRINT 애널에 
+					ELSE
+						PRINT 바기나에 
+						CALL ADDS_EXP("질사경험", 1, ARG)
+					ENDIF
+				ELSE
+					PRINT 엉덩이에 
+				ENDIF
+				PRINTW 사정했다.
+			ELSE
+				PRINTFORM "다음은 전신 촬영이야"라는 내레이션이 울려 퍼지는 가운데, %CALLNAME:MASTER%(은)는 %CALLNAME:ARG%의 
+				IF TALENT:ARG:오토코노코 || TALENT:ARG:애널광 || ABL:ARG:Ａ감각 > ABL:ARG:Ｖ감각
+					PRINT 애널에 
+				ELSE
+					PRINT 바기나에 
+				ENDIF
+				PRINTW 손가락을 넣는다.
+				PRINTFORML 기기에서 흘러나오는 음악과 함께 물소리가 울려 퍼지는 가운데 %CALLNAME:MASTER%(은)는 덜덜 허리를 떨고,
+				PRINTFORM 촬영 플래시가 터짐과 동시에 %CALLNAME:ARG%(은)는 
+				IF TALENT:ARG:오토코노코 || TALENT:ARG:애널광 || ABL:ARG:Ａ감각 > ABL:ARG:Ｖ감각
+					IF HAVE_PENIS(ARG)
+						PRINTW 애널 오르가즘과 함께 사정했다.
+					ELSE
+						PRINTW 애널 오르가즘에 도달했다.
+					ENDIF
+				ELSEIF TALENT:ARG:후타나리
+					PRINTW 절정하며 사정했다.
+				ELSE
+					PRINTW 절정을 맞이하며 조수를 뿜었다.
+				ENDIF
+			ENDIF
+			PRINTFORML 촬영 종료 후 낙서 부스로 이동해, 음담패설이 가득한 낙서를 시간 꽉 채워 적어 넣은 뒤,
+			PRINTFORMW 인쇄된 스티커를 받았다.
+
+			IF TALENT:ARG:오토코노코 || TALENT:ARG:애널광 || ABL:ARG:Ａ감각 > ABL:ARG:Ｖ감각
+				CALL ADDS_EXP("Ａ경험", 5, ARG)
+				SIF HAVE_PENIS(MASTER) && TALENT:ARG:소인체형
+					CALL ADDS_EXP("Ａ확장경험", 5, ARG)
+			ELSE
+				CALL ADDS_EXP("Ｖ경험", 5, ARG)
+				SIF HAVE_PENIS(MASTER) && TALENT:ARG:소인체형
+					CALL ADDS_EXP("Ｖ확장경험", 5, ARG)
+				IF TALENT:ARG:처녀
+					TALENT:ARG:처녀 = 0
+					CALL ADDS_ABNORMAL_EXP("処女奪取（同性）", MASTER)
+					CALL ADDS_ABNORMAL_EXP("処女喪失（同性）", ARG)
+				ENDIF
+				SIF TALENT:ARG:재생처녀
+					TALENT:ARG:재생처녀 = 0
+			ENDIF
+			IF 近親チェック(ARG , MASTER)
+				CALL ADDS_ABNORMAL_EXP( @"近親相姦（%RESULTS:0%）", ARG)
+				CALL ADDS_ABNORMAL_EXP( @"近親相姦（%RESULTS:1%）", MASTER)
+			ENDIF
+			CALL ADDS_EXP("봉사쾌락경험", 5, ARG)
+			CALL ADDS_EXP("야외노출경험", 5, ARG)
+			CALL ADDS_EXP("절정경험", 1, ARG)
+			IF IS_LESBIAN(MASTER, ARG)
+				CALL ADDS_EXP("레즈경험", 5, MASTER)
+				CALL ADDS_EXP("레즈경험", 5, ARG)
+			ELSEIF IS_GAY(MASTER, ARG)
+				CALL ADDS_EXP("ＢＬ경험", 5, MASTER)
+				CALL ADDS_EXP("ＢＬ경험", 5, ARG)
+			ENDIF
+			IF HAVE_PENIS(MASTER)
+				CALL ADDS_EXP("삽입경험", 5, MASTER)
+				CALL ADDS_EXP("성교경험", 5, ARG)
+				CALL ADDS_EXP("야외노출경험", 5, MASTER)
+				CALL ADDS_EXP("사정경험", 1, MASTER)
+			ENDIF
+			SIF HAVE_PENIS(ARG)
+				CALL ADDS_EXP("사정경험", 1, ARG)
+		ENDIF
+	ELSEIF ARGS == "복종"
+		;服従ルート ヤる
+		IF IS_NAKED(ARG) || IS_CLOTH_NAKEDCOAT(ARG)
+			;裸or裸コート
+			IF HAVE_PENIS(MASTER)
+				PRINTFORMW %CALLNAME:ARG%를 범해버릴까…
+				CALL INPUT_YN("범한다", "스마타로 참는다")
+			ENDIF
+			PRINT 부스에 들어가자마자, 
+			IF IS_CLOTH_NAKEDCOAT(ARG)
+				PRINTFORMW %CALLNAME:ARG%에게 코트를 벗으라고 명령한다.
+				PRINT 실오라기 하나 걸치지 않은 알몸이 된 
+			ELSE
+				PRINT 실오라기 하나 걸치지 않은 알몸의 
+			ENDIF
+			PRINTFORM %CALLNAME:ARG%의 
+			IF TALENT:MASTER:오토코노코 || TALENT:ARG:애널광 || ABL:ARG:Ａ감각 > ABL:ARG:Ｖ감각
+				PRINT 애널에 
+			ELSE
+				PRINT 바기나에 
+			ENDIF
+			IF HAVE_PENIS(MASTER) && RESULT == 0
+				PRINT 자신의 육봉을 
+			ELSE
+				PRINT 손가락을 
+			ENDIF
+			PRINTW 삽입한다.
+			IF HAVE_PENIS(MASTER) && RESULT == 0
+				PRINTFORML 그대로 일방적으로 %CALLNAME:ARG%를 범하며, 카메라 플래시가 터지는 타이밍에 제멋대로 사정했다.
+				PRINT 촬영을 마치고, 
+			ELSE
+				PRINTFORM 그대로 일방적으로 %CALLNAME:ARG%의 
+				IF TALENT:MASTER:오토코노코 || TALENT:ARG:애널광 || ABL:ARG:Ａ감각 > ABL:ARG:Ｖ감각
+					PRINT 장내를 
+				ELSE
+					PRINT 질내를 
+				ENDIF
+				PRINTFORML 휘저었다.
+				PRINTFORM 마지막 한 장의 플래시가 번쩍임과 동시에 %CALLNAME:ARG%(은)는 
+				IF TALENT:ARG:오토코노코 || TALENT:ARG:애널광 || ABL:ARG:Ａ감각 > ABL:ARG:Ｖ감각
+					IF HAVE_PENIS(ARG)
+						PRINT 애널 오르가즘과 동시에 사정…할 
+					ELSE
+						PRINT 애널 오르가즘에 도달…할 
+					ENDIF
+				ELSEIF TALENT:ARG:후타나리
+					PRINT 절정하면서 사정…할 
+				ELSE
+					PRINT 절정을 맞이해 조수를 뿜…을 
+				ENDIF
+				PRINTL 뻔했으나, 
+				PRINTW 살짝 타이밍이 어긋나서 제대로 촬영되지 못했다.
+				PRINT "돌아가면 벌이야"라고 전하고, 
+			ENDIF
+
+			IF HAVE_PENIS(MASTER) && RESULT == 0
+				CALL ADDS_EXP("삽입경험", 5, MASTER)
+				CALL ADDS_EXP("성교경험", 5, ARG)
+				SIF TALENT:MASTER:처녀
+					TALENT:MASTER:처녀 = 0
+				SIF TALENT:MASTER:재생처녀
+					TALENT:MASTER:재생처녀 = 0
+			ENDIF
+			IF TALENT:ARG:오토코노코 || TALENT:ARG:애널광 || ABL:ARG:Ａ감각 > ABL:ARG:Ｖ감각
+				CALL ADDS_EXP("Ａ경험", 5, ARG)
+				SIF TALENT:ARG:소인체형
+					CALL ADDS_EXP("Ａ확장경험", 5, ARG)
+			ELSE
+				CALL ADDS_EXP("Ｖ경험", 5, ARG)
+				SIF HAVE_PENIS(MASTER) && RESULT == 0
+					CALL ADDS_EXP("질사경험", 1, ARG)
+				SIF TALENT:ARG:소인체형
+					CALL ADDS_EXP("Ｖ확장경험", 5, ARG)
+			ENDIF
+			IF IS_LESBIAN(MASTER, ARG)
+				CALL ADDS_EXP("레즈경험", 5, MASTER)
+				CALL ADDS_EXP("레즈경험", 5, ARG)
+			ELSEIF IS_GAY(MASTER, ARG)
+				CALL ADDS_EXP("ＢＬ경험", 5, MASTER)
+				CALL ADDS_EXP("ＢＬ경험", 5, ARG)
+			ENDIF
+			CALL ADDS_EXP("야외노출경험", 5, MASTER)
+			CALL ADDS_EXP("야외노출경험", 5, ARG)
+			IF HAVE_PENIS(MASTER)
+				CALL ADDS_EXP("사정경험", 1, MASTER)
+			ELSE
+				CALL ADDS_EXP("절정경험", 1, ARG)
+				SIF HAVE_PENIS(ARG)
+					CALL ADDS_EXP("사정경험", 1, ARG)
+			ENDIF
+
+			PRINTW 부스 안에 튄 체액을 청소하라고 명령한 뒤 혼자서 낙서를 시작한다.
+			PRINTFORM 청소를 마치고 %CALLNAME:MASTER%의 곁으로 다가온 %CALLNAME:ARG%에게 
+		ELSE
+			;服は着ている
+			IF IS_CLOTH_LIVING(ARG)
+				;触手服
+				PRINTFORML 입고 있는 것이 촉수복뿐이 되자 %CALLNAME:ARG%(은)는 그 촉수복에도 손을 댔다.
+				PRINTFORMW 그러나 그 순간 촉수복이 저항하기 시작했는지, %CALLNAME:ARG%(은)는 별안간 교성을 질렀다.
+				PRINTFORML 다급히 입을 틀어막은 %CALLNAME:ARG%였지만 %CALLNAME:MASTER%에게 손을 떼라는 명령을 받고,
+				PRINTFORMW 공공장소임에도 불구하고 %CALLNAME:ARG%(은)는 교성을 내지르는 것이었다.
+			ELSEIF IS_CLOTH_CHASTITY(ARG)
+				;정조대
+				PRINTL 입고 있던 옷을 벗어가자 그 아래에서 금속으로 된 투박한 정조대가 드러난다.
+				PRINTFORM 정조대 차림의 %CALLNAME:ARG%에게 렌즈를 향해 천박한 포즈를 취하게 하면서, 
+				IF IS_CLOTH_VIBRATOR(ARG)
+					;バイブ付き
+					PRINTFORMW %CALLNAME:MASTER%(은)는 정조대에 장착된 바이브의 스위치를 켰다.
+					PRINTFORML 갑자기 작동하기 시작한 바이브에 %CALLNAME:ARG%(은)는 별안간 교성을 내질렀다.
+					PRINTFORM 다급히 입을 틀어막은 %CALLNAME:ARG%였지만, 
+					PRINTFORML 다급히 입을 틀어막은 %CALLNAME:ARG%였지만 %CALLNAME:MASTER%에게 손을 떼라는 명령을 받고,
+					PRINTFORMW 공공장소임에도 불구하고 %CALLNAME:ARG%(은)는 교성을 내지르는 것이었다.
+				ELSE
+					;バイブなし
+					PRINTFORML %CALLNAME:MASTER%(은)는 %CALLNAME:ARG%의 정조대 열쇠를 연다.
+					PRINTFORM 음란한 냄새가 촬영 부스를 감싸는 가운데, %CALLNAME:ARG%(은)는 오랜만에 
+					IF HAVE_PENIS(ARG)
+						PRINT 자유를 얻은 페니스를 발기시키고, 
+					ELSE
+						PRINT 해방된 은밀한 부위를 손가락으로 벌리며, 
+					ENDIF
+					PRINTW 초점이 풀린 눈동자를 카메라로 향한 채 미소 지었다.
+				ENDIF
+			ELSE
+				;それ以外
+				PRINTFORML 옷을 벗는 모습이 사진에 찍히는 사이, %CALLNAME:ARG%(은)는 실오라기 하나 걸치지 않은 알몸이 된다.
+				IF HAVE_PENIS(ARG)
+					SIF TALENT:ARG:음모없음
+						PRINT 매끈매끈한 
+					PRINT 육봉
+				ELSE
+					SIF TALENT:ARG:음모없음
+						PRINT 매끈매끈한 
+					PRINT 치구
+				ENDIF
+				PRINTFORMW 을(를) 드러내며, %CALLNAME:ARG%(은)는 %CALLNAME:MASTER%의 지시에 따라 갖가지 천박한 포즈로 사진을 찍어 나갔다.
+			ENDIF
+
+			CALL ADDS_EXP("야외노출경험", 7, ARG)
+			SELECTCASE CFLAG:ARG:속옷（하）
+				CASE [[衣装:바이브달린정조대]]
+					CALL ADDS_EXP("Ｖ경험", 7, ARG)
+				CASE [[衣装:Ａ바이브달린정조대]]
+					CALL ADDS_EXP("Ａ경험", 7, ARG)
+				CASE [[衣装:Ｗ바이브달린정조대]]
+					CALL ADDS_EXP("Ｖ경험", 7, ARG)
+					CALL ADDS_EXP("Ａ경험", 7, ARG)
+			ENDSELECT
+			SIF IS_CLOTH_LIVING(ARG)
+				CALL ADDS_EXP("촉수경험", 7, ARG)
+
+			PRINTFORMW 촬영 종료 후 %CALLNAME:MASTER%(은)는 낙서 코너 밖에서 대기하라고 %CALLNAME:ARG%에게 명령한다.
+			PRINTFORM 낙서를 마치고 나온 %CALLNAME:MASTER%로부터 
+		ENDIF
+		PRINTFORML 건네받은 것은, 
+		PRINTFORMW "%NAME:ARG%(은)는 %NAME:MASTER%의 소유물입니다"라는 문장과 자신을 능욕하는 문구가 적힌 스티커였다.
+	ELSE
+		;그외 エロ無し
+		CALL DUNGEON_EVENT_PURIKURA_NORMAL_OTHER, ARG
+	ENDIF
+ENDIF
+
+;信頼ルート
+@DUNGEON_EVENT_PURIKURA_NORMAL_TRUST, ARG
+PRINTFORML 촬영이 진행되고 전신 촬영이 시작되는 타이밍에 %CALLNAME:ARG%(이)가 어깨동무를 해왔다.
+PRINTFORMW %CALLNAME:ARG%의 의도를 알아챈 %CALLNAME:MASTER%(은)는 어깨를 마주 감싸 안고 함께 팔을 치켜올리며 사진을 촬영했다.
+PRINTFORMW 낙서 코너로 옮겨간 두 사람은 촬영한 사진을 보며 "최고의 사진이 찍혔어"라며 마주 보고 웃었다.
+
+;그외(NTR中/未陥落など)
+@DUNGEON_EVENT_PURIKURA_NORMAL_OTHER, ARG
+PRINTFORMW "왜 %CSTR:ARG:일인칭%가…"라는 %CALLNAME:ARG%에게 사이좋아지고 싶어서라고 대답하며 안내 방송에 맞춰 포즈를 취한다.
+PRINTFORMW 처음엔 꺼리던 %CALLNAME:ARG%였지만 결국엔 함께 포즈를 취해 주었다.

@@ -1,0 +1,170 @@
+﻿;スキル名
+@SKILL_NAME_スピンチョッパー, ARG
+RESULTS = 스핀 초퍼
+IF FLAG:총공격중
+	TSTR:스킬메시지행동자 = RoRo
+	TFLAG:스킬행동자컬러 = 0x9933cd
+ENDIF
+
+;　명중
+@SKILL_HITRATE_スピンチョッパー, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG, "スピンチョッパー")
+IF SKILLGAGE_D_GET(ARG, SKILL_NUM) > 0
+	RETURN 120
+ELSE
+	RETURN 100
+ENDIF
+
+;　威力
+@SKILL_POWER_スピンチョッパー, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG, "スピンチョッパー")
+IF SKILLGAGE_D_GET(ARG, SKILL_NUM) > 0
+	IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "다크니스트리거Ｘ") && FLAG:총공격중
+		;約1.25倍
+		RETURN 160
+	ELSE
+		RETURN 130
+	ENDIF
+ELSE
+	RETURN 250
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_スピンチョッパー, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG, "スピンチョッパー")
+SIF SKILLGAGE_D_GET(ARG, SKILL_NUM) > 0
+	RETURN 2
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_スピンチョッパー, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG, "スピンチョッパー")
+SIF SKILLGAGE_D_GET(ARG, SKILL_NUM) > 0
+	RETURN 2
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_スピンチョッパー, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_スピンチョッパー, ARG
+;ダークネストリガー発動中はコスト1/3
+SIF SKILLGAGE_H_GET(ARG, [[스킬:DARKNESS TRIGGER]]) == 1
+	RETURN 5
+RETURN 16
+
+;　相性
+@SKILL_TYPE_スピンチョッパー, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG, "スピンチョッパー")
+IF SKILLGAGE_D_GET(ARG, SKILL_NUM) > 0
+	RETURN GET_TYPE_NUM("검격")
+ELSE
+	RETURN GET_TYPE_NUM("검격"), GET_TYPE_NUM("질풍")
+ENDIF
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_スピンチョッパー
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_スピンチョッパー, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_スピンチョッパー, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_スピンチョッパー, ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_スピンチョッパー, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_スピンチョッパー, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_スピンチョッパー, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_スピンチョッパー
+RETURN 0
+
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_スピンチョッパー, ARG, ARG:1
+#DIM SKILL_NUM
+#DIM ROCK_H
+
+;ダークネストリガー追撃条件共通
+IF DTRIGGER_ABLE(ARG, "スピンチョッパー")
+	ROCK_H = SKILLGAGE_H_GET(ARG, [[스킬:블리츠대쉬]]) / 10
+	SKILL_NUM = PU_SKILLNUM_GET(ARG, "スピンチョッパー")
+	CALL SKILLGAGE_D_SET, ARG, SKILL_NUM, 1
+	RETURN 1, 200000 + CPOS(ROCK_H)
+ENDIF
+RETURN 0
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_スピンチョッパー, ARG, ARG:1, SKILL_NUM
+#DIM SKILL_NUM
+#DIM ROCK_H
+#DIM 加算クードス
+
+SIF !FLAG:총공격중
+	CALL ATTACK_SINGLE, ARG, POS(ARG:1), SKILL_NUM
+;ロック中かつロック対象が生存中ならロック対象へ攻撃
+IF BLITZ_TARGET_JUDG(ARG) == 1
+	SIF FLAG:총공격중
+		TFLAG:반사후0데미지화 = 1
+	ROCK_H = SKILLGAGE_H_GET(ARG, [[스킬:블리츠대쉬]]) / 10
+	CALL SKILLGAGE_D_SET, ARG, SKILL_NUM, 1
+	CALL ATTACK_SINGLE, ARG, ROCK_H, SKILL_NUM
+ENDIF
+
+IF CFLAG:ARG:PT플래그 > 0
+	;撃破数1につき20の基礎クードスを得る。(上限20)
+	加算クードス = GET_CREC_ACT_SUM(ARG, "적", "KILL")
+	CALL SET_加算クードス, ARG, 加算クードス
+ENDIF
+
+;EXウェポン7番=スピンチョッパー
+SIF HAVE_SKILL(ARG, [[스킬:DARKNESS TRIGGER]])
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:DARKNESS TRIGGER]], 7
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_スピンチョッパー, ARG
+PRINTL 특수 프로펠러를 탑재한 워커 베스파의 능력을 재현한 EX 웨폰.
+PRINTL HP를 소비하는 커맨드 「블리츠 대시」로 록온된 적이 있는 경우 공격 후 그 대상에게 추격을 가한다.
+PRINTL (공격 대상과 록온 대상이 다른 경우에도 기능한다)
+PRINTL 
+PRINTL 적 단체에 검격과 질풍의 복합 상성으로 중데미지를 준다.
+PRINTL 추가로 록온 상태인 적이 있는 경우 그 적에게 검격 상성으로 2회 소데미지를 주는 추격을 행한다.
+IF ARG > 0 && ARG < CHARANUM && IS_CHARA_EQUIPED(ARG, "다크니스트리거Ｘ") && SKILLGAGE_H_GET(ARG, [[스킬:DARKNESS TRIGGER]]) == 1
+	SETCOLOR 0x9933cd
+	PRINTL 다크니스 트리거 X 장비 중 다크니스 트리거에 의한 추격 시의 데미지 상승
+	RESETCOLOR
+ENDIF
+PRINTL ※이 스킬로 적을 격파했을 경우 쿠도스가 20 가산된다
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_スピンチョッパー, ARG
+RETURN 1
+

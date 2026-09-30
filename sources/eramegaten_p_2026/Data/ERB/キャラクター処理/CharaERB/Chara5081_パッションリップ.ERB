@@ -1,0 +1,109 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5081_パッションリップ.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/03/08		epizo				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+;--------------------------------------------------
+@ADD_NEW_COMPANION_[[キャラ:패션립]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+CALL SET_LEARNED_SKILL, ARG, "目を逸らさずに"
+
+@EVENT_CHANGE_TRAIN_TALENT_[[キャラ:패션립]], ARG, ARGS, ARGS:1 = "GET"
+;陥落時にスキルエミュレータの販売を追加する
+IF GROUPMATCH(ARGS, "친애", "창부", "예속") && ARGS:1 == "GET" && !HAVE_PU_SKILL(ARG, "水天日光天照八野鎮石")
+	PRINTFORMW %CALLNAME:ARG%은(는) 새로운 스킬을 창안했다!
+	CALL SET_LEARN_SKILL, ARG, "CSTR専用スキル/死が二人を分断つまで", 1, , "入れ替え確認"
+ENDIF
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:패션립]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("パッションリップ_FACE_1")
+			RETURNF ""
+		SIF !SPRITECREATED("パッションリップ_FACE_2")
+			RETURNF ""
+		SIF !SPRITECREATED("パッションリップ_FACE_3")
+			RETURNF ""
+		RESULTS_F = CCC
+		RESULTS_F:1 = パッションリップ_FACE_1
+	CASE 1
+		;画像チェック
+		SIF !SPRITECREATED("パッションリップ_FACE_4")
+			RETURNF ""
+		SIF !SPRITECREATED("パッションリップ_FACE_5")
+			RETURNF ""
+		SIF !SPRITECREATED("パッションリップ_FACE_6")
+			RETURNF ""
+		RESULTS_F = 三臨
+		RESULTS_F:1 = パッションリップ_FACE_4
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:패션립]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "CCC"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+				RESULTS_F = パッションリップ_FACE_2
+			CASEELSE
+				IF IS_BADSTATE(L_CHARA, "CHARM")
+					RESULTS_F = パッションリップ_FACE_2
+				ELSEIF L_SITUATION:1 == "DYING"
+					RESULTS_F = パッションリップ_FACE_3
+					;DYINGでの色相変換を回避させるための指定
+					RESULT_F:1 = 1
+				ELSE
+					RESULTS_F = パッションリップ_FACE_1
+				ENDIF
+		ENDSELECT
+	CASE "三臨"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+				RESULTS_F = パッションリップ_FACE_5
+			CASEELSE
+				IF IS_BADSTATE(L_CHARA, "CHARM")
+					RESULTS_F = パッションリップ_FACE_5
+				ELSEIF L_SITUATION:1 == "DYING"
+					RESULTS_F = パッションリップ_FACE_6
+					;DYINGでの色相変換を回避させるための指定
+					RESULT_F:1 = 1
+				ELSE
+					RESULTS_F = パッションリップ_FACE_4
+				ENDIF
+		ENDSELECT
+	CASEELSE
+ENDSELECT

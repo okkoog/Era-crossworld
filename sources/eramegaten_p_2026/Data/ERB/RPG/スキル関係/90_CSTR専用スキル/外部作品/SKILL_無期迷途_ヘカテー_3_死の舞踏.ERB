@@ -1,0 +1,113 @@
+﻿;スキル名
+@SKILL_NAME_死の舞踏,ARG
+RESULTS = 죽음의 무도
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_死の舞踏, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+
+;　コストの量
+@SKILL_COST_死の舞踏,ARG
+IF ARG >= 0 && HAVE_PU_SKILL(ARG, "寂滅の水影")
+	RETURN 30
+ELSE
+	RETURN 15
+ENDIF
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_死の舞踏
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_死の舞踏, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　範囲　単体　一列　全体　敵味方全体　縦列
+@SKILL_SPHERE_死の舞踏,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_死の舞踏, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_死の舞踏
+RETURN GET_SUCCESSION_NUM("방어")
+
+;속도보정
+@SKILL_SPEED_死の舞踏, ARG = -1
+RETURN 0
+
+;スキルランク
+;スキルの習得時の必要ＭＡＧの算出に主に用いられる
+;また、習得・所持スキルはこのランクの5倍のレベルを基準として設定する。
+@SKILL_RANK_死の舞踏, ARG = -1
+IF ARG >= 0 && HAVE_PU_SKILL(ARG, "寂滅の水影")
+	RETURN 15
+ELSE
+	RETURN 5
+ENDIF
+;====================================================
+;スキル及び行動の実行
+;ARG = スキルの使用者
+;ARG:1 = スキルの使用対象
+;ARG:2 = スキルの番号
+;====================================================
+@ACTION_死の舞踏, ARG, ARG:1, ARG:2
+IF ARG == POS(ARG:1)
+	CALL PRINT_HIT_MESSAGE, ARG, "효과가 없었다！", "w"
+ELSE
+	IF HAVE_PU_SKILL(ARG, "寂滅の水影")
+		CALL SKILL_SET_HPバリア, POS(ARG:1), 300 * GET_BASEHEAL_IN_CALC(MAXBASE:ARG:마법효과, MAXBASE:ARG:마법위력) / 100, "悪夢"
+	ELSE
+		;ディアラマ相当
+		CALL SKILL_SET_HPバリア, POS(ARG:1), 200 * GET_BASEHEAL_IN_CALC(MAXBASE:ARG:마법효과, MAXBASE:ARG:마법위력) / 100, "悪夢"
+	ENDIF
+	CALL PU_SKILLGAGE_F_SET, ARG, "死の舞踏", 1
+ENDIF
+WAIT
+
+@DISPLAY_COMMAND_P_死の舞踏, ARG
+#DIM DYNAMIC LCOUNT
+FOR LCOUNT, CFLAG:ARG:PT플래그 ? 1 # 7, CFLAG:ARG:PT플래그 ? 7 # 17
+	SIF !IS_TARGET_ABLE(POS(LCOUNT))
+		CONTINUE
+	SIF CSTR:POS(LCOUNT):HP배리어명 != "悪夢"
+		CONTINUE
+	SIF !CFLAG:POS(LCOUNT):HP배리어
+		CONTINUE
+	SIF RESULTS != ""
+		RESULTS += "<br>"
+	RESULTS += @"悪夢[{CFLAG:POS(LCOUNT):HP배리어}] >>> [POS.{LCOUNT,2}]"
+NEXT
+SIF RESULTS == ""
+	RETURN 0
+RETURN 3
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_死の舞踏, ARG
+PRINTL 자신 이외의 아군 1명을 지정하여 악몽을 소환하고, 대상 대신 데미지를 받게 한다.
+PRINTL 악몽의 HP는 헤카테의 치유력에 따라 증가한다.
+PRINTL 이 스킬은 전투 중 한 번만 쓸 수 있다.
+
+;ツールチップ版の解説文
+@SKILL_EXPLAIN_TOOLTIP_死の舞踏, ARG
+RESULTS:0 = 자신 이외의 아군 1명을 지정하여 악몽을 소환하고, 대상 대신 데미지를 받게 한다.
+RESULTS:1 = 악몽의 HP는 헤카테의 치유력에 따라 증가한다.
+RESULTS:2 = このスキルは戦闘中一度のみ使える。
+
+;ターゲット条件
+@SKILL_TARGETABLE_死の舞踏,ARG, ARG:1
+SIF !IS_FRIEND(ARG, ARG:1)
+	RETURN 0
+RETURN ARG != ARG:1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_死の舞踏,ARG
+RESULTS = 使用回数制限
+SIF PU_SKILLGAGE_F_GET(ARG, "死の舞踏")
+	RETURN 0
+RETURN 1
+;とくにない

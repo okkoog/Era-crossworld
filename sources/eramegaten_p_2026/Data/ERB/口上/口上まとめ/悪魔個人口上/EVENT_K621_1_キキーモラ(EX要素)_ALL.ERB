@@ -1,0 +1,3280 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2011/09/14		名無し					アリス口上1&eraVOICERの%CALLNAME%口上をベースに作成
+;	002		2023/05/20		P						戦闘口上を顔グラ対応に変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;------------------------------------------------------------------------------------
+;ライセンスについて
+;	・基本項目(許可する項目を"○"に、許可しない項目を"×"に変更してください。)
+;	+----+----+-------------------------------+
+;	|番号|許可|ライセンス内容                 |
+;	+----+----+-------------------------------+
+;	|   1| ○ | 処理上のバグ修正              |
+;	+----+----+-------------------------------+
+;	|   2| ○ | 口上の誤字・脱字の修正        |
+;	+----+----+-------------------------------+
+;	|   3| ○ | 口上まとめへの収録            |
+;	+----+----+-------------------------------+
+;	|   4| ○ | 口上の新規追加                |
+;	+----+----+-------------------------------+
+;	|   5| ○ | 既存口上の改変                |
+;	+----+----+-------------------------------+
+;	|   6| ○ | 改変した口上の自由な再配布    |
+;	+----+----+-------------------------------+
+;	|   7| ○ | 口上内容の転載                |
+;	+----+----+-------------------------------+
+
+;=====================================================================
+
+;CFLAG:808　表示するAAを選択
+;CFLAG:809　AA表示の有無を判定
+
+;-------------------------------------------------
+;eratohoA及びeratohoA系列専用口上テンプレート
+;X1とX2をキャラ番号に置換し、Y1を助手のキャラ番号に置換してください
+;ただし、キャラ番号が一桁のキャラの場合、X1,Y1は1、X2は01のように変えてください
+;そしてコマンド内の適当な条件の下のPRINTFORMWの後ろに半角スペースを置いてセリフを追加してください
+;口上を追加しないコマンドは無記入でも構いませんが、CFLAG:XXXの頭に『;』をつけてコメントアウトすると尚良いでしょう
+;エキストラ構文など、コメントアウトされている構文を使う際には、『;』を外してコメントアウトを解除する必要があります
+;最後にread meにも目を通しておくことをお勧めします
+;-------------------------------------------------
+
+;--------------------------------------------------
+;口上セレクト機能：口上説明
+;--------------------------------------------------
+@セレクト口上説明_K[[キャラ:키키모라]]_1,ARG = 0
+SIF ARG == 1
+	RETURN 0
+;口上名
+PRINTFORML 키키무라 구상_１ (EX요소 있음）
+;口上説明文
+PRINTFORML 
+PRINTL 　EX요소,소질변경이 포함되어 있습니다。
+PRINTL 　키키모라의 이미지를 손상시키고 싶지 않은 분은 선택하지 마십시오。
+PRINTL 
+PRINTL 　「아키타의 쿠소가키」이걸로 감이 안 오는 사람도、선택하지 마세요。
+PRINTL 
+;--------------------------------------------------
+;EVENTTRAIN関係（X1をキャラ番号に置換）
+;調教開始時のセリフ CFLAG 201～219を使用
+;--------------------------------------------------
+@EVENTTRAIN_K[[キャラ:키키모라]]_1
+;SIF FLAG:7 <= 0
+;	RETURN 0
+;SIF TCVAR:0 == 1
+;	RETURN 0
+;SIF ABL:회화타입 != 303
+;	RETURN 0
+;--------------------------------------------------
+;エキストラモード構文　CFLAG:220を使用
+;はいを選択した時に初調教時に口上設定用の素質に変更できます
+;下記に処女化する場合の構文をサンプルとして載せておきます
+;--------------------------------------------------
+IF CFLAG:220 == 0
+	PRINTW 소질을 변경했습니다。
+	CSTR:이인칭 = 서머너
+	CSTR:일인칭 = 나
+	;元素質削除
+	TALENT:처녀 = 0
+	TALENT:겁쟁이 = 0
+	TALENT:얌전함 = 0
+	TALENT:호기심 = 0
+	TALENT:정조관념 = 0
+	TALENT:부끄럼쟁이 = 0
+	TALENT:아픔에약함 = 0
+	TALENT:습득빠름 = 0
+	TALENT:혀놀림 = 0
+	TALENT:악취민감 = 0
+	TALENT:헌신적 = 0
+	TALENT:Ｃ둔감 = 0
+	TALENT:우애 = 0
+	
+	;追加素質
+	TALENT:처녀 = 1
+	;性格
+	TALENT:겁쟁이 = 1
+	;性への関心
+	TALENT:호기심 = 1
+	;乙女心
+	;体質
+	TALENT:아픔에약함 = 1
+	;技術
+	TALENT:바늘다루기 = 1
+	;潔癖度
+	TALENT:자위하기쉬움 = 1
+	;正直度
+	TALENT:쾌감에솔직 = 1
+	;性愛性
+	TALENT:도착적 = 1
+	TALENT:남성혐오 = 1
+	;身体特徴
+	TALENT:유아체형 = 1
+	TALENT:Ｃ민감 = 1
+	TALENT:Ｖ둔감 = 1
+	TALENT:빈유 = 1
+	TALENT:음모없음 = 1
+	
+	;特殊
+	TALENT:회복빠름 = 1
+	TALENT:인기 = 1
+	CFLAG:220 = 1
+	
+	PRINTW 의상을 변경했습니다。
+	PRINTL 
+	;衣装追加
+	CFLAG:TARGET:모자 = [[衣装:머리장식]];包丁
+	CFLAG:TARGET:옷 = [[衣装:기모노]]
+	CFLAG:TARGET:하의 = [[衣装:미니스커트]]
+	CFLAG:TARGET:속옷（상） = [[衣装:브래지어]]
+	CFLAG:TARGET:속옷（하） = [[衣装:팬티]]
+	CFLAG:TARGET:양말 = [[衣装:버선]]
+	CFLAG:TARGET:신발 = [[衣装:게다]]
+	CFLAG:TARGET:그외 = [[衣装:오비]]
+	CFLAG:TARGET:그외2 = [[衣装:애독서]];同人誌
+	
+	
+	;AA表示の有無を決定
+	PRINTFORML AA표시 여부를 선택해 주세요（「아무것도안한다」 커맨드로 나중에 변경 가능합니다。）
+	PRINTFORML  [1] “AA표시 없음”
+	PRINTFORML  [2] “AA표시 있음”
+	CFLAG:808 = 7001
+	CALL PRINT_AA_KIRITAN
+	$INPUT_LOOP_K[[キャラ:키키모라]]_PRINT_AA
+	INPUT
+	IF RESULT == 2
+		PRINTFORMW AA를 표시하게 되었습니다
+		CFLAG:809 = 0
+	ELSEIF RESULT == 1
+		PRINTFORMW AA를 표시하지 않습니다
+		CFLAG:809 = 1
+	ELSE
+		GOTO INPUT_LOOP_K[[キャラ:키키모라]]_PRINT_AA
+	ENDIF
+	;AA表示の有無を決定、ここまで
+ELSE
+ENDIF
+
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL EVENTTRAIN_PY1_K[[キャラ:키키모라]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL EVENTTRAIN_PY1_K[[キャラ:키키모라]]
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;--------------------------------------------------
+;簡易助手口上の発動時に初調教時口上をスキップ（Y1を助手のキャラ番号にする）
+;複数人いる際には、SIF NO:ASSI == Y1 || NO:ASSI == Z1と追加していく
+;--------------------------------------------------
+;IF CFLAG:201 == 0 && ASSI > 0
+;	SIF NO:ASSI == Y1
+;		CFLAG:201 =1
+;ENDIF
+;-------------------------------------------------
+;調教開始時（一回のみ） CFLAG201
+;-------------------------------------------------
+;初調教時
+IF CFLAG:201 == 0 && TALENT:연모 == 0
+	DRAWLINE
+	CALL EVENTTRAIN_MESSAGE_CLOTHES
+	PRINTFORMW 「나는 ○학교 5학년이라、야한 일은 금지니까요」
+	PRINTFORMW 「엣？조교？물론 안 됩니다。이 변태」
+	CFLAG:808 = 7001
+	CALL PRINT_AA_KIRITAN
+	CFLAG:201 = 1
+	RETURN 0
+;屈服刻印Lv1
+ELSEIF CFLAG:201 < 2 && MARK:2 == 1
+	DRAWLINE
+	CALL EVENTTRAIN_MESSAGE_CLOTHES
+	PRINTFORMW 「나만 일방적으로 조교된다니、역시 이상해요」
+	PRINTFORMW 「대가 주세요、대가」
+	PRINTFORMW 「최신 게임기와 소프트웨어 10편、그리고 동인지 100권 사주면 조금쯤은 보여줘도 괜찮아요」
+	CFLAG:808 = 7001
+	CALL PRINT_AA_KIRITAN
+	CFLAG:201 = 2
+	RETURN 0
+;屈服刻印Lv2
+ELSEIF CFLAG:201 < 3 && MARK:2 == 2
+	DRAWLINE
+	CALL EVENTTRAIN_MESSAGE_CLOTHES
+	IF TALENT:MASTER:남자 && !TALENT:MASTER:오토코노코
+		PRINTFORMW 「애당초 서머너는 색기가 부족하거든요」
+		PRINTFORMW 「적어도 TS해서 매끈매끈하고 탱탱한 허벅지를 제가 쓰게 해주세요」
+		PRINTFORMW ＞%CALLNAME은% 허벅지를 좋아하는 것 같다、한동안 서로의 성버릇 이야기로 분위기가 고조되었다。
+	ELSE
+		PRINTFORMW 「서머너는 꽤 좋은 허벅지를 가지고 있네요」
+		PRINTFORMW 「감지언니 못지않게 탱탱한 촉、매끈한 피부……」
+		PRINTFORMW 「으헤헤헤」
+		PRINTFORMW ＞%CALLNAME은% %CALLNAME:MASTER%의 허벅지에 문지르면서、꽤나 아재 냄새나는 이야기를 계속했다……
+	ENDIF
+	CFLAG:808 = 7001
+	CALL PRINT_AA_KIRITAN
+	CFLAG:201 = 3
+	RETURN 0
+;屈服刻印Lv3
+ELSEIF CFLAG:201 < 4 && MARK:2 == 3 && (TALENT:3 == 0 && TALENT:4 == 0 && TALENT:5 == 0 && TALENT:6 == 0 && TALENT:7 == 0 && TALENT:8 == 0)
+	DRAWLINE
+	CALL EVENTTRAIN_MESSAGE_CLOTHES
+	PRINTFORMW ＞%CALLNAME%의 허벅지를 만져보았다。
+	PRINTFORMW ＞젊은 피부의 매끈매끈함을 참을 수가 없다……
+	PRINTFORMW 「내 허벅지도 매끈매끈함에는 자신이 있습니다」
+	PRINTFORMW 「그도 그럴게、그 언니의 여동생이니까요！」
+	PRINTFORMW ＞그렇다 쳐도 근육이 부족해서 말랑말랑하다。운동을 좀 더 해야 하지 않을까
+	PRINTFORMW 「만지게 해드리고 있는데、도대체 뭡니까 서머너는……」"
+	CFLAG:808 = 7001
+	CALL PRINT_AA_KIRITAN
+	CFLAG:201 = 4
+	RETURN 0
+;陥落
+ELSEIF CFLAG:201 < 5 && (TALENT:3 || TALENT:4 || TALENT:5)
+	DRAWLINE
+	CALL EVENTTRAIN_MESSAGE_CLOTHES
+	;연모
+	IF TALENT:3
+		PRINTFORMW 「아、기다려주세요」
+		PRINTFORMW 「괜찮으시다면、좀 쭈그리고 앉아 이쪽으로 가주시겠어요」
+		PRINTFORMW ＞？、도대체 뭐지
+		PRINTFORMW 「그럼……갑니다」
+		PRINTFORMW ＞%CALLNAME이% 이쪽으로 얼굴을 가까이 한다。이건…
+		PRINTFORMW 「……츄」
+		PRINTFORMW 「……이것이 제 마음입니다」
+	;음란
+	ELSEIF TALENT:4
+		PRINTFORMW 「에헤헤─」
+		PRINTFORMW ＞%CALLNAME은% 이쪽에 기대어 뺨을 문지르고 있다。
+		PRINTFORMW ＞……？
+		PRINTFORMW ＞%CALLNAME이% 어느새 이쪽의 옷을 벗기기 위해 달라붙어있다
+		PRINTFORMW ＞오히려 %CALLNAME% 쪽이 기모노를 거의 벗고 있는 상태이다
+		PRINTFORMW 「야한 건 기분 좋네요」
+		PRINTFORMW ＞그러면서 %CALLNAME은% 이쪽의 속옷을 완전히 벗겼다
+		PRINTFORMW 「자자、위에도 벗어요」
+		IF TALENT:MASTER:남자 && !TALENT:MASTER:오토코노코
+			PRINTFORMW 「에헤헤、서머너의 몸、튼튼하고 커다라네요」
+		ELSE
+			PRINTFORMW 「에헤헤、서머너의 몸、매끈매끈하고 부드럽네요」
+		ENDIF
+	;복종
+	ELSEIF TALENT:5
+	ENDIF
+	CFLAG:201 = 5
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;簡易助手口上（Y1を助手のキャラ番号に置換、X1をキャラ番号に変更する) CFLAG203
+;掛け合いをするキャラを増やす場合は、構文をコピー＆ペーストをして、CFLAGの数を204、205と増やす
+;-------------------------------------------------
+;助手の有無をチェック（いない場合は二回目以降へ飛ぶ）
+IF ASSI < 0 
+	CALL EVENTTRAIN_SECOND_K[[キャラ:키키모라]]_1
+;助手
+;ELSEIF NO:ASSI == Y1
+	;初めて
+;	IF CFLAG:203 == 0
+		;陥落済み＋陥落時初口上が発生済み
+;		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && CFLAG:201 >= 5
+;			PRINTFORMW 
+		;それ以外
+;		ELSE
+;			PRINTFORMW 
+;		ENDIF
+;		CFLAG:203 = 1
+	;二回目以降
+;	ELSEIF CFLAG:203 < 2 || FLAG:7 ==2
+		;陥落済み
+;		IF TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8
+;			PRINTFORMW 
+		;それ以外
+;		ELSE
+;			PRINTFORMW 
+;		ENDIF
+;		CFLAG:203 = 2
+;	ENDIF
+;口上のある助手が居ない場合は、通常の二回目以降の口上へ飛ぶ
+ELSE
+	CALL EVENTTRAIN_SECOND_K[[キャラ:키키모라]]_1
+ENDIF
+
+;-------------------------------------------------
+;調教開始時（2回目以降、X1をキャラ番号に変更する）
+;-------------------------------------------------
+@EVENTTRAIN_SECOND_K[[キャラ:키키모라]]_1
+	DRAWLINE
+	CALL EVENTTRAIN_MESSAGE_CLOTHES
+;反発刻印Lv3
+IF MARK:3 == 3 && (CFLAG:202 < 4 || FLAG:7 == 2)
+	PRINTFORMW 「그─러─니─까、싫다고 하잖아요」
+	PRINTFORMW 「이 변태、로리콘、쓰레기」
+	CFLAG:808 = 7001
+	CALL PRINT_AA_KIRITAN
+	CFLAG:202 = 4
+;屈服刻印Lv0
+ELSEIF MARK:2 == 0 && (CFLAG:202 < 1 || FLAG:7 == 2)
+	PRINTFORMW 「조교 따위는 싫어요、왜 그런 짓을 해야 하나요」
+	CFLAG:808 = 7001
+	CALL PRINT_AA_KIRITAN
+	CFLAG:202 = 1
+;屈服刻印Lv1
+ELSEIF MARK:2 == 1 && (CFLAG:202 < 2 || FLAG:7 == 2)
+	PRINTFORMW 「나만 일방적으로 조교된다니、역시 이상해요」
+	PRINTFORMW 「대가 주세요、대가」
+	PRINTFORMW 「최신 게임기와 소프트웨어 10편、그리고 동인지 100권 사주면 조금쯤은 보여줘도 괜찮아요」
+	CFLAG:202 = 2
+;屈服刻印Lv2
+ELSEIF MARK:2 == 2 && (CFLAG:202 < 3 || FLAG:7 == 2)
+	IF TALENT:MASTER:남자 && !TALENT:MASTER:오토코노코
+		PRINTFORMW 「애당초 서머너는 색기가 부족하거든요」
+		PRINTFORMW 「적어도 TS해서 매끈매끈하고 탱탱한 허벅지를 제가 쓰게 해주세요」
+		PRINTFORMW ＞%CALLNAME은% 허벅지를 좋아하는 것 같다、한동안 서로의 성버릇 이야기로 분위기가 고조되었다。
+	ELSE
+		PRINTFORMW 「서머너는 꽤 좋은 허벅지를 가지고 있네요」
+		PRINTFORMW 「감지언니 못지않게 탱탱한 촉、매끈한 피부……」
+		PRINTFORMW 「으헤헤헤」
+		PRINTFORMW ＞%CALLNAME은% %CALLNAME:MASTER%의 허벅지에 문지르면서、꽤나 아재 냄새나는 이야기를 계속했다……
+	ENDIF
+	CFLAG:202 = 3
+;屈服刻印Lv3＋陥落素質無し
+ELSEIF MARK:2 == 3 && (TALENT:3 == 0 && TALENT:4 == 0 && TALENT:5 == 0 && TALENT:6 == 0 && TALENT:7 == 0 && TALENT:8 == 0) && (CFLAG:202 < 4 || FLAG:7 == 2)
+	PRINTFORMW ＞%CALLNAME%의 허벅지를 만져보았다。
+	PRINTFORMW ＞젊은 피부의 매끈매끈함을 참을 수가 없다……
+	PRINTFORMW 「내 허벅지도 매끈매끈함에는 자신이 있습니다」
+	PRINTFORMW 「그도 그럴게、그 언니의 여동생이니까요！」
+	PRINTFORMW ＞그렇다 쳐도 근육이 부족해서 말랑말랑하다。운동을 좀 더 해야 하지 않을까
+	PRINTFORMW 「만지게 해드리고 있는데、도대체 뭡니까 서머너는……」
+	CFLAG:202 = 4
+;陥落済み
+ELSEIF CFLAG:202 < 5 || FLAG:7 == 2
+	;妻
+	IF RAND:2 == 0 && TALENT:170
+		PRINTFORM 「에헤헤헤헤、서머너의、귀엽고 사랑스러운 어린 신부에요─
+		CALL HEARTMARK_K[[キャラ:키키모라]]
+		PRINTW 」」
+		CFLAG:808 = 7002
+	ELSE
+		SELECTCASE RAND:2
+			CASE 0
+				PRINTFORMW 「오늘은 무엇을 할까요？」
+				CFLAG:808 = 7002
+			CASE 1
+				CALL SKINSHIP_K[[キャラ:키키모라]]
+		ENDSELECT
+	ENDIF
+	CALL PRINT_AA_KIRITAN
+	CFLAG:202 = 5
+ENDIF
+RETURN 0
+
+;-------------------------------------------------
+;EVENTEND関係（X1をキャラ番号に置換）
+;調教終了時のセリフ
+;-------------------------------------------------
+@EVENTEND_K[[キャラ:키키모라]]_1
+;SIF FLAG:7 <= 0
+;	RETURN 0
+;SIF TCVAR:0 == 1
+;	RETURN 0
+;SIF ABL:회화타입 != 303
+;	RETURN 0
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL EVENTEND_PY1_K[[キャラ:키키모라]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	SIF NO:ASSI == Y1
+;	CALL EVENTEND_PY1_K[[キャラ:키키모라]]
+;	RETURN 0
+;ENDIF
+;--------------------------------------------------
+;調教終了時のセリフ
+;--------------------------------------------------
+DRAWLINE
+;反発刻印Lv3
+IF MARK:3 == 3 && (CFLAG:217 < 1 || FLAG:7 == 2)
+	IF RAND:2 == 0
+		PRINTFORMW （버텨라 나 자신！이건 계약의……계약 때문이야……）
+	ELSE
+		PRINTFORMW 「우에에……」
+		PRINTFORMW 「기분 나쁘니까 이 이상、부르지 말아주세요。」
+	ENDIF
+	CFLAG:217 = 1
+;屈服刻印Lv1以下
+ELSEIF MARK:2 <= 1 && (CFLAG:219 < 1 || FLAG:7 == 2)
+	PRINTFORMW （아무리 서머너라도、이건 좀……）
+	CFLAG:219 = 1
+;屈服刻印Lv2
+ELSEIF MARK:2 == 2
+	PRINTFORMW 「……슬슬 게임하러 가볼게요」
+	PRINTFORMW 「그럼、다음에 또」
+	CFLAG:219 = 2
+;屈服刻印Lv3＋陥落素質無し
+ELSEIF MARK:2 == 3 && (TALENT:3 == 0 && TALENT:4 == 0 && TALENT:5 == 0 && TALENT:6 == 0 && TALENT:7 == 0 && TALENT:8 == 0)
+	PRINTFORMW 「다음에는 몇 시에 불러주시나요？」
+	CFLAG:219 = 3
+;陥落済み＋体力500未満
+ELSEIF BASE:0 < 500 && (CFLAG:218 < 1 || FLAG:7 == 2)
+	SELECTCASE RAND:3
+		CASE 0
+			PRINTFORMW ＞%CALLNAME%의 배를 톡톡 하고 건드려본다
+			PRINTFORMW 「에헤헤……」
+			PRINTFORMW 「서머너는 몇 명이나、아이를 원하시나요？」
+		CASE 1
+			PRINTFORMW 「하아……하아……」
+		CASE 2
+			PRINTFORMW 「후우……휴식합시다」
+	ENDSELECT
+	CFLAG:218 = 1
+;陥落済み
+ELSEIF CFLAG:219 < 4 || FLAG:7 == 2
+	SELECTCASE RAND:4
+		CASE 0
+			PRINTFORMW ＞%CALLNAME%의 배를 톡톡 하고 건드려본다
+			PRINTFORMW 「에헤헤……」
+			PRINTFORMW 「서머너는 몇 명이나、아이를 원하시나요？」
+		CASE 1
+			PRINTFORMW 「～♪」
+			PRINTFORMW ＞%CALLNAME은% 기분이 좋아 보인다
+		CASE 2
+			PRINTFORMW 「에헤헤…」
+			PRINTFORMW ＞%CALLNAME은% 실실 웃는 표정을 짓고 있다
+		CASE 3
+			PRINTFORMW 「엣……벌써 끝인가요？」
+			PRINTFORMW 「좀 더 잔뜩 해봐요─」
+			PRINTFORMW ＞%CALLNAME은% 이쪽에게 응석부리며、노골적으로 유혹한다
+	ENDSELECT
+	CFLAG:219 = 4
+ENDIF
+RETURN 0
+
+;--------------------------------------------------
+;@KOJO_MESSAGE_COM関係（X1をキャラ番号に置換）
+;コマンド実行時に出力されます
+;--------------------------------------------------
+@KOJO_MESSAGE_COM_K[[キャラ:키키모라]]_1
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL TRAIN_MESSAGE
+	RETURN 0
+ENDIF
+
+;--------------------------------------------------
+;自動喘ぎ声呼び出し
+;尚、この呼び出し用構文はコマンド毎の口上が揃ってきたら削除します
+;口上がこれを前提としたものになった場合はその限りではありません。
+;--------------------------------------------------
+;SIF FLAG:自動喘ぎ声
+;	CALL TRAINVOICE
+
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_COM_PY1_K[[キャラ:키키모라]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_COM_PY1_K[[キャラ:키키모라]]
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;コマンド実行時のセリフ CFLAG 300～500
+;-------------------------------------------------
+;=================================================
+;愛撫系コマンド
+;=================================================
+;-------------------------------------------------
+;0,愛撫、3,指挿入れ、14,クリ愛撫、15,엉덩이애무
+;-------------------------------------------------
+SELECTCASE SELECTCOM
+	CASE 0, 3, 14, 15
+		CALL TRAIN_MESSAGE
+		;陥落済み、愛撫、1/2
+		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && SELECTCOM == 0 && RAND:2 == 0
+			PRINTFORMW 「에헤헤、서머너의 손、따뜻해……」
+		;(B感覚が5&&快B1000以上) or 快B5000以上
+		ELSEIF (ABL:6 >= 5 && PALAM:3 >= 1000) || PALAM:3 >= 5000
+			CALL BODYTOUCH_K[[キャラ:키키모라]]_2
+		ELSE
+			CALL BODYTOUCH_K[[キャラ:키키모라]]
+		ENDIF
+		IF SELECTCOM == 0
+			CFLAG:808 = 61
+		ELSEIF SELECTCOM == 3
+			CFLAG:808 = 34
+		ELSEIF SELECTCOM == 14
+			CFLAG:808 = 142
+		ELSEIF SELECTCOM == 15
+			CFLAG:808 = 150
+		ENDIF
+		CALL PRINT_AA_KIRITAN
+;-------------------------------------------------
+;1,커닐링구스
+;-------------------------------------------------
+	CASE 1
+	CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:301 == 0
+			PRINTFORMW 「그、그런 곳 더러워요…」
+			CFLAG:808 = 7000
+			CALL PRINT_AA_KIRITAN
+			CFLAG:301 = 1
+		;二回目以降
+		ELSE
+			;C感覚が5以上 or 快C5000以上
+			IF (ABL:Ｃ감각 >= 5 && PALAM:쾌Ｃ >= 1000) || PALAM:쾌Ｃ >= 5000
+				SELECTCASE RAND:3
+					CASE 0
+						PRINTFORM 「아앗、히야아아아아앗
+						CALL HEARTMARK_K[[キャラ:키키모라]]
+						PRINTW 」
+						PRINTFORMW ＞%CALLNAME%의 사타구니에서 투명한 즙이 끝없이 흘러나온다
+					CASE 1
+						PRINTFORMW 「후와아앗、거기、안됏」
+					CASE 2
+						PRINTFORMW 「응응！～～～～～～읏！」
+						PRINTFORMW ＞%CALLNAME은% 사타구니에서 오는 쾌감의 물결을 받아들이지 못하는 것 같다
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:2
+					CASE 0
+						PRINTFORMW 「그、그런 곳 더러워요…」
+					CASE 1
+						PRINTFORMW 「…그렇게 핥지 말아주세요…」
+				ENDSELECT
+			ENDIF
+			CFLAG:808 = 10
+			CALL PRINT_AA_KIRITAN
+		ENDIF
+
+;-------------------------------------------------
+;2,펠라한다
+;-------------------------------------------------
+	CASE 2
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;4,애널핥기
+;-------------------------------------------------
+	CASE 4
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:304 == 0
+			PRINTFORMW 「그、그런 곳까지 핥는건가요！？」
+			CFLAG:808 = 7000
+			CALL PRINT_AA_KIRITAN
+			CFLAG:304 = 1
+		;二回目以降
+		ELSE
+			;Ａ感覚が5以上 or 快A5000以上
+			IF (ABL:Ａ감각 >= 5 && PALAM:쾌Ａ >= 1000) || PALAM:쾌Ａ >= 5000
+				SELECTCASE RAND:3
+					CASE 0
+						PRINTFORM 「아앗、히야아아아아앗
+						CALL HEARTMARK_K[[キャラ:키키모라]]
+						PRINTW 」
+						PRINTFORMW ＞%CALLNAME%의 애널에서 투명한 즙이 끝없이 흘러나온다
+					CASE 1
+						PRINTFORMW 「후와아앗、거기、안됏」
+					CASE 2
+						PRINTFORMW 「응응！～～～～～～읏！」
+						PRINTFORMW ＞%CALLNAME은% 애널에서 오는 쾌감의 물결을 받아들이지 못하는 것 같다
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:2
+					CASE 0
+						PRINTFORMW 「그、그런 곳 더러워요…」
+					CASE 1
+						PRINTFORMW 「…그렇게 핥지 말아주세요…」
+				ENDSELECT
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;5,애널애무
+;-------------------------------------------------
+	CASE 5
+		CALL TRAIN_MESSAGE
+		IF (ABL:6 >= 5 && PALAM:3 >= 1000) || PALAM:3 >= 5000
+			CALL BODYTOUCH_K[[キャラ:키키모라]]_2
+			CFLAG:808 = 50
+		ELSE
+			PRINTFORMW 「어、엉덩이 구멍…빙글빙글 거리지…마…앗！」
+			CFLAG:808 = 51
+		ENDIF
+		CALL PRINT_AA_KIRITAN
+;-------------------------------------------------
+;6,胸揉み、7,乳首責め、8,가슴애무
+;-------------------------------------------------
+	CASE 6, 7, 8
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:306 == 0 && CFLAG:307 == 0 && CFLAG:307 == 0
+			PRINTFORML 「……내 가슴、만져도 아무것도 아니라고 생각하는데요」
+			CFLAG:808 = 63
+			CALL PRINT_AA_KIRITAN
+			CFLAG:306 = 1
+			CFLAG:307 = 1
+			CFLAG:308 = 1
+		;二回目以降
+		ELSE
+			;B感覚が5以上 or 快B5000以上
+			IF (ABL:6 >= 5 && PALAM:3 >= 1000) || PALAM:3 >= 5000
+				PRINT 「이것、이상햇
+				CALL HEARTMARK_K[[キャラ:키키모라]]
+				PRINT 、젖꼭지、대단햇
+				CALL HEARTMARK_K[[キャラ:키키모라]]
+				PRINTW 」
+			ELSE
+				SELECTCASE RAND:3 == 0
+					CASE 0
+						PRINTFORMW 「으─음、확실히 조금씩 느끼게 된 것 같기도…아닌 것 같기도…」
+					CASE 1
+						PRINTFORMW 「……정말 가슴을 만져서 느끼게 될까요？」
+						PRINTFORMW 「환상 아닌가요？」
+					CASE 2
+						PRINTFORML 「……내 가슴、만져도 아무것도 아니라고 생각하는데요」
+				ENDSELECT
+			ENDIF
+			IF SELECTCOM == 7
+				CFLAG:808 = 72
+			ELSEIF SELECTCOM == 6
+				CFLAG:808 = 63
+			ENDIF
+			CALL PRINT_AA_KIRITAN
+		ENDIF
+		
+;-------------------------------------------------
+;9,조개젖히기
+;-------------------------------------------------
+	CASE 9
+		CALL TRAIN_MESSAGE
+		PRINTW 「그、그렇게 넓히면…」
+		IF TCVAR:TARGET:101 > 0
+			CFLAG:808 = 91
+			CALL PRINT_AA_KIRITAN
+		ENDIF
+;-------------------------------------------------
+;10,가슴자위
+;-------------------------------------------------
+	CASE 10
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:310 == 0
+			PRINTFORMW 「스스로……인가요？알겠습니다、해보겠습니다……」
+			CFLAG:808 = 100
+			CALL PRINT_AA_KIRITAN
+			CFLAG:310 = 1
+		;二回目以降
+		ELSE
+			;陥落済み
+			IF TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8
+				;B感覚が5以上 or 快B5000以上
+				IF (ABL:6 >= 5 && PALAM:3 >= 1000) || PALAM:3 >= 5000
+					IF RAND:2 == 0
+						PRINTFORMW 「에헤헷、서머너를 위해서、자안─뜩 스스로 연습했거든요」
+						PRINTFORMW 「서머너─、제 야한 모습、자안─뜩 봐주세요」
+						PRINTFORMW 「응……응흣……기분좋아、응앗」
+					ELSE
+						PRINTFORMW 「아서머너에게 여러가지를 가르침 받아、혼자서도 기분이 좋아질 수 있게 되었습니다」
+						PRINTFORMW 「아하하핫、이렇게、찌릿찌릿해서、붕─하고 뜨거든요」
+						PRINTFORMW 「요이것、응읏、나쁜 버릇이 되버렸네요」
+					ENDIF
+				ELSE
+					PRINTFORMW 「서머너─、제 야한 모습、자안─뜩 봐주세요」
+					PRINTFORMW ＞%조사처리(CALLNAME,"는")% 자위하는 모습이 보여져서 흥분하고 있는 것 같다。격렬하게 자기 손으로 몸을 문지르고 있다
+				ENDIF
+			ELSE
+				PRINTFORMW 「잉…으으…크으…우으…」
+			ENDIF
+			CFLAG:808 = 100
+			CALL PRINT_AA_KIRITAN
+		ENDIF
+
+;-------------------------------------------------
+;11,자위
+;-------------------------------------------------
+	CASE 11
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:311 == 0
+			PRINTFORML 「스스로……인가요？알겠습니다、해보겠습니다……」
+			CFLAG:311 = 1
+		;二回目以降
+		ELSE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8)
+				;B感覚が5以上 or 快B5000以上
+				IF (ABL:6 >= 5 && PALAM:3 >= 1000) || PALAM:3 >= 5000
+					IF RAND:2 == 0
+						PRINTFORMW 「에헤헷、서머너를 위해서、자안─뜩 스스로 연습했거든요」
+						PRINTFORMW 「서머너─、제 야한 모습、자안─뜩 봐주세요」
+						PRINTFORMW 「응……응흣……기분좋아、응앗」
+					ELSE
+						PRINTFORMW 「아서머너에게 여러가지를 가르침 받아、혼자서도 기분이 좋아질 수 있게 되었습니다」
+						PRINTFORMW 「아하하핫、이렇게、찌릿찌릿해서、붕─하고 뜨거든요」
+						PRINTFORMW 「요이것、응읏、나쁜 버릇이 되버렸네요」
+					ENDIF
+				ELSE
+					IF RAND:2 == 0
+						PRINTFORMW 「서머너─、제 야한 모습、자안─뜩 봐주세요」
+						PRINTFORMW ＞%조사처리(CALLNAME,"는")% 자위하는 모습이 보여져서 흥분하고 있는 것 같다。격렬하게 자기 손으로 몸을 문지르고 있다
+					ELSE
+						PRINTFORMW 「이렇게、책상 모서리에……응읏……미는걸로도 좋은 느낌으로 되네요」
+					ENDIF
+				ENDIF
+			ELSE
+				PRINTFORMW 「잉…으으…크으…우으…」
+			ENDIF
+		ENDIF
+		CFLAG:808 = 111
+		CALL PRINT_AA_KIRITAN
+		
+
+
+;=================================================
+;コミュニケーション系コマンド
+;=================================================
+;-------------------------------------------------
+;20,키스한다
+;-------------------------------------------------
+	CASE 20
+		CALL TRAIN_MESSAGE
+		;陥落済み
+		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8)
+			SELECTCASE RAND:3
+				CASE 0
+					PRINTFORMW 「츄우우…츄우웃…푸하아…」
+				CASE 1
+					PRINTFORMW 「쥬르르…츄우웃…푸하아…」
+				CASE 2
+					PRINTFORMW 「응……할짝……응큿」
+			ENDSELECT
+		ELSE
+		
+		ENDIF
+
+;-------------------------------------------------
+;21,아무것도안한다
+;-------------------------------------------------
+	CASE 21
+		CALL TRAIN_MESSAGE
+		;AA表示の有無を決定
+		IF CFLAG:809 == 0
+			PRINTFORML AA표시 여부를 변경하시겠습니까？(현재：표시있음）
+		ELSE
+			PRINTFORML AA표시 여부를 변경하시겠습니까？(현재：표시없음）
+		ENDIF
+		PRINTFORML  [1] “AA표시 없음”
+		PRINTFORML  [2] “AA표시 있음”
+		$INPUT_LOOP_K[[キャラ:키키모라]]_PRINT_AA
+		INPUT
+		IF RESULT == 2
+			PRINTFORMW AA를 표시하게 되었습니다。
+			CFLAG:809 = 0
+		ELSEIF RESULT == 1
+			PRINTFORMW AA를 표시하지 않습니다。
+			CFLAG:809 = 1
+		ELSE
+			GOTO INPUT_LOOP_K[[キャラ:키키모라]]_PRINT_AA
+		ENDIF
+;-------------------------------------------------
+;22,회화　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 22
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:314 == 0
+			PRINTFORMW 「다시 소개하면、%조사처리(CALLNAME,"라")%고 합니다」
+			PRINTFORMW 「좋아하는 것은、비디오 게임、만회、그리고……언니입니다」
+			PRINTFORMW 전형적인 요즘 애들 취미인 것 같다。언니를 그리워하는 것도 좋은 일이다
+			CFLAG:314 = 1
+		;二回目以降
+		ELSEIF CFLAG:314 < 2 || FLAG:7 == 2
+			SELECTCASE RAND:3
+				CASE 0
+					PRINTFORMW 「%CSTR:1%～、게임 사주세요～」
+					PRINTFORMW ＞%조사처리(CALLNAME,"가")% 아첨하는 목소리로、게다가 몸을 들이밀면서 부탁해온다
+					PRINTFORMW ＞크、이런 미인계에 질 수는……
+					PRINTFORMW 「사주세요오～」
+				CASE 1
+					PRINTFORMW 「%CSTR:1%、새 게임 사주세요」
+					PRINTFORMW ＞요전에 산 지 얼마 안 됐잖아……
+					PRINTFORMW 「사줘─사줘─」
+					PRINTFORMW ＞……%CALLNAME%도 이런 부분은 나이에 알맞다
+				CASE 2
+					PRINTFORMW 「언니의 특징이요？」
+					PRINTFORMW 「글쎄요、짙은 녹색 장발에、완두콩 모양 머리띠를 달고 있어요」
+					PRINTFORMW 「뭐니뭐니해도、기장이 짧은 일본옷을 입은 것이 특징이죠」
+					PRINTFORMW ＞과연、그것은 좋은 표지가 될 것 같다
+					PRINTFORMW 「그 일본옷은 제가 디자인하고、업체가 만들어 준 특주품이죠」
+					PRINTFORMW ＞그런건가、키리탄은 다재다능하군
+					PRINTFORMW 「에헤헤……그렇지 않아요」
+			ENDSELECT
+			CFLAG:314 = 2
+		ENDIF
+
+;-------------------------------------------------
+;23,프레젠트　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 23
+		CALL TRAIN_MESSAGE
+		PRINTFORMW 「에헤헤、저、기뻐요」
+;-------------------------------------------------
+;24,스킨쉽　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 24
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:316 == 0
+			PRINTFORMW 「햣！？」
+			PRINTFORMW 「갑자기 뭔가요……」
+			CFLAG:316 = 1
+		;二回目以降
+		ELSEIF CFLAG:316 < 2 || FLAG:7 == 2
+			CALL SKINSHIP_K[[キャラ:키키모라]]
+			CFLAG:316 = 2
+		ENDIF
+
+;-------------------------------------------------
+;25,느긋하게있는다　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 25
+		PRINTFORMW 「%CSTR:1%、괜찮으시다면 같이 게임 하실래요？」
+		
+;-------------------------------------------------
+;26,가사　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 26
+		CALL TRAIN_MESSAGE
+		IF ABL:요리기능 > 3
+			PRINTFORMW ＞%CALLNAME%의 요리는 매우 맛있다
+			PRINTFORMW 「에헤헷、감사합니닷」
+		ELSE
+			PRINTFORMW 「집안일이요？」
+			PRINTFORMW 「좋아요、같이해요」
+		ENDIF
+
+;-------------------------------------------------
+;27,노래연습　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 27
+		CALL TRAIN_MESSAGE
+		IF RAND:2 && ABL:가창기능 > 3
+			PRINTFORMW 「～♪」
+			PRINTFORMW 「후후훗、기계학습을 터득한 저에게 부를 수 없는 노래는 없어요」
+		ELSE
+			PRINTFORMW 「～♪」
+		ENDIF
+;-------------------------------------------------
+;28,罵倒、29,비디오감상　陥落済みのみ
+;-------------------------------------------------
+	CASE 28
+		CALL TRAIN_MESSAGE
+
+		
+;=================================================
+;道具使用コマンド
+;=================================================
+;40,ローター、41,Ｅマッサージャ、42,클리캡
+;-------------------------------------------------
+	CASE 40, 41
+		CALL TRAIN_MESSAGE
+		IF SELECTCOM == 40
+			CFLAG:808 = 402
+		ELSEIF SELECTCOM == 41
+			CFLAG:808 = 410
+		ENDIF
+		CALL PRINT_AA_KIRITAN
+;-------------------------------------------------
+;43,오나홀
+;-------------------------------------------------
+	CASE 43
+	IF TEQUIP:12 == 1
+		CALL TRAIN_MESSAGE
+	ELSE
+		IF CFLAG:325 == 1 || FLAG:7 == 2
+			CALL TRAIN_MESSAGE
+		ENDIF
+	ENDIF
+;-------------------------------------------------
+;44,バイブ、45,애널바이브
+;-------------------------------------------------
+	CASE 44, 45
+		IF TEQUIP:13 == 1 || TEQUIP:14 == 1
+			CALL TRAIN_MESSAGE
+			IF SELECTCOM == 44
+				CFLAG:808 = 441
+			ELSEIF SELECTCOM == 45
+				CFLAG:808 = 452
+			ENDIF
+			CALL PRINT_AA_KIRITAN
+		ELSE
+		
+		ENDIF
+;-------------------------------------------------
+;46,애널비즈
+;-------------------------------------------------
+	CASE 46
+		IF TEQUIP:15 == 1
+			CALL TRAIN_MESSAGE
+			CFLAG:808 = 462
+			CALL PRINT_AA_KIRITAN
+		ELSE
+			IF CFLAG:328 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+				CFLAG:808 = 463
+				CALL PRINT_AA_KIRITAN
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;47,유두캡
+;-------------------------------------------------
+	CASE 47
+		IF TEQUIP:16 == 1
+			CALL TRAIN_MESSAGE
+			SIF (ABL:Ｂ감각 >= 5 && PALAM:쾌Ｂ >= 1000) || PALAM:쾌Ｂ >= 5000
+				PRINTW 「기다려주세요！？그런、젖꼭지만…읏」
+		ELSE
+		IF CFLAG:329 == 1 || FLAG:7 == 2
+			CALL TRAIN_MESSAGE
+		ENDIF
+	ENDIF
+;-------------------------------------------------
+;48,유두로터
+;-------------------------------------------------
+	CASE 48
+		CALL TRAIN_MESSAGE
+		;B感覚が5以上 or 快B5000以上
+		IF (ABL:Ｂ감각 >= 5 && PALAM:쾌Ｂ >= 1000) || PALAM:쾌Ｂ >= 5000
+			PRINT 「앗 이거 안됏…
+			CALL HEARTMARK_K[[キャラ:키키모라]]
+			PRINTW 」
+			PRINT 「끝 쪽이、움찔움찔거려서…
+			CALL HEARTMARK_K[[キャラ:키키모라]]
+			PRINTW 」
+		ELSE
+			PRINTFORMW 「왜 그렇게、젖꼭지만…읏」
+		ENDIF
+;-------------------------------------------------
+;49,착유기
+;-------------------------------------------------
+	CASE 49
+		IF TEQUIP:17 == 1
+		ELSE
+			IF CFLAG:331 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+				PRINTFORMW 
+			ENDIF
+		ENDIF
+
+;=================================================
+;セックス系コマンド
+;=================================================
+;-------------------------------------------------
+;60,正常位、61,後背位、62,正常位アナル、63,後背位アナル、67,기승위애널
+;-------------------------------------------------
+	CASE 60, 61, 62, 63, 67
+		CALL TRAIN_MESSAGE
+		;V感覚が5以上 or 快V5000以上
+		IF (ABL:Ｖ감각 >= 5 && PALAM:쾌Ｖ >= 1000) || PALAM:쾌Ｖ >= 5000
+			CALL SEX_K[[キャラ:키키모라]]_2
+		ELSE
+			CALL SEX_K[[キャラ:키키모라]]
+		ENDIF
+		IF SELECTCOM == 61
+			CFLAG:808 = 611
+			CALL PRINT_AA_KIRITAN
+		ELSEIF SELECTCOM == 62
+			CFLAG:808 = 623
+			CALL PRINT_AA_KIRITAN
+		ELSEIF SELECTCOM == 63
+			CFLAG:808 = 631
+			CALL PRINT_AA_KIRITAN
+		ENDIF
+;-------------------------------------------------
+;65,젖성교
+;-------------------------------------------------
+	CASE 65
+		CALL TRAIN_MESSAGE
+	
+;-------------------------------------------------
+;66,騎乗位、64,역강간
+;-------------------------------------------------
+	CASE 66, 64
+		CALL TRAIN_MESSAGE
+		IF (ABL:Ｖ감각 >= 5 && PALAM:쾌Ｖ >= 1000) || PALAM:쾌Ｖ >= 5000
+			PRINTFORMW 「자─자、내버려라、초５ 로리 보지에 내버려라」
+			PRINTFORMW ＞어디서 배웠는지、%조사처리(CALLNAME,"는")% 외설스러운 말을 늘어놓으며 허리 움직임을 계속하고 있다
+			IF SELECTCOM == 66
+			CFLAG:808 = 740
+			CALL PRINT_AA_KIRITAN
+		ENDIF
+		ELSE
+			CALL SEX_K[[キャラ:키키모라]]
+		ENDIF
+
+;-------------------------------------------------
+;68,対面座位、69,背面座位、70,対面座位アナル、71,배면좌위애널
+;-------------------------------------------------
+	CASE 68, 69, 70, 71
+		CALL TRAIN_MESSAGE
+		;陥落済み
+		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && RAND:2 == 0
+			PRINTFORMW 「서머너─…좀 더 세게…、세게…꾸욱 해주세요」
+		ELSE
+			;V感覚が5以上 or 快V5000以上
+			IF (ABL:Ｖ감각 >= 5 && PALAM:쾌Ｖ >= 1000) || PALAM:쾌Ｖ >= 5000
+				CALL SEX_K[[キャラ:키키모라]]_2
+				IF SELECTCOM == 69
+					FLAG:808 = 692
+					CALL PRINT_AA_KIRITAN
+				ENDIF
+			ELSE
+				CALL SEX_K[[キャラ:키키모라]]
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;72,속옷비켜삽입
+;-------------------------------------------------
+	CASE 72
+		CALL TRAIN_MESSAGE
+		
+;-------------------------------------------------
+;73,속옷비켜삽입애널
+;-------------------------------------------------
+	CASE 73
+		CALL TRAIN_MESSAGE
+		
+;=================================================
+;奉仕系コマンド
+;=================================================
+;-------------------------------------------------
+;80,수음
+;-------------------------------------------------
+	CASE 80
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:344 == 0
+			PRINTFORMW 「와、커지고있어……」
+			PRINTFORMW 「이걸 손으로 잡는 거죠？」
+			PRINTFORMW 「우와、자지라는 건 이렇게나 딱딱해지는군요」
+			PRINTFORMW ＞만져보기는커녕 본 적도 거의 없을 것이다。페니스를 뚫어지게 쳐다보며、머뭇거리면서 손으로 훑기 시작했다。
+			CFLAG:344 = 1
+		;二回目以降
+		ELSE
+			;奉仕精神5以上
+			IF ABL:7 >= 5
+				SELECTCASE RAND:2
+					CASE 0
+						PRINTFORMW 「서머너는 말이죠、자지를 쥐면 시들어버려서」
+						PRINTFORMW 「왠지、귀엽네요♪」
+						PRINTFORMW 「○등학교 5학년한테 이런 꼴이라니、부끄럽지 않나요～」
+					CASE 1
+						PRINTFORMW 「서머너─、이런 거 좋아하잖아요？」
+				ENDSELECT
+				CFLAG:808 = 801
+				CALL PRINT_AA_KIRITAN
+			ELSE
+				PRINTFORMW 「손으로 만지나요？우으……」
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;81,펠라치오
+;-------------------------------------------------
+	CASE 81
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:345 == 0
+			PRINTFORMW 「에、입으로 하는건가요！？　싫은데…」
+			PRINTFORMW 재차 명령하자、%조사처리(CALLNAME,"는")% 마지못해 페니스를 입에 넣었다。
+			PRINTFORMW 「우와、이상한 맛…」
+			CFLAG:345 = 1
+		;二回目以降
+		ELSE
+			;奉仕精神5以上
+			IF ABL:7 >= 5
+				CALL SERVE_F_K[[キャラ:키키모라]]
+			ELSE
+				PRINTFORMW 「날름날름……」
+				PRINTFORMW （움찔거리면서 움직였다……기분 좋은걸까）
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;82,파이즈리
+;-------------------------------------------------
+	CASE 82
+		CALL TRAIN_MESSAGE
+		;奉仕精神5以上
+		IF ABL:7 >= 5
+			CALL SERVE_P_K[[キャラ:키키모라]]
+			CFLAG:808 = 650
+			CALL PRINT_AA_KIRITAN
+		ELSE
+		ENDIF
+;-------------------------------------------------
+;83,스마타
+;-------------------------------------------------
+	CASE 83
+		CALL TRAIN_MESSAGE
+		;奉仕精神5以上
+		IF ABL:7 >= 5
+			SELECTCASE RAND:2
+				CASE 0
+					PRINTW 「제 허벅지、기분 좋으신가요？」
+					PRINTW 「저도……응……사타구니에 쓸려서 느낌이 좋네요」
+				CASE 1
+					PRINTW 「자〇랑 민감한 곳을 밀착시키고…」
+					PRINTW 「맨 밑부터 끝까지입니～다♪슥～슥♪」
+			ENDSELECT
+			CFLAG:808 = 830
+			CALL PRINT_AA_KIRITAN
+		ELSE
+			PRINTW 「그렇게나 제 허벅지、기분 좋으신가요」
+		ENDIF
+;-------------------------------------------------
+;84,거품춤
+;-------------------------------------------------
+	CASE 84
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:348 == 0
+			PRINTFORMW 
+			CFLAG:348 = 1
+		;二回目以降
+		ELSE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:348 < 4 || FLAG:7 == 2)
+				PRINTFORMW 「%CSTR:1%、등 씻을게요」
+			;それ以外
+			ELSE
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;85,풋잡
+;-------------------------------------------------
+	CASE 85
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;86,다리핥기강제
+;-------------------------------------------------
+	CASE 86
+		CALL TRAIN_MESSAGE
+		
+;-------------------------------------------------
+;87,세로파이즈리
+;-------------------------------------------------
+	CASE 87
+		CALL TRAIN_MESSAGE
+		
+;-------------------------------------------------
+;88,파이즈리펠라
+;-------------------------------------------------
+	CASE 88
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;89,모유마시기　陥落済みのみ
+;-------------------------------------------------
+	CASE 89
+		CALL TRAIN_MESSAGE
+
+;=================================================
+;調教者奉仕系コマンド
+;=================================================
+;-------------------------------------------------
+;수음한다
+;-------------------------------------------------
+	CASE 90
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;파이즈리한다
+;-------------------------------------------------
+	CASE 91
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;정상위시킨다
+;-------------------------------------------------
+	CASE 92
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;후배위시킨다
+;-------------------------------------------------
+	CASE 93
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;94:騎乗位する、95:アナル正常位させる、96:アナル後背位させる、97アナル騎乗位する
+;-------------------------------------------------
+	CASE 94,  95, 96, 97
+		CALL TRAIN_MESSAGE
+
+;=================================================
+;SM系コマンド
+;=================================================
+;-------------------------------------------------
+;100,스팽킹
+;-------------------------------------------------
+	CASE 100
+		CALL TRAIN_MESSAGE
+		CFLAG:808 = 1001
+		CALL PRINT_AA_KIRITAN
+;-------------------------------------------------
+;101,젖스팽킹
+;-------------------------------------------------
+	CASE 101
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;102,채찍
+;-------------------------------------------------
+	CASE 102
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;103,양초
+;-------------------------------------------------
+	CASE 103
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;104,바늘
+;-------------------------------------------------
+	CASE 104
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;105,아이마스크
+;-------------------------------------------------
+	CASE 105
+		IF TEQUIP:18 == 1
+			CALL TRAIN_MESSAGE
+		ELSEIF SELECTCOM == 105
+			IF CFLAG:359 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;106,밧줄
+;-------------------------------------------------
+	CASE 106
+		IF TEQUIP:19 == 1
+			CALL TRAIN_MESSAGE
+		ELSE
+			IF CFLAG:360 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;107,볼재갈
+;-------------------------------------------------
+	CASE 107
+		IF TEQUIP:20
+			CALL TRAIN_MESSAGE
+		ELSE
+			IF CFLAG:361 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+			ENDIF
+		ENDIF
+
+;=================================================
+;助手によるコマンド、及びレズプレイ
+;=================================================
+;-------------------------------------------------
+;120,クンニ強制、121,貝あわせ、122,助手を犯させる、123,풋잡한다
+;-------------------------------------------------
+	CASE 120, 121, 122, 123, 124
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+
+;-------------------------------------------------
+;124,더블펠라
+;-------------------------------------------------
+	CASE 124
+		CALL TRAIN_MESSAGE
+		CALL SERVE_F_K[[キャラ:키키모라]]
+		CFLAG:808 = 1240
+		CALL PRINT_AA_KIRITAN
+;-------------------------------------------------
+;125,더블파이즈리
+;-------------------------------------------------
+	CASE 125
+		CALL TRAIN_MESSAGE
+		CALL SERVE_P_K[[キャラ:키키모라]]
+;-------------------------------------------------
+;126,가슴맞대기
+;-------------------------------------------------
+	CASE 126
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;127,자위과시
+;-------------------------------------------------
+	CASE 127
+		CALL TRAIN_MESSAGE
+;=================================================
+;ハードな調教コマンド
+;=================================================
+;-------------------------------------------------
+;140,이라마치오
+;-------------------------------------------------
+	CASE 140
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:369 == 0
+			PRINTFORMW 「므긋！、～～～～～～～～！！！」
+			PRINTFORMW ＞목구멍까지 힘껏 꽂자、%조사처리(CALLNAME,"는")% 괴로운 듯이 몸부림치고 있다
+			CFLAG:369 = 1
+		;二回目以降
+		ELSE
+			;奉仕精神5以上
+			IF ABL:7 >= 5
+				PRINTFORMW 「읏！응응～～～～～～～～！！！」
+				PRINTFORMW ＞목구멍까지 힘껏 꽂자、%조사처리(CALLNAME,"는")% 괴로운 목소리를 냈지만
+				PRINTFORMW ＞곧바로 부드럽게 전후 운동을 하기 시작했다
+			ELSE
+				PRINTFORMW 「읏！응응～～～～～～～～！！！」
+				PRINTFORMW ＞목구멍까지 힘껏 꽂자、%조사처리(CALLNAME,"는")% 괴로운 듯이 몸부림치고 있다
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;141,피스트퍽　服従、隷属のみ、142,애널피스트　服従、隷属のみ、143,양구멍피스트　服従、隷属のみ、145,アナル奉仕強制、146,浣腸器＋プラグ、147,공기관장
+;148,拡張バルーン、149,애널전극　服従、隷属のみ、150,유방전극　服従、隷属のみ、151,뱀장어욕탕　服従、隷属のみ、152,벌레욕탕　服従、隷属のみ
+;-------------------------------------------------
+	CASE 141, 142, 143, 145, 146, 147, 148, 149, 150, 151, 152
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;144,방뇨
+;-------------------------------------------------
+	CASE 144
+		CALL TRAIN_MESSAGE
+		PRINTFORMW 「오줌 싸는 걸 보고 싶다니」
+		PRINTFORMW 「서머너는 정말 변태군요」
+		CFLAG:808 = 1441
+		CALL PRINT_AA_KIRITAN
+;-------------------------------------------------
+;154,요정오나홀　小人体系のみ
+;-------------------------------------------------
+	CASE 154
+		CALL TRAIN_MESSAGE
+;=================================================
+;触手系コマンド
+;=================================================
+;-------------------------------------------------
+;160,촉수소환
+;-------------------------------------------------
+	CASE 160
+		IF TEQUIP:25
+			CALL TRAIN_MESSAGE
+		ELSE
+			IF CFLAG:382 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;161,触手挿入、162,アナル触手、163,触手クリ責め、164,触手乳首責め、165,触手搾乳、166,触手緊縛、167,触手浣腸、169,촉수페니스자극
+;-------------------------------------------------
+	CASE 161, 162, 163, 164, 165, 166, 167, 169
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;168,촉수구욕
+;-------------------------------------------------
+	CASE 168
+		IF TEQUIP:36
+			CALL TRAIN_MESSAGE
+		ELSE
+			IF CFLAG:390 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+				PRINTFORMW 
+			ENDIF
+		ENDIF
+
+;=================================================
+;特殊コマンド
+;=================================================
+;-------------------------------------------------
+;180,ローション、181,媚薬、182,이뇨제,
+;-------------------------------------------------
+	CASE 180, 181, 182
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;183,비디오카메라,
+;-------------------------------------------------
+	CASE 183
+		IF TEQUIP:28
+			CALL TRAIN_MESSAGE
+		ELSE
+			IF CFLAG:395 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+				PRINTFORMW 
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;184,야외플레이,
+;-------------------------------------------------
+;TEQUIP:29 == 0は野外プレイから帰ってきた時
+	CASE 184
+		IF TEQUIP:29
+			CALL TRAIN_MESSAGE
+			IF RAND:2 == 0
+				PRINTFORMW 「밖에서라니…정말로 변태네요、서머너─」
+			ELSE
+				PRINTFORM 「에～、싫어요、밖에 나온다니」
+			ENDIF
+		ELSEIF SELECTCOM == 184 && TEQUIP:29 >= 1
+			;TEQUIP:29 >= 1でどこの場所選んでも同じ口上が出るように変更･場所ごとで変えたければ==にして数字をいじる
+			IF CFLAG:396 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;185,조수를범한다,
+;-------------------------------------------------
+	CASE 185
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;186,수치플레이,
+;-------------------------------------------------
+	CASE 186
+		IF TEQUIP:30
+		CALL TRAIN_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8)
+				SELECTCASE RAND:2
+					CASE 0
+						PRINTFORMW 「에헤헤……저의 부끄러운 곳、바로 보이네요」
+						PRINTFORMW 「%CSTR:1%도 천천히 감상해주세요」
+					CASE 1
+						PRINTFORMW 「와、와아……」
+						PRINTFORMW （나、%조사처리(CSTR:1,"랑")% 하고 있을 때 이렇게나 녹은 표정을 짓고 있었구나……）
+				ENDSELECT
+			ELSE
+				PRINTFORMW ＞%조사처리(CALLNAME,"는")% 거울 쪽을 잘 보려 하지 않는다……
+			ENDIF
+			
+		ELSE
+			IF CFLAG:398 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;187,목욕탕플레이,
+;-------------------------------------------------
+	CASE 187
+		IF TEQUIP:31
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:399 == 0
+			PRINTFORMW 「목욕탕에서 하나요？」
+			PRINTFORMW 「현기증 나지 않을까 걱정되네요……」
+			CFLAG:399 = 1
+		;二回目以降
+		ELSE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8)
+				PRINTFORMW 「목욕인가요、좋아요」
+				PRINTFORMW 「왓。%CSTR:1%의 그거、커지고 있다……」
+			ELSE
+				PRINTFORMW 「평범하게 목욕하고 싶다아……」
+			ENDIF
+		ENDIF
+	ELSE
+		IF CFLAG:399 == 1 || FLAG:7 == 2
+			CALL TRAIN_MESSAGE
+			PRINTFORMW 「후우─시원해」
+		ENDIF
+	ENDIF
+;-------------------------------------------------
+;188,샤워,
+;-------------------------------------------------
+	CASE 188
+		IF TEQUIP:32
+		CALL TRAIN_MESSAGE
+	ELSE
+		IF CFLAG:400 == 1 || FLAG:7 == 2
+			CALL TRAIN_MESSAGE
+			PRINTFORMW 
+		ENDIF
+	ENDIF
+;-------------------------------------------------
+;189,새댁플레이,　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 189
+		IF TEQUIP:33
+			CALL TRAIN_MESSAGE
+			;陥落済み
+			IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8)
+				PRINTFORMW 「네、남편님。당신의 아내 %CALLNAME% 입니다♪」
+				PRINTFORMW 「충분히 맛봐주세요♪」
+			ELSE
+				PRINTFORMW 「네、남편님。당신의 아내 %CALLNAME% 입니다」
+				PRINTFORMW 「……이거、정말로 하지 않으면 안됩니까？」
+			ENDIF
+			CFLAG:808 = 1890
+			CALL PRINT_AA_KIRITAN
+		ELSE
+			IF CFLAG:401 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+				;陥落済み
+				IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8)
+					PRINTFORMW 「어라、이제 앞치마는 끝인가요？」
+					PRINTFORMW 「모처럼 남편님……아니 서머너랑 좀 더 으쌰으쌰 할 수 있을줄 알았는데」
+				ELSE
+					PRINTFORMW 「아아、끝났다……」
+					PRINTFORMW 「이거、더는 서머너 말고는 시집 못가겠네요……」
+				ENDIF
+			ENDIF
+		ENDIF
+;-------------------------------------------------
+;190,写真撮影、191,強精神薬、192,コンドーム精飲（奴隷）、193,コンドーム精飲（助手）、194,정액키스
+;-------------------------------------------------
+	CASE 190, 191, 192, 193, 194
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;195,유선개발
+;-------------------------------------------------
+	CASE 195
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;200,사람을부른다
+;-------------------------------------------------
+	CASE 200
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;201,윤간
+;-------------------------------------------------
+	CASE 201
+		CALL TRAIN_MESSAGE
+;=================================================
+;500番台,派生コマンド
+;=================================================
+;-------------------------------------------------
+;500,３Ｐ
+;-------------------------------------------------
+	CASE 500
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;501,식스나인
+;-------------------------------------------------
+	CASE 501
+		CALL TRAIN_MESSAGE
+		;初めて
+		;奉仕精神5以上
+		IF ABL:7 >= 5
+			CALL SERVE_F_K[[キャラ:키키모라]]
+		ENDIF
+		;C感覚が5以上 or 快C5000以上
+		IF (ABL:Ｃ감각 >= 5 && PALAM:쾌Ｃ >= 1000) || PALAM:쾌Ｃ >= 5000
+			SELECTCASE RAND:3
+				CASE 0
+					PRINTFORM 「아앗、히야아아아아앗
+					CALL HEARTMARK_K[[キャラ:키키모라]]
+					PRINTW 」
+					PRINTFORMW ＞%CALLNAME%의 사타구니에서 투명한 즙이 끝없이 흘러나온다
+				CASE 1
+					PRINTFORMW 「후와아앗、거기、안됏」
+				CASE 2
+					PRINTFORMW 「응응！～～～～～～읏！」
+					PRINTFORMW ＞%조사처리(CALLNAME,"는")% 사타구니에서 오는 쾌감의 물결을 받아들이지 못하는 것 같다
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:2
+				CASE 0
+					PRINTFORMW 「그、그런 곳 더러워요…」
+				CASE 1
+					PRINTFORMW 「…그렇게 핥지 말아주세요…」
+			ENDSELECT
+		ENDIF
+;-------------------------------------------------
+;502,이와시미즈
+;-------------------------------------------------
+	CASE 502
+		CALL TRAIN_MESSAGE
+
+;-------------------------------------------------
+;503,G스팟자극
+;-------------------------------------------------
+	CASE 503
+		CALL TRAIN_MESSAGE
+		PRINTFORMW 「아…읏、이거…！」
+		CFLAG:808 = 5030
+		CALL PRINT_AA_KIRITAN
+;-------------------------------------------------
+;504,흐트러진모란
+;-------------------------------------------------
+	CASE 504
+		CALL TRAIN_MESSAGE
+		IF ABL:Ｖ감각 >= 5 || PALAM:쾌Ｖ >= 5000
+			SELECTCASE RAND:2
+				CASE 0
+					CALL SEX_K[[キャラ:키키모라]]
+				CASE 1
+					PRINTFORMW 「서、서머너엇─、이것
+					CALL HEARTMARK_K[[キャラ:키키모라]]
+					PRINTFORM 발、서있을수가앗
+					CALL HEARTMARK_K[[キャラ:키키모라]]
+					PRINTFORMW 」
+			ENDSELECT
+		ELSE
+			CALL SEX_K[[キャラ:키키모라]]
+		ENDIF
+		
+;-------------------------------------------------
+;505,기승유방자위
+;-------------------------------------------------
+;ヴァギナ派生
+	CASE 505
+		CALL TRAIN_MESSAGE
+;アナル派生
+	CASE 512
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;506,挿入Ｇスポ責め
+;-------------------------------------------------
+	CASE 506
+		CALL TRAIN_MESSAGE
+		IF ABL:Ｖ감각 >= 5 || PALAM:쾌Ｖ >= 5000
+			PRINTFORMW 「왔다…어른의 진심 피스톤 왔다…」
+		ELSE
+			PRINTFORMW 「아…안쪼옥…」
+		ENDIF
+;-------------------------------------------------
+;507,삽입자궁구자극
+;-------------------------------------------------
+	CASE 507
+		CALL TRAIN_MESSAGE
+		;Ｖ感覚が5以上 or 快V5000以上
+		IF ABL:Ｖ감각 >= 5 || PALAM:쾌Ｖ >= 5000
+			SELECTCASE RAND:2
+				CASE 0
+					PRINTFORMW 「왔다…어른의 진심 피스톤 왔다…」
+				CASE 1
+					PRINTFORMW 「이것 뱃속이！콕콕 거려서어！」
+			ENDSELECT
+			CFLAG:808 = 5070
+			CALL PRINT_AA_KIRITAN
+		ELSE
+			PRINTFORMW 「아…안쪼옥…」
+		ENDIF
+;-------------------------------------------------
+;508,６９파이즈리
+;-------------------------------------------------
+	CASE 508
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;509,착유
+;-------------------------------------------------
+	CASE 509
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;510,더블스마타
+;-------------------------------------------------
+	CASE 510
+		CALL TRAIN_MESSAGE
+;-------------------------------------------------
+;511,두개펠라
+;-------------------------------------------------
+	CASE 511
+		CALL TRAIN_MESSAGE
+
+;その他
+	CASEELSE
+		CALL TRAIN_MESSAGE
+ENDSELECT
+
+
+
+
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG関係（X1をキャラ番号に置換）
+;パラメータ変化などをトリガーにした口上　CFLAG 221～260を使用
+;-------------------------------------------------
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_A（X1をキャラ番号に置換）
+;調教者の射精をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_A_K[[キャラ:키키모라]]_1
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_A
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_A_PY1_K[[キャラ:키키모라]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_A_PY1_K[[キャラ:키키모라]]
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;調教者の射精時のテキスト
+;-------------------------------------------------
+;-------------------------------------------------
+;射精箇所変更時のテキスト　有効時はここで関数終了
+;-------------------------------------------------
+IF CFLAG:106
+	CALL PALAM_MESSAGE_A
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;手、口以外で射精
+;対応コマンドはキス、素股、足コキ、アナル強制奉仕、ダブル素股
+;-------------------------------------------------
+IF TFLAG:9 == 1
+	CALL PALAM_MESSAGE_A
+	;陥落済み
+	IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:231 < 3 || FLAG:7 == 2)
+		PRINTFORMW 「아하핫、잔뜩 나왔네요」
+		PRINTFORMW 「서머너의 정액、따뜻해서、좋아요」
+		CFLAG:231 = 3
+	ELSE
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;조수를범한다로사정
+;-------------------------------------------------
+IF TFLAG:7 > 0
+	CALL PALAM_MESSAGE_A
+ENDIF
+
+;-------------------------------------------------
+;입으로사정
+;-------------------------------------------------
+IF TFLAG:0 > 0
+	CALL PALAM_MESSAGE_A
+	;陥落済み
+	IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8)
+		PRINTFORMW 「응、응응───」
+		PRINTFORMW 「푸핫、잔뜩나완네여」
+		PRINTFORMW ＞%조사처리(CALLNAME,"는")% 입안에 정액을 채워 넣고、침과 얽히게 한다
+		CFLAG:808 = 8000
+		CALL PRINT_AA_KIRITAN
+		CFLAG:233 = 3
+	ELSE
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;손으로사정
+;-------------------------------------------------
+IF TFLAG:1 > 0
+	CALL PALAM_MESSAGE_A
+ENDIF
+
+;-------------------------------------------------
+;가슴으로사정
+;-------------------------------------------------
+IF TFLAG:34 > 0
+	CALL PALAM_MESSAGE_A
+ENDIF
+;-------------------------------------------------
+;오나홀에사정
+;-------------------------------------------------
+IF TFLAG:16 == 1
+	CALL PALAM_MESSAGE_A
+ENDIF
+
+;-------------------------------------------------
+;섹스로사정
+;-------------------------------------------------
+IF TFLAG:2 > 0
+	;アナルセックス系
+	IF SELECTCOM == 62 || SELECTCOM == 63 || SELECTCOM == 67 || SELECTCOM == 70 || SELECTCOM == 71 || (SELECTCOM == 505 && TFLAG:40 == 2)
+		;陥落済み
+		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8)
+		CALL PALAM_MESSAGE_A
+		;それ以外
+		ELSEIF CFLAG:237 < 1 || FLAG:7 == 2
+		CALL PALAM_MESSAGE_A
+		ENDIF
+	;Ｖセックス系
+	ELSE
+		;陥落済み
+		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8)
+			SELECTCASE RAND:3
+				CASE 0
+					PRINTFORMW 「나올 것 같나요？좋아요」
+					PRINTFORMW 「가버려라、가버려라♪」
+					CALL PALAM_MESSAGE_A
+					PRINTFORM 「응아아～
+					CALL HEARTMARK_K[[キャラ:키키모라]]
+					PRINTW 」
+					CFLAG:808 = 8560
+				CASE 1
+					CALL PALAM_MESSAGE_A
+					PRINT 「잔뜩 나오고있어…
+					CALL HEARTMARK_K[[キャラ:키키모라]]
+					PRINTW 」
+					PRINTFORM (교배엣、서머너의 정자로 교배되고 있어
+					CALL HEARTMARK_K[[キャラ:키키모라]]
+					PRINTW )
+					CFLAG:808 = 8560
+				CASE 2
+					PRINTFORM 「이대로…내 안에 내어도、좋아…요
+					CALL HEARTMARK_K[[キャラ:키키모라]]
+					PRINTW 」
+					PRINTFORM 「저는 서머너의 자〇 케이스니까요！」
+					CALL PALAM_MESSAGE_A
+					CFLAG:808 = 8511
+				CASE 3
+					PRINTFORMW 「점점 움직임이 빨라지고 있네요、로리콘 보〇…퓻퓻 하고 싶은거군요…」
+					PRINTFORMW 「좋아요…자안～뜩、어린이 보〇에 퓻퓻 해주세요」
+					CALL PALAM_MESSAGE_A
+					CFLAG:808 = 8511
+			ENDSELECT
+			CALL PRINT_AA_KIRITAN
+		;それ以外
+		ELSEIF CFLAG:238 < 1 || FLAG:7 == 2
+			CALL PALAM_MESSAGE_A
+			CFLAG:808 = 8500
+			CALL PRINT_AA_KIRITAN
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;逆レイプで射精させた
+;-------------------------------------------------
+IF SELECTCOM == 64 && TFLAG:10 > 0
+	PRINTFORMW 「나올 것 같나요？좋아요」
+	PRINTFORMW 「가버려라、가버려라♪」
+	CALL PALAM_MESSAGE_A
+	PRINTFORM 「응아아～
+	CALL HEARTMARK_K[[キャラ:키키모라]]
+	PRINTW 」
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_E（X1をキャラ番号に置換）
+;触手の射精をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_E_K[[キャラ:키키모라]]_1
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_E
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_E_PY1_K[[キャラ:키키모라]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_E_PY1_K[[キャラ:키키모라]]
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;触手の射精時のテキスト
+;-------------------------------------------------
+;-------------------------------------------------
+;촉수가사정
+;-------------------------------------------------
+IF TFLAG:15 >0
+	CALL PALAM_MESSAGE_E
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_B関係（X1をキャラ番号に置換）
+;奴隷の絶頂をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_B_K[[キャラ:키키모라]]_1
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_B
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_B_PY1_K[[キャラ:키키모라]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_B_PY1_K[[キャラ:키키모라]]
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;奴隷の絶頂時のテキスト
+;-------------------------------------------------
+;-------------------------------------------------
+;初めてC絶頂
+;-------------------------------------------------
+IF NOWEX:0 > 0 && CFLAG:241 == 0
+	PRINTFORML 「햣！아、아아아！뭐、뭐야 이거어！아아아아아！」
+	PRINTFORMW %조사처리(CALLNAME,"는")% 처음 겪는 감각에 당황해、%CALLNAME:MASTER%에게 꼭 달라붙어 떨었다。
+	CFLAG:241 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めてV絶頂
+;-------------------------------------------------
+IF NOWEX:1 > 0 && CFLAG:242 == 0
+	PRINTFORML 「아앙！아아아아！뭐야 이거、보、보지！보지 망가져！망가져버려어어어어！！응아아아아！」
+	CFLAG:242 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めてA絶頂
+;-------------------------------------------------
+IF NOWEX:2 > 0 && CFLAG:243 == 0
+	PRINTFORML 「시、싫어어！엉덩이가！엉덩이로 가버려！아아아아아！」
+	CFLAG:243 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めてB絶頂
+;-------------------------------------------------
+IF NOWEX:3 > 0 && CFLAG:244 == 0
+	PRINTFORML 「아！아아！가슴 좋아！안 돼、안대에에에！」
+	CFLAG:244 = 1
+ENDIF
+
+;-------------------------------------------------
+;절정
+;-------------------------------------------------
+IF TFLAG:29 > 0
+	CALL PALAM_MESSAGE_B
+	;四重絶頂
+	IF NOWEX:Ｃ절정 >= 2 && NOWEX:Ｖ절정 >= 2 && NOWEX:Ａ절정 >= 2 && NOWEX:Ｂ절정 >= 2
+		PRINTFORMW 「이것……이상해……져어엇」
+		PRINTFORMW 「아아……오옷、……잇──」
+		PRINTFORMW ＞%조사처리(CALLNAME,"는")% 몸을 크게 움찔거리고、……입을 뻐끔뻐금거리며 굳어버렸다
+		PRINTFORMW 「…………！하앗、하앗、하아──앗、후───」
+	;ＶＡ込みの三重絶頂
+	ELSEIF (NOWEX:Ｃ절정 >= 2 && NOWEX:Ｖ절정 >= 2 && NOWEX:Ａ절정 >= 2) || (NOWEX:Ｖ절정 >= 2 && NOWEX:Ａ절정 >= 2 && NOWEX:Ｂ절정 >= 2)
+		IF RAND:2 == 0
+			PRINTFORMW 「크으……앗、안 돼요、이거……앞에도、뒤에도……」
+			PRINTFORMW 「힛……아、으으……우아、앗、아앗──！」
+		ELSE
+			PRINTFORMW 「히、아……이런……더는、안되욧……」
+			PRINTFORMW 「앗、아앗、아아앗──！」
+			PRINTFORMW 「하아、하아……이거、대단……」
+		ENDIF
+	;二重絶頂：Ｃ＆Ｂ
+	ELSEIF NOWEX:Ｃ절정 >= 2 && NOWEX:Ｂ절정 >= 2
+		PRINTFORMW 「크、후앗……가슴이랑、거기가、한꺼번에……」
+		PRINTFORMW 「안돼、더는、참을、수갓……응、아앗──！」
+		PRINTFORMW 「하아、하아……기분、좋았다아……」
+	;二重絶頂：Ｖ＆Ａ
+	ELSEIF NOWEX:Ｖ절정 >= 2 && NOWEX:Ａ절정 >= 2
+		PRINTFORMW 「하으……이런、앞에도、뒤에도……！」
+		PRINTFORMW 「싫、안돼요……그런……크、우아……아앗──！」
+		PRINTFORMW 「하아、하아……이런 거、굉장했다아……」
+	;強絶頂以上
+	ELSEIF TFLAG:29 > 1
+		;Ｃ절정
+		IF NOWEX:Ｃ절정 > 1
+			PRINTFORMW 「하앗、앗、좋앗、온닷、」
+			PRINTFORMW 「와버려、대단햇、%CSTR:1%、아앗──！」
+		;Ｖ절정
+		ELSEIF NOWEX:Ｖ절정 > 1
+			PRINTFORMW 「앗、앗、앗、앗……%CSTR:1%、좋아해요、」
+			PRINTFORMW 「응、응응──！」
+			PRINTFORMW ＞%조사처리(CALLNAME,"는")% 허리를 활처럼 휘게 만들어、Ｇ스팟을 강하게 밀며 절정에 달했다
+			PRINTFORMW ＞비소에서는 끝없이 애액이 쏟아져 나온다
+		;Ａ절정
+		ELSEIF NOWEX:Ａ절정 > 1
+			PRINTFORMW 「아아……안돼、엉덩이、오싹오싹해서엇……」
+			PRINTFORMW 「크으……읏……응읏──！」
+		;Ｂ절정
+		ELSEIF NOWEX:Ｂ절정 > 1
+			IF RAND:2 == 0
+				PRINTFORMW 「으、아……또、가슴이……찌릿거려서……」
+			ELSE
+				PRINTFORMW 「싫……가슴이、더는……」
+			ENDIF
+			PRINTFORMW 「응……앗、아앗──！」
+		ENDIF
+	;절정
+	ELSEIF TFLAG:29 == 1
+		PRINTFORMW 「응……하아、하아……」
+		IF NOWEX:Ｃ절정 > 0
+			PRINTFORMW 「아、아……이거、대단……」
+			PRINTFORMW 「안돼、와버려요……아앗──！」
+		ELSEIF NOWEX:Ｖ절정 > 0
+			SELECTCASE RAND:2
+				CASE 0
+					PRINTFORMW 「크、으……안쪽、스쳐서……」
+					PRINTFORMW 「안돼、더는……응、아앗──！」
+				CASE 1
+					PRINT 「간다간닷、가버려요！！
+					CALL HEARTMARK_K[[キャラ:키키모라]]
+					PRINTW 」
+					PRINT 「아～～～～～～～～～
+					CALL HEARTMARK_K[[キャラ:키키모라]]
+					PRINTW 」
+			ENDSELECT
+		ELSEIF NOWEX:Ａ절정 > 0
+			PRINTFORMW 「아아……안돼、엉덩이、오싹오싹해서엇……」
+			PRINTFORMW 「크으……읏……응읏──！」
+		ELSEIF NOWEX:Ｂ절정 > 1
+			IF RAND:2 == 0
+				PRINTFORMW 「으、아……또、가슴이……찌릿거려서……」
+			ELSE
+				PRINTFORMW 「싫……가슴이、더는……」
+			ENDIF
+			PRINTFORMW 「응……앗、아앗──！」
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;사정
+;-------------------------------------------------
+;射精している
+IF TFLAG:10 > 0
+ENDIF
+
+;-------------------------------------------------
+;분유
+;-------------------------------------------------
+;噴乳している
+IF TFLAG:11 > 0
+	;陥落済み
+	IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:247 < 3 || FLAG:7 == 2)
+		PRINTFORMW 
+		CFLAG:247 = 3
+	;屈服刻印Lv3
+	ELSEIF MARK:2 == 3 && (CFLAG:247 < 2 || FLAG:7 == 2)
+		PRINTFORMW 
+		CFLAG:247 = 2
+	;それ以外
+	ELSEIF CFLAG:247 < 1 || FLAG:7 == 2
+		PRINTFORMW 
+		CFLAG:247 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;방뇨
+;-------------------------------------------------
+;放尿している
+IF TFLAG:29 > 0 && (TEQUIP:27 || TALENT:57)
+	PRINTFORMW 「우으…오줌 싸버렸어…」
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_C関係（X1をキャラ番号に置換）
+;調教後の変化をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_C_K[[キャラ:키키모라]]_1
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_C
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_C_PY1_K[[キャラ:키키모라]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_C_PY1_K[[キャラ:키키모라]]
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;調教後のテキスト
+;-------------------------------------------------
+;-------------------------------------------------
+;処女喪失(処女のみ)
+;-------------------------------------------------
+IF TFLAG:3 > 0
+	CALL PALAM_MESSAGE_C
+	PRINTFORMW 「제 처음을 빼앗았으니까、책임은 져주셔야겠어요」
+ENDIF
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_D関係（X1をキャラ番号に置換）
+;パラメータ変化をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_D_K[[キャラ:키키모라]]_1
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_D
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_D_PY1_K[[キャラ:키키모라]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_D_PY1_K[[キャラ:키키모라]]
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;パラメータ変化時のテキスト
+;-------------------------------------------------
+;-------------------------------------------------
+;初めて潤滑がLV3超えた
+;-------------------------------------------------
+P = PALAM:4 + UP:4
+IF P > PALAMLV:4 && CFLAG:245 == 0
+	CALL PALAM_MESSAGE_D
+ENDIF
+
+;-------------------------------------------------
+;初めて欲情がLV2超えた
+;-------------------------------------------------
+P = PALAM:6 + UP:6
+IF P > PALAMLV:3 && CFLAG:246 == 0
+	CALL PALAM_MESSAGE_D
+ENDIF
+
+;-------------------------------------------------
+;初めて屈服がLV3超えた
+;-------------------------------------------------
+P = PALAM:7 + UP:7
+IF P > PALAMLV:3 && CFLAG:247 == 0
+	CALL PALAM_MESSAGE_D
+ENDIF
+
+;-------------------------------------------------
+;初めて恭順がLV3超えた
+;-------------------------------------------------
+P = PALAM:5 + UP:5
+IF P > PALAMLV:3 && CFLAG:248 == 0
+	CALL PALAM_MESSAGE_D
+ENDIF
+
+;-------------------------------------------------
+;初めて恐怖がLV3超えた
+;-------------------------------------------------
+P = PALAM:11 + UP:11
+IF P > PALAMLV:3 && CFLAG:249 == 0
+	CALL PALAM_MESSAGE_D
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_MARKCNG関係（X1をキャラ番号に置換）
+;刻印変動をトリガーにした口上
+;刻印変動後に口上を発動します
+;-------------------------------------------------
+@KOJO_MESSAGE_MARKCNG_K[[キャラ:키키모라]]_1
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL MARK_MESSAGE
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_MARKCNG_PY1_K[[キャラ:키키모라]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_MARKCNG_PY1_K[[キャラ:키키모라]]
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;苦痛刻印Lv3
+;-------------------------------------------------
+IF TFLAG:22 == 3
+	CALL MARK_MESSAGE_A
+ENDIF
+
+;-------------------------------------------------
+;快楽刻印Lv3
+;-------------------------------------------------
+IF TFLAG:23 == 3
+	CALL MARK_MESSAGE_P
+ENDIF
+
+;-------------------------------------------------
+;屈服刻印Lv3
+;-------------------------------------------------
+IF TFLAG:24 == 13 || TFLAG:24 == 23 || TFLAG:24 == 33
+	CALL MARK_MESSAGE_S
+ENDIF
+
+;-------------------------------------------------
+;反発刻印Lv3
+;-------------------------------------------------
+IF TFLAG:21 == 3
+	CALL MARK_MESSAGE_R
+ENDIF
+
+;-------------------------------------------------
+;イベント口上集（X1、X2をキャラ番号に置換する） CFLAG 261～299を使用
+;-------------------------------------------------
+@KOJO_MESSAGE_EVENT_K[[キャラ:키키모라]]_1
+;--------------------------------------------------
+;特定主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_EVENT_PY1_K[[キャラ:키키모라]]
+;	RETURN 0
+;ENDIF
+;-------------------------------------------------
+;朝フェラ
+;-------------------------------------------------
+SELECTCASE TFLAG:13
+	CASE 1
+		CALL EVENT_MESSAGE
+		PRINTFORMW ＞둥실둥실 뜨는 듯한 좋은 기분으로 눈을 뜨자、시야 아래에는──
+		PRINTFORMW 「아、죠은 아치이애여、%CSTR:1%」
+		PRINTFORMW 「자자、이제 잠도 깼겠다 가버리자고요」
+		CFLAG:808 = 810
+		CALL PRINT_AA_KIRITAN
+;-------------------------------------------------
+;朝パイズリ
+;-------------------------------------------------
+	CASE 2
+		CALL EVENT_MESSAGE
+		PRINTFORMW 「이쪽도 죠은 아침입니다、%CSTR:1%」
+		PRINTFORMW ＞콸콸 쏟아지듯 정액을 배출하는 남근에、키리탄은 가볍게 키스했다
+
+;-------------------------------------------------
+;朝騎乗位
+;-------------------------------------------------
+	CASE 3
+		CALL EVENT_MESSAGE
+		PRINTFORMW 「좋은 아침입니……우읏」
+		PRINTFORMW 「……이렇게 크게 만든 %조사처리(CSTR:1,"가")% 나쁜거니까요……」
+;-------------------------------------------------
+;朝騎乗位A
+;-------------------------------------------------
+	CASE 24
+		CALL EVENT_MESSAGE
+		PRINTFORMW 「좋은 아침입니……우읏」
+		PRINTFORMW 「……이렇게 크게 만든 %조사처리(CSTR:1,"가")% 나쁜거니까요……」
+;-------------------------------------------------
+;朝キス
+;-------------------------------------------------
+	CASE 25
+		CALL EVENT_MESSAGE
+		IF RAND:2 == 0
+			PRINTFORMW 「네、아침 인사 키스입니다」
+		ELSE
+			PRINTFORMW 「이히히、좋은 아침입니다、%CSTR:1%」
+		ENDIF
+;-------------------------------------------------
+;朝食
+;-------------------------------------------------
+	CASE 26
+		CALL EVENT_MESSAGE
+		PRINTFORMW 「오늘 아침 식사는 아키타코마치로 만든 밥과 키리탄포가 들어간 된장국이에요～」
+;-------------------------------------------------
+;起きたら隣で寝てる
+;-------------------------------------------------
+	CASE 27
+		CALL EVENT_MESSAGE
+		IF RAND:2 == 0
+			PRINTFORMW 「오늘은 이대로 그냥 자볼래요？」
+		ELSE
+			PRINTFORMW 「벌써 아침인가요…우으…앞으로 5분만…」
+		ENDIF
+;-------------------------------------------------
+;朝の足コキ
+;-------------------------------------------------
+	CASE 28
+		CALL EVENT_MESSAGE
+		PRINTFORMW 「아하핫、한심하게 사정해 버렸네요」
+;-------------------------------------------------
+;;朝の搾りたてミルク
+;-------------------------------------------------
+	CASE 29
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;;お寝小
+;-------------------------------------------------
+	CASE 30
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;調教後レズプレイ
+;-------------------------------------------------
+	CASE 4
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;調教後セックス
+;-------------------------------------------------
+	CASE 5
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;強精神薬の反動
+;-------------------------------------------------
+	CASE 6
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;調教後搾乳
+;-------------------------------------------------
+	CASE 7
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;調教後自慰
+;-------------------------------------------------
+	CASE 8
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;夜這い（主人C 相手V）
+;-------------------------------------------------
+	CASE 9
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;夜這い（主人C 相手A）
+;-------------------------------------------------
+	CASE 31
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;夜這い（主人V 相手C）
+;-------------------------------------------------
+	CASE 32
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;夜這い（主人A 相手C）
+;-------------------------------------------------
+	CASE 33
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;夜這い（両者C（素股）・両者C（貝合わせ））
+;-------------------------------------------------
+	CASE 34
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;夜自慰
+;-------------------------------------------------
+	CASE 35
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;一緒に寝る
+;-------------------------------------------------
+	CASE 36
+		CALL EVENT_MESSAGE
+		IF RAND:2 == 0
+			PRINTFORMW 「에헤헤……와버렸어요」
+			PRINTFORMW 「%CSTR:1%의 이불속에、들어가도 될까요？」
+		ELSE
+			PRINTFORMW 「……잠을 잘 수 없게 됐어요」
+			PRINTFORMW 「잠시만、옆에 있어도 될까요？」
+		ENDIF
+;-------------------------------------------------
+;黄色のキャンディ使用時
+;-------------------------------------------------
+	CASE 10
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;妊娠発覚時
+;-------------------------------------------------
+	CASE 11
+		SIF CFLAG:271 >= 1 && FLAG:7 != 2
+			RETURN 0
+		CALL EVENT_MESSAGE
+		PRINTFORMW 「에헤헤…생긴 것 같아요」
+		
+;-------------------------------------------------
+;出産時
+;-------------------------------------------------
+	CASE 12
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;育児室
+;-------------------------------------------------
+	CASE 13
+		CALL EVENT_MESSAGE
+		;出産前
+		IF TALENT:153
+		;出産後
+		ELSE
+		ENDIF
+
+;-------------------------------------------------
+;親離れ時
+;-------------------------------------------------
+	CASE 14
+		CALL EVENT_MESSAGE
+		
+;-------------------------------------------------
+;定食屋台時
+;-------------------------------------------------
+	CASE 15, 16
+		CALL EVENT_MESSAGE
+		PRINTFORMW 「에─、일하는 건가요─」
+		PRINTFORMW 「이거、번 돈을 게임에 쓰고 싶습니다……」
+		;-------------------------------------------------
+		;娼館でバイト・設定時
+		;-------------------------------------------------
+	CASE 16
+		CALL EVENT_MESSAGE
+		;-------------------------------------------------
+		;娼館でバイト・実行時
+		;-------------------------------------------------
+	CASE 63
+			CALL EVENT_MESSAGE
+;-------------------------------------------------
+;レンタル時
+;-------------------------------------------------
+	CASE 17
+		CALL EVENT_MESSAGE
+
+;-------------------------------------------------
+;売却時
+;-------------------------------------------------
+	CASE 18
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;ビデオ売却時
+;-------------------------------------------------
+	CASE 19
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;コンサート時
+;-------------------------------------------------
+	CASE 20
+		CALL EVENT_MESSAGE
+		PRINTFORMW 「이예─、로〇콘 오빠들─」
+		PRINTFORMW 「슈퍼챗 해주세요 슈퍼챗」
+		CFLAG:808 = 7002
+		CALL PRINT_AA_KIRITAN
+;-------------------------------------------------
+;乱交ライブ時
+;-------------------------------------------------
+	CASE 21
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;公衆便所プレイ時
+;-------------------------------------------------
+CASE 22
+	CALL EVENT_MESSAGE
+;-------------------------------------------------
+;ビデオ保有時
+;-------------------------------------------------
+	CASE 23
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;記憶消去薬使用時
+;-------------------------------------------------
+	CASE 30
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;;[아내][남편]取得時
+;-------------------------------------------------
+	CASE 40
+		;CALL EVENT_MESSAGE
+		;陥落済み
+		IF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && (CFLAG:283 < 1 || FLAG:7 == 2)
+			;恋慕、親愛
+			IF TALENT:3 || TALENT:6
+				PRINTFORMW 「정말、서머너는 구제불능의 로리콘이군요」
+				PRINTFORMW 「…그래도、기쁩니다。감사합니다、%CSTR:1%」
+				PRINTFORMW 「이 반지、소중히 간직할게요」
+			;淫乱、娼婦
+			ELSEIF TALENT:4 || TALENT:7
+				PRINTFORMW 
+			;服従、隷属
+			ELSEIF TALENT:5 || TALENT:8
+				PRINTFORMW 
+			ENDIF
+			CFLAG:283 = 1
+		ENDIF
+
+;-------------------------------------------------
+;;[음마]取得時
+;-------------------------------------------------
+	CASE 41
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;;[노리개]取得時
+;-------------------------------------------------
+	CASE 42
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;;ＮＴＲ夜這い・ＮＴＲ後初逢引
+;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)になった直後の一日の終了後、一度だけ行う
+;別のキャラに陥落する度に起こる。同じキャラに再度陥落した場合は起こらない
+;-------------------------------------------------
+	CASE 56
+		CALL EVENT_MESSAGE
+;-------------------------------------------------
+;;ＮＴＲ夜這い・本番
+;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)で１日の終了時に発生。
+;女性であれば入れられる側、男性であれば入れる側で固定
+;-------------------------------------------------
+CASE 58
+	CALL EVENT_MESSAGE
+CASEELSE
+	CALL EVENT_MESSAGE
+ENDSELECT
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_ENDING関係(X1、X2をキャラ番号に置換する)
+;-------------------------------------------------
+;-------------------------------------------------
+;条件設定
+;-------------------------------------------------
+@EVENTTURNEND_K[[キャラ:키키모라]]_1
+;#LATER
+;SIF TARGET < 0
+;	RETURN 0
+;SIF TCVAR:0 == 1
+;	RETURN 0
+;SIF ABL:회화타입 != 303
+;	RETURN 0
+;特殊ハーレムエンド用条件判定構文サンプル
+;XX内に条件とするキャラのキャラ番号を入れると、好きな組み合わせのハーレムエンドを設定できる
+;ハーレムエンドの条件を満たしたとき、ここの特殊ハーレムエンドの条件も満たしている場合、ハーレムエンドから派生する
+;A = 0
+;B = 0
+;REPEAT CHARANUM
+;	IF NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX
+;		SIF TALENT:COUNT:6 || TALENT:COUNT:7 || TALENT:COUNT:8
+;			A += 1
+;		SIF TALENT:COUNT:3 || TALENT:COUNT:4 || TALENT:COUNT:5 || TALENT:COUNT:6 || TALENT:COUNT:7 || TALENT:COUNT:8
+;			B += 1
+;	ENDIF
+;REND
+;SIF A && A+B >= XXX
+;	CFLAG:21 = 2
+;単体エンド用分岐フラグ、単体エンドのある上位陥落素質のみコメントアウトを解除する
+;SIF TALENT:6
+;	CFLAG:21 = 1
+;SIF TALENT:7
+;	CFLAG:21 = 1
+;SIF TALENT:8
+;	CFLAG:21 = 1
+;-------------------------------------------------
+;エンド本文
+;-------------------------------------------------
+@KOJO_MESSAGE_ENDING_K[[キャラ:키키모라]]_1
+;--------------------------------------------------
+;特定主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_ENDING_PY1_K[[キャラ:키키모라]]
+;	RETURN 0
+;ENDIF
+;--------------------------------------------------
+;恋慕単体エンド
+;IF TALENT:6 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.1X2A (○○エンド)
+;淫乱単体エンド
+;ELSEIF TALENT:7 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.1X2B (○○エンド)
+;服従単体エンド
+;ELSEIF TALENT:8 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.1X2C (○○エンド)
+;ENDIF
+
+;特殊ハーレムエンド
+;IF CFLAG:21 == 2
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.2X2 (○○エンド)
+;ENDIF
+
+;CALL GAME_CONTINUE
+;RETURN 0
+
+;=============================================================
+;汎用台詞関数
+;=============================================================
+;ハートマーク表示関数
+@HEARTMARK_K[[キャラ:키키모라]]
+SETCOLOR COLOR("ピンク")
+SETFONT "Times New Roman"
+PRINTFORM  %UNICODE(0x2665)% 
+RESETCOLOR
+SETFONT
+
+
+;스킨쉽
+@SKINSHIP_K[[キャラ:키키모라]]
+SELECTCASE RAND:2
+	CASE 0
+		PRINTFORMW ＞%CALLNAME%의 허벅지를 만져보았다。
+		PRINTFORMW ＞젊은 피부의 매끈매끈함을 참을 수가 없다……
+		PRINTFORMW 「내 허벅지도 매끈매끈함에는 자신이 있습니다」
+		PRINTFORMW 「그도 그럴게、그 언니의 여동생이니까요！」
+		PRINTFORMW ＞그렇다 쳐도 근육이 부족해서 말랑말랑하다。운동을 좀 더 해야 하지 않을까
+		PRINTFORMW 「만지게 해드리고 있는데、도대체 뭡니까 서머너는……」
+		CFLAG:808 = 7001
+	CASE 1
+		PRINTFORMW 「서머너～、부탁이 있는데～」
+		PRINTFORMW ＞%조사처리(CALLNAME,"가")% 아양을 떨며 아첨하는 듯한 목소리에 몸을 비비면서 부탁해온다
+		PRINTFORMW 「새로운 게임、사주지 않겠습니까？」
+		PRINTFORMW ＞안됀다
+		PRINTFORMW 「에─엣、구두쇠─」
+		CFLAG:808 = 7001
+	CASE 2
+		PRINTFORMW ＞%CALLNAME%의 말랑말랑 거리는 볼을 만져보았다
+		PRINTFORMW ＞탱탱하고 젊은 피부의 촉감이、마음을 달래준다……
+		PRINTFORMW 「므뉴─」
+		PRINTFORMW ＞잠자코 만져지고 있는 %CALLNAME%도 아주 만족하지는 못한 것 같다
+		CFLAG:808 = 9999
+	CASE 3
+		PRINTFORMW ＞%조사처리(CALLNAME,"는")% 이쪽에 대해서 안심하고 있는 것 같다
+		PRINTFORMW ＞너무나 무방비한 등을 이쪽으로 돌리고 있다
+		PRINTFORMW ＞시험삼아 간지럼을 피워 보고 싶다……
+		PRINTFORMW 「～♪」
+		PRINTFORMW ＞콕、손가락 끝으로 옆구리를 쿡쿡 찔러본다
+		PRINTFORMW 「햣！」
+		PRINTFORMW ＞그대로 간지럽힌다
+		PRINTFORMW 「후에에、잠、그만、아하하、햐하하하하하」
+		PRINTFORMW ＞깔깔거리며 웃는 %CALLNAME%。슬슬 멈출 때가 되었겠지
+		PRINTFORMW 「허억……허억……。하아……하아……」
+		PRINTFORMW 「갑자기인가요、정말이지……」
+		CFLAG:808 = 7001
+	CASE 4
+		PRINTFORMW ＞%CALLNAME%의 등을 마사지하고 있다
+		PRINTFORMW 「아아～～～～～～～～거기～～～～～～～～～～」
+		PRINTFORMW ＞아직 젊은데 어깨나 허리、등이 너무 결린다
+		PRINTFORMW ＞게임을 너무 많이 하는 것은 아닐까？
+		PRINTFORMW ＞%CALLNAME%의 어깨에서 등에 걸쳐 가볍게 두드려본다
+		PRINTFORMW ＞게임의 피로가 등뒤에 드러나 있다
+		PRINTFORMW 「아아아아아아아아아아아아」
+		PRINTFORMW 「좋아아아아아아아아아아아」
+		PRINTFORMW ＞%조사처리(CALLNAME,"가")% 기분 좋아 보여서 다행이다
+		CFLAG:808 = 9999
+	CASE 5
+ENDSELECT
+
+;汎用の反応台詞
+@BODYTOUCH_K[[キャラ:키키모라]]
+SELECTCASE RAND:7
+	CASE 0
+		PRINTFORMW 「우─응」
+		PRINTFORMW 「뭐어、얼마든지 만지게 해줄게요、저는 귀여우니까」
+		CFLAG:808 = 7001
+		CALL PRINT_AA_KIRITAN
+	CASE 1
+		PRINTFORMW 「아……」
+		PRINTFORMW （서머너의 손은、이렇게 컸구나……）
+	CASE 2
+		PRINTFORMW 「조금、간지러워욧」
+	CASE 3
+		PRINTFORMW 「앗、아팟」
+		PRINTFORMW 「좀 더 상냥하게 해주실 수 있나요？」
+	CASE 4
+		PRINTFORMW ＞%조사처리(CALLNAME,"는")% 아직 만져지는 감각에 익숙하지 않은 것 같다
+		PRINTFORMW 「응……우으……」
+	CASE 5
+		PRINTFORMW 「서머너의 만지는 방법…야한데요…」
+	CASE 6
+		PRINTW 「그、그런 어설프게 만지는 방법으로는 기분 좋게라니…응」
+		PRINTW 「아닛…、방금 건 아파서 목소리가 나왔을 뿐이니까요！」
+ENDSELECT
+
+@BODYTOUCH_K[[キャラ:키키모라]]_2
+SELECTCASE RAND:5
+	CASE 0
+		PRINTFORMW 「햐、만지지만 말고、슬슬、그……」
+		PRINTFORMW ＞%조사처리(CALLNAME,"는")% 머뭇거리며 몸을 비틀고 있다
+	CASE 1
+		PRINTFORMW ＞%조사처리(CALLNAME,"는")% 애무에 반응하듯 꿈틀꿈틀 몸을 움직이고 있다
+		PRINTFORMW 「응으……응웃」
+	CASE 2
+		PRINTFORMW ＞%CALLNAME%의 몸은 움찔움찔거리며 관능적으로 튀고 있다
+		PRINTFORMW 「응앗…햣」
+	CASE 3
+		PRINTFORMW 「그거、거깃、빙글빙글해서……아、응읏」
+	CASE 4
+		PRINTFORMW 「저、전혀 느끼거나 하지 않았는데욧！？」
+		PRINTFORMW 「애당초、이런 어설프게 만지는걸로 느끼거나 할 리가 없잖아요、에로 만화를 너무 많이 읽었…」
+		PRINT 「햐앙…아앙
+		CALL HEARTMARK_K[[キャラ:키키모라]]
+		PRINT 이、이건 아니에요…！…응히잇
+		CALL HEARTMARK_K[[キャラ:키키모라]]
+		PRINTW 」
+ENDSELECT
+
+
+@SEX_K[[キャラ:키키모라]]
+SELECTCASE RAND:4
+	CASE 0
+		PRINTFORMW 「대단…굵어…」
+		PRINTFORMW 「하지만 저는 〇학생한테 발정하는 로리콘 자〇한테 지지 않을 테니까요」
+		PRINTFORMW 「……조금만 천천히…부탁드립니다…」
+	CASE 1
+		PRINTFORMW 「으으～읏、응큿！」
+		PRINTFORMW 「헤헤…서머너의 작은 자지라니 완전 여유로운데요…」
+		PRINTFORMW 「…그래도…조금만 천천히…부탁드립니다…」
+	CASE 2
+		PRINTFORMW 「…！、어른 자〇씨…！내 안…에、삽입이라니…！」
+		PRINTFORMW 「초등학생의 안에 퓻퓻 하려고、…이렇게 꽉꽉 차서…」
+	CASE 3
+		PRINTFORMW 「로리콘 자〇씨…아이 보지 안에 가득…」
+		PRINTFORMW 「자〇씨…제 안에 들어가버렸네요…」
+ENDSELECT
+
+@SEX_K[[キャラ:키키모라]]_2
+SELECTCASE RAND:5
+	CASE 0
+		PRINT 「서머너
+		CALL HEARTMARK_K[[キャラ:키키모라]]
+		PRINT 、나、이거
+		CALL HEARTMARK_K[[キャラ:키키모라]]
+		PRINT 、이상해져、버려어
+		CALL HEARTMARK_K[[キャラ:키키모라]]
+		PRINTW 」
+	CASE 1
+		PRINT 「앗、앗、응、하읏
+		CALL HEARTMARK_K[[キャラ:키키모라]]
+		PRINTW 」
+		PRINT （머리가、둥실둥실거려…서머너의 자〇 뽑기 싫어…
+		CALL HEARTMARK_K[[キャラ:키키모라]]
+		PRINTW ）
+	CASE 2
+		PRINTFORMW 「에헤헤…서머너의 자〇에 딱 맞는 전용 작고 귀여운 케이스에요」
+		PRINTFORMW 「어떤가요 푹 들어갔죠?」
+	CASE 3
+		PRINTFORMW 「에헤헤…서머너가 더 기뻐한다면야…」
+		PRINTFORMW 「물건처럼 써도 괜찮아요…」
+	CASE 4
+		PRINT 「이、이거 무리이잇
+		CALL HEARTMARK_K[[キャラ:키키모라]]
+		PRINTW 」
+		PRINT 「서머너의 자〇 갱장해에에에엣
+		CALL HEARTMARK_K[[キャラ:키키모라]]
+		PRINTW ｝
+ENDSELECT
+
+@SERVE_F_K[[キャラ:키키모라]]
+SELECTCASE RAND:3
+	CASE 0
+		PRINTFORMW 「어쩔 수 없는 서머너네요♪」
+		PRINTFORMW 「자자、제 입으로 들어가보죠」
+		PRINTFORMW ＞사타구니에 미끈미끈한 감각이 퍼진다
+		CFLAG:808 = 810
+		CALL PRINT_AA_KIRITAN
+	CASE 1
+		PRINTFORMW 「아이 상대로 이렇게 자〇、발딱 세우고…」
+		PRINTFORMW 「입으로 하는 게 그렇게 좋으신가요♪」
+		CFLAG:808 = 812
+		CALL PRINT_AA_KIRITAN
+	CASE 2
+		PRINTFORMW 「응후후、어떤가요、기분 좋은신가요♪」
+		PRINTFORMW 「할짝할짝 할 때마다、점점 딱딱해져요♪」
+		PRINTFORMW 「아이 입으로 퓻퓻 할 수 있나요♪」
+		CFLAG:808 = 810
+		CALL PRINT_AA_KIRITAN
+ENDSELECT
+
+@SERVE_P_K[[キャラ:키키모라]]
+SELECTCASE RAND:2
+	CASE 0
+		PRINTFORMW 「언니처럼 가슴 같은게 없어도、봐요…이렇게 하면…」
+		PRINTFORMW 「어떤가요？」
+	CASE 1
+		PRINTFORMW 「서머너의 자〇、엄청 뜨거워졌네요」
+		PRINTFORMW 「데일 것만 같아요」
+	CASE 2
+		PRINTFORMW 「이렇게 젖꼭지에 대고 끝을 빙글빙글 하면」
+		PRINTFORMW 「어때요？기분 좋죠？」
+ENDSELECT
+;=============================================================
+;戦闘メッセージ
+;=============================================================
+@ENEMY_BATTLE_EVENT_K[[キャラ:키키모라]]_1, ARG, ARG:1, ARG:2
+IF TFLAG:전투이벤트 == 1
+;敵でのデビルＣＯ－ＯＰ発動時の台詞
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%"",72,LEFT%┃
+;			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ENDIF
+IF TFLAG:전투이벤트 == 2
+;敵でのデビルＣＯ－ＯＰ参加時の台詞
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%"",72,LEFT%┃
+;			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ENDIF
+@KOJO_BATTLE_EVENT_K[[キャラ:키키모라]]_1, ARG, ARG:1, ARG:2
+IF TFLAG:전투이벤트 == 1
+;味方パーティでのデビルＣＯ－ＯＰ発動時の台詞
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"계속 나의 턴─！",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			CFLAG:808 =7003
+			CALL PRINT_AA_KIRITAN
+ENDIF
+IF TFLAG:전투이벤트 == 2
+;味方パーティでのデビルＣＯ－ＯＰ参加時の台詞
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"고─！고─！",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ENDIF
+
+;味方パーティでの被召喚時の台詞
+IF TFLAG:전투이벤트 == 3
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"그럼、출격하겠습니다",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			CFLAG:808 =7001
+			CALL PRINT_AA_KIRITAN
+ENDIF
+
+;공격(単体 or 範囲限定）
+IF (TFLAG:전투이벤트 == 11 || TFLAG:전투이벤트 == 13 )
+	;攻撃して倒した
+	IF BASE:(ARG:1):ＨＰ <= 0
+		IF RAND:2
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"후훗……。레벨 차가 너무 많이 났네요",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			CFLAG:808 = 7002
+		ELSE
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"잘 됐네요、이 정도가 딱 좋네요",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			CFLAG:808 = 7002
+		ENDIF
+		CALL PRINT_AA_KIRITAN
+	;無効化された
+	ELSEIF ARG:2 == 0
+		PRINTFORML ┏＠%CALLNAME:ARG,20,LEFT%━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"죄송합니다、잠이 덜 깼습니다",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		CFLAG:808 = 7001
+		CALL PRINT_AA_KIRITAN
+	ENDIF
+ENDIF
+
+;被弾
+IF TFLAG:전투이벤트 == 12 || TFLAG:전투이벤트 == 14
+	;死亡
+	IF BASE:ARG:ＨＰ <= 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"으겟、쓰러졌어요……",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		CFLAG:808 = 7004
+		CALL PRINT_AA_KIRITAN
+	;残り１５％以下
+	ELSEIF 現HP割合(ARG) < 15
+		PRINTFORML ┏＠%CALLNAME:ARG,20,LEFT%━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"메딕！　메디─익！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		CFLAG:808 = 7000
+		CALL PRINT_AA_KIRITAN
+	;大ダメージ
+	ELSEIF ダメージ割合(ARG, ARG:2) > 40
+		PRINTFORML ┏＠%CALLNAME:ARG,20,LEFT%━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"아파아파아파아파！！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		CFLAG:808 = 7000
+		CALL PRINT_AA_KIRITAN
+	ENDIF
+ENDIF
+
+;反射された
+IF TFLAG:전투이벤트 == 15
+	PRINTFORML ┏＠%CALLNAME:ARG,20,LEFT%━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃%"죄송합니다、잠이 덜 깼습니다",72,LEFT%┃
+	PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	CFLAG:808 = 7001
+	CALL PRINT_AA_KIRITAN
+ENDIF
+
+;反射した
+IF TFLAG:전투이벤트 == 16
+	PRINTFORML ┏＠%CALLNAME:ARG,20,LEFT%━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃%"훗、웃기네요",72,LEFT%┃
+	PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	CFLAG:808 = 7002
+	CALL PRINT_AA_KIRITAN
+ENDIF
+
+;回避された
+IF TFLAG:전투이벤트 == 17
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃%"잠깐 회선에 렉이 걸린 것 같네요…",72,LEFT%┃
+	PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	CFLAG:808 = 7004
+	CALL PRINT_AA_KIRITAN
+ENDIF
+
+;回避した
+IF TFLAG:전투이벤트 == 18
+	PRINTFORML ┏＠%CALLNAME:ARG,20,LEFT%━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃%"뭐、제가 진심을 내면、이런 거죠",72,LEFT%┃
+	PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	CFLAG:808 = 7002
+	CALL PRINT_AA_KIRITAN
+ENDIF
+
+;-------------------------------------------------
+;○レベルアップした
+;-------------------------------------------------
+IF TFLAG:전투이벤트 == 91
+	PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃%"레벨～업",72,LEFT%┃
+	PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	CFLAG:808 = 7002
+	CALL PRINT_AA_KIRITAN
+ENDIF
+
+;-------------------------------------------------
+;○戦闘開始
+;-------------------------------------------------
+IF TFLAG:전투이벤트 == 94
+	PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃%"적습입니다",72,LEFT%┃
+	PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	CFLAG:808 = 7001
+	CALL PRINT_AA_KIRITAN
+ENDIF
+
+@KOJO_BATTLE_MESSAGE_K[[キャラ:키키모라]]_1,ARG,ARG:1 = 0
+;-------------------------------------------------
+;○ATTACK
+;-------------------------------------------------
+IF CFLAG:ARG:입력행동 == 0
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	SELECTCASE RAND:3
+		CASE 0
+			PRINTFORML ┃%"욧、홋、탓！",72,LEFT%┃
+			CFLAG:808 = 7006
+		CASE 1
+			PRINTFORML ┃%"오라오라─！",72,LEFT%┃
+			CFLAG:808 = 7006
+		CASE 2
+			PRINTFORML ┃%"사박사박 갑니다─",72,LEFT%┃
+			CFLAG:808 = 7003
+	ENDSELECT
+	PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	CALL PRINT_AA_KIRITAN
+
+
+;충격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1001, 1099)
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃%"키리탄포、전문발사！",72,LEFT%┃
+	PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	CFLAG:808 = 7005
+	CALL PRINT_AA_KIRITAN
+
+;회복
+ELSEIF RANGE(CFLAG:ARG:입력행동,401, 423)
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃%"회복하겠습니─다",72,LEFT%┃
+	PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	CFLAG:808 = 7001
+	CALL PRINT_AA_KIRITAN
+ENDIF
+
+;ELSE
+;	;システムによらず忠誠度を上げたいとか他があったらここに記載
+
+
+
+;AA表示用関数
+@PRINT_AA_KIRITAN
+CHKFONT "ＭＳ Ｐゴシック"
+	SIF RESULT
+		SETFONT "ＭＳ Ｐゴシック"
+	;AA表示あり
+	IF CFLAG:809 == 0
+		;AAと本文の間に一行スペースを入れる
+		PRINTL 　
+		SELECTCASE CFLAG:808
+			CASE 810
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　 　 　 　 ／
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　 __(::{
+				PRINTL 　　　　　　　　　　　　　　　　　　　,...:.:''"´:.:.:.:.:.:.:.｀`～､、
+				PRINTL 　　 　 　 　 　 　 ,、　　　　　 ､ヽ`.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:｀''...､
+				PRINTL 　　　　　　　 　 / 7〕i_..,, ／:.:.:.:.:.:.:.:.:.:.／:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.丶
+				PRINTL 　　　　 　 　 　 {　ﾆ/:.:.:. /:.:.:.:.:.:.:./:.:.:.:.:.:.:.:.:.:.:.:.:.:.:}:.:.:.:.:.:.:.:.:.ヽ
+				PRINTL 　　 　 　 　 　 八　ﾏ二/ :.:. /:.:.:.:.:.:.::/:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.|:.:.:.:.:.:.:.:.::.:._＿＿____
+				PRINTL 　　.　　　　 　 　 〉.. ゝ/:.:.:.:/:.:.:.:.:.:.:/i:.:.:./:.:.:.:.:.:.:.:.:.:.:.:.:|:.:.:.:.:.:.:}:.:.:.:.:.ﾏﾆ　}
+				PRINTL 　　　　 　 　 　 /:.:.:.:.ｧ:.:.:.:.:i:.:.:.:.:.:.:'　:.:..:{:.:.:.{.:.:.:.:.:.:.:.:./:.:.:.:.:.:.:.|:.:.:.:.:.:.ﾆﾆ/ /
+				PRINTL 　　.　 　 　 　 /:.:.:.:.:.:{:.:.:.:.:.|:{:.:.:.:〕ｈ、从:L:./|:.:.:.:.:.:.:./　}:.:.:.:._:.|:.:.:.:.:.:.:v＞　 ,
+				PRINTL 　　　　 　 　 /:.:.:.:.:.:.:.|从:.圦─f苳~´　　｀丶、:/斗匕´:.:.:.|:.:.:.:.:.:.:}...:.:
+				PRINTL 　.　　 　 　 /:.:.:.:.:.:.:.:/:.:.ﾍ{:.|〃 ) 灯　　　　　　　fｘ:.:./:.:.:.:.:.:.:从:.:.:|
+				PRINTL 　　　　 　 /:.:.:.:.:.:.:.:/:.:.:.:.:.:.:.　　r;;　　 　　　　　)屶　ヽL:.ﾊ::.:.:.:.: |
+				PRINTL 　.　　 　 /:.:.:.:.:.:.:.:/ｲ:.:.:.:.:.:. }/:/:/:/:　　 　 ｀　　　　乂;;　　 从:.: {:.:.:.:.:. {
+				PRINTL 　　　　 /:.:.:}:.:ｉ.:.:.:.:.:.lﾙ:.:.}乂{　　　　　　　　　　　　　/:/:/:/:　′:.:.:.|:.:.:.:.:.:.
+				PRINTL 　　　／:.:.:.ｲ:.|:.:.:.:.:{:.:.::ﾚﾍ　:　　　　　..::^:::^ヽ　　　 　 　 　 ｲ:.:.:.:.:.:|:.:.:.:.:.:.:.:.
+				PRINTL 　　 ⌒^~　 |:.:|:.:.:.:.i|:.:.:.:.:.:.圦　　　　/::j ::::ﾊ　　　　　　　7:.:／{:.:.:.:.:.:.:.:.:.
+				PRINTL 　　　　　　 乂{:.:.:.八:.:.:.:.:.:　 ＼　　(乂U::::::::ﾉ〉　 　u　　 /　:.:.:.:.:.:.:.:.:.:.:.}､:.:.
+				PRINTL 　　　　　　　　}:.:/　:.:.:.{　_　／＼≧=-: : : :ｲ　　　　　 ｲ　 .:.:.:.:.:.:.:.:.:.:.:.:.:　＼、
+				PRINTL 　　　　 　 　 .ﾉ 'ｲ　　　｀ 厂_／＼): : : : : : : }斗f七I"　 　 人:.:.:.:ｲ:.:.:.:.:.:;
+				PRINTL 　　　　　　 ／ 　 　 　 　 /　　_／＼): : : : : : :! :i:i:i:／^~　⌒＼ .ﾉｲ:.:.:./
+				PRINTL 　　　　　　(　　　　　　　/　　　｀ﾆﾆ: : : : : : }i:i:i:／　　　　　 　 ＼ﾙﾚ'
+				PRINTL 　　　/⌒^^＼/＼　　 /　　　　: : : : : : : ;i:i:/　　　　 }　　　　 
+				PRINTL --＜　　　　　 　　 ﾌ 　 　　/ { : : : : : : :「 ｀ヽ　　　　　/　 　 　 　 ﾑ
+				PRINTL 　　　　 ｀´　 　 ､丶`　　　　ｲﾒ爻爻爻.ﾉ⌒^　 、　　　　 　 　 　_＼_　-=ﾆ
+				PRINTL ＝＝=-　__ .／　　　　 ／ /爻爻爻爻爻(_／(_／ ＼ ￣｀　 .｡ｓ≦二二
+				PRINTL ≧ｓ｡..   ﾆ≧s｡ )｡ｓ≦
+			CASE 7000
+				PRINTL ::.:.:.:.:.:.:.:.:.:.:.:.√ :.:.:.:.:.:.:.|:.:.:.:.:.／｜:.:.:|:.:.: |:.:.:.:.:.:.:.:.:.:.:.:|:.:.:.:.:.:.:.:.:.:|:.:.:.:.:.:.:.:.:.:.:.:.:.:.∨ﾆﾆ／　／
+				PRINTL ::.:.:.:.:.:.:.:.:.:.:.:√:.:.:.:.:.:.:.: |:.:.:.／ '⌒|:.:.:.|:.:.: |:.:.:.:.:.:.:.:.:.:.:.:|:.:.:.:.:.:.:.:.:.:|:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.∨¨¨´　／
+				PRINTL ::.:.:.:.:.:.:.:.:.:.:√:.:.:.:.:.:.:.:.:.| ／　　＿ |＿人＿|:.:.:.:.:.:.:.:.:.:.:.:|:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:. |￣￣
+				PRINTL ::.:.:.:.:.:.:.:. / |:.:.:.:.:.:.:.:.:.:. |　 _-‐──=- _　＼＼:.:.:.:.:.:.:.:.:.ﾉ:.:.:.:.:.:.: /:.:.:.:/:.:.:.:.:.:.:.:.:.:.:.:.|
+				PRINTL ::.:.:.:.:.:.:.:/ /|:.:.:.:.:.:.:.:.:.:.:.: /´ ＞‐㍉ -ﾆ,_　＼＿￣￣｀＼:.:.:.:.:./:.:.:.:/:.:.:.:.:.:.:.:.:.:.:.:.: |
+				PRINTL ::.:.:.:.:.:.:.{　{ |:.:.:.:.:.:.:.:.:.:.:.:.{/　 /::::::::::::.　　￣　　　　 　 ＼＿＞〈―:.:/:.:.:.:.:.:.:.:.:.:.:.:.:.:.:|
+				PRINTL ::.:.:.:.:.:.:.{　{ |:.:.:.:.:.:.:.:.:.:.｜　　{:::::;;;읏:::}　　　　　　　　　 ______　　＼/ |:.:.:.:.:.:.:.:.:.:./:.:.:;
+				PRINTL ::.:.:.:.:.:.:Λ　|:.:.:.:.:.:.:.:.:.:.:.|:.|　 乂::::::: 　　　　　　　　 　 ＞‐-ｘ　　 |:.|:.:.:.:.:.:.:./:.:.:/
+				PRINTL ::.:.:.:.:.:.:.: 人|:.:.:.:.:.:.:.:.:.:.:.|:.|　 =-- 　 　 ........　　 　 　 /::::::::::::｢ ＼　 |人:.:.: ／:.:.:/ |
+				PRINTL ::.:.:.:.:.:.:.:.: 八:.:.:.:.:.:.:.:.:.:.:.八　　　 　 　 .:::::::::::::::::::..　　{:::::;;읏:::} 　 } ﾉ:.:.:〈／|:.:.／:.: |
+				PRINTL ::.:.:.:.:.:.:.:.:.:.:.Λ:.:.:.:.:.:.:.:.:.:.:.:.:..　　　　 　 　 　 :::::::::::.　 乂:::::: 　 ／:.:.:. |:.:.:.:.:.:.:.:.:.:.|
+				PRINTL ::.:.:.:.:.:.:.:.:.:.:.:.:Λ:.:.:.:.:.:.:.:.:.:.:.:|　　　　　　　　　 　 ,:￣　＼＿　　 /:.:.:.:.:.:.|:.:.:.:.:.:.:.:.:.:.:|
+				PRINTL ::.:.:.:.:.:.:.:.:.:.: /￣＼:.:.:.:.:.:.八|　　 　 ／＼＿　　　　 　 　 　　　/:.:.:.:.:.:.:. |:.:.:.:.:.:.:.:.:.:.:.|
+				PRINTL ::.:.:.:.:.:.:.:.:.:./ﾆ| :.:.:.: /　ﾉ　　　/:.:.＿(＿　 ＼　 　 　 __　 / :.:.:.:.:.:.:.: |:.:.:.:.:.:.:.:.:.:.:|
+				PRINTL ＾＼:.:.:.:.:.:厂＼ﾆ| :. ／ ＼ 　 　 └(＿　 ＼＼　＼    /　{|:.:.:.:.:.:.:.:.:.:.|:.:.:.:.:.:.:.:.:.:.|
+				PRINTL 　　}＿__/}　 　 ∨.ﾉ／-＼　 ＼　　 {　＼＼　 ＼)　　＼{　 ∨:|:.:.:.:.:.:.:.:.:.:|:.:.:.:.:.:.:.:.:.:.|
+				PRINTL 　　|　　　|.　　　 ∨ﾆﾆΛ　　 /＞ ＼　＼＼　　 　 　 ＼　∨:./:.:.:.:.:.: ﾉ :.:.:.:.:. ﾉ:.:.:|
+				PRINTL 　　|　　　|　　　　 ∨ﾆﾆΛ　　　（ ＼ ＼　　　 　 　 　 　 　 ∨|:.:.:.:／:.:.:.:.:.:／|:.:.:.ﾉ
+				PRINTL 　　|　　　|.　　　 　 ∨ﾆﾆΛ　 /ﾆ＼ ＼_)　　　　　　 　 　 　 }ﾉ::／}:.:.:.:.:.／　,ﾉ／
+				PRINTL 　　|　　　|　　　　 　 ∨ﾆﾆΛ/ﾆﾆ＼　　　 　 　 　 　 　 　 {／　 }:.:.／
+			CASE 7001
+				PRINTL 　　　　　　　　 　 　 　 　 　 　 　 ､
+				PRINTL 　　　　　　　　　　　　　　　　 ( (⌒｀
+				PRINTL 　　　　　　　　　　　　　　　　　)>　-‐=＝＝=‐-　 _　　＞ 〔
+				PRINTL 　　　　　　　　 　 ＼　　　 .....::::::::::::::::::::::::::::::::::::､＞ : : }　「
+				PRINTL 　　　　 　 　 　 ｉ{　{::＼,..:::::::::::::::::::::::::::::::::::::::::::::`､.: : : ﾉ 丿
+				PRINTL 　　　　 　 　 　 ｌ{ 　:::::/::::::::::::::::::::::::::::j:::::::::::::::::::::∧／ ..:::::.
+				PRINTL .　　 　 　 　 　 八 弋:::::::: : :i:::::::::::::::::::{::::::::::::::::::: : ∧...::::::::::::.
+				PRINTL 　　　　　　　　　　＼::::: i:: : |:i::::::::::::: ｉ {::::::::i::::::::::::::::/,.:::::::::::::::.
+				PRINTL 　　　　　　　　　　 .:ｉl::::::|:___|:}i_::::::::::-|十ﾆ 人:::::::::: : :}i:::::::::::::::::.
+				PRINTL 　　　　　　　 　 　 i::ｌ|::::::|:::｣｣L∟∟ .｣_jI斗f七: ::::::::: :|l:::::::::::::::::i
+				PRINTL 　　　　　　　　 　 ｉ{::ｌ|::::::jI斗f　 　 　 .爪　ｉ:::::::: : :|l:::::::::::::::::|l
+				PRINTL 　　　　　　　　 　 ｌ{叭:::::ﾊ　V　　　　　ｰ 　 |:::::::::::::|l:::::::::::::::::|[
+				PRINTL 　　　　　　　　 　 ｌ{⌒＼::j}　　　 .:　　　　　　　ｉ|::::::::: ｉ:|l:::::::::::::::::|[
+				PRINTL 　　　　　　　　 　 ｌ{:::::::}i:八 　 　 　 　 　 　 　 ||:::::::::ﾉⅱ:::::::::::::::√
+				PRINTL 　　　　　　　　 　 ｌ{:::::::}ｌ:::公｡_　　 「ゝ　　　　,从 ／　.|l::::::::::::::∥.
+				PRINTL .　　　 　 　 　 　 从:::: 从:: ⌒)≧s｡.,__ ｡s≦⌒ j}ﾄ､　 ｉ|:::::::::::: /′
+				PRINTL .　 　 　 　 　 　 'ﾞ⌒＼:::::::::::ｌ{　 　 _i{{　 　 ／:i:ｉ:〉 从___彡'ﾞ
+				PRINTL 　　　　　 　 　 　 　 　 ＼: : 从＞  l{叭､ ／.:i:i:ｉ:/　 　 　 ､
+				PRINTL 　　 　 　 　 　 　 　 　 　 　 ｱ　　　 .{i:i:i:i, Ζ:ｉ:ｉΖ　　 　 　 `､
+				PRINTL 　　　　　　　　　　 　 　 　 / 　 　 　 ⅦiΖ:i:ｉΖ　　　　　　　_,〉
+				PRINTL 　　　　　　　　　　　　　 , ,′ 　 　 　 .〉ﾞ:ｉ:ｉ:Ζ　　　　.　　_　 　∨
+				PRINTL 　　　　　　　　　　　　　　{　　　　 　 /:i:i:ｉΖ　　　　 i　ｱ゜　　　 V
+				PRINTL 　　　 　 　 　 　 　 　 /　 ',　j}　 　 /:i:i:i:/ 　 　 　 　 }i/　　 　 　 ∨
+				PRINTL 　　　　　　　　 　 　 /　　 '∨{　　.√ｉ:ｉ/　　 　 　 　 :}l　　 　 　 　 ⅥjI斗ｬﾔ
+				PRINTL .　　　　　　　 　 　 / -‐‐-　j廴.. √ｉ:/　　　_｣LL｣_ j}L∟L｣_. 　 　 Ⅶ゜:::i
+				PRINTL 　　　　　　　　＞ 　　 　 　 `寸=‐-＝-‐==‐-　 _　　　　　　｀`'＜ `寸::::: |
+				PRINTL 　 　　　　 　　　　　 ＞ ⌒ヽ:::::::⌒｀`丶､　 ｀丶､　　　　　　　`'＜ : |
+			CASE 7002
+				PRINTL 　　　　　　　　　　　　　＿＿＿＿＿_
+				PRINTL 　　 　 　 　 　 　 ＿／::::::::::::::::::::::::: ＼ ＿＿＿＿
+				PRINTL 　　　 ＿＿＿／ ::::::::::::::::::::::::::::::::::::::::::∨| |
+				PRINTL .　　　|　|-/:::::::::::::::::::::::::::::::| ::::::::::::::: ∨二二ﾉ｜
+				PRINTL 　　　 ＼＼/::::/:::::::::/|::::::::::::::|＼ ::::::::::::::∨＿__.
+				PRINTL .　　 　 　 /::::/:::::::::人|::::::::::::::|| ::::::::::::::::|:::::::‘，
+				PRINTL 　　　　　 |:::::::::::::::/　 |::::::::::::::|　|Λ＿:::::::|::::::::::|
+				PRINTL 　　　　　 |＿|:::::: 笊芋 ￣￣　笊芋　|::: ￣|::::::::: |
+				PRINTL 　 　 　 　 |:::|/V⌒{ V　　 　　　|:::::::::|::::::::: |
+				PRINTL 　 　 　 　 | :::: |::: r읏　　丶　　 　　r읏|:::::::::|::::::::: |
+				PRINTL 　 　 　 　 |::|::::|:::人　　　　､　　　 ﾉ| :::::: 八::::Ν
+				PRINTL 　 　 　 　 |人:::|人::::≧=--　　-=≦ |:ﾍ／ |::::::ﾉ
+				PRINTL .　　　　　　　 ＼::: ＼{　 /＼　　／二)　 |／
+				PRINTL 　　　　　　 　 　 ＼｛　r〈／二二／　＼
+				PRINTL 　　　　　　　(＼　 ∩ /Λ ／二二／∩∩
+				PRINTL .　 　 　 　 　 ＼＼| |/　ﾆ=‐…‐-= | |.| |_　|
+				PRINTL .　 　 　 　 　 r)⊂ )￣{　　　　＿ｎｎf 〈/〉|
+				PRINTL .　 　 　 　 　 ＼)__　 }　{＿＿ {( (ﾟωﾟ{　　　|　＼
+				PRINTL .　　　　　　 　 　 /＼}　{＿　　￣//| | ＼＿）　　＼
+				PRINTL 　　　　　　　 　 /: : : |　{　 ___＿ ------|: : : : ＼　 ＼
+				PRINTL .　　　　　　 　 /: : : : |　厂|ﾆﾆ|　　　　　 |: : : : : :.:＼
+			CASE 7003
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　 　 　 　 　    /＼
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　   /　 　＼
+				PRINTL 　　　　　　　　　　　 　 　 　 　 　 　 　_＿_┌-　　　　　  /　 　 　 ∧
+				PRINTL 　　　　　　　　　　　 　 　 　 　┌━=:::::::::::::＼::::＼　　./　 ./:::ﾊ　 ∧
+				PRINTL 　　　　　　　　　　　　　　　　／::::::＼:::::::＿____＼::::＼ |　　|:::::::|　　∧
+				PRINTL 　　　　　　　　　　　　　 　／:::::::＿／￣,庁￢ 冫::::∧￣￣/　　　　 |
+				PRINTL 　 　 ┌――=　　　　   ::::::::∠　　　似　／/::::::::::::|＿／　　　　/ .|
+				PRINTL 　　　 |　 　 　 　＼ 　 　 └1::::/似　　　　 　 　 ＼:::::::::|::::::::::::＼　　　 |
+				PRINTL 　　　 |　 i⌒＼　　 ＼　    八丿　 ／⌒＼　　　 ∠:::::八:::::::::::::::｀、　 .|
+				PRINTL 　　　 |.　 ＼__ﾉ　　 　 ＼ /::::|　　 ∨　''⌒|　　　　　 ⌒5|:::|:::::::::::::｀、　|
+				PRINTL 　 　 八　　　　　 　 /　 ./::::八　　　＼_　丿 　 　 　 ┌∨:::::::::::::: ｀、
+				PRINTL 　 　 　 ∨　 　＿／ 　 〈∧::::/＼　　　　　　　　　／彡' |　|::::::::::::::|＼〉 |
+				PRINTL . 　 　 　 ∨　　　　　　　　 ∨|::::::＞　　＿__,,.　＜＿__| /::::::::::::::　　　|
+				PRINTL 　　　　　　　　　　 　 　 　 　 И::::::::::::/　 丿／ﾆ／￣∨ﾑ_／}／　　　　|
+				PRINTL 　　　　　　　 ＼　　　　 　 　 　 ＼:::／|／〈/ﾆﾆ/{ ⌒　 |　　 ∨　　　　　 |
+				PRINTL 　　　　　　　　　＼　　　　　／⌒∨/  |ﾆﾆﾆﾆ/ 厶＿　 ∨　　 ＼　　　　 |
+				PRINTL 　　　　　　　　　　 ＼　　　√｀  У|　/ﾆﾆ=-┴‐┤.八　└┬―-＼　 　.|
+				PRINTL 　　　 　 　 　 　 　 　 ＼ 　| r'⌒'’,／￣<⌒''苳⌒＼∧　　 ∨　　　＼　 |
+				PRINTL 　　　 　 　 　 　 　 　 　 ＼| |//|/　 〃⌒＼√ ＼__// ＼ 　　| 　 　 　 ∨|
+				PRINTL 　　　　　　　　　　 　 ＿／ ∨/|＿／￣￣|｣￣|｣⌒＼//,＼/　　　　　 ∨
+				PRINTL 　　　　　　　　　 　 /　/　　丿人ﾆﾆﾆﾆﾆﾆ＼　　　　　＼∧|　　　　　　　＼
+				PRINTL 　　　　　　　 　 　 √ |　　／/ﾆﾆ＼ﾆﾆﾆﾆﾆﾆﾆ- _　　　　∨　　　　　 　 　 ∧
+				PRINTL 　　　　　　　　　　 |　 |_／／ﾆﾆﾆﾆ/＼ﾆﾆﾆﾆﾆﾆﾆﾆ- _　　 ＼　　　　　　 　 ∧
+				PRINTL 　　　　　　　　　　√ /　/ﾆﾆﾆﾆﾆ/: : : :＼ﾆﾆﾆ=―: 〔￣￣￣＼＼　　　　　 ∧
+				PRINTL 　　　　　　　　　 /　 　 /ﾆﾆﾆﾆﾆ/: : : : : : |￣: : : : : : 〔: : : : : :∨＼〉　　　　　 ∧
+				PRINTL 　　　　　　　　／　　　/ﾆﾆ＿_／: : : : : : : |＿＿＿____〔 : : : : : :∨/＼　　　 　   |
+				PRINTL 　　　　　　　/　　　　/(￣: : /: : : :／￣￣i:i:i:/　　　　｀⌒＼: : : ∨//＼　　　  |
+				PRINTL 　　　　　　 /　　　／|/: : : : |＿／∨:i:i:i:i:i:i:i/　　　　　　　　 ⌒＼:∨//＼＿/
+				PRINTL 　　　 　 　 |＿_／　/: : : : :/　　　　∨i:i:i:i:ｉ:|　　　　　　　　　　　　∨＼//∧
+				PRINTL 　　　　　　　　　　 /: : : :／　　　　　 ＼:i:i:i:i:　　　　　　　　　　　　 |::::::∨/∧
+				PRINTL 　　 　 　 　 　 　 /: : ／　　　　　　　　 ｀Yi:i:|　　　　　　　　　　　　 |::::::/∨/∧
+				PRINTL 　　　　　　　　　/:／|　　　　　　　　　　　V┤　　　　　　　　　　　　|:／:::::〉/ ∧
+				PRINTL 　　　　　 　 　 〈/::::::|　　　　　　　　　　 √:|　　　　　　　　　　　　  |:::::::////,∧
+				PRINTL .　 　 　 　 　 　 ∨::::|　　　　　　　　　　 √∧　　　　　　　　　　　　|_／∨/// ∧
+				PRINTL 　　　　　 　 　 　 ＼_|　　　　　　　　　　 √￣ﾍ　　　　　　　　　　　 |　　 ∨/// ∧
+			CASE 7004
+				PRINTL 　　　　　　　　　　 　　 ―――
+				PRINTL 　　　____ ＿＿ ／:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:＼＿＿＿＿
+				PRINTL 　　　|　|ﾆ／:.:.:.:.:/:.:.|:.:.:.:.:.:.:.:.:.:.:.:.:.:.:＼|　|
+				PRINTL .　 　 　 ＼/:.:.:.:.:.─|-‐|ｖ:.:. rｖ|-|--‐:.:.:.:.:.:∨ﾆ/ /
+				PRINTL 　　　　 ＼| :.:.:.:.:. ≫==|:.| :.:.:. | ==≪:.:.:.:.:.: |___／
+				PRINTL 　　　　 　 |:.:.:.〃　⌒|人＿｜ ⌒　ヽ:.:.:Λ|Λ
+				PRINTL .　　 　 　 /:.|八_:.: 乂..　　　乂..├ﾍ/:.:.:.:.Λ
+				PRINTL 　　　 　 /:.:.:.|:.:.:} ￣￣　 　＿￣￣ |:.:.:.:.|:.:.:.:.:.:|
+				PRINTL .　　 　 /:.:.:.: |: 从∪　［　　 　 ┘ 　 |:.:.:.:.|:.:.:.:.:.:|
+				PRINTL 　　　　| :.:.:.:.:|:.:.个:.....　_ 　 　 __　.. :|:.:.:.:.|:.:.:.:.:.:|
+				PRINTL 　　　　|人:.:八／:.:.∨_／｢　 ／廴 ::|/Τ＼
+				PRINTL 　　　　　　＼{＼「　/　|竺|／竺ｱ￣＼
+				PRINTL .　　 　 /￣￣＼／　　|竺|竺ｱ　Ｖ　 |　/￣￣＼
+				PRINTL 　　　 /　　　　　∨ 〈⌒´"''＜⌒＼〉　∨
+				PRINTL 　　　 |　　　　　　|　 |ﾆﾆﾆﾆﾆﾆﾆﾆ|　 / 　 　 　 　 |
+				PRINTL 　　　 |　　　　　　　 /ﾆﾆﾆﾆﾆﾆﾆﾆ|　　　　　　　　 |
+				PRINTL 　　　 | 　 　 　 [＿/￣~|竺｢￣￣Λ＿｣　 　 　 　 |
+				PRINTL .　　　 ＼　　　 ｢ /　 　 |竺|　　 　 Λ　|　　　　　 ﾉ
+				PRINTL 　　　　　 ＼＿.|　＼＿_|竺|_,,止止／　|＿＿_ ／
+				PRINTL .　　　　　　 　 　 └┬┴┬┬┴┬┘
+			CASE 7005
+				PRINTL ―――　　　　　　　　　　　　　　　　　　　　　　　　　 　 　 　 ￣-=二―――――――二=-
+				PRINTL 二――――　　　　　　　　　　　　　　　　　　　　　　　　　　　 　 -=二――――――二=-
+				PRINTL ―二――――　　　　　　　　　　　　　　　　　　　　　　 　 　 　 　 -=二―――――二=-
+				PRINTL ――二二――――　　　　　　　　　　　　　　　　　 　 　 　 　 　 　 -=二――――二=-
+				PRINTL ――――二二――――　　　　　　　　　　　　 　 　 　 　 　 　 　 　 -=二―――二=-
+				PRINTL 二――――――二―――　　　　　　　　　　　　　　　　　　　　　　　 -=二――二=-
+				PRINTL ―二――――――二二―――　　　　　　　　　　　　　　　　 　 　 　 |　-二―二=-　 |
+				PRINTL ――二―――――――二二――＿＿　　　　　　　　　　　　　　　　 |　 ／|―ﾆ 　 ｜｜
+				PRINTL ――――二―――――――二ﾆ― 　 　 ＼　　　　　　　　　　　　 　 ／二j　　 　 　 ｜｜　　　　　　　　　　　　　＿＿
+				PRINTL 　 ―――＝二二――――――ﾆ―‐　　　＼ 　 　 　 ＞―――＜ﾆ/　　　　　 /　｜　　　　　　　　　 　 ／二二二
+				PRINTL 　 　 　 ―――＝二二――――――二|　 　 　 ＼　 ／:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:∨:＜ _____／　　 |　　　　　　　　　　 /二二二二
+				PRINTL 　 　 　 　 　 ―――＝二――――――|　　} ＿＿_/ :.:.:.:.:.:.:.:.:.:.:.:.:|:∨:.:.:|:.:.:.:.:.:＼　　　　｜　　　　　　　　 　 {二二二二
+				PRINTL 　　　　　 　 　 　 　 ―――＝二二――ﾉ　乂二二/:.:.:.:.:.|:.:.:.|:.:.:. -匕|＿ﾉ:.:.:.:.:.:.:.:.:＼　 　 |　　　　　　　　　　/二二二二
+				PRINTL 　　　　　　　　　 　 　 　 　 ――　 `─　 　　ﾉ ｀¨¨ﾟ|:.:.:|＼|__: |:.:.:.:.ｱ方ﾊ ∨:.:.:.:.:.:.|:.:.:.:..　　 | 　 　 　 　 　 　 /二二二二二
+				PRINTL 　　　　　 　 　 　 　 　 　 　 　 　 ＼　　　 ／　 　 /:|:.:.:|:.ｱ方ﾊ￣　 乂　 :.:.:.:.:.:.:|:.:.:.:.l　　 |　　　　　　　　　{二二二二二
+				PRINTL 　　　　　　　　　　　　　　 　 　 　 　 　─　　　 　 :.:人:.:Λ乂　、 　 　 　 {:.:.:.:.:.:ﾉ:.:.:.:.|　 　　　　　　　　　 ＼二二二二
+				PRINTL 　　　　　　　　　　　　　　 　 　 　 　 　 ｀''＜ 　　 |:.:.|:.:.:.:.　　　　⌒　　　八_:／|:.:.:ﾉ 厂＼　　　　　　　　　 /二二二二
+				PRINTL 　　　　　　　　　　　　　　 　 　 　 　 　 　 　 ｀''＜|: 人:.:.:.:.込 　 乂_　 ／/}人:.:.|　　　￣=-　　_　　　　{二二二二二
+				PRINTL 　　　　　　　　　　　　　　　　 　 　 　 　 　 　 　 八:.:.:.:＼:.{ﾆ≧=--＜　/二Λﾆ|　　　　　　　　　 ＼　　 {二二二二二
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　 　 　 　 　 ＼{＼:.:{ ∨-｢＼ﾆﾆ∨/　 ∨-|　　　　　　　　‐=二}＿/二二二二二
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　／　　 ∨| 　 ＼/二/　　　∨|　　　　 /￣￣￣/二二二二二二二
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　 　 　 　 厂　 　 　 〈|.　　 /二/　　　＿Λ　 　 　|　.ｒ ⌒＼二二二二二二二
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　 　 　 ／￣二=-‐　Λ　 /二/_,∠　　 　 Λ　 　 | /|　|　|ＪＪ二二二二二二二
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　 　 　 　 ／　　　　　　　/　　〈二/　＿＿＿＿__ ∨＿〈_人人ﾉ二二二二二二二二二
+				PRINTL 　　　　　　　　　　　　　　　　　　　　 　 　 __／　　　 　 　 　 /　　　 ∨／二二二二二二{二二二二二二二二二二二二二
+				PRINTL 　　　＿＿＿　　　　　　　　　　　　　　／　　　　　　　　　　/　　 厂二二二二二二二二〈二二二二二二二二二二二二二
+				PRINTL 　 /二二二二＼　　　　　　　　　ｒ―　　 　　　　　　　　　 ￣} 　 {二二二二二二二二二 ＼二二二二二二二二二二二二
+				PRINTL ／二二＼＿┌― ￣ ＼＿＿＿　　　 ￣￣￣￣〉二二二二二二二二二二}二二二二二二二二二二二二
+				PRINTL ﾆ二|/ / ＿_　 / 二二二二二二二二二二二二二二二二二二二 ＼二二二二二二二二二二二
+				PRINTL ﾆ二二 ﾆﾆＬ/二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二
+				PRINTL 二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二二
+				PRINTL 二二二二二二二二二二/二二二二二二二二二二二／二二二二二二二二二二二二二二二二二二二二二二二二二二
+			CASE 7006
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 　 　 　 　 ＿　　 　 　 　 　 　 /
+				PRINTL 　　　　　　　　　　　　　　　　　　　　 　 　 　 　 　 　 　 　 ＿__　〃⌒　　　　　 　 ―┼─ 〇 ＿＿
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 //￣|_|/＿__　　　　　　　 / | ｜　　 　 　 |
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　 　 　  　_| |＞:.:.:.:.:.:.:.:.:.:｀丶、 ./＼　　　　　　 ‐─┘　　　　　　
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　　 　 　 　 ／ ／:.:.:.:.:.:.:.:.:.:.:.:.:.＼:.:.:/＼∧　　　　　　　　　 　 　 　 　 
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　 　 ┌v￢　 /:.:.:.:.:.:.:.:/:.:.:.:.:.:.:.:.:.:￣＼ √|┐　　　　　　/　　　　 　 
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　 rＪ/⌒):.:L_/:.:./:.:.:.:.:.:.:|:.::/　　 　 ( _)┐　　―┼― 〇　　
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　 └t_└ｧ/:/≠└‐-=≦:ﾊ/|　　　　　}__／丁| 　　　/ | ＼　　 　 
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　／(＿)/:.:j ,,　 　 　 ＝≠　|:.|　　　　　 ＼: :/｜　　 　＿＿_　　　
+				PRINTL 　　　　 　 　 　 　　　　　　　　　　　　 　)V／　　　八:.人 　 　 ＿__　,,,. /:.|　　　　　　　　　=　　　　　　|　　 
+				PRINTL .　　 　 　 　 　　　　　　　　　　　　　　　└　./⌒＼ ＼_＞＜,,＿＿)　/:./　　／(j￣∨　　 〈　　　――┘　 
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　廴)　)T⌒¨　　/ﾆ|　∠／　  　|人＿｝　 　 |　　　　　　　　 
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　 └―＜/　 　 　 |ﾆﾆ/ﾆﾆ　　　 　 .|: : : :/　　　√　 　 　 　 　 
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　　　 　　 ∨ 　 　 .|／⌒T¨ ￣ 　 　 ＼_/　　　 √　 　 　 　 　 
+				PRINTL 　 　 　 　 　 　 　 　　　　　 　 　 　 　 　 　 　 )V／　∨　　　{_　　 ∨　　　　　　　　　 　 /　　 　 　 　 　 
+				PRINTL 　　　　　　　　　　　　　　　　　　　　　　　　 　 └　 ＼　　 　└― =彡 ／　　　　　　 =彡　　　 　 　 　 
+				PRINTL 　　　　　　　　　 　　　　　　　　　　　　　　 　 　 　 　  　＼　 　|i:i:i:／￣￣＼　　　　　／/　　　　　　　
+				PRINTL .　　　　　　 　 　  　　　　　　　　　　　　　　　　　　　　 　　 ∨　|i:i/　⌒T¨¨: ∧　　　　／
+				PRINTL 　　　　　　　　　　 　　　　　　 　 　 　 　 　 　 　 　 　  　　　|　∧人___j┘＼＿|　　 ／
+				PRINTL 　　　　　　　　　　  　　　　　　　　　　　　　　　　　 　   　 　 |　 ∧∧ 　　　 ＼＿／＼
+				PRINTL 　　　　　　　　　　　 　　　　　　　　　　　　　　　　　　 　　 　 |／:∧_]＿＿／＼:::::::／
+				PRINTL 　　　　　　　　　　　  　　　　　　　　　　　　　　 　 　  　　　 /:::::/::::|::::::::::::::::::/|￣
+		ENDSELECT
+		IF TFLAG:전투중
+			PRINTL 
+		ELSE
+			PRINTW 
+		ENDIF
+	;AA表示なし
+	ELSE
+	ENDIF
+	SETFONT
+
+

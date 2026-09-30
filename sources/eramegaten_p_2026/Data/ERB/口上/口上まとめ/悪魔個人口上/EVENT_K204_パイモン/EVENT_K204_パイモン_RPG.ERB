@@ -1,0 +1,885 @@
+﻿;------------------------------------------ｷﾘﾄﾘｾﾝ------------------------------------------
+
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_K[[キャラ:파이몬]]_パイモン_RPG
+;	Facility	:eraMegaten専用口上テンプレート
+;
+;	Modification Data:
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		？？？					新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;-------------------------------------------------
+;ライセンスについて
+;-------------------------------------------------
+;　K[[キャラ:파이몬]]番の口上本体に準じる
+;-------------------------------------------------
+;-------------------------------------------------
+;敵としてこの口上のキャラが登場した際のCOOP発動時のセリフ
+;-------------------------------------------------
+@KOJO_ENEMY_BATTLE_EVENT_K[[キャラ:파이몬]], ARG, ARG:1, ARG:2
+SELECTCASE GET_BATTLE_EVENT(TFLAG:전투이벤트)
+	;敵でのデビルＣＯ－ＯＰ発動時の台詞
+	CASE "COOP発動"
+		BTL_KOJO_RESULTS:0 = 
+	;敵でのデビルＣＯ－ＯＰ参加時の台詞
+	CASE "COOP参加"
+		BTL_KOJO_RESULTS:0 = 
+ENDSELECT
+
+
+;-------------------------------------------------
+;戦闘中のイベント関連
+;-------------------------------------------------
+@KOJO_BATTLE_EVENT_K[[キャラ:파이몬]], ARG, ARG:1, ARG:2
+SELECTCASE GET_BATTLE_EVENT(TFLAG:전투이벤트)
+	;COOP発動 発動者の番号はARGに格納されている
+	CASE "COOP発動"
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = %CSTR:일인칭%に続きなさい！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 行くわよ！　皆！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 体勢を崩したわ、今よ！
+		ENDSELECT
+	;COOP参加
+	CASE "COOP参加"
+		IF FLAG:행동순1 != -1
+			IF FLAG:행동순1 == MASTER
+				;主人がCOOP発動
+				SELECTCASE RAND:3
+					CASE 0
+						BTL_KOJO_RESULTS:0 = やるじゃない、%CSTR:ARG:이인칭%！
+					CASE 1
+						BTL_KOJO_RESULTS:0 = 褒めてあげるわ、%CSTR:ARG:이인칭%！
+					CASE 2
+						BTL_KOJO_RESULTS:0 = %CSTR:ARG:이인칭%にしては上出来よ！
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:3
+					CASE 0
+						BTL_KOJO_RESULTS:0 = 追撃するわ！
+					CASE 1
+						BTL_KOJO_RESULTS:0 = 負けないんだから！
+					CASE 2
+						BTL_KOJO_RESULTS:0 = トドメを刺してやるわ！
+				ENDSELECT
+			ENDIF
+		ENDIF
+	;被召喚時
+	CASE "被召喚"
+		BTL_KOJO_RESULTS:0 = 
+	;공격　ARGが攻撃をする仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE "与ダメージ_単体"
+		IF BASE:(ARG:1):ＨＰ <= 0
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = これで終わりよ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = やってやったわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 砕け散りなさい！
+			ENDSELECT
+		;弱点をついた。つまりCOOP
+		ELSEIF GET_CREC_ACT(ARG, ARG:1, "WEAK")
+			IF CFLAG:(ARG:1):방어플래그
+				SELECTCASE RAND:3
+					CASE 0
+						BTL_KOJO_RESULTS:0 = あーもう！　硬いわねぇ！
+					CASE 1
+						BTL_KOJO_RESULTS:0 = しぶといのよ！　観念しなさい！
+					CASE 2
+						BTL_KOJO_RESULTS:0 = 無駄な抵抗はやめなさい！
+				ENDSELECT
+			ELSE
+				;こっちはCOOP発動に回すためにカット
+				RETURN 0
+			ENDIF
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 50
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = よし、あと一息よ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = もうすぐ倒せるわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 諦めて倒れなさい！
+			ENDSELECT
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 25
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = どう、効いたかしら？
+				CASE 1
+					BTL_KOJO_RESULTS:0 = まだまだこんなもんじゃないわよ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = このまま畳みかけてやるわ！
+			ENDSELECT
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 0
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 平気そうな顔して、ムカつくわね！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = あんまり効いてないわね……！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = この攻撃じゃダメみたいね……！
+			ENDSELECT
+		;無効された
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 全然効いてないじゃない！　ムカつくわね！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 嘘っ！？　無効化された！？
+				CASE 2
+					BTL_KOJO_RESULTS:0 = まずっ、弾かれた！？
+			ENDSELECT
+		ENDIF
+	;反射された
+	CASE "反射された"
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = きゃあ！？　そんなっ！？
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 反射っ！？　きゃああ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 跳ね返って――！？
+		ENDSELECT
+	;回避された
+	CASE "回避された"
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = そこ、動くな！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 避けてんじゃないわよ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = あーもう！　ムカつくわね！
+		ENDSELECT
+	;被ダメージ
+	;ARGが攻撃を受ける仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE "被ダメージ_単体"
+		;死んだ
+		IF BASE:ARG:ＨＰ <= 0
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = まだ、やれ……る……
+				CASE 1
+					BTL_KOJO_RESULTS:0 = こんな、ところで……
+				CASE 2
+					BTL_KOJO_RESULTS:0 = そん、な……この%CSTR:일인칭%が……
+			ENDSELECT
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 50 || 現HP割合(ARG) < 25
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = よくも……っ！　許さない、許さないわ……！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = ぐぅっ！　やってくれたわね……！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = なめんじゃ、ないわよ……！
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 次は！　%CSTR:일인칭%の番よ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = くぅっ！　まだまだぁ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 痛っ！　許さないわよ！
+			ENDSELECT
+		ENDIF
+	;無効化した
+	CASE "無効化した"
+		;吸収した
+		IF GET_CREC_ACT(ARG:1, ARG, "DRAIN")
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 無駄よ！　こんなの効かないわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = アンタじゃ%CSTR:일인칭%には勝てないわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = それでお終いかしら？
+			ENDSELECT
+		;無効化した
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 無駄よ！　こんなの効かないわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = アンタじゃ%CSTR:일인칭%には勝てないわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = それでお終いかしら？
+			ENDSELECT
+		ENDIF
+	;反射した
+	CASE "反射した"
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 無駄よ！　こんなの効かないわ！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = アンタじゃ%CSTR:일인칭%には勝てないわ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = それでお終いかしら？
+		ENDSELECT
+	;回避した
+	CASE "回避した"
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 遅い！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = そんなの当たらないわ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = そんな攻撃！
+		ENDSELECT
+	;範囲攻撃
+	;ARGが攻撃をする仲魔、ARG:1が攻撃された敵数、ARG:2が無効数(回避も含む)
+	CASE "与ダメージ_範囲_ランダム"
+		;全弾命中した
+		IF ARG:2 == 0
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = よし！　全弾命中よ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = %CSTR:일인칭%からは逃げられないわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = %CSTR:일인칭%にかかればこんなものよ！
+			ENDSELECT
+		;普通
+		ELSEIF ARG:2 < ARG:1
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 捉えたわ、そこっ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 当たったわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = まだまだ行くわよ！
+			ENDSELECT
+		;全弾回避された
+		ELSEIF ARG:2 == ARG:1
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = そこ、動くな！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 避けてんじゃないわよ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = あーもう！　ムカつくわね！
+			ENDSELECT
+		ENDIF
+	;範囲攻撃で敵を撃破した
+	;ARGが攻撃をする仲魔、ARG:1が攻撃された敵数、ARG:2が撃破数
+	CASE "与ダメージ_範囲_ランダム_撃破あり"
+		;全員撃破
+		IF GET_CREC_ACT_SUM(ARG, "敵", "ATTACK") == ARG:2
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = ま、こんなものよ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = %CSTR:일인칭%の相手じゃなかったわね！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = さあ！　次は誰が相手かしら！？
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 残りも撃破してやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = これで終わりじゃないわよ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 何発でも打ち込んでやるわ！
+			ENDSELECT
+		ENDIF
+	;敵味方全体攻撃(詳細処理無し)
+	;CASE "敵味方全体攻撃"
+	;	BTL_KOJO_RESULTS:0 = 
+	;反撃を発動した
+	CASE "反撃発動"
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = お返しよっ！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = こんのおおお！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 迂闊に、近づきすぎなのよっ！
+		ENDSELECT
+	;トリガースキルを発動した
+	CASE "追撃発動"
+		SELECTCASE TFLAG:발동연동스킬
+			;スキルを指定したい場合、反撃と同様、対象スキルの番号をCASEに記載する
+			;CASE (対象スキル番号)
+			;	BTL_KOJO_RESULTS:0 = 
+			;その他
+			CASEELSE
+				BTL_KOJO_RESULTS:0 = 
+		ENDSELECT
+	;バッドステータスを受けた
+	CASE "被バステ付着"
+		SELECTCASE GET_STATE(CFLAG:ARG:상태이상)
+			CASE "HAPPY"
+				BTL_KOJO_RESULTS:0 = あっはっはっは！　楽しくて仕方ないわ！
+			CASE "SHOCK"
+				BTL_KOJO_RESULTS:0 = しびびびびっ！？
+			CASE "FREEZE"
+				BTL_KOJO_RESULTS:0 = さ、寒……
+			CASE "BIND"
+				BTL_KOJO_RESULTS:0 = うーっ！　離しなさいよ！
+			CASE "PALYZE"
+				BTL_KOJO_RESULTS:0 = なに、これ……動け、な……！
+			CASE "PANIC"
+				BTL_KOJO_RESULTS:0 = え、何！？　どうなってるの！？
+			CASE "SLEEP"
+				BTL_KOJO_RESULTS:0 = 急に眠く……ふぁぁ……
+			CASE "CLOSE"
+				BTL_KOJO_RESULTS:0 = そんな、魔法が！？
+			CASE "POISON"
+				BTL_KOJO_RESULTS:0 = うっ……！？　これは、毒……！？
+			CASE "BOMB"
+				BTL_KOJO_RESULTS:0 = か、身体になんか付いてる！？
+			CASE "CHARM"
+				BTL_KOJO_RESULTS:0 = あ、あら？　なんだかあの人が魅力的に……
+			CASE "CURSE"
+				BTL_KOJO_RESULTS:0 = 魔王に呪いなんて、いい度胸してるじゃない……！
+			CASE "FLY"
+				BTL_KOJO_RESULTS:0 = *ブブブブ……*
+			CASE "STONE"
+				BTL_KOJO_RESULTS:0 = ――。
+			CASE "FLAME"
+				BTL_KOJO_RESULTS:0 = あちちちちっ！？　み、水～っ！！
+			CASE "SLIP"
+				BTL_KOJO_RESULTS:0 = きゃっ！？
+			CASE "BRAND"
+				BTL_KOJO_RESULTS:0 = うぅ、これ、嫌な感じ……！
+			;その他の状態異常
+			;CASEELSE
+		ENDSELECT
+	;バトルに勝利した
+	CASE "戦闘勝利"
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 当然の結果よね！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = この%CSTR:ARG:일인칭%がいるんだもの、当然よ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ま、これが%CSTR:ARG:일인칭%達の実力ってワケ！
+		ENDSELECT 
+	;レベルアップした
+	CASE "レベルアップ"
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 強くなったわ！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = これでもっと活躍してやるわ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = まだまだ成長するわよ！
+		ENDSELECT 
+	;逃走に成功した
+	CASE "逃走成功"
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = み、見逃してあげるわ！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = こ、これで勘弁してやるんだから！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = い、今はアンタみたいな雑魚に構ってられないの！
+		ENDSELECT 
+	;逃走に失敗した
+	CASE "逃走失敗"
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = もうっ！　見逃してあげるって言ってんのに！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = しつっこいのよ！　アンタ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = お、追いつかれたわよ！？
+		ENDSELECT 
+	;戦闘開始時
+	CASE "戦闘開始時"
+		;瀕死
+		IF 現HP割合(ARG) < 25
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = や、やってやるわよ……！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = ま、まだ来るの……！？
+				CASE 2
+					BTL_KOJO_RESULTS:0 = ……ちょっと、しんどいかも……
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%の力を見せてやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 戦闘ね！　任せなさい！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = ぶっ飛ばしてやるわ！　覚悟しなさい！
+			ENDSELECT
+		ENDIF
+	;先制攻撃に成功
+	CASE "先制攻撃"
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 先手必勝よ！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = さっさと片付けてやるわ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 間抜けね、食らいなさい！
+		ENDSELECT
+	;バックアタックを受けた
+	CASE "バックアタック"
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = ！？　やっ、やば――っ！？
+				CASE 1
+					BTL_KOJO_RESULTS:0 = う、後ろに――！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = はぁ、はぁ……？　えっ――？
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = %CSTR:ARG:이인칭%、後ろっ！？
+				CASE 1
+					BTL_KOJO_RESULTS:0 = なっ、後ろから！？
+				CASE 2
+					BTL_KOJO_RESULTS:0 = そんな、気づけなかったなんて！？
+			ENDSELECT
+		ENDIF
+	;敵の先制攻撃を受けた
+	CASE "不意打ち"
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = ！？　やっ、やば――っ！？
+				CASE 1
+					BTL_KOJO_RESULTS:0 = う、後ろに――！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = はぁ、はぁ……？　えっ――？
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = %CSTR:ARG:이인칭%、後ろっ！？
+				CASE 1
+					BTL_KOJO_RESULTS:0 = なっ、後ろから！？
+				CASE 2
+					BTL_KOJO_RESULTS:0 = そんな、気づけなかったなんて！？
+			ENDSELECT
+		ENDIF
+	;リンケージに参加した
+	CASE "링케이지참가"
+		IF FLAG:행동순1 == MASTER
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = やるわよ、%CSTR:ARG:이인칭%！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%達の技、見せてやるわよ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%も手伝うわ！　感謝しなさい！
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = やるわよ、合わせるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%達の技、見せてやるわよ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%も手伝うわ！　感謝しなさい！
+			ENDSELECT
+		ENDIF
+ENDSELECT
+
+;-------------------------------------------------
+;スキル発動時の口上
+;-------------------------------------------------
+@KOJO_BATTLE_MESSAGE_K[[キャラ:파이몬]],ARG,ARG:1 = 0
+#DIM SKILL_E
+;使用したスキルの名前をLOCALSに代入
+CALL GET_SKILL_PROP, "SKILL_NAME", CFLAG:ARG:입력행동, ARG
+LOCALS = %RESULTS%
+
+;崩壊してる場合は口上表示しないようにもできる
+;SIF TALENT:ARG:9
+;	RETURN 0
+
+;スキルの効果系列を取得（攻撃系、回復系、支援系など）
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+SKILL_E = RESULT
+;コメントアウトしやすいようにここでIFを消費
+IF 1 == 0
+;-------------------------------------------------
+;状態異常時
+;-------------------------------------------------
+;魅了時
+ELSEIF IS_BADSTATE(ARG, "CHARM")
+	;行動不能（ムラムラしている）
+	IF CFLAG:ARG:입력행동 == [[스킬:행동불능]]
+		BTL_KOJO_RESULTS:0 = はぁ、はぁ……こんな時にぃ……！
+	ELSE
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 覚悟しなさい！　……あれっ？
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 敵に容赦はしないわよ！　……アンタが敵、だったわよね？
+		ENDSELECT
+	ENDIF
+;混乱時
+ELSEIF IS_BADSTATE(ARG, "PANIC")
+	;금전뿌리기
+	IF CFLAG:ARG:입력행동 == [[스킬:금전뿌리기]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = こんなもの、欲しけりゃくれてやるわよ！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あっはっは！　ばら撒き楽しい～！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = お金はパーッと使ってこそよ！
+		ENDSELECT
+	;行動不能（ぼんやりしている）
+	ELSEIF CFLAG:ARG:입력행동 == [[스킬:행동불능]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = ええっと、どうしたらいいの？
+			CASE 1
+				BTL_KOJO_RESULTS:0 = う、動くべきかしら、それとも待っとくべき？
+			CASE 2
+				BTL_KOJO_RESULTS:0 = と、とりあえず落ち着かなきゃ……！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = ええい、ままよ！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = よくわかんないけどえーい！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = とにかく、これならどう！？
+		ENDSELECT
+	ENDIF
+;幸福時の行動不能
+ELSEIF IS_BADSTATE(ARG, "HAPPY") && CFLAG:ARG:입력행동 == [[스킬:행동불능]]
+	;自分の体をまさぐっている(発情中+ムフフ展開時のみ)
+	IF 위험일(ARG) == 2 && FLAG:무후후전개
+		BTL_KOJO_RESULTS:0 = 
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;（通常そのキャラが習得するスキルは、ここで個別でしゃべるようにするといいと思うよ）
+;-------------------------------------------------
+;これは通常攻撃
+ELSEIF GROUPMATCH(CFLAG:ARG:입력행동, [[스킬:ＳＷＯＲＤ]], [[스킬:ＡＴＴＡＣＫ]])
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = えいっ！
+		CASE 1
+			BTL_KOJO_RESULTS:0 = やぁっ！
+		CASE 2
+			BTL_KOJO_RESULTS:0 = だああっ！
+	ENDSELECT
+;섹시댄스
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:섹시댄스]]
+	BTL_KOJO_RESULTS:0 = 
+;캔디보이스
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:캔디보이스]]
+	BTL_KOJO_RESULTS:0 = 
+;파이널누드
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:파이널누드]]
+	BTL_KOJO_RESULTS:0 = 
+;-------------------------------------------------
+;銃攻撃（特殊弾丸含む）
+;-------------------------------------------------
+ELSEIF INRANGE(CFLAG:ARG:입력행동,2101, 2200)
+;-------------------------------------------------
+;基本行動
+;-------------------------------------------------
+ELSEIF INRANGE(CFLAG:ARG:입력행동,2301, 2400)
+	;ＣＨＡＮＧＥ
+	IF CFLAG:ARG:입력행동 == [[스킬:ＣＨＡＮＧＥ]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = えいっ！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = やぁっ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = だああっ！
+		ENDSELECT
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;-------------------------------------------------
+;アイテム
+;-------------------------------------------------
+ELSEIF INRANGE(CFLAG:ARG:입력행동,3001, 3500)
+	BTL_KOJO_RESULTS:0 = 
+;-------------------------------------------------
+;リンケージ
+;-------------------------------------------------
+ELSEIF INRANGE(CFLAG:ARG:입력행동,4000, 5000)
+	;메시아라이저
+	IF CFLAG:ARG:입력행동 == [[스킬:메시아라이저]]
+		BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%と%CSTR:ARG:이인칭%で、負けるわけがないんだから！
+	;Ｌ히트라이저
+	;全角なので注意
+	ELSEIF CFLAG:ARG:입력행동 == [[스킬:Ｌ히트라이저]]
+		BTL_KOJO_RESULTS:0 = 
+	;사망유희
+	ELSEIF CFLAG:ARG:입력행동 == [[스킬:사망유희]]
+		BTL_KOJO_RESULTS:0 = 
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;魔法少女系
+ELSEIF INRANGE(CFLAG:ARG:입력행동,2989, 2999)
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = この魔法、%CSTR:ARG:일인칭%達のとは何か違うわね……
+		CASE 1
+			BTL_KOJO_RESULTS:0 = やってやるわ！
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 魔法少女の力ならどうよ！
+	ENDSELECT
+;-------------------------------------------------
+;汎用スキル
+;-------------------------------------------------
+;スキルの継承相性ごとに喋らせる口上
+;-------------------------------------------------
+ELSE
+	CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", CFLAG:ARG:입력행동, ARG
+	LOCAL = RESULT
+	;継承タイプ名をGET_TYPE()で取得し、その内容＝継承タイプ名で分岐
+	SELECTCASE GET_SUCCESSION(LOCAL)
+		CASE "검격"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 切り刻んでやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 真っ二つよ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 細切れにしてやるわ！
+			ENDSELECT
+		CASE "비구"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 撃ち抜くわよ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 蜂の巣にしてやるわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 覚悟しなさい！
+			ENDSELECT
+		CASE "타격"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = ぶん殴ってやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = ボッコボコにしてやるわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 覚悟しなさい！
+			ENDSELECT
+		CASE "전술"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 悪魔の力、見せてやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = ええーい！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 覚悟しなさい！
+			ENDSELECT
+		CASE "회복"
+			;全体回復
+			IF CFLAG:ARG:타겟 > 6
+				BTL_KOJO_RESULTS:0 = みんな大丈夫！？　へばんじゃないわよ！
+			ELSE
+				SELECTCASE RAND:3
+					CASE 0
+						BTL_KOJO_RESULTS:0 = 待ってて！　今治すわ！
+					CASE 1
+						BTL_KOJO_RESULTS:0 = これでもう大丈夫よ！
+					CASE 2
+						BTL_KOJO_RESULTS:0 = ほら、もう痛くないでしょ？
+				ENDSELECT
+			ENDIF
+		CASE "지원"
+			;強化系
+			IF GROUPMATCH(CFLAG:ARG:입력행동, [[스킬:타루・카쟈]], [[스킬:스쿠・카쟈]], [[스킬:마카・카쟈]], [[스킬:라쿠・카쟈]], [[스킬:데・쿤다]], [[스킬:사마・카쟈]])
+				SELECTCASE RAND:2
+					CASE 0
+						BTL_KOJO_RESULTS:0 = ほら、これで頑張りなさい！
+					CASE 1
+						BTL_KOJO_RESULTS:0 = 援護するわ！　それっ！
+				ENDSELECT
+			;弱体系
+			ELSEIF GROUPMATCH(CFLAG:ARG:입력행동, [[스킬:타룬・다]], [[스킬:스쿤・다]], [[스킬:마칸・다]], [[스킬:라쿤・다]], [[스킬:데・카쟈]], [[스킬:사만・다]])
+				SELECTCASE RAND:2
+					CASE 0
+						BTL_KOJO_RESULTS:0 = アンタなんか、これでへにゃっちゃえ！
+					CASE 1
+						BTL_KOJO_RESULTS:0 = 思い通りになんてさせないわよ！
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RAND:2
+					CASE 0
+						BTL_KOJO_RESULTS:0 = これで決めるわ！
+					CASE 1
+						BTL_KOJO_RESULTS:0 = 行くわよ！　覚悟しなさい！
+				ENDSELECT
+			ENDIF
+		CASE "방어"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 弾き返してやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 防御は任せなさい！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = これで安心ね！
+			ENDSELECT
+		CASE "화염"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 焼き尽くしてやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = やってやるわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 火炎の力ならどうよ！
+			ENDSELECT
+		CASE "빙결"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 氷像にしてやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = やってやるわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 氷結の力ならどうよ！
+			ENDSELECT
+		CASE "전격"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 黒こげにしてやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = やってやるわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 電撃の力ならどうよ！
+			ENDSELECT
+		CASE "충격"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = バラバラにしてやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = やってやるわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 衝撃の力ならどうよ！
+			ENDSELECT
+		CASE "신경"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 神経ズタズタにしてやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = やってやるわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 神経の力ならどうよ！
+			ENDSELECT
+		CASE "정신"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 脳みそぐちゃぐちゃにしてやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = やってやるわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 精神の力ならどうよ！
+			ENDSELECT
+		CASE "파마"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 神の元に送ってやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = やってやるわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 破魔の力ならどうよ！
+			ENDSELECT
+		CASE "주살"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 呪い殺してやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = やってやるわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 呪殺の力ならどうよ！
+			ENDSELECT
+		CASE "지변"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 地面のシミにしてやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = やってやるわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 地変の力ならどうよ！
+			ENDSELECT
+		CASE "수격"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 溺れさせてやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = やってやるわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 水撃の力ならどうよ！
+			ENDSELECT
+		CASE "질풍"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 風で切り刻んでやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = やってやるわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 疾風の力ならどうよ！
+			ENDSELECT
+		CASE "중력"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 押し潰してやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = やってやるわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 重力の力ならどうよ！
+			ENDSELECT
+		CASE "핵열"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 焼き尽くしてやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = やってやるわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 核熱の力ならどうよ！
+			ENDSELECT
+		CASE "만능"
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 全部吹っ飛ばしてやるわ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = やってやるわ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 万能の力ならどうよ！
+			ENDSELECT
+		;その他汎用スキルセリフ
+		CASEELSE
+			BTL_KOJO_RESULTS:0 = 
+	ENDSELECT
+ENDIF
+;-------------------------------------------------
+;真・その他
+;-------------------------------------------------
+;ここまでで全く口上が指定されていなかった場合のみ喋る
+;-------------------------------------------------
+IF BTL_KOJO_RESULTS:0 == ""
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = これならどう！
+		CASE 1
+			BTL_KOJO_RESULTS:0 = やってやるわ！
+		CASE 2
+			BTL_KOJO_RESULTS:0 = ええーい！
+	ENDSELECT
+ENDIF
+

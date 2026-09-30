@@ -1,0 +1,979 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_K[[キャラ:데모니카오퍼레이터]]_데모니카오퍼레이터_SUPORT.ERB
+;	Facility	:デモニカオペレーターナビ口上
+;	Licence		:ライセンスフリー。ご自由にどうぞ
+;	Author		:west_117
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;-------------------------------------------------
+;〇メモ
+;-------------------------------------------------
+;ナビ口上
+;デモニカオペレーター（賢そうな女性）
+;デモニカスーツに習熟しているし、「シュバルツバース調査隊」ってエリートの集いだろうしプログラムやレーダーや使いこなせるはず。賢そうだし
+;というか賢そうなお姉さん戦闘員はオペレーターも出来ると古今東西決まってるのでスマートに出来ます
+;
+;イメージとしてはミスは少なく数字を信頼しているタイプであまり感情を出さない系だが鉄面皮でもなくぶっちゃける時はぶっちゃける感じで…
+;-------------------------------------------------
+
+;=========================================
+;ナビ口上の存在確認
+;この関数が設定されていないと口上が存在しない扱いになる
+;=========================================
+@IS_EXIST_KOJO_BATTLE_NAVI_K[[キャラ:데모니카오퍼레이터]], ARG
+RETURN 1
+
+;=========================================
+;以下ナビ口上、京都じゃない方の双葉はんから拝借した古代ちゃん口上から拝借、本当に申し訳ない
+;造魔口上（虚心系造魔口上）からも拝借させていただきました
+;
+;TSTR:네비_시추에이션_메인		主に呼び出しタイミングを定義(戦闘開始/メイン画面/戦闘終了)
+;TSTR:네비_시추에이션_서버1		状況を定義
+;TSTR:네비_시추에이션_서버2		状況の補足オプション
+;=========================================
+@KOJO_BATTLE_NAVI_K[[キャラ:데모니카오퍼레이터]], ARG
+;右のような指定も可能→SETCOLOR 0xA0A0A0
+;色見本に#ABCDEFというような書き方がされていた場合は、こちらの書き方(SETCOLOR 0xABCDEF)を使うと良い
+;水色
+;SETCOLOR 0x33ffcc
+;LOCALS = {ARG:1}
+;独自定義
+#DIM 方位
+#DIM 距離
+#DIM MAXハーモナイザー出力
+#DIM 現在ハーモナイザー出力
+#DIM ハーモナイザー出力％
+#DIM 撃破数
+#DIM 戦闘終了rand値
+現在ハーモナイザー出力 = GET_ハーモナイザー出力()
+IF MAXハーモナイザー出力 == 0
+	;戦闘終了時に0になるので戦闘開始時にのみ代入される想定
+	MAXハーモナイザー出力 = GET_ハーモナイザー出力()
+ENDIF
+SELECTCASE TSTR:네비_시추에이션_메인
+	CASE "戦闘開始"
+		SELECTCASE TSTR:네비_시추에이션_서버1
+			CASE "통상"
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "格下"
+						IF TFLAG:적초기배치수 >= 1 && TFLAG:적초기배치수 <= 3
+							; 敵1~3体
+							BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体。
+							BTL_KOJO_RESULTS:1 = データ上では負ける要素がありません。各個撃破してください
+						ELSEIF TFLAG:적초기배치수 >= 4 && TFLAG:적초기배치수 <= 6
+							; 敵4~6体
+							BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体を確認。
+							BTL_KOJO_RESULTS:1 = 戦力比較全く問題ありません。無力化をお願いします
+						ELSEIF TFLAG:적초기배치수 >= 7 && TFLAG:적초기배치수 <= 9
+							; 敵7~9体
+							BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体です。
+							BTL_KOJO_RESULTS:1 = 格下ですが数が多いです。足を掬われぬ様注意してください
+						ELSE
+							; 敵10体
+							BTL_KOJO_RESULTS:0 = 敵反応多数確認。
+							BTL_KOJO_RESULTS:1 = 敵の戦力値は低いので範囲攻撃による殲滅も考慮してください
+						ENDIF
+					CASE "同格"
+						IF TFLAG:적초기배치수 >= 1 && TFLAG:적초기배치수 <= 3
+							; 敵1~3体
+							BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体。
+							BTL_KOJO_RESULTS:1 = このパーティならば問題はないかと
+						ELSEIF TFLAG:적초기배치수 >= 4 && TFLAG:적초기배치수 <= 6
+							; 敵4~6体
+							BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体補足。
+							BTL_KOJO_RESULTS:1 = 数値上の戦力値はほぼ同等。念の為注意してください
+						ELSEIF TFLAG:적초기배치수 >= 7 && TFLAG:적초기배치수 <= 9
+							; 敵7~9体
+							BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体を確認。
+							BTL_KOJO_RESULTS:1 = まずは数を減らすことを推奨します
+						ELSE
+							; 敵10体
+							BTL_KOJO_RESULTS:0 = 敵反応多数確認。
+							BTL_KOJO_RESULTS:1 = 戦力比較で負けています。逃走も視野に入れてはどうでしょう？
+						ENDIF
+					CASE "格上"
+						; 格上の場合はボスを考慮
+						IF TFLAG:보스플래그있음
+							IF FLAG:도주불가플래그
+								; ボスでかつ逃走不可
+								IF TFLAG:적초기배치수 == 1
+									; 敵1体
+									BTL_KOJO_RESULTS:0 = 敵は通常の戦力分析では測りきれない強い力を持っているようです
+									BTL_KOJO_RESULTS:1 = 数をいかして全力の連携を叩き込むことを推奨します
+								ELSEIF TFLAG:적초기배치수 >= 2 && TFLAG:적초기배치수 <= 3
+									; 敵2~3体
+									BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体。
+									BTL_KOJO_RESULTS:1 = 相当の強敵です。数を減らすことを考えましょう
+								ELSEIF TFLAG:적초기배치수 >= 4 && TFLAG:적초기배치수 <= 6
+									; 敵4~6体
+									BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体！
+									BTL_KOJO_RESULTS:1 = 戦力比較ではこちらが不利。慎重に戦術を探りましょう
+								ELSEIF TFLAG:적초기배치수 >= 7 && TFLAG:적초기배치수 <= 9
+									; 敵7~9体
+									BTL_KOJO_RESULTS:0 = 敵合計…{TFLAG:적초기배치수}体です。
+									BTL_KOJO_RESULTS:1 = 余力を残さず全力で最大火力を叩き込みましょう
+								ELSE
+									; 敵10体
+									BTL_KOJO_RESULTS:0 = 強敵反応多数…
+									BTL_KOJO_RESULTS:1 = こちらの数が減ってはますます不利です。隊員の体力に注意してください
+								ENDIF
+							ELSE
+								; ボスでかつ逃走可（そんな事ありえるのかしら）
+								IF TFLAG:적초기배치수 == 1
+									; 敵1体
+									BTL_KOJO_RESULTS:0 = 敵は相当の強敵のようです
+									BTL_KOJO_RESULTS:1 = 壊滅的な被害を被る前に撤退も視野に入れてください
+								ELSEIF TFLAG:적초기배치수 >= 2 && TFLAG:적초기배치수 <= 3
+									; 敵2~3体
+									BTL_KOJO_RESULTS:0 = 敵は{TFLAG:적초기배치수}体です
+									BTL_KOJO_RESULTS:1 = 念の為逃走経路を確保します
+								ELSEIF TFLAG:적초기배치수 >= 4 && TFLAG:적초기배치수 <= 6
+									; 敵4~6体
+									BTL_KOJO_RESULTS:0 = 強敵の反応が{TFLAG:적초기배치수}体。
+									BTL_KOJO_RESULTS:1 = 念の為ですが、逃走経路を解析は完了済です
+								ELSE
+									; 敵7～10体
+									BTL_KOJO_RESULTS:0 = 強敵反応複数確認。
+									BTL_KOJO_RESULTS:1 = 本当に今戦う必要あります？
+								ENDIF
+							ENDIF
+						ELSE
+							IF FLAG:도주불가플래그
+								; ボスでないが逃走不可
+								IF TFLAG:적초기배치수 >= 1 && TFLAG:적초기배치수 <= 3
+									; 敵1~3体
+									BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体を確認
+									BTL_KOJO_RESULTS:1 = 強敵ですが逃走ルート確保できません…多少の被害は覚悟するしかなさそうです
+								ELSEIF TFLAG:적초기배치수 >= 4 && TFLAG:적초기배치수 <= 6
+									; 敵4~6体
+									BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体…
+									BTL_KOJO_RESULTS:1 = すみません、完全に敵にマークされてます。逃走は難しいと思います…
+								ELSEIF TFLAG:적초기배치수 >= 7 && TFLAG:적초기배치수 <= 9
+									; 敵7~9体
+									BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体！
+									BTL_KOJO_RESULTS:1 = 敵は連携して逃げ道を塞いでいます…強敵ですし、全力で迎撃を。
+								ELSE
+									; 敵10体
+									BTL_KOJO_RESULTS:0 = 強敵反応多数…
+									BTL_KOJO_RESULTS:1 = 完全に囲まれています。総員全力で迎撃を！
+								ENDIF
+							ELSE
+								; ボスでないが逃走可（ただの格上の敵）
+								IF TFLAG:적초기배치수 >= 1 && TFLAG:적초기배치수 <= 3
+									; 敵1~3体
+									BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体、強敵です。
+									BTL_KOJO_RESULTS:1 = 節約を考慮すると逆に損害が大きくなりそうですね
+								ELSEIF TFLAG:적초기배치수 >= 4 && TFLAG:적초기배치수 <= 6
+									; 敵4~6体
+									BTL_KOJO_RESULTS:0 = 強敵{TFLAG:적초기배치수}体です
+									BTL_KOJO_RESULTS:1 = 戦力比較ではこちらが負けています…戦うならば多少の被害は覚悟するしかなさそうです
+								ELSEIF TFLAG:적초기배치수 >= 7 && TFLAG:적초기배치수 <= 9
+									; 敵7~9体
+									BTL_KOJO_RESULTS:0 = 強敵反応{TFLAG:적초기배치수}。
+									BTL_KOJO_RESULTS:1 = 現在の我々の戦力では早すぎたかも知れませんね…撤退も視野にいれるべきかと
+								ELSE
+									; 敵10体
+									BTL_KOJO_RESULTS:0 = 強敵反応多数。
+									BTL_KOJO_RESULTS:1 = 即時撤退を推奨します。全滅する前に帰りましょうよ
+								ENDIF
+							ENDIF
+						ENDIF
+				ENDSELECT
+			CASE "先制攻撃"
+				IF SOFT_ON("Mr.サプライズ")
+					方位 = RAND:11 + 1
+					SELECTCASE TSTR:네비_시추에이션_서버2
+						CASE "格下"
+							距離 = RAND:20 + 30
+							BTL_KOJO_RESULTS:0 = Mr.サプライズアラート。{方位}時方向、距離は{距離}。
+							BTL_KOJO_RESULTS:1 = 油断しきってる敵を感知しました。お好きなように
+						CASE "同格"
+							距離 = RAND:20 + 20
+							BTL_KOJO_RESULTS:0 = Mr.サプライズに感あり。{方位}時の方向、距離{距離}。
+							BTL_KOJO_RESULTS:1 = 座標転送します。攻撃開始してください
+						CASE "格上"
+							距離 = RAND:20 + 10
+							BTL_KOJO_RESULTS:0 = Mr.サプライズに反応あり！{方位}時、距離{距離}…
+							BTL_KOJO_RESULTS:1 = 後方に回り込んで……今です！
+					ENDSELECT
+				ELSE
+					SELECTCASE TSTR:네비_시추에이션_서버2
+						; ソフトが無いので距離や方位は測れない
+						CASE "格下"
+							BTL_KOJO_RESULTS:0 = 敵の反応有り。奇襲可能です。
+							BTL_KOJO_RESULTS:1 = がっつりやっちゃってください
+						CASE "同格"
+							BTL_KOJO_RESULTS:0 = こちらを感知していない敵を発見。
+							BTL_KOJO_RESULTS:1 = 背後から攻撃を開始してください
+						CASE "格上"
+							BTL_KOJO_RESULTS:0 = 敵発見。今なら奇襲できます。
+							BTL_KOJO_RESULTS:1 = 即座に行動を！
+					ENDSELECT
+				ENDIF
+			CASE "バックアタック"
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "格下"
+						BTL_KOJO_RESULTS:0 = 背後から敵襲です！
+						BTL_KOJO_RESULTS:1 = 格下ですが策を練っていたようです…ぬかりました。至急迎撃を！
+					CASE "同格"
+						BTL_KOJO_RESULTS:0 = 敵襲！後ろです！
+						BTL_KOJO_RESULTS:1 = 落ち着いて陣形を立て直してください！
+					CASE "格上"
+						BTL_KOJO_RESULTS:0 = ッ！背後から敵の襲撃です！
+						BTL_KOJO_RESULTS:1 = いつの間に…！耐えてください！
+				ENDSELECT
+			CASE "バックアタック阻止"
+				; バックアタックなので4~8時方向になるはず
+				方位 = RAND:4 + 4
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "格下"
+						距離 = RAND:10 + 20
+						BTL_KOJO_RESULTS:0 = 百太郎アラートです。{方位}時の方向、距離は{距離}。
+						BTL_KOJO_RESULTS:1 = 後ろからしたり顔でやってきますよ。返り討ちにしてあげましょう
+					CASE "同格"
+						距離 = RAND:10 + 10
+						BTL_KOJO_RESULTS:0 = 百太郎に感あり。{方位}時方向、距離{距離}。
+						BTL_KOJO_RESULTS:1 = 後方からやってきます。至急隊列を入れ替えてください
+					CASE "格上"
+						距離 = RAND:10 + 5
+						BTL_KOJO_RESULTS:0 = 百太郎アラート！後方{方位}時、距離{距離}から敵、急速接近！
+						BTL_KOJO_RESULTS:1 = 反転１８０度！迎撃準備！
+				ENDSELECT
+			CASE "不意打ち"
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "格下"
+						BTL_KOJO_RESULTS:0 = ッ…！敵襲です！
+						BTL_KOJO_RESULTS:1 = すみません、私のアラートミスです…戦力値は低いので、耐えてください！
+					CASE "同格"
+						BTL_KOJO_RESULTS:0 = 敵襲です！
+						BTL_KOJO_RESULTS:1 = 前方、敵の攻撃が飛んできます…！陣形を崩さないよう！
+					CASE "格上"
+						BTL_KOJO_RESULTS:0 = いつの間に…！
+						BTL_KOJO_RESULTS:1 = 敵の攻撃です！防御態勢を！
+				ENDSELECT
+			CASE "不意打ち阻止"
+				方位 = RAND:11 + 1
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "格下"
+						距離 = RAND:20 + 20
+						BTL_KOJO_RESULTS:0 = 百太郎アラート。{方位}時方向、距離は{距離}。
+						BTL_KOJO_RESULTS:1 = 突っ込んでくるので引き付けてぶっ叩いてください
+					CASE "同格"
+						距離 = RAND:20 + 10
+						BTL_KOJO_RESULTS:0 = 百太郎反応です。{方位}時の方向、距離{距離}。
+						BTL_KOJO_RESULTS:1 = 隠れて攻撃準備を行っているので逆に突撃して敵のアドバンテージを無くしましょう
+					CASE "格上"
+						距離 = RAND:20 + 5
+						BTL_KOJO_RESULTS:0 = 百太郎アラート！{方位}時、距離{距離}！
+						BTL_KOJO_RESULTS:1 = …敵も感づいて不意打ちの選択を捨て正面から襲ってくるようです。迎撃を！
+				ENDSELECT
+		ENDSELECT
+	CASE "メイン画面"
+		SELECTCASE TSTR:네비_시추에이션_서버1
+			CASE "重度の危機"
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "半壊"
+						IF SOFT_ON("ハーモナイザー") 
+							IF FLAG:도주불가플래그
+								IF 現在ハーモナイザー出力 == 1
+									BTL_KOJO_RESULTS:0 = ハーモナイザー機能不全。
+									BTL_KOJO_RESULTS:1 = 強化補正が消えて戦力値が大幅に下がっています！至急、隊員の蘇生を！
+								ELSEIF MAXハーモナイザー出力 > 現在ハーモナイザー出力
+									ハーモナイザー出力％ = (現在ハーモナイザー出力 * 100) / MAXハーモナイザー出力
+									BTL_KOJO_RESULTS:0 = ハーモナイザー出力低下。現在の出力、{ハーモナイザー出力％}％。強化補正値{現在ハーモナイザー出力}％。
+									BTL_KOJO_RESULTS:1 = 人間隊員は弱体化してしまっています。至急COMP持ちの隊員の蘇生を！
+								ELSE
+									BTL_KOJO_RESULTS:0 = 手ひどくやられていますが、ハーモナイザー出力は下がっていません
+									BTL_KOJO_RESULTS:1 = 強化補正値{現在ハーモナイザー出力}％。落ち着いて隊を立て直してください！
+								ENDIF
+							ELSE
+								IF 現在ハーモナイザー出力 == 1
+									BTL_KOJO_RESULTS:0 = ハーモナイザー機能不全。強化補正が消え戦力値は大幅に減少。
+									BTL_KOJO_RESULTS:1 = 危険です。即座に撤退してください！
+								ELSEIF MAXハーモナイザー出力 > 現在ハーモナイザー出力
+									ハーモナイザー出力％ = (現在ハーモナイザー出力 * 100) / MAXハーモナイザー出力
+									BTL_KOJO_RESULTS:0 = ハーモナイザー出力低下。現在の出力{ハーモナイザー出力％}％。強化補正値{現在ハーモナイザー出力}％。
+									BTL_KOJO_RESULTS:1 = かなり不利です。撤退を進言します。このままでは全滅も有りえます！
+								ELSE
+									BTL_KOJO_RESULTS:0 = ハーモナイザー出力低下せず。強化補正値{現在ハーモナイザー出力}％。
+									BTL_KOJO_RESULTS:1 = ですが隊は半壊状態です。手遅れになる前に撤退を視野に入れてください
+								ENDIF
+							ENDIF
+						ELSE
+							IF FLAG:도주불가플래그
+								BTL_KOJO_RESULTS:0 = 死傷者多数！逃走ルートも完全に塞がれています…
+								BTL_KOJO_RESULTS:1 = 確実に隊を立て直すか、覚悟を決めて一斉攻撃を！
+							ELSE
+								BTL_KOJO_RESULTS:0 = 死傷者多数！
+								BTL_KOJO_RESULTS:1 = 全滅する前に撤退もご一考ください！
+							ENDIF
+						ENDIF
+					CASE "異常半壊"
+						IF SOFT_ON("ハーモナイザー") 
+							IF FLAG:도주불가플래그
+								IF 現在ハーモナイザー出力 == 1
+									BTL_KOJO_RESULTS:0 = ハーモナイザー機能不全。
+									BTL_KOJO_RESULTS:1 = 強化補正が消え戦力値が大幅に下がっています！至急、隊の立て直しを！
+								ELSEIF MAXハーモナイザー出力 > 現在ハーモナイザー出力
+									ハーモナイザー出力％ = (現在ハーモナイザー出力 * 100) / MAXハーモナイザー出力
+									BTL_KOJO_RESULTS:0 = ハーモナイザー出力低下。現在の出力、{ハーモナイザー出力％}％。強化補正値{現在ハーモナイザー出力}％。
+									BTL_KOJO_RESULTS:1 = 人間隊員さらに弱体化。追い打ちな状態です…至急COMP持ちの隊員の回復を！
+								ELSE
+									BTL_KOJO_RESULTS:0 = 状態異常者多数ですがハーモナイザーの出力は低下せず。
+									BTL_KOJO_RESULTS:1 = 強化補正値{現在ハーモナイザー出力}％。これ以上不利になる前に回復を！
+								ENDIF
+							ELSE
+								IF 現在ハーモナイザー出力 == 1
+									BTL_KOJO_RESULTS:0 = ハーモナイザー機能不全。強化補正が消え戦力値は大幅に減少。
+									BTL_KOJO_RESULTS:1 = 危険です。全体回復ができないならば至急撤退してください！
+								ELSEIF MAXハーモナイザー出力 > 現在ハーモナイザー出力
+									ハーモナイザー出力％ = (現在ハーモナイザー出力 * 100) / MAXハーモナイザー出力
+									BTL_KOJO_RESULTS:0 = ハーモナイザー出力低下。現在の出力{ハーモナイザー出力％}％。強化補正値{現在ハーモナイザー出力}％。
+									BTL_KOJO_RESULTS:1 = 人間隊員の性能大幅低下中。全体回復は可能ですか？厳しいようならば撤退してください！
+								ELSE
+									BTL_KOJO_RESULTS:0 = 隊はめちゃくちゃですがハーモナイザー出力維持。強化補正値{現在ハーモナイザー出力}％。
+									BTL_KOJO_RESULTS:1 = 面倒なようならば今の内に撤退しましょうか
+								ENDIF
+							ENDIF
+						ELSE
+							IF FLAG:도주불가플래그
+								BTL_KOJO_RESULTS:0 = 隊員の半数以上が異常を抱えています！
+								BTL_KOJO_RESULTS:1 = 危険な異常から順次回復を！
+							ELSE
+								BTL_KOJO_RESULTS:0 = 状態異常者多数！
+								BTL_KOJO_RESULTS:1 = 移動は出来そうですし、全体回復出来ないならば撤退しましょう
+							ENDIF
+						ENDIF
+					CASE "死亡者多数"
+						IF SOFT_ON("ハーモナイザー") 
+							IF FLAG:도주불가플래그
+								IF 現在ハーモナイザー出力 == 1
+									BTL_KOJO_RESULTS:0 = ハーモナイザー機能不全。強化補正が消えてしまっています。
+									BTL_KOJO_RESULTS:1 = 今は攻撃よりも回復を優先しないと一瞬で全滅する可能性もあります！
+								ELSEIF MAXハーモナイザー出力 > 現在ハーモナイザー出力
+									ハーモナイザー出力％ = (現在ハーモナイザー出力 * 100) / MAXハーモナイザー出力
+									BTL_KOJO_RESULTS:0 = ハーモナイザー出力低下。現在の出力、{ハーモナイザー出力％}％。強化補正値{現在ハーモナイザー出力}％。
+									BTL_KOJO_RESULTS:1 = 被害拡大する前に早急な蘇生をお願いします
+								ELSE
+									BTL_KOJO_RESULTS:0 = 状態異常者多数ですがハーモナイザー出力維持。強化補正値{現在ハーモナイザー出力}％。
+									BTL_KOJO_RESULTS:1 = これ以上不利になる前に回復を！
+								ENDIF
+							ELSE
+								IF 現在ハーモナイザー出力 == 1
+									BTL_KOJO_RESULTS:0 = ハーモナイザー機能不全。強化補正が消え戦力値は大幅に減少。
+									BTL_KOJO_RESULTS:1 = 危険です。即座に回復、ないし撤退を！
+								ELSEIF MAXハーモナイザー出力 > 現在ハーモナイザー出力
+									ハーモナイザー出力％ = (現在ハーモナイザー出力 * 100) / MAXハーモナイザー出力
+									BTL_KOJO_RESULTS:0 = ハーモナイザー出力低下。現在の出力{ハーモナイザー出力％}％。強化補正値{現在ハーモナイザー出力}％。
+									BTL_KOJO_RESULTS:1 = 人間隊員の性能大幅低下中。全体回復は可能ですか？厳しいようならば撤退してください！
+								ELSE
+									BTL_KOJO_RESULTS:0 = 死傷者多数。ハーモナイザー異常なし。強化補正値{現在ハーモナイザー出力}％。
+									BTL_KOJO_RESULTS:1 = これ以上死者が増える前に手を打ってください
+								ENDIF
+							ENDIF
+						ELSE
+							IF FLAG:도주불가플래그
+								BTL_KOJO_RESULTS:0 = 死傷者多数！戦力値低下中。
+								BTL_KOJO_RESULTS:1 = 落ち着いて蘇生するか、覚悟を決めて突撃してください！
+							ELSE
+								BTL_KOJO_RESULTS:0 = 死傷者多数！ここで欲張る必要はありません。
+								BTL_KOJO_RESULTS:1 = 撤退して安全を確保してから立て直しましょう
+							ENDIF
+						ENDIF
+					CASE "機能不全"
+						IF SOFT_ON("ハーモナイザー") 
+							IF FLAG:도주불가플래그
+								IF 現在ハーモナイザー出力 == 1
+									BTL_KOJO_RESULTS:0 = ハーモナイザー機能不全。強化補正が消えてしまっています。
+									BTL_KOJO_RESULTS:1 = まずは至急COMP持ちの隊員を回復しないと一瞬で蹴散らされますよ！
+								ELSEIF MAXハーモナイザー出力 > 現在ハーモナイザー出力
+									ハーモナイザー出力％ = (現在ハーモナイザー出力 * 100) / MAXハーモナイザー出力
+									BTL_KOJO_RESULTS:0 = ハーモナイザー出力低下。現在の出力、{ハーモナイザー出力％}％。強化補正値{現在ハーモナイザー出力}％。
+									BTL_KOJO_RESULTS:1 = 直近の課題は多いですがCOMP持ちの隊員を優先することを推奨します
+								ELSE
+									BTL_KOJO_RESULTS:0 = 隊は機能不全状態です…ですがハーモナイザーは安定稼働中
+									BTL_KOJO_RESULTS:1 = 強化補正値{現在ハーモナイザー出力}％。これを武器になんとか立て直してください！
+								ENDIF
+							ELSE
+								IF 現在ハーモナイザー出力 == 1
+									BTL_KOJO_RESULTS:0 = ハーモナイザー機能不全。強化補正が消え戦力値は大幅に減少。
+									BTL_KOJO_RESULTS:1 = 現在の隊員達は完全に機能不全状態です。撤退して下さい！
+								ELSEIF MAXハーモナイザー出力 > 現在ハーモナイザー出力
+									ハーモナイザー出力％ = (現在ハーモナイザー出力 * 100) / MAXハーモナイザー出力
+									BTL_KOJO_RESULTS:0 = ハーモナイザー出力低下。現在の出力{ハーモナイザー出力％}％。強化補正値{現在ハーモナイザー出力}％。
+									BTL_KOJO_RESULTS:1 = 隊の戦力値大幅低下中！撤退を進言します
+								ELSE
+									BTL_KOJO_RESULTS:0 = 隊機能不全状態。ですがハーモナイザーは安定稼働中。強化補正値{現在ハーモナイザー出力}％。
+									BTL_KOJO_RESULTS:1 = これ以上戦力値が下がる前に撤退したほうがよろしいのでは？
+								ENDIF
+							ENDIF
+						ELSE
+							IF FLAG:도주불가플래그
+								BTL_KOJO_RESULTS:0 = 隊機能不全状態！戦力値低下中。
+								BTL_KOJO_RESULTS:1 = 落ち着いて蘇生するか、覚悟を決めて突撃してください！
+							ELSE
+								BTL_KOJO_RESULTS:0 = 隊機能不全状態！ここで欲張る必要はありません。
+								BTL_KOJO_RESULTS:1 = 撤退して安全を確保してから立て直しましょう
+							ENDIF
+						ENDIF
+					CASE "PTHP危機"
+						IF FLAG:도주불가플래그
+							BTL_KOJO_RESULTS:0 = 隊員全体の体力が低下しています…
+							BTL_KOJO_RESULTS:1 = 逃走ルート確保出来ません。強力な全体回復を使うことを進言します
+						ELSE
+							BTL_KOJO_RESULTS:0 = 隊員全体の体力が低下しています…
+							BTL_KOJO_RESULTS:1 = 死者が出る前に対処をお願いします
+						ENDIF
+					CASE "マスター瀕死"
+						IF FLAG:도주불가플래그
+							BTL_KOJO_RESULTS:0 = リーダーの体力が残りわずかです。
+							BTL_KOJO_RESULTS:1 = 回復を最優先にしてください
+						ELSE
+							BTL_KOJO_RESULTS:0 = リーダーのダメージが深刻です
+							BTL_KOJO_RESULTS:1 = 致命傷を受ける前に回復、ないし撤退を
+						ENDIF
+					CASE "マスター死亡"
+						; デスマーチは具体的にどうやって死んでも平気になるか調べた限り明言されてないので死んでも死なせず仕事させるソフトと解釈した
+						IF SOFT_ON("デスマーチ") 
+							IF FLAG:도주불가플래그
+								BTL_KOJO_RESULTS:0 = デスマーチ起動。リーダーへの最低限の生命維持を開始。
+								BTL_KOJO_RESULTS:1 = 命令系統を脳波チャンネルに切り替え完了。指示を続行し立て直してください
+							ELSE
+								BTL_KOJO_RESULTS:0 = デスマーチ起動。リーダーへの最低限の生命維持を開始。
+								BTL_KOJO_RESULTS:1 = 意識は失っても指示は送れるはずです。回復、撤退、安全確保の指示を
+							ENDIF
+						ELSE
+							IF FLAG:도주불가플래그
+								BTL_KOJO_RESULTS:0 = リーダー戦闘不能！…一時的に指揮権を移譲
+								BTL_KOJO_RESULTS:1 = 戦線を維持しつつリーダーの蘇生をお願いします！
+							ELSE
+								BTL_KOJO_RESULTS:0 = リーダー戦闘不能、一時的に指揮権を移譲
+								BTL_KOJO_RESULTS:1 = リーダーの蘇生、または安全の確保もしくは戦闘領域からの離脱をお願いします
+							ENDIF
+						ENDIF
+					CASEELSE
+						IF SOFT_ON("ハーモナイザー") 
+							IF FLAG:도주불가플래그
+								IF 現在ハーモナイザー出力 == 1
+									BTL_KOJO_RESULTS:0 = ハーモナイザー機能不全。強化補正が消えてしまっています。
+									BTL_KOJO_RESULTS:1 = 逃走ルート確保出来ず。至急対処を！
+								ELSEIF MAXハーモナイザー出力 > 現在ハーモナイザー出力
+									ハーモナイザー出力％ = (現在ハーモナイザー出力 * 100) / MAXハーモナイザー出力
+									BTL_KOJO_RESULTS:0 = ハーモナイザー出力低下。現在の出力、{ハーモナイザー出力％}％。強化補正値{現在ハーモナイザー出力}％。
+									BTL_KOJO_RESULTS:1 = 逃走ルート確保出来ません…対処をお願いします
+								ELSE
+									BTL_KOJO_RESULTS:0 = ハーモナイザーは稼働維持してますが、危険な状態です
+									BTL_KOJO_RESULTS:1 = 強化補正値{現在ハーモナイザー出力}％。対処をお願いします
+								ENDIF
+							ELSE
+								IF 現在ハーモナイザー出力 == 1
+									BTL_KOJO_RESULTS:0 = ハーモナイザー機能不全。強化補正消失。
+									BTL_KOJO_RESULTS:1 = 対処・撤退をお願いします
+								ELSEIF MAXハーモナイザー出力 > 現在ハーモナイザー出力
+									ハーモナイザー出力％ = (現在ハーモナイザー出力 * 100) / MAXハーモナイザー出力
+									BTL_KOJO_RESULTS:0 = ハーモナイザー出力低下。現在の出力{ハーモナイザー出力％}％。強化補正値{現在ハーモナイザー出力}％。
+									BTL_KOJO_RESULTS:1 = 対処・撤退を。
+								ELSE
+									BTL_KOJO_RESULTS:0 = ハーモナイザーは稼働維持してますが、危険な状態です
+									BTL_KOJO_RESULTS:1 = 強化補正値{現在ハーモナイザー出力}％。面倒ならば至急撤退を。
+								ENDIF
+							ENDIF
+						ELSE
+							IF FLAG:도주불가플래그
+								BTL_KOJO_RESULTS:0 = 深刻な状態です。
+								BTL_KOJO_RESULTS:1 = 落ち着いて対処をお願いします
+							ELSE
+								BTL_KOJO_RESULTS:0 = 深刻な状態です。
+								BTL_KOJO_RESULTS:1 = 撤退しましょうか
+							ENDIF
+						ENDIF
+				ENDSELECT
+			CASE "中度の危機"
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "핀치캐릭터"
+						SELECTCASE TSTR:핀치캐릭터위기내용
+							CASE "DYING"
+								BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さん、戦闘不能…
+								BTL_KOJO_RESULTS:1 = 地返しの玉、反魂香、リカームで蘇生をお願いします
+							CASE "瀕死"
+								BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さん、ダメージが深刻です
+								BTL_KOJO_RESULTS:1 = 早急な回復を強く推奨します
+							CASE "重傷"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダー、体力低下しています！
+									BTL_KOJO_RESULTS:1 = 回復を最優先にしてください
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さんの体力が低下しています
+									BTL_KOJO_RESULTS:1 = 倒れてしまう前に回復することを推奨します
+								ENDIF
+							CASE "STONE"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									IF SOFT_ON("デスマーチ") 
+										BTL_KOJO_RESULTS:0 = デスマーチ起動。リーダーへの最低限の生命維持を開始。
+										BTL_KOJO_RESULTS:1 = 早急にディストーンかペトラディ、カースディで回復を！
+									ELSE
+										BTL_KOJO_RESULTS:0 = リーダーが石化しています…一時的に指揮権を移譲
+										BTL_KOJO_RESULTS:1 = 自然治癒しないのでディストーンかペトラディ、カースディで回復を！
+									ENDIF
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さんが石化しています
+									BTL_KOJO_RESULTS:1 = 自然治癒しないのでディストーンかペトラディで回復を推奨します
+								ENDIF
+							CASE "HEAT"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダー、現在冷却処理中。行動可能状態まで時間を要します
+									BTL_KOJO_RESULTS:1 = その間、指示に集中してください
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さん、現在冷却処理中。行動不能です
+									BTL_KOJO_RESULTS:1 = 再稼働まで時間を要します。しばしお待ち下さい
+								ENDIF
+							CASE "FLY"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダーが蝿に変えられました…！命令系統を精神チャンネルに切り替え完了
+									BTL_KOJO_RESULTS:1 = まともな方法では治療できません。戦闘を考えず身を守ってください
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さんが蝿に変えられました…！
+									BTL_KOJO_RESULTS:1 = まともな方法では治療できません。戦闘能力もほぼ消失しています
+								ENDIF
+							CASE "PALYZE"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダーが麻痺して行動不能です。
+									BTL_KOJO_RESULTS:1 = ディスパライズかパララディで回復してください
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さんが麻痺して行動不能です。
+									BTL_KOJO_RESULTS:1 = このままでは精神力も消耗します。ディスパライズかパララディで回復してください
+								ENDIF
+							CASE "CHARM"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダー、魅了されてしまっていますね…
+									BTL_KOJO_RESULTS:1 = 話聞いてくれないので誰かディスチャームかチャムディでさっさと回復してください
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さんが魅了されています
+									BTL_KOJO_RESULTS:1 = 利敵行動を起こす可能性があるのでディスチャームかチャムディを推奨します
+								ENDIF
+							CASE "BRAND"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダーに烙印が押されており、回復を受け付けない状態になっています
+									BTL_KOJO_RESULTS:1 = 即死攻撃にも弱くなっています。アムリタで回復するか防御を！
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さんに烙印が押されており、回復を受け付けない状態になっています
+									BTL_KOJO_RESULTS:1 = 即死攻撃にも弱くなっています。アムリタで回復するか防御を専念させてください
+								ENDIF
+							CASE "CURSE"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダーが呪われ、攻撃すると痛みが半分戻ってきます…
+									BTL_KOJO_RESULTS:1 = 即死攻撃にも弱くなっています。カースディで回復するか防御を！
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さんが呪われ、攻撃すると痛みが半分戻ってきます…
+									BTL_KOJO_RESULTS:1 = 即死攻撃にも弱くなっています。カースディで回復するか防御を！
+								ENDIF
+							CASE "FLAME"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダーの身体が炎上しています。
+									BTL_KOJO_RESULTS:1 = 今疾風や核熱の攻撃を受けるとより火が大きくなってしまいます。注意してください
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さんが炎上しています。
+									BTL_KOJO_RESULTS:1 = 今疾風や核熱の攻撃を受けるとより火が大きくなってしまいます。注意してください
+								ENDIF
+							CASE "BOMB"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダーの身体が爆弾に変えられています…
+									BTL_KOJO_RESULTS:1 = 着火されると被害が甚大になります。その前にパトラやペンパトラで解除してください
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さんの身体が爆弾に変えられています
+									BTL_KOJO_RESULTS:1 = 着火されると被害が甚大になります。その前にパトラやペンパトラで解除してください
+								ENDIF
+							CASE "POISON"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダーが毒に犯されています。
+									BTL_KOJO_RESULTS:1 = ディスポイズンかポズムディで中和してください
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さんが毒に犯されています。
+									BTL_KOJO_RESULTS:1 = ディスポイズンかポズムディで中和してください
+								ENDIF
+							CASE "CLOSE"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダー、魔法の使用が出来ない状態です
+									BTL_KOJO_RESULTS:1 = ディスクローズかクロズディで治療するか、物理で攻撃してください
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さん、魔法の使用が出来ない状態です
+									BTL_KOJO_RESULTS:1 = ディスクローズかクロズディで治療するか、物理で攻撃してください
+								ENDIF
+							CASE "BIND"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダーが金縛りにあって行動不能です
+									BTL_KOJO_RESULTS:1 = 回復を待つか、イワクラの水やパトラで治療してください
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さんが金縛りにあって行動不能です
+									BTL_KOJO_RESULTS:1 = 回復を待つか、イワクラの水やパトラで治療してください
+								ENDIF
+							CASE "SLIP"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダー、体勢を崩して転倒中です。
+									BTL_KOJO_RESULTS:1 = 追撃や重力攻撃を受ける前になるべく早く起き上がってください
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さん、体勢を崩して転倒中です。
+									BTL_KOJO_RESULTS:1 = 追撃や重力攻撃を受ける前になるべく早く起き上がってください
+								ENDIF
+							CASE "FREEZE"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダー、身体が凍結して行動不能で無防備状態です。
+									BTL_KOJO_RESULTS:1 = 電撃、地変攻撃や追撃を受けると被害が甚大になります。注意してください
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さん、身体が凍結して行動不能で無防備状態です。
+									BTL_KOJO_RESULTS:1 = 電撃、地変攻撃や追撃を受けると被害が甚大になります。注意してください
+								ENDIF
+							CASE "SLEEP"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダー、睡眠してしまい無防備状態です。防御力が低下しています
+									BTL_KOJO_RESULTS:1 = 追撃を受ける前にイワクラの水やパトラで叩き起こしてください
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さん、睡眠してしまい無防備状態です。防御力が低下しています
+									BTL_KOJO_RESULTS:1 = 追撃を受ける前にイワクラの水やパトラで叩き起こしてください
+								ENDIF
+							CASE "PANIC"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダーが混乱しています…
+									BTL_KOJO_RESULTS:1 = 奇っ怪な行動を取る前にイワクラの水やパトラで正気を取り戻させてください
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さんが混乱しています…
+									BTL_KOJO_RESULTS:1 = 奇っ怪な行動を取る前にイワクラの水やパトラで正気を取り戻させてください
+								ENDIF
+							CASE "SHOCK"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダー、感電して動けません…
+									BTL_KOJO_RESULTS:1 = 氷結・水撃攻撃や追撃を受けると被害が甚大になります。注意してください
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さん、感電して動けません…
+									BTL_KOJO_RESULTS:1 = 氷結・水撃攻撃や追撃を受けると被害が甚大になります。注意してください
+								ENDIF
+							CASE "HAPPY"
+								IF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+									BTL_KOJO_RESULTS:0 = リーダーが腑抜けになっています。あれでは動けても力が入らないでしょう
+									BTL_KOJO_RESULTS:1 = とっととイワクラの水やパトラで正気を取り戻させてください
+								ELSE
+									BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%さんが幸福状態で意識が朦朧としてます
+									BTL_KOJO_RESULTS:1 = しばらく放置するかイワクラの水やパトラで正気を取り戻させてください
+								ENDIF
+							CASEELSE
+								; 入らないはず
+								BTL_KOJO_RESULTS:0 = 隊になんらかの異常発生中。
+								BTL_KOJO_RESULTS:1 = リーダーの判断で、適宜対処をお願いします
+						ENDSELECT
+					CASE "戦力低下"
+						IF FLAG:도주불가플래그
+							BTL_KOJO_RESULTS:0 = こちらの戦力値低下中。逃走ルート見つけられません…
+							BTL_KOJO_RESULTS:1 = 壊滅状態になる前に、新たな戦闘員の召喚や戦闘不能者の蘇生をお願いします
+						ELSE
+							BTL_KOJO_RESULTS:0 = こちらの戦力値低下中。
+							BTL_KOJO_RESULTS:1 = 壊滅状態になる前に、新たな戦闘員の召喚や撤退をお願いします
+						ENDIF
+					CASE "異常者複数"
+						IF SOFT_ON("ハーモナイザー") 
+							IF FLAG:도주불가플래그
+								IF 現在ハーモナイザー出力 == 1
+									BTL_KOJO_RESULTS:0 = ハーモナイザー機能不全。
+									BTL_KOJO_RESULTS:1 = 強化補正が消えています…隊員の状態異常回復を強く推奨します
+								ELSEIF MAXハーモナイザー出力 > 現在ハーモナイザー出力
+									ハーモナイザー出力％ = (現在ハーモナイザー出力 * 100) / MAXハーモナイザー出力
+									BTL_KOJO_RESULTS:0 = ハーモナイザー出力低下。現在の出力、{ハーモナイザー出力％}％。強化補正値{現在ハーモナイザー出力}％。
+									BTL_KOJO_RESULTS:1 = 戦力値を回復する為に隊員の状態異常回復を推奨します
+								ELSE
+									BTL_KOJO_RESULTS:0 = 状態異常者複数存在。しかしハーモナイザーは安定稼働中
+									BTL_KOJO_RESULTS:1 = 強化補正値{現在ハーモナイザー出力}％。今のうちに立て直すことを推奨します
+								ENDIF
+							ELSE
+								IF 現在ハーモナイザー出力 == 1
+									BTL_KOJO_RESULTS:0 = ハーモナイザー機能不全。強化補正が消え戦力値は大幅に減少。
+									BTL_KOJO_RESULTS:1 = 異常回復をする余裕がなければ撤退してもいいかもしれませんね
+								ELSEIF MAXハーモナイザー出力 > 現在ハーモナイザー出力
+									ハーモナイザー出力％ = (現在ハーモナイザー出力 * 100) / MAXハーモナイザー出力
+									BTL_KOJO_RESULTS:0 = ハーモナイザー出力低下。現在の出力{ハーモナイザー出力％}％。強化補正値{現在ハーモナイザー出力}％。
+									BTL_KOJO_RESULTS:1 = 隊員の状態異常回復、もしくは一気に殲滅、ないし撤退の判断を
+								ELSE
+									BTL_KOJO_RESULTS:0 = 状態異常者複数存在。しかしハーモナイザーは安定稼働中
+									BTL_KOJO_RESULTS:1 = 強化補正値{現在ハーモナイザー出力}％。さっさとやっつけるか面倒なら撤退しましょうか
+								ENDIF
+							ENDIF
+						ELSE
+							IF FLAG:도주불가플래그
+								BTL_KOJO_RESULTS:0 = 状態異常者多数。冷静に厄介な異常から解決していきましょう
+								BTL_KOJO_RESULTS:1 = アムリタやアムリタシャワーがあれば簡単に解決出来ますが…
+							ELSE
+								BTL_KOJO_RESULTS:0 = 状態異常者複数存在。
+								BTL_KOJO_RESULTS:1 = 特に戦闘継続する理由が薄いのならば撤退して立て直すことを推奨します
+							ENDIF
+						ENDIF
+					CASE "PTHP減少"
+						IF FLAG:도주불가플래그
+							BTL_KOJO_RESULTS:0 = 隊員全体の体力が低下傾向にあります
+							BTL_KOJO_RESULTS:1 = 緊急性は少ないですが、体力の回復を考慮することを進言します
+						ELSE
+							BTL_KOJO_RESULTS:0 = 隊員全体の体力が低下傾向にあります
+							BTL_KOJO_RESULTS:1 = この戦闘が終わったら回復の時間を取ったほうがいいかもしれませんね
+						ENDIF
+					CASEELSE
+						; 入らない…はず
+						BTL_KOJO_RESULTS:0 = 隊に軽度問題発生中。対処をお願いします
+				ENDSELECT
+			CASE "平常"
+				;戦闘中・危険な状態の味方はいない・戦闘開始時よりも敵の数が少ない
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "殲滅率0"
+						IF FLAG:경과턴수 == 0
+							IF TFLAG:보스플래그있음
+								BTL_KOJO_RESULTS:0 = 戦闘開始。敵戦力値を解析開始
+								BTL_KOJO_RESULTS:1 = 強敵です。敵の動向を注意しながら戦ってください
+							ELSE
+								BTL_KOJO_RESULTS:0 = 戦闘開始。敵戦力値を解析開始
+								BTL_KOJO_RESULTS:1 = 油断せず粛々と戦闘行動を行ってください
+							ENDIF
+						ELSEIF FLAG:경과턴수 < 5
+							;なんかカジャ系って6回で限界って聞いたから
+							BTL_KOJO_RESULTS:0 = 敵戦力損傷ゼロ。残り{TFLAG:적배치수}体。
+							BTL_KOJO_RESULTS:1 = 準備が完了次第攻撃開始しましょう
+						ELSE
+							BTL_KOJO_RESULTS:0 = 敵戦力損傷ゼロ。残り{TFLAG:적배치수}体。
+							BTL_KOJO_RESULTS:1 = 長期戦の構えですね…気を抜かないように注意してください
+						ENDIF
+					CASE "殲滅率1"
+						IF TFLAG:보스플래그있음
+							BTL_KOJO_RESULTS:0 = 敵戦力損傷軽微。威力偵察中でしょうか
+							BTL_KOJO_RESULTS:1 = 攻撃の相性を注意しながら攻撃を続けていきましょう
+						ELSE
+							BTL_KOJO_RESULTS:0 = 敵戦力損傷軽微。残り{TFLAG:적배치수}体。
+							BTL_KOJO_RESULTS:1 = 地道に削るか一気に押し切るか考えどころですね…
+						ENDIF
+					CASE "殲滅率25"
+						BTL_KOJO_RESULTS:0 = 敵戦力、損傷拡大しています
+						BTL_KOJO_RESULTS:1 = その調子で攻撃を続行してください
+					CASE "殲滅率50"
+						BTL_KOJO_RESULTS:0 = 敵戦力値半減を確認。残り{TFLAG:적배치수}体。
+						BTL_KOJO_RESULTS:1 = こちらが優勢です。そのままこの戦法で攻撃維持しましょう
+					CASE "殲滅率75"
+						BTL_KOJO_RESULTS:0 = 敵戦力、ダメージ限界に近づいています。残り{TFLAG:적배치수}体。
+						BTL_KOJO_RESULTS:1 = 押し切ってしまいましょう
+					CASE "殲滅率90"
+						BTL_KOJO_RESULTS:0 = 敵戦力崩壊寸前です。残り{TFLAG:적배치수}体。
+						BTL_KOJO_RESULTS:1 = 油断なくトドメをお願いします
+					CASE "PTHP微減"
+						BTL_KOJO_RESULTS:0 = こちらの隊員、損傷軽微。
+						BTL_KOJO_RESULTS:1 = 問題といえる程ではありませんが、気にかけておいてください
+					CASE "一部撃破済み"
+						撃破数 = TFLAG:적초기배치수 - TFLAG:적배치수
+						BTL_KOJO_RESULTS:0 = 敵、{撃破数}体撃破。残り{TFLAG:적배치수}体です。
+					CASE "敵健在"
+						IF FLAG:경과턴수 == 0
+							IF TFLAG:보스플래그있음
+								BTL_KOJO_RESULTS:0 = 戦闘開始。敵戦力値を解析開始
+								BTL_KOJO_RESULTS:1 = 強敵です。敵の動向を注意しながら戦ってください
+							ELSE
+								BTL_KOJO_RESULTS:0 = 戦闘開始。敵戦力値を解析開始
+								BTL_KOJO_RESULTS:1 = 油断せず粛々と戦闘行動を行ってください
+							ENDIF
+						ELSE
+							IF FLAG:경과턴수 > 9
+								IF FLAG:도주불가플래그
+									BTL_KOJO_RESULTS:0 = 敵戦力未だ健在…残り{TFLAG:적배치수}体。長期戦の構えですね
+									BTL_KOJO_RESULTS:1 = 地道に少しずつ有利に進めていくしかなさそうです
+								ELSE
+									BTL_KOJO_RESULTS:0 = 敵戦力未だ健在。残り{TFLAG:적배치수}体。
+									BTL_KOJO_RESULTS:1 = 流石に暇になってきたので早く終わらせてくださいね
+								ENDIF
+							ELSE
+								SELECTCASE RAND:2
+									CASE 0
+										IF SOFT_ON("ハーモナイザー") 
+											ハーモナイザー出力％ = (現在ハーモナイザー出力 * 100) / MAXハーモナイザー出力
+											BTL_KOJO_RESULTS:0 = ハーモナイザー稼働確認。出力{ハーモナイザー出力％}％。強化補正値{現在ハーモナイザー出力}％。
+											BTL_KOJO_RESULTS:1 = 敵戦力健在。攻撃を続行してください
+										ELSE
+											BTL_KOJO_RESULTS:0 = 敵戦力健在。残り{TFLAG:적배치수}体。
+											BTL_KOJO_RESULTS:1 = 攻撃を続行してください
+										ENDIF
+									CASEELSE
+										BTL_KOJO_RESULTS:0 = 敵戦力健在。残り{TFLAG:적배치수}体。
+										BTL_KOJO_RESULTS:1 = 攻撃を続行してください
+								ENDSELECT
+							ENDIF
+						ENDIF
+					CASE "그외"
+						IF SOFT_ON("ハーモナイザー") 
+							ハーモナイザー出力％ = (現在ハーモナイザー出力 * 100) / MAXハーモナイザー出力
+							BTL_KOJO_RESULTS:0 = ハーモナイザー稼働確認。出力{ハーモナイザー出力％}％。強化補正値{現在ハーモナイザー出力}％。
+							BTL_KOJO_RESULTS:1 = 問題なく稼働しています。戦闘続行してください
+						ELSE
+							BTL_KOJO_RESULTS:0 = 現在、全隊員に支障なし。そのまま戦闘行動を継続してください
+						ENDIF
+				ENDSELECT
+		ENDSELECT
+	CASE "戦闘終了"
+		; 次戦闘用に初期化。本当はダンジョンから帰還する時や仲間入れ替え時に初期化したいんだけどねぇ
+		MAXハーモナイザー出力 = 0
+		SELECTCASE TSTR:네비_시추에이션_서버1
+			CASE "勝利"
+				IF SOFT_ON("ヒロえもん") && SOFT_ON("アルセーヌ")
+					戦闘終了rand値 = RAND:3
+				ELSEIF SOFT_ON("ヒロえもん") || SOFT_ON("アルセーヌ")
+					戦闘終了rand値 = RAND:2
+				ELSE
+					戦闘終了rand値 = 0
+				ENDIF
+
+				SELECTCASE 戦闘終了rand値
+					; ヒロえもんとアルセーヌ以外はサマナー個人のエミュレーターや特殊スキルの為ナビがどうこうすることは出来ないとする
+					CASE 2
+						IF TFLAG:보스플래그있음
+							BTL_KOJO_RESULTS:0 = 敵の撃破を確認。ヒロえもん及びアルセーヌ同時起動…並列サーチ開始。
+							BTL_KOJO_RESULTS:1 = 強敵でしたからいいものが見つかると良いですね
+						ELSE
+							BTL_KOJO_RESULTS:0 = エリア内の敵、全滅を確認。
+							BTL_KOJO_RESULTS:1 = ヒロえもん及びアルセーヌ同時起動…並列サーチ開始。結果をリザルトに追記します。
+						ENDIF
+					CASE 1
+						IF SOFT_ON("ヒロえもん")
+							IF TFLAG:보스플래그있음
+								BTL_KOJO_RESULTS:0 = 敵の撃破を確認。ヒロえもん起動、オブジェクトサーチ開始。
+								BTL_KOJO_RESULTS:1 = 強敵でしたからいいものが見つかると良いですね
+							ELSE
+								BTL_KOJO_RESULTS:0 = エリア内の敵、全滅を確認。
+								BTL_KOJO_RESULTS:1 = ヒロえもん起動、オブジェクトサーチ開始。結果をリザルトに追記します。
+							ENDIF
+						ELSEIF SOFT_ON("アルセーヌ")
+							IF TFLAG:보스플래그있음
+								BTL_KOJO_RESULTS:0 = 敵の撃破を確認。アルセーヌ起動、宝石の探知開始。
+								BTL_KOJO_RESULTS:1 = 強敵でも宝石は隠し持っているものでしょうか？
+							ELSE
+								BTL_KOJO_RESULTS:0 = エリア内の敵、全滅を確認。
+								BTL_KOJO_RESULTS:1 = アルセーヌ起動。宝石の探知開始。結果をリザルトに追記します。
+							ENDIF
+						ELSE
+							; 死に分岐だけど念の為
+							BTL_KOJO_RESULTS:0 = エリア内の敵、全滅を確認。
+							BTL_KOJO_RESULTS:1 = リザルトを表示します。
+						ENDIF
+					CASE 0
+						SELECTCASE TSTR:네비_시추에이션_서버2
+						CASE "계약"
+							; なんかサブ2にこの値入らないっぽい
+						CASE "契約失敗"
+							; なんかサブ2にこの値入らないっぽい
+						CASE "1ターンキル"
+							IF TFLAG:보스플래그있음
+								BTL_KOJO_RESULTS:0 = 敵の撃破を確認。戦闘不能状態です。
+								BTL_KOJO_RESULTS:1 = 我々の敵ではありませんでしたね。
+							ELSE
+								BTL_KOJO_RESULTS:0 = エリア内の敵、全滅を確認。
+								BTL_KOJO_RESULTS:1 = 一瞬の仕事、流石です。探索に移行してください
+							ENDIF
+						CASE "早期決着"
+							IF TFLAG:보스플래그있음
+								BTL_KOJO_RESULTS:0 = 敵の撃破を確認。
+								BTL_KOJO_RESULTS:1 = 流石リーダー。苦戦する程でもありませんでしたね
+							ELSE
+								BTL_KOJO_RESULTS:0 = エリア内の敵、全滅を確認。
+								BTL_KOJO_RESULTS:1 = 戦闘行動、問題なく機能していると思います。探索に移行してください
+							ENDIF
+						CASE "長期戦"
+							IF TFLAG:보스플래그있음
+								BTL_KOJO_RESULTS:0 = 敵の撃破を確認。強敵でしたね…
+								BTL_KOJO_RESULTS:1 = 長丁場ですが、勝利できて安心しました
+							ELSE
+								BTL_KOJO_RESULTS:0 = エリア内の敵、全滅を確認。
+								BTL_KOJO_RESULTS:1 = 思ったより長引きましたね。念の為隊員の状態をチェックすることを推奨します
+							ENDIF
+						CASE "格下"
+							IF TFLAG:보스플래그있음
+								BTL_KOJO_RESULTS:0 = 敵の撃破を確認。
+								BTL_KOJO_RESULTS:1 = お山の大将を気取っていましたがさしたる敵ではありませんでしたね。
+							ELSE
+								BTL_KOJO_RESULTS:0 = エリア内の敵、全滅を確認。
+								BTL_KOJO_RESULTS:1 = 格下相手ですから、実入りは薄そうですね。探索に移行してください
+							ENDIF
+						CASE "格上"
+							IF TFLAG:보스플래그있음
+								BTL_KOJO_RESULTS:0 = 敵の撃破を確認。完全戦闘不能です。
+								BTL_KOJO_RESULTS:1 = お疲れ様でした。勝利できたのはリーダーの指揮のおかげですね
+							ELSE
+								BTL_KOJO_RESULTS:0 = エリア内の敵、全滅を確認。
+								BTL_KOJO_RESULTS:1 = 格上でしたが、無事倒せたようで安心しました。隊員の状態のチェックをお願いします
+							ENDIF
+						CASE "同格"
+							IF TFLAG:보스플래그있음
+								BTL_KOJO_RESULTS:0 = 敵の撃破を確認。
+								BTL_KOJO_RESULTS:1 = 歯ごたえのある敵でしたが勝利出来ましたね
+							ELSE
+								BTL_KOJO_RESULTS:0 = エリア内の敵、全滅を確認。
+								BTL_KOJO_RESULTS:1 = 戦力値同等近い相手でも勝てましたね。念の為隊員の状態のチェックを推奨します
+							ENDIF
+						CASE "壊滅的"
+							IF TFLAG:보스플래그있음
+								BTL_KOJO_RESULTS:0 = 敵の撃破を確認…
+								BTL_KOJO_RESULTS:1 = まさしく紙一重の勝利でしたね…無事に勝利出来て安心しました…
+							ELSE
+								BTL_KOJO_RESULTS:0 = エリア内の敵、全滅を確認。こちらも壊滅的な被害を受けています…
+								BTL_KOJO_RESULTS:1 = 至急、隊員の治療・復活をお願いします。状況によっては撤退も考慮してください
+							ENDIF
+						CASE "被害甚大"
+							IF TFLAG:보스플래그있음
+								BTL_KOJO_RESULTS:0 = 敵の撃破を確認
+								BTL_KOJO_RESULTS:1 = こちらも被害甚大ですが、リーダーの指揮の差で勝利できましたね…
+							ELSE
+								BTL_KOJO_RESULTS:0 = エリア内の敵、全滅を確認。
+								BTL_KOJO_RESULTS:1 = こちらも被害甚大です。敵増援が来る前に至急、隊員の治療・復活をお願いします
+							ENDIF
+						CASE "被害大"
+							IF TFLAG:보스플래그있음
+								BTL_KOJO_RESULTS:0 = 敵の撃破を確認。お疲れ様でした。
+								BTL_KOJO_RESULTS:1 = 隊員にダメージが残っていますが、強敵でしたので想定の範囲内かと
+							ELSE
+								BTL_KOJO_RESULTS:0 = エリア内の敵、全滅を確認。
+								BTL_KOJO_RESULTS:1 = こちらも被害を受けています。隊員の治療をお願いします
+							ENDIF
+						CASE "被害軽微"
+							IF TFLAG:보스플래그있음
+								BTL_KOJO_RESULTS:0 = 敵の撃破を確認。戦闘不能状態です
+								BTL_KOJO_RESULTS:1 = 隊員への被害軽微、リーダーの指揮による余裕の勝利ですね
+							ELSE
+								BTL_KOJO_RESULTS:0 = エリア内の敵、全滅を確認。
+								BTL_KOJO_RESULTS:1 = 軽微ですが隊員にダメージを確認。各隊員の状態のチェックを推奨します
+							ENDIF
+						CASE "被害皆無"
+							IF TFLAG:보스플래그있음
+								BTL_KOJO_RESULTS:0 = 敵の撃破を確認。お疲れ様でした。
+								BTL_KOJO_RESULTS:1 = 隊員への被害皆無。素晴らしい戦果ですね。
+							ELSE
+								BTL_KOJO_RESULTS:0 = エリア内の敵、全滅を確認。
+								BTL_KOJO_RESULTS:1 = 隊員のダメージ、確認できず。そのまま探索に移行してください
+							ENDIF
+						CASE "그외"
+							BTL_KOJO_RESULTS:0 = 戦闘終了。探索に移行してください
+					ENDSELECT
+				ENDSELECT
+			CASE "도주"
+				 SELECTCASE RAND:3
+				 	CASE 0
+						BTL_KOJO_RESULTS:0 = 逃走ルート展開。各隊員の視界情報にルート表示完了…
+						BTL_KOJO_RESULTS:1 = 全隊員、戦闘領域を離脱！
+					CASE 1
+						方位 = RAND:11 + 1
+						BTL_KOJO_RESULTS:0 = 逃走ルート展開。合図と共に、{方位}時方向へ！
+						BTL_KOJO_RESULTS:1 = 全隊員、戦闘領域を離脱！
+					CASEELSE
+						BTL_KOJO_RESULTS:0 = 逃走ルート展開。逃走開始までのカウントダウン開始……
+						BTL_KOJO_RESULTS:1 = 全隊員、戦闘領域を離脱！
+				ENDSELECT
+			CASE "敗北"
+				SELECTCASE RAND:3
+				 	CASE 0
+						BTL_KOJO_RESULTS:0 = リーダー、応答してください！
+						BTL_KOJO_RESULTS:1 = リーダー！リーダー！
+					CASE 1
+						BTL_KOJO_RESULTS:0 = っ……！残念です。リーダー…
+					CASEELSE
+						BTL_KOJO_RESULTS:0 = ここまで、ですか…リーダー…！
+				ENDSELECT
+		ENDSELECT
+ENDSELECT

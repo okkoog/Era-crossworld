@@ -1,0 +1,365 @@
+﻿;一人で飲んでる男(ヴィンセント)
+;イベント後にキャサリンをお持ち帰り可(という想定で作成)
+;	Edit	Date			Author					Reason
+;	001		2023/11/25		XXX						新規作成。現在の完成度50%程度、イベント部分だけ作って力尽きた…
+;	002		2024/01/23		っとっとき				ヴィンセント部分加筆。加入イベントのデータは仮
+;	003		2024/04/16		っとっとき				アイコン部分の対応(実際のアイコンがないのでガワだけ)
+
+@SORP_PLAY_1023, ARGS
+#DIM CHARA, 1
+#DIMS DYNAMIC ICON_ADDRESS
+IF 六本木娼婦フラグ予備1:23 >= 20
+	ICON_ADDRESS =
+ELSEIF 六本木娼婦フラグ予備1:23 >= 10
+ELSE
+	ICON_ADDRESS '= D31_FACE("ヴィンセント")
+ENDIF
+SELECTCASE ARGS
+	CASE "娼婦番号"
+		RESULTS = [1023]
+	CASE "キャラ名"
+		IF 六本木娼婦フラグ予備1:23 >= 10
+	RESULTS = 캐서린
+		ELSE
+	RESULTS = 혼자 마시고 있는 남자
+		ENDIF
+	CASE "指名名"
+		IF 六本木娼婦フラグ予備1:23 >= 10
+			IF 六本木娼婦フラグ予備1:23 == 10 || 六本木娼婦フラグ予備1:23 == 20
+	RESULTS = 캐서린이라 자칭하는 여자
+			ELSE
+	RESULTS = 캐서린
+			ENDIF
+		ELSE
+	RESULTS = 혼자 마시고 있는 남자
+		ENDIF
+	CASE "所属"
+		;表なら1、裏なら2、援助なら3
+		RETURN 3
+	CASE "判定"
+		;指名可能なら0、不可なら1
+		SIF !IS_PLAYABLE_EXTRA_CHARA([[キャラ:빈센트]])
+			RETURN 1
+		IF 六本木娼婦フラグ:23 >= 3 
+			RETURN 1
+		ELSE
+			RETURN 0
+		ENDIF
+	CASE "価格"
+		IF 六本木娼婦フラグ予備1:23 >= 10
+			RETURN 300
+		ELSE
+			RETURN 2
+		ENDIF
+	CASE "紹介文"
+		IF 六本木娼婦フラグ:23 == 0
+		CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, ,"노출된 웨이트리스", @"그는요~/푸념을 들어주길 바랄 뿐인 것 같아요~"
+		CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, ,"노출된 웨이트리스", @"이전에는 술집에서 고주망태가 되도록 마셨던 모양인데~/잠시 출입 금지를 당했다면서~/여기서 주정을 부리고 있는 거라네요~"
+		ELSEIF 六本木娼婦フラグ予備1:23 < 10
+		CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, ,"노출된 웨이트리스", @"그는요~/또 푸념을 들어주길 바라는 모양이에요~"
+		ELSEIF 六本木娼婦フラグ予備1:23 == 10
+			;Cキャサリン紹介
+		CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, ,"노출된 웨이트리스", @"그녀는요~/좋아하던 남자가 도망쳐버렸다고 하네요~/"
+		ELSEIF 六本木娼婦フラグ予備1:23 == 20
+			;Kキャサリン紹介
+		CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, ,"노출된 웨이트리스", @"그녀는요~/결혼을 생각하던 남자에게 최근 차여버렸다고 하네요~/"
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, ,"노출된 웨이트리스", @"그녀는요~/……"
+		ENDIF
+	CASE "確認"
+		IF 六本木娼婦フラグ予備1:23 >= 10
+		CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, ,"노출된 웨이트리스", @"３００마카에 소개해 드릴 수 있습니다만~/어떻게 하시겠어요~？"
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, ,"노출된 웨이트리스", @"자리세 명목의 ２마카에 소개해 드릴 수 있습니다만~/어떻게 하시겠어요~？"
+		ENDIF
+	CASE "プレイ口上"
+		IF 六本木娼婦フラグ:23 == 0
+			;初回、導入
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"…저기, 하나 물어봐도 될까？/…바람피우는 건 죄일까？ …아니면 남자의 사가일까？/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞이야기를 들어보니, 사귀고 있는 『그녀』가 있음에도 불구하고/술에 취해 『낯선 여자』와 알몸으로 아침을 맞이했다고 한다…/"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞「어쩌면 좋지…」라며 머리를 감싸 쥐는 남자의 이야기에 어울려주었습니다."
+			CALL SHOW_PICTURE, "EMPTY"
+			六本木娼婦フラグ:23 = 1
+			六本木娼婦フラグ予備1:23 = 0
+			六本木娼婦フラグ予備2:23 = 0
+			六本木娼婦フラグ予備3:23 = 0
+		ELSEIF 六本木娼婦フラグ:23 == 1 && 六本木娼婦フラグ予備1:23 < 10
+			IF 六本木娼婦フラグ予備1:23 == 0
+				;2回目
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"…요즘, 악몽을 자주 꿔./예를 들면… 『그녀』에게 결혼을 독촉받는―― 그런 꿈이라던가"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"응해줘야 한다, 고는 생각해/하지만, 평생 잡혀 살 게 눈에 훤해서……"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"난 대체… 어쩌면 좋다고 생각해？"
+				;選択肢1
+				CALL INPUT_SELECT_D, "[0] (견실한 선택)/[1] (분방한 선택)/",,, 2
+				IF RESULT == 0
+					;堅実
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞「인생의 무덤이 반드시 감옥이라곤 할 수 없다」/고, 등을 밀어주었다"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"그런… 건가…？"
+					六本木娼婦フラグ予備2:23 += 1
+				ELSEIF RESULT == 1
+					;奔放
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞「선원은 여러 항구를 품고 산다고도 한다」/고, 등을 밀어주었다"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"그런… 건가…？"
+					六本木娼婦フラグ予備3:23 += 1
+				ENDIF
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞남자의 푸념에 어울려주었습니다."
+				CALL SHOW_PICTURE, "EMPTY"
+				六本木娼婦フラグ予備1:23 = 1
+			ELSEIF 六本木娼婦フラグ予備1:23 == 1
+				;3回目
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"…요즘, 악몽을 자주 꿔./예를 들면… 『바람피운 상대』와 문란한 관계를 강요받는―― 그런 꿈이라던가"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"언젠가 파멸할 거란 건 알고 있어…/하지만… 그런 생활도 나쁘지 않을 것 같단 생각이 들어서…"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"대체… 난 어쩌면 좋다고 생각해？"
+				;選択肢2
+				CALL INPUT_SELECT_D, "[0] (견실한 선택)/[1] (분방한 선택)/",,, 2
+				IF RESULT == 0
+					;堅実
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞「때로는 위험한 길을 피하는 것도 용기가 필요한 법」/이라며, 등을 밀어주었다"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"그런… 건가…？"
+					六本木娼婦フラグ予備2:23 += 1
+				ELSEIF RESULT == 1
+					;奔放
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞「스릴이야말로 인생. 그것도 낭만」/이라며, 등을 밀어주었다"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"그런… 건가…？"
+					六本木娼婦フラグ予備3:23 += 1
+				ENDIF
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞남자의 푸념에 어울려주었습니다."
+				CALL SHOW_PICTURE, "EMPTY"
+				六本木娼婦フラグ予備1:23 = 2
+			ELSEIF 六本木娼婦フラグ予備1:23 == 2
+				;4回目
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"…요즘, 악몽을 자주 꿔./예를 들면… 아이에게 『아빠』라 불리는―― 그런 꿈이라던가"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"보통이라면 기뻐해야 할 일, 이라고 생각해/하지만 솔직히… 무거운 짐이라 생각하는 나도 있어서…"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"대체… 난 어쩌면 좋다고 생각해？"
+				;選択肢3
+				CALL INPUT_SELECT_D, "[0] (견실한 선택)/[1] (분방한 선택)/",,, 2
+				IF RESULT == 0
+					;堅実
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞「짐이라 자각하는 것 자체가 그만큼 책임감이 있다는 증거」/라며, 등을 밀어주었다"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"그런… 건가…？"
+					六本木娼婦フラグ予備2:23 += 1
+				ELSEIF RESULT == 1
+					;奔放
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞「여분의 짐을 짊어지지 않는 것도 현명한 선택」/이라며, 등을 밀어주었다"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"그런… 건가…？"
+					六本木娼婦フラグ予備3:23 += 1
+				ENDIF
+				
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞남자의 푸념에 어울려주었습니다."
+				CALL SHOW_PICTURE, "EMPTY"
+				六本木娼婦フラグ予備1:23 = 3
+			ELSEIF 六本木娼婦フラグ予備1:23 == 3
+				;5回目
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"…그게, 어제… 악몽을 꿨어./『그녀』에게 바람피운 걸 들켜서 『수라장』 『대개막』―― 그런 꿈을"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"그리고 난… 무너지는 벽을 필사적으로 기어 올라가…/『그녀』와 함께 『악몽』을 탈출했어…/탈출, 했을 터였는데…"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"하지만… 난 잠결에 비몽사몽해서… 깨우러 온 『그녀』에게/바람피웠던 일을 엉겁결에 입 밖에 내버려서…/오늘 아침, 완전히 정나미 떨어진 채 차여버렸어…"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"…저기, 하나 물어봐도 될까？/난 대체… 어쩌면 좋다고 생각해？"
+				;選択肢4。女あなたなら浮気に参戦可。参戦しないならルート確定
+				IF !TALENT:MASTER:남자
+					CALL INPUT_SELECT_D, "[0] (견실한 선택)/[1] (분방한 선택)/[2] 위로해 준다",,, 2
+				ELSE
+					CALL INPUT_SELECT_D, "[0] (견실한 선택)/[1] (분방한 선택)/",,, 2
+				ENDIF
+				IF RESULT == 0
+					;堅実
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞「그대가 마땅히 해야 할 바를 행하라」/고, 등을 밀어주었다"
+					;by至高神ファリスの教え
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"그런가…… 그렇겠지/…미안. 잠깐 다녀올게"
+					六本木娼婦フラグ予備2:23 += 1
+					六本木娼婦フラグ予備1:23 = 5
+				ELSEIF RESULT == 1
+					;奔放
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞「그대가 원하는 대로 행하라」/고, 등을 밀어주었다"
+					;by暗黒神ファラリスの教え
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"그런가…… 그렇겠지/…미안. 잠깐 다녀올게"
+					六本木娼婦フラグ予備3:23 += 1
+					六本木娼婦フラグ予備1:23 = 5
+				ELSEIF RESULT == 2
+					;あなた参戦ルート
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞여기까지 이야기를 들어준 탓인지, 남자에게 깊은 연민을 느낀 " + CALLNAME:MASTER + "는…/『괜찮아？ 위로해 줄까？』라고 제안했다…"
+					;ダメンズ好きあなた的な流れ
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"……？！ 자, 잠깐만！！ 진정해!/나, 난 딱히 그럴 생각으로 그런 게…?!"
+					CALL SHOW_PICTURE, "EMPTY"
+					;あなたの経験を増やす
+					EXP:MASTER:절정경험 += 1
+					EXP:MASTER:성교경험 += 1
+					EXP:MASTER:Ｖ경험 += 1
+					EXP:MASTER:질사경험 += 1
+					EXP:MASTER:정액경험 += 1
+					六本木娼婦フラグ予備1:23 = 4
+				ENDIF
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞남자의 푸념에 어울려주었습니다."
+				IF RESULT == 2
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞덧붙여… 이건 여담이지만/남자의 이름이 『빈센트』라는 것을 이제야 알게 되었다."
+				ENDIF
+				CALL SHOW_PICTURE, "EMPTY"
+			ELSEIF 六本木娼婦フラグ予備1:23 == 4
+				;6回目(女あなた参戦ルート)
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"빈센트", @"…저기, 하나 물어봐도 될까？/혹시 너도…… 『몽마』인 거냐？"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞자세한 이야기를 들어보니, 그의 바람기와 악몽에는 몽마가 깊이 관여되어 있던 모양이다…/「흑막」에게서 여러 이야기를 들었다고 한다"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞그렇다면야 하고 " + CALLNAME:MASTER + "는 신분을 밝혔다/「자신은 『몽마』가 아니라 『악마소환사』다」라고"
+				;サマナーじゃなくてペルソナ使いやシフターの場合のケースは一旦なし
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"빈센트", @"…에？！ 뭐야 그건……？/그, 그럼…… 그건 환각이 아니라… 진짜 바람이었다는 거야아！？"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞빈센트는 머리를 감싸 쥐었다…/아무래도 지난번의 그것은 쓸데없는 오지랖이었던 모양이다//――――어떡할까？"
+				;選択肢。ここに来るで、どちらかが間違いなく多くなるはず
+				IF 六本木娼婦フラグ予備2:23 > 六本木娼婦フラグ予備3:23
+					CALL INPUT_SELECT_D, "[0] 한 번 잤으니 이제 내 남자다/[1] 성실하게 마주한다/",,, 2
+				ELSEIF 六本木娼婦フラグ予備2:23 < 六本木娼婦フラグ予備3:23
+					CALL INPUT_SELECT_D, "[0] 몽마 따위에게 빼앗길까 보냐/[1] 놓아준다/",,, 2
+				ENDIF
+				IF RESULT == 0
+					;あなたルート確定
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞「나도 몽마든 일반인이든 뒤지지 않는다」/　「후회는 안 시킬 테니 나와 함께 가지 않겠나？」/라고 " + CALLNAME:MASTER + "는 빈센트를 유혹했다"
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"빈센트", @"…에. 그게 그러니까？！ 자, 잠깐만 기다려줘！！/화, 확실히 네가 여러모로 친절하게 들어줬고… 그 제안은 나도 마음이 흔들리긴 하지만!"
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"빈센트", @"다, 다음 악몽이 마지막이야！ 매듭은 확실히 지어야 해…/그, 그러니까… 그때까지 대답은 기다려줘！！"
+					六本木娼婦フラグ予備1:23 = 9
+				ELSEIF RESULT == 1
+					;キャンセル
+					IF 六本木娼婦フラグ予備2:23 > 六本木娼婦フラグ予備3:23
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞이야기를 꼬이게 만들고 싶진 않다./솔직하게 고개를 숙여 " + CALLNAME:MASTER + "는 사과했다"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞그리고――/「만약, 정 안 되겠거든… 그때는 내가 거두어 주겠다」/고 다시금 등을 밀어주었다"
+					ELSEIF 六本木娼婦フラグ予備2:23 < 六本木娼婦フラグ予備3:23
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞사태를 복잡하게 만들고 싶진 않다./" + CALLNAME:MASTER + "는 섣불리 넘겨짚었음을 솔직히 인정했다"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞그리고――/「만약 차이거든… 그 경우에는 내가 데려가 주겠다」/고 다시금 등을 밀어주었다"
+					ENDIF
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"빈센트", @"그런가…… 그렇겠지/고마워…… 나, 잠깐 다녀올게！！"
+					六本木娼婦フラグ予備1:23 = 5
+				ENDIF
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞빈센트는 술값을 테이블에 올려두고 뛰쳐나갔다…"
+				IF RESULT == 1
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞/「저 모습이라면 분명 이제 괜찮겠지……」/" + CALLNAME:MASTER + "는 그렇게 확신을 품고, 「그 하룻밤」을 없었던 일로 쳤다"
+				ENDIF
+				CALL SHOW_PICTURE, "EMPTY"
+			ELSEIF 六本木娼婦フラグ予備1:23 >= 5
+				;結末。上記の選択肢で選んだフラグより判定
+				IF 六本木娼婦フラグ予備1:23 == 9
+					;女あなたに奪われる
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"빈센트", @"아~… 그게… 전부, 끝내고 왔어/…이걸로 악몽에 살해당하는 남자는 앞으로, 사라질 거야/아니… 그게 아니지…"
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"빈센트", @"미안, 역시 도무지 결심이 잘 안 서서 말야/새삼스럽게, 그날의 대답을 들려주려니, 좀 쑥스럽기도 하고…"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞「괜찮아. 방황할 때 등을 밀어주는 것이 나의 역할」/　「등… 맡겨줄 거지？」/"
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"빈센트", @"…아아, 그래/너와 함께라면 안심할 수 있어. 혼자서 발버둥치는 건 이제 진절머리가 나"
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"빈센트", @"…저기, 들어주지 않을래？/지금까지 나의 고군분투기. 너도 알아줬으면 좋겠어"
+					CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞남자의 이야기에 어울려주었습니다."
+					CALL SHOW_PICTURE, "EMPTY"
+					;加入処理
+					;キャラデータは仮。
+					;現状はスキルも何もないただの一般人
+					CALL ADD_NEW_COMPANION, [[キャラ:빈센트]], 3000
+
+					六本木娼婦フラグ予備1:23 = 99
+					六本木娼婦フラグ:23 = 3;身請け済みにして終わる
+				ELSEIF 六本木娼婦フラグ予備2:23 > 六本木娼婦フラグ予備3:23
+					;堅実が多い場合はKルート
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"…나, 『그녀』와 결혼하기로 했어/그 후, 사과하러 가서… 도게자를 하며 꼴사납게 매달렸거든"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"그녀가 없으면 아무 의미가 없다는 걸 겨우 깨달았어…/불안해서 앞이 보이지 않았지만, 지금이라면 알 수 있어/…「그녀를 사랑하고 있다」는 걸"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞아무래도 원만하게 해결된 모양이다/「축하해」라고 따뜻하게 축복해 주었습니다"
+					CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞남자의 이야기에 어울려주었습니다."
+					CALL SHOW_PICTURE, "EMPTY"
+					六本木娼婦フラグ予備1:23 = 10
+				ELSEIF 六本木娼婦フラグ予備2:23 < 六本木娼婦フラグ予備3:23
+					;奔放が多い場合はCルート
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"…나, 『그녀』와 결혼하기로 했어/그 후, 마음을 전하러 가서… 무릎을 꿇고 꼴사납게 매달렸거든"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"『전 여친』과 헤어지고 나니 망설임이 싹 가셨어/「답답한 인생은 이제 싫어. 자유롭게 살 거야」라고 말이지…/그녀와 함께라면 분명 그걸 실현할 수 있을 것 같아"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞아무래도 원만하게 해결된 모양이다/「축하해」라고 따뜻하게 축복해 주었습니다"
+					CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞남자의 이야기에 어울려주었습니다."
+					CALL SHOW_PICTURE, "EMPTY"
+					六本木娼婦フラグ予備1:23 = 20
+				ELSE
+					;上記のいずれでもない場合、自由ルート(ただ愚痴を聞かされて終わり)
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"…나, 『그녀』와 헤어지기로 했어/그녀는, 나에겐 과분할 정도로 좋은 여자이고, 나도 스스로를 되돌아보고 싶어졌거든"
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ヴィンセント"), ICON_ADDRESS, ,"남자", @"그래서…… 덧붙여서 하는 말인데, 돈 좀 빌려주지 않을래？/나를 찾는 여행이라도 떠나볼까 하는데/당장 쓸 여비가… 없거든…"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞아무래도 원만하게 정리된 모양이다/이래저래 짚이는 구석은 많지만, 순순히 새 출발을 축복해 주었다…"
+					CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+					IF MONEY:1 >= 5000
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞남자의 푸념에 어울려주었습니다.//…또한, 교섭 끝에 5000마카를 빌려주었다/(덧붙여 훗날, 도박에서 대박이 터진 모양이라 돈은 문제없이 변제되었다)"
+					ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞남자의 푸념에 어울려주었습니다.//…또한, 교섭 끝에 수중의 돈 전액을 빌려주었다/(덧붙여 훗날, 도박에서 대박이 터진 모양이라 돈은 문제없이 변제되었다)"
+					ENDIF
+					;金は減らないフレーバー展開
+					CALL SHOW_PICTURE, "EMPTY"
+					六本木娼婦フラグ予備1:23 = -1
+					六本木娼婦フラグ:23 = 3;身請け済みに設定して終わる
+				ENDIF
+				;ここで予備フラグをリセットして、後のイベントで使えるようにしておく
+				六本木娼婦フラグ予備2:23 = 0
+				六本木娼婦フラグ予備3:23 = 0
+			ENDIF
+		ELSEIF 六本木娼婦フラグ予備1:23 >= 10 && 六本木娼婦フラグ予備1:23 < 20
+			;Kルート後、Cキャサリン
+			IF 六本木娼婦フラグ予備1:23 == 10
+				;導入
+				CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"캐서린", @""
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞"
+				
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+				CALL SHOW_PICTURE, "EMPTY"
+				六本木娼婦フラグ予備1:23 = 11
+			ELSE
+				CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"캐서린", @""
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞"
+				
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+				CALL SHOW_PICTURE, "EMPTY"
+				;見受け可能フラグを設定
+				六本木娼婦フラグ:23 = 2
+			ENDIF
+		ELSEIF 六本木娼婦フラグ予備1:23 >= 20 && 六本木娼婦フラグ予備1:23 < 30
+			;Cルート後、Kキャサリン
+			IF 六本木娼婦フラグ予備1:23 == 20
+				;導入
+				CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"캐서린", @""
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞"
+				
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+				CALL SHOW_PICTURE, "EMPTY"
+				六本木娼婦フラグ予備1:23 = 21
+			ELSE
+				CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"캐서린", @""
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞"
+				
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+				CALL SHOW_PICTURE, "EMPTY"
+				;見受け可能フラグを設定
+				六本木娼婦フラグ:23 = 2
+			ENDIF
+		ENDIF
+	CASE "身受け価格"
+		RETURN 3000
+	CASE "身受け確認"
+		CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, ,"노출된 웨이트리스", @"그녀는요~/3000마카에 데려가셔도 좋다고 합니다만~/어떻게 하시겠어요~?/"
+		CALL MESSAGE_WINDOW_D_ICON, , 給仕アイコンアドレス:1, ,"노출된 웨이트리스", @"그녀는요~/３０００마카에 데리고 나가셔도 괜찮다고 합니다만~/어떻게 하시겠어요~？/"
+		六本木娼婦フラグ:17 = 3
+		IF 六本木娼婦フラグ予備1:23 >= 10 && 六本木娼婦フラグ予備1:23 < 20
+			;Cキャサリン
+			CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"캐서린", @""
+			
+			;加入処理
+			;CALL ADD_NEW_COMPANION, XXX, 3000
+		ELSEIF 六本木娼婦フラグ予備1:23 >= 20 && 六本木娼婦フラグ予備1:23 < 30
+			;Kキャサリン
+			CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"캐서린", @""
+			
+			;加入処理
+			;CALL ADD_NEW_COMPANION, XXX, 3000
+		ENDIF
+	CASE "宣伝"
+	CASE "リスト"
+		IF 六本木娼婦フラグ予備1:23 >= 20
+			RESULTS = ""
+		ELSEIF 六本木娼婦フラグ予備1:23 >= 10
+			RESULTS = ""
+		ELSE
+			CALLF 顔グラ追加_F, [[キャラ:빈센트]]
+			RESULTS '= "ヴィンセント" + "_" + D31_FACE("ヴィンセント", 1)
+		ENDIF
+ENDSELECT
+

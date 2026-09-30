@@ -1,0 +1,278 @@
+﻿;VenusBlood HOLLOW International　アノーラ　戦闘口上　ライセンスフリー
+;
+;-------------------------------------------------
+;・更新履歴・
+;日時			更新者						内容
+;2026/01/31		ロココ						新規作成
+;2026/02/01		ロココ						微調整
+;-------------------------------------------------
+;ライセンスについて
+;	・基本項目(許可する項目を"○"に、許可しない項目を"×"に変更してください。)
+;	+----+----+-------------------------------+
+;	|番号|許可|ライセンス内容                 |
+;	+----+----+-------------------------------+
+;	|   1| ○ | 処理上のバグ修正              |
+;	+----+----+-------------------------------+
+;	|   2| ○ | 口上の誤字・脱字の修正        |
+;	+----+----+-------------------------------+
+;	|   3| ○ | 口上まとめへの収録            |
+;	+----+----+-------------------------------+
+;	|   4| ○ | 口上の新規追加                |
+;	+----+----+-------------------------------+
+;	|   5| ○ | 既存口上の改変                |
+;	+----+----+-------------------------------+
+;	|   6| ○ | 改変した口上の自由な再配布    |
+;	+----+----+-------------------------------+
+;	|   7| ○ | 口上内容の転載                |
+;	+----+----+-------------------------------+
+;-------------------------------------------------
+;【性格とか】
+;VBHIにおけるメインヒロイン、アノーラの戦闘用口上。
+;主人公にベタベタにドロドロに依存しまくりの他にはツンデレ全開な、
+;しかしいざ戦闘となるとやたらかっこいいお人。
+;愛しい人が登場していない…程度であーだこーだは言わないはず。というイメージで作りました。
+;一応ロウストーリー準拠で頑張った…つもり。案外戦闘関連セリフなかったな…
+
+@ENEMY_BATTLE_EVENT_K[[キャラ:아노라・아르크노아]], ARG, ARG:1, ARG:2
+IF TFLAG:전투이벤트 == 1
+;敵でのデビルＣＯ－ＯＰ発動時の台詞
+;			BTL_KOJO_RESULTS:0 =
+ENDIF
+IF TFLAG:전투이벤트 == 2
+;敵でのデビルＣＯ－ＯＰ参加時の台詞
+;			BTL_KOJO_RESULTS:0 =
+ENDIF
+
+@KOJO_BATTLE_EVENT_K[[キャラ:아노라・아르크노아]], ARG, ARG:1, ARG:2
+SELECTCASE GET_BATTLE_EVENT(TFLAG:전투이벤트)
+	;味方パーティでのデビルＣＯ－ＯＰ発動時の台詞
+	CASE "COOP発動"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = %CSTR:일인칭%を舐めるんじゃないわよ！
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 踊りなさい！“漆黒宴の礼装”！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 終わったと思ったの？甘いわよ
+		ENDIF
+	;味方パーティでのデビルＣＯ－ＯＰ参加時の台詞
+	CASE "COOP参加"
+		;あなたが発動
+		IF FLAG:행동순1 != -1 && FLAG:행동순1 == MASTER
+			IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = %CSTR:이인칭%、踊らせてもらうわ
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = いくわよ、%CSTR:이인칭%！
+			ELSE
+				BTL_KOJO_RESULTS:0 = いくわよエンヴィ！
+			ENDIF
+		;それ以外
+		ELSE
+			IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = このチャンスは逃さないわ
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 上出来よ。これももらっていきなさい
+			ELSE
+				BTL_KOJO_RESULTS:0 = いくわよエンヴィ！
+			ENDIF
+		ENDIF
+	CASE "与ダメージ_単体"
+		;攻撃して殺害した
+		IF BASE:(ARG:1):ＨＰ <= 0
+			IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = あら、もう終わり？
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 手間取らせてくれたわね
+			ELSE
+				BTL_KOJO_RESULTS:0 = こいつは、ここで殺しておかないと
+			ENDIF
+		;攻撃したけど吸収された
+		ELSEIF ARG:2 < 0
+			IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = 私が踊らされた？
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 屈辱ね。相手のいいようにされるなんて
+			ELSE
+				BTL_KOJO_RESULTS:0 = いらつくわね。その能力、あの人にそっくり
+			ENDIF
+		ENDIF
+	CASE "追撃発動"
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = エンヴィ！行って！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 終わりだと思った？残念、まだよ
+		ENDIF
+	CASE "被ダメージ_単体"
+		;被弾（死亡）
+		IF BASE:ARG:ＨＰ <= 0
+			IF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = ここが…私の死に場所…
+			ELSE
+				BTL_KOJO_RESULTS:0 = 終わるわけには…いかないのに…
+			ENDIF
+		;残り１５％以下
+		ELSEIF 現HP割合(ARG) < 15
+			IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = こんなところで終われない！
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = ずいぶんやってくれたじゃない…！
+			ELSE
+				BTL_KOJO_RESULTS:0 = ダメ。ここで倒れるわけには行かない
+			ENDIF
+		;被弾
+		ELSE
+			IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = あら。なにかした？
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = たいしたことないのね
+			ELSE
+				BTL_KOJO_RESULTS:0 = この程度なの？
+			ENDIF
+		ENDIF
+		
+	;外した
+	CASE "回避された"
+		BTL_KOJO_RESULTS:0 = ちっ…次は当てるわ
+	;회피
+	CASE "回避した"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 避けてくれと言っているのかしら
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = その攻撃は予測済みよ
+		ELSE
+			BTL_KOJO_RESULTS:0 = あらあら。もっと上手に踊りなさいな
+		ENDIF
+	;反射された
+	CASE "反射された"
+		BTL_KOJO_RESULTS:0 = 跳ね返された！？いけない、防御を
+	;反射
+	CASE "反射した"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = その力、そのまま返させてもらうわ
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 無様ね。自分の力で自滅なさい
+		ELSE
+			BTL_KOJO_RESULTS:0 = 全て見切っているわ。これは返礼よ
+		ENDIF
+	;バトルに勝利した
+	CASE "戦闘勝利"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 呆気ないのね
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 敗北を認めなさい
+		ELSE
+			BTL_KOJO_RESULTS:0 = 簡単に死なせてなんてあげないわよ？
+		ENDIF
+	;レベルアップした
+	CASE "レベルアップ"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 足手まといにはならない
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 力を持ってやりたいことがある、それだけよ
+		ELSE
+			BTL_KOJO_RESULTS:0 = 少しは目的に近づけたかしら
+		ENDIF
+	;逃走に成功した
+	CASE "逃走成功"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 馬鹿正直に戦うわけがないでしょう
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = あなたと正面からやり合うとでも？
+		ELSE
+			BTL_KOJO_RESULTS:0 = うまいこと撹乱できたわね
+		ENDIF
+	;逃走に失敗した
+	CASE "逃走失敗"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = やられた。これじゃ逃げ切れないわ
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = ここで時間を取られるわけにはいかないのに
+		ELSE
+			BTL_KOJO_RESULTS:0 = こちらに退路はなさそう
+		ENDIF
+	;戦闘開始時
+	CASE "先制攻撃"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 多少時間を稼いだわ。どう始末するかは%CSTR:이인칭%に任せた
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 隙だらけね。%CSTR:이인칭%、片付けるわよ
+		ELSE
+			BTL_KOJO_RESULTS:0 = 開幕はこちらの作戦勝ちかしら
+		ENDIF
+	CASE "戦闘開始時"
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 行くわよ%CSTR:이인칭%
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = めんどくさい…邪魔なのよ貴方達
+		ELSE
+			BTL_KOJO_RESULTS:0 = 私たちの礎になってもらうわ
+		ENDIF
+	;戦闘開始時・バックアタックを受けた
+	CASE "バックアタック"
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 後方ですって…！？
+		ELSE
+			BTL_KOJO_RESULTS:0 = しまった！？
+		ENDIF
+	;戦闘開始時・先制攻撃を受けた
+	CASE "不意打ち"
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 先手を取られた！？
+		ELSE
+			BTL_KOJO_RESULTS:0 = しまった！？
+		ENDIF
+ENDSELECT
+
+
+
+@KOJO_BATTLE_MESSAGE_K[[キャラ:아노라・아르크노아]],ARG,ARG:1 = 0
+;ターゲットが単体なら事前に対象のキャラをLOCALに保存しておく
+LOCAL = -1
+SIF INRANGE(CFLAG:ARG:타겟, 1, 16)
+	LOCAL = POS(CFLAG:ARG:타겟)
+
+;ちょっとした記憶用の領域を確保
+LOCAL:1 = 0
+
+
+;通常攻撃
+IF CFLAG:ARG:입력행동 == 0
+	IF RAND:3 == 0
+		BTL_KOJO_RESULTS:0 = くらえ！
+	ELSEIF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 邪魔よ
+	ELSE
+		BTL_KOJO_RESULTS:0 = やらせない
+	ENDIF
+;GUN
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:ＧＵＮ]]
+	IF RAND:3 == 0
+		BTL_KOJO_RESULTS:0 = 便利な道具ね
+	ELSEIF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = これなら当てられそう
+	ELSE
+		BTL_KOJO_RESULTS:0 = 吹き飛びなさい
+	ENDIF
+;MAG習得スキル/純血結界
+ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG,"純血結界")
+	IF RAND:3 == 0
+		BTL_KOJO_RESULTS:0 = 他人を操るばかりが能じゃないのよ
+	ELSEIF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 我が闇より出し混沌の導よ、我が血我が福音に基づき、
+		BTL_KOJO_RESULTS:1 = 我に仇成す全ての事象を拒絶せよ──純血結界！
+	ELSE
+		BTL_KOJO_RESULTS:0 = 純血結界＜ブラッドラウル＞──展開！
+	ENDIF
+;힘의도눔
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:힘의도눔]]
+	IF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 死力を振り絞りなさい！
+	ELSE
+		BTL_KOJO_RESULTS:0 = 踊りなさい、“漆黒宴の礼装”＜スクレッツァ＞！
+	ENDIF
+;행동불능
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:행동불능]]
+	BTL_KOJO_RESULTS:0 = 体の自由が効かない…！
+;金ばらまき
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:금전뿌리기]]
+	BTL_KOJO_RESULTS:0 = 何をやっているのよ私は…！
+ENDIF

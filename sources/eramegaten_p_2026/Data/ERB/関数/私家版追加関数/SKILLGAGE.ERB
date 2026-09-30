@@ -1,0 +1,556 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILLGAGE.ERB
+;	Facility	:スキルゲージを処理する関数群
+;
+;	Licence		:。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		Jガン					新規作成
+;	002		2020/08/27		Jガン					スキルゲージをクリア、交換する関数追加
+;	003		2022/10/30		P(bazzile)				スキルゲージ増加時にログを出す仕組みを追加
+;	004		2025/01/XX		Jガン					スキルゲージのリセット、D増減の関数を作成し、直接処理をここで行うように
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;---- EDIT 004 ADD START -------------------------
+;スキルゲージの定義数
+@SG_NUM
+#FUNCTION
+RETURNF 50
+;---- EDIT 004 ADD END ---------------------------
+
+@SKILLGAGE_NUM,ARG,ARG:1
+#FUNCTION
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+LOCAL = HAVE_SKILL(ARG,ARG:1,1)
+SIF LOCAL == 0
+	RETURNF LOCAL
+SIF LOCAL > 20
+	LOCAL += 9
+IF LOCAL < 13
+	IF TALENT:ARG:페르소나구사자
+		IF EQUIP:ARG:장비페르소나 == EQUIP:ARG:소지페르소나2
+			LOCAL += 8
+		ELSEIF EQUIP:ARG:장비페르소나 == EQUIP:ARG:소지페르소나3
+			LOCAL += 16
+		ENDIF
+	ELSEIF CFLAG:ARG:악마변신 == 1
+		LOCAL += 12
+	ENDIF
+ENDIF
+RETURNF LOCAL
+
+;-------------------------------------------------------------------
+
+@SKILLGAGE_H_GET,ARG,ARG:1
+#FUNCTION
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	RETURNF 0
+RETURNF CFLAG:ARG:("스킬게이지H"+TOSTR(LOCAL))
+
+@PU_SKILLGAGE_H_GET,ARG,ARGS
+#FUNCTION
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+LOCAL = SKILLGAGE_NUM(ARG,PU_SKILLNUM_GET(ARG, ARGS))
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬[%ARGS%]의 게이지를 취득하려 하고 있습니다! [캐릭터:%CALLNAME:ARG%]
+RETURNF CFLAG:ARG:("스킬게이지H"+TOSTR(LOCAL))
+
+@SKILLGAGE_D_GET,ARG,ARG:1
+#FUNCTION
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	RETURNF 0
+RETURNF CFLAG:ARG:("스킬게이지D"+TOSTR(LOCAL))
+
+@PU_SKILLGAGE_D_GET,ARG,ARGS
+#FUNCTION
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+LOCAL = SKILLGAGE_NUM(ARG,PU_SKILLNUM_GET(ARG, ARGS))
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬[%ARGS%]의 게이지를 취득하려 하고 있습니다! [캐릭터:%CALLNAME:ARG%]
+RETURNF CFLAG:ARG:("스킬게이지D"+TOSTR(LOCAL))
+
+@SKILLGAGE_F_GET,ARG,ARG:1
+#FUNCTION
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	RETURNF 0
+RETURNF CFLAG:ARG:("스킬게이지F"+TOSTR(LOCAL))
+
+@PU_SKILLGAGE_F_GET,ARG,ARGS
+#FUNCTION
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+LOCAL = SKILLGAGE_NUM(ARG,PU_SKILLNUM_GET(ARG, ARGS))
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬[%ARGS%]의 게이지를 취득하려 하고 있습니다! [캐릭터:%CALLNAME:ARG%]
+RETURNF CFLAG:ARG:("스킬게이지F"+TOSTR(LOCAL))
+;-------------------------------------------------------------------
+
+@SKILLGAGE_H_SET,ARG,ARG:1,ARG:2
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	代入数
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+CFLAG:ARG:("스킬게이지H"+TOSTR(LOCAL)) = ARG:2
+RETURN RESULT
+
+@PU_SKILLGAGE_H_SET,ARG,ARGS,ARG:2
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	代入数
+LOCAL = SKILLGAGE_NUM(ARG,PU_SKILLNUM_GET(ARG, ARGS))
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬[%ARGS%]의 게이지를 취득하려 하고 있습니다! [캐릭터:%CALLNAME:ARG%]
+CFLAG:ARG:("스킬게이지H"+TOSTR(LOCAL)) = ARG:2
+RETURN RESULT
+
+@SKILLGAGE_D_SET,ARG,ARG:1,ARG:2
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	代入数
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+CFLAG:ARG:("스킬게이지D"+TOSTR(LOCAL)) = ARG:2
+RETURN RESULT
+
+@PU_SKILLGAGE_D_SET,ARG,ARGS,ARG:2
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	代入数
+LOCAL = SKILLGAGE_NUM(ARG,PU_SKILLNUM_GET(ARG, ARGS))
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬[%ARGS%]의 게이지를 취득하려 하고 있습니다! [캐릭터:%CALLNAME:ARG%]
+CFLAG:ARG:("스킬게이지D"+TOSTR(LOCAL)) = ARG:2
+RETURN RESULT
+
+@SKILLGAGE_F_SET,ARG,ARG:1,ARG:2
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	代入数
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+CFLAG:ARG:("스킬게이지F"+TOSTR(LOCAL)) = ARG:2
+RETURN RESULT
+
+@PU_SKILLGAGE_F_SET,ARG,ARGS,ARG:2
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	代入数
+LOCAL = SKILLGAGE_NUM(ARG,PU_SKILLNUM_GET(ARG, ARGS))
+
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬[%ARGS%]의 게이지를 취득하려 하고 있습니다! [캐릭터:%CALLNAME:ARG%]
+CFLAG:ARG:("스킬게이지F"+TOSTR(LOCAL)) = ARG:2
+RETURN RESULT
+
+;-------------------------------------------------------------------
+
+@SKILLGAGE_H_GETBIT,ARG,ARG:1,ARG:2 = -1
+#FUNCTION
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	ビット位置(0～63)
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+RETURNF GETBIT(CFLAG:ARG:("스킬게이지H"+TOSTR(LOCAL)),ARG:2)
+
+@SKILLGAGE_D_GETBIT,ARG,ARG:1,ARG:2 = -1
+#FUNCTION
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	ビット位置(0～63)
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+RETURNF GETBIT(CFLAG:ARG:("스킬게이지D"+TOSTR(LOCAL)),ARG:2)
+
+@SKILLGAGE_F_GETBIT,ARG,ARG:1,ARG:2 = -1
+#FUNCTION
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	ビット位置(0～63)
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+RETURNF GETBIT(CFLAG:ARG:("스킬게이지F"+TOSTR(LOCAL)),ARG:2)
+
+;-------------------------------------------------------------------
+
+@SKILLGAGE_H_SETBIT,ARG,ARG:1,ARG:2 = -1
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	ビット位置(0～63)
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+SETBIT CFLAG:ARG:("스킬게이지H"+TOSTR(LOCAL)),ARG:2
+
+@SKILLGAGE_D_SETBIT,ARG,ARG:1,ARG:2 = -1
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	ビット位置(0～63)
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+SETBIT CFLAG:ARG:("스킬게이지D"+TOSTR(LOCAL)),ARG:2
+
+@SKILLGAGE_F_SETBIT,ARG,ARG:1,ARG:2 = -1
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	ビット位置(0～63)
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+SETBIT CFLAG:ARG:("스킬게이지F"+TOSTR(LOCAL)),ARG:2
+
+@SKILLGAGE_H_CLEARBIT,ARG,ARG:1,ARG:2 = -1
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	ビット位置(0～63)
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+CLEARBIT CFLAG:ARG:("스킬게이지H"+TOSTR(LOCAL)),ARG:2
+
+@SKILLGAGE_D_CLEARBIT,ARG,ARG:1,ARG:2 = -1
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	ビット位置(0～63)
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+CLEARBIT CFLAG:ARG:("스킬게이지D"+TOSTR(LOCAL)),ARG:2
+RETURN RESULT
+
+@SKILLGAGE_F_CLEARBIT,ARG,ARG:1,ARG:2 = -1
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	ビット位置(0～63)
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+CLEARBIT CFLAG:ARG:("스킬게이지F"+TOSTR(LOCAL)),ARG:2
+
+@SKILLGAGE_H_INVERTBIT,ARG,ARG:1,ARG:2 = -1
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	ビット位置(0～63)
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+INVERTBIT CFLAG:ARG:("스킬게이지H"+TOSTR(LOCAL)),ARG:2
+
+@SKILLGAGE_D_INVERTBIT,ARG,ARG:1,ARG:2 = -1
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	ビット位置(0～63)
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+INVERTBIT CFLAG:ARG:("스킬게이지D"+TOSTR(LOCAL)),ARG:2
+
+@SKILLGAGE_F_INVERTBIT,ARG,ARG:1,ARG:2 = -1
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	ビット位置(0～63)
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+INVERTBIT CFLAG:ARG:("스킬게이지F"+TOSTR(LOCAL)),ARG:2
+RETURN RESULT
+
+;-------------------------------------------------------------------
+
+@SKILLGAGE_H_ADD,ARG,ARG:1,ARG:2
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	加算数
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+CFLAG:ARG:("스킬게이지H"+TOSTR(LOCAL)) += ARG:2
+RETURN RESULT
+
+@PU_SKILLGAGE_H_ADD,ARG,ARGS,ARG:1
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	加算数
+LOCAL = SKILLGAGE_NUM(ARG,PU_SKILLNUM_GET(ARG, ARGS))
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬[%ARGS%]의 게이지를 취득하려 하고 있습니다! [캐릭터:%CALLNAME:ARG%]
+CFLAG:ARG:("스킬게이지H"+TOSTR(LOCAL)) += ARG:1
+RETURN RESULT
+
+@SKILLGAGE_D_ADD,ARG,ARG:1,ARG:2
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	加算数
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+CFLAG:ARG:("스킬게이지D"+TOSTR(LOCAL)) += ARG:2
+RETURN RESULT
+
+@PU_SKILLGAGE_D_ADD,ARG,ARGS,ARG:1
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	加算数
+LOCAL = SKILLGAGE_NUM(ARG,PU_SKILLNUM_GET(ARG, ARGS))
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬[%ARGS%]의 게이지를 취득하려 하고 있습니다! [캐릭터:%CALLNAME:ARG%]
+CFLAG:ARG:("스킬게이지D"+TOSTR(LOCAL)) += ARG:1
+RETURN RESULT
+
+@SKILLGAGE_F_ADD,ARG,ARG:1,ARG:2
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	加算数
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+CFLAG:ARG:("스킬게이지F"+TOSTR(LOCAL)) += ARG:2
+RETURN RESULT
+
+
+@PU_SKILLGAGE_F_ADD,ARG,ARGS,ARG:1
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	加算数
+LOCAL = SKILLGAGE_NUM(ARG,PU_SKILLNUM_GET(ARG, ARGS))
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬[%ARGS%]의 게이지를 취득하려 하고 있습니다! [캐릭터:%CALLNAME:ARG%]
+CFLAG:ARG:("스킬게이지F"+TOSTR(LOCAL)) += ARG:1
+RETURN RESULT
+
+;-------------------------------------------------------------------
+
+@SKILLGAGE_H_CALCULATION,ARG,ARG:1,ARG:2,ARGS = "+"
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	演算数
+;ARGS	演算方法(=,+,-,*,/ デフォルトで+)
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+SELECTCASE ARGS
+	CASE "="
+		CFLAG:ARG:("스킬게이지H"+TOSTR(LOCAL)) = ARG:2
+	CASE "+"
+		CFLAG:ARG:("스킬게이지H"+TOSTR(LOCAL)) += ARG:2
+	CASE "-"
+		CFLAG:ARG:("스킬게이지H"+TOSTR(LOCAL)) -= ARG:2
+	CASE "*"
+		CFLAG:ARG:("스킬게이지H"+TOSTR(LOCAL)) *= ARG:2
+	CASE "/"
+		CFLAG:ARG:("스킬게이지H"+TOSTR(LOCAL)) /= ARG:2
+	CASE "%"
+		CFLAG:ARG:("스킬게이지H"+TOSTR(LOCAL)) %= ARG:2
+ENDSELECT
+RETURN RESULT
+
+@SKILLGAGE_D_CALCULATION,ARG,ARG:1,ARG:2,ARGS = "+"
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	演算数
+;ARGS	演算方法(=,+,-,*,/ デフォルトで+)
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+SELECTCASE ARGS
+	CASE "="
+		CFLAG:ARG:("스킬게이지D"+TOSTR(LOCAL)) = ARG:2
+	CASE "+"
+		CFLAG:ARG:("스킬게이지D"+TOSTR(LOCAL)) += ARG:2
+	CASE "-"
+		CFLAG:ARG:("스킬게이지D"+TOSTR(LOCAL)) -= ARG:2
+	CASE "*"
+		CFLAG:ARG:("스킬게이지D"+TOSTR(LOCAL)) *= ARG:2
+	CASE "/"
+		CFLAG:ARG:("스킬게이지D"+TOSTR(LOCAL)) /= ARG:2
+	CASE "%"
+		CFLAG:ARG:("스킬게이지D"+TOSTR(LOCAL)) %= ARG:2
+ENDSELECT
+RETURN RESULT
+
+@SKILLGAGE_F_CALCULATION,ARG,ARG:1,ARG:2,ARGS = "+"
+#LOCALSIZE 1
+;ARG	キャラ番号
+;ARG:1	スキル番号
+;ARG:2	演算数
+;ARGS	演算方法(=,+,-,*,/ デフォルトで+)
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+SIF LOCAL == 0
+	THROW 소지하고 있지 않은 스킬의 게이지가 조작되려 했습니다! [캐릭터:%CALLNAME:ARG%] [스킬:{ARG:1}]
+SELECTCASE ARGS
+	CASE "="
+		CFLAG:ARG:("스킬게이지F"+TOSTR(LOCAL)) = ARG:2
+	CASE "+"
+		CFLAG:ARG:("스킬게이지F"+TOSTR(LOCAL)) += ARG:2
+	CASE "-"
+		CFLAG:ARG:("스킬게이지F"+TOSTR(LOCAL)) -= ARG:2
+	CASE "*"
+		CFLAG:ARG:("스킬게이지F"+TOSTR(LOCAL)) *= ARG:2
+	CASE "/"
+		CFLAG:ARG:("스킬게이지F"+TOSTR(LOCAL)) /= ARG:2
+	CASE "%"
+		CFLAG:ARG:("스킬게이지F"+TOSTR(LOCAL)) %= ARG:2
+ENDSELECT
+RETURN RESULT
+
+;-------------------------------------------------------------------
+;-------- MOD 003 START ADD -------------------------------
+@SKILLGAGE_CHARGE, L_CHARA, L_ACTOR
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_ACTOR
+#DIMS DYNAMIC TEMP_SKILL
+;#LOCALSIZE 2
+;#LOCALSSIZE 1
+;ARG	スキルゲージ溜める人
+;ARG:1	現在の行動者
+FOR LCOUNT, 0, TRYSKILLNUM(L_CHARA)
+	;控えキャラが指定された場合は控えで使えるスキルかどうかを確認する
+	TEMP_SKILL '= GET_TRYSKILL(L_CHARA, LCOUNT)
+	IF !CPOS(L_CHARA)
+		TRYCCALLFORM SKILLGAGE_CHARGE_USEABLE_RESERVE_%TEMP_SKILL%, L_CHARA
+			SIF !RESULT
+				CONTINUE
+		CATCH
+			CONTINUE
+		ENDCATCH
+	ENDIF
+	RESULT = 0
+	RESULT:1 = 0
+	VARSET RESULTS, "", 0, 3
+	TRYCCALLFORM SKILLGAGE_CHARGE_%TEMP_SKILL%, L_CHARA, L_ACTOR
+		IF RESULT
+			SIF TSTR:게이지메시지 != ""
+				TSTR:게이지메시지 += ","
+			IF STRFIND(RESULTS, "</font>") >= 0 || STRFIND(RESULTS, "</button>") >= 0
+				TSTR:게이지메시지 += @"{L_CHARA}_:%RESULTS%_{RESULT:1}"
+			ELSEIF RESULTS:2 == ""
+				TSTR:게이지메시지 += @"{L_CHARA}_:"
+				SIF RESULT > 0
+					TSTR:게이지메시지 += "+"
+				TSTR:게이지메시지 += @"%TOSTR(RESULT),5%%RESULTS:1%　<<%RESULTS%>>_{RESULT:1}"
+			ELSE
+				TSTR:게이지메시지 += @"{L_CHARA}_: %RESULTS:2%_{RESULT:1}"
+			ENDIF
+			TFLAG:게이지획득자이름 = MAX(STRLENS(CALLNAME:L_CHARA), TFLAG:게이지획득자이름)
+		ENDIF
+	CATCH
+		CONTINUE
+	ENDCATCH
+NEXT
+
+;-------- MOD 003 END   ADD -------------------------------
+;-------- MOD 002 START ADD -------------------------------
+@SKILLGAGE_SWAP,ARG,ARG:1,ARG:2
+#LOCALSIZE 2
+;ARG	スキルゲージ変える人
+;ARG:1	スキゲ入替スキル1
+;ARG:2	スキゲ入替スキル2
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+LOCAL:1 = SKILLGAGE_NUM(ARG,ARG:2)
+
+CALL SKILLGAGE_DIRECT_SWAP,ARG,LOCAL,LOCAL:1
+
+@SKILLGAGE_DIRECT_SWAP,ARG,ARG:1,ARG:2
+;ARG	スキルゲージ変える人
+;ARG:1	スキゲ入替場所1
+;ARG:2	スキゲ入替場所2
+
+SWAP CFLAG:ARG:("스킬게이지H"+TOSTR(ARG:1)),CFLAG:ARG:("스킬게이지H"+TOSTR(ARG:2))
+SWAP CFLAG:ARG:("스킬게이지D"+TOSTR(ARG:1)),CFLAG:ARG:("스킬게이지D"+TOSTR(ARG:2))
+SWAP CFLAG:ARG:("스킬게이지F"+TOSTR(ARG:1)),CFLAG:ARG:("스킬게이지F"+TOSTR(ARG:2))
+
+@SKILLGAGE_CLEAR,ARG,ARG:1
+#LOCALSIZE 1
+;ARG	スキルゲージ変える人
+;ARG:1	スキゲクリアスキル
+LOCAL = SKILLGAGE_NUM(ARG,ARG:1)
+
+CALL SKILLGAGE_DIRECT_CLEAR,ARG,LOCAL
+
+@SKILLGAGE_DIRECT_CLEAR,ARG,ARG:1
+;ARG	スキルゲージ変える人
+;ARG:1	スキゲクリア場所
+
+CFLAG:ARG:("스킬게이지H"+TOSTR(ARG:1)) = 0
+CFLAG:ARG:("스킬게이지D"+TOSTR(ARG:1)) = 0
+CFLAG:ARG:("스킬게이지F"+TOSTR(ARG:1)) = 0
+
+;-------- MOD 002 END ADD -------------------------------
+;---- EDIT 004 ADD START -------------------------
+@SKILLGAGE_ALL_CLEAR,ARG,ARG:1 = 0
+#DIM DYNAMIC L_COUNT
+;ARG	スキルゲージ全クリアする人
+;ARG:1	リセット方法　0=全部　1=Fを除く
+VARSET CFLAG:ARG:0, 0, GETNUM(CFLAG, ("스킬게이지H1")), GETNUM(CFLAG, ("스킬게이지H1")) + SG_NUM()
+VARSET CFLAG:ARG:0, 0, GETNUM(CFLAG, ("스킬게이지D1")), GETNUM(CFLAG, ("스킬게이지D1")) + SG_NUM()
+SIF ARG:1 == 0
+	VARSET CFLAG:ARG:0, 0, GETNUM(CFLAG, ("스킬게이지F1")), GETNUM(CFLAG, ("스킬게이지F1")) + SG_NUM()
+
+@SKILLGAGE_D_ALL_DRIFTING,ARG
+#DIM L_COUNT
+;ARG	スキルゲージDを増減する人
+FOR L_COUNT, GETNUM(CFLAG, "스킬게이지D1"), GETNUM(CFLAG, "스킬게이지D1") + SG_NUM()
+	SIF CFLAG:ARG:L_COUNT > 0
+		CFLAG:ARG:L_COUNT --
+	SIF CFLAG:ARG:L_COUNT < 0
+		CFLAG:ARG:L_COUNT ++
+NEXT
+;---- EDIT 004 ADD END ---------------------------
+

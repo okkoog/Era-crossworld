@@ -1,0 +1,364 @@
+﻿#DIM CONST CS_CARD_TYPES = 1000 ;カードの種類数
+
+#DIM SAVEDATA SC_SS , 999
+;---------------------------------------------------
+;記録用
+;---------------------------------------------------
+
+#DIM SAVEDATA OWN_CARD , CS_CARD_TYPES       ;所持カード
+#DIM SAVEDATA OBTAIN_CARD , 100              ;入手済みカード(ビット　有無は問わない)
+#DIMS SAVEDATA CARD_IMAGE_ID , CS_CARD_TYPES ;それぞれのカード画像のID
+#DIM SAVEDATA CS_FUSION_KNOW , 2             ;特別合体を結果を知っているフラグ(ビット)
+#DIM SAVEDATA CS_S_FLAG
+#DIM SAVEDATA CS_G_FLAG
+#DIM SAVEDATA CS_B_FLAG
+
+#DIM SAVEDATA OWN_CARDDECK , 10 ,99
+#DIM SAVEDATA OWN_MAINDECK
+#DIM SAVEDATA OWN_DECK_ALIGNMENT , 10
+#DIMS SAVEDATA OWN_DECK_NAME , 10
+
+#DIMS SAVEDATA CBF_IMAGE_ID
+
+#DIM SAVEDATA CB_SETTING_BM_SPEED         ;バトルの自動進行速度
+
+#DIM SAVEDATA CARD_MARCHING_COUNT , CS_CARD_TYPES  ;出撃回数
+#DIM SAVEDATA CARD_FIGHTING_COUNT , CS_CARD_TYPES  ;バトル回数
+#DIM SAVEDATA CARD_SP_USING_COUNT , CS_CARD_TYPES  ;SPを使った回数
+#DIM SAVEDATA CARD_USING_COUNT , CS_CARD_TYPES     ;場に出た(アクティブ状態で場に出る)、アイテム使用回数
+
+#DIM SAVEDATA CB_CONTINUOS_BATTLE_RECORD  ;連続バトルの連勝記録
+
+#DIM CS_DEBUG	;デバッグ
+;---------------------------------------------------
+;敵AI用
+;---------------------------------------------------
+#DIM CS_AI_STEP			;AI段階
+#DIM CS_AI_ACTION,50	;AI行動
+
+#DIM CS_AI_ACTNUM			;AI行動番号
+#DIM CS_AI_ATTACK_S			;AI用アタックサポ付き
+
+;---------------------------------------------------
+;ショップ、合体用
+;---------------------------------------------------
+#DIM CS_SHOP_CC
+#DIM CS_SHOP_CL,999
+
+#DIM CS_SP_FUSION_COMBI, 3
+;---------------------------------------------------
+;チュートリアル用
+;---------------------------------------------------
+#DIM CS_TUTORIAL, 2;チュートリアル　0:チュートリアルの種類　2:チュートリアル進行度
+
+#DIM CS_DECK_FIXED;デッキ固定（自分のみ）
+#DIM CS_HP_FIXED, 2;開始時のHPの設定（0以下で無効）
+
+#DIM CS_START_T_FIXED;先攻サマナー固定　1:相手　2:自分
+;---------------------------------------------------
+;カードデータ
+;---------------------------------------------------
+#DIM CARD_DATE_V, 14
+#DIMS CARD_DATE_S, 8
+
+;CARD_DATE_V用
+#DIM CONST CBV_NO		= 0		;番号
+#DIM CONST CBV_AP		= 1		;ap
+#DIM CONST CBV_HP		= 2		;HP
+#DIM CONST CBV_RARITY	= 3	;レア度
+#DIM CONST CBV_COST		= 4		;コスト
+#DIM CONST CBV_FUSION	= 5
+#DIM CONST CBV_OFFERING = 6	;供物
+#DIM CONST CBV_FLIGHT	= 7
+#DIM CONST CBV_KINDS	= 8
+#DIM CONST CBV_SP1		= 9
+#DIM CONST CBV_SP2		= 10
+#DIM CONST CBV_BUY		= 11		;買値
+#DIM CONST CBV_SELL		= 12	;売値
+#DIM CONST CBV_LIMIT	= 13	;枚数制限
+
+#DIM CONST CBV_番号		= 0
+#DIM CONST CBV_ＡＰ		= 1
+#DIM CONST CBV_ＨＰ		= 2
+#DIM CONST CBV_レア度	= 3
+#DIM CONST CBV_コスト	= 4
+#DIM CONST CBV_合体		= 5
+#DIM CONST CBV_供物		= 6
+#DIM CONST CBV_飛行		= 7
+#DIM CONST CBV_種類		= 8
+#DIM CONST CBV_属性		= 8
+#DIM CONST CBV_特技1	= 9
+#DIM CONST CBV_特技2	= 10
+#DIM CONST CBV_買値		= 11
+#DIM CONST CBV_売値		= 12
+#DIM CONST CBV_制限		= 13
+
+;CARD_DATE_S用
+#DIM CONST CBS_NAME = 0				;名前
+#DIM CONST CBS_RACE = 1				;종족
+#DIM CONST CBS_SP1_SUB = 2
+#DIM CONST CBS_SP2_SUB = 3
+#DIM CONST CBS_SP1_NAME_CHANGE = 4
+#DIM CONST CBS_SP2_NAME_CHANGE = 5
+#DIM CONST CBS_COMMENTARY = 6		;해설
+#DIM CONST CBS_APPEARANCE = 7
+
+#DIM CONST CBS_名前 = 0
+#DIM CONST CBS_種族 = 1
+#DIM CONST CBS_特技1特性 = 2
+#DIM CONST CBS_特技2特性 = 3
+#DIM CONST CBS_特技1名前変更 = 4
+#DIM CONST CBS_特技2名前変更 = 5
+#DIM CONST CBS_解説 = 6
+#DIM CONST CBS_出展 = 7
+
+
+
+
+
+;===================================================
+;カードバトル用
+;===================================================
+#DIM CBF_SELECT	;選択中の場所
+#DIM CBF_PHASE	;1,プリーペアフェイズ、2,ドローフェイズ、3,メインフェイズ、4,ブロックフェイズ、5,ディスカードフェイズ、6,エンドフェイズ
+#DIM CBF_TURN	;今のターン
+#DIM CBF_P_TURN	;どっちのターンか
+#DIM CBF_SELECT_MODE	;1_フィールド一つ　2_フィールド複数　11_手札一つ　12_手札複数
+#DIM CBF_SELECT_BIT		;選択可能な手札か仲間(ﾋﾞｯﾄ演算)　手札そのまま　フィールド(仲魔0～11、サマナー20.21)
+#DIM CBF_SELECTING_BIT	;複数用の選択中の手札か仲間(ﾋﾞｯﾄ演算)　手札そのまま　フィールド(仲魔0～11、サマナー20.21)
+#DIMS CBF_LOG,100
+#DIM CBF_START_LINE	;バトルフィールドの最初の行
+
+#DIMS CB_FIRLD_KIND	;どんな状況のバトルか？
+
+;対戦相手のセリフ
+#DIMS CBF_NPC_COMMENT, 12, 2
+;第1配列　バトル開始、有利、超有利、不利、超不利、アタック時、勝利、敗北、引き分け、対等、強敵召喚、有利HP1
+#DIM CONST CBNC_バトル開始 	= 0
+#DIM CONST CBNC_有利 		= 1
+#DIM CONST CBNC_超有利 		= 2
+#DIM CONST CBNC_不利 		= 3
+#DIM CONST CBNC_超不利 		= 4
+#DIM CONST CBNC_アタック時 	= 5
+#DIM CONST CBNC_勝利 		= 6
+#DIM CONST CBNC_敗北 		= 7
+#DIM CONST CBNC_引き分け 	= 8
+#DIM CONST CBNC_均等 		= 9
+#DIM CONST CBNC_十八番召喚 	= 10
+#DIM CONST CBNC_有利HP1 	= 11
+;第2配列　台詞、画像
+
+#DIM CBF_NPC_ACE, 5
+;NPCの強敵
+
+;---------------------------------------------------
+;サマナー用
+;---------------------------------------------------
+#DIM SUMMONER_PARAMETER, 2, 5	;サマナーパラメータ
+#DIMS SUMMONER_INFO, 2 ,3	;サマナーの名前、画像の種類、デッキ名
+#DIM SUMMONER_DECK, 2, 99	;デッキ
+#DIM SUMMONER_HAND_CARDS, 2, 99	;手札
+#DIM SUMMONER_STATE, 2, 50 ,5	;サマナー状態
+
+;SUMMONER_PARAMETER用
+;　第一配列
+#DIM CONST CS1_ONESELF = 0
+#DIM CONST CS1_OPPONENT = 1
+
+#DIM CONST CS1_自分 = 0
+#DIM CONST CS1_相手 = 1
+
+;　第二配列　パラメータ用
+#DIM CONST CSP2_MAX_HP = 0
+#DIM CONST CSP2_HP = 1
+#DIM CONST CSP2_MAG = 2
+#DIM CONST CSP2_ALIGNMENT = 3
+#DIM CONST CSP2_STOCK_MAG = 4
+
+#DIM CONST CSP2_最大ＨＰ = 0
+#DIM CONST CSP2_ＨＰ = 1
+#DIM CONST CSP2_ＭＡＧ = 2
+#DIM CONST CSP2_属性 = 3
+#DIM CONST CSP2_ストックMAG = 4
+
+;　第二配列　情報用
+#DIM CONST CSI2_NANE = 0
+#DIM CONST CSI2_IMAGE = 1
+#DIM CONST CSI2_DECK_NAME = 2
+
+#DIM CONST CSI2_名前 = 0
+#DIM CONST CSI2_画像 = 1
+#DIM CONST CSI2_デッキ名 = 2
+
+
+;　第三配列　状態用
+#DIM CONST CSS3_STATE = 0
+#DIM CONST CSS3_TURN = 1
+#DIM CONST CSS3_SUB1 = 2
+#DIM CONST CSS3_SUB2 = 3
+#DIM CONST CSS3_SUB3 = 4
+
+#DIM CONST CSS3_状態 = 0
+#DIM CONST CSS3_持続ターン = 1
+#DIM CONST CSS3_サブ1 = 2
+#DIM CONST CSS3_サブ2 = 3
+#DIM CONST CSS3_サブ3 = 4
+
+
+;供物で使用するカード
+#DIM OFFERING_CARD_DATE_V, 6,14
+#DIMS OFFERING_CARD_DATE_S, 6,8
+
+;合体素材で使用する仲魔
+#DIM FUSION_CARD_DATE_V, 6,22
+#DIMS FUSION_CARD_DATE_S, 6,8
+
+
+;---------------------------------------------------
+;フィールド仲魔用
+;---------------------------------------------------
+;フィールドの悪魔用
+#DIM FIELD_DEMON_DATE_V, 24,22
+#DIMS FIELD_DEMON_DATE_S, 24,8
+#DIM FIELD_DEMON_STATE_V, 24,50,6
+#DIMS FIELD_DEMON_STATE_S, 24,50,3
+
+;　第一配列　포지션
+;0~11 今場にいるポジション
+#DIM CONST CBF_ALLY_POS1 = 0
+#DIM CONST CBF_ALLY_POS2 = 1
+#DIM CONST CBF_ALLY_POS3 = 2
+#DIM CONST CBF_ALLY_POS4 = 3
+#DIM CONST CBF_ALLY_POS5 = 4
+#DIM CONST CBF_ALLY_POS6 = 5
+#DIM CONST CBF_ENEMY_POS1 = 6
+#DIM CONST CBF_ENEMY_POS2 = 7
+#DIM CONST CBF_ENEMY_POS3 = 8
+#DIM CONST CBF_ENEMY_POS4 = 9
+#DIM CONST CBF_ENEMY_POS5 = 10
+#DIM CONST CBF_ENEMY_POS6 = 11
+
+;12~23 AI用　アタックサポスキル後等
+#DIM CONST CBF_ALLY_AI_POS1 = 12
+#DIM CONST CBF_ALLY_AI_POS2 = 13
+#DIM CONST CBF_ALLY_AI_POS3 = 14
+#DIM CONST CBF_ALLY_AI_POS4 = 15
+#DIM CONST CBF_ALLY_AI_POS5 = 16
+#DIM CONST CBF_ALLY_AI_POS6 = 17
+#DIM CONST CBF_ENEMY_AI_POS1 = 18
+#DIM CONST CBF_ENEMY_AI_POS2 = 19
+#DIM CONST CBF_ENEMY_AI_POS3 = 20
+#DIM CONST CBF_ENEMY_AI_POS4 = 21
+#DIM CONST CBF_ENEMY_AI_POS5 = 22
+#DIM CONST CBF_ENEMY_AI_POS6 = 23
+
+;24~35 AI用　スキル強化後等
+#DIM CONST CBF_ALLY_AI2_POS1 = 24
+#DIM CONST CBF_ALLY_AI2_POS2 = 25
+#DIM CONST CBF_ALLY_AI2_POS3 = 26
+#DIM CONST CBF_ALLY_AI2_POS4 = 27
+#DIM CONST CBF_ALLY_AI2_POS5 = 28
+#DIM CONST CBF_ALLY_AI2_POS6 = 29
+#DIM CONST CBF_ENEMY_AI2_POS1 = 30
+#DIM CONST CBF_ENEMY_AI2_POS2 = 31
+#DIM CONST CBF_ENEMY_AI2_POS3 = 32
+#DIM CONST CBF_ENEMY_AI2_POS4 = 33
+#DIM CONST CBF_ENEMY_AI2_POS5 = 34
+#DIM CONST CBF_ENEMY_AI2_POS6 = 35
+
+#DIM CONST CBF_味方ポジション1 = 0
+#DIM CONST CBF_味方ポジション2 = 1
+#DIM CONST CBF_味方ポジション3 = 2
+#DIM CONST CBF_味方ポジション4 = 3
+#DIM CONST CBF_味方ポジション5 = 4
+#DIM CONST CBF_味方ポジション6 = 5
+#DIM CONST CBF_敵ポジション1 = 6
+#DIM CONST CBF_敵ポジション2 = 7
+#DIM CONST CBF_敵ポジション3 = 8
+#DIM CONST CBF_敵ポジション4 = 9
+#DIM CONST CBF_敵ポジション5 = 10
+#DIM CONST CBF_敵ポジション6 = 11
+#DIM CONST CBF_味方AIポジション1 = 12
+#DIM CONST CBF_味方AIポジション2 = 13
+#DIM CONST CBF_味方AIポジション3 = 14
+#DIM CONST CBF_味方AIポジション4 = 15
+#DIM CONST CBF_味方AIポジション5 = 16
+#DIM CONST CBF_味方AIポジション6 = 17
+#DIM CONST CBF_敵AIポジション1 = 18
+#DIM CONST CBF_敵AIポジション2 = 19
+#DIM CONST CBF_敵AIポジション3 = 20
+#DIM CONST CBF_敵AIポジション4 = 21
+#DIM CONST CBF_敵AIポジション5 = 22
+#DIM CONST CBF_敵AIポジション6 = 23
+#DIM CONST CBF_味方AI2ポジション1 = 24
+#DIM CONST CBF_味方AI2ポジション2 = 25
+#DIM CONST CBF_味方AI2ポジション3 = 26
+#DIM CONST CBF_味方AI2ポジション4 = 27
+#DIM CONST CBF_味方AI2ポジション5 = 28
+#DIM CONST CBF_味方AI2ポジション6 = 29
+#DIM CONST CBF_敵AI2ポジション1 = 30
+#DIM CONST CBF_敵AI2ポジション2 = 31
+#DIM CONST CBF_敵AI2ポジション3 = 32
+#DIM CONST CBF_敵AI2ポジション4 = 33
+#DIM CONST CBF_敵AI2ポジション5 = 34
+#DIM CONST CBF_敵AI2ポジション6 = 35
+
+;　第二配列　パラメータデータ
+;召喚された仲魔0～13は上のカードデータ
+#DIM CONST CBV_HOST 		= 14
+#DIM CONST CBV_B_AP 		= 15
+#DIM CONST CBV_B_HP 		= 16
+#DIM CONST CBV_SPEED 		= 17
+#DIM CONST CBV_FLYING 		= 18
+#DIM CONST CBV_MAG 			= 19
+#DIM CONST CBV_BATTLE 		= 20
+#DIM CONST CBV_CONDITION	= 21
+;ﾋﾞｯﾄ　0.フリーズ状態、1.SP使用後状態、2.カード状態、3.MAG生成済み
+
+#DIM CONST CBV_主人				= 14
+#DIM CONST CBV_基礎ＡＰ			= 15
+#DIM CONST CBV_基礎ＨＰ			= 16
+#DIM CONST CBV_攻撃速度			= 17
+#DIM CONST CBV_飛行状態			= 18
+#DIM CONST CBV_ＭＡＧ			= 19
+#DIM CONST CBV_バトル			= 20
+#DIM CONST CBV_コンディション	= 21
+
+
+;召喚された仲魔の状態
+;　第三配列　状態用
+#DIM CONST CBV_STATE = 0
+#DIM CONST CBV_TURN = 1
+#DIM CONST CBV_TIMING = 2
+#DIM CONST CBV_SUB1 = 3
+#DIM CONST CBV_SUB2 = 4
+#DIM CONST CBV_SUB3 = 5
+
+#DIM CONST CBV_状態 = 0
+#DIM CONST CBV_持続ターン = 1
+#DIM CONST CBV_タイミング = 2
+#DIM CONST CBV_サブ1 = 3
+#DIM CONST CBV_サブ2 = 4
+#DIM CONST CBV_サブ3 = 5
+
+#DIM CONST CBS_SUB1 = 0
+#DIM CONST CBS_SUB2 = 1
+#DIM CONST CBS_SUB3 = 2
+
+#DIM CONST CBS_サブ1 = 0
+#DIM CONST CBS_サブ2 = 1
+#DIM CONST CBS_サブ3 = 2
+
+;SIF ARG == 0 || ARG == 1
+
+;GOTO AI_SET_OK
+
+;SIF ARG == 0 || ARG == 1
+;    GOTO AI_SET_OK
+
+;CS1_ONESELF
+
+;CS1_OPPONENT
+
+
+

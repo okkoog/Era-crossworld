@@ -1,0 +1,549 @@
+﻿;空ファイル
+;(実際には空ファイルじゃないけど、使わないので削除可)
+
+;強化デモナイズドver1
+;もしかしたら今後の拡張で使うかもしれないので、念のため旧処理を残しておく
+
+;=======================================================================
+;プチデモ内部処理
+;=======================================================================
+
+;プチデモ内容選択
+;@PETIT_DEMON_SELECT, ARG
+@PETIT_DEMON_SELECT_OLD, ARG
+#DIMS VALUES
+$INPUT_LOOP
+IF ARG == 2
+	;デモナイズド
+	VALUES = [1]エンジェル/
+	VALUES += "[2]ネコマタ/"
+	VALUES += "[3]イナバシロウサギ/"
+	VALUES += "[4]ピクシー/"
+	VALUES += "[5]マーメイド/"
+	VALUES += "[6]ハーピー/"
+	VALUES += "[7]좀비/"
+	VALUES += "[8]ヴァンパイア/"
+	VALUES += "/"
+	VALUES += "/[0]やめる"
+	CALL INPUT_SELECT_D , VALUES, , , 3
+	SELECTCASE RESULT
+		CASE 0
+			RETURN 0
+		CASE 1
+			RETURN 3111
+		CASE 2
+			RETURN 3112
+		CASE 3
+			RETURN 3113
+		CASE 4
+			RETURN 3114
+		CASE 5
+			RETURN 3115
+		CASE 6
+			RETURN 3116
+		CASE 7
+			RETURN 3117
+		CASE 8
+			RETURN 3118
+	ENDSELECT
+ELSEIF ARG == 3
+	VALUES = [1]エンジェル　　天使：破魔精神+10 +[날개] -[좀비]/
+	VALUES += "[2]Jフロスト 　　妖精：氷結水撃+10 +[유아체형] -[소인체형,큰체형,거체]/"
+	VALUES += "[3]イヌガミ　　　魔獣：火炎核熱+10 +[꼬리,모피] -[날개] )/"
+	VALUES += "[4]좀비　　　　屍鬼：呪殺神経+10 +[좀비] -[날개,꼬리,모피,갈퀴]/"
+	VALUES += "[5]オニ　　　　　妖鬼：打撃戦技+10 +[큰체형] -[유아체형,소인체형,거체]/"
+	VALUES += "[6]シルフ　　　　精霊：衝撃疾風+10 +[날개,소인체형] -[유아체형,큰체형,거체]/"
+	VALUES += "[7]ぬりかべ　　　妖鬼：剣撃電撃+10 +[거체] -[날개,소인체형,유아체형,큰체형]/"
+	VALUES += "[8]ゾンビドッグ　屍鬼：飛具　　+10 +[좀비,꼬리,모피,갈퀴] -[날개]/"
+	VALUES += "[9]Hゴースト 　　天使：地変重力+10 +[날개] -[좀비]/"
+	VALUES += "[0]やめる"
+	
+	CALL INPUT_SELECT_D , VALUES, , , 1
+	SELECTCASE RESULT
+		CASE 0
+			RETURN 0
+		CASE 1
+			RETURN 3121
+		CASE 2
+			RETURN 3122
+		CASE 3
+			RETURN 3123
+		CASE 4
+			RETURN 3124
+		CASE 5
+			RETURN 3125
+		CASE 6
+			RETURN 3126
+		CASE 7
+			RETURN 3127
+		CASE 8
+			RETURN 3128
+		CASE 9
+			RETURN 3129
+	ENDSELECT
+ELSE
+	;プチデモ
+	VALUES = [1]動物の耳をつける/
+	VALUES += "[2]尾を生やす/"
+	VALUES += "[3]羽を生やす/"
+	VALUES += "[4]人魚にする/"
+	VALUES += "[5]小人にする/"
+	VALUES += "/"
+	VALUES += "/[0]やめる"
+	CALL INPUT_SELECT_D , VALUES, , , 2
+	SELECTCASE RESULT
+		CASE 0
+			RETURN 0
+		CASE 1
+			RETURN 3101
+		CASE 2
+			RETURN 3102
+		CASE 3
+			RETURN 3103
+		CASE 4
+			RETURN 3104
+		CASE 5
+			RETURN 3105
+	ENDSELECT
+ENDIF
+
+;------------------------------
+;ADDタイプ
+;------------------------------
+;ver1
+;------------------------------
+;エンジェル
+@ADVANCE_DEMONIEZD_TYPE_3121, ARGS, ARG
+#LOCALSSIZE 1
+SELECTCASE ARGS
+	CASE "アドバンスドタイプ"
+		RESULTS = エンジェル
+	CASE "해설"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "엔젤을 추가하는 거야?/그러면 파마와 정신에 강해질 거야"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "부작용으로 날개가 추가되고, 좀비화는 해제될 거야"
+	CASE "チェック"
+		IF TALENT:ARG:날개 == 1
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이 벌써 날개가 있네/부위가 중복되면 과간섭이 발생해서 위험하니까 그만두렴"
+			RETURN 0
+		ELSEIF MAXBASE:ARG:파마 <= 0
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이는 이 이상 파마에 강해질 수 없어/과잉강화하면 그릇이 견디지 못하니까 그만두렴"
+			RETURN 0
+		ELSEIF MAXBASE:ARG:정신 <= 0
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이는 이 이상 정신에 강해질 수 없어/과잉강화하면 그릇이 견디지 못하니까 그만두렴"
+			RETURN 0
+		ENDIF
+		RETURN 1
+	CASE "確認"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "50000마카가 드는데/정말로, "+ CALLNAME:ARG + "에게 엔젤을 집어넣어도 괜찮겠어?"
+	CASE "価格"
+		;バランス未調整版のため、今だけ50マッカ
+		;RETURN 50000
+		RETURN 50
+	CASE "アドバンスド実行"
+		CSTR:ARG:종족명 = 천사
+		MAXBASE:ARG:정신 -= 10
+		BASE:ARG:정신 -= 10
+		MAXBASE:ARG:파마 -= 10
+		BASE:ARG:파마 -= 10
+		IF MAXBASE:ARG:정신 < 0
+			MAXBASE:ARG:정신 = 0
+			BASE:ARG:정신 = 0
+		ENDIF
+		IF MAXBASE:ARG:파마 < 0
+			MAXBASE:ARG:파마 = 0
+			BASE:ARG:파마 = 0
+		ENDIF
+		TALENT:ARG:날개 = 1
+		TALENT:ARG:좀비 = 0
+ENDSELECT
+
+;ジャックフロスト
+@ADVANCE_DEMONIEZD_TYPE_3122, ARGS, ARG
+#LOCALSSIZE 1
+SELECTCASE ARGS
+	CASE "アドバンスドタイプ"
+		RESULTS = ジャックフロスト
+	CASE "해설"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "잭 프로스트를 추가하는 거야?/그러면 빙결과 수격에 강해질 거야"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "부작용으로 유아 체형이 될 거야"
+	CASE "チェック"
+		IF TALENT:ARG:유아체형 == 1
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이 벌써 유아 체형이네/중복되면 과간섭이 발생해서 위험하니까 그만두렴"
+			RETURN 0
+		ELSEIF MAXBASE:ARG:빙결 <= 0
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이는 이 이상 빙결에 강해질 수 없어/과잉강화하면 그릇이 견디지 못하니까 그만두렴"
+			RETURN 0
+		ELSEIF MAXBASE:ARG:수격 <= 0
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이는 이 이상 수격에 강해질 수 없어/과잉강화하면 그릇이 견디지 못하니까 그만두렴"
+			RETURN 0
+		ENDIF
+		RETURN 1
+	CASE "確認"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "50000마카가 드는데/정말로, "+ CALLNAME:ARG + "에게 잭 프로스트를 집어넣어도 괜찮겠어?"
+	CASE "価格"
+		;バランス未調整版のため、今だけ50マッカ
+		;RETURN 50000
+		RETURN 50
+	CASE "アドバンスド実行"
+		CSTR:ARG:종족명 = 요정
+		MAXBASE:ARG:빙결 -= 10
+		BASE:ARG:빙결 -= 10
+		MAXBASE:ARG:수격 -= 10
+		BASE:ARG:수격 -= 10
+		IF MAXBASE:ARG:빙결 < 0
+			MAXBASE:ARG:빙결 = 0
+			BASE:ARG:빙결 = 0
+		ENDIF
+		IF MAXBASE:ARG:수격 < 0
+			MAXBASE:ARG:수격 = 0
+			BASE:ARG:수격 = 0
+		ENDIF
+		TALENT:ARG:유아체형 = 1
+		TALENT:ARG:소인체형 = 0
+		TALENT:ARG:큰체형 = 0
+		TALENT:ARG:거체 = 0
+ENDSELECT
+
+;イヌガミ
+@ADVANCE_DEMONIEZD_TYPE_3123, ARGS, ARG
+#LOCALSSIZE 1
+SELECTCASE ARGS
+	CASE "アドバンスドタイプ"
+		RESULTS = イヌガミ
+	CASE "해설"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "이누가미를 추가하는 거야?/그러면 화염과 핵열에 강해질 거야"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "부작용으로 꼬리와 모피가 추가되고, 날개가 없어질 거야"
+	CASE "チェック"
+		IF TALENT:ARG:꼬리 == 1
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이 벌써 꼬리가 있네/부위가 중복되면 과간섭이 발생해서 위험하니까 그만두렴"
+			RETURN 0
+		ELSEIF TALENT:ARG:모피 == 1
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이 벌써 모피가 있네/부위가 중복되면 과간섭이 발생해서 위험하니까 그만두렴"
+			RETURN 0
+		ELSEIF MAXBASE:ARG:화염 <= 0
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이는 이 이상 화염에 강해질 수 없어/과잉강화하면 그릇이 견디지 못하니까 그만두렴"
+			RETURN 0
+		ELSEIF MAXBASE:ARG:핵열 <= 0
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이는 이 이상 핵열에 강해질 수 없어/과잉강화하면 그릇이 견디지 못하니까 그만두렴"
+			RETURN 0
+		ENDIF
+		RETURN 1
+	CASE "確認"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "50000마카가 드는데/정말로, "+ CALLNAME:ARG + "에게 이누가미를 집어넣어도 괜찮겠어?"
+	CASE "価格"
+		;バランス未調整版のため、今だけ50マッカ
+		;RETURN 50000
+		RETURN 50
+	CASE "アドバンスド実行"
+		CSTR:ARG:종족명 = 마수
+		MAXBASE:ARG:화염 -= 10
+		BASE:ARG:화염 -= 10
+		MAXBASE:ARG:핵열 -= 10
+		BASE:ARG:핵열 -= 10
+		IF MAXBASE:ARG:화염 < 0
+			MAXBASE:ARG:화염 = 0
+			BASE:ARG:화염 = 0
+		ENDIF
+		IF MAXBASE:ARG:핵열 < 0
+			MAXBASE:ARG:핵열 = 0
+			BASE:ARG:핵열 = 0
+		ENDIF
+		TALENT:ARG:꼬리 = 1
+		TALENT:ARG:모피 = 1
+		TALENT:ARG:날개 = 0
+		SIF TALENT:ARG:팔 == 0
+			TALENT:ARG:팔 = 1
+ENDSELECT
+
+;좀비
+@ADVANCE_DEMONIEZD_TYPE_3124, ARGS, ARG
+#LOCALSSIZE 1
+SELECTCASE ARGS
+	CASE "アドバンスドタイプ"
+		RESULTS = 좀비
+	CASE "해설"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "좀비를 추가하는 거야?/그러면 주살과 신경에 강해질 거야"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "부작용으로 좀비가 되고, 날개나 꼬리, 모피나 갈퀴가 없어질 거야"
+	CASE "チェック"
+		IF TALENT:ARG:좀비 == 1
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이 벌써 좀비네/중복되면 과간섭이 발생해서 위험하니까 그만두렴"
+			RETURN 0
+		ELSEIF MAXBASE:ARG:주살 <= 0
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이는 이 이상 주살에 강해질 수 없어/과잉강화하면 그릇이 견디지 못하니까 그만두렴"
+			RETURN 0
+		ELSEIF MAXBASE:ARG:신경 <= 0
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이는 이 이상 신경에 강해질 수 없어/과잉강화하면 그릇이 견디지 못하니까 그만두렴"
+			RETURN 0
+		ENDIF
+		RETURN 1
+	CASE "確認"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "50000마카가 드는데/정말로, "+ CALLNAME:ARG + "에게 좀비를 집어넣어도 괜찮겠어?"
+	CASE "価格"
+		;バランス未調整版のため、今だけ50マッカ
+		;RETURN 50000
+		RETURN 50
+	CASE "アドバンスド実行"
+		CSTR:ARG:종족명 = 屍鬼
+		MAXBASE:ARG:주살 -= 10
+		BASE:ARG:주살 -= 10
+		MAXBASE:ARG:신경 -= 10
+		BASE:ARG:신경 -= 10
+		IF MAXBASE:ARG:주살 < 0
+			MAXBASE:ARG:주살 = 0
+			BASE:ARG:주살 = 0
+		ENDIF
+		IF MAXBASE:ARG:신경 < 0
+			MAXBASE:ARG:신경 = 0
+			BASE:ARG:신경 = 0
+		ENDIF
+		TALENT:ARG:좀비 = 1
+		TALENT:ARG:날개 = 0
+		TALENT:ARG:꼬리 = 0
+		TALENT:ARG:모피 = 0
+		TALENT:ARG:갈퀴 = 0
+		SIF TALENT:ARG:팔 == 0
+			TALENT:ARG:팔 = 1
+ENDSELECT
+
+
+;オニ
+@ADVANCE_DEMONIEZD_TYPE_3125, ARGS, ARG
+#LOCALSSIZE 1
+SELECTCASE ARGS
+	CASE "アドバンスドタイプ"
+		RESULTS = オニ
+	CASE "해설"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "오니를 추가하는 거야?/그러면 타격과 전술에 강해질 거야"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "부작용으로 큰 체형이 될 거야"
+	CASE "チェック"
+		IF TALENT:ARG:큰체형 == 1
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이 벌써 큰 체형이네/중복되면 과간섭이 발생해서 위험하니까 그만두렴"
+			RETURN 0
+		ELSEIF MAXBASE:ARG:타격 <= 0
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이는 이 이상 타격에 강해질 수 없어/과잉강화하면 그릇이 견디지 못하니까 그만두렴"
+			RETURN 0
+		ELSEIF MAXBASE:ARG:전술 <= 0
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이는 이 이상 전술에 강해질 수 없어/과잉강화하면 그릇이 견디지 못하니까 그만두렴"
+			RETURN 0
+		ENDIF
+		RETURN 1
+	CASE "確認"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "50000마카가 드는데/정말로, "+ CALLNAME:ARG + "에게 오니를 집어넣어도 괜찮겠어?"
+	CASE "価格"
+		;バランス未調整版のため、今だけ50マッカ
+		;RETURN 50000
+		RETURN 50
+	CASE "アドバンスド実行"
+		CSTR:ARG:종족명 = 요귀
+		MAXBASE:ARG:타격 -= 10
+		MAXBASE:ARG:전술 -= 10
+		BASE:ARG:타격 -= 10
+		BASE:ARG:전술 -= 10
+		IF MAXBASE:ARG:타격 < 0
+			MAXBASE:ARG:타격 = 0
+			BASE:ARG:타격 = 0
+		ENDIF
+		IF MAXBASE:ARG:전술 < 0
+			MAXBASE:ARG:전술 = 0
+			BASE:ARG:전술 = 0
+		ENDIF
+		TALENT:ARG:큰체형 = 1
+		TALENT:ARG:유아체형 = 0
+		TALENT:ARG:소인체형 = 0
+		TALENT:ARG:거체 = 0
+ENDSELECT
+
+
+;シルフ
+@ADVANCE_DEMONIEZD_TYPE_3126, ARGS, ARG
+#LOCALSSIZE 1
+SELECTCASE ARGS
+	CASE "アドバンスドタイプ"
+		RESULTS = シルフ
+	CASE "해설"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "실프를 추가하는 거야?/그러면 충격과 질풍에 강해질 거야"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "부작용으로 소인 체형이 되고, 날개가 추가될 거야"
+	CASE "チェック"
+		IF TALENT:ARG:소인체형 == 1
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이 벌써 소인이네/중복되면 과간섭이 발생해서 위험하니까 그만두렴"
+			RETURN 0
+		ELSEIF TALENT:ARG:날개 == 1
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이 벌써 날개가 있네/부위가 중복되면 과간섭이 발생해서 위험하니까 그만두렴"
+			RETURN 0
+		ELSEIF MAXBASE:ARG:충격 <= 0
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이는 이 이상 충격에 강해질 수 없어/과잉강화하면 그릇이 견디지 못하니까 그만두렴"
+			RETURN 0
+		ELSEIF MAXBASE:ARG:질풍 <= 0
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이는 이 이상 질풍에 강해질 수 없어/과잉강화하면 그릇이 견디지 못하니까 그만두렴"
+			RETURN 0
+		ENDIF
+		RETURN 1
+	CASE "確認"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "50000마카가 드는데/정말로, "+ CALLNAME:ARG + "에게 실프를 집어넣어도 괜찮겠어?"
+	CASE "価格"
+		;バランス未調整版のため、今だけ50マッカ
+		;RETURN 50000
+		RETURN 50
+	CASE "アドバンスド実行"
+		CSTR:ARG:종족명 = 정령
+		MAXBASE:ARG:충격 -= 10
+		BASE:ARG:충격 -= 10
+		MAXBASE:ARG:질풍 -= 10
+		BASE:ARG:질풍 -= 10
+		IF MAXBASE:ARG:충격 < 0
+			MAXBASE:ARG:충격 = 0
+			BASE:ARG:충격 = 0
+		ENDIF
+		IF MAXBASE:ARG:질풍 < 0
+			MAXBASE:ARG:질풍 = 0
+			BASE:ARG:질풍 = 0
+		ENDIF
+		TALENT:ARG:소인체형 = 1
+		TALENT:ARG:유아체형 = 0
+		TALENT:ARG:큰체형 = 0
+		TALENT:ARG:거체 = 0
+		TALENT:ARG:날개 = 1
+ENDSELECT
+
+;ぬりかべ
+@ADVANCE_DEMONIEZD_TYPE_3127, ARGS, ARG
+#LOCALSSIZE 1
+SELECTCASE ARGS
+	CASE "アドバンスドタイプ"
+		RESULTS = ぬりかべ
+	CASE "해설"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "누리카베를 추가하는 거야?/그러면 검격과 전격에 강해질 거야"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "부작용으로 거체가 되고, 날개가 없어질 거야"
+	CASE "チェック"
+		IF TALENT:ARG:거체 == 1
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이 벌써 거체네/중복되면 과간섭이 발생해서 위험하니까 그만두렴"
+			RETURN 0
+		ELSEIF MAXBASE:ARG:검격 <= 0
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이는 이 이상 검격에 강해질 수 없어/과잉강화하면 그릇이 견디지 못하니까 그만두렴"
+			RETURN 0
+		ELSEIF MAXBASE:ARG:전격 <= 0
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이는 이 이상 전격에 강해질 수 없어/과잉강화하면 그릇이 견디지 못하니까 그만두렴"
+			RETURN 0
+		ENDIF
+		RETURN 1
+	CASE "確認"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "50000마카가 드는데/정말로, "+ CALLNAME:ARG + "에게 누리카베를 집어넣어도 괜찮겠어?"
+	CASE "価格"
+		;バランス未調整版のため、今だけ50マッカ
+		;RETURN 50000
+		RETURN 50
+	CASE "アドバンスド実行"
+		CSTR:ARG:종족명 = 요귀
+		MAXBASE:ARG:검격 -= 10
+		BASE:ARG:검격 -= 10
+		MAXBASE:ARG:전격 -= 10
+		BASE:ARG:전격 -= 10
+		IF MAXBASE:ARG:검격 < 0
+			MAXBASE:ARG:검격 = 0
+			BASE:ARG:검격 = 0
+		ENDIF
+		IF MAXBASE:ARG:전격 < 0
+			MAXBASE:ARG:전격 = 0
+			BASE:ARG:전격 = 0
+		ENDIF
+		TALENT:ARG:거체 = 1
+		TALENT:ARG:소인체형 = 0
+		TALENT:ARG:유아체형 = 0
+		TALENT:ARG:큰체형 = 0
+		TALENT:ARG:날개 = 0
+ENDSELECT
+
+
+;ゾンビドッグ
+@ADVANCE_DEMONIEZD_TYPE_3128, ARGS, ARG
+#LOCALSSIZE 1
+SELECTCASE ARGS
+	CASE "アドバンスドタイプ"
+		RESULTS = ゾンビドッグ
+	CASE "해설"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "좀비독을 추가하는 거야?/그러면 비구에 강해질 거야"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "부작용으로 좀비가 되고, 꼬리와 모피와 갈퀴가 추가되고, 날개가 없어질 거야"
+	CASE "チェック"
+		IF TALENT:ARG:좀비 == 1
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이 벌써 좀비네/중복되면 과간섭이 발생해서 위험하니까 그만두렴"
+			RETURN 0
+		ELSEIF TALENT:ARG:꼬리 == 1
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이 벌써 꼬리가 있네/부위가 중복되면 과간섭이 발생해서 위험하니까 그만두렴"
+			RETURN 0
+		ELSEIF TALENT:ARG:모피 == 1
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이 벌써 모피가 있네/부위가 중복되면 과간섭이 발생해서 위험하니까 그만두렴"
+			RETURN 0
+		ELSEIF TALENT:ARG:갈퀴 == 1
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이 벌써 갈퀴가 있네/부위가 중복되면 과간섭이 발생해서 위험하니까 그만두렴"
+			RETURN 0
+		ELSEIF MAXBASE:ARG:비구 <= 0
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이는 이 이상 비구에 강해질 수 없어/과잉강화하면 그릇이 견디지 못하니까 그만두렴"
+			RETURN 0
+		ENDIF
+		RETURN 1
+	CASE "確認"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "50000마카가 드는데/정말로, "+ CALLNAME:ARG + "에게 좀비독을 집어넣어도 괜찮겠어?"
+	CASE "価格"
+		;バランス未調整版のため、今だけ50マッカ
+		;RETURN 50000
+		RETURN 50
+	CASE "アドバンスド実行"
+		CSTR:ARG:종족명 = 屍鬼
+		MAXBASE:ARG:비구 -= 10
+		BASE:ARG:비구 -= 10
+		IF MAXBASE:ARG:비구 < 0
+			MAXBASE:ARG:비구 = 0
+			BASE:ARG:비구 = 0
+		ENDIF
+		TALENT:ARG:좀비 = 1
+		TALENT:ARG:꼬리 = 1
+		TALENT:ARG:모피 = 1
+		TALENT:ARG:갈퀴 = 1
+		TALENT:ARG:날개 = 0
+ENDSELECT
+
+
+;ホーリーゴースト
+@ADVANCE_DEMONIEZD_TYPE_3129, ARGS, ARG
+#LOCALSSIZE 1
+SELECTCASE ARGS
+	CASE "アドバンスドタイプ"
+		RESULTS = ホーリーゴースト
+	CASE "해설"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "홀리 고스트를 추가하는 거야?/그러면 지변과 중력에 강해질 거야"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "부작용으로 날개가 추가되고, 좀비화는 해제될 거야"
+	CASE "チェック"
+		IF TALENT:ARG:날개 == 1
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이 벌써 날개가 있네/부위가 중복되면 과간섭이 발생해서 위험하니까 그만두렴"
+			RETURN 0
+		ELSEIF MAXBASE:ARG:지변 <= 0
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이는 이 이상 지변에 강해질 수 없어/과잉강화하면 그릇이 견디지 못하니까 그만두렴"
+			RETURN 0
+		ELSEIF MAXBASE:ARG:중력 <= 0
+			CALL MESSAGE_WINDOW_D , "남 점주" , "어머, 이 아이는 이 이상 중력에 강해질 수 없어/과잉강화하면 그릇이 견디지 못하니까 그만두렴"
+			RETURN 0
+		ENDIF
+		RETURN 1
+	CASE "確認"
+		CALL MESSAGE_WINDOW_D , "남 점주" , "50000마카가 드는데/정말로, "+ CALLNAME:ARG + "에게 홀리 고스트를 집어넣어도 괜찮겠어?"
+	CASE "価格"
+		;バランス未調整版のため、今だけ50マッカ
+		;RETURN 50000
+		RETURN 50
+	CASE "アドバンスド実行"
+		CSTR:ARG:종족명 = 천사
+		MAXBASE:ARG:지변 -= 10
+		BASE:ARG:지변 -= 10
+		MAXBASE:ARG:중력 -= 10
+		BASE:ARG:중력 -= 10
+		IF MAXBASE:ARG:지변 < 0
+			MAXBASE:ARG:지변 = 0
+			BASE:ARG:지변 = 0
+		ENDIF
+		IF MAXBASE:ARG:중력 < 0
+			MAXBASE:ARG:중력 = 0
+			BASE:ARG:중력 = 0
+		ENDIF
+		TALENT:ARG:날개 = 1
+		TALENT:ARG:좀비 = 0
+ENDSELECT

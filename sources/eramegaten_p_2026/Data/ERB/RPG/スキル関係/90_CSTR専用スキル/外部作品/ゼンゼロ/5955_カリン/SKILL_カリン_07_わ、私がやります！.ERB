@@ -1,0 +1,119 @@
+﻿;スキル名
+@SKILL_NAME_わ、私がやります！,ARG
+RESULTS = 제, 제가 할게요!
+
+;　명중
+@SKILL_HITRATE_わ、私がやります！, ARG
+RETURN 999
+
+;クリティカル
+@SKILL_CRITICAL_RATE_わ、私がやります！, ARG
+RETURN 5
+
+;　威力
+@SKILL_POWER_わ、私がやります！, ARG
+RETURN 100
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_わ、私がやります！,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_わ、私がやります！,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_わ、私がやります！, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_わ、私がやります！,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_わ、私がやります！,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_わ、私がやります！
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　攻撃タイプ
+@SKILL_ATTACKTYPE_わ、私がやります！,ARG
+RETURN GET_攻撃タイプ_NUM("物理")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_わ、私がやります！, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_わ、私がやります！,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_わ、私がやります！,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_わ、私がやります！,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_わ、私がやります！
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_わ、私がやります！,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_わ、私がやります！,ARG,ARG:1,ARG:2
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_わ、私がやります！,ARG
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_わ、私がやります！, ARG = -1
+RETURN 2
+
+@リンク不能_わ、私がやります！
+RETURN 1
+
+@継承不能_わ、私がやります！
+RETURN 2
+
+@SKILL_ACTIONABLE_BATTLE_わ、私がやります！, ARG
+RETURN 0
+
+;　説明文の表示
+@SKILL_EXPLAIN_わ、私がやります！,ARG
+PRINTL 【패링 지원】
+PRINTL 자동효과: 대기에 있을 때 효과를 발동하여 전위가 검격·비구·타격·전기 상성의 공격을 일정 확률로 무효화한다.
+PRINTL 　　　　 추가로 효과 발동 시 다량의 데시벨을 획득한다.
+
+@SKILL_EXPLAIN_TOOLTIP_わ、私がやります！, ARG
+RESULTS:0 = 자동효과: 대기에 있을 때 효과를 발동하여 전위가 검격·비구·타격·전기 상성의 공격을 일정 확률로 무효화한다.
+RESULTS:1 = 　　　　 추가로 효과 발동 시 다량의 데시벨을 획득한다.
+
+@SKILL_TAG_わ、私がやります！
+RESULTS = 젠제로 패링 지원
+
+@SKILL_ZENZERO_PARRY_RATE_わ、私がやります！, L_CHARA, L_LINKING, L_LINK_NO
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_LINKING
+#DIM DYNAMIC L_LINK_NO
+FOR LCOUNT, 0, TYPENUM
+	SELECTCASE GET_TYPE(LCOUNT)
+		CASE "검격", "비구", "전술", "타격"
+			IF HAVE_PU_SKILL(L_CHARA, "戦場ではお傍に")
+				C_ZENZERO_PARRY_RATE:L_LINKING:L_LINK_NO:LCOUNT += 50
+			ELSE
+				C_ZENZERO_PARRY_RATE:L_LINKING:L_LINK_NO:LCOUNT += 25
+			ENDIF
+		CASEELSE
+	ENDSELECT
+NEXT

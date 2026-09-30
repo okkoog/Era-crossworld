@@ -1,0 +1,103 @@
+﻿;-------------------------------------------------
+;방뇨
+;ハードな調教コマンド、レベル2
+;-------------------------------------------------
+@ACT_COM144
+PRINTL 방뇨
+TSTR:0 = 방뇨
+;CALL KOJO_MESSAGE_COM
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 10
+DOWNBASE:TARGET:기력 += 200
+
+SOURCE:TARGET:무서움 = 200
+SOURCE:TARGET:노출 = 800
+SOURCE:TARGET:굴종 = 500
+SOURCE:TARGET:일탈 = 700
+SOURCE:TARGET:반감 = 700
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;抑圧、抵抗持ちには、抑鬱ソース追加
+SIF TALENT:억압 || TALENT:저항
+	SOURCE:TARGET:울굴 += 700
+
+;場所によって逸脱のソースが上下
+;野外
+IF TEQUIP:29
+	TIMES SOURCE:TARGET:일탈 , 2.50
+;鏡の前（羞恥プレイ）
+ELSEIF TEQUIP:30
+	TIMES SOURCE:TARGET:일탈 , 1.50
+;風呂場
+ELSEIF TEQUIP:31
+	TIMES SOURCE:TARGET:일탈 , 0.50
+ENDIF
+
+;-------------------------------------------------
+;吸精処理
+;-------------------------------------------------
+IF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+	LOCAL = (100) * BASE:LV * 5
+	CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+ENDIF
+
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+;방뇨경험
+;PRINTFORML %EXPNAME:31%＋２
+CALL ADDS_EXP("방뇨경험", 2, TARGET)
+
+
+;레즈경험
+A = 1
+IF IS_LESBIAN(TARGET,PLAYER)
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, PLAYER)
+ELSEIF IS_GAY(TARGET,PLAYER)
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+ENDIF
+
+;野外放尿で異常経験
+IF TEQUIP:29
+;	PRINTFORML %EXPNAME:50%＋１
+;	EXP:50 += 1
+	CALL ADDS_ABNORMAL_EXP("野外放尿", TARGET)
+ENDIF
+
+;利尿剤解除
+IF TEQUIP:27
+	TEQUIP:27 = 0
+ENDIF
+
+;依存度ベクトル
+TFLAG:33 = 5
+
+;依存度補正値(服従で1、隷属で2）
+IF TALENT:복종 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:예속 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_144
+RETURN COMTYPE("ハード系")
+
+
+
+

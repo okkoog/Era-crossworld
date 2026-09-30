@@ -1,0 +1,147 @@
+﻿;=============================================
+;EVENT_201_4_イプシロン2
+;=============================================
+@SET_ACTION_セラフィックルイン, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:기합]]
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	;ガンヴォルトあるある：HPが1/3切ったらSPスキル使う　5Tに1回打ってくるぞ
+	IF CFLAG:ARG:800 == 3 && PU_SKILLGAGE_D_GET(ARG, "セラフィックデス") == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "セラフィックデス")
+	ELSEIF MIN(CFLAG:ARG:공격강화, CFLAG:ARG:마법위력강화, CFLAG:ARG:방어강화, CFLAG:ARG:마법효과강화) < 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:이니셜라이즈]]
+	ELSEIF MIN(CFLAG:ARG:회피강화, CFLAG:ARG:명중강화) < 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "タイムフリーザー")
+	ELSEIF PU_SKILLGAGE_D_GET(ARG, "シールドストライク") > 0 && RAND:10 > 5
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "インフェルノドロップ")
+	ELSE
+		IF GET_カジャンダ_MIN(ARG) < 8 && RAND:3 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		ELSEIF RAND:5 == 0
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "シールドストライク")
+		ELSEIF RAND:4 == 0
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "オラージュリーゼ")
+		ELSEIF RAND:3 == 0
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "エイミングレイ")
+		ELSEIF RAND:2 == 0
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "タイムフリーザー")
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "φシュート")
+		ENDIF
+	ENDIF
+ELSE
+	IF GET_カジャンダ_MIN(ARG) < 8 && RAND:5 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+	ELSEIF PU_SKILLGAGE_D_GET(ARG, "シールドストライク") > 0 && RAND:10 > 3
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "インフェルノドロップ")
+	ELSEIF RAND:6 == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "シールドストライク")
+	ELSEIF RAND:5 == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ジャッジメントブレード")
+	ELSEIF RAND:4 == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "φシュート")
+	ELSEIF RAND:3 == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "オラージュリーゼ")
+	ELSEIF RAND:2 == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ジャッジメントブレード")
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "φシュート")
+	ENDIF
+ENDIF
+
+@CHANGE_ACTION_セラフィックルイン, ARG
+IF CFLAG:ARG:800 == 2 
+	CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "セラフィックデス")
+	CFLAG:ARG:800 = 3
+ENDIF
+
+@EVENT_BATTLE_DYING_EVENT_201_4_イプシロン2, L_T, L_P, L_SKIP
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_SKIP
+IF L_T == GET_ENEMY("イプシロン") && CFLAG:L_T:800 == 0
+	TSTR:스킬메시지추가 = %CALLNAME:L_T%은(는) 일어섰다!!
+	
+	CFLAG:L_T:상태이상 = GET_STATE_NUM("GOOD")
+	BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ / 3
+	CFLAG:L_T:800 = 1
+	CFLAG:L_T:공격대상제외_ACT = 1
+ENDIF
+
+@EVENT_BATTLE_ACTEND_EVENT_201_4_イプシロン2
+IF CFLAG:GET_ENEMY("イプシロン"):800 == 1
+	BTL_KOJO_RESULTS:0 = 마더…… 난, 이긴다……ッ!
+	SETCOLOR COLOR("ENEMY")
+	CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("イプシロン")
+	CFLAG:GET_ENEMY("イプシロン"):800 = 2
+ENDIF
+
+;イプシロン戦専用ライブノベル2
+@EVENT_BATTLE_TURNSTART_EVENT_201_4_イプシロン2
+#DIM 進行度
+#DIM DYNAMIC COPEN
+SIF 進行度 == 30
+	RETURN 0
+SIF FINDCHARA_B([[キャラ:아큐라_X]])  != 2
+	RETURN 0
+COPEN = RESULT:1
+SELECTCASE 進行度
+	CASE 0
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 이전에는 데이터가 부족했지만, 이번엔 다르다!
+		BTL_KOJO_RESULTS:1 = 데이터를 완벽하게 갖춘 지금의 난 무적이다ッ!
+		LOCAL = 0
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("イプシロン")
+		
+		CALL SET_RORO_KOJO_FLAG, COPEN
+		BTL_KOJO_RESULTS:0 = 조심해, 아큐라 군! 전보다 전술 패턴이 증가했어
+		BTL_KOJO_RESULTS:1 = 지금 저 녀석은 모든 묘지기의 힘을 쓸 수 있는 모양이야!
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 이 순간을 위해, 네놈들의 침공을 그저 지켜보고 있을 수밖에 없었다……!
+		BTL_KOJO_RESULTS:1 = 쓰러진 워커들과 함께 설욕을 씻고―― 네놈을 뛰어넘겠다ッ!
+		LOCAL = 0
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("イプシロン")
+		
+		進行度 = 10
+		RESETCOLOR
+	CASE 10
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 언제까지 그런 것에 얽매여 있을 셈이냐……!
+		BTL_KOJO_RESULTS:1 = 하찮은 자기만족에 어울리게 하지 마라!
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 자기만족, 이라고? 이것이! 자기만족일 리가 있나ッ!
+		BTL_KOJO_RESULTS:1 = 나는, 분명히 요구받았다!
+		LOCAL = 0
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("イプシロン")
+		
+		BTL_KOJO_RESULTS:0 = 『위대한 어머니 곁에 나란히 서는, 파트너가 될지어다』라고!
+		BTL_KOJO_RESULTS:1 = 그러므로, 나는 전력으로 그것을 완수한다ッ!
+		LOCAL = 0
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("イプシロン")
+		
+		進行度 = 20
+		RESETCOLOR
+	CASE 20
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 마더의 파트너가 되는 것과, 나를 뛰어넘는 것……
+		BTL_KOJO_RESULTS:1 = 거기에 무슨 관계가 있다는 거냐!
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 있으니까 이러는 거다ッ! 네놈은 아무것도 모른 채 멸망해 사라져라ッ!
+		BTL_KOJO_RESULTS:1 = 그리고 나의 이름을―― Ｘ《극한》을 뛰어넘은 자의 이름을 새겨라ッ!!
+		LOCAL = 0
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("イプシロン")
+		
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 우리에겐 그런 한가한 시간은 없다
+		BTL_KOJO_RESULTS:1 = 멸망하는 것은 네놈 쪽이다…… 입실론!
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		進行度 = 30
+		RESETCOLOR
+ENDSELECT

@@ -1,0 +1,370 @@
+﻿;更新履歴
+;001	2020/09/06		kamedakeisuke(ﾟдﾟ)			新規作成
+;002	2020/12/08		kamedakeisuke(ﾟдﾟ)			気絶の斬撃を列攻撃に変更
+;003	2022/02/12		kamedakeisuke(ﾟдﾟ)			非CR時の基礎威力上昇
+;003	2022/06/05		kamedakeisuke(ﾟдﾟ)			CR時・非CR時の基礎威力上昇、バステ付与率上昇、コスト上昇、エラー避けのおまじない追加
+
+;愛城華恋（キング・アーサー）専用スキル
+
+;---
+;CAスキルは意図的に強力にする
+;使用条件がイベント後半まで進行＆星のティアラをアクセサリー欄に装備＆キラめきチャージ完了時に１発だけ、なので。
+;入手の際の代償もあるし、それに見合った性能に。
+
+;通常スキルに使用条件は無し
+;だけどこちらも使えるようになるタイミングは同じなので多少は盛る
+;---
+
+;クライマックスアクトは全体全回復付き複合属性全体ランダム攻撃（盛りすぎワロタ）
+;通常時は列攻撃イナズマ突き
+;クライマックス・アクトは消費無し（そのかわり撃ったらクライマックスレヴュー終了
+
+;Renameは『기절의참격』のほうで
+
+;スキル名
+@SKILL_NAME_3589,ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RESULTS = 선택받은 왕
+ELSE
+	RESULTS = 기절의참격
+ENDIF
+
+;　명중
+@SKILL_HITRATE_3589, ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN 125
+ELSE
+	RETURN 100
+ENDIF
+
+;高クリティカル
+@SKILL_CRITICAL_RATE_3589, ARG
+RETURN 20
+
+;　威力
+@SKILL_POWER_3589, ARG
+;CR展開時　9回攻撃・合計648相当
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	;HP100%회복
+	SIF TFLAG:스킬용1
+		RETURN 1000
+	RETURN 72
+ELSE
+	RETURN 360
+ENDIF
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3589,ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN 9
+ELSE
+	RETURN 1
+ENDIF
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3589,ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN 9
+ELSE
+	RETURN 1
+ENDIF
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3589, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3589,ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	;消費無し（代わりにゲージをゼロに）
+	RETURN 0
+ELSE
+	RETURN 19
+ENDIF
+
+;　複合相性
+@SKILL_TYPE_3589,ARG
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN GET_TYPE_NUM("검격"), GET_TYPE_NUM("핵열"), GET_TYPE_NUM("중력")
+ELSE
+	RETURN GET_TYPE_NUM("검격")
+ENDIF
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3589
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3589, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3589, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_3589,ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN 3
+ELSE
+	RETURN 1
+ENDIF
+
+;　範囲　1単体　2列　3全体　4　敵味方全体
+@SKILL_SPHERE_3589,ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN 3
+ELSE
+	RETURN 2
+ENDIF
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3589, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+@SKILL_HEAL_TYPE_3589, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("割合")
+
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3589
+RETURN GET_SUCCESSION_NUM("검격")
+
+;속도보정
+@SKILL_SPEED_3589, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3589
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3589, ARG = -1
+RETURN 16
+
+@継承不能_3589
+RETURN 2
+
+@リンク不能_3589
+RETURN 1
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_3589,ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN 0
+ELSE
+	RETURN GET_STATE_NUM("SHOCK")
+ENDIF
+
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_3589,ARG
+;CR展開時
+;검격
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN 0
+;전격
+ELSE
+	RETURN 6
+ENDIF
+
+;追加効果基本付与確率
+;確率高め
+@SKILL_ADDTIONAL_BASE_RATE_3589,ARG
+;CR展開時
+;검격
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN 0
+ELSE
+	RETURN 80
+ENDIF
+
+;追加効果付与確率上限
+;確率高め
+@SKILL_ADDTIONAL_MAX_RATE_3589,ARG
+;CR展開時
+;검격
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN 0
+ELSE
+	RETURN 100
+ENDIF
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3589, ARG, ARG:1, ARG:2
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	ALIGNMENT CENTER
+	SETCOLOR 0xff0033
+	PRINTL 【ＣＬＩＭＡＸ　ＡＣＴ】
+	RESETCOLOR
+	ALIGNMENT LEFT
+
+	;愛城パワーアップイベント中かつボスが最終形態時のみ、ボスの不死フラグを剥がして攻撃
+	IF GETBIT(イベントフラグ:93:11, 5) && (イベントフラグ:93:0 == 12 || イベントフラグ:93:0 == 13) && (イベントフラグ:93:10 == [[キャラ:카렌_무대소녀]])
+		CFLAG:(CHARANUM-1):불사신플래그 = 0
+	ENDIF
+	
+	;何らかの事情によりターゲットが22未満だったら
+	IF CFLAG:ARG:타겟 < 22
+		;22（全体）をセット
+		CFLAG:ARG:타겟 = 22
+	ENDIF
+	
+	;ランダム攻撃処理
+	LOCAL = 22
+	CALL ATTACK_RAND, ARG, LOCAL, 3589, 1
+	PRINTL 
+	TFLAG:스킬용1 = 1
+	CALL HEAL_FIELD, ARG, 19, 3589
+	;愛城パワーアップイベント中かつボスが最終形態時のみ、撃破時に敵が喋る
+	IF GETBIT(イベントフラグ:93:11, 5) && (イベントフラグ:93:0 == 12 || イベントフラグ:93:0 == 13) && (イベントフラグ:93:10 == [[キャラ:카렌_무대소녀]])
+		
+		;ボスのHPがぴったり1の場合、『すでに削り切ったけど、攻撃をミスってとどめを刺せていない』状況と見る
+		IF BASE:(CHARANUM-1):ＨＰ == 1
+			PRINTL
+			SETCOLOR COLOR("FRIEND")
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"마지막 한 걸음, 부디 힘을 빌려줘, 모두들――!!",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			PRINTL
+			ALIGNMENT CENTER
+			PRINTFORML ┏━━━━━━━━━━┓
+			PRINTFORML ┃　　 　1more！　　　┃
+			PRINTFORMW ┗━━━━━━━━━━┛
+			RESETCOLOR
+			ALIGNMENT LEFT
+			
+			;テイクツー
+			CFLAG:(CHARANUM-1):불사신플래그 = 0
+			;CFLAG:ARG:회심의패기플래그 = 1
+			TFLAG:필중 = 1
+			CALL ATTACK_RAND, ARG, LOCAL, 3589, 1
+			
+		ENDIF
+		
+		;ボス撃破
+		IF BASE:(CHARANUM-1):ＨＰ < 1
+			ALIGNMENT CENTER
+			PRINTL
+			SETCOLOR 0x777777
+			PRINTL The Star remembers it all.　　　　　별은 모든 것을 기억하고 있다
+			FORCEWAIT
+			PRINTL
+			PRINTW When Fury was Passion.　　　　　　　그것은 격앙이 정열이었을 적
+			PRINTW When Curse was Faith. 　　　　　　　그것은 주박이 신앙이었을 적
+			PRINTW When Escape was Bravery.　　　　　　그것은 도피가 용기였을 적
+			PRINTW When Jelousy was Affection. 　　　　그것은 질투가 애정이었을 적
+			PRINTW When Despair was Hope.　　　　　　　그것은 절망이 희망이었을 적
+			PRINTW When Arrogance was Pride. 　　　　　그것은 오만이 긍지였을 적
+			PRINTL
+			PRINTW And it shall be bestowed upon you.　가지도록 하렴
+			PRINTW the Star which you　　　　　　　　　네가 바라던
+			PRINTW have longed for　　　　　　　　　　 그 별을
+			PRINTL
+			SETCOLOR 0xfdca57
+			PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　　　　　　　　┃
+			PRINTL ┃　　　　　　　　　이어졌구나, 별의 인연　　　　　　　　　┃
+			PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　　　　　　　　┃
+			PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			FORCEWAIT
+			PRINTL 
+			ALIGNMENT LEFT
+			SETCOLOR 0xff0033
+			PRINTL ――내 소원이 이루어졌을 때는
+			PRINTL 
+			PRINTL 　　　　　믿고 있어줘!
+			PRINTL 
+			PRINTL 　　누구도 불행하게 만들지 않아!――
+			PRINTL 
+			RESETCOLOR
+			
+		ENDIF
+	ELSE
+		;クライマックスレヴュー終了。ゲージ取得をとめるために-1で送ってむこうで0にする
+		CALL SET_ROLE_CFLAG_DUNGEON, ARG,  "클라이맥스레뷰지속시간" , -1
+	ENDIF
+
+
+	ALIGNMENT CENTER
+	SETCOLOR 0xff0033
+	PRINTW 【ＣＬＩＭＡＸ　ＲＥＶＵＥ／ＦＩＮＩＳＨ】
+	PRINTL
+	RESETCOLOR
+	ALIGNMENT LEFT
+;それ以外
+ELSE
+	;単体攻撃処理
+	;LOCAL = POS(ARG:1)
+	;CALL ATTACK_SINGLE,ARG,LOCAL,3589
+	;やっぱ一列攻撃に
+	CALL ATTACK_FIELD,ARG,ARG:1,3589
+ENDIF
+
+
+
+
+
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3589, ARG
+#LOCALSIZE 1
+IF CFLAG:(CHARANUM-1):PT플래그 || ARG < 0 || ARG >= CHARANUM
+	PRINTL 【通常時】
+	PRINTL 적 1열에 검격 상성의 대 데미지 + 감전
+	PRINTL 
+	PRINTL 【클라이맥스 레뷰 발동 시】
+	PRINTL 무작위 대상에게 고크리티컬 『검격·중력·핵열』 복합 대 데미지 + 아군의 HP 전회복.
+ELSE
+	;CR展開時
+	IF GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+		SETCOLOR 0xff0033
+		PRINTL 【ＣＬＩＭＡＸ　ＡＣＴ】
+		RESETCOLOR
+		PRINTL 동료의 마음과 함께 시대를 일직선으로 달려나가는 킹 아서의 필살기.
+		PRINTL 무작위 대상에게 고크리티컬 『검격·중력·핵열』 복합 대 데미지 + 아군의 HP 전회복.
+		;愛城パワーアップイベント中かつボスが最終形態時のみ、撃ち放題
+		IF GETBIT(イベントフラグ:93:11, 5) && (イベントフラグ:93:0 == 12 || イベントフラグ:93:0 == 13) && (イベントフラグ:93:10 == [[キャラ:카렌_무대소녀]])
+			SETCOLOR 0xff0033
+			PRINTL 혼신의 일격으로 이 레뷰에 결착을!
+			RESETCOLOR
+		;通常
+		ELSE
+			PRINTL 사용하면 클라이맥스 레뷰는 종료된다
+		ENDIF
+		
+	;それ以外
+	ELSE
+		PRINTL 적 1열에 검격 상성의 대 데미지 + 감전
+		PRINTL 클라이맥스 레뷰 발동 중에는 성능이 변화한다.
+	ENDIF
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3589,ARG
+RETURN 1
+;とくにない
+

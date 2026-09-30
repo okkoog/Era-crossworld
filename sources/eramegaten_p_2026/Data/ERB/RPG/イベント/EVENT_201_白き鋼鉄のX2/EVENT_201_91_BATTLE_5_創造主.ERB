@@ -1,0 +1,460 @@
+﻿;=============================================
+;EVENT_201_5_創造主
+;=============================================
+@SET_ACTION_ステラースパーク, ARG
+;創造主三戦目と大体同じ。
+;CSTR:ARG:전용기1 = シールドストライク
+;CSTR:ARG:전용기2 = インフェルノドロップ
+;CSTR:ARG:전용기3 = オラージュリーゼ
+;CSTR:ARG:전용기4 = ＳＰスキル
+;CSTR:ARG:전용기5 = エイミングレイ
+;CSTR:ARG:전용기6 = タイムフリーザー
+;CSTR:ARG:전용기7 = ジャッジメントブレード
+;CSTR:ARG:전용기8 = φシュート
+IF CFLAG:ARG:１more플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:기합]]
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	;ガンヴォルトあるある：HPが1/3切ったらSPスキル使う　5Tに1回打ってくるぞ
+	IF CFLAG:ARG:800 == 3 && PU_SKILLGAGE_D_GET(ARG, "ＳＰスキル") == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+	ELSEIF MIN(CFLAG:ARG:공격강화, CFLAG:ARG:마법위력강화, CFLAG:ARG:방어강화, CFLAG:ARG:마법효과강화) < 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:이니셜라이즈]]
+	ELSEIF MIN(CFLAG:ARG:회피강화, CFLAG:ARG:명중강화) < 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "タイムフリーザー")
+	ELSEIF PU_SKILLGAGE_D_GET(ARG, "シールドストライク") > 0 && RAND:10 > 5
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "インフェルノドロップ")
+	ELSE
+		IF GET_カジャンダ_MIN(ARG) < 8 && RAND:3 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		ELSEIF RAND:5 == 0
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "シールドストライク")
+		ELSEIF RAND:4 == 0
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "オラージュリーゼ")
+		ELSEIF RAND:3 == 0
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "エイミングレイ")
+		ELSEIF RAND:2 == 0
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "タイムフリーザー")
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "φシュート")
+		ENDIF
+	ENDIF
+ELSE
+	IF GET_カジャンダ_MIN(ARG) < 8 && RAND:5 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+	ELSEIF PU_SKILLGAGE_D_GET(ARG, "シールドストライク") > 0 && RAND:10 > 3
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "インフェルノドロップ")
+	ELSEIF RAND:6 == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "シールドストライク")
+	ELSEIF RAND:5 == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ジャッジメントブレード")
+	ELSEIF RAND:4 == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "φシュート")
+	ELSEIF RAND:3 == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "オラージュリーゼ")
+	ELSEIF RAND:2 == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ジャッジメントブレード")
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "φシュート")
+	ENDIF
+ENDIF
+
+@CHANGE_ACTION_ステラースパーク, ARG
+IF CFLAG:ARG:800 == 2 
+	CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+	CFLAG:ARG:800 = 3
+ENDIF
+
+@EVENT_BATTLE_DYING_EVENT_201_5_創造主, L_T, L_P, L_SKIP
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_SKIP
+IF L_T == GET_ENEMY("イプシロン？") && CFLAG:L_T:800 == 0
+	TSTR:스킬메시지추가 = %CALLNAME:L_T%은(는) 일어섰다!!
+	
+	CFLAG:L_T:상태이상 = GET_STATE_NUM("GOOD")
+	BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ / 3
+	CFLAG:L_T:800 = 1
+	CFLAG:L_T:공격대상제외_ACT = 1
+ENDIF
+
+IF L_T == GET_ENEMY("イプシロン？") && CFLAG:L_T:800 >= 2
+	CFLAG:L_T:상태이상 = GET_STATE_NUM("GOOD")
+	BASE:L_T:ＨＰ = 1
+	CFLAG:L_T:불사신플래그 = 1
+	CFLAG:L_T:800 = 4
+	CFLAG:L_T:공격대상제외_ACT = 1
+ENDIF
+
+IF L_T == GET_ENEMY("アキュラ？") && CFLAG:L_T:800 == 0
+	TSTR:스킬메시지추가 = %CALLNAME:L_T%은(는) 일어섰다!!
+	
+	CFLAG:L_T:상태이상 = GET_STATE_NUM("GOOD")
+	BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ / 3
+	CFLAG:L_T:800 = 1
+	CFLAG:L_T:공격대상제외_ACT = 1
+ENDIF
+
+@EVENT_BATTLE_ACTEND_EVENT_201_5_創造主
+IF CFLAG:GET_ENEMY("イプシロン？"):800 == 1
+	BTL_KOJO_RESULTS:0 = くっ……ッ！
+	SETCOLOR COLOR("ENEMY")
+	CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("イプシロン？")
+	CFLAG:GET_ENEMY("イプシロン？"):800 = 2
+ENDIF
+
+IF CFLAG:GET_ENEMY("イプシロン？"):800 == 4
+	CFLAG:GET_ENEMY("イプシロン？"):800 = 5
+	SETCOLOR COLOR("ENEMY")
+	BTL_KOJO_RESULTS:0 = やるな……
+	CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("イプシロン？")
+	RESETCOLOR
+	PRINTFORML 입실론이 무릎을 꿇는다. 격전의 여파인지, 그 마스크에는 깊은 균열이 새겨져 있었다.
+	PRINTFORMW 균열은 점차 번져나가며, 『하얀 강철』에 가려져 있던 맨얼굴이 드러난다――.
+
+	SETCOLOR COLOR("ENEMY")
+	BTL_KOJO_RESULTS:0 = だが――まだだ。この程度では、足りない
+	CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("アキュラ？")
+	IF FINDCHARA_B([[キャラ:아큐라_X]])
+		VARI L_ACURA = RESULT:1
+		CALL SET_RORO_KOJO_FLAG(L_ACURA)
+		BTL_KOJO_RESULTS:0 = えっ……あの顔、アキュラくん……？
+		BTL_KOJO_RESULTS:1 = 一体どういうこと！？　そっくりってレベルじゃないよ！
+		CALL PRINT_KOJO_RPG_MESSAGE, , L_ACURA
+
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = ……平行同位体、か
+		CALL PRINT_KOJO_RPG_MESSAGE, , L_ACURA
+	ENDIF
+	RESETCOLOR
+	PRINTFORML 입실론―― 아니. 이세계의 아큐라가 다시 방패를 겨눈다.
+	PRINTFORMW 내뿜는 기백, 겨누어지는 전의는 방금 전보다도 훨씬 위다.
+	CALL REMOVE_POSITION, CPOS(GET_ENEMY("イプシロン？"))
+	CALL INSERT_POSITION, 9, GET_ENEMY("アキュラ？")
+ENDIF
+
+IF CFLAG:GET_ENEMY("アキュラ？"):800 == 1
+	BTL_KOJO_RESULTS:0 = ……ああ。お前たちなら、きっと
+	SETCOLOR COLOR("ENEMY")
+	CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("アキュラ？")
+	CFLAG:GET_ENEMY("アキュラ？"):800 = 2
+ENDIF
+
+;創造主戦専用ライブノベル2
+@EVENT_BATTLE_TURNSTART_EVENT_201_5_創造主
+#DIM 進行度
+#DIM DYNAMIC COPEN
+SIF 進行度 == 30
+	RETURN 0
+SIF CPOS(GET_ENEMY("イプシロン？")) == 0
+	RETURN 0
+SIF FINDCHARA_B([[キャラ:아큐라_X]])  != 2
+	RETURN 0
+COPEN = RESULT:1
+SELECTCASE 進行度
+	CASE 0
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = ……もう、時間がない
+		BTL_KOJO_RESULTS:1 = 見せてみろ、お前の力を
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("イプシロン？")
+
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = その声……キーライフルを寄越したのはお前だな
+		BTL_KOJO_RESULTS:1 = 何故オレたちをこの世界に呼んだ？
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = それを知りたくば、オレを超えてみせろ
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("イプシロン？")
+
+		進行度 = 10
+		RESETCOLOR
+	CASE 10
+		CALL SET_RORO_KOJO_FLAG, COPEN
+		BTL_KOJO_RESULTS:0 = おかしいよ、あいつから熱源反応がしない。生命反応も同様
+		BTL_KOJO_RESULTS:1 = あるのはマグネタイト反応だけ。これじゃ、まるで――
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = ワーカーでも人間でもない……？
+		BTL_KOJO_RESULTS:1 = ならば、あいつは一体――
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 白き鋼鉄のＸ……お前が真に救世主であるならば
+		BTL_KOJO_RESULTS:1 = オレを超えていけるはずだ。“アイツ”を止められるはずだ
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("イプシロン？")
+
+		進行度 = 20
+		RESETCOLOR
+	CASE 20
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = ……いいだろう。コハクを取り戻すためにも
+		BTL_KOJO_RESULTS:1 = どの道、マザーの元へ向かわねばならん
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = そうだ……それでいい
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("イプシロン？")
+
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 望み通り、証明してやる。行くぞ……！
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+
+		進行度 = 30
+		RESETCOLOR
+ENDSELECT
+
+
+
+;創造主・敵対時の口上
+@KOJO_ENEMY_BATTLE_MESSAGE_K[[キャラ:창조주_X2]], ARG, ARG:1 = 0
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;これは通常攻撃
+SELECTCASE  CFLAG:ARG:입력행동
+	CASE 0
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = ……行くぞ
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 攻撃する
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 逃さん……
+		ENDSELECT
+;-------------------------------------------------
+;汎用スキル
+;-------------------------------------------------
+	CASE [[스킬:기합]], [[스킬:일기당천의눈빛]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = ――次で、決める
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 覚悟してもらうぞ
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 時間を与えた対価、払ってもらう
+		ENDSELECT
+	CASE [[스킬:히트라이저]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 能力を強化する
+			CASE 1
+				BTL_KOJO_RESULTS:0 = ブースト開始……！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ついてこられるか？
+		ENDSELECT
+	CASE [[스킬:랜더마이저]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = これでどうだ？
+			CASE 1
+				BTL_KOJO_RESULTS:0 = そうはさせん……
+			CASE 2
+				BTL_KOJO_RESULTS:0 = さあ、これならどうする？
+		ENDSELECT
+	CASE [[스킬:이니셜라이즈]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = それなら、これだ
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 対処する
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ――仕切り直しだ
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "シールドストライク")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 吹き飛ばす……！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = そこを、退けッ
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 突破する！
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "インフェルノドロップ")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 燃えろ、プロミネンスアッパー……！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 創造主権限、認証――力を貸してくれ、デイサイト
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 炎熱フィールド展開、耐えられるか……！
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "オラージュリーゼ")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 散れ、オラージュリーゼ……！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 創造主権限、認証――力を貸してくれ、ヴェスパ
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 圧縮空気弾生成、追跡しろ……！
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+		BTL_KOJO_RESULTS:0 = 行くぞ
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		ALIGNMENT RIGHT
+		RESETCOLOR
+		PRINTFORML 　　　　Bolts of determination　　　　　　　　　　　　　 
+		PRINTFORML 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+		PRINTFORML
+		PRINTFORML 　　The thounderous voice in X's heart　　　　　　　　　 
+		SETCOLOR 0xe8307c
+		PRINTFORML 　　　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　
+		RESETCOLOR
+		PRINTFORML
+		PRINTFORML 　　　　proves of the etarnal law　　　　　　　　　　　　
+		PRINTFORMW 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+		ALIGNMENT LEFT
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 스파크스텔라……！
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		TFLAG:전투구상직접출력 = 1
+	CASE PU_SKILLNUM_GET(ARG, "エイミングレイ")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 貫け、エイミングレイ……！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 創造主権限、認証――力を貸してくれ、オートクロムッ
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ターゲット展開、ロック開始……！
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "タイムフリーザー")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 凍れ、タイムフリーザー……！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 創造主権限、認証――力を貸してくれ、ヘイルッ
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 時間凍結場展開、遅い……！
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "ジャッジメントブレード")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 両断せよ、ジャッジメントブレード……！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 創造主権限、認証――力を貸してくれ、ブリガドッ
+			CASE 2
+				BTL_KOJO_RESULTS:0 = エネルギーブレード展開、断ち切る……！
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "φシュート")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 切り刻め、φシュート……！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 創造主権限、認証――力を貸してくれ、スラグッ
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ブーメラン射出、制圧する……！
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "セラフィックデス")
+		IF TFLAG:스킬용1 == 99
+			BTL_KOJO_RESULTS:0 = 光を……受け取れッ！！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 超えてみせろ……！
+			CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+			ALIGNMENT RIGHT
+			RESETCOLOR
+			PRINTFORML 　　　　Broken worker's soul　　　　　　　　　　　　　　 
+			PRINTFORML 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+			PRINTFORML
+			PRINTFORML 　　Unite as one yet again　　　　　　　　　　　　　　　 
+			SETCOLOR 0xe8307c
+			PRINTFORML 　　　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　
+			RESETCOLOR
+			PRINTFORML
+			PRINTFORML 　　　　To bring the true light　　　　　　　　　　　　　
+			PRINTFORMW 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+			ALIGNMENT LEFT
+			SETCOLOR COLOR("ENEMY")
+			BTL_KOJO_RESULTS:0 = セラフィックデス！
+			CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+			TFLAG:전투구상직접출력 = 1
+		ENDIF
+ENDSELECT
+
+@SET_ACTION_エクストリームビヨンド, ARG
+;ここからが本番。
+;ガチガチにしすぎたかもしれんが「vsバッドエンドの先まで行き着いた主人公」がテーマなので一度は死んでいただくぐらいのつもり
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC L_TYPES
+#DIMS CONST L_TYPE_TABLE = "타격","화염","질풍","핵열","비구","검격","빙결"
+;CSTR:ARG:전용기1 = シールドストライク
+;CSTR:ARG:전용기2 = インフェルノドロップ
+;CSTR:ARG:전용기3 = オラージュリーゼ
+;CSTR:ARG:전용기4 = ＳＰスキル（今回は使わない）
+;CSTR:ARG:전용기5 = エイミングレイ
+;CSTR:ARG:전용기6 = タイムフリーザー
+;CSTR:ARG:전용기7 = ジャッジメントブレード
+;CSTR:ARG:전용기8 = φシュート
+;CSTR:ARG:전용기9 = セラフィックデス
+CFLAG:ARG:입력행동 = 0
+CFLAG:ARG:타겟 = -1
+
+IF CFLAG:ARG:800 == 2
+	CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "セラフィックデス")
+	CFLAG:ARG:800 = 3
+ELSEIF CFLAG:ARG:１more플래그 > 0
+	IF RAND:2 == 0
+		;集中しても意味がない
+		CALL SET_ACTION_SKILL, ARG, [[스킬:일기당천의눈빛]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:랜더마이저]]
+	ENDIF
+ELSEIF CFLAG:ARG:800 == 3 && PU_SKILLGAGE_D_GET(ARG, "セラフィックデス")
+	CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "セラフィックデス")
+ELSEIF CFLAG:ARG:(BASE_KAJA_TABLE:RAND(0, VARSIZE("BASE_KAJA_TABLE")) + "강화") < 0 || GET_カジャンダ_MIN(ARG) < -16
+	CFLAG:ARG:입력행동 = [[스킬:이니셜라이즈]]
+ELSEIF GET_カジャンダ_MAX(GET_RANDOM_FRIEND()) >= 16
+	CFLAG:ARG:입력행동 = [[스킬:이니셜라이즈]]
+ELSE
+	;スキルの仮決定
+	SIF L_TYPES == "" || CFLAG:ARG:행동한횟수 == 0
+		L_TYPES '= L_TYPE_TABLE:RAND(VARSIZE("L_TYPE_TABLE"))
+	SELECTCASE L_TYPES
+		CASE "타격"
+			CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "シールドストライク")
+		CASE "화염"
+			CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "インフェルノドロップ")
+		CASE "질풍"
+			CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "オラージュリーゼ")
+		CASE "핵열", "비구"
+			CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "エイミングレイ")
+		CASE "검격"
+			IF RAND:2
+				CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "ジャッジメントブレード")
+			ELSE
+				CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "φシュート")
+			ENDIF
+		CASE "빙결"
+			CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "タイムフリーザー")
+	ENDSELECT
+
+	;耐性をチェックし、ガードブレイクか万能攻撃に振り替える
+	FOR LCOUNT, 1, 7
+		SIF !IS_TARGET_ABLE(POS(LCOUNT))
+			CONTINUE
+		IF CHECK_WEAKNESS(MAXBASE:POS(LCOUNT):L_TYPES < 0) && !CFLAG:POS(LCOUNT):(L_TYPES + "가드킬")
+			CFLAG:ARG:입력행동 = SKILL_NUM_F(L_TYPES + "ガードブレイク")
+			BREAK
+		ELSE
+			CALL BTL_CALC_AISYOU, ARG, POS(LCOUNT), , GET_TYPE_NUM(L_TYPES)
+			IF CHECK_WEAKNESS(RESULT) <= -2
+				IF CFLAG:ARG:행동한횟수 == 0
+					SELECTCASE RAND:3
+						CASE 0
+							;単体・威力210*2。クリティカル35%で普通に痛い
+							CFLAG:ARG:입력행동 = [[스킬:메기도크로스]]
+						CASE 1
+							;単体・威力325。確率は低いが万能DYINGは怖い
+							CFLAG:ARG:입력행동 = [[스킬:적살]]
+						CASE 2
+							;一列・威力320。威力はこの中だと一番低いが防御低下してくる
+							CFLAG:ARG:입력행동 = [[스킬:끝나는세계]]
+					ENDSELECT
+				ELSE
+					CFLAG:ARG:입력행동 = [[스킬:이니셜라이즈]]
+				ENDIF
+				BREAK
+			ENDIF
+		ENDIF
+	NEXT
+ENDIF
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동

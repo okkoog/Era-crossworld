@@ -1,0 +1,1237 @@
+﻿@SHOPCOMABLE_998
+RESULTS = 악마조교전.exe
+RETURN 1
+
+@SHOP_COM_998, ARG
+CALL DICTIONARY_MENU
+RETURN 1
+
+;≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
+;調教典
+;≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
+;SHOPメニューより呼び出される。用語辞典っぽいものに。
+;記述はまとめwikiの物を一部参考・借用しています。
+;コマンド説明パッチよりコマンドの説明も追加。
+;--------------------------------------------------
+;このファイル内ではメニュー処理と
+;能力・刻印・経験・珠・その他数値・ソースについての記述があります。
+;--------------------------------------------------
+;=============================================================================
+;調教典メニュー
+;=============================================================================
+;--------------------------------------------------
+;調教典メニュー
+;--------------------------------------------------
+@DICTIONARY_MENU
+DRAWLINE
+PRINTL 어느 항목을 알아보시겠습니까？
+PRINTL 알아보고 싶은 항목의 번호를 입력하거나、클릭해주세요。
+DRAWLINE
+SETCOLOR 0xff00ff
+PRINTL 【조교】
+RESETCOLOR
+PRINTLC [ 1] 능력
+PRINTLC [ 2] 각인
+PRINTLC [ 3] 소질
+PRINTLC [ 4] 경험
+PRINTLC [ 5] 구슬
+PRINTLC [ 6] 소스
+PRINTLC [ 7] 조교아이템
+PRINTLC [ 8] 체질변화약
+PRINTLC [ 9] 조교커맨드의 설명
+PRINTL [10] 이상경험의 획득 조건
+SETCOLOR 0xffde86
+PRINTL 【그외】
+RESETCOLOR
+PRINTLC [20] 스테이터스
+PRINTLC [21] SHOP커맨드의 설명
+PRINTLC [22] OPTION의 설명
+PRINTLC [23] 그 외 수치
+PRINTLC [24] END의 조건(스포일러)
+PRINTLC [25] 스포일러 정보
+PRINTL [26] 초심자의 추천
+SETCOLOR 0x0099cc
+PRINTL 【로그・이력・장부】
+RESETCOLOR
+PRINTLC [31] 미션 로그
+PRINTLC [32] 함락 이력
+PRINTLC [33] 장부 열람
+PRINTL 
+PRINTL [100]그만둔다
+DRAWLINE
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT == 1
+	;能力
+	CALL DICTIONARY_ABL_MAIN
+ELSEIF RESULT == 2
+	;刻印
+	CALL DICTIONARY_MARK_MAIN
+ELSEIF RESULT == 3
+	;素質
+	CALL DICTIONARY_TALENT_MAIN
+ELSEIF RESULT == 4
+	;経験
+	CALL DICTIONARY_EXP_MAIN
+ELSEIF RESULT == 5
+	;珠
+	CALL DICTIONARY_JUEL_MAIN
+ELSEIF RESULT == 6
+	;ソース
+	CALL DICTIONARY_SOURCE_MAIN
+ELSEIF RESULT == 7
+	;アイテム
+	CALL DICTIONARY_ITEM_MAIN
+ELSEIF RESULT == 8
+	;体質変化薬
+	CALL DICTIONARY_DRUG_MAIN
+ELSEIF RESULT == 9
+	;調教コマンドの説明
+	CALL DICTIONARY_T_COMMAND_MAIN
+ELSEIF RESULT == 10
+	;異常経験の獲得条件
+	CALL DICTIONARY_ABNORMAL_EXP_MAIN
+ELSEIF RESULT == 20
+	;ステータスの解説
+	CALL DICTIONARY_STATUS_MAIN
+ELSEIF RESULT == 21
+	;SHOPコマンドの説明
+	CALL DICTIONARY_SHOP_COMMAND
+ELSEIF RESULT == 22
+	;OPTIONの説明
+	CALL DICTIONARY_CONFIG_MAIN
+ELSEIF RESULT == 23
+	;その他の数値
+	CALL DICTIONARY_OTHER_MAIN
+ELSEIF RESULT == 24
+	;ENDの条件(ネタバレ)
+	CALL DICTIONARY_END_NETABARE_MAIN
+ELSEIF RESULT == 25
+	;ネタばれ情報
+	CALL DICTIONARY_NETABARE_MAIN
+ELSEIF RESULT == 26
+	;初心者Ｑ＆Ａ
+	CALL DICTIONARY_EASY_QA
+ELSEIF RESULT == 31
+	;ミッションログ
+	CALL DICTIONARY_MISSION_MAIN
+ELSEIF RESULT == 32
+	;陥落履歴
+	CALL DICTIONARY_FALLED_MAIN
+ELSEIF RESULT == 33
+	;帳簿の閲覧
+	CALL ACCOUNTING_BOOKS_MAIN
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+RESTART
+
+;=============================================================================
+;用語辞典――能力
+;=============================================================================
+;--------------------------------------------------
+;能力解説メインページ
+;--------------------------------------------------
+@DICTIONARY_ABL_MAIN
+$PRINT_LIST
+DRAWLINE
+PRINTL 「능력」에 관한 해설입니다。
+PRINTL 능력을 올리려면、대응하는 구슬・능력・경험이 필요합니다。
+PRINTL 또한、능력에 따라 일정 LV 올리려면『이상경험』이 필요한 경우도 있습니다。
+PRINTL 소질에 따라 구슬이나 경험의 필요량이 증감하며、『이상경험』과 관계없이 올릴 수 있게 되는 경우도 있습니다。
+PRINTL
+PRINTL 함락 전은 LV5가 상한이지만、함락 후는 LV10 까지 올릴 수 있게 됩니다。
+PRINTL 주인은、감각계는 대응하는 부위의 절정횟수로、그 이외는 경험이 높아지면 LV10 까지 올라갑니다。
+PRINTL 
+PRINTL 설명을 알고 싶은 능력의 번호를 입력하거나、클릭해주세요。
+DRAWLINE
+;各表示
+FOR LOCAL, 0, 30
+	SIF ABLNAME:LOCAL!=""
+		PRINTFORMLC [{LOCAL, 2}] %ABLNAME:LOCAL%
+NEXT
+PRINTL 
+DRAWLINE
+PRINTLC [100]돌아간다
+
+$INPUT_LOOP
+INPUT
+SIF RESULT == 100
+	RETURN 0
+SIF RESULT < 0 || RESULT > 30
+	GOTO INPUT_LOOP
+SIF ABLNAME:RESULT ==""
+	GOTO INPUT_LOOP
+CALL DICTIONARY_ABL_DATA,RESULT
+
+GOTO PRINT_LIST
+;--------------------------------------------------
+;能力解説
+;--------------------------------------------------
+@DICTIONARY_ABL_DATA, ARG
+	PRINTFORML 【%ABLNAME:ARG%】
+SELECTCASE ABLNAME:RESULT
+	CASE "순종"
+		PRINTL 주인에 대해 얼마나 따르려고 생각하는지를 나타냅니다。
+		PRINTL 이 능력이 낮으면 커맨드를 실행하기 어렵고、반감이 오르기 쉽지만、
+		PRINTL 높아짐에 따라 커맨드를 실행하기 쉬워지고、반감이 오르기 어려워집니다。
+		PRINTL 조수로 삼거나、성노예로서 매각하는 등、조교를 행하는 데에는 필수라고 할 수 있는 능력입니다。
+		PRINTW 「봉사정신」을 상승시키는 것과、반발각인의 LV다운과 소거、[반발]의 소거에 필요합니다。
+	CASE "욕망"
+		PRINTL 그 캐릭터가 얼마나 정사에 빠져 있는지를 나타냅니다。
+		PRINTL 높으면 욕정이 오르기 쉬워집니다。
+		PRINTL 강한 쾌락을 느끼게 하거나、「미약」을 마시게 하면 상승시킬 수 있습니다。
+		PRINTL 성노예에 필수인 능력이라고 할 수 있겠지요。
+		PRINTL 일부 능력을 상승시키는 것과、[반발]의 소거에 필요합니다。
+		PRINTW 또、높을수록 MAG의 최대치가 높아집니다。
+	CASE "기교"
+		PRINTL 얼마나 성에 관련된 테크닉을 가지고 있는지를 나타냅니다。
+		PRINTL 또、손재주 쪽의 기용함도 이것으로 나타내는 경우가 있습니다。
+		PRINTL 높을수록 타인에게 주는 쾌감이 커집니다。
+		PRINTL 조교자、노예를 불문하고 중요한 능력이라고 할 수 있겠지요。
+		PRINTW 또、대상의 이 능력이 높을수록、펠라치오 등으로 사정하기 쉬워집니다。
+	CASE "Ｃ감각"
+		PRINTL 클리토리스(또는 페니스)로 얼마나 느끼는지의 지수입니다。
+		PRINTL 로터나 커닐링구스(펠라한다) 등으로 상승시킬 수 있습니다。
+		PRINTW 「자위중독」을 상승시키는 데 필요합니다。
+	CASE "Ｖ감각"
+		PRINTL 바기나로 얼마나 느끼는지의 지수입니다。
+		PRINTL 바이브나 정상위 등의 섹스계 커맨드로 상승시킬 수 있습니다。
+		PRINTL [여자] 캐릭터의 「섹스중독」을 상승시키는 데 필요합니다。
+		PRINTW 당연하지만 [남자] 캐릭터는 상승시킬 수 없습니다。
+	CASE "Ａ감각"
+		PRINTL 애널로 얼마나 느끼는지의 지수입니다。
+		PRINTL 애널바이브나 정상위 애널 등의 커맨드로 상승시킬 수 있습니다。
+		PRINTL 단 엉덩이 구멍으로 성행위에 이르는 것은 일반적으로 어브노멀한 것이라는 인식이 강합니다。
+		PRINTW [남자] 캐릭터의 「섹스중독」을 상승시키는 데 필요합니다。
+	CASE "Ｂ감각"
+		PRINTL 가슴으로 얼마나 느끼는지의 지수입니다。[남자] 캐릭터는 올리기 어렵습니다。
+		PRINTL 가슴애무나 파이즈리 등의 가슴을 사용하는 커맨드로 상승시킬 수 있습니다。
+		PRINTL 가슴의 크기에 따라 올리기 쉬운 정도、가슴을 사용하는 커맨드의 실행에 필요한 기교와 가능 여부가 변화합니다。
+		PRINTL 가슴이 작으면 올리기 쉽지만、필요한 기교가 높아지고、크면 올리기 어려워지지만、필요한 기교가 낮아집니다。
+		PRINTW 「분유중독」을 상승시키는 데 필요합니다。
+	CASE "봉사정신"
+		PRINTL 타인에게 진력하는 것에 기쁨을 얼마나 느끼는지를 나타냅니다。
+		PRINTL 높으면 조교에서 보다 많은 것을 배우려고 하거나、
+		PRINTL 명령을 주지 않아도 스스로 나서서 봉사하게 됩니다。
+		PRINTL 펠라치오나 파이즈리 등의 봉사계 커맨드를 반복하면 상승시킬 수 있습니다。
+		PRINTL 상승시키려면 「순종」이 필요합니다。
+		PRINTW 또、「레즈/ＢＬ중독」을 상승시키는 데 필요합니다。
+	CASE "노출증"
+		PRINTL 부끄러운 모습을 보이는 것으로 흥분하는지 여부를 나타냅니다。
+		PRINTL 높으면 자위 등의 치정이 오르는 커맨드를 실행했을 때 욕정이 오르기 쉬워집니다。
+		PRINTL 동시에 부끄러워하는 마음이 옅어지기 때문에、공포가 오르기 어려워집니다。
+		PRINTL 야외플레이나 자위 등으로 익숙하게 해감으로써 상승시킬 수 있습니다。
+		PRINTW 상승시키려면 「욕망」이 필요합니다。
+	CASE "마조끼"
+		PRINTL 고통을 느끼는 것에 얼마나 욕정하는지의 지표입니다。
+		PRINTL 높으면 아픔을 느꼈을 때 욕정이 오르게 되고、반감이 오르기 어려워지고、
+		PRINTL 고통에 의한 체력과 기력의 감소를 억제하고、일부 커맨드의 효과를 높입니다。
+		PRINTL SM계 조교를 메인으로 행하는 경우에는 필수라고 할 수 있는 능력이지만、
+		PRINTW 이 능력이 높을수록 「새드끼」를 상승시키기 어려워집니다。
+	CASE "새드끼"
+		PRINTL 고통을 주는 것에 얼마나 욕정하는지의 지표입니다。
+		PRINTL SM계 조교 커맨드를 실행했을 때 상대에게 많은 고통을 주게 되는 것 외에、
+		PRINTL 이 능력이 일정 LV 이상이 아니면 실행할 수 없는 커맨드도 존재합니다。
+		PRINTL 「마조끼」와 마찬가지로 SM계 조교를 메인으로 행하는 경우에는 필수라고 할 수 있는 능력이지만、
+		PRINTL 이 능력이 높을수록 「마조끼」를 상승시키기 어려워집니다。
+		PRINTL 상승시키려면 「욕망」이 필요하지만、복종계 함락해 있는 경우는 「욕망」이 아니라
+		PRINTW 「기교」가 필요해집니다。
+	CASE "레즈끼"
+		PRINTL 여성끼리의 성애를 어느 정도 받아들이고 있는지를 나타냅니다。
+		PRINTL 높으면 여성끼리 조교했을 때、대상이 가지고 있다면 굴복과 반감이 오르기 어려워지고、
+		PRINTL 공순이 오르기 쉬워집니다。
+		PRINTL 조교자가 가지고 있다면 공순과 욕정이 오르기 쉬워집니다。
+		PRINTW [여자] 캐릭터만의 능력입니다。 
+	CASE "요리기능"
+		PRINTL 요리 기술의 높이의 척도를 나타냅니다。
+		PRINTL 높으면 그만큼 만든 요리의 외견이나 맛이 좋아지고、주위에서 고평가를 얻기 쉬워집니다。
+		PRINTL 식당에서 일했을 때의 보수액이 높아지고、손님을 만족시키기 쉬워집니다。
+		PRINTW 상승시키려면 가사경험이 필요합니다。
+	CASE "촬영기능"
+		PRINTL 비디오나 사진촬영에 관한 기술의 높이를 나타냅니다。
+		PRINTL 높으면 그만큼 좋은 동영상이나 잘 나오는 사진을 찍을 수 있게 됩니다。
+		PRINTL 그 나름의 촬영경험을 쌓을 필요가 있지만、높으면 사진과 비디오의 가격、
+		PRINTL 난교 라이브에서 촬영자를 설정했을 때의 보수액이 높아지기 때문에、
+		PRINTW 이것들을 주된 수입으로 하는 경우는 이른 단계에서 올리는 것을 권합니다。
+	CASE "가창기능"
+		PRINTL 얼마나 노래를 능숙하게 부를 수 있는지의 척도를 나타냅니다。
+		PRINTL 높으면 콘서트와 집단 라이브의 성공률・보수액과 아이템을 입수할 확률이 높아집니다。
+		PRINTW 상승시키려면 가창경험이 필요합니다。
+	CASE "자위중독"
+		PRINTL 자위행위의 습관이 얼마나 있는지입니다。
+		PRINTL 높으면 조교 종료 후에 자위를 하기 쉬워지고、자위 횟수도 증가합니다。
+		PRINTL 더욱 자위계 커맨드의 효과가 높아집니다。
+		PRINTL 상승시키려면 자위경험이나 조교자위경험이 많이 필요합니다。
+		PRINTW 또、「Ｃ감각」과 「노출증」도 필요합니다。
+	CASE "정액중독"
+		PRINTL 정액의 맛이나 냄새에 얼마나 흥분하는지의 지수입니다。
+		PRINTL 높으면 정액으로 욕정이 오르게 되는 것 외에、이벤트 등에서 구슬을 많이 획득할 수 있게 됩니다。
+		PRINTL 단、상승시키는 데 필요한 「굴복의 구슬」의 양이 매우 많습니다。
+		PRINTL 정액경험이 높으면 필요한 양이 크게 감소하므로、
+		PRINTL 올린다면 정액경험을 많이 벌고 나서 하는 편이 좋겠지요。
+		PRINTL 상승시키려면 「봉사정신」도 필요하지만、음란계 함락해 있는 경우는、「봉사정신」이 아니라
+		PRINTW 「욕망」이 필요해집니다。
+	CASE "레즈중독"
+		PRINTL 여성끼리의 성애에 얼마나 몰두하고 있는지를 나타냅니다。
+		PRINTL 높으면 여성끼리 조교했을 때、대상이 가지고 있다면 굴복・불쾌・반감이 오르기 어려워지고、
+		PRINTL 쾌감계와 공순이 오르기 쉬워집니다。
+		PRINTL 조교자가 가지고 있다면 습득・공순・욕정이 오르기 쉬워집니다。
+		PRINTL 상승시키려면 「봉사정신」이 필요합니다。
+		PRINTW 조교 종료시에 레즈 플레이를 행하기 위해서는 이 능력이 필요합니다。또、[여자] 캐릭터만의 능력입니다。 
+	CASE "섹스중독"
+		PRINTL 성교하는 것에 얼마나 몰두하고 있는지를 나타냅니다。
+		PRINTL 높으면 성교했을 때 욕정이 오르기 쉬워집니다。
+		PRINTW 상승시키려면 [여자]라면 「Ｖ감각」이、[남자]라면 「Ａ감각」이 필요합니다。
+	CASE "분유중독"
+		PRINTL 모유를 내는 것에 대해 얼마나 흥분하는지를 나타냅니다。
+		PRINTL 높으면 조교 종료시에 자신의 젖을 짜서 주인에게 제공하게 됩니다。
+		PRINTL 또、「착유기」의 효과가 오르고、분유하기 쉬워집니다。
+		PRINTL 가슴의 크기에 따라 「쾌Ｂ의 구슬」의 필요량이 증감합니다。
+		PRINTL 상승시키려면 [모유체질]과 「Ｂ감각」이 필요합니다。
+		PRINTW 당연하지만 [남자] 캐릭터는 이 능력을 상승시킬 수 없습니다。
+	CASE "ＢＬ끼"
+		PRINTL 남성끼리의 성애를 어느 정도 받아들이고 있는지를 나타냅니다。
+		PRINTL 높으면 남성끼리 조교했을 때、대상이 가지고 있다면 굴복과 반감이 오르기 어려워지고、
+		PRINTL 공순이 오르기 쉬워집니다。
+		PRINTL 조교자가 가지고 있다면 공순과 욕정이 오르기 쉬워집니다。
+		PRINTW [남자] 캐릭터만의 능력입니다。 
+	CASE "ＢＬ중독"
+		PRINTL 남성끼리의 성애에 얼마나 몰두하고 있는지를 나타냅니다。
+		PRINTL 높으면 남성끼리 조교했을 때、대상이 가지고 있다면 굴복・불쾌・반감이 오르기 어려워지고、
+		PRINTL 쾌감계와 공순이 오르기 쉬워집니다。
+		PRINTL 조교자가 가지고 있다면 습득・공순・욕정이 오르기 쉬워집니다。
+		PRINTL 상승시키려면 「봉사정신」이 필요합니다。
+		PRINTW 조교 종료시에 ＢＬ 플레이를 행하기 위해서는 이 능력이 필요합니다。또、[남자] 캐릭터만의 능력입니다。
+	CASE "수간중독"
+		PRINTL 동물과 성교하는 것에 얼마나 몰두하고 있는지를 나타냅니다。
+		PRINTL 높으면 [짐승]이나 [새]를 가진 캐릭터와 성교했을 때 굴복・불쾌・반감이 오르기 어려워지고、
+		PRINTW 쾌감계와 공순이 오르기 쉬워집니다。
+	CASE "촉수중독"
+		PRINTL 촉수에게 범해지는 것에 얼마나 몰두하고 있는지를 나타냅니다。
+		PRINTL 높으면 촉수조교를 받았을 때 굴복・공포・불쾌・반감이 오르기 어려워지고、
+		PRINTW 쾌감계와 공순이 오르기 쉬워집니다。
+	CASE "윤간중독"
+		PRINTL 윤간당하는 것에 얼마나 몰두하고 있는지를 나타냅니다。
+		PRINTW 높으면 윤간당했을 때의 체력과 기력의 감소량을 억제합니다。
+	CASE "키스중독"
+		PRINTL 키스하는 것에 얼마나 몰두하고 있는지를 나타냅니다。
+		PRINTW 높으면 키스의 효과가 높아집니다。
+	CASEELSE
+		PRINTW 아직 해설이 작성되지 않았습니다
+ENDSELECT
+RETURN
+;=============================================================================
+;用語辞典――刻印
+;=============================================================================
+;--------------------------------------------------
+;刻印解説
+;--------------------------------------------------
+@DICTIONARY_MARK_MAIN
+$PRINT_LIST
+DRAWLINE
+PRINTL 「각인」에 관한 해설입니다。
+PRINTL LV3까지 획득하고、LV에 따라 효과가 강해집니다。
+PRINTL 해설을 알고 싶은 각인의 번호를 입력하거나、클릭해주세요。
+DRAWLINE
+PRINTL [ 0] 고통각인
+PRINTL [ 1] 쾌락각인
+PRINTL [ 2] 굴복각인
+PRINTL [ 3] 반발각인
+DRAWLINE
+PRINTLC [100]돌아간다
+
+$INPUT_LOOP
+INPUT
+SELECTCASE RESULT
+	CASE 100
+		RETURN 0
+	CASE 0
+		PRINTL 【고통각인】
+		PRINTL 신체에 배어 잊을 수 없을 정도로 신체에 강한 고통을 받은 것을 나타냅니다。
+		PRINTL 각인의 LV이 높을수록 한 번에 강한 고통을 받고 있는 것을 나타내고 있으며、
+		PRINTL 그 이상의 고통을 받는 것은 피하고 싶다는 심리가 작용함으로써、
+		PRINTL 보다 조교의 명령을 받아들이기 쉬워집니다。
+		PRINTL 
+		PRINTL 획득하려면 고통의 파라미터가 한 번에 일정 이상 상승했을 때 획득합니다。
+		PRINTL 고통을 올리기 쉬운 커맨드는 반감이 높고、반발각인을 획득하기 쉬우므로 주의해주세요。
+		PRINTL 
+		PRINTL Lv1 고통의 파라미터가 한 번에 2000 이상 4000 미만 상승한다。
+		PRINTL Lv2 고통의 파라미터가 한 번에 4000 이상 8000 미만 상승한다。
+		PRINTL Lv3 고통의 파라미터가 한 번에 8000 이상 상승한다。
+		PRINTL 
+		PRINTW LV3을 획득했을 때、『이상경험』을 획득합니다。특정 조건을 만족하고 있으면 획득량이 높아집니다。
+	CASE 1
+		PRINTL 【쾌락각인】
+		PRINTL 신체에 배어 잊을 수 없을 정도로 강한 쾌감을 받은 것을 나타냅니다。
+		PRINTL 각인의 LV이 높을수록 한 번에 강한 쾌락을 받고 있는 것을 나타내고 있으며、
+		PRINTL 더한 쾌락을 얻고 싶다는 심리가 작용함으로써、
+		PRINTL 보다 조교의 명령을 받아들이기 쉬워집니다。
+		PRINTL 캐릭터를 음란계 함락시키려면 이 각인을 LV3까지 획득시킬 필요가 있습니다。
+		PRINTL 
+		PRINTL 획득하려면 절정했을 때、부위와 강도의 합계가 일정 이상이면 획득합니다。
+		PRINTL 
+		PRINTL C와 B인 경우는 통상+1・강+2・초강+3・최강+4・궁극+5
+		PRINTL V와 A인 경우는 통상+2・강+4・초강+6・최강+8・궁극+10
+		PRINTL Lv1 합계가 2 이상
+		PRINTL Lv2 합계가 3 이상
+		PRINTW Lv3 합계가 4 이상
+	CASE 2
+		PRINTL 【굴복각인】
+		PRINTL 마음이 꺾이고、주인에게 굴한 것을 나타냅니다。
+		PRINTL 각인의 LV이 높을수록 보다 강한 종속심이 생겨나고 있는 것을 나타내고 있으며、
+		PRINTL 주인의 명령에 거스르려는 마음이 작아져 갑니다。
+		PRINTL 캐릭터를 함락시키려면 이 각인을 LV3까지 획득시킬 필요가 있습니다。
+		PRINTL 
+		PRINTL 획득하려면 쾌감계나、고통과 공포나、공순과 굴복의 파라미터가 한 번에 일정 이상 상승했을 때 획득합니다。
+		PRINTL 쾌감계로 획득하려면 쾌락각인이 필요하고、쾌락각인과 같은 LV까지만 획득할 수 있습니다。
+		PRINTL 
+		PRINTL Lv1 쾌감계나、고통과 공포나、공순과 굴복의 파라미터가 한 번에 1000 이상 2400 미만 상승한다。
+		PRINTL Lv2 쾌감계나、고통과 공포나、공순과 굴복의 파라미터가 한 번에 2400 이상 6000 미만 상승한다。
+		PRINTL Lv3 쾌감계나、고통과 공포나、공순과 굴복의 파라미터가 한 번에 6000 이상 상승한다。
+		PRINTL 
+		PRINTW 또、반발각인을 없애는 데 필요합니다。
+	CASE 3
+		PRINTL 【반발각인】
+		PRINTL 주인에 대해 강한 반감을 가지고 있는 것을 나타냅니다。
+		PRINTL 각인의 LV이 높을수록 주인에 대한 반감이 강하기 때문에、
+		PRINTL 주인의 명령에 거스르려는 마음이 강해져 갑니다。
+		PRINTL 하지만、강한 반발심을 가진 채 부하를 계속 가하면 마음을 부수는 것도 가능합니다。
+		PRINTL 그렇다고는 해도、캐릭터의 함락이 불가능해지고、소스 면에서 불리해지는 등、
+		PRINTL 기본적으로 조교의 방해밖에 되지 않으므로 빨리 없애는 것을 권합니다。
+		PRINTL 
+		PRINTL 반감과 불쾌의 파라미터가 한 번에 일정 이상 상승했을 때 획득해버립니다。
+		PRINTL 
+		PRINTL Lv1 반감과 불쾌의 파라미터가 한 번에 500 이상 1200 미만 상승한다。
+		PRINTL Lv2 반감과 불쾌의 파라미터가 한 번에 1200 이상 3000 미만 상승한다。
+		PRINTL Lv3 반감과 불쾌의 파라미터가 한 번에 3000 이상 상승한다。
+		PRINTL 
+		PRINTL 없애려면 반발각인의 LV 이상의 굴복각인과 순종・굴복의 구슬이 필요합니다。
+		PRINTL 또、LV3→LV2→LV1의 순서로만 없앨 수 있습니다。
+		PRINTL 과거에 어느 LV까지 획득했는지가 캐릭터마다 기록되어 있고、
+		PRINTW 한 번이라도 획득한 LV 이하의 반발각인을 조교 중에 다시 획득하는 일은 없습니다。
+	CASEELSE
+		GOTO INPUT_LOOP
+ENDSELECT
+GOTO PRINT_LIST
+;=============================================================================
+;用語辞典――経験
+;=============================================================================
+;--------------------------------------------------
+;経験解説メインページ
+;--------------------------------------------------
+@DICTIONARY_EXP_MAIN
+$PRINT_LIST
+DRAWLINE
+PRINTL 「경험」에 관한 해설입니다。
+PRINTL 일부 경험은 높아지면 주인과 조수의 능력이 오르는 것이 있습니다。
+PRINTL 주인은 LV10、조수라면 LV5까지 상승합니다。 이 방법으로 올렸을 때는 구슬을 필요로 하지 않습니다。
+PRINTL 경험에는 LV이 존재합니다。경험의 수치가 높으면 LV이 높아집니다。
+PRINTL 어떠한 효과가 있는 것은 LV이 높을수록 효과가 높아집니다。
+PRINTL 0이 LV0、1～4가 LV1、5～19가 LV2、20～49가 LV3、50～199가 LV4、200 이상이 LV5입니다。
+PRINTL 해설을 알고 싶은 경험의 번호를 입력하거나、클릭해주세요。
+DRAWLINE
+;各表示
+FOR LOCAL, 0, 100
+	SIF EXPNAME:LOCAL != ""
+		PRINTFORMLC [{LOCAL, 2}] %EXPNAME:LOCAL%
+NEXT
+PRINTL 
+DRAWLINE
+PRINTLC [100]돌아간다
+
+$INPUT_LOOP
+INPUT
+SIF RESULT == 100
+	RETURN 0
+SIF RESULT < 0 || RESULT > 100
+	GOTO INPUT_LOOP
+SIF EXPNAME:RESULT ==""
+	GOTO INPUT_LOOP
+CALL DICTIONARY_EXP_DATA,RESULT
+GOTO PRINT_LIST
+;--------------------------------------------------
+;経験解説
+;--------------------------------------------------
+
+@GET_EXP_DATA, ARG
+#FUNCTIONS
+#DIMS L_RESULTS
+L_RESULTS = 
+SELECTCASE EXPNAME:ARG
+	CASE "Ｖ경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "조교 등으로 바기나를 얼마나 만져졌는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "그만큼 많은 횟수、질에 삽입되었다는 것이므로、")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "높으면 Ｖ계 커맨드를 실행했을 때 고통이 오르기 어려워집니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "또、「Ｖ감각」을 상승시키는 데 필요합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "당연하지만、[남자]의 캐릭터가 경험하는 일은 없습니다。")
+	CASE "Ａ경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "조교 등으로 애널을 얼마나 만져졌는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "그만큼 많은 횟수、항문에 삽입되었다는 것이므로、")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "높으면 Ａ계 커맨드를 실행했을 때 고통과 반감이 오르기 어려워집니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "또、「Ａ감각」을 상승시키는 데 필요합니다。")
+	CASE "절정경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "오르가즘을 몇 번 체험했는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "클리토리스나 바기나에 자극을 주어、절정시키면 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "강한 절정을 하거나、다중절정한 경우는 2 이상 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「봉사정신」을 상승시키는 것과、일부 소질을 획득하는 데 필요합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "또、주인이 「욕망」을 상승시키는 데 필요합니다。")
+	CASE "사정경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "성적인 자극을 받아 몇 번 사정했는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "한 번의 사정으로 대량의 정액을 낸 경우는、사정을 2회분 이상 행한 것으로 간주되어、")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "2 이상 획득하는 경우도 있습니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "높아지면 대상이 사정했을 때의 획득 소스가 변화합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "또、주인의 「욕망」 상승과 [절륜] 획득에 필요합니다。")
+	CASE "성교경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "성적인 행위를 몇 번 경험했는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "섹스계 커맨드로 삽입된 측이 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「섹스중독」을 상승시키는 데 필요합니다。")
+	CASE "질사경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "몇 번 안에 사정당했는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "피임하지 않고 질내사정당했을 때 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "한 번의 사정으로 대량의 정액을 낸 경우는、질사를 2회분 이상 행한 것으로 간주되어、")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "2 이상 획득하는 경우도 있습니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "질사경험을 획득한 턴은 옵션 설정에 따르지만、임신할 가능성이 있습니다。")
+	CASE "키스경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "키스를 몇 번 했는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「키스중독」을 상승시키는 데 필요합니다。")
+	CASE "요도경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "조교 등으로 요도를 얼마나 만져졌는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "그만큼 많이 요도에 삽입되었다는 것이므로、")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "높으면 요도 괴롭히기를 했을 때 고통과 반감이 오르기 어려워집니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "첫회에만 『이상경험』을 획득합니다。")
+	CASE "삽입경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "성적인 행위를 몇 번 경험했는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "Ｖ/Ａ경험을 획득했을 때、삽입한 측이 획득합니다。")
+	CASE "자위경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "자위를 몇 번 했는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "조교 중의 「자위」 커맨드 이외에도 조교 후의 이벤트 등에서도 획득하는 경우가 있습니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「자위중독」을 상승시키는 데 필요합니다。")
+	CASE "조교자위경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "조교 중、본인의 의도하지 않은 자위를 몇 번 했는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "자위경험과 비슷하지만 그 정의는 보다 좁고、조교에 의한 것뿐입니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "원칙적으로 조교 중의 「자위」나 그것에 관련된 커맨드로만 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「자위중독」을 상승시키는 데 필요합니다。")
+	CASE "정액경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "조교 등으로 정액이 몸에 묻은 횟수를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "한 번에 대량의 정액을 뒤집어쓴 경우는 2 이상 획득하는 경우도 있지만、")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "양이나 뿌린 부위에 따라서는 획득하지 않는 경우가 있습니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「봉사정신」과 「정액중독」을 상승시키는 데 필요합니다。")
+	CASE "봉사쾌락경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "주인에게 성적인 봉사를 하는 것에 쾌락을 느낀 경험을 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "봉사계 커맨드로 성적인 쾌락을 주면 획득하기 쉽습니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「봉사정신」을 상승시키거나、일부 소질을 획득시키는 데 필요합니다。")
+	CASE "펠라경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "입에 주인이나 조수의 페니스를 물고 봉사하는 「펠라치오」를 얼마나 했는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "그 이름대로、「펠라치오」나 관련된 커맨드로 획득하는 외에、")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "아침 이벤트 등에서도 획득하는 경우가 있습니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "일부 소질을 획득시키는 데 필요합니다。")
+	CASE "애정경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "얼마나 주인에게 강한 애정을 받고、자신도 애정을 느꼈는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "캐릭터가 연모계로 함락되어 있고、주인에게 조교받을 때 「펠라치오」 등으로 획득하는 외에、")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "아침과 밤의 이벤트 등에서도 획득하는 경우가 있습니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "[친애]를 획득시키는 것과、어떤 이벤트를 발생시키는 데 필요합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "또、주인이 「순종」을 상승시키는 데 필요합니다。")
+	CASE "고통쾌락경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "신체적 고통을 받는 것에 쾌락을 느낀 경험을 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "고통을 주는 커맨드로 성적인 쾌락을 주면 획득하기 쉽습니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「마조끼」를 상승시키거나、일부 소질을 획득시키는 데 필요합니다。")
+	CASE "방뇨경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "요도 등에 대한 자극으로 소변을 얼마나 냈는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "[오줌싸개버릇]이 있거나、「이뇨제」를 먹인 상태에서 Ｃ에 자극을 주거나、절정시키거나、")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「방뇨」를 실행하는 것으로 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "한 번의 방뇨로 대량의 소변을 지린 경우는、방뇨를 2회분 이상 행한 것으로 간주되어、")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "2 이상 획득하는 경우가 있습니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "통상은 [오줌싸개버릇]이나 「이뇨제」를 사용하지 않는 한 방뇨경험을 획득하는 일은 없습니다。")
+	CASE "가학쾌락경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "신체적 고통을 준 것에 쾌락을 느낀 경험을 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "대상이 고통쾌락경험을 획득했을 때 획득하기 쉽습니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「새드끼」를 상승시키거나、일부 소질을 획득시키는 데 필요합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "주인과 조수의 경우、높아지면 「새드끼」가 상승합니다。")
+	CASE "야외노출경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "야외플레이 등으로 노출한 경험을 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "주인이 「노출증」을 상승시키는 데 필요합니다。")
+	CASE "레즈경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "여성끼리의 성적인 플레이、레즈 플레이를 얼마나 했는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "여성끼리 조교했을 때나 조교 종료 후의 이벤트 등으로 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「레즈끼」와 「레즈중독」을 상승시키는 데 필요합니다。")
+	CASE "ＢＬ경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "남성끼리의 성적인 플레이、BL 플레이를 얼마나 했는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "남성끼리 조교했을 때나 조교 종료 후의 이벤트 등으로 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「ＢＬ끼」와 「ＢＬ중독」을 상승시키는 데 필요합니다。")
+	CASE "이상경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "트라우마가 될 정도의 강렬한 경험을 얼마나 받았는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "매우 하드한 조교나 비상식적인 행동을 시키는 것으로 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "여러 능력의 상승에 필요한 조건이 되어 있고、")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "이 경험이 적으면、상승시킬 수 없는 능력이 다수 존재하고、")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "또、수치에 따라 함락소질인 [연모]・[친애]・[복종]・[예속]・[음란]・[창부]의")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "획득 가능 여부가 변화합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "획득하는 조건에 대해서는 별항의 이상경험 획득 조건을 봐주세요。")
+	CASE "긴박경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "그 이름대로 긴박당한 경험을 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "주로 밧줄로 묶거나、촉수를 사용하는 것으로 획득시킬 수 있습니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "이 경험은 능력의 상승과는 관계없지만、")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "높으면 긴박당했을 때의 체력과 기력 감소가 적어집니다。")
+	CASE "Ｖ확장경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "바기나를 통상으로는 있을 수 없을 정도의 크기까지 억지로 넓혀진 것을 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "획득시키는 수단이 적고、통상의 플레이에서 볼 기회는 적을 것입니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「피스트퍽」 등의 신체에 매우 부담이 가는 플레이로 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "첫회에만 『이상경험』을 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "능력의 상승과는 관계없지만、")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "이 경험이 일정 이상 있는 것이、보다 하드한 V조교 커맨드의 실행 조건이 됩니다。")
+	CASE "Ａ확장경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "애널을 통상으로는 있을 수 없을 정도의 크기까지 억지로 넓혀진 것을 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "획득시키는 수단이 적고、통상의 플레이에서 볼 기회는 적을 것입니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「애널피스트」 등의 신체에 매우 부담이 가는 플레이로 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "첫회에만 『이상경험』을 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "능력의 상승과는 관계없지만、")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "이 경험이 일정 이상 있는 것이、보다 하드한 A조교 커맨드의 실행 조건이 됩니다。")
+	CASE "분유경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "가슴에 대한 자극으로 모유가 얼마나 분출했는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "[모유체질]을 가지고 있지 않은 한 획득하는 일은 없습니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "한 번의 분유에 대량의 모유를 낸 경우는、분유를 2회분 이상 행한 것으로 간주되어、")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "2 이상 획득하는 경우가 있습니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "높아지면 대상이 분유했을 때의 획득 소스가 변화합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「분유중독」을 상승시키는 데 필요합니다。")
+	CASE "촉수경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "얼마나 촉수에 의한 조교를 받았는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "기본적으로 촉수계 커맨드로 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "첫회에만 『이상경험』을 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "높아지면 체력과 기력의 감소가 적어지고、불쾌와 반감이 오르기 어려워집니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "페티시의 경향이 강하고、촉수를 싫어하는 분에게는 인연이 없는 경험일 것입니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「촉수중독」을 상승시키는 데 필요합니다。")
+	CASE "흡혈경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "그 이름대로、몇 번 피를 빨렸는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "현재 획득하는 수단과 커맨드는 존재하지 않습니다。")
+	CASE "수간경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "[짐승]형이나 [새]형의 캐릭터와 성교한 횟수를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "첫회에만 『이상경험』을 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「수간중독」을 상승시키는 데 필요합니다。")
+	CASE "출산경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "아이를 몇 명 낳았는지를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "옵션의 임신기능 설정과 출산기능이 [ON]이 아니면 획득하는 일은 없습니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "높으면 「황색사탕」을 사용했을 때의 스트레스를 억제하고、다태율과 다태 상한이 높아집니다。")
+	CASE "가사경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "가정의 여러 잡무를 행한 횟수를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「가사」나 식당에서 일하게 하면 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "높으면 그만큼 요리하는 것에 익숙해져 있다는 것이므로、")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "식당에서 일했을 때의 보수액이 높아집니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "또、「요리기능」을 상승시키는 데 필요합니다。")
+	CASE "촬영경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "비디오카메라、또는 카메라로 조교 풍경을 촬영한 횟수를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「비디오카메라」나 「카메라」를 사용하는 것으로 조교자 측이 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「촬영기능」을 상승시키는 데 필요합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "주인과 조수의 경우、높아지면 능력 「촬영기능」이 상승합니다。")
+	CASE "피사경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "비디오카메라、또는 카메라로 조교 풍경을 촬영당한 횟수를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「비디오카메라」나 「카메라」를 사용하는 것으로 대상 측이 획득합니다。")
+	CASE "가창경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "노래를 부른 횟수를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「노래연습」과 콘서트와 집단 라이브를 행하면 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "높으면 노래하는 것에 익숙해졌다는 것이 되어、콘서트와 집단 라이브의 보수액이 높아집니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "또、「가창기능」을 상승시키는 데 필요합니다。")
+	CASE "훈련경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "전투훈련을 행한 횟수를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「기초훈련」으로 획득합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "[비전투원]에게 전투소질을 획득시켜、싸울 수 있게 하는 데 필요합니다。")
+	CASE "조교경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "조교를 행했거나 받은 횟수입니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "주인과 조수의 경우、높아지면 「기교」가 상승합니다。")
+	CASE "외식노역경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "식당에서 일한 횟수를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "높을수록 손님을 만족시키기 쉬워집니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "또、주인이 「요리기능」을 상승시키는 데 필요합니다。")
+	CASE "매춘경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "매춘을 행한 횟수를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "높을수록 손님을 만족시키기 쉬워집니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "주인이 「노출증」을 상승시키는 것과、[음란]과 [창부]의 소질을 획득하는 데 필요합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "주인의 이 경험이 일정 이상 있는 것이、밤의(여)왕END와 타락END에 도달하는 조건입니다。")
+	CASE "렌탈경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "렌탈된 횟수를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "높을수록 손님을 만족시키기 쉬워집니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "횟수가 늘어나면 장기간의 렌탈이 가능해집니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "또、주인이 이 경험을 획득하는 일은 없습니다。")
+	CASE "라이브경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "콘서트를 행한 횟수를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "높을수록 콘서트와 집단 라이브의 보수액이 높아집니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "주인의 이 경험이 일정 이상 있는 것이、아이돌END에 도달하는 조건입니다。")
+	CASE "변기경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "공중변기로 사용된 횟수를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "높을수록 손님을 만족시키기 쉬워집니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "또、주인이 [음란]과 [창부]의 소질을 획득하는 데 필요합니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "주인의 이 경험이 일정 이상 있는 것이、타락END에 도달하는 조건입니다。")
+	CASE "ＴＳ경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「무지개색사탕」이나 「전생의비약」으로 성전환한 횟수를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "첫회에만 『이상경험』을 획득합니다。")
+	CASE "윤간경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "윤간당한 횟수를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "「윤간중독」을 상승시키는 데 필요합니다。")
+	CASE "매각경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "매각된 횟수를 나타냅니다。")
+	CASE "바람경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "바람피운 횟수를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "주로 NTR 이벤트로 획득합니다。")
+	CASE "합체경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "악마합체한 횟수를 나타냅니다。")
+	CASE "교류경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "교류한 횟수를 나타냅니다。")
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "집회나 교류를 행하면 획득합니다。")
+	CASE "주인과의교류경험"
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "주인과 교류한 횟수를 나타냅니다。")
+	CASEELSE
+		L_RESULTS '= ADD_SPLIT(L_RESULTS, UNICODE(0x000D), "아직 해설이 작성되지 않았습니다")
+ENDSELECT
+RETURNF L_RESULTS
+
+@DICTIONARY_EXP_DATA, ARG
+PRINTFORML 【%EXPNAME:ARG%】
+CALL PRINTFORM_LF, GET_EXP_DATA(ARG), "w"
+;=============================================================================
+;用語辞典――珠
+;=============================================================================
+;--------------------------------------------------
+;珠解説メインページ
+;--------------------------------------------------
+@DICTIONARY_JUEL_MAIN
+$PRINT_LIST
+DRAWLINE
+PRINTL 「구슬」에 관한 해설입니다。
+PRINTL 《》로 둘러싸인 것은 그 능력을 올리는 데 그 구슬밖에 수단이 없다는 것을 나타냅니다。
+PRINTL 해설을 알고 싶은 구슬의 번호를 입력하거나、클릭해주세요。
+DRAWLINE
+;各表示
+FOR LOCAL, 0, 199
+	IF PALAMNAME:LOCAL != ""
+		IF LOCAL >= 100
+			PRINTFORMLC [{LOCAL}]%PALAMNAME:LOCAL%의 구슬
+		ELSE
+			PRINTFORMLC [{LOCAL, 2}] %PALAMNAME:LOCAL%의 구슬
+		ENDIF
+	ENDIF
+NEXT
+PRINTL 
+DRAWLINE
+PRINTLC [200]돌아간다
+
+$INPUT_LOOP
+INPUT
+SIF RESULT == 200
+	RETURN 0
+SIF RESULT < 0 || RESULT > 200
+	GOTO INPUT_LOOP
+SIF PALAMNAME:RESULT ==""
+	GOTO INPUT_LOOP
+CALL DICTIONARY_PALAM_DATA,RESULT
+GOTO PRINT_LIST
+;--------------------------------------------------
+;珠解説
+;--------------------------------------------------
+@DICTIONARY_PALAM_DATA,ARG
+PRINTFORML 【%PALAMNAME:ARG%의 구슬】
+SELECTCASE PALAMNAME:ARG
+	CASE "쾌Ｃ"
+		PRINTL 클리토리스나 페니스 등에 쾌감을 받아 획득하는 구슬입니다。
+		PRINTL 《Ｃ감각》・레즈끼・자위중독・레즈중독・
+		PRINTL ＢＬ끼・ＢＬ중독의 상승에 필요합니다。
+		PRINTW 조교에서는 쾌Ｃ의 소스에서 변환됩니다。
+	CASE "쾌Ｖ"
+		PRINTL 바기나에 쾌감을 받아 획득하는 구슬입니다。바기나가 있는 [여자]만 획득합니다。
+		PRINTL 《Ｖ감각》・섹스중독・수간중독・촉수중독・윤간중독의 상승에 필요합니다。
+		PRINTW 조교에서는 쾌Ｖ의 소스에서 변환됩니다。
+	CASE "쾌Ａ"
+		PRINTL 아누스에 쾌감을 받아 획득하는 구슬입니다。
+		PRINTL 《Ａ감각》・섹스중독・수간중독・촉수중독・윤간중독의 상승에 필요합니다。
+		PRINTW 조교에서는 쾌Ａ의 소스에서 변환됩니다。
+	CASE "쾌Ｂ"
+		PRINTL 유방에 쾌감을 받아 획득하는 구슬로、[남자]는 획득량이 적습니다。
+		PRINTL 《Ｂ감각》과 분유중독의 상승에 필요합니다。
+		PRINTW 조교에서는 쾌Ｂ의 소스에서 변환됩니다。
+	CASE "윤활"
+		PRINTL 얼마나 젖었는지를 나타내는 구슬이지만、실제로 구슬로서 획득하는 일은 없습니다。
+		PRINTL 윤활은 V계・A계・요도자극계 조교 커맨드의 실행하기 쉬운 정도와
+		PRINTL 획득하는 소스에 영향을 줍니다。
+		PRINTW 조교에서는 액체의 소스에서 변환됩니다。
+	CASE "복종"
+		PRINTL 주인에 대해 공손하게 따른다는 심리를 느낌으로써 획득하는 구슬입니다。
+		PRINTL 순종・봉사정신・《키스중독》의 상승에 필요합니다。
+		PRINTW 조교에서는 정애・공순・중독충족・공순의 소스에서 변환됩니다。
+	CASE "욕정"
+		PRINTL 성적으로 욕정해버린 경우에 획득하는 구슬입니다。
+		PRINTL 순종・욕망・새드끼・마조끼・레즈끼・자위중독・정액중독・레즈중독・섹스중독・
+		PRINTL 분유중독・ＢＬ끼・ＢＬ중독・수간중독・촉수중독・윤간중독의 상승에 필요합니다。
+		PRINTL 조교에서는 쾌Ｃ・쾌Ｖ・쾌Ａ・쾌Ｂ・정애・
+		PRINTW 중독충족・욕정・노출의 소스에서 변환됩니다。
+	CASE "굴복"
+		PRINTL 주인에 대해 저항하는 마음이 꺾여버린 심리를 느낌으로써 획득하는 구슬입니다。
+		PRINTL 순종・봉사정신・마조끼・레즈끼・정액중독・레즈중독・섹스중독・
+		PRINTL 분유중독・ＢＬ끼・ＢＬ중독・수간중독・촉수중독・윤간중독의 상승에 필요합니다。
+		PRINTL 또、《반발각인》의 LV다운과 소거에 필요합니다。
+		PRINTW 조교에서는 굴종의 소스에서 변환됩니다。
+	CASE "습득"
+		PRINTL 성조교든、다른 생활적인 일이든、무언가에 숙련된 경우에
+		PRINTL 획득하는 구슬입니다。즉、가사나 노래의 연습 등에서도 획득합니다。
+		PRINTL 기교・봉사정신・새드끼・《요리기능》・《촬영기능》・《가창기능》의 상승에 필요합니다。
+		PRINTW 조교에서는 성행동의 소스에서 변환됩니다。
+	CASE "치정"
+		PRINTL 무언가 부끄럽다고 생각한 심리를 느낌으로써 획득하는 구슬입니다。
+		PRINTL 《노출증》과 자위중독의 상승에 필요합니다。
+		PRINTW 조교에서는 노출의 소스에서 변환됩니다。
+	CASE "고통"
+		PRINTL 무언가 괴로움이나 아픔을 느낌으로써 획득하는 구슬입니다。
+		PRINTL 마조끼의 상승에 필요합니다。
+		PRINTW 조교에서는 아픔의 소스에서 변환됩니다。
+	CASE "공포"
+		PRINTL 무언가 공포를 느낌으로써 획득하는 구슬입니다。
+		PRINTL 순종의 상승에 필요합니다。
+		PRINTW 조교에서는 아픔과 무서움의 소스에서 변환됩니다。
+	CASE "반감"
+		PRINTL 주인에 대해 무언가 반감을 느낌으로써 획득하는 구슬이지만、
+		PRINTL 이 구슬은 바로 부정의 구슬로 변환됩니다。
+		PRINTW 조교에서는 일탈과 반감의 소스에서 변환됩니다。
+	CASE "불쾌"
+		PRINTL 무언가 불쾌함을 느낌으로써 획득하는 구슬이지만、
+		PRINTL 이 구슬은 바로 부정의 구슬로 변환됩니다。
+		PRINTW 조교에서는 불결의 소스에서 변환됩니다。
+	CASE "억울"
+		PRINTL 자신에 관해 자기혐오를 느끼거나、
+		PRINTL 울적한 기분을 느끼거나 함으로써 획득하는 구슬이지만、
+		PRINTL 이 구슬은 바로 부정의 구슬로 변환됩니다。
+		PRINTW 조교에서는 울결의 소스에서 변환됩니다。
+	CASE "부정"
+		PRINTL 무언가 부정적인 일이 있으면 획득하는 구슬입니다。
+		PRINTL 또、반감・불쾌・억울의 구슬에서도 이 구슬로 변환되어 쌓입니다。
+		PRINTL 능력 상승 때 공순・욕정・굴복・치정의 구슬을 상쇄하여 감소시키는
+		PRINTL 것으로 능력 상승의 방해가 됩니다。
+		PRINTW 조교에서는 반감・불쾌・억울의 각 구슬 해설을 참조해주세요。
+	CASEELSE
+		PRINTW 아직 해설이 작성되지 않았습니다
+ENDSELECT
+RETURN
+;=============================================================================
+;用語辞典――その他数値
+;=============================================================================
+;--------------------------------------------------
+;その他数値解説
+;--------------------------------------------------
+@DICTIONARY_OTHER_MAIN
+$PRINT_LIST
+DRAWLINE
+PRINTL 능력이나 각인이나 경험이나 구슬 이외의 수치에 관한 해설입니다。
+PRINTL 해설을 알고 싶은 수치의 번호를 입력하거나、클릭해주세요。
+DRAWLINE
+	PRINTLC [ 0] 체력
+	PRINTLC [ 1] 기력
+	PRINTLC [ 2] 의존도
+	PRINTLC [ 3] 사정게이지
+	PRINTLC [ 4] 모유게이지
+	PRINTLC [ 5] 절정게이지
+	PRINTLC [ 6] 소스
+	PRINTLC [ 7] 파라미터
+	PRINTLC [ 8] 스트레스
+	PRINTLC [ 9] ￥
+	PRINTLC [10] 마카
+	PRINTLC [11] COMP용량
+	PRINTLC [12] 동료마 스톡
+	PRINTLC [13] 명성
+	PRINTLC [14] 조교사명성
+	PRINTLC [15] 조직공헌도
+	PRINTLC [16] 투기장명성
+	PRINTLC [17] 노점/식당인기
+	PRINTLC [18] 숙박업소/창관인기
+	PRINTLC [19] 요리인기
+	PRINTLC [20] 매춘인기
+	PRINTLC [21] 렌탈인기
+	PRINTLC [22] 아이돌인기
+	PRINTLC [23] 그룹인기
+	PRINTLC [24] 변기인기
+	PRINTLC [25] 극장인기
+	PRINTLC [26] 촉수에너지
+PRINTL
+DRAWLINE
+PRINTLC [1000]돌아간다
+$INPUT_LOOP
+INPUT
+SELECTCASE RESULT
+	CASE 1000
+		RETURN 0
+	CASE 0
+		PRINTL 〔체력〕
+		PRINTL 그 캐릭터의 체력을 나타냅니다。
+		PRINTL 이것이 0이 되면 기절해버리고、순종이 1 저하하고、잠시 체력이 회복하지 않게 됩니다。
+		PRINTL 동료마강화로 최대치를 증가시킬 수 있습니다。
+		PRINTW 또、조교 횟수의 감소와 휴식의 실행、턴 엔드 시에 회복합니다。소질에 따라 회복량이 증감합니다。
+	CASE 1
+		PRINTL 〔기력〕
+		PRINTL 그 캐릭터의 기력을 나타냅니다。
+		PRINTL 이것이 0이 되면、체력의 감소량이 크게 증가하고、파라미터가 오르기 어려워집니다。
+		PRINTL 동료마강화로 최대치를 증가시킬 수 있습니다。
+		PRINTW 또、조교 횟수의 감소와 휴식의 실행、턴 엔드 시에 최대까지 회복합니다。
+	CASE 2
+		PRINTL 〔의존도〕
+		PRINTL 그 캐릭터가 얼마나 주인에게 의존하고 있는지를 나타냅니다。
+		PRINTL [사토리（소질）]가 없으면 수치는 알 수 없지만、조교에 의해 증감합니다。
+		PRINTL 연모계와 복종계의 함락에 관계되는 수치입니다。
+		PRINTL 대상의 능력과 소질、주인의 일부 소질에 따라 증감량이 변화합니다。
+		PRINTL 일정 수치 이상、이하이면 소스에 수정이 걸리게 됩니다。
+		PRINTL 증가하는지、감소하는지는 실행한 커맨드에 따라 정해져 있습니다。
+		PRINTW [붕괴]해 있으면 변화하지 않게 됩니다。 
+	CASE 3
+		PRINTL 〔사정게이지〕
+		PRINTL 그 캐릭터가 앞으로 어느 정도면 사정하는지를 나타냅니다。
+		PRINTL 게이지가 최대에 달하면 어떠한 이유로 멈춰져 있지 않은 한 사정합니다。
+		PRINTL 즉、이 게이지의 상한이 적을수록 사정하기 쉽습니다。
+		PRINTL 당연히、사정할 수 있는 페니스가 없는 캐릭터에게는 관계 없는 게이지입니다。
+		PRINTL 또、대상만 사정에는 체력과 기력의 감소가 동반되는 것에도 주의해주세요。
+		PRINTW 소질이나 능력에 따라 오르기 쉬운 정도와 상한이 변화합니다。 
+	CASE 4
+		PRINTL 〔모유게이지〕
+		PRINTL 그 캐릭터가 앞으로 어느 정도면 분유하는지를 나타냅니다。
+		PRINTL 게이지가 최대에 달하면 어떠한 이유로 멈춰져 있지 않은 한 분유합니다。
+		PRINTL 즉、이 게이지의 상한이 적을수록 분유하기 쉽습니다。
+		PRINTL 당연히、[모유체질]인 [여자] 이외의 캐릭터에게는 관계 없는 게이지입니다。
+		PRINTL 또、대상만 분유에는 체력과 기력의 감소가 동반되는 것에도 주의해주세요。
+		PRINTW 소질이나 능력에 따라 오르기 쉬운 정도가 변화합니다。 
+	CASE 5
+		PRINTL 〔절정게이지〕
+		PRINTL 그 캐릭터가 앞으로 어느 정도면 절정하는지를 나타냅니다。
+		PRINTL 게이지가 최대에 달하면 어떠한 이유로 멈춰져 있지 않은 한 절정합니다。
+		PRINTL 즉、이 게이지의 상한이 적을수록 절정하기 쉽습니다。
+		PRINTW 조교자 측만 가지고 있습니다。
+	CASE 6
+		PRINTL 〔소스〕
+		PRINTL 조교 중에、커맨드를 실행했을 때 대상이 획득하는 것으로、
+		PRINTL 커맨드를 실행했을 때의 반응을 수치화한 것입니다。
+		PRINTL 획득한 소스는 그 턴 안에 파라미터로 변환됩니다。
+		PRINTL 또、많은 종류로 나뉘어 있습니다。자세한 것은 별항의 소스 해설을 봐주세요。
+		PRINTL 
+		PRINTL era 시리즈에서의 조교란、대상에게 유용한 소스를 주는 듯한
+		PRINTL 커맨드를 행하고、그 소스가 파라미터로 변환되고、
+		PRINTL 조교 종료 후에、그 파라미터의 양에 따라 각종 구슬로 변환되고、
+		PRINTL 그 구슬을 소비함으로써、대상의 능력을 상승시키거나、
+		PRINTL 반발각인의 LV다운과 소거를 행하기 위해 행합니다。
+		PRINTL 
+		PRINTL 커맨드의 실행으로 획득하는 소스는 대상의 소질이나 상황에 따라 변화합니다。
+		PRINTW 어느 조교 소스가 어느 파라미터로 어느 정도의 비율로 변환되는지도 정해져 있습니다。
+	CASE 7
+		PRINTL 〔파라미터〕
+		PRINTL 조교 중에 각 캐릭터가 어느 정도의 상태가 되었는지를、수치로 나타낸 것으로、
+		PRINTL 대상뿐만 아니라 주인이나 조수에게도 존재합니다。
+		PRINTL 하지만、통상은 대상의 수치가 가장 중요하기 때문에、조교에서의 커맨드 입력 시에는、
+		PRINTL 반드시 대상의 현재 수치가 게이지와 함께 표시되어 있습니다。
+		PRINTL 
+		PRINTL 파라미터에는 역치가 존재하고 있어、이것을 넘으면 보다 많은 구슬을 입수할 수 있습니다。
+		PRINTL 커맨드 결과란에 표시되는 NEXT가 다음 역치입니다。
+		PRINTL 
+		PRINTL 대상의 파라미터는 조교를 종료했을 때 대응하는 구슬로 변환됩니다。
+		PRINTL 그 구슬을 모아가고、일정 이상이 되면 그것을 소비함으로써、
+		PRINTW 대상의 각종 능력의 상승과 반발각인의 LV다운과 소거가 가능해집니다。
+	CASE 8
+		PRINTL 〔스트레스〕
+		PRINTL 그 캐릭터가 얼마나 정신적으로 몰려 있는지를 나타냅니다。
+		PRINTL 체질변화약의 투여나 조교、노역 등으로 증가합니다。
+		PRINTL 체력이나 기력이 적어질 때까지 조교하거나 한 경우는、스트레스의 증가량이 높습니다。
+		PRINTL 이 수치가 100을 넘으면、캐릭터의 정신은 [붕괴]해버립니다。
+		PRINTL 단 충성도가 높으면 충성도가 감소하는 대신 [붕괴]하는 것을 회피할 수 있는 경우가 있습니다。
+		PRINTW 조교 횟수가 감소했을 때、휴식했을 때、턴 엔드했을 때 감소합니다。
+	CASE 9
+		PRINTL 〔￥〕
+		PRINTL 현재 사용할 수 있는 ￥을 나타냅니다。
+		PRINTL 콘서트나 집단 라이브、던전의 클리어나 의뢰의 달성 등으로 입수할 수 있습니다。
+		PRINTL 이것을 목표 이상으로 하는 것이 게임 목적 중 하나겠지요。
+		PRINTL 또、￥을 소비함으로써 쇼핑을 하거나 서비스를 받을 수 있습니다。
+		PRINTW 또한、0 이하가 되면 게임 오버가 됩니다。
+	CASE 10
+		PRINTL 〔마카〕
+		PRINTL 현재 소지하고 있는 마카를 나타냅니다。
+		PRINTL 캐릭터의 매각이나 노역 등으로 입수할 수 있습니다。
+		PRINTL ￥으로로 변환하거나 특수한 아이템과 교환할 수 있습니다。
+		PRINTW 또한、￥을 마카로 변환할 수는 없으므로 주의해주세요。
+	CASE 11
+		PRINTL 〔COMP용량〕
+		PRINTL COMP의 현재 사용하고 있는 용량과 최대용량을 나타냅니다。
+		PRINTL 용량은 인스톨 소프트를 ON으로 하는 데 사용하고、강력한 것일수록 용량을 많이 사용합니다。
+		PRINTW 숍의 COMP SMITH에서 늘릴 수 있습니다。
+	CASE 12
+		PRINTL 〔동료마 스톡〕
+		PRINTL 현재 몇 체의 동료마를 스톡하고 있는지、몇 체까지 스톡할 수 있는지를 나타냅니다。
+		PRINTW 처음은 8체까지지만、조직공헌 LV이 높아지면 최대 24체까지 스톡할 수 있게 됩니다。
+	CASE 13
+		PRINTL 〔명성〕
+		PRINTL 주인의 명성을 나타냅니다。
+		PRINTL 던전의 클리어나 의뢰의 달성 등으로 획득합니다。
+		PRINTW 이벤트의 발생조건에 관계되고、간부 END 후의 급료 액수에 영향합니다。
+	CASE 14
+		PRINTL 〔조교사명성〕
+		PRINTL 주인의 조교사로서의 명성을 나타냅니다。
+		PRINTL 캐릭터를 매각하면 획득합니다。
+		PRINTL 매각액이 높을수록 획득량이 늘어납니다。
+		PRINTW 이 수치가 일정 이상 있는 것이、조교사 END에 도달하는 조건입니다。
+	CASE 15
+		PRINTL 〔조직공헌도〕
+		PRINTL 주인이 얼마나 조직에 공헌하고 있는지를 나타냅니다。
+		PRINTL 납금하면 증가합니다。
+		PRINTW 이벤트의 발생조건과 END 조건에 관계되고、간부 END 후의 급료 액수에 영향합니다。
+	CASE 16
+		PRINTL 〔투기장명성〕
+		PRINTL 주인의 투기장에서의 명성을 나타냅니다。
+		PRINTL 투기장에서 승리하면 획득합니다。
+		PRINTW 투기장 상대의 출현조건에 관계됩니다。
+	CASE 17
+		PRINTL 〔노점/식당인기〕
+		PRINTL 주인의 가게 인기를 나타냅니다。
+		PRINTL 식당에서 일하게 해、객을 만족시키면 획득합니다。
+		PRINTL 높으면 객이 많이 오게 됩니다。
+		PRINTW 이 수치가 일정 이상 있는 것이、식당운영 END에 도달하는 조건입니다。
+	CASE 18
+		PRINTL 〔숙박업소/창관인기〕
+		PRINTL 주인의 가게 인기를 나타냅니다。
+		PRINTL 창관에서 일하게 해、객을 만족시키면 획득합니다。
+		PRINTL 높으면 객이 많이 오게 됩니다。
+		PRINTW 이 수치가 일정 이상 있는 것이、창관경영 END에 도달하는 조건입니다。
+	CASE 19
+		PRINTL 〔요리인기〕
+		PRINTL 그 캐릭터의 요리 인기를 나타냅니다。
+		PRINTL 식당에서 일하게 해、객을 만족시키면 획득합니다。
+		PRINTW 높으면 객이 많이 오게 됩니다。
+	CASE 20
+		PRINTL 〔매춘인기〕
+		PRINTL 그 캐릭터의 창관에서의 인기를 나타냅니다。
+		PRINTL 창관에서 일하게 해、객을 만족시키면 획득합니다。
+		PRINTL 높으면 객이 많이 오게 됩니다。
+		PRINTW 주인의 이 수치가 일정 이상 있는 것이、밤의 (여)왕 END에 도달하는 조건입니다。
+	CASE 21
+		PRINTL 〔렌탈인기〕
+		PRINTL 그 캐릭터의 렌탈에서의 인기를 나타냅니다。
+		PRINTW 캐릭터를 렌탈로 대출하면 획득합니다。
+	CASE 22
+		PRINTL 〔아이돌인기〕
+		PRINTL 그 캐릭터의 아이돌로서의 인기를 나타냅니다。
+		PRINTL 콘서트와 집단 라이브를 행하고、성공하면 획득합니다。
+		PRINTW 높으면 보수액의 상한이 증가합니다。
+	CASE 23
+		PRINTL 〔그룹인기〕
+		PRINTL 그룹의 인기를 나타냅니다。
+		PRINTL 집단 라이브를 행하고、성공하면 획득합니다。
+		PRINTW 높으면 보수액의 상한을 획득합니다。
+	CASE 24
+		PRINTL 〔변기인기〕
+		PRINTL 그 캐릭터의 공중변소에서의 인기를 나타냅니다。
+		PRINTL 공중변소에서 일하게 하면 획득합니다。
+		PRINTW 높으면 객이 많이 오게 됩니다。
+	CASE 25
+		PRINTL 〔극장인기〕
+		PRINTL 그 캐릭터의 스트립극장에서의 인기를 나타냅니다。
+		PRINTL 스트립극장에서 일하게 하면 획득합니다。
+		PRINTW 높으면 객이 많이 오게 됩니다。
+	CASE 26
+		PRINTL 〔촉수에너지〕
+		PRINTL 촉수가 얼마나 에너지를 모아두고 있는지를 나타냅니다。
+		PRINTL 촉수 LV를 올리는 것과 MAG를 캐릭터에게 주는 데 사용합니다。
+		PRINTL 캐릭터를 촉수에게 바치거나、조교 시에 MAG흡수를 ON으로 하고 촉수조교를 하면 획득할 수 있습니다。
+		PRINTW 조교로 획득하려면 대상에게 MAG가 필요합니다。
+	CASEELSE
+		GOTO PRINT_LIST
+ENDSELECT
+GOTO PRINT_LIST
+;=============================================================================
+;用語辞典――ソース
+;=============================================================================
+;--------------------------------------------------
+;ソース解説メインページ
+;--------------------------------------------------
+@DICTIONARY_SOURCE_MAIN
+$PRINT_LIST
+DRAWLINE
+PRINTL 「소스」에 관한 해설입니다。
+PRINTL 소스는 일반적으로、조교에서 조교대상이 획득하는 것으로、
+PRINTL 주인이나 조수가 획득하는 일은 없습니다。（그 경우는 직접 파라미터가 상하하거나、구슬로서 얻습니다。）
+PRINTL 획득된 소스는 그 턴 안에、파라미터를 상승시킵니다。
+PRINTL 이하의 각 소스 해설에서 ()로 둘러싸인 파라미터는
+PRINTL 소질이나 상황에 따라 상승하지 않는 경우가 있다는 것을 나타냅니다。
+PRINTL 해설을 알고 싶은 소스의 번호를 입력하거나、클릭해주세요。
+DRAWLINE
+;各表示
+FOR LOCAL, 0, 20
+	SIF SOURCENAME:LOCAL != ""
+		PRINTFORMLC [{LOCAL, 2}] %SOURCENAME:LOCAL%
+NEXT
+PRINTL 
+DRAWLINE
+PRINTLC [200]돌아간다
+
+$INPUT_LOOP
+INPUT
+SIF RESULT == 200
+	RETURN 0
+SIF RESULT < 0 || RESULT > 18
+	GOTO INPUT_LOOP
+
+CALL DICTIONARY_SOURCE_DATA,RESULT
+GOTO PRINT_LIST
+;--------------------------------------------------
+;ソース解説
+;--------------------------------------------------
+@DICTIONARY_SOURCE_DATA, ARG
+PRINTFORML 【%SOURCENAME:ARG%의 소스】
+SELECTCASE SOURCENAME:ARG
+	CASE "쾌Ｃ"
+		PRINTL 쾌감계 소스로、1번째로 먼저 처리됩니다。
+		PRINTL 소스 No.는 0번입니다。
+		PRINTL 쾌Ｃ・욕정・(억울)・(액체)의 파라 상승에 관계됩니다。
+		PRINTL 억울의 파라는 [쾌감을부정]을 가지고 있는 경우에만 상승합니다。
+		PRINTL 
+		PRINTL Ｃ감각과 욕망의 LV、현재의 욕정 파라미터 LV이 높을수록 획득량이 늘어납니다。
+		PRINTL 주인에 의한 조교로 의존도가 정방향으로 높아도 늘어납니다。
+		PRINTW 또、상성과 소질 등에 의한 수정을 받습니다。
+	CASE "쾌Ｖ"
+		PRINTL 쾌감계 소스로、2번째로 처리됩니다。
+		PRINTL 소스 No.는 1번입니다。
+		PRINTL 쾌Ｖ・욕정・(억울)・(액체)・(습득)의 파라 상승에 관계됩니다。
+		PRINTL 억울의 파라는 [쾌감을부정]을 가지고 있는 경우에만、
+		PRINTL 습득의 파라는 [소인체형]을 가지고 있는 경우에만 상승합니다。
+		PRINTL 
+		PRINTL Ｖ감각과 욕망의 LV・Ｖ경험・
+		PRINTL 현재의 윤활과 욕정 파라미터의 LV이 높을수록 획득량이 늘어납니다。
+		PRINTL 주인에 의한 조교로 의존도가 정방향으로 높아도 늘어납니다。
+		PRINTW 또、상성과 소질 등에 의한 수정을 받습니다。
+	CASE "쾌Ａ"
+		PRINTL 쾌감계 소스로、3번째로 처리됩니다。
+		PRINTL 소스 No.는 2번입니다。
+		PRINTL 쾌Ａ・욕정・(억울)・(액체)의 파라 상승에 관계됩니다。
+		PRINTL 억울의 파라는 [쾌감을부정]을 가지고 있는 경우에만 상승합니다。
+		PRINTL 
+		PRINTL Ａ감각과 욕망의 LV・Ａ경험・
+		PRINTL 현재의 윤활과 욕정 파라미터의 LV이 높을수록 획득량이 늘어납니다。
+		PRINTL 주인에 의한 조교로 의존도가 정방향으로 높아도 늘어납니다。
+		PRINTW 또、상성과 소질 등에 의한 수정을 받습니다。
+	CASE "쾌Ｂ"
+		PRINTL 쾌감계 소스로、4번째로 처리됩니다。
+		PRINTL 소스 No.는 3번입니다。
+		PRINTL 쾌Ｂ・욕정・(억울)・(액체)의 파라 상승에 관계됩니다。
+		PRINTL 억울의 파라는 [쾌감을부정]을 가지고 있는 경우에만 상승합니다。
+		PRINTL 
+		PRINTL Ｂ감각과 욕망의 LV、
+		PRINTL 현재의 욕정 파라미터의 LV이 높을수록 획득량이 늘어납니다。
+		PRINTL 주인에 의한 조교로 의존도가 정방향으로 높아도 늘어납니다。
+		PRINTW 또、상성과 소질 등에 의한 수정을 받습니다。
+	CASE "정애"
+		PRINTL 포지티브 소스로、5번째로 처리됩니다。
+		PRINTL 소스 No.는 4번입니다。
+		PRINTL 공순과 욕정의 파라 상승에 관계됩니다。
+		PRINTL 
+		PRINTL 순종과 욕망의 LV이 높을수록 획득량이 늘어납니다。
+		PRINTL 주인에 의한 조교로 의존도가 정방향으로 높아도 늘어납니다。
+		PRINTW 또、상성과 소질 등에 의한 수정을 받습니다。
+	CASE "성행위"
+		PRINTL 포지티브 소스로、6번째로 처리됩니다。
+		PRINTL 소스 No.는 5번입니다。
+		PRINTL 습득의 파라 상승에 관계됩니다。
+		PRINTL 
+		PRINTL 기교와 봉사정신의 LV이 높을수록 획득량이 늘어납니다。
+		PRINTW 또、상성과 소질 등에 의한 수정을 받습니다。
+	CASE "달성"
+		PRINTL 포지티브 소스로、7번째로 처리됩니다。
+		PRINTL 소스 No.는 6번입니다。
+		PRINTL 공순의 파라 상승에 관계됩니다。
+		PRINTL 
+		PRINTL 순종과 봉사정신의 LV이 높을수록 획득량이 늘어납니다。
+		PRINTW 또、상성과 소질 등에 의한 수정을 받습니다。
+	CASE "아픔"
+		PRINTL 포지티브 소스로、8번째로 처리됩니다。
+		PRINTL 소스 No.는 7번입니다。
+		PRINTL 고통・공포・(욕정)의 파라 상승에 관계됩니다。
+		PRINTL 욕정의 파라는 마조끼의 LV이 1 이상이면 상승합니다。
+		PRINTL 
+		PRINTL 마조끼의 LV이 높을수록 획득량이 늘어납니다。
+		PRINTW 또、상성과 소질 등에 의한 수정을 받습니다。
+	CASE "무서움"
+		PRINTL 포지티브 소스로、9번째로 처리됩니다。
+		PRINTL 소스 No.는 8번입니다。
+		PRINTL 공포의 파라 상승에 관계됩니다。
+		PRINTL 
+		PRINTL 순종의 LV이 높을수록 획득량이 늘어납니다。
+		PRINTL 주인에 의한 조교로 의존도가 부방향으로 높아도 늘어납니다。
+		PRINTW 또、상성과 소질 등에 의한 수정을 받습니다。
+	CASE "중독충족"
+		PRINTL 포지티브 소스로、10번째로 처리됩니다。
+		PRINTL 소스 No.는 9번입니다。
+		PRINTL 공순과 욕정의 파라 상승에 관계됩니다。
+		PRINTL 
+		PRINTL 욕망의 LV이 높을수록 획득량이 늘어납니다。
+		PRINTL 주인에 의한 조교로 의존도가 부방향으로 높아도 늘어납니다。
+		PRINTW 또、상성에 의한 수정을 받습니다。
+	CASE "액체"
+		PRINTL 포지티브 소스로、11번째로 처리됩니다。
+		PRINTL 소스 No.는 10번입니다。
+		PRINTL 윤활의 파라 상승에 관계됩니다。
+		PRINTL 
+		PRINTL 쾌C・쾌V・쾌A・쾌B의 파라 합계가 한 번에 100 이상 상승했다면、
+		PRINTL 그 20%가 액체의 소스에 가산됩니다。([남자] 캐릭터는 제외)
+		PRINTW 소질에 의한 수정을 받습니다。
+	CASE "욕정"
+		PRINTL 포지티브 소스로、12번째로 처리됩니다。
+		PRINTL 소스 No.는 11번입니다。
+		PRINTL 욕정의 파라 상승에 관계됩니다。
+		PRINTL 
+		PRINTL 욕망의 LV이 높을수록 획득량이 늘어납니다。
+		PRINTW 또、상성에 의한 수정을 받습니다。
+	CASE "공순"
+		PRINTL 포지티브 소스로、13번째로 처리됩니다。
+		PRINTL 소스 No.는 12번입니다。
+		PRINTL 공순의 파라 상승에 관계됩니다。
+		PRINTL 
+		PRINTL 순종의 LV이 높을수록 획득량이 늘어납니다。
+		PRINTW 또、상성에 의한 수정을 받습니다。
+	CASE "노출"
+		PRINTL 포지티브 소스로、14번째로 처리됩니다。
+		PRINTL 소스 No.는 13번입니다。
+		PRINTL 욕정과 치정의 파라 상승에 관계됩니다。
+		PRINTL 
+		PRINTL 노출증의 LV이 높을수록 획득량이 늘어나지만、현재의 치정 파라미터의 LV이 높으면 감소합니다。
+		PRINTL 윤활 파라의 상승량의 50%가 이 소스에 가산됩니다。단 액체의 소스 수치분은 빠집니다。
+		PRINTW 또、소질에 의한 수정을 받습니다。
+	CASE "굴종"
+		PRINTL 포지티브 소스로、15번째로 처리됩니다。
+		PRINTL 소스 No.는 14번입니다。
+		PRINTL 굴복의 파라 상승에 관계됩니다。
+		PRINTL 
+		PRINTL 순종과 봉사정신의 LV이 높을수록 획득량이 늘어납니다。
+		PRINTL 주인에 의한 조교로 의존도가 부방향으로 높아도 늘어납니다。
+		PRINTW 또、상성에 의한 수정을 받습니다。
+	CASE "불결"
+		PRINTL 네거티브 소스로、16번째로 처리됩니다。
+		PRINTL 소스 No.는 15번입니다。
+		PRINTL 불쾌의 파라 상승에 관계됩니다。
+		PRINTL 
+		PRINTL 순종의 LV이 높을수록 획득량이 감소합니다。
+		PRINTL 주인에 의한 조교로 의존도가 정방향으로 높아도 감소합니다。
+		PRINTW 소질 등에 의한 수정을 받습니다。
+	CASE "울굴"
+		PRINTL 네거티브 소스로、17번째로 처리됩니다。
+		PRINTL 소스 No.는 16번입니다。
+		PRINTL 억울의 파라 상승에 관계됩니다。
+		PRINTL [저항]이나 [억압]이 있으면 많은 커맨드에 이 소스가 추가됩니다。
+		PRINTL 
+		PRINTL 순종과 욕망의 LV이 높을수록 획득량이 감소합니다。
+		PRINTW 주인에 의한 조교로 의존도가 부방향으로 높아도 감소합니다。
+	CASE "일탈"
+		PRINTL 네거티브 소스로、18번째로 처리됩니다。
+		PRINTL 소스 No.는 17번입니다。
+		PRINTL 반감의 파라 상승에 관계됩니다。
+		PRINTL 
+		PRINTL 순종과 마조끼의 LV이 높을수록 획득량이 감소합니다。
+		PRINTL 주인에 의한 조교로 의존도가 정방향으로 높아도 감소합니다。
+		PRINTW 소질 등에 의한 수정을 받습니다。
+	CASE "반감"
+		PRINTL 네거티브 소스로、19번째로 처리됩니다。
+		PRINTL 소스 No.는 18번입니다。
+		PRINTL 반감의 파라 상승에 관계됩니다。
+		PRINTL 
+		PRINTL 순종・봉사정신・마조끼의 LV이 높을수록 획득량이 감소합니다。
+		PRINTW 주인에 의한 조교로 의존도가 부방향으로 높아도 감소합니다。
+	CASEELSE
+		PRINTW 아직 해설이 작성되지 않았습니다
+ENDSELECT
+RETURN

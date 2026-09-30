@@ -1,0 +1,601 @@
+﻿
+
+;====================
+;条件
+;====================
+@GET_COLOSSEUM_NAME_53
+#FUNCTIONS
+RESULTS_F '= "デビルハンター"
+RETURNF RESULTS_F
+
+@PLAYABLE_COLOSSEUM_53
+IF FLAG:투기장랭크 >= 5 && FLAG:투기장명성 >= 800 && 闘技場フラグ:53:0 == 0
+	RESULTS = 시합 랭크Ｘ　ＶＳ 데빌헌터
+	RETURN 1
+ELSEIF 闘技場フラグ:53:0 == 1
+	RESULTS = 시합 랭크Ｘ　ＶＳ 아버지의 힘을 원하는 자
+	RETURN 1
+ENDIF
+RETURN 0
+
+
+;====================
+;内容
+;====================
+@COLOSSEUM_53
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+CUSTOMDRAWLINE =
+FLAG:현던전 = [[ダンジョン:콜로세움던전]]
+FLAG:현M = 1
+FLAG:현X = 4
+FLAG:현Y = 6
+CALL MAKE_FLOOR, FLAG:현던전
+DA:4:4 = 4
+CALL FLOOR_ANALYZE
+CALL SHOW_FLOOR
+CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+IF 闘技場フラグ:53:0 == 0
+	CALL MESSAGE_WINDOW_D, , "＞이번 시합은 상대 쪽에서 지명한 모양이다"
+	CALL MESSAGE_WINDOW_D, "수수께끼의 남자", "악마가 아냐。그렇다고 인간 냄새도 안나고…과연"
+	CALL MESSAGE_WINDOW_D, , "＞링에는 붉은 코트를 몸에 걸치고、장대한 대검을 등에 멘 남자가 서 있었다"
+	CALL MESSAGE_WINDOW_D, "수수께끼의 남자", "만나서 반가운데。너도 그렇게 생각하지？"
+	CALL MESSAGE_WINDOW_D, "", @"＞등에 메고 있던 대검을 뽑아、%CALLNAME:MASTER%에게 겨누었다"
+	CALL MESSAGE_WINDOW_D, "수수께끼의 남자", "실력을 보도록 할까"
+	CALL MESSAGE_WINDOW_D, "", "＞마인 단테가 1명 나타났다！"
+	CUSTOMDRAWLINE =
+	WAIT
+	;
+	;ダンテLv80
+	CALL SET_ENEMY,9,[[キャラ:단테]],80,0,1
+	CFLAG:(CHARANUM-1):ＨＰ보정 += 9999
+	CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+	CFLAG:(CHARANUM-1):행동횟수 = 2
+	CFLAG:(CHARANUM-1):속도보정 += 20
+	BASE:(CHARANUM-1):지혜 += 10
+	BASE:(CHARANUM-1):마력 += 10
+	BASE:(CHARANUM-1):내구 += 10
+	BASE:(CHARANUM-1):속도 += 10
+	BASE:(CHARANUM-1):운 += 10
+	ABL:(CHARANUM-1):스킬7 = 129
+	ABL:(CHARANUM-1):스킬8 = 2418
+	EQUIP:(CHARANUM-1):검 = GETNUM(ITEM, "리벨리온")
+	EQUIP:(CHARANUM-1):총 = GETNUM(ITEM, "Ｅ＆Ｉ")
+	EQUIP:(CHARANUM-1):머리 = GETNUM(ITEM, "야크트헬름")
+	EQUIP:(CHARANUM-1):몸통 = GETNUM(ITEM, "야크트아머")
+	EQUIP:(CHARANUM-1):팔 = GETNUM(ITEM, "야크트글러브")
+	EQUIP:(CHARANUM-1):발 = GETNUM(ITEM, "야크트레그")
+	CSTR:(CHARANUM-1):사고패턴 = 3503
+	CALL SYNC_STATUS, (CHARANUM-1)
+	CALL HEALTH_CHARA, (CHARANUM-1)
+	CALL BATTLE_START
+	CUSTOMDRAWLINE =
+	CALL MESSAGE_WINDOW_D, , "＞격렬한 공방 끝에 먼저 물러선 것은 남자 쪽이었다"
+	CALL MESSAGE_WINDOW_D, "수수께끼의 남자", "나쁘지 않아…마음에 들었다고"
+	IF ABL:MASTER:0 == 0
+		CALL MESSAGE_WINDOW_D, "수수께끼의 남자", "악마를 죽이라는 의뢰였었는데……오호라/목숨을 노림받을 만한 뭔가가 있는 것 같군"
+	ELSE
+		CALL MESSAGE_WINDOW_D, "수수께끼의 남자", "겉모습은 인간이지만……오호라/완전히 인간이란 것도 아닌 것 같군"
+	ENDIF
+	CALL MESSAGE_WINDOW_D, "", @"＞%조사처리(CALLNAME:MASTER,"는")% 남자에게 대체 누구냐고 물었다"
+	CALL MESSAGE_WINDOW_D, "수수께끼의 남자", "내 이름은 단테。소박한 장사를 하고 있지/데빌 헌터란 걸 말야"
+	CALL MESSAGE_WINDOW_D, "단테", "어느 노신사의 의뢰로/널 사냥하러 왔다만…"
+	CALL MESSAGE_WINDOW_D, , "＞단테는 다시 대검을 겨누었다"
+	CALL MESSAGE_WINDOW_D, "단테", "……아무렴 어때"
+	CALL MESSAGE_WINDOW_D, "단테", "일단 지금의 승부는 접자고/영감의 속셈이 신경 쓰여/조사 좀 해볼 필요도 있을 성 싶으니 말이지"
+	CALL MESSAGE_WINDOW_D, "단테", "뭐……상황과 사정에 따라서는/한 번 더 만날 수도 있겠지"
+	CALL MESSAGE_WINDOW_D, "단테", "…그때까지 힘껏 살라고/너를 죽이는건 나일지도 모르잖아？"
+	CALL MESSAGE_WINDOW_D, "", @"＞단테는 대검을 원래 자리로 되돌리고 %CALLNAME:MASTER%에 등을 돌렸다/%CALLNAME:MASTER%에게 손을 흔들며 그대로 가버렸다。링을 떠나려는 모양이다"
+	CALL MESSAGE_WINDOW_D, , "＞만류하겠습니까？"
+	CALL INPUT_YN_D
+		IF RESULT == 0
+		CALL MESSAGE_WINDOW_D, "단테", "……날 이만큼 High하게 한 너라면/영감의 속을 까발릴 수 있을지도 모르지/죽이기엔 아깝군……힘을 빌려주지"
+		CALL MESSAGE_WINDOW_D, "", @"＞단테는 %CALLNAME:MASTER% 쪽으로 돌아왔다"
+		CALL MESSAGE_WINDOW_D, "단테", "바로 비즈니스 이야기로 가지/눈알이 튀어나올 수준의 요금을 청구해도 좋지만……넌 특별 취급하마/동전으로 정하자고"
+		CALL MESSAGE_WINDOW_D, , "＞어느 새 단테의 손에 동전이 있었다"
+		CALL MESSAGE_WINDOW_D, "단테", "……앞이냐 뒤냐/네가 이기면 １달러, 아니, ￥이었지? １￥이면 돼"
+		CALL MESSAGE_WINDOW_D, "단테", "만약 네가 지면……그렇지, 네가 가진 돈을 딱 나누자고"
+		CALL MESSAGE_WINDOW_D, "단테", "자, 어느 쪽에 걸겠어？"
+		CALL INPUT_SELECT_D("[1] 앞/[2] 뒤")
+			IF RESULT == 1
+				CALL MESSAGE_WINDOW_D, , "＞동전은 앞이었다"
+				CALL MESSAGE_WINDOW_D, "단테", "…앞이군。운 좋은데, 너/…그럼 특별가격１￥으로 봐주지"
+				CALL MESSAGE_WINDOW_D, "", @"＞%조사처리(CALLNAME:MASTER,"는")% 단테에게 １￥을 지불했다"
+				MONEY -= 1
+			ELSE
+				CALL MESSAGE_WINDOW_D, , "＞동전은 앞이었다"
+				CALL MESSAGE_WINDOW_D, "단테", "…앞이군。내 승리다/…나도 재수가 없는 편이지만, 너도 상당하구만"
+				CALL MESSAGE_WINDOW_D, "", @"＞%조사처리(CALLNAME:MASTER,"는")% 단테에게 수중에 있던 ￥을 절반 지불했다"
+				MONEY = MONEY / 2
+			ENDIF
+		CALL MESSAGE_WINDOW_D, "단테", "자, 오늘부터 네가 내 의뢰주다/…네 이름은？"
+		CALL MESSAGE_WINDOW_D, "", @"＞%조사처리(CALLNAME:MASTER,"는")% 이름을 말했다"
+		CALL MESSAGE_WINDOW_D, "단테", @"오케이 %CALLNAME:MASTER%/지옥의 마왕한테 인사라도 하러 갈까/선물로 부하 목이라도 들고서 말야"
+		;CALL MESSAGE_WINDOW_D, "ダンテ", "見せてもらおうか"
+		;CALL MESSAGE_WINDOW_D, "ダンテ", "神と悪魔の最終決戦とやらを"
+		CALL MESSAGE_WINDOW_D, "", @"＞%조사처리(CALLNAME:MASTER,"는")% 단테와 함께 링을 뒤로했다"
+		CALL MESSAGE_WINDOW_D, , "＞단테가 동료마로 들어왔다"
+		CALL ADD_NEW_COMPANION, [[キャラ:단테]],500
+		ELSE
+		CALL MESSAGE_WINDOW_D, , "＞단테의 모습이 사라졌다"
+		CALL MESSAGE_WINDOW_D, "", @"＞%조사처리(CALLNAME:MASTER,"는")% 링을 뒤로했다"
+		ENDIF
+	闘技場フラグ:53:0 = 1
+	FLAG:단테격파 += 1
+ELSEIF  闘技場フラグ:53:0 == 1
+	CALL MESSAGE_WINDOW_D, , "＞이번 경기는 상대편에서 지명이 있었던 것 같다."
+	CALL MESSAGE_WINDOW_D, "수수께끼의 사나이", "왔는가…"
+	CALL MESSAGE_WINDOW_D, , "＞링에는 파란색 코트를 입고、왼손에 칼집에 든 칼을 든 남자가 서 있었다"
+	CALL MESSAGE_WINDOW_D, "수수께끼의 사나이", @"네놈이 %CALLNAME:MASTER%인가、원한은 없지만 너와 싸우라는 지시를 받고 왔다…"
+	CALL MESSAGE_WINDOW_D, "", @"＞오른손으로 칼자루를 들고 전투 태세에 들어갔다"
+	CALL MESSAGE_WINDOW_D, "수수께끼의 사나이", "네 실력이 어떤 건지…/솜씨 좀 볼까！"
+	CALL MESSAGE_WINDOW_D, "", "＞마인 버질이 나타났다！"
+	CUSTOMDRAWLINE =
+	WAIT
+	;
+	;ダンテLv80
+	CALL SET_ENEMY,9,[[キャラ:버질]],80,0,1
+	CFLAG:(CHARANUM-1):ＨＰ보정 += 9999
+	CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+	CFLAG:(CHARANUM-1):행동횟수 = 3
+	CFLAG:(CHARANUM-1):속도보정 += 20
+	BASE:(CHARANUM-1):지혜 += 10
+	BASE:(CHARANUM-1):마력 += 10
+	BASE:(CHARANUM-1):내구 += 10
+	BASE:(CHARANUM-1):속도 += 10
+	BASE:(CHARANUM-1):운 += 10
+	ABL:(CHARANUM-1):스킬1 = 2483
+	;ABL:(CHARANUM-1):스킬2 = 
+	;ABL:(CHARANUM-1):스킬3 = 
+	;ABL:(CHARANUM-1):스킬4 = 
+	;ABL:(CHARANUM-1):스킬5 = 
+	;ABL:(CHARANUM-1):스킬6 = 
+	ABL:(CHARANUM-1):스킬7 = 3601
+	ABL:(CHARANUM-1):스킬8 = 3606
+	ABL:(CHARANUM-1):스킬9 = 2485
+	ABL:(CHARANUM-1):스킬10 = 2419
+	ABL:(CHARANUM-1):스킬11 = 2449
+	ABL:(CHARANUM-1):스킬12 = 2448
+	EQUIP:(CHARANUM-1):검 = GETNUM(ITEM, "염마도")
+	EQUIP:(CHARANUM-1):총 = 0
+	EQUIP:(CHARANUM-1):머리 = GETNUM(ITEM, "야크트헬름")
+	EQUIP:(CHARANUM-1):몸통 = GETNUM(ITEM, "야크트아머")
+	EQUIP:(CHARANUM-1):팔 = GETNUM(ITEM, "야크트글러브")
+	EQUIP:(CHARANUM-1):발 = GETNUM(ITEM, "야크트레그")
+	CSTR:(CHARANUM-1):사고패턴 = CL53バージル
+	CALL SYNC_STATUS, (CHARANUM-1)
+	CALL HEALTH_CHARA, (CHARANUM-1)
+	CALL BATTLE_START
+	CUSTOMDRAWLINE =
+	CALL MESSAGE_WINDOW_D, , "＞격렬한 공방 끝에 먼저 물러선 것은 남자 쪽이었다"
+	CALL MESSAGE_WINDOW_D, "수수께끼의 사나이", "흥、과연 그 노신사가 말한 대로인가"
+	CALL MESSAGE_WINDOW_D, "", @"＞%CALLNAME:MASTER%는 사내에게 누구인지 물었다"
+	CALL MESSAGE_WINDOW_D, "수수께끼의 사나이", "나는 버질/이유가 있어서 마계에 있었고…"
+	CALL MESSAGE_WINDOW_D, "버질", "어떤 노신사의 도움을 받았던 터라/그 보답으로 너와 싸울 것을 부탁받았다"
+	CALL MESSAGE_WINDOW_D, "버질", "영감은 한번만 싸우라는 말도 했어/네놈을 죽이라고는 말하지 않았으니까"
+	CALL MESSAGE_WINDOW_D, "버질", "이제 여기에는 볼일이 없구만…"
+	CALL MESSAGE_WINDOW_D, "", @"＞버질은 칼을 칼집에 넣고、%CALLNAME:MASTER%에게 등을 돌리고 그대로 가버렸다。/링을 뒤로 하는 것 같다"
+	CALL MESSAGE_WINDOW_D, , "＞만류합니까？"
+	CALL INPUT_YN_D
+	IF RESULT == 0
+		CALL MESSAGE_WINDOW_D, "버질", "글쎄 / 그 영감、왜 나를 부활시켰을까 / 궁금했으니까 말야"
+		CALL MESSAGE_WINDOW_D, "", @"＞버질은 %CALLNAME:MASTER%에게로 돌아왔다"
+		CALL MESSAGE_WINDOW_D, "버질", "네 녀석과 함께 있으면 그 수수께끼를 알 수 있을지도/"
+		CALL MESSAGE_WINDOW_D, "버질", "게다가  너와 함께 싸우는 것도 나쁘지 않을 것 같고…/…네놈의 이름은？"
+		CALL MESSAGE_WINDOW_D, "", @"＞%CALLNAME:MASTER%은 이름을 말했다"
+		CALL MESSAGE_WINDOW_D, "버질", @"%CALLNAME:MASTER%、그 영감의 가면을 벗기러 가볼까"
+		CALL MESSAGE_WINDOW_D, "", @"＞%CALLNAME:MASTER%은 버질과 함께 링을 뒤로 했다"
+		CALL MESSAGE_WINDOW_D, , "＞버질이 동료 악마가 되었다"
+		CALL ADD_NEW_COMPANION,[[キャラ:버질]],500
+	ELSE
+		CALL MESSAGE_WINDOW_D, , "＞버질의 모습은 보이지 않게 되었다"
+		CALL MESSAGE_WINDOW_D, "", @"＞%CALLNAME:MASTER%는 링을 뒤로 했다."
+	ENDIF
+	闘技場フラグ:53:0 = 2
+ENDIF
+CUSTOMDRAWLINE =
+WAIT
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+PRINTW ￥500000을 상금으로 받고、명성 500을 얻었다
+MONEY += 500000
+FLAG:명성 += 500
+FLAG:투기장명성 += 500
+CALL RESET_ANNOUNCE_FLAG
+
+FOR LOCAL,0,CHARANUM
+	CALL HEALTH_CHARA,LOCAL
+NEXT
+
+
+;=======================================================================
+;ダンテパターン
+;=======================================================================
+;ＨＰ減少によりパターン変更
+;原作通りこちらの強化系には一切反応しない
+;いろいろな方を参考にさせてもらっています
+@EVENT_BATTLE_TURNEND_COLOSSEUM53
+#LOCALSIZE 2
+IF FINDCHARA_ENEMY([[キャラ:단테]])
+	LOCAL = RESULT:1
+	IF HAVE_SKILL(LOCAL, [[스킬:데빌트리거]]) && SKILLGAGE_F_GET(LOCAL, [[스킬:데빌트리거]]) > 99 && 現HP割合(LOCAL) < 40
+		CALL PRINT_ACT_MESSAGE, LOCAL, [[스킬:데빌트리거]]
+		CALL ACTION_[[스킬:데빌트리거]],LOCAL
+	ENDIF
+ELSEIF FINDCHARA_ENEMY([[キャラ:버질]])
+	LOCAL = RESULT:1
+	SIF 現HP割合(LOCAL) < 70 && CFLAG:LOCAL:800 < 1
+		CFLAG:LOCAL:800 = 1
+	SIF 現HP割合(LOCAL) < 40 && CFLAG:LOCAL:800 < 2
+		CFLAG:LOCAL:800 = 2
+	IF HAVE_SKILL(LOCAL, [[스킬:환영검]]) && SKILLGAGE_D_GET(LOCAL, [[스킬:환영검]]) == 0 && CFLAG:LOCAL:800 > 0	
+		CALL PRINT_ACT_MESSAGE, LOCAL, [[스킬:환영검]]
+		CALLFORM ACTION_[[스킬:환영검]],LOCAL
+	ENDIF
+	IF HAVE_SKILL(LOCAL, [[스킬:데빌트리거]]) && SKILLGAGE_F_GET(LOCAL, [[스킬:데빌트리거]]) > 99 && CFLAG:LOCAL:800 > 1	
+		CALL PRINT_ACT_MESSAGE, LOCAL, [[스킬:데빌트리거]]
+		CALL ACTION_[[스킬:데빌트리거]],LOCAL
+	ENDIF
+ENDIF
+@ENEMY_BATTLE_MESSAGE_K[[キャラ:단테]], ARG
+IF 現HP割合(ARG) > 70 && LOCAL == 0
+	SETCOLOR 0xff0032
+	PRINTL 
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃……１０분이야　　　　　　　　　　　　　　　　┃
+	PRINTFORML ┃그 사이에 생각해둬　　　　　　　　　　　　　　┃
+	PRINTFORML ┃　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTL 
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃관인지 쓰레기통인지……　　　　　　　　　　　┃
+	PRINTFORML ┃네가 갈 곳을!　　　　　　　　　　　　　　　　┃
+	PRINTFORML ┃　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+	LOCAL = 1
+ELSEIF 現HP割合(ARG) < 70 && LOCAL == 1
+	SETCOLOR 0xff0032
+	PRINTL 
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃제법 번들번들 독이 올랐군!　　　　　　　　　┃
+	PRINTFORML ┃이해한다고 즐거운 거지?　　　　　　　　　　　┃
+	PRINTFORML ┃　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTL 
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃……나도 그러니까!　　　　　　　　　　　　　┃
+	PRINTFORML ┃　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+	LOCAL = 2
+ELSEIF 現HP割合(ARG) < 40 && LOCAL == 2
+	SETCOLOR 0xff0032
+	PRINTL 
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃이만큼 해먹을 줄은 몰랐다　　　　　　　　　　┃
+	PRINTFORML ┃　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTL 
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃좋아 보여주마 　　　　　　　　　　　　		 ┃
+	PRINTFORML ┃어른의 진짜 싸움이란 것을!	　 　　　　　　┃
+	PRINTFORML ┃　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+	LOCAL = 3
+ENDIF
+
+;バージルの思考パターン
+@SET_ACTION_CL53バージル,ARG
+#DIM LCOUNT
+IF CFLAG:ARG:１more플래그 == 0 && CFLAG:ARG:행동한횟수 == 0
+	LOCAL:1 = 0
+	FOR LOCAL,0,6
+		SIF CFLAG:ARG:(GET_BATTLESTATUS(LOCAL) + "강화") < 0
+			LOCAL:1 -= CFLAG:ARG:(GET_BATTLESTATUS(LOCAL) + "강화")
+	NEXT
+	IF RAND:100 < LOCAL:1
+			CFLAG:ARG:입력행동 = 2952
+			CALL RANDOM_TARGET,ARG,2952
+			RETURN 1
+	ENDIF
+	IF !CFLAG:ARG:気合フラグ && CFLAG:ARG:800 && RAND:(CFLAG:ARG:800+1)
+				CFLAG:ARG:입력행동 = 511
+				CALL RANDOM_TARGET,ARG,511
+				RETURN 1
+	ENDIF
+ELSEIF CFLAG:ARG:１more플래그 > 0
+	IF !CFLAG:ARG:気合フラグ && !RAND:5
+				CFLAG:ARG:입력행동 = 511
+				CALL RANDOM_TARGET,ARG,511
+				RETURN 1
+	ENDIF
+ENDIF
+
+	FOR LOCAL, 1, 7
+		SIF POS(LOCAL) < 0
+			CONTINUE
+		SIF CFLAG:POS(LOCAL):상태이상 == GET_STATE_NUM("DYING")
+			CONTINUE
+		
+			
+		FOR LCOUNT,0,6
+			SIF CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LCOUNT) + "강화") > 0
+				LOCAL:1 += CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LCOUNT) + "강화")
+			SIF CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LCOUNT) + "강화") == 32
+				LOCAL:2 = 1
+			SIF CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LCOUNT) + "강화") > LOCAL:17
+				LOCAL:17 = CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LCOUNT) + "강화")
+		NEXT
+		SIF LOCAL:3 < LOCAL:1
+			LOCAL:3 = LOCAL:1
+	NEXT
+	
+	
+	
+	
+	
+	$DECIDE_ACTION
+	CALL ランダム行動, ARG
+;ダンテの思考パターン
+@SET_ACTION_3503,ARG
+;1more
+IF CFLAG:ARG:１more플래그 > 0
+	;IF CFLAG:ARG:물리반사플래그 < 1
+	;	CFLAG:ARG:입력행동 = 2956
+	;	RETURN 1
+	;ELSEIF CFLAG:ARG:마법반사플래그 < 1
+	;	CFLAG:ARG:입력행동 = 2956
+	;	RETURN 1
+	IF RAND:7 == 0
+		;투섬타임
+		CALL CHECK_ACTIONABLE,ARG,2951
+		SIF RESULT == 0
+			GOTO DECIDE_ACTION
+		CFLAG:ARG:입력행동 = 2951
+		CALL RANDOM_TARGET,ARG,2951
+		RETURN 1
+	ELSEIF RAND:6 == 0
+		;기합
+		CALL CHECK_ACTIONABLE,ARG,511
+		SIF RESULT == 0
+			GOTO DECIDE_ACTION
+		CFLAG:ARG:입력행동 = 511
+		CALL RANDOM_TARGET,ARG,511
+		RETURN 1
+	ELSEIF RAND:5 == 0
+		;도발
+		CALL CHECK_ACTIONABLE,ARG,515
+		SIF RESULT == 0
+			GOTO DECIDE_ACTION
+		CFLAG:ARG:입력행동 = 515
+		CALL RANDOM_TARGET,ARG,515
+		RETURN 1
+	ELSEIF RAND:4 == 0
+		;스팅거
+		CALL CHECK_ACTIONABLE,ARG,2955
+		SIF RESULT == 0
+			GOTO DECIDE_ACTION
+		CFLAG:ARG:입력행동 = 2955
+		CALL RANDOM_TARGET,ARG,2955
+		RETURN 1
+	ELSEIF RAND:3 == 0
+		;쇼타임
+		CALL CHECK_ACTIONABLE,ARG,2956
+		SIF RESULT == 0
+			GOTO DECIDE_ACTION
+		CFLAG:ARG:입력행동 = 2956
+		CALL RANDOM_TARGET,ARG,2956
+		RETURN 1
+	ELSEIF RAND:2 == 0
+		;라운드트립
+		CALL CHECK_ACTIONABLE,ARG,2953
+		SIF RESULT == 0
+			GOTO DECIDE_ACTION
+		CFLAG:ARG:입력행동 = 2953
+		CALL RANDOM_TARGET,ARG,2953
+		RETURN 1
+	ELSE
+		;휠윈드
+		CALL CHECK_ACTIONABLE,ARG,2954
+		SIF RESULT == 0
+			GOTO DECIDE_ACTION
+		CFLAG:ARG:입력행동 = 2954
+		CALL RANDOM_TARGET,ARG,2954
+		RETURN 1
+	ENDIF
+;ＨＰ40％以下
+ELSEIF 現HP割合(ARG) < 40
+	IF CFLAG:ARG:행동한횟수 == 0
+		SELECTCASE RAND:100
+			;70％기합
+			CASE IS < 70
+				CALL CHECK_ACTIONABLE,ARG,511
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 511
+				CALL RANDOM_TARGET,ARG,511
+				RETURN 1
+			;30％홀리스타
+			CASE IS < 100
+				CALL CHECK_ACTIONABLE,ARG,2952
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 2952
+				CALL RANDOM_TARGET,ARG,2952
+				RETURN 1
+		ENDSELECT
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		SELECTCASE RAND:100
+			;90％쇼타임
+			CASE IS < 90
+				CALL CHECK_ACTIONABLE,ARG,2956
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 2956
+				CALL RANDOM_TARGET,ARG,2956
+				RETURN 1
+			;10％스팅거
+			CASE IS < 100
+				CALL CHECK_ACTIONABLE,ARG,2955
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 2955
+				CALL RANDOM_TARGET,ARG,2955
+				RETURN 1
+		ENDSELECT
+	ENDIF
+;ＨＰ70％以下
+ELSEIF 現HP割合(ARG) < 70
+	IF CFLAG:ARG:행동한횟수 == 0
+		;IF CFLAG:ARG:물리반사플래그 < 1
+		;	CFLAG:ARG:입력행동 = 2956
+		;	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+		;	RETURN 1
+		;ELSEIF CFLAG:ARG:마법반사플래그 < 1
+		;	CFLAG:ARG:입력행동 = 2956
+		;	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+		;	RETURN 1
+		SELECTCASE RAND:100
+			;50％기합
+			CASE IS < 50
+				CALL CHECK_ACTIONABLE,ARG,511
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 511
+				CALL RANDOM_TARGET,ARG,511
+				RETURN 1
+			;30％도발
+			CASE IS < 80
+				CALL CHECK_ACTIONABLE,ARG,515
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 515
+				CALL RANDOM_TARGET,ARG,515
+				RETURN 1
+			;10％비구가드브레이크
+			CASE IS < 90
+				CALL CHECK_ACTIONABLE,ARG,129
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 129
+				CALL RANDOM_TARGET,ARG,129
+				RETURN 1
+			;10％　홀리스타
+			CASE IS < 100
+				CALL CHECK_ACTIONABLE,ARG,2952
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 2952
+				CALL RANDOM_TARGET,ARG,2952
+				RETURN 1
+		ENDSELECT
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		SELECTCASE RAND:100
+			;50％스팅거
+			CASE IS < 50
+				CALL CHECK_ACTIONABLE,ARG,2955
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 2955
+				CALL RANDOM_TARGET,ARG,2955
+				RETURN 1
+			;30％투섬타임
+			CASE IS < 80
+				CALL CHECK_ACTIONABLE,ARG,2951
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 2951
+				CALL RANDOM_TARGET,ARG,2951
+				RETURN 1
+			;10％라운드트립
+			CASE IS < 90
+				CALL CHECK_ACTIONABLE,ARG,2953
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 2953
+				CALL RANDOM_TARGET,ARG,2953
+				RETURN 1
+			;10％휠윈드
+			CASE IS < 100
+				CALL CHECK_ACTIONABLE,ARG,2954
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 2954
+				CALL RANDOM_TARGET,ARG,2954
+				RETURN 1
+		ENDSELECT
+	ENDIF
+;ＨＰ70％以上
+ELSEIF 現HP割合(ARG) > 70
+	IF CFLAG:ARG:행동한횟수 == 0
+		;IF CFLAG:ARG:물리반사플래그 < 1
+		;	CFLAG:ARG:입력행동 = 2956
+		;	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+		;	RETURN 1
+		;ELSEIF CFLAG:ARG:마법반사플래그 < 1
+		;	CFLAG:ARG:입력행동 = 2956
+		;	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+		;	RETURN 1
+		SELECTCASE RAND:100
+			;40％　투섬타임
+			CASE IS < 40
+				CALL CHECK_ACTIONABLE,ARG,2951
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 2951
+				CALL RANDOM_TARGET,ARG,2951
+				RETURN 1
+			;30％　라운드트립
+			CASE IS < 70
+				CALL CHECK_ACTIONABLE,ARG,2953
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 2953
+				CALL RANDOM_TARGET,ARG,2953
+				RETURN 1
+				
+			;20％　비구가드브레이크
+			CASE IS < 90
+				CALL CHECK_ACTIONABLE,ARG,129
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 129
+				CALL RANDOM_TARGET,ARG,129
+				RETURN 1
+			;10％　홀리스타
+			CASE IS < 100
+				CALL CHECK_ACTIONABLE,ARG,2952
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 2952
+				CALL RANDOM_TARGET,ARG,2952
+				RETURN 1
+		ENDSELECT
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		SELECTCASE RAND:100
+			;70％투섬타임
+			CASE IS < 70
+				CALL CHECK_ACTIONABLE,ARG,2951
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 2951
+				CALL RANDOM_TARGET,ARG,2951
+				RETURN 1
+			;30％휠윈드
+			CASE IS < 100
+				CALL CHECK_ACTIONABLE,ARG,2954
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 2954
+				CALL RANDOM_TARGET,ARG,2954
+				RETURN 1
+		ENDSELECT
+	ENDIF
+ELSE
+	$DECIDE_ACTION
+	CALL ランダム行動, ARG
+ENDIF

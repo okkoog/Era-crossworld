@@ -1,0 +1,141 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SYSTEM_BATTLE.ERH
+;	Facility	:戦闘システム用の独自変数の定義
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/10/29		P(Bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2024/05/10		P(Bazzile)				マガツヒゲージ2種を追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------
+;キャラクター変数
+;--------------------------------------
+#DIMS SAVEDATA CHARADATA C_LEARNED_SKILLS, 2								;自力で習得したスキルのリスト 0;通常形態 1:変身形態
+#DIM SAVEDATA CHARADATA C_DEVIL_ARMS_SKILL, 3								;デビルアームズによる取得スキル
+#DIM SAVEDATA CHARADATA C_HAVE_SUCCESSIONNUM								;継承素質の所持数
+#DIM CONST COMMANDER_SKILL_HAVEABLE_NUM = 12
+#DIM SAVEDATA CHARADATA C_HAVE_SKILL_ATK_TYPE, TYPENUM						;キャラが個別に持つ攻撃相性
+#DIM SAVEDATA CHARADATA C_HAVE_BOOSTER_STRENGTH, TYPENUM					;キャラが各相性で持っているブースター倍率
+#DIM ENEMY_HAVE_SKILL_ATK_TYPE, TYPENUM										;敵パーティー全体で持っている攻撃相性
+#DIM SAVEDATA CHARADATA C_COMMANDER_SKILL, COMMANDER_SKILL_HAVEABLE_NUM	;커맨드스킬
+#DIM SAVEDATA CHARADATA C_COMMANDER_SKILL_CT, COMMANDER_SKILL_HAVEABLE_NUM	;커맨드스킬
+#DIM CONST ASSIST_SKILL_HAVEABLE_NUM = 12
+#DIM SAVEDATA CHARADATA C_ASSIST_SKILL, ASSIST_SKILL_HAVEABLE_NUM			;어시스트스킬
+#DIM SAVEDATA CHARADATA C_ASSIST_SKILL_CT, ASSIST_SKILL_HAVEABLE_NUM		;어시스트스킬
+#DIM CONST SKILL_EX_DISPLAY_LENS = 18										;簡易ゲージ表示用の領域の長さ
+#DIMS SAVEDATA CHARADATA C_SKILL_EX_DISPLAY, 2								;簡易ゲージ表示の選択内容
+#DIMS SAVEDATA CHARADATA C_SKILL_EX_DISPLAY_LIST, 10						;簡易ゲージ表示のリスト			とりあえず10で様子見。足りないようなら増やす
+#DIM SAVEDATA CHARADATA C_REPEAT_SKILL, 5									;REPEATコマンド
+#DIMS SAVEDATA CHARADATA C_REPEAT_NOT_HAVE_SKILL, 5							;REPEATコマンド
+#DIM SAVEDATA CHARADATA C_REPEAT_TARGET, 5									;REPEATコマンド
+#DIM SAVEDATA CHARADATA C_REPEAT_LINKAGE_MEMBER, 5, 5						;REPEATコマンド
+
+;ゼンゼロ用
+#DIM CHARADATA C_ZENZERO_PARRY_RATE, 2, TYPENUM
+#DIM CONST C_ZENZERO_DISCNUM = 4
+#DIMS SAVEDATA CHARADATA C_ZENZERO_DISC_NAME, C_ZENZERO_DISCNUM
+#DIM SAVEDATA CHARADATA C_ZENZERO_DISC_SKILL, C_ZENZERO_DISCNUM
+#DIM SAVEDATA CHARADATA C_ZENZERO_DISC_STAT, C_ZENZERO_DISCNUM, 6
+
+;--------------------------------------
+;戦闘システム全般
+;--------------------------------------
+#DIM TRYSKILL_VAR
+#DIMS TRYSKILL_STR
+#DIMS CHARADATA C_BTL_EFFECT, 10
+#DIMS CHARADATA C_BTL_EFFECT_PERMANENCE
+;---- EDIT P 001 ADD START -------------------------
+#DIMS CHARADATA C_BTL_EFFECT_CHARGE
+;---- EDIT P 001 ADD END ---------------------------
+#DIMS FIELD_BTL_EFFECT
+#DIMS FIELD_BTL_EFFECT_PERMANENCE
+
+#DIMS CONST BASE_KAJA_TABLE = "공격", "명중", "방어", "회피", "마법위력", "마법효과"
+#DIMS CONST KAJA_TABLE = "공격", "명중", "방어", "회피", "마법위력", "마법효과", "크리티컬", "BS부착률"
+
+#DIM SAVEDATA COUNT_ACTIVE_LEADER_SKILL, 2			;いくつのリーダースキルがアクティブ状態か
+#DIMS SAVEDATA ACTIVE_LEADER_SKILL, 200				;アクティブなリーダースキルのリスト
+#DIM SAVEDATA ACTIVE_LEADER_SKILL_HAVE_CHARA, 200	;スキルの持ち主
+#DIM SAVEDATA ACTIVE_LEADER_SKILL_NUMBER, 200		;同種のものが何番目に登録されたか
+#DIMS SAVEDATA ACTIVE_ENEMY_LEADER_SKILL, 200
+#DIM SAVEDATA ACTIVE_ENEMY_LEADER_SKILL_HAVE_CHARA, 200
+#DIM SAVEDATA ACTIVE_ENEMY_LEADER_SKILL_NUMBER, 200
+
+#DIMS CHOOSE_COMPANION_VAR;召喚選択時にショップ経由かショップ外経由か、あるいはスキルはどうかなどの識別用の変数
+#DIM USEABLE_SKILL_LIST_FOR_RANDOM_ACT, 60;ランダム行動時の判定に使うスキルリスト
+
+#DIM CASTING_CHARA;キャラリスト表示関数内で条件判別の時に使われるキャラ指定変数
+#DIM LINKED_DAMAGE_TO_POS,17;ポジションごとに発生したダメージ共有によるダメージ量
+;---- EDIT P 001 ADD START -------------------------
+#DIM CONST MAGASTUHI_SKILLNUM = 300
+#DIM CONST EX_MAGASTUHI_SKILLNUM = 100
+#DIM CONST LIMIT_MAGATSUHI_GAGE = 10000
+#DIM SAVEDATA MAGATSUHI_GAGE_FRIEND
+#DIM SAVEDATA MAGASTUHI_GAGE_ENEMY
+#DIMS CHARADATA CHARA_SETED_MAGATSUHI_SKILL
+
+#DIMS COMMAND_LIST_P, 100
+#DIM UNABLE_COMMAND_LIST_P, 100
+#DIMS COMMAND_LIST_NAME, 5
+#DIMS COMMAND_LIST_SHOWNAME, 5
+#DIMS COMMAND_LIST_COLOR, 5
+#DIMS COMMAND_LIST_TITLE, 5
+#DIM COMMAND_LIST_CATEGORY, 5
+#DIM COMMAND_LIST_UNABLE, 5
+;---- EDIT P 001 ADD END ---------------------------
+
+;--------------------------------------
+;戦闘に実際に参加したキャラクターを格納する
+;--------------------------------------
+#DIM BCHARA, 600				;BはBattle。戦闘に参加したキャラクターのキャラ番号を前から順に入れる。空き番号は-1
+#DIM BCHARANUM, 1				;戦闘に参加しているキャラクター数+1が格納される。CHARANUMと同じように使う
+#DIM CHARADATA IS_JOINED_BCHARA	;戦闘に参加をしていることをキャラ側に持たせておく一時変数
+#DIM ENEMY_TIMEID_LIST, 20		;AI・イベント用にSET関数からセットする
+#DIMS ENEMY_NAME_LIST, 20		;AI・イベント用にSET関数からセットする
+;--------------------------------------
+;戦闘中に起きた出来事の記録を取る 
+;--------------------------------------
+#DIMS CHARADATA C_RECORDS, 6
+
+;--------------------------------------
+;追撃・カウンターシステム用の関数
+;--------------------------------------
+#DIM POS_REC, 17;追撃・カウンター実行時のPOS変動に対応するために変動前のPOSを格納する
+#DIMS TRIGGER_SKD_LIST, 1;追撃参加者のリスト
+#DIMS COUNTER_SKD_LIST, 1;カウンター参加者のリスト
+#DIMS CHARADATA C_TRIGGER_SKD, 1;キャラ個別の追撃スキルと対象のリスト
+#DIMS CHARADATA C_COUNTER_SKD, 1;キャラ個別のカウンタースキルと対象のリスト
+
+;--------------------------------------
+;戦闘中の表示関連のオプションフラグ
+;--------------------------------------
+#DIM GLOBAL SAVEDATA OPT_SHOW_SKILL_SELECT;0 = スキル選択時にEX/MAを分離して表示 1 = 分離せずに表示
+#DIM GLOBAL SAVEDATA OPT_SHOW_SKILL_NUM;0 = スキル選択時にスキルを並べる数
+#DIM GLOBAL SAVEDATA OPT_SHOW_SKILLLENS;0 = スキル選択時の文字数(通常/幅広)
+
+#DIM GLOBAL SAVEDATA OPT_B_MES_WAIT;通常時のWAITタイミングの設定保存フラグ
+#DIM GLOBAL SAVEDATA OPT_B_MES_WAIT_TIME;通常時の自動モードでの入力待ち時間
+#DIM GLOBAL SAVEDATA OPT_B_MES_USE_WAIT_TIME_MULTI;行数補正率(行がまとめて流れてきた場合にWAIT時間に補正をかける)
+#DIM GLOBAL SAVEDATA OPT_B_MES_WAIT_TIME_MULTI;行数補正率(行がまとめて流れてきた場合にWAIT時間に補正をかける)
+
+#DIM GLOBAL SAVEDATA OPT_B_MES_AUTO_WAIT;AUTO時のWAITタイミングの設定保存フラグ
+#DIM GLOBAL SAVEDATA OPT_B_MES_AUTO_WAIT_TIME;AUTO時の自動モードでの入力待ち時間
+#DIM GLOBAL SAVEDATA OPT_B_MES_USE_AUTO_WAIT_TIME_MULTI;行数補正率(行がまとめて流れてきた場合にWAIT時間に補正をかける)
+#DIM GLOBAL SAVEDATA OPT_B_MES_AUTO_WAIT_TIME_MULTI;行数補正率(行がまとめて流れてきた場合にWAIT時間に補正をかける)
+
+#DIM GLOBAL SAVEDATA OPT_B_MES_WAIT_INCREASE;範囲回復等、個別でPRINTLを指定してクリック数を減らしているものの改行を増やす
+#DIM GLOBAL SAVEDATA OPT_B_MES_USE_TEMP_AUTOWAIT;左クリックを押し続けてる間だけ自動設定を適用する
+
+;FLAG:RPG구상       RPG口上のスキップ設定フラグ
+#DIM GLOBAL SAVEDATA OPT_B_MES_SKIP;メッセージスキップモードの強制停止等の設定を保存する
+#DIM GLOBAL SAVEDATA OPT_B_MES_COLOR_FRIEND;味方カラー。デフォルトは水色
+#DIM GLOBAL SAVEDATA OPT_B_MES_COLOR_ENEMY;敵カラー。デフォルトは赤色
+#DIM GLOBAL SAVEDATA OPT_B_MES_COLOR_DMG_FRIEND, 10;味方が受けたダメージ等のカラー
+#DIM GLOBAL SAVEDATA OPT_B_MES_COLOR_DMG_ENEMY, 10;敵に与えたダメージ等のカラー
+#DIM GLOBAL SAVEDATA OPT_B_MES_COLOR_USE_STATE, 2;状態異常をステートカラーにするかどうか。0:敵に与えたダメージ 1:味方が受けたダメージ

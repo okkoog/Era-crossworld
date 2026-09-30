@@ -1,0 +1,979 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2021/01/28		eMさ者					EQUIP_P_INSERT_V_TARGETの処理を変更
+;	002		2022/09/06		JK好き					マジックナンバー整理 挿入経験用の処理を追加
+;	003		2023/09/05		絹延					挿入継続処理に追記。状態2に遷移し、継続処理を回避した後は状態1に戻るように修正。
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;挿入継続の処理
+;TRACHECKとセットで機能しています
+;----------------------------------------------------------------------
+@EQUIP_P_INSERT_V_TARGET
+;----------------------------------------------------------------------
+;IF TEQUIP:TARGET:Ｖ섹스 > 0 && TEQUIP:TARGET:Ｖ섹스 < 2
+;TEQUIP50が3と4でで経験処理、1(挿入なしの状態でV挿入）、2(V挿入中にもう一度V挿入コマンド実行時）は処理しない。1,2のときはELSEIFで3,4に変更し、次回以降のV挿入コマンド以外のときに経験処理する
+IF TEQUIP:TARGET:Ｖ섹스 > 2
+	;調教者←→調教対象
+	TFLAG:28 = 3
+	B += 750
+
+;	;再装填処理中は射精ゲージは20分の1に
+;	SIF CFLAG:PLAYER:射精ゲージ再装填 > 0
+;		B /= 20
+
+	SIF HAVE_PENIS(PLAYER)
+		BASE:PLAYER:사정 += B
+
+	DOWNBASE:TARGET:체력 += 25
+	DOWNBASE:TARGET:기력 += 50
+
+	SOURCE:TARGET:쾌Ｖ += 200
+	SOURCE:TARGET:정애 += 75
+	SOURCE:TARGET:노출 += 25
+
+	;調教者に快Ｃ
+	SOURCE:PLAYER:쾌Ｃ += 100
+
+	;抑圧、抵抗持ちには、抑鬱ソース追加
+	SIF TALENT:억압 || TALENT:저항
+		SOURCE:TARGET:울굴 += 150
+
+	LOCAL = 250
+	LOCAL:1 = 150
+	LOCAL:2 = 100
+
+	;貞操観念持ちで恋慕、親愛持ち以外には常に反発のソースを追加する（セックス系のみ）
+	SIF TALENT:정조관념 && !IS_LOVER(TARGET)
+		SOURCE:TARGET:반감 += 500
+
+	;Vへの苦痛は先に処理しておく
+	;EXP:Ｖ経験をみる（処女の反感は別途処理済みなので省略）
+	IF EXP:Ｖ경험 < EXPLV:1
+		TIMES LOCAL , 2.50
+	ELSEIF EXP:Ｖ경험 < EXPLV:2
+		TIMES LOCAL , 0.80
+	ELSEIF EXP:Ｖ경험 < EXPLV:3
+		TIMES LOCAL , 0.40
+	ELSEIF EXP:Ｖ경험 < EXPLV:4
+		TIMES LOCAL , 0.10
+	ELSEIF EXP:Ｖ경험 < EXPLV:5
+		TIMES LOCAL , 0.00
+	ELSEIF EXP:Ｖ경험 >= EXPLV:5
+		TIMES LOCAL , 0.00
+	ENDIF
+
+	;PALAM:潤滑をみる
+	IF PALAM:윤활 < PALAMLV:1
+		TIMES LOCAL , 1.20
+		TIMES LOCAL:1 , 1.50
+	ELSEIF PALAM:윤활 < PALAMLV:2
+		TIMES LOCAL , 0.70
+		TIMES LOCAL:1 , 1.20
+	ELSEIF PALAM:윤활 < PALAMLV:3
+		TIMES LOCAL , 0.40
+	ELSEIF PALAM:윤활 < PALAMLV:4
+		TIMES LOCAL , 0.10
+	ELSEIF PALAM:윤활 >= PALAMLV:4
+		TIMES LOCAL , 0.10
+	ENDIF
+
+	;中毒による中毒充足のソースは先に処理しておく
+	;セックス中毒を見る
+	IF ABL:섹스중독 == 0
+		TIMES LOCAL:2 , 0.00
+	ELSEIF ABL:섹스중독 == 1
+		TIMES LOCAL:2 , 0.30
+	ELSEIF ABL:섹스중독 == 2
+		TIMES LOCAL:2 , 0.60
+	ELSEIF ABL:섹스중독 == 3
+		TIMES LOCAL:2 , 0.90
+	ELSEIF ABL:섹스중독 == 4
+		TIMES LOCAL:2 , 1.20
+	ELSEIF ABL:섹스중독 == 5
+		TIMES LOCAL:2 , 1.50
+	ELSEIF ABL:섹스중독 == 6
+		TIMES LOCAL:2 , 1.80
+	ELSEIF ABL:섹스중독 == 7
+		TIMES LOCAL:2 , 2.10
+	ELSEIF ABL:섹스중독 == 8
+		TIMES LOCAL:2 , 2.40
+	ELSEIF ABL:섹스중독 == 9
+		TIMES LOCAL:2 , 3.00
+	ELSEIF ABL:섹스중독 >= 10
+		TIMES LOCAL:2 , 5.00
+	ENDIF
+
+	SOURCE:TARGET:아픔 += LOCAL
+	SOURCE:TARGET:반감 += LOCAL:1
+	SOURCE:TARGET:중독충족 += LOCAL:2
+
+	;-------------------------------------------------
+	;射精チェック
+	;-------------------------------------------------
+
+	;射精先タイプの設定
+	TCVAR:PLAYER:페니스사용대상 = TARGET
+	TCVAR:PLAYER:사정부위 = 1
+	;射精先選択の可・不可
+	TFLAG:사정대상선택가능 = 1
+	;-------------------------------------------------
+	;汚れの処理
+	;-------------------------------------------------
+	;射精に関係なく行われる処理はここから
+	;膣内に破瓜の血の汚れを付加
+	SIF TALENT:처녀 == 1 || TALENT:재생처녀 == 1
+		CALL SET_STAIN("질내", "破瓜の血", TARGET)
+	;奴隷の膣内⇔調教者のＰの汚れが移動
+	CALL MOVE_STAIN("질내", TARGET, "페니스", PLAYER)
+
+	;-------------------------------------------------
+	;吸精処理
+	;-------------------------------------------------
+	IF CFLAG:PLAYER:ＭＡＧ비피흡수 == 0
+		LOCAL = (RAND:10+1) * BASE:LV
+		CALL DRAIN_MAG,PLAYER,LOCAL,TARGET
+	ELSEIF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+		LOCAL = (RAND:10+1) * BASE:LV
+		CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+	ENDIF
+
+
+	;経験の処理
+	;-------------------------------------------------
+	;V経験
+	CALL ADDS_EXP("Ｖ경험", 1, TARGET)
+
+	;성교경험
+	CALL ADDS_EXP("성교경험", 1, TARGET)
+	CALL ADDS_EXP("삽입경험", 1, PLAYER)
+	;수간경험
+	IF (TALENT:PLAYER:짐승 || TALENT:PLAYER:새) && !(TALENT:TARGET:짐승 || TALENT:TARGET:새)
+		CALL ADDS_EXP("수간경험", 1, TARGET)
+	ENDIF
+
+	;処女で同性の場合異常経験
+	IF TALENT:TARGET:처녀
+		SIF !IS_MALE(PLAYER) 
+			CALL ADDS_ABNORMAL_EXP("処女奪取（同性）", PLAYER)
+		SIF !IS_MALE(PLAYER)
+			CALL ADDS_ABNORMAL_EXP("処女喪失（同性）", TARGET)
+	ENDIF
+
+	;近親相姦の場合異常経験付与
+	IF 近親チェック(TARGET , PLAYER)
+		CALL ADDS_ABNORMAL_EXP( @"近親相姦（%RESULTS:0%）", TARGET)
+		CALL ADDS_ABNORMAL_EXP( @"近親相姦（%RESULTS:1%）", PLAYER)
+	ENDIF
+
+	;레즈경험
+	A = 4
+	IF IS_LESBIAN(TARGET,PLAYER)
+		CALL ADDS_EXP("레즈경험", A, TARGET)
+		CALL ADDS_EXP("레즈경험", A, PLAYER)
+	ELSEIF IS_GAY(TARGET,PLAYER)
+		CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+		CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+	ENDIF
+
+	;애정경험
+	IF TALENT:연모 == 1 && ASSIPLAY == 0
+		CALL ADDS_EXP("애정경험", 2, TARGET)
+		CALL ADDS_EXP("애정경험", 1, MASTER)
+		CALL ADDS_EXP("봉사쾌락경험", 1, PLAYER)
+	ELSEIF TALENT:친애 == 1 && ASSIPLAY == 0
+		CALL ADDS_EXP("애정경험", 4, TARGET)
+		CALL ADDS_EXP("애정경험", 1, MASTER)
+		CALL ADDS_EXP("봉사쾌락경험", 1, PLAYER)
+	ENDIF
+
+	;依存度ベクトル
+	TFLAG:33 = 1
+
+	;依存度補正値(恋慕で1、親愛で2）
+	IF TALENT:연모 && ASSIPLAY == 0
+		TFLAG:30 += 1
+	ELSEIF TALENT:친애 && ASSIPLAY == 0
+		TFLAG:30 += 2
+	ENDIF
+	
+
+;(V挿入コマンドの地の文で挿入なし→挿入の分岐用）
+ELSEIF TEQUIP:TARGET:Ｖ섹스 == 1
+	TEQUIP:TARGET:Ｖ섹스 = 3
+;(V挿入コマンドの地の文で挿入継続時に挿入を続ける文の分岐用)
+ELSEIF TEQUIP:TARGET:Ｖ섹스 == 2
+	TEQUIP:TARGET:Ｖ섹스 = 4
+ENDIF
+PRINTFORML ＜%TARGET에게% Ｖ 삽입 중＞
+
+
+;----------------------------------------------------------------------
+@EQUIP_P_INSERT_A_TARGET
+;----------------------------------------------------------------------
+IF TEQUIP:TARGET:Ａ섹스 > 0 && TEQUIP:TARGET:Ａ섹스 < 2
+
+	B += 750
+;	;再装填処理中は射精ゲージは20分の1に
+;	SIF CFLAG:PLAYER:射精ゲージ再装填 > 0
+;		B /= 20
+
+	SIF HAVE_PENIS(PLAYER)
+		BASE:PLAYER:사정 += B
+
+	;調教者←→調教対象
+	TFLAG:28 = 3
+
+	;-------------------------------------------------
+	;ソース追加処理
+	;-------------------------------------------------
+	;消費体力、気力
+	DOWNBASE:TARGET:체력 += 40
+	DOWNBASE:TARGET:기력 += 60
+
+	SOURCE:TARGET:쾌Ａ += 200
+	SOURCE:TARGET:정애 += 50
+	SOURCE:TARGET:노출 += 30
+	SOURCE:TARGET:일탈 += 100
+
+	;調教者に快Ｃ
+	SOURCE:PLAYER:쾌Ｃ += 300
+	;-------------------------------------------------
+	;特殊ソース処理
+	;-------------------------------------------------
+	;抑圧、抵抗持ちには、抑鬱ソース追加
+	SIF TALENT:억압 || TALENT:저항
+		SOURCE:TARGET:울굴 += 250
+
+	LOCAL = 400
+	LOCAL:1 = 250
+	LOCAL:2 = 100
+
+	;貞操観念持ちで恋慕、親愛持ち以外には常に反発のソースを追加する（セックス系のみ）
+	SIF TALENT:정조관념 && !IS_LOVER(TARGET)
+		SOURCE:TARGET:반감 += 500
+		
+	;Aへの苦痛は先に処理しておく
+	;EXP:Ａ経験をみる
+	IF EXP:Ａ경험 < EXPLV:1
+		TIMES LOCAL , 3.00
+		TIMES LOCAL:1 , 3.00
+	ELSEIF EXP:Ａ경험 < EXPLV:2
+		TIMES LOCAL , 1.20
+		TIMES LOCAL:1 , 2.00
+	ELSEIF EXP:Ａ경험 < EXPLV:3
+		TIMES LOCAL , 0.80
+		TIMES LOCAL:1 , 1.50
+	ELSEIF EXP:Ａ경험 < EXPLV:4
+		TIMES LOCAL , 0.60
+		TIMES LOCAL:1 , 1.20
+	ELSEIF EXP:Ａ경험 < EXPLV:5
+		TIMES LOCAL , 0.40
+	ELSEIF EXP:Ａ경험 >= EXPLV:5
+		TIMES LOCAL , 0.20
+	ENDIF
+	
+	;PALAM:潤滑をみる
+	IF PALAM:윤활 < PALAMLV:1
+		TIMES LOCAL , 1.20
+		TIMES LOCAL:1 , 2.00
+	ELSEIF PALAM:윤활 < PALAMLV:2
+		TIMES LOCAL , 1.00
+		TIMES LOCAL:1 , 1.50
+	ELSEIF PALAM:윤활 < PALAMLV:3
+		TIMES LOCAL , 0.60
+	ELSEIF PALAM:윤활 < PALAMLV:4
+		TIMES LOCAL , 0.30
+	ELSEIF PALAM:윤활 >= PALAMLV:4
+		TIMES LOCAL , 0.20
+	ENDIF
+
+	;中毒による中毒充足のソースは先に処理しておく
+	;セックス中毒を見る
+	IF ABL:섹스중독 == 0
+		TIMES LOCAL:2 , 0.00
+	ELSEIF ABL:섹스중독 == 1
+		TIMES LOCAL:2 , 0.30
+	ELSEIF ABL:섹스중독 == 2
+		TIMES LOCAL:2 , 0.60
+	ELSEIF ABL:섹스중독 == 3
+		TIMES LOCAL:2 , 0.90
+	ELSEIF ABL:섹스중독 == 4
+		TIMES LOCAL:2 , 1.20
+	ELSEIF ABL:섹스중독 == 5
+		TIMES LOCAL:2 , 1.50
+	ELSEIF ABL:섹스중독 == 6
+		TIMES LOCAL:2 , 1.80
+	ELSEIF ABL:섹스중독 == 7
+		TIMES LOCAL:2 , 2.10
+	ELSEIF ABL:섹스중독 == 8
+		TIMES LOCAL:2 , 2.40
+	ELSEIF ABL:섹스중독 == 9
+		TIMES LOCAL:2 , 3.00
+	ELSEIF ABL:섹스중독 >= 10
+		TIMES LOCAL:2 , 5.00
+	ENDIF
+
+	SOURCE:TARGET:아픔 += LOCAL
+	SOURCE:TARGET:반감 += LOCAL:1
+	SOURCE:TARGET:중독충족 += LOCAL:2
+
+	;-------------------------------------------------
+	;射精チェック
+	;-------------------------------------------------
+	;射精先タイプの設定
+	TCVAR:PLAYER:페니스사용대상 = TARGET
+	TCVAR:PLAYER:사정부위 = 2
+	;射精先選択の可・不可
+	TFLAG:사정대상선택가능 = 1
+
+	;-------------------------------------------------
+	;汚れの処理
+	;-------------------------------------------------
+	;射精に関係なく行われる処理はここから
+	;奴隷のＡ⇔調教者のＰの汚れが移動
+	CALL MOVE_STAIN("애널", TARGET, "페니스", PLAYER)
+
+	;-------------------------------------------------
+	;吸精処理
+	;-------------------------------------------------
+	IF CFLAG:PLAYER:ＭＡＧ비피흡수 == 0
+		LOCAL = (RAND:10+1) * BASE:LV
+		CALL DRAIN_MAG,PLAYER,LOCAL,TARGET
+	ELSEIF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+		LOCAL = (RAND:10+1) * BASE:LV
+		CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+	ENDIF
+
+	;-------------------------------------------------
+	;経験の処理
+	;-------------------------------------------------
+	;A経験
+	CALL ADDS_EXP("Ａ경험", 2, TARGET)
+
+	;성교경험
+	CALL ADDS_EXP("성교경험", 1, TARGET)
+	CALL ADDS_EXP("삽입경험", 1, PLAYER)
+	;수간경험
+	IF (TALENT:PLAYER:짐승 || TALENT:PLAYER:새) && !(TALENT:TARGET:짐승 || TALENT:TARGET:새)
+		CALL ADDS_EXP("수간경험", 1, TARGET)
+	ENDIF
+
+	;레즈경험
+	A = 4
+	IF IS_LESBIAN(TARGET,PLAYER)
+		CALL ADDS_EXP("레즈경험", A, TARGET)
+		CALL ADDS_EXP("레즈경험", A, PLAYER)
+	ELSEIF IS_GAY(TARGET,PLAYER)
+		CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+		CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+	ENDIF
+
+	;애정경험
+	IF TALENT:연모 == 1 && ASSIPLAY == 0
+		CALL ADDS_EXP("애정경험", 1, TARGET)
+		CALL ADDS_EXP("애정경험", 1, MASTER)
+		CALL ADDS_EXP("봉사쾌락경험", 1, PLAYER)
+	ELSEIF TALENT:친애 == 1 && ASSIPLAY == 0
+		CALL ADDS_EXP("애정경험", 2, TARGET)
+		CALL ADDS_EXP("애정경험", 1, MASTER)
+		CALL ADDS_EXP("봉사쾌락경험", 1, PLAYER)
+	ENDIF
+
+	;依存度ベクトル
+	TFLAG:33 = 1
+
+	;依存度補正値(服従で1、隷属で2）
+	IF TALENT:복종 && ASSIPLAY == 0
+		TFLAG:30 += 1
+	ELSEIF TALENT:예속 && ASSIPLAY == 0
+		TFLAG:30 += 2
+	ENDIF
+;---003 ADD START---
+ELSEIF TEQUIP:TARGET:Ａ섹스 > 1
+	TEQUIP:TARGET:Ａ섹스 = 1
+;---003 ADD END---
+ENDIF
+PRINTFORML ＜%TARGET에게% Ａ 삽입 중＞
+
+
+;----------------------------------------------------------------------
+@EQUIP_F_INSERT_V_TARGET
+;----------------------------------------------------------------------
+IF TEQUIP:TARGET:Ｖ손가락삽입 > 0 && TEQUIP:TARGET:Ｖ손가락삽입 < 2
+	;調教者→調教対象
+	TFLAG:28 = 2
+
+	;-------------------------------------------------
+	;ソース追加処理
+	;-------------------------------------------------
+	;消費体力、気力
+	DOWNBASE:TARGET:체력 += 15
+	DOWNBASE:TARGET:기력 += 40
+
+
+	IF TALENT:처녀 == 0 && TALENT:재생처녀 == 0
+		SOURCE:TARGET:쾌Ｖ += 60
+		SOURCE:TARGET:노출 += 5
+		SOURCE:TARGET:일탈 += 10
+		LOCAL = 7
+		LOCAL:1 = 10
+	;V経験が0の時はV経験を伴わない物に派生
+	;Vの珠は入らないが、快Vが高いと慣らしてあるため処女喪失時に影響
+	ELSE
+		SIF PALAM:쾌Ｖ < 100
+			SOURCE:TARGET:쾌Ｖ += 30
+		SOURCE:TARGET:노출 += 15
+		SOURCE:TARGET:일탈 += 15
+		LOCAL = 5
+		LOCAL:1 += 15
+	ENDIF
+
+
+	;-------------------------------------------------
+	;特殊ソース処理
+	;-------------------------------------------------
+	;抑圧、抵抗持ちには、抑鬱ソース追加
+	IF TALENT:억압 || TALENT:저항
+		SOURCE:TARGET:울굴 += 10
+		;처녀
+		SIF TALENT:처녀
+			SOURCE:TARGET:울굴 += 5
+	ENDIF
+
+	;Vへの苦痛は先に処理しておく
+	;EXP:Ｖ経験をみる（処女の反感は別途処理済みなので省略）
+	IF EXP:Ｖ경험 < EXPLV:1
+		TIMES LOCAL , 2.50
+	ELSEIF EXP:Ｖ경험 < EXPLV:2
+		TIMES LOCAL , 0.80
+	ELSEIF EXP:Ｖ경험 < EXPLV:3
+		TIMES LOCAL , 0.40
+	ELSEIF EXP:Ｖ경험 < EXPLV:4
+		TIMES LOCAL , 0.10
+	ELSEIF EXP:Ｖ경험 < EXPLV:5
+		TIMES LOCAL , 0.00
+	ELSEIF EXP:Ｖ경험 >= EXPLV:5
+		TIMES LOCAL , 0.00
+	ENDIF
+
+	;PALAM:潤滑をみる
+	IF PALAM:윤활 < PALAMLV:1
+		TIMES LOCAL , 1.20
+		TIMES LOCAL:1 , 1.50
+	ELSEIF PALAM:윤활 < PALAMLV:2
+		TIMES LOCAL , 0.70
+		TIMES LOCAL:1 , 1.20
+	ELSEIF PALAM:윤활 < PALAMLV:3
+		TIMES LOCAL , 0.40
+	ELSEIF PALAM:윤활 < PALAMLV:4
+		TIMES LOCAL , 0.10
+	ELSEIF PALAM:윤활 >= PALAMLV:4
+		TIMES LOCAL , 0.10
+	ENDIF
+
+	SOURCE:TARGET:아픔 += LOCAL
+	SOURCE:TARGET:반감 += LOCAL:1
+
+	;-------------------------------------------------
+	;汚れの処理
+	;-------------------------------------------------
+	;奴隷の膣内⇔調教者の指の汚れが移動
+	CALL MOVE_STAIN("질내", TARGET, "손", PLAYER)
+
+	;-------------------------------------------------
+	;吸精処理
+	;-------------------------------------------------
+	IF CFLAG:PLAYER:ＭＡＧ비피흡수 == 0
+		LOCAL = (RAND:4+1) * BASE:LV
+		CALL DRAIN_MAG,PLAYER,LOCAL,TARGET
+	ELSEIF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+		LOCAL = (RAND:4+1) * BASE:LV
+		CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+	ENDIF
+
+	;-------------------------------------------------
+	;経験の処理
+	;-------------------------------------------------
+	;V経験
+	SIF TALENT:처녀 == 0 && TALENT:재생처녀 == 0
+		CALL ADDS_EXP("Ｖ경험", 1, TARGET)
+
+	;레즈경험
+	A = 1
+	IF IS_LESBIAN(TARGET,PLAYER)
+		CALL ADDS_EXP("레즈경험", A, TARGET)
+		CALL ADDS_EXP("레즈경험", A, PLAYER)
+	ELSEIF IS_GAY(TARGET,PLAYER)
+		CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+		CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+	ENDIF
+
+	;依存度ベクトル
+	IF TALENT:처녀
+		TFLAG:33 = 3
+	ELSE
+		TFLAG:33 = 1
+	ENDIF
+;---003 ADD START---
+ELSEIF TEQUIP:TARGET:Ｖ손가락삽입 > 1
+	TEQUIP:TARGET:Ｖ손가락삽입 = 1
+;---003 ADD END---
+ENDIF
+PRINTFORML ＜ %TARGET에게% 손가락 Ｖ 삽입 중 ＞
+
+
+;----------------------------------------------------------------------
+@EQUIP_F_INSERT_A_TARGET
+;----------------------------------------------------------------------
+IF TEQUIP:TARGET:Ａ손가락삽입 > 0 && TEQUIP:TARGET:Ａ손가락삽입 < 2
+	;調教者→調教対象
+	TFLAG:28 = 2
+
+	;-------------------------------------------------
+	;ソース追加処理
+	;-------------------------------------------------
+	;消費体力、気力
+	DOWNBASE:TARGET:체력 += 20
+	DOWNBASE:TARGET:기력 += 50
+
+	SOURCE:TARGET:쾌Ａ += 50
+	SOURCE:TARGET:굴종 += 50
+	SOURCE:TARGET:일탈 += 40
+
+
+	;-------------------------------------------------
+	;特殊ソース処理
+	;-------------------------------------------------
+	;抑圧、抵抗持ちには、抑鬱ソース追加
+	SIF TALENT:억압 || TALENT:저항
+		SOURCE:TARGET:울굴 += 50
+
+
+	LOCAL = 50
+	LOCAL:1 = 30
+	;Aへの苦痛は先に処理しておく
+	;EXP:Ａ経験をみる
+	IF EXP:Ａ경험 < EXPLV:1
+		TIMES LOCAL , 3.00
+		TIMES LOCAL:1 , 3.00
+	ELSEIF EXP:Ａ경험 < EXPLV:2
+		TIMES LOCAL , 1.20
+		TIMES LOCAL:1 , 2.00
+	ELSEIF EXP:Ａ경험 < EXPLV:3
+		TIMES LOCAL , 0.80
+		TIMES LOCAL:1 , 1.50
+	ELSEIF EXP:Ａ경험 < EXPLV:4
+		TIMES LOCAL , 0.60
+		TIMES LOCAL:1 , 1.20
+	ELSEIF EXP:Ａ경험 < EXPLV:5
+		TIMES LOCAL , 0.40
+	ELSEIF EXP:Ａ경험 >= EXPLV:5
+		TIMES LOCAL , 0.20
+	ENDIF
+
+	;PALAM:潤滑をみる
+	IF PALAM:윤활 < PALAMLV:1
+		TIMES LOCAL , 1.20
+		TIMES LOCAL:1 , 2.00
+	ELSEIF PALAM:윤활 < PALAMLV:2
+		TIMES LOCAL , 1.00
+		TIMES LOCAL:1 , 1.50
+	ELSEIF PALAM:윤활 < PALAMLV:3
+		TIMES LOCAL , 0.60
+	ELSEIF PALAM:윤활 < PALAMLV:4
+		TIMES LOCAL , 0.30
+	ELSEIF PALAM:윤활 >= PALAMLV:4
+		TIMES LOCAL , 0.20
+	ENDIF
+
+	SOURCE:TARGET:아픔 += LOCAL
+	SOURCE:TARGET:반감 += LOCAL:1
+
+	;-------------------------------------------------
+	;汚れの処理
+	;-------------------------------------------------
+	IF TEQUIP:촉수
+		;奴隷のＡに触手の汚れがつく
+		CALL SET_STAIN("애널", "粘液", TARGET)
+	ELSE
+		;奴隷のＡ⇔調教者の指の汚れが移動
+		CALL MOVE_STAIN("애널", TARGET, "손", PLAYER)
+	ENDIF
+
+	;-------------------------------------------------
+	;吸精処理
+	;-------------------------------------------------
+	IF CFLAG:PLAYER:ＭＡＧ비피흡수 == 0
+		LOCAL = (RAND:3+1) * BASE:LV
+		CALL DRAIN_MAG,PLAYER,LOCAL,TARGET
+	ELSEIF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+		LOCAL = (RAND:3+1) * BASE:LV
+		CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+	ENDIF
+
+	;-------------------------------------------------
+	;経験の処理
+	;-------------------------------------------------
+	CALL ADDS_EXP("Ａ경험", 1, TARGET)
+
+	A = 2
+	IF IS_LESBIAN(TARGET,PLAYER)
+		CALL ADDS_EXP("레즈경험", A, TARGET)
+		CALL ADDS_EXP("레즈경험", A, PLAYER)
+	ELSEIF IS_GAY(TARGET,PLAYER)
+		CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+		CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+	ENDIF
+
+	;依存度ベクトル
+	TFLAG:33 = 3
+;---003 ADD START---
+ELSEIF TEQUIP:TARGET:Ａ손가락삽입 > 1
+	TEQUIP:TARGET:Ａ손가락삽입 = 1
+;---003 ADD END---
+ENDIF
+PRINTFORML ＜%TARGET에게% 손가락 Ａ 삽입 중＞
+
+
+;----------------------------------------------------------------------
+@EQUIP_P_INSERT_V_PLAYER
+;----------------------------------------------------------------------
+IF TEQUIP:PLAYER:Ｖ섹스 > 0 && TEQUIP:PLAYER:Ｖ섹스 < 2
+	;調教者←→調教対象
+	TFLAG:28 = 3
+	;-------------------------------------------------
+	;ソースの計算
+	;-------------------------------------------------
+	LOSEBASE:체력 += 25
+	LOSEBASE:기력 += 50
+
+
+	IF TALENT:PLAYER:유아체형
+		SOURCE:TARGET:쾌Ｃ = 150
+		SOURCE:아픔 += 25
+	ELSEIF TALENT:PLAYER:소인체형
+		SOURCE:TARGET:쾌Ｃ = 250
+		SOURCE:아픔 += 50
+	ENDIF
+	IF TALENT:큰체형
+		SOURCE:TARGET:쾌Ｃ = 100
+		SOURCE:아픔 += 25
+	ELSEIF TALENT:거체
+		SOURCE:TARGET:쾌Ｃ = 100
+		SOURCE:아픔 += 50
+	ENDIF
+
+	SOURCE:TARGET:성행위 = 250
+	SOURCE:TARGET:굴종 = 500
+	SOURCE:TARGET:일탈 = 250
+	IF IS_MALE(TARGET) && (TALENT:쾌감을부정 == 0 || ABL:욕망 > 2)
+		SOURCE:TARGET:반감 += 25
+	ELSE
+		SOURCE:TARGET:반감 += 250
+	ENDIF
+
+	;調教者に快Ｖ
+	SOURCE:PLAYER:쾌Ｖ += 200
+
+	;-------------------------------------------------
+	;射精チェック
+	;-------------------------------------------------
+
+	;射精先タイプの設定
+	TCVAR:TARGET:페니스사용대상 = PLAYER
+	TCVAR:TARGET:사정부위 = 1
+	TFLAG:사정대상선택가능 = 0
+
+	;-------------------------------------------------
+	;汚れの処理
+	;-------------------------------------------------
+	;射精に関係なく行われる処理はここから
+	;膣内に破瓜の血の汚れを付加
+	SIF TALENT:PLAYER:처녀 == 1 || TALENT:PLAYER:재생처녀 == 1
+		CALL SET_STAIN("질내", "破瓜の血", PLAYER)
+	;奴隷の膣内⇔調教者のＰの汚れが移動
+	CALL MOVE_STAIN("질내", TARGET, "페니스", PLAYER)
+
+	;-------------------------------------------------
+	;吸精処理
+	;-------------------------------------------------
+	IF CFLAG:PLAYER:ＭＡＧ비피흡수 == 0
+		LOCAL = (RAND:10+1) * BASE:LV
+		CALL DRAIN_MAG,PLAYER,LOCAL,TARGET
+	ELSEIF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+		LOCAL = (RAND:10+1) * BASE:LV
+		CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+	ENDIF
+
+	;-------------------------------------------------
+	;経験の処理
+	;-------------------------------------------------
+	;調教者のV経験
+	CALL ADDS_EXP("Ｖ경험", 1, PLAYER)
+
+	CALL ADDS_EXP("봉사쾌락경험", 1, PLAYER)
+	CALL ADDS_EXP("성교경험", 1, PLAYER)
+	CALL ADDS_EXP("삽입경험", 1, TARGET)
+	;수간경험
+	IF (TALENT:TARGET:짐승 || TALENT:TARGET:새) && !(TALENT:PLAYER:짐승 || TALENT:PLAYER:새)
+		CALL ADDS_EXP("수간경험", 1, PLAYER)
+	ENDIF
+
+	;処女で同性の場合異常経験
+	IF TALENT:PLAYER:처녀 && !IS_MALE(TARGET)
+		CALL ADDS_ABNORMAL_EXP("処女奪取（同性）", TARGET)
+		CALL ADDS_ABNORMAL_EXP("処女喪失（同性）", PLAYER)
+	ENDIF
+	;近親相姦の場合異常経験付与
+	IF 近親チェック(PLAYER , TARGET)
+		CALL ADDS_ABNORMAL_EXP( @"近親相姦（%RESULTS:0%）", PLAYER)
+		CALL ADDS_ABNORMAL_EXP( @"近親相姦（%RESULTS:1%）", TARGET)
+	ENDIF
+	;레즈경험
+	A = 4
+	IF IS_LESBIAN(TARGET,PLAYER)
+		CALL ADDS_EXP("레즈경험", A, TARGET)
+		CALL ADDS_EXP("레즈경험", A, PLAYER)
+	ELSEIF IS_GAY(TARGET,PLAYER)
+		CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+		CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+	ENDIF
+
+
+
+	;依存度ベクトル
+	TFLAG:33 = 1
+
+	;依存度補正値(主人かつ恋慕、淫乱、服従で1。親愛、娼婦、隷属で2）
+	IF (TALENT:연모 || TALENT:음란 || TALENT:복종) && ASSIPLAY == 0
+		TFLAG:30 += 1
+	ELSEIF (TALENT:친애 || TALENT:창부 || TALENT:예속) && ASSIPLAY == 0
+		TFLAG:30 += 2
+	ENDIF
+
+	;奉仕快楽フラグ
+	TFLAG:100 = 1
+ENDIF
+PRINTFORML ＜%조사처리(CALLNAME:TARGET, "로부터")% Ｖ 삽입 중＞
+
+
+;----------------------------------------------------------------------
+@EQUIP_P_INSERT_A_PLAYER
+;----------------------------------------------------------------------
+IF TEQUIP:PLAYER:Ａ섹스 > 0 && TEQUIP:PLAYER:Ａ섹스 < 2
+	;調教者←→調教対象
+	TFLAG:28 = 3
+
+	B += 750
+;	;再装填処理中は射精ゲージは20分の1に
+;	SIF CFLAG:PLAYER:射精ゲージ再装填 > 0
+;		B /= 20
+	SIF HAVE_PENIS(PLAYER)
+		BASE:PLAYER:사정 += B
+
+	;調教対象→調教者
+	TFLAG:28 = 1
+
+	LOSEBASE:체력 += 20
+	LOSEBASE:기력 += 80
+
+	SOURCE:TARGET:쾌Ｃ += 300
+	SOURCE:TARGET:성행위 += 250
+	SOURCE:TARGET:복종 = 250
+	SOURCE:TARGET:굴종 += 500
+	IF IS_MALE(TARGET) && (TALENT:쾌감을부정 == 0 || ABL:욕망 > 2)
+		SOURCE:TARGET:반감 = 25
+	ELSE
+		SOURCE:TARGET:반감 = 250
+	ENDIF
+
+	SOURCE:TARGET:불결 += 375
+
+	;調教者に快Ａ
+	SOURCE:PLAYER:쾌Ａ = 350
+
+	;抑圧、抵抗持ちには、抑鬱ソース追加
+	SIF TALENT:억압 || TALENT:저항
+		SOURCE:TARGET:울굴 += 350
+
+	;-------------------------------------------------
+	;射精チェック
+	;-------------------------------------------------
+
+	;射精先タイプの設定
+	TCVAR:TARGET:페니스사용대상 = PLAYER
+	TCVAR:TARGET:사정부위 = 2
+	;射精先選択の可・不可
+	TFLAG:사정대상선택가능 = 0
+
+
+	;-------------------------------------------------
+	;汚れの処理
+	;-------------------------------------------------
+	;射精に関係なく行われる処理はここから
+	;調教者のＡ⇔奴隷のＰの汚れが移動
+	CALL MOVE_STAIN("애널", PLAYER, "페니스", TARGET)
+
+	;-------------------------------------------------
+	;吸精処理
+	;-------------------------------------------------
+	IF CFLAG:PLAYER:ＭＡＧ비피흡수 == 0
+		LOCAL = (RAND:10+1) * BASE:LV
+		CALL DRAIN_MAG,PLAYER,LOCAL,TARGET
+	ELSEIF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+		LOCAL = (RAND:10+1) * BASE:LV
+		CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+	ENDIF
+
+	;-------------------------------------------------
+	;経験の処理
+	;-------------------------------------------------
+	;調教者のＡ経験
+	CALL ADDS_EXP("Ａ경험", 1, PLAYER)
+
+	CALL ADDS_EXP("봉사쾌락경험", 1, PLAYER)
+	CALL ADDS_EXP("성교경험", 1, PLAYER)
+	CALL ADDS_EXP("삽입경험", 1, TARGET)
+	;수간경험
+	IF (TALENT:TARGET:짐승 || TALENT:TARGET:새) && !(TALENT:PLAYER:짐승 || TALENT:PLAYER:새)
+		CALL ADDS_EXP("수간경험", 1, PLAYER)
+	ENDIF
+	;레즈경험
+	A = 4
+	IF IS_LESBIAN(TARGET,PLAYER)
+		CALL ADDS_EXP("레즈경험", A, TARGET)
+		CALL ADDS_EXP("레즈경험", A, PLAYER)
+	ELSEIF IS_GAY(TARGET,PLAYER)
+		CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+		CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+	ENDIF
+
+	;依存度ベクトル
+	TFLAG:33 = 3
+
+	;依存度補正値(主人かつ恋慕、淫乱、服従で1。親愛、娼婦、隷属で2）
+	IF (TALENT:연모 || TALENT:음란 || TALENT:복종) && ASSIPLAY == 0
+		TFLAG:30 += 1
+	ELSEIF (TALENT:친애 || TALENT:창부 || TALENT:예속) && ASSIPLAY == 0
+		TFLAG:30 += 2
+	ENDIF
+
+	;奉仕快楽フラグ
+	TFLAG:100 = 1
+
+ENDIF
+PRINTFORML ＜%조사처리(CALLNAME:TARGET, "로부터")% Ａ 삽입 중＞
+
+
+
+
+;-------------------------------------------------
+@REMOVE_P_INSERT_V_TARGET
+;-------------------------------------------------
+IF TEQUIP:TARGET:Ｖ섹스 > 0
+	TFLAG:18 = 1
+	TEQUIP:TARGET:Ｖ섹스 = -1
+	DOWNBASE:TARGET:체력 += 10
+	DOWNBASE:TARGET:기력 += 10
+;	SOURCE:TARGET:쾌Ｖ += 200
+	SOURCE:TARGET:정애 = 10
+	SOURCE:TARGET:노출 = 10
+	SOURCE:TARGET:일탈 = 10
+ELSE
+	TEQUIP:TARGET:Ｖ섹스 = 0
+ENDIF
+SIF TFLAG:18 == 1 && TEQUIP:TARGET:Ｖ섹스 == -1
+	PRINTFORML ＜Ｖ 삽입 해제＞
+
+;-------------------------------------------------
+@REMOVE_P_INSERT_A_TARGET
+;-------------------------------------------------
+IF TEQUIP:TARGET:Ａ섹스 > 0
+	TFLAG:18 = 1
+	TEQUIP:TARGET:Ａ섹스 = -1
+	DOWNBASE:TARGET:체력 += 10
+	DOWNBASE:TARGET:기력 += 10
+;	SOURCE:TARGET:쾌Ａ += 200
+	SOURCE:TARGET:정애 = 10
+	SOURCE:TARGET:노출 = 10
+	SOURCE:TARGET:일탈 = 10
+ELSE
+	TEQUIP:TARGET:Ａ섹스 = 0
+ENDIF
+SIF TFLAG:18 == 1 && TEQUIP:TARGET:Ａ섹스 == -1
+	PRINTFORML ＜Ａ 삽입 해제＞
+
+;-------------------------------------------------
+@REMOVE_F_INSERT_V_TARGET
+;-------------------------------------------------
+IF TEQUIP:TARGET:Ｖ손가락삽입 > 0
+	TFLAG:18 = 1
+	TEQUIP:TARGET:Ｖ손가락삽입 = -1
+	DOWNBASE:TARGET:체력 += 10
+	DOWNBASE:TARGET:기력 += 10
+;	SOURCE:TARGET:쾌Ｖ += 60
+	SOURCE:TARGET:정애 = 10
+	SOURCE:TARGET:노출 = 10
+	SOURCE:TARGET:일탈 = 10
+ELSE
+	TEQUIP:TARGET:Ｖ손가락삽입 = 0
+ENDIF
+SIF TFLAG:18 == 1 && TEQUIP:TARGET:Ｖ손가락삽입 == -1
+	PRINTFORML ＜손가락 Ｖ 삽입 해제＞
+
+;-------------------------------------------------
+@REMOVE_F_INSERT_A_TARGET
+;-------------------------------------------------
+IF TEQUIP:TARGET:Ａ손가락삽입 > 0
+	TFLAG:18 = 1
+	TEQUIP:TARGET:Ａ손가락삽입 = -1
+	DOWNBASE:TARGET:체력 += 10
+	DOWNBASE:TARGET:기력 += 10
+;	SOURCE:TARGET:쾌Ａ += 50
+	SOURCE:TARGET:정애 = 10
+	SOURCE:TARGET:노출 = 10
+	SOURCE:TARGET:일탈 = 10
+ELSE
+	TEQUIP:TARGET:Ａ손가락삽입 = 0
+ENDIF
+SIF TFLAG:18 == 1 && TEQUIP:TARGET:Ａ손가락삽입 == -1
+	PRINTFORML ＜손가락 Ａ 삽입 해제＞
+
+;-------------------------------------------------
+@REMOVE_P_INSERT_V_PLAYER
+;-------------------------------------------------
+IF TEQUIP:PLAYER:Ｖ섹스 > 0
+	TFLAG:18 = 1
+	TEQUIP:PLAYER:Ｖ섹스 = -1
+	DOWNBASE:TARGET:체력 += 10
+	DOWNBASE:TARGET:기력 += 10
+;	SOURCE:TARGET:쾌Ａ += 50
+	SOURCE:TARGET:정애 = 10
+	SOURCE:TARGET:노출 = 10
+	SOURCE:TARGET:일탈 = 10
+ELSE
+	TEQUIP:PLAYER:Ｖ섹스 = 0
+ENDIF
+SIF TFLAG:18 == 1 && TEQUIP:PLAYER:Ｖ섹스 == -1
+	PRINTFORML ＜Ｖ 삽입 해제(조교자)＞
+	
+;-------------------------------------------------
+@REMOVE_P_INSERT_A_PLAYER
+;-------------------------------------------------
+IF TEQUIP:PLAYER:Ａ섹스 > 0
+	TFLAG:18 = 1
+	TEQUIP:PLAYER:Ａ섹스 = -1
+	DOWNBASE:TARGET:체력 += 10
+	DOWNBASE:TARGET:기력 += 10
+;	SOURCE:TARGET:쾌Ａ += 50
+	SOURCE:TARGET:정애 = 10
+	SOURCE:TARGET:노출 = 10
+	SOURCE:TARGET:일탈 = 10
+ELSE
+	TEQUIP:PLAYER:Ａ섹스 = 0
+ENDIF
+SIF TFLAG:18 == 1 && TEQUIP:PLAYER:Ａ섹스 == -1
+	PRINTFORML ＜Ａ 삽입 해제(조교자)＞

@@ -1,0 +1,169 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:TALK.ERB
+;	Facility	:戦闘中のTALK選択時の処理を行う
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/01/10		Ｎ鳥					TALK_COMMONを使用するように変更。
+;	003		2012/02/09		ネトリス				魅了状態時の処理追加
+;	004		2013/03/12		ネトリス				命乞い処理を追加
+;	005		2020/05/05		がめら					セカンドハロー対応。「ヤラせてもらう」「犯してもらう」の判定をTALK PLAYERの素質・能力で緩和するように。
+;	006		2021/04/23		JK好き					主人以外TALKでの分岐条件不足を解消
+;	007		2023/04/15		P(bazzile)				ナビの判断用にTALKのの結果をグローバルな変数で取得できるように
+;													ものもらいと立ち去るの戻り値がおかしかった不具合を修正したのにあわせて、既存の状態が正式仕様になるように処理を改変
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=====================================================================
+;戦闘中の悪魔会話の処理
+;=====================================================================
+
+;=====================================================================
+;悪魔会話
+;=====================================================================
+@TALK,ARG
+#DIM LCOUNT
+
+SIF GETBIT(FLAG:목숨구걸플래그, 1) || GETBIT(FLAG:목숨구걸플래그, 2)
+	GOTO 命乞い
+
+PLAYER = MASTER
+
+
+
+IF CFLAG:ARG:언노운플래그 == 1
+	PRINTFORMW 정체를 알 수 없어, 접촉할 수 없다
+	RETURN 0
+ENDIF
+
+IF CFLAG:ARG:결렬플래그 == 1
+	PRINTFORMW %ARG는% 싸울 생각이다
+	RETURN 0
+ENDIF
+
+IF GROUPMATCH(ABL:ARG:회화타입, 0, 331)
+	IF CFLAG:ARG:TALK시특수메시지행수 > 0
+		CALL MESSAGE_B,CFLAG:ARG:TALK시특수메시지행수,CSTR:ARG:TALK시특수메시지1,CSTR:ARG:TALK시특수메시지2,CSTR:ARG:TALK시특수메시지3,CSTR:ARG:TALK시특수메시지4,CSTR:ARG:TALK시특수메시지5
+	ELSE
+		PRINTFORMW 말이 통하지 않는다！
+		PRINTFORMW %ARG는% 싸울 생각이다
+	ENDIF
+	CFLAG:ARG:결렬플래그 = 1
+	RETURN 0
+ENDIF
+
+
+;簡易処理
+IF !FLAG:TALK실행자선택불능 && FLAG:주인이외TALK가능 && (CFLAG:(FINDCHARA(NO,NO:ARG)):PT플래그 == 0 || SOFT_ON("세컨드헬로") || (CFLAG:(FINDCHARA(NO,NO:ARG)):PT플래그 == 1 && CFLAG:(FINDCHARA(NO,NO:ARG)):소속ＣＯＭＰ == -1))
+	;魅了状態の仲間がいる場合、10％の確率で勝手に会話をする
+	IF FLAG:무후후전개
+		FOR LCOUNT, 1, 6
+			SIF POS(LCOUNT) == -1
+				CONTINUE
+			SIF !(CFLAG:(POS(LCOUNT)):상태이상 == GET_STATE_NUM("CHARM"))
+				CONTINUE
+			SIF TALENT:(POS(LCOUNT)):남자 == 1
+				CONTINUE
+			IF RAND:100 < 10
+				PRINTFORMW %CALLNAME:(POS(LCOUNT))%이(가) 비틀거리며 %CALLNAME:ARG%의 앞으로 걸어 나왔다
+				PLAYER = POS(LCOUNT)
+				GOTO 魅了会話
+			ENDIF
+		NEXT
+	ENDIF
+	CALL SHOW_NOW_FORMATION_P,0,2,0
+	PRINTL 누가 대화할까？
+	$INPUT_LOOP
+	ONEINPUT
+	LOCAL = RESULT
+	IF LOCAL > 0 && LOCAL < 7
+		SIF POS(LOCAL) == -1
+			GOTO INPUT_LOOP
+		SIF  陥落(POS(LOCAL)) == 0 && POS(LOCAL) != MASTER
+			CALL INPUTABLE_CHARA,POS(LOCAL)
+		SIF RESULT == 0
+			GOTO INPUT_LOOP
+		PLAYER = POS(LOCAL)
+	ELSE
+		GOTO INPUT_LOOP
+	ENDIF
+ELSE
+	PLAYER = MASTER
+ENDIF
+$魅了会話
+$命乞い
+CUSTOMDRAWLINE ・
+CALL TALK_COMMON,ARG
+
+PRINTL
+
+;---- EDIT 007 MOD START -------------------------
+;RESULT: 1 	なかま2 ものもらい3 襲われる4 おこらせる5 単に会話終了　6立ち去る　7逃げられた
+;			8仲魔になる交渉は成功したが仲魔にならなかった 9.直接仲魔になる加入するイベント蛾発生した。
+TFLAG:교섭결과 = RESULT;EDIT 007 ADD
+TFLAG:교섭대상 = ARG;EDIT 007 ADD
+
+;RETURN 1は戦闘終了になる
+;が、仕様ミスで2と6の戻り値が正しくなかったんで2と6は続行されてた
+;本来の仕様にいまさらするのもということで、戦闘継続をデフォルトの仕様に変更
+SELECTCASE RESULT
+	;CASE 1,2,6
+	CASE 1, 8, 9
+		FLAG:승리플래그 = 1
+		RETURN 1
+	;CASE 2, 4, 5
+	CASE 2, 4, 5, 6, 7
+		RETURN 0
+	CASE 3
+		RETURN 2
+	CASEELSE
+		RETURN 0
+ENDSELECT
+;---- EDIT 007 MOD END ---------------------------
+
+;=====================================================================
+;仲魔を外す処理
+;=====================================================================
+
+;=====================================================================
+;物をもらう
+;=====================================================================
+@GIFT_PUBLIC,ARG
+$GIFT
+SIF RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2) + CFLAG:ARG:우호도 < 50
+	GOTO GET_DAMAGE
+SIF RAND:2 == 0
+	GOTO GETMONEY
+GOTO GETMAG
+
+
+$GETMONEY
+LOCAL:2 = CSVBASE(NO:ARG,GETNUM(BASE,"LV"),0) * (300 + RAND:1000) * 5 /100
+PRINTFORMW %PLAYER는% ￥{LOCAL:2} 손에 넣었다
+MONEY += LOCAL:2
+RETURN 5
+
+$GETMAG
+LOCAL:2 = CSVBASE(NO:ARG,GETNUM(BASE,"LV"),0) * (600 + RAND:1500) * 5 /100
+PRINTFORMW %PLAYER는% {LOCAL:2}MAG 손에 넣었다
+CALL CONTROL_MAG,PLAYER,LOCAL:2
+RETURN 5
+
+$GET_DAMAGE
+PRINTFORMW %PLAYER는% 데미지를 받았다
+CALL VAR_HP,PLAYER,-MAXBASE:PLAYER:ＨＰ/5,"食いしばり無効ダメージ"
+RETURN 5
+
+;=====================================================================
+;式中関数
+;=====================================================================
+@바친캐릭터()
+#FUNCTION
+RETURNF TFLAG:바친캐릭터
+@교섭대상()
+#FUNCTION
+RETURNF TFLAG:교섭대상
+

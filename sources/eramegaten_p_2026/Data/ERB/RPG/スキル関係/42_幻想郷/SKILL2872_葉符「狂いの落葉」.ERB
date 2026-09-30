@@ -1,0 +1,184 @@
+﻿;210820	NEO		火炎相性攻撃スキルから支援スキルへ変更（９割新造）
+;				味方回避+1、敵命中-1の「半スクカジャ＋半スクンダ」、PT内に穣子がいる状況で静葉が使用するとさらに回避か命中効果が付与される
+
+
+;スキル名
+@SKILL_NAME_2872,ARG
+RESULTS = 엽부「광기의낙엽」
+
+;　명중
+@SKILL_HITRATE_2872, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2872, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2872,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2872,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2872, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+;　「スクカジャ12＋スクンダ12」の半分なので12……しかし命中回避-2のフォッグブレスが消費48。
+;　当スキルの効果は「회피+2」または「명중-2」と言い換えることもでき、味方回避率が上がる方が強いこと、また、追加効果があるため、ちょっと増
+@SKILL_COST_2872,ARG
+RETURN 28
+
+;支援だがその場合はたいてい剣撃
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2872
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+;　支援スキル
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2872, ARG
+RETURN GET_SKILL_TARGET_NUM("전투전체")
+
+;　사거리
+@SKILL_RANGE_2872,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2872,ARG
+RETURN GET_SPHERE_NUM("적아군전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2872, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2872
+RETURN GET_SUCCESSION_NUM("지원")
+;화염
+
+;속도보정
+@SKILL_SPEED_2872, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2872
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2872, ARG = -1
+RETURN 12
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2872, ARG, ARG:1, ARG:2
+#DIM LCOUNT
+#DIM L_RAND
+L_RAND = RAND:2
+FOR LCOUNT, 1, 17
+	SIF !IS_TARGET_ABLE(POS(LCOUNT))
+		CONTINUE
+	IF SKILL_CHANGE(ARG, [[キャラ:시즈하]]) &&  FINDCHARA_B([[キャラ:미노리코]]) == 2
+		IF L_RAND
+			IF IS_FRIEND(ARG, POS(LCOUNT))
+				CALL SKILL_SET_カジャンダ, ARG, ARG, "회피", 4, "단체", "NOWAIT"
+			ELSE
+				CALL SKILL_SET_カジャンダ, ARG, ARG, "命中_回避", -4, "단체", "NOWAIT"
+			ENDIF
+		ELSE
+			IF IS_FRIEND(ARG, POS(LCOUNT))
+				CALL SKILL_SET_カジャンダ, ARG, ARG, "命中_回避", 4, "단체", "NOWAIT"
+			ELSE
+				CALL SKILL_SET_カジャンダ, ARG, ARG, "명중", -4, "단체", "NOWAIT"
+			ENDIF
+		ENDIF
+	ELSE
+		IF IS_FRIEND(ARG, POS(LCOUNT))
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "회피", 4, "단체", "NOWAIT"
+		ELSE
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "명중", -4, "단체", "NOWAIT"
+		ENDIF
+	ENDIF
+NEXT
+WAIT
+;#LOCALSIZE 5
+;コストを支払う
+;CALL PAY_COST,ARG,502
+
+
+;IF CFLAG:(ARG):PT플래그 == 0
+;	LOCAL:1 = 7
+;	LOCAL:2 = 17
+;	LOCAL:3 = 1
+;	LOCAL:4 = 7
+;ELSE
+;	LOCAL:1 = 1
+;	LOCAL:2 = 7
+;	LOCAL:3 = 7
+;	LOCAL:4 = 17
+;ENDIF
+;
+;FOR LOCAL,LOCAL:1,LOCAL:2
+;	SIF POS(LOCAL) < 0
+;		CONTINUE
+;	CFLAG:POS(LOCAL):회피강화 = MIN(32, CFLAG:POS(LOCAL):회피강화 + 4)
+;NEXT
+;PRINTFORML \@ CFLAG:ARG:PT플래그 == 0 ? 敵 # 味方 \@の回避率が上がった！
+;FOR LOCAL,LOCAL:3,LOCAL:4
+;	SIF POS(LOCAL) < 0
+;		CONTINUE
+;	CFLAG:POS(LOCAL):명중강화 = MAX(-16, CFLAG:POS(LOCAL):명중강화 - 4)
+;NEXT
+;PRINTFORMW \@ CFLAG:ARG:PT플래그 == 2 ? 敵 # 味方 \@の命中率が下がった！
+;
+;;静葉が使用時、かつPTに穣子がいる場合
+;IF SKILL_CHANGE(ARG, [[キャラ:시즈하]]) &&  FINDCHARA_B([[キャラ:미노리코]]) == 2
+;	IF RAND:2 == 0
+;		FOR LOCAL,LOCAL:1,LOCAL:2
+;			SIF POS(LOCAL) < 0
+;				CONTINUE
+;			CFLAG:POS(LOCAL):회피강화 = MIN(32, CFLAG:POS(LOCAL):회피강화 + 4)
+;		NEXT
+;		PRINTFORMW 高まる秋力により、さらに\@ CFLAG:ARG:PT플래그 == 0 ? 敵 # 味方 \@の回避率が上がった！
+;	ELSE
+;		FOR LOCAL,LOCAL:3,LOCAL:4
+;			SIF POS(LOCAL) < 0
+;				CONTINUE
+;			CFLAG:POS(LOCAL):명중강화 = MAX(-16, CFLAG:POS(LOCAL):명중강화 - 4)
+;		NEXT
+;		PRINTFORMW 高まる秋力により、さらに\@ CFLAG:ARG:PT플래그 == 2 ? 敵 # 味方 \@の命中率が下がった！
+;	ENDIF
+;ENDIF
+;
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2872, ARG
+PRINTL 전장 전체에 단풍을 흩날려 시야를 가리고 아군 회피를 상승시키며 적 명중을 낮춘다
+PRINTL 여동생인 지모신 아키 미노리코가 파티 내에 존재하면 가을력이 높아진다!
+PRINTL (추가로 아군 회피 플러스 혹은 적 명중 마이너스 효과가 추가된다)
+PRINTL 지모신　아키 시즈하의 스펠카드
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2872,ARG
+RETURN 1
+;とくにない
+

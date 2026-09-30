@@ -1,0 +1,136 @@
+﻿;221013		NEO		説明文などを変更、演出を追加
+;					ブラッドヒート状態の強化を追加：ラストイッパツ「スライダー」部分を追加
+;					ちょっと素で強いんだよねぇこのスキル……
+;					「スヴィア・ブレイク」部分、２発にしようかと思ったが、メルブラ原作の方で多段ヒットなのよねぇ。
+
+;スキル名
+@SKILL_NAME_2982,ARG
+RESULTS = 스피어・브레이크・슬라이더
+SIF  GETBIT (FLAG:커스텀게임화면,1)
+	RESULTS = 스비아 브레이크 슬라이더
+
+;　명중
+@SKILL_HITRATE_2982, ARG
+RETURN 80
+
+;　威力
+@SKILL_POWER_2982, ARG
+RETURN 250
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2982,ARG
+RETURN 3
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2982,ARG
+RETURN 7
+
+;一体辺りの最大ＨＩＴ数
+@SKILL_MAXATK_PER_2982,ARG
+RETURN 4
+
+;一体辺りの最低ＨＩＴ数
+@SKILL_MINATK_PER_2982,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2982, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2982,ARG
+RETURN 50
+
+;　相性
+@SKILL_TYPE_2982,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2982
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2982, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2982, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2982,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2982,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2982, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2982
+RETURN GET_SUCCESSION_NUM("만능")
+
+@継承不能_2982
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_2982, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2982
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2982, ARG = -1
+RETURN 15
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2982, ARG, ARG:1, ARG:2
+
+	;メッセージ表示
+	;HP条件をチェックし、強化状態であったら「BLOOD HEAT!!」を表示する
+	CALL MELTY_BLOOD_IS_BLOOD_HEAT_HP_CONDITIONS(ARG)
+
+	CALL ATTACK_RAND, ARG, ARG:1, 2982
+
+	;おまじない：ブラッドヒート状態で青子が使用した場合のみ全体攻撃「スライダー」を追加
+	IF 現HP割合(ARG) < 33 && SKILL_CHANGE(ARG, [[キャラ:아오코]])
+
+		PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃[{CPOS(ARG),2}] %CALLNAME:ARG,21,LEFT%┃　┃슬라이더!　　　　　　　　　　　　　　┃
+		PRINTFORML ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+		;味方の場合
+		IF CFLAG:(ARG):PT플래그 >= 1
+			CALL ATTACK_FIELD, ARG, (22),2982
+		ELSE
+			CALL ATTACK_FIELD, ARG, (19),2982
+		ENDIF
+	ENDIF
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2982, ARG
+PRINTL 적 전체 무작위 대상을 향해 만능 상성으로 중위력의 마법 공격을 최대 7회 행한다.
+PRINTL 사용자의 HP가 얼마 남지 않았을 경우 적 전체를 대상으로 추격을 행한다.
+PRINTL 　
+PRINTL 굵디굵은 빔을 양팔에서 뿜어낸다.
+PRINTL 마법사 아오자키 아오코의 필살기
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2982,ARG
+RETURN 1
+;とくにない
+

@@ -1,0 +1,57 @@
+﻿
+
+;====================
+;条件
+;====================
+@GET_EVENT_NAME_91
+#FUNCTIONS
+RESULTS_F '= "데몬패러사이트"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_91
+;メガテン系イベント以外不許可の場合
+SIF !GETS_USEABLE_EXTRA_TITLE("デモンパラサイト")
+	RETURN 0
+SIF GET_PAYMENT_RANK() < 1
+	RETURN 0
+;初期開放
+IF イベントフラグ:91:0 == 0
+	RESULTS = （EX:DP）악마빙의자의 소문
+	RETURN 1
+;あなたのレベル10以上
+ELSEIF イベントフラグ:91:0 == 1 && BASE:MASTER:30 >= 10
+	RESULTS = （EX:DP）연분홍색의 소녀・내방
+	RETURN 1
+ELSEIF イベントフラグ:91:0 == 2
+	RESULTS = （EX:DP）연분홍색의소녀・재방
+	RETURN 1
+ELSEIF イベントフラグ:91:0 == 3 && BASE:MASTER:30 >= 15
+	RESULTS = （EX:DP）야마토 나데시코
+	RETURN 1
+ELSEIF イベントフラグ:91:0 == 4 && イベントフラグ:91:9 == 0
+	;RESULTS = デモパラパッチ・デバッグ処理
+	;RETURN 1
+ENDIF
+RETURN 0
+
+
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_91
+IF イベントフラグ:91:0 == 0
+	CALL EVENT_91_0
+	RETURN 0
+ENDIF
+IF イベントフラグ:91:0 == 1 || イベントフラグ:91:0 == 2
+	CALL EVENT_91_1
+	RETURN 0
+ENDIF
+IF イベントフラグ:91:0 == 3
+	CALL EVENT_91_3
+	RETURN 0
+ENDIF
+;IF イベントフラグ:91:0 == 4 && イベントフラグ:91:9 == 0
+;	CALL EVENT_91_99
+;	RETURN 0
+;ENDIF

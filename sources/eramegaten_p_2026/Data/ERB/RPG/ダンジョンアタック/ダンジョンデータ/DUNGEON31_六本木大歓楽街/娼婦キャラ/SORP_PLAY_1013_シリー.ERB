@@ -1,0 +1,88 @@
+﻿;シリー(드리아드)
+@SORP_PLAY_1013, ARGS
+#DIMS DYNAMIC ICON_ADDRESS
+ICON_ADDRESS = 68_シリー
+SELECTCASE ARGS
+	CASE "娼婦番号"
+		RESULTS = [1013]
+	CASE "キャラ名"
+	RESULTS = 실리
+	CASE "指名名"
+	RESULTS = 실리(드리아드)
+	CASE "所属"
+		;表なら1、裏なら2
+		RETURN 1
+	CASE "判定"
+		;指名可能なら0、不可なら1
+		;ナヴィ身請け済なら出現
+		CALL SORP_PLAY_1003, "判定"
+		SIF !RESULT
+			RETURN 1
+		RETURN 0
+	CASE "価格"
+		RETURN 500
+	CASE "紹介文"
+		IF 六本木娼婦フラグ:13 == 0
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"과연, 실리 양을 희망하십니까/나비 양에게 소개라도 받으셨습니까？/같은 고향에서 자란 후배라고 하더군요"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그녀는 보시다시피 드리아드인지라/손님께서 이전에 인수하셨던 나비 양 같은 화려함은 없습니다만/그 복잡하게 뒤엉켜오는 몸놀림은 이미 수많은 이를 포로로 만들었을 정도입니다"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그녀도 수목의 정령 피를 이어받은 자이기에/손님의 MAG를 평소 이상으로 흡수할 것으로 보입니다/부디, 탈진하지 않도록 조심해 주십시오…"
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"과연, 실리 양입니까/손님, 아무래도 실리 양 마음에 드신 모양이군요/"
+		ENDIF
+	CASE "確認"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그럼, 실리 양입니다만…/하룻밤에 ５００마카가 되겠습니다/"
+	CASE "プレイ口上"
+		CALL DUNGEON_WORP,1,14,2
+		IF 六本木娼婦フラグ:13 == 0
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"실리", @"처음 뵙겠습니다, 실리라고 해요/저도 가끔 교대로 호객에 참여하곤 하니까, 그쪽도 잘 부탁해요☆/"
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"실리", @"그대의 하얀 이슬은 대체 어떤 맛이 날까나？/후후… 잘 먹겠습니다아☆/"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+			CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"/＞즐겁게 놀았습니다…/"
+			六本木娼婦フラグ:13 = 1
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"실리", @"또 와주셔서 기뻐요/이 거리에서 맛본 것 중에는, 그대의 MAG가 제일 끝내주네요☆/"
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"실리", @"그럼 오늘도… 잘 먹겠습니다아☆//"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+			CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"/＞즐겁게 놀았습니다…/"
+		ENDIF
+		EXP:MASTER:삽입경험 += ABL:MASTER:욕망 * 4 + 1
+		EXP:MASTER:절정경험 += ABL:MASTER:욕망 * 2
+		JUEL:MASTER:쾌Ｃ += ABL:MASTER:욕망 * (500) + 500
+		JUEL:MASTER:쾌Ｂ += ABL:MASTER:욕망 * (300) + 300
+		IF !TALENT:MASTER:남자
+			EXP:MASTER:레즈경험 += ABL:MASTER:욕망 * 2 + 1
+			JUEL:MASTER:쾌Ｖ += ABL:MASTER:욕망 * (200) + 200
+		ENDIF
+		IF TALENT:MASTER:남자 || TALENT:MASTER:후타나리
+			EXP:MASTER:질사경험 += ABL:MASTER:욕망 * 2
+			EXP:MASTER:사정경험 += ABL:MASTER:욕망 * 5
+		ENDIF
+		IF TALENT:MASTER:모유체질
+			EXP:MASTER:분유경험 += (ABL:MASTER:욕망 + 1) * 3
+			JUEL:MASTER:쾌Ｂ += (ABL:MASTER:욕망 + 1) * 500
+			CALL CONTROL_MAG, MASTER, -(ABL:MASTER:욕망 * 5000 + 1000)
+		ENDIF
+		JUEL:MASTER:욕정 += ABL:MASTER:욕망 * (500) + 300
+		JUEL:MASTER:습득 += ABL:MASTER:욕망 * (500) + 300
+		CALL CONTROL_MAG, MASTER, -(ABL:MASTER:욕망 * 20000 + 1000)
+		;CALL INCREASE_LC,5  意図が不明かつ変動量が強烈で、ユーザー側から認識できない場所での変動なので除外します。必要性があって再実装する場合は右記の点に注意して再実装してください。
+	CASE "身受け価格"
+		RETURN 99999
+	CASE "身受け確認"
+		;
+	CASE "身受け口上"
+		;
+	CASE "宣伝"
+		PRINTL
+		PRINTL 실리
+		SETCOLOR COLOR("ハートピンク")
+		PRINTL 『맛있는 것을 원합니다☆』
+		RESETCOLOR
+		PRINTW (편집자 주기: 취미는 맛집 탐방이라고 합니다. 마음에 든다면 무언가 먹을 것을 사다 주면 좋겠지요)
+	CASE "リスト"
+		RESULTS '= ICON_ADDRESS
+
+		RESULTS:1 = 맛있는 ……을 원합니다☆
+ENDSELECT

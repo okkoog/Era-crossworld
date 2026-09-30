@@ -1,0 +1,45 @@
+﻿
+;スキル名
+@SKILL_NAME_AW_112,ARG
+RESULTS = 운명의 시각
+
+;　コストの量
+@SKILL_COST_AW_112,ARG
+RETURN 0
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_AW_112
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_AW_112, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입,制限なし
+@SKILL_SUCCESSION_TYPE_AW_112, ARG
+RETURN GET_SUCCESSION_NUM("자동효과")
+;　 説明文の表示
+@SKILL_EXPLAIN_AW_112, ARG
+PRINTL 여신 노른의 각성 스킬
+PRINTL 자동: 3의 배수 턴 종료 시 연동 효과 발동.
+PRINTL 「모든 아군의 공격력과 마법위력을 상승시킨다.」
+
+@SKILL_EXPLAIN_TOOLTIP_AW_112, ARG
+RESULTS = 자동: 3의 배수 턴 종료 시 연동 효과 발동.
+RESULTS:1 = 「모든 아군의 공격력과 마법위력을 상승시킨다.」
+
+@SKILL_ACTIONABLE_BATTLE_AW_112, ARG
+RETURN 0
+
+@SKILL_TURNEND_AW_112, ARG
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+	RETURN 0
+;入力可能な状態じゃないとだめ
+SIF !ACTIONABLE_CHARA_F(ARG)
+	RETURN 0
+;規定のターンじゃないとダメ
+SIF FLAG:경과턴수 % 3 != 2
+	RETURN 0
+CALL PRINT_ACT_MESSAGE, ARG,  SKILL_NUM_F("각성스킬"), , , , "NOWAIT"
+CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ? 19 # 22, "공격/마법위력", 4, "範囲"

@@ -1,0 +1,178 @@
+﻿
+
+;スキル名
+@SKILL_NAME_4121,ARG
+RESULTS = 라이트스매셔
+;　명중
+@SKILL_HITRATE_4121, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_4121, ARG
+SIF FLAG:공격횟수 == 1
+	RETURN 135
+RETURN 160
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_4121,ARG
+RETURN 2
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_4121,ARG
+RETURN 2
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_4121, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;コストの量
+@SKILL_COST_4121, ARG, ARG:1
+	RETURN 2
+;　相性
+@SKILL_TYPE_4121,ARG
+SIF FLAG:공격횟수 == 1
+	RETURN GET_TYPE_NUM("파마")
+RETURN GET_TYPE_NUM("전술")
+;　1EXTRAか2MAGICか
+
+@SKILL_DECIDE_TYPE_4121
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_4121, ARG
+SIF FLAG:공격횟수 == 1
+	RETURN 2
+RETURN 1
+
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_4121, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_4121,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_4121,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_4121, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_4121
+RETURN GET_SUCCESSION_NUM("계통없음")
+
+;속도보정
+@SKILL_SPEED_4121, ARG = -1
+RETURN 20
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_4121
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_4121, ARG = -1
+RETURN 0
+
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_4121,ARG
+RETURN GET_STATE_NUM("DYING")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_4121,ARG
+RETURN GET_TYPE_NUM("파마")
+
+;基礎値
+@SKILL_ADDTIONAL_BASE_RATE_4121,ARG
+RETURN 30
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_4121,ARG
+RETURN 50
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_4121, ARG, ARG:1, ARG:2
+CALL ATTACK_SINGLE,ARG,POS(ARG:1),4121
+
+
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_4121, ARG
+PRINTL 적 １체에 전술 상성＋파마상성의 데미지
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_4121,ARG
+CALL CHECK_COST, ARG, 4121
+SIF RESULT == 0
+	RETURN 0
+RETURN 1
+;とくにない
+
+
+;=====================================================
+;リンケージ設定
+;=====================================================
+@LINKAGE_4121
+RETURN 1
+
+@参加人数_4121
+RETURN 1
+
+@参加条件表示_4121,ARG
+SELECTCASE ARG
+	CASE 1
+		PRINTFORM 파마계 마법
+	CASE 2
+		PRINTFORM 전술계 １체 물리
+ENDSELECT
+
+@発動者条件_4121 , ARG
+;戦技相性の単体物理攻撃スキルを使用可能なこと
+CALL HAVE_SKILL_SEARCH(ARG, "전술", "단체", "공격", "物理")
+RETURN RESULT
+
+
+@参加者条件_4121, ARG , ARG:1
+SIF CPOS(ARG) < 1 || CPOS(ARG) > 6
+	RETURN 0
+CALL CHECK_COST_LINCAGE, ARG, 4121, ARG:1
+SIF RESULT == 0
+	RETURN 0
+SELECTCASE ARG:1
+	CASE 1
+		;破魔相性の魔法スキルを使用可能なこと
+		CALL HAVE_SKILL_SEARCH(ARG, "파마", , , "魔法", 4121)
+		RETURN RESULT
+ENDSELECT
+@リンケージ能力参照者_4121, ARG
+	SIF FLAG:공격횟수 == 1
+		RETURN 1
+	RETURN 0
+
+@リンケージコストタイプ_4121, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 3
+ENDSELECT
+@リンケージコスト_4121, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 4
+ENDSELECT

@@ -1,0 +1,157 @@
+﻿
+
+;スキル名
+@SKILL_NAME_4970,ARG
+RESULTS = 이로하선배와순찰！
+
+;　명중
+@SKILL_HITRATE_4970, ARG
+RETURN 120
+
+;　威力
+@SKILL_POWER_4970, ARG
+RETURN 700
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_4970,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_4970,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_4970, ARG, ARG:1
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_4970, ARG
+RETURN 40
+
+;　相性
+@SKILL_TYPE_4970,ARG
+RETURN GET_TYPE_NUM("비구"), GET_TYPE_NUM("지변"), GET_TYPE_NUM("핵열")
+;비구＋지변＋핵열
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_4970
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_4970, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_4970, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_4970,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_4970,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_4970, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_4970
+RETURN GET_SUCCESSION_NUM("비구")
+
+;속도보정
+@SKILL_SPEED_4970, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_4970
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_4970, ARG = -1
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_4970, ARG, ARG:1, ARG:2
+;			PRINTFORML ┏┓ ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%"%
+;			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+CALL ATTACK_FIELD, ARG, ARG:1, 4970
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_4970, ARG
+PRINTL 이부키와 이로하가 둘이서 전차에 탑승해 강렬한 주포를 한 방 쏘아 적 전체에 비구 + 지변 + 핵열 물리 초특대 데미지
+PRINTL 이부키와 이로하의 합체기
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_4970,ARG
+CALL CHECK_COST,ARG,4970
+SIF RESULT == 0
+	RETURN 0
+RETURN 1
+;とくにない
+
+
+;=====================================================
+;リンケージ設定
+;=====================================================
+@LINKAGE_4970
+RETURN 1
+
+@参加人数_4970
+RETURN 1
+
+@参加条件表示_4970,ARG
+SELECTCASE ARG
+	CASE 1
+		PRINTFORM 【이부키】＆ LV40 이상
+	CASE 2
+		PRINTFORM 【이로하】
+ENDSELECT
+
+@発動者条件_4970 , ARG
+;イブキのレベル40以上じゃないとダメムリ
+SIF BASE:ARG:LV < 40
+	RETURN 0
+SIF NO:ARG == [[キャラ:이부키]]
+	RETURN 1
+RETURN 0
+
+@参加者条件_4970, ARG , ARG:1
+SIF CPOS(ARG) < 1 || CPOS(ARG) > 6
+	RETURN 0
+CALL CHECK_COST_LINCAGE, ARG, 4970, ARG:1
+SIF RESULT == 0
+	RETURN 0
+SELECTCASE ARG:1
+	CASE 1
+		SIF NO:ARG == [[キャラ:이로하]]
+			RETURN 1
+		RETURN 0
+ENDSELECT
+@リンケージ能力参照者_4970, ARG
+	SIF FLAG:공격횟수 == 1
+		RETURN 1
+	RETURN 0
+
+@リンケージコストタイプ_4970, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 3
+ENDSELECT
+@リンケージコスト_4970, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 40
+ENDSELECT

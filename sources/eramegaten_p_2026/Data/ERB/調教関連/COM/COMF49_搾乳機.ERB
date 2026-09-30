@@ -1,0 +1,158 @@
+﻿;-------------------------------------------------
+;착유기
+;道具使用コマンド、レベル3
+;-------------------------------------------------
+@COMNAME49
+IF TEQUIP:착유기
+	RESULTS = 착유기 해제
+ELSE
+	RESULTS = 착유기
+ENDIF
+@ACT_COM49
+
+IF TEQUIP:25
+	PRINTL 촉수착유
+	TSTR:0 = 촉수착유
+	SELECTCOM = 165
+ELSE
+	PRINTL 착유기
+	TSTR:0 = 착유기
+ENDIF
+;CALL KOJO_MESSAGE_COM
+
+;着脱の処理
+IF TEQUIP:17 == 0
+	TEQUIP:17 = 1
+	;触手搾乳は触手の汚れを追加
+	IF TEQUIP:25
+		CALL SET_STAIN("가슴", "粘液", TARGET)
+	ENDIF
+ELSE
+	TEQUIP:17 = 0
+ENDIF
+
+;調教者→調教対象
+TFLAG:28 = 2
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 50
+DOWNBASE:TARGET:기력 += 100
+
+SOURCE:TARGET:도구쾌Ｂ = 200
+SOURCE:TARGET:아픔 = 100
+SOURCE:TARGET:중독충족 = 100
+SOURCE:TARGET:노출 = 30
+SOURCE:TARGET:굴종 = 100
+SOURCE:TARGET:일탈 = 100
+SOURCE:TARGET:반감 = 100
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;抑圧、抵抗持ちには、抑鬱ソース追加
+SIF TALENT:억압 || TALENT:저항
+	SOURCE:TARGET:울굴 += 100
+
+;中毒による中毒充足のソースは先に処理しておく
+;噴乳中毒を見る
+IF ABL:분유중독 == 0
+	TIMES SOURCE:TARGET:중독충족 , 0.00
+ELSEIF ABL:분유중독 == 1
+	TIMES SOURCE:TARGET:중독충족 , 0.30
+ELSEIF ABL:분유중독 == 2
+	TIMES SOURCE:TARGET:중독충족 , 0.60
+ELSEIF ABL:분유중독 == 3
+	TIMES SOURCE:TARGET:중독충족 , 0.90
+ELSEIF ABL:분유중독 == 4
+	TIMES SOURCE:TARGET:중독충족 , 1.20
+ELSEIF ABL:분유중독 == 5
+	TIMES SOURCE:TARGET:중독충족 , 1.50
+ELSEIF ABL:분유중독 == 6
+	TIMES SOURCE:TARGET:중독충족 , 1.80
+ELSEIF ABL:분유중독 == 7
+	TIMES SOURCE:TARGET:중독충족 , 2.10
+ELSEIF ABL:분유중독 == 7
+	TIMES SOURCE:TARGET:중독충족 , 2.40
+ELSEIF ABL:분유중독 == 9
+	TIMES SOURCE:TARGET:중독충족 , 3.00
+ELSEIF ABL:분유중독 >= 10
+	TIMES SOURCE:TARGET:중독충족 , 5.00
+ENDIF
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;触手搾乳なら、触手体液が胸に付く
+SIF TEQUIP:25
+	CALL SET_STAIN("가슴", "粘液", TARGET)
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+A = 1
+IF IS_LESBIAN(TARGET,PLAYER)
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, PLAYER)
+ELSEIF IS_GAY(TARGET,PLAYER)
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+ENDIF
+
+;触手召喚時、触手経験のリセットをする
+;SIF TEQUIP:25 == 1
+;	T = 0
+
+;依存度ベクトル
+TFLAG:33 = 3
+
+
+RETURN 1
+
+
+;-------------------------------------------------
+;装着継続の処理
+;-------------------------------------------------
+@EQUIP_COM49
+;搾乳器装備中
+IF TEQUIP:25
+	PRINTL ＜촉수착유 중＞
+ELSE
+	PRINTL ＜착유기 장착 중＞
+ENDIF
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+DOWNBASE:TARGET:체력 += 25
+DOWNBASE:TARGET:기력 += 50
+
+SOURCE:TARGET:도구쾌Ｂ += 100
+SOURCE:TARGET:아픔 += 50
+SOURCE:TARGET:중독충족 += 50
+SOURCE:TARGET:노출 += 15
+SOURCE:TARGET:굴종 += 50
+SOURCE:TARGET:일탈 += 50
+SOURCE:TARGET:반감 += 50
+
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+;触手経験加算
+SIF TEQUIP:25 == 1
+	CALL ADDS_EXP("촉수경험", 1, TARGET)
+;	T += 1
+
+
+RETURN 1
+
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_49
+RETURN COMTYPE("道具系")
+
+

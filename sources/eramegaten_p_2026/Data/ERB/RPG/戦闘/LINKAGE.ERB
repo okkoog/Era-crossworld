@@ -1,0 +1,477 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:LINKAGE.ERB
+;	Facility	:合体スキル用関数置き場
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2021/02/11		Rsp暇人 				ACTIONABLE_LINKAGEで使用されるD及びEの中身を参照型変数で保存するように。
+;													SHOW_LINKAGEで銃攻撃リンケージを表示でき、未解析のスキルを？？？？で表示するように。現在のパーティ編成で使用可能なリンケージは水色で表示するように。
+;	003		2021/01/20		Jガン					スキル参照のフラグなどを追加して、スキルの詳細が正しくなるように
+;	004		2021/04/22		Rsp暇人 				キャラクタ選択画面から発動可能なリンケージ一覧を表示し選択可能に。リンケージ参加者から参加リンケージをキャンセルできるように。
+;	005		2022/01/17		P(bazzile) 				リンケージの領域指定を定数化
+;	006		2024/05/26		P(bazzile) 				リンケージの発動者・参加者の判定に対して共通処理を追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;=================================================
+;リンケージ使用可能判定
+;================================================
+@ACTIONABLE_LINKAGE,ARG,ARG:1,REF_LOCAL
+#DIM REF REF_LOCAL, 0, 0, 0;MOD 002 ADD
+;対象スキルがそもそもリンケージじゃなかったら帰る
+;この処理はより上の階層に逃がす予定
+TRYCCALLFORM LINKAGE_{ARG}
+	SIF RESULT == 0
+		RETURN 0
+CATCH
+	RETURN 0
+ENDCATCH
+;発動者が条件を満たしているかチェック
+;---- EDIT 006 MOD START -------------------------
+;CALLFORM 発動者条件_{ARG},ARG:1
+CALL リンケージ発動者条件確認, ARG, ARG:1
+SIF RESULT == 0
+	RETURN 0
+;---- EDIT 006 MOD END ---------------------------
+;参加者の人数をチェック
+CALLFORM 参加人数_{ARG}
+LOCAL:1 = RESULT
+
+;条件を満たす参加者をDの枠に放り込む
+VARSET D , 0
+FOR LOCAL, 1 , LOCAL:1+1
+	FOR LOCAL:2 , 1 , 7
+		SIF POS(LOCAL:2) == -1
+			CONTINUE
+		;発動者は参加者になれない
+		SIF POS(LOCAL:2) == ARG:1
+			CONTINUE
+		U = ARG:1
+		;---- EDIT 004 ADD END ---------------------------
+		;CALLFORM 参加者条件_{ARG},POS(LOCAL:2),LOCAL
+		CALL リンケージ参加者条件確認, ARG,POS(LOCAL:2),LOCAL
+		SIF RESULT == 0
+			CONTINUE
+		;---- EDIT 006 MOD END ---------------------------
+		;参加可能ならREF_LOCALをONにする
+		SETBIT REF_LOCAL:(ARG-4000):0:LOCAL, LOCAL:2
+		;入力できない状態の人はそもそも無理
+		CALL INPUTABLE_CHARA , POS(LOCAL:2)
+		SIF RESULT == 0
+			CONTINUE
+		;別のリンケージに参加中のキャラは弾く
+		;---- EDIT 004 MOD START ---------------------------
+		SIF CFLAG:POS(LOCAL:2):링케이지참가 || CFLAG:POS(LOCAL:2):링케이지발동
+		;---- EDIT 004 MOD END ---------------------------
+			CONTINUE
+		SETBIT D:LOCAL ,LOCAL:2
+	NEXT
+NEXT
+;0があると駄目
+LOCAL:2 = 1
+FOR LOCAL, 1, LOCAL:1+1
+	LOCAL:2 = MIN(REF_LOCAL:(ARG-4000):0:LOCAL, LOCAL:2)
+NEXT
+SIF !LOCAL:2
+	RETURN 0
+;---- EDIT 002 MOD END ---------------------------
+
+
+
+;重複せずに全てが埋まる組み合わせがあるかをチェック
+;どうすんだこれ
+VARSET E , 0
+
+;まずLOCAL番目の条件を満たせるキャラが一人しか居ない場合、参加者LOCAL番目はそのキャラに決定
+;FOR LOCAL , 1 , LOCAL:1+1
+;	SIF C:LOCAL > 0
+;		CONTINUE
+;	FOR LOCAL:2 , 1 , 7
+;		IF D:LOCAL = POWER(2,LOCAL:2)
+;			C:LOCAL = POWER(2,LOCAL:2)
+;			;全てのDからLOCAL:2番目のビットを削除
+;			FOR LOCAL:3 , 1 , LOCAL:1+1
+;				D:(LOCAL:3) &= ~(POWER(2,LOCAL:2))
+;			NEXT
+;			GOTO LOOP
+;		ENDIF
+;	NEXT
+;NEXT
+
+FOR LOCAL:4 , 1 , 7
+	$LOOP1
+	;LOCAL番目の条件をLOCAL:4人が満たしている場合、番号の若い順に当てはめ
+	;当てはめたらまた一人からチェック
+	FOR LOCAL , 1 , LOCAL:1 + 1
+		SIF E:LOCAL > 0
+			CONTINUE
+		;人数を判定
+		LOCAL:3 = 0
+		FOR LOCAL:2 , 1 , 7
+			LOCAL:3 += GETBIT(D:LOCAL, LOCAL:2)
+		NEXT
+		;LOCAL:4人じゃなければ次へ
+		SIF LOCAL:3 != LOCAL:4
+			CONTINUE
+		FOR LOCAL:2 , 1 , 7
+			IF D:LOCAL & POWER(2,LOCAL:2)
+				E:LOCAL = POWER(2,LOCAL:2)
+				;---- EDIT 002 ADD START ---------------------------
+				REF_LOCAL:(ARG-4000):1:LOCAL = LOCAL:2
+				;---- EDIT 002 ADD END ---------------------------
+				;全てのDからLOCAL:2番目のビットを削除
+				FOR LOCAL:3 , 1 , LOCAL:1+1
+					D:(LOCAL:3) &= ~(POWER(2,LOCAL:2))
+				NEXT
+				LOCAL:4 = 0
+				GOTO LOOP1
+			ENDIF
+		NEXT
+	NEXT
+NEXT
+
+
+;Eに0が残ってたら駄目
+
+;---- EDIT 002 MOD START ---------------------------
+SETBIT FLAG:(GETNUM(FLAG, "링케이지애널라이즈")+ARG / 63), ARG % 63
+CALL CHECK_ACTIONABLE,ARG:1,ARG
+SIF MINARRAY(E,1,LOCAL:1+1) == 0 || RESULT == 0
+	RETURN -1
+;---- EDIT 002 MOD END ---------------------------
+RETURN 1
+
+;---- EDIT 004 MOD START ---------------------------
+;=================================================
+;リンケージ一覧表示
+;  ARG=0 非戦闘中、閲覧のみ 1 戦闘中発動者固定で一覧表示 2 属性を無視して発動可能なリンケージを列記して直接選択し発動可能
+;================================================
+@SHOW_LINKAGE, ARG, L_CHARA = -1
+#DIM DYNAMIC L_CHARA
+#LOCALSIZE 4
+#LOCALSSIZE 1
+#DIM TYPE, 1
+#DIM PAGE, 1
+#DIM LINE, 1
+#DIM LIST, 100
+#DIM LINK_LOCAL, 1000, 2, 7;MOD 002 ADD
+;LINK_LOCAL:(スキル番号-4000):(0 参加資格があるキャラ全ての配置番号（Bit） 1 実際に成立しうる一例のキャラの配置番号):(0 発動可能者(Bit) 1-5リンケージ参加枠番号)
+;LINK_LOCAL:(スキル番号-4000):1:0 は隊列を前後に入れ替えた場合の発動可能者(Bit) 入れ替え後のPOSなので注意
+
+;---- EDIT 002 MOD START ---------------------------
+VARSET LINK_LOCAL, 0
+;ARGが0の場合敵が0のため射程内に敵が居ない→攻撃系リンケージが成立するか判定できないためダミー作成
+SIF !ARG
+	CALL SET_ENEMY, 7, 0,5,0,0
+FOR LOCAL:2, 0, 2
+	;射程Ｓのリンケージが後列に発動可能者がいるかチェックするため前後入れ替え
+	CALL CHANGE_POS,1,6
+	CALL CHANGE_POS,2,5
+	CALL CHANGE_POS,3,4
+	FOR LOCAL:1, 1, 7
+		SIF POS(LOCAL:1) < 0
+			CONTINUE
+		;FOR LOCAL,4000,5000;EDIT 005 MOD
+		FOR LOCAL, MIN_LINKAGENUM, MAX_LINKAGENUM
+			;入れ替え時の参加候補者をリセット
+			LINK_LOCAL:(LOCAL-4000):1:(LOCAL:1) = 0
+			TRYCCALLFORM LINKAGE_{LOCAL}
+			CATCH
+				CONTINUE
+			ENDCATCH
+			CALL ACTIONABLE_LINKAGE,LOCAL,POS(LOCAL:1),LINK_LOCAL
+			SIF RESULT > 0 && (!ARG || (!CFLAG:POS(LOCAL:1):링케이지참가 && !CFLAG:POS(LOCAL:1):링케이지발동))
+				SETBIT LINK_LOCAL:(LOCAL-4000):(!LOCAL:2):0, LOCAL:1
+		NEXT
+	NEXT
+NEXT
+;使用済みのダミーを削除
+SIF !ARG
+	CALL キャラ削除, CHARANUM - 1
+;---- EDIT 004 MOD END ---------------------------
+;---- EDIT 002 MOD END ---------------------------
+
+LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT -LINE
+DRAWLINE
+;---- EDIT 004 MOD START ---------------------------
+IF ARG == 2
+	;ARGが2の場合、属性問わず現在使用可能なリンケージスキルを全部列記
+	FOR LOCAL, MIN_LINKAGENUM, MAX_LINKAGENUM
+		IF LINK_LOCAL:(LOCAL-4000):0:0 > 0
+			CALL GET_SKILL_PROP, "SKILL_NAME", LOCAL, -1
+			SIF RESULTS == ""
+				CONTINUE
+			PRINTFORM [{LOCAL}] %RESULTS,20,LEFT%
+			CALLFORM 参加人数_{LOCAL}
+			FOR LOCAL:1, 1, RESULT + 2
+				SIF LOCAL:1 > 1
+					PRINT 　→　
+				CALLFORM 参加条件表示_{LOCAL}, LOCAL:1
+			NEXT
+			RESETCOLOR
+			PRINTL 
+		ENDIF
+	NEXT
+ELSE
+	;---- EDIT 004 MOD END ---------------------------
+	FOR LOCAL, 4000 + TYPE * 40, 4000 + (TYPE+1) * 40
+	;---- EDIT 002 MOD START ---------------------------
+		;未解析の場合は？？？？で存在を示唆するように
+		IF !GETBIT(FLAG:(1202+LOCAL / 63), LOCAL % 63)
+			CALL GET_SKILL_PROP, "SKILL_NAME", LOCAL, -1
+			SIF RESULTS == ""
+				CONTINUE
+			SETCOLOR 0x404040
+			PRINTPLAINFORM [{LOCAL}] %"？？？？",20,LEFT%
+			CALLFORM 参加人数_{LOCAL}
+			FOR LOCAL:1, 1, RESULT + 2
+				SIF LOCAL:1 > 1
+					PRINT 　→　
+				CALLFORM 参加条件表示_{LOCAL}, LOCAL:1
+			NEXT
+			RESETCOLOR
+		ELSE
+			CALL GET_SKILL_PROP, "SKILL_NAME", LOCAL, -1
+			SIF RESULTS == ""
+				CONTINUE
+			SIF LINK_LOCAL:(LOCAL-4000):0:0 || (!ARG && LINK_LOCAL:(LOCAL-4000):1:0)
+				SETCOLOR COLOR("aqua")
+			PRINTFORM [{LOCAL}] %RESULTS,20,LEFT%
+			CALLFORM 参加人数_{LOCAL}
+			FOR LOCAL:1, 1, RESULT + 2
+				SIF LOCAL:1 > 1
+					PRINT 　→　
+				CALLFORM 参加条件表示_{LOCAL}, LOCAL:1
+			NEXT
+			RESETCOLOR
+		ENDIF
+		PRINTL 
+	NEXT
+	;---- EDIT 002 MOD END ---------------------------
+	DRAWLINE
+	LOCAL:1 = 0
+	FOR LOCAL, 0, 21
+		SIF GET_SUCCESSION(LOCAL) == ""
+			CONTINUE
+		SIF LOCAL == TYPE
+			SETCOLOR COLOR("aqua")
+		PRINTFORM [{LOCAL,2}]%GET_SUCCESSION(LOCAL), 6, LEFT%
+		SIF LOCAL:1 % 7 == 6
+			PRINTL 
+		LOCAL:1++
+		RESETCOLOR
+	NEXT
+	;---- EDIT 002 MOD START ---------------------------
+	PRINTFORM [21]%"건슬링거", 16, LEFT%
+	PRINTL
+ENDIF
+;---- EDIT 002 MOD END ---------------------------
+;---- EDIT 004 MOD END ---------------------------
+
+DRAWLINE
+PRINTL [99] 돌아간다
+$INPUT_LOOP
+INPUT
+IF RESULT == 99
+	RETURN -1
+ELSEIF RESULT >= 4000 && RESULT <= 5000
+	LOCAL = RESULT
+	IF GETBIT(FLAG:(GETNUM(FLAG, "링케이지애널라이즈")+LOCAL / 63), LOCAL % 63)
+		CALL GET_SKILL_PROP, "SKILL_NAME", LOCAL, -1
+		SIF RESULTS == ""
+			CONTINUE
+		;---- EDIT 004 MOD START ---------------------------
+		PRINTFORM [{LOCAL}] %RESULTS,20,LEFT%　
+		;説明文に書かれてないことがあるので射程・範囲を明記
+		CALL GET_SKILL_PROP, "SKILL_RANGE", LOCAL, L_CHARA
+		IF RESULT == 0
+			PRINTFORM 사거리:부정　
+		ELSE
+			PRINTFORM 사거리:%GET_RANGE(RESULT)%　
+		ENDIF
+		CALL GET_SKILL_PROP, "SKILL_TARGET", LOCAL, L_CHARA
+		IF RESULT == 6
+				PRINTFORML 범위:자신　
+		ELSE
+			CALL GET_SKILL_PROP, "SKILL_SPHERE", LOCAL, L_CHARA
+			IF RESULT == 0
+				PRINTFORML 범위:부정　
+			ELSE
+				CALL GET_SKILL_TARGET_STR, LOCAL, L_CHARA
+				PRINTFORM 범위:%RESULTS%　
+			ENDIF
+		ENDIF
+		;---- EDIT 004 MOD END ---------------------------
+		PRINT 발동자 　
+		CALL GET_SKILL_PROP, "SKILL_COSTTYPE", LOCAL, L_CHARA
+		IF RESULT == 2
+			CALL GET_SKILL_PROP, "SKILL_COST", LOCAL, L_CHARA
+			PRINTFORM ＨＰ{RESULT,3}％　
+		ELSE
+			CALL GET_SKILL_PROP, "SKILL_COST", LOCAL, L_CHARA
+			PRINTFORM ＭＰ{RESULT,3}　　
+		ENDIF
+		CALLFORM 参加人数_{LOCAL}
+		LOCAL:1 = RESULT + 1
+		FOR LOCAL:2, 1, LOCAL:1
+			PRINTFORM 참가자{LOCAL:2}　
+			CALLFORM リンケージコストタイプ_{LOCAL}, LOCAL:2
+			IF RESULT == 2
+				CALLFORM リンケージコスト_{LOCAL}, LOCAL:2
+				PRINTFORM ＨＰ{RESULT,3}％　
+			ELSE
+				CALLFORM リンケージコスト_{LOCAL}, LOCAL:2
+				PRINTFORM ＭＰ{RESULT,3}　　
+			ENDIF
+			IF LOCAL:1 == LOCAL:2 - 1
+				PRINTL 
+			ELSEIF LOCAL:2 == 2
+				PRINTL 
+				PRINTFORM %" "* 27%
+			ENDIF
+		NEXT
+		PRINTL 
+		;参加者が決まってなかったりして落ちるスキルがあるので…
+		;SIF FLAG:스킬속성표시설정 == 1
+		;	CALL SKILL_EXPLAIN_PERFORMANCE, LOCAL, -1
+		CALL GET_SKILL_PROP, "SKILL_EXPLAIN", LOCAL, -1
+		;---- EDIT 004 MOD START ---------------------------
+		IF LINK_LOCAL:(LOCAL-4000):0:0 || LINK_LOCAL:(LOCAL-4000):1:0
+			LOCAL:2 = 0
+			PRINTL
+			PRINTFORM 발동가능：
+			FOR LOCAL:1, 1, 7
+				IF GETBIT(LINK_LOCAL:(LOCAL-4000):0:0, LOCAL:1) && ARG == 2
+					;ARGが2の場合のみコマンド化
+					PRINTFORM [{LOCAL:1,2}] %CALLNAME:POS(LOCAL:1)%　
+					SETBIT LOCAL:2, LOCAL:1
+				ELSEIF GETBIT(LINK_LOCAL:(LOCAL-4000):0:0, LOCAL:1)
+					;現在の編成で発動可
+					PRINTPLAINFORM [{LOCAL:1,2}] %CALLNAME:POS(LOCAL:1)%　
+					SETBIT LOCAL:2, LOCAL:1
+				ENDIF
+			NEXT
+			FOR LOCAL:1, 1, 7
+				IF GETBIT(LINK_LOCAL:(LOCAL-4000):1:0, LOCAL:1) && !GETBIT(LOCAL:2, 7-LOCAL:1)
+					;後列のため使用不可
+					SETCOLOR 0x808080
+					PRINTPLAINFORM [{7-LOCAL:1,2}] %CALLNAME:POS(7-LOCAL:1)%　
+					RESETCOLOR
+				ENDIF
+			NEXT
+			PRINTL [0]ＲＥＴＵＲＮ
+			PRINTL
+			$INPUT_LOOP1
+			CLEARLINE 1
+			CALL INPUTINT(0,1,2,3,4,5,6)
+			IF RESULT == 0
+				GOTO START
+			ELSEIF GETBIT(LINK_LOCAL:(LOCAL-4000):0:0, RESULT) && ARG == 2
+				LOCAL:1 = RESULT
+				CLEARLINE 1
+				DRAWLINE
+				CALL INPUT_COM_LINKAGE, POS(LOCAL:1), LOCAL
+				SIF RESULT == 0
+					GOTO START
+				RETURN POS(LOCAL:1)
+			ELSE
+				GOTO INPUT_LOOP1
+			ENDIF
+		ENDIF
+		;---- EDIT 004 MOD END ---------------------------
+		WAIT
+	ENDIF
+;---- EDIT 002 MOD START ---------------------------
+ELSEIF RESULT >= 0 && RESULT < 22
+;---- EDIT 002 MOD END ---------------------------
+	TYPE = RESULT
+ENDIF
+GOTO START
+
+;---- EDIT 004 ADD START ---------------------------
+;=================================================
+;リンケージ参加キャンセル ARGはキャラ番号
+;================================================
+@LINKAGE_CANSELL(ARG)
+#LOCALSIZE 1
+#DIM LCOUNT, 2
+
+SIF !INRANGE(ARG, 0, CHARANUM-1)
+	RETURN 0
+
+SIF CFLAG:ARG:링케이지참가 < 1
+	RETURN 0
+LOCAL = CFLAG:ARG:링케이지참가 - 1
+CALL GET_SKILL_PROP, "SKILL_NAME", CFLAG:LOCAL:입력행동
+IF RESULTS != ""
+	PRINTPLAINFORM %CALLNAME:ARG%은(는) [{CPOS(LOCAL)}] %CALLNAME:LOCAL%의 린케이지 스킬：%RESULTS%에 참가 중입니다
+ELSE
+	PRINTPLAINFORM %CALLNAME:ARG%은(는) [{CPOS(LOCAL)}] %CALLNAME:LOCAL%의 린케이지 스킬에 참가 중? 입니다
+ENDIF
+PRINTL
+PRINTL 참가를 취소하시겠습니까? 
+CALL INPUT_YN("네","아니오",2)
+SIF RESULT
+	RETURN 0
+FOR LCOUNT, 1, 6
+	IF CFLAG:LOCAL:("링케이지참가자" + TOSTR(LCOUNT)) > -1
+		CFLAG:(CFLAG:LOCAL:("링케이지참가자" + TOSTR(LCOUNT))):링케이지참가 = 0
+		CFLAG:(CFLAG:LOCAL:("링케이지참가자" + TOSTR(LCOUNT))):방어플래그 = 1
+	ENDIF
+NEXT
+CFLAG:LOCAL:링케이지발동 = 0
+CFLAG:LOCAL:방어플래그 = 1
+CALL SET_REPEAT_CHARA, LOCAL, -1
+RETURN 1
+
+;---- EDIT 004 ADD END ---------------------------
+
+;---- EDIT 006 ADD START -------------------------
+;================================================
+;発動者確認関数
+;================================================
+@リンケージ発動者条件確認, L_SKILL, L_CHARA
+#DIM DYNAMIC L_SKILL			;確認するスキルの番号
+#DIM DYNAMIC L_CHARA			;参加者
+CALLFORM 発動者条件_{L_SKILL}, L_CHARA
+RETURN RESULT
+
+;================================================
+;参加者確認関数
+;================================================
+@リンケージ参加者条件確認, L_SKILL, L_CHARA, L_COUNT_MEMBERNUM
+#DIM DYNAMIC L_SKILL			;確認するスキルの番号
+#DIM DYNAMIC L_CHARA			;参加者
+#DIM DYNAMIC L_COUNT_MEMBERNUM	;何番目の参加者か？
+CALLFORM 参加者条件_{L_SKILL}, L_CHARA, L_COUNT_MEMBERNUM
+RETURN RESULT
+;---- EDIT 006 ADD END ---------------------------
+
+;================================================
+;特定キャラの関与するリンケージを確認して破棄する
+;================================================
+@リンケージ破棄確認, ARG
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_LINK_MASTER = -1
+SIF CFLAG:ARG:링케이지발동
+	L_LINK_MASTER = ARG
+SIF CFLAG:ARG:링케이지참가
+	L_LINK_MASTER = CFLAG:ARG:링케이지참가 - 1
+IF L_LINK_MASTER >= 0
+	CFLAG:L_LINK_MASTER:링케이지발동 = 0
+	FOR LCOUNT, 1, 6
+		L_CHARA = CFLAG:L_LINK_MASTER:@"링케이지참가자{LCOUNT}"
+		SIF L_CHARA < 0
+			CONTINUE
+		CFLAG:L_CHARA:링케이지참가 = 0
+		CALL COMMAND_REPEAT, L_CHARA
+	NEXT
+	CALL COMMAND_REPEAT, L_LINK_MASTER
+ENDIF

@@ -1,0 +1,163 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara459_インプ.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2023/10/03		P(bazzile)				新規作成
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;--------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:임프]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+CALL SET_BASE_[[キャラ:임프]], ARG, ARG:2
+IF ARG:2 == 1
+	;スキル初期化
+	CALL CLEAR_ALL_SKILL, ARG
+	CALL CLEAR_LEARNED_SKILL_ALL, ARG
+ENDIF
+CALL SET_LEARN_SKILL_[[キャラ:임프]], ARG, ARG:2
+
+;ERB\RPG\이벤트\EVENT_102(など）_炎・氷\EVENT_102_5_ホノオノハテニ.ERB
+;ARG:1はイベントフラグ
+@SET_BASE_[[キャラ:임프]], ARG, ARG:1
+SELECTCASE ARG:1
+	CASE 1
+		NAME:ARG = ハーミル
+		CALLNAME:ARG = ハーミル
+		BASE:ARG:LV = 60
+		BASE:ARG:힘 = 21
+		BASE:ARG:지혜 = 26
+		BASE:ARG:마력 = 1
+		BASE:ARG:내구 = 16
+		BASE:ARG:속도 = 23
+		BASE:ARG:운 = 11
+		BASE:ARG:CP = 10
+	
+		TALENT:ARG:남자 = 0
+		TALENT:ARG:처녀 = 1
+		TALENT:ARG:유아체형 = 1
+		TALENT:ARG:빈유 = 1
+	
+		CSTR:ARG:일인칭 = アタシ
+		CSTR:ARG:이인칭 = あんた
+		CFLAG:ARG:초기전신복 = [[衣装:관두의]]
+		;貫頭衣でいいのかなこの服？
+	
+		ABL:ARG:회화타입 = 304;女・若者
+ENDSELECT
+
+@SET_LEARN_SKILL_[[キャラ:임프]], ARG, ARG:1
+;ハーミル
+IF ARG:1 == 1
+	CALL CLEAR_ALL_LEARN_SKILL, ARG
+	CALL SET_LEARN_SKILL, ARG, "잔", 1
+	CALL SET_LEARN_SKILL, ARG, "도루미나", 1
+	CALL SET_LEARN_SKILL, ARG, "이악물기", 1
+	CALL SET_LEARN_SKILL, ARG, "천우의춤", 1
+	CALL SET_LEARN_SKILL, ARG, "이할의활천", 1
+	CALL SET_LEARN_SKILL, ARG, "도무디", 62
+	CALL SET_LEARN_SKILL, ARG, "파라라・웨이브", 64
+	CALL SET_LEARN_SKILL, ARG, "포효", 66
+	CALL SET_LEARN_SKILL, ARG, "이노센트턱", 68
+ENDIF
+
+;--------------------------------------------------
+;キャラクター独自変数名称定義関数
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:임프]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_EV
+	;周回時にリセットされる数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_EV
+	;周回時にリセットされる文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる数値型変数です
+	;スキルゲージHとほぼ互換です。基本的にはゲージHが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる文字列型変数です
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる数値型変数
+	;スキルゲージFとほぼ互換です。基本的にはゲージFが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる文字列型変数
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS

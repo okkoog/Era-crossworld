@@ -1,0 +1,449 @@
+﻿;-------------------------------------------------
+;ハチワレ口上
+;進捗
+;調教開始時、終了時：ゼロ！
+;各調教コマンド：ゼロ！
+;戦闘時：テンプレートを使用。いろいろシャベル。
+;ネタ：夜這い時、パジャマパーティー/朝、空からお菓子が降る（赤福、マシュマロ）、テレビでちいかわが放送、花束かと思ったら唐辛子の束、おかきの評価シート
+;食事ネタ：謎の緑色の出汁、貝汁カレー、煮つけ、しるこサンド、ピザ、コンビーフ丼、焼きそばごはん、郎、すき焼き
+;-------------------------------------------------
+;eraMegaten専用口上テンプレート
+;X1とX2をキャラ番号に置換し、Y1を助手のキャラ番号に置換してください
+;ただし、キャラ番号が一桁のキャラの場合、X1,Y1は1、X2は01のように変えてください
+;そしてコマンド内の適当な条件の下のPRINTFORMWの後ろに半角スペースを置いてセリフを追加してください
+;口上を追加しないコマンドは無記入でも構いませんが、CFLAG:XXXの頭に『;』をつけてコメントアウトすると尚良いでしょう
+;エキストラ構文など、コメントアウトされている構文を使う際には、『;』を外してコメントアウトを解除する必要があります
+;最後にread meにも目を通しておくことをお勧めします
+;-------------------------------------------------
+
+;-------------------------------------------------
+;汎用口上の作成に使用する場合は、X1→キャラ番号ではなく、
+;KX1→PUB会話タイプ番号　へと変換してご使用ください
+;-------------------------------------------------
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_K[[キャラ:치이카와_하치와레]].ERB
+;	Facility	:会話タイプ：なし
+;
+;	Modification Data:
+;	Edit	Date			Author					Reason
+;	001		2024/10/24		아메지스트					新規作成、テンプレートｖ3.5をもとに戦闘口上のみ追記
+;	002		2024/11/04		아메지스트					状態異常加筆、戦闘時の顔グラ反映
+;
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;ライセンスについて
+;	・基本項目(許可する項目を"○"に、許可しない項目を"×"に変更してください。)
+;	+----+----+-------------------------------+
+;	|番号|許可|ライセンス内容                 |
+;	+----+----+-------------------------------+
+;	|   1| ○ | 処理上のバグ修正              |
+;	+----+----+-------------------------------+
+;	|   2| ○ | 口上の誤字・脱字の修正        |
+;	+----+----+-------------------------------+
+;	|   3| ○ | 口上まとめへの収録            |
+;	+----+----+-------------------------------+
+;	|   4| ○ | 口上の新規追加                |
+;	+----+----+-------------------------------+
+;	|   5| ○ | 既存口上の改変                |
+;	+----+----+-------------------------------+
+;	|   6| ○ | 改変した口上の自由な再配布    |
+;	+----+----+-------------------------------+
+;	|   7| ○ | 口上内容の転載                |
+;	+----+----+-------------------------------+
+
+;--------------------------------------------------
+;口上セレクト機能：口上説明
+;--------------------------------------------------
+;この関数のコメントアウトを外すと、口上の選択時に選択肢として候補にあがります
+;既に口上のあるキャラや会話タイプの別版の口上を作成する時に利用してください
+;その際、この関数を含めたこのファイル内の関数名すべてに_任意の1-49(汎用口上なら1-9)の数字を加えてください
+;例： EVENTTRAIN_KX1 → EVENTTRAIN_KX1_12
+;--------------------------------------------------
+;@セレクト口上説明_KX1,ARG = 0
+;SIF ARG == 1
+;	RETURN 0
+;;口上名
+;PRINTFORML ここに口上の名称を記述してください
+;;口上説明文
+;PRINTFORML    ここに口上の簡単な説明や注意点などを記述してください
+
+;--------------------------------------------------
+;EVENTTRAIN関係（X1をキャラ番号に置換）
+;調教開始時のセリフ CFLAG 201～219を使用
+;--------------------------------------------------
+@EVENTTRAIN_K[[キャラ:치이카와_하치와레]]
+CALL 口上変数初期化
+;--------------------------------------------------
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL EVENTTRAIN_PY1_K[[キャラ:치이카와_하치와레]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL EVENTTRAIN_PY1_K[[キャラ:치이카와_하치와레]]
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;--------------------------------------------------
+;簡易助手口上の発動時に初調教時口上をスキップ（Y1を助手のキャラ番号にする）
+;複数人いる際には、SIF NO:ASSI == Y1 || NO:ASSI == Z1と追加していく
+;--------------------------------------------------
+;IF CFLAG:201 == 0 && ASSI > 0
+;	SIF NO:ASSI == Y1
+;		CFLAG:201 =1
+;ENDIF
+;-------------------------------------------------
+;調教開始時（一回のみ） CFLAG201
+;-------------------------------------------------
+;!!!!!!!!!!!!ここから戦闘口上までカット!!!!!!!!!!!!
+;-------------------------------------------------
+@KOJO_BATTLE_EVENT_K[[キャラ:치이카와_하치와레]], ARG, ARG:1, ARG:2
+;-------------------------------------------------
+SIF ARG < 0 && NO:ARG != 5243
+	RETURN 0
+VARSET LOCALS
+VARSET KSTR
+
+;KSTR:0 = 
+;KSTR:1 = 
+SELECTCASE TFLAG:전투이벤트
+	;COOP発動 ARGは発動者
+	CASE 1
+		LOCALS:10 = なんとかなれー！
+	;COOP参加
+	CASE 2
+		;主人がCOOP発動
+		IF FLAG:행동순1 != -1 && FLAG:행동순1 == MASTER
+			LOCALS:10 = ヤーーーーー！！
+		;それ以外
+		ELSE
+			LOCALS:10 = ヤーーーーー！
+		ENDIF
+	;被召喚時
+	CASE 3
+			LOCALS:10 = 出番！？出番なの！？
+	;공격　ARGが攻撃をする仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 11
+		;味方に攻撃した
+		;IF CFLAG:ARG:PT플래그 == CFLAG:(ARG:1):PT플래그
+		;相手が死んだ
+		IF BASE:(ARG:1):ＨＰ <= 0
+			LOCALS:10 = や、やった？
+		;弱点をついた。つまりCOOP
+		ELSEIF GET_CREC_ACT(ARG, ARG:1, "WEAK")
+			IF CFLAG:(ARG:1):방어플래그
+				LOCALS:10 = ここだッ！
+			ELSE
+				;こっちはCOOP発動に回すためにカット
+				RETURN 0
+			ENDIF
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 50
+			LOCALS:10 = よし！大ダメージ！
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 25
+			LOCALS:10 = 効いてる！効いてるよ！
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 0
+			LOCALS:10 = 当たった……！
+		;無効された
+		ELSEIF ダメージ割合(ARG:1, ARG:2) <= 0
+			LOCALS:10 = 効いてない！？
+		ENDIF
+	;被ダメージ
+	;ARGが攻撃を受ける仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 12
+		;味方に攻撃された
+		;IF CFLAG:ARG:PT플래그 == CFLAG:(ARG:1):PT플래그
+		;死んだ
+		IF BASE:ARG:ＨＰ <= 0
+			LOCALS:10 = ぁ……まだ……ゃ……
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 50
+			LOCALS:10 = ッ……耐えた……ッ！
+		;無効
+		ELSEIF ARG:2 == 0
+			LOCALS:10 = なにーーー？
+		;吸収
+		ELSEIF ARG:2 < 0
+			LOCALS:10 = すごい！これ、「吸収」だよ！
+		;瀕死
+		ELSEIF 現HP割合(ARG) < 25
+			LOCALS:10 = 絶対……負けない……
+		;ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 20
+			LOCALS:10 = いったーーーい！
+		;小ダメージ
+		ELSE
+			LOCALS:10 = 
+		ENDIF
+	;範囲攻撃
+	;ARGが攻撃をする仲魔、ARG:1が攻撃された敵数、ARG:2が無効数(回避も含む)
+	CASE 13
+		;全弾命中した
+		IF ARG:2 == 0
+			LOCALS:10 = やった！「全弾命中」だね！
+		;普通
+		ELSEIF ARG:2 < ARG:1
+			LOCALS:10 = どんどんいくよ！
+		;全弾回避された
+		ELSEIF ARG:2 == ARG:1
+			LOCALS:10 = エェーーーっ！？あたんないの！？ひとつも！？
+		ENDIF
+	;範囲攻撃で敵を撃破した
+	;ARGが攻撃をする仲魔、ARG:1が攻撃された敵数、ARG:2が撃破数
+	CASE 14
+		;全員撃破
+		IF GET_CREC_ACT_SUM(ARG, "敵", "ATTACK") == ARG:2
+			LOCALS:10 = 簡単ッッッ！簡単ッッッ！
+		ELSE
+			LOCALS:10 = やったー！
+		ENDIF
+	;反射された
+	CASE 15
+			LOCALS:10 = 「反射」するのッ！？
+	;反射した
+	CASE 16
+			LOCALS:10 = 跳ね……返すッ！
+	;回避された
+	CASE 17
+			LOCALS:10 = あたんないよー！！
+	;回避した
+	CASE 18
+			LOCALS:10 = プレスターンゲット！え？ないの？
+	;敵味方全体攻撃(詳細処理無し)
+	;CASE 19
+	;		LOCALS:10 = 
+	;反撃を発動した
+	CASE 20
+		SELECTCASE TFLAG:발동연동스킬
+		;닷지카운터
+		CASE 2484
+			LOCALS:10 = こうして、こう！
+		;その他
+		CASEELSE
+			LOCALS:10 = 「カウンター」、ってやつ！
+		ENDSELECT
+	;トリガースキルを発動した
+	CASE 21
+		SELECTCASE TFLAG:발동연동스킬
+		;○○
+		;CASE 
+		;	LOCALS:10 = 
+		;その他
+		CASEELSE
+			LOCALS:10 = 
+		ENDSELECT
+	;バッドステータスを受けた
+	CASE 22
+		SELECTCASE GET_STATE(CFLAG:ARG:상태이상)
+			CASE "HAPPY"
+				LOCALS:10 = あはは！あははははは！
+			CASE "SHOCK","BIND","PALYZE"
+				LOCALS:10 = う゛、うごけ……な……
+			CASE "FREEZE"
+				LOCALS:10 = (((ｶﾞﾀｶﾞﾀｶﾞﾀｶﾞﾀ)))
+			CASE "PANIC"
+				LOCALS:10 = みてみてー！　「ハラワタ」！　あはは！
+			CASE "SLEEP"
+				LOCALS:10 = ねむ……
+			;CASE "CLOSE"
+			CASE "POISON"
+				LOCALS:10 = ……オェ
+			CASE "BOMB"
+				LOCALS:10 = なっちゃった！「爆弾」！
+			CASE "CHARM"
+				LOCALS:10 = アハッ%UNICODE(0x2661)%%UNICODE(0x2661)%%UNICODE(0x2661)%
+			CASE "CURSE"
+				LOCALS:10 = 呪われた、って……コト！？
+			CASE "FLY"
+				LOCALS:10 = わぁ！見て！羽だよこれ！
+			CASE "STONE"
+				LOCALS:10 = 身体が……！？……ぁ
+			CASE "FLAME"
+				LOCALS:10 = アッツイ！？
+			CASE "SLIP"
+				LOCALS:10 = ｽﾃｰﾝ
+			;CASE "BRAND"
+			;その他の状態異常
+			;CASEELSE
+		ENDSELECT
+	;食いしばり等で耐えた
+	CASE 23
+		;이악물기
+		IF BASE:ARG:ＨＰ == 1
+			LOCALS:10 = 負け、られない！
+		;その他
+		ELSE
+			LOCALS:10 = 「ギリギリ」で耐えたぁ！
+		ENDIF
+	;回復してもらった
+	CASE 24
+		;ARG:2　回復量
+		LOCAL = ARG:2 * 100 / BASE:ARG:ＨＰ
+		;LOCAL　回復量割合
+		IF 0
+		;キャラ分岐
+		;ELSEIF NO:(ARG:1) == XXXX
+		;50%以上 & HPほぼ満タン
+		ELSEIF LOCAL > 50 && 現HP割合(ARG) > 90
+		;50%以上
+		ELSEIF LOCAL > 50
+		;その他
+		ELSE
+		ENDIF
+	;状態異常を直してもらった
+	CASE 25
+		;ARG:2　直ったバステ
+		IF 0
+		;キャラ分岐
+		;ELSEIF NO:(ARG:1) == XXXX
+		ELSE
+			SELECTCASE GET_STATE(ARG:2)
+				CASE "SLEEP"
+					LOCALS:10 = 
+				;その他の状態異常
+				CASEELSE
+					LOCALS:10 = ありがとー！
+			ENDSELECT
+		ENDIF
+	;戦闘中イって行動不能にならず耐えた(ムフフ展開時のみ)
+	CASE 47
+		;歯を食いしばって快楽に耐えた
+		LOCALS:10 = 
+	;行動中イって行動不能になった(ムフフ展開時のみ 50%の確率でHAPPYに)
+	CASE 48
+		;GET_STATE(CFLAG:ARG:상태이상) == "HAPPY"
+		
+		;絶頂の余韻に浸っている
+		LOCALS:10 = 
+	;ターン終了時状態異常が自然回復した
+	CASE 50
+		SELECTCASE GET_STATE(CFLAG:ARG:상태이상)
+			CASE "SLEEP"
+				LOCALS:10 = おはよー……えっ、あっ！戦闘中だ！
+			;その他の状態異常
+			CASEELSE
+				LOCALS:10 = あっ！なんともない！
+		ENDSELECT
+	;ターン終了時今の状態による口上
+	CASE 51
+		;ムフフ展開系
+		IF FLAG:무후후전개 && (BATTLE_H_EVENT_PRO(ARG) > 30 || CFLAG:ARG:던전내발정용욕정치 > 5000) && !RAND:2
+			;BATTLE_H_EVENT_PRO(ARG)…戦闘中イく確率
+			SETCOLOR COLOR("pink")
+			IF     BATTLE_H_EVENT_PRO(ARG) > 80
+			ELSEIF BATTLE_H_EVENT_PRO(ARG) > 50
+			ELSEIF BATTLE_H_EVENT_PRO(ARG) > 30
+			ELSEIF CFLAG:ARG:던전내발정용욕정치 > 10000
+			ELSEIF CFLAG:ARG:던전내발정용욕정치 > 5000
+			ENDIF
+			SIF LOCALS:10 == "" && KSTR:0 == ""
+				RESETCOLOR
+		ENDIF
+		;状態異常継続中
+		IF LOCALS:10 == "" && KSTR:0 == ""
+			SELECTCASE GET_STATE(CFLAG:ARG:상태이상)
+				CASE "SLEEP"
+					LOCALS:10 = ZZZzzz...
+				;その他の状態異常
+				CASEELSE
+					LOCALS:10 = 
+			ENDSELECT
+		ENDIF
+		;残りHP関連
+		IF LOCALS:10 == "" && KSTR:0 == ""
+			IF 0
+			;HP50%以下
+			ELSEIF 現HP割合(ARG) < 50
+				LOCALS:10 = 
+			;HP20%以下
+			ELSEIF 現HP割合(ARG) < 20
+				LOCALS:10 = 
+			ENDIF
+		ENDIF
+	;ターン終了時ORGYがHEATになった(機械の乙女専用)
+	;CASE 52
+	;		LOCALS:10 = 
+	;ターン終了時エクスリンケージ装備時のイベント口上(ムフフ展開時のみ)
+	CASE 53
+		;発情によってHAPPYになった
+		IF CFLAG:ARG:던전내발정 == 1 && GET_STATE(CFLAG:ARG:상태이상) == "HAPPY"
+			LOCALS:10 = 
+		;頭の中がピンクに染まった
+		ELSEIF CFLAG:ARG:던전내발정 == 1
+			LOCALS:10 = 
+		;落ち着いた
+		ELSEIF CFLAG:ARG:던전내발정 == 0
+			LOCALS:10 = 
+		ENDIF
+	;ターン終了時エクスリンケージ装備時のイベント口上2(ムフフ展開時のみ)
+	CASE 54
+		;中に注がれた精液が垂れてきた…
+		LOCALS:10 = 
+	;バトルに勝利した
+	CASE 90
+			LOCALS:10 = 勝利ッ！
+	;レベルアップした
+	CASE 91
+			LOCALS:10 = 強いよ！この身体ッ！
+	;逃走に成功した
+	CASE 92
+			LOCALS:10 = 逃げれた！？
+	;逃走に失敗した
+	CASE 93
+			LOCALS:10 = 逃げられない！？
+	;戦闘開始時
+	CASE 94
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			LOCALS:10 = やられる前に……！
+		ELSE
+			LOCALS:10 = よーし、やるぞー！
+		ENDIF
+	;バックアタックを受けた
+	CASE 95
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			LOCALS:10 = 嘘ッ！？
+		ELSE
+			LOCALS:10 = 後ろから！？
+		ENDIF
+	;敵の先制攻撃を受けた
+	CASE 96
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			LOCALS:10 = ……まずッ！
+		ELSE
+			LOCALS:10 = え？
+		ENDIF
+	;先制攻撃に成功
+	CASE 97
+			LOCALS:10 = 今なら……ゴクッ！
+ENDSELECT
+
+;リンケージに参加した
+IF TFLAG:전투이벤트 == 100
+	IF 0
+	;スキル分岐
+	ELSEIF CFLAG:(FLAG:행동순1):입력행동 == [[스킬:트리오・더・펀치]]
+		LOCALS:10 = エーーーーイ！
+	;キャラ分岐
+	;ELSEIF NO:(FLAG:행동순1) == 
+	ELSE
+		LOCALS:10 = ヤーーーーー！
+	ENDIF
+ENDIF
+
+
+
+IF !(LOCALS:10 == "") && !(KSTR:0 == "")
+	CALL MESSAGE_B2(CALLNAME:ARG,0, LOCALS:10, LOCALS:11, LOCALS:12, LOCALS:13, LOCALS:14)
+	CALL 口上変数表示
+ELSEIF !(LOCALS:10 == "")
+	CALL MESSAGE_B2(CALLNAME:ARG,1, LOCALS:10, LOCALS:11, LOCALS:12, LOCALS:13, LOCALS:14)
+ENDIF
+
+

@@ -1,0 +1,209 @@
+﻿;ギイの種。　カウンター状態になるスキル。
+;原作では発動確率が地味に低いのであんまり出番がなかった。
+;
+;
+;
+
+;スキル名
+@SKILL_NAME_ギイの種,ARG
+RESULTS = 기이의 씨앗
+
+;　명중
+@SKILL_HITRATE_ギイの種, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_ギイの種, ARG
+RETURN 200
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_ギイの種, ARG
+RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_ギイの種, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ギイの種,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ギイの種,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_ギイの種,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_ギイの種,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ギイの種, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ギイの種,ARG
+RETURN 30
+;約30ぐらい
+
+;　相性
+@SKILL_TYPE_ギイの種,ARG
+RETURN GET_TYPE_NUM("전술")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ギイの種
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ギイの種,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ギイの種,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_ギイの種,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ギイの種,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ギイの種,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_ギイの種
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_ギイの種, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ギイの種
+RETURN 0
+
+;没
+;@SKILL_RANK_ギイの種, ARG = -1
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_ギイの種,ARG
+RETURN GET_STATE_NUM("POISON")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_ギイの種,ARG
+RETURN GET_TYPE_NUM("신경")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_ギイの種,ARG
+RETURN 40
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_ギイの種,ARG
+RETURN 99
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_ギイの種,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;====================================================
+;@SKILL_TRIGGER_ACTIONABLE_ギイの種,ARG,ARG:1
+;RETURN 0
+
+;====================================================
+;カウンター発動条件
+;====================================================
+@SKILL_COUNTER_ACTIONABLE_ギイの種,ARG,ARG:1
+	;自分への攻撃行動でないとだめ。一応。
+	SIF !GET_CREC_ACT(ARG:1, ARG, "ATTACK")
+		RETURN 0
+	;受けた結果が反射ではない
+	SIF GET_CREC_ACT(ARG:1, ARG, "REFLECT")
+		RETURN 0
+	;仲間には反撃しない
+	SIF IS_FRIEND(ARG:1, ARG)
+		RETURN 0
+	;スキル起動中でないといけない
+	SIF SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"ギイの種")) == 0
+		RETURN 0
+	;反撃の対象は反撃してきたキャラ(ポジションで返す)
+	RETURN 1, CPOS(ARG:1)
+;要するにスキル起動中で自分が攻撃を受けて、ターゲットが死亡していない場合。
+;====================================================
+;ダメージ発動時
+;====================================================
+;@SKILL_DAMAGE_EFFECT_ギイの種,ARG,ARG:1
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_ギイの種,ARG,ARG:1
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ギイの種,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+IF FLAG:카운터중 == 1
+	CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+ELSE
+	CALL SKILLGAGE_D_SET,ARG,PU_SKILLNUM_GET(ARG,"ギイの種"),6
+	PRINTFORMW 기이의 씨앗이 \@ CFLAG:ARG:PT플래그 ? 적 # 아군 \@의 진형에 흩뿌려졌다!
+
+ENDIF
+
+;CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+;CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+;CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM;		拡散攻撃
+;CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM;			ランダム攻撃
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_ギイの種,ARG
+IF PU_SKILLGAGE_D_GET(ARG,"ギイの種") != 0
+	RESULTS = 기이의 씨앗:{PU_SKILLGAGE_D_GET(ARG,"ギイの種")}T
+	RETURN 3
+ENDIF
+
+;　説明文の表示
+@SKILL_EXPLAIN_ギイの種,ARG
+PRINTL 『기이의 씨앗』
+PRINTL 발동 후 6턴 동안 적의 공격을 받으면 확실히 반격하는 카운터 효과를 세트한다.
+PRINTL 카운터 시에는 전기 속성 중위력의 물리 공격을 가하고, 신경 속성으로 중확률의 독을 수반한다.
+PRINTL 각 전용 기능은 TP 게이지(DR)를 추가로 10 플러스하는 효과를 지닌다.
+PRINTL 
+PRINTL 적진에 「기이의 씨앗」을 뿌리고, 자신에게 기이의 어머니인 「미키」를 두르고 대기하는 스킬.
+PRINTL 미키가 상처 입을 경우, 기이의 씨앗은 독소를 동반해 작렬하여 보복하는 구조.
+PRINTL 마족 데스폴류카의 식물을 다루는 마족 기능 중 하나(CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ギイの種,ARG
+RETURN 1
+;CALL SKILLGAGE_H_ADD,ARG,PU_SKILLNUM_GET(ARG,"ギイの種"),0

@@ -1,0 +1,231 @@
+﻿;-------------------------------------------------
+;FF7 티파 개별 이벤트
+;-------------------------------------------------
+@INDIVIDUAL_EVENT_K5213, ARG, ARG:1 = 0, ARG:2 = -1
+;ARG:0　キャラ番号
+;ARG:1　関数種類　1,開放条件　2,타이틀　3,이벤트
+;ARG:2　イベント番号（0～63まで）
+
+;リストにキャラを表示する条件
+IF ARG:1 == 0
+	;イベント0で全部終了
+	SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+		RETURN 0
+	RETURN 1
+ENDIF
+
+;最初にデビオクで売られていた戦闘素質のない方のアップデート処理。
+;条件は異能者の有無。
+IF TALENT:ARG:이능자 == 0
+	PRINTFORML 이능자 소질이 없는, 초기형 상태인 『%CALLNAME:ARG%』의 업데이트 처리를 진행합니다.
+	PRINTFORML 
+	PRINTFORML ＞업데이트로 변경되는 내용
+	PRINTFORML 　조교 후천 소질・함락・계약・함락 이력 이외의 전 소질 (전투 소질 포함)
+	PRINTFORML 　CSTR：悪魔解説
+	PRINTFORML 　습득 스킬 (인간 이능자용 전투 소질에 맞춘 습득 라인업)
+	PRINTFORML 　종족 (인간으로 리셋)
+	PRINTFORML 　전투 참가 불능 상태일 경우, 조교할 때까지 전투 참가 가능화
+	PRINTFORML 
+	PRINTFORML ＞덮어쓰이지 않는 내용
+	PRINTFORML 　ABL・EXP (조교 능력치・경험・체력 등)
+
+		SIF GET_VALUE_TALENT_JOINABLE((ARG)) == 0
+			CALL SET_TALENT_PARTY_JOINABLE, (ARG), "신용"
+		
+		;종족(ABL80)の再読み込み
+		ABL:ARG:종족 = CSVABL(NO:ARG,GETNUM(ABL,"종족"),0)
+
+		;素質をCSVから読み込んだステータスで上書き。
+		;ただし、陥落素質3-8と契約素質170-173、信頼系素質180-182、陥落履歴270-273は対象外！
+		FOR LOCAL,0,343
+			SIF LOCAL >= 3 && LOCAL <= 8
+				CONTINUE
+			SIF LOCAL >= 74 && LOCAL <= 77
+				CONTINUE
+			SIF LOCAL >= 170 && LOCAL <= 173
+				CONTINUE
+			SIF LOCAL >= 180 && LOCAL <= 182
+				CONTINUE
+			SIF LOCAL >= 270 && LOCAL <= 273
+				CONTINUE
+			TALENT:ARG:(LOCAL) = CSVTALENT(NO:ARG,LOCAL,0)
+		NEXT
+
+		;悪魔解説のCSVからの読み込みで上書き。
+		FOR LOCAL, 1, 21
+			CSTR:ARG:@"해설{LOCAL}" '= CSVCSTR(NO:ARG, GETNUM(CSTR, @"해설{LOCAL}"))
+		NEXT
+		
+		;習得予定スキルをCSVから読み直し。
+		FOR LOCAL,1,21
+			ABL:ARG:("습득스킬" + TOSTR(LOCAL)) = CSVABL(NO:ARG,(GETNUM(ABL,"습득스킬" + TOSTR(LOCAL))),0)
+			ABL:ARG:("습득LV" + TOSTR(LOCAL)) = CSVABL(NO:ARG,(GETNUM(ABL,"습득LV" + TOSTR(LOCAL))),0)
+			;ABL:LOCAL:("초기변신악마습득스킬" + TOSTR(LOCAL:1)) = CSVABL(NO:LOCAL,(GETNUM(ABL,"초기변신악마습득스킬" + TOSTR(LOCAL:1))),0)
+			;ABL:LOCAL:("초기변신악마습득LV" + TOSTR(LOCAL:1)) = CSVABL(NO:LOCAL,(GETNUM(ABL,"초기변신악마습득LV" + TOSTR(LOCAL:1))),0)
+		NEXT
+	PRINTFORML 
+	PRINTFORMW 처리를 완료했습니다. 자세한 내용은 능력 확인에서 확인해 주십시오.
+ENDIF
+
+SELECTCASE ARG:2
+CASE 0
+	;解放条件
+	;陥落済みであり、Lv80以上
+	IF ARG:1 == 1
+		SIF 陥落(ARG) == 0
+			RETURN 0
+		SIF BASE:ARG:LV < 80
+			RETURN 0
+		RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			RESULTS = 『티파 록하트』
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			RESULTS = ※%CALLNAME:ARG%의 함락과, 전투 Lv80 이상이 필요.
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		PRINTFORML 
+		PRINTFORMW ＞검사실
+		PRINTFORML 
+		PRINTFORMW 검사대 위의 %CALLNAME:ARG%는, 눈을 감은 상태로 누워 있다.
+		PRINTFORML 
+		PRINTFORML 거두어졌을 때의 상태와 비교하면, 다소 활기가 있긴 하지만,
+		PRINTFORMW 그것을 계기로, 본격적으로 몸을 살펴보기로 한 것이다.
+		PRINTFORML 
+		PRINTFORML 신체 조성, 마그네타이트 저장 능력, 전투 능력……
+		PRINTFORMW 그것들을 조사하던 중, 기묘한 데이터가 산출되었다.
+		PRINTFORML 
+		PRINTFORMW ……순수한 인간이라기보다는, 합체・흡수 능력을 잃어버린 조마에 가까운 결과가 나온 것이다.
+		PRINTFORML 
+		PRINTFORML 순도 100%의 이세계인이라 하기엔 이쪽 세계의 논리에 가까운 기능도 있고,
+		PRINTFORMW 이쪽에서 1부터 만들어졌다 하기엔 미지의 능력도 섞여 있다.
+		PRINTFORML 
+		PRINTFORML 「……어째서일까. 기억하고 있는 건 많이 있는데
+		PRINTFORMW 　어째서 여기에 있는 건지, 전혀 모르겠어」
+		PRINTFORML 
+		PRINTFORML 보다시피, 본인도 전혀 기억하지 못하고 있으며,
+		PRINTFORMW 정신을 차려보니 노예 상품으로 가게에 진열되어 있었다고 한다.
+		PRINTFORML 
+		PRINTFORMW ――라그 숍에 문의해 본 결과
+		PRINTFORML 
+		PRINTFORMW 『아~? 아~ 그 애 말이구나, 사정이 좀 있는 모양이야?
+		;健在な戦闘参加メンバー(2) > 健在でない戦闘参加メンバー(12) > 健在なCOMP内悪魔OR探索不参加人間(1) > 健在でない～(11) > 自宅サーバーに保存してある悪魔(0)
+		;デモナイズしたらマジで使いようがなくなるはずだが一応。
+		SIF FINDCHARA_B([[キャラ:치키_＃FE]]) >= 0
+			PRINTFORML 　이전에 사 갔던 용족 소녀랑 비슷한 느낌인데 말이지,
+		PRINTFORML 　온갖 정보가 모이는 무언가로부터 뽑아낸, 이계의 정보를 바탕으로,
+		PRINTFORMW 　어디의 누군가가 심혈을 기울여 탄생시킨 『영웅』이라는 모양이야』
+		PRINTFORML 
+		PRINTFORMW ……이계의 정보로부터 만들어진, 『영웅』이라 이거지.
+		PRINTFORML 
+		PRINTFORML 『……뭐 그 어디의 누군가도 뒈져버린 모양이라서,
+		PRINTFORMW 　돌고 돌아, 최종적으로 네놈이 있는 곳에 도달한 모양이네』
+		PRINTFORML 
+		PRINTFORML ――허풍이나 그럴싸하게 포장한 이야기인 줄 알았지만,
+		PRINTFORML 실제로 %CALLNAME:ARG%가 서로 다른 세계와 이쪽 세계의 법칙이 뒤섞인
+		PRINTFORMW 기묘한 존재임이 증명된 이상, 인정할 수밖에 없을 것 같다.
+		PRINTFORML 
+		;ローカパーラ収容所クリア＝太陽が情報の集合体であることを知っている
+		SIF ダンジョンフラグ:13:1 > 2
+			PRINTFORMW 정보(말). ……즉, 그 태양과 교신한 누군가가 있었던 것이겠지.
+		PRINTFORMW 만들어지고, 그리고 창조주를 잃고 떠돌다 지금에 이르렀다는 뜻이다.
+		PRINTFORML 
+		PRINTFORML ……업마전의 모 주인 귀에 들어가기라도 했다간
+		PRINTFORML 
+		PRINTFORMW 『넘겨주게! 부탁하네! 100만 마카! 아니 부르는 값대로 사겠네!!!』
+		PRINTFORML 
+		PRINTFORMW 라며 끈질기게 물고 늘어질 것이 눈에 선하다.
+		PRINTFORML 
+		PRINTFORMW 「……%CSTR:일인칭%은, 또 팔려 가는 거야?」
+		PRINTFORML 
+		PRINTFORMW 상황을 정리하며 생각에 잠겨 있자, 가녀린 목소리가 @을 현실로 불러들였다.
+		PRINTFORMW ……시선을 돌리자, 검사실 유리 너머로 눈이 마주쳤다.
+		PRINTFORML 
+		;IF 陥落(ARG) > 2
+		IF TALENT:ARG:신뢰 || TALENT:ARG:동료
+			PRINTFORMW 「함께 어깨를 나란히 하고 있을 수 있어서, 기쁘다고 생각했었는데……」
+			PRINTFORML 
+			PRINTFORML 자신에게 결정권이 없다는 것을 이해하고 있지만,
+			PRINTFORMW 이렇게 털어놓은 한마디는, 분명 진심일 것이다.
+		ELSEIF TALENT:ARG:연모 || TALENT:ARG:친애
+			PRINTFORMW 「……싫…… 어」
+			PRINTFORML 
+			PRINTFORMW 푹 빠지게 만든 만큼, 떨어지라고 한다 한들, 고분고분 들으리란 보장은 없다.
+			PRINTFORMW 그렇다 쳐도, 작은 목소리라지만 정면으로 이의를 제기하는 것은 처음이었다.
+			PRINTFORML 
+			PRINTFORMW %CALLNAME:ARG%의, 혼자 깊이 생각하고, 담아두는 버릇을 생각하면 이것은 제법 놀라운 진보라 할 수 있다.
+		ELSEIF TALENT:ARG:음란 || TALENT:ARG:창부
+			PRINTFORMW 「팔려 간 곳은, %CSTR:일인칭%이랑 잔뜩 야한 짓 해주는 곳이야……?」
+			PRINTFORML 
+			PRINTFORML 더 기분 좋은 것, 알고 싶어, 라고 중얼거리는 %CALLNAME:ARG%의 눈에, 색욕이 어렸다.
+			PRINTFORML 변태적인 행위까지 포함해 가르쳐온 만큼,
+			PRINTFORMW 관심은 그쪽에 가 있는 모양이었다.
+		ELSEIF TALENT:ARG:복종 || TALENT:ARG:예속
+			PRINTFORMW 「주인님이 그걸 바라신다면, 어쩔 수 없지만……」
+			PRINTFORML 
+			PRINTFORMW 조금은, 싫으려나, 하고 시선을 피한 %CALLNAME:ARG%의 눈은, 근심의 빛을 띠고 있었다.
+			PRINTFORML 지금까지 실컷 주물러대며 명령에는 거역할 수 없게 만들었지만,
+			PRINTFORMW 그런데도 그렇게 느낄 정도라면, 그 마음은 깊이 뿌리박힌 것, 혹은 진심일 것이다.
+		ENDIF
+		PRINTFORML 
+		IF 陥落(ARG) > 2
+			SIF TALENT:ARG:맹우
+				PRINTFORMW 헤어질 일은 없다. 맹약은 영원하다.
+			SIF TALENT:ARG:아내 || TALENT:ARG:남편
+				PRINTFORMW 그런 짓은 하지 않는다. 반지에 맹세코.
+			SIF TALENT:ARG:음마
+				PRINTFORMW 괜찮다, 여기서 얼마든지 만족시켜 주마.
+			SIF TALENT:ARG:노리개
+				PRINTFORMW 물론 놓아주지 않는다. 놓치지 않아.
+			PRINTFORML 
+			PRINTFORMW 그런 마음을 전하자, %CALLNAME:ARG%는 희미하게나마 안도하는 미소를 지어 보였다.
+		ENDIF
+		PRINTFORML 
+		PRINTFORMW ……손에 쥔 계측기에서, 새로운 해석 완료를 알리는 착신음이 울렸다.
+		PRINTFORMW 훑어보니, %CALLNAME:ARG%의 정보 속에 어떤 무기의 데이터가 잠들어 있었다는 것을 알 수 있었다.
+		PRINTFORML 
+		PRINTFORMW ……무기 코드는 『프리미엄하트』.
+		PRINTFORML 
+		PRINTFORML %CALLNAME:ARG%의 특기인 격투술을 보조하기 위해 설계되었으며,
+		PRINTFORMW 타격, 메치기, 장풍…… 온갖 공격을 낭비 없이 상대에게 꽂아 넣을 수 있게 되어 있다.
+		PRINTFORML 
+		PRINTFORML 검사가 끝난 시점에서 흥미를 보인 %CALLNAME:ARG%와 함께,
+		PRINTFORMW 곧바로, 개발에 착수하기로 했다.
+		PRINTFORML 
+		PRINTFORMW …………。
+		PRINTFORML 
+		CALL GET_ITEMS, "프리미엄하트", 1
+		SETCOLOR 0x33ffcc
+			PRINTFORML ＞『프리미엄하트』를 입수했습니다.
+			PRINTFORML ＞장비 중, 자신의 행동으로 리미트 게이지 상승량이 증가합니다.
+		RESETCOLOR
+		FORCEWAIT
+		RETURN 1
+	ENDIF
+	RETURN 1
+CASE 1
+	;解放条件
+	IF ARG:1 == 1
+		;現状オフ状態にする。
+		;SIF GETBIT(CFLAG:CAST:개별이벤트읽음,0)
+		;	RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			RESULTS = 
+		ELSE
+			;未開放時のタイトル（解放条件）
+			;RESULTS = 
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		
+	ELSEIF ARG:1 == 3
+	ENDIF
+ENDSELECT
+RETURN 0

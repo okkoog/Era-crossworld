@@ -1,0 +1,1799 @@
+﻿;=================================================
+;   sub SET_ACTION_5424
+;=================================================
+;   依頼:ウォークライ用思考パターン
+;-------------------------------------------------
+@SET_ACTION_ウォークライ,ARG
+#DIM num
+#DIM CTR
+#LOCALSIZE 3
+;FLAG:경과턴수=0が1ターン目なので特定ターンの行動を決定したいなら経過ターン数に+1しないとダメ
+IF LOCAL:2 == 1
+	IF num == 0
+		num = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	IF CFLAG:ARG:気合フラグ == 1
+		CALL SETS_ACTION_SKILL, ARG, "タイフーンハウル"
+	ELSE
+		;ここから初回行動
+		IF (FLAG:경과턴수-CTR) == 0 && CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+		ELSEIF (FLAG:경과턴수-CTR) == 0 && CFLAG:ARG:행동한횟수 == 1
+			CALL SETS_ACTION_SKILL, ARG, "力溜め"
+		;ここまで初回行動
+		;10n+1回目の行動
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 5 == 1 && CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "力溜め"
+		;6n+1回目の行動
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 3 == 1 && CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "灼熱の剛火球"
+		;それ以外
+		ELSE
+			CALL SET_ACTION_トリニトロ_B,ARG
+		ENDIF
+	ENDIF
+ELSE
+	;5n回目の行動
+	IF ((FLAG:경과턴수 + 1) % 5 == 3 && CFLAG:ARG:행동한횟수 == 0) || ((FLAG:경과턴수 + 1) % 5 == 0 && CFLAG:ARG:행동한횟수 == 1)
+		CALL SETS_ACTION_SKILL, ARG, "灼熱の剛火球"
+	;それ以外
+	ELSE
+		CALL SET_ACTION_トリニトロ_A,ARG
+	ENDIF
+ENDIF
+;50%切ったらパターン変化
+SIF 現HP割合(ARG) < 50
+	LOCAL:2 = 1
+
+;=================================================
+;   sub SET_ACTION_トリニトロ_A
+;=================================================
+;   依頼:ウォークライ用思考パターン(サブ)
+;-------------------------------------------------
+@SET_ACTION_トリニトロ_A,ARG
+#DIM num1
+;通常攻撃→通常攻撃→ギガブレイク→頭に戻る　というローテ
+IF num1 % 3 == 2
+	CALL SETS_ACTION_SKILL, ARG, "ギガブレイク"
+ELSE
+	CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+ENDIF
+;=================================================
+;   sub SET_ACTION_トリニトロ_B
+;=================================================
+;   依頼:ウォークライ用思考パターン(サブ)
+;-------------------------------------------------
+;HP50％以下になったらSET_ACTION_5424_Aのnum1をリセットすればいいんだけど処理めんどくさいのでコピペ
+@SET_ACTION_トリニトロ_B,ARG
+#DIM num1
+IF num1 % 3 == 2
+	CALL SETS_ACTION_SKILL, ARG, "ギガブレイク"
+	num1 = 0
+ELSE
+	CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+	num1 = num1 + 1
+ENDIF
+;=================================================
+;   sub SET_ACTION_ジゴワット
+;=================================================
+;   依頼:ジゴワット用思考パターン
+;-------------------------------------------------
+@SET_ACTION_ジゴワット,ARG
+#DIM num
+#DIM num1
+#DIM CTR
+#DIM switch
+#LOCALSIZE 3
+IF LOCAL:2 == 1
+	IF num == 0
+		num = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	IF num1 == 0
+		IF (FLAG:경과턴수-CTR) == 0 && CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "放電攻撃"
+		ELSEIF ((FLAG:경과턴수-CTR) == 1 && CFLAG:ARG:행동한횟수 == 1) || ((FLAG:경과턴수-CTR) == 3 && CFLAG:ARG:행동한횟수 == 0)
+			CALL SETS_ACTION_SKILL, ARG, "全体掃射"
+		ELSEIF (FLAG:경과턴수-CTR) == 2 && CFLAG:ARG:행동한횟수 == 0
+			CFLAG:ARG:타겟 = RAND:5 + 1
+			CALL SETS_ACTION_SKILL, ARG, "エイミングショット"
+		ELSEIF (FLAG:경과턴수-CTR) == 3 && CFLAG:ARG:행동한횟수 == 1
+			CALL SETS_ACTION_SKILL, ARG, "放電攻撃"
+			num = 0
+			num1 = 1
+			switch = 1
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ENDIF
+	ELSE
+		IF switch == 1;パターンA(ナルカミパターン)
+			IF (FLAG:경과턴수-CTR) == 0 && CFLAG:ARG:행동한횟수 == 0
+				IF RAND:2 == 0
+					CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+				ELSE
+					CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+				ENDIF
+			ELSEIF (FLAG:경과턴수-CTR) == 0 && CFLAG:ARG:행동한횟수 == 1
+				CALL SETS_ACTION_SKILL, ARG, "超電磁チャージ"
+			ELSEIF (FLAG:경과턴수-CTR) == 1 && CFLAG:ARG:행동한횟수 == 0
+				CALL SETS_ACTION_SKILL, ARG, "超電磁砲"
+			ELSEIF (FLAG:경과턴수-CTR) == 1 && CFLAG:ARG:행동한횟수 == 1
+				CFLAG:ARG:타겟 = 9
+				CFLAG:ARG:입력행동 = -1
+				CFLAG:ARG:방어플래그 = 1
+				num = 0
+				switch = 2;次行動からパターンB開始
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ENDIF
+		ELSEIF switch == 2;パターンB(通常攻撃パターン)
+			IF (FLAG:경과턴수-CTR) == 1 && CFLAG:ARG:행동한횟수 == 0
+				CALL SETS_ACTION_SKILL, ARG, "全体掃射"
+			ELSEIF (FLAG:경과턴수-CTR) == 1 && CFLAG:ARG:행동한횟수 == 1
+				CALL SETS_ACTION_SKILL, ARG, "エイミングショット"
+			ELSEIF (FLAG:경과턴수-CTR) == 3 && CFLAG:ARG:행동한횟수 == 0
+				CALL SETS_ACTION_SKILL, ARG, "放電攻撃"
+			ELSEIF (FLAG:경과턴수-CTR) == 3 && CFLAG:ARG:행동한횟수 == 1
+				CALL SETS_ACTION_SKILL, ARG, "全体掃射"
+				num = 0
+				switch = 1;次行動からパターンA開始
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ENDIF
+		ENDIF
+	ENDIF
+ELSE
+	IF ((FLAG:경과턴수 + 1) % 5 == 2 && CFLAG:ARG:행동한횟수 == 0) || ((FLAG:경과턴수 + 1) % 5 == 3 && CFLAG:ARG:행동한횟수 == 1)
+		CALL SETS_ACTION_SKILL, ARG, "全体掃射"
+	ELSEIF (FLAG:경과턴수 + 1) % 5 == 2 && CFLAG:ARG:행동한횟수 == 1
+		CFLAG:ARG:타겟 = RAND:5 + 1
+		CALL SETS_ACTION_SKILL, ARG, "エイミングショット"
+	ELSEIF (FLAG:경과턴수 + 1) % 5 == 4 && CFLAG:ARG:행동한횟수 == 0
+		IF RAND:2 == 0
+			CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+		ENDIF
+	ELSEIF (FLAG:경과턴수 + 1) % 5 == 4 && CFLAG:ARG:행동한횟수 == 1
+		CALL SETS_ACTION_SKILL, ARG, "超電磁チャージ"
+	ELSEIF (FLAG:경과턴수 + 1) % 5 == 0 && CFLAG:ARG:행동한횟수 == 0
+		CALL SETS_ACTION_SKILL, ARG, "超電磁砲"
+	ELSEIF (FLAG:경과턴수 + 1) % 5 == 0 && CFLAG:ARG:행동한횟수 == 1
+		CFLAG:ARG:타겟 = 9
+		CFLAG:ARG:입력행동 = -1
+		CFLAG:ARG:방어플래그 = 1
+	ELSE
+		CFLAG:ARG:타겟 = RAND:5 + 1
+		CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+	ENDIF
+ENDIF
+;50%切ったらパターン変化
+SIF 現HP割合(ARG) < 50
+	LOCAL:2 = 1
+;=================================================
+;   sub SET_ACTION_ロア＝ア＝ルア
+;=================================================
+;   依頼:ロア＝ア＝ルア用思考パターン
+;-------------------------------------------------
+@SET_ACTION_ロア＝ア＝ルア,ARG
+#DIM num
+#DIM CTR
+#LOCALSIZE 3
+CFLAG:ARG:입력행동 = -1
+
+;FLAG:경과턴수=0が1ターン目なので特定ターンの行動を決定したいなら経過ターン数に+1しないとダメ
+IF LOCAL:2 == 1
+	IF num == 0
+		num = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	;ここから初回行動
+	IF (FLAG:경과턴수-CTR) == 0 && CFLAG:ARG:행동한횟수 == 0
+		CALL SETS_ACTION_SKILL, ARG, "フルムーンロアー"
+	ELSEIF (FLAG:경과턴수-CTR) == 0 && CFLAG:ARG:행동한횟수 == 1
+		CFLAG:ARG:입력행동 = -1
+		CFLAG:ARG:방어플래그 = 1
+	;ここまで初回行動
+	;10n+1回目の行動
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 5 == 1 && CFLAG:ARG:행동한횟수 == 0
+		CALL SETS_ACTION_SKILL, ARG, "スウェイリアクト"
+	;7n+9回目の行動
+	ELSEIF (((FLAG:경과턴수-CTR) + 1) % 7 == 5 && CFLAG:ARG:행동한횟수 == 0) || (((FLAG:경과턴수-CTR) + 1) % 7 == 1 && CFLAG:ARG:행동한횟수 == 1)
+		CALL SETS_ACTION_SKILL, ARG, "フルムーンロアー"
+	;4n回目の行動
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 2 == 0 && CFLAG:ARG:행동한횟수 == 1
+		CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "盲目のささやき")
+	;3n回目の行動
+	ELSEIF (((FLAG:경과턴수-CTR) + 1) % 3 == 2 && CFLAG:ARG:행동한횟수 == 0) || (((FLAG:경과턴수-CTR) + 1) % 3 == 0 && CFLAG:ARG:행동한횟수 == 1)
+		CALL SETS_ACTION_SKILL, ARG, "紅の薙爪"
+	;それ以外
+	ELSE
+		CFLAG:ARG:타겟 = RAND:5 + 1
+		CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+	ENDIF
+ELSE
+	;10n+1回目の行動
+	IF (FLAG:경과턴수 + 1) % 5 == 1 && CFLAG:ARG:행동한횟수 == 0
+		CALL SETS_ACTION_SKILL, ARG, "スウェイリアクト"
+	;5n回目の行動
+	ELSEIF ((FLAG:경과턴수 + 1) % 5 == 3 && CFLAG:ARG:행동한횟수 == 0) || ((FLAG:경과턴수 + 1) % 5 == 0 && CFLAG:ARG:행동한횟수 == 1)
+		CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "盲目のささやき")
+	;3n回目の行動
+	ELSEIF ((FLAG:경과턴수 + 1) % 3 == 2 && CFLAG:ARG:행동한횟수 == 0) || ((FLAG:경과턴수 + 1) % 3 == 0 && CFLAG:ARG:행동한횟수 == 1)
+		CALL SETS_ACTION_SKILL, ARG, "紅の薙爪"
+	;それ以外
+	ELSE
+		CFLAG:ARG:타겟 = RAND:5 + 1
+		CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+	ENDIF
+ENDIF
+;50%切ったらパターン変化
+SIF 現HP割合(ARG) < 50
+	LOCAL:2 = 1
+
+;=================================================
+;   sub SET_ACTION_トリニトロ
+;=================================================
+;   依頼:トリニトロ用思考パターン
+;-------------------------------------------------
+@SET_ACTION_トリニトロ,ARG
+#DIM num
+#DIM num1
+#DIM num2
+#DIM CTR
+#LOCALSIZE 3
+;FLAG:경과턴수=0が1ターン目なので特定ターンの行動を決定したいなら経過ターン数に+1しないとダメ
+IF LOCAL:2 > 0
+	IF num == 0
+		num = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	IF !PU_SKILLGAGE_H_GET(ARG, "高速再生")
+		CALL SETS_ACTION_SKILL, ARG, "高速再生"
+	;HP30%以下で1回だけ実施
+	ELSEIF num1 == 0 && LOCAL:2 == 2
+		CALL SETS_ACTION_SKILL, ARG, "体内フレア"
+		num1 = 1
+	ELSEIF CFLAG:ARG:집중플래그 == 1
+		CALL SETS_ACTION_SKILL, ARG, "ヒートブレス"
+	;5n+2回目の行動
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 5 == 1 && CFLAG:ARG:행동한횟수 == 1
+		CALL SETS_ACTION_SKILL, ARG, "ヒートチャージ"
+	;2ターン目の初回行動だけ通常攻撃(↓の6n+9のため)
+	ELSEIF ((FLAG:경과턴수-CTR) + 1)  == 2 && CFLAG:ARG:행동한횟수 == 0
+		CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		num2 = num2 + 1
+	;6n+9回目の行動
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 3 == 2 && CFLAG:ARG:행동한횟수 == 0
+		CALL SETS_ACTION_SKILL, ARG, "テイルブレード"
+		num2 = num2 + 1
+	;16n+1回目の行動
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 8 == 1 && CFLAG:ARG:행동한횟수 == 0
+		CFLAG:ARG:타겟 = 9
+		CALL SETS_ACTION_SKILL, ARG, "高速再生"
+		num2 = num2 + 1
+	;テイルブレード/高速再生/通常攻撃実行回数が合計3回 かつ 2n+1回目の行動
+	ELSEIF num2 == 3 && CFLAG:ARG:행동한횟수 == 0
+		CALL SETS_ACTION_SKILL, ARG, "フレイムベーン"
+		num2 = 0
+	;それ以外
+	ELSE
+		CFLAG:ARG:타겟 = RAND:2 + 1
+		CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		num2 = num2 + 1
+	ENDIF
+ELSE
+	;ここから初回行動
+	IF FLAG:경과턴수 == 0
+		CFLAG:ARG:타겟 = RAND:2 + 1
+		CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+	;ここまで初回行動
+	;6n-1回目の行動
+	ELSEIF (FLAG:경과턴수 + 1) % 3 == 0 && CFLAG:ARG:행동한횟수 == 0
+		CALL SETS_ACTION_SKILL, ARG, "テイルブレード"
+	;4n回目の行動
+	ELSEIF (FLAG:경과턴수 + 1) % 2 == 0 && CFLAG:ARG:행동한횟수 == 1
+		CALL SETS_ACTION_SKILL, ARG, "フレイムベーン"
+	ELSE
+		CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+	ENDIF
+ENDIF
+
+;25%と50%切ったらパターン変化
+SIF 現HP割合(ARG) < 50 && LOCAL:2 < 1
+	LOCAL:2 = 1
+SIF 現HP割合(ARG) < 30
+	LOCAL:2 = 2
+
+;=================================================
+;   sub SET_ACTION_スリーピーホロウ
+;=================================================
+;   依頼:スリーピーホロウ用思考パターン
+;-------------------------------------------------
+@SET_ACTION_スリーピーホロウ,ARG
+#DIM num
+#DIM num1
+#DIM CTR
+#LOCALSIZE 3
+CFLAG:ARG:입력행동 = -1
+
+;FLAG:경과턴수=0が1ターン目なので特定ターンの行動を決定したいなら経過ターン数に+1しないとダメ
+IF LOCAL:2 == 1
+	IF num == 0
+		num = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	;ここから初回行動
+	IF (FLAG:경과턴수-CTR) == 0 && CFLAG:ARG:행동한횟수 == 0
+		CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+	ELSEIF (FLAG:경과턴수-CTR) == 0 && CFLAG:ARG:행동한횟수 == 1
+		CALL SETS_ACTION_SKILL, ARG, "力溜め"
+	;ここまで初回行動
+	ELSEIF CFLAG:ARG:気合フラグ == 1
+		CALL SETS_ACTION_SKILL, ARG, "発狂飛行"
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 5 == 1 && CFLAG:ARG:행동한횟수 == 1
+		CALL SETS_ACTION_SKILL, ARG, "力溜め"
+	ELSEIF (((FLAG:경과턴수-CTR) + 1) % 7 == 4 && CFLAG:ARG:행동한횟수 == 0) || (((FLAG:경과턴수-CTR) + 1) % 7 == 0 && CFLAG:ARG:행동한횟수 == 1)
+		CALL SETS_ACTION_SKILL, ARG, "錯乱りんぷん"
+	ELSEIF (((FLAG:경과턴수-CTR) + 1) % 5 == 3 && CFLAG:ARG:행동한횟수 == 0) || (((FLAG:경과턴수-CTR) + 1) % 5 == 0 && CFLAG:ARG:행동한횟수 == 1)
+		CALL SETS_ACTION_SKILL, ARG, "毒りんぷん"
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 2 == 1 && CFLAG:ARG:행동한횟수 == 1
+		CALL SETS_ACTION_SKILL, ARG, "ダブルクロー"
+	;それ以外
+	ELSE
+		CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+	ENDIF
+ELSE
+	;ここから初回行動 and 7回目の行動
+	IF ((FLAG:경과턴수 + 1)  == 1  && CFLAG:ARG:행동한횟수 == 0) || ((FLAG:경과턴수 + 1)  == 4  && CFLAG:ARG:행동한횟수 == 0)
+		CALL SETS_ACTION_SKILL, ARG, "錯乱りんぷん"
+	ELSEIF (FLAG:경과턴수 + 1)  == 1  && CFLAG:ARG:행동한횟수 == 1
+		CALL SETS_ACTION_SKILL, ARG, "毒りんぷん"
+	;ここまで初回行動
+	;9n+11回目の行動
+	ELSEIF ((FLAG:경과턴수 + 1) % 9 == 6 && CFLAG:ARG:행동한횟수 == 0) || ((FLAG:경과턴수 + 1) % 9 == 1 && CFLAG:ARG:행동한횟수 == 1)
+		CALL SETS_ACTION_SKILL, ARG, "睡眠りんぷん"
+	;5n+2回目の行動
+	ELSEIF ((FLAG:경과턴수 + 1) % 5 == 4 && CFLAG:ARG:행동한횟수 == 0) || ((FLAG:경과턴수 + 1) % 5 == 1 && CFLAG:ARG:행동한횟수 == 1)
+		CALL SETS_ACTION_SKILL, ARG, "錯乱りんぷん"
+	;3n+2回目の行動
+	ELSEIF ((FLAG:경과턴수 + 1) % 3 == 0 && CFLAG:ARG:행동한횟수 == 0) || ((FLAG:경과턴수 + 1) % 3 == 1 && CFLAG:ARG:행동한횟수 == 1)
+		CALL SETS_ACTION_SKILL, ARG, "毒りんぷん"
+	;それ以外
+	ELSE
+		CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+	ENDIF
+ENDIF
+;70%切ったらパターン変化
+SIF 現HP割合(ARG) < 70
+	LOCAL:2 = 1
+;=================================================
+;   sub SET_ACTION_5429
+;=================================================
+;   依頼:ザ・スカヴァー尾用思考パターン
+;-------------------------------------------------
+@SET_ACTION_スカヴァー尾,ARG
+#DIM num
+#DIM num1
+#DIM num2
+#LOCALSIZE 4
+;FLAG:경과턴수=0が1ターン目なので特定ターンの行動を決定したいなら経過ターン数に+1しないとダメ
+IF LOCAL:3 == 1 && num == 0
+	num = 1
+	CFLAG:ARG:타겟 = 9
+	CALL SETS_ACTION_SKILL, ARG, "力溜め"
+	SIF num1 == 1
+		num2 = num2 + 1
+ELSEIF LOCAL:2 == 1 && num1 == 0
+	num1 = 1
+	CALL SETS_ACTION_SKILL, ARG, "突き刺し"
+ELSEIF num2 == 4
+	CALL SETS_ACTION_SKILL, ARG, "突き刺し"
+	num2 = 0
+ELSEIF (FLAG:경과턴수 + 1) % 2 == 0 && CFLAG:ARG:행동한횟수 == 1
+	CALL SETS_ACTION_SKILL, ARG, "テイルスイング"
+	SIF num1 == 1
+		num2 = num2 + 1
+ELSE
+	CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+	SIF num1 == 1
+		num2 = num2 + 1
+ENDIF
+SIF 現HP割合(ARG) < 50
+	LOCAL:2 = 1
+SIF 現HP割合(ARG) < 40
+	LOCAL:3 = 1
+;=================================================
+;   sub SET_ACTION_5430
+;=================================================
+;   依頼:ザ・スカヴァー胴用思考パターン
+;-------------------------------------------------
+@SET_ACTION_スカヴァー胴,ARG
+#DIM num
+#DIM num1
+#DIM num2
+#LOCALSIZE 4
+;FLAG:경과턴수=0が1ターン目なので特定ターンの行動を決定したいなら経過ターン数に+1しないとダメ
+IF LOCAL:2 == 1 && num == 0
+	num = 1
+	CALL SETS_ACTION_SKILL, ARG, "力溜め"
+;4n+1回目の行動
+ELSEIF (FLAG:경과턴수 + 1) % 2 == 1 && CFLAG:ARG:행동한횟수 == 0
+	CALL SETS_ACTION_SKILL, ARG, "ストマックローラー"
+;6n回目の行動
+ELSEIF (FLAG:경과턴수 + 1) % 3 == 0 && CFLAG:ARG:행동한횟수 == 1
+	CALL SETS_ACTION_SKILL, ARG, "パラライズジェット"
+ELSE
+	CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+	SIF num1 == 1
+		num2 = num2 + 1
+ENDIF
+SIF 現HP割合(ARG) < 40
+	LOCAL:2 = 1
+;=================================================
+;   sub SET_ACTION_5431
+;=================================================
+;   依頼:ザ・スカヴァー頭用思考パターン
+;-------------------------------------------------
+@SET_ACTION_スカヴァー頭,ARG
+#DIM num
+#DIM CTR
+#LOCALSIZE 3
+CFLAG:ARG:입력행동 = -1
+
+;FLAG:경과턴수=0が1ターン目なので特定ターンの行動を決定したいなら経過ターン数に+1しないとダメ
+IF LOCAL:2 == 1
+	IF num == 0
+		num = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	;ここから初回行動
+	IF (FLAG:경과턴수-CTR) == 0 && CFLAG:ARG:행동한횟수 == 0
+		CALL SETS_ACTION_SKILL, ARG, "ヘッドストンプ"
+	;ここまで初回行動
+	;6n回目の行動
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 3 == 0 && CFLAG:ARG:행동한횟수 == 1
+		CALL SETS_ACTION_SKILL, ARG, "ヘッドストンプ"
+	;7n回目の行動
+	ELSEIF (((FLAG:경과턴수-CTR) + 1) % 7 == 4 && CFLAG:ARG:행동한횟수 == 0) || (((FLAG:경과턴수-CTR) + 1) % 7 == 0 && CFLAG:ARG:행동한횟수 == 1)
+		CALL SETS_ACTION_SKILL, ARG, "ドラムヘッド"
+	;4n+5回目の行動
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 2 == 1 && CFLAG:ARG:행동한횟수 == 0
+		CALL SETS_ACTION_SKILL, ARG, "ダストブレス"
+	;それ以外
+	ELSE
+		CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+	ENDIF
+ELSE
+	;1回目の行動
+	IF (FLAG:경과턴수 + 1) == 1 && CFLAG:ARG:행동한횟수 == 0
+		CALL SETS_ACTION_SKILL, ARG, "ドラムヘッド"
+	;7n回目の行動
+	ELSEIF ((FLAG:경과턴수 + 1) % 7 == 4 && CFLAG:ARG:행동한횟수 == 0) || ((FLAG:경과턴수 + 1) % 7 == 0 && CFLAG:ARG:행동한횟수 == 1)
+		CALL SETS_ACTION_SKILL, ARG, "ドラムヘッド"
+	;4n回目の行動
+	ELSEIF (FLAG:경과턴수 + 1) % 2 == 0 && CFLAG:ARG:행동한횟수 == 1
+		CALL SETS_ACTION_SKILL, ARG, "ダストブレス"
+	;それ以外
+	ELSE
+		CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+	ENDIF
+ENDIF
+;70%切ったらパターン変化
+SIF 現HP割合(ARG) < 70
+	LOCAL:2 = 1
+;=================================================
+;   sub SET_ACTION_5432
+;=================================================
+;   依頼:ゼロ＝ブルー用思考パターン
+;-------------------------------------------------
+@SET_ACTION_ゼロ＝ブルー,ARG
+#DIM num
+#DIM num1
+#DIM CTR
+#LOCALSIZE 3
+IF CFLAG:ARG:행동한횟수 == 0
+	;30%と65%切ったらパターン変化
+	SIF 現HP割合(ARG) < 65 && LOCAL:2 < 1
+		LOCAL:2 = 1
+	SIF 現HP割合(ARG) < 30
+		LOCAL:2 = 2
+ENDIF
+;FLAG:경과턴수=0が1ターン目なので特定ターンの行動を決定したいなら経過ターン数に+1しないとダメ
+IF LOCAL:2 > 0
+	IF num == 0
+		num = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	;HP30%以下なら最優先で一回だけ
+	IF LOCAL:2 == 2 && num1 == 0
+		CALL SETS_ACTION_SKILL, ARG, "冷気圧縮"
+		num1 = 1
+	;12n+1回目の行動
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 6 == 1 && CFLAG:ARG:행동한횟수 == 0
+		CALL SETS_ACTION_SKILL, ARG, "ブリザード"
+	;2回目の行動
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) == 1 && CFLAG:ARG:행동한횟수 == 1
+		CALL SETS_ACTION_SKILL, ARG, "冷気圧縮"
+	;3回目の行動
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) == 2 && CFLAG:ARG:행동한횟수 == 0
+		CALL SETS_ACTION_SKILL, ARG, "フリーズブレス"
+	;8n+11回目の行動
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 4 == 2 && CFLAG:ARG:행동한횟수 == 0
+		CALL SETS_ACTION_SKILL, ARG, "スリープバイト"
+	;5n+3回目の行動
+	ELSEIF (((FLAG:경과턴수-CTR) + 1) % 5 == 2 && CFLAG:ARG:행동한횟수 == 0) || (((FLAG:경과턴수-CTR) + 1) % 5 == 4 && CFLAG:ARG:행동한횟수 == 1)
+		CALL SETS_ACTION_SKILL, ARG, "フリーズブレス"
+	;それ以外
+	ELSE
+		CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+	ENDIF
+ELSE
+	;6n回目の行動
+	IF (FLAG:경과턴수 + 1) % 3 == 0 && CFLAG:ARG:행동한횟수 == 1
+		CALL SETS_ACTION_SKILL, ARG, "スリープバイト"
+	;4n回目の行動
+	ELSEIF (FLAG:경과턴수 + 1) % 2 == 0 && CFLAG:ARG:행동한횟수 == 1
+		CALL SETS_ACTION_SKILL, ARG, "フリーズブレス"
+	;それ以外
+	ELSE
+		CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+	ENDIF
+ENDIF
+;=================================================
+;   sub SET_ACTION_5433
+;=================================================
+;   依頼:ミヅチ用思考パターン
+;-------------------------------------------------
+@SET_ACTION_ミヅチ,ARG
+#DIM num
+#DIM num1
+#DIM num2
+#DIM CTR
+#DIM switch
+#LOCALSIZE 3
+IF CFLAG:ARG:행동한횟수 == 0
+	;25%と60%切ったらパターン変化
+	SIF 現HP割合(ARG) < 60 && LOCAL:2 < 1
+		LOCAL:2 = 1
+	SIF 現HP割合(ARG) < 25
+		LOCAL:2 = 2
+ENDIF
+
+;FLAG:경과턴수=0が1ターン目なので特定ターンの行動を決定したいなら経過ターン数に+1しないとダメ
+IF LOCAL:2 > 0
+	IF num == 0
+		num = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	IF num1 == 0
+		IF (FLAG:경과턴수-CTR) == 0 && CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+			ENDIF
+		ELSEIF (FLAG:경과턴수-CTR) == 0 && CFLAG:ARG:행동한횟수 == 1
+			CALL SETS_ACTION_SKILL, ARG, "力溜め"
+		ELSEIF (FLAG:경과턴수-CTR) == 1 && CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "アイシクルエデン"
+		ELSEIF (FLAG:경과턴수-CTR) == 1 && CFLAG:ARG:행동한횟수 == 1
+			CALL SETS_ACTION_SKILL, ARG, "サンダーシールド"
+			num = 0
+			num1 = 1
+			switch = 1;次行動からパターンA開始
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ENDIF
+	ELSE
+		IF switch == 1;パターンA
+			;パターンA開始・HP25%以下で一度だけ
+			IF LOCAL:2 == 2 && num2 == 0 && CFLAG:ARG:행동한횟수 == 0
+				CALL SETS_ACTION_SKILL, ARG, "最後の食いしばり"
+			ELSEIF LOCAL:2 == 2 && num2 == 0 && CFLAG:ARG:행동한횟수 == 1
+				CALL SETS_ACTION_SKILL, ARG, "サンダーシールド"
+				num2 = 1
+			;10回目の行動
+			ELSEIF (FLAG:경과턴수-CTR) == 4 && CFLAG:ARG:행동한횟수 == 1
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+				num = 0
+				switch = 2;次行動からパターンB開始
+			;9回目の行動
+			ELSEIF (FLAG:경과턴수-CTR) == 4 && CFLAG:ARG:행동한횟수 == 0
+				CALL SETS_ACTION_SKILL, ARG, "封印にらみ"
+			;7回目の行動
+			ELSEIF (FLAG:경과턴수-CTR) == 3 && CFLAG:ARG:행동한횟수 == 0
+				IF RAND:2 == 0
+					CALL SETS_ACTION_SKILL, ARG, "ファイアボール"
+				ELSE
+					CALL SETS_ACTION_SKILL, ARG, "サンダーボール"
+				ENDIF
+			;4n回目の行動
+			ELSEIF ((FLAG:경과턴수-CTR) == 1 || (FLAG:경과턴수-CTR) == 3) && CFLAG:ARG:행동한횟수 == 1
+				CALL SETS_ACTION_SKILL, ARG, "ブラッドネイル"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ENDIF
+		ELSEIF switch == 2;パターンB
+			;4回目の行動
+			IF (FLAG:경과턴수-CTR) == 1 && CFLAG:ARG:행동한횟수 == 1
+				IF RAND:3 == 0
+					CALL SETS_ACTION_SKILL, ARG, "ブラッドネイル"
+				ELSEIF RAND:2 == 0
+					CALL SETS_ACTION_SKILL, ARG, "ファイアボール"
+				ELSE
+					CALL SETS_ACTION_SKILL, ARG, "サンダーボール"
+				ENDIF
+				num = 0
+				switch = 1;次行動からパターンA開始
+			;3回目の行動
+			ELSEIF (FLAG:경과턴수-CTR) == 1 && CFLAG:ARG:행동한횟수 == 0
+				CALL SETS_ACTION_SKILL, ARG, "アイシクルエデン"
+			;2回目の行動
+			ELSEIF (FLAG:경과턴수-CTR) == 0 && CFLAG:ARG:행동한횟수 == 1
+				CALL SETS_ACTION_SKILL, ARG, "力溜め"
+			;1回目の行動
+			ELSEIF (FLAG:경과턴수-CTR) == 0 && CFLAG:ARG:행동한횟수 == 0
+				IF RAND:2 == 0
+					CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+				ELSE
+					CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+				ENDIF
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ENDIF
+		ENDIF
+	ENDIF
+ELSE
+	;1回目の行動
+	IF (FLAG:경과턴수 + 1) == 1 && CFLAG:ARG:행동한횟수 == 0
+		CALL SETS_ACTION_SKILL, ARG, "ファイアボール"
+	;6n+7回目の行動
+	ELSEIF (FLAG:경과턴수 + 1) % 3 == 1 && CFLAG:ARG:행동한횟수 == 0
+		CALL SETS_ACTION_SKILL, ARG, "封印にらみ"
+	;5n+1回目の行動
+	ELSEIF ((FLAG:경과턴수 + 1) % 5 == 1 && CFLAG:ARG:행동한횟수 == 0) || ((FLAG:경과턴수 + 1) % 5 == 3 && CFLAG:ARG:행동한횟수 == 1)
+		CALL SETS_ACTION_SKILL, ARG, "ファイアボール"
+	;4n回目の行動
+	ELSEIF (FLAG:경과턴수 + 1) % 2 == 0 && CFLAG:ARG:행동한횟수 == 1
+		CALL SETS_ACTION_SKILL, ARG, "サンダーボール"
+	;それ以外
+	ELSE
+		CFLAG:ARG:타겟 = RAND:2 + 1
+		CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+	ENDIF
+ENDIF
+;=================================================
+;   sub SET_ACTION_5434
+;=================================================
+;   依頼:ニアラ用思考パターン
+;-------------------------------------------------
+@SET_ACTION_ニアラ,ARG
+#DIM num
+#DIM CTR
+#DIM switch
+#DIM sikkoku
+#LOCALSIZE 3
+;50%切ったらパターン変化
+IF 現HP割合(ARG) < 50 && CFLAG:ARG:행동한횟수 == 0
+	LOCAL:2 = 1
+ENDIF
+;FLAG:경과턴수=0が1ターン目なので特定ターンの行動を決定したいなら経過ターン数に+1しないとダメ
+IF LOCAL:2 == 1
+	IF num == 0
+		num = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	IF STRCOUNT(C_BTL_EFFECT_CHARGE:ARG:0, "力溜め")
+		CALL SETS_ACTION_SKILL, ARG, "真竜メテオ2020"
+	ELSE
+		;ここから初回行動
+		IF (FLAG:경과턴수-CTR) == 0 && CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "キリングリアクト"
+		;ここまで初回行動
+		;14n+13回目の行動
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 7 == 0 && CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+			ENDIF
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 7 == 0 && CFLAG:ARG:행동한횟수 == 1
+			CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "力溜め")
+		;8n+3回目の行動
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 4 == 2 && CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "虚無の睨み"
+		;5n+2回目の行動
+		ELSEIF (((FLAG:경과턴수-CTR) + 1) % 5 == 4 && CFLAG:ARG:행동한횟수 == 0) || (((FLAG:경과턴수-CTR) + 1) % 5 == 1 && CFLAG:ARG:행동한횟수 == 1)
+			CALL SETS_ACTION_SKILL, ARG, "真竜の牙"
+		;14n+10回目の行動
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 7 == 5 && CFLAG:ARG:행동한횟수 == 1
+			CALL SETS_ACTION_SKILL, ARG, "漆黒の炎"
+		;それ以外
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ENDIF
+	ENDIF
+ELSE
+	;7n回目の行動
+	IF ((FLAG:경과턴수 + 1) % 7 == 4 && CFLAG:ARG:행동한횟수 == 0) || ((FLAG:경과턴수 + 1) % 7 == 0 && CFLAG:ARG:행동한횟수 == 1)
+		CALL SETS_ACTION_SKILL, ARG, "虚無の睨み"
+	;6n回目の行動
+	ELSEIF (FLAG:경과턴수 + 1) % 3 == 0 && CFLAG:ARG:행동한횟수 == 1
+		CALL SETS_ACTION_SKILL, ARG, "真竜ブレス"
+	;4n→4n+1→4n+2→4n+3→4n…回目の行動
+	ELSEIF switch == 0 && ((FLAG:경과턴수 + 1) % 2 == 0 && CFLAG:ARG:행동한횟수 == 1)
+		CALL SETS_ACTION_SKILL, ARG, "漆黒の炎"
+		sikkoku = sikkoku + 1
+		IF sikkoku == 2
+			sikkoku = 0
+			switch = 1
+		ENDIF
+	ELSEIF switch == 1 && ((FLAG:경과턴수 + 1) % 2 == 1 && CFLAG:ARG:행동한횟수 == 0)
+		CALL SETS_ACTION_SKILL, ARG, "漆黒の炎"
+		sikkoku = sikkoku + 1
+		IF sikkoku == 2
+			sikkoku = 0
+			switch = 2
+		ENDIF
+	ELSEIF switch == 2 && ((FLAG:경과턴수 + 1) % 2 == 1 && CFLAG:ARG:행동한횟수 == 1)
+		CALL SETS_ACTION_SKILL, ARG, "漆黒の炎"
+		sikkoku = sikkoku + 1
+		IF sikkoku == 2
+			sikkoku = 0
+			switch = 3
+		ENDIF
+	ELSEIF switch == 3 && ((FLAG:경과턴수 + 1) % 2 == 0 && CFLAG:ARG:행동한횟수 == 0)
+		CALL SETS_ACTION_SKILL, ARG, "漆黒の炎"
+		sikkoku = sikkoku + 1
+		IF sikkoku == 2
+			sikkoku = 0
+			switch = 0
+		ENDIF
+	;それ以外
+	ELSE
+		CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+	ENDIF
+ENDIF
+;=================================================
+;   sub SET_ACTION_ティアマット
+;=================================================
+;   依頼:ティアマット用思考パターン
+;-------------------------------------------------
+@SET_ACTION_ティアマット,ARG
+#DIM num1
+#DIM num2
+#DIM CTR
+#DIM KIAI
+#LOCALSIZE 3
+CFLAG:ARG:입력행동 = -1
+IF CFLAG:ARG:행동한횟수 == 0
+	;25%と60%切ったらパターン変化
+	SIF 現HP割合(ARG) < 60 && LOCAL:2 < 1
+		LOCAL:2 = 1
+	SIF 現HP割合(ARG) < 25
+		LOCAL:2 = 2
+ENDIF
+;FLAG:경과턴수=0が1ターン目なので特定ターンの行動を決定したいなら経過ターン数に+1しないとダメ
+;HP25%以下
+IF LOCAL:2 == 2
+	IF num2 == 0
+		num2 = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	IF CFLAG:ARG:気合フラグ == 1
+		KIAI = 1
+	ENDIF
+	;前ターンで力溜め済み
+	IF KIAI == 1
+		IF  CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "クリスタルブレス"
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 10 == 6
+			CALL SETS_ACTION_SKILL, ARG, "タイフーンハウル"
+			KIAI = 0
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			KIAI = 0
+		ENDIF
+	ELSE
+		;ここから初回行動
+		IF ((FLAG:경과턴수-CTR) + 1) == 1 && CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) == 1 && CFLAG:ARG:행동한횟수 == 1
+			CALL SETS_ACTION_SKILL, ARG, "ドラゴンファング"
+		;ここまで初回行動
+		;10n+2ターンの1回目 か 10nターンの2回目
+		ELSEIF (((FLAG:경과턴수-CTR) + 1) % 10 == 2 && CFLAG:ARG:행동한횟수 == 0) || (((FLAG:경과턴수-CTR) + 1) % 10 == 0 && CFLAG:ARG:행동한횟수 == 1)
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "마비할퀴기"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ENDIF
+		;10n+2ターンの2回目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 10 == 2 && CFLAG:ARG:행동한횟수 == 1
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "タイフーンハウル"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ENDIF
+		;10n+3ターン目 か 10n+5ターン目 か 10n+8ターン目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 10 == 3 || ((FLAG:경과턴수-CTR) + 1) % 10 == 5 || ((FLAG:경과턴수-CTR) + 1) % 10 == 8
+			IF CFLAG:ARG:행동한횟수 == 0
+				IF RAND:2 == 0
+					CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+				ELSE
+					CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+				ENDIF
+			ELSE
+				CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "力溜め")
+			ENDIF
+		;10n+7ターンの2回目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 10 == 7 && CFLAG:ARG:행동한횟수 == 1
+			CALL SETS_ACTION_SKILL, ARG, "마비할퀴기"
+		;10nターンの1回目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 10 == 0 && CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ドラゴンファング"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ENDIF
+		;10n+1ターンの1回目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 10 == 1 && CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "ドラゴンファング"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ENDIF
+	ENDIF
+;HP60%以下
+ELSEIF LOCAL:2 == 1
+	IF num1 == 0
+		num1 = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	IF CFLAG:ARG:気合フラグ == 1
+		KIAI = 1
+	ENDIF
+	;前ターンで力溜め済み
+	IF KIAI == 1
+		IF  CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "クリスタルブレス"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			KIAI = 0
+		ENDIF
+	ELSE
+		;5n+1ターンの1回目
+		IF ((FLAG:경과턴수-CTR) + 1) % 5 == 1 && CFLAG:ARG:행동한횟수 == 0
+			IF RAND:3 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ドラゴンファング"
+			ELSEIF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSE
+				IF RAND:2 == 0
+					CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+				ELSE
+					CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+				ENDIF
+			ENDIF
+		;5n+1ターンの2回目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 5 == 1 && CFLAG:ARG:행동한횟수 == 1
+			CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "力溜め")
+		;ここまで初回行動
+		;5n+3ターンの1,2回目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 5 == 3
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ドラゴンファング"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ENDIF
+		;5n+4ターンの2回目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 5 == 4 && CFLAG:ARG:행동한횟수 == 1
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ドラゴンファング"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ENDIF
+		;5nターンの2回目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 5 == 0 && CFLAG:ARG:행동한횟수 == 1
+			CALL SETS_ACTION_SKILL, ARG, "タイフーンハウル"
+		;それ以外
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ENDIF
+	ENDIF
+ELSE
+	;1ターン目限定の行動
+	IF (FLAG:경과턴수 + 1) == 1
+		IF CFLAG:ARG:행동한횟수 == 1
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ドラゴンファング"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ENDIF
+		;それ以外
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ENDIF
+	;2ターン目以降の行動
+	ELSE
+		;5n+3ターン・5nターンの1回目
+		IF ((FLAG:경과턴수 + 1) % 5 == 3 && CFLAG:ARG:행동한횟수 == 0) || ((FLAG:경과턴수 + 1) % 5 == 0 && CFLAG:ARG:행동한횟수 == 0)
+			CALL SETS_ACTION_SKILL, ARG, "タイフーンハウル"
+		;5n+4ターン・5n+1ターンの2回目
+		ELSEIF ((FLAG:경과턴수 + 1) % 5 == 4 && CFLAG:ARG:행동한횟수 == 1) || ((FLAG:경과턴수 + 1) % 5 == 1 && CFLAG:ARG:행동한횟수 == 1)
+			CALL SETS_ACTION_SKILL, ARG, "ドラゴンファング"
+		;それ以外
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ENDIF
+	ENDIF
+ENDIF
+;=================================================
+;   sub SET_ACTION_オケアヌス
+;=================================================
+;   依頼:オケアヌス用思考パターン
+;-------------------------------------------------
+@SET_ACTION_オケアヌス,ARG
+#DIM num
+#DIM CTR
+#LOCALSIZE 3
+;50%切ったらパターン変化
+IF CFLAG:ARG:행동한횟수 == 0
+	SIF 現HP割合(ARG) < 60
+		LOCAL:2 = 1
+ENDIF
+;FLAG:경과턴수=0が1ターン目なので特定ターンの行動を決定したいなら経過ターン数に+1しないとダメ
+IF LOCAL:2 == 1
+	IF num == 0
+		num = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	;形態変化から1～4ターンは固定
+	IF ((FLAG:경과턴수-CTR) + 1) == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+			ENDIF
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "雨乞い"
+		ENDIF
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) == 2
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "酸の雨"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "酸の玉"
+		ENDIF
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) == 3
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "かみ砕き"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ウォーターウイング"
+		ENDIF
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) == 4
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "酸の玉"
+			ENDIF
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ENDIF
+	;以降はループさせる
+	;5nターン目
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 5 == 0
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+			ENDIF
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "雨乞い"
+		ENDIF
+	;5n+1ターン目
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 5 == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "酸の雨"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ENDIF
+	;5n+2ターン目
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 5 == 2
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "ウォーターウイング"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "酸の玉"
+		ENDIF
+	;5n+3ターン目
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 5 == 3
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "かみ砕き"
+		ELSE
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "かみ砕き"
+			ENDIF
+		ENDIF
+	;5n+4ターン目
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 5 == 4
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "酸の玉"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "かみ砕き"
+		ENDIF
+	ENDIF
+ELSE
+	;10n+2ターン目
+	IF (FLAG:경과턴수 + 1) % 10 == 2
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "かみ砕き"
+			ENDIF
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ENDIF
+	;10n+3ターン目
+	ELSEIF (FLAG:경과턴수 + 1) % 10 == 3
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "酸の玉"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ENDIF
+	;10n+4ターン目と10n+9ターン目
+	ELSEIF (FLAG:경과턴수 + 1) % 10 == 4 || (FLAG:경과턴수 + 1) % 10 == 9
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "酸の玉"
+			ENDIF
+		ELSE
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "かみ砕き"
+			ENDIF
+		ENDIF
+	;10n+5ターン目と10n+6ターン目
+	ELSEIF (FLAG:경과턴수 + 1) % 10 == 5 || (FLAG:경과턴수 + 1) % 10 == 6
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "ウォーターウイング"
+			ENDIF
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "酸の玉"
+		ENDIF
+	;10n+7ターン目
+	ELSEIF (FLAG:경과턴수 + 1) % 10 == 7
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "かみ砕き"
+			ENDIF
+		ELSE
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "ウォーターウイング"
+			ENDIF
+		ENDIF
+	;10n+8ターン目
+	ELSEIF (FLAG:경과턴수 + 1) % 10 == 8
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "酸の玉"
+			ENDIF
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ENDIF
+	;10nターン目と10n+1ターン目
+	ELSE
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "ウォーターウイング"
+			ENDIF
+		ELSE
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "酸の玉"
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+;=================================================
+;   sub SET_ACTION_5437
+;=================================================
+;   依頼:ジャバウォック用思考パターン
+;-------------------------------------------------
+@SET_ACTION_ジャバウォック,ARG
+#DIM num
+#DIM CTR
+#LOCALSIZE 3
+CFLAG:ARG:입력행동 = -1
+;FLAG:경과턴수=0が1ターン目なので特定ターンの行動を決定したいなら経過ターン数に+1しないとダメ
+IF LOCAL:2 == 1
+	IF num == 0
+		num = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	;形態変化の1ターン目は固定
+	IF ((FLAG:경과턴수-CTR) + 1) == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "ハンマークラッシュ"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ENDIF
+	ELSE
+		SELECTCASE ((FLAG:경과턴수-CTR) + 1) % 7
+			CASE 1
+				IF CFLAG:ARG:행동한횟수 == 0
+					IF RAND:2 == 0
+						CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+					ELSE
+						CALL SETS_ACTION_SKILL, ARG, "ハンマークラッシュ"
+					ENDIF
+				ELSE
+					CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+				ENDIF
+			CASE 2
+				;以降はループさせる
+				;7n+2ターン目
+				IF CFLAG:ARG:행동한횟수 == 0
+					CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+				ELSE
+					IF RAND:2 == 0
+						CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+					ELSE
+						CALL SETS_ACTION_SKILL, ARG, "パワータックル"
+					ENDIF
+				ENDIF
+			CASE 3
+				;7n+3ターン目
+				IF CFLAG:ARG:행동한횟수 == 0
+					CALL SETS_ACTION_SKILL, ARG, "パワータックル"
+				ELSE
+					CALL SETS_ACTION_SKILL, ARG, "バーンブレス"
+				ENDIF
+			;7n+4ターン目
+			CASE 4
+				IF CFLAG:ARG:행동한횟수 == 0
+					CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+				ELSE
+					IF RAND:2 == 0
+						CALL SETS_ACTION_SKILL, ARG, "ハンマークラッシュ"
+					ELSE
+						CALL SETS_ACTION_SKILL, ARG, "パワータックル"
+					ENDIF
+				ENDIF
+			;7n+5ターン目
+			CASE 5
+				IF CFLAG:ARG:행동한횟수 == 0
+					IF RAND:2 == 0
+						IF RAND:2 == 0
+							CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+						ELSE
+							CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+						ENDIF
+					ELSE
+						CALL SETS_ACTION_SKILL, ARG, "ハンマークラッシュ"
+					ENDIF
+				ELSE
+					IF CFLAG:ARG:気合フラグ
+						CALL SETS_ACTION_SKILL, ARG, "パワータックル"
+					ELSE
+						CALL SETS_ACTION_SKILL, ARG, "力溜め"
+					ENDIF
+				ENDIF
+			;7n+6ターン目
+			CASE 6
+				IF 現HP割合(ARG) < 50
+					IF CFLAG:ARG:행동한횟수 == 0
+						CALL SETS_ACTION_SKILL, ARG, "超大暴れ"
+					ELSE
+						CALL SETS_ACTION_SKILL, ARG, "バーンブレス"
+					ENDIF
+				ELSE
+					IF CFLAG:ARG:행동한횟수 == 0
+						CALL SETS_ACTION_SKILL, ARG, "バーンブレス"
+					ELSE
+						CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+					ENDIF
+				ENDIF
+			;7nターン目
+			CASE 0
+				IF CFLAG:ARG:행동한횟수 == 0
+					CALL SETS_ACTION_SKILL, ARG, "ブラッドリアクト"
+				ELSE
+					CALL SETS_ACTION_SKILL, ARG, "パワータックル"
+				ENDIF
+		ENDSELECT
+	ENDIF
+ELSE
+	SELECTCASE (FLAG:경과턴수 + 1) % 7
+		CASE 1
+			;7n+1ターン目
+			IF CFLAG:ARG:행동한횟수 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ブラッドリアクト"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "パワータックル"
+			ENDIF
+		CASE 2, 4, 6
+			;7n+2,7n+4,7n+6ターン目
+			IF CFLAG:ARG:행동한횟수 == 0
+				IF RAND:2 == 0
+					IF RAND:2 == 0
+						CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+					ELSE
+						CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+					ENDIF
+				ELSE
+					CALL SETS_ACTION_SKILL, ARG, "ハンマークラッシュ"
+				ENDIF
+			ELSE
+				IF STRCOUNT(C_BTL_EFFECT_CHARGE:ARG:0, "力溜め")
+					CALL SETS_ACTION_SKILL, ARG, "パワータックル"
+				ELSE
+					CALL SETS_ACTION_SKILL, ARG, "力溜め"
+				ENDIF
+			ENDIF
+		CASE 3, 5, 0
+			IF CFLAG:ARG:행동한횟수 == 0
+				CALL SETS_ACTION_SKILL, ARG, "バーンブレス"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ENDIF
+	ENDSELECT
+ENDIF
+;50%切ったらパターン変化
+SIF 現HP割合(ARG) < 60
+	LOCAL:2 = 1
+;=================================================
+;   sub SET_ACTION_インソムニア
+;=================================================
+;   依頼:インソムニア用思考パターン
+;-------------------------------------------------
+@SET_ACTION_インソムニア,ARG
+#DIM num1
+#DIM num2
+#DIM CTR
+#DIM SENKOKU
+#DIM TAME
+#DIM TAMECTR
+#LOCALSIZE 3
+IF CFLAG:ARG:행동한횟수 == 0
+	;25%と60%切ったらパターン変化
+	SIF 現HP割合(ARG) < 60 && LOCAL:2 < 1
+		LOCAL:2 = 1
+	SIF 現HP割合(ARG) < 40
+		LOCAL:2 = 2
+ENDIF
+;FLAG:경과턴수=0が1ターン目なので特定ターンの行動を決定したいなら経過ターン数に+1しないとダメ
+;HP40%以下
+IF LOCAL:2 == 2
+	IF num2 == 0
+		num2 = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	IF TAME == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "漆黒ブレス"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			TAME = 0
+		ENDIF
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 3 == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:3 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSEIF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "パワースラッシュ"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "물고늘어지기"
+			ENDIF
+		ELSE
+			IF RAND:3 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSEIF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "パワースラッシュ"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "물고늘어지기"
+			ENDIF
+		ENDIF
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 3 == 2
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+			ENDIF
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "力溜め"
+			TAME = 1
+		ENDIF
+	ENDIF
+;HP60%以下
+ELSEIF LOCAL:2 == 1
+	IF num1 == 0
+		num1 = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	IF SENKOKU == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "死の宣告")
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			SENKOKU = 0
+		ENDIF
+	ELSEIF TAME == 1
+		IF CFLAG:ARG:행동한횟수 == 0 && TAMECTR == 1
+			CALL SETS_ACTION_SKILL, ARG, "漆黒ブレス"
+		ELSEIF CFLAG:ARG:행동한횟수 == 0 && TAMECTR % 2 == 1
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "漆黒ブレス"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "エグゾーストブレス"
+			ENDIF
+		ELSEIF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ELSE
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "パワースラッシュ"
+			ENDIF
+			TAME = 0
+		ENDIF
+	;形態変化の1ターン目は固定
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+			ENDIF
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "力溜め"
+			TAME = 1
+			TAMECTR += 1
+		ENDIF
+	;以降はループさせる
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 14 == 5 || ((FLAG:경과턴수-CTR) + 1) % 14 == 11
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+			ENDIF
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "力溜め"
+			TAME = 1
+			TAMECTR += 1
+		ENDIF
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 14 == 0
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "死の予兆"
+			SENKOKU = 1
+		ENDIF
+	ELSE
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ELSE
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "パワースラッシュ"
+			ENDIF
+		ENDIF
+	ENDIF
+ELSE
+	IF SENKOKU == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "死の宣告")
+		ELSEIF (FLAG:경과턴수 + 1) % 6 == 2
+			CALL SETS_ACTION_SKILL, ARG, "力溜め"
+			SENKOKU = 0
+			TAME = 1
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			SENKOKU = 0
+		ENDIF
+	ELSEIF TAME == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "エグゾーストブレス"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			TAME = 0
+		ENDIF
+	;6n+1ターン目
+	ELSEIF (FLAG:경과턴수 + 1) % 6 == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+			ENDIF
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "死の予兆"
+			SENKOKU = 1
+		ENDIF
+	;6n+4ターン目
+	ELSEIF (FLAG:경과턴수 + 1) % 6 == 4
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "パワースラッシュ"
+			ENDIF
+		ELSE
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "パワースラッシュ"
+			ENDIF
+		ENDIF
+	;6n+5ターン目
+	ELSE
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+			ENDIF
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "死の予兆"
+			SENKOKU = 1
+		ENDIF
+	ENDIF
+ENDIF
+;=================================================
+;   sub SET_ACTION_5439A
+;=================================================
+;   依頼:フォーマルハウト用思考パターン
+;-------------------------------------------------
+@SET_ACTION_フォーマルハウト,ARG
+#DIM num
+#DIM CTR
+#DIM SYUTYU
+#DIM SYUTYU_CTR
+#LOCALSIZE 3
+
+;50%切ったらパターン変化
+IF 現HP割合(ARG) < 50 && CFLAG:ARG:행동한횟수 == 0
+	LOCAL:2 = 1
+ENDIF
+;FLAG:경과턴수=0が1ターン目なので特定ターンの行動を決定したいなら経過ターン数に+1しないとダメ
+IF CFLAG:ARG:집중플래그 == 1
+	SYUTYU = 1
+ENDIF
+IF LOCAL:2 == 1
+	IF num == 0
+		num = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	IF SYUTYU == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF ((FLAG:경과턴수-CTR) + 1) == 3
+				CALL SETS_ACTION_SKILL, ARG, "暗キ閃光"
+			ELSEIF SYUTYU_CTR % 2 == 1
+				IF RAND:2 == 0
+					CALL SETS_ACTION_SKILL, ARG, "悪夢ノ黒花"
+				ELSE
+					CALL SETS_ACTION_SKILL, ARG, "暗キ閃光"
+				ENDIF
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "暗キ閃光"
+			ENDIF
+		ELSE
+			SYUTYU = 0
+			IF ((FLAG:경과턴수-CTR) + 1) == 3
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ELSEIF SYUTYU_CTR % 2 == 1
+				CALL SETS_ACTION_SKILL, ARG, "破滅ノ予兆"
+				SYUTYU_CTR += 1
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ENDIF
+		ENDIF
+	;形態変化の1～2ターン目は固定
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "双翼ノ引キ裂キ"
+		ENDIF
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) == 2
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+			ENDIF
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "破滅ノ予兆"
+		ENDIF
+	;以降はループさせる
+	;5n+4ターン目
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 5 == 4
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "双翼ノ引キ裂キ"
+		ENDIF
+	;5nターン目
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 5 == 0
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "呪ノ爪"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ENDIF
+	;5n+1ターン目
+	ELSEIF ((FLAG:경과턴수-CTR) + 1) % 5 == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+			ENDIF
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "破滅ノ予兆"
+			SYUTYU_CTR += 1
+		ENDIF
+	ENDIF
+ELSE
+	IF SYUTYU == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "悪夢ノ黒花"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			SYUTYU = 0
+		ENDIF
+	;4n+1ターン目
+	ELSEIF (FLAG:경과턴수 + 1) % 4 == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "双翼ノ引キ裂キ"
+		ENDIF
+	;4n+2ターン目
+	ELSEIF (FLAG:경과턴수 + 1) % 4 == 2
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "呪ノ爪"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ENDIF
+	;4n+3ターン目
+	ELSEIF (FLAG:경과턴수 + 1) % 4 == 3
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+			ENDIF
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "破滅ノ予兆"
+		ENDIF
+	ENDIF
+ENDIF
+;=================================================
+;   sub SET_ACTION_5439B
+;=================================================
+;   依頼:神体フォーマルハウト用思考パターン
+;-------------------------------------------------
+@SET_ACTION_神体フォーマルハウト,ARG
+#DIM num1
+#DIM num2
+#DIM CTR
+#DIM SYUTYU
+#LOCALSIZE 3
+;40%と60%切ったらパターン変化
+IF CFLAG:ARG:행동한횟수 == 0
+	SIF 現HP割合(ARG) < 60 && LOCAL:2 < 1
+		LOCAL:2 = 1
+	SIF 現HP割合(ARG) < 40
+		LOCAL:2 = 2
+ENDIF
+;FLAG:경과턴수=0が1ターン目なので特定ターンの行動を決定したいなら経過ターン数に+1しないとダメ
+IF CFLAG:ARG:집중플래그 == 1
+	SYUTYU = 1
+ENDIF
+;HP60%以下
+IF LOCAL:2 > 0
+	IF num1 == 0
+		num1 = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	IF num2 == 0
+		num2 = 1
+		CTR = FLAG:경과턴수
+	ENDIF
+	;60%を切ったら6n+1ターン目の行動は常に一定
+	IF ((FLAG:경과턴수-CTR) + 1) % 6 == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "カースリアクト"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "呪いの眼光"
+		ENDIF
+	;HP40%以下
+	ELSEIF LOCAL:2 == 2
+		IF SYUTYU == 1
+			IF CFLAG:ARG:행동한횟수 == 0
+				CALL SETS_ACTION_SKILL, ARG, "魔槍フォーマルハウト"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "呪いの眼光"
+				SYUTYU = 0
+			ENDIF
+		;2ターン目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) == 2
+			IF CFLAG:ARG:행동한횟수 == 0
+				CALL SETS_ACTION_SKILL, ARG, "呪いの眼光"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "破滅ノ予兆"
+			ENDIF
+		;3ターン目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) == 4
+			IF CFLAG:ARG:행동한횟수 == 0
+				CALL SETS_ACTION_SKILL, ARG, "呪いの眼光"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ENDIF
+		;4ターン目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) == 5
+			IF CFLAG:ARG:행동한횟수 == 0
+				CALL SETS_ACTION_SKILL, ARG, "휠윈드"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "破滅ノ予兆"
+			ENDIF
+		;6n+2ターン目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 6 == 2
+			IF CFLAG:ARG:행동한횟수 == 0
+				IF RAND:2 == 0
+					CALL SETS_ACTION_SKILL, ARG, "呪いの眼光"
+				ELSE
+					CALL SETS_ACTION_SKILL, ARG, "휠윈드"
+				ENDIF
+			ELSE
+				IF RAND:2 == 0
+					CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+				ELSE
+					CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+				ENDIF
+			ENDIF
+		;6n+3ターン目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 6 == 3
+			IF CFLAG:ARG:행동한횟수 == 0
+				IF RAND:3 == 0
+					CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+				ELSEIF RAND:2 == 0
+					CALL SETS_ACTION_SKILL, ARG, "呪いの眼光"
+				ELSE
+					CALL SETS_ACTION_SKILL, ARG, "휠윈드"
+				ENDIF
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "破滅ノ予兆"
+			ENDIF
+		;6n+5ターン目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 6 == 5
+			IF CFLAG:ARG:행동한횟수 == 0
+				CALL SETS_ACTION_SKILL, ARG, "クリスタルシック"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "휠윈드"
+			ENDIF
+		;6nターン目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 6 == 0
+			IF CFLAG:ARG:행동한횟수 == 0
+				IF RAND:2 == 0
+					CALL SETS_ACTION_SKILL, ARG, "呪いの眼光"
+				ELSE
+					CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+				ENDIF
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "呪いの眼光"
+			ENDIF
+		ENDIF
+	;HP60%以下
+	ELSE
+		IF SYUTYU == 1
+			IF CFLAG:ARG:행동한횟수 == 0
+				CALL SETS_ACTION_SKILL, ARG, "エンドブレス"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "呪いの眼光"
+				SYUTYU = 0
+			ENDIF
+		;6n+2ターン目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 6 == 2
+			IF CFLAG:ARG:행동한횟수 == 0
+				IF RAND:2 == 0
+					CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+				ELSE
+					CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+				ENDIF
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "呪いの眼光"
+			ENDIF
+		;6n+3ターン目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 6 == 3
+			IF CFLAG:ARG:행동한횟수 == 0
+				CALL SETS_ACTION_SKILL, ARG, "呪いの眼光"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "破滅ノ予兆"
+			ENDIF
+		;6n+5ターン目
+		ELSEIF ((FLAG:경과턴수-CTR) + 1) % 6 == 5
+			IF CFLAG:ARG:행동한횟수 == 0
+				CALL SETS_ACTION_SKILL, ARG, "クリスタルシック"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "휠윈드"
+			ENDIF
+		;6nターン目
+		ELSE
+			IF CFLAG:ARG:행동한횟수 == 0
+				CALL SETS_ACTION_SKILL, ARG, "휠윈드"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "呪いの眼光"
+			ENDIF
+		ENDIF
+	ENDIF
+ELSE
+	IF SYUTYU == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "エンドブレス"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			SYUTYU = 0
+		ENDIF
+	;5n+1ターン目
+	ELSEIF (FLAG:경과턴수 + 1) % 5 == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "クリスタルシック"
+		ENDIF
+	;5n+2ターン目
+	ELSEIF (FLAG:경과턴수 + 1) % 5 == 2
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "데・카쟈"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "데・쿤다"
+			ENDIF
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "呪いの眼光"
+		ENDIF
+	;5n+3ターン目
+	ELSEIF (FLAG:경과턴수 + 1) % 5 == 3
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF RAND:2 == 0
+				CALL SETS_ACTION_SKILL, ARG, "휠윈드"
+			ELSE
+				CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+			ENDIF
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "破滅ノ予兆"
+		ENDIF
+	;5nターン目
+	ELSE
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SETS_ACTION_SKILL, ARG, "呪いの眼光"
+		ELSE
+			CALL SETS_ACTION_SKILL, ARG, "ＡＴＴＡＣＫ"
+		ENDIF
+	ENDIF
+ENDIF
+

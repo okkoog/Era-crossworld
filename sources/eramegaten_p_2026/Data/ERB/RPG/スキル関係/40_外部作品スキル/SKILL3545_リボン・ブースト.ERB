@@ -1,0 +1,392 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_3545,ARG
+RESULTS = 리본・부스트
+IF ARG > -1
+	SIF SKILLGAGE_H_GET(ARG,3545) == 1
+		RESULTS = B･써니 빔
+	SIF SKILLGAGE_H_GET(ARG,3545) == 2
+		;捏造なんだよなぁ
+		RESULTS = B･블루 스타
+	SIF SKILLGAGE_H_GET(ARG,3545) == 3
+		RESULTS = B･힐링S
+	SIF SKILLGAGE_H_GET(ARG,3545) == 4
+		RESULTS = B･캐럿S
+ENDIF
+;　명중
+@SKILL_HITRATE_3545, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_3545, ARG
+RETURN 50
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3545,ARG
+IF ARG > -1
+	;サニービーム　화염
+	SIF SKILLGAGE_H_GET(ARG,3545) == 1
+		RETURN 3
+	;ブルースター　비구
+	SIF SKILLGAGE_H_GET(ARG,3545) == 2
+		RETURN 4
+	;ヒーリングスタッフ
+	SIF SKILLGAGE_H_GET(ARG,3545) == 3
+		RETURN 3
+	;キャロットシューター
+	SIF SKILLGAGE_H_GET(ARG,3545) == 4
+		RETURN 3
+ENDIF
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3545,ARG
+IF ARG > -1
+	;サニービーム　화염
+	SIF SKILLGAGE_H_GET(ARG,3545) == 1
+		RETURN 3
+	;ブルースター　비구
+	SIF SKILLGAGE_H_GET(ARG,3545) == 2
+		RETURN 4
+	;ヒーリングスタッフ
+	SIF SKILLGAGE_H_GET(ARG,3545) == 3
+		RETURN 3
+	;キャロットシューター
+	SIF SKILLGAGE_H_GET(ARG,3545) == 4
+		RETURN 3
+ENDIF
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3545, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3545,ARG
+RETURN 45
+
+;　複合相性
+@SKILL_TYPE_3545,ARG
+SELECTCASE SKILLGAGE_H_GET(ARG,3545)
+	;サニービーム
+	CASE 1
+		RETURN GET_TYPE_NUM("만능"), GET_TYPE_NUM("화염")
+	;ブルースター
+	CASE 2
+		RETURN GET_TYPE_NUM("만능"), GET_TYPE_NUM("비구")
+	;ヒーリングスタッフ
+	CASE 3
+		RETURN GET_TYPE_NUM("만능"), GET_TYPE_NUM("충격")
+	;キャロットシューター
+	CASE 4
+		RETURN GET_TYPE_NUM("만능"), GET_TYPE_NUM("핵열")
+ENDSELECT
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3545
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3545, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3545, ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_3545,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3545,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3545, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3545
+RETURN GET_SUCCESSION_NUM("만능")
+
+;속도보정
+@SKILL_SPEED_3545, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3545
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3545, ARG = -1
+RETURN 15
+
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;
+;一定ターン攻撃した対象に対し、『万能属性と対応属性の複合』で小威力の物理追撃を行う。
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_3545,ARG,ARG:1
+;自分じゃなければNG
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+;一度のみの判定にする
+SIF ARG != ARG:1
+	RETURN 0
+SIF SKILLGAGE_D_GET(ARG,3545) < 1
+	RETURN 0
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+SIF RESULT != 1 || CFLAG:ARG:타겟 < 1
+	RETURN 0
+RETURN 1, CFLAG:ARG:타겟
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3545, ARG, ARG:1, ARG:2
+#LOCALSIZE 4
+IF SKILLGAGE_D_GET(ARG,3545) == 0
+	IF SKILLGAGE_F_GET(ARG,3545) == 100
+		CALL SKILLGAGE_D_SET,ARG,3545,6
+		CALL SKILLGAGE_F_SET,ARG,3545,0
+		PRINTFORML 맥스 부스트!! 6턴 동안, 추격이 발동하게 되었다
+	ELSE
+		CALL SKILLGAGE_D_SET,ARG,3545,3
+		CALL SKILLGAGE_F_SET,ARG,3545,0
+		PRINTFORML 리본 부스트 발동! 3턴 동안, 추격이 발동하게 되었다
+	ENDIF
+	;IF CFLAG:(ARG):PT플래그 == 0
+	;	LOCAL:1 = 7
+	;	LOCAL:2 = 17
+	;ELSE
+	;	LOCAL:1 = 1
+	;	LOCAL:2 = 7
+	;ENDIF
+	;FOR LOCAL,LOCAL:1,LOCAL:2
+	;	SIF POS(LOCAL) < 0
+	;		CONTINUE
+	;	CFLAG:POS(LOCAL):명중강화 = MIN(32, CFLAG:POS(LOCAL):명중강화 + 4)
+	;	CFLAG:POS(LOCAL):회피강화 = MIN(32, CFLAG:POS(LOCAL):회피강화 + 4)
+	;NEXT
+	PRINTFORML \@ CFLAG:ARG:PT플래그 == 0 ? 적 # 아군 \@의 속도(명중·회피) 상승!
+	IF SKILLGAGE_H_GET(ARG,3545) == 1
+		;1サニービーム　　　　　　　　（火炎追撃　速度・攻撃強化）
+		;FOR LOCAL,LOCAL:1,LOCAL:2
+		;	SIF POS(LOCAL) < 0
+		;		CONTINUE
+		;	CFLAG:POS(LOCAL):공격강화 = MIN(32, CFLAG:POS(LOCAL):공격강화 + 4)
+		;NEXT
+		CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ? 19 # 22, "攻撃_命中_回避", 4, "範囲", "NOMES"
+		PRINTFORMW \@ CFLAG:ARG:PT플래그 == 0 ? 적 # 아군 \@의 공격력 상승!
+	ELSEIF SKILLGAGE_H_GET(ARG,3545) == 2
+		;2ブルースター　　　　　　　　（飛具追撃　速度・防御強化）
+		;FOR LOCAL,LOCAL:1,LOCAL:2
+		;	SIF POS(LOCAL) < 0
+		;		CONTINUE
+		;	CFLAG:POS(LOCAL):방어강화 = MIN(32, CFLAG:POS(LOCAL):방어강화 + 4)
+		;NEXT
+		CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ? 19 # 22, "防御_命中_回避", 4, "範囲", "NOMES"
+		PRINTFORMW \@ CFLAG:ARG:PT플래그 == 0 ? 적 # 아군 \@의 방어력 상승!
+	ELSEIF SKILLGAGE_H_GET(ARG,3545) == 3
+		;3ヒーリングスタッフ　　　　　（衝撃追撃　速度＋２）
+		;メディアこれ機能しねーな？ということで速度＋２に変更。回復無尽蔵もよろしくないし
+		;FOR LOCAL,LOCAL:1,LOCAL:2
+		;	SIF POS(LOCAL) < 0
+		;	CONTINUE
+		;	CFLAG:POS(LOCAL):명중강화 = MIN(32, CFLAG:POS(LOCAL):명중강화 + 4)
+		;	CFLAG:POS(LOCAL):회피강화 = MIN(32, CFLAG:POS(LOCAL):회피강화 + 4)
+		;NEXT
+		CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ? 19 # 22, "命中_回避", 8, "範囲", "NOMES"
+	ELSEIF SKILLGAGE_H_GET(ARG,3545) == 4
+		;4キャロットシューター　　　　（核熱追撃　速度・魔法威力強化）
+		;FOR LOCAL,LOCAL:1,LOCAL:2
+		;	SIF POS(LOCAL) < 0
+		;		CONTINUE
+		;	CFLAG:POS(LOCAL):마법위력강화 = MIN(32, CFLAG:POS(LOCAL):마법위력강화 + 4)
+		;NEXT
+		CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ? 19 # 22, "魔法威力_命中_回避", 4, "範囲", "NOMES"
+		PRINTFORMW \@ CFLAG:ARG:PT플래그 == 0 ? 적 # 아군 \@의 마법 위력 상승!
+	ENDIF
+ELSEIF ARG:1 < 17
+	CALL ATTACK_SINGLE,ARG,POS(ARG:1),3545
+ELSE
+	CALL ATTACK_FIELD,ARG,ARG:1,3545
+ENDIF
+WAIT
+;CALL SKILLGAGE_H_SET,ARG,3545,0
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;====================================================
+;追加コマンド(一番下)
+;====================================================
+@INPUT_COM_NAME_3545,ARG
+RESULTS = リボンブースト
+RESULTS:1 = 리본・부스트
+RETURN 2
+
+@INPUT_COM_ABLE_リボンブースト,ARG
+RESULTS = 発動中
+SIF SKILLGAGE_D_GET(ARG,3545)
+	RETURN -1
+RESULTS = 게이지 부족
+SIF SKILLGAGE_F_GET(ARG,3545) < 50
+	RETURN -1
+RETURN 1
+
+;====================================================
+;コマンド実行
+;====================================================
+@INPUT_COM_リボンブースト,ARG
+#LOCALSIZE 1
+CALL GET_SKILL_COST,3545,ARG
+PRINTL [1] 부스트 써니 빔　　　　　　（화염 추격　속도·공격 강화）
+PRINTL [2] 부스트 블루 스타　　　　　（비구 추격　속도·방어 강화）
+PRINTL [3] 부스트 힐링 스태프　　　　（충격 추격　속도 2단계 강화）
+PRINTL [4] 부스트 캐럿 슈터　　　　　（핵열 추격　속도·마법 위력 강화）
+DRAWLINE
+PRINTL [0] ＣＡＮＣＥＬ
+CALL INPUTINT(0,1,2,3,4)
+IF RESULT > 0
+	CALL SKILLGAGE_H_SET,ARG,3545,RESULT
+	CALL PRINT_ACT_MESSAGE, ARG, 3545
+	CALL ACTION_3545,ARG
+	CALL BATTLE_EVENT_ACT, ARG, 3545
+ENDIF
+RETURN -1
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3545, ARG
+PRINTL 패시브: 리본의 하이퍼 시스템 제어용 스킬.
+PRINTL 
+PRINTL 마법 서포트를 행할 때 필요한 리본의 부스트 포인트를 가시화한 것.
+PRINTL 게이지 50% 이상에서 커맨드 사용이 가능해진다. 발동 후 선택에 따른 버프를 아군 전체에 부여하고,
+PRINTL 일정 턴 동안 공격한 대상에 대해 『만능 속성과 대응 속성의 복합』으로 소위력 물리 추격을 행한다.
+PRINTL 효과 시간은 3턴. 게이지 100%로 발동한 경우 6턴. 발동하면 종료까지 해제 불능.
+PRINTL 게이지는 평시 행동에서 데미지량에 상응하는 양, 기합·포효·도발·콘센트레이트로 15% 상승한다.
+PRINTL 
+PRINTL 모험을 하는 도중 모은 지팡이를 이용한 리본의 기능. (에리나·코코아 전용)
+
+
+;とくにない
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3545,ARG
+RETURN 0
+
+@DISPLAY_COMMAND_P_3545,ARG
+IF SKILLGAGE_D_GET(ARG,3545) > 0
+	RESULTS = ＢＯＯＳＴ:%TOFULL(TOSTR(SKILLGAGE_D_GET(ARG,3545)))%Ｔ
+ELSE
+	RESULTS = ＢＯＯＳＴ:{SKILLGAGE_F_GET(ARG,3545),3}％
+ENDIF
+RETURN 3
+
+@SKILL_EX_DISPLAY_3545, ARG, ARGS
+IF SKILLGAGE_D_GET(ARG, 3545) > 0
+	SELECTCASE SKILLGAGE_H_GET(ARG, 3545)
+		CASE 1
+			RESULTS += SET_COLOR_TAG(UNICODE(0x263D), "赤")
+			RESULTS += HTML_RECT_SPLIT_BAR(SKILLGAGE_D_GET(ARG, 3545), 10, SKILL_EX_DISPLAY_LENS - 2, BARCOLORSET("赤"), RESULT:1)
+			RESULTS:1 = 써니 빔
+		CASE 2
+			RESULTS += SET_COLOR_TAG(UNICODE(0x263D), "藍色")
+			RESULTS += HTML_RECT_SPLIT_BAR(SKILLGAGE_D_GET(ARG, 3545), 10, SKILL_EX_DISPLAY_LENS - 2, BARCOLORSET("青"), RESULT:1)
+			RESULTS:1 = 블루 스타
+		CASE 3
+			RESULTS += SET_COLOR_TAG(UNICODE(0x263D), "黄色")
+			RESULTS += HTML_RECT_SPLIT_BAR(SKILLGAGE_D_GET(ARG, 3545), 10, SKILL_EX_DISPLAY_LENS - 2, BARCOLORSET("黄"), RESULT:1)
+			RESULTS:1 = 힐링 스태프
+		CASE 4
+			RESULTS += SET_COLOR_TAG(UNICODE(0x263D), "深紅")
+			RESULTS += HTML_RECT_SPLIT_BAR(SKILLGAGE_D_GET(ARG, 3545), 10, SKILL_EX_DISPLAY_LENS - 2, BARCOLORSET("赤"), RESULT:1)
+			RESULTS:1 = 캐럿 슈터
+	ENDSELECT
+ELSE
+	IF SKILLGAGE_F_GET(ARG, 3545) < 50
+		RESULTS += SET_COLOR_TAG(UNICODE(0x263D), "gray")
+	ELSE
+		RESULTS += SET_COLOR_TAG(UNICODE(0x263D), "黄色")
+	ENDIF
+	RESULTS += HTML_RECT_BAR(SKILLGAGE_F_GET(ARG, 3545), 100, SKILL_EX_DISPLAY_LENS - 2, BARCOLORSET("緑"), RESULT:1)
+	RESULTS:1 = 魔力蓄積量
+ENDIF
+RETURN 1
+@SKILLGAGE_CHARGE_3545,ARG,ARG:1
+#LOCALSIZE 1
+#DIM L_T
+#DIM L_GP
+;スキルゲージDがある＝発動中の場合離脱
+SIF SKILLGAGE_D_GET(ARG,3545) > 0
+	RETURN 0
+;ゲージが上限に到達している場合は離脱
+SIF SKILLGAGE_F_GET(ARG,3545) == 100
+	RETURN 0
+L_GP = 0
+;自分の行動の場合
+IF ARG == ARG:1
+	FOR LOCAL, 0, BCHARANUM
+		L_T = BCHARA:LOCAL
+		SIF IS_FRIEND(ARG, L_T)
+			CONTINUE
+		SIF GET_CREC_ACT(ARG, L_T, "HIT")
+			L_GP += 5
+		SIF GET_CREC_ACT(ARG, L_T, "CRT")
+			L_GP += 5
+		SIF GET_CREC_ACT(ARG, L_T, "WEAK")
+			L_GP += 5
+	NEXT
+	;気合を入れても上がる
+	SIF CFLAG:ARG:입력행동 == [[스킬:기합]]
+		L_GP += 15
+	;集中しても上がる
+	SIF CFLAG:ARG:입력행동 == [[스킬:컨센트레이트]]
+		L_GP += 15
+	;雄叫びしても上がる
+	SIF CFLAG:ARG:입력행동 == [[스킬:포효]]
+		L_GP += 15
+	;挑発しても上がる
+	SIF CFLAG:ARG:입력행동 == [[스킬:도발]]
+		L_GP += 15
+ENDIF
+;ダメージを受けた又はカウンター、トリガー以外の攻撃を受けたら
+;ゲージが増える
+SIF GET_CREC_ACT(ARG:1, ARG, "HIT")
+	L_GP += MAX(60 * CFLAG:ARG:현데미지 / MAXBASE:ARG:ＨＰ, 2)
+;スキルゲージが100以上だと100にする
+CALL SKILLGAGE_F_SET,ARG,3545,MIN(100, L_GP + SKILLGAGE_F_GET(ARG,3545))
+;SIF SKILLGAGE_F_GET(ARG,3545) > 100
+;	CALL SKILLGAGE_F_SET,ARG,3545,100
+IF SKILLGAGE_F_GET(ARG,3545) == 100
+	RESULTS = ＭＡＸ！
+	RESULT:1 = COLOR("黄色")
+ELSEIF SKILLGAGE_F_GET(ARG,3545) >= 50
+	RESULTS = ＢＯＯＳＴ！
+	RESULT:1 = COLOR("AQUA")
+ELSE
+	RESULTS = 魔力蓄積量
+ENDIF
+RESULTS:1 = \%
+RETURN L_GP
+;RETURN 0
+
+@SKILL_DEL_UNABLE_3545,ARG
+RETURN 1
+
+@継承不能_3545
+RETURN 2
+
+@リンク不能_3545
+RETURN 1

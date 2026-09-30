@@ -1,0 +1,44 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@LEADER_SKILL_CONTROL_NO_54,ARG
+RESULTS = 식스 센스
+
+;スキル名
+@SKILL_NAME_LEADER_シックスセンス,ARG
+RESULTS = 식스센스
+
+@ACTION_LEADER_シックスセンス,ARG,ARG:1,ARG:2
+;10.00~%の還元
+CALL BACK_COST, POS(ARG:1), COUNT_ACTIVE_LEADER_SKILL("シックスセンス") * 500 + 500, "MP"
+
+;　 説明文の設定
+@SET_VAR_LEADER_SKILL_EXPLAIN_シックスセンス, L_TEXT
+#DIMS REF L_TEXT
+#DIM L_CNT
+L_CNT = COUNT_ACTIVE_LEADER_SKILL("シックスセンス")
+IF L_CNT
+	L_TEXT = 아군이 스킬로 약점을 찔렀을 경우에 소비 MP의 {5 + L_CNT * 5}\%가 환원된다。
+ELSE
+	L_TEXT = 아군이 스킬로 약점을 찔렀을 경우에 소비 MP의 10\%가 환원된다。
+ENDIF
+;重複可能な数
+@LEADER_SKILL_COUNT_LIMIT_シックスセンス
+RETURN 6
+
+;====================================================
+;追撃
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_LEADER_シックスセンス,ARG,ARG:1
+;自分じゃなければNG
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+SIF !CFLAG:ARG:소비MP
+	RETURN 0
+;複数登録されている最初の一個目でまとめて判定してあとは飛ばす(LEARDERスキルのTRYSKILL_VARにはLEADERスキルの持ち主が入れられる)
+SIF !IS_FIRST_ACTIVE_LEADER_SKILL("シックスセンス", TRYSKILL_VAR, ARG)
+	RETURN 0
+;弱点をあてていなければ通らない
+SIF !GET_CREC_ACT(FLAG:행동순1, ARG:1, "WEAK")
+	RETURN 0
+RETURN 1, CPOS(ARG)

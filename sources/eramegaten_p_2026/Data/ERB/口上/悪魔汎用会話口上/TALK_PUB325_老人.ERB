@@ -1,0 +1,811 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:TALK_PUB325.ERB
+;	Facility	:会話タイプ：老人の会話用メッセージ＋挨拶・問答処理
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2021/12/XX		----					新規作成
+;	002		2022/07/10		しめじ					命乞い分岐関係を追記（CASE 91～CASE 93）。
+;													大体は口上内に元々あった文章を流用させていただいています。
+;	003		2025/03/01		JK好き					色々加筆
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;=====================================================================
+;口調タイプ：老人の汎用口上＋会話用ファイルです
+;=====================================================================
+
+;=====================================================================
+;戦闘時会話および合体時会話の口上テンプレートです。
+
+;個別の悪魔に対応させたい場合はX1をキャラ番号に
+;会話タイプ別に対応させたい場合はPUB325をPUB(会話タイプの番号)に
+;置き換えてください。
+
+;例）ピクシーの口上を作りたいならX1⇒501に置き換え
+;　　会話タイプ：女、淑女ならPUB325⇒PUB304に置き換え
+
+;知ってると便利そうな表記
+;　%CSTR:ARG:X%　X = 11:일인칭 12:이인칭 20:종족
+;　\@ CSTR:ARG:종족명 != "" ? %CSTR:ARG:종족명% # %STR:(ABL:ARG:종족)%
+;　┗CSTRに種族名が記載されていればそれを、されていなければABLから種族名を割り出して表示する
+;====================================================================
+
+@KOJO_TALK_PUB325,ARG,ARG:1
+SELECTCASE ARG:1
+	CASE 1
+		;1:レディ・キラーズ
+		PRINTFORML %ARG는% %CALLNAME:PLAYER%에게 푹 빠진 것 같다
+		
+	CASE 2
+		; 2:おねだり前の逡巡時(あいさつor問答で目的が決まっている場合)
+		IF RAND:2 == 0
+			PRINTFORML 「이야기를 들어주는 것 또한 꺼리지 않는다만, 요즘 조금 쓸 돈이 궁해서 말이지…」
+		ELSE
+			PRINTFORML 「협력을 얻고자 한다면, 역시 성의를 보여야 하지 않겠누」
+		ENDIF
+	CASE 3
+		; 3:交渉の目的を尋ねる
+		SELECTCASE CFLAG:ARG:우호도
+			CASE IS < 25
+				;友好度低い
+				PRINTFORML 「%CSTR:ARG:이인칭%의 이야기는 지루하구먼」
+				PRINTFORML 「얼른 용건을 말해주지 않겠나」
+			CASE IS < 50
+				;友好度普通
+				PRINTFORML 「아ー 최근 귀가 어두워서 말이지. 다시 한 번 말해주겠누?」
+			CASEELSE
+				;友好度高い
+				PRINTFORML 「어디 이 %CSTR:ARG:일인칭%가 세뱃돈이라도 주도록 할까나」
+		ENDSELECT
+	CASE 84
+		;84:要求前の1文
+		PRINTL 「그렇구먼……」
+	CASE 4
+		; 4-6:交渉目的：やらせてくれと言った時の反応
+		; 4:取り付く島もなし
+		PRINTFORMW 「처음부터 %CSTR:ARG:일인칭%의 정조를 노리고 있었던 게냐!? 어찌 이리 무시무시할꼬」
+		PRINTFORMW 격렬히 거부당했다
+	CASE 5
+		; 5:交渉次第
+		PRINTFORMW 「아니아니아니 할멈한테 들키면 무슨 소릴 들을지… 하지만 정 그렇다면야…」
+		PRINTFORMW 조건에 따라 들어줄 것 같다
+	CASE 6
+		; 6:一発おｋ
+		PRINTFORMW 「%CSTR:ARG:일인칭%와 말인가? 으ー음 뭐 좋겠지. 할멈에겐 비밀일세」
+		PRINTFORMW 흔쾌히 승낙해주었다
+	CASE 7
+		; 7-9:交渉目的：やらせてくれと言った時の反応
+		; 7:取り付く島もなし
+		PRINTFORMW 「처음부터 %CSTR:ARG:일인칭%의 정조를 노리고 있었던 게냐!? 어찌 이리 무시무시할꼬」
+		PRINTFORMW 격렬히 거부당했다
+	CASE 8
+		; 8:交渉次第
+		PRINTFORMW 「아니아니아니 할멈한테 들키면 무슨 소릴 들을지… 하지만 정 그렇다면야…」
+		PRINTFORMW 조건에 따라 범해줄 것 같다
+	CASE 9
+		; 9:一発おｋ
+		PRINTFORMW 「%CSTR:ARG:일인칭%와 말인가? 으ー음 뭐 좋겠지. 할멈에겐 비밀일세」
+		PRINTFORMW 흔쾌히 승낙해주었다
+	CASE 10
+		;10:要求額を提示：￥
+		PRINTFORMW 「설마 공짜로 해줄 수는 없으니 말이지…」
+		PRINTFORML 「￥{TFLAG:TALK용요구치} 정도 마련해 주실까나」
+	CASE 11
+		;11-13:￥を払おうとしてお金が足りない
+		;11:別のものを要求する
+		PRINTFORMW 「뭐라, 가진 돈이 없다고?」
+		PRINTFORMW 「캐시리스 사회라는 것도 여기까지 침투한 겐가…」
+	CASE 85
+		;85 恵まれる
+		PRINTFORMW 「어허, 소욕지족(少欲知足)을 실천하고 있는 겐가!」
+		PRINTFORMW 「요즘 젊은것치고는 꽤나 기개가 있구먼」
+		PRINTFORMW ＞%CALLNAME:ARG%은(는) 왠지 감탄하고 있다…
+	CASE 12
+		;12:交渉失敗。立ち去る
+		PRINTFORMW 「뭐냐, 그 정도 돈도 못 내는 게냐?」
+		PRINTFORMW 「정말이지, 말이 안 통하는구먼」
+	CASE 13
+		;13:交渉失敗。敵対する
+		PRINTFORMW 「뭐라, 가진 돈이 없다고?」
+		PRINTFORMW 「그럼 대신에 %CSTR:ARG:이인칭%의 영혼을 받아볼까나」
+	CASE 14
+		;14-16:￥を支払った
+		;14:払ったのに逃げられる
+		PRINTFORMW 「확실히 받았네!」
+		PRINTFORMW 「윽, 갑자기 허리가! 미안하지만 오늘은 여기까지일세!」
+	CASE 15
+		;15:さらに要求される
+		PRINTFORML 「흠흠… 한 번만 더일세」
+	CASE 16
+		;16:交渉成功
+		PRINTFORMW 「좋구먼」
+	CASE 17
+		;17-19:￥を支払うのを断った::
+		;17:交渉失敗。奇襲する
+		PRINTFORMW 「고작 얼마 안 되는 돈조차 아까워하는 겐가…」
+		PRINTFORMW 「하지만 돈보다 아까워해야 할 것이 있지 않겠누?」
+		PRINTFORMW 「이 %CSTR:ARG:일인칭%가 그걸 가르쳐 주도록 할까나」
+	CASE 18
+		;18:交渉失敗。敵対する
+		PRINTFORML 「그런가 그런가, 그릇의 크기를 알 만하구먼」
+		PRINTFORMW 「그럼 이 이야기는 없었던 걸로 하세나」
+	CASE 19
+		;19:他のものを要求する:
+		PRINTFORMW 「흠, 이 조건으로는 불만인 게냐?」
+	CASE 20
+		;20:要求額を提示：ＭＡＧ
+		PRINTFORML 「{TFLAG:TALK용요구치} MAG를 마련해 주지 않겠나?」
+	CASE 21
+		;21-23:ＭＡＧを支払おうとしたが足りない
+		;21:別のものを要求する
+		PRINTFORMW 「뭐라, 가진 MAG가 없다고?」
+		PRINTFORMW 「정말이지, 요즘 악마소환사들은 어떻게 된 게냐」
+	CASE 86
+		;86 恵まれる
+		PRINTFORMW 「뭐라, 가진 돈이 없다고?」
+		PRINTFORMW 「그 모양이어선 동마들이 모조리 슬라임이 되어버린다네!」
+		PRINTFORMW ＞%CALLNAME:ARG%에게 불쌍하게 여겨진 것 같다
+	CASE 22
+		;22:交渉失敗。立ち去る
+		PRINTFORMW 「뭐라, 가진 MAG조차 없다니!」
+		PRINTFORMW 「으으음… 악마소환사의 말석에도 못 둘 녀석이구먼」
+		PRINTFORMW 「이런이런, 이야기해 봐야 시간 낭비였구먼」
+	CASE 23
+		;23:交渉失敗。敵対する
+		PRINTFORMW 「뭐라, 가진 MAG조차 없다니!」
+		PRINTFORML 「%CSTR:ARG:이인칭% 같은 어리석은 놈이 악마소환사를 자칭하다니 말세로다 말세야!」
+	CASE 24
+		;24-26:ＭＡＧを支払った
+		;24:払ったのに逃げられる
+		PRINTFORMW 「확실히 받았네!」
+		PRINTFORMW 「으윽, 갑자기 등이! 미안하지만 오늘은 여기까지일세!」
+	CASE 25
+		;25:さらに要求される
+		PRINTFORMW 「흠흠… 한 번만 더일세」
+	CASE 26
+		;26:交渉成功
+		PRINTFORMW 「좋구먼」
+	CASE 27
+		;27-29:ＭＡＧを支払うのを断った
+		;27:交渉失敗。奇襲する
+		PRINTFORML 「……하아, 그 MAG도 악마 사냥에 쓸 생각이지?」
+		PRINTFORMW 「정말이지, 사람 분수를 넘어서는 짓을 해대다니…」
+		PRINTFORMW 「그래서, 오늘 몫은 사냥했는가? 아직이라면 이 늙은이가 상대해 주마!」
+	CASE 28
+		;28:交渉失敗。敵対する
+		PRINTFORML 「MAG를 내놓지 않는다면 동마가 될 수는 없지」
+		PRINTFORMW 「그럼 악마로서의 본분을 다하도록 해볼까나」
+	CASE 29
+		;29:他のものを要求する
+		PRINTFORMW 「흠, 이 조건으로는 불만인 게냐?」
+	CASE 30
+		;30:魔石を要求
+		PRINTFORML 「그럼 마석으로 합의를 보도록 하지」
+	CASE 31
+		;31-33:魔石を渡そうとしたが持っていない
+		;31:別のものを要求する
+		PRINTFORMW 「설마 마석도 안 가지고 있는 게냐?」
+		PRINTFORMW 「음, 그러고 보니 %CSTR:ARG:이인칭%은(는) 인간이었지」
+	CASE 87
+		;87 恵まれる
+		PRINTFORMW 「어허, 마석도 안 챙기고 돌아다니다니!」
+		PRINTFORMW 「방심해도 유분수지 말이야」
+		PRINTFORMW ＞%CALLNAME:ARG%에게 불쌍하게 여겨진 것 같다
+	CASE 32
+		;32:交渉失敗。立ち去る
+		PRINTFORMW 「뭐라, 마석조차 가지고 있지 않다고?」
+		PRINTFORMW 「그 모양이어선 이야기가 안 된다네」
+	CASE 33
+		;33:交渉失敗。敵対する
+		PRINTFORMW 「뭐라, 마석조차 가지고 있지 않다고?」
+		PRINTFORMW 「으으음… 이야기해 봐야 시간 낭비였구먼!」
+	CASE 34
+		;34-36:魔石を渡した
+		;34:払ったのに逃げられる
+		PRINTFORMW 「확실히 받았네!」
+		PRINTFORMW 「음, 갑자기 무릎이! 미안하지만 오늘은 여기까지일세!」
+	CASE 35
+		;35:さらに要求される
+		PRINTFORML 「흠흠… 한 번만 더일세」
+	CASE 36
+		;36:交渉成功
+		PRINTFORMW 「좋구먼」
+	CASE 37
+		;37-39:魔石を渡すのを断った
+		;37:交渉失敗。奇襲する
+		PRINTFORML 「마석 하나조차 아까워하다니 %CSTR:ARG:이인칭%, 너무 인색한 것 아니냐?」
+		PRINTFORMW 「……점점 화가 치밀어 오르는구먼!」
+		PRINTFORMW 「미안하지만 한 대만 후려갈기게 해주지 않겠나!」
+	CASE 38
+		;38:交渉失敗。敵対する
+		PRINTFORML 「뭐냐, 마석 하나도 못 내놓겠다는 말이냐!」
+		PRINTFORMW 「그럼 이제 더 이야기할 것은 없다네」
+	CASE 39
+		;39:他のものを要求する
+		PRINTFORMW 「마석이 아깝다고? 그렇다면…」
+	CASE 40
+		;40:異性との性交渉を要求
+		PRINTFORMW 「○년 만에 여인과 살을 섞어보고 싶구먼… 어떠냐, 준비해 줄 수 있겠느냐?」
+	CASE 41
+		;18:異性を宛がってもらった時の反応
+		IF 바친캐릭터() == PLAYER
+			PRINTFORML 「네놈이 직접 말이냐? 혹시 처음부터 그게 목적이었던 겐가? 힉힉힉」
+		ELSEIF IS_HUMAN(바친캐릭터())
+			PRINTFORML 「인간 여자를 대령해 주다니 기쁘구먼」
+		ELSE
+			PRINTFORML 「힉힉힉 인간에게 사역당해 거역조차 못하다니, 가여워서 흥분이 솟구치는구먼」
+		ENDIF
+		CALL MESSAGE_TALK
+		IF TALENT:(바친캐릭터()):연모 || TALENT:(바친캐릭터()):친애
+			PRINTFORML 「반해버린 약점을 잡혀서 영감탱이 좆에 꿰뚫리는 기분은 어떠냐, 분하냐?」
+			PRINTFORMW 「자아 주인의 얼굴을 보면서 가버려라! 오, 오오… 조여온다아~ 안에 싼다아~~」
+		ELSEIF TALENT:(바친캐릭터()):음란 || TALENT:(바친캐릭터()):창부
+			PRINTFORML 「스스로 격렬하게 허리를 흔들어대다니! 이런 늙은이한테서 쥐어짜낼 셈이냐!」
+			PRINTFORMW 「%CSTR:ARG:일인칭%도 안 진다! 연륜의 저력을 보여주마!! 흣! 흣! 흣!!!」
+		ELSEIF TALENT:(바친캐릭터()):복종 || TALENT:(바친캐릭터()):예속
+			PRINTFORML 「오호, 기특하게도 정성껏 봉사하는구먼. 착한 아이로세」
+			PRINTFORMW 「손주의 노예로 삼고 싶을 지경이구먼. 그전에 정액부터 받아내거라」
+		ELSE
+			PRINTFORMW 「제법 괜찮은 계집아이 아닌가. %CSTR:ARG:일인칭%의 애완동물로 삼고 싶을 정도구먼」
+		ENDIF
+	CASE 42
+		;42-46:性交渉が終わった後
+		;42:敗北してる場合ここでゲームオーバー
+		PRINTFORMW 「하아ー 할 짓 다 하고 나니 속이 후련하구먼. 그럼 %CSTR:ARG:일인칭%는 돌아갈 테니, 네놈들은 여기서 썩어버리거라」
+	CASE 43
+		;43:話しかけたキャラが倒れている
+		PRINTFORMW 「뭐냐 뭐냐, 요즘 젊은것들은 고작 이 정도로 뻗어버리다니 한심하구먼」
+	CASE 44
+		;44:ヤらせたのに逃げられる
+		PRINTFORMW 「후ー 만족했네. 이런 마계 반상회 모임에 늦겠구먼. 또 보세」
+	CASE 45
+		;45:満足してない
+		PRINTFORMW 「으ー음 나이는 먹고 싶지 않구먼. %CSTR:ARG:일인칭%의 매그넘은 이 정도가 아니었거늘…」
+	CASE 46
+		;46:満足
+		PRINTFORM 「이야ー 대단히 만족스럽구먼
+		IF GET_STATE(CFLAG:(바친캐릭터()):상태이상) == "CHARM"
+			PRINTFORML 　헌데 %CSTR:ARG:일인칭%의 좆이 그렇게 마음에 들었더냐?」
+			PRINTFORMW 「빨아댄 채로 떨어지질 않는구먼. 책임을 지고 거둬 먹여야겠는걸?」
+		ELSEIF TALENT:(바친캐릭터()):연모 || TALENT:(바친캐릭터()):친애
+			PRINTFORML 　설마 자기한테 반한 여자를 빌려줄 줄이야」
+			PRINTFORMW 「대단한 도량일세. 몇 년 만에 끓어올랐구먼」
+		ELSEIF TALENT:(바친캐릭터()):음란 || TALENT:(바친캐릭터()):창부
+			PRINTFORML 　특히 딥키스라는 녀석은 마음에 쏙 들었다네」
+			PRINTFORMW 「그걸 하면서 즐기는 밀회는 참을 수 없었지. 또 해줬으면 좋겠구먼」
+		ELSEIF TALENT:(바친캐릭터()):복종 || TALENT:(바친캐릭터()):예속
+			PRINTFORML 　뿜어낸 것을 한 방울도 안 흘리고 받아내다니」
+			PRINTFORMW 「잘 길들여졌구먼. 주인의 훈육이 훌륭한 모양이야」
+		ELSE
+			PRINTFORML 　젊은 시절이 떠오르는구먼」
+			PRINTFORMW 「%CSTR:ARG:일인칭%의 젊은 시절엔 참으로 대단했는데 (이하 생략)
+		ENDIF
+		PRINTFORMW %ARG는% 만족한 것 같다
+	CASE 47
+		;47-49:性交渉を断った
+		;47:交渉失敗。奇襲する
+		PRINTFORMW 「거절하는 게냐!? 늙은이의 부탁을 거절하다니! 용서 못 한다! 거기 꼼짝 말고 서라!!」
+	CASE 48
+		;48:交渉失敗。敵対する
+	CASE 49
+		;49:他のものを要求する
+	CASE 50
+		;50-55:ヤらせてもらった後
+		;50:敗北してる場合ここでゲームオーバー
+	CASE 51
+		;51:話かけたキャラが倒れいる
+	CASE 52
+		;52:去っていく
+	CASE 53
+		;53:満足し、仲魔になる
+	CASE 54
+		;54:満足し、アイテムをくれる
+	CASE 53
+		;53:満足し、見逃してくれる
+		;現状、死に処理
+	CASE 56
+		;56-61:犯してもらった後
+		;56:敗北してる場合ここでゲームオーバー
+	CASE 57
+		;57:話かけたキャラが倒れいる
+	CASE 58
+		;58:去っていく
+	CASE 59
+		;59:満足し、仲魔になる
+	CASE 60
+		;60:満足し、アイテムをくれる
+	CASE 61
+		;61:満足し、見逃してくれる
+		;現状、死に処理
+	CASE 62
+		;62:仲魔になる
+		IF FLAG:교섭목적 > 3
+			PRINTFORMW %CALLNAME:PLAYER%의 몸에 매우 만족하여、%ARG가% 동료마가 되어주었습니다
+		ELSE
+			PRINTFORML 「%CSTR:ARG:일인칭%는 \@ CSTR:ARG:종족명 != "" ? %CSTR:ARG:종족명% # %STR:(ABL:ARG:종족)% \@ %CALLNAME:ARG%일세. 앞으로도 잘 부탁하네」
+		ENDIF
+	CASE 63
+		;63:マスターのレベルより高い場合
+		PRINTFORMW 「…유감이지만 %CSTR:ARG:이인칭%의 힘, 아직 %CSTR:ARG:일인칭%에게는 못 미치는 모양이구먼」
+		PRINTFORMW 「이래선 힘을 빌려줄 수가 없다네」
+		PRINTFORMW 「조금 더 단련하고 나서 다시 오도록 하게」
+	CASE 64
+		;64:ＣＯＭＰの空きが無い場合
+		PRINTFORMW 「…인 줄 알았는데 소환기의 빈 용량이 부족한 모양이구먼」
+		PRINTFORMW 「이래선 힘을 빌려줄 수가 없다네」
+		PRINTFORMW 「빈자리를 정리하고 나서 다시 오도록 하게」
+	CASE 65
+		;65:搾りとられた
+	CASE 66
+		;66:お金をくれる
+		IF FLAG:교섭목적 > 3
+			PRINTFORMW %CALLNAME:PLAYER%의 몸에 매우 만족하여、돈을 베풀어 주었습니다
+		ELSE
+			PRINTFORML 「어디, ￥{TFLAG:TALK용요구치}을(를) 주도록 하마」
+		ENDIF
+	CASE 67
+		;67:ＭＡＧをくれる
+		IF FLAG:교섭목적 > 3
+			PRINTFORMW %CALLNAME:PLAYER%의 몸에 매우 만족하여、ＭＡＧ를 베풀어 주었습니다
+		ELSE
+			PRINTFORML 「어디, {TFLAG:TALK용요구치} MAG를 주도록 하마」
+		ENDIF
+	CASE 68
+		;68:ダメージをくれる
+		PRINTFORML 「젊을 때 고생은 사서도 하는 법이라네」
+	CASE 69
+		;69-75:アイテムをくれるor回復してくれる
+		;69:ソーマを使ってくれる
+	CASE 70
+		;70:宝玉輪を使ってくれる
+	CASE 71
+		;71:ITEMor魔石をくれる
+			PRINTFORMW 「어디 심부름값이나 하나 주마」
+	CASE 72
+		;72:魔石をくれる
+		IF RAND:2 == 0
+			PRINTFORMW 「어디 용돈으로 마석이나 하나 주마」
+		ELSE
+			PRINTFORMW 「마석 한 알에 300미터라네」
+		ENDIF
+	CASE 73
+		;73:魔石を使ってくれる
+		PRINTFORMW 「착한 아이에겐 상으로 마석을 주마」
+	CASE 74
+		;74:宝玉を使ってくれる
+		PRINTFORMW 「착한 아이에겐 상으로 보옥을 주마」
+	CASE 75
+		;75:宝玉をくれる
+		IF RAND:2 == 0
+			PRINTFORMW 「어디 용돈으로 보옥이나 주마」
+		ELSE
+			PRINTFORMW 「보옥 하나면 개운 상쾌해진다네」
+		ENDIF
+	CASE 76
+		;76-78:気まずくなった
+		;76:会話失敗。奇襲する
+		PRINTFORMW 「……점점 화가 치밀어 오르는구먼!」
+		PRINTFORMW 「미안하지만 한 대만 후려갈기게 해주지 않겠나!」
+	CASE 77
+		;77:会話失敗。敵対する
+		PRINTFORMW 「조금은 말이 통할까 싶었다만 인간은 어차피 인간이구먼」
+	CASE 78
+		;78:会話継続
+		PRINTFORMW 「으으음… 왠지 귀울림이 생기는구먼」
+		PRINTFORMW 「그래서, 무슨 이야기였더라?」
+	CASE 79
+		;79-83:立ち去る
+		;79:同じ仲魔がいる場合
+		PRINTFORML 「동마가 있구먼. 잘 부탁하네」
+	CASE 80
+		;険悪な雰囲気
+		PRINTFORML 「퉤엣~ 인간 따위와 어울려 줄 수는 없지」
+	CASE 81
+		;友好度が低い
+		PRINTFORML 「노후의 하루는 일각여삼추(一刻如三秋)라더니」
+	CASE 82
+		;友好度が普通
+		PRINTFORML 「그럼 작별일세」
+	CASE 83
+		;友好度が高い
+		PRINTFORML 「헛헛헛, 또 보세나」
+	CASE 88
+		;ヤらせてもらう・交渉が成功した場合
+		PRINTFORMW 교섭에 성공해、범해져 주기로 했다
+		CALL MESSAGE_TALK
+	CASE 89
+		;犯してもらう・交渉が成功した場合
+		PRINTFORMW 교섭에 성공해、범해주기로 했다
+		CALL MESSAGE_TALK
+	CASE 90
+		;ダンジョン内性欲処理：輪姦イベント
+		PRINTFORMW 자위행위에 열중해 있던 %CALLNAME:PLAYER%은(는), {RESULT:1}마리의 %CALLNAME:ARG%의 접근을 알아채지 못했다…
+		IF 体格(PLAYER) < 0
+			PRINTFORM 「아가씨
+		ELSE
+			PRINTFORM 「아가씨
+		ENDIF
+		PRINTFORMW 、이런 곳에서 혼자 놀다니 위험하구먼」
+		PRINTFORMW 「우리들의 거처로 오거라… 듬뿍 귀여워해 주마」
+		PRINTFORMW %CALLNAME:PLAYER%은(는) 반쯤 억지로 %CALLNAME:ARG%에게 끌려가 실컷 귀염을 받았다…
+		PRINTFORMW …
+		PRINTFORMW ……
+		PRINTFORMW ………
+		PRINTFORMW 「힉힉힉, 즐거웠다네. 언제든 놀러 오거라」
+		PRINTFORMW %CALLNAME:ARG% 일행은 %CALLNAME:PLAYER%을(를) 원래 있던 장소에 돌려보내고는 떠나갔다
+	CASE 91
+		;敵が命乞いCASE91～93
+		;91:命乞い
+		PRINTFORML 
+		PRINTFORMW 「이, 이보게! 그렇게 늙은이를 괴롭히는 게 아닐세」
+		PRINTFORMW 「조금 봐줄 수는 없겠누?」
+		PRINTFORML 
+	CASE 92
+		;92:助けた場合（RETURN 0, X = 0.逃げる　1.仲魔になる　2.何か貰う　3.奇襲）
+		;『@KOJO_TALK』をはさむ為、RESULT:0が上書きされてしまうのでRESULT:1を使う
+		;とりあえずランダムにしてみる
+		SELECTCASE RAND:100
+			;逃げる
+			CASE 0 TO 24
+				PRINTFORML 
+				PRINTFORMW 「헛헛헛 그럼 작별일세」
+				PRINTFORML 
+				RETURN 0, 0
+			;仲魔になる
+			CASE 25 TO 49
+				PRINTFORML 
+				PRINTFORMW 「오오, 제법 장래가 촉망되는 인간이구먼」
+				PRINTFORMW 「어디, 이 %CSTR:ARG:일인칭%도 힘을 하나 보태어 주지」
+				PRINTFORMW 「%CSTR:ARG:일인칭%는 \@ CSTR:ARG:종족명 != "" ? %CSTR:ARG:종족명% # %STR:(ABL:ARG:종족)% \@ %CALLNAME:ARG%일세. 앞으로도 잘 부탁하네」
+				PRINTFORML 
+				RETURN 0, 1
+			;何か貰う
+			CASE 50 TO 74
+				PRINTFORML 
+				PRINTFORMW 「오오, 고맙구먼」
+				PRINTFORMW 「사례로 이 녀석을 주도록 할까나」
+				PRINTFORML 
+				RETURN 0, 2
+			;奇襲
+			CASEELSE
+				PRINTFORML 
+				PRINTFORMW 「헛헛헛! 방심은 금물이라네!」
+				PRINTFORML 
+				RETURN 0, 3
+		ENDSELECT
+	CASE 93
+		;93:断った場合
+		PRINTFORML 
+		PRINTFORMW 「퉤엣~ 인간 따위에게 기대한 %CSTR:ARG:일인칭%가 잘못이었구먼」
+		PRINTFORML 
+	CASE 94
+		;敵から助ける代わりに取引を持ちかけられるCASE94～101
+		;94:取引内容（RETURN 0, X = 1.￥　2.魔貨　3.異性）
+		PRINTFORML %ARG가% %CALLNAME:PLAYER%에게 거래를 제안해 왔다
+	CASE 95
+		;95:要求をのむ（￥）
+	CASE 96
+		;96:要求をのむ（魔貨）
+	CASE 97
+		;97:要求をのむ（異性）
+		CALL MESSAGE_TALK
+	CASE 98
+		;98:約束を守るかどうか口上内で決める（RETURN 0, X = 1.去っていく　2.戦闘続行）
+	CASE 99
+		;99:約束を守って去っていく
+	CASE 100
+		;100:約束を守らず戦闘続行
+	CASE 101
+		;101:要求を断る
+ENDSELECT
+
+
+
+;===========================================================================
+;会話時挨拶
+;===========================================================================
+@GREET_PUB325,ARG
+
+SELECTCASE CFLAG:ARG:우호도
+	CASE IS > 25
+		PRINTFORML 「음, %CSTR:ARG:이인칭%에 대해서는 알고 있다네!」
+		PRINTFORMW 「……분명 신종 악마소환사였던가?」
+	CASE IS > -25
+		;最初の挨拶
+		IF FLAG:월령 == 8
+			PRINTFORMW 「훠훠훠…!」
+			PRINTFORMW 「오늘 밤만큼은 %CSTR:ARG:일인칭%도 흥분해서 견딜 수가 없구먼!」
+			PRINTFORML
+		ELSE
+		PRINTFORML 「음, %CSTR:ARG:이인칭%에 대해서는 알고 있다네!」
+		PRINTFORMW 「……분명 신종 메가튜버였던가?」
+		ENDIF
+	CASEELSE
+		PRINTFORMW 「호오, 인간이 악마와 이야기를 하겠다고…?」
+ENDSELECT
+;質問を増やした場合、RAND:XのXを増やす
+;RETURNの値により回答後の雰囲気が変わる。
+;0.会話継続 1.直接仲魔になる 2.何かくれる 3.奇襲される 4.敵対する 5.逃げる 6.気まずくなる
+SELECTCASE RAND:2
+	CASE 0
+		PRINTFORMW 「헌데 인간이 이런 곳에서 무얼 하고 있는 게냐?」
+		PRINTFORML
+		PRINTFORML [1]모험　　　[2]악마 퇴치
+		PRINTFORML [3]동마 찾기　[4]노예 사냥
+		$INPUT_LOOP0
+		INPUT
+		PRINTFORML
+		IF RESULT == 1
+			;１．冒険
+			LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+;			素質によって判定値がランダムに上下することもある
+;			SIF TALENT:ARG:반항적
+;				LOCAL -= RAND:20
+			IF LOCAL < 30
+				CFLAG:ARG:우호도 -= RAND:50
+				;失敗
+				PRINTFORMW 「모험이라고? 정말이지, 젊은 녀석이 허파에 바람이나 차서 어슬렁거리기는…」
+				RETURN 6
+			ELSE
+				CFLAG:ARG:우호도 += RAND:30
+				;成功
+				PRINTFORMW 「호오… 모험이란 말이지」
+				PRINTFORMW 「그것 또한 젊은이의 특권이로구먼」
+				RETURN 0
+			ENDIF
+		ELSEIF RESULT == 2
+			;２．悪魔退治
+			LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+			IF LOCAL < 40
+				CFLAG:ARG:우호도 -= RAND:50
+				;失敗
+				PRINTFORMW 「그렇다면 어쩔 수 없지… 삶든 굽든 마음대로 하게」
+				PRINTFORMW 「%CSTR:ARG:일인칭%도 가만히 있지는 않겠지만 말이야!」
+				RETURN 4
+			ELSE
+				CFLAG:ARG:우호도 += RAND:30
+				;成功
+				PRINTFORMW 「호오… 악마 퇴치라고?」
+				PRINTFORMW 「면전에서 딱 잘라 말하다니 배짱이 두둑한 놈이구먼」
+				RETURN 0
+			ENDIF
+		ELSEIF RESULT == 3
+			;３．仲魔探し
+			LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+			IF LOCAL < 20
+				CFLAG:ARG:우호도 -= RAND:50
+				;失敗
+				PRINTFORMW 「뭐냐, 악마소환사인가…」
+				PRINTFORMW 「여전히 지독한 계약으로 악마를 부려먹고 있겠지」
+				RETURN 5
+			ELSE
+				CFLAG:ARG:우호도 += RAND:30
+				;成功
+				PRINTFORMW 「호오, 악마소환사인가…」
+				PRINTFORMW 「오랫동안 잊혀졌나 싶었더니 %CSTR:ARG:일인칭%도 제법이구먼」
+				RETURN 0
+			ENDIF
+		ELSEIF RESULT == 4
+			;４．奴隷狩り
+			LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2) - RAND:20
+			IF LOCAL < 60
+				CFLAG:ARG:우호도 -= RAND:50
+				;失敗
+				PRINTFORMW 「어라, 요즘은 인간들도 제법 도덕심을 갖추게 되었다고 들었는데……」
+				PRINTFORMW 「헛헛헛 인간은 어차피 인간이구먼」
+				PRINTFORMW 「동족조차 등쳐먹는 판국이니 악마에게 잡아먹힌들 할 말은 없겠지」
+				RETURN 3
+			ELSE
+				CFLAG:ARG:우호도 += RAND:30
+				;成功
+				PRINTFORMW 「과연, %CSTR:ARG:일인칭%에게 바칠 제물을 고르고 있는 중인 게냐?」
+				PRINTFORMW 「기특하구먼, 기특해…」
+				RETURN 0
+			ENDIF
+		ELSE
+			GOTO INPUT_LOOP0
+		ENDIF
+
+	CASE 1
+		PRINTFORMW 「그건 그렇고……」
+		PRINTFORMW 「어라, 그러고 보니 %CSTR:ARG:이인칭%은(는) 대체 누구였더라?」
+		PRINTFORML
+		PRINTFORML [1]데빌서머너　　　[2]사립탐정
+		PRINTFORML [3]내가 신이다　　　　　　[4]관광객
+		$INPUT_LOOP1
+		INPUT
+		PRINTFORML
+		IF RESULT == 1
+			;１．デビルサマナー
+			LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+;			素質によって判定値がランダムに上下することもある
+;			SIF TALENT:ARG:반항적
+;				LOCAL -= RAND:20
+			IF LOCAL < 30
+				CFLAG:ARG:우호도 -= RAND:50
+				;失敗
+				PRINTFORMW 「오오, 악마소환사였지…」
+				PRINTFORMW 「그래서, 이 가련한 악마를 소환기에 밀어 넣으러 온 겐가?」
+				RETURN 6
+			ELSE
+				CFLAG:ARG:우호도 += RAND:30
+				;成功
+				PRINTFORMW 「음음… 요즘 시대의 악마소환사였지」
+				PRINTFORMW 「자 그럼, 악마의 도움을 얻을 생각이라면 그에 걸맞은 대가를 준비해 왔겠지?」
+				RETURN 0
+			ENDIF
+		ELSEIF RESULT == 2
+			;２．私立探偵
+			LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+			IF LOCAL < 30
+				CFLAG:ARG:우호도 -= RAND:50
+				;失敗
+				PRINTFORMW 「으으음… 탐정, 탐정인가」
+				PRINTFORMW 「설마 요전에 잡아먹어 버린 길 잃은 고양이를 찾으러 온 건 아니겠지」
+				RETURN 5
+			ELSE
+				CFLAG:ARG:우호도 += RAND:30
+				;成功
+				PRINTFORMW 「뭐라, 탐정이라고!」
+				PRINTFORMW 「악마 조수가 필요할 정도라니 대체 무슨 괴사건인 게냐!?」
+				RETURN 0
+			ENDIF
+		ELSEIF RESULT == 3
+			;３．私が神だ
+			LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+			IF LOCAL < 30
+				CFLAG:ARG:우호도 -= RAND:50
+				;失敗
+				PRINTFORMW 「뭣이, 이 근방의 용맥은 이미 %CSTR:ARG:일인칭%의 텃밭이거늘!」
+				PRINTFORMW 「이놈! 딴 곳의 신에게 넘겨줄 수는 없다네!」
+				RETURN 4
+			ELSE
+				CFLAG:ARG:우호도 += RAND:30
+				;成功
+				PRINTFORMW 「뭐라, %CSTR:ARG:이인칭%은(는) 신선 지망생이었던 겐가!」
+				PRINTFORMW 「그 험난한 고행에 도전할 생각이라니 요즘 젊은것치곤 기골이 장대하구먼」
+				RETURN 0
+			ENDIF
+		ELSEIF RESULT == 4
+			;４．観光客
+			LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2) - RAND:20
+			IF LOCAL < 30
+				CFLAG:ARG:우호도 -= RAND:50
+				;失敗
+				PRINTFORMW 「어허, 관광에까지 그런 무기를 들고나와야 할 정도로 세상이 흉흉해졌단 말인가!」
+				PRINTFORMW 「이런이런… 어쩐지 아무도 %CSTR:ARG:일인칭%를 공경하지 않게 되었더라니…」
+				RETURN 5
+			ELSE
+				CFLAG:ARG:우호도 += RAND:30
+				;成功
+				PRINTFORMW 「어허, 요즘 세상의 여행자는 이런 곳까지 관광을 온단 말인가?」
+				PRINTFORMW 「으으음… 이것 참 새로운 신앙을 얻을 기회일지도 모르겠구먼!」
+				RETURN 0
+			ENDIF
+		ELSE
+			GOTO INPUT_LOOP1
+		ENDIF
+ENDSELECT
+
+;===========================================================================
+;会話時問答
+;===========================================================================
+@QUESTION_PUB325,ARG,ARG:1
+
+PRINTFORML
+CUSTOMDRAWLINE ･
+PRINTFORML
+
+DO
+	;設問を増やした場合、RAND:XのXを増やす
+	RESULT:1 = RAND:2
+
+	;RETURNの値により回答後の雰囲気が変わる。
+	;0.会話継続 1.直接仲魔になる 2.何かくれる 3.奇襲される 4.敵対する 5.逃げる 6.気まずくなる 7.交渉開始
+	SELECTCASE RESULT:1
+		CASE ARG:1
+			CONTINUE
+		CASE 0
+			PRINTFORMW 「도구만 편리해지고, 인간들이 생각하는 것은 도통 모르겠구먼」
+			PRINTFORML
+			PRINTFORML [1]이래서 옛날 사람은　[2]나도 모르겠다
+			$INPUT_LOOP0
+			INPUT
+			PRINTFORML
+			IF RESULT == 1
+				;1．だから古い人は
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+	;			素質によって判定値がランダムに上下することもある
+	;			SIF TALENT:ARG:반항적
+	;				LOCAL -= RAND:20
+				IF LOCAL < 70
+					CFLAG:ARG:우호도 -= RAND:50
+					;失敗
+					PRINTFORMW 「나이 따윈 상관없네! 이 늙은이도 다 알고 있다네!」
+					PRINTFORMW 「컴퓨터도 못 다루는 젊은것들이 늘었다지 않느냐!」
+					RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+					PRINTFORMW 「옛, 옛날 사람…이라고!?」
+					PRINTFORMW 「으으음…」
+					PRINTFORMW 「슬슬 스마트폰 교실이라도 다녀야 하는 것일까…」
+					RETURN 0
+				ENDIF
+			ELSEIF RESULT == 2
+				;2．自分もわからない
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 30
+					CFLAG:ARG:우호도 -= RAND:50
+					;失敗
+					PRINTFORMW 「그럼 그저 아무 생각도 없이 세상을 몇 번이고 불태울 도구를 다루고 있는 게냐?」
+					PRINTFORMW 「악마 따위보다 훨씬 무시무시하지 않은가!」
+					RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+					PRINTFORMW 「지혜란 그것을 다스릴 줄 알아야 힘이 되는 법일세」
+					PRINTFORMW 「그 사실을 부디 잊지 말도록 하게」
+					RETURN 0
+				ENDIF
+			ELSE
+				GOTO INPUT_LOOP0
+			ENDIF
+
+		CASE 1
+			PRINTFORMW 「인간 세상도 참으로 소란스러워졌구먼…」
+			PRINTFORML
+			PRINTFORML [1]수도니까　[2]옛날엔 달랐나?
+			$INPUT_LOOP1
+			INPUT
+			PRINTFORML
+			IF RESULT == 1
+				;1．首都だから
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+	;			素質によって判定値がランダムに上下することもある
+	;			SIF TALENT:ARG:반항적
+	;				LOCAL -= RAND:20
+				IF LOCAL < 20
+					CFLAG:ARG:우호도 -= RAND:50
+					;失敗
+					PRINTFORMW 「어라… 도읍에 사는 인간이라면 응당 합당한 절차를 갖추어 %CSTR:ARG:일인칭%에게 경의를 표해야 하거늘」
+					PRINTFORMW 「인간의 마음이란 이다지도 변덕스러운 것이었나」
+					PRINTFORMW 「여기서 재앙이라도 한바탕 일으켜서 기억을 되살려 줘야겠구먼」
+					RETURN 4
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+					PRINTFORMW 「호오…… 나라의 수도라고. 인간이 많을 만도 하구먼」
+					PRINTFORMW 「덕분에 우리들도 숨어들기 쉽다네」
+					RETURN 0
+				ENDIF
+			ELSEIF RESULT == 2
+				;2．昔は違ってた？
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 30
+					CFLAG:ARG:우호도 -= RAND:50
+					;失敗
+					PRINTFORMW 「어라… 돌이켜 보면 어느 시대든 인간 놈들은 소란스러웠던가…」
+					PRINTFORMW 「하지만 지금처럼 대우받지 못하던 시대도 없었던 것 같구먼」
+					RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+					PRINTFORMW 「호오… 옛날이야기를 듣고 싶은 게냐? 요즘 젊은것치고는 꽤나 학구열이 높구먼」
+					RETURN 0
+				ENDIF
+			ELSE
+				GOTO INPUT_LOOP1
+			ENDIF
+	ENDSELECT
+LOOP 1
+
+@FUSION_MESSAGE_PUB325,ARG
+;合体時口上
+PRINTFORMW 
+

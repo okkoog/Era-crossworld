@@ -1,0 +1,107 @@
+﻿;スキル名
+@SKILL_NAME_トラッシュ＆クラッシュ,ARG
+IF FLAG:총공격중
+	RESULTS = 브레스트 밸리
+ELSE
+	RESULTS = 트래시 & 크래시
+ENDIF
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_トラッシュ＆クラッシュ,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;スキル変化？用ランク
+@SKILL_RANK_トラッシュ＆クラッシュ, ARG = -1
+RETURN 15
+
+;変化不可
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_トラッシュ＆クラッシュ, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_トラッシュ＆クラッシュ,ARG
+RETURN 0
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_トラッシュ＆クラッシュ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_トラッシュ＆クラッシュ
+RETURN GET_SUCCESSION_NUM("자동효과")
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_トラッシュ＆クラッシュ,ARG
+RETURN GET_STATE_NUM("DYING")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_トラッシュ＆クラッシュ,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_トラッシュ＆クラッシュ,ARG
+RETURN 40
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_トラッシュ＆クラッシュ,ARG
+RETURN 100
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PASSIVE_PENETRATION_RANK_トラッシュ＆クラッシュ, L_P, L_T, L_スキル, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM DYNAMIC L_P;このスキルの所持者
+#DIM DYNAMIC L_T;攻撃対象
+#DIMS DYNAMIC L_スキル;スキルの所持者が敵に対して使用しているスキルの関数名称
+#DIM DYNAMIC L_ダメージタイプ
+#DIM DYNAMIC L_攻撃タイプ
+#DIM DYNAMIC L_相性
+#DIM DYNAMIC GIVE_EFFECT_CHARA;リーダースキル等他人からつけられている場合の提供者
+SIF GROUPMATCH(GET_TYPE(L_相性), "검격", "전술")
+	RETURN 0, 4
+RETURN 0, 0
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　説明文の表示
+@SKILL_EXPLAIN_トラッシュ＆クラッシュ,ARG
+#DIM SKILL_NUM
+PRINTL 자동효과:검격과 전기 속성의 공격이 적의 내성을 50%까지 무시하고 관통하는 효과를 얻는다.
+PRINTL 　　　　자신의 공격으로 적에게 크리티컬을 입혔을 때 이하의 연동효과가 발동한다.
+PRINTL 　　　　「확률로 대상을 즉사시킨다」
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_トラッシュ＆クラッシュ,ARG,ARG:1
+;自分の行動のみ
+SIF ARG != FLAG:행동순1
+	RETURN 0
+;攻撃対象が敵でないとダメ
+SIF IS_FRIEND(ARG, ARG:1)
+	RETURN 0
+SIF CFLAG:(ARG:1):방어플래그
+	RETURN 0
+SIF !GET_CREC_ACT(FLAG:행동순1, ARG:1, "CRT")
+	RETURN 0
+RETURN 1, CPOS(ARG:1)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_トラッシュ＆クラッシュ,ARG
+RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_トラッシュ＆クラッシュ,ARG,ARG:1,ARG:2
+CALL SINGLE_BADSTATE,ARG,POS(ARG:1),ARG:2
+
+@SKILL_ACTIONABLE_BATTLE_トラッシュ＆クラッシュ, ARG
+RETURN 0

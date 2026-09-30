@@ -1,0 +1,1375 @@
+﻿
+
+;=======================================================================
+;모리모토병원
+;=======================================================================
+;=======================================================================
+;攻略条件
+;=======================================================================
+@PREREQUISITE_DUNGEON_55
+SIF STRFLAG_NUM_EV("罪ルート進行", , , , [[이벤트:페르소나２]]) == 12
+	RETURN 1
+RETURN 0
+
+
+
+;=======================================================================
+;ダンジョン名
+;=======================================================================
+@GET_DUNGEON_NAME_55
+#FUNCTIONS
+RESULTS_F = シバルバー
+
+;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@CAN_ENTER_55, ARG, ARG:1
+#LOCALSIZE 2
+SELECTCASE DA:ARG:(ARG:1)
+	CASE 4002
+		IF !STRFLAG_D("扉開放")
+			IF FLAG:현Y == ARG:1 - 1
+				CALL MESSAGE_WINDOW_D, "", "＞문이 열리지 않는다！"
+				RETURN 0
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞문의 자물쇠를 해제했다"
+				CALLF STRFLAG_D("扉開放", 1)
+				RETURN 1
+			ENDIF
+		ELSE
+			RETURN 1
+		ENDIF
+	CASE 4012
+		IF !STRFLAG_D("ロンギヌス5撃破")
+			CALL MESSAGE_WINDOW_D, "", "＞문 너머에서 모터 구동음이 들린다/＞문을 열고 진행하시겠습니까？"
+			CALL INPUT_YN_D
+			IF RESULT == 1
+				RETURN 0
+			ELSE
+				FOR LOCAL:1, 3, 13
+					FOR LOCAL, 0, 7
+						CALL SET_FLOOR_ANALYZE(2, FLAG:현던전, 4, LOCAL, LOCAL:1)
+					NEXT
+				NEXT
+				CALL MESSAGE_WINDOW_D, "", "＞문을 열고 방에 들어선다"
+				RETURN 1
+			ENDIF
+		ELSE
+			RETURN 1
+		ENDIF
+	CASE 7002
+		IF !STRFLAG_D("ロンギヌス1撃破")
+			CALL MESSAGE_WINDOW_D, "", "＞문 너머에서 모터 구동음이 들린다/＞문을 열고 진행하시겠습니까？"
+			CALL INPUT_YN_D
+			IF RESULT == 0
+				FOR LOCAL:1, 9, 16
+					FOR LOCAL, 3, 8
+						CALL SET_FLOOR_ANALYZE(2, FLAG:현던전, 7, LOCAL, LOCAL:1)
+					NEXT
+				NEXT
+				CALL MESSAGE_WINDOW_D, "", "＞문을 열고 방에 들어선다"
+				RETURN 1
+			ELSE
+				RETURN 0
+			ENDIF
+		ELSE
+			RETURN 1
+		ENDIF
+	CASE 8002
+		CALL MESSAGE_WINDOW_D, "", "＞문 너머에서 괴상한 기척이 느껴진다…/＞문을 열고 진행하시겠습니까？"
+		CALL INPUT_YN_D
+		IF RESULT == 0
+			CALL DUNGEON_WORP_ID, 9, 9014
+			RETURN 0
+		ELSE
+			RETURN 0
+		ENDIF
+	CASE 8012
+		IF !STRFLAG_D("ボロンティック撃破")
+			CALL MESSAGE_WINDOW_D, "", "＞문에는 수수께끼의 문자가 새겨져 있다…/＞어쩐지 이상한 기색이 있는 것 같지만…/＞문을 열고 진행하시겠습니까？"
+			CALL INPUT_YN_D
+			IF RESULT == 0
+				FOR LOCAL:1, 8, 21
+					FOR LOCAL, 18, 27
+						CALL SET_FLOOR_ANALYZE(2, FLAG:현던전, 8, LOCAL, LOCAL:1)
+					NEXT
+				NEXT
+				CALL MESSAGE_WINDOW_D, "", "＞문을 열고 방에 들어선다"
+				RETURN 1
+			ELSE
+				RETURN 0
+			ENDIF
+		ELSE
+			RETURN 1
+		ENDIF
+	CASEELSE
+		CALL CAN_ENTER, ARG, ARG:1
+		RETURN RESULT
+ENDSELECT
+
+;=======================================================================
+;フロア名表示
+;=======================================================================
+@FLOORNAME_55
+PRINTFORML \@FLAG:현M == 9 ? 시바르바 중심부 # Ｂ%TOFULL(TOSTR(FLAG:현M+1))%Ｆ\@
+
+;=======================================================================
+;フロアデータ
+;=======================================================================
+@MAKE_FLOOR_55
+SELECTCASE FLAG:현M
+	CASE 0
+		FLAG:최대X = 21
+		FLAG:최대Y = 18
+		;						 000000000011111111112
+		;						 012345678901234567890
+		CALL MAKE_FLOOR_LINE, 0,"                     "
+		CALL MAKE_FLOOR_LINE, 1,"   E  1111111111     "
+		CALL MAKE_FLOOR_LINE, 2,"   2  1 11 111   31  "
+		CALL MAKE_FLOOR_LINE, 3,"   1111 111111   11  "
+		CALL MAKE_FLOOR_LINE, 4,"   1111      1   111 "
+		CALL MAKE_FLOOR_LINE, 5,"   1111      1   1   "
+		CALL MAKE_FLOOR_LINE, 6,"    2        11111   "
+		CALL MAKE_FLOOR_LINE, 7,"  11111 111111   111 "
+		CALL MAKE_FLOOR_LINE, 8,"  11111 1 1111    11 "
+		CALL MAKE_FLOOR_LINE, 9,"  11111 11111     11 "
+		CALL MAKE_FLOOR_LINE,10,"  11111       131111 "
+		CALL MAKE_FLOOR_LINE,11,"    2         111111 "
+		CALL MAKE_FLOOR_LINE,12,"  1111111         11 "
+		CALL MAKE_FLOOR_LINE,13,"  11111111  1     11 "
+		CALL MAKE_FLOOR_LINE,14,"  1 1 1 11  1    711 "
+		CALL MAKE_FLOOR_LINE,15,"  11111111111     11 "
+		CALL MAKE_FLOOR_LINE,16,"    4       1111 111 "
+		CALL MAKE_FLOOR_LINE,17,"                     "
+		;						 000000000011111111112
+		;						 012345678901234567890
+	CASE 1
+		FLAG:최대X = 21
+		FLAG:최대Y = 16
+		;						 000000000011111111112
+		;						 012345678901234567890
+		CALL MAKE_FLOOR_LINE, 0,"                     "
+		CALL MAKE_FLOOR_LINE, 1,"    11111       1    "
+		CALL MAKE_FLOOR_LINE, 2,"    1  11 11111 1    "
+		CALL MAKE_FLOOR_LINE, 3,"    1  1121111121    "
+		CALL MAKE_FLOOR_LINE, 4,"    1  11 11111 1    "
+		CALL MAKE_FLOOR_LINE, 5," 31111111       1111 "
+		CALL MAKE_FLOOR_LINE, 6," 1111     1111111111 "
+		CALL MAKE_FLOOR_LINE, 7,"   11      11 1      "
+		CALL MAKE_FLOOR_LINE, 8," 11111111  111111  3 "
+		CALL MAKE_FLOOR_LINE, 9," 11  1 11  111  1  1 "
+		CALL MAKE_FLOOR_LINE,10," 11  1111    1  1  1 "
+		CALL MAKE_FLOOR_LINE,11," 11       1111111  1 "
+		CALL MAKE_FLOOR_LINE,12," 3111     1 1   1  1 "
+		CALL MAKE_FLOOR_LINE,13,"   1126   1 1 721111 "
+		CALL MAKE_FLOOR_LINE,14,"   11   31111   1111 "
+		CALL MAKE_FLOOR_LINE,15,"                     "
+		;						 000000000011111111112
+		;						 012345678901234567890
+	CASE 2
+		FLAG:최대X = 30
+		FLAG:최대Y = 24
+		;						 000000000011111111112222222222
+		;						 012345678901234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"                              "
+		CALL MAKE_FLOOR_LINE, 1,"   11 11111111111111111 11    "
+		CALL MAKE_FLOOR_LINE, 2,"   11211111111111111111211    "
+		CALL MAKE_FLOOR_LINE, 3,"   11 11111111111111111 11    "
+		CALL MAKE_FLOOR_LINE, 4," 3111                   11    "
+		CALL MAKE_FLOOR_LINE, 5,"   11                   11    "
+		CALL MAKE_FLOOR_LINE, 6,"    11111      11111111111    "
+		CALL MAKE_FLOOR_LINE, 7,"    1 11       2   2  11      "
+		CALL MAKE_FLOOR_LINE, 8,"    1111       3   3  11      "
+		CALL MAKE_FLOOR_LINE, 9," 31111    1111       111      "
+		CALL MAKE_FLOOR_LINE,10,"   11    311111    7   111    "
+		CALL MAKE_FLOOR_LINE,11,"   11       111    2     1    "
+		CALL MAKE_FLOOR_LINE,12,"   1111     111111111    1    "
+		CALL MAKE_FLOOR_LINE,13,"   11 1         11111    1    "
+		CALL MAKE_FLOOR_LINE,14,"   1111111111   11111    1    "
+		CALL MAKE_FLOOR_LINE,15,"     1111       11111    1    "
+		CALL MAKE_FLOOR_LINE,16,"     111126     1        1    "
+		CALL MAKE_FLOOR_LINE,17,"     1111       1 11111  1111 "
+		CALL MAKE_FLOOR_LINE,18,"   1111111111  11 11111  11 1 "
+		CALL MAKE_FLOOR_LINE,19,"   11 1        11211111211111 "
+		CALL MAKE_FLOOR_LINE,20,"   1111      1111 11111 11111 "
+		CALL MAKE_FLOOR_LINE,21,"   1         1 11 11111 1     "
+		CALL MAKE_FLOOR_LINE,22,"   1         1111       1     "
+		CALL MAKE_FLOOR_LINE,23,"                              "
+		;						 000000000011111111112222222222
+		;						 012345678901234567890123456789
+	CASE 3
+		FLAG:최대X = 20
+		FLAG:최대Y = 21
+		;						 000000000011111111112
+		;						 012345678901234567890
+		CALL MAKE_FLOOR_LINE, 0,"                    "
+		CALL MAKE_FLOOR_LINE, 1,"   11111   31111111 "
+		CALL MAKE_FLOOR_LINE, 2,"   11111       1 11 "
+		CALL MAKE_FLOOR_LINE, 3," 111   1   11 11 1  "
+		CALL MAKE_FLOOR_LINE, 4," 1     111111111 1  "
+		CALL MAKE_FLOOR_LINE, 5," 1     11 1 11   1  "
+		CALL MAKE_FLOOR_LINE, 6," 111   1111 11   1  "
+		CALL MAKE_FLOOR_LINE, 7,"   111111        1  "
+		CALL MAKE_FLOOR_LINE, 8,"   1   1111 111 11  "
+		CALL MAKE_FLOOR_LINE, 9,"   1     1111   11  "
+		CALL MAKE_FLOOR_LINE,10,"   1     11 1   11  "
+		CALL MAKE_FLOOR_LINE,11," 111   3111     11  "
+		CALL MAKE_FLOOR_LINE,12," 1     111    6 11  "
+		CALL MAKE_FLOOR_LINE,13," 1           11111  "
+		CALL MAKE_FLOOR_LINE,14," 111111111   1 1 1  "
+		CALL MAKE_FLOOR_LINE,15," 11 7        11111  "
+		CALL MAKE_FLOOR_LINE,16," 11       11111111  "
+		CALL MAKE_FLOOR_LINE,17," 11       11111111  "
+		CALL MAKE_FLOOR_LINE,18,"             11     "
+		CALL MAKE_FLOOR_LINE,19,"             11     "
+		CALL MAKE_FLOOR_LINE,20,"                    "
+		;						 000000000011111111112
+		;						 012345678901234567890
+	CASE 4
+		FLAG:최대X = 20
+		FLAG:최대Y = 20
+		;						 0000000000111111111
+		;						 0123456789012345678
+		CALL MAKE_FLOOR_LINE, 0,"                  "
+		CALL MAKE_FLOOR_LINE, 1,"  1111111111111   "
+		CALL MAKE_FLOOR_LINE, 2," 111111111111111  "
+		CALL MAKE_FLOOR_LINE, 3,"   2   111   1  3 "
+		CALL MAKE_FLOOR_LINE, 4," 11111 1 1   1  1 "
+		CALL MAKE_FLOOR_LINE, 5," 11111 111   1111 "
+		CALL MAKE_FLOOR_LINE, 6," 11111 1 1 7    1 "
+		CALL MAKE_FLOOR_LINE, 7," 11111 111111 E 1 "
+		CALL MAKE_FLOOR_LINE, 8," 11111 1 1111 G 1 "
+		CALL MAKE_FLOOR_LINE, 9," 11111 1111111111 "
+		CALL MAKE_FLOOR_LINE,10," 11111 1 111111 1 "
+		CALL MAKE_FLOOR_LINE,11," 11411 11111111 1 "
+		CALL MAKE_FLOOR_LINE,12,"   G      2   1 1 "
+		CALL MAKE_FLOOR_LINE,13," 11111   111  1 1 "
+		CALL MAKE_FLOOR_LINE,14," 11111   111  1 1 "
+		CALL MAKE_FLOOR_LINE,15," 1111111 111  1 3 "
+		CALL MAKE_FLOOR_LINE,16,"  1 1  1 111  1   "
+		CALL MAKE_FLOOR_LINE,17,"  6 1  1 111  11  "
+		CALL MAKE_FLOOR_LINE,18,"    1111      1   "
+		CALL MAKE_FLOOR_LINE,19,"                  "
+		;						 0000000000111111111
+		;						 0123456789012345678
+	CASE 5
+		FLAG:최대X = 26
+		FLAG:최대Y = 26
+		;						 00000000001111111111222222
+		;						 01234567890123456789012345
+		CALL MAKE_FLOOR_LINE, 0,"                          "
+		CALL MAKE_FLOOR_LINE, 1,"           3111111        "
+		CALL MAKE_FLOOR_LINE, 2,"               1111111    "
+		CALL MAKE_FLOOR_LINE, 3,"    7  1111111 1 11111    "
+		CALL MAKE_FLOOR_LINE, 4,"    2  1111111 111  13    "
+		CALL MAKE_FLOOR_LINE, 5,"  1111111 11111111  11    "
+		CALL MAKE_FLOOR_LINE, 6,"  1111111 11   1          "
+		CALL MAKE_FLOOR_LINE, 7,"  1111111 11 111111 111   "
+		CALL MAKE_FLOOR_LINE, 8,"  111111         1111111  "
+		CALL MAKE_FLOOR_LINE, 9,"  1 1 11         1 11 11  "
+		CALL MAKE_FLOOR_LINE,10," 1111111 3111    1111  1  "
+		CALL MAKE_FLOOR_LINE,11," 11 11 1 1111 6   1111 1  "
+		CALL MAKE_FLOOR_LINE,12," 11 11      1111    11 1  "
+		CALL MAKE_FLOOR_LINE,13,"        111 1111       1  "
+		CALL MAKE_FLOOR_LINE,14," 1111111111 1111 11   11  "
+		CALL MAKE_FLOOR_LINE,15," 111111111  11 1 111111   "
+		CALL MAKE_FLOOR_LINE,16," 11    111 11111 111111   "
+		CALL MAKE_FLOOR_LINE,17,"  3 11 111 11 11 111111   "
+		CALL MAKE_FLOOR_LINE,18,"    11111111     1111111  "
+		CALL MAKE_FLOOR_LINE,19,"   11     11          11  "
+		CALL MAKE_FLOOR_LINE,20,"   11 111    11 1111 111  "
+		CALL MAKE_FLOOR_LINE,21,"   1111 111 1112111121111 "
+		CALL MAKE_FLOOR_LINE,22,"   111111 1 111 1111 1111 "
+		CALL MAKE_FLOOR_LINE,23,"       1  1   1      1    "
+		CALL MAKE_FLOOR_LINE,24,"       3 1111111    11    "
+		CALL MAKE_FLOOR_LINE,25,"                          "
+		;						 000000000011111111112222222222
+		;						 012345678901234567890123456789
+	CASE 6
+		FLAG:최대X = 19
+		FLAG:최대Y = 22
+		;						 00000000001111111111
+		;						 01234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"                   "
+		CALL MAKE_FLOOR_LINE, 1,"         7         "
+		CALL MAKE_FLOOR_LINE, 2,"    1111 1 1111    "
+		CALL MAKE_FLOOR_LINE, 3,"  1111 11111 1 111 "
+		CALL MAKE_FLOOR_LINE, 4," 1 1 1 11111 1 1 1 "
+		CALL MAKE_FLOOR_LINE, 5," 1 3 1       1 3 1 "
+		CALL MAKE_FLOOR_LINE, 6," 1   111111111   1 "
+		CALL MAKE_FLOOR_LINE, 7," 111 1   1   1 111 "
+		CALL MAKE_FLOOR_LINE, 8," 1 11  11111 111   "
+		CALL MAKE_FLOOR_LINE, 9," 1  1  1 1 1  1  1 "
+		CALL MAKE_FLOOR_LINE,10," 1111111 1 111 111 "
+		CALL MAKE_FLOOR_LINE,11," 1     1 1 1  1  1 "
+		CALL MAKE_FLOOR_LINE,12," 1 111 11 11 111 1 "
+		CALL MAKE_FLOOR_LINE,13," 1 1 1   1   1 1 1 "
+		CALL MAKE_FLOOR_LINE,14," 111 13 111 31 111 "
+		CALL MAKE_FLOOR_LINE,15," 1 1  1 1 1 1  1 1 "
+		CALL MAKE_FLOOR_LINE,16," 1 1 11 1 1 11 1   "
+		CALL MAKE_FLOOR_LINE,17," 1 1 1111 1111 1 1 "
+		CALL MAKE_FLOOR_LINE,18," 111   11111   111 "
+		CALL MAKE_FLOOR_LINE,19,"   1111111111111   "
+		CALL MAKE_FLOOR_LINE,20,"   1111  6  1111   "
+		CALL MAKE_FLOOR_LINE,21,"                   "
+		;						 00000000001111111111
+		;						 01234567890123456789
+	CASE 7
+		FLAG:최대X = 29
+		FLAG:최대Y = 27
+		;						 000000000011111111112222222222
+		;						 012345678901234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"                             "
+		CALL MAKE_FLOOR_LINE, 1,"   1311     1   1     1113   "
+		CALL MAKE_FLOOR_LINE, 2,"  1111   1111   1111   1111  "
+		CALL MAKE_FLOOR_LINE, 3,"  1 117  1111 6 1111   11 1  "
+		CALL MAKE_FLOOR_LINE, 4," 11 11   11111111111   11 11 "
+		CALL MAKE_FLOOR_LINE, 5," 11    1111  111  1111    11 "
+		CALL MAKE_FLOOR_LINE, 6," 11 11 11 1  1 1  1 11111 11 "
+		CALL MAKE_FLOOR_LINE, 7," 11 11    1111 1111    11 11 "
+		CALL MAKE_FLOOR_LINE, 8," 11111111 1111 1111  1111111 "
+		CALL MAKE_FLOOR_LINE, 9," 11  2       1 1       2  11 "
+		CALL MAKE_FLOOR_LINE,10,"  1 111 111 11111 111 111 1  "
+		CALL MAKE_FLOOR_LINE,11,"  1 111   1 11111 1   111 1  "
+		CALL MAKE_FLOOR_LINE,12,"  0 111   1   1   1   111 0  "
+		CALL MAKE_FLOOR_LINE,13,"  1 111 111      1111 111 1  "
+		CALL MAKE_FLOOR_LINE,14,"  1 141 11   11111111 111 1  "
+		CALL MAKE_FLOOR_LINE,15," 11  G  11    1   1    2  11 "
+		CALL MAKE_FLOOR_LINE,16," 111111  1    1   1  1111111 "
+		CALL MAKE_FLOOR_LINE,17," 1  111  111111   1111111    "
+		CALL MAKE_FLOOR_LINE,18," 1  11       111111  111     "
+		CALL MAKE_FLOOR_LINE,19," 1  1        1   11  11      "
+		CALL MAKE_FLOOR_LINE,20," 3  1    R   1   11  11   11 "
+		CALL MAKE_FLOOR_LINE,21,"   11    2   1   1111111111  "
+		CALL MAKE_FLOOR_LINE,22,"  1111  11111111111     131  "
+		CALL MAKE_FLOOR_LINE,23,"  1111  1 1 1   111     111  "
+		CALL MAKE_FLOOR_LINE,24,"   1111111111   1111  1111   "
+		CALL MAKE_FLOOR_LINE,25,"      111111     111111      "
+		CALL MAKE_FLOOR_LINE,26,"                             "
+		;						 000000000011111111112222222222
+		;						 012345678901234567890123456789
+	CASE 8
+		FLAG:최대X = 29
+		FLAG:최대Y = 29
+		;						 000000000011111111112222222222
+		;						 012345678901234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"                    G        "
+		CALL MAKE_FLOOR_LINE, 1,"       1111        111       "
+		CALL MAKE_FLOOR_LINE, 2,"  11111111111 11111111111 1  "
+		CALL MAKE_FLOOR_LINE, 3,"  1  11111  1 111  111  1 1  "
+		CALL MAKE_FLOOR_LINE, 4,"  1  1   1  1 111       1 1  "
+		CALL MAKE_FLOOR_LINE, 5,"  11116  1 11 111111 1111 1  "
+		CALL MAKE_FLOOR_LINE, 6," 11111   1         1 1111 11 "
+		CALL MAKE_FLOOR_LINE, 7," 11 11111111111111 111111111 "
+		CALL MAKE_FLOOR_LINE, 8," 1  111   1 1    1    2    1 "
+		CALL MAKE_FLOOR_LINE, 9," 11   1   111      1111111 1 "
+		CALL MAKE_FLOOR_LINE,10," 111111   1 11     1111111 1 "
+		CALL MAKE_FLOOR_LINE,11,"  00000   11111111 1111111   "
+		CALL MAKE_FLOOR_LINE,12,"  11111  111     1 1111111   "
+		CALL MAKE_FLOOR_LINE,13,"  1111111111 111 1 1111111   "
+		CALL MAKE_FLOOR_LINE,14,"    2  1   1 13111 1111111   "
+		CALL MAKE_FLOOR_LINE,15,"   111 1   1 111 1 1111111   "
+		CALL MAKE_FLOOR_LINE,16,"   111    11     1 1111111   "
+		CALL MAKE_FLOOR_LINE,17,"   111        1    1111111   "
+		CALL MAKE_FLOOR_LINE,18," 1 111        1    1111111 3 "
+		CALL MAKE_FLOOR_LINE,19," 1 111        1  1 1114111 1 "
+		CALL MAKE_FLOOR_LINE,20," 1  2      1111  1    G    1 "
+		CALL MAKE_FLOOR_LINE,21," 111111  111 111111 11111111 "
+		CALL MAKE_FLOOR_LINE,22," 1111111111111   11  1111 11 "
+		CALL MAKE_FLOOR_LINE,23,"  1 1 11    1       11111 1  "
+		CALL MAKE_FLOOR_LINE,24,"  11311     1    11       1  "
+		CALL MAKE_FLOOR_LINE,25,"  1 1 1    11  1111   11111  "
+		CALL MAKE_FLOOR_LINE,26,"  111111  11111111111111111  "
+		CALL MAKE_FLOOR_LINE,27,"      11111       11111      "
+		CALL MAKE_FLOOR_LINE,28,"                             "
+		;						 000000000011111111112222222222
+		;						 012345678901234567890123456789
+	CASE 9
+		FLAG:최대X = 9
+		FLAG:최대Y = 9
+		;						 000000000
+		;						 012345678
+		CALL MAKE_FLOOR_LINE, 0,"         "
+		CALL MAKE_FLOOR_LINE, 1," 1111111 "
+		CALL MAKE_FLOOR_LINE, 2," 1111111 "
+		CALL MAKE_FLOOR_LINE, 3," 1114111 "
+		CALL MAKE_FLOOR_LINE, 4," 1111111 "
+		CALL MAKE_FLOOR_LINE, 5," 1114111 "
+		CALL MAKE_FLOOR_LINE, 6," 1111111 "
+		CALL MAKE_FLOOR_LINE, 7," 1111111 "
+		CALL MAKE_FLOOR_LINE, 8,"    2    "
+		;						 000000000
+		;						 012345678
+ENDSELECT
+;=======================================================================
+;タイル調整
+;=======================================================================
+@MAKE_FLOOR_LINE_COMMON_55, ARG, ARG:1, ARG:2
+#LOCALSIZE 30
+;LOCAL:3 宝箱 ダンジョンフラグ:75~99
+;LOCAL:4 이벤트
+;LOCAL:8 メッセンジャー
+;(0/0)でLOCALを消去
+SIF ARG:1 == 0 && ARG:2 == 0
+	VARSET LOCAL
+IF ARG == 3
+	IF GETBIT(ダンジョンフラグ:(FLAG:현던전):(FLAG:현M+75), LOCAL:3)
+		DA:(ARG:1):(ARG:2) = 1
+	ELSE
+		DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:3 * 10 + 3
+	ENDIF
+	LOCAL:3++
+ENDIF
+;イベント扉
+IF ARG == 12
+	DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:2 * 10 + 2
+	LOCAL:2++
+ENDIF
+IF ARG == 4
+	DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:4 * 10 + 4
+	LOCAL:4++
+	SELECTCASE DA:(ARG:1):(ARG:2) / 10
+		CASE 400
+			SIF STRFLAG_D("ロンギヌス5撃破")
+				DA:(ARG:1):(ARG:2) = 1
+		CASE 700
+			SIF STRFLAG_D("ロンギヌス1撃破")
+				DA:(ARG:1):(ARG:2) = 1
+		CASE 800
+			SIF STRFLAG_D("ボロンティック撃破")
+				DA:(ARG:1):(ARG:2) = 1
+	ENDSELECT
+ENDIF
+IF ARG == 6
+	DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:6 * 100 + 6
+	LOCAL:6++
+ENDIF
+IF ARG == 7
+	DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:7 * 100 + 7
+	LOCAL:7++
+ENDIF
+IF ARG == 8
+	DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:8 * 10 + 8
+	LOCAL:8++
+	SELECTCASE DA:(ARG:1):(ARG:2) / 10
+	ENDSELECT
+ENDIF
+;=======================================================================
+;タイル定義
+;=======================================================================
+@DEFINE_TILES_55, ARGS, ARG, ARG:1
+;G イベント扉
+SIF ARGS == "G"
+	RETURN 12
+;=======
+;ELEVATOR定義
+;=======
+@DUNGEON_ELEVATOR_55, ARG
+RETURN 0, 4
+;=======================================================================
+;ダンジョン突入時のイベント
+;=======================================================================
+@START_DUNGEON_55, ARG
+FLAG:현M = 0
+FLAG:현X = 4
+FLAG:현Y = 16
+;=======================================================================
+;タイル進入時のイベント
+;=======================================================================
+@EVENT_ENTER_DUNGEON_55,ARG
+;ARG = 進入時の向き　0の場合ワープなど
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 10
+CASE 1
+	SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	ENDSELECT
+;==========
+;出口の処理　出口はない
+;==========
+;==========
+;扉の処理
+;==========
+CASE 2
+	CALL DUNGEON_DOOR,ARG
+;宝の処理
+;========
+	CASE 3
+		CALL TREASURE_55, DA:(FLAG:현X):(FLAG:현Y) / 10
+		RETURN 1
+;=======
+;이벤트
+;=======
+	CASE 4
+		CALL EVENT_55
+		RETURN 1
+;=======
+;階段
+;=======
+	CASE 6
+		CALL STAIR_55, 6
+		RETURN 1
+	CASE 7
+		CALL STAIR_55, 7
+		RETURN 1
+;=======
+;メッセンジャー
+;=======
+	CASE 8
+		CALL MESSAGE_55
+		RETURN 1
+;=======
+;特殊タイル
+;=======
+	CASE 9
+ENDSELECT
+@EVENT_CHECK_DUNGEON_55
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 10
+;========
+;宝の処理
+;========
+	CASE 3
+		CALL TREASURE_55, DA:(FLAG:현X):(FLAG:현Y) / 10
+		RETURN 1
+;=======
+;이벤트
+;=======
+	CASE 4
+		CALL EVENT_55
+		RETURN 1
+;=======
+;階段
+;=======
+	CASE 6
+		CALL STAIR_55, 6
+		RETURN 1
+	CASE 7
+		CALL STAIR_55, 7
+		RETURN 1
+;=======
+;メッセンジャー
+;=======
+	CASE 8
+		CALL MESSAGE_55
+		RETURN 1
+	CASEELSE
+		CALL MESSAGE_WINDOW_D, "", "＞아무것도 없는 것 같다"
+		RETURN 0
+ENDSELECT
+@TREASURE_55, ARG
+#LOCALSIZE 1
+#LOCALSSIZE 3
+;個数,-1のとき、魔貨・0の時、\となる
+LOCAL = 1
+;IDは現M*100＋X個目の宝箱の法則でふられている
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 0
+		LOCALS = 개비의열매
+		LOCAL = 1
+	CASE 1
+		LOCALS = 은의마니샤
+		LOCAL = 2
+	CASE 100
+		LOCALS = 물반경
+		LOCAL = 2
+	CASE 101
+		LOCALS = MAG
+		LOCAL = 22700
+	CASE 102
+		LOCALS = 마반경
+		LOCAL = 2
+	CASE 103
+		LOCALS = 운의향
+	CASE 200
+		LOCALS = ALL인센스카드
+	CASE 201
+		LOCALS = ＨＰ
+		LOCAL = 20
+	CASE 202
+		LOCALS = POISON
+		LOCAL = 100
+		LOCALS:1 = 신경
+	CASE 203
+		LOCALS = 솔빙오브
+	CASE 204
+		LOCALS = VIT인센스카드
+	CASE 300
+		LOCALS = 벼랑끝분말
+	CASE 301
+		LOCALS = ＭＰ
+		LOCAL = 20
+	CASE 400
+		LOCALS = 우황단
+		LOCAL = 3
+	CASE 401
+		LOCALS = PALYZE
+		LOCAL = 100
+		LOCALS:1 = 신경
+	CASE 500
+		LOCALS = ＨＰ
+		LOCAL = 15
+	CASE 501
+		LOCALS = 이와쿠라의물
+		LOCAL = 3
+	CASE 502
+		LOCALS = 디스챰
+		LOCAL = 3
+	CASE 503
+		LOCALS = 디스패라이즈
+		LOCAL = 3
+	CASE 504
+		LOCALS = 보옥륜
+		LOCAL = 2
+	CASE 505
+		LOCALS = 디스포이즌
+		LOCAL = 3
+	CASE 600
+		LOCALS = 보옥
+		LOCAL = 3
+	CASE 601
+		LOCALS = 스킬카드【마카・카쟈】
+	CASE 602
+		LOCALS = 디스가이즈굿즈
+		LOCAL = 1
+	CASE 603
+		LOCALS = POISON
+		LOCAL = 100
+		LOCALS:1 = 신경
+	CASE 700
+		LOCALS = 챠크라드롭
+		LOCAL = 5
+	CASE 701
+		LOCALS = PALYZE
+		LOCAL = 100
+		LOCALS:1 = 신경
+	CASE 702
+		LOCALS = ＭＰ
+		LOCAL = 20
+	CASE 703
+		LOCALS = 스킬카드【메・디아라마】
+	CASE 800
+		LOCALS = 히히이로카네투구
+	CASE 801
+		LOCALS = 마력의향
+	CASE 802
+		LOCALS = 반혼향
+		LOCAL = 3
+ENDSELECT
+IF LOCALS == "￥"
+	CALL GET_TREASURE_MONEY, 0, LOCAL, FLAG:현던전, FLAG:현M + 75, (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+ELSEIF LOCALS == "魔貨"
+	CALL GET_TREASURE_MONEY, 1, LOCAL, FLAG:현던전, FLAG:현M + 75, (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+ELSEIF LOCALS == "MAG" || LOCALS == "ＭＡＧ"
+	CALL GET_TREASURE_MAG, 0, LOCAL, FLAG:현던전, FLAG:현M + 75, (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+ELSEIF LOCALS == "ＨＰ" || LOCALS == "ＭＰ" || LOCALS == "POISON" || LOCALS == "PALYZE"
+	;LOCALS:1 종류 LOCAL ダメージ量or確率 LOCALS:2 相性
+	CALL GET_TREASURE_TRAP, LOCALS, LOCAL, GET_TYPE_NUM(LOCALS:1), FLAG:현던전, FLAG:현M + 75, (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+ELSE
+	IF GETNUM(ITEM, LOCALS) == -1
+		PRINTL ＞아이템명의 지정이 잘못되었습니다
+		PRINTW ＞아이템의 취득 처리를 중단합니다
+	ELSE
+		CALL GET_TREASURE, GETNUM(ITEM, LOCALS), LOCAL , FLAG:현던전, FLAG:현M + 75, (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+	ENDIF
+ENDIF
+
+
+;=======================================================================
+;階段
+;=======================================================================
+@STAIR_55, ARG
+IF ARG == 6
+	CALL DUNGEON_UPSTAIRS_ID, FLAG:현M-1, DA:(FLAG:현X):(FLAG:현Y)-999
+ELSE
+	CALL DUNGEON_DOWNSTAIRS_ID, FLAG:현M+1, DA:(FLAG:현X):(FLAG:현Y)+999
+ENDIF
+@TILE_MARK_COMMON_55_4, ARG, ARG:1, ARG:2
+SELECTCASE ARG / 10
+	CASE 0
+		RESULTS = 出
+	CASEELSE
+		RESULTS = ！
+ENDSELECT
+;=======================================================================
+;이벤트
+;=======================================================================
+@EVENT_55
+#LOCALSIZE 5
+CALL SHOW_PICTURE, "D"
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) /10
+	CASE 0
+		CALL DUNGEON_EXIT
+	CASE 400
+		CALL MESSAGE_WINDOW_D, "롱기누스７", "웃기는군…/새로운 인형이 왔구나/오래된 인형처럼 아무것도 모른채 춤추는 인형이 왔어"
+		CALL MESSAGE_WINDOW_D, "", @"＞기다리고 있던 성창기사단이 %CALLNAME:MASTER%에게 창을 겨눴다"
+		CALL MESSAGE_WINDOW_D, "롱기누스５", "마리오넷트여/자신을 조종하는 실을 조종하는 손에 대해 생각해 봤는가？"
+		CALL MESSAGE_WINDOW_D, "롱기누스６", "네놈은 확실히 인형극을 난장판으로 만들었다/하지만 그렇다고 해서 너 자신이 꼭두각시가 /아니라고 할 수도 없지"
+		CALL MESSAGE_WINDOW_D, "롱기누스７", "어리석은 인형이여… 여기서 헛되이 죽어라！！"
+		CALL SET_ENEMY,8, [[キャラ:롱기누스５]], 60, 0, 1
+		CALL SET_ENEMY,9, [[キャラ:롱기누스６]], 60, 0, 1
+		CALL SET_ENEMY,10, [[キャラ:롱기누스７]], 60, 0, 1
+		CALL ADJUST_IMPERIAL
+		CALL MESSAGE_WINDOW_D, "", "＞성창기사단 롱기누스５가 １체 나타났다！/＞성창기사단 롱기누스６이 １체 나타났다！/＞성창기사단 롱기누스７이 １체 나타났다！"
+		FLAG:도주불가플래그 = 1
+		FLAG:회화불능플래그 = 1
+		FLAG:선제기습취소 = 1
+		CALL BATTLE_START
+		FLAG:도주불가플래그 = 0
+		FLAG:회화불능플래그 = 0
+		FLAG:선제기습취소 = 0
+		CALL MESSAGE_WINDOW_D, "롱기누스６", "크크크、어리석은 놈이/자신이 누구에게 봉사하고 있는지도 모르고선…"
+		CALL MESSAGE_WINDOW_D, "", "＞성창기사단은 힘이 다했다！"
+		CALLF STRFLAG_D("ロンギヌス5撃破", 1)
+			IF STRFLAG_NUM_EV("ナチスの美人秘密兵士の噂", , , , [[이벤트:소문]])  == 2
+				PRINTL 
+				PRINTL ＞성창기사단들은 예에 따라 목숨에 지장은 없는 것 같다
+				PRINTW ＞나불대는 입에 어떤 봉사를 시켜줄까…
+				PRINTW
+			ELSEIF STRFLAG_NUM_EV("ナチスの切札は機械化美女軍団の噂", , , , [[이벤트:소문]]) == 2
+				PRINTL 
+				PRINTL ＞격파한 성창기사단의 상태를 조사한다
+				PRINTW ＞사람의 모습을 하면서 분명히 기계로 구성된 육체는 앞선 전투에서도 치명적인 손상은 면한 모양이다
+				PRINTL ＞타인을 꼭두각시라고 불렀던 기계의처녀들을 향후 어떻게 취급할까 고민하면서、그녀들을 엄선하기 시작했다…
+				PRINTW
+			ENDIF
+				IF STRFLAG_NUM_EV("ナチスの美人秘密兵士の噂", , , , [[이벤트:소문]]) == 2 || STRFLAG_NUM_EV("ナチスの切札は機械化美女軍団の噂", , , , [[이벤트:소문]]) == 2
+					PRINTL ＞3명 중 어느것을 데리고 돌아갈까
+					PRINTW
+
+					VARSET LOCAL
+					LOCAL = 1
+					IF GETCHARA([[キャラ:롱기누스７_소문]]) < 0
+						PRINTL ＞[1]롱기누스７
+						LOCAL:(LOCAL++) = 1
+					ENDIF
+					IF GETCHARA([[キャラ:롱기누스６_소문]]) < 0
+						PRINTL ＞[2]롱기누스６
+						LOCAL:(LOCAL++) = 2
+					ENDIF
+					IF GETCHARA([[キャラ:롱기누스５_소문]]) < 0
+						PRINTL ＞[3]롱기누스５
+						LOCAL:(LOCAL++) = 3
+					ENDIF
+					PRINTL ＞[0]데리고 돌아가지 않는다
+					PRINTL
+					CALL INPUTINT,0,LOCAL:1,LOCAL:2,LOCAL:3
+
+
+					SELECTCASE RESULT
+					CASE 1
+						PRINTW ＞롱기누스７을 손에 넣었다
+						CALL ADD_NEW_COMPANION,[[キャラ:롱기누스７_소문]],0,STRFLAG_NUM_EV("ナチスの切札は機械化美女軍団の噂", , , , [[이벤트:소문]]) == 2, , 1
+					CASE 2
+						PRINTW ＞롱기누스６을 손에 넣었다
+						CALL ADD_NEW_COMPANION,[[キャラ:롱기누스６_소문]],0,STRFLAG_NUM_EV("ナチスの切札は機械化美女軍団の噂", , , , [[이벤트:소문]]) == 2, , 1
+					CASE 3
+						PRINTW ＞롱기누스５을 손에 넣었다
+						CALL ADD_NEW_COMPANION,[[キャラ:롱기누스５_소문]],0,STRFLAG_NUM_EV("ナチスの切札は機械化美女軍団の噂", , , , [[이벤트:소문]]) == 2, , 1
+					ENDSELECT
+				PRINTW ＞성창기사단의 인물을 한 명 포박하여, 그 자리를 뒤로했다…
+			ENDIF
+			SIF FLAG:아이템합성해금
+				ITEM:롱기누스의잔해 += 5
+	CASE 700
+		CALL MESSAGE_WINDOW_D, "", "＞방 안에는 성창기사단이 기다리고 있었다"
+		CALL MESSAGE_WINDOW_D, "롱기누스１", "마침내 여기까지 왔군/그런데 네놈은 이 시발바가 뭔지 알고나 있는가？"
+		CALL MESSAGE_WINDOW_D, "롱기누스２", "대부분은 인류 멸망을 믿지 않겠지/주인의 생각도 모른채！"
+		CALL MESSAGE_WINDOW_D, "롱기누스３", "네 녀석이 힘이 있구나…/허나、불쌍한 광대일 뿐/결국은 여기서 끝날 숙명이다！"
+		CALL MESSAGE_WINDOW_D, "", @"＞성창기사단은 %CALLNAME:MASTER% 일행을 포위했다"
+		CALL MESSAGE_WINDOW_D, "롱기누스１", "꿈쩍도 하지 않나……/엄청난 자신이로군、팬텀 소사이어티의 앞잡이여/때론 사람은 자기의 전능함에 취해 잘못을 범하지/바로 지금이 그 때란 걸 알아라！！"
+		CALL SET_ENEMY,14, [[キャラ:롱기누스１]], 65, 0, 1
+		CALL SET_ENEMY,8, [[キャラ:롱기누스２]], 63, 0, 1
+		CALL SET_ENEMY,9, [[キャラ:롱기누스３]], 63, 0, 1
+		CALL SET_ENEMY,10, [[キャラ:롱기누스４]], 63, 0, 1
+		CALL ADJUST_IMPERIAL
+		CALL MESSAGE_WINDOW_D, "", "＞성창기사단　롱기누스１이 １체 나타났다！/＞성창기사단　롱기누스２가 １체 나타났다！/＞성창기사단 롱기누스３이　１체 나타났다！/＞성창기사단　롱기누스４가 １체 나타났다！"
+		FLAG:도주불가플래그 = 1
+		FLAG:회화불능플래그 = 1
+		FLAG:선제기습취소 = 1
+		CALL BATTLE_START
+		FLAG:도주불가플래그 = 0
+		FLAG:회화불능플래그 = 0
+		FLAG:선제기습취소 = 0
+		CALL SHOW_PICTURE, "D"
+		CALL MESSAGE_WINDOW_D, "롱기누스１", "여기서 죽었으면 좋았을 것을…/마리오네트여…/네 녀석은 어디로 가려는 하는가…"
+		CALLF STRFLAG_D("ロンギヌス1撃破", 1)
+		IF STRFLAG_NUM_EV("ナチスの美人秘密兵士の噂", , , , [[이벤트:소문]]) == 2 || STRFLAG_NUM_EV("ナチスの切札は機械化美女軍団の噂", , , , [[이벤트:소문]]) == 2
+			IF STRFLAG_NUM_EV("ナチスの美人秘密兵士の噂", , , , [[이벤트:소문]])  == 2
+				PRINTL 
+				PRINTL ＞격파한 기사들에게 목숨의 지장은 없는 것 같다
+				PRINTW ＞그다지 느긋하게 있을 시간도 없다、신병을 확보하는 대로、다시 침공을 개시하자…、
+				PRINTW
+			ELSEIF STRFLAG_NUM_EV("ナチスの切札は機械化美女軍団の噂", , , , [[이벤트:소문]]) == 2
+				PRINTL 
+				PRINTL ＞격파한 성창기사단의 상태를 조사한다
+				PRINTW ＞사람의 모습을 하면서 분명히 기계로 구성된 육체는 앞선 전투에서도 치명적인 손상은 면한 모양이다
+				PRINTL ＞타인을 꼭두각시라고 불렀던 기계의처녀들을 향후 어떻게 취급할까 고민하면서、그녀들을 엄선하기 시작했다…
+				PRINTW
+			ENDIF
+			PRINTL ＞4명 중 어느것을 데리고 돌아갈까
+			PRINTW
+			VARSET LOCAL
+			LOCAL = 1
+			IF GETCHARA([[キャラ:롱기누스４_소문]]) < 0
+				PRINTL ＞[1]롱기누스４
+				LOCAL:(LOCAL++) = 1
+			ENDIF
+			IF GETCHARA([[キャラ:롱기누스３_소문]]) < 0
+				PRINTL ＞[2]롱기누스３
+				LOCAL:(LOCAL++) = 2
+			ENDIF
+			IF GETCHARA([[キャラ:롱기누스２_소문]]) < 0
+				PRINTL ＞[3]롱기누스２
+				LOCAL:(LOCAL++) = 3
+				ENDIF
+			IF GETCHARA([[キャラ:롱기누스１_소문]]) < 0
+				PRINTL ＞[4]롱기누스１
+				LOCAL:(LOCAL++) = 4
+			ENDIF
+
+			PRINTL
+			PRINTL ＞[0]데리고 돌아가지 않는다
+			PRINTL
+			CALL INPUTINT,0,LOCAL:1,LOCAL:2,LOCAL:3,LOCAL:4
+			;CSV呼び出し処理と同様の措置をとりやすくするためにロンギヌスの味方化処理をキャラ個別の処理に変更
+			;旧処理は可読性のためにファイル下部に移動し、コメントアウト
+			SELECTCASE RESULT
+				CASE 1
+					PRINTW ＞롱기누스４을 손에 넣었다
+					CALL ADD_NEW_COMPANION,[[キャラ:롱기누스４_소문]],0, STRFLAG_NUM_EV("ナチスの切札は機械化美女軍団の噂", , , , [[이벤트:소문]]) == 2, , 1
+				CASE 2
+					PRINTW ＞롱기누스３을 손에 넣었다
+					CALL ADD_NEW_COMPANION,[[キャラ:롱기누스３_소문]],0, STRFLAG_NUM_EV("ナチスの切札は機械化美女軍団の噂", , , , [[이벤트:소문]]) == 2, , 1
+				CASE 3
+					PRINTW ＞롱기누스２을 손에 넣었다
+					CALL ADD_NEW_COMPANION,[[キャラ:롱기누스２_소문]],0, STRFLAG_NUM_EV("ナチスの切札は機械化美女軍団の噂", , , , [[이벤트:소문]]) == 2, , 1
+				CASE 4
+					PRINTW ＞롱기누스１을 손에 넣었다
+					CALL ADD_NEW_COMPANION,[[キャラ:롱기누스１_소문]],0, STRFLAG_NUM_EV("ナチスの切札は機械化美女軍団の噂", , , , [[이벤트:소문]]) == 2, , 1
+			ENDSELECT
+			PRINTW ＞성창기사단의 인물을 한 명 포박하여, 앞길을 서둘렀다…
+		ENDIF
+	CASE 800
+		CALL MESSAGE_WINDOW_D, "", @"＞방안은 냉기로 가득차 있어 얼어 버릴 것만 같다/＞근처에 얼어붙은 캡슐이 굴러다니고 있다/＞%마스터가% 캡슐을 확인하려 하자 사람의 그림자가 눈에 들어왔다"
+		CALL MESSAGE_WINDOW_D, "???", "캬하！！/머기、머기！！"
+		CALL MESSAGE_WINDOW_D, "", @"＞우주인을 생각나게 하는 이상한 풍채를 한 그것이/%마스터를% 습격했다！/＞우주인？ 포론틱１이 １체 나타났다！"
+		CALL SET_ENEMY,9,[[キャラ:포론틱１]],65,0,1
+		LOCAL = CHARANUM-1
+		CSTR:LOCAL:사고패턴 = ボロンティック
+		CFLAG:LOCAL:행동횟수 = 2
+		;HP10000 MP10000
+		LOCAL:2 = FLAG:전투난이도 - 3 > 0 ? 100 + (FLAG:전투난이도 - 3) * 20 # 100
+		CALL SET_BATTLE_STATUS(LOCAL, 100 * LOCAL:2, "ＨＰ")
+		CALL SET_BATTLE_STATUS(LOCAL, 100 * LOCAL:2, "ＭＰ")
+		CALL SYNC_STATUS, LOCAL
+		CALL HEALTH_CHARA, LOCAL
+		FLAG:도주불가플래그 = 1
+		FLAG:회화불능플래그 = 1
+		FLAG:선제기습취소 = 1
+		ABL:(CHARANUM-1):아이템1 = GETNUM(ITEM, "스킬카드【다크노바사이저】")
+		ABL:(CHARANUM-1):입수확률1 = 20
+		CALL BATTLE_START
+
+		CALL SHOW_PICTURE, "D"
+		CALL MESSAGE_WINDOW_D, "", "＞우주인？을 쓰러트리자 근처에 다른 우주인？이 나타났다"
+		CALL MESSAGE_WINDOW_D, "다른 우주인？", "와따！！/와따！！/배거푸다！！"
+		CALL MESSAGE_WINDOW_D, "", "＞우주인？ 포론틱２가 １체 나타났다！"		
+		CALL SET_ENEMY,9,[[キャラ:포론틱２]],65,0,1
+		CALL SET_BATTLE_STATUS(LOCAL, 100 * LOCAL:2, "ＨＰ")
+		CALL SET_BATTLE_STATUS(LOCAL, 100 * LOCAL:2, "ＭＰ")
+		CALL SYNC_STATUS, LOCAL
+		CALL HEALTH_CHARA, LOCAL
+		ABL:(CHARANUM-1):아이템1 = GETNUM(ITEM, "스킬카드【이클립스미러】")
+		ABL:(CHARANUM-1):입수확률1 = 20
+		CALL BATTLE_START
+		
+		CALL SHOW_PICTURE, "D"
+		CALL MESSAGE_WINDOW_D, "다른 우주인？", "아아！！/칭구가！/포론티긔 칭구가！"
+		CALL MESSAGE_WINDOW_D, "", "＞숨 돌릴 새도 없이 다른 우주인이 덮쳐왔다/＞우주인？ 포론틱３가 １체 나타났다！"
+		CALL SET_ENEMY,9,[[キャラ:포론틱３]],65,0,1
+		LOCAL = CHARANUM-1
+		CSTR:LOCAL:사고패턴 = ボロンティック
+		CFLAG:LOCAL:행동횟수 = 2
+		;HP10000 MP10000
+		LOCAL:2 = FLAG:전투난이도 - 3 > 0 ? 100 + (FLAG:전투난이도 - 3) * 20 # 100
+		CALL SET_BATTLE_STATUS(LOCAL, 100 * LOCAL:2, "ＨＰ")
+		CALL SET_BATTLE_STATUS(LOCAL, 100 * LOCAL:2, "ＭＰ")
+		CALL SYNC_STATUS, LOCAL
+		CALL HEALTH_CHARA, LOCAL
+		ABL:(CHARANUM-1):아이템1 = GETNUM(ITEM, "스킬카드【어둠의포미러버】")
+		ABL:(CHARANUM-1):입수확률1 = 20
+		CALL BATTLE_START
+		
+		CALL SHOW_PICTURE, "D"
+		CALL MESSAGE_WINDOW_D, "다른 우주인？", "머야！　머야！/어떠케 댄거야！/잉간！/그러묜 먹눈다！！"
+		CALL MESSAGE_WINDOW_D, "", "＞우주인？ 포론틱４가 １체 나타났다！"
+		CALL SET_ENEMY,9,[[キャラ:포론틱４]],65,0,1
+		LOCAL = CHARANUM-1
+		CSTR:LOCAL:사고패턴 = ボロンティック
+		CFLAG:LOCAL:행동횟수 = 2
+		;HP10000 MP10000
+		LOCAL:2 = FLAG:전투난이도 - 3 > 0 ? 100 + (FLAG:전투난이도 - 3) * 20 # 100
+		CALL SET_BATTLE_STATUS(LOCAL, 100 * LOCAL:2, "ＨＰ")
+		CALL SET_BATTLE_STATUS(LOCAL, 100 * LOCAL:2, "ＭＰ")
+		CALL SYNC_STATUS, LOCAL
+		CALL HEALTH_CHARA, LOCAL
+		ABL:(CHARANUM-1):아이템1 = GETNUM(ITEM, "스킬카드【피의디포즈】")
+		ABL:(CHARANUM-1):입수확률1 = 20
+		CALL BATTLE_START
+		
+		CALL SHOW_PICTURE, "D"
+		CALL MESSAGE_WINDOW_D, "다른 우주인？", "캬하！！/캬하！！/캬하하하하하！！！！"
+		CALL MESSAGE_WINDOW_D, "", "＞우주인？ 포론틱5가 １체 나타났다！"
+		CALL SET_ENEMY,9,[[キャラ:포론틱５]],65,0,1
+		LOCAL = CHARANUM-1
+		CSTR:LOCAL:사고패턴 = ボロンティック
+		CFLAG:LOCAL:행동횟수 = 2
+		;HP10000 MP10000
+		LOCAL:2 = FLAG:전투난이도 - 3 > 0 ? 100 + (FLAG:전투난이도 - 3) * 20 # 100
+		CALL SET_BATTLE_STATUS(LOCAL, 100 * LOCAL:2, "ＨＰ")
+		CALL SET_BATTLE_STATUS(LOCAL, 100 * LOCAL:2, "ＭＰ")
+		CALL SYNC_STATUS, LOCAL
+		CALL HEALTH_CHARA, LOCAL
+		ABL:(CHARANUM-1):아이템1 = GETNUM(ITEM, "스킬카드【테라포츈】")
+		ABL:(CHARANUM-1):입수확률1 = 20
+		CALL BATTLE_START
+		FLAG:도주불가플래그 = 0
+		FLAG:회화불능플래그 = 0
+		FLAG:선제기습취소 = 0
+		CALL SHOW_PICTURE, "D"
+		CALL MESSAGE_WINDOW_D, "", "＞포론틱5는 힘이 다했다/＞더이상 우주인？들은 없는 것 같다…"
+		CALLF STRFLAG_D("ボロンティック撃破", 1)
+		DA:(FLAG:현X):(FLAG:현Y) = 1
+	CASE 901
+		FOR LOCAL:1, 1, 3
+			FOR LOCAL, 2, 7
+				CALL SET_FLOOR_ANALYZE(2, FLAG:현던전, 9, LOCAL, LOCAL:1)
+			NEXT
+		NEXT
+		CALL SHOW_PICTURE, "D"
+		CALL MESSAGE_WINDOW_D, "", @"＞방에 들어가니 그곳은 별이 빛나는 우주를 연상시키는 공간이었다 %\@STRFLAG_EV("벨벳룸사용가능", 0, [[이벤트:페르소나]])?/＞전에 필레몬이 있던 곳과 같은 공간처럼 느껴진다#\@%"
+		CALL MESSAGE_WINDOW_D, "", "＞그리고 그 공간에 칠자매 학원에서 만났던 、/＞카라코우에서 조커의 아버지라고 자칭했던 인물이 있었다"
+		CALL MESSAGE_WINDOW_D, "조커의 아버지", "환영하네/보편적 무의식의 세계에 잘 왔다/여기까지 와주다니 정말 즐겁게 해주는구나"
+		CALL MESSAGE_WINDOW_D, "조커의 아버지", @"찰나에도 미치지 못하지만、/%\@STRFLAG_EV("벨벳룸사용가능", 0, [[이벤트:페르소나]])?10년을 기다린 놀이를 버리고 힘을 빌려 주었다#찰나에도 미치지 못하지만、10년을 기다린 놀이가 엉망이 되었던 것이다\@%/그렇지 않으면 재미없지"
+		CALL MESSAGE_WINDOW_D, "조커의 아버지", "여기는 너희들 인간이라는 이름의、/모르모트가 태어난 장소다//별처럼 보이는 장소는 너희들의 의식이 불러내는 거다/인간의 자아는 여기에서 태어나 여기에서 바뀌지"
+		CALL MESSAGE_WINDOW_D, "조커의 아버지", "시바르바도 그것을 원한 너희들이 형태를 준、나의 일부에 지나지 않아/그래、다른 별의 배에서 진화한、/악마로 가득 찬 이 세계로부터 구원받고자 하는 환상이지"
+		CALL MESSAGE_WINDOW_D, "조커의 아버지", "확실히、너희 모르모트는 어리석어/온갖 수단을 다 써서 환상이라는 그럴듯한 것에 매달리려고 하지/하하하핫、너는 자신만은 다르다고 생각하는건가？"
+		CALL MESSAGE_WINDOW_D, "조커의 아버지", "하지만 너도 팬텀 소사이어티에 매달리고 있는 것이다/그것이 무슨 뜻인지도 모르고 말이야"
+		CALL MESSAGE_WINDOW_D, "조커의 아버지", "하지만 네가 모든 운명을 깨뜨리고、여기까지 도착한 것은 사실이다/너는 모순을 안고있는 사람의 마음이/완전한 모습으로 진화할 가능성을 보여줄지도 모른다/자、기어오는 혼돈을 받아보거라"
+		CALL MESSAGE_WINDOW_D, "", "＞조커의 아버지의 모습이 변해가고/＞그리고 퓌러가 나타났다"
+		CALL MESSAGE_WINDOW_D, "퓌러", "자 네 모든 걸로 미래를 붙잡을 수 있는지 보여봐라！/하지만 진정한 성창과 운명을 비웃는 니알랏토텝의 힘、겉멋이 아니다！"
+		CALL MESSAGE_WINDOW_D, "", "＞??? 퓌러가 １체 나타났다！"
+		FLAG:도주불가플래그 = 1
+		FLAG:회화불능플래그 = 1
+		FLAG:선제기습취소 = 1
+		CALL SET_ENEMY,9,[[キャラ:퓌러]],70,0,1
+		LOCAL = CHARANUM-1
+		CSTR:LOCAL:사고패턴 = フューラー
+		CFLAG:LOCAL:행동횟수 = 2
+		LOCAL:2 = FLAG:전투난이도 - 3 > 0 ? 100 + (FLAG:전투난이도 - 3) * 25 # 100
+		CALL SET_BATTLE_STATUS(LOCAL, 300 * LOCAL:2, "ＨＰ")
+		CALL SET_BATTLE_STATUS(LOCAL, 200 * LOCAL:2, "ＭＰ")
+		CALL SYNC_STATUS, LOCAL
+		CALL HEALTH_CHARA, LOCAL
+		CALL BATTLE_START
+		FLAG:도주불가플래그 = 0
+		FLAG:회화불능플래그 = 0
+		FLAG:선제기습취소 = 0
+		CALL SHOW_PICTURE, "D"
+		CALL MESSAGE_WINDOW_D, "퓌러", "여기까지인가……너의 힘、확실히 봤다/잘해주었다"
+		CALL MESSAGE_WINDOW_D, "퓌러", "하지만 나는 너희 인간들의 그림자다/인간의 어둠이 마음에 있는한、나는 없어지지 않아/기어오는 혼돈이라는 이름을 기억하는게 좋을거다"
+		CALL MESSAGE_WINDOW_D, "", "＞퓌러는 힘이 다했다"
+		CALL CLEAR_TILE_ID, 9004
+		CALL SHOW_PICTURE, "D"
+		CALLF STRFLAG_NUM_EV("罪ルート進行", "=", , 13, [[이벤트:페르소나２]])
+		IF STRFLAG_EV("ベルベットルーム使用可能", 0, [[이벤트:페르소나]])
+			CALL MESSAGE_WINDOW_D, "목소리", "기어오는 혼돈…니알랏토텝이여/이것으로 내 말이 이해되었는가"
+			DA:(FLAG:현X+1):(FLAG:현Y) = 9024
+			CALL SHOW_PICTURE, "D"
+			CALL MESSAGE_WINDOW_D, "", "＞어느 순간 필레몬이 있었다…"
+			CALL MESSAGE_WINDOW_D, "필레몬", "놈이야말로 기어드는 혼돈…니알랏토텝이다/우리는 사람들 마음의 근원… 보편적 무의식의 화신이며、/표리일체의 존재다…/우리는 계속 여기서 사람들의 행위를 보아왔다"
+			CALL MESSAGE_WINDOW_D, "필레몬", "나는 강한 마음을 가진 사람을 지도하고 기어드는 혼돈은、/약한 사람을 나락으로 이끌려고 접근하지"
+			CALL MESSAGE_WINDOW_D, "필레몬", "모든 것은 모순을 안고 있는 사람의 마음이、/완전한 모습으로 진화할 수 있는지의 결과로 판단된다/너는 그 가능성을 보여주었다"
+			CALL MESSAGE_WINDOW_D, "필레몬", "사람의 마음 속에는 현실의 흐름을 바꾸는 큰 힘이 있다/그 녀석의 나쁜 환상에 의지하지 않는、그대의 강한 의지와 행동이야말로、/현실을 바꾸는 에너지가 되는 것이다"
+			CALL MESSAGE_WINDOW_D, "필레몬", "그대가 녀석을 쳐부술 수 있었던 것은、/그대의 마음이 강했다는 것이다/그러나 무의식적으로 파멸을 원하는 사람들의 어둠이 그 녀석 힘의 근원이다/저 녀석을 억제할려면 사람 자체가 바뀌어야 한다"
+			CALL MESSAGE_WINDOW_D, "필레몬", "그대라면 분명 우리에게도 좋은 관찰 결과를 가져올 것이다…/이대로 새로운 세계를 너희들이 만들어 가라"
+			CALL MESSAGE_WINDOW_D, "필레몬", "나는 항상 너를 포함한 사람 모두를 지켜보고 있다/그것을 잊지 말아주게"
+			CALL MESSAGE_WINDOW_D, "", "＞이렇게 말하며 필레몬은 사라졌다……"
+			CALL CLEAR_TILE_ID, 9024
+			CALL SHOW_PICTURE, "D"
+			;ED用フラグ
+			ダンジョンフラグ:55:99 = 1
+		ENDIF
+		CALL MESSAGE_WINDOW_D, "", @"＞%마스터가% 시바르바를 탈출할 무렵에는 /＞시바르바…아니 스마루 시는 지상으로 돌아왔다/＞또 날 수는 없을 것이다/＞사태 해결의 보상으로 \\300000이 입금되었다"
+		MONEY += 300000
+		FLAG:탈출 = 1
+ENDSELECT
+CALL MAKE_FLOOR, FLAG:현던전
+
+;=====================
+;メッセンジャー
+;=====================
+@TILE_MARK_COMMON_55_8, ARG, ARG:1, ARG:2
+SETCOLOR 0x00ff00
+RESULTS = ｍ
+@MESSAGE_55
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 0
+	CASE 100
+ENDSELECT
+;=======================================================================
+;인카운트율
+;=======================================================================
+@ENCOUNT_RATE_55
+IF FLAG:미조우걸음수 <= 5
+	FLAG:인카운트율 = 0
+ELSE
+	FLAG:인카운트율 = 10 + (FLAG:미조우걸음수-5) * 3
+ENDIF
+;=======================================================================
+;必要レベル目安
+;推奨LV 雑魚最低LV 雑魚最高LV ボスLV 
+;=======================================================================
+@GET_DUNGEON_LV_55
+RETURN 55, 56, 60, 70
+;=======================================================================
+;エンカウント処理
+;=======================================================================
+@CHECK_ENCOUNT_55
+IF RAND:100 < FLAG:인카운트율
+	IF !RAND:4 && FLAG:현M < 5
+		SELECTCASE RAND:100
+			CASE IS < 10
+				CALL SET_ENEMY,7, [[キャラ:Ｓ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,8, [[キャラ:Ｍ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,9, [[キャラ:Ｍ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,10, [[キャラ:Ｍ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,11, [[キャラ:Ｓ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,14, [[キャラ:코만단트]], 56 + RAND:2 * 3, 0, , 1
+			CASE IS < 30
+				CALL SET_ENEMY,7, [[キャラ:Ｓ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,8, [[キャラ:Ｓ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,9, [[キャラ:Ｓ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,10, [[キャラ:Ｓ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,11, [[キャラ:Ｓ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,13, [[キャラ:Ｓ슛체]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,14, [[キャラ:코만단트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,15, [[キャラ:Ｓ슛체]], 56 + RAND:2 * 3, 0, , 1
+			CASE IS < 45
+				CALL SET_ENEMY,7, [[キャラ:Ｍ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,8, [[キャラ:Ｍ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,9, [[キャラ:Ｍ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,10, [[キャラ:Ｍ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,11, [[キャラ:Ｍ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,13, [[キャラ:Ｓ슛체]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,14, [[キャラ:코만단트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,15, [[キャラ:Ｓ슛체]], 56 + RAND:2 * 3, 0, , 1
+			CASE IS < 60
+				CALL SET_ENEMY,7, [[キャラ:Ｍ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,8, [[キャラ:Ｍ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,9, [[キャラ:Ｍ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,10, [[キャラ:Ｍ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,11, [[キャラ:Ｍ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,13, [[キャラ:Ｖ크래프트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,14, [[キャラ:코만단트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,15, [[キャラ:Ｖ크래프트]], 56 + RAND:2 * 3, 0, , 1
+			CASE IS < 75
+				CALL SET_ENEMY,8, [[キャラ:Ｓ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,9, [[キャラ:Ｓ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,10, [[キャラ:Ｓ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,13, [[キャラ:Ｖ크래프트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,14, [[キャラ:코만단트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,15, [[キャラ:Ｖ크래프트]], 56 + RAND:2 * 3, 0, , 1
+			CASE IS < 90
+				CALL SET_ENEMY,7, [[キャラ:Ｍ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,8, [[キャラ:Ｓ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,9, [[キャラ:Ｓ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,10, [[キャラ:Ｓ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,11, [[キャラ:Ｍ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,13, [[キャラ:Ｓ슛체]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,14, [[キャラ:코만단트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,15, [[キャラ:Ｖ크래프트]], 56 + RAND:2 * 3, 0, , 1
+			CASEELSE
+				CALL SET_ENEMY,7, [[キャラ:Ｍ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,8, [[キャラ:Ｓ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,9, [[キャラ:Ｓ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,10, [[キャラ:Ｓ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,11, [[キャラ:Ｍ졸다트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,12, [[キャラ:Ｓ슛체]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,13, [[キャラ:Ｓ슛체]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,14, [[キャラ:코만단트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,15, [[キャラ:Ｖ크래프트]], 56 + RAND:2 * 3, 0, , 1
+				CALL SET_ENEMY,16, [[キャラ:Ｖ크래프트]], 56 + RAND:2 * 3, 0, , 1
+		ENDSELECT
+		CALL ADJUST_IMPERIAL
+	ELSE
+		ダンジョンフラグ:(FLAG:현던전):1 = RAND:2 ? 1 # 0
+	ENDIF
+	RETURN 1
+ELSE
+	FLAG:미조우걸음수 += 1
+	RETURN 0
+ENDIF
+
+@SET_ENEMY_STATUS_55, L_ENEMY
+#DIM DYNAMIC L_ENEMY
+CALL ADJUST_IMPERIAL, L_ENEMY
+
+;=======================================================================
+;敵の種族の種類数
+;=======================================================================
+@CLASS_NUM_55
+RETURN CLASS_NUM_COMMON("最上級")
+;=======================================================================
+;敵の総数
+;ARGは出現する敵の種類です
+;=======================================================================
+@ENEMY_NUM_55, ARG
+RETURN ENEMY_NUM_COMMON("最上級", ARG)
+;=======================================================================
+;敵の種類
+;=======================================================================
+@ENEMY_55, ARG
+IF FLAG:현M < 5
+	SELECTCASE RAND:100
+		CASE IS < 20
+			RETURN [[キャラ:키메라]], 58
+		CASE IS < 40
+			RETURN [[キャラ:발키리]], 56
+		CASE IS < 60
+			RETURN [[キャラ:퀸메이브]], 58
+		CASE IS < 70
+			RETURN [[キャラ:테스카틀리포카]], 58
+		CASE IS < 90
+			RETURN [[キャラ:체르노보그]], 57
+		CASEELSE
+			RETURN [[キャラ:위칠로포치틀리]], 57
+	ENDSELECT
+ELSE
+	IF ダンジョンフラグ:(FLAG:현던전):1 == 1
+		SELECTCASE RAND:100
+			CASE IS < 30
+				RETURN [[キャラ:Ｍ첸타오아]], 61
+			CASE IS < 60
+				RETURN [[キャラ:헬제엔]], 61
+			CASE IS < 80
+				RETURN [[キャラ:친위대]], 63
+			CASEELSE
+				RETURN [[キャラ:메탈・드랏헤]], 64
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:100
+			CASE IS < 20
+				RETURN [[キャラ:화조]], 64
+			CASE IS < 40
+				RETURN [[キャラ:퀴벨레]], 62
+			CASE IS < 55
+			;キンマモン
+				RETURN [[キャラ:킨마몬]], 62
+			CASE IS < 70
+				RETURN [[キャラ:고모리]], 61
+			CASE IS < 80
+				RETURN [[キャラ:네르갈]], 62
+			CASE IS < 90
+				RETURN [[キャラ:헤임달]], 61
+			CASEELSE
+				RETURN [[キャラ:무르무르]], 61
+		ENDSELECT
+	ENDIF
+ENDIF
+
+;----------------------------------------------
+;ボロンティック
+;스킬1 1:프레이다인 2;이클립스미러 3:闇のフォーミラーバー 4:피의디포즈 5:테라포츈
+;스킬2 1:다크노바사이저 2:부흐다인 3:마그다인 4:아쿠아다인 5:갈다인
+;스킬3 1:메갈로파이어 2:절대영도 3:헬데저트 4:멜스트롬 5:스톰나이트메어
+;
+;２はスキル３が絶対零度なので純粋に4種攻撃
+;それ以外は即死スキルを低確率・全体スキルをやや低確率で撃ってくる
+;
+;四天王同様の連戦仕様
+;それぞれの使用相性の幅は狭いので対策してるキャラなら一人撃破も容易
+;ただ対策なしで即死系にひっかかると崩れかねないので注意か
+;
+;即死防ぐだけならテトラが有効だけど呪殺にひっかかるからガードエンジェルか
+;まぁ人間はきつい気がする
+;---------------------------------------------
+@SET_ACTION_ボロンティック, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+IF CFLAG:ARG:행동한횟수 == 0
+	SELECTCASE RAND:100
+		CASE IS < 30
+			CFLAG:ARG:입력행동 = 0
+		CASE IS < 60
+			CFLAG:ARG:입력행동 = ABL:ARG:스킬2
+		CASE IS < 80
+			CFLAG:ARG:입력행동 = ABL:ARG:스킬1
+		CASEELSE
+			CFLAG:ARG:입력행동 = ABL:ARG:스킬3
+	ENDSELECT
+ELSE
+	SELECTCASE RAND:100
+		CASE IS < 40
+			CFLAG:ARG:입력행동 = 0
+		CASE IS < 80
+			CFLAG:ARG:입력행동 = ABL:ARG:스킬2
+		CASEELSE
+			CFLAG:ARG:입력행동 = ABL:ARG:스킬1
+	ENDSELECT
+ENDIF
+;アクション実行不能
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+@SET_ACTION_ボロンティック２, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+SELECTCASE RAND:100
+	CASE IS < 30
+		CFLAG:ARG:입력행동 = 0
+	CASE IS < 60
+		CFLAG:ARG:입력행동 = ABL:ARG:스킬2
+	CASE IS < 80
+		CFLAG:ARG:입력행동 = ABL:ARG:스킬1
+	CASEELSE
+		CFLAG:ARG:입력행동 = ABL:ARG:스킬3
+ENDSELECT
+;アクション実行不能
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+	
+;----------------------------------------------
+;フューラー
+;----------------------------------------------
+@SET_ACTION_フューラー, ARG
+#LOCALSIZE 3
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+SIF 現HP割合(ARG) <= 25
+	CFLAG:ARG:행동횟수 = 3
+IF !TFLAG:적오메가클러스터
+	CFLAG:ARG:입력행동 = [[스킬:오메가클러스터]]
+ELSEIF CFLAG:ARG:１more플래그 > 0
+	CFLAG:ARG:입력행동 = [[스킬:성궤]]
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	;聖杯のクール制御
+	TFLAG:435++
+	;波紋チェック
+	LOCAL:1 = 0
+	;ンダは-8まで容認
+	SIF MINARRAY(CFLAG:ARG:0, GETNUM(CFLAG, "공격강화"), GETNUM(CFLAG, "BS부착률강화") + 1) < -8
+		LOCAL:1 = 1
+	;味方のうち一人から判定する
+	LOCAL = POS(RAND(1, 7))
+	IF LOCAL >= 0
+		;カジャは8まで容認
+		SIF MAXARRAY(CFLAG:LOCAL:0, GETNUM(CFLAG, "공격강화"), GETNUM(CFLAG, "BS부착률강화") + 1) > 8
+			LOCAL:1 = 1
+		;反射も波紋対象
+		SIF CFLAG:LOCAL:물리반사플래그 || CFLAG:LOCAL:마법반사플래그
+			LOCAL:1 = 2
+	ENDIF
+	;波紋フラグが立っている時
+	IF (LOCAL:1 == 1 && RAND:2) || (LOCAL:1 == 2 && !RAND:3)
+		CFLAG:ARG:입력행동 = [[스킬:포말의파문]]
+		TFLAG:435 += 3
+	;1/3で反射は聖櫃送り
+	ELSEIF LOCAL:1 == 2 && RAND:2
+		CFLAG:ARG:입력행동 = [[스킬:성궤]]
+	ELSE
+		SELECTCASE RAND:100
+			CASE IS < 50
+				CFLAG:ARG:입력행동 = [[스킬:성창]]
+			CASE IS < 75
+				CFLAG:ARG:입력행동 = [[스킬:ＭＧ３４]]
+			CASEELSE
+				CFLAG:ARG:입력행동 = [[스킬:성궤]]
+		ENDSELECT
+	ENDIF
+ELSEIF CFLAG:ARG:행동한횟수 == 1
+	SELECTCASE RAND:100
+		CASE IS < 50
+			;聖杯はクール期間がある
+			IF TFLAG:435 < 3
+				CFLAG:ARG:입력행동 = [[스킬:성창]]
+			ELSE
+				CFLAG:ARG:입력행동 = [[스킬:성배]]
+				TFLAG:435 = 0
+			ENDIF
+		CASE IS < 75
+			CFLAG:ARG:입력행동 = [[스킬:ＭＧ３４]]
+		CASEELSE
+			CFLAG:ARG:입력행동 = [[스킬:브릴블리츠]]
+	ENDSELECT
+ELSE
+	SELECTCASE RAND:100
+		CASE IS < 25
+			CFLAG:ARG:입력행동 = [[스킬:성창]]
+		CASE IS < 50
+			CFLAG:ARG:입력행동 = [[스킬:ＭＧ３４]]
+		CASE IS < 75
+			CFLAG:ARG:입력행동 = [[스킬:성궤]]
+		CASEELSE
+			CFLAG:ARG:입력행동 = [[스킬:브릴블리츠]]
+	ENDSELECT
+ENDIF
+
+;アクション実行不能
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+
+;=======================================================================
+;輪姦参加悪魔
+;=======================================================================
+@DUNGEON_RAPE_DEVIL_55
+;ランダムにどの悪魔が出るか決定
+;RETURN CSV番号 , 人数 , レベル
+IF ダンジョンフラグ:(FLAG:현던전):1 == 1 && FLAG:현M >= 5
+	SELECTCASE RAND:4
+		CASE 0
+			RETURN [[キャラ:Ｍ첸타오아]] , 3 + RAND:10 , CSVBASE([[キャラ:Ｍ첸타오아]] , GETNUM(BASE , "LV") , 0) + RAND:3
+		CASE 1
+			RETURN [[キャラ:헬제엔]] , 3 + RAND:10 , CSVBASE([[キャラ:헬제엔]] , GETNUM(BASE , "LV") , 0) + RAND:3
+		CASE 2
+			RETURN [[キャラ:친위대]] , 3 + RAND:10 , CSVBASE([[キャラ:친위대]] , GETNUM(BASE , "LV") , 0) + RAND:3
+		CASE 3
+			RETURN [[キャラ:메탈・드랏헤]] , 3 + RAND:10 , CSVBASE([[キャラ:메탈・드랏헤]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	ENDSELECT
+ELSEIF ダンジョンフラグ:(FLAG:현던전):1 == 0 && FLAG:현M >= 5
+	SELECTCASE RAND:4
+		CASE 0
+			RETURN [[キャラ:퀴벨레]] , 3 + RAND:10 , CSVBASE([[キャラ:퀴벨레]] , GETNUM(BASE , "LV") , 0) + RAND:3
+		CASE 1
+			RETURN [[キャラ:네르갈]] , 3 + RAND:10 , CSVBASE([[キャラ:네르갈]] , GETNUM(BASE , "LV") , 0) + RAND:3
+		CASE 2
+			RETURN [[キャラ:헤임달]] , 3 + RAND:10 , CSVBASE([[キャラ:헤임달]] , GETNUM(BASE , "LV") , 0) + RAND:3
+		CASE 3
+			RETURN [[キャラ:무르무르]] , 3 + RAND:10 , CSVBASE([[キャラ:무르무르]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	ENDSELECT
+ELSE
+	SELECTCASE RAND:3
+		CASE 0
+			RETURN [[キャラ:테스카틀리포카]] , 3 + RAND:10 , CSVBASE([[キャラ:테스카틀리포카]] , GETNUM(BASE , "LV") , 0) + RAND:3
+		CASE 1
+			RETURN [[キャラ:체르노보그]] , 3 + RAND:10 , CSVBASE([[キャラ:체르노보그]] , GETNUM(BASE , "LV") , 0) + RAND:3
+		CASE 2
+			RETURN [[キャラ:위칠로포치틀리]] , 3 + RAND:10 , CSVBASE([[キャラ:위칠로포치틀리]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	ENDSELECT
+ENDIF

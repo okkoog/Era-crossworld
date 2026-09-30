@@ -1,0 +1,291 @@
+﻿;-------------------------------------------------
+;애무시킨다
+;愛撫系コマンド　レベル2
+;-------------------------------------------------
+@CHECK_COM_ABLE99
+;愛撫実行判定
+;下着だけか上着だけでないとダメ
+;SIF (TEQUIP:PLAYER:음순노출 != -1 && TEQUIP:PLAYER:Ｃ촉각 == 0 )|| (TEQUIP:PLAYER:유방노출 != -1 && TEQUIP:PLAYER:유방촉각 == 0)
+;	RETURN 0
+;将来的には服の上からでも触らせたいね
+;とりあえず服の上からでも触れるように(2014/01/13)
+
+;口が使えないとダメ
+SIF !USE_MOUTH(TARGET)
+	RETURN 0
+
+;手が使える
+SIF !USE_HAND(TARGET)
+	RETURN 0
+
+;主導権があって手と口が使えれば優先的に使える
+SIF TEQUIP:주도권 && USE_HAND(TARGET) && USE_MOUTH(TARGET)
+	RETURN 1
+
+RETURN 1
+
+
+@ACT_COM99
+
+PRINTL 애무시킨다
+TSTR:0 = 애무시킨다
+;CALL KOJO_MESSAGE_COM
+
+;調教対象→調教者
+TFLAG:28 = 1
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 5
+DOWNBASE:TARGET:기력 += 50
+
+SOURCE:PLAYER:쾌Ｃ = 80
+SOURCE:PLAYER:쾌Ｂ = 80
+SOURCE:PLAYER:성행위 = 60
+SOURCE:PLAYER:노출 = 25
+SOURCE:PLAYER:불결 = 25
+SOURCE:TARGET:쾌Ｃ = 30
+SOURCE:TARGET:정애 = 50
+SOURCE:TARGET:성행위 = 60
+SOURCE:TARGET:일탈 = 30
+SOURCE:TARGET:반감 = 15
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;抑圧、抵抗持ちには、抑鬱ソース追加
+SIF TALENT:억압 || TALENT:저항
+	SOURCE:TARGET:울굴 += 40
+
+;舌を使う調教では、調教者の舌使いによって、快感のソース増加
+;IF TALENT:PLAYER:52
+;	TIMES SOURCE:TARGET:쾌Ｃ , 1.50
+;	TIMES SOURCE:TARGET:쾌Ｂ , 1.50
+;	TIMES SOURCE:TARGET:정애 , 1.50
+;ENDIF
+;猫舌は減少
+;IF TALENT:PLAYER:54
+;	TIMES SOURCE:TARGET:쾌Ｃ , 0.75
+;	TIMES SOURCE:TARGET:쾌Ｂ , 0.75
+;	TIMES SOURCE:TARGET:정애 , 0.75
+;ENDIF
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;IF (STAIN:TARGET:0 >= 2 && (STAIN:TARGET:0 != 16 && STAIN:TARGET:0 != 17) && ASSIPLAY == 0 && TALENT:MASTER:64 == 0) || TEQUIP:20
+IF !PLAY_KISS(PLAYER, TARGET)
+;奴隷の口の汚れがあるときキスはない（愛液と母乳よごれはＯＫ、汚れ無視か助手調教時は問題なし）
+;ボールギャグ使用中もなし
+	SOURCE:TARGET:불결 = 0
+;	SOURCE:TARGET:쾌Ｃ /= 2
+	SOURCE:TARGET:정애 /= 4
+	SOURCE:TARGET:액체 /= 2
+ELSE
+	;악취둔감
+	SIF TALENT:악취둔감
+		SOURCE:TARGET:불결 /= 4
+	;악취민감
+	SIF TALENT:악취민감
+		SOURCE:TARGET:불결 *= 3
+	;自尊心
+	SIF TALENT:프라이드높음
+		SOURCE:TARGET:불결 *= 2
+	IF STAIN:PLAYER:0
+	;主人の口の汚れがあると不潔150%
+		SOURCE:TARGET:불결 *= 3
+		SOURCE:TARGET:불결 /= 2
+	ENDIF
+	SIF TALENT:PLAYER:혀놀림
+		TIMES SOURCE:TARGET:정애 , 1.50
+	SIF TALENT:PLAYER:고양이혀
+		TIMES SOURCE:TARGET:정애 , 0.75
+	;奴隷の口⇔調教者の口の汚れが移動
+	CALL MOVE_STAIN("입", TARGET, "입", PLAYER)
+ENDIF
+CALL MOVE_STAIN("가슴", TARGET, "손", PLAYER)
+
+;-------------------------------------------------
+;吸精処理
+;-------------------------------------------------
+IF CFLAG:PLAYER:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:3+1) * BASE:LV
+	CALL DRAIN_MAG,PLAYER,LOCAL,TARGET
+ELSEIF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:3+1) * BASE:LV
+	CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+ENDIF
+
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+A = 5
+IF IS_LESBIAN(TARGET,PLAYER)
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, PLAYER)
+ELSEIF IS_GAY(TARGET,PLAYER)
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+ENDIF
+
+;調教者が猫舌持ちの場合は、調教者に嗜虐快楽経験を追加
+IF TALENT:PLAYER:54
+	CALL ADDS_EXP("가학쾌락경험", 1, PLAYER)
+ENDIF
+
+;依存度ベクトル
+TFLAG:33 = 2
+
+RETURN 1
+;===================================================
+;実行時の台詞
+;===================================================
+@MESSAGE_COM99
+PRINTFORM %PLAYER는%
+IF RAND:2 == 0
+	PRINTFORM %TARGET의% 손을 잡고,
+ELSE
+	PRINTFORM %TARGET에게% 명령하여, 그 손으로
+ENDIF
+	IF TALENT:PLAYER:유아체형
+		IF RAND:2 == 0
+			IF TALENT:유아체형
+				PRINTFORM %TARGET과% 비슷한 크기의 몸
+			ELSEIF TALENT:소인체형
+				PRINTFORM %TARGET보다%는 큰 몸
+			ELSEIF TALENT:거체
+				PRINTFORM %TARGET을% 한 손에 쥘 수 있을 만큼 거대한 몸
+			ELSEIF TALENT:큰체형
+				PRINTFORM %TARGET보다% 한 바퀴 이상 작은 몸
+			ELSE
+				PRINTFORM %TARGET보다% 한 바퀴는 작은 몸
+			ENDIF
+		ELSE
+			IF TALENT:PLAYER:소년／소녀
+				PRINT 초등학생 같은 몸
+			ELSE
+				IF RAND:2 == 0
+					PRINT 어린아이 같은 몸
+				ELSE
+					PRINT 어린 체구
+				ENDIF
+			ENDIF
+		ENDIF
+	ELSEIF TALENT:PLAYER:소인체형
+		IF RAND:2 == 0
+			PRINT 페트병 크기만 한 몸
+		ELSE
+			PRINT 맥주병 크기만 한 몸
+		ENDIF
+	ELSEIF TALENT:PLAYER:거체
+		IF RAND:2 == 0
+			PRINT 인간을 초월한 체구
+		ELSE
+			PRINT 격이 다른 체구
+		ENDIF
+	ELSEIF TALENT:PLAYER:큰체형
+		IF RAND:2 == 0
+			PRINT 다부진 몸
+		ELSE
+			PRINT 큼직한 몸
+		ENDIF
+	ELSE
+		IF RAND:2 == 0
+			PRINT 자신의 몸
+		ELSE
+			PRINT 자신의 사지
+		ENDIF
+	ENDIF
+	PRINT 의
+IF RAND:2 == 0
+	IF TALENT:PLAYER:임신
+		SIF TALENT:PLAYER:소년／소녀
+			PRINT 이면서도
+		PRINTL 임신하여 둥그스름해진 아랫배, 그리고
+	ENDIF
+	IF TALENT:PLAYER:절벽
+		PRINT 가슴팍
+	ELSEIF TALENT:PLAYER:빈유
+		PRINT 납작한 가슴
+	ELSEIF TALENT:PLAYER:거유
+		PRINT 풍만한 가슴
+	ELSEIF TALENT:PLAYER:폭유 || TALENT:PLAYER:마유
+		IF TALENT:PLAYER:유아체형 || TALENT:PLAYER:소인체형
+			PRINTFORM 그 몸과 어울리지 않게 크고 풍만한 가슴
+		ELSE
+			PRINT 넘쳐흐를 정도로 풍만한 가슴
+		ENDIF
+	ELSE
+		IF RAND:2 == 0
+			PRINT 
+		ELSE
+			PRINT 가슴
+		ENDIF
+	ENDIF
+	PRINT , 엉덩이, 목덜미 등을
+	IF RAND:3 == 0
+		PRINT 자유롭게
+	ELSEIF RAND:2 == 0
+		PRINT 정성스럽게
+	ELSE
+		PRINT 마음껏
+	ENDIF
+	IF RAND:2 == 0
+		PRINTW 애무하게 했다…
+	ELSE
+		PRINTW 만지게 했다…
+	ENDIF
+ELSE
+	SIF TALENT:PLAYER:임신
+		PRINT 부풀어 오른 배, 팽팽해진 유방, 그리고
+	IF TALENT:PLAYER:절벽
+		PRINT 납작한
+	ELSEIF TALENT:PLAYER:빈유
+		PRINT 완만한
+	ELSEIF TALENT:PLAYER:거유
+		PRINT 풍만한
+	ELSEIF TALENT:PLAYER:폭유 || TALENT:PLAYER:마유
+		PRINT 풍만한
+	ELSE
+		PRINT 부드러운
+	ENDIF
+
+	IF TALENT:PLAYER:후타나리
+		PRINT 가슴이나 은밀한 부위, 육괴를
+	ELSEIF HAVE_VAGINA(PLAYER)
+		PRINT 가슴, 바기나를
+	ELSEIF HAVE_PENIS(PLAYER)
+		PRINT 가슴, 페니스를
+	ENDIF
+	IF TALENT:연모 || TALENT:음란 || TALENT:복종 || TALENT:친애 || TALENT:창부 || TALENT:예속
+		IF RAND:3 == 0
+			PRINT 그 욕망대로
+		ELSEIF RAND:2 == 0
+			PRINT 좋아하는 대로
+		ELSE
+			PRINT 자유롭게
+		ENDIF
+	ELSE
+		IF RAND:3 == 0
+			PRINT 억지로
+		ELSEIF RAND:2 == 0
+			PRINT 강제로
+		ELSE
+			PRINT 혐오 어린 표정 그대로
+		ENDIF
+	ENDIF
+	IF RAND:2 == 0
+		PRINTW 애무하게 했다…
+	ELSE
+		PRINTW 만지게 했다…
+	ENDIF
+ENDIF
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_99
+RETURN COMTYPE("愛撫系")
+

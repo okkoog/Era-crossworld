@@ -1,0 +1,918 @@
+﻿
+;=======================================================================
+;スタート時イベント
+;=======================================================================
+@EVENT_DUNGEON_START_103
+#DIM LCOUNT
+PRINTL
+DRAWLINE
+
+CALL SET_GUEST_D103
+IF ダンジョンフラグ:(FLAG:현던전):5 == 0
+;攻略開始時
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞갱도 깊은 곳, 무너진 바위 너머에 있던 것은/온통 붉은 용암 바다, 그리고 당연하다는 듯 피어오르는/무시무시한 열기였다"
+	CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞엄청난 열기와… 마족의 살기다/역시 여기가… 전설의 종말이라 불리는 장소인가"
+	CALL MESSAGE_WINDOW_D_ICON, [[キャラ:데스포르카_DR]], "CSV", , "데스포르카", "＞이것이… 마왕님의…! 무시무시한 원념이다…/이건 내게도 향하고 있는 거겠지/정말이지 몸서리가 쳐지네"
+	CALL MESSAGE_WINDOW_D_ICON, [[キャラ:브루_KE]], "CSV", , "브루", "＞관광명소로 삼기에는… 조금 너무 흉흉할지도 모르겠군/게다가 아이나 노인이 여기까지 오기엔 너무 벅찰 테고"
+	CALL MESSAGE_WINDOW_D_ICON, [[キャラ:사미다레_KE]], "CSV", , "사미다레", "＞그때 마족의 침공에는 마왕이 없었지…/즉 이제부터 싸울 상대는 천 년 동안 힘을 비축한 마왕이라는 뜻이다/…투지가 끓어오르는군!"
+	CALL MESSAGE_WINDOW_D_ICON, [[キャラ:빌로우_KE]], "CSV", , "빌로우", "＞여기서 끝내지 않으면 인류는 천 년 전으로 되돌아가는 거야/간신히 보호받은 마족들도 몰살당하고 말겠지/저기 있는 마족의 괴짜를 위해서라도 극락왕생시켜 줘야겠어!"
+	CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아벤트_KE]], "CSV", , "아벤트", "＞그렇다면 할 일은 하나뿐이다!/냉큼 여길 돌파해서 마왕님인지 뭔지 때려죽이자고!/우선 내가 쳐들어갈 테니까! 떨어지지 말라고!"
+	CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞내 영혼은 인류를 해치는 마족과 마왕을 쓰러뜨리기 위해서야…!/그 참극을, 전쟁을 되풀이하지 않기 위해서라도…/어떻게 해서든 여기서 막겠어…!!!"
+	CALL MESSAGE_WINDOW_D_ICON, [[キャラ:레스터_KE]], "CSV", , "레스터", "＞하아아… 여기까지 왔으면 돌아갈 순 없겠지/내가 할 수 있는 일은 적지만…/가능한 한 서포트할게"
+	CALL MESSAGE_WINDOW_D_ICON, [[キャラ:스티아라_KE]], "CSV", , "스티아라", "＞자 가요, 루이스!/이제 그 누구에게도… 인류의 절망을 보여선 안 돼요!"
+	CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞아아… 물론이다…!/데스포르카, 그리고 협력자 공… 당신들도 믿고 있습니다"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞게오루이스의 시선에 굳게 고개를 끄덕이고, 앞으로 나아갈 좁은 바윗길을 응시했다"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞마왕 토벌 파티의 편성을 실시합니다"
+	CALL RECONSTRUCTION_DUNGEON_103
+	CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞자, 가자!/우리가… 마왕을 토벌하는 거다!!"
+
+ELSE
+	;攻略再開
+	;聖剣GET後、ゲストのグイーネには聖剣が装備される
+	SIF ダンジョンフラグ:(FLAG:현던전):7 == 1 && CFLAG:GETCHARA([[キャラ:귀네_KE]]):게스트가입플래그 == 1
+		EQUIP:GETCHARA([[キャラ:귀네_KE]]):검 = GETNUM(ITEM, "KE＿성검")
+
+	CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞푹 쉬었으려나…/파티 재점검은 괜찮은가?"
+	CALL RECONSTRUCTION_DUNGEON_103
+	CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞좋아…/그럼 가볼까!"
+
+ENDIF
+CALL MAKE_FLOOR, FLAG:현던전
+
+;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@CAN_ENTER_103,ARG,ARG:1
+IF DA:(ARG):(ARG:1) == 8019
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞용이 보물을 지키고 있는 것 같다/싸움을 걸겠습니까?"
+	CALL INPUT_YN_D
+	SIF RESULT
+		RETURN 0
+ENDIF
+CALL CAN_ENTER,ARG,ARG:1
+RETURN RESULT
+;=======================================================================
+;[5]調べる　実行時のイベント
+;=======================================================================
+@EVENT_CHECK_DUNGEON_103
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 10
+;==========
+;出口の処理
+;==========
+;	CASE 8
+;========
+;宝の処理
+;========
+	CASE 3
+		CALL TRESURING_CALLING_103
+		RETURN 1
+;==========
+;イベントの処理
+;==========
+	CASE 4
+		CALL EVENTING_CALLING_103
+		RETURN 1
+;=======
+;階段
+;=======
+	CASE 6
+		CALL DUNGEON_UPSTAIRS_ID, (FLAG:현M+1) , (FLAG:현M+1) * 1000 + 7
+		RETURN 1
+	CASE 7
+		CALL DUNGEON_DOWNSTAIRS_ID, (FLAG:현M-1) , (FLAG:현M-1) * 1000 + 6
+		RETURN 1
+;==========
+;イベントの処理
+;==========
+	CASE 9
+		CALL TILE9_EVENT_DUNGEON_103
+		RETURN 1
+	CASEELSE
+		PRINTFORML 
+		PRINTFORMW 　　　　＞아무것도 없는 것 같다 
+		RETURN 0
+ENDSELECT
+
+;=======================================================================
+;タイル進入時のイベント
+;=======================================================================
+@EVENT_ENTER_DUNGEON_103,ARG
+;ARG = 進入時の向き　0の場合ワープなど
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 10
+;==========
+;出口の処理
+;==========
+;	CASE 8
+;========
+;宝の処理
+;========
+	CASE 3
+		CALL TRESURING_CALLING_103
+		RETURN 1
+;==========
+;イベントの処理
+;==========
+	CASE 4
+		CALL EVENTING_CALLING_103
+		RETURN 1
+;=======
+;階段
+;=======
+	CASE 6
+		CALL DUNGEON_UPSTAIRS_ID, (FLAG:현M+1) , (FLAG:현M+1) * 1000 + 7
+		RETURN 1
+	CASE 7
+		CALL DUNGEON_DOWNSTAIRS_ID, (FLAG:현M-1) , (FLAG:현M-1) * 1000 + 6
+		RETURN 1
+;==========
+;矢印・イベントの処理
+;==========
+	CASE 9
+		CALL TILE9_EVENT_DUNGEON_103
+	RETURN 1
+ENDSELECT
+RETURN 0
+
+;=======================================================================
+;イベントまとめ
+;=======================================================================
+@EVENTING_CALLING_103
+#DIM LCOUNT
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 10
+	CASE 4
+		IF DA:(FLAG:현X):(FLAG:현Y) == 1004
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞앗…!/저건 설마 보물 아니겠어!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞…귀네의 나쁜 버릇이 시작됐군…/호기심이 많은 건 언제나 그렇지만…"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:데스포르카_DR]], "CSV", , "데스포르카", "＞…확실히 장식이 호화로운 상자로 보이긴 하지만…/이런 장소다, 내용물은 글쎄…"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:빌로우_KE]], "CSV", , "빌로우", "＞댁은 전에도 호되게 당했잖아…/또 미믹이라 해도 난 몰라?"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞내 보물을 향한 호기심은 멈출 수 없어!"
+
+			ダンジョンフラグ:(FLAG:현던전):9 = 1
+			ダンジョンフラグ:(FLAG:현던전):10 = 1
+			CALL REPLACE_TILE_DUNGEON_103, DA:(FLAG:현X):(FLAG:현Y), FLAG:현X, FLAG:현Y
+			CALL DUNGEON_WORP,1,11,5
+
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞그 누구도 연 흔적이 없고…/이 안의 보물은 손대지 않은 그대로라는 거지!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:데스포르카_DR]], "CSV", , "데스포르카", "＞…이봐 영웅… 이 녀석 안 말려도 되는 건가?/호기심이 앞서서 경계심이란 게 전혀 없잖아"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞…이렇게 된 귀네는 꼼짝도 안 해…/…뭐 무슨 일 생기면 커버해 주는 수밖에"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞그럼 열어버릴게~♪/뭐가 들어있을지 두근두근하네~♪"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞딸깍"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞놀랍게도 보물상자는 미믹이었다!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞…어머?"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:빌로우_KE]], "CSV", , "빌로우", "＞또 전이랑 똑같은 함정에 걸렸구만…/허리까지 삼켜져 버리고 참…"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아벤트_KE]], "CSV", , "아벤트", "＞또 미믹인가…/귀네 아가씨는 머리가 좋은 건지 나쁜 건지 모르겠단 말이지…"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:데스포르카_DR]], "CSV", , "데스포르카", "＞음, 뒤에서 적이 오고 있다!/거기 못 움직이는 보물 바보는 일단 내버려 둬!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞보, 보물 바보라니…"
+
+			FLAG:도주불가플래그 = 1
+			FLAG:선제기습취소 = 1
+
+			;一旦グイーネをパーティから外す
+			FOR LOCAL, 1, 7
+				LOCALS = 포지션{LOCAL} 
+				IF POS(LOCAL) == GETCHARA([[キャラ:귀네_KE]])
+					;ポジションから外す
+					CALL REMOVE_POSITION(LOCAL)
+					;グイーネがパーティに居たら外したフラグ
+					LOCAL:1 = 1
+				ENDIF
+			NEXT
+
+			CALL TRESURE_ENEMY_SET_103
+			CALL BATTLE_START
+
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:데스포르카_DR]], "CSV", , "데스포르카", "＞아직 더 온다!"
+
+			CALL TRESURE_ENEMY_SET_103
+			CALL BATTLE_START
+
+			FLAG:도주불가플래그 = 0
+			FLAG:선제기습취소 = 0
+
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞적을 격퇴한 후, 귀네를 미믹에게서 구출해냈다"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞미안해, 폐를 끼쳐버렸네…"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:브루_KE]], "CSV", , "브루", "＞그래서 보물인지 뭔지는 어땠어"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞보물…은…"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:데스포르카_DR]], "CSV", , "데스포르카", "＞이건… 10일(IL), 이군…/푼돈이다"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞으으…, 내 두근거림을 돌려줘…!"
+
+			;元々パーティに居たグイーネを空きポジションへ戻す
+			IF LOCAL:1 > 0
+				FOR LOCAL, 1, 7
+					LOCALS = 포지션{LOCAL} 
+					IF FLAG:LOCALS < 0
+						CALL INSERT_POSITION, LOCAL, GETCHARA([[キャラ:귀네_KE]])
+						LOCAL:1 = 0
+						BREAK
+					ENDIF
+				NEXT				
+			ENDIF
+
+			IF LOCAL:1 > 0
+				FOR LOCAL, 1, 7
+					LOCALS = 포지션{LOCAL} 
+					; 人間でもMASTERでもなければ外してそこに入れる
+					IF GET_ROLE_PROP("CAN_PUT_IN_COMP", POS(LOCAL))
+						;ポジションから外す
+						CALL REMOVE_POSITION(LOCAL)
+						CALL INSERT_POSITION, LOCAL, GETCHARA([[キャラ:귀네_KE]])
+						BREAK
+					ENDIF
+				NEXT				
+			ENDIF
+
+			ダンジョンフラグ:(FLAG:현던전):0 = 1
+			ダンジョンフラグ:(FLAG:현던전):9 = 2
+			ダンジョンフラグ:(FLAG:현던전):10 = 2
+			CALL REPLACE_TILE_DUNGEON_103, DA:(FLAG:현X + 1):(FLAG:현Y), FLAG:현X + 1, FLAG:현Y
+
+		ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 1014 && ダンジョンフラグ:(FLAG:현던전):9 == 2
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:사미다레_KE]], "CSV", , "사미다레", "＞어랏?/구멍 속에 뭔가 있다구!"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞몬스터가 나온 구멍에서, 진기의 갑옷을 손에 넣었다!"
+
+			;なんかいい感じの強めの鎧ないかな…
+			ITEM:신기의갑옷 += 1
+
+			ダンジョンフラグ:(FLAG:현던전):9 = 3
+			
+		ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 1024 && ダンジョンフラグ:(FLAG:현던전):10 == 2
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:레스터_KE]], "CSV", , "레스터", "＞…응?/구멍 안에 아이템이 있어…?"
+			
+			
+			LOCAL = GETNUM(ITEM, "소마")
+			CALL CHECK_ITEMMAX,LOCAL
+			IF RESULT == 0
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞몬스터가 나온 구멍에서, 소마를 손에 넣었다!"
+				CALL GET_ITEM,LOCAL,1
+			ELSE
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞소마를 발견했지만 더 이상 지닐 수 없었다"
+			ENDIF
+
+			ダンジョンフラグ:(FLAG:현던전):10 = 3
+
+		ELSEIF FLAG:현M == 8 && ダンジョンフラグ:(FLAG:현던전):6 == 0
+			;トレジャーハンターグイーネ
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞꺄아아아아아앗!!!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:데스포르카_DR]], "CSV", , "데스포르카", "＞우왓!?"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞왜, 왜 그래 귀네?"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞비, 비싸 보이는 검이 꽂혀있어어어!/저건 상당한 보물로 보여!/빨리 가지러 가자!!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:빌로우_KE]], "CSV", , "빌로우", "＞거대한 용이 가로막고 있는데/안중에도 없는 모양이구만"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아벤트_KE]], "CSV", , "아벤트", "＞이거 마그마 속에 보물이라도 발견하면 맨발로라도 가지러 갈 기세인데?"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:데스포르카_DR]], "CSV", , "데스포르카", "＞보물에 사족을 못 쓴다는 건가…/그럴싸하게 꾸며놓으면 쉽게 함정에 걸리겠군…"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞이렇게 되면 귀네는 안 멈추니까…/혼자 돌격하기 전에 다 같이 용을 쓰러뜨리자…"
+			
+			ダンジョンフラグ:(FLAG:현던전):6 = 1
+			CALL REPLACE_TILE_DUNGEON_103, DA:(FLAG:현X):(FLAG:현Y), FLAG:현X, FLAG:현Y
+		ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 12004
+			FLAG:도주불가플래그 = 1
+			FLAG:선제기습취소 = 1
+			CALL SET_ENEMY,9,[[キャラ:마왕_KingExit]],90,0,1
+
+			CFLAG:(CHARANUM-1):행동횟수 = 2
+			;ゲストキャラの技構成上、かなり高頻度でCOOPが発生するのでHP盛らないとすぐ死んじゃう
+			CFLAG:(CHARANUM-1):ＨＰ보정 +=20000
+			CFLAG:(CHARANUM-1):ＭＰ보정 +=10000
+
+			CSTR:(CHARANUM-1):사고패턴 = 7508
+
+			CFLAG:(CHARANUM-1):불사신플래그 = 1
+
+			CALL SYNC_STATUS, (CHARANUM-1)
+			CALL HEALTH_CHARA, (CHARANUM-1)
+
+			CALL BATTLE_START
+
+			FLAG:도주불가플래그 = 0
+			FLAG:선제기습취소 = 0
+			
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞마왕의 최후를 지켜본 뒤, 문장의 전사들은 빛의 알갱이가 되어 흩어져 갔다"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞……우선 여길 나가요/이런 곳에 있다간 우리도 쓰러지고 말아요……!"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞게오루이스의 말을 계기로 빠른 걸음으로 용암 지대를 뒤로했다"
+			CALL 全ゲスト削除
+
+			FLAG:탈출 = 1
+			FLAG:탈출스킬금지 = 0
+		ENDIF
+
+	CASE 9
+		IF DA:(FLAG:현X):(FLAG:현Y) == 8009
+			;トレジャーハンターグイーネ
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞해냈다아아! 굉장한 광택과 장식!/이건 필시 이름 있는 검이 틀림없어!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:데스포르카_DR]], "CSV", , "데스포르카", "＞…꽤 가냘픈 검으로 보이는데…/전투에 썼다간 금세 부러져 버릴 것 같군…"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아벤트_KE]], "CSV", , "아벤트", "＞마족 아가씨 말대로야…/검은 부러지면 가치가 없어져 버리지"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞그런 건… 끄으으윽…!/상관없어… 끄으으응…!/보물인… 검이라면어어언…!!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:브루_KE]], "CSV", , "브루", "＞뭘 놀고 있는 거야?/냉큼 가져오라고"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞바닥에서어언…!!/안 뽑혀… 나간단 말이야아아아…!!!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:레스터_KE]], "CSV", , "레스터", "＞하하하/용암에 녹아 들러붙은 거 아닐까?/포기하는 편이 좋지 않을까"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞보물을 눈앞에 두고…!/포기한다는 선택지는…!!/없단 말이야아아아아앗!!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:데스포르카_DR]], "CSV", , "데스포르카", "＞무시무시한 집념이군…/그거잖아, 뽑는 데 자격이 필요하다든가 하는 그런 거 아닌가?"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:사미다레_KE]], "CSV", , "사미다레", "＞그럼 진짜로 보류구만!/주인을 가리는 검 따위 손에 넣을 수가 없지!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞그런… 내가 보물한테… 거절당하다니…/큭… 게오루이스… 한번 해봐…!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:데스포르카_DR]], "CSV", , "데스포르카", "＞포기를 모르는 녀석이군…"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞정말이지… 어쩔 수 없군/애초에 보물이라 쳐도 그 뒤에 어쩌려고 그래/골동품점에라도 팔라고…?"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "","＞쏙"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞아… 뽑혔다"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞보물 겟이야아아아아아아아아아아!!!!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:스티아라_KE]], "CSV", , "스티아라", "＞와아~!/축하드려요, 루이스!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:사미다레_KE]], "CSV", , "사미다레", "＞이런 곳에 박혀 있던 검이다, 무뎌져 있을지도 몰라/한번 시험 삼아 베어보고 나서 쓰라고"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞보, 보물로 몬스터를 베는 건 조금…"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:데스포르카_DR]], "CSV", , "데스포르카", "＞아무것도 못 베는 검 따위 어차피 가치 없잖아…/뭐… 그렇게 가냘픈 검으론 기대도 안 되지만"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞보, 보물인데…"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞　　　성검을 손에 넣었다!"
+
+			;聖剣GET
+			CALL GET_ITEMS, "KE＿성검", 1
+
+			;グイーネがゲストキャラなら聖剣を装備させる
+			SIF CFLAG:GETCHARA([[キャラ:귀네_KE]]):게스트가입플래그 == 1
+				EQUIP:GETCHARA([[キャラ:귀네_KE]]):검 = GETNUM(ITEM, "KE＿성검")
+
+			ダンジョンフラグ:(FLAG:현던전):7 = 1
+		ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 8019
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞간다…!!"
+			;宝を守る竜
+			FLAG:도주불가플래그 = 1
+			FLAG:선제기습취소 = 1
+			CALL SET_ENEMY,9,[[キャラ:수호룡]],80,0,1
+
+			CFLAG:(CHARANUM-1):ＨＰ보정 +=5000
+			CFLAG:(CHARANUM-1):ＭＰ보정 +=10000
+
+			CSTR:(CHARANUM-1):사고패턴 = 7507
+
+			CALL SYNC_STATUS, (CHARANUM-1)
+			CALL HEALTH_CHARA, (CHARANUM-1)
+
+			CALL BATTLE_START
+
+			FLAG:도주불가플래그 = 0
+			FLAG:선제기습취소 = 0
+
+			ダンジョンフラグ:(FLAG:현던전):8 = 1
+		ENDIF
+	CASEELSE
+ENDSELECT
+RETURN 1
+
+;=======================================================================
+;矢印・イベントの処理
+;=======================================================================
+@TILE9_EVENT_DUNGEON_103
+SELECTCASE FLAG:현M
+	CASE 0
+			CALL DUNGEON_WORP,9,4,7
+	CASE 1
+			CALL DUNGEON_WORP,2,2,4
+	CASE 2
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y)
+			CASE 2009
+				CALL DUNGEON_WORP,10,4,7
+			CASE 2019, 2039
+				CALL DUNGEON_WORP,7,2,9
+			CASE 2029
+				CALL DUNGEON_WORP,1,17,1
+			CASE 2049
+				CALL DUNGEON_WORP,3,2,7
+		ENDSELECT
+	CASE 3
+			CALL DUNGEON_WORP,2,22,15
+	CASE 4
+			CALL DUNGEON_WORP,5,2,5
+	CASE 5
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y)
+			CASE 5009
+				CALL DUNGEON_WORP,11,6,7
+			CASE 5019, 5029
+				CALL DUNGEON_WORP,4,18,2
+		ENDSELECT
+	CASE 6
+		;TODO 
+		CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞느껴진다…/마왕은 이 앞쪽에 있어"
+		CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞준비는 괜찮은가?/이 너머로 가면 이제 돌아올 수 없어/남은 일은 없는가?"
+		CALL INPUT_YN,"Yes","No"
+		IF RESULT == 0
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞좋은 대답이다…/좋아… 가자!"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞・・・・・・・・・・・・・・・・"
+			CALL DUNGEON_WORP,12,3,4
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞과연 그 존재는 압도적인 살기를 뿜어내며 그곳에 있었다/이미 파괴된 봉인이 여기저기 흩어진 가운데 사지에 쇠사슬 구속구를 찬/「마왕」이 그곳에 서 있었다"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:귀네_KE]], "CSV", , "귀네", "＞윽… 엄청난 마력과 살기…/이 녀석이…!…!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞아아, 틀림없어/이 녀석이 마왕이다…!!!"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞단단한 표면이 쇠사슬과 마찰하며 삐걱삐걱 소리를 내더니…/마왕이 이쪽을 인식했다"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "마왕", "＞나타났느냐… 인간 놈들…/그 괘씸한 힘을 지니고… 다시금 내 면전에 발을 들이느냐…/나의 봉인은 곧 파괴된다… 네놈들은… 첫 노예로서 써먹어 주마"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "마왕", "＞인간 놈들은 내게 사역되는 것이야말로 천명…/목숨을 갈아 넣어 봉사하거라… 노예의 후예들이여…/…누우…?"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞데스포르카가 마왕 앞으로 뚜벅뚜벅 걸어 나간다/그걸 보고 살짝 경계하는 아벤트의 어깨에 괜찮다며 말을 건넸다"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:데스포르카_DR]], "CSV", , "데스포르카", "＞…처음 뵙겠습니다, 일까요? 마왕님…/내게 엄청난 살기를 뿜어내고 계십니다만… 들었던 성격과는 전혀 딴판이군요/천 년 전부터 변해버리신 모양입니다"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "마왕", "＞…옛 마족… 네놈은 말살해 주마…!/내가 지배할 세상에 네놈은 불필요하다… 내 앞에서 사라져라…!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:데스포르카_DR]], "CSV", , "데스포르카", "＞나는 데스포르카, 당신의 사도였던 마족이다…/그 사지의 봉인을 깨부수고, 사도인 나를 말살하며, 인간을 노예로 삼는다…/어찌 됐든 그 생각은 변함없다… 그렇게 이해하면 되겠습니까?"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "마왕", "＞엎드려라… 인간…!/사라져라… 옛 마족…!/데스포르카… 네놈은 내 지배의 주춧돌, 그 첫 번째가 되는 것이다…!!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:데스포르카_DR]], "CSV", , "데스포르카", "＞그렇군, 교섭의 여지는 없겠어/하자, 게오루이스…/인간도 마족도, 여기서 지켜내겠어…!!"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞아아… 간다, 데스포르카!!/각오해라, 마왕!!"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "마왕", "＞오오오… 엎드려라아아아앗!!!!"
+			CALL DUNGEON_WORP,12,3,3
+		ELSEIF RESULT == 1
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "＞그런가, 알았다/혹독한 결전이 될 거야, 준비는 단단히 해"
+		ENDIF
+	CASE 7
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y)
+			CASE 7009
+				CALL DUNGEON_WORP,8,7,11
+				CALL FLOOR_ANALYZE
+			CASE 7019
+				CALL DUNGEON_WORP,2,22,3
+		ENDSELECT
+	CASE 8
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y)
+			;검
+			CASE 8009
+				CALL EVENTING_CALLING_103
+				CALL REPLACE_TILE_DUNGEON_103, DA:(FLAG:현X):(FLAG:현Y), FLAG:현X, FLAG:현Y
+			;竜
+			CASE 8019
+				CALL EVENTING_CALLING_103
+				CALL REPLACE_TILE_DUNGEON_103, DA:(FLAG:현X):(FLAG:현Y), FLAG:현X, FLAG:현Y
+			CASE 8029, 8039
+				CALL DUNGEON_WORP,7,10,2
+		ENDSELECT
+	CASE 9
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y)
+			CASE 9009
+				CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "정말이지, 끔찍한 열기로군…/여기는 몬스터도 나오지 않는 것 같으니/잠시 휴식이라도 취하고 갈까"
+				CALL EVENT_DUNGEON_TERMINAL_103
+			CASE 9019
+				CALL DUNGEON_WORP,0,11,2
+		ENDSELECT
+	CASE 10
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y)
+			CASE 10009
+				CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "정말이지, 끔찍한 열기로군…/여기는 몬스터도 나오지 않는 것 같으니/잠시 휴식이라도 취하고 갈까"
+				CALL EVENT_DUNGEON_TERMINAL_103
+			CASE 10019
+				CALL DUNGEON_WORP,2,12,2
+		ENDSELECT
+	CASE 11
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y)
+			CASE 11009
+				CALL MESSAGE_WINDOW_D_ICON, [[キャラ:게오루이스_KE]], "CSV", , "게오루이스", "정말이지, 끔찍한 열기로군…/여기는 몬스터도 나오지 않는 것 같으니/잠시 휴식이라도 취하고 갈까"
+				CALL EVENT_DUNGEON_TERMINAL_103
+			CASE 11019
+				CALL DUNGEON_WORP,5,8,2
+		ENDSELECT
+	CASEELSE
+ENDSELECT
+
+@TRESURE_ENEMY_SET_103
+SELECTCASE RAND:5
+	CASE 0
+		;マグマスラ!ジ×6
+		CALL SET_ENEMY,8,[[キャラ:마그마슬러지]],70,0,0,0
+		CALL SET_ENEMY,9,[[キャラ:마그마슬러지]],70,0,0,0
+		CALL SET_ENEMY,10,[[キャラ:마그마슬러지]],70,0,0,0
+		CALL SET_ENEMY,13,[[キャラ:마그마슬러지]],70,0,0,0
+		CALL SET_ENEMY,14,[[キャラ:마그마슬러지]],70,0,0,0
+		CALL SET_ENEMY,15,[[キャラ:마그마슬러지]],70,0,0,0
+	CASE 1
+		;瘴毒×2 溶水母×3
+		CALL SET_ENEMY,8,[[キャラ:용수모]],73,0,0,0
+		CALL SET_ENEMY,9,[[キャラ:용수모]],73,0,0,0
+		CALL SET_ENEMY,10,[[キャラ:용수모]],73,0,0,0
+		CALL SET_ENEMY,13,[[キャラ:장독]],70,0,0,0
+		CALL SET_ENEMY,15,[[キャラ:장독]],70,0,0,0
+	CASE 2
+		;瘴毒×2 マグマスラ!ジ×3
+		CALL SET_ENEMY,8,[[キャラ:마그마슬러지]],70,0,0,0
+		CALL SET_ENEMY,9,[[キャラ:마그마슬러지]],70,0,0,0
+		CALL SET_ENEMY,10,[[キャラ:마그마슬러지]],70,0,0,0
+		CALL SET_ENEMY,13,[[キャラ:장독]],70,0,0,0
+		CALL SET_ENEMY,15,[[キャラ:장독]],70,0,0,0
+	CASE 3
+		;瘴毒×2 ツクツク×2
+		CALL SET_ENEMY,8,[[キャラ:츠쿠츠쿠]],75,0,0,0
+		CALL SET_ENEMY,10,[[キャラ:츠쿠츠쿠]],75,0,0,0
+		CALL SET_ENEMY,13,[[キャラ:장독]],70,0,0,0
+		CALL SET_ENEMY,15,[[キャラ:장독]],70,0,0,0
+	CASE 4
+		;溶水母×2 マグマスラ!ジ×3
+		CALL SET_ENEMY,8,[[キャラ:마그마슬러지]],70,0,0,0
+		CALL SET_ENEMY,9,[[キャラ:마그마슬러지]],70,0,0,0
+		CALL SET_ENEMY,10,[[キャラ:마그마슬러지]],70,0,0,0
+		CALL SET_ENEMY,13,[[キャラ:용수모]],73,0,0,0
+		CALL SET_ENEMY,15,[[キャラ:용수모]],73,0,0,0
+ENDSELECT
+
+
+;=======================================================================
+;KingExit組ゲスト加入
+;=======================================================================
+@SET_GUEST_D103
+#LOCALSIZE 1
+;初期加入 アーベント・ベロー・グイーネ・ゲオルイース
+
+CALL ADD_STARTING_LINEUP_GUEST_DUNGEON_103(6000)
+IF RESULT:1 == 1
+	LOCAL = GETCHARA([[キャラ:아벤트_KE]])
+	;ゲスト加入
+	BASE:LOCAL:LV = 80
+
+	BASE:LOCAL:힘 = 37		;+26
+	BASE:LOCAL:지혜 = 10	;+7
+	BASE:LOCAL:마력 = 10	;+5
+	BASE:LOCAL:내구 = 28	;+15
+	BASE:LOCAL:속도 = 25	;+14
+	BASE:LOCAL:운 = 20		;+8
+	EQUIP:LOCAL:검 = [[アイテム:그레이트소드]]
+	EQUIP:LOCAL:몸통 = [[アイテム:후미의갑옷]]
+	EQUIP:LOCAL:팔 = [[アイテム:레더글러브]]
+	EQUIP:LOCAL:발 = [[アイテム:초승달의구족]]
+	EQUIP:LOCAL:악세서리 = [[アイテム:갖지못한자의반지]]
+
+	ABL:(CHARANUM-1):스킬5 = [[스킬:강절단]]
+	ABL:(CHARANUM-1):스킬6 = [[스킬:전용기6]]	;残心
+	ABL:(CHARANUM-1):스킬7 = [[스킬:전용기5]]	;横薙ぎ斬撃
+	ABL:(CHARANUM-1):스킬8 = [[스킬:전용기7]]	;聖剣気
+	ABL:(CHARANUM-1):스킬9 = [[스킬:전용기4]]	;メガバスター
+	ABL:(CHARANUM-1):스킬10 = [[스킬:회심의패기]]
+	ABL:(CHARANUM-1):스킬11 = [[스킬:전용기8]]	;狼騎士の咆哮
+	ABL:(CHARANUM-1):스킬12 = [[스킬:전용기9]]	;狼騎士団の守護
+
+	CALL SYNC_STATUS, LOCAL
+	CALL HEALTH_CHARA, LOCAL
+ENDIF
+
+CALL ADD_STARTING_LINEUP_GUEST_DUNGEON_103(6001)
+IF RESULT:1 == 1
+	LOCAL = GETCHARA([[キャラ:빌로우_KE]])
+	;ゲスト加入
+	BASE:LOCAL:LV = 80
+
+	BASE:LOCAL:힘 = 5		;+2
+	BASE:LOCAL:지혜 = 37	;+23
+	BASE:LOCAL:마력 = 47	;+30
+	BASE:LOCAL:내구 = 19	;+10
+	BASE:LOCAL:속도 = 15	;+5
+	BASE:LOCAL:운 = 12		;+4
+	EQUIP:LOCAL:검 = [[アイテム:청수정지팡이]]
+	EQUIP:LOCAL:머리 = [[アイテム:삼각모자]]
+	EQUIP:LOCAL:몸통 = [[アイテム:가라시지의법의]]
+	EQUIP:LOCAL:팔 = [[アイテム:태도할의토시]]
+	EQUIP:LOCAL:발 = [[アイテム:티타늄부츠]]
+	EQUIP:LOCAL:악세서리 = [[アイテム:갖지못한자의반지]]
+
+	ABL:(CHARANUM-1):스킬5 = [[스킬:전용기3]]	;マジ!クエンハンス
+	ABL:(CHARANUM-1):스킬6 = [[스킬:라쿤・다]]
+	ABL:(CHARANUM-1):스킬7 = [[스킬:마하・라기온]]
+	ABL:(CHARANUM-1):스킬8 = [[스킬:마하・지온가]]
+	ABL:(CHARANUM-1):스킬9 = [[스킬:전용기2]]	;クロスマジ!ク
+	ABL:(CHARANUM-1):스킬10 = [[스킬:마하・라기다인]]
+	ABL:(CHARANUM-1):스킬11 = [[스킬:마하・부흐다인]]
+	ABL:(CHARANUM-1):스킬12 = [[스킬:마하・지오다인]]
+
+	CALL SYNC_STATUS, LOCAL
+	CALL HEALTH_CHARA, LOCAL
+ENDIF
+
+CALL ADD_GUEST_DUNGEON_103(6002)
+IF RESULT != -1
+	LOCAL = GETCHARA([[キャラ:브루_KE]])
+	;ゲスト加入
+	BASE:LOCAL:LV = 80
+
+	BASE:LOCAL:힘 = 10		;+5
+	BASE:LOCAL:지혜 = 32	;+20
+	BASE:LOCAL:마력 = 40	;+32
+	BASE:LOCAL:내구 = 30	;+12
+	BASE:LOCAL:속도 = 10	;+2
+	BASE:LOCAL:운 = 8		;+4
+	EQUIP:LOCAL:검 = [[アイテム:낭아봉]]
+	EQUIP:LOCAL:몸통 = [[アイテム:후미의갑옷]]
+	EQUIP:LOCAL:팔 = [[アイテム:다마스커스글러브]]
+	EQUIP:LOCAL:발 = [[アイテム:칠흑의구족]]
+	EQUIP:LOCAL:악세서리 = [[アイテム:갖지못한자의반지]]
+
+	ABL:(CHARANUM-1):스킬5 = [[스킬:디아라마]]
+	ABL:(CHARANUM-1):스킬6 = [[스킬:메・디아]]
+	ABL:(CHARANUM-1):스킬7 = [[스킬:전용기2]]	;女神の祝福
+	ABL:(CHARANUM-1):스킬8 = [[스킬:사마리캄]]
+	ABL:(CHARANUM-1):스킬9 = [[스킬:메・디아라마]]
+	ABL:(CHARANUM-1):스킬10 = [[스킬:메・디아라한]] 
+	ABL:(CHARANUM-1):스킬11 = [[스킬:전용기3]] 	;天冠の祝福
+	ABL:(CHARANUM-1):스킬12 = [[스킬:마하코우가온]] 
+
+	CALL SYNC_STATUS, LOCAL
+	CALL HEALTH_CHARA, LOCAL
+ENDIF
+
+CALL ADD_GUEST_DUNGEON_103(6003)
+IF RESULT != -1
+	LOCAL = GETCHARA([[キャラ:레스터_KE]])
+	;ゲスト加入
+	BASE:LOCAL:LV = 60
+
+	BASE:LOCAL:힘 = 10		;+6
+	BASE:LOCAL:지혜 = 47	;+30
+	BASE:LOCAL:마력 = 5		;+0
+	BASE:LOCAL:내구 = 18	;+10
+	BASE:LOCAL:속도 = 10	;+2
+	BASE:LOCAL:운 = 22		;+12
+	EQUIP:LOCAL:검 = [[アイテム:어택나이프]]
+	EQUIP:LOCAL:몸통 = [[アイテム:방한복]]
+	EQUIP:LOCAL:발 = [[アイテム:레더부츠]]
+	EQUIP:LOCAL:악세서리 = [[アイテム:갖지못한자의반지]]
+
+	ABL:(CHARANUM-1):스킬5 = [[스킬:전용기2]]	;麻痺薬
+	ABL:(CHARANUM-1):스킬6 = [[스킬:전용기3]]	;回復薬調合
+	ABL:(CHARANUM-1):스킬7 = [[스킬:전용기4]]	;爆薬調合
+	ABL:(CHARANUM-1):스킬8 = [[스킬:전용기6]]	;東方丸
+	ABL:(CHARANUM-1):스킬9 = [[스킬:전용기7]]	;西方山
+	ABL:(CHARANUM-1):스킬10 = [[스킬:전용기8]] 	;東方山
+	ABL:(CHARANUM-1):스킬11 = [[스킬:아이템숙련]] 
+	ABL:(CHARANUM-1):스킬12 = [[스킬:성대한접대]] 
+
+	CALL SYNC_STATUS, LOCAL
+	CALL HEALTH_CHARA, LOCAL
+ENDIF
+
+CALL ADD_GUEST_DUNGEON_103(6004)
+IF RESULT != -1
+	LOCAL = GETCHARA([[キャラ:사미다레_KE]])
+	;ゲスト加入
+	BASE:LOCAL:LV = 80
+
+	BASE:LOCAL:힘 = 50		;+30
+	BASE:LOCAL:지혜 = 15	;+7
+	BASE:LOCAL:마력 = 11	;+7
+	BASE:LOCAL:내구 = 40	;+25
+	BASE:LOCAL:속도 = 15	;+5
+	BASE:LOCAL:운 = 3		;+1
+	EQUIP:LOCAL:검 = [[アイテム:버스터너클]]
+	EQUIP:LOCAL:몸통 = [[アイテム:레이디스메일]]
+	EQUIP:LOCAL:팔 = [[アイテム:붉은토시]]
+	EQUIP:LOCAL:발 = [[アイテム:붉은구족]]
+	EQUIP:LOCAL:악세서리 = [[アイテム:갖지못한자의반지]]
+
+	ABL:(CHARANUM-1):스킬5 = [[스킬:전용기5]]	;氷陣爪
+	ABL:(CHARANUM-1):스킬6 = [[스킬:전용기6]]	;縛陣拳
+	ABL:(CHARANUM-1):스킬7 = [[스킬:백발백중]]
+	ABL:(CHARANUM-1):스킬8 = [[스킬:전용기7]]	;念陣胆
+	ABL:(CHARANUM-1):스킬9 = [[스킬:이악물기]]
+	ABL:(CHARANUM-1):스킬10 = [[스킬:전용기2]] 	;メガバスター
+	ABL:(CHARANUM-1):스킬11 = [[스킬:뇌진왕모의발차기]] 
+	ABL:(CHARANUM-1):스킬12 = [[스킬:삼할의활천]] 
+
+	CALL SYNC_STATUS, LOCAL
+	CALL HEALTH_CHARA, LOCAL
+ENDIF
+CALL ADD_GUEST_DUNGEON_103(6005)
+IF RESULT != -1
+	LOCAL = GETCHARA([[キャラ:스티아라_KE]])
+	;ゲスト加入
+	BASE:LOCAL:LV = 60
+
+	BASE:LOCAL:힘 = 2		;+0
+	BASE:LOCAL:지혜 = 20	;+10
+	BASE:LOCAL:마력 = 41	;+30
+	BASE:LOCAL:내구 = 15	;+7
+	BASE:LOCAL:속도 = 10	;+3
+	BASE:LOCAL:운 = 20		;+10
+	EQUIP:LOCAL:검 = [[アイテム:로터스완드]]
+	EQUIP:LOCAL:머리 = [[アイテム:강철꽃장식]]
+	EQUIP:LOCAL:몸통 = [[アイテム:엔젤스커트]]
+	EQUIP:LOCAL:발 = [[アイテム:레더부츠]]
+	EQUIP:LOCAL:악세서리 = [[アイテム:갖지못한자의반지]]
+
+	ABL:(CHARANUM-1):스킬5 = [[스킬:스쿤・다]]
+	ABL:(CHARANUM-1):스킬6 = [[스킬:메・디아]]
+	ABL:(CHARANUM-1):스킬7 = [[스킬:바이스디]]
+	ABL:(CHARANUM-1):스킬8 = [[스킬:메・디아라마]]
+	ABL:(CHARANUM-1):스킬9 = [[스킬:전용기3]]	;応援ダンス
+	ABL:(CHARANUM-1):스킬10 = [[스킬:사마리캄]] 
+	ABL:(CHARANUM-1):스킬11 = [[스킬:마하코우가온]] 
+	ABL:(CHARANUM-1):스킬12 = [[스킬:전용기2]] 	;リペイドル
+
+	CALL SYNC_STATUS, LOCAL
+	CALL HEALTH_CHARA, LOCAL
+ENDIF
+
+CALL ADD_STARTING_LINEUP_GUEST_DUNGEON_103(6006)
+IF RESULT:1 == 1
+	LOCAL = GETCHARA([[キャラ:귀네_KE]])
+	;ゲスト加入
+	BASE:LOCAL:LV = 80
+
+	BASE:LOCAL:힘 = 37		;+25
+	BASE:LOCAL:지혜 = 30	;+18
+	BASE:LOCAL:마력 = 32	;+20
+	BASE:LOCAL:내구 = 15	;+5
+	BASE:LOCAL:속도 = 22	;+7
+	BASE:LOCAL:운 = 2		;+0
+	EQUIP:LOCAL:검 = [[アイテム:루나・엣지]]
+	EQUIP:LOCAL:머리 = [[アイテム:날개장식]]
+	EQUIP:LOCAL:몸통 = [[アイテム:레이디스메일]]
+	EQUIP:LOCAL:팔 = [[アイテム:다마스커스글러브]]
+	EQUIP:LOCAL:발 = [[アイテム:티타늄부츠]]
+	EQUIP:LOCAL:악세서리 = [[アイテム:갖지못한자의반지]]
+
+	ABL:(CHARANUM-1):스킬5 = [[스킬:전용기2]]	;白刃
+	ABL:(CHARANUM-1):스킬6 = [[스킬:마하・마그나스]]
+	ABL:(CHARANUM-1):스킬7 = [[스킬:전용기6]]	;クリティカルエ!ジ
+	ABL:(CHARANUM-1):스킬8 = [[스킬:불굴의투지]]
+	ABL:(CHARANUM-1):스킬9 = [[스킬:전용기3]]	;双竜剣
+	ABL:(CHARANUM-1):스킬10 = [[스킬:전용기7]] 	;ヴァリアブルエ!ジ
+	ABL:(CHARANUM-1):스킬11 = [[스킬:전용기4]] 	;運命両断
+	ABL:(CHARANUM-1):스킬12 = [[스킬:전용기8]] 	;救世の光
+
+	CALL SYNC_STATUS, LOCAL
+	CALL HEALTH_CHARA, LOCAL
+ENDIF
+
+CALL ADD_STARTING_LINEUP_GUEST_DUNGEON_103(6007)
+IF RESULT:1 == 1
+	LOCAL = GETCHARA([[キャラ:게오루이스_KE]])
+	;ゲスト加入
+	BASE:LOCAL:LV = 80
+
+	BASE:LOCAL:힘 = 15		;+12
+	BASE:LOCAL:지혜 = 40	;+28
+	BASE:LOCAL:마력 = 40	;+20
+	BASE:LOCAL:내구 = 15	;+7
+	BASE:LOCAL:속도 = 15	;+3
+	BASE:LOCAL:운 = 15		;+10
+	EQUIP:LOCAL:검 = [[アイテム:청수정지팡이]]
+	EQUIP:LOCAL:머리 = [[アイテム:날개장식]]
+	EQUIP:LOCAL:몸통 = [[アイテム:레이디스메일]]
+	EQUIP:LOCAL:팔 = [[アイテム:다마스커스글러브]]
+	EQUIP:LOCAL:발 = [[アイテム:티타늄부츠]]
+	EQUIP:LOCAL:악세서리 = [[アイテム:갖지못한자의반지]]
+
+	ABL:(CHARANUM-1):스킬5 = [[스킬:전용기2]]	;白刃
+	ABL:(CHARANUM-1):스킬6 = [[스킬:전용기10]]	;生の回復脈動式
+	ABL:(CHARANUM-1):스킬7 = [[스킬:전용기11]]	;心の連結反応式
+	ABL:(CHARANUM-1):스킬8 = [[스킬:불굴의투지]]
+	ABL:(CHARANUM-1):스킬9 = [[스킬:전용기3]]	;双竜剣
+	ABL:(CHARANUM-1):스킬10 = [[스킬:전용기7]] 	;로엔그린
+	ABL:(CHARANUM-1):스킬11 = [[스킬:전용기4]] 	;跋扈聖断
+	ABL:(CHARANUM-1):스킬12 = [[스킬:전용기9]] 	;ライトニングアーク
+
+	CALL SYNC_STATUS, LOCAL
+	CALL HEALTH_CHARA, LOCAL
+ENDIF
+
+;=======================================================================
+;KingExit組ゲスト加入処理
+;=======================================================================
+@ADD_STARTING_LINEUP_GUEST_DUNGEON_103(ARG)
+#LOCALSIZE 4
+LOCAL:1 = -1
+LOCAL:2 = -1
+FOR LOCAL, 1, 7
+	LOCALS = 포지션{LOCAL} 
+	IF FLAG:LOCALS < 0
+		LOCAL:1 = LOCAL
+		BREAK
+	ENDIF
+NEXT
+;人間は@とデスポリュカ以外居ないハズ
+IF LOCAL:1 == -1
+	FOR LOCAL, 1, 7
+		LOCALS = 포지션{LOCAL} 
+		IF (ABL:(FLAG:LOCALS):종족) && (FLAG:LOCALS) != MASTER
+			LOCAL:1 = LOCAL
+			;LOCAL:2にどかすキャラを入れる
+			LOCAL:2 = POS(LOCAL)
+			;ポジションから外す
+			CALL REMOVE_POSITION(LOCAL)
+			BREAK
+		ENDIF
+	NEXT
+ENDIF
+IF LOCAL:1 >= 0
+	;キャラを加入させる
+	CALL ADD_GUEST_DUNGEON_103, ARG
+	IF RESULT == -1
+		CALL INSERT_POSITION, LOCAL:1, GETCHARA(ARG)
+		LOCAL:2 = 0
+	ELSE
+		CALL INSERT_POSITION, LOCAL:1, RESULT
+		LOCAL:2 = 1
+	ENDIF
+	;いれたポジションをかえす
+	RETURN LOCAL:1, LOCAL:2
+ENDIF
+RETURN 0, -1
+
+;=======================================================================
+;KingExit組控えゲスト加入処理
+;=======================================================================
+@ADD_GUEST_DUNGEON_103(ARG)
+;キャラを加入させる
+IF GETCHARA(ARG) >= 0
+	LOCAL = -1
+ELSE
+	CALL ADD_NEW_COMPANION, ARG , 0
+	CFLAG:(RESULT:1):게스트가입플래그 = 1
+	CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+	;これは本来KingExitの物語 @が居なくても戦闘は続行される
+	;ので、信頼陥落させて@が死んでもセーフにする
+	TALENT:(RESULT:1):신뢰 = 1
+
+	LOCAL = RESULT:1
+ENDIF
+RETURN LOCAL
+
+;=======================================================================
+;魔王様撃破時イベント
+;=======================================================================
+@EVENT_DEFEATED_THE_DEMON_KING
+PRINTFORMW ....................................
+PRINTFORML 
+PRINTFORML 세월을 거쳐 비축된 강대한 힘, 모든 것을 복종시키고 전멸시키려는 악의, 살기
+PRINTFORML 「마왕」이라 불린 존재는 그것들을 아낌없이 흩뿌리며 인간에게 공포의 상징으로서의 위용을 과시한다
+PRINTFORMW 싸울수록 풀려가던 봉인을 억지로 깨부수며 마족의 왕으로서의 힘을 더해갔다
+PRINTFORML 
+PRINTFORML 그리고 지금이라도 상처입고 쓰러질 것 같은 와중에도 그 악의와 투지는 전혀 쇠하지 않았다
+PRINTFORML 마지막 발악이라도 하듯 한계에 달한 몸을 움직여 이쪽을 집어삼키려 덤벼든다
+PRINTFORMW 빠각, 하고 소리를 내며 마지막 봉인이 산산조각 났고, 마왕은 포효했다
+PRINTFORML 
+PRINTFORML 「오　오　오　오　오　오　오　오　!!」
+PRINTFORMW 「엎　드　려　라　아　아　아　아　아　아　앗　!!」
+PRINTFORML 
+PRINTFORML 무시무시한 살기와 함께 내지른 절규 속에서 마왕의 몸에 대검이, 마법이, 주먹이 연달아 꽂힌다
+PRINTFORML 
+PRINTFORML 「「하아아아아앗!!!」」
+PRINTFORML 
+IF EQUIP:GETCHARA([[キャラ:귀네_KE]]):검 == GETNUM(ITEM, "KE＿성검")
+	PRINTFORMW 마왕의 몸에 난 균열에 귀네와 게오루이스가 성검을 꽂아 넣자 마왕이 고통에 찬 비명을 지른다
+ELSE
+	PRINTFORMW 마왕의 몸에 난 균열에 귀네와 게오루이스가 검을 꽂아 넣자 마왕이 고통에 찬 비명을 지른다
+ENDIF
+PRINTFORML 
+PRINTFORML 「오오오오오오옷!!! 용서 못 한다… 용서 못 해애애애액!!!」
+PRINTFORML 「…기억해 둬라 인간 놈들…!! 내가 멸망하더라도…! 다음 내가, 마왕이! 반드시 네놈들을 예속시킬 것이다…!!」
+PRINTFORML 「이번에야말로… 영원히 무릎 꿇도록 해라…!! 노예 놈들아아아앗… 크윽!!?」
+PRINTFORML 
+PRINTFORMW 궁지에 몰려 욕설을 퍼붓는 마왕의 눈앞으로 데스포르카가 화살처럼 뛰쳐나간다
+PRINTFORML 
+PRINTFORMW 「나를, 내 동포들을! 인간들을! 유린하게 두지 않아! 그 이상 지껄이지 마라아앗!!」
+PRINTFORML 
+PRINTFORML 그리고 크게 팔을 치켜올려…
+PRINTFORML 
+PRINTFORMW 「얌전히 영원히 잠이나 자고 있어라앗!! 빌어먹을 영감탱이야아아아아아아앗!!!!!」
+PRINTFORML 
+PRINTFORML 꽂혀있던 검의 폼멜을 온 힘을 다해 후려갈겼다.
+PRINTFORML 
+PRINTFORMW 「크, 오오오오오오……윽!! 데스, 포르카아아아아아…………앗!!!!!」
+PRINTFORML 
+PRINTFORML 단말마의 비명을 지르는 마왕의 사지에 다시금 봉인이 채워져 가며… 용암 속으로 가라앉아 간다
+PRINTFORML 
+IF EQUIP:GETCHARA([[キャラ:귀네_KE]]):검 == GETNUM(ITEM, "KE＿성검")
+	PRINTFORML 마왕의 몸에 깊숙이 박힌 성검은 귀네의 집념으로 간신히 뽑아내었고…
+ELSE
+	PRINTFORML 마왕의 몸에 깊숙이 박힌 검은 칼날을 체내에 남긴 채 부러져 마왕과 운명을 함께하게 되었고…
+ENDIF
+;全く感動しないターミネーター
+PRINTFORMW 미련스럽게 뻗어 나온 오른손을 마지막으로, 마왕은 붉은 바닷속으로 집어삼켜져 갔다…
+PRINTFORMW 
+
+;必ず殺す10万ダメージ
+CALL VAR_HP, (CHARANUM-1), -100000
+
+ダンジョンフラグ:(FLAG:현던전):13 = 1
+
+;=======================================================================
+;魔王様即死時イベント
+;=======================================================================
+@EVENT_INSTANT_DEATH_THE_DEMON_KING
+PRINTFORMW ....................................
+PRINTFORML 
+PRINTFORML 세월을 거쳐 비축된 강대한 힘, 모든 것을 복종시키고 전멸시키려는 악의, 살기
+PRINTFORML 「마왕」이라 불린 존재는 그것들을 아낌없이 흩뿌리며 바로 지금부터 인간에게 공포의 상징으로 우뚝 서려 했다
+PRINTFORMW 풀려가던 봉인을 억지로 부수고 마족의 왕으로서의 힘을, 위용을 마음껏 과시한다… 그럴 터였으나…
+PRINTFORML 
+PRINTFORML 「오… 오오오오…!? 뭐냐…!? 정체가 뭐냐, 네놈…!?」
+PRINTFORMW 「있을 수 없다… 있을 수 없어어엇!! 내가, 마왕인 이 내가…!! 떨고 있다니이잇!!??」
+PRINTFORML 
+PRINTFORML 눈앞에 들이닥친 죽음의 기운… 그 농밀한 살기에 마왕은 태어나서 처음으로 가슴 깊은 곳부터 벌벌 떨었다…
+PRINTFORML 
+PRINTFORMW 「크윽!? 우, 움직여라…!! 내 손발아… 어째서 안 움직이는 거냐!!??」
+PRINTFORML 
+PRINTFORML 마왕은 필사적으로 떨리는 손발을 어색하게 움직이려 했으나… 그 찰나 치명적인 일격이 복부를 관통한다
+PRINTFORML 
+PRINTFORMW 「우욱!? 누오옷, 우오오오오오오옷!!!!!!!!!!!」
+PRINTFORML 
+PRINTFORML 공포의 상징이었던 마왕은 단말마의 절규를 내지르며 날아가 무너져 내렸다
+PRINTFORML 
+PRINTFORML 「나… 나 혼자만 죽을까 보냐…! 네놈들도 함께다아…!!」
+PRINTFORML 
+PRINTFORM 마지막 발악처럼 사악한 염을 뿜어내려 했으나,
+IF EQUIP:GETCHARA([[キャラ:귀네_KE]]):검 == GETNUM(ITEM, "KE＿성검")
+	PRINTFORMW 그 몸에 귀네와 게오루이스가 성검을 꽂아 숨통을 끊었다
+ELSE
+	PRINTFORMW 그 몸에 귀네와 게오루이스가 검을 꽂아 숨통을 끊었다
+ENDIF
+PRINTFORML 
+PRINTFORML 「큭…!!」하는 소리를 마지막으로 마왕은 움직이지 않게 되었고… 그리고 봉인의 쇠사슬이 그 몸을 용암 바다로 끌고 들어갔다
+PRINTFORMW 인류를 공포로 몰아넣었어야 할 존재는 끝내 그 진가를 발휘하지 못한 채… 붉은 바다로 가라앉고 말았다
+
+;必ず殺す10万ダメージ
+CALL VAR_HP, (CHARANUM-1), -100000
+
+ダンジョンフラグ:(FLAG:현던전):13 = 1

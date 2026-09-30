@@ -1,0 +1,462 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:黒龍双剋勝利剣.ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	000		20XX/XX/XX		----					テンプレ
+;	001		2021/04/28		しゃけかん			作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_黒龍双剋勝利剣,ARG
+RESULTS = 黒龍双剋勝利剣
+
+;　명중
+@SKILL_HITRATE_黒龍双剋勝利剣, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"黒龍双剋勝利剣")
+;初段以降は初段の判定結果に従う
+IF SKILLGAGE_H_GET(ARG,SKILL_NUM) > 1
+	IF GET_CREC_ACT(ARG, -1, "AVOID")
+		RETURN 0
+	ELSE
+		RETURN 999
+	ENDIF
+ELSE
+	RETURN 130
+ENDIF
+
+;1撃目以降で相手が回避失敗ではなかった場合、命中率を0に
+;SIF SKILLGAGE_H_GET(ARG,SKILL_NUM) > 1 && CFLAG:POS(CFLAG:ARG:타겟):회피실패 < 1
+;	RETURN 0
+;RETURN 130
+
+
+;　威力
+@SKILL_POWER_黒龍双剋勝利剣, ARG
+#DIM SKILL_NUM
+#DIM L_DMG
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"黒龍双剋勝利剣")
+;総威力は300,450,500、強化イベント経由時は400,550,600
+SELECTCASE SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム"))
+	CASE IS > 3
+		SELECTCASE TOINT(CSTR:ARG:102)
+			CASE IS > 2
+				L_DMG = 600
+			CASEELSE
+				L_DMG = 500
+		ENDSELECT
+	CASE IS > 1
+		SELECTCASE TOINT(CSTR:ARG:102)
+			CASE IS > 2
+				L_DMG = 550
+			CASEELSE
+				L_DMG = 450
+		ENDSELECT
+	CASEELSE
+		SELECTCASE TOINT(CSTR:ARG:102)
+			CASE IS > 2
+				L_DMG = 400
+			CASEELSE
+				L_DMG = 300
+		ENDSELECT
+ENDSELECT
+
+SELECTCASE SKILLGAGE_H_GET(ARG,SKILL_NUM)
+	CASE 1
+		TIMES L_DMG , 0.02
+	CASE 2
+		TIMES L_DMG , 0.04
+	CASE 3
+		TIMES L_DMG , 0.06
+	CASE 4
+		TIMES L_DMG , 0.08
+	CASE 5
+		TIMES L_DMG , 0.11
+	CASE 6
+		TIMES L_DMG , 0.13
+	CASE 7
+		TIMES L_DMG , 0.15
+	CASE 8
+		TIMES L_DMG , 0.17
+	CASE 9
+		TIMES L_DMG , 0.24
+ENDSELECT
+
+RETURN L_DMG
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_黒龍双剋勝利剣, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"黒龍双剋勝利剣")
+;初段以降のクリティカル判定は初段の判定に従う
+IF SKILLGAGE_H_GET(ARG,SKILL_NUM) > 1
+	IF TFLAG:크리티컬발생_ACT
+		RETURN 999
+	ELSE
+		RETURN 0
+	ENDIF
+ELSE
+	RETURN 30
+ENDIF
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_黒龍双剋勝利剣,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_黒龍双剋勝利剣,ARG
+RETURN 1
+
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_黒龍双剋勝利剣, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_黒龍双剋勝利剣,ARG
+RETURN 40
+
+;　相性
+@SKILL_TYPE_黒龍双剋勝利剣,ARG
+RETURN GET_TYPE_NUM("검격"), GET_TYPE_NUM("전격"), GET_TYPE_NUM("중력"), GET_TYPE_NUM("만능")
+;#LOCALSSIZE 5
+;#LOCALSIZE 4
+;SIF ARG < 0 || スキル属性表示中
+;	RETURN GET_TYPE_NUM("검격")
+;SIF CFLAG:ARG:타겟 > 16 || CFLAG:ARG:타겟 < 1
+;	RETURN GET_TYPE_NUM("검격")
+;LOCAL = POS(CFLAG:ARG:타겟)
+;SIF LOCAL < 0
+;	RETURN GET_TYPE_NUM("검격")
+;	
+;LOCAL:2 = -300
+;;全部-400とかないとおもうけど、あったらあれなんで、剣撃をいれとく
+;LOCALS = 검격
+;LOCALS:1 = 전격
+;LOCALS:2 = 검격
+;LOCALS:3 = 중력
+;LOCALS:4 = 만능
+;FOR LOCAL:1, 1, 5
+;	;判定用に数値をしまう。反射は-200扱い
+;	LOCAL:3 = MAXBASE:LOCAL:(LOCALS:(LOCAL:1)) == 999 ? -200 # MAXBASE:LOCAL:(LOCALS:(LOCAL:1))
+;	LOCAL:3 = !(HAVE_SKILL(ARG,[[스킬:영세라이도우]]) || HAVE_SKILL(ARG,2947)) && CFLAG:LOCAL:(LOCALS:(LOCAL:1)+"무효화횟수") ? -5 # LOCAL:3
+;	LOCAL:3 = CFLAG:LOCAL:(LOCALS:(LOCAL:1)+"가드킬") && LOCAL:3 < 100 ? 100 # LOCAL:3
+;	SELECTCASE LOCAL:1
+;		CASE 1
+;			LOCAL:3 = CFLAG:LOCAL:물리반사플래그 ? -200 # LOCAL:3
+;		CASE 2 TO 4
+;			LOCAL:3 = CFLAG:LOCAL:마법반사플래그 ? -200 # LOCAL:3
+;		CASEELSE
+;	ENDSELECT
+;	IF LOCAL:3 > LOCAL:2
+;		LOCAL:2 = LOCAL:3
+;		LOCALS = %LOCALS:(LOCAL:1)%
+;	ENDIF
+;NEXT
+;RETURN GET_TYPE_NUM(LOCALS)
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_黒龍双剋勝利剣
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_黒龍双剋勝利剣,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_黒龍双剋勝利剣,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_黒龍双剋勝利剣,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_黒龍双剋勝利剣,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_黒龍双剋勝利剣,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_黒龍双剋勝利剣
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_黒龍双剋勝利剣, ARG = -1
+RETURN 50
+;SIF SKILLGAGE_H_GET(ARG,PU_SKILLNUM_GET(ARG,"黒龍双剋勝利剣")) == 0
+;	PRINTFORMW  オルトリアクター臨界突破。我が暗黒の光芒で、素粒子に帰れ！
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_黒龍双剋勝利剣
+RETURN 0
+
+
+
+
+;====================================================
+;トリガー発動条件
+;====================================================
+;@SKILL_TRIGGER_ACTIONABLE_黒龍双剋勝利剣,ARG,ARG:1
+;RETURN 0
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+;@SKILL_DAMAGE_EFFECT_黒龍双剋勝利剣,ARG,ARG:1,ARG:2
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_黒龍双剋勝利剣,ARG,ARG:1
+
+
+;====================================================
+;独自のカジャ処理
+;ARG		攻撃側のキャラ登録番号
+;ARG:1		防御側のキャラ登録番号
+;RESULT 	= 強化値
+;RESULT:1	= 基準値	(基準値 + x) / 基準値 あるいは　(基準値 * 2 - x) /基準値 * 2倍になる
+;			　デフォは基準値32で、最大で(32 + 32) / 32 or (64 - 32) / 64倍になる
+;====================================================
+@SKILL_CALC_BUFF_黒龍双剋勝利剣, ARGS, ARG, ARG:1
+SELECTCASE ARGS
+	CASE "ATK"
+		RETURN LIMIT(CFLAG:ARG:공격강화 + CFLAG:ARG:마법위력강화, -48, 64), 32
+ENDSELECT
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_黒龍双剋勝利剣,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM トドメまでお前を殴るのを止めないフラグ
+#DIM HIT_COUNT
+
+トドメまでお前を殴るのを止めないフラグ = 0
+;CFLAG:ARG:공격강화 += CFLAG:ARG:마법위력강화
+SIF TOINT(CSTR:ARG:102) > 2
+	CALL SKILLGAGE_D_SET,ARG,SKILL_NUM,1
+;相手が元から不死身じゃないなら不死身にしてボコボコにしても問題ないな！
+IF CFLAG:POS(ARG:1):불사신플래그 < 1
+	CFLAG:POS(ARG:1):불사신플래그 = 1
+	トドメまでお前を殴るのを止めないフラグ = 1
+ENDIF
+FOR HIT_COUNT,1,10
+	IF HIT_COUNT == 1 && CFLAG:ARG:PT플래그 == 0
+		SETCOLOR 0xff0033
+		CALL BATTLE_EVENT_ACT, ARG
+		RESETCOLOR
+	ENDIF
+	CALL SKILLGAGE_H_ADD,ARG,SKILL_NUM,1
+	;トドメまでお前を殴るのを止めないフラグが立ってたら不死身フラグを解除してトドメを刺す
+	IF HIT_COUNT == 9
+		SIF CFLAG:ARG:PT플래그 == 0
+			SETCOLOR 0xff0033
+		SIF CFLAG:ARG:PT플래그 == 2
+			SETCOLOR 0x33ffcc 
+		CALL BATTLE_EVENT_ACT, ARG
+		RESETCOLOR
+		IF トドメまでお前を殴るのを止めないフラグ == 1
+			SIF BASE:(POS(ARG:1)):ＨＰ < 1
+				BASE:(POS(ARG:1)):ＨＰ = 1
+			CFLAG:(POS(ARG:1)):불사신플래그 = 0
+		ENDIF
+	ENDIF
+	CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+	IF HIT_COUNT == 9
+		CALL SKILLGAGE_H_SET,ARG,SKILL_NUM,0
+	ENDIF
+NEXT
+CALL SKILLGAGE_D_SET,ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム"),0
+;CFLAG:ARG:공격강화 -= CFLAG:ARG:마법위력강화
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_黒龍双剋勝利剣,ARG
+IF TOINT(CSTR:ARG:102) > 2
+	PRINTL 단체 고명중, 고크리티컬, 세이버 특효, Light 속성 특효 검격/전격/중력/만능 복합 속성의 9연타 소 데미지
+ELSE
+	PRINTL 단체 고명중, 고크리티컬, 세이버 특효 검격/전격/중력/만능 복합 속성의 9연타 소 데미지
+ENDIF
+PRINTL 
+PRINTL 마력 변환로 「오르토리액터」를 자발적으로 폭주시켜, 임계상태를 돌파하여 넘쳐흐르는 마력의 분류로 적을 증발시키는 보구.
+PRINTL 그 성질상 특정 검에 의존하지 않고, 실은 주먹질만으로도 발동할 수 있다는 묘한 편리함을 자랑한다.
+PRINTL 이 스킬은 사용자의 마법 위력 강화 영향을 받는다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_黒龍双剋勝利剣,ARG
+RESULTS = 魔力充填中
+SIF SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム")) > 0
+	RETURN 1
+RETURN 0
+
+;スキルゲージで役に立つ関数
+;SKILLGAGE_H_GET(ARG,PU_SKILLNUM_GET(ARG,"黒龍双剋勝利剣"))
+;CALL SKILLGAGE_H_SET,ARG,PU_SKILLNUM_GET(ARG,"黒龍双剋勝利剣"),0
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_黒龍双剋勝利剣, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+#DIM TOTAL_DMG_B
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			TOTAL_DMG_B = 0
+			IF SKILLGAGE_D_GET(L_ACTOR,SKILL_NUM) > 0 && GET_ALI1(ABL:L_TARGET:속성LD) == "Light" && TOINT(CSTR:L_ACTOR:102) > 2
+				RESULTS = Light特攻
+				TOTAL_DMG_B += 50
+			ENDIF
+			IF CFLAG:L_ACTOR:입력행동 == SKILL_NUM
+				CALL SABER_SERVANT_CHECK(L_ACTOR, L_TARGET)
+				IF RESULT
+					RESULTS:1 = 세이버 특효
+					TOTAL_DMG_B += 150
+				ENDIF
+			ENDIF
+			RETURN TOTAL_DMG_B
+	ENDSELECT
+ENDIF
+;====================================================
+;独自処理
+;====================================================
+;（予定）と付けられている方は仮置きの物。実際に採用されるかどうかはわからない。
+;ARG = 使用者
+;ARGS （ダメージ↑、被ダメージ↑、命中↑、回避↑、魔威↑、魔効↑、etc…）といった感じの奴
+;ARG:1 = 対象
+;文字列を参考にする都合上、どの文字列を使うか事前に定めておいた方がいいかも
+;@AUTO_PU_SKILL_黒龍双剋勝利剣,ARG,ARGS = "",ARG:1
+;#DIM SKILL_NUM
+;#DIM TOTAL_DMG_B
+;#DIM 特攻
+;TOTAL_DMG_B = 0
+;特攻 = 0
+;SKILL_NUM = PU_SKILLNUM_GET(ARG,"黒龍双剋勝利剣")
+;SIF SKILL_NUM == -1
+;	RETURN
+;SELECTCASE ARGS
+;	CASE "ダメージ↑"
+;		IF SKILLGAGE_D_GET(ARG,SKILL_NUM) > 0 && GET_ALI1(ABL:(ARG:1):속성LD) == "Light"
+;			SIF CFLAG:ARG:입력행동 != SKILL_NUM || SKILLGAGE_H_GET(ARG,SKILL_NUM) == 9
+;				PRINTFORM Light属性特攻！
+;			TOTAL_DMG_B += 50
+;			特攻 += 1
+;		ENDIF
+;		IF CFLAG:ARG:입력행동 == SKILL_NUM
+;			CALL SABER_SERVANT_CHECK(ARG,ARG:1)
+;			IF RESULT == 1
+;				IF SKILLGAGE_H_GET(ARG,SKILL_NUM) == 9
+;					SIF 特攻 > 0
+;						PRINT  && 
+;					PRINTFORML セイバークラス認定！
+;				ENDIF
+;				TOTAL_DMG_B += 150
+;				特攻 += 2
+;			ENDIF
+;			IF 特攻 > 0 && SKILLGAGE_H_GET(ARG,SKILL_NUM) == 9
+;				SIF 特攻 < 2
+;					PRINTL 
+;				PRINTFORM %CALLNAME:ARG%の与えるダメージが
+;				SIF 特攻 > 1
+;					PRINT 大きく
+;				PRINTL 上昇！
+;			ENDIF
+;		ELSEIF 特攻 > 0 && (CFLAG:ARG:입력행동 != SKILL_NUM || SKILLGAGE_H_GET(ARG,SKILL_NUM) == 9)
+;			PRINTL 
+;		ENDIF
+;		SIF 特攻 > 0 && (CFLAG:ARG:입력행동 != SKILL_NUM || SKILLGAGE_H_GET(ARG,SKILL_NUM) == 9)
+;			PRINTFORM 　　TARGET:[{CPOS(ARG:1),2}] %CALLNAME:(ARG:1),20,LEFT%　>>>>>>　
+;		RETURN TOTAL_DMG_B
+;ENDSELECT
+
+@SABER_SERVANT_CHECK,ARG,ARG:1
+;セイバーサーヴァントとして認識されるのはFGO側でセイバーとして扱われた悪魔、後はEXTRA勢で剣とか持ってそうな奴
+;後は刀、レイピア、剣を持ってて、尚且つ非人間の奴もセイバーサーヴァント認定される
+;クラススキル「セイバー」を所持していなくても、CFLAG:(ARG:1):専用技のどこかに設定されていれば問答無用で特攻対象
+SIF PU_SKILL_CHECK(ARG:1,"セイバー")
+	RETURN 1
+SELECTCASE NO:(ARG:1)
+	CASE [[キャラ:파랑세이버]],[[キャラ:빨강세이버]],[[キャラ:라마]],[[キャラ:지크프리트]],[[キャラ:아서]],[[キャラ:수르트]],[[キャラ:사야카]],[[キャラ:요우무]],[[キャラ:모미지_동방]],[[キャラ:텐시]],[[キャラ:요리히메]],[[キャラ:Ａ・치르노]],[[キャラ:락슈미]]
+		RETURN 1
+ENDSELECT
+RESULT = 0
+TRYCALLFORM 剣タイプ_{EQUIP:(ARG:1):검}
+SELECTCASE RESULT
+	CASE 1,2,4
+		SIF GET_ROLE_PROP("CAN_USE_EQUIP", ARG:1)
+			RETURN 1 
+		;SIF (ABL:(ARG:1):종족 != 0 || CFLAG:(ARG:1):악마변신)
+		;	RETURN 1
+ENDSELECT
+RETURN 0
+
+;@HIT_CONTINUE_黒龍双剋勝利剣,ARG,ARG:1
+;#FUNCTION
+;#DIM SKILL_NUM
+;ARG:0　使用者
+;ARG:1　対象キャラ　
+;一度でも宝具が命中した場合、以降の攻撃を確定命中にする処理
+
+;SKILL_NUM = PU_SKILLNUM_GET(ARG,"黒龍双剋勝利剣")
+;SIF CFLAG:ARG:입력행동 == SKILL_NUM && CFLAG:(ARG:1):회피실패 == 1
+;	RETURNF 1
+
+;@CRT_CONTINUE_黒龍双剋勝利剣,ARG,ARG:1
+;#DIM SKILL_NUM
+;一度でも宝具がクリティカルした場合、以降の攻撃を確定クリティカルにする処理
+;ARG:0　使用者
+;ARG:1　対象者
+;SKILL_NUM = PU_SKILLNUM_GET(ARG,"黒龍双剋勝利剣")
+;入力行動が黒龍双剋勝利剣であり、2段目の攻撃である必要がある
+;IF CFLAG:ARG:입력행동 == SKILL_NUM && SKILLGAGE_H_GET(ARG,SKILL_NUM) > 1
+	;相手が被クリティカルを受けている
+	;IF GETBIT(CFLAG:(ARG:1):受けフラグ,21)
+	;	RETURN 1
+;	IF GET_CREC_ACT(ARG, ARG:1, "CRT")
+;		RETURN 1
+;	ELSE
+		;こちらは防御状態でもクリティカルが発生した場合
+		;CALL CRT_CHECK
+		;SIF GETBIT(RESULT,2)
+;		SIF TFLAG:크리티컬발생_ACT
+;			RETURN 1
+;	ENDIF
+;ENDIF
+;RETURN 0
+
+;スキルのタグ、他の処理でこのスキルがどういう物か調べる時に使う
+@SKILL_TAG_黒龍双剋勝利剣
+RESULTS = 宝具

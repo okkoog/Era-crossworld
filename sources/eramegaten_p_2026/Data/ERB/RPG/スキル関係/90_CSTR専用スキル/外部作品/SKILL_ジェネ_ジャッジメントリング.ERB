@@ -1,0 +1,165 @@
+﻿;専用スキル用のテンプレート
+;「ジャッジメントリング」を別の名前に置き換えてください
+
+;アクティブスキルに必須なものはそのままにしており
+;なくてもいいものはコメントアウトしております
+;必要だと思ったらコメントアウトを外して設定してください
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_ジャッジメントリング,ARG
+RESULTS = 저지먼트 링
+
+;　명중
+@SKILL_HITRATE_ジャッジメントリング, ARG
+RETURN 300
+
+;　威力
+@SKILL_POWER_ジャッジメントリング, ARG
+RETURN 120
+
+;;クリティカル率
+;@SKILL_CRITICAL_RATE_ジャッジメントリング, ARG
+;RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_ジャッジメントリング, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ジャッジメントリング,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ジャッジメントリング,ARG
+RETURN 1
+
+;一体辺りの最大ＨＩＴ数
+;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_ジャッジメントリング,ARG
+;RETURN 1
+
+;一体辺りの最低ＨＩＴ数
+;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_ジャッジメントリング,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ジャッジメントリング, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ジャッジメントリング,ARG
+RETURN 10
+
+;　相性
+@SKILL_TYPE_ジャッジメントリング,ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ジャッジメントリング
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ジャッジメントリング,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ジャッジメントリング,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_ジャッジメントリング,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ジャッジメントリング,ARG
+RETURN GET_SPHERE_NUM("일렬")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ジャッジメントリング,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_ジャッジメントリング
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_ジャッジメントリング, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ジャッジメントリング
+RETURN 0
+
+;没
+;@SKILL_RANK_ジャッジメントリング, ARG = -1
+
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_ジャッジメントリング,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;====================================================
+;@SKILL_TRIGGER_ACTIONABLE_ジャッジメントリング,ARG,ARG:1
+;RETURN 0
+
+;====================================================
+;カウンター発動条件
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_ジャッジメントリング,ARG,ARG:1
+;RETURN RESULT
+
+;====================================================
+;ダメージ発動時
+;====================================================
+@SKILL_DAMAGE_EFFECT_ジャッジメントリング,ARG,ARG:1,ARG:2
+SIF ARG:1 < 0
+	RETURN 0
+;無効以下では発動しない
+SIF ARG:2 <= -2
+	RETURN 0
+CALL SKILL_SET_カジャンダ, ARG, ARG:1, "방어", -4, "短縮"
+;PRINTFORML  & 防御ダウン
+;CFLAG:(ARG:1):방어강화 = MAX(-16, CFLAG:(ARG:1):방어강화 - 4)
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_ジャッジメントリング,ARG,ARG:1
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ジャッジメントリング,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+;CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+;CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM;		拡散攻撃
+;CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM;			ランダム攻撃
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_ジャッジメントリング,ARG
+PRINTL 본래는 적의 중심에서 더블 세이버를 휘둘러 공격하는 기술.
+PRINTL 적 전열에 위력은 낮지만 명중하기 쉬운 검격 상성의 공격을 가하고, 동시에 방어력을 낮춘다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ジャッジメントリング,ARG
+RETURN 1

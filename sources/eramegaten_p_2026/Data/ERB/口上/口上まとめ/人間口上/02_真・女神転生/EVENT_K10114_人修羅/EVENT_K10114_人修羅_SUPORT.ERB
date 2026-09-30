@@ -1,0 +1,559 @@
+﻿;eraMegaten専用ナビ口上テンプレート
+;X1をキャラ番号に置換してください
+;人修羅くんナビ口上
+;半魔だし初期でアナライズできるし悪魔に詳しいはず、ということで作成。
+;完全自分用　作成者 490メモリー
+;=========================================
+;=========================================
+;ナビ口上の存在確認
+;この関数が設定されていないと口上が存在しない扱いになる
+;=========================================
+@IS_EXIST_KOJO_BATTLE_NAVI_K[[キャラ:인수라M]], ARG
+RETURN 1
+
+;=========================================
+;以下ナビ口上、京都じゃない方の双葉はんから拝借した古代ちゃん口上から拝借、本当に申し訳ない
+;
+;TSTR:네비_시추에이션_메인		主に呼び出しタイミングを定義(戦闘開始/メイン画面/戦闘終了)
+;TSTR:네비_시추에이션_서버1		状況を定義
+;TSTR:네비_시추에이션_서버2		状況の補足オプション
+;=========================================
+@KOJO_BATTLE_NAVI_K[[キャラ:인수라M]], ARG
+SELECTCASE TSTR:네비_시추에이션_메인
+	CASE "戦闘開始"
+		SELECTCASE TSTR:네비_시추에이션_서버1
+			CASE "통상"
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "格下"
+						SELECTCASE TFLAG:적초기배치수
+							CASE 4
+								;敵数4
+								BTL_KOJO_RESULTS:0 = ……少しは油断しても大丈夫そう。この数なら蹴散らせると思う
+							CASE 3
+								;敵数3
+								BTL_KOJO_RESULTS:0 = ……まぁ、ほどほどに痛めつければ逃げてくれそうだ
+							CASE 2
+								;敵数2
+								BTL_KOJO_RESULTS:0 = ……舐められてるのかと思ったけど、そういうわけでもないみたい
+							CASE 1
+								;敵数1
+								BTL_KOJO_RESULTS:0 = ……その勇気は褒めてあげたい
+							CASEELSE
+								;敵数5以上
+								BTL_KOJO_RESULTS:0 = ……相手は 敵数{TFLAG:적초기배치수}匹。一応、気をつけて
+						ENDSELECT
+					CASE "同格"
+						SELECTCASE TFLAG:적초기배치수
+							CASE 2
+								BTL_KOJO_RESULTS:0 = ……敵もまぁまぁ強いみたいだ
+							CASE 1
+								BTL_KOJO_RESULTS:0 = ……敵が何を隠し持っててもおかしくない。危なそうだったら逃げるのも手だよ
+							CASEELSE
+								BTL_KOJO_RESULTS:0 = ……相手は 敵数 = 体。一撃で沈められれば問題なさそう
+						ENDSELECT
+					CASE "格上"
+						SELECTCASE TFLAG:적초기배치수
+							CASE 1
+								BTL_KOJO_RESULTS:0 = ……敵は1体。だけど…危ない、かもな
+							CASEELSE
+								BTL_KOJO_RESULTS:0 = ……敵の方がかなり強い。それに 敵数 体だから戦略は考えてね
+						ENDSELECT
+				ENDSELECT
+			CASE "先制攻撃"
+				IF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = ……こっちの方が察知したのは早かったからね、さっさとカタを付けよう
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = ……今更身構えたってもう遅いよ
+				ELSE
+					BTL_KOJO_RESULTS:0 = ……いいね、すぐ終わりそう
+				ENDIF
+			CASE "バックアタック"
+				IF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = ……敵が来てる。 敵数 = 体、だけど…
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = ……ごめん。今敵が来たよね？
+				ELSE
+					BTL_KOJO_RESULTS:0 = ……敵か。今完全に気を抜いてた…
+				ENDIF
+			CASE "バックアタック阻止"
+				IF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = ……敵 敵数 = 体。はやく身構えてくれれば防げるよ
+				ELSE
+					BTL_KOJO_RESULTS:0 = ……大丈夫。敵は 敵数 = 体しかいないから
+				ENDIF
+			CASE "不意打ち"
+				IF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = ……めんどくさい戦法をとってくるヤツらだな
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = ……危ない！　敵が来てる！
+				ELSE
+					BTL_KOJO_RESULTS:0 = ……チッ
+				ENDIF
+			CASE "不意打ち阻止"
+				IF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = ……敵 敵数 = 体。正面向かってこないってことは、こっちに勝機がある
+				ELSE
+					BTL_KOJO_RESULTS:0 = ……予測通りに来てくれた。敵 敵数 = 体だよ
+				ENDIF
+		ENDSELECT
+	CASE "メイン画面"
+		SELECTCASE TSTR:네비_시추에이션_서버1
+			CASE "重度の危機"
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "死亡者多数"
+						IF FLAG:도주불가플래그
+							IF RAND:3 == 0
+								BTL_KOJO_RESULTS:0 = ……クソ、はやく立って！　こんなの嫌だろ…！
+							ELSEIF RAND:2 == 0
+								BTL_KOJO_RESULTS:0 = ……絶体絶命ってやつ、か
+							ELSE
+								BTL_KOJO_RESULTS:0 = ……ここを乗り切れば、どうにかなるかも
+							ENDIF
+						ELSE
+							BTL_KOJO_RESULTS:0 = ……今なら逃げれる！　早くして！
+						ENDIF
+					CASE "マスター瀕死"
+						IF RAND:2 == 0
+							BTL_KOJO_RESULTS:0 = ……%CALLNAME:MASTER%、回復しないと承知しないから
+						ELSE
+							BTL_KOJO_RESULTS:0 = ……！
+						ENDIF
+					CASE "マスター死亡"
+						BTL_KOJO_RESULTS:0 = ……はやくッ！%CALLNAME:MASTER%と一緒に避難しろ！
+					CASE "그외"
+						IF RAND:2
+							IF FLAG:도주불가플래그
+								IF RAND:3 == 0
+									BTL_KOJO_RESULTS:0 = ……これは痛いな
+								ELSEIF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = ……くっ
+								ELSE
+									BTL_KOJO_RESULTS:0 = ……皆、防御も忘れないで
+								ENDIF
+							ELSE
+								IF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = ……一回、仕切り直すのはどう？
+								ELSE
+									BTL_KOJO_RESULTS:0 = ……回復しないと不味いよ
+								ENDIF
+							ENDIF
+						ELSE
+							IF RAND:2
+								BTL_KOJO_RESULTS:0 = ……追い詰められるなんてね
+							ELSE
+								BTL_KOJO_RESULTS:0 = ……こんなはずじゃ…！
+							ENDIF
+						ENDIF
+				ENDSELECT
+			CASE "中度の危機"
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "핀치캐릭터"
+						SELECTCASE TSTR:핀치캐릭터위기내용
+							CASE "DYING"
+								BTL_KOJO_RESULTS:0 =  ……死んでる人がいる、困るな
+							CASEELSE
+								IF RAND:2 == 0
+									BTL_KOJO_RESULTS:0 = ……一人が欠けると困るから、回復を挟んで
+								ELSE
+									BTL_KOJO_RESULTS:0 = ……回避すればいいわけじゃないから、回復して
+								ENDIF
+						ENDSELECT
+					CASEELSE
+						IF FLAG:경과턴수 < 3
+							BTL_KOJO_RESULTS:0 = ……苦戦させられてるね、そいつの弱点を探すから待って
+						ELSEIF FLAG:경과턴수 < 10
+							BTL_KOJO_RESULTS:0 = ……大丈夫、まだ戦えるでしょ？
+						ELSE
+							BTL_KOJO_RESULTS:0 = ……勝てるよ、絶対
+						ENDIF
+				ENDSELECT
+			CASE "平常"
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "一部撃破済み"
+						IF RAND:3 == 0
+							BTL_KOJO_RESULTS:0 = ……この感じならもう終わるよ
+						ELSEIF RAND:2 == 0
+							BTL_KOJO_RESULTS:0 = ……他に敵は来てないよ。敵はあと 敵数 = 体のまま
+						ELSE
+							BTL_KOJO_RESULTS:0 = ……
+						ENDIF
+					CASE "그외"
+						IF RAND:3 == 0
+							BTL_KOJO_RESULTS:0 = ……敵は 敵数{TFLAG:적배치수}体。狙いを外さないようにね
+						ELSEIF RAND:2 == 0
+							BTL_KOJO_RESULTS:0 = ……どんどん行こう
+						ELSE
+							BTL_KOJO_RESULTS:0 = ……
+						ENDIF
+				ENDSELECT
+		ENDSELECT
+	CASE "戦闘終了"
+		SELECTCASE TSTR:네비_시추에이션_서버1
+			CASE "勝利"
+				IF ナビ_シチュエーション存在取得("格下")
+					IF RAND:3 == 0
+						BTL_KOJO_RESULTS:0 = ……やっぱり楽勝だった？　お疲れ様
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = ……期待外れなぐらい弱かったね。お疲れ様
+					ELSE
+						BTL_KOJO_RESULTS:0 = ……よし、次に進もう
+					ENDIF
+				ELSEIF ナビ_シチュエーション存在取得("格上")
+					IF RAND:3 == 0
+						BTL_KOJO_RESULTS:0 = ……よかった、苦戦はしたけど勝てた。お疲れ様
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = ……皆怪我は深くない？　お疲れ様
+					ELSE
+						BTL_KOJO_RESULTS:0 = ……一回、休憩するのも手だよ
+					ENDIF
+				ELSE
+					IF RAND:3 == 0
+						BTL_KOJO_RESULTS:0 = ……安定してるね。お疲れ様
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = ……次もこの調子でいけるといいけど。お疲れ様
+					ELSE
+						BTL_KOJO_RESULTS:0 = ……気を抜かないでね
+					ENDIF
+				ENDIF
+			CASE "敗北"
+				IF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = ……こんな終わり方って…やるせないな
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = ……あーあ、ここまでか
+				ELSE
+					BTL_KOJO_RESULTS:0 = ……わかってはいたけど、嫌な光景だ…
+				ENDIF
+		ENDSELECT
+ENDSELECT
+
+@BATTLE_NAVI_K[[キャラ:인수라M]], ARG
+SELECTCASE ARG
+	;戦闘開始・味方のレベルが敵のレベルより１０以上高い
+	CASE 0
+		IF ARG:1 == 4
+			;敵数4
+			BTL_KOJO_RESULTS:0 = ……少しは油断しても大丈夫そう。この数なら蹴散らせると思う
+		ELSEIF ARG:1 == 3
+			;敵数3
+			BTL_KOJO_RESULTS:0 = ……まぁ、ほどほどに痛めつければ逃げてくれそうだ
+		ELSEIF ARG:1 == 2
+			;敵数2
+			BTL_KOJO_RESULTS:0 = ……舐められてるのかと思ったけど、そういうわけでもないみたい
+		ELSEIF ARG:1 == 1
+			;敵数1
+			BTL_KOJO_RESULTS:0 = ……その勇気は褒めてあげたい
+		ELSE
+			;敵数5以上
+			BTL_KOJO_RESULTS:0 = ……相手は 敵数 = 匹。一応、気をつけて
+		ENDIF
+	;戦闘開始・味方のレベルが敵のレベルより１０以上低い
+	CASE 1
+		;敵数１
+		IF ARG:1 == 1
+			BTL_KOJO_RESULTS:0 = ……敵は1体。だけど…危ない、かもな
+		ELSE
+			BTL_KOJO_RESULTS:0 = ……敵の方がかなり強い。それに 敵数 体だから戦略は考えてね
+		ENDIF
+	;戦闘開始・同レベル帯
+	CASE 2
+		IF ARG:1 == 2
+			BTL_KOJO_RESULTS:0 = ……敵もまぁまぁ強いみたいだ
+		ELSEIF ARG:1 == 1
+			BTL_KOJO_RESULTS:0 = ……敵が何を隠し持っててもおかしくない。危なそうだったら逃げるのも手だよ
+		ELSE
+			BTL_KOJO_RESULTS:0 = ……相手は 敵数 = 体。一撃で沈められれば問題なさそう
+		ENDIF
+	;戦闘開始・先制攻撃
+	CASE 3
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = ……こっちの方が察知したのは早かったからね、さっさとカタを付けよう
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = ……今更身構えたってもう遅いよ
+		ELSE
+			BTL_KOJO_RESULTS:0 = ……いいね、すぐ終わりそう
+		ENDIF
+	;戦闘開始・バックアタック
+	CASE 4
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = ……敵が来てる。 敵数 = 体、だけど…
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = ……ごめん。今敵が来たよね？
+		ELSE
+			BTL_KOJO_RESULTS:0 = ……敵か。今完全に気を抜いてた…
+		ENDIF
+	;戦闘開始・バックアタック（百太郎発動）
+	CASE 5
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = ……敵 敵数 = 体。はやく身構えてくれれば防げるよ
+		ELSE
+			BTL_KOJO_RESULTS:0 = ……大丈夫。敵は 敵数 = 体しかいないから
+		ENDIF
+	;戦闘開始・不意打ち
+	CASE 6
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = ……めんどくさい戦法をとってくるヤツらだな
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = ……危ない！　敵が来てる！
+		ELSE
+			BTL_KOJO_RESULTS:0 = ……チッ
+		ENDIF
+	;戦闘開始・不意打ち（百太郎発動）
+	CASE 7
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = ……敵 敵数 = 体。正面向かってこないってことは、こっちに勝機がある
+		ELSE
+			BTL_KOJO_RESULTS:0 = ……予測通りに来てくれた。敵 敵数 = 体だよ
+		ENDIF
+	;戦闘終了・味方のレベルが敵のレベルより１０以上高い
+	CASE 8
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = ……やっぱり楽勝だった？　お疲れ様
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = ……期待外れなぐらい弱かったね。お疲れ様
+		ELSE
+			BTL_KOJO_RESULTS:0 = ……よし、次に進もう
+		ENDIF
+	;戦闘終了・味方のレベルが敵のレベルより１０以上低い
+	CASE 9
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = ……よかった、苦戦はしたけど勝てた。お疲れ様
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = ……皆怪我は深くない？　お疲れ様
+		ELSE
+			BTL_KOJO_RESULTS:0 = ……一回、休憩するのも手だよ
+		ENDIF
+	;戦闘終了・同レベル帯
+	CASE 10
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = ……安定してるね。お疲れ様
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = ……次もこの調子でいけるといいけど。お疲れ様
+		ELSE
+			BTL_KOJO_RESULTS:0 = ……気を抜かないでね
+		ENDIF
+	;戦闘終了・全滅
+	CASE 11
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = ……こんな終わり方って…やるせないな
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = ……あーあ、ここまでか
+		ELSE
+			BTL_KOJO_RESULTS:0 = ……わかってはいたけど、嫌な光景だ…
+		ENDIF
+	;戦闘中・死亡している味方が複数いる・逃走不能
+	CASE 12
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = ……クソ、はやく立って！　こんなの嫌だろ…！
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = ……絶体絶命ってやつ、か
+		ELSE
+			BTL_KOJO_RESULTS:0 = ……ここを乗り切れば、どうにかなるかも
+		ENDIF
+	;戦闘中・死亡している味方が複数いる・逃走可能
+	CASE 13
+		BTL_KOJO_RESULTS:0 = ……今なら逃げれる！　早くして！
+	;戦闘中・死亡している味方が一人いる（あなた）
+	CASE 14
+		BTL_KOJO_RESULTS:0 = ……はやくッ！%CALLNAME:MASTER%と一緒に避難しろ！
+	;戦闘中・死亡している味方が一人いる（あなた以外）
+	CASE 15
+		IF 0
+;		ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;			BTL_KOJO_RESULTS:0 = 
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 
+		ELSE
+			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;戦闘中・ＨＰを25%切った味方が複数いる・逃走不能
+	CASE 16
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = ……これは痛いな
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = ……くっ
+		ELSE
+			BTL_KOJO_RESULTS:0 = ……皆、防御も忘れないで
+		ENDIF
+	;戦闘中・ＨＰを25%切った味方が複数いる・逃走可能
+	CASE 17
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = ……一回、仕切り直すのはどう？
+		ELSE
+			BTL_KOJO_RESULTS:0 = ……回復しないと不味いよ
+		ENDIF
+	;戦闘中・ＨＰを25%切った味方が一人いる（あなた）
+	CASE 18
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = ……%CALLNAME:MASTER%、回復しないと承知しないから
+		ELSE
+			BTL_KOJO_RESULTS:0 = ……！
+		ENDIF
+	;戦闘中・ＨＰを25%切った味方が一人いる（あなた以外）
+	CASE 19
+		IF 0
+;		ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;			BTL_KOJO_RESULTS:0 = 
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = ……一人が欠けると困るから、回復を挟んで
+		ELSE
+			BTL_KOJO_RESULTS:0 = ……回避すればいいわけじゃないから、回復して
+		ENDIF
+	;戦闘中・状態異常の味方が複数いる
+	CASE 20
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 
+		ELSE
+			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;戦闘中・状態異常の味方がいる
+	CASE 33,21,22,23,24,25,26,27
+		SELECTCASE CFLAG:(ARG:8):상태이상
+			;HAPPY　幸福
+			CASE 1
+				IF 0
+;				ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;					BTL_KOJO_RESULTS:0 = 
+;				ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;					BTL_KOJO_RESULTS:0 = 
+				ELSE
+					BTL_KOJO_RESULTS:0 = 
+				ENDIF
+			;PANIC　混乱
+			CASE 3
+				IF 0
+;				ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;					BTL_KOJO_RESULTS:0 = 
+;				ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;					BTL_KOJO_RESULTS:0 = 
+				ELSE
+					BTL_KOJO_RESULTS:0 = 
+				ENDIF
+			;SLEEP　睡眠
+			CASE 4
+				IF 0
+;				ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;					BTL_KOJO_RESULTS:0 = 
+;				ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;					BTL_KOJO_RESULTS:0 = 
+				ELSE
+					BTL_KOJO_RESULTS:0 = 
+				ENDIF
+			;BIND　金縛
+;			CASE 6
+			;CLOSE　沈黙
+;			CASE 7
+			;POISON　毒
+			CASE 8
+				IF 0
+;				ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;					BTL_KOJO_RESULTS:0 = 
+;				ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;					BTL_KOJO_RESULTS:0 = 
+				ELSE
+					BTL_KOJO_RESULTS:0 = 
+				ENDIF
+			;BOMB　爆弾化
+;			CASE 9
+			;CHARM　魅了
+			CASE 10
+				IF 0
+;				ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;					BTL_KOJO_RESULTS:0 = 
+;				ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;					BTL_KOJO_RESULTS:0 = 
+				ELSE
+					BTL_KOJO_RESULTS:0 = 
+				ENDIF
+			;PALYZE　麻痺
+			CASE 11
+				IF 0
+;				ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;					BTL_KOJO_RESULTS:0 = 
+;				ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;					BTL_KOJO_RESULTS:0 = 
+				ELSE
+					BTL_KOJO_RESULTS:0 = 
+				ENDIF
+			;CURSE　呪い
+;			CASE 12
+			;FLY　蠅化
+;			CASE 13
+			;STONE　石化
+			CASE 14
+				IF 0
+;				ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;					BTL_KOJO_RESULTS:0 = 
+;				ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;					BTL_KOJO_RESULTS:0 = 
+				ELSE
+					BTL_KOJO_RESULTS:0 = 
+				ENDIF
+			;FLAME　炎上
+;			CASE 18
+			;SLIP　転倒
+;			CASE 19
+			;BRAND　낙인
+;			CASE 20
+			;その他の状態異常
+			CASEELSE
+				IF 0
+;				ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;					BTL_KOJO_RESULTS:0 = 
+;				ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;					BTL_KOJO_RESULTS:0 = 
+				ELSE
+					BTL_KOJO_RESULTS:0 = 
+				ENDIF
+			ENDSELECT
+		;ENDIF
+	;戦闘中・ＨＰを50%切った味方がいる
+	CASE 28
+		IF 0
+;		ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;			BTL_KOJO_RESULTS:0 = 
+;		ELSEIF NO:(ARG:8) == [[キャラ:○○]]
+;			BTL_KOJO_RESULTS:0 = 
+		ELSE
+			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;戦闘中・危険な状態の味方はいない・逃走不能
+	CASE 29
+			IF FLAG:경과턴수 < 3
+				BTL_KOJO_RESULTS:0 = ……苦戦させられてるね、そいつの弱点を探すから待って
+			ELSEIF FLAG:경과턴수 < 10
+				BTL_KOJO_RESULTS:0 = ……大丈夫、まだ戦えるでしょ？
+			ELSE
+				BTL_KOJO_RESULTS:0 = ……勝てるよ、絶対
+			ENDIF
+	;戦闘中・危険な状態の味方はいない・戦闘開始時よりも敵の数が少ない
+	CASE 30
+		IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = ……この感じならもう終わるよ
+		ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = ……他に敵は来てないよ。敵はあと 敵数 = 体のまま
+		ELSE
+				BTL_KOJO_RESULTS:0 = ……
+		ENDIF
+	;戦闘中・危険な状態の味方はいない・戦闘開始時から敵の数が変わらない
+	CASE 31
+		IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = ……敵は 敵数 = 体。狙いを外さないようにね
+		ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = ……どんどん行こう
+		ELSE
+				BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;戦闘中・戦闘開始時よりも味方の数が少ない
+	CASE 32
+		IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = ……追い詰められるなんてね
+		ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = ……こんなはずじゃ…！
+		ELSE
+				BTL_KOJO_RESULTS:0 = 
+		ENDIF
+;	CASE 33 は上記
+;
+ENDSELECT

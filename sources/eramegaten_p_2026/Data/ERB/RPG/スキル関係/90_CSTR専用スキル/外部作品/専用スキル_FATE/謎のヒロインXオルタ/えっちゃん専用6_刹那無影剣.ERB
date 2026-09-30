@@ -1,0 +1,188 @@
+﻿;スキル名
+@SKILL_NAME_刹那無影剣,ARG
+RESULTS = 刹那無影剣
+
+;　명중
+@SKILL_HITRATE_刹那無影剣, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_刹那無影剣, ARG
+RETURN 100
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_刹那無影剣,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_刹那無影剣,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_刹那無影剣, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_刹那無影剣,ARG
+RETURN 10
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_刹那無影剣
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_刹那無影剣,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_刹那無影剣,ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_刹那無影剣,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_刹那無影剣,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_刹那無影剣,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;속도보정
+@SKILL_SPEED_刹那無影剣, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_刹那無影剣
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_刹那無影剣,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"刹那無影剣")
+
+IF SKILLGAGE_D_GET(ARG,SKILL_NUM) == 0
+	CALL SKILLGAGE_D_SET,ARG,SKILL_NUM,5
+	PRINTW 3턴 동안 특정 공격 시 데미지가 상승하는 상태가 되었다!
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;追加コマンド(EXTRAの下)
+;====================================================
+@INPUT_COM_NAME_刹那無影剣,ARG
+RESULTS = 刹那無影剣
+RESULTS:1 = 刹那無影剣
+RETURN 0
+
+@INPUT_COM_ABLE_刹那無影剣,ARG
+RESULTS = 効果発動中
+SIF PU_SKILLGAGE_D_GET(ARG, "刹那無影剣")
+	RETURN -1
+CALL CHECK_COST, ARG, PU_SKILLNUM_GET(ARG, "刹那無影剣")
+SIF !RESULT
+	RETURN -1
+RETURN 1
+
+;====================================================
+;コマンド実行
+;====================================================
+@INPUT_COM_刹那無影剣,ARG
+#LOCALSIZE 1
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"刹那無影剣")
+CALL GET_SKILL_COST,SKILL_NUM,ARG
+PRINTL 스킬 사용 시 3턴 동안 이하의 공격을 실행했을 때 데미지가 상승하는 상태가 됩니다.
+PRINTL 해당 공격: 『검격 속성 공격』 『전격 속성 공격』
+PRINTL 
+PRINTFORML 스킬을 사용하겠습니까? (소비 MP　{RESULT})
+PRINTL
+CALL INPUT_YN
+IF RESULT == 0
+	LOCAL = CFLAG:ARG:입력행동
+	CFLAG:ARG:입력행동 = SKILL_NUM
+	CALL PAY_COST, ARG, CFLAG:ARG:입력행동
+	CALL PRINT_ACT_MESSAGE, ARG, SKILL_NUM
+	CALL BATTLE_EVENT_ACT, ARG
+	RESETCOLOR
+	CALL ACTION_刹那無影剣,ARG
+	CFLAG:ARG:입력행동 = LOCAL
+ENDIF
+RETURN -1
+;-1 再びコマンド選択へ
+; 1 キャラ選択へ
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_刹那無影剣,ARG
+IF PU_SKILLGAGE_D_GET(ARG,"刹那無影剣") > 2
+	RESULTS = 刹那無影剣:{PU_SKILLGAGE_D_GET(ARG,"刹那無影剣") - 2}Ｔ
+ELSEIF PU_SKILLGAGE_D_GET(ARG,"刹那無影剣") > 0
+	RESULTS = 刹那無影剣:ＣＴ{PU_SKILLGAGE_D_GET(ARG,"刹那無影剣")}
+ENDIF
+RETURN 3
+
+;　説明文の表示
+@SKILL_EXPLAIN_刹那無影剣,ARG
+PRINTL 빈둥빈둥 지내고 싶다는 끝없는 게으름으로 인해 직감을 승화시켜 연마한 검기.
+PRINTL 
+PRINTL 자신의 크리티컬 부여율이 크게 상승하고, 피크리티컬 확률이 감소한다.
+PRINTL 커맨드 발동 시 3턴 동안만 이하의 공격을 사용했을 때 데미지가 상승하는 상태가 된다.
+PRINTL 해당 공격: 『검격 속성 공격』 『전격 속성 공격』 『중력 속성 공격』
+PRINTL 이 커맨드는 발동 후 5턴까지 재사용 불가.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_刹那無影剣,ARG
+RETURN 1
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_刹那無影剣, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			SIF PU_SKILLGAGE_D_GET(L_P,"刹那無影剣") < 3
+				RETURN 0
+			SIF !GROUPMATCH(L_相性名, "검격", "전격", "중력")
+				RETURN 0
+			RETURN 30
+		CASE "クリティカルランク"
+			RETURN 2
+	ENDSELECT
+ELSE
+	SELECTCASE ARGS
+		CASE "クリティカル耐性ランク"
+			RETURN -1
+	ENDSELECT
+ENDIF
+RETURN 0

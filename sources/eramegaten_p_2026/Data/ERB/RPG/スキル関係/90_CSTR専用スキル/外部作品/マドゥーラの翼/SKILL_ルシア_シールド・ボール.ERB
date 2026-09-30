@@ -1,0 +1,110 @@
+﻿;ルシア専用スキル。いわゆるリーフシールド的なあれ。
+;防御を上げるというか飛んでくる敵をぶっ殺す＝実質のダメージ量を減らすなので、攻撃力へのデバフで表現
+
+;スキル名
+@SKILL_NAME_シールド・ボール,ARG
+RESULTS = 실드 볼
+
+;　명중
+@SKILL_HITRATE_シールド・ボール, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_シールド・ボール, ARG
+RETURN 130
+
+;クリティカル率
+;@SKILL_CRITICAL_RATE_シールド・ボール, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_シールド・ボール,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_シールド・ボール,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_シールド・ボール, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_シールド・ボール,ARG
+RETURN 20
+
+;　相性
+@SKILL_TYPE_シールド・ボール,ARG
+RETURN GET_TYPE_NUM("충격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_シールド・ボール
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_シールド・ボール,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_シールド・ボール,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_シールド・ボール,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_シールド・ボール,ARG
+RETURN GET_SPHERE_NUM("일렬")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_シールド・ボール,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_シールド・ボール, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_シールド・ボール
+RETURN 0
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_シールド・ボール
+RETURN GET_SUCCESSION_NUM("충격")
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+@SKILL_DAMAGE_EFFECT_シールド・ボール,ARG,ARG:1,ARG:2
+SIF ARG:1 < 0
+	RETURN 0
+CALL SKILL_SET_カジャンダ, ARG, ARG:1, "공격", -4, "短縮"
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_シールド・ボール,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+;範囲攻撃
+CALL ATTACK_FIELD, ARG, ARG:1, SKILL_NUM
+
+;　説明文の表示
+@SKILL_EXPLAIN_シールド・ボール,ARG
+PRINTL 적 1열에 충격 속성의 소 데미지 ＋ 적의 공격력을 1단계 낮춘다. 사정거리 S
+PRINTL 매직 링에서 쏘아낸 고속 회전하는 마력의 원환으로 적을 튕겨 날려 공격을 받기 어렵게 만든다
+
+@SKILL_EXPLAIN_TOOLTIP_シールド・ボール, ARG
+RESULTS:0 = 적 1열에 충격 속성의 소 데미지 ＋ 적의 공격력을 1단계 낮춘다. 사정거리 S
+RESULTS:1 = 매직 링에서 쏘아낸 고속 회전하는 마력의 원환으로 적을 튕겨 날려 공격을 받기 어렵게 만든다
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_シールド・ボール,ARG
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_シールド・ボール, ARG = -1
+RETURN 9

@@ -1,0 +1,141 @@
+﻿;スキル名
+@SKILL_NAME_2757,ARG
+RESULTS = 마신의조사
+
+;　명중
+@SKILL_HITRATE_2757, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2757, ARG
+RETURN 330
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2757,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2757,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2757, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2757,ARG
+RETURN 30
+
+;　相性
+@SKILL_TYPE_2757,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2757
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2757, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2757, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2757,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2757,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2757, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2757
+RETURN GET_SUCCESSION_NUM("만능")
+
+;속도보정
+@SKILL_SPEED_2757, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2757
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2757, ARG = -1
+RETURN 8
+
+@継承不能_2757
+RETURN 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2757, ARG, ARG:1, ARG:2
+CALL ATTACK_SKILL,ARG,ARG:1,ARG:2
+
+;====================================================
+;ダメージ発動時
+;ARG:0	行動者のキャラ番号
+;ARG:1	対象のキャラ番号
+;ARG:2	1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;
+;備考:標準の追加効果付与はblock・吸収の場合は発動しない。
+;====================================================
+@SKILL_DAMAGE_EFFECT_2757, ARG, ARG:1, ARG:2
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CNT
+#DIMS DYNAMIC TYPE_TABLE = "화염", "빙결", "전격", "충격", "파마", "주살"
+SIF ARG:1 < 0
+	RETURN 0
+;無効以下では発動しない
+SIF ARG:2 <= -2
+	RETURN 0
+CALL SHUFFLE_ARRAY_STR, TYPE_TABLE
+FOR LCOUNT, 0, VARSIZE("TYPE_TABLE")
+	;もともとの耐性が破壊対象にならないやつは弾く
+	SIF CHECK_WEAKNESS(MAXBASE:(ARG:1):(TYPE_TABLE:LCOUNT)) >= 0
+		CONTINUE
+	L_CNT = 3
+	IF L_CNT > CFLAG:(ARG:1):@"%TYPE_TABLE:LCOUNT%무효화횟수"*2
+		L_CNT -= CFLAG:(ARG:1):@"%TYPE_TABLE:LCOUNT%무효화횟수"
+		IF L_CNT >= CFLAG:(ARG:1):@"%TYPE_TABLE:LCOUNT%가드킬"
+			CFLAG:(ARG:1):@"%TYPE_TABLE:LCOUNT%가드킬" = L_CNT
+			TSTR:스킬메시지추가효과 += " & " + "《" + TYPE_TABLE:LCOUNT + "내성파괴" + "》"
+		ENDIF
+	ELSE
+		CFLAG:(ARG:1):@"%TYPE_TABLE:LCOUNT%무효화횟수" = MAX(CFLAG:(ARG:1):@"%TYPE_TABLE:LCOUNT%무효화횟수" - L_CNT, 0)
+		IF CFLAG:(ARG:1):@"%TYPE_TABLE:LCOUNT%무효화횟수" > 0
+			TSTR:스킬메시지추가효과 += " & " + "《" + TYPE_TABLE:LCOUNT + "장벽파손" + "》"
+		ELSE
+			TSTR:스킬메시지추가효과 += " & " + "《" + TYPE_TABLE:LCOUNT + "장벽파괴" + "》"
+		ENDIF
+	ENDIF
+	BREAK
+NEXT
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2757, ARG
+PRINTL 적 １체에 만능 상성으로 대 데미지를 준다。
+PRINTL 추가로 공격에 성공했을 시、화염・빙결・전격・충격・파마・주살 중 하나의 내성을 ３턴간 무효화한다。
+
+@SKILL_EXPLAIN_TOOLTIP_2757, ARG
+RESULTS:0 = 적 １체에 만능 상성으로 대 데미지를 준다。
+RESULTS:1 = 추가로 공격에 성공했을 시、화염・빙결・전격・충격・파마・주살 중 하나의 내성을 ３턴간 무효화한다。
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2757,ARG
+RETURN 1
+;とくにない
+

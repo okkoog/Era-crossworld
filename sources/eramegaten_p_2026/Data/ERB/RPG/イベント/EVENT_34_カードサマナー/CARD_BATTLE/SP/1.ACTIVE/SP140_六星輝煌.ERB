@@ -1,0 +1,66 @@
+﻿
+;特技名
+@CGSP_NAME_140, ARGS, ARG
+RESULTS = 六星輝煌
+
+;　コストの量
+@CGSP_COST_140, ARGS, ARG
+RETURN 1
+;1
+
+;　타겟(選択するかしないか)
+@CGSP_TARGET_140, ARGS, ARG
+RETURN 0
+;0-無し　　　1-味方1体　2-味方1体(自身含む)　3-敵1体　4-敵1体(サマナー含む)
+;5-敵味方1体　6-サマナーどちらか
+;自動発動なので0
+
+;　発動タイミング
+@CGSP_TIMING_140, ARGS, ARG
+RETURN 0
+;0-アクティブ　1-味方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　2-相手ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　3-両方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ
+
+;====================================================
+;特技発動
+;====================================================
+@CGSP_ACTION_140, ARGS, ARG, ARG:1
+;
+#DIM L_M_HOST
+#DIM L_Y_HOST
+#DIM L_M_PROB
+#DIM L_Y_PROB
+L_M_HOST = FIELD_DEMON_DATE_V:ARG:CBV_HOST
+L_Y_HOST = (L_M_HOST + 1) % 2
+
+LOCAL = (SUMMONER_PARAMETER:L_Y_PROB:CSP2_ALIGNMENT / 10) - (SUMMONER_PARAMETER:L_M_HOST:CSP2_ALIGNMENT / 10)
+
+
+FOR LOCAL:1, 0, 6
+    IF RAND:6 < (3 + LOCAL)
+		CALL SP_SUMMONER_HEAL, L_M_HOST, 1, ARG
+    ELSE
+		CALL SP_SUMMONER_HEAL, L_Y_HOST, 1, ARG
+    ENDIF
+NEXT
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;発動後どうなるか
+@CGSP_ACTION_AFTER_140, ARGS, ARG, ARG:1
+RETURN 1
+;0-何もなし　1-フリーズ状態　2-山札に戻る　3-即死する
+
+;　 説明文の表示
+@CGSP_EXPLAIN_140, ARGS, ARG
+RESULTS = 両サマナーのＨＰをランダム対象で６回、１Ｐ回復する。サマナーがライト属性に近いほど対象になりやすい。
+
+;　スキルタイプ
+;　主にこのターンパワーアップとアギとかのダメージ系で使用
+;　それ以外は省略
+;　30 회복
+@CGSP_TYPE_140, ARGS, ARG
+RETURN 30, 3
+
+

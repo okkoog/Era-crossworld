@@ -1,0 +1,2578 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:GROUP_LIVE.ERB
+;	Facility	:集団ライブでの労役に関する関数群です。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2021/06/30		木綿豆腐				新規作成
+;	002		2021/07/04		木綿豆腐				変動_グループ人気がマイナスの場合にエラー落ちする不具合を修正
+;	003		2021/08/20		木綿豆腐				TFLAG:13の指定が競合してたので回避/特殊編成ボーナスについてファイルを分けた
+;	004		2021/11/04		JK好き					結果に関わらず歌唱経験が１は獲得出来るように修正
+;	005		2022/10/12		木綿豆腐				集団ライブでもアイテムを入手できるように
+;	006		2022/11/04		kuuzya					PRINT命令のFORM忘れを修正
+;	007		2023/07/15		P(bazzile)				MAG加算処理を専用の関数を通す形に変更
+;	008		2024/05/26		P(bazzile)				スタッフ補正の判定式を変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2024/02/15		P(bazzile)				ゲーム進行の変更にあわせて処理を調整
+;	002		2024/06/07		P(bazzile)				実行した場合にターンエンドに遷移させるやり方を変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+@GROUP_LIVE
+#LOCALSIZE 2
+$TOP_OF_GROUP_LIVE
+;---- EDIT P 002 ADD START -------------------------
+DRAWLINE
+PRINTFORML 아무 그룹의 라이브가 끝난 뒤 이 화면을 벗어나면
+PRINTFORML 조교가능횟수를 1회 소모하고、또한 다음 턴까지 콘서트와 라이브를 개최할 수 없게 되므로 주의해주세요
+PRINTFORML 라이브에서 노래할 그룹을 선택해주세요　
+DRAWLINE
+;---- EDIT P 002 ADD END ---------------------------
+CALL GROUP_NAME_CHECK
+FOR LOCAL, 1, 4
+	PRINTFORM {LOCAL}. %グループ名前:LOCAL, 30, LEFT%　인기：{グループ人気:LOCAL, 10}　
+	SIF グループ特殊編成値:LOCAL > 300
+		グループ特殊編成値:LOCAL = 300
+	SIF グループ熟練度:LOCAL > 300
+		グループ熟練度:LOCAL = 300
+	SIF グループ相性値:LOCAL > 300
+		グループ相性値:LOCAL = 300
+	LOCAL:1 = グループ特殊編成値:LOCAL + グループ熟練度:LOCAL + グループ相性値:LOCAL
+	SELECTCASE LOCAL:1
+	CASE 50 TO 149
+		PRINTL 편성보너스　발동중（효과：소）
+	CASE 150 TO 299
+		PRINTL 편성보너스　발동중（효과：중）
+	CASE IS > 299
+		PRINTL 편성보너스　발동중（효과：대）
+	CASEELSE
+		PRINTL 편성보너스　없음
+	ENDSELECT
+NEXT
+;---- EDIT P 001 MOD START -------------------------
+PRINTL [0]  - 라이브실행
+;---- EDIT P 001 MOD END ---------------------------…
+PRINTL [1]  - 그룹 편성
+PRINTL [2]  - 그룹 확인
+PRINTL [3]  - 그룹명 변경
+PRINTL [4]  - HELP
+DRAWLINE
+PRINTL [100]- 돌아간다
+$INPUT_LOOP
+CALL INPUTINT, 0, 1, 2, 3, 4, 100
+IF RESULT == 100
+	;---- EDIT P 002 MOD START -------------------------
+	IF コンサート実行日 == DAY
+		FLAG:조교실행완료횟수++
+		RETURN 1
+	ELSE
+		RETURN 0
+	ENDIF
+	;---- EDIT P 002 MOD END ---------------------------
+ELSEIF RESULT == 0
+	CALL LIVE_EXECUTION
+ELSEIF RESULT == 1
+	CALL GROUP_SELECTION
+ELSEIF RESULT == 2
+	CALL GROUP_CHECK
+ELSEIF RESULT == 3
+	CALL GROUP_RENAME
+ELSEIF RESULT == 4
+	CALL GROUP_HELP
+ELSE
+	CLEARLINE 1
+	GOTO INPUT_LOOP
+ENDIF
+DRAWLINE
+GOTO TOP_OF_GROUP_LIVE
+
+@GROUP_SELECTION
+#LOCALSSIZE 1
+$TOP_OF_GROUP_SELECTION
+CALL GROUP_NAME_CHECK
+PRINTL 어느 그룹을 편성하시겠습니까？
+PRINTFORML [1]  - %グループ名前:1%
+PRINTFORML [2]  - %グループ名前:2%
+PRINTFORML [3]  - %グループ名前:3%
+DRAWLINE
+PRINTL [100]- 돌아간다
+$INPUT_LOOP
+CALL INPUTINT, 1, 2, 3, 100
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT == 1
+	CALL GROUP_MEMBER_SELECTION, 1
+ELSEIF RESULT == 2
+	CALL GROUP_MEMBER_SELECTION, 2
+ELSEIF RESULT == 3
+	CALL GROUP_MEMBER_SELECTION, 3
+ELSE
+	CLEARLINE 1
+	GOTO INPUT_LOOP
+ENDIF
+DRAWLINE
+GOTO TOP_OF_GROUP_SELECTION
+
+@GROUP_MEMBER_SELECTION, ARG
+;ARG:0 = 変更するグループ番号
+#LOCALSIZE 2
+#LOCALSSIZE 1
+#DIM CAST
+#DIM N_PEOPLE
+#DIM ループ用
+#DIM 重複チェック
+#DIM 確認番号1
+#DIM 確認番号2
+SIF ARG == 0
+	RETURN 0
+REDRAW 0
+VARSET T, -2
+FOR LOCAL, 0, CHARANUM
+	IF CFLAG:LOCAL:소속그룹 == ARG
+		FOR LOCAL:1, 0, 10
+			SIF CFLAG:LOCAL:그룹포지션 == LOCAL:1
+				T:(LOCAL:1) = LOCAL
+		NEXT
+	ENDIF
+NEXT
+$RET
+DRAWLINE
+LOCALS = %グループ名前:ARG%
+PRINTFORML %LOCALS%에 편성할 멤버를 골라주십시오
+IF ITEM:라이브하우스 == 1 || ITEM:무도관 == 1
+ELSE
+	IF ITEM:라이브하우스 == 0
+		PRINTL 라이브 하우스를 구입하면 6명까지 편성할 수 있게 됩니다
+	ELSEIF ITEM:무도관 == 0
+		PRINTL 대극장을 구입하면 10명까지 편성할 수 있게 됩니다
+	ENDIF
+ENDIF
+DRAWLINE
+PRINTFORML [0]\@ T:0 >= 0 ? %CALLNAME:(T:0),20,LEFT%　[10]제외 # ＜없음＞ \@
+PRINTFORML [1]\@ T:1 >= 0 ? %CALLNAME:(T:1),20,LEFT%　[11]제외 # ＜없음＞ \@
+PRINTFORML [2]\@ T:2 >= 0 ? %CALLNAME:(T:2),20,LEFT%　[12]제외 # ＜없음＞ \@
+IF ITEM:라이브하우스 == 1 || ITEM:무도관 == 1
+	PRINTFORML [3]\@ T:3 >= 0 ? %CALLNAME:(T:3),20,LEFT%　[13]제외 # ＜없음＞ \@
+	PRINTFORML [4]\@ T:4 >= 0 ? %CALLNAME:(T:4),20,LEFT%　[14]제외 # ＜없음＞ \@
+	PRINTFORML [5]\@ T:5 >= 0 ? %CALLNAME:(T:5),20,LEFT%　[15]제외 # ＜없음＞ \@
+ENDIF
+IF ITEM:무도관 == 1
+	PRINTFORML [6]\@ T:6 >= 0 ? %CALLNAME:(T:6),20,LEFT%　[16]제외 # ＜없음＞ \@
+	PRINTFORML [7]\@ T:7 >= 0 ? %CALLNAME:(T:7),20,LEFT%　[17]제외 # ＜없음＞ \@
+	PRINTFORML [8]\@ T:8 >= 0 ? %CALLNAME:(T:8),20,LEFT%　[18]제외 # ＜없음＞ \@
+	PRINTFORML [9]\@ T:9 >= 0 ? %CALLNAME:(T:9),20,LEFT%　[19]제외 # ＜없음＞ \@
+ENDIF
+N_PEOPLE = 0
+重複チェック = 0
+FOR LOCAL, 0, 10
+	SIF T:LOCAL < 0
+		CONTINUE
+	N_PEOPLE ++
+	確認番号1 = T:LOCAL
+	FOR LOCAL:1, 0, 10
+		確認番号2 = T:(LOCAL:1)
+		SIF 確認番号2 < 0 || LOCAL == LOCAL:1
+			CONTINUE
+		;確認番号1, 2にはそれぞれポジション0～9の生成番号が入る
+		;これがLOCAL != LOCAL:1の時限定で一致する→同じ番号の人がいるということ
+		SIF 確認番号1 == 確認番号2
+			重複チェック = 1
+	NEXT
+NEXT
+グループ相性値:ARG = 0
+FOR LOCAL, 0, 10
+	SIF T:LOCAL < 0
+		CONTINUE
+	確認番号1 = T:LOCAL
+	FOR LOCAL:1, 0, 10
+		確認番号2 = T:(LOCAL:1)
+		SIF 確認番号2 < 0 || LOCAL == LOCAL:1
+			CONTINUE
+		;アライメントでの加算はライブでやってるのでこっちでは見ない。
+		;本当はキャラ相性値を見たかったんだけど反映されてないみたい？
+		グループ相性値:ARG += (GET_RELATION(確認番号1, 確認番号2, 0) - 100) / N_PEOPLE
+	NEXT
+NEXT
+SIF グループ相性値:ARG > 300
+	グループ相性値:ARG = 300
+PRINTFORML 현재의 그룹 상성치：{グループ相性値:ARG, 3}
+
+;詳細はGROUP_SPECIAL_BONUS.ERBを参照のこと
+CALL GROUP_SPECIAL_BONUS, ARG
+
+DRAWLINE
+SIF 重複チェック > 0
+	PRINTL ※경고　같은 멤버가 2회 이상 등록되어 있습니다
+IF N_PEOPLE > 1 && 重複チェック == 0
+	PRINT [2000]편성 결정
+ELSE
+	PRINT 　　　　　　　
+ENDIF
+IF N_PEOPLE > 0
+	PRINT [3000]편성 전체 해제
+ELSE
+	PRINT 　　　　　　　　
+ENDIF
+PRINTL [1000]돌아간다
+INPUT
+IF RESULT == 1000
+	VARSET T, -2
+	RETURN 0
+ELSEIF RESULT == 3000
+	VARSET T, -2
+	GOTO RET
+ELSEIF RESULT >= 0 && RESULT < 10
+	LOCAL = RESULT
+	;LOCALS = 誰を設定しますか？
+	;CALL INPUT_CHARA_LIST(LOCALS, "CASTING_GROUP_LIVE")
+	{
+	CALL INPUT_CHARA_LIST
+		, "FUNC_PROPSET_LIST"
+		, "누구를 설정하시겠습니까？"
+		, "CASTING_GROUP_LIVE" 
+		, "SHOW_ADD_UP_FUNCTION"
+		, "SHOW_ADD_DOWN_FUNCTION"
+		, "ADD_SELECT_FUNCTION"
+		, "L_CANCELS"
+		, "FUNC_CUSTOM_TITLE"
+		, "FUNC_CUSTOM_COLOR"
+		, -1
+	}
+	REDRAW 1
+	SIF RESULT != 1000
+		T:LOCAL = RESULT
+	GOTO RET
+ELSEIF RESULT >= 10 && RESULT < 20
+	T:(RESULT - 10) = -2
+	GOTO RET
+ELSEIF RESULT == 2000 && N_PEOPLE > 1
+	DRAWLINE
+	;ここで既に別のグループに入ってないかチェック
+	重複チェック = 0
+	FOR ループ用, 0, 10
+		CAST = T:ループ用
+		;いない番号ならパス
+		SIF CAST < 0
+			CONTINUE
+		;ARGにはグループ番号が入ってるので、0でもなくARGでもない＝別のグループにいる扱いのはず
+		SIF CFLAG:CAST:소속그룹 != ARG && CFLAG:CAST:소속그룹 != 0
+			重複チェック += 1
+	NEXT
+	PRINTL 이 멤버로 결정하겠습니까?
+	SIF 重複チェック > 0
+		PRINTL ※다른 그룹에 소속된 멤버가 포함되어 있습니다. 결정하면 소속이 덮어쓰기됩니다.
+	SIF グループ熟練度:ARG > 0
+		PRINTL ※그룹 숙련도가 리셋됩니다.
+	DRAWLINE
+	CALL INPUT_YN
+	SIF RESULT == 1
+		GOTO RET
+ELSE
+	CLEARLINE 1
+	GOTO RET
+ENDIF
+
+;メンバーが変わるかもなので選択したグループを一回解散する
+FOR LOCAL, 0, CHARANUM
+	SIF CFLAG:LOCAL:소속그룹 == ARG
+		;ポジションまで初期化してないけど出ないから関係ないでしょ
+		CFLAG:LOCAL:소속그룹 = 0
+NEXT
+FOR ループ用, 0, 10
+	CAST = T:ループ用
+	;いない番号ならパス
+	SIF CAST < 0
+		CONTINUE
+	;ARGにはグループ番号が入ってるはず
+	CFLAG:CAST:소속그룹 = ARG
+	;いつの日かポジション効果を作る誰かのために
+	CFLAG:CAST:그룹포지션 = ループ用
+NEXT
+;熟練度をリセット（熟練度じゃなくて人気の方がいいか？）
+グループ熟練度:ARG = 0
+VARSET T
+
+@CASTING_GROUP_LIVE(ARG)
+#DIM 実行可能カウント
+;合同ライブの条件はコンサートと一緒でいいでしょ
+;体力を見るのだけは消した
+実行可能カウント = 0
+
+SIF TALENT:ARG:반역
+	RETURN 0
+SIF CFLAG:ARG:이자리에없는플래그 == 1
+	RETURN 0
+SIF CFLAG:ARG:전투이외불능
+	RETURN 0
+	
+;あなた以外は隷属以外の陥落が必要
+IF ARG != MASTER 
+	SIF !(TALENT:ARG:연모 || TALENT:ARG:친애 || TALENT:ARG:음란 || TALENT:ARG:창부 || TALENT:ARG:신뢰 || TALENT:ARG:동료)
+		RETURN 0
+	
+	;以下実行判定
+	IF ABL:ARG:가창기능 > 4
+		実行可能カウント += 3
+	ELSEIF ABL:ARG:가창기능 > 2
+		実行可能カウント += 2
+	ELSEIF ABL:ARG:가창기능 > 0
+		実行可能カウント += 1
+	ENDIF
+	
+	IF EXP:ARG:가창경험 > 199
+		実行可能カウント += 3
+	ELSEIF EXP:ARG:가창경험 > 99
+		実行可能カウント += 2
+	ELSEIF EXP:ARG:가창경험 > 49
+		実行可能カウント += 1
+	ENDIF
+	
+	IF EXP:ARG:라이브경험 > 99
+		実行可能カウント += 3
+	ELSEIF EXP:ARG:라이브경험 > 49
+		実行可能カウント += 2
+	ELSEIF EXP:ARG:라이브경험 > 19
+		実行可能カウント += 1
+	ENDIF
+	
+	SIF TALENT:ARG:습득빠름
+		実行可能カウント += 1
+	SIF TALENT:ARG:눈에띄고싶어함
+		実行可能カウント += 1
+	SIF TALENT:ARG:프라이드높음
+		実行可能カウント += 1
+	SIF TALENT:ARG:매력
+		実行可能カウント += 2
+	SIF TALENT:ARG:인기
+		実行可能カウント += 2
+	
+	;信頼陥落は優遇（調教できないので）
+	SIF TALENT:ARG:신뢰
+		実行可能カウント += 1
+	SIF TALENT:ARG:동료
+		実行可能カウント += 2
+	SIF TALENT:ARG:맹우
+		実行可能カウント += 1
+	
+	;技巧はおおざっぱに
+	SIF ABL:ARG:기교 > 2
+		実行可能カウント += 1
+	;露出癖もおおざっぱに
+	SIF ABL:ARG:노출증 > 2
+		実行可能カウント += 1
+	
+	;実行可能カウントが5以上で可能
+	SIF 実行可能カウント < 5
+		RETURN 0
+ENDIF
+RETURN 1
+
+@GROUP_RENAME
+#LOCALSSIZE 1
+#DIM グループ番号
+$TOP_OF_GROUP_RENAME
+CALL GROUP_NAME_CHECK
+PRINTL 어느 그룹명을 변경하시겠습니까？
+PRINTFORML [1]  - %グループ名前:1%
+PRINTFORML [2]  - %グループ名前:2%
+PRINTFORML [3]  - %グループ名前:3%
+DRAWLINE
+PRINTL [100]- 돌아간다
+$INPUT_LOOP
+CALL INPUTINT, 1, 2, 3, 100
+SELECTCASE RESULT
+CASE 1 TO 3
+CASE 100
+	RETURN 0
+CASEELSE
+	CLEARLINE 1
+	GOTO INPUT_LOOP
+ENDSELECT
+グループ番号 = RESULT
+$INPUT_NAME
+PRINTFORML 그룹 {グループ番号}의 이름을 입력해 주십시오
+INPUTS
+グループ名前:グループ番号 = %RESULTS%
+PRINTFORML 그룹 {グループ番号}：%RESULTS%
+PRINTL 이걸로 괜찮으시겠습니까？
+CALL INPUT_YN
+IF RESULT == 1
+	CLEARLINE 1
+	GOTO INPUT_NAME
+ENDIF
+PRINTL 이름을 결정했습니다
+DRAWLINE
+GOTO TOP_OF_GROUP_RENAME
+
+@GROUP_NAME_CHECK
+;名前ブランクなグループがないかチェックするだけの関数
+FOR LOCAL, 1, 4
+	IF グループ名前:LOCAL == ""
+		;なんかとっても回りくどいことをしている気がする！
+		LOCALS = グループ
+		LOCALS += TOSTR(LOCAL)
+		グループ名前:LOCAL = %LOCALS%
+	ENDIF
+NEXT
+
+@GROUP_CHECK
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIM ループ用
+#DIMS 名簿, 10
+$TOP_OF_GROUP_CHECK
+VARSET 名簿
+CALL GROUP_NAME_CHECK
+PRINTL 어느 그룹을 확인하시겠습니까？
+PRINTFORML [1]  - %グループ名前:1%
+PRINTFORML [2]  - %グループ名前:2%
+PRINTFORML [3]  - %グループ名前:3%
+DRAWLINE
+PRINTL [100]- 돌아간다
+$INPUT_LOOP
+CALL INPUTINT, 1, 2, 3, 100
+SELECTCASE RESULT
+CASE 1 TO 3
+CASE 100
+	RETURN 0
+CASEELSE
+	CLEARLINE 1
+	GOTO INPUT_LOOP
+ENDSELECT
+PRINTFORML 그룹명 　%グループ名前:RESULT%
+FOR ループ用, 0, CHARANUM
+	IF CFLAG:ループ用:소속그룹 == RESULT
+		LOCAL = CFLAG:ループ用:그룹포지션
+		名簿:LOCAL = %CALLNAME:ループ用%
+	ENDIF
+NEXT
+FOR ループ用, 0, 10
+	IF 名簿:ループ用 == ""
+		PRINTFORML 포지션{ループ用}　－－－－－－－－
+	ELSE
+		;CALLNAMEだし8文字もあれば十分だと思うが
+		PRINTFORML 포지션{ループ用}　%名簿:ループ用, 8, LEFT%
+	ENDIF
+NEXT
+PRINTL 
+PRINTFORML 그룹 인기　　　　　　：{グループ人気:RESULT, 10}
+PRINTFORML 그룹 수입　　　　　　：{グループ収入:RESULT, 10}
+SIF グループ特殊編成値:RESULT > 300
+	グループ特殊編成値:RESULT = 300
+PRINTFORML 현재의 그룹 특수편성치：{グループ特殊編成値:RESULT, 3}
+SIF グループ熟練度:RESULT > 300
+	グループ熟練度:RESULT = 300
+PRINTFORML 현재의 그룹 숙련도　　：{グループ熟練度:RESULT, 3}
+SIF グループ相性値:RESULT > 300
+	グループ相性値:RESULT = 300
+PRINTFORML 현재의 그룹 상성치　　：{グループ相性値:RESULT, 3}
+LOCAL = グループ特殊編成値:RESULT + グループ熟練度:RESULT + グループ相性値:RESULT
+SELECTCASE LOCAL
+CASE 50 TO 149
+	PRINTFORML 편성보너스　발동중（효과：소）
+CASE 150 TO 299
+	PRINTFORML 편성보너스　발동중（효과：중）
+CASE IS > 299
+	PRINTFORML 편성보너스　발동중（효과：대）
+CASEELSE
+	PRINTFORML 편성보너스　없음
+ENDSELECT
+DRAWLINE
+GOTO TOP_OF_GROUP_CHECK
+
+@LIVE_EXECUTABLE_CHECK, ARG
+#LOCALSSIZE 1
+#DIM ループ用
+#DIM 人数
+#DIM 体力なし
+;ARG:0 = 実行可能な確認するグループ番号
+SIF ARG == 0
+	RETURN 0
+人数 = 0
+体力なし = 0
+FOR ループ用, 0, CHARANUM
+	IF CFLAG:ループ用:소속그룹 == ARG
+		人数 += 1
+		SIF BASE:ループ用:체력 <= 500
+			体力なし += 1
+	ENDIF
+NEXT
+SIF 体力なし > 0
+	RETURN -1
+SIF 人数 > 1
+	RETURN 1
+RETURN 0
+
+@LIVE_EXECUTION
+#DIM ループ用
+#DIM 結果保存, 4
+$TOP_OF_LIVE_EXECUTION
+PRINTL 어느 그룹으로 실행하겠습니까?
+FOR ループ用, 1, 4
+	CALL LIVE_EXECUTABLE_CHECK, ループ用
+	結果保存:ループ用 = RESULT
+	;特に15文字の理由はない！
+	IF 結果保存:ループ用 == 1
+		PRINTFORML [{ループ用}]  - %グループ名前:ループ用, 30, LEFT%
+	ELSEIF 結果保存:ループ用 == -1
+		PRINTFORML [-]  - %グループ名前:ループ用, 30, LEFT%　※체력 부족인 멤버가 있어 실행할 수 없습니다
+	ELSE
+		PRINTFORML [-]  - %グループ名前:ループ用, 30, LEFT%　※멤버 부족으로 실행할 수 없습니다. 최소 2명 이상 편성해 주십시오
+	ENDIF
+NEXT
+DRAWLINE
+PRINTL [100]- 돌아간다
+$INPUT_LOOP
+CALL INPUTINT, 1, 2, 3, 100
+IF RESULT == 100
+	RETURN 0
+ELSEIF 結果保存:RESULT
+	CALL LIVE_START, RESULT
+	SIF RESULT
+		コンサート実行日 = DAY
+;ELSEIF RESULT == 1 && 結果保存:1 == 1
+;	CALL LIVE_START, 1
+;ELSEIF RESULT == 2 && 結果保存:2 == 1
+;	CALL LIVE_START, 2
+;ELSEIF RESULT == 3 && 結果保存:3 == 1
+;	CALL LIVE_START, 3
+ELSE
+	CLEARLINE 1
+	GOTO INPUT_LOOP
+ENDIF
+DRAWLINE
+GOTO TOP_OF_LIVE_EXECUTION
+
+@LIVE_START, ARG
+;ARG:0 = 実行するグループ番号
+#LOCALSIZE 2
+#DIM ループ用
+#DIM 体力値保管, 10
+#DIM CAST
+#DIM 平均歌唱技能
+#DIM 実行可能回数, 10
+#DIM 実行回数
+#DIM 人数
+#DIM 試算合計
+#DIM 変動_愛情経験, 10
+#DIM 変動_歌唱経験, 10
+#DIM 変動_習得の珠, 10
+#DIM 変動_ライブ経験, 10
+#DIM 変動_アイドル人気, 10
+#DIM 変動_マグネタイト, 10
+#DIM 変動_金
+#DIM 変動_熟練度
+#DIM 変動_グループ人気
+#DIM 成功回数
+#DIM プレゼント判定
+;50も要らんとは思う
+#DIMS DYNAMIC TEMP_プレゼント名称
+#DIM DYNAMIC GROUPLIVE_ファンからのプレゼント, 50
+#DIMS DYNAMIC プレゼント名称, 50
+;#DIMS プレゼントリスト, 50
+;名称を定義
+プレゼント名称:0 = 가넷
+プレゼント名称:1 = 아메지스트
+プレゼント名称:2 = 아쿠아마린
+プレゼント名称:3 = 다이아몬드
+プレゼント名称:4 = 에메랄드
+プレゼント名称:5 = 진주
+プレゼント名称:6 = 루비
+プレゼント名称:7 = 오닉스
+プレゼント名称:8 = 사파이어
+プレゼント名称:9 = 오팔
+プレゼント名称:10 = 토파즈
+プレゼント名称:11 = 터키석
+プレゼント名称:12 = －－未使用－－
+プレゼント名称:13 = 외상약
+プレゼント名称:14 = 마석
+プレゼント名称:15 = 보옥
+プレゼント名称:16 = 보옥륜
+プレゼント名称:17 = 힘의향
+プレゼント名称:18 = 지혜의향
+プレゼント名称:19 = 마력의향
+プレゼント名称:20 = 내구의향
+プレゼント名称:21 = 속도의향
+プレゼント名称:22 = 운의향
+プレゼント名称:23 = インセンス詰め合わせ
+プレゼント名称:24 = 챠크라드롭
+プレゼント名称:25 = 챠크라포트
+プレゼント名称:26 = 그레이트챠크라
+プレゼント名称:27 = 물반경
+プレゼント名称:28 = 마반경
+プレゼント名称:29 = 질서의돌
+プレゼント名称:30 = 혼돈의돌
+プレゼント名称:31 = 선행의돌
+プレゼント名称:32 = 악행의돌
+プレゼント名称:33 = 모듬스시세트
+プレゼント名称:34 = 전투식량MRE
+プレゼント名称:35 = 곱빼기즉석라멘
+プレゼント名称:36 = 뉴클리어밤
+プレゼント名称:37 = 파마화살
+プレゼント名称:38 = 비공침
+プレゼント名称:39 = 外れ1
+プレゼント名称:40 = 外れ2
+プレゼント名称:41 = 外れ3
+プレゼント名称:42 = 外れ4
+プレゼント名称:43 = 外れ5
+プレゼント名称:44 = 外れ6
+プレゼント名称:45 = 外れ7
+プレゼント名称:46 = －－未使用－－
+プレゼント名称:47 = －－未使用－－
+プレゼント名称:48 = －－未使用－－
+
+;こっちの名簿は数値型だよ
+SIF ARG == 0
+	RETURN 0
+人数 = 0
+平均歌唱技能 = 0
+試算合計 = 0
+VARSET 体力値保管
+VARSET 変動_愛情経験
+VARSET 変動_歌唱経験
+VARSET 変動_習得の珠
+VARSET 変動_ライブ経験
+VARSET 変動_アイドル人気
+VARSET 変動_マグネタイト
+変動_金 = 0
+変動_熟練度 = 0
+変動_グループ人気 = 0
+成功回数 = 0
+プレゼント判定 = 0
+VARSET GROUPLIVE_ファンからのプレゼント
+
+;よく分からんけどコンサートだと一文字変数使ってたしこっちでも使おう
+;S：歌唱技能用
+;D：歌唱経験・ライブ経験用
+;V：倍率用
+;C：能力、素質用
+;Z：崩壊とか狂気用
+;F：評判判定。1なら成功、0なら失敗
+;R：取得習得の珠
+;Q：取得歌唱経験
+;G：取得人気
+S = 0
+D = 0
+V = 0
+C = 0
+Z = 0
+F = 0
+R = 0
+Q = 0
+G = 0
+VARSET T, -2
+;実行者名簿作成。これでT:0～9には事前に設定した人が入るよ（入ってないと-2だよ）
+FOR LOCAL, 0, CHARANUM
+	IF CFLAG:LOCAL:소속그룹 == ARG
+		FOR LOCAL:1, 0, 10
+			SIF CFLAG:LOCAL:그룹포지션 == LOCAL:1
+				T:(LOCAL:1) = LOCAL
+		NEXT
+		人数 += 1
+	ENDIF
+NEXT
+
+FOR ループ用, 0, 10
+	CAST = T:ループ用
+	SIF CAST < 0
+		CONTINUE
+	CALL ESTIMATE_CHECK, ARG, 人数, 1, CAST
+	IF RESULT == -1
+		PRINTFORMW %CALLNAME:CAST%의 이윤을 기대할 수 없기 때문에, 콘서트를 중지합니다
+		RETURN 0
+	ELSE
+	ENDIF
+NEXT
+
+$QUESTION_OF_GROUP_LIVE
+VARSET 実行可能回数
+;次に連続で何回できるか調べる
+FOR LOCAL, 0, 10
+	CAST = T:LOCAL
+	SIF CAST < 0
+		CONTINUE
+	SELECTCASE LOCAL
+	CASE 0
+		体力値保管:LOCAL = BASE:CAST:체력
+		WHILE 体力値保管:LOCAL > 500
+			体力値保管:LOCAL -= 体力値保管:LOCAL / 2
+			実行可能回数:LOCAL += 1
+		WEND
+	CASE 1 TO 2
+		体力値保管:LOCAL = BASE:CAST:체력
+		WHILE 体力値保管:LOCAL > 500
+			体力値保管:LOCAL -= 体力値保管:LOCAL / 3
+			実行可能回数:LOCAL += 1
+		WEND
+	CASE 3 TO 5
+		体力値保管:LOCAL = BASE:CAST:체력
+		WHILE 体力値保管:LOCAL > 500
+			体力値保管:LOCAL -= 体力値保管:LOCAL / 4
+			実行可能回数:LOCAL += 1
+		WEND
+	CASE 6 TO 9
+		体力値保管:LOCAL = BASE:CAST:체력
+		WHILE 体力値保管:LOCAL > 500
+			体力値保管:LOCAL -= 体力値保管:LOCAL / 5
+			実行可能回数:LOCAL += 1
+		WEND
+	ENDSELECT
+NEXT
+実行回数 = 0
+FOR LOCAL, 0, 10
+	IF 実行可能回数:LOCAL == 0
+	ELSE
+		IF 実行回数 == 0
+			実行回数 = 実行可能回数:LOCAL
+		ELSEIF 実行可能回数:LOCAL < 実行回数
+			;一番小さい実行可能回数を拾うこと
+			実行回数 = 実行可能回数:LOCAL
+		ENDIF
+	ENDIF
+NEXT
+
+PRINTFORML %グループ名前:ARG%의 콘서트를 실행하겠습니까?
+PRINTL [0] 실행한다
+SIF 実行回数 > 1
+	PRINTFORML [1] 체력이 닿는 한 실행한다（{実行回数}회 실시）
+PRINTL [2] 시산 확인（인원수만큼 출력됩니다）
+PRINTL [3] 그만둔다
+CALL INPUTINT, 0, 1, 2, 3
+IF RESULT == 3
+	RETURN 0
+ELSEIF RESULT == 2
+	FOR ループ用, 0, 10
+		CAST = T:ループ用
+		SIF CAST < 0
+			CONTINUE
+		CALL ESTIMATE_CHECK, ARG, 人数, 0, CAST
+		IF RESULT > 0
+			試算合計 += RESULT
+		ENDIF
+	NEXT
+	PRINTL 
+	PRINTFORMW 합계 시산：{試算合計}
+	DRAWLINE
+	GOTO QUESTION_OF_GROUP_LIVE
+ELSEIF RESULT == 0
+	実行回数 = 1
+ENDIF
+PRINTFORML %グループ名前:ARG%의 콘서트를 실행합니다.
+LOCAL = 0
+FOR ループ用, 0, 10
+	CAST = T:ループ用
+	SIF CAST < 0
+		CONTINUE
+	LOCAL += ABL:CAST:가창기능
+NEXT
+;ライブ判定とかグループ人気の上昇値は平均値を参照したい
+平均歌唱技能 = LOCAL / 人数
+
+FOR ループ用, 0, 実行回数
+	FOR LOCAL, 0, 10
+		;この段階でTは初期化されてないので利用できる
+		CAST = T:LOCAL
+		SIF CAST < 0
+			CONTINUE
+		CALL ESTIMATE_CHECK, ARG, 人数, 1, CAST
+		;こっちにもメモ残し。
+		;RESULT:1 = メンバーが全員人気だと1を、それ以外は0を返す
+		;RESULT:2 = メンバー全員とLD・LC軸が一致したら1を、一人でもLD・LC軸が不一致なら-1を返す
+		;評判判定
+		SELECTCASE 平均歌唱技能
+		CASE 0
+			;成功率20%
+			IF RAND:5 == 0
+				F = 1
+				Z = S
+				TIMES Z, 0.05
+				S += Z
+			ELSE
+				F = 0
+				Z = S
+				TIMES Z, 0.05
+				S -= Z
+			ENDIF
+		CASE 1 TO 3
+			;成功率33%
+			IF RAND:3 == 0
+				F = 1
+				Z = S
+				TIMES Z, 0.05
+				S += Z
+			ELSE
+				F = 0
+				Z = S
+				TIMES Z, 0.05
+				S -= Z
+			ENDIF
+		CASE 4 TO 8
+			;成功率50%
+			IF RAND:2 == 0
+				F = 1
+				Z = S
+				TIMES Z, 0.05
+				S += Z
+			ELSE
+				F = 0
+				Z = S
+				TIMES Z, 0.05
+				S -= Z
+			ENDIF
+		CASE 10
+			;「平均値」が10なので通常より上手くいきやすくてもいいでしょ
+			;成功率90%
+			IF RAND:10 == 0
+				F = 0
+				Z = S
+				TIMES Z, 0.05
+				S -= Z
+			ELSE
+				F = 1
+				Z = S
+				TIMES Z, 0.05
+				S += Z
+			ENDIF
+		CASEELSE
+			;成功率80%
+			IF RAND:5 == 0
+				F = 0
+				Z = S
+				TIMES Z, 0.05
+				S -= Z
+			ELSE
+				F = 1
+				Z = S
+				TIMES Z, 0.05
+				S += Z
+			ENDIF
+		ENDSELECT
+		;F = 1ならライブは成功している
+		SIF F == 1
+			成功回数 += 1
+		
+		;流石に一回でいいでしょ？
+		IF ループ用 == 0
+			LOCAL:1 = TARGET
+			TARGET = CAST
+			TFLAG:13 = 98
+			CALL KOJO_MESSAGE_EVENT
+			;KOJO_MESSAGE_EVENT内で MATCH(T,GETCHARA(○○)) > 0 を使うと誰かがいたときに口上を変化させることができる
+			TARGET = LOCAL:1
+		ENDIF
+		
+		;ここからいろいろ取得する処理
+		;LOCALに現在のポジションが入っているので、ポジション0は特に人気変動を大きく……とかも出来る
+		;人数:1～10の範囲を取る/LOCAL:0～9の範囲を取る
+		
+		;体力の減算
+		SELECTCASE LOCAL
+		CASE 0
+			;ポジション0は現体力の1/2引く
+			BASE:CAST:체력 -= BASE:CAST:체력 / 2
+		CASE 1 TO 2
+			;施設なしでもやれる範囲は現体力の1/3引く
+			BASE:CAST:체력 -= BASE:CAST:체력 / 3
+		CASE 3 TO 5
+			;ライブハウスでやれる範囲は現体力の1/4引く
+			BASE:CAST:체력 -= BASE:CAST:체력 / 4
+		CASE 6 TO 9
+			;大劇場でやれる範囲は現体力の1/5引く
+			BASE:CAST:체력 -= BASE:CAST:체력 / 5
+		ENDSELECT
+		
+		;R：取得習得の珠
+		;Q：取得歌唱経験
+		;難しいことは分からないのでとりあえずコンサートと合わせる
+		SELECTCASE ABL:CAST:가창기능
+		CASE 0
+			R = 8
+			Q = 0
+		CASE 1
+			R = 50
+			Q = 1
+		CASE 2
+			R = 300
+			Q = 2
+		CASE 3
+			R = 900
+			Q = 3
+		CASE 4
+			R = 2400
+			Q = 5
+		CASE 5
+			R = 3000
+			Q = 8
+		CASE 6
+			R = 3500
+			Q = 12
+		CASE 7
+			R = 4000
+			Q = 16
+		CASE 8
+			R = 4500
+			Q = 20
+		CASE 9
+			R = 5000
+			Q = 24
+		CASE 10
+			R = 6000
+			Q = 30
+		ENDSELECT
+		;習得の珠/歌唱経験もポジションによって変更じゃー
+		SELECTCASE LOCAL
+		CASE 0
+			;ポジション0は手を付けない
+		CASE 1 TO 2
+			IF RESULT:1 == 1 && RESULT:2 == 1
+				;全員人気かつアライメント統一済みなら
+			ELSEIF RESULT:1 == 1
+				;全員人気なら
+				TIMES R, 0.80
+				TIMES Q, 0.80
+			ELSE
+				;施設なしでもやれる範囲は0.8倍
+				TIMES R, 0.80
+				TIMES Q, 0.80
+			ENDIF
+		CASE 3 TO 5
+			IF RESULT:1 == 1 && RESULT:2 == 1
+				;全員人気かつアライメント統一済みなら
+			ELSEIF RESULT:1 == 1
+				;全員人気なら
+				TIMES R, 0.80
+				TIMES Q, 0.80
+			ELSE
+				;ライブハウスでやれる範囲は0.5倍
+				TIMES R, 0.50
+				TIMES Q, 0.50
+			ENDIF
+		CASE 6 TO 9
+			IF RESULT:1 == 1 && RESULT:2 == 1
+				;全員人気かつアライメント統一済みなら
+			ELSEIF RESULT:1 == 1
+				;全員人気なら
+				TIMES R, 0.50
+				TIMES Q, 0.50
+			ELSE
+				;大劇場でやれる範囲は0.3倍
+				TIMES R, 0.30
+				TIMES Q, 0.30
+			ENDIF
+		ENDSELECT
+		
+		;せっかくグループだし増やしてもいい気がするなー
+		EXP:CAST:라이브경험 += 1
+		;変動配列シリーズは0～9に対応ポジションの変動値を保存
+		変動_ライブ経験:LOCAL += 1
+		;愛情経験は恋慕ルートのみ
+		;ここはポジションごとにいじらなくていいでしょ……
+		LOCAL:1 = 0
+		IF TALENT:CAST:아내 || TALENT:CAST:남편
+			LOCAL:1 = RAND:15 + 1
+			EXP:CAST:애정경험 += LOCAL:1
+			変動_愛情経験:LOCAL += LOCAL:1
+		ELSEIF TALENT:CAST:친애
+			LOCAL:1 = RAND:10 + 1
+			EXP:CAST:애정경험 += LOCAL:1
+			変動_愛情経験:LOCAL += LOCAL:1
+		ELSEIF TALENT:CAST:연모
+			LOCAL:1 = RAND:10 + 1
+			EXP:CAST:애정경험 += LOCAL:1
+			変動_愛情経験:LOCAL += LOCAL:1
+		ENDIF
+		;信頼系陥落時は歌唱経験獲得量1.5倍～2.5倍に
+		IF TALENT:CAST:맹우
+			TIMES Q, 2.50
+		ELSEIF TALENT:CAST:동료
+			TIMES Q, 2.00
+		ELSEIF TALENT:CAST:신뢰
+			TIMES Q, 1.50
+		ENDIF
+		
+		;一人で歌う訳ではないのでストレス減らさないのも手か？
+		SIF CFLAG:CAST:스트레스치 > 0
+			CFLAG:CAST:스트레스치 -= 1
+		EXP:CAST:가창경험 += MAX(1 , Q)
+		変動_歌唱経験:LOCAL += MAX(1 , Q)
+		JUEL:CAST:습득 += R
+		変動_習得の珠:LOCAL += R
+		
+		;G：取得人気
+		;個人のアイドル人気の加算（編成人数が少ないほど増える）
+		;ソロコンサートよりは絶対少なくなる
+		G = (1 + RAND:(1 + ABL:CAST:가창기능)) * (F + 1)
+		SELECTCASE 人数
+		CASE 2 TO 3
+			;施設なしでもやれる範囲は0.8倍
+			TIMES G, 0.80
+		CASE 4 TO 6
+			TIMES G, 0.60
+		CASE 7 TO 10
+			TIMES G, 0.30
+		CASEELSE
+		ENDSELECT
+		SELECTCASE LOCAL
+		CASE 0
+			;ポジション0は手を付けない
+		CASE 1 TO 2
+			IF RESULT:1 == 1 && RESULT:2 == 1
+				;全員人気かつアライメント統一済みなら
+			ELSEIF RESULT:1 == 1
+				;全員人気なら
+				TIMES G, 0.80
+			ELSE
+				;施設なしでもやれる範囲は0.8倍
+				TIMES G, 0.80
+			ENDIF
+		CASE 3 TO 5
+			IF RESULT:1 == 1 && RESULT:2 == 1
+				;全員人気かつアライメント統一済みなら
+			ELSEIF RESULT:1 == 1
+				;全員人気なら
+				TIMES G, 0.80
+			ELSE
+				;ライブハウスでやれる範囲は0.5倍
+				TIMES G, 0.50
+			ENDIF
+		CASE 6 TO 9
+			IF RESULT:1 == 1 && RESULT:2 == 1
+				;全員人気かつアライメント統一済みなら
+			ELSEIF RESULT:1 == 1
+				;全員人気なら
+				TIMES G, 0.50
+			ELSE
+				;大劇場でやれる範囲は0.3倍
+				TIMES G, 0.30
+			ENDIF
+		CASEELSE
+		ENDSELECT
+		IF F == 1
+			IF ITEM:무도관
+				G += 2
+			ELSEIF ITEM:라이브하우스
+				G += 1
+			ENDIF
+			CFLAG:CAST:아이돌인기 += G
+			変動_アイドル人気:LOCAL += G
+		ELSE
+			CFLAG:CAST:아이돌인기 -= G
+			変動_アイドル人気:LOCAL -= G
+		ENDIF
+		
+		;グループ人気。単純にこうすると実施した人数分グループ人気が上がってしまうので考えないとアカン
+		G = (1 + RAND:(1 + 平均歌唱技能)) * (F + 1)
+		SELECTCASE 人数
+		CASE 2 TO 3
+			;施設なしでもやれる規模は0.8倍
+			TIMES G, 0.80
+		CASE 4 TO 6
+			;ライブハウスでやれる規模は手を付けない
+		CASE 7 TO 10
+			;大劇場でやれる規模は1.15倍
+			TIMES G, 1.15
+		CASEELSE
+		ENDSELECT
+		IF F == 1
+			IF ITEM:무도관
+				G += 2
+			ELSEIF ITEM:라이브하우스
+				G += 1
+			ENDIF
+			グループ人気:ARG += G
+			変動_グループ人気 += G
+		ELSE
+			グループ人気:ARG -= G
+			変動_グループ人気 -= G
+		ENDIF
+		
+		;取得MAG　せっかくだし盛っていいかもね
+		LOCAL:1 = 0
+		LOCAL:1 = (G * 100 + (R + D))
+		;大劇場は100％吸収
+		IF ITEM:무도관
+		;ライブハウスは50％吸収
+		ELSEIF ITEM:라이브하우스
+			LOCAL:1 = LOCAL:1 / 2
+		;路上ライブは10％吸収
+		ELSE
+			LOCAL:1 = LOCAL:1 / 10
+		ENDIF
+		CALL CONTROL_MAG, CAST, LOCAL:1
+		変動_マグネタイト:LOCAL += LOCAL:1
+		;グループ熟練度の加算（編成人数が少ないほど増える）
+		SELECTCASE 人数
+		CASE 2 TO 3
+			グループ熟練度:ARG += 4
+			変動_熟練度 += 5
+		CASE 4 TO 6
+			グループ熟練度:ARG += 2
+			変動_熟練度 += 2
+		CASE 7 TO 10
+			グループ熟練度:ARG += 1
+			変動_熟練度 += 1
+		CASEELSE
+		ENDSELECT
+		
+		MONEY += S
+		変動_金 += S
+		;専用のFLAGとか作んなきゃダメですかね……
+		CALL 帳簿閲覧_労役, CAST, S, 0, 6
+	NEXT
+NEXT
+;集団ライブ終了後の個人パラメータの変動表示
+FOR LOCAL, 0, 10
+	CAST = T:LOCAL
+	SIF CAST < 0
+		CONTINUE
+	PRINTFORML □%CALLNAME:CAST%
+	SIF 変動_愛情経験:LOCAL > 0
+		PRINTFORML 　%EXPNAME:23%＋{変動_愛情経験:LOCAL}
+	PRINTFORML 　%EXPNAME:64%＋{変動_歌唱経験:LOCAL}
+	PRINTFORML 　%PALAMNAME:8%의 구슬＋{変動_習得の珠:LOCAL}
+	PRINTFORML 　%EXPNAME:74%＋{変動_ライブ経験:LOCAL}
+	IF 変動_アイドル人気:LOCAL == 0
+		;こんなこと滅多にないだろ……
+		PRINTFORML 　아이돌 인기　변동 없음
+	ELSEIF 変動_アイドル人気:LOCAL > 0
+		PRINTFORML 　아이돌 인기＋{変動_アイドル人気:LOCAL}
+	ELSE
+		LOCAL:1 = ABS(変動_アイドル人気:LOCAL)
+		PRINTFORML 　아이돌인기－{LOCAL:1}
+	ENDIF
+	PRINTFORML 　방출된 마그네타이트＋{変動_マグネタイト:LOCAL}
+	IF !TALENT:CAST:인기
+		IF CFLAG:CAST:아이돌인기 > 99
+			TALENT:CAST:인기 = 1
+			PRINTL
+			PRINTFORML 　%CALLNAME:CAST%의 인기가 급상승하고 있다
+			PRINTFORML 　%CALLNAME:CAST%은(는) 【인기】를 얻었다
+		ENDIF
+	ELSEIF TALENT:CAST:인기
+		IF CFLAG:CAST:아이돌인기 < -5
+			TALENT:CAST:인기 = 0
+			PRINTL
+			PRINTFORML 　%CALLNAME:CAST%의 인기가 침체되고 있다
+			PRINTFORML 　%CALLNAME:CAST%은(는) 【인기】를 잃었다
+		ENDIF
+	ENDIF
+	WAIT
+NEXT
+グループ収入:ARG += 変動_金
+;終わったら金の報告
+PRINTL
+PRINTFORML 그룹 숙련도가 {変動_熟練度} 증가했습니다
+IF 変動_グループ人気 == 0
+	PRINTFORML 그룹 인기에 변동은 없었습니다
+ELSEIF 変動_グループ人気 > 0
+	PRINTFORML 그룹 인기가 {変動_グループ人気} 증가했습니다
+ELSE
+	LOCAL:1 = ABS(変動_グループ人気)
+	PRINTFORML 그룹 인기가 {LOCAL:1} 감소했습니다
+ENDIF
+PRINTFORML 콘서트에서 노래를 선보인 결과, ￥{変動_金}의 이윤을 얻었습니다
+PRINTFORMW （누계 그룹 수입：{グループ収入:ARG}）
+
+IF 成功回数 > 0
+	;成功した回数分だけアイテムの判定をぐるぐるする
+	;ここはコンサートからパクっている（調整してもいいかもね）
+	プレゼント判定 = 平均歌唱技能
+	;要は「인기」取得ボーダー
+	SIF グループ人気:ARG > 99
+		プレゼント判定 += 5
+	SIF ITEM:라이브하우스
+		E += 5
+	SIF ITEM:무도관
+		E += 6
+	PRINTL
+	PRINTW 팬에게서 선물을 받았다（목록 형식으로 출력합니다）
+	CUSTOMDRAWLINE =
+	FOR ループ用, 0, (成功回数 + 1)
+		TEMP_プレゼント名称 = 
+		IF RAND:100 < (プレゼント判定 / 2)
+			IF RAND:1000 < (プレゼント判定 + 5)
+				TEMP_プレゼント名称 = インセンス詰め合わせ
+			ELSE
+				SELECTCASE RAND:7
+					CASE 0
+						TEMP_プレゼント名称 = 힘의향
+					CASE 1
+						TEMP_プレゼント名称 = 지혜의향
+					CASE 2
+						TEMP_プレゼント名称 = 마력의향
+					CASE 3
+						TEMP_プレゼント名称 = 내구의향
+					CASE 4
+						TEMP_プレゼント名称 = 속도의향
+					CASE 5
+						TEMP_プレゼント名称 = 운의향
+					CASE 6
+						TEMP_プレゼント名称 = 그레이트챠크라
+				ENDSELECT
+			ENDIF
+		;宝石は再抽選する
+		ELSEIF RAND:100 < (プレゼント判定 / 2)
+			SELECTCASE RAND:6
+				CASE 0
+					SELECTCASE RAND:4
+						CASE 0
+							TEMP_プレゼント名称 = 사파이어
+						CASE 1
+							TEMP_プレゼント名称 = 진주
+						CASE 2
+							TEMP_プレゼント名称 = 루비
+						CASE 3
+							TEMP_プレゼント名称 = 다이아몬드
+					ENDSELECT
+				CASE 1,2
+					SELECTCASE RAND:4
+						CASE 0
+							TEMP_プレゼント名称 = 오닉스
+						CASE 1
+							TEMP_プレゼント名称 = 아쿠아마린
+						CASE 2
+							TEMP_プレゼント名称 = 터키석
+						CASE 3
+							TEMP_プレゼント名称 = 토파즈
+					ENDSELECT
+				CASEELSE
+					SELECTCASE RAND:4
+						CASE 0
+							TEMP_プレゼント名称 = 에메랄드
+						CASE 1
+							TEMP_プレゼント名称 = 아메지스트
+						CASE 2
+							TEMP_プレゼント名称 = 오팔
+						CASE 3
+							TEMP_プレゼント名称 = 가넷
+					ENDSELECT
+			ENDSELECT
+		ELSE
+			;ライブハウスがあれば外れなし
+			IF ITEM:라이브하우스
+				SELECTCASE RAND:100
+					CASE 70 TO 99
+						TEMP_プレゼント名称 = 마석
+					CASE 50 TO 69
+						TEMP_プレゼント名称 = 보옥
+					CASE 40 TO 49
+						TEMP_プレゼント名称 = 곱빼기즉석라멘
+					CASE 30 TO 39
+						TEMP_プレゼント名称 = 모듬스시세트
+					CASE 20 TO 29
+						TEMP_プレゼント名称 = 전투식량MRE
+					CASE 15 TO 19
+						TEMP_プレゼント名称 = 챠크라드롭
+					CASE 10 TO 14
+						TEMP_プレゼント名称 = 파마화살
+					CASE 5 TO 9
+						TEMP_プレゼント名称 = 비공침
+					CASE 4
+						TEMP_プレゼント名称 = 질서의돌
+					CASE 3
+						TEMP_プレゼント名称 = 혼돈의돌
+					CASE 2
+						TEMP_プレゼント名称 = 선행의돌
+					CASE 1
+						TEMP_プレゼント名称 = 악행의돌
+					CASE 0
+						TEMP_プレゼント名称 = 챠크라포트
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:7
+					CASE 0
+						TEMP_プレゼント名称 = 外れ1
+					CASE 1
+						TEMP_プレゼント名称 = 外れ2
+					CASE 2
+						TEMP_プレゼント名称 = 外れ3
+					CASE 3
+						TEMP_プレゼント名称 = 外れ4
+					CASE 4
+						TEMP_プレゼント名称 = 外れ5
+					CASE 5
+						TEMP_プレゼント名称 = 外れ6
+					CASE 6
+						TEMP_プレゼント名称 = 外れ7
+				ENDSELECT
+			ENDIF
+			SIF TEMP_プレゼント名称 != ""
+				GROUPLIVE_ファンからのプレゼント:FINDELEMENT(プレゼント名称, TEMP_プレゼント名称, , , 1) += 1
+			TEMP_プレゼント名称 = 
+			;大劇場を持っている場合はもういちど抽選
+			IF ITEM:무도관
+				;追加入手率はぐっと低くMAX5%
+				IF RAND:100 < (平均歌唱技能 / 2)
+					;香詰め合わせはナシで
+					SELECTCASE RAND:7
+						CASE 0
+							TEMP_プレゼント名称 = 힘의향
+						CASE 1
+							TEMP_プレゼント名称 = 지혜의향
+						CASE 2
+							TEMP_プレゼント名称 = 마력의향
+						CASE 3
+							TEMP_プレゼント名称 = 내구의향
+						CASE 4
+							TEMP_プレゼント名称 = 속도의향
+						CASE 5
+							TEMP_プレゼント名称 = 운의향
+						CASE 6
+							TEMP_プレゼント名称 = 그레이트챠크라
+					ENDSELECT
+				ELSE
+					SELECTCASE RAND:100
+						CASE 80 TO 99
+							TEMP_プレゼント名称 = 마석
+						CASE 60 TO 79
+							TEMP_プレゼント名称 = 보옥
+						CASE 50 TO 59
+							TEMP_プレゼント名称 = 곱빼기즉석라멘
+						CASE 40 TO 49
+							TEMP_プレゼント名称 = 모듬스시세트
+						CASE 30 TO 39
+							TEMP_プレゼント名称 = 전투식량MRE
+						CASE 25 TO 29
+							TEMP_プレゼント名称 = 챠크라드롭
+						CASE 20 TO 24
+							TEMP_プレゼント名称 = 물반경
+						CASE 15 TO 19
+							TEMP_プレゼント名称 = 마반경
+						CASE 14
+							TEMP_プレゼント名称 = 보옥륜
+						CASE 13
+							TEMP_プレゼント名称 = 챠크라포트
+						CASE 12
+							TEMP_プレゼント名称 = 뉴클리어밤
+						CASEELSE
+							SELECTCASE RAND:6
+								CASE 0
+									SELECTCASE RAND:4
+										CASE 0
+											TEMP_プレゼント名称 = 사파이어
+										CASE 1
+											TEMP_プレゼント名称 = 진주
+										CASE 2
+											TEMP_プレゼント名称 = 루비
+										CASE 3
+											TEMP_プレゼント名称 = 다이아몬드
+									ENDSELECT
+								CASE 1,2
+									SELECTCASE RAND:4
+										CASE 0
+											TEMP_プレゼント名称 = 오닉스
+										CASE 1
+											TEMP_プレゼント名称 = 아쿠아마린
+										CASE 2
+											TEMP_プレゼント名称 = 터키석
+										CASE 3
+											TEMP_プレゼント名称 = 토파즈
+									ENDSELECT
+								CASEELSE
+									SELECTCASE RAND:4
+										CASE 0
+											TEMP_プレゼント名称 = 에메랄드
+										CASE 1
+											TEMP_プレゼント名称 = 아메지스트
+										CASE 2
+											TEMP_プレゼント名称 = 오팔
+										CASE 3
+											TEMP_プレゼント名称 = 가넷
+									ENDSELECT
+							ENDSELECT
+					ENDSELECT
+				ENDIF
+				SIF TEMP_プレゼント名称 != ""
+					GROUPLIVE_ファンからのプレゼント:FINDELEMENT(プレゼント名称, TEMP_プレゼント名称, , , 1) += 1
+			ENDIF
+		ENDIF
+	NEXT
+	FOR ループ用, 0, VARSIZE("プレゼント名称")
+		SIF !GROUPLIVE_ファンからのプレゼント:ループ用
+			CONTINUE
+		SELECTCASE プレゼント名称:ループ用
+			CASE "インセンス詰め合わせ"
+				PRINTFORML ・%"인센스 모둠　　　　　　　　　　　　", 36, LEFT%：{GROUPLIVE_ファンからのプレゼント:ループ用}개
+				CALL GET_ITEMS, "힘의향", GROUPLIVE_ファンからのプレゼント:ループ用
+				CALL GET_ITEMS, "지혜의향", GROUPLIVE_ファンからのプレゼント:ループ用
+				CALL GET_ITEMS, "마력의향", GROUPLIVE_ファンからのプレゼント:ループ用
+				CALL GET_ITEMS, "내구의향", GROUPLIVE_ファンからのプレゼント:ループ用
+				CALL GET_ITEMS, "속도의향", GROUPLIVE_ファンからのプレゼント:ループ用
+				CALL GET_ITEMS, "운의향", GROUPLIVE_ファンからのプレゼント:ループ用
+			CASE "外れ1"
+				PRINTFORML ・%"지극히 평범한 팬레터　　　　　　　", 36, LEFT%：{GROUPLIVE_ファンからのプレゼント:ループ用}개（본인에게 전해주었습니다）
+			CASE "外れ2"
+				PRINTFORML ・%"잘 모를 센스의 액세서리　　　　　　", 36, LEFT%：{GROUPLIVE_ファンからのプレゼント:ループ用}개（버렸습니다）
+			CASE "外れ3"
+				PRINTFORML ・%"투샷 사진(합성 사진)　　　　　　　", 36, LEFT%：{GROUPLIVE_ファンからのプレゼント:ループ用}개（버렸습니다）
+			CASE "外れ4"
+				PRINTFORML ・%"지극히 평범한 꽃다발　　　　　　　", 36, LEFT%：{GROUPLIVE_ファンからのプレゼント:ループ用}개（적당한 곳에 장식해 두었습니다）
+			CASE "外れ5"
+				PRINTFORML ・%"자작 시　　　　　　　　　　　　　　", 36, LEFT%：{GROUPLIVE_ファンからのプレゼント:ループ用}개（일단 치워두었습니다）
+			CASE "外れ6"
+				PRINTFORML ・%"하얀 잼이 채워진 병　　　　　　　　", 36, LEFT%：{GROUPLIVE_ファンからのプレゼント:ループ用}개（버렸습니다）
+			CASE "外れ7"
+				PRINTFORML ・%"비린내 나는 점액으로 얼룩진 사진　", 36, LEFT%：{GROUPLIVE_ファンからのプレゼント:ループ用}개（버렸습니다）
+			CASEELSE
+				PRINTFORML ・%プレゼント名称:ループ用, 36, LEFT%：{GROUPLIVE_ファンからのプレゼント:ループ用}개
+				CALL GET_ITEMS, プレゼント名称:ループ用, GROUPLIVE_ファンからのプレゼント:ループ用
+		ENDSELECT
+	NEXT
+	CUSTOMDRAWLINE =
+ENDIF
+RETURN 1
+;FLAG:휴식플래그 = 1
+;BEGIN TURNEND
+;RETURN 1
+
+@ESTIMATE_CHECK, ARG, ARG:1, ARG:2 = 0, ARG:3
+;ARG:0 = 実行するグループ番号
+;ARG:1 = 実行グループの人数
+;ARG:2 = 0(能力確認したい時に)/1(利潤の計算だけしたい・文字出したくない時に)
+;ARG:3 = 確認したい人
+;RESULT:0 = 試算判定。0以下の場合-1を、それ以外の場合は試算結果を返す
+;RESULT:1 = メンバーが全員人気だと1を、それ以外は0を返す
+;RESULT:2 = メンバー全員とLD・LC軸が一致したら1を、一人でもLD・LC軸が不一致なら-1を返す
+;ポジションごとに判定変えたかったらCFLAG:CAST:グループポジションを使ってください
+#LOCALSIZE 2
+#DIM CAST
+#DIM 試算判定
+#DIM ループ用
+#DIM 人気記録
+#DIM LC軸記録
+#DIM LD軸記録
+#DIM ALIGN記録
+人気記録 = 0
+;よく分からんけどコンサートだと一文字変数使ってたしこっちでも使おう
+;S：歌唱技能用
+;D：歌唱経験・ライブ経験用
+;V：倍率用
+;C：能力、素質用
+;Z：崩壊とか狂気用
+;G：取得人気
+;R：取得習得の珠
+;Q：取得歌唱経験
+S = 0
+D = 0
+V = 0
+C = 0
+Z = 0
+G = 0
+R = 0
+Q = 0
+RESULT:1 = 0
+CAST = ARG:3
+LOCAL = 0
+試算判定 = 0
+IF ARG:2 == 0
+	PRINTFORML □%CALLNAME:CAST%　포지션{CFLAG:CAST:그룹포지션}
+	PRINTL 【기본값산출】
+ENDIF
+SELECTCASE ABL:CAST:가창기능
+CASE 0
+	S = 0
+CASE 1
+	S = 60
+CASE 2
+	S = 100
+CASE 3
+	S = 150
+CASE 4
+	S = 210
+CASE 5
+	S = 280
+CASE 6
+	S = 360
+CASE 7
+	S = 450
+CASE 8
+	S = 550
+CASE 9
+	S = 660
+CASE 10
+	S = 780
+ENDSELECT
+IF ARG:2 == 0
+	SIF S > 0
+		PRINTFORML 　%ABLNAME:14%{ABL:CAST:가창기능}LV ＋ {S}
+ENDIF
+
+IF EXP:CAST:가창경험 < 25
+	D += 1
+ELSEIF EXP:CAST:가창경험 < 50
+	D += 20
+ELSEIF EXP:CAST:가창경험 < 75
+	D += 80
+ELSEIF EXP:CAST:가창경험 < 150
+	D += 160
+ELSEIF EXP:CAST:가창경험 < 250
+	D += 250
+ELSE
+	D += 400
+ENDIF
+SIF ARG:2 == 0
+	PRINTFORML 　%EXPNAME:64%{EXP:CAST:가창경험} ＋{D}
+
+;ライブ経験はx2したのち加算。250（500）で頭打ちに
+IF EXP:CAST:라이브경험 < 250
+	D += EXP:CAST:라이브경험 * 2
+	SIF ARG:2 == 0
+		PRINTFORML 　%EXPNAME:74%{EXP:CAST:라이브경험} ＋ {EXP:CAST:라이브경험 * 2}
+ELSE
+	D += 500
+	SIF ARG:2 == 0
+		PRINTFORML 　%EXPNAME:74%{EXP:CAST:라이브경험} ＋ 500
+ENDIF
+S += D
+IF ARG:2 == 0
+	SETCOLOR 0x33ffcc
+	PRINTFORML 기초치：{S}p
+	RESETCOLOR
+	PRINTL
+	PRINTL 【배율 산출】
+ENDIF
+V = 100
+;まずは能力のターン
+SELECTCASE ABL:CAST:순종
+CASE 0
+	C = 0
+CASE 1
+	C = 10
+CASE 2
+	C = 20
+CASE 3
+	C = 30
+CASE 4
+	C = 40
+CASE 5
+	C = 50
+CASE 6
+	C = 60
+CASE 7
+	C = 70
+CASE 8
+	C = 80
+CASE 9
+	C = 90
+CASE 10
+	C = 100
+ENDSELECT
+IF ARG:2 == 0
+	SIF C > 0
+		PRINTFORML 　%ABLNAME:0%{ABL:CAST:순종}LV ＋ {C}
+ENDIF
+V += C
+SELECTCASE ABL:CAST:욕망
+CASE 0
+	C = 0
+CASE 1
+	C = 10
+CASE 2
+	C = 20
+CASE 3
+	C = 30
+CASE 4
+	C = 40
+CASE 5
+	C = 50
+CASE 6
+	C = 60
+CASE 7
+	C = 70
+CASE 8
+	C = 80
+CASE 9
+	C = 90
+CASE 10
+	C = 100
+ENDSELECT
+IF ARG:2 == 0
+	SIF C > 0
+		PRINTFORML 　%ABLNAME:1%{ABL:CAST:욕망}LV ＋ {C}
+ENDIF
+V += C
+SELECTCASE ABL:CAST:기교
+CASE 0
+	C = 0
+CASE 1
+	C = 5
+CASE 2
+	C = 10
+CASE 3
+	C = 15
+CASE 4
+	C = 20
+CASE 5
+	C = 25
+CASE 6
+	C = 30
+CASE 7
+	C = 35
+CASE 8
+	C = 40
+CASE 9
+	C = 45
+CASE 10
+	C = 50
+ENDSELECT
+IF ARG:2 == 0
+	SIF C > 0
+		PRINTFORML 　%ABLNAME:2%{ABL:CAST:기교}LV ＋ {C}
+ENDIF
+V += C
+SELECTCASE ABL:CAST:Ｖ감각
+CASE 0
+	C = 0
+CASE 1
+	C = 5
+CASE 2
+	C = 10
+CASE 3
+	C = 15
+CASE 4
+	C = 20
+CASE 5
+	C = 25
+CASE 6
+	C = 30
+CASE 7
+	C = 35
+CASE 8
+	C = 40
+CASE 9
+	C = 45
+CASE 10
+	C = 50
+ENDSELECT
+IF ARG:2 == 0
+	SIF C > 0
+		PRINTFORML 　%ABLNAME:4%{ABL:CAST:Ｖ감각}LV ＋ {C}
+ENDIF
+V += C
+SELECTCASE ABL:CAST:봉사정신
+CASE 0
+	C = 0
+CASE 1
+	C = 5
+CASE 2
+	C = 10
+CASE 3
+	C = 15
+CASE 4
+	C = 20
+CASE 5
+	C = 25
+CASE 6
+	C = 30
+CASE 7
+	C = 35
+CASE 8
+	C = 40
+CASE 9
+	C = 45
+CASE 10
+	C = 50
+ENDSELECT
+IF ARG:2 == 0
+	SIF C > 0
+		PRINTFORML 　%ABLNAME:7%{ABL:CAST:봉사정신}LV ＋ {C}
+ENDIF
+V += C
+SELECTCASE ABL:CAST:노출증
+CASE 0
+	C = 0
+CASE 1
+	C = 5
+CASE 2
+	C = 10
+CASE 3
+	C = 15
+CASE 4
+	C = 20
+CASE 5
+	C = 25
+CASE 6
+	C = 30
+CASE 7
+	C = 35
+CASE 8
+	C = 40
+CASE 9
+	C = 45
+CASE 10
+	C = 50
+ENDSELECT
+IF ARG:2 == 0
+	SIF C > 0
+		PRINTFORML 　%ABLNAME:8%{ABL:CAST:노출증}LV ＋ {C}
+ENDIF
+V += C
+SELECTCASE ABL:CAST:마조끼
+CASE 0
+	C = 0
+CASE 1
+	C = 5
+CASE 2
+	C = 10
+CASE 3
+	C = 15
+CASE 4
+	C = 20
+CASE 5
+	C = 25
+CASE 6
+	C = 30
+CASE 7
+	C = 35
+CASE 8
+	C = 40
+CASE 9
+	C = 45
+CASE 10
+	C = 50
+ENDSELECT
+IF ARG:2 == 0
+	SIF C > 0
+		PRINTFORML 　%ABLNAME:9%{ABL:CAST:마조끼}LV ＋ {C}
+ENDIF
+V += C
+SELECTCASE ABL:CAST:새드끼
+CASE 0
+	C = 0
+CASE 1
+	C = 5
+CASE 2
+	C = 10
+CASE 3
+	C = 15
+CASE 4
+	C = 20
+CASE 5
+	C = 25
+CASE 6
+	C = 30
+CASE 7
+	C = 35
+CASE 8
+	C = 40
+CASE 9
+	C = 45
+CASE 10
+	C = 50
+ENDSELECT
+IF ARG:2 == 0
+	SIF C > 0
+		PRINTFORML 　%ABLNAME:10%{ABL:CAST:새드끼}LV ＋ {C}
+ENDIF
+V += C
+SELECTCASE ABL:CAST:섹스중독
+CASE 0
+	C = 0
+CASE 1
+	C = 10
+CASE 2
+	C = 20
+CASE 3
+	C = 30
+CASE 4
+	C = 40
+CASE 5
+	C = 50
+CASE 6
+	C = 60
+CASE 7
+	C = 70
+CASE 8
+	C = 80
+CASE 9
+	C = 90
+CASE 10
+	C = 100
+ENDSELECT
+IF ARG:2 == 0
+	SIF C > 0
+		PRINTFORML 　%ABLNAME:18%{ABL:CAST:섹스중독}LV ＋ {C}
+ENDIF
+V += C
+;続いて素質のターン
+IF TALENT:CAST:연모
+	C = 100
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:3% ＋{C}％
+ENDIF
+IF TALENT:CAST:신뢰
+	C = 100
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:180% ＋{C}％
+ENDIF
+IF TALENT:CAST:친애
+	LOCAL:1 = 0
+	FOR ループ用, 0, 10
+		LOCAL = T:ループ用
+		SIF LOCAL < 0
+			CONTINUE
+		SIF TALENT:LOCAL:친애
+			LOCAL:1 += 1
+	NEXT
+	;メンバー全員が親愛陥落だったらボーナスで10%アップ
+	IF LOCAL:1 == ARG:1
+		C = 220
+		V += C
+		SIF ARG:2 == 0
+			PRINTFORML 　%TALENTNAME:6% ＋{C}％　전원 친애 보너스!
+	ELSE
+		C = 200
+		V += C
+		SIF ARG:2 == 0
+			PRINTFORML 　%TALENTNAME:6% ＋{C}％
+	ENDIF
+ENDIF
+IF TALENT:CAST:동료
+	LOCAL:1 = 0
+	FOR ループ用, 0, 10
+		LOCAL = T:ループ用
+		SIF LOCAL < 0
+			CONTINUE
+		SIF TALENT:LOCAL:동료
+			LOCAL:1 += 1
+	NEXT
+	;メンバー全員が親愛陥落だったらボーナスで10%アップ
+	IF LOCAL:1 == ARG:1
+		C = 220
+		V += C
+		SIF ARG:2 == 0
+			PRINTFORML 　%TALENTNAME:181% ＋{C}％　전원 동료 보너스!
+	ELSE
+		C = 200
+		V += C
+		SIF ARG:2 == 0
+			PRINTFORML 　%TALENTNAME:181% ＋{C}％
+	ENDIF
+ENDIF
+IF TALENT:CAST:겁쟁이
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:10% ＋{C}％
+ENDIF
+IF TALENT:CAST:반항적
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:11% ＋{C}％
+ENDIF
+IF TALENT:CAST:꿋꿋함
+	C = 20
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:12% ＋{C}％
+ENDIF
+IF TALENT:CAST:솔직함
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:13% ＋{C}％
+ENDIF
+IF TALENT:CAST:얌전함
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:14% ＋{C}％
+ENDIF
+IF TALENT:CAST:프라이드높음
+	C = 20
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:15% ＋{C}％
+ENDIF
+IF TALENT:CAST:건방짐
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:16% ＋{C}％
+ENDIF
+IF TALENT:CAST:프라이드낮음
+	C = 20
+	V -= C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:17% －{C}％
+ENDIF
+IF TALENT:CAST:츤데레
+	C = 20
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:18% ＋{C}％
+ENDIF
+IF TALENT:CAST:감정결핍
+	C = 10
+	V -= C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:22% －{C}％
+ENDIF
+IF TALENT:CAST:눈에띄고싶어함
+	C = 20
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:28% ＋{C}％
+ENDIF
+IF TALENT:CAST:아픔에약함
+	C = 10
+	V -= C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:40% －{C}％
+ENDIF
+IF TALENT:CAST:아픔에강함
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:41% ＋{C}％
+ENDIF
+IF TALENT:CAST:습득빠름
+	C = 15
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:50% ＋{C}％
+ENDIF
+IF TALENT:CAST:습득느림
+	C = 15
+	V -= C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:51% －{C}％
+ENDIF
+IF TALENT:CAST:헌신적
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:63% ＋{C}％
+ENDIF
+IF TALENT:CAST:도착적
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:80% ＋{C}％
+ENDIF
+IF TALENT:CAST:바이
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:81% ＋{C}％
+ENDIF
+IF TALENT:CAST:남성혐오
+	C = 20
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:82% ＋{C}％
+ENDIF
+IF TALENT:CAST:새드
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:83% ＋{C}％
+ENDIF
+IF TALENT:CAST:마조
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:84% ＋{C}％
+ENDIF
+IF TALENT:CAST:망신
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:86% ＋{C}％
+ENDIF
+IF TALENT:CAST:소악마
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:87% ＋{C}％
+ENDIF
+IF TALENT:CAST:여성혐오
+	C = 20
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:88% ＋{C}％
+ENDIF
+IF TALENT:CAST:요호
+	C = 20
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:91% ＋{C}％
+ENDIF
+IF TALENT:CAST:매력
+	C = 30
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:92% ＋{C}％
+ENDIF
+IF TALENT:CAST:매혹
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:93% ＋{C}％
+ENDIF
+IF TALENT:CAST:수수께끼의매력
+	C = 50
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:94% ＋{C}％
+ENDIF
+IF TALENT:CAST:미끼
+	C = 30
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:95% ＋{C}％
+ENDIF
+IF TALENT:CAST:유아체형
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:100% ＋{C}％
+ENDIF
+IF TALENT:CAST:빈유
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:109% ＋{C}％
+ENDIF
+IF TALENT:CAST:절벽 && TALENT:CAST:남자 < 1
+	C = 15
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:110% ＋{C}％
+ENDIF
+IF TALENT:CAST:거유
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:111% ＋{C}％
+ENDIF
+IF TALENT:CAST:폭유
+	C = 15
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:112% ＋{C}％
+ENDIF
+IF TALENT:CAST:큰체형
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:113% ＋{C}％
+ENDIF
+IF TALENT:CAST:거체
+	C = 20
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:114% ＋{C}％
+ENDIF
+IF TALENT:CAST:小尻 && TALENT:CAST:남자 < 1
+	C = 10
+	V -= C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:121% －{C}％
+ENDIF
+IF TALENT:CAST:巨尻 && TALENT:CAST:남자 < 1
+	C = 20
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:123% ＋{C}％
+ENDIF
+IF TALENT:CAST:爆尻 && TALENT:CAST:남자 < 1
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:124% ＋{C}％
+ENDIF
+IF TALENT:CAST:魔尻 && TALENT:CAST:남자 < 1
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:125% ＋{C}％
+ENDIF
+IF TALENT:CAST:마유
+	C = 20
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:126% ＋{C}％
+ENDIF
+IF TALENT:CAST:흡혈귀
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:132% ＋{C}％
+ENDIF
+IF TALENT:CAST:소인체형
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:142% ＋{C}％
+ENDIF
+IF TALENT:CAST:동물귀
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　%TALENTNAME:143% ＋{C}％
+ENDIF
+IF TALENT:CAST:인기
+	LOCAL:1 = 0
+	FOR ループ用, 0, 10
+		LOCAL = T:ループ用
+		SIF LOCAL < 0
+			CONTINUE
+		SIF TALENT:LOCAL:인기
+			LOCAL:1 += 1
+	NEXT
+	;メンバー全員が人気だったらボーナスで10%アップ
+	IF LOCAL:1 == ARG:1
+		人気記録 = 1
+		C = 33
+		V += C
+		SIF ARG:2 == 0
+			PRINTFORML 　%TALENTNAME:145% ＋{C}％　전원 인기 보너스!
+	ELSE
+		C = 30
+		V += C
+		SIF ARG:2 == 0
+			PRINTFORML 　%TALENTNAME:145% ＋{C}％
+	ENDIF
+ENDIF
+SIF グループ特殊編成値:ARG > 300
+	グループ特殊編成値:ARG = 300
+SIF グループ熟練度:ARG > 300
+	グループ熟練度:ARG = 300
+SIF グループ相性値:ARG > 300
+	グループ相性値:ARG = 300
+LOCAL = グループ特殊編成値:ARG + グループ熟練度:ARG + グループ相性値:ARG
+;編成ボーナスの加算（編成人数が多いほど上限が上がる）
+SELECTCASE ARG:1
+CASE 2 TO 3
+	SELECTCASE LOCAL
+	CASE 0 TO 49
+		C = 0
+	CASE 50 TO 149
+		C = 10
+	CASE 150 TO 299
+		C = 20
+	CASE IS > 299
+		C = 30
+	CASEELSE
+		C = 0
+	ENDSELECT
+CASE 4 TO 6
+	SELECTCASE LOCAL
+	CASE 0 TO 49
+		C = 0
+	CASE 50 TO 149
+		C = 10
+	CASE 150 TO 299
+		C = 25
+	CASE IS > 299
+		C = 40
+	CASEELSE
+		C = 0
+	ENDSELECT
+CASE 7 TO 10
+	SELECTCASE LOCAL
+	CASE 0 TO 49
+		C = 0
+	CASE 50 TO 149
+		C = 15
+	CASE 150 TO 299
+		C = 30
+	CASE IS > 299
+		C = 50
+	CASEELSE
+		C = 0
+	ENDSELECT
+CASEELSE
+	C = 0
+ENDSELECT
+IF C > 0
+	V += C
+	IF ARG:2 == 0
+		IF LOCAL > 300
+			PRINTFORML 　편성보너스 ＋{C}％　보너스 최대치！
+		ELSE
+			PRINTFORML 　편성보너스 ＋{C}％
+		ENDIF
+	ENDIF
+ENDIF
+LD軸記録 = 0
+LC軸記録 = 0
+;まずは立てておく
+ALIGN記録 = 1
+FOR ループ用, 0, 10
+	LOCAL = T:ループ用
+	SIF LOCAL < 0
+		CONTINUE
+	;ポジション0の人がいたら
+	IF ループ用 == 0
+		;今収支を出してる人(CAST)がポジション0じゃなかったら
+		IF LOCAL != CAST
+			IF ABL:LOCAL:속성LD != ABL:CAST:속성LD
+				LD軸記録 = -1
+			ELSE
+				LD軸記録 = 1
+			ENDIF
+			IF ABL:LOCAL:속성LC != ABL:CAST:속성LC
+				LC軸記録 = -1
+			ELSE
+				LC軸記録 = 1
+			ENDIF
+		ENDIF
+	ENDIF
+	;アライメントが異なれば折る
+	SIF ABL:LOCAL:속성LD != ABL:CAST:속성LD
+		ALIGN記録 = 0
+	SIF ABL:LOCAL:속성LC != ABL:CAST:속성LC
+		ALIGN記録 = 0
+NEXT
+;メンバー全員のアライメントが完全一致
+IF ALIGN記録 == 1
+	C = 20
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　멤버의 얼라인먼트 완전 일치 ＋{C}％
+;ポジション0とアライメントが異なる
+ELSEIF LD軸記録 == -1 || LC軸記録 == -1
+	C = 10
+	V -= C
+	SIF ARG:2 == 0
+		PRINTFORML 　포지션 0과 얼라인먼트 불일치 －{C}％
+;ポジション0がいない／ポジション0本人
+ELSEIF LD軸記録 == 0 || LC軸記録 == 0
+;ポジション0とアライメントが一致
+ELSEIF LD軸記録 == 1 || LC軸記録 == 1
+	C = 10
+	V += C
+	SIF ARG:2 == 0
+		PRINTFORML 　포지션 0과 얼라인먼트 일치 ＋{C}％
+ENDIF
+
+;補正値が0以下の場合は1(0.01倍)にする
+SIF V <= 0
+	V = 1
+IF ARG:2 == 0
+	SETCOLOR 0x33ffcc
+	PRINTFORML 배율 합계：{V}％
+	RESETCOLOR
+	PRINTL 
+ENDIF
+;補正値の適用
+S *= V
+S /= 100
+;붕괴,狂気は利潤をかなり低くする（従順によって、80％まで回復）
+IF TALENT:CAST:붕괴
+	LOCAL:1 = 0
+	FOR ループ用, 0, 10
+		LOCAL = T:ループ用
+		SIF LOCAL < 0
+			CONTINUE
+		SIF TALENT:LOCAL:붕괴
+			LOCAL:1 += 1
+	NEXT
+	;メンバー全員が崩壊だったらペナルティでもっと下げる
+	IF LOCAL:1 == ARG:1
+		S *= ABL:CAST:순종
+		TIMES S , 0.05
+		Z = ABL:CAST:순종
+		Z *= 5
+		SIF ARG:2 == 0
+			PRINTFORML %TALENTNAME:9% ×{Z}％　전원 붕괴 페널티
+	ELSE
+		S *= ABL:CAST:순종
+		TIMES S , 0.08
+		Z = ABL:CAST:순종
+		Z *= 8
+		SIF ARG:2 == 0
+			PRINTFORML %TALENTNAME:9% ×{Z}％
+	ENDIF
+ELSEIF TALENT:CAST:광기
+	LOCAL:1 = 0
+	FOR ループ用, 0, 10
+		LOCAL = T:ループ用
+		SIF LOCAL < 0
+			CONTINUE
+		SIF TALENT:LOCAL:광기
+			LOCAL:1 += 1
+	NEXT
+	;メンバー全員が狂気だったらペナルティでもっと下げる
+	IF LOCAL:1 == ARG:1
+		S *= ABL:CAST:순종
+		TIMES S , 0.05
+		Z = ABL:CAST:순종
+		Z *= 5
+		SIF ARG:2 == 0
+			PRINTFORML %TALENTNAME:141% ×{Z}％　전원 광기 페널티
+	ELSE
+		S *= ABL:CAST:순종
+		TIMES S , 0.08
+		Z = ABL:CAST:순종
+		Z *= 8
+		SIF ARG:2 == 0
+			PRINTFORML %TALENTNAME:141% ×{Z}％
+	ENDIF
+ENDIF
+;所持施設
+IF ITEM:무도관 == 1
+	IF ARG:2 == 0
+		PRINTL 【시설 평가】
+		PRINTL 　무도관 ×140％
+	ENDIF
+	TIMES S , 1.40
+ELSEIF ITEM:라이브하우스 == 1
+	IF ARG:2 == 0
+		PRINTL 【시설 평가】
+		PRINTL 　라이브하우스 ×110％
+	ENDIF
+	TIMES S , 1.10
+ELSE
+	IF ARG:2 == 0
+		PRINTL 【시설 평가】
+		PRINTL 　노상 라이브 ×---％
+	ENDIF
+ENDIF
+;---- EDIT 008 MOD START -------------------------
+;スタッフバフ
+SIF ヴォーカリスト・セイレーン進行 > 1 && FINDCHARA_B([[キャラ:세이렌]], 1) >= 0
+	TIMES S , 1.10
+;シナリオライター・ジークフリート（大劇場）
+SIF シナリオライター・ジークフリート進行 > 1 && FINDCHARA_B([[キャラ:지크프리트]], 1) >= 0
+	TIMES S , 1.10
+;;『観客』ディオニュソス（大劇場）
+SIF 『観客』ディオニュソス進行 > 1 && FINDCHARA_B([[キャラ:디오니소스]], 1) >= 0
+	TIMES S , 1.15
+;スタッフバフ
+;ヴォーカリスト・セイレーン（ライブハウス）
+;IF ヴォーカリスト・セイレーン進行 > 1
+;	FOR LOCAL, 0, CHARANUM
+;		;劇場憑きのセイレーンはここで判定
+;		IF NO:LOCAL == [[キャラ:세이렌]] && CFLAG:LOCAL:998 == 1
+;			SIF ARG:2 == 0
+;				PRINTL 　ヴォーカリスト・セイレーンの加護 ×110％
+;			TIMES S , 1.10
+;			BREAK
+;		ENDIF
+;	NEXT
+;ENDIF
+;;シナリオライター・ジークフリート（大劇場）
+;IF シナリオライター・ジークフリート進行 > 1
+;	FOR LOCAL, 0, CHARANUM
+;		;劇場憑きのジークフリートはここで判定
+;		IF NO:LOCAL == [[キャラ:지크프리트]] && CFLAG:LOCAL:998 == 1
+;			SIF ARG:2 == 0
+;				PRINTL 　シナリオライター・ジークフリートの加護 ×110％
+;			TIMES S , 1.10
+;			BREAK
+;		ENDIF
+;	NEXT
+;ENDIF
+;;『観客』ディオニュソス（大劇場）
+;IF 『観客』ディオニュソス進行 > 1
+;	FOR LOCAL, 0, CHARANUM
+;		;劇場憑きのディオニュソスはここで判定
+;		IF NO:LOCAL == [[キャラ:디오니소스]] && CFLAG:LOCAL:998 == 1
+;			SIF ARG:2 == 0
+;				PRINTL 　『観客』ディオニュソスの加護 ×115％
+;			TIMES S , 1.15
+;			BREAK
+;		ENDIF
+;	NEXT
+;ENDIF
+;---- EDIT 008 MOD END ---------------------------
+IF ARG:2 == 0
+	PRINTL 
+	PRINTL 【그룹 인기 보정】
+	PRINTFORML 　그룹 인기 {グループ人気:ARG}p
+ENDIF
+;超人気
+IF グループ人気:ARG > 2999
+	SIF ARG:2 == 0
+		PRINTL 　그룹 인기에 따른 집객력……∞
+;大人気
+ELSEIF グループ人気:ARG > 1999
+	IF S > 5999
+		IF ARG:2 == 0
+			SETCOLOR 0xff0033
+			PRINTL ※집객이 한계에 도달했습니다, 그룹 인기를 더 올려야 합니다
+			PRINTFORML 다음 목표치……3000p
+			RESETCOLOR
+		ENDIF
+		S = 6000
+	ELSE
+		SIF ARG:2 == 0
+			PRINTL 　그룹 인기에 따른 집객력……대
+	ENDIF
+;인기
+ELSEIF グループ人気:ARG > 999
+	IF S > 3999
+		IF ARG:2 == 0
+			SETCOLOR 0xff0033
+			PRINTL ※집객이 한계에 도달했습니다, 그룹 인기를 더 올려야 합니다
+			PRINTFORML 다음 목표치……2000p
+			RESETCOLOR
+		ENDIF
+		S = 4000
+	ELSE
+		SIF ARG:2 == 0
+			PRINTL 　그룹 인기에 따른 집객력……있음
+	ENDIF
+;小人気
+ELSEIF グループ人気:ARG > 499
+	IF S > 2999
+		IF ARG:2 == 0
+				SETCOLOR 0xff0033
+				PRINTL ※집객이 한계에 도달했습니다, 그룹 인기를 더 올려야 합니다
+				PRINTFORML 다음 목표치……1000p
+				RESETCOLOR
+		ENDIF
+		S = 3000
+	ELSE
+		SIF ARG:2 == 0
+			PRINTL 　그룹 인기에 따른 집객력……소
+	ENDIF
+;人気習得以前
+ELSE
+	IF S > 1999
+		IF ARG:2 == 0
+			SETCOLOR 0xff0033
+			PRINTL ※집객이 한계에 도달했습니다, 그룹 인기를 더 올려야 합니다
+			PRINTFORML 다음 목표치……500p
+			RESETCOLOR
+		ENDIF
+		S = 2000
+	ELSE
+		SIF ARG:2 == 0
+			PRINTL 　그룹 인기에 따른 집객력……없음
+	ENDIF
+ENDIF
+;難易度処理
+;EASY
+IF FLAG:조교난이도 == 1
+	IF ARG:2 == 0
+		PRINTL 
+		PRINTL 난이도:EASY ×120％
+	ENDIF
+	TIMES S , 1.20
+;NORMAL
+ELSEIF FLAG:조교난이도 == 2
+	;これ要らなくない？
+	;TIMES S , 1.00
+;HARD
+ELSEIF FLAG:조교난이도 == 3
+	IF ARG:2 == 0
+		PRINTL 
+		PRINTL 난이도:HARD ×80％
+	ENDIF
+	TIMES S , 0.80
+ENDIF
+IF ARG:2 == 0
+	PRINTL 
+	SETCOLOR 0x33ffcc
+	PRINTFORML 시산 결과：{S}
+	RESETCOLOR
+	PRINTW 〈다음으로〉
+	DRAWLINE
+ENDIF
+IF S <= 0
+	試算判定 = -1
+ELSEIF S > 0
+	試算判定 = S
+ENDIF
+RESULT:1 = 人気記録
+RESULT:2 = ALIGN記録
+;一人でも利潤が見込めなかったら-1返す
+RETURN 試算判定
+
+@GROUP_HELP
+$TOP_OF_GROUP_HELP
+PRINTL 어느 항목에 대해 알아보겠습니까?
+PRINTL [ 1] 그룹 편성에 대해
+PRINTL [ 2] 그룹 확인에 대해
+PRINTL [ 3] 편성 보너스에 대해
+PRINTL [ 4] 집단 라이브와 콘서트의 차이점에 대해
+DRAWLINE
+PRINTL [100]- 돌아간다
+$INPUT_LOOP
+CALL INPUTINT, 1, 2, 3, 4, 100
+SELECTCASE RESULT
+CASE 1 TO 4
+	CALL GROUP_HELP_ABOUT, RESULT
+CASE 100
+	RETURN 0
+CASEELSE
+	CLEARLINE 1
+	GOTO INPUT_LOOP
+ENDSELECT
+DRAWLINE
+GOTO TOP_OF_GROUP_HELP
+
+@GROUP_HELP_ABOUT, ARG
+SELECTCASE ARG
+CASE 1
+	PRINTW 라이브를 실행할 그룹에 멤버를 편성합니다.
+	PRINTL 편성 가능한 최대 멤버 수는 라이브 하우스・대극장의 소지 여부에 따라 변화합니다.
+	PRINTW （미소지→최대 3명　라이브 하우스 소지→6명　대극장 소지→10명）
+	PRINTW 자세한 내용은 라이브와 콘서트의 차이점에서 해설하겠지만, 포지션에 따라 효과가 달라집니다.
+	;まあまだ作ってないんだけどネ
+	PRINTW 또한, 특별한 조합으로 효과를 발휘하는 멤버도 있는 것 같습니다.
+CASE 2
+	PRINTW 현재 편성되어 있는 그룹을 확인합니다.
+	PRINTL 여기서는 그룹명, 각 포지션에 배치된 멤버, 그룹 인기, 그룹의 총수입,
+	PRINTL 그리고 편성 보너스에 관여하는 그룹 특수편성치, 그룹 숙련도, 그룹 상성치도 확인할 수 있습니다.
+	PRINTW 이 3가지 능력치에 대해서는 편성 보너스에서 해설합니다.
+CASE 3
+	PRINTW 그룹 특수편성치, 그룹 숙련도, 그룹 상성치의 합계로부터 계산되는 보너스입니다.
+	PRINTW 합계치의 상한은 300으로 되어 있습니다.
+	PRINTL ・그룹 특수편성치
+	PRINTW 　특별한 멤버끼리의 조합으로만 발생한다.
+	PRINTL ・그룹 숙련도
+	PRINTL 　집단 라이브를 실행할 때마다 가산된다.
+	PRINTW 　단, 편성을 변경하면 리셋된다.
+	PRINTL ・그룹 상성치
+	PRINTW 　CSV에 정의된 상성이나 상성 그룹 등의 관계성으로부터 산출된다.
+	PRINTL ・편성 보너스의 발동 조건
+	PRINTW 　그룹 특수편성치, 그룹 숙련도, 그룹 상성치의 합계가 50 이상일 경우, 배율에 보너스가 적용된다.
+CASE 4
+	PRINTW 집단 라이브와 콘서트의 차이점은 다음과 같습니다.
+	PRINTW ・멤버 전원이 [친애][동료][인기]를 소지하고 있을 경우, 배율에 보너스가 적용된다
+	PRINTW ・편성 보너스가 존재한다
+	PRINTL ・포지션 0 이외의 멤버는, 포지션 0의 멤버와 얼라인먼트가 다르면 배율이 감소하고,
+	PRINTL 　얼라인먼트가 일치하면 배율이 증가한다
+	PRINTW 　단, 포지션 0에 멤버가 없는 경우에는 적용되지 않는다
+	PRINTW ・멤버 전원의 얼라인먼트가 완전 일치하면 배율이 증가한다
+	PRINTW ・멤버 전원이 [붕괴][광기]를 소지하고 있을 경우, 배율에 페널티가 적용된다
+	PRINTW ・라이브의 성공률・그룹 인기의 산출은 멤버의 평균 가창 기능을 참조한다
+	PRINTL ・개개인의 아이돌 인기 획득량은 편성 인원수에 따라 증감한다
+	PRINTL 　3명 이하：콘서트의 0.8배
+	PRINTL 　6명 이하：콘서트의 0.6배
+	PRINTW 　그 외：콘서트의 0.3배
+	PRINTL ・그룹 인기 획득량은 편성 인원수에 따라 증감한다
+	PRINTL 　3명 이하：0.8배
+	PRINTL 　6명 이하：보정 없음
+	PRINTW 　그 외：1.15배
+	PRINTL ・그룹 숙련도는 편성 인원수에 따라 증감한다
+	PRINTL 　3명 이하：실행할 때마다 +5
+	PRINTL 　6명 이하：실행할 때마다 +2
+	PRINTW 　그 외：실행할 때마다 +1
+	PRINTL ・라이브 실행 시, 포지션에 따라 효과가 달라진다
+	PRINTL 　포지션 0
+	PRINTL 　　실행할 때마다, 현재 체력의 1/2을 소비
+	PRINTL 　포지션 1~2
+	PRINTL 　　실행할 때마다, 현재 체력의 1/3을 소비
+	PRINTL 　　습득의 구슬・가창 경험・아이돌 인기 획득량이 0.8배
+	PRINTL 　포지션 3~5
+	PRINTL 　　실행할 때마다, 현재 체력의 1/4을 소비
+	PRINTL 　　습득의 구슬・가창 경험・아이돌 인기 획득량이 0.5배
+	PRINTL 　포지션 6~9
+	PRINTL 　　실행할 때마다, 현재 체력의 1/5을 소비
+	PRINTL 　　습득의 구슬・가창 경험・아이돌 인기 획득량이 0.3배
+	PRINTL 　단, 멤버 전원이 [인기]를 소지하고 있을 경우, 습득의 구슬・가창 경험・아이돌 인기 획득량의 제한이 완화되고,
+	PRINTW 　멤버 전원이 [인기]를 소지하고 얼라인먼트가 완전 일치할 경우, 습득의 구슬・가창 경험・아이돌 인기 획득량은 무제한이 됩니다.
+ENDSELECT

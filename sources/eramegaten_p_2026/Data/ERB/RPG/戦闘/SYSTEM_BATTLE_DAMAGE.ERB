@@ -1,0 +1,2823 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SYSTEM_BATTLE_DAMAGE.ERB
+;	Facility	:戦闘システム（ダメージ計算処理）
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/11/09		旅人					統合整備
+;													ファイルが肥大化している為、ダメージ処理を分離
+;			2011/11/11		旅人					統合整備（ダメージ計算処理統合）
+;	003		2013/04/13		銃Ｐ					煌天の会心が機能しないのを修正
+;	004		2016/12/09		Jガン					自身の素質によってダメージアップするように
+;	005		2016/12/11		Jガン					1moreフラグを少し変更
+;	006		2017/09/27		Jガン					幸福時にダメージに効果があるように
+;	006		2017/10/30		Jガン					独覚時に弱点を吸収するように
+;	006		2017/10/30		Jガン					スキル吸収関数作成のための編集
+;	007		2018/06/06		JK好き					サードアイに被与クリティカル率アップ効果を追加
+;	008		2018/09/02		千鶴					各種ブースタスキルの処理の追加
+;	009		2019/11/27		Jガン					クリティカル無効フラグ追加
+;	010		2019/12/30		Jガン					カウンター追加による回避失敗等の追加
+;	011		2020/02/20		Jガン					FLY仕様変更による倍率変更
+;	012		2020/03/XX		Jガン					武器素質仕様の変更、追加
+;	013		2020/07/05		Jガン					ダメージ計算の変更、与ダメージ補正、属性ダメージ補正、隠れ耐性等追加
+;	014		2020/07/31		Jガン					1more処理を整理して一つに(1moreオプション仕様は前と一緒)、クリティカル処理を縦長に見やすく
+;													ONE_MORE_POINT_ADD関数追加、銃攻撃には切り落とし・気合は影響しないように
+;	015		2020/07/31		kamedakeisuke(ﾟдﾟ)		クライマックスレヴューに関する記述を追加
+;	016		2020/08/22		名無し					ガードキルと貫通の相互作用を調整
+;	017		2020/08/28		Jガン					父の名を別の効果に(貫通付きに)、デビルトリガーによるダメージアップ追加
+;	018		2020/09/02		Jガン					バージルのスキルの処理追加
+;	019		2020/09/07		Jガン					デビルトリガー、クライマックスレビューの処理が正しく機能してないのを修正
+;	020		2020/09/17		SUIHOU					エアハイクの被クリティカル率減少補正を追加
+;	021		2020/10/23		Jガン					クリティカル補正が正しく計算されるように
+;	022		2021/01/29		Rsp暇人					도구명중/道具威力を新設
+;	023		2021/03/21		木綿豆腐				SONG OF DIVAに関する処理を追加
+;	024		2021/05/01		Jガン					貫通フラグの処理を変更(ダメージタイプと相性で指定できるように)、割合攻撃処理をここに移動
+;	025		2021/04/24		SUIHOU					FATE_鯖共通専用技の効果を追記
+;	026		2021/05/17		しゃけ					災厄の巨焔、ラグナロク（ＡＮ）の処理追加
+;	027		2021/05/24		Jガン					HP処理を簡略化
+;	028		2021/06/10		Schrott					アナーキーバレットヘルに対し、摩多羅神以外が所持していると機能しない様に。
+;	029		2021/06/24		しゃけ					謎のヒロインX'sの処理を追加,CRT_CHECKを追加
+;	030		2021/08/11		木綿豆腐				SONG OF DIVAに関する処理のミスを修正
+;	031		2021/08/19		SUIHOU					FATE鯖専用スキルの効果を各種追記・修正
+;	032		2021/11/23		kamedakeisuke(ﾟдﾟ)		他人気合フラグ、他人集中フラグの処理を追加
+;	033		2022/02/04		しゃけ					デンゲキコの処理を追加
+;	034		2022/04/14		takaya					魔人学園キャラの処理を追加
+;	035		2022/05/30		takaya					クリティカル率のミスを修正及び与クリ減少と被クリ増加の自動効果追加
+;	036		2022/05/29		takaya					アンリマユのスキル処理を追加
+;	037		2022/07/11		沖田					沖田のスキル処理を追加
+;	038		2022/04/20		しゃけ					アーミヤ専用技の効果を追加、BTL_CALC_DAMAGE_ADJUSTMENTの無効化処理部分を改良
+;	039		2022/08/05		NEO						種族特効スキル関連処理の追加
+;	040		2022/08/02		Schrott					会心率強化フラグ、会心確定フラグ、会心専心の処理を創設、切り落としフラグから必殺率上昇措置を分離。各種ダメージ補正を味方にも適用。
+;	041		2022/10/13		P						DAMAGE関数3種(物理・魔法・銃)を統合したうえで割合ダメージの処理を合流させ、@BTL_CALC_DAMAGEを作成
+;													@BTL_CALC_DAMAGE_EXE内にあったダメージの補正処理を@BTL_CALC_DAMAGE_ADJUSTMENTに移動し、さらに両関数内の中身を整理。
+;													@BTL_CALC_DAMAGE_ADJUSTMENT内にあったクリティカル判定部分を@BTL_JUDG_CRTとして独立、@BTL_CALC_DAMAGE_ADJUSTMENT内にあった相性判定部分を@BTL_CALC_AISYOUとして独立し、サブ関数を追加
+;													命中関数3種を統合して、@BTL_JUDG_HITを作成し、さらにSYSTEM_BATTLE.ERBから移動
+;													ゲッシュと陽の黄龍の器の器の発動条件の不具合を修正。会心専心が魔法ダメージを減少させていたのを修正。
+;													ダメージタイプなしの適用範囲を広げる。素質によるダメージの増加を敵に適用されないように変更。
+;													貫通と耐性変化無効をプロパティ化し、どこまで適用されるかのランクを設定する
+;													デバッグ用に付与率の計算過程を取得する変数を追加
+;													大規模な記述変更で、編集履歴を残すのが難しく、また可読性を損ねていたので一旦クリアー。EDIT.40までの履歴を参照したい場合は資料の2022_10_12_EDIT40_SYSTEM_BATTLE.ERBを参照してください。
+;	042		2022/10/30		P(bazzile)				クリティカル解析を追加。さらにほかの解析の記述内容も調整
+;													受けフラグをCRECフラグに置換
+;													メッセージ表示の仕様を変更
+;													相性の再計算措置をSKILL_TARGETに送る
+;	043		2022/10/31		P(bazzile)				HPバリアの処理を追加
+;	044		2022/11/06		P(bazzile)				解析処理で数値が下がりすぎて0除算が出る場合のケースに対応。크리티컬보정-100をクリティカル無効処理に追加
+;	045		2022/11/09		P(bazzile)				万能の貫通効果が弱まっていたバグを修正
+;	046		2022/11/16		P(bazzile)				ダメージ計算関数(BTL_CALC_DAMAGE_ADJUSTMENT・BTL_JUDG_HIT・BTL_JUDG_CRT)にスキル側で定義した補正値を取得する処理を追加
+;													処理の追加に合わせて、記述を一部変更。また解析フラグを新記述にあわせて変更
+;													会心強化と分離していた切り落としフラグを再統合
+;													切り落としによる会心補正の仕様を変更
+;													百発百中・千発千中・見切りによるの命中率上昇の処理を変更
+;													魔人学園系の防御系スキルの処理位置が変更前の状態で取り残されていたので正しい位置に移動
+;													万能が特定条件で相性変化の影響を受けてしまっていたのを修正
+;	047		2022/11/21		P(bazzile)				宿星:白虎玄武青龍朱雀が与ダメージを減少させてしまっていたのを被ダメージを減らすように修正
+;													菩薩眼が被ダメージでなく、与ダメージを増やしてしまっていたのを修正
+;													追加回避の絶対回避と回避不能の処理が逆転していたのを修正
+;													スキル補正の記述を変更し、さらにキャラクター補正を追加
+;													スキル補正に相性変更の処理を追加
+;													相性判定関数をスキル指定なしでも呼び出せるように修正
+;													耐性スキル貫通処理を統合整理
+;													独覚フラグの判定処理ミスを修正
+;	048		2022/12/15		P(bazzile)				クリティカル補正B群が機能していなかったのを修正
+;													∞黒餡子が∞黒餡子を所持していない場合に常に発動状態として扱われていたのを修正
+;	049		2022/11/15		しゃけ					エレナの処理を追加
+;	050		2022/01/07		P(bazzile)				FATEクラススキルのうち、セイバーのクリティカル耐性・アーチャーのクリティカル補正・ライダーの被ダメージ軽減・ルーラーの被ダメージ軽減の記述が存在しなかったので
+;													スキル説明文に合わせて修正するととも、クラススキルのダメージ関係の効果を各スキル側にすべて移動
+;	051		2023/01/10		P(bazzile)				達人補正と相性素質補正を攻撃の心得とスキル適性に置き換え
+;													防御の心得の処理を追加
+;													@BTL_CALC_相性を行動者の指定なしで通すように
+;	052		2022/02/15		P(bazzile)				固定ダメージの処理を作成
+;	053		2023/03/21		P(bazzile)				後列判定を関数を介して行う用に変更
+;	054		2023/04/30		P(bazzile)				表示関係の都合で貫通とガードキルの判定順を入れ替え
+;	055		2023/06/07		P(bazzile)				魔装術による攻撃相性の追加を銃のときに発生しないように修正
+;	056		2023/06/12		P(bazzile)				能力ダウンを8ランクに変更
+;													魔法ダメージの減少効果をラクカジャとサマカジャの両方を見る形に変更
+;													魔法ダメージの命中率補正をスクカジャとサマカジャの両方を見る形に変更
+;													バロウズによる表示のためのクリティカル率の取得処理を追加
+;	056		2023/06/19		P(bazzile)				不死と人間境界で不適切な戻り値を返してしまっていた不具合を修正
+;													バロウズの表示の関係で上記2種の処理の位置を変更
+;	057		2023/06/22		P(bazzile)				貫通と耐性スキル貫通を統合
+;	058		2023/10/02		P(bazzile)				専用スキルの貫通の判定時に攻撃タイプとダメージタイプを正しく取得できていなかった不具合を修正
+;													専用スキルのインサイトの判定を正しく取得できていなかった不具合を修正
+;													インサイトが拡散スキルに適用されていた不具合を修正
+;	059		2023/10/02		P(bazzile)				オプションの如何に関わらず、アイテム攻撃が道具命中を参照していた不具合を修正
+;	060		2023/10/02		P(bazzile)				スキル毎に攻撃値と防御値を独自に呼び出す処理を追加
+;	061		2023/12/20		P(bazzile)				銃攻撃の命中率が不当に低くなっていた不具合を修正
+;	062		2024/03/02		P(bazzile)				オーバーガードの処理を追加
+;	063		2024/10/07		P(bazzile)				魔法ダメージに対して防御強化と魔法効果強化が正しく機能していなかった不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;  P
+;	001		2024/05/13		P(bazzile)				絶対会心の処理を追加
+;													漲力の処理を追加
+;													溜力の処理を追加
+;	002		2024/06/30		P(bazzile)				独覚と独善の楔の処理を削除
+;	003		2024/07/10		P(bazzile)				クリティカル有効化のプロパティを追加
+;	004		2024/07/26		P(bazzie)				チュートリアル進行時に戦闘難易度によるダメージ計算の変動処理が発生しないように修正
+;	005		2024/09/04		P(bazzie)				アイテム属性の補正を追加
+;	006		2024/09/13		P(bazzie)				攻撃タイプにLV参照を追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;===============================================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name						Explanation
+;
+;	・ BTL_CALC_DAMAGE							
+;	・ BTL_CHK_リンケージ				BTL:リンケージチェック
+;	・ BTL_CALC_DAMAGE_BLOCK			BTL計算:ダメージブロック
+;	・ BTL_CALC_BASE_DAMAGE				BTL計算:基礎ダメージ
+;	・ BTL_CALC_DAMAGE_ADJUSTMENT		BTL計算:ダメージ調整
+;	・ BTL_CALC_DAMAGE_EXE				BTL計算:ダメージ実行
+;	・ BTL_CALC_DAMAGE_COOP				BTL計算:COOP
+;	・ BTL_CALC_RATE_DAMAGE				BTL計算:割合ダメージ
+;	・ ONE_MORE_POINT_ADD				反射・吸収・無効・ミスによる1more発生率抑制処理
+;	・ BTL_CALC_AISYOU					BTL計算:貫通やスキルによる変動を含めた最終的な相性を取得
+;	・ BTL_CHK_SKILL_貫通				BTL:貫通のランクを取得。BTL_CALC_AISYOUのサブ関数
+;	・ BTL_JUDG_HIT						BTL:命中判定
+;	・ BTL_JUDG_CRT						BTL:クリティカル判定
+;===============================================================================
+
+;=================================================
+;   sub DAMAGE_1
+;=================================================
+;   BTL計算:ダメージ
+;-------------------------------------------------
+;   ダメージの計算と処理を行う
+;-------------------------------------------------
+; Input:
+;  ARG:0				攻撃者
+;  ARG:1				被攻撃者
+;  ARG:2				威力
+;  ARG:3				使用スキル
+;  ARG:4				공격상성
+;  ARG:5				攻撃相性によるダメージ倍率
+;  ARG:6				クリティカル率(%)
+;  ARG:7				吸収率
+;  ARG:8				ダメージタイプ
+;  ARG:9				攻撃タイプ
+;-------------------------------------------------
+@BTL_CALC_DAMAGE, ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5, ARG:6 = 5, ARG:7 = 0, ARG:8 = -1, ARG:9 = -1, ARG:10, ARG:11
+#DIM L_P
+#DIM L_T
+#DIM L_スキル
+#DIM L_威力
+#DIM L_相性
+#DIM L_相性倍率
+#DIM L_クリティカル率
+#DIM L_吸収率
+#DIM L_ダメージタイプ
+#DIM L_攻撃タイプ
+#DIM L_割合計算
+#DIM L_割合上限
+#DIM L_DMG
+#DIM L_CRT
+#DIM L_COOP
+
+L_P = ARG
+L_T = ARG:1
+L_スキル = ARG:2
+L_威力 = ARG:3
+L_相性 = ARG:4
+L_相性倍率 = ARG:5
+L_クリティカル率 = ARG:6
+L_吸収率 = ARG:7
+L_ダメージタイプ = ARG:8
+L_攻撃タイプ = ARG:9
+L_割合計算 = ARG:10
+L_割合上限 = ARG:11
+
+;リンケージでのメインの行動者を確定する
+CALL BTL_CHK_リンケージ, L_P
+L_P = RESULT
+
+;---- EDIT 046 MOD START 引数追加-------------------------
+;クリティカル判定(戻り値はクリティカルしたかどうか)
+CALL BTL_JUDG_CRT, L_P, L_T, L_クリティカル率, L_ダメージタイプ, L_攻撃タイプ, GET_TYPE(L_相性), L_相性倍率
+L_CRT = RESULT
+;---- EDIT 056 ADD START -------------------------
+SELECTCASE RESULT:1
+	CASE 999
+		TSTR:바로우즈메시지 = %ADD_SPLIT(TSTR:바로우즈메시지, UNICODE(0x000D), @"CRTRATE:　確定")%
+	CASE -999
+		TSTR:바로우즈메시지 = %ADD_SPLIT(TSTR:바로우즈메시지, UNICODE(0x000D), @"CRTRATE:　無効")%
+	;魔法で判定自体がない場合
+	CASE -1000
+	CASEELSE
+		TSTR:바로우즈메시지 = %ADD_SPLIT(TSTR:바로우즈메시지, UNICODE(0x000D), @"CRTRATE:　{RESULT:1, 3}\%")%
+ENDSELECT
+;---- EDIT 056 ADD END ---------------------------
+;---- EDIT 046 MOD END ---------------------------
+;ダメージ計算。基礎ダメージを算出したのちに補正をかけて増減させる。(RESULT = ダメージ)
+IF L_攻撃タイプ == GET_攻撃タイプ_NUM("割合")
+	CALL BTL_CALC_RATE_DAMAGE, L_P, L_T, L_威力, L_ダメージタイプ, L_吸収率, L_割合計算, L_割合上限
+;---- EDIT 052 ADD START -------------------------
+ELSEIF L_攻撃タイプ == GET_攻撃タイプ_NUM("固定")
+	CALL BTL_CALC_FIXED_DAMAGE, L_P, L_T, L_威力, L_相性倍率
+;---- EDIT 052 ADD END ---------------------------
+ELSE
+	;---- EDIT 050 MOD START -------------------------
+	;- BTL計算:基礎ダメージ
+	CALL BTL_CALC_BASE_DAMAGE, L_P, L_T, L_威力, L_ダメージタイプ, L_攻撃タイプ, L_スキル
+	L_DMG = RESULT
+	;- BTL計算:ダメージ調整
+	CALL BTL_CALC_DAMAGE_ADJUSTMENT(L_P, L_T, L_DMG, L_相性, L_相性倍率, L_CRT, L_ダメージタイプ, L_攻撃タイプ, L_スキル)
+	;---- EDIT 050 MOD END ---------------------------
+ENDIF
+L_DMG = RESULT
+
+;- BTL計算:ダメージをキャラクターに与え、それによって発生する処理を実行する。(RESULT = ダメージ。 RESULT:1 = クリティカル)
+CALL BTL_CALC_DAMAGE_EXE(L_P, L_T, L_DMG, L_相性, L_相性倍率, L_ダメージタイプ, L_攻撃タイプ, L_CRT, L_吸収率)
+L_DMG = RESULT:0
+SIF RESULT:1
+	SETBIT L_CRT, 0
+
+;口上用にフラグ保存
+;CALL BATTLE_EVENT_ATTACK, L_P, L_T, L_DMG, L_ダメージタイプ
+
+SIF L_DMG < 1
+	RETURN 0
+
+;-----------------------------------------------------------------
+;COOP/1moreのフラグ立てとダメージ計算(ダメージ実行処理は行動終了後)
+;-----------------------------------------------------------------
+;割合/固定ダメージは1MOREはするCOOPはしない
+SIF GROUPMATCH(L_攻撃タイプ, GET_攻撃タイプ_NUM("割合"), GET_攻撃タイプ_NUM("固定")) && CFLAG:L_P:PT플래그 > 0
+	RETURN L_DMG, L_CRT
+L_COOP = 0
+SIF CHECK_WEAKNESS(L_相性倍率) > 0
+	SETBIT L_COOP, 0
+SIF L_CRT
+	SETBIT L_COOP, 1
+SIF !L_COOP
+	RETURN L_DMG, L_CRT
+CALL BTL_CALC_DAMAGE_COOP(L_P, L_T, L_DMG, L_相性, L_ダメージタイプ, L_COOP, L_威力)
+RETURN L_DMG, L_CRT
+
+;=================================================
+;   sub BTL_CHK_リンケージ
+;=================================================
+;   BTL:リンケージチェック
+;-------------------------------------------------
+; Input:
+;  ARG:0				対象者
+; Output:
+;  RETURN				チェック結果のキャラ
+;-------------------------------------------------
+@BTL_CHK_リンケージ(ARG:0)
+#DIM L_P
+L_P = ARG:0
+
+;リンケージの場合、能力参照者を指定できる
+IF CFLAG:L_P:링케이지발동 && !CFLAG:L_P:단독링케이지
+	TRYCCALLFORM リンケージ能力参照者_{CFLAG:L_P:사용링케이지}, L_P
+		TRYCALLFORM リンケージ能力参照者_{CFLAG:L_P:사용링케이지}, L_P
+		SIF RESULT
+			L_P = CFLAG:L_P:@"링케이지참가자{RESULT}"
+	CATCH
+	ENDCATCH
+ENDIF
+
+RETURN L_P
+
+;=================================================
+;   sub BTL_CALC_BASE_DAMAGE
+;=================================================
+;   BTL計算:基礎ダメージ
+;-------------------------------------------------
+; Input:
+;  ARG:0				攻撃者
+;  ARG:1				被攻撃者
+;  ARG:2				威力
+;  ARG:3				計算タイプ(物理/魔法)
+;  ARG:4				攻撃タイプ(物理/魔法/총/道具/割合)
+; Output:
+;  RETURN				ダメージ
+;
+;EVALUATE_DMG			
+;
+;備考
+;アイテムの攻撃タイプはオプションで排除されるがその判定タイミングはスキルから数値を拾うときに実行
+;-------------------------------------------------
+;---- EDIT 050 ADD START -------------------------
+@BTL_CALC_BASE_DAMAGE(ARG:0, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5)
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_威力
+#DIM DYNAMIC L_DMG
+#DIM DYNAMIC L_ATK
+#DIM DYNAMIC L_DEF
+#DIM DYNAMIC L_攻撃値
+#DIM DYNAMIC L_防御値
+#DIMS DYNAMIC L_攻撃タイプ
+#DIMS DYNAMIC L_ダメージタイプ
+#DIM DYNAMIC L_SKILL
+
+L_P		= ARG:0
+L_T		= ARG:1
+L_威力	= ARG:2
+L_DMG = 0
+L_ATK = 0
+L_DEF = 0
+L_ダメージタイプ = %GET_ダメージタイプ(ARG:3)%
+L_攻撃タイプ = %GET_攻撃タイプ(ARG:4)%
+;---- EDIT 060 ADD START -------------------------
+L_SKILL = ARG:5
+;---- EDIT 060 ADD END ---------------------------
+;-----------------------------
+;- 計算タイプ別チェック
+;-----------------------------
+;---- EDIT 060 MOD START -------------------------
+TSTR:데미지해석1 = 【威力_{L_威力}】【%L_攻撃タイプ%/%L_ダメージタイプ%】
+;攻撃ステータスによる基礎ダメージ算出
+RESULT = 0
+TRYCALLFORM SKILL_CALC_BATTTLE_STATUS_%CONVERT_SKILLNUM_TO_STR(L_P, L_SKILL)%, "ATK", L_P, L_T
+IF RESULT > 0
+	L_ATK = (100+MAXBASE:L_P:LV)*(RESULT)*(10+RESULT/12)
+ELSE
+	SELECTCASE L_攻撃タイプ
+		CASE "物理"
+			L_ATK = (100+MAXBASE:L_P:LV)*(MAXBASE:L_P:공격)*(10+MAXBASE:L_P:공격/12)
+		CASE "魔法"
+			L_ATK = (100+MAXBASE:L_P:LV)*(MAXBASE:L_P:마법위력)*(10+MAXBASE:L_P:마법위력/12)
+		CASE "총"
+			L_ATK = (100+MAXBASE:L_P:LV)*(MAXBASE:L_P:총공격)*(10+MAXBASE:L_P:총공격/12)
+		CASE "アイテム"
+			L_ATK = (100+MAXBASE:L_P:LV)*(MAXBASE:L_P:도구위력)*(10+MAXBASE:L_P:도구위력/12)
+		CASE "LV"
+			VARI LV_ATK = MAXBASE:L_P:LV * 2 + ((MAXBASE:L_P:LV + 18) / 6) * 7 / 2
+			L_ATK = (100+MAXBASE:L_P:LV)*(LV_ATK)*(10+LV_ATK/12)
+		CASE "固定"
+			L_DMG = L_威力
+			RETURN 0
+		CASEELSE
+			PRINTFORMW 공격 타입 지정 미스가 있습니다。
+			PRINTFORMW 처리를 중단합니다。
+			PRINTFORMW 이 메시지가 나온 경우, 보고를 부탁드립니다。
+			;エラー
+			RETURN 0
+	ENDSELECT
+ENDIF
+L_DMG = L_ATK * L_威力
+;防御ステータスによる基礎ダメージ減少
+RESULT = 0
+TRYCALLFORM SKILL_CALC_BATTTLE_STATUS_%CONVERT_SKILLNUM_TO_STR(L_P, L_SKILL)%, "DEF", L_P, L_T
+IF RESULT > 0
+	L_DEF = RESULT * 100 * 100
+ELSE
+	SELECTCASE L_ダメージタイプ
+		CASE "物理"
+			L_DEF = (MAXBASE:L_T:방어) * 100 * 100
+		CASE "魔法"
+			L_DEF = ((MAXBASE:L_T:마법효과*2+MAXBASE:L_T:방어)/3) * 100 * 100
+		CASEELSE
+			;エラー
+			PRINTFORMW 데미지 타입 지정 미스가 있습니다。
+			PRINTFORMW 처리를 중단합니다。
+			PRINTFORMW 이 메시지가 나온 경우, 보고를 부탁드립니다。
+			RETURN 0
+	ENDSELECT
+ENDIF
+L_DMG /= L_DEF
+TSTR:데미지해석1 += @"_【攻/防_{L_ATK}/{L_DEF}_({L_ATK*100 / L_DEF}\%)_{L_DMG}】"
+;---- EDIT 060 MOD END ---------------------------
+;---- EDIT 050 ADD END ---------------------------
+;-----------------------------
+;- 基本調整
+;-----------------------------
+
+;乱数
+SIF L_DMG > 0
+	L_DMG += RAND:3
+L_DMG *= (9500+RAND:1000)
+L_DMG /= 10000
+
+TSTR:데미지해석1 += @"【乱数処理_{L_DMG}】"
+;-----------------------------
+;- 終了
+;-----------------------------
+RETURN L_DMG
+
+
+;=================================================
+;   sub BTL_CALC_DAMAGE_ADJUSTMENT
+;=================================================
+;   BTL計算:ダメージ調整
+;-------------------------------------------------
+;   入力されたダメージを、必要に応じて調整する
+;-------------------------------------------------
+; Input:
+;  ARG:0				攻撃者
+;  ARG:1				被攻撃者
+;  ARG:2				ダメージ値
+;  ARG:3				공격상성
+;  ARG:4				相性倍率
+;  ARG:5				クリティカルしているかどうか
+;  ARG:6				ダメージタイプ(1:物理 2:魔法)
+;  ARG:7				攻撃タイプ(物理/魔法/총/道具)
+; Output:
+;  RETURN				ダメージ値
+;
+; 備考
+;  基本ダメージ算出に関与しないダメージ増減処理はここに追加してください。
+;  同カテゴリー内での記述の順番は大雑把に言えば汎用性の高さ
+;  どんなキャラでもつかえる>一部の種族・ロールでつかえる>原作の一部キャラのみがつかえる>EXキャラのみが使える
+;  と言った感じでお願いします
+;-------------------------------------------------
+@BTL_CALC_DAMAGE_ADJUSTMENT(ARG:0, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5, ARG:6, ARG:7, ARG:8)
+#DIM LCOUNT, 2
+#DIM TEMP
+#DIM L_P
+#DIM L_T
+#DIM L_DMG
+#DIM L_SKILL
+#DIM L_CRT
+#DIM L_相性
+#DIMS L_相性名
+#DIM L_継承素質
+#DIM L_相性値
+#DIM L_貫通フラグ;024
+#DIMS L_ダメージタイプ
+#DIMS L_攻撃タイプ
+#DIM L_武器素質P
+#DIM L_武器素質T
+#DIM L_ダメージ補正
+#DIM L_解析用
+#DIM TEMP_SKILL
+#DIM L_SKILLCOUNT, 2
+;-----------------------------
+;- 初期処理
+;-----------------------------
+
+L_P				 = ARG:0
+L_T				 = ARG:1
+L_DMG			 = ARG:2
+L_相性			 = ARG:3
+L_相性名		 = %GET_TYPE(L_相性)%
+L_相性値		 = ARG:4
+L_CRT			 = ARG:5
+L_ダメージタイプ'= GET_ダメージタイプ(ARG:6)
+L_攻撃タイプ	'= GET_攻撃タイプ(ARG:7)
+L_SKILL 		 = ARG:8
+
+CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", L_SKILL, L_P
+L_継承素質 = RESULT
+
+CALL MATCHING_WEAPON_CHECK(L_P)
+L_武器素質P = RESULT
+CALL WEAPON_STYLE_CHECK(L_P,RESULT)
+;3ケタ以降は型
+L_武器素質P += RESULT * 100
+
+CALL MATCHING_WEAPON_CHECK(L_T)
+L_武器素質T = RESULT
+CALL WEAPON_STYLE_CHECK(L_T,RESULT)
+;3ケタ以降は型
+L_武器素質T += RESULT * 100
+
+L_SKILLCOUNT = CHARA_SKILLCOUNT(L_P), CHARA_SKILLCOUNT(L_T);EDIT046 ADD
+
+SIF L_相性 < 0
+	THROW 相性のないスキル[{L_SKILL}]がダメージ処理を通過しようとしています
+;-----------------------------
+;- ダメージタイプ別チェック
+;-----------------------------
+TSTR:데미지해석2 = 【基礎_{L_DMG}】
+L_解析用 = MAX(L_DMG, 1)
+;- 物理ダメージタイプ
+IF (L_ダメージタイプ == "物理")
+	;影霄・絶影用特殊処理
+	IF SKILLGAGE_F_GET(L_P,PU_SKILLNUM_GET(L_P,"影霄・絶影")) < 0
+		IF SKILLGAGE_H_GET(L_P,PU_SKILLNUM_GET(L_P,"影霄・絶影")) >= 10000 || SKILLGAGE_H_GET(L_P,PU_SKILLNUM_GET(L_P,"影霄・絶影")) >= -1
+			L_DMG *= 2
+			GOTO AN_CHIMAERA_SKIP
+		ENDIF
+	ENDIF
+	;毒は物理ダメージを半減させる
+	SIF GET_STATE(CFLAG:L_P:상태이상) == "POISON"
+		L_DMG /= 2
+	;特殊ダメージ補正
+	L_DMG = L_DMG * (CFLAG:L_T:물리피데미지보정 +100) / 100
+	L_DMG = L_DMG * (CFLAG:L_P:물리여데미지보정 +100) / 100
+ELSE
+	;キメラ用特殊処理
+	IF SKILLGAGE_F_GET(L_P,PU_SKILLNUM_GET(L_P,"キメラ")) < 0
+		L_DMG *= 2
+		GOTO AN_CHIMAERA_SKIP
+	ENDIF
+	;魔法はダメージを1/5にする
+	SIF GET_STATE(CFLAG:L_P:상태이상) == "CLOSE"
+		L_DMG /= 5
+
+	;特殊ダメージ補正
+	L_DMG = L_DMG * (CFLAG:L_T:마법피데미지보정 +100) / 100
+	L_DMG = L_DMG * (CFLAG:L_P:마법여데미지보정 +100) / 100
+ENDIF
+L_DMG = L_DMG * (CFLAG:L_T:(L_相性名 + "피데미지보정") +100) / 100
+L_DMG = L_DMG * (CFLAG:L_P:(L_相性名 + "여데미지보정") +100) / 100
+TSTR:데미지해석2 += @"【攻防強化_{L_DMG * 100/L_解析用}\%】"
+L_解析用 = MAX(L_DMG, 1)
+;---- EDIT 056 ADD START -------------------------
+;-----------------------------
+;- カジャンダの処理
+;-----------------------------
+;---- EDIT P 001 MOD START -------------------------
+;---- EDIT 060 MOD START -------------------------
+RESULT = 0, 0
+;スキル側で指定する場合
+TRYCALLFORM SKILL_CALC_BUFF_%CONVERT_SKILLNUM_TO_STR(L_P, L_SKILL)%, "ATK", L_P, L_T
+IF RESULT:1 > 0
+	IF RESULT > 0
+		IF CFLAG:L_P:장력
+			;장력　攻撃・魔威両参照などで3倍になっているものなどを考慮して上限をセットしておく
+			L_DMG = L_DMG * (RESULT + MIN(RESULT / 2, RESULT:1 / 2) + RESULT:1) / RESULT:1
+		ELSE
+			L_DMG = L_DMG * (RESULT + RESULT:1) / RESULT:1
+		ENDIF
+	ELSE
+		L_DMG = L_DMG * (RESULT + RESULT:1 * 2) /(RESULT:1 * 2)
+	ENDIF
+ELSE
+	IF L_攻撃タイプ == "魔法"
+		IF CFLAG:L_P:마법위력강화 > 0
+			IF CFLAG:L_P:장력
+				L_DMG = L_DMG * (CFLAG:L_P:마법위력강화 * 3 / 2 + 32) / 32
+			ELSE
+				L_DMG = L_DMG * (CFLAG:L_P:마법위력강화 + 32) / 32
+			ENDIF
+		ELSE
+			L_DMG = L_DMG * (CFLAG:L_P:마법위력강화 + 64) / 64
+		ENDIF
+	ELSE
+		IF CFLAG:L_P:공격강화 > 0
+			IF CFLAG:L_P:장력
+				L_DMG = L_DMG * (CFLAG:L_P:공격강화 * 3 / 2 + 32) / 32
+			ELSE
+				L_DMG = L_DMG * (CFLAG:L_P:공격강화 + 32) / 32
+			ENDIF
+		ELSE
+			L_DMG = L_DMG * (CFLAG:L_P:공격강화 + 64) / 64
+		ENDIF
+	ENDIF
+ENDIF
+;---- EDIT P 001 MOD END ---------------------------
+RESULT = 0, 0
+TRYCALLFORM SKILL_CALC_BUFF_%CONVERT_SKILLNUM_TO_STR(L_P, L_SKILL)%, "DEF", L_P, L_T
+;スキル側して指定する場合
+IF RESULT:1 > 0
+	IF RESULT > 0
+		L_DMG = L_DMG * (RESULT:1 * 2 - RESULT) / (RESULT:1 * 2)
+	ELSE
+		L_DMG = L_DMG * (RESULT:1 - RESULT) / RESULT:1
+	ENDIF
+ELSE
+	IF L_ダメージタイプ == "魔法"
+		;魔法ダメージはラクカジャ・サマカジャの両方を見る
+		IF CFLAG:L_T:방어강화 + CFLAG:L_T:마법효과강화 > 0
+			L_DMG = L_DMG * MAX(128 - (CFLAG:L_T:방어강화 + CFLAG:L_T:마법효과강화), 64) / 128
+		ELSE
+			L_DMG = L_DMG * (64 - (CFLAG:L_T:방어강화 + CFLAG:L_T:마법효과강화)) / 64
+		ENDIF
+	ELSE
+		IF CFLAG:L_T:방어강화 > 0
+			L_DMG = L_DMG * (64 - CFLAG:L_T:방어강화) / 64
+		ELSE
+			L_DMG = L_DMG * (32 - CFLAG:L_T:방어강화) / 32
+		ENDIF
+	ENDIF
+ENDIF
+;---- EDIT 060 MOD END ---------------------------
+;---- EDIT 056 ADD END ---------------------------
+TSTR:데미지해석2 += @"【カジャンダ_{L_DMG * 100/L_解析用}\%】"
+L_解析用 = MAX(L_DMG, 1)
+$AN_CHIMAERA_SKIP
+;-----------------------------
+;- 耐性処理
+;相性は上流で計算したものを適用する
+;-----------------------------
+L_DMG *= L_相性値
+L_DMG /= 100
+
+TSTR:데미지해석2 += @"【相性_{L_相性値}\%】"
+L_解析用 = MAX(L_DMG, 1)
+;-----------------------------
+;-基本のダメージ処置
+;방어플래그(ダメージ半減)
+;後列判定(ダメージ0.7倍)
+;異常によるダメージ増加(最大2倍)
+;真全門耐性・追撃の心得・ヘルズゲート
+;-----------------------------
+
+;防御中のキャラにはダメージ減少
+SIF CFLAG:L_T:방어플래그
+	L_DMG /= 2
+
+;---- EDIT 012 ADD ------
+;槍、投具の二ノ型の場合後列への攻撃減少なし(銃・アイテムを除く)
+;IF !FLAG:銃攻撃中 && ((L_武器素質P == 205 && L_ダメージタイプ == 1) || (L_武器素質P == 208 && L_ダメージタイプ == 2))
+IF (L_攻撃タイプ != "총") && ((L_武器素質P == 205 && L_ダメージタイプ == "物理") || (L_武器素質P == 208 && L_ダメージタイプ == "魔法"))
+	TIMES L_DMG,1.00
+;後列のキャラにはダメージ減少
+ELSEIF !IS_FRONT(L_T)
+	TIMES L_DMG,0.70
+ENDIF
+TSTR:데미지해석2 += @"【列・GUARD_{L_DMG * 100/L_解析用}\%】"
+L_解析用 = MAX(L_DMG, 1)
+
+;---- EDIT P 004 MOD START -------------------------
+IF CFLAG:L_T:PT플래그 > 0 && !FLAG:튜토리얼진행중
+	SELECTCASE FLAG:전투난이도
+		CASE 1
+			TIMES L_DMG,0.75
+		CASE 3,4
+			TIMES L_DMG , 1.5
+		CASE 5
+			TIMES L_DMG , 2
+		CASE 6
+			TIMES L_DMG , 3
+	ENDSELECT
+ENDIF
+;---- EDIT P 004 MOD END ---------------------------
+TSTR:데미지해석2 += @"【難度補正_{L_DMG * 100/L_解析用}\%】"
+L_解析用 = MAX(L_DMG, 1)
+;攻撃者が幸せだとダメージ減少
+SIF CFLAG:L_P:상태이상 == GET_STATE_NUM("HAPPY")
+	TIMES L_DMG,0.70
+
+;攻撃者が蝿でダメージ減少
+SIF CFLAG:L_P:상태이상 == GET_STATE_NUM("FLY")
+	TIMES L_DMG,0.50
+
+;---- EDIT P 004 MOD START -------------------------
+;難易度EASYなら敵へのダメージ大
+SIF CFLAG:L_T:PT플래그 == 0 && FLAG:전투난이도 == 1 &&  !FLAG:튜토리얼진행중
+	TIMES L_DMG , 1.40
+;---- EDIT P 004 MOD END ---------------------------
+;幸せだとダメージ大
+SIF CFLAG:L_T:상태이상 == GET_STATE_NUM("HAPPY")
+	TIMES L_DMG,1.25
+;眠っていたらダメージ大
+SIF CFLAG:L_T:상태이상 == GET_STATE_NUM("SLEEP")
+	TIMES L_DMG,1.5
+;蝿状態ならダメージ大
+SIF CFLAG:L_T:상태이상 == GET_STATE_NUM("FLY")
+	TIMES L_DMG,1.5
+;自身がオルギアでダメージ上昇
+SIF CFLAG:L_P:상태이상 == GET_STATE_NUM("ORGY")
+	TIMES L_DMG,1.25
+
+;- 特定の状態異常時、ダメージが倍化
+SELECTCASE GET_STATE(CFLAG:L_T:상태이상)
+	;- FREEZE時は電撃、地変
+	CASE "FREEZE"
+		SIF L_相性名 == "전격" || L_相性名 == "지변"
+			TIMES L_DMG,2.0
+			
+	;- SHOCK時は氷結、水撃
+	CASE "SHOCK"
+		SIF L_相性名 == "빙결" || L_相性名 == "수격"
+			TIMES L_DMG,2.0
+			
+	;- SLIP時は重力、物理
+	CASE "SLIP"
+		IF L_相性名 == "중력" || L_相性名 == "검격" || L_相性名 == "타격" || L_相性名 == "비구" || L_相性名 == "전술"
+			TIMES L_DMG,1.7
+			SIF L_相性名 == "중력"
+				CFLAG:L_T:SLIP중중력피탄플래그 = 1
+		ENDIF
+		
+	;- FLAME時は疾風、核熱
+	CASE "FLAME"
+		SIF L_相性名 == "질풍" || L_相性名 == "핵열"
+			TIMES L_DMG,1.5
+			
+ENDSELECT
+;more系
+;追撃の心得持ち+1more中は威力が1.5倍
+SIF CFLAG:L_T:１more플래그 > 900 && HAVE_SKILL(L_T,[[스킬:추격의심득]])
+	TIMES L_DMG,1.5
+
+;진・전문내성(万能以外半減・万能倍化)
+SIF HAVE_SKILL(L_T, [[스킬:진・전문내성]])
+	L_DMG = (L_相性名 == "만능") ? L_DMG * 2 # L_DMG / 2
+
+;ヘルズゲート処理
+;敵の1MOREを発生させなくする代わりに被ダメージ2倍
+;ヘルズゲートをインストールしていて、攻撃対象が味方である
+IF SOFT_ON("헬즈게이트") && CFLAG:L_T:PT플래그
+	IF !HAVE_SKILL(L_P, [[스킬:엑스트라원]] ) && !CFLAG:L_P:보스플래그
+		IF L_CRT  && CHECK_WEAKNESS(L_相性値) > 0
+			L_DMG *= 2
+		ENDIF
+	ENDIF
+ENDIF
+
+TSTR:데미지해석2 += @"【バステ_{L_DMG * 100/L_解析用}\%】"
+L_解析用 = MAX(L_DMG, 1)
+;------------------------------------------------------------------------
+;クリティカルの処理
+;------------------------------------------------------------------------
+IF L_CRT
+	TIMES L_DMG , 1.50
+	TFLAG:크리티컬발생_HIT = 1
+	TFLAG:크리티컬발생_ACT = 1
+ENDIF
+
+TSTR:데미지해석2 += @"【CRT_{L_DMG * 100/L_解析用}\%】"
+L_解析用 = MAX(L_DMG, 1)
+;---------------------------------------------------------------------------
+;素質によるダメージ増加(継承素質補正+武器素質系補正)
+;ダメージへの影響度が下記の乗算ダメージ補正群より大きくなるので
+;基本的にはここへの補正の追加は推奨しません。
+;---------------------------------------------------------------------------
+L_ダメージ補正 = 100
+;攻撃の心得はLv毎に10%の補正を与える(旧達人・人修羅処理)
+;継承素質補正は15%の補正を与える
+;この2種は片方のみ適用される
+IF GET_BTL_TALENT_LV("스킬적성", L_P) && 相性素質チェック_F(L_P, L_継承素質)
+	TEMP = SUB_ROLE_스킬적성효과("ダメージ補正", L_P)
+ELSE
+	TEMP = 0
+ENDIF
+L_ダメージ補正 += MAX(GET_BTL_TALENT_LV("공격의심득", L_P) * 10, TEMP);EDIT 051 ADD
+
+;デビルアームズは判定の都合上、SKILL_TEMP.ERBのATTACK_TARGETでスキル威力を変化させる形で処理
+;武器素質によるダメージアップ(銃を除く)
+IF !(L_攻撃タイプ == "총")
+	IF L_CRT > 0
+		;팬서　二ノ型でクリティカルダメージアップ
+		SIF L_武器素質P == 202
+			L_ダメージ補正 += 11
+		;검술　二ノ型でクリティカルダメージアップ
+		SIF L_武器素質P == 204
+			L_ダメージ補正 += 8
+	ENDIF
+	IF L_相性値 > 100 && L_相性値 != 999
+		;궁술　二ノ型で弱点ダメージアップ
+		SIF L_武器素質P == 203
+			L_ダメージ補正 += 11
+		;검술　二ノ型で弱点ダメージアップ
+		SIF L_武器素質P == 204
+			L_ダメージ補正 += 8
+	ENDIF
+	;槍、投具の二ノ型の場合後列からの攻撃が+3%
+	SIF ((L_武器素質P == 205 && L_ダメージタイプ == "物理") || (L_武器素質P == 208 && L_ダメージタイプ == "魔法")) && !IS_FRONT(L_P)
+		L_ダメージ補正 += 3
+ENDIF
+L_DMG = L_DMG * L_ダメージ補正/100
+
+TSTR:데미지해석2 += @"【素質_{L_ダメージ補正}\%】"
+L_解析用 = MAX(L_DMG, 1)
+;------------------------------------------------------------------------
+;ダメージタイプ変更措置
+;------------------------------------------------------------------------
+;キメラ起動中、魔法攻撃だった場合はダメージタイプを「なし」として扱う
+;具体的には気合・集中の利用ができなくなり、さらにカジャンダによるダメージ増減の影響を受けなくなり、一部の武器素質による補正が発生しなくなる。
+SIF SKILLGAGE_F_GET(L_P,PU_SKILLNUM_GET(L_P,"キメラ")) < 0 && L_ダメージタイプ == "魔法"
+	L_ダメージタイプ = なし
+;影霄・絶影の最後の一撃と、その後のスキル効果時間中は物理攻撃のダメージタイプを「なし」として扱う
+SIF (SKILLGAGE_F_GET(L_P,PU_SKILLNUM_GET(L_P,"影霄・絶影")) < 0 && L_ダメージタイプ == "物理") && (SKILLGAGE_H_GET(L_P,PU_SKILLNUM_GET(L_P,"影霄・絶影")) >= 10000 || SKILLGAGE_H_GET(L_P,PU_SKILLNUM_GET(L_P,"影霄・絶影")) > -1)
+	L_ダメージタイプ = なし
+
+;-----------------------------------------------------------------------
+;乗算ダメージ補正群
+;大半のダメージ補正はここで加算にすることでダメージインフレに対する安全係数を確保しています。
+;そういうわけでキャラ個別の補正は基本的にここに追加してください。
+;-----------------------------------------------------------------------
+L_ダメージ補正 = 100
+L_ダメージ補正 += C_HAVE_BOOSTER_STRENGTH:L_P:L_相性
+
+;==============================
+;チャージ効果
+;기합/集中　+150%で、2以上のフラグを持たされている場合は+50づつ増加、ブースタは+50%、チェーンアップは下のテーブル参照
+;他人気合/集中(ドナム)　+50%で、2以上のフラグを持たされている場合は+10づつ増加、ブースタは+15%
+;==============================
+;気合で物理攻撃のみ+150%
+;使用判定は命中判定後に行う
+IF TFLAG:기합사용
+	L_ダメージ補正 += (CFLAG:L_P:気合フラグ > 0) * 100 + CFLAG:L_P:気合フラグ * 50
+	L_ダメージ補正 += (CFLAG:L_P:타인기합플래그 > 0) * 40 + CFLAG:L_P:타인기합플래그 * 10
+	IF HAVE_SKILL(L_P, [[스킬:기합부스터]])
+		L_ダメージ補正 += (CFLAG:L_P:気合フラグ > 0) * 50
+		L_ダメージ補正 += (CFLAG:L_P:타인기합플래그 > 0) * 15
+	ELSE
+		IF COUNT_ACTIVE_LEADER_SKILL("チェーンアップ") && GETS_ROLE_PROP("INSTALLSOFT_EFFECT_TYPE", L_P) == "悪魔"
+			L_ダメージ補正 += (CFLAG:L_P:気合フラグ > 0) * GET_POWER_チェーンアップ(L_P)
+			L_ダメージ補正 += (CFLAG:L_P:타인기합플래그 > 0) * RESULT_F
+		ENDIF
+	ENDIF
+	;---- EDIT P 001 ADD START -------------------------
+	IF CFLAG:L_P:충전력
+		L_ダメージ補正 += (CFLAG:L_P:気合フラグ > 0) * 50
+		L_ダメージ補正 += (CFLAG:L_P:타인기합플래그 > 0) * 15
+	ENDIF
+	;---- EDIT P 001 ADD END ---------------------------
+	;---- EDIT 032 ADD START   ---------------------------
+	;SIF CFLAG:L_P:気合フラグ
+	;	L_ダメージ補正 += 150
+	;SIF CFLAG:L_P:気合フラグ == 2
+	;	L_ダメージ補正 += 50
+	;---- EDIT 032 ADD START   ---------------------------
+	;SIF CFLAG:L_P:타인기합플래그 == 1 && L_ダメージタイプ == "物理" && !(L_攻撃タイプ == "총") && !FLAG:카운터중
+	;	L_ダメージ補正 += 50
+ENDIF
+IF TFLAG:집중사용
+	L_ダメージ補正 += (CFLAG:L_P:집중플래그 > 0) * 100 + CFLAG:L_P:집중플래그 * 50
+	L_ダメージ補正 += (CFLAG:L_P:타인집중플래그 > 0) * 40 + CFLAG:L_P:타인집중플래그 * 10
+	IF HAVE_SKILL(L_P, [[스킬:집중부스터]])
+		L_ダメージ補正 += (CFLAG:L_P:집중플래그 > 0) * 50
+		L_ダメージ補正 += (CFLAG:L_P:타인집중플래그 > 0) * 15
+	ELSE
+		IF COUNT_ACTIVE_LEADER_SKILL("ダットサイト") && GETS_ROLE_PROP("INSTALLSOFT_EFFECT_TYPE", L_P) == "悪魔"
+			L_ダメージ補正 += (CFLAG:L_P:집중플래그 > 0) * GET_POWER_ダットサイト(L_P)
+			L_ダメージ補正 += (CFLAG:L_P:타인집중플래그 > 0) * RESULT_F
+		ENDIF
+	ENDIF
+	;---- EDIT P 001 ADD START -------------------------
+	IF CFLAG:L_P:충전력
+		L_ダメージ補正 += (CFLAG:L_P:집중플래그 > 0) * 50
+		L_ダメージ補正 += (CFLAG:L_P:타인집중플래그 > 0) * 15
+	ENDIF
+	;---- EDIT P 001 ADD END ---------------------------
+	;---- EDIT 032 ADD END   ---------------------------
+	;コンセントレイトで魔法攻撃のみ+150%
+	;SIF CFLAG:L_P:집중플래그
+	;	L_ダメージ補正 += 150
+	;---- EDIT 032 ADD START   ---------------------------
+	;SIF CFLAG:L_P:타인집중플래그 == 1 && L_ダメージタイプ == "魔法"  && !(L_攻撃タイプ == "총") && !FLAG:카운터중
+	;	L_ダメージ補正 += 50
+ENDIF
+IF TFLAG:공격실행
+	IF CFLAG:L_P:꿰뚫는투기
+		L_ダメージ補正 += 80
+	ENDIF
+ENDIF
+;==============================
+;道具スキル専用補正
+;==============================
+CALL GET_SKILL_PROP, "SKILL_IS_ITEMSKILL", L_SKILL, L_P
+IF RESULT
+	SIF GET_BTL_TALENT_LV("아이템숙련", L_P) > 0
+		L_ダメージ補正 += 50
+	SIF HAVE_SKILL(L_P, [[스킬:아이템숙련]])
+		L_ダメージ補正 += 25
+ENDIF
+
+;==============================
+;種族特効処理　EDIT 39
+;==============================
+;各種種族への特効
+;造魔特効はかなり存在価値が怪しいが……
+;14.御霊、30.七星、33.ボス専用、39.リンク専用、40.ペルソナ専用、41.ペルソナ２、46.음마……への特効は作成しない
+;基本的には１スキル１種族対応だが例外アリ
+;・人間特効：「人間、狂人、超人」が対象（敵として出てくる人間キャラは、内部的には狂人であったり超人であったりするため）
+;・半魔特効：「半魔、悪魔人」特効（悪魔人エネミーが少なすぎるし、わりと近いフレーバー持ってるので、まとめてもまあ構うまい、というところ）
+;・魔人特効：「人間がモトなのか定かではない」ということで、人間特効には含まれない
+;・英雄特効：「過去の人間のガワの悪魔」扱いということで、人間特効には含まれない
+;==============================
+
+;スキル側に移動
+;SIF HAVE_SKILL(L_P,[[스킬:인간특효]])   && (ABL:L_T:종족 == 0 || ABL:L_T:종족 == 31 || ABL:L_T:종족 == 43)
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:지모신특효]]) && ABL:L_T:종족 == 1
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:여신특효]])   && ABL:L_T:종족 == 2
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:마왕특효]])   && ABL:L_T:종족 == 3
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:천사특효]])   && ABL:L_T:종족 == 4
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:요마특효]])   && ABL:L_T:종족 == 5
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:요정특효]])   && ABL:L_T:종족 == 6
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:요귀특효]])   && ABL:L_T:종족 == 7
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:용왕특효]])   && ABL:L_T:종족 == 8
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:마수특효]])   && ABL:L_T:종족 == 9
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:요조특효]])   && ABL:L_T:종족 == 10
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:외도특효]])   && ABL:L_T:종족 == 11
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:기계특효]])   && ABL:L_T:종족 == 12
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:정령특효]])   && ABL:L_T:종족 == 13
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:귀신특효]])   && ABL:L_T:종족 == 15
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:마신특효]])   && ABL:L_T:종족 == 16
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:사신邪神특효]])   && ABL:L_T:종족 == 17
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:타천사특효]]) && ABL:L_T:종족 == 18
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:괴이특효]])   && ABL:L_T:종족 == 32
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:반마특효]])   && (ABL:L_T:종족 == 36 || ABL:L_T:종족 == 73)
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:마인특효]])   && ABL:L_T:종족 == 42
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:영웅특효]])   && ABL:L_T:종족 == 44
+;	L_ダメージ補正 += 20
+;SIF HAVE_SKILL(L_P,[[스킬:조마특효]])   && ABL:L_T:종족 == 45
+;	L_ダメージ補正 += 20
+;==============================
+;種族特効処理　おしまい
+;==============================
+;---- EDIT 046 ADD START -------------------------
+;==============================
+;スキルによる与ダメージ補正
+;==============================
+FOR LCOUNT, 0, TRYSKILLNUM(L_P)
+	RESULT = 0
+	VARSET RESULTS, "", 0, 10
+	TEMP_SKILL = TOINT(GET_TRYSKILL(L_P, LCOUNT))
+	TRYCCALLFORM SKILL_PASSIVE_BTL_EFFECT_%GET_TRYSKILL(L_P, LCOUNT)%, "ダメージ補正加算", L_P, L_P, L_T, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, "ステート名", L_CRT, TEMP_SKILL, TRYSKILL_VAR
+		L_ダメージ補正 += RESULT
+		FOR LCOUNT:1, 0, 10
+			SIF RESULTS:(LCOUNT:1) != ""
+				TSTR:스킬메시지데미지변동요인 = %ADD_SPLIT(TSTR:스킬메시지데미지변동요인, "/", RESULTS:(LCOUNT:1))%
+		NEXT
+	CATCH
+	ENDCATCH
+NEXT
+
+FOR LCOUNT, 0, TRYSKILLNUM(L_T)
+	RESULT = 0
+	VARSET RESULTS, "", 0, 10
+	TEMP_SKILL = TOINT(GET_TRYSKILL(L_T, LCOUNT))
+	TRYCCALLFORM SKILL_PASSIVE_BTL_EFFECT_%GET_TRYSKILL(L_T, LCOUNT)%, "ダメージ補正加算", L_T, L_P, L_T, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, "ステート名", L_CRT, TEMP_SKILL, TRYSKILL_VAR
+		L_ダメージ補正 += RESULT
+		FOR LCOUNT:1, 0, 10
+			SIF RESULTS:(LCOUNT:1) != ""
+				TSTR:스킬메시지데미지변동요인 = %ADD_SPLIT(TSTR:스킬메시지데미지변동요인, "/", RESULTS:(LCOUNT:1))%
+		NEXT
+	CATCH
+	ENDCATCH
+NEXT
+;---- EDIT 046 ADD END ---------------------------
+
+;==============================
+;FATE専用技に関する処理
+;==============================
+
+;◯魔力放出中は与ダメージに補正
+	SIF SKILLGAGE_D_GET(L_P,PU_SKILLNUM_GET(L_P,"ノウブル・ファンタズム")) > 0
+		L_ダメージ補正 += 20
+
+;---- EDIT 050 DEL START スキル側に処理を移動-------------------------
+;◯サーヴァントクラス毎+特定属性の攻撃に補正
+	;　セイバー　검격
+	;IF HAVE_PU_SKILL(L_P,"セイバー")
+	;	SIF L_相性 == GET_TYPE_NUM("검격")
+	;		L_ダメージ補正 += 15
+	;---- EDIT 025 ADD START ---------------------------
+	;　ランサー　검격+타격
+	;ELSEIF HAVE_PU_SKILL(L_P,"ランサー")
+	;	SIF L_相性 == GET_TYPE_NUM("검격") || L_相性 == GET_TYPE_NUM("타격")
+	;		L_ダメージ補正 += 10
+	;---- EDIT 025 ADD END -----------------------------
+	;　アーチャー　비구
+	;ELSEIF HAVE_PU_SKILL(L_P,"アーチャー")
+	;	SIF L_相性 == GET_TYPE_NUM("비구")
+	;		L_ダメージ補正 += 15
+	;　ライダー　타격
+	;ELSEIF HAVE_PU_SKILL(L_P,"ライダー")
+	;	SIF L_相性 == GET_TYPE_NUM("타격")
+	;		L_ダメージ補正 += 15
+	;　キャスター　魔法攻撃+、物理攻撃-(-補正は最終ダメージ側で処理)
+	;ELSEIF HAVE_PU_SKILL(L_P,"キャスター")
+	;	SIF L_ダメージタイプ == "魔法"
+	;		L_ダメージ補正 += 20
+	;　アヴェンジャー　攻撃全般に補正
+	;ELSEIF HAVE_PU_SKILL(L_P,"アヴェンジャー")
+	;	L_ダメージ補正 += 10
+	;ENDIF
+;---- EDIT 029 ADD START   ---------------------------
+;◯相手がクラススキルを所持していた場合の処理
+	;キャスター/アサシンの場合与ダメ増
+	;SIF HAVE_PU_SKILL(L_T,"キャスター") || HAVE_PU_SKILL(L_T,"アサシン")
+	;	L_ダメージ補正 += 10
+;◯バーサーカーの場合与ダメ、被ダメが大幅増
+	;SIF HAVE_PU_SKILL(L_P,"バーサーカー")
+	;	L_ダメージ補正 += 20
+	;SIF HAVE_PU_SKILL(L_T,"バーサーカー")
+	;	L_ダメージ補正 += 50
+;---- EDIT 050 DEL END スキル側に処理を移動---------------------------
+
+;◯ゲッシュ所持かつ、誓いを守れているかで補正が発生(;誓い（Fゲージ）0=プラス補正、-1=マイナス補正)
+	IF HAVE_PU_SKILL(L_P,"ゲッシュ")
+		IF SKILLGAGE_F_GET(L_P,PU_SKILLNUM_GET(L_P,"ゲッシュ")) == -1
+			L_ダメージ補正 -= 20
+		ELSE
+			L_ダメージ補正 += 20
+		ENDIF
+	ENDIF
+;---- EDIT 031 MOD END ----------------------------
+
+; Dゲージが2より上であり、相性が「검격」、「전격」、「중력」のいずれかであればダメージ+30%
+;SIF SKILLGAGE_D_GET(L_P,PU_SKILLNUM_GET(L_P,"刹那無影剣")) > 2 && (L_相性名 == "검격" || L_相性名 == "전격" || L_相性名 == "중력")
+;	L_ダメージ補正 += 30
+;対象がセイバー認定された場合、ダメージ+50%
+;CALL AUTO_PU_SKILL_銀河流星剣(L_P,"ダメージ↑",L_T)
+;L_ダメージ補正 += RESULT
+;対象がセイバー顔認定された場合、ダメージ+150%
+;CALL AUTO_PU_SKILL_無銘勝利剣(L_P,"ダメージ↑",L_T)
+;L_ダメージ補正 += RESULT
+;対象がセイバー認定された場合、ダメージ+150%
+;個別イベント経由済みだった場合、相手のLD属性がLight時にダメージ+50%
+;CALL AUTO_PU_SKILL_黒龍双剋勝利剣(L_P,"ダメージ↑",L_T)
+;L_ダメージ補正 += RESULT
+;---- EDIT 029 ADD END   ---------------------------
+;○アンリマユは種族:人間への与ダメージ増
+SIF HAVE_PU_SKILL(L_P,"この世全ての悪") && ABL:L_T:종족 == 0
+	L_ダメージ補正 += 20
+;○アンリマユは種族:狂人への与ダメージ増
+SIF HAVE_PU_SKILL(L_P,"この世全ての悪") && ABL:L_T:종족 == 31
+	L_ダメージ補正 += 20
+;○アンリマユは種族:超人への与ダメージ増
+SIF HAVE_PU_SKILL(L_P,"この世全ての悪") && ABL:L_T:종족 == 43
+	L_ダメージ補正 += 20
+;○アンリマユはボスへの与ダメージ増
+SIF HAVE_PU_SKILL(L_P,"最後の欠片") && CFLAG:L_T:보스플래그
+	L_ダメージ補正 += 20
+;∞黒餡子
+; Hゲージの特定ビットがある時にクリティカルした場合、相性が「검격」、「전격」、「중력」のいずれかであればダメージ+30%
+; 適用した後はダメージ計算終了時にビットを消すためのビットを立てる
+;IF L_CRT > 0 && (L_相性名 == "검격" && SKILLGAGE_H_GETBIT(L_P,(PU_SKILLNUM_GET(L_P,"∞黒餡子")),1) || L_相性名 == "전격" && SKILLGAGE_H_GETBIT(L_P,(PU_SKILLNUM_GET(L_P,"∞黒餡子")),2) || L_相性名 == "중력" && SKILLGAGE_H_GETBIT(L_P,(PU_SKILLNUM_GET(L_P,"∞黒餡子")),3))
+IF L_CRT > 0 && HAVE_PU_SKILL(ARG, "∞黒餡子")
+	SELECTCASE L_相性名
+		CASE "검격"
+			CALL SKILLGAGE_H_SETBIT(L_P,(PU_SKILLNUM_GET(L_P,"∞黒餡子")),4)
+			SIF SKILLGAGE_H_GETBIT(L_P,(PU_SKILLNUM_GET(L_P,"∞黒餡子")),0) > 0
+				L_ダメージ補正 += 30
+		CASE "전격"
+			CALL SKILLGAGE_H_SETBIT(L_P,(PU_SKILLNUM_GET(L_P,"∞黒餡子")),5)
+			SIF SKILLGAGE_H_GETBIT(L_P,(PU_SKILLNUM_GET(L_P,"∞黒餡子")),1) > 0
+				L_ダメージ補正 += 30
+		CASE "중력"
+			CALL SKILLGAGE_H_SETBIT(L_P,(PU_SKILLNUM_GET(L_P,"∞黒餡子")),6)
+			SIF SKILLGAGE_H_GETBIT(L_P,(PU_SKILLNUM_GET(L_P,"∞黒餡子")),2) > 0
+				L_ダメージ補正 += 30
+	ENDSELECT
+ENDIF
+;---- EDIT 049 ADD START   ---------------------------
+;미지에대한탐구
+; 効果時間中、選択された相性の攻撃ならダメージ+20%
+CALL AUTO_PU_SKILL_未知への探求(L_P,"ダメージ↑",L_T,L_相性)
+L_ダメージ補正 += RESULT
+;---- EDIT 049 ADD END     ---------------------------
+;==============================
+;ガンパレに関する処理
+;==============================
+;○素質:第六世代で与ダメアップ
+	SIF TALENT:L_P:제육세대
+		L_ダメージ補正 += 10
+;==============================
+;ガンパレに関する処理ここまで
+;==============================
+;==============================
+;サクラ大戦に関する処理
+;==============================
+;○霊子甲冑で与ダメアップ
+	IF HAVE_PU_SKILL(L_P,"영자갑옷")
+		IF CFLAG:L_P:극장인기 > EXP:L_P:라이브경험
+			IF CFLAG:L_P:극장인기 > 199
+				L_ダメージ補正 += 20
+			ELSEIF CFLAG:L_P:극장인기 > 99
+				L_ダメージ補正 += 10
+			ELSEIF CFLAG:L_P:극장인기 > 49
+				L_ダメージ補正 += 5
+			ELSEIF CFLAG:L_P:극장인기 < 20
+				L_ダメージ補正 -= 5
+			ENDIF
+		ELSE
+			IF EXP:L_P:라이브경험 > 199
+				L_ダメージ補正 += 20
+			ELSEIF EXP:L_P:라이브경험 > 99
+				L_ダメージ補正 += 10
+			ELSEIF EXP:L_P:라이브경험 > 49
+				L_ダメージ補正 += 5
+			ELSEIF EXP:L_P:라이브경험 < 20
+				L_ダメージ補正 -= 5
+			ENDIF
+		ENDIF
+	ENDIF
+;==============================
+;サクラ大戦に関する処理ここまで
+;==============================
+
+
+;---- EDIT 026 ADD START   ---------------------------
+;災厄の巨焔、ラグナロク（ＡＮ）、劫火の余燼の効果（効果値はERB側に記載）
+L_ダメージ補正 += AUTO_PU_SKILL_災厄の巨焔(L_P,"ダメージ↑") + AUTO_PU_SKILL_災厄の巨焔(L_P,"ダメージ条件↑") + AUTO_PU_SKILL_ラグナロク（ＡＮ）(L_P,"ダメージ↑")
+;---- EDIT 026 ADD END   ---------------------------
+;---- EDIT 038 ADD START ---------------------------
+;戦術詠唱γ、キメラ起動中は強化を得る
+CALL AUTO_PU_SKILL_戦術詠唱γ(L_P,"ダメージ↑",L_T)
+L_ダメージ補正 += RESULT
+CALL AUTO_PU_SKILL_キメラ(L_P,"ダメージ↑",L_T)
+L_ダメージ補正 += RESULT
+;影霄・奔夜、影霄・絶影起動中は強化を得る
+CALL AUTO_PU_SKILL_影霄・奔夜(L_P,"ダメージ↑",L_T)
+L_ダメージ補正 += RESULT
+CALL AUTO_PU_SKILL_影霄・絶影(L_P,"ダメージ↑",L_T)
+L_ダメージ補正 += RESULT
+;同じ陣営のキャラが蒼き怒火を持っている場合、強化を得る
+;専用スキル起動中の場合、効果倍増
+CALL AUTO_PU_SKILL_蒼き怒火(L_P,"ダメージ↑",L_T)
+L_ダメージ補正 += RESULT
+
+;---- EDIT 033 ADD END   ---------------------------
+;---- 東方MOD START   ---------------------------
+;アナーキーバレットヘル・魔法攻撃のみ+25%
+SIF HAVE_SKILL(L_P,2947) && L_ダメージタイプ == "魔法" && NO:L_P == [[キャラ:오키나]]
+	L_ダメージ補正 += 25
+
+;==============================
+;その他キャラ個別処理
+;==============================
+;SONG OF DIVA発動中かつDARKNESS TRIGGER未使用(0)・強制解除後(2)は与ダメージが+20％
+IF SKILLGAGE_H_GET(L_P, [[스킬:SONG OF DIVA]]) || SKILLGAGE_F_GET(L_P, [[스킬:SONG OF DIVA]])
+	SIF SKILLGAGE_H_GET(L_P, [[스킬:DARKNESS TRIGGER]]) != 1
+		L_ダメージ補正 += 20
+ENDIF
+
+;父の名に誓って持ちは弱点、クリティカルダメージが+30%
+SIF HAVE_SKILL(L_P,[[스킬:아버지의이름에맹세코]]) && (L_CRT > 0 || (L_相性値 > 100 && L_相性値 != 999))
+	L_ダメージ補正 += 30
+;もっと力を持ちは反撃、追撃、クリティカルダメージが+30%
+SIF HAVE_SKILL(L_P,[[스킬:조금만더힘을]]) && (L_CRT > 0 || FLAG:카운터중)
+	L_ダメージ補正 += 30
+;デビルトリガー中はダメージが+50%
+SIF SKILLGAGE_D_GET(L_P,[[스킬:데빌트리거]])
+	L_ダメージ補正 += 50
+;---- EDIT 015 ADD END ---------------------------
+;怒り状態で+20%
+IF SKILLGAGE_D_GET(L_P,[[스킬:분노폭발]])
+	L_ダメージ補正 += 20
+	;怒り爆発でさらに+10%
+	SIF SKILLGAGE_H_GET(L_P,[[스킬:분노폭발]]) == 200
+		L_ダメージ補正 += 10
+ENDIF
+L_DMG = L_DMG * MAX(L_ダメージ補正, 0)/100
+;L_DMG = MAX(L_DMG * L_ダメージ補正/100, 0)
+
+TSTR:데미지해석2 += @"【その他補正_{L_ダメージ補正}\%】"
+L_解析用 = MAX(L_DMG, 1)
+;=================================================================================
+;ダメージダウン(全共通)
+;=================================================================================
+L_DMG = L_DMG * (100 - GET_BTL_TALENT_LV("방어의심득", L_T) * 5 - (GET_BTL_TALENT_LV("방어의심득", L_T) > 0) * 5) / 100;EDIT 051 ADD
+
+;---- EDIT 012 ADD START ---------------------------
+;武器素質のダメージアップは↑に
+;채찍술　二ノ型で魔法被ダメージダウン
+SIF L_武器素質T == 207 && L_ダメージタイプ == "魔法"
+	TIMES L_DMG , 0.85
+;마샬아츠　二ノ型で物理被ダメージダウン
+SIF L_武器素質T == 211 && L_ダメージタイプ == "物理"
+	TIMES L_DMG , 0.85
+;봉술　二ノ型で被ダメージダウン
+SIF L_武器素質T == 210
+	TIMES L_DMG , 0.91
+;---- EDIT 012 ADD END   ---------------------------
+;---- EDIT 046 ADD START -------------------------
+FOR LCOUNT, 0, TRYSKILLNUM(L_T)
+	RESULT = 0
+	TEMP_SKILL = TOINT(GET_TRYSKILL(L_T, LCOUNT))
+	TRYCCALLFORM SKILL_PASSIVE_BTL_EFFECT_%GET_TRYSKILL(L_T, LCOUNT)%, "ダメージ倍率", L_T, L_P, L_T, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, "ステート名",L_CRT, TEMP_SKILL, TRYSKILL_VAR
+		L_DMG = L_DMG * (100 + RESULT) / 100
+	CATCH
+	ENDCATCH
+NEXT
+;---- EDIT 046 MOD END ---------------------------
+;---- EDIT 047 MOD START 菩薩眼の位置を移動+宿星4種のバグ修正-------------------------
+;○素質:第六世代で被ダメマイナス
+	SIF TALENT:L_T:제육세대
+		TIMES L_DMG , 0.90
+;---- EDIT 046 MOD END ---------------------------
+;---- EDIT 017 ADD START ---------------------------
+;デビルトリガー中は被ダメージが0.65倍に
+SIF SKILLGAGE_D_GET(L_T,[[스킬:데빌트리거]])
+	TIMES L_DMG , 0.65
+;---- EDIT 017 ADD END ---------------------------
+;---- EDIT 023 ADD START ---------------------------
+;SONG OF DIVA発動中かつDARKNESS TRIGGER未使用(0)・強制解除後(2)は被ダメージが0.8倍に
+IF SKILLGAGE_H_GET(L_T, [[스킬:SONG OF DIVA]]) || SKILLGAGE_F_GET(L_T, [[스킬:SONG OF DIVA]])
+	SIF SKILLGAGE_H_GET(L_T, [[스킬:DARKNESS TRIGGER]]) != 1
+		TIMES L_DMG , 0.80
+ENDIF
+;---- EDIT 023 ADD END ---------------------------
+;---- EDIT 025 ADD START ---------------------------
+;■魔力放出中は被ダメージが0.8倍に
+SIF SKILLGAGE_D_GET(L_T,PU_SKILLNUM_GET(L_T,"ノウブル・ファンタズム"))
+	TIMES L_DMG , 0.80
+;---- EDIT 025 ADD END -----------------------------
+;---- EDIT 029 ADD START   ---------------------------
+;---- EDIT 050 DEL START スキル側に処理を移動-------------------------
+;使用者の方がアサシンを所有していた場合、被ダメージが0.9倍に(=与ダメージ減少スキル)
+;SIF HAVE_PU_SKILL(L_P,"アサシン")
+;	TIMES L_DMG , 0.90
+;---- EDIT 050 DEL END   スキル側に処理を移動-------------------------
+;---- EDIT 029 ADD END   ---------------------------
+;---- EDIT 033 ADD START ---------------------------
+;---- EDIT 033 ADD END   ---------------------------
+;---- EDIT 038 ADD START ---------------------------
+;ソウルブースト起動中、自身が行う追撃の与えるダメージが低下
+;小数点を返せないので100で割る式にする
+CALL AUTO_PU_SKILL_ソウルブースト(L_P,"ダメージ↓",L_T)
+SIF RESULT != 0
+	L_DMG = L_DMG * RESULT / 100
+;影霄・絶影起動中、魔法被ダメージが低下
+;小数点を返せないので100で割る式にする
+CALL AUTO_PU_SKILL_影霄・絶影(L_P, "魔法被ダメージ↓", L_T, GET_ダメージタイプ_NUM(L_ダメージタイプ))
+SIF RESULT != 0
+	L_DMG = L_DMG * RESULT / 100
+;対象の陣営内に蒼き怒火を持つ者がいる場合、対象の陣営の被ダメージが低下
+;小数点を返せないので100で割る式にする
+CALL AUTO_PU_SKILL_蒼き怒火(L_P,"被ダメージ↓",L_T)
+SIF RESULT != 0
+	L_DMG = L_DMG * RESULT / 100
+
+TSTR:데미지해석2 += @"【ダメージ減少_{L_DMG * 100/L_解析用}\%】"
+L_解析用 = MAX(L_DMG, 1)
+;---- EDIT 038 ADD END   ---------------------------
+
+;---- EDIT 013 ADD ---------------------------
+SIF !CFLAG:L_T:PT플래그 && CFLAG:L_T:피데미지제한 > 0 && L_DMG > CFLAG:L_T:피데미지제한
+	L_DMG = CFLAG:L_T:피데미지제한
+
+;---- EDIT 062 ADD START -------------------------
+;-----------------------------
+;特別なダメージ処理
+;-----------------------------
+SIF CFLAG:L_T:오버가드 > 0 && CFLAG:L_T:오버가드 < L_DMG
+	L_DMG = 0
+;---- EDIT 062 ADD END ---------------------------
+;-----------------------------
+;- 終了
+;-----------------------------
+TSTR:데미지해석2 += @"【DMG_{L_DMG}】"
+RETURN L_DMG
+
+
+;=================================================
+;   sub BTL_CALC_DAMAGE_EXE
+;=================================================
+;   BTL計算:ダメージ実行
+;-------------------------------------------------
+;   入力されたダメージ値を基に、ダメージを反映し、それに付属して発生する処理を実行する。
+;   この関数内でダメージの増減を発生させないでください。
+;-------------------------------------------------
+; Input:
+;  ARG:0				攻撃者
+;  ARG:1				被攻撃者
+;  ARG:2				ダメージ値
+;  ARG:3				공격상성
+;  ARG:4				攻撃倍率
+;  ARG:5				ダメージタイプ(1:物理 2:魔法)
+;  ARG:6				攻撃タイプ(物理/魔法/총/道具)
+;  ARG:7				クリティカル
+;  ARG:8				吸収率(%)
+; Output:
+;  RESULT:0				ダメージ値
+;  RESULT:1				クリティカルフラグ
+;-------------------------------------------------
+@BTL_CALC_DAMAGE_EXE(ARG:0, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5, ARG:6, ARG:7, ARG:8)
+#DIM L_P
+#DIM L_T
+#DIM L_DMG
+#DIM L_CRT
+#DIMS L_相性名
+#DIM L_相性値
+#DIM L_物理貫通フラグ
+#DIMS L_ダメージタイプ
+#DIMS L_攻撃タイプ
+#DIM L_クリティカル
+#DIM L_ABS
+#DIM L_吸収量
+;---- EDIT 012 ADD ------
+#DIM L_武器素質P
+#DIM L_武器素質T
+;---- EDIT 013 ADD ------
+#DIM L_ダメージ補正
+;---- EDIT 014 ADD ------
+#DIM L_クリ強化補正
+#DIM LCOUNT
+
+;-----------------------------
+;- 初期処理
+;-----------------------------
+
+L_P		= ARG:0
+L_T		= ARG:1
+L_DMG	= ARG:2
+L_ダメージタイプ '= GET_ダメージタイプ(ARG:5)
+L_攻撃タイプ '= GET_攻撃タイプ(ARG:6)
+L_クリティカル = ARG:7
+L_ABS	= ARG:8
+
+L_相性名	= %GET_TYPE(ARG:3)%
+L_相性値	= ARG:4
+L_ダメージ補正 = 100
+
+;-----------------------------
+;- HP減少処理
+;-----------------------------
+IF L_DMG >= 0
+	IF CFLAG:L_T:PT플래그
+		IF TFLAG:아군전체HP배리어
+			;バリアで受けきれる場合はここで処理を終える
+			IF TFLAG:아군전체HP배리어 > L_DMG
+				TFLAG:아군전체HP배리어 -= L_DMG
+				;ダメージをバリアで受けたように表示を追加
+				TSTR:스킬메시지서문 += @"　　TARGET:[{CPOS(L_T), 2}] %TSTR:아군전체HP배리어명,20,LEFT%%TSTR:스킬메시지화살표%%L_相性名%:{L_DMG,6}ダメージ_L"
+				TSTR:스킬메시지결과 = BLOCK
+				TSTR:상성변동요인 = %TSTR:아군전체HP배리어명%
+				L_DMG = 0
+				RETURN 0
+			ELSE
+				;バリアが抜かれる場合はダメージからバリア耐久度を減らして計算続行
+				L_DMG -= TFLAG:아군전체HP배리어
+				TFLAG:아군전체HP배리어 = 0
+				TSTR:스킬메시지서문 += @"%TSTR:스킬메시지대상%%TSTR:스킬메시지화살표%%TSTR:아군전체HP배리어명%が破られた！_L"
+			ENDIF
+		ENDIF
+	ELSE
+		IF TFLAG:적전체HP배리어
+			;バリアで受けきれる場合はここで処理を終える
+			IF TFLAG:적전체HP배리어 > L_DMG
+				TFLAG:적전체HP배리어 -= L_DMG
+				;ダメージをバリアで受けたように表示を追加
+				TSTR:스킬메시지서문 += @"　　TARGET:[{CPOS(L_T), 2}] %TSTR:적전체HP배리어명,20,LEFT%%TSTR:스킬메시지화살표%%L_相性名%:{L_DMG,6}ダメージ_L"
+				TSTR:스킬메시지결과 = BLOCK
+				TSTR:상성변동요인 = %TSTR:적전체HP배리어명%
+				L_DMG = 0
+				RETURN 0
+			ELSE
+				;バリアが抜かれる場合はダメージからバリア耐久度を減らして計算続行
+				L_DMG -= TFLAG:적전체HP배리어
+				TFLAG:적전체HP배리어 = 0
+				TSTR:스킬메시지서문 += @"%TSTR:스킬메시지대상%%TSTR:스킬메시지화살표%%TSTR:적전체HP배리어명%が破られた！_L"
+			ENDIF
+		ENDIF
+	ENDIF
+	;---- EDIT 042 ADD START HP배리어-------------------------
+	IF CFLAG:L_T:HP배리어
+		;バリアで受けきれる場合はここで処理を終える
+		IF CFLAG:L_T:HP배리어 > L_DMG
+			CFLAG:L_T:HP배리어 -= L_DMG
+			;ダメージをバリアで受けたように表示を追加
+			TSTR:스킬메시지서문 += @"　　TARGET:[{CPOS(L_T), 2}] %CSTR:L_T:HP배리어명,20,LEFT%%TSTR:스킬메시지화살표%%L_相性名%:{L_DMG,6}ダメージ_L"
+			TSTR:스킬메시지결과 = BLOCK
+			TSTR:상성변동요인 = %CSTR:L_T:HP배리어명%
+			L_DMG = 0
+			RETURN 0
+		ELSE
+			;バリアが抜かれる場合はダメージからバリア耐久度を減らして計算続行
+			L_DMG -= CFLAG:L_T:HP배리어
+			CFLAG:L_T:HP배리어 = 0
+			TSTR:스킬메시지서문 += @"%TSTR:스킬메시지대상%%TSTR:스킬메시지화살표%%CSTR:L_T:HP배리어명%が破られた！_L"
+		ENDIF
+	ENDIF
+	;---- EDIT 042 ADD END ---------------------------
+	TSTR:스킬메시지결과 += @"%L_相性名%:{L_DMG,6}데미지"
+	CALL VAR_HP, L_T, -L_DMG, "ダメージ", L_P, 1
+	;死亡しており、ハントスキルを使われていた場合は被ハントフラグを立てておく
+	IF L_P >= 0 && CFLAG:L_T:상태이상 == GET_STATE_NUM("DYING")
+		TRYCCALLFORM ハントスキル_{CFLAG:L_P:입력행동}
+			CFLAG:L_T:피헌트 = L_P + 1
+		CATCH
+		ENDCATCH
+	ENDIF
+	CFLAG:L_T:피탄횟수 += 1
+	CFLAG:L_T:현데미지 += L_DMG
+	CFLAG:L_T:현턴축적데미지 += L_DMG
+	CFLAG:L_T:축적데미지 += L_DMG
+ELSE
+	TSTR:스킬메시지결과 += @"%L_相性名%:{-L_DMG,6}회복　　"
+	TFLAG:스킬메시지컬러 = COLOR("BATTLE", L_T)
+	CALL VAR_HP, L_T, -L_DMG, "회복", L_P, 1
+	;わざわざスナッピーの為に何をしているんだ俺は
+	CFLAG:L_T:데미지흡수량 -= L_DMG
+ENDIF
+
+;吸収処理
+IF L_P >= 0 && L_DMG > 0 && L_ABS != 0
+	L_吸収量 = L_DMG * L_ABS/100
+	IF L_ABS > 0
+		;自身の攻撃では吸収しない
+		SIF L_T == L_P
+			L_吸収量 = 0
+	ENDIF
+	CFLAG:L_P:HP흡수량 += L_吸収量
+ENDIF
+;寝てたら起きる
+SIF CFLAG:L_T:상태이상 == GET_STATE_NUM("SLEEP") && L_DMG > 0
+	CFLAG:L_T:상태이상 = 0
+	
+;被弾者がBOMB状態かつ火炎・核熱相性のダメージを受けた場合
+IF CFLAG:L_T:상태이상 == GET_STATE_NUM("BOMB") && L_DMG > 0 && ( L_相性名 == "화염" || L_相性名 == "핵열" )
+	CFLAG:L_T:상태이상 = 0
+	CFLAG:L_T:BOMB인화플래그 = 1
+ENDIF
+;-----------------------------
+;- 終了
+;-----------------------------
+RETURN L_DMG, L_CRT
+
+;=================================================
+;   sub BTL_CALC_DAMAGE_COOP
+;=================================================
+;   BTL計算:COOP
+;-------------------------------------------------
+;   入力されたダメージ値を基に、ＣＯＯＰ可能かチェックをする
+;-------------------------------------------------
+; Input:
+;  ARG:0				攻撃者
+;  ARG:1				被攻撃者
+;  ARG:2				ダメージ値
+;  ARG:3				공격상성
+;  ARG:4				ダメージタイプ(1:物理 2:魔法)
+;  ARG:5				クリティカルフラグ(ビット0:相性 ビット1:物理)
+;  ARG:6				威力
+;-------------------------------------------------
+@BTL_CALC_DAMAGE_COOP(ARG:0, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5, ARG:6)
+#DIM L_P
+#DIM L_T
+#DIM L_DMG
+#DIMS L_相性名
+#DIM L_相性値
+#DIM L_物理貫通フラグ
+#DIM L_ダメージタイプ
+#DIM L_CRT
+#DIM L_威力
+#DIM 対象リスト , 16
+#DIM 対象人数
+
+;-----------------------------
+;- 初期処理
+;-----------------------------
+
+L_P		= ARG:0
+L_T		= ARG:1
+L_DMG	= ARG:2
+L_ダメージタイプ = ARG:4
+L_CRT	=ARG:5
+L_威力	=ARG:6
+;L_相性名	= %GET_TYPE(ARG:3)%
+;L_相性値	= MAXBASE:L_T:L_相性名
+
+
+;-----------------------------
+;- COOPチェック
+;-----------------------------
+SIF FLAG:카운터중
+	RETURN 0
+SIF FLAG:총공격중
+	RETURN 0
+;more系
+;ヘルズゲート処理
+SIF SOFT_ON("헬즈게이트") && CFLAG:L_P:PT플래그 < 1 && !HAVE_SKILL(L_P, [[스킬:엑스트라원]] ) && !CFLAG:L_P:보스플래그
+	RETURN 0
+
+;弱点を付かれ、防御しておらず、ダメージを受けており、瀕死になっていなければＣＯＯＰの対象に
+;→瀕死でもCOOP対象になるように変更
+;---- EDIT 014 START ---------------------------
+IF L_DMG > 0 && CFLAG:L_T:방어플래그 == 0 && L_CRT && CFLAG:L_T:ＣＯＯＰ플래그 >= 0
+;	IF CFLAG:L_P:PT플래그 > 0 && (SOFT_ON("ＣＯ－ＯＰ강화R") || CFLAG:L_T:상태이상 != GET_STATE_NUM("DYING"))
+	IF CFLAG:L_P:PT플래그 > 0
+		;相性クリティカル(1ビット目)
+		SIF GETBIT(L_CRT,0)
+			CFLAG:L_T:ＣＯＯＰ플래그 += L_威力
+		;物理クリティカル(2ビット目)
+		SIF GETBIT(L_CRT,1)
+			CFLAG:L_T:ＣＯＯＰ플래그 += L_威力/2
+	ELSEIF CFLAG:L_P:PT플래그 != CFLAG:L_T:PT플래그
+		CALL ONE_MORE_POINT_ADD,L_P,1
+	ENDIF
+ENDIF
+;無効、吸収されたら１more値が下がる
+IF CFLAG:L_P:PT플래그 != CFLAG:L_T:PT플래그 && L_DMG == 0
+	CALL ONE_MORE_POINT_ADD,L_P,-1
+ELSEIF CFLAG:L_P:PT플래그 != CFLAG:L_T:PT플래그 && L_DMG < 0
+	CALL ONE_MORE_POINT_ADD,L_P,-2
+ENDIF
+;---- EDIT 014 END ---------------------------
+
+IF SOFT_ON("ＣＯ－ＯＰ강화R") && (BASE:L_T:ＨＰ < 1 || CFLAG:L_T:상태이상 == GET_STATE_NUM("DYING"))
+	VARSET 対象リスト , 0
+	対象人数 = 0
+	FOR LOCAL , 7 , 17
+		SIF POS(LOCAL) == -1
+			CONTINUE
+		SIF BASE:POS(LOCAL):ＨＰ < 1
+			CONTINUE
+		SIF GET_STATE(CFLAG:POS(LOCAL):상태이상) == "DYING"
+			CONTINUE
+		対象リスト:対象人数 = LOCAL
+		対象人数 ++
+	NEXT
+	SIF 対象人数 > 0
+		CFLAG:POS(対象リスト:(RAND:対象人数)):ＣＯＯＰ플래그 += CFLAG:L_T:ＣＯＯＰ플래그
+ENDIF
+
+@BTL_CALC_RATE_DAMAGE,ARG,ARG:1,ARG:2,ARG:3,ARG:4,ARG:5,ARG:6=0
+;=========================================
+;割合ダメージ計算
+;ARG:0 使用者
+;ARG:1 対象キャラNo.
+;ARG:2 威力
+;ARG:3 吸収率
+;ARG:4 ダメージタイプ
+;ARG:5 割合計算　0-現在HP　1-最大HP　-1-現在HP(不殺)　-2-最大HP(不殺)
+;ARG:6 上限ダメージ(マイナスだと下限(敵使用時のみ対応))
+;=========================================
+#DIM L_P
+#DIM L_T
+#DIM L_スキル
+#DIM L_攻撃タイプ
+#DIM L_ダメージタイプ
+#DIM L_CRT
+#DIM L_DMG
+#DIM L_威力
+#DIM L_吸収率
+#DIMS L_相性名
+#DIM L_相性値
+#DIM L_上限ダメージ
+#DIM L_DMGF
+#DIM L_割合計算
+
+L_P = ARG:0
+L_T = ARG:1
+L_威力 = ARG:2
+L_吸収率 = ARG:3
+L_ダメージタイプ = ARG:4
+L_割合計算 = ARG:5
+L_上限ダメージ = ARG:6
+L_CRT = 0
+;CALL RECEIVE_SET, ARG:1,ARG:3,ARG:6
+;SIF !FLAG:카운터중
+;	CFLAG:L_T:회피실패 = 1
+
+;味方使用時は威力900まで
+SIF CFLAG:L_P:PT플래그 > 0 && L_威力 > 900
+	L_威力 = 900
+
+;割合ダメージは威力の1/10％
+L_DMG = (L_割合計算 == 0 || L_割合計算 == -1 ? BASE:L_T:ＨＰ # MAXBASE:L_T:ＨＰ) * L_威力 / 1000
+
+;ボスの場合強制的に現在ダメージ、ダメージ激減
+IF CFLAG:L_T:보스플래그 > 0
+	L_DMG = BASE:L_T:ＨＰ * L_威力 / 1000
+	L_DMG /= 4 + CFLAG:L_T:보스플래그
+ENDIF
+	
+;上限、下限ダメージ調整
+;味方の場合上限ダメージを設定してない場合、上限ダメージは威力の数字
+IF L_上限ダメージ > 0 && !(CFLAG:L_P:보스플래그 > 0 && CFLAG:L_P:PT플래그 < 1)
+	L_DMG = MIN(L_上限ダメージ,L_DMG)
+ELSEIF L_上限ダメージ < 0 && CFLAG:L_P:PT플래그 < 1
+	L_DMG = MAX(-L_上限ダメージ,L_DMG)
+ELSEIF CFLAG:L_P:PT플래그 > 0
+	L_DMG = MIN(L_威力,L_DMG)
+ENDIF
+
+;- 物理ダメージタイプ
+IF L_ダメージタイプ == 1
+	SIF !CFLAG:L_P:PT플래그
+		L_DMG = L_DMG * (CFLAG:L_T:물리피데미지보정 +100) / 100
+;- 魔法ダメージタイプ
+ELSEIF L_ダメージタイプ == 2
+	SIF !CFLAG:L_P:PT플래그
+		L_DMG = L_DMG * (CFLAG:L_T:마법피데미지보정 +100) / 100
+ENDIF
+
+SIF !CFLAG:L_T:PT플래그 && CFLAG:L_T:피데미지제한 > 0 && L_DMG > CFLAG:L_T:피데미지제한
+	L_DMG = CFLAG:L_T:피데미지제한
+;不殺指定
+SIF L_割合計算 < 0
+	L_DMG = MIN(BASE:L_T:ＨＰ - 1, L_DMG)
+RETURN L_DMG
+
+;---- EDIT 052 ADD START -------------------------
+;=========================================
+;固定ダメージ計算
+;ARG:0 使用者
+;ARG:1 対象キャラNo.
+;ARG:2 威力
+;ARG:3 相性倍率
+;=========================================
+@BTL_CALC_FIXED_DAMAGE, ARG, ARG:1, ARG:2, ARG:3
+#DIM L_P
+#DIM L_T
+#DIM L_威力
+#DIM L_相性値
+L_P = ARG:0 
+L_T = ARG:1 
+L_威力 = ARG:2 
+L_相性値 = ARG:3 
+
+RETURN L_威力 * L_相性値 / 100
+;---- EDIT 052 ADD END ---------------------------
+
+;=======================================================
+;敵の1more値を加算する(マイナスだと減算)
+;対象者	ARG
+;減少値	ARG:1
+;====================================================
+@ONE_MORE_POINT_ADD,ARG,ARG:1
+;味方だとしない
+SIF CFLAG:ARG:PT플래그 > 0
+	RETURN 0
+;バニラ設定、エクストラワン持ちだと減算しない
+SIF ARG:1 < 0 && (!BATTLE_SETTING_IS_1MORE() || HAVE_SKILL(ARG, [[스킬:엑스트라원]] ))
+	RETURN
+;すでに1MORE中なら増減させない
+SIF CFLAG:ARG:１more플래그 >= 1000
+	RETURN 0
+;ボスだと加算値2倍
+SIF CFLAG:ARG:보스플래그 && ARG:1 > 0
+	ARG:1 *= 2
+;ボスだと減算値-1固定
+SIF CFLAG:ARG:보스플래그 && ARG:1 < -1
+	ARG:1 = -1
+CFLAG:ARG:１more플래그 += ARG:1
+;下がりすぎない、多すぎないようにする
+IF 800 < CFLAG:ARG:１more플래그 && CFLAG:ARG:１more플래그 < 900
+	CFLAG:ARG:１more플래그 = 800
+ELSEIF 900 <= CFLAG:ARG:１more플래그 && CFLAG:ARG:１more플래그 < 950
+	CFLAG:ARG:１more플래그 = 950
+ENDIF
+;---- EDIT 014 ADD END ---------------------------
+
+;---- EDIT 024 ADD START ---------------------------
+;=========================================
+;相性とそれに近い仕様(吸収・反射・無効・耐性・弱点)による倍率を取得する関数
+;ARG:0 使用者
+;ARG:1 対象
+;ARG:2 使用スキル
+;ARG:3 相性を直接指定する場合
+;ARG:4 ダメージ計算中に呼び出された場合
+;ARG:5 異常の計算中の一部として呼び出された場合
+
+;output
+;RESULT 相性の倍率
+;RESULT;1 実際に使われた相性(複合相性スキル用の返り値)
+;RESULTS 相性の変動要因(貫通など主に表示用に取得しておく)
+;=========================================
+@BTL_CALC_AISYOU, ARG = -1, ARG:1, ARG:2 = -1, ARG:3 = -1, ARG:4, ARG:5
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_RESULT, TYPENUM
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_スキル
+#DIM DYNAMIC L_ダメージタイプ
+#DIM DYNAMIC L_攻撃タイプ
+#DIM DYNAMIC L_相性番号
+#DIMS DYNAMIC L_相性名
+#DIM DYNAMIC L_相性値
+#DIMS DYNAMIC L_変動要因
+#DIM DYNAMIC LT_相性番号
+#DIMS DYNAMIC LT_相性名
+#DIM DYNAMIC LT_相性値, 2
+#DIMS DYNAMIC LT_変動要因
+#DIM DYNAMIC L_貫通ランク
+#DIM DYNAMIC L_準貫通ランク
+#DIM DYNAMIC L_ダメージ計算中
+#DIM DYNAMIC L_状態異常
+#DIM DYNAMIC TEMP_SKILL
+#DIM DYNAMIC CHANGE_TYPE_RANK
+#DIM DYNAMIC L_ブースタ強度
+L_P = ARG
+L_T = ARG:1
+L_スキル = ARG:2
+L_ダメージ計算中 = ARG:4
+IF ARG:2 >= 0
+	CALL GET_SKILL_PROP, "SKILL_DAMAGETYPE", L_スキル, ARG
+	L_ダメージタイプ = RESULT
+	CALL GET_SKILL_PROP, "SKILL_ATTACKTYPE", L_スキル, ARG
+	L_攻撃タイプ = RESULT
+ELSE
+	L_攻撃タイプ = 0
+	L_ダメージタイプ = 0
+ENDIF
+L_状態異常 = ARG:5
+;RESULTを掃除
+
+VARSET RESULT, -1, 0, TYPENUM
+VARSET L_RESULT, -1, 0, TYPENUM
+
+;相性が直接指定されている場合はそちらを優先
+IF ARG:3 >= 0
+	L_RESULT = ARG:3
+ELSE
+	IF L_状態異常
+		CALL GET_SKILL_PROP, "SKILL_ADDTIONAL_TYPE", L_スキル, ARG
+	ELSE
+		;相性を取得する
+		CALL GET_SKILL_PROP, "SKILL_TYPE", L_スキル, ARG
+	ENDIF
+	;RESULTは強度に問題があるのですぐに結果を引き写しておく
+	FOR LCOUNT, 0, TYPENUM
+		L_RESULT:LCOUNT = RESULT:LCOUNT
+	NEXT
+	;魔装術による相性強化。スキルの相性が持ち主の武器相性と一致しているときに複合相性として追加される。
+	;処理としてはスキルの複合相性と同じようにやるため、さきほど保存した配列の空いてる箇所に突っ込む。
+	;銃の場合に適用されないように変更
+	IF L_P >= 0
+		IF CSTR:(L_P):장비강화 != "" && L_攻撃タイプ == 1 && MATCH(L_RESULT, ABL:(L_P):공격상성, 0, TYPENUM)
+			CALL 装備強化_展開, (L_P), EQUIP:(L_P):검, "공격상성", "属性付与"
+			IF RESULT == 1
+				CALL 装備強化_展開, (L_P), EQUIP:(L_P):검, "공격상성", "付与相性"
+				SIF RESULT > -1 && !MATCH(L_RESULT, RESULT, 0, TYPENUM)
+					L_RESULT:FINDELEMENT(L_RESULT, -1) = RESULT
+			ENDIF
+		ENDIF
+		;キャラ特性・ロール特性による追加相性を入れる。
+		IF L_スキル >= 0
+			FOR LCOUNT:1, 0, 3
+				VARSET RESULT, -1, 0, TYPENUM
+				SELECTCASE LCOUNT:1
+					CASE 0
+						TRYCALLFORM SKILL_ADD_TYPE_IN_CALK_%CSTR:L_P:특수적보정패턴%, CONVERT_SKILLNUM_TO_STR(L_P, L_スキル), L_P, L_状態異常, L_RESULT
+					CASE 1
+						TRYCALLFORM SKILL_ADD_TYPE_IN_CALK_CHARA_{NO:L_P}, CONVERT_SKILLNUM_TO_STR(L_P, L_スキル), L_P, L_状態異常, L_RESULT
+					CASE 2
+						TRYCALLFORM SKILL_ADD_TYPE_IN_CALK_ROLE_%CSTR:L_P:롤%, CONVERT_SKILLNUM_TO_STR(L_P, L_スキル), L_P, L_状態異常, L_RESULT
+				ENDSELECT
+				FOR LCOUNT, 0, TYPENUM
+					SIF RESULT:LCOUNT < 0
+						BREAK
+					SIF MATCH(L_RESULT, RESULT, 0, TYPENUM)
+						CONTINUE
+					L_RESULT:FINDELEMENT(L_RESULT, -1) = RESULT
+				NEXT
+			NEXT
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------------------------------
+;無条件BLOCK
+;-------------------------------------------------------------------------
+;---- EDIT 056 MOD START -------------------------
+;人間不可侵に対しての人間の攻撃は無効
+IF HAVE_SKILL(L_T, [[스킬:인간불가침]]) && L_P >= 0 && ABL:L_P:종족 == 0 && NO:L_P != [[キャラ:코로마루]] && (!CFLAG:L_P:악마변신 || TALENT:L_P:이능자 || TALENT:L_P:이능자 || TALENT:L_P:서머너 || TALENT:L_P:페르소나구사자)
+	RESULTS = 인간불가침
+	RETURN 0, L_RESULT
+ENDIF
+;新宿のベルデルに対しての攻撃は無効
+IF NO:L_T == [[キャラ:벨・데르]] && TFLAG:벨데르불사
+	RESULTS = 不死
+	RETURN 0, L_RESULT
+ENDIF
+;---- EDIT 056 MOD END ---------------------------
+
+L_変動要因 = 
+LT_変動要因 =
+
+;複合相性スキルの相性をとるために複数回まわす
+FOR LCOUNT, 0, TYPENUM
+	SIF L_RESULT:LCOUNT < 0
+		CONTINUE
+	LT_相性番号 = L_RESULT:LCOUNT
+	LT_相性名 = %GET_TYPE(LT_相性番号)%
+	LT_相性値 = MAXBASE:L_T:LT_相性名
+	LT_変動要因 = 
+	;貫通ランクを採る
+	IF L_スキル >= 0
+		CALL BTL_CHK_SKILL_貫通, L_P, L_T, L_スキル, LT_相性番号
+		L_貫通ランク = RESULT
+		L_準貫通ランク = RESULT:1
+	ELSE
+		L_貫通ランク = 0
+		L_準貫通ランク = 0
+	ENDIF
+	;万能は大体の影響を受けない
+	;------------------------------------------------------------------------
+	;相性と貫通による耐性処理
+	;------------------------------------------------------------------------
+	;万能は貫通とスキルによる変化の影響を受けない
+	;---- EDIT 045 MOD START -------------------------
+	;SIF L_相性名 == "만능";EDIT 046 相性名の判定先のミスを修正
+	SIF LT_相性名 == "만능"
+		GOTO AISHOU_CHANGE_END
+	
+	;---- EDIT 054 MOD START -------------------------
+	;貫通処理はランクに依存する。
+	SELECTCASE CHECK_WEAKNESS(LT_相性値)
+		CASE -4
+			IF L_貫通ランク == 4
+				LT_相性値 = 100
+				LT_変動要因 = 反射貫通
+			ELSEIF L_準貫通ランク == 4
+				LT_相性値 = 50
+				LT_変動要因 = 反射貫通 & ダメージ半減
+			ENDIF
+		CASE -3
+			IF L_貫通ランク >= 3
+				LT_相性値 = 100
+				LT_変動要因 = 吸収貫通
+			ELSEIF L_準貫通ランク >= 3
+				LT_相性値 = 50
+				LT_変動要因 = 吸収貫通 & ダメージ半減
+			ENDIF
+		CASE -2
+			IF L_貫通ランク >= 2
+				LT_相性値 = 100
+				LT_変動要因 = 無効貫通
+			ELSEIF L_準貫通ランク >= 2
+				LT_相性値 = 50
+				LT_変動要因 = 無効貫通 & ダメージ半減
+			ENDIF
+		CASE -1
+			IF L_貫通ランク >= 1
+				LT_相性値 = 100
+				LT_変動要因 = 耐性貫通
+			ELSEIF L_準貫通ランク >= 1 && LT_相性値 < 50
+				LT_相性値 = 50
+				LT_変動要因 = 耐性貫通 & ダメージ半減
+			ENDIF
+	ENDSELECT
+
+	;CHECK_WEAKNESS(相性値) 1:弱点, 0:100%, -1:耐性, -2:無効 -3:吸収, -4:反射
+	;ガードキルは耐性・無効・吸収・反射に対応する
+	IF CHECK_WEAKNESS(LT_相性値) < 0 && CFLAG:L_T:(LT_相性名 + "가드킬")
+		LT_相性値 = 100
+		LT_変動要因 = %LT_相性名 + "キル"%
+	ENDIF
+	;---- EDIT 054 MOD END ---------------------------
+	;---- EDIT 045 MOD END   -------------------------
+	;------------------------------------------------------------------------
+	;スキル等による耐性処理
+	;------------------------------------------------------------------------
+	;スキル処理を無効化した場合は100にするのではなく元々の数値にする。そのために数値を保存しておく
+	;通常の貫通と統合し、100%にする処理に変更
+	LT_相性値:1 = LT_相性値
+	;2022/9/30時点では存在しないが半減を付与する等の措置が追加された時用
+	IF CHECK_WEAKNESS(LT_相性値) > -1
+		;属性無効化(壁スキルとか護符とか)
+		;IF 
+		;	LT_相性値 = 0
+		;	LT_変動要因 = %LT_相性名 + "무효"%
+		;ENDIF
+		;貫通ランク1以上に貫通は上記の無効化を無効化する
+		;IF L_耐性スキル貫通ランク >= 1 && (LT_相性値 < LT_相性値:1) && LT_相性値 != 999
+		;	LT_相性値 = LT_相性値:1
+		;	LT_変動要因 = %LT_変動要因+"無効化"%
+		;ENDIF
+	ENDIF
+	;スキルなどによる無効化
+	IF CHECK_WEAKNESS(LT_相性値) > -2
+		;属性無効化(壁スキルとか護符とか)
+		IF CFLAG:L_T:(LT_相性名 + "무효화횟수")
+			LT_相性値 = 0
+			LT_変動要因 = %LT_相性名 + "防壁"%
+		ENDIF
+		;ブレイク状態
+		IF CFLAG:L_T:(LT_相性名 + "웨이트") == 1
+			LT_相性値 = 0
+			LT_変動要因 = %LT_相性名 + "ブレイク"%
+		ENDIF
+		;護りの盾は万能以外を無効化する。
+		IF CFLAG:L_T:수호의방패
+			LT_相性値 = 0
+			LT_変動要因 = ダメージ防壁
+		ENDIF
+		;永世ライドウなど貫通ランク2以上に貫通は上記の無効化を無効化する
+		;IF L_耐性スキル貫通ランク >= 2 && (CHECK_WEAKNESS(LT_相性値) < CHECK_WEAKNESS(LT_相性値:1))
+		;	LT_相性値 = LT_相性値:1
+		;	LT_変動要因 = %LT_変動要因+"無効化"%
+		;ENDIF
+	ENDIF
+	;スキルなどによる吸収
+	IF CHECK_WEAKNESS(LT_相性値) > -3
+		;ドレイン状態
+		IF CFLAG:L_T:(LT_相性名 + "웨이트") == 3 && LT_相性値 != 999 && LT_相性値 > -50
+			LT_相性値 = -50
+			LT_変動要因 = %LT_相性名+"ドレイン"%
+		ENDIF
+		;貫通ランク3以上に貫通は上記の吸収を無効化する
+		;IF L_耐性スキル貫通ランク >= 3 && (CHECK_WEAKNESS(LT_相性値) < CHECK_WEAKNESS(LT_相性値:1))
+		;	LT_相性値 = LT_相性値:1
+		;	LT_変動要因 = %LT_変動要因+"無効化"%
+		;ENDIF
+	ENDIF
+	;スキルなどによる反射
+	IF CHECK_WEAKNESS(LT_相性値) > -4
+		;リフレクト状態
+		IF CFLAG:L_T:(LT_相性名 + "웨이트") == 2 && LT_相性値 != 999
+			LT_相性値 = 999
+			LT_変動要因 = %LT_相性名 + "リフレクト"%
+		ENDIF
+		;反射中は反応しない
+		IF !TFLAG:반사중
+			;カーンなど
+			IF CFLAG:L_T:물리반사플래그 && L_ダメージタイプ == 1
+				;影霄・絶影起動中 ダメージタイプなし(=反射フラグを抜ける)
+				IF !(SKILLGAGE_F_GET(L_P, PU_SKILLNUM_GET(L_P ,"影霄・絶影")) < 0)
+					LT_相性値 = 999
+					LT_変動要因 = 物理反射結界
+				ENDIF
+			ENDIF
+			IF CFLAG:L_T:마법반사플래그 && L_ダメージタイプ == 2
+				;キメラ起動中 ダメージタイプなし(=反射フラグを抜ける)
+				IF !(SKILLGAGE_F_GET(L_P, PU_SKILLNUM_GET(L_P,"キメラ")) < 0)
+					LT_相性値 = 999
+					LT_変動要因 = 魔法反射結界
+				ENDIF
+			ENDIF
+			;ハイパーカウンタは事前にランダム部分の判定を済ませておいてフラグが立ってれば発動判定
+			IF TFLAG:카운터 && GROUPMATCH(LT_相性名, "검격", "비구", "타격", "전술")
+				LT_相性値 = 999
+				LT_変動要因 = 카운터
+			ENDIF
+		ENDIF
+		;スキル耐性貫通ランク4の貫通は上記の反射を貫通する
+		;IF L_耐性スキル貫通ランク == 4 && (CHECK_WEAKNESS(LT_相性値) < CHECK_WEAKNESS(LT_相性値:1))
+		;	LT_相性値 = LT_相性値:1
+		;	LT_変動要因 = %LT_変動要因+"無効化"%
+		;ENDIF
+	ENDIF
+	;スキル固有の耐性変化処理
+	CHANGE_TYPE_RANK = 0
+	FOR LCOUNT:1, 0, TRYSKILLNUM(L_T)
+		RESULT = 0
+		TEMP_SKILL = TOINT(GET_TRYSKILL(L_T, LCOUNT:1))
+		TRYCCALLFORM SKILL_PASSIVE_BTL_EFFECT_%GET_TRYSKILL(L_T, LCOUNT:1)%, "相性変化", L_T, L_P, L_T, LT_相性名, LT_相性値, GET_ダメージタイプ(L_ダメージタイプ), GET_攻撃タイプ(L_攻撃タイプ), "ステート名", , TEMP_SKILL, TRYSKILL_VAR
+			SIF !RESULT
+				CONTINUE
+			IF RESULT > CHANGE_TYPE_RANK
+				LT_相性値 = RESULT:1
+				LT_変動要因 '= RESULTS
+			ELSE
+				IF RESULT == CHANGE_TYPE_RANK
+					;同ランクでは弱点の付与を優先
+					IF CHECK_WEAKNESS(RESULT:1) > 0
+						;数値が大きい(=弱点の強度が高いなら更新)
+						IF (RESULT:1 > LT_相性値) || LT_相性値 == 999
+							LT_相性値 =  RESULT:1
+							LT_変動要因 '= RESULTS
+						ENDIF
+					;耐性を付与する場合はより強い耐性を優先
+					ELSE
+						;数値が低い(=耐性の強度が高いなら更新,ただしすでに反射が入っている場合は更新できない)
+						IF ((RESULT:1 < LT_相性値) || RESULT:1 == 999) && LT_相性値 != 999
+							LT_相性値 = RESULT:1
+							LT_変動要因 '= RESULTS
+						ENDIF
+					ENDIF
+				ENDIF
+			ENDIF
+		CATCH
+		ENDCATCH
+	NEXT
+	;耐性スキル貫通ランクによる耐性変化の無効化処理
+	;耐性が強まっている場合
+	;---- EDIT 057 MOD START -------------------------
+	IF (CHECK_WEAKNESS(LT_相性値) < CHECK_WEAKNESS(LT_相性値:1))
+		;耐性ランクは1~4と-1~-4が対応している
+		IF (L_貫通ランク >=  ABS(CHECK_WEAKNESS(LT_相性値)))
+			;LT_相性値 = LT_相性値:1
+			LT_相性値 = 100
+			LT_変動要因 = %LT_変動要因+"관통"%
+		ELSEIF (L_準貫通ランク >=  ABS(CHECK_WEAKNESS(LT_相性値)))
+			IF LT_相性値 == 999 || LT_相性値 < 50
+				LT_相性値 = 50
+				LT_変動要因 = %LT_変動要因+"관통 & ダメージ半減"%
+			ENDIF
+		ENDIF
+	ENDIF
+	;---- EDIT 057 MOD END ---------------------------
+	;------------------------------------------------------------------------
+	;状況に起因する変化
+	;------------------------------------------------------------------------
+	;---- EDIT 045 ADD START -------------------------
+	$AISHOU_CHANGE_END
+	;---- EDIT 045 ADD END ---------------------------
+	;反射中における反射は無効となる
+	IF TFLAG:반사중
+		SIF CHECK_WEAKNESS(LT_相性値) == -4
+			LT_相性値 = 0
+		SIF TFLAG:반사후0데미지화
+			LT_相性値 = 0
+	ENDIF
+	;割合攻撃は吸収を無効として扱う
+	SIF GET_攻撃タイプ(L_攻撃タイプ) == "割合" && CHECK_WEAKNESS(LT_相性値) == -3
+		LT_相性値 = 0
+	;0ダメージ化フラグ。カウンターに対する反射・吸収の処理など
+	SIF TFLAG:반사0데미지화 &&  (CHECK_WEAKNESS(LT_相性値) == -4)
+		LT_相性値 = 0
+	SIF TFLAG:흡수0데미지화 &&  (CHECK_WEAKNESS(LT_相性値) == -4)
+		LT_相性値 = 0
+	;------------------------------------------------------------------------
+	;複合相性の判定部分
+	;------------------------------------------------------------------------
+	IF LCOUNT == 0
+		;最初は無条件で代入
+		L_相性番号 = LT_相性番号
+		L_相性名 = %LT_相性名%
+		L_相性値 = LT_相性値
+		L_変動要因 = %LT_変動要因%
+		SIF L_P >= 0
+			L_ブースタ強度 = C_HAVE_BOOSTER_STRENGTH:L_P:LT_相性番号
+	ELSE
+		;複合属性は判定を繰り返してより良い相性になるものを更新していく
+		;同値の場合はブースタ優先度を確認する
+		IF LT_相性値 == L_相性値
+			IF L_P >= 0 && L_ブースタ強度 < C_HAVE_BOOSTER_STRENGTH:L_P:LT_相性番号
+				L_相性番号 = LT_相性番号
+				L_相性名 = %LT_相性名%
+				L_相性値 = LT_相性値
+				L_変動要因 = %LT_変動要因%
+				L_ブースタ強度 = C_HAVE_BOOSTER_STRENGTH:L_P:LT_相性番号
+			ENDIF
+		;耐性・吸収は同ランクで数値が違うことがあるので、ここは生の数値で比較する
+		ELSEIF (LT_相性値 != 999) && ((L_相性値 == 999) || (LT_相性値 > L_相性値))
+			L_相性番号 = LT_相性番号
+			L_相性名 = %LT_相性名%
+			L_相性値 = LT_相性値
+			L_変動要因 = %LT_変動要因%
+			SIF L_P >= 0
+				L_ブースタ強度 = C_HAVE_BOOSTER_STRENGTH:L_P:LT_相性番号
+		ENDIF
+	ENDIF
+	;디버그용
+	;PRINTFORML [L] %L_相性名% / {L_相性値} / [LT] %LT_相性名% / {LT_相性値}
+NEXT
+RESULTS = %L_変動要因%
+
+;属性無効化が発生していた場合は後で処理するために被弾フラグを立てておく
+SIF RESULTS == GET_TYPE(L_相性番号) + "防壁"
+	CFLAG:L_T:(GET_TYPE(L_相性番号) + "피탄") = 1
+SIF RESULTS == "ダメージ防壁"
+	CFLAG:L_T:수호의방패발동 = 1
+RETURN L_相性値, L_相性番号
+
+;=================================================
+;   sub BTL_CHK_SKILL_貫通
+;=================================================
+;   BTL:スキルチェック(관통)
+;-------------------------------------------------
+; Input:
+;  ARG:0				攻撃者
+;  ARG:1				攻撃対象
+;  ARG:2				使用スキル
+;  ARG:3				공격상성　0.검격～17.만능;024
+; Output:
+;  RETURNF				貫通ランク0~4(1 = 耐性, 2 = 無効、3, 吸収, 4, 反射)
+;-------------------------------------------------
+@BTL_CHK_SKILL_貫通, ARG:0, ARG:1 = 1, ARG:2, ARG:3 = -1
+#DIM LCOUNT
+#DIM L_P
+#DIM L_T
+#DIM L_スキル
+#DIM L_ダメージタイプ
+#DIM L_攻撃タイプ
+#DIM L_相性
+#DIM L_RANK, 2
+#DIM TEMP_SKILL
+L_P = ARG:0
+L_T = ARG:1
+L_スキル = ARG:2
+L_相性 = ARG:3
+
+;---- EDIT 058 MOD START -------------------------
+CALL GET_SKILL_PROP, "SKILL_DAMAGETYPE", L_スキル, ARG
+L_ダメージタイプ = RESULT
+CALL GET_SKILL_PROP, "SKILL_ATTACKTYPE", L_スキル, ARG
+L_攻撃タイプ = RESULT
+
+L_RANK = 0, 0
+;인사이트:単体・単発攻撃であるなら全耐性貫通(ランク4)
+IF HAVE_SKILL(L_P, [[스킬:인사이트]])
+	CALL GET_SKILL_PROP, "SKILL_TARGET", L_スキル, L_P
+	IF RESULT == 1
+		CALL GET_SKILL_PROP, "SKILL_SPHERE", L_スキル, ARG
+		IF RESULT == 1
+			CALL GET_SKILL_PROP, "SKILL_SPREAD", L_スキル, ARG
+			IF !RESULT
+				CALL GET_SKILL_PROP, "SKILL_MAXATTACKNUMBER", L_スキル, ARG
+				SIF RESULT == 1
+					L_RANK = MAX(L_RANK, 4)
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+;---- EDIT 058 MOD END ---------------------------
+IF CFLAG:L_P:꿰뚫는투기
+	L_RANK = 4
+ENDIF
+
+;スキルの持つ貫通ランク
+CALL GET_SKILL_PROP, "SKILL_PENETRATION_RANK", L_スキル, ARG, ARG:1
+L_RANK = MAX(L_RANK, RESULT), MAX(L_RANK:1, RESULT:1)
+
+;パッシブスキルの貫通ランク
+FOR LCOUNT, 0, TRYSKILLNUM(L_P)
+	RESULT = 0, 0
+	;TODO スキル名は上流からすべて文字列で送ったほうがいいがとりあえずいまは下流だけなおしておく
+	TRYCCALLFORM SKILL_PASSIVE_PENETRATION_RANK_%GET_TRYSKILL(L_P, LCOUNT)%, L_P, L_T, CONVERT_SKILLNUM_TO_STR(L_P, L_スキル), L_ダメージタイプ, L_攻撃タイプ, L_相性, TRYSKILL_VAR
+		L_RANK = MAX(L_RANK, RESULT), MAX(L_RANK:1, RESULT:1)
+	CATCH
+	ENDCATCH
+NEXT
+RETURN L_RANK, L_RANK:1
+
+;=============================================
+;命中判定関数
+;ARG 攻撃者
+;ARG:1 被攻撃者
+;ARG:2 スキル命中率
+;ARG:3 相性
+;ARG:4 相性値
+;ARG:5 ダメージタイプ
+;ARG:6 攻撃タイプ
+;
+;RETURN 1:Hit 2:Miss, RESULT:1 最終的な判定値(DEBUG用)
+;=============================================
+@BTL_JUDG_HIT, ARG, ARG:1, ARG:2, ARG:3 = -1, ARG:4, ARG:5, ARG:6, ARG:7
+#LOCALSIZE 1
+#DIM LCOUNT
+#DIM TEMP
+#DIM L_P
+#DIM L_T
+#DIM L_HIT
+#DIM L_スキル命中率
+#DIMS L_ダメージタイプ
+#DIMS L_攻撃タイプ
+#DIM L_追加命中強化
+#DIM L_スキル命中強化
+#DIM L_追加回避強化
+#DIMS L_相性名
+#DIM L_相性値
+#DIM L_SKILL
+#DIM L_SKILLCOUNT, 2
+#DIM TEMP_SKILL
+
+L_スキル命中強化 = 0
+L_追加命中強化 = 0
+L_追加回避強化 = 0
+
+L_P = ARG
+L_T = ARG:1
+L_スキル命中率 = ARG:2
+IF ARG:3 == -1
+	L_相性名 '= "指定なし"
+ELSE
+	L_相性名 '= GET_TYPE(ARG:3)
+ENDIF
+ L_相性値 = ARG:4
+L_ダメージタイプ '= GET_ダメージタイプ(ARG:5)
+L_攻撃タイプ '= GET_攻撃タイプ(ARG:6)
+L_SKILL = ARG:7
+;---- EDIT 059 ADD START -------------------------
+;アイテム攻撃はオプションで許可されてるときのみ
+SIF L_攻撃タイプ == "アイテム" && !BATTLE_SETTING_IS_ITEM_DAMAGE()
+	L_攻撃タイプ = L_ダメージタイプ
+;---- EDIT 059 ADD END ---------------------------
+
+;スキルの所持数を取得
+L_SKILLCOUNT = CHARA_SKILLCOUNT(L_P), CHARA_SKILLCOUNT(L_T)
+
+;------------------------------------------------------------------
+;必中・絶対回避処理
+;------------------------------------------------------------------
+TSTR:명중률분석 = 절대회피
+TSTR:명중판정확정요인 '= ""
+;TFLAG:絶対回避が立ってる間は命中判定を飛ばす
+SIF TFLAG:절대회피 > 0
+	RETURN 0, -999
+;スキル命中率が0以下の場合は絶対回避として扱う
+SIF L_スキル命中率 <= 0
+	RETURN 0, -999
+TSTR:명중률분석 = 필중
+;TFLAG:必中が立ってる間は命中判定を飛ばす
+SIF TFLAG:필중 > 0
+	RETURN 1, 999
+SIF TFLAG:필중_전투중 > 0
+	RETURN 1, 999
+;スキル命中率が999以上の場合は必中技として扱う
+SIF L_スキル命中率 >= 999
+	RETURN 1, 999
+IF L_ダメージタイプ == "物理"
+	SIF CFLAG:ARG:회심의패기플래그
+		RETURN 1, 999
+ENDIF
+;バステ影響設定有効(行動不能な状態異常の場合、必中になる)
+IF BATTLE_SETTING_IS_BAD_STATUS()
+	SELECTCASE GET_STATE(CFLAG:L_T:상태이상)
+		CASE "STONE","PALYZE","BIND","FREEZE","SHOCK","SLEEP","PANIC","CHARM","HEAT","SLIP"
+			RETURN 1, 999
+	ENDSELECT
+ENDIF
+
+;------------------------------------------------------------------
+;基本命中率
+;------------------------------------------------------------------
+SIF L_攻撃タイプ == "割合"
+	L_攻撃タイプ '= L_ダメージタイプ
+
+;---- EDIT 060 MOD START -------------------------
+;基本値
+IF L_ダメージタイプ == "物理"
+	L_HIT = 80
+ELSE
+	L_HIT = 100
+ENDIF
+
+RESULT = 0
+TRYCALLFORM SKILL_CALC_BATTTLE_STATUS_%CONVERT_SKILLNUM_TO_STR(L_P, L_SKILL)%, "HIT", L_P, L_T
+IF RESULT >0
+	L_HIT += RESULT
+ELSE
+	SELECTCASE L_攻撃タイプ
+		CASE "物理"
+			L_HIT += MAXBASE:L_P:명중
+		CASE "魔法"
+			L_HIT += (MAXBASE:L_P:마법효과 + MAXBASE:L_P:명중) / 2
+		CASE "총"
+			L_HIT += (MAXBASE:L_P:총명중 / 2) + 20
+		CASE "アイテム"
+			IF L_ダメージタイプ == "物理"
+				L_HIT += MAXBASE:L_P:도구명중
+			ELSE
+				L_HIT += (MAXBASE:L_P:마법효과 + MAXBASE:L_P:도구명중) / 2
+			ENDIF
+		CASE "LV"
+			;ステータス下駄がないことを想定するとレベル差がきついので基礎値時点で下駄をはかせておく
+			L_HIT += MAXBASE:L_P:LV * 2 + ((MAXBASE:L_P:LV + 18) / 6) * 7 / 2 + 20
+	ENDSELECT
+ENDIF
+
+RESULT = 0
+TRYCALLFORM SKILL_CALC_BATTTLE_STATUS_%CONVERT_SKILLNUM_TO_STR(L_P, L_SKILL)%, "AVOID", L_P, L_T
+IF RESULT > 0
+	L_HIT -= RESULT
+ELSE
+	;---- EDIT 061 MOD START -------------------------
+	SELECTCASE L_ダメージタイプ
+		CASE "物理"
+			IF L_攻撃タイプ == "총"
+				L_HIT -= MAXBASE:L_T:회피 / 2
+			ELSE
+				L_HIT -= MAXBASE:L_T:회피
+			ENDIF
+		CASE "魔法"
+			IF L_攻撃タイプ == "총"
+				L_HIT -= (MAXBASE:L_T:마법효과 + MAXBASE:L_T:회피) / 4
+			ELSE
+				L_HIT -= (MAXBASE:L_T:마법효과 + MAXBASE:L_T:회피) / 2
+			ENDIF
+	ENDSELECT
+	;---- EDIT 061 MOD END ---------------------------
+ENDIF
+TSTR:명중률분석 = 【基礎_{L_HIT}】
+;---- EDIT 060 MOD END ---------------------------
+
+;------------------------------------------------------------------
+;スキル命中強化
+;スキル命中率部分に加算する。仕様上、低命中率スキルのほうが効果が大きく、カジャンダと相乗効果がある。
+;
+;要するに追加命中と比較すると命中率60以下の命中不安スキルのフォロー力高い
+;------------------------------------------------------------------
+;百発百中、千発千中、見切りの命中強化
+SIF HAVE_SKILL(L_P, [[스킬:백발백중]])
+	L_スキル命中強化 += 10
+SIF HAVE_SKILL(L_P, [[스킬:천발천중]])
+	L_スキル命中強化 += 20
+
+;------------------------------------------------------------------
+;スキルによる独自のスキル命中強化・追加命中・追加回避
+;------------------------------------------------------------------
+FOR LCOUNT, 0, TRYSKILLNUM(L_P)
+	RESULT = 0
+	TEMP_SKILL = TOINT(GET_TRYSKILL(L_P, LCOUNT))
+	TRYCCALLFORM SKILL_PASSIVE_BTL_EFFECT_%GET_TRYSKILL(L_P, LCOUNT)%, "スキル命中強化", L_P, L_P, L_T, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, "ステート名",0, TEMP_SKILL, TRYSKILL_VAR
+		L_スキル命中強化 += RESULT
+		RESULT = 0
+		RESULTS '= ""
+		CALLFORM SKILL_PASSIVE_BTL_EFFECT_%GET_TRYSKILL(L_P, LCOUNT)%, "追加命中強化", L_P, L_P, L_T, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, "ステート名",0, TEMP_SKILL, TRYSKILL_VAR
+		IF RESULT >= 999
+			IF STRCOUNT(SKILL_NAME_F(TEMP_SKILL), "전용기")
+				TSTR:명중률분석 = 필중:%CSTR:L_P:@"전용기{TEMP_SKILL - SKILL_NUM_F("전용기1") + 1}"%
+			ELSE
+				TSTR:명중률분석 = 필중:%SKILL_NAME_F(TEMP_SKILL)%
+			ENDIF
+			TSTR:명중판정확정요인 '= RESULTS
+			RETURN 1, 999
+		ENDIF
+		IF RESULT <= -999
+			IF STRCOUNT(SKILL_NAME_F(TEMP_SKILL), "전용기")
+				TSTR:명중률분석 = 命中率0:%CSTR:L_P:@"전용기{TEMP_SKILL - SKILL_NUM_F("전용기1") + 1}"%
+			ELSE
+				TSTR:명중률분석 = 命中率0:%SKILL_NAME_F(TEMP_SKILL)%
+			ENDIF
+			TSTR:명중판정확정요인 '= RESULTS
+			RETURN 0, 999
+		ENDIF
+		L_追加命中強化 += RESULT
+	CATCH
+	ENDCATCH
+NEXT
+
+FOR LCOUNT, 0, TRYSKILLNUM(L_T)
+	RESULT = 0
+	TEMP_SKILL = TOINT(GET_TRYSKILL(L_T, LCOUNT))
+	RESULTS '= ""
+	TRYCCALLFORM SKILL_PASSIVE_BTL_EFFECT_%GET_TRYSKILL(L_T, LCOUNT)%, "追加回避強化", L_T, L_P, L_T, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, "ステート名",0, TEMP_SKILL, TRYSKILL_VAR
+		TEMP_SKILL = TOINT(GET_TRYSKILL(L_T, LCOUNT))
+		IF RESULT >= 999
+			IF STRCOUNT(SKILL_NAME_F(TEMP_SKILL), "전용기")
+				TSTR:명중률분석 = 절대회피:%CSTR:L_T:@"전용기{TEMP_SKILL - SKILL_NUM_F("전용기1") + 1}"%
+			ELSE
+				TSTR:명중률분석 = 절대회피:%SKILL_NAME_F(TEMP_SKILL)%
+			ENDIF
+			TSTR:명중판정확정요인 '= RESULTS
+			RETURN 0, -999
+		ENDIF
+		IF RESULT <= -999
+			IF STRCOUNT(SKILL_NAME_F(TEMP_SKILL), "전용기")
+				TSTR:명중률분석 = 回避不能:%CSTR:L_T:@"전용기{TEMP_SKILL - SKILL_NUM_F("전용기1") + 1}"%
+			ELSE
+				TSTR:명중률분석 = 回避不能:%SKILL_NAME_F(TEMP_SKILL)%
+			ENDIF
+			RETURN 1, 999
+			TSTR:명중판정확정요인 '= RESULTS
+		ENDIF
+		L_追加回避強化 += RESULT
+	CATCH
+	ENDCATCH
+NEXT
+;---- EDIT 046 MOD END ---------------------------
+;------------------------------------------------------------------
+;追加命中/회피강화(EX)
+;------------------------------------------------------------------
+;◯ゲッシュ所持かつ、誓いを守れているかで補正が発生
+IF HAVE_PU_SKILL(ARG,"ゲッシュ")
+	;誓い（Fゲージ）0=プラス補正、-1=マイナス補正
+	IF SKILLGAGE_F_GET(L_P, PU_SKILLNUM_GET(ARG,"ゲッシュ")) == -1
+		L_追加命中強化 -= 16
+	ELSE
+		L_追加命中強化 += 8
+	ENDIF
+ENDIF
+
+IF SKILLGAGE_H_GET(L_T, [[스킬:SONG OF DIVA]]) || SKILLGAGE_F_GET(L_T, [[스킬:SONG OF DIVA]])
+	;ダークネストリガー未使用(0)・強制解除後(2)なら
+	SIF SKILLGAGE_H_GET(L_T, [[스킬:DARKNESS TRIGGER]]) != 1
+		L_追加回避強化 += 4
+ENDIF
+SIF L_相性名 == "비구" && HAVE_PU_SKILL(L_T, "矢避けの加護")
+	L_追加回避強化 += 8
+
+IF L_ダメージタイプ == "物理"
+	SIF HAVE_SKILL(L_T, [[스킬:에어트릭]])
+		L_追加回避強化 += 4
+	SIF HAVE_SKILL(L_T, [[스킬:에어하이크]])
+		L_追加回避強化 += 4
+	SIF HAVE_PU_SKILL(L_T, "アサシン")
+		L_追加回避強化 += 4
+	;+8
+	CALL AUTO_PU_SKILL_バイ・バイ・ライジング, L_P, "物理回避判定↑", L_T
+	L_追加回避強化 += RESULT
+	;+4
+	CALL AUTO_PU_SKILL_戦術詠唱γ, L_P, "物理回避判定↑", L_T
+	L_追加回避強化 += RESULT
+ELSE
+	;ランク依存で+4 or +8
+	CALL AUTO_PU_SKILL_戦術詠唱γ, L_P, "魔法命中判定↑", L_T
+	L_追加命中強化 += RESULT
+	
+	;ランク依存で+4 or +8
+	CALL AUTO_PU_SKILL_戦術詠唱γ, L_P, "魔法回避判定↑", L_T
+	L_追加回避強化 += RESULT
+	;+8
+	CALL AUTO_PU_SKILL_バイ・バイ・ライジング, L_P, "魔法回避判定↑", L_T
+	L_追加回避強化 += RESULT
+	;+8
+	CALL AUTO_PU_SKILL_影霄・奔夜, L_P, "魔法回避判定↑", L_T
+	L_追加回避強化 += RESULT
+ENDIF
+
+;------------------------------------------------------------------
+;명중/回避強化の補正処理
+;2022/10/12 下限処理を一応追加。デフォの4段階下げ+追加低下が存在したときに上限を超えられる形に
+;2023/06/12 魔法効果のステータスと合わせる形で命中回避に魔法効果を関与させるように
+;			下限を8段階に変更し、変動率を緩和
+;------------------------------------------------------------------
+;---- EDIT 056 MOD START -------------------------
+TEMP = L_HIT
+
+RESULT = -10000, 32
+TRYCALLFORM SKILL_CALC_BUFF_%CONVERT_SKILLNUM_TO_STR(L_P, L_SKILL)%, "HIT", L_P, L_T
+IF RESULT != -10000
+	IF (RESULT + L_追加命中強化) > 0
+		L_HIT = L_HIT * (RESULT + L_追加命中強化 + RESULT:1) / RESULT:1
+	ELSE
+		L_HIT = L_HIT * MAX(RESULT + RESULT:1 * 2, RESULT:1) / (RESULT:1 * 2)
+	ENDIF
+ELSE
+	IF L_攻撃タイプ == "魔法"
+		IF (CFLAG:L_P:명중강화 + CFLAG:L_P:마법효과강화 + L_追加命中強化) > 0
+			L_HIT = L_HIT * (CFLAG:L_P:명중강화 + CFLAG:L_P:마법효과강화 + L_追加命中強化 + 64) / 64
+		ELSE
+			L_HIT = L_HIT * MAX(CFLAG:L_P:명중강화 + CFLAG:L_P:마법효과강화 + L_追加命中強化 + 128, 64) / 128
+		ENDIF
+	ELSE
+		IF (CFLAG:L_P:명중강화 + L_追加命中強化) > 0
+			L_HIT = L_HIT * (CFLAG:L_P:명중강화 + L_追加命中強化 + 32) / 32
+		ELSE
+			L_HIT = L_HIT * MAX(CFLAG:L_P:명중강화 + L_追加命中強化 + 64, 32) / 64
+		ENDIF
+	ENDIF
+ENDIF
+RESULT = -10000, 32
+TRYCALLFORM SKILL_CALC_BUFF_%CONVERT_SKILLNUM_TO_STR(L_P, L_SKILL)%, "AVOID", L_P, L_T
+IF RESULT != -10000
+	IF (RESULT + L_追加回避強化) > 0
+		L_HIT = L_HIT * MAX(RESULT:1 * 2 - (RESULT + L_追加回避強化), RESULT:1) / (RESULT:1 * 2)
+	ELSE
+		L_HIT = L_HIT * (RESULT:1 - (RESULT + L_追加回避強化)) / RESULT:1
+	ENDIF
+ELSE
+	IF L_ダメージタイプ == "魔法"
+		IF (CFLAG:L_T:회피강화 + CFLAG:L_T:마법효과강화 + L_追加回避強化) > 0
+			L_HIT = L_HIT * MAX(128 - (CFLAG:L_T:회피강화 + CFLAG:L_T:마법효과강화 + L_追加回避強化), 64) / 128
+		ELSE
+			L_HIT = L_HIT * (64 - (CFLAG:L_T:회피강화 + CFLAG:L_T:마법효과강화 + L_追加回避強化)) / 64
+		ENDIF
+	ELSE
+		IF (CFLAG:L_T:회피강화 + L_追加回避強化) > 0
+			L_HIT = L_HIT * MAX(64 - (CFLAG:L_T:회피강화 + L_追加回避強化), 32) / 64
+		ELSE
+			L_HIT = L_HIT * (32 - (CFLAG:L_T:회피강화 + L_追加回避強化)) / 32
+		ENDIF
+	ENDIF
+ENDIF
+SIF TEMP > 0
+	TSTR:명중률분석 += @"【強化_{L_HIT * 100 / TEMP}\%】"
+
+;L_HIT *= MAX((32 + MAX(CFLAG:L_P:명중강화, -16) + L_追加命中強化), 8)
+;L_HIT /= MAX((32 + MAX(CFLAG:L_T:회피강화, -16) + L_追加回避強化), 8)
+;TSTR:명중률분석 += @"【強化_{32+CFLAG:L_P:명중강화 + L_追加命中強化}/{32 + CFLAG:L_T:회피강화 + L_追加回避強化}】"
+;---- EDIT 056 MOD END ---------------------------
+
+;------------------------------------------------------------------
+;スキル命中率の反映
+;------------------------------------------------------------------
+TSTR:명중률분석 += @"【スキル命中率_{L_スキル命中率}\@L_スキル命中強化 ? + {L_スキル命中強化}#\@】"
+L_HIT = L_HIT * (L_スキル命中率 + L_スキル命中強化) / 100
+TSTR:명중률분석 += @"【命中率_{L_HIT}】"
+
+;------------------------------------------------------------------
+;判定
+;------------------------------------------------------------------
+IF RAND:100 < L_HIT
+	RETURN 1, LIMIT(L_HIT, 0, 900)
+ELSE
+	RETURN 0, LIMIT(L_HIT, 0, 900)
+ENDIF
+
+;---- EDIT 046 MOD START -------------------------
+;=============================================
+;クリティカル判定関数
+;ARG 攻撃者
+;ARG:1 被攻撃者
+;ARG:2 スキルのクリティカル率
+;ARG:3 ダメージタイプ(1.物理 2.魔法)
+;ARG:4 攻撃タイプ(1.物理 2.魔法 3.총 4.アイテム 5.割合攻撃)
+;ARGS  相性名
+;ARG:5 相性値
+;
+;RETURN 0:1 = クリティカル, 1:最終的なクリティカル率 
+;=============================================
+@BTL_JUDG_CRT, ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARGS, ARG:5
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_クリ固定値強化
+#DIM DYNAMIC L_クリ強化補正
+#DIM DYNAMIC L_クリティカル率
+#DIMS DYNAMIC L_ダメージタイプ
+#DIMS DYNAMIC L_攻撃タイプ
+#DIMS DYNAMIC L_相性名
+#DIM DYNAMIC L_相性値
+#DIM DYNAMIC L_CRT
+#DIM DYNAMIC L_SKILLCOUNT, 2
+#DIM DYNAMIC L_解析用
+#DIM DYNAMIC L_固定値強化
+#DIM DYNAMIC L_クリティカル補正A
+#DIM DYNAMIC L_クリティカルランク
+#DIM DYNAMIC L_クリティカル耐性ランク
+#DIM DYNAMIC L_クリティカル有効化
+#DIM DYNAMIC TEMP_SKILL
+L_P = ARG
+L_T = ARG:1
+L_クリティカル率 = ARG:2
+L_ダメージタイプ '= GET_ダメージタイプ(ARG:3)
+L_攻撃タイプ '= GET_攻撃タイプ(ARG:4)
+L_相性名 '= ARGS
+L_相性値 = ARG:5
+
+;スキルの所持数を取得
+L_SKILLCOUNT = CHARA_SKILLCOUNT(L_P), CHARA_SKILLCOUNT(L_T)
+
+L_クリティカル補正A = 100
+L_固定値強化 = 0
+L_クリティカルランク = 1
+L_クリティカル耐性ランク = 1
+
+;---------------------------------------------------------------------
+;クリティカル無効処理
+;---------------------------------------------------------------------
+TSTR:크리티컬분석 = 被物理
+;物理でない場合はクリティカルしない
+;---- EDIT P 001 MOD START -------------------------
+IF L_ダメージタイプ == "物理"
+	L_クリティカル有効化 = 1
+ELSE
+	IF CFLAG:L_P:절대회심
+		L_クリティカル有効化 = 1
+	ELSEIF CFLAG:L_P:수라의일격 && CFLAG:L_P:입력행동 == [[스킬:ＡＴＴＡＣＫ]]
+		L_クリティカル有効化 = 1
+	ELSE
+		L_クリティカル有効化 = 0
+	ENDIF
+ENDIF
+;---- EDIT P 003 MOD START -------------------------
+;---------------------------------------------------------------------
+;スキルの独自補正
+;A群/B群/D群の補正。数値は先にだしておく
+;---------------------------------------------------------------------
+FOR LCOUNT, 0, TRYSKILLNUM(L_P)
+	RESULT = 0
+	TEMP_SKILL = TOINT(GET_TRYSKILL(L_P, LCOUNT))
+	TRYCCALLFORM SKILL_PASSIVE_BTL_EFFECT_%GET_TRYSKILL(L_P, LCOUNT)%, "クリティカル補正A", L_P, L_P, L_T, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, "ステート名",0, TEMP_SKILL, TRYSKILL_VAR
+		TEMP_SKILL = TOINT(GET_TRYSKILL(L_T, LCOUNT))
+		L_クリティカル補正A += RESULT
+		IF RESULT >= 999
+			IF STRCOUNT(SKILL_NAME_F(TEMP_SKILL), "전용기")
+				TSTR:크리티컬분석 = クリティカル確定:%CSTR:L_P:@"전용기{TEMP_SKILL - SKILL_NUM_F("전용기1") + 1}"%
+			ELSE
+				TSTR:크리티컬분석 = クリティカル確定:%SKILL_NAME_F(TEMP_SKILL)%
+			ENDIF
+			RETURN 1, 999
+		ENDIF
+		IF RESULT <= -999
+			IF STRCOUNT(SKILL_NAME_F(TEMP_SKILL), "전용기")
+				TSTR:크리티컬분석 = クリティカル不能:%CSTR:L_P:@"전용기{TEMP_SKILL - SKILL_NUM_F("전용기1") + 1}"%
+			ELSE
+				TSTR:크리티컬분석 = クリティカル不能:%SKILL_NAME_F(TEMP_SKILL)%
+			ENDIF
+			RETURN 0, -999
+		ENDIF
+		RESULT = 0
+		CALLFORM SKILL_PASSIVE_BTL_EFFECT_%GET_TRYSKILL(L_P, LCOUNT)%, "クリティカルランク", L_P, L_P, L_T, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, "ステート名",0, TEMP_SKILL, TRYSKILL_VAR
+		IF RESULT > 0
+			L_クリティカルランク += RESULT
+		ELSE
+			L_クリティカル耐性ランク += ABS(RESULT)
+		ENDIF
+		RESULT = 0
+		CALLFORM SKILL_PASSIVE_BTL_EFFECT_%GET_TRYSKILL(L_P, LCOUNT)%, "クリティカル加算", L_P, L_P, L_T, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, "ステート名",0, TEMP_SKILL, TRYSKILL_VAR
+		L_固定値強化 += RESULT
+		IF L_クリティカル有効化 == 0
+			RESULT = 0
+			CALLFORM SKILL_PASSIVE_BTL_EFFECT_%GET_TRYSKILL(L_P, LCOUNT)%, "クリティカル有効化", L_P, L_P, L_T, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, "ステート名",0, TEMP_SKILL, TRYSKILL_VAR
+			SIF RESULT
+				L_クリティカル有効化 = 1
+		ENDIF
+	CATCH
+	ENDCATCH
+NEXT
+IF L_クリティカル有効化 == 0
+	TSTR:크리티컬분석 = クリティカル不能
+	RETURN 0, -1000
+ENDIF
+;---- EDIT P 003 MOD END ---------------------------
+;---- EDIT P 001 MOD END ---------------------------
+TSTR:크리티컬분석 = クリティカル無効
+;自分か相手がプリンキピアを持っているのならCRITICALはキャンセルされる
+SIF HAVE_SKILL(L_P, [[스킬:프린키피아]])
+	RETURN 0, -999
+SIF HAVE_SKILL(L_T, [[스킬:프린키피아]])
+	RETURN 0, -999
+;クリティカルを無効化する。いちおうプレイヤー側は弾いておく
+SIF (!CFLAG:L_T:PT플래그 && CFLAG:L_T:크리티컬무효플래그)
+	RETURN 0, -999
+;クリティカル率が0以下の場合はクリティカルしない。(これは計算式的にもそうなっている)
+SIF L_クリティカル率 <= 0
+	RETURN 0, -999
+SIF CFLAG:L_P:크리티컬보정 <= -100
+	RETURN 0, -999
+;---------------------------------------------------------------------
+;クリティカル確定処理
+;---------------------------------------------------------------------
+TSTR:크리티컬분석 = クリティカル確定
+;主にDEBUG用。クリティカルが確定する
+SIF CFLAG:L_P:회심확정플래그
+	RETURN 1, 999
+SIF TFLAG:절대회심
+	RETURN 1, 999
+;煌天+満月は確定クリティカル
+SIF (HAVE_SKILL(L_P, [[스킬:황천의회심]]) && FLAG:월령 == 8)
+	RETURN 1, 999
+;晴天+新月は確定クリティカル
+SIF (HAVE_SKILL(L_P, [[스킬:정천의회심]]) && FLAG:월령 == 0)
+	RETURN 1, 999
+;眠り・感電・凍結は確定クリティカル
+SIF GROUPMATCH(GET_STATE(CFLAG:L_T:상태이상), "SLEEP", "SHOCK", "FREEZE")
+	RETURN 1, 999
+;基礎値が999の場合は確定クリティカル
+SIF L_クリティカル率 >= 999
+	RETURN 1, 999
+;---- EDIT P 001 ADD START -------------------------
+SIF CFLAG:L_P:절대회심
+	RETURN 1, 999
+SIF CFLAG:L_P:수라의일격 && CFLAG:L_P:입력행동 == [[스킬:ＡＴＴＡＣＫ]]
+	RETURN 1, 999
+;---- EDIT P 001 ADD END ---------------------------
+
+FOR LCOUNT, 0, TRYSKILLNUM(L_T)
+	RESULT = 0
+	TEMP_SKILL = TOINT(GET_TRYSKILL(L_T, LCOUNT))
+	TRYCCALLFORM SKILL_PASSIVE_BTL_EFFECT_%GET_TRYSKILL(L_T, LCOUNT)%, "クリティカル補正A", L_T, L_P, L_T, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, "ステート名",0, TEMP_SKILL, TRYSKILL_VAR
+		L_クリティカル補正A += RESULT
+		IF RESULT >= 999
+			IF STRCOUNT(SKILL_NAME_F(TEMP_SKILL), "전용기")
+				TSTR:크리티컬분석 = 被クリティカル確定:%CSTR:L_T:@"전용기{TEMP_SKILL - SKILL_NUM_F("전용기1") + 1}"%
+			ELSE
+				TSTR:크리티컬분석 = 被クリティカル確定:%SKILL_NAME_F(TEMP_SKILL)%
+			ENDIF
+			RETURN 1, 999
+		ENDIF
+		IF RESULT <= -999
+			IF STRCOUNT(SKILL_NAME_F(TEMP_SKILL), "전용기")
+				TSTR:크리티컬분석 = クリティカル無効:%CSTR:L_T:@"전용기{TEMP_SKILL - SKILL_NUM_F("전용기1") + 1}"%
+			ELSE
+				TSTR:크리티컬분석 = クリティカル無効:%SKILL_NAME_F(TEMP_SKILL)%
+			ENDIF
+			RETURN 0, -999
+		ENDIF
+		RESULT = 0
+		CALLFORM SKILL_PASSIVE_BTL_EFFECT_%GET_TRYSKILL(L_T, LCOUNT)%, "クリティカル耐性ランク", L_T, L_P, L_T, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, "ステート名",0, TEMP_SKILL, TRYSKILL_VAR
+		IF RESULT > 0
+			L_クリティカル耐性ランク += RESULT
+		ELSE
+			L_クリティカルランク += ABS(RESULT)
+		ENDIF
+	CATCH
+	ENDCATCH
+NEXT
+
+;---------------------------------------------------------------------
+;補正A群
+;乗除の補正を加減算する。
+;補正としては弱く、安全度が高い部分。
+;---------------------------------------------------------------------
+TSTR:크리티컬분석 = 【スキルCRT率_{L_クリティカル率}】
+L_クリ強化補正 = 100
+L_解析用 = MAX(L_クリ強化補正, 1)
+
+;攻撃側が「与クリティカル率減少」（粗雑）を持っていたらクリティカル率が減少
+SIF HAVE_SKILL(L_P,[[스킬:조잡]])
+	L_クリティカル補正A -= 20
+	;L_クリ強化補正 = MAX(1, L_クリ強化補正 - 20)
+;受け手側が「被クリティカル率上昇」（慢心）を持っていたらクリティカル率増大
+SIF HAVE_SKILL(L_T,[[스킬:자만심]])
+	L_クリティカル補正A += 20
+	;L_クリ強化補正 += 20
+L_クリティカル補正A += CFLAG:L_P:크리티컬보정
+
+;いちおう下限をつけておく
+L_クリティカル補正A = MAX(L_クリティカル補正A, 10)
+
+L_クリ強化補正 = L_クリ強化補正 * L_クリティカル補正A / 100
+TSTR:크리티컬분석 += @"【補正A群_{L_クリティカル補正A}\%】】"
+L_解析用 = MAX(L_クリ強化補正, 1)
+;---------------------------------------------------------------------
+;ステータス補正
+;ステータスの比率で乗除をかける。底に10が入ってるのでそこまで極端なことにはならない
+;---------------------------------------------------------------------
+L_クリ強化補正 *= (10 + MAXBASE:L_P:운)
+L_クリ強化補正 /= (10 + MAXBASE:L_T:운)
+
+TSTR:크리티컬분석 += @"【運補正_{(10 + MAXBASE:L_P:운) * 100 / (10 + MAXBASE:L_T:운)}\%】"
+L_解析用 = MAX(L_クリ強化補正, 1)
+
+;---------------------------------------------------------------------
+;크리티컬강화(レボリューション等)
+;2段強化で2倍、1段で1.5倍。マイナスは1段が上限で半減
+;※下限は0以下による確定不発が起こり得ないとはかぎらないので安全装置として2022年/10/12に追加しました。
+;---------------------------------------------------------------------
+;---- EDIT 056 MOD START -------------------------
+IF CFLAG:L_P:크리티컬강화 > 0
+	L_クリ強化補正 *= CFLAG:L_P:크리티컬강화 + 8
+	L_クリ強化補正 /= 8
+ELSEIF CFLAG:L_P:크리티컬강화 < 0
+	L_クリ強化補正 *= MAX(CFLAG:L_P:크리티컬강화, 8) + 16
+	L_クリ強化補正 /= 16
+ENDIF
+TSTR:크리티컬분석 += @"【CRT強化_{MAX(CFLAG:L_P:크리티컬강화+8, 4)* 100 / 8}\%】"
+L_解析用 = MAX(L_クリ強化補正, 1)
+;---- EDIT 056 MOD END ---------------------------
+;-----------------------------------------------------------------------------
+;보정 B群
+;以下のスキル群は数に応じて（1+X)倍、(1/(X+1)倍の補正を与える。
+;かなり強力な補正で、要するに一つにつき100%増える。
+;1個積んだ時点で基礎30%スキルは60%、2個で90%とかなりエグいことになる。
+;基本的に汎用のアドバイス+キャラ固有でもう1個を限度として、それ以上積めないようにしたほうがいいと思われる。
+;-----------------------------------------------------------------------------
+;---- EDIT 050 MOD START スキル側に処理を移動-------------------------
+;---- EDIT 048 MOD START -------------------------
+;{ {}内に「;」をいれると以降の行が無視されるので注意
+;    L_クリ強化補正 *= 
+	{
+	L_クリティカルランク += 
+		(HAVE_SKILL(L_P,[[스킬:어드바이스]]) > 0)
+		+ (HAVE_SKILL(L_P,[[스킬:서드아이]]) > 0)
+		+ (HAVE_PU_SKILL(L_P,"直感") > 0)
+		+ (HAVE_PU_SKILL(L_P,"セイバーの星") > 0)
+	}
+;{
+;	L_クリ強化補正 /= 
+	{
+	L_クリティカル耐性ランク += 
+		(HAVE_SKILL(L_T,[[스킬:코칭]]) > 0) 
+		+ (HAVE_SKILL(L_T,[[스킬:에어하이크]]) > 0) 
+		+ (HAVE_SKILL(L_T,[[스킬:롤링블레이즈]]) > 0)
+		+ (HAVE_SKILL(L_T,[[스킬:서드아이]]) > 0) 
+		+ (HAVE_PU_SKILL(L_T,"直感") > 0) 
+		+ (HAVE_PU_SKILL(L_T,"セイバーの星") > 0) 
+		+ (HAVE_PU_SKILL(L_T,"영자갑옷") > 0)
+	}
+;		+ 1
+		;+ (HAVE_SKILL(L_T,PU_SKILLNUM_GET(L_T,"ランサー")) > 0) 
+;}
+;---- EDIT 048 MOD END ---------------------------
+;---- EDIT 050 MOD END   スキル側に処理を移動-------------------------
+L_クリ強化補正 = L_クリ強化補正 * L_クリティカルランク / L_クリティカル耐性ランク
+TSTR:크리티컬분석 += @"【補正B群_{L_クリティカルランク * 100 / L_クリティカル耐性ランク}\%】"
+L_解析用 = MAX(L_クリ強化補正, 1)
+;-----------------------------------------------------------------------------
+;보정 C群
+;単独で乗算するので効力は強い。
+;-----------------------------------------------------------------------------
+;ゲッシュ所持かつ、誓いを守れているかで補正が発生(;誓い（Fゲージ）0=プラス補正、-1=マイナス補正)
+;攻め手用
+IF HAVE_PU_SKILL(L_P,"ゲッシュ")
+	IF SKILLGAGE_F_GET(L_P,PU_SKILLNUM_GET(L_P,"ゲッシュ")) == -1
+		L_クリ強化補正 /= 2
+	ELSE
+		L_クリ強化補正 *= 2
+	ENDIF
+ENDIF
+;受け手用
+IF HAVE_PU_SKILL(L_T,"ゲッシュ")
+	IF SKILLGAGE_F_GET(L_T,PU_SKILLNUM_GET(L_T,"ゲッシュ")) == -1
+		L_クリ強化補正 *= 2
+	ELSE
+		L_クリ強化補正 /= 2
+	ENDIF
+ENDIF
+TSTR:크리티컬분석 += @"【補正C群_{L_クリ強化補正* 100 / L_解析用}\%】"
+;-----------------------------------------------------------------------------
+;基礎クリティカル率の反映
+;スキルのクリティカル率で、基本値は5%
+;クリティカルの補正は全てこの数値に対して乗除なので支配力は強い。
+;というか、クリティカル30%は要するに6倍補正を受けてるスキルになる。
+;式の関係で4倍補正ぐらいはあっさりいけるのでスキルクリティカル率はかなり重い要素となる
+;-----------------------------------------------------------------------------
+L_CRT = L_クリティカル率 * L_クリ強化補正 / 100
+TSTR:크리티컬분석 += @"【補正後CRT率_{L_CRT}】"
+
+;-----------------------------------------------------------------------------
+;補正D群(固定値強化)
+;乗算の場合、低クリティカルに対しての効果が薄すぎるので強くクリティカルを補正する効果は固定値に
+;ただ2倍が簡単できて4倍・8倍までいけるこの式で乗算させてしまうとやばいので乗除が終わったあとに加算する
+;-----------------------------------------------------------------------------
+IF L_攻撃タイプ == "物理"
+	;会心の覇気は物理スキルのみ(=銃・アイテムは除かれる)
+	SIF !FLAG:카운터중 && !FLAG:총공격중 && CFLAG:L_P:회심의패기플래그
+		 L_固定値強化 += 50
+ENDIF
+TSTR:크리티컬분석 += @"【固定値加算_{L_固定値強化}】"
+
+L_CRT = MAX(L_CRT + L_固定値強化, 0)
+TSTR:크리티컬분석 += @"【CRT率_{L_CRT}】"
+IF RAND:100 < L_CRT
+	RETURN 1, LIMIT(L_CRT, 0, 900)
+ELSE
+	RETURN 0, LIMIT(L_CRT, 0, 900)
+ENDIF
+;---- EDIT 046 MOD END ---------------------------

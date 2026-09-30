@@ -1,0 +1,101 @@
+﻿;スキル名
+@SKILL_NAME_AW_261,ARG
+RESULTS = 트릭스터
+
+;　명중
+@SKILL_HITRATE_AW_261, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_AW_261, ARG
+RETURN 100
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_AW_261,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_AW_261,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_AW_261, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_AW_261,ARG
+RETURN 0
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_AW_261
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_AW_261, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입,制限なし
+@SKILL_SUCCESSION_TYPE_AW_261, ARG
+RETURN GET_SUCCESSION_NUM("자동효과")
+;　 説明文の表示
+@SKILL_EXPLAIN_AW_261, ARG
+PRINTL 마왕 로키의 각성 스킬
+PRINTL 자동: 적의 약점을 찔렀을 때 20% 확률로 연동 효과가 발동한다.
+PRINTL 　　　아직 행동하지 않은 아군 중 무작위 1명을 연속 행동 상태로 만든다.
+
+@SKILL_EXPLAIN_TOOLTIP_AW_261, ARG
+RESULTS:0 = 자동: 적의 약점을 찔렀을 때 20\% 확률로 연동 효과가 발동한다.
+RESULTS:1 = 　　　아직 행동하지 않은 아군 중 무작위 1명을 연속 행동 상태로 만든다.
+
+@SKILL_ACTIONABLE_BATTLE_AW_261, ARG
+RETURN 0
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_AW_261,ARG,ARG:1
+#DIM LCOUNT
+#DIM TABLE, 16
+;自分自身の行動でないと誘発しない
+SIF ARG != FLAG:행동순1
+	RETURN 0
+;一回しか判定しない
+SIF TFLAG:스킬트리거용1
+	RETURN 0
+SIF !GET_CREC_ACT(ARG, ARG:1, "WEAK")
+	RETURN 0
+TFLAG:스킬트리거용1 = 1
+SIF RAND:100 >= 20
+	RETURN 0
+;対象の捜索用の行動ができるキャラをリスト化し、シャッフル
+FOR LCOUNT, 0, 16
+	TABLE:LCOUNT = FLAG:@"행동순{LCOUNT+1}"
+NEXT
+FOR LCOUNT, 0, 16
+	SWAP TABLE:(RAND:16), TABLE:(RAND:16)
+NEXT
+FOR LCOUNT, 0, 16
+	SIF TABLE:LCOUNT < 0
+		CONTINUE
+	SIF !IS_TARGET_ABLE(TABLE:LCOUNT)
+		CONTINUE
+	;入力可能な状態じゃないとだめ
+	SIF !ACTIONABLE_CHARA_F(TABLE:LCOUNT)
+		CONTINUE
+	SIF !IS_FRIEND(ARG, TABLE:LCOUNT)
+		CONTINUE
+	SIF CFLAG:(TABLE:LCOUNT):입력행동 == -1
+		CONTINUE
+	SIF ARG == TABLE:LCOUNT
+		CONTINUE
+	RETURN 1, CPOS(TABLE:LCOUNT)
+NEXT
+RETURN 0
+
+@ACTION_AW_261,ARG,ARG:1,ARG:2
+CALL PRINT_HIT_MESSAGE, POS(ARG:1), "連続行動！", "w"
+CFLAG:POS(ARG:1):연속행동발생률 += 100
+

@@ -1,0 +1,508 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara4629_石嶺伽耶.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/11/23		P(bazzile)				新規作成
+;	002		2023/02/22		P(bazzile)				加入時のステータス操作処理を追加
+;	Comment
+;	イベントで非戦闘員を喪失した場合、イベントでの選択によって顔グラが変化する。
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:카야]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+CALL SET_BASE_[[キャラ:카야]], ARG, ARG:2
+CALL SET_BTL_TALENT_[[キャラ:카야]], ARG, ARG:2
+CALL CLEAR_ALL_SKILL, ARG
+CALL SET_LEARN_SKILL_[[キャラ:카야]], ARG, ARG:2
+
+;ARG:1はイベントフラグ
+@SET_BASE_[[キャラ:카야]], ARG, ARG:1
+SELECTCASE ARG:1
+	CASE 1
+		CSTR:ARG:종족명 = 야마
+		CALL SET_TALENT_PARTY_JOINABLE, ARG, "신용"
+
+		;サキュバス化/超メギドを取得すること、調教や労働に+になる素質が多く追加されるのが利点。
+		;身体はエロくなったものの反動で自制心が付いてしまった
+		BASE:ARG:LV = 45
+		BASE:ARG:힘 = 10
+		BASE:ARG:지혜 = 20
+		BASE:ARG:마력 = 28
+		BASE:ARG:내구 = 10
+		BASE:ARG:속도 = 13
+		BASE:ARG:운 = 5
+		
+		;たぶん労働倍率が380％ぐらいになるぞ！（どんぶり勘定
+		;ゴトウ少将の300％を超越。やったぜ。
+		TALENT:ARG:바늘다루기 = 1
+		TALENT:ARG:혀놀림 = 1
+		TALENT:ARG:악취민감 = 1
+		TALENT:ARG:불결무시 = 1
+		TALENT:ARG:일선을넘지않음 = 1
+		TALENT:ARG:자위하기쉬움 = 1
+		TALENT:ARG:중독되기쉬움 = 1
+		TALENT:ARG:망신 = 1
+		TALENT:ARG:쾌감을부정 = 1
+		TALENT:ARG:바이 = 1
+		TALENT:ARG:도착적 = 1
+		TALENT:ARG:회복빠름 = 1
+		TALENT:ARG:습득빠름 = 1
+		TALENT:ARG:거유 = 1
+		TALENT:ARG:매력 = 1
+		TALENT:ARG:매혹 = 1
+		TALENT:ARG:Ｖ민감 = 1
+		TALENT:ARG:Ａ민감 = 1
+		TALENT:ARG:소악마 = 1
+		
+		TALENT:ARG:교활 = 1
+		TALENT:ARG:날개 = 1
+		TALENT:ARG:발정가능 = 1
+		
+		BASE:ARG:검격 = 75
+		BASE:ARG:비구 = 125
+		BASE:ARG:타격 = 75
+		BASE:ARG:전술 = 125
+		BASE:ARG:화염 = 100
+		BASE:ARG:빙결 = 100
+		BASE:ARG:전격 = 0
+		BASE:ARG:충격 = 125
+		BASE:ARG:신경 = 999
+		BASE:ARG:정신 = 999
+		BASE:ARG:파마 = 200
+		BASE:ARG:주살 = 999
+		BASE:ARG:지변 = 100
+		BASE:ARG:수격 = 100
+		BASE:ARG:질풍 = 100
+		BASE:ARG:중력 = 100
+		BASE:ARG:핵열 = 100
+		BASE:ARG:만능 = 100
+		BASE:ARG:사이코 = 100
+
+		TALENT:ARG:전격 = 1
+		TALENT:ARG:정신 = 1
+		TALENT:ARG:주살 = 1
+		
+		CFLAG:ARG:선악치 = 0
+		ABL:ARG:속성LD = 3
+		ABL:ARG:속성LC = 2
+		
+		ABL:ARG:욕망 = 2
+		ABL:ARG:기교 = 2
+		ABL:ARG:섹스중독 = 1
+		
+		CSTR:LOCAL:타이틀 = 착정소녀
+		CSTR:LOCAL:37 = ……지만、이 시간축에선、그녀는 인간의 영혼을 바쳐 버린 것 같다。
+		CSTR:LOCAL:38 = 그녀의 볼은 홍조를 띠고 있다。길었던 머리카락도 싹둑 잘라내버려、말 그대로、소악마적인 모습이다。
+		CSTR:LOCAL:39 = 향긋한 체취에、촉촉한 입술。서큐버스로 다시 태어난 그녀는 성애의 모든 것을 가지고 있다。
+		
+		CSTR:LOCAL:41 = 그럼에도、그 극적인 이차 성징에 、그녀의 마음은 아직 따라가지 못하는 것 같다。
+		CSTR:LOCAL:42 = 가슴과 함께 부풀어오른 제어할 수 없는 성욕은、“당신”의 손가락 끝을 찾아、지금도 헤메고 있다。
+	CASE 2
+		CSTR:ARG:종족명 = 흉조
+		CALL SET_TALENT_PARTY_JOINABLE, ARG, "신용"
+
+		;ショボー化/利点はいちばんかわいいことだ（きっぱり）。ライドウさんのショボーに倣い、デ・カジャを付けてます
+		BASE:ARG:LV = 45
+		BASE:ARG:힘 = 21
+		BASE:ARG:지혜 = 15
+		BASE:ARG:마력 = 12
+		BASE:ARG:내구 = 8
+		BASE:ARG:속도 = 28
+		BASE:ARG:운 = 2
+		MAXBASE:ARG:LV = 45
+		MAXBASE:ARG:힘 = 21
+		MAXBASE:ARG:지혜 = 15
+		MAXBASE:ARG:마력 = 12
+		MAXBASE:ARG:내구 = 8
+		MAXBASE:ARG:속도 = 28
+		MAXBASE:ARG:운 = 2
+		
+		;労働倍率150％ぐらい（どんぶり勘定
+		TALENT:ARG:혀놀림 = 1
+		TALENT:ARG:악취둔감 = 1
+		TALENT:ARG:불결무시 = 1
+		TALENT:ARG:쾌감에솔직 = 1
+		TALENT:ARG:자위하기쉬움 = 1
+		TALENT:ARG:유아체형 = 1
+		TALENT:ARG:호기심 = 1
+		TALENT:ARG:도착적 = 1
+		TALENT:ARG:새드 = 1
+		TALENT:ARG:Ｃ민감 = 1
+		
+		TALENT:ARG:교활 = 1
+		TALENT:ARG:잔학 = 1
+		TALENT:ARG:날개 = 1
+		TALENT:ARG:발정가능 = 1
+		
+		BASE:ARG:검격 = 50
+		BASE:ARG:비구 = 200
+		BASE:ARG:타격 = 50
+		BASE:ARG:전술 = 150
+		BASE:ARG:화염 = 100
+		BASE:ARG:빙결 = 100
+		BASE:ARG:전격 = 50
+		BASE:ARG:충격 = -50
+		BASE:ARG:신경 = 100
+		BASE:ARG:정신 = 50
+		BASE:ARG:파마 = 100
+		BASE:ARG:주살 = 100
+		BASE:ARG:지변 = 100
+		BASE:ARG:수격 = 100
+		BASE:ARG:질풍 = 150
+		BASE:ARG:중력 = 50
+		BASE:ARG:핵열 = 50
+		BASE:ARG:만능 = 100
+		BASE:ARG:사이코 = 100
+		
+		
+		TALENT:ARG:충격 = 1
+		TALENT:ARG:회복 = 1
+		TALENT:ARG:만능 = 1
+		
+		CFLAG:ARG:선악치 = 0
+		ABL:ARG:속성LD = 3
+		ABL:ARG:속성LC = 2
+		
+		ABL:ARG:새드끼 = 3
+		
+		CSTR:LOCAL:타이틀 = 흉조소녀
+		CSTR:LOCAL:37 = ……지만、이 시간축에선、그녀는 사람으로서의 영혼을 바쳐버린 것 같다。
+		CSTR:LOCAL:38 = 악마가 된 그녀는 윤리관이 바뀌어 버렸다。모・쇼보의 측면이 강하게 나와 있다。
+		CSTR:LOCAL:39 = 예전의 그녀에게서는 상상도 못할 정도로 잔학해진 그녀는、특히、가지고 놀다 죽인 인간의 뇌를 즐겨 먹게 되어버렸다。
+		
+		CSTR:LOCAL:41 = 입의 끝에서 피를 머금으며 웃는 소녀지만、
+		CSTR:LOCAL:42 = “당신”에게의 감정만은、무엇하나 변하지 않은 듯 하다。
+		
+	CASE 3
+		CSTR:ARG:종족명 = 지령
+		CALL SET_TALENT_PARTY_JOINABLE, ARG, "신용"
+
+		;ノッ化ー/オナホ妖精にできることが一番の利点です。
+		BASE:ARG:LV = 45
+		BASE:ARG:힘 = 20
+		BASE:ARG:지혜 = 8
+		BASE:ARG:마력 = 20
+		BASE:ARG:내구 = 30
+		BASE:ARG:속도 = 3
+		BASE:ARG:운 = 5
+		MAXBASE:ARG:LV = 45
+		MAXBASE:ARG:힘 = 20
+		MAXBASE:ARG:지혜 = 8
+		MAXBASE:ARG:마력 = 20
+		MAXBASE:ARG:내구 = 30
+		MAXBASE:ARG:속도 = 3
+		MAXBASE:ARG:운 = 5
+
+		
+		;労働倍率100％くらい（どんぶり
+		TALENT:ARG:호기심 = 1
+		TALENT:ARG:낙관적 = 1
+		TALENT:ARG:아픔에강함 = 1
+		TALENT:ARG:고무 = 1
+		TALENT:ARG:회복빠름 = 1
+		TALENT:ARG:부끄럼쟁이 = 0
+		TALENT:ARG:Ｂ민감 = 1
+		TALENT:ARG:소인체형 = 1
+		TALENT:ARG:임신하기쉬움 = 1
+		
+		TALENT:ARG:우애 = 1
+		TALENT:ARG:발정가능 = 1
+		
+		BASE:ARG:검격 = 100
+		BASE:ARG:비구 = 100
+		BASE:ARG:타격 = 100
+		BASE:ARG:전술 = 75
+		BASE:ARG:화염 = 125
+		BASE:ARG:빙결 = 50
+		BASE:ARG:전격 = 50
+		BASE:ARG:충격 = 125
+		BASE:ARG:신경 = 100
+		BASE:ARG:정신 = 100
+		BASE:ARG:파마 = 50
+		BASE:ARG:주살 = 100
+		BASE:ARG:지변 = -50
+		BASE:ARG:수격 = 100
+		BASE:ARG:질풍 = 200
+		BASE:ARG:중력 = 100
+		BASE:ARG:핵열 = 100
+		BASE:ARG:만능 = 100
+		BASE:ARG:사이코 = 75
+		
+		TALENT:ARG:타격 = 1
+		TALENT:ARG:정신 = 1
+		TALENT:ARG:지변 = 1
+		
+		ABL:ARG:속성LD = 2
+		ABL:ARG:속성LC = 2
+		
+		ABL:ARG:순종 = 1
+		ABL:ARG:가창기능 = 3
+		ABL:ARG:봉사정신 = 1
+		
+		CSTR:LOCAL:타이틀 = 요정소녀
+		CSTR:LOCAL:37 = ……하지만、이 시간축에선、그녀는 인간의 영혼을 바쳐 버린 것 같다。
+		CSTR:LOCAL:38 = 비장한 결의를 품고、스스로 악마와 합체하기를 원했던 그녀였지만、막상 합체하고 보니、보다 밝아진 자신의 마음에 놀라움을 감추지 못하는 것 같다。
+		CSTR:LOCAL:39 = 역시나 태생 요정 만큼은 아니지만、요리중에 빙글빙글 춤을 추기 시작할 정도로 쾌활하게 된 그녀는、예전보다 즐겁게 나날을 보내고 있다。
+		
+		CSTR:LOCAL:41 = 하지만、그 몸이、마치 아기처럼 작아져서、
+		CSTR:LOCAL:42 = 분명 “당신”에게 사랑받지 못할거라고、포기한 듯한 기색을 보인다。
+	CASE 4
+		CSTR:ARG:종족명 = 기계의처녀
+		CALL SET_TALENT_PARTY_JOINABLE, ARG, "신용"
+		
+		BASE:ARG:LV = 45
+		BASE:ARG:힘 = 32
+		BASE:ARG:지혜 = 10
+		BASE:ARG:마력 = 10
+		BASE:ARG:내구 = 18
+		BASE:ARG:속도 = 21
+		BASE:ARG:운 = 1
+		MAXBASE:ARG:LV = 45
+		MAXBASE:ARG:힘 = 32
+		MAXBASE:ARG:지혜 = 10
+		MAXBASE:ARG:마력 = 10
+		MAXBASE:ARG:내구 = 18
+		MAXBASE:ARG:속도 = 21
+		MAXBASE:ARG:운 = 1
+		
+		TALENT:ARG:Ｃ둔감 = 1
+		TALENT:ARG:Ｂ둔감 = 1
+		TALENT:ARG:Ｖ둔감 = 1
+		TALENT:ARG:Ａ둔감 = 1
+		
+		;労働倍率60％ぐらい（各感覚4以上の場合）
+		;セックス産業には向いてない
+		TALENT:ARG:아픔에강함 = 1
+		TALENT:ARG:젖기어려움 = 1
+		TALENT:ARG:습득빠름 = 1
+		TALENT:ARG:악취둔감 = 1
+		TALENT:ARG:약독내성 = 1
+		TALENT:ARG:불결무시 = 1
+		TALENT:ARG:절벽 = 1
+		TALENT:ARG:회복빠름 = 1
+		TALENT:ARG:임신하기어려움 = 1
+		
+		TALENT:ARG:기계의처녀 = 1
+		
+		;ポンコツと合体させるからポンコツが伝染りました
+		TALENT:ARG:우둔 = 1
+		
+		BASE:ARG:검격 = 90
+		BASE:ARG:비구 = 90
+		BASE:ARG:타격 = 90
+		BASE:ARG:전술 = 90
+		BASE:ARG:화염 = 100
+		BASE:ARG:빙결 = 100
+		BASE:ARG:전격 = 200
+		BASE:ARG:충격 = 150
+		BASE:ARG:신경 = 0
+		BASE:ARG:정신 = 0
+		BASE:ARG:파마 = 0
+		BASE:ARG:주살 = 0
+		BASE:ARG:지변 = 100
+		BASE:ARG:수격 = 100
+		BASE:ARG:질풍 = 100
+		BASE:ARG:중력 = 150
+		BASE:ARG:핵열 = 50
+		BASE:ARG:만능 = 100
+		BASE:ARG:사이코 = 100
+		
+		ABL:ARG:공격상성 = 1
+		ABL:ARG:사거리 = 3
+		
+		TALENT:ARG:전격 = 1
+		TALENT:ARG:비구 = 1
+		
+		CFLAG:ARG:선악치 = 255
+		ABL:ARG:속성LD = 1
+		ABL:ARG:속성LC = 2
+		
+		ABL:ARG:요리기능 = 0
+		
+		CSTR:LOCAL:타이틀 = 기계로 변한 소녀
+		CSTR:LOCAL:37 = ……하지만、이 시간축에선、그녀는 인간의 영혼을 바쳐 버린 것 같다。
+		CSTR:LOCAL:38 = 로봇과 합체해、기계로 변한 소녀는、인간적인 오감을 잃어버렸다。
+		CSTR:LOCAL:39 = 그 몸에 체온은 없고、그토록 특기였던 요리도、변변찮은 미각과 강철 손톱이 방해되어서、예전처럼 할 수 없게 되었다。
+		
+		CSTR:LOCAL:41 = 그녀는 모든 것을 잃었다。
+		CSTR:LOCAL:42 = 단 하나、“당신 옆에서 싸울 수 있는 힘”을、붙잡은 채。
+ENDSELECT
+
+@SET_BTL_TALENT_[[キャラ:카야]], ARG, ARG:1
+SELECTCASE CSTR:ARG:종족명
+	CASE "야마", "흉조", "지령"
+		CALL CHANGE_ROLE, ARG, "", , "마인", "サブ素質引継ぎなし"
+		;CALL CLEAR_ROLE_TALENT, ARG
+		;ABL:ARG:종족 = GET_RACE_NUM("마인")
+	CASE "기계의처녀"
+		CALL CHANGE_ROLE, ARG, "", , "머신", "サブ素質引継ぎなし"
+		;CALL CLEAR_ROLE_TALENT, ARG
+		;ABL:ARG:종족 = GET_RACE_NUM("머신")
+		;TALENT:ARG:기계의처녀 = 1
+ENDSELECT
+@SET_LEARN_SKILL_[[キャラ:카야]], ARG, ARG:1
+SELECTCASE CSTR:ARG:종족명
+	CASE "야마" 
+		CALL CLEAR_ALL_LEARN_SKILL, ARG
+			
+		CALL SET_LEARN_SKILL, ARG, "타룬・다", 1
+		CALL SET_LEARN_SKILL, ARG, "섹시댄스", 1
+		CALL SET_LEARN_SKILL, ARG, "파라라아이", 1
+		CALL SET_LEARN_SKILL, ARG, "마하・지온가", 1
+			
+		CALL SET_LEARN_SKILL, ARG, "데・쿤다", 47
+		CALL SET_LEARN_SKILL, ARG, "지오다인", 46
+		CALL SET_LEARN_SKILL, ARG, "초메기도", 50
+		CALL SET_LEARN_SKILL, ARG, "유혹", 48
+	CASE "흉조"
+		CALL CLEAR_ALL_LEARN_SKILL, ARG
+
+		;自爆技ばっかりじゃアレなので、ちょこちょこと変更
+		CALL SET_LEARN_SKILL, ARG, "디아", 1
+		CALL SET_LEARN_SKILL, ARG, "자폭", 1
+		CALL SET_LEARN_SKILL, ARG, "쪼기", 1
+		CALL SET_LEARN_SKILL, ARG, "데・카쟈", 1
+			
+		CALL SET_LEARN_SKILL, ARG, "마하・잔", 46
+		CALL SET_LEARN_SKILL, ARG, "마인드슬라이스", 48
+		CALL SET_LEARN_SKILL, ARG, "테트라쟈", 49
+		CALL SET_LEARN_SKILL, ARG, "마음의외침", 50
+	CASE "지령"
+		CALL CLEAR_ALL_LEARN_SKILL, ARG
+
+		;回復と支援特化
+		CALL SET_LEARN_SKILL, ARG, "포즈무디", 
+		CALL SET_LEARN_SKILL, ARG, "마그나스", 
+		CALL SET_LEARN_SKILL, ARG, "메・디아라마", 
+		CALL SET_LEARN_SKILL, ARG, "리캄", 
+			
+		CALL SET_LEARN_SKILL, ARG, "해피스텝", 46
+		CALL SET_LEARN_SKILL, ARG, "숏잽", 48
+		CALL SET_LEARN_SKILL, ARG, "히트라이저", 50
+		CALL SET_LEARN_SKILL, ARG, "메・디아라한", 47
+	CASE "기계의처녀" 
+		CALL CLEAR_ALL_LEARN_SKILL, ARG
+
+		;スキルはマシン・ゴーレムのものを参考に、暴徒鎮圧的な装備で
+		CALL SET_LEARN_SKILL, ARG, "하이・애널라이즈", 
+		CALL SET_LEARN_SKILL, ARG, "연속사격", 
+		CALL SET_LEARN_SKILL, ARG, "산탄사격", 
+		CALL SET_LEARN_SKILL, ARG, "할퀴기", 
+			
+		CALL SET_LEARN_SKILL, ARG, "컨센트레이트", 46
+		CALL SET_LEARN_SKILL, ARG, "전격", 48
+		CALL SET_LEARN_SKILL, ARG, "독가스브레스", 50
+		CALL SET_LEARN_SKILL, ARG, "파라라・웨이브", 50
+		CALL SET_LEARN_SKILL, ARG, "방전", 52
+		CALL SET_LEARN_SKILL, ARG, "텐타라후", 55
+		CALL SET_LEARN_SKILL, ARG, "뉴클리어미사일", 60
+ENDSELECT
+
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:카야]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+IF L_CHARA >= 0
+	SELECTCASE L_NO
+		CASE 0
+			;画像チェック
+			SIF !SPRITECREATED("伽耶_FACE_0")
+				RETURNF ""
+			;画像チェック
+			SIF !SPRITECREATED("伽耶_FACE_EX_0")
+				RETURNF ""
+			SIF !SPRITECREATED("伽耶_FACE_EX_2")
+				RETURNF ""
+			SIF !SPRITECREATED("伽耶_FACE_EX_3")
+				RETURNF ""
+			SIF !SPRITECREATED("伽耶_FACE_EX_4")
+				RETURNF ""
+			RESULTS_F = 伽耶変身
+			;アイコン設定時の表示に使うアイコン
+			SELECTCASE CSTR:L_CHARA:종족명
+				CASE "기계의처녀"
+					RESULTS_F:1 = 伽耶_FACE_EX_0
+				CASE "야마"
+					RESULTS_F:1 = 伽耶_FACE_EX_2
+				CASE "흉조"
+					RESULTS_F:1 = 伽耶_FACE_EX_3
+				CASE "지령"
+					RESULTS_F:1 = 伽耶_FACE_EX_4
+				CASEELSE
+					RESULTS_F:1 = 伽耶_FACE_0
+			ENDSELECT
+		CASE 1, 2, 3
+			SIF CSTR:L_CHARA:종족명 != "기계의처녀"
+				RETURNF ""
+			SELECTCASE L_NO
+				CASE 1
+					SIF !SPRITECREATED("伽耶_FACE_EX_1")
+						RETURNF ""
+					RESULTS_F = 伽耶変身_ゴーレム差分1
+					RESULTS_F:1 = 伽耶_FACE_EX_1
+				CASE 2
+					SIF !SPRITECREATED("伽耶_FACE_EX_5")
+						RETURNF ""
+					RESULTS_F = 伽耶変身_ゴーレム差分2
+					RESULTS_F:1 = 伽耶_FACE_EX_5
+				CASE 3
+					SIF !SPRITECREATED("伽耶_FACE_EX_6")
+						RETURNF ""
+					RESULTS_F = 伽耶変身_ゴーレム差分3
+					RESULTS_F:1 = 伽耶_FACE_EX_6
+			ENDSELECT
+		CASEELSE
+			RETURNF ""
+	ENDSELECT
+ENDIF
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:카야]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "伽耶変身"
+		SELECTCASE CSTR:L_CHARA:종족명
+			CASE "기계의처녀"
+				RESULTS_F = 伽耶_FACE_EX_0
+			CASE "야마"
+				RESULTS_F = 伽耶_FACE_EX_2
+			CASE "흉조"
+				RESULTS_F = 伽耶_FACE_EX_3
+			CASE "지령"
+				RESULTS_F = 伽耶_FACE_EX_4
+			CASEELSE
+				RESULTS_F = 伽耶_FACE_0
+		ENDSELECT
+	CASE "伽耶変身_ゴーレム差分1"
+		RESULTS_F = 伽耶_FACE_EX_1
+	CASE "伽耶変身_ゴーレム差分2"
+		RESULTS_F = 伽耶_FACE_EX_5
+	CASE "伽耶変身_ゴーレム差分3"
+		RESULTS_F = 伽耶_FACE_EX_6
+	CASEELSE
+ENDSELECT

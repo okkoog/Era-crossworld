@@ -1,0 +1,67 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@LEADER_SKILL_CONTROL_NO_200,ARG
+RESULTS = 신의 첨병
+
+;スキル名
+@SKILL_NAME_LEADER_神の尖兵,ARG
+RESULTS = 신의 선봉
+
+;　 説明文の設定
+@SET_VAR_LEADER_SKILL_EXPLAIN_神の尖兵, L_TEXT
+#DIMS REF L_TEXT
+#DIM LCOUNT
+#DIM L_CNT
+#DIM L_ANGEL_CNT
+L_CNT = COUNT_ACTIVE_LEADER_SKILL("神の尖兵")
+IF L_CNT
+	L_TEXT = 히브리천사의 주는 데미지가 {L_CNT * 5}\% UP한다。
+ELSE
+	L_TEXT = 히브리천사의 주는 데미지가 5\% UP한다。
+ENDIF
+;重複可能な数
+@LEADER_SKILL_COUNT_LIMIT_神の尖兵
+RETURN 6
+
+
+;====================================================
+;ダメージ計算時の追加補正
+;クリティカルダメージ+10%　セット数が増える場合5%づつ強化される
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_LEADER_神の尖兵, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+#DIM L_RESULT
+#DIM LCOUNT
+#DIM L_CNT_ANGEL
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			SIF CSTR:L_P:상성그룹 != "ヘブライ天使"
+				RETURN 0
+			;複数登録されている最初の一個目でまとめて判定してあとは飛ばす
+			SIF !IS_FIRST_ACTIVE_LEADER_SKILL("神の尖兵", GIVE_EFFECT_CHARA)
+				RETURN 0
+			;健在な天使が二人以上必要
+			SIF GET_ANGEL_COUNT(L_P) < 2
+				RETURN 0
+			RETURN COUNT_ACTIVE_LEADER_SKILL("神の尖兵") * 5
+	ENDSELECT
+ENDIF
+RETURN 0

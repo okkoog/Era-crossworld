@@ -1,0 +1,63 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:魔人学園_宿星05_【宿星：白虎】.ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	000		20XX/XX/XX		----					テンプレ
+;	001		2022/03/??		takaya					作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_【宿星：白虎】,ARG
+RESULTS = 【宿星：白虎】
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_【宿星：白虎】
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_【宿星：白虎】,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;　説明文の表示
+@SKILL_EXPLAIN_【宿星：白虎】,ARG
+PRINTL 중국에 전해지는 청룡・주작・백호・현무로 이루어진 사신.
+PRINTL 그중 『백호』를 관장하는 숙성이며, 백호로 변생할 수 있다.
+PRINTL 
+PRINTL 자동효과:HP가 20% 증가한다. 이 효과는 활천계 스킬로 취급된다
+PRINTL 　　　　 턴 종료 시 HP의 5%를 회복한다.
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_【宿星：白虎】,ARG
+RETURN 0
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_【宿星：白虎】, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	CASE "HP補正"
+		RESULTS = 活泉
+		RETURN 20
+ENDSELECT
+RETURN 0
+
+@SKILL_REGEN_AT_TURNEND_【宿星：白虎】,ARG
+RETURN MAXBASE:ARG:ＨＰ * 5 / 100

@@ -1,0 +1,207 @@
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:REQUEST.7.ERB
+;	Facility	:依頼「灼熱の花」　ダンジョン「精神世界」の前提となる依頼
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX			P					新規作成
+;	002		2011/01/15			P					属性による出現条件の追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;====================
+;条件
+;====================
+@PLAYABLE_REQUEST_7
+;---- EDIT 002 ADD START -------------------------
+;百合の花ルートはDかCになってるとでない。直哉ルートはLになってるとでない
+;とりあえず、一時差し止めで属性が変動した場合は出てくる
+IF FLAG:百合の花ルート == 4 && ABL:MASTER:属性LD < 3 && ABL:MASTER:属性LC < 3
+	RESULTS = 灼熱の花
+	RETURN 1
+ENDIF
+IF FLAG:直哉ルート == 4 && STRFLAG_NUM_D("大魔宮進行", , , , [[ダンジョン:大魔宮]]) >= 1
+	RESULTS = 灼熱の花
+	RETURN 1
+ENDIF
+;---- EDIT 002 ADD END -------------------------
+RETURN 0
+;====================
+;説明
+;====================
+@EXPLAIN_REQUEST_7
+IF FLAG:百合の花ルート
+	PRINTL
+	PRINTFORML アマネから%CALLNAME:MASTER%に頼みたいことがあるので
+	PRINTFORML 事務所を訪れたいという申し入れがきている
+	PRINTL
+ELSE
+	PRINTL
+	PRINTFORML 直哉から%CALLNAME:MASTER%に会わせたい人物がいるので
+	PRINTFORML 新宿を訪れてほしいという申し入れがきている
+	PRINTL
+ENDIF
+
+;====================
+;内容
+;====================
+@REQUEST_7
+CUSTOMDRAWLINE =
+IF FLAG:百合の花ルート
+	PRINTW ＞アマネがやってきた
+	PRINTW ＞しかし、その目はどこか冷たく、別人のようだ
+	PRINTL 
+	PRINTL アマネ:
+	PRINTW 「初めまして…というべきでしょうね」
+	PRINTW 「私はレミエル。神の使いであり、いまはこの娘の体を借りています」
+	PRINTW 「貴方と話をしたくて、こうして姿を現しました」
+	PRINTW 「アマネは貴方を救世主だと考えています」
+	PRINTW 「私もまた、その可能性は十分にあると考えています…が、まだそうだと決めるわけにはいきません」
+	PRINTW 「それを見極めるため、貴方には一人の少女を救って欲しいのです」
+	PRINTW 「その少女とはずばり、アマネ……、この娘です」
+	PRINTW 「貴方はこの娘がベル・デルに狙われていたのを覚えていますか？」
+	PRINTW 「あれはこの娘の中に、イザ・ベルという強大な悪魔が巣食っており、その力を奪うためだったのです」
+	PRINTW 「今でもアマネの中にはイザ・ベルがいて、心を犯し、支配し、実体化しようとしています」
+	PRINTW 「そして、今アマネの心はイザ・ベルに支配されつつあります」
+	PRINTW 「私の力でイザ・ベルの実体化を抑制してはおりますが、それも長くはもたないでしょう」
+	PRINTW 「このまま放っておけば、そう遠くないうちにアマネの心は死んでしまうでしょう」
+	CALL INPUT_YN("すぐに助けに行く", "なぜお前は助けてやらない？")
+	IF RESULT == 0
+		PRINTL レミエル:
+		PRINTW 「…頼もしい言葉ですね、さすがはアマネが救世主と見込んだものです。この娘も喜ぶ事でしょう」
+		CALL INCREASE_LD, 8
+		CALL INCREASE_LC, 8
+	ELSE
+		PRINTL レミエル:
+		PRINTW 「我々天使の仕事は、決して人を救うことではありません」
+		PRINTW 「あくまで、試練に自ら立ち向かう人々に力を貸すことなのです」
+		PRINTL 「私がアマネの中に宿り、イザ・ベルを抑えるのも
+		PRINTW 　アマネがイザ・ベルに立ち向かおうとするのに力を貸しているだけにすぎません」
+		PRINTW 「そして、貴方に対しても、力を貸しますが、それ以上のことはできないのです」
+	ENDIF
+	PRINTW 「それでは準備をしたら、サイコダイバーの元を訪れるとしましょう」
+	PRINTW 「彼らの力を借りれば、アマネの心へとはいってイザ・ベルを討つことができます」
+	PRINTW ＞レミエルの依頼を受けた
+	PRINTW ＞精神世界に赴き、アマネの精神に巣食うイザ・ベルを倒そう
+	FLAG:百合の花ルート = 5
+ELSE
+	PRINTW ＞直哉に会うためにガイア教会を訪れた
+	PRINTW ＞ガイア教会は閑散としており、直哉と一人の少女しかいない
+	PRINTW ＞少女には以前、新宿で出会ったような気がするが…
+	PRINTL 
+	PRINTL 直哉:
+	PRINTW 「来たか…、こんなところまでわざわざ済まないな」
+	PRINTL 少女:
+	PRINTW 「では、この方が、ベル・デルを倒し、その力を得たという？」
+	PRINTL 直哉:
+	PRINTW 「そうだ。とてもそんな風には見えないだろう。くっく」
+	PRINTL 少女:
+	PRINTW 「いえ、そんなことは…」
+	PRINTW 「それより、私は九頭竜 天音と申します…」
+	PRINTL 直哉:
+	PRINTW 「それより？　アマネ…、いや、イザ・ベルよ。お前からすれば人間など、みんな雑魚もいいところではないのか？」
+	PRINTL アマネ:
+	PRINTW 「アンタ、気づいていたのかい！？」
+	PRINTL 直哉:
+	PRINTW 「ククク、力の強い悪魔は人間を馬鹿にしているからな」
+	PRINTW 「こううして、あっさりだまされるというわけだ」
+	PRINTW 「聖者のふりをするお前を見るのは楽しかったぞ？」
+	PRINTL アマネ:
+	PRINTW 「くっ…、ウザったいねぇ…」
+	PRINTL 直哉:
+	PRINTW 「この女にはベル神がとりついている。さっさと叩きのめしてくれ」
+	PRINTL アマネ:
+	PRINTW 「たかが、人間ごときがこのイザ・ベルにかなうと思ってるのかい！？」
+	PRINTL 直哉:
+	PRINTW 「当然だ。ただ、メシア教徒達に守られていてはちょっかいだすのがむずかしかったがな」
+	PRINTW 「こうして、出てきてくれれば、問題はない」
+	PRINTL アマネ:
+	PRINTW 「ち、舐めやがって…その思い上がり、後悔させてやるよ！」
+	;人間はいろいろ面倒なのでイザ・ベルの名前を置き換える
+	CALL SET_ENEMY,13,207,35, 1, 1
+	NAME:(CHARANUM-1) = アマネ
+	CALLNAME:(CHARANUM-1) = アマネ
+	CFLAG:(CHARANUM-1):ＨＰ補正 += 2500
+	CFLAG:(CHARANUM-1):ＭＰ補正 += 1000
+	ABL:(CHARANUM-1):スキル6 = 0
+	CFLAG:(CHARANUM-1):行動回数 = 2
+	CSTR:(CHARANUM-1):思考パターン = イザベル
+	FOR LOCAL, GETNUM(BASE, "剣撃"), GETNUM(BASE, "サイコ")
+		BASE:(CHARANUM-1):LOCAL = 100
+		MAXBASE:(CHARANUM-1):LOCAL = 100
+	NEXT
+	BASE:(CHARANUM-1):破魔 = 0
+	MAXBASE:(CHARANUM-1):破魔 = 0
+	BASE:(CHARANUM-1):核熱 = -100
+	MAXBASE:(CHARANUM-1):核熱 = -100
+	BASE:(CHARANUM-1):破魔 = 0
+	MAXBASE:(CHARANUM-1):破魔 = 0
+	BASE:(CHARANUM-1):核熱 = -50
+	MAXBASE:(CHARANUM-1):核熱 = -50
+	BASE:(CHARANUM-1):魔力 = 20
+	BASE:(CHARANUM-1):知恵 = 15
+	BASE:(CHARANUM-1):速さ = 20
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	FLAG:逃走不可フラグ = 1
+	FLAG:会話不能フラグ = 1
+	FLAG:先制不意打ちキャンセル = 1
+	PRINTW ＞魔王 アマネが出た！
+	CALL BATTLE_START
+	CUSTOMDRAWLINE =
+	WAIT
+	FLAG:直哉ルート = 5
+	FLAG:逃走不可フラグ = 0
+	FLAG:会話不能フラグ = 0
+	FLAG:先制不意打ちキャンセル = 0
+	PRINTW ＞アマネを倒した
+	PRINTL 
+	PRINTL アマネ:
+	PRINTW 「な…何て事だい…！ 人間なんかに…」
+	PRINTL 
+	PRINTFORMW アマネは%CALLNAME:MASTER%を憎々しげに睨みつけた…
+	PRINTL 
+	PRINTL 直哉:
+	PRINTW 「そう、人間なんかにだ」
+	PRINTW 「なぁ、イザ・ベルよ。考えても見るがいい」
+	PRINTW 「その人間なんかが、ベルの王となり、神に反逆し、打ち倒す」
+	PRINTW 「これは、普通に悪魔がベルの王位につくより愉快なことではないか？」
+	PRINTL アマネ:
+	PRINTW 「……」
+	PRINTL 直哉:
+	PRINTW 「イザ・ベルよ。この人間に協力するがいい」
+	PRINTW 「お前もあの神に恨みがあるのだろう？」
+	PRINTW 「ならば、ここで、この人間に手を貸せば、面白いことになるぞ？」
+	PRINTL アマネ:
+	PRINTW 「アハハハハ、人間ごときがアタシに力を貸せだって？」
+	PRINTW 「笑わせてくれるねぇ！」
+	PRINTW 「しかも、それで神を倒すだって？」
+	PRINTW 「いいねぇ。気に入ったよ！」
+	PRINTW 「アタシの力を使うがいい……といいたいところだけど」
+	PRINTW 「実は今、アンタ達に負けたせいでアマネを支配する力が弱まってね」
+	PRINTW 「こうなってはこの体が出ることは出来ない」
+	PRINTW 「そして、この体の中にはほかに忌々しい天使がいるんだよ」
+	PRINTW 「このままじゃやつに体を奪い取られちまう」
+	PRINTL 直哉:
+	PRINTW 「要するにアマネの精神に入り込んで、レミエルを殺してしまえばいいということだろう？」
+	PRINTW 「クク、こうなることは想定通りだ…サイコダイバーの手配はしてある」
+	PRINTL アマネ:
+	PRINTW 「ちっ、つくづく、いらいらさせてくれる人間だねぇ」
+	PRINTL 直哉:
+	PRINTW 「そう褒めてくれるなよ」
+	PRINTL 
+	PRINTW ＞そう言って直哉はニヤニヤと笑っている
+	PRINTL 
+	PRINTL 直哉:
+	PRINTW 「さて、お前もすぐに準備するんだな」
+	PRINTW 「準備ができたら、またここで会おう。サイコダイバーは連れてきておく」
+	
+	;---- EDIT 002 ADD START -------------------------
+	;FLAGの立て忘れの修正
+	FLAG:直哉ルート = 5
+	;---- EDIT 002 ADD END ---------------------------
+ENDIF
+CUSTOMDRAWLINE =
+

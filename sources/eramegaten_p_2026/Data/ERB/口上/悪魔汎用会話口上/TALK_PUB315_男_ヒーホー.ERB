@@ -1,0 +1,2666 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:TALK_PUB302.ERB
+;	Facility	:会話タイプ：男・ヒーホーの会話用メッセージ＋挨拶・問答処理
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/01/10		Ｎ鳥					基本処理をTALK_COMMONに一元化し、メッセージを口上呼び出し用関数に移植
+;	003		2022/04/15		餅呑					D2会話収録+加筆修正など　子憎たらしさを盛りました
+;	004		2022/07/10		しめじ					命乞い分岐関係を追記（CASE 68～CASE 75、CASE 91～CASE 93）。
+;													大体は口上内に元々あった文章を流用させていただいています。
+;	005		2022/09/12		餅呑					分離していたので統合+加筆修正など(選択肢INPUTINTに置き換えました)
+;
+;
+;二人称にバラツキありますが個体差ということでここはひとつ
+;元々D2の会話を全収録する目的で口上の大幅加筆を図ったのですが、これだとD2のヒーホーでありeratenのヒーホーではないなと思ってしまった
+;問答ではなく会話寄りに、既存に無理に寄せるより自分の理想のヒーホー像を優先させる形で書き直そうと思っています
+;競合してもRANDなどを用いて統合させるので、口上加筆したい方がいたら気軽に加筆してね　by餅呑 22.9.12
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=====================================================================
+;口調タイプ：男・ヒーホータイプの汎用口上＋会話用ファイルです
+;=====================================================================
+
+@KOJO_TALK_PUB315,ARG,ARG:1
+SELECTCASE ARG:1
+	CASE 1
+		;1:レディ・キラーズ
+		PRINTFORMW 「……！？」
+		PRINTFORMW 「히, 히호！？　%CSTR:ARG:일인칭%, 굉장히 두근두근해버렸어호……」
+		PRINTFORMW 「혹시, 이게 사랑……?%UNICODE(0x2661)%」
+		PRINTFORMW 「……%CSTR:ARG:일인칭%, 인간한테 해버린다호～」
+		
+	CASE 2
+		; 2:おねだり前の逡巡時(あいさつor問答で目的が決まっている場合)
+		PRINTFORML 「칫칫칫……공짜로는 말도 안 되호！」
+	CASE 3
+		; 3:交渉の目的を尋ねる
+		SELECTCASE CFLAG:ARG:우호도
+			CASE IS < 25
+				;友好度低い
+				PRINTFORMW 「얘기를 들어줄게호～」
+				PRINTFORML 「%CSTR:ARG:일인칭%에게 볼일이 있어호？」
+			CASE IS < 50
+				;友好度普通
+				PRINTFORMW 「히호？……%CSTR:ARG:일인칭%에게 용건이야호？」
+			CASEELSE
+				;友好度高い
+				PRINTFORMW 「히호호―♪　%CSTR:ARG:일인칭%에게 용건이 있다면 들어줄게호～♪」
+		ENDSELECT
+	CASE 84
+		;84:要求前の1文
+		PRINTW 「히호……　그러면호ー」
+	CASE 4
+		; 4-6:交渉目的：やらせてくれと言った時の反応
+		; 4:取り付く島もなし
+		PRINTFORMW 격렬히 거부당했다
+	CASE 5
+		; 5:交渉次第
+		PRINTFORMW 조건에 따라 들어줄 것 같다
+	CASE 6
+		; 6:一発おｋ
+		PRINTFORMW 「%조사처리(CSTR:ARG:일인칭,"을")% 권하고 있는거야호？」
+		PRINTFORMW 「그러면、받겠습니다호ー♪｣
+	CASE 7
+		; 7-9:交渉目的：やらせてくれと言った時の反応
+		; 7:取り付く島もなし
+		PRINTFORMW 격렬히 거부당했다
+	CASE 8
+		; 8:交渉次第
+		PRINTFORMW 조건에 따라 범해줄 것 같다
+	CASE 9
+		; 9:一発おｋ
+		PRINTFORMW 「%조사처리(CSTR:ARG:일인칭,"을")% 권하는거야호？」
+		PRINTFORMW 「그럼、받겠습니다호ー♪｣
+	CASE 10
+		;10:要求額を提示：￥
+		PRINTFORML 「￥{TFLAG:TALK용요구치} 갖고싶어호～」
+	CASE 11
+		;11-13:￥を払おうとしてお金が足りない
+		;11:別のものを要求する
+		PRINTFORMW 「히홋……　가난한 사람이다호～」
+		PRINTFORMW 「어쩔 수 없으니까 다른 걸로 봐줄게호～」
+	CASE 85
+		;85 恵まれる
+		PRINTFORMW 소지금이 부족합니다
+		PRINTFORMW ＞%CALLNAME:ARG%에게 불쌍하게 여겨진 것 같다
+		PRINTFORMW 「서、서머너……　그런 푼돈도 가지고 있지 않은거야호……？」
+		PRINTFORMW 「불쌍하니까 %CSTR:ARG:일인칭%의 용돈 조금만 줄게호……」
+	CASE 12
+		;12:交渉失敗。立ち去る
+		PRINTFORMW ＞하지만 ￥이 부족했다
+		PRINTFORMW 「히호ー－－ー…………」
+		PRINTFORMW 「너한테는 실망이다호. 바이바이호~！」
+	CASE 13
+		;13:交渉失敗。敵対する
+		PRINTFORMW 「그것조차 없는 가난뱅이한테 볼일은 없다호~!!」
+		PRINTFORMW 「렛츠 고 투 헤에에엘! 해주겠다호~!!」
+	CASE 14
+		;14-16:￥を支払った
+		;14:払ったのに逃げられる
+		PRINTFORMW 「힛호호~! %CSTR:ARG:일인칭% 이제 간식 마음껏 사 먹겠다호~!」
+	CASE 15
+		;15:さらに要求される
+		PRINTFORML 「히호히호～！좀 더 갖고싶어호～！！」
+	CASE 16
+		;16:交渉成功
+		PRINTFORML 「좋은 봉! 즉, 굿 봉이다호~!」
+		PRINTFORMW 「너를 따라가면 %CSTR:ARG:일인칭%도 억만 마카 부자가 될 수 있겠다호~」
+	CASE 17
+		;17-19:￥を支払うのを断った::
+		;17:交渉失敗。奇襲する
+		PRINTFORMW 「히홋!? 구두쇠냐호!? 네 마음은 아주 자~알 알겠다호!」
+		PRINTFORMW 「렛츠 고 투 헬이다호!」
+	CASE 18
+		;18:交渉失敗。敵対する
+		PRINTFORMW 「키-호-!! %CSTR:ARG:일인칭%을 바보 취급했다호~!」
+		PRINTFORMW 「싫은 인간이야호!!」
+	CASE 19
+		;19:他のものを要求する:
+		PRINTFORMW 「쳇…… 쪼들리는 인간이다호……」
+		PRINTFORMW 「그럼 다른걸로 하자호～」
+	CASE 20
+		;20:要求額を提示：ＭＡＧ
+		PRINTFORML 「{TFLAG:TALK용요구치}MAG 갖고 싶어호～」
+	CASE 21
+		;21-23:ＭＡＧを支払おうとしたが足りない
+		;21:別のものを要求する
+		PRINTFORMW 「ＭＡＧ 갖고 있지 않은거야호～？」
+		PRINTFORMW 「다른 거라도 괜찮아호―」
+	CASE 86
+		;86 恵まれる
+		PRINTFORMW ＭＡＧ가 부족합니다
+		PRINTFORMW ＞%CALLNAME:ARG%에게 불쌍하게 여겨진 것 같다
+		PRINTFORMW 「그 꼴로 잘도 %CSTR:ARG:일인칭%한테 말 걸 생각을 했다호네……」
+		PRINTFORMW 「어쩔 수 없으니 나눠주겠다호…… 자, 눈뭉치」
+	CASE 22
+		;22:交渉失敗。立ち去る
+		PRINTFORMW 「MAG도 안 갖고 있다니…… 너랑은 말이 안 통한다호……」
+		PRINTFORMW 「%CSTR:ARG:일인칭%, 이제 질렸으니까 집에 가겠다호~」
+	CASE 23
+		;23:交渉失敗。敵対する
+		PRINTFORMW 「ＭＡＧ도 갖고 있지 않아호～！？」
+		PRINTFORMW 「키―호―!!　너의 몸에서 생체 ＭＡＧ을 직접 빼앗아줄게호ー!!」
+	CASE 24
+		;24-26:ＭＡＧを支払った
+		;24:払ったのに逃げられる
+		PRINTFORMW 「너의 MAG, 제법 맛있었다호~」
+		PRINTFORMW 「또 만나면 같이 놀자호～♪」
+	CASE 25
+		;25:さらに要求される
+		PRINTFORML 「히호~♪ 더 원한다호~!」
+	CASE 26
+		;26:交渉成功
+		PRINTFORMW 「히호~ 제법 맛깔나는 녀석이다호! 마음에 들었다호!」
+		PRINTFORMW 「특별히 %CSTR:ARG:일인칭%의 하인으로 삼아주겠다호~!」
+	CASE 27
+		;27-29:ＭＡＧを支払うのを断った
+		;27:交渉失敗。奇襲する
+		PRINTFORMW 「힛홋호…… 거절하다니 나이스 배짱이다호~」
+		PRINTFORMW 「너를 쓰러뜨리고 가진 MAG를 모~조리 빼앗아주겠다호~!」
+	CASE 28
+		;28:交渉失敗。敵対する
+		PRINTFORMW 「키-호-!! 기분 나쁜 인간이다호!!」
+		PRINTFORMW 「부글부글 쾅! %CSTR:ARG:일인칭%와 함께 고 투 헬이다호!」
+	CASE 29
+		;29:他のものを要求する
+		PRINTFORMW 「쳇…… 쪼들리는 인간이다호……」
+		PRINTFORMW 「그럼 다른걸로 할래호…」
+	CASE 30
+		;30:魔石を要求
+		PRINTFORML 「마석이 갖고싶어호！」
+		
+	CASE 31
+		;31-33:魔石を渡そうとしたが持っていない
+		;31:別のものを要求する
+		PRINTFORMW 「마석이 없어호？」
+		PRINTFORMW 「별 수 없네호、다른 걸로 용서해줄게호ー」
+	CASE 87
+		;87 恵まれる
+		PRINTFORMW 「마석도 안 갖고 있냐호?」
+		PRINTFORMW 「어쩔 수 없으니 가련한 인간한테 적선해주겠다호-」
+		PRINTFORMW 「%CSTR:ARG:일인칭%한테 감사하라호」
+	CASE 32
+		;32:交渉失敗。立ち去る
+		PRINTFORMW 「마석이 없어호？」
+		PRINTFORMW 「마석도 갖고 있지 않은 서머너 따위에게 용무는 없어호ー」
+	CASE 33
+		;33:交渉失敗。敵対する
+		PRINTFORMW 「마석이 없어호？」
+		PRINTFORMW 「마석도 없이 악마와 교섭하려고 하다니 좋은 배짱이다호」
+		PRINTFORMW 「포상으로 고-투-헬 해줄게호ー！」
+	CASE 34
+		;34-36:魔石を渡した
+		;34:払ったのに逃げられる
+		PRINTFORMW 「땡큐호~! 이 빚은 언젠가 갚겠다호~!」
+		PRINTFORMW 「그럼 바이바이호~」
+	CASE 35
+		;35:さらに要求される
+		PRINTFORML 「아직도 부족하다호~! 더 달라호~!」
+	CASE 36
+		;36:交渉成功
+		PRINTFORMW 「땡큐호~! 너, 제법 말이 통하는 녀석이다호!」
+	CASE 37
+		;37-39:魔石を渡すのを断った
+		;37:交渉失敗。奇襲する
+		PRINTFORMW 「히홋!? 구두쇠냐호!? 네 마음은 아주 자~알 알겠다호!」
+		PRINTFORMW 「부글부글 쾅이다호! %CSTR:ARG:일인칭%와 함께 고 투 헤에에엘!!!」
+	CASE 38
+		;38:交渉失敗。敵対する
+		PRINTFORMW 「키-호-!! 너랑은 말이 안 통한다호-!」
+		PRINTFORMW 「너를 귀여운 눈사람으로 만들어주겠다호-!」
+	CASE 39
+		;39:他のものを要求する
+		PRINTFORMW 「히호오……그럼 다른걸로 할래호…」
+	CASE 40
+		;40:異性との性交渉を要求
+		PRINTFORML 「%CSTR:ARG:일인칭%、여자랑 한 발 하고 싶어호！」
+	CASE 41
+		;18:異性を宛がってもらった時の反応
+		PRINTFORMW 「정말로 좋아호？｣
+		PRINTFORMW 「그러면、받을게호ー♪｣
+		CALL MESSAGE_TALK
+	CASE 42
+		;42-46:性交渉が終わった後
+		;42:敗北してる場合ここでゲームオーバー
+		PRINTFORMW 「히호、벌써 한계호？」
+		PRINTFORMW 「%CSTR:ARG:일인칭%、아직 부족하다구호ー｣
+		PRINTFORMW 「그럼、%조사처리(CSTR:ARG:이인칭,"은")% 이제부터%CSTR:ARG:일인칭%의 장난감이야호ー｣
+	CASE 43
+		;43:話しかけたキャラが倒れている
+		PRINTFORMW 「히호、벌써 한계야호？」
+		PRINTFORMW 「%CSTR:ARG:일인칭%、아직 부족하다구호ー｣
+	CASE 44
+		;44:ヤらせたのに逃げられる
+		PRINTFORMW 「히ー호ーー♪만족했어호ー♪」
+		PRINTFORMW 「그럼、안녀엉호ー♪」
+	CASE 45
+		;45:満足してない
+		PRINTFORML 「히ー호ーー♪좀 더 하고 싶어호ー♪」
+	CASE 46
+		;46:満足
+		PRINTFORMW 「히ー호ーー♪만족했어호ー♪」
+		PRINTFORMW 「고마워호～」
+	CASE 47
+		;47-49:性交渉を断った
+		;47:交渉失敗。奇襲する
+		PRINTFORMW 「%조사처리(CSTR:ARG:일인칭,"을")% 바보 취급했지호～!!」
+		PRINTFORMW 「어린애라고 얕보다간 큰코다친다호!」
+	CASE 48
+		;48:交渉失敗。敵対する
+		PRINTFORMW 「히ー호ー!!」
+		PRINTFORMW 「싫은 인간이다호!!」
+	CASE 49
+		;49:他のものを要求する
+		PRINTFORMW 「쳇…… 재미없는 인간이다호……」
+		PRINTFORMW 「그럼 다른걸로 할래호～」
+	CASE 50
+		;50-55:ヤらせてもらった後
+		;50:敗北してる場合ここでゲームオーバー
+		PRINTFORMW 「히호、벌써 한계야호？」
+		PRINTFORMW 「%CSTR:ARG:일인칭%、아직 부족하다구호ー｣
+		PRINTFORMW 「그럼、%조사처리(CSTR:ARG:이인칭,"은")% 이제부터%CSTR:ARG:일인칭%의 장난감이야호ー｣
+	CASE 51
+		;51:話かけたキャラが倒れいる
+		PRINTFORMW 「히호、벌써 한계야호？」
+		PRINTFORMW 「%CSTR:ARG:일인칭%、아직 부족하다구호ー｣
+	CASE 52
+		;52:去っていく
+		PRINTFORMW 「히ー호ーー♪만족했어호ー♪」
+		PRINTFORMW 「그럼、안녀엉호ー♪」
+	CASE 53
+		;53:満足し、仲魔になる
+		PRINTFORMW 「히ー호ーー♪만족했어호ー♪」
+		PRINTFORMW 「고마워호～」
+	CASE 54
+		;54:満足し、アイテムをくれる
+		PRINTFORMW 「히ー호ーー♪만족했어호ー♪」
+		PRINTFORMW 「고마워호～」
+	CASE 53
+		;53:満足し、見逃してくれる
+		;現状、死に処理
+	CASE 56
+		;56-61:犯してもらった後
+		;56:敗北してる場合ここでゲームオーバー
+		PRINTFORMW 「히호、벌써 한계야호？」
+		PRINTFORMW 「%CSTR:ARG:일인칭%、아직 부족하다구호ー｣
+		PRINTFORMW 「그럼、%조사처리(CSTR:ARG:이인칭,"은")% 이제부터%CSTR:ARG:일인칭%의 장난감이야호ー｣
+	CASE 57
+		;57:話かけたキャラが倒れいる
+		PRINTFORMW 「히호、벌써 한계야호？」
+		PRINTFORMW 「%CSTR:ARG:일인칭%、아직 부족하다구호ー｣
+	CASE 58
+		;58:去っていく
+		PRINTFORMW 「히ー호ーー♪만족했어호ー♪」
+		PRINTFORMW 「그럼、안녕이다호♪」
+	CASE 59
+		;59:満足し、仲魔になる
+		PRINTFORMW 「히ー호ーー♪만족했어호ー♪」
+		PRINTFORMW 「고마워호～」
+	CASE 60
+		;60:満足し、アイテムをくれる
+		PRINTFORMW 「히ー호ーー♪만족했어호ー♪」
+		PRINTFORMW 「고마워호～」
+	CASE 61
+		;61:満足し、見逃してくれる
+		;現状、死に処理
+	CASE 62
+		;62:仲魔になる
+			IF FLAG:교섭목적 > 3
+				PRINTFORMW %CALLNAME:PLAYER%의 몸에 매우 만족하여、%ARG가% 동료마가 되어주었습니다
+			ELSE
+				PRINTFORML 「히ー호ー　%CSTR:ARG:일인칭%、\@ CSTR:ARG:종족명 != "" ? %CSTR:ARG:종족명% # %STR:(ABL:ARG:종족)% \@ %CALLNAME:ARG%」
+				PRINTFORMW 「앞으로도 잘 부탁한다호~♪」
+			ENDIF
+	CASE 63
+		;63:マスターのレベルより高い場合
+		PRINTFORMW 「히호? 인간, %CSTR:ARG:일인칭%보다 약하다호?」
+		PRINTFORMW 「유감이지만 허접 쓰레기 피라미한테 볼일은 없다호~」
+		PRINTFORMW 「더 강해지면 힘을 빌려주겠다호~♪」
+		
+	CASE 64
+		;64:ＣＯＭＰの空きが無い場合
+		IF RAND:2 == 0
+			PRINTFORML 「히호? %CSTR:ARG:일인칭%이 들어갈 자리가 없다호?」
+			PRINTFORMW 「%CSTR:ARG:일인칭%이 들어갈 자리가 생기면 또 불러달라호~♪」
+		ELSE
+			PRINTFORMW 「……라니, %CSTR:ARG:일인칭% 자리는 어디냐호-?」
+			PRINTFORMW 「키-호-! VIP 손님을 맞이하는 태도라곤 도~저히 생각할 수 없다호!」
+			PRINTFORMW 「다음엔 프리미엄 좌석을 비워둬라호! 안 그러면 아쿠마존 리뷰에 최하점을 주겠다호!」
+			PRINTFORMW 「…………그럼, 바이바이호~♪」
+		ENDIF
+	CASE 65
+		;65:搾りとられた
+	CASE 66
+		;66:お金をくれる
+		IF FLAG:교섭목적 > 3
+			PRINTFORMW %CALLNAME:PLAYER%의 몸에 매우 만족하여、돈을 베풀어 주었습니다
+		ELSE
+			PRINTFORMW 「이거 줄게호～♪」
+		ENDIF
+	CASE 67
+		;67:ＭＡＧをくれる
+		IF FLAG:교섭목적 > 3
+			PRINTFORMW %CALLNAME:PLAYER%의 몸에 매우 만족하여、ＭＡＧ를 베풀어 주었습니다
+		ELSE
+			PRINTFORMW 「이거 줄게호～♪」
+		ENDIF
+	CASE 68
+		;68:ダメージをくれる
+		PRINTFORMW 「%CSTR:ARG:일인칭%의 러브……… 받아주면 좋겠다호%UNICODE(0x2661)%」
+		;69-75:アイテムをくれるor回復してくれる
+	CASE 69
+		;69:ソーマを使ってくれる
+		PRINTFORMW 「왠지 상처투성이다호~. 회복시켜 주겠다호~♪」
+	CASE 70
+		;70:宝玉輪を使ってくれる
+		PRINTFORMW 「왠지 상처투성이다호~. 회복시켜 주겠다호~♪」
+	CASE 71
+		;71:ITEMor魔石をくれる
+		PRINTFORMW 「이걸 주겠다호~♪」
+	CASE 72
+		;72:魔石をくれる
+		PRINTFORMW 「이걸 주겠다호~♪」
+	CASE 73
+		;73:魔石を使ってくれる
+		PRINTFORMW 「회복시켜 주겠다호~♪」
+	CASE 74
+		;74:宝玉を使ってくれる
+		PRINTFORMW 「회복시켜 주겠다호~♪」
+	CASE 75
+		;75:宝玉をくれる
+		PRINTFORMW 「이걸 주겠다호~♪」
+	CASE 76
+		;76-78:気まずくなった
+		;76:会話失敗。奇襲する
+		PRINTFORMW 「%CSTR:ARG:이인칭%, %CSTR:ARG:일인칭%을 바보 취급하고 있다호!!」
+		PRINTFORMW 「화났다호-!! %CSTR:ARG:일인칭%의 무서움을 똑똑히 가르쳐주겠다호-!」
+	CASE 77
+		;77:会話失敗。敵対する
+		PRINTFORMW 「히호…… %CSTR:ARG:이인칭%, 반응이 영 별로다호-…」
+		PRINTFORMW 「너랑 얘기하는 거 재미없다호! 살육이다호-!」
+	CASE 78
+		;78:会話継続
+		PRINTFORMW 「히호-…… 인간, 시시하다호……」
+		PRINTFORMW 「더 재미있는 이야기를 듣고 싶다호~」
+	CASE 79
+		;79-83:立ち去る
+		;79:同じ仲魔がいる場合
+		PRINTFORML 「%CSTR:ARG:일인칭%의 친구와 사이좋게 지냈으면 좋겠어호～！」
+	CASE 80
+		;険悪な雰囲気
+		PRINTFORML
+		PRINTFORML 「이래선 얘기가 안 된다호-」
+		PRINTFORMW 「얼른 집에 가서 엄마 젖이나 빨고 있는 게 딱이다호!」
+	CASE 81
+		;友好度が低い
+		PRINTFORML 「작별이다호」
+	CASE 82
+		;友好度が普通
+		PRINTFORML 「또 놀자호～」
+	CASE 83
+		;友好度が高い
+		PRINTFORML
+		PRINTFORMW 「인간치고는 재미있는 녀석이었다호~」
+		PRINTFORML 「또 놀아줘도 괜찮다호! 바이바이호~!」
+	CASE 88
+		;ヤらせてもらう・交渉が成功した場合
+		PRINTFORMW 교섭에 성공해、범해져 주기로 했다
+		CALL MESSAGE_TALK
+	CASE 89
+		;犯してもらう・交渉が成功した場合
+		PRINTFORMW 교섭에 성공해、범해주기로 했다
+		CALL MESSAGE_TALK
+	CASE 90
+		;ダンジョン内性欲処理：輪姦イベント
+	CASE 91
+		;敵が命乞いCASE91～93
+		;91:命乞い
+		PRINTFORMW 「히호…… %CSTR:ARG:일인칭%을 죽일 셈이냐호!?」
+		PRINTFORMW 「목숨만은 살려달라호-!」
+		PRINTFORMW 「히호! 히호! 살려달라호-! 부탁한다호-!」
+	CASE 92
+		;92:助けた場合（RETURN 0, X = 0.逃げる　1.仲魔になる　2.何か貰う　3.奇襲）
+		;『@KOJO_TALK』をはさむ為、RESULT:0が上書きされてしまうのでRESULT:1を使う
+		;とりあえずランダムにしてみる
+		;確率を設定したい場合は CASE 0 TO 10 のようにしてやるといい
+		PRINTFORML 
+		SELECTCASE RAND:8
+			;逃げる
+			CASE 0 
+				PRINTFORMW 「히-호-!! 살았다호-!」
+				RETURN 0, 0
+			CASE 1
+				PRINTFORMW 「히~! %CSTR:ARG:일인칭% 집에 갈 거다호~!!」
+				RETURN 0, 0
+			;仲魔になる
+			CASE 2
+				PRINTFORMW 「히…… 홋……」
+				PRINTFORMW 「네가 우호적이라서 살았다호……」
+				PRINTFORMW 「%CSTR:ARG:일인칭%…… 너의 힘이 되어주고 싶다호!」
+				RETURN 0, 1
+			CASE 3
+				PRINTFORMW 「히ー호ー♪」
+				PRINTFORMW 「답례로 %CSTR:ARG:일인칭%이 동마가 되어주겠다호-♪」
+				RETURN 0, 1
+			;何か貰う
+			CASE 4
+				PRINTFORMW 「살았다호-…」
+				PRINTFORMW 「답례로 이걸 주겠다호-」
+				RETURN 0, 2
+			CASE 5
+				PRINTFORMW 「히…… 홋……」
+				PRINTFORMW 「네가 우호적이라서 살았다호」
+				PRINTFORMW 「답례로 %CSTR:ARG:일인칭%의 마음을 받아주면 좋겠다호~！」
+				RETURN 0, 2
+			;奇襲
+			CASE 6
+				PRINTFORMW 「힛홋호~！」
+				PRINTFORMW 「인간이란 정말 쉽게 속는다호~! 바보멍청이다호!」
+				RETURN 0, 3
+			CASEELSE
+				PRINTFORMW 「바보 같은 인간이다호~!」
+				PRINTFORMW 「%CSTR:ARG:일인칭%의 무서움을 똑똑히 깨닫게 해주겠다호~!」
+				RETURN 0, 3
+		ENDSELECT
+		PRINTFORML 
+	CASE 93
+		;93:断った場合
+		PRINTFORML 
+		PRINTFORMW 「히, 히-호-…」
+		PRINTFORMW 「이렇게 된 이상 각오를 다지겠다호-!」
+		PRINTFORML 
+	CASE 94
+		;敵から助ける代わりに取引を持ちかけられるCASE94～101
+		;94:取引内容（RETURN 0, X = 1.￥　2.魔貨　3.異性）
+		PRINTFORML %ARG가% %CALLNAME:PLAYER%에게 거래를 제안해 왔다
+	CASE 95
+		;95:要求をのむ（￥）
+	CASE 96
+		;96:要求をのむ（魔貨）
+	CASE 97
+		;97:要求をのむ（異性）
+		CALL MESSAGE_TALK
+	CASE 98
+		;98:約束を守るかどうか口上内で決める（RETURN 0, X = 1.去っていく　2.戦闘続行）
+	CASE 99
+		;99:約束を守って去っていく
+	CASE 100
+		;100:約束を守らず戦闘続行
+	CASE 101
+		;101:要求を断る
+ENDSELECT
+
+;===========================================================================
+;ヒーホー口上会話の大まかな流れ
+;１.GREET_PUB315 出会い頭の挨拶(まれに問答→会話後、３へ)
+;２.GREET_PUB315 問答発生(調教ってなんだホ、の箇所)→会話後、３へ
+;３.QUESTION_PUB315 続きの問答発生→穏便に終わると仲魔勧誘会話に移行
+;気まずくなった後会話が継続したらもう一度３から抽選、永遠に３をループする　ので、会話を増やす場合は３が多めだと好ましい　…かもしれない
+;===========================================================================
+;会話時挨拶
+;===========================================================================
+@GREET_PUB315,ARG
+
+;質問を増やした場合、RAND:XのXを増やす
+;RETURNの値により回答後の雰囲気が変わる。
+;0.会話継続 1.直接仲魔になる 2.何かくれる 3.奇襲される 4.敵対する 5.逃げる 6.気まずくなる
+
+
+SELECTCASE RAND:20
+;出合い頭のコンニチハ段階で発生する会話
+
+
+	CASE 0
+		;立ち去ろうとしている
+		PRINTFORML 
+		PRINTFORML 악마는 떠나가려 하고 있다……
+		PRINTFORMW 어쩌겠습니까?
+		PRINTFORML 
+		PRINTFORML [1]말을 건다　[2]지켜본다
+		PRINTFORML 
+
+		;ユーザー入力を待つ文
+		CALL INPUTINT, 1, 2
+
+		SELECTCASE RESULT
+			;声をかける
+			CASE 1
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 20
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗　20％ほど　
+						PRINTFORMW 「성가신 녀석이다호-」
+						PRINTFORMW 「%CSTR:ARG:일인칭% 지금 기분이 몹시 얹짢다호-」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:10
+					;成功　それ以外(D2
+						PRINTFORML 「뭐냐호?」
+						PRINTFORMW 「넉살 좋은 녀석이다호-」
+						RETURN 0
+				ENDIF
+			;見守る
+			CASE 2
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				;謎の魅力で補正
+				SIF TALENT:PLAYER:수수께끼의매력
+					LOCAL += RAND:30
+				IF LOCAL < 40
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗　40％？ (D2
+						PRINTFORML 「부글부글-!」
+						PRINTFORMW 「입 다물고 있지 말고 조금은 불러 세워보라호!」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:50
+					;成功　
+						PRINTFORMW 「무, 왠지…… 뜨거운 시선이 느껴진다호~……」
+						PRINTFORMW 「너 혹시…… %CSTR:ARG:일인칭%의 팬이냐!?」
+						PRINTFORMW 「싸…… 싸인 정도라면 해줄 수도 있다호~!」
+						RETURN 0
+				ENDIF
+		ENDSELECT
+		;CASE 0 の問答処理終わり
+
+	CASE 1
+		;身構えている
+		PRINTFORML
+		PRINTFORML 악마는 경계 태세를 취하고 있다……
+		PRINTFORMW 어쩌겠습니까?
+		PRINTFORML 
+		PRINTFORML [1]흉내 낸다　[2]때려 본다
+		PRINTFORML
+		CALL INPUTINT(1,2)
+		SELECTCASE RESULT
+			;真似をする
+			CASE 1
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				SIF TALENT:PLAYER:수수께끼의매력
+					LOCAL += RAND:20
+				IF LOCAL < 30
+					CFLAG:ARG:우호도 -= RAND:40
+					;失敗　30％
+						PRINTFORMW 「키-호-! %CSTR:ARG:일인칭%을 따라했다호!」
+						PRINTFORMW 「%CSTR:ARG:일인칭%만의 멋진 포즈였는데-!」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:40
+					;成功(D2
+						PRINTFORML 「히호!?」
+						PRINTFORMW 「인간 주제에…… 왠지 멋있다호-!」
+						RETURN 0
+				ENDIF
+			;殴ってみる
+			CASE 2
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 40
+					CFLAG:ARG:우호도 -= RAND:20
+					;失敗
+						PRINTFORMW 그러나 악마는 가볍게 피해버렸다!
+						PRINTFORML 
+						PRINTFORMW 「너 소문의 악마 살해자냐호!?」
+						PRINTFORMW 「키-호-! 여기서 만난 것이 백 년의 원수다호-!」
+						PRINTFORMW 「%CSTR:ARG:일인칭%와 함께 호- 투 헤에에엘!!」
+						RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功(D2
+						PRINTFORMW 「히…… 히호…… 살았다호……」
+						PRINTFORMW 「목이 막혀서 죽을 뻔했다호」
+						RETURN 0
+				ENDIF
+		ENDSELECT
+	CASE 2
+		;近づいてきた
+		PRINTFORML
+		PRINTFORML 악마가 다가왔다……
+		PRINTFORMW 어쩌겠습니까?
+		PRINTFORML 
+		PRINTFORML [1]자세를 잡는다　[2]인사한다　[3]동요하지 않는다
+		PRINTFORML
+		CALL INPUTINT(1,2,3)
+		SELECTCASE RESULT
+			CASE 1
+			;身構える(オリジナル版「死んだふり？」は会話の前後を合わせるために3に移動)
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 15
+					CFLAG:ARG:우호도 += RAND:10
+					;失敗　低め
+						PRINTFORMW 「히호……? 너, %CSTR:ARG:일인칭%의 샌드백이 되어주는 거냐호?」
+						PRINTFORMW 「좋~아 실컷 패주겠다호-!!」
+						RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功　
+						PRINTFORMW 「히홋! 인간치고는 제법 배짱이 두둑하다호-!」
+						PRINTFORMW 「마음에 들었으니 특별히 %CSTR:ARG:일인칭%의 꼬붕으로 삼아줄 수도 있다호-」
+						PRINTFORMW 「꼬붕은 오야붕의 말동무가 되는 거다호!」
+						RETURN 0
+				ENDIF
+			CASE 2
+			;挨拶する
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 40
+					CFLAG:ARG:우호도 -= RAND:20
+					;失敗
+						PRINTFORMW 「혹시 %CSTR:ARG:일인칭%한테 싸움 거는 거냐호!?」
+						PRINTFORMW 「인간은 어른스럽지 못하다호……」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:10
+					;成功(D2
+						PRINTFORMW 「혹시 %CSTR:ARG:일인칭%한테 싸움 거는 거냐호!?」
+						PRINTFORMW 「인간은 어른스럽지 못하다호……」
+						PRINTFORMW 「처신하기에 따라선 용서해주겠다호?」
+						RETURN 0
+				ENDIF
+			CASE 3
+			;動じない
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 50
+					CFLAG:ARG:우호도 -= RAND:10
+						;失敗(D2
+						PRINTFORMW 「……뭐냐호? 죽은 척이냐호?」
+						PRINTFORMW 「깨물어서 확인해보겠다호-!」
+						RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:20
+						;成功
+						PRINTFORMW 「안녕호-! 마침 딱 좋은 곳에 인간이 있다호-」
+						PRINTFORMW 「%CSTR:ARG:일인칭% 잠깐 물어보고 싶은 게 있었다호-!」
+						RETURN 0
+				ENDIF
+		ENDSELECT
+	CASE 3
+		;噂は聞いてる
+		PRINTFORML
+		PRINTFORML 「히호호-!」
+		PRINTFORMW 「네 소문은 익히 들었다호-!」
+		PRINTFORML
+		PRINTFORML [1]사람 잘못 봤다　[2]악마 잘못 봤다　[3]쑥스러운걸
+		PRINTFORML
+		CALL INPUTINT(1,2,3)
+		SELECTCASE RESULT
+			CASE 1
+				;人違いだ
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 15
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗
+						PRINTFORMW 「히호호-! 속지 않는다호-!」
+						PRINTFORMW 「너 소문의 악마 살해자다호-!」
+						PRINTFORMW 「먹어라호! 형제들의 원수다호-!!」
+						RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:50
+					;成功(D2
+						PRINTFORMW 「히호호-! 속지 않는다호-!」
+						PRINTFORMW 「너 소문의 악마 살해자다호-!」
+						PRINTFORMW 「찌…… 찌릿찌릿 멋지다호! 싸인 내놓아라호-!」
+						RETURN 0
+				ENDIF
+			CASE 2
+				;悪魔違いだ
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 30
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗
+						;ここに@が悪魔だったら台詞変わる仕様入れたかったけどデビルマン要素が把握できないほど多すぎて断念した
+						;IF IS_HUMAN(PLAYER) == 1
+						PRINTFORMW 「히호? 너는 악마가 아니냐호?」
+						PRINTFORMW 「하지만 %CSTR:ARG:일인칭%…… 악마를 태연하게 죽이는 인간 쪽이 더 무섭다호-……」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:10
+					;成功(D2
+						PRINTFORMW 「쳇…… 착각이었냐호……」
+						PRINTFORMW 「%CSTR:ARG:일인칭% 그만 소문의 악마 살해자인 줄 알았다호……」
+						RETURN 0
+				ENDIF
+			CASE 3
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				;照れるなあ
+				IF LOCAL < 60
+					CFLAG:ARG:우호도 -= RAND:40
+					;失敗(D2
+						PRINTFORMW 「부글부글-! 착각하지 마라호-!」
+						PRINTFORMW 「왜 우리들을 습격하는 거냐호!」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+						PRINTFORMW 「%CSTR:ARG:일인칭%, 데빌 버스터 버스터즈 견습이다호!」
+						PRINTFORMW 「대단한 데빌 버스터님을 만나서 영광이다호~!」
+						RETURN 0
+				ENDIF
+		ENDSELECT
+	CASE 4
+		;顔をしかめている
+		PRINTFORML
+		PRINTFORML 악마는 얼굴을 찌푸리고 있다……
+		PRINTFORMW 어쩌겠습니까?
+		PRINTFORML
+		PRINTFORML [1]손가락질하며 웃는다　[2]표정을 흉내 낸다
+		PRINTFORML
+		CALL INPUTINT(1,2)
+		SELECTCASE RESULT
+			CASE 1
+				;指さして笑う
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 10
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗
+						PRINTFORML 「키-호-!」
+						PRINTFORMW 「인간, %CSTR:ARG:일인칭%을 바보 취급했다호-! 부글부글 쾅이다호-!」
+						RETURN 4
+				ELSE
+					CFLAG:ARG:우호도 += RAND:50
+					;成功(D2
+						PRINTFORML 「히…… 히호…… %CSTR:ARG:일인칭%……」
+						PRINTFORMW 「그렇게 멋있었냐호……」
+						PRINTFORMW 「특별히 팬 서비스 쏴주겠다호-!」
+						RETURN 2
+				ENDIF
+			CASE 2
+				;顔真似
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 10
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗
+						PRINTFORMW 「히호… %CSTR:ARG:일인칭% 따라쟁이냐호?」
+						PRINTFORMW 「하나도 안 닮았다호…… 왠지 부글부글 화가 난다호……」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功(D2
+						PRINTFORML 「히호호-!」
+						PRINTFORMW 「제법 하는구나호-!」
+						RETURN 0
+				ENDIF
+		ENDSELECT
+	CASE 5
+		;しらんふり
+		PRINTFORML
+		PRINTFORML 악마는 모르는 척 시치미를 떼고 있다……
+		PRINTFORMW 어쩌겠습니까?
+		PRINTFORML
+		PRINTFORML [1]춤춰 본다　[2]덮쳐 든다
+		PRINTFORML
+		CALL INPUTINT(1,2)
+		SELECTCASE RESULT
+			CASE 1
+				;踊る
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2+MAXBASE:PLAYER:마력)
+				;魔力10のダンス
+				IF LOCAL < 90
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗(D2
+						PRINTFORMW 「히호…… 변태다호……」
+						PRINTFORMW 「눈 마주치면 안 된다호……」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:50
+					;成功
+						PRINTFORMW %CALLNAME:PLAYER%은(는) 화려한 턴을 구사했다!
+						PRINTFORMW 「히호! 히호-!! %CSTR:ARG:일인칭% 감동해서 눈물이 찔끔 난다호-!」
+						PRINTFORMW 「인간! %CSTR:ARG:일인칭%을 제자로 삼아달라호-!!」
+						PRINTFORML
+						PRINTFORMW %CALLNAME:ARG%은(는) %CALLNAME:PLAYER%의 동의도 없이 %CALLNAME:PLAYER%의 파티에 가입하려고 하고 있다……
+						RETURN 1
+				ENDIF
+			CASE 2
+				;襲い掛かる
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 10
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗
+						PRINTFORMW 그러나 가볍게 빗나갔다!
+						PRINTFORMW 「힛홋호! 아직 한참 멀었다호!」
+						PRINTFORMW 「진짜 기습이란 걸 가르쳐주겠다호-!」
+						RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功(D2
+						PRINTFORMW 그러나 가볍게 빗나갔다!
+						PRINTFORMW 「쯧쯧쯧…… 아직 한참 멀었다호!」
+						PRINTFORMW 「이렇게 된 이상……」
+						PRINTFORMW 「%CSTR:ARG:일인칭%의 놀이 상대가 되어라호-!」
+						RETURN 0
+				ENDIF
+		ENDSELECT
+	CASE 6
+		PRINTFORML
+		PRINTFORML 악마는 손짓하고 있다……
+		PRINTFORMW 어쩌겠습니까?
+		PRINTFORML
+		PRINTFORML [1]고개를 젓는다　[2]손을 흔든다
+		PRINTFORML [3]다가간다
+		PRINTFORML
+		CALL INPUTINT(1,2,3)
+		SELECTCASE RESULT
+			CASE 1
+				;首を振る
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 10
+					CFLAG:ARG:우호도 -= RAND:10
+					;失敗
+						PRINTFORMW 「목이 아프냐호-?」
+						PRINTFORMW 「%CSTR:ARG:일인칭%이 따주겠다호-!」
+						RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功(D2
+						PRINTFORMW %CALLNAME:PLAYER%은(는) 맹렬하게 헤드뱅잉을 했다!
+						PRINTFORML 「히히…… 히…… 호호……」
+						PRINTFORMW 「너무 웃기지 마라호-!」
+						RETURN 0
+				ENDIF
+			CASE 2
+				;手を振る
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 60
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗(D2
+						PRINTFORMW 「%CSTR:ARG:일인칭%…… 미움받았다호……」
+						PRINTFORMW 「점점 배알이 꼴려온다호-!」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:40
+					;成功
+						PRINTFORMW 「너도 준비운동이냐호-?」
+						PRINTFORMW 「히호히호! 좋은 살육은 좋은 운동에서 시작되는 거다호!」
+						PRINTFORMW 「너 제법 뭘 아는구나호!」
+						RETURN 0
+				ENDIF
+			CASE 3
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				;近寄る
+				IF LOCAL < 60
+					CFLAG:ARG:우호도 -= RAND:10
+					;失敗(D2
+						PRINTFORML 「무, 뭐냐호!?」
+						PRINTFORMW 「운동 중에 다가오지 마라호-!」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+						PRINTFORMW 「히호히호! 말 잘 듣는 착한 아이라 기특하다호!」
+						PRINTFORMW 「그럼 다음은…… 손이다호!」
+						RETURN 0
+				ENDIF
+		ENDSELECT
+	;追加あったらこの段に
+	CASEELSE
+		SELECTCASE CFLAG:ARG:우호도
+			CASE IS > 25
+			;友好度高い
+			PRINTFORML
+			PRINTFORML 「히호?… %CSTR:ARG:일인칭%와 이야기하고 싶은 거냐호?」
+			PRINTFORMW 「기쁘다호~♪」
+			PRINTFORML
+			CASE IS > -25
+			;友好度普通
+			PRINTFORML
+			PRINTFORML 「히호?… %CSTR:ARG:일인칭%와 이야기하고 싶은 거냐호?」
+			PRINTFORMW 「들어주겠다호~♪」
+			PRINTFORML
+			CASEELSE
+			;友好度低い
+			PRINTFORML
+			PRINTFORML 「히호?… %CSTR:ARG:일인칭%와 이야기하고 싶은 거냐호?」
+			PRINTFORMW 「들어주지 못할 것도 없다호~」
+			PRINTFORML
+		ENDSELECT
+ENDSELECT
+
+;質問を増やした場合、RAND:XのXを増やす
+;RETURNの値により回答後の雰囲気が変わる。
+;0.会話継続 1.直接仲魔になる 2.何かくれる 3.奇襲される 4.敵対する 5.逃げる 6.気まずくなる
+
+SELECTCASE RAND:12
+	CASE 0
+		PRINTFORMW 「인간, %CSTR:ARG:일인칭%한테 가르쳐줬으면 좋겠다호…」
+		PRINTFORMW 「조교라는 게 뭐냐호~?」
+		PRINTFORML
+			PRINTFORML [1]즐거운 일　　　　　[2]괴로운 일
+		IF TALENT:PLAYER:남자 == 0 || TALENT:PLAYER:오토코노코 == 1
+			PRINTFORML [3]봉사하겠습니다 주인님　[4]야한 짓
+		ELSE
+			PRINTFORML [3]애송이에겐 아직 이르다　[4]야한 짓
+		ENDIF
+		PRINTFORML
+		CALL INPUTINT(1,2,3,4)
+		SELECTCASE RESULT
+			CASE 1
+				;楽しい事
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 20
+					CFLAG:ARG:우호도 -= RAND:50
+					;失敗
+						PRINTFORML 「히ー호ー!?」
+						PRINTFORMW 「즐거운 일을 혼자서 독차지하는 거냐호-」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:50 + 10
+					;成功
+						PRINTFORML 「히ー호ー!?」
+						PRINTFORMW 「자세히 가르쳐주면 좋겠다호-」
+						RETURN 0
+				ENDIF
+			CASE 2
+				;苦しい事
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 30
+					CFLAG:ARG:우호도 -= RAND:60
+					;失敗
+						PRINTFORML 「히ー호ー…」
+						PRINTFORMW 「괴로운 건 싫다호-」
+						PRINTFORMW %CALLNAME:ARG%은(는) 도망쳐버렸다
+						RETURN 5
+				ELSE
+					CFLAG:ARG:우호도 += RAND:20
+					;成功
+						PRINTFORMW 「히ー호ー？」
+						PRINTFORMW 「인간은 왜 괴로운 짓을 하는 거냐호-?」
+						RETURN 0
+				ENDIF
+			CASE 3
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				;ご奉仕
+				IF TALENT:PLAYER:140 == 0 || TALENT:PLAYER:157 == 1
+					IF LOCAL < 10
+						CFLAG:ARG:우호도 -= RAND:20
+						;失敗
+							PRINTFORML 「그런 거, 흥미가 있다호-」
+							PRINTFORMW 「하지만 인간을 믿었다간 속아 넘어갈 것 같다호?」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:50 + 20
+						;成功
+							PRINTFORMW 「그런 걸 메이드라고 부르는 거냐호?」
+							PRINTFORMW 「실물로 만난 건 %CSTR:ARG:일인칭%도 처음이다호♪」
+							RETURN 0
+					ENDIF
+				ELSE
+					IF LOCAL < 100
+						CFLAG:ARG:우호도 -= RAND:20
+						;失敗
+							PRINTFORMW 「%CSTR:ARG:일인칭%, 꼬맹이 아니다호-!!」
+							RETURN 3
+					ELSE
+						CFLAG:ARG:우호도 += RAND:10
+						;成功
+							PRINTFORMW 「인간이 %CSTR:ARG:일인칭%을 바보 취급하고 있다는 건 잘 알았다호!!」
+							PRINTFORMW 「%CSTR:ARG:일인칭%의 무서움을 뼈저리게 느끼게 해주겠다호~!!」
+							RETURN 4
+							;RETURN5になってたので4に訂正しましたがどうなんだろう……(餅)
+					ENDIF
+				ENDIF
+			CASE 4
+				;エッチな事
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2) - RAND:20
+				IF LOCAL < 30
+					CFLAG:ARG:우호도 -= RAND:40
+					;失敗
+						PRINTFORML 「%CSTR:ARG:일인칭%이 어린애라고 대충 지껄이는 거냐호!?」
+						PRINTFORMW 「바보 취급하지 말았으면 좋겠다호~!!」
+						RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:50
+					;成功
+						PRINTFORMW 「히ー호ー」
+						PRINTFORMW 「어른들의 세계를 %CSTR:ARG:일인칭%도 알고 싶다호-」
+						RETURN 0
+				ENDIF
+		ENDSELECT
+	CASE 1
+		;一緒に踊りませんか
+		PRINTFORML
+		PRINTFORML 「히호호-!」
+		PRINTFORMW 「%CSTR:ARG:일인칭%와 함께 춤추지 않겠냐호?」
+		PRINTFORML
+		PRINTFORML [1]좋아　　　[2]싫어　　　[3]춤 못 춰
+		PRINTFORML
+		CALL INPUTINT(1,2,3)
+		SELECTCASE RESULT
+			CASE 1
+			;いいよ
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2+MAXBASE:PLAYER:마력)
+				;魔力10のダンスリスペクト
+				IF LOCAL < 60
+					CFLAG:ARG:우호도 += RAND:30
+					;失敗(D2
+						PRINTFORMW 「히호호-! 당장 춤추겠다호-!」
+						PRINTFORMW 「생사를 건 전투의 춤이다호!」
+						RETURN 4
+				ELSE
+					CFLAG:ARG:우호도 += RAND:40
+					;成功
+						PRINTFORMW 「히호……!? 생, 생각보다 폼이 좋은데호……」
+						PRINTFORMW 「인간…… 왠지 멋있다호~！」
+						RETURN 0
+				ENDIF
+			CASE 2
+			;いやだ
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 60
+					CFLAG:ARG:우호도 -= RAND:40
+					;失敗(D2
+						PRINTFORMW 「히호…… 너 재미없다호……」
+						PRINTFORMW 「화풀이로 한 대 후려갈겨도 되냐호?」
+						RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:10
+					;成功
+						PRINTFORMW 「히호-!? 인간, 다리에서 피 난다호!」
+						PRINTFORMW 「게엑… 맛없어 보인다호…… 얼른 고쳐라호-」
+						RETURN 2
+				ENDIF
+			CASE 3	
+			;踊れない
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 70
+					CFLAG:ARG:우호도 += RAND:10
+					;失敗(D2
+						PRINTFORMW 「쯧쯧쯧…… %CSTR:ARG:일인칭%한테 맡겨라호!」
+						PRINTFORMW 「%CSTR:ARG:일인칭%도 춤 따위 전혀 못 춘다호!」
+						PRINTFORMW 「대충 치고받고 싸우자호-!」
+						RETURN 4
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+						PRINTFORMW 「%CSTR:ARG:일인칭%한테 맡겨라호-!」
+						PRINTFORMW %CALLNAME:ARG%은(는) %CALLNAME:PLAYER%의 손을 잡고 춤추기 시작했다……
+						PRINTFORMW ・・・
+						PRINTFORMW ・・
+						PRINTFORMW ・
+						PRINTFORMW 「…히호! 제법 끝내주는 그루브였다호!」
+						PRINTFORMW 「너 마음에 들었다호! 특별히 %CSTR:ARG:일인칭%의 꼬붕으로 삼아주겠다호-!」
+						PRINTFORML
+						PRINTFORMW %CALLNAME:ARG%은(는) %CALLNAME:PLAYER%의 동의도 없이 %CALLNAME:PLAYER%의 파티에 가입하려고 하고 있다……
+						RETURN 1
+				ENDIF
+		ENDSELECT
+
+	CASE 2
+		;コロシアイごっこ
+		PRINTFORML
+		PRINTFORML 「히호!」
+		PRINTFORMW 「%CSTR:ARG:일인칭%와 죽고 죽이기 놀이 하자호-!」
+		PRINTFORML
+		PRINTFORML [1]좋아　　　[2]기각한다
+		PRINTFORML
+		CALL INPUTINT(1,2)
+		SELECTCASE RESULT
+			CASE 1
+			;いいよ
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 30
+					CFLAG:ARG:우호도 += RAND:10
+					;失敗
+						PRINTFORMW 「그럼 가겠다호~！」
+						PRINTFORMW 「정의의 철퇴다호~!! 먹어라호~!」
+						RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:20
+					;成功(D2
+						PRINTFORMW 「흥이 넘치는 좋은 인간이다호! 마음에 들었다호!」
+						PRINTFORMW 「그럼 우선 가위바위보부터다호!」
+						PRINTFORMW
+						PRINTFORMW 「…히호-? %CSTR:ARG:일인칭%와 인간, 손 모양이 다르다호!」
+						PRINTFORMW 「인간 손 모양 왠지 징그럽다호~! 웃기다호!」
+						RETURN 0
+				ENDIF
+			CASE 2
+			;却下で
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 70
+					CFLAG:ARG:우호도 -= RAND:20
+					;失敗(D2
+						PRINTFORMW 「쳇…… 쩨쩨한 인간이다호……」
+						PRINTFORMW 「%CSTR:ARG:일인칭% 흥미를 잃었다호……」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:20
+					;成功
+						PRINTFORMW 「그럼-…… 몰살 놀이 하자호-!」
+						PRINTFORMW 「%CSTR:ARG:일인칭%와 함께 인간 사냥 떠나보자호~！」
+						PRINTFORML
+						PRINTFORMW %CALLNAME:ARG%은(는) %CALLNAME:PLAYER%의 동의도 없이 %CALLNAME:PLAYER%의 파티에 가입하려고 하고 있다……
+						RETURN 1
+				ENDIF
+		ENDSELECT
+	CASE 3
+		;悪魔とニンゲンどっちと遊ぶか
+		PRINTFORML
+		PRINTFORML 「악마와 인간……」
+		PRINTFORMW 「어느 쪽이랑 놀지 고민 중이다호……」
+		PRINTFORML
+		PRINTFORML [1]혼자서 놀아라
+		PRINTFORML [2]악마랑 놀아라　　[3]나랑 놀아라
+		PRINTFORML
+		CALL INPUTINT(1,2,3)
+		SELECTCASE RESULT
+			CASE 1
+				;ひとりで遊べ
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 50
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗(D2
+						PRINTFORMW 「쳇…… 쩨쩨한 인간이다호……」
+						PRINTFORMW 「%CSTR:ARG:일인칭%와 놀아주지 않으면 아주 박살을 내주겠다호-!!」
+						RETURN 4
+				ELSE
+					CFLAG:ARG:우호도 += RAND:10
+					;成功
+						PRINTFORMW 「그럼 %CSTR:ARG:일인칭% 혼자서 놀겠다호~!」
+						PRINTFORMW 「서머너는 공으로 삼겠다호!」
+						RETURN 3
+				ENDIF
+			CASE 2
+				;悪魔と遊べ
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 60
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗(D2
+						PRINTFORMW 「히호… 알았다호… 친구 악마를 불러보겠다호…」
+						PRINTFORMW 「너를 간식거리로 삼을 텐데 문제없다호?」
+						RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:10
+					;成功
+						PRINTFORMW 「히호… 알았다호… 친구 악마를 불러보겠다호…」
+						PRINTFORMW %CALLNAME:ARG%은(는) 터덜터덜 떠나갔다……
+						RETURN 5
+				ENDIF
+			CASE 3
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				;自分と遊べ
+				IF LOCAL < 10
+					CFLAG:ARG:우호도 += RAND:20
+					;失敗
+						PRINTFORMW 「힛호~! 인간이랑 노는 건 처음이다호~!」
+						PRINTFORMW 「인간이랑 렛츠 살육 놀이다호~!」
+						RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:40
+					;成功(D2
+						PRINTFORMW 「너…… 혹시 소문의 『아싸 톨죽이』냐호!?」
+						PRINTFORMW 「히호호! 희귀하다호-! %CSTR:ARG:일인칭% 너를 데리고 놀겠다호-!」
+						RETURN 0
+				ENDIF
+		ENDSELECT
+	CASE 4
+		;ニンゲンに興味
+		PRINTFORML
+		PRINTFORML 「%CSTR:ARG:일인칭% 인간에 대해서」
+		PRINTFORMW 「흥미가 있다호!」
+		PRINTFORML
+		PRINTFORML [1]친하게 지내자　[2]어떤 흥미?
+		PRINTFORML [3]그건 곤란해
+		PRINTFORML
+		CALL INPUTINT(1,2,3)
+		SELECTCASE RESULT
+			CASE 1
+				;仲良くしよう
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 70
+					CFLAG:ARG:우호도 -= RAND:20
+					;失敗(D2
+						PRINTFORML 「히호호-!」
+						PRINTFORMW 「너의 선전포고, 잘 접수했다호-!」
+						RETURN 4
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+						PRINTFORMW 「인간은 %CSTR:ARG:일인칭%와 사이좋게 지내고 싶은 거냐호?」
+						PRINTFORMW 「인간이란 역시 이상하다호-! 흥미진진하다호!」
+						PRINTFORMW 「너를 따라가면 인간의 신비를 더 알 수 있냐호~?」
+						PRINTFORML
+						PRINTFORMW %CALLNAME:ARG%은(는) %CALLNAME:PLAYER%의 동의도 없이 %CALLNAME:PLAYER%의 파티에 가입하려고 하고 있다……
+						RETURN 1
+				ENDIF
+			CASE 2
+				;どんな興味？
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 30
+					CFLAG:ARG:우호도 -= RAND:10
+					;失敗
+						PRINTFORMW 「인간 몸속에는 지구보다 엄~청나게 긴 끈이 들어있다고 들었다호-!」
+						PRINTFORMW 「%CSTR:ARG:일인칭% 그걸로 줄넘기하고 놀고 싶다호~!」
+						PRINTFORMW 「혹시 네 속에도 들어있냐호-? 확인해보겠다호-!」
+						RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功(D2
+						PRINTFORMW 「알고 싶냐호?」
+						PRINTFORMW 「당연히 알고 싶겠지호-!」
+						PRINTFORMW 「하지만 안 가르쳐주겠다호-!」
+						PRINTFORMW 「히호호호홋!」
+						RETURN 0
+				ENDIF
+			CASE 3
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				;それは困る
+				IF LOCAL < 50
+					CFLAG:ARG:우호도 -= RAND:10
+					;失敗(D2
+						PRINTFORMW 「히호호-! 뜸 들이지 마라호!」
+						PRINTFORMW 「잠깐 낯짝 좀 대봐라호-!」
+						RETURN 4
+				ELSE
+					CFLAG:ARG:우호도 += RAND:10
+						;成功
+						PRINTFORMW 「왜 곤란하다는 거냐호-?」
+						PRINTFORMW 「히호! 혹시 %CSTR:ARG:이인칭% 상당한」
+						PRINTFORMW 「한량인 거냐호! %CSTR:ARG:일인칭% 명추리 맞지?」
+						RETURN 0
+						;[1]そんな言葉どこで覚えた？　[2]やめなさい！そんなこと言うのは
+				ENDIF
+		ENDSELECT
+	CASE 5
+		;信用できない
+		PRINTFORML
+		PRINTFORML 「히호호-! 인간 따위」
+		PRINTFORMW 「신용할 수 없다호-!」
+		PRINTFORML
+		PRINTFORML [1]별 상관없다　[2]믿어줘
+		PRINTFORML
+		CALL INPUTINT(1,2)
+		SELECTCASE RESULT
+			CASE 1
+				;別に構わない
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 10
+					CFLAG:ARG:우호도 -= RAND:50
+					;失敗
+						PRINTFORML 「어떤 낯짝을 들고 말하는 거냐호?」
+						PRINTFORMW 「%CSTR:ARG:일인칭% 본 적이 있다호!」
+						PRINTFORMW 「인간이 %CSTR:ARG:일인칭%의 형제를 박박 갈아서 빙수로 파먹고 있었다호-!」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:50
+					;成功(D2
+						PRINTFORML 「히호호-!」
+						PRINTFORMW 「너 최고로 쿨하다호-!」
+						RETURN 0
+				ENDIF
+			CASE 2
+				;信用してくれ
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 30
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗
+						PRINTFORMW 「거짓말이다호! %CSTR:ARG:일인칭%을 속여서 잡아먹을 생각이냐호!」
+						PRINTFORMW 「히…… 히~호~~!! 살려달라호~~!!」
+						RETURN 5
+				ELSE
+					CFLAG:ARG:우호도 += RAND:10
+					;成功(D2
+						PRINTFORMW 「쯧쯧쯧……」
+						PRINTFORMW 「그건 네 행실에 달렸다호-」
+						RETURN 0
+				ENDIF
+		ENDSELECT
+	CASE 6
+		;一緒にラクガキ
+		PRINTFORML
+		PRINTFORMW 「%CSTR:ARG:일인칭%와 함께 낙서하자호!」
+		PRINTFORML
+		PRINTFORML [1]뭘 그릴까?　[2]낙서는 안 돼
+		PRINTFORML
+		CALL INPUTINT(1,2)
+		SELECTCASE RESULT
+			CASE 1
+				;何を描こう
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 40
+					CFLAG:ARG:우호도 -= RAND:10
+					;失敗(D2
+						PRINTFORMW 「히호호-! 반응 좋은 인간이다호-!」
+						PRINTFORML 「너 피 좀 뽑아달라호!」
+						PRINTFORMW 「물감으로 쓸 거다호-!」
+						RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+						PRINTFORMW 「히호호-! 반응 좋은 인간이다호-!」
+						PRINTFORML 「우리 악마들의 무서움을 널리 알리는」
+						PRINTFORMW 「호러블한 낙서를 하겠다호-!」
+						RETURN 0
+				ENDIF
+			CASE 2
+				;落書きはダメ
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 60
+					CFLAG:ARG:우호도 -= RAND:40
+					;失敗(D2
+						PRINTFORMW 「히호…… 낙서가 안 된다면 대작을 만들겠다호-!」
+						PRINTFORML 「물감이 엄청 많이 필요하다호-!」
+						PRINTFORMW 「너 팍팍 피를 바쳐라호-!」
+						RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:10
+					;成功
+						PRINTFORML 「히… 히호!? 여기에 낙서를 했다간 나중에」
+						PRINTFORMW 「묵사발이 나도록 끔찍한 꼴을 당한다호-!?」
+						PRINTFORMW 「히… 히호…… 충고해 줘서 감사하다호~…」
+						RETURN 0
+				ENDIF
+		ENDSELECT
+	CASE 7
+		;一緒にイタズラ
+		PRINTFORML
+		PRINTFORML 「히호!」
+		PRINTFORMW 「함께 장난치자호!」
+		PRINTFORML
+		PRINTFORML [1]좋아　　　[2]안 돼
+		PRINTFORML [3]내용에 따라 다르지
+		PRINTFORML
+		CALL INPUTINT(1,2,3)
+		SELECTCASE RESULT
+			CASE 1
+				;いいよ
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 30
+					CFLAG:ARG:우호도 -= RAND:10
+					;失敗(D2
+						PRINTFORMW 「히호호! 흔쾌해서 마음에 든다호!」
+						PRINTFORMW 「인간 살육 놀이 하자호-!」
+						RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+						PRINTFORMW 「히호호! 흔쾌해서 마음에 든다호!」
+						PRINTFORMW 「슈퍼 재미있는 장난을 치겠다호~!」
+						PRINTFORMW 「……히홋! 하지만 그러고 보니……」
+						PRINTFORMW 「무슨 장난을 칠지 안 생각해뒀다호~」
+						RETURN 0
+				ENDIF
+			CASE 2
+				;駄目
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 50
+					CFLAG:ARG:우호도 -= RAND:20
+					;失敗(D2
+						PRINTFORML 「히호……」
+						PRINTFORMW 「너 너무 진지하다호……」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:20
+					;成功
+						PRINTFORMW 「혹시 쫄았냐호~?」
+						PRINTFORMW 「히홋히호호호!! 인간이란 정말 약골이다호~!」
+						RETURN 0
+				ENDIF
+			CASE 3
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				;内容による
+				IF LOCAL < 60
+					CFLAG:ARG:우호도 -= RAND:10
+					;失敗(D2
+						PRINTFORMW 「히호…… 신중파로구나호-」
+						PRINTFORMW 「사는 거 재미없지 않냐호?」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:10
+					;成功
+						PRINTFORMW 「히호호! 문제없다호-!」
+						PRINTFORMW 「인간한테 오금 접기(무릎 치기)만 하는 간단한 일이다호!」
+						RETURN 0
+				ENDIF
+		ENDSELECT
+	CASE 8
+		;ちょっと貸して
+		;技術革新でオワコンになったらこっそり名称変えてください……
+		PRINTFORML
+		PRINTFORML 「히호! 네가 가지고 있는 그거」
+		PRINTFORMW 「잠깐 빌려달라호?」
+		PRINTFORML
+		PRINTFORML [1]스마트폰?　　　[2]태블릿?
+		PRINTFORML [3]COMP 말이야?
+		PRINTFORML
+		CALL INPUTINT(1,2,3)
+		SELECTCASE RESULT
+			CASE 1
+				;スマホ
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 20
+					CFLAG:ARG:우호도 -= RAND:20
+					;失敗
+						PRINTFORMW 「키-호-! 그거 아니다호!」
+						PRINTFORMW 「얼굴 옆에 달린 귀라는 녀석이다호!」
+						PRINTFORMW 「쥐어뜯어서 확인해볼 텐데 문제없지 히호?」
+						RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:20
+					;成功(D2
+						PRINTFORML 「히호호-!」
+						PRINTFORMW 「그거 스마트폰이라고 부르는 거냐호!」
+						PRINTFORML 「다들 들고 다니던데」
+						PRINTFORMW 「목줄 같은 물건이냐호?」
+						RETURN 0
+				ENDIF
+			CASE 2
+				;タブレット
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 80
+					CFLAG:ARG:우호도 -= RAND:10
+					;失敗(D2
+						PRINTFORMW 「히호? 이 얇은 판때기는 뭐냐호?」
+						PRINTFORMW 「보아하니 무기 따위인 거로구나호!」
+						PRINTFORMW 「……공부랑… 일할 때 쓰는 도구냐호?」
+						PRINTFORMW 「쳇…… 재미없다호……」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:10
+					;成功
+						PRINTFORMW 「히호-? 두드렸더니 깨져버렸다호-」
+						PRINTFORMW 「이, 인간…? 표정이 무섭다호-……」
+						PRINTFORMW 「…………」
+						PRINTFORMW 「………………」
+						PRINTFORMW 「……미, 미안하다호-……」
+						PRINTFORMW 「이거 줄 테니까 용서해달라호~……」
+						RETURN 2
+				ENDIF
+			CASE 3
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				;COMP
+				IF LOCAL < 80
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗
+						PRINTFORMW 「%CSTR:ARG:이인칭%의 소중한 물건이니까 빌려줄 수 없다……호?」
+						PRINTFORMW 「키-호-!! 인간 구두쇠다호-!!」
+						PRINTFORMW 「이제 됐다호! 인간을 쓰러뜨린 다음에 손에 넣겠다호!!」
+						RETURN 4
+				ELSE
+					CFLAG:ARG:우호도 += RAND:20
+					;成功
+						PRINTFORMW 「이걸로 악마와 계약하는 거냐호~?」
+						PRINTFORMW 「히호! 그러~고 보니… 이 안에서 MAG 냄새가 난다호~…」
+						PRINTFORMW 「도… 동마가 되면…… 먹을 수 있는 거 무제한이다호……??」
+						PRINTFORML
+						PRINTFORMW %CALLNAME:ARG%은(는) 동마가 되고 싶어 하는 눈치로 이쪽을 보고 있다……
+						RETURN 1
+				ENDIF
+		ENDSELECT
+	CASE 9
+		PRINTFORML
+		PRINTFORMW 「인간은 제멋대로에 건방지다호!」
+		PRINTFORML
+		PRINTFORML [1]무슨 일 있었어?　[2]동감이야
+		PRINTFORML
+		CALL INPUTINT(1,2)
+		SELECTCASE RESULT
+			CASE 1
+				;何かされた
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 60
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗(D2
+						PRINTFORMW 「바로 지금 %CSTR:ARG:일인칭%한테 건방지게 말을 걸고 있다호!」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+						PRINTFORMW 「키-호-! 인간은 툭하면 %CSTR:ARG:일인칭%을 어린애 취급한다호!」
+						PRINTFORMW 「……뭐 간식거리라면…… 받아줄 수도 있다호!」
+						RETURN 0
+				ENDIF
+			CASE 2
+				;同感だ
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 20
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗
+						PRINTFORMW 「히홋! 그 수에는 안 넘어간다호!」
+						PRINTFORMW 「요전에도 그렇게 동정하는 척 다가온 인간한테」
+						PRINTFORMW 「하마터면 노예가 될 뻔했다호!」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:40
+					;成功(D2
+						PRINTFORMW 「히호…… 너 친구 없냐호?」
+						PRINTFORMW 「불쌍해지기 시작했다호……」
+						RETURN 0
+				ENDIF
+		ENDSELECT
+	CASE 10
+		PRINTFORML
+		PRINTFORMW 「히호…… 『마스코트』 같다는 말을 들었다호……」
+		PRINTFORMW 「……『마스코트』가 뭐냐호?」
+		PRINTFORML
+		PRINTFORML [1]장난감　[2]귀여운 것
+		PRINTFORML
+		CALL INPUTINT(1,2)
+		SELECTCASE RESULT
+			CASE 1
+				;オモチャ
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 100
+					CFLAG:ARG:우호도 -= RAND:20
+					;失敗(D2
+						PRINTFORMW 「히호호-! 인간은 무시무시하다호!」
+						PRINTFORML 「장난감이란 노리개라는 뜻이냐호?」
+						PRINTFORMW 「%CSTR:ARG:일인칭% 너덜너덜하게 찢겨나간다호-!」
+						RETURN 5
+				ELSE
+					CFLAG:ARG:우호도 += RAND:30
+					;成功
+						PRINTFORMW 「%CSTR:ARG:일인칭% 장난감 모델이 되면 불티나게 팔릴 것 같다호……?」
+						PRINTFORML 「히호호! 인간! %CSTR:ARG:일인칭% 장난감을 만들어서」
+						PRINTFORMW 「어리석은 인간 놈들한테서 돈을 갈취하는 거다호-!」
+						RETURN 0
+				ENDIF
+			CASE 2
+				;可愛いもの
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 20
+					CFLAG:ARG:우호도 -= RAND:30
+					;失敗
+						PRINTFORMW 「히, 히호-! 인간 표정이 무섭다호-!」
+						PRINTFORMW 「짐승이다호-! %CSTR:ARG:일인칭% 범해져 버린다호-! 살려줘호-!」
+						RETURN 5
+				ELSE
+					CFLAG:ARG:우호도 += RAND:40
+					;成功(D2
+						PRINTFORMW 「히호…… %CSTR:ARG:일인칭%…… 역시 귀엽냐호?」
+						PRINTFORMW 「자각은 하고 있었다호……」
+						RETURN 0
+				ENDIF
+		ENDSELECT
+	CASE 11
+		PRINTFORML
+		PRINTFORMW 「히호…… 바, 봐달라호-!」
+		PRINTFORML
+		PRINTFORML [1]안 봐준다　[2]조건에 따라 다르다
+;		PRINTFORML [3]今後は注目する
+		PRINTFORML
+		CALL INPUTINT(1,2)
+		SELECTCASE RESULT
+			CASE 1
+				;みのがさない
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 10
+					CFLAG:ARG:우호도 -= RAND:50
+					;失敗
+						PRINTFORMW 「집에 위독한 형제가 있다호!」
+						PRINTFORMW 「너 악마냐호! 최악이다호!」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:40
+					;成功(D2
+						PRINTFORMW 「히호…… 점점 더 인기쟁이다호-!」
+						PRINTFORMW 「%CSTR:ARG:일인칭%의 귀여움은 죄악이다호……」
+						RETURN 0
+				ENDIF
+			CASE 2
+				;条件
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 70
+					CFLAG:ARG:우호도 -= RAND:20
+					;失敗(D2
+						PRINTFORMW 「히호홋! 보아하니 %CSTR:ARG:일인칭%을 팔아넘길 속셈이구나호!」
+						PRINTFORMW 「절대로 안 속는다호-!」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:10
+					;成功
+						PRINTFORMW 「아, 알겠다호-! 뭐든지 할 테니까…호?」
+						PRINTFORMW 「히, 히호-! 그래선 도망 못 친다호-! 바, 방금 건 취소다호!」
+						RETURN 0
+				ENDIF
+		ENDSELECT
+ENDSELECT
+
+;===========================================================================
+;会話時問答
+;===========================================================================
+@QUESTION_PUB315,ARG,ARG:1
+#LOCALSIZE 4
+;RAND:X (Xは問答の個数)
+
+PRINTFORML
+CUSTOMDRAWLINE ･
+PRINTFORML
+
+DO
+	RESULT:1 = RAND:19
+
+	;0.会話継続 1.直接仲魔になる 2.何かくれる 3.奇襲される 4.敵対する 5.逃げる 6.気まずくなる 7.交渉開始
+
+	SELECTCASE RESULT:1
+;		CASE ARG:1
+;			CONTINUE
+		CASE 0
+			PRINTFORML 「히ー호ー」
+			PRINTFORMW 「인간, 뭔가 재미있는 것 좀 해줬으면 좋겠다호-」
+			PRINTFORML
+			PRINTFORML [1]노래한다　　　　[2]만담을 한다
+			PRINTFORML [3]노려본다　　　　[4]조교에 대해 논한다
+			PRINTFORML
+			CALL INPUTINT(1,2,3,4)
+			SELECTCASE RESULT
+				CASE 1
+					;1.歌う
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					;素質によって判定値がランダムに上下することもある
+					SIF ABL:PLAYER:14 >= 1
+						LOCAL += RAND:20
+					IF LOCAL < 30
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+							PRINTFORML 「땡~」
+							PRINTFORMW 「……땡 하나 탈락이다호~」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						;成功
+							PRINTFORMW 「히ー호ー♪」
+							PRINTFORML 「%CSTR:ARG:일인칭%도 즐거워졌다호-♪」
+							RETURN 0
+					ENDIF
+				CASE 2
+					;2.漫才
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 30
+						CFLAG:ARG:우호도 -= RAND:50
+						;失敗
+							PRINTFORMW 「인간… 안 팔리는 무명 개그맨 같다호…」
+							RETURN 5
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						;成功
+							PRINTFORML 「히ー호ー♪」
+							PRINTFORMW 「인간 엄청난 재능이다호-♪」
+							RETURN 0
+					ENDIF
+				CASE 3
+					;3.睨む
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					SIF TALENT:PLAYER:83 == 1
+						LOCAL += 30
+					;失敗
+					IF LOCAL < 50
+						CFLAG:ARG:우호도 -= RAND:50
+						IF TALENT:PLAYER:83 == 1
+							PRINTFORMW 「히ー호ー」
+							PRINTFORMW 「%CSTR:ARG:일인칭%을 죽이지 말아줬으면 좋겠다호-」
+							RETURN 5
+						ELSE
+							PRINTFORML 「%CSTR:ARG:일인칭%을 바보 취급하는 눈빛이다호-!!」
+							PRINTFORMW 「용서 못 한다호-!!」
+							RETURN 3
+						ENDIF
+					;成功
+					ELSE
+						IF TALENT:PLAYER:83 == 1
+							CFLAG:ARG:우호도 += 20
+							PRINTFORML 「히ー호ー」
+							PRINTFORMW 「그 눈은 악마를 죽여본 적이 있는 눈이다호-」
+							RETURN 0
+						ELSE
+							CFLAG:ARG:우호도 += RAND:20
+							PRINTFORML 「……째려보지 말았으면 좋겠다호-」
+							PRINTFORMW 「%CSTR:ARG:일인칭%이 잘못했다호-」
+							RETURN 0
+						ENDIF
+					ENDIF
+				CASE 4
+					;4.調教について語る
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 40
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+							PRINTFORML 「히ー호ー!!」
+							PRINTFORMW 「악당은 응징해주겠다호-!!」
+							RETURN 4
+					ELSE
+						CFLAG:ARG:우호도 += RAND:40
+						;成功
+							PRINTFORML 「히홋!?」
+							PRINTFORM 「겉보기와 달리 무시무시한 
+							IF TALENT:PLAYER:남자 == 0 || TALENT:PLAYER:오토코노코 == 1
+								PRINTFORMW 누나다호-」
+							ELSE
+								PRINTFORMW 형이다호-」
+							ENDIF
+							RETURN 0
+					ENDIF
+			ENDSELECT
+		CASE 1
+			;どの人間なら殺戮しても…
+			;D2主は一般人だけどあなたはPS構成員なので原作の選択肢から「！」マーク撤廃改変しました
+			PRINTFORML
+			PRINTFORML 「히호…… 어떤 인간이라면」
+			PRINTFORMW 「살육해도 괜찮냐호-?」
+			PRINTFORML
+			PRINTFORML [1]그렇다면……　[2]어느 쪽도 안 돼
+			PRINTFORML
+			CALL INPUTINT(1,2)
+			SELECTCASE RESULT
+				CASE 1
+					;それじゃ……
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 70
+						CFLAG:ARG:우호도 -= RAND:20
+						;失敗
+							PRINTFORMW 「너…… 너…… 피도 눈물도 없는 인간이냐호!?」
+							PRINTFORMW 「동족을 살육하다니 진짜 미쳤다호……」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:50 + 10
+						;成功(D2原文ちょい改変
+							PRINTFORMW 「너…… 너…… 피도 눈물도 없는 인간이냐호!?」
+							PRINTFORMW 「마음에 들었다호! %CSTR:ARG:일인칭% 최고로 감탄했다호!」
+							PRINTFORMW 「%CSTR:ARG:일인칭% 너를 초절정 리스펙트한다호-!」
+							PRINTFORML
+							PRINTFORMW %CALLNAME:ARG%은(는) %CALLNAME:PLAYER%의 동의도 없이 %CALLNAME:PLAYER%의 파티에 가입하려고 하고 있다……
+							RETURN 1
+					ENDIF
+				CASE 2
+					;どれも駄目
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 60
+						CFLAG:ARG:우호도 -= RAND:40
+						;失敗(D2
+							PRINTFORMW 「히호…… 너 재미없다호……」
+							PRINTFORMW 「%CSTR:ARG:일인칭% 기분이 팍 식어버렸다호-」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:10
+						;成功
+							PRINTFORMW 「사냥감 가로채기는 안 되는 거냐호-?」
+							PRINTFORMW 「그럼 대신에 다른 거라도 내놓아라호-」
+							PRINTFORML
+							RETURN 7
+					ENDIF
+			ENDSELECT
+		CASE 2
+			;こすぷれって何
+			PRINTFORML
+			PRINTFORML 「히호…… 『코스프레』라는 건」
+			PRINTFORMW 「할로윈 장난인 거냐호?」
+			PRINTFORML
+			PRINTFORML [1]조금 다르다　[2]대충 비슷하다
+			PRINTFORML
+			CALL INPUTINT(1,2)
+			SELECTCASE RESULT
+				CASE 1
+					;ちょっと違う
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 50
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗(D2
+							PRINTFORMW 「『조금』이란 건 뭐냐호?」
+							PRINTFORMW 「장난칠 생각은 없는 거냐호!?」
+							PRINTFORMW 「……점점 짜증이 치밀어 오른다호-!」
+							PRINTFORMW 「아주 박살을 내주겠다호-!」
+							RETURN 3
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						;成功
+							PRINTFORMW 「히홋!? 『코스프레』란 건…… 야한 짓인 거냐호!?」
+							PRINTFORMW 「히, 히호-…… %CSTR:ARG:일인칭%, 사양해두겠다호~……」
+							PRINTFORMW 「인간의 변태 취미에 어울려주는 건 사양이다호~…」
+							RETURN 0
+					ENDIF
+				CASE 2
+					;だいたい同じ
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 80
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗(D2
+							PRINTFORMW 「『대충』이란 건 뭐냐호?」
+							PRINTFORMW 「같다는 거냐 다르다는 거냐 똑바로 해라호!」
+							PRINTFORMW 「점점 짜증이 치밀어 오른다호-!」
+							PRINTFORMW 「너 한 대 후려갈겨도 되냐호!?」
+							RETURN 4
+					ELSE
+						CFLAG:ARG:우호도 += RAND:10
+						;成功
+							PRINTFORMW 「장난치는 녀석이 『코스프레』를 하는 거냐호?」
+							PRINTFORMW 「그럼 %CSTR:ARG:일인칭%도 『코스프레』 하겠다호-! 이러면 마음껏 장난칠 수 있다호-!」
+							PRINTFORMW 「…히호? 네 아지트에 가면 『코스프레』 할 수 있냐호?」
+							PRINTFORMW 「히호-! %CSTR:ARG:일인칭% 너의 아지트에 가고 싶다호-!」
+							PRINTFORML
+							PRINTFORMW %CALLNAME:ARG%은(는) %CALLNAME:PLAYER%의 동의도 없이 %CALLNAME:PLAYER%의 파티에 가입하려고 하고 있다……
+							RETURN 1
+					ENDIF
+			ENDSELECT
+		CASE 3
+			;イタズラの内容
+			PRINTFORML
+			PRINTFORMW 「히호! 무슨 장난을 칠지」
+			PRINTFORMW 「함께 생각해보자호!」
+			PRINTFORML
+			PRINTFORML [1]뭐가 좋은데?　[2]귀찮아
+			PRINTFORML
+			CALL INPUTINT(1,2)
+			SELECTCASE RESULT
+				CASE 1
+					;何がいい？
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 70
+						CFLAG:ARG:우호도 -= RAND:10
+						;失敗(D2
+							PRINTFORML 「그걸 알면 의논도 안 했다호」
+							PRINTFORMW 「너한테 의논해 봐야 소용없다호-」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:20
+						;成功
+							PRINTFORMW 「%CSTR:ARG:일인칭%이 정해도 되냐호~?」
+							PRINTFORMW 「그럼 %CSTR:ARG:일인칭%…… 아수라장이라는 거 해보고 싶다호-!」
+							PRINTFORMW 「피바람 몰아치는 서로 죽이기 배틀이다호-!」
+							RETURN 0
+					ENDIF
+				CASE 2
+					;面倒臭い
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 30
+						CFLAG:ARG:우호도 -= RAND:20
+						;失敗
+							PRINTFORMW 「호~~~…… 너한텐 절레절레다호……」
+							PRINTFORMW 「이런 간단한 것도 못 하다니」
+							PRINTFORMW 「바보 멍청이였던 거로구나호~~……」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						;成功(D2
+							PRINTFORML 「히-호-! %CSTR:ARG:일인칭%도 지금」
+							PRINTFORMW 「귀찮아 죽겠는 기분이다호!」
+							PRINTFORMW 「너랑은 죽이 잘 맞을 것 같다호!」
+							RETURN 0
+					ENDIF
+			ENDSELECT
+		CASE 4
+			;オイラのアイ
+			PRINTFORML
+			PRINTFORML 「%CSTR:ARG:일인칭%의 사랑을」
+			PRINTFORMW 「받아주면 좋겠다호-!」
+			PRINTFORML
+			PRINTFORML [1]좋아　　[2]싫어
+			PRINTFORML
+			CALL INPUTINT(1,2)
+			SELECTCASE RESULT
+				CASE 1
+					;いいよ
+					
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					LOCAL:2 = MAXBASE:PLAYER:ＨＰ * 17 /100
+					IF LOCAL < 60
+						;30
+						CFLAG:ARG:우호도 += RAND:20
+						;失敗(D2
+						PRINTFORML 「히호호-!」
+						PRINTFORMW 「이것이 %CSTR:ARG:일인칭%의 사랑이다호-!」
+						PRINTFORMW 악마의 눈에서 광선이 날아왔다!
+
+						;RPG内TALK_COMMOMから持ってきた
+						IF SOFT_ON("아미티프로텍터") && (ABL:ARG:속성LD == ABL:PLAYER:속성LD || ABL:ARG:속성LC == ABL:PLAYER:속성LC)
+							PRINTFORMW 그러나 아미티 프로텍터가 대미지를 막아냈다!
+						ELSE
+							PRINTFORMW 왠지 기분이 좋다……
+							PRINTFORMW %CALLNAME:PLAYER%은(는) {LOCAL:2}의 대미지를 입었다
+							CALL VAR_HP,PLAYER,-LOCAL:2,"食いしばり無効ダメージ"
+						ENDIF
+						;---- EDIT 019 ADD END -------------------------
+						PRINTFORMW 「%CSTR:ARG:일인칭%의 사랑…… 똑똑히 받아주었냐호?」
+						RETURN 0
+					ELSE
+						CFLAG:ARG:우호도 += RAND:40
+						;成功(D2
+						PRINTFORMW 「좋~아 전력으로 가겠다호-!」
+						PRINTFORMW 악마의 주먹 펀치가 날아왔다!
+						IF SOFT_ON("아미티프로텍터") && (ABL:ARG:속성LD == ABL:PLAYER:속성LD || ABL:ARG:속성LC == ABL:PLAYER:속성LC)
+							PRINTFORMW 그러나 아미티 프로텍터가 대미지를 막아냈다!
+						ELSE
+							PRINTFORMW 제법 강렬하다!
+							CALL VAR_HP,PLAYER,-LOCAL:2,"食いしばり無効ダメージ"
+							PRINTFORMW %CALLNAME:PLAYER%은(는) {LOCAL:2}의 대미지를 입었다
+							PRINTFORMW 「%CSTR:ARG:일인칭%의 사랑…… 똑똑히 받아주었냐호?」
+						ENDIF
+						RETURN 0
+					ENDIF
+				CASE 2
+					;いやだ
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 50
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+							PRINTFORML 「히호……」
+							PRINTFORMW 「너는 차갑다호……」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:10
+						;成功(D2
+							PRINTFORML 「히호……」
+							PRINTFORMW 「너는 차갑다호……」
+							PRINTFORMW 「그럼…… 대신에 거래하자호-」
+							RETURN 7
+					ENDIF
+			ENDSELECT
+		CASE 5
+			;大笑い
+			PRINTFORML
+			PRINTFORMW 「히호…… 히호호호호-!!」
+			PRINTFORMW 「히, 히호, 히홋, 히호호-!」
+			PRINTFORMW 악마는 미친 듯이 포복절도하고 있다……
+			PRINTFORML
+			PRINTFORML [1]뭐가 웃긴데?　[2]괴로운 거야?
+			PRINTFORML
+			CALL INPUTINT(1,2)
+			SELECTCASE RESULT
+				CASE 1
+					;何が面白い？
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 50
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗(D2
+							PRINTFORMW 「히호…… 웃겨 죽을 뻔했다호……」
+							PRINTFORMW 「네 덕분에 살았다호……」
+							PRINTFORMW 「네 탓에 재미없어졌다호!」
+							PRINTFORMW 「부글부글이다호-!!」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						;成功
+							PRINTFORMW 「힛, 히호-…… 히호-……」
+							PRINTFORMW 「어, 어떻게든 웃음을 멈췄다호……」
+							PRINTFORMW 「인간 얼굴이란 참 멍청해 보인다호…… 히호 히홋 히호호호!」
+							RETURN 0
+					ENDIF
+				CASE 2
+					;苦しいの？
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 20
+						CFLAG:ARG:우호도 -= RAND:20
+						;失敗
+							PRINTFORMW 「히호, 호…… 시시해서 웃음이 멎었다호……」
+							PRINTFORMW 「어디의 누군가가 멍청한 질문을 한 탓에 흥이 다 깨졌다호-」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						;成功(D2
+							PRINTFORMW 「히호!? 깜짝 놀라서 웃음이 멎었다호……」
+							PRINTFORMW 「덕분에 웃다 죽는 건 면했다호!」
+							PRINTFORMW 「감사한다호-!」
+							RETURN 0
+					ENDIF
+			ENDSELECT
+		CASE 6
+			;がっこうのせいふく
+			;本編でも制服着てないキャラとの交渉でこの会話していたのでヒーホーが無知と解釈しました
+			PRINTFORML
+			PRINTFORMW 「그거 『학교』 교복이냐호?」
+			PRINTFORMW 「조금 부럽다호-」
+			PRINTFORML
+			PRINTFORML [1]그냥 옷이다　　[2]최강의 장비다
+			PRINTFORML [3]저주받은 장비다
+			PRINTFORML
+			CALL INPUTINT(1,2,3)
+			SELECTCASE RESULT
+				CASE 1
+					;ただの服だ(両回答D2改変
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 20
+						CFLAG:ARG:우호도 -= RAND:20
+						;失敗
+							PRINTFORMW 「히호? 공짜(타다)라면 %CSTR:ARG:일인칭%이 갖고 싶다호-!」
+							PRINTFORMW 「너 그 옷 필요 없으면 %CSTR:ARG:일인칭%한테 넘겨라호-!」
+							RETURN 3
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						
+						;成功
+							PRINTFORMW 「히호? 공짜라면 %CSTR:ARG:일인칭%도 갖고 싶다호-!」
+							PRINTFORMW 「어디로 가야 공짜로 얻을 수 있냐호-?」
+							RETURN 0
+					ENDIF
+				CASE 2
+					;最強の装備だ
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 20
+						CFLAG:ARG:우호도 -= RAND:10
+						;失敗
+							PRINTFORMW 「최, 최강…… 꿀꺽……」
+							PRINTFORMW 「히, 히호-! 네 것은 %CSTR:ARG:일인칭% 것! %CSTR:ARG:일인칭% 것도 %CSTR:ARG:일인칭% 것이다호-!」
+							RETURN 3
+					ELSE
+						CFLAG:ARG:우호도 += RAND:40
+						;成功(D2
+							PRINTFORMW 「최, 최강인 거냐호!?」
+							PRINTFORMW 「%CSTR:ARG:일인칭%도 입으면 강해질 수 있냐호?」
+							RETURN 0
+					ENDIF
+				CASE 3
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					;呪いの装備だ
+					IF LOCAL < 60
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗(D2
+							PRINTFORMW 「히호…… 저주가 걸려 있는 거냐호?」
+							PRINTFORMW 「왜 그런 걸 입고 있는 거냐호!?」
+							PRINTFORMW 「가, 다가오지 마라호-! 저주 옮는다호-!!」
+							RETURN 
+					ELSE
+						CFLAG:ARG:우호도 += RAND:60
+						;成功
+							PRINTFORMW 「저… 저주의 힘을 지배하고 있는 거냐호!?」
+							PRINTFORMW 「이, 인간…… 멋지다호…… 두근두근……」
+							RETURN 0
+					ENDIF
+			ENDSELECT
+		CASE 7
+			;ニンゲンってザンコク
+			PRINTFORML
+			PRINTFORMW 「인간이란…… 잔혹하다호……」
+			PRINTFORML
+			PRINTFORML [1]확실히 잔혹하다　[2]악마가 할 소리냐
+			PRINTFORML
+			CALL INPUTINT(1,2)
+			SELECTCASE RESULT
+				CASE 1
+					;確かに残酷だ
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 80
+						CFLAG:ARG:우호도 -= RAND:20
+						;失敗(D2
+							PRINTFORML 「히호…… 칭찬받았다고 해서」
+							PRINTFORMW 「조금은 겸손해라호……」
+							PRINTFORMW 「살짝 정떨어졌다호……」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:40
+						;成功
+							PRINTFORML 「힛호-! 너한테선 아주」
+							PRINTFORMW 「잔혹한 냄새가 난다호!」
+							PRINTFORMW 「쿠… 쿨하다호! %CSTR:ARG:일인칭% 너를 따라가겠다호!」
+							PRINTFORML
+							PRINTFORMW %CALLNAME:ARG%은(는) %CALLNAME:PLAYER%의 동의도 없이 %CALLNAME:PLAYER%의 파티에 가입하려고 하고 있다……
+							RETURN 1
+					ENDIF
+				CASE 2
+					;悪魔が言うな
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 10
+						CFLAG:ARG:우호도 += RAND:40
+						;失敗
+							PRINTFORMW 「히, 히호호~… 들켜버렸냐호?」
+							PRINTFORMW 「%CSTR:ARG:일인칭%… 이래 봬도 잔혹계의 카리스마란 말이다호……」
+							PRINTFORMW 「히홋! %CSTR:ARG:일인칭%의 잔혹함… 특별히 보여주겠다호~!」
+							RETURN 3
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						;成功(D2
+							PRINTFORMW 「히, 히호호-!」
+							PRINTFORMW 「%CSTR:ARG:일인칭% 따윈 아직 멀었다호……」
+							RETURN 0
+					ENDIF
+			ENDSELECT
+		CASE 8
+			;おなか
+			PRINTFORML
+			PRINTFORMW 「%CSTR:ARG:일인칭% 배에서 꼬르륵 소리가 난다호-!」
+			PRINTFORML
+			PRINTFORML [1]배고파?　[2]배탈 난 거야?
+			PRINTFORML
+			CALL INPUTINT(1,2)
+			SELECTCASE RESULT
+				CASE 1
+					;お腹空いた？
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 30
+						CFLAG:ARG:우호도 -= RAND:10
+						;失敗
+							PRINTFORMW 「히호! 잘도 알아챘구나호!」
+							PRINTFORML 「정답을 맞힌 너는 특별히」
+							PRINTFORMW 「%CSTR:ARG:일인칭%의 밥으로 삼아주겠다호-!」
+							RETURN 3
+					ELSE
+						CFLAG:ARG:우호도 += RAND:10
+						;成功(D2
+							PRINTFORMW 「히호! 잘도 알아챘구나호!」
+							PRINTFORML 
+							PRINTFORMW 「……라고 말하고 싶지만」
+							PRINTFORMW 「마력이 넘쳐흐를 것 같다호-!」
+							RETURN 0
+					ENDIF
+				CASE 2
+					;腹を壊した？
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 20
+						CFLAG:ARG:우호도 -= RAND:10
+						;失敗
+							PRINTFORMW 「히호~…… 아까 먹은 인간… 분명 썩어있었던 거다호……」
+							PRINTFORMW 「히호… 이래저래 다 인간 탓이다호-!」
+							PRINTFORMW 「부글부글부글-! 썩은 인간 따위 내버려 두지 마라호-!」
+							RETURN 4
+					ELSE
+						CFLAG:ARG:우호도 += RAND:10
+						;成功(D2
+							PRINTFORMW 「히호…… 그럴지도 모른다호……」
+							PRINTFORMW 「마력 충전하고 오겠다호……」
+							PRINTFORMW %CALLNAME:ARG%은(는) 비틀거리며 대열을 이탈했다……
+							RETURN 5
+					ENDIF
+			ENDSELECT
+		CASE 9
+			;カワイイは正義
+			PRINTFORML
+			PRINTFORML 「히호호호-!」
+			PRINTFORMW 「귀여움은 정의다호-!」
+			PRINTFORML
+			PRINTFORML [1]격하게 끄덕인다　[2]차가운 눈으로 본다
+			PRINTFORML [3]무시한다
+			PRINTFORML
+			CALL INPUTINT(1,2,3)
+			SELECTCASE RESULT
+				CASE 1
+					;強く頷く
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 50
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+							PRINTFORML 「히… 히홋!?」
+							PRINTFORMW 「이, 인간의 눈빛…… 왠지 소름 돋는다호……」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						;成功(D2
+							PRINTFORMW 「히-호-! 너 제법 고분고분하구나호-!」
+							PRINTFORMW 「%CSTR:ARG:일인칭%의 꼬붕이 되고 싶냐호?」
+							RETURN 0
+					ENDIF
+				CASE 2
+					;白い目で見る
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					SIF TALENT:PLAYER:새드
+						LOCAL += RAND:20
+					IF LOCAL < 40
+						CFLAG:ARG:우호도 -= RAND:20
+						;失敗
+							PRINTFORML 「히ー호ー？」
+							PRINTFORMW 「%CSTR:ARG:일인칭%의 귀여움도 모르다니…… 쯧쯧이다호~」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:40 + 10
+						;成功(D2
+							PRINTFORMW 「히호……!?」
+							PRINTFORMW 「뭔…… 왠지 두근두근거린다호-!」
+							RETURN 0
+					ENDIF
+				CASE 3
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					;無視する
+					IF LOCAL < 30
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+							PRINTFORMW 「히호!? 씹다니 제법 배짱이 두둑하다호-!!」
+							PRINTFORMW 「%CSTR:ARG:일인칭% 말을 안 듣는 녀석은 호- 투 헤에에엘!!」
+							RETURN 3
+					ELSE
+						CFLAG:ARG:우호도 += RAND:20
+						;成功(D2
+							PRINTFORML 「히호호-!」
+							PRINTFORMW 「부끄러워하지 않아도 된다호-!」
+							RETURN 0
+					ENDIF
+			ENDSELECT
+		CASE 10
+			PRINTFORML 
+			PRINTFORML 「히호히호-!!」
+			PRINTFORMW 「저리 가라호-!!」
+			PRINTFORML
+			PRINTFORML [1]내 얘기야?　[2]쫓아낸다?
+			PRINTFORML
+			CALL INPUTINT(1,2)
+			SELECTCASE RESULT
+				CASE 1
+					;自分のこと？
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 10
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+							PRINTFORMW 「키-호-! 그렇다호!」
+							PRINTFORMW 「네가 가려서 저기 있는 TV가 잘 안 보였다호!」
+							PRINTFORMW 「너 때문이라호-! 너 따위 싫다호-!」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:20
+						;成功(D2
+							PRINTFORMW 「아, 아니다호! 저기에 이상한 녀석이……」
+							PRINTFORMW 「……저건 거울에 비친 %CSTR:ARG:일인칭%?」
+							PRINTFORMW 「……아, 아무한테도 말하지 말아달라호-!」
+							RETURN 0
+					ENDIF
+				CASE 2
+					;追い払う？
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 30
+						CFLAG:ARG:우호도 -= RAND:20
+						;失敗
+							PRINTFORMW 「부글부글-! 네가 방해된다호!」
+							PRINTFORMW 「그런데도 다른 악마한테 뒤집어씌우다니……」
+							PRINTFORMW 「대가리가 너무 꽃밭이다호… 참 한심하다호-……」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:20
+						;成功(D2
+							PRINTFORMW 「부글부글-! 너 말이다호! 대가리가 너무 꽃밭이다호!」
+							PRINTFORMW 「하지만… 꽃밭이라 왠지 마음에 들기 시작했다호……」
+							RETURN 0
+					ENDIF
+			ENDSELECT
+		CASE 11
+			PRINTFORML
+			PRINTFORML 「히…… 히호……」
+			PRINTFORMW 「%CSTR:ARG:일인칭% 귀엽다는 말을 들었다호……」
+			PRINTFORML
+			PRINTFORML [1]확실히 귀여워　[2]잘못 들은 거야
+			PRINTFORML [3]부끄러워하지 마라 멍청아
+			PRINTFORML
+			CALL INPUTINT(1,2,3)
+			SELECTCASE RESULT
+				CASE 1
+					;確かに可愛い
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 80
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗(D2
+							PRINTFORML 「히호! 다가오지 마라호!」
+							PRINTFORMW 「%CSTR:ARG:일인칭%을 팔아넘길 속셈이다호!」
+							RETURN 4
+					ELSE
+						CFLAG:ARG:우호도 += RAND:50
+						;成功
+							PRINTFORMW 「히… 히호… 호, 혹시… 사랑 고백이란 거냐호……?」
+							PRINTFORMW 「안 된다호-! %CSTR:ARG:일인칭%…… 아직 마음의 준비가……」
+							PRINTFORMW 「착, 착각이었다호…? 히호-! 이상한 말 하지 말아달라호!」
+							RETURN 0
+					ENDIF
+				CASE 2
+					;聞き間違いだ
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 10
+						CFLAG:ARG:우호도 -= RAND:20
+						;失敗
+							PRINTFORMW 「%CSTR:ARG:일인칭%이 안 귀엽다고 말하고 싶은 거냐호?」
+							PRINTFORMW 「인간 쪽이 훨씬 안 귀엽다호!」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						;成功(D2
+							PRINTFORMW 「히호…… 안심했다호……」
+							PRINTFORMW 「귀여웠다간 조교당해서 팔려나갈 뻔했다호……」
+							PRINTFORMW 「너는 좋은 녀석인 것 같다호……」
+							RETURN 0
+					ENDIF
+				CASE 3
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					;照れるなボケ
+					IF LOCAL < 10
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+							PRINTFORMW 「%CSTR:ARG:일인칭%이 진지하게 고민 상담 중인데 장난치지 말아줬으면 좋겠다호!」
+							PRINTFORMW 「너는 매운맛을 봐야 정신을 차리는 모양이구나호!」
+							PRINTFORMW 「%CSTR:ARG:일인칭%의 철권제재를 머-억-어-라-호-!」
+							RETURN 3
+					ELSE
+						CFLAG:ARG:우호도 += RAND:20
+						;成功(D2
+							PRINTFORMW 「히호홋! %CSTR:ARG:일인칭% 알고 있다호!」
+							PRINTFORMW 「너 같은 녀석을 츤데레라고 부른다호-!」
+							RETURN 0
+					ENDIF
+			ENDSELECT
+		CASE 12
+			PRINTFORML
+			PRINTFORML 「%CSTR:ARG:일인칭%와 큰 건수 하나」
+			PRINTFORMW 「치지 않겠냐호?」
+			PRINTFORML
+			PRINTFORML [1]좋네!　　　[2]위험하다면 싫어
+			PRINTFORML [3]건수(산)가 뭔데?
+			PRINTFORML
+			CALL INPUTINT(1,2,3)
+			SELECTCASE RESULT
+				CASE 1
+					;いいね
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 20
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗
+							PRINTFORMW 「힛호-! 그래야지호-!」
+							PRINTFORMW 「그럼 %CSTR:ARG:일인칭%…… 저 꼭대기가 하얀 산에 오르고 싶다호-!」
+							PRINTFORMW 「히호? 도쿄에서는 너무 멀어서 못 간다호?」
+							PRINTFORMW 「키-호-! 기대하게 만들지 마라호-!」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						;成功(D2
+							PRINTFORMW 「그럼 당장 부탁한다호!」
+							PRINTFORMW 「이거 시체를 묻어둔 산더미다호-!」
+							RETURN 0
+					ENDIF
+				CASE 2
+					;危険ならいや
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 70
+						CFLAG:ARG:우호도 -= RAND:20
+						;失敗(D2
+							PRINTFORMW 「히호…… 유감스러운 인간이다호……」
+							PRINTFORMW 「너의 악마 사냥도 위험하다호-」
+							PRINTFORMW 「…………」
+							PRINTFORMW 「점점 배알이 꼴려온다호-!」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						;成功
+							PRINTFORMW 「히호-? 위험하지 않으니까 안심이다호!」
+							PRINTFORMW 「등 뒤를 찔릴 것 같으면 너로 방패 삼을 테니 안전하다호!」
+							RETURN 0
+					ENDIF
+				CASE 3
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					;ヤマって何
+					IF LOCAL < 20
+						CFLAG:ARG:우호도 -= RAND:10
+						;失敗
+							PRINTFORMW 「그런 것도 모르다니… 너 설마 풋내기 야매냐호?」
+							PRINTFORMW 「%CSTR:ARG:일인칭% 촌뜨기랑 어울리는 건 사양이다호~」
+							RETURN 5
+					ELSE
+						CFLAG:ARG:우호도 += RAND:20
+						;成功(D2
+							PRINTFORMW 「산(건수)은 산이다호!」
+							PRINTFORMW 「잘잘한 걸 따지는 녀석이다호!」
+							RETURN 0
+					ENDIF
+			ENDSELECT
+		CASE 13
+			PRINTFORML
+			PRINTFORML 「히호…… 배고프다호……」
+			PRINTFORMW 「뭔가 먹고 싶다호……」
+			PRINTFORML
+			PRINTFORML [1]뭐 좀 먹을래?　[2]뭐 좀 먹자
+			PRINTFORML
+			CALL INPUTINT(1,2)
+			SELECTCASE RESULT
+				CASE 1
+					;何か食べる？
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 60
+						CFLAG:ARG:우호도 -= RAND:40
+						;失敗(D2
+							PRINTFORMW 「히호! 그렇다면……」
+							PRINTFORMW 「너의 한쪽 팔이나 한쪽 다리 아무거나 달라호-!」
+							PRINTFORMW 「……안 될 거면 처음부터 권하지 마라호! 기분 잡쳤다호-!!」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:50
+						;成功
+							PRINTFORMW %CALLNAME:PLAYER%은(는) 운 좋게도 술과 안주를 가지고 있었다!
+							PRINTFORMW 「히호… 딸꾹… 히호-… 기분 좋다호~♪」
+							RETURN 7
+					ENDIF
+				CASE 2
+					;何か食べよう
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 10
+						CFLAG:ARG:우호도 -= RAND:10
+						;失敗
+							PRINTFORMW 「히호-… 그럼 %CSTR:ARG:일인칭%은 너의 얼굴을 뜯어먹겠다호……」
+							PRINTFORMW 「인간은 얼굴을 뜯어서 먹여준다고 애니에서 봤다호!」
+							RETURN 3
+					ELSE
+						CFLAG:ARG:우호도 += RAND:50
+						;成功(D2
+							PRINTFORMW 「히호호! 네가 쏘는 거냐호!?」
+							PRINTFORMW 「통이 큰 인간이다호-!」
+							RETURN 0
+					ENDIF
+			ENDSELECT
+		CASE 14
+			PRINTFORML
+			PRINTFORMW 「너 %CSTR:ARG:일인칭%의 가신이 되어라호-!」
+			PRINTFORML
+			PRINTFORML [1]네가 되어라　[2]좋아
+			PRINTFORML
+			CALL INPUTINT(1,2)
+			SELECTCASE RESULT
+				CASE 1
+					;おまえがなれ
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 20
+						CFLAG:ARG:우호도 -= RAND:50
+						;失敗
+							PRINTFORMW 「%CSTR:ARG:일인칭%을 향해 그 태도는 뭐냐호!」
+							PRINTFORMW 「가신 주제에 건방지다호! 벌을 내려주겠다호-!」
+							RETURN 3
+					ELSE
+						CFLAG:ARG:우호도 += RAND:100
+						;成功(D2
+							PRINTFORML 「히호……읏!」
+							PRINTFORMW 「설마 하던 당당함이다호……!」
+							PRINTFORMW 「조금 멋지다호 친하게 지내줘도 괜찮겠다호-!」
+							RETURN 0
+					ENDIF
+				CASE 2
+					;いいよ
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 10
+						CFLAG:ARG:우호도 += RAND:30
+						;失敗
+							PRINTFORMW 「히호히호! 말이 척척 통하는 똑똑한 인간이다호-!」
+							PRINTFORMW 「그럼 우선…… %CSTR:ARG:일인칭% 배고프니까 생체 MAG를 헌상해라호-!」
+							RETURN 3
+					ELSE
+						CFLAG:ARG:우호도 += RAND:20
+						;成功(D2
+							PRINTFORMW 「히호히호-! 손쉬운 호구 인간이다호-!」
+							PRINTFORMW 「……너무 쉬운 놈이라 걱정이다호 가신 따윈 필요 없다호……」
+							RETURN 0
+					ENDIF
+			ENDSELECT
+		CASE 15
+			PRINTFORML
+			PRINTFORMW 「너 살인에 흥미 있냐호?」
+			PRINTFORML
+			PRINTFORML [1]있다　　[2]없다
+			PRINTFORML
+			CALL INPUTINT(1,2)
+			SELECTCASE RESULT
+				CASE 1
+					;ある
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 20
+						CFLAG:ARG:우호도 -= RAND:20
+						;失敗
+							PRINTFORMW 「호… 그러~고 보니… 너의 손에선 살인의 냄새가 난다호……」
+							PRINTFORMW 「…히홋!? %CSTR:ARG:일인칭%… 위기냐호!? 사, 살려달라호~!」
+							RETURN 5
+					ELSE
+						CFLAG:ARG:우호도 += RAND:30
+						;成功(D2
+							PRINTFORML 「히호! 살았다호!」
+							PRINTFORMW 「죽여줬으면 하는 녀석이 있다호!」
+							PRINTFORMW 「『살충제』라는 녀석이다호!」
+							PRINTFORMW 「벌레에 물려서 가렵다호-!」
+							RETURN 0
+					ENDIF
+				CASE 2
+					;ない
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 70
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗(D2
+							PRINTFORMW 「너 악마를 죽이고 있구나호!」
+							PRINTFORMW 「거짓말쟁이는 안 된다호-!」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:50
+						;成功
+							PRINTFORMW 「자기 손은 안 더럽히고 나쁜 짓을 하는 거냐호…!?」
+							PRINTFORMW 「히… 히호-ᆺ! 잔인하다호! 사악하다호!」
+							PRINTFORMW 「이, 인간…… 최고로 쿨하다호-!!」
+							RETURN 0
+					ENDIF
+			ENDSELECT
+		CASE 16
+			PRINTFORML
+			PRINTFORMW 「『인터넷』 동영상을 봤다호!」
+			PRINTFORMW 「요즘 살육 쇼는 눈앞에서 직접 안 보는 거냐호-?」
+			PRINTFORML
+			PRINTFORML [1]가짜로 만든 거다　　[2]주작(연출)이다
+			PRINTFORML [3]어린애는 보지 마라
+			PRINTFORML
+			CALL INPUTINT(1,2,3)
+			SELECTCASE RESULT
+				CASE 1
+					;作り物
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 20
+						CFLAG:ARG:우호도 -= RAND:20
+						;失敗
+							PRINTFORMW 「가짜에 놀아나고 있는 거냐호!?」
+							PRINTFORMW 「%CSTR:ARG:일인칭% 왠지 부글부글 화가 난다호……」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:20
+						;成功(D2
+							PRINTFORMW 「히호…… 가짜인 거냐호……」
+							PRINTFORMW 「인간이란 잔혹하다호-」
+							RETURN 0
+					ENDIF
+				CASE 2
+					;やらせ
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 50
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗(D2
+							PRINTFORML 「부글부글-! %CSTR:ARG:일인칭% 같은 몸이」
+							PRINTFORMW 「속임수에 걸려들었단 말이냐호!」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:20
+						;成功
+							PRINTFORMW 「주작이란 게 뭐냐호?」
+							PRINTFORMW 「히호-!? 상사한테 명령받는 거냐호!?」
+							PRINTFORMW 「히호-… 히호호… 인간한테는 동정을 표한다호……」
+							RETURN 0
+					ENDIF
+				CASE 3
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					;子供は見るな
+					IF LOCAL < 70
+						CFLAG:ARG:우호도 -= RAND:30
+						;失敗(D2
+						;元台詞が「みせいねん」でera勢にはまず当てはまらなかったので改変してます
+							PRINTFORMW 「너도 악마에 비하면 아직 애송이다호-!」
+							PRINTFORMW 「애송이한테 애 취급당하고 싶지 않다호!」
+							RETURN 6
+					ELSE
+						CFLAG:ARG:우호도 += RAND:10
+						;成功
+							PRINTFORMW 「시~렁호! 하지 말라고 하면 더 보고 싶어지는 법이다호~!」
+							PRINTFORMW 「억울하면 말려보든가호~! 히호홋!」
+							RETURN 0
+					ENDIF
+			ENDSELECT
+		CASE 17
+			PRINTFORML
+			PRINTFORML 「인간이란 제법 폼 난다호-!」
+			PRINTFORMW 「진짜배기 살육 쇼다호!」
+			PRINTFORML
+			PRINTFORML [1]……뭐가?　[2]살인사건!?
+			PRINTFORML
+			CALL INPUTINT(1,2)
+			SELECTCASE RESULT
+			CASE 1
+				;なにが
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 10
+					CFLAG:ARG:우호도 -= RAND:20
+					;失敗
+						PRINTFORMW 「왜 %CSTR:ARG:일인칭%이 하나부터 열까지 설명해줘야 하는 거냐호!」
+						PRINTFORMW 「히호~… 요즘 젊은 인간들은 글러 먹었다호!」
+						RETURN 6
+				ELSE
+					CFLAG:ARG:우호도 += RAND:20
+					;成功(D2
+						PRINTFORMW 「%CSTR:ARG:일인칭% 봤다호! 난도질당해서 파닥거리고 있었다호-!」
+						PRINTFORMW 「『활어회』라는 녀석 너도 먹어본 적 있냐호!?」
+						RETURN 0
+				ENDIF
+			CASE 2
+				;殺人事件
+				LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+				IF LOCAL < 20
+					CFLAG:ARG:우호도 += RAND:30
+					;失敗
+						PRINTFORMW 「그렇다호! %CSTR:ARG:일인칭%도 살인사건 저지르고 싶다호-!」
+						PRINTFORMW 「너는 제1마을사람이 되는 거다호! 간다호~！」
+						RETURN 3
+				ELSE
+					CFLAG:ARG:우호도 += RAND:40
+					;成功(D2
+						PRINTFORMW 「쯧쯧쯧…… 조금 너무 가까이 붙었다호……」
+						PRINTFORMW 「보아하니 너 살육 좋아하는구나호! %CSTR:ARG:일인칭%와 죽이 잘 맞을 것 같다호-!」
+						RETURN 0
+				ENDIF
+			ENDSELECT
+		CASE 18
+			PRINTFORML
+			PRINTFORMW 「히호! 온라인 게임은 살육 무제한인 거냐호!?」
+			PRINTFORML
+			PRINTFORML [1]그건 오해다　[2]어떤 의미에선 그래
+			PRINTFORML
+			CALL INPUTINT(1,2)
+			SELECTCASE RESULT
+				CASE 1
+					;誤解
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 10
+						CFLAG:ARG:우호도 -= RAND:10
+						;失敗
+							PRINTFORMW 「쳇…… 아니냐호…… %CSTR:ARG:일인칭% 실망이다호……」
+							PRINTFORMW 「그럼 %CSTR:ARG:일인칭% 리얼 현실에서 너를 살육하겠다호-!」
+							RETURN 3
+					ELSE
+						CFLAG:ARG:우호도 += RAND:10
+						;成功(D2
+							PRINTFORMW 「쳇…… 아니냐호…… %CSTR:ARG:일인칭% 실망이다호……」
+							PRINTFORMW 「그럼 지금 너를 살육해도 살육이 아닌 거구나호……」
+							RETURN 0
+					ENDIF
+				CASE 2
+					;ある意味そう
+					LOCAL = RAND:100 + RAND:(MAXBASE:PLAYER:지혜+MAXBASE:PLAYER:운/2)
+					IF LOCAL < 30
+						CFLAG:ARG:우호도 -= RAND:20
+						;失敗
+							PRINTFORMW 「히호! 살육 무제한이냐호!」
+							PRINTFORMW 「……어? 진짜로 죽는 건 아니냐호?」
+							PRINTFORMW 「그런 건 재미없다호-! 더 죽이게 해달라호-!」
+							PRINTFORMW 「대신에 너를 살육할 텐데 문제없지호!?」
+							RETURN 4
+					ELSE
+						CFLAG:ARG:우호도 += RAND:10
+						;成功(D2
+							PRINTFORMW 「히호! 살육 무제한이냐호!」
+							PRINTFORMW 「…………」
+							PRINTFORMW 「…………」
+							PRINTFORMW 「하라고 허락받으면 왠지 김이 팍 샌다호……」
+							RETURN 0
+					ENDIF
+			ENDSELECT
+	ENDSELECT
+
+LOOP 1

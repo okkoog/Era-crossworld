@@ -1,0 +1,248 @@
+﻿
+;スキル名
+@SKILL_NAME_3543,ARG
+RESULTS = 『망토회귀』
+
+;　명중
+@SKILL_HITRATE_3543, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_3543, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3543,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3543,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3543, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3543,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_3543,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3543
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3543, ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_3543,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3543,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3543, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3543
+RETURN GET_SUCCESSION_NUM("만능")
+;빙결
+
+;속도보정
+@SKILL_SPEED_3543, ARG = -1
+RETURN 3
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3543
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3543, ARG = -1
+RETURN 15
+
+
+
+
+;====================================================
+;行動によるスキルゲージ操作
+;各キャラクターの通常の行動後に全キャラで呼び出される
+;ARG:		このスキルの持ち主のキャラ番号
+;ARG:1		行動したキャラクターのキャラ番号
+;
+;RESULT 		獲得したゲージの量を返すことで獲得量を表示させる。つまり、他人の行動に反応させることなども可能。
+;RESULT:1		獲得表示のときの文字色を指定できる。ゲージが溜まったときの表示わけなどに
+;RESULTS		ゲージの名称 「<<XXXX>>」という形で表示される
+;RESULTS:1		ゲージの単位。半角の%を使いたい場合は「\%」と言うかたちで退避記号を使うと良い
+;RESULTS;2		色指定以外の要素を使わずに文字列を返す。ゲージ式の獲得量で表現したい場合などに
+;====================================================
+@SKILLGAGE_CHARGE_3543,ARG,ARG:1
+#LOCALSIZE 2
+#DIM L_T
+#DIM L_GP
+#DIM SKILL_NUM
+SKILL_NUM = 3543
+;スキルゲージDがある＝変身中の場合離脱
+SIF SKILLGAGE_D_GET(ARG,SKILL_NUM) > 0
+	RETURN 0
+SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) == 100
+	RETURN 0
+L_GP = 0
+;自分の行動の場合
+IF ARG == ARG:1
+	FOR LOCAL, 0, BCHARANUM
+		L_T = BCHARA:LOCAL
+		SIF IS_FRIEND(ARG, L_T)
+			CONTINUE
+		SIF GET_CREC_ACT(ARG, L_T, "HIT")
+			L_GP += 5
+		SIF GET_CREC_ACT(ARG, L_T, "CRT")
+			L_GP += 5
+		SIF GET_CREC_ACT(ARG, L_T, "WEAK")
+			L_GP += 5
+	NEXT
+	;気合を入れても上がる
+	SIF CFLAG:ARG:입력행동 == [[스킬:기합]]
+		L_GP += 25
+	;集中しても上がる
+	SIF CFLAG:ARG:입력행동 == [[스킬:컨센트레이트]]
+		L_GP += 25
+	;雄叫びしても上がる
+	SIF CFLAG:ARG:입력행동 == [[스킬:포효]]
+		L_GP += 25
+	;挑発しても上がる
+	SIF CFLAG:ARG:입력행동 == [[스킬:도발]]
+		L_GP += 25
+ENDIF
+;ダメージを受けた又はカウンター、トリガー以外の攻撃を受けたら
+;ゲージが増える
+;IF CFLAG:ARG:현데미지 > 0 || GETBIT(CFLAG:ARG:受けフラグ,18) || GETBIT(CFLAG:ARG:受けフラグ,19)
+IF GET_CREC_ACT(ARG:1, ARG, "HIT")
+	L_GP += MAX(60 * CFLAG:ARG:현데미지 / MAXBASE:ARG:ＨＰ, 2)
+	;LOCAL = LOCAL < 2 ? 2 # LOCAL
+	;CALL SKILLGAGE_F_ADD,ARG,SKILL_NUM,LOCAL
+ENDIF
+;スキルゲージが100以上だと100にする
+CALL SKILLGAGE_F_SET,ARG, SKILL_NUM, MIN(SKILLGAGE_F_GET(ARG, SKILL_NUM) + L_GP, 100)
+;SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) > 100
+;	CALL SKILLGAGE_F_SET,ARG,SKILL_NUM,100
+IF SKILLGAGE_F_GET(ARG,SKILL_NUM) >= 30
+	RESULTS = ＲＥＳＵＲＲＥＣＴＩＯＮ ＳＴＡＮＤＢＹ！
+	RESULT:1 = 0xDD00DD
+ELSE
+	RESULTS = 魔力蓄積量
+ENDIF
+RESULTS:1 = \%
+RETURN L_GP
+
+;--------------------------------------------------
+;顔グラを指定する関数
+;ERB\CharaERB\Chara5329_ノア（兎）.ERBで管理しているのでそちらを参照されたし
+;--------------------------------------------------
+;@PRINT_SPECIAL_FACE_3543, ARG, ARG:1, ARG:2, SKILL_NUM
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3543, ARG, ARG:1, ARG:2
+CALL SKILLGAGE_D_SET,ARG,3543,(SKILLGAGE_F_GET(ARG,3543) / 10)
+CALL SKILLGAGE_F_SET,ARG,3543,0
+SETCOLOR 0xDD00DD
+	PRINT 『망토회귀』
+SETCOLOR 0x999999
+	PRINT Bunny Resurrection
+RESETCOLOR
+	PRINTL 
+	PRINTL 
+	PRINTFORMW 　지난날 노아의 모습이, 지금, 되살아난다.
+RESETCOLOR
+;====================================================
+;実行内容ここまで
+;====================================================
+;====================================================
+;追加コマンド(一番下)
+;====================================================
+@INPUT_COM_NAME_3543,ARG
+RESULTS = 亡兎回帰
+RESULTS:1 = 亡兎回帰
+RESULTS:2 = 0xDD00DD
+RETURN 2
+
+@INPUT_COM_ABLE_亡兎回帰,ARG
+RESULTS = 게이지 부족
+SIF SKILLGAGE_F_GET(ARG,3543) < 30
+	RETURN -1
+RETURN 1
+
+;====================================================
+;コマンド実行
+;====================================================
+@INPUT_COM_亡兎回帰,ARG
+#LOCALSIZE 1
+LOCAL = CFLAG:ARG:입력행동
+CALL PRINT_ACT_MESSAGE, ARG, 3543
+CALL ACTION_3543,ARG
+CFLAG:ARG:입력행동 = LOCAL
+RETURN -1
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_3543,ARG
+IF SKILLGAGE_D_GET(ARG,3543) > 0
+	RESULTS = 『망토회귀』:%TOFULL(TOSTR(SKILLGAGE_D_GET(ARG,3543)))%Ｔ
+ELSE
+	RESULTS = 魔力蓄積量:{SKILLGAGE_F_GET(ARG,3543),3}％
+ENDIF
+RETURN 3
+
+@SKILL_EX_DISPLAY_3543, ARG, ARGS
+IF SKILLGAGE_D_GET(ARG, 3543) > 0
+	RESULTS += SET_COLOR_TAG(UNICODE(0x263D), "yellow")
+	RESULTS += HTML_RECT_SPLIT_BAR(SKILLGAGE_D_GET(ARG, 3543), 10, SKILL_EX_DISPLAY_LENS - 2, BARCOLORSET("赤"), RESULT:1)
+	RESULTS:1 = 『망토회귀』
+ELSE
+	IF SKILLGAGE_F_GET(ARG, 3543) < 30
+		RESULTS += SET_COLOR_TAG(UNICODE(0x263D), "gray")
+	ELSE
+		RESULTS += SET_COLOR_TAG(UNICODE(0x263D), "yellow")
+	ENDIF
+	RESULTS += HTML_RECT_BAR(SKILLGAGE_F_GET(ARG, 3543), 100, SKILL_EX_DISPLAY_LENS - 2, BARCOLORSET("緑"), RESULT:1)
+	RESULTS:1 = 魔力蓄積量
+ENDIF
+RETURN 1
+;　 説明文の表示
+@SKILL_EXPLAIN_3543, ARG
+PRINTL 패시브: 토끼귀족 노아의 하이퍼 시스템 제어용 스킬.
+PRINTL 
+PRINTL 일시적으로 전성기의 힘을 발휘하는 것이 가능해지는, 노아의 변신에 필요한 힘을 가시화한 것.
+PRINTL 30% 이상에서 커맨드로 변신이 가능해지며, 『주탄』의 성능을 공격 주체로 변경한다.
+PRINTL 효과 턴은 발동 시 게이지량의 1/10. (최단 3, 최장 10턴) 발동하면 종료까지 해제 불능.
+PRINTL 게이지는 평시 행동에서 데미지량에 상응하는 양, 기합·포효·도발·콘센트레이트로 25% 상승한다.
+PRINTL 
+PRINTL 조마합체로 MAG를 마력의 근원으로 삼음으로써 짜낸 토끼귀족 노아의 마법의 힘. (전용)
+
+
+
+;とくにない
+
+@継承不能_3543
+RETURN 2
+
+@リンク不能_3543
+RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3543,ARG
+RETURN 0
+;とくにない
+

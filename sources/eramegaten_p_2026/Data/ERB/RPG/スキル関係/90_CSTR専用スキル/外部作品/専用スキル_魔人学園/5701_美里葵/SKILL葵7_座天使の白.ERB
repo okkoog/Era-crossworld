@@ -1,0 +1,137 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_座天使の白,ARG
+RESULTS = 좌천사의 백
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_座天使の白, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_座天使の白,ARG
+RETURN 80
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_座天使の白
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_座天使の白, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_座天使の白,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_座天使の白,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_座天使の白, ARG
+RETURN GET_SKILL_EFFECT_NUM("상태회복")
+
+;蘇生スキルであるか
+@SKILL_IS_RESUSCITATION_座天使の白
+RETURN 1
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_座天使の白
+RETURN GET_SUCCESSION_NUM("회복")
+
+;속도보정
+@SKILL_SPEED_座天使の白, ARG = -1
+RETURN 2
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_座天使の白
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_座天使の白, ARG = -1
+RETURN 15
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_座天使の白, ARG, ARG:1, ARG:2
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC IS_DONE
+FOR LCOUNT, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1) + 1
+	L_CHARA = POS(LCOUNT)
+	SIF L_CHARA < 0
+		CONTINUE
+	CALL SKILL_CURE_STATE_座天使の白,CFLAG:L_CHARA:상태이상
+	IF RESULT == 1
+		CALL PRINT_HIT_MESSAGE, L_CHARA, CALLNAME:L_CHARA + "は息を吹き返した"
+		CFLAG:L_CHARA:상태이상 = 0
+		CFLAG:L_CHARA:상태이상경과턴수 = 0
+		CALL VAR_HP,L_CHARA,MAXBASE:L_CHARA:ＨＰ
+		IS_DONE = 1
+	ENDIF
+NEXT
+IF IS_DONE
+	WAIT
+ELSE
+	PRINTFORMW 효과가 없었다
+ENDIF
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+@ACTION_FIELD_座天使の白,ARG,ARG:1,ARG:2
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC IS_DONE
+FOR LCOUNT, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1) + 1
+	L_CHARA = POS(LCOUNT)
+	SIF L_CHARA < 0
+		CONTINUE
+	CALL SKILL_CURE_STATE_座天使の白,CFLAG:L_CHARA:상태이상
+	IF RESULT == 1
+		PRINTFORML %CALLNAME:L_CHARA%(은)는 숨을 되찾았다
+		CFLAG:L_CHARA:상태이상 = 0
+		CFLAG:L_CHARA:상태이상경과턴수 = 0
+		CALL VAR_HP,L_CHARA,MAXBASE:L_CHARA:ＨＰ
+	ENDIF
+NEXT
+IF IS_DONE
+	WAIT
+ELSE
+	PRINTFORMW 효과가 없었다
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_座天使の白, ARG
+PRINTL 좌천사에게 기도를 올려 기적의 업을 재현한다.
+PRINTL 빈사인 아군 1명을 HP 최대로 부활시킨다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_座天使の白,ARG
+RETURN 1
+;とくにない
+
+;ターゲット条件
+@SKILL_TARGETABLE_座天使の白,ARG, ARG:1
+CALL SKILL_CURE_STATE_座天使の白,(CFLAG:(ARG:1):상태이상)
+RETURN RESULT
+
+
+;何のバッドステータスを治せるか
+@SKILL_CURE_STATE_座天使の白,ARG
+SELECTCASE GET_STATE(ARG)
+	CASE "DYING"
+		RETURN 1
+	CASEELSE
+		RETURN 0
+ENDSELECT

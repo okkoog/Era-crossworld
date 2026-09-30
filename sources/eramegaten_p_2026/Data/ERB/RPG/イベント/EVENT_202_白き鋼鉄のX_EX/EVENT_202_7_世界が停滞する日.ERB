@@ -1,0 +1,152 @@
+﻿;====================
+;条件
+;====================
+@EVENT_TITLE_202_7
+RESULTS '= "세계가 정체되는 날"
+
+@EVENT_EXPLAIN_202_7
+RESULTS:0 '= "보수: 헤일 획득"
+IF GETCHARA([[キャラ:헤일_X2]]) >= 0
+	RESULTS:1 '= "　　 ※보수 소지 중"
+ELSE
+	RESULTS:1 '= "　　 ※보수를 수령하려면 도리 카드몬이 필요"
+ENDIF
+
+@PLAYABLE_EVENT_202_7
+SIF !GETBIT(FLAG:발견ED2, 11)
+	RETURN 0
+RETURN 1
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_202_7
+PRINTFORML ………
+PRINTFORML ……
+PRINTFORMW …
+PRINTFORMW 그레이브 필러　한랭지 블록 최심부――
+PRINTFORML 과거에 방문했을 때는 한기가 미치지 않았던 이곳도, 지금은 꽁꽁 얼어붙어 있다.
+PRINTFORMW 그것도 그럴 것이, 이곳에는 이미 활동 중인 그녀가 있기 때문이다.
+PRINTFORML 　
+PRINTFORMW 「어머나아…… 또, 만났네요오~」
+PRINTFORML 　
+PRINTFORML 냉기를 다루는 헤일은, 그저 그 자리에 있는 것만으로도 주위의 기온을 떨어뜨려 간다.
+PRINTFORMW 마치, 시간마저도 서서히 얼어붙어 가는 듯한 착각에 사로잡히고 만다.
+PRINTFORML 　
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:헤일_X2]]), [[キャラ:헤일_X2]]
+PRINTFORMW 「너무우, 살금살금 돌아다니며언, 안 된다구요오. 벌로서어……」
+CLEARLINE 7
+PRINTFORML 「너무우, 살금살금 돌아다니며언, 안 된다구요오. 벌로서어……」
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:헤일_X2]]), [[キャラ:헤일_X2]]
+PRINTFORMW 「적어도 괴롭지 않게, 순식간에 얼려 드려야겠네요오」
+CLEARLINE 7
+PRINTFORML 「적어도 괴롭지 않게, 순식간에 얼려 드려야겠네요오」
+PRINTFORML 　
+PRINTFORMW 워커　헤일이　1체 나타났다!
+
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+CALL SET_BOSS_ENEMY_EVENT_202, "ヘイル"
+CALL BATTLE_START
+
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+SIF FLAG:패배플래그
+	RETURN 0
+
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:헤일_X2]]), [[キャラ:헤일_X2]]
+PRINTFORMW 「안녕히 주무세에효……」
+CLEARLINE 7
+PRINTFORML 「안녕히 주무세에효……」
+PRINTFORML 　
+PRINTFORML 두 동강 난 헤일에게서, 사방팔방으로 흩날리는 Pix.
+IF GETCHARA([[キャラ:헤일_X2]]) > 0 || ITEM:도리・카드몬 == 0
+	PRINTFORML 외각이 소실되고, 소체가 드러나자, 내부에서 섬광이 번쩍이더니――대폭발.
+	PRINTFORMW 주위를 감싸던 냉기는 날아가고, 눈 녹은 물과 함께 증발해 버리는 것이었다.
+ELSE
+	PRINTFORML 이대로 방치하면, 머지않아 소체가 드러나 대폭발할 것이다.
+	PRINTFORML 과연, 도리 카드몬을 써야 할까?
+	CALL INPUT_YN, "예", "아니오"
+	IF RESULT == 0
+		PRINTFORML %CALLNAME:MASTER%은(는) 재빠르게 도리 카드몬을 집어던져,
+		PRINTFORML 소체의 대용품으로서 주위에 흩날린 Pix를 남김없이 흡수시켜 간다.
+		PRINTFORMW ……그렇게 완성된 것은, 악마로 다시 태어난 헤일의 모습이었다.
+		PRINTFORML 　
+		CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:헤일_X2]]), [[キャラ:헤일_X2]]
+		PRINTFORMW 「어머나아……? 좋은 아침이에요오……?」
+		CLEARLINE 7
+		PRINTFORML 「어머나아……? 좋은 아침이에요오……?」
+		PRINTFORML 　
+		PRINTFORML 상황을 이해하고 있는 건지 어떤지 잘 모르겠지만, 어쨌든 계약을 진행하여――
+		PRINTFORMW 마침내 헤일은 %CALLNAME:MASTER%의 악마가 되는 것이었다.
+		PRINTFORML 　
+		PRINTFORMW ＞헤일이 동료마가 되었다.
+		ITEM:도리・카드몬 -= 1
+		CALL ADD_NEW_COMPANION, [[キャラ:헤일_X2]], 0
+	ELSE
+		PRINTFORML %CALLNAME:MASTER%은(는) 도리 카드몬을 쓰지 않기로 하고, 전말을 지켜보기로 했다.
+		PRINTFORML 외각이 소실되고, 소체가 드러나자, 내부에서 섬광이 번쩍이더니――대폭발.
+		PRINTFORMW 주위를 감싸던 냉기는 날아가고, 눈 녹은 물과 함께 증발해 버리는 것이었다.
+	ENDIF
+ENDIF
+CUSTOMDRAWLINE =
+RETURN 1
+
+
+@SET_ACTION_フリジッドステイシス2, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:컨센트레이트]]
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	;ガンヴォルトあるある：HPが1/3切ったらSPスキル使う　5Tに1回打ってくるぞ
+	IF CFLAG:ARG:800 && PU_SKILLGAGE_D_GET(ARG, "ＳＰスキル") == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+	ELSE
+		SELECTCASE FLAG:경과턴수 % 6
+			CASE 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:무거운공기]]
+			CASE 1
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마하・부흐바리온]]
+			CASE 2
+				CALL SET_ACTION_SKILL, ARG, [[스킬:한숨]]
+			CASE 3
+				CALL SET_ACTION_SKILL, ARG, [[스킬:니플헤임]]
+			CASE 4
+				CALL SET_ACTION_SKILL, ARG, [[스킬:부흐바리온]]
+			CASEELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:절대영도]]
+		ENDSELECT
+	ENDIF
+ELSE
+	SELECTCASE FLAG:경과턴수 % 6
+		CASE 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:빙결가드브레이크]]
+		CASE 1
+			CALL SET_ACTION_SKILL, ARG, [[스킬:천상의춤]]
+		CASE 2
+			CALL SET_ACTION_SKILL, ARG, [[스킬:절대영도]]
+		CASE 3
+			CALL SET_ACTION_SKILL, ARG, [[스킬:천상의춤]]
+		CASE 4
+			CALL SET_ACTION_SKILL, ARG, [[스킬:악마의위협]]
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:대냉계]]
+	ENDSELECT
+ENDIF
+
+@CHANGE_ACTION_フリジッドステイシス2, ARG
+CALL CHANGE_ACTION_フリジッドステイシス, ARG
+
+@EVENT_BATTLE_DYING_フリジッドステイシス2, L_T, L_P, L_SKIP
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_SKIP
+CALL EVENT_BATTLE_DYING_EVENT_201_2_7_ヘイル, L_T, L_P, L_SKIP
+
+@EVENT_BATTLE_ACTEND_フリジッドステイシス2
+CALL EVENT_BATTLE_ACTEND_EVENT_201_2_7_ヘイル
+
+@EVENT_BATTLE_LOSE_フリジッドステイシス2
+RETURN 1

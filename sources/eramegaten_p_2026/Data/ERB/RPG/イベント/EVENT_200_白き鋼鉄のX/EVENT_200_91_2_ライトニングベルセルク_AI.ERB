@@ -1,0 +1,217 @@
+﻿;=============================================
+;EVENT_200_2_ライトニングベルセルク
+;ブレイド
+;=============================================
+;메모: GO→SET_ACTION CALL→1회째 행동 실행→SET_ACTION CALL→2회째 행동 실행→……이라는 느낌
+@SET_ACTION_ライトニングベルセルク, ARG
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIM ターン保存
+IF CFLAG:ARG:１more플래그 > 0
+	;원 모어 가져갈 때마다 기합 넣는 여자
+	CALL SET_ACTION_SKILL, ARG, [[스킬:기합]]
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	IF CFLAG:ARG:800 == 1
+		;건볼트 흔한 패턴: HP가 1/3 이하로 떨어지면 SP스킬 사용 5턴에 1번씩 날아온다
+		IF (FLAG:경과턴수 - CFLAG:ARG:803) % 5 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:토르해머]]
+		ELSEIF (FLAG:경과턴수 - CFLAG:ARG:803) % 5 == 1
+			CALL SET_ACTION_SKILL, ARG, [[스킬:전격가드킬]]
+		ELSEIF (FLAG:경과턴수 - CFLAG:ARG:803) % 5 == 2
+			CALL SET_ACTION_SKILL, ARG, [[스킬:산산조각베기]]
+		ELSEIF (FLAG:경과턴수 - CFLAG:ARG:803) % 5 == 3
+			CALL SET_ACTION_SKILL, ARG, [[스킬:썬더볼트]]
+		ELSE
+			IF 現HP割合(ARG) < 34
+				CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "コレダーデュランダル")
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:전격가드킬]]
+			ENDIF
+		ENDIF
+	ELSE
+		;1회째 행동은 속도 보정이 높은 녀석
+		IF RAND:2
+			CALL SET_ACTION_SKILL, ARG, [[스킬:퀵스피어]]
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:스파크볼트]]
+		ENDIF
+	ENDIF
+ELSEIF CFLAG:ARG:행동한횟수 == 1
+	IF CFLAG:ARG:800 == 1
+		;2회째 행동은 속도 보정이 높은 녀석
+		IF RAND:2
+			CALL SET_ACTION_SKILL, ARG, [[스킬:퀵버스터]]
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:블리츠레인]]
+		ENDIF
+	ELSE
+		IF (FLAG:경과턴수 + 1) % 3 == 1
+			CALL SET_ACTION_SKILL, ARG, [[스킬:번개찌르기]]
+		ELSEIF (FLAG:경과턴수 + 1) % 3 == 2
+			CALL SET_ACTION_SKILL, ARG, [[스킬:구십구나선격]]
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:헬라이트닝]]
+		ENDIF
+	ENDIF
+ELSE
+	CFLAG:ARG:801 = 0
+	CFLAG:ARG:802 = 0
+	FOR LOCAL, 1, 7
+		LOCALS = 포지션{LOCAL}
+		SIF FLAG:LOCALS == -1
+			CONTINUE
+		SIF CFLAG:(FLAG:LOCALS):상태이상 == GET_STATE_NUM("DYING")
+			CONTINUE
+		SIF CFLAG:ARG:타겟 != -1
+			CONTINUE
+		;전격 약점의 수를 확인
+		SIF MAXBASE:(FLAG:LOCALS):전격 > 100
+			CFLAG:ARG:801 += 1
+		;검격 약점의 수를 확인
+		SIF MAXBASE:(FLAG:LOCALS):검격 > 100
+			CFLAG:ARG:802 += 1
+	NEXT
+	;PT의 절반 이상이 검격 약점 그리고 전격 약점보다 수가 많다면?
+	IF CFLAG:ARG:802 > 3 && CFLAG:ARG:802 > CFLAG:ARG:801
+		CALL SET_ACTION_SKILL, ARG, [[스킬:산산조각베기]]
+	;PT의 절반 이상이 전격 약점이라면?
+	ELSEIF CFLAG:ARG:801 > 3
+		CALL SET_ACTION_SKILL, ARG, [[스킬:썬더볼트]]
+	ELSEIF (FLAG:경과턴수 - CFLAG:ARG:803) % 5 == 1 || (FLAG:경과턴수 - CFLAG:ARG:803) % 5 == 3
+		IF RAND:2
+			CALL SET_ACTION_SKILL, ARG, [[스킬:대나무베기]]
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:부월쇄파]]
+		ENDIF
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:토르해머]]
+	ENDIF
+ENDIF
+
+@EVENT_BATTLE_DYING_EVENT_200_2_ライトニングベルセルク, L_T, L_P, L_SKIP
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_SKIP
+IF L_T == GET_ENEMY("ブレイド") && CFLAG:L_T:800 == 0
+	CALL SHOW_NOW_FORMATION_E,0,2, -2
+	DRAWLINE
+	CALL SHOW_NOW_FORMATION_P,0,2
+	DRAWLINE
+	CALL PRINT_ACT_MESSAGE, L_T, , , , "BERSERK TRIGGER"
+	ALIGNMENT RIGHT
+	;01011=11 01001=9 01100=12 알파벳으로 변환하면……?
+	PRINTFORML 　　　　01011 01001 01100 01100　　　　　　　　　　　　　
+	PRINTFORML 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+	PRINTFORML
+	PRINTFORML 　　01011 01001 01100 01100　　　　　　　　　　　　　　　
+	SETCOLOR 0xe8307c
+	PRINTFORML 　　　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　
+	RESETCOLOR
+	PRINTFORML
+	PRINTFORML 　　　　01011 01001 01100 01100　　　　　　　　　　　　　
+	PRINTFORMW 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+	ALIGNMENT LEFT
+	SETCOLOR COLOR("ENEMY")
+	BTL_KOJO_RESULTS:0 = 이, 이것은…… 으, 크아아아아아악!!!
+	CALL PRINT_KOJO_RPG_MESSAGE, , L_T
+	RESETCOLOR
+	PRINTFORML ＞%CALLNAME:L_T%의 온몸에 푸른 뇌정이 뿜어진다! %CALLNAME:L_T%의 눈동자에서 이성의 빛이 사라졌다!
+	PRINTFORML ＞%CALLNAME:L_T%의 HP가 회복되었다!
+	PRINTFORML ＞%CALLNAME:L_T%의 행동 횟수가 늘어났다!
+	PRINTFORML ＞%CALLNAME:L_T%의 검격속성 위력이 올랐다!
+	PRINTFORMW ＞%CALLNAME:L_T%의 전격속성 위력이 올랐다!
+	CFLAG:L_T:800 = 1
+	CFLAG:L_T:803 = FLAG:경과턴수
+	BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ / 2
+	CFLAG:L_T:상태이상 = GET_STATE_NUM("GOOD")
+	CFLAG:L_T:행동횟수 = 3
+	CFLAG:L_T:검격여데미지보정 = 20
+	CFLAG:L_T:전격여데미지보정 = 20
+ENDIF
+
+;블레이드・적대 시 구상
+@KOJO_ENEMY_BATTLE_MESSAGE_K[[キャラ:블레이드_X]], ARG, ARG:1 = 0
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+;-------------------------------------------------
+;특정 스킬
+;-------------------------------------------------
+;이것은 통상 공격
+SELECTCASE CFLAG:ARG:입력행동
+	CASE 0
+		IF CFLAG:ARG:800 > 0
+			BTL_KOJO_RESULTS:0 = 다앗!
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 간다!
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 타앗!
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 받아라!
+			ENDSELECT
+		ENDIF
+	;-------------------------------------------------
+	;범용 스킬
+	;-------------------------------------------------
+	CASE [[스킬:번개찌르기]]
+		BTL_KOJO_RESULTS:0 = 물러!
+	CASE [[스킬:구십구나선격]]
+		BTL_KOJO_RESULTS:0 = 받아라!
+	CASE [[스킬:퀵스피어]] || CFLAG:ARG:입력행동 == [[스킬:스파크볼트]]
+		BTL_KOJO_RESULTS:0 = 늦어, 잡았다!
+	CASE [[스킬:기합]]
+		IF CFLAG:ARG:800 > 0
+			BTL_KOJO_RESULTS:0 = 크아아아아……!
+		ELSE
+			BTL_KOJO_RESULTS:0 = 하아아아아……!
+		ENDIF
+	CASE [[스킬:헬라이트닝]]
+		IF CFLAG:ARG:800 > 0
+			BTL_KOJO_RESULTS:0 = 흣! 다아앗!!
+		ELSE
+			BTL_KOJO_RESULTS:0 = 터져라!
+		ENDIF
+	CASE [[스킬:검격가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:전격가드브레이크]]
+		BTL_KOJO_RESULTS:0 = 소용없다아앗!
+	CASE [[스킬:퀵버스터]] || CFLAG:ARG:입력행동 == [[스킬:블리츠레인]]
+		BTL_KOJO_RESULTS:0 = 늦어엇!
+	CASE [[스킬:산산조각베기]]
+		BTL_KOJO_RESULTS:0 = 데에에잇!
+	CASE [[스킬:썬더볼트]]
+		BTL_KOJO_RESULTS:0 = 뒈져라아!
+	CASE [[스킬:대나무베기]]
+		BTL_KOJO_RESULTS:0 = 제아아아앗!
+	CASE [[스킬:부월쇄파]]
+		BTL_KOJO_RESULTS:0 = 새긴다! 사라져라아!
+	CASE [[스킬:토르해머]]
+		BTL_KOJO_RESULTS:0 = 멸망해라아!
+	CASE PU_SKILLNUM_GET(ARG, "コレダーデュランダル")
+		IF CFLAG:ARG:800 == 100
+			IF RAND:10 == 0
+				BTL_KOJO_RESULTS:0 = 데에잇! 하아앗! 토오오옷!
+			ELSE
+				BTL_KOJO_RESULTS:0 = 제에잇! 야아앗! 하아아아앗!
+			ENDIF
+		ELSE
+			BTL_KOJO_RESULTS:0 = 크, 으윽!? 으, 크아아아아아악!!!
+			CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+			ALIGNMENT RIGHT
+			RESETCOLOR
+			PRINTFORML 　　　　Wicked blade agleam　　　　　　　　　　　　　　　
+			PRINTFORML 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+			PRINTFORML
+			PRINTFORML 　　Barbarous and bathed in darkness　　　　　　　　　　 
+			SETCOLOR 0xe8307c
+			PRINTFORML 　　　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　
+			RESETCOLOR
+			PRINTFORML
+			PRINTFORML 　　　　Cleaving all in its path　　　　　　　　　　　　 
+			PRINTFORMW 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+			ALIGNMENT LEFT
+			BTL_KOJO_RESULTS:0 = 콜라이다아아아 듀란달-!
+			SETCOLOR COLOR("ENEMY")
+			CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+			TFLAG:전투구상직접출력 = 1
+			RESETCOLOR
+		ENDIF
+ENDSELECT

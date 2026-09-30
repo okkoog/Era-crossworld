@@ -1,0 +1,461 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/02/25		黒天					能力上昇画面で対象キャラを切り替えられるように変更
+;	003		2011/03/25		UNP						SHOW_ABLUP_SELECTに売却・陥落条件表示を追加（呼び出しのみ）
+;	004		2011/03/25								能力一覧に屈服刻印を追加（参照のみ）
+;	005		2013/01/25		ネトリス				『全能力値オートアップ』『オート能力値アップ』を追加
+;	006		2022/06/07		Collared				UI整理プロジェクトにより配置変更＆名前変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+@SHOPCOMABLE_205
+SIF !IS_USEABLE_SHOPCOM
+	RETURN 0
+RESULT:1 = 2
+RESULTS = 조교능력상승
+RETURN 1
+
+@SHOP_COM_205, ARG
+#DIM DYNAMIC LCOUNT
+CALL ABL_MANUAL_MENU
+FOR LCOUNT, 0, CHARANUM
+	SIF LCOUNT == MASTER
+		CONTINUE
+	CALL EVENTCHECK_T, LCOUNT
+	CALL END_TRAIN_CHARASELL, LCOUNT
+NEXT
+RETURN 1
+
+;=============================================================================
+;手動能力アップ
+;=============================================================================
+;-------------------------------------------------
+;能力上昇キャラ選択処理
+;-------------------------------------------------
+@CASTING_ABL_MANUAL(ARG)
+#DIM LCOUNT
+SIF CFLAG:ARG:이자리에없는플래그 >= 1
+	RETURN 0
+SIF CFLAG:ARG:전투이외불능
+	RETURN 0
+SIF IS_RENTING(ARG)
+	RETURN 0
+SIF CFLAG:ARG:필터링플래그
+	RETURN 0
+;SIF ((TALENT:ARG:임신 && CFLAG:ARG:출산예정일 - 2 <= DAY) || TALENT:ARG:육아중) && FLAG:출산기능ONOFF == 1
+;	RETURN 0
+SIF M == 0
+	RETURN 1
+;能力上昇の判定の為にTARGETにARGをセットしつつ、現在のTARGETをARGに退避
+SWAP ARG, TARGET
+FOR LCOUNT, 0, 26
+	SIF GROUPMATCH(LCOUNT, 11, 17) && IS_MALE(TARGET)
+		CONTINUE
+	SIF GROUPMATCH(LCOUNT, 20, 21) && !IS_MALE(TARGET)
+		CONTINUE
+	CALLFORM ISABLUP{LCOUNT}
+	SIF RESULT == 1
+		BREAK
+NEXT
+SIF RESULT == 0
+	CALL ISABLUP99
+;ARGに退避しておいたTARGETを戻す
+TARGET = ARG
+RETURN RESULT
+
+@ABL_MANUAL_MENU
+#LOCALSIZE 1
+;ターゲット退避(TFLAG:75)
+LOCAL = TARGET
+M = 0
+$INPUT_LIST
+;キャラリストを表示・選択
+;CALL INPUT_CHARA_LIST("誰の能力を上昇させますか？", "CASTING_ABL_MANUAL")
+{
+CALL INPUT_CHARA_LIST
+	, "FUNC_PROPSET_LIST"
+	, "누구의 능력을 상승시키겠습니까？"
+	, "CASTING_ABL_MANUAL" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "MODECHANGE_SHOP_COM_205"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+IF RESULT == 1000
+	SWAP LOCAL , TARGET
+	RETURN 0
+ENDIF
+TARGET = RESULT
+CALL ABL_MANUAL_MAIN, RESULT:1
+GOTO INPUT_LIST
+
+@MODECHANGE_SHOP_COM_205 , ARG
+SELECTCASE ARG
+	CASE -1
+		PRINTL 
+		SIF M == 0
+			PRINTFORMLC [1010]상승하는 캐릭터만 표시
+		SIF M == 1
+			PRINTFORMLC [1010]상승하지 않는 캐릭터도 표시
+	CASE 1010
+		M = !M
+		RETURN ARG , -1
+ENDSELECT
+RETURN ARG , 1
+
+;-------------------------------------------------
+;上昇させる能力選択の処理
+;-------------------------------------------------
+@ABL_MANUAL_MAIN,ARG
+#LOCALSIZE 1
+;リストの何人目かをLOCALに保存
+LOCAL = FINDELEMENT(Q, TARGET)
+CALL DENIAL_CHECK
+$ABLUP_LOOP1
+DRAWLINE
+PRINTFORML %CALLNAME:TARGET%의 어느 능력을 상승시키겠습니까？
+CALL SHOW_JUEL
+
+CALL SHOW_ABLUP_SELECT
+
+IF FLAG:SHOP커맨드 == [[ショップ:능력의상승]]
+	PRINTFORMLC \@(LOCAL > 0) ? [1001]이전캐릭터 # %" " * 16%\@
+	PRINTFORMLC   %" " * 18%
+	PRINTFORMLC \@(LOCAL < ARG - 1) ? [1003]다음캐릭터 # %" " * 16%\@
+ENDIF
+I = 0
+Z = 0
+$INPUT_LOOP1
+INPUT
+IF 0 <= RESULT && RESULT < 100
+	TRYCALLFORM ABLUP{RESULT}
+	GOTO ABLUP_LOOP1
+ELSEIF RESULT == 1001 && FLAG:SHOP커맨드 == [[ショップ:능력의상승]] && LOCAL > 0
+	LOCAL -= 1
+	TARGET = Q:LOCAL
+	RESTART
+ELSEIF RESULT == 1003 && FLAG:SHOP커맨드 == [[ショップ:능력의상승]] && LOCAL < ARG - 1
+	LOCAL += 1
+	TARGET = Q:LOCAL
+	RESTART
+ELSEIF RESULT == 200
+	CALL AUTOMAX
+	RESTART
+ELSEIF RESULT == 100
+	CALL JUJUN_UP_CHECK
+	CALL YOKUBO_UP_CHECK
+ELSE
+	GOTO INPUT_LOOP1
+ENDIF
+
+;-------------------------------------------------
+;珠の表示
+;-------------------------------------------------
+
+@SHOW_JUEL
+#DIM LCOUNT
+DRAWLINE
+CALL SHOW_INFO_EXP
+
+FOR LCOUNT, 0, 13
+	IF LCOUNT == 12
+		X = 100
+	ELSE
+		X = LCOUNT
+	ENDIF
+
+	PRINTFORM %PALAMNAME:X%구슬：
+	;表示位置そろえる
+	IF FLAG:커스텀게임화면
+		PRINTFORM {JUEL:X, 8}
+	ELSE
+		PRINTFORM {JUEL:X, 6}
+	ENDIF
+
+	;改行or表示位置あけ
+	IF LCOUNT%4 == 3
+		PRINTL 
+	ELSE
+		SIF FLAG:커스텀게임화면
+			PRINT 　
+		PRINT 　
+	ENDIF
+NEXT
+PRINTL 　
+DRAWLINE
+
+@SHOW_ABLUP_SELECT
+#DIM LCOUNT
+;売却・助手条件
+CALL SPOILER_PRINT_SELL
+;陥落条件
+CALL SPOILER_PRINT_FALLTALENT
+
+FOR LCOUNT, 0, 26
+	SIF GROUPMATCH(LCOUNT, 11, 17) && IS_MALE(TARGET)
+		CONTINUE
+	SIF GROUPMATCH(LCOUNT, 20, 21) && !IS_MALE(TARGET)
+		CONTINUE
+	CALLFORM ISABLUP{LCOUNT}
+	IF RESULT == 1
+		PRINTFORM [{LCOUNT, 2}]%ABLNAME:LCOUNT + "-"*(13 - STRLENS(ABLNAME:LCOUNT))%LV{ABL:LCOUNT, 2, LEFT}*
+	ELSE
+		SETCOLOR 0x555555
+		PRINTFORM [{LCOUNT, 2}]%ABLNAME:LCOUNT + "-"*(13 - STRLENS(ABLNAME:LCOUNT))%LV{ABL:LCOUNT, 2, LEFT} 
+		RESETCOLOR
+	ENDIF
+
+	IF GROUPMATCH(LCOUNT, 2, 6, 10, 14, 18, 25)
+		PRINTL 
+	ELSE
+		PRINT 　
+	ENDIF
+
+NEXT
+
+SETCOLOR 0x555555
+PRINTFORM [98]%MARKNAME:2%-----LV{MARK:2}  
+RESETCOLOR
+PRINT 　
+
+CALL ISABLUP99
+IF RESULT == 1
+	PRINTFORM [99]%MARKNAME:3%-----LV{MARK:3} *
+ELSE
+	SETCOLOR 0x555555
+	PRINTFORM [99]%MARKNAME:3%-----LV{MARK:3}
+	RESETCOLOR
+
+ENDIF
+
+PRINTL 
+PRINTL 
+PRINTLC [100] 능력치 상승 종료
+PRINTFORMLC   %" " * 42%
+PRINTL [200] 전체 능력치 자동 상승
+
+@USERABLUP
+
+IF RESULT == 100
+	CALL JUJUN_UP_CHECK
+	CALL YOKUBO_UP_CHECK
+	BEGIN TURNEND
+	RETURN 1
+ELSEIF RESULT == 200
+	CALL AUTOMAX
+ENDIF
+
+RETURN 0
+
+;能力値アップオート
+@AUTOMAX, ARG = -1
+#LOCALSIZE 1
+;ABL判別用
+LOCAL = 0
+SIF ARG > -1
+	LOCAL = ARG
+
+$AUTOMAX_LOOP
+WHILE 1
+	SIF ABL:LOCAL >= 10
+		BREAK
+	;能力が上昇可能か確認
+	CALLFORM ISABLUP{LOCAL}
+	;上昇できないなら終了
+	SIF RESULT == 0
+		BREAK
+	ABL:LOCAL += 1
+	;ISABLUPがDECIDE_ABLUPもCALLしているため、それを使用し条件毎にJUEL消費
+	SELECTCASE LOCAL
+		CASE 0
+			IF I == 0
+				JUEL:공포 -= A
+			ELSEIF J == 0
+				JUEL:복종 -= B
+			ELSEIF K == 0
+				JUEL:욕정 -= C
+			ELSEIF L == 0
+				JUEL:굴복 -= D
+			ENDIF
+		CASE 1
+			IF I == 0
+				JUEL:욕정 -= A
+			ENDIF
+		CASE 2
+			IF I == 0
+				JUEL:습득 -= A
+			ENDIF
+		CASE 3
+			IF I == 0
+				JUEL:쾌Ｃ -= A
+			ENDIF
+		CASE 4
+			IF I == 0
+				JUEL:쾌Ｖ -= A
+			ENDIF
+		CASE 5
+			IF I == 0
+				JUEL:쾌Ａ -= A
+			ENDIF
+		CASE 6
+			IF I == 0
+				JUEL:쾌Ｂ -= A
+			ENDIF
+		CASE 7
+			IF I == 0
+				JUEL:굴복 -= A
+			ELSEIF J == 0
+				JUEL:복종 -= B
+			ELSEIF K == 0
+				JUEL:습득 -= C
+			ENDIF
+		CASE 8
+			IF I == 0
+				JUEL:치정 -= A
+			ENDIF
+		CASE 9
+			IF I == 0
+				JUEL:고통 -= A
+				JUEL:욕정 -= B
+			ELSEIF J == 0
+				JUEL:고통 -= D
+				JUEL:굴복 -= E
+			ENDIF
+		CASE 10
+			IF I == 0
+				JUEL:욕정 -= A
+			ENDIF
+		CASE 11
+			IF I == 0
+				JUEL:욕정 -= A
+				JUEL:굴복 -= C
+			ELSEIF J == 0
+				JUEL:쾌Ｃ -= D
+			ENDIF
+		CASE 12
+			IF I == 0
+				JUEL:습득 -= A
+			ENDIF
+		CASE 13
+			IF I == 0
+				JUEL:습득 -= A
+			ENDIF
+		CASE 14
+			IF I == 0
+				JUEL:습득 -= A
+			ENDIF
+		CASE 15
+			IF I == 0
+				JUEL:욕정 -= A
+				JUEL:쾌Ｃ -= B
+				JUEL:치정 -= C
+			ELSEIF J == 0
+				JUEL:욕정 -= A
+				JUEL:쾌Ｃ -= B
+				JUEL:치정 -= C
+			ENDIF
+		CASE 16
+			IF I == 0
+				JUEL:욕정 -= A
+				JUEL:굴복 -= B
+			ELSEIF J == 0
+				JUEL:욕정 -= A*3
+				JUEL:굴복 -= B*3
+			ENDIF
+		CASE 17
+			IF I == 0
+				JUEL:쾌Ｃ -= B
+				JUEL:욕정 -= A
+				JUEL:굴복 -= A
+			ENDIF
+		CASE 18
+			IF I == 0
+				JUEL:욕정 -= A
+				JUEL:쾌Ｖ -= B
+				JUEL:굴복 -= C
+			ELSEIF J == 0
+				JUEL:욕정 -= A
+				JUEL:쾌Ａ -= B
+				JUEL:굴복 -= C
+			ENDIF
+		CASE 19
+			IF I == 0
+				JUEL:욕정 -= A
+				JUEL:쾌Ｂ -= B
+				JUEL:굴복 -= C
+			ENDIF
+		CASE 20
+			IF I == 0
+				JUEL:욕정 -= A
+				JUEL:굴복 -= C
+			ELSEIF J == 0
+				JUEL:쾌Ｃ -= D
+			ENDIF
+		CASE 21
+			IF I == 0
+				JUEL:쾌Ｃ -= B
+				JUEL:욕정 -= A
+				JUEL:굴복 -= A
+			ENDIF
+		CASE 22
+			IF I == 0
+				JUEL:쾌Ｖ -= B
+				JUEL:욕정 -= A
+				JUEL:굴복 -= A
+			ELSEIF J == 0
+				JUEL:쾌Ａ -= D
+				JUEL:욕정 -= A
+				JUEL:굴복 -= A
+			ENDIF
+		CASE 23
+			IF I == 0
+				JUEL:쾌Ｖ -= B
+				JUEL:욕정 -= A
+				JUEL:굴복 -= A
+			ELSEIF J == 0
+				JUEL:쾌Ａ -= D
+				JUEL:욕정 -= A
+				JUEL:굴복 -= A
+			ENDIF
+		CASE 24
+			IF I == 0
+				JUEL:쾌Ｖ -= B
+				JUEL:욕정 -= A
+				JUEL:굴복 -= A
+			ELSEIF J == 0
+				JUEL:쾌Ａ -= D
+				JUEL:욕정 -= A
+				JUEL:굴복 -= A
+			ENDIF
+		CASE 25
+			IF I == 0
+				JUEL:복종 -= A
+			ENDIF
+	ENDSELECT
+WEND
+;個別の場合はココで終わり
+SIF ARG > -1
+	RETURN
+LOCAL += 1
+SIF LOCAL < 26
+	GOTO AUTOMAX_LOOP
+
+
+PRINTW 오토종료
+
+
+
+
+
+
+
+
+
+
+

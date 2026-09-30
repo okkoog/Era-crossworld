@@ -1,0 +1,80 @@
+﻿;スキル名
+@SKILL_NAME_エネルギー還元,ARG
+RESULTS = 에너지 환원
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_エネルギー還元
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_エネルギー還元,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_エネルギー還元,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_エネルギー還元,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_エネルギー還元,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;スキル変化？用ランク
+@SKILL_RANK_エネルギー還元, ARG = -1
+RETURN 15
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_エネルギー還元, ARG = -1
+RETURN 0
+
+;　説明文の表示
+@SKILL_EXPLAIN_エネルギー還元,ARG
+PRINTL 자동: 스킬에 의한 공격이 성공할 때마다 이하의 연동 효과가 발동한다.
+PRINTL 　　　「파티원 전원의 MP를 회복한다. MP 회복량은 지원 스킬 랭크에 따라 증가한다.」
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_エネルギー還元,ARG
+RETURN 0
+
+;====================================================
+;追撃発動条件
+;ARG			このスキルの持ち主
+;ARG:1			攻撃者のキャラ番号
+
+;RESULT			1 = 反撃成立。ただし実行までの間に行動者が行動不能になった場合は不発する
+;RESULT:1		反撃対象のPOS(ACTION_XXXのARG:1に送られる)。システム側で敵の生存・存在判定による不発判定をおこなうが、RESULT:1が0の場合は相手の状態に関わらず判定を通す
+;RESULT:2		-1 = デフォルトのスキル名表示を省く
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_エネルギー還元,ARG,ARG:1
+SIF ARG != FLAG:행동순1
+	RETURN 0
+SIF IS_FRIEND(ARG, ARG:1)
+	RETURN 0
+SIF CFLAG:ARG:입력행동 <= 0
+	RETURN 0
+SIF !GET_CREC_ACT(ARG, ARG:1, "HIT")
+	RETURN 0
+RETURN 1, CPOS(ARG:1)
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_エネルギー還元,ARG,ARG:1,ARG:2
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_HEAL
+L_HEAL = GET_ROLE_CFLAG_TAKEOVER(ARG, "支援スキルランク") / 3 + 1
+FOR LCOUNT, 0, 3
+	IF LCOUNT == 0
+		L_T = ARG
+	ELSE
+		L_T = FINDCHARA_LINK(ARG, LCOUNT - 1)
+	ENDIF
+	SIF L_T < 0
+		CONTINUE
+	CALL PRINT_HIT_MESSAGE, L_T, @"ＭＰ:{L_HEAL}회복", "L"
+	CALL VAR_MP, L_T, L_HEAL, "회복"
+NEXT
+WAIT

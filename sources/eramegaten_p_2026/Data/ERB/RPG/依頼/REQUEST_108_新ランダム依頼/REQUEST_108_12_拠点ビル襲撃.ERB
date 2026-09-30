@@ -1,0 +1,217 @@
+﻿;依頼名===================================================================
+;依頼難易度は敵の最大レベルによって変動
+; 1～10　☆、11～20　☆☆、21～30　☆☆☆、以下略
+;ダンジョン攻略が必要な場合は☆が★になる。
+
+@TITLE_RANDOM_REQUEST_108_12
+RESULTS = 거점 빌딩 습격 (난이도 ★★★★)
+RETURN 1
+
+;説明===================================================================
+@REQUEST_EXPLAIN_108_12
+	PRINTL 
+	PRINTL 【의뢰주】가이아교
+	PRINTL 
+	PRINTL 　메시아교의 거점 빌딩을 습격한다.
+	PRINTL 　공작원과 협력하여, 내부의 적을 전멸시켜라.
+	PRINTL 
+	PRINTL 　【작전영역】거점 빌딩
+	PRINTL 　【적의 전력】다수의 템플나이트, 천사(주살이 유효)
+	PRINTL 　【성공조건】적 전멸
+	PRINTL 　【주의사항】던전 공략 필요
+	PRINTL 
+	PRINTL 
+
+;内容====================================================================
+@REQUEST_108_12
+CALL MESSAGE_WINDOW_ICON, , "モブ", "ガイア教徒", "가이아교도", @"우리는 이 부근에서 활동 중인/메시아교의 거점 중 하나를 탐지해 내는 데 성공했다.", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "ガイア教徒", "가이아교도", @"이 빌딩을 습격하여、메시아교의 세력을 이 부근에서 배제하는 것이/이번 의뢰의 목표다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "ガイア教徒", "가이아교도", @"이미 목표 빌딩에는 우리의 공작원이 잠입해 있다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "ガイア教徒", "가이아교도", @"습격 개시 후에는、공작원의 통신을 통해 적의 상황을 전달받을 계획이다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "ガイア教徒", "가이아교도", @"공작원의 지시에 따라 층을 이동하여/템플나이트 놈들을 배제하라。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "ガイア教徒", "가이아교도", @"그럼、건투를 빈다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞【거점 빌딩】에 들어갈 수 있게 되었다。", , , , , 4
+依頼フラグ:[[依頼:랜덤의뢰]]:2 = 1
+依頼フラグ:[[依頼:랜덤의뢰]]:3 = 1
+
+;ダンジョン名=============================================================
+@DUNGEON_NAME_108_12
+#FUNCTIONS
+RESULTS_F = 거점 빌딩
+
+;攻略開始時のイベント=====================================================
+@EVENT_DUNGEON_START_108_12
+CALL MESSAGE_WINDOW_D, "",@"＞빌딩 안으로 들어가자、공작원으로부터의 통신이 들어왔다。", , , , , 4
+CALL MESSAGE_WINDOW_D, "工作員" ,@"「통신 들리나？ 우선 2층의 적을 격파해 줘」", , , , , 4
+
+;ダンジョン内イベント======================================================
+@DUNGEON_EVENT_108_12
+SELECTCASE FLAG:현M
+	CASE 1
+		IF FLAG:현X == 2 && FLAG:현Y == 2
+			CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" ,@"＞층 안쪽으로 나아가자、템플나이트들이 모여 있다。", , , , , 4
+			CALL MESSAGE_WINDOW_ICON, , "モブ", "テンプルナイト", "템플나이트" ,@"뭐냐！？ 저、적습인가？！", , , , , 4
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			FOR LOCAL, 7, 12
+				CALL SET_ENEMY, LOCAL ,[[キャラ:템플나이트]],25+RAND:5,1,0
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+			FOR LOCAL, 12, 17
+				CALL SET_ENEMY, LOCAL ,[[キャラ:하우르바타트]],25+RAND:5,1,0
+				NAME:(CHARANUM-1) = テンプルナイト
+				CALLNAME:(CHARANUM-1) = テンプルナイト
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+			CALL BATTLE_START
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			CALL MESSAGE_WINDOW_ICON, 7, "モブ", "ファントム構成員男", "공작원", @"목표의 격파를 이쪽에서도 확인", , , , , 4
+			CALL MESSAGE_WINDOW_ICON, 7, "モブ", "ファントム構成員男", "공작원", @"다음은 3층으로 이동해 줘", , , , , 4
+			ダンジョンフラグ:108:20 = 1
+			DA:(FLAG:현X):(FLAG:현Y) = 1
+		ENDIF
+	CASE 2
+		IF FLAG:현X == 8 && FLAG:현Y == 2
+			CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" ,@"＞여기서도 템플나이트들이 모여 있다。", , , , , 4
+			CALL MESSAGE_WINDOW_ICON, , "モブ", "テンプルナイト", "템플나이트" ,@"아까부터、아래층이 시끄럽군… 음？ 뭐냐 네놈은！", , , , , 4
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			FOR LOCAL, 7, 12
+				CALL SET_ENEMY, LOCAL ,[[キャラ:템플나이트]],24+RAND:5,1,0
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+			FOR LOCAL, 12, 17
+				CALL SET_ENEMY, LOCAL ,[[キャラ:아크엔젤]],24+RAND:5,1,0
+				NAME:(CHARANUM-1) = テンプルナイト
+				CALLNAME:(CHARANUM-1) = テンプルナイト
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+			CALL BATTLE_START
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			CALL MESSAGE_WINDOW_ICON, 7, "モブ", "ファントム構成員男", "공작원", @"「3층의 적 전멸 확인、다음은 4층이다」", , , , , 4
+			ダンジョンフラグ:108:20 = 2
+			DA:(FLAG:현X):(FLAG:현Y) = 1
+		ENDIF
+	CASE 3
+		IF FLAG:현X == 2 && FLAG:현Y == 2
+			CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" ,@"＞여기서도 템플나이트들이 모여 있다。", , , , , 4
+			CALL MESSAGE_WINDOW_ICON, , "モブ", "テンプルナイト", "템플나이트" ,@"소란스럽다 했더니、역시 적습인가！하지만 네놈은 여기서 죽는 것이다！", , , , , 4
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			FOR LOCAL, 7, 12
+				CALL SET_ENEMY, LOCAL ,[[キャラ:템플나이트]],24+RAND:5,1,0
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+			FOR LOCAL, 12, 17
+				CALL SET_ENEMY, LOCAL ,[[キャラ:아크엔젤]],24+RAND:5,1,0
+				NAME:(CHARANUM-1) = テンプルナイト
+				CALLNAME:(CHARANUM-1) = テンプルナイト
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+			CALL BATTLE_START
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			CALL MESSAGE_WINDOW_ICON, 7, "モブ", "ファントム構成員男", "공작원", @"남은 건 6층이 전부다、직통 엘리베이터로 이동해 줘", , , , , 4
+			ダンジョンフラグ:108:20 = 3
+			DA:(FLAG:현X):(FLAG:현Y) = 1
+		ENDIF
+	CASE 5
+		IF FLAG:현X == 6 && FLAG:현Y == 6
+			CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" ,@"＞6층으로 올라가자、템플나이트들이 모여 있다。", , , , , 4
+			CALL MESSAGE_WINDOW_ICON, , "モブ", "テンプルナイト", "템플나이트" ,@"잘도 해치웠겠다！ 곱게 죽이진 않겠다！ 네놈！", , , , , 4
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			FOR LOCAL, 7, 12
+				CALL SET_ENEMY, LOCAL ,[[キャラ:템플나이트]],28+RAND:5,1,0
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+			FOR LOCAL, 12, 17
+				CALL SET_ENEMY, LOCAL ,[[キャラ:프린시펄리티]],28+RAND:5,1,0
+				NAME:(CHARANUM-1) = テンプルナイト
+				CALLNAME:(CHARANUM-1) = テンプルナイト
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+			CALL BATTLE_START
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			CALL MESSAGE_WINDOW_ICON, 7, "モブ", "ファントム構成員男", "공작원", @"목표 전멸 확인。", , , , , 4
+			依頼フラグ:[[依頼:랜덤의뢰]]:4 = 1
+			FLAG:탈출 = 1
+		ENDIF
+ENDSELECT
+
+;脱出時のイベント==========================================================
+@DUNGEON_RESULT_108_12
+;報酬
+IF 依頼フラグ:[[依頼:랜덤의뢰]]:4 == 1
+	依頼フラグ:[[依頼:랜덤의뢰]]:5 = 3;難易度
+	依頼フラグ:[[依頼:랜덤의뢰]]:7 = 2;依頼主：ガイア教
+	CALL PRIZE_REQUEST_108
+;ダンジョンを出ると依頼キャンセル
+ELSE
+	CALL MESSAGE_WINDOW_D, "", "＞의뢰를 취소했다。"
+ENDIF
+
+;敵の総数==================================================================
+@ENEMY_NUM_108_12
+RESULTS = 中級
+RETURN 0
+
+;敵の種類==================================================================
+@ENEMY_108_12
+RETURN [[キャラ:템플나이트]], 25
+
+;フロア名表示===============================================================
+@FLOORNAME_108_12
+PRINT 거점 빌딩　
+SELECTCASE FLAG:현M
+	CASE 0
+		PRINTL １Ｆ
+	CASE 1
+		PRINTL ２Ｆ
+	CASE 2
+		PRINTL ３Ｆ
+	CASE 3
+		PRINTL ４Ｆ
+	CASE 4
+		PRINTL ５Ｆ
+	CASE 5
+		PRINTL ６Ｆ
+	CASEELSE
+		PRINTL
+ENDSELECT
+
+;MAP改変=====================================================================
+@MAP_CHANGE_108_12
+SELECTCASE FLAG:현M
+	CASE 1
+		;ダンジョンフラグ:108:20 == 0ならX == 2,Y == 2にイベントを設置
+		CALL SET_TILE, 2, 2, ダンジョンフラグ:108:20, 0, 4
+	CASE 2
+		;ダンジョンフラグ:108:20 == 1ならX == 8,Y == 2にイベントを設置
+		CALL SET_TILE, 8, 2, ダンジョンフラグ:108:20, 1, 4
+	CASE 3
+		;ダンジョンフラグ:108:20 == 2ならX == 2,Y == 2にイベントを設置
+		CALL SET_TILE, 2, 2, ダンジョンフラグ:108:20, 2, 4
+	CASE 5
+		;ダンジョンフラグ:108:20 == 3ならX == 6,Y == 6にイベントを設置
+		CALL SET_TILE, 6, 6, ダンジョンフラグ:108:20, 3, 4
+ENDSELECT

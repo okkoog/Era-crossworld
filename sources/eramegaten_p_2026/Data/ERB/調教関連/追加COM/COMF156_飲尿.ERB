@@ -1,0 +1,125 @@
+﻿;-------------------------------------------------
+;음뇨
+;ハードな調教コマンド、レベル4
+;-------------------------------------------------
+@ACT_COM156
+PRINTL 음뇨
+TSTR:0 = 음뇨
+;CALL KOJO_MESSAGE_COM
+
+;調教者→調教対象
+TFLAG:28 = 2
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 20
+DOWNBASE:TARGET:기력 += 100
+
+SOURCE:TARGET:성행위 = 300
+SOURCE:TARGET:굴종 = 2200
+SOURCE:TARGET:불결 = 1000
+SOURCE:TARGET:일탈 = 1500
+SOURCE:TARGET:반감 = 1000
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;マゾを見る
+IF TALENT:마조 == 1
+	TIMES SOURCE:TARGET:굴종 , 2.50
+ENDIF
+
+;TALENT:プライド高いをみる
+IF TALENT:프라이드높음 == 1
+	TIMES SOURCE:TARGET:반감 , 2.00
+ENDIF
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;奴隷の口⇔調教者のＰの汚れが移動
+CALL MOVE_STAIN("입", TARGET, "페니스", PLAYER)
+
+;奉仕精神ＬＶ４以上、技巧ＬＶ２以上なら汚れをなめ取る（ボールギャグ使用時は除く）
+IF ABL:봉사정신 >= 4 && ABL:기교 >= 2 && TEQUIP:20 == 0
+	STAIN:PLAYER:2 = 2
+		TFLAG:8 = 1
+ENDIF
+
+;-------------------------------------------------
+;吸精処理
+;-------------------------------------------------
+IF CFLAG:PLAYER:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:3+1) * BASE:LV
+	CALL DRAIN_MAG,PLAYER,LOCAL,TARGET
+ELSEIF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:3+1) * BASE:LV
+	CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+ENDIF
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+A = 2
+IF IS_LESBIAN(TARGET,PLAYER)
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, PLAYER)
+ELSEIF IS_GAY(TARGET,PLAYER)
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+ENDIF
+
+	CALL ADDS_ABNORMAL_EXP("飲尿", TARGET)
+
+;依存度ベクトル
+TFLAG:33 = 3
+
+;依存度補正値(服従で1、隷属で2）
+IF TALENT:복종 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:예속 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+;-------------------------------------------------
+;実行判定処理
+;-------------------------------------------------
+@COM_ORDER_156, ARG, ARG:1
+CALL ADD_COM_ORDER, "ABL", "순종", 1, ARG, ARG:1
+CALL ADD_COM_ORDER, "ABL", "봉사정신", 4, ARG, ARG:1
+CALL ADD_COM_ORDER, "ABL", "마조끼", 4, ARG, ARG:1
+CALL ADD_COM_ORDER, "ABL", "정액중독", 4, ARG, ARG:1
+CALL ADD_COM_ORDER, "MARK", "쾌락각인", 1, ARG, ARG:1
+CALL ADD_COM_ORDER, "PALAM", "욕정", 1, ARG, ARG:1
+CALL ADD_COM_ORDER, "TALENT", "부끄럼쟁이", -3, ARG, ARG:1
+CALL ADD_COM_ORDER, "TALENT", "악취둔감", 1, ARG, ARG:1
+CALL ADD_COM_ORDER, "TALENT", "악취민감", -6, ARG, ARG:1
+CALL ADD_COM_ORDER, "TALENT", "헌신적", 6, ARG, ARG:1
+SIF !TALENT:ARG:음란 && !TALENT:ARG:창부
+	CALL ADD_COM_ORDER, "TALENT", "쾌감을부정", -1, ARG, ARG:1
+;男嫌い（恋慕、親愛で無効）
+SIF HATE(ARG, ARG:1)
+	CALL ADD_COM_ORDER, "TALENT", \@IS_MALE(PLAYER) ? 남성혐오 # 여성혐오 \@, -12, ARG, ARG:1
+CALL ADD_COM_ORDER, "TALENT", "복종", 5, ARG, ARG:1
+CALL ADD_COM_ORDER, "TALENT", "예속", 10, ARG, ARG:1
+;調教者がふたなり
+CALL ADD_COM_ORDER, "TALENT", "후타나리", 8, ARG:1, ARG
+CALL ADD_COM_ORDER, "STAIN", "페니스", 100, ARG, ARG:1
+CALL ADD_COM_ORDER, "RELATION", , , ARG, ARG:1
+
+;-------------------------------------------------
+;実行値
+;-------------------------------------------------
+@COM_ORDER_NUM_156
+RETURN 80
+
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_156
+RETURN COMTYPE("ハード系")
+

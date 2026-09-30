@@ -1,0 +1,60 @@
+﻿;スキル名
+@SKILL_NAME_女神の神核,ARG
+RESULTS = 여신의 신핵
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_女神の神核,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;スキル変化？用ランク
+@SKILL_RANK_女神の神核, ARG = -1
+RETURN 15
+;変化不可
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_女神の神核
+RETURN GET_SUCCESSION_NUM("자동효과")
+;====================================================
+;実行内容ここまで
+;====================================================
+;　説明文の表示
+@SKILL_EXPLAIN_女神の神核,ARG
+#DIM SKILL_NUM
+PRINTL 자동효과:신경 무효와 정신 무효를 얻는다
+PRINTL 
+PRINTL 날 때부터 완성된 여신임을 나타내는 스킬.
+PRINTL 정신과 육체의 절대성을 유지하는 효과를 지닌다
+
+@SKILL_EXPLAIN_TOOLTIP_女神の神核, ARG
+RESULTS:0 = 신경 무효와 정신 무효를 얻는다
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_女神の神核,ARG
+RETURN 0
+
+@SKILL_ACTIONABLE_BATTLE_女神の神核, ARG
+RETURN 0
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_女神の神核, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	CASE "相性"
+		SELECTCASE ARGS:1
+			;打撃の基本相性を弱点にする
+			CASE "신경", "정신"
+				RETURN 1, 0
+		ENDSELECT
+ENDSELECT
+RETURN 0

@@ -1,0 +1,123 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_GoodCheer,ARG
+RESULTS = 양기 유포
+
+
+;　명중
+@SKILL_HITRATE_GoodCheer, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_GoodCheer, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_GoodCheer,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_GoodCheer,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_GoodCheer, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_GoodCheer,ARG
+RETURN 15
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_GoodCheer
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_GoodCheer,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_GoodCheer,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_GoodCheer,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_GoodCheer,ARG
+RETURN GET_SKILL_EFFECT_NUM("상태회복")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_GoodCheer
+RETURN GET_SUCCESSION_NUM("회복")
+
+;속도보정
+@SKILL_SPEED_GoodCheer, ARG = -1
+RETURN 2
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_GoodCheer
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_GoodCheer,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL CURE_STATE_FIELD,ARG,ARG:1,SKILL_NUM
+CALL SKILL_能力低下解除, ARG, ARG:1, "範囲"
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_GoodCheer,ARG
+PRINTL 아군 전체의 HAPPY, BIND, PANIC, SLEEP, BOMB을 회복한다. 저하된 아군의 능력을 원래대로 되돌린다.
+
+;スキル選択時のツールチップの内容
+;※選択不能な場合は戦闘不能メッセージが優先される
+@SKILL_EXPLAIN_TOOLTIP_GoodCheer, ARG
+RESULTS = 아군 전체의 HAPPY, BIND, PANIC, SLEEP, BOMB을 회복한다. 저하된 아군의 능력을 원래대로 되돌린다.
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_GoodCheer,ARG
+RETURN 1
+;とくにない
+
+;ターゲット条件
+@SKILL_IS_VALID_TARGET_GoodCheer,ARG, ARG:1
+SIF POS(ARG) < 0
+	RETURN 0
+CALL SKILL_CURE_STATE_GoodCheer,(CFLAG:(POS(ARG)):상태이상)
+RETURN RESULT
+
+;控えに使えるか
+@SKILL_T_RESERVE_GoodCheer,ARG
+RETURN 0
+
+;何のバッドステータスを治せるか
+@SKILL_CURE_STATE_GoodCheer,ARG
+SELECTCASE GET_STATE(ARG)
+	CASE "HAPPY","BIND","PANIC","SLEEP","BOMB"
+		RETURN 1
+	CASEELSE
+		RETURN 0
+ENDSELECT
+

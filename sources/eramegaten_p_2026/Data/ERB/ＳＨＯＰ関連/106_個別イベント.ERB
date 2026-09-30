@@ -1,0 +1,171 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:INDIVIDUAL_EVENT.ERB
+;	Facility	:個別イベント制御
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2020/05/04		Jガン					新規作成
+;	002		2021/07/28		木綿豆腐				個別イベントにも戦闘中イベントを出せるように
+;	003		2022/06/07		Collared				UI整理プロジェクトにより配置変更。 あとModule周り変更
+;	004		2022/12/04		P(bazzile)				RESULT:1が呼び出し関数内で書き換えられてしまう問題に対応
+;	005		2023/06/30		P(bazzile)				イベントが完全に終了するなどリストに選択肢が存在しなくなるキャラクターを候補に出さないようにできるように処理を追加
+;													イベント閲覧後に出現の再チェック処理を実行し、出現している場合はメッセージを表示し、さらにそのまま選択できるように変更
+;	006		2024/06/12		P(bazzile)				エンディングの呼び出しを予約化
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+@SHOPCOMABLE_106
+#LOCALSIZE 3
+SIF !IS_USEABLE_SHOPCOM
+	RETURN 0
+;RESULT:1 = 1;EDIT 004 DEL	以下の判定関数で書き換えられる可能性があるので戻り値で直接指定するように
+LOCAL:2 = 0
+
+FOR LOCAL,0, CHARANUM
+	CALL CASTING_INDIVIDUAL(LOCAL)
+	IF RESULT
+		FOR LOCAL:1,0, 64
+			IF !GETBIT(CFLAG:LOCAL:개별이벤트개방,LOCAL:1)
+				RESULT = 0
+				TRYCALLFORM INDIVIDUAL_EVENT_K{NO:LOCAL},LOCAL,1,LOCAL:1
+				IF RESULT > 0
+					SETBIT CFLAG:LOCAL:개별이벤트개방,LOCAL:1
+					CALLFORM INDIVIDUAL_EVENT_K{NO:LOCAL},LOCAL,2,LOCAL:1
+					LOCALS = %CALLNAME:LOCAL%의 개별이벤트【%RESULTS%】이(가) 출현！
+					CALL MESSAGE_B(1, LOCALS)
+				ENDIF
+			ENDIF
+		NEXT
+		LOCAL:2 = 1
+	ENDIF
+NEXT
+RESULTS = 개별이벤트
+;RESULT:1 = 1;RPG関連のSHOPコマンドであることを示す
+RETURN LOCAL:2, 1;EDIT 004 MOD
+
+@CASTING_INDIVIDUAL(ARG)
+;この場にいない不可
+SIF CFLAG:ARG:이자리에없는플래그
+	RETURN 0
+;イベントはキャラ番号ごと（口上は関係なし）
+TRYCCALLFORM INDIVIDUAL_EVENT_K{NO:ARG}, ARG, 0
+	;---- EDIT 009 ADD START -------------------------
+	;0の場合はリストに出さない。
+	SIF !RESULT
+		RETURN 0
+	;---- EDIT 009 ADD END ---------------------------
+	RETURN 1
+CATCH
+	RETURN 0
+ENDCATCH
+
+
+@SHOP_COM_106, ARG
+#LOCALSIZE 2
+#LOCALSSIZE 1
+#DIM CAST
+#DIM STOCK
+#DIM M_COUNT
+;LOCAL:0 
+;M_COUNT = 1 + ( TALENT:MASTER:수수께끼의매력 || TALENT:MASTER:매력 || TALENT:MASTER:매혹)
+REDRAW 0
+$RET
+;LOCALS = 誰の個別イベントを見ますか？
+;CALL INPUT_CHARA_LIST( LOCALS,"CASTING_INDIVIDUAL")
+{
+CALL INPUT_CHARA_LIST
+	, "FUNC_PROPSET_LIST"
+	, "誰の個別イベントを見ますか？"
+	, "CASTING_INDIVIDUAL" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+IF RESULT == 1000
+	REDRAW 1
+	RETURN 0
+ENDIF
+CAST = RESULT
+STOCK = TARGET
+TARGET = CAST
+$SELECT_EV
+DRAWLINE
+PRINTFORML %CALLNAME:CAST%와의 이벤트를 보겠습니까？
+DRAWLINE
+FOR LOCAL,0, 64
+	SIF GETBIT(CFLAG:CAST:개별이벤트읽음,LOCAL)
+		CONTINUE
+	RESULT = 0
+	TRYCALLFORM INDIVIDUAL_EVENT_K{NO:CAST},CAST,1,LOCAL
+	IF RESULT == 0
+		CLEARBIT CFLAG:CAST:개별이벤트개방,LOCAL
+		SETCOLOR COLOR("灰色")
+	ENDIF
+	;SIF !GETBIT(CFLAG:CAST:개별이벤트개방,LOCAL)
+	;	SETCOLOR COLOR("灰色")
+	RESULTS = 
+	TRYCALLFORM INDIVIDUAL_EVENT_K{NO:CAST},CAST,2,LOCAL
+	IF RESULTS != ""
+		PRINTFORM [{LOCAL,2}]
+		PRINTFORML %RESULTS%
+	ENDIF
+	RESETCOLOR
+NEXT
+DRAWLINE
+PRINTFORML [100]돌아간다
+INPUT
+IF RESULT >= 0 && RESULT < 64 && GETBIT(CFLAG:CAST:개별이벤트개방,RESULT) && !GETBIT(CFLAG:CAST:개별이벤트읽음,RESULT)
+	LOCAL = RESULT
+	CALL STARTUP_RPG_SHOPCOM
+	;---- EDIT 002 MOD START -------------------------
+	FLAG:개별이벤트캐릭 = NO:CAST
+	FLAG:진행중개별이벤트 = LOCAL
+	;---- EDIT 002 MOD END   -------------------------
+	CALLFORM INDIVIDUAL_EVENT_K{NO:CAST},CAST,3,LOCAL
+	;---- EDIT 002 MOD START -------------------------
+	FLAG:개별이벤트캐릭 = -1
+	FLAG:진행중개별이벤트 = -1
+	;---- EDIT 002 MOD END   -------------------------
+	;---- EDIT 006 ADD START -------------------------
+	SIF FLAG:전생리스타트예약
+		RETURN 0
+	;---- EDIT 006 ADD END ---------------------------
+	SIF RESULT == 1
+		SETBIT CFLAG:CAST:개별이벤트읽음,LOCAL
+	DRAWLINE
+	PRINTFORML %CALLNAME:CAST%
+	DRAWLINE
+	CALL SHOW_EXTRA, CAST
+	PRINTFORMW 
+	;イベントの出現を再チェック
+	CALL SHOPCOMABLE_106
+	;個別イベントを持つキャラが居なかった場合は終わる
+	SIF !RESULT
+		RETURN 0
+	;開放されているものの中に既読じゃないものがあるならキャラ別の選択肢に戻す
+	SIF (CFLAG:CAST:개별이벤트개방 & CFLAG:CAST:개별이벤트읽음) != CFLAG:CAST:개별이벤트개방
+		GOTO SELECT_EV
+ENDIF
+TARGET = STOCK
+GOTO RET
+
+;====================
+;出現チェック関数
+;====================
+@EVENT_IND_APP_CHECK,ARG,ARG:1
+#FUNCTION
+RETURNF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:1)
+
+;====================
+;既読チェック関数
+;====================
+@EVENT_IND_READ_CHECK,ARG,ARG:1
+#FUNCTION
+RETURNF GETBIT(CFLAG:ARG:개별이벤트읽음,ARG:1)

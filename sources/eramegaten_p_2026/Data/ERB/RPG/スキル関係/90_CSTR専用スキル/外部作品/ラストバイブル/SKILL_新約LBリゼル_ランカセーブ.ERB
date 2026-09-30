@@ -1,0 +1,171 @@
+﻿;専用スキル用のテンプレート
+;「ランカセーブ」を別の名前に置き換えてください
+
+;アクティブスキルに必須なものはそのままにしており
+;なくてもいいものはコメントアウトしております
+;必要だと思ったらコメントアウトを外して設定してください
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_ランカセーブ,ARG
+RESULTS = 란카 세이브
+
+;　명중
+@SKILL_HITRATE_ランカセーブ, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_ランカセーブ, ARG
+RETURN 0
+
+;;クリティカル率
+;@SKILL_CRITICAL_RATE_ランカセーブ, ARG
+;RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_ランカセーブ, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ランカセーブ,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ランカセーブ,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_ランカセーブ,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_ランカセーブ,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ランカセーブ, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ランカセーブ,ARG
+RETURN 0
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ランカセーブ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ランカセーブ,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_ランカセーブ
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_ランカセーブ, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ランカセーブ
+RETURN 0
+
+;没
+;@SKILL_RANK_ランカセーブ, ARG = -1
+
+
+;拡散スキルの拡散距離定義関数(このような感じで数値を増やすことで増えていく)
+;1 　　　　　2 　　　　
+;□□◆□□　□◆◆◆□
+;□◆★◆□　◆◆★◆◆
+;@SKILL_SPREAD_ランカセーブ,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;
+;詳しい仕様については資料フォルダの解説を参照してください
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_ランカセーブ,ARG,ARG:1
+;ランカを詠唱中か？
+SIF MAX(SKILLGAGE_D_GET(ARG, [[스킬:란카]]), SKILLGAGE_D_GET(ARG, [[스킬:란캄]]) , SKILLGAGE_D_GET(ARG, [[스킬:란카인]])) < 1
+	RETURN 0
+
+;一度ランカセーブは発動したか
+SIF SKILLGAGE_D_GET(ARG, PU_SKILLNUM_GET(ARG, "ランカセーブ")) > 0
+	RETURN 0
+
+;発動したのは回復スキルか？
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+SIF RESULT == 2 || RESULT == 5
+	RETURN 1
+RETURN 0
+
+;====================================================
+;カウンター発動条件
+;ARG 		このスキルの持ち主
+;ARG;1 		攻撃してきている相手
+;RESULT 	カウンターが成立したかどうか
+;RESULT:1	カウンターする相手のターゲット番号(ポジションなのでCPOSで返すか、あるいは範囲なら19などで返す)
+;RESULT;1は指定なしなら敵の生存判定・存在判定を行わずにACTIONを実行する
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_ランカセーブ,ARG,ARG:1
+;RETURN RESULT
+
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+;@SKILL_DAMAGE_EFFECT_ランカセーブ,ARG,ARG:1,ARG:2
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_ランカセーブ,ARG,ARG:1
+;RETURN 0
+;@SKILL_CALC_BUFF_ランカセーブ, ARGS, ARG, ARG:1
+
+;SELECTCASE ARGS
+;	CASE "ATK"
+;		RETURN LIMIT(CFLAG:ARG:공격강화 + CFLAG:ARG:마법위력강화, -48, 64), 32
+;ENDSELECT
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ランカセーブ,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+CALL SKILLGAGE_D_SET, ARG, SKILL_NUM, 2
+
+CALL SKILLGAGE_D_ADD, ARG, [[스킬:란카]], 1
+CALL SKILLGAGE_D_ADD, ARG, [[스킬:란캄]], 1
+CALL SKILLGAGE_D_ADD, ARG, [[스킬:란카인]], 1
+
+PRINTFORMW %CALLNAME:ARG%의 영창은 끊기지 않았다!
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_ランカセーブ,ARG
+PRINTL 란카, 란캄, 란카인을 복창 중 회복 행동(스킬 및 아이템)을 실행해도 영창은 지속된다.
+PRINTL 단 2턴 연속 회복 행동을 실행하면 영창은 무효가 된다
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ランカセーブ,ARG
+RETURN 0

@@ -1,0 +1,158 @@
+﻿;スキル名
+@SKILL_NAME_愉快な仲間たち,ARG
+RESULTS = 유쾌한 동료들
+
+;　명중
+@SKILL_HITRATE_愉快な仲間たち, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_愉快な仲間たち, ARG
+RETURN 0
+
+;;クリティカル率
+@SKILL_CRITICAL_RATE_愉快な仲間たち, ARG
+RETURN 0
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_愉快な仲間たち, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_愉快な仲間たち, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_愉快な仲間たち, ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_愉快な仲間たち,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_愉快な仲間たち,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_愉快な仲間たち,ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_愉快な仲間たち,ARG
+RETURN 25
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_愉快な仲間たち
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_愉快な仲間たち,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_愉快な仲間たち,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_愉快な仲間たち,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_愉快な仲間たち,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_愉快な仲間たち
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_愉快な仲間たち, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_愉快な仲間たち
+RETURN 0
+
+;没
+;@SKILL_RANK_愉快な仲間たち, ARG = -1
+
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_愉快な仲間たち,ARG
+;RETURN 1
+
+;====================================================
+;トリガー発動条件
+;====================================================
+;@SKILL_TRIGGER_ACTIONABLE_愉快な仲間たち,ARG,ARG:1
+;RETURN 0
+
+;====================================================
+;カウンター発動条件
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_愉快な仲間たち,ARG,ARG:1
+;RETURN RESULT
+
+;====================================================
+;ダメージ発動時
+;====================================================
+;@SKILL_DAMAGE_EFFECT_愉快な仲間たち,ARG,ARG:1
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_愉快な仲間たち,ARG,ARG:1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_愉快な仲間たち,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"愉快な仲間たち")
+
+CALL SKILL_SET_カジャンダ, ARG, ARG:1, "공격", 4, "範囲","NOWAIT"
+	;追加効果発動不可のターンが残っているなら発動しない
+	SIF SKILLGAGE_D_GET(ARG,SKILL_NUM) > 0
+		RETURN 0
+	CALL SET_C_BTL_EFFECT_FIELD, ARG, ARG:1, "愉快な仲間たち",3,"クリティカルダメージが上がった！"
+;追加効果が発動できる状態なら発動不可状態にする
+IF SKILLGAGE_D_GET(ARG,SKILL_NUM) == 0
+	CALL SKILLGAGE_D_SET(ARG,SKILL_NUM,5)
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_愉快な仲間たち,ARG
+IF PU_SKILLGAGE_D_GET(ARG,"愉快な仲間たち") > 0
+	RESULTS = 유쾌한 동료들:CT{PU_SKILLGAGE_D_GET(ARG,"愉快な仲間たち")}
+	RETURN 3
+ENDIF
+;　説明文の表示
+@SKILL_EXPLAIN_愉快な仲間たち,ARG
+PRINTL 『유쾌한 동료들』
+PRINTL 버니언의 캠프에는 언제나 든든한 동료들이 모인다.
+PRINTL
+PRINTL 아군 전체의 공격력을 상승시키고, 추가 효과를 발동한다.
+PRINTL 추가 효과: 3턴 동안 아군 전체의 크리티컬 데미지를 20% 상승시킨다.
+PRINTL
+PRINTL 사용 후 쿨타임이 발생하며, 전투 종료 또는 규정 턴 수가 경과할 때까지 추가 효과는 재발동하지 않는다.
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_愉快な仲間たち,ARG
+RETURN 1

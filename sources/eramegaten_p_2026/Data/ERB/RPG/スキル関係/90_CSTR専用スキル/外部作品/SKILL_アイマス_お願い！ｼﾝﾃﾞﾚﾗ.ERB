@@ -1,0 +1,91 @@
+﻿;スキル名
+@SKILL_NAME_お願い！ｼﾝﾃﾞﾚﾗ,ARG
+RESULTS = 부탁해! 신데렐라
+SIF ARG == FLAG:행동순1
+	RESULTS = 부탁해! 신데렐라
+;　명중
+@SKILL_HITRATE_お願い！ｼﾝﾃﾞﾚﾗ, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_お願い！ｼﾝﾃﾞﾚﾗ, ARG
+RETURN 0
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_お願い！ｼﾝﾃﾞﾚﾗ, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_お願い！ｼﾝﾃﾞﾚﾗ, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_お願い！ｼﾝﾃﾞﾚﾗ,ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_お願い！ｼﾝﾃﾞﾚﾗ,ARG
+RETURN 40
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_お願い！ｼﾝﾃﾞﾚﾗ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_お願い！ｼﾝﾃﾞﾚﾗ,ARG
+RETURN GET_SKILL_TARGET_NUM("특수")
+
+;　사거리
+@SKILL_RANGE_お願い！ｼﾝﾃﾞﾚﾗ,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_お願い！ｼﾝﾃﾞﾚﾗ,ARG
+RETURN GET_SPHERE_NUM("적아군전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_お願い！ｼﾝﾃﾞﾚﾗ,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_お願い！ｼﾝﾃﾞﾚﾗ
+;RETURN 5
+;지원
+
+;속도보정
+@SKILL_SPEED_お願い！ｼﾝﾃﾞﾚﾗ, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_お願い！ｼﾝﾃﾞﾚﾗ
+RETURN 0
+
+@SKILL_RANK_お願い！ｼﾝﾃﾞﾚﾗ, ARG = -1
+RETURN 10
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_お願い！ｼﾝﾃﾞﾚﾗ,ARG,ARG:1,ARG:2
+CALL SKILL_能力低下解除, ARG, CFLAG:ARG:PT플래그 ? 19 # 22, "範囲", "NOWAIT"
+CALL SKILL_能力上昇解除, ARG, CFLAG:ARG:PT플래그 ? 22 # 19, "範囲"
+CALL PU_SKILLGAGE_D_SET,ARG,"お願い！ｼﾝﾃﾞﾚﾗ",4
+
+;　説明文の表示
+@SKILL_EXPLAIN_お願い！ｼﾝﾃﾞﾚﾗ,ARG
+#DIM SKILL_NUM
+PRINTL 아이돌인 소녀들의 마음의 결정체.
+PRINTL 
+PRINTL 적 전체의 상승한 능력과 아군 전체의 저하된 능력을 동시에 원래대로 되돌린다.
+PRINTL 이 스킬은 사용 후, 3턴 동안 재사용할 수 없다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_お願い！ｼﾝﾃﾞﾚﾗ,ARG
+RESULTS = 쿨타임:%TOFULL(TOSTR(PU_SKILLGAGE_D_GET(ARG, "お願い！ｼﾝﾃﾞﾚﾗ")))%턴
+SIF PU_SKILLGAGE_D_GET(ARG, "お願い！ｼﾝﾃﾞﾚﾗ") > 0
+	RETURN 0
+RETURN 1

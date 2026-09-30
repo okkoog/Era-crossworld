@@ -1,0 +1,187 @@
+﻿;スキル名
+@SKILL_NAME_AW_365,ARG
+IF TFLAG:커맨드표시중 || FLAG:총공격중 || (ARG >= 0 && FLAG:행동순1 == ARG)
+	RESULTS = 영혼의 심판
+ELSE
+	RESULTS = 최초의 천사
+ENDIF
+;　명중
+@SKILL_HITRATE_AW_365, ARG
+RETURN 80
+
+@SKILL_POWER_AW_365, ARG
+RETURN 80
+
+;;クリティカル率
+@SKILL_CRITICAL_RATE_AW_365, ARG
+RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_AW_365, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_AW_365,ARG
+RETURN 8
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_AW_365,ARG
+RETURN 8
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_AW_365,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_AW_365,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_AW_365, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_AW_365,ARG
+RETURN 70
+
+;　相性
+;複合相性
+@SKILL_TYPE_AW_365,ARG
+RETURN GET_TYPE_NUM("파마")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_AW_365
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_AW_365,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_AW_365,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_AW_365,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_AW_365,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_AW_365,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_AW_365, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_AW_365
+RETURN 0
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_AW_365,ARG
+RETURN GET_STATE_NUM("BRAND")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_AW_365,ARG
+RETURN GET_TYPE_NUM("파마")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_AW_365,ARG
+RETURN 20
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_AW_365,ARG
+RETURN 100
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_AW_365, ARG = -1, ARG:1 = -1
+RETURN 4
+
+;効果を発揮するリーダースキル
+@SKILL_GET_LEADER_SKILL_NAME_AW_365, ARG
+RESULTS = 최초의 천사
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_AW_365,ARG,ARG:1,SKILL_NUM
+#DIM LCOUNT
+#DIM SKILL_NUM
+#DIMS TARGET_LIST
+#DIM L_TARGET
+CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM
+
+;　説明文の表示
+@SKILL_EXPLAIN_AW_365,ARG
+PRINTL 대천사 미카엘의 각성 스킬
+PRINTL 자동: 스킬 소지자의 공격이 파마 상성의 무효와 내성을 관통한다.
+PRINTL 　　　아군 전체가 낙인 상태인 적에 대해 데미지 +30%를 얻는다. 이 스킬 소지자가 복수 존재해도 이 효과는 누적되지 않는다.
+PRINTL 　　　
+PRINTL 　　　턴 종료 시 연동 효과가 발동한다.
+PRINTL 　　　「자신의 공격·방어·마법위력·마법효과·명중·회피 중 어느 하나가 상승한다.
+PRINTL 　　　　상승하는 능력의 수는 파티 멤버 내의 건재한 히브리 천사 수에 따라 결정된다.」
+PRINTL 　　　파티 멤버 내에 건재한 히브리 천사가 4체 이상 있을 경우, 【영혼의 심판】을 사용할 수 있다.
+PRINTL 【영혼의 심판】
+PRINTL 적 전체 무작위로 8회, 모든 파마 상성과 파마 상성 강화 효과를 관통하는 파마 상성의 소 데미지를 주고, 낮은 확률로 낙인을 부여한다.
+
+
+@SKILL_EXPLAIN_TOOLTIP_AW_365, ARG
+RESULTS:0 = 적 전체 무작위로 8회, 모든 파마 상성과 파마 상성 강화 효과를 관통하는 파마 상성의 소 데미지를 주고, 낮은 확률로 낙인을 부여한다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_AW_365,ARG
+SIF ARG >= 0 && GET_ANGEL_COUNT(ARG) > 3
+	RETURN 1
+RETURN 0
+
+@SKILL_ACTIONABLE_BATTLE_AW_365, ARG
+;選択肢に出るかどうか
+SIF ARG >= 0 && GET_ANGEL_COUNT(ARG) > 3
+	RETURN 1
+RETURN 0
+
+@SKILL_TURNEND_AW_365, ARG
+#DIM L_CHARA
+#DIMS TEMPS
+#DIM LCOUNT
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+	RETURN 0
+;入力可能な状態じゃないとだめ
+SIF !ACTIONABLE_CHARA_F(ARG)
+	RETURN 0
+;ランダムで抽選した味方がヘブライ天使なら発動
+TEMPS = "공격/방어/마법위력/마법효과/命中_回避"
+FOR LCOUNT, MIN(GET_ANGEL_COUNT(ARG), 5), 5
+	TEMPS = %DEL_SPLIT(TEMPS, "/", RAND_SPLIT(TEMPS, "/"))%
+NEXT
+SIF TEMPS == ""
+	RETURN 0
+CALL PRINT_ACT_MESSAGE, ARG,  SKILL_NUM_F("각성스킬")
+CALL SKILL_SET_カジャンダ, ARG, ARG, TEMPS, 4, "단체"
+
+
+@SKILL_PASSIVE_PENETRATION_RANK_AW_365, L_P, L_T, L_スキル, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM DYNAMIC L_P;このスキルの所持者
+#DIM DYNAMIC L_T;攻撃対象
+#DIMS DYNAMIC L_スキル;スキルの所持者が敵に対して使用しているスキルの関数名称
+#DIM DYNAMIC L_ダメージタイプ
+#DIM DYNAMIC L_攻撃タイプ
+#DIM DYNAMIC L_相性
+#DIM DYNAMIC GIVE_EFFECT_CHARA;リーダースキル等他人からつけられている場合の提供者
+SIF GET_TYPE(L_相性) == "파마"
+	RETURN 2
+RETURN 0

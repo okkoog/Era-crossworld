@@ -1,0 +1,75 @@
+﻿;==========================================================
+;そのキャラが最大でいくつスキルを持てるのか調べる
+;ARG 対象のキャラ
+;ARGS = 形態指定
+;==========================================================
+@CHARA_SKILLCOUNT(ARG, ARGS)
+#FUNCTION
+#DIM L_NUM
+SIF CFLAG:ARG:PT플래그 < 1
+	RETURNF 20
+IF ARGS == "変身形態"
+	RETURNF ABL:ARG:초기악마변신스킬슬롯수
+ELSE
+	IF ARGS == "通常形態"
+		RETURNF ABL:ARG:스킬슬롯수
+	ELSE
+		IF CFLAG:ARG:악마변신
+			RETURNF ABL:ARG:초기악마변신스킬슬롯수
+		ELSE
+			RETURNF ABL:ARG:스킬슬롯수
+		ENDIF
+	ENDIF
+ENDIF
+
+@SET_CHARA_SKILLCOUNT, ARG
+ABL:ARG:스킬슬롯수 = GET_CHARA_SKILLCOUNT(ARG, "通常形態", "HAVEABLE")
+ABL:ARG:초기악마변신스킬슬롯수 = GET_CHARA_SKILLCOUNT(ARG, "変身形態", "HAVEABLE")
+
+@GET_CHARA_SKILLCOUNT, ARG, ARGS = "通常形態", ARGS:1 = "HAVEABLE"
+#FUNCTION
+#DIM L_NUM
+;敵は常に20
+IF  CFLAG:ARG:PT플래그 < 1
+	L_NUM = 20
+ELSE
+	;返信できないロールは0を返す
+	SIF ARGS == "変身形態" && !GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+		RETURNF 0
+	;基本値部分は所持可能・操作可能かで分岐させる
+	IF ARGS:1 == "CHANGEABLE"
+		CALLFORMF ROLE_CHANGEABLE_SKILLCOUNT_%CSTR:ARG:롤%, ARG
+		IF ARGS == "変身形態"
+			L_NUM = RESULT_F:1
+		ELSE
+			L_NUM = RESULT_F
+		ENDIF
+	ELSE
+		L_NUM = GET_ROLE_PROP("SKILLCOUNT", ARG, , ARGS)
+	ENDIF
+	;異能者が1以上あるときは+4(ただし8枠は超えない)
+	SIF L_NUM < 8
+		L_NUM = MIN(L_NUM + (GET_BTL_TALENT_LV("이능자", ARG, ARGS) ? 4 # 0), 8)
+	;魔導の才能は+2/+3/+4
+	L_NUM = MIN(L_NUM + GET_BTL_TALENT_LV("마도의재능", ARG, ARGS) + (GET_BTL_TALENT_LV("마도의재능", ARG, ARGS) > 0), 12)
+ENDIF
+RETURNF L_NUM
+
+
+
+;==========================================================
+;↑の関数の別バージョン。主にAion式のスキル操作時に使用する（リンク悪魔の有無に関わらず4までしか見ない）
+;ARG 対象のキャラ
+;ARG:1 0=人間時　1=今の状態時
+;==========================================================
+;@CHARA_SKILLCOUNT_スキル操作用(ARG, ARG:1 = 1)
+;#FUNCTION
+;SIF CFLAG:ARG:PT플래그 < 1 && CFLAG:ARG:보스플래그
+;	RETURNF 20
+;SIF TALENT:ARG:Aion식소환술
+;	RETURNF 4
+;SIF TALENT:ARG:페르소나구사자
+;	RETURNF FLAG:스킬수
+;SIF (TALENT:ARG:이능자 || TALENT:ARG:달인 || TALENT:ARG:인수라) && (!CFLAG:ARG:악마변신 || ARG:1 == 0)
+;	RETURNF FLAG:이능자스킬수
+;RETURNF FLAG:스킬수

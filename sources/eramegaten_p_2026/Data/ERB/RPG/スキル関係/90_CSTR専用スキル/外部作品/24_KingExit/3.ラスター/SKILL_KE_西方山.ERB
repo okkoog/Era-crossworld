@@ -1,0 +1,137 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_KE_西方山, ARG
+RESULTS = 西方山
+
+;　명중
+@SKILL_HITRATE_KE_西方山, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_KE_西方山, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_KE_西方山, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_KE_西方山, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_KE_西方山, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_KE_西方山, ARG
+RESULTS = %" 40ＴＰ"%
+RETURN 0
+
+;　相性
+@SKILL_TYPE_KE_西方山, ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_KE_西方山
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_KE_西方山, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_KE_西方山, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_KE_西方山, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_KE_西方山, ARG
+RETURN GET_SPHERE_NUM("일렬")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_KE_西方山, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;속도보정
+@SKILL_SPEED_KE_西方山, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_KE_西方山
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_KE_西方山, ARG, ARG:1, SKILL_NUM
+#LOCALSIZE 4
+#DIM SKILL_NUM
+
+IF ARG:1 == 17
+	LOCAL:1 = 1
+	LOCAL:2 = 4
+ELSEIF ARG:1 == 18
+	LOCAL:1 = 4
+	LOCAL:2 = 7
+ELSEIF ARG:1 == 19
+	LOCAL:1 = 7
+	LOCAL:2 = 12
+ELSE
+	LOCAL:1 = 12
+	LOCAL:2 = 17
+ENDIF
+
+;TP40消費。
+CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", 40, "-="
+
+FOR LOCAL, LOCAL:1, LOCAL:2
+	SELECTCASE NO:POS(LOCAL)
+	CASE [[キャラ:아벤트_KE]], [[キャラ:빌로우_KE]], [[キャラ:브루_KE]], [[キャラ:레스터_KE]]
+	CASE [[キャラ:사미다레_KE]], [[キャラ:스티아라_KE]], [[キャラ:귀네_KE]], [[キャラ:게오루이스_KE]]
+	CASEELSE
+		CONTINUE
+	ENDSELECT
+	;TP15増加
+	CALL SET_RPG_CFLAG_DUNGEON, POS(LOCAL), "KE_TPゲージ", MIN(GET_RPG_CFLAG_DUNGEON(POS(LOCAL), "KE_TPゲージ") + 15, 100) 
+	IF GET_RPG_CFLAG_DUNGEON(POS(LOCAL), "KE_TPゲージ") == 100
+		SETCOLOR 0xffef00
+		PRINTFORM 　　[{LOCAL,2}] %CALLNAME:POS(LOCAL), LOCAL:1, LEFT%    :  +15 　
+		PRINTFORML <<ＴＰ　ＦＵＬＬＹ　ＣＨＡＲＧＥＤ！>>
+		RESETCOLOR
+	ELSE
+		PRINTFORM 　　[{LOCAL,2}] %CALLNAME:POS(LOCAL), LOCAL:1, LEFT%    :  +15 　
+		PRINTFORML <<TP:{GET_RPG_CFLAG_DUNGEON(POS(LOCAL), "KE_TPゲージ")}>>
+	ENDIF
+NEXT
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_KE_西方山, ARG
+PRINTL 
+PRINTL 식물을 조합해 만든 특수한 약.
+PRINTL 아군 1열의 TP 게이지(KE)를 15 상승시킨다.
+PRINTL 
+PRINTL 식물명예박사 라스터의 스킬(CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_KE_西方山, ARG
+;ゲージが40以上のときのみ
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 40
+	RETURN 0
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_KE_西方山, ARG
+RESULTS:0 = 식물을 조합해 만든 특수한 약. 아군 1열의 TP 게이지(KE)를 15 상승시킨다.
+RESULTS:1 = TP消費 40
+SIF ARG >= 0 && GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 40
+	RESULTS:1 = %RESULTS:1%(不足)

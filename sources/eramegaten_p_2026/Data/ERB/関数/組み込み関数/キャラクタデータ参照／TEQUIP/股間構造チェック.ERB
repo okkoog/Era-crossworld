@@ -1,0 +1,94 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2022/11/19		っとっとき				CLOTHES.ERBから関数化
+;	003		2022/11/19		っとっとき				@Vずらし中がEVENT_MESSAGE_96のテキストに依存していた問題に対応
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;=================================================
+;股間構造のチェック
+;TEQUIP:고간구조 BIT演算 6以降はスカート
+;0 = ズボン、1 = ビキニタイプ、2 = 穴開き、3 前開き、4 開閉可能
+;10 = 具チラ 11 = ミニ 12 = 通常 13 = ロング 14 = タイト
+;=================================================
+@股間構造チェック,ARG
+#DIM 衣装部位 , 1
+#DIM 構造 , 14
+#LOCALSIZE 1
+
+VARSET 構造 , 0
+TEQUIP:ARG:고간구조 = 0
+TEQUIP:ARG:스커트걷어올림 = 0
+
+;可視状況初期化
+TEQUIP:ARG:음순보임 = TEQUIP:ARG:음순노출
+TEQUIP:ARG:둔부보임 = TEQUIP:ARG:둔부노출
+FOR 衣装部位 , 0 , 14
+	RESULT = 0
+	;股間の構造
+	TRYCCALLFORM CLOTHES_CROTCH_{TEQUIP:ARG:GET_CLOTHESNAME(衣装部位)}
+		IF RESULT <= 0
+			CONTINUE
+		ELSEIF RESULT == 3
+			;スカートの場合、スカートのタイプを股間構造に放り込む
+			TRYCCALLFORM CLOTHES_SKIRT_{TEQUIP:ARG:GET_CLOTHESNAME(衣装部位)}
+				SIF RESULT == 0
+					RESULT = 3
+				SETBIT TEQUIP:ARG:고간구조 , 9 + RESULT
+			CATCH
+				SETBIT TEQUIP:ARG:고간구조 , 12
+			ENDCATCH
+;		ELSEIF INRANGE(RESULT,4,6)
+;			RESULT -= 2
+		ELSEIF TEQUIP:ARG:음순노출 == 衣装部位
+			SIF	RESULT > 3
+				RESULT -= 1
+			;スカート以外の場合、一番上の衣装であれば股間構造を放り込む
+			SETBIT TEQUIP:ARG:고간구조 , RESULT - 1
+		ENDIF
+		構造:衣装部位 = RESULT
+	CATCH
+	ENDCATCH
+NEXT
+;陰唇露出しているのであれば、股間の構造に穴開きがあれば放り込む
+SIF TEQUIP:ARG:음순노출 == -1 && MATCH(構造,4)
+	SETBIT TEQUIP:ARG:고간구조 , 2
+
+;スカートの長さに基づく諸処理
+;ロング
+IF GETBIT(TEQUIP:ARG:고간구조,13)
+	TEQUIP:ARG:스커트걷어올림 = 4
+	TEQUIP:ARG:음순보임 = 0
+	TEQUIP:ARG:둔부보임 = 0
+;通常
+ELSEIF GETBIT(TEQUIP:ARG:고간구조,12)
+	TEQUIP:ARG:스커트걷어올림 = 3
+	TEQUIP:ARG:음순보임 = 0
+	TEQUIP:ARG:둔부보임 = 0
+;タイト
+ELSEIF GETBIT(TEQUIP:ARG:고간구조,14)
+	TEQUIP:ARG:스커트걷어올림 = 1
+	SIF !HAVE_PENIS(ARG)
+		TEQUIP:ARG:음순보임 = 0
+	TEQUIP:ARG:둔부보임 = 0
+;ミニ
+ELSEIF GETBIT(TEQUIP:ARG:고간구조,11)
+	TEQUIP:ARG:스커트걷어올림 = 2
+	SIF !HAVE_PENIS(ARG)
+		TEQUIP:ARG:음순보임 = 0
+	TEQUIP:ARG:둔부보임 = 0
+;具チラ
+ELSEIF GETBIT(TEQUIP:ARG:고간구조,10)
+	TEQUIP:ARG:스커트걷어올림 = 1
+ENDIF
+
+;前開き、Vずらし中の状態の場合、そちらを反映
+IF TEQUIP:ARG:고간앞열림 && TEQUIP:ARG:Ｖ비켜놓기가능 && TEQUIP:ARG:V비켜놓기중 == -1
+	SIF !HAVE_PENIS(ARG)
+		TEQUIP:ARG:음순보임 = 0
+	TEQUIP:ARG:둔부보임 = 0
+ENDIF
+	

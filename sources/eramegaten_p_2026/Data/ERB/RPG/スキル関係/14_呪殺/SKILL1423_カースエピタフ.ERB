@@ -1,0 +1,195 @@
+﻿;
+
+;スキル名
+@SKILL_NAME_1423,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:코우메]])
+	RESULTS = ﾌﾞﾗｯﾃﾞｨ・ﾌｪｽﾀ
+ELSE
+	RESULTS = 저주비문
+ENDIF
+
+;　명중
+@SKILL_HITRATE_1423, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_1423, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_1423,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_1423,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_1423, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_1423,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:코우메]])
+	RETURN 25
+ELSE
+	RETURN 20
+ENDIF
+;　相性
+@SKILL_TYPE_1423,ARG
+RETURN GET_TYPE_NUM("주살")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_1423
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_1423, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_1423, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_1423,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_1423,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_1423, ARG
+RETURN GET_SKILL_EFFECT_NUM("상태변화")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_1423
+RETURN GET_SUCCESSION_NUM("주살")
+
+;속도보정
+@SKILL_SPEED_1423, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_1423
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_1423, ARG = -1
+RETURN 9
+
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_1423,ARG
+SIF TFLAG:스킬용1
+	RETURN GET_STATE_NUM("BIND")
+RETURN GET_STATE_NUM("CURSE")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_1423,ARG
+SIF TFLAG:스킬용1
+	RETURN GET_TYPE_NUM("만능")
+RETURN 11
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_1423,ARG
+SIF TFLAG:스킬용1
+	RETURN 100
+RETURN 70
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_1423,ARG
+SIF TFLAG:스킬용1
+	RETURN 100
+RETURN 95
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_1423, ARG, ARG:1, ARG:2
+#LOCALSSIZE 1
+SIF SKILL_CHANGE(ARG, [[キャラ:코우메]])
+	PRINTFORMW ＞%CALLNAME:ARG%의 주변에서, 엄청난 양의 사령 무리가 적 전체를 덮쳤다!
+
+CALL FIELD_BADSTATE,ARG,ARG:1,1423
+
+;小梅の互換スキルとしての追加分(CURCE判定を抜けた相手に対し、スキルゲージを消費しての万能BIND)
+IF SKILL_CHANGE(ARG, [[キャラ:코우메]])
+	;疑似付与管理用のDゲージを取得。
+	LOCAL:3= (SKILLGAGE_D_GET(ARG,3622))
+	FOR LOCAL,7,17
+		;敵に疑似付与されている分の死霊カウンターを取得。
+		LOCAL:4 = LOCAL:3 / POWER(10,LOCAL-6)
+		LOCAL:4 = LOCAL:4 - ((LOCAL:4 / 10)*10)
+		SIF POS(LOCAL) < 0
+			CONTINUE
+		IF LOCAL:4 >= 5
+			PRINTFORML [{LOCAL,2}]追加判定発生
+			IF GET_STATE(CFLAG:(POS(LOCAL)):상태이상) == "GOOD"
+				PRINTL 
+				PRINTFORMW ＞사령의 손이 %CALLNAME:(POS(LOCAL))%을(를) 낚아챈다!
+				PRINTL 
+				;PRINTFORM 　　TARGET:[{LOCAL}] %CALLNAME:(POS(LOCAL)),20,LEFT%　>>>>>>　
+				TFLAG:스킬용1 = 1
+				CALL SINGLE_BADSTATE, ARG, POS(LOCAL), 1421
+				;CALL ATTACK_BADSTATE, ARG, POS(LOCAL), GET_STATE_NUM("BIND"), 17, 100, 100 ;万能属性100%付与
+				CALL SKILLGAGE_D_ADD,ARG,3622,-5 * POWER(10,LOCAL-6) ;対象の死霊カウンターの減少
+			ENDIF
+			PRINTFORML
+		ENDIF
+		;敵全体へのランダム1～3点死霊カウンター付与(完全ランダムではない)
+		IF GET_STATE(CFLAG:(POS(LOCAL)):상태이상) != "DYING"
+			SELECTCASE RAND:100
+			CASE IS > 80
+				LOCAL:2 = 3
+			CASE 45 TO 80 
+				LOCAL:2 = 2
+			CASEELSE 
+				LOCAL:2 = 1
+			ENDSELECT
+			SIF LOCAL:4 + LOCAL:2 >= 10
+				LOCAL:2 = 9 - LOCAL:4
+			PRINTFORMW ＞%CALLNAME:(POS(LOCAL))%의 주위에, 무수한 사령이 들러붙었다!
+			CALL SKILLGAGE_D_ADD,ARG,3622,LOCAL:2 * POWER(10,LOCAL-6)
+		ENDIF
+	NEXT
+	CALL SKILLGAGE_H_ADD,ARG,3622,-5
+ENDIF
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_1423, ARG
+
+IF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:코우메]]
+	PRINTL 무수한 사령을 적 전체에 해방함으로써 적 전체를 CURSE 상태로 만들고、추가로 사령을 엉겨 붙게 한다。
+	PRINTL 또한、상대에게 사령 카운터가 이미 5 이상 부여되어 있고、CURSE 상태가 되지 않았을 경우는 대상의 사령 카운터를 5 소비해 BIND 상태로 만든다。
+	PRINTL 사령 카운터를 5 소비하여 발동한다。
+ELSE
+	PRINTL 적 전체를 저주 상태로 만든다。
+ENDIF
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_1423,ARG
+
+IF SKILL_CHANGE(ARG, [[キャラ:코우메]])
+;小梅が使用する場合は固有ゲージが5以上ないと発動できない。
+	SIF SKILLGAGE_H_GET(ARG,3622) >= 5
+		RETURN 1
+RETURN 0
+ELSE	
+	RETURN 1
+;とくにない
+ENDIF
+

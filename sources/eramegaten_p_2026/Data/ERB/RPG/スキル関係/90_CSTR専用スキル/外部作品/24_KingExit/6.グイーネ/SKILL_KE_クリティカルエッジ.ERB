@@ -1,0 +1,120 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_KE_クリティカルエッジ, ARG
+RESULTS = 크리티컬 에지
+
+;　명중
+@SKILL_HITRATE_KE_クリティカルエッジ, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_KE_クリティカルエッジ, ARG
+;基礎威力300に攻撃と魔法威力を加算
+; LOCAL = BASE:ARG:공격 + BASE:ARG:마법위력
+; RETURN 80 + (LOCAL / 5)
+RETURN 120
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_KE_クリティカルエッジ, ARG
+RETURN 10
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_KE_クリティカルエッジ, ARG
+RETURN 2
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_KE_クリティカルエッジ, ARG
+RETURN 2
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_KE_クリティカルエッジ, ARG
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 25
+	RETURN 1
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_KE_クリティカルエッジ, ARG
+IF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 25
+	RESULTS = %" 25ＴＰ"%
+	RETURN 0
+ENDIF
+RETURN 5
+
+;　相性
+@SKILL_TYPE_KE_クリティカルエッジ, ARG
+SIF ARG < 0
+	RETURN 1
+CALLFORM 攻撃相性_{EQUIP:ARG:검},ARG
+RETURN RESULT
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_KE_クリティカルエッジ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_KE_クリティカルエッジ, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_KE_クリティカルエッジ, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_KE_クリティカルエッジ, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_KE_クリティカルエッジ, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_KE_クリティカルエッジ, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_KE_クリティカルエッジ, ARG = -1
+RETURN 30
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_KE_クリティカルエッジ
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_KE_クリティカルエッジ, ARG, ARG:1, SKILL_NUM
+#LOCALSIZE 4
+#DIM SKILL_NUM
+
+;Fゲージ再回収できる様に起動前にTP25消費。
+CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", 25, "-="
+
+CALL ATTACK_SINGLE, ARG, POS(ARG:1), SKILL_NUM
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_KE_クリティカルエッジ, ARG
+PRINTL 
+PRINTL 적에게 달려들어 연속 공격을 때려박는다.
+PRINTL 적 단체에 장비한 무기 속성으로 중위력의 연속 공격을 가한다.
+PRINTL 
+PRINTL 구세주 구이네의 스킬(CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_KE_クリティカルエッジ, ARG
+;ゲージが25以上のときのみ
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 25
+	RETURN 0
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_KE_クリティカルエッジ, ARG
+RESULTS:0 = 적 단체에 장비한 무기 속성으로 중위력의 연속 공격을 가한다.
+RESULTS:1 = TP消費 25
+SIF ARG >= 0 && GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 25
+	RESULTS:1 = %RESULTS:1%(不足)

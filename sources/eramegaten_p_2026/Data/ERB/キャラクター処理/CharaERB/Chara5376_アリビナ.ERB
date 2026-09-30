@@ -1,0 +1,135 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5376_アリビナ.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2026/01/07		epizo					新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:알리비나]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("アリビナ_FACE_9")
+			RETURNF ""
+		SIF !SPRITECREATED("アリビナ_FACE_10")
+			RETURNF ""
+		SIF !SPRITECREATED("アリビナ_FACE_EX_0")
+			RETURNF ""
+		SIF !SPRITECREATED("アリビナ_FACE_EX_1")
+			RETURNF ""
+		SIF !SPRITECREATED("アリビナ_FACE_EX_2")
+			RETURNF ""
+		SIF !SPRITECREATED("アリビナ_FACE_EX_3")
+			RETURNF ""
+		SIF !SPRITECREATED("アリビナ_FACE_EX_4")
+			RETURNF ""
+		RESULTS_F = AI画像赤
+		RESULTS_F:1 = アリビナ_FACE_9
+	CASE 1
+		;画像チェック
+		SIF !SPRITECREATED("アリビナ_FACE_11")
+			RETURNF ""
+		SIF !SPRITECREATED("アリビナ_FACE_12")
+			RETURNF ""
+		SIF !SPRITECREATED("アリビナ_FACE_EX_5")
+			RETURNF ""
+		SIF !SPRITECREATED("アリビナ_FACE_EX_6")
+			RETURNF ""
+		SIF !SPRITECREATED("アリビナ_FACE_EX_7")
+			RETURNF ""
+		SIF !SPRITECREATED("アリビナ_FACE_EX_8")
+			RETURNF ""
+		SIF !SPRITECREATED("アリビナ_FACE_EX_9")
+			RETURNF ""
+		RESULTS_F = AI画像灰
+		RESULTS_F:1 = アリビナ_FACE_11
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:알리비나]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "AI画像赤"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+					RESULTS_F = アリビナ_FACE_10
+			CASEELSE
+				SELECTCASE L_SITUATION:1
+					;戦闘不能になった時
+					CASE "DYING"
+						RESULTS_F = アリビナ_FACE_EX_0
+					;魅了にされた時
+					CASE "CHARM"
+						RESULTS_F = アリビナ_FACE_EX_1
+					;睡眠にされた時
+					CASE "SLEEP" 
+						RESULTS_F = アリビナ_FACE_EX_2
+					;混乱にされた時
+					CASE "PANIC"
+						RESULTS_F = アリビナ_FACE_EX_3
+					;上記以外の状態異常の時
+					CASE "STONE", "FLY", "PALYZE", "BRAND", "CURSE", "FLAME", "BOMB", "POISON", "CLOSE", "BIND", "SLIP", "FREEZE", "SHOCK", "HAPPY"
+						RESULTS_F = アリビナ_FACE_EX_4
+					;通常時
+					CASEELSE
+						RESULTS_F = アリビナ_FACE_9
+				ENDSELECT
+				;HPが25%未満だとDYINGまでこれに固定する
+				IF 現HP割合(L_CHARA) < 25
+					RESULTS_F = アリビナ_FACE_EX_0
+				ENDIF
+		ENDSELECT
+	CASE "AI画像灰"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+					RESULTS_F = アリビナ_FACE_12
+			CASEELSE
+				SELECTCASE L_SITUATION:1
+					;戦闘不能になった時
+					CASE "DYING"
+						RESULTS_F = アリビナ_FACE_EX_5
+					;魅了にされた時
+					CASE "CHARM"
+						RESULTS_F = アリビナ_FACE_EX_6
+					;睡眠にされた時
+					CASE "SLEEP" 
+						RESULTS_F = アリビナ_FACE_EX_7
+					;混乱にされた時
+					CASE "PANIC"
+						RESULTS_F = アリビナ_FACE_EX_8
+					;上記以外の状態異常の時
+					CASE "STONE", "FLY", "PALYZE", "BRAND", "CURSE", "FLAME", "BOMB", "POISON", "CLOSE", "BIND", "SLIP", "FREEZE", "SHOCK", "HAPPY"
+						RESULTS_F = アリビナ_FACE_EX_9
+					;通常時
+					CASEELSE
+						RESULTS_F = アリビナ_FACE_11
+				ENDSELECT
+				;HPが25%未満だとDYINGまでこれに固定する
+				IF 現HP割合(L_CHARA) < 25
+					RESULTS_F = アリビナ_FACE_EX_5
+				ENDIF
+		ENDSELECT
+	CASEELSE
+ENDSELECT

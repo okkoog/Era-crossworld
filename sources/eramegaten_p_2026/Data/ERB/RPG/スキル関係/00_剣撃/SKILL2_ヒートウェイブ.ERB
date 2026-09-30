@@ -1,0 +1,138 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2,ARG
+;古代ちゃんが使用する場合ヒートウェーブにマイナーチェンジ。射程が延びる。
+IF SKILL_CHANGE(ARG, [[キャラ:코시로]])
+	RESULTS = 히트웨이브
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:사이버스터]]) || SKILL_CHANGE(ARG, [[キャラ:우즈키]]) || FINDCHARA_M(ARG, [[キャラ:사이버스터]], [[キャラ:우즈키]])
+	RESULTS = 척참격ㆍ언월
+ELSE
+	RESULTS = 히트웨이브
+ENDIF
+
+;　명중
+@SKILL_HITRATE_2, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2, ARG
+IF SKILL_CHANGE(ARG, [[キャラ:사이버스터]]) || SKILL_CHANGE(ARG, [[キャラ:우즈키]]) 
+	RETURN 172
+ELSE
+	RETURN 195
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:사이버스터]]) || SKILL_CHANGE(ARG, [[キャラ:우즈키]]) 
+	RETURN 2
+ELSE
+	RETURN 1
+ENDIF
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:사이버스터]]) || SKILL_CHANGE(ARG, [[キャラ:우즈키]]) 
+	RETURN 2
+ELSE
+	RETURN 1
+ENDIF
+
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:사이버스터]]) || SKILL_CHANGE(ARG, [[キャラ:우즈키]]) 
+	RETURN 30
+ELSE
+	RETURN 10
+ENDIF
+
+;　相性
+@SKILL_TYPE_2,ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:코시로]])
+	RETURN 2
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:사이버스터]])
+	RETURN 2
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:우즈키]]) 
+	RETURN 3
+ELSE
+	RETURN 1
+ENDIF
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2,ARG
+RETURN GET_SPHERE_NUM("일렬")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2
+RETURN GET_SUCCESSION_NUM("검격")
+
+;속도보정
+@SKILL_SPEED_2, ARG = -1
+RETURN 2
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2, ARG = -1
+RETURN 7
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2, ARG, ARG:1, ARG:2
+CALL ATTACK_FIELD,ARG,ARG:1,2
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_2, ARG
+IF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:코시로]]
+	PRINTL 손에 든 무기를 옆으로 휘둘러 적 １열을 공격한다。후열 사용 가능。
+ELSEIF  FINDCHARA_M(ARG, [[キャラ:사이버스터]], [[キャラ:우즈키]])
+	PRINTL 손에 든 무기를 옆으로 휘둘러 날카로운 참기를 날리는 연격。참기를 날리는 타입이기 때문에 후열 사용 가능。
+ELSE
+	PRINTL 적 전열을 후려쳐 공격한다。
+ENDIF
+
+;継承に必要な部位
+@継承部位_2,ARG
+RESULTS = 무기
+RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2,ARG
+RETURN 1
+;とくにない
+

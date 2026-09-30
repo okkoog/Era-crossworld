@@ -1,0 +1,1309 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20xx/xx/xx		----					新規作成
+;	002		2011/01/15		旅人					PARTY情報の味方表示部に色を付ける
+;	003		2011/01/25		旅人					PARTY情報の表示部に色を付ける
+;	004		2011/02/05		風花救済計画			特定スキルの条件チェック追加
+;	005		2011/02/15		黒天					仲魔にいる悪魔が敵にいる場合名前の色が変わるように
+;	006		2011/02/16		Ｎ鳥					悪魔ストレージ機能に対応
+;	007		2011/03/18		P						ストレージ機能に合わせて、若干処理を追加
+;	008		2011/03/23		UNP						セットアップ画面での誤爆クリックを予防・ポジションチェンジのキャンセルを実装
+;	009		2012/12/02		ネトリス				ムフフ展開のＧＯＯＤの色の変化を『CFLAG:던전내발정용욕정치』を参照にするように変更
+;	010		2012/12/02								招来の舞踏用に死者だけリスト化するのを追加(サバトマの逆)
+;	011		2013/03/05		銃Ｐ					召喚/編入のリストでＣＯＭＰにいるか表示、最初のページと最後のページを行き来できるように加筆
+;	012		2013/11/24		ひみつ					リスト表示数設定
+;	013		2017/06/23		kuni					キャラ表示でINPUT_CHARA_LISTを使用するように変更
+;	014		2018/10/20		JK好き					INSERT_POSITIONを悪魔人に対応
+;	015		2019/02/05		(ﾟдﾟ)					画像表示について、伽耶ちゃんズに対応（力技）
+;	016		2019/03/17		名無					マインドシーカー(常時アンノウン状態アプリ)追加
+;	016		2019/04/20		TR(SAYA)				解析度最大のキャラは色を変えて表示する様に
+;	017		2019/08/03		ypa     				画像表示処理修正
+;	018		2019/08/24		空気					サマナーLv1から相手の耐性を表示できるように(ANALYZEはできるのに表示されないので面倒なだけだった)
+;	019		2019/08/29		空気					MAXHP、MAXMP5桁以上で表示がずれる問題修正
+;	020		2020/02/02		木綿豆腐 				데빌시프터/식노/悪魔憑きは悪魔変身時の画面の顔グラを設定できるように
+;	021		2020/02/28		Jガン					Cflag:애널라이즈불가　追加　このフラグがONだと耐性？に
+;	022		2020/06/12		なんとなくの人			画像エディットの画像を表示できるように
+;	023		2020/08/20		JK好き					戦闘中に表示切替ボタンでキャラの防御壁を確認できるように追加 @SHOW_NOW_FORMATION_P @SHOW_NOW_FORMATION_E
+;	024		2021/02/07		Rsp暇人					文字数が多くてレイアウトが崩れる場合に短縮形を使うように。EDIT002,003,004のコメントアウト部分を削除（もう10年間問題なく動いているから残す必要はないと思う）
+;	025		2021/02/21		Rsp暇人					名前部分の文字色変更戻し用RESETCOLORを削除してたので修正
+;	026		2021/05/17		しゃけ					ラグナロク（ＡＮ）起動中にポジションから外された場合、ゲージをリセットする処理を追加
+;	023		2021/08/31		JK好き					@SHOW_NOW_FORMATION_P　名前が長いキャラがいると画像表示が崩れる問題を修正
+;	023		2022/05/22		Collared				外見固定処理を追加
+;	024		2022/06/10		Collared				UI整理プロジェクトによりショップコマンドフラグを参照するよう変更
+;	025		2022/06/20		JK好き					@INSERT_POSITION セットアップから人間キャラ交代が出来なかった問題を修正
+;	030		2021/12/26		しゃけ					キメラ起動中にポジションから外された場合、ゲージをリセットする処理を追加、ラグナロクのゲージ初期化処理を修正
+;	031		2022/10/13		P						悪魔変身時の顔グラの変化を反映する処理がなかったので追加。それと可読性とメンテナンス性がヤバイことになってたので構文を整理させてもらいました。
+;													ただし、現状悪魔変身専用悪魔は種族を持ってないので専用種族を使ってる場合は変わりません。今後設定シていく予定です。
+;													スキル選択時の敵の相性表示を変更し、複合属性・貫通・耐性スキルなどを加味した最終的な相性を表示するように
+;	032		2022/10/19		JK好き					@PRINT_FORMATION_FACE_P モブ画像_表示に渡す引数ミスで画像サイズが常に大きかった問題を修正
+;	033		2022/10/20		P						@PRINT_FORMATION_E ARG:2の仕様が古かった関係でキャラ番号18以降のキャラが相性表示等をできなかった問題を修正
+;	034		2022/10/23		JK好き					@SHOW_NOW_FORMATION_E ギボ・アイズ発動中のエラー修正
+;	035		2022/10/31		P(bazzile)				@RPG_PRINT_PARAM_COLORにHPバリアがある場合、HP表示の色をかえる処理を追加
+;													同関数のLOCAL変数をDIM化し、少し構造をリファクタリング
+;	036		2022/11/06		名無し					戦闘画面にて、味方の防壁や敵の相性等表示が左にズレていたので修正
+;	037		2022/11/25		P(bazzile)				@SHOW_NOW_FORMATION_P/Eでツールチップを利用できるように一部をHTML書式に変更
+;													@PRINT_FORMATION_FACE_Pにスキル・Chara.ERBから顔グラを指定する処理を追加
+;													汎用悪魔変身時にオプション設定次第で変身先の悪魔画像を利用する処理を追加
+;	038		2022/12/07		P(bazzile)				FORMATIONでの表示の出力を完全にHTML_PRINT化
+;													旧ファイルとの変更箇所が非常に多くなったので可読性の確保のため、EDIT037時点のファイルを資料フォルダに格納し、変更箇所の明示をオミット
+;													壁の付与状態を参照する条件から解析度の縛りを撤廃
+;													変更点の確認は旧ファイルとの差分照合でお願いします
+;													戦闘中用にボタン化処理とツールチップ作成処理を追加
+;	039		2022/12/12		P(bazzile)				幅広オプションをONにするとフォーメーションの表示がずれるのを修正
+;													ムフフモードをONにするとエラーオチするのを修正
+;	040		2022/12/17		P(bazzile)				特定条件下でタグの閉じ忘れでエラー落ちするのを修正
+;													TALKで敵を選択する際にボタンが死んでいたのを修正
+;													@BATTLE_MAINからの@SHOW_NOW_FORMATION_Eの呼び出しに引数を追加
+;	041		2022/12/25		P(bazzile)				戦闘中の仲魔召喚の選択が召喚者でなく、マスターのMAGで可否を決められていたのを修正
+;	042		2022/12/31		P(bazzile)				戦闘中のメイン画面で空きポジションをクリックするとエラーが発生するのを修正
+;	043		2022/01/15		P(bazzile)				戦闘中のメイン画面で耐性を見れるがアナライズできない相手をクリックすると無限ループシていたのを修正
+;	044		2022/02/23		P(bazzile)				ダンジョン探索画面での顔グラに特定条件で不適切なボタンが生成されていたのを修正
+;													さらに戦闘中以外の顔グラのクリックをHP・MP部分と同じものに変更
+;	045		2023/02/26		P(bazzile)				悪魔憑きをアウトサイダーに変更
+;	046		2023/04/19		P(bazzile)				ナビ口上用に口上側から顔グラを指定できる仕様を追加
+;													ナビでの掛け合いキャラの顔グラを指定でき仕様を追加
+;	047		2023/06/26		P(bazzile)				カスタム表示の際に敵PTに不要なスペースがはいってしまっていた不具合を修正
+;	048		2023/07/08		P(bazzile)				ツールチップ内の情報を取るのにエスケープ処理を追加
+;	049		2023/08/24		P(bazzile)				REFRESH_FORMATION関数にポジションからの除外処理を追加
+;	050		2023/08/29		P(bazzile)				戦闘用の顔グラ表示にキャラ個別の汎用アイコン指定の処理を追加
+;													悪魔変身関係の顔グラでの判定処理を調整
+;													古い仕様のままだった構文を修正
+;	051		2023/09/18		P(bazzile)				味方のフォーメーション表示にゲージスキル等の状況を示す欄を追加
+;													味方のフォーメーション表示の処理を調整
+;													戦闘画面に敵の所持スキル相性を簡易表示機能を追加
+;													ギボ・アイズに弱点攻撃を受ける可能性がある際に警告する機能を追加
+;													顔グラ表示の際にリンク悪魔の判定のミスで悪魔変身でエラーがでる不具合を修正
+;	052		2023/10/17		P(bazzile)				ギボ・アイズをセットした状態で空きポジションがあるとエラーが発生する不具合を修正
+;	053		2023/10/20		P(bazzile)				PRINT_FORMATION_FACE_Pを削除し、WRITE_IMG内で完結するように
+;	054		2024/01/14		JK好き					@SHOW_NOW_FORMATION_P 愛称の長いキャラクターがいると画像がズレる問題を修正
+;													@CASTING_DEAD_COMPANION 招来の舞踏の対象処理を修正
+;	055		2024/02/23		P(bazzile)				探索中以外でも被変身フラグが立っているキャラクターをPTに加えられないように修正
+;	056		2024/03/16		P(bazzile)				INPUT_CHARA関数の変更に対応
+;	057		2024/04/08		P(bazzile)				ポジションセット時の判定に不備があった不具合を修正
+;	058		2024/04/16		P(bazzile)				FORMATION_Pをパーティーセットの表示に対応
+;													セット編成用の関数を追加
+;													セットアップ画面で誰もいないポジションをクリックした場合、キャラ配置を行えるようにSETUP_SUMMON関数を調整
+;													ポジション入れ替え時に選んだポジションの背景色が変わるように変更
+;	059		2024/04/20		P(bazzile)				セットメンバーのセットに失敗することがある不具合を修正
+;													SUMMON関数にポジションを指定して飛んだ場合にキャンセルできない不具合を修正
+;	060		2024/05/08		P(bazzile)				送還の条件を修正
+;	061		2024/05/09		P(bazzile)				召喚の条件も修正
+;	062		2024/05/15		P(bazzile)				召喚の条件に召喚不能フラグを追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2024/05/15		P(bazzile)				マガツヒゲージの表示処理を追加
+;	002		2024/05/28		P(bazzile)				ポジション変更時の背景色がずれる不具合を修正
+;	003		2024/05/30		P(bazzile)				カスタム画面表示でパーティセットボタンがずれる不具合を修正
+;													マガツヒスキルを使えない場合、ゲージがおかしな位置に出ていた不具合を修正
+;	004		2024/06/11		P(bazzile)				味方のフォーメーション表示をDIV形式に変更。ただし本体バグ回避措置がはいっているので後日修正すること
+;													フォーメーション表示をするための関数群を別ファイルに移動
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;---- EDIT 058 ADD START -------------------------
+;==================================
+;召喚
+;==================================
+@SETUP_SUMMON, ARG = -1
+#DIM DYNAMIC SELECT_POS
+#DIM DYNAMIC SELECT_CHARA
+IF ARG == -1
+	PRINTL
+	CALL SHOW_NOW_FORMATION_P,0,2,3
+	PRINTC [1000] - 돌아간다
+	PRINTL
+	DRAWLINE
+	PRINTL 어디에 배치할까？
+	$INPUT_LOOP
+	INPUT
+	IF RESULT == 1000
+		RETURN 0
+	ELSEIF !(RESULT < 7 && 0 < RESULT)
+		GOTO INPUT_LOOP
+	ENDIF
+	SELECT_POS = RESULT
+ELSE
+	SELECT_POS = ARG
+ENDIF
+$INPUT_LOOP2
+CALL CHOOSE_COMPANION,"셋업"
+SELECT_CHARA = RESULT
+IF RESULT == 1000
+	;---- EDIT 059 MOD START -------------------------
+	IF ARG == -1
+		RESTART
+	ELSE
+		RETURN 0
+	ENDIF
+	;---- EDIT 059 MOD END ---------------------------
+ELSE
+	;---- EDIT 007 ADD START -------------------------
+	IF POS(SELECT_POS) > 0 && CFLAG:POS(SELECT_POS):소속ＣＯＭＰ == -1 && FLAG:SHOP커맨드 == [[ショップ:탐색]] && !(SELECT_POS < 4 && POS(SELECT_POS+3) == -1)
+		PRINTFORML %CALLNAME:POS(SELECT_POS)%은(는) 자택 서버에 등록되어 있는 악마입니다
+		PRINTL 던전 안에서는 자택 서버에 등록되어 있는 악마를 파티에서 제외할 수 없습니다
+		PRINTW 다른 포지션을 선택하여 소환해 주십시오
+		CLEARLINE 3
+		GOTO INPUT_LOOP2
+	ENDIF
+	;---- EDIT 007 ADD END   -------------------------
+	;LOCAL:2 = FLAG:SHOP커맨드
+	;FLAG:SHOP커맨드 = [[ショップ:셋업]]
+	CALL INSERT_POSITION,SELECT_POS,SELECT_CHARA
+	;FLAG:SHOP커맨드 = LOCAL:2
+	IF RESULT > -1
+		SELECTCASE FLAG:SHOP커맨드
+			CASE [[ショップ:탐색]],[[ショップ:콜로세움참가]],[[ショップ:이벤트]],[[ショップ:의뢰청부]]
+				IF CFLAG:(SELECT_CHARA):PT플래그 > 0 && ABL:(SELECT_CHARA):종족 != 0
+					CALL CONTROL_MAG, MASTER, -MAXBASE:(SELECT_CHARA):￥
+				ENDIF
+		ENDSELECT
+	ENDIF
+	SIF ARG == -1
+		RESTART
+ENDIF
+CALL REFRESH_FORMATION
+;---- EDIT 058 ADD END ---------------------------
+;==================================
+;ポジション変更
+;==================================
+@SETUP_FORMATION
+#LOCALSIZE 2
+#DIMS DYNAMIC SHOW_LINE
+PRINTL
+DRAWLINE
+DRAWLINE
+LOCAL:1 = LINECOUNT
+PRINTL 포지션변경
+$START
+CLEARLINE LOCAL:1 - LINECOUNT
+CALL SHOW_NOW_FORMATION_P, 0, 2, 3
+DRAWLINE
+PRINT 교체할 포지션을 선택해주세요(
+PRINTBUTTON "[  0] - 돌아간다",0
+PRINT 　
+PRINTBUTTON "[  9] - 전체변경",9
+PRINTL )
+CALL INPUTINT(0, 1, 2, 3, 4, 5 ,6, 9)
+SIF RESULT == 0
+	RETURN 0
+IF RESULT == 9
+	CALL SETUP_FORMATIONS
+	SIF RESULT
+		RETURN 0
+	GOTO START
+ENDIF
+LOCAL = RESULT
+CLEARLINE LOCAL:1 - LINECOUNT
+;---- EDIT 058 ADD START -------------------------
+;---- EDIT P 002 MOD START -------------------------
+VARI L_XPOS
+L_XPOS = 17 * 50
+L_XPOS += ((LOCAL - 1) % 3) * (GET_CHARALENS_FORMATION_P() + 2) * 50
+VARI L_HEIGHT = FLAG:상성등표시ON > 0 ? 700 # 500
+VARI L_YPOS = 300 + ((LOCAL -1) > 2 ? L_HEIGHT # 0)
+VARI L_WIDTH
+L_WIDTH = GET_CHARALENS_FORMATION_P() * 50
+VARS L_BGCOLOR
+L_BGCOLOR '= TOSTR_HTML(BGCOLOR("LIGHT-BLACK"))
+HTML_PRINT @"<div xpos = '{L_XPOS}' ypos = '{L_YPOS}' height = '{L_HEIGHT}' width = '{L_WIDTH}' background_color = '%L_BGCOLOR%'>" + "</div>"
+
+;SHOW_LINE = 
+;SHOW_LINE += (FLAG:커스텀게임화면 && !FLAG:화상표시설정 ? 17 + 12 # 17) * " "
+;SHOW_LINE += ((LOCAL -1) % 3) * GET_CHARALENS_FORMATION_P() * " "
+;SHOW_LINE += @"<shape type ='rect' param = '0, {(LOCAL -1) > 2 ? 900 # 300}, {GET_CHARALENS_FORMATION_P() * 50}, {}' color = '%TOSTR_HTML(BGCOLOR("LIGHT-BLACK"))%'>"
+;HTML_PRINT SHOW_LINE
+;---- EDIT 058 ADD END ---------------------------
+;---- EDIT P 002 MOD END ---------------------------
+CALL SHOW_NOW_FORMATION_P,0,2, 3
+DRAWLINE
+PRINTFORM [ {LOCAL}]와 교체할 포지션을 선택해주세요 (
+PRINTBUTTON "[  0] - 취소",0
+PRINTL )
+CALL INPUTINT(0, 1, 2, 3, 4, 5 ,6)
+SIF RANGE(RESULT, 1, 6)
+	CALL CHANGE_POS,LOCAL ,RESULT
+GOTO START
+@SETUP_FORMATIONS
+#DIM LCOUNT
+#LOCALSIZE 3
+VARSET Q,-1
+;PRINTL
+;DRAWLINE
+;DRAWLINE
+CALL SHOW_NOW_FORMATION_P,0,2, 3
+DRAWLINE
+;PRINTL ポジションを変更します
+VARSET Q,-1
+LOCAL = 0
+FOR LCOUNT, 0, CHARANUM
+	SIF CFLAG:LCOUNT:PT플래그 != 2
+		CONTINUE
+	Q:LOCAL = LCOUNT
+	;元のポジションを保存
+	Q:(10+LOCAL) = CFLAG:LCOUNT:포지션
+	LOCAL += 1
+NEXT
+
+FOR LCOUNT, 0, 6
+	LOCALS = 포지션{LCOUNT+1}
+	IF FLAG:LOCALS > -1
+		;各ポジションの数値を保存
+		Q:(20+LCOUNT) = FLAG:LOCALS
+		
+		CFLAG:(FLAG:LOCALS):포지션 = 0
+		FLAG:(LOCALS) = -1
+	ENDIF
+NEXT
+FOR LOCAL:2,0,LOCAL
+	CALL SHOW_NOW_FORMATION_P,0,2, 3
+	DRAWLINE
+	PRINTFORM %CALLNAME:(Q:(LOCAL:2))%은(는) 어느 포지션？ (
+	PRINTBUTTON "[  0] - 취소",0
+	PRINT 　
+	PRINTBUTTON "[  9] - 한 단계 뒤로",9
+	PRINTL )
+	$INPUT_LOOP
+	INPUT
+	LOCALS = 포지션{RESULT}
+	;戻る
+	IF RESULT == 9 && LOCAL:2 > 0
+		LOCAL:2--
+		CALL REMOVE_POSITION, Q:(LOCAL:2+30)
+		FLAG:(LOCALS) = Q:(LOCAL:2 + 20)
+		CFLAG:(Q:(LOCAL:2)):포지션 = 0
+		LOCAL:2--
+	ELSEIF RESULT == 0
+		;キャンセル
+		FOR LCOUNT, 0, 6
+			IF Q:LCOUNT > -1
+				CFLAG:(Q:LCOUNT):포지션 = Q:(10+LCOUNT)
+			ENDIF
+			
+			LOCALS = 포지션{LCOUNT+1}
+			FLAG:(LOCALS) = Q:(20+LCOUNT)
+		NEXT
+		RETURN 0
+	ELSEIF RESULT < 1 || RESULT > 6 || FLAG:LOCALS > -1
+		GOTO INPUT_LOOP
+	ELSE
+		Q:(LOCAL:2+30) = RESULT
+		CALL INSERT_POSITION,RESULT,Q:(LOCAL:2)
+	ENDIF
+NEXT
+CALL REFRESH_FORMATION
+RETURN 1
+
+;==================================
+;メンバーを外す：選択
+;==================================
+@SETUP_REMOVE, FORCE_REMOVE_NUMBER, L_MES
+#DIM DYNAMIC L_LINE
+#DIMS DYNAMIC L_MES
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC FORCE_REMOVE_NUMBER
+PRINTL
+DRAWLINE
+L_LINE = LINECOUNT
+DO
+	CLEARLINE LINECOUNT - L_LINE
+	DRAWLINE
+	CALL SHOW_NOW_FORMATION_P,0,2, 3
+	DRAWLINE
+	IF FORCE_REMOVE_NUMBER == 0
+		PRINTC [0] 그만둔다
+		PRINTL
+	ELSE
+		IF L_MES == ""
+			HTML_PRINT @"동료를 가입시킬 수 있도록, 파티에 빈 자리를 만들어 주십시오."
+		ELSE
+			HTML_PRINT L_MES
+		ENDIF
+	ENDIF
+	DRAWLINE
+	PRINTL 누구를 되돌릴까？
+	CALL INPUTINT, 0, 1, 2, 3, 4, 5, 6
+	IF RESULT > 0
+		L_CHARA = POS(RESULT)
+		IF L_CHARA < 0
+			CONTINUE
+		ELSEIF CAN_REMOVE_POSITION(L_CHARA, FORCE_REMOVE_NUMBER == 0 ? -1 # 0)
+			CALL REMOVE_POSITION,CPOS(L_CHARA)
+		ELSE
+			IF GET_ROLE_PROP("CAN_PUT_IN_COMP", L_CHARA) && CFLAG:L_CHARA:소속ＣＯＭＰ == -1
+				PRINTW 던전 안에서는 자택 서버에 등록되어 있는 악마를 파티에서 제외할 수 없습니다
+			ELSE
+				PRINTFORMW %CALLNAME:L_CHARA%을(를) 파티에서 제외할 수는 없습니다
+			ENDIF
+			CONTINUE
+		ENDIF
+	ENDIF
+LOOP CMATCH(CFLAG:0:PT플래그, 2) > (6 - FORCE_REMOVE_NUMBER)
+
+;==================================
+;メンバーを外す実行処理
+;==================================
+@REMOVE_POSITION,ARG
+LOCALS = 포지션{ARG}
+IF FLAG:(LOCALS) > -1
+	CFLAG:(FLAG:LOCALS):포지션 = 0
+	CFLAG:(FLAG:LOCALS):입력행동 = -1
+	SIF CFLAG:(FLAG:LOCALS):PT플래그 > 0
+		CFLAG:(FLAG:LOCALS):PT플래그 = 1
+	;---- EDIT 030 ADD START -------------------------
+	;---- EDIT 026 ADD START -------------------------
+	IF SKILLGAGE_F_GET(FLAG:LOCALS,PU_SKILLNUM_GET(FLAG:LOCALS,"ラグナロク（ＡＮ）")) >= 666
+		PRINTFORMW 능력 발동 중에 전투 PT에서 이탈함으로써, %CALLNAME:(FLAG:LOCALS)%의 라그나로크(AN) 효과가 종료되었다.
+		CALL SKILLGAGE_F_SET,FLAG:LOCALS,PU_SKILLNUM_GET(FLAG:LOCALS,"ラグナロク（ＡＮ）"),-70
+	ENDIF
+	;---- EDIT 026 ADD END   -------------------------
+	IF SKILLGAGE_F_GET(FLAG:LOCALS,PU_SKILLNUM_GET(FLAG:LOCALS,"キメラ")) < 0
+		CALL SKILLGAGE_F_SET,FLAG:LOCALS,PU_SKILLNUM_GET(FLAG:LOCALS,"キメラ"),0
+		CALL SKILLGAGE_F_SET,FLAG:LOCALS,PU_SKILLNUM_GET(FLAG:LOCALS,"アブソープション"),-70
+		CALL SKILLGAGE_H_SET,FLAG:LOCALS,PU_SKILLNUM_GET(FLAG:LOCALS,"アブソープション"),0
+		PRINTL
+		PRINTL ……
+		PRINTFORMW 능력 발동 중에 전장에서 억지로 이탈한 결과, 능력의 반동으로 %CALLNAME:(FLAG:LOCALS)%은(는) 쓰러지고 말았다…
+		CALL DEAD_CHARA,FLAG:LOCALS,FLAG:LOCALS
+	ENDIF
+	;---- EDIT 030 ADD END   -------------------------
+ENDIF
+FLAG:LOCALS = -1
+
+;==================================
+;メンバーを外せるかどうかの確認関数
+;==================================
+@CAN_REMOVE_POSITION, L_CHARA, IS_DUNGEON = -1
+#FUNCTION
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC IS_DUNGEON
+SIF IS_DUNGEON == -1
+	IS_DUNGEON = FLAG:SHOP커맨드 == [[ショップ:탐색]]
+SIF L_CHARA == MASTER
+	RETURNF 0
+SIF CFLAG:L_CHARA:게스트가입플래그
+	RETURNF 0
+IF IS_DUNGEON > 0
+	IF GET_ROLE_PROP("CAN_PUT_IN_COMP", L_CHARA)
+		SIF CFLAG:L_CHARA:소속ＣＯＭＰ == -1
+			RETURNF 0
+	ELSE
+		RETURNF 0
+	ENDIF
+ENDIF
+RETURNF 1
+;---- EDIT 031 悪魔変身顔グラ処理 MOD START -------------------------
+;※旧記述は可読性のためにまとめてファイル下部に移動させました。
+;---- EDIT 037 MOD START -------------------------一部HTML化
+;---- EDIT 051 MOD START -------------------------
+;==================================
+;味方パーティの描画
+;==================================
+;ARG/ARG:1 表示列の定義(0:前列と1:後列の範囲をFOR文方式で指定する)
+;ARG:2 相性等表示してもよい状況か
+;1:色リスト表示 2:相性等表示枠 4:強化・弱体化表示（戦闘中）　してもよい
+;ARG:2がOK　かつ　FLAG:相性等表示ONがOK　の時表示する
+
+;ARG:3 通常は0か省略
+;セットアップのメイン画面 1を指定
+;探索中のメイン画面 2を指定
+;戦闘時ショートカットキーON 3を指定
+
+;---- EDIT P 004 MOD START -------------------------
+@SHOW_NOW_FORMATION_P,ARG,ARG:1, ARG:2 = 0, L_SITUATION, SHOW_SET_PT_NO = -1, L_ACTOR = -1, L_SKILL = -1
+#LOCALSIZE 2
+#DIM DYNAMIC L_XPOS
+#DIM DYNAMIC L_YPOS
+#DIM DYNAMIC SHOW_SET_PT_NO;PTセットの表示の場合の指定
+#DIM DYNAMIC　L_ACTOR;スキル使用時のスキル使用者
+#DIM DYNAMIC　L_SKILL;使用スキル
+#DIMS DYNAMIC L_SITUATION
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC LCOUNT, 5
+#DIMS DYNAMIC IMG_SIZE
+#DIM DYNAMIC L_POS
+#DIMS DYNAMIC SHOW_LINE, 14
+#DIM DYNAMIC LINENUM
+#DIM DYNAMIC LEN_NAME, 6
+#DIM DYNAMIC ERROR_CORRECTION, 6
+#DIM DYNAMIC CHARA_POSITION
+#DIMS DYNAMIC GAZOU_REIGAI
+#DIM DYNAMIC IMG_TYPE, 1 ;EDIT 017 ADD 
+#DIMS DYNAMIC SNAME, 1 ; EDIT 024 ADD
+#DIM DYNAMIC TEMP
+#DIMS DYNAMIC TEMPS, 2
+#DIMS DYNAMIC L_BUTTON, 7;ボタンの中身
+#DIMS DYNAMIC L_BUTTON_F, 7;顔グラボタンの中身
+#DIMS DYNAMIC L_TITLE, 7;ツールチップの中身
+#DIMS DYNAMIC L_TITLE_F, 7;顔グラのツールチップの中身
+#DIM DYNAMIC TEMP_COLOR
+#DIM DYNAMIC CAN_SHOW_COLOR_LIST
+#DIM DYNAMIC CAN_SHOW_AISYOU_LIST
+#DIM DYNAMIC CAN_SHOW_ENHANCE_LIST
+#DIM DYNAMIC IS_CAUTION_CHARA, 7
+#DIMS DYNAMIC CAUTION_TITLE
+#DIMS DYNAMIC BLANK_FACE
+CAN_SHOW_COLOR_LIST = GETBIT(ARG:2, 0) == 1
+CAN_SHOW_AISYOU_LIST = GETBIT(ARG:2, 1) == 1
+CAN_SHOW_ENHANCE_LIST = GETBIT(ARG:2, 2) == 1
+
+;画像サイズの確定
+IF FLAG:상성등표시ON >= 1 && CAN_SHOW_AISYOU_LIST
+	IMG_SIZE '= "L"
+	BLANK_FACE '= " " * 12
+	LINENUM = (1 + 6) * 2
+ELSE
+	IMG_SIZE '= "S"
+	BLANK_FACE '= " " * 8
+	LINENUM = (1 + 4) * 2
+ENDIF
+
+;---- EDIT 044 ADD START -------------------------
+VARSET L_BUTTON
+VARSET L_BUTTON_F
+;---- EDIT 044 ADD END ---------------------------
+VARSET L_TITLE
+VARSET L_TITLE_F
+
+;=========================================================
+;ヘッダー部分
+;=========================================================
+PRINTSL GETLINESTR("=")
+
+VARS TEMP_SHOWLINE
+IF SHOW_SET_PT_NO >= 0
+	IF BATTLE_MEMBERSET_NAME:SHOW_SET_PT_NO != ""
+		TEMP_SHOWLINE = %BATTLE_MEMBERSET_NAME:SHOW_SET_PT_NO%
+	ELSE
+		TEMP_SHOWLINE = ＳＥＴ - %SUBSTRINGU("ＡＢＣＦＥＦＧ", SHOW_SET_PT_NO, 1)%
+	ENDIF
+ELSE
+	;---- EDIT P 001 MOD START -------------------------
+	TEMP_SHOWLINE '= "ＰＡＲＴＹ"
+	;---- EDIT P 003 MOD START -------------------------
+	IF IS_USEABLE_MAGATSUHI_SKILL()
+		TEMP_SHOWLINE += " " * 16
+		FOR LCOUNT, 0, 2
+			TEMP_SHOWLINE += " " * 19
+			TEMP_SHOWLINE += " " * ((FLAG:상성등표시ON >= 1 && CAN_SHOW_AISYOU_LIST) ? 12 # 8)
+		NEXT
+		IF MAGATSUHI_GAGE_FRIEND == LIMIT_MAGATSUHI_GAGE
+			TEMP_SHOWLINE += SET_COLOR_TAG("禍つ霊", TOSTR_HTML(BARCOLORSET("マガツヒ")))
+		ELSE
+			TEMP_SHOWLINE += "禍つ霊"
+		ENDIF
+		TEMP_SHOWLINE += ":"
+		TEMP_SHOWLINE += HTML_RECT_BAR(MAGATSUHI_GAGE_FRIEND, 10000, 16, BARCOLORSET("マガツヒ"), RESULT:1, 30, 40)
+	ENDIF
+	TEMP_SHOWLINE '= "<div xpos = '0' yos = '0'>" + TEMP_SHOWLINE + "</div>"
+	SHOW_LINE += TEMP_SHOWLINE
+ENDIF
+SHOW_LINE += "<br>"
+;色リスト
+IF FLAG:상성등표시ON == 1 && CAN_SHOW_COLOR_LIST
+	VARS COLOR_LIST	
+	;色リスト表示１行目
+	COLOR_LIST += @"<font color = '%TOSTR_HTML(COLOR("약점컬러"))%'>■</font>%"WEAK", 7, LEFT%" + " " * 8
+	COLOR_LIST += "<br>" + @"<font color = '%TOSTR_HTML(COLOR("통상컬러"))%'>■</font>%"NORMAL", 7, LEFT%" + " " * 8
+	COLOR_LIST += "<br>" + @"<font color = '%TOSTR_HTML(COLOR("내성컬러"))%'>■</font>%"RESIST", 7, LEFT%" + " " * 8
+	COLOR_LIST += "<br>" + @"<font color = '%TOSTR_HTML(COLOR("무효컬러"))%'>■</font>%"BLOCK", 7, LEFT%" + " " * 8
+	COLOR_LIST += "<br>" + @"<font color = '%TOSTR_HTML(COLOR("흡수컬러"))%'>■</font>%"ABSORB", 7, LEFT%" + " " * 8
+	COLOR_LIST += "<br>" + @"<font color = '%TOSTR_HTML(COLOR("반사컬러"))%'>■</font>%"REFLECT", 7, LEFT%" + " " * 8
+	COLOR_LIST '= "<div xpos = '0' ypos = '0'>" + COLOR_LIST + "</div>"
+	SHOW_LINE += COLOR_LIST
+ENDIF
+L_XPOS = 50 * 17
+L_YPOS = 0
+
+VARI L_ROW
+VARI L_COLUMN
+VARS CHARA_INFO
+VARI L_XPOS_CHARA_INFO
+VARI L_YPOS_CHARA_INFO
+FOR L_ROW, 0, 2
+	FOR L_COLUMN, 0, 3
+		L_POS = L_ROW * 3 + L_COLUMN + 1
+		IF SHOW_SET_PT_NO == -1
+			L_CHARA = POS(L_POS)
+		ELSE
+			L_CHARA = POS_FOR_FORMATION_P(L_POS, SHOW_SET_PT_NO)
+		ENDIF
+		IF IMG_SIZE == "L"
+			L_XPOS_CHARA_INFO = 1100 + 600
+		ELSE
+			L_XPOS_CHARA_INFO = 1100 + 400
+		ENDIF
+		L_XPOS_CHARA_INFO += 100
+		L_XPOS_CHARA_INFO *= L_COLUMN
+		IF IMG_SIZE == "L"
+			L_YPOS_CHARA_INFO = 700 * L_ROW
+		ELSE
+			L_YPOS_CHARA_INFO = 500 * L_ROW
+		ENDIF
+		CALL MAKE_STR_SHOW_FORMATION_CHARA_P, L_CHARA, L_POS, ARG:2, IMG_SIZE, L_SITUATION, L_ACTOR, L_SKILL
+		;CHARA_INFO += RESULTS
+		CHARA_INFO += @"<div xpos = '{L_XPOS_CHARA_INFO}' ypos = '{L_YPOS_CHARA_INFO}'>" + RESULTS + "</div>"
+	NEXT
+NEXT
+CHARA_INFO '= @"<div xpos = {L_XPOS} ypos = {L_YPOS}>" + CHARA_INFO + "<div>"
+SHOW_LINE += CHARA_INFO
+HTML_PRINT SHOW_LINE
+FOR LCOUNT, 0, LINENUM - 1
+	PRINTL 
+NEXT
+PRINTSL GETLINESTR("=")
+RETURN 0
+;---- EDIT P 004 MOD END ---------------------------
+;==================================
+;敵パーティの描画
+;==================================
+;ARG:2 選択中のスキルの属性　＆　表示してもよい状況か
+;ARG:3 選択中のスキル番号
+;ARGS  呼び出し元やモードの指定;EDIT 040 ADD
+;０～相性数：その属性に対する相性表示　例：剣撃　75％
+;－１：色分けで全部表示　例：剣飛打戦火氷電衝神
+;それ以外：表示しない
+;ARG:2がOK　かつ　FLAG:相性等表示ONがOK　の時表示する
+@SHOW_NOW_FORMATION_E, ARG, ARG:1, L_TYPE, L_SITUATION, L_ACTOR = -1, L_SKILL = -1
+#DIM DYNAMIC LCOUNT, 4
+#DIM DYNAMIC L_ENEMY
+#DIM DYNAMIC L_TYPE;選択中のスキルの属性　あるいは　表示してもよい状況か
+#DIM DYNAMIC L_SKILL;選択中のスキル番号
+#DIM DYNAMIC L_ACTOR;スキル実行者
+#DIM DYNAMIC L_POS
+#DIMS DYNAMIC L_SITUATION
+#DIM DYNAMIC CAN_SHOW_ENEMY_TYPE_ALL
+#DIMS DYNAMIC SHOW_LINE
+#DIM DYNAMIC LINENUM
+#DIM DYNAMIC L_HEIGHT
+#DIM DYNAMIC L_WIDTH
+#DIM DYNAMIC TEMP
+#DIM DYNAMIC TEMP_TYPE
+#DIMS DYNAMIC TEMPS
+#DIMS DYNAMIC L_CAUTION
+LINENUM = 4 * (ARG:1 - ARG) + 1
+IF L_SITUATION == "SELECT_TARGET"
+	LINENUM += 1 * (ARG:1 - ARG)
+ELSEIF L_TYPE == -1
+	SIF FLAG:상성등표시ON > 0
+		LINENUM += 2 * (ARG:1 - ARG)
+ENDIF
+SHOW_LINE = 
+
+;----------------------------------------------------
+;画面右サイドの敵所持スキル相性欄の表示条件の確認
+;----------------------------------------------------
+PRINTSL GETLINESTR("=")
+SHOW_LINE '= "ＥＮＥＭＹ"
+IF FLAG:월령 != 0 && FLAG:월령 != 8
+	SHOW_LINE += TOALIGNMENT(@"현재의월령：{FLAG:월령}/8 \@ FLAG:월령벡터 == 0 ? ＹＯＵＮＧ # ＯＬＤ \@ ＭＯＯＮ", 100, "RIGHT")
+ELSE
+	SHOW_LINE += TOALIGNMENT(@"현재의월령：\@ FLAG:월령 == 8 ? ＦＵＬＬ ＭＯＯＮ # ＮＥＷ ＭＯＯＮ\@", 100, "RIGHT")
+ENDIF
+SHOW_LINE '= "<div xpos = '0' ypos = '0'>" + SHOW_LINE + "</div>"
+IF L_SITUATION == "BATTLE_MAIN" && (!NUM_SUMMONER(1) || !NUM_HAVESKILL([[스킬:하이・애널라이즈]]))
+	;敵全ての情報がとれているか確認する
+	VARI CAN_SHOW_ENEMY_TYPE_ALL = 1
+	VARI L_ENEMY
+	FOR LCOUNT:1,ARG:1-1,ARG-1,-1
+		FOR LCOUNT, 0, 5
+			L_POS = LCOUNT+LCOUNT:1*5+7
+			L_ENEMY = POS(L_POS)
+			SIF !IS_TARGET_ABLE(L_ENEMY)
+				CONTINUE
+			SIF CAN_SHOW_ENEMY_TYPE(L_ENEMY)
+				CONTINUE
+			SIF CFLAG:L_ENEMY:보스플래그
+				CONTINUE
+			CAN_SHOW_ENEMY_TYPE_ALL = 0
+		NEXT
+	NEXT
+	TEMPS '= ""
+	FOR LCOUNT, 0, LINENUM + 1
+		SIF LCOUNT
+			TEMPS += "<br>"
+		TEMPS += "┃"
+	NEXT
+	SHOW_LINE += @"<div xpos = '7200' ypos = '0'>" + TEMPS + "</div>"
+	VARS L_CAUTION
+	L_CAUTION '= "ＣＡＵＴＩＯＮ" + "<br>"
+	FOR LCOUNT:1, 0, TYPENUM / 2
+		TEMPS '= ""
+		FOR LCOUNT, 0, 2
+			TEMP = LCOUNT:1 * 2 + LCOUNT
+			TEMPS += SUBSTRING(GET_TYPE(TEMP), 0, 2)+":"
+			IF ENEMY_HAVE_SKILL_ATK_TYPE:TEMP == 2
+				TEMPS += "！"
+				TEMPS '= SET_COLOR_TAG(TEMPS, "red")
+			ELSE
+				IF CAN_SHOW_ENEMY_TYPE_ALL
+					TEMPS += "―"
+				ELSE
+					TEMPS += "？"
+					TEMPS '= SET_COLOR_TAG(TEMPS, "light-gray")
+				ENDIF
+			ENDIF
+			SIF !LCOUNT
+				TEMPS += "　　"
+		NEXT
+		L_CAUTION += TEMPS + "<br>"
+	NEXT
+	L_CAUTION '= @"<div xpos = '7300' ypos = '0'>" + SET_BUTTON_TAG(L_CAUTION, , "アナライズ済みの敵が使用する可能性のある攻撃相性") + "</div>"
+	SHOW_LINE += L_CAUTION
+ENDIF
+SHOW_LINE '= "<div xpos = '0' ypos = '0'>" + SHOW_LINE + "</div>"
+;----------------------------------------------------
+;LCOUNT:1 は列を制御。0 = 前列、1 = 後列
+;----------------------------------------------------
+SHOW_LINE += "<br>"
+VARI CNT_LINE
+FOR LCOUNT:1, ARG:1-1, ARG-1,-1
+	FOR LCOUNT, 0, 5
+		L_POS = LCOUNT + LCOUNT:1 * 5 + 7
+		L_ENEMY = POS(L_POS)
+		CALL MAKE_STR_SHOW_FORMATION_CHARA_E, L_ENEMY, L_POS, L_SITUATION, L_TYPE, L_ACTOR, L_SKILL
+		L_WIDTH = RESULT
+		L_HEIGHT = RESULT:1
+		SHOW_LINE += @"<div xpos = '{200 + LCOUNT * (L_WIDTH + 100)}' ypos = '{CNT_LINE * L_HEIGHT}'>"  + RESULTS + "</div>"
+	NEXT
+	CNT_LINE++
+NEXT
+HTML_PRINT SHOW_LINE
+FOR LCOUNT, 0, LINENUM - 1
+	PRINTL 
+NEXT
+PRINTSL GETLINESTR("=")
+RETURN 0
+
+;==================================
+;前詰め/死亡チェック
+;==================================
+@REFRESH_FORMATION
+#DIM LCOUNT
+#DIM L_FRONT
+#DIM L_BACK
+;---- EDIT 049 ADD START -------------------------
+;場から除外されるキャラがいないか先にチェック
+FOR LCOUNT, 1, 17
+	SIF POS(LCOUNT) < 0
+		CONTINUE
+	SIF !IS_BADSTATE(POS(LCOUNT), "DYING")
+		CONTINUE
+	IF CFLAG:POS(LCOUNT):PT플래그 > 0
+		CONTINUE
+	ELSE
+		SIF CFLAG:POS(LCOUNT):시체잔존 > 0
+			CONTINUE
+	ENDIF
+	CALL REMOVE_POSITION, LCOUNT
+NEXT
+;---- EDIT 049 ADD END ---------------------------
+;前衛が空いているのに後衛がいるポジションがないか調べる
+FOR LCOUNT,1,4
+	L_FRONT = POS(LCOUNT)
+	L_BACK = POS(LCOUNT+3)
+	IF L_FRONT == -1
+		SIF L_BACK > -1
+			CALL INSERT_POSITION,LCOUNT,L_BACK
+	ELSEIF GET_STATE(CFLAG:(L_FRONT):상태이상) == "DYING"
+		SIF L_BACK > -1 && GET_STATE(CFLAG:(L_BACK):상태이상) != "DYING"
+			CALL CHANGE_POSITION,L_FRONT,L_BACK
+	ENDIF
+NEXT
+FOR LCOUNT,7,12
+	L_FRONT = POS(LCOUNT)
+	L_BACK = POS(LCOUNT+5)
+	IF L_FRONT == -1
+		SIF L_BACK > -1
+			CALL INSERT_POSITION,LCOUNT,L_BACK
+	ELSEIF GET_STATE(CFLAG:(L_FRONT):상태이상) == "DYING"
+		SIF L_BACK > -1 && GET_STATE(CFLAG:(L_BACK):상태이상) != "DYING"
+			CALL CHANGE_POSITION,L_FRONT,L_BACK
+	ENDIF
+NEXT
+
+;==============================================
+;ポジション入れ替え
+;==============================================
+@CHANGE_POSITION,ARG,ARG:1
+	LOCALS = 포지션{CFLAG:(ARG:0):포지션}
+	LOCALS:1 = 포지션{CFLAG:(ARG:1):포지션}
+	SWAP FLAG:LOCALS,FLAG:(LOCALS:1)
+	SWAP CFLAG:(ARG:0):포지션,CFLAG:(ARG:1):포지션
+
+;==============================================
+;ポジション入れ替え2式
+;==============================================
+@CHANGE_POS,ARG,ARG:1
+	LOCALS = 포지션{ARG}
+	LOCALS:1 = 포지션{ARG:1}
+	SIF FLAG:LOCALS > -1
+		CFLAG:(FLAG:LOCALS):포지션 = ARG:1
+	SIF FLAG:(LOCALS:1) > -1
+		CFLAG:(FLAG:(LOCALS:1)):포지션 = ARG
+	CALL REFRESH_POS
+;		SWAP FLAG:LOCALS,FLAG:(LOCALS:1)
+
+;==================================
+;ポジションに挿入
+;==================================
+@INSERT_POSITION, ARG = -1, ARG:1, NOT_SYNC
+#DIM DYNAMIC SWITCHING_CHARA = -1
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC NOT_SYNC
+IF ARG == -1
+	SIF CPOS(ARG:1) > 0
+		RETURN 0
+	FOR LCOUNT, 6, 0, -1
+		SIF POS(LCOUNT) >= 0
+			CONTINUE
+		ARG = LCOUNT
+		BREAK
+	NEXT
+	SIF ARG == -1
+		THROW 空きポジションがない状態でキャラを挿入しようとしています！
+ENDIF
+LOCALS = 포지션{ARG}
+IF CFLAG:(ARG:1):PT플래그 > 0
+	SIF ARG < 4
+		LOCALS:1 = 포지션{ARG+3}
+ELSE
+	SIF ARG < 12
+		LOCALS:1 = 포지션{ARG+5}
+ENDIF
+IF FLAG:LOCALS > -1
+	;後ろが空いてるならずれてもらう
+	IF ((CFLAG:(ARG:1):PT플래그 && ARG < 4) || (CFLAG:(ARG:1):PT플래그 == 0 && ARG < 12)) && FLAG:(LOCALS:1) == -1
+		CFLAG:(FLAG:LOCALS):포지션 = ARG+3+!CFLAG:(FLAG:LOCALS):PT플래그*2
+		FLAG:(LOCALS:1) = FLAG:LOCALS
+		;PRINTFORML {ARG}に%CALLNAME:(ARG:1)%を配置します
+		FLAG:LOCALS = ARG:1
+		;PRINTFORML %CALLNAME:(ARG:1)%のポジションを{ARG}に書き換えます。
+		CFLAG:(ARG:1):포지션 = ARG
+		SIF CFLAG:(ARG:1):PT플래그
+			CFLAG:(ARG:1):PT플래그 = 2
+	;空いておらず、そこに居るのが主人なら交代不可
+	ELSEIF (FLAG:LOCALS) == MASTER
+		PRINTW 교체할 수 없습니다
+		RETURN -1, -1
+	;交代
+	ELSEIF GET_ROLE_PROP("CAN_PUT_IN_COMP", FLAG:LOCALS) && CFLAG:(FLAG:LOCALS):소속ＣＯＭＰ == 0
+		SWITCHING_CHARA = FLAG:LOCALS
+		CALL REMOVE_POSITION,ARG
+		;PRINTFORML {ARG}に%CALLNAME:(ARG:1)%を配置します
+		FLAG:LOCALS = ARG:1
+		;PRINTFORML %CALLNAME:(ARG:1)%のポジションを{ARG}に書き換えます。
+		CFLAG:(ARG:1):포지션 = ARG
+		SIF CFLAG:(ARG:1):PT플래그
+			CFLAG:(ARG:1):PT플래그 = 2
+	;そこに居るのが主人以外かつ探索or戦闘中でなければ交代
+	ELSEIF (FLAG:LOCALS) != MASTER && FLAG:SHOP커맨드 == [[ショップ:셋업]]
+		SWITCHING_CHARA = FLAG:LOCALS
+		CALL REMOVE_POSITION,ARG
+		;PRINTFORML {ARG}に%CALLNAME:(ARG:1)%を配置します
+		FLAG:LOCALS = ARG:1
+		;PRINTFORML %CALLNAME:(ARG:1)%のポジションを{ARG}に書き換えます。
+		CFLAG:(ARG:1):포지션 = ARG
+		SIF CFLAG:(ARG:1):PT플래그
+			CFLAG:(ARG:1):PT플래그 = 2
+	ELSE
+	;どれかに引っかからなかったら交代できない
+		PRINTW 교체할 수 없습니다
+		RETURN -1, -1
+	ENDIF
+ELSE
+	IF CFLAG:(ARG:1):포지션
+		LOCALS:2 = 포지션{CFLAG:(ARG:1):포지션}
+		FLAG:(LOCALS:2) = -1
+	ENDIF
+	;PRINTFORML {ARG}に%CALLNAME:(ARG:1)%を配置します
+	FLAG:LOCALS = ARG:1
+	;PRINTFORML %CALLNAME:(ARG:1)%のポジションを{ARG}に書き換えます。
+	CFLAG:(ARG:1):포지션 = ARG
+	SIF CFLAG:(ARG:1):PT플래그
+		CFLAG:(ARG:1):PT플래그 = 2
+ENDIF
+SIF !NOT_SYNC
+	CALL SYNC_STATUS, ARG:1, "HPMP割合保持"
+RETURN 1, SWITCHING_CHARA
+
+;---- EDIT 042 MOD START -------------------------
+;---- EDIT 061 MOD START -------------------------
+;==================================
+;仲間を表示
+;ARG = 呼び出し元を示す
+;ARG:1 = 呼び出したキャラクター
+;==================================
+@CHOOSE_COMPANION, ARGS, ARG
+#DIMS DYNAMIC L_FUNC_PROPSET_LIST
+#DIMS DYNAMIC L_EXPLAIN
+#DIM L_LINE
+L_LINE = LINECOUNT
+$START
+CHOOSE_COMPANION_VAR = %ARGS%
+CLEARLINE LINECOUNT - L_LINE
+;IF FLAG:SHOP커맨드 == [[ショップ:셋업]]
+;	CALL INPUT_CHARA_LIST("誰を配置する？", "CASTING_CHOOSE_COMPANION", "", "", "", "やめる")
+;ELSE
+;	CALL INPUT_CHARA_LIST("누구를 불러낼까？", "CASTING_CHOOSE_COMPANION", "", "", "", "やめる")
+;ENDIF
+IF TFLAG:전투중
+	L_FUNC_PROPSET_LIST = 戦闘/育成情報/調教/基本ステータス/防御相性1/防御相性2
+	L_EXPLAIN = 누구를 불러낼까？
+ELSE
+	L_FUNC_PROPSET_LIST = CHOOSE_COMPANION_戦闘/CHOOSE_COMPANION_育成情報/CHOOSE_COMPANION_調教/基本ステータス/防御相性1/防御相性2
+	L_EXPLAIN = 누구를 배치할까？
+ENDIF
+{
+CALL INPUT_CHARA_LIST
+	, L_FUNC_PROPSET_LIST
+	, L_EXPLAIN
+	, "CASTING_CHOOSE_COMPANION" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "그만둔다"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+CHOOSE_COMPANION_VAR '= ""
+IF RESULT == 1000
+	RETURN 1000
+;ELSEIF RESULT == 1002 && ARG == 2 ;この1002がよく分からないからコメントアウト
+;	RETURN 1002
+ELSE
+	IF GET_VALUE_TALENT_JOINABLE(RESULT) == 0
+		PRINTFORMW %CALLNAME:RESULT%은(는) 전투 참가를 거부하고 있다.
+		PRINTFORMW 「순종」 혹은 「욕망」 능력을 올려 【반발각인】을 소거해 주십시오.
+		CLEARLINE 3
+		GOTO START
+	ELSE
+		SELECTCASE FLAG:SHOP커맨드
+			CASE [[ショップ:탐색]],[[ショップ:콜로세움참가]],[[ショップ:이벤트]],[[ショップ:의뢰청부]]
+				;IF ABL:RESULT:종족 != 0 && GET_CHARA_STOCK_MAG(MASTER) < MAXBASE:RESULT:￥
+				IF ABL:RESULT:종족 != 0 && GET_CHARA_STOCK_MAG(MASTER) < MAXBASE:RESULT:￥
+					PRINTW MAG가 부족합니다
+					CLEARLINE 2
+					GOTO START
+				ENDIF
+		ENDSELECT
+		RETURN RESULT
+	ENDIF
+ENDIF
+;---- EDIT 055 MOD START -------------------------
+;---- EDIT 056 MOD END ---------------------------
+;---- EDIT 041 MOD END ---------------------------
+@CASTING_CHOOSE_COMPANION(ARG:0)
+;---- EDIT 052 ADD START -------------------------
+SIF FLAG:소환불능
+	RETURN 0
+;---- EDIT 052 ADD END ---------------------------
+SIF CFLAG:(ARG:0):PT플래그 != 1
+	RETURN 0
+IF GROUPMATCH(FLAG:SHOP커맨드, [[ショップ:탐색]],[[ショップ:콜로세움참가]],[[ショップ:이벤트]],[[ショップ:의뢰청부]])
+	SIF GET_VALUE_TALENT_JOINABLE((ARG:0)) == 0
+		RETURN 0
+ELSE
+	SIF TALENT:(ARG:0):반역
+		RETURN 0
+ENDIF
+SIF TALENT:(ARG:0):전력상실 > 0
+	RETURN 0
+SIF IS_RENTING(ARG:0)
+	RETURN 0
+SIF TALENT:(ARG:0):비전투원
+	RETURN 0
+SIF CFLAG:(ARG:0):이자리에없는플래그 == 1
+	RETURN 0
+SIF CFLAG:(ARG:0):피변신플래그
+	RETURN 0
+TRYCCALLFORM CASTING_CHOOSE_COMPANION_ROLE_%CSTR:(ARG:0):롤%, ARG
+	SIF !RESULT
+		RETURN 0
+CATCH
+ENDCATCH
+TRYCCALLFORM CASTING_CHOOSE_COMPANION_CHARA_{NO:(ARG:0)}, ARG
+	SIF !RESULT
+		RETURN 0
+CATCH
+ENDCATCH
+;探索・戦闘中に呼出
+IF COUNT_SPLIT(CHOOSE_COMPANION_VAR, "/", "RPG")
+	SIF GET_STATE(CFLAG:(ARG:0):상태이상) == "DYING"
+		RETURN 0
+	;---- EDIT 061 MOD START -------------------------
+	SIF !GET_ROLE_PROP("CAN_PUT_IN_COMP", ARG)
+		RETURN 0
+	;SIF ABL:(ARG:0):종족 == 0
+	;	RETURN 0
+	;---- EDIT 061 MOD END ---------------------------
+	;SIF CFLAG:(ARG:0):피변신플래그
+	;	RETURN 0
+	SIF CFLAG:(ARG:0):소속ＣＯＭＰ == -1
+		RETURN 0
+	;召喚攻撃からの呼出では死亡の他の攻撃不能な異常も見る
+	IF COUNT_SPLIT(CHOOSE_COMPANION_VAR, "/", "召喚攻撃")
+		CALL ACTIONABLE_CHARA, ARG:0
+		SIF !RESULT
+			RETURN 0
+	ENDIF
+ENDIF
+;フィルタリングされてるキャラは除外
+SIF CFLAG:(ARG:0):필터링플래그
+	RETURN 0
+RETURN 1
+;---- EDIT 055 MOD END ---------------------------
+;---- EDIT 056 ADD START -------------------------
+@CHOOSE_COMPANION_戦闘
+RESULTS '= "NO_NAME_LV_ALI_SEX_POS_HP_MP_SPD_BADSTATE_CP_MAGCOST_FALLTALENT_BELONG"
+
+@CHOOSE_COMPANION_育成情報
+RESULTS '= "NO_NAME_LV_ALI_SEX_POS_HP_MP_CP_LOYALTY_MAG_RACE_BELONG"
+
+@CHOOSE_COMPANION_調教
+RESULTS '= "NO_NAME_LV_ALI_SEX_POS_体力_気力_STRESS_LOYALTY_FALLTALENT_WORK_CONDITION_KOJO_BELONG"
+;---- EDIT 056 ADD END ---------------------------
+
+@GET_VALUE_TALENT_JOINABLE, L_CHARA
+#FUNCTION
+#DIM DYNAMIC L_CHARA
+SIF TALENT:L_CHARA:반발
+	RETURNF 0
+SIF TALENT:L_CHARA:반역
+	RETURNF 0
+SIF TALENT:L_CHARA:신용
+	RETURNF 1
+RETURNF 2
+
+@SET_TALENT_PARTY_JOINABLE, L_CHARA, ARGS
+#DIM DYNAMIC L_CHARA
+SELECTCASE ARGS
+	CASE "参加不可能"
+		TALENT:L_CHARA:신용 = 0
+		TALENT:L_CHARA:반발 = 1
+	CASE "参加可能"
+		TALENT:L_CHARA:신용 = 0
+		TALENT:L_CHARA:반발 = 0
+		TALENT:L_CHARA:반역 = 0
+	CASE "信用", "신용"
+		TALENT:L_CHARA:신용 = 1
+		TALENT:L_CHARA:반발 = 0
+	CASE "反逆", "반역"
+		TALENT:L_CHARA:신용 = 0
+		TALENT:L_CHARA:반발 = 0
+		TALENT:L_CHARA:반역 = 1
+	CASEELSE
+		THROW 引き数の指定ミス
+ENDSELECT
+
+;========================================================================
+;ポジションキャラ側から読み込み
+;合体、売却等でキャラが消滅する際にポジションを読み込みし直す処理
+;========================================================================
+@REFRESH_POS
+FOR LOCAL,1,17
+	LOCALS = 포지션{LOCAL}
+	FLAG:LOCALS = -1
+NEXT
+
+FOR LOCAL,0,CHARANUM
+	SIF CFLAG:LOCAL:PT플래그 == 2
+		CFLAG:LOCAL:PT플래그 = 1
+	IF CFLAG:LOCAL:포지션 > 0
+		;ステータス同期をせずに入れなおす
+		CALL INSERT_POSITION,CFLAG:LOCAL:포지션,LOCAL, 1
+	ENDIF
+NEXT
+
+;ステータス同期
+CALL SET_LEADER_SKILL
+;リーダースキルの変更があった場合は@SET_LEADER_SKILL内でSYNCするようになっているため、ここでのSYNCはコメントアウト
+;FOR LOCAL, 1, 17
+;	SIF POS(LOCAL) < 0
+;		CONTINUE
+;	CALL SYNC_STATUS, POS(LOCAL), "HPMP割合保持"
+;NEXT
+
+;----------------------------------
+;指定PT作成関数
+;イベントで特定PTで戦闘させたいという時に
+;
+;MASTER抜きPTを作る場合はイベント終了後にMASTERを加入させたPTをつくってください
+;サバトマやCOMPを抑制する仕様はないので別で制御してください
+;また、陥落しているメンバーがいないPTを作った場合はエラー落ちするので注意してください
+;
+;ARG:0 ~ ARG:5 	PTメンバーに指定するキャラクターのNO、基本的には[[キャラ:XXXX]]で指定してください
+;ARGS			欠員許容を指定した場合、指定メンバーの一部がいない場合でもPT作成を完了できます
+;				逆に非許容のままPTメンバーが足りない場合はエラー落ちするのでこの関数に到達するまでの条件を見直してください
+;----------------------------------
+@MAKE_SELECTED_PT, ARG = -1, ARG:1 = -1, ARG:2 = -1, ARG:3 = -1, ARG:4 = 1, ARG:5 = -1, ARGS = "欠員非許容"
+#DIM LCOUNT
+#DIM CHARA
+#DIM IS_ABLE
+FOR LCOUNT, 1, 7
+	SIF POS(LCOUNT) < 0
+		CONTINUE
+	CALL REMOVE_POSITION, LCOUNT
+NEXT
+;PT作成
+FOR LCOUNT, 0, 6
+	SIF ARG:LCOUNT == -1
+		CONTINUE
+	CHARA = GETCHARA(ARG:LCOUNT)
+	;PTの参加可否
+	;PTの参加可否
+	IS_ABLE = 1	
+	IF CHARA >= 0
+		SIF CFLAG:CHARA:PT플래그 != 1 && CFLAG:CHARA:PT플래그 != 2
+			IS_ABLE = 0
+		SIF GET_VALUE_TALENT_JOINABLE(CHARA) == 0
+			IS_ABLE = 0
+		SIF TALENT:CHARA:전력상실 > 0
+			IS_ABLE = 0
+		SIF IS_RENTING(CHARA)
+			IS_ABLE = 0
+		SIF TALENT:CHARA:비전투원
+			IS_ABLE = 0
+	ELSE
+		IS_ABLE = 0
+	ENDIF
+	;欠員を許容しない場合はメンバー不足のときにエラー落ちで警告する
+	IF !IS_ABLE
+		IF ARGS != "欠員許容"
+			A = -1
+			IF CHARA == -1
+				PRINTFORMW %CSVNAME(ARG:LCOUNT)%의 GETCHARA를 할 수 없습니다!
+			ELSE
+				PRINTFORMW %CSVNAME(ARG:LCOUNT)%이(가) PT에 들어갈 수 없는 상태입니다!
+			ENDIF
+			TSTR:A = この関数に到達するまでの条件を見直してください
+		ELSE
+			CONTINUE
+		ENDIF
+	ENDIF
+	CALL INSERT_POSITION, LCOUNT+1, CHARA
+NEXT
+;ゲームオーバーチェック
+FOR LCOUNT, 1, 7
+	CHARA = POS(LCOUNT)
+	SIF CHARA < 0
+		CONTINUE
+	SIF MASTER == CHARA
+		RETURN 1
+	SIF 陥落(CHARA)
+		RETURN 1
+NEXT
+A=-1
+PRINTL 배치 완료 PT
+FOR LCOUNT, 1, 7
+	CHARA = POS(LCOUNT)
+	IF CHARA < 0
+		PRINTFORML [{LCOUNT}] EMPTY
+	ELSE
+		PRINTFORML [{LCOUNT}] %CALLNAME:CHARA%
+	ENDIF
+NEXT
+TSTR:A = このままのPTで戦闘させるとゲームオーバーしてしまいます！条件を見直してください！
+
+;----------------------------------
+;指定PT作成条件確認関数
+;上記のPT作成関数を通るPTをつくれるかどうかを確認する
+;
+;戻り値	1 = 作成可能　0 = 作成不能　またRESULTSに作成ができない理由を格納
+;----------------------------------
+@CHECK_CAN_MAKE_SELECTED_PT, ARG = -1, ARG:1 = -1, ARG:2 = -1, ARG:3 = -1, ARG:4 = 1, ARG:5 = -1, ARGS = "欠員非許容"
+#FUNCTION
+#DIM LCOUNT
+#DIM CHARA
+#DIM IS_ABLE
+;メンバー存在 & PT参加可否チェック
+FOR LCOUNT, 0, 6
+	SIF ARG:LCOUNT == -1
+		CONTINUE
+	CHARA = GETCHARA(ARG:LCOUNT)
+	;PTの参加可否
+	IS_ABLE = 1	
+	IF CHARA >= 0
+		SIF CFLAG:CHARA:PT플래그 != 1 && CFLAG:CHARA:PT플래그 != 2
+			IS_ABLE = 0
+		SIF GET_VALUE_TALENT_JOINABLE(CHARA) == 0
+			IS_ABLE = 0
+		SIF TALENT:CHARA:전력상실 > 0
+			IS_ABLE = 0
+		SIF IS_RENTING(CHARA)
+			IS_ABLE = 0
+		SIF TALENT:CHARA:비전투원
+			IS_ABLE = 0
+	ELSE
+		IS_ABLE = 0
+	ENDIF
+	;欠員を許容しない場合はメンバー不足を通さない
+	IF !IS_ABLE
+		IF ARGS != "欠員許容"
+			IF CHARA < 0
+				RESULTS = %CSVNAME(ARG:LCOUNT)%이(가) 존재하지 않음
+			ELSE
+				RESULTS = %CSVNAME(ARG:LCOUNT)%이(가) PT에 참가 불가능
+			ENDIF
+			RETURNF 0
+		ELSE
+			CONTINUE
+		ENDIF
+	ENDIF
+NEXT
+;ゲームオーバーチェック
+FOR LCOUNT, 1, 7
+	CHARA = POS(LCOUNT)
+	SIF CHARA < 0
+		CONTINUE
+	SIF MASTER == CHARA
+		RETURNF 1
+	SIF 陥落(CHARA)
+		RETURNF 1
+NEXT
+RESULTS = 게임 오버 체크아웃
+RETURNF 0
+
+;---- EDIT 041 MOD START -------------------------
+@CHOOSE_DEAD_COMPANION,ARGS, ARG
+#DIMS DYNAMIC L_MESSAGE
+CHOOSE_COMPANION_VAR = %ARGS%
+IF FLAG:SHOP커맨드 == [[ショップ:셋업]]
+	L_MESSAGE = 누구를 배치할까？
+ELSE
+	L_MESSAGE = 누구를 불러낼까？
+ENDIF
+$INPUT_LOOP_2
+;IF FLAG:SHOP커맨드 == [[ショップ:셋업]]
+;	CALL INPUT_CHARA_LIST("誰を配置する？", "CASTING_DEAD_COMPANION", "", "", "", "やめる")
+;ELSE
+;	CALL INPUT_CHARA_LIST("누구를 불러낼까？", "CASTING_DEAD_COMPANION", "", "", "", "やめる")
+;ENDIF
+{
+CALL INPUT_CHARA_LIST
+	, "FUNC_PROPSET_LIST_BATTLE"
+	, L_MESSAGE
+	, "CASTING_DEAD_COMPANION" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "그만둔다"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+IF RESULT == 1000
+	RETURN 1000
+;ELSEIF RESULT == 1002 && ARG == 2 ;この1002がよく分からないからコメントアウト
+;	RETURN 1002
+ELSE
+	SELECTCASE FLAG:SHOP커맨드
+		CASE [[ショップ:탐색]],[[ショップ:콜로세움참가]],[[ショップ:이벤트]],[[ショップ:의뢰청부]]
+			IF ABL:RESULT:종족 != 0 && GET_CHARA_STOCK_MAG(ARG) < MAXBASE:RESULT:￥
+				PRINTW MAG가 부족합니다
+				CLEARLINE 2
+				GOTO INPUT_LOOP_2
+			ENDIF
+	ENDSELECT
+	RETURN RESULT
+ENDIF
+
+@CASTING_DEAD_COMPANION(ARG:0)
+;---- EDIT 052 ADD START -------------------------
+SIF FLAG:소환불능
+	RETURN 0
+;---- EDIT 052 ADD END ---------------------------
+SIF CFLAG:(ARG:0):PT플래그 != 1
+	RETURN 0
+SIF GET_VALUE_TALENT_JOINABLE((ARG:0)) == 0
+	RETURN 0
+SIF IS_RENTING((ARG:0))
+	RETURN 0
+SIF TALENT:(ARG:0):비전투원
+	RETURN 0
+SIF CFLAG:(ARG:0):이자리에없는플래그 == 1
+	RETURN 0
+;---- EDIT 061 MOD START -------------------------
+SIF !GET_ROLE_PROP("CAN_PUT_IN_COMP", ARG)
+	RETURN 0
+SIF CFLAG:(ARG:0):피변신플래그
+	RETURN 0
+SIF CFLAG:(ARG:0):소속ＣＯＭＰ == -1
+	RETURN 0
+;フィルタリングされてるキャラは除外
+SIF CFLAG:(ARG:0):필터링플래그
+	RETURN 0
+TRYCCALLFORM CASTING_CHOOSE_COMPANION_ROLE_%CSTR:(ARG:0):롤%, ARG
+	SIF !RESULT
+		RETURN 0
+CATCH
+ENDCATCH
+TRYCCALLFORM CASTING_CHOOSE_COMPANION_CHARA_{NO:(ARG:0)}, ARG
+	SIF !RESULT
+		RETURN 0
+CATCH
+ENDCATCH
+RETURN 1
+;---- EDIT 009 ADD END ---------------------------
+;---- EDIT 031 悪魔変身顔グラ処理 ADD START -------------------------
+;---- EDIT 037 MOD START -------------------------
+
+;---- EDIT 058 ADD START -------------------------
+;-------------------------------------------------
+;編成セットのポジションから登録されているキャラ番号を取得する関数  
+;-------------------------------------------------
+; Input:
+;  ARG:0				포지션
+;  ARG:1				編成セット番号
+;-------------------------------------------------
+@POS_FOR_FORMATION_P, ARG, ARG:1
+#FUNCTION
+RETURNF FINDCHARA(CFLAG:0:실제가입시간, BATTLE_MEMBERSET:(ARG:1):ARG)
+;---- EDIT 019 ADD END ---------------------------
+
+;-------------------------------------------------
+;現在のパーティを登録されている編成セットのものに入れ替える関数
+;-------------------------------------------------
+; Input:
+;  ARG:0				編成セット番号
+;-------------------------------------------------
+@CHANGE_BATTLE_MEMBERSET, ARG
+#DIM DYNAMIC L_POS
+#DIM DYNAMIC L_CHARA
+;---- EDIT 059 MOD START -------------------------
+FOR L_POS, 1, 7
+	;先に全員外す
+	SIF POS(L_POS) >= 0
+		CALL REMOVE_POSITION, L_POS
+NEXT
+FOR L_POS, 1, 7
+	L_CHARA = POS_FOR_FORMATION_P(L_POS, ARG)
+	SIF L_CHARA < 0
+		CONTINUE
+	;配置条件を確認する
+	CALL CASTING_CHOOSE_COMPANION, L_CHARA
+	SIF !RESULT
+		CONTINUE 
+	CALL INSERT_POSITION, L_POS, L_CHARA
+NEXT
+;---- EDIT 059 MOD END ---------------------------
+;-------------------------------------------------
+;最後に編成されたパーティメンバー編成を登録する関数
+;-------------------------------------------------
+@SET_LAST_BATTLE_MEMBERSET
+#DIM DYNAMIC LCOUNT
+FOR LCOUNT, 1, 7
+	IF POS(LCOUNT) < 0
+		BATTLE_MEMBERSET:(BATTLE_MEMBERSETNUM - 1):LCOUNT = 0
+	ELSE
+		BATTLE_MEMBERSET:(BATTLE_MEMBERSETNUM - 1):LCOUNT = CFLAG:POS(LCOUNT):실제가입시간
+	ENDIF
+NEXT
+
+;-------------------------------------------------
+;現在のパーティを最後に利用された編成に入れ替える
+;-------------------------------------------------
+@CHANGE_LAST_BATTLE_MEMBERSET
+CALL CHANGE_BATTLE_MEMBERSET, BATTLE_MEMBERSETNUM - 1

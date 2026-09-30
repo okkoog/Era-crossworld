@@ -1,0 +1,195 @@
+﻿;枯渇庭園
+;221013		NEO		説明文などを変更、名称変化と演出を追加、継承不能追加
+;					BLOODHEAT状態の場合、敵へのダメージを万能相性にする効果を追加
+
+
+;スキル名
+@SKILL_NAME_2971,ARG
+RESULTS = 고유결계：고갈정원
+
+;　명중
+@SKILL_HITRATE_2971, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2971, ARG
+	IF ARG == -1
+		RETURN 100
+	ENDIF
+
+	IF 現HP割合(ARG) < 33
+		RETURN 150
+	ELSE
+		RETURN 100
+	ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2971,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2971,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2971, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2971,ARG
+RETURN 50
+
+;　相性
+@SKILL_TYPE_2971,ARG
+	IF FLAG:확산플래그 == 1
+		;ブラッドヒート状態かつ敵側への攻撃であるなら万能相性
+		RETURN GET_TYPE_NUM("만능")
+	ELSE
+		RETURN GET_TYPE_NUM("주살")
+	ENDIF
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2971
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2971, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2971, ARG
+RETURN GET_SKILL_TARGET_NUM("전투전체")
+
+;　사거리
+@SKILL_RANGE_2971,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2971,ARG
+RETURN GET_SPHERE_NUM("적아군전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2971, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2971
+RETURN GET_SUCCESSION_NUM("주살")
+@継承不能_2971
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_2971, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2971
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2971, ARG = -1
+RETURN 23
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_2971,ARG
+RETURN 0
+
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_2971,ARG
+RETURN 0
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_2971,ARG
+RETURN 0
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_2971,ARG
+RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2971, ARG, ARG:1, ARG:2
+#DIMS ATK_TARGET_POS
+#DIM LCOUNT
+#DIM ATK_TARGET
+#DIM ATK_TARGET_HP
+
+
+	;メッセージ表示
+	;HP条件をチェックし、強化状態であったら「BLOOD HEAT!!」を表示する
+	CALL MELTY_BLOOD_IS_BLOOD_HEAT_HP_CONDITIONS(ARG)
+
+	;敵味方全体対象
+	FOR LCOUNT, 1, 17
+		;ポジションを取得
+		ATK_TARGET_POS = 포지션{LCOUNT}
+		;対象とするポジションが死んでたりしたら戻る
+		SIF FLAG:ATK_TARGET_POS < 0
+			CONTINUE
+		SIF GET_STATE(CFLAG:(FLAG:ATK_TARGET_POS):상태이상) == "DYING"
+			CONTINUE
+		ATK_TARGET = FLAG:ATK_TARGET_POS 
+		CFLAG:ARG:타겟 = LCOUNT
+		;攻撃前HPを保存
+		ATK_TARGET_HP = BASE:(ATK_TARGET):ＨＰ
+
+		;ブラッドヒートチェック
+		;HPが33％未満かつ、敵への攻撃である場合、万能相性で行う
+		;まず初期化
+		FLAG:확산플래그 = 0
+		IF 現HP割合(ARG) < 33
+			;PTフラグが立ってなくて（敵で）、ポジション1-6（あなたチーム）への攻撃である場合
+			IF CFLAG:ARG:PT플래그 < 1 && LCOUNT < 7
+				FLAG:확산플래그 = 1
+			;PTフラグが立ってて（味方で）、ポジション7-16（敵）への攻撃である場合
+			ELSEIF CFLAG:ARG:PT플래그 > 0 && LCOUNT > 6
+				FLAG:확산플래그 = 1
+			ENDIF
+		ENDIF
+		
+		;単体攻撃を行う
+		CALL ATTACK_SINGLE, ARG, ATK_TARGET, 2971
+
+		;対象とするポジションが死んでたりしたら戻る
+		SIF FLAG:ATK_TARGET_POS < 0
+			CONTINUE
+		SIF GET_STATE(CFLAG:(FLAG:ATK_TARGET_POS):상태이상) == "DYING"
+			CONTINUE
+		;減ったHPを取得、それを半分にしてMPダメージにする
+		ATK_TARGET_HP = MAX(0, ATK_TARGET_HP - BASE:(ATK_TARGET):ＨＰ)
+		ATK_TARGET_HP /= 2
+		BASE:(ATK_TARGET):ＭＰ -= ATK_TARGET_HP
+		SIF BASE:(ATK_TARGET):ＭＰ < 0
+			BASE:(ATK_TARGET):ＭＰ = 0
+	NEXT
+	CFLAG:ARG:타겟 = CFLAG:ARG:포지션 < 7 ? 22 # 19
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2971, ARG
+PRINTL 적·아군 전체에 주살 상성의 소위력 데미지를 주고, 이에 비례한 데미지를 MP에 준다.
+PRINTL 사용자의 HP가 얼마 남지 않았을 경우 위력이 상승하고, 적을 향한 공격 상성이 만능 상성으로 변화한다.
+PRINTL 　
+PRINTL 모든 마나를 고갈시키는 내면세계를 외계에 구현화하여 적을 공격한다.
+PRINTL 사도 유미즈카 사츠키의 고유결계.
+
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2971,ARG
+RETURN 1
+;とくにない
+

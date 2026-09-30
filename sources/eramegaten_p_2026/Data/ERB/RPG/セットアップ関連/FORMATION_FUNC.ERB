@@ -1,0 +1,910 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/06/11		P(bazzile)				肥大化したFORMATIONから切り離す形で新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2024/09/10		P(bazzile)				ギボアイズによる弱点警告が正しく表示されない不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@BUFFCOLORSET, ARG
+IF ARG > 0
+	SETCOLOR 0x66FFFF
+ELSEIF ARG < 0
+	SETCOLOR 0x990000
+ELSE
+	SETCOLOR 0x404040
+ENDIF
+
+;---- EDIT 051 ADD START -------------------------
+@COMMANDER_SKILL_EX_DISPLAY, ARG, ARGS, ARG:1, ARGS:1
+#DIMS DYNAMIC L_RESULTS
+L_RESULTS = <img src = 'SKILL_ICON_00_COMMANDER_SKILL'>
+L_RESULTS +=" "
+CALL GET_CAST_SKILL_EMULATOR, ARG:1, ARG
+IF RESULT <= 0
+	IF INPUTABLE_CHARA_F(ARG)
+		CALL GET_SKILL_PROP, "SKILL_NAME", ARG:1, ARG
+		VARS TEMPS
+		L_RESULTS '= "<img src = 'SKILL_ICON_00_COMMANDER_SKILL'>"
+		L_RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG(@"%ARGS:1, SKILL_EX_DISPLAY_LENS - 9, LEFT%", "パ緑"), ARGS)
+		IF CFLAG:ARG:입력행동 == ARG:1 && !CFLAG:ARG:방어플래그
+			L_RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG("[ Set ]", "パ緑"), , @"%RESULTS%を使用予定")
+		ELSE
+			L_RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG("[Ready]", "パ緑"), @"INPUT/CS/{ARG}/{ARG:1}", @"%RESULTS%を使用")
+		ENDIF
+	ELSE
+		L_RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG(@"%ARGS:1, SKILL_EX_DISPLAY_LENS - 9, LEFT%", "gray"), ARGS)
+		L_RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG("[Ready]", "gray"), , "행동불능")
+	ENDIF
+ELSE
+	L_RESULTS += @"%ARGS:1, SKILL_EX_DISPLAY_LENS - 9, LEFT%%HTML_ESCAPE(@"<CT:{RESULT}>")%"
+ENDIF
+RESULTS '= L_RESULTS
+RETURN 1
+
+@ASSIST_SKILL_EX_DISPLAY, ARG, ARGS, ARG:1, ARGS:1
+#DIMS DYNAMIC L_RESULTS
+L_RESULTS = <img src = 'SKILL_ICON_01_ASSIST_SKILL'>
+L_RESULTS +=" "
+CALL GET_CAST_SKILL_EMULATOR, ARG:1, ARG
+IF RESULT <= 0
+	CALL GET_SKILL_PROP, "SKILL_NAME", ARG:1, ARG
+	IF INPUTABLE_CHARA_F(ARG)
+		L_RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG(@"%ARGS:1, SKILL_EX_DISPLAY_LENS - 10, LEFT%", "パ緑"), ARGS)
+		L_RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG("[Ready]", "パ緑"), @"INPUT/AS/{ARG}/{ARG:1}", @"%RESULTS%を使用")
+	ELSE
+		L_RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG(@"%ARGS:1, SKILL_EX_DISPLAY_LENS - 10, LEFT%", "gray"), ARGS)
+		L_RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG("[Ready]", "gray"), , @"행동불능")
+	ENDIF
+ELSE
+	L_RESULTS += @"%ARGS:1, SKILL_EX_DISPLAY_LENS - 9, LEFT%%HTML_ESCAPE(@"<CT:{RESULT}>")%"
+ENDIF
+RESULTS '= L_RESULTS
+RETURN 1
+
+
+;---- EDIT 003 ADD START -------------------------
+;---- EDIT 035 MOD START -------------------------
+;=================================================
+;   sub RPG_PRINT_PARAM_COLOR
+;=================================================
+;   表示:RPGパラメータ(色付き)
+;-------------------------------------------------
+;  引数を元に着色したパラメータ情報をPRINTする
+;-------------------------------------------------
+; Input:
+;  ARG:0				処理タイプ(1:ＨＰ(味方) 2:ＭＰ(味方) 3:ＨＰ(敵) 4:ＭＰ(敵))
+;  ARG:1				キャラ番号
+;  ARG:2				着色拒否フラグ(0:着色 1:着色拒否 2:ボスのみ着色拒否)
+;-------------------------------------------------
+@RPG_PRINT_PARAM_COLOR, ARG:0, ARG:1, ARG:2 = 0
+#FUNCTIONS
+#DIM LCOUNT
+#DIMS L_TEXT
+#DIM L_CHARA
+#DIM L_COLOR
+#DIMS L_COLORS
+#DIM L_HPMP;表示キャラのHPorMP
+#DIM L_MHPMP;表示キャラ最大HPorMP
+#DIM IS_BOSS;表示キャラがボスかどうか(解析度不足の場合の非ボスも含む)
+#DIM NOT_PRINT;非表示フラグ
+#DIM NOT_COLOR;非着色フラグ
+#DIM IS_SET_LINECOLOR;真なら行全体の着色を行う。偽なら現HP/MP部分だけの着色となる
+#DIMS 表示HPMP
+#DIMS 処理タイプ
+;--初期化
+;LOCAL:0  ;キャラ番号
+;LOCAL:1  ;出力無しフラグ(0:出力 1:出力無し(着色) 2:出力無し(通常色))
+;LOCAL:2  ;보스플래그(0:通常 1:ボス)
+L_CHARA  = ARG:1
+L_TEXT = 
+NOT_PRINT = 0
+
+NOT_COLOR = 0
+SIF ARG:2 == 1
+	NOT_COLOR = 1
+SIF ARG:2 == 2 && IS_BOSS
+	NOT_COLOR = 1
+
+IS_BOSS = 0
+処理タイプ = %AUTO_SPLIT("味方HP/味方MP/敵HP/敵MP", "/", ARG:0-1)%
+;--定数設定
+IF 処理タイプ == "味方HP" || 処理タイプ == "敵HP"
+	表示HPMP = ＨＰ
+ELSE
+	表示HPMP = ＭＰ
+ENDIF
+
+;CHK:対象有無
+IF L_CHARA < 0
+;対象無し
+	NOT_PRINT = 1
+ELSE
+;対象有り
+
+	;--定数設定
+	L_HPMP  = BASE:L_CHARA:(表示HPMP)
+	L_MHPMP  = MAXBASE:L_CHARA:(表示HPMP)
+
+	;CHK:処理タイプ
+	SELECTCASE 処理タイプ
+		;敵の場合
+		CASE "敵HP", "敵MP"
+			;CHK:ボス and 解析度
+			IF (CFLAG:(L_CHARA):보스플래그 || ANALYSIS_RATE:(NO:L_CHARA) < ANALYSIS_COMPLETED)
+			;ボスあるいは解析度が低い場合は表示を隠す
+				IS_BOSS = 1
+				;処理タイプ:4(ＭＰ(敵))で最大値が0以下の場合
+				IF 処理タイプ == "敵MP" && !( L_MHPMP > 0 )
+					;魔法使用不可のキャラは非表示
+					NOT_PRINT = 1
+					NOT_COLOR = 1
+				ENDIF
+			ELSE
+			;雑魚の場合
+				;処理タイプ:4(ＭＰ(敵))で最大値が0以下の場合
+				IF 処理タイプ == "敵MP" && !( L_MHPMP > 0 )
+					;魔法使用不可のキャラは非表示
+					NOT_PRINT = 1
+					NOT_COLOR = 1
+				ENDIF
+			ENDIF
+		;味方の場合
+		CASEELSE
+			;処理タイプ:2(ＭＰ(味方))で最大値が0以下の場合
+			IF 処理タイプ == "味方MP" && !( L_MHPMP > 0 )
+				;魔法使用不可のキャラは非表示
+				NOT_PRINT = 1
+				NOT_COLOR = 1
+			ENDIF
+	ENDSELECT
+
+ENDIF
+
+
+;--出力開始
+;出力無し
+IF NOT_PRINT != 0
+	IF !NOT_COLOR
+		L_COLORS '= TOSTR_HTML(COLOR("デフォルト"))
+	ELSE
+		L_COLORS '= TOSTR_HTML(COLOR("DARK-GRAY"))
+	ENDIF
+	L_TEXT = <font color = '%L_COLORS%'>
+	L_TEXT += @"%表示HPMP% [-----/-----]"
+	L_TEXT += "</font>"
+	RETURNF L_TEXT
+ELSE
+	;出力有り　現HP表示用の色はL_COLORに保存していく
+	IS_SET_LINECOLOR = 0
+	IF CFLAG:L_CHARA:HP배리어 && 表示HPMP == "ＨＰ"
+		L_COLORS '= TOSTR_HTML(COLOR("パ緑"))
+		SIF !NOT_COLOR
+			L_TEXT += @"<font color = '%L_COLORS%'>"
+		;行全体着色指定
+		IS_SET_LINECOLOR = 1
+	ENDIF
+	;---- EDIT 035 ADD END ---------------------------
+	L_TEXT += @"%表示HPMP% ["
+
+	IF !IS_SET_LINECOLOR
+		;CHK:数値
+		SELECTCASE L_HPMP
+			;死亡
+			CASE IS == 0
+				;赤(暗い赤)
+				L_COLORS '= TOSTR_HTML(COLOR("RED"))
+				;L_COLOR = COLOR("RED")
+			;危険
+			CASE IS <  (L_MHPMP * 25 / 100)
+				;赤(朱色?)
+				L_COLORS '= TOSTR_HTML(0xcc6666)
+				;L_COLOR = 0xcc6666
+			;弱っている
+			CASE IS <  (L_MHPMP * 50 / 100)
+				;黄色(オレンジ)
+				L_COLORS '= TOSTR_HTML(0xffcc66)
+				;L_COLOR = 0xffcc66
+			CASEELSE
+				L_COLORS '= TOSTR_HTML(GETCOLOR())
+				;L_COLOR = GETCOLOR()
+		ENDSELECT
+	ENDIF
+	;CHK:보스플래그
+	IF IS_BOSS
+		SIF !IS_SET_LINECOLOR && !NOT_COLOR
+			L_TEXT += @"<font color = '%L_COLORS%'>"
+		FOR LCOUNT, 0, 11
+			IF L_HPMP >= ( (L_MHPMP/12) * (LCOUNT + 1))
+				L_TEXT += "*"
+			ELSE
+				L_TEXT += "."
+			ENDIF
+		NEXT
+		SIF !IS_SET_LINECOLOR && !NOT_COLOR
+			L_TEXT += "</font>"
+	ELSE
+		SIF !IS_SET_LINECOLOR && !NOT_COLOR
+			L_TEXT += @"<font color = '%L_COLORS%'>"
+		L_TEXT += ADD_KMGT(L_HPMP)
+		SIF !IS_SET_LINECOLOR && !NOT_COLOR
+			L_TEXT += "</font>"
+		L_TEXT += "/" + ADD_KMGT(L_MHPMP)
+	ENDIF
+	L_TEXT += "]"
+	SIF IS_SET_LINECOLOR && !NOT_COLOR
+		L_TEXT += "</font>"
+	RETURNF L_TEXT
+ENDIF
+;RESETCOLOR
+;---- EDIT 035 MOD END ---------------------------
+;=================================================
+;   sub RPG_PRINT_STATUS_COLOR
+;=================================================
+;   表示:RPG STATUS(色付き)
+;-------------------------------------------------
+;  引数を元に着色した状態情報をPRINTする
+;-------------------------------------------------
+; Input:
+;  ARG:0				キャラ番号
+;-------------------------------------------------
+@RPG_PRINT_STATUS_COLOR, ARG:0
+#FUNCTIONS
+#LOCALSIZE 1
+#DIM L_COLOR
+#DIMS L_RESULTS
+L_RESULTS = 
+IF CFLAG:(ARG:0):상태이상 == 0 && FLAG:무후후전개
+	IF CFLAG:(ARG:0):던전내발정
+		RETURNF @"<font color = '%TOSTR_HTML(COLOR("ダンジョン内欲情ハート", ARG))%'>　%ハート(3)%　</font>"
+	ELSE
+		L_RESULTS += @"<font color = '%TOSTR_HTML(COLOR("ダンジョン内欲情文字列", ARG))%'>"
+		L_RESULTS += "　GOOD</font>"
+		L_RESULTS += @"<font color = '%TOSTR_HTML(COLOR("ダンジョン内欲情ハート", ARG))%'>"
+		L_RESULTS += @"%ハート()%</font>"
+		RETURNF L_RESULTS
+	ENDIF
+ELSE
+	RETURNF @"<font color = '%TOSTR_HTML(BADSTATE_COLOR(CFLAG:(ARG:0):상태이상))%'>%GET_STATE(CFLAG:(ARG:0):상태이상), 7,RIGHT%</font>"
+ENDIF
+;-------------------------------------------------
+;  着色済みの相性リストをHTML文字列として返す
+;-------------------------------------------------
+; Input:
+;  ARG:0				キャラ番号
+;  ARG:1				行数
+;-------------------------------------------------
+@RPG_PRINT_TYPE_COLOR, ARG:0, ARG:1
+#FUNCTIONS
+#DIM LCOUNT
+#DIMS L_RESULTS
+L_RESULTS = 
+FOR LCOUNT, ARG:1 * 9, ARG:1 * 9 + 9
+	L_RESULTS += @"<font color = '%TOSTR_HTML(COLOR(GET_WEAKNESS(MAXBASE:ARG:(GET_TYPE(LCOUNT)))+"컬러"))%'>"
+	L_RESULTS += SUBSTRING(GET_TYPE(LCOUNT), 0, 2)
+	L_RESULTS += "</font>"
+NEXT
+RETURNF L_RESULTS
+
+;-------------------------------------------------
+;  着色済みの強化/弱化リストをHTML文字列として返す
+;-------------------------------------------------
+; Input:
+;  ARG:0				キャラ番号
+;  ARG:1				行数
+;-------------------------------------------------
+@RPG_PRINT_ENHANCE_COLOR, ARG:0, ARG:1
+#FUNCTIONS
+#DIM LCOUNT
+#DIMS TEMPS
+#DIM TEMP
+#DIMS L_RESULTS
+L_RESULTS = 
+FOR LCOUNT, ARG:1 * 4, ARG:1 * 4 + 4
+	TEMPS '= AUTO_SPLIT("공격/명중/마법위력/크리티컬/방어/회피/마법효과/BS부착률", "/", LCOUNT) + "강화"
+	TEMP = CFLAG:ARG:TEMPS
+	IF TEMP
+		;この2種は減衰もあるので4で割らない数値を出す
+		IF !GROUPMATCH(TEMPS, "크리티컬강화", "BS부착률강화")
+			;半端な数で表示上0になるのを防ぐ
+			IF INRANGE(TEMP, 1, 3)
+				TEMP = 1
+			ELSEIF INRANGE(TEMP, -1, -3)
+				TEMP = -1
+			ELSE
+				TEMP = TEMP /4
+			ENDIF
+		ENDIF
+		L_RESULTS += @"<font color = '%TOSTR_HTML(COLOR(\@TEMP > 0 ? バフ # デバフ\@))%'>"
+	ENDIF
+	L_RESULTS += AUTO_SPLIT("공/명/위/크리/방/회/효/BS부", "/", LCOUNT) + \@TEMP >= 0 ?+#\@ + TOSTR(TEMP)
+	SIF CFLAG:ARG:TEMPS
+		L_RESULTS += "</font>"
+NEXT
+RETURNF L_RESULTS
+
+;-------------------------------------------------
+;  着色済みの防壁リストをHTML文字列として返す
+;-------------------------------------------------
+; Input:
+;  ARG:0				キャラ番号
+;  ARG:1				行数
+;-------------------------------------------------
+@RPG_PRINT_WALL_COLOR, ARG:0, ARG:1
+#FUNCTIONS
+#DIM LCOUNT
+#DIMS L_RESULTS
+L_RESULTS = 
+;1130~1147
+FOR LCOUNT , GETNUM(CFLAG, "검격무효화횟수") + ARG:1 * 10, GETNUM(CFLAG, "검격무효화횟수") + ARG:1 * 10 + (ARG:1 ? 8 # 10)
+	L_RESULTS += @"<font color = '%TOSTR_HTML(COLOR(\@CFLAG:ARG:LCOUNT > 0 && CFLAGNAME:LCOUNT != "만능무효화횟수" ? aqua # light-gray\@))%'>"
+	L_RESULTS += SUBSTRING(CFLAGNAME:LCOUNT, 0, 2)
+	L_RESULTS += "</font>"
+NEXT
+IF ARG:1 == 1
+	L_RESULTS += @"<font color = '%TOSTR_HTML(COLOR(\@CFLAG:ARG:성스러운가호 > 0 ? aqua # light-gray\@))%'>"
+	L_RESULTS += "BS"
+	L_RESULTS += "</font>"
+
+	L_RESULTS += @"<font color = '%TOSTR_HTML(COLOR(\@CFLAG:ARG:테트라쟈 > 0 ? aqua # light-gray\@))%'>"
+	L_RESULTS += "즉"
+	L_RESULTS += "</font>"
+ENDIF
+RETURNF L_RESULTS
+
+;---- EDIT 041 MOD END ---------------------------
+;-------------------------------------------------
+;  ツールチップで表示するためのステート情報の文字列を作る関数
+;-------------------------------------------------
+; Input:
+;  ARG:0				キャラ番号
+;-------------------------------------------------
+@MAKE_RPG_STATE_TITLE, ARG:0
+#DIM L_CHARA
+#DIM LCOUNT
+#DIMS L_RESULTS
+L_RESULTS = 
+L_CHARA = ARG
+
+
+;-------------------------------------------------
+;フォーメーションでの味方のキャラ表示領域の長さ
+;-------------------------------------------------
+@GET_CHARALENS_FORMATION_P
+#FUNCTION
+#DIM L_RESULT
+;---- EDIT P 003 MOD START -------------------------
+;---- EDIT P 002 MOD START -------------------------
+L_RESULT = 22 + 2 * (FLAG:커스텀게임화면 > 0)
+;---- EDIT P 002 MOD END ---------------------------
+;---- EDIT P 003 MOD END ---------------------------
+L_RESULT += FLAG:상성등표시ON > 0 ? 12 # 8
+RETURNF L_RESULT
+
+@MAKE_STR_SHOW_FORMATION_CHARA_P, L_CHARA = -99, L_POS = 0, CAN_ADD_LIST = 0, IMG_SIZE = "S", L_SITUATION = "", L_ACTOR = -1, L_SKILL = -1
+#DIM DYNAMIC L_POS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC CAN_ADD_LIST
+#DIMS DYNAMIC L_SITUATION
+#DIMS DYNAMIC IMG_SIZE
+#DIM DYNAMIC L_ACTOR
+#DIM DYNAMIC L_SKILL
+#DIMS DYNAMIC CAUTION_TITLE
+#DIMS DYNAMIC L_RESULTS, 4
+#DIMS DYNAMIC L_TITLE
+#DIMS DYNAMIC L_TITLE_FACE
+#DIMS DYNAMIC L_COLOR
+#DIMS DYNAMIC L_BUTTON
+#DIMS DYNAMIC L_BUTTON_FACE
+#DIM DYNAMIC L_HEIGHT
+#DIM DYNAMIC IS_SHOWTYPE
+;-------------------------------------------------------------------------
+;ポジションとキャラ登録番号のセット
+;-------------------------------------------------------------------------
+IF L_CHARA == -99
+	L_CHARA = POS(L_POS)
+ELSEIF L_POS == 0
+	SIF L_CHARA >= 0
+		L_POS = CPOS(L_CHARA)
+ENDIF
+VARS L_NAME
+
+L_HEIGHT = IMG_SIZE == "S" ? 400 # 600
+
+;-------------------------------------------------------------------------
+;名前と数字ボタン
+;-------------------------------------------------------------------------
+L_NAME '= HTML_ESCAPE(@" " + @"%S_NAME(L_CHARA, 18-2*!FLAG:커스텀게임화면, 2, "EMPTY"), 19-2*!FLAG:커스텀게임화면, LEFT%")
+SELECTCASE L_SITUATION
+	CASE "셋업"
+		L_BUTTON '= TOSTR(20 + L_POS)
+		L_BUTTON_FACE '= L_BUTTON
+		L_RESULTS += @"[0{L_POS}]" + L_NAME
+	CASE "探索中"
+		L_BUTTON = %AUTO_SPLIT("U/V/W/X/Y/Z", "/", L_POS-1)%
+		L_BUTTON_FACE '= L_BUTTON
+		L_RESULTS += @"[0{L_POS}]" + L_NAME
+	CASE "戦闘中_メイン", "戦闘中_個別入力"
+		IF L_CHARA >= 0
+			L_COLOR '= ""
+			;ギボアイズの名前入れ替えチェック
+			IF SOFT_ON("호프・아이즈") || NUM_HAVESKILL([[스킬:서드아이]]) && !IS_BADSTATE(L_CHARA, "DYING")
+				VARI L_TYPE
+				FOR L_TYPE, 0, TYPENUM
+					SIF !ENEMY_HAVE_SKILL_ATK_TYPE:(L_TYPE)
+						CONTINUE
+					SIF CHECK_WEAKNESS(MAXBASE:L_CHARA:GET_TYPE(L_TYPE)) <= 0
+						CONTINUE
+					L_NAME = ！ %S_NAME(L_CHARA, 16-2*!FLAG:커스텀게임화면, 2, "EMPTY"), 17-2*!FLAG:커스텀게임화면, LEFT%
+					L_COLOR '= TOSTR_HTML(COLOR("red"))
+					CAUTION_TITLE '= ADD_SPLIT(CAUTION_TITLE, UNICODE(0x00D), GET_TYPE(L_TYPE) +"　ALART !!")
+				NEXT
+			ENDIF
+			IF L_SITUATION == "戦闘中_個別入力"
+				L_BUTTON = .{L_POS}
+				L_BUTTON_FACE = .{L_POS}
+			ELSE
+				L_BUTTON = BATTLE_MAIN/{L_POS}
+				L_BUTTON_FACE = BATTLE_MAIN_ANALYZE/{L_POS}
+			ENDIF
+			CALL MAKE_TOOLTIP_FOR_BATTLE_MAIN, L_CHARA
+			L_TITLE '= RESULTS
+			SIF CAUTION_TITLE != ""
+				L_TITLE += UNICODE(0x000D) + CAUTION_TITLE
+			L_TITLE_FACE '= RESULTS:1
+		ELSE
+			L_BUTTON = NONBUTTON
+		ENDIF
+		SIF L_COLOR != ""
+			L_NAME '= SET_COLOR_TAG(L_NAME, L_COLOR)
+		IF L_SITUATION == "戦闘中_個別入力"
+			L_RESULTS += @"[.{L_POS}]" + L_NAME
+		ELSE
+			L_RESULTS += @"[{L_POS,2}]" + L_NAME
+		ENDIF
+	CASEELSE
+		L_BUTTON = {L_POS}
+		L_BUTTON_FACE '= L_BUTTON
+		L_RESULTS += @"[{L_POS, 2}]" + L_NAME
+ENDSELECT
+L_RESULTS += "<br>"
+
+;-------------------------------------------------------------------------
+;ステータス
+;-------------------------------------------------------------------------
+L_RESULTS += "　　" + RPG_PRINT_PARAM_COLOR(1, L_CHARA)
+L_RESULTS += "<br>"
+L_RESULTS += "　　" + RPG_PRINT_PARAM_COLOR(2, L_CHARA)
+L_RESULTS += "<br>"
+IF L_CHARA >= 0
+	IF BASE:L_CHARA:LV > 999999
+		L_RESULTS += @"　 LV%TOSTR(BASE:L_CHARA:LV/1000000) + \@ LOG10(BASE:L_CHARA:LV) == 6? .{(BASE:L_CHARA:LV % 1000000)/100000}# \@,3%M "
+	ELSEIF BASE:L_CHARA:LV > 9999
+		L_RESULTS += @"　 LV{BASE:L_CHARA:LV/1000,3}K "
+	ELSE
+		L_RESULTS += @"　　LV{BASE:L_CHARA:LV,3} "
+	ENDIF
+	L_RESULTS += PRINT_ALIGNMENT_F(L_CHARA,1) + " " * (INRANGE(BASE:L_CHARA:LV,1000,9999) ? 1 # 2) + RPG_PRINT_STATUS_COLOR(L_CHARA)
+ENDIF
+
+;-------------------------------------------------------------------------
+;相性・壁
+;-------------------------------------------------------------------------
+VARI CAN_SHOW_AISYOU_LIST = GETBIT(CAN_ADD_LIST, 1) == 1
+VARI CAN_SHOW_ENHANCE_LIST = GETBIT(CAN_ADD_LIST, 2) == 1
+IF L_SITUATION == "SELECT_TARGET" && L_CHARA >= 0
+	L_RESULTS += "<br>" + "　　"
+	;タルンダ等のそもそも相性が無関係のスキルをチェックする
+	CALL GET_SKILL_PROP, "SKILL_TYPE", L_SKILL, L_ACTOR, L_CHARA
+	VARI TEMP_TYPE = RESULT
+	IF TEMP_TYPE >= 0
+		CALL BTL_CALC_AISYOU, L_ACTOR, L_CHARA, L_SKILL
+		VARI L_USE_TYPE = RESULT:1
+		VARI L_USE_TYPE_VALUE = RESULT
+		L_RESULTS += @"<font color = '%TOSTR_HTML(COLOR(GET_WEAKNESS(L_USE_TYPE_VALUE)+"컬러"))%'>"
+		L_RESULTS += @"%GET_TYPE(L_USE_TYPE)%"
+		L_RESULTS += \@ L_USE_TYPE_VALUE < 0 ? 흡 # 　\@
+		L_RESULTS += \@ L_USE_TYPE_VALUE != 999 ? {ABS(L_USE_TYPE_VALUE), 4}％ # 　反射\@
+		L_RESULTS += "</font>"
+
+		IS_SHOWTYPE = 1
+	ENDIF
+ELSE
+	IF CAN_SHOW_AISYOU_LIST
+		VARI L_ROW
+		FOR L_ROW, 0, 2
+			IF L_CHARA >= 0
+				IF FLAG:상성등표시ON == 1 || (FLAG:상성등표시ON > 1 && !CAN_SHOW_ENHANCE_LIST)
+					L_RESULTS += "<br>"
+					;全ての相性を表示
+					L_RESULTS += "　　"
+					L_RESULTS += RPG_PRINT_TYPE_COLOR(L_CHARA, L_ROW)
+				ELSEIF FLAG:상성등표시ON == 2
+					L_RESULTS += "<br>"
+					L_RESULTS += "　　"
+					L_RESULTS += RPG_PRINT_ENHANCE_COLOR(L_CHARA, L_ROW)
+				ELSEIF FLAG:상성등표시ON == 3
+					L_RESULTS += "<br>"
+					L_RESULTS += "　"
+					L_RESULTS += RPG_PRINT_WALL_COLOR(L_CHARA, L_ROW)
+				ENDIF
+			ENDIF
+		NEXT
+	ENDIF
+ENDIF
+IF L_TITLE == ""
+	L_RESULTS '= SET_BUTTON_TAG(@"<div xpos = '0' ypos = '0' width = '1100' height = '{L_HEIGHT}'>" + L_RESULTS + "</div>", L_BUTTON)
+ELSE
+	L_RESULTS '= SET_BUTTON_TAG(@"<div xpos = '0' ypos = '0' width = '1100' height = '{L_HEIGHT}'>" + L_RESULTS + "</div>", L_BUTTON, L_TITLE)
+ENDIF
+
+;-------------------------------------------------------------------------
+;ゲージ等
+;-------------------------------------------------------------------------
+VARSET RESULTS, "", 0, 2
+;ディスプレイするスキルが無い
+IF L_CHARA >= 0 && C_SKILL_EX_DISPLAY:L_CHARA:0 != "" && !IS_SHOWTYPE
+	CALLFORM SKILL_EX_DISPLAY_%C_SKILL_EX_DISPLAY:L_CHARA:0%, L_CHARA, @"SKILL_EX_DISPLAY/{L_CHARA}"
+	IF RESULT
+		L_RESULTS:1 += RESULTS
+	ELSE
+		L_RESULTS:1 += " " * SKILL_EX_DISPLAY_LENS
+	ENDIF
+	;ボタンタグをつけるが、つけられている状態で帰ってきてる場合は処理を省く
+	L_RESULTS:1 '= " " * 4 + L_RESULTS:1
+	SIF !STRCOUNT(L_RESULTS:1, "<(non)?button")
+		L_RESULTS:1 '= SET_BUTTON_TAG(L_RESULTS:1, @"SKILL_EX_DISPLAY/{L_CHARA}", RESULTS:1)
+	L_RESULTS:1 '= @"<div xpos = '0' ypos = '{L_HEIGHT}'>" + L_RESULTS:1 + "</div>"
+ENDIF
+
+IF L_CHARA >= 0
+	RESULT_F:1 = 0
+	L_RESULTS:2 '= GET_FACE_BY_CHARA(L_CHARA, L_SITUATION, GET_STATE(CFLAG:L_CHARA:상태이상))
+	IF !RESULT_F:1 && G_OPT_USE_ICON != "사용안함"
+		IF IS_BADSTATE(L_CHARA, "DYING")
+			VARS L_SPRITENAME
+			L_SPRITENAME '= L_RESULTS:2 + "_" + "DYING"
+			IF !SPRITECREATED(L_SPRITENAME)
+				VARI GID	
+				GID = FINDELEMENT(USED_CHARA_GID, 0)
+				USED_CHARA_GID:GID = 1
+				CALL CHANGE_COLOR_MATRIX, GID, L_RESULTS:2, "グレースケール"
+				;ファイル名を登録する
+				CHARA_GID_SPRITENAME:gID '= L_SPRITENAME
+				SPRITECREATE L_SPRITENAME, GID, 0, 0, GWIDTH(GID), GHEIGHT(GID)
+			ENDIF
+			L_RESULTS:2 '= L_SPRITENAME
+		ENDIF
+	ENDIF
+	L_RESULTS:2 '= @"<img src = '%L_RESULTS:2%' height = '{L_HEIGHT}'>"
+	IF L_TITLE_FACE == ""
+		L_RESULTS:2 '= SET_BUTTON_TAG(@"<div xpos = '1100' ypos = '50' width = '{L_HEIGHT}' height = '{L_HEIGHT + 100}'>" + L_RESULTS:2 + "</div>", L_BUTTON_FACE)
+	ELSE
+		L_RESULTS:2 '= SET_BUTTON_TAG(@"<div xpos = '1100' ypos = '50' width = '{L_HEIGHT}' height = '{L_HEIGHT + 100}'>" + L_RESULTS:2 + "</div>", L_BUTTON_FACE, L_TITLE_FACE)
+	ENDIF
+	IF !TFLAG:전투턴진행중 && L_SITUATION == "戦闘中_メイン"
+		TRYCCALLFORM ADD_ICON_BATTLE_EFFECT_%TSTR:전투이벤트패턴%, L_CHARA
+			IF RESULT
+				L_RESULTS:3 '= @"<img src = '%RESULTS%' height = '{L_HEIGHT}'>"
+				L_RESULTS:3 '= @"<div xpos = '1100' ypos = '50' width = '{L_HEIGHT}' height = '{L_HEIGHT + 100}'>" + L_RESULTS:3 + "</div>"
+				TFLAG:애니메이션타이머 = 100
+				SETANIMETIMER TFLAG:애니메이션타이머
+			ENDIF
+		CATCH
+		ENDCATCH
+	ENDIF
+ENDIF
+L_RESULTS:0 += L_RESULTS:1 + L_RESULTS:2 + L_RESULTS:3
+;ターゲットとして選べない対象の場合はグレーアウト
+IF L_ACTOR >= 0 && L_SKILL >= 0 && L_CHARA >= 0
+	CALL GET_SKILL_PROP, "SKILL_TARGETABLE", L_SKILL, L_ACTOR, L_CHARA
+	SIF !RESULT
+		L_RESULTS += "<div xpos = '0' ypps = '0'>" + 不可フィルタ((4 + 20) * 50 + L_HEIGHT, L_HEIGHT + 100) + "</div>"
+ENDIF
+RESULTS '= L_RESULTS
+
+@CREATE_SPRITE_ICON_EFFECT, ARGS
+#DIM DYNAMIC GID
+GID = FINDELEMENT(USED_TEMP_GIDNAME, ARGS, , , 1)
+SIF GID >= 0
+	RETURN GID + TEMP_GID_START
+GID = GET_FREE_TEMP_GID()
+IF !GCREATEFROMFILE(GID, "90_アイコン\\アイコン装飾\\" + ARGS + ".png")
+	SIF !GCREATEFROMFILE(GID, "90_アイコン\\アイコン装飾\\" + ARGS + ".webp")
+		RETURN 0
+ENDIF
+SPRITECREATE ARGS, GID
+USED_TEMP_GIDNAME:(GID - TEMP_GID_START) '= ARGS
+CALL PUSH_ARRAY_STR, TEMP_GID_SPRITENAME, ARGS
+RETURN GID
+
+@MAKE_STR_SHOW_FORMATION_CHARA_E, L_ENEMY = -99, L_POS, L_SITUATION, L_TYPE, L_ACTOR = -1, L_SKILL = -1
+#DIM DYNAMIC LCOUNT,2
+#DIM DYNAMIC L_POS
+#DIM DYNAMIC L_ENEMY
+#DIMS DYNAMIC L_SITUATION
+#DIM DYNAMIC L_TYPE
+#DIM DYNAMIC L_ACTOR
+#DIM DYNAMIC L_SKILL
+#DIMS DYNAMIC L_RESULTS,4
+#DIM DYNAMIC L_HEIGHT
+#DIM DYNAMIC L_WIDTH
+#DIMS DYNAMIC TEMP_COLORS
+#DIM DYNAMIC L_USE_TYPE
+#DIM DYNAMIC L_USE_TYPE_VALUE
+#DIMS DYNAMIC L_BUTTON
+#DIMS DYNAMIC L_TITLE
+#DIMS DYNAMIC L_BLANK,2
+IF FLAG:적아이콘표시
+	L_BLANK '= "　　　", "　　"
+	L_WIDTH = 1200
+ELSE
+	L_BLANK '= "　　", "　"
+	L_WIDTH = 1150
+ENDIF
+IF L_TYPE == -1 && FLAG:상성등표시ON > 0
+	L_HEIGHT = 600
+ELSEIF L_SITUATION == "SELECT_TARGET"
+	L_HEIGHT = 500
+ELSE
+	L_HEIGHT = 400
+ENDIF
+
+IF L_ENEMY < 0
+	L_RESULTS '= @"[{L_POS, 2}] EMPTY"
+	L_RESULTS += "<br>"
+	L_RESULTS += L_BLANK + RPG_PRINT_PARAM_COLOR(3, L_ENEMY)
+	L_RESULTS += "<br>"
+	L_RESULTS += L_BLANK + RPG_PRINT_PARAM_COLOR(4, L_ENEMY)
+	L_RESULTS '= "<div xpos = '0' ypps = '0'>" + L_RESULTS + "</div>"
+	L_RESULTS += "<div xpos = '0' ypps = '0'>" + 不可フィルタ(L_WIDTH, L_HEIGHT) + "</div>"
+ELSE
+	;-----------------------------------------------------
+	;敵名称の行
+	;-----------------------------------------------------
+	;仲魔にいる敵の名前の色を変えて表示
+	IF FINDCHARA_B(NO:L_ENEMY) > 0
+		TEMP_COLORS = #ee88ff
+	;加入させたことがある
+	ELSEIF IS_CHARA_COMPANIONED:(NO:L_ENEMY)
+		TEMP_COLORS = #ffbbbb
+	ELSEIF ANALYSIS_RATE:(NO:L_ENEMY) >= ANALYSIS_COMPLETED
+		TEMP_COLORS = #8888ff
+	ELSE
+		TEMP_COLORS '= TOSTR_HTML(GETDEFCOLOR())
+	ENDIF
+	L_RESULTS += SET_COLOR_TAG(HTML_ESCAPE(@"[{L_POS,2}] %S_NAME(L_ENEMY, 17, 2)%"), TEMP_COLORS)
+
+	;-----------------------------------------------------
+	;HP表示
+	;-----------------------------------------------------
+	L_RESULTS += "<br>"
+	L_RESULTS += L_BLANK
+	L_RESULTS += RPG_PRINT_PARAM_COLOR(3, L_ENEMY)
+	
+	;-----------------------------------------------------
+	;MP表示
+	;-----------------------------------------------------
+	L_RESULTS += "<br>"
+	L_RESULTS += L_BLANK
+	L_RESULTS += RPG_PRINT_PARAM_COLOR(4, L_ENEMY)
+	
+	;-----------------------------------------------------
+	;Lv/性別表示
+	;-----------------------------------------------------
+	L_RESULTS += "<br>" + L_BLANK
+	IF CFLAG:L_ENEMY:언노운플래그 == 0
+		L_RESULTS += @"LV{BASE:L_ENEMY:LV,3}"
+		SIF FINDCHARA_B(NO:L_ENEMY) == 0
+			L_RESULTS += @"<font color = '%TOSTR_HTML(COLOR("gray"))%'>";EDIT040 MOD
+		L_RESULTS += \@ CFLAG:(FINDCHARA(NO, NO:L_ENEMY)):PT플래그 > 0 ? 仲 # 　 \@
+		SIF FINDCHARA_B(NO:L_ENEMY) == 0
+			L_RESULTS += "</font>"
+		L_RESULTS += \@ TALENT:L_ENEMY:남자 == 0 ? ♀ # ♂ \@
+	ELSE
+		L_RESULTS += "?????????"
+	ENDIF
+	L_RESULTS += "　" + RPG_PRINT_STATUS_COLOR(L_ENEMY)
+	IF L_SITUATION == "SELECT_TARGET"
+		L_RESULTS += "<br>" + L_BLANK
+		;タルンダ等のそもそも相性が無関係のスキルをチェックする
+		CALL GET_SKILL_PROP, "SKILL_TYPE", L_SKILL, L_ACTOR, L_ENEMY
+		VARI TEMP_TYPE = RESULT
+		IF TEMP_TYPE >= 0
+			IF CFLAG:L_ENEMY:공격대상제외_ACT || CFLAG:L_ENEMY:공격대상제외
+				L_RESULTS += @"<font color = '%TOSTR_HTML(0xFF0000)%'>" + "  -- 対象指定不能 -- " + "</font>"
+			;個別の相性表示条件を満たしている
+			ELSEIF CAN_SHOW_ENEMY_TYPE(L_ENEMY)
+				CALL BTL_CALC_AISYOU, L_ACTOR, L_ENEMY, L_SKILL
+				L_USE_TYPE = RESULT:1
+				L_USE_TYPE_VALUE = RESULT
+
+				L_RESULTS += @"<font color = '%TOSTR_HTML(COLOR(GET_WEAKNESS(L_USE_TYPE_VALUE)+"컬러"))%'>"
+				L_RESULTS += @"%GET_TYPE(L_USE_TYPE)%"
+				L_RESULTS += \@ L_USE_TYPE_VALUE < 0 ? 흡 # 　\@
+				L_RESULTS += \@ L_USE_TYPE_VALUE != 999 ? {ABS(L_USE_TYPE_VALUE), 4}％ # 　反射\@
+				L_RESULTS += "</font>"
+			;ギボアイズか
+			ELSEIF SOFT_ON("호프・아이즈") || NUM_HAVESKILL([[스킬:서드아이]])
+				;ギボ・アイズ効果表示
+				SELECTCASE CHECK_WEAKNESS(MAXBASE:L_ENEMY:GET_TYPE(TEMP_TYPE))
+					CASE IS <= -2
+						L_RESULTS += @"<font color = '%TOSTR_HTML(0xFF0000)%'>" + " --- ALART !! --- " + "</font>"
+					CASE 1
+						L_RESULTS += @"<font color = '%TOSTR_HTML(0x00FFFF)%'>" + " -- WEAKPOINT!! --" + "</font>"
+				ENDSELECT
+			ENDIF
+		ENDIF
+	;相性表示
+	;全表示タイミングでかつ相性表示のいずれかを利用 あるいは スキルの対象選択時
+	ELSEIF L_TYPE == -1 && FLAG:상성등표시ON > 0
+		L_RESULTS += "<br>"
+		SELECTCASE FLAG:상성등표시ON
+			;相性の表示
+			CASE 1
+				IF CAN_SHOW_ENEMY_TYPE(L_ENEMY)
+					L_RESULTS += L_BLANK + RPG_PRINT_TYPE_COLOR(L_ENEMY, 0)
+					L_RESULTS += "<br>"
+					L_RESULTS += L_BLANK + RPG_PRINT_TYPE_COLOR(L_ENEMY, 1)
+				ELSE
+					L_RESULTS += @"<font color = '%TOSTR_HTML(0x808080)%'>" + L_BLANK + "？？？？？？？？？" + "</font>"
+					L_RESULTS += "<br>"
+					L_RESULTS += @"<font color = '%TOSTR_HTML(0x808080)%'>" + L_BLANK + "？？？？？？？？？" + "</font>"
+				ENDIF
+			CASE 2
+				;強化弱体化表示
+				L_RESULTS += L_BLANK + RPG_PRINT_ENHANCE_COLOR(L_ENEMY, 0)
+				L_RESULTS += "<br>"
+				L_RESULTS += L_BLANK + RPG_PRINT_ENHANCE_COLOR(L_ENEMY, 1)
+			CASE 3
+				L_RESULTS += L_BLANK:1 + RPG_PRINT_WALL_COLOR(L_ENEMY, 0)
+				L_RESULTS += "<br>"
+				L_RESULTS += L_BLANK:1 + RPG_PRINT_WALL_COLOR(L_ENEMY, 1)
+		ENDSELECT
+	ENDIF
+
+	;---------------------------------------------------------
+	;ボタンの作成
+	;---------------------------------------------------------
+	SELECTCASE L_SITUATION
+		CASE "BATTLE_MAIN"
+			L_BUTTON = BATTLE_MAIN_ANALYZE/{L_POS}
+		CASEELSE
+			L_BUTTON '= TOSTR(L_POS)
+	ENDSELECT
+	;--------------------------------------------------------
+	;ターゲットとして選べない対象の場合はグレーアウト
+	;--------------------------------------------------------
+	IF L_SITUATION == "SELECT_TARGET"
+		;原因を取得する
+		RESULTS '= ""
+		CALL GET_SKILL_PROP, "SKILL_TARGETABLE", L_SKILL, L_ACTOR, L_ENEMY
+		IF !RESULT
+			L_RESULTS += "<div xpos = '0' ypps = '0'>" + 不可フィルタ(L_WIDTH, L_HEIGHT) + "</div>"
+			L_TITLE += RESULTS
+		ENDIF
+	ENDIF
+	;---------------------------------------------------------
+	;通常のツールチップの作成
+	;---------------------------------------------------------
+	SIF L_TITLE != ""
+		L_TITLE += UNICODE(0x000D)
+	L_TITLE += BADSTATE_COMMENT(CFLAG:L_ENEMY:상태이상, , 1)
+	LCOUNT = -1
+	WHILE GET_EX_STATE(++LCOUNT) != "値域外"
+		SIF !GET_EX_STATE_VALUE(L_ENEMY, , LCOUNT)
+			CONTINUE
+		L_TITLE += UNICODE(0x000D)
+		L_TITLE += EX_STATE_COMMENT(LCOUNT, , L_ENEMY, 1)
+	WEND
+	FOR LCOUNT, 0, TRYSKILLNUM(L_ENEMY)
+		VARSET RESULTS, "", 0, 10
+		TRYCCALLFORM SKILL_BATTLE_MAIN_FACE_TOOLTIP_%GET_TRYSKILL(L_ENEMY, LCOUNT)%, L_ENEMY, TOINT(GET_TRYSKILL(L_ENEMY, LCOUNT))
+			FOR LCOUNT:1, 0, 10
+				SIF RESULTS:(LCOUNT:1) == ""
+					BREAK
+				L_TITLE += UNICODE(0x000D)
+				L_TITLE += TOOLTIP_ESCAPE(RESULTS:(LCOUNT:1))
+			NEXT
+		CATCH
+		ENDCATCH
+	NEXT
+	;---------------------------------------------------------
+	;アイコンの作成
+	;---------------------------------------------------------
+	RESULT_F:1 = 0
+	L_RESULTS:0 '= "<div xpos = '0' ypos = '0'>" + L_RESULTS:0 + "</div>"
+	;TODO 敵CSVの転用処理に対する避難措置でCSV名称と名称が一致していない場合はアイコンを出さない
+	IF FLAG:적아이콘표시 && G_OPT_USE_ICON != "사용안함" && CALLNAME:L_ENEMY == CSVCALLNAME(NO:L_ENEMY)
+		L_RESULTS:1 '= GET_FACE_BY_CHARA(L_ENEMY, L_SITUATION, GET_STATE(CFLAG:L_ENEMY:상태이상))
+		IF !RESULT_F:1
+			IF IS_BADSTATE(L_ENEMY, "DYING")
+				VARS L_SPRITENAME
+				L_SPRITENAME '= L_RESULTS:1 + "_" + "DYING"
+				IF !SPRITECREATED(L_SPRITENAME)
+					VARI GID	
+					GID = FINDELEMENT(USED_CHARA_GID, 0)
+					USED_CHARA_GID:GID = 1
+					CALL CHANGE_COLOR_MATRIX, GID, L_RESULTS:1, "グレースケール"
+					;ファイル名を登録する
+					CHARA_GID_SPRITENAME:gID '= L_SPRITENAME
+					SPRITECREATE L_SPRITENAME, GID, 0, 0, GWIDTH(GID), GHEIGHT(GID)
+				ENDIF
+				L_RESULTS:1 '= L_SPRITENAME
+			ENDIF
+		ENDIF
+		L_RESULTS:1 '= @"<img src = '%L_RESULTS:1%' height = '{280}'>"
+		L_RESULTS:1 '= @"<div xpos = '0' ypos = '110' width = '{L_HEIGHT}' height = '{L_HEIGHT + 100}'>" + L_RESULTS:1 + "</div>"
+		L_RESULTS += L_RESULTS:1
+	ENDIF
+	L_RESULTS '= SET_BUTTON_TAG(L_RESULTS, L_BUTTON, L_TITLE)
+ENDIF
+RESULTS '= L_RESULTS
+RETURN L_WIDTH, L_HEIGHT
+
+@MAKE_TOOLTIP_FOR_BATTLE_MAIN, L_CHARA
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_RESULTS, 2
+;-----------------------------------------------------------
+;ツールチップの中身を作成　戦闘用
+;입력행동＋타겟＋スキルのゲージの蓄積量など
+;-----------------------------------------------------------
+;入力行動の文字列化
+CALL GETS_INPUT_COMMAND_ACT, L_CHARA
+L_RESULTS '= RESULTS
+;対象部分の文字列作成
+CALL GETS_INPUT_COMMAND_TARGET, L_CHARA, L_RESULTS
+SIF RESULT == -1
+	L_RESULTS '= "ＧＵＡＲＤ"
+L_RESULTS '= "□COMMAND" + UNICODE(0x000D) + "　" +L_RESULTS
+;ターゲット指定があったなら文章追加
+SIF RESULT > 0
+	L_RESULTS += UNICODE(0x000D) * 1 + "□TARGET"+ UNICODE(0x000D) + "　" + RESULTS
+
+VARI L_SKILL
+VARS TEMPS
+VARI COUNT_EXPLAIN
+FOR L_SKILL, 0, TRYSKILLNUM(L_CHARA)
+	TEMPS = 
+	VARSET RESULTS, "", 0, 10
+	TRYCCALLFORM SKILL_BATTLE_MAIN_TOOLTIP_%GET_TRYSKILL(L_CHARA, L_SKILL)%, L_CHARA, TOINT(GET_TRYSKILL(L_CHARA, L_SKILL))
+		FOR COUNT_EXPLAIN, 0, 10
+			SIF RESULTS:COUNT_EXPLAIN == ""
+				BREAK
+			SIF TEMPS != ""
+				TEMPS += UNICODE(0x000D)
+			TEMPS += TOOLTIP_ESCAPE(RESULTS:COUNT_EXPLAIN)
+		NEXT
+	CATCH
+	ENDCATCH
+	SIF TEMPS != ""
+		L_RESULTS += UNICODE(0x000D) *1 + TEMPS
+NEXT
+
+;-----------------------------------------------------------
+;ツールチップの中身を作成(味方顔グラ)
+;状態異常・追加ステート(気合など)・スキルの補正効果など
+;-----------------------------------------------------------
+L_RESULTS:1 += BADSTATE_COMMENT(CFLAG:L_CHARA:상태이상, , 1)
+VARI COUNT_EX_STATE = -1
+WHILE GET_EX_STATE(++COUNT_EX_STATE) != "値域外"
+	SIF !GET_EX_STATE_VALUE(L_CHARA, , COUNT_EX_STATE)
+		CONTINUE
+	L_RESULTS:1 += UNICODE(0x000D)
+	L_RESULTS:1 += EX_STATE_COMMENT(COUNT_EX_STATE, , L_CHARA, 1)
+WEND
+FOR L_SKILL, 0, TRYSKILLNUM(L_CHARA)
+	VARSET RESULTS, "", 0, 10
+	TRYCCALLFORM SKILL_BATTLE_MAIN_FACE_TOOLTIP_%GET_TRYSKILL(L_CHARA, L_SKILL)%, L_CHARA, TOINT(GET_TRYSKILL(L_CHARA, L_SKILL))
+		FOR COUNT_EXPLAIN, 0, 10
+			SIF RESULTS:COUNT_EXPLAIN == ""
+				BREAK
+			L_RESULTS:1 += UNICODE(0x000D)
+			L_RESULTS:1 += TOOLTIP_ESCAPE(RESULTS:COUNT_EXPLAIN)
+		NEXT
+	CATCH
+	ENDCATCH
+NEXT
+RESULTS '= L_RESULTS:0, L_RESULTS:1

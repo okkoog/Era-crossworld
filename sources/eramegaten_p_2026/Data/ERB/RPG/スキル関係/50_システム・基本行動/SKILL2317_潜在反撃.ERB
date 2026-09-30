@@ -1,0 +1,202 @@
+﻿;このスキルは勝手に習得させちゃあいけない！
+
+;スキル名
+@SKILL_NAME_2317,ARG
+RESULTS = 잠재반격
+
+;　명중
+@SKILL_HITRATE_2317, ARG
+RETURN 100
+
+
+;　威力
+@SKILL_POWER_2317, ARG
+#DIM TOTAL_POW
+TOTAL_POW = 100
+SIF ARG < 0
+	RETURN 100
+;ペルソナ相性が☆なら威力値を500に、◎なら威力値300にする
+SELECTCASE GET_P_FITNESS(ARG, 0)
+	CASE 3
+		TOTAL_POW = 500
+	CASE 2
+		TOTAL_POW = 300
+ENDSELECT
+;上記で設定した威力値 + 使用者の力 or 魔力、いずれか高い方を加算する
+TOTAL_POW += MAX(MAXBASE:ARG:힘,MAXBASE:ARG:마력)
+RETURN TOTAL_POW
+
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_2317, ARG
+RETURN 0
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_2317, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2317,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2317,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_2317,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_2317,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2317, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2317,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_2317,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2317
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2317,ARG
+SIF ARG < 0
+	RETURN 1
+;使用者の攻撃力が魔法威力より低い場合は魔法ダメージタイプになる
+SIF MAXBASE:ARG:공격 < MAXBASE:ARG:마법위력
+	RETURN 2
+RETURN 1
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2317,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2317,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2317,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2317,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2317,ARG
+RETURN GET_SUCCESSION_NUM("검격")
+
+;속도보정
+@SKILL_SPEED_2317, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2317
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2317, ARG = -1
+RETURN 0
+;変化不可
+
+;没
+;@SKILL_RANK_2317, ARG = -1
+
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_2317,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;====================================================
+;@SKILL_TRIGGER_ACTIONABLE_2317,ARG,ARG:1
+;RETURN 1
+
+;====================================================
+;カウンター発動条件
+;====================================================
+@SKILL_COUNTER_ACTIONABLE_2317,ARG,ARG:1
+;攻撃受けてないなら発動しない
+;SIF !RECEIVE_CHECK(ARG,"공격")
+;	RETURN 0
+SIF !TALENT:ARG:페르소나구사자
+	RETURN 0
+SIF !GET_CREC_ACT(ARG:1, ARG, "HIT")
+	RETURN 0
+;PRINTW 攻撃受けフラグをチェック
+;なんか知らんけど本来の処理だとエネミー側では発動しないっぽいので、使用者が味方じゃなければ発動しない
+SIF CFLAG:ARG:PT플래그 == 0
+	RETURN 0
+;PRINTW 味方パーティフラグチェック
+;ペルソナの相性が☆か◎じゃなければ発動不可
+SIF GET_P_FITNESS(ARG,0) < 2
+	RETURN 0
+;PRINTW ペルソナ相性チェック
+;使用者の現HPが25%以下でない場合は発動しない
+SIF 現HP割合(ARG) > 25
+	RETURN 0
+;PRINTW 現HP25%以下チェック
+;使用者の潜在能力発動回数が3を超えていたら発動しない
+SIF CFLAG:ARG:잠재능력발동횟수 > 3
+	RETURN 0
+;PRINTW 潜在能力発動回数4未満チェック
+;;使用者のHP量に応じた確率を引き当てられないなら発動しない（博打めいた確率になるから却下だ！）
+;SIF RAND:(MAX(2, BASE:(ARG:1):ＨＰ * 16 / MAXBASE:(ARG:1):ＨＰ)) != 0
+;	RETURN 0
+;攻撃してきたキャラが不在or既に死んでいる場合は発動しない
+;SIF ARG:1 < 0 || GET_STATE(CFLAG:(ARG:1):상태이상) == "DYING"
+;	RETURN 0
+;PRINTW 対象存命チェック
+RETURN 1, CPOS(ARG:1)
+
+;====================================================
+;ダメージ発動時
+;====================================================
+;@SKILL_DAMAGE_EFFECT_2317,ARG,ARG:1
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_2317,ARG,ARG:1
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2317, ARG, ARG:1, ARG:2
+#DIM SKILL_NUM
+#DIM L_TARGET
+#DIM L_POW
+#DIM L_DMG_TYPE
+
+L_TARGET = 0
+L_POW = 100
+L_DMG_TYPE = 1
+
+L_TARGET = POS(ARG:1)
+CALL ATTACK_SINGLE, ARG, L_TARGET, 2317
+CFLAG:ARG:잠재능력발동횟수 ++
+
+;　説明文の表示
+@SKILL_EXPLAIN_2317, ARG
+PRINTL 
+PRINTL 
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2317,ARG
+RETURN 1

@@ -1,0 +1,124 @@
+﻿;スキル変化だと土竜だけハブになるので全部つくった。
+
+;スキル名
+@SKILL_NAME_3639,ARG
+RESULTS = 대사초래
+
+;　명중
+@SKILL_HITRATE_3639, ARG
+RETURN 90
+
+;　威力
+@SKILL_POWER_3639, ARG
+RETURN 150
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3639,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3639,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3639, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3639,ARG
+RETURN 10
+
+;　相性
+@SKILL_TYPE_3639,ARG
+RETURN GET_TYPE_NUM("전술")
+;전술
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3639
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3639, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3639, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_3639,ARG
+RETURN 4
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3639,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3639, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3639
+RETURN GET_SUCCESSION_NUM("전술")
+;전술
+
+;속도보정
+@SKILL_SPEED_3639, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3639
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3639, ARG = -1
+RETURN 4
+
+
+;====================================================
+;ダメージ発動時
+;ARG:0	行動者のキャラ番号
+;ARG:1	対象のキャラ番号
+;ARG:2	1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;
+;備考:標準の追加効果付与はblock・吸収の場合は発動しない。
+;====================================================
+@SKILL_DAMAGE_EFFECT_3639, ARG, ARG:1, ARG:2
+SIF ARG:1 < 0
+	RETURN 0
+;無効以下では発動しない
+SIF ARG:2 <= -2
+	RETURN 0
+CALL SKILL_SET_カジャンダ, ARG, ARG:1, "攻撃力", -4, "短縮"
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3639, ARG, ARG:1, ARG:2
+#LOCALSIZE 2
+LOCAL:1 = BASE:POS(ARG:1):ＨＰ
+CALL ATTACK_SINGLE, ARG, POS(ARG:1),3639
+
+;IF POS(ARG:1) > 0 && LOCAL:1 > BASE:POS(ARG:1):ＨＰ && GET_STATE(CFLAG:POS(ARG:1):상태이상) != "DYING"
+;	CFLAG:POS(ARG:1):공격강화 = MAX(-16, CFLAG:POS(ARG:1):공격강화 - 4)
+;	PRINTFORML 　　TARGET:[{ARG:1,2}] %CALLNAME:POS(ARG:1),20,LEFT%　>>>>>>　攻撃力が下がった！
+;ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3639, ARG
+PRINTL 대사를 초래하여, 적 1체에 전기 상성으로 중 데미지를 주고 공격력을 낮춘다.
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3639,ARG
+RETURN 1
+;とくにない
+

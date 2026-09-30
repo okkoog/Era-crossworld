@@ -1,0 +1,105 @@
+﻿;======================================================
+;装備品のデータ
+;2131　폭동진압방패
+;======================================================
+
+
+@基本能力修正_2131,ARG,ARG:1 = -1
+SELECTCASE ARG
+ENDSELECT
+RETURN 0
+
+
+@戦闘能力修正_2131,ARG,ARG:1 = -1
+	SELECTCASE ARG
+		;공격
+		CASE 0
+			RETURN 5
+		;명중
+		CASE 1
+			RETURN 5
+		;防御（熟練度に応じて性能向上、最低20)）
+		CASE 2
+			SIF ARG:1 == -1
+				RETURN 0
+			RETURN 20 + CFLAG:(ARG:1):도검숙련도 / 20 + CFLAG:(ARG:1):레이피어숙련도 / 20 + CFLAG:(ARG:1):활숙련도 / 20 + CFLAG:(ARG:1):검숙련도 / 20 + CFLAG:(ARG:1):창숙련도 / 20 + CFLAG:(ARG:1):도끼、둔기숙련도 / 20 + CFLAG:(ARG:1):채찍숙련도 / 20 + CFLAG:(ARG:1):투척숙련도 / 20 + CFLAG:(ARG:1):지팡이・제구숙련도 / 20 + CFLAG:(ARG:1):곤봉숙련도 / 20 + CFLAG:(ARG:1):권투구숙련도 / 20
+	ENDSELECT
+RETURN 0
+
+@防御相性_2131,ARG,ARG:1 = -1
+SELECTCASE ARG
+	;剣撃（刀熟練度、レイピア熟練度、剣熟練度に応じて性能向上、最初90、最低20)
+	CASE 0
+		SIF ARG:1 == -1
+				RETURN 100
+		RETURN 90 - MIN( CFLAG:(ARG:1):도검숙련도 + CFLAG:(ARG:1):레이피어숙련도 + CFLAG:(ARG:1):검숙련도,1400) / 20
+	;飛具（弓熟練度、投具熟練度に応じて性能向上、最初90、最低20)
+	CASE 1
+		SIF ARG:1 == -1
+				RETURN 100
+		RETURN 90 - MIN( CFLAG:(ARG:1):활숙련도 + CFLAG:(ARG:1):투척숙련도,1400) / 20
+	;打撃（斧、鈍器熟練度、杖・祭具熟練度、棍熟練度に応じて性能向上、最初90、最低20）
+	CASE 2
+		SIF ARG:1 == -1
+				RETURN 100
+		RETURN 90 - MIN( CFLAG:(ARG:1):도끼、둔기숙련도 + CFLAG:(ARG:1):지팡이・제구숙련도 + CFLAG:(ARG:1):곤봉숙련도,1400) / 20
+	;戦技（槍熟練度、拳闘具熟練度に応じて性能向上、最初90、最低20）
+	CASE 3
+		SIF ARG:1 == -1
+				RETURN 100
+		RETURN 90 - MIN( CFLAG:(ARG:1):창숙련도 + CFLAG:(ARG:1):권투구숙련도,1400) / 20
+ENDSELECT
+RETURN 100
+
+@攻撃相性_2131, ARG = -1
+RETURN 2
+
+@最低攻撃回数_2131, ARG = -1
+RETURN 1
+
+@最大攻撃回数_2131, ARG = -1
+RETURN 1
+
+@射程_2131, ARG = -1
+RETURN 1
+
+@攻撃範囲_2131, ARG = -1
+RETURN 1
+
+@装備箇所_2131
+RETURN GET_EQUIPNUM("검")
+
+
+;-----------------------------
+;- ショップ
+;-----------------------------
+@購入条件_2131
+RETURN 1
+
+@必要レベル_2131
+RETURN 1
+
+@必要ステータス_2131
+RESULTS = 힘
+RESULTS:1 = OR
+RETURN 10
+
+@装備条件_2131,ARG
+;SIF BASE:ARG:힘 < 10
+;	RETURN 0
+RETURN 1
+
+@装備条件説明_2131
+;PRINTL 装備条件：力10以上
+
+@装備解説_2131
+PRINTL 머리부터 무릎까지의 범위를 충분히 덮는 크기의 방패. 완력이 없으면 들고 다니기 어렵다
+PRINTL 무기 숙련을 쌓으면 방어의 정밀도가 올라간다...고 한다
+
+;@引継ぎ可不可_2131
+;RETURN 0
+
+@剣タイプ_2131
+;1 = 刀　2 =레이피어　3 = 弓　　　　4 = 검　5 = 槍　　　6 = 斧、鈍器
+;7 = 채찍　8 =投具　　　9 = 杖、祭具　10= 棍　11= 拳闘具
+RETURN 11

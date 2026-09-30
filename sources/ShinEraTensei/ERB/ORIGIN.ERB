@@ -1,0 +1,551 @@
+@GET_GIFT,ARG,ARG:3
+CALL CHECK_ITEMMAX,ARG
+IF RESULT == 0
+	PRINTFORMW %ITEMNAME:ARG%を{ARG:3}個手に入れた
+	CALL GET_ITEM,ARG,ARG:3
+	RETURN 1
+ELSE
+	PRINTFORMW %ITEMNAME:ARG%を{ARG:3}個もらったが、持ちきれなかった
+	RETURN 0
+ENDIF
+
+@MASTER_HUKUSO
+#DIM 服装 , 12
+VARSET 服装 , 0
+VARSET 服装 , 1 , 0 , 4
+PRINTL あなたの服装を変更しますか？
+CALL INPUT_YN,"Yes","No"
+SIF RESULT == 1
+	RETURN 0
+FOR LOCAL,0,12
+	CFLAG:MASTER:(40+LOCAL) = CSVCFLAG(NO:MASTER,40+LOCAL,0)
+	CFLAG:MASTER:(60+LOCAL) = CSVCFLAG(NO:MASTER,40+LOCAL,0)
+NEXT
+;40,帽子
+;41,服
+;42,下衣
+;43,全身服
+;44,手
+;45,下着（上）
+;46,下着（下）
+;47,全身下着
+;48,靴下
+;49,靴
+;50,上着
+;51,その他
+
+PRINTW あなたの表向きの職業は……
+PRINTL [0]生粋のデビルサマナー
+PRINTL [1]学生
+PRINTL [2]フリーター
+PRINTL [3]社会人
+
+IF TALENT:MASTER:157 == 1 || TALENT:MASTER:オトコ == 0
+	PRINTL [4]深窓の令嬢
+	服装:4 = 1
+ENDIF
+IF (TALENT:MASTER:140 == 0  || TALENT:MASTER:157 == 1) && ABL:MASTER:セックス中毒 >= 1
+	PRINTL [5]公衆便所
+	服装:5 = 1
+	
+ENDIF
+IF TALENT:MASTER:140 == 0 && TALENT:MASTER:5 == 0 && TALENT:MASTER:83 == 1
+	PRINTL [6]女王様
+	服装:6 = 1
+ENDIF
+
+IF TALENT:MASTER:140 == 1 && FLAG:998 >= 1
+	PRINTL [7]渡世人
+	服装:7 = 1
+ENDIF
+IF (TALENT:MASTER:140 == 0 || TALENT:MASTER:157 == 1)
+	PRINTL [8]メイド
+	服装:8 = 1
+ENDIF
+IF TALENT:MASTER:140
+	PRINTL [9]執事
+	服装:9 = 1
+ENDIF
+IF TALENT:MASTER:140
+	PRINTFORML [10]仏僧
+	服装:10 = 1
+ENDIF
+IF TALENT:MASTER:157 == 1 || TALENT:MASTER:オトコ == 0
+	PRINTFORML [11]シスター
+	服装:11 = 1
+ENDIF
+
+$INPUT_LOOP
+CALL INPUTINT,0,1,2,3,4,5,6,7,8,9,10,11
+IF 服装:RESULT == 0
+	CLEARLINE 1
+	GOTO INPUT_LOOP
+ENDIF
+SELECTCASE RESULT
+	CASE 0
+	;生粋のデビルサマナー
+	CFLAG:MASTER:72 = 1
+	CSTR:MASTER:31 = 表の職業は持たず、生粋のデビルサマナーとして活動している。
+	;学生風
+	CASE 1
+		IF TALENT:MASTER:男の娘 == 1
+			CALL INPUT_YN("女装","男装")
+		ELSE
+			RESULT = TALENT:MASTER:オトコ
+		ENDIF
+		SELECTCASE RESULT
+			CASE 1
+				;靴
+				CALL SET_初期衣装, "靴" , [[衣装:革靴]]
+				;服 ワイシャツ
+				CALL SET_初期衣装, "服" , [[衣装:ワイシャツ]]
+				;上着　ブレザー
+				CALL SET_初期衣装, "上着" , [[衣装:ブレザー]]
+			CASE 0
+				IF RAND:2 == 0
+					;服　セーラー
+					CALL SET_初期衣装, "服" , [[衣装:セーラー服]]
+				ELSE
+					;服　ブラウス
+					CALL SET_初期衣装, "服" , [[衣装:ブラウス]]
+					;上着　ブレザー
+					CALL SET_初期衣装, "上着" , [[衣装:ブレザー]]
+				ENDIF
+				;下衣
+				
+				IF EXP:MASTER:性交経験 >= 10
+					CALL SET_初期衣装, "下衣" , [[衣装:ミニスカート]]
+				ELSE
+					CALL SET_初期衣装, "下衣" , [[衣装:スカート]]
+				ENDIF
+				;下着（上）　110絶壁　109貧乳
+				IF EXP:MASTER:性交経験 >= 50
+					CALL SET_初期衣装, "下着（上）" , [[衣装:オープンブラ]]
+						SIF TALENT:MASTER:男の娘
+							CALL SET_初期衣装, "その他" , [[衣装:ペニスリボン]]
+				ELSEIF EXP:MASTER:性交経験 >= 10
+					CALL SET_初期衣装, "下着（上）" , [[衣装:マイクロブラ]]
+				ELSEIF TALENT:MASTER:貧乳 == 1
+					CALL SET_初期衣装, "下着（上）" , [[衣装:スポーツブラ]]
+				ELSEIF TALENT:MASTER:絶壁 == 1
+					CALL SET_初期衣装, "下着（上）" , -1
+				ELSE
+					CALL SET_初期衣装, "下着（上）" , [[衣装:ブラジャー]]
+				ENDIF
+				;下着（下）
+				IF EXP:MASTER:性交経験 >= 50
+					CALL SET_初期衣装, "下着（下）" , [[衣装:オープンショーツ]]
+					SIF TALENT:MASTER:男の娘
+						CALL SET_初期衣装, "その他" , [[衣装:ペニスリボン]]
+				ELSEIF EXP:MASTER:性交経験 >= 10
+					CALL SET_初期衣装, "下着（下）" , -1
+					SIF TALENT:MASTER:男の娘
+						CALL SET_初期衣装, "その他" , [[衣装:ペニスリボン]]
+				ELSE
+					CALL SET_初期衣装, "下着（下）" , [[衣装:パンティ]]
+				ENDIF
+				;靴下
+				IF RAND:3 == 0
+					CALL SET_初期衣装, "靴下" , [[衣装:ハイソックス]]
+				ELSEIF RAND:2 == 0
+					CALL SET_初期衣装, "靴下" , [[衣装:ニーソックス]]
+				ELSE
+					CALL SET_初期衣装, "靴下" , [[衣装:サイハイソックス]]
+				ENDIF
+				;靴
+					CALL SET_初期衣装, "靴" , [[衣装:革靴]]
+			CASEELSE
+		ENDSELECT
+		CFLAG:MASTER:72 = 2
+		CSTR:MASTER:31 = 表の職業は学生。
+	;フリーター
+	CASE 2
+		IF TALENT:MASTER:男の娘 == 1
+			CALL INPUT_YN("女装","男装")
+		ELSE
+			RESULT = TALENT:MASTER:オトコ
+		ENDIF
+		IF RESULT == 1
+			;靴
+			CALL SET_初期衣装, "靴" , [[衣装:スニーカー]]
+			IF RAND:2 == 0
+				CALL SET_初期衣装, "上着" , [[衣装:パーカー]]
+			ENDIF
+			IF RAND:2 == 0
+				CALL SET_初期衣装, "その他" , [[衣装:ヘッドホン]]
+			ENDIF
+		ELSE
+			LOCAL = EXP:MASTER:性交経験
+			IF LOCAL >= 50
+				IF RAND:3 == 0
+					;チューブトップ
+					CALL SET_初期衣装, "服" , [[衣装:チューブトップ]]
+					CALL SET_初期衣装, "下着（上）" , -1
+				ELSEIF RAND:2 == 0
+					;タンクトップ
+					CALL SET_初期衣装, "服" , [[衣装:タンクトップ]]
+					CALL SET_初期衣装, "下着（上）" , -1
+				ELSE
+					;キャミ
+					CALL SET_初期衣装, "服" , [[衣装:キャミソール]]
+					CALL SET_初期衣装, "下着（上）" , [[衣装:オープンブラ]]
+				ENDIF
+				;下衣
+				IF RAND:3 == 0
+					;ホットパンツ
+					CALL SET_初期衣装, "下衣" , [[衣装:ホットパンツ]]
+					CALL SET_初期衣装, "下着（下）" , [[衣装:オープンショーツ]]
+					SIF TALENT:MASTER:男の娘
+						CALL SET_初期衣装, "その他" , [[衣装:ペニスリボン]]
+				ELSEIF RAND:2 == 0
+					;ミニスカート
+					CALL SET_初期衣装, "下衣" , [[衣装:ミニスカート]]
+					CALL SET_初期衣装, "下着（下）" , [[衣装:オープンショーツ]]
+					SIF TALENT:MASTER:男の娘
+						CALL SET_初期衣装, "その他" , [[衣装:ペニスリボン]]
+				ELSE
+					;ショートパンツ
+					CALL SET_初期衣装, "下衣" , [[衣装:ショートパンツ]]
+					CALL SET_初期衣装, "下着（下）" , -1
+				ENDIF
+			ELSEIF LOCAL >= 10
+				IF RAND:2 == 0
+					;ビキニトップ
+					CALL SET_初期衣装, "服" , [[衣装:ビキニトップ]]
+					CALL SET_初期衣装, "下着（上）" , -1
+					;ビキニボトム
+					CALL SET_初期衣装, "下衣" , [[衣装:ビキニボトム]]
+					CALL SET_初期衣装, "下着（上）" , -1
+				ELSE
+					;タンクトップ
+					CALL SET_初期衣装, "服" , [[衣装:タンクトップ]]
+					CALL SET_初期衣装, "下着（上）" , -1
+					;下衣
+					IF RAND:2 == 0
+						;ホットパンツ
+						CALL SET_初期衣装, "下衣" , [[衣装:ホットパンツ]]
+						CALL SET_初期衣装, "下着（下）" , -1
+					ELSE
+						;ミニスカート
+						CALL SET_初期衣装, "下衣" , [[衣装:ミニスカート]]
+						CALL SET_初期衣装, "下着（下）" , -1
+						SIF TALENT:MASTER:男の娘
+							CALL SET_初期衣装, "その他" , [[衣装:ペニスリボン]]
+					ENDIF
+				ENDIF
+			ELSE
+				IF RAND:2 == 0
+					IF RAND:2 == 0
+						;タンクトップ
+						CALL SET_初期衣装, "服" , [[衣装:タンクトップ]]
+						CALL SET_初期衣装, "下着（上）" , -1
+					ELSE
+						;キャミ
+						CALL SET_初期衣装, "服" , [[衣装:キャミソール]]
+						CALL SET_初期衣装, "下着（上）" , [[衣装:ブラジャー]]
+					ENDIF
+					;下衣
+					IF RAND:2 == 0
+						;ミニスカート
+						CALL SET_初期衣装, "下衣" , [[衣装:ミニスカート]]
+					ELSE
+						;ショートパンツ
+						CALL SET_初期衣装, "下衣" , [[衣装:ショートパンツ]]
+					ENDIF
+					CALL SET_初期衣装, "下着（下）" , [[衣装:パンティ]]
+				ELSE
+					;全身服
+					;ワンピース
+						CALL SET_初期衣装, "全身服" , [[衣装:ワンピース]]
+						CALL SET_初期衣装, "服" , -1
+						CALL SET_初期衣装, "下衣" , -1
+						CALL SET_初期衣装, "下着（下）" , [[衣装:パンティ]]
+				ENDIF
+			ENDIF
+			;下着（上）
+			IF TALENT:MASTER:貧乳 && CFLAG:MASTER:下着（上） == [[衣装:ブラジャー]]
+				CALL SET_初期衣装, "下着（上）" , [[衣装:スポーツブラ]]
+			ELSEIF TALENT:MASTER:絶壁 && CFLAG:MASTER:下着（上） == [[衣装:ブラジャー]]
+				CALL SET_初期衣装, "下着（上）" , -1
+			ENDIF
+			;靴
+			IF RAND:4 == 0
+				;サンダル
+				CALL SET_初期衣装, "靴" , [[衣装:サンダル]]
+			ELSEIF RAND:3 == 0
+				;ミュール
+				CALL SET_初期衣装, "靴" , [[衣装:ミュール]]
+			ELSEIF RAND:2 == 0
+				;スニーカー
+				CALL SET_初期衣装, "靴" , [[衣装:スニーカー]]
+			ELSE
+				;パンプス
+				CALL SET_初期衣装, "靴" , [[衣装:パンプス]]
+			ENDIF
+			;靴下
+			IF CFLAG:MASTER:靴 == [[衣装:スニーカー]] || CFLAG:MASTER:靴 == [[衣装:パンプス]]
+				IF RAND:4 == 0
+					;ニーソックス
+					CALL SET_初期衣装, "靴下" , [[衣装:ニーソックス]]
+				ELSEIF RAND:3 == 0
+					;ハイソックス
+					CALL SET_初期衣装, "靴下" , [[衣装:ハイソックス]]
+				ELSEIF RAND:2 == 0
+					;ソックス
+					CALL SET_初期衣装, "靴下" , [[衣装:靴下]]
+				ELSE
+					;サイハイソックス
+					CALL SET_初期衣装, "靴下" , [[衣装:サイハイソックス]]
+				ENDIF
+			ELSE
+					CALL SET_初期衣装, "靴下" , -1
+			ENDIF
+		ENDIF
+	CFLAG:MASTER:72 = 3
+	CSTR:MASTER:31 = 表の職業はフリーター。
+	;社会人
+	CASE 3
+		IF TALENT:MASTER:男の娘 == 1
+			CALL INPUT_YN("女装","男装")
+		ELSE
+			RESULT = TALENT:MASTER:オトコ
+		ENDIF
+		IF RESULT == 1
+			;靴
+			CALL SET_初期衣装, "靴" , [[衣装:革靴]]
+			;上着　スーツ
+			CALL SET_初期衣装, "上着" , [[衣装:ジャケット]]
+			;服　ワイシャツ
+			CALL SET_初期衣装, "上着" , [[衣装:ワイシャツ]]
+		ELSE
+			LOCAL = EXP:MASTER:性交経験
+			;下衣
+			IF LOCAL >= 20
+				CALL SET_初期衣装, "下衣" , [[衣装:タイトミニスカート]]
+			ELSE
+				CALL SET_初期衣装, "下衣" , [[衣装:タイトスカート]]
+			ENDIF
+			;靴下
+			IF LOCAL >= 20
+				CALL SET_初期衣装, "靴下" , [[衣装:ガーターストッキング]]
+			ELSE
+				CALL SET_初期衣装, "靴下" , [[衣装:パンティストッキング]]
+			ENDIF
+			;靴
+			IF LOCAL >= 20
+				IF RAND:2 == 0
+					CALL SET_初期衣装, "靴" , [[衣装:ピンヒール]]
+				ELSE
+					CALL SET_初期衣装, "靴" , [[衣装:ハイヒール]]
+				ENDIF
+			ELSE
+				IF RAND:2 == 0
+					CALL SET_初期衣装, "靴" , [[衣装:ハイヒール]]
+				ELSE
+					CALL SET_初期衣装, "靴" , [[衣装:パンプス]]
+				ENDIF
+			ENDIF
+			;下着
+			IF LOCAL >= 50
+				CALL SET_初期衣装, "下着（上）" , [[衣装:オープンブラ]]
+				CALL SET_初期衣装, "下着（下）" , [[衣装:オープンショーツ]]
+				SIF TALENT:MASTER:男の娘
+					CALL SET_初期衣装, "その他" , [[衣装:ペニスリボン]]
+				
+			ELSEIF LOCAL >= 30
+				CALL SET_初期衣装, "下着（上）" , -1
+				CALL SET_初期衣装, "下着（下）" , -1
+				SIF TALENT:MASTER:男の娘
+					CALL SET_初期衣装, "その他" , [[衣装:ペニスリボン]]
+			ENDIF
+		ENDIF
+		CFLAG:MASTER:72 = 4
+		CSTR:MASTER:31 = 表の職業は社会人。
+	;深窓の令嬢
+	CASE 4
+	;☆お嬢様
+		IF RAND:4 == 0
+			;リボン
+			CALL SET_初期衣装, "帽子" , [[衣装:リボン]]
+		ELSEIF RAND:3 == 0
+			;帽子
+			CALL SET_初期衣装, "帽子" , [[衣装:帽子]]
+		ELSEIF RAND:2 == 0
+			;カチューシャ
+			CALL SET_初期衣装, "帽子" , [[衣装:カチューシャ]]
+		ELSE
+			CALL SET_初期衣装, "帽子" , -1
+		ENDIF
+		IF RAND:3 == 0
+			CALL SET_初期衣装, "全身服" , [[衣装:ワンピース]]
+		ELSEIF RAND:2 == 0
+			CALL SET_初期衣装, "全身服" , [[衣装:ドレス]]
+		ELSE
+			CALL SET_初期衣装, "全身服" , [[衣装:イブニングドレス]]
+		ENDIF
+		CALL SET_初期衣装, "服" , -1
+		CALL SET_初期衣装, "下衣" , -1
+		
+		CALL SET_初期衣装, "手" , [[衣装:レースの手袋]]
+		
+		IF RAND:2 == 0
+			CALL SET_初期衣装, "靴" , [[衣装:ピンヒール]]
+		ELSE
+			CALL SET_初期衣装, "靴" , [[衣装:ミュール]]
+		ENDIF
+		IF CFLAG:MASTER:靴 == [[衣装:ピンヒール]]
+			IF RAND:2 == 0
+				CALL SET_初期衣装, "靴下" , [[衣装:ガーターストッキング]]
+			ELSE
+				CALL SET_初期衣装, "靴下" , [[衣装:パンティストッキング]]
+			ENDIF
+		ENDIF
+		;下着
+		LOCAL = EXP:MASTER:性交経験
+		IF LOCAL >= 50
+			CALL SET_初期衣装, "下着（上）" , [[衣装:オープンブラ]]
+			CALL SET_初期衣装, "下着（下）" , [[衣装:オープンショーツ]]
+			SIF TALENT:MASTER:男の娘
+				CALL SET_初期衣装, "その他" , [[衣装:ペニスリボン]]
+		ELSEIF LOCAL >= 20
+			CALL SET_初期衣装, "下着（上）" , -1
+			CALL SET_初期衣装, "下着（下）" , -1
+			SIF TALENT:MASTER:男の娘
+				CALL SET_初期衣装, "その他" , [[衣装:ペニスリボン]]
+		ELSE
+			CALL SET_初期衣装, "下着（上）" , [[衣装:レース付きブラジャー]]
+			CALL SET_初期衣装, "下着（下）" , [[衣装:レース付きパンティ]]
+			SIF TALENT:MASTER:貧乳
+				CALL SET_初期衣装, "下着（上）" , -1
+			SIF TALENT:MASTER:絶壁
+				CALL SET_初期衣装, "下着（上）" , -1
+		ENDIF
+		CFLAG:MASTER:72 = 5
+		CSTR:MASTER:31 = 表の職業は世間知らずのお嬢様。
+	;公衆便所
+	CASE 5
+		CALL SET_初期衣装, "その他" , [[衣装:拘束具]]
+		CFLAG:MASTER:72 = 6
+		CSTR:MASTER:31 = 表の職業は性欲処理として使われている公衆便所。
+	;女王様
+	CASE 6
+			CALL SET_初期衣装, "全身服" , [[衣装:ボンテージスーツ]]
+		CALL SET_初期衣装, "服" , -1
+		CALL SET_初期衣装, "下衣" , -1
+		CALL SET_初期衣装, "下着（上）" , -1
+		CALL SET_初期衣装, "下着（下）" , -1
+		CALL SET_初期衣装, "手" , [[衣装:エルボーグローブ]]
+		SIF TALENT:MASTER:男の娘
+			CALL SET_初期衣装, "その他" , [[衣装:ペニスリボン]]
+		IF RAND:2 == 0
+			CALL SET_初期衣装, "靴" , [[衣装:ハイブーツ]]
+		ELSE
+			CALL SET_初期衣装, "靴下" , [[衣装:ガーターストッキング]]
+			CALL SET_初期衣装, "靴" , [[衣装:ピンヒール]]
+		ENDIF
+		CFLAG:MASTER:72 = 7
+		CSTR:MASTER:31 = 表の職業は女王様。
+	;渡世人
+	CASE 7
+		CALL SET_初期衣装, "全身服" , [[衣装:長着]]
+		CALL SET_初期衣装, "服" , -1
+		CALL SET_初期衣装, "下衣" , -1
+		CALL SET_初期衣装, "下着（上）" , [[衣装:さらし]]
+		SIF TALENT:MASTER:貧乳 == 1 || TALENT:MASTER:絶壁 == 1
+			CALL SET_初期衣装, "下着（上）" , -1
+		CALL SET_初期衣装, "下着（下）" , [[衣装:褌]]
+		CALL SET_初期衣装, "靴下" , -1
+		CALL SET_初期衣装, "靴" , [[衣装:下駄]]
+		CFLAG:MASTER:72 = 8
+		CSTR:MASTER:31 = 職業は日陰の世界を渡り歩く渡世人。
+	;メイド
+	CASE 8
+		CALL SET_初期衣装, "帽子" , [[衣装:ホワイトブリム]]
+		LOCAL = EXP:MASTER:性交経験
+		IF LOCAL >= 20
+			CALL SET_初期衣装, "全身服" , [[衣装:フレンチメイド服]]
+			CALL SET_初期衣装, "服" , -1
+			CALL SET_初期衣装, "下衣" ,-1
+		ELSE
+			CALL SET_初期衣装, "全身服" , [[衣装:メイド服]]
+			CALL SET_初期衣装, "服" , -1
+			CALL SET_初期衣装, "下衣" ,-1
+		ENDIF
+		IF LOCAL >= 50
+			CALL SET_初期衣装, "靴下" , [[衣装:ガーターストッキング]]
+			CALL SET_初期衣装, "下着（上）" , [[衣装:オープンブラ]]
+			CALL SET_初期衣装, "下着（下）" , [[衣装:オープンショーツ]]
+			SIF TALENT:MASTER:男の娘
+				CALL SET_初期衣装, "その他" , [[衣装:ペニスリボン]]
+		ELSE
+			IF RAND:4 == 0
+				CALL SET_初期衣装, "靴下" , [[衣装:ニーソックス]]
+			ELSEIF RAND:3 == 0
+				CALL SET_初期衣装, "靴下" , [[衣装:サイハイソックス]]
+			ELSEIF RAND:2 == 0
+				CALL SET_初期衣装, "靴下" , [[衣装:ガーターストッキング]]
+			ELSE
+				CALL SET_初期衣装, "靴下" , [[衣装:パンティストッキング]]
+			ENDIF
+			CALL SET_初期衣装, "下着（上）" , [[衣装:レース付きブラジャー]]
+			CALL SET_初期衣装, "下着（下）" , [[衣装:レース付きパンティ]]
+			IF LOCAL >= 20
+				CALL SET_初期衣装, "下着（上）" , -1
+				CALL SET_初期衣装, "下着（下）" , -1
+				SIF TALENT:MASTER:男の娘
+					CALL SET_初期衣装, "その他" , [[衣装:ペニスリボン]]
+			ELSEIF TALENT:MASTER:絶壁
+				CALL SET_初期衣装, "下着（上）" , -1
+			ENDIF
+		ENDIF
+		CALL SET_初期衣装, "靴" , [[衣装:革靴]]
+		CFLAG:MASTER:72 = 9
+		CSTR:MASTER:31 = 表の職業はメイド。
+	;執事
+	CASE 9
+		CALL SET_初期衣装, "手" , [[衣装:カフス]]
+		CALL SET_初期衣装, "靴" , [[衣装:革靴]]
+		CALL SET_初期衣装, "上着" , [[衣装:燕尾服]]
+		CALL SET_初期衣装, "服" , [[衣装:ワイシャツ]]
+		CALL SET_初期衣装, "下衣" , [[衣装:ズボン]]
+		CFLAG:MASTER:72 = 10
+		CSTR:MASTER:31 = 表の職業は執事。
+	;仏僧
+	CASE 10
+		CALL SET_初期衣装, "靴" , [[衣装:草鞋]]
+		CALL SET_初期衣装, "全身服" , [[衣装:法衣]]
+		CFLAG:MASTER:72 = 11
+		CSTR:MASTER:31 = 表の職業は仏僧。
+	;シスター
+	CASE 11
+		CALL SET_初期衣装, "靴" , [[衣装:ブーツ]]
+		CALL SET_初期衣装, "帽子" , [[衣装:ヴェール]]
+		IF RAND:3 == 0
+			CALL SET_初期衣装, "下着（上）" , [[衣装:レース付きブラジャー]]
+			CALL SET_初期衣装, "下着（下）" , [[衣装:レース付きパンティ]]
+		ELSEIF RAND:2 == 0
+			CALL SET_初期衣装, "下着（上）" , [[衣装:ブラジャー]]
+			CALL SET_初期衣装, "下着（下）" , [[衣装:パンティ]]
+		ELSE
+			CALL SET_初期衣装, "下着（上）" , [[衣装:スポーツブラ]]
+			CALL SET_初期衣装, "下着（下）" , [[衣装:ドロワーズ]]
+		ENDIF
+		CALL SET_初期衣装, "全身服" , [[衣装:法衣]]
+		CALL SET_初期衣装, "服" , -1
+		CALL SET_初期衣装, "下衣" , -1
+		CFLAG:MASTER:72 = 12
+		CSTR:MASTER:31 = 表の職業はシスター。
+	CASEELSE
+ENDSELECT
+
+PRINTL あなたは眼鏡をかけていますか？
+CALL INPUT_YN,"Yes","No"
+SIF RESULT == 1
+	RETURN 0
+
+CALL SET_初期衣装, "その他" , [[衣装:眼鏡]]
+
+@SET_初期衣装,ARGS,ARG,ARG:1 = 0
+CFLAG:(ARG:1):ARGS = ARG
+CFLAG:(ARG:1):@"初期%ARGS%" = ARG
+

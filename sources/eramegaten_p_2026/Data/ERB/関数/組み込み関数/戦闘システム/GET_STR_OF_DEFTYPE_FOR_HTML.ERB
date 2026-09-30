@@ -1,0 +1,43 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Test Module	:GET_STR_OF_DEFTYPE_FOR_HTML
+;	Facility	:HTML用に防御相性の表示用の文字列を取得する
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/05/17		P(bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;====================================================
+;=========================================
+;ターゲットのポジション最低値取得
+;ARG = 타겟
+;=========================================
+@GET_STR_OF_DEFTYPE_FOR_HTML, L_STRENGTH, L_LENS = 6, L_UNIT = "％", L_OPT
+#FUNCTIONS
+#DIM DYNAMIC L_STRENGTH
+#DIMS DYNAMIC L_OPT
+#DIM DYNAMIC L_LENS
+#DIMS DYNAMIC L_UNIT
+#DIMS DYNAMIC L_RESULTS
+#DIMS DYNAMIC L_WEAKNESS
+L_WEAKNESS '= GET_WEAKNESS(L_STRENGTH)
+SELECTCASE L_WEAKNESS
+	CASE "반사"
+		L_RESULTS = %"", STRLENS(L_UNIT)%%"반사", L_LENS%
+	CASE "흡수"
+		IF STRCOUNT(L_OPT, "マイナス表記")
+			L_RESULTS = {L_STRENGTH, L_LENS}%L_UNIT%
+		ELSE
+			L_RESULTS = 吸{ABS(L_STRENGTH), L_LENS - 2, RIGHT}%L_UNIT%
+		ENDIF
+	CASEELSE
+		L_RESULTS = {L_STRENGTH, L_LENS}%L_UNIT%
+ENDSELECT
+IF STRCOUNT(L_OPT, "非着色")
+	RETURNF L_RESULTS
+ELSE
+	RETURNF SET_COLOR_TAG(L_RESULTS, TOSTR_HTML(COLOR(L_WEAKNESS + "컬러")))
+ENDIF

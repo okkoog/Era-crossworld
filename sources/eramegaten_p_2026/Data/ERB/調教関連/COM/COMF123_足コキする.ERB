@@ -1,0 +1,158 @@
+﻿;-------------------------------------------------
+;足コキ
+;助手によるコマンド、及びレズプレイ、レベル1
+;-------------------------------------------------
+@ACT_COM123
+PRINTL 풋잡한다
+TSTR:0 = 풋잡한다
+;CALL KOJO_MESSAGE_COM
+
+;調教者→調教対象
+TFLAG:28 = 2
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 30
+DOWNBASE:TARGET:기력 += 150
+
+SOURCE:TARGET:쾌Ｃ = 250
+SOURCE:TARGET:달성 = 200
+SOURCE:TARGET:노출 = 300
+SOURCE:TARGET:굴종 = 300
+SOURCE:TARGET:일탈 = 350
+SOURCE:TARGET:반감 = 350
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;抑圧、抵抗持ちには、抑鬱ソース追加
+SIF TALENT:억압 || TALENT:저항
+	SOURCE:TARGET:울굴 += 400
+
+;苦痛を伴わないマゾっ気及びマゾの処理は先にしておく
+;マゾっ気を見る
+IF ABL:9 == 0
+	TIMES SOURCE:TARGET:달성 , 0.80
+	TIMES SOURCE:TARGET:굴종 , 0.80
+	SOURCE:TARGET:액체 += 0
+	SOURCE:TARGET:욕정 += 0
+ELSEIF ABL:9 == 1
+	TIMES SOURCE:TARGET:달성 , 1.00
+	TIMES SOURCE:TARGET:굴종 , 1.00
+	SOURCE:TARGET:액체 += 20
+	SOURCE:TARGET:욕정 += 30
+ELSEIF ABL:9 == 2
+	TIMES SOURCE:TARGET:달성 , 1.20
+	TIMES SOURCE:TARGET:굴종 , 1.20
+	SOURCE:TARGET:액체 += 40
+	SOURCE:TARGET:욕정 += 70
+ELSEIF ABL:9 == 3
+	TIMES SOURCE:TARGET:달성 , 1.40
+	TIMES SOURCE:TARGET:굴종 , 1.40
+	SOURCE:TARGET:액체 += 70
+	SOURCE:TARGET:욕정 += 120
+ELSEIF ABL:9 == 4
+	TIMES SOURCE:TARGET:달성 , 1.50
+	TIMES SOURCE:TARGET:굴종 , 1.50
+	SOURCE:TARGET:액체 += 110
+	SOURCE:TARGET:욕정 += 180
+ELSEIF ABL:9 == 5
+	TIMES SOURCE:TARGET:달성 , 1.70
+	TIMES SOURCE:TARGET:굴종 , 1.70
+	SOURCE:TARGET:액체 += 150
+	SOURCE:TARGET:욕정 += 250
+ELSEIF ABL:9 == 6
+	TIMES SOURCE:TARGET:달성 , 1.90
+	TIMES SOURCE:TARGET:굴종 , 1.90
+	SOURCE:TARGET:액체 += 200
+	SOURCE:TARGET:욕정 += 300
+ELSEIF ABL:9 == 7
+	TIMES SOURCE:TARGET:달성 , 2.10
+	TIMES SOURCE:TARGET:굴종 , 2.10
+	SOURCE:TARGET:액체 += 250
+	SOURCE:TARGET:욕정 += 350
+ELSEIF ABL:9 == 8
+	TIMES SOURCE:TARGET:달성 , 2.30
+	TIMES SOURCE:TARGET:굴종 , 2.30
+	SOURCE:TARGET:액체 += 300
+	SOURCE:TARGET:욕정 += 400
+ELSEIF ABL:9 == 9
+	TIMES SOURCE:TARGET:달성 , 2.50
+	TIMES SOURCE:TARGET:굴종 , 2.50
+	SOURCE:TARGET:액체 += 350
+	SOURCE:TARGET:욕정 += 450
+ELSEIF ABL:9 >= 10
+	TIMES SOURCE:TARGET:달성 , 3.00
+	TIMES SOURCE:TARGET:굴종 , 3.00
+	SOURCE:TARGET:액체 += 500
+	SOURCE:TARGET:욕정 += 500
+ENDIF
+
+;マゾを見る
+IF TALENT:84 == 1
+	TIMES SOURCE:TARGET:달성 , 2.50
+	TIMES SOURCE:TARGET:굴종 , 2.50
+	TIMES SOURCE:TARGET:액체 , 1.20
+	TIMES SOURCE:TARGET:욕정 , 1.20
+ENDIF
+
+;도착적
+SIF TALENT:80
+	TIMES SOURCE:TARGET:달성 , 1.80
+
+;-------------------------------------------------
+;吸精処理
+;-------------------------------------------------
+IF CFLAG:PLAYER:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:5+1) * BASE:LV
+	CALL DRAIN_MAG,PLAYER,LOCAL,TARGET
+ELSEIF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:5+1) * BASE:LV
+	CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+ENDIF
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+A = 4
+IF IS_LESBIAN(TARGET,PLAYER)
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, PLAYER)
+ELSEIF IS_GAY(TARGET,PLAYER)
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+ENDIF
+
+;依存度ベクトル
+;P = PLAYER
+IF GET_RELATION(TARGET, PLAYER) > 100
+	TFLAG:33 = 2
+ELSEIF GET_RELATION(TARGET, PLAYER) < 100
+	TFLAG:33 = 3
+ELSE
+	TFLAG:33 = 1
+ENDIF
+
+;依存度補正値(相性100↑かつ淫乱で2、娼婦で4）
+;P = PLAYER
+IF TALENT:음란 && GET_RELATION(TARGET, PLAYER) > 100
+	TFLAG:30 += 2
+ELSEIF TALENT:창부 && GET_RELATION(TARGET, PLAYER) > 100
+	TFLAG:30 += 4
+ENDIF
+
+
+
+
+RETURN 1
+
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_123
+RETURN COMTYPE("助手・レズ系")
+
+
+

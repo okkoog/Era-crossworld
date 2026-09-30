@@ -1,0 +1,207 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:BTL_EFFECT_SYSTEM.ERB
+;	Facility	:戦闘時効果(独自バフデバフ)の処理
+;
+;	Licence		:ライセンスフリー。
+;
+;	Edit	Date			Author					Reason
+;	001		2023/03/22		P(bazzile)				新規作成
+;	002		2023/05/08		P(bazzile)				戦闘効果の付与関数に効果時間の指定を追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2024/05/19		P(bazzile)				持続時間の指定にチャージを追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;===============================================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name						Explanation
+;
+;	・ SET_C_BTL_EFFECT_SINGLE			単体へのセット関数
+;	・ SET_C_BTL_EFFECT_FIELD			範囲へのセット関数
+;	・ SET_C_BTL_EFFECT					キャラクター効果のセット
+;	・ IS_ACTIVE_C_BTL_EFFECT			キャラクター効果がアクティブかどうかの判定関数
+;	・ CLEAR_C_BTL_EFFECT_PERMANENCE	指定した永続効果を削除する関数
+;===============================================================================
+;========================================
+;キャラクター効果のセット関数
+;
+;ARG 	セットするキャラ
+;ARG:1	セット対象
+;ARGS 	セットする効果名称
+;ARG:2	セットする効果の持続時間
+;ARGS:1 効果発動時のメッセージ
+;ARGS:2 効果不発時のメッセージ
+;ARGS:3 メッセージオプション
+;========================================
+@SET_C_BTL_EFFECT_SINGLE, ARG, ARG:1, ARGS, ARG:2 = -1, ARGS:1, ARGS:2 = "효과가 없었다！", ARGS:3
+CALL SET_C_BTL_EFFECT_TARGET, ARG, ARG:1, ARGS, ARG:2
+IF RESULT
+	SIF ARGS:1 == ""
+		ARGS:1 = %ARGS%의 효과！
+	SIF !COUNT_SPLIT(ARGS:3, "/","NOPRINT")
+		CALL PRINT_HIT_MESSAGE, ARG:1, ARGS:1, \@COUNT_SPLIT(ARGS:3, "/","NOWAIT") ? L # W\@
+ELSE
+	SIF !COUNT_SPLIT(ARGS:3, "/","NOPRINT")
+		CALL PRINT_HIT_MESSAGE, ARG:1, ARGS:2, \@COUNT_SPLIT(ARGS:3, "/","NOWAIT") ? L # W\@
+ENDIF
+;========================================
+;キャラクター効果のセット関数
+;
+;ARG 	セットするキャラ
+;ARG:1	セット対象
+;ARGS 	セットする効果名称
+;ARG:2	セットする効果の持続時間
+;ARGS:1 効果発動時のメッセージ
+;ARGS:2 効果不発時のメッセージ
+;ARGS:3 メッセージオプション
+;========================================
+@SET_C_BTL_EFFECT_FIELD, ARG, ARG:1, ARGS, ARG:2 = -1, ARGS:1, ARGS:2 = "효과가 없었다！", ARGS:3
+#DIM L_POS
+#DIM L_T
+FOR L_POS, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1) + 1
+	L_T = POS(L_POS)
+	SIF !IS_TARGET_ABLE(L_T)
+		CONTINUE
+	CALL SET_C_BTL_EFFECT_TARGET, ARG, L_T, ARGS, ARG:2
+	IF RESULT
+		SIF ARGS:1 == ""
+			ARGS:1 = %ARGS%의 효과！
+		SIF !COUNT_SPLIT(ARGS:3, "/","NOPRINT")
+			CALL PRINT_HIT_MESSAGE, L_T, ARGS:1, "L"
+	ELSE
+		SIF !COUNT_SPLIT(ARGS:3, "/","NOPRINT")
+			CALL PRINT_HIT_MESSAGE, L_T, ARGS:2, "L"
+	ENDIF
+NEXT
+SIF !COUNT_SPLIT(ARGS:3, "/","NOWAIT") && !COUNT_SPLIT(ARGS:3, "/","NOPRINT")
+	WAIT
+
+;========================================
+;キャラクター効果のセット関数
+;
+;ARG 	セットするキャラ
+;ARG:1	セット対象
+;ARGS 	セットする効果名称
+;ARG:2	効果のターン数指定
+;========================================
+@SET_C_BTL_EFFECT_TARGET, ARG, ARG:1, ARGS, ARG:2 = -1
+#DIM DYNAMIC L_TIME;効果時間
+#DIMS DYNAMIC L_CHARGE_TYPE;チャージの型
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC NOW_EFFECT
+#DIMS DYNAMIC TEMPS
+#DIM DYNAMIC L_EXCLUSIVE
+#DIMS DYNAMIC L_EXCLUSIVE_EFFECT
+SIF IS_BADSTATE(ARG:1, "DYING")
+	RETURN 0
+TRYCCALLFORM C_BTL_EFFECT_SPECIAL_TARGET_%ARGS%, ARG:1, ARG
+	SIF !RESULT
+		RETURN 0
+CATCH
+ENDCATCH
+
+;---- EDIT P 001 MOD START -------------------------
+RESULTS = 
+L_CHARGE_TYPE = 
+TRYCCALLFORM C_BTL_EFFECT_CHARGE_TYPE_%ARGS%
+	L_CHARGE_TYPE '= RESULTS
+	NOW_EFFECT = %C_BTL_EFFECT_CHARGE:(ARG:1):0%
+CATCH
+	;---- EDIT 002 ADD START -------------------------
+	IF ARG:2 == -1
+		CALLFORM C_BTL_EFFECT_CONTINUE_TIME_%ARGS%
+		L_TIME = RESULT
+	ELSE
+		L_TIME = ARG:2
+	ENDIF
+	;---- EDIT 002 ADD END ---------------------------
+	IF L_TIME
+		NOW_EFFECT = %C_BTL_EFFECT:(ARG:1):0%
+	ELSE
+		NOW_EFFECT = %C_BTL_EFFECT_PERMANENCE:(ARG:1):0%
+	ENDIF
+ENDCATCH
+;---- EDIT P 001 MOD END ---------------------------
+
+;重複可能な数
+CALLFORM C_BTL_EFFECT_COUNT_LIMIT_%ARGS%
+SIF STRCOUNT("/" + NOW_EFFECT, "/" + ARGS + "_") >= RESULT
+	RETURN 0
+;排他となる効果
+RESULT = 0
+RESULTS = 
+TRYCALLFORM C_BTL_EFFECT_EXCLUSIVE_%ARGS%
+L_EXCLUSIVE = RESULT
+L_EXCLUSIVE_EFFECT = %RESULTS%
+
+IF L_EXCLUSIVE_EFFECT != ""
+	FOR LCOUNT, 0, STRCOUNT(L_EXCLUSIVE_EFFECT, "/") + 1
+		TEMPS = %AUTO_SPLIT(L_EXCLUSIVE_EFFECT, "/", LCOUNT)%
+		IF L_EXCLUSIVE == 1
+			;上書きなら対象を置換して消す ※本体側の仕様の問題でエスケープ記号をエスケープしないと正規表現を使えないので//になっている
+			NOW_EFFECT = %REPLACE("/" + NOW_EFFECT, "/" + TEMPS + "_" + "\\d*", "")%
+			NOW_EFFECT = %SUBSTRING(NOW_EFFECT, 1)%
+			IF L_TIME > 0
+				FOR LCOUNT, 0, L_TIME
+					C_BTL_EFFECT:(ARG:1):LCOUNT = %REPLACE("/" + C_BTL_EFFECT:(ARG:1):LCOUNT, "/" + TEMPS + "_" + "\\d*", "")%
+					C_BTL_EFFECT:(ARG:1):LCOUNT = %SUBSTRING(C_BTL_EFFECT:(ARG:1):LCOUNT, 1)%
+				NEXT
+			ENDIF
+		;上書き不能
+		ELSEIF L_EXCLUSIVE == -1
+			SIF STRCOUNT("/" + NOW_EFFECT, "/" + TEMPS + "_")
+				RETURN 0
+		ENDIF
+	NEXT
+ENDIF
+;---- EDIT P 001 ADD START -------------------------
+IF L_CHARGE_TYPE != ""
+	C_BTL_EFFECT_CHARGE:(ARG:1):0 = %ADD_SPLIT(NOW_EFFECT, "/", ARGS + "_" + TOSTR(ARG) + "_" + L_CHARGE_TYPE)%
+ELSE
+	IF L_TIME
+		FOR LCOUNT, 0, L_TIME
+			C_BTL_EFFECT:(ARG:1):LCOUNT = %ADD_SPLIT(C_BTL_EFFECT:(ARG:1):LCOUNT, "/", ARGS + "_" + TOSTR(ARG))%
+		NEXT
+	ELSE
+		C_BTL_EFFECT_PERMANENCE:(ARG:1):0 = %ADD_SPLIT(NOW_EFFECT, "/", ARGS + "_" + TOSTR(ARG))%
+	ENDIF
+ENDIF
+RETURN 1
+;---- EDIT P 001 ADD END ---------------------------
+
+;========================================
+;キャラクター効果の発動確認関数
+;
+;ARGS 	セットする効果名称
+;ARG 	セットするキャラ
+;
+;永続・時限に対応
+;========================================
+@IS_ACTIVE_C_BTL_EFFECT, ARGS, ARG
+#FUNCTION
+RETURNF STRCOUNT(C_BTL_EFFECT:ARG:0, ARGS + "_" +"\\d+")
+
+;========================================
+;キャラクター効果の発動確認関数
+;
+;ARGS 	セットする効果名称
+;ARG 	セットするキャラ
+;
+;永続・時限に対応
+;========================================
+@IS_ACTIVE_C_BTL_EFFECT_PERMANENCE, ARGS, ARG
+#FUNCTION
+RETURNF STRCOUNT(C_BTL_EFFECT_PERMANENCE:ARG:0, ARGS + "_" +"\\d+")
+
+;========================================
+;永続キャラクター効果の消去関数
+;
+;ARGS 	消去する効果名称
+;ARG 	消去するキャラ
+;
+;永続・時限に対応
+;========================================
+@CLEAR_C_BTL_EFFECT_PERMANENCE, ARGS, ARG
+C_BTL_EFFECT_PERMANENCE:ARG:0 = %REPLACE("/" + C_BTL_EFFECT:ARG:0, "/" + ARGS + "_" + "\\d*", "")%

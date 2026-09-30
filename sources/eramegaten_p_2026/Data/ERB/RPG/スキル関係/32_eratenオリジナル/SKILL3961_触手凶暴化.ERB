@@ -1,0 +1,117 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_3961,ARG
+RESULTS = 촉수흉포화
+
+;　명중
+@SKILL_HITRATE_3961, ARG
+RETURN 100
+
+;　威力
+;最大まで育てればメギドラオン並になる
+@SKILL_POWER_3961, ARG
+LOCAL = 200 + MIN((FLAG:촉수레벨 * 2) , 200)
+RETURN LOCAL
+
+;최저공격횟수
+@SKILL_MINATTACKNUMBER_3961,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3961,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3961, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3961,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_3961,ARG
+RETURN GET_TYPE_NUM("전술")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3961
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3961, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3961, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_3961,ARG
+RETURN 4
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3961,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3961, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3961
+RETURN GET_SUCCESSION_NUM("전술")
+
+;속도보정
+@SKILL_SPEED_3961, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3961
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3961, ARG = -1
+RETURN 0
+
+@SKILL_RANKUP_3961
+;ランクアップなし
+RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3961, ARG, ARG:1, ARG:2
+IF CFLAG:ARG:PT플래그 > 0
+	IF GET_CHARA_STOCK_MAG((ARG)) < MAX(GET_CHARA_MAXMAG(ARG)/4,1)
+		FLAG:촉수에너지 += (GET_CHARA_STOCK_MAG((ARG)))
+		PRINTFORML %조사처리(CALLNAME:(ARG),"는")% 건넬 ＭＡＧ가 부족해 촉수에게 벌을 받았다！
+		CFLAG:ARG:상태이상 = GET_STATE_NUM("HAPPY")
+	ELSE
+		FLAG:촉수에너지 += MAX(GET_CHARA_MAXMAG(ARG)/40,1)
+		CALL ATTACK_FIELD,ARG,ARG:1,3961
+		PRINTFORML %CALLNAME:ARG% >>>>> {MAX(GET_CHARA_MAXMAG(ARG)/4,1)} 소비 (나머지{GET_CHARA_STOCK_MAG(ARG)})
+	ENDIF
+	CALL CONTROL_MAG, ARG, -MAX(GET_CHARA_MAXMAG(ARG)/4,1)
+ELSE
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3961, ARG
+PRINTL 길러낸 촉수에게 대량의 MAG를 건네、적 전체에 전술 상성의 특대 데미지를 준다。
+PRINTL 사용자의 MAG를 25% 소비하고、소비 MAG의 1할은 촉수에너지로 환원된다。촉수 레벨이 낮으면 성능을 발휘할 수 없다。
+SIF ARG >= 0
+	PRINTFORML %CALLNAME:ARG% 의 남은 MAG {GET_CHARA_STOCK_MAG(ARG)} 예상소비 {MAX(GET_CHARA_MAXMAG(ARG)/4,1) } 사용후 MAG {GET_CHARA_STOCK_MAG(ARG) - MAX(GET_CHARA_MAXMAG(ARG)/4,1)}
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3961,ARG
+RETURN 1
+;とくにない

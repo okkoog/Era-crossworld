@@ -1,0 +1,150 @@
+﻿;-----------------------------
+;デマーシアの審判
+;-----------------------------
+;スキル名
+@SKILL_NAME_デマーシアの審判,ARG
+RESULTS = 데마시아의 심판
+
+;　명중
+@SKILL_HITRATE_デマーシアの審判, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_デマーシアの審判, ARG
+#DIM DYNAMIC L_POWER
+SIF ARG < 0
+	RETURN 50
+L_POWER = 50
+SIF HAVE_PU_SKILL(ARG, "デマーシアの勇士LV10")
+	L_POWER = 100
+SIF HAVE_PU_SKILL(ARG, "デマーシアの勇士LV5")
+	L_POWER = 75
+SIF HAVE_PU_SKILL(ARG, "デマーシアの勇士LV15")
+	L_POWER = 125
+SIF FLAG:확산플래그
+	L_POWER /= 2
+RETURN L_POWER
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_デマーシアの審判,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_デマーシアの審判,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_デマーシアの審判, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_デマーシアの審判,ARG
+SIF ARG < 0
+	RETURN 20
+SIF HAVE_PU_SKILL(ARG, "デマーシアの勇士LV15")
+	RETURN 50
+SIF HAVE_PU_SKILL(ARG, "デマーシアの勇士LV10")
+	RETURN 40
+SIF HAVE_PU_SKILL(ARG, "デマーシアの勇士LV5")
+	RETURN 30
+RETURN 20
+
+;　相性
+@SKILL_TYPE_デマーシアの審判,ARG
+RETURN GET_TYPE_NUM("검격")
+;검격
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_デマーシアの審判
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　攻撃タイプ
+@SKILL_ATTACKTYPE_デマーシアの審判,ARG
+RETURN GET_攻撃タイプ_NUM("物理")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_デマーシアの審判, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_デマーシアの審判,ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_デマーシアの審判,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_デマーシアの審判,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_デマーシアの審判, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_デマーシアの審判
+RETURN GET_SUCCESSION_NUM("검격")
+;검격
+
+;スキル変化？用ランク
+@SKILL_RANK_デマーシアの審判, ARG = -1
+RETURN 8
+
+;拡散攻撃用追加処理
+@SKILL_SPREAD_デマーシアの審判,ARG
+RETURN 1
+
+;====================================================
+;カウンター発動条件
+;ARG			このスキルの持ち主
+;ARG:1			攻撃者のキャラ番号
+
+;RESULT			1 = 反撃成立。ただし実行までの間に行動者が行動不能になった場合は不発する
+;RESULT:1		反撃対象のPOS(ACTION_XXXのARG:1に送られる)。システム側で敵の生存・存在判定による不発判定をおこなうが、RESULT:1が0の場合は相手の状態に関わらず判定を通す
+;RESULT:2		-1 = デフォルトのスキル名表示を省く
+;====================================================
+@SKILL_COUNTER_ACTIONABLE_デマーシアの審判,ARG,ARG:1
+SIF !GET_CREC_ACT(ARG:1, ARG, "ATTACK")
+	RETURN 0
+SIF PU_SKILLGAGE_D_GET(ARG, "デマーシアの審判") < 5
+	RETURN 0
+;反撃の対象は反撃してきたキャラ(ポジションで返す)
+RETURN 1, CPOS(ARG:1)
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_デマーシアの審判,ARG,ARG:1,ARG:2
+IF FLAG:카운터중
+	CALL ATTACK_SKILL, ARG, ARG:1, ARG:2
+ELSE
+	CALL PRINT_HIT_MESSAGE, ARG, "刃の嵐を纏い、高速回転を始めた！", "w"
+	CALL SKILLGAGE_D_SET, ARG, ARG:2, 5
+ENDIF
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_デマーシアの審判,ARG
+PRINTL 사용한 턴 동안 공격을 받았을 때 공격자와 그 주위의 적에 대해 검격 상성의 공격으로 반격하는 상태가 된다.
+PRINTL 
+PRINTL 이 스킬은 턴을 소비하지 않고 즉시 발동한다.
+PRINTL 이 스킬은 사용 후 4턴 동안 사용할 수 없다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_デマーシアの審判,ARG
+RESULTS = 効果発動中
+SIF PU_SKILLGAGE_D_GET(ARG, "デマーシアの審判") == 5
+	RETURN 0
+RESULTS = CT:{PU_SKILLGAGE_D_GET(ARG, "デマーシアの審判")}
+SIF PU_SKILLGAGE_D_GET(ARG, "デマーシアの審判")
+	RETURN 0
+RETURN 1
+;とくにない
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+;即時発動
+@SKILL_QUICK_ACTION_デマーシアの審判, ARG
+RETURN 1

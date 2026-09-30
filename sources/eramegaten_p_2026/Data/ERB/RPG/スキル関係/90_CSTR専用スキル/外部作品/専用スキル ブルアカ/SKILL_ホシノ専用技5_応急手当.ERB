@@ -1,0 +1,70 @@
+﻿;スキル名
+@SKILL_NAME_応急手当,ARG
+RESULTS = 応急手当
+
+@SKILL_POWER_応急手当, ARG
+RETURN 200
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_応急手当, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+
+;　コストの量
+@SKILL_COST_応急手当,ARG
+RETURN 5
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_応急手当,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;通常・割合・固定
+@SKILL_HEAL_TYPE_応急手当, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("통상")
+
+@SKILL_SPHERE_応急手当,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_応急手当, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_応急手当
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;　説明文の表示
+@SKILL_EXPLAIN_応急手当,ARG
+PRINTL 자동효과: 턴 종료 시 자신의 HP가 30% 미만인 경우, MP 5를 소비하여 이하의 연동 효과가 발동한다.
+PRINTL 　　　　 「자신의 HP를 중회복시킨다.」
+
+@SKILL_EXPLAIN_TOOLTIP_応急手当, ARG
+RESULTS:0 = 자동효과: 턴 종료 시 자신의 HP가 30% 미만인 경우, 이하의 연동 효과가 발동한다.
+RESULTS:1 = 　　　　 「자신의 HP를 중회복시킨다.」
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_応急手当,ARG
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_応急手当, ARG = -1
+RETURN 4
+
+@SKILL_TURNEND_応急手当, ARG
+#DIM DYNAMIC L_CHARA
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+	RETURN 0
+;入力可能な状態じゃないとだめ
+SIF !ACTIONABLE_CHARA_F(ARG)
+	RETURN 0
+SIF 現HP割合(ARG) >= 30
+	RETURN 0
+;コスト計算
+CALL CHECK_COST, ARG, PU_SKILLNUM_GET(ARG, "応急手当")
+SIF !RESULT
+	RETURN 0
+CALL PRINT_ACT_MESSAGE, ARG, , , , "応急手当"
+CALL HEAL_SKILL, ARG, CPOS(ARG), PU_SKILLNUM_GET(ARG, "応急手当")
+
+;コスト支払い
+CALL PAY_COST, ARG, PU_SKILLNUM_GET(ARG, "応急手当")

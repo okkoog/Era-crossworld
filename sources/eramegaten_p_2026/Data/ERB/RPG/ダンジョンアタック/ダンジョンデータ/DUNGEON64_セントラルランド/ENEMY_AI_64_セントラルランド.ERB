@@ -1,0 +1,1121 @@
+﻿;=======================================================================
+@SET_ACTION_デビチル_セントラルランド_刹那, ARG
+;=======================================================================
+;○コンセプト
+;　飛具攻撃を使う
+;　単体攻撃である場合、ターゲットを「HPが一番低いヤツ」を狙う
+;　宝玉輪、デカジャの石、デクンダの石をそれぞれ３個持ち、そこそこ適切に使用
+;　→宝玉輪を宝玉と魔石に変更し、デビルチルドレンとパートナーの速攻撃破対策措置にする。
+;　　その他、仲魔が使わない相性をカバーするアイテムを使用
+;　　クール/ベールが死ぬまでは攻撃スキルの性能と範囲を抑える
+;=======================================================================
+#DIM LCOUNT
+#DIMS CONST ENEMY_TABLE = "刹那", "クール", "ナタタイシ", "トウテツ", "クエレプレ", "クラマテング"
+#DIM DYNAMIC L_ENEMY
+#DIM 宝玉使用制限
+#DIM デカジャの石使用制限
+#DIM デクンダの石使用制限
+#DIM 宝玉使用フラグ
+#DIM デカジャの石使用フラグ
+#DIM デクンダの石使用フラグ
+#DIM デビチルチーム生存人数
+
+
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+宝玉使用フラグ = 0
+デカジャの石使用フラグ = 0
+デクンダの石使用フラグ = 0
+
+デビチルチーム生存人数 = 0
+IF CFLAG:ARG:행동한횟수 == 1
+	SELECTCASE FLAG:경과턴수 % 4
+		CASE 0
+			CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "攪乱指令")
+		CASE 1
+			CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "攻撃指令")
+		CASEELSE
+			RETURN 0
+	ENDSELECT
+	RETURN 1
+ENDIF
+;生存数の取得
+FOR LCOUNT, 7, 17
+	SIF POS(LCOUNT) < 0
+		CONTINUE
+	デビチルチーム生存人数++
+NEXT
+;回復アイテム判定
+;HP50%未満の味方に使用
+;デビチルとパートナーの:宝玉であわせて最大4回まで使う。仲魔が減るか、仲間に魔石が使われると使用回数が減る
+;その他、魔石が使われる
+FOR LCOUNT, 0, 6
+	L_ENEMY = GET_ENEMY(ENEMY_TABLE:LCOUNT)
+	SIF !IS_TARGET_ABLE(L_ENEMY)
+		CONTINUE
+	SIF 現HP割合(L_ENEMY) >= 50
+		CONTINUE
+	IF GROUPMATCH(ENEMY_TABLE:LCOUNT, "刹那", "クール")
+		IF TFLAG_D34_回復アイテム使用カウント < デビチルチーム生存人数 - 2
+			CFLAG:ARG:입력행동 = [[스킬:보옥]]
+			CFLAG:ARG:타겟 = CPOS(L_ENEMY)
+			TFLAG_D34_回復アイテム使用カウント++
+			RETURN 1
+		ENDIF
+	ELSE
+		IF !CFLAG:L_ENEMY:800
+			CFLAG:ARG:입력행동 = [[스킬:마석]]
+			CFLAG:ARG:타겟 = CPOS(L_ENEMY)
+			CFLAG:L_ENEMY:800 = 1
+			TFLAG_D34_回復アイテム使用カウント++
+			RETURN 1
+		ENDIF
+	ENDIF
+NEXT
+;デクンダの石のチェック
+FOR LCOUNT, 7, 17
+	;いなかったら戻る
+	SIF POS(LCOUNT) < 0
+		CONTINUE
+	;DYINGも無視
+	SIF CFLAG:POS(LCOUNT):상태이상 == GET_STATE_NUM("DYING")
+		CONTINUE
+	;強化段階がマイナスになっている能力をカウント
+	FOR LOCAL:1, 0, 6
+		SIF CFLAG:POS(LCOUNT):(GET_BATTLESTATUS(LOCAL:1) + "강화") < 0
+			デクンダの石使用フラグ += 1
+	NEXT
+NEXT
+
+;PT生存人数の弱体化段階の数が多いとデクンダの石を使用
+;（ひとりあたり３か所マイナスで使用する）
+IF デクンダの石使用フラグ >= (デビチルチーム生存人数 * 3)
+	デクンダの石使用フラグ = 1
+ELSE
+	デクンダの石使用フラグ = 0
+ENDIF
+;デカジャの石チェック
+FOR LCOUNT, 1, 7
+	SIF POS(LCOUNT) < 0
+		CONTINUE
+	SIF CFLAG:POS(LCOUNT):공격강화 > 0
+		デカジャの石使用フラグ += CFLAG:POS(LCOUNT):공격강화
+	SIF CFLAG:POS(LCOUNT):방어강화 > 0
+		デカジャの石使用フラグ += CFLAG:POS(LCOUNT):방어강화
+	SIF CFLAG:POS(LCOUNT):마법위력강화 > 0
+		デカジャの石使用フラグ += CFLAG:POS(LCOUNT):마법위력강화
+	SIF CFLAG:POS(LCOUNT):마법효과강화 > 0
+		デカジャの石使用フラグ += CFLAG:POS(LCOUNT):마법효과강화
+	SIF CFLAG:POS(LCOUNT):명중강화 > 0
+		デカジャの石使用フラグ += CFLAG:POS(LCOUNT):명중강화
+	SIF CFLAG:POS(LCOUNT):회피강화 > 0
+		デカジャの石使用フラグ += CFLAG:POS(LCOUNT):회피강화
+NEXT
+;PT6名の強化平均が+2(内部的には+8)以上＝6か所が+2(+8)以上、なので6*8*6、で使用フラグが288以上ならデカジャの石を使用するフラグをオン
+IF デカジャの石使用フラグ >= 288
+	デカジャの石使用フラグ = 1
+ELSE
+	デカジャの石使用フラグ = 0
+ENDIF
+IF 0
+ELSEIF デカジャの石使用制限 < 3 && デカジャの石使用フラグ == 1
+	CFLAG:ARG:입력행동 = [[스킬:데카쟈의돌]]
+	デカジャの石使用制限 += 1
+ELSEIF デクンダの石使用制限 < 3 && デクンダの石使用フラグ == 1
+	CFLAG:ARG:입력행동 = [[스킬:데쿤다의돌]]
+	デクンダの石使用制限 += 1
+;通常行動
+ELSE
+	IF CFLAG:ARG:１more플래그
+		;1MORE時は攻撃を絞る
+		SELECTCASE RAND:3
+			CASE 0
+				CFLAG:ARG:입력행동 = [[스킬:챠이캄TNT]]
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:트리플다운]]
+			CASE 2
+				CFLAG:ARG:입력행동 = [[스킬:원샷킬]]
+		ENDSELECT
+	ELSE
+		;クールが死んでいる場合、スキルが強まる
+		IF IS_BADSTATE(GET_ENEMY("クール"), "DYING")
+			SELECTCASE RAND:5
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:흑성의곡옥]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:격뢰의곡옥]]
+				CASE 2
+					CFLAG:ARG:입력행동 = [[스킬:뉴클리어밤]]
+				CASE 3
+					CFLAG:ARG:입력행동 = [[스킬:원샷킬]]
+				CASE 4
+					CFLAG:ARG:입력행동 = [[스킬:해피트리거]]
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:5
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:중압의곡옥]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:라이어트밤]]
+				CASE 2
+					CFLAG:ARG:입력행동 = [[스킬:챠이캄TNT]]
+				CASE 3
+					CFLAG:ARG:입력행동 = [[스킬:트리플다운]]
+				CASE 4
+					CFLAG:ARG:입력행동 = [[스킬:미들샷]]
+			ENDSELECT
+		ENDIF
+	ENDIF
+ENDIF
+;タゲチェック：GOTOでしか入れない
+IF 0
+	$HP_MIN_CHK
+	;単体攻撃の場合、飛具耐性を持っておらず一番HPの低いキャラを狙う
+	FOR LCOUNT,1,7
+		LOCALS = 포지션{LCOUNT}
+		SIF FLAG:LOCALS == -1
+			CONTINUE
+		SIF CFLAG:(FLAG:LOCALS):상태이상 >= GET_STATE_NUM("STONE")
+			CONTINUE
+		SIF MAXBASE:(FLAG:LOCALS):비구 < 1 || MAXBASE:(FLAG:LOCALS):비구 == 999
+			CONTINUE
+		IF FLAG:LOCALS > -1 && CFLAG:ARG:타겟 == -1 
+			CFLAG:ARG:타겟 = LCOUNT
+			CONTINUE
+		ENDIF
+		IF FLAG:LOCALS > -1 && BASE:(FLAG:LOCALS):ＨＰ < BASE:((POS(CFLAG:ARG:타겟))):ＨＰ
+			CFLAG:ARG:타겟 = LCOUNT
+		ENDIF
+	NEXT
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+@SET_ACTION_デビチル_セントラルランド_クール, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+IF TFLAG_D34_攻撃指令_火炎
+	IF CFLAG:ARG:１more플래그
+		CFLAG:ARG:입력행동 = [[스킬:아기바리온]]
+	ELSE
+		SELECTCASE CFLAG:ARG:행동한횟수
+			CASE 0
+				CFLAG:ARG:입력행동 = [[스킬:짐승의안광]]
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:데들리번]]
+			CASE 2
+				CFLAG:ARG:입력행동 = [[스킬:아기바리온]]
+			CASE 3
+				CFLAG:ARG:입력행동 = [[스킬:마하・라기다인]]
+		ENDSELECT
+	ENDIF
+ELSEIF TFLAG_D34_攻撃指令_戦技
+	IF CFLAG:ARG:１more플래그
+		CFLAG:ARG:입력행동 = [[스킬:스파이크클로]]
+	ELSE
+		SELECTCASE CFLAG:ARG:행동한횟수
+			CASE 0
+				CFLAG:ARG:입력행동 = [[스킬:짐승의안광]]
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:킹스톰]]
+			CASE 2
+				CFLAG:ARG:입력행동 = [[스킬:스파이크클로]]
+			CASE 3
+				CFLAG:ARG:입력행동 = [[스킬:허공조격]]
+		ENDSELECT
+	ENDIF
+ELSEIF TFLAG_D34_攪乱指令
+	SELECTCASE CFLAG:ARG:행동한횟수
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:포효]]
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:도발]]
+	ENDSELECT
+ELSE
+	IF CFLAG:ARG:１more플래그
+		SELECTCASE RAND:2
+			CASE 0
+				CFLAG:ARG:입력행동 = [[스킬:아기바리온]]
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:스파이크클로]]
+		ENDSELECT
+	ELSE
+		SELECTCASE CFLAG:ARG:행동한횟수
+			CASE 0
+				SELECTCASE RAND:4
+					CASE 0
+						CFLAG:ARG:입력행동 = [[스킬:아기바리온]]
+					CASE 1
+						CFLAG:ARG:입력행동 = [[스킬:마하・라기다인]]
+					CASE 2
+						CFLAG:ARG:입력행동 = [[스킬:스파이크클로]]
+					CASE 3
+						CFLAG:ARG:입력행동 = [[스킬:허공조격]]
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:2
+					CASE 0
+						CFLAG:ARG:입력행동 = [[스킬:아기바리온]]
+					CASE 1
+						CFLAG:ARG:입력행동 = [[스킬:스파이크클로]]
+				ENDSELECT
+		ENDSELECT
+	ENDIF
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+@SET_ACTION_デビチル_セントラルランド_トウテツ, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+IF TFLAG_D34_攻撃指令_火炎
+	IF IS_BADSTATE(GET_ENEMY("クール"), "DYING")
+		CFLAG:ARG:입력행동 = [[스킬:베어먹기]]
+	ELSE
+		CFLAG:ARG:입력행동 = [[스킬:프린파다인]]
+		CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+		IF RESULT
+			SIF CHECK_WEAKNESS(MAXBASE:POS(CFLAG:ARG:타겟):화염) < 0
+				CFLAG:ARG:입력행동 = [[스킬:화염가드킬]]
+		ENDIF
+	ENDIF
+ELSEIF TFLAG_D34_攻撃指令_戦技
+	IF IS_BADSTATE(GET_ENEMY("クール"), "DYING")
+		CFLAG:ARG:입력행동 = [[스킬:베어먹기]]
+	ELSE
+		CFLAG:ARG:입력행동 = [[스킬:물어-뜯기]]
+		CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+		IF RESULT
+			SIF CHECK_WEAKNESS(MAXBASE:POS(CFLAG:ARG:타겟):전술) < 0
+				CFLAG:ARG:입력행동 = [[스킬:전술가드킬]]
+		ENDIF
+	ENDIF
+ELSEIF TFLAG_D34_攪乱指令
+	CFLAG:ARG:입력행동 = [[스킬:마카라칸]]
+ELSE
+	IF CFLAG:ARG:１more플래그
+		SELECTCASE RAND:2
+			CASE 0
+				CFLAG:ARG:입력행동 = [[스킬:물어-뜯기]]
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:프린파다인]]
+		ENDSELECT
+	ELSE
+		IF !IS_BADSTATE(GET_ENEMY("クール"), "DYING")
+			SELECTCASE RAND:2
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:물어-뜯기]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:프린파다인]]
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:물어-뜯기]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:프린파다인]]
+				CASE 2
+					CFLAG:ARG:입력행동 = [[스킬:텐타라후]]
+				CASE 3
+					CFLAG:ARG:입력행동 = [[스킬:메기도라]]
+			ENDSELECT
+		ENDIF
+	ENDIF
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+@SET_ACTION_デビチル_セントラルランド_ナタタイシ, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+IF TFLAG_D34_攻撃指令_火炎 || TFLAG_D34_攻撃指令_戦技
+	SELECTCASE RAND:2
+		CASE 0
+			IF RAND:2
+				CFLAG:ARG:입력행동 = [[스킬:방어부수기]]
+			ELSE
+				CFLAG:ARG:입력행동 = [[스킬:기간피스트]]
+			ENDIF
+		CASE 1
+			IF !IS_BADSTATE(GET_ENEMY("クール"), "DYING")
+				CFLAG:ARG:입력행동 = [[스킬:히트라이저]]
+				CFLAG:ARG:타겟 = CPOS(GET_ENEMY("クール"))
+			ELSE
+				IF RAND:2
+					CFLAG:ARG:입력행동 = [[스킬:소닉무버]]
+				ELSE
+					CFLAG:ARG:입력행동 = [[스킬:트위스터킥]]
+				ENDIF
+			ENDIF
+	ENDSELECT
+ELSEIF TFLAG_D34_攪乱指令
+	CFLAG:ARG:입력행동 = [[스킬:마하・타루카쟈]]
+ELSE
+	IF CFLAG:ARG:１more플래그
+		SELECTCASE RAND:2
+			CASE 0
+				CFLAG:ARG:입력행동 = [[스킬:기간피스트]]
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:풍신격]]
+		ENDSELECT
+	ELSE
+		IF !IS_BADSTATE(GET_ENEMY("クール"), "DYING")
+			SELECTCASE RAND:2
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:기간피스트]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:풍신격]]
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:기간피스트]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:풍신격]]
+				CASE 2
+					CFLAG:ARG:입력행동 = [[스킬:트위스터킥]]
+				CASE 3
+					CFLAG:ARG:입력행동 = [[스킬:소닉무버]]
+			ENDSELECT
+		ENDIF
+	ENDIF
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+@SET_ACTION_デビチル_セントラルランド_クラマテング, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+IF TFLAG_D34_攻撃指令_火炎
+	IF !IS_BADSTATE(GET_ENEMY("クール"), "DYING")
+		CFLAG:ARG:입력행동 = [[스킬:마의도눔]]
+		CFLAG:ARG:타겟 = CPOS(GET_ENEMY("クール"))
+	ELSE
+		CFLAG:ARG:입력행동 = [[스킬:마하・갈다인]]
+	ENDIF
+ELSEIF TFLAG_D34_攻撃指令_戦技
+	IF !IS_BADSTATE(GET_ENEMY("クール"), "DYING")
+		CFLAG:ARG:입력행동 = [[스킬:힘의도눔]]
+		CFLAG:ARG:타겟 = CPOS(GET_ENEMY("クール"))
+	ELSE
+		CFLAG:ARG:입력행동 = [[스킬:마하・잔다인]]
+	ENDIF
+ELSEIF TFLAG_D34_攪乱指令
+	IF RAND:2
+		CFLAG:ARG:입력행동 = [[스킬:포그브레스]]
+	ELSE
+		CFLAG:ARG:입력행동 = [[스킬:마하・스쿠카쟈]]
+	ENDIF
+ELSE
+	IF CFLAG:ARG:１more플래그
+		SELECTCASE RAND:2
+			CASE 0
+				CFLAG:ARG:입력행동 = [[스킬:갈다인]]
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:잔다인]]
+		ENDSELECT
+	ELSE
+		IF !IS_BADSTATE(GET_ENEMY("クール"), "DYING")
+			SELECTCASE RAND:2
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:갈다인]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:잔다인]]
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:갈다인]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:잔다인]]
+				CASE 2
+					CFLAG:ARG:입력행동 = [[스킬:마하・스쿠카쟈]]
+				CASE 3
+					CFLAG:ARG:입력행동 = [[스킬:포그브레스]]
+			ENDSELECT
+		ENDIF
+	ENDIF
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+@SET_ACTION_デビチル_セントラルランド_クエレプレ, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+IF TFLAG_D34_攻撃指令_火炎 || TFLAG_D34_攻撃指令_戦技
+	CFLAG:ARG:입력행동 = [[스킬:용해브레스]]
+ELSEIF TFLAG_D34_攪乱指令
+	CFLAG:ARG:입력행동 = [[스킬:포효]]
+ELSE
+	IF CFLAG:ARG:１more플래그
+		CFLAG:ARG:입력행동 = [[스킬:용해브레스]]
+	ELSE
+		IF !IS_BADSTATE(GET_ENEMY("クール"), "DYING")
+			SELECTCASE RAND:5
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:용해브레스]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:아쿠아다인]]
+				CASE 2
+					CFLAG:ARG:입력행동 = [[스킬:부흐다인]]
+				CASE 3
+					CFLAG:ARG:입력행동 = [[스킬:갈다인]]
+				CASE 4
+					CFLAG:ARG:입력행동 = [[스킬:베놈재퍼]]
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					IF IS_FRONT(ARG)
+						CFLAG:ARG:입력행동 = [[스킬:트리플바이스]]
+					ELSE
+						CFLAG:ARG:입력행동 = [[스킬:아쿠아다인]]
+					ENDIF
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:아쿠아다인]]
+				CASE 2
+					CFLAG:ARG:입력행동 = [[스킬:부흐다인]]
+				CASE 3
+					CFLAG:ARG:입력행동 = [[스킬:갈다인]]
+			ENDSELECT
+		ENDIF
+	ENDIF
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+@EVENT_BATTLE_TURNTOP_デビチル_セントラルランド_刹那
+TFLAG_D34_攻撃指令_火炎 = 0
+TFLAG_D34_攻撃指令_戦技 = 0
+SELECTCASE TFLAG_D34_攻撃指令予約
+	CASE 1
+		TFLAG_D34_攻撃指令_火炎 = 1
+	CASE 2
+		TFLAG_D34_攻撃指令_戦技 = 1
+ENDSELECT
+TFLAG_D34_攪乱指令 = TFLAG_D34_攪乱指令予約
+TFLAG_D34_攻撃指令予約 = 0
+TFLAG_D34_攪乱指令予約 = 0
+
+
+
+;=======================================================================
+@SET_ACTION_デビチル_セントラルランド_未来, ARG
+;=======================================================================
+;○コンセプト
+;　飛具攻撃を使う
+;　単体攻撃である場合、ターゲットを「HPが一番低いヤツ」を狙う
+;　宝玉輪、デカジャの石、デクンダの石をそれぞれ３個持ち、そこそこ適切に使用
+;　→宝玉輪を宝玉と魔石に変更し、デビルチルドレンとパートナーの速攻撃破対策措置にする。
+;　　その他、仲魔が使わない相性をカバーするアイテムを使用
+;　　ベール/ベールが死ぬまでは攻撃スキルの性能と範囲を抑える
+;=======================================================================
+#DIM LCOUNT
+#DIMS ENEMY_TABLE = "未来", "ベール", "ランダ", "デュラハン", "ヴィヴィアン", "コワトリクエ"
+#DIM DYNAMIC L_ENEMY
+#DIM 宝玉使用制限
+#DIM デカジャの石使用制限
+#DIM デクンダの石使用制限
+#DIM 宝玉使用フラグ
+#DIM デカジャの石使用フラグ
+#DIM デクンダの石使用フラグ
+#DIM デビチルチーム生存人数
+
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+宝玉使用フラグ = 0
+デカジャの石使用フラグ = 0
+デクンダの石使用フラグ = 0
+
+デビチルチーム生存人数 = 0
+IF CFLAG:ARG:행동한횟수 == 1
+	SELECTCASE FLAG:경과턴수 % 4
+		CASE 0
+			CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "攪乱指令")
+		CASE 1
+			CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "攻撃指令")
+		CASEELSE
+			RETURN 0
+	ENDSELECT
+	RETURN 1
+ENDIF
+;生存数の取得
+FOR LCOUNT, 7, 17
+	SIF POS(LCOUNT) < 0
+		CONTINUE
+	デビチルチーム生存人数++
+NEXT
+;回復アイテム判定
+;HP50%未満の味方に使用
+;デビチルとパートナーの:宝玉であわせて最大4回まで使う。仲魔が減るか、仲間に魔石が使われると使用回数が減る
+;その他、魔石が使われる
+FOR LCOUNT, 0, 6
+	L_ENEMY = GET_ENEMY(ENEMY_TABLE:LCOUNT)
+	SIF !IS_TARGET_ABLE(L_ENEMY)
+		CONTINUE
+	SIF 現HP割合(L_ENEMY) >= 50
+		CONTINUE
+	IF GROUPMATCH(ENEMY_TABLE:LCOUNT, "未来", "ベール")
+		IF TFLAG_D34_回復アイテム使用カウント < デビチルチーム生存人数 - 2
+			CFLAG:ARG:입력행동 = [[스킬:보옥]]
+			CFLAG:ARG:타겟 = CPOS(L_ENEMY)
+			TFLAG_D34_回復アイテム使用カウント++
+			RETURN 1
+		ENDIF
+	ELSE
+		IF !CFLAG:L_ENEMY:800
+			CFLAG:ARG:입력행동 = [[스킬:마석]]
+			CFLAG:ARG:타겟 = CPOS(L_ENEMY)
+			CFLAG:L_ENEMY:800 = 1
+			TFLAG_D34_回復アイテム使用カウント++
+			RETURN 1
+		ENDIF
+	ENDIF
+NEXT
+;デクンダの石のチェック
+FOR LCOUNT, 7, 17
+	;いなかったら戻る
+	SIF POS(LCOUNT) < 0
+		CONTINUE
+	;DYINGも無視
+	SIF CFLAG:POS(LCOUNT):상태이상 == GET_STATE_NUM("DYING")
+		CONTINUE
+	;強化段階がマイナスになっている能力をカウント
+	FOR LOCAL:1, 0, 6
+		SIF CFLAG:POS(LCOUNT):(GET_BATTLESTATUS(LOCAL:1) + "강화") < 0
+			デクンダの石使用フラグ += 1
+	NEXT
+NEXT
+
+;PT生存人数の弱体化段階の数が多いとデクンダの石を使用
+;（ひとりあたり３か所マイナスで使用する）
+IF デクンダの石使用フラグ >= (デビチルチーム生存人数 * 3)
+	デクンダの石使用フラグ = 1
+ELSE
+	デクンダの石使用フラグ = 0
+ENDIF
+;デカジャの石チェック
+FOR LCOUNT, 1, 7
+	SIF POS(LCOUNT) < 0
+		CONTINUE
+	SIF CFLAG:POS(LCOUNT):공격강화 > 0
+		デカジャの石使用フラグ += CFLAG:POS(LCOUNT):공격강화
+	SIF CFLAG:POS(LCOUNT):방어강화 > 0
+		デカジャの石使用フラグ += CFLAG:POS(LCOUNT):방어강화
+	SIF CFLAG:POS(LCOUNT):마법위력강화 > 0
+		デカジャの石使用フラグ += CFLAG:POS(LCOUNT):마법위력강화
+	SIF CFLAG:POS(LCOUNT):마법효과강화 > 0
+		デカジャの石使用フラグ += CFLAG:POS(LCOUNT):마법효과강화
+	SIF CFLAG:POS(LCOUNT):명중강화 > 0
+		デカジャの石使用フラグ += CFLAG:POS(LCOUNT):명중강화
+	SIF CFLAG:POS(LCOUNT):회피강화 > 0
+		デカジャの石使用フラグ += CFLAG:POS(LCOUNT):회피강화
+NEXT
+;PT6名の強化平均が+2(内部的には+8)以上＝6か所が+2(+8)以上、なので6*8*6、で使用フラグが288以上ならデカジャの石を使用するフラグをオン
+IF デカジャの石使用フラグ >= 288
+	デカジャの石使用フラグ = 1
+ELSE
+	デカジャの石使用フラグ = 0
+ENDIF
+IF 0
+ELSEIF デカジャの石使用制限 < 3 && デカジャの石使用フラグ == 1
+	CFLAG:ARG:입력행동 = [[스킬:데카쟈의돌]]
+	デカジャの石使用制限 += 1
+ELSEIF デクンダの石使用制限 < 3 && デクンダの石使用フラグ == 1
+	CFLAG:ARG:입력행동 = [[스킬:데쿤다의돌]]
+	デクンダの石使用制限 += 1
+;通常行動
+ELSE
+	IF CFLAG:ARG:１more플래그
+		;1MORE時は攻撃を絞る
+		SELECTCASE RAND:3
+			CASE 0
+				CFLAG:ARG:입력행동 = [[스킬:챠이캄TNT]]
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:트리플다운]]
+			CASE 2
+				CFLAG:ARG:입력행동 = [[스킬:원샷킬]]
+		ENDSELECT
+	ELSE
+		;パートナーが死んでいる場合、スキルが強まる
+		IF IS_BADSTATE(GET_ENEMY("ベール"), "DYING")
+			SELECTCASE RAND:5
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:흑성의곡옥]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:격뢰의곡옥]]
+				CASE 2
+					CFLAG:ARG:입력행동 = [[스킬:뉴클리어밤]]
+				CASE 3
+					CFLAG:ARG:입력행동 = [[스킬:원샷킬]]
+				CASE 4
+					CFLAG:ARG:입력행동 = [[스킬:해피트리거]]
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:5
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:중압의곡옥]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:라이어트밤]]
+				CASE 2
+					CFLAG:ARG:입력행동 = [[스킬:챠이캄TNT]]
+				CASE 3
+					CFLAG:ARG:입력행동 = [[스킬:트리플다운]]
+				CASE 4
+					CFLAG:ARG:입력행동 = [[스킬:미들샷]]
+			ENDSELECT
+		ENDIF
+	ENDIF
+ENDIF
+;タゲチェック：GOTOでしか入れない
+IF 0
+	$HP_MIN_CHK
+	;単体攻撃の場合、飛具耐性を持っておらず一番HPの低いキャラを狙う
+	FOR LCOUNT,1,7
+		LOCALS = 포지션{LCOUNT}
+		SIF FLAG:LOCALS == -1
+			CONTINUE
+		SIF CFLAG:(FLAG:LOCALS):상태이상 >= GET_STATE_NUM("STONE")
+			CONTINUE
+		SIF MAXBASE:(FLAG:LOCALS):비구 < 1 || MAXBASE:(FLAG:LOCALS):비구 == 999
+			CONTINUE
+		IF FLAG:LOCALS > -1 && CFLAG:ARG:타겟 == -1 
+			CFLAG:ARG:타겟 = LCOUNT
+			CONTINUE
+		ENDIF
+		IF FLAG:LOCALS > -1 && BASE:(FLAG:LOCALS):ＨＰ < BASE:((POS(CFLAG:ARG:타겟))):ＨＰ
+			CFLAG:ARG:타겟 = LCOUNT
+		ENDIF
+	NEXT
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+
+;クールのコンパチ
+;基本は「화염→충격」（でもデッドリーバーンがリムドラオンになってて大丈夫かな……）
+;虚空爪撃が天羽の舞になっている
+@SET_ACTION_デビチル_セントラルランド_ベール, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+
+IF TFLAG_D34_攻撃指令_衝撃
+	IF CFLAG:ARG:１more플래그
+		CFLAG:ARG:입력행동 = [[스킬:잔바리온]]
+	ELSE
+		SELECTCASE CFLAG:ARG:행동한횟수
+			CASE 0
+				CFLAG:ARG:입력행동 = [[스킬:짐승의안광]]
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:림도라온]]
+			CASE 2
+				CFLAG:ARG:입력행동 = [[스킬:잔바리온]]
+			CASE 3
+				CFLAG:ARG:입력행동 = [[스킬:마하・잔다인]]
+		ENDSELECT
+	ENDIF
+ELSEIF TFLAG_D34_攻撃指令_戦技
+	IF CFLAG:ARG:１more플래그
+		CFLAG:ARG:입력행동 = [[스킬:스파이크클로]]
+	ELSE
+		SELECTCASE CFLAG:ARG:행동한횟수
+			CASE 0
+				CFLAG:ARG:입력행동 = [[스킬:짐승의안광]]
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:킹스톰]]
+			CASE 2
+				CFLAG:ARG:입력행동 = [[스킬:스파이크클로]]
+			CASE 3
+				CFLAG:ARG:입력행동 = [[스킬:천우의춤]]
+		ENDSELECT
+	ENDIF
+ELSEIF TFLAG_D34_攪乱指令
+	SELECTCASE CFLAG:ARG:행동한횟수
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:포효]]
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:도발]]
+	ENDSELECT
+ELSE
+	IF CFLAG:ARG:１more플래그
+		SELECTCASE RAND:2
+			CASE 0
+				CFLAG:ARG:입력행동 = [[스킬:잔바리온]]
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:스파이크클로]]
+		ENDSELECT
+	ELSE
+		SELECTCASE CFLAG:ARG:행동한횟수
+			CASE 0
+				SELECTCASE RAND:4
+					CASE 0
+						CFLAG:ARG:입력행동 = [[스킬:잔바리온]]
+					CASE 1
+						CFLAG:ARG:입력행동 = [[스킬:마하・잔다인]]
+					CASE 2
+						CFLAG:ARG:입력행동 = [[스킬:스파이크클로]]
+					CASE 3
+						CFLAG:ARG:입력행동 = [[스킬:천우의춤]]
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:2
+					CASE 0
+						CFLAG:ARG:입력행동 = [[스킬:잔바리온]]
+					CASE 1
+						CFLAG:ARG:입력행동 = [[스킬:스파이크클로]]
+				ENDSELECT
+		ENDSELECT
+	ENDIF
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+
+@SET_ACTION_デビチル_セントラルランド_ランダ, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+IF TFLAG_D34_攻撃指令_衝撃
+	;ベール撃破後のみランダマイザを使用する
+	IF IS_BADSTATE(GET_ENEMY("ベール"), "DYING")
+		CFLAG:ARG:입력행동 = [[스킬:랜더마이저]]
+	ELSE
+		CFLAG:ARG:입력행동 = [[스킬:독침]]
+		CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+		IF RESULT
+			SIF CHECK_WEAKNESS(MAXBASE:POS(CFLAG:ARG:타겟):충격) < 0
+				CFLAG:ARG:입력행동 = [[스킬:충격가드킬]]
+		ENDIF
+	ENDIF
+ELSEIF TFLAG_D34_攻撃指令_戦技
+	IF IS_BADSTATE(GET_ENEMY("ベール"), "DYING")
+		CFLAG:ARG:입력행동 = [[스킬:랜더마이저]]
+	ELSE
+		CFLAG:ARG:입력행동 = [[스킬:주온]]
+		CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+		IF RESULT
+			SIF CHECK_WEAKNESS(MAXBASE:POS(CFLAG:ARG:타겟):전술) < 0
+				CFLAG:ARG:입력행동 = [[스킬:전술가드킬]]
+		ENDIF
+	ENDIF
+ELSEIF TFLAG_D34_攪乱指令
+	CFLAG:ARG:입력행동 = [[스킬:섹시댄스]]
+ELSE
+	IF CFLAG:ARG:１more플래그
+		SELECTCASE RAND:2
+			CASE 0
+				CFLAG:ARG:입력행동 = [[스킬:메기도]]
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:마하・라기온]]
+		ENDSELECT
+	ELSE
+		IF !IS_BADSTATE(GET_ENEMY("ベール"), "DYING")
+			SELECTCASE RAND:2
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:메기도]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:마하・라기온]]
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:5
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:마하・라기온]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:섹시댄스]]
+				CASE 2
+					CFLAG:ARG:입력행동 = [[스킬:주온]]
+				CASE 3
+					CFLAG:ARG:입력행동 = [[스킬:독침]]
+				CASE 4
+					CFLAG:ARG:입력행동 = [[스킬:메기도]]
+			ENDSELECT
+		ENDIF
+	ENDIF
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+@SET_ACTION_デビチル_セントラルランド_デュラハン, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+IF TFLAG_D34_攻撃指令_衝撃 || TFLAG_D34_攻撃指令_戦技
+	SELECTCASE RAND:2
+		CASE 0
+			IF RAND:2
+				CFLAG:ARG:입력행동 = [[스킬:길로틴블레이드]]
+			ELSE
+				CFLAG:ARG:입력행동 = [[스킬:맹돌진]]
+			ENDIF
+		CASE 1
+			IF !IS_BADSTATE(GET_ENEMY("ベール"), "DYING")
+				CFLAG:ARG:입력행동 = [[스킬:히트라이저]]
+				CFLAG:ARG:타겟 = CPOS(GET_ENEMY("ベール"))
+			ELSE
+				IF RAND:2
+					CFLAG:ARG:입력행동 = [[스킬:헬즈아이]]
+				ELSE
+					CFLAG:ARG:입력행동 = [[스킬:암흑의난무]]
+				ENDIF
+			ENDIF
+	ENDSELECT
+ELSEIF TFLAG_D34_攪乱指令
+	CFLAG:ARG:입력행동 = [[스킬:마하・스쿤다]]
+ELSE
+	IF CFLAG:ARG:１more플래그
+		SELECTCASE RAND:3
+			CASE 0
+				CFLAG:ARG:입력행동 = [[스킬:암흑의난무]]
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:아기다인]]
+			CASE 2
+				CFLAG:ARG:입력행동 = [[스킬:잔다인]]
+		ENDSELECT
+	ELSE
+		IF !IS_BADSTATE(GET_ENEMY("ベール"), "DYING")
+			SELECTCASE RAND:2
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:맹돌진]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:헬즈아이]]
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:암흑의난무]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:아기다인]]
+				CASE 2
+					CFLAG:ARG:입력행동 = [[스킬:잔다인]]
+				CASE 3
+					CFLAG:ARG:입력행동 = [[스킬:길로틴블레이드]]
+			ENDSELECT
+		ENDIF
+	ENDIF
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+@SET_ACTION_デビチル_セントラルランド_ヴィヴァン, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+IF TFLAG_D34_攻撃指令_衝撃
+	IF !IS_BADSTATE(GET_ENEMY("ベール"), "DYING")
+		CFLAG:ARG:입력행동 = [[스킬:마의도눔]]
+		CFLAG:ARG:타겟 = CPOS(GET_ENEMY("ベール"))
+	ELSE
+		CFLAG:ARG:입력행동 = [[스킬:마하・아쿠다인]]
+	ENDIF
+ELSEIF TFLAG_D34_攻撃指令_戦技
+	IF !IS_BADSTATE(GET_ENEMY("ベール"), "DYING")
+		CFLAG:ARG:입력행동 = [[스킬:힘의도눔]]
+		CFLAG:ARG:타겟 = CPOS(GET_ENEMY("ベール"))
+	ELSE
+		CFLAG:ARG:입력행동 = [[스킬:마하・부흐다인]]
+	ENDIF
+ELSEIF TFLAG_D34_攪乱指令
+	IF RAND:2
+		CFLAG:ARG:입력행동 = [[스킬:포그브레스]]
+	ELSE
+		CFLAG:ARG:입력행동 = [[스킬:다크브레스]]
+	ENDIF
+ELSE
+	IF CFLAG:ARG:１more플래그
+		SELECTCASE RAND:2
+			CASE 0
+				CFLAG:ARG:입력행동 = [[스킬:아쿠아다인]]
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:부흐다인]]
+		ENDSELECT
+	ELSE
+		IF !IS_BADSTATE(GET_ENEMY("ベール"), "DYING")
+			SELECTCASE RAND:2
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:아쿠아다인]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:부흐다인]]
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:아쿠아다인]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:부흐다인]]
+				CASE 2
+					CFLAG:ARG:입력행동 = [[스킬:다크브레스]]
+				CASE 3
+					CFLAG:ARG:입력행동 = [[스킬:포그브레스]]
+			ENDSELECT
+		ENDIF
+	ENDIF
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+@SET_ACTION_デビチル_セントラルランド_コワトリクエ, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+IF TFLAG_D34_攻撃指令_衝撃 || TFLAG_D34_攻撃指令_戦技
+	CFLAG:ARG:입력행동 = [[스킬:마하・사마카쟈]]
+ELSEIF TFLAG_D34_攪乱指令
+	CFLAG:ARG:입력행동 = [[스킬:악마의위협]]
+ELSE
+	IF CFLAG:ARG:１more플래그
+		CFLAG:ARG:입력행동 = [[스킬:악마의위협]]
+	ELSE
+		IF !IS_BADSTATE(GET_ENEMY("ベール"), "DYING")
+			SELECTCASE RAND:4
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:악마의위협]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:마그다인]]
+				CASE 2
+					CFLAG:ARG:입력행동 = [[스킬:코우가온]]
+				CASE 3
+					CFLAG:ARG:입력행동 = [[스킬:에이가온]]
+				CASE 4
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					IF IS_FRONT(ARG)
+						CFLAG:ARG:입력행동 = [[스킬:트리플바이스]]
+					ELSE
+						CFLAG:ARG:입력행동 = [[스킬:코우가온]]
+					ENDIF
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:코우가온]]
+				CASE 2
+					CFLAG:ARG:입력행동 = [[스킬:에이가온]]
+				CASE 3
+					CFLAG:ARG:입력행동 = [[스킬:마그다인]]
+			ENDSELECT
+		ENDIF
+	ENDIF
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+
+@EVENT_BATTLE_TURNTOP_デビチル_セントラルランド_未来
+TFLAG_D34_攻撃指令_衝撃 = 0
+TFLAG_D34_攻撃指令_戦技 = 0
+SELECTCASE TFLAG_D34_攻撃指令予約
+	CASE 1
+		TFLAG_D34_攻撃指令_衝撃 = 1
+	CASE 2
+		TFLAG_D34_攻撃指令_戦技 = 1
+ENDSELECT
+TFLAG_D34_攪乱指令 = TFLAG_D34_攪乱指令予約
+TFLAG_D34_攻撃指令予約 = 0
+TFLAG_D34_攪乱指令予約 = 0
+
+
+
+

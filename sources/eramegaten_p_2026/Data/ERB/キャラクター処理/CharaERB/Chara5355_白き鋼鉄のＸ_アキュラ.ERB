@@ -1,0 +1,224 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5355_白き鋼鉄のＸ_アキュラ.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/05/15		P(bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:아큐라_X]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("アキュラ_X_FACE_0")
+			RETURNF ""
+		SIF !SPRITECREATED("アキュラ_X_FACE_1")
+			RETURNF ""
+		RESULTS_F = デフォルト
+		RESULTS_F:1 = アキュラ_X_FACE_0
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:아큐라_X]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "デフォルト"
+		SIF L_SITUATION == "戦闘口上"
+			L_SITUATION:1 '= L_SITUATION
+		SELECTCASE L_SITUATION
+			CASEELSE
+				IF TSTR:전투이벤트패턴 == "EVENT_200_5_電気仕掛けの狂神2"
+					RESULTS_F '= "アキュラ_X_" + CONVERT_FACE_ADDRESS_アキュラ("最終決戦仕様")
+				ELSE
+					RESULTS_F '= "アキュラ_X_" + CONVERT_FACE_ADDRESS_アキュラ(L_SITUATION)
+					SIF RESULTS_F == "アキュラ_X_FACE_0" && GET_RPG_CSTR_TAKEOVER(L_CHARA, "モード") == "X2"
+						RESULTS_F '= "アキュラ_X_FACE_1"
+				ENDIF
+		ENDSELECT
+	CASEELSE
+ENDSELECT
+
+@CHANGE_MODE_アキュラ, L_CHARA, L_MODE
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_MODE
+IF L_MODE == "X2"
+	CALL DEL_FRIEND_HAVE_SKILL, L_CHARA, [[스킬:DARKNESS TRIGGER]], , , 1
+	CALL CLEAR_LEARNED_SKILL, L_CHARA, "DARKNESS TRIGGER"
+	CALL SET_LEARN_SKILL, L_CHARA, "힐링", 1, , "入れ替え確認"
+	CALL SET_RPG_CSTR_TAKEOVER, L_CHARA, "モード", "X2"
+ELSE
+	CALL DEL_FRIEND_HAVE_SKILL, L_CHARA, [[스킬:힐링]], , , 1
+	CALL CLEAR_LEARNED_SKILL, L_CHARA, "힐링"
+	CALL SET_LEARN_SKILL, L_CHARA, "DARKNESS TRIGGER", 1, , "入れ替え確認"
+	CALL SET_RPG_CSTR_TAKEOVER, L_CHARA, "モード", "X"
+ENDIF
+
+@CHARA_ENHANCE_[[キャラ:아큐라_X]], L_NO, L_CHARA, SELECT_TRANS
+#DIM DYNAMIC L_NO
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC SELECT_TRANS
+SELECTCASE L_NO
+	CASE 0
+		SIF !GETBIT(FLAG:발견ED2, 11)
+			RETURN 0
+		RESULTS '= "戦闘スタイル変更"
+		RETURN 1
+	CASEELSE
+		RETURN 0
+ENDSELECT
+@ENHANCE_[[キャラ:아큐라_X]]_戦闘スタイル変更, L_CHARA, TRANS_MODE
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC TRANS_MODE
+#DIMS DYNAMIC SHOWLINE
+#DIM DYNAMIC LINE
+LINE = LINECOUNT
+WHILE 1
+	CLEARLINE LINECOUNT - LINE
+	CALL MAG_ENHANCE_INFO_CHARA, L_CHARA
+	PRINTFORML %CALLNAME:L_CHARA%의 전투 스타일을 변경할 수 있습니다
+	DRAWLINE
+	SHOWLINE '= "[1] Ｘ仕様"
+	SHOWLINE += "<br>" + TOALIGNMENT("ブリッツダッシュによるロックで威力が上昇するスキル「ディヴァイド」を所持する高速戦闘形態です", 108,"LEFT")
+	SHOWLINE += "<br>" + TOALIGNMENT("스킬「ダークネストリガー」が使用可能", 108,"LEFT")
+	SHOWLINE += "<br>" + TOALIGNMENT("→ロックオンした敵に対し自動追撃を行えます", 108,"LEFT")
+
+	IF GET_RPG_CSTR_TAKEOVER(L_CHARA, "モード") == "X2"
+		SHOWLINE '= "<div border_width = '2px' padding = '50' width = '5500'>" + SHOWLINE + "</div>"
+	ELSE
+		SHOWLINE '= @"<font color = '%BGCOLOR_HTML("赤", 1)%'>" + SHOWLINE + "</font>"
+		SHOWLINE '= @"<div border_width = '2px' padding = '50' width = '5500' background_color = '%BGCOLOR_HTML("赤")%'>" + SHOWLINE + "</div>"
+	ENDIF
+	SHOWLINE '= SET_BUTTON_TAG(SHOWLINE, "1")
+	HTML_PRINT SHOWLINE
+	PRINTL 
+	PRINTL 
+	PRINTL 
+	PRINTL 
+	PRINTL 
+	SHOWLINE '= "[2] Ｘ２仕様"
+	SHOWLINE += "<br>" + TOALIGNMENT("非ロック時でも高い威力を持つスキル「ブレイクホイール」を所持する近接戦闘形態です", 108, "LEFT")
+	SHOWLINE += "<br>" + TOALIGNMENT("스킬「힐링」が使用可能", 108, "LEFT")
+	SHOWLINE += "<br>" + TOALIGNMENT("→自分限定で実行の速いＨＰ全回復を行えます", 108, "LEFT")
+
+	IF GET_RPG_CSTR_TAKEOVER(L_CHARA, "モード") == "X2"
+		SHOWLINE '= @"<font color = '%BGCOLOR_HTML("赤", 1)%'>" + SHOWLINE + "</font>"
+		SHOWLINE '= @"<div border_width = '2px' padding = '50' width = '5500' background_color = '%BGCOLOR_HTML("赤")%'>" + SHOWLINE + "</div>"
+	ELSE
+		SHOWLINE '= "<div border_width = '2px' padding = '50' width = '5500'>" + SHOWLINE + "</div>"
+	ENDIF
+	SHOWLINE '= SET_BUTTON_TAG(SHOWLINE, "2")
+	HTML_PRINT SHOWLINE
+	CALL PRINT_SPACE_ENHANCE
+	DRAWLINE
+	PRINTL [0] 돌아간다
+	IF GET_RPG_CSTR_TAKEOVER(L_CHARA, "モード") == "X2"
+		CALL INPUTINT, 0, 1
+	ELSE
+		CALL INPUTINT, 0, 2
+	ENDIF
+	SELECTCASE RESULT
+		CASE 0
+			RETURN 0
+		CASE 1
+			CALL CHANGE_MODE_アキュラ, L_CHARA, "X"
+		CASE 2
+			CALL CHANGE_MODE_アキュラ, L_CHARA, "X2"
+	ENDSELECT
+WEND
+
+RETURN 1
+
+;--------------------------------------------------
+;キャラクター独自変数名称定義関数
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:아큐라_X]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS '= "モード"
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS
+
+@CONVERT_FACE_ADDRESS_アキュラ, L_FACENAME
+#FUNCTIONS
+#DIMS DYNAMIC L_FACENAME
+SELECTCASE L_FACENAME
+	;100
+	CASE "ブレイクシフト"
+		RETURNF "FACE_1"
+	;6400
+	CASE "ロロ_バトルポッド"
+		RETURNF "FACE_EX_0"
+	;6500
+	CASE "ロロ_ディーヴァ"
+		RETURNF "FACE_EX_1"
+	;6600
+	CASE "ロロ_アウェイクニング"
+		RETURNF "FACE_EX_2"
+	;6700
+	CASE "ロロ_ダークネス"
+		RETURNF "FACE_EX_3"
+	;7300
+	CASE "ロロ_ヒーリング"
+		RETURNF "FACE_EX_4"
+	;6800
+	CASE "最終決戦仕様"
+		RETURNF "FACE_EX_5"
+	;7000
+	CASE "SPスキル"
+		RETURNF "FACE_EX_6"
+	;7100
+	CASE "最終決戦仕様_SPスキル"
+		RETURNF "FACE_EX_7"
+	;7200
+	CASE "ブリッツシフト"
+		RETURNF "FACE_EX_8"
+	;6900
+	CASE "ミチル"
+		RETURNF "FACE_EX_9"
+	CASEELSE
+		RETURNF "FACE_0"
+ENDSELECT
+
+@SET_RORO_KOJO_FLAG, ARG
+TSTR:전투구상캐릭터명칭 '= "ＲｏＲｏ"
+IF SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+	SETCOLOR 0xffffff
+	TSTR:전투구상캐릭터화상어드레스 '= "アキュラ_X_" + CONVERT_FACE_ADDRESS_アキュラ("ロロ_アウェイクニング")
+ELSEIF SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+	TSTR:전투구상캐릭터화상어드레스 '= "アキュラ_X_" + CONVERT_FACE_ADDRESS_アキュラ("ロロ_ディーヴァ")
+	SETCOLOR 0xff961e
+ELSE
+	SETCOLOR COLOR("BATTLE", ARG)
+	TSTR:전투구상캐릭터화상어드레스 '= "アキュラ_X_" + CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド")
+ENDIF

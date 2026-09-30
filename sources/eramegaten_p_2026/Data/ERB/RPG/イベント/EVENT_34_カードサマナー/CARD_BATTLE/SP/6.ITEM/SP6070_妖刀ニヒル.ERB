@@ -1,0 +1,78 @@
+﻿
+;特技名
+@CGSP_NAME_6070, ARGS, ARG
+RESULTS = 요도니힐
+
+;　コストの量
+@CGSP_COST_6070, ARGS, ARG
+RETURN 3
+
+
+;　타겟(選択するかしないか)
+@CGSP_TARGET_6070, ARGS, ARG
+RETURN 101 ,5
+;0-無し　　　1-味方1体　2-味方1体(自身含む)　3-敵1体　4-敵1体(サマナー含む)
+;5-敵味方1体　6-サマナーどちらか　7-敵味方１体(サマナー含む)　8-敵味方１体(サマナー含む、自分含まず)
+;自動発動なので0
+
+
+;　発動タイミング
+@CGSP_TIMING_6070, ARGS, ARG
+RETURN 0
+;0-アクティブ　1-味方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　2-相手ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　3-両方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ
+
+;====================================================
+;特技発動
+;====================================================
+@CGSP_ACTION_6070, ARGS, ARG, ARG:1
+#DIM L_COUNT
+#DIM L_OFFE
+#DIM L_ENEMY
+
+FOR L_COUNT, CBF_ALLY_POS1, CBF_ENEMY_AI_POS6 + 1
+    IF GETBIT(ARG:1, L_COUNT)
+        IF FIELD_DEMON_DATE_V:L_COUNT:CBV_HOST == ARG % 20
+            L_OFFE = L_COUNT
+        ELSE
+            L_ENEMY = L_COUNT
+        ENDIF
+    ENDIF
+NEXT
+;
+CALL CS_DEMON_DEATH, L_OFFE, 0, 0
+
+CALL CS_DICEROLL_STATE(3, ARG, L_ENEMY, 998, 1)
+;CALL CS_DICEROLL(2, ARG, ARG:1)
+;SIF RESULT
+;	CALL CS_DEMON_DEATH, ARG:1
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;発動後どうなるか
+@CGSP_ACTION_AFTER_6070, ARGS, ARG, ARG:1
+RETURN 1
+;0-何もなし　1-フリーズ状態　2-山札に戻る　3-即死する
+
+;　 説明文の表示
+@CGSP_EXPLAIN_6070, ARGS, ARG
+RESULTS = 敵仲魔1体とカード状態ではない味方仲魔1体を選択する。味方仲魔は倒してしまうが、敵仲魔を 3/6（50％）の確率で倒す。『呪われた妖刀。使用するものは血を欲する殺人鬼になってしまう。』
+
+;　スキルタイプ
+;　主にこのターンパワーアップとアギとかのダメージ系で使用
+;　それ以外は省略
+;　99　即死,確率
+@CGSP_TYPE_6070, ARGS, ARG
+RETURN 99
+;RETURN 12, 998, 3
+
+
+@CGSP_TARGET_TERMS_6070, L_SP_SUB, L_U ,L_T
+#DIMS L_SP_SUB
+#DIM L_U
+#DIM L_T
+SIF FIELD_DEMON_DATE_V:L_T:CBV_HOST != L_U % 20
+    RETURN 1
+SIF GETBIT(FIELD_DEMON_DATE_V:L_T:CBV_CONDITION,3)
+    RETURN 0
+RETURN 1

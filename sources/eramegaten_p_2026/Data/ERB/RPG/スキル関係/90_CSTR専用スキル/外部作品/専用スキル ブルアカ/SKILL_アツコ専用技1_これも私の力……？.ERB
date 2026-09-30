@@ -1,0 +1,130 @@
+﻿;スキル名
+@SKILL_NAME_これも私の力……？,ARG
+RESULTS = 이것도 나의 힘……?
+
+;　명중
+@SKILL_HITRATE_これも私の力……？, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_これも私の力……？, ARG
+RETURN 120
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_これも私の力……？,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_これも私の力……？,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_これも私の力……？, ARG
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_これも私の力……？,ARG
+RETURN 40
+
+;　相性
+@SKILL_TYPE_これも私の力……？,ARG
+RETURN 0
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_これも私の力……？,ARG
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_これも私の力……？,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+@SKILL_HEAL_TYPE_これも私の力……？, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("통상")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_これも私の力……？,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_これも私の力……？,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_これも私の力……？,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_これも私の力……？,ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_これも私の力……？,ARG
+RETURN GET_SUCCESSION_NUM("회복")
+
+;속도보정
+@SKILL_SPEED_これも私の力……？, ARG = -1
+RETURN 0
+
+;;　口上の表示とそのタイプ
+;@SKILL_MESSAGE_これも私の力……？,ARG
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_これも私の力……？, ARG = -1
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_これも私の力……？, ARG = -1
+RETURN 10
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_これも私の力……？,ARG,ARG:1,SKILL_NUM
+#LOCALSIZE 4
+#DIM SKILL_NUM
+
+;発動時回復
+CALL HEAL_FIELD,ARG,ARG:1,SKILL_NUM, , , "４ターン継続回復！"
+;継続回復状態付与
+CALL SET_C_BTL_EFFECT_FIELD, ARG, ARG:1, "これも私の力……？", , , , "NOPRINT"
+
+;Dゲージ6。使用後5ターン。
+CALL SKILLGAGE_D_SET, ARG, PU_SKILLNUM_GET(ARG,"これも私の力……？"),5
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_これも私の力……？,ARG
+IF PU_SKILLGAGE_D_GET(ARG,"これも私の力……？") > 0
+	RESULTS = 《이것도 나의 힘……?》 잔여: {PU_SKILLGAGE_D_GET(ARG,"これも私の力……？")}턴
+ENDIF
+RETURN 3
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_これも私の力……？,ARG
+PRINTL 방독면 장치를 통해 아군 전체를 발동 시 회복시키고 이후 4턴 동안 지속 회복시킨다.
+PRINTL 하카리 아츠코의 전용기.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_これも私の力……？,ARG
+RESULTS = 쿨타임:%TOFULL(TOSTR(PU_SKILLGAGE_D_GET(ARG, "これも私の力……？")))%턴
+;クールタイムが0のときのみ
+SIF PU_SKILLGAGE_D_GET(ARG, "これも私の力……？") != 0
+	RETURN 0
+RETURN 1
+
+@SKILL_BATTLE_MAIN_FACE_TOOLTIP_C_BTL_EFFECT_これも私の力……？, ARG, ARG:1
+RESULTS = □이것도 나의 힘……?
+RESULTS:1 = 　턴 종료 시에 HP가 10% 회복된다.

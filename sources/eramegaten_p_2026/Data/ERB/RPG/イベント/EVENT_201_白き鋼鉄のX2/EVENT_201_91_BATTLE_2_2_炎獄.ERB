@@ -1,0 +1,391 @@
+﻿@SET_BOSS_ENEMY_EVENT_201_炎獄, L_ENEMY_NAME
+#DIMS DYNAMIC L_ENEMY_NAME
+#DIM DYNAMIC L_ENEMY
+SELECTCASE L_ENEMY_NAME
+	CASE "炎獄1"
+		TSTR:전투이벤트패턴 = EVENT_201_2_2_炎獄
+		CALL SET_ENEMY, 7, [[キャラ:락샤사]], 32
+		CALL SET_ENEMY, 10, [[キャラ:락샤사]], 32
+		CALL SET_ENEMY, 12, [[キャラ:경비드론]], 30
+		CALL SET_ENEMY, 15, [[キャラ:경비드론]], 30
+	CASE "炎獄2"
+		TSTR:전투이벤트패턴 = EVENT_201_2_2_炎獄
+		CALL SET_ENEMY, 7, [[キャラ:피닉스]], 31
+		CALL SET_ENEMY, 9, [[キャラ:화염방사워커]], 32
+		CALL SET_ENEMY, 10, [[キャラ:화염방사워커]], 32
+		CALL SET_ENEMY, 11, [[キャラ:경비워커]], 30
+		CALL SET_ENEMY, 15, [[キャラ:경비드론]], 30
+	CASE "炎獄3"
+		TSTR:전투이벤트패턴 = EVENT_201_2_2_炎獄
+		CALL SET_ENEMY, 8, [[キャラ:화염방사워커]], 32
+		CALL SET_ENEMY, 9, [[キャラ:아레스]], 35
+		CALL SET_ENEMY, 10, [[キャラ:화염방사워커]], 32
+	CASE "デイサイト"
+		TSTR:전투이벤트패턴 = EVENT_201_2_2_デイサイト
+
+		CALL SET_ENEMY, 9, [[キャラ:데이사이트_X2]], 35, 1, 1
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "デイサイト"
+		CSTR:L_ENEMY:사고패턴 = アルマゲドンレイ
+		CFLAG:L_ENEMY:ＨＰ보정 += 1000
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		BASE:L_ENEMY:SHOCK = -25
+		
+		CSTR:L_ENEMY:基本アイコンファイルネーム '= "デイサイト_X2_FACE_1"
+		
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "섬머솔트"
+		CALL SET_SKILL, L_ENEMY, "트위스터킥"
+		CALL SET_SKILL, L_ENEMY, "화쇄열풍파"
+		CALL SET_SKILL, L_ENEMY, "폭렬의손톱"
+		CALL SET_SKILL, L_ENEMY, "메테오피스트"
+		CALL SET_SKILL, L_ENEMY, "헬파이어"
+		CALL SET_SKILL, L_ENEMY, "소작권"
+		CALL SET_SKILL, L_ENEMY, "ＳＰスキル"
+		CALL SET_SKILL, L_ENEMY, "백열찌르기"
+		CALL SET_SKILL, L_ENEMY, "마그마・액시스"
+		CALL SET_SKILL, L_ENEMY, "インフェルノドロップ"
+		
+		CSTR:L_ENEMY:랜덤선택금지스킬 '= "ＳＰスキル"
+ENDSELECT
+
+@EVENT_BATTLE_TURNEND_EVENT_201_2_2_炎獄
+FLAG_白き鋼鉄のX2_マグマ到達ターン--
+
+@EVENT_BATTLE_NAVI_EVENT_201_2_2_炎獄, ARGS
+SELECTCASE ARGS
+	CASE "メイン画面"
+		CALL SET_RORO_KOJO_FLAG, GETCHARA([[キャラ:아큐라_X]])
+		RESETCOLOR
+		IF FLAG_白き鋼鉄のX2_マグマ到達ターン > 0
+			BTL_KOJO_RESULTS:0 = 마그마가 올 때까지 앞으로 {FLAG_白き鋼鉄のX2_マグマ到達ターン}턴이야! 서둘러!
+		ELSE
+			BTL_KOJO_RESULTS:0 = 마그마 때문에 행동할 때마다 대미지를 입으니까 조심해!
+		ENDIF
+		CALL PRINT_KOJO_RPG_MESSAGE, "ナビ_メイン画面"
+		RETURN 1
+ENDSELECT
+
+@EVENT_BATTLE_ACTEND_EVENT_201_2_2_炎獄
+#DIM DYNAMIC L_DAMAGE
+#DIM DYNAMIC L_TYPE_VALUE
+SIF FLAG_白き鋼鉄のX2_マグマ到達ターン > 0
+	RETURN 0
+SIF !IS_TARGET_ABLE(FLAG:행동순1)
+	RETURN 0
+L_DAMAGE = RAND(20, 30)
+CALL BTL_CALC_AISYOU, -1, FLAG:행동순1, -1, GET_TYPE_NUM("화염")
+L_TYPE_VALUE = RESULT
+IF L_TYPE_VALUE == 999
+	L_TYPE_VALUE = 0
+	L_DAMAGE = 0
+ELSE
+	L_DAMAGE = L_DAMAGE * RESULT / 100
+ENDIF
+TSTR:스킬메시지대상 = 　　TARGET:[{CPOS(FLAG:행동순1),2}] %CALLNAME:(FLAG:행동순1),20,LEFT%
+TSTR:스킬메시지화살표 = 　>>>>>>　
+CALL BTL_CALC_DAMAGE_EXE, -1, FLAG:행동순1, L_DAMAGE, GET_TYPE_NUM("화염"), L_TYPE_VALUE
+CALL PRINT_ACT_MESSAGE, , , COLOR("ENEMY"), "마그마", "화염상성데미지", "NOWAIT"
+CALL PRINT_SKILL_MESSAGE
+WAIT
+
+;=============================================
+;EVENT_201_2_2_デイサイト
+;=============================================
+@SET_ACTION_アルマゲドンレイ, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:기합]]
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	IF CFLAG:ARG:800 == 3
+		;ガンヴォルトあるある：HPが1/3切ったらSPスキル使う　5Tに1回打ってくるぞ
+		IF PU_SKILLGAGE_D_GET(ARG, "ＳＰスキル") == 0
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+		ELSE
+			IF RAND:5 == 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:폭렬의손톱]]
+			ELSEIF RAND:4 == 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:백열찌르기]]
+			ELSEIF RAND:3 == 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:화염가드킬]]
+			ELSEIF RAND:2 == 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마그마・액시스]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "インフェルノドロップ")
+			ENDIF
+		ENDIF
+	ELSE
+		IF RAND:5 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:폭렬의손톱]]
+		ELSEIF RAND:4 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:메테오피스트]]
+		ELSEIF RAND:3 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:화염가드킬]]
+		ELSEIF RAND:2 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:마그마・액시스]]
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "インフェルノドロップ")
+		ENDIF
+	ENDIF
+ELSE
+	IF RAND:4 == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "インフェルノドロップ")
+	ELSEIF RAND:3 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:트위스터킥]]
+	ELSEIF RAND:2 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:헬파이어]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:화쇄열풍파]]
+	ENDIF
+ENDIF
+
+@CHANGE_ACTION_アルマゲドンレイ, ARG
+IF CFLAG:ARG:800 == 2 
+	CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+	CFLAG:ARG:800 = 3
+ENDIF
+
+@EVENT_BATTLE_DYING_EVENT_201_2_2_デイサイト, L_T, L_P, L_SKIP
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_SKIP
+IF L_T == GET_ENEMY("デイサイト") && CFLAG:L_T:800 == 0
+	TSTR:스킬메시지추가 = %CALLNAME:L_T%은(는) 일어섰다!!
+	
+	CSTR:L_T:基本アイコンファイルネーム '= "デイサイト_X2_FACE_2"
+
+	CFLAG:L_T:상태이상 = GET_STATE_NUM("GOOD")
+	BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ / 3
+	CFLAG:L_T:800 = 1
+	CFLAG:L_T:공격대상제외_ACT = 1
+	CFLAG:L_T:ＣＯＯＰ플래그 = 0
+ENDIF
+
+@EVENT_BATTLE_ACTEND_EVENT_201_2_2_デイサイト
+IF CFLAG:GET_ENEMY("デイサイト"):800 == 1
+	BTL_KOJO_RESULTS:0 = 불이 붙었구만……!
+	SETCOLOR COLOR("ENEMY")
+	CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("デイサイト")
+	CFLAG:GET_ENEMY("デイサイト"):800 = 2
+ENDIF
+
+;デイサイト戦専用ライブノベル
+@EVENT_BATTLE_TURNSTART_EVENT_201_2_2_デイサイト
+#DIM 進行度
+#DIM DYNAMIC COPEN
+SIF 進行度 == 30
+	RETURN 0
+SIF FINDCHARA_B([[キャラ:아큐라_X]])  != 2
+	RETURN 0
+COPEN = RESULT:1
+SELECTCASE 進行度
+	CASE 0
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 너와 싸우고 있자니, 옛날 생각이 나는군
+		BTL_KOJO_RESULTS:1 = 이렇게 탑을 노리는 인간들과도 싸우곤 했었지
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("デイサイト")
+
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 인간과 싸웠다고?
+		BTL_KOJO_RESULTS:1 = 너희들은 인간이 만든 것이 아니었던가?
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 아아, 그래. 우리 워커는 인간이 만들었지
+		BTL_KOJO_RESULTS:1 = 그렇다 해도 제조 목적을 다하기 위해서라면 인간 상대로도 힘을 휘둘렀다
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("デイサイト")
+
+		進行度 = 10
+		RESETCOLOR
+	CASE 10
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 그런 자신에게 의문을 품었던 적조차 있었지
+		BTL_KOJO_RESULTS:1 = 하지만―― 이윽고, 그런 의문조차 품을 필요가 없어졌다
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("デイサイト")
+
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = ……이 세계의 인류가, 멸망했기 때문인가
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 그 말대로다
+		BTL_KOJO_RESULTS:1 = 그렇게 내 투쟁심은 사그라들었던 참이었지―― 어제까지는
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("デイサイト")
+
+		進行度 = 20
+		RESETCOLOR
+	CASE 20
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 솔직한 심정으로, 난 오랜만에 뜨겁게 달아오르고 있어
+		BTL_KOJO_RESULTS:1 = 네가 내게 불을 붙여 주었으니까
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("デイサイト")
+
+		BTL_KOJO_RESULTS:0 = 도굴꾼에게 할 말은 아니지만, 감사를 표해야 할지도 모르겠군
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("デイサイト")
+
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = ……감사를 표할 바엔, 열쇠를 넘겨주었으면 좋겠군
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+
+		進行度 = 30
+		RESETCOLOR
+ENDSELECT
+
+;デイサイト・敵対時の口上
+@KOJO_ENEMY_BATTLE_MESSAGE_K[[キャラ:데이사이트_X2]], ARG, ARG:1 = 0
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;これは通常攻撃
+IF CFLAG:ARG:입력행동 == 0
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 먹어라앗!
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 내 주먹은 뜨겁다고
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 좋은 과녁이로군
+	ENDSELECT
+;-------------------------------------------------
+;汎用スキル
+;-------------------------------------------------
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:기합]]
+	BTL_KOJO_RESULTS:0 = 각오해라……!
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:폭렬의손톱]]
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 화기엄금, 이라는 거다
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 조심하라고. 한 방에 쾅, 이니까
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 다음 한 방으로 넌 끝장이다
+	ENDSELECT
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:백열찌르기]] || CFLAG:ARG:입력행동 == [[스킬:천열찌르기]]
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 나쁘게 생각하진 말라고?
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 이걸 간파해낼 수 있을까?
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 봐주는 건 서툴러서 말이지
+	ENDSELECT
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:화염가드킬]] || CFLAG:ARG:입력행동 == [[스킬:타격가드브레이크]]
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 미안하지만, 놓치지 않는다
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 대책 정도는 진작에 세워뒀다는 소리다
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 전망이 너무 안일하다고 하지 않을 수 없군
+	ENDSELECT
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:마그마・액시스]]
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 마그마 따위보다 훨씬 뜨겁다고 보는데 말이야
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 서비스다, 얌전히 받아라!
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 뜨거운 걸로, 제대로 먹어라앗
+	ENDSELECT
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:메테오피스트]] || CFLAG:ARG:입력행동 == [[스킬:분노의철권]] || CFLAG:ARG:입력행동 == [[스킬:소작권]]
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 한 방은커녕 몇 방이라도 먹여주마
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 근접전은 내 전문 분야라서 말이지
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 내 주먹은 뜨겁다고？
+	ENDSELECT
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:트위스터킥]] || CFLAG:ARG:입력행동 == [[스킬:뇌진왕모의발차기]] || CFLAG:ARG:입력행동 == [[스킬:예광구리가라축]]
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 내가 발버릇이 좀 나빠서 말이야, 나도 모르게 튀어나갔군
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 훤히 보이는 빈틈을 드러낸 네놈 잘못이다
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 빈틈투성이라고, 받아라앗!
+	ENDSELECT
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:헬파이어]] || CFLAG:ARG:입력행동 == [[스킬:불꽃의난무]]
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 지옥이랑 어느 쪽이 더 뜨거운지 시험해 볼 테냐
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 하, 여기도 지옥이나 다름없지만 말이야
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 지옥의 업화라는 녀석이다
+	ENDSELECT
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:화쇄열풍파]] || CFLAG:ARG:입력행동 == [[스킬:여덟머리의염구]]
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 한꺼번에 쓸어버리기엔 이게 제격이지
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 날아가 버려라
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 이걸 피할 수 있을까?
+	ENDSELECT
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:포효]] || CFLAG:ARG:입력행동 == [[스킬:워크라이]] 
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 즐겨보자고, 이 전장을ッ!
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 왜 그러나ッ, 그 정도밖에 안 되는 건 아니겠지!?
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 이 정도로 겁먹고 그러진 않겠지이앗!
+	ENDSELECT
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:파워브레스]]
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 성능 강화를 시도해 볼까
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 몰아붙이는 것만이 싸움은 아니다, 라는 거지
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 자, 준비 완료다
+	ENDSELECT
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:회심의패기]]
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 아주 잘 보이는군, 네놈들의 빈틈이
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 몰아붙이는 것만이 싸움은 아니다, 라는 거지
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 다음이다. 피할 수 있을 거라 생각 마라?
+	ENDSELECT
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:회심의패기]]
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 아주 잘 보이는군, 네놈들의 빈틈이
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 정신 집중―― 간다?
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 슬슬, 진심으로 끝내러 가볼까
+	ENDSELECT
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:전용기2]]
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 이걸로…… 녹아내려라아!!
+		CASE 1
+			BTL_KOJO_RESULTS:0 = 거긴, 내 사정거리다ッ
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 받아랏!
+	ENDSELECT
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:전용기1]]
+	BTL_KOJO_RESULTS:0 = 포격 준비……
+	CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+	ALIGNMENT RIGHT
+	RESETCOLOR
+	PRINTFORML 　　　　Flames that burn inside me　　　　　　　　　　　 
+	PRINTFORML 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+	PRINTFORML
+	PRINTFORML 　　Quietly rage like a smoldering　　　　　　　　　　　 
+	SETCOLOR 0xe8307c
+	PRINTFORML 　　　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　
+	RESETCOLOR
+	PRINTFORML
+	PRINTFORML 　　　　Inferno as I incinerate all creation　　　　　　 
+	PRINTFORMW 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+	ALIGNMENT LEFT
+	SETCOLOR COLOR("ENEMY")
+	BTL_KOJO_RESULTS:0 = 메기도 게이저!
+	CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+	TFLAG:전투구상직접출력 = 1
+ENDIF

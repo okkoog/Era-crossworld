@@ -1,0 +1,476 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;	ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2020/08/01		やぶへび				新規作成
+;	002		2021/01/30		kamedakeisuke(ﾟдﾟ)		サブタイにEXってつけた。メリーさんと同じく何来るか書いちゃうのも何かなって思ったので
+;	003		2022/08/24		JK好き					@PLAYABLE_REQUEST_37 依頼発生条件のIF分岐が正しく機能していなかった問題を修正
+;	004		2022/08/31		JK好き					@REQUEST_37 あなたの獲得経験の性交経験は受け側なのでコメントアウト、代わりに新設した挿入経験追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;====================
+;조건
+;====================
+@GET_REQUEST_NAME_37
+#FUNCTIONS
+RESULTS_F '= "매혹된자의구원"
+RETURNF RESULTS_F
+
+@PLAYABLE_REQUEST_37
+;メガテン系イベント以外不許可の場合
+SIF !GETS_USEABLE_EXTRA_TITLE("都市伝説")
+	RETURN 0
+
+
+
+;ワケ有り物件調査を達成してる＆あなたのレベル50以上＆名声500以上で出る
+IF 依頼フラグ:[[依頼:이유있는물건조사]]:0 == 1 && BASE:MASTER:LV > 50 && FLAG:명성 >= 500 && 依頼フラグ:[[依頼:매혹된자의구원]]:0 == 0
+	RESULTS = （EX）매혹된 자의 구원
+	;RETURN 1 で依頼出現
+	RETURN 1
+ENDIF
+RETURN 0
+;RETURN 0 で依頼未出現
+
+;====================
+;설명
+;====================
+@EXPLAIN_REQUEST_37
+;はい、いいえ前の依頼の説明
+
+PRINTFORML %CALLNAME:MASTER%지명 의뢰가 도착했다。
+PRINTFORMW 의뢰인은 일반 남성. 난잡한 문장을 정리한 내용은 이러하였다。
+PRINTFORMW 「팔척님에게 홀리고 말았습니다。도와주세요。」
+PRINTFORML 
+PRINTFORMW 보수:￥70000
+
+;この後、この依頼を受けるか　はい、いいえ　が出る
+
+;====================
+;내용
+;====================
+@REQUEST_37
+PRINTFORMW %CALLNAME:MASTER%은、상세한 이야기를 듣기 위해 의뢰인에게로 서둘러 가고 있었다。
+PRINTFORMW 
+PRINTFORMW 『팔척님』…매혹된 자를 며칠 만에 잡아 죽이는 팔척 장신의 여자。
+PRINTFORMW 의뢰인이 언제 그것을 만났는진 모르겠지만, 이미 죽은 뒤일 수도 있을 것이다。
+;属性で分岐させたかった。
+;PRINTFORMW 八尺様によって依頼人に被害がでないになんとかしたいが…
+;PRINTFORMW 報酬は比較的安かったが、八尺様を仲魔にできるかもしれない。
+PRINTFORMW 뭐 가보지 않으면 모를 일이다。
+PRINTFORMW 
+PRINTFORMW 그렇게 생각하는 와중에 의뢰인이 이야기한 주소에 도착했지만…
+PRINTFORML 
+WAIT
+PRINTFORML …역겨운、기척이 느껴진다。
+WAIT
+PRINTFORMW 
+PRINTFORMW 아무래도、이미 선객이 와 있는것 같다。
+;さっさと突入するとそのまま八尺様と戦闘。待つと依頼人逆レイプシーン後HPが減っているがレベルの高い八尺様と戦闘。あと見捨てて帰る。ダークに寄る。
+PRINTFORMW 자、어떻게 할까。
+PRINTFORML [0]　돌입한다。
+PRINTFORML [1]　…잠시、기다린다。
+PRINTFORML [2]　어쩔 수 없었다 치고 돌아간다。
+
+CALL INPUTINT, 0, 1, 2
+IF RESULT == 0
+	PRINTFORMW 고민하고 있을 것이 아니라 빨리 돌입해야 한다。
+	PRINTFORMW 문을 걷어차며、안으로 돌입했다。
+	PRINTFORML 
+	PRINTFORML 「………도、도와줘！！」
+	PRINTFORMW
+	PRINTFORML 구조를 요청하는 소리가 방안에 울려퍼졌다。
+	PRINTFORMW 
+	PRINTFORMW 소리가 나는 곳을 바라보니, 거대한 장신의 여자가 남자에게 다가가고 있었다。
+	PRINTFORMW 그 남자가 의뢰인임엔 틀림없으리라。
+	PRINTFORMW 「아、당신은！？그엑」
+	PRINTFORMW 두 사람 사이에 끼어들어 남자를 멀리 던졌다。
+	PRINTFORMW 이걸로 의뢰인의 안전은 보장되었다。전투의 방해가 되진 않으리라。
+	PRINTFORML 
+	WAIT
+	PRINTFORMW 「포……포포……포포포포포포」
+	WAIT
+	PRINTFORML 
+	PRINTFORMW 기묘한 소리를 내며 『팔척님』이 덮쳐 왔다！
+	PRINTL 괴이　팔척님이 1체 등장했다！
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+	CALL SET_ENEMY,9, [[キャラ:팔척님]],50, 1,1
+	CFLAG:(CHARANUM-1):행동횟수 = 2
+	CFLAG:(CHARANUM-1):ＨＰ보정 += 4000
+	ABL:(CHARANUM-1):스킬1 = 265
+	ABL:(CHARANUM-1):스킬2 = 236
+	ABL:(CHARANUM-1):스킬3 = 229
+	ABL:(CHARANUM-1):스킬4 = 1412
+	ABL:(CHARANUM-1):스킬5 = 210
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	CALL BATTLE_START
+	WAIT
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+	WAIT
+	PRINTFORMW %CALLNAME:MASTER% 일행은 팔척님에게 치명상을 입혔다！
+	PRINTFORMW 
+	PRINTFORMW 「……포포포……포포……」
+	PRINTFORMW 
+	PRINTFORMW 끔찍한 기척과 함께 팔척님은 그 자리에서 사라져버렸다。
+	PRINTFORMW ……이걸로 일단은 안심이겠지。
+	PRINTFORMW 「고、고、감사합니다아아！！！」
+	PRINTFORML 의뢰인은 머리에 혹을 달고、울먹이며 %CALLNAME:MASTER%에게 보수를 건네왔다…
+	PRINTFORMW 보수 ￥70000을 받았다。
+	MONEY += 70000
+	WAIT
+	PRINTFORMW 
+	PRINTFORMW 그 귀갓길。
+	PRINTFORMW 사무소로 향하는 %CALLNAME:MASTER%의 등 뒤에서、희미한 소리가 들려왔다。
+	PRINTFORML 
+	WAIT
+	PRINTFORML 「……포……」
+	WAIT
+	PRINTFORMW 
+	PRINTFORML ――%CALLNAME:MASTER%는 무기를 겨누며 등 뒤를 돌아보았다。
+	PRINTFORMW 
+	PRINTFORML 「……포……포……」
+	PRINTFORMW 
+	PRINTFORMW 그곳에는、금방이라도 사라질 듯한 8척쯤 되는 거구의 여자… 팔척님이 서 있었다。
+	PRINTFORMW 그토록 끔찍했던 기척도、지금은 약간의 한기밖에 남아있지 않다。
+	PRINTFORMW 
+	PRINTFORML 타깃을 의뢰인에게서 %CALLNAME:MASTER%로 바꾼 것일까？
+	PRINTFORMW 아니면 방해에 대한 보복인 것일까？
+	;でかい！（身長）でかい！（乳）でっかい！（尻）あなたの身長で分岐させたい。
+	;PRINTFORML その表情は、帽子に隠れてうかがい知れない。
+	PRINTFORML 그 표정은 8척의 거체에 걸맞은、훌륭한 유방에 가려 엿볼 수가 없다。
+	PRINTFORMW 
+	PRINTFORMW 빈사의 지금이라면 손쉽게 숨통을 끊을 수 있겠지만……
+	PRINTFORMW 강력한 힘과、매력적인 육체。
+	PRINTFORMW 그것들을 내버리기엔 아깝지만……
+	PRINTFORML [0]　MAG를 주어 동료마로 삼는다。
+	;PRINTFORML [1]　ここでＭＡＧを与えて仲魔にしてやろう。
+	PRINTFORML [2]　필요 없다。
+	CALL INPUTINT, 0, 2
+	IF RESULT == 0
+		PRINTFORMW 내버려 두기엔 아깝다。그렇다면 선택지는 하나뿐이겠지。
+		PRINTFORML 
+		;戦闘後だしないとは思うけどＭＡＧが0だった時は強制終了。
+		IF GET_CHARA_STOCK_MAG(MASTER) == 0
+			PRINTFORMW 그러나 %CALLNAME:MASTER%에게는 실체화시킬 만큼의 MAG가 남아있지 않다。
+			PRINTFORMW 눈물을 머금고 팔척님에게 숨통을 끊었다…
+			RETURN
+			依頼フラグ:[[依頼:매혹된자의구원]]:0 = 1
+		ENDIF
+		PRINTFORMW %CALLNAME:MASTER%는 팔척님에게 MAG를 나누어 주었다。
+		PRINTFORMW 팔척님은 정기를 되찾아갔고、어느새 한기마저 사라져 있었다。
+		PRINTFORMW 그리고 팔척님이 %CALLNAME:MASTER%의 귓가로 다가왔다。
+		PRINTFORML 
+		WAIT
+		PRINTFORML 「……앞으로도……잘……부탁해……」
+		WAIT
+		PRINTFORMW 
+		PRINTFORMW ……제대로 말할 줄 알았나。
+		PRINTFORML 
+		PRINTFORML %CALLNAME:MASTER%는 팔척님을 데리고、귀갓길을 다시 걷기 시작했다。
+		PRINTFORMW 
+		;ここでのみ八尺様は加入。合体は不可。
+		PRINTFORML ＞괴이　팔척님이 동료마가 되었다。
+		CALL ADD_NEW_COMPANION,[[キャラ:팔척님]],200
+		PRINTFORMW ＞%CALLNAME:MASTER%의 MAG를 대량으로 잃었다…
+		CALL CONTROL_MAG, MASTER, -100000
+;	ELSEIF == 1
+;		PRINTFORMW 捨ておくには惜しいので見捨てはしない……が。
+;		PRINTFORML 
+;		PRINTFORMLとんでもない乳にとんでもない尻。
+;		PRINTFORMW はっきり言って戦闘中に若干ムラついていた。
+;		PRINTFORML 
+;		PRINTFORMW もう我慢の限界だ。誰にも邪魔されないように八尺様を路地裏へと連れ込んだ……
+;		PRINTFORML 
+;		PRINTFORMW 壁に手をつけさせて、スカートをめくりあげた。
+;		PRINTFORMW これからされる事を察したのか、八尺様は声を出さずに大人しくしている。
+;		PRINTFORMW 指を軽く入れただけでとぷとぷと愛液があふれ出てくる。
+;		PRINTFORML 
+;		PRINTFORML 元から淫乱か。これなら何をしても悦びそうだ。
+;		PRINTFORMW 
+;		;ここで1000万MAG以上で追加描写。初期忠誠度鬼盛り。
+;		IF BASE:MASTER:ＭＡＧ > 9999999
+;			;ちんこあり分岐
+;			IF (TALENT:MASTER:남자 || TALENT:MASTER:후타나리)
+;			;ちんこなし分岐
+;			ELSE
+;			
+;			ENDIF
+;			;ここでのみ八尺様は加入。合体は不可。
+;			PRINTFORML ＞괴이　팔척님이 동료마가 되었다。
+;			CALL ADD_NEW_COMPANION,[[キャラ:팔척님]],1000
+;			PRINTFORMW ＞%CALLNAME:MASTER%のＭＡＧが失われた。まぁ必要経費だ。
+;			;あなたのＭＡＧが10万減らす。この分岐に入る時点でねぇ……
+;			BASE:MASTER:ＭＡＧ -= 100000
+;		ELSE
+;			;ちんこあり分岐
+;			IF (TALENT:MASTER:남자 || TALENT:MASTER:후타나리)
+;				;立バック
+;				PRINTFORMW 愛撫もそこそこに、後ろから一気に突き上げた！
+;				PRINTFORMW 「……ぽ……」
+;				PRINTFORML 
+;				PRINTFORMW 巨大な尻をつかんで腰を振る。
+;				PRINTFORML 一突きごとに膣壁が絡み、射精を急かすように快楽を叩きつけてくる。
+;				PRINTFORMW さっさと射精をしないとこちらが持っていかれる……！
+;				PRINTFORML 
+;				PRINTFORMW 意識を飛ばさないように歯を食いしばり、最後まで射精する。
+;				PRINTFORML 役目を果たしたペニスをひき抜き、息を整える。
+;				PRINTFORMW 膣内に残した精液は一滴残さず八尺様に吸収されたようだ。
+;				PRINTFORML 
+;				PRINTFORMW 「ぽ……ぽぽ……」
+;				PRINTFORMW 八尺様はゆっくりと立ち上がり、スカートを直した。
+;				PRINTFORMW そしてこちらに振り向いてささやいた。
+;				WAIT
+;				PRINTFORML 「……앞으로도……잘……부탁해……」
+;				WAIT
+;				PRINTFORMW ……제대로 말할 줄 알았나。
+;				PRINTFORML 
+;				PRINTFORML %CALLNAME:MASTER%は疲れた顔で八尺様を見つめながら、そう思った。
+;				PRINTFORMW 
+;			;ちんこなし分岐
+;			ELSE
+;			;立ち貝合わせ
+;			;すっげぇアクロバットだがもうこうするしか……！
+;			
+;			ENDIF
+;			;ここでのみ八尺様は加入。合体は不可。
+;			PRINTFORML ＞괴이　팔척님이 동료마가 되었다。
+;			CALL ADD_NEW_COMPANION,[[キャラ:팔척님]],200
+;			PRINTFORMW ＞%CALLNAME:MASTER%의 MAG를 대량으로 잃었다…
+;			;あなたのＭＡＧが10万以上なら10万、以下なら1万残す。
+;			IF BASE:MASTER:ＭＡＧ > 109999
+;				BASE:MASTER:ＭＡＧ -= 100000
+;			ELSE
+;				BASE:MASTER:ＭＡＧ = 10000
+;			ENDIF
+;		ENDIF
+	ELSEIF RESULT == 2
+		;そんな捨て犬みたいな……
+		PRINTFORMW 안타깝지만 계약할 여유가 없다……
+		PRINTFORMW 약간 미련을 남기면서 팔척님에게 숨통을 끊었다……
+	ENDIF
+	依頼フラグ:[[依頼:매혹된자의구원]]:0 = 1
+ELSEIF RESULT == 1
+	CALL INCREASE_LD, -5
+	PRINTFORMW …여기는 신중하게 행동하자。
+	PRINTFORMW 
+	PRINTFORMW 
+	PRINTFORMW ――数分後。
+	PRINTFORMW %CALLNAME:MASTER%는 천천히 안으로 침입해 들어갔다。
+	PRINTFORMW 
+	PRINTFORMW 한 발자국 나아갈 때마다 끔찍한 기척이 휘감겨온다。
+	PRINTFORMW 조심스레 발걸음을 옮기는 %CALLNAME:MASTER%의 귀에、희미한 목소리가 들려왔다。
+	PRINTFORML 
+	PRINTFORML 「……도……와……」
+	;し
+	PRINTFORMW 
+	PRINTFORMW 옆방에서 들려온 것 같다。
+	PRINTFORML 소리를 내지 않고 안을 들여다보니 그곳에는
+	PRINTFORMW 방 한가운데서 남자를 깔고 허리를 흔드는―― 거대한 여자가 있었다。
+	PRINTFORML 
+	PRINTFORML 「포……포……」
+	PRINTFORMW 
+	PRINTFORMW 이쪽을 등진 채 기묘한 소리를 내고 있다。아무래도 정사를 즐기고 있는 모양새다。
+	PRINTFORMW 
+	PRINTFORMW 남자는 짓눌린 채 가냘프고 짓눌린 신음을 내고 있다。
+	PRINTFORMW 그 규격 외의 체격 차이는 마치 어른과 아이처럼 보이기까지 한다。
+	PRINTFORML 
+	PRINTFORMW 거칠게 허리를 흔들며、그 밑에는 백탁액이 고여 있다。남자에게서 계속해서 착정을 이어가고 있는 듯하다。
+	PRINTFORMW 당장 말리러 들어가야 마땅하겠지만、눈을 뗄 수가 없다。
+	PRINTFORMW 
+	PRINTFORML 여자가 점점 허리를 흔드는 속도를 올리고 있다。
+	PRINTFORML 그리고 남자가 고통스럽게 신음했다。사정했을 것이다。
+	PRINTFORML 여자는 멈추었나 싶더니、다시 허리를 흔들기 시작했다。
+	PRINTFORMW 
+	PRINTFORMW ……위험하다。이 이상 방치하면 의뢰인이 죽을 때까지 착정당할 것이다。
+	PRINTFORMW 
+	PRINTFORML %CALLNAME:MASTER%는 계속 보고 싶은 욕망을 떨쳐내듯 안으로 돌입해、빈틈투성이인 여자의 등을 공격했다。
+	PRINTFORMW 
+	PRINTFORML 여자가 남자에게서 물러선 것을 확인하고、남자 쪽으로 다가간다。
+	PRINTFORMW 희미하게 숨을 쉬고 있다。이 남자가 아마 의뢰인일 것이다。
+	PRINTFORMW 앞으로 어떻게 할지 궁리하던 %CALLNAME:MASTER%는 알아차리고 말았다。
+	PRINTFORML 
+	PRINTFORML 여자―― 『팔척님』의 기척이 점점 바뀌어가고 있다는 것을。
+	PRINTFORMW 방금 입힌 상처는 명백히 아물어가고 있었고、끔찍한 기척은 점점 부풀어 오르고 있다。
+	PRINTFORML 
+	PRINTFORMW 아무래도 %CALLNAME:MASTER%의 선택은
+	PRINTFORML 
+	WAIT
+	PRINTFORML 「포……포포……포포포포포포포포」
+	WAIT
+	PRINTFORMW 
+	PRINTFORMW 악수였던 모양이다――
+	PRINTFORML
+	PRINTL 괴이　팔척님이 1체 등장했다！ 
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+	CALL SET_ENEMY,9, [[キャラ:팔척님]],70, 1,1
+	;行動回数が３、百烈突き→千烈突き、ムドオン→ドムディ、烈風撃追加。힘＋１０
+	CFLAG:(CHARANUM-1):행동횟수 = 3
+	CFLAG:(CHARANUM-1):ＨＰ보정 += 4000
+	BASE:(CHARANUM-1):힘 += 10
+	ABL:(CHARANUM-1):스킬1 = 265
+	ABL:(CHARANUM-1):스킬2 = 236
+	ABL:(CHARANUM-1):스킬3 = 230
+	ABL:(CHARANUM-1):스킬4 = 1438
+	ABL:(CHARANUM-1):스킬5 = 210
+	ABL:(CHARANUM-1):스킬6 = 1019
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	CALL BATTLE_START
+	WAIT
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+	PRINTFORMW %CALLNAME:MASTER% 일행은 팔척님에게 치명상을 입혔다！
+	PRINTFORMW 
+	PRINTFORMW 「………포포………」
+	PRINTFORMW 
+	PRINTFORMW 끔찍한 기척과 함께 팔척님은 그 자리에서 사라져버렸다。
+	PRINTFORMW …이걸로 일단은 안심이겠지。
+	PRINTFORML %CALLNAME:MASTER%는 급히 죽어가는 의뢰인을 병원으로 옮겼다。
+	PRINTFORMW 
+	PRINTFORMW ……목숨은 건진 것 같다。
+	PRINTFORMW 그러나 의식은 돌아오지 않은 모양이다。무리도 아니지。
+	;属性でセリフを変えたい
+	;PRINTFORML 間に合わなった詫びとして
+	;PRINTFORML いいものを見せてもらった見物料として
+	PRINTFORMW 일단 의뢰는 완수했지만、완벽하지는 않았기에
+	PRINTFORML 4만 엔만 받아 가기로 했다。
+	;治療費を３万円で済まそうとするクズになるので報酬なしでもいいかもしれない。
+	PRINTFORMW 보수 ￥40000을 손에 넣었다。
+	MONEY += 40000
+	WAIT
+	PRINTFORMW 그 귀갓길。
+	PRINTFORMW 사무소로 향하는 %CALLNAME:MASTER%의 등 뒤에서、무언가 다가오는 소리가 들려왔다。
+	PRINTFORML 
+	PRINTFORML ――%CALLNAME:MASTER%가 등 뒤를 돌아본 순간、그것이 덮쳐왔다。
+	PRINTFORMW 
+	PRINTFORML 
+	WAIT
+	PRINTFORML 「……포포포포포포」
+	WAIT
+	PRINTFORMW 
+	PRINTFORML %CALLNAME:MASTER%의 위로 팔척님이 덮쳐 누르고 있었다。
+	PRINTFORML 금방이라도 사라질 듯하지만、끔찍한 기척은 결코 옅어지지 않았다。
+	PRINTFORMW 
+	PRINTFORML 타깃을 의뢰인에게서 %CALLNAME:MASTER%로 바꾼 것인가？
+	PRINTFORMW 그런 찰나의 생각 와중에도 팔척님은 %CALLNAME:MASTER%의 옷에 손을 대려 하고 있었다。
+	PRINTFORMW ――의뢰인처럼 착정해 쥐어짤 셈인가！
+	;逆レ。逆レに抗うとそのまま終了。身を任せると経験プラス依存度が高い八尺様が加入。
+	PRINTFORML [0]　저항한다。
+	PRINTFORML [1]　몸을 맡긴다。
+	CALL INPUTINT, 0, 1
+	IF RESULT == 0
+		PRINTFORMW 네년에게 줄 MAG는 1밀리도 없다――！！！
+		PRINTFORML 
+		PRINTFORML %CALLNAME:MASTER%는 온 힘을 다해 팔척님에게 무기를 내리쳤다。
+		PRINTFORMW 그것이 치명타가 되었으리라。팔척님은 단말마를 지르며 안개처럼 흩어져 갔다。
+		PRINTFORML 
+		PRINTFORMW 사라져가는 끔찍한 기척을 뒤로하고、%CALLNAME:MASTER%는 귀갓길로 다시 발걸음을 옮겼다。
+		依頼フラグ:[[依頼:매혹된자의구원]]:0 = 1
+	ELSEIF RESULT == 1
+		PRINTFORMW 문득、떠올리고 말았다。
+		PRINTFORML 의뢰인과 팔척님이 몸을 섞던 정경을。
+		PRINTFORMW 
+		PRINTFORMW 문득、궁금해지고 말았다。
+		PRINTFORML 그 교합의 실제 맛이 어떠한지를。
+		PRINTFORMW 
+		PRINTFORML %CALLNAME:MASTER%는…
+		PRINTFORML 조교사로서의 호기심에 져보기로 했다。
+		PRINTFORMW 
+		;あなたがちんちんもちの場合は性交経験と膣射経験とＶ経験とＶ感覚（騎乗位）
+		;女の場合はレズ経験とキス経験と奉仕快楽とＣ感覚（貝合わせ）。愛情とかは増えない。
+		;依頼人5回あなたで10回。なので女あなたでも騎乗位5回分は経験が入る。Ｖ感覚はつかない。
+		IF (TALENT:MASTER:남자 || TALENT:MASTER:후타나리)
+		;ちんこあり分岐
+			PRINTFORMW 팔척님은 저항하지 않는 %CALLNAME:MASTER%의 하의를 벗겨냈다。
+			PRINTFORMW 그 거친 태도와는 딴판으로、아직 임전태세가 되지 않은 페니스를 부드럽게 애무해온다。
+			PRINTFORMW 이윽고 페니스가 우뚝 솟아오르자、팔척님은 자신의 균열에 그 열기를 묻었다……
+			;あなたの経験を増やす。
+			PRINTFORML 절정경험 + 10
+			EXP:MASTER:절정경험 += 10
+			PRINTFORML 사정경험 + 10
+			EXP:MASTER:사정경험 += 10
+			PRINTFORML 삽입경험 + 10
+			EXP:MASTER:삽입경험 += 10
+			;あなたがふたなりならレズ経験
+			IF TALENT:MASTER:후타나리
+				PRINTFORML 레즈경험 + 10
+				EXP:MASTER:레즈경험 += 10
+			ENDIF
+		ELSE
+		;ちんこなし分岐
+			PRINTFORMW 팔척님은 저항하지 않는 %CALLNAME:MASTER%의 하의를 벗겨냈다。
+			PRINTFORMW 그 거친 태도와는 딴판으로、아직 젖지 않은 균열을 부드럽게 애무해온다。
+			PRINTFORMW 이윽고 촉촉하게 젖어 들기 시작하자、팔척님은 자신의 균열로 열기와 열기를 겹쳐 맞추었다……
+			WAIT
+			;あなたの経験を増やす。
+			PRINTFORML 절정경험 + 10
+			EXP:MASTER:절정경험 += 10
+			PRINTFORML 키스경험 + 10
+			EXP:MASTER:키스경험 += 10
+			PRINTFORML 레즈경험 + 10
+			EXP:MASTER:레즈경험 += 10
+		ENDIF
+		PRINTFORMW ……통째로 쥐어짜였다。10번은 족히 섞었을까。
+		PRINTFORMW 
+		PRINTFORML 팔척님은 움직이지 못하는 %CALLNAME:MASTER%의 곁에 서 있다。
+		PRINTFORMW 그 몸은 뚜렷하게 실체를 지니고 있었다。
+		PRINTFORMW 내려다보는 팔척님과 시선이 마주친다。
+		PRINTFORML 
+		WAIT
+		PRINTFORML 「……앞으로도……잘……부탁해……♪」
+		WAIT
+		PRINTFORMW 
+		PRINTFORMW …제대로 말할 줄 알았던 건가。그보다 동료마가 되는 건가。
+		PRINTFORML 
+		PRINTFORML %CALLNAME:MASTER%는 움직이지 않는 몸으로 팔척님을 올려다보며 그렇게 생각했다。
+		PRINTFORMW 
+		PRINTFORMW ＞괴이　팔척님이 동료마가 되었다。
+		CALL ADD_NEW_COMPANION,[[キャラ:팔척님]],700
+		;また分岐　
+		IF (TALENT:MASTER:남자 || TALENT:MASTER:후타나리)
+		;ちんこあり分岐
+			IF RESULT == 1
+				LOCAL = RESULT:1
+				ABL:LOCAL:Ｖ감각 = 1
+				EXP:LOCAL:Ｖ경험 = 15
+				EXP:LOCAL:성교경험 += 15
+				EXP:LOCAL:질사경험 += 15
+				;あなたがふたなりならレズ経験
+				IF TALENT:MASTER:후타나리
+					EXP:LOCAL:레즈경험 += 10
+				ENDIF
+			ENDIF
+		ELSE
+		;ちんこなし分岐
+			IF RESULT == 1
+				LOCAL = RESULT:1
+				ABL:LOCAL:Ｃ감각 = 1
+				EXP:LOCAL:Ｖ경험 = 5
+				EXP:LOCAL:성교경험 += 5
+				EXP:LOCAL:질사경험 += 5
+				EXP:LOCAL:질사경험 += 10
+				EXP:LOCAL:봉사쾌락경험 += 10
+				EXP:LOCAL:레즈경험 += 10
+			ENDIF
+		ENDIF
+		;分岐おしまい
+		PRINTFORMW ＞%CALLNAME:MASTER%의 MAG를 대량으로 잃었다…
+		CALL CONTROL_MAG, MASTER, -100000
+	ENDIF
+	依頼フラグ:[[依頼:매혹된자의구원]]:0 = 1
+ELSEIF RESULT == 2
+	CALL INCREASE_LD, -20
+	PRINTFORMW 아마 이미 홀려 죽었을 것이다。
+	PRINTFORML %CALLNAME:MASTER%는 의뢰인을 버려두고 돌아가기로 했다。
+	依頼フラグ:[[依頼:매혹된자의구원]]:0 = 1
+ENDIF

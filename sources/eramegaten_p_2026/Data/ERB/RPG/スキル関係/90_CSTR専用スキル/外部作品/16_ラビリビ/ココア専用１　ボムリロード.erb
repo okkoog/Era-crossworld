@@ -1,0 +1,172 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_ボムリロード,ARG
+RESULTS = ボムリロード
+
+;　명중
+@SKILL_HITRATE_ボムリロード,ARG
+RETURN 0
+
+;　威力
+@SKILL_POWER_ボムリロード,ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ボムリロード,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ボムリロード,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ボムリロード,ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ボムリロード,ARG
+RETURN 60
+
+;　相性
+@SKILL_TYPE_ボムリロード,ARG
+RETURN 1
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ボムリロード
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ボムリロード,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ボムリロード,ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_ボムリロード,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ボムリロード,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ボムリロード,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_ボムリロード
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;속도보정
+@SKILL_SPEED_ボムリロード, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ボムリロード
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_ボムリロード, ARG = -1
+RETURN 0
+
+
+
+;====================================================
+;トリガー発動条件
+;====================================================
+;
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ボムリロード,ARG,ARG:1,ARG:2
+#DIM ボムストック
+#LOCALSIZE 4
+ボムストック = PU_SKILLNUM_GET(ARG,"ボムリロード")
+CALL SKILLGAGE_F_SET,ARG,ボムストック,0
+
+;====================================================
+;追加コマンド(一番下)
+;====================================================
+@INPUT_COM_NAME_ボムリロード,ARG
+RESULTS = ボムリロード
+RESULTS:1 = 『ボムリロード』
+RETURN 2
+
+@INPUT_COM_ABLE_ボムリロード,ARG
+RESULTS = 効果発動中
+SIF PU_SKILLGAGE_F_GET(ARG,"ボムリロード") == 0
+	RETURN -1
+RETURN 1
+
+;====================================================
+;コマンド実行
+;====================================================
+@INPUT_COM_ボムリロード,ARG
+#DIM ボムストック
+#LOCALSIZE 5
+ボムストック = PU_SKILLNUM_GET(ARG,"ボムリロード")
+CALL GET_SKILL_COST,ボムストック,ARG
+PRINTFORML ドローンボムを補充しますか？(소비MP　{RESULT})
+CALL INPUT_YN
+IF RESULT == 0
+	CALL PRINT_ACT_MESSAGE, ARG, ボムストック
+	CALL ACTION_ボムリロード,ARG
+	CALL BATTLE_EVENT_ACT, ARG, ボムストック
+	CALL PAY_COST, ARG,ボムストック
+ENDIF
+RETURN -1
+
+;　 説明文の表示
+@SKILL_EXPLAIN_ボムリロード,ARG
+PRINTL ゲージ制御：ココアのドローンボムスキル制御用兼リロードスキル。
+PRINTL MPを消費し、ボムストックを最大数まで回復する。ストックが残っていても消費MPに変化はない。
+PRINTL 
+SETCOLOR 0x33ffcc
+PRINT ボムストック
+RESETCOLOR
+PRINTL ：ドローンボムを使用するために必要なコストとなるもの。
+PRINTL ストック数は最大４まで。戦闘終了でもリセットされず、ストックが無くなるとリロードが必要になる。
+RESETCOLOR
+;とくにない
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ボムリロード,ARG
+RETURN 1
+
+@DISPLAY_COMMAND_P_ボムリロード,ARG
+SELECTCASE PU_SKILLGAGE_F_GET(ARG,"ボムリロード")
+	CASE 0
+		RESULTS = ボム残量：★★★★
+	CASE 1
+		RESULTS = ボム残量：★★★☆
+	CASE 2
+		RESULTS = ボム残量：★★☆☆
+	CASE 3
+		RESULTS = ボム残量：★☆☆☆
+	CASE 4
+		RESULTS = ボム残量：☆☆☆☆
+ENDSELECT
+RETURN 3
+
+@SKILL_EX_DISPLAY_ボムリロード, ARG, ARGS
+#DIM L_VALUE
+#DIM L_MAX_VALUE
+RESULTS = Bomb:
+RESULTS += SET_COLOR_TAG("★" * (4 - PU_SKILLGAGE_F_GET(ARG, "ボムリロード")),"0x999999")
+RESULTS += SET_COLOR_TAG("☆" * (PU_SKILLGAGE_F_GET(ARG, "ボムリロード")),"0x999999")
+RESULTS += " " * (SKILL_EX_DISPLAY_LENS - (5 + 8))
+RESULTS:1 = ボムストック
+RETURN 1
+
+@SKILLGAGE_CHARGE_ボムリロード,ARG,ARG:1
+
+@継承不能_ボムリロード
+RETURN 1
+

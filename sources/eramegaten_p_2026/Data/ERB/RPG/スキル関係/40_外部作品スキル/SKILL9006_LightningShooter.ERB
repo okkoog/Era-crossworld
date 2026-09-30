@@ -1,0 +1,71 @@
+﻿;라이트닝슈터
+;このスキルを所持していることで他の雷遁スキルに影響を及ぼす
+
+;スキル名
+@SKILL_NAME_9006,ARG
+RESULTS = 뇌격의쌍권총
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_9006
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_9006, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_9006
+RETURN GET_SUCCESSION_NUM("자동효과")
+;何でもおｋ
+
+@継承不能_9006
+RETURN 1
+
+
+;スキル変化？用ランク
+@SKILL_RANK_9006, ARG = -1
+RETURN 10
+;変化不可
+
+
+@SKILL_PASSIVE_BTL_EFFECT_9006, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+#DIM TOTAL_DMG_B
+;自分が攻撃側かつライトニングシューターを装備時
+IF L_P == L_ACTOR && IS_CHARA_EQUIPED(L_P, "라이트닝슈터")
+	SELECTCASE ARGS
+		;スキル命中率に加算する。低命中スキルに影響度が高く、カジャンダによって効果量が増減する
+		CASE "スキル命中強化"
+			SELECTCASE CFLAG:L_P:입력행동
+				CASE [[스킬:뇌격]], [[스킬:뇌총격]], [[스킬:뇌운]]
+					RETURN 30
+				CASE [[스킬:뇌격파]]
+					RETURN 20
+				CASE [[스킬:뇌추＜토르해머＞]]
+					RETURN 40
+			ENDSELECT
+			RETURN 0
+	ENDSELECT
+ENDIF
+
+;　 説明文の表示
+@SKILL_EXPLAIN_9006, ARG
+PRINTL 유키카제의 강력한 뇌둔을 제어하기 위한 전용 쌍권총 겸 리미터
+PRINTL 그 위력은 유키카제 본래의 파워에는 못 미치지만 연사함으로써 커버가 가능
+PRINTL 자동: 라이트닝 슈터를 장비 중일 때 유키카제의 각 뇌둔 스킬의 명중이 상승하고 소비 MP를 조금 낮춘다
+
+@SKILL_ACTIONABLE_BATTLE_9006,ARG
+RETURN 0
+
+
+

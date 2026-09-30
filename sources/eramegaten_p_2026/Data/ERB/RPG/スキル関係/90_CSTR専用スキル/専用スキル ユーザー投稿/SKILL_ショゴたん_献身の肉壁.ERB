@@ -1,0 +1,113 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:献身の肉壁
+;	Facility	:HPバリアを付与するスキルのモデル
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/10/31		P(bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_献身の肉壁,ARG
+RESULTS = 헌신의 고기방패
+
+;　명중
+@SKILL_HITRATE_献身の肉壁, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_献身の肉壁, ARG
+RETURN 100
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_献身の肉壁,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_献身の肉壁,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_献身の肉壁, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_献身の肉壁,ARG
+RETURN 20
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_献身の肉壁
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_献身の肉壁,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;====================================================
+;攻撃手段
+;1.物理攻撃 2.魔法攻撃 3.총공격 4.アイテム攻撃(ダメージ計算時の依存ステータスに関わる)
+;関数がない場合はダメージタイプとおなじになる
+;====================================================
+@SKILL_ATTACKTYPE_献身の肉壁, ARG
+RETURN GET_攻撃タイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_献身の肉壁,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_献身の肉壁,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_献身の肉壁,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_献身の肉壁,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;속도보정
+@SKILL_SPEED_献身の肉壁, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_献身の肉壁
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_献身の肉壁,ARG,ARG:1,SKILL_NUM
+#DIM DYNAMIC L_COST
+#DIM DYNAMIC SKILL_NUM
+
+L_COST = MAXBASE:ARG:ＨＰ * 80 / 100
+IF L_COST > BASE:ARG:ＨＰ
+	CALL PRINT_HIT_MESSAGE, ARG, "ＨＰの不足により、スキルの使用に失敗"
+ELSE
+	;HPバリアのセット関数
+	;SKILL_SET_HPバリア, 対象のキャラ番号, バリアの耐久力, バリアの名称, "非表示"の場合メッセージ表示をとばす
+	CALL SKILL_SET_全体HPバリア, ARG, L_COST / 2, "献身の肉壁"
+	CALL PRINT_HIT_MESSAGE, ARG, @"{L_COST}데미지", "W"
+	CALL VAR_HP,ARG,-L_COST,"食いしばり無効ダメージ"
+	CALL PU_SKILLGAGE_H_ADD,ARG,"献身の肉壁",1
+ENDIF
+;　説明文の表示
+@SKILL_EXPLAIN_献身の肉壁,ARG
+PRINTL 자신의 육체를 깎아 아군에게 두르게 함으로써 데미지를 대신 받아내는 기술.
+PRINTL 
+PRINTL 자신에게 최대 HP의 80%에 상당하는 데미지를 준다.
+PRINTL 이 효과로 잃은 HP의 50%까지의 데미지를 흡수하는 배리어를 아군 전체에 전개한다.
+PRINTL 사용 제한: 1전투당 1회까지.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_献身の肉壁,ARG
+RESULTS = 使用回数制限
+SIF PU_SKILLGAGE_H_GET(ARG,"献身の肉壁") > 0
+	RETURN 0
+RETURN 1

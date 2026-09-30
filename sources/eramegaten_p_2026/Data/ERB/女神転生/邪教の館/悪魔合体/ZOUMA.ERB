@@ -1,0 +1,830 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:ZOUMA.ERB
+;	Facility	:造魔作成
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2013/11/24		ひみつ					リスト表示数設定
+;	003		2015/08/06		----					素材の保有MAGが譲渡されないバグを修正
+;	004		2017/06/23		kuni					キャラ表示でINPUT_CHARA_LISTを使用するように変更
+;	005		2018/08/22		JK好き					登録キャラ199人の状態で造魔作成を行うとエラー落ちする問題を修正
+;	006		2019/11/17		JK好き					造魔強化合体時の説明文が逆になっているのを修正
+;	007		2023/03/18		P(bazzile)				@MAKE_ZOUMAと@FUSION_ZOUMAの変数の一部に名称を付与
+;													造魔の継承スキルに制限を追加
+;	008		2023/05/30		P(bazzile)				継承素質の継承処理を追加
+;													戦闘素質の継承処理を追加
+;	009		2023/06/16		P(bazzile)				戦闘素質の継承処理が機能していなかった不具合を修正
+;													造魔強化合体時のFLAG:スキル数で見てる部分をキャラのスキル所持数でのカウントに変更
+;													造魔作成時のスキル選定処理で素材のスキル所持数が造魔のそれを超えている場合に対応
+;													素材とキャパシティが違うことを考慮して造魔作成時にも素質の選択処理を追加
+;	010		2023/06/29		P(bazzile)				造魔強化合体のスキル継承が正しく動作していなかった不具合を修正
+;	011		2023/08/06		P(bazzile)				継承可能なスキル判定の処理の一部を新関数を通す形に変更
+;	012		2023/08/22		P(bazzile)				造魔作成時にスキルを習得できなくなっていた不具合を修正
+;	013		2023/08/26		P(bazzile)				造魔の強化合体時及び削除時にTARGETとASSIがずれることがある不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;================================================================
+;造魔作成
+;================================================================
+@MAKE_ZOUMA
+#DIM LCOUNT
+#DIM L_SKILL
+#DIM L_PAGE
+#DIM SOZAI_DEVIL
+#DIM ZOUMA
+#DIM TEMP
+#DIMS TEMPS, 2
+#DIMS L_BTL_TALENT
+#DIM SKILL_LIST, HAVEABLE_SKILLNUM
+;SOZAI_DEVIL 素材の登録番号
+SOZAI_DEVIL = -1
+$START_MAKE
+
+;CALL INPUT_CHARA_LIST("素体にする悪魔を選んでください", "CASTING_MAKE_ZOUMA")
+{
+CALL INPUT_CHARA_LIST
+	, "PROPSET_FUSION"
+	, "素体にする悪魔を選んでください"
+	, "CASTING_MAKE_ZOUMA" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+IF RESULT == 1000
+	RETURN 0
+ENDIF
+
+SOZAI_DEVIL = RESULT
+ZOUMA = CHARANUM
+
+;一旦合体結果の悪魔をキャラ登録
+CALL ADD_NEW_COMPANION, [[キャラ:조마]],500, -1
+;なんらかの理由でキャラ登録できない場合
+IF RESULT == 0
+	PRINTW 캐릭터 등록이 불가능하므로 합체 처리를 중단합니다
+	RETURN 0
+ENDIF
+
+FOR LCOUNT, 0, SUCCESSIONNUM
+	TALENT:ZOUMA:GET_SUCCESSION(LCOUNT) = TALENT:SOZAI_DEVIL:GET_SUCCESSION(LCOUNT)
+NEXT
+
+;---- EDIT 009 MOD START -------------------------
+;-------------------------------------------------
+;スキル継承
+;基本的には継承できるものを弾いて全部いれるだけだが
+;枠が足りなくなる場合はランクが高いものを優先する
+;-------------------------------------------------
+;ランクとスキルをリストに入れる
+VARSET SKILL_LIST
+FOR LCOUNT, 1, CHARA_SKILLCOUNT(SOZAI_DEVIL) + 1
+	L_SKILL = ABL:SOZAI_DEVIL:@"스킬{LCOUNT}"
+	CALL IS_SUCCESSIONABLE_SKILL_ZOUMA, L_SKILL, ZOUMA
+	SIF !RESULT
+		CONTINUE
+	L_SKILL = RESULT
+	TEMP = FINDELEMENT(SKILL_LIST, 0)
+	SKILL_LIST:TEMP = L_SKILL
+	CALL GET_SKILL_PROP, "SKILL_RANK", L_SKILL, ZOUMA
+	SKILL_LIST:TEMP += RESULT * 100000
+	;ABL:ZOUMA:@"스킬{LCOUNT}" = L_SKILL
+NEXT
+;降順にソート
+ARRAYSORT SKILL_LIST, BACK
+;引き継ぎ範囲内のものを昇順にソート
+;ソート範囲は0がはいることでも変わるが、20枠全部埋まっている場合に-1をひっかえるとまずいのだけそこだけ場合わけしておく
+TEMP = MIN(CHARA_SKILLCOUNT(ZOUMA), FINDELEMENT(SKILL_LIST, 0))
+ARRAYSORT SKILL_LIST, FORWARD, 0, TEMP >= 0 ? TEMP # HAVEABLE_SKILLNUM
+;ランク情報を切って登録
+FOR LCOUNT, 0, CHARA_SKILLCOUNT(ZOUMA)
+	L_SKILL = SKILL_LIST:LCOUNT % 100000
+	ABL:ZOUMA:@"스킬{LCOUNT + 1}" = L_SKILL
+	;一応自力習得スキルとして登録しておく
+	CALL SET_LEARNED_SKILL, ZOUMA, TOSTR(L_SKILL)
+NEXT
+;---- EDIT 009 MOD END ---------------------------
+
+;FOR LOCAL, 1, FLAG:스킬수+1
+;	LOCALS = 스킬{LOCAL}
+;	ABL:ZOUMA:LOCALS = ABL:SOZAI_DEVIL:LOCALS
+;NEXT
+
+;能力継承
+FOR LOCAL,0,7
+	BASE:ZOUMA:(GET_BASESTATUS(LOCAL)) = BASE:SOZAI_DEVIL:(GET_BASESTATUS(LOCAL)) +1
+NEXT
+;CFLAG:ZOUMA:초기LV = CSVBASE(NO:(SOZAI_DEVIL),GETNUM(BASE,"LV"),0)
+CFLAG:ZOUMA:초기LV = BASE:ZOUMA:LV
+
+;調教効果による能力アップ
+BASE:ZOUMA:힘 += (ABL:SOZAI_DEVIL:욕망+1)/2
+BASE:ZOUMA:지혜 += (ABL:SOZAI_DEVIL:기교+1)/2
+BASE:ZOUMA:마력 += (ABL:SOZAI_DEVIL:욕망+1)/2
+BASE:ZOUMA:내구 += (ABL:SOZAI_DEVIL:순종+1)/2
+BASE:ZOUMA:속도 += (ABL:SOZAI_DEVIL:기교+1)/2
+BASE:ZOUMA:운 += (ABL:SOZAI_DEVIL:순종+1)/2
+
+;---- EDIT 008 ADD START -------------------------
+IF CSTR:SOZAI_DEVIL:잠재전투소질 != ""
+	FOR LCOUNT, 0, STRCOUNT(CSTR:SOZAI_DEVIL:잠재전투소질, "/") + 1
+		TEMPS = %AUTO_SPLIT(CSTR:SOZAI_DEVIL:잠재전투소질, "/", LCOUNT)%
+		TALENT:ZOUMA:AUTO_SPLIT(TEMPS, "_", 0) = TOINT(AUTO_SPLIT(TEMPS, "_", 1))
+	NEXT
+	CSTR:ZOUMA:잠재전투소질 = %CSTR:SOZAI_DEVIL:잠재전투소질%
+ENDIF
+;---- EDIT 008 ADD END ---------------------------
+
+;ガチャモードONで、ガチャ継承処理
+IF FLAG:악마가챠모드 > 0
+	SIF TALENT:SOZAI_DEVIL:가챠
+		TALENT:ZOUMA:가챠 = 1
+ENDIF
+
+SIF TALENT:SOZAI_DEVIL:무기
+	TALENT:ZOUMA:무기 = 1
+SIF TALENT:SOZAI_DEVIL:갈퀴
+	TALENT:ZOUMA:갈퀴 = 1
+SIF TALENT:SOZAI_DEVIL:갈퀴발
+	TALENT:ZOUMA:갈퀴발 = 1
+SIF TALENT:SOZAI_DEVIL:날개
+	TALENT:ZOUMA:날개 = 1
+SIF TALENT:SOZAI_DEVIL:꼬리
+	TALENT:ZOUMA:꼬리 = 1
+SIF TALENT:SOZAI_DEVIL:사격무기
+	TALENT:ZOUMA:사격무기 = 1
+SIF TALENT:SOZAI_DEVIL:모피
+	TALENT:ZOUMA:모피 = 1
+SIF TALENT:SOZAI_DEVIL:촉수
+	TALENT:ZOUMA:촉수 = 1
+SIF TALENT:SOZAI_DEVIL:부리
+	TALENT:ZOUMA:부리 = 1
+SIF TALENT:SOZAI_DEVIL:동물귀
+	TALENT:ZOUMA:동물귀 = 1
+SIF TALENT:SOZAI_DEVIL:유아체형
+	TALENT:ZOUMA:유아체형 = 1
+SIF TALENT:SOZAI_DEVIL:소인체형
+	TALENT:ZOUMA:소인체형 = 1
+SIF TALENT:SOZAI_DEVIL:큰체형
+	TALENT:ZOUMA:큰체형 = 1
+SIF TALENT:SOZAI_DEVIL:거체
+	TALENT:ZOUMA:거체 = 1
+
+;ソウルハッカーズの造魔の耐性変化をアレンジ　獣：獣型、爬虫類：竜型、←以外で羽持ち：天使型、←以外：人型
+IF TALENT:SOZAI_DEVIL:짐승
+	TALENT:ZOUMA:동물귀 = 1
+	TALENT:ZOUMA:꼬리 = 1
+	TALENT:ZOUMA:모피 = 1
+	BASE:ZOUMA:검격 = 75
+	BASE:ZOUMA:비구 = 75
+ELSEIF TALENT:SOZAI_DEVIL:파충류
+	TALENT:ZOUMA:꼬리 = 1
+	BASE:ZOUMA:충격 = 75
+	BASE:ZOUMA:핵열 = 75
+ELSEIF TALENT:ZOUMA:날개
+	BASE:ZOUMA:화염 = 75
+	BASE:ZOUMA:수격 = 75
+ELSE
+	BASE:ZOUMA:화염 = 75
+	BASE:ZOUMA:충격 = 75
+ENDIF
+
+;武器によって射程と相性が変更
+IF TALENT:ZOUMA:무기
+	ABL:ZOUMA:공격상성 = 0
+ELSEIF TALENT:ZOUMA:사격무기
+	ABL:ZOUMA:공격상성 = 1
+	ABL:ZOUMA:사거리 = 3
+ENDIF
+
+CALL SYNC_STATUS,ZOUMA
+CALL HEALTH_CHARA,ZOUMA
+CALL CONTROL_MAG,ZOUMA,BASE:SOZAI_DEVIL:ＭＡＧ+CFLAG:SOZAI_DEVIL:강화사용ＭＡＧ
+
+NAME:(ZOUMA) = %" "%
+CALLNAME:(ZOUMA) = %" "%
+
+CUSTOMDRAWLINE =
+;合体結果のステータスを表示
+U = ZOUMA
+L_PAGE = 2
+$PRINT_STATUS
+PRINTFORML %STR:(ABL:U:80)%　　%CALLNAME:U%　　
+CALLFORM SHOW_INFO_PAGE_{L_PAGE}
+SIF L_PAGE == 2
+	CALL SHOW_ADD_INFO_ZOUMA, U
+CUSTOMDRAWLINE =
+
+
+	;ステータスの表示切替用
+PRINTFORMLC \@ L_PAGE == 2 ? [1007]이전페이지 # %" " * 16% \@
+PRINTFORMLC                 
+PRINTFORMLC \@ L_PAGE == 1 ? [1009]다음페이지 # %" " * 16% \@
+PRINTL
+PRINTL
+
+;合体するかどうか　→　合体実行（実際には既に終わっている）
+PRINTL 이 악마로 결정하시겠습니까? [0]Yes [1]No
+$INPUT_LOOP
+INPUT
+IF RESULT == 1007 && L_PAGE == 2
+	L_PAGE = 1
+	GOTO PRINT_STATUS
+ELSEIF RESULT == 1009 && L_PAGE == 1
+	L_PAGE = 2
+	GOTO PRINT_STATUS
+ELSEIF RESULT == 1
+	DELCHARA ZOUMA
+	FOR LCOUNT, 0, 4
+		LOCAL:(LCOUNT+1) = -1
+	NEXT
+	RESTART
+ELSEIF RESULT == 0
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+;悪魔解析度が100未満なら100に。
+ANALYSIS_RATE:(NO:ZOUMA) = ANALYSIS_COMPLETED
+SETBIT IS_CHARA_COMPANIONED:(NO:ZOUMA), CFLAG:ZOUMA:이벤트가입 < 0 ? 0 # CFLAG:ZOUMA:이벤트가입
+
+;名称決定
+CALL NAME_ZOUMA,ZOUMA
+
+;作成時のセリフを表示
+TRYCCALLFORM FUSION_MESSAGE_K{NO:(ZOUMA)},ZOUMA
+
+CATCH
+	TRYCALLFORM FUSION_MESSAGE_PUB{ABL:ZOUMA:회화타입},ZOUMA
+ENDCATCH
+
+;忠誠度による素質変更
+CALL MAKE_TALENT,ZOUMA, GET_LOYALTY_POINT_MAKE_ZOUMA(SOZAI_DEVIL)
+
+PRINTFORMW %STR:(ABL:ZOUMA:종족)% %CALLNAME:(ZOUMA)%이(가) 동료마가 되었다.
+
+;---- EDIT 009 ADD START -------------------------
+CALL SET_ROLE_CP, ZOUMA
+IF GET_ROLE_CP(ZOUMA, "通常形態") < 0
+	DRAWLINE
+	PRINTFORML %CALLNAME:(ZOUMA)%의 소질 코스트가 수용량의 상한을 초과했습니다.
+	PRINTFORMW 남길 소질을 선택해주세요.
+	DRAWLINE
+	CALL SET_VAR_HAVE_SUB_ROLE, ZOUMA, "通常形態", L_BTL_TALENT
+	;サブ素質を設定
+	CALL ENHANCE_ROLE, ZOUMA, "通常形態", L_BTL_TALENT, , "戻る不可"
+	;造魔の場合は残さなかった潜在素質を削る
+	TEMPS:1 = 
+	IF STRCOUNT(CSTR:(ZOUMA):잠재전투소질, "/") > 0
+		FOR LCOUNT, 0, STRCOUNT(CSTR:(ZOUMA):잠재전투소질, "/") + 1
+			TEMPS = %AUTO_SPLIT(CSTR:(ZOUMA):잠재전투소질, "/", LCOUNT)%
+			TEMPS = %AUTO_SPLIT(TEMPS, "_", 0)%
+			SIF TALENT:(ZOUMA):TEMPS
+				TEMPS:1 = %ADD_SPLIT(TEMPS:1, "/", TEMPS + "_" + TOSTR(TALENT:(ZOUMA):TEMPS))%
+		NEXT
+		CSTR:(ZOUMA):잠재전투소질 = %TEMPS:1%
+	ENDIF
+ENDIF
+;---- EDIT 009 ADD END ---------------------------
+
+CALL FUSION_LETTER,SOZAI_DEVIL,3
+
+
+;合体素材の悪魔を消去
+SIF GET_STATE(CFLAG:SOZAI_DEVIL:상태이상) == "DYING"
+	CALL INCREASE_LD,-7
+CALL キャラ削除, SOZAI_DEVIL
+
+ITEM:도리・카드몬 -= 1
+
+RETURN 0
+
+GOTO START_MAKE
+
+
+@CASTING_MAKE_ZOUMA(ARG)
+SIF 계약(ARG) > 0
+	RETURN 0
+SIF !GET_ROLE_PROP("CAN_FUSION", ARG)
+	RETURN 0
+SIF IS_RENTING(ARG)
+	RETURN 0
+SIF CFLAG:ARG:합체소재사용금지
+	RETURN 0
+SIF CFLAG:ARG:이자리에없는플래그 == 1
+	RETURN 0
+RETURN 1
+
+
+;==========================================================================
+;造魔をドリー・カドモンに戻す
+;==========================================================================
+@DEL_ZOUMA
+
+;CALL INPUT_CHARA_LIST("どの造魔をドリー・カドモンに戻しますか？", "CASTING_DEL_ZOUMA")
+{
+CALL INPUT_CHARA_LIST
+	, "PROPSET_FUSION"
+	, "どの造魔をドリー・カドモンに戻しますか？"
+	, "CASTING_DEL_ZOUMA" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+IF RESULT == 1000
+		RETURN 0
+ENDIF
+
+LOCAL:1 = RESULT
+PRINTFORMW %NAME:(LOCAL:1)%은(는) 돌리・카도몬으로 되돌아갔다
+
+CALL FUSION_LETTER, LOCAL:1,5
+
+;---- EDIT 013 DEL START -------------------------
+;IF TARGET == LOCAL:1
+;	TARGET = -1
+;ELSE
+;	SIF TARGET > LOCAL:1
+;		TARGET -= 1
+;ENDIF
+;IF ASSI == LOCAL:1
+;	ASSI = -1
+;ELSE
+;	SIF ASSI > LOCAL:1
+;		ASSI -= 1
+;ENDIF
+;---- EDIT 013 DEL END ---------------------------
+
+;合体素材の悪魔を消去
+;SIF CFLAG:(LOCAL:1):포지션 > 0
+;	CALL REMOVE_POSITION,CFLAG:(LOCAL:1):포지션
+;DELCHARA LOCAL:1
+CALL キャラ削除, LOCAL:1
+;ポジションに齟齬が発生するので、FLAG側を初期化＋CFLAG側から読み込み
+;CALL REFRESH_POS
+
+ITEM:도리・카드몬 += 1
+
+@CASTING_DEL_ZOUMA(ARG)
+SIF GET_RACE(ABL:ARG:종족) != "조마"
+	RETURN 0
+;ユニークな造魔は初期化できない
+SIF CSVCFLAG(NO:ARG, GETNUM(CFLAG, "복수생성가능")) == 0
+	RETURN 0
+SIF CFLAG:ARG:이자리에없는플래그 == 1
+	RETURN 0
+;労役中はダメ
+SIF IS_RENTING(ARG)
+	RETURN 0
+RETURN 1
+
+;================================================================
+;造魔強化合体
+;================================================================
+@FUSION_ZOUMA
+#DIM LCOUNT,2
+#DIMS DYNAMIC L_MESSAGE
+#DIM TEMP_SKILL
+#DIM STOCK_SKILL
+#DIM TEMP_RANK
+#DIM STOCK_RANK
+#DIM TEMP
+#DIMS TEMPS, 2
+#DIM SUCCESSION_BY_HAVE_SKILL, SUCCESSIONNUM
+#DIMS L_BTL_TALENT
+#DIM STOCK_ZOUMA
+#DIM SET_SKILL, HAVEABLE_SKILLNUM * 2 + 1
+;#DIM 強化する造魔
+;#DIM 合体素材
+FLAG:합체소재악마1 = -1
+FLAG:합체소재악마2 = -1
+$START_FUSION
+
+;IF FLAG:합체소재악마1 > -1
+;	CALL INPUT_CHARA_LIST("합체시키고 싶은 악마를 선택해주세요", "CASTING_FUSION_ZOUMA", "", "DOWN_PRINT_FUSION_ZOUMA")
+;ELSE
+;	CALL INPUT_CHARA_LIST("強化する造魔を選んでください", "CASTING_FUSION_ZOUMA", "", "DOWN_PRINT_FUSION_ZOUMA")
+;ENDIF
+IF FLAG:합체소재악마1 > -1
+	L_MESSAGE = 합체시키고 싶은 악마를 선택해주세요
+ELSE
+	L_MESSAGE = 強化する造魔を選んでください
+ENDIF
+{
+CALL INPUT_CHARA_LIST
+	, "PROPSET_FUSION"
+	, L_MESSAGE
+	, "CASTING_FUSION_ZOUMA" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "DOWN_PRINT_FUSION_ZOUMA"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+IF RESULT == 1000
+	IF FLAG:합체소재악마1 > -1
+		FLAG:합체소재악마1 = -1
+		GOTO START_FUSION
+	ELSE
+		RETURN 0
+	ENDIF
+ENDIF
+
+
+
+IF FLAG:합체소재악마1 > 0
+	FLAG:합체소재악마2 = RESULT
+	;リセット用にキャラをコピーしておく
+	ADDCOPYCHARA FLAG:합체소재악마1
+	STOCK_ZOUMA = CHARANUM - 1
+	;能力を保存
+	VARSET SET_SKILL
+
+	;能力平均化処理
+	FOR LOCAL, 1, 7
+		IF BASE:(FLAG:합체소재악마1):(GET_BASESTATUS(LOCAL)) < MAXBASE:(FLAG:합체소재악마2):GET_BASESTATUS(LOCAL)
+			BASE:(FLAG:합체소재악마1):(GET_BASESTATUS(LOCAL)) = (BASE:(FLAG:합체소재악마1):(GET_BASESTATUS(LOCAL)) + MAXBASE:(FLAG:합체소재악마2):(GET_BASESTATUS(LOCAL))*3)/4
+		ELSE
+			BASE:(FLAG:합체소재악마1):(GET_BASESTATUS(LOCAL)) = (BASE:(FLAG:합체소재악마1):(GET_BASESTATUS(LOCAL)) * 2 + MAXBASE:(FLAG:합체소재악마2):(GET_BASESTATUS(LOCAL))*3)/5
+		ENDIF
+	NEXT
+	;Lvは上がりづらく
+	BASE:(FLAG:합체소재악마1):LV = MAX(BASE:(FLAG:합체소재악마1):LV, (BASE:(FLAG:합체소재악마1):LV * 3 + BASE:(FLAG:합체소재악마2):LV) / 4)
+	
+	;スキルの処理
+	IF !SOFT_ON("스킬키퍼")
+		;SET_SKILL配列に習得可能なスキルをセット
+		FOR LCOUNT:1, 0, 2
+			FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+				TEMP_SKILL = ABL:(FLAG:@"합체소재악마{LCOUNT:1+1}"):@"스킬{LCOUNT+1}"
+				SIF TEMP_SKILL == 0
+					CONTINUE
+				;条件チェック
+				CALL IS_SUCCESSIONABLE_SKILL_ZOUMA, TEMP_SKILL, FLAG:합체소재악마1
+				SIF !RESULT
+					CONTINUE
+				TEMP_SKILL = RESULT
+				SIF MATCH(SET_SKILL, TEMP_SKILL)
+					CONTINUE
+				SET_SKILL:FINDELEMENT(SET_SKILL, 0) = TEMP_SKILL
+			NEXT
+		NEXT
+		FOR LCOUNT, 0, VARSIZE("SET_SKILL")
+			SIF SET_SKILL:LCOUNT == 0
+				CONTINUE
+			CALL GET_SKILL_PROP, "SKILL_RANK", SET_SKILL:LCOUNT, FLAG:합체소재악마1
+			SET_SKILL:LCOUNT += RESULT * 100000
+		NEXT
+		ARRAYSORT SET_SKILL:LCOUNT, BACK
+		FOR LCOUNT, 0, VARSIZE("SET_SKILL")
+			SET_SKILL:LCOUNT %= 100000
+		NEXT
+		CALL CLEAR_ALL_SKILL, FLAG:합체소재악마1
+		FOR LCOUNT, 0, CHARA_SKILLCOUNT(FLAG:합체소재악마1)
+			ABL:(FLAG:합체소재악마1):@"스킬{LCOUNT+1}" = SET_SKILL:LCOUNT
+		NEXT
+	ENDIF
+	;---- EDIT 008 ADD START -------------------------
+	VARSET SUCCESSION_BY_HAVE_SKILL
+	FOR LCOUNT, 1, CHARA_SKILLCOUNT(FLAG:합체소재악마1) + 1
+		SIF !ABL:(FLAG:합체소재악마1):@"스킬{LCOUNT}"
+			CONTINUE
+		CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", ABL:(FLAG:합체소재악마1):@"스킬{LCOUNT}", FLAG:합체소재악마1
+		SIF INRANGE(RESULT, 0, VARSIZE("SUCCESSION_BY_HAVE_SKILL") - 1)
+			SUCCESSION_BY_HAVE_SKILL:RESULT = 1
+	NEXT
+
+	;素質の処理
+	;元の素質 / 素材の素質 / 所持スキルの継承素質区分のうち２つが真なら素質がつく
+	FOR LCOUNT, 0, SUCCESSIONNUM
+		TEMP = 0
+		SIF SUCCESSION_BY_HAVE_SKILL:LCOUNT
+			TEMP++
+		SIF TALENT:(FLAG:합체소재악마1):GET_SUCCESSION(LCOUNT)
+			TEMP++
+		SIF TALENT:(FLAG:합체소재악마2):GET_SUCCESSION(LCOUNT)
+			TEMP++
+		TALENT:(FLAG:합체소재악마1):GET_SUCCESSION(LCOUNT) = (TEMP >= 2)
+	NEXT
+	;---- EDIT 009 MOD START -------------------------
+	;戦闘素質の変更
+	IF CSTR:(FLAG:합체소재악마2):잠재전투소질 != ""
+		FOR LCOUNT, 0, STRCOUNT(CSTR:(FLAG:합체소재악마2):잠재전투소질, "/") + 1
+			TEMPS = %AUTO_SPLIT(CSTR:(FLAG:합체소재악마2):잠재전투소질, "/", LCOUNT)%
+			IF TALENT:(FLAG:합체소재악마1):AUTO_SPLIT(TEMPS, "_", 0) <  TOINT(AUTO_SPLIT(TEMPS, "_", 1))
+				TALENT:(FLAG:합체소재악마1):AUTO_SPLIT(TEMPS, "_", 0) = MAX(TALENT:(FLAG:합체소재악마1):AUTO_SPLIT(TEMPS, "_", 0), TOINT(AUTO_SPLIT(TEMPS, "_", 1)))
+				CALL ADD_潜在戦闘素質, FLAG:합체소재악마1, AUTO_SPLIT(TEMPS, "_", 0), TOINT(AUTO_SPLIT(TEMPS, "_", 1))
+			ENDIF
+		NEXT
+		;CSTR:(FLAG:합체소재악마1):잠재전투소질 = %CSTR:(FLAG:합체소재악마2):잠재전투소질%
+	ENDIF
+	;---- EDIT 009 MOD END ---------------------------
+	;---- EDIT 008 ADD END ---------------------------
+	;ガチャモードONで両方ガチャ素質持ってるか検出、持ってないなら一時的に-999に
+	IF FLAG:악마가챠모드 > 0
+		SIF TALENT:(FLAG:합체소재악마1):가챠 > 0 && TALENT:(FLAG:합체소재악마2):가챠 <= 0
+			TALENT:(FLAG:합체소재악마1):가챠 = -999
+	ENDIF
+	CALL SYNC_STATUS, FLAG:합체소재악마1
+	CALL HEALTH_CHARA, FLAG:합체소재악마1
+	CUSTOMDRAWLINE =
+	;合体結果のステータスを表示
+	U = FLAG:합체소재악마1
+	PRINTFORML %STR:(ABL:U:80)%　　%CALLNAME:U%　　
+	CALL SHOW_INFO_PAGE_2
+	CALL SHOW_ADD_INFO_ZOUMA, FLAG:합체소재악마1;EDIT ADD 008
+	CUSTOMDRAWLINE =
+
+	;合体するかどうか　→　合体実行（実際には既に終わっている）
+	PRINT 이 악마로 결정하시겠습니까?
+
+	CALL INPUT_YN,"Yes","No",2
+
+	IF RESULT == 1
+		;ストックしておいたキャラと入れ替えて復元
+		SWAPCHARA STOCK_ZOUMA, FLAG:합체소재악마1
+		DELCHARA STOCK_ZOUMA
+		;ガチャモードONならガチャ素質を復元
+		;SIF FLAG:악마가챠모드 == -999
+		;	TALENT:(FLAG:합체소재악마1):가챠 = 1
+
+		;能力とスキルを復元
+		;FOR LOCAL,0,7
+		;	BASE:(FLAG:합체소재악마1):(GET_BASESTATUS(LOCAL)) = LOCAL:(10+LOCAL)
+		;NEXT
+		;FOR LOCAL,1,FLAG:스킬수+1
+		;	LOCALS = 스킬{LOCAL}
+		;	ABL:(FLAG:합체소재악마1):LOCALS = LOCAL:(20+LOCAL) 
+		;NEXT
+		;	CALL SYNC_STATUS, FLAG:합체소재악마1
+		;	CALL HEALTH_CHARA, FLAG:합체소재악마1
+		RESTART
+	ENDIF
+	;この時点でストックが必要なくなるので削除
+	DELCHARA STOCK_ZOUMA
+	;ＭＡＧを吸収
+	CALL CONTROL_MAG, FLAG:합체소재악마1, GET_CHARA_STOCK_MAG(FLAG:합체소재악마2)+CFLAG:(FLAG:합체소재악마2):강화사용ＭＡＧ
+	;---- EDIT 008 ADD START -------------------------
+	CALL SET_ROLE_CP, FLAG:합체소재악마1
+	IF GET_ROLE_CP(FLAG:합체소재악마1, "通常形態") < 0
+		DRAWLINE
+		PRINTFORML %CALLNAME:(FLAG:합체소재악마1)%의 소질 코스트가 수용량의 상한을 초과했습니다.
+		PRINTFORMW 남길 소질을 선택해주세요.
+		DRAWLINE
+		CALL SET_VAR_HAVE_SUB_ROLE, FLAG:합체소재악마1, "通常形態", L_BTL_TALENT
+		;サブ素質を設定
+		CALL ENHANCE_ROLE, FLAG:합체소재악마1, "通常形態", L_BTL_TALENT, , "戻る不可"
+		;---- EDIT 009 ADD START -------------------------
+		;造魔の場合は残さなかった潜在素質を削る
+		TEMPS:1 = 
+		IF STRCOUNT(CSTR:(FLAG:합체소재악마1):잠재전투소질, "/") > 0
+			FOR LCOUNT, 0, STRCOUNT(CSTR:(FLAG:합체소재악마1):잠재전투소질, "/") + 1
+				TEMPS = %AUTO_SPLIT(CSTR:(FLAG:합체소재악마1):잠재전투소질, "/", LCOUNT)%
+				TEMPS = %AUTO_SPLIT(TEMPS, "_", 0)%
+				SIF TALENT:(FLAG:합체소재악마1):TEMPS
+					TEMPS:1 = %ADD_SPLIT(TEMPS:1, "/", TEMPS + "_" + TOSTR(TALENT:(FLAG:합체소재악마1):TEMPS))%
+			NEXT
+			CSTR:(FLAG:합체소재악마1):잠재전투소질 = %TEMPS:1%
+		ENDIF
+		;---- EDIT 009 ADD END ---------------------------
+	ENDIF
+	;---- EDIT 008 ADD END ---------------------------
+;---忠誠度による素質変更--------------------------
+	SIF TALENT:(FLAG:합체소재악마1):아내 || TALENT:(FLAG:합체소재악마1):남편 || TALENT:(FLAG:합체소재악마1):음마 || TALENT:(FLAG:합체소재악마1):노리개
+		CALL MAKE_TALENT, FLAG:합체소재악마1, GET_LOYALTY_POINT()
+;-------------------------------------------------
+	;IF TALENT:(FLAG:합체소재악마2):창부 || TALENT:(FLAG:합체소재악마2):친애 || TALENT:(FLAG:합체소재악마2):예속
+	;	CALL 造魔耐性強化(FLAG:합체소재악마1,1)
+	;ELSEIF TALENT:(FLAG:합체소재악마2):음란 || TALENT:(FLAG:합체소재악마2):연모 || TALENT:(FLAG:합체소재악마2):복종
+	;	CALL 造魔耐性強化(FLAG:합체소재악마1,0)
+	;ENDIF
+;	;作成時のセリフを表示
+;	TRYCCALLFORM FUSION_MESSAGE_K{NO:(FLAG:합체소재악마1)},LOCAL:3
+;	
+;	
+;	
+;	CATCH
+;		TRYCALLFORM FUSION_MESSAGE_PUB{ABL:(FLAG:합체소재악마1):회화타입},LOCAL:3
+;	ENDCATCH
+;	
+;	;ここに忠誠度による素質変化とか予定
+;	CALL MAKE_TALENT,LOCAL:3,(BASE:(FLAG:합체소재악마1):충성도+BASE:(FLAG:합체소재악마2):충성도)
+;	BASE:(LOCAL:3):충성도 = MAX(100,RESULT/2)
+;	
+;	PRINTFORMW %STR:(ABL:(LOCAL:3):종족)% %CALLNAME:(LOCAL:3)%が仲魔になった。
+	
+	;---- EDIT 013 DEL START -------------------------
+	;IF TARGET == FLAG:합체소재악마2
+	;	TARGET = -1
+	;ELSE
+	;	SIF TARGET > FLAG:합체소재악마2
+	;		TARGET -= 1
+	;ENDIF
+	;IF ASSI == FLAG:합체소재악마2
+	;	ASSI = -1
+	;ELSE
+	;	SIF ASSI > FLAG:합체소재악마2
+	;		ASSI -= 1
+	;ENDIF
+	;---- EDIT 013 DEL END ---------------------------
+
+	;手紙システム
+	CALL FUSION_LETTER, FLAG:합체소재악마2, 4
+	
+	;合体素材の悪魔を消去
+	SIF GET_STATE(CFLAG:(FLAG:합체소재악마2):상태이상) == "DYING"
+		CALL INCREASE_LD,-7
+	CALL キャラ削除, FLAG:합체소재악마2
+	FLAG:합체소재악마1 = -1
+	FLAG:합체소재악마2 = -1
+	RETURN 0
+ELSE
+	FLAG:합체소재악마1 = RESULT
+ENDIF
+
+GOTO START_FUSION
+
+@CASTING_FUSION_ZOUMA(ARG)
+SIF 계약(ARG) > 0 && FLAG:합체소재악마1 > -1 
+	RETURN 0
+IF FLAG:합체소재악마1 == -1
+	SIF GET_RACE(ABL:ARG:종족) != "조마"
+		RETURN 0
+ELSE
+	SIF !GET_ROLE_PROP("CAN_FUSION", ARG)
+		RETURN 0
+ENDIF
+SIF ARG == FLAG:합체소재악마1 || ARG == FLAG:합체소재악마2
+	RETURN 0
+SIF IS_RENTING(ARG)
+	RETURN 0
+SIF CFLAG:ARG:합체소재사용금지
+	RETURN 0
+SIF CFLAG:ARG:이자리에없는플래그 == 1
+	RETURN 0
+RETURN 1
+
+@DOWN_PRINT_FUSION_ZOUMA
+SIF FLAG:합체소재악마1 > -1
+	PRINTFORML 선택 조마:%CALLNAME:(FLAG:합체소재악마1)%
+;SIF FLAG:합체소재악마2 > -1
+;	PRINTFORML ２体目:%CALLNAME:(FLAG:합체소재악마2)%
+
+;===========================================
+;造魔の名前決定
+;===========================================
+@NAME_ZOUMA,ARG
+PRINTL 조마의 이름을 지어주세요
+
+	CALL CREATE_RANDOM_NAME_IF
+	NAME:ARG     = %RESULTS%
+	CALLNAME:ARG = %RESULTS%
+
+@造魔耐性強化(ARG,ARG:1)
+#DIM LCOLOR
+LCOLOR = GETCOLOR()
+PRINTFORMW 함락 소질을 보유한 악마를 소재로 삼았으므로, 상성을 하나 \@ ARG:1 ? 무효 # 반감\@으로 만들 수 있습니다.
+IF CFLAG:ARG:변경상성1
+	PRINTFORM 현재 강화 중인 상성：%GET_TYPE(CFLAG:ARG:변경상성1 - 1) %
+	CALL SET_AISYOU_COLOR(CFLAG:ARG:변경상성치1)
+	PRINTFORML \@ CFLAG:ARG:변경상성치1 < 0 ? 흡 # 　 \@\@ CFLAG:ARG:변경상성치1 != 999 ? {ABS(CFLAG:ARG:변경상성치1), 3}％ # %" "%반사 \@
+	SETCOLOR LCOLOR
+ENDIF
+DRAWLINE
+PRINTL 어느 상성을 변경하시겠습니까?
+FOR LOCAL, 0, TYPENUM - 1
+	SIF LOCAL >= 8 && LOCAL <= 11
+		CONTINUE
+	PRINTFORM [{LOCAL, 2}]%GET_TYPE(LOCAL)% 
+	CALL SET_AISYOU_COLOR(MAXBASE:ARG:(GET_TYPE(LOCAL)))
+	PRINTFORM \@ MAXBASE:ARG:(GET_TYPE(LOCAL)) < 0 ? 흡 # 　 \@
+	PRINTFORM \@ MAXBASE:ARG:(GET_TYPE(LOCAL)) != 999 ? {ABS(MAXBASE:ARG:(GET_TYPE(LOCAL))), 3}％ # %" "%반사 \@　
+	PRINTFORM \@ LOCAL % 6 == 5 ? \n # \@
+	SETCOLOR LCOLOR
+NEXT
+PRINTL 
+DRAWLINE
+PRINTL [100] 변경하지 않는다
+DRAWLINE
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT < 0 || RESULT >= TYPENUM-1 || (RESULT >= 8 && RESULT <= 11)
+	GOTO INPUT_LOOP
+ENDIF
+CFLAG:ARG:변경상성1 = RESULT+1
+
+PRINTFORM %CALLNAME:ARG%의 신체는 %GET_TYPE(CFLAG:ARG:변경상성1 - 1)%
+IF !ARG:1
+	CFLAG:ARG:변경상성치1 = 50
+	PRINTW 반감이 되었다.
+ELSE
+	CFLAG:ARG:변경상성치1 = 0
+	PRINTW 무효가 되었다.
+ENDIF
+DRAWLINE
+;---- EDIT 011 MOD START -------------------------
+;==========================================
+;造魔のスキル継承チェック
+;
+;習得できない場合の代替スキルがあるならRESULTはそれで返す
+;習得できるならスキル番号をそのまま返す
+;==========================================
+@IS_SUCCESSIONABLE_SKILL_ZOUMA, L_SKILL, ARG
+#DIM L_SKILL
+#DIM L_RESULT
+L_RESULT = 1
+;スキルがなかったら中断
+SIF L_SKILL == 0
+	L_RESULT = 0
+;スキルがCSTR専用技だったら中断
+SIF IS_PU_SKILLNUM(L_SKILL)
+	L_RESULT = 0
+;強度の高い継承不能
+CALL GET_SKILL_PROP, "継承不能", L_SKILL, ARG
+SIF RESULT == 2
+	L_RESULT = 0
+;---- EDIT 012 MOD START -------------------------
+;敵専用/ロールチェック
+CALL IS_SKILL_HAVEABLE, L_SKILL, ARG, "通常形態", "レベル習得時"
+;---- EDIT 012 MOD END ---------------------------
+SIF !RESULT
+	L_RESULT = 0
+;링크불능　固有のフラグ等を用いるスキルである可能性が高いので弾く
+CALL GET_SKILL_PROP, "링크불능", L_SKILL, ARG
+SIF RESULT
+	L_RESULT = 0
+IF L_RESULT == 0
+	CALL GET_SKILL_PROP, "置換スキル", L_SKILL, ARG
+	RETURN RESULT
+ENDIF
+RETURN L_SKILL
+;---- EDIT 011 MOD END ---------------------------
+;---- EDIT 008 ADD START -------------------------
+;==========================================
+;造魔の追加情報表示
+;
+;戦闘素質と継承素質を表示する
+;==========================================
+@SHOW_ADD_INFO_ZOUMA, ARG
+#DIM LCOUNT
+#DIMS L_TALENT
+#DIMS SHOW_LINE
+SHOW_LINE = □資質：
+FOR LCOUNT, 0, VARSIZE("TALENT")
+	SIF GET_SUB_ROLE_NUM(TALENTNAME:LCOUNT) < 0
+		CONTINUE
+	SIF !TALENT:ARG:LCOUNT
+		CONTINUE
+	L_TALENT = [%GETS_SUB_ROLE_PROP("NAME", TALENTNAME:LCOUNT, ARG)%]
+	CALL GET_TALENT_EXPLAIN, LCOUNT
+	L_TALENT = <nonbutton title = '%RESULTS%'>%L_TALENT%</nonbutton>
+	L_TALENT += " "
+	IF (STRLENS(HTML_TOPLAINTEXT(SHOW_LINE)) + STRLENS(HTML_TOPLAINTEXT(L_TALENT))) > LINELENS
+		HTML_PRINT SHOW_LINE
+		SHOW_LINE = 　　　　
+	ENDIF
+	SHOW_LINE += L_TALENT
+NEXT
+SIF SHOW_LINE != ""
+	HTML_PRINT SHOW_LINE
+PRINTL 
+
+DRAWLINE
+SHOW_LINE = □継承：
+FOR LCOUNT, 0, SUCCESSIONNUM
+	L_TALENT = %GET_SUCCESSION(LCOUNT)%
+	SIF !TALENT:ARG:L_TALENT
+		CONTINUE
+	CALL GET_TALENT_EXPLAIN, , L_TALENT
+	L_TALENT = <nonbutton title = '%RESULTS%'>[%L_TALENT%]</nonbutton>
+	L_TALENT += " "
+	IF (STRLENS(HTML_TOPLAINTEXT(SHOW_LINE)) + STRLENS(HTML_TOPLAINTEXT(L_TALENT))) > LINELENS
+		HTML_PRINT SHOW_LINE
+		SHOW_LINE = 　　　　
+	ENDIF
+	SHOW_LINE += L_TALENT
+NEXT
+IF SHOW_LINE != ""
+	IF SHOW_LINE == "□継承："
+		PRINTL □계승: 없음
+	ELSE
+		HTML_PRINT SHOW_LINE
+	ENDIF
+ENDIF
+PRINTL 
+;---- EDIT 008 ADD END ---------------------------

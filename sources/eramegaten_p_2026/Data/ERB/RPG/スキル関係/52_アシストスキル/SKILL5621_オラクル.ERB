@@ -1,0 +1,298 @@
+﻿; 오라클
+; 時間をおいて発動するようなスキルの作り方わかんないし即時発動
+; 内容は無印FESとPごちゃまぜで8種類。ただし、MP(=SP)回復は露骨にいやらしく確率を1%未満に下げておく
+; 原作のような行動消費しない回復支援行動でもないし別にどうでもいいのかもしれないけど
+; MP回復引くまでリロードゲーになるようならMP回復削除か……
+;18/07/30一人一日一回ならもう少し確率上げても大丈夫でしょう
+;これで回復引くまで粘るぐらいならレベル上げて出直して来いって話ですわ
+;23/05/11 P
+;時差発動にして効果を調整しアシストスキル化
+
+;スキル名
+@SKILL_NAME_5621, ARG
+RESULTS = 오라클
+
+;　명중
+@SKILL_HITRATE_5621, ARG
+RETURN 0
+
+;　威力
+@SKILL_POWER_5621, ARG
+SIF ARG < 0
+	RETURN 0
+SELECTCASE SKILL_5621_GET_ORACLE_EFFECT(ARG)
+	CASE "HP回復"
+		RETURN 160
+	CASE "HP全回復"
+		RETURN 1000
+	CASEELSE
+		RETURN 0
+ENDSELECT
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_5621, ARG
+RETURN 0
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_5621, ARG
+RETURN 0
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_5621, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("TURN")
+
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_5621, ARG
+RETURN 5
+
+;　相性
+@SKILL_TYPE_5621, ARG
+RETURN GET_TYPE_NUM("없음")
+;相性なし
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_5621
+RETURN GET_SKILL_DECIDE_TYPE_NUM("AS")
+;MAGIC
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_5621, ARG
+RETURN GET_SKILL_TARGET_NUM("특수")
+
+;　사거리
+@SKILL_RANGE_5621, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_5621, ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_5621, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+@SKILL_HEAL_TYPE_5621, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("割合")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_5621
+RETURN GET_SUCCESSION_NUM("지원")
+@継承不能_5621
+RETURN 2
+;継承不可
+
+;속도보정
+@SKILL_SPEED_5621, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_5621
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_5621, ARG = -1
+RETURN 15
+
+;変化不可
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_5621, ARG, ARG:1, ARG:2
+#DIM LCOUNT
+#DIMS L_EFFECT
+IF SKILL_5621_GET_ORACLE_EFFECT(ARG) == "未発動"
+	CALL SKILLGAGE_D_SET, ARG, 5621, 2
+	SELECTCASE RAND:10000
+		CASE IS < 1500
+			L_EFFECT = 異常回復
+			PRINTFORMW ＞턴 종료시에 아군 전원의 배드스테이터스를 회복한다！
+		CASE IS < 2500
+			L_EFFECT = 全能力アップ
+			PRINTFORMW ＞턴 종료시에 아군 전원의 모든 능력이 UP한다！
+		CASE IS < 3000
+			L_EFFECT = 全能力大幅アップ
+			PRINTFORMW ＞턴 종료시에 아군 전원의 모든 능력이 대폭 UP한다！
+		CASE IS < 3500
+			L_EFFECT = 能力アップダウン解除
+			PRINTFORMW ＞턴 종료시에 아군 전원의 능력의 UP과 DOWN이 해제된다！
+		CASE IS < 4500
+			L_EFFECT = クリティカル率アップ
+			PRINTFORMW ＞턴 종료시에 아군 전원의 크리티컬률이 대폭 UP한다！
+		CASE IS < 5000
+			L_EFFECT = 気合集中
+			PRINTFORMW ＞턴 종료시에 아군 전원이 다음의 물리공격력과 마법공격력을 대폭 증가하는 효과를 얻는다！
+		CASE IS < 6000
+			L_EFFECT = HP全回復
+			PRINTFORMW ＞턴 종료시에 아군 전원의 ＨＰ가 전부 회복한다！
+		CASE IS < 7000
+			L_EFFECT = HP回復
+			PRINTFORMW ＞턴 종료시에 아군 전원의 ＨＰ가 회복한다！
+		CASE IS < 7500
+			L_EFFECT = 護りの盾
+			PRINTFORMW ＞턴 종료시에 아군 전원이 적의 공격을 무효화하는 효과를 얻는다！
+		CASE IS < 8500
+			L_EFFECT = MP消費半減
+			PRINTFORMW ＞다음 턴、아군 전원의 소비 ＭＰ가 50\% 환원되게 된다！
+		CASE IS < 9000
+			L_EFFECT = MP消費無効
+			PRINTFORMW ＞다음 턴、아군 전원의 소비 ＭＰ가 100\% 환원되게 된다！
+		CASEELSE 
+			L_EFFECT = 瀕死
+			PRINTFORMW ＞턴 종료시에、아군 전원의 대 데미지를 받는다！
+	ENDSELECT
+	FOR LCOUNT, 0, 20
+		SIF L_EFFECT == SKILL_5621_ORACLE_EFFECT(LCOUNT)
+			CALL SKILLGAGE_H_SET, ARG, 5621, LCOUNT
+	NEXT
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_5621, ARG
+PRINTL 랜덤으로 다양한 효과가 사용한 턴 종료시、혹은 다음 턴에 발동한다。
+
+;PRINTL 効果はランダム。いわゆるパルプンテ
+
+@SKILL_BATTLE_MAIN_TOOLTIP_5621, ARG, ARG:1
+CALL GET_CAST_SKILL_EMULATOR, ARG:1, ARG
+RESULTS = □오라클
+IF RESULT <= 0
+	RESULTS:1 = 　READY
+ELSE
+	RESULTS:1 =　필요턴수:{RESULT}
+ENDIF
+
+@SKILL_EX_DISPLAY_5621, ARG, ARGS
+CALL ASSIST_SKILL_EX_DISPLAY, ARG, ARGS, 5621, "Oracle"
+RETURN RESULT
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_5621, ARG
+RETURN 1
+
+;; その日に使用してないこと
+; (闘技場やイベント、依頼で使用していたら探索では使用できないし逆も然り)
+;SIF CFLAG:ARG:오라클플래그 == DAY
+;	RETURN 0
+;RETURN 1
+
+
+;何のバッドステータスを治せるか
+@SKILL_CURE_STATE_5621, ARG
+IF SKILL_5621_GET_ORACLE_EFFECT(ARG) == "異常回復"
+	SELECTCASE GET_STATE(ARG)
+		CASE "GOOD", "DYING"
+			RETURN 0
+		CASEELSE
+			RETURN 1
+	ENDSELECT
+	ENDIF
+RETURN 0
+@SKILL_5621_ORACLE_EFFECT, ARG
+#FUNCTIONS
+SELECTCASE ARG
+	CASE 1
+		RETURNF "異常回復"
+	CASE 2
+		RETURNF "全能力アップ"
+	CASE 3
+		RETURNF "全能力大幅アップ"
+	CASE 4
+		RETURNF "クリティカル率アップ"
+	CASE 5
+		RETURNF "能力アップダウン解除"
+	CASE 6
+		RETURNF "気合集中"
+	CASE 7
+		RETURNF "HP全回復"
+	CASE 8
+		RETURNF "HP回復"
+	CASE 9
+		RETURNF "護りの盾"
+	CASE 10
+		RETURNF "瀕死"
+	CASE 11
+		RETURNF "MP消費半減"
+	CASE 12
+		RETURNF "MP消費無効"
+ENDSELECT
+
+@SKILL_5621_GET_ORACLE_EFFECT, ARG
+#FUNCTIONS
+SIF !SKILLGAGE_D_GET(ARG, 5621)
+	RETURNF "未発動"
+RETURNF SKILL_5621_ORACLE_EFFECT(SKILLGAGE_H_GET(ARG, 5621))
+
+@SKILL_TURNEND_5621, ARG
+#DIM LCOUNT, 2
+#DIMS TEMPS
+SIF GROUPMATCH(SKILL_5621_GET_ORACLE_EFFECT(ARG), "未発動")
+	RETURN 0
+SETCOLOR COLOR("BATTLE", ARG)
+CALL MESSAGE_B, 1, "예언이 실현된다！"
+RESETCOLOR
+SELECTCASE SKILL_5621_GET_ORACLE_EFFECT(ARG)
+	CASE "異常回復"
+		CALL CURE_STATE_FIELD,ARG, 19,5621
+	CASE "全能力アップ"
+		CALL SKILL_SET_カジャンダ, ARG, 19, "공격/방어/마법위력/마법효과/명중/회피", 4, "範囲"
+	CASE "全能力大幅アップ"
+		CALL SKILL_SET_カジャンダ, ARG, 19, "공격/방어/마법위력/마법효과/명중/회피", 8, "範囲"
+	CASE "クリティカル率アップ"
+		CALL SKILL_SET_カジャンダ, ARG, 19, "크리티컬률", 8, "範囲"
+	CASE "能力アップダウン解除"
+		FOR LCOUNT,1, 7
+			SIF !IS_TARGET_ABLE(POS(LCOUNT))
+				CONTINUE
+			FOR LCOUNT:1, GETNUM(CFLAG,"공격강화"), GETNUM(CFLAG,"마법효과강화")+1
+				CFLAG:POS(LCOUNT):(LCOUNT:1) = 0
+			NEXT
+			CALL PRINT_HIT_MESSAGE, POS(LCOUNT), "능력 상승과 저하가 해제되었다！"
+		NEXT
+		WAIT
+	CASE "気合集中"
+		FOR LCOUNT,1, 7
+			SIF !IS_TARGET_ABLE(POS(LCOUNT))
+				CONTINUE
+			IF CFLAG:POS(LCOUNT):気合フラグ == 0 && CFLAG:POS(LCOUNT):집중플래그 == 0
+				TEMPS = 공격력 대폭 UP & 마법공격력 대폭 UP
+			ELSEIF CFLAG:POS(LCOUNT):気合フラグ == 0
+				TEMPS = 공격력 대폭 UP
+			ELSEIF CFLAG:POS(LCOUNT):집중플래그 == 0
+				TEMPS = 마법공격력 대폭 UP
+			ELSE
+				TEMPS = 효과없음
+			ENDIF
+			CFLAG:POS(LCOUNT):気合フラグ = MAX(CFLAG:POS(LCOUNT):気合フラグ, 1)
+			CFLAG:POS(LCOUNT):집중플래그 = MAX(CFLAG:POS(LCOUNT):집중플래그, 1)
+			CALL PRINT_HIT_MESSAGE, POS(LCOUNT), TEMPS
+		NEXT
+		WAIT
+	CASE "HP全回復"
+		CALL HEAL_FIELD,ARG, 19,5621
+	CASE "HP回復"
+		CALL HEAL_FIELD,ARG, 19,5621
+	CASE "護りの盾"
+		CALL SKILL_INVALID_WALL, ARG, 19, "수호의방패", "範囲"
+	CASE "瀕死"
+		FOR LCOUNT,1, 7
+			SIF !IS_TARGET_ABLE(POS(LCOUNT))
+				CONTINUE
+			TEMPS = {BASE:POS(LCOUNT):ＨＰ - 1}데미지
+			CALL VAR_HP, POS(LCOUNT), -(BASE:POS(LCOUNT):ＨＰ - 1), "食いしばり無効ダメージ"
+			CALL PRINT_HIT_MESSAGE, POS(LCOUNT), TEMPS
+		NEXT
+		WAIT
+	CASE "MP消費半減"
+		CALL SET_C_BTL_EFFECT_FIELD, ARG, 19, "MP消費半減"
+	CASE "MP消費無効"
+		CALL SET_C_BTL_EFFECT_FIELD, ARG, 19, "MP消費無効"
+ENDSELECT
+CALL SKILLGAGE_H_SET, ARG, 5621, 0

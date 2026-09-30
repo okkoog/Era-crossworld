@@ -1,0 +1,435 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_82_英霊召喚(マンドリカルド).ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author		Reason
+;	000		20XX/XX/XX		----		テンプレ
+;	001		2022/05/25		takaya		作成
+;	002		2022/08/25		SUIHOU		FGO_SUMMON_SACRIFICE_4を追加、召喚条件を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;有志が当テンプレを埋める+鯖CSVを用意すればイベントを作れるように準備
+;3についてはイベントファイル内にある召喚実験リスト.ERH内の
+;「鯖リスト」と「EXリスト」を参照願います
+;(また、後の人のために使用した番号とキャラ名を追記してくだされば助かります)
+;
+;EVENT_82_英霊召喚(FGO).ERBについては基本追記せず、テンプレ内で処理願います
+;
+;Fate用とその他作品用で関数を分けておりますので、適宣使い分けてください
+;
+;イベントフラグ:82:5の40番台をマンドリカルド関係で使用しています
+
+;====================
+;召喚イベント条件
+;====================
+@FGO_SUMMON_CHECK_4
+#DIM LCOUNT
+#DIM 達成度
+#DIM 生贄
+
+
+;■召喚可否条件をここに記載することで読み込んでくれます■
+;※召喚はイベントフラグ:82:1が必ず4以上から。
+;---- EDIT 002 ADD START ---------------------------
+達成度 = 0
+IF イベントフラグ:82:1 > 3
+	IF GETCHARA([[キャラ:만드리카르도]]) > 0
+		RESULTS = 아싸계 서번트(만드리카르도)
+		RESULTS:1 = 필요 촉매：LV50 이상의 남성 조마(함락됨)　만드리카르도 가입 완료
+		RETURN 0
+	ELSEIF GETCHARA([[キャラ:조마]]) > 0
+		;造魔所持していれば更に条件を詰めて確認してゆく
+		FOR LCOUNT,0,CHARANUM
+			;造魔以外は除外
+			SIF NO:LCOUNT != [[キャラ:조마]]
+				CONTINUE
+			;男性キャラ以外は除外
+			SIF !IS_MALE(LCOUNT)
+				CONTINUE
+			;LV50未満は除外
+			SIF BASE:LCOUNT:LV < 50
+				CONTINUE
+			;上記条件達成していたら達成度に+1
+			達成度 ++
+		NEXT
+		
+		IF 達成度 > 0
+			RESULTS = 아싸계 서번트(만드리카르도)
+			RESULTS:1 = 필요 촉매：LV50 이상의 남성 조마(함락됨)　만드리카르도 미가입
+			RETURN 1
+		ELSE
+			RESULTS = 아싸계 서번트(만드리카르도)
+			RESULTS:1 = 필요 촉매：LV50 이상의 남성 조마(함락됨)　조건 미달성
+			RETURN 0
+		ENDIF
+;---- EDIT 002 ADD END -----------------------------
+	ELSE
+		RESULTS = 아싸계 서번트(만드리카르도)
+		RESULTS:1 = 필요 촉매：LV50 이상의 남성 조마(함락됨)　미소지
+		RETURN 0
+	ENDIF
+ELSE
+	;そもこれが出ることはないはずだけど、確認用に一応記載
+	RESULTS = 최초 소환 이벤트 미소화
+	RETURN 0
+ENDIF
+
+;※RETURN 1　で鯖リストのBITがオンになるようにしているため、必ずRETURNを記入してください
+
+
+;---- EDIT 002 ADD START ---------------------------
+;====================
+;生贄可否の条件確認
+;====================
+@FGO_SUMMON_SACRIFICE_4(ARG:0)
+	;造魔以外は不可
+	SIF NO:ARG != [[キャラ:조마]]
+		RETURN 0
+	;オトコ以外は対象外
+	SIF !IS_MALE(ARG)
+		RETURN 0
+	;未陥落は対象外
+	SIF !陥落(ARG)
+		RETURN 0
+	;LV50未満は対象外
+	SIF BASE:ARG:LV < 50
+		RETURN 0
+	SIF !FGO_SUMMON_SACRIFIE_COMMON(ARG)
+		RETURN 0
+	RETURN 1
+;---- EDIT 002 ADD END -----------------------------
+
+
+;====================
+;マンドリカルド召喚
+;====================
+@FGO_SUMMON_4
+#DIM 対象
+#DIM L_COUNT
+;■イベント本文を記載■
+
+	対象 = [[キャラ:만드리카르도]]
+	;バトルイベント識別のためにイベントフラグを特定値に設定
+	イベントフラグ:82:5 = 40
+	PRINTFORML  「자, 소환술은 다음 단계로!
+	PRINTFORMW  　――우리들의 연구 성과를 보여주도록 하지」
+	PRINTFORML  
+	PRINT  「자, 마음 단단히 먹게나
+	PRINTFORM \@ TALENT:MASTER:서머너 > 0 ? 서머너 # 전사 \@ %CALLNAME:MASTER%.
+	PRINTFORMW  　이것이 새로운 소환 기술, 그 발전이다――――읏읏읏」
+;---- EDIT 002 ADD START ---------------------------
+	;イベント本文を呼び出す前に削除処理をするように変更
+	;キャラリストの下から順にキャラ検索
+	;該当するキャラを発見した場合、それを削除する
+	;FOR L_COUNT,CHARANUM,-1,-1
+	;	IF L_COUNT == GETCHARA([[キャラ:조마]])
+	;		SIF !陥落(L_COUNT)
+	;			CONTINUE
+	;		SIF TALENT:L_COUNT:남자 == 0
+	;			CONTINUE
+	;		SIF BASE:L_COUNT:LV < 50
+	;			CONTINUE
+	;		CALL キャラ削除, L_COUNT
+	;		BREAK
+	;	ENDIF
+	;NEXT
+;---- EDIT 002 ADD START ---------------------------
+	CALL 疑似的画面クリア
+	TWAIT 500,1
+	PRINTFORML  
+	PRINTFORML  
+	;■以下、召喚イベント本文をどうぞ■
+	PRINTFORML  ＞ 이번에는 『랜덤 소환』이라는 소환 실험을 해달라는 요청을 받아 다시 이곳으로 찾아왔다
+	PRINTFORML  　특정 영령을 지정하는 소재를 쓰지 않고, 말 그대로 무작위,
+	PRINTFORML 　 혹은 소환자와 닮은 성질을 지닌 영령을 불러낸다고 한다
+	PRINTFORML  　우선은 남성 서번트를 원한다고 하여 제물로 삼은 것은 남성형 조마다
+	PRINTFORML 
+	PRINTFORML  ＞ 마법진의 소환 빛이 잦아들자 그곳에 눈매가 사나운 흑발의 청년 한 명이 서 있었다
+	PRINTFORMW  　그 청년은 경갑과 둥근 방패, 그리고 무기로서 목검을 차고 있다
+	PRINTFORML 
+	PRINTFORML  「묻겠다.　
+	PRINTFORMW  　――당신이 나의 마스터인가?」
+	PRINTFORML 
+	PRINTFORML  ＞ 세이버 클래스 계열 서번트일까 생각하고 있자 눈앞의 청년이 그렇게 물어왔다
+	PRINTFORMW  　목검을 어깨에 메고 날카로운 눈매를 바짝 세우며 %CALLNAME:MASTER%를 똑바로 응시하고 있다
+	PRINTFORML 
+
+	$INPUT_LOOP1
+	PRINTFORML [0] 그렇다
+	PRINTFORML [1] 아닙니다
+	INPUT
+	SELECTCASE RESULT
+		CASE 0
+			PRINTFORML  
+		CASE 1
+			PRINTFORML  
+			PRINTFORML  「……엣?
+			PRINTFORML  　앗…… 그, 그럼 돌아가겠습니다…….
+			PRINTFORMW  　…………역시 나처럼 지명도 없는 녀석 따윈 부를 리가 없겠지」
+			PRINTFORML  
+			PRINTFORMW  ＞ 이쪽이 던진 농담을 곧이곧대로 받아들였는지 청년의 표정과 분위기가 갑자기 맥없이 풀려버린다
+			PRINTFORMW  　그대로 쭈뼛쭈뼛 두리번거리며 주위를 둘러보더니
+			PRINTFORMW  　고개를 푹 숙인 채 우물쭈물 말을 꺼냈다
+			PRINTFORML  
+			PRINTFORML 　「……분명 뭔가 착오로 소환된 게 틀림없어.
+			PRINTFORMW 　　그런 고로 슬슬 좌로 돌아가……」
+			PRINTFORML 
+			PRINTFORML 　＞진심으로 돌아가려는 낌새를 느낀 %CALLNAME:MASTER%는 황급히 그를 만류했다
+			PRINTFORMW 　방금 전의 말은 농담이다, 우선은 클래스명과 이름을 알려주었으면 한다, 고 물었다
+			PRINTFORML 
+			PRINTFORML  　「농담? 정말로요? 착오가 아니고요?
+			PRINTFORML 　　 ……그렇다면 마음을 다잡고」
+		CASEELSE
+			GOTO INPUT_LOOP1
+	ENDSELECT
+
+	PRINTFORML 　「예에. 난 라이더, 만드리카르도다……가 아니라.
+	PRINTFORMW 　　……만드리카르도임다. 소환에 응하여 강림했슴다」
+	PRINTFORML
+	PRINTFORML 　＞만드리카르도……
+	PRINTFORMW 　　순간 누구지? 하고 기억 속에서 그 이름을 뒤져보느라 10초 정도 침묵이 흘렀다
+	PRINTFORML 
+	PRINTFORMW 　「……역시 날 모르는 거겠죠. 나 지명도도 없는 삼류 영령이고」
+	PRINTFORML 
+	PRINTFORML  　＞시선을 비스듬히 아래로 떨구며 비굴하게 자평하는 만드리카르도를 앞에 두고
+	PRINTFORML  　　%CALLNAME:MASTER%는 만드리카르도, 만드리카르도 하고 머릿속으로 되뇌다 마침내 그 이름에 도달했다
+	PRINTFORML  　　분명 롤랑 전설과 관련된 어딘가에 등장하는 모 왕국의 왕이었을 터다
+	PRINTFORMW  　　만드리카르도에게 알고 있다고 전해주자 숙이고 있던 표정이 환하게 밝아졌다
+	PRINTFORML 
+	PRINTFORML  「이래 봬도 생전에는 타타르인의 왕이자 모험가 생활도 오래 했으니 그럭저럭 싸울 수는 있슴다.
+	PRINTFORML  　뭐, 그럭저럭이긴 하지만요.
+	PRINTFORMW 　 ……역시 나 같은 놈보다 훨씬 유명하고 대단한 서번트를 부르는 편이」
+	PRINTFORML 
+	PRINTFORML  ＞ 두마디 세마디만 건네면 바로 비굴하고 자학적으로 변하는 것이 이 청년의 버릇인 걸까?
+	PRINTFORML  　날카로운 눈매와 달리 왠지 내향적인 기색이 역력하다. 소환 당시 첫인상과의 갭이 엄청나다.
+	PRINTFORML  　싸울 수 있다면 아무 문제 없다고 격려해 주어도 여전히 어딘가 거리감이 느껴진다
+	PRINTFORML  　실제로 랜덤 소환 자체는 성공했다
+	PRINTFORMW  　분명 이 굽실거리는 영령이 소환된 것은 랜덤의 결과일 것이다
+	PRINTFORML 
+	PRINTFORML  「좌에 등록되어 있다고는 해도 자랑할 만한 일화 자체가 없고 지명도도 낮죠.
+	PRINTFORML  　이런 날 굳이 써먹어 줄 별난 마스터 따윈.
+	PRINTFORMW  　……그리 쉽게 있을 리가 없잖슴까」
+	PRINTFORML 
+	PRINTFORML  ＞ 거기까지 말한다면 전투 테스트라도 해볼까? 하고 문득 떠오른 생각을 입에 담았다
+	PRINTFORMW  　그렇게 제안하자 만드리카르도는 눈을 크게 뜨고 경악하더니 안절부절못하기 시작했다
+	PRINTFORML  
+	PRINTFORML  「엣? 진짬까!? 지금 당장!?
+	PRINTFORMW  　이, 이래서 약하다고 해고하거나 그러진 않는 거죠……? 네?」
+	PRINTFORML 
+	PRINTFORML  ＞ 어디까지나 실력을 재보기 위한 테스트라고 다시 말해주자 만드리카르도는 안도하는 표정을 지었다
+	PRINTFORML  　자, 어떻게 할까……
+	PRINTFORML  
+	$INPUT_LOOP2
+	PRINTFORML [0] 전투 테스트를 한다
+	PRINTFORML [1] 역시 그만둔다
+	INPUT
+	SELECTCASE RESULT
+		CASE 0
+			PRINTFORML  
+			PRINTFORML  「우와~, 진짬까!
+			PRINTFORMW  　큰일이다, 가슴이 두근거리기 시작했어……」
+			PRINTFORML
+			PRINTFORML 
+			PRINTFORMW  ＞ 영령 만드리카르도가 허둥지둥대며 전투 태세에 들어갔다! 
+			PRINTFORML 
+
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+	
+			CALL SET_ENEMY,9,[[キャラ:만드리카르도]],50,1,3
+			CFLAG:(CHARANUM-1):행동횟수 = 1
+			CFLAG:(CHARANUM-1):ＨＰ보정 = (MAXBASE:(CHARANUM-1):ＨＰ / 2)
+			CFLAG:(CHARANUM-1):ＭＰ보정 += 99999
+	
+			BASE:(CHARANUM-1):힘 += 3
+			BASE:(CHARANUM-1):내구 += 4
+			BASE:(CHARANUM-1):속도 += 4
+	
+			ABL:(CHARANUM-1):스킬3 = 0
+			ABL:(CHARANUM-1):스킬9 = 2485
+	
+			CSTR:(CHARANUM-1):사고패턴 = 陰キャ系サーヴァント
+	
+	
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL BATTLE_START
+
+			PRINTFORML  
+			PRINTFORMW  「역시 난 안 될 놈이네요……」
+			PRINTFORML  
+			PRINTFORML  ＞ 이쪽이 승리하기는 했으나 실력은 확인했으니 충분하다
+			PRINTFORMW  　전투 후 어깨를 축 늘어뜨리며 풀이 죽은 만드리카르도에게 그렇게 말을 건넨다
+			PRINTFORML 
+			PRINTFORML  「……뭐, 그렇다면 다행임다.
+			PRINTFORML  　그럼 다시. 라이더 서번트, 만드리카르도.
+			PRINTFORMW  　앞으로도 잘 부탁드려 줍쇼」
+			PRINTFORML 
+			PRINTFORML  「그건 그렇고 말임다, 날 소환했다는 건 당신 마술사인 거죠?
+			PRINTFORML  　…………엣, 아니라고요? ……팬텀 소사이어티? 조교사?
+			PRINTFORMW  　저, 저기, 역시 나 잠깐 좌로 돌아가………… 으아악!!」
+			PRINTFORML 
+			PRINTFORML 
+			PRINTFORMW  ＞ 영령 만드리카르도가 동료마가 되었다!
+			PRINTFORML  
+			CALL ADD_NEW_COMPANION, [[キャラ:만드리카르도]], 1000
+			;バトルイベント識別に使ったイベントフラグを片付け
+			イベントフラグ:82:5 = 0
+		CASE 1
+			PRINTFORML  
+			PRINTFORML  「앗, 역시 다음에 하실 검까?
+			PRINTFORMW  　만약 나 같은 놈이라도 괜찮으시다면 전투에 내보내 주시면 실력은 보여드리겠슴다」
+			PRINTFORML  　
+			PRINTFORMW  ＞ 싱긋, 하고 약간 굳었지만 미소를 띠며 만드리카르도는 그렇게 말했다
+			PRINTFORML 
+			PRINTFORML  「그럼 다시. 라이더 서번트, 만드리카르도.
+			PRINTFORMW  　앞으로도 잘 부탁드려 줍쇼」
+			PRINTFORML 
+			PRINTFORML  「그건 그렇고 말임다, 날 소환했다는 건 당신 마술사인 거죠?
+			PRINTFORML  　…………엣, 아니라고요? ……팬텀 소사이어티? 조교사?
+			PRINTFORMW  　저, 저기, 역시 나 잠깐 좌로 돌아가………… 으아악!!」
+			PRINTFORML 
+			PRINTFORML  
+			PRINTFORMW  ＞ 영령 만드리카르도가 동료마가 되었다!
+			PRINTFORML  
+			CALL ADD_NEW_COMPANION, [[キャラ:만드리카르도]], 1000
+			;バトルイベント識別に使ったイベントフラグを片付け
+			イベントフラグ:82:5 = 0
+		CASEELSE
+			GOTO INPUT_LOOP2
+	ENDSELECT
+	PRINTFORML  
+
+
+
+
+	
+;--------------------
+;バトル設定
+;--------------------
+;戦闘開始時のイベント発生
+;サンプル：初手ノウブル・ファンタズムゲージMAX、気合フラグオン
+@EVENT_BATTLE_START_EVENT82_4
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+
+IF イベントフラグ:82:5 == 40
+	PRINTFORML  
+	CUSTOMDRAWLINE =
+	PRINTFORML  
+	SETCOLOR COLOR("YELLOW")
+	PRINTFORMW  ＞  역할을 마쳤을 마법진에서 마그네타이트가 뿜어져 나와 영령에게 공급되어 간다!
+	RESETCOLOR
+	PRINTFORML  
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃어, 어라? 뭐지, 이 힘은……　　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃어쩐지 몸이 후끈거린다고 해야 하나　　　　　　　　┃
+	PRINTL ┃엄청 고양되어 오고 있슴다　　　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃나처럼 지명도도 없는 아싸한테 힘이 넘쳐흘러……　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃잘은 모르겠지만 이 정도라면 나라도 통하겠슴다!! 　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	;魔力放出状態に強制移行
+	CALL SKILLGAGE_F_SET,(CHARANUM-1),SKILL_NUM,100
+	CALL PRINT_ACT_MESSAGE, CHARANUM-1, SKILL_NUM
+	CALL ACTION_ノウブル・ファンタズム,(CHARANUM-1)
+	CFLAG:(CHARANUM-1):気合フラグ = 1
+	イベントフラグ:82:5 = 41
+ENDIF
+
+;---------------------------------------------------
+@EVENT_BATTLE_TURNEND_EVENT82_4
+;---------------------------------------------------
+#DIM SKILL_NUM
+
+SKILL_NUM = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+
+IF イベントフラグ:82:5 == 42 && 現HP割合(CHARANUM-1) < 50
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃――――아야욧! 　　　　　　　　　　　　　　　　　　┃
+	PRINTL ┃젠장, 제법 하잖슴까……　　　　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃자랑할 일화도 없는 이런 나이지만　　　　　　　　　┃
+	PRINTL ┃뭐, 그겁니다　　　　　　　　　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTL
+	PRINTW ＞영령 만드리카르도가 손에 쥔 목검에 빛이 모여들기 시작했다!!
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃아싸라도 할 땐 하는 법임다!! 　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	ABL:(CHARANUM-1):스킬3 = 3906
+	CSTR:(CHARANUM-1):전용기3 = 不帯剣の誓い
+	CALL VAR_HP,(CHARANUM-1),MAX(MAXBASE:(CHARANUM-1):ＨＰ,1),"회복"
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	CALL SKILLGAGE_D_SET,(CHARANUM-1),SKILL_NUM,5
+	イベントフラグ:82:5 = 43
+ELSEIF イベントフラグ:82:5 == 41 && 現HP割合(CHARANUM-1) < 80
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃큭……! 　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTL ┃여기서부턴 진심으로 가보겠슴다!! 　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	CFLAG:(CHARANUM-1):행동횟수 = 2
+	イベントフラグ:82:5 = 42
+ELSE
+ENDIF
+
+;--------------------
+;思考パターン設定
+;--------------------
+@SET_ACTION_陰キャ系サーヴァント, ARG
+#DIM SKILL_NUM,2
+
+SKILL_NUM:0 = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+SKILL_NUM:1 = PU_SKILLNUM_GET((CHARANUM-1),"不帯剣の誓い")
+
+SELECTCASE イベントフラグ:82:5
+	CASE 43
+		IF CFLAG:(CHARANUM-1):행동한횟수 == 0
+			CALL SET_ACTION_SKILL, (CHARANUM-1), (SKILL_NUM:1)
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					CALL SET_ACTION_SKILL, (CHARANUM-1), 3907
+				CASE 1
+					CALL SET_ACTION_SKILL, (CHARANUM-1), 6
+				CASE 2
+					CALL SET_ACTION_SKILL, (CHARANUM-1), 67
+			ENDSELECT
+		ENDIF
+	CASEELSE
+		SELECTCASE RAND:3
+			CASE 0
+				CALL SET_ACTION_SKILL, (CHARANUM-1), 3907
+			CASE 1
+				CALL SET_ACTION_SKILL, (CHARANUM-1), 6
+			CASE 2
+				CALL SET_ACTION_SKILL, (CHARANUM-1), 67
+		ENDSELECT
+ENDSELECT
+
+
+

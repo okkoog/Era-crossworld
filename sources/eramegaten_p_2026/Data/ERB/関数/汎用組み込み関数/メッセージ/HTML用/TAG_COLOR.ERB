@@ -1,0 +1,49 @@
+﻿;----------------------------------------------------------
+;@COLOR(ARGS)
+;ARGS:1 = 	色名
+;ARG  	= 	BATTLE指定時のキャラ番号
+;ARG:1	=	BATTLE指定時の反転指定
+;----------------------------------------------------------
+@SET_COLOR_TAG, ARGS, ARGS:1, ARG = -1, ARG:1
+#FUNCTIONS
+#DIM L_COLOR
+#DIMS L_COLORS
+L_COLOR = COLOR(ARGS:1, ARG, ARG:1)
+IF L_COLOR >= 0
+	L_COLORS = %TOSTR_HTML(L_COLOR)%
+ELSE
+	IF SUBSTRING(ARGS:1, 0, 1) == "#"
+		L_COLORS = %ARGS:1%
+	ELSEIF SUBSTRING(ARGS:1, 0, 2) == "0x"
+		L_COLORS = #%SUBSTRING(ARGS:1, 2, -1)%
+	ELSE
+		L_COLORS = %TOSTR_HTML(TOINT(ARGS:1))%
+	ENDIF
+ENDIF
+RETURNF @"<font color = '%L_COLORS%'>" + ARGS + "</font>"
+
+;ARGS内にすでにタグが入っている場合の変換関数
+@SET_COLOR_TAG_IN_TAG_CASE, ARGS, ARGS:1, ARG, ARG:1
+#DIM LCOUNT
+#DIM CNT_SPLIT
+#DIM IS_USE_FONT_TAG
+HTML_TAGSPLIT ARGS
+CNT_SPLIT = RESULT
+IS_USE_FONT_TAG = 0
+FOR LCOUNT, 0, CNT_SPLIT
+	;タグを確認
+	IF CHARATU(RESULTS:LCOUNT, 0) == "<" && CHARATU(RESULTS:LCOUNT, STRLENSU(RESULTS:LCOUNT) -1) == ">"
+		IF STRCOUNT(RESULTS:LCOUNT, "<font")
+			IS_USE_FONT_TAG = 1
+		ELSEIF RESULTS:LCOUNT == "</font>"
+			IS_USE_FONT_TAG = 0
+		ENDIF
+	ELSE
+		;タグなしでかつフォントタグがついていない時のみ色をつける
+		SIF IS_USE_FONT_TAG == 0
+			RESULTS:LCOUNT = %SET_COLOR_TAG(RESULTS:LCOUNT, ARGS:1, ARG, ARG:1)%
+	ENDIF
+NEXT
+;結合して終わる
+STRJOIN RESULTS, "", 0, CNT_SPLIT
+RETURN 1

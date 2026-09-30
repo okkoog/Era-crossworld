@@ -1,0 +1,70 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@C_BTL_EFFECT_CONTROL_NO_KE_天冠の祝福,ARG
+RESULTS = 천관의 축복
+
+;スキル名
+@SKILL_NAME_C_BTL_EFFECT_天冠の祝福,ARG
+RESULTS = 천관의 축복
+
+;重複可能な数
+@C_BTL_EFFECT_COUNT_LIMIT_天冠の祝福
+RETURN 1
+
+;効果時間　最大10ターンまで、0を指定した場合は戦闘中永続
+@C_BTL_EFFECT_CONTINUE_TIME_天冠の祝福
+RETURN 4
+
+;排他となる効果
+;戻り値
+; RESULTS = 効果名
+; RESULT
+; 0 = 排他
+;-1 = 上書き不能
+; 1 = 上書き(対象も1なら相互上書き)
+@C_BTL_EFFECT_EXCLUSIVE_天冠の祝福
+RESULTS = 
+RETURN 1
+
+;個別の対象条件
+;ARG 	効果を受けるキャラの登録番号
+;ARG:1	効果を与えるキャラの登録番号
+@C_BTL_EFFECT_SPECIAL_TARGET_天冠の祝福, ARG, ARG:1
+SIF IS_BADSTATE(ARG, "DYING")
+	RETURN 0
+RETURN 1
+
+;効果処理
+;ARG 	効果を受けるキャラの登録番号
+;ARG:1	効果を与えるキャラの登録番号
+@SKILL_TURNEND_C_BTL_EFFECT_天冠の祝福, ARG, ARG:1
+#DIM 回復量
+#DIM 残スキルカウント
+#LOCALSIZE 2
+;治癒促進のスキルから流用
+;死んでいる、もしくは回復不能状態であれば終了
+IF !(CPOS(ARG) > 0 && CFLAG:ARG:상태이상 != GET_STATE_NUM("DYING") && CFLAG:ARG:회복불능플래그 < 1 && CFLAG:ARG:상태이상 != GET_STATE_NUM("BRAND"))
+	RETURN
+ENDIF
+
+回復量 = MAX(MAXBASE:ARG:ＨＰ/10,1)
+; スキル番号 = PU_SKILLNUM_GET(ARG, "KE_天冠の祝福")
+; CALL VAR_REGENABLE_CHECK, ARG, スキル番号, TOHALF("ＨＰ")
+
+残スキルカウント = 0
+FOR LOCAL, 0, 3
+	IF C_BTL_EFFECT:(ARG):LOCAL != ""
+		残スキルカウント ++
+	ENDIF
+NEXT
+
+LOCAL:1 = 0
+FOR LOCAL, 1, 7
+	SIF POS(LOCAL) < 0 || IS_BADSTATE(POS(LOCAL), "DYING")
+		CONTINUE
+	LOCAL:1 = MAX(LOCAL:1, STRLENS(CALLNAME:POS(LOCAL)))
+NEXT
+
+PRINTFORML 　　[{CPOS(ARG),2}] %CALLNAME:ARG, LOCAL:1, LEFT% >>>>> {回復量}회복 (천관의 축복 남은 턴：{残スキルカウント - 1})
+CALL VAR_HP, ARG, +MAXBASE:ARG:ＨＰ / 10

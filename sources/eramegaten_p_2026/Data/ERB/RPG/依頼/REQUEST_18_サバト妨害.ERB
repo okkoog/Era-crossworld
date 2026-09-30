@@ -1,0 +1,458 @@
+﻿;	Edit	Date			Author					Reason
+;	001		yyyy/mm/dd								新規作成
+;	002		2021/10/17		kamedakeisuke(ﾟдﾟ)		小林周り加筆、ボス戦のエルゴールをアムドゥシアスに差し替え
+;====================
+;関連フラグリスト
+;====================
+;
+;====================
+;条件
+;====================
+@GET_REQUEST_NAME_18
+#FUNCTIONS
+RESULTS_F '= "サバト妨害"
+RETURNF RESULTS_F
+
+@PLAYABLE_REQUEST_18
+;依頼：聖城学園調査クリア後
+IF 依頼フラグ:[[依頼:세이죠학원조사]]:0 != 0 && 依頼フラグ:[[依頼:사바트방해]]:0 == 0
+	RESULTS = 의뢰：사바트 방해
+	RETURN 1
+ENDIF
+RETURN 0
+;====================
+;説明
+;====================
+@EXPLAIN_REQUEST_18
+PRINTL 
+PRINTFORMW -메일이 도착했습니다-
+PRINTFORMW ……팬텀으로부터 의뢰가 들어왔다。
+PRINTFORMW 예전에 악마 사건이 일어났던 세이죠 학원 학생들이 라이브하우스에 모여 사바트를 하려고 한다는 것이다。
+PRINTFORMW 이대로 두면、지난번보다 더 큰 규모의 악마 소환이 일어나、다수의 사상자가 발생하는 것은 피할 수 없을 것이다。
+PRINTFORMW 의뢰 내용은、이 사건을 해결하는 것이다。
+;====================
+;内容
+;====================
+@REQUEST_18
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+CUSTOMDRAWLINE =
+PRINTFORMW 라이브하우스가 있는 번화가. 겉으로 보기에는 별다른 이상은 없어 보이지만、
+PRINTFORMW 번화가인데 사람이 한 명도 없었다。
+PRINTFORMW ……결계다。
+PRINTFORMW 악마와 깊은 관계를 맺고 있는 %CALLNAME:MASTER% 님 같은 인종에게는 이런 식의 술법은 효과가 없다、
+PRINTFORMW %CALLNAME:MASTER%은 망설임 없이 결계를 뚫고 발을 내딛었다。
+PRINTFORML ………………
+PRINTFORML …………
+PRINTFORMW ……
+IF 依頼フラグ:[[依頼:세이죠학원조사]]:0 == 1
+;依頼17で道を開けた。
+	PRINTFORMW 라이브 하우스로 향하는 %CALLNAME:MASTER%의 귀에 어디선가 목소리가 들려왔다。
+	PRINTFORMW 기척은 없다。당신이 자세를 잡자、목소리는 차분한 어조로 말하기 시작했다。
+	PRINTL
+	PRINTFORMW （……팬텀 소사이어티의 에이전트들이군요。
+	PRINTFORMW 　우리는 이미 행동을 시작했고、다른이의 개입을 원하지 않습니다。
+	PRINTFORMW 　부디 물러나 주시겠습니까？）
+	PRINTL
+	PRINTFORMW 당신은 무시하고 걷기 시작했다。
+	PRINTL
+	PRINTFORMW （……그렇다면、이쪽의 계획에 동참해 주실 수 없으십니까？
+	PRINTFORMW 　이 사건의 주모자에게 안내해 드리겠습니다。
+	PRINTFORMW 　저쪽을 처리하면 당신의 임무는 완료인 거지요？）
+	PRINTL
+	PRINTFORMW 꽤나 그럴듯한 이야기다。
+	CALL INPUT_YN("제안을 받아들인다", "거절한다")
+	IF RESULT == 0
+		PRINTFORMW （……이야기가 빨라 다행입니다.）
+		PRINTL
+		PRINTFORMW 목소리와 함께、어둠 속에서、가녀린 학생이 두 손을 치켜들며 걸어 나왔다。
+		PRINTL
+		PRINTFORMW （단순한 식신입니다、
+		PRINTFORMW 　큰 힘은 없지만 길 안내 정도는 할 수 있습니다）
+		PRINTL
+		PRINTFORMW 목소리와 함께 그것은 %CALLNAME:MASTER% 보다 앞장서서 달려가기 시작했다。
+		依頼フラグ:[[依頼:사바트방해]]:0 = 1
+	ELSE
+		PRINTFORMW （……안타깝지만 어쩔 수 없네요。
+		PRINTFORMW 　당신이 더 강할 것 같지만、발목잡기、암살、파괴공작、
+		PRINTFORMW 　이쪽의 전문분야에서 열심히 하겠습니다。신경쓰지 말아요――）
+		依頼フラグ:[[依頼:사바트방해]]:0 = 2
+	ENDIF
+ELSEIF 依頼フラグ:[[依頼:세이죠학원조사]]:0 == 2
+;依頼17で茉莉花を捕えた
+	PRINTFORMW 라이브하우스로 향하는 길을 서두르던 %CALLNAME:MASTER% 였으나、위화감에 발걸음을 멈추는 순간、눈앞의 땅이 폭발했다。
+	PRINTFORMW 학생 3명이 서 있다。닌자인가。%CALLNAME:MASTER%는 전투 태세를 취했다。
+	PRINTL
+	PRINTFORMW 「팬텀의 에이전트、우리는 당신과 싸울 이유가 있다」
+	PRINTFORMW 「당신의 목숨을、받아가겠다」
+	IF FINDCHARA_B([[キャラ:마리카]]) == 2
+		PRINTFORMW 「……【배신자】도 처리해야 하니까 말이다」
+		PRINTL
+		PRINTFORMW 학생――아니、닌자들은、당신 뒤에 대기하고 있는 쿠사카 마리카를 감정을 죽인 눈으로 노려보고 있다。
+		PRINTFORMW 마리화는 아무 말도 할 수 없다、말할 수 있을 리가 없다。
+		PRINTFORMW 적에게 넘어가서 자결도 하지 않고、오히려 그 마음까지 내어주었으니――
+		PRINTL
+		PRINTFORMW 「네놈……아니、쿠사카 마리카。
+		PRINTFORMW 　네게는 진정한 죽음을 주어야 한다、신류 닌자의 긍지를 걸고」
+	ENDIF
+	PRINTL
+	PRINTFORMW 
+	依頼フラグ:[[依頼:사바트방해]]:0 = 2
+ELSE
+;依頼17で茉莉花に協力を申し出た
+	PRINTFORMW 라이브하우스로 서둘러 향하는 %CALLNAME:MASTER%의 귀에 어디선가 들려오는 목소리가 있다。
+	PRINTFORMW 기척은 없다。당신이 자세를 잡자、목소리는 차분한 어조로 말하기 시작했다。
+	PRINTL
+	PRINTFORMW （……팬텀 소사이어티의 에이전트들이군요。
+	PRINTFORMW 　우리는 이미 행동을 시작했고、다른이의 개입을 원하지 않습니다。
+	PRINTFORMW 　부디 물러나 주시겠습니까？）
+	PRINTL
+	PRINTFORMW 당신은 무시하고 걷기 시작했다。
+	PRINTL
+	PRINTFORMW （……그렇다면、이쪽의 계획에 동참해 주실 수 없으십니까？
+	PRINTFORMW 　이 사건의 주모자에게 안내해 드리겠습니다。
+	PRINTFORMW 　저쪽을 처리하면 당신의 임무는 완료인 거지요？）
+	PRINTL
+	PRINTFORMW 꽤나 그럴듯한 이야기다。
+	CALL INPUT_YN("제안을 받아들인다", "거절한다")
+	IF RESULT == 0
+		PRINTFORMW （……이야기가 빨라 다행입니다.）
+		PRINTL
+		PRINTFORMW 목소리와 함께、어둠 속에서、가녀린 학생이 두 손을 치켜들며 걸어 나왔다。
+		PRINTL
+		PRINTFORMW （단순한 식신입니다、
+		PRINTFORMW 　큰 힘은 없지만 길 안내 정도는 할 수 있습니다）
+		PRINTL
+		PRINTFORMW 목소리와 함께 그것은 %CALLNAME:MASTER% 보다 앞장서서 달려가기 시작했다。
+		依頼フラグ:[[依頼:사바트방해]]:0 = 1
+	ELSE
+		PRINTFORMW （……안타깝지만 어쩔 수 없네요。
+		PRINTFORMW 　당신이 더 강할 것 같지만、발목잡기、암살、파괴공작、
+		PRINTFORMW 　이쪽의 전문분야에서 열심히 하겠습니다。신경쓰지 말아요――）
+		依頼フラグ:[[依頼:사바트방해]]:0 = 2
+	ENDIF
+ENDIF
+
+IF 依頼フラグ:[[依頼:사바트방해]]:0 == 2
+	CALL SET_ENEMY, 9, [[キャラ:닌자]],25, 1, 1
+	;방전
+	ABL:(CHARANUM-1):스킬4 = 910
+	CALL SET_ENEMY, 10, [[キャラ:닌자]],25, 1, 1
+	;포그브레스
+	ABL:(CHARANUM-1):스킬4 = 520
+	CALL SET_ENEMY, 14, [[キャラ:닌자]],25, 1, 1
+	;천우의춤
+	ABL:(CHARANUM-1):스킬4 = 106
+	CALL BATTLE_START
+	CUSTOMDRAWLINE =
+	PRINTFORMW 닌자들을 쓰러뜨리고、서둘러 길을 나섰다……
+ENDIF
+PRINTFORMW 문제의 라이브 하우스에 도착했다。
+PRINTFORMW 밖에서도、내부에서 심상치 않은 소동이 일어나고 있는 소리가 들린다。
+IF 依頼フラグ:[[依頼:사바트방해]]:0 == 1
+;忍者と協力
+	PRINTL
+	PRINTFORMW （……이쪽입니다、뒷쪽으로 돌아가십시오。
+	PRINTFORMW 　식신(式神)을 터뜨려서、놈들의 시선을 사로잡겠습니다、３、２、１）
+	PRINTL
+	PRINTFORMW 반대편에서 발생한 폭발음에 맞춰、%CALLNAME:MASTER%는 뒷문을 박차고 나왔다……
+	PRINTFORML ………………
+	PRINTFORML …………
+	PRINTFORMW ……
+ELSE
+;忍者と戦闘
+	PRINTFORMW ……상당한 수의 악마가 있는 것 같지만、어쩔 수 없다。어차피 내부 사정을 알 수 없으니 말이다。
+	PRINTFORMW %CALLNAME:MASTER%는 라이브 하우스에 정면에서 들이닥쳤다、
+	PRINTL
+	PRINTFORMW 라이브 하우스 안은、시끄러움과 피비린내로 가득했다。
+	PRINTFORMW 세 개의 십자가、그 중 두 개의 십자가에 제물이 바쳐져 있다。
+	PRINTFORMW 얼굴을 보니、 둘 다 아직 학생인데、가슴에 창을 깊숙이 꽂혀 처참하게 죽어가고 있었다。
+	PRINTL
+	PRINTFORMW 「아하하하하%UNICODE(0x2661)%　좋아、좋아、최고야아아앗%UNICODE(0x2661)%」
+	PRINTL
+	PRINTFORMW 끔찍한 광경이지만――소음은、  피비린내조차도 무색하게 만든다。
+	PRINTFORMW 수십 명의 학생들이 비좁은 라이브 하우스 안에서 웃고 떠들며 난교를 하고 있었다。
+	PRINTFORMW 살이 부딪히는 소리、격렬하게 울려 퍼지는 데스메탈、그리고 헐떡이는 소리와 웃음소리。
+	PRINTL
+	PRINTFORMW 「맛나、쭈웁、쭈우웁%UNICODE(0x2661)%　맛있어……맛있어요오오%UNICODE(0x2661)%」
+	PRINTL
+	PRINTFORMW 남자든 여자든 상관없이、눈앞에 있는 성기를、소리 내어 빨아먹는다。
+	PRINTFORMW 그렇게 충분히 젖어들면, 비어있는 여자와 남자가 원숭이처럼 서로 교미한다。
+	PRINTFORMW ――이미 악마가 빙의된 것 같다。오르가즘을 맞이함과 동시에、부화하듯 골격과 육체가 비틀어졌다。
+	PRINTL
+	PRINTFORMW 방해받으면 짜증난다、%CALLNAME:MASTER%은 음란한 악마들에게 공격당했다。
+	CALL SET_ENEMY, 7, [[キャラ:가기손]],15,0
+	CALL SET_ENEMY, 8, [[キャラ:고블린]],15, 0
+	CALL SET_ENEMY, 10, [[キャラ:이누가미]],15, 0
+	CALL SET_ENEMY, 11, [[キャラ:모・쇼보]],15, 0
+	CALL SET_ENEMY, 12, [[キャラ:오크]],15, 0
+	CALL SET_ENEMY, 13, [[キャラ:네코마타]],15, 0
+	CALL SET_ENEMY, 15, [[キャラ:리림]],15, 0
+	CALL SET_ENEMY, 16, [[キャラ:임프]],15, 0
+	CALL BATTLE_START
+	CUSTOMDRAWLINE =
+	PRINTFORMW 쓰러진 학생들은 악마의 힘을 잃고、사람의 모습으로 돌아간다。
+	PRINTFORMW 이쪽의 모습을 보고 정신을 차렸는지、학생들은 겁에 질린 듯 벽에 기대어 있다。
+	PRINTFORMW 이제 방해꾼은 없어졌다。 %CALLNAME:MASTER%는 서둘러 앞으로 나아갔다。
+ENDIF
+PRINTL
+PRINTFORMW 라이브하우스의 가장 안쪽은 수라장이 되어 있었다。
+PRINTFORMW 방의 가장 안쪽에는、나체의 소녀 3명을 시중들게하고 있는、너무 아름다워 인간답지 않은 미소녀――
+PRINTFORMW ……아니、남학생 교복을 입고 있군 。남자아이인가？
+PRINTFORMW 비인간적인 미소년이、모든 것을 내려다보듯、거만한 자세를 취하고 있었다。
+PRINTL
+IF 依頼フラグ:[[依頼:사바트방해]]:0 == 1
+;忍者と協力
+	PRINTFORMW 「이 얼마나 엉망인가」
+	PRINTL
+	PRINTFORMW 소년의 눈앞에 뚱뚱한 학생이 한 명 쓰러져 있다。
+	PRINTFORMW 자세히 보니 머리가 없었다。잔계 마법을 당한 시체와 흡사한 모습이었다。
+	PRINTFORMW 그 옆에서 몇 명의 닌자들이、무사한 학생을 지키기 위해 악마 무리와 싸우고 있다。
+	PRINTL
+	PRINTFORMW 「쳇、왼팔을 당했다……。
+	PRINTFORMW 　학생이 변한 악마가 아니라면、군용 퇴마포 한 방 감일텐데！」
+	PRINTL
+	PRINTFORMW 그 중에는 예전에 세이죠 학원에서 만난 적이 있는 소녀도 있다。
+	PRINTFORMW 인질을 볼모로 잡혀서 열세를 면치 못하고 있는 것 같다。
+	PRINTFORMW 필사적으로 몸부림치는 닌자들――그것을 완전히 무시하고、미소년은 가증스러울 정도로 비단결 같은 은발을 긁적였다。
+	PRINTL
+	PRINTFORMW 「이게 무슨 짓이냐！　모처럼의 오세님께 바치는 제사가……！」
+	PRINTL
+	PRINTFORMW 미소년은 이쪽을 보자마자、눈을 크게 뜨며 격분했다――
+ELSE
+;忍者と戦闘
+	IF 依頼フラグ:[[依頼:세이죠학원조사]]:0 == 2
+		;依頼17で茉莉花を捕えた
+		PRINTFORMW 방의 중앙 부근에서、뚱뚱하고 안경 쓴 학생이、밧줄로 묶인 어려보이는 얼굴의 소녀를 정신없이 범하고 있었다。
+		PRINTL
+		PRINTFORMW 「대、대단해……！　이、이것이 시이나 유우코의……으읏！」
+		PRINTFORMW 「우아――아――오――」
+		PRINTL
+		PRINTFORMW 뚱뚱한 학생은 여자아이를 자신의 엉덩이로 짓누르며 경련을 일으켰다。
+		PRINTFORMW 어린 얼굴의 소녀는、더 이상 상황을 이해할 수 없게 된 것일까、
+		PRINTFORMW 초점이 흐려진 눈으로 허공을 올려다보며、내뱉어지는 정액을 그저 음부로 받아내고 있다。
+		PRINTL
+		PRINTFORMW 「젠자앙！　시이나 씨、시이나 씨……！」
+		PRINTL
+		PRINTFORMW 방 한구석에서 밧줄에 묶인 학생들이 비통한 목소리를 내고 있다。
+		PRINTFORMW 주변의 악마들은 소년이 사정하는 모습을 바라보며、다음 순서를 놓고 다투고 있다。
+		PRINTFORMW 미소년은 부드럽게 웃으며 뚱뚱한 소년의 어깨에 손을 얹었다。
+		PRINTL
+		PRINTFORMW 「……후훗、그러니까 말했잖아？　손이 닿지 않는 여자에게도 손이 닿는다、고。
+		PRINTFORMW 　자아、이제 네 차례야。
+		PRINTFORMW 　무례한 방해꾼을 제거하기 위해、 네 힘을 빌려줄 수 있을까？」
+		PRINTL
+		PRINTFORMW 그 목소리가 끝나자마자、뚱뚱한 학생은 괴성을 지르며 소녀의 몸 안에 몇 번이나 사정을 했다。
+		PRINTFORMW 그 직후、환희의 목소리는 사람 같지 않은 포효로 대체되었다、
+		PRINTFORMW 그는 소녀의 몸을 취하면서 심하게 부풀어 오른 오니로 변했다。
+		CALL SET_ENEMY, 10, [[キャラ:오니]],25, 0, 1
+	ELSE
+		PRINTFORMW 방 중앙 부근에서 오크로 변한 뚱뚱한 학생이 한 여학생을 질질 끌고 있었다。
+		PRINTFORMW 그 옆에는 몇 명의 학생이 밧줄로 묶여 있고、목이 터져라 폭행을 제지하려 하지만、지금 상황에서 말만으로 멈출 리가 없다。
+		PRINTL
+		PRINTFORMW 「아앗！　싫어、그만해！！」
+		PRINTL
+		PRINTFORMW 울부짖으며 용서를 구하는 어려보이는 얼굴의 소녀의 옷을 찢고 억누른다……
+		PRINTFORMW 그때、온 방의 시선이、%CALLNAME:MASTER%에게로 향했다。
+		PRINTFORMW 미소년은 불쾌한 표정으로 매끄러운 은발을 긁적거렸다。
+		PRINTL
+		PRINTFORMW 「또 방해꾼인가。중요한 의식을 진행하는 중이라고 말했을텐데」
+	ENDIF
+ENDIF
+CALL SET_ENEMY,8, [[キャラ:안드라스]],25, 1, 1
+;スキルがよわよわなので補強。ついでに原作にあった剣撃描写も拾う
+ABL:(CHARANUM-1):스킬1 = [[스킬:아기다인]]
+ABL:(CHARANUM-1):스킬2 = [[스킬:마하・라기온]]
+ABL:(CHARANUM-1):스킬3 = [[스킬:데스바운드]]
+ABL:(CHARANUM-1):스킬4 = [[스킬:기가리온]]
+CFLAG:(CHARANUM-1):ＭＰ보정 += 500
+CALL SET_ENEMY,11, [[キャラ:암두시아스]], 25, 1, 1
+ABL:(CHARANUM-1):스킬1 = [[스킬:포효]]
+ABL:(CHARANUM-1):스킬2 = [[스킬:랜더마이저]]
+ABL:(CHARANUM-1):스킬3 = [[스킬:최면파]]
+ABL:(CHARANUM-1):스킬4 = [[스킬:포효]]
+CFLAG:(CHARANUM-1):ＭＰ보정 += 500
+CALL SET_ENEMY,16, [[キャラ:아키토]],30, 1, 1
+;今の基準だとかなり弱いのでもーちょいボスっぽく
+CALLNAME:(CHARANUM-1) = 코바야시
+CFLAG:(CHARANUM-1):ＨＰ보정 += 100
+CFLAG:(CHARANUM-1):ＭＰ보정 += 1000
+CFLAG:(CHARANUM-1):속도보정 = 5
+CFLAG:(CHARANUM-1):행동횟수 = 2
+MAXBASE:(CHARANUM-1):충격 = 999
+BASE:(CHARANUM-1):충격 = 999
+MAXBASE:(CHARANUM-1):정신 = 999
+BASE:(CHARANUM-1):정신 = 999
+MAXBASE:(CHARANUM-1):주살 = 0
+BASE:(CHARANUM-1):주살 = 0
+MAXBASE:(CHARANUM-1):파마 = 0
+BASE:(CHARANUM-1):파마 = 0
+MAXBASE:(CHARANUM-1):주살 = 0
+BASE:(CHARANUM-1):주살 = 0
+MAXBASE:(CHARANUM-1):신경 = 0
+BASE:(CHARANUM-1):신경 = 0
+MAXBASE:(CHARANUM-1):화염 = 50
+BASE:(CHARANUM-1):화염 = 50
+MAXBASE:(CHARANUM-1):빙결 = 50
+BASE:(CHARANUM-1):빙결 = 50
+MAXBASE:(CHARANUM-1):전격 = 50
+BASE:(CHARANUM-1):전격 = 50
+ABL:(CHARANUM-1):스킬1 = [[스킬:마하・잔마]]
+ABL:(CHARANUM-1):스킬2 = [[스킬:잔다인]]
+ABL:(CHARANUM-1):스킬3 = [[스킬:텐타라후]]
+ABL:(CHARANUM-1):스킬4 = [[스킬:유혹의안개]]
+ABL:(CHARANUM-1):스킬5 = 0
+ABL:(CHARANUM-1):스킬6 = 0
+ABL:(CHARANUM-1):스킬7 = 0
+ABL:(CHARANUM-1):스킬8 = 0
+ABL:(CHARANUM-1):스킬9 = 0
+ABL:(CHARANUM-1):스킬10 = 0
+ABL:(CHARANUM-1):스킬11 = 0
+ABL:(CHARANUM-1):스킬12 = 0
+
+MAXBASE:(CHARANUM-1):힘 = 6
+MAXBASE:(CHARANUM-1):지혜 = 13
+MAXBASE:(CHARANUM-1):마력 = 17
+MAXBASE:(CHARANUM-1):내구 = 10
+MAXBASE:(CHARANUM-1):속도 = 12
+MAXBASE:(CHARANUM-1):운 = 5
+
+;種族を超人に
+ABL:(CHARANUM-1):종족 = 43
+CFLAG:(CHARANUM-1):강제악마화 = 1
+
+CALL SYNC_STATUS,(CHARANUM-1)
+CALL HEALTH_CHARA,(CHARANUM-1)
+
+CUSTOMDRAWLINE =
+PRINTFORML 
+PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃타인에게 기생할 뿐인 못난 원숭이들아……　　　┃
+	PRINTFORML ┃총통 오세님 강림의 자리를 더럽힌 죄！　　　　　　　┃
+	PRINTFORML ┃스스로의 죽음으로 갚으라！！　　　　　　　┃
+PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORMW ＞초인 코바야시 아키토가 나타났다！
+CALL BATTLE_START
+PRINTFORML ………………
+PRINTFORML …………
+PRINTFORMW ……
+PRINTL
+PRINTFORMW 「큿、이런 바보같은！」
+PRINTL
+PRINTFORMW 코바야시라는 소년이 쓰러지려는 순간、그 뒤에 대기하고 있던 반라의 소녀들이 그 몸을 지탱한다。
+PRINTL
+PRINTFORMW 「도망가세요、코바야시님」「여기는 저희들이……」
+PRINTL
+PRINTFORMW 소녀들의 재촉에、코바야시라는 소년은 비틀거리며 도망쳤다。
+PRINTFORMW %CALLNAME:MASTER%는 뒤쫓아 가려고 했지만、소녀 중 두 명이 앞길을 가로막듯이 끼어들어――갑자기 서로에게 입맞춤을 했다。
+PRINTFORMW 갑자기 온몸에서 마력의 불길이 솟구쳤다！　그것은 순식간에 소녀들을 태우고 라이브 하우스로 옮겨 붙었다！
+IF 依頼フラグ:[[依頼:사바트방해]]:0 == 1
+;忍者と協力
+	PRINTL
+	PRINTFORMW 「서둘러 주세요、이쪽으로 오시면 탈출할 수 있습니다」
+	PRINTL
+	PRINTFORMW 능수능란한 움직임으로、닌자들은 이미 퇴로를 확보한 것 같다。
+	PRINTFORMW 악마화되어 혼수상태에 빠진 학생들도 손이 닿는 범위 내에서 구출하려고 하는 걸 보면 꽤나 착한 닌자다。
+	PRINTL
+	PRINTFORMW 녀석들의 솜씨를 구경할 틈도 없이――뒤돌아선 %CALLNAME:MASTER%의 발이、무언가를 걷어찼다。
+	PRINTFORMW 이건、죽은 뚱뚱한 소년이 손에 쥐고 있던 바쥬라인가……주워가자。
+	PRINTFORMW ＞바쥬라를 손에 넣었다
+	CALL GET_ITEMS("바쥬라", 1)
+ELSE
+;忍者と戦闘
+	PRINTFORMW 이렇게 되었으니 추격을 포기하고 도망칠 수 밖에 없을 것이다。
+	PRINTFORMW %CALLNAME:MASTER%는、불길에 휩싸이지 않은 탈출로를 찾기 시작했다。
+	PRINTL 
+	IF 依頼フラグ:[[依頼:세이죠학원조사]]:0 == 2
+;依頼17で茉莉花を捕えた
+		PRINTFORMW ……삐걱거리는 소리가 났다。
+		PRINTFORMW 뒤돌아보니、절명한 오니의 뱃속에서 점액으로 범벅이 된 어린 얼굴의 여자아이가 빠져나오고 있었다。
+		PRINTL
+		PRINTFORMW 「게흑……게흑……！」
+		PRINTL
+		PRINTFORMW 완전히 흡수되어 분해된 줄 알았는데……자세히 보니、그 가랑이에는 갈기갈기 찢어진 페니스가 꽂혀 있었다。
+		PRINTFORMW 그놈은 싸우는 동안 배 속에서 계속 그녀를 범하고 있었던 모양이다。
+		PRINTFORMW 꽤나 심한 광경이다。당신은 방치하고 탈출하려 했지만――
+		PRINTL
+		PRINTFORMW 「아니야아……싫어어어……누가 좀 도와줘요……！」
+		PRINTL
+		PRINTFORMW 자세히 보니 눈을 의심할 정도로 터질 것 같이 커다란 가슴의 소유자였다。
+		PRINTFORMW ……이대로 가다가는 불에 타 죽고 말 것이다、주워가자。
+		PRINTFORMW ＞동안폭유 소녀 시이나 유우코를 노예로 했다
+		
+		CALL ADD_NEW_COMPANION, [[キャラ:시이나]],200,1
+	ELSE
+		PRINTFORMW 움직일 수 있는 학생들은 어느새 도망치고 있었다。
+		PRINTFORMW 닌자의 도움이라도 받은 것일까、방 구석에 있어야 할 학생들도 이미 사라졌다。
+		PRINTFORMW ……하지만、방금 전 폭행을 당할 뻔했던 동안 소녀만이、%CALLNAME:MASTER%의 발밑에 쓰러져 있었다。
+		PRINTL
+		PRINTFORMW 「게흑……게흑……！」
+		PRINTL
+		PRINTFORMW 아무래도、%CALLNAME:MASTER%가 너무 가까워서 구출하지 못했을 것이다。
+		PRINTFORMW 겁에 질린 눈빛을 하고 있는 어려보이는 얼굴의 소녀는――눈을 의심할 정도로、터질 듯이 커다란 가슴을 가지고 있었다。
+		PRINTFORMW ……이대로라면 불길에 휩싸여 죽을지도 모른다、이 기회에 챙기자。당신은 그녀를 부드럽게 끌어안았다。
+		PRINTL
+		PRINTFORMW 「앗……%UNICODE(0x2661)%」
+		PRINTL
+		PRINTFORMW 뭐냐 그 얼굴은。
+		PRINTFORMW ＞동안폭유 소녀 시이나 유우코를 보호했다.
+		CALL ADD_NEW_COMPANION, [[キャラ:시이나]],200
+	ENDIF
+ENDIF
+PRINTFORML ………………
+PRINTFORML …………
+PRINTFORMW ……
+PRINTFORMW 우리가 탈출하자마자、라이브하우스가 무너졌다。
+PRINTFORMW 건물이 멀쩡했다면、 오너에게 보상을 받아낼 수 있었을 텐데、이래가지고선 무리겠지。
+IF 依頼フラグ:[[依頼:사바트방해]]:0 == 1
+	PRINTFORMW 그런 생각을 하며 걷고 있는데、포니테일 소녀를 선두로 한 닌자들이 웃으며、%CALLNAME:MASTER%를 반갑게 맞이했다。
+	PRINTL
+	PRINTFORMW 「감사합니다、이번엔 정말 고마웠어요。
+	PRINTFORMW 　저는、쿠사카 마리카。이쪽은 쿠사카의 명물ㆍ에도무라 닌자군단……」
+	PRINTFORMW 「마리카씨、그런 농담은 그만해 주세요」
+	PRINTL
+	PRINTFORMW 닌자들에 둘러싸인、마리카는 미안하다면서 웃는 모습을 보였다。
+	PRINTFORMW 망가지는 모습을 보여 준다는 건、 어느 정도 신뢰를 얻은 것일까？
+	PRINTFORMW 경계심을 남긴 %CALLNAME:MASTER%와는 달리、그녀는 치아가 보이도록 웃으며 주머니에서 부적 한 장을 꺼냈다。
+	PRINTL
+	PRINTFORMW 「답례라고 말하긴 좀 그렇지만、이거、줄게요」
+	PRINTL
+	PRINTFORMW 그것은 고풍스러운 양식으로 제작된 스킬 카드였다。
+	PRINTFORMW 낯선 문법에 당신이 의아한 표정을 짓자、소녀는 자랑스럽게 입꼬리를 올렸다。
+	PRINTL
+	PRINTFORMW 「이건 안개가 자욱하게 끼는 기술이라고나 할까요？」
+	PRINTL
+	PRINTFORMW 마리카가 장난스럽게 윙크한다。
+	PRINTFORMW ――다음 순간 눈앞에 있던 사람들은 모두 사라지고、밤의 어둠만이 남아있었다。
+	PRINTFORMW ＞포그브레스의 스킬카드를 입수했다。
+	ITEM:스킬카드【포그브레스】 += 1
+ELSE
+	IF 依頼フラグ:[[依頼:세이죠학원조사]]:0 == 2
+		PRINTFORMW %CALLNAME:MASTER%는、탈출 도중에 주운 바주라와 새로 데려온 노예를 내려다보았다。
+		PRINTFORMW ……이것도 일단 보수 중 하나인가。
+		PRINTFORMW ＞바쥬라를 손에 넣었다
+	ELSE
+		PRINTFORMW %CALLNAME:MASTER%는、탈출 도중에 만난 소녀를 내려다보았다。
+		PRINTL
+		PRINTFORMW （반짝반짝반짝반짝……）
+		PRINTL
+		PRINTFORMW 에에에잇、그런 얼굴 하지마。달라붙지 마！
+		PRINTL
+		PRINTFORMW 「끼야☆」
+		PRINTL
+		PRINTFORMW 꺄 가 아니고！　묘하게、좋아하는듯한 모습이다。
+		PRINTFORMW ……아니、잘 보니 그녀가 뭔가를 쥐고 있군。돌아가면 알아봐야겠다。
+		PRINTFORMW ＞바쥬라를 손에 넣었다.
+	ENDIF
+	CALL GET_ITEMS("바쥬라", 1)
+ENDIF
+PRINTL
+PRINTFORMW 의뢰를 달성하여 보상、10,000엔과 명성 300을 얻었다。
+MONEY += 10000
+FLAG:명성 += 300
+CUSTOMDRAWLINE =
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+

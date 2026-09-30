@@ -1,0 +1,729 @@
+﻿;--------------------------------------------------
+;このファイル内では素質についての記述があります。
+;--------------------------------------------------
+;=============================================================================
+;用語辞典――素質
+;=============================================================================
+;--------------------------------------------------
+;素質解説メインページ
+;--------------------------------------------------
+@DICTIONARY_TALENT_MAIN
+#DIM ページ数
+#DIM 最大ページ数
+ページ数 = 0
+最大ページ数 = 4
+$PRINT_LIST
+DRAWLINE
+PRINTL 「소질」에 관한 해설입니다。
+PRINTL 설명을 알고 싶은 소질의 번호를 입력하거나、클릭해주세요。
+PRINTFORML  ＜page.{ページ数+1}/{最大ページ数+1}＞
+DRAWLINE
+;各ページを表示
+FOR LOCAL:1, 0, 60
+	LOCAL = LOCAL:1 + ページ数*60
+	SIF TALENTNAME:LOCAL !=""
+		PRINTFORMLC [{LOCAL, 3}]%TALENTNAME:LOCAL%
+NEXT
+PRINTL 
+DRAWLINE
+PRINTFORMLC \@(ページ数 <= 0) ? %" " * 16% # [1001]이전페이지\@
+PRINTLC [1000]돌아간다
+PRINTFORMLC \@(ページ数 >= 最大ページ数) ? %" " * 16% # [1009]다음페이지\@
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT == 1001 && ページ数 > 0
+	ページ数 -= 1
+	GOTO PRINT_LIST
+ELSEIF RESULT == 1009 && ページ数 < 最大ページ数
+	ページ数 += 1
+	GOTO PRINT_LIST
+ENDIF
+SIF RESULT < 0 &&RESULT>=最大ページ数*60
+	GOTO INPUT_LOOP
+SIF TALENTNAME:RESULT==""
+	GOTO INPUT_LOOP
+CALL DICTIONARY_TALENT_DATA,RESULT
+GOTO PRINT_LIST
+;--------------------------------------------------
+;素質解説
+;--------------------------------------------------
+@DICTIONARY_TALENT_DATA, ARG
+#DIM LCOUNT
+PRINTFORML 【%TALENTNAME:ARG%】
+CALL GET_TALENT_EXPLAIN, ARG
+CALL PRINTFORM_LF, RESULTS, "w"
+
+;--------------------------------------------------
+;素質解説
+;--------------------------------------------------
+@GET_TALENT_EXPLAIN, ARG = -1, ARGS
+IF ARG != -1
+	ARGS = %TALENTNAME:ARG%
+ELSE
+	ARG = GETNUM(TALENTNAME, ARGS)
+ENDIF
+RESULTS = 
+SELECTCASE ARGS
+	CASE "처녀"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "캐릭터가 처녀임을 나타낸다。")%
+	CASE "재생처녀"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "처녀가 아닌 캐릭터가 어떠한 이유로 처녀막을 얻은 상태。")%
+	CASE "연모"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "함락소질 중 하나로、주인에게 애정과 비슷한 감정을 품고 있는 상태。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "식당・콘서트・집단 라이브의 보수액이 높아지지만、")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "매각액과 매춘 관계 노역의 보수액이 낮아진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "순종・봉사정신・기능계를 올리기 쉬워지고、순종과 봉사정신을 올리는 데 필요한 이상경험을 무시할 수 있다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、[남성혐오]와 [여성혐오]가 원래 성별이고、또한 주인에 의한 조교 시에만 무효화된다。")%
+	CASE "음란"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "함락소질 중 하나로、쾌락에 빠져 있는 상태。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "매각액과 매춘 관계 노역의 보수액이 높아지지만、식당의 보수액이 낮아진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "감각계・레즈끼・ＢＬ끼를 올리기 쉬워지고、욕망을 올리는 데 필요한 이상경험을 무시할 수 있다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、[쾌감을부정]이 무효화된다。")%
+	CASE "복종"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "함락소질 중 하나로、주인에게 마음이 완전히 평복한 상태。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "매각액과 매춘 관계 노역의 보수액이 높아지지만、식당의 보수액이 낮아진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "순종과 봉사정신을 올리기 쉬워지고、[반항적]이 무효화된다。")%
+	CASE "친애"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "연모의 상위소질로、몸도 마음도 주인에게 완전히 의존한 상태。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "식당・콘서트・집단 라이브의 보수액이 더욱 높아지지만、")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "매각액과 매춘 관계 노역의 보수액이 더욱 낮아진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "순종・봉사정신・기능계를 더욱 올리기 쉬워지고、순종과 봉사정신을 올리는 데 필요한 이상경험을 무시할 수 있다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、[남성혐오]와 [여성혐오]가 원래 성별이고、또한 주인에 의한 조교 시에만 무효화된다。")%
+	CASE "창부"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "음란의 상위소질로、쾌락에 완전히 의존한 상태。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "매각액과 매춘 관계 노역의 보수액이 더욱 높아지지만、식당의 보수액이 더욱 낮아진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "감각계・레즈끼・ＢＬ끼를 더욱 올리기 쉬워지고、욕망을 올리는 데 필요한 이상경험을 무시할 수 있다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、[쾌감을부정]이 무효화된다。")%
+	CASE "예속"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "복종의 상위소질로、몸도 마음도 주인의 노예가 되어버린 상태。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "매각액과 매춘 관계 노역의 보수액이 더욱 높아지지만、식당의 보수액이 더욱 낮아진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "순종과 봉사정신을 더욱 올리기 쉬워지고、[반항적]이 무효화된다。")%
+	CASE "붕괴"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "정신에 이상을 일으켜버린 상태。노역의 보수액과 매각액이 대폭 저하하고、")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "HP와 MP가 0.7배로、능력치가 0.8배가 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "순종이 높을수록 저하 정도가 완화된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "캐릭터의 스트레스가 100 이상이 되면 획득해버린다。 그때 함락해 있다면 함락소질을 잃고、")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "재차 획득시킬 수 없게 되고、의존도가 변화하지 않게 된다。")%
+	CASE "겁쟁이"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "공포와 반감이 오르기 쉽고、순종을 올리는 데 필요한 이상경험을 무시할 수 있다。")%
+	CASE "반항적"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "커맨드를 실행하기 어렵고、순종이 LV4 이상이 아니면 매각할 수 없다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "공순과 굴복이 오르기 어렵고、반감이 오르기 쉽다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、「매도」의 효과가 저하한다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "복종계 함락해 있으면 무효화된다。")%
+	CASE "꿋꿋함"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "커맨드를 실행하기 어렵고、순종이 LV4 이상이 아니면 매각할 수 없다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "공순・욕정・굴복・공포가 오르기 어렵고、반감과 억울이 오르기 쉽다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "「매도」의 효과가 크게 저하한다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、고통각인을 획득해도 순종이 오르지 않는다。")%
+	CASE "솔직함"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "커맨드를 실행하기 쉽고、공순이 오르기 쉽고、반감이 오르기 어렵다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "순종을 올리는 데 필요한 이상경험을 무시할 수 있다。")%
+	CASE "얌전함"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "공순과 반감이 오르기 어렵다。")%
+	CASE "프라이드높음"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "커맨드를 실행하기 어렵고、굴복과 공포가 오르기 어렵고、반감이 오르기 쉽다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、기교를 올리기 어렵고、일부 커맨드의 효과가 변화한다。")%
+	CASE "건방짐"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "공순과 굴복이 오르기 어렵고、반감이 오르기 쉽다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、「매도」의 효과가 저하한다。")%
+	CASE "프라이드낮음"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "커맨드를 실행하기 쉽고、굴복과 공포가 오르기 쉽고、반감이 오르기 어렵다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "「매도」의 효과가 변화한다。")%
+	CASE "츤데레"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "공순과 굴복이 오르기 어렵고、반감이 오르기 쉽다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "함락해 있으면 효과가 반전하고、공순과 굴복이 오르기 쉬워지고、반감이 오르기 어려워진다。")%
+	CASE "자제심"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "욕망이 LV4 이상이 아니면 매각할 수 없다。굴복・공포・쾌감계가 오르기 어렵고、반감이 오르기 쉽다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "강절정해도 오르는 욕망이 저하하고、쾌락각인을 획득해도 순종이 오르지 않는다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "조교자와 대상이 동성이면 성행동과 달성의 소스가 감소한다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "대상이 이 소질을 가지고 있으면 사정・분유하기 어려워진다。")%
+	CASE "무관심"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "공순・욕정・굴복・공포・반감이 오르기 어렵다。")%
+	CASE "감정결핍"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "파라미터가 전체적으로 오르기 어렵다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、각인을 획득해도 순종이 변동하지 않는다。")%
+	CASE "호기심"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "커맨드를 실행하기 쉽고、습득이 오르기 쉽고、반감이 오르기 어렵다。")%
+	CASE "보수적"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "커맨드를 실행하기 어렵고、습득이 오르기 어렵고、반감이 오르기 쉽다。")%
+	CASE "낙관적"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "억울이 오르기 어렵다。")%
+	CASE "비관적"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "억울이 오르기 쉽다。")%
+	CASE "일선을넘지않음"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "감각계 이외의 모든 능력을 올리기 어렵다。단 함락해 있다면 무효화된다。")%
+	CASE "눈에띄고싶어함"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "커맨드를 실행하기 쉽고、공순이 오르기 쉽다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "노출증을 올리는 데 필요한 이상경험을 무시할 수 있다。")%
+	CASE "정조관념"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "Ｖ계 섹스계 커맨드에서 반감이 오르기 쉬워지고、")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "「조개젖히기」와 「조개젖히기과시」의 효과가 변화한다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、처녀상실했을 때 획득하는 소스가 변화한다。")%
+	CASE "정조관결여"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "처녀상실했을 때 획득하는 소스가 감소한다。")%
+	CASE "억압"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "커맨드를 실행하기 어렵고、억울과 반발이 오르기 쉽고、욕정이 오르기 어렵다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "음란이나 복종으로 함락시키거나、욕망이 LV3 이상이면 소멸한다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "욕망을 올려서 없앤 경우、부정의 구슬의 수가 반이 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "음란・복종으로 함락시켜 없앤 경우、[해방]이 없으면 [해방]을 획득한다。")%
+	CASE "해방"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "욕정과 굴복이 오르기 쉽고、마조끼를 올리는 데 필요한 이상경험을 무시할 수 있다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、조교자가 이 소질을 가지고 있으면 쾌감계・공순・욕정이 오르기 쉬워진다。")%
+	CASE "저항"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "커맨드를 실행하기 어렵고、억울과 반발이 오르기 쉽다。순종이 LV3 이상이면 소멸한다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "소멸했을 때는 부정의 구슬의 수가 반이 된다。")%
+	CASE "부끄럼쟁이"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "노출계 커맨드를 실행하기 어려워지지만、효과가 높아진다。")%
+	CASE "부끄럼없음"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "노출계 커맨드를 실행하기 쉬워지지만、효과가 낮아진다。")%
+	CASE "약점"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "커맨드를 실행하기 쉽다。")%
+	CASE "아픔에약함"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "고통이 오르기 쉽고、고통에 의한 체력과 기력의 감소량이 많다。")%
+	CASE "아픔에강함"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "고통이 오르기 어렵고、고통에 의한 체력과 기력의 감소량이 적다。")%
+	CASE "젖기쉬움"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "윤활이 오르기 쉽다。")%
+	CASE "젖기어려움"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "윤활이 오르기 어렵다。")%
+	CASE "임신하기쉬움"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "임신율・다태율・다태상한이 상승한다。")%
+	CASE "임신하기어려움"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "임신율・다태율・다태상한이 저하한다。")%
+	CASE "습득빠름"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "습득이 오르기 쉽다。")%
+	CASE "습득느림"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "습득이 오르기 어렵다。")%
+	CASE "혀놀림"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "혀를 사용하는 커맨드의 효과가 높아진다。")%
+	CASE "바늘다루기"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "능력에 관계없이 조수가 「바늘」을 실행할 수 있게 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "조교자가 이 소질을 가진 상태에서、「바늘」로 대상이")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "고통각인 LV3을 획득하면 대상이 이상경험을 추가로 획득한다。")%
+	CASE "고양이혀"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "혀를 사용하는 커맨드의 효과가 변화하고、실행 시에 기학쾌락경험을 획득하게 된다。")%
+	CASE "조합지식"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "특수한 아이템을 구입할 수 있고、「미약」과 「이뇨제」의 체력과 기력의 감소량이 반이 된다。")%
+	CASE "약독내성"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "「미약」이나 「이뇨제」 등의 약을 사용하는 커맨드를 실행할 수 없게 된다。커맨드 이외의 것은 가능。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "단 「이뇨제」는 촉수조교 중이라면 실행할 수 있다。")%
+	CASE "오줌싸개버릇"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "「이뇨제」를 마시게 하지 않아도 「방뇨」를 실행할 수 있게 되고、절정했을 때 방뇨한다。")%
+	CASE "자위하기쉬움"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "자위계 커맨드를 실행하기 쉬워진다。")%
+	CASE "악취둔감"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "펠라계 커맨드를 실행하기 쉽고、정액중독을 올리는 데 필요한 이상경험을 무시할 수 있다。")%
+	CASE "악취민감"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "펠라계 커맨드를 실행하기 어렵다。")%
+	CASE "헌신적"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "봉사계 커맨드를 실행하기 쉽고、굴복이 오르기 쉽다。")%
+	CASE "불결무시"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "조교자일 때 더러움에 의한 페널티를 받지 않게 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "주인인 경우는 조교 아이템 구입에 있는 「불결무시」를 구입하면 획득할 수 있다。")%
+	CASE "쾌감에솔직"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "커맨드를 실행하기 쉽고、욕정이 오르기 쉽고、사정・분유하기 쉬워진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "욕망을 올리는 데 필요한 이상경험을 무시할 수 있다。")%
+	CASE "쾌감을부정"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "커맨드를 실행하기 어렵고、욕정이 오르기 어렵다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "쾌감계의 소스에 따라 억울이 오르게 되고、사정・분유하기 어려워진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "음란계 함락해 있다면 무효화된다。")%
+	CASE "중독되기쉬움"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "중독계 능력을 올리기 쉽고、중독계 능력을 올리는 데 필요한 이상경험을 무시할 수 있다。")%
+	CASE "즉각함락"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "커맨드를 실행하기 쉽고、모든 포지티브 파라미터가 오르기 쉽고、모든 네거티브 파라미터가 오르기 어려워지지만、")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "매각액과 매춘계 노역의 보수액이 대폭 저하한다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、옵션의 NTR 기능 설정이 [ON]일 때、NTR 이벤트가 발생했을 때 걸리기 쉬워진다。")%
+	CASE "자위광"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "쾌Ｃ계 커맨드의 효과가 높아지고、자위중독을 올리는 데 필요한 이상경험을 무시할 수 있다。")%
+	CASE "섹스광"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "쾌Ｖ계 커맨드의 효과가 높아지고、[여자] 캐릭터의 섹스중독을 올리는 데 필요한 이상경험을 무시할 수 있다。")%
+	CASE "애널광"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "쾌Ａ계 커맨드의 효과가 높아지고、[남자] 캐릭터의 섹스중독을 올리는 데 필요한 이상경험을 무시할 수 있다。")%
+	CASE "음유"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "쾌Ｂ계 커맨드의 효과가 높아지고、분유중독을 올리는 데 필요한 이상경험을 무시할 수 있다。")%
+	CASE "잉태희망"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "임신율・다태율・다태상한이 상승한다。")%
+	CASE "창놈"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "성교계 커맨드의 효과가 높아진다。")%
+	CASE "도착적"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "굴복과 치정이 오르기 쉬워지고、「사정멈추기」와 「풋잡한다」의 효과가 높아진다。")%
+	CASE "바이"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "대상과 조교자가 동성이면 커맨드를 실행하기 쉬워진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "조교자가 이 소질을 가지고 있으면 공순・욕정・습득이 오르기 쉬워진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "레즈/ＢＬ끼와 레즈/ＢＬ중독을 올리는 데 필요한 이상경험을 무시할 수 있다。")%
+	CASE "남성혐오"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "조교자가 [남자]이면、커맨드를 실행하기 어렵고、공순・욕정・굴복・습득이 오르기 어렵고、반감과 불쾌가 오르기 쉬워진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "연모계 함락해 있고、원래 성별이며、또한 주인에 의한 조교 시라면 무효화된다。")%
+	CASE "새드"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "조교자일 때 커맨드를 실행하기 쉬워지고、공포가 오르기 쉬워진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "고통이 상승했을 때 욕정이 오르기 쉬워진다。(대상에게 마조끼가 필요)")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "일부 커맨드를 실행할 수 있게 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "대상이 이 소질을 가지고 있으면 굴복과 공포가 오르기 어려워진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、조수가 이 소질을 가지고 있다면、조수가 능력에 관계없이 일부 커맨드를 실행할 수 있게 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "새드끼를 올리기 쉬워지고、올리는 데 필요한 이상경험을 무시할 수 있다。")%
+	CASE "마조"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "커맨드를 실행하기 쉽고、굴복과 공포가 오르기 쉬워지고、억울이 오르기 어려워진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、마조끼를 올리기 쉬워진다。")%
+	CASE "질투"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "질투「젤러시 봄버」의 위력상한이 크게 상승한다。")%
+	CASE "망신"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "커맨드를 실행하기 쉽고、굴복이 오르기 쉽고、반감이 오르기 어렵다。")%
+	CASE "소악마"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "조교자일 때 커맨드를 실행하기 쉬워지고、욕정과 치정이 오르기 쉬워진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、조수가 이 소질을 가지고 있다면、조수가 능력에 관계없이 일부 커맨드를 실행할 수 있게 된다。")%
+	CASE "여성혐오"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "조교자가 [여자]이면、커맨드를 실행하기 어렵고、공순・욕정・굴복・습득이 오르기 어렵고、반감과 불쾌가 오르기 쉬워진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "연모계 함락해 있고、원래 성별이며、또한 주인에 의한 조교 시라면 무효화된다。")%
+	CASE "여우"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "기교와 Ｃ감각이 LV5이고 [처녀]일 때 [요호]를 획득한다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "그때、이 소질은 소멸한다。")%
+	CASE "요호"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "이 소질을 가진 캐릭터가 조수일 때、")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "「미약」을 1개도 가지고 있지 않다면 조교 종료 시에 1개 입수한다。")%
+	CASE "매력"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "매각액과 노역의 보수액이 증가한다。")%
+	CASE "매혹"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "조교자일 때 커맨드를 실행하기 쉬워지고、쾌감계와 습득이 오르기 쉬워진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、불쾌와 반감이 오르기 어려워진다。")%
+	CASE "수수께끼의매력"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "매각액과 노역의 보수액이 증가한다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "조교자일 때 커맨드를 실행하기 쉬워지고、쾌감계・공순・습득이 오르기 쉬워진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、불쾌와 반감이 오르기 어려워지고、일부 커맨드를 실행할 수 있게 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "추가로 주인이 이 소질을 가지고 있으면 캐릭터가 미조교 함락하기 쉬워지고、성교섭 시에 유리해진다。")%
+	CASE "미끼"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "미끼 이벤트가 발생하게 된다。")%
+	CASE "유아체형"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "몸이 작기 때문에、일부 커맨드의 효과와 실행 가능 여부가 변화한다。")%
+	CASE "Ｃ둔감"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "쾌Ｃ가 오르기 어렵다。")%
+	CASE "Ｃ민감"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "쾌Ｃ가 오르기 쉽다。")%
+	CASE "Ｖ둔감"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "쾌Ｖ가 오르기 어렵다。")%
+	CASE "Ｖ민감"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "쾌Ｖ가 오르기 쉽다。")%
+	CASE "Ａ둔감"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "쾌Ａ가 오르기 어렵다。")%
+	CASE "Ａ민감"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "쾌Ａ가 오르기 쉽다。")%
+	CASE "Ｂ둔감"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "쾌Ｂ가 오르기 어렵고、분유하기 어렵다。")%
+	CASE "Ｂ민감"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "쾌Ｂ가 오르기 쉽고、분유하기 쉽다。")%
+	CASE "빈유"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "Ｂ감각과 분유중독을 올리기 쉽지만、가슴을 사용하는 커맨드에서 필요한 기교가 1 높아진다。")%
+	CASE "절벽"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "Ｂ감각과 분유중독을 상당히 올리기 쉽지만、가슴을 사용하는 커맨드를 실행할 수 없게 된다。")%
+	CASE "거유"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "Ｂ감각과 분유중독을 올리기 어렵지만、가슴을 사용하는 커맨드에서 필요한 기교가 1 낮아진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "「세로파이즈리」를 실행할 수 있게 된다。")%
+	CASE "폭유"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "Ｂ감각과 분유중독을 상당히 올리기 어렵지만、가슴을 사용하는 커맨드에서 필요한 기교가 2 낮아진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "「세로파이즈리」를 실행할 수 있게 된다。")%
+	CASE "큰체형"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "몸이 크기 때문에、일부 커맨드의 효과와 실행 가능 여부가 변화한다。")%
+	CASE "거체"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "몸이 매우 크기 때문에、일부 커맨드의 효과와 실행 가능 여부가 변화한다。")%
+	CASE "크고아름다움"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "특정 조건을 만족하면 주인이 획득할 수 있고、이 소질은 특정 END 조건 중 하나。")%
+	CASE "유생고정"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "신체적 성장이 고정되어、현재 상태를 유지하고 있는 상태。")%
+	CASE "小尻"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "엉덩이가 작다。")%
+	CASE "並尻"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "엉덩이가 보통 정도。")%
+	CASE "巨尻"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "엉덩이가 크고、「더블엉덩이잡」에 필요한 기교가 1 낮아진다。")%
+	CASE "爆尻"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "엉덩이가 매우 크고、「더블엉덩이잡」에 필요한 기교가 3 낮아진다。")%
+	CASE "魔尻"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "엉덩이가 초월적으로 크고、「더블엉덩이잡」에 필요한 기교가 3 낮아진다。")%
+	CASE "마유"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "Ｂ감각과 분유중독을 상당히 올리기 어렵지만、가슴을 사용하는 커맨드에서 필요한 기교가 2 낮아진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "「세로파이즈리」를 실행할 수 있게 된다。")%
+	CASE "슬렌더"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "늘씬한 체형。")%
+	CASE "포동포동"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "살집이 좋은 체형。")%
+	CASE "음모없음"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "여성기가 무모가 되어 있다。")%
+	CASE "회복빠름"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "체력의 회복량이 증가한다。")%
+	CASE "회복느림"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "체력의 회복량이 저하한다。")%
+	CASE "흡혈귀"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "「샤워」의 효과가 변화한다。")%
+	CASE "일광욕"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "현재、효과가 없는 소질。")%
+	CASE "월광욕"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "현재、효과가 없는 소질。")%
+	CASE "치료"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "함락해 있거나、조수 가능한 이 소질 소지자의 수에 따라 체력의 회복량이 증가한다。")%
+	CASE "고무"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "조수일 때 커맨드를 실행하기 쉬워지고、조교 종료 시의 자위 횟수가 증가한다。")%
+	CASE "이상한뿌리"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "조수화 시에 [후타나리]가 된다。")%
+	CASE "후타나리"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "[남자]가 아니어도 페니스를 사용하는 조교 커맨드를 실행할 수 있게 된다。")%
+	CASE "남자"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "남성이다。")%
+	CASE "광기"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "노역의 보수액과 매각액이 대폭 저하한다。순종이 높을수록 저하 정도가 완화된다。")%
+	CASE "소인체형"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "주인이 [금단의지식]을 가지고 있지 않으면 대부분의 ＶＡ계 커맨드를 실행할 수 없게 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "고통이 오르기 쉬워지지만、고통이 올랐을 때의 욕정 상승량이 적어진다。(대상에게 마조끼가 있는 경우)")%
+	CASE "동물귀"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "노역의 보수액과 매각액이 증가하지만、「목욕탕플레이」와 「샤워」에서 필요한 순종이 높아지고、")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "「샤워」의 효과가 변화한다。")%
+	CASE "금단의지식"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "특수한 아이템의 구입이나 커맨드의 실행이 가능해진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "대상이 [소인체형]을 가지고 있을 때의 ＶＡ계 커맨드 제한을 없앤다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "추가로 주인과 계약한 동료마를 합체할 수 있게 된다。")%
+	CASE "인기"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "아이돌 인기에 따라 매각액이 증가하고、노역의 보수액이 증가한다。")%
+	CASE "구현"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "조수화 시에 [후타나리]가 된다。")%
+	CASE "봉래인"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "체력의 회복량이 대폭 증가한다。")%
+	CASE "광기의눈"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "아마 플레이버。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "사안적인 것을 가지고 있다。")%
+	CASE "모유체질"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "분유하게 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "[임신]에 의한 것인 경우는 출산・육아의 종료와 함께 소멸한다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "조교나 「파란사탕」에 의한 것인 경우는 「프롤락틴억제약」으로 없앨 수 있다。")%
+	CASE "유아／유아퇴행"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "조교자일 때 상대를 [모유체질]로 만든다。「가슴주무르기」・「가슴맞대기」・「착유」의 효과가 높아진다。")%
+	CASE "유치"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "조교자일 때 「가슴주무르기」・「가슴맞대기」・「착유」의 효과가 높아진다。")%
+	CASE "절륜"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "사정 게이지의 최대치가 반이 되고、사정하기 쉬워진다。")%
+	CASE "임신"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "아이를 임신하고 있는 상태。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "모든 스테이터스가 오르지만、임신 수가 많으면 반대로 내려간다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "식당에서 일했을 때의 보수액이 증가하지만、체력의 감소량도 많아진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、렌탈의 보수액과 매각액이 대폭 저하한다。순종이 높을수록 저하 정도가 완화된다。")%
+	CASE "육아중"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "아이를 기르고 있는 중。")%
+	CASE "모성"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "아이를 낳은 모친의 사랑。아이를 낳은 캐릭터가 육아방기를 했을 때、")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "대신 육아를 맡길 수 있게 되고、")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "식당에서 일했을 때의 보수액과 다태율이 오른다。")%
+	CASE "사토리（소질）"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "캐릭터의 의존도・스트레스・캐릭터 간의 의존도・음란도가 표시되게 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、랜덤 캐릭터가 가입하는 이벤트에서、캐릭터의 일부 정보가 상세화된다。")%
+	CASE "오토코노코"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "여자아이로 착각할 정도의 귀여움。쾌A와 쾌B가 오르기 쉬워지고、")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "옵션의 설정에 따르지만、대상이나 조교자 중 어느 한쪽이 소지하고 있으면 동성 보너스/페널티가 없어진다。")%
+	CASE "촉수사역술"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "촉수를 다루는 술법을 몸에 익히고 있기 때문에、촉수에 관한 커맨드를 실행할 수 있게 된다。")%
+	CASE "발정가능"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "위험일에 발정한다。")%
+	CASE "간판아가씨"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "점내에서 가장 인기가 있는 증명。노역의 보수가 오른다。")%
+	CASE "간판창부"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "창관 내에서 가장 인기가 있는 증명。일부 노역의 보수가 오르고、손님을 끌기 쉬워진다。")%
+	CASE "ＮＴＲ"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "옵션의 NTR 기능 설정이 [ON]일 때 의미가 있는 소질。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "네토라레되어 있는 상태。되찾으면 없앨 수 있지만、서서히 상황이 나빠져 간다。")%
+	CASE "아내납치"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "옵션의 NTR 기능 설정이 [ON]일 때 의미가 있는 소질。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "ＮＴＲ 관계 소질 중 하나로、납치되어 있는 상태。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "빨리 구하지 않으면 상황이 나빠져 간다。")%
+	CASE "악덕스카우트"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "옵션의 NTR 기능 설정이 [ON]일 때 의미가 있는 소질。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "ＮＴＲ 관계 소질 중 하나로、악덕 스카우트에게 유괴되어 있는 상태。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "빨리 구하지 않으면 상황이 나빠져 간다。")%
+	CASE "바람기"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "옵션의 NTR 기능 설정이 [ON]일 때 의미가 있는 소질。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "NTR 이벤트에 의한 음란도의 증감량이 높아진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "바람경험이 50 이상이고 방치 턴 수가 20 이상이면 획득해버린다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "「밤국화의눈물」로 없앨 수 있다。")%
+	CASE "아내"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "연모계 계약소질로、주인의 아내이다。[남자]이면 [남편]이 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "특수한 링케이지를 발동할 수 있게 되고、다음 주회에서 인계할 수 있게 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、방어상성을 하나 더 강화할 수 있게 된다。")%
+	CASE "남편"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "연모계 계약소질로、주인의 남편이다。[여자]이면 [아내]가 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "특수한 링케이지를 발동할 수 있게 되고、다음 주회에서 인계할 수 있게 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、방어상성을 하나 더 강화할 수 있게 된다。")%
+	CASE "음마"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "음란계 계약소질로、낙인을 찍힌 음마이다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "특수한 링케이지를 발동할 수 있게 되고、다음 주회에서 인계할 수 있게 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、방어상성을 하나 더 강화할 수 있게 된다。")%
+	CASE "노리개"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "복종계 계약소질로、주인 전용의 노예이다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "특수한 링케이지를 발동할 수 있게 되고、다음 주회에서 인계할 수 있게 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、방어상성을 하나 더 강화할 수 있게 된다。")%
+	CASE "사역마"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "가지고 있는 캐릭터도 입수방법도 아마 존재하지 않는다。")%
+	CASE "아이"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "출산한 아이인 경우는 시간경과로 성장하고、이 소질을 잃고、[소년／소녀]를 획득한다。")%
+	CASE "소년／소녀"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "출산한 아이인 경우 시간경과로 성장하고、이 소질을 잃는다。")%
+	CASE "마스터의혈통"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "주인과 혈연이 있다。")%
+	CASE "세대"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "계승되는 세대。")%
+	CASE "신뢰"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "함락소질 중 하나로、주인을 신용하고 있는 상태。")%
+	CASE "동료"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "신뢰의 상위소질로、주인을 동료라고 인식하고 있는 상태。")%
+	CASE "맹우"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "신뢰의 계약소질로、주인과 굳은 약속을 서로 맹세한 상태。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "특수한 링케이지를 발동할 수 있게 되고、다음 주회에서 인계할 수 있게 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、방어상성을 하나 더 변경할 수 있게 된다。")%
+	CASE "남성"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "외견이 남성이다。")%
+	CASE "여성"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "외견이 여성이다。")%
+	CASE "중성"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "외견이 어느 쪽이라고도 할 수 없다。")%
+	CASE "웅성"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "페니스만 가지고 있다。")%
+	CASE "암성"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "바기나만 가지고 있다。")%
+	CASE "쌍성"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "후타나리이다。")%
+	CASE "무성"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "성기를 가지지 않는다。")%
+	CASE "신용"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "당신을 신용하고 전투에 참가할 수 있는 상태。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "조교를 함으로써 반발로 변화하고、전투에 참가할 수 없게 되어버린다。")%
+	CASE "반발"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "당신을 거절하고 있는 상태。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "이 소질이 있으면、전투에 참가시킬 수 없다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "순종이나 욕정의 LV를 3 이상으로 올리면 소거할 수 있다。")%
+	CASE "반역"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "당신에게 반항하고 있는 상태。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "NTR 이벤트로 붙고、전투나 노역에 참가시킬 수 없다。")%
+	CASE "서머너"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "악마소환사이다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "인스톨 소프트를 포함한 COMP의 기능을 사용할 수 있다。")%
+	CASE "우애"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전투 시에 회복과 배드 스테이터스를 회복하는 행동을 했을 때 충성도가 상승한다。")%
+	CASE "영맹"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전투 시에 물리데미지를 주는 행동을 했을 때 충성도가 상승한다。")%
+	CASE "우둔"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전투 시에 순종과 욕망 중 어느 쪽인가 높은 쪽의 LV에 따라 충성도가 상승한다。")%
+	CASE "교만"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전투 시에 배드 스테이터스 효과가 있는 스킬을 사용했을 때 충성도가 상승한다。")%
+	CASE "교활"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전투 시에 마법데미지를 주는 행동을 했을 때 충성도가 상승한다。")%
+	CASE "냉정"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전투 시에 특수 스킬을 사용했을 때 충성도가 상승한다。")%
+	CASE "잔학"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전투 시에 대 데미지를 주는 행동을 했을 때 충성도가 상승한다。")%
+	CASE "현명"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전투 시에 적의 약점을 찌르거나、행동불능의 적에게 행동했을 때 충성도가 상승한다。")%
+	CASE "좀비"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전투 시에 HP・MP・MAG의 잔량에 따라 충성도가 상승한다。")%
+	CASE "천사"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전투 시에 파마・정신・신경상성의 행동을 했을 때 충성도가 상승한다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "이 소질은 [음란]이나 [복종]을 획득하면 [타천사]로 변화한다。")%
+	CASE "타천사"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전투 시에 주살・정신・신경상성의 행동을 했을 때 충성도가 상승한다。")%
+	CASE "허심"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전투 시、이 소질과 함께 가지고 있는 소질에 따라 충성도가 상승하는 조건이 변화한다。")%
+	CASE "짐승"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "모습이 짐승이다。")%
+	CASE "새"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "모습이 새이다。")%
+	CASE "파충류"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "모습이 파충류이다。")%
+	CASE "부정형"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "모습이 부정형이다。")%
+	CASE "물고기"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "모습이 물고기이다。")%
+	CASE "인간화"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "인간형이 아닌 캐릭터의 모습이 인간형이 된 경우에 획득하는 소질。")%
+	CASE "이형"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "모습이 인간형・짐승・새・파충류・물고기는 아니지만 부정형이라고 하기도 어렵다。")%
+	CASE "머리"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "머리를 소지하고 있다。일부 조교 커맨드의 실행에 필요")%
+	CASE "눈"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "눈을 소지하고 있다。일부 조교 커맨드의 실행에 필요")%
+	CASE "입"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "입을 소지하고 있다。일부 조교 커맨드의 실행에 필요")%
+	CASE "팔"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "팔을 소지하고 있다。일부 조교 커맨드의 실행에 필요")%
+	CASE "갈퀴"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "갈퀴를 소지하고 있다。팔을 필요로 하는 조교 커맨드의 실행난이도가 상승한다。")%
+	CASE "날개"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "깃털 혹은 날개를 소지하고 있다。일부 스킬의 습득 코스트가 경감된다。")%
+	CASE "발"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "다리를 일부 조교 커맨드의 실행에 필요")%
+	CASE "갈퀴발"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "갈퀴발을 소지하고 있다。다리를 필요로 하는 조교 커맨드의 실행난이도가 상승한다。")%
+	CASE "꼬리"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "꼬리를 소지하고 있다。일부 스킬의 습득 코스트가 경감된다。")%
+	CASE "모피"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "모피를 소지하고 있다。")%
+	CASE "무기"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "무기를 소지하고 있다。일부 스킬의 습득 코스트가 경감된다。")%
+	CASE "사격무기"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "총이나 활 등을 소지하고 있다。일부 스킬의 습득 코스트가 경감된다。")%
+	CASE "촉수"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "촉수를 가지고 있다。")%
+	CASE "부리"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "부리를 소지하고 있다。")%
+	CASE "송곳니"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "송곳니를 소지하고 있다。일부 스킬의 습득 코스트가 경감된다。")%
+	CASE "석세서"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "마정무기를 장비할 수 있다。")%
+	CASE "데빌시프터"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "악마로 변신할 수 있다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "추가로 동료마와 링크함으로써 변신하는 악마를 변경할 수 있다。")%
+	CASE "이능자"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "인간이면서 마법이나 특기를 사용할 수 있다。")%
+	CASE "페르소나구사자"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "[이능자]의 아종으로、페르소나 능력을 소지하고 있다。")%
+	CASE "도구지식"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전투 중에 아이템을 사용할 수 있다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "이 소질의 LV에 따라 사용할 수 있는 아이템이 다르다。")%
+	CASE "아이템숙련"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "사용하는 아이템의 회복량과 데미지가 높아진다。")%
+	CASE "건슬링거"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "총의 스페셜리스트로、특수탄을 사용할 수 있다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "이 소질의 LV에 따라 사용할 수 있는 특수탄이 다르다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "총의 필요 LV이 5 저하하고、필요한 능력치도 20% 적어진다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "LV3 이상이라면 모든 총과 특수탄을 사용할 수 있고、LV5라면 더블탭을 사용할 수 있다。")%
+	CASE "쿠즈노하"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "라이도우 전용의 소질。")%
+	CASE "식노"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "[데빌시프터]의 아종으로、변신하는 악마를 변경할 수 없지만、")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "만트라 시스템을 소지하고 있다。")%
+	CASE "달인"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "MAG로 스킬의 습득이나 랭크업을 할 수 없다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "특수한 성능의 캐릭터가 많다。")%
+	CASE "전심"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "MAG로 계승소질을 가지고 있지 않은 스킬의 습득이나 랭크업을 할 수 없다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "특수한 성능의 캐릭터가 많다。")%
+	CASE "비전투원"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "싸울 힘을 가지지 않고、전투에 참가시킬 수 없다。")%
+	CASE "영매체질"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전투나 조교 등에 의한 MAG의 획득량과 흡수량이 증가한다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "추가로 턴의 경과로 MAG를 획득하는 경우가 있다。")%
+	CASE "기계의처녀"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "오르기아 모드를 사용할 수 있다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、일부 총의 장비에 필요한 힘과 내구의 수치가 30 감소하고、강력한 총을 장비할 수 있게 된다。")%
+	CASE "데모니카오퍼레이터"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "데모니카 슈트 운용의 프로페셔널。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "슈트의 상성을 최적화할 수 있고、「프로텍트모드」를 사용할 수 있다。")%
+	CASE "데모니카오퍼레이터X"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "데모니카 슈트 운용의 톱 프로페셔널。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "「프로텍트모드(광범위)」를 사용할 수 있다。")%
+	CASE "아웃사이더"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "악마로 변신할 수 있고、인간인 채로도 여러 전투 기능을 가진다。")%
+	CASE "인수라"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "「마가타마」에서 힘을 끌어낼 수 있는 특수한 마인。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "악마이면서 스킬 칸이 12로 많다。")%
+	CASE "Aion"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "정보지성체라는 증거。")%
+	CASE "Aion식소환술"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "동료마를 1체 골라 장비할 수 있다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "방어상성과 사용할 수 있는 스킬의 일부는 장비한 동료마의 것으로 바뀐다。")%
+	CASE "도술"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "일본도를 장비하고 있을 때 능력치가 1.1배가 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "무기수련으로 획득할 수 있다。")%
+	CASE "팬서"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "레이피어를 장비하고 있을 때 능력치가 1.1배가 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "무기수련으로 획득할 수 있다。")%
+	CASE "궁술"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "활을 장비하고 있을 때 능력치가 1.1배가 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "무기수련으로 획득할 수 있다。")%
+	CASE "검술"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "서양검을 장비하고 있을 때 능력치가 1.1배가 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "무기수련으로 획득할 수 있다。")%
+	CASE "창술"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "창을 장비하고 있을 때 능력치가 1.1배가 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "무기수련으로 획득할 수 있다。")%
+	CASE "도끼술"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "도끼・둔기를 장비하고 있을 때 능력치가 1.1배가 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "무기수련으로 획득할 수 있다。")%
+	CASE "채찍술"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "채찍을 장비하고 있을 때 능력치가 1.1배가 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "무기수련으로 획득할 수 있다。")%
+	CASE "투척술"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "투구를 장비하고 있을 때 능력치가 1.1배가 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "무기수련으로 획득할 수 있다。")%
+	CASE "제사"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "지팡이・제구를 장비하고 있을 때 능력치가 1.1배가 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "무기수련으로 획득할 수 있다。")%
+	CASE "봉술"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "곤을 장비하고 있을 때 능력치가 1.1배가 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "무기수련으로 획득할 수 있다。")%
+	CASE "마샬아츠"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "권투구를 장비하고 있을 때 능력치가 1.1배가 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "무기수련으로 획득할 수 있다。")%
+	CASE "함락내역(친애)"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전회차에 친애함락을 획득한 이력。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "연모계 함락해 있지 않아도 일부 커맨드를 실행할 수 있게 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、방어상성을 하나 더 강화할 수 있게 된다。")%
+	CASE "함락내역(창부)"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전회차에 창부함락을 획득한 이력。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "방어상성을 하나 더 강화할 수 있게 된다。")%
+	CASE "함락내역(예속)"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전회차에 예속함락을 획득한 이력。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "복종계 함락해 있지 않아도 일부 커맨드를 실행할 수 있게 된다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "또、방어상성을 하나 더 강화할 수 있게 된다。")%
+	CASE "함락내역(동료)"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "전회차에 동료함락을 획득한 이력。")%
+	CASE "페니스사이즈"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "페니스의 크기。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "사이즈가 커질수록 쾌V・아픔・반감의 소스가 증가하고、정애의 소스가 감소하고、")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "사이즈가 작아질수록 쾌V・아픔・반감의 소스가 감소하고、정애의 소스가 증가한다。")%
+	CASE "페니스발광도"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "문자 그대로。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "당연하지만 조교에 영향은 없다。")%
+	CASE "페니스피부타입"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "페니스의 피부 타입。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "[マジカル]・[やわらか]・[やさしさ]인 경우는 쾌감계의 소스가 증가하고、아픔의 소스가 크게 감소한다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "[イボ付き]・[トゲ付き]・[真珠入り]・[マーラ]인 경우는 아픔의 소스가 증가한다。")%
+	CASE "제육세대"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "대환수용으로 워드레스를 장비할 수 있도록 만들어진 골격강화된 아인종이다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "자신이 주는 데미지가 높아지고、받는 데미지가 낮아진다。")%
+	CASE "블루헥사"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "라보에서 특수한 처리를 받은 제6세대의 클론이다。")%
+	CASE "악마사냥꾼"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "악마사냥꾼이다。")%
+	CASE "무대소녀"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "무대소녀이다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "반짝임에 의해 싸울 힘을 얻고 있다。복종계 함락하거나、[붕괴]하면 반짝임을 잃고 비전투원이 되어버린다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "이벤트의 선택지에 의해서도 반짝임을 잃는 경우가 있다。반짝임을 잃으면 이벤트 진행이 불가능해진다。")%
+	CASE "톱스타"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "톱스타이다。")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "그 무대소녀의 최종 이벤트를 클리어한 증거。")%
+	CASE "전력상실"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "어떠한 이유로 전투능력을 잃어버리고 있다")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "원인이 해소될 때까지 전투에 참가시킬 수 없다。")%
+	CASE "낙적"
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "누군가에게서 낙적한 존재")%
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "매각 시、항상 LV1로 계산되는 페널티가 걸린다")%
+	CASEELSE
+		TRYCCALLFORM SUB_ROLE_EXPLAIN_TOOLTIP_%ARGS%
+		CATCH
+			IF MATCH(TALENTNAME, ARGS, GETNUM(TALENT, "검격"), GETNUM(TALENT, "검격") + SUCCESSIONNUM)
+				RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), @"%ARGS% 계통에 속하는 스킬의 습득 코스트가 감소하고、스킬적성도 지녔다면 성능이 강화된다。")%
+			ELSE
+				RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "아직 해설이 작성되지 않았습니다。")%
+			ENDIF
+		ENDCATCH
+ENDSELECT
+IF ARG >= 0 && GET_SELLPRICE_TALENT(ARG, , 1) != 0
+	RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "　")%
+	IF RESULTS_F != ""
+		RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), "가격보정:" + RESULTS_F)%
+	ELSE
+		IF GET_SELLPRICE_TALENT(ARG, , 1) > 0
+			RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), @"가격보정:+{GET_SELLPRICE_TALENT(ARG, , 1)}")%
+		ELSE
+			RESULTS = %ADD_SPLIT(RESULTS, UNICODE(0x000D), @"가격보정:{GET_SELLPRICE_TALENT(ARG, , 1)}")%
+		ENDIF
+	ENDIF
+ENDIF
+RETURN RESULTS != "아직 해설이 작성되지 않았습니다。"

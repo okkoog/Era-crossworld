@@ -1,0 +1,118 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_KE_氷陣爪, ARG
+	RESULTS = 氷陣爪
+
+;　명중
+@SKILL_HITRATE_KE_氷陣爪, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_KE_氷陣爪, ARG
+RETURN 150
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_KE_氷陣爪, ARG
+RETURN 2
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_KE_氷陣爪, ARG
+RETURN 2
+
+;一体辺りの最大ＨＩＴ数
+@SKILL_MAXATK_PER_氷陣爪,ARG
+RETURN 2
+
+;一体辺りの最低ＨＩＴ数
+@SKILL_MINATK_PER_氷陣爪,ARG
+RETURN 2
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_KE_氷陣爪, ARG
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 15
+	RETURN 1
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_KE_氷陣爪, ARG
+IF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 15
+	RESULTS = %" 15ＴＰ"%
+	RETURN 0
+ENDIF
+RETURN 10
+
+;　相性
+@SKILL_TYPE_KE_氷陣爪, ARG
+RETURN GET_TYPE_NUM("타격"), GET_TYPE_NUM("빙결")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_KE_氷陣爪
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_KE_氷陣爪, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_KE_氷陣爪, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_KE_氷陣爪, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_KE_氷陣爪, ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_KE_氷陣爪, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_KE_氷陣爪, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_KE_氷陣爪
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_KE_氷陣爪, ARG, ARG:1, SKILL_NUM
+#LOCALSIZE 4
+#DIM SKILL_NUM
+
+;Fゲージ再回収できる様に起動前にTP10消費。
+CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", 15, "-="
+
+CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_KE_氷陣爪, ARG
+PRINTL 
+PRINTL 자신의 손톱을 투기로 순간적으로 냉각하여 적을 베어가르는 오의.
+PRINTL 적 랜덤에게 2회 빙결/타격 복합 속성으로 공격한다.
+PRINTL 
+PRINTL 무국 야마토 여왕 사미다레의 스킬(CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_KE_氷陣爪, ARG
+;ゲージが12以上のときのみ
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 15
+	RETURN 0
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_KE_氷陣爪, ARG
+RESULTS:0 = 적 랜덤에게 2회 빙결/타격 복합 속성으로 공격한다.
+RESULTS:1 = TP消費 15
+SIF ARG >= 0 && GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 15
+	RESULTS:1 = %RESULTS:1%(不足)

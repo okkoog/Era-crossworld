@@ -1,0 +1,316 @@
+﻿;======================================================
+;アイテムの基本処理を記述するファイルです
+;======================================================
+;======================================================
+;番号変換関数
+;======================================================
+@CONVERT_USEITEMNUM_TO_SKILLNUM,ARG
+#FUNCTION
+IF IS_USEITEM(ARG)
+	RETURNF ARG + 2000
+ELSE
+	RETURNF ARG
+ENDIF
+
+@CONVERT_SKILLNUM_TO_USEITEMNUM, ARG
+#FUNCTION
+SIF !IS_USEITEM(ARG - 2000)
+	THROW 사용 아이템이 아닌 스킬을 번호 변환하려고 하고 있습니다.
+RETURNF ARG - 2000
+
+;======================================================
+;装備品の最大所持数処理
+;======================================================
+@IS_USEITEM,ARG
+#FUNCTION
+RETURNF INRANGE(ARG, MIN_USEITEMNUM, MAX_USEITEMNUM)
+
+;======================================================
+;使用アイテムの所持可能数の制限がない場面を取得する。
+;======================================================
+@IS_NOLIMIT_USEITEM_HAVEABLENUM
+#FUNCTION
+SIF FLAG:SHOP커맨드 == [[ショップ:정크숍]]
+	RETURNF 1
+SIF FLAG:SHOP커맨드 == [[ショップ:마카교환]]
+	RETURNF 1
+SIF FLAG:SHOP커맨드 == [[ショップ:라그의가게]]
+	RETURNF 1
+SIF FLAG:SHOP커맨드 == [[ショップ:아이템합성]]
+	RETURNF 1
+SIF FLAG:SHOP커맨드 == [[ショップ:가챠！]]
+	RETURNF 1
+SIF FLAG:SHOP커맨드 == [[ショップ:노역/매각/경영]]
+	RETURNF 1
+RETURNF 0
+
+;======================================================
+;アイテムの最大所持数を取得する。
+;======================================================
+@GET_ITEMMAX,ARG, ARG:1
+RESULT = 0
+TRYCCALLFORM 最大所持数_{ARG}
+	IF INRANGE(ARG, 0, VARSIZE("COUNT_STOCK_ITEM")) && INRANGE(ARG, MIN_USEITEMNUM, MAX_USEITEMNUM - 1)
+		IF (ARG:1 == 1 || (ARG:1 == 0 && IS_NOLIMIT_USEITEM_HAVEABLENUM()))
+			RETURN 999, RESULT
+		ELSE
+			RETURN RESULT, RESULT
+		ENDIF
+	ELSE
+		RETURN RESULT, RESULT
+	ENDIF
+CATCH
+	RETURN 999
+ENDCATCH
+
+;======================================================
+;現在のアイテムの所持数を取得する。
+;======================================================
+@GET_HAVE_ITEM_NUM,L_ITEMNO, IN_SHOP, IS_ONLY_UNEQUIPED
+#DIM DYNAMIC L_ITEMNO
+#DIM DYNAMIC IN_SHOP
+#DIM DYNAMIC IS_ONLY_UNEQUIPED
+#FUNCTION
+IF INRANGE(L_ITEMNO, MIN_EQUIPNUM, MAX_EQUIPNUM - 1)
+	SIF IS_ONLY_UNEQUIPED
+		RETURNF ITEM:L_ITEMNO
+	RETURNF ITEM:L_ITEMNO + CMATCH(EQUIP:0:GET_EQUIP(EQUIP_PART:(L_ITEMNO - MIN_EQUIPNUM)), L_ITEMNO)
+ELSEIF INRANGE(L_ITEMNO, 0, VARSIZE("COUNT_STOCK_ITEM"))
+	SIF IN_SHOP
+		RETURNF ITEM:L_ITEMNO + COUNT_STOCK_ITEM:L_ITEMNO
+	SIF IS_NOLIMIT_USEITEM_HAVEABLENUM()
+		RETURNF ITEM:L_ITEMNO + COUNT_STOCK_ITEM:L_ITEMNO
+	RETURNF ITEM:L_ITEMNO
+ELSE
+	RETURNF ITEM:L_ITEMNO
+ENDIF
+
+;======================================================
+;現在のアイテムの所持数を取得する。
+;======================================================
+@GETS_HAVE_ITEM_NUM,ARGS, ARG, ARG:1
+#FUNCTION
+RETURNF GET_HAVE_ITEM_NUM(GETNUM(ITEM, ARGS), ARG, ARG:1)
+
+;======================================================
+;アイテムを最大値まで持っているか
+;======================================================
+@CHECK_ITEMMAX, ARG, ARG:1
+CALL GET_ITEMMAX, ARG, ARG:1
+IF INRANGE(ARG, 0, VARSIZE("COUNT_STOCK_ITEM")) && (ARG:1 == 1 || (ARG:1 == 0 && IS_NOLIMIT_USEITEM_HAVEABLENUM()))
+	SIF RESULT <= ITEM:ARG + COUNT_STOCK_ITEM:ARG
+		RETURN 1
+	RETURN 0
+ELSE
+	SIF RESULT <= ITEM:ARG
+		RETURN 1
+	RETURN 0
+ENDIF
+
+;======================================================
+;アイテム入手
+;ARG:2が1の時はストック込判定,-1の時はストック除外判定。指定しない場合はショップコマンドから振り分ける
+;======================================================
+@GET_ITEM,ARG,ARG:1 = 1,ARG:2
+;ARG アイテム番号
+;ARG:1 入手個数
+
+IF ARG:1 > 0
+	IF INRANGE(ARG, 0, VARSIZE("TAKEN_ITEM") - 1)
+		TAKEN_ITEM:ARG = 1
+	;レアスキルカードは何らかの入手で取得履歴がつく
+	ELSEIF INRANGE(ARG, ITEMNUM, ITEMNUM + SKILLNUM - 1)
+		CALL GET_SKILL_PROP, "継承不能", ARG - ITEMNUM, -1
+		SIF RESULT == 1
+			TAKEN_SKILLCARD:(ARG - ITEMNUM) = 1
+	ENDIF
+ENDIF
+CALL GET_ITEMMAX, ARG, ARG:2
+IF (GET_HAVE_ITEM_NUM(ARG) + ARG:1) > RESULT
+	ITEM:ARG += MAX(RESULT - GET_HAVE_ITEM_NUM(ARG), 0)
+ELSE
+	ITEM:ARG += ARG:1
+ENDIF
+CALL MOVE_STOCK_ITEM, ARG
+
+@GET_ITEMS,ARGS,ARG:1 = 1,ARG:2
+;ARGS アイテム名
+;ARG:1 入手個数
+CALL GET_ITEM, GETNUM(ITEM, ARGS), ARG:1, ARG:2
+
+;======================================================
+;戦闘中の使用アイテムをリスト化して表示
+;======================================================
+@PRINT_USE_ITEM,USING_CHARA = -1
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC USING_CHARA
+SIF USING_CHARA == -1
+	USING_CHARA = MASTER
+P = LIMIT(P,0,2)
+VARSET Z,0
+
+$PRINT_LIST
+	DRAWLINE
+IF P == 0
+	PRINTL 종별：회복아이템
+ELSEIF P == 1
+	PRINTL 종별：공격아이템
+ELSEIF P == 2
+	PRINTL 종별：특수아이템
+ENDIF
+	DRAWLINE
+
+FOR LCOUNT, MIN_USEITEMNUM, MAX_USEITEMNUM
+	;未実装アイテムは飛ばす
+	SIF ITEMPRICE:LCOUNT == 0
+		CONTINUE
+	;持ってないアイテムは飛ばす
+	SIF ITEM:LCOUNT < 1
+		CONTINUE
+	;スキルとして定義されてないなら飛ばす
+	CALL GET_SKILL_PROP, "SKILL_IS_ITEMSKILL", LCOUNT + 2000, USING_CHARA
+	SIF !RESULT
+		CONTINUE
+	;処理
+	CALL GET_SKILL_PROP, "SKILL_EFECT", LCOUNT+2000, -1
+	IF (P == 2 && RESULT == 4) || (P == 1 && (RESULT == 1 || RESULT == 3)) || (P == 0 && (RESULT == 2 || RESULT == 5))
+		;戦闘中使用不可なアイテムと使用条件を満たしていないアイテムは灰色表示で選択不可
+		CALL CHECK_ACTIONABLE, USING_CHARA, LCOUNT + 2000
+		;選択できないアイテムをZ:に記憶
+		IF RESULT == 0
+			SETCOLOR 0x666666
+			Z:(LCOUNT-1000) = 1
+		ENDIF
+		CALL GET_ITEMMAX, LCOUNT
+		IF RESULT != 999
+			PRINTFORMC [{LCOUNT-1000,3}] %ITEMNAME:LCOUNT,20,LEFT% {ITEM:LCOUNT,2}/{RESULT,2}개
+		ELSE
+			PRINTFORMC [{LCOUNT-1000,3}] %ITEMNAME:LCOUNT,20,LEFT% {ITEM:LCOUNT,2}/99개
+		ENDIF
+		RESETCOLOR
+	ENDIF
+NEXT
+PRINTL
+
+DRAWLINE
+PRINTFORMLC \@(P == 0) ? [1007]공격아이템 # [1007]회복아이템\@
+PRINTLC [1000]ＣＡＮＣＥＬ
+PRINTFORMLC \@(P == 2) ? [1009]공격아이템 # [1009]특수아이템\@
+PRINTL 
+VARI L_LINE = LINECOUNT
+$INPUT_LOOP_1
+INPUT
+CLEARLINE LINECOUNT - L_LINE
+LOCAL = RESULT
+IF RESULT == 1000
+	RETURN 1000
+ELSEIF RESULT == 1007
+	IF P == 0
+		P = 1
+	ELSE
+		P = 0
+	ENDIF
+	GOTO PRINT_LIST
+ELSEIF RESULT == 1009
+	IF P == 2
+		P = 1
+	ELSE
+		P = 2
+	ENDIF
+	GOTO PRINT_LIST
+ELSEIF RESULT < 0 || RESULT >= 1000
+	GOTO INPUT_LOOP_1
+ELSEIF ITEM:(RESULT+1000) == 0
+	GOTO INPUT_LOOP_1
+ELSEIF Z:RESULT == 1
+	GOTO INPUT_LOOP_1
+ENDIF
+RETURN LOCAL
+
+;======================================================
+;使用アイテムの所持数を取る
+;======================================================
+@IS_HAVE_USEITEM, ARG
+#FUNCTION
+RETURNF ITEM:ARG
+
+;======================================================
+;使用アイテムの所持数を取る
+;======================================================
+@IS_HAVES_USEITEM, ARGS
+#FUNCTION
+RETURNF ITEM:ARGS
+
+;======================================================
+;お酒による性格変更
+;======================================================
+@酩酊,ARG,ARG:1
+;ARG 対象 ARG:1 性格 ARG:2 アイテム使用強化
+;CFLAG:飲酒前性格に、もとの性格を(性格のTALENT番号-友愛のTALENT番号+3)bitで保存。1bit目に変更フラグ、2bit目に延長フラグを保存
+;CFLAG:飲酒前性格が存在する場合、性格を保存せずに現性格を上書き
+
+LOCAL:1 = 2
+LOCAL:2 = 0
+;想定外の数値は弾く
+SIF ARG < 0 || ARG >= CHARANUM || ARG:1 < GETNUM(TALENT,"우애") || ARG:1 > GETNUM(TALENT,"허심")
+	RETURN
+;保存するか否かを記憶
+SIF CFLAG:ARG:음주전성격 == 0
+	LOCAL:2 = 1
+;変更を保存（人間等性格素質を持たない場合用）
+SETBIT CFLAG:ARG:음주전성격,1
+
+;元の性格を保存
+FOR LOCAL,GETNUM(TALENT,"우애"),GETNUM(TALENT,"허심") + 1
+	LOCAL:1 ++
+	IF LOCAL:2 == 1 && TALENT:ARG:LOCAL
+		SETBIT CFLAG:ARG:음주전성격,LOCAL:1
+	ENDIF
+	TALENT:ARG:LOCAL = 0
+NEXT
+
+TALENT:ARG:(ARG:1) = 1
+
+
+
+@酔い覚まし,ARG:1
+;ARG:1 ターン終了時の酔い覚まし
+;こちらは時期によって一括なんで対象は取らない
+;CFLAG:飲酒前性格の1bit目がONならOFFにする。そうでなければ、CFLAG:飲酒前性格から元の性格を読み込んで戻す
+
+FOR LOCAL,0,CHARANUM
+	SIF CFLAG:LOCAL:음주전성격 == 0
+		CONTINUE
+	;延長フラグONならOFFにして戻す
+	IF GETBIT(CFLAG:LOCAL:음주전성격,2) && ARG:1 == 0
+		CLEARBIT CFLAG:LOCAL:음주전성격,2
+		CONTINUE
+	ENDIF
+	LOCAL:1 = 2
+	FOR LOCAL:2,GETNUM(TALENT,"우애"),GETNUM(TALENT,"허심") + 1
+		LOCAL:1 ++
+		TALENT:LOCAL:(LOCAL:2) = 0
+		IF GETBIT(CFLAG:LOCAL:음주전성격,LOCAL:1)
+			TALENT:LOCAL:(LOCAL:2) = 1
+		ENDIF
+	NEXT
+	CFLAG:LOCAL:음주전성격 = 0
+NEXT
+
+;ストックしてある使用アイテムをITEMに移す。
+;ショップ画面遷移毎及びアイテム売買毎に処理をする。
+@MOVE_STOCK_ITEM, ARG = -1
+#DIM L_ITEMNO
+#DIM L_COUNT_HAVE
+#DIM L_MAX_HAVE
+FOR L_ITEMNO, ARG >= 0 ? ARG # MIN_USEITEMNUM, (ARG >= 0 ? ARG # MAX_USEITEMNUM) + 1
+	TRYCCALLFORM 最大所持数_{L_ITEMNO}
+		L_MAX_HAVE = RESULT
+		IF L_MAX_HAVE > 0
+			L_COUNT_HAVE = ITEM:L_ITEMNO + COUNT_STOCK_ITEM:L_ITEMNO
+			ITEM:L_ITEMNO = MIN(L_COUNT_HAVE, L_MAX_HAVE)
+			COUNT_STOCK_ITEM:L_ITEMNO = L_COUNT_HAVE - ITEM:L_ITEMNO
+		ENDIF
+	CATCH
+	ENDCATCH
+NEXT

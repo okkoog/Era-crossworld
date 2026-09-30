@@ -1,0 +1,118 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_本能解放,ARG
+RESULTS = 本能解放
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_本能解放, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_本能解放,ARG
+RETURN 15
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_本能解放
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_本能解放, ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_本能解放, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_本能解放
+RETURN GET_SUCCESSION_NUM("지원")
+;何でも
+
+;속도보정
+@SKILL_SPEED_本能解放, ARG = -1
+RETURN 999
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_本能解放
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_本能解放, ARG = -1
+RETURN 9
+
+;すでにフラグが立てられているのならランダム・リピートの選定から除く
+@SKILL_SELECTABLE_BY_AUTO_本能解放, ARG
+SIF PU_SKILLGAGE_D_GET(ARG, "本能解放")
+	RETURN 0
+RETURN 1
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_本能解放, ARG, ARG:1, SKILL_NUM
+#DIM SKILL_NUM
+CALL PRINT_HIT_MESSAGE, ARG, "本能解放！　ゾイドの力が漲る！", "w"
+CALL PU_SKILLGAGE_D_SET, ARG, "本能解放", 4
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_本能解放, ARG
+PRINTL 4턴 동안 가하는 데미지가 60% 증가한다.
+PRINTL 본능해방 <와일드 블래스트>
+PRINTL 조이드와 라이더의 인기간 일체로 일시적으로 전투력이 향상된다.
+
+@SKILL_EXPLAIN_TOOLTIP_本能解放, ARG
+RESULTS:0 = 4턴 동안, 주는 데미지가 60\％ 증가한다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_本能解放,ARG
+RETURN 1
+;とくにない
+
+@DISPLAY_COMMAND_P_本能解放,ARG
+IF PU_SKILLGAGE_D_GET(ARG,"本能解放") > 0
+	RESULTS = ＢＯＯＳＴ:%TOFULL(TOSTR(PU_SKILLGAGE_D_GET(ARG, "本能解放")))%Ｔ
+	RETURN 3
+ENDIF
+
+@SKILL_BATTLE_MAIN_TOOLTIP_本能解放, ARG, ARG:1
+IF PU_SKILLGAGE_D_GET(ARG, "本能解放") > 0
+	RESULTS = □本能解放
+	RESULTS:1 = 남은 턴:{PU_SKILLGAGE_D_GET(ARG, "本能解放")}
+ENDIF
+;====================================================
+;ダメージ計算時の追加補正
+;クリティカルダメージ+10%　セット数が増える場合5%づつ強化される
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_本能解放, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			SIF PU_SKILLGAGE_D_GET(L_P, "本能解放")
+				RETURN 60
+	ENDSELECT
+ENDIF
+RETURN 0

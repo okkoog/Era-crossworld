@@ -1,0 +1,1081 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_A.ERB
+;	Facility	:EVENT_ABILITY、能力や素質の変化イベントに関する関数群です。
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/03/21		黒天					처녀&再生処女喪失イベント用の関数「@처녀상실」「@処女喪失イベント」を新規作成
+;	003		2012/02/04		ネトリス				主人の大業物取得イベント追加,
+;	004		2019/05/20		kuma					特殊性感素質の取得条件変更
+;	005		2019/10/27		ypa						恋慕時にCFLAG:2400にセットする値を修正
+;	006		2020/05/19		がめら					NTR好感度処理をCDFLAGに変更
+;	007		2021/02/10		純水100%				オトコだと矛盾する表記の書き換え
+;	008		2021/03/05		JK好き					上位陥落を確認したら下位陥落の陥落履歴を埋めるように修正　サマナーあなたの不屈の闘志獲得フラグに信頼系陥落を含むように修正
+;													あなたの淫乱素質獲得の条件修正
+;	009		2021/08/21		Musue					主人への好感度がマイナスの時に陥落素質を取得すると好感度反転
+;	010		2022/08/31		JK好き					マジックナンバー整理　@EVENTCHECK_M 挿入経験追加による大業物取得イベント条件修正　ヤリチン取得処理を追加
+;													@EVENTCHECK_T　ヤリチン取得処理を追加
+;	011		2023/05/26		P(bazzile)				周回ごとの陥落人数の追加処理を行う関数を追加し、信頼と恋慕の乗り入れの過程で人数に不整合が出る問題に対処
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;EVENT_A.ERB、EVENT_ABILITY、能力や素質の変化イベント
+@EVENTCHECK_ABL
+IF TARGET >= 0
+	CALL EVENTCHECK_T, TARGET
+	CALL END_TRAIN_CHARASELL, TARGET
+ENDIF
+SIF MASTER >= 0
+	CALL EVENTCHECK_M
+SIF ASSI >= 0
+	CALL EVENTCHECK_A
+IF FLAG:주인함락기능
+	SIF MASTER > -1
+		CALL 主人陥落
+ENDIF
+IF FLAG:ＮＴＲ기능
+	SIF TARGET > -1
+		CALL NTR_CHECK,TARGET
+	SIF ASSI > -1
+		CALL NTR_CHECK,ASSI
+ENDIF
+
+;割五鈷杵彫りの指輪の処理で使用します
+SIF TARGET > -1 && (CFLAG:MASTER:그외 == 1130 || CFLAG:MASTER:그외2 == 1130 || CFLAG:MASTER:그외3 == 1130)
+	CALL CHECK_LEVEL_UP , TARGET
+;---------------------------------------------------------
+;陥落素質
+;---------------------------------------------------------
+@EVENTCHECK_T, L_CHARA
+#DIM DYNAMIC L_CHARA
+#DIM LCOUNT
+#DIMS GET_TALENTS
+#DIMS LOST_TALENTS
+#DIM STOCK_LINE
+STOCK_LINE = LINECOUNT
+GET_TALENTS = 
+LOST_TALENTS = 
+
+IF 陥落(L_CHARA) < 1 && TALENT:L_CHARA:붕괴 == 0 && (FLAG:ＮＴＲ기능 == 0 || FAVORITE_1(L_CHARA) == MASTER)
+	;恋慕：従順、奉仕精神3以上+屈服刻印Lv3+反発刻印Lv0+奉仕快楽経験200以上+依存度1000以上+異常経験2未満
+	IF ABL:L_CHARA:순종 >= 3 && ABL:L_CHARA:봉사정신 >= 3 && MARK:L_CHARA:굴복각인 == 3 && MARK:L_CHARA:반발각인 == 0 && EXP:L_CHARA:봉사쾌락경험 >= 200 && CFLAG:L_CHARA:의존도 >= 1000 && (EXP:L_CHARA:이상경험 - CFLAG:L_CHARA:초기이상경험) < 2
+		GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "연모")%
+		CALL SET_陥落素質, L_CHARA, "연모"
+		PRINTFORMW %CALLNAME:L_CHARA%의 이쪽을 바라보는 눈빛이 이상하다
+		PRINTFORML %조사처리(CALLNAME:L_CHARA,"는")% %CALLNAME:MASTER%와의 행위에 기쁨을 느끼고 있는 것 같다
+		PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【연모】를 얻었다
+		SIF ABL:L_CHARA:종족 != 0 && !TALENT:L_CHARA:비전투원
+			CALL CHECK_LEVEL_UP , L_CHARA
+	;淫乱：欲望3以上+CVAB感覚合計10以上+快楽刻印Lv3+屈服刻印Lv3+反発刻印Lv0+絶頂経験50以上+異常経験3以上or異常経験1以上+レズ経験もしくはＢＬ経験1000以上orレズ経験もしくはＢＬ経験2000以上
+	ELSEIF ABL:L_CHARA:욕망 >= 3 && ABL:L_CHARA:Ｃ감각+ABL:L_CHARA:Ｖ감각+ABL:L_CHARA:Ａ감각+ABL:L_CHARA:Ｂ감각 >= 10 && MARK:L_CHARA:쾌락각인 == 3 && MARK:L_CHARA:굴복각인 == 3 && MARK:L_CHARA:반발각인 == 0 && EXP:L_CHARA:절정경험 >= 50
+		IF EXP:L_CHARA:이상경험 >= 3 || (EXP:L_CHARA:이상경험 >= 1 && (EXP:L_CHARA:레즈경험 >= 1000 || EXP:L_CHARA:ＢＬ경험 >= 1000))
+			PRINTFORMW %CALLNAME:L_CHARA%의 이쪽을 바라보는 눈빛이 이상하다
+			PRINTFORML %조사처리(CALLNAME:L_CHARA,"는")% %CALLNAME:MASTER%에게 주어지는 쾌락에 빠져 있는 것 같다
+			PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【음란】을 얻었다
+			CALL SET_陥落素質, L_CHARA, "음란"
+			GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "음란")%
+			IF TALENT:L_CHARA:천사
+				PRINTFORMW %조사처리(NAME:L_CHARA,"는")% 성욕에 빠진 탓에【타천사】로 타락해버렸다
+				TALENT:L_CHARA:천사 = 0
+				TALENT:L_CHARA:타천사 = 1
+				GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "타천사")%
+				LOST_TALENTS = %ADD_SPLIT(LOST_TALENTS, "/", "천사")%
+				IF TALENT:L_CHARA:억압
+					IF TALENT:L_CHARA:해방 == 0
+						PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【억압】을 잃고、【해방】을 얻었다
+						TALENT:L_CHARA:억압 = 0
+						TALENT:L_CHARA:해방 = 1
+						GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "해방")%
+					ELSE
+						PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【억압】을 잃었다
+						TALENT:L_CHARA:억압 = 0
+					ENDIF
+					LOST_TALENTS = %ADD_SPLIT(LOST_TALENTS, "/", "억압")%
+				ENDIF
+			ENDIF
+			CALL 陥落人数加算, L_CHARA, "음란"
+			SIF ABL:L_CHARA:종족 != 0 && !TALENT:L_CHARA:비전투원
+				CALL CHECK_LEVEL_UP , L_CHARA
+		ENDIF
+	;服従：従順、マゾっ気3以上+CAVB感覚10未満+屈服刻印Lv3+反発刻印Lv0+고통쾌락경험+緊縛経験200以上+의존도-1000以下+異常経験2以上
+	ELSEIF ABL:L_CHARA:순종 >= 3 && ABL:L_CHARA:마조끼 >= 3 && ABL:L_CHARA:Ｃ감각+ABL:L_CHARA:Ｖ감각+ABL:L_CHARA:Ａ감각+ABL:L_CHARA:Ｂ감각 < 10 && MARK:L_CHARA:굴복각인 == 3 && MARK:L_CHARA:반발각인 == 0 && EXP:L_CHARA:고통쾌락경험+EXP:L_CHARA:긴박경험 >= 200 && -CFLAG:L_CHARA:의존도 >= 1000 && EXP:L_CHARA:이상경험 >= 2
+		PRINTFORMW %CALLNAME:L_CHARA%의 이쪽을 바라보는 눈빛이 이상하다
+		PRINTFORML %조사처리(CALLNAME:L_CHARA,"는")% %CALLNAME:MASTER%에게 마음이 완전히 굴복한 것 같다
+		PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【복종】을 얻었다
+		CALL SET_陥落素質, L_CHARA, "복종"
+		GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "복종")%
+		IF TALENT:L_CHARA:천사
+			PRINTFORMW %조사처리(NAME:L_CHARA,"는")% 몸도 마음도 %CALLNAME:MASTER%의 노예가 된 탓에、【타천사】로 타락해버렸다
+			TALENT:L_CHARA:천사 = 0
+			TALENT:L_CHARA:타천사 = 1
+			GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "타천사")%
+			LOST_TALENTS = %ADD_SPLIT(LOST_TALENTS, "/", "천사")%
+			IF TALENT:L_CHARA:억압
+				IF TALENT:L_CHARA:해방 == 0
+					PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【억압】을 잃고、【해방】을 얻었다
+					TALENT:L_CHARA:억압 = 0
+					TALENT:L_CHARA:해방 = 1
+					GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "해방")%
+				ELSE
+					PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【억압】을 잃었다
+					TALENT:L_CHARA:억압 = 0
+				ENDIF
+				LOST_TALENTS = %ADD_SPLIT(LOST_TALENTS, "/", "억압")%
+			ENDIF
+		ENDIF
+		SIF ABL:L_CHARA:종족 != 0 && !TALENT:L_CHARA:비전투원
+			CALL CHECK_LEVEL_UP , L_CHARA
+	ENDIF
+ENDIF
+IF 陥落(L_CHARA) < 2 && TALENT:L_CHARA:붕괴 == 0 && (FLAG:ＮＴＲ기능 == 0 || FAVORITE_1(L_CHARA) == MASTER)
+	;친애:恋慕、従順、奉仕精神5以上+反発刻印Lv0+愛情経験200以上+奉仕快楽経験400以上+依存度3000以上+異常経験5未満
+	IF TALENT:L_CHARA:연모 && ABL:L_CHARA:순종 >= 5 && ABL:L_CHARA:봉사정신 >= 5 && MARK:L_CHARA:반발각인 == 0 && EXP:L_CHARA:애정경험 >= 200 && EXP:L_CHARA:봉사쾌락경험 >= 400 && CFLAG:L_CHARA:의존도 >= 3000 && (EXP:L_CHARA:이상경험 - CFLAG:L_CHARA:초기이상경험) < 5
+		PRINTFORMW %CALLNAME:L_CHARA%의 이쪽을 바라보는 눈빛이 이상하다
+		PRINTFORML %조사처리(CALLNAME:L_CHARA,"는")% 몸도 마음도 %CALLNAME:MASTER%에게 의존하고 있는 것 같다
+		PRINTFORMW %NAME:L_CHARA%의【연모】는【친애】가 되었다
+		CALL SET_陥落素質, L_CHARA, "친애"
+		GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "친애")%
+		LOST_TALENTS = %ADD_SPLIT(LOST_TALENTS, "/", "연모")%
+		;NTR時の戦闘参加不可能解除用
+		IF FLAG:ＮＴＲ기능 != 0
+			IF TALENT:L_CHARA:즉각함락 == 1
+				TALENT:L_CHARA:즉각함락 = 0
+				PRINTFORMW %조사처리(CALLNAME:L_CHARA,"는")% 【즉각함락】을 잃었다
+				LOST_TALENTS = %ADD_SPLIT(LOST_TALENTS, "/", "즉각함락")%
+			ENDIF
+			;上司イベント
+			IF CFLAG:L_CHARA:상사이벤트진행도 >= 9
+				PRINTFORML %조사처리(CALLNAME:L_CHARA,"는")% 간부인 남자와의 계약을 파기했다
+				;戦闘員だった場合は非戦闘員が外れる
+				;非戦闘員素質付与の悪用防止措置。
+				IF TALENT:L_CHARA:반역
+					CALL SET_TALENT_PARTY_JOINABLE, L_CHARA, "参加可能"
+					PRINTFORML %조사처리(CALLNAME:L_CHARA,"를")% 파티에 편입할 수 있게 되었습니다
+				ENDIF
+				CFLAG:L_CHARA:노역플래그 = 0
+				CFLAG:L_CHARA:매각가능 = 1
+				PRINTFORML %조사처리(CALLNAME:L_CHARA,"는")% 노역에 종사할 수 있게 되었습니다
+				PRINTFORML %조사처리(CALLNAME:L_CHARA,"를")% 매각할 수 있게 되었습니다
+				CFLAG:L_CHARA:상사이벤트진행도 = 0
+			ENDIF
+		ENDIF
+	;娼婦：淫乱、欲望5以上+CVAB感覚合計20以上+反発刻印Lv0+絶頂経験200以上+異常経験6以上or異常経験4以上+レズ経験もしくはＢＬ経験2000以上or異常経験3以上+レズ経験もしくはＢＬ経験3000以上
+	ELSEIF TALENT:L_CHARA:음란 && ABL:L_CHARA:욕망 >= 5 && ABL:L_CHARA:Ｃ감각+ABL:L_CHARA:Ｖ감각+ABL:L_CHARA:Ａ감각+ABL:L_CHARA:Ｂ감각 >= 20 && MARK:L_CHARA:반발각인 == 0 && EXP:L_CHARA:절정경험 >= 200
+		IF EXP:L_CHARA:이상경험 >= 6 || (EXP:L_CHARA:이상경험 >= 4 && (EXP:L_CHARA:레즈경험 >= 2000 || EXP:L_CHARA:ＢＬ경험 >= 2000)) || (EXP:L_CHARA:이상경험 >= 3 && (EXP:L_CHARA:레즈경험 >= 3000 || EXP:L_CHARA:ＢＬ경험 >= 3000))
+			PRINTFORMW %CALLNAME:L_CHARA%의 이쪽을 바라보는 눈빛이 이상하다
+			PRINTFORML %조사처리(CALLNAME:L_CHARA,"는")% 몸도 마음도 %CALLNAME:MASTER%에게 주어지는 쾌락에 의존하고 있는 것 같다
+			PRINTFORMW %NAME:L_CHARA%의【음란】은【창부】가 되었다
+			GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "창부")%
+			LOST_TALENTS = %ADD_SPLIT(LOST_TALENTS, "/", "음란")%
+			CALL SET_陥落素質, L_CHARA, "창부"
+		ENDIF
+	;隷属：服従、従順、マゾっ気5以上+CAVB感覚15未満+反発刻印Lv0+고통쾌락경험+緊縛経験500以上+의존도-3000以下+レズ経験もしくはＢＬ経験1500未満+異常経験5以上
+	ELSEIF TALENT:L_CHARA:복종 && ABL:L_CHARA:순종 >= 5 && ABL:L_CHARA:마조끼 >= 5 && ABL:L_CHARA:Ｃ감각+ABL:L_CHARA:Ｖ감각+ABL:L_CHARA:Ａ감각+ABL:L_CHARA:Ｂ감각 < 15 && MARK:L_CHARA:반발각인 == 0 && EXP:L_CHARA:고통쾌락경험+EXP:L_CHARA:긴박경험 >= 500 && -CFLAG:L_CHARA:의존도 >= 3000 && EXP:L_CHARA:이상경험 >= 5
+		PRINTFORMW %CALLNAME:L_CHARA%의 이쪽을 바라보는 눈빛이 이상하다
+		PRINTFORML %조사처리(CALLNAME:L_CHARA,"는")% 몸도 마음도 %CALLNAME:MASTER%의 노예가 된 것 같다
+		PRINTFORMW %NAME:L_CHARA%의【복종】은【예속】이 되었다
+		GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "예속")%
+		LOST_TALENTS = %ADD_SPLIT(LOST_TALENTS, "/", "복종")%
+		CALL SET_陥落素質, L_CHARA, "예속"
+	ENDIF
+ENDIF
+
+IF CFLAG:L_CHARA:피조교횟수 > 0
+	;九条ななみでなければ調教で信頼を喪失する。
+	IF TALENT:L_CHARA:신뢰 || TALENT:L_CHARA:동료
+		;九条ななみは処女である限り信頼を維持する。
+		IF L_CHARA == GETCHARA([[キャラ:나나미]]) && CFLAG:L_CHARA:801 == 4
+			PRINTFORMW 이번에도 처녀를 지켜냈다. 나나미의 신뢰는 유지되고 있다
+		ELSE
+			SETCOLOR 0xff0033
+			IF TALENT:L_CHARA:연모
+				PRINTFORMW 조교를 받은것으로 인해、%조사처리(NAME:L_CHARA,"는")% %NAME:MASTER%에의 애정이 우정을 넘어버렸다
+			ELSEIF GET_VALUE_TALENT_JOINABLE(L_CHARA) == 1
+				PRINTFORMW 조교를 받은것으로 인해、%조사처리(NAME:L_CHARA,"는")% %NAME:MASTER%에의 우정이 깨지고、전투에 참가하지 않게 되었습니다
+				CALL SET_TALENT_PARTY_JOINABLE, TARGET, "参加不可能"
+				SIF CPOS(L_CHARA) > 0
+					CALL REMOVE_POSITION,CPOS(L_CHARA)
+			ELSE
+				PRINTFORMW 조교를 받은것으로 인해、%조사처리(NAME:L_CHARA,"는")% %NAME:MASTER%의 노예임을 재확인한 것 같다
+			ENDIF
+			IF TALENT:L_CHARA:신뢰
+				PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【신뢰】를 잃었다
+				LOST_TALENTS = %ADD_SPLIT(LOST_TALENTS, "/", "신뢰")%
+			ENDIF
+			IF TALENT:L_CHARA:동료
+				PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【동료】를 잃었다
+				LOST_TALENTS = %ADD_SPLIT(LOST_TALENTS, "/", "동료")%
+			ENDIF
+			TALENT:L_CHARA:신뢰 = 0
+			TALENT:L_CHARA:동료 = 0
+			CALL 陥落人数加算, TARGET, "연모"
+			RESETCOLOR
+		ENDIF
+	ELSE
+		IF GET_VALUE_TALENT_JOINABLE(L_CHARA) == 0 && !TALENT:L_CHARA:반역 && !TALENT:L_CHARA:비전투원 && !TALENT:L_CHARA:전력상실
+			IF ABL:L_CHARA:순종 >= 3 || ABL:L_CHARA:욕망 >= 3
+				SETCOLOR COLOR("FRIEND")
+				IF ABL:L_CHARA:욕망 >= 3
+					PRINTFORMW %조사처리(CALLNAME:L_CHARA,"는")% 쾌락에 빠져, 당신에게 저항할 마음을 잃은 것 같다…
+				ELSE
+					PRINTFORMW %조사처리(CALLNAME:L_CHARA,"는")% 마음이 꺾여, 당신에게 따를 생각이 든 것 같다…
+				ENDIF
+				PRINTFORMW %조사처리(CALLNAME:L_CHARA,"는")% 【반발】을 잃었다。
+				PRINTFORMW %조사처리(CALLNAME:L_CHARA,"을")% 전투에 참가시킬 수 있게 되었다。
+				RESETCOLOR
+				CALL SET_TALENT_PARTY_JOINABLE, L_CHARA, "参加可能"
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+;---------------------------------------------------------
+;その他奴隷の素質および能力
+;---------------------------------------------------------
+;特殊性感素質、一つしか取得はできない（重複した場合は上から優先）
+;自慰狂い：Ｃ感覚４以上、調教自慰経験２５０以上、絶頂経験１５０以上
+IF ABL:L_CHARA:Ｃ감각 >= 4 && EXP:L_CHARA:조교자위경험 >= 250 && EXP:L_CHARA:절정경험 >= 150 && TALENT:L_CHARA:자위광 == 0 && TALENT:L_CHARA:섹스광 == 0 && TALENT:L_CHARA:애널광 == 0 && TALENT:L_CHARA:음유 == 0 && TALENT:L_CHARA:창놈 == 0
+	PRINTFORMW %CALLNAME:L_CHARA%의 이쪽을 바라보는 눈빛이 이상하다
+	;オトコでもクリトリス固定だったので
+	PRINTFORML 조교가 끝난 뒤 임에도 불구하고、%조사처리(CALLNAME:L_CHARA,"는")% \@ HAVE_PENIS(L_CHARA) ? 페니스 # 클리토리스 \@를 만지작거리며 아쉬운 듯한 시선을 %CALLNAME:MASTER%에게 보내고 있다
+	PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【자위광】을 얻었다
+	TALENT:L_CHARA:자위광 = 1
+	GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "자위광")%
+ENDIF
+
+;セックス狂：Ｖ感覚４以上、性交経験１５０以上、絶頂経験１５０以上
+IF ABL:L_CHARA:Ｖ감각 >= 4 && EXP:L_CHARA:성교경험 >= 150 && EXP:L_CHARA:절정경험 >= 150 && TALENT:L_CHARA:자위광 == 0 && TALENT:L_CHARA:섹스광 == 0 && TALENT:L_CHARA:애널광 == 0 && TALENT:L_CHARA:음유 == 0 && TALENT:L_CHARA:창놈 == 0
+	PRINTFORMW %CALLNAME:L_CHARA%의 이쪽을 바라보는 눈빛이 이상하다
+	PRINTFORML 조교가 끝난 뒤 임에도 불구하고、%조사처리(CALLNAME:L_CHARA,"는")% %CALLNAME:MASTER%에게 바짝 다가와 안아달라고 간청해왔다
+	PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【섹스광】을 얻었다
+	TALENT:L_CHARA:섹스광 = 1
+	GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "섹스광")%
+ENDIF
+
+;尻穴狂い：Ａ感覚４以上、Ａ経験２００以上、絶頂経験１５０以上
+IF ABL:L_CHARA:Ａ감각 >= 4 && EXP:L_CHARA:Ａ경험 >= 200 && EXP:L_CHARA:절정경험 >= 150 && TALENT:L_CHARA:자위광 == 0 && TALENT:L_CHARA:섹스광 == 0 && TALENT:L_CHARA:애널광 == 0 && TALENT:L_CHARA:음유 == 0 && TALENT:L_CHARA:창놈 == 0
+	PRINTFORMW %CALLNAME:L_CHARA%의 이쪽을 바라보는 눈빛이 이상하다
+	PRINTFORML 조교가 끝난 뒤 임에도 불구하고、%조사처리(CALLNAME:L_CHARA,"는")% 애널을 만지작거리며 아쉬운 듯한 시선을 %CALLNAME:MASTER%에게 보내고 있다
+	PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【애널광】을 얻었다
+	TALENT:L_CHARA:애널광 = 1
+	GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "애널광")%
+ENDIF
+
+;淫乳：Ｂ感覚４以上、噴乳経験３００以上、絶頂経験１５０以上
+IF ABL:L_CHARA:Ｂ감각 >= 4 && EXP:L_CHARA:분유경험 >= 300 && EXP:L_CHARA:절정경험 >= 150 && TALENT:L_CHARA:자위광 == 0 && TALENT:L_CHARA:섹스광 == 0 && TALENT:L_CHARA:애널광 == 0 && TALENT:L_CHARA:음유 == 0 && TALENT:L_CHARA:창놈 == 0
+	PRINTFORMW %CALLNAME:L_CHARA%의 이쪽을 바라보는 눈빛이 이상하다
+	PRINTFORML 조교가 끝난 뒤 임에도 불구하고、%조사처리(CALLNAME:L_CHARA,"는")% 유두를 만지작거리며 아쉬운 듯한 시선을 %CALLNAME:MASTER%에게 보내고 있다
+	PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【음유】를 얻었다
+	TALENT:L_CHARA:음유 = 1
+	GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "음유")%
+ENDIF
+
+;ヤリチン：Ｃ感覚４以上、挿入経験３００以上
+IF ABL:L_CHARA:Ｃ감각 >= 4 && EXP:L_CHARA:삽입경험 >= 300 && HAVE_PENIS(L_CHARA) && TALENT:L_CHARA:자위광 == 0 && TALENT:L_CHARA:섹스광 == 0 && TALENT:L_CHARA:애널광 == 0 && TALENT:L_CHARA:음유 == 0 && TALENT:L_CHARA:창놈 == 0
+	PRINTFORMW %CALLNAME:L_CHARA%의 이쪽을 바라보는 눈빛이 이상하다
+	PRINTFORML 조교가 끝난 뒤 임에도 불구하고、%조사처리(CALLNAME:L_CHARA,"는")% 페니스를 %CALLNAME:MASTER%에게 비벼대며 더 많은 성교를 조르고 있다
+	PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【창놈】을 얻었다
+	TALENT:L_CHARA:창놈 = 1
+	GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "창놈")%
+ENDIF
+
+
+;特殊性癖素質
+;サド：サドっ気Lv４以上、嗜虐快楽経験３００以上、技巧Lv４以上
+IF ABL:L_CHARA:새드끼 >= 4 && EXP:L_CHARA:가학쾌락경험 >= 300 && ABL:L_CHARA:기교 >= 4 && TALENT:L_CHARA:새드 == 0 && TALENT:L_CHARA:마조 == 0
+	PRINTFORMW %CALLNAME:L_CHARA%의 이쪽을 바라보는 눈빛이 이상하다
+	PRINTFORML %조사처리(CALLNAME:L_CHARA,"는")% 남을 괴롭히는 기쁨에 눈뜬 것 같다
+	PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【새드】를 얻었다
+	TALENT:L_CHARA:새드 = 1
+	GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "새드")%
+ENDIF
+
+;マゾ：マゾっ気Lv４以上、苦痛快楽経験３００以上
+IF ABL:L_CHARA:마조끼 >= 4 && EXP:L_CHARA:고통쾌락경험 >= 300 && TALENT:L_CHARA:새드 == 0 && TALENT:L_CHARA:마조 == 0
+	PRINTFORMW %CALLNAME:L_CHARA%의 이쪽을 바라보는 눈빛이 이상하다
+	PRINTFORML %조사처리(CALLNAME:L_CHARA,"는")% 몸을 괴롭혀지는 기쁨에 눈뜬 것 같다
+	PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【마조】를 얻었다
+	TALENT:L_CHARA:마조 = 1
+	GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "마조")%
+ENDIF
+
+;人気：ビデオ20本以上売却、平均価格１５００以上
+IF TALENT:L_CHARA:인기 == 0 && CFLAG:L_CHARA:비디오매각수 >= 20 && CFLAG:L_CHARA:비디오매각합계금액 / CFLAG:L_CHARA:비디오매각수 >= 1500
+	PRINTFORMW %CALLNAME:L_CHARA%의 비디오가 인기를 얻고 있는 모양이다
+	PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【인기】를 얻었다
+	TALENT:L_CHARA:인기 = 1
+	GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "인기")%
+	FLAG:인기취득자수 += 1
+ENDIF
+
+;舌使い：技巧Lv５以上、フェラ経験５００以上
+IF TALENT:L_CHARA:혀놀림 == 0 && EXP:L_CHARA:펠라경험 >=500 && ABL:L_CHARA:기교 >= 5
+	PRINTFORMW %조사처리(CALLNAME:L_CHARA,"는")% 구음 경험을 많이 쌓아, 혀를 쓰는 요령을 터득한 것 같다
+	PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【혀놀림】을 얻었다
+	TALENT:L_CHARA:혀놀림 = 1
+	GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "혀놀림")%
+ENDIF
+
+;取得難易度は高め　これだけ可愛がったら売却なんてできないはず？
+;妄信：従順Lv１０以上、調教経験１０００以上、忠誠度１０００００以上
+IF TALENT:L_CHARA:망신 == 0 && EXP:L_CHARA:조교경험 >=1000 && ABL:L_CHARA:순종 >= 10 && GET_CHARA_LOYALTY(L_CHARA) >= 100000
+	PRINTFORMW %CALLNAME:L_CHARA%의 %CALLNAME:MASTER%에 대한 충성은 확고부동해졌다
+	;PRINTFORMWと思う、多分
+	PRINTFORMW %조사처리(NAME:L_CHARA,"는")%【망신】을 얻었다
+	TALENT:L_CHARA:망신 = 1
+	GET_TALENTS = %ADD_SPLIT(GET_TALENTS , "/", "망신")%
+ENDIF
+
+CALL EVENT_CHANGE_TRAIN_TALENT, L_CHARA, GET_TALENTS, LOST_TALENTS
+SIF STOCK_LINE != LINECOUNT
+	PRINTL 
+;---------------------------------------------
+;素質の変動があった場合のイベント
+;崩壊の場合、呼び出しタイミングが変わるので関数化
+;---------------------------------------------
+@EVENT_CHANGE_TRAIN_TALENT, ARG, ARGS, ARGS:1
+#DIM LCOUNT, 2
+#DIM L_SKILL
+#DIMS SKILL_NAME, 2
+IF CSTR:ARG:롤 == "悪魔" && (COUNT_SPLIT(ARGS, "/", "연모") || COUNT_SPLIT(ARGS, "/", "음란")  || COUNT_SPLIT(ARGS, "/", "복종"))
+	CALL GET_AW_SKILLNUM_BY_CSV, ARG
+	L_SKILL = RESULT
+	TRYCCALLFORM SKILL_NAME_AW_{L_SKILL}, ARG
+		SKILL_NAME = %RESULTS%
+		IF ABL:ARG:각성스킬
+			IF ABL:ARG:각성스킬 != L_SKILL && HAVE_SKILL(ARG, SKILL_NUM_F("각성스킬"))
+				PRINTFORMW %ARG는% 새로운 스킬을 각성했다！
+				PRINTFORMW 하지만、각성스킬은 하나만 소지할 수 있다…
+				DRAWLINE
+				PRINTFORML □%SKILL_NAME%
+				DRAWLINE
+				U = ARG
+				CALLFORM SKILL_EXPLAIN_AW_{L_SKILL}
+				PRINTL 
+				PRINTL 
+				DRAWLINE
+				CALLFORM SKILL_NAME_AW_{ABL:ARG:각성스킬}, ARG
+				SKILL_NAME:1 = %RESULTS%
+				PRINTFORML □%SKILL_NAME:1%
+				DRAWLINE
+				CALLFORM SKILL_EXPLAIN_AW_{ABL:ARG:각성스킬}
+				PRINTL 
+				PRINTL 
+				DRAWLINE
+				PRINTFORML [0] %조사처리(SKILL_NAME,"을")% 취득한다
+				PRINTFORML [1] %조사처리(SKILL_NAME:1,"을")% 남긴다
+				CALL INPUTINT, 0, 1
+				IF RESULT
+					PRINTFORMW %조사처리(SKILL_NAME,"을")% 취득하지 않았다。
+				ELSE
+					PRINTFORMW %조사처리(SKILL_NAME,"을")% 새롭게 취득했다。
+					ABL:ARG:각성스킬 = L_SKILL
+				ENDIF
+			ENDIF
+		ELSE
+			PRINTFORMW %ARG는% 새로운 스킬을 각성했다！
+			ABL:ARG:각성스킬 = L_SKILL
+			SIF !HAVE_SKILL(ARG, SKILL_NUM_F("각성스킬"))
+				CALL LEARN_SKILL, ARG, SKILL_NUM_F("각성스킬")
+		ENDIF
+	CATCH
+	ENDCATCH
+ENDIF
+;キャラ固有
+FOR LCOUNT, 0, 2
+	SIF ARGS:LCOUNT == ""
+		CONTINUE
+	FOR LCOUNT:1, 0, STRCOUNT(ARGS:LCOUNT, "/") + 1
+		TRYCCALLFORM EVENT_CHANGE_TRAIN_TALENT_{NO:ARG}, ARG, AUTO_SPLIT(ARGS:LCOUNT, "/", LCOUNT:1), \@LCOUNT ?LOST#GET\@
+		CATCH
+			TRYCCALLFORM EVENT_CHANGE_TRAIN_TALENT_%CSTR:ARG:롤%, ARG, AUTO_SPLIT( ARGS:LCOUNT, "/", LCOUNT:1), \@LCOUNT ?LOST#GET\@
+			CATCH
+			ENDCATCH
+		ENDCATCH
+	NEXT
+NEXT
+
+;---------------------------------------------------------
+;主人の素質および能力
+;---------------------------------------------------------
+@EVENTCHECK_M
+#DIM L_COUNT
+#LOCALSIZE 99
+;主人の技巧：調教経験が20、100、250、400、600のたびに上昇、Lv５まで
+IF EXP:MASTER:조교경험 >= 1800 && ABL:MASTER:기교 <= 9
+	ABL:MASTER:기교 = 10
+	PRINTFORMW %NAME:MASTER%의 %조사처리(ABLNAME:2,"가")% {ABL:MASTER:기교}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:조교경험 >= 1500 && ABL:MASTER:기교 <= 8
+	ABL:MASTER:기교 = 9
+	PRINTFORMW %NAME:MASTER%의 %조사처리(ABLNAME:2,"가")% {ABL:MASTER:기교}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:조교경험 >= 1250 && ABL:MASTER:기교 <= 7
+	ABL:MASTER:기교 = 8
+	PRINTFORMW %NAME:MASTER%의 %조사처리(ABLNAME:2,"가")% {ABL:MASTER:기교}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:조교경험 >= 1000 && ABL:MASTER:기교 <= 6
+	ABL:MASTER:기교 = 7
+	PRINTFORMW %NAME:MASTER%의 %조사처리(ABLNAME:2,"가")% {ABL:MASTER:기교}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:조교경험 >= 800 && ABL:MASTER:기교 <= 5
+	ABL:MASTER:기교 = 6
+	PRINTFORMW %NAME:MASTER%의 %조사처리(ABLNAME:2,"가")% {ABL:MASTER:기교}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:조교경험 >= 600 && ABL:MASTER:기교 <= 4
+	ABL:MASTER:기교 = 5
+	PRINTFORMW %NAME:MASTER%의 %조사처리(ABLNAME:2,"가")% {ABL:MASTER:기교}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:조교경험 >= 400 && ABL:MASTER:기교 <= 3
+	ABL:MASTER:기교 = 4
+	PRINTFORMW %NAME:MASTER%의 %조사처리(ABLNAME:2,"가")% {ABL:MASTER:기교}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:조교경험 >= 250 && ABL:MASTER:기교 <= 2
+	ABL:MASTER:기교 = 3
+	PRINTFORMW %NAME:MASTER%의 %조사처리(ABLNAME:2,"가")% {ABL:MASTER:기교}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:조교경험 >= 100 && ABL:MASTER:기교 <= 1
+	ABL:MASTER:기교 = 2
+	PRINTFORMW %NAME:MASTER%의 %조사처리(ABLNAME:2,"가")% {ABL:MASTER:기교}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:조교경험 >= 20 && ABL:MASTER:기교 <= 0
+	ABL:MASTER:기교 = 1
+	PRINTFORMW %NAME:MASTER%의 %조사처리(ABLNAME:2,"가")% {ABL:MASTER:기교}로 올라갔다
+	PRINTL 　
+ENDIF
+;主人の感覚の上昇
+FOR LOCAL,0,4
+	SIF LOCAL == 1 && TALENT:MASTER:남자
+		CONTINUE
+	IF EX:MASTER:LOCAL >= POWER(ABL:MASTER:(LOCAL+3),2) && ABL:MASTER:(LOCAL+3) < 10
+		ABL:MASTER:(LOCAL+3) += 1
+		PRINTFORMW %NAME:MASTER%의 %조사처리(ABLNAME:(LOCAL+3),"이")% {ABL:MASTER:(LOCAL+3)}로 올라갔다
+	ENDIF
+NEXT
+
+;主人の従順の上昇
+IF EXP:MASTER:애정경험 >= EXPLV:(ABL:MASTER:순종+1) * 10 && ABL:MASTER:순종 < 10
+	ABL:MASTER:순종 += 1
+	PRINTFORMW %NAME:MASTER%의 순종이 {ABL:MASTER:순종}로 올라갔다
+ENDIF
+
+;主人の欲望の上昇
+IF EXP:MASTER:절정경험 + EXP:MASTER:사정경험 >= 3000 && ABL:MASTER:욕망 <= 9
+	ABL:MASTER:욕망 = 10
+	PRINTFORMW %NAME:MASTER%의 욕망이 {ABL:MASTER:욕망}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:절정경험 + EXP:MASTER:사정경험 >= 2500 && ABL:MASTER:욕망 <= 8
+	ABL:MASTER:욕망 = 9
+	PRINTFORMW %NAME:MASTER%의 욕망이 {ABL:MASTER:욕망}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:절정경험 + EXP:MASTER:사정경험 >= 2100 && ABL:MASTER:욕망 <= 7
+	ABL:MASTER:욕망 = 8
+	PRINTFORMW %NAME:MASTER%의 욕망이 {ABL:MASTER:욕망}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:절정경험 + EXP:MASTER:사정경험 >= 1700 && ABL:MASTER:욕망 <= 6
+	ABL:MASTER:욕망 = 7
+	PRINTFORMW %NAME:MASTER%의 욕망이 {ABL:MASTER:욕망}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:절정경험 + EXP:MASTER:사정경험 >= 1300 && ABL:MASTER:욕망 <= 5
+	ABL:MASTER:욕망 = 6
+	PRINTFORMW %NAME:MASTER%의 욕망이 {ABL:MASTER:욕망}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:절정경험 + EXP:MASTER:사정경험 >= 1000 && ABL:MASTER:욕망 <= 4
+	ABL:MASTER:욕망 = 5
+	PRINTFORMW %NAME:MASTER%의 욕망이 {ABL:MASTER:욕망}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:절정경험 + EXP:MASTER:사정경험 >= 700 && ABL:MASTER:욕망 <= 3
+	ABL:MASTER:욕망 = 4
+	PRINTFORMW %NAME:MASTER%의 욕망이 {ABL:MASTER:욕망}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:절정경험 + EXP:MASTER:사정경험 >= 300 && ABL:MASTER:욕망 <= 2
+	ABL:MASTER:욕망 = 3
+	PRINTFORMW %NAME:MASTER%의 욕망이 {ABL:MASTER:욕망}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:절정경험 + EXP:MASTER:사정경험 >= 100 && ABL:MASTER:욕망 <= 1
+	ABL:MASTER:욕망 = 2
+	PRINTFORMW %NAME:MASTER%의 욕망이 {ABL:MASTER:욕망}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:절정경험 + EXP:MASTER:사정경험 >= 10 && ABL:MASTER:욕망 <= 0
+	ABL:MASTER:욕망 = 1
+	PRINTFORMW %NAME:MASTER%의 욕망이 {ABL:MASTER:욕망}로 올라갔다
+	PRINTL 　
+ENDIF
+
+;主人の奉仕精神の上昇
+IF EXP:MASTER:봉사쾌락경험 >= EXPLV:(ABL:MASTER:봉사정신+1) * 10 && ABL:MASTER:봉사정신 < 10
+	ABL:MASTER:봉사정신 += 1
+	PRINTFORMW %NAME:MASTER%의 봉사정신이 {ABL:MASTER:봉사정신}로 올라갔다
+ENDIF
+;主人の露出癖の上昇
+IF EXP:MASTER:매춘경험 + EXP:MASTER:야외노출경험 >= EXPLV:(ABL:MASTER:노출증+1) * 10 && ABL:MASTER:노출증 < 10
+	ABL:MASTER:노출증 += 1
+	PRINTFORMW %NAME:MASTER%의 노출증이 {ABL:MASTER:노출증}로 올라갔다
+ENDIF
+;主人の自慰中毒の上昇
+IF EXP:MASTER:자위경험 >= EXPLV:(ABL:MASTER:자위중독+1) * 10 && ABL:MASTER:자위중독 < 10
+	ABL:MASTER:자위중독 += 1
+	PRINTFORMW %NAME:MASTER%의 자위중독이 {ABL:MASTER:자위중독}로 올라갔다
+ENDIF
+;主人のレズっ気の上昇
+IF EXP:MASTER:레즈경험 >= EXPLV:(ABL:MASTER:레즈끼+1) * 10 && ABL:MASTER:레즈끼 < 10
+	ABL:MASTER:레즈끼 += 1
+	PRINTFORMW %NAME:MASTER%의 레즈끼가 {ABL:MASTER:레즈끼}로 올라갔다
+ENDIF
+;主人のＢＬっ気の上昇
+IF EXP:MASTER:ＢＬ경험 >= EXPLV:(ABL:MASTER:ＢＬ끼+1) * 10 && ABL:MASTER:ＢＬ끼 < 10
+	ABL:MASTER:ＢＬ끼 += 1
+	PRINTFORMW %NAME:MASTER%의 ＢＬ끼가 {ABL:MASTER:ＢＬ끼}로 올라갔다
+ENDIF
+;主人のレズ中毒の上昇
+IF EXP:MASTER:레즈경험 >= EXPLV:(ABL:MASTER:레즈중독+1) * 15 && ABL:MASTER:자위중독 > ABL:MASTER:레즈중독 && ABL:MASTER:레즈중독 < 10
+	ABL:MASTER:레즈중독 += 1
+	PRINTFORMW %NAME:MASTER%의 레즈중독이 {ABL:MASTER:레즈중독}로 올라갔다
+ENDIF
+
+;主人のＢＬ中毒の上昇
+IF EXP:MASTER:ＢＬ경험 >= EXPLV:(ABL:MASTER:ＢＬ중독+1) * 15 && ABL:MASTER:자위중독 > ABL:MASTER:ＢＬ중독 && ABL:MASTER:ＢＬ중독 < 10
+	ABL:MASTER:ＢＬ중독 += 1
+	PRINTFORMW %NAME:MASTER%의 ＢＬ중독이 {ABL:MASTER:ＢＬ중독}로 올라갔다
+ENDIF
+
+;主人の料理技能の上昇
+IF EXP:MASTER:외식노역경험 + EXP:MASTER:가사경험 > EXPLV:(ABL:MASTER:요리기능+1)*10 && ABL:MASTER:요리기능 < 10
+	ABL:MASTER:요리기능 += 1
+	PRINTFORMW %NAME:MASTER%의 요리기능이 {ABL:MASTER:요리기능}로 올라갔다
+ENDIF
+;主人の歌唱技能の上昇
+IF EXP:MASTER:가창경험 > EXPLV:(ABL:MASTER:가창기능+1)*10 && ABL:MASTER:가창기능 < 10
+	ABL:MASTER:가창기능 += 1
+	PRINTFORMW %NAME:MASTER%의 가창경험이 {ABL:MASTER:가창기능}로 올라갔다
+ENDIF
+;主人の精液中毒の上昇
+IF EXP:MASTER:정액경험 > EXPLV:(ABL:MASTER:정액중독+1)*20 && ABL:MASTER:정액중독 < 10
+	ABL:MASTER:정액중독 += 1
+	PRINTFORMW %NAME:MASTER%의 정액중독이 {ABL:MASTER:정액중독}로 올라갔다
+ENDIF
+;主人の噴乳中毒の上昇
+IF EXP:MASTER:분유경험 > EXPLV:(ABL:MASTER:분유중독+1)*15 && ABL:MASTER:분유중독 < 10
+	ABL:MASTER:분유중독 += 1
+	PRINTFORMW %NAME:MASTER%의 분유중독이 {ABL:MASTER:분유중독}로 올라갔다
+ENDIF
+;主人のセックス中毒の上昇
+IF EXP:MASTER:성교경험 > EXPLV:(ABL:MASTER:섹스중독+1)*10 && ABL:MASTER:섹스중독 < 10
+	ABL:MASTER:섹스중독 += 1
+	PRINTFORMW %NAME:MASTER%의 섹스중독이 {ABL:MASTER:섹스중독}로 올라갔다
+ENDIF
+;主人の獣姦中毒の上昇
+IF EXP:MASTER:수간경험 > EXPLV:(ABL:MASTER:수간중독+1) && ABL:MASTER:수간중독 < 10
+	ABL:MASTER:수간중독 += 1
+	PRINTFORMW %NAME:MASTER%의 수간중독이 {ABL:MASTER:수간중독}로 올라갔다
+ENDIF
+;主人の触手中毒の上昇
+IF EXP:MASTER:촉수경험 > EXPLV:(ABL:MASTER:촉수중독+1) && ABL:MASTER:촉수중독 < 10
+	ABL:MASTER:촉수중독 += 1
+	PRINTFORMW %NAME:MASTER%의 촉수중독이 {ABL:MASTER:촉수중독}로 올라갔다
+ENDIF
+;主人の輪姦中毒の上昇
+IF EXP:MASTER:윤간경험 > EXPLV:(ABL:MASTER:윤간중독+1) && ABL:MASTER:윤간중독 < 10
+	ABL:MASTER:윤간중독 += 1
+	PRINTFORMW %NAME:MASTER%의 윤간중독이 {ABL:MASTER:윤간중독}로 올라갔다
+ENDIF
+;主人のキス中毒の上昇
+IF EXP:MASTER:키스경험 > EXPLV:(ABL:MASTER:키스중독+1)*10 && ABL:MASTER:키스중독 < 10
+	ABL:MASTER:키스중독 += 1
+	PRINTFORMW %NAME:MASTER%의 키스중독이 {ABL:MASTER:키스중독}로 올라갔다
+ENDIF
+;主人のサドっ気：嗜虐快楽経験が10、20、50、100、200のたびに上昇、Lv５まで
+IF EXP:MASTER:가학쾌락경험 >= 1000 && ABL:MASTER:새드끼 <= 9
+	ABL:MASTER:새드끼 = 10
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:10%가 {ABL:MASTER:새드끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:가학쾌락경험 >= 800 && ABL:MASTER:새드끼 <= 8
+	ABL:MASTER:새드끼 = 9
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:10%가 {ABL:MASTER:새드끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:가학쾌락경험 >= 600 && ABL:MASTER:새드끼 <= 7
+	ABL:MASTER:새드끼 = 8
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:10%가 {ABL:MASTER:새드끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:가학쾌락경험 >= 450 && ABL:MASTER:새드끼 <= 6
+	ABL:MASTER:새드끼 = 7
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:10%가 {ABL:MASTER:새드끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:가학쾌락경험 >= 300 && ABL:MASTER:새드끼 <= 5
+	ABL:MASTER:새드끼 = 6
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:10%가 {ABL:MASTER:새드끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:가학쾌락경험 >= 200 && ABL:MASTER:새드끼 <= 4
+	ABL:MASTER:새드끼 = 5
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:10%가 {ABL:MASTER:새드끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:가학쾌락경험 >= 100 && ABL:MASTER:새드끼 <= 3
+	ABL:MASTER:새드끼 = 4
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:10%가 {ABL:MASTER:새드끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:가학쾌락경험 >= 50 && ABL:MASTER:새드끼 <= 2
+	ABL:MASTER:새드끼 = 3
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:10%가 {ABL:MASTER:새드끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:가학쾌락경험 >= 20 && ABL:MASTER:새드끼 <= 1
+	ABL:MASTER:새드끼 = 2
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:10%가 {ABL:MASTER:새드끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:가학쾌락경험 >= 10 && ABL:MASTER:새드끼 <= 0
+	ABL:MASTER:새드끼 = 1
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:10%가 {ABL:MASTER:새드끼}로 올라갔다
+	PRINTL 　
+ENDIF
+
+
+;主人のマゾっ気：苦痛快楽経験が10、20、50、100、200のたびに上昇、Lv５まで
+IF EXP:MASTER:고통쾌락경험 >= 1000 && ABL:MASTER:마조끼 <= 9
+	ABL:MASTER:마조끼 = 10
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:9%가 {ABL:MASTER:마조끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:고통쾌락경험 >= 800 && ABL:MASTER:마조끼 <= 8
+	ABL:MASTER:마조끼 = 9
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:9%가 {ABL:MASTER:마조끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:고통쾌락경험 >= 600 && ABL:MASTER:마조끼 <= 7
+	ABL:MASTER:마조끼 = 8
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:9%가 {ABL:MASTER:마조끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:고통쾌락경험 >= 450 && ABL:MASTER:마조끼 <= 6
+	ABL:MASTER:마조끼 = 7
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:9%가 {ABL:MASTER:마조끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:고통쾌락경험 >= 300 && ABL:MASTER:마조끼 <= 5
+	ABL:MASTER:마조끼 = 6
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:9%가 {ABL:MASTER:마조끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:고통쾌락경험 >= 200 && ABL:MASTER:마조끼 <= 4
+	ABL:MASTER:마조끼 = 5
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:9%가 {ABL:MASTER:마조끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:고통쾌락경험 >= 100 && ABL:MASTER:마조끼 <= 3
+	ABL:MASTER:마조끼 = 4
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:9%가 {ABL:MASTER:마조끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:고통쾌락경험 >= 50 && ABL:MASTER:마조끼 <= 2
+	ABL:MASTER:마조끼 = 3
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:9%가 {ABL:MASTER:마조끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:고통쾌락경험 >= 20 && ABL:MASTER:마조끼 <= 1
+	ABL:MASTER:마조끼 = 2
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:9%가 {ABL:MASTER:마조끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:고통쾌락경험 >= 10 && ABL:MASTER:마조끼 <= 0
+	ABL:MASTER:마조끼 = 1
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:9%가 {ABL:MASTER:마조끼}로 올라갔다
+	PRINTL 　
+ENDIF
+
+;主人の撮影技能：撮影経験が10、30、60、100、150のたびに上昇、Lv５まで
+IF EXP:MASTER:촬영경험 >= 540 && ABL:MASTER:촬영기능 <= 9
+	ABL:MASTER:촬영기능 = 10
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:13%이 {ABL:MASTER:촬영기능}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:촬영경험 >= 450 && ABL:MASTER:촬영기능 <= 8
+	ABL:MASTER:촬영기능 = 9
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:13%이 {ABL:MASTER:촬영기능}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:촬영경험 >= 360 && ABL:MASTER:촬영기능 <= 7
+	ABL:MASTER:촬영기능 = 8
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:13%이 {ABL:MASTER:촬영기능}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:촬영경험 >= 280 && ABL:MASTER:촬영기능 <= 6
+	ABL:MASTER:촬영기능 = 7
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:13%이 {ABL:MASTER:촬영기능}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:촬영경험 >= 210 && ABL:MASTER:촬영기능 <= 5
+	ABL:MASTER:촬영기능 = 6
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:13%이 {ABL:MASTER:촬영기능}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:촬영경험 >= 150 && ABL:MASTER:촬영기능 <= 4
+	ABL:MASTER:촬영기능 = 5
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:13%이 {ABL:MASTER:촬영기능}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:촬영경험 >= 100 && ABL:MASTER:촬영기능 <= 3
+	ABL:MASTER:촬영기능 = 4
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:13%이 {ABL:MASTER:촬영기능}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:촬영경험 >= 60 && ABL:MASTER:촬영기능 <= 2
+	ABL:MASTER:촬영기능 = 3
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:13%이 {ABL:MASTER:촬영기능}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:촬영경험 >= 30 && ABL:MASTER:촬영기능 <= 1
+	ABL:MASTER:촬영기능 = 2
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:13%이 {ABL:MASTER:촬영기능}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:MASTER:촬영경험 >= 10 && ABL:MASTER:촬영기능 <= 0
+	ABL:MASTER:촬영기능 = 1
+	PRINTFORMW %NAME:MASTER%의 %ABLNAME:13%이 {ABL:MASTER:촬영기능}로 올라갔다
+	PRINTL 　
+ENDIF
+
+;主人の淫乱：欲望3以上+CVAB感覚合計10以上+絶頂経験50以上+売春経験50以上or便器経験50以上
+IF ABL:MASTER:욕망 >= 3 && ABL:MASTER:Ｃ감각+ABL:MASTER:Ｖ감각+ABL:MASTER:Ａ감각+ABL:MASTER:Ｂ감각 >= 10 && EXP:MASTER:절정경험 >= 50 && 陥落(MASTER) == 0
+	IF EXP:MASTER:매춘경험 >= 50 || EXP:MASTER:변기경험 >= 50
+		PRINTFORMW %MASTER는%【음란】이 되었다
+		TALENT:MASTER:음란 = 1
+	ENDIF
+ENDIF
+
+;主人の娼婦：淫乱、欲望5以上+CVAB感覚合計20以上+絶頂経験200以上+売春経験100以上or便器経験100以上
+IF TALENT:MASTER:음란 && ABL:MASTER:욕망 >= 5 && ABL:MASTER:Ｃ감각+ABL:MASTER:Ｖ감각+ABL:MASTER:Ａ감각+ABL:MASTER:Ｂ감각 >= 20 && EXP:MASTER:절정경험 >= 200
+	IF EXP:MASTER:매춘경험 >= 100 || EXP:MASTER:변기경험 >= 100
+		PRINTFORMW %NAME:MASTER%의 【음란】은 【창부】가 되었다
+		TALENT:MASTER:음란 = 0
+		TALENT:MASTER:창부 = 1
+	ENDIF
+ENDIF
+
+;主人の絶倫：調教者の射精経験が200以上で取得
+IF EXP:MASTER:사정경험 >= 200 && TALENT:MASTER:절륜 == 0
+	PRINTFORMW %MASTER는%【절륜】을 몸에 익혔다
+	TALENT:MASTER:절륜 = 1
+ENDIF
+
+;主人の謎の魅力：恋慕･服従にした奴隷の数が5人以上
+IF (FLAG:연모인수+FLAG:복종인수) >= 5 && TALENT:MASTER:수수께끼의매력 == 0
+	PRINTFORMW %MASTER는%【수수께끼의매력】을 몸에 익혔다
+	TALENT:MASTER:수수께끼의매력 = 1
+ENDIF
+
+
+;主人の人気：人気を取得した奴隷の数が5人以上
+IF TALENT:MASTER:인기 == 0 && FLAG:인기취득자수 >= 5
+	PRINTFORMW %MASTER는%【인기】를 얻었다
+	TALENT:MASTER:인기 = 1
+ENDIF
+
+;主人のＳＭ性癖　既にどちらかの素質を取得していても経験によってもう一方も取得できる　条件は厳しめ
+;主人のサド：サドっ気がLv４以上、嗜虐快楽経験300以上でサド
+IF ABL:MASTER:새드끼 >= 4 + (TALENT:MASTER:마조 * 4) && EXP:MASTER:가학쾌락경험 >= 300 + (TALENT:MASTER:마조 * 2700) && EXP:MASTER:이상경험 >= (TALENT:MASTER:새드 + TALENT:MASTER:마조) * 15 && TALENT:MASTER:새드 == 0
+	PRINTFORMW %MASTER는%【새드】를 몸에 익혔다
+	TALENT:MASTER:새드 = 1
+ENDIF
+
+;主人のマゾ：マゾっ気がLv４以上、苦痛快楽経験300以上でサド
+IF ABL:MASTER:마조끼 >= 4 + (TALENT:MASTER:새드 * 4) && EXP:MASTER:고통쾌락경험 >= 300 + (TALENT:MASTER:새드 * 2700) && EXP:MASTER:이상경험 >= (TALENT:MASTER:새드 + TALENT:MASTER:마조) * 15 && TALENT:MASTER:마조 == 0
+	PRINTFORMW %MASTER는%【마조】를 몸에 익혔다
+	TALENT:MASTER:마조 = 1
+ENDIF
+
+;主人の特殊性感素質　異常経験の数に応じて４つ全て取得出来る（複数の条件を満たした場合は上から優先）
+;自慰狂い：Ｃ感覚８以上、自慰経験１０００以上、絶頂経験１５０００以上
+IF ABL:MASTER:Ｃ감각 >= 8 && EXP:MASTER:자위경험 >= 1000 && EXP:MASTER:절정경험 >= 15000 && EXP:MASTER:이상경험 >= (TALENT:MASTER:자위광 + TALENT:MASTER:섹스광 + TALENT:MASTER:애널광 + TALENT:MASTER:음유 && TALENT:MASTER:창놈) * 8 && TALENT:MASTER:자위광 == 0
+	PRINTFORMW %MASTER는%【자위광】을 얻었다
+	PRINTL 　
+	TALENT:MASTER:자위광 = 1
+ENDIF
+
+;セックス狂：Ｖ感覚８以上、性交経験３０００以上、絶頂経験１５０００以上
+IF ABL:MASTER:Ｖ감각 >= 8 && EXP:MASTER:성교경험 >= 3000 && EXP:MASTER:절정경험 >= 15000 && EXP:MASTER:이상경험 >= (TALENT:MASTER:자위광 + TALENT:MASTER:섹스광 + TALENT:MASTER:애널광 + TALENT:MASTER:음유 && TALENT:MASTER:창놈) * 8 && TALENT:MASTER:섹스광 == 0
+	PRINTFORMW %MASTER는%【섹스광】을 얻었다
+	PRINTL 　
+	TALENT:MASTER:섹스광 = 1
+ENDIF
+
+;尻穴狂い：Ａ感覚８以上、Ａ経験３０００以上、絶頂経験１５０００以上
+IF ABL:MASTER:Ａ감각 >= 8 && EXP:MASTER:Ａ경험 >= 3000 && EXP:MASTER:절정경험 >= 15000 && EXP:MASTER:이상경험 >= (TALENT:MASTER:자위광 + TALENT:MASTER:섹스광 + TALENT:MASTER:애널광 + TALENT:MASTER:음유 && TALENT:MASTER:창놈) * 8 && TALENT:MASTER:애널광 == 0
+	PRINTFORMW %MASTER는%【애널광】을 얻었다
+	PRINTL 　
+	TALENT:MASTER:애널광 = 1
+ENDIF
+
+;淫乳：Ｂ感覚８以上、噴乳経験１０００以上、絶頂経験１５０００以上
+IF ABL:MASTER:Ｂ감각 >= 8 && EXP:MASTER:분유경험 >= 1000 && EXP:MASTER:절정경험 >= 15000 && EXP:MASTER:이상경험 >= (TALENT:MASTER:자위광 + TALENT:MASTER:섹스광 + TALENT:MASTER:애널광 + TALENT:MASTER:음유 && TALENT:MASTER:창놈) * 8 && TALENT:MASTER:음유 == 0
+	PRINTFORMW %MASTER는%【음유】를 얻었다
+	PRINTL 　
+	TALENT:MASTER:음유 = 1
+ENDIF
+
+;ヤリチン：Ｃ感覚８以上、挿入経験３０００以上、絶頂経験１５０００以上
+IF ABL:MASTER:Ｃ감각 >= 8 && EXP:MASTER:삽입경험 >= 3000 && HAVE_PENIS(MASTER) && EXP:MASTER:절정경험 >= 15000 && EXP:MASTER:이상경험 >= (TALENT:MASTER:자위광 + TALENT:MASTER:섹스광 + TALENT:MASTER:애널광 + TALENT:MASTER:음유 && TALENT:MASTER:창놈) * 8 && TALENT:MASTER:창놈 == 0
+	PRINTFORMW %MASTER는%【창놈】을 얻었다
+	PRINTL 　
+	TALENT:MASTER:창놈 = 1
+ENDIF
+
+;主人の大業物：恋慕･음란･服従にした奴隷の数がそれぞれ10人以上、調教者の挿入経験が1000以上で取得
+;プレイスタイルによっては無理なので陥落合計が50人以上に変更(やや難易度上昇?
+IF TALENT:MASTER:크고아름다움 == 0 && EXP:MASTER:삽입경험 >= 1000 && ( (FLAG:연모인수 + FLAG:음란인수 + FLAG:복종인수) >= 50 ) && HAVE_PENIS(MASTER)
+	PRINTFORMW 수많은 여성을 울린 %NAME:MASTER%의 남근은 【크고아름다움】의 영역에까지 도달했다
+	TALENT:MASTER:크고아름다움 = 1
+ENDIF
+
+
+VARSET LOCAL
+IF MAXBASE:MASTER:ＭＰ == 0
+	;主人の食いしばり：陥落した奴隷の数が10人以上
+	;IF (FLAG:연모인수+FLAG:음란인수+FLAG:복종인수) >= 10 && !GETBIT(FLAG:주인획득스킬, 50)
+	;	PRINTFORMW 10人陥落ボーナス！　食いしばりを獲得できます！
+	;	SETBIT FLAG:주인획득스킬, 50
+	;	CALL LEARN_SKILL, MASTER, [[스킬:이악물기]]
+	;ENDIF
+	;主人の不屈の闘志：今周回陥落した奴隷の数が100人以上
+	IF (FLAG:이번주회연모인수+FLAG:이번주회음란인수+FLAG:이번주회복종인수) >= 100 && !GETBIT(FLAG:주인획득스킬, 51)
+		PRINTFORMW 100인 함락 보너스！　불굴의투지를 획득할 수 있습니다！
+		SETBIT FLAG:주인획득스킬, 51
+		CALL LEARN_SKILL, MASTER, [[스킬:불굴의투지]]
+	ENDIF
+	FOR L_COUNT, 0, CSVCHARANUM
+		SIF !EXISTCSV(L_COUNT, 0)
+			CONTINUE
+		;信頼陥落系を含むように修正
+		SIF GET_陥落履歴_陥落強度(L_COUNT) > 0
+			LOCAL:CSVABL(L_COUNT, GETNUM(ABL, "종족"), 0)++
+	NEXT
+	FOR L_COUNT, 0 ,49
+		IF MASTER_SKILL(L_COUNT) >= 0 && !GETBIT(FLAG:주인획득스킬, L_COUNT) && LOCAL:L_COUNT >= 5
+			CALL GET_SKILL_PROP, "SKILL_NAME", MASTER_SKILL(L_COUNT), MASTER
+			PRINTFORMW %조사처리(STR:L_COUNT,"를")% 일정 수 함락시킨 것으로 보너스 발생！
+			PRINTFORMW 【%RESULTS%】%조사만처리(RESULTS,"를")% 획득할 수 있습니다！
+			SETBIT FLAG:주인획득스킬, L_COUNT
+			CALL LEARN_SKILL, MASTER, MASTER_SKILL(L_COUNT)
+		ENDIF
+	NEXT
+ENDIF
+
+@MASTER_SKILL, ARG
+#FUNCTION
+SELECTCASE ARG
+	;인간
+;	CASE 0
+;		RETURNF [[스킬:]]
+	;지모신
+	CASE 1
+		RETURNF [[스킬:라쿠카쟈오토]]
+	;여신
+	CASE 2
+		RETURNF [[스킬:어드바이스]]
+	;마왕
+	CASE 3
+		RETURNF [[스킬:마카카쟈오토]]
+	;천사
+	CASE 4
+		RETURNF [[스킬:추격의심득]]
+	;요마
+	CASE 5
+		RETURNF [[스킬:유혹]]
+	;요정
+	CASE 6
+		RETURNF [[스킬:민속학]]
+	;요귀
+	CASE 7
+		RETURNF [[스킬:코칭]]
+	;용왕
+	CASE 8
+		RETURNF [[스킬:삼할의활천]]
+	;마수
+	CASE 9
+		RETURNF [[스킬:타루카쟈오토]]
+	;요조
+	CASE 10
+		RETURNF [[스킬:스쿠카쟈오토]]
+	;외도
+	CASE 11
+		RETURNF [[스킬:이악물기]]
+	;머신
+	;CASE 12
+	;	RETURNF [[스킬:]]
+	;정령
+	CASE 13
+		RETURNF [[스킬:치유의파동]]
+	;어령
+	;CASE 14
+	;	RETURNF [[스킬:]]
+	;귀신
+	CASE 15
+		RETURNF [[스킬:정천의회심]]
+	;마신
+	CASE 16
+		RETURNF [[스킬:황천의회심]]
+	;사신
+	CASE 17
+		RETURNF [[스킬:이신의잔영]]
+	;타천사
+	CASE 18
+		RETURNF [[스킬:아이템숙련]]
+	;괴이
+	CASE 32
+		RETURNF [[스킬:사마카쟈오토]]
+	;마인
+	CASE 42
+		RETURNF [[스킬:하이퍼카운터]]
+	;영웅
+	CASE 44
+		RETURNF [[스킬:장비지식Lv5]]
+	CASE 50
+		RETURNF [[스킬:불굴의투지]]
+	CASEELSE
+		RETURNF -1
+ENDSELECT
+;---------------------------------------------------------
+;助手の素質および能力
+;---------------------------------------------------------
+@EVENTCHECK_A
+;助手の技巧：調教経験が20、100、250、400、600のたびに上昇、Lv５まで
+IF EXP:ASSI:조교경험 >= 600 && ABL:ASSI:기교 <= 4
+	ABL:ASSI:기교 = 5
+	PRINTFORMW %NAME:ASSI%의 %조사처리(ABLNAME:2,"가")% {ABL:ASSI:기교}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:ASSI:조교경험 >= 400 && ABL:ASSI:기교 <= 3
+	ABL:ASSI:기교 = 4
+	PRINTFORMW %NAME:ASSI%의 %조사처리(ABLNAME:2,"가")% {ABL:ASSI:기교}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:ASSI:조교경험 >= 250 && ABL:ASSI:기교 <= 2
+	ABL:ASSI:기교 = 3
+	PRINTFORMW %NAME:ASSI%의 %조사처리(ABLNAME:2,"가")% {ABL:ASSI:기교}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:ASSI:조교경험 >= 100 && ABL:ASSI:기교 <= 1
+	ABL:ASSI:기교 = 2
+	PRINTFORMW %NAME:ASSI%의 %조사처리(ABLNAME:2,"가")% {ABL:ASSI:기교}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:ASSI:조교경험 >= 20 && ABL:ASSI:기교 <= 0
+	ABL:ASSI:기교 = 1
+	PRINTFORMW %NAME:ASSI%의 %조사처리(ABLNAME:2,"가")% {ABL:ASSI:기교}로 올라갔다
+	PRINTL 　
+ENDIF
+
+;助手のサドっ気：嗜虐快楽経験が10、20、50、100、200のたびに上昇、Lv５まで
+IF EXP:ASSI:가학쾌락경험 >= 200 && ABL:ASSI:새드끼 <= 4
+	ABL:ASSI:새드끼 = 5
+	PRINTFORMW %NAME:ASSI%의 %ABLNAME:10%가 {ABL:ASSI:새드끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:ASSI:가학쾌락경험 >= 100 && ABL:ASSI:새드끼 <= 3
+	ABL:ASSI:새드끼 = 4
+	PRINTFORMW %NAME:ASSI%의 %ABLNAME:10%가 {ABL:ASSI:새드끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:ASSI:가학쾌락경험 >= 50 && ABL:ASSI:새드끼 <= 2
+	ABL:ASSI:새드끼 = 3
+	PRINTFORMW %NAME:ASSI%의 %ABLNAME:10%가 {ABL:ASSI:새드끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:ASSI:가학쾌락경험 >= 20 && ABL:ASSI:새드끼 <= 1
+	ABL:ASSI:새드끼 = 2
+	PRINTFORMW %NAME:ASSI%의 %ABLNAME:10%가 {ABL:ASSI:새드끼}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:ASSI:가학쾌락경험 >= 10 && ABL:ASSI:새드끼 <= 0
+	ABL:ASSI:새드끼 = 1
+	PRINTFORMW %NAME:ASSI%의 %ABLNAME:10%가 {ABL:ASSI:새드끼}로 올라갔다
+	PRINTL 　
+ENDIF
+
+;助手の撮影技能：撮影経験が10、30、60、100、150のたびに上昇、Lv５まで
+IF EXP:ASSI:촬영경험 >= 150 && ABL:ASSI:촬영기능 <= 4
+	ABL:ASSI:촬영기능 = 5
+	PRINTFORMW %NAME:ASSI%의 %ABLNAME:13%이 {ABL:ASSI:촬영기능}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:ASSI:촬영경험 >= 100 && ABL:ASSI:촬영기능 <= 3
+	ABL:ASSI:촬영기능 = 4
+	PRINTFORMW %NAME:ASSI%의 %ABLNAME:13%이 {ABL:ASSI:촬영기능}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:ASSI:촬영경험 >= 60 && ABL:ASSI:촬영기능 <= 2
+	ABL:ASSI:촬영기능 = 3
+	PRINTFORMW %NAME:ASSI%의 %ABLNAME:13%이 {ABL:ASSI:촬영기능}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:ASSI:촬영경험 >= 30 && ABL:ASSI:촬영기능 <= 1
+	ABL:ASSI:촬영기능 = 2
+	PRINTFORMW %NAME:ASSI%의 %ABLNAME:13%이 {ABL:ASSI:촬영기능}로 올라갔다
+	PRINTL 　
+ELSEIF EXP:ASSI:촬영경험 >= 10 && ABL:ASSI:촬영기능 <= 0
+	ABL:ASSI:촬영기능 = 1
+	PRINTFORMW %NAME:ASSI%의 %ABLNAME:13%이 {ABL:ASSI:촬영기능}로 올라갔다
+	PRINTL 　
+ENDIF
+
+;助手のサド：サドっ気がLv４以上、嗜虐快楽経験300以上でサド
+IF ABL:ASSI:새드끼 >= 4 && EXP:ASSI:가학쾌락경험 >= 300 && TALENT:ASSI:새드 == 0 && TALENT:ASSI:마조 == 0
+	PRINTFORMW %CALLNAME:ASSI%의 모습이 이상하다
+	PRINTFORML %ASSI는% 남을 괴롭히는 기쁨에 눈뜬 것 같다
+	PRINTFORMW %조사처리(NAME:ASSI,"는")% 【새드】를 몸에 익혔다
+	TALENT:ASSI:새드 = 1
+ENDIF
+
+;助手のマゾ：マゾっ気がLv４以上、苦痛快楽経験300以上でマゾ
+IF ABL:ASSI:마조끼 >= 4 && EXP:ASSI:고통쾌락경험 >= 300 && TALENT:ASSI:새드 == 0 && TALENT:ASSI:마조 == 0
+	PRINTFORMW %CALLNAME:ASSI%의 모습이 이상하다
+	PRINTFORML %ASSI는% 몸을 괴롭혀지는 기쁨에 눈뜬 것 같다
+	PRINTFORMW %조사처리(NAME:ASSI,"는")% 【마조】를 몸에 익혔다
+	PRINTL 　
+	TALENT:ASSI:마조 = 1
+ENDIF
+
+;==========================================================
+;@처녀상실
+; 처녀/再生処女を喪失する。
+;<引数>
+;	ARG  - 처녀/再生処女を失うキャラのキャラ登録番号
+;<戻り値>
+;	なし
+;==========================================================
+@처녀상실, ARG = -1
+;ARGがキャラ登録番号の範囲の場合何もせず戻る
+SIF ARG < 0 && ARG >= CHARANUM
+	RETURN
+
+;처녀상실플래그
+IF TALENT:ARG:처녀 == 1
+	TALENT:ARG:처녀 = 0
+	CFLAG:ARG:처녀상실플래그 = 1
+ENDIF
+;재생처녀상실플래그
+IF TALENT:ARG:재생처녀 == 1
+	TALENT:ARG:재생처녀 = 0
+	CFLAG:ARG:재생처녀상실플래그 = 1
+ENDIF
+
+;==========================================================
+;@処女喪失イベント
+; 처녀/再生処女を喪失する。
+;<引数>
+;	ARG  - 처녀/再生処女を失ったキャラのキャラ登録番号
+;	ARGS - 処女喪失の状況
+;<戻り値>
+;	なし
+;==========================================================
+@処女喪失イベント, ARG = -1, ARGS = ""
+;ARGがキャラ登録番号の範囲の場合何もせず戻る
+SIF ARG < 0 && ARG >= CHARANUM
+	RETURN
+
+IF CFLAG:ARG:처녀상실플래그
+	CFLAG:ARG:처녀상실플래그 = 0
+	PRINTL 처녀상실
+	SETCOLOR COLOR("red")
+	IF ARGS == ""
+		PRINTL 이상경험　처녀상실 + 2
+	ELSE
+		PRINTFORML 이상경험　처녀상실(%ARGS%) + 2
+	ENDIF
+RESETCOLOR
+	EXP:ARG:이상경험 += 2
+ELSEIF CFLAG:ARG:재생처녀상실플래그
+	CFLAG:ARG:재생처녀상실플래그 = 0
+	PRINTL 재생처녀상실
+ENDIF
+
+;---- EDIT 011 ADD START -------------------------
+;==========================================================
+;@陥落人数加算
+;신뢰<>恋慕の乗り入れの間で人数が変動する処理に対処にするために加算時に変動を折り込む
+;またこの過程で加入時点での陥落素質持ちが混ざると破綻するのを防ぐために取得履歴を個別でもたせる
+;
+;ARG 	加算する際の履歴を持つキャラ登録番号
+;ARGS 	加算する系統
+;==========================================================
+@陥落人数加算, ARG, ARGS
+#DIM LCOUNT
+#DIMS CONST L_ROUTE = "未陥落", "연모", "음란", "복종", "신뢰"
+IF CFLAG:ARG:함락인수가산완료
+	FLAG:@"%L_ROUTE:(CFLAG:ARG:함락인수가산완료)%인수" -= 1
+	FLAG:@"이번주회%L_ROUTE:(CFLAG:ARG:함락인수가산완료)%인수" -= 1
+ENDIF
+FLAG:@"%ARGS%인수" += 1
+FLAG:@"이번주회%ARGS%인수" += 1
+CFLAG:ARG:함락인수가산완료 = FINDELEMENT(L_ROUTE, ARGS)
+;---- EDIT 011 ADD END ---------------------------

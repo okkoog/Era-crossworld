@@ -1,0 +1,1763 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX								新規作成
+;	002		2021/02/22		亜人いいよね			スキルカード拡張枠の追加
+;	003		2021/12/25		JK好き					@MAKE_SKILLCARD 一文字関数Uにスキル保有者を代入
+;	004		2022/07/05		JK好き					@SHOW_LEARN_SKILL ベルベットルームと青い蝶でペルソナスキルカード処理が違っていた問題を修正
+;	005		2022/07/10		JK好き					@SHOW_LEARN_SKILL @スキルカード在庫確認 デビルシフター変身後が取得済みのスキルをスキルカードで追加習得出来た問題を修正
+;	006		2022/01/01		P(bazzile)				スキルカードを抽出出来る条件をロール参照に変更
+;													スキルカード在庫確認のスキルの所持判定を人間時スキルも見るようにし、さらに処理の簡略化のために所持スキルをリスト化シて持たせる形に
+;													SKILLNUMを設定
+;	007		2022/02/26		P(bazzile)				ロール限定スキルを削除する際に代用スキルがあれば置き換える処理を追加
+;	008		2022/03/03		P(bazzile)				ペルソナにスキルカードを使う際に落ちるのを修正
+;	009		2023/04/11		P(bazzile)				文字列のスキル記録用の名称取得関数GET_SKILL_TO_STRFLAGを作成
+;	010		2023/05/26		P(bazzile)				所持スキルの追加用の関数を追加
+;	011		2023/06/05		P(bazzile)				悪魔変身中に正しくスキルを取得できない不具合を修正
+;	012		2023/06/21		P(bazzile)				初期ペルソナの所持不能スキルの排除処理がめちゃくちゃだった不具合を修正
+;	013		2023/06/23		P(bazzile)				スキル習得関数を文字列と数字で共存させる処理にISNUMERICを使うように変更
+;	014		2023/06/26		P(bazzile)				味方のスキルの削除関数を追加
+;	015		2023/06/30		P(bazzile)				SET_LEARN_SKILLに習得したスキルをそのまま入れ替えるか選ぶようにするオプションを追加
+;													追加表示オプションの表示を調整
+;	016		2023/07/05		P(bazzile)				スキルカード作成の処理とUIをリファクタリング
+;	017		2023/07/10		P(bazzile)				対象のキャラクターが何枚スキルカードを取れるか取得する関数を作成
+;	018		2023/08/06		P(bazzile)				スキルの所持可能判定関数を追加
+;													スキルをカード化できるか確認する関数を追加
+;	019		2023/09/09		P(bazzile)				ペルソナがスキルを習得できない不具合を修正
+;	020		2023/09/20		P(bazzile)				習得済みスキルのチェックで専用スキルが番号で送られてきた場合に正しく取れなかった不具合を修正
+;	021		2024/03/01		P(bazzile)				再習得スキルから特定のスキルを抜くための関数　@CLEAR_LEARNED_SKILLを追加
+;													ロール変更時のスキル除外処理に再習得リストからのスキル除外処理を追加
+;	022		2024/06/10		P(bazzile)				スキルカード確認の系統送りが不正な系統をはじこうとしていなかった不具合を修正
+;	023		2024/06/20		P(bazzile)				CLEAR_ALL_SKILLでスキルを消す際にCSTR:専用技も消すように変更
+;													SET_SKILL系列の関数の機能を拡張し、SET_SKILLに数値指定と専用スキル指定を追加。さらにスキルの重複回避をするように
+;==========================================================
+;==========================================================
+;スキルカードシステム
+;スキルカード一覧表示
+;==========================================================
+@SHOW_SKILL_CARD
+#DIM 選択スキル
+#DIM 選択スキル系統
+#DIM ページ
+#DIM ライン
+#LOCALSIZE 2
+
+REDRAW 0
+選択スキル系統 = -1
+選択スキル = -1
+ページ = 0
+ライン = LINECOUNT
+CALL スキルカード在庫確認()
+FOR LOCAL, 0, 24
+	X:LOCAL = Z:LOCAL
+NEXT
+
+
+$START
+CLEARLINE LINECOUNT - ライン
+CUSTOMDRAWLINE =
+IF 選択スキル > -1
+	PRINTFORML 【%SKILL_NAME_F(選択スキル)%】
+	SIF FLAG:스킬속성표시설정 == 1
+		CALL SKILL_EXPLAIN_PERFORMANCE, 選択スキル, -1
+	CALL GET_SKILL_PROP, "SKILL_EXPLAIN", 選択スキル, -1
+ELSE
+	PRINTFORML \@ 選択スキル系統 == -1 ? 어느 계통의 스킬 카드를 확인하겠습니까? # 어느 스킬의 설명을 보겠습니까? \@
+	PRINTL
+ENDIF
+DRAWLINE
+IF 選択スキル系統 > -1
+	FOR LOCAL, ページ*20 , (ページ+1)*20
+		IF HAVE_SKILLCARD_LIST:LOCAL > 0
+			CALL GET_SKILL_PROP, "SKILL_NAME", HAVE_SKILLCARD_LIST:LOCAL, -1
+			IF GETBIT(FLAG:커스텀게임화면,1)
+				PRINTFORM [{HAVE_SKILLCARD_LIST:LOCAL,4}] %RESULTS,38,LEFT% × {ITEM:(10000+HAVE_SKILLCARD_LIST:LOCAL),3}\@ABLE_MAKESKILLCARD(HAVE_SKILLCARD_LIST:LOCAL)?　복제可　#　　　　　\@
+			ELSE
+				PRINTFORM [{HAVE_SKILLCARD_LIST:LOCAL,4}] %RESULTS,20,LEFT% × {ITEM:(10000+HAVE_SKILLCARD_LIST:LOCAL),3}\@ABLE_MAKESKILLCARD(HAVE_SKILLCARD_LIST:LOCAL)?　복제可　#　　　　　\@
+			ENDIF
+			RESETCOLOR
+		ENDIF
+		SIF LOCAL % 2 == 1
+			PRINTL
+	NEXT
+ELSE
+	PRINTFORM %"\n" * 10%
+ENDIF
+DRAWLINE
+FOR LOCAL,0,24
+	;使えるカードが無い系統は暗く表示
+	SIF LOCAL == 21
+		CONTINUE
+	IF LOCAL == 選択スキル系統
+		SETCOLOR COLOR("水色")
+	ELSEIF X:LOCAL == 0
+		SETCOLOR 0x606060
+	ENDIF
+	;IF LOCAL == 22
+	;	PRINTFORM [4022] 자동효과
+	;ELSEIF LOCAL == 23
+	;	PRINTFORML [4023] レア
+	;ELSE
+	PRINTFORM [{4000+LOCAL}] %GET_SUCCESSION(LOCAL)%　　
+	;ENDIF
+	RESETCOLOR
+	SIF LOCAL % 6 == 5 || LOCAL == 20
+		PRINTL
+NEXT
+DRAWLINE
+PRINTFORMLC \@(ページ <= 0) ? %" " * 16% # [3007]이전페이지\@
+PRINTLC [0]돌아간다
+PRINTFORMLC \@(ページ >= (LOCAL:1 - 1) / 20) ? %" " * 16% # [3009]다음페이지\@
+PRINTL 
+PRINTFORMLC [3004]이전계통
+PRINTFORMLC 현재의계통【\@ 選択スキル系統 == -1 ? ---- #%GET_SUCCESSION(選択スキル系統)%\@】
+PRINTFORMLC [3006]다음계통
+
+$INPUT_LOOP_1
+INPUT
+IF RESULT == 0
+	REDRAW 1
+	RETURN 0
+;系統選択
+ELSEIF RESULT >= 4000 && RESULT <= 4023
+	ページ = 0
+	選択スキル系統 = RESULT - 4000
+	CALL スキルカード在庫確認(選択スキル系統, , 1)
+	LOCAL:1 = RESULT
+	GOTO START
+;系統送り
+ELSEIF RESULT == 3004 || RESULT == 3006
+	;---- EDIT 022 MOD START -------------------------
+	ページ = 0
+	IF MAXARRAY(X, 0, 24)
+		DO 
+			選択スキル系統 += (RESULT == 3004 ? -1 # 1)
+			SIF 選択スキル系統 > 23
+				選択スキル系統 = 0
+			SIF 選択スキル系統 < 0
+				選択スキル系統 = 23
+		LOOP !X:選択スキル系統
+	ENDIF
+	;SIF 選択スキル系統 == 21
+	;	選択スキル系統 += (RESULT == 3004 ? -1 # 1)
+	CALL スキルカード在庫確認(選択スキル系統, , 1)
+	LOCAL:1 = RESULT
+	GOTO START
+	;---- EDIT 022 MOD END ---------------------------
+;ページ操作
+ELSEIF (RESULT == 3007 && ページ> 0) || (RESULT == 3009 && ページ < (LOCAL:1 -1) / 20)
+	ページ += (RESULT == 3007 ? -1 # 1)
+	GOTO START
+ELSEIF !RANGE(RESULT , 0 , VARSIZE("ITEM") - 10001) || MATCH(HAVE_SKILLCARD_LIST,RESULT) == -1 || ITEM:(10000+RESULT) < 1
+	CLEARLINE 1
+	GOTO INPUT_LOOP_1
+ENDIF
+選択スキル = RESULT
+GOTO START
+
+
+;==============================================================
+;スキル習得用・リスト表示
+;==============================================================
+@SHOW_LEARN_SKILL(ARG, どっちの強化？)
+#LOCALSIZE 6
+#DIM どっちの強化？ , 1
+LOCAL:3 = LINECOUNT
+IF !LOCAL:5
+	LOCAL:4 = CURRENTREDRAW()
+	SIF LOCAL:4 != 2
+		REDRAW 2
+	LOCAL:5 = 1
+ENDIF
+PRINTL 어느 계통의 스킬을 습득하시겠습니까？
+;CALL スキルカード在庫確認(, ARG)
+CALL スキルカード在庫確認(, ARG, , どっちの強化？)
+FOR LOCAL, 0, 21
+	SIF FLAG:SHOP커맨드 == [[ショップ:동료마강화]] && !TALENT:ARG:GET_SUCCESSION(LOCAL)
+		SETCOLOR 0xDDDDDD
+	SIF (FLAG:SHOP커맨드 == [[ショップ:벨벳룸]] || FLAG:SHOP커맨드 == [[ショップ:탐색]]) && !TALENT:ARG:GET_SUCCESSION(LOCAL)
+		SETCOLOR STRFLAG_EV("初期ペルソナスキル習得", 0, [[이벤트:페르소나]]) ? 0xDDDDDD # 0x404040
+	SIF !Z:LOCAL	;使えるカードが無い系統は暗く表示
+		SETCOLOR 0x606060
+	IF FLAG:SHOP커맨드 == [[ショップ:동료마강화]]
+		PRINTFORM [{LOCAL, 2}] %GET_SUCCESSION(LOCAL)%　\@ TALENT:ARG:GET_SUCCESSION(LOCAL) ? ○ # △ \@　
+	ELSEIF (FLAG:SHOP커맨드 == [[ショップ:벨벳룸]] || FLAG:SHOP커맨드 == [[ショップ:탐색]])
+		IF STRFLAG_EV("初期ペルソナスキル習得", 0, [[이벤트:페르소나]])
+			PRINTFORM [{LOCAL, 2}] %GET_SUCCESSION(LOCAL)%　\@ TALENT:ARG:GET_SUCCESSION(LOCAL) ? ○ # △ \@　
+		ELSE
+			PRINTFORM [{LOCAL, 2}] %GET_SUCCESSION(LOCAL)%　\@ TALENT:ARG:GET_SUCCESSION(LOCAL) ? ○ # × \@　
+		ENDIF
+	ELSE
+		PRINTFORM [{LOCAL,2}] %GET_SUCCESSION(LOCAL)%　　
+	ENDIF
+	PRINTFORM \@ LOCAL % 6 == 5 ? \n # \@
+	RESETCOLOR
+NEXT
+SETCOLOR Z:22 ? GETCOLOR() # 0x606060
+PRINT [22] 자동효과
+RESETCOLOR
+IF FLAG:SHOP커맨드 == [[ショップ:동료마강화]]
+	SETCOLOR Z:23 ? GETCOLOR() # 0x606060
+	PRINTFORM 　[23] 레어
+	RESETCOLOR
+ENDIF
+PRINTFORML \n[100]돌아간다
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	SIF LOCAL:4 != 2
+		REDRAW LOCAL:4
+	LOCAL:5 = 0
+	RETURN 0
+{
+ELSEIF !INRANGE(RESULT, 0, 23) || RESULT == 21 || ((FLAG:SHOP커맨드 == [[ショップ:벨벳룸]] || FLAG:SHOP커맨드 == [[ショップ:탐색]]) && RESULT == 23) || 
+	((FLAG:SHOP커맨드 == [[ショップ:벨벳룸]] || FLAG:SHOP커맨드 == [[ショップ:탐색]]) && RESULT != 22 && !TALENT:ARG:GET_SUCCESSION(RESULT) && 
+	!STRFLAG_EV("初期ペルソナスキル習得", 0, [[이벤트:페르소나]]))
+}
+	CLEARLINE 1
+	GOTO INPUT_LOOP
+ENDIF
+
+RESULT:10 = RESULT
+
+CALL スキルカード在庫確認(RESULT:10, ARG, , どっちの強化？)
+LOCAL:1 = RESULT
+IF !LOCAL:1
+	CLEARLINE 1
+	REUSELASTLINE 카드를 소지하고 있지 않습니다
+	GOTO INPUT_LOOP
+ENDIF
+
+;Sの中身を表示
+P = 0
+LOCAL:2 = LINECOUNT
+$PRINT_LIST
+CLEARLINE LINECOUNT - LOCAL:2
+DRAWLINE
+FOR LOCAL, P * 20, (P + 1) * 20
+	IF HAVE_SKILLCARD_LIST:LOCAL > 0 && ITEM:(10000 + HAVE_SKILLCARD_LIST:LOCAL)
+		CALL GET_SKILL_PROP, "SKILL_NAME", HAVE_SKILLCARD_LIST:LOCAL, -1
+		PRINTFORM [{HAVE_SKILLCARD_LIST:LOCAL, 4}] %RESULTS, 20, LEFT% × {ITEM:(10000 + HAVE_SKILLCARD_LIST:LOCAL), 3}　　\@ LOCAL & 1 ? \n # \@
+	ENDIF
+NEXT
+PRINTFORM \@ LINEISEMPTY() ? # \n \@
+PRINTFORM \@ P && P == (LOCAL:1 - 1) / 20 ? %"\n" * MAX(0, 11 + LOCAL:2 - LINECOUNT)% # \@
+DRAWLINE
+PRINTFORMLC \@ P > 0 ? [3007]이전페이지 # %" " * 16% \@
+PRINTLC [0]돌아간다
+PRINTFORMLC \@ P < (LOCAL:1 - 1) / 20 ? [3009]다음페이지 # %" " * 16% \@
+PRINTL 
+$INPUT_LOOP_1
+INPUT
+IF RESULT == 0
+	CLEARLINE LINECOUNT - LOCAL:3
+	RESTART
+ELSEIF RESULT == 3007 && P > 0
+	P--
+	GOTO PRINT_LIST
+ELSEIF RESULT == 3009 && P < (LOCAL:1 - 1) / 20
+	P++
+	GOTO PRINT_LIST
+;---- EDIT 019 MOD START -------------------------	
+ELSEIF RESULT < 0 || !MATCH(HAVE_SKILLCARD_LIST, RESULT, 0, LOCAL:1) || !ITEM:(10000 + RESULT)
+;ELSEIF RESULT < 0 || !MATCH(S, RESULT, 0, LOCAL:1) || !ITEM:(10000 + RESULT)
+	CLEARLINE 1
+	GOTO INPUT_LOOP_1
+;---- EDIT 019 MOD END ---------------------------
+ENDIF
+SIF LOCAL:4 != 2
+	REDRAW LOCAL:4
+LOCAL:5 = 0
+RETURN RESULT
+
+
+;==========================================
+;邪教の館・スキルカード作成
+;種族等の判定はロールの属性に移動
+;==========================================
+@CASTING_MAKE_SKILLCARD(ARG:0)
+;妊娠か忠誠度2000以上必要
+SIF (TALENT:(ARG:0):임신 == 0 || TALENT:(ARG:0):붕괴) && GET_CHARA_LOYALTY((ARG:0)) < 500
+	RETURN 0
+;妊娠消えたりで面倒
+SIF ((TALENT:(ARG:0):임신 && CFLAG:(ARG:0):출산예정일 - 2 <= DAY) || TALENT:(ARG:0):육아중) && FLAG:출산기능ONOFF == 1
+	RETURN 0
+SIF IS_RENTING(ARG:0)
+	RETURN 0
+SIF CFLAG:(ARG:0):이자리에없는플래그 == 1
+	RETURN 0
+SIF !GET_ROLE_PROP("CAN_MAKE_SKILLCARD", ARG:0)
+	RETURN 0
+;悪魔かつペルソナ使い　悪魔かつ達人も弾く
+;SIF TALENT:(ARG:0):페르소나구사자 || TALENT:(ARG:0):달인
+;	RETURN 0
+RETURN 1
+;---- EDIT 018 ADD START -------------------------
+;==========================================
+;指定したスキルがスキルカードにできるかどうかの確認関数
+;==========================================
+@IS_MAKEABLE_SKILLCARD, L_SKILL
+#DIM L_SKILL
+;ランクが値域外のものは弾く
+CALL GET_SKILL_PROP, "SKILL_RANK", L_SKILL, -1
+SIF !INRANGE(RESULT, 1, 15)
+	RETURN 0
+
+;継承不能スキルは弾く
+CALL GET_SKILL_PROP, "継承不能", L_SKILL, -1
+SIF RESULT
+	RETURN 0
+
+;敵専用スキルは弾く
+CALL GET_SKILL_PROP, "敵専用", L_SKILL, -1
+SIF RESULT
+	RETURN 0
+
+;削除不能
+CALL GET_SKILL_PROP, "SKILL_DEL_UNABLE", L_SKILL, -1
+SIF RESULT
+	RETURN 0
+
+;リンク不能スキルは弾く
+CALL GET_SKILL_PROP, "링크불능", L_SKILL, -1
+SIF RESULT
+	RETURN 0
+
+;ロール専用スキルは弾く
+CALL GET_SKILL_PROP, "ロール専用", L_SKILL, -1
+SIF RESULT
+	RETURN 0
+RETURN 1
+;---- EDIT 018 ADD END ---------------------------
+
+;---- EDIT 016 MOD START -------------------------
+@MAKE_SKILLCARD
+#DIM LINE, 3
+#DIM L_CHARA
+#DIM LCOUNT
+#DIM L_SKILL
+#DIM L_RESULT
+#DIM CAN_NOT_MAKE_SKILLCARD, HAVEABLE_SKILLNUM
+;LOCAL FOR用
+;LOCAL:1 作成する悪魔
+;LOCAL:2 作成するスキルの習得番号
+;LOCAL:5 ページ管理用
+;LOCAL:7 スキルカード化可能スキルの個数
+
+;LOCAL:8-12 増加するストレス値
+
+;キャラリストを表示・選択
+;CALL INPUT_CHARA_LIST("スキルカードを作成する悪魔を選んでください", "CASTING_MAKE_SKILLCARD")
+{
+CALL INPUT_CHARA_LIST
+	, "FUNC_PROPSET_LIST_BATTLE"
+	, "스킬카드를 작성할 악마를 선택해주세요"
+	, "CASTING_MAKE_SKILLCARD" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+SIF RESULT == 1000
+	RETURN 0
+;LOCAL:1 = RESULT
+L_CHARA = RESULT
+
+;一文字U利用箇所
+U = L_CHARA
+;U = LOCAL:1
+DRAWLINE
+LINE = LINECOUNT
+$INPUT_LOOP
+CLEARLINE LINECOUNT - LINE
+VARSET CAN_NOT_MAKE_SKILLCARD
+;VARSET S,-1
+
+DRAWLINE
+PRINTFORML □%CALLNAME:L_CHARA%의 스킬
+DRAWLINE
+CALL MAKE_SKILLCARD_LIST, L_CHARA, "通常形態", CAN_NOT_MAKE_SKILLCARD
+IF MINARRAY(CAN_NOT_MAKE_SKILLCARD) > 1
+	PRINTFORMW 스킬카드로 만들 수 있는 스킬을 습득하지 않았습니다
+	CLEARLINE 2
+	RESTART
+ENDIF
+DRAWLINE
+PRINTL □스킬카드 작성 방법
+CALL PRINT_COLOR, @"　①스킬추출　　　　충성도를 {GET_LOYALTY_FOR_MAKE_SKILLCARD(L_CHARA, "消費")} 소비하고、추가로 스킬을 삭제한다 (요:충성도{GET_LOYALTY_FOR_MAKE_SKILLCARD(L_CHARA, "必要")})", GET_CHARA_LOYALTY(L_CHARA) < GET_LOYALTY_FOR_MAKE_SKILLCARD(L_CHARA, "必要") ? COLOR("gray") # COLOR("DEF"), "L"
+CALL PRINT_COLOR, @"　②스킬카드화　　　악마를 삭제한다 (요:충성도 500)", GET_CHARA_LOYALTY(L_CHARA) < 500 ? COLOR("gray") # COLOR("DEF"), "L"
+CALL PRINT_COLOR, @"　③태아카드화　　　임신을 잏고、추가로 스트레스와 피로를 가산한다 (요:임신 + 붕괴 미소지)", (!TALENT:L_CHARA:임신 || TALENT:L_CHARA:붕괴) ? COLOR("gray") # COLOR("DEF"), "L"
+DRAWLINE
+PRINTL [ 0]돌아간다　[99]스킬잠금설정
+INPUT
+IF RESULT == 0
+	RESTART
+ELSEIF RESULT == 99
+	CALL SKILL_ROCK_SETTING, L_CHARA
+	GOTO INPUT_LOOP
+;ELSEIF RESULT < 0 || RESULT > FLAG:이능자스킬수+1 || S:RESULT == -1
+;	GOTO INPUT_LOOP_2
+ENDIF
+
+L_RESULT = RESULT
+SIF !INRANGE(L_RESULT, 1, HAVEABLE_SKILLNUM)
+	GOTO INPUT_LOOP
+SIF CAN_NOT_MAKE_SKILLCARD:(L_RESULT - 1)
+	GOTO INPUT_LOOP
+L_SKILL = ABL:L_CHARA:@"스킬{L_RESULT}"
+LINE:1 = LINECOUNT
+$INPUT_LOOP_2
+CLEARLINE LINE:1 - LINECOUNT
+
+DRAWLINE
+CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, -1
+CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", L_SKILL, L_CHARA
+PRINTFORML 【%GET_SUCCESSION(RESULT)%】 %RESULTS%
+SIF FLAG:스킬속성표시설정 == 1
+	CALL SKILL_EXPLAIN_PERFORMANCE, L_SKILL, L_CHARA
+CALL GET_SKILL_PROP, "SKILL_EXPLAIN", L_SKILL, L_CHARA
+DRAWLINE
+IF ITEM:(10000 + L_SKILL)
+	LOCAL:4 = GETCOLOR()
+	SETCOLOR COLOR("PASTEL-RED")
+	PRINTFORML ※이 스킬카드는 {ITEM:(10000 + L_SKILL)}매 소지하고 있습니다
+	SETCOLOR LOCAL:4
+ENDIF
+IF ABLE_MAKESKILLCARD(L_SKILL)
+	LOCAL:4 = GETCOLOR()
+	SETCOLOR COLOR("PASTEL-BLUE")
+	PRINTL ※이 스킬카드는 시간성에서 복제 가능합니다
+	SETCOLOR LOCAL:4
+ENDIF
+PRINTFORML 현재、이하의 방법으로 스킬카드를 작성할 수 있습니다　충성도{GET_CHARA_LOYALTY(L_CHARA),6}
+DRAWLINE
+IF GET_CHARA_LOYALTY(L_CHARA) >= GET_LOYALTY_FOR_MAKE_SKILLCARD(L_CHARA, "必要")
+	PRINTFORML [1] 스킬추출 (충성도가 {GET_LOYALTY_FOR_MAKE_SKILLCARD(L_CHARA, "消費")} 감소하고、대상 스킬을 잊어버립니다)
+ELSE
+	CALL PRINT_COLOR, @"[1] 스킬추출 (충성도가 {GET_LOYALTY_FOR_MAKE_SKILLCARD(L_CHARA, "必要")} 필요합니다)", COLOR("gray"), "L"
+ENDIF
+IF GET_CHARA_LOYALTY(L_CHARA) >= 500
+	PRINTL [2] 스킬카드화 (악마는 삭제됩니다)
+ELSE
+	CALL PRINT_COLOR, "[2] 스킬카드화 (충성도가 500 이상의 악마를 삭제함으로써 스킬카드로 만들 수 있습니다)", COLOR("gray"), "L"
+ENDIF
+;SIF GET_CHARA_LOYALTY(L_CHARA) >= (4+CFLAG:L_CHARA:스킬추출횟수)*250
+;	PRINTFORML [1] スキル抽出 (忠誠度が{(2+CFLAG:L_CHARA:스킬추출횟수)*250}減少し、対象のスキルを忘れます)
+;SIF GET_CHARA_LOYALTY(L_CHARA) >= 500
+;	PRINTL [2] スキルカード化 (悪魔は削除されます)
+SIF TALENT:L_CHARA:임신 && TALENT:L_CHARA:붕괴 == 0
+	PRINTL [3] 태내의 생명을 스킬카드화 ([임신]을 잃고、스트레스와 피로가 쌓입니다)
+DRAWLINE
+PRINTL [0] 돌아간다
+LINE:1 = LINECOUNT
+$INPUT_LOOP_3
+CLEARLINE LINE:1 - LINECOUNT
+INPUT
+IF RESULT == 0
+	GOTO INPUT_LOOP
+;ELSEIF RESULT == 1 && GET_CHARA_LOYALTY(L_CHARA) >= (4+CFLAG:L_CHARA:스킬추출횟수)*250
+ELSEIF RESULT == 1 && GET_CHARA_LOYALTY(L_CHARA) >= GET_LOYALTY_FOR_MAKE_SKILLCARD(L_CHARA, "必要")
+	PRINTFORML %CALLNAME:L_CHARA%에게서 스킬카드를 추출합니다。괜찮겠습니까
+	CALL INPUT_YN
+	SIF RESULT == 1
+		GOTO INPUT_LOOP
+	CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, -1
+	PRINTFORMW %CALLNAME:L_CHARA%에게서、%RESULTS%의 스킬카드를 추출했다
+	CALL CONTROL_LOYALTY, L_CHARA, -GET_LOYALTY_FOR_MAKE_SKILLCARD(L_CHARA, "消費")
+	ABL:L_CHARA:("스킬"+TOSTR(L_RESULT)) = 0
+	CFLAG:L_CHARA:스킬추출횟수 += 1
+	ITEM:(10000+L_SKILL) += 1
+	;装備知識スキルが削除対象で装備知識スキル系をまったく所持していない場合は装備を解除する
+	CALL SKILL_EQUIPTHEORY_DEL_SKILL, L_CHARA, L_RESULT
+ELSEIF RESULT == 2 && GET_CHARA_LOYALTY(L_CHARA) >= 500
+	PRINTFORML %조사처리(CALLNAME:L_CHARA,"을")% 스킬카드화 합니다。괜찮겠습니까
+	CALL INPUT_YN
+	SIF RESULT == 1
+		GOTO INPUT_LOOP
+	CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, -1
+	PRINTFORMW %조사처리(CALLNAME:L_CHARA,"을")%、%RESULTS%의 스킬카드로 다시 태어나게 했다。
+	;手紙システム
+	CALL FUSION_LETTER,L_CHARA,2
+	CALL キャラ削除, L_CHARA
+	;主人の属性値変動
+	CALL INCREASE_LD,-5
+	CALL SYNC_STATUS,MASTER
+	ITEM:(10000+L_SKILL) += 1
+ELSEIF RESULT == 3 && TALENT:L_CHARA:임신 && TALENT:L_CHARA:붕괴 == 0
+	PRINTFORML %CALLNAME:L_CHARA%의 태내의 생명을 스킬카드화 합니다。괜찮겠습니까
+	CALL INPUT_YN
+	SIF RESULT == 1
+		GOTO INPUT_LOOP
+	CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL,-1
+	PRINTFORML %CALLNAME:L_CHARA%의 태내에 깃든 생명을 %RESULTS%의 스킬카드로 변환했다。
+	PRINTFORMW %조사처리(CALLNAME:L_CHARA,"은")% [임신]을 잃고、다시 임신할 수 있는 신체가 되었다。
+	ITEM:(10000+L_SKILL) += 1
+;	LOCAL:3 = TARGET
+;	TARGET = LOCAL:2
+	TALENT:L_CHARA:153 = 0
+	CFLAG:L_CHARA:발정임신 = 0
+	;ふたごちゃんパッチ：妊娠人数のリセット
+	CFLAG:L_CHARA:이번수태인수 = 0
+	
+	;妊娠イベントで減った体力の最大値が回復（少なめ）
+	;MAXBASE:L_CHARA:0 += 300
+	;胸の縮小処理を実行
+	PRINTW 또한、가슴 크기도 작아진 것 같다
+;	C = L_CHARA
+	CALL REVERSE_B_SIZE(L_CHARA)
+	CALL CLEAR_PREGNANCY_FLAG(L_CHARA)
+		
+	;ストレス値の補正の決定
+	;ABL:従順をみる
+	LOCAL:8 = ABL:L_CHARA:순종 * 5
+
+	E = 100
+	;陥落素質を見る
+	SIF TALENT:L_CHARA:연모
+		E = 90
+	SIF TALENT:L_CHARA:3 && CFLAG:L_CHARA:111 == MASTER
+		E = 120
+	SIF TALENT:L_CHARA:4
+		E = 80
+	SIF TALENT:L_CHARA:5
+		E = 60
+	SIF TALENT:L_CHARA:친애
+		E = 85
+	SIF TALENT:L_CHARA:6 && CFLAG:L_CHARA:111 == MASTER
+		E = 135
+	SIF TALENT:L_CHARA:7
+		E = 60
+	SIF TALENT:L_CHARA:8
+		E = 40
+	SIF TALENT:L_CHARA:9
+		E = 0
+
+	F = (90- LOCAL:8)*E/10000
+
+	CFLAG:L_CHARA:10 += F
+	BASE:L_CHARA:0 = 10
+	RESULT = (L_CHARA)
+	IF CFLAG:L_CHARA:10 >= 100 && TALENT:L_CHARA:9 == 0 && (L_CHARA) != MASTER
+		IF 陥落(L_CHARA) > 0
+			IF (CFLAG:L_CHARA:스트레스치 -99) * 100 <= GET_CHARA_LOYALTY(L_CHARA)
+				PRINTFORMW %조사처리(CALLNAME:L_CHARA,"은")% 강한 스트레스를 느끼고 있는 것 같다……
+				PRINTFORMW %CALLNAME:L_CHARA%의 충성도가 {(CFLAG:L_CHARA:스트레스치 -99) * 100} 감소했다
+				CALL CONTROL_LOYALTY, L_CHARA, -(CFLAG:L_CHARA:스트레스치 -99) * 100
+				CFLAG:L_CHARA:스트레스치 = 99
+			ENDIF
+		ELSE
+			IF (CFLAG:L_CHARA:스트레스치 -99) * 500 <= GET_CHARA_LOYALTY(L_CHARA)
+				PRINTFORMW %조사처리(CALLNAME:L_CHARA,"은")% 강한 스트레스를 느끼고 있는 것 같다……
+				PRINTFORMW %CALLNAME:L_CHARA%의 충성도가 {(CFLAG:L_CHARA:스트레스치 -99) * 500} 감소했다
+				CALL CONTROL_LOYALTY, L_CHARA, -(CFLAG:L_CHARA:스트레스치 -99) * 500
+				CFLAG:L_CHARA:스트레스치 = 99
+			ENDIF
+		ENDIF
+	ENDIF
+	SIF CFLAG:L_CHARA:10 >= 100 && TALENT:L_CHARA:9 == 0
+		CALL COLLAPSE_MIND_ITEM, L_CHARA
+
+	PRINTFORMW %조사처리(NAME:((L_CHARA)),"는")% 체력을 격렬히 소모했다
+	;PRINTFORMW 少し休ませたほうがよさそうだ
+	;休憩フラグを立てる
+	;FLAG:0 = 1
+	;BEGIN TURNEND
+	CALL INCREASE_LD,-5
+	CALL SYNC_STATUS,MASTER
+	;装備知識スキルが削除対象で装備知識スキル系をまったく所持していない場合は装備を解除する
+	CALL SKILL_EQUIPTHEORY_DEL_SKILL, L_CHARA, L_RESULT
+ELSE
+	GOTO INPUT_LOOP_2
+ENDIF
+RESTART
+;---- EDIT 016 MOD END ---------------------------
+
+;---- EDIT 016 ADD START -------------------------
+;==========================================
+;スキルカード作成用のスキル一覧
+;==========================================
+@MAKE_SKILLCARD_LIST, L_CHARA, TRANS_MODE = "通常形態", CAN_NOT_MAKE_SKILLCARD
+#DIMS TRANS_MODE
+#DIM L_CHARA
+#DIM LCOUNT
+#DIM L_SKILL
+#DIM REF CAN_NOT_MAKE_SKILLCARD
+VARSET CAN_NOT_MAKE_SKILLCARD
+FOR LCOUNT, 0, CHARA_SKILLCOUNT(L_CHARA, TRANS_MODE)
+	IF TRANS_MODE == "変身形態"
+		L_SKILL = ABL:L_CHARA:@"초기변신악마스킬{LCOUNT + 1}"
+	ELSE
+		L_SKILL = ABL:L_CHARA:@"스킬{LCOUNT + 1}"
+	ENDIF
+	IF L_SKILL == 0
+		CAN_NOT_MAKE_SKILLCARD:LCOUNT = 3
+		CONTINUE
+	ENDIF
+	IF TRANS_MODE == "変身形態"
+		;スキルロック設定がかかっているスキルを除く
+		SIF GETBIT(CFLAG:L_CHARA:악마변신스킬잠금설정, LCOUNT + 1)
+			CAN_NOT_MAKE_SKILLCARD:LCOUNT = 1
+	ELSE
+		;スキルロック設定がかかっているスキルを除く
+		SIF GETBIT(CFLAG:L_CHARA:스킬잠금설정, LCOUNT + 1)
+			CAN_NOT_MAKE_SKILLCARD:LCOUNT = 1
+	ENDIF
+	;カード化できるスキルかどうかチェック
+	CALL IS_MAKEABLE_SKILLCARD, L_SKILL
+	SIF !RESULT
+		CAN_NOT_MAKE_SKILLCARD:LCOUNT = 2
+
+	;-------------------------------------
+	;表示の開始
+	;-------------------------------------
+	SIF CAN_NOT_MAKE_SKILLCARD:LCOUNT == 1
+		SETCOLOR COLOR("yellow")
+	SIF CAN_NOT_MAKE_SKILLCARD:LCOUNT == 2
+		SETCOLOR COLOR("gray")
+	CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, L_CHARA
+	PRINTFORM [{LCOUNT + 1, 2}] %RESULTS, SKILLNAMELENS, LEFT%　
+	IF CAN_NOT_MAKE_SKILLCARD:LCOUNT == 2
+		PRINT 카드화불능　　
+	ELSEIF CAN_NOT_MAKE_SKILLCARD:LCOUNT == 1
+		PRINT ROCKED　　　　　
+	ELSE
+		PRINT 　　　　　　　　
+	ENDIF
+	PRINTFORM 소지매수:{ITEM:(10000 + L_SKILL) ,3}　　
+	IF IS_LEARNED_SKILL(L_CHARA, TOSTR(L_SKILL), TRANS_MODE)
+		CALL PRINT_COLOR, "재습득가능　　", COLOR("p-green")
+	ELSE
+		PRINT 　　　　　　　
+	ENDIF
+	SIF ABLE_MAKESKILLCARD(L_SKILL)
+		CALL PRINT_COLOR, "복제가능　　　", COLOR("p-red")
+	PRINTL 
+	RESETCOLOR
+NEXT
+;---- EDIT 017 MOD START -------------------------
+;==========================================
+;スキルカード作成必要性忠誠度
+;==========================================
+@GET_LOYALTY_FOR_MAKE_SKILLCARD, ARG, ARGS = "必要", ARG:1
+#FUNCTION
+IF ARGS == "消費"
+	RETURNF (2 + CFLAG:ARG:스킬추출횟수 + ARG:1) * 250
+ELSE
+	RETURNF (4 + CFLAG:ARG:스킬추출횟수 + ARG:1) * 250
+ENDIF
+;---- EDIT 016 ADD END ---------------------------
+;---- EDIT 017 MOD END ---------------------------
+;---- EDIT 017 ADD START -------------------------
+;==========================================
+;スキルカード作成必要性忠誠度
+;==========================================
+@COUNT_ABLE_MAKE_SKILLCARD, ARG
+#FUNCTION
+#DIM L_LOYALTY
+#DIM L_CNT
+L_CNT = 0
+L_LOYALTY = GET_CHARA_LOYALTY(ARG)
+WHILE L_LOYALTY >= GET_LOYALTY_FOR_MAKE_SKILLCARD(ARG, "必要", L_CNT)
+	L_LOYALTY -= GET_LOYALTY_FOR_MAKE_SKILLCARD(ARG, "消費", L_CNT)
+	L_CNT++
+	;100枚でとりあえず打ち切る
+	SIF L_CNT == 100
+		RETURNF 100
+WEND
+RETURNF L_CNT
+;---- EDIT 017 ADD END ---------------------------
+
+
+;==========================================
+;スキルカード一覧用 スキルカード在庫確認
+;==========================================
+@スキルカード在庫確認, ARG = -1, ARG:1 = -1, ARG:2, IS_TRANS
+#DIM IS_TRANS
+#DIMS TRANS_MODE
+#DIM LCOUNT
+#DIMS TEMPS
+#DIM L_SKILL
+#DIM L_SKILLCOUNT
+#DIM HAVE_SKILL, 21
+#DIM L_SKILL_SUCCESSION
+;계승타입=ARGのスキルカードの所持を調べ、所持していたらS:に代入
+;ARG が指定されていない場合、各継承タイプの所持種類数をZ:に代入して返す
+;ARG:1 が指定されている場合、ARG:1の習得できるスキルのみを調べる
+;ARG:2 が真の場合スキルカードが作成出来る場合も判定を通す
+;なお、継承不能スキルは継承タイプ23として扱う
+SIF ARG:1 >= CHARANUM
+	ARG:1 = -1
+TRANS_MODE = \@IS_TRANS ? 変身形態 # 通常形態\@
+;---- EDIT 006 ADD START -------------------------
+;処理の簡易化のために所持スキルをリスト化しておく
+IF ARG:1 >= 0
+	VARSET HAVE_SKILL
+	IF CSTR:(ARG:1):롤 != "" && GET_ROLE_PROP("CAN_USE_TRANS", ARG:1)
+		TEMPS = \@IS_TRANS ? 초기변신악마스킬 # 인간시스킬\@
+	ELSE
+		TEMPS = 스킬
+	ENDIF
+	IF CSTR:(ARG:1):롤 == ""
+		L_SKILLCOUNT = 8
+	ELSE
+		L_SKILLCOUNT = GET_ROLE_PROP("CHANGEABLE_SKILLCOUNT", ARG:1, , TRANS_MODE)
+	ENDIF
+	FOR LCOUNT, 1, L_SKILLCOUNT + 1
+		HAVE_SKILL:LCOUNT = ABL:(ARG:1):@"%TEMPS%{LCOUNT}"
+	NEXT
+ENDIF
+;---- EDIT 006 ADD END ---------------------------
+VARSET HAVE_SKILLCARD_LIST,-1
+VARSET Z,0
+LOCAL:1 = 0
+LOCAL:2 = 0
+
+;EDIT 002 MOD START -----------------------------------
+;Sに選択した系統のスキルを代入
+;FOR LOCAL, 1 ,4000
+FOR LOCAL, 1, SKILLNUM
+	CALL SKIP_スキルカード化不能領域, LOCAL
+;EDIT 002 MOD END -------------------------------------
+	;所持していないカードをまず弾く
+	;ただしARG:2が真の場合はカード作成可能な場合も通す
+	IF ARG:2
+		SIF (ITEM:(10000+LOCAL) < 1) && !ABLE_MAKESKILLCARD(LOCAL)
+			CONTINUE
+	ELSE
+		SIF (ITEM:(10000+LOCAL) < 1)
+			CONTINUE
+	ENDIF
+	
+;---- EDIT 006 ADD START -------------------------
+	;スキル所持による判定
+	IF ARG:1 >= 0
+		SIF MATCH(HAVE_SKILL, LOCAL)
+			CONTINUE
+	ENDIF
+;---- EDIT 006 ADD END ---------------------------
+;---- EDIT 006 DEL START -------------------------
+	;スキル所持による判定
+	;デビルシフター変身後用処理
+	;IF ARG:1 > -1 && HAVE_SKILL_C(ARG:1 , LOCAL)
+	;	TRYCCALLFORM 重複習得数_{LOCAL}
+	;		SIF HAVE_SKILL_OVERLAP(ARG:1,LOCAL,どっちの強化？) + 1 > RESULT
+	;			CONTINUE
+	;	CATCH
+	;		CONTINUE
+	;	ENDCATCH
+	;ARG:1>=0なら、ARG:1のキャラが持ってて重複習得上限に達したスキルは弾く
+	;ELSEIF ARG:1 > -1 && HAVE_SKILL(ARG:1 , LOCAL)
+	;	TRYCCALLFORM 重複習得数_{LOCAL}
+	;		SIF HAVE_SKILL_OVERLAP(ARG:1,LOCAL) + 1 > RESULT
+	;			CONTINUE
+	;	CATCH
+	;		CONTINUE
+	;	ENDCATCH
+	;ENDIF
+	;---- EDIT 006 DEL END ---------------------------
+	;---- EDIT 008 MOD START -------------------------
+	;----------------------------------------------
+	;継承タイプによる判定
+	;----------------------------------------------
+	;継承タイプの取得及び使用可能状況の判定
+	CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", LOCAL, ARG:1
+	L_SKILL_SUCCESSION = RESULT
+	;スキルカード使用可能ランクによる判定
+	;1 = 自動効果のみ	2 = 자동효과 + 継承素質を持つもの
+	IF ARG:1 >= 0 && CSTR:(ARG:1):롤 != ""
+		SELECTCASE GET_SKILL_CHANGEABLE_RANK(ARG:1, TRANS_MODE)
+			CASE 2
+				SIF !相性素質チェック_F(ARG:1, L_SKILL_SUCCESSION, TRANS_MODE) && L_SKILL_SUCCESSION != 22
+					CONTINUE
+			CASE 1
+				SIF L_SKILL_SUCCESSION != 22
+					CONTINUE
+		ENDSELECT
+	ENDIF
+	IF ARG:1 >= 0 && CSTR:(ARG:1):롤 != ""
+		CALL GET_SKILL_PROP, "ロール専用", LOCAL, ARG:1
+		IF RESULT
+			SIF !STRCOUNT(GETS_ROLE_PROP("CAN_USE_SPECIAL_SKILL", ARG:1, TRANS_MODE), RESULTS)
+				CONTINUE
+		ENDIF
+	ENDIF
+	;---- EDIT 008 MOD END ---------------------------
+	RESULT = 0
+	;継承不能スキルかチェックし、不能なら23番の扱いにする
+	CALL GET_SKILL_PROP, "継承不能", LOCAL, ARG:1
+	SIF RESULT
+		L_SKILL_SUCCESSION = 23
+	;継承タイプが指定されている場合は離脱判定
+	SIF L_SKILL_SUCCESSION != ARG && ARG > -1
+		CONTINUE
+
+	;ランクが範囲外なら外す
+	CALL GET_SKILL_PROP, "SKILL_RANK", LOCAL, ARG:1
+	SIF RESULT <= 0 || RESULT > 15
+		CONTINUE
+	HAVE_SKILLCARD_LIST:(LOCAL:1) = LOCAL
+	LOCAL:1 += 1
+	Z:(L_SKILL_SUCCESSION) += 1
+NEXT
+RETURN LOCAL:1
+
+;==========================================
+;特殊スキルチェック
+;ARG	スキル番号
+;ARG:1	スキル番号も含むか　0含まない　1含む
+;==========================================
+@SP_SKILL_CHECK, ARG, ARG:1 = 0
+;スキル番号が汎用か
+SIF 2500 <= ARG && ARG:1 > 0
+	RETURN 1
+
+;継承タイプによる判定
+RESULT = 0
+;まず継承不能スキルかチェック
+CALL GET_SKILL_PROP, "継承不能", ARG, -1
+SIF RESULT
+	RETURN 1
+CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", ARG, -1
+SIF RESULT > 22&& RESULT < 0
+	RETURN 1
+
+;ランクによる判定
+CALL GET_SKILL_PROP, "SKILL_RANK", ARG, -1
+SIF RESULT <= 0 || RESULT > 15
+	RETURN 1
+RETURN 0
+
+;==========================================
+;스킬잠금설정
+;ARG	キャラ番号
+;ARG:1	悪魔変身時かそうじゃないか　0人間時　1悪魔変身
+;==========================================
+@SKILL_ROCK_SETTING, ARG,ARG:1 = 0
+#DIM LINE
+#DIM SKILL_C
+#DIMS LOCKS
+#DIM L_SKILL
+IF ARG:1 == 1
+	LOCKS = 악마변신스킬잠금설정
+ELSE
+	LOCKS = 스킬잠금설정
+ENDIF
+PRINTFORML □%CALLNAME:ARG%의 스킬 락 설정：
+	PRINTL 　※잠금 설정하면 스킬을 삭제하기 어려워집니다
+SKILL_C = CHARA_SKILLCOUNT(ARG, \@ARG:1 ? 変身形態 # 通常形態\@)
+;SIF ARG:1 == 1
+;	SKILL_C = 8
+LINE = LINECOUNT
+$PRINT_LIST
+CLEARLINE LINECOUNT - LINE
+IF ARG:1 == 1
+	IF CFLAG:ARG:악마변신
+		LOCALS = 스킬
+	ELSE
+		LOCALS = 초기변신악마스킬
+	ENDIF
+ELSE
+	IF CFLAG:ARG:악마변신
+		LOCALS = 인간시스킬
+	ELSE
+		LOCALS = 스킬
+	ENDIF
+ENDIF
+
+FOR LOCAL,1,SKILL_C + 1
+	L_SKILL = ABL:ARG:@"%LOCALS%{LOCAL}"
+	SIF L_SKILL < 1
+		CONTINUE
+	SIF GETBIT(CFLAG:ARG:LOCKS,LOCAL)
+		SETCOLOR COLOR("黄色")
+	PRINTFORM 　[{LOCAL,2}]
+	IF GETBIT(CFLAG:ARG:LOCKS,LOCAL)
+		PRINT LOCK　
+	ELSE
+		PRINT 　　　
+	ENDIF
+	CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL,ARG
+	PRINTFORML %RESULTS%
+	RESETCOLOR
+NEXT
+DRAWLINE
+PRINTL [0]돌아간다 [99]자동 잠금
+INPUT
+IF RESULT == 0
+	CLEARLINE LINECOUNT - LINE + 2
+	RETURN 0
+ENDIF
+SIF RESULT == 99
+	CALL AUTO_SKILL_ROCK,ARG,ARG:1
+;LOCALS = 스킬{RESULT}
+SIF RESULT > 0 && RESULT <= SKILL_C && ABL:ARG:@"%LOCALS%{RESULT}" > 0
+	INVERTBIT CFLAG:ARG:LOCKS,RESULT
+GOTO PRINT_LIST
+
+;==========================================
+;スキルロック自動設定
+;ARG	キャラ番号
+;ARG:1	悪魔変身時かそうじゃないか　0人間時　1悪魔変身
+;==========================================
+@AUTO_SKILL_ROCK, ARG,ARG:1 = 0
+#DIM SKILL_C
+#DIMS LOCKS
+IF ARG:1 == 1
+	LOCKS = 악마변신스킬잠금설정
+ELSE
+	LOCKS = 스킬잠금설정
+ENDIF
+
+SKILL_C = CHARA_SKILLCOUNT(ARG, \@ARG:1 ? 通常形態 # 変身形態\@)
+SIF ARG:1 == 1
+	SKILL_C = 8
+	
+CFLAG:ARG:LOCKS = 0
+FOR LOCAL,1,SKILL_C + 1
+	IF ARG:1 == 1
+		LOCALS = 초기변신악마스킬{LOCAL}
+	ELSE
+		LOCALS = 스킬{LOCAL}
+	ENDIF
+	SIF ABL:ARG:LOCALS < 1
+		CONTINUE
+	CALL SP_SKILL_CHECK,ABL:ARG:LOCALS
+	SIF RESULT > 0
+		SETBIT CFLAG:ARG:LOCKS,LOCAL
+NEXT
+
+;スキルセット関数
+@SET_SKILL, ARG, ARGS, ARG:1 = -1
+CALLFORMF SET_SKILL_F, ARG, ARGS, ARG:1
+
+;---- EDIT 023 MOD START -------------------------
+;---- EDIT 084 ADD START -------------------------
+;---- EDIT 023 MOD END ---------------------------
+;---- EDIT 026 ADD START -------------------------
+;==========================================
+;所持スキル関数
+;味方の所持スキルにスキルをセットする関数
+;
+;ARG		セットするキャラの登録番号
+;ARG:1		セットするスキルのスキル番号
+;ARGS		通常形態/変身形態
+;ARG:2		スキルの枠番号。省略した場合は空き番号を使う
+;==========================================
+@SET_FRIEND_HAVE_SKILL, ARG, ARG:1, ARGS = "通常形態", ARG:2 = -1
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC L_SKILLS, 2
+#DIM DYNAMIC DEL_SKILL
+#DIM DYNAMIC SET_SKILL_NUM
+CALL FIX_CHARA_TRANS_SKILL, ARG
+IF GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+	IF CFLAG:ARG:악마변신
+		IF ARGS == "変身形態"
+			;---- EDIT 011 MOD START -------------------------
+			IF CFLAG:ARG:링크캐릭터실제가입시간0 <= 0
+				L_SKILLS '= "스킬", "초기변신악마스킬"
+			ELSE
+				L_SKILLS '= "초기변신악마스킬"
+			ENDIF
+			;---- EDIT 011 MOD END ---------------------------
+		ELSE
+			L_SKILLS '= "인간시스킬"
+		ENDIF
+	ELSE
+		IF ARGS == "変身形態"
+			L_SKILLS '= "초기변신악마스킬"
+		ELSE
+			L_SKILLS '= "스킬", "인간시스킬"
+		ENDIF
+	ENDIF
+ELSE
+	L_SKILLS '= "스킬"
+ENDIF
+
+IF ARG:2 >= 0
+	SET_SKILL_NUM = ARG:2
+ELSE
+	FOR LCOUNT, 1, 1 + CHARA_SKILLCOUNT(ARG, ARGS)
+		SIF ABL:ARG:@"%L_SKILLS%{LCOUNT}"
+			CONTINUE
+		SET_SKILL_NUM = LCOUNT
+		BREAK
+	NEXT
+ENDIF
+;専用スキルの場合CSTRからも削除する
+DEL_SKILL = ABL:ARG:@"%L_SKILLS%{SET_SKILL_NUM}"
+SIF IS_PU_SKILLNUM(DEL_SKILL)
+	CSTR:ARG:@"전용기{(DEL_SKILL - [[스킬:전용기1]] + 1)}" '= ""
+ABL:ARG:@"%L_SKILLS%{SET_SKILL_NUM}" = ARG:1
+SIF L_SKILLS:1 != ""
+	ABL:ARG:@"%L_SKILLS:1%{SET_SKILL_NUM}" = ARG:1
+CALL SKILLGAGE_DIRECT_CLEAR, ARG, SET_SKILL_NUM + (ARGS == "変身形態") * 12
+
+;---- EDIT 014 ADD START -------------------------
+;==========================================
+;所持スキル削除関数
+;味方の所持スキルにスキルをセットする関数
+;
+;ARG		セットするキャラの登録番号
+;ARG:1		スキルの枠番号。省力した場合は空き番号を使う
+;ARGS		通常形態/変身形態
+;ARG:2		削除するスキルのスキル番号
+;==========================================
+@DEL_FRIEND_HAVE_SKILL, L_CHARA, L_SKILL, TRANS_MODE = "通常形態", L_SKILL_HAVENUM, IS_DEL_LEARN
+#DIM LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_SKILL
+#DIM DYNAMIC L_SKILL_HAVENUM
+#DIM DYNAMIC IS_DEL_LEARN
+#DIMS DYNAMIC TRANS_MODE
+#DIMS DYNAMIC L_SKILLS, 3
+IF GET_ROLE_PROP("CAN_USE_TRANS", L_CHARA)
+	IF TRANS_MODE == "変身形態"
+		L_SKILLS '= "초기변신악마스킬", "초기변신악마습득스킬", "초기변신악마습득LV"
+	ELSE
+		L_SKILLS '= "인간시스킬", "습득스킬", "습득LV"
+	ENDIF
+ELSE
+	L_SKILLS '= "스킬", "습득스킬", "습득LV"
+ENDIF
+IF L_SKILL > 0
+	IF IS_DEL_LEARN
+		FOR LCOUNT, 1, HAVEABLE_SKILLNUM + 1
+			SIF ABL:L_CHARA:@"%L_SKILLS:1%{LCOUNT}" != L_SKILL
+				CONTINUE
+			ABL:L_CHARA:@"%L_SKILLS:1%{LCOUNT}" = 0
+			ABL:L_CHARA:@"%L_SKILLS:2%{LCOUNT}" = 0
+		NEXT
+	ENDIF
+	L_SKILL_HAVENUM = 0
+	FOR LCOUNT, 1, HAVEABLE_SKILLNUM + 1
+		SIF ABL:L_CHARA:@"%L_SKILLS%{LCOUNT}" != L_SKILL
+			CONTINUE
+		L_SKILL_HAVENUM = LCOUNT
+		BREAK
+	NEXT
+	SIF L_SKILL_HAVENUM == 0
+		RETURN 0
+ELSE
+	L_SKILL = ABL:L_CHARA:@"%L_SKILLS%{L_SKILL_HAVENUM}"
+ENDIF
+;専用スキルは一緒にCSTRも消しておく
+SIF IS_PU_SKILLNUM(ABL:L_CHARA:@"%L_SKILLS%{L_SKILL_HAVENUM}")
+	CSTR:L_CHARA:@"전용기{ABL:L_CHARA:@"%L_SKILLS%{L_SKILL_HAVENUM}" - [[스킬:전용기1]] + 1}" = 
+ABL:L_CHARA:@"%L_SKILLS%{L_SKILL_HAVENUM}" = 0
+IF (L_SKILLS == "인간시스킬" && !CFLAG:L_CHARA:악마변신) || (L_SKILLS == "초기변신악마스킬" && CFLAG:L_CHARA:악마변신)
+	FOR LCOUNT, 1, HAVEABLE_SKILLNUM + 1
+		SIF ABL:L_CHARA:@"스킬{LCOUNT}" != L_SKILL
+			CONTINUE
+		ABL:L_CHARA:@"스킬{LCOUNT}" = 0
+		BREAK
+	NEXT
+ENDIF
+IF TRANS_MODE == "変身形態"
+	SIF CFLAG:L_CHARA:링크캐릭터실제가입시간0 <= 0
+		CALL SKILLGAGE_DIRECT_CLEAR, L_CHARA, L_SKILL_HAVENUM + 12
+ELSE
+	CALL SKILLGAGE_DIRECT_CLEAR, L_CHARA, L_SKILL_HAVENUM
+ENDIF
+;---- EDIT 014 ADD END ---------------------------
+
+;----------------------------
+;スキルに変更があった場合に初期変身悪魔と人間時のスキルを所持スキルに反映させる
+;変身出来るキャラは直接スキルを操作しないでこれをつかってあわせないとおかしくなることがある
+;----------------------------
+@FIX_CHARA_TRANS_SKILL, ARG, ARGS
+#DIM LCOUNT
+#DIM STOCK_TRANS
+IF GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+	IF CFLAG:ARG:악마변신
+		IF CFLAG:ARG:링크캐릭터실제가입시간0 <= 0
+			FOR LCOUNT, 1, 1 + CHARA_SKILLCOUNT(ARG, ARGS)
+				ABL:ARG:@"초기변신악마스킬{LCOUNT}" = ABL:ARG:@"스킬{LCOUNT}"
+			NEXT
+		ENDIF
+	ELSE
+		FOR LCOUNT, 1, 1 + CHARA_SKILLCOUNT(ARG, ARGS)
+			ABL:ARG:@"인간시스킬{LCOUNT}" = ABL:ARG:@"스킬{LCOUNT}"
+		NEXT
+	ENDIF
+ENDIF
+;---- EDIT 026 ADD END ---------------------------
+;---- EDIT 023 MOD START -------------------------
+;---------------------------------------
+;スキル消去関数
+;
+;ARG		セットする対象のキャラ登録番号
+;ARGS		通常形態/変身形態の指定　デフォルトでは両方消す
+;---------------------------------------
+@CLEAR_ALL_SKILL, ARG, ARGS = "両形態"
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_SKILL
+CALL CLEAR_LEARNED_SKILL_ALL, ARG, ARGS
+FOR LCOUNT, 1, HAVEABLE_SKILLNUM + 1
+	IF ARGS == "両形態" || ARGS == "通常形態"
+		L_SKILL = ABL:ARG:@"스킬{LCOUNT}"
+		SIF IS_PU_SKILLNUM(L_SKILL)
+			CSTR:ARG:@"전용기{L_SKILL - [[스킬:전용기1]] + 1}" '= ""
+		ABL:ARG:@"스킬{LCOUNT}" = 0
+	ENDIF
+	IF ARGS == "両形態" || ARGS == "変身形態"
+		L_SKILL = ABL:ARG:@"초기변신악마스킬{LCOUNT}"
+		SIF IS_PU_SKILLNUM(L_SKILL)
+			CSTR:ARG:@"전용기{L_SKILL - [[스킬:전용기1]] + 1}" '= ""
+		ABL:ARG:@"초기변신악마스킬{LCOUNT}" = 0
+	ENDIF
+NEXT
+;---- EDIT 023 MOD END ---------------------------
+
+;---------------------------------------
+;習得スキル消去関数
+;
+;ARG		セットする対象のキャラ登録番号
+;ARGS		通常形態/変身形態の指定　デフォルトでは両方消す
+;---------------------------------------
+@CLEAR_ALL_LEARN_SKILL, ARG, ARGS = "両形態"
+#DIM LCOUNT
+#DIM  DYNAMIC L_SKILL
+FOR LCOUNT, 1, HAVEABLE_SKILLNUM + 1
+	IF ARGS == "両形態" || ARGS == "通常形態"
+		L_SKILL = ABL:ARG:@"습득스킬{LCOUNT}"
+		SIF IS_PU_SKILLNUM(L_SKILL) && !HAVE_SKILL(ARG, L_SKILL)
+			CSTR:ARG:@"전용기{L_SKILL - [[스킬:전용기1]] + 1}" '= ""
+		ABL:ARG:@"습득스킬{LCOUNT}" = 0
+		ABL:ARG:@"습득LV{LCOUNT}" = 0	
+	ENDIF
+	IF ARGS == "両形態" || ARGS == "変身形態"
+		L_SKILL = ABL:ARG:@"초기변신악마습득스킬{LCOUNT}"
+		SIF IS_PU_SKILLNUM(L_SKILL) && !HAVE_SKILL(ARG, L_SKILL)
+			CSTR:ARG:@"전용기{L_SKILL - [[스킬:전용기1]] + 1}" '= ""
+		ABL:ARG:@"초기변신악마습득스킬{LCOUNT}" = 0
+		ABL:ARG:@"초기변신악마습득LV{LCOUNT}" = 0	
+	ENDIF
+NEXT
+
+;---------------------------------------
+;自力習得スキルの確認関数
+;ARG		セットする対象のキャラ登録番号
+;ARGS		セットするスキルの名称。"1"でヤマオロシのように数字指定も一応可能
+;			専用スキル/XXXXで専用スキルの指定
+;ARGS:1		通常形態/変身形態の指定
+;---------------------------------------
+@IS_LEARNED_SKILL, ARG, ARGS, ARGS:1
+#FUNCTION
+#DIM L_NUM
+#DIM L_SKILL
+#DIMS L_SKILLS
+SIF ARGS == ""
+	RETURNF 0
+IF ARGS:1 == ""
+	L_NUM = CFLAG:ARG:악마변신 ? 1 # 0
+ELSE
+	L_NUM = ARGS:1 == "通常形態" ? 0 # 1
+ENDIF
+;スキルを名称指定しているかを確認
+L_SKILL = SKILL_NUM_F(ARGS)
+;番号が帰ってきてるなら名称指定
+IF L_SKILL >= 0
+	L_SKILLS = %TOSTR(L_SKILL)%
+;帰ってきてないなら番号指定or専用スキルの名称指定で、どちらもそのままで良い
+ELSE
+	;---- EDIT 020 MOD START -------------------------
+	IF ISNUMERIC(ARGS)
+		L_SKILL = TOINT(ARGS)
+		;専用スキルかどうかを確認
+		IF IS_PU_SKILLNUM(L_SKILL)
+			L_SKILLS = %CSTR:ARG:@"전용기{(L_SKILL - [[스킬:전용기1]] + 1)}"%
+		ELSE
+			L_SKILLS = %ARGS%
+		ENDIF
+	ELSE
+		L_SKILLS = %ARGS%
+	ENDIF
+	;---- EDIT 020 MOD END ---------------------------
+ENDIF
+RETURNF COUNT_SPLIT(C_LEARNED_SKILLS:ARG:L_NUM, "/", L_SKILLS)
+
+;---------------------------------------
+;自力習得スキルの履歴獲得関数
+;ARG		セットする対象のキャラ登録番号
+;ARGS		セットするスキルの名称。"1"でヤマオロシのように数字指定も一応可能
+;ARGS:1		通常形態/変身形態の指定
+;---------------------------------------
+@SET_LEARNED_SKILL, ARG, ARGS, ARGS:1
+#DIM L_NUM
+#DIM L_SKILL
+#DIMS L_SKILLS
+SIF ARGS == ""
+	RETURN 0
+IF ARGS:1 == ""
+	L_NUM = CFLAG:ARG:악마변신 ? 1 # 0
+ELSE
+	L_NUM = ARGS:1 == "通常形態" ? 0 # 1
+ENDIF
+IF ISNUMERIC(ARGS)
+	L_SKILLS = %GET_SKILL_TO_STRFLAG(ARGS, ARG)%
+ELSE
+	L_SKILLS = %ARGS%
+ENDIF
+SIF COUNT_SPLIT(C_LEARNED_SKILLS:ARG:L_NUM, "/", L_SKILLS)
+	RETURN 0
+C_LEARNED_SKILLS:ARG:L_NUM = %ADD_SPLIT(C_LEARNED_SKILLS:ARG:L_NUM, "/", L_SKILLS)%
+RETURN 1
+
+;---- EDIT 009 ADD START -------------------------
+;---------------------------------------
+;スキルのSTRFLAG登録用の名称取得関数
+;ARG		キャラ登録番号(専用技の判定に必要になる場合がある)
+;ARGS		セットするスキルの名称。"1"でヤマオロシのように数字指定も一応可能
+;			専用スキル/XXXXで専用スキルの指定
+;---------------------------------------
+@GET_SKILL_TO_STRFLAG, ARGS, ARG = -1
+#FUNCTIONS
+#DIM L_SKILL
+#DIMS L_SKILLS
+SIF ARGS == ""
+	RETURNF ""
+;専用スキルとして登録されているものが来てるならそのまま流す
+IF ARG >= 0 && PU_SKILLNUM_GET(ARG, ARGS) >= 0
+	L_SKILLS = %ARGS%
+ELSE
+	;名称指定かどうかを確認
+	L_SKILL = SKILL_NUM_F(ARGS)
+	;番号指定かどうかを確認
+	L_SKILL = L_SKILL == -1 ? TOINT(ARGS) # L_SKILL
+	;TOINTで0になってしまったのなら名称が不正
+	SIF !L_SKILL
+		RETURNF ""
+	;専用スキルの番号が送られてきているのなら、専用技の名称を確保する
+	IF IS_PU_SKILLNUM(L_SKILL) > 0
+		;キャラ指定なしなら終わる
+		IF ARG < 0
+			RETURNF ""
+		ELSE
+			L_SKILLS = %CSTR:ARG:@"전용기{(L_SKILL - [[스킬:전용기1]] + 1)}"%
+			SIF L_SKILLS == ""
+				RETURNF ""
+		ENDIF
+	ELSE
+		L_SKILLS = %TOSTR(L_SKILL)%
+	ENDIF
+ENDIF
+RETURNF L_SKILLS
+
+;---- EDIT 021 ADD START -------------------------
+;---------------------------------------
+;再習得リストから特定のスキルを抜く関数
+;ARG		キャラクター登録番号
+;ARGS		スキルの番号 / 명칭。指定方式はGET_SKILL_TO_STRFLAG参照
+;ARGS:1		形態の指定	
+;---------------------------------------
+@CLEAR_LEARNED_SKILL, ARG, ARGS, ARGS:1 = "両形態"
+#DIM LCOUNT
+#DIMS L_SKILLS
+FOR LCOUNT, 0, 2
+	SIF LCOUNT == 0 && !(ARGS:1 == "両形態" || ARGS:1 == "通常形態")
+		CONTINUE
+	SIF LCOUNT == 1 && !(ARGS:1 == "両形態" || ARGS:1 == "変身形態")
+		CONTINUE
+	C_LEARNED_SKILLS:ARG:LCOUNT '= "/" + C_LEARNED_SKILLS:ARG:LCOUNT + "/"
+	C_LEARNED_SKILLS:ARG:LCOUNT '= REPLACE(C_LEARNED_SKILLS:ARG:LCOUNT, "/" + GET_SKILL_TO_STRFLAG(ARGS, ARG) + "/", "/")
+	C_LEARNED_SKILLS:ARG:LCOUNT '= SUBSTRING(C_LEARNED_SKILLS:ARG:LCOUNT, 1, STRLENS(C_LEARNED_SKILLS:ARG:LCOUNT) - 2)
+NEXT
+;---- EDIT 021 ADD END ---------------------------
+;---- EDIT 009 ADD END ---------------------------
+;---------------------------------------
+;再習得リストからすべてのスキルを抜く関数
+;ARG		キャラクター登録番号
+;ARGS:1		形態の指定	
+;---------------------------------------
+@CLEAR_LEARNED_SKILL_ALL, ARG, ARGS = "両形態"
+SIF ARGS == "両形態" || ARGS == "通常形態"
+	C_LEARNED_SKILLS:ARG:0 = 
+SIF ARGS == "両形態" || ARGS == "変身形態"
+	C_LEARNED_SKILLS:ARG:1 = 
+
+;---- EDIT 018 ADD START -------------------------
+;---------------------------------------
+;指定したスキルの所持可能かの判定関数
+;SKILLNUM	スキルの番号
+;L_CHARA	キャラクター登録番号。省略した場合はキャラが関わる要素があるスキルは自動的に所持不能と判定
+;L_OPT		レベル習得時:レベルアップで習得する / 初期スキル等で一部の条件を無視できる場合
+;---------------------------------------
+@IS_SKILL_HAVEABLE, L_SKILLNUM, L_CHARA = -1, TRANS_MODE = "通常形態", L_OPT
+#DIM L_SKILLNUM
+#DIM L_CHARA
+#DIMS L_ROLE
+#DIMS L_OPT
+#DIMS TRANS_MODE
+#DIM L_SKILL_SUCCESSION
+;0は常にスキル枠に入れられる
+SIF L_SKILLNUM == 0
+	RETURN 1
+;敵は味方専用であるかどうか確認する
+IF L_CHARA >= 0 && !CFLAG:L_CHARA:PT플래그
+	CALL GET_SKILL_PROP, "味方専用", L_SKILLNUM, L_CHARA
+	IF RESULT
+		SIF L_CHARA < 0
+			RETURN 0
+	ENDIF
+ELSE
+	CALL GET_SKILL_PROP, "敵専用", L_SKILLNUM, L_CHARA
+	SIF RESULT || L_CHARA < 0
+		RETURN 0
+	CALL GET_SKILL_PROP, "ロール専用", L_SKILLNUM, L_CHARA
+	IF RESULT
+		IF L_ROLE == ""
+			IF L_CHARA < 0
+				RETURN 0
+			ELSE
+				SIF !STRCOUNT(GETS_ROLE_PROP("CAN_USE_SPECIAL_SKILL", L_CHARA, ,TRANS_MODE), RESULTS)
+					RETURN 0
+			ENDIF
+		ELSE
+			SIF !STRCOUNT(GETS_ROLE_PROP("CAN_USE_SPECIAL_SKILL", , L_ROLE, TRANS_MODE), RESULTS)
+				RETURN 0
+		ENDIF
+	ENDIF
+	;キャラの習得能力によるチェック
+	IF L_CHARA >= 0
+		;自力で覚えたスキルは習得可能スキルとして扱う
+		IF !IS_LEARNED_SKILL(L_CHARA, TOSTR(L_SKILLNUM), TRANS_MODE)
+			IF !STRCOUNT(L_OPT, "レベル習得時")
+				;継承タイプの取得及び使用可能状況の判定
+				CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", L_SKILLNUM, L_CHARA
+				L_SKILL_SUCCESSION = RESULT
+				;1 = 自動効果のみ	2 = 자동효과 + 継承素質を持つもの
+				SELECTCASE GET_SKILL_CHANGEABLE_RANK(L_CHARA, TRANS_MODE)
+					CASE 3
+					CASE 2
+						SIF L_SKILL_SUCCESSION != 22 && !相性素質チェック_F(L_CHARA, L_SKILL_SUCCESSION, TRANS_MODE)
+							RETURN 0
+					CASE 1
+						SIF L_SKILL_SUCCESSION != 22
+							RETURN 0
+					;取得不能
+					CASE 0
+						RETURN 0
+				ENDSELECT
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+RETURN 1
+;---- EDIT 018 ADD END ---------------------------
+
+;---------------------------------------
+;習得スキルセット関数
+;所持スキルと習得予定のスキルである場合はセットしない
+;セットに使う番号は開いている番号を探して詰める
+;
+;ARG		セットする対象のキャラ登録番号
+;ARGS		セットするスキルの名称。"1"でヤマオロシのように数字指定も一応可能
+;			専用スキル/XXXXで専用スキルの指定
+;ARG:1		習得レベルの指定
+;ARGS:1		通常形態/変身形態の指定
+;ARGS:2		スキルを習得した場合、メッセージ表示でメッセージ表示 / 入れ替え確認　その場で入れ替えを確認させる場合
+;---------------------------------------
+@SET_LEARN_SKILL, ARG, ARGS, ARG:1, ARGS:1 = "通常形態", ARGS:2 = "メッセージ非表示"
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC  L_PU_SKILL
+#DIM DYNAMIC L_SKILL
+#DIMS DYNAMIC  L_SKILLS
+#DIM DYNAMIC L_CHANGEABLE_SKILLCOUNT
+#DIM DYNAMIC L_EMPTY;스킬/習得スキルの空き番号を入れる
+#DIM DYNAMIC SKILL_LIST, HAVEABLE_SKILLNUM
+;先にスキル内容を更新しておく
+CALL FIX_CHARA_TRANS_SKILL, ARG
+L_EMPTY = 0
+;専用スキルは専用スキルのセットを試してから番号を取る
+IF STRCOUNT(ARGS, "CSTR専用スキル/")
+	L_PU_SKILL = %AUTO_SPLIT(ARGS, "/", 1)%
+	CALL PU_SKILL_ADD, ARG, L_PU_SKILL
+	L_SKILL = PU_SKILLNUM_GET(ARG, L_PU_SKILL)
+	SIF L_SKILL < 0
+		RETURN 0
+ELSE
+	;---- EDIT 013 MOD START -------------------------
+	IF ISNUMERIC(ARGS)
+		L_SKILL = TOINT(ARGS)
+	ELSE
+		L_SKILL = SKILL_NUM_F(ARGS)
+	ENDIF
+	;---- EDIT 013 MOD END ---------------------------
+ENDIF
+SIF L_SKILL <= 0
+	THROW スキルの指定[ARGS : %ARGS%]が不正です。
+IF GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+	IF ARGS:1 == "通常形態"
+		L_SKILLS = 인간시스킬
+	ELSE
+		L_SKILLS = 초기변신악마스킬
+	ENDIF
+	;判定用のリストを作る
+	FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+		IF ARGS:1 == "通常形態"
+			IF CFLAG:ARG:악마변신
+				SKILL_LIST:LCOUNT = ABL:ARG:@"인간시스킬{LCOUNT + 1}"
+			ELSE
+				SKILL_LIST:LCOUNT = ABL:ARG:@"스킬{LCOUNT + 1}"
+			ENDIF
+		ELSE
+			IF CFLAG:ARG:악마변신
+				IF FINDCHARA_LINK(ARG) < 0
+					SKILL_LIST:LCOUNT = ABL:ARG:@"스킬{LCOUNT + 1}"
+				ELSE
+					SKILL_LIST:LCOUNT = ABL:ARG:@"초기변신악마스킬{LCOUNT + 1}"
+				ENDIF
+			ELSE
+				SKILL_LIST:LCOUNT = ABL:ARG:@"초기변신악마스킬{LCOUNT + 1}"
+			ENDIF
+		ENDIF
+	NEXT
+ELSE
+	L_SKILLS = 스킬
+	FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+		SKILL_LIST:LCOUNT = ABL:ARG:@"스킬{LCOUNT + 1}"
+	NEXT
+ENDIF
+
+;すでに習得しているかどうかを確認し、習得しているのならば終わる。また空き番号を確保しておく
+FOR LCOUNT, 1, GET_ROLE_PROP("CHANGEABLE_SKILLCOUNT", ARG, , ARGS:1) + 1
+	;習得スキルを所持していた場合は終わり
+	IF MATCH(SKILL_LIST, L_SKILL)
+		;習得済みスキルに入れておく
+		CALL SET_LEARNED_SKILL, ARG, TOSTR(L_SKILL), ARGS:1
+		RETURN 0
+	ENDIF
+	SIF ABL:ARG:@"%L_SKILLS%{LCOUNT}" == 0 && L_EMPTY == 0
+		L_EMPTY = LCOUNT
+NEXT
+
+;---- EDIT 015 MOD START -------------------------
+;習得レベルを超えている場合、
+IF BASE:ARG:LV >= ARG:1 && (L_EMPTY || STRCOUNT(ARGS:2, "入れ替え確認"))
+	;スキルに空きがあるなら直接習得させて終了
+ 	IF L_EMPTY
+		CALL SET_FRIEND_HAVE_SKILL, ARG, L_SKILL, ARGS:1, L_EMPTY
+		;スキルの習得履歴に追加
+		IF STRCOUNT(ARGS:2, "メッセージ表示") || STRCOUNT(ARGS:2, "入れ替え確認")
+			;スキルチェンジで名称が変わっている可能性があるので名前をちゃんと呼び出す
+			CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, ARG
+			PRINTFORMW %CALLNAME:ARG%은(는) %RESULTS%을(를) 습득했다.
+		ENDIF
+	;入れ替え確認のときは習得させる
+	ELSE
+		CALL LEARN_SKILL, ARG, L_SKILL, ARGS:1 == "変身形態" ? 1 # 0
+	ENDIF
+	CALL SET_LEARNED_SKILL, ARG, TOSTR(L_SKILL), ARGS:1
+	RETURN 1
+ENDIF
+;---- EDIT 015 MOD END ---------------------------
+
+;すでに習得スキルに入っていないか確認する。
+L_EMPTY = 0
+FOR LCOUNT, 1, HAVEABLE_SKILLNUM + 1
+	IF ARGS:1 == "変身形態"
+		IF ABL:ARG:@"초기변신악마습득스킬{LCOUNT}" == L_SKILL
+			IF ABL:ARG:@"초기변신악마습득LV{LCOUNT}" == 0
+				ABL:ARG:@"초기변신악마습득LV{LCOUNT}" = ARG:1
+				RETURN 1
+			ELSE
+				RETURN 0
+			ENDIF
+		ENDIF
+		IF !L_EMPTY
+			SIF ABL:ARG:@"초기변신악마습득LV{LCOUNT}" == 0
+				L_EMPTY = LCOUNT
+		ENDIF
+	ELSE
+		IF ABL:ARG:@"습득스킬{LCOUNT}" == L_SKILL
+			IF ABL:ARG:@"습득LV{LCOUNT}" == 0
+				ABL:ARG:@"습득LV{LCOUNT}" = ARG:1
+				RETURN 1
+			ELSE
+				RETURN 0
+			ENDIF
+		ENDIF
+		IF !L_EMPTY
+			SIF ABL:ARG:@"습득LV{LCOUNT}" == 0
+				L_EMPTY = LCOUNT
+		ENDIF
+	ENDIF
+NEXT
+;空き番号がないのなら終わる
+SIF !L_EMPTY
+	RETURN 0
+IF ARGS:1 == "変身形態"
+	ABL:ARG:@"초기변신악마습득스킬{L_EMPTY}" = L_SKILL
+	ABL:ARG:@"초기변신악마습득LV{L_EMPTY}" = ARG:1	
+ELSE
+	ABL:ARG:@"습득스킬{L_EMPTY}" = L_SKILL
+	ABL:ARG:@"습득LV{L_EMPTY}" = ARG:1	
+ENDIF
+RETURN 1
+
+;---- EDIT 018 MOD START ---------------------------
+;---------------------------------------
+;ARGが味方として所持出来ないスキルや条件付きで所持できるスキルを判別して削除する
+;ARG:1が真のときは置換・削除メッセージを出す
+;---------------------------------------
+@EXCLUDE_UNABLE_SKILL, ARG, ARG:1
+#DIM LCOUNT, 2
+#DIM L_SKILL,2
+#DIMS L_SKILLS, 3
+#DIMS L_TRANS
+#DIM L_PERSONA
+IF !TALENT:ARG:페르소나구사자
+	FOR LCOUNT:1, 0, 5
+		FOR LCOUNT, 1, HAVEABLE_SKILLNUM + 1
+			SELECTCASE LCOUNT:1
+				CASE 0
+					L_SKILLS:2 = 스킬
+					L_SKILLS = 스킬{LCOUNT}
+					L_SKILLS:1 = 
+					L_TRANS = 通常形態
+				CASE 1
+					L_SKILLS:2 = 습득스킬
+					L_SKILLS = 습득스킬{LCOUNT}
+					L_SKILLS:1 = 습득LV{LCOUNT}
+					L_TRANS = 通常形態
+				CASE 2
+					L_SKILLS:2 = 인간시스킬
+					L_SKILLS = 인간시스킬{LCOUNT}
+					L_SKILLS:1 = 
+					L_TRANS = 通常形態
+				CASE 3
+					L_SKILLS:2 = 초기변신악마스킬
+					L_SKILLS = 초기변신악마스킬{LCOUNT}
+					L_SKILLS:1 = 
+					L_TRANS = 変身形態
+				CASE 4
+					L_SKILLS:2 = 초기변신악마습득스킬
+					L_SKILLS = 초기변신악마습득스킬{LCOUNT}
+					L_SKILLS:1 = 초기변신악마습득LV{LCOUNT}
+					L_TRANS = 変身形態
+			ENDSELECT
+			L_SKILL = ABL:ARG:L_SKILLS
+			CALL GET_SKILL_PROP, "敵専用", L_SKILL, ARG
+			IF RESULT == 1
+				SIF ARG:1
+					CALL MESSAGE_B, 1, @"%CALLNAME:ARG%が【%SKILL_NAME_F(L_SKILL)%】の所持条件を満たしていないため、スキルが削除されました。"
+				;---- EDIT 021 ADD START -------------------------
+				CALL CLEAR_LEARNED_SKILL, ARG, TOSTR(ABL:ARG:L_SKILLS)
+				;---- EDIT 021 ADD END ---------------------------
+				ABL:ARG:L_SKILLS = 0
+				SIF L_SKILLS:1 != ""
+					ABL:ARG:(L_SKILLS:1) = 0
+				CONTINUE
+			ENDIF
+			;ロール指定スキルを削除
+			CALL GET_SKILL_PROP, "ロール専用", L_SKILL, ARG
+			IF RESULT == 1
+				IF !STRCOUNT(GETS_ROLE_PROP("CAN_USE_SPECIAL_SKILL", ARG, L_TRANS), RESULTS)
+					;---- EDIT 007 ADD START -------------------------
+					;代わりに取得するスキルの判定をする
+					CALL GET_SKILL_PROP, "置換スキル", L_SKILL, ARG
+					L_SKILL:1 = RESULT
+					IF L_SKILL:1 > 0
+						FOR LCOUNT:1, 1, HAVEABLE_SKILLNUM + 1
+							SIF ABL:ARG:@"%L_SKILLS:2%{LCOUNT:1}" != L_SKILL:1
+								CONTINUE
+							L_SKILL:1 = 0
+							BREAK
+						NEXT
+					ENDIF
+					IF ARG:1
+						IF L_SKILL:1 == 0
+							CALL MESSAGE_B, 1, @"%CALLNAME:ARG%が【%SKILL_NAME_F(L_SKILL)%】の所持条件を満たしていないため、スキルが削除されました。"
+						ELSE
+							CALL MESSAGE_B, 2, @"%CALLNAME:ARG%が【%SKILL_NAME_F(L_SKILL)%】の所持条件を満たしていないため、", @"スキルが【%SKILL_NAME_F(L_SKILL:1)%】に置き換えられました。"
+						ENDIF
+					ENDIF
+					;---- EDIT 021 ADD START -------------------------
+					CALL CLEAR_LEARNED_SKILL, ARG, TOSTR(ABL:ARG:L_SKILLS)
+					;---- EDIT 021 ADD END ---------------------------
+					ABL:ARG:L_SKILLS = L_SKILL:1
+					SIF L_SKILLS:1 != "" && !L_SKILL:1
+						ABL:ARG:(L_SKILLS:1) = 0
+					CONTINUE
+					;---- EDIT 007 ADD END ---------------------------
+				ENDIF
+			ENDIF
+		NEXT
+	NEXT
+ELSE
+	;---- EDIT 012 MOD START -------------------------
+	IF TALENT:ARG:페르소나구사자
+		L_PERSONA = CFLAG:ARG:초기페르소나넘버
+		FOR LCOUNT:1, 0, 2
+			FOR LCOUNT, 1, 21
+				SIF LCOUNT:1 == 0 && LCOUNT >= 9
+					BREAK
+				RESULT = 0
+				IF LCOUNT:1
+					L_SKILLS = 습득스킬{LCOUNT}
+				ELSE
+					L_SKILLS = 스킬{LCOUNT}
+				ENDIF
+				L_SKILL = DITEMTYPE:L_PERSONA:페르소나(L_SKILLS)
+				CALL GET_SKILL_PROP, "敵専用", L_SKILL, -1
+				IF RESULT == 1
+					DITEMTYPE:L_PERSONA:페르소나(L_SKILLS) = 0
+					SIF ARG:1
+						CALL MESSAGE_B, 1, @"%CALLNAME:ARG%が【%SKILL_NAME_F(L_SKILL)%】の所持条件を満たしていないため、スキルが削除されました。"
+				ENDIF
+				CALL GET_SKILL_PROP, "ロール専用", L_SKILL, -1
+				IF RESULT == 1
+					;代わりに取得するスキルの判定をする
+					CALL GET_SKILL_PROP, "置換スキル", L_SKILL, -1
+					L_SKILL:1 = RESULT
+					IF ARG:1
+						IF L_SKILL:1 == 0
+							CALL MESSAGE_B, 1, @"%CALLNAME:ARG%が【%SKILL_NAME_F(L_SKILL)%】の所持条件を満たしていないため、スキルが削除されました。"
+						ELSE
+							CALL MESSAGE_B, 2, @"%CALLNAME:ARG%が【%SKILL_NAME_F(L_SKILL)%】の所持条件を満たしていないため、", @"スキルが【%SKILL_NAME_F(L_SKILL:1)%】に置き換えられました。"
+						ENDIF
+					ENDIF
+					DITEMTYPE:L_PERSONA:페르소나(L_SKILLS) = L_SKILL:1
+				ENDIF
+			NEXT
+		NEXT
+	ENDIF
+ENDIF
+;---- EDIT 012 MOD END ---------------------------
+;---- EDIT 018 MOD END ---------------------------
+;---------------------------------------
+;ARGが味方として所持出来ないスキルや条件付きで所持できるスキルを判別して削除する
+;---------------------------------------
+@EXCLUDE_UNABLE_SKILL_ALL_CHARA
+#DIM LCOUNT, 2
+FOR LCOUNT, 0, CHARANUM
+	CALL EXCLUDE_UNABLE_SKILL, LCOUNT
+NEXT
+FOR LCOUNT, 1, 9
+	CALL GET_SKILL_PROP, "敵専用", DITEMTYPE:(LCOUNT:1):페르소나(@"스킬{LCOUNT}"), -1
+	SIF RESULT == 1
+		DITEMTYPE:(LCOUNT:1):페르소나(@"스킬{LCOUNT}") = 0
+	CALL GET_SKILL_PROP, "ロール専用", DITEMTYPE:(LCOUNT:1):페르소나(@"스킬{LCOUNT}"), -1
+	SIF RESULT == 1
+		DITEMTYPE:(LCOUNT:1):페르소나(@"스킬{LCOUNT}") = 0
+NEXT
+FOR LCOUNT:1, 1, 11
+	FOR LCOUNT, 1, 21
+		CALL GET_SKILL_PROP, "敵専用", DITEMTYPE:(LCOUNT:1):페르소나(@"습득스킬{LCOUNT}"), -1
+		SIF RESULT == 1
+			DITEMTYPE:(LCOUNT:1):페르소나(@"습득스킬{LCOUNT}") = 0
+		CALL GET_SKILL_PROP, "ロール専用", DITEMTYPE:(LCOUNT:1):페르소나(@"습득스킬{LCOUNT}"), -1
+		SIF RESULT == 1
+			DITEMTYPE:(LCOUNT:1):페르소나(@"습득스킬{LCOUNT}") = 0
+	NEXT
+NEXT
+;---- EDIT 084 ADD END ---------------------------
+
+;---------------------------------------
+;置換スキルの番号を取る
+;---------------------------------------
+@GET_REPLACE_SKILL, L_SKILL, L_CHARA = -1, TRANS_MODE = "通常形態"
+#DIM DYNAMIC L_SKILL
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC TRANS_MODE
+#DIM DYNAMIC IS_SUCCESS_ABLE
+IS_SUCCESS_ABLE = 1
+;置換チェック
+CALL GET_SKILL_PROP, "継承不能", L_SKILL, L_CHARA
+SIF RESULT
+	IS_SUCCESS_ABLE = 0
+CALL GET_SKILL_PROP, "ロール専用", L_SKILL, -1
+IF RESULT
+	IF L_CHARA >= 0
+		SIF !STRCOUNT(GETS_ROLE_PROP("CAN_USE_SPECIAL_SKILL", L_CHARA, TRANS_MODE), RESULTS)
+			IS_SUCCESS_ABLE = 0
+	ELSE
+		IS_SUCCESS_ABLE = 0
+	ENDIF
+ENDIF
+IF IS_SUCCESS_ABLE == 0
+	CALL GET_SKILL_PROP, "置換スキル", L_SKILL, L_CHARA
+	SIF RESULT > 0
+		L_SKILL = RESULT
+ENDIF
+RETURN L_SKILL
+
+;---------------------------------------
+;指定したスキルに対応する継承部位を持っているか
+;---------------------------------------
+@HAVE_SKILL_SUCCESSION_BODY, L_CHARA, L_SKILL
+#DIM LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_SKILL
+CALL GET_SKILL_PROP, "継承部位", L_SKILL, L_CHARA
+SIF RESULT == 0
+	RETURN 0
+FOR LCOUNT, 0, FINDELEMENT(RESULTS, "", , , 1)
+	SIF TALENT:L_CHARA:(RESULTS:LCOUNT)
+		RETURN 1
+NEXT
+RETURN 0
+
+
+;---------------------------------------
+;固有スキルの習得リストの適正化
+;
+;戻り値:0 = 固有スキルの習得リストが存在しないか、あるいは存在しなくなった場合
+;		1 = リストになんらかのスキルが存在する状態で戻された
+;---------------------------------------
+@FIX_SPECIAL_LEARN_SKILL, L_CHARA, TRANS_MODE = "自動選別"
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC TRANS_MODE
+#DIMS DYNAMIC TEMPS
+#DIMS TEMP_SKILLS, 100
+IF TRANS_MODE == "自動選別"
+	IF CFLAG:L_CHARA:악마변신
+		TEMPS = 초기변신악마MAG스킬습득리스트
+	ELSE
+		TEMPS = MAG습득스킬리스트
+	ENDIF
+ELSE
+	IF TRANS_MODE == "通常形態"
+		TEMPS = MAG습득스킬리스트
+	ELSE
+		TEMPS = 초기변신악마MAG스킬습득리스트
+	ENDIF
+ENDIF
+SIF CSTR:L_CHARA:TEMPS == ""
+	RETURN 0
+SPLIT CSTR:L_CHARA:TEMPS, "/", TEMP_SKILLS
+;一度クリアする
+CSTR:L_CHARA:TEMPS '= ""
+FOR LCOUNT, 0, RESULT
+	CALL GETS_SKILL_PROP, "SKILL_NAME", TEMP_SKILLS:LCOUNT, L_CHARA
+	SIF RESULTS == ""
+		CONTINUE
+	IF ISNUMERIC(TEMP_SKILLS:LCOUNT)
+		SIF HAVE_SKILL(L_CHARA, TOINT(TEMP_SKILLS:LCOUNT))
+			CONTINUE
+	ELSE
+		SIF HAVE_PU_SKILL(L_CHARA, TEMP_SKILLS:LCOUNT)
+			CONTINUE
+	ENDIF
+	SIF IS_LEARNED_SKILL(L_CHARA, TEMP_SKILLS:LCOUNT, TRANS_MODE)
+		CONTINUE
+	CALL GETS_SKILL_PROP, "ロール専用", TEMP_SKILLS:LCOUNT, L_CHARA
+	IF RESULT
+		IF !COUNT_SPLIT(GETS_ROLE_PROP("CAN_USE_SPECIAL_SKILL", L_CHARA, TEMP_SKILLS:LCOUNT), "/", RESULTS)
+			CALL GETS_SKILL_PROP, "置換スキル", TEMP_SKILLS:LCOUNT, L_CHARA
+			IF RESULT
+				TEMP_SKILLS:LCOUNT = {RESULT}
+			ELSE
+				CONTINUE
+			ENDIF
+		ENDIF
+	ENDIF
+	;つなぎなおす
+	SIF CSTR:L_CHARA:TEMPS != ""
+		CSTR:L_CHARA:TEMPS += "/"
+	CSTR:L_CHARA:TEMPS += TEMP_SKILLS:LCOUNT
+NEXT
+RETURN CSTR:L_CHARA:TEMPS != ""

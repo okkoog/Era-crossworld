@@ -1,0 +1,191 @@
+
+
+;====================
+;条件
+;====================
+@PLAYABLE_COLOSSEUM_15
+IF FLAG:DEBUG || 闘技場フラグ:15:0 == 0 && 依頼フラグ:14:0 
+	RESULTS = 試合ランクＥ　ＶＳ ボウガン使いの男
+	RETURN 1
+ENDIF
+RETURN 0
+
+
+;====================
+;内容
+;====================
+@COLOSSEUM_15
+FLAG:逃走不可フラグ = 1
+FLAG:会話不能フラグ = 1
+FLAG:先制不意打ちキャンセル = 1
+PRINTL 
+PRINTFORMW ＞ボウガンを持ったオレンジ色の髪の男が居る。
+PRINTFORMW ＞青年は%CALLNAME:MASTER%を見とめると、悲鳴を上げ闘技場から逃げ出そうとした。
+PRINTFORMW 「来るな、近づくな…！喰わないで、喰わないで、くれえ…！」
+PRINTFORMW ＞完全に怯えきった男は、震えながらも手にしたボウガンを%CALLNAME:MASTER%に向ける。
+PRINTFORMW 「お、お前も俺を喰う気なんだろ？俺の兵隊を喰ったみてえによう」
+PRINTFORMW 「な、な、何とか言えよ…お、俺は大人しく喰われてなんかやらねえぞ！」
+PRINTFORMW ＞男が襲い掛かってきた！
+PRINTL
+PRINTL 喰奴 ハーリーＱが１体出た！
+CUSTOMDRAWLINE =
+
+;喰奴 ハーリーＱ
+CALL SET_ENEMY,14,4569,20,0,1
+CFLAG:(CHARANUM-1):ＨＰ補正 += 300
+CFLAG:(CHARANUM-1):速度補正 += 10
+CFLAG:(CHARANUM-1):行動回数 = 2
+CFLAG:(CHARANUM-1):初期リンク悪魔 = 3801
+CFLAG:(CHARANUM-1):リンク悪魔 = -1
+;ボウガン弱すぎにつき補正
+CFLAG:(CHARANUM-1):銃攻撃補正 = 50
+CALL SYNC_STATUS, (CHARANUM-1)
+CALL HEALTH_CHARA, (CHARANUM-1)
+CSTR:(CHARANUM-1):思考パターン = 4569
+
+CALL BATTLE_START
+CUSTOMDRAWLINE =
+PRINTW 「燃べだ…燃べづぎだああああああ…あ…！！」
+PRINTW ＞男は崩れ落ち、人間の姿に戻った…。
+PRINTW
+PRINTW ＞報酬を受け取りに行くと、そこにシェフィールドが居た。
+PRINTW 「なかなか良いデータが取れたよ。ファントムに依頼して正解だったかな」
+PRINTW ＞対戦相手の男の様子がおかしかった理由を尋ねてみた。
+PRINTW 「アレは他のアスラAIに淘汰されたのをテスト用に復元したんだ」
+PRINTW 「多分記憶が混乱しているんだろう、どうでもいいことだけど」
+PRINTW 「ああ…君は確か、奴隷商人だったっけ？」
+PRINTW 「アレが欲しいなら持っていってもいいよ」
+PRINTL
+PRINTL ハーリーＱを受け取りますか？
+
+CALL INPUT_YN
+
+IF RESULT == 0
+	PRINTW 「何に使うかは聞かないでおくよ。それじゃ、僕はこれで」
+	PRINTW ＞シェフィールドは立ち去った…。
+	PRINTL
+	PRINTW ハーリーＱが奴隷になった。
+	CALL ADD_NEW_COMPANION,4569,500
+	;さり気に治療費として持ってった
+	PRINTW ￥15000を賞金として受け取った
+	MONEY += 15000
+	PRINTFORMW %CALLNAME:MASTER%は80の名声を得た
+	FLAG:名声 += 80
+	PRINTL ※喰奴が加入しました
+	PRINTL 　喰奴は人間として剣や銃を扱うことができ、また悪魔に変身して各種スキルを行使できます。
+	PRINTL 　ただし、デビルシフターとは異なり変身する悪魔を変化させることはできません。
+	PRINTL 　また、喰奴は戦闘時に獲得できるMAGが半減します。
+	PRINTW 　戦闘中にハントスキルを使用するたび得られるMAGが上昇します。
+ELSEIF RESULT == 1
+	PRINTW 「まぁ、貰っても困るか。処分費用が浮くと思ったんだけど…」
+	PRINTW 「いや、こっちの話。それじゃ、僕はこれで」
+	PRINTW ＞シェフィールドは立ち去った…。
+	PRINTL
+	PRINTW ￥25000を賞金として受け取った
+	MONEY += 25000
+	PRINTFORMW %CALLNAME:MASTER%は80の名声を得た
+	FLAG:名声 += 80
+ENDIF
+
+闘技場フラグ:15:0 = 1
+CUSTOMDRAWLINE =
+FLAG:逃走不可フラグ = 0
+FLAG:会話不能フラグ = 0
+FLAG:先制不意打ちキャンセル = 0
+
+FOR LOCAL,0,CHARANUM
+	CALL HEALTH_CHARA,LOCAL
+NEXT
+
+@SET_ACTION_4569,ARG
+CFLAG:ARG:入力行動 = -1
+CFLAG:ARG:ターゲット = -1
+
+;変身しているかどうか
+IF CFLAG:ARG:悪魔変身 == 0
+	;人間版
+	IF 現HP割合(ARG) <= 50
+		CFLAG:ARG:入力行動 = [[スキル:悪魔変身]]
+	ELSEIF CFLAG:ARG:行動した回数 == 0
+		;１ターン目は道具を使う
+		SELECTCASE RAND:100
+			CASE 0 TO 9 
+				CFLAG:ARG:入力行動 = [[スキル:ナパーム弾]]
+			CASE 10 TO 39
+				CFLAG:ARG:入力行動 = [[スキル:スタングレネード]]
+			CASE 40 TO 69
+				CFLAG:ARG:入力行動 = [[スキル:毒矢]]
+			CASE 70 TO 99
+				CFLAG:ARG:入力行動 = [[スキル:スパイラルボム]]	
+		ENDSELECT
+	ELSE
+		;弱い敵にちまちま攻撃
+		CFLAG:ARG:入力行動 = [[スキル:ＧＵＮ]]
+		CFLAG:ARG:ターゲット = -1
+		CALL ATTACK_MIN_HP,ARG,0
+	ENDIF
+ELSE
+	;１ターン目はかならず火の壁
+	IF CFLAG:ARG:行動した回数 == 0
+		CFLAG:ARG:入力行動 = [[スキル:炎の壁]]
+	ELSE
+		SELECTCASE RAND:100
+			CASE 0 TO 19 
+				CFLAG:ARG:入力行動 = [[スキル:ファイアストーム]]
+			CASE 20 TO 50
+				CFLAG:ARG:入力行動 = [[スキル:喰い散らし]]
+			CASE 51 TO 99
+				CFLAG:ARG:入力行動 = [[スキル:喰らいつき]]
+		ENDSELECT
+	ENDIF
+
+ENDIF
+;アクション実行不能
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:入力行動
+
+IF RESULT == 0 && CFLAG:ARG:悪魔変身 == 0
+	;人間時
+	CFLAG:ARG:入力行動 = [[スキル:ＧＵＮ]]
+ELSEIF RESULT == 0 && CFLAG:ARG:悪魔変身 == 1
+	CFLAG:ARG:入力行動 = 0
+ENDIF
+
+SIF CFLAG:ARG:ターゲット == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:入力行動
+	
+@ENEMY_BATTLE_MESSAGE_K4569, ARG
+SKIPDISP 0
+LOCAL:1 = 1
+LOCAL = CFLAG:ARG:入力行動
+LOCALS = EMPTY
+SELECTCASE LOCAL
+	CASE [[スキル:スタングレネード]]
+		LOCALS = ち、近寄るんじゃねええええ！
+	CASE [[スキル:ナパーム弾]]
+		LOCALS = く、来るなあああああ！
+	CASE [[スキル:スパイラルボム]]
+		LOCALS = ひ、ひぃいいい！
+	CASE [[スキル:毒矢]]
+		LOCALS = 喰わないでくれえっ！
+	CASE [[スキル:ＧＵＮ]]	
+		LOCALS = や、やめてくれえっ！
+	CASE [[スキル:炎の壁]]	
+		LOCALS = 火火ーン！	
+	CASE [[スキル:喰らいつき]]	
+		LOCALS = 喰っでやるあぁあぁ！
+	CASE [[スキル:喰い散らし]]
+		LOCALS = 一片も残ざねええええ！
+	CASE [[スキル:ファイアストーム]]	
+		LOCALS = 燃べろ！燃べ尽ぎろぉぉぉ！
+	CASE [[スキル:悪魔変身]]
+		RESETCOLOR
+		PRINTFORMW ＞ハーリーＱの様子がおかしい…。
+		PRINTFORMW 「そう、か…いっこだけ、わかったぜ…」
+		PRINTFORMW 「食われる前に……喰っちまえばいいんだよなぁ！」
+		PRINTFORML
+		PRINTFORMW ＞ハーリーＱは悪魔に変身した！
+		;HP全快に
+		CALL VAR_HP,ARG,MAXBASE:ARG:ＨＰ,3
+ENDSELECT
+SIF LOCALS != "EMPTY"
+	CALL MESSAGE_B(LOCAL:1, LOCALS, LOCALS:1, LOCALS:2, LOCALS:3, LOCALS:4)

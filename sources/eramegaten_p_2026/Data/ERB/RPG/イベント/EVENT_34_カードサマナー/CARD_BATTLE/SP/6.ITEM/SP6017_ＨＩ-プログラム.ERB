@@ -1,0 +1,60 @@
+﻿
+;特技名
+@CGSP_NAME_6017, ARGS, ARG
+RESULTS = ＨＩ-プログラム
+
+;　コストの量
+@CGSP_COST_6017, ARGS, ARG
+RETURN 2
+;1
+
+;　타겟(選択するかしないか)
+@CGSP_TARGET_6017, ARGS, ARG
+RETURN 0
+;0-無し　　　1-味方1体　2-味方1体(自身含む)　3-敵1体　4-敵1体(サマナー含む)
+;5-敵味方1体　6-サマナーどちらか
+;自動発動なので0
+
+;　発動タイミング
+@CGSP_TIMING_6017, ARGS, ARG
+RETURN 0
+;0-アクティブ　1-味方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　2-相手ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　3-両方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ
+
+;====================================================
+;特技発動
+;====================================================
+@CGSP_ACTION_6017, ARGS, ARG, ARG:1
+FOR LOCAL,0,2
+	IF HAND_CARDS(ARG % 20) < 8
+		CALL CS_DECKCARD_DRAW, (ARG % 20), 1
+	ENDIF
+NEXT
+CALL CARDBATTLE_MESSAGE, CS_PIC_NAME(ARG) + @"はカードを引いた。"
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;発動後どうなるか
+@CGSP_ACTION_AFTER_6017, ARGS, ARG, ARG:1
+RETURN 0
+;0-何もなし　1-フリーズ状態　2-山札に戻る　3-即死する
+
+;　 説明文の表示
+@CGSP_EXPLAIN_6017, ARGS, ARG
+RESULTS = サマナーの山札からカードを２枚引く。ただし、手札は８枚を超えない。『コンピュータのスピードアップ用ソフト』
+
+;　スキルタイプ
+;　主にこのターンパワーアップとアギとかのダメージ系で使用
+;　それ以外は省略
+;　30 회복
+@CGSP_TYPE_6017, ARGS, ARG
+RETURN 40, 2
+
+;使用条件
+;特になければ省略してOK
+@CGSP_SPECIAL_ACTIONABLE_6017, ARGS, ARG
+SIF HAND_CARDS(FIELD_DEMON_DATE_V:(ARG % 20):CBV_HOST) < 8
+	RETURN 1
+RETURN 0
+;とくにない
+

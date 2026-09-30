@@ -1,0 +1,923 @@
+﻿;-------------------------------------------------
+;リリテイルズ　ジル＝グランツ個別イベント
+;-------------------------------------------------
+@INDIVIDUAL_EVENT_K5384, ARG, ARG:1 = 0, ARG:2 = -1
+;ARG:0　キャラ番号
+;ARG:1　関数種類　1,開放条件　2,타이틀　3,이벤트
+;ARG:2　イベント番号（0～63まで）
+
+;リストにキャラを表示する条件
+IF ARG:1 == 0
+	;イベント0で全部終了
+	SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+		RETURN 0
+	RETURN 1
+ENDIF
+
+SELECTCASE ARG:2
+CASE 0
+	;解放条件
+	;ジル＝グランツ陥落済み＋主人戦闘レベル５０以上。
+	IF ARG:1 == 1
+		SIF 陥落(ARG) == 0
+			RETURN 0
+		SIF BASE:MASTER:LV < 50
+			RETURN 0
+		RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			RESULTS = %CALLNAME:ARG%과(와) 루나리에＝엘＝블랑카(전투 있음?)
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			RESULTS = ※%CALLNAME:ARG%의 함락, %CALLNAME:MASTER%의 전투 Lv50 이상이 필요.
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		LOADGLOBAL
+		PRINTFORML 
+		PRINTFORML %CALLNAME:ARG%을(를) 데려오고 얼마 지나지 않았을 무렵.
+		PRINTFORML 
+		IF TALENT:ARG:신뢰 || TALENT:ARG:동료 || TALENT:ARG:연모 || TALENT:ARG:친애
+			PRINTFORMW 「저기 %CALLNAME:MASTER%, 이건 사 가는 거야?」
+			PRINTFORML 
+			PRINTFORMW 오늘은 물품을 매입하러 가는 날이다.
+			PRINTFORML 
+			PRINTFORML 확인하러 오는 %CALLNAME:ARG%에게 대답을 돌려주자, 알았어~ 라며 느긋한 목소리를 내고,
+			PRINTFORMW 구입 예정품 목록을 손에 든 채, 기분 좋게 필요 물품을 바구니에 담아 간다.
+			PRINTFORML 
+			PRINTFORMW ……제법 밝아진 모습이다.
+			PRINTFORMW 혹은 이것이 그녀 본래의 성격인 것일까.
+			PRINTFORMW 라그의 말에 따르면, 그녀는 『외지』에서 들여온 노예로 전직 왕녀였다고 한다.
+			PRINTFORML 
+			;多分これで陥落までは信頼方面だった、あるいは今も信頼状態の分岐になる。
+			IF CFLAG:ARG:미조교함락 == 1
+				PRINTFORML 끌려왔을 당시 떨고 있던 %CALLNAME:ARG%의 구속을 풀어주고,
+				PRINTFORMW 너는 오늘부터 식당에서 일해야 한다, 고 말했을 때의 얼굴은 인상적이었다.
+				PRINTFORML 
+				PRINTFORML 그란츠 영국이라는 곳은 아무래도 중세의, 그것도 판타지에 가까운 세계인 듯하여,
+				PRINTFORMW 처음에는 조리기구는커녕 세이프하우스 설비에조차 놀라 일일이 사용법을 설명해 주어야 했다.
+				PRINTFORML 덧붙여 접객 상대에 악마도 섞여 있다는 것에는 놀라기는 했지만,
+				PRINTFORMW 의사소통이 가능한 지적 생명체임을 알고 나서는 납득하여 순조롭게 넘어갔다.
+				PRINTFORML 
+				PRINTFORMW 게다가 왕녀 신분임에도 요리 소양을 갖추고 있던 것도 안성맞춤이었다.
+				SIF ABL:ARG:요리기능 > 2 || CFLAG:ARG:요리인기 > 100
+					PRINTFORMW 제법 뛰어난 순응력을 보여주어 지금은 어엿한 식당의 종업원이다.
+				PRINTFORML 
+				PRINTFORMW 「자, 이걸로 다 골랐어! 계산하러 갈까?」
+				PRINTFORML 
+				PRINTFORMW 현대에서는 원하는 물건을 일단 바구니에 담고, 계산대에서 대금을 지불함으로써 매매가 성립된다.
+				PRINTFORMW ……고작 이런 일을, 그것도 방금 배운 참인데도 그 표정은 득의양양했다.
+			;こっちは調教して恋慕・親愛にした。
+			ELSE
+				PRINTFORML 이렇게 외출할 수 있게 된 %CALLNAME:ARG%은(는),
+				PRINTFORMW 조교를 받고 있을 때와는 전혀 다른 인상을 보여준다.
+				PRINTFORML 
+				;未開通
+				IF ABL:ARG:Ａ감각 == 0 && ABL:ARG:Ｖ감각 == 0
+					;お股の方が多い
+					IF ABL:ARG:Ｂ감각 == 0 || (ABL:ARG:Ｂ감각 < 3 && ABL:ARG:Ｂ감각 < ABL:ARG:Ｃ감각)
+						PRINTFORML 개발된 비소는 살짝 건드리기만 해도 흠뻑 젖어 들고,
+						PRINTFORMW 때로는 스스로 비벼대며 쾌락에 빠져들기도 한다.
+					;股がさほどでもなく胸を開発している。
+					ELSEIF ABL:ARG:Ｃ감각 == 0 || (ABL:ARG:Ｃ감각 < 3 && ABL:ARG:Ｃ감각 < ABL:ARG:Ｂ감각)
+						PRINTFORMW 얼핏 미성숙한 몸이지만 가슴은 훌륭하게 자라나 있고 개발도 진척되어 왔다.
+						PRINTFORMW 주물러 주기만 해도 그것만으로 눈망울을 적시며 한층 더 강한 자극을 졸라댄다.
+					ENDIF
+				;前のほうが使ってるor３以上
+				ELSEIF ABL:ARG:Ａ감각 == 0 || (ABL:ARG:Ｖ감각 < 3 && ABL:ARG:Ｖ감각 > ABL:ARG:Ａ감각)
+					PRINTFORM 남자를 몰랐던 여성기는 이제
+					SIF HAVE_PENIS(MASTER) == 1 && EXP:ARG:성교경험 > 0
+						PRINTFORM %CALLNAME:MASTER%의 형태를 기억해내어,
+					PRINTFORML 삽입당하는 것만으로도 절정에 달할 정도이며,
+					PRINTFORMW 타고나길 민감했던 탓인지 들락날락할 때마다 온몸을 들썩이며 사랑스러운 교성을 들려준다.
+				;後ろが３以上
+				ELSEIF ABL:ARG:Ａ감각 < 3 && ABL:ARG:Ａ감각 > ABL:ARG:Ｖ감각
+					PRINTFORML 본래의 용도로밖에 쓰지 않았을 엉덩이는,
+					PRINTFORMW 이미 몸속 깊은 곳까지 이물 삽입의 기분 좋음을 기억해 버렸다.
+					PRINTFORML 현재는 사전에 %CALLNAME:MASTER%의 손으로 관장을 마치고 조교에 들어가고 있지만,
+					PRINTFORMW 스스로 관장기 사용법을 기억해 버린다면 아마 큰일이 날 것이다.
+				;どれも感覚３に至っていない場合は特筆しない。
+				ENDIF
+				PRINTFORML 
+				PRINTFORMW ……물론 공공장소에서 꼴불견인 꼴이 되지 않도록 수위를 조절하고 있는 면도 있다.
+				SIF ABL:ARG:요리기능 > 2 || CFLAG:ARG:요리인기 > 100
+					PRINTFORMW 식사 제공 노역을 시키는 이상, 마음을 꺾어버려서는 안 되기 때문이다.
+				PRINTFORML 
+				PRINTFORMW 「자, %CALLNAME:MASTER%. 다음 코너로 가자」
+				PRINTFORML 
+				PRINTFORMW 재촉해 오는 %CALLNAME:ARG%에게 대답하며 뒤를 따랐다.
+				SIF ABL:ARG:요리기능 > 2 || CFLAG:ARG:요리인기 > 100
+					PRINTFORMW 요리를 가르치는 과정에서 주입한 현대 사회 지식은 제대로 기능하고 있는 모양이다.
+			ENDIF
+			;分岐終了。
+				PRINTFORML 
+				PRINTFORML ………。
+				PRINTFORML ……。
+				PRINTFORML …。
+				PRINTFORML 
+				PRINTFORMW 「잔뜩 사 버렸네」
+				PRINTFORML 
+				PRINTFORMW 돌아오는 길.
+				PRINTFORML 
+				PRINTFORMW 장바구니를 양손으로 껴안은 %CALLNAME:ARG%은(는) 싱글벙글 웃고 있다.
+				PRINTFORML 예정에 없던 식재료를 몇 가지 담았던 것 같았지만,
+				PRINTFORMW 아마 이쪽 세계에 적응하고자 레퍼토리를 넓힐 셈일 것이다.
+				PRINTFORML 
+				;お互いの料理技能が最大（念の為１０以上）
+				IF ABL:MASTER:요리기능 >= 10 && ABL:ARG:요리기능 >= 10
+					PRINTFORML 그렇다곤 해도 %CALLNAME:ARG%에게는 이미 기초는커녕 응용까지 전부 주입해 두었는데,
+					PRINTFORMW 이번엔 무엇에 도전할 생각인 걸까.
+					PRINTFORML 
+					PRINTFORML 「응, 다른 사람에게 가르쳐줄 수 있도록 요점, 실패 사례,
+					PRINTFORMW 　식재료가 부족할 때의 대체 방법이나 요리 전반에서 주의해야 할 점을 정리하고 싶어서」
+					PRINTFORML 
+					PRINTFORMW 가르치는 방법까지는 가르쳐주지 않았던가.
+					PRINTFORML 
+					PRINTFORMW %CALLNAME:ARG%은(는) 습득이 빨랐지만 그렇지 못한 자도 있었다.
+					PRINTFORMW 그 경험담을 섞어가며 함께 정리하기로 하자.
+					PRINTFORML 
+					PRINTFORMW 「응…… 루나한테 가르쳐주고 싶어……」
+					PRINTFORML 
+				;%CALLNAME:MASTER%の方が料理技能が上。
+				ELSEIF ABL:MASTER:요리기능 > ABL:ARG:요리기능
+					PRINTFORMW ……어울려 주는 것도 주인의 도량일까.
+					PRINTFORML 
+					PRINTFORMW 「%CALLNAME:MASTER%에게 배우기만 하는 것도 죄송하고, 스스로도 시험해 보고 있어.
+					PRINTFORMW 　쿠키 재료도 큰 차이는 없지만 온도라든가 조금 요령이 다른 것 같고」
+					PRINTFORML 
+					PRINTFORMW 그렇다면 서로의 세계의 요리 문화 차이를 대조해 보는 것부터 시작해 볼까.
+					PRINTFORML 
+					PRINTFORMW 「응! 잘 부탁드립니다!」
+					PRINTFORML 
+					PRINTFORML ……루나도 이런 기분으로 배웠으려나, 하고 중얼거리며
+					PRINTFORMW 끄덕이는 미소를 생각에 잠긴 얼굴로 바꾸어 간다.
+					PRINTFORML 
+				;ジルのが上、あるいは%CALLNAME:MASTER%が料理労役せず労役に突っ込んだだけでお互い料理を上げていない。＝%CALLNAME:MASTER%が料理に興味がない
+				ELSE
+					PRINTFORMW 어찌 되었든 몰두할 수 있는…… 보람찬 일을 찾았다는 것은 좋은 일이다.
+					PRINTFORML 
+					PRINTFORML 자금은 신경 쓰지 말고 마음대로 하렴, 하고 전하자
+					PRINTFORMW 화아앗, 하고 효과음이 들려올 듯한 환한 미소로 기뻐하고 있다.
+					PRINTFORML 
+					PRINTFORMW 「루나에게도 먹여주고 싶다……」
+					PRINTFORML 
+				ENDIF
+				PRINTFORMW 아무래도 『루나』…… 루나리에＝엘＝블랑카라는 자는 상당한 요리치인 모양이다.
+				PRINTFORML 
+					PRINTL [0] 루나에 대해 물어본다
+					PRINTL [1] 라그 가게에서의 전말을 물어본다
+					PRINTL [2] 쓰다듬는다
+					CALL INPUTINT, 0 , 1 ,2
+					IF RESULT == 0
+						PRINTFORML 
+						PRINTFORMW 「루나는 말이지, 내 소꿉친구야. 처음 만난 건 혼자서 울고 있을 때였으려나.
+						PRINTFORML 　악마의 아이라고 따돌림당하던 루나에게 %CSTR:ARG:일인칭%이(가) 말을 건넨 것이 계기였어……」
+						PRINTFORML 
+						PRINTFORML 그렇게 어울려 놀게 되었고, 훗날 %CALLNAME:ARG%을(를) 지키기 위해 기사 견습까지 올라섰다고 한다.
+						PRINTFORMW 말하길 『엄청난 노력파지만 요리를 못하고 울보』
+						PRINTFORML 
+						PRINTFORMW 「루나가 만드는 쿠키는 터무니없이 맛없어!
+						PRINTFORML 　만드는 법을 도와주거나 같이 만들어도 왠지 딱딱하게 굳어버리거나,
+						PRINTFORMW 　산산조각이 나버려. 병량으로는…… 안 맞으려나」
+						PRINTFORML 
+						PRINTFORMW 그렇게 이야기되는 그란츠 영국의 사건들은 어디에나 있을 법한
+						PRINTFORMW 왕녀와, 친구가 된 왕녀를 지키기 위해 기사를 지망하는 소녀들의 이야기였다.
+						PRINTFORML 
+						PRINTFORM 한동안 %CALLNAME:ARG%의 추억담을 듣고 있었지만……
+					ELSEIF RESULT == 1
+						PRINTFORML 
+						PRINTFORMW 「응……」
+						PRINTFORML 
+						PRINTFORMW 길어지며 옆길로 새기 십상인 %CALLNAME:ARG%에게서 캐낸 이야기를 종합해 보면…….
+						PRINTFORML 
+						PRINTFORMW 그날은 의례를 치르기 위해 먼 길을 떠났던 참이었다고 한다.
+						PRINTFORML %CALLNAME:ARG%은(는) 루나리에와 함께 의례 및 기사 취임식을 마치고 돌아오던 중 길이 막혀 있어,
+						PRINTFORMW 우회한 곳에서 갑자기 몬스터가 나타나 따돌리고자 부대를 나눈 끝에 또다시 누군가의 습격을 받았다.
+						PRINTFORML 
+						PRINTFORML 루나를 포함한 근위병 잔당으로 응전했으나 주모자로 보이는 흰 옷의 정체불명 인물에게 일축당했고,
+						PRINTFORMW 근위대는 괴멸하여…… 자신 혼자 사막의 노예 교역 도시로 끌려왔다.
+						PRINTFORML 
+						PRINTFORMW 「……처음에 그 남자가 말했어. 『자백할 때까지 고통을 주거나, 노리갯감이 되어 줘야겠군』이라고」
+						PRINTFORML 
+						PRINTFORMW 노림수는 의례를 통해 %CALLNAME:ARG%이(가) 계승한 금지된 구문명의 봉인의 열쇠.
+						PRINTFORMW 그것을 캐내려는 고문을 받던 차에 라그가 나타났다고 한다.
+						PRINTFORML 
+						PRINTFORMW 「붉은 눈알이 달린 보라색 머리의 여자와 그 노예 상인이 나타나선…… 그 『눈』이……」
+						PRINTFORML 
+						PRINTFORML %CALLNAME:ARG%이(가) 숨기고 있던 봉인 해제법을 보라색 머리의 여자는 몇 마디 문답만으로 캐내었고,
+						PRINTFORMW 읽어내 버렸다. 마치 속마음을 훤히 꿰뚫어 보듯.
+						PRINTFORML 
+						PRINTFORMW 그렇게 정보만 얻으면 쓸모가 다했다며 라그에게 넘겨졌고…… %CALLNAME:MASTER%에게 매입되어 현재에 이르렀다.
+						PRINTFORML 
+						;古明地さとり解析率１０以上＝見たことがある。　もしくは主人が覚り持ち
+						IF ANALYSIS_RATE:[[キャラ:사토리]] > 0 || TALENT:MASTER:사토리（소질） > 0
+							PRINTFORMW ……이세계에 사토리 요괴까지 끌고 와서 무슨 짓을 벌인 건가 그 녀석은.
+							PRINTFORMW 그렇게까지 해서 %CALLNAME:ARG%을(를) 입하하고 싶었던 것일까.
+							PRINTFORML 
+							PRINTFORM ……
+						ENDIF
+						PRINTFORML 습격 과정에서 동료들이 살해당한 이상 정상적인 방식으로 %CALLNAME:ARG%이(가) 그 주모자에게
+						PRINTFORMW 협력할 리는 없다. %CALLNAME:ARG%은(는) 그런 아이다.
+						PRINTFORML 
+						PRINTFORMW 당인은 그렇게 생각하지 않겠지만 목숨을 건졌다고 볼 수도 있다.
+						PRINTFORML 
+						PRINTFORM 한동안 이야기를 들으며 생각에 잠겨 있었지만,
+						;リリテイルズカオスルートで、ルナが捕まってしまった場合、ジルは折れて封印解除の術を白状する。
+						;カオスルート中、ルナが性奴隷になることを受け入れてしまった場合、ふたりとも売り飛ばされることから、
+						;情報が入り、『素材』さえ潤沢に取れる環境なら王女自身は手放す可能性が高い。
+						;ラグはそこへ介入し、（どうやってだよ）覚りを使って情報を取り出すことを条件に、ジルの身柄を要求した。
+					ELSEIF RESULT == 2
+						PRINTFORML 
+						;%CALLNAME:MASTER%が小人体型であると、%CALLNAME:MASTER%が手を伸ばすのに苦労する。
+						IF TALENT:MASTER:소인체형
+							PRINTFORMW 쓰다듬어 주려 했으나 곤란하게도 %CALLNAME:ARG% 쪽이 키가 더 크다. 손짓하여 몸을 굽히게 했다.
+							PRINTFORML 
+							PRINTFORML 그 손짓만으로 눈치채고 웃는 얼굴의 이마를 콕 찌른 뒤 정수리를 쓰다듬어 주자,
+							PRINTFORMW 헤벌쭉하니 한심스러울 정도로 표정이 풀어진다.
+							PRINTFORML 
+							SIF EXP:ARG:애정경험 > 99
+								PRINTFORMW 「……이거, 좋아」
+						;他のケースだと苦労しない
+						ELSE
+							PRINTFORMW 폭, 하고 소리를 내며 %CALLNAME:ARG%의 머리에 손을 얹었다.
+							PRINTFORMW 얼떨떨하던 표정이 곧바로 흐물흐물 풀어졌다.
+							PRINTFORML 
+							SIF EXP:ARG:애정경험 > 99
+								PRINTFORML 「……이거, 좋아」
+						ENDIF
+						PRINTFORML 
+						PRINTFORM 한동안 %CALLNAME:ARG%의 머리카락의 부드러움과 감촉을 즐기고 있었지만……
+					ENDIF
+				PRINTFORML %CALLNAME:ARG%의 상태가 변했다.
+				IF TALENT:MASTER:사토리（소질） > 0
+					PRINTFORMW ……방금 전 일로 과거의 기억들이 고구마 줄기처럼 줄줄이 떠오르기 시작한 모양이다.
+					PRINTFORML 
+					PRINTFORML 루나와 헤어졌을 때의 공포와 분노, 비열하게 웃는 남자에게 발가벗겨져 채찍질당하던 고통과 굴욕,
+					PRINTFORML 사토리 요괴에게 눈을 들여다보이며 마음을 읽혔을 때의 이해할 수 없는 생명체를 마주한 곤혹과 공포.
+					PRINTFORML 라그 가게의 삭막한 대기실 풍경과 함께 되살아나는 앞날을 알 수 없는 불안과 외로움…….
+					PRINTFORML 
+					PRINTFORML ……이것은 『운다』.
+					PRINTFORML 
+					PRINTFORM 그렇게 깨달은 다음 순간, 그녀의
+				ENDIF
+				PRINTFORMW 눈에서 주룩주룩 눈물이 쏟아지며 어깨가 떨린다.
+				PRINTFORMW 껴안은 장바구니에 얼굴을 묻고 새어 나오는 오열.
+				PRINTFORML 
+				SIF TALENT:MASTER:사토리（소질） < 1
+					PRINTFORMW 향수병이다, 틀림없다.
+				PRINTFORML 
+				PRINTFORMW 아무리 있을 곳이 마련되었다곤 해도 낯선 세계에 혼자뿐이다.
+				PRINTFORMW 언젠가는 이렇게 되어도 이상하지 않은 일이었지만……
+				PRINTFORML 
+				PRINTFORMW 「……윽, 흑……, 으…… 루나아…… 루나아아……윽」
+				PRINTFORML 
+				PRINTFORMW 오가는 사람이 많은 길 한복판에서 울어버리니 속수무책이다.
+				PRINTFORMW 기분 탓인지 주변에서 따가운 시선이 꽂히는 느낌마저 든다.
+				PRINTFORML 
+				;嫁
+				IF 陥落(ARG) > 2 && TALENT:ARG:친애
+					PRINTFORML ……하지만 %CALLNAME:ARG%은(는) %CALLNAME:MASTER%의 반려이기에
+					PRINTFORMW 이러한 수단을 취할 수도 있다.
+					PRINTFORML 
+					PRINTFORMW 주저앉아 칭얼거리는 %CALLNAME:ARG%의 얼굴을 들어 올리고……
+					PRINTFORML 
+					PRINTFORMW 「응, 으…… ……쪽……」
+					PRINTFORML 
+					PRINTFORMW 훌쩍거리는 콧소리를 들으며 입술을 포갰다.
+					PRINTFORMW ……콧물로 젖은 입술이 참으로 형용할 수 없는 감촉이다.
+					PRINTFORML 
+					PRINTFORMW 「훌쩍…… 쪽…… 응…… 흑」
+					PRINTFORML 
+					PRINTFORMW 울어대고 빨아대며 그야말로 커다란 갓난아기나 다름없다.
+					PRINTFORML 
+				;他。
+				ELSE
+					;小柄じゃしょうがねーんだ
+					SIF TALENT:MASTER:소인체형
+						PRINTFORM 꽤 애를 쓰면서도 간신히 닿은
+					PRINTFORMW %CALLNAME:ARG%의 어깨에 손을 얹었다.
+					PRINTFORML ……눈물범벅이 된 얼굴이 이쪽을 보더니,
+					PRINTFORMW 온몸으로 와락 안겨 왔다.
+					PRINTFORMW 본인이 진정될 때까지 원하는 대로 내버려 두기로 했다.
+					PRINTFORMW 
+				ENDIF
+				PRINTFORML 장바구니째로 %CALLNAME:MASTER%에게 안겨 오는 %CALLNAME:ARG%을(를) 달래면서,
+				PRINTFORMW 근본적인 해결책이 되지 못한다는 것을 %CALLNAME:MASTER%은(는) 느끼고 있었다.
+				PRINTFORMW 
+				PRINTFORMW 적어도 루나리에를 찾는 것이 급선무가 될 듯하다.
+				PRINTFORML 
+				PRINTFORMW ……바로 그때,
+				PRINTFORML 
+				PRINTFORML 채
+				PRINTFORML 　　　그
+				PRINTFORMW 　　　　　　랑
+				PRINTFORML 
+				PRINTFORMW 하고,
+				PRINTFORMW 금속질의 긴 물건이 길바닥에 떨어져,
+				PRINTFORMW 굴러가는 듯한 소리가 났다.
+				PRINTFORML 
+				PRINTFORMW 소리가 난 쪽을 바라보니 세 명의 소녀가 있었다.
+				PRINTFORML 
+				PRINTFORMW 은발의…… 기사 코스프레?
+				PRINTFORMW 금발의…… 승려 코스프레?
+				PRINTFORMW 흑발의…… 댄서 코스프레?
+				PRINTFORML 
+				PRINTFORMW 전원 노출이 심해 맨다리와 겨드랑이가 훤히 드러나 있고, 댄서에 이르러서는 속옷 차림 수준이다.
+				PRINTFORML 
+				PRINTFORMW 이런, 이 근방에 이런 수위 높은 캐릭터를 다루는 행사라도 있었던가.
+				PRINTFORMW 그렇게 생각하는 %CALLNAME:MASTER%을(를) 아랑곳하지 않고, 은발 기사 코스어가 떨리는 목소리를 낸다.
+				PRINTFORML 
+				PRINTFORMW 「지…… 질!」
+				IF 陥落(ARG) > 2 && TALENT:ARG:친애
+					PRINTFORML 
+					PRINTFORMW 「……푸에!? 루, 루나!?」
+					PRINTFORML 
+					PRINTFORML 눈물과 콧물, 서로의 타액으로 범벅이 된 얼굴을 들며,
+					PRINTFORMW %CALLNAME:ARG%이(가) 코스어…… 루나리에에게 말을 건넨다.
+					PRINTFORML 
+				;他。
+				ELSE
+					PRINTFORML 
+					PRINTFORMW 「어…… 루나…… 루나!?」
+					PRINTFORML 
+					PRINTFORML 눈물과 콧물로 엉망이 된 얼굴을 들며,
+					PRINTFORMW %CALLNAME:ARG%이(가) 코스어…… 루나리에에게 말을 건넨다.
+					PRINTFORML 
+				ENDIF
+				PRINTFORMW ……루나리에＝엘＝블랑카, 드디어 찾았다.
+				PRINTFORML 
+				PRINTFORMW 「당, 당신 대체 질에게 무슨 짓을! 울리다니……앗!? 떨, 떨어져……앗!」
+				PRINTFORMW 「아, 아니야 루나! 이건……」
+				PRINTFORMW 「하, 하지만 질……!」
+				PRINTFORML 
+				PRINTFORMW %CALLNAME:ARG%의 등을 떠밀어 루나리에의 품으로 뛰어들게 해주었다.
+				PRINTFORMW ……잠시 대화를 나누더니 이내 둘이서 큰 소리로 울기 시작했다.
+				PRINTFORML 둘만의 세계에 빠진 것은 일단 내버려 두고,
+				PRINTFORMW 금발과 흑발의 코스어에게 말을 걸었다.
+				PRINTFORML 
+				PRINTFORMW 「저기…… 저는 크레스, 이 아이는 아이리라고 해요」
+				PRINTFORML 
+				PRINTFORMW 루나리에와 함께 행동하는 것을 보니 아마도 이국의 주민일 것이다.
+				PRINTFORMW %CALLNAME:ARG%이(가) 지금 몸을 의탁하고 있는 상대임을 밝히고 세이프하우스로 초대하기로 했다.
+				PRINTFORML 
+				PRINTFORMW 「그렇네요, 낯선 장소에서 곤란해하고 있던 건 사실이니까요」
+				PRINTFORMW 「난 어찌 되든 좋지만, 루나치는 꽤 힘들어 보였고 말이지~」
+				PRINTFORML 
+				PRINTFORMW 「질으으으으아아아아아~~~!!」
+				PRINTFORMW 「루나아아아아……앗」
+				PRINTFORML 
+				PRINTFORMW 완전히 넋을 놓아버린 두 사람을 셋이서 밀어가며 그 자리를 떠났다.
+				PRINTFORML 
+				PRINTFORMW ……%CALLNAME:ARG%이(가) 들고 있던 장바구니(구겨졌다)는 크레스가 들었다.
+				PRINTFORML 
+					CUSTOMDRAWLINE =
+				PRINTFORML 
+				PRINTFORMW ＞세이프하우스 응접실
+				PRINTFORML 
+				PRINTFORMW %CALLNAME:MASTER%의 가업을 대략 설명한 뒤, %CALLNAME:ARG%의 지금까지의 일들을 떠올리며 이야기했다.
+				PRINTFORML 
+				PRINTFORML 너무 운 반동과 부끄러움으로 눈과 얼굴을 새빨갛게 물들인 루나리에가,
+				PRINTFORMW 크레스, 아이리와 함께 소파에 앉아 있다.
+				PRINTFORMW %CALLNAME:ARG%도 그랬지만, 이 루나리에 또한 꽤나 대단한 울보였다.
+				PRINTFORML 
+				PRINTFORML 「그럼 루나 씨의 주인님이신 이 질 씨가 여기에 있는 이유가,
+				PRINTFORMW 　노예 상인에게 팔려가던 것을 당신이 데려왔기 때문이라는 건가요.
+				PRINTFORML 
+				PRINTFORMW 한편 끄덕이는 %CALLNAME:ARG%은(는) 이미 시치미를 뚝 뗀 채였다.
+				PRINTFORMW 이쪽은 밥이 맛있다느니 장보기가 편리하다느니,
+				PRINTFORMW 현대 사회 문명의 이기에 푹 빠져버린 모습을 태블릿을 꺼내 들며 늘어놓고 있다.
+				PRINTFORML 
+				PRINTFORMW 「질을…… 구해 주셔서 감사합니다……!」
+				PRINTFORML 
+				PRINTFORMW 루나리에에게서도 이야기를 캐낸 결과 종합해 보면……
+				PRINTFORML 
+				PRINTFORML ・%CALLNAME:ARG%이(가) 행방불명된 후 혈혈단신 노예 교역 도시에 뛰어든 루나리에
+				PRINTFORML 　크레스, 아이리와 만나 %CALLNAME:ARG%은(는) 여기에 있을 거라며 찾고 있었으나
+				PRINTFORMW 　본인은커녕 단서조차 거액을 지불한 노예 되사기 업자에게서 얻지 못했다.
+				PRINTFORML ・그러는 사이에 봉인의 땅이 열렸다는 소문을 듣고
+				PRINTFORML 　다른 단서도 없다면 그쪽을 조사하자며 탐색을 시작했던바,
+				PRINTFORML 　심부에 있는 잘 알 수 없는 『텔레포트』(Teleport일 것이다)라는 키를 눌러버려
+				PRINTFORMW 　정신을 차려보니 이쪽으로 와 있었다.
+				PRINTFORML 
+				PRINTFORMW 라는 모양이다.
+				PRINTFORML 단서를 얻을 수 없었던 것은 아마도 라그가 진작에 사들여 버려서,
+				PRINTFORMW 밟을 만한 발자취 자체가 사라져 버렸기 때문이리라.
+				PRINTFORML 
+				PRINTFORMW 「저기…… 『주인님』」
+				PRINTFORML 
+				PRINTFORMW %CALLNAME:ARG%이(가) 굳이 그렇게 말문을 열었다.
+				SIF TALENT:MASTER:사토리（소질） > 0
+					PRINTFORMW 말하려는 바는 알고 있다.
+				PRINTFORML 
+				PRINTFORMW 루나리에 일행에게도 자신과 마찬가지로 있을 곳을 마련해 주었으면 한다, 는 건가?
+				PRINTFORML 
+				PRINTFORMW 「응……」
+				PRINTFORML 
+				PRINTFORMW 물론 가능은 하지만 한 가지 걸림돌이 있다.
+				PRINTFORMW 머무를 곳이 노예 조교사의 곁이어도 상관없느냐는 점이다.
+				PRINTFORML 
+				PRINTFORMW 뭐, 노예라는 제도는 이쪽에선 어둠의 영역이지만……
+				PRINTFORMW 그 어둠의 세계 인물이라는 점이 그녀들에게는 문제가 되지 않는 걸까.
+				PRINTFORML 
+				PRINTFORMW 「……당신은 질을 구해 주었으니까」
+				PRINTFORML 
+				PRINTFORMW 그런가.
+				PRINTFORML 
+				PRINTFORMW 납득하고 있다면야.
+				PRINTFORMW 악마 소환사라는 명목으로 활동하고 있어 거친 일이 필요할 때도 있으니,
+				PRINTFORMW 그럴 때의 전투원으로서 일손을 맡긴다는 명목으로 세 명 모두 납득한 듯하다.
+				PRINTFORML 
+				PRINTFORMW ……몸에 손을 대지 않는 한, 이라는 요구 조건과 함께.
+				PRINTFORML 
+				PRINTFORMW 「저는 루나리에＝엘＝블랑카」
+				PRINTFORMW 「저는 크레스＝그레첸」
+				PRINTFORMW 「난 아이리」
+				PRINTFORML 
+				PRINTFORMW ――앞으로 잘 부탁드립니다.
+				PRINTFORML 
+				;FINDCHARA関数は健在な戦闘参加メンバー(2) > 健在でない戦闘参加メンバー(12) > 健在なCOMP内悪魔OR探索不参加人間(1) > 健在でない～(11) > 自宅サーバーに保存してある悪魔(0)
+				;3人のうち一人でもいない時
+				IF FINDCHARA_B([[キャラ:루나리에]]) < 0 || FINDCHARA_B([[キャラ:클레스]]) < 0 || FINDCHARA_B([[キャラ:아이리_LT]]) < 0
+					PRINTFORML 
+					PRINTFORMW 「그런데 말야……」
+					PRINTFORML 
+					PRINTFORMW 그동안 내내 입을 다물고 있던 아이리가 곁으로 다가와 귓속말을 한다.
+					PRINTFORML 
+					PRINTFORMW 「우리들에 대해 구석구석 조사당해 버릴까? 역시……」
+					PRINTFORML 
+					PRINTFORML 아마도 인간일 터인 세 사람은 그러면서도 MAG 친화성이 높은,
+					PRINTFORMW 이능자로서의 소양을 갖추고 있었다.
+					PRINTFORML 
+					PRINTFORMW 루나는 크레스보다 그 강도가 높고, 아이리는 훨씬 더 강한 모양이지만…….
+					PRINTFORML 
+					PRINTFORMW 어떻게 대답해야 할까.
+					PRINTFORMW 
+						FORCEWAIT
+						SETCOLOR 0x33ffcc
+					PRINTL [0] 조사해 둔다 (악마 해설이 릴리테일즈의 스포일러를 포함)
+					PRINTL [1] 그만둔다
+					CALL INPUTINT, 0 , 1
+						IF RESULT == 0
+							;３人加入処理
+							CALL ADD_NEW_COMPANION, [[キャラ:루나리에]], 1000
+							IF RESULT > 0
+								CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+								PRINTFORML 루나리에가 동료로 가입했습니다.
+							ENDIF
+							CALL ADD_NEW_COMPANION, [[キャラ:클레스]], 1000
+							IF RESULT > 0
+								CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+								PRINTFORML 크레스가 동료로 가입했습니다.
+							ENDIF
+							CALL ADD_NEW_COMPANION, [[キャラ:아이리_LT]], 1000
+							IF RESULT > 0
+								CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+								PRINTFORML 아이리가 동료로 가입했습니다.
+							ENDIF
+							RESETCOLOR
+							PRINTFORMW 「아, 역시……? 아무한테도 말하면 안 돼?」
+							PRINTFORML 
+						;ネタバレ回避版
+						ELSEIF RESULT == 1
+							;３人加入処理
+							CALL ADD_NEW_COMPANION, [[キャラ:루나리에]], 1000
+							IF RESULT > 0
+								CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+								CSTR:(RESULT:1):종족명 = 인간
+								CSTR:(RESULT:1):44 = 彼女は幼少の頃から悪魔の子と呼ばれ忌み嫌われていた。
+								CSTR:(RESULT:1):45 = それが何故かは不明であるが、魔術的な素養は高いらしく、槍術と雷の魔法が得意。
+								CSTR:(RESULT:1):46 = 筋力を魔力で底上げすることで、暴漢やモンスターとも渡り合ってきた。
+								CSTR:(RESULT:1):47 = 　
+								PRINTFORML 루나리에가 동료로 가입했습니다.
+							ENDIF
+							CALL ADD_NEW_COMPANION, [[キャラ:클레스]], 1000
+							IF RESULT > 0
+								CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+								PRINTFORML 크레스가 동료로 가입했습니다.
+							ENDIF
+							CALL ADD_NEW_COMPANION, [[キャラ:아이리_LT]], 1000
+							IF RESULT > 0
+								CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+								CSTR:(RESULT:1):종족명 = 인간
+								CSTR:(RESULT:1):43 = 元が飄々とした性格であるためか、本心はめったに見せないが、
+								CSTR:(RESULT:1):44 = ルナリエのことは、興味の他にも、気に入ってはいたようである。
+								CSTR:(RESULT:1):45 = ……少なくとも、探索に一緒について来て、こんなところに来てしまうくらいには。
+								PRINTFORML 아이리가 동료로 가입했습니다.
+							ENDIF
+							RESETCOLOR
+							PRINTFORMW 「그래? 뭐, 나로선 그 편이 다행이긴 하지만」
+							PRINTFORML 
+						;アナライズ選択肢if終了
+						ENDIF
+					;３人存在分岐終了。
+					ENDIF
+				RETURN 1
+		;淫乱・服従
+		ELSEIF TALENT:ARG:음란 || TALENT:ARG:창부 || TALENT:ARG:복종 || TALENT:ARG:예속
+			;二人称ご主人さまに変更しておく
+			;首輪がなかったら
+			CSTR:ARG:이인칭 = ご主人さま
+			PRINTFORML 
+			PRINTFORMW 「……앗, 아…… 주인님…… 하아」
+			PRINTFORML 
+			PRINTFORM 문득 변덕이 들어,
+			SIF ITEM:개목걸이 == 0
+				PRINTFORM 목줄을 준비하여,
+			PRINTFORML 야외 플레이를 하기로 했다.
+			PRINTFORML 
+			SIF ITEM:개목걸이 == 0
+				ITEM:개목걸이 = 1
+				;未開通
+				IF ABL:ARG:Ａ감각 == 0 && ABL:ARG:Ｖ감각 == 0
+					;お股の方が多い
+					IF ABL:ARG:Ｂ감각 == 0 || (ABL:ARG:Ｂ감각 < 3 && ABL:ARG:Ｂ감각 < ABL:ARG:Ｃ감각)
+						PRINTFORMW 외출의 흥분으로 비소는 옷 너머로도 이미 짙은 냄새를 풍기고 있다.
+					;股がさほどでもなく胸を開発している。
+					ELSEIF ABL:ARG:Ｃ감각 == 0 || (ABL:ARG:Ｃ감각 < 3 && ABL:ARG:Ｃ감각 < ABL:ARG:Ｂ감각)
+						PRINTFORMW 목적지로 향하는 도중 가슴을 주물러 주자 그것만으로 웅크려버릴 정도로 개발은 순조로웠다.
+					ENDIF
+				;前のほうが使ってるor３以上
+				ELSEIF ABL:ARG:Ａ감각 == 0 || (ABL:ARG:Ｖ감각 < 3 && ABL:ARG:Ｖ감각 > ABL:ARG:Ａ감각)
+					PRINTFORM 남자를 몰랐던 여성기는 이제
+					SIF HAVE_PENIS(MASTER) == 1 && EXP:ARG:성교경험 > 0
+						PRINTFORM %CALLNAME:MASTER%의 형태를 기억해내어,
+					PRINTFORML 삽입당하는 것만으로도 절정에 달할 정도이며,
+					PRINTFORMW 타고나길 민감했던 그 몸은 아이 만들기 쾌감에 푹 빠져 있다.
+				;後ろが３以上
+				ELSEIF ABL:ARG:Ａ감각 < 3 && ABL:ARG:Ａ감각 > ABL:ARG:Ｖ감각
+					PRINTFORML 본래의 용도로밖에 쓰지 않았을 엉덩이는,
+					PRINTFORMW 이미 몸속 깊은 곳까지 이물 삽입의 기분 좋음을 기억해 버렸다.
+				;どれも感覚３に至っていない場合は特筆しない。
+				ENDIF
+			PRINTFORML 
+			PRINTFORML 이제는 목줄에조차 흥분하여 참을 수 없다는 듯이
+			PRINTFORMW 허벅지를 비벼대며 안절부절못한 채 %CALLNAME:MASTER%의 뒤를 따라오는 %CALLNAME:ARG%.
+			PRINTFORML 
+			PRINTFORML 목적지인, 인적이 있을 듯 없을 듯한 숲에 도착할 무렵에는
+			PRINTFORMW %CALLNAME:ARG%의 머릿속은 온통 분홍빛으로 물들어 있었다.
+			PRINTFORML 
+			PRINTFORMW 침을 흘리며 이 뒤에 벌어질 행위에 대한 기대감에
+			PRINTFORMW 아름다웠던 금빛 눈동자가 탁하게 흐려진 것이 눈에 들어온다.
+			PRINTFORML 
+			PRINTFORMW ……키스를 나누며 온몸을 쓰다듬었다.
+			PRINTFORML 자극을 온몸으로 받아들이며 달콤한 신음을 흘리며 기뻐하는 모습을 보며,
+			PRINTFORMW 시간을 들여 귀여워해 주기로 했다.
+			PRINTFORML 
+			PRINTFORML 
+			PRINTFORMW ……그 창이 날아들기 전까지는.
+				FORCEWAIT
+			PRINTFORML 
+			PRINTFORMW 소리도 없이 날아와 %CALLNAME:MASTER%을(를) 노린 그 창은,
+			PRINTFORML 
+			PRINTFORMW 아슬아슬하게 회피한 머리를 스치더니 뒤편에 있던 고목에 깊숙이 내리꽂혔다.
+			PRINTFORML 
+			PRINTFORMW 「질……!!」
+			PRINTFORML 
+			PRINTFORML 시선을 돌리자 투척을 마친 자세의 은발 경장 갑주 차림의 여자가,
+			PRINTFORMW 분노로 떨리는 얼굴과 눈동자로 이쪽을 쏘아보고 있었다.
+			PRINTFORML 
+			PRINTFORMW 「아…… 루나아……」
+			PRINTFORML 
+			PRINTFORMW 그 이름에는 짚이는 바가 있다…… %CALLNAME:ARG%에게서 캐낸 적이 있었다.
+			PRINTFORMW 루나리에＝엘＝블랑카.
+			PRINTFORMW 말하길 『엄청난 노력파지만 요리를 못하고 울보』
+			PRINTFORML 
+			PRINTFORMW ……주군을 쫓아 여기까지 찾아왔다――혹은 와버렸다――는 모양이다.
+			PRINTFORMW 눈물겨운 충성심이다.
+			PRINTFORML 
+			PRINTFORMW 「질에게서 떨어져!」
+			PRINTFORML 
+			PRINTFORMW 그 루나리에는 몇 명의 동료를 대동하고 있는 듯했다.
+			PRINTFORMW 곤봉을 쥐고 있는 승려 같은 여자에, 단검을 겨눈 댄서 풍의 여자.
+			PRINTFORML 
+			PRINTFORMW 「루나아…… 주인님, 엄청 대단해에.
+			PRINTFORMW 　루나도 같이 놀자아……」
+			PRINTFORML 
+			PRINTFORML 한편 이미 완전히 타락해 버린 %CALLNAME:ARG%은(는) 루나를 자신의 곁으로 끌어들이고자
+			PRINTFORMW 몽롱하게 취한 정욕과 감정을 소중한 상대에게 쏟아붓는다.
+			PRINTFORML 
+			PRINTFORML 순간 들은 말을 이해하지 못한 기색의 루나리에였으나,
+			PRINTFORMW 이내 또 다른 한 자루의 창을 꺼내 다시 겨눈다.
+			PRINTFORML 
+			PRINTFORMW 제법 대단한 투지다.
+			PRINTFORML 
+			PRINTFORMW 「비열한 놈……!! 질을 이 꼴로 만들어 놓고!!
+			PRINTFORMW 　용서 못 해!!!」
+			PRINTFORML 
+			PRINTFORML ＞격앙하는 루나리에
+			PRINTFORML ＞의기에 불타는 크레스
+			PRINTFORMW ＞진지한 표정의 아이리가 나타났다!
+			PRINTFORML 
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				
+				CALL SET_ENEMY, 8, [[キャラ:클레스]], 60, 1, 1
+				NAME:(CHARANUM-1) = 의에 불타는 크레스
+				CALLNAME:(CHARANUM-1) = 의에 불타는 크레스
+				CFLAG:(CHARANUM-1):ＨＰ보정 += 2000
+				CFLAG:(CHARANUM-1):ＭＰ보정 += 50000
+				CFLAG:(CHARANUM-1):행동횟수 = 2
+				EQUIP:(CHARANUM-1):검 = GETNUM(ITEM, "영조의지팡이")
+				EQUIP:(CHARANUM-1):총 = GETNUM(ITEM, "Ｃａｌ’Ｍａｒｉａ")
+				EQUIP:(CHARANUM-1):머리 = GETNUM(ITEM, "퍼레이드헬름")
+				EQUIP:(CHARANUM-1):몸통 = GETNUM(ITEM, "퍼레이드아머")
+				EQUIP:(CHARANUM-1):팔 = GETNUM(ITEM, "퍼레이드글러브")
+				EQUIP:(CHARANUM-1):발 = GETNUM(ITEM, "퍼레이드부츠")
+				ABL:(CHARANUM-1):스킬1  = [[스킬:디아라마]]
+				ABL:(CHARANUM-1):스킬2  = [[스킬:딜레이・디아]]
+				ABL:(CHARANUM-1):스킬3  = [[스킬:마하에이바리온]]
+				ABL:(CHARANUM-1):스킬4  = [[스킬:마한마바리온]]
+				ABL:(CHARANUM-1):스킬5  = [[스킬:암리타]]
+				ABL:(CHARANUM-1):스킬6  = [[스킬:스마일차지]]
+				ABL:(CHARANUM-1):스킬7  = [[스킬:유혹의안개]]
+				ABL:(CHARANUM-1):스킬8  = 0
+				ABL:(CHARANUM-1):스킬9  = 0
+				ABL:(CHARANUM-1):스킬10  = 0
+				CSTR:(CHARANUM-1):전용기1 = アイアンメイデン
+				CSTR:(CHARANUM-1):전용기2 = ブラッディメイス
+				ABL:(CHARANUM-1):스킬11  = 3904
+				ABL:(CHARANUM-1):스킬12  = 3905
+				CALL SYNC_STATUS, (CHARANUM-1)
+				CALL HEALTH_CHARA, (CHARANUM-1)
+				MAXBASE:(CHARANUM-1):검격 = 100
+				BASE:(CHARANUM-1):비구 = 100
+				MAXBASE:(CHARANUM-1):비구 = 100
+				BASE:(CHARANUM-1):타격 = 100
+				MAXBASE:(CHARANUM-1):타격 = 100
+				BASE:(CHARANUM-1):전술 = 100
+				MAXBASE:(CHARANUM-1):전술 = 100
+				BASE:(CHARANUM-1):화염 = 100
+				MAXBASE:(CHARANUM-1):화염 = 100
+				BASE:(CHARANUM-1):빙결 = 100
+				MAXBASE:(CHARANUM-1):빙결 = 100
+				BASE:(CHARANUM-1):충격 = 100
+				MAXBASE:(CHARANUM-1):충격 = 100
+				BASE:(CHARANUM-1):지변 = 100
+				MAXBASE:(CHARANUM-1):지변 = 100
+				BASE:(CHARANUM-1):질풍 = 100
+				MAXBASE:(CHARANUM-1):질풍 = 100
+				BASE:(CHARANUM-1):중력 = 100
+				MAXBASE:(CHARANUM-1):중력 = 100
+				BASE:(CHARANUM-1):핵열 = 100
+				MAXBASE:(CHARANUM-1):핵열 = 100
+
+				CALL SET_ENEMY, 9, [[キャラ:루나리에]], 70, 1, 1
+				NAME:(CHARANUM-1) = 격앙하는 루나리에
+				CALLNAME:(CHARANUM-1) = 격앙하는 루나리에
+				CFLAG:(CHARANUM-1):ＨＰ보정 += 5000
+				CFLAG:(CHARANUM-1):ＭＰ보정 += 50000
+				CFLAG:(CHARANUM-1):행동횟수 = 2
+				;PRAYerからのコピペ
+				EQUIP:(CHARANUM-1):검 = GETNUM(ITEM, "셀티스")
+				EQUIP:(CHARANUM-1):총 = GETNUM(ITEM, "황금총")
+				EQUIP:(CHARANUM-1):머리 = GETNUM(ITEM, "퍼레이드헬름")
+				EQUIP:(CHARANUM-1):몸통 = GETNUM(ITEM, "퍼레이드아머")
+				EQUIP:(CHARANUM-1):팔 = GETNUM(ITEM, "퍼레이드글러브")
+				EQUIP:(CHARANUM-1):발 = GETNUM(ITEM, "퍼레이드부츠")
+				ABL:(CHARANUM-1):스킬1  = [[스킬:기합]]
+				ABL:(CHARANUM-1):스킬2  = [[스킬:밤벚꽃의춤]]
+				ABL:(CHARANUM-1):스킬3  = [[스킬:이신의잔영]]
+				ABL:(CHARANUM-1):스킬4  = [[스킬:히트라이저]]
+				ABL:(CHARANUM-1):스킬5  = [[스킬:이악물기]]
+				ABL:(CHARANUM-1):스킬6  = [[스킬:천열찌르기]]
+				ABL:(CHARANUM-1):스킬7  = [[스킬:만마의일격]]
+				ABL:(CHARANUM-1):스킬8  = 0
+				ABL:(CHARANUM-1):스킬9  = 0
+				CSTR:(CHARANUM-1):전용기1 = ガンマ・レイ
+				CSTR:(CHARANUM-1):전용기2 = ファヤダーン
+				CSTR:(CHARANUM-1):전용기3 = サンダーボルト（LT）
+				ABL:(CHARANUM-1):스킬10  = 3904
+				ABL:(CHARANUM-1):스킬11  = 3905
+				ABL:(CHARANUM-1):스킬12  = 3906
+				CALL SYNC_STATUS, (CHARANUM-1)
+				CALL HEALTH_CHARA, (CHARANUM-1)
+				MAXBASE:(CHARANUM-1):검격 = 100
+				BASE:(CHARANUM-1):비구 = 100
+				MAXBASE:(CHARANUM-1):비구 = 100
+				BASE:(CHARANUM-1):타격 = 100
+				MAXBASE:(CHARANUM-1):타격 = 100
+				BASE:(CHARANUM-1):전술 = 100
+				MAXBASE:(CHARANUM-1):전술 = 100
+				BASE:(CHARANUM-1):화염 = 100
+				MAXBASE:(CHARANUM-1):화염 = 100
+				BASE:(CHARANUM-1):빙결 = 100
+				MAXBASE:(CHARANUM-1):빙결 = 100
+				BASE:(CHARANUM-1):충격 = 100
+				MAXBASE:(CHARANUM-1):충격 = 100
+				BASE:(CHARANUM-1):지변 = 100
+				MAXBASE:(CHARANUM-1):지변 = 100
+				BASE:(CHARANUM-1):질풍 = 100
+				MAXBASE:(CHARANUM-1):질풍 = 100
+				BASE:(CHARANUM-1):중력 = 100
+				MAXBASE:(CHARANUM-1):중력 = 100
+				BASE:(CHARANUM-1):핵열 = 100
+				MAXBASE:(CHARANUM-1):핵열 = 100
+
+				CALL SET_ENEMY, 10, [[キャラ:아이리_LT]], 60, 1, 1
+				NAME:(CHARANUM-1) = 진지한 얼굴의 아이리
+				CALLNAME:(CHARANUM-1) = 진지한 얼굴의 아이리
+				CFLAG:(CHARANUM-1):ＨＰ보정 += 2000
+				CFLAG:(CHARANUM-1):ＭＰ보정 += 50000
+				CFLAG:(CHARANUM-1):행동횟수 = 3
+				EQUIP:(CHARANUM-1):검 = GETNUM(ITEM, "영조의지팡이")
+				EQUIP:(CHARANUM-1):총 = GETNUM(ITEM, "Ｃａｌ’Ｍａｒｉａ")
+				EQUIP:(CHARANUM-1):머리 = GETNUM(ITEM, "퍼레이드헬름")
+				EQUIP:(CHARANUM-1):몸통 = GETNUM(ITEM, "퍼레이드아머")
+				EQUIP:(CHARANUM-1):팔 = GETNUM(ITEM, "퍼레이드글러브")
+				EQUIP:(CHARANUM-1):발 = GETNUM(ITEM, "퍼레이드부츠")
+				ABL:(CHARANUM-1):스킬1  = [[스킬:컨센트레이트]]
+				ABL:(CHARANUM-1):스킬2  = [[스킬:치유의파동]]
+				ABL:(CHARANUM-1):스킬3  = [[스킬:블레이드댄스]]
+				ABL:(CHARANUM-1):스킬4  = [[스킬:정신가드킬]]
+				ABL:(CHARANUM-1):스킬5  = [[스킬:마의도눔]]
+				ABL:(CHARANUM-1):스킬6  = [[스킬:마카라칸]]
+				ABL:(CHARANUM-1):스킬7  = [[스킬:절세의육체]]
+				ABL:(CHARANUM-1):스킬8  = 0
+				ABL:(CHARANUM-1):스킬9  = 0
+				ABL:(CHARANUM-1):스킬10  = 0
+				CSTR:(CHARANUM-1):전용기1 = 焔の炎刃
+				CSTR:(CHARANUM-1):전용기2 = ドレインキッス
+				ABL:(CHARANUM-1):스킬11  = 3904
+				ABL:(CHARANUM-1):스킬12  = 3905
+				CALL SYNC_STATUS, (CHARANUM-1)
+				CALL HEALTH_CHARA, (CHARANUM-1)
+				MAXBASE:(CHARANUM-1):검격 = 100
+				BASE:(CHARANUM-1):비구 = 100
+				MAXBASE:(CHARANUM-1):비구 = 100
+				BASE:(CHARANUM-1):타격 = 100
+				MAXBASE:(CHARANUM-1):타격 = 100
+				BASE:(CHARANUM-1):전술 = 100
+				MAXBASE:(CHARANUM-1):전술 = 100
+				BASE:(CHARANUM-1):화염 = 100
+				MAXBASE:(CHARANUM-1):화염 = 100
+				BASE:(CHARANUM-1):빙결 = 100
+				MAXBASE:(CHARANUM-1):빙결 = 100
+				BASE:(CHARANUM-1):충격 = 100
+				MAXBASE:(CHARANUM-1):충격 = 100
+				BASE:(CHARANUM-1):지변 = 100
+				MAXBASE:(CHARANUM-1):지변 = 100
+				BASE:(CHARANUM-1):질풍 = 100
+				MAXBASE:(CHARANUM-1):질풍 = 100
+				BASE:(CHARANUM-1):중력 = 100
+				MAXBASE:(CHARANUM-1):중력 = 100
+				BASE:(CHARANUM-1):핵열 = 100
+				MAXBASE:(CHARANUM-1):핵열 = 100
+
+				CALL BATTLE_START
+
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+
+			PRINTFORML 
+			PRINTFORMW 루나리에 일행을 격파했다.
+			PRINTFORML 
+			PRINTFORMW 「큭……!!」
+			PRINTFORML 
+			PRINTFORMW 승려와 댄서가 쓰러지고 자신도 방금 전의 일격으로 싸울 기력 따윈 남아있지 않을 텐데도,
+			PRINTFORMW 이 루나리에라는 여자는 아직도 일어서려 하고 있다.
+			PRINTFORMW 참으로 주인을 생각하는 아이로다. 존경할 만하다.
+			PRINTFORML 
+			PRINTFORMW 「질과 함께…… 돌아가야 하는데…… 이런 곳에서엇」
+			PRINTFORMW 「루나…… 괜찮아아」
+			PRINTFORML 
+			PRINTFORMW %CALLNAME:ARG%이(가) 입을 연다.
+			PRINTFORML 
+			PRINTFORMW 「%CSTR:ARG:일인칭%과(와) 함께…… 루나도 주인님께 귀여움 받으면 계속 함께일 수 있으니까.」
+			PRINTFORMW 「윽…………!!」
+			PRINTFORML 
+			PRINTFORMW 진심으로 한 말이었을 그것은 루나리에에게 숨통을 끊어놓기엔 충분했던 모양이다.
+			PRINTFORMW 실이 끊어진 인형처럼 루나리에도 움직이지 않게 되었다.
+			PRINTFORML 
+			PRINTFORMW 「그치, 주인님…… 루나를 데리고 돌아가 줄 거지?」
+			PRINTFORML 
+				PRINTL [0] 인정한다
+				PRINTL [1] 생각해 본다
+				CALL INPUTINT, 0 , 1
+				IF RESULT == 0
+					PRINTFORML 
+					PRINTFORMW 「에헤헤…… 고마워. 다정한 주인님, 너무 좋아」
+					PRINTFORML 
+					PRINTFORMW 활 모양으로 가늘게 뜬 금빛 눈동자로,
+					PRINTFORMW 쓰러진 루나리에를 덮쳐 안는 %CALLNAME:ARG%은(는)
+					PRINTFORMW 기쁨이 가득한 표정이었다.
+					PRINTFORML 
+				ELSEIF RESULT == 1
+					PRINTFORML 
+					PRINTFORMW 물론 데리고 돌아가 봤자 미조교 노예가 늘어날 뿐이다.
+					PRINTFORMW 이만큼이나 적개심을 품고 있다면 조교하여 함락시키기 전까지는 도움이 되지 않을 것이다.
+					PRINTFORML 
+					PRINTFORMW ……노예 방에 처넣어 두는 정도라면 문제는 없겠지.
+					PRINTFORML 
+					PRINTFORMW 「주인님, 기뻐……」
+					PRINTFORML 
+				ENDIF
+			PRINTFORML 한바탕 결박하여 무력화한 뒤,
+			PRINTFORMW 데리고 돌아와 노예 방에 처넣었다.
+			PRINTFORML 
+			PRINTFORMW 루나리에와 댄서에게서는 서큐버스종에 가까운 MAG가 느껴진다.
+			PRINTFORMW ……다루기에 따라선 좋은 성노예가 될 수 있겠지.
+			PRINTFORML 
+			;３人のうち誰かかけていた場合加入時の選択肢へ。
+			IF FINDCHARA_B([[キャラ:루나리에]]) < 0 || FINDCHARA_B([[キャラ:클레스]]) < 0 || FINDCHARA_B([[キャラ:아이리_LT]]) < 0
+				PRINTFORMW 애널라이즈하면 약력 등도 알아낼 수 있을지도 모른다.
+				PRINTFORML 
+				FORCEWAIT
+				SETCOLOR 0x33ffcc
+				PRINTL [0] 조사해 둔다 (악마 해설이 릴리테일즈의 스포일러를 포함)
+				PRINTL [1] 그만둔다
+				CALL INPUTINT, 0 , 1
+				IF RESULT == 0
+					;３人加入処理
+					CALL ADD_NEW_COMPANION, [[キャラ:루나리에]], 100
+					IF RESULT > 0
+						;CALL SYNC_STATUS,(RESULT:1)
+						;CALL HEALTH_CHARA,(RESULT:1)
+						PRINTFORML 루나리에를 노예로 추가했습니다.
+					ENDIF
+					CALL ADD_NEW_COMPANION, [[キャラ:클레스]], 100
+					IF RESULT > 0
+						;CALL SYNC_STATUS,(RESULT:1)
+						;CALL HEALTH_CHARA,(RESULT:1)
+						PRINTFORML 크레스를 노예로 추가했습니다.
+					ENDIF
+					CALL ADD_NEW_COMPANION, [[キャラ:아이리_LT]], 100
+					IF RESULT > 0
+						;CALL SYNC_STATUS,(RESULT:1)
+						;CALL HEALTH_CHARA,(RESULT:1)
+						PRINTFORML 아이리를 노예로 추가했습니다.
+					ENDIF
+					RESETCOLOR
+				;ネタバレ回避版
+				ELSEIF RESULT == 1
+					;３人加入処理
+					CALL ADD_NEW_COMPANION, [[キャラ:루나리에]], 100
+					IF RESULT > 0
+						CSTR:(RESULT:1):종족명 = 인간
+						CSTR:(RESULT:1):44 = 彼女は幼少の頃から悪魔の子と呼ばれ忌み嫌われていた。
+						CSTR:(RESULT:1):45 = それが何故かは不明であるが、魔術的な素養は高いらしく、槍術と雷の魔法が得意。
+						CSTR:(RESULT:1):46 = 筋力を魔力で底上げすることで、暴漢やモンスターとも渡り合ってきた。
+						CSTR:(RESULT:1):47 = 　
+						;CALL SYNC_STATUS,(RESULT:1)
+						;CALL HEALTH_CHARA,(RESULT:1)
+						PRINTFORML 루나리에를 노예로 추가했습니다.
+					ENDIF
+					CALL ADD_NEW_COMPANION, [[キャラ:클레스]], 100
+					IF RESULT > 0
+						;CALL SYNC_STATUS,(RESULT:1)
+						;CALL HEALTH_CHARA,(RESULT:1)
+						PRINTFORML 크레스를 노예로 추가했습니다.
+					ENDIF
+					CALL ADD_NEW_COMPANION, [[キャラ:아이리_LT]], 100
+					IF RESULT > 0
+						CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+						CSTR:(RESULT:1):종족명 = 인간
+						CSTR:(RESULT:1):43 = 元が飄々とした性格であるためか、本心はめったに見せないが、
+						CSTR:(RESULT:1):44 = ルナリエのことは、興味の他にも、気に入ってはいたようである。
+						CSTR:(RESULT:1):45 = ……少なくとも、探索に一緒について来て、こんなところに来てしまうくらいには。
+						;CALL SYNC_STATUS,(RESULT:1)
+						;CALL HEALTH_CHARA,(RESULT:1)
+						PRINTFORML 아이리를 노예로 추가했습니다.
+					ENDIF
+					RESETCOLOR
+				;アナライズ選択肢if終了
+				ENDIF
+			ENDIF
+			RETURN 1
+		ELSE
+			PRINTL 함락되어 있는데도 참조되지 않는 항목이 발생했으므로 버그일 수 있습니다. 보고해 주십시오.
+		ENDIF
+	ENDIF
+CASE 1
+	;解放条件
+	IF ARG:1 == 1
+		;前イベントの　シアノとクレーンゲーム　既読後
+		;SIF GETBIT(CFLAG:CAST:개별이벤트읽음,0)
+		;	RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			RESULTS = 
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			;RESULTS = (%CALLNAME:ARG%とクレーンゲームを見ている)
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		
+		
+		
+		
+		;好感度以外は後に上昇値が表示される
+		;CFLAG:ARG:(MASTER + 2100) += (好感度)
+		;TCVAR:ARG:획득의존도 += 
+		;TCVAR:ARG:획득충성도 += 
+		;CALL ADDS_EXP("○○経験", 1, ARG)
+		RETURN 1
+	ENDIF
+ENDSELECT
+RETURN 0

@@ -1,0 +1,129 @@
+﻿
+;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_アフターバーナー_カガリ,ARG
+RESULTS = 애프터버너
+
+;　명중
+@SKILL_HITRATE_アフターバーナー_カガリ, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_アフターバーナー_カガリ, ARG
+RETURN 450
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_アフターバーナー_カガリ,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_アフターバーナー_カガリ,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_アフターバーナー_カガリ, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+
+;　コストの量
+@SKILL_COST_アフターバーナー_カガリ,ARG
+RETURN 30
+
+;　相性
+@SKILL_TYPE_アフターバーナー_カガリ,ARG
+RETURN GET_TYPE_NUM("화염")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_アフターバーナー_カガリ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_アフターバーナー_カガリ, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_アフターバーナー_カガリ, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_アフターバーナー_カガリ,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_アフターバーナー_カガリ,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_アフターバーナー_カガリ, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_アフターバーナー_カガリ
+RETURN GET_SUCCESSION_NUM("화염")
+
+;속도보정
+@SKILL_SPEED_アフターバーナー_カガリ, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_アフターバーナー_カガリ
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_アフターバーナー_カガリ, ARG = -1
+RETURN 12
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_アフターバーナー_カガリ, ARG, ARG:1, ARG:2
+CALL ATTACK_SKILL, ARG, ARG:1, ARG:2
+CALL PUSH_CEMETERY_閃刀魔法, ARG, "アフターバーナー"
+
+;====================================================
+;ダメージ発動時
+;ARG:0	行動者のキャラ番号
+;ARG:1	対象のキャラ番号
+;ARG:2	1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;
+;備考:標準の追加効果付与はblock・吸収の場合は発動しない。
+;====================================================
+@SKILL_DAMAGE_EFFECT_アフターバーナー_カガリ, ARG, ARG:1, ARG:2
+SIF ARG:1 < 0
+	RETURN 0
+;無効以下では発動しない
+SIF ARG:2 <= -2
+	RETURN 0
+SIF GET_COUNT_閃刀カウンター(ARG) < 3
+	RETURN 0
+CALL SKILL_SET_カジャンダ, ARG, ARG:1, "방어", -8, "短縮"
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_アフターバーナー_カガリ, ARG
+PRINTL 【閃刀魔法】
+PRINTL 적 1체에 화염 속성의 물리 특대 데미지를 가한다. 후열 사용 가능.
+PRINTL 스킬 발동 후 섬도 카운터를 1개 얻는다.
+PRINTL 
+PRINTL 〈강화 효과〉 섬도 카운터가 3개 이상 있을 경우,
+PRINTL 공격 성공 시 대상의 방어력을 대폭 저하시킨다.
+PRINTL 강화 효과 발동 후 섬도 카운터를 얻는 대신 3개 제거한다.
+PRINTL 
+PRINTL 이 스킬은 전투 중 1회만 사용 가능.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_アフターバーナー_カガリ,ARG
+RESULTS = 스킬 사용 완료
+SIF !IS_USEABLE_閃刀魔法(ARG, "アフターバーナー")
+	RETURN 0
+RETURN 1
+
+@リンク不能_アフターバーナー_カガリ
+RETURN 1
+
+@SKILL_TAG_アフターバーナー_カガリ
+RESULTS = 閃刀魔法

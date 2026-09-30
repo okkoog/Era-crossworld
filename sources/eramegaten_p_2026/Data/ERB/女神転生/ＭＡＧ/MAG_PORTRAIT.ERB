@@ -1,0 +1,871 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Test Module		:MAG_PORTRAIT.ERB
+;
+;	Modification Data:写せ身を利用した強化処理を定義するファイル
+;
+;	Edit	Date			Author					Reason
+;	001		2024/05/17		P(bazzile)				新規作成
+;	002		2024/06/01		P(bazzile)				wasd入力に対応
+;													行数が足りない場合に表示が吹き飛ばないように
+;													行数が足りない環境を想定して少行数モードを追加
+;													最終確認ウィンドウを下から計算するようにしてウィンドウサイズの影響をうけないように
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;================================================
+;写せ身の極意(現身によるスキル習得)
+;================================================
+@MAG_LEARN_SKILL_BY_PORTRATE, L_CHARA, L_MODE
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_MODE
+
+;================================================
+;神格習合(現身による耐性と継承素質のセット)
+;================================================
+@MAG_ENHANCE_DEFTYPE_BY_PORTRATE, L_CHARA, L_MODE
+#DIM CONST MAIN_LAYER_NO = 1
+#DIM CONST INPUT_LAYER_NO = 2
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_XPOS
+#DIM DYNAMIC L_YPOS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_MODE
+#DIM DYNAMIC ABSOLUTE_BASE_YPOS
+#DIM DYNAMIC L_DEFTYPE_COLUMN_MAXNUM = 5
+#DIM DYNAMIC L_DEFTYPE_ROW_MAXNUM = 3
+#DIM DYNAMIC SELECT_RACE
+#DIM DYNAMIC SELECT_DEVIL_NO
+#DIM DYNAMIC SELECT_DEVIL_LIST
+#DIM DYNAMIC SELECT_RACE_LIST
+#DIM DYNAMIC L_DEVIL_LIST,RACENUM,200
+#DIM DYNAMIC EXCLUDE_DEVIL_NO, CSVCHARANUM
+#DIM DYNAMIC L_RACE_LIST,RACENUM
+#DIM DYNAMIC COUNT_DEVIL_IN_RACE,RACENUM
+#DIM DYNAMIC STOCK_REDRAW
+#DIM DYNAMIC L_BUTTON_NUM
+#DIM DYNAMIC BUTTON_COORD, 100, 4
+#DIMS DYNAMIC BUTTON_VALUE, 100
+#DIMS DYNAMIC LOCKED_SYMBOL
+#DIMS CONST SYMBOL_FOR_DEVIL_TABLE = "z", "x"
+#DIMS CONST SYMBOL_FOR_RACE_TABLE = "*", "/", "+", "-"
+#DIM DYNAMIC DELAY_WHEEL
+VARI COUNT_PRINT_BUNNER = L_DEFTYPE_COLUMN_MAXNUM * L_DEFTYPE_ROW_MAXNUM
+
+STOCK_REDRAW = CURRENTREDRAW()
+REDRAW 0
+VARI START_LINE = LINECOUNT
+
+;------------------------------------------------
+;写せ身にできる悪魔をすべて登録
+;------------------------------------------------
+$MAKE_LIST
+VARI L_DEVIL_NO
+VARSET L_DEVIL_LIST:0:0
+VARSET COUNT_DEVIL_IN_RACE
+LOCKED_SYMBOL '= ""
+
+FOR L_DEVIL_NO, 0, CSVCHARANUM
+	SIF !IS_USEABLE_DEVIL_AS_PORTRAIT(L_DEVIL_NO)
+		CONTINUE
+	VARI TEMP_RACE = CSVABL(L_DEVIL_NO, GETNUM(ABL, "종족"))
+	;種族リストに登録する
+	SIF !MATCH(L_RACE_LIST, TEMP_RACE)
+		L_RACE_LIST:FINDELEMENT(L_RACE_LIST, 0) = TEMP_RACE
+	;除外リストに入っている場合
+	SIF EXCLUDE_DEVIL_NO:L_DEVIL_NO
+		CONTINUE
+	L_DEVIL_LIST:TEMP_RACE:(COUNT_DEVIL_IN_RACE:TEMP_RACE) = L_DEVIL_NO
+	COUNT_DEVIL_IN_RACE:TEMP_RACE++
+NEXT
+
+;一応並べなおす
+ARRAYSORT L_RACE_LIST, FORWARD, 0, FINDELEMENT(L_RACE_LIST, 0)
+
+$START
+CLEARLINE LINECOUNT - START_LINE
+HTML_PRINT_ISLAND_CLEAR
+VARS SHOWLINE
+
+;------------------------------------------------
+;表示領域の決定
+;------------------------------------------------
+IF G_PRINT_FEWLINE_MODE == 0
+	ABSOLUTE_BASE_YPOS = -GET_HEIGHTLENS() * 100 - 100
+	L_DEFTYPE_COLUMN_MAXNUM = 5
+	L_DEFTYPE_ROW_MAXNUM = 3
+ELSE
+	ABSOLUTE_BASE_YPOS = -(GET_HEIGHTLENS() - 12) * 100 - 100
+	L_DEFTYPE_COLUMN_MAXNUM = 5
+	L_DEFTYPE_ROW_MAXNUM = 2
+ENDIF
+SELECT_RACE = L_RACE_LIST:SELECT_RACE_LIST;現在選択中の種族
+IF SELECT_DEVIL_LIST < 0
+	SELECT_DEVIL_NO = 0
+ELSE
+	SELECT_DEVIL_NO = L_DEVIL_LIST:SELECT_RACE:SELECT_DEVIL_LIST;現在選択中の悪魔のNO
+ENDIF
+;============================================================================================================================
+;------------------------------------------------
+;強化対象の情報
+;------------------------------------------------
+;区切り線
+SHOWLINE '= @"<div display = 'absolute-leftbottom' xpos = '0' ypos = '{CONVERT_YPOS_TOP_TO_BUTTOM(0, ABSOLUTE_BASE_YPOS)}'>" + DRAWLINESTR + "</div>"
+HTML_PRINT_ISLAND SHOWLINE, MAIN_LAYER_NO
+
+;アイコン
+SHOWLINE '= @"<div display = 'absolute-leftbottom' xpos = '0' ypos = '{CONVERT_YPOS_TOP_TO_BUTTOM(100, ABSOLUTE_BASE_YPOS)}'>" + GET_FACE_BY_CHARA_AS_HTML(L_CHARA) + "</div>"
+HTML_PRINT_ISLAND SHOWLINE, MAIN_LAYER_NO
+
+VARSET SHOWLINE
+VARI L_BASE_XPOS = 750
+VARI L_BASE_YPOS = 100
+
+SHOWLINE += @"<div xpos = '0' ypos = '0'>" + CALLNAME:L_CHARA + "</div>"
+SHOWLINE += @"<div xpos = '0' ypos = '100'>" + @"Lv  : {BASE:L_CHARA:LV}" + "</div>"
+SHOWLINE += @"<div xpos = '0' ypos = '200'>" + @"MAG :" + "</div>"
+
+;------------------------------------------------
+;必要MAG/所持MAGとバー表示
+;------------------------------------------------
+VARI L_MAG_BARLENS = 1100
+VARI TEMP_MAX_VALUE
+VARI L_SELECT_DEVIL_COST
+IF SELECT_DEVIL_NO > 0
+	L_SELECT_DEVIL_COST = GET_COST_MAG_ENHANCE_DEFTYPE_BY_PORTRATE(SELECT_DEVIL_NO, L_CHARA)
+	TEMP_MAX_VALUE = MAX(GET_CHARA_MAXMAG(L_CHARA), L_SELECT_DEVIL_COST)
+	SHOWLINE += @"<div xpos = '0' ypos = '400'>" + CSVCALLNAME(SELECT_DEVIL_NO) + "</div>"
+	SHOWLINE += @"<div xpos = '0' ypos = '500'>" + "COST:" + "</div>"
+
+	L_BAR_COLOR '= TOSTR_HTML(COLOR("藍色"))
+	VARI TEMP_BARLENS = LIMIT(L_SELECT_DEVIL_COST * L_MAG_BARLENS / TEMP_MAX_VALUE, 0, L_MAG_BARLENS)
+	SIF TEMP_BARLENS > 0
+		SHOWLINE += @"<div xpos = '250' ypos = '500'>" + @"<shape type = 'rect' param = '0, 40, {TEMP_BARLENS}, 40' color = '%L_BAR_COLOR%'>" + "</div>"
+	SHOWLINE += @"<div xpos = '{250 +25 + L_MAG_BARLENS - STRLENS(TOSTR(L_SELECT_DEVIL_COST)) * 50}' ypos = '500'>" + @"{L_SELECT_DEVIL_COST}" + "</div>"
+ELSE
+	TEMP_MAX_VALUE = GET_CHARA_MAXMAG(L_CHARA)
+ENDIF
+
+VARS L_BAR_COLOR, 2
+L_BAR_COLOR:0 '= TOSTR_HTML(BARCOLORSET("紫")), TOSTR_HTML(RESULT:1)
+L_XPOS = L_BASE_XPOS + 250
+L_YPOS = CONVERT_YPOS_TOP_TO_BUTTOM(L_BASE_YPOS + 200, ABSOLUTE_BASE_YPOS)
+
+VARI TEMP_BARLENS = LIMIT(GET_CHARA_MAXMAG(L_CHARA) * L_MAG_BARLENS / TEMP_MAX_VALUE, 25, L_MAG_BARLENS)
+SHOWLINE += @"<div xpos = '250' ypos = '200'>" + @"<shape type = 'rect' param = '0, 40, {TEMP_BARLENS}, 40' color = '%L_BAR_COLOR:1%'>" + "</div>"
+
+VARI TEMP_BARLENS = LIMIT(GET_CHARA_STOCK_MAG(L_CHARA) * L_MAG_BARLENS / TEMP_MAX_VALUE, 0, L_MAG_BARLENS)
+SIF TEMP_BARLENS > 24
+	SHOWLINE += @"<div xpos = '250' ypos = '200'>" + @"<shape type = 'rect' param = '0, 40, {TEMP_BARLENS}, 40' color = '%L_BAR_COLOR%'>" + "</div>"
+SHOWLINE += @"<div xpos = '{250 +25 + L_MAG_BARLENS - STRLENS(TOSTR(GET_CHARA_STOCK_MAG(L_CHARA))) * 50}' ypos = '200'>" + @"{GET_CHARA_STOCK_MAG(L_CHARA)}" + "</div>"
+
+VARI HEIGHT_CHARA_INFO = 800
+
+;----------------------------------------
+;区切りの破断線
+;----------------------------------------
+VARS BLOKEN_BAR_2
+TEMP_BLOKEN_BAR '= ("¦" + "<br>") * 6 + "¦"
+SHOWLINE += @"<div xpos = '{300 + 25 + L_MAG_BARLENS}' ypos = '{-50}'>" + TEMP_BLOKEN_BAR + "</div>"
+
+SHOWLINE '= @"<div display = 'absolute-leftbottom' xpos = '{L_BASE_XPOS}' ypos = '{CONVERT_YPOS_TOP_TO_BUTTOM(L_BASE_YPOS, ABSOLUTE_BASE_YPOS)}'>" + SHOWLINE + "</div>"
+HTML_PRINT_ISLAND SHOWLINE, MAIN_LAYER_NO
+;============================================================================================================================
+;----------------------------------------
+;継承素質
+;----------------------------------------
+L_BASE_XPOS = L_BASE_XPOS + 300 + 25 + L_MAG_BARLENS + 50
+L_BASE_YPOS = 100
+
+VARSET SHOWLINE
+SHOWLINE += @"<div xpos = '0' ypos = '0'>" + "□継承素質" + "</div>"
+
+VARS TEMP_SUCCESION_SHOWLINE
+FOR L_SUCCESSION, 0, SUCCESSIONNUM
+	L_TALENT_NO = GETNUM(TALENT, "검격") + L_SUCCESSION
+	IF L_SUCCESSION == 0
+		TEMP_SUCCESION_SHOWLINE += "　"
+	ELSE
+		SIF L_SUCCESSION % 5 == 0
+			TEMP_SUCCESION_SHOWLINE += "<br>" + "　"
+	ENDIF
+	IF CSVTALENT(EQUIP:L_CHARA:허물, L_TALENT_NO)
+		TEMP_SUCCESION_SHOWLINE += GET_SUCCESSION(L_SUCCESSION)
+	ELSE
+		TEMP_SUCCESION_SHOWLINE += SET_COLOR_TAG(GET_SUCCESSION(L_SUCCESSION), "gray")
+	ENDIF
+	TEMP_SUCCESION_SHOWLINE += "　 "
+NEXT
+SHOWLINE += @"<div xpos = '0' ypos = '100'>" + TEMP_SUCCESION_SHOWLINE + "</div>"
+;----------------------------------------
+;区切りの破断線
+;----------------------------------------
+VARS TEMP_BLOKEN_BAR
+TEMP_BLOKEN_BAR '= ("¦" + "<br>") * 6 + "¦"
+SHOWLINE += @"<div xpos = '1825' ypos = '-50'>" + TEMP_BLOKEN_BAR + "</div>"
+
+SHOWLINE '= @"<div display = 'absolute-leftbottom' xpos = '{L_BASE_XPOS}' ypos = '{CONVERT_YPOS_TOP_TO_BUTTOM(L_BASE_YPOS, ABSOLUTE_BASE_YPOS)}'>" + SHOWLINE + "</div>"
+HTML_PRINT_ISLAND SHOWLINE, MAIN_LAYER_NO
+
+;============================================================================================================================
+;----------------------------------------
+;防御相性
+;----------------------------------------
+L_BASE_XPOS = L_BASE_XPOS + 1875
+L_BASE_YPOS = 100
+
+VARSET SHOWLINE
+SHOWLINE += @"<div xpos = '0' ypos = '0'>" + "□防御相性" + "</div>"
+VARI L_TYPE
+VARS TEMP_SHOWLINE
+VARI TYPE_COLUMNNUM = 4
+FOR L_TYPE, 0, TYPENUM
+	IF L_TYPE % TYPE_COLUMNNUM == 0
+		IF L_TYPE == 0
+			TEMP_SHOWLINE += "　"
+		ELSE
+			TEMP_SHOWLINE += "<br>" + "　"
+		ENDIF
+	ENDIF
+	TEMP_SHOWLINE += GET_TYPE(L_TYPE) + " " + GET_STR_OF_DEFTYPE_FOR_HTML(CSVBASE(EQUIP:L_CHARA:허물, GETNUM(BASE, GET_TYPE(L_TYPE)))) + "　　　"
+NEXT
+SHOWLINE += @"<div xpos = '0' ypos = '100'>" + TEMP_SHOWLINE + "</div>"
+
+SHOWLINE '= @"<div display = 'absolute-leftbottom' xpos = '{L_BASE_XPOS}' ypos = '{CONVERT_YPOS_TOP_TO_BUTTOM(L_BASE_YPOS, ABSOLUTE_BASE_YPOS)}'>" + SHOWLINE + "</div>"
+HTML_PRINT_ISLAND SHOWLINE, MAIN_LAYER_NO
+
+;============================================================================================================================
+;----------------------------------------
+;허물
+;----------------------------------------
+VARI L_COLUMN
+VARI L_ROW
+VARI START_DEVIL_NO = (SELECT_DEVIL_LIST / COUNT_PRINT_BUNNER) * COUNT_PRINT_BUNNER;表示の起点になる番号 = ページ内で一番若い番号
+
+VARS TEMP_BANNER, 3
+VARI TEMP_BANNER_LENS = 26
+
+VARI HEIGHT_CHARA_INFO_NAME = 200
+VARI HEIGHT_CHARA_INFO_SUCCESION = 300
+VARI HEIGHT_CHARA_INFO_DEFTYPE = 700
+
+L_BUTTON_NUM = 0
+FOR L_ROW, 0, L_DEFTYPE_ROW_MAXNUM
+	FOR L_COLUMN, 0, L_DEFTYPE_COLUMN_MAXNUM
+		VARSET TEMP_BANNER
+		;PADDINGで50*2、余白で50*1
+		L_BASE_XPOS = 750 + L_COLUMN * (((TEMP_BANNER_LENS + 3) * 50 + 25))
+		L_BASE_YPOS = HEIGHT_CHARA_INFO + L_ROW * (HEIGHT_CHARA_INFO_NAME + HEIGHT_CHARA_INFO_SUCCESION + HEIGHT_CHARA_INFO_DEFTYPE + 50)
+		
+		;----------------------------------------
+		;表示悪魔の確定と名前の取得
+		;----------------------------------------
+		VARI TEMP_NO = L_ROW * L_DEFTYPE_COLUMN_MAXNUM + L_COLUMN
+		;要素数がオーバーしてたら終わり
+		SIF START_DEVIL_NO + TEMP_NO >= VARSIZE("L_DEVIL_LIST", 1)
+			CONTINUE
+		VARI L_DEVIL_NO = L_DEVIL_LIST:SELECT_RACE:(START_DEVIL_NO + TEMP_NO)
+		;登録がない場合は終わり
+		SIF L_DEVIL_NO == 0
+			CONTINUE
+
+		;----------------------------------------
+		;コスト計算と色設定
+		;色タグ入れ子を防ぐためにこの段階で色を決めておく
+		;----------------------------------------
+		VARI L_COST
+		VARS L_COLOR
+		VARS L_BORDER_COLOR
+		VARS L_BG_COLOR
+		VARS L_TITLE
+		L_COST = GET_COST_MAG_ENHANCE_DEFTYPE_BY_PORTRATE(L_DEVIL_NO, L_CHARA)
+		IF L_COST > GET_CHARA_STOCK_MAG(L_CHARA)
+			L_COLOR '= TOSTR_HTML(COLOR("gray"))
+			L_BORDER_COLOR '= TOSTR_HTML(COLOR("gray"))
+			L_TITLE = 必要ＭＡＧ:{L_COST}(ＭＡＧ不足)
+		ELSE
+			L_COLOR '= ""
+			L_BORDER_COLOR '= TOSTR_HTML(COLOR("DEF"))
+			L_TITLE = 必要ＭＡＧ:{L_COST}
+		ENDIF
+
+		;選択中の背景色と枠線
+		IF L_DEVIL_NO == SELECT_DEVIL_NO
+			L_BG_COLOR '= TOSTR_HTML(BGCOLOR("light-black"))
+			L_BORDER_COLOR '= TOSTR_HTML(COLOR("yellow"))
+		ELSE
+			L_BG_COLOR '= TOSTR_HTML(GETBGCOLOR())
+		ENDIF
+
+		;----------------------------------------
+		;名称表示
+		;----------------------------------------
+		VARS TEMP_BUTTON_VALUE
+		TEMP_BUTTON_VALUE '= SYMBOL_FOR_DEVIL_TABLE:(TEMP_NO / 10)  + TOSTR(TEMP_NO % 10)
+		TEMP_BANNER:0 '= TOALIGNMENT("[" + TEMP_BUTTON_VALUE + "] " + CSVCALLNAME(L_DEVIL_NO), TEMP_BANNER_LENS, "LEFT")
+
+		TEMP_BANNER:0 '= @"<div border_width = '1' border_color = '%L_BORDER_COLOR%' xpos = '0' ypos = '0' padding = '50' background_color = '%L_BG_COLOR%'>" + TEMP_BANNER:0 + "</div>"
+		VARI L_SUCCESSION
+		VARI BANNER_COLUMNNUM = SUCCESSIONNUM / 2 + SUCCESSIONNUM % 2
+		VARI L_TALENT_NO
+
+		;----------------------------------------
+		;継承素質
+		;----------------------------------------
+		FOR L_SUCCESSION, 0, SUCCESSIONNUM
+			L_TALENT_NO = GETNUM(TALENT, "검격") + L_SUCCESSION
+			IF L_SUCCESSION % BANNER_COLUMNNUM == 0
+				IF L_SUCCESSION == 0
+					TEMP_BANNER:1 += "　"
+				ELSE
+					TEMP_BANNER:1 += "<br>" + "　"
+				ENDIF
+			ENDIF
+			IF CSVTALENT(L_DEVIL_NO, L_TALENT_NO) || L_COLOR != ""
+				TEMP_BANNER:1 += SUBSTRINGU(GET_SUCCESSION(L_SUCCESSION), 0, 1)
+			ELSE
+				TEMP_BANNER:1 += SET_COLOR_TAG(SUBSTRINGU(GET_SUCCESSION(L_SUCCESSION), 0, 1), "gray")
+			ENDIF
+			SIF L_SUCCESSION % BANNER_COLUMNNUM == BANNER_COLUMNNUM - 1
+				TEMP_BANNER:1 += "　"
+		NEXT
+		TEMP_BANNER:1 '= @"<div border_width = '1' border_color = '%L_BORDER_COLOR%' padding = '50' xpos = '{0}' ypos = '{HEIGHT_CHARA_INFO_NAME}'background_color = '%L_BG_COLOR%'>" + TEMP_BANNER:1 + "</div>"
+		VARI BANNER_COLUMNNUM = 3
+
+		;----------------------------------------
+		;防御相性
+		;----------------------------------------
+		FOR L_TYPE, 0, TYPENUM
+			IF L_TYPE > 0
+				IF L_TYPE % BANNER_COLUMNNUM == 0
+					TEMP_BANNER:2 += "<br>"
+				ELSE
+					TEMP_BANNER:2 += " "
+				ENDIF
+			ENDIF
+			TEMP_BANNER:2 +=  SUBSTRINGU(GET_TYPE(L_TYPE), 0, 1)
+			IF L_COLOR == ""
+				TEMP_BANNER:2 += GET_STR_OF_DEFTYPE_FOR_HTML(CSVBASE(L_DEVIL_NO, GETNUM(BASE, GET_TYPE(L_TYPE))), 5, "\%", "マイナス表記")
+			ELSE
+				TEMP_BANNER:2 += GET_STR_OF_DEFTYPE_FOR_HTML(CSVBASE(L_DEVIL_NO, GETNUM(BASE, GET_TYPE(L_TYPE))), 5, "\%", "マイナス表記_非着色")
+			ENDIF
+		NEXT
+		TEMP_BANNER:2 '= @"<div border_width = '1' border_color = '%L_BORDER_COLOR%' padding = '50' xpos = '0' ypos = '{HEIGHT_CHARA_INFO_NAME + HEIGHT_CHARA_INFO_SUCCESION}' background_color = '%L_BG_COLOR%'>" + TEMP_BANNER:2 + "</div>"
+
+		IF L_COLOR == ""
+			SHOWLINE '= SET_BUTTON_TAG(TEMP_BANNER:0 + TEMP_BANNER:1 + TEMP_BANNER:2, TEMP_BUTTON_VALUE, L_TITLE)
+		ELSE
+			SHOWLINE '= SET_COLOR_TAG(SET_BUTTON_TAG(TEMP_BANNER:0 + TEMP_BANNER:1 + TEMP_BANNER:2, TEMP_BUTTON_VALUE, L_TITLE), L_COLOR)
+		ENDIF
+		
+		SHOWLINE '= @"<div display = 'absolute-leftbottom' xpos = '{L_BASE_XPOS}' ypos = '{CONVERT_YPOS_TOP_TO_BUTTOM(L_BASE_YPOS, ABSOLUTE_BASE_YPOS)}'>" + SHOWLINE + "</div>"
+		HTML_PRINT_ISLAND SHOWLINE, MAIN_LAYER_NO
+	NEXT
+NEXT
+
+VARI DEF_TYPE_WINDOW_HEIGHT = (HEIGHT_CHARA_INFO_NAME + HEIGHT_CHARA_INFO_SUCCESION + HEIGHT_CHARA_INFO_DEFTYPE) * L_DEFTYPE_ROW_MAXNUM
+VARI DEF_TYPE_WINDOW_LINENUM = DEF_TYPE_WINDOW_HEIGHT / 100
+
+SHOWLINE '= @"<div display = 'absolute-leftbottom' xpos = '{L_BASE_XPOS}' ypos = '{CONVERT_YPOS_TOP_TO_BUTTOM(L_BASE_YPOS, ABSOLUTE_BASE_YPOS)}'>" + SHOWLINE + "</div>"
+HTML_PRINT_ISLAND SHOWLINE, MAIN_LAYER_NO
+
+;----------------------------------------
+;区切り線
+;----------------------------------------
+HTML_PRINT_ISLAND @"<div display = 'absolute-leftbottom' xpos = '0' ypos = '{CONVERT_YPOS_TOP_TO_BUTTOM(700, ABSOLUTE_BASE_YPOS)}'>" + DRAWLINESTR + "</div>", MAIN_LAYER_NO
+
+;============================================================================================================================
+;----------------------------------------
+;種族ウィンドウ
+;----------------------------------------
+VARSET SHOWLINE
+VARI L_RACE
+
+L_BASE_XPOS = 0
+L_BASE_YPOS = HEIGHT_CHARA_INFO
+
+FOR L_RACE, 0, RACENUM
+	SIF !L_RACE_LIST:L_RACE
+		CONTINUE
+	SIF SHOWLINE != ""
+		SHOWLINE += "<br>"
+	VARS TEMP_BUTTON
+	TEMP_BUTTON_VALUE '= SYMBOL_FOR_RACE_TABLE:(L_RACE / 10)  + TOSTR(L_RACE % 10)
+	TEMP_BUTTON '= "[" + TEMP_BUTTON_VALUE + "] "
+	TEMP_BUTTON += TOALIGNMENT(GET_RACE(L_RACE_LIST:L_RACE), 6, "LEFT")
+	TEMP_BUTTON '= SET_BUTTON_TAG(TEMP_BUTTON, TEMP_BUTTON_VALUE)
+	SIF SELECT_RACE_LIST == L_RACE
+		TEMP_BUTTON '= SET_COLOR_TAG(TEMP_BUTTON, "aqua")
+	SHOWLINE += TEMP_BUTTON
+NEXT
+
+SHOWLINE '= @"<div display = 'absolute-leftbottom' border_width = '1' padding = '50' xpos = '{L_BASE_XPOS}' ypos = '{CONVERT_YPOS_TOP_TO_BUTTOM(L_BASE_YPOS, ABSOLUTE_BASE_YPOS)}'>" + SHOWLINE + "</div>"
+HTML_PRINT_ISLAND SHOWLINE, MAIN_LAYER_NO
+
+;============================================================================================================================
+;----------------------------------------
+;入力ボタン表示
+;----------------------------------------
+VARSET SHOWLINE
+L_BASE_XPOS = 0
+L_BASE_YPOS = HEIGHT_CHARA_INFO + (DEF_TYPE_WINDOW_LINENUM - 4) * 100
+
+;枠作成
+SHOWLINE += @"<div border_width = '1' xpos = '0' ypos = '50' width = '650' height = '450'>" + "" + "</div>"
+
+TEMP_WINDOW '= ""
+IF FLAG:던전내조작설정 == 1
+	TEMP_WINDOW += " 　 " + SET_BUTTON_TAG("[w]", "8") + "　 " + "<br>"
+	TEMP_WINDOW += SET_COLOR_TAG("◂", "p-green") + SET_BUTTON_TAG("[a]", "4") + "　 " +SET_BUTTON_TAG("[d]", "6") + SET_COLOR_TAG("▸", "p-green") + "<br>"
+	TEMP_WINDOW += " 　 " + SET_BUTTON_TAG("[s]", "2") + "　  "
+ELSE
+	TEMP_WINDOW += " 　 " + SET_BUTTON_TAG("[8]", "8") + "　 " + "<br>"
+	TEMP_WINDOW += SET_COLOR_TAG("◂", "p-green") + SET_BUTTON_TAG("[4]", "4") + "　 " +SET_BUTTON_TAG("[6]", "6") + SET_COLOR_TAG("▸", "p-green") + "<br>"
+	TEMP_WINDOW += " 　 " + SET_BUTTON_TAG("[2]", "2") + "　  "
+ENDIF
+SHOWLINE += @"<div xpos = '0' ypos = '{100 - 25}' padding = '50'>" + TEMP_WINDOW + "</div>"
+
+;縦ふたつのヤジルシを表示(位置調整をするために別表示)
+L_XPOS = 300
+L_YPOS = CONVERT_YPOS_TOP_TO_BUTTOM(HEIGHT_CHARA_INFO + (DEF_TYPE_WINDOW_LINENUM - 4) * 100 + 50, ABSOLUTE_BASE_YPOS)
+SHOWLINE += @"<div xpos = '300' ypos = '50'>" + SET_COLOR_TAG("▴", "p-green") + "</div>"
+SHOWLINE += @"<div xpos = '300' ypos = '400'>" + SET_COLOR_TAG("▾", "p-green") + "</div>"
+
+SHOWLINE '= @"<div display = 'absolute-leftbottom' xpos = '{L_BASE_XPOS}' ypos = '{CONVERT_YPOS_TOP_TO_BUTTOM(L_BASE_YPOS, ABSOLUTE_BASE_YPOS)}'>" + SHOWLINE + "</div>"
+HTML_PRINT_ISLAND SHOWLINE, MAIN_LAYER_NO
+
+IF G_PRINT_FEWLINE_MODE == 0
+	VARSET SHOWLINE
+	L_BASE_XPOS = 0
+	L_BASE_YPOS = HEIGHT_CHARA_INFO + (DEF_TYPE_WINDOW_LINENUM - 12) * 100
+
+	SHOWLINE += @"<div border_width = '1' xpos = '0' ypos = '50' width = '650' height = '350'>" + "" + "</div>"
+	SHOWLINE += @"<div xpos = '100' ypos = '{100 + 10}'>" + SET_BUTTON_TAG("[7] ↑", "7", "マウスホイールでもリスト移動可能") + "</div>"
+	SHOWLINE += @"<div xpos = '100' ypos = '{100 + 140}'>" + SET_BUTTON_TAG("[1] ↓", "1", "マウスホイールでもリスト移動可能") + "</div>"
+	SHOWLINE += @"<div xpos = '400' ypos = '{100 + 50 + 20}'>" + "Page" + "</div>"
+
+
+	SHOWLINE += @"<div border_width = '1' xpos = '0' ypos = '{400 + 50}' width = '650' height = '350'>" + "" + "</div>"
+	IF FLAG:던전내조작설정 == 1
+		SHOWLINE += @"<div xpos = '100' ypos = '{500 + 10}'>" + SET_BUTTON_TAG("[q] ↑", "9", "マウスサイドボタンでも移動可能") + "</div>"
+	ELSE
+		SHOWLINE += @"<div xpos = '100' ypos = '{500 + 10}'>" + SET_BUTTON_TAG("[9] ↑", "9", "マウスサイドボタンでも移動可能") + "</div>"
+	ENDIF
+	IF FLAG:던전내조작설정 == 1
+		SHOWLINE += @"<div xpos = '100' ypos = '{500 + 140}'>" + SET_BUTTON_TAG("[e] ↓", "3", "マウスサイドボタンでも移動可能") + "</div>"
+	ELSE
+		SHOWLINE += @"<div xpos = '100' ypos = '{500 + 140}'>" + SET_BUTTON_TAG("[3] ↓", "3", "マウスサイドボタンでも移動可能") + "</div>"
+	ENDIF
+	SHOWLINE += @"<div display = 'absolute-leftbottom' xpos = '400' ypos = '{500 + 50 + 20}'>" + "Race" + "</div>"
+	
+	SHOWLINE '= @"<div display = 'absolute-leftbottom' xpos = '{L_BASE_XPOS}' ypos = '{CONVERT_YPOS_TOP_TO_BUTTOM(L_BASE_YPOS, ABSOLUTE_BASE_YPOS)}'>" + SHOWLINE + "</div>"
+	HTML_PRINT_ISLAND SHOWLINE, MAIN_LAYER_NO
+ENDIF
+
+;----------------------------------------
+;区切りの破断線
+;----------------------------------------
+VARS BLOKEN_BAR_1
+TEMP_BLOKEN_BAR '= ("¦" + "<br>") * (DEF_TYPE_WINDOW_LINENUM + 1) + "¦"
+{
+	HTML_PRINT_ISLAND 
+	@"<div display = 'absolute-leftbottom'
+	xpos = '{(11 + 3) * 50 - 25}'
+	ypos = '{CONVERT_YPOS_TOP_TO_BUTTOM(HEIGHT_CHARA_INFO- 50, ABSOLUTE_BASE_YPOS)}'>"
+	 + TEMP_BLOKEN_BAR + "</div>", MAIN_LAYER_NO
+}
+
+;============================================================================================================================
+;----------------------------------------
+;下部入力ボタン
+;----------------------------------------
+;----------------------------------------
+;区切り線
+;----------------------------------------
+L_BASE_XPOS = 0
+L_BASE_YPOS = DEF_TYPE_WINDOW_LINENUM * 100 + HEIGHT_CHARA_INFO + 100
+VARSET SHOWLINE
+
+HTML_PRINT_ISLAND @"<div display = 'absolute-leftbottom' xpos = '0' ypos = '{CONVERT_YPOS_TOP_TO_BUTTOM(DEF_TYPE_WINDOW_LINENUM * 100 + HEIGHT_CHARA_INFO + 100, ABSOLUTE_BASE_YPOS)}'>" + DRAWLINESTR + "</div>", MAIN_LAYER_NO
+
+VARS TEMP_SHOW_LINE
+VARS TEMP_COLOR
+IF SELECT_DEVIL_NO == 0
+	TEMP_SHOW_LINE '= SET_COLOR_TAG("[Enter] 決定", "gray")
+ELSEIF GET_CHARA_STOCK_MAG(L_CHARA) < GET_COST_MAG_ENHANCE_DEFTYPE_BY_PORTRATE(SELECT_DEVIL_NO, L_CHARA)
+	TEMP_SHOW_LINE '= SET_COLOR_TAG(SET_BUTTON_TAG("[Enter] 決定", "ENTER", "MAGが不足しています"), "gray")
+ELSE
+	TEMP_SHOW_LINE '= SET_BUTTON_TAG("[Enter] 決定", "ENTER")
+ENDIF
+L_XPOS = 0
+L_YPOS = CONVERT_YPOS_TOP_TO_BUTTOM(L_BASE_YPOS + 100, ABSOLUTE_BASE_YPOS)
+SHOWLINE += @"<div xpos = '0' ypos = '100'>" + TEMP_SHOW_LINE + "</div>"
+
+L_XPOS = 3700
+TEMP_SHOW_LINE '= SET_BUTTON_TAG("[c] 表示数変更", "c")
+SHOWLINE += @"<div xpos = '3700' ypos = '100'>" + TEMP_SHOW_LINE + "</div>"
+
+TEMP_SHOW_LINE '= SET_BUTTON_TAG("[0]     戻る", "０")
+TEMP_SHOW_LINE += " " * 2 + SET_COLOR_TAG(SET_BUTTON_TAG("[@] 除外リセット", "@", "右クリック及びスペースキーでリストから除外したキャラをすべて復帰させます"), TOSTR_HTML(MAXARRAY(EXCLUDE_DEVIL_NO) ? COLOR("DEF") # COLOR("gray")))
+
+L_XPOS = 0
+L_YPOS = CONVERT_YPOS_TOP_TO_BUTTOM(L_BASE_YPOS + 200, ABSOLUTE_BASE_YPOS)
+SHOWLINE += @"<div xpos = '0' ypos = '200'>" + TEMP_SHOW_LINE + "</div>"
+
+L_XPOS += STRLENS("[0]     戻る" + " " * 2) * 50
+
+L_XPOS = 3700
+TEMP_SHOW_LINE '= "[SPACE]/[右クリック] 表示から悪魔を除外する"
+SHOWLINE += @"<div xpos = '3700' ypos = '200'>" + TEMP_SHOW_LINE + "</div>"
+
+SHOWLINE '= @"<div display = 'absolute-leftbottom' xpos = '{L_BASE_XPOS}' ypos = '{CONVERT_YPOS_TOP_TO_BUTTOM(L_BASE_YPOS, ABSOLUTE_BASE_YPOS)}'>" + SHOWLINE + "</div>"
+HTML_PRINT_ISLAND SHOWLINE, MAIN_LAYER_NO
+
+FOR LCOUNT, 0, DEF_TYPE_WINDOW_LINENUM + HEIGHT_CHARA_INFO / 100 + 2
+	PRINTL 
+NEXT
+
+;----------------------------------------
+;入力
+;----------------------------------------
+
+;+と*を入れようとする挙動を踏まえてSHIFTは逃がす
+DO
+	INPUTMOUSEKEY
+LOOP CONVERT_KEYCORD_TO_STR(RESULT:1) == "SHIFT"
+;結果をRESULTSに変換して渡す
+VARI IS_CLICKED
+IF RESULT:0 == 1
+	IS_CLICKED = 1
+	SELECTCASE RESULT:1
+		CASE 0x100000, 0x200000
+			;クリック座標からRESULTSを取る
+			IF RESULTS:5 == ""
+				IF RESULT:5 != 0
+					RESULTS '= TOSTR(RESULT:5)
+				ELSE
+					GOTO START
+				ENDIF
+			ELSE
+				RESULTS '= RESULTS:5
+			ENDIF
+			;右クリック除外
+			IF RESULT:1 == 0x200000 && MATCH(SYMBOL_FOR_DEVIL_TABLE, CHARATU(RESULTS, 0))
+				VARI TEMP_DEVIL_LIST =  (SELECT_DEVIL_LIST / COUNT_PRINT_BUNNER * COUNT_PRINT_BUNNER) + FINDELEMENT(SYMBOL_FOR_DEVIL_TABLE,  CHARATU(RESULTS, 0)) * 10 + TOINT( CHARATU(RESULTS, 1))
+				EXCLUDE_DEVIL_NO:(L_DEVIL_LIST:SELECT_RACE:TEMP_DEVIL_LIST) = 1
+				;選択番号をずらす
+				SIF SELECT_DEVIL_LIST >= TEMP_DEVIL_LIST
+					SELECT_DEVIL_LIST -= 1
+				SELECT_DEVIL_LIST = LIMIT(SELECT_DEVIL_LIST, 0, COUNT_DEVIL_IN_RACE:SELECT_RACE - 1)
+				GOTO MAKE_LIST
+			ELSE
+				IF MATCH(SYMBOL_FOR_DEVIL_TABLE, CHARATU(RESULTS, 0)) || MATCH(SYMBOL_FOR_RACE_TABLE, CHARATU(RESULTS, 0))
+					LOCKED_SYMBOL '= CHARATU(RESULTS, 0)
+					RESULTS '= CHARATU(RESULTS, 1)
+				ENDIF
+			ENDIF
+		;サイドボタン1
+		CASE 0x1000000
+		;サイドボタン2
+			RESULTS '= "9"
+		CASE 0x800000
+			RESULTS '= "3"
+	ENDSELECT
+;ホイールの上下でページ移動
+;そのままだと行き過ぎ事案がめちゃくちゃ発生するのでディレイをつける
+ELSEIF RESULT:0 == 2 && DELAY_WHEEL < GETMILLISECOND()
+	IF RESULT:1 > 60
+		RESULTS '= "7"
+		DELAY_WHEEL = GETMILLISECOND() + 250
+	ELSEIF RESULT:1 < -60
+		RESULTS '= "1"
+		DELAY_WHEEL = GETMILLISECOND() + 250
+	ENDIF
+ELSEIF RESULT:0 == 3
+	RESULTS '= CONVERT_KEYCORD_TO_STR(RESULT:1)
+	SELECTCASE RESULTS
+		CASE ";"
+			RESULTS '= "+"
+		CASE ":"
+			RESULTS '= "*"
+		CASE "↑", "w", "W"
+			LOCKED_SYMBOL '= ""
+			RESULTS '= "8"
+		CASE "↓", "s", "S"
+			LOCKED_SYMBOL '= ""
+			RESULTS '= "2"
+		CASE "←", "a", "A"
+			LOCKED_SYMBOL '= ""
+			RESULTS '= "4"
+		CASE "→", "d", "D"
+			LOCKED_SYMBOL '= ""
+			RESULTS '= "6"
+		CASE "PAGEUP"
+			LOCKED_SYMBOL '= ""
+			RESULTS '= "7"
+		CASE "PAGEDOWN"
+			LOCKED_SYMBOL '= ""
+			RESULTS '= "1"
+		CASE "HOME", "q", "Q"
+			LOCKED_SYMBOL '= ""
+			RESULTS '= "9"
+		CASE "END", "e", "E"
+			LOCKED_SYMBOL '= ""
+			RESULTS '= "3"
+		CASE "ESC"
+			LOCKED_SYMBOL '= ""
+			RESULTS '= "0"
+	ENDSELECT
+ENDIF
+IF LOCKED_SYMBOL != ""
+	IF ISNUMERIC(RESULTS)
+		IF MATCH(SYMBOL_FOR_DEVIL_TABLE, LOCKED_SYMBOL) 
+			VARI TEMP_DEVIL_LIST = FINDELEMENT(SYMBOL_FOR_DEVIL_TABLE, LOCKED_SYMBOL) * 10 + TOINT(RESULTS)
+			IF IS_CLICKED && TEMP_DEVIL_LIST == SELECT_DEVIL_LIST % COUNT_PRINT_BUNNER
+				RESULTS '= "ENTER"
+			ELSE
+				SIF (SELECT_DEVIL_LIST / COUNT_PRINT_BUNNER * COUNT_PRINT_BUNNER) + TEMP_DEVIL_LIST < COUNT_DEVIL_IN_RACE:SELECT_RACE
+					SELECT_DEVIL_LIST = SELECT_DEVIL_LIST / COUNT_PRINT_BUNNER * COUNT_PRINT_BUNNER + TEMP_DEVIL_LIST
+			ENDIF
+		ELSEIF MATCH(SYMBOL_FOR_RACE_TABLE, LOCKED_SYMBOL) 
+			SELECT_RACE_LIST = FINDELEMENT(SYMBOL_FOR_RACE_TABLE, ESCAPE(LOCKED_SYMBOL)) * 10 + TOINT(RESULTS)
+		ENDIF
+	ENDIF
+ELSE
+	SELECTCASE RESULTS
+		CASE "0", "０"
+			HTML_PRINT_ISLAND_CLEAR
+			REDRAW STOCK_REDRAW
+			RETURN 0
+		CASE "4", "8", "7", "9"
+			VARI TEMP_MOVE_VAR
+			SELECTCASE RESULTS
+				CASE "4"
+					TEMP_MOVE_VAR = 1
+				CASE "8"
+					TEMP_MOVE_VAR = L_DEFTYPE_COLUMN_MAXNUM
+				CASE "7"
+					TEMP_MOVE_VAR = COUNT_PRINT_BUNNER
+				CASE "9"
+					SELECT_DEVIL_LIST = 0
+			ENDSELECT
+
+			IF RESULTS != "9" && (SELECT_DEVIL_LIST - TEMP_MOVE_VAR >= 0)
+				SELECT_DEVIL_LIST -= TEMP_MOVE_VAR
+			ELSE
+				IF SELECT_RACE_LIST
+					SELECT_RACE_LIST--
+				ELSE
+					SELECT_RACE_LIST = FINDELEMENT(L_RACE_LIST, 0) - 1
+				ENDIF
+				SELECT_RACE = L_RACE_LIST:SELECT_RACE_LIST
+				SELECT_DEVIL_LIST = MIN((COUNT_DEVIL_IN_RACE:SELECT_RACE - 1)  / COUNT_PRINT_BUNNER * COUNT_PRINT_BUNNER + SELECT_DEVIL_LIST % COUNT_PRINT_BUNNER, COUNT_DEVIL_IN_RACE:SELECT_RACE - 1)
+			ENDIF
+		CASE "6", "2", "1", "3"
+			VARI TEMP_MOVE_VAR
+			SELECTCASE RESULTS
+				CASE "6"
+					TEMP_MOVE_VAR = 1
+				CASE "2"
+					TEMP_MOVE_VAR = L_DEFTYPE_COLUMN_MAXNUM
+				CASE "1"
+					TEMP_MOVE_VAR = COUNT_PRINT_BUNNER
+				CASE "3"
+					SELECT_DEVIL_LIST = 0
+			ENDSELECT
+			IF RESULTS != "3" && (SELECT_DEVIL_LIST + TEMP_MOVE_VAR < COUNT_DEVIL_IN_RACE:SELECT_RACE)
+				SELECT_DEVIL_LIST += TEMP_MOVE_VAR
+			ELSE
+				IF SELECT_RACE_LIST + 1 == VARSIZE("L_RACE_LIST") || L_RACE_LIST:(SELECT_RACE_LIST + 1) == 0
+					SELECT_RACE_LIST = 0
+				ELSE
+					SELECT_RACE_LIST += 1
+				ENDIF
+				SELECT_RACE = L_RACE_LIST:SELECT_RACE_LIST
+				SELECT_DEVIL_LIST = MIN(SELECT_DEVIL_LIST % COUNT_PRINT_BUNNER, COUNT_DEVIL_IN_RACE:SELECT_RACE -1)
+			ENDIF
+		CASE "SPACE"
+			IF SELECT_DEVIL_NO > 0
+				EXCLUDE_DEVIL_NO:SELECT_DEVIL_NO = 1
+				SELECT_DEVIL_LIST = LIMIT(SELECT_DEVIL_LIST, 0, COUNT_DEVIL_IN_RACE:SELECT_RACE - 1)
+				GOTO MAKE_LIST
+			ENDIF
+		CASE "@"
+			VARSET EXCLUDE_DEVIL_NO
+			GOTO MAKE_LIST
+		CASE "c"
+			G_PRINT_FEWLINE_MODE = !G_PRINT_FEWLINE_MODE
+			SAVEGLOBAL
+			GOTO START
+		CASEELSE
+			IF MATCH(SYMBOL_FOR_DEVIL_TABLE, RESULTS) || MATCH(SYMBOL_FOR_RACE_TABLE, RESULTS)
+				LOCKED_SYMBOL '= RESULTS
+				GOTO START
+			ENDIF
+	ENDSELECT
+ENDIF
+;----------------------------------------
+;選択
+;----------------------------------------
+IF RESULTS == "ENTER" && SELECT_DEVIL_NO > 0
+	L_COST = GET_COST_MAG_ENHANCE_DEFTYPE_BY_PORTRATE(SELECT_DEVIL_NO, L_CHARA)
+	VARS TEMP_BUTTON
+	VARS TEMP_WINDOW
+	VARI TEMPSTRLENS = 50
+
+	;ウィンドウの色定義
+	VARS L_BG_COLOR
+	L_BG_COLOR '= TOSTR_HTML(GETBGCOLOR())
+	L_BORDER_COLOR '= TOSTR_HTML(COLOR("p-green"))
+
+	;メッセージウィンドウのポップ位置計算
+	L_COLUMN = SELECT_DEVIL_LIST % L_DEFTYPE_COLUMN_MAXNUM
+	IF L_COLUMN < 2
+		L_XPOS = 750 + (L_COLUMN + 1) * (((TEMP_BANNER_LENS + 3) * 50 + 25))
+	ELSE
+		L_XPOS = 750 + (L_COLUMN - 1) * (((TEMP_BANNER_LENS + 3) * 50 + 25)) - 150
+	ENDIF
+
+	L_ROW = (SELECT_DEVIL_LIST % COUNT_PRINT_BUNNER) / L_DEFTYPE_COLUMN_MAXNUM
+	L_YPOS = 15 + HEIGHT_CHARA_INFO + L_ROW * (HEIGHT_CHARA_INFO_NAME + HEIGHT_CHARA_INFO_SUCCESION + HEIGHT_CHARA_INFO_DEFTYPE + 50)
+	L_YPOS = CONVERT_YPOS_TOP_TO_BUTTOM(L_YPOS, ABSOLUTE_BASE_YPOS)
+	VARI SELECT_BUTTON_COORD, 2, 4
+	VARS SELECT_BUTTON_VALUE, 2
+	IF GET_CHARA_STOCK_MAG(L_CHARA) >= L_COST
+		TEMP_WINDOW += SET_BUTTON_TAG(@"%"継承素質と防御相性を変更してもよろしいですか？", TEMPSTRLENS, LEFT%", "NONE")
+		TEMP_WINDOW += "<br>" + SET_BUTTON_TAG(@"%"[0] はい", TEMPSTRLENS, LEFT%", "０")
+		TEMP_WINDOW += "<br>" + SET_BUTTON_TAG(@"%"[1] 아니오", TEMPSTRLENS, LEFT%", "1")
+		TEMP_WINDOW += "<br>" + SET_BUTTON_TAG(@"%"所持ＭＡＧ:" + TOALIGNMENT(TOSTR(GET_CHARA_STOCK_MAG(L_CHARA)), STRLENS(TOSTR(MAX(GET_CHARA_STOCK_MAG(L_CHARA), L_COST))),"RIGHT"), TEMPSTRLENS, LEFT%", "NONE")
+		TEMP_WINDOW += "<br>" + SET_BUTTON_TAG(@"%"必要ＭＡＧ:" + TOALIGNMENT(TOSTR(L_COST), STRLENS(TOSTR(MAX(GET_CHARA_STOCK_MAG(L_CHARA), L_COST))),"RIGHT"), TEMPSTRLENS, LEFT%", "NONE")
+		{
+			HTML_PRINT_ISLAND @"<div display = 'absolute-leftbottom' xpos = '{L_XPOS}' ypos = '{L_YPOS}' 
+			border_width = '30' border_color = '%L_BORDER_COLOR%' padding = '60' height = '600' width = '{TEMPSTRLENS * 50}'
+			background_color = '%TOSTR_HTML(GETBGCOLOR())%'>" + TEMP_WINDOW + "</div>", INPUT_LAYER_NO
+		}
+		DO 
+			INPUTMOUSEKEY
+			VARI L_RESULT = RESULT
+			IF RESULT:0 == 1
+				;右クリックでキャンセル
+				IF RESULT:1 == 0x200000
+					RESULTS '= "1"
+				ELSE
+					IF RESULT:5 == 1
+						RESULTS '= "1"
+					ELSEIF RESULTS:5 == "０"
+						RESULTS '= "0"
+						CONTINUE
+					ENDIF
+				ENDIF
+			ELSEIF RESULT:0 == 3
+				RESULTS '= CONVERT_KEYCORD_TO_STR(RESULT:1)
+			ENDIF
+		LOOP RESULTS != "0" && RESULTS != "1"
+		HTML_PRINT_ISLAND_CLEAR INPUT_LAYER_NO
+		IF RESULTS == "0"
+			TEMP_WINDOW '= @"%CALLNAME:L_CHARA + "の継承素質と防御相性を変更されました！", TEMPSTRLENS, LEFT%"
+			{
+				HTML_PRINT_ISLAND @"<div display = 'absolute-leftbottom' xpos = '{L_XPOS}' ypos = '{L_YPOS}'
+				border_width = '30' border_color = '%L_BORDER_COLOR%' padding = '60' height = '600' width = '{TEMPSTRLENS * 50}'
+				background_color = '%TOSTR_HTML(GETBGCOLOR())%'>" + TEMP_WINDOW + "</div>", INPUT_LAYER_NO
+			}
+			IF L_RESULT == 3
+				WAIT
+			ELSE
+				WAITANYKEY
+			ENDIF
+			HTML_PRINT_ISLAND_CLEAR
+			EQUIP:L_CHARA:허물 = SELECT_DEVIL_NO
+			CALL CONTROL_MAG, L_CHARA, -L_COST
+			CALL SYNC_STATUS, L_CHARA
+			REDRAW STOCK_REDRAW
+			RETURN 0
+		ENDIF
+	ELSE
+		TEMP_WINDOW += @"%"ＭＡＧ가 부족합니다", TEMPSTRLENS, LEFT%"
+		TEMP_WINDOW += "<br>" + @"%"所持ＭＡＧ:" + TOALIGNMENT(TOSTR(GET_CHARA_STOCK_MAG(L_CHARA)), STRLENS(TOSTR(MAX(GET_CHARA_STOCK_MAG(L_CHARA), L_COST))),"RIGHT"), TEMPSTRLENS, LEFT%"
+		TEMP_WINDOW += "<br>" + @"%"必要ＭＡＧ:" + TOALIGNMENT(TOSTR(L_COST), STRLENS(TOSTR(MAX(GET_CHARA_STOCK_MAG(L_CHARA), L_COST))),"RIGHT"), TEMPSTRLENS, LEFT%"
+		;下部のポップアップをつぶす
+		TEMP_WINDOW '= SET_BUTTON_TAG(TEMP_WINDOW, "NONE", "")
+		{
+			HTML_PRINT_ISLAND @"<div display = 'absolute-leftbottom' xpos = '{L_XPOS}' ypos = '{L_YPOS}'
+			border_width = '30' border_color = '%L_BORDER_COLOR%' padding = '60' height = '600' width = '{TEMPSTRLENS * 50}'
+			background_color = '%TOSTR_HTML(GETBGCOLOR())%'>" + TEMP_WINDOW + "</div>", INPUT_LAYER_NO
+		}
+		WAITANYKEY
+		HTML_PRINT_ISLAND_CLEAR
+	ENDIF
+ENDIF
+LOCKED_SYMBOL '= ""
+GOTO START
+;================================================
+;写せ身として使える悪魔かどうかの判別
+;================================================
+@IS_USEABLE_DEVIL_AS_PORTRAIT, DEVIL_NO, L_RACE = -1
+#FUNCTION
+#DIM DYNAMIC DEVIL_NO
+#DIM DYNAMIC L_RACE
+;解析度が10%必要
+;SIF FLAG:(DEVIL_NO+20000) < 100
+;	RETURNF 0
+SIF !IS_CHARA_COMPANIONED:DEVIL_NO
+	RETURNF 0
+;CSVがあるか確認、なければ弾く
+SIF EXISTCSV(DEVIL_NO, 0) == 0
+	RETURNF 0
+IF L_RACE >= 0
+	SIF L_RACE != CSVABL(DEVIL_NO, GETNUM(ABL, "종족"))
+		RETURNF 0
+ELSE
+	SIF !IS_USEABLE_RACE_AS_PORTRAIT(CSVABL(DEVIL_NO, GETNUM(ABL, "종족")))
+		RETURNF 0
+ENDIF
+IF DEVIL_NO > 4400 || INRANGE(DEVIL_NO, 3384, 3499)
+	;メガテン系イベント以外不許可の場合はEX系は不許可
+	SIF !GET_USEABLE_EXTRA_TITLE()
+		RETURNF 0
+ENDIF
+;非戦闘員は弾く
+SIF CSVTALENT(DEVIL_NO, GETNUM(TALENT, "비전투원"))
+	RETURNF 0
+SIF CSVCFLAG(DEVIL_NO, GETNUM(CFLAG, "전서소환불가"))
+	RETURNF 0
+SIF CSVCFLAG(DEVIL_NO, GETNUM(CFLAG, "１체만"))
+	RETURNF 0
+SIF CSVCFLAG(DEVIL_NO, GETNUM(CFLAG, "특수합체만")) && !IS_CHARA_COMPANIONED:DEVIL_NO
+	RETURNF 0
+SIF CSVCFLAG(DEVIL_NO, GETNUM(CFLAG, "합체조건있음")) && REMOVED_FUSION_LIMIT:DEVIL_NO == 0
+	RETURNF 0
+SIF CSVTALENT(DEVIL_NO, GETNUM(TALENT, "달인"))
+	RETURNF 0
+RETURNF 1
+
+@IS_USEABLE_RACE_AS_PORTRAIT, L_RACE_NUM
+#FUNCTION
+#DIM DYNAMIC L_RACE_NUM
+;一般種族のみ
+{
+IF GROUPMATCH(GET_RACE(L_RACE_NUM),
+				"지모신","여신","마왕","천사",
+				"요마","요정","요귀","용왕",
+				"마수","요조","외도","정령",
+				"귀신","마신","사신","타천사")
+}
+	RETURNF 1
+ELSE
+	RETURNF 0
+ENDIF
+
+@GET_COST_MAG_ENHANCE_DEFTYPE_BY_PORTRATE, DEVIL_NO, L_CHARA = -1
+#FUNCTION
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC DEVIL_NO
+#DIM DYNAMIC CORRECT_ANALYZE
+#DIM DYNAMIC L_COST
+;基礎値はその悪魔から獲得できるMAG10匹分
+L_COST = GET_BASE_ENEMY_MAG( , CSVBASE(DEVIL_NO, GETNUM(BASE, "LV")), CSVABL(DEVIL_NO, GETNUM(ABL, "종족")))
+L_COST *= 10
+
+IF L_CHARA >= 0
+	SIF L_CHARA == MASTER
+		L_COST *= 10
+ENDIF
+RETURNF L_COST

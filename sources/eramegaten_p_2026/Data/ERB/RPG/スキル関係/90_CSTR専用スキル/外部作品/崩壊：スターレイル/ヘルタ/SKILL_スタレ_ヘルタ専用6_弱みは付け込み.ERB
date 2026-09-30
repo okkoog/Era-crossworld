@@ -1,0 +1,196 @@
+﻿;ヘルタ専用スキル
+;何見てるのに連動して発動する。単体小威力氷結魔法。
+
+
+;スキル名
+@SKILL_NAME_弱みは付け込み,ARG
+RESULTS = 약점 물고 늘어지기
+
+;　명중
+@SKILL_HITRATE_弱みは付け込み, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_弱みは付け込み, ARG
+RETURN 100
+
+;クリティカル率
+;@SKILL_CRITICAL_RATE_弱みは付け込み,ARG
+;RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_弱みは付け込み,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_弱みは付け込み,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_弱みは付け込み, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_弱みは付け込み,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_弱みは付け込み,ARG
+RETURN GET_TYPE_NUM("빙결")
+
+;@SKILL_ATTACKTYPE_弱みは付け込み,ARG
+;RETURN GET_攻撃タイプ_NUM("LV")
+;なんかこれでレベル依存になるらしい
+;割合ダメージとかもこの項目で作るんだって
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_弱みは付け込み
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_弱みは付け込み, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_弱みは付け込み,ARG
+RETURN GET_SKILL_TARGET_NUM("특수")
+
+;　사거리
+@SKILL_RANGE_弱みは付け込み,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_弱みは付け込み,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_弱みは付け込み,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_弱みは付け込み,ARG
+RETURN GET_SUCCESSION_NUM("빙결")
+
+;속도보정
+@SKILL_SPEED_弱みは付け込み, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_弱みは付け込み
+RETURN 0
+;できない
+
+;戦闘中に使用できるか
+@SKILL_ACTIONABLE_BATTLE_弱みは付け込み, ARG
+RETURN 0
+;できない
+
+;スキル変化？用ランク
+@SKILL_RANK_弱みは付け込み, ARG = -1
+RETURN 5
+
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_弱みは付け込み,ARG
+RETURN GET_STATE_NUM("FREEZE")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_弱みは付け込み,ARG
+RETURN GET_TYPE_NUM("빙결")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_弱みは付け込み,ARG
+RETURN 20
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_弱みは付け込み,ARG
+RETURN 95
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_弱みは付け込み, ARG = -1, ARG:1 = -1
+RETURN 4
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_弱みは付け込み,ARG,ARG:1
+;自分じゃなければNG
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+;判定は一回のみ
+SIF ARG != ARG:1
+	RETURN 0
+IF CFLAG:ARG:PT플래그
+	SIF GROUPMATCH(CFLAG:ARG:타겟, 17, 18, 19)
+		RETURN 0
+	SIF INRANGE(CFLAG:ARG:타겟, 1, 6)
+		RETURN 0
+ELSE
+	SIF GROUPMATCH(CFLAG:ARG:타겟, 20, 21, 22)
+		RETURN 0
+	SIF INRANGE(CFLAG:ARG:타겟, 7, 16)
+		RETURN 0
+ENDIF
+;何見てるのを確認
+SIF !(IS_PU_SKILL_入力行動(ARG, "何見てるの"))
+	RETURN 0
+;入力行動が攻撃スキルでかつターゲットがちゃんと存在していること
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+SIF RESULT != 1 || CFLAG:ARG:타겟 < 1
+	RETURN 0
+;命中してないとダメ
+SIF !GET_CREC_ACT(FLAG:행동순1, ARG:1, "HIT")
+    RETURN 0
+;殺したらダメ
+SIF GET_CREC_ACT(FLAG:행동순1, ARG:1, "KILL")
+    RETURN 0
+;敵のHPが50%以下か、51%以上だと通らない
+SIF 現HP割合(ARG:1) > 50
+	RETURN 0
+RETURN 1, CFLAG:ARG:타겟
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_弱みは付け込み,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+IF INRANGE(ARG:1, 1, 16)
+	CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM
+ELSE
+	CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM
+ENDIF
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_弱みは付け込み,ARG
+PRINTL 자동: 【뭘 봐?】에 의한 공격을 행했을 때 적의 HP가 50% 이하인 경우 이하의 연동 효과를 발동한다.
+PRINTL 「빙결 상성의 마법 소데미지를 준다. 확률에 따라 FREEZE 상태로 만든다.
+PRINTL 　이 스킬에 의한 데미지는 모든 내성 및 내성강화 효과를 관통한다.」
+
+;ツールチップ版の解説文
+@SKILL_EXPLAIN_TOOLTIP_弱みは付け込み, ARG
+RESULTS:0 = 자동: 【뭘 봐?】에 의한 공격을 행했을 때 적의 HP가 50% 이하인 경우 이하의 연동 효과를 발동한다.
+RESULTS:1 = 「빙결 상성의 마법 소데미지를 준다. 확률에 따라 FREEZE 상태로 만든다.
+RESULTS:2 = 　このスキルによるダメージは모든 내성 및 내성강화 효과를 관통한다。」
+
+
+;とくにない
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_弱みは付け込み,ARG
+RETURN 1
+;とくにない
+
+

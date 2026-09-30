@@ -1,0 +1,118 @@
+﻿;-----------------------------
+;妙技・御用改め式牙狼
+;敵陣に切り込んで、敵の行動をひきつけて阻害する役割としてターゲット集中を実装
+;パッシブの攻撃時HP回復とあわせて役割の完遂を狙う
+;-----------------------------
+;スキル名
+@SKILL_NAME_妙技・御用改め式牙狼,ARG
+RESULTS = 묘기·검문검색식 아랑
+
+;　명중
+@SKILL_HITRATE_妙技・御用改め式牙狼, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_妙技・御用改め式牙狼, ARG
+RETURN 410
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_妙技・御用改め式牙狼,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_妙技・御用改め式牙狼,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_妙技・御用改め式牙狼, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_妙技・御用改め式牙狼,ARG
+RETURN 40
+
+;　相性
+@SKILL_TYPE_妙技・御用改め式牙狼,ARG
+RETURN GET_TYPE_NUM("검격")
+;검격
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_妙技・御用改め式牙狼
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　攻撃タイプ
+@SKILL_ATTACKTYPE_妙技・御用改め式牙狼,ARG
+RETURN GET_攻撃タイプ_NUM("物理")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_妙技・御用改め式牙狼, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_妙技・御用改め式牙狼,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_妙技・御用改め式牙狼,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_妙技・御用改め式牙狼,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_妙技・御用改め式牙狼, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_妙技・御用改め式牙狼
+RETURN GET_SUCCESSION_NUM("검격")
+;검격
+
+;スキル変化？用ランク
+@SKILL_RANK_妙技・御用改め式牙狼, ARG = -1
+RETURN 15
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_妙技・御用改め式牙狼, ARG = -1, ARG:1 = -1
+RETURN 0, 4
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_妙技・御用改め式牙狼,ARG,ARG:1,ARG:2
+CALL ATTACK_SKILL, ARG, ARG:1,ARG:2
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_妙技・御用改め式牙狼,ARG
+PRINTL 적 1체에 검격 상성으로 특대 데미지를 준다.
+PRINTL 이 스킬에 의한 데미지는 적의 내성을 50%까지 무시하고 관통한다.
+PRINTL 이 스킬이 사용되는 턴 동안 적에게 표적이 될 확률이 크게 상승한다.
+PRINTL 
+PRINTL 【아사기 전용】
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_妙技・御用改め式牙狼,ARG
+RETURN 1
+;とくにない
+
+@SKILL_TURNSTART_妙技・御用改め式牙狼, ARG
+SIF CFLAG:ARG:입력행동 != PU_SKILLNUM_GET(ARG, "妙技・御用改め式牙狼")
+	RETURN 0
+IF CFLAG:ARG:변동피타겟율 < 300 || CFLAG:ARG:피타겟비율변동지속턴수 == 0
+	CFLAG:ARG:피타겟비율변동지속턴수 = 1
+	CFLAG:ARG:변동피타겟율 = 300
+ENDIF
+
+@SKILL_TAG_妙技・御用改め式牙狼
+RESULTS = 아사기_봄버걸

@@ -1,0 +1,142 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2861,ARG
+SIF SKILL_CHANGE(ARG, [[キャラ:케이네_백택]])
+	RESULTS = 박치기「아마테라스」
+RESULTS = 광부「아마테라스」
+
+;　명중
+@SKILL_HITRATE_2861, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2861, ARG
+SIF SKILL_CHANGE(ARG, [[キャラ:케이네_백택]])
+	RETURN 600
+RETURN 180
+
+;吸収率
+@SKILL_HP_ABSORBER_2861, ARG
+IF SKILL_CHANGE(ARG, [[キャラ:케이네_백택]])
+	SIF FLAG:확산플래그 == 1
+		RETURN 0
+	RETURN -100
+ENDIF
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2861,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2861,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2861, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2861,ARG
+RETURN 18
+
+;　相性
+@SKILL_TYPE_2861,ARG
+RETURN GET_TYPE_NUM("핵열")
+;전술
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2861
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2861, ARG
+SIF SKILL_CHANGE(ARG, [[キャラ:케이네_백택]])
+	RETURN 1
+RETURN 2
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2861, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2861,ARG
+RETURN 4
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2861,ARG
+SIF SKILL_CHANGE(ARG, [[キャラ:케이네_백택]])
+	RETURN 1
+RETURN 2
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2861, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2861
+RETURN GET_SUCCESSION_NUM("핵열")
+;전술
+
+@継承不能_2861
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_2861, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2861
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2861, ARG = -1
+RETURN 15
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2861, ARG, ARG:1, ARG:2
+IF SKILL_CHANGE(ARG, [[キャラ:케이네_백택]])
+	FLAG:확산플래그 = 0
+	SIF ABL:POS(ARG:1):속성LD != 1
+		FLAG:확산플래그 = 1
+	CALL ATTACK_SINGLE,ARG,POS(ARG:1),2861
+		FLAG:확산플래그 = 1
+ELSE
+	CALL ATTACK_FIELD,ARG,ARG:1,2861
+ENDIF
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2861, ARG
+IF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:케이네_백택]]
+	PRINTL 적 1체에 핵열 속성으로 특대 위력의 물리 공격을 1회 행한다.
+	PRINTL LD 성향이 라이트 속성인 상대를 공격했을 경우 준 데미지만큼 반동을 받는다.
+	PRINTL 
+	PRINTL 빛을 두르고 적에게 돌진해 뿔이 돋아난 엄청나게 아픈 박치기를 먹인다.
+	PRINTL 교육자로서의 긍지는 나쁜 아이를 훈육할 때 최대한의 효과를 발휘한다.
+	PRINTL 백택 카미시라사와 케이네의 스펠카드
+ELSE
+	PRINTL 적 1열에 핵열 속성으로 중위력의 마법 공격을 1회 행한다.
+	PRINTL 
+	PRINTL 빛을 두르고 적진에서 대난동을 부린다.
+	PRINTL 요마　카미시라사와 케이네의 스펠카드
+ENDIF
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2861,ARG
+RETURN 1
+

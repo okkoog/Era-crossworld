@@ -1,0 +1,1716 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:WORK.ERB
+;	Facility	:労役の指定・解除などを行う処理群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/01/19		P						労役のシフト処理を追加
+;	003		2011/02/17		黒天					シフト設定の一括処理を追加
+;	004		2011/03/03		迷走中の人				母乳の価格判定変更
+;	005		2011/04/02		迷走中の人				追加コマンドのビデオ価格追加
+;	006		2011/04/13		黒天					対象が一人もいない場合「全員を対象にする」選択肢が使用できないよう修正
+;													労役解除に「全員を対象にする」選択肢を追加
+;													労役解除後のキャラ一覧で解除이전페이지を表示するよう変更
+;	007		2011/06/30		ななし					ビデオ内容の取り出しをFLAGからTCVARに変更
+;	008		2013/11/30		ひみつ					リスト表示数設定追加。シフト設定画面を改造して○×を直接触れるように。
+;													第何日目でなく曜日で表示するように変更
+;	009		2017/06/23		kuni					キャラ表示でINPUT_CHARA_LISTを使用するように変更
+;	010		2018/08/10		JK好き					拡張するものがないときは労役施設拡張が表示されない様に変更
+;	011		2019/01/27		JK好き					労役施設拡張の条件ミスを修正
+;	012		2019/01/28		JK好き					道場で修練追加
+;	013		2019/04/28		ドワ鍛冶の作者			炭鉱を追加
+;	014		2020/03/17		(ﾟдﾟ)					ライブハウス・大劇場の購入を追加
+;	015		2020/06/15		JK好き					周回回数5以上で労役によるあなたの善悪値変動を表示するように
+;	016		2021/06/30		木綿豆腐				集団ライブ追加/集団ライブと乱交ライブの番号を入れ替えた
+;	017		2021/09/07		JK好き					@PRICE_VIDEO　TFLAG:48の重複に対処
+;	018		2022/04/18		JK好き					@EXTEND_WORK 식당＆娼館の購入条件が表示されるように変更
+;	019		2022/06/07		Collared				UI整理プロジェクトにより配置変更
+;	020		2023/03/07		JK好き					全体的にマジックナンバーを整理　ビデオ＆写真関連処理を整備及び修正
+;													ビデオのコマンド判定ガバガバだった問題を修正
+;	021		2024/01/21		oktwr					労役:依頼を追加
+;	022		2024/01/02		JK好き					@SELL_VIDEO ビデオタイトル決定処理を現在の環境に合うように修正
+;	023		2024/09/11		っとっとき				@PRICE_VIDEO コマンド追加に伴い、ビデオ価格に対応
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;	P
+;	001		2024/02/16		P						ターン進行の仕様変更にあわせて一部労役の選択条件を修正
+;	002		2024/06/07		P						乱交ライブがコンサート系に帰属していることがわかりやすいように表示順を調整
+;													シフト設定をオミット
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@SHOPCOMABLE_206
+SIF !IS_USEABLE_SHOPCOM
+	RETURN 0
+RESULT:1 = 2
+RESULTS = 노역/매각/경영
+RETURN CHARANUM > 1
+
+;労役指示
+@SHOP_COM_206, ARG
+#DIM LCOUNT
+CUSTOMDRAWLINE =
+;A = 0
+;B = 0
+;D = 0
+;E = 0
+;F = 0
+;G = 0
+;FOR LCOUNT, 0, CHARANUM
+;	SIF LCOUNT == MASTER
+;		CONTINUE
+;	SIF CFLAG:LCOUNT:1 != 2
+;		CONTINUE
+;	SIF CFLAG:LCOUNT:12 > 0
+;		CONTINUE
+;	;育児部屋に移動しているキャラは除外
+;	C = LCOUNT
+;	CALL CHECK_CHILD_CARE
+;	SIF RESULT == 1
+;		CONTINUE
+;	SIF (TALENT:LCOUNT:연모 || TALENT:LCOUNT:친애)
+;		A += 1
+;	SIF (TALENT:LCOUNT:음란 || TALENT:LCOUNT:창부) && TIME == 0
+;		B += 1
+;	SIF (TALENT:LCOUNT:복종 || TALENT:LCOUNT:예속) && TIME == 0
+;		D += 1
+;	SIF (TALENT:LCOUNT:연모 || TALENT:LCOUNT:친애) && ABL:LCOUNT:가창기능 >= 2
+;		E += 1
+;	SIF TALENT:LCOUNT:음란 || TALENT:LCOUNT:창부
+;		F += 1
+;	SIF TALENT:LCOUNT:5 || TALENT:LCOUNT:8
+;		G += 1
+;NEXT
+;御霊出現処理
+SIF イベントフラグ:33:1 == 4
+	イベントフラグ:15:4 = MONEY
+PRINTFORM 소지금：￥%TOSTR(MONEY, "#,##0")% / %TOSTR(MONEY:1, "#,##0")%마카
+IF FLAG:주회횟수 >= 2
+	LOCAL:10 = 0
+	FOR LCOUNT, 0, CHARANUM
+		IF CFLAG:(LCOUNT):노역플래그 == 1
+			LOCAL:10 += 1
+		ELSEIF CFLAG:(LCOUNT):노역플래그 == 2
+			LOCAL:10 -= 2
+		ELSEIF INRANGE(CFLAG:(LCOUNT):노역플래그 ,10 ,19)
+			SELECTCASE [[店舗:종류]]:(CFLAG:(LCOUNT):노역플래그-10)
+				CASE 10	;공중변소
+					LOCAL:10 -= 3
+			ENDSELECT
+		ENDIF
+	NEXT
+	IF LOCAL:10 > 0
+		PRINTFORM  / 노역에 의한 주인 선악 변동치
+		SETCOLOR  0, 0, 255
+		PRINTFORM  +{LOCAL:10}
+		RESETCOLOR
+	ELSEIF LOCAL:10 < 0
+		PRINTFORM  / 노역에 의한 주인 선악 변동치
+		SETCOLOR 255, 0, 0
+		PRINTFORM  {LOCAL:10}
+		RESETCOLOR
+	ENDIF
+ENDIF
+PRINTL 
+PRINTL [0]  - 매각
+	IF ITEM:식당
+		PRINTL [1]  - 식당에서 일한다
+	ELSEIF ITEM:노점
+		PRINTL [1]  - 노점에서 일한다
+	ELSE
+		PRINTL [1]  - 식당에서 아르바이트
+	ENDIF
+	IF ITEM:창관
+		PRINTL [2]  - 매춘
+	ELSEIF ITEM:여관
+		PRINTL [2]  - 여관에서 손님을 받게 한다
+	ELSE
+		PRINTL [2]  - 창관에서 아르바이트
+	ENDIF
+;---- EDIT P 001 MOD START -------------------------
+;IF TIME == 0
+	PRINTL [3]  - 노예의 렌탈
+;ELSE
+;	SETCOLOR 0x2e2e41
+;	PRINTL [-]  - 奴隷のレンタル（朝のみ実行可能）
+;	RESETCOLOR
+;---- EDIT P 001 MOD END ---------------------------…
+;ENDIF
+
+IF イベントフラグ:32:0 == 0
+	;---- EDIT P 002 MOD START -------------------------
+	IF コンサート実行日 == DAY
+		CALL PRINT_COLOR, "[-]  - 콘서트　　　　（실행완료）", COLOR("gray"), "L"
+		CALL PRINT_COLOR, "├[-]  - 집단라이브", COLOR("gray"), "L"
+		CALL PRINT_COLOR, "└[-]  - 난교라이브", COLOR("gray"), "L"
+	ELSEIF GET_TRAINABLE_NUM() <= 0
+		CALL PRINT_COLOR, "[-]  - 콘서트　　　　（조교가능횟수 필요）", COLOR("gray"), "L"
+		CALL PRINT_COLOR, "├[-]  - 집단라이브", COLOR("gray"), "L"
+		CALL PRINT_COLOR, "└[-]  - 난교라이브", COLOR("gray"), "L"
+	ELSE
+		PRINTL [4]  - 콘서트
+		PRINTL ├[5]- 집단라이브
+		PRINTL └[6]- 난교라이브
+	ENDIF
+ENDIF
+;---- EDIT P 002 MOD END ---------------------------
+;IF イベントフラグ:32:0 == 0 && TIME == 3
+;	PRINTL [4]  - コンサート
+;ELSEIF イベントフラグ:32:0 == 0 && TIME != 3
+;;--- 014 MOD START---
+;	SETCOLOR 0x2e2e41
+;	PRINTL [-]  - コンサート　　（夜のみ実行可能）
+;	RESETCOLOR
+;;--- 014 MOD END---
+;ENDIF
+;IF イベントフラグ:32:0 == 0 && TIME == 3
+;	PRINTL └[5]- 集団ライブ
+;ELSEIF イベントフラグ:32:0 == 0 && TIME != 3
+;;--- 014 MOD START---
+;	SETCOLOR 0x2e2e41
+;	PRINTL └[-]- 集団ライブ　　（夜のみ実行可能）
+;	RESETCOLOR
+;;--- 014 MOD END---
+;ENDIF
+;SIF G
+	PRINTL [7]  - 도장에서 수련
+;---- EDIT P 002 MOD START -------------------------
+SIF イベントフラグ:33:1 == 4 && FLAG:드워프대장장이해금
+	PRINTL [8]  - 탄광에서 노동
+;IF コンサート実行日 == DAY
+;	CALL PRINT_COLOR, "[-]  - 乱交ライブ　　（実行済み）", COLOR("gray"), "L"
+;ELSEIF GET_TRAINABLE_NUM() <= 0
+;	CALL PRINT_COLOR, "[-]  - 乱交ライブ　　（調教可能回数が必要）", COLOR("gray"), "L"
+;ELSE
+;	PRINTL [8]  - 乱交ライブ
+;ENDIF
+;---- EDIT P 002 MOD END ---------------------------…
+;SIF F
+;	PRINTL [8]  - 乱交ライブ
+	
+	PRINTL [9]  - 의뢰
+
+PRINTL [20] - 노역해제
+;--- 014 MOD START---
+SIF ITEM:식당 == 0 || ITEM:창관 == 0 || ITEM:무도관 == 0
+	PRINTL [21] - 노역시설확장
+;--- 014 MOD END---
+;---- EDIT 002 ADD START -------------------------
+;新規作成
+;PRINTL [22] - シフト設定
+;---- EDIT 002 ADD END  ---------------------------
+PRINTL [23] - 점포 경영
+PRINTL [24] - 캐릭터 등록 삭제
+
+DRAWLINE
+PRINTL [100]- 돌아간다
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT == 0
+	CALL CHARA_SELL_SELECT
+ELSEIF RESULT == 1
+	CALL RESTRANT
+ELSEIF RESULT == 2
+	CALL PROSTITUTION
+;---- EDIT P 002 MOD START -------------------------
+ELSEIF RESULT == 3
+;ELSEIF RESULT == 3 && TIME == 0
+	CALL RENTAL_SLAVE
+ELSEIF GROUPMATCH(RESULT, 4, 5, 6) && コンサート実行日 != DAY && GET_TRAINABLE_NUM() > 0
+	IF RESULT == 4 && イベントフラグ:32:0 == 0
+		CALL CONCERT
+	ELSEIF RESULT == 5 && イベントフラグ:32:0 == 0
+		CALL GROUP_LIVE
+	ELSEIF RESULT == 6
+		CALL PROMISCUOUS_SEX_LIVE
+	ENDIF
+;---- EDIT 016 ADD START -------------------------
+;ELSEIF RESULT == 5 && イベントフラグ:32:0 == 0 && TIME == 3
+;---- EDIT 016 ADD END  ---------------------------
+;---- EDIT P 002 MOD END ---------------------------
+;ELSEIF RESULT == 6 && G
+ELSEIF RESULT == 7
+	CALL DOJO
+ELSEIF RESULT == 8 && イベントフラグ:33:1 == 4 && FLAG:드워프대장장이해금
+	CALL TANKOU
+;ELSEIF RESULT == 5 && F
+;ELSEIF RESULT == 8
+;	CALL PROMISCUOUS_SEX_LIVE
+ELSEIF RESULT == 9
+	CALL IRAI
+ELSEIF RESULT == 20
+	CALL CANCEL_WORK
+ELSEIF RESULT == 21
+	CALL EXTEND_WORK
+;---- EDIT 002 ADD START -------------------------
+;新規作成
+;ELSEIF RESULT ==22
+;	CALL SIFT_WORK
+;---- EDIT 002 ADD END  ---------------------------
+ELSEIF RESULT == 23
+	CALL MANAGEMENT
+ELSEIF RESULT == 24
+	CALL DEAL_CHARA
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+;戻り値が1はターンエンドに遷移させる
+IF RESULT == 1
+	BEGIN TURNEND
+	RETURN 0
+ENDIF
+;労役で御霊出現
+IF MONEY > イベントフラグ:15:4 && イベントフラグ:33:1 == 4 && FLAG:드워프대장장이해금
+	IF !RAND:20
+		PRINTW 어령을 봤다는 정보가 들어왔다！
+		イベントフラグ:15:0 ++
+	ENDIF
+ENDIF
+RESTART
+
+@CANCEL_WORK
+#DIM LCOUNT
+;CALL INPUT_CHARA_LIST("労役をやめる奴隷を選択してください", "CASTING_CANCEL_WORK", "", "", "MODECHANGE_CANCEL_WORK")
+{
+CALL INPUT_CHARA_LIST
+	, "FUNC_PROPSET_LIST"
+	, "노역을 그만둘 노예를 선택해주세요"
+	, "CASTING_CANCEL_WORK" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "MODECHANGE_CANCEL_WORK"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+IF RESULT == 1000
+	RETURN 0
+ENDIF
+
+IF RESULT != 999
+	VARSET Q, -1
+	Q:0 = RESULT
+	LOCAL:2 = 1
+ELSE
+	;間違い対策として念押し確認
+	PRINTL 현재 노역중인 모든 캐릭터의 노역을 그만두게 합니다。
+	PRINTL 정말로 괜찮겠습니까？
+	CALL INPUT_YN
+	SIF RESULT == 1
+		;キャラ一覧に戻る。
+		RESTART
+	LOCAL:2 = FINDELEMENT(Q, -1)
+ENDIF
+
+FOR LCOUNT, 0, LOCAL:2
+	PRINTFORMW %CALLNAME:(Q:LCOUNT)%의 노역을 해제했습니다
+	CFLAG:(Q:LCOUNT):노역플래그 = 0
+	;CFLAG:(Q:LCOUNT):노역점포 = 0
+	IF CFLAG:(Q:LCOUNT):극장출연순서 != 0
+		DE:(49+(CFLAG:(Q:LCOUNT):극장출연순서)):(CFLAG:(Q:LCOUNT):노역점포-1) = -1
+		DE:(59+(CFLAG:(Q:LCOUNT):극장출연순서)):(CFLAG:(Q:LCOUNT):노역점포-1) = -1
+		CFLAG:(Q:LCOUNT):극장출연순서 = 0
+		CFLAG:(Q:LCOUNT):노역점포 = 0
+	ENDIF
+NEXT
+
+RESTART
+
+@CASTING_CANCEL_WORK(ARG)
+SIF CFLAG:ARG:노역플래그 == 0
+	RETURN 0
+SIF IS_RENTING(ARG)
+	RETURN 0
+SIF CFLAG:ARG:이자리에없는플래그 == 1
+	RETURN 0
+SIF CFLAG:ARG:전투이외불능
+	RETURN 0
+RETURN 1
+
+@MODECHANGE_CANCEL_WORK , ARG
+;対象が二人未満の場合、999(全員の労役解除)は無効
+IF ARG == -1 && FINDELEMENT(Q, -1) >= 2
+	PRINTL
+	DRAWLINE
+	PRINTL [999] 노역중인 캐릭터 전원의 노역을 그만둔다
+ELSEIF ARG == 999
+	RETURN ARG, 0
+ENDIF
+RETURN ARG, 1
+
+@EXTEND_WORK
+DRAWLINE
+
+SIF ITEM:노점 == 0
+	PRINTL [1]  - 노점을 구입한다(￥50000)
+IF ITEM:식당 == 0 && FLAG:요리인기 >= 150
+	PRINTL [1]  - 식당의 권리서를 산다(￥300000)
+ELSEIF ITEM:식당 == 0
+	PRINTL [-]  - 식당의 권리서를 산다(￥300000 ＆ 노점인기 150이상)
+ENDIF
+SIF ITEM:여관 == 0
+	PRINTL [2]  - 여관을 구입한다(￥50000)
+IF ITEM:창관 == 0 && FLAG:매춘인기 >= 150
+	PRINTL [2]  - 여관을 창관으로 개장한다(￥500000)
+ELSEIF ITEM:창관 == 0
+	PRINTL [-]  - 여관을 창관으로 개장한다(￥500000 ＆ 여관인기 150이상)
+ENDIF
+
+;--- 014 ADD START---
+SIF ITEM:라이브하우스 == 0
+	PRINTL [3]  - 라이브하우스를 구입한다(￥200000)
+SIF ITEM:라이브하우스 == 1 && ITEM:무도관 == 0
+	PRINTL [3]  - 무도관과 장기계약한다(￥1000000)
+;--- 014 ADD END---
+
+
+DRAWLINE
+PRINTL [100]  - 돌아간다
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT == 1 && ITEM:식당 == 0
+	IF ITEM:노점 == 0 && MONEY < 50000
+		PRINTW 노점을 운영할 자본금이 부족하다。
+		CLEARLINE 2
+		GOTO INPUT_LOOP
+	ELSEIF ITEM:노점 == 0
+		PRINTW 노점을 구입했습니다
+		MONEY -= 50000
+		FLAG:요리인기 = 1
+		ITEM:노점 = 1
+		RESTART
+	ELSEIF ITEM:식당 == 0 && FLAG:요리인기 >= 150 && MONEY < 300000
+		PRINTW 식당의 권리서를 사기에는 자본금이 부족하다
+		CLEARLINE 2
+		GOTO INPUT_LOOP
+	ELSEIF  ITEM:식당 == 0 && FLAG:요리인기 >= 150
+		PRINTFORMW %조사처리(NAME:MASTER,"가")% 경영하는 식당이 개점했습니다。
+		MONEY -= 300000
+		ITEM:식당 = 1
+		RESTART
+	ELSE
+		CLEARLINE 1
+		GOTO INPUT_LOOP
+	ENDIF
+ELSEIF RESULT == 2 && ITEM:창관 == 0
+	IF ITEM:여관 == 0 && MONEY < 50000
+		PRINTW 여관을 경영할 자본금이 부족하다
+		CLEARLINE 2
+		GOTO INPUT_LOOP
+	ELSEIF ITEM:여관 == 0
+		PRINTW 여관의 권리서를 구입했습니다
+		MONEY -= 50000
+		FLAG:매춘인기 = 1
+		ITEM:여관 = 1
+		RESTART
+	ELSEIF ITEM:창관 == 0 && FLAG:매춘인기 >= 150 && MONEY < 500000
+		PRINTW 여관을 개장시킬 자본금이 부족하다
+		CLEARLINE 2
+		GOTO INPUT_LOOP
+	ELSEIF  ITEM:창관 == 0 && FLAG:매춘인기 >= 150
+		PRINTW 소유 중인 여관을 매춘 전용 시설로 개장했습니다。
+		MONEY -= 500000
+		ITEM:창관 = 1
+		RESTART
+	ELSE
+		CLEARLINE 1
+		GOTO INPUT_LOOP
+	ENDIF
+;--- 014 ADD START---
+ELSEIF RESULT == 3 && ITEM:무도관 == 0
+	IF ITEM:라이브하우스 == 0 && MONEY < 200000
+		PRINTW 라이브하우스를 구입하기에는 자본금이 부족하다
+		CLEARLINE 2
+		GOTO INPUT_LOOP
+	ELSEIF ITEM:라이브하우스 == 0
+		PRINTW 라이브하우스의 권리서를 구입했습니다
+		MONEY -= 200000
+		ITEM:라이브하우스 = 1
+		RESTART
+	ELSEIF ITEM:무도관 == 0 && MONEY < 1000000
+		PRINTW 무도관의 사용권을 얻기에는 자본금이 부족하다
+		CLEARLINE 2
+		GOTO INPUT_LOOP
+	ELSEIF  ITEM:무도관 == 0
+		PRINTW 무도관의 사용권을 구입했습니다。
+		MONEY -= 1000000
+		ITEM:무도관 = 1
+		RESTART
+	ELSE
+		CLEARLINE 1
+		GOTO INPUT_LOOP
+	ENDIF
+;--- 014 ADD END---
+ELSE
+	CLEARLINE 1
+	GOTO INPUT_LOOP
+ENDIF
+
+;ビデオの重複使用を処理するために、予め値段の加算を行っておく
+@PRICE_VIDEO
+#DIM ビデオ価格 = 0
+#DIM ビデオ奉仕 = 0
+#DIM ビデオ被虐 = 0
+#DIM ビデオ肛虐 = 0
+#DIM ビデオ倍率
+#DIM 雑変数
+#DIM LCOUNT
+
+TFLAG:비디오타이틀용 = 0
+;---- EDIT 007 MOD START -----------------
+FOR LCOUNT, 0, TFLAG:70
+	雑変数 = LCOUNT + 110
+	;디버그용
+	;PRINTFORML {LCOUNT+1, 2}回目 {TCVAR:雑変数, 3}番
+	;コマンド番号はTrain.CSVに書いてある
+	
+	;COM:愛撫を見る
+	IF TCVAR:雑変数 == 0
+		ビデオ価格 += 50
+	;COM:クンニを見る
+	ELSEIF TCVAR:雑変数 == 1
+		ビデオ価格 += 50
+	;COM:フェラするを見る
+	ELSEIF TCVAR:雑変数 == 2
+		ビデオ価格 += 200
+	;COM:指挿入れを見る
+	ELSEIF TCVAR:雑変数 == 3
+		ビデオ価格 += 150
+	;COM:アナル舐めを見る
+	ELSEIF TCVAR:雑変数 == 4
+		ビデオ価格 += 100
+		ビデオ肛虐 += 1
+	;COM:アナル愛撫を見る
+	ELSEIF TCVAR:雑変数 == 5
+		ビデオ価格 += 100
+		ビデオ肛虐 += 1
+	;COM:胸揉みを見る
+	ELSEIF TCVAR:雑変数 == 6
+		ビデオ価格 += 120
+	;COM:乳首責めを見る
+	ELSEIF TCVAR:雑変数 == 7
+		ビデオ価格 += 250
+	;COM:胸愛撫を見る
+	ELSEIF TCVAR:雑変数 == 8
+		ビデオ価格 += 100
+	;COM:秘貝開帳を見る
+	ELSEIF TCVAR:雑変数 == 9
+		ビデオ価格 += 300
+	;COM:胸自慰を見る
+	ELSEIF TCVAR:雑変数 == 10
+		ビデオ価格 += 400
+	;COM:自慰を見る
+	;自動的に公開オナニーになる
+	ELSEIF TCVAR:雑変数 == 11
+		ビデオ価格 += 500
+	;COM:羽愛撫を見る
+	ELSEIF TCVAR:雑変数 == 12
+		ビデオ価格 += 100
+	;COM:尻尾撫でを見る
+	ELSEIF TCVAR:雑変数 == 13
+		ビデオ価格 += 100
+	;COM:クリ愛撫を見る
+	ELSEIF TCVAR:雑変数 == 14
+		ビデオ価格 += 100
+	;COM:尻愛撫を見る
+	ELSEIF TCVAR:雑変数 == 15
+		ビデオ価格 += 100
+	;COM:キスするを見る
+	ELSEIF TCVAR:雑変数 == 20
+		ビデオ価格 += 100
+	;COM:何もしないを見る
+	ELSEIF TCVAR:雑変数 == 21
+		ビデオ価格 += 10
+	;COM:会話を見る
+	ELSEIF TCVAR:雑変数 == 22
+		ビデオ価格 += 50
+	;COM:プレゼントを見る
+	ELSEIF TCVAR:雑変数 == 23
+		ビデオ価格 += 10
+	;COM:スキンシップを見る
+	ELSEIF TCVAR:雑変数 == 24
+		ビデオ価格 += 30
+	;COM:まったりするを見る
+	ELSEIF TCVAR:雑変数 == 25
+		ビデオ価格 += 10
+	;COM:家事を見る
+	ELSEIF TCVAR:雑変数 == 26
+		ビデオ価格 += 10
+	;COM:歌の練習を見る
+	ELSEIF TCVAR:雑変数 == 27
+		ビデオ価格 += 50
+	;COM:罵倒を見る
+	ELSEIF TCVAR:雑変数 == 28
+		ビデオ価格 += 20
+	;COM:ビデオ鑑賞を見る
+	ELSEIF TCVAR:雑変数 == 29
+		ビデオ価格 += 20
+	;COM:ぱふぱふを見る
+	ELSEIF TCVAR:雑変数 == 30
+		ビデオ価格 += 100
+	;COM:ローターを見る
+	ELSEIF TCVAR:雑変数 == 40
+		ビデオ価格 += 150
+	;COM:Eマッサージャを見る
+	ELSEIF TCVAR:雑変数 == 41
+		ビデオ価格 += 200
+	;COM:クリキャップを見る
+	ELSEIF TCVAR:雑変数 == 42
+		ビデオ価格 += 150
+	;COM:オナホールを見る
+	ELSEIF TCVAR:雑変数 == 43
+		ビデオ価格 += 100
+	;COM:バイブを見る
+	ELSEIF TCVAR:雑変数 == 44
+		ビデオ価格 += 200
+	;COM:アナルバイブを見る
+	ELSEIF TCVAR:雑変数 == 45
+		ビデオ価格 += 250
+		ビデオ肛虐 += 1
+	;COM:アナルビーズを見る
+	ELSEIF TCVAR:雑変数 == 46
+		ビデオ価格 += 150
+		ビデオ肛虐 += 1
+	;COM:ニプルキャップを見る
+	ELSEIF TCVAR:雑変数 == 47
+		ビデオ価格 += 150
+	;COM:乳首ローターを見る
+	ELSEIF TCVAR:雑変数 == 48
+		ビデオ価格 += 150
+	;COM:搾乳器を見る
+	ELSEIF TCVAR:雑変数 == 49
+		ビデオ価格 += 250
+	;COM:クリキャップ使うを見る
+	ELSEIF TCVAR:雑変数 == 50
+		ビデオ価格 += 100
+	;COM:オナホール使うを見る
+	ELSEIF TCVAR:雑変数 == 51
+		ビデオ価格 += 100
+	;COM:バイブ使うを見る
+	ELSEIF TCVAR:雑変数 == 52
+		ビデオ価格 += 100
+	;COM:アナルバイブ使うを見る
+	ELSEIF TCVAR:雑変数 == 53
+		ビデオ価格 += 100
+	;COM:アナルビーズ使うを見る
+	ELSEIF TCVAR:雑変数 == 54
+		ビデオ価格 += 100
+	;COM:ニプルキャップ使うを見る
+	ELSEIF TCVAR:雑変数 == 55
+		ビデオ価格 += 100
+	;COM:搾乳機使うを見る
+	ELSEIF TCVAR:雑変数 == 56
+		ビデオ価格 += 100
+	;COM:正常位を見る
+	ELSEIF TCVAR:雑変数 == 60
+		ビデオ価格 += 300
+	;COM:背後位を見る
+	ELSEIF TCVAR:雑変数 == 61
+		ビデオ価格 += 450
+	;COM:正常位アナルを見る
+	ELSEIF TCVAR:雑変数 == 62
+		ビデオ価格 += 250
+		ビデオ肛虐 += 1
+	;COM:後背位アナルを見る
+	ELSEIF TCVAR:雑変数 == 63
+		ビデオ価格 += 400
+		ビデオ肛虐 += 1
+	;COM:逆レイプを見る
+	ELSEIF TCVAR:雑変数 == 64
+		ビデオ価格 += 500
+	;COM:乳ファックを見る
+	ELSEIF TCVAR:雑変数 == 65
+		ビデオ価格 += 400
+	;COM:騎乗位を見る
+	ELSEIF TCVAR:雑変数 == 66
+		ビデオ価格 += 500
+	;COM:騎乗位アナルを見る
+	ELSEIF TCVAR:雑変数 == 67
+		ビデオ価格 += 500
+		ビデオ肛虐 += 1
+	;COM:対面座位を見る
+	ELSEIF TCVAR:雑変数 == 68
+		ビデオ価格 += 450
+	;COM:背面座位を見る
+	ELSEIF TCVAR:雑変数 == 69
+		ビデオ価格 += 500
+	;COM:対面座位アナルを見る
+	ELSEIF TCVAR:雑変数 == 70
+		ビデオ価格 += 450
+		ビデオ肛虐 += 1
+	;COM:背面座位アナルを見る
+	ELSEIF TCVAR:雑変数 == 71
+		ビデオ価格 += 450
+		ビデオ肛虐 += 1
+	;COM:下着ずらし挿入を見る
+	ELSEIF TCVAR:雑変数 == 72
+		ビデオ価格 += 300
+	;COM:下着ずらし挿入アナルを見る
+	ELSEIF TCVAR:雑変数 == 73
+		ビデオ価格 += 350
+		ビデオ肛虐 += 1
+	;COM:逆レイプされるを見る
+	ELSEIF TCVAR:雑変数 == 74
+		ビデオ価格 += 500
+	;COM:手淫を見る
+	ELSEIF TCVAR:雑変数 == 80
+		ビデオ価格 += 300
+		ビデオ奉仕 += 1
+	;COM:フェラチオを見る
+	ELSEIF TCVAR:雑変数 == 81
+		ビデオ価格 += 400
+		ビデオ奉仕 += 1
+	;COM:パイズリを見る
+	ELSEIF TCVAR:雑変数 == 82
+		ビデオ価格 += 500
+		ビデオ奉仕 += 1
+	;COM:素股を見る
+	ELSEIF TCVAR:雑変数 == 83
+		ビデオ価格 += 350
+		ビデオ奉仕 += 1
+	;COM:泡踊りを見る
+	ELSEIF TCVAR:雑変数 == 84
+		ビデオ価格 += 500
+		ビデオ奉仕 += 1
+	;COM:足扱きを見る
+	ELSEIF TCVAR:雑変数 == 85
+		ビデオ価格 += 350
+		ビデオ奉仕 += 1
+	;COM:足舐め強制を見る
+	ELSEIF TCVAR:雑変数 == 86
+		ビデオ価格 += 350
+		ビデオ奉仕 += 1
+	;COM:縦パイズリを見る
+	ELSEIF TCVAR:雑変数 == 87
+		ビデオ価格 += 500
+		ビデオ奉仕 += 1
+	;COM:パイズリフェラを見る
+	ELSEIF TCVAR:雑変数 == 88
+		ビデオ価格 += 500
+		ビデオ奉仕 += 1
+	;COM:母乳飲みを見る
+	ELSEIF TCVAR:雑変数 == 89
+		ビデオ価格 += 250
+	;COM:手淫するを見る
+	ELSEIF TCVAR:雑変数 == 90
+		ビデオ価格 += 300
+	;COM:パイズリするを見る
+	ELSEIF TCVAR:雑変数 == 91
+		ビデオ価格 += 500
+	;COM:正常位させるを見る
+	ELSEIF TCVAR:雑変数 == 92
+		ビデオ価格 += 300
+	;COM:背後位させるを見る
+	ELSEIF TCVAR:雑変数 == 93
+		ビデオ価格 += 450
+	;COM:騎乗位させるを見る
+	ELSEIF TCVAR:雑変数 == 94
+		ビデオ価格 += 500
+	;COM:正常位アナルさせるを見る
+	ELSEIF TCVAR:雑変数 == 95
+		ビデオ価格 += 250
+	;COM:後背位アナルさせるを見る
+	ELSEIF TCVAR:雑変数 == 96
+		ビデオ価格 += 400
+	;COM:騎乗位アナルさせるを見る
+	ELSEIF TCVAR:雑変数 == 97
+		ビデオ価格 += 500
+	;COM:母乳飲ませるを見る
+	ELSEIF TCVAR:雑変数 == 98
+		ビデオ価格 += 200
+	;COM:愛撫させるを見る
+	ELSEIF TCVAR:雑変数 == 99
+		ビデオ価格 += 100
+	;COM:スパンキングを見る
+	ELSEIF TCVAR:雑変数 == 100
+		ビデオ価格 += 250
+		ビデオ被虐 += 1
+	;COM:乳スパンキングを見る
+	ELSEIF TCVAR:雑変数 == 101
+		ビデオ価格 += 300
+		ビデオ被虐 += 1
+	;COM:鞭を見る
+	ELSEIF TCVAR:雑変数 == 102
+		ビデオ価格 += 350
+		ビデオ被虐 += 1
+	;COM:蝋燭を見る
+	ELSEIF TCVAR:雑変数 == 103
+		ビデオ価格 += 400
+		ビデオ被虐 += 1
+	;COM:針を見る
+	ELSEIF TCVAR:雑変数 == 104
+		ビデオ価格 += 500
+		ビデオ被虐 += 1
+	;COM:アイマスクを見る
+	ELSEIF TCVAR:雑変数 == 105
+		ビデオ価格 += 150
+		ビデオ被虐 += 1
+	;COM:縄を見る
+	ELSEIF TCVAR:雑変数 == 106
+		ビデオ価格 += 200
+		TFLAG:비디오타이틀용 = 4
+	;COM:ボールギャグを見る
+	ELSEIF TCVAR:雑変数 == 107
+		ビデオ価格 += 250
+		ビデオ被虐 += 1
+	;COM:三角木馬を見る
+	ELSEIF TCVAR:雑変数 == 108
+		ビデオ価格 += 450
+		ビデオ被虐 += 1
+	;COM:射精止めを見る
+	ELSEIF TCVAR:雑変数 == 109
+		ビデオ価格 += 200
+		ビデオ被虐 += 1
+	;COM:クンニ強制を見る
+	ELSEIF TCVAR:雑変数 == 120
+		ビデオ価格 += 250
+	;COM:貝あわせを見る
+	ELSEIF TCVAR:雑変数 == 121
+		ビデオ価格 += 350
+	;COM:助手を犯させるを見る
+	ELSEIF TCVAR:雑変数 == 122
+		ビデオ価格 += 500
+	;COM:足コキを見る
+	ELSEIF TCVAR:雑変数 == 123
+		ビデオ価格 += 350
+		ビデオ被虐 += 1
+	;COM:ダブルフェラを見る
+	ELSEIF TCVAR:雑変数 == 124
+		ビデオ価格 += 450
+	;COM:ダブルパイズリを見る
+	ELSEIF TCVAR:雑変数 == 125
+		ビデオ価格 += 500
+	;COM:乳の揉み合いを見る
+	ELSEIF TCVAR:雑変数 == 126
+		ビデオ価格 += 200
+	;COM:자위과시
+	ELSEIF TCVAR:雑変数 == 127
+		ビデオ価格 += 50
+	;COM:조개젖히기과시
+	ELSEIF TCVAR:雑変数 == 128
+		ビデオ価格 += 40
+	;COM:自慰口淫見せつけを見る
+	ELSEIF TCVAR:雑変数 == 129
+		ビデオ価格 += 30
+	;COM:ダブル足扱きを見る
+	ELSEIF TCVAR:雑変数 == 130
+		ビデオ価格 += 400
+	;COM:ダブル尻扱きを見る
+	ELSEIF TCVAR:雑変数 == 131
+		ビデオ価格 += 400
+	;COM:イマラチオを見る
+	ELSEIF TCVAR:雑変数 == 140
+		ビデオ価格 += 450
+		ビデオ被虐 += 1
+	;COM:フィストファックを見る
+	ELSEIF TCVAR:雑変数 == 141
+		ビデオ価格 += 500
+		ビデオ被虐 += 1
+	;COM:アナルフィストを見る
+	ELSEIF TCVAR:雑変数 == 142
+		ビデオ価格 += 500
+		ビデオ肛虐 += 2
+		ビデオ被虐 += 1
+	;COM:両穴フィストを見る
+	ELSEIF TCVAR:雑変数 == 143
+		ビデオ価格 += 500
+		ビデオ被虐 += 2
+	;COM:放尿を見る
+	ELSEIF TCVAR:雑変数 == 144
+		ビデオ価格 += 200
+		ビデオ被虐 += 1
+	;COM:アナル奉仕強制を見る
+	ELSEIF TCVAR:雑変数 == 145
+		ビデオ価格 += 250
+	;COM:浣腸器＋プラグを見る
+	ELSEIF TCVAR:雑変数 == 146
+		ビデオ価格 += 350
+		ビデオ被虐 += 1
+	;COM:空気浣腸を見る
+	ELSEIF TCVAR:雑変数 == 147
+		ビデオ価格 += 150
+		ビデオ被虐 += 1
+	;COM:拡張バルーンを見る
+	ELSEIF TCVAR:雑変数 == 148
+		ビデオ価格 += 150
+		ビデオ被虐 += 1
+	;COM:アナル電極を見る
+	ELSEIF TCVAR:雑変数 == 149
+		ビデオ価格 += 250
+		ビデオ肛虐 += 2
+		ビデオ被虐 += 1
+	;COM:乳房電極を見る
+	ELSEIF TCVAR:雑変数 == 150
+		ビデオ価格 += 250
+		ビデオ被虐 += 1
+	;COM:鰻風呂を見る
+	ELSEIF TCVAR:雑変数 == 151
+		ビデオ価格 += 250
+	;COM:蟲風呂を見る
+	ELSEIF TCVAR:雑変数 == 152
+		ビデオ価格 += 250
+	;COM:요정오나홀
+	ELSEIF TCVAR:雑変数 == 154
+		ビデオ価格 += 500
+		ビデオ被虐 += 2
+	;COM:玉キックを見る
+	ELSEIF TCVAR:雑変数 == 155
+		ビデオ価格 += 200
+	;COM:飲尿を見る
+	ELSEIF TCVAR:雑変数 == 156
+		ビデオ価格 += 300
+	;COM:妖精バイブを見る
+	ELSEIF TCVAR:雑変数 == 157
+		ビデオ価格 += 1000
+	;COM:カテーテルを見る
+	ELSEIF TCVAR:雑変数 == 158
+		ビデオ価格 += 300
+	;COM:尿道プラグを見る
+	ELSEIF TCVAR:雑変数 == 159
+		ビデオ価格 += 300
+	;COM:触手召喚を見る
+	ELSEIF TCVAR:雑変数 == 160
+		ビデオ価格 += 150
+		TFLAG:비디오타이틀용 = 2
+	;COM:触手挿入を見る
+	ELSEIF TCVAR:雑変数 == 161
+		ビデオ価格 += 250
+	;COM:アナル触手を見る
+	ELSEIF TCVAR:雑変数 == 162
+		ビデオ価格 += 300
+	;COM:触手クリ責めを見る
+	ELSEIF TCVAR:雑変数 == 163
+		ビデオ価格 += 100
+	;COM:触手乳首責めを見る
+	ELSEIF TCVAR:雑変数 == 164
+		ビデオ価格 += 150
+	;COM:触手搾乳を見る
+	ELSEIF TCVAR:雑変数 == 165
+		ビデオ価格 += 200
+	;COM:触手緊縛を見る
+	ELSEIF TCVAR:雑変数 == 166
+		ビデオ価格 += 300
+	;COM:触手浣腸を見る
+	ELSEIF TCVAR:雑変数 == 167
+		ビデオ価格 += 300
+	;COM:触手口辱を見る
+	ELSEIF TCVAR:雑変数 == 168
+		ビデオ価格 += 400
+	;COM:触手ペニス責めを見る
+	ELSEIF TCVAR:雑変数 == 169
+		ビデオ価格 += 100
+	;COM:触手挿入させるを見る
+	ELSEIF TCVAR:雑変数 == 170
+		ビデオ価格 += 200
+	;COM:アナル触手させるを見る
+	ELSEIF TCVAR:雑変数 == 171
+		ビデオ価格 += 250
+	;COM:触手クリ責めさせるを見る
+	ELSEIF TCVAR:雑変数 == 172
+		ビデオ価格 += 50
+	;COM:触手乳首責めさせるを見る
+	ELSEIF TCVAR:雑変数 == 173
+		ビデオ価格 += 100
+	;COM:触手搾乳させるを見る
+	ELSEIF TCVAR:雑変数 == 174
+		ビデオ価格 += 150
+	;COM:触手ペニス責めさせるを見る
+	ELSEIF TCVAR:雑変数 == 175
+		ビデオ価格 += 50
+	;COM:アナル極太触手を見る
+	ELSEIF TCVAR:雑変数 == 176
+		ビデオ価格 += 500
+	;COM:触手暴走を見る
+	ELSEIF TCVAR:雑変数 == 177
+		ビデオ価格 += 1000
+	;COM:触手暴走させるを見る
+	ELSEIF TCVAR:雑変数 == 178
+		ビデオ価格 += 700
+	;COM:ローションを見る
+	ELSEIF TCVAR:雑変数 == 180
+		ビデオ価格 += 10
+	;COM:媚薬を見る
+	ELSEIF TCVAR:雑変数 == 181
+		ビデオ価格 += 100
+		TFLAG:비디오타이틀용 = 5
+	;COM:利尿剤を見る
+	ELSEIF TCVAR:雑変数 == 182
+		ビデオ価格 += 100
+	;COM:ビデオカメラを見る
+	ELSEIF TCVAR:雑変数 == 183
+		ビデオ価格 += 0
+	;COM:野外プレイを見る
+	ELSEIF TCVAR:雑変数 == 184
+		ビデオ価格 += 250
+		TFLAG:비디오타이틀용 = 3
+	;COM:助手を犯すを見る
+	ELSEIF TCVAR:雑変数 == 185
+		ビデオ価格 += 300
+	;COM:羞恥プレイを見る
+	ELSEIF TCVAR:雑変数 == 186
+		ビデオ価格 += 250
+	;COM:お風呂場プレイを見る
+	ELSEIF TCVAR:雑変数 == 187
+		ビデオ価格 += 200
+	;COM:シャワーを見る
+	ELSEIF TCVAR:雑変数 == 188
+		ビデオ価格 += 100
+	;COM:新妻プレイを見る
+	ELSEIF TCVAR:雑変数 == 189
+		ビデオ価格 += 200
+	;COM:写真撮影を見る
+	ELSEIF TCVAR:雑変数 == 190
+		ビデオ価格 += 100
+	;COM:強精神薬を見る
+	ELSEIF TCVAR:雑変数 == 191
+		ビデオ価格 += 50
+	;COM:コンドーム精飲（奴隷）を見る
+	ELSEIF TCVAR:雑変数 == 192
+		ビデオ価格 += 200
+	;COM:コンドーム精飲（助手）を見る
+	ELSEIF TCVAR:雑変数 == 193
+		ビデオ価格 += 200
+	;COM:ザーメンキスを見る
+	ELSEIF TCVAR:雑変数 == 194
+		ビデオ価格 += 300
+	;COM:乳腺開発を見る
+	ELSEIF TCVAR:雑変数 == 195
+		ビデオ価格 += 300
+		ビデオ被虐 += 1
+	;COM:媚薬使うを見る
+	ELSEIF TCVAR:雑変数 == 196
+		ビデオ価格 += 50
+	;COM:パンツ扱きを見る
+	ELSEIF TCVAR:雑変数 == 197
+		ビデオ価格 += 350
+	;COM:人を呼ぶを見る
+	ELSEIF TCVAR:雑変数 == 200
+		ビデオ価格 += 50
+	;COM:輪姦を見る
+	ELSEIF TCVAR:雑変数 == 201
+		ビデオ価格 += 1500
+		TFLAG:비디오타이틀용 = 11
+	;COM:人を集めさせるを見る
+	ELSEIF TCVAR:雑変数 == 202
+		ビデオ価格 += 70
+	;COM:원격조교
+	ELSEIF TCVAR:雑変数 == 203
+		ビデオ価格 += 1500
+		TFLAG:비디오타이틀용 = 10
+	;COM:飲精を見る
+	ELSEIF TCVAR:雑変数 == 204
+		ビデオ価格 += 600
+	;COM:亀頭攻めを見る
+	ELSEIF TCVAR:雑変数 == 210
+		ビデオ価格 += 400
+	;COM:귀두공격(受)を見る
+	ELSEIF TCVAR:雑変数 == 211
+		ビデオ価格 += 350
+	;COM:触手Ｖピストンを見る
+	ELSEIF TCVAR:雑変数 == 250
+		ビデオ価格 += 800
+	;COM:触手Ａピストンを見る
+	ELSEIF TCVAR:雑変数 == 251
+		ビデオ価格 += 800
+	;COM:触手両穴ピストンを見る
+	ELSEIF TCVAR:雑変数 == 252
+		ビデオ価格 += 900
+	;COM:３Ｐを見る
+	ELSEIF TCVAR:雑変数 == 500 || TCVAR:雑変数 == 513 || TCVAR:雑変数 == 514
+		ビデオ価格 += 500
+	;COM:シックスナインを見る
+	ELSEIF TCVAR:雑変数 == 501
+		ビデオ価格 += 400
+	;COM:岩清水を見る
+	ELSEIF TCVAR:雑変数 == 502
+		ビデオ価格 += 500
+	;COM:Ｇスポット刺激を見る
+	ELSEIF TCVAR:雑変数 == 503
+		ビデオ価格 += 200
+	;COM:乱れ牡丹を見る
+	ELSEIF TCVAR:雑変数 == 504
+		ビデオ価格 += 500
+	;COM:騎乗乳房自慰を見る
+	ELSEIF TCVAR:雑変数 == 505
+		ビデオ価格 += 450
+	;COM:挿入Ｇスポ責めを見る
+	ELSEIF TCVAR:雑変数 == 506
+		ビデオ価格 += 500
+	;COM:挿入子宮口責めを見る
+	ELSEIF TCVAR:雑変数 == 507
+		ビデオ価格 += 500
+	;COM:６９パイズリを見る
+	ELSEIF TCVAR:雑変数 == 508
+		ビデオ価格 += 500
+	;COM:搾乳を見る
+	ELSEIF TCVAR:雑変数 == 509
+		ビデオ価格 += 500
+	;COM:ダブル素股を見る
+	ELSEIF TCVAR:雑変数 == 510
+		ビデオ価格 += 500
+	;COM:二本フェラを見る
+	ELSEIF TCVAR:雑変数 == 511
+		ビデオ価格 += 450
+	;COM:アナル騎乗乳房自慰を見る
+	ELSEIF TCVAR:雑変数 == 512
+		ビデオ価格 += 450
+		ビデオ肛虐 += 1
+	;COM:アナル乱れ牡丹を見る
+	ELSEIF TCVAR:雑変数 == 515
+		ビデオ価格 += 500
+		ビデオ肛虐 += 1
+	;COM:前立腺刺激を見る
+	ELSEIF TCVAR:雑変数 == 516
+		ビデオ価格 += 500
+		ビデオ肛虐 += 1
+	;COM:挿入前立腺責めを見る
+	ELSEIF TCVAR:雑変数 == 517
+		ビデオ価格 += 500
+		ビデオ肛虐 += 1
+	;COM:挿入前立腺責めさせるを見る
+	ELSEIF TCVAR:雑変数 == 520
+		ビデオ価格 += 400
+	;COM:対面座位させるを見る
+	ELSEIF TCVAR:雑変数 == 900
+		ビデオ価格 += 450
+	;COM:背面座位させるを見る
+	ELSEIF TCVAR:雑変数 == 901
+		ビデオ価格 += 500
+	;COM:アナル対面座位させるを見る
+	ELSEIF TCVAR:雑変数 == 902
+		ビデオ価格 += 450
+	;COM:アナル背面座位させるを見る
+	ELSEIF TCVAR:雑変数 == 903
+		ビデオ価格 += 450
+	;COM:バイブオナニーを見る
+	ELSEIF TCVAR:雑変数 == 991
+		ビデオ価格 += 600
+	;COM:アナルバイブオナニーを見る
+	ELSEIF TCVAR:雑変数 == 992
+		ビデオ価格 += 600
+		ビデオ肛虐 += 1
+	;COM:二穴バイブオナニーを見る
+	ELSEIF TCVAR:雑変数 == 993
+		ビデオ価格 += 700
+	;COM:シャワーオナニーを見る
+	ELSEIF TCVAR:雑変数 == 994
+		ビデオ価格 += 550
+	ELSE
+		ビデオ価格 += 10
+	ENDIF
+NEXT
+
+;処女喪失シーンがあれば加算
+IF TFLAG:39
+	ビデオ価格 += 5000
+	TFLAG:비디오타이틀용 = 1
+	TFLAG:39 = 0
+ENDIF
+;---- EDIT 007 MOD END -----------------
+
+
+
+
+
+ビデオ倍率 = 100
+;素質:処女を見る
+SIF TALENT:처녀
+	ビデオ倍率 += 20
+;素質:無関心を見る
+SIF TALENT:무관심
+	ビデオ倍率 += 30
+;素質:感情乏しいを見る
+SIF TALENT:감정결핍
+	ビデオ倍率 += 30
+;素質:恥じらいを見る
+SIF TALENT:부끄럼쟁이
+	ビデオ倍率 += 10
+;素質:小柄体型を見る
+SIF TALENT:유아체형
+	ビデオ倍率 += 20
+;素質:絶壁を見る
+SIF TALENT:절벽
+	ビデオ倍率 += 10
+;素質:巨乳を見る
+SIF TALENT:거유
+	ビデオ倍率 += 20
+;素質:爆乳を見る
+SIF TALENT:폭유 || TALENT:마유
+	ビデオ倍率 += 10
+;素質:動物耳を見る
+SIF TALENT:동물귀
+	ビデオ倍率 += 10
+;素質:人気を見る
+SIF TALENT:인기
+	ビデオ倍率 += 30
+;素質:謎の魅力を見る
+SIF TALENT:수수께끼의매력
+	ビデオ倍率 += 30
+;素質:魅力を見る
+SIF TALENT:매력
+	ビデオ倍率 += 20
+;-----------------------------------------------------------
+
+;奴隷の被写経験を見る
+IF EXP:TARGET:피사경험 >= EXPLV:5
+	ビデオ倍率 += 30
+ELSEIF EXP:TARGET:피사경험 >= EXPLV:3
+	ビデオ倍率 += 20
+ELSEIF EXP:TARGET:피사경험 >= EXPLV:1
+	ビデオ倍率 += 10
+ENDIF
+
+;撮影者を見る
+;主人
+IF FLAG:촬영자 == 1
+	;撮影技能を見る
+	IF ABL:MASTER:촬영기능 >= 5
+		ビデオ倍率 += (50 + ABL:MASTER:촬영기능 * 10)
+	ELSEIF ABL:MASTER:촬영기능 == 4
+		ビデオ倍率 += 50
+	ELSEIF ABL:MASTER:촬영기능 == 3
+		ビデオ倍率 += 20
+	ELSEIF ABL:MASTER:촬영기능 <= 1
+		ビデオ倍率 += 20
+	ENDIF
+;助手
+ELSEIF FLAG:촬영자 == 2
+	;撮影技能を見る
+	IF ABL:ASSI:촬영기능 >= 5
+		ビデオ倍率 += (50 + ABL:ASSI:촬영기능 * 10)
+	ELSEIF ABL:ASSI:촬영기능 == 4
+		ビデオ倍率 += 50
+	ELSEIF ABL:ASSI:촬영기능 == 3
+		ビデオ倍率 += 20
+	ELSEIF ABL:ASSI:촬영기능 <= 1
+		ビデオ倍率 += 20
+	ENDIF
+ENDIF
+
+;倍率処理
+SIF ビデオ倍率 < 0
+	ビデオ倍率 = 0
+
+ビデオ価格 *= ビデオ倍率
+ビデオ価格 /= 100
+
+;難易度処理
+;EASY
+IF FLAG:조교난이도 == 1
+	TIMES ビデオ価格 , 0.24
+;NORMAL
+ELSEIF FLAG:조교난이도 == 2
+	TIMES ビデオ価格 , 0.20
+;HARD
+ELSEIF FLAG:조교난이도 == 3
+	TIMES ビデオ価格 , 0.16
+ENDIF
+
+TFLAG:36 += ビデオ価格
+TFLAG:70 = 0
+;ビデオタイトル用内容単語
+IF TFLAG:비디오타이틀용 == 0
+	IF (ビデオ奉仕 > ビデオ被虐) && (ビデオ奉仕 > ビデオ肛虐) && (ビデオ奉仕 > 2)
+		TFLAG:비디오타이틀용 = 6
+	ELSEIF (ビデオ被虐 > ビデオ奉仕) && (ビデオ被虐 > ビデオ肛虐) && (ビデオ被虐 > 2)
+		TFLAG:비디오타이틀용 = 7
+	ELSEIF (ビデオ肛虐 > ビデオ奉仕) && (ビデオ肛虐 > ビデオ被虐) && (ビデオ肛虐 > 2)
+		TFLAG:비디오타이틀용 = 8
+	ELSE
+		TFLAG:비디오타이틀용 = 9
+	ENDIF
+ENDIF
+
+@SELL_VIDEO
+#DIM LCOUNT
+;調教時に録画したビデオの売却
+;TODO 価格設定再考・状況による価格をプラスできるか(処女開通時など)
+
+;撮影中のまま売却まで来た場合はテープの数を減らす
+;テープの減数は撮影後処理のため、さらにビデオの値段および経験もここで処理をする
+IF TEQUIP:비디오카메라
+	ITEM:비디오테이프 -= 1
+	CALL PRICE_VIDEO
+ENDIF
+
+;録画してなければ終了
+SIF TFLAG:36 == 0
+	RETURN 0
+
+
+;PRINTFORML 録画したビデオは￥{TFLAG:36}程度の値が付きそうだ
+PRINT 녹화된 비디오「
+SELECTCASE RAND:10
+	CASE 0
+		;朝
+		IF TIME == 0
+			PRINT 아침의 
+		;昼
+		ELSEIF TIME == 1
+			PRINT 대낮의 
+		;夕
+		ELSEIF TIME == 2
+			PRINT 황혼의 
+		;夜
+		ELSE
+			PRINT 한밤중의 
+		ENDIF
+	CASE 1
+		IF TALENT:TARGET:연모 || TALENT:TARGET:친애
+			PRINT 사랑의 
+		ELSEIF TALENT:TARGET:음란 || TALENT:TARGET:창부
+			PRINT 음란
+		ELSEIF TALENT:TARGET:복종 || TALENT:TARGET:예속
+			PRINT 예속
+		ELSE
+			PRINT 노예 
+		ENDIF
+	CASE 2
+		PRINT 붙잡힌 
+	CASE 3
+		PRINT 음옥의 
+	CASE 4
+		PRINT 더럽혀진 
+	CASE 5
+		PRINT 애수의 
+	CASE 6
+		PRINT 범해진 
+	CASE 7
+		PRINT 속아버린 
+	CASE 8
+		PRINT 함정에 빠진 
+	CASE 9
+		PRINT 초변태 
+ENDSELECT
+;タイトルが無ければ種族名
+IF CSTR:타이틀 == ""
+	PRINTFORM %STR:(ABL:종족)%
+ELSE
+	PRINTFORM %CSTR:타이틀%
+ENDIF
+;
+IF RAND:10 == 0 && TFLAG:비디오타이틀용 < 10
+	PRINT ＶＳ
+	IF CFLAG:MASTER:당신의전공분야 == 1
+		PRINT 다크서머너
+	ELSEIF CFLAG:MASTER:당신의전공분야 == 2
+		PRINT 어둠의 페르소나구사자
+	ELSEIF CFLAG:MASTER:당신의전공분야 == 3
+		PRINT 이능자
+	ELSEIF CFLAG:MASTER:당신의전공분야 == 4
+		PRINT 조교사
+	ELSEIF CFLAG:MASTER:당신의전공분야 == 5
+		PRINT 굶주린 식노
+	ELSEIF CFLAG:MASTER:당신의전공분야 == 6
+		PRINT 사악한 달인
+	ELSEIF CFLAG:MASTER:당신의전공분야 == 7
+		PRINT 악마사냥꾼
+	ELSEIF CFLAG:MASTER:당신의전공분야 == 8
+		PRINT 악마인
+	ELSEIF CFLAG:MASTER:당신의전공분야 == 10
+		PRINT 데빌시프터
+	ELSEIF CFLAG:MASTER:당신의전공분야 == 11
+		PRINT 아웃사이더
+	ELSEIF CFLAG:MASTER:당신의전공분야 == 12
+		PRINT 반마인
+	ELSEIF ABL:MASTER:종족 == 10
+		PRINT 타케시
+	ELSE
+		PRINT 조교사
+	ENDIF
+ELSEIF RAND:9 == 0
+	PRINTDATA
+		DATAFORM 危険な
+		DATAFORM 淫靡な
+		DATAFORM スケベな
+		DATAFORM お澄まし
+		DATAFORM 욕정
+	ENDDATA
+ENDIF
+IF TFLAG:비디오타이틀용 == 1
+	PRINT 처녀
+ELSEIF TFLAG:비디오타이틀용 == 2
+	PRINT 촉수
+ELSEIF TFLAG:비디오타이틀용 == 3
+	PRINT 노출
+ELSEIF TFLAG:비디오타이틀용 == 4
+	PRINT 긴박
+ELSEIF TFLAG:비디오타이틀용 == 5
+	PRINT 미약
+ELSEIF TFLAG:비디오타이틀용 == 6
+	PRINT 봉사
+ELSEIF TFLAG:비디오타이틀용 == 7
+	PRINT 피학
+ELSEIF TFLAG:비디오타이틀용 == 8
+	PRINT 항학
+ELSEIF TFLAG:비디오타이틀용 == 9
+	PRINT 능욕
+;원격조교
+ELSEIF TFLAG:비디오타이틀용 == 10
+	PRINTDATA
+		DATAFORM お出かけ
+		DATAFORM お散歩
+		DATAFORM 出歩き
+		DATAFORM 逆ナン
+	ENDDATA
+;윤간
+ELSEIF TFLAG:비디오타이틀용 == 11
+	PRINT 윤간
+ENDIF
+
+TFLAG:비디오타이틀용 = 0
+
+PRINTDATA
+	DATAFORM 調教
+	DATAFORM の秘密
+	DATAFORM の罠
+	DATAFORM オークション
+	DATAFORM 性生活
+	DATAFORM の日常
+ENDDATA
+
+PRINTFORML 」은(는) ￥{TFLAG:36} 정도의 가격이 붙을 것 같다
+PRINTL 녹화한 비디오를 어떻게 할 지 선택해주세요
+PRINTL [0] - 판다
+PRINTL [1] - 수중에 남긴다
+DRAWLINE
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	PRINTFORML 조교시에 녹화한 비디오를 팔아、￥{TFLAG:36} 입수했습니다
+	MONEY += TFLAG:36
+	CFLAG:TARGET:비디오매각수 += 1
+	CFLAG:TARGET:비디오매각합계금액 += TFLAG:36
+	TFLAG:36 = 0
+	;イベント口上呼び出し(ビデオ売却時）
+	TFLAG:13 = 19
+	CALL KOJO_MESSAGE_EVENT
+ELSEIF RESULT == 1
+	PRINTFORML 조교시에 녹화한 비디오를 수중에 남겨두었습니다
+	CFLAG:촬영한비디오를가지고있는지 += 1
+	
+;---- EDIT 007 ADD START -----------------
+	;TCVARの内容をCFLAGに移動する
+	FOR LCOUNT, 0, 10
+		CFLAG:(1500 + LCOUNT) = TCVAR:(110 + LCOUNT)
+	NEXT
+;---- EDIT 007 ADD END -----------------
+	
+	;イベント口上呼び出し(ビデオ保有時）
+	TFLAG:13 = 23
+	CALL KOJO_MESSAGE_EVENT
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+DRAWLINE
+
+
+
+@PRICE_PICTURE
+#DIM 倍率 = 100
+#DIM 値段 = 0
+#DIM 보정 = 0
+;A = 100
+;B = 0
+;C = 0
+
+;調教者のABL:撮影技能をみる
+IF ABL:PLAYER:촬영기능 == 0
+	値段 = 10
+ELSEIF ABL:PLAYER:촬영기능 == 1
+	値段 = 100
+ELSEIF ABL:PLAYER:촬영기능 == 2
+	値段 = 150
+ELSEIF ABL:PLAYER:촬영기능 == 3
+	値段 = 250
+ELSEIF ABL:PLAYER:촬영기능 == 4
+	値段 = 300
+ELSEIF ABL:PLAYER:촬영기능 == 5
+	値段 = 500
+ELSE
+	値段 = 500 + ABL:MASTER:촬영기능 * 20
+ENDIF
+
+;口系
+;ボールギャグ装着、触手口辱
+IF TEQUIP:볼재갈 || TEQUIP:촉수구욕
+	倍率 += 20
+	보정 += 1
+ENDIF
+;Ａ系
+;アナルバイブ装着、アナルビーズ装着、浣腸＋アナルプラグ装着、空気浣腸、バルーン装着、アナル電極装着
+IF TEQUIP:애널바이브 || TEQUIP:애널비즈 || TEQUIP:관장기＋플러그 || TEQUIP:확장벌룬 || TEQUIP:애널전극 || TEQUIP:Ａ섹스 || TEQUIP:Ａ손가락삽입
+	倍率 += 10
+	보정 += 1
+ENDIF
+;Ｃ系
+;クリキャップ装着、オナホール装着
+IF TEQUIP:클리캡 || TEQUIP:오나홀 || TEQUIP:리본
+	倍率 += 10
+	보정 += 1
+ENDIF
+;Ｂ系
+;ニプルキャップ装着、搾乳器、乳房電極装着
+IF TEQUIP:유두캡 || TEQUIP:착유기 || TEQUIP:유방전극
+	倍率 += 15
+	보정 += 1
+ENDIF
+;Ｖ系
+;バイブ装着
+IF TEQUIP:바이브 || TEQUIP:Ｖ섹스 || TEQUIP:Ｖ손가락삽입
+	倍率 += 15
+	보정 += 1
+ENDIF
+;尿道系
+IF TEQUIP:카테터 || TEQUIP:요도플러그
+	倍率 += 10
+	보정 += 1
+ENDIF
+;緊縛系
+;アイマスク装着
+IF TEQUIP:아이마스크
+	倍率 += 20
+	보정 += 1
+ENDIF
+;縄で緊縛
+IF TEQUIP:밧줄
+	倍率 += 25
+	보정 += 1
+ENDIF
+;薬剤系
+;媚薬、利尿剤
+IF TEQUIP:미약 || TEQUIP:이뇨제
+	倍率 += 5
+	보정 += 1
+ENDIF
+;場所系
+;野外プレイ、羞恥プレイ中、お風呂場プレイ
+IF TEQUIP:야외플레이 || TEQUIP:수치플레이 || TEQUIP:목욕탕
+	倍率 += 20
+	보정 += 1
+ENDIF
+;状況系
+;シャワー、ビデオ撮影
+IF TEQUIP:샤워 || TEQUIP:비디오카메라
+	倍率 += 10
+	보정 += 1
+ENDIF
+;触手調教
+IF TEQUIP:촉수
+	倍率 += 5
+	보정 += 1
+ENDIF
+;着衣系他
+;新妻プレイ中
+IF TEQUIP:에이프런
+	倍率 += 10
+	보정 += 1
+ENDIF
+;何も装着していない場合のボーナス
+SIF 보정 == 0
+	倍率 += 50
+
+;精液の補正を設定するためリセット
+보정 = 0
+;精液の汚れ(口、手、ペニス、ヴァギナ、アナルの順)
+SIF GET_STAIN("입", "精液", PLAYER)
+	보정 += 1
+SIF GET_STAIN("손", "精液", PLAYER)
+	보정 += 1
+SIF GET_STAIN("페니스", "精液", PLAYER)
+	보정 += 1
+SIF GET_STAIN("바기나", "精液", PLAYER)
+	보정 += 1
+SIF GET_STAIN("애널", "精液", PLAYER)
+	보정 += 1
+;精液の汚れがない場合のボーナス
+SIF 보정 == 0
+	倍率 += 30
+
+
+SIF TALENT:처녀
+	倍率 += 20
+;素質:無関心を見る
+SIF TALENT:무관심
+	倍率 -= 30
+;素質:感情乏しいを見る
+SIF TALENT:감정결핍
+	倍率 -= 30
+;素質:恥じらいを見る
+SIF TALENT:부끄럼쟁이
+	倍率 += 10
+;素質:小柄体型を見る
+SIF TALENT:유아체형
+	倍率 += 20
+;素質:絶壁を見る
+SIF TALENT:절벽
+	倍率 -= 10
+;素質:巨乳を見る
+SIF TALENT:거유
+	倍率 += 20
+;素質:爆乳を見る
+SIF TALENT:폭유 || TALENT:마유
+	倍率 += 10
+;素質:動物耳を見る
+SIF TALENT:동물귀
+	倍率 += 10
+;素質:人気を見る
+SIF TALENT:인기
+	倍率 += 30
+;素質:謎の魅力を見る
+SIF TALENT:수수께끼의매력
+	倍率 += 30
+;素質:魅力を見る
+SIF TALENT:매력
+	倍率 += 20
+
+SIF 倍率 < 0
+	倍率 = 0
+
+値段 *= 倍率
+値段 /= 100
+
+;難易度処理
+;EASY
+IF FLAG:조교난이도 == 1
+	TIMES 値段 , 0.24
+;NORMAL
+ELSEIF FLAG:조교난이도 == 2
+	TIMES 値段 , 0.20
+;HARD
+ELSEIF FLAG:조교난이도 == 3
+	TIMES 値段 , 0.16
+ENDIF
+
+;사진을매각할경우의가격
+TFLAG:37 += 値段
+
+
+@SELL_PICTURE
+SIF TFLAG:37 <= 0
+	RETURN 0
+
+PRINTFORML %NAME:TARGET%의 사진에는 {TFLAG:37}의 매입가가 붙었다
+MONEY += TFLAG:37
+;フラグリセット。これで調教メニュー以外でも再利用できるように
+TFLAG:37 = 0
+WAIT
+
+
+
+@SELL_MILK
+#DIM 総額
+総額 = 0
+TFLAG:노예모유가격 = TFLAG:착유중 * 100
+TFLAG:착유중 = 0
+IF EXP:분유경험 <= EXPLV:0
+	TFLAG:노예모유가격 *= 1
+ELSEIF EXP:분유경험 <= EXPLV:1
+	TFLAG:노예모유가격 *= 2
+ELSEIF EXP:분유경험 <= EXPLV:2
+	TFLAG:노예모유가격 *= 3
+ELSEIF EXP:분유경험 <= EXPLV:3
+	TFLAG:노예모유가격 *= 4
+ELSEIF EXP:분유경험 <= EXPLV:4
+	TFLAG:노예모유가격 *= 5
+ELSE
+	TFLAG:노예모유가격 *= 6
+ENDIF
+;難易度処理
+;EASY
+IF FLAG:조교난이도 == 1
+	TIMES TFLAG:노예모유가격 , 0.24
+;NORMAL
+ELSEIF FLAG:조교난이도 == 2
+	TIMES TFLAG:노예모유가격 , 0.20
+;HARD
+ELSEIF FLAG:조교난이도 == 3
+	TIMES TFLAG:노예모유가격 , 0.16
+ENDIF
+総額 += TFLAG:노예모유가격
+
+TFLAG:주인모유가격 = TFLAG:주인이착유중 * 100
+TFLAG:주인이착유중 = 0
+IF EXP:MASTER:분유경험 <= EXPLV:0
+	TFLAG:주인모유가격 *= 1
+ELSEIF EXP:MASTER:분유경험 <= EXPLV:1
+	TFLAG:주인모유가격 *= 2
+ELSEIF EXP:MASTER:분유경험 <= EXPLV:2
+	TFLAG:주인모유가격 *= 3
+ELSEIF EXP:MASTER:분유경험 <= EXPLV:3
+	TFLAG:주인모유가격 *= 4
+ELSEIF EXP:MASTER:분유경험 <= EXPLV:4
+	TFLAG:주인모유가격 *= 5
+ELSE
+	TFLAG:주인모유가격 *= 6
+ENDIF
+;難易度処理
+;EASY
+IF FLAG:조교난이도 == 1
+	TIMES TFLAG:주인모유가격 , 0.24
+;NORMAL
+ELSEIF FLAG:조교난이도 == 2
+	TIMES TFLAG:주인모유가격 , 0.20
+;HARD
+ELSEIF FLAG:조교난이도 == 3
+	TIMES TFLAG:주인모유가격 , 0.16
+ENDIF
+総額 += TFLAG:주인모유가격
+
+IF ASSI >= 0
+	TFLAG:조수모유가격 = TFLAG:조수가착유중 * 100
+	TFLAG:조수가착유중 = 0
+	IF EXP:ASSI:분유경험 <= EXPLV:0
+		TFLAG:조수모유가격 *= 1
+	ELSEIF EXP:ASSI:분유경험 <= EXPLV:1
+		TFLAG:조수모유가격 *= 2
+	ELSEIF EXP:ASSI:분유경험 <= EXPLV:2
+		TFLAG:조수모유가격 *= 3
+	ELSEIF EXP:ASSI:분유경험 <= EXPLV:3
+		TFLAG:조수모유가격 *= 4
+	ELSEIF EXP:ASSI:분유경험 <= EXPLV:4
+		TFLAG:조수모유가격 *= 5
+	ELSE
+		TFLAG:조수모유가격 *= 6
+	ENDIF
+	;難易度処理
+	;EASY
+	IF FLAG:조교난이도 == 1
+		TIMES TFLAG:조수모유가격 , 0.24
+	;NORMAL
+	ELSEIF FLAG:조교난이도 == 2
+		TIMES TFLAG:조수모유가격 , 0.20
+	;HARD
+	ELSEIF FLAG:조교난이도 == 3
+		TIMES TFLAG:조수모유가격 , 0.16
+	ENDIF
+	総額 += TFLAG:조수모유가격
+ENDIF
+IF 総額 > 0
+	IF TFLAG:주인모유가격 > 0
+		PRINTFORML 착유기를 사용해 %CALLNAME:MASTER%에게서 모유를 짜내었다
+		PRINTFORML %CALLNAME:MASTER%의 모유에는 {TFLAG:주인모유가격}의 가격이 붙었다
+	ENDIF
+	IF TFLAG:조수모유가격 > 0
+		PRINTFORML 착유기를 사용해 %CALLNAME:ASSI%에게서 모유를 짜내었다
+		PRINTFORML %CALLNAME:ASSI%의 모유에는 {TFLAG:조수모유가격}의 가격이 붙었다
+	ENDIF
+	IF TFLAG:노예모유가격 > 0
+		PRINTFORML 착유기를 사용해 %CALLNAME:TARGET%에게서 모유를 짜내었다
+		PRINTFORML %CALLNAME:TARGET%의 모유에는 {TFLAG:노예모유가격}의 가격이 붙었다
+	ENDIF
+	MONEY += 総額
+	TFLAG:주인모유가격 = 0
+	TFLAG:조수모유가격 = 0
+	TFLAG:노예모유가격 = 0
+	PRINTFORML 소지금 {総額}증가
+	WAIT
+ENDIF

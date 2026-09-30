@@ -1,0 +1,392 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/07/31		P(bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@SHOPCOMABLE_122
+RETURN 0
+
+@SHOP_COM_122, ARG
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_LINE
+IF !IS_VISITED_YOYO_CASTLE
+	CALL FIRST_IN_YOYO_CASTLE
+ENDIF
+DRAWLINE
+PRINTFORML 요요조 　　　　　마카:{MONEY:1}
+DRAWLINE
+;画面モード:表示
+CALL RPG_SHOP_SCREENMODE_PRINT
+IF FLAG:SHOP화면모드설정 == 0
+	PRINTFORML [801] 장비자 비교 설정：\@ GETBIT(FLAG:정크숍설정,0) ? ON # OFF \@
+ELSE
+	PRINTFORML [801] 장비자 비교 설정：변경불가（단품구매 모드에서만 변경가능）
+ENDIF
+PRINTL ("아이템과 교환"화면에 적용됩니다)
+PRINTL 
+
+PRINTFORML [1] ￥과 교환
+PRINTFORML [2] 아이템과 교환
+PRINTFORML [3] 도리・카드몬과 교환（필요 마카：500）({ITEM:도리・카드몬}개)
+DRAWLINE
+VARI MES_LINE = LINECOUNT
+FOR LCOUNT, 0, 7
+	PRINTL 
+NEXT
+DRAWLINE
+CALL GET_TALK_BY_ADDRESS, "リーナー", "rina", "내 성에 무슨 볼일이라도?"
+HTML_PRINT SET_BUTTON_TAG("[0] 돌아간다", "0") + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+
+$INPUT_LOOP
+INPUT
+CLEARLINE 2
+IF RESULT == 0
+	CALL GET_TALK_BY_ADDRESS, "リーナー", "rina", "또 오렴"
+	HTML_PRINT SET_BUTTON_TAG("[0] 돌아간다", "0") + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+	WAIT
+	CLEARLINE 1
+	RETURN 0
+;---- EDIT 002 ADD START -------------------------
+ELSEIF RESULT == 800
+	;画面モード:変更
+	CALL RPG_SHOP_SCREENMODE_CHANGE
+	RESTART
+;---- EDIT 002 ADD END ---------------------------
+ELSEIF RESULT == 801
+	;装備比較ON/OFF
+	;非まとめ買いモードでのみ変更可能
+	SIF FLAG:SHOP화면모드설정 == 0
+		INVERTBIT FLAG:정크숍설정,0
+	CUSTOMDRAWLINE =
+ELSEIF RESULT == 1
+	CALL GET_TALK_BY_ADDRESS, "リーナー", "rina", "얼마나 필요한 걸까나?_얼마든지 말하렴._물론, 마카는 받겠지만 말・야"
+	HTML_PRINT SET_BUTTON_TAG("[0] 돌아간다", "0") + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+	WAIT
+	CLEARLINE 1
+	CALL EXCHANGE_MONEY
+	RESTART
+ELSEIF RESULT == 2
+	CALL GET_TALK_BY_ADDRESS, "リーナー", "rina", "수상쩍은 상품이라면 무엇이든 맡겨두렴"
+	HTML_PRINT SET_BUTTON_TAG("[0] 돌아간다", "0") + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+	WAIT
+	CLEARLINE 1
+	IF MouseUIStore_Enable
+		;マウスUIモード
+		CALL MouseUIStore("MACCA")
+		RESTART
+	ELSEIF FLAG:SHOP화면모드설정 == 0
+		;比較OK画面
+		CALL EXCHANGE_ITEM
+	ELSE
+		;アイテム購入:纏め買いモード (1:마카교환)
+		CALL RPG_SHOP_NOMAL,FLAG:SHOP화면모드설정,1
+		SIF RESULT == 0
+			RETURN 0
+	ENDIF
+	RESTART
+ELSEIF RESULT == 3
+	IF MONEY:1 < 500
+		CALL GET_TALK_BY_ADDRESS, "リーナー", "rina", "어머나. 마카가 부족하잖아"
+		HTML_PRINT SET_BUTTON_TAG("[0] 돌아간다", "0") + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+		WAIT
+	ELSE
+		MONEY:1 -= 500
+		ITEM:도리・카드몬 += 1
+		CALL GET_TALK_BY_ADDRESS, "リーナー", "rina", "자, 여기_이걸로 귀여운 조마 쨩을 만들어 주렴"
+		HTML_PRINT SET_BUTTON_TAG("[0] 돌아간다", "0") + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+		WAIT
+		CLEARLINE 1
+		CALL GET_TALK_BY_ADDRESS, "", "BLANK_IMG", "＞조마의 소체, 『도리・카드몬』을 손에 넣었다"
+		HTML_PRINT SET_BUTTON_TAG("[0] 돌아간다", "0") + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+		WAIT
+	ENDIF
+	CLEARLINE 1
+ENDIF
+RESTART
+
+@EXCHANGE_MONEY
+#DIM DYNAMIC L_RATE
+; 魔貨レート変動設定が有効
+IF SETTING_IS_MAKKA_RATE()
+	;レートが0の場合は30に修正し、他のレートも再設定する
+	IF FLAG:마카환율1 == 0
+		FLAG:마카환율1 = 30
+		FLAG:마카환율2 = 10+RAND:51
+		FLAG:마카환율3 = 10+RAND:51
+	ENDIF
+	L_RATE = FLAG:마카환율1
+ELSE
+	L_RATE = 50
+ENDIF
+PRINTFORML 얼마나 마카를 ￥으로 교환하시겠습니까？(1마카＝￥{L_RATE})
+CALL INPUT_MANY, 0, MONEY:1, , , "EXCHANGE_MONEY_INPUT_SIDEBUTTON", "EXCHANGE_MONEY_INPUT_TEXT", L_RATE
+IF RESULT == 0
+	RETURN 0
+ELSE
+	PRINTFORMW {RESULT}마카를 ￥{RESULT*L_RATE}으로 교환했습니다。
+	MONEY += RESULT*L_RATE
+	MONEY:1 -= RESULT
+ENDIF
+
+@EXCHANGE_MONEY_INPUT_TEXT, INPUT_NUM, L_PRICE
+#DIM DYNAMIC INPUT_NUM
+#DIM DYNAMIC L_PRICE
+PRINTFORM 【￥{INPUT_NUM * L_PRICE}】
+
+@EXCHANGE_MONEY_INPUT_SIDEBUTTON
+#DIM DYNAMIC LCOUNT
+#DIM CONST INPUT_TABLE = 2000, 10000, 20000, 100000, 200000, 1000000, 2000000
+SIF SETTING_IS_MAKKA_RATE()
+	RETURN 0
+FOR LCOUNT, 0, VARSIZE("INPUT_TABLE")
+	SIF MONEY:1 >= INPUT_TABLE:LCOUNT
+		RESULTS += SET_BUTTON_TAG(@"[￥%TOSTR(INPUT_TABLE:LCOUNT * 50, "#,###")%]", TOSTR(INPUT_TABLE:LCOUNT)) + "<br>"
+NEXT
+
+@EXCHANGE_ITEM
+#DIM 比較者
+DRAWLINE
+PRINTFORML 현재 {MONEY:1}마카 있습니다。
+PRINTL 무엇과 교환하시겠습니다？
+DRAWLINE
+
+FOR LOCAL,0,8
+	PRINTFORML [{LOCAL}] %GET_EQUIP(LOCAL)%
+NEXT
+PRINTL [8] 아이템
+DRAWLINE
+PRINTL [100] 그만둔다
+
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 999
+	RETURN -1
+ELSEIF RESULT == 100
+	RETURN 0
+ELSEIF RESULT >= 0 && RESULT < 9
+	LOCAL = RESULT
+	CALL MAKE_EXCHANGEITEMLIST,RESULT
+	LOCAL:1 = RESULT
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+P = 0
+$PRINT_LIST
+DRAWLINE
+IF GETBIT(FLAG:정크숍설정,0) && LOCAL < 7
+	CALL PRINT_RPGITEMLIST_2,LOCAL:1,LOCAL,比較者
+ELSE
+	CALL PRINT_EXCHANGEITEMLIST,LOCAL:1
+ENDIF
+$INPUT_LOOP2
+INPUT
+LOCAL:2 = RESULT
+IF RESULT == 0
+	RESTART
+ELSEIF RESULT == 2 && GETBIT(FLAG:정크숍설정,0) && LOCAL < 7
+	P:1 = P
+	P = P:2
+	;CALL INPUT_CHARA_LIST("比較するキャラを選んでください", "CASTING_EQUIPMENT")
+	{
+	CALL INPUT_CHARA_LIST
+		, "FUNC_PROPSET_LIST_BATTLE"
+		, "비교할 캐릭터를 선택해주세요"
+		, "CASTING_EQUIPMENT" 
+		, "SHOW_ADD_UP_FUNCTION"
+		, "SHOW_ADD_DOWN_FUNCTION"
+		, "ADD_SELECT_FUNCTION"
+		, "L_CANCELS"
+		, "FUNC_CUSTOM_TITLE"
+		, "FUNC_CUSTOM_COLOR"
+		, -1
+	}
+	SIF RESULT != 1000
+		比較者 = RESULT
+	P:2 = P
+	P = P:1
+ELSEIF RESULT == 3 && GETBIT(FLAG:정크숍설정,0) && LOCAL < 7
+	比較者 = -1
+ELSEIF RESULT == 7 && P > 0
+	P -= 1
+	GOTO PRINT_LIST
+ELSEIF RESULT == 9 && P < LOCAL:1/10 && GETBIT(FLAG:정크숍설정,0) && LOCAL < 7
+	P += 1
+	GOTO PRINT_LIST
+ELSEIF RESULT == 9 && P < LOCAL:1/20
+	P += 1
+	GOTO PRINT_LIST
+ELSEIF MATCH(アイテムリスト,RESULT,0)> 0
+	DRAWLINE
+	IF LOCAL < 7
+		CALL 装備説明,LOCAL:2
+		LOCAL:3 = 999
+		IF ITEM:(LOCAL:2) >= 999
+			PRINTW 더 이상 가질 수 없습니다
+			GOTO PRINT_LIST
+		ENDIF
+	ELSEIF LOCAL == 7
+		CALLFORM 装備解説_{LOCAL:2}
+		PRINTL
+		LOCAL:3 = 999
+		IF ITEM:(LOCAL:2) >= 999
+			PRINTW 더 이상 가질 수 없습니다
+			GOTO PRINT_LIST
+		ENDIF
+	ELSE
+		CALL GET_ITEMMAX, LOCAL:2
+		LOCAL:3 = RESULT
+		PRINTFORML %ITEMNAME:(LOCAL:2),20,LEFT%   所持数：{ITEM:(LOCAL:2)}/{LOCAL:3}
+		SIF FLAG:스킬속성표시설정 == 1
+			CALL SKILL_EXPLAIN_PERFORMANCE, LOCAL:2 + 2000, -1
+		CALL GET_SKILL_PROP, "SKILL_EXPLAIN", LOCAL:2+2000, -1
+		DRAWLINE
+		IF ITEM:(LOCAL:2) >= LOCAL:3
+			PRINTW 더 이상 가질 수 없습니다
+			GOTO PRINT_LIST
+		ENDIF
+	ENDIF
+
+	IF MONEY:1 < ITEMPRICE:(LOCAL:2)
+		PRINTW 마카가 부족합니다
+		GOTO PRINT_LIST
+	ELSE
+		PRINTFORML 몇 개 구입하시겠습니까？ (현재 {ITEM:(LOCAL:2)}개 소지)
+		;---- EDIT 021 MOD START -------------------------
+		CALL INPUT_MANY, 0, MIN(MONEY:1/ITEMPRICE:(LOCAL:2), LOCAL:3 - ITEM:(LOCAL:2)), , , , "EXCHANGE_ITEM_INPUT_TEXT", ITEMPRICE:(LOCAL:2)
+		;---- EDIT 021 MOD END ---------------------------
+		IF RESULT == 0
+			GOTO PRINT_LIST
+		ELSE
+			MONEY:1 -= (RESULT * ITEMPRICE:(LOCAL:2))
+			IF RESULT == 1
+				PRINTFORMW ＜%ITEMNAME:(LOCAL:2)%을 구입했습니다＞
+			ELSE
+				PRINTFORMW ＜%ITEMNAME:(LOCAL:2)%을(를) {RESULT}개 구입했습니다＞
+			ENDIF
+			CALL GET_ITEM,LOCAL:2,RESULT
+			IF GETBIT(FLAG:정크숍설정,0) && LOCAL < 7 && 比較者 > -1 && 比較者 < CHARANUM
+				RESULT = 0
+				TRYCALLFORM 装備条件_{LOCAL:2},比較者
+				IF RESULT > 0
+					PRINTFORMW %CALLNAME:比較者%에게 장착하시겠습니까？　[0]네　[1]아니오
+					INPUT
+					SIF RESULT == 0
+						CALL 装備変更 , 比較者 , LOCAL , LOCAL:2
+				ENDIF
+			ENDIF
+			GOTO PRINT_LIST
+		ENDIF
+	ENDIF
+ELSE
+	GOTO INPUT_LOOP2
+ENDIF
+GOTO PRINT_LIST
+
+@EXCHANGE_ITEM_INPUT_TEXT, INPUT_NUM, L_PRICE
+#DIM DYNAMIC INPUT_NUM
+#DIM DYNAMIC L_PRICE
+RESULTS =【{INPUT_NUM * L_PRICE}魔貨】
+
+@MAKE_EXCHANGEITEMLIST,ARG
+VARSET アイテムリスト,-1
+LOCAL:1 = 0
+IF ARG < 8
+	;FOR LOCAL,2000,VARSIZE("ITEM") EDIT MOD 019
+	FOR LOCAL, MIN_EQUIPNUM, MAX_EQUIPNUM
+		SIF ITEMPRICE:LOCAL == 0
+			CONTINUE
+		RESULT = 12
+		TRYCCALLFORM 装備箇所_{LOCAL}
+			IF RESULT == ARG
+				RESULT = 0
+				TRYCALLFORM EQUIP_EXCHANGE_{LOCAL}
+				SIF RESULT == 0
+					CONTINUE
+				アイテムリスト:(LOCAL:1) = LOCAL
+				LOCAL:1 += 1
+			ENDIF
+		CATCH
+		ENDCATCH
+	NEXT
+ELSE
+	;FOR LOCAL,1001,2000EDIT MOD 019
+	FOR LOCAL, MIN_USEITEMNUM, MAX_USEITEMNUM
+		SIF ITEMPRICE:LOCAL == 0
+			CONTINUE
+		RESULT = 0
+		TRYCALLFORM ITEM_EXCHANGE_{LOCAL+2000}
+		SIF RESULT == 0
+			CONTINUE
+		アイテムリスト:(LOCAL:1) = LOCAL
+		LOCAL:1 += 1
+	NEXT
+ENDIF
+RETURN LOCAL:1
+
+@PRINT_EXCHANGEITEMLIST,ARG
+PRINTFORML 교환할 아이템을 선택해주세요　＜page.{P + 1}＞
+PRINTFORML {MONEY:1}마카소지중
+DRAWLINE
+FOR LOCAL,P*20,MIN(P*20+20,ARG)
+	PRINTFORM [{アイテムリスト:LOCAL}] %ITEMNAME:(アイテムリスト:LOCAL),20,LEFT% {ITEMPRICE:(アイテムリスト:LOCAL),7} 마카　　
+	SIF LOCAL % 2 == 1
+		PRINTL
+NEXT
+PRINTL
+DRAWLINE
+PRINTFORMLC \@(P <= 0) ? %" " * 13% # [7]이전페이지\@
+PRINTLC [0]돌아간다
+PRINTFORMLC \@(P >= ARG / 20) ? %" " * 13% # [9]다음페이지\@
+
+
+@FIRST_IN_YOYO_CASTLE
+#DIMS DYNAMIC L_CALLNAME
+#DIM DYNAMIC L_LINE
+
+IS_VISITED_YOYO_CASTLE = 1
+
+IF IS_LOOKSLIKE_MALE(MASTER)
+	L_CALLNAME = 형씨
+ELSE
+	L_CALLNAME = 아가씨
+ENDIF
+FLAG:윈도우메시지스킵 = 0
+CALL SHOW_PICTURE, "NONFLOORD", "요요조"
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞%CALLNAME:MASTER%은(는) 요요조에 발을 들였다。/＞중화풍 인테리어의 점내에는 생필품이나 가구、골동품、/＞어디에 쓰는지도 잘 모를 물건 등이 무질서하게 늘어서 있다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "rina", "", "묘하게 거리가 가까운 여자", @"어머나、맛있어 보이는 %L_CALLNAME%잖아。/자、이리 와서/그 얼굴을 자~알 보여줘봐", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞가게 안을 둘러보려던 찰나에/＞뚱뚱한 여자가 다가왔다。/＞%CALLNAME:MASTER%은(는) 엄청난 박력에 뒷걸음질 치고 말았다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "rina", "", "묘하게 거리가 가까운 여자", @"괜찮아~、잡아먹진 않으니까앙。/난 리나。/여기 요요조의 주인이란다。/잘 부탁해。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "rina", "", "리나", @"킁킁… 어머나、/네가 원하는 건 뒷메뉴 쪽이구나。/그야 봐봐、어둠의 냄새가 물씬 풍기는걸。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "rina", "", "리나", @"여기선、수상쩍은 물건이라면 종류별로 갖추어 두고 있단다앙。/분명 널 만족시켜 줄 수 있을 거야아。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞리나는 그렇게 말하며 가슴을 폈다。/＞상당히 자신감이 넘쳐 보인다…", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "rina", "", "리나", @"아、하지만 거래는 마카로 하니까/그것만큼은 잊으면 안 된다앙？", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "rina", "", "리나", @"그리고 우리 가게에선 마카를 ￥으로 환전해주는 서비스도 하고 있으니까/엔화가 필요할 때도 찾아와 주렴", , , , , 4
+
+L_LINE = LINECOUNT
+DRAWLINE
+PRINTL 요요조
+DRAWLINE
+PRINTFORML □마카교환
+PRINTFORML 　요요죠에서는 마카를 아이템과 교환할 수 있습니다。
+PRINTFORML 　악마가 사용하는 마카는 입수하기 어렵지만、￥으로 살 수 있는 것보다 희소하고 강력한 아이템을 얻을 수 있습니다。
+PRINTFORML 　마카를 잘 입수했다면、강력한 아이템으로 바꿔 유용하게 활용하는 것이 좋습니다。
+PRINTFORML 
+PRINTFORML □환전
+PRINTFORML 　요요죠에서는 마카를 ￥으로 교환할 수 있습니다。
+PRINTFORML 　납금은 ￥으로 받고 있기 때문에 팬텀・소사이어티의 요구를 충족시킬 돈을 얻고자 할 경우、
+PRINTFORML 　마카를 교환해서 그것으로 납금하는 것이 효과적입니다。
+PRINTFORML 　또한、￥으로 바꾸는 것으로 정크숍 등에도 사용 할 수 있는 자금이 되므로 용도에 맞게 ￥으로 바꾸는 것이 좋습니다。
+PRINTFORML 
+PRINTFORML □도리・카드몬
+PRINTFORML 　새로운 생명의 창조에 쓰이는 진귀한 물건입니다。
+PRINTFORML 　사교의관에서 도리・카드몬과 악마를 합성하여 『조마』를 제작할 수 있습니다.
+PRINTFORML 　『조마』를 제작하고 싶은 경우에는 여기서 도리・카드몬을 구입해 주십시오.
+PRINTL 
+WHILE LINECOUNT - L_LINE < (GET_HEIGHTLENS() - G_PRINT_FEWLINE_MODE * 9)
+	PRINTL 
+WEND
+FORCEWAIT
+CALL 暗転ウェイト実行

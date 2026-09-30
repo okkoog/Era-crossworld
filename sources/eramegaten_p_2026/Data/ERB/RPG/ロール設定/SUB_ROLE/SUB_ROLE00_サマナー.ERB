@@ -1,0 +1,80 @@
+﻿;----------------------------------------------
+;サブロール(追加素質)の設定
+;----------------------------------------------
+;----------------------------------------------
+;トリガーになる素質名
+;----------------------------------------------
+@SUB_ROLE_TALENT_0, ARG
+#FUNCTIONS
+RESULTS_F = 서머너
+RETURNF RESULTS_F
+
+;----------------------------------------------
+;表示用の名称変化
+;----------------------------------------------
+@SUB_ROLE_NAME_서머너, ARG = -1, ARGS, ARG:1
+#FUNCTIONS
+#DIM L_LV
+L_LV = ARG >= 0 ? GET_BTL_TALENT_LV("서머너", ARG, ARGS) # ARG:1
+IF L_LV > 0
+	RESULTS_F = 서머너 Lv{L_Lv}
+ELSE
+	RESULTS_F = 서머너
+ENDIF
+RETURNF RESULTS_F
+
+;----------------------------------------------
+;最大レベルの定義
+;----------------------------------------------
+@SUB_ROLE_MAXLV_서머너, ARG = -1, ARGS, ARG:1
+#FUNCTION
+RESULT_F = 5
+RETURNF RESULT_F
+
+;----------------------------------------------
+;素質のコスト設定
+;各キャラのコストは各メインロール毎にもつキャパシティ内に収める必要がある
+;----------------------------------------------
+@SUB_ROLE_COST_서머너, ARG = -1, ARGS, ARG:1
+#FUNCTION
+#DIM L_LV
+L_LV = ARG >= 0 ? GET_BTL_TALENT_LV("서머너", ARG, ARGS) # ARG:1
+SELECTCASE L_LV
+	CASE 5
+		RESULT_F = 999
+	CASE 4
+		RESULT_F = -20
+	CASE 3
+		RESULT_F = 15
+	CASE 2
+		RESULT_F = -10
+	CASE 1
+		RESULT_F = 5
+	CASEELSE
+		RESULT_F = 0
+ENDSELECT
+RETURNF RESULT_F
+
+;----------------------------------------------
+;説明文
+;----------------------------------------------
+@SUB_ROLE_EXPLAIN_서머너, ARG = -1, ARGS, ARG:1
+#DIM L_LV
+L_LV = ARG >= 0 ? GET_BTL_TALENT_LV("서머너", ARG, ARGS) # ARG:1
+;5レベルのときはメインロールになるのでサブロールでの解説は省く
+SIF !INRANGE(L_LV, 1, 4)
+	RETURN 0
+PRINTFORML □서머너 Lv{L_LV}
+PRINTFORML 　ＣＯＭＰ를 통해 악마를 사역할 수 있다。
+SELECTCASE L_LV
+	CASE IS >= 3
+		PRINTFORML 　또한 일부를 제외한 고도의 인스톨소프트를 사용할 수 있다。
+	CASEELSE
+		PRINTFORML 　또한 일부 다루기 쉬운 인스톨소프트를 사용할 수 있다。
+ENDSELECT
+
+;----------------------------------------------
+;説明文2
+;----------------------------------------------
+@SUB_ROLE_EXPLAIN_TOOLTIP_서머너, ARG = -1, ARG:1 = -1
+RESULTS '=  "ＣＯＭＰ를 통해 악마를 사역할 수 있다。" + UNICODE(0x000D) + "또한 레벨에 맞는 인스톨소프트를 사용할 수 있다。"

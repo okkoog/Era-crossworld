@@ -1,0 +1,58 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2874,ARG
+RESULTS = 액부「배드포츈」
+SIF  GETBIT (FLAG:커스텀게임화면,1)
+	RESULTS = 액부「배드 포춘」
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2874
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2874, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2874
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;スキル変化？用ランク
+@SKILL_RANK_2874, ARG = -1
+RETURN 5
+
+@継承不能_2874
+RETURN 1
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2874, ARG
+PRINTL 자동: 퉤퉤 퉤마스터 주위에서는 적도 아군도 불운을 겪는다.
+PRINTL 　　　전투 중 1번만, 전투에 참가했을 때 이하의 연동 효과가 발동한다.
+PRINTL 　　　「적·아군의 크리티컬 발생률을 대폭 상승. 시간 경과에 따라 효과가 옅어진다.」
+PRINTL 秘神　카기야마 히나의 스펠카드
+
+@SKILL_BATTLE_ENTER_2874, ARG
+#DIM LCOUNT
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+	RETURN 0
+;入力可能な状態じゃないとだめ
+SIF !ACTIONABLE_CHARA_F(ARG)
+	RETURN 0
+;入場一回目のみ発動
+SIF CFLAG:ARG:입장플래그 != 1
+	RETURN 0
+;自身の入場のみで発動
+SIF TFLAG:입장캐릭터 >= 0 && TFLAG:입장캐릭터 != ARG
+	RETURN 0
+CALL PRINT_ACT_MESSAGE, ARG, , , , "厄符「バッドフォーチュン」", "NOWAIT"
+CALL SKILL_SET_カジャンダ, ARG, 23, "크리티컬", 8, "範囲"
+
+@SKILL_ACTIONABLE_BATTLE_2874, ARG
+RETURN 0
+
+
+

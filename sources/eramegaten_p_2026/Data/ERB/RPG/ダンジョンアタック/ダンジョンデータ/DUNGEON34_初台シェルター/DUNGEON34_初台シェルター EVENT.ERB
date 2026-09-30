@@ -1,0 +1,697 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:DUNGEON34_初台シェルター EVENT.ERB
+;	Facility	:初台シェルターのイベントまとめ
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX								新規作成
+;	002		2024/06/01			P(bazzile)			チュートリアル突入時に人間を外す処理を作ったつもりで作っていなかったので作成
+;	003		2024/06/08			P(bazzile)			クリア報酬の35000円が消えていた不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2024/05/30			P(bazzile)			初日チュートリアル終了後の再突入に対応
+;	002		2024/05/30			P(bazzile)			再突入した際の出口でゴウトが湧いてくる不具合を修正
+;	003		2024/07/26			P(bazzile)			チュートリアルの解析度の追加処理を復活
+;	004		2024/07/27			P(bazzile)			バステチュートリアルで落ちる不具合を修正
+;	005		2025/10/13			kamedakeisuke		チュートリアルテキスト修正。情報が爆発していた箇所があったので話す内容を整理。ゴウトの口調を超力兵団奇譚（というかアバドン王）準拠に更新。その他テキスト微調整
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=======================================================================
+;スタート時イベント
+;=======================================================================
+@EVENT_DUNGEON_START_34
+#DIM LCOUNT
+PRINTL
+;タイトル画像表示
+CALL PRINT_EVENT_PICTURE, "06_初台シェルタータイトル", 10, "CENTER"
+WAIT
+DRAWLINE
+;チュートリアル
+;IF FLAG:전투난이도 >= 3 || FLAG:주회횟수 >= 1 || ダンジョンフラグ:1:1 == 1 || ダンジョンフラグ:34:8 == 1 || BASE:MASTER:LV >= 11
+;---- EDIT P 001 MOD START -------------------------
+IF FLAG:튜토리얼진행중
+;---- EDIT P 001 MOD END ---------------------------
+	IF FLAG:첫탐색종료
+		FLAG:튜토리얼진행중 = 0
+		FLAG_D34_チュートリアル利用済み = 1
+	ELSE
+		FLAG_D34_シェルター封鎖 = 1
+
+		;---- EDIT 002 ADD START -------------------------
+		VARI L_POS
+		VARI L_CHARA
+		;突入前にCOMPに入れないキャラを外す
+		FOR L_POS, 1, 7
+			L_CHARA = POS(L_POS)
+			SIF L_CHARA < 0
+				CONTINUE
+			SIF L_CHARA == MASTER
+				CONTINUE
+			CALL REMOVE_POSITION, L_POS
+		NEXT
+		CALL REFRESH_FORMATION
+		;---- EDIT 002 ADD END ---------------------------
+
+		CALL MESSAGE_WINDOW_D, "", @"＞하츠다이 쉘터로 향하던 도중、/＞%CALLNAME:MASTER%의 휴대단말기가 울리기 시작했다"
+		CALL MESSAGE_WINDOW_D, "마요네", "후후……첫 임무중인가 보네？"
+		IF GETCHARA([[キャラ:마리]]) == -1
+			IF RAND:2 == 0
+				CALL MESSAGE_WINDOW_D, "", "＞대화 소리에、질퍽질퍽한 음란한 물소리가 섞여 있다……/＞노예를 곁에 두고 있는 것일까"
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞대화 소리에、욕정에 젖은 여자의 달콤한 신음이 섞여 있다……/＞노예를 곁에 두고 있는 것일까"
+			ENDIF
+		ENDIF
+		CALL MESSAGE_WINDOW_D, "마요네", "재밌는 소식을 전해드릴께요/당신이 향한 하츠다이 쉘터 근처에/낡아빠진 “쿠즈노하”의 서머너가 머물고 있는 것 같네요"
+		CALL MESSAGE_WINDOW_D, "마요네", "쿠즈노하는 우리들과 적대하는 조직……/만나게 된다면、적어도 기분을 상하게 하지는 않도록 노력하세요？"
+		IF GETCHARA([[キャラ:도리]]) == -1
+			CALL MESSAGE_WINDOW_D, "", @"＞쿡쿡 웃는 마요네의 목소리에、/＞%\@RAND:2?찰싹#철썩\@% 하는 채찍 소리가 겹쳤다。"
+			CALL MESSAGE_WINDOW_D, "소녀 같은 목소리", @"%\@RAND:2?주인님、용서ㄹ……#\힉、도와……\@%。"
+			CALL MESSAGE_WINDOW_D, "", @"＞%\@RAND:2?비명#흐느낌\@%과 함께 통화가 끊겼다……"
+		ELSE
+			CALL MESSAGE_WINDOW_D, "", "＞비웃는 듯한 충고를 남기고、통화는 일방적으로 끊어졌다"
+		ENDIF
+		CALL MESSAGE_WINDOW_D, "", "………/……/…"
+		CALL MESSAGE_WINDOW_D, "", "＞튜토리얼 이벤트가 개시되었습니다/＞파티가 해산되었으니 주의해주세요"
+	ENDIF
+ENDIF
+CALL MAKE_FLOOR, FLAG:현던전
+
+;=======================================================================
+;指定したマスに侵入しようとする際のイベント
+;=======================================================================
+@DUNGEON_BEFORE_ENTER_EVENT_34, L_X, L_Y, L_DIRECTION
+#DIM DYNAMIC L_X
+#DIM DYNAMIC L_Y
+#DIM DYNAMIC L_TILE
+#DIM DYNAMIC L_DIRECTION
+L_TILE = DA:L_X:L_Y
+SELECTCASE L_TILE
+	CASE 8
+		IF FLAG:튜토리얼진행중 && FLAG_D34_ライドウ参戦
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "", "고우토", "겁먹었나？/우리들에게 가르침 받을 수 있는 기회는/오늘뿐이라고 미리 말해두지"
+			CALL INPUT_YN_D
+			IF RESULT == 0
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "", "고우토", "그럼、안녕이다/정진하도록、팬텀・소사이어티의 데빌서머너여"
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞고우토와 라이도우가 파티에서 떠났다"
+				CALL 全ゲスト削除
+				FLAG:탈출스킬금지 = 0
+				FLAG:탈출 = 1
+				RETURN 0
+			ELSE
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "", "고우토", "그렇다면、탐색을 계속하지"
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞고우토가 재촉하듯 던전의 앞을 가리킨다"
+				RETURN 0
+			ENDIF
+		ELSE
+			CALL DUNGEON_EXIT
+			RETURN 0
+		ENDIF
+	CASE 7
+		;---- EDIT P 002 MOD START -------------------------
+		IF FLAG:튜토리얼진행중
+			;ラタトスクを出してないと進めない……が、合体とか削除で消せるのでいない場合も見ておく
+			IF FLAG_D34_COMPチュートリアル == 1 && GETCHARA([[キャラ:라타토스크]]) >= 0 && FINDCHARA_B([[キャラ:라타토스크]]) == 1
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "", "고우토", "신입이여、라타토스크를 ＣＯＭＰ에서 소환한 다음 앞으로 나아가라"
+				RETURN 0
+			ELSE
+				FLAG_D34_COMPチュートリアル = 2
+			ENDIF
+		ELSE
+			IF FLAG_D34_クリアフラグ && FLAG_D34_チュートリアル利用済み
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞더이상 앞은 용무가 없다……"
+				RETURN 0
+			ENDIF
+		ENDIF
+		;---- EDIT P 002 MOD END ---------------------------
+	CASE 92
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞문은 완전히 봉쇄되어 있다……"
+		RETURN 0
+	CASE 4012
+		IF FLAG:튜토리얼진행중
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞문 너머에서 뼛속까지 스며들 정도의 죽음의 냄새가 풍겨욘다……"
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "", "고우토", "흠、수가 많군/신입이여、문을 열면 전투가 시작된다。준비는 되었나？"
+			CALL INPUT_YN_D, "문을 연다", "문을 열지 않는다"
+		ELSE
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞죽음의 냄새가 난다/＞문을 열까？"
+			CALL INPUT_YN_D
+		ENDIF
+		RETURN !RESULT
+	CASE 9012
+		IF FLAG:튜토리얼진행중
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞문 너머에서、키보드를 두드리는 소리가 들린다"
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "", "고우토", "아무래도 여기가、이 이계의 중심인 것 같군/신입이여、이 앞은 실전이다。우리도 지도해 줄 여유가 없다/준비는 되었나？"
+		ELSE
+			CALL MESSAGE_WINDOW_D, "", "＞문 너머에서、키보드를 두드리는 소리가 들린다/＞문을 열겠습니까？"
+		ENDIF
+		CALL INPUT_YN_D
+		RETURN !RESULT
+ENDSELECT
+CALL CAN_ENTER,L_X,L_Y
+RETURN RESULT
+
+;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@CAN_ENTER_34,ARG,ARG:1
+IF FLAG:현M == 5 && ARG ==1 && ARG:1 == 9 && ダンジョンフラグ:34:9 == 0
+	CALL MESSAGE_WINDOW_D, "", "＞죽음의 냄새가 난다/＞문을 열까？"
+	CALL INPUT_YN_D
+ELSEIF FLAG:현M == 9
+	IF ARG == 7 && ARG:1 == 9 && !ダンジョンフラグ:34:8
+		CALL MESSAGE_WINDOW_D, "", "＞문 너머에서、키보드를 두드리는 소리가 들린다/＞문을 열겠습니까？"
+		CALL INPUT_YN_D
+		SIF RESULT
+			RETURN 0
+		;PRINTFORML 
+		;PRINTFORML 　　　　＞扉の向こうから、キーボードを叩く音が聞こえる
+		;PRINTFORML 
+		;PRINTFORML 　　　　＞誰かがいるようだ……
+		;PRINTFORML 
+		;PRINTFORMW 　　　　＞扉を開けますか？
+		;PRINTFORML 
+		;PRINTFORML 　　　　　　[0]はい
+		;PRINTFORML 
+		;PRINTFORML 　　　　　　[1]やめておく　
+		;INPUT
+		;SIF RESULT
+		;	RETURN 0
+	ENDIF
+ENDIF
+CALL CAN_ENTER,ARG,ARG:1
+RETURN RESULT
+;=======================================================================
+;[5]調べる　実行時のイベント
+;=======================================================================
+@EVENT_CHECK_DUNGEON_34
+;==========
+;出口の処理
+;==========
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 10
+	CASE 8
+		CALL DUNGEON_EXIT
+		RETURN 1
+;========
+;宝の処理
+;========
+	CASE 3
+		CALL TRESURING_CALLING_34
+		RETURN 1
+;==========
+;イベントの処理
+;==========
+	CASE 4, 9
+		CALL EVENTING_CALLING_34
+		RETURN 1
+;=======
+;階段
+;=======
+	CASE 6
+		CALL DUNGEON_UPSTAIRS_ID, FLAG:현M-1 , (FLAG:현M-1) * 1000 + 7
+		RETURN 1
+	CASE 7
+		CALL DUNGEON_DOWNSTAIRS_ID, FLAG:현M+1 , (FLAG:현M+1) * 1000 + 6
+		RETURN 1
+	CASEELSE
+		PRINTFORML 
+		PRINTFORMW 　　　　＞아무것도 없다
+		RETURN 0
+ENDSELECT
+
+;=======================================================================
+;タイル進入時のイベント
+;=======================================================================
+@EVENT_ENTER_DUNGEON_34,ARG
+;ARG = 進入時の向き　0の場合ワープなど
+;==========
+;出口の処理
+;==========
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 10
+	CASE 8
+		CALL DUNGEON_EXIT
+		RETURN 1
+;========
+;宝の処理
+;========
+	CASE 3
+		CALL TRESURING_CALLING_34
+		RETURN 1
+;==========
+;イベントの処理
+;==========
+	CASE 4, 9
+		CALL EVENTING_CALLING_34
+		CALL REPLACE_TILE_DUNGEON_34, DA:(FLAG:현X):(FLAG:현Y), FLAG:현X, FLAG:현Y
+		RETURN 1
+;=======
+;階段
+;=======
+	CASE 6
+		CALL DUNGEON_UPSTAIRS_ID, FLAG:현M-1 , (FLAG:현M-1) * 1000 + 7
+		RETURN 1
+	CASE 7
+		CALL DUNGEON_DOWNSTAIRS_ID, FLAG:현M+1 , (FLAG:현M+1) * 1000 + 6
+		RETURN 1
+;==========
+;扉の処理
+;==========
+	CASE 2
+		CALL DUNGEON_DOOR,ARG
+		RETURN 1
+ENDSELECT
+RETURN 0
+
+;=======================================================================
+;イベントまとめ
+;=======================================================================
+@EVENTING_CALLING_34
+#DIM LCOUNT
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y)
+	CASE 4
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_黒猫と青年", "", "＞사람의 기척이 느껴져 발걸음을 멈추니/＞선명한 녹색 눈을 한 검은 고양이/＞그리고、다이쇼 시대에서 온듯 한 학생――서생 차림을 한 소년이、이쪽을 바라보고 있다"
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "05_黒猫と青年", "검은 고양이", "잘 왔구나、신참 데빌서머너여"
+		;元のコメントを整理すると、このライドウは真３経由、ルシファーより何らかの依頼を受け行動している。状況的におそらく人修羅とも知り合い
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_黒猫と青年", "", "＞놀랍게도、검은 고양이가 말을 했다"
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "05_黒猫と青年", "검은 고양이", "나는 고우토、이쪽은 라이도우라네/이번에는 어떤 인물의 의뢰로/너에게 데빌서머너로서의 기본을 가르쳐주기로 했다/잘 부탁하네"
+		;心得を説くのはラスプーチン、という謎のコンテキストが令和には生まれてしまったがそれはそれ、eratenチュートリアルはライドウです
+		CALL SET_GUEST_D34
+		FLAG_D34_ライドウ参戦 = 1
+		FLAG:탈출스킬금지 = 1
+	CASE 14
+		CALL SHOW_PICTURE, "D"
+		CALL MESSAGE_WINDOW_D_ICON, [[キャラ:라타토스크]], "CSV", , "마수 라타토스크", "아ー！　살아있는 인간이에요오！！/이상한 냄새도 안나고、숨도 쉬고 있어서 대단해요오"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", ,"", "＞머리가 나빠보이는 악마가 말을 걸어왔다……"
+		CALL MESSAGE_WINDOW_D_ICON, [[キャラ:라타토스크]], "CSV", , "마수 라타토스크", "최근은 좀비 투성이라 지루하던 참이었어요오/인간은 잠깐 대화 상대가 되어줘야 해요오"
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", ,"고우토", "마침 좋은 교재가 나왔군"
+		CALL MESSAGE_WINDOW_D_ICON, [[キャラ:라타토스크]], "CSV", , "마수 라타토스크", "교오ー자이？　그거 맛있는 건가요오？"
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", ,"고우토", "악마는 대화를 통해 교섭해、동료마로 삼을 수 있다/동료마는 ＣＯＭＰ……네가 가지고 있는 소형 컴퓨터다/그 안에 넣어、스토리지의 용량만큼 데리고 다닐 수 있다"
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", ,"고우토", "먼저 라타토스크에게「ＴＡＬＫ」해、동료마로 만들어 보아라"
+		CALL MESSAGE_WINDOW_D_ICON, [[キャラ:라타토스크]], "CSV", , "마수 라타토스크", "음、뭐죠 뭐죠오？/할 건가요？"
+		FLAG:도주불가플래그 = 1
+		FLAG:선제기습취소 = 1
+		;戦闘後の経験値処理をスキップする
+		FLAG:RESULT스킵 = 1
+		CALL SET_ENEMY, 9,[[キャラ:라타토스크]], 5,0,0
+		ABL:(CHARANUM-1):회화타입 = 1
+		CSTR:(CHARANUM-1):사고패턴 = D34_ラタトスク
+		CSTR:(CHARANUM-1):특수적보정패턴 = D34_ラタトスク
+		FLAG_D34_ラタトスク戦中 = 1
+		CALL SYNC_STATUS, CHARANUM-1
+		CALL HEALTH_CHARA, CHARANUM-1
+		;相性が見えるまで解析度を追加
+		ANALYSIS_RATE:[[キャラ:라타토스크]] = ANALYSIS_COMPLETED
+		;FLAG:(20000 + [[キャラ:라타토스크]]) = MAX(FLAG:(20000 + [[キャラ:라타토스크]]), 1000)
+		CALL BATTLE_START
+		FLAG_D34_ラタトスク戦中 = 0
+		FLAG:도주불가플래그 = 0
+		FLAG:회화불능플래그 = 0
+		FLAG:선제기습취소 = 0
+		FLAG:RESULT스킵 = 0
+		FLAG_D34_COMPチュートリアル = 1
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", ,"고우토", "흠、그럭저럭 소질이 있군/그럼 바로 관……이 아니군、이 시대는/ＣＯＭＰ에서 동료마를 소환해라"
+		IF !TALENT:MASTER:서머너
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", ,"고우토", "……뭐라고？　거점 밖에서는 ＣＯＭＰ를 사용할 수 없다고！？/ＣＯＭＰ를 사용하려면「서머너」의 소질이 필요하다/없다면、소환마법「사바트마」등의 다른 수단이 필요하다"
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", ,"고우토", "게다가、ＣＯＭＰ가 없으면 적의 악점 상성도 파악할 수 없다/물론、ＣＯＭＰ에 불러와 사용하는 인스톨소프트도 작동하지 않는다/네 실력으로는、아무것도 이루지 못하고 잡아먹혀 끝나버리겠지"
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", ,"고우토", "지금은 라이도우가 대신 조작해줄 수 있지만、그 후는 모른다/이곳을 나가면、신속히 협력자를 찾도록"
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", ,"고우토", "알겠나？/현대에서 데빌서머너로 살아가고자 한다면/「서머너」소질을 가진 자는 반드시 한 명은 데려와야 한다 "
+		ENDIF
+	CASE 1004
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "03_ゾンビの群れ1","", "＞계단 앞을 좀비 무리가 막고 있다"
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "03_ゾンビの群れ1","고우토", "신참이여/악마에게는「약점」이 있다는 것을 알고 있나？"
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "03_ゾンビの群れ1","고우토", "데빌서머너의 전투는/적의 약점을 찌르는 것이 기본이다/우선 가까이 다가가 상황을 지켜보도록 하지"
+		FLAG:도주불가플래그 = 1
+		FLAG:회화불능플래그 = 1
+		FLAG:선제기습취소 = 1
+		FLAG_D34_ゾンビちゃん戦中 = 1
+		;戦闘後の経験値処理をスキップする
+		FLAG:RESULT스킵 = 1
+		FOR LCOUNT, 0, 3
+			CALL SET_ENEMY,8 + LCOUNT,[[キャラ:좀비쨩]],1,0,0
+			CSTR:(CHARANUM-1):사고패턴 = チュートリアルゾンビ
+			CFLAG:(CHARANUM-1):ＨＰ보정 += 150
+			ABL:(CHARANUM -1):스킬1 = [[스킬:몸통박치기]]
+			CFLAG:(CHARANUM-1):크리티컬보정 = -100
+			CALL SYNC_STATUS, CHARANUM-1
+			CALL HEALTH_CHARA, CHARANUM-1
+		NEXT
+		;相性が見えるまで解析度を追加
+		ANALYSIS_RATE:[[キャラ:좀비쨩]] = ANALYSIS_COMPLETED
+		;FLAG:(20000 + [[キャラ:좀비쨩]]) = MAX(FLAG:(20000 + [[キャラ:좀비쨩]]), 1000)
+		CALL BATTLE_START
+		FLAG:도주불가플래그 = 0
+		FLAG:회화불능플래그 = 0
+		FLAG:선제기습취소 = 0
+		FLAG_D34_ゾンビちゃん戦中 = 0
+		;戦闘後の経験値処理をスキップする
+		FLAG:RESULT스킵 = 0
+		FLAG_D34_戦闘チュートリアル = 1
+		CALL CLEAR_TILE
+		;CALL SHOW_PICTURE, "D"
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "정리되었군"
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "약점을 찌르면 큰 대미지를 줄 수 있을 뿐 아니라/속성이 일치하는 동료마와 날리는 총공격「ＤＥＶＩＬ　ＣＯ－ＯＰ」이 발동한다/약점을 찌르고、약점이 찔리지 않도록 하는 것이、전투의 기본이다"
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "……음？　손에 상처를 입었나？/이계를 빈손으로 오다니 제정신이 아니라고 생각되지만、뭐 좋다/라이도우、이 녀석에게 아이텀을 나누어 주도록"
+		CALL MESSAGE_WINDOW_D_ICON, [[キャラ:라이도우]], "CSV", , "", @"＞라이도우가 %CALLNAME:MASTER%에게 여러 개의 아이템을 건넸다"
+		CALL GET_ITEMS, "외상약", 5
+		CALL GET_ITEMS, "메디컬파우더", 3
+		CALL GET_ITEMS, "도반옥", 1
+		CALL GET_ITEMS, "디스포이즌", 3
+		CALL GET_ITEMS, "우황단", 1
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞외상약을 5개 받았다/＞메디컬파우더를 3개 받았다/＞도반옥을 1개 받았다"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "＞디스포이즌을 3개 받았다/＞우황단을 1개 받았다"
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "아이템을 보충하려면 돈이 들고/들고 다닐 수 있는 수에도 한계가 있으나/ＭＰ를 소비하지 않고 회복이나 소생、상태이상의 회복이 가능하다/다음에는、제대로 준비하도록"
+	CASE 4004
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "04_ゾンビの群れ2", "", @"＞%MASTER가% 문을 열자、대량의 좀비가 일제히 머리를 들었다！"
+		IF FLAG:튜토리얼진행중
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "04_ゾンビの群れ2", "고우토", "일망타진하도록 하지！/라이도우、그것을 사용해라！"
+			IF GET_BTL_TALENT_LV("도구지식", MASTER) >= 2
+				CALL MESSAGE_WINDOW_D_ICON, [[キャラ:라이도우]], "CSV", "04_ゾンビの群れ2", "", @"＞라이도우는 %CALLNAME:MASTER%에게 아이템을 건넸다/＞네이팜탄을 5개、손에 넣었다/＞라이어트밤을 5개、손에 넣었다/＞액화질소봄베를 5개、손에 넣었다"
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "04_ゾンビの群れ2", "고우토", "적의 약점을 찌르는 것이 얼마나 중요한지 이해했나？/하지만、사용할 수 있는 기술이 항상 상대의 약점을 찌를 수 있는 것은 아닐테지/그런 상황에서 도움이 되는 것이 공격아이템이다"
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "04_ゾンビの群れ2", "고우토", "네게 건네준 것 중에 타개할 수 있는 한 수가 있다/전투가 시작되면 ＩＴＥＭ을 선택해 이것이라고 생각되는 것을 선택해라！"
+			ELSE
+				CALL MESSAGE_WINDOW_D_ICON, [[キャラ:라이도우]], "CSV", "04_ゾンビの群れ2", "", @"＞라이도우가 아이템을 꺼냈다/＞네이팜탄을 5개、손에 넣었다/＞라이어트밤을 5개、손에 넣었다/＞액화질소봄베를 5개、손에 넣었다"
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "04_ゾンビの群れ2", "고우토", "적의 약점을 찌르는 것이 얼마나 중요한지 이해했나？/하지만、사용할 수 있는 기술이 항상 상대의 약점을 찌를 수 있는 것은 아닐테지/그런 상황에서 도움이 되는 것이 공격아이템이다"
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "04_ゾンビの群れ2", "고우토", "……뭐라고！？　방금 보여준 도구를 쓸수 없다고！？/「도구지식」이 없는 자는 아이템을 사용할 수 없다/또한、도구지식의 LV이 낮다면、일부 아이템만 사용할 수 있다"
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "04_ゾンビの群れ2", "고우토", "이번에는 라이도우가 시연해주겠다/전투가 시작되면ＩＴＥＭ을 열고 이것이라고 생각되는 것을 선택해라！"
+			ENDIF
+			CALL GET_ITEMS,"네이팜탄", 5
+			CALL GET_ITEMS,"라이어트밤", 5
+			CALL GET_ITEMS,"액화질소봄베", 5
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			FLAG:RESULT스킵 = 1
+			;FLAG:(20000 + [[キャラ:좀비군]]) = MAX(FLAG:(20000 + [[キャラ:좀비군]]), 1000)
+			ANALYSIS_RATE:[[キャラ:좀비군]] = ANALYSIS_COMPLETED
+			FOR LOCAL, 7, 17
+				CALL SET_ENEMY,LOCAL,[[キャラ:좀비군]], 3,0,0
+				CSTR:(CHARANUM-1):사고패턴 = チュートリアルゾンビ
+				BASE:(CHARANUM-1):질풍 = 0
+				BASE:(CHARANUM-1):화염 = 400
+				ABL:(CHARANUM-1):스킬1 = [[스킬:돌격]]
+				ABL:(CHARANUM-1):스킬2 = 0
+				CFLAG:(CHARANUM-1):공격보정 = -10
+				CFLAG:(CHARANUM-1):ＨＰ보정 = 100
+				CFLAG:(CHARANUM-1):크리티컬보정 = -100
+				CALL SYNC_STATUS, CHARANUM- 1
+				CALL HEALTH_CHARA, CHARANUM-1
+			NEXT
+			CALL BATTLE_START
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			FLAG:RESULT스킵 = 0
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "생각보다 화려하게 날아가버렸군/신입이여、아직 무사한가？"
+			CALL INPUT_YN_D
+			IF RESULT == 0
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "좋다/허나、역부족이라고 느껴질 때는、망설이지 말고 퇴각하는 것이 좋다/죽음에서의 부활도 육체가 없다면 이루어질 수 없으니 말이다"
+			ELSE
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "약한 소리를、말할 수 있는 한 별 문제는 없을 터/허나、역부족이라고 느껴질 때는、망설이지 말고 퇴각하는 것이 좋다/죽음에서의 부활도 육체가 없다면 이루어질 수 없으니 말이다"
+			ENDIF
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "특히 이런 문 뒤에는/강적이 매복해 있을 수도 있다/가능한 한、만전을 기해서 열도록 해라"
+		ELSE
+			CALL SET_ENEMY,7,[[キャラ:좀비군]],13,0,0
+			CALL SET_ENEMY,8,[[キャラ:좀비쨩]],10,0,0
+			CALL SET_ENEMY,9,[[キャラ:좀비군]],13,0,0
+			CALL SET_ENEMY,10,[[キャラ:좀비너스]],14,0,0
+			CALL SET_ENEMY,11,[[キャラ:좀비쨩]],10,0,0
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			CALL BATTLE_START
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+		ENDIF
+		FLAG_D34_中ボスゾンビの群れ = 1
+	CASE 7004
+		CALL SET_ENEMY, 9,GET_D34_TUTOLIAL_BADSTATE_ENEMY(), 12,0,1
+		ANALYSIS_RATE:(NO:(CHARANUM-1)) = ANALYSIS_COMPLETED
+		;FLAG:(20000 + NO:(CHARANUM -1)) = MAX(FLAG:(20000 + NO:(CHARANUM -1)), 1000)
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "기다려！　무언가 있다！"
+		SELECTCASE GET_D34_TUTOLIAL_BADSTATE_ENEMY()
+			CASE [[キャラ:오키쿠무시]]
+				ABL:(CHARANUM-1):스킬1 = [[스킬:무드]]
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "저건、오키쿠무시인가……/우리 쿠즈노하에게는 그리운 상대지만/너에게는、다소 짐이 무거운 악마겠지/신입이여、저것은 즉사마법【무드】를 사용한다"
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "즉사마법이 통하면、체력에 관계 없이 목숨을 빼앗긴다/제대로 당한다면、문자 그대로 죽는 수밖에 없지/하지만 대책은 있다"
+			CASE [[キャラ:엔젤]]
+				ABL:(CHARANUM-1):스킬1 = [[스킬:한마]]
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "저건、엔젤인가……/어째서 이런 곳에……？/신입이여、저것은 즉사마법【한마】를 가지고 있다"
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "즉사마법이 통하면、체력에 관계 없이 목숨을 빼앗긴다/제대로 당한다면、문자 그대로 죽는 수밖에 없지/하지만 대책은 있다"
+			CASE [[キャラ:리림]]
+				ABL:(CHARANUM-1):스킬1 = [[스킬:마린카린]]
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "저건、리림인가……/어째서 이런 곳에……？/신입이여、저것은 매료마법【마린카린】을 가지고 있다"
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "매료에 당하면 아군을 공격하게 된다/그렇게 되면、적을 쓰러트릴 겨를조차 없게 되겠지/하지만 대책은 있다"
+			CASE [[キャラ:요모츠시코메]]
+				ABL:(CHARANUM-1):스킬1 = [[스킬:시바브]]
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "저건、요모츠시코메인가……/어째서 이런 곳에……？/신입이여、저것은 구속마법【시바브】를 가지고 있다"
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "구속을 당하면 꼼짝도 못하게 된다/그렇게 되면、적을 쓰러트릴 겨를조차 없게 되겠지/하지만 대책은 있다"
+		ENDSELECT
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "신입이여、ＧＵＡＲＤ를 사용해라！"
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "ＧＵＡＲＤ하고 있는 동안에는、어떠한 상태이상도 무효화된다/너는 ＧＵＡＲＤ에만 집중해라"
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "……참고다만、이번 적은、너 외에는 눈에 들어오지 않는 것 같다/라이도우나 동료마는 안심하고 공격에 나서도 좋다"
+		CSTR:(CHARANUM-1):사고패턴 = チュートリアルオキクムシ
+		CSTR:(CHARANUM-1):특수적보정패턴 = D34_オキクムシ
+		CFLAG:(CHARANUM-1):속도보정 = 100
+		CFLAG:(CHARANUM-1):ＭＰ보정 = 1000
+		CALL SYNC_STATUS, CHARANUM-1
+		CALL HEALTH_CHARA, CHARANUM-1
+		FLAG:도주불가플래그 = 1
+		FLAG:회화불능플래그 = 1
+		FLAG:선제기습취소 = 1
+		FLAG:RESULT스킵 = 1
+		FLAG_D34_オキクムシ戦闘中 = 1
+		CALL BATTLE_START
+		FLAG:도주불가플래그 = 0
+		FLAG:회화불능플래그 = 0
+		FLAG:선제기습취소 = 0
+		FLAG:RESULT스킵 = 0
+		FLAG_D34_オキクムシ戦闘中 = 0
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "잘 헤쳐나왔나"
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "ＧＵＡＲＤ는 데미지를 경감시킬 뿐 아니라/즉사나 마비、매료 같은、모든 상태이상을 무효화한다"
+		CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "게나다……ＧＵＡＲＤ중에는 약점을 찔려도/적의 추격이 발생하지 않게 된다/상성이 나쁜 적과 싸울때는、종료마의 생동에서 신경을 쓰도록"
+		FLAG_D34_オキクムシ撃破 = 1
+	CASE 8004
+		FLAG:도주불가플래그 = 1
+		FLAG:회화불능플래그 = 1
+		FLAG:선제기습취소 = 1
+		;ライドウ
+		IF FLAG:튜토리얼진행중
+			FLAG_D34_ビットボール戦中 = 1
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "07_通路のマシン", "", "＞통로에는 대량의 머신이 있다！"
+			FLAG:RESULT스킵 = 1
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "07_通路のマシン", "고우토", "폭주한 살인기계들인가/저것은 전격에 약하다/전격상성으로 공격하면 쉽게 쓰러트릴 수 있겠지"
+			IF GET_BTL_TALENT_LV("건슬링거", MASTER) >= 2
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "07_通路のマシン", "고우토", "하지만、아무래도 이정도 수는 위험하군……/라이도우、여기는 녀석에게「링케이지」를 사용하게하지/――신입、이 총을 써라！"
+				;銃を使えって言いたかっただけ。銃を使え！銃を使え！銃を使え！銃を使え！
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "07_通路のマシン", "", @"＞고우토에 목소리에 맞춰、라이도우는/＞%CALLNAME:MASTER%에게 쇠파이프형산탄총을 던져주었다"
+				EQUIP:MASTER:특수탄1 = GETNUM(ITEM, "코로나샷")
+				EQUIP:MASTER:특수탄2 = 0
+				EQUIP:MASTER:특수탄3 = 0
+				CALL GET_ITEMS,"코로나샷",5
+				CALL GET_ITEMS,"쇠파이프형산탄총",1
+				CALL 装備変更, MASTER, GET_EQUIPNUM("총"), GETNUM(ITEM, "쇠파이프형산탄총")
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "07_通路のマシン", "고우토", "샷건은 적 １열을 공격할 수 있는 총이다/이녀석에게 전격을 날리는 특수탄「코로나샷」을 장전하면/저 녀석들을 한꺼번에 쓰러뜨릴수 있다"
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "07_通路のマシン", "고우토", "하지만、이번에는 한 수 더 쓰겠다――라이도우！"
+			ELSE
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "07_通路のマシン", "고우토", "하지만、아무래도 이정도 수를 상대하는 것은 힘든가……/라이도우、「링케이지」를 보여줘라"
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "07_通路のマシン", "", @"＞고우토가 눈짓을 하면、라이도우는 고개를 끄덕이고、/＞총을 샷건으로 바꿨디"
+				EQUIP:GETCHARA([[キャラ:라이도우]]):특수탄1 = GETNUM(ITEM, "코로나샷")
+				CALL GET_ITEMS,"코로나샷",5
+				EQUIP:GETCHARA([[キャラ:라이도우]]):총 = GETNUM(ITEM, "쇠파이프형산탄총")
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "07_通路のマシン", "고우토", "샷건은 적 １열을 공격할 수 있는 총이다/이녀석에게 전격을 날리는 특수탄「코로나샷」을 장전하면/저 녀석들을 한꺼번에 쓰러뜨릴수 있다"
+				CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "07_通路のマシン", "고우토", "하지만、이번에는 한 수 더 쓰겠다――라이도우！"
+			ENDIF
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:라이도우]], "CSV", "07_通路のマシン", "", "＞라이도우는 흉조 모・쇼보를 소환했다/＞모・쇼보가 일시적으로 파티에 참가했다"
+			CALL MAKE_BLANK_POSTION_FOR_ADDCHARA, [[キャラ:모・쇼보]]
+			CALL ADD_GUEST_COMPANION, [[キャラ:모・쇼보]], 200
+			SIF RESULT
+				ABL:(RESULT:1):스킬2 = [[스킬:마하・갈]]
+			SIF ITEM:코로나샷 < 3
+				CALL GET_ITEMS,"코로나샷", 3 - ITEM:코로나샷
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "07_通路のマシン", "고우토", "「코로나샷」과 질풍마법「갈」의 합체기/링케이지「뇌령마법탄」을 사용해라！"
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "07_通路のマシン", "고우토", "이 기술은 총의 공격범위를 한 단계 넓히는 효과가 있다/즉 핸드건이라면 １열공격으로、샷건이라면 전체공격으로 강화된다"
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "07_通路のマシン", "고우토", "신입이여/주인을 져버린 가엾은 기계에게、한꺼번에 안식을 주도록！"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "07_通路のマシン", "", "＞비트볼이 10체 나타났다！"
+			;FLAG:(20000 + [[キャラ:비트볼]]) = MAX(FLAG:(20000 + [[キャラ:비트볼]]), 1000)		
+			ANALYSIS_RATE:[[キャラ:비트볼]] = ANALYSIS_COMPLETED
+			FOR LOCAL, 7 ,17
+				CALL SET_ENEMY,LOCAL,[[キャラ:비트볼]],9,0,1
+				CSTR:(CHARANUM-1):사고패턴 = チュートリアルゾンビ
+				CSTR:(CHARANUM-1):특수적보정패턴 = D34_ビットボール
+				BASE:(CHARANUM-1):질풍 = 25
+				BASE:(CHARANUM-1):전격 = 300
+				CFLAG:(CHARANUM-1):마법피데미지보정 = -50
+				CFLAG:(CHARANUM-1):COOP피데미지보정 = 250
+				CFLAG:(CHARANUM-1):속도보정 = -100
+				CALL SET_BATTLE_STATUS(CHARANUM-1, 120, "ＨＰ")
+				CALL SYNC_STATUS, CHARANUM- 1
+				CALL HEALTH_CHARA, CHARANUM-1
+			NEXT
+		ELSE
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "07_通路のマシン", "", "＞통로를 막는 듯 머신이 서 있었다"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "07_通路のマシン", "머신", "침입자 발견　배제하겠습니다"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "07_通路のマシン", "", "＞비트볼이 3체 나타났다！"
+			CALL SET_ENEMY,8,[[キャラ:비트볼]],13,0,0
+			CALL SET_ENEMY,9,[[キャラ:비트볼]],13,0,0
+			CALL SET_ENEMY,10,[[キャラ:비트볼]],13,0,0
+		ENDIF
+		CALL BATTLE_START
+		FLAG:도주불가플래그 = 0
+		FLAG:회화불능플래그 = 0
+		FLAG:선제기습취소 = 0
+		FLAG_D34_ビットボール戦中 = 0
+		FLAG:RESULT스킵 = 0
+		IF FLAG:튜토리얼진행중
+			CALL キャラ削除(GETCHARA([[キャラ:모・쇼보]]))
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:모・쇼보]], "CSV", , "훙조 모・쇼보", "지쳤다ー！/라이도우、이제 돌아가도 되지ー？"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:라이도우]], "CSV", , "", "＞라이도우가 고개를 끄덕이며 모・쇼보를 귀환시켰다/＞모・쇼보가 파티에서 이탈했다"
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "어떤가？/링케이지의 강력함、이해 할 수 있었는가？/너와 동료마 뿐만 아니라、동료마와 동료마로도 링케이지가 가능하다/잘 링케이지 할 수 있도록、동료마의 스킬을 검토해보는 것도 방법이겠지"
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", , "고우토", "링케이지가 발생하는 기술의 조합은/이미 몇 개가 등록되어 있을 것이다/여유가 있다면 전투중에 링케이지를 해석해보는 것이 좋다/발견한 조합은 자동으로 등록될 것이다"
+		ENDIF
+		FLAG_D34_中ボスマシン = 1
+	CASE 9004
+		;部屋をアナライズし表示更新
+		CALL SET_FLOOR_ANALYZE(2, FLAG:현던전, FLAG:현M, 8, 7)
+		CALL SET_FLOOR_ANALYZE(2, FLAG:현던전, FLAG:현M, 8, 11)
+		CALL FLOOR_ANALYZE, FLAG:현M, 9, 13, 6, 13
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "02_コンピューター室", "", "＞무수한 모니터가 깜빡이는 방 안에서、/＞１체의 악마가 일심불란하게 키보드를 두드리고 있다。"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "02_コンピューター室", "타천사 단탈리온", "네놈、뭐하는 놈이냐！/……아니、누구라도 관계없지/조금 ＭＡＧ에 굷주린 참이었지/네녀석에게서 짜내주마！"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "02_コンピューター室", "", "＞타천사 단탈리온이 １체 나타났다！"
+		FLAG:도주불가플래그 = 1
+		FLAG:회화불능플래그 = 1
+		FLAG:선제기습취소 = 1
+		;チュートリアルだとLVだけ高く見えるようにいじる
+		IF FLAG:튜토리얼진행중
+			FLAG:RESULT스킵 = 1
+			CALL SET_ENEMY,9, [[キャラ:단탈리온]], 5,0,1
+			BASE:(CHARANUM-1):LV = 15
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL SET_BATTLE_STATUS(CHARANUM-1, 800, "ＨＰ")
+			CALL SET_BATTLE_STATUS(CHARANUM-1, 20, "공격")
+			CALL SET_BATTLE_STATUS(CHARANUM-1, 20, "방어")
+			CALL SET_BATTLE_STATUS(CHARANUM-1, 50, "명중")
+			CALL SET_BATTLE_STATUS(CHARANUM-1, 10, "회피")
+			CALL SET_BATTLE_STATUS(CHARANUM-1, 30, "마법위력")
+			CALL SET_BATTLE_STATUS(CHARANUM-1, 20, "마법효과")
+		ELSE
+			CALL SET_ENEMY,9, [[キャラ:단탈리온]], 15,0,1
+		ENDIF
+		CFLAG:(CHARANUM-1):행동횟수 = 2
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 400
+		ABL:(CHARANUM-1):아이템3 = GETNUM(ITEM, "오닉스")
+		ABL:(CHARANUM-1):입수확률3 = 100
+		CALL SYNC_STATUS,(CHARANUM-1)
+		CALL HEALTH_CHARA,(CHARANUM-1)
+		CALL BATTLE_START
+		FLAG:도주불가플래그 = 0
+		FLAG:회화불능플래그 = 0
+		FLAG:선제기습취소 = 0
+		FLAG:RESULT스킵 = 0
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "02_コンピューター室", "타천사 단탈리온", "이 내가、인간 따위에게 이런 꼴을 당하다니……"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "02_コンピューター室", "", "＞타천사 단탈리온은 힘이 다했다"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "01_コンピューター画面", "", @"＞%MASTER는% 타천사가 조작하고있던 컴퓨터 화면을 들여다 보았다/＞화면에는 기이한 스크립트가 춤추고 있다……"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "01_コンピューター画面", "", "＞『새로운 의식에 적응시킨、새로운 솔로몬의 열쇠의 작성』/＞『천사를 추방하고、우리들의 길을 열기 위한 프로그램』"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "01_コンピューター画面", "", @"＞아무래도、이것들은/＞일부 악마합체의 결과를 바꾸는 컨버터인 듯 하다/＞%MASTER는% 소프트를 가져가기로 했다"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "01_コンピューター画面", "", @"＞인스톨소프트【고에티아】를 손에 넣었다/＞인스톨소프트【라비스질】을 손에 넣었다"
+		;ライドウ
+		LOCAL = GETCHARA([[キャラ:라이도우]])
+		IF FLAG:튜토리얼진행중
+			;あまりにも長すぎたので情報を取捨選択し再構築
+			;あと意味深なことをいってその後出番もないクソデカチェーホフキャノンになってたので印象を少し緩和
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "01_コンピューター画面", "고우토", "잘했다、저건 유명한 타천사/우리들의 도움이 있었다고는 하나/살아 남은 것은、오로지 네 힘 덕분이다"
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "01_コンピューター画面", "고우토", "……앞으로도 계속 정진할 생각이라면/우선은「사교의관」을 의지하도록/동료마는「악마합체」를 통해/일부 스킬이나 성격을 물려받은、다른 악마를 소환할 수 있다"
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "01_コンピューター画面", "고우토", "동료마의 강함이 서머너의 강함이라고 해도 과언이 아니다/ＴＡＬＫ로 동료마를 늘리고/합체로 스킬을 보강하여、자신의 이상적인 동료마를 만들어가도록/"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:라이도우]], "CSV", "01_コンピューター画面", "", "……"
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "01_コンピューター画面", "고우토", "……음？　무슨일인가 라이도우"
+
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:라이도우]], "CSV", "01_コンピューター画面", "", "＞라이도우가 한 장의 카드를 건네왔다/＞스킬카드【갈】을 손에 넣었다"
+			CALL GET_ITEMS,"스킬카드【갈】", 1
+
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "01_コンピューター画面", "고우토", "그 스킬카드는 질풍마법「갈」이다/「동료마강화」를 통해 동료마에게 가르쳐두면/너희들도 방금 전 링케이지를 사용할 수 있을 것이다"
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "01_コンピューター画面", "고우토", "――아아、그렇지、마지막으로 중요한 얘기를 해주지"
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "01_コンピューター画面", "고우토", "인간은、악마보다、압도적으로 약하다/거기 있는 라이도우와 같은 예외도 있긴 하지만"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:라이도우]], "CSV", "01_コンピューター画面", "", "＞라이도우는 약간 난처하다는 표정을 지으며 얼굴을 돌렸다"
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "01_コンピューター画面", "고우토", "평범한 인간이 약점을 극복하는 수단은「장비」다/적의 LV에 맞는 장비로 교체해야만/비로소 악마와 대등하게 싸울 수 있다。그것을 잊지 말도록"
+			CALL MESSAGE_WINDOW_D_ICON, , "00_ゴウト", "01_コンピューター画面", "고우토", "그럼、인연이 닿는다면 다시 만나지/안녕이다、팬텀・소사이어티의 다크서머너여"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "01_コンピューター画面", "", "＞고우토와 라이도우가 파티를 떠났다"
+			CALL 全ゲスト削除
+		ENDIF
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "01_コンピューター画面", "", "＞타천사 단탈리온을 토벌하고、하츠다이 쉘터를 제압했다"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "01_コンピューター画面", "", "＞보수로써 ￥35,000이 지급되었다"
+		CALL GETS_INSTALLSOFT, "고에티아"
+		CALL GETS_INSTALLSOFT, "라비스질"
+		;---- EDIT 003 ADD START -------------------------
+		MONEY += 35000
+		;---- EDIT 003 ADD END ---------------------------
+		FLAG_D34_クリアフラグ = 1
+		CALL CLEAR_TILE
+		FLAG:탈출스킬금지 = 0
+		FLAG:탈출 = 1
+		RETURN 1
+	CASE 9999
+		CALL MESSAGE_WINDOW_D, "", "＞엘리베이터 인 것 같……지만、악마에게 부서져 있다"
+	CASEELSE
+	ENDSELECT
+	RETURN 1
+RETURN 0
+
+@SET_GUEST_D34
+#LOCALSIZE 1
+CALL ADD_GUEST_COMPANION, [[キャラ:라이도우]], 0
+CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "05_黒猫と青年", "", @"＞쿠즈노하 라이도우가 %CALLNAME:MASTER%의 파티에 참가했다"
+LOCAL = GETCHARA([[キャラ:라이도우]])
+
+BASE:LOCAL:LV += 10
+BASE:LOCAL:ＭＡＧ = 0
+BASE:LOCAL:힘 += 6
+BASE:LOCAL:지혜 += 5
+BASE:LOCAL:마력 += 5
+BASE:LOCAL:내구 += 5
+BASE:LOCAL:속도 += 6
+BASE:LOCAL:운 += 5
+CFLAG:LOCAL:방어보정 = 50
+CFLAG:LOCAL:마법효과보정 = 50
+
+CSTR:LOCAL:특수적보정패턴 = D34_ライドウ
+CALL CLEAR_ALL_SKILL, LOCAL
+
+ABL:LOCAL:스킬1 = [[스킬:부기우기]]
+ABL:LOCAL:스킬2 = [[스킬:불굴의투지]]
+;マスターが持たない場合があるので
+TALENT:LOCAL:서머너 = 1
+TALENT:LOCAL:도구지식 = 3
+CALL SYNC_STATUS, LOCAL
+CALL HEALTH_CHARA, LOCAL
+
+
+;=====================================================================
+;ターミナル
+;=====================================================================
+@RAIDOU_TERMINAL
+CALL SHOW_PICTURE, "D"
+CALL MESSAGE_WINDOW_D, "", "＞터미널이 있다"
+CALL MESSAGE_WINDOW_D, "터미널", "여기는 하츠다이 쉘터 터미널입니다/용건을 말씀해주세요"
+$START
+CALL INPUT_SELECT_D, "[1] 세이브/[0] 아무것도안한다"
+IF RESULT == 0
+	RETURN 1
+ELSEIF RESULT == 1
+	CALL TITLE_SAVEGAME
+ENDIF
+GOTO START
+
+;一応耐性塞ぎを考慮して選定する
+@GET_D34_TUTOLIAL_BADSTATE_ENEMY
+#FUNCTION
+SIF CHECK_WEAKNESS(MAXBASE:MASTER:주살) > -2
+	RETURNF [[キャラ:오키쿠무시]]
+SIF CHECK_WEAKNESS(MAXBASE:MASTER:파마) > -2
+	RETURNF [[キャラ:엔젤]]
+SIF CHECK_WEAKNESS(MAXBASE:MASTER:정신) > -2
+	RETURNF [[キャラ:리림]]
+SIF CHECK_WEAKNESS(MAXBASE:MASTER:신경) > -2
+	RETURNF [[キャラ:요모츠시코메]]
+RETURNF 0

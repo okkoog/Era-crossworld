@@ -1,0 +1,88 @@
+﻿
+;スキル名
+@SKILL_NAME_MAGATSUHI_EX_3,ARG
+RESULTS = 禍時：配信
+
+@SKILL_NAME_MAGATSUHI_禍時：配信,ARG
+RESULTS = 마가토키：배신
+
+@SKILL_COND_MAGATSUHI_禍時：配信, ARG
+SIF NO:ARG == [[キャラ:초텐짱]]
+	RETURN 1
+RETURN 0
+
+@SKILL_QUICK_ACTION_MAGATSUHI_禍時：配信, ARG
+RETURN 1
+
+;　威力
+@SKILL_POWER_禍時：配信, ARG
+RETURN 0
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_MAGATSUHI_禍時：配信, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+
+;　コストの量
+@SKILL_COST_MAGATSUHI_禍時：配信,ARG
+RETURN 0
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_MAGATSUHI_禍時：配信
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_MAGATSUHI_禍時：配信,ARG
+RETURN GET_SKILL_TARGET_NUM("특수")
+
+;　사거리
+@SKILL_RANGE_MAGATSUHI_禍時：配信,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_MAGATSUHI_禍時：配信, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_MAGATSUHI_禍時：配信
+RETURN GET_SUCCESSION_NUM("검격")
+;속도보정
+@SKILL_SPEED_禍時：配信, ARG = -1
+RETURN 0
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_MAGATSUHI_禍時：配信,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;　 説明文の表示
+@SKILL_EXPLAIN_MAGATSUHI_禍時：配信, ARG
+PRINTL 전령 초텐짱의 마가츠히스킬
+PRINTL 자신의 모든 능력을 초대폭 상승시킨다。
+PRINTL 자신 이외의 파티멤버의 능력을 대폭 낮춘다。
+PRINTL 이 스킬은 턴을 소비하지 않고 즉시 발동한다。
+
+@SKILL_EXPLAIN_TOOLTIP_MAGATSUHI_禍時：配信, ARG
+RESULTS:0 = 자신의 모든 능력을 초대폭 상승시킨다。
+RESULTS:1 = 자신 이외의 파티멤버의 능력을 대폭 낮춘다。
+RESULTS:2 = 이 스킬은 턴을 소비하지 않고 즉시 발동한다。
+
+@SKILL_ACTIONABLE_BATTLE_MAGATSUHI_禍時：配信, ARG
+RETURN 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_MAGATSUHI_禍時：配信,ARG,ARG:1,ARG:2
+#DIM DYNAMIC LPOS
+FOR LPOS, 1, 7
+	SIF !IS_TARGET_ABLE(POS(LPOS))
+		CONTINUE
+	IF ARG == POS(LPOS)
+		CALL SKILL_SET_カジャンダ, ARG, POS(LPOS), "공격/방어/마법위력/마법효과/명중/회피", 32, "단체", "NOWAIT"
+	ELSE
+		CALL SKILL_SET_カジャンダ, ARG, POS(LPOS), "공격/방어/마법위력/마법효과/명중/회피", -8, "단체", "NOWAIT"
+	ENDIF
+NEXT
+WAIT
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_MAGATSUHI_禍時：配信,ARG
+RETURN 1

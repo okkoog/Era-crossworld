@@ -1,0 +1,249 @@
+﻿;====================
+;更新履歴
+;2022/06/01　テキスト試作
+;====================
+;====================
+;内容
+;주인공이 eraten 세계에서 만난 적이 있는 인물로부터 메시아교가 이벤트 중 사고로 위장하여 암살을 계획하고 있다는 정보를 얻는 이벤트.
+;イベントフラグ:55:9 : 이벤트 중, 선택지 전에 대화하던 인간을 선택지 후에 호출하는 플래그. 또한 본 이벤트 후에는 이벤트의 성공/불성공 플래그로 유용됨.
+;====================
+@EVENT_55_6
+
+;導入開始
+CUSTOMDRAWLINE =
+PRINTFORML 
+PRINTFORMW 　＞＞%CALLNAME:MASTER%의 아지트＜＜
+PRINTFORML 
+;코시로(4559)가 동료에 있고 전투 가능
+IF FINDCHARA_B([[キャラ:코시로]]) >= 1 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:코시로]])) > 0 && FLAG:나이트・테일진행도 >= 3
+	PRINTFORMW ＞코시로가 불쑥 %CALLNAME:MASTER%을 찾아왔다.
+	PRINTFORMW 「탐정님 탐정님 탐정니임ー, 탐정님 메시아쨩 오타쿠죠?」
+	PRINTFORML
+	PRINTFORMW ＞%CALLNAME:MASTER%은 마시던 커피를 뿜었다. 어떻게 안 거지. 그리고 세 번이나 부르지 마라.
+	PRINTFORMW 「그야 책상 위에 브로마이드 올려뒀으면 크리스 더 카(기동차)라도 눈치채죠」
+	PRINTFORML
+	PRINTFORMW ＞%CALLNAME:MASTER%은 말없이 책상 위의 액자를 엎었다. ……그래서, 무슨 일인데.
+	PRINTFORML
+	PRINTFORMW 「저기요, 검은 안경한테서 메시지가 왔는데, 제보가 들어왔대요. 메시아쨩에 대한」
+	PRINTFORML
+	PRINTFORMW ＞이런, 미국의 오파츠 연구기관 에이전트가 저잣거리의 다크서머너에게, 제보를?
+	PRINTFORMW 　도대체 어떤 정보를 제공하겠다는 걸까.
+	;직전에 누구와의 대화를 거쳤는지 기억
+	イベントフラグ:55:9 = 1
+
+;쇼우지(4626)가 동료에 없고 무사한 상태로 해방됨
+ELSEIF FINDCHARA_B([[キャラ:쇼우지]]) == -1 && ダンジョンフラグ:82:1 == -1 && ダンジョンフラグ:82:6 <= 3
+	PRINTFORMW ＞쇼우지, 라고 이름을 밝힌 여성이 %CALLNAME:MASTER%을 찾아왔다.
+	PRINTFORML 
+	PRINTFORMW ＞어디의 누구였는지 언뜻 떠오르지 않았으나, 명함을 받아보고서야 깨달았다.
+	PRINTFORMW 　지난번 이계화 빌딩에 기밀 정보를 들고 도망쳤던 저널리스트 여자다.
+	PRINTFORMW 　듣자하니 %CALLNAME:MASTER%에게 정보를 제공하고 싶다고 한다.
+	PRINTFORMW 　……이른바 「메시아쨩에 관한 중요한 특종」이라는 모양이다.
+	;직전에 누구와의 대화를 거쳤는지 기억
+	イベントフラグ:55:9 = 2
+		
+;베스(4501)가 동료에 있고 전투 가능
+ELSEIF FINDCHARA_B([[キャラ:베스]]) >= 1 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:베스]])) > 0 
+;베스의 2인칭 호출
+	LOCAL = GETCHARA([[キャラ:베스]])
+	PRINTFORMW ＞베스가 불쑥 %CALLNAME:MASTER%을 찾아왔다.
+	PRINTFORML
+	PRINTFORMW 「실은 저, 메시아 교단의 신자 분 중 일부와 지금도 연이 닿아 있어서요,
+	PRINTFORMW 　그분께서 %CSTR:LOCAL:이인칭%와 만나고 싶어 하십니다…….
+	PRINTFORMW 　음…… 메시아쨩? 이라고 하는 분에 대한 중요한 정보라면서」
+	PRINTFORML
+	PRINTFORMW ＞……교단 내부에서의 유출? 도대체 무슨 일이지.
+
+	;직전에 누구와의 대화를 거쳤는지 기억
+	イベントフラグ:55:9 = 3
+ELSE
+	PRINTFORMW ＞요전 날 메시아쨩 라이브에서 의기투합했던 팬 남자에게서 메일이 왔다…….
+	PRINTFORMW 듣자하니 『다음 주 라이브 건으로 중요한 정보를 입수했으니 부디 만나고 싶다』
+	PRINTFORMW 는 모양이다. 어쩔까……
+
+ENDIF
+
+PRINTFORML (승낙하면 이벤트가 진행되며 시간이 소모됩니다. 거부하면 시간은 경과하지 않지만 이벤트는 소멸합니다）
+CALL INPUT_YN("이야기를 듣는다", "그만둔다")
+;그만둔다	
+IF RESULT == 1 
+	IF イベントフラグ:55:9 == 1
+		PRINTFORMW ＞그만두자. 지금은 바쁘다.
+		PRINTFORML 「그래요? 그럼 거절해 둘게요」
+	ELSEIF イベントフラグ:55:9 == 2
+		PRINTFORMW ＞그만두자. 지금은 바쁘다.
+		PRINTFORML 「그래, 난 상관없지만. 그럼 안녕」
+		PRINTFORMW 쇼우지는 떠나갔다…….
+	ELSEIF イベントフラグ:55:9 == 3
+		PRINTFORMW ＞그만두자. 지금은 바쁘다.
+		PRINTFORMW 「……그러신가요. 바쁘신 와중에 죄송했습니다」
+		PRINTFORMW 베스는 돌아갔다…….
+	ELSE
+		PRINTFORMW ……우선 차단 설정해 두자. 계정 해킹 메일일지도 모르니까.
+		PRINTFORMW %CALLNAME:MASTER%은 메일을 못 본 척하기로 했다.
+	ENDIF
+	;충고 플래그 1 (거절함)
+	イベントフラグ:55:9 = 1
+
+	RETURN
+;승낙함	
+ELSE
+
+	PRINTFORMW ＞이야기를 듣자.
+	PRINTFORML 
+	PRINTFORMW ………
+	PRINTFORML ……
+	PRINTFORML …
+	PRINTFORML 
+
+	;코시로와 대화했을 때
+	IF イベントフラグ:55:9 == 1
+		PRINTFORMW ＞──사무소 아래층 카페에서 이야기를 들어보니 대략적인 내용은 이렇다.
+		PRINTFORMW 　『이번 주 일요일 대대적으로 열리는 카테드랄 라이브 이벤트 중에 사고를 일으킨다는 계획이 있다』
+		PRINTFORMW 　는 모양이다.
+		PRINTFORML
+		PRINTFORMW 「……사고로 위장한 요인 납치나 암살 뒤처리, 라는 건가요. 전형ー적인 수법이네요」
+		PRINTFORMW ＞잔뜩 들이부은 각설탕 때문에 넘칠 듯한 커피를 호호 불며 찰랑찰랑 홀짝이던 코시로가 말한다.
+		PRINTFORML
+		PRINTFORMW ＞……사고를 일으켜 라이브를 중지시키고 싶을 뿐인 게 아닐까?
+		PRINTFORMW 　라며 의문을 제기하자, 검은 안경에게 일축당했다.
+		PRINTFORML
+		PRINTFORMW 「메시아교의 총본산에서 그런 일 때문에 난동을 용납할 리가 없고,
+		PRINTFORMW 　그런 짓은 지금까지 지겹도록 저질러왔다는 건 당신도 아실 텐데요. 있었잖아요? 습격 현장에」
+		PRINTFORML
+		PRINTFORMW ＞──부정은 않겠지만 그걸 네가 어떻게 알지?
+		PRINTFORML
+		PRINTFORMW 「메시아 교단 규모를 너무 얕보시는군요…… 비장의 『처리반』 부대 어뎁트나 터미네이터를 투입하고,
+		PRINTFORMW 　심지어 그것이 격퇴당했다면 그들도 조사할 테고, 엉클 샘(미국 정부)도 조사하죠.
+		PRINTFORMW 　라기보단 일본이나 다른 나라 정보기관에서도 똑같이 조사했을 걸요」
+		PRINTFORML 
+		PRINTFORMW 한층 더 입꼬리를 끌어올리는 검은 안경. 입 밖으로 내지는 않았지만 '당신 바보 아닌가요?'라고 말하는 듯하다.
+		PRINTFORML 
+		PRINTFORMW ＞──이야기는 이해했다만, 왜 그걸 『야곱의 사다리』가 알리러 온 거지?
+		PRINTFORML 
+		PRINTFORMW 「그걸 굳이 상사에게 확인하지 않는 것이 우리들의 일이죠…… 뭐, 짐작은 갑니다만.
+		PRINTFORMW 　왜 우리인가? 에 대해선 뭐, 우리도 교단의 영향은 있다지만 미국의 기관이니까요.
+		PRINTFORMW 　단순히 꼬리가 밟히기 어렵다, 라는 게 이유겠죠.
+		PRINTFORMW 　그럼 왜 당신인가? 이것도 간단합니다── 『처리반』 부대를 쓰러뜨린 게 당신이니까요」
+		PRINTFORML 
+		PRINTFORMW ＞즉 정보원은 자신에게 이것을 저지해 주길 기대하고 있다는 건가.
+		PRINTFORML 
+		PRINTFORML 「그걸 확인하지 않는 것이 당신의 일이죠…… 그럼 모쪼록 무운을 빕니다. AMEN.」
+		PRINTFORMW ＞검은 안경은 커피에 대해 한마디 감사를 표하고는 돌아갔다…….
+		PRINTFORML 
+		PRINTFORMW ………
+		PRINTFORML ……
+		PRINTFORMW …
+		PRINTFORML 
+		PRINTFORMW 「……그래서, 탐정님은 얼굴밖에 모르는 아이돌을 목숨 걸고 구해주는 건가요? 『최애』라는 건 대단하네요오……
+		PRINTFORMW 　……우와, 크다…… 이게 『성체』인가요오…… 저도 신이긴 한데 말이죠. 메시아교 신앙하면 커지려나요」
+		PRINTFORMW ＞코시로가 어느샌가 메시아쨩의 브로마이드가 든 액자를 쥐고 있었기에 빼앗았다.
+		PRINTFORML 
+
+	;만난 것이 쇼우지
+	ELSEIF イベントフラグ:55:9 == 2
+		PRINTFORMW ＞──사무소 아래층 카페에서 이야기를 들어보니 대략적인 내용은 이렇다.
+		PRINTFORMW ＞『이번 주 일요일 대대적으로 열리는 카테드랄 라이브 이벤트 중에 사고를 일으킨다는 계획이 있다』
+		PRINTFORMW ＞는 모양이다.
+		PRINTFORML
+		PRINTFORML ＞다크서머너인 %CALLNAME:MASTER%은 직감했다. 요인 납치나 암살 뒤처리에 사용되는 전형적인 수법이다.
+		PRINTFORMW 　하지만 돈을 받고 팔아야 할 정보를 먼저 거저 준 이유는 뭘까. ……부르는 대로 주겠다는 뜻일까?
+		PRINTFORML 
+		PRINTFORML 「나도 정보를 팔 수 있었다면 좋았겠지만…… 난 단순한 메신저야. 이 정보를 당신에게 전하라는 말이지」
+		PRINTFORMW ……정보원은 내부 유출이란 말인가. 자세히 들려줄 수 있을까?
+		PRINTFORML 
+		PRINTFORMW 「내가 들은 건 교단 신관에게서야. 하지만 그 윗선 이야기는 듣지 못했어…… 그럼 확실히 전했어」
+		PRINTFORMW ＞그럼 커피 잘 마셨어, 라며 쇼우지는 자리에서 일어났다.
+		PRINTFORML 
+		PRINTFORMW 「그런데 이런 정보를 어째서 당신 앞으로 흘렸을까? ……아니, 방해해 주길 바란다는 의도는 이해하겠지만」
+		PRINTFORML 
+		PRINTFORMW ＞그건…… 그 습격 현장에서 『처리반』 부대를 때려눕힌 것이 본인이라는 게 들통났기 때문 아닐까?
+		PRINTFORMW ＞짚이는 구석은 있었지만, %CALLNAME:MASTER%은 입을 다물기로 했다.
+		PRINTFORML 
+		PRINTFORMW ………
+		PRINTFORML ……
+		PRINTFORMW …
+
+	;만난 것이 베스
+	ELSEIF イベントフラグ:55:9 == 3
+		PRINTFORMW ＞──사무소 아래층 카페에서 이야기를 들어보니 대략적인 내용은 이렇다.
+		PRINTFORMW ＞『이번 주 일요일 대대적으로 열리는 카테드랄 라이브 이벤트 중에 사고를 일으킨다는 계획이 있다』
+		PRINTFORMW ＞는 모양이다.
+		PRINTFORML
+		PRINTFORML ＞다크서머너인 %CALLNAME:MASTER%에게는 짚이는 바가 있다…….
+		PRINTFORMW ＞즉 이것은 요인 납치나 암살 뒤처리에 사용되는 전형적인 수법이 아니겠는가.
+		PRINTFORML 
+		PRINTFORMW 「교단이 암살이라는 수단을 정말로요? ……사고를 일으켜 라이브를 중지시키고 싶을 뿐인 건 아닐까요?」
+		PRINTFORML ＞라며 의문을 입에 담는 베스였지만, %CALLNAME:MASTER%은 고개를 저었다.
+		PRINTFORML 
+		PRINTFORMW ＞──그건 이미 그들이 실행해 옮긴 적이 있다. 그것도 몇 번이나.
+		PRINTFORMW 　메시아교의 총본산에서 사고라는 불상사를 일으키면서까지 그런 짓을 벌인다면,
+		PRINTFORMW 　그것은 원인을 근본부터 제거하겠다는 의지의 표명 말고는 생각할 수 없다.
+		PRINTFORML 
+		PRINTFORMW 「그런가요…… 그들 중 일부의 뜻이기는 하겠지만…… 안타깝네요」
+		PRINTFORMW ＞이런 정보가 흘러나왔다는 것은 자정 작용이 아예 없지는 않다는 뜻이라며 베스를 위로했다……
+		PRINTFORMW 「……그렇군요. 어떻게 해서든 저지해야겠네요」
+		PRINTFORML 
+		PRINTFORMW ＞잠시 후, 전말을 전한 신도는 주위를 살피며 떠나갔다……
+		PRINTFORMW ………
+		PRINTFORML ……
+		PRINTFORMW …
+		PRINTFORML 
+		PRINTFORMW 「……이분이 그 아이돌이라는 분인가요. 소문은 들었습니다만…… 우와, 크다……」
+		PRINTFORMW ＞이럴 수가, 베스는 신도가 남기고 간 사진을 보며 자신의 가슴을 들었다 놨다 하고 있다……
+		PRINTFORMW 　시선을 어디에 둬야 할지 몰라 %CALLNAME:MASTER%은 베스에게서 눈을 돌렸다.
+		PRINTFORML 
+
+	;그 외 (팬 남자)
+	ELSE
+		PRINTFORMW ＞──요전 날 함께 술을 마셨던 바에서 만나 이야기를 듣기로 했다.
+		PRINTFORMW ＞요전에 알게 되었을 때와 마찬가지로 보라색 수트에 붉은 넥타이로 멋을 낸 한량 스타일의 남자는 싱글벙글 웃으며 손을 흔들고 있다…….
+		PRINTFORMW 「안녕 안녕, 왔구나…… 아니, 잘됐다 잘됐어! 헛걸음이 안 돼서 다행이야」
+		PRINTFORML 
+		PRINTFORMW ＞『이야아…… 메시아쨩, 참 좋단 말이지…… 재밌잖아 그녀!!』
+		PRINTFORML 　라며 말을 걸어왔고, 라이브 후의 고양감에 취해 분위기 타서 바에서 함께 술을 마셨다가,
+		PRINTFORMW 　흠뻑 취한 끝에 메일 주소를 교환해 버렸던 것인데, 다시 보니 몹시도 수상쩍은 남자다…….
+		PRINTFORML
+		PRINTFORMW 「아니 미안 미안, 조금 자네를 만난 게 기뻐서 흥분해 버렸어. 그럼 본론으로 들어갈까…….
+		PRINTFORMW 그전에 먼저 자네, 메시아 교단에는 진짜 천사가 있다는 이야기, 이미 알고 있지……?」
+		PRINTFORML 
+		CALL INPUT_YN("어느 정도는", "물론이다")
+		IF RESULT == 1 
+		ELSE
+		ENDIF
+		PRINTFORMW 「응~ 좋아 좋아. 그럼 그녀가 휘말리려 하는 음모에 대한 이야기를 해줄게…….」
+		PRINTFORMW ＞……남자가 묘하게 위에서 내려다보는 투로 말한 내용은 이렇다.
+		PRINTFORML 
+		PRINTFORMW 『메시아교 상층부에 존재하는 대천사가 메시아쨩을 눈엣가시로 여기고 있다.
+		PRINTFORML 　그들은 외부의 감시망이 닿지 않는 카테드랄에서 그녀를 죽이고,
+		PRINTFORMW 　사고로 위장해 그 증거를 회장의 관객들과 함께 통째로 날려버릴 계획을 세우고 있다』
+		PRINTFORMW 는 모양이다…….
+		PRINTFORML 
+		PRINTFORMW 「크크크크…… 재밌지 않아? 신의 사자인 천사가 신의 아이로 만들어진 인간을 죽이겠다고 하니 말이야.
+		PRINTFORML 　마치 소돔과 고모라의 멸망 재현……까지는 아닐지도 모르겠지만, 이건 큰일이라고.
+		PRINTFORMW 　그들은 도대체 무엇을 경계하고 있는 걸까……?」
+		PRINTFORML 
+		PRINTFORMW 애초에 인간을 초월한 영역의 존재들에 관한 이야기를 마치 훤히 꿰뚫고 있는 양 지껄이는 이 녀석은 대체 누구인가?
+		PRINTFORML 
+		PRINTFORMW 「응, 내가 누구냐고……? 그런 건 아무래도 좋잖아. 지금은 그녀를 구해줘야지.
+		PRINTFORMW 날 알고 싶다면…… 그래, 또 어디선가 만나자고. 이번 주차가 아닌, 다른 어딘가에서 말이야」
+		PRINTFORML 그렇게 말을 남기자 남자는 어느샌가 사라져 버려 있었다…….
+		PRINTFORML 
+	ENDIF
+ENDIF
+;충고 플래그 (정보 입수)	
+
+PRINTFORMW ＞이벤트 습격 정보를 입수했다. 주말의 결전에 도전하자.
+
+イベントフラグ:55:9 = 2
+CALL EVENT_55_6_END
+
+
+
+@EVENT_55_6_END
+
+;- 1ターン経過
+;FLAG:휴식플래그 = 1
+;BEGIN TURNEND
+
+RETURN

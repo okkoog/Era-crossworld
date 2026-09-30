@@ -1,0 +1,870 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:ガチャモード.ERB
+;	Facility	:SHOP커맨드[]ガチャの処理。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	000		2017/09/23		名無					新規作成
+;	001		2022/06/07		Collared				UI整理プロジェクトにより配置変更
+;	002		2023/07/01		P						使用アイテムと装備の範囲指定を定数化
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;=================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name
+;
+; *- SHOP関連(RPG)
+;
+;	# メニュー関連
+;	・SHOPCOMABLE_402
+;	・SHOP_COM_402
+;	・GACHA_MASCHINE_SHOP
+;
+;	# 가챠！
+;	・GACHA_ONCE
+;	・GACHA_SEARCH_DEVIL
+;	・GACHA_SEARCH_ITEM
+;
+;=================================================
+@SHOPCOMABLE_402
+SIF !IS_USEABLE_SHOPCOM
+	RETURN 0
+	RESULT:1 = 4
+	IF FLAG:악마가챠모드 > 0
+		RESULTS = 가챠！
+		RETURN 1
+	ENDIF
+RETURN 0
+
+
+;=================================================
+@SHOP_COM_402, ARG
+	CUSTOMDRAWLINE =
+	CALL GACHA_MASCHINE_SHOP
+
+
+;=================================================
+@GACHA_MASCHINE_SHOP
+PRINTFORML 
+PRINTFORML 여기에는 뽑기 기계(가챠)가 놓여 있다……
+PRINTFORML 
+$GACHA_LOOP_START
+CUSTOMDRAWLINE =
+PRINTFORM ＞현재 픽업은
+IF TALENT:MASTER:가챠 > 0
+	LOCAL = (DAY ) % 5
+	SELECTCASE LOCAL
+		CASE 0
+			;なしの日
+			PRINTFORM  없음 
+		CASE 1
+			;性別ピックアップの日
+			LOCAL:1 = (DAY + TIME - 1) % 2
+			SELECTCASE LOCAL:1
+				CASE 0
+					PRINTFORM [여성 악마 픽업]
+					FLAG:현재가챠토픽 = 11000140
+				CASE 1
+					PRINTFORM [남성 픽업]
+					FLAG:현재가챠토픽 = 01000140
+			ENDSELECT
+		CASE 2
+			;性格の日
+			LOCAL:1 = (DAY + TIME - 1) % 8
+			SELECTCASE LOCAL:1
+				CASE 0
+					PRINTFORM [우애 픽업]
+					FLAG:현재가챠토픽 = 01000201
+				CASE 1
+					PRINTFORM [사나움 픽업]
+					FLAG:현재가챠토픽 = 01000202
+				CASE 2
+					PRINTFORM [우둔 픽업]
+					FLAG:현재가챠토픽 = 01000203
+				CASE 3
+					PRINTFORM [거만 픽업]
+					FLAG:현재가챠토픽 = 01000204
+				CASE 4
+					PRINTFORM [교활 픽업]
+					FLAG:현재가챠토픽 = 01000205
+				CASE 5
+					PRINTFORM [냉정 픽업]
+					FLAG:현재가챠토픽 = 01000206
+				CASE 6
+					PRINTFORM [잔학 픽업]
+					FLAG:현재가챠토픽 = 01000207
+				CASE 7
+					PRINTFORM [영리함 픽업]
+					FLAG:현재가챠토픽 = 01000208
+			ENDSELECT
+		CASE 3
+			;敏感の日
+			LOCAL:1 = (DAY + TIME - 1) % 4
+			SELECTCASE LOCAL:1
+				CASE 0
+					PRINTFORM [C민감 픽업]
+					FLAG:현재가챠토픽 = 01000102
+				CASE 1
+					PRINTFORM [B민감 픽업]
+					FLAG:현재가챠토픽 = 01000104
+				CASE 2
+					PRINTFORM [V민감 픽업]
+					FLAG:현재가챠토픽 = 01000106
+				CASE 3
+					PRINTFORM [A민감 픽업]
+					FLAG:현재가챠토픽 = 01000108
+			ENDSELECT
+		CASE 4
+			;属性ピックアップの日
+			LOCAL:1 = (DAY + TIME - 1) % 4
+			SELECTCASE LOCAL:1
+				CASE 0
+					PRINTFORM [라이트 악마 픽업]
+					FLAG:현재가챠토픽 = 05000001
+				CASE 1
+					PRINTFORM [로우 악마 픽업]
+					FLAG:현재가챠토픽 = 05000002
+				CASE 2
+					PRINTFORM [카오스 악마 픽업]
+					FLAG:현재가챠토픽 = 05000003
+				CASE 3
+					PRINTFORM [다크 악마 픽업]
+					FLAG:현재가챠토픽 = 05000004
+			ENDSELECT
+	ENDSELECT
+ELSE
+	PRINTFORM [初回限定無料１０連]
+ENDIF
+PRINTFORML 입니다.
+SIF FLAG:가챠레벨설정 < 5 || TALENT:MASTER:가챠 <= 0
+	FLAG:가챠레벨설정 = 5
+SIF FLAG:가챠레벨설정 > 80
+	FLAG:가챠레벨설정 = 80
+PRINTFORML 가챠 LV {FLAG:가챠레벨설정}　　　소지 마카 {MONEY:1}
+CUSTOMDRAWLINE =
+LOCAL = FLAG:가챠레벨설정 * 2
+IF TALENT:MASTER:가챠 > 0
+	IF TALENT:MASTER:가챠 < DAY
+		PRINTFORML [1] 단발 가챠　　－　
+		SETCOLOR 0xBB00BB
+		PRINTFORML 하루 1회 무료!
+		RESETCOLOR
+	ELSE
+		PRINTFORML [1] 단발 가챠　　－　{LOCAL} 마카
+	ENDIF
+	PRINTFORML [2] 10연속 가챠　－　{LOCAL * 10} 마카
+	SIF FLAG:DEBUG
+		PRINTFORML [777] SR 악마 확정 디버그용 단발 가챠　－　{LOCAL} 마카
+ELSE
+	PRINTFORM [2] 10연속 가챠　－　
+	SETCOLOR 0xBB00BB
+	PRINTFORML 최초 1회 무료!
+	RESETCOLOR
+ENDIF
+PRINTFORML [3] 배출 확률 확인
+SIF TALENT:MASTER:가챠 > 0
+	PRINTFORML [4] 레벨 설정
+;ガチャレベルLv80以上＋エクストライベントON時限定ガチャ
+IF GET_USEABLE_EXTRA_TITLE() && FLAG:가챠레벨설정 == 80
+	PRINTFORML [5] EXTRA 이벤트 가챠 (Lv80 한정)
+ENDIF
+PRINTFORML [100] 돌아간다
+CUSTOMDRAWLINE =
+
+IF GET_USEABLE_EXTRA_TITLE() && FLAG:가챠레벨설정 == 80
+	IF TALENT:MASTER:가챠 > 0 && FLAG:DEBUG
+		CALL INPUTINT(1, 2, 3, 4, 5, 777, 100)
+	ELSEIF TALENT:MASTER:가챠 > 0
+		CALL INPUTINT(1, 2, 3, 4, 5, 100)
+	ELSE
+		CALL INPUTINT(2, 3, 5, 100)
+	ENDIF
+ELSE
+	IF TALENT:MASTER:가챠 > 0 && FLAG:DEBUG
+		CALL INPUTINT(1, 2, 3, 4, 777, 100)
+	ELSEIF TALENT:MASTER:가챠 > 0
+		CALL INPUTINT(1, 2, 3, 4, 100)
+	ELSE
+		CALL INPUTINT(2, 3, 100)
+	ENDIF
+ENDIF
+
+PRINTFORML 
+SELECTCASE RESULT
+	;１連ガチャ
+	CASE 1
+		IF TALENT:MASTER:가챠 >= DAY
+			LOCAL = FLAG:가챠레벨설정 * 2
+			IF MONEY:1 < (LOCAL)
+				PRINTFORMW 마카가 부족합니다。
+				GOTO GACHA_LOOP_START
+			ENDIF
+		MONEY:1 -= LOCAL
+		ELSE
+			TALENT:MASTER:가챠 = DAY
+		ENDIF
+		PRINTFORML 달그락 달그락……
+		PRINTFORMW 
+
+		CALL GACHA_ONCE,0,FLAG:현재가챠토픽
+
+		PRINTFORML 
+		PRINTFORMW 가챠를 종료했습니다.
+		GOTO GACHA_LOOP_START
+
+	;１０連ガチャ
+	CASE 2
+		IF TALENT:MASTER:가챠 > 0
+			LOCAL = FLAG:가챠레벨설정 * 2
+			IF MONEY:1 < (LOCAL * 10)
+				PRINTFORMW 마카가 부족합니다。
+				GOTO GACHA_LOOP_START
+			ENDIF
+			MONEY:1 -= LOCAL * 10
+		ELSE
+			TALENT:MASTER:가챠 = DAY
+		ENDIF
+		PRINTFORML 달그락 달그락 달그락 달그락 달그락 달그락 달그락……
+		PRINTFORMW 
+
+		;最初が悪魔確定、最後がＲ以上確定
+		CALL GACHA_ONCE,1,FLAG:현재가챠토픽
+		CALL GACHA_ONCE,0,FLAG:현재가챠토픽
+		CALL GACHA_ONCE,0,FLAG:현재가챠토픽
+		CALL GACHA_ONCE,0,FLAG:현재가챠토픽
+		CALL GACHA_ONCE,0,FLAG:현재가챠토픽
+		CALL GACHA_ONCE,0,FLAG:현재가챠토픽
+		CALL GACHA_ONCE,0,FLAG:현재가챠토픽
+		CALL GACHA_ONCE,0,FLAG:현재가챠토픽
+		CALL GACHA_ONCE,0,FLAG:현재가챠토픽
+		CALL GACHA_ONCE,2,FLAG:현재가챠토픽
+
+		PRINTFORML 
+		PRINTFORMW 가챠를 종료했습니다.
+		GOTO GACHA_LOOP_START
+
+	;排出率の確認
+	CASE 3
+		LOCAL = FLAG:가챠레벨설정 * 2
+		PRINTFORML 　　1％　……SR……　{FLAG:가챠레벨설정+1}~{FLAG:가챠레벨설정+10}LV의 「악마」
+		PRINTFORML 　　4％　……　R……　{MAX(FLAG:가챠레벨설정/2,5)}~{FLAG:가챠레벨설정+5}LV 이하의 「악마」
+		PRINTFORML 　 15％　……　N……　{MAX(FLAG:가챠레벨설정/2,5)}LV 이하의 「악마」
+		PRINTFORML 　　2％　……SR……　{LOCAL*10} 마카 이내로 현재 교환 가능한 장비・아이템
+		PRINTFORML 　　8％　……　R……　{LOCAL*4} 마카 이내로 현재 교환 가능한 장비・아이템
+		PRINTFORML 　 20％　……　N……　{LOCAL} 마카 이내로 현재 교환 가능한 장비・아이템
+		PRINTFORML 　　5％　……SR……　{LOCAL*500}엔 이내로 현재 구입 가능한 장비・아이템
+		PRINTFORML 　 10％　……　R……　{LOCAL*200}엔 이내로 현재 구입 가능한 장비・아이템
+		PRINTFORML 　 35％　……　N……　{LOCAL*50}엔 이내로 현재 구입 가능한 장비・아이템
+		PRINTFORML 　
+		PRINTFORML 　　・10연속 가챠는 반드시 악마가 1체, 또한 R 이상이 1개 선출됩니다.
+		PRINTFORML 　　　단, R 아이템에서 N 등급이 나오더라도 울지 않기.
+		PRINTFORML 　　・선출 후, 악마는 다시 4분의 1 확률로 픽업 대상 중에서 선정됩니다.
+		PRINTFORML 　　　단, 픽업 대상이 없을 경우에는 비픽업 대상 중에서 선정됩니다.
+		PRINTFORML 　　　그래도 없을 경우에는 한 단계 아래 조건으로 내려가 다시 선출합니다.
+		PRINTFORMW 
+		SIF GET_USEABLE_EXTRA_TITLE() && FLAG:가챠레벨설정 == 80
+			PRINTFORML 　　　EXTRA 이벤트 가챠는 각 추첨 시 1% 확률로 EXTRA 악마가 배출되는 10연속 가챠입니다.
+		GOTO GACHA_LOOP_START
+
+	;ガチャレベルの変更
+	CASE 4
+		PRINTFORML 가챠에서 나오는 악마 레벨 및 아이템 가격의 상한을 설정합니다.
+		PRINTFORML (최소 5 ~ 최대 마스터 LV 또는 80까지)
+		CALL INPUT_MANY(0,BASE:MASTER:LV, , "0/1/2/3/4/5")
+		FLAG:가챠레벨설정 = RESULT
+		GOTO GACHA_LOOP_START
+
+	CASE 5
+		PRINTFORML 어느 가챠를 뽑겠습니까?
+		PRINTFORML [1]원신 가챠
+		PRINTFORML [2]붕괴: 스타레일 가챠
+		PRINTFORML [100] 돌아간다
+		CALL INPUTINT(1, 2, 100)
+		SIF RESULT == 100
+			RETURN
+		LOCAL:100 = RESULT
+		IF TALENT:MASTER:가챠 > 0
+			LOCAL = FLAG:가챠레벨설정 * 2
+			IF MONEY:1 < (LOCAL * 10)
+				PRINTFORMW 마카가 부족합니다。
+				GOTO GACHA_LOOP_START
+			ENDIF
+			MONEY:1 -= LOCAL * 10
+		ELSE
+			TALENT:MASTER:가챠 = DAY
+		ENDIF
+		PRINTFORML 달그락 달그락 달그락 달그락 달그락 달그락 달그락……
+		PRINTFORMW 
+
+		;それぞれ１％でエクストライベントガチャに飛ぶ。残り９９％は最初が悪魔確定、最後がＲ以上確定
+		IF RAND:100 == 0
+			CALL エクストライベントガチャ,LOCAL:100
+		ELSE
+			CALL GACHA_ONCE,1,FLAG:현재가챠토픽
+		ENDIF
+		IF RAND:100 == 0
+			CALL エクストライベントガチャ,LOCAL:100
+		ELSE
+			CALL GACHA_ONCE,0,FLAG:현재가챠토픽
+		ENDIF
+		IF RAND:100 == 0
+			CALL エクストライベントガチャ,LOCAL:100
+		ELSE
+			CALL GACHA_ONCE,0,FLAG:현재가챠토픽
+		ENDIF
+		IF RAND:100 == 0
+			CALL エクストライベントガチャ,LOCAL:100
+		ELSE
+			CALL GACHA_ONCE,0,FLAG:현재가챠토픽
+		ENDIF
+		IF RAND:100 == 0
+			CALL エクストライベントガチャ,LOCAL:100
+		ELSE
+			CALL GACHA_ONCE,0,FLAG:현재가챠토픽
+		ENDIF
+		IF RAND:100 == 0
+			CALL エクストライベントガチャ,LOCAL:100
+		ELSE
+			CALL GACHA_ONCE,0,FLAG:현재가챠토픽
+		ENDIF
+		IF RAND:100 == 0
+			CALL エクストライベントガチャ,LOCAL:100
+		ELSE
+			CALL GACHA_ONCE,0,FLAG:현재가챠토픽
+		ENDIF
+		IF RAND:100 == 0
+			CALL エクストライベントガチャ,LOCAL:100
+		ELSE
+			CALL GACHA_ONCE,0,FLAG:현재가챠토픽
+		ENDIF
+		IF RAND:100 == 0
+			CALL エクストライベントガチャ,LOCAL:100
+		ELSE
+			CALL GACHA_ONCE,0,FLAG:현재가챠토픽
+		ENDIF
+		IF RAND:100 == 0
+			CALL エクストライベントガチャ,LOCAL:100
+		ELSE
+			CALL GACHA_ONCE,2,FLAG:현재가챠토픽
+		ENDIF
+
+		PRINTFORML 
+		PRINTFORMW 가챠를 종료했습니다.
+		GOTO GACHA_LOOP_START
+
+
+	;もどる
+	CASE 100
+		RETURN
+	;１連ガチャ
+	CASE 777
+		SIF !(FLAG:DEBUG)
+			GOTO GACHA_LOOP_START
+		IF TALENT:MASTER:가챠 >= DAY
+			LOCAL = FLAG:가챠레벨설정 * 2
+			IF MONEY:1 < (LOCAL)
+				PRINTFORMW 마카가 부족합니다。
+				GOTO GACHA_LOOP_START
+			ENDIF
+		ELSE
+			TALENT:MASTER:가챠 = DAY
+		ENDIF
+		MONEY:1 -= LOCAL
+		PRINTFORML SR 확정 가챠……
+		PRINTFORMW 
+
+		CALL GACHA_ONCE,777,FLAG:현재가챠토픽
+
+		PRINTFORML 
+		PRINTFORMW 가챠를 종료했습니다.
+		GOTO GACHA_LOOP_START
+
+ENDSELECT
+
+
+
+;=================================================
+;みんな大好きガチャ処理　(ARG=1は悪魔確定でARG=2でＲ以上確定。　ARG:3=ピックアップ内容)
+;=================================================
+@GACHA_ONCE(ARG = -1, ARG:3 = -1)
+LOCAL = 0
+	IF ARG == 1
+		LOCAL = RAND:2000000
+	ELSEIF ARG == 2
+		LOCAL = RAND:3000000
+		IF LOCAL >= 1500000
+			LOCAL += 5000000
+		ELSEIF LOCAL >= 500000 && LOCAL < 1500000
+			LOCAL += 2000000
+		ENDIF
+	ELSEIF ARG == 777
+		LOCAL = RAND:100000
+	ELSE
+		LOCAL = RAND:10000000
+	ENDIF
+	;　１％　……ＳＲ……　{FLAG:가챠레벨설정+1}～{FLAG:가챠레벨설정+10}LVの「悪魔」
+	IF   LOCAL < 100000
+		IF !(LOCAL % 4)
+			CALL GACHA_SEARCH_DEVIL, FLAG:가챠레벨설정+1, FLAG:가챠레벨설정+10, ARG:3
+			IF RESULT > 0
+				CALL ADD_NEW_COMPANION ,RESULT ,0 ,0
+				IF RESULT
+					LOCAL = RESULT:1
+					SIF FLAG:DEBUG
+						PRINTFORM {LOCAL, 5}
+					TALENT:LOCAL:가챠 = 1
+					;SIF FLAG:(20000+NO:LOCAL) < 100
+					;	FLAG:(20000+NO:LOCAL) = 100
+					SETCOLOR 0x00EEEE
+					PRINTFORM [ＳＲ悪魔]
+					RESETCOLOR
+					PRINTFORML %종족명(LOCAL)% %CALLNAME:LOCAL%
+					RETURN 0
+				ENDIF
+			ENDIF
+		ENDIF
+		CALL GACHA_SEARCH_DEVIL, FLAG:가챠레벨설정+6, FLAG:가챠레벨설정+10, 0
+		IF RESULT > 0
+			CALL ADD_NEW_COMPANION ,RESULT ,0 ,0
+			IF RESULT
+				LOCAL = RESULT:1
+				SIF FLAG:DEBUG
+					PRINTFORM {LOCAL, 5}
+				TALENT:LOCAL:가챠 = 1
+				;SIF FLAG:(20000+NO:LOCAL) < 100
+				;	FLAG:(20000+NO:LOCAL) = 100
+				SETCOLOR 0x00EEEE
+				PRINTFORM [ＳＲ悪魔]
+				RESETCOLOR
+				PRINTFORML %종족명(LOCAL)% %CALLNAME:LOCAL%
+				RETURN 0
+			ENDIF
+			;失敗した場合は次に回す（仲間枠飽和とかも含む）
+		ENDIF
+	ENDIF
+
+	;　４％　……　Ｒ……　{MAX(FLAG:가챠레벨설정/2,5)}～{FLAG:가챠레벨설정+5}LV以下の「悪魔」
+	IF   LOCAL < 500000
+		IF !(LOCAL % 4)
+			CALL GACHA_SEARCH_DEVIL, MAX(FLAG:가챠레벨설정/2,5), FLAG:가챠레벨설정+5, ARG:3
+			IF RESULT > 0
+				CALL ADD_NEW_COMPANION ,RESULT ,0 ,0
+				IF RESULT
+					LOCAL = RESULT:1
+					SIF FLAG:DEBUG
+						PRINTFORM {RESULT:1, 5}
+					TALENT:LOCAL:가챠 = 1
+					;SIF FLAG:(20000+NO:LOCAL) < 100
+					;	FLAG:(20000+NO:LOCAL) = 100
+					SETCOLOR 0xEEEE00
+					PRINTFORM [　Ｒ悪魔]
+					RESETCOLOR
+					PRINTFORML %종족명(LOCAL)% %CALLNAME:LOCAL%
+					RETURN 0
+				ENDIF
+			ENDIF
+		ENDIF
+		CALL GACHA_SEARCH_DEVIL, MAX(FLAG:가챠레벨설정/2,5), FLAG:가챠레벨설정+5, 0
+		IF RESULT > 0
+			CALL ADD_NEW_COMPANION ,RESULT ,0 ,0
+			IF RESULT
+				LOCAL = RESULT:1
+				SIF FLAG:DEBUG
+					PRINTFORM {LOCAL, 5}
+				TALENT:LOCAL:가챠 = 1
+				;SIF FLAG:(20000+NO:LOCAL) < 100
+				;	FLAG:(20000+NO:LOCAL) = 100
+				SETCOLOR 0xEEEE00
+				PRINTFORM [　Ｒ悪魔]
+				RESETCOLOR
+				PRINTFORML %종족명(LOCAL)% %CALLNAME:LOCAL%
+				RETURN 0
+			ENDIF
+			;失敗した場合は次に回す（仲間枠飽和とかも含む）
+		ENDIF
+	ENDIF
+
+	;１５％　……　Ｎ……　{MAX(FLAG:가챠레벨설정/2,5)}LV以下の「悪魔」
+	IF  LOCAL < 2000000
+		IF !(LOCAL % 4)
+			CALL GACHA_SEARCH_DEVIL, 1, MAX(FLAG:가챠레벨설정/2,5), ARG:3
+			IF RESULT > 0
+				CALL ADD_NEW_COMPANION ,RESULT ,0 ,0
+				IF RESULT
+					LOCAL = RESULT:1
+					SIF FLAG:DEBUG
+						PRINTFORM {LOCAL, 5}
+					TALENT:LOCAL:가챠 = 1
+					;SIF FLAG:(20000+NO:LOCAL) < 100
+					;	FLAG:(20000+NO:LOCAL) = 100
+					PRINTFORM [　Ｎ悪魔]
+					PRINTFORML %종족명(LOCAL)% %CALLNAME:LOCAL%
+					RETURN 0
+				ENDIF
+			ENDIF
+		ENDIF
+		CALL GACHA_SEARCH_DEVIL, 1, MAX(FLAG:가챠레벨설정/2,5), 0
+		IF RESULT > 0
+			CALL ADD_NEW_COMPANION ,RESULT ,0 ,0
+			IF RESULT
+				LOCAL = RESULT:1
+		SIF FLAG:DEBUG
+			PRINTFORM {LOCAL, 5}
+				TALENT:LOCAL:가챠 = 1
+				;SIF FLAG:(20000+NO:LOCAL) < 100
+				;	FLAG:(20000+NO:LOCAL) = 100
+				PRINTFORM [　Ｎ悪魔]
+				PRINTFORML %종족명(LOCAL)% %CALLNAME:LOCAL%
+				RETURN 0
+			ENDIF
+			;失敗した場合は次に回す（仲間枠飽和とかも含む）
+		ENDIF
+	ENDIF
+
+	;　２％　……ＳＲ……　{LOCAL*10}魔貨以内で現在交換可能なアイテム
+	IF  LOCAL < 2200000
+		CALL GACHA_SEARCH_ITEM, FLAG:가챠레벨설정 * 2 *10 / 2, 1
+		IF RESULT > 0
+			LOCAL = RESULT
+			SIF FLAG:DEBUG
+				PRINTFORM {LOCAL, 5}
+			SETCOLOR 0x00EEEE
+			PRINTFORM [ＳＲ魔貨]
+			RESETCOLOR
+			PRINTFORM %ITEMNAME:LOCAL%
+			CALL CHECK_ITEMMAX, LOCAL
+			IF RESULT > 0
+				SETCOLOR 0x888888
+				PRINTFORM 　(더 이상 지닐 수 없어 파기했습니다)
+				RESETCOLOR
+			ELSE
+				CALL GET_ITEM, LOCAL, 1
+			ENDIF
+			PRINTFORML
+			RETURN 0
+		ENDIF
+		;失敗した場合は次に回す
+	ENDIF
+
+	;　８％　……　Ｒ……　{LOCAL*4}魔貨以内で現在交換可能なアイテム
+	IF  LOCAL < 3000000
+		CALL GACHA_SEARCH_ITEM, FLAG:가챠레벨설정 * 2 *4 /2, 1
+		IF RESULT > 0
+			LOCAL = RESULT
+			SIF FLAG:DEBUG
+				PRINTFORM {LOCAL, 5}
+			SETCOLOR 0xEEEE00
+			PRINTFORM [　Ｒ魔貨]
+			RESETCOLOR
+			PRINTFORM %ITEMNAME:LOCAL%
+			CALL CHECK_ITEMMAX, LOCAL
+			IF RESULT > 0
+				SETCOLOR 0x888888
+				PRINTFORM 　(더 이상 지닐 수 없어 파기했습니다)
+				RESETCOLOR
+			ELSE
+				CALL GET_ITEM, LOCAL, 1
+			ENDIF
+			PRINTFORML
+			RETURN 0
+		ENDIF
+		;失敗した場合は次に回す
+	ENDIF
+
+	;２０％　……　Ｎ……　{LOCAL} 마카以内で現在交換可能なアイテム
+	IF  LOCAL < 5000000
+		CALL GACHA_SEARCH_ITEM, FLAG:가챠레벨설정 * 2 /2, 1
+		IF RESULT > 0
+			LOCAL = RESULT
+			SIF FLAG:DEBUG
+				PRINTFORM {LOCAL, 5}
+			PRINTFORM [　Ｎ魔貨]
+			PRINTFORM %ITEMNAME:LOCAL%
+			CALL CHECK_ITEMMAX, LOCAL
+			IF RESULT > 0
+				SETCOLOR 0x888888
+				PRINTFORM 　(더 이상 지닐 수 없어 파기했습니다)
+				RESETCOLOR
+			ELSE
+				CALL GET_ITEM, LOCAL, 1
+			ENDIF
+			PRINTFORML
+			RETURN 0
+		ENDIF
+		;失敗した場合は次に回す
+	ENDIF
+
+	;　５％　……ＳＲ……　{LOCAL*500}￥以内で現在購入可能なアイテム
+	IF  LOCAL < 5500000
+		CALL GACHA_SEARCH_ITEM, FLAG:가챠레벨설정 * 2 * 500 /2, 0
+		IF RESULT > 0
+			LOCAL = RESULT
+			SIF FLAG:DEBUG
+				PRINTFORM {LOCAL, 5}
+			SETCOLOR 0x00EEEE
+			PRINTFORM [ＳＲ￥　]
+			RESETCOLOR
+			PRINTFORM %ITEMNAME:LOCAL%
+			CALL CHECK_ITEMMAX, LOCAL
+			IF RESULT > 0
+				SETCOLOR 0x888888
+				PRINTFORM 　(더 이상 지닐 수 없어 파기했습니다)
+				RESETCOLOR
+			ELSE
+				CALL GET_ITEM, LOCAL, 1
+			ENDIF
+			PRINTFORML
+			RETURN 0
+		ENDIF
+		;失敗した場合は次に回す
+	ENDIF
+
+	;１０％　……　Ｒ……　{LOCAL*200}￥以内で現在購入可能なアイテム
+	IF  LOCAL < 5500000
+		CALL GACHA_SEARCH_ITEM, FLAG:가챠레벨설정 * 2 *200 /2, 0
+		IF RESULT > 0
+			LOCAL = RESULT
+			SIF FLAG:DEBUG
+				PRINTFORM {LOCAL, 5}
+			SETCOLOR 0xEEEE00
+			PRINTFORM [　Ｒ￥　]
+			RESETCOLOR
+			PRINTFORM %ITEMNAME:LOCAL%
+			CALL CHECK_ITEMMAX, LOCAL
+			IF RESULT > 0
+				SETCOLOR 0x888888
+				PRINTFORM 　(더 이상 지닐 수 없어 파기했습니다)
+				RESETCOLOR
+			ELSE
+				CALL GET_ITEM, LOCAL, 1
+			ENDIF
+			PRINTFORML
+			RETURN 0
+		ENDIF
+		;失敗した場合は次に回す
+	ENDIF
+
+	;３５％　……　Ｎ……　{LOCAL*50}￥以内で現在購入可能なアイテム
+	CALL GACHA_SEARCH_ITEM, FLAG:가챠레벨설정 * 2 *50 /2, 0
+	IF RESULT > 0
+		LOCAL = RESULT
+			SIF FLAG:DEBUG
+				PRINTFORM {RESULT, 4}
+		PRINTFORM [　Ｎ￥　]
+		PRINTFORM %ITEMNAME:LOCAL%
+		CALL CHECK_ITEMMAX, LOCAL
+		IF RESULT > 0
+			SETCOLOR 0x888888
+			PRINTFORM 　(더 이상 지닐 수 없어 파기했습니다)
+			RESETCOLOR
+		ELSE
+			CALL GET_ITEM, LOCAL, 1
+		ENDIF
+		PRINTFORML
+		RETURN 0
+	ENDIF
+	;失敗した場合は次に回す
+
+	PRINTFORML  에러 발생
+RETURN
+
+
+;=================================================
+;対象悪魔サーチ(ARG:1=下限レベル、ARG:2=上限レベル、ARG:3=ピックアップ内容)
+;帰す値は仲魔になった悪魔の番地またはアイテムNO、失敗したら-1帰す
+;ピックアップ内容は、XYZZZZZZ　Y=1でZ番の素質、Y=5でアライメント(1:Light、2:Law、3:C、4:Dark)を見る
+;ただしXが1の時はYの条件がそれではない時を見る
+;=================================================
+@GACHA_SEARCH_DEVIL, ARG:1=1, ARG:2=5, ARG:3 = -1
+
+;LOCAL:1番が選出された悪魔のNO
+LOCAL:1 = -1
+;LOCAL:2番が候補になった悪魔の総数
+LOCAL:2 = 0
+;LOCAL:3番が候補になった悪魔のRAND抽選用
+LOCAL:3 = 0
+;LOCAL:4番はピックアップの真偽チェック
+LOCAL:4 = 0
+;LOCAL:6はFORループ用
+LOCAL:6 = 0
+
+FOR LOCAL:6, 0, 1800
+	SIF !EXISTCSV(LOCAL:6, 0)
+		CONTINUE
+	IF ARG:3 > 0
+		SIF !CSVTALENT(LOCAL:6, (ARG:3 % 1000000), 0)
+			CONTINUE
+	ENDIF
+	SIF CSVCFLAG(LOCAL:6,(GETNUM(CFLAG,"전서소환불가")),0) == 1
+		CONTINUE
+	SIF CSVCFLAG(LOCAL:6,(GETNUM(CFLAG,"합체조건있음")),0) == 1
+		CONTINUE
+	SIF CSVCFLAG(LOCAL:6,(GETNUM(CFLAG,"특수합체만")),0) == 1
+		CONTINUE
+	SIF CSVABL(LOCAL:6, GETNUM(ABL, "종족")) <= 0
+		CONTINUE
+	SIF CSVABL(LOCAL:6, GETNUM(ABL, "종족")) >= 45
+		CONTINUE
+	SIF CSVBASE(LOCAL:6,(GETNUM(BASE, "LV")),0) < ARG:1
+		CONTINUE
+	SIF CSVBASE(LOCAL:6,(GETNUM(BASE, "LV")),0) > ARG:2
+		CONTINUE
+
+	;こっからピックアップ検出
+	IF ARG:3 > 0
+		;LOCAL:4が0なら真の時、1なら偽の時スルー出来る。
+		LOCAL:4 = ARG:3 / 10000000
+		;1は素質
+		IF (ARG:3 % 10000000) / 1000000 == 1
+			SIF CSVTALENT(LOCAL:6, (ARG:3 % 1000000) , 0) && LOCAL:4 == 0
+				CONTINUE
+			SIF !CSVTALENT(LOCAL:6, (ARG:3 % 1000000) , 0) && LOCAL:4 == 1
+				CONTINUE
+
+		;5はアライメント
+		ELSEIF (ARG:3 % 10000000) / 1000000 == 5
+			;余り1はライト
+			SIF (ARG:3 % 1000000) == 1 && CSVABL(LOCAL:6, GETNUM(ABL, "속성LD")) == 1 && LOCAL:4 == 0
+				CONTINUE
+			SIF (ARG:3 % 1000000) == 1 && !(CSVABL(LOCAL:6, GETNUM(ABL, "속성LD")) == 1) && LOCAL:4 == 1
+				CONTINUE
+			;余り2はロウ
+			SIF (ARG:3 % 1000000) == 2 && CSVABL(LOCAL:6, GETNUM(ABL, "속성LC")) == 3 && LOCAL:4 == 0
+				CONTINUE
+			SIF (ARG:3 % 1000000) == 2 && !(CSVABL(LOCAL:6, GETNUM(ABL, "속성LC")) == 3) && LOCAL:4 == 1
+				CONTINUE
+			;余り3はカオス
+			SIF (ARG:3 % 1000000) == 3 && CSVABL(LOCAL:6, GETNUM(ABL, "속성LC")) == 3 && LOCAL:4 == 0
+				CONTINUE
+			SIF (ARG:3 % 1000000) == 3 && !(CSVABL(LOCAL:6, GETNUM(ABL, "속성LC")) == 3) && LOCAL:4 == 1
+				CONTINUE
+			;余り4はダーク
+			SIF (ARG:3 % 1000000) == 4 && CSVABL(LOCAL:6, GETNUM(ABL, "속성LD")) == 1 && LOCAL:4 == 0
+				CONTINUE
+			SIF (ARG:3 % 1000000) == 4 && !(CSVABL(LOCAL:6, GETNUM(ABL, "속성LD")) == 1) && LOCAL:4 == 1
+				CONTINUE
+		ENDIF
+
+	ENDIF
+
+	LOCAL:2++
+	;ここまで通ったなら抽選チャンス
+	IF LOCAL:1 < 0
+		;これが初めてならそのまま入力
+		LOCAL:1 = LOCAL:6
+	ELSE
+		LOCAL:3 = RAND:(LOCAL:2 * 100)
+		SIF LOCAL:3 >= 100
+			CONTINUE
+		LOCAL:1 = LOCAL:6
+	ENDIF
+NEXT
+
+;ガチャ失敗を返す
+SIF LOCAL:1 <= 0
+	RETURN -1
+
+;ここまで来たら成功なのでキャラ番号を返す
+RETURN LOCAL:1
+
+;=================================================
+;対象アイテムサーチ(ARG:1=金額上限、ARG:3=マニーか魔貨か)
+;帰す値はアイテムNO、失敗したら-1帰す
+;ARG:3は0で￥、1で魔貨
+;ただしXが1の時はYの条件がそれではない時を見る
+;=================================================
+@GACHA_SEARCH_ITEM, ARG:1=25, ARG:3 = 0
+
+
+;LOCAL:1番が選出されたアイテムのNO
+LOCAL:1 = -1
+;LOCAL:2番が選出された総数
+LOCAL:2 = 0
+;LOCAL:3番が候補になったアイテムのRAND抽選用
+LOCAL:3 = 0
+;LOCAL:4番は0:￥か1:魔貨か。
+LOCAL:4 = ARG:3
+;LOCAL:5番はARG:1の記録
+LOCAL:5 = ARG:1
+;SIF LOCAL:5 < 15
+;	LOCAL:5 = 15
+;SIF LOCAL:5 < 75 && LOCAL:4 == 0
+;	LOCAL:5 = 75
+;LOCAL:6はFORループ用
+LOCAL:6 = 0
+
+;３分の１で装備、３分の２で消耗品。
+LOCAL:3 = RAND:9999
+IF (LOCAL:3 % 3) == 0
+	;FOR LOCAL:6,2000,VARSIZE("ITEM") EDIT 002 MOD
+	FOR LOCAL:6, MIN_EQUIPNUM, MAX_EQUIPNUM
+		SIF ITEMPRICE:(LOCAL:6) < 10 || ITEMPRICE:(LOCAL:6) > LOCAL:5
+			CONTINUE
+		RESULT = 0
+		IF LOCAL:4 == 0
+			TRYCALLFORM 購入条件_{LOCAL:6}
+			SIF RESULT == 0
+				CONTINUE
+		ELSE
+			TRYCALLFORM EQUIP_EXCHANGE_{LOCAL:6}
+			SIF RESULT == 0
+				CONTINUE
+		ENDIF
+		RESULT = 12
+		TRYCALLFORM 装備箇所_{(LOCAL:6)}
+		SIF RESULT < 0 && RESULT > 7
+			CONTINUE
+
+		LOCAL:2++
+		;ここまで通ったなら抽選チャンス
+		IF LOCAL:1 < 0
+			;これが初めてならそのまま入力
+			LOCAL:1 = LOCAL:6
+		ELSE
+			LOCAL:3 = RAND:(LOCAL:2 * 100)
+			SIF LOCAL:3 >= 100
+				CONTINUE
+			LOCAL:1 = LOCAL:6
+		ENDIF
+	NEXT
+ELSE
+	;FOR LOCAL:6,1000,2000 EDIT 002 MOD
+	FOR LOCAL:6, MIN_USEITEMNUM, MAX_USEITEMNUM
+		SIF ITEMPRICE:(LOCAL:6) < 10 || ITEMPRICE:(LOCAL:6) > LOCAL:5
+			CONTINUE
+		RESULT = 0
+		IF LOCAL:4 == 0
+			TRYCALLFORM 道具購入条件_{LOCAL:6 +2000}
+			SIF RESULT == 0
+				CONTINUE
+		ELSE
+			TRYCALLFORM ITEM_EXCHANGE_{LOCAL:6 +2000}
+			SIF RESULT == 0	
+				CONTINUE
+		ENDIF
+
+		LOCAL:2++
+		;ここまで通ったなら抽選チャンス
+		IF LOCAL:1 < 0
+			;これが初めてならそのまま入力
+			LOCAL:1 = LOCAL:6
+		ELSE
+			LOCAL:3 = RAND:(LOCAL:2 * 100)
+			SIF LOCAL:3 >= 100
+				CONTINUE
+			LOCAL:1 = LOCAL:6
+		ENDIF
+	NEXT
+ENDIF
+
+;ガチャ失敗を返す
+SIF LOCAL:1 <= 0
+	RETURN -1
+
+;ここまで来たら成功なのでアイテム番号を返す
+RETURN LOCAL:1

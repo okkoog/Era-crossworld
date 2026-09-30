@@ -1,0 +1,100 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:アイコンセット_システム.ERB
+;	Facility	:キャラ生成時にデフォルトなどの顔グラをセットするための関数群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/07/28		Rsp暇人					新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2024/05/28		P(bazzile)				自作フォルダ以外からも画像を受け付けるために処理を拡大
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@SET_DEFAULT_FACE, L_CHARA, L_MODE = "通常形態"
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_MODE
+CALLF SET_DEFAULT_FACE_F, L_CHARA, L_MODE
+
+@SET_DEFAULT_FACE_F, L_CHARA, L_MODE = "通常形態"
+#FUNCTIONS
+#DIM DYNAMIC LCOUNT, 3
+#DIM DYNAMIC L_RESULT, 2
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_MODE
+#DIM DYNAMIC L_CSVNO, 2
+#DIMS DYNAMIC L_SPRITENAME
+#DIMS DYNAMIC L_FOLDERNAME
+#DIMS CONST SPLITE_TYPE_TABLE = "ユーザー自作", "통상"
+;CSV番号を取得
+SIF CFLAG:L_CHARA:초기링크악마 > 0
+	CALLF 顔グラ追加_F, CFLAG:L_CHARA:초기링크악마
+IF L_MODE == "通常形態"
+	L_CSVNO = GET_ICON_CSVNO(NO:L_CHARA)
+	L_RESULT = -1, -1
+	;最初にアイコンパターン持ちかどうかをチェックする
+	IF CSTR:L_CHARA:구상아이콘패턴 == ""
+		FOR LCOUNT, 0, FACE_PATTERNNUM
+			VARSET RESULTS_F, "", 0, 2
+			IF EXISTFUNCTION(@"DEFINE_FACE_PATTERN_CHARA_{NO:L_CHARA}")
+				CALLFORMF DEFINE_FACE_PATTERN_CHARA_{NO:L_CHARA}, L_CHARA, LCOUNT
+				SIF RESULTS_F == ""
+					CONTINUE
+				CSTR:L_CHARA:아이콘패턴 '= RESULTS_F
+				L_RESULT:1 = LCOUNT
+				BREAK
+			ELSE
+				CONTINUE
+			ENDIF
+		NEXT
+	ENDIF
+ELSE
+	L_CSVNO = GET_ICON_CSVNO(CFLAG:L_CHARA:초기링크악마)
+ENDIF
+CALLF 顔グラ追加_F, L_CSVNO
+
+;CSVとオトコが一致しているかどうかでTSの判断をする
+L_RESULT = -1
+FOR LCOUNT:1, 0, 2
+	FOR LCOUNT, 0, ICONNUM
+		L_SPRITENAME '= GET_識別名(L_CSVNO)
+		SELECTCASE SPLITE_TYPE_TABLE:(LCOUNT:1)
+			CASE "ユーザー自作"
+				L_SPRITENAME += "_" + "USER"
+				L_FOLDERNAME '= "00_ユーザー追加アイコン"
+			CASE "통상"
+				IF L_MODE == "悪魔変身" || TALENT:L_CHARA:남자 == CSVTALENT(L_CSVNO, GETNUM(TALENT, "남자"))
+					L_SPRITENAME += "_" + "FACE"
+				ELSE
+					L_SPRITENAME += "_" + "FACE_TS"
+				ENDIF
+		ENDSELECT
+		L_SPRITENAME += "_" + TOSTR(LCOUNT)
+		SPRITECREATED L_SPRITENAME
+		SIF !RESULT
+			CONTINUE
+		CALLF SET_ALL_FACE_NEW, L_CHARA, L_SPRITENAME, L_MODE, 0
+		L_RESULT = LCOUNT
+		BREAK
+	NEXT
+	SIF L_RESULT >= 0
+		BREAK
+NEXT
+
+@SET_ALL_FACE_NEW, ARG, ARGS, ARGS:1, IS_DISPOSE_PATTERN = 1
+#FUNCTION
+#DIM DYNAMIC IS_DISPOSE_PATTERN
+SIF IS_DISPOSE_PATTERN
+	CSTR:ARG:아이콘패턴 '= ""
+IF ARGS:1 == "変身形態"
+	CSTR:ARG:悪魔変身アイコンファイルネーム '= ARGS
+ELSEIF ARGS:1 == "通常形態"
+	CSTR:ARG:基本アイコンファイルネーム '= ARGS
+	CSTR:ARG:調教アイコンファイルネーム '= ARGS
+ELSE
+	CSTR:ARG:基本アイコンファイルネーム '= ARGS
+	CSTR:ARG:悪魔変身アイコンファイルネーム '= ARGS
+	CSTR:ARG:調教アイコンファイルネーム '= ARGS
+ENDIF

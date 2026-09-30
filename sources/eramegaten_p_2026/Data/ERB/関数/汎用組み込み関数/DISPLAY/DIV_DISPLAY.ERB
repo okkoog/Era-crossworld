@@ -1,0 +1,465 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:DIV_DISPLAY.ERB
+;	Facility	:複数の<div>ウィンドウ管理・制御用の関数群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/06/20		一ノ瀬				    新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	@SET_DISPLAY：<div>タグを利用するウィンドウを生成（または内容の変更）する。
+;	@FIND_DISPLAY_ID：指定した名称のウィンドウのIDを取得する。
+;	@ACTIVATE_DISPLAY：指定した、またはすべてのウィンドウをアクティブ状態にする。
+;	@DEACTIVATE_DISPLAY：指定した、またはすべてのウィンドウを非アクティブ状態にする。
+;	@REFRESH_DISPLAY：指定した、またはすべてのウィンドウのREFRESH関数を（あれば）呼び出す。
+;	@SHOW_DISPLAY：SETしてあるウィンドウ全てを表示する。
+;	@CLEAR_DISPLAY：指定した、またはすべてのウィンドウを削除・初期化する。
+;	@GET_DISPLAY_SIZE：渡した文字列の内、指定した<div>の属性を取得する。
+;---------------------------------------------
+;	@SET_DISPLAY
+;	<div>タグを利用するウィンドウを生成する。
+;
+;	L_NAME_DISPLAY：そのウィンドウの名前
+;	L_CONTENT：そのウィンドウの中に入れる内容。内部で<div>による表示を行っていてもよい。
+;	ARG：そのウィンドウの深度。０であれば、一番高いものに+1した値を放り込む。
+;
+;	備考：L_NAME_DISPLAYに、既に作成済みのウィンドウの名前を入れると、その内容やオプション
+;	記述例：CALL SET_DISPLAY , "名前ウィンドウ" , CALLNAME:MASTER , "<x=500><y=-200><w=800><h=500>"
+;
+;---------------------------------------------
+@SET_DISPLAY , L_X = 0 , L_Y = 0 , L_NAME_DISPLAY = "" , L_CONTENT = "" ,  L_DEPTH = 0
+#DIMS L_CONTENT
+#DIMS L_NAME_DISPLAY
+#DIM L_ID
+#DIM L_DEPTH
+#DIM L_X
+#DIM L_Y
+;まず名前に対応してるウィンドウIDがないか探索
+;同名で登録されているウィンドウがないのなら、空のウィンドウの番号の中で一番若いものを取得する。
+;同名で登録されているウィンドウがあるのなら、名前以外の要素を今回の初期設定で上書きする
+L_ID = FIND_DISPLAY_ID(L_NAME_DISPLAY,1)
+;ここでIDが-1ならエラーを投げる事
+IF L_ID == -1
+	THROW DIV_DISPLAY의 최대 윈도우 수를 초과하여 윈도우를 생성하려 하고 있습니다.
+	RETURN 0
+ENDIF
+
+;ウィンドウ新規作成時の処理
+IF NAME_DISPLAY:L_ID == ""
+	;アクティブ属性をオン
+	ACTIVE_DISPLAY:L_ID = 1
+	;深度を設定
+	;初期値としてARGに渡されてたらその値に、そうでないなら一番大きい数+1にして一番前面に出す
+	IF L_DEPTH == 0
+		DEPTH_DISPLAY:L_ID = MAXARRAY(DEPTH_DISPLAY)+1
+	ELSE
+		DEPTH_DISPLAY:L_ID = L_DEPTH
+	ENDIF
+ENDIF
+;ウィンドウの基本情報を入力して作成。
+DIV_DISPLAY:L_ID = %L_CONTENT%
+NAME_DISPLAY:L_ID = %L_NAME_DISPLAY%
+XPOS_DISPLAY:L_ID = L_X
+YPOS_DISPLAY:L_ID = L_Y
+
+RETURN 1
+
+;---------------------------------------------
+;	@FIND_DISPLAY_ID
+;指定した名称のウィンドウのIDを返す
+;ない場合、ARGが0なら-1、それ以外なら空いている中で最も若い番号を返す
+;---------------------------------------------
+@FIND_DISPLAY_ID , L_NAME_DISPLAY = "" , ARG = 0
+#FUNCTION
+#DIMS L_NAME_DISPLAY
+#DIM L_ID
+;ARGが0であれば、見つからない場合は-1を返すのでそのまま参照
+IF ARG == 0
+	LOCAL = FINDELEMENT(NAME_DISPLAY , L_NAME_DISPLAY , , , 1)
+ELSE
+	;まず名前に対応してるウィンドウIDがないか探索
+	LOCAL = FINDELEMENT(NAME_DISPLAY , L_NAME_DISPLAY , , , 1)
+	SIF LOCAL == -1
+		;見つからない場合に新IDを割り振る
+		LOCAL = FINDELEMENT(NAME_DISPLAY , "" , , , 1)
+ENDIF
+RETURNF LOCAL
+
+;---------------------------------------------
+;	@ACTIVATE_DISPLAY
+;	指定した名称のウィンドウをアクティブ状態で表示するようにする
+;	ARGが0以外であれば、ボタン機能もオンにする。
+;---------------------------------------------
+@ACTIVATE_DISPLAY , L_NAME_DISPLAY = "" , ARG = 1
+#DIMS L_NAME_DISPLAY
+#DIM L_ID
+;名称未指定であれば、全てをACTIVATE
+IF L_NAME_DISPLAY == ""
+	VARSET  ACTIVE_DISPLAY , 1
+	SIF ARG != 0
+		VARSET BUTTON_OFF_DISPLAY , 0
+	RETURN 1
+ENDIF
+
+L_ID = FIND_DISPLAY_ID(L_NAME_DISPLAY,0)
+;ここでIDが-1ならエラーを投げる事
+IF L_ID == -1
+	THROW ACTIVATE_DISPLAY에서 올바르지 않은 명칭의 윈도우가 지정되었습니다
+	RETURN 0
+ENDIF
+ACTIVE_DISPLAY:L_ID = 1
+SIF ARG != 0
+	BUTTON_OFF_DISPLAY = 0
+RETURN 1
+
+;---------------------------------------------
+;	@DEACTIVATE_DISPLAY
+;	指定した名称のウィンドウを非アクティブ状態で表示するようにする（グレーアウトして表示される）
+;---------------------------------------------
+@DEACTIVATE_DISPLAY , L_NAME_DISPLAY = ""
+#DIMS L_NAME_DISPLAY
+#DIM L_ID
+;名称未指定であれば、全てをDEACTIVATE
+IF L_NAME_DISPLAY == ""
+	VARSET  ACTIVE_DISPLAY , 0
+	VARSET BUTTON_OFF_DISPLAY , 1
+	RETURN 1
+ENDIF
+
+L_ID = FIND_DISPLAY_ID(L_NAME_DISPLAY,0)
+;ここでIDが-1ならエラーを投げる事
+IF L_ID == -1
+	THROW DEACTIVATE_DISPLAY에서 올바르지 않은 명칭의 윈도우가 지정되었습니다
+	RETURN 0
+ENDIF
+ACTIVE_DISPLAY:L_ID = 0
+BUTTON_OFF_DISPLAY:L_ID = 1
+RETURN 1
+
+;---------------------------------------------
+;	@REFRESH_DISPLAY
+;	指定した名称のウィンドウについて、@REFRESH_%ウィンドウ名%　をTRYCALLFORMする。
+;	特定のウィンドウだけその中身を更新する事が容易になる。
+;	ウィンドウ名未指定であれば、全てのウィンドウについてREFRESHを実行する。（画面の再表示はこの関数を呼び出した側のコードでやること）
+;---------------------------------------------
+@REFRESH_DISPLAY , L_NAME_DISPLAY = ""
+#DIM LCOUNT , 3
+#DIMS L_NAME_DISPLAY
+#DIM L_ID
+;REFRESHするウィンドウの範囲を指定。ウィンドウ名が指定されていなかったら全て
+IF L_NAME_DISPLAY == ""
+	LCOUNT:1 = 0 , 最大ウィンドウ数
+ELSE
+	;ウィンドウ名が指定されていたらそのウィンドウだけ。
+	;不正な名前が指定されていたら帰る
+	LCOUNT:1 = FIND_DISPLAY_ID(L_NAME_DISPLAY,0)
+	SIF LCOUNT:1 == -1
+		RETURN 0
+	LCOUNT:2 = LCOUNT:1+1
+ENDIF
+FOR LCOUNT , LCOUNT:1 , LCOUNT:2
+	;ウィンドウ内部の再生成処理呼び出し
+	TRYCCALLFORM REFRESH_%NAME_DISPLAY:LCOUNT%
+	CATCH
+	ENDCATCH
+NEXT
+RETURN 1
+
+;---------------------------------------------
+;	@CLEAR_DISPLAY , L_NAME_DISPLAY = ""
+;	ウィンドウの削除・変数の初期化を行う。
+;	
+;	L_NAME_DISPLAY：削除するウィンドウの名前。未指定ならば、全てのウィンドウを削除する。
+;---------------------------------------------
+@CLEAR_DISPLAY , L_NAME_DISPLAY = ""
+#DIMS L_NAME_DISPLAY
+#DIM L_ID
+IF L_NAME_DISPLAY == ""
+	VARSET ACTIVE_DISPLAY , 0
+	VARSET BUTTON_OFF_DISPLAY , 0
+	VARSET DEPTH_DISPLAY , 0
+	VARSET XPOS_DISPLAY , 0
+	VARSET YPOS_DISPLAY , 0
+	VARSET DIV_DISPLAY , ""
+	VARSET NAME_DISPLAY , ""
+ELSE
+	;不正な名前が指定されていたら帰る
+	L_ID = FIND_DISPLAY_ID(L_NAME_DISPLAY,0)
+	SIF L_ID == -1
+		RETURN 0
+	ACTIVE_DISPLAY:L_ID = 0
+	BUTTON_OFF_DISPLAY:L_ID = 0
+	DEPTH_DISPLAY:L_ID = 0
+	XPOS_DISPLAY:L_ID = 0
+	YPOS_DISPLAY:L_ID = 0
+	DIV_DISPLAY:L_ID '= ""
+	NAME_DISPLAY:L_ID '= ""
+ENDIF
+
+RETURN 1
+
+@SHOW_DISPLAY
+#DIM LCOUNT , 2
+#DIMS SHOW_STR
+
+SHOW_STR '= ""
+FOR LCOuNT:1 , MINARRAY(DEPTH_DISPLAY) , MAXARRAY(DEPTH_DISPLAY)+1
+	SIF !MATCH(DEPTH_DISPLAY , LCOUNT:1)
+		CONTInUE
+	FOR LCOUNT , 0 , 最大ウィンドウ数
+		SIF DIV_DISPLAY:LCOUNT == ""
+			CONTINUE
+		SIF DEPTH_DISPLAY:LCOUNT != LCOUNT:1
+			CONTINUE
+		LOCALS = %DIV_DISPLAY:LCOUNT%
+		SIF XPOS_DISPLAY:LCOUNT != 0 || YPOS_DISPLAY:LCOUNT != 0
+			LOCALS = <div xpos='{XPOS_DISPLAY:LCOUNT}' ypos='{YPOS_DISPLAY:LCOUNT}'>%LOCALS%</div>
+		IF ACTIVE_DISPLAY:LCOUNT == 0
+			;非アクティブである場合ボタンを全て殺す
+			;ひとまず今は除去用関数でツールチップ事殺す
+			;<clearbutton>タグが出来たらそちらに切り替える事。
+			LOCALS = %DEL_BUTTON_TAG(LOCALS)%
+			;変数を宣言
+			VARI G_WIDTH
+			VARI G_HEIGHT
+			VARI G_PAD
+			VARI G_BORDER
+			VARI G_X
+			VARI G_Y
+			G_WIDTH = GET_DISPLAY_SIZE(DIV_DISPLAY:LCOUNT , "width")
+			G_HEIGHT = GET_DISPLAY_SIZE(DIV_DISPLAY:LCOUNT , "height")
+			;サイズが取得できないなら、非アクティブフラグは無視
+			IF !GROUPMATCH( -1 , G_WIDTH , G_HEIGHT)
+				;サイズが取得できたのならそのサイズに合わせて暗転用フィルタをかぶせる
+				G_PAD = GET_DISPLAY_SIZE(DIV_DISPLAY:LCOUNT , "padding")
+				G_BORDER = GET_DISPLAY_SIZE(DIV_DISPLAY:LCOUNT , "border_width")
+				G_X = XPOS_DISPLAY:LCOUNT
+				G_Y = YPOS_DISPLAY:LCOUNT
+				LOCALS += @"<div xpos='{G_X}' ypos='{G_Y}' padding='{-G_BORDER}'><nonbutton>%不可フィルタ(G_WIDTH+G_BORDER*2+G_PAD+10 , G_HEIGHT+G_BORDER*2+G_PAD+10)%</nonbutton></div>"
+				;独自の非アクティブフィルタが付いていたらそれを読み込み
+				CALL GET_NONACTIVE_FILTER ,DIV_DISPLAY:LCOUNT , XPOS_DISPLAY:LCOUNT , YPOS_DISPLAY:LCOUNT
+				SIF RESULT == 1
+					LOCALS += RESULTS
+			ENDIF
+		ENDIF
+		;PRINTW heke
+		SHOW_STR += LOCALS
+	NEXT
+NEXT
+;意味のないフィルタ(ノンアクティブフィルターなど)が混ざっていたらそれを殺す
+SHOW_STR = %REPLACE(SHOW_STR, "(<nonactive_filter=)[^>]+>", "")%
+;PRINTFORMW %SHOW_STR%
+HTML_PRINT SHOW_STR
+
+
+;---------------------------------------------
+;	@GET_DISPLAY_SIZE
+;	DIVで指定した領域のサイズを取得する関数
+;---------------------------------------------
+@GET_DISPLAY_SIZE , ARGS , ARGS:1 = "width"
+#FUNCTION
+#DIM LCOUNT
+#DIM TAG_NUM
+#DIMS TAG_STR , 1000
+#DIM SPLIT_NUM
+#DIMS SPLIT_STR , 2
+
+HTML_TAGSPLIT ARGS , TAG_STR , TAG_NUM
+FOR LCOUNT , 0 , TAG_NUM
+	SIF STRCOUNT(TAG_STR:LCOUNT , "div ") == 0
+		CONTINUE
+	SIF STRCOUNT(TAG_STR:LCOUNT , " " + ARGS:1) == 0
+		CONTINUE
+	SPLIT TAG_STR:LCOUNT , " " + ARGS:1 + "='" , SPLIT_STR , SPLIT_NUM
+	;ここでSPLIT_STR:0 には目的の数字より左側の文字列　SPLIT_STR:1には　目的の数字＋目的の数字より右側の文字列となっている
+	;ので、SPLIT_STR:1を更に分解
+	SPLIT SPLIT_STR:1 , "'" , SPLIT_STR , SPLIT_NUM
+	;SPRIT_STR:0に目的の数字が収まっているので、それをTOINTしてRETURNF
+	RETURNF TOINT(SPLIT_STR)
+NEXT
+RETURNF 0
+;---------------------------------------------
+;	@GET_NONACTIVE_FILTER
+;	渡した引数の中から、存在する<nonactive_filter>を全て取得して、不可フィルタへと変換してRESULTSに代入する。
+;---------------------------------------------
+@GET_NONACTIVE_FILTER , ARGS , ARG , ARG:1
+#LOCALSSIZE 5
+#DIMS L_TEMP , 30
+#DIMS L_SIZE , 30
+#DIMS DYNAMIC L_FILTER
+SIF STRCOUNT( ARGS , "<!--nonactive_filter=") == 0
+	RETURN 0
+
+SPLIT ARGS , "<!--nonactive_filter=" , L_TEMP
+;ノンアクティブフィルター前のタグには全て用が無いのでずらす
+ARRAYSHIFT L_TEMP , -1 , ""
+LOCAL = RESULT
+VARI LCOUNT
+FOR LCOUNT , 0 , LOCAL
+	SIF L_TEMP:LCOUNT == ""
+		CONTINUE
+	SPLIT L_TEMP:LCOUNT , "-->" , L_SIZE
+	SPLIT L_SIZE , "," , L_SIZE
+	L_FILTER += @"<div xpos='{TOINT(L_SIZE:0)+ARG}' ypos='{TOINT(L_SIZE:1)+ARG:1}'><img src='%不可フィルタ()%' width='%L_SIZE:2%' height='%L_SIZE:3%'></div>"
+	;PRINTFORMW %L_FILTER%
+NEXT 
+RESULTS = %L_FILTER%
+RETURN 1
+
+
+
+
+
+
+;;---------------------------------------------
+;;	@GET_CONTENT_DISPLAY
+;;	指定した名称のウィンドウの中身に入れられている文字列を返す
+;;	IDが分かってたら普通は無用
+;;---------------------------------------------
+;@GET_CONTENT_DISPLAY , L_NAME_DISPLAY = ""
+;#FUNCTIONS
+;#DIMS L_NAME_DISPLAY
+;#DIMS L_ID
+;RETURNF 
+
+;;---------------------------------------------
+;;	@FUNC_DISPLAY
+;;	指定した名称のウィンドウをHTML記述した文字列を返す
+;;	@SHOW_DISPLAYで表示するものの本体
+;;---------------------------------------------
+;@FUNC_DISPLAY , L_NAME_DISPLAY = ""
+;#FUNCTIONS
+;#DIMS L_NAME_DISPLAY
+;#DIMS L_ID
+;RETURNF 
+
+;;---------------------------------------------
+;;	@CHANGE_DISPLAY
+;;	指定した名称のウィンドウの中身を上書きする
+;;	名称ではなく番号が指定されていた場合は、TOINTしてそのIDのウィンドウに上書きする
+;;---------------------------------------------
+;@CHANGE_DISPLAY , L_NAME_DISPLAY , L_CONTENT="" , 
+;#DIMS L_CONTENT
+;#DIMS L_NAME_DISPLAY
+;
+;;---------------------------------------------
+;;	@FADDTAG_DISPLAY
+;;	指定した名称のウィンドウに<div>用のタグを付与（又は変更）する
+;;	名称ではなく番号が指定されていた場合はTOINTしてそのIDのウィンドウに付与する
+;;	ARGS	：タグの名称(xposなど)
+;;	ARGS:1	：そのタグで指定する値
+;;---------------------------------------------
+;@ADDTAG_DISPLAY , L_NAME_DISPLAY , ARGS ="" , ARGS:1=""
+;#DIMS L_NAME_DISPLAY
+;#DIMS L_ID
+;
+;;ウィンドウ名が数字だけで渡されている場合IDと判断
+;IF ISNUMERIC(L_NAME_DISPLAY)
+;	L_ID = TOINT(L_NAME_DISPLAY)
+;ELSE
+;	;そうでなければウィンドウ名からIDを取得	
+;	L_ID = FIND_DISPLAY_ID(L_NAME_DISPLAY , 0)
+;ENDIF
+;IF L_ID == -1
+;	THROW 登録されていないウィンドウ「%L_NAME_DISPLAY%」にADDTAGしようとしました
+;	RETURN 0
+;ENDIF
+;SELECTCASE ARGS
+;	CASE "x" , "X" , "xpos" , "XPOS"
+;		XPOS_DISPLAY:L_ID = %ARGS:1%
+;		RESUTLS = "xpos_"
+;	CASE "y" , "Y" , "ypos" , "YPOS"
+;		YPOS_DISPLAY:L_ID = %ARGS:1%
+;		RESUTLS = "ypos_"
+;	CASE "w" , "W" , "width" , "WIDTH"
+;	CASE "h" , "H" , "height" , "HEIGHT"
+;	CASEELSE
+;		RETURN 0
+;ENDSELECT
+;
+;RETURN 1
+;
+
+
+;@SET_DISPLAYの没案部分
+
+;---------------------------------------------
+;	@SET_DISPLAY
+;	<div>タグを利用するウィンドウを生成する。
+;
+;	L_NAME_DISPLAY：そのウィンドウの名前
+;	L_CONTENT：そのウィンドウの中に入れる内容。内部で<div>による表示を行っていてもよい。
+;	ARGS：ウィンドウに持たせるオプション。以下のタグを並べて表記して設定できる。数字はほぼ全て現在のフォントサイズに対する％。
+;		<xpos=int>：ウィンドウの左上のX座標。画面一番左端を基準に、値が正なら右方向にずれていく。
+;					intではなくLEFT、CENTER、RIGHTも設定できるようにする？(CENTER、RIGHTを設定する際は必ずウィンドウ幅を設定させること)
+;		<ypos=int>：ウィンドウの左上のy座標。画面一番下を基準に、値が負であれば上方向にずれていく。
+;		<width=int>：ウィンドウの幅
+;		<height=int>：ウィンドウの高さ
+;		<borderwidth=int>：ウィンドウの外側に作られるボーダーラインの太さ。未記入だと1
+;		<bordercolor=str>：ウィンドウの外側に作られるボーダーラインの色。未記入だとデフォルト色
+;		<padding=int>：ウィンドウの左端・上端から内側へ向け、コンテンツに対して行うオフセット。未記入だと0。
+;		<bgcolor=str>：ウィンドウの背景色。未指定であればデフォルトの背景色を設定し、裏側にあるコンテンツを隠す。
+;		<button=str>：ウィンドウ全体に設定するボタン。コンテンツ内にボタンがあれば、そのボタンのある領域だけはそちらを優先する仕様。
+;		<buttoncolor=str>：ウィンドウ全体に設定するボタンのマウスオーバー時色。
+;		<depth=int>：ウィンドウの深度（優先表示度）。値が低い程後ろ側に表示され、高い程前側に表示。未指定だとその時点での一番前に表示。
+;
+;	備考：L_NAME_DISPLAYに、既に作成済みのウィンドウの名前を入れると、その内容やオプション
+;	記述例：CALL SET_DISPLAY , "名前ウィンドウ" , CALLNAME:MASTER , "<x=500><y=-200><w=800><h=500>"
+;
+;;ARGSから、<div>用の各種タグの為のデータを取得
+
+;@SET_DISPLAY , L_NAME_DISPLAY = "" , L_CONTENT = "" , ARG=0
+;#DIM LCOUNT , 2
+;#LOCALSSIZE 2
+;#DIMS DISPLAY_TAG , 12
+;#DIMS L_CONTENT
+;#DIMS L_NAME_DISPLAY
+;#DIM L_ID
+;#DIM L_X
+;#DIM L_Y
+;#DIM L_W
+;#DIM L_H
+;#DIMS L_TAGS
+;#DIMS 初期設定タグ , 12
+;;まず名前に対応してるウィンドウIDがないか探索
+;;同名で登録されているウィンドウがないのなら、空のウィンドウの番号の中で一番若いものを取得する。
+;;同名で登録されているウィンドウがあるのなら、名前以外の要素を今回の初期設定で上書きする
+;L_ID = FIND_DISPLAY_ID(L_NAME_DISPLAY,1)
+;;ここでIDが-1ならエラーを投げる事
+;IF L_ID == -1
+;	THROW DIV_DISPLAY의 최대 윈도우 수를 초과하여 윈도우를 생성하려 하고 있습니다.
+;	RETURN 0
+;ENDIF
+;
+;;ウィンドウの基本情報を入力して作成
+;DIV_DISPLAY:L_ID = L_CONTENT
+;NAME_DISPLAY:L_ID = L_CONTENT
+;
+;;深度を設定
+;;初期値として設定されてたらスキップ、そうでないなら一番大きい数+1にして一番前面に出す
+;
+;;アクティブはオン
+;ACTIVE_DISPLAY:L_ID = 1
+;
+;RETURN 1
+;
+;;IF ARGS == ""
+;;	VARSET 初期設定タグ , ""
+;;	HTML_TAGSPLIT ARGS , LCOUNT:1 , DISPLAY_TAG
+;;	FOR LCOUNT , 0 , LCOUNT:1
+;;		;タグから<>を消し、=で項目名と値で分割。
+;;		REPLACE DISPLAY_TAG:L_ID , "<" , ""
+;;		REPLACE DISPLAY_TAG:L_ID , ">" , ""
+;;		SPLIT DISPLAY_TAG:L_ID , "=" , LOCALS
+;;		RESULTS = ""
+;;		;タグ付け
+;;		CALL ADDTAG_DISPLAY , L_ID , LOCALS , LOCALS:1
+;;		;初期設定しているタグの場合そのフラグを記録
+;;		初期設定タグ += RESULTS
+;;	NEXT
+;;ENDIF
+;;

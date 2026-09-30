@@ -1,0 +1,165 @@
+﻿;20220204	NEO		「カブキロックス」系スキル
+;					歌唱技能に応じて、原作の炎系スキルの名称に変更
+;					歌唱技能１～５の性能上昇を高めに調整　ランクを下げて習得しやすく
+;					（序盤に入手できるようにしたので序盤向きに）（最終的にはコスパがかなり悪化するバランスはそのまま）
+;					技能と威力の関係は以下の通り。歌唱技能６あたりだとマハ～ダインよりかなり強め
+;					技能	0	1	2	3	4	5	6	7	8	9	10
+;					威力	100.145.190.235.270.315.360.370.380.390.400
+
+
+;スキル名
+@SKILL_NAME_2829,ARG
+IF ARG == -1
+	RESULTS = 『불의전차』
+;火炎系歌武器Lv1
+ELSEIF ABL:ARG:가창기능 == 0
+	RESULTS = 『좋은 불길 여행길』
+;火炎系歌武器Lv2
+ELSEIF ABL:ARG:가창기능 <= 3
+	RESULTS = 『불의전차』
+;火炎系歌武器Lv3
+ELSEIF ABL:ARG:가창기능 <= 6
+	RESULTS = 『목숨을 불태워』
+;火炎系歌武器Lv4
+;４は「爆発系」でボンバーガールがあるようだ
+;ELSEIF ABL:ARG:가창기능 <= 9
+;	RESULTS = 『불의전차』
+;火炎系歌武器Lv5
+ELSE
+	RESULTS = 『열시선』
+ENDIF
+
+
+;　명중
+@SKILL_HITRATE_2829, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2829, ARG
+SIF ARG == -1
+	RETURN 110
+
+	LOCAL = 100 + MIN((ABL:ARG:가창기능) * 45, 250)
+
+	;歌唱技能が５以上だと少しづつ上昇
+	SIF (ABL:ARG:가창기능) > 5
+		LOCAL += MIN(((ABL:ARG:가창기능)-5) * 10 , 50)
+
+	RETURN LOCAL
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2829,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2829,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2829, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2829,ARG
+SIF ARG == -1
+	RETURN 7
+IF ABL:ARG:가창기능 == 0
+	RETURN 7
+ELSEIF ABL:ARG:가창기능 == 1
+	RETURN 10
+ELSEIF ABL:ARG:가창기능 == 2
+	RETURN 13
+ELSEIF ABL:ARG:가창기능 == 3
+	RETURN 16
+ELSEIF ABL:ARG:가창기능 == 4
+	RETURN 19
+ELSEIF ABL:ARG:가창기능 == 5
+	RETURN 21
+ELSEIF ABL:ARG:가창기능 == 6
+	RETURN 25
+ELSEIF ABL:ARG:가창기능 == 7
+	RETURN 28
+ELSEIF ABL:ARG:가창기능 == 8
+	RETURN 32
+ELSEIF ABL:ARG:가창기능 == 9
+	RETURN 35
+ELSE
+	RETURN 39
+ENDIF
+RETURN 110
+
+;　相性
+@SKILL_TYPE_2829,ARG
+RETURN GET_TYPE_NUM("화염")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2829
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2829, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2829, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2829,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2829,ARG
+RETURN GET_SPHERE_NUM("일렬")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2829, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2829
+RETURN GET_SUCCESSION_NUM("화염")
+
+;속도보정
+@SKILL_SPEED_2829, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2829
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2829, ARG = -1
+RETURN 7
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2829, ARG, ARG:1, ARG:2
+CALL ATTACK_FIELD,ARG,ARG:1,2829
+
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2829, ARG
+PRINTL 적 1열에 타오르는 듯한 노래를 들려주어 데미지를 준다.
+PRINTL 사용자의 가창 기능에 따라 위력이 증가한다.
+PRINTL 아득한 연다코 행성에서 환상향으로 전해진 『노래 무기』라 불리는 이능의 힘.
+
+@継承部位_2829,ARG
+;RESULTS = 입
+;RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2829,ARG
+RETURN 1
+;とくにない
+

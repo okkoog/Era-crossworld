@@ -1,0 +1,386 @@
+﻿
+
+;====================
+;条件
+;====================
+@GET_COLOSSEUM_NAME_6
+#FUNCTIONS
+RESULTS_F '= "二人組みの女"
+RETURNF RESULTS_F
+
+@PLAYABLE_COLOSSEUM_6
+;天体博物館クリア
+IF ダンジョンフラグ:89:1 > 0 && 闘技場フラグ:6:0 == 0
+;IF FLAG:투기장랭크 == 2 && FLAG:투기장명성 >= 455
+	RESULTS = 시합 랭크Ｅ　ＶＳ 2인조여성
+	RETURN 1
+ENDIF
+RETURN 0
+
+
+;====================
+;内容
+;====================
+@COLOSSEUM_6
+#DIM CONST NEMISSA_TABLE = 0, [[キャラ:네밋사_밝음]], [[キャラ:네밋사_쿨]], [[キャラ:네밋사_섹시]]
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+CUSTOMDRAWLINE =
+PRINTW ＞어딘가 차가운 분위기의 메이드와 다른 한 명은…
+IF FINDCHARA_B([[キャラ:네밋사_밝음]]) >= 0
+	闘技場フラグ:6:1 = 1
+ELSEIF FINDCHARA_B([[キャラ:네밋사_쿨]]) >= 0
+	闘技場フラグ:6:1 = 2
+ELSEIF FINDCHARA_B([[キャラ:네밋사_섹시]]) >= 0
+	闘技場フラグ:6:1 = 3
+ELSE
+	PRINTL [1]밝아 보이는 여자다
+	PRINTL [2]쿨할 것 같은 여자다
+	PRINTL [3]섹시한 여자다
+	$INPUT_LOOP
+	INPUT
+
+	IF RESULT > 0 && RESULT < 4
+		闘技場フラグ:6:1= RESULT
+	ELSE
+		GOTO INPUT_LOOP
+	ENDIF
+ENDIF
+
+PRINT ＞그래、
+IF 闘技場フラグ:6:1 == 1
+	PRINT 밝아 보이는 
+ELSEIF 闘技場フラグ:6:1 == 2
+	PRINT 쿨할 것 같은 
+ELSEIF 闘技場フラグ:6:1 == 3
+	PRINT 섹시한 
+ENDIF
+PRINTW 여자가 있다
+PRINTW 「빅토르에게 말을 듣고 와봤는데、그가 말하던 것만큼 재미있을 것 같진 않은걸」
+PRINTW 「…옵니다」
+PRINTL
+PRINTW 메어리와 네밋사 2체가 나타났다！
+
+CUSTOMDRAWLINE =
+WAIT
+CALL SET_ENEMY,8, [[キャラ:메어리]],20,0,1
+;HP1.5倍で2人合わせてボス3人分に
+CFLAG:(CHARANUM-1):ＨＰ보정 = MAXBASE:(CHARANUM-1):ＨＰ / 2
+CFLAG:(CHARANUM-1):ＭＰ보정 += 1000
+;スキルをリセットする
+CALL CLEAR_ALL_SKILL, CHARANUM -1
+CALL SET_SKILL, CHARANUM-1, "디아라마"
+CALL SET_SKILL, CHARANUM-1, "메・디아라마"
+CALL SET_SKILL, CHARANUM-1, "타룬・다"
+CALL SET_SKILL, CHARANUM-1, "스쿤・다"
+CALL SET_SKILL, CHARANUM-1, "마카・카쟈"
+CALL SET_SKILL, CHARANUM-1, "스쿠・카쟈"
+CALL SET_SKILL, CHARANUM-1, "デクンダ"
+CALL SET_SKILL, CHARANUM-1, "마의도눔"
+CALL SET_SKILL, CHARANUM-1, "육탄"
+SELECTCASE 闘技場フラグ:6:1
+	CASE 1
+		CALL SET_SKILL, CHARANUM-1, "불의벽"
+		CALL SET_SKILL, CHARANUM-1, "번개의벽"
+	CASE 2
+		CALL SET_SKILL, CHARANUM-1, "물의벽"
+		CALL SET_SKILL, CHARANUM-1, "수정의벽"
+	CASE 3
+		CALL SET_SKILL, CHARANUM-1, "수정의벽"
+		CALL SET_SKILL, CHARANUM-1, "번개의벽"
+ENDSELECT
+BASE:(CHARANUM-1):전술 = 125
+BASE:(CHARANUM-1):타격 = 125
+CFLAG:(CHARANUM-1):행동횟수 = 2
+CSTR:(CHARANUM-1):사고패턴 = COL_6_メアリ
+CALL SYNC_STATUS, (CHARANUM-1)
+CALL HEALTH_CHARA, (CHARANUM-1)
+
+CALL SET_ENEMY, 10, NEMISSA_TABLE:(闘技場フラグ:6:1),20,0,1
+CFLAG:(CHARANUM-1):ＨＰ보정 = MAXBASE:(CHARANUM-1):ＨＰ / 2
+CFLAG:(CHARANUM-1):ＭＰ보정 += 1000
+CALL CLEAR_ALL_SKILL, CHARANUM -1
+SELECTCASE 闘技場フラグ:6:1
+	CASE 1
+		CALL SET_SKILL, CHARANUM-1, "한마"
+		CALL SET_SKILL, CHARANUM-1, "마한마"
+		CALL SET_SKILL, CHARANUM-1, "아기라오"
+		CALL SET_SKILL, CHARANUM-1, "마하・라기온"
+		CALL SET_SKILL, CHARANUM-1, "로마・카롤"
+		BASE:(CHARANUM-1):화염 = 0
+		BASE:(CHARANUM-1):빙결 = 150
+		BASE:(CHARANUM-1):수격 = 150
+	CASE 2
+		CALL SET_SKILL, CHARANUM-1, "무드온"
+		CALL SET_SKILL, CHARANUM-1, "마하무드온"
+		CALL SET_SKILL, CHARANUM-1, "부흐라"
+		CALL SET_SKILL, CHARANUM-1, "마하・부흐라"
+		CALL SET_SKILL, CHARANUM-1, "로마・그랜드"
+		BASE:(CHARANUM-1):빙결 = 0
+		BASE:(CHARANUM-1):화염 = 150
+		BASE:(CHARANUM-1):핵열 = 150
+	CASE 3
+		CALL SET_SKILL, CHARANUM-1, "마린카린"
+		CALL SET_SKILL, CHARANUM-1, "메기도"
+		CALL SET_SKILL, CHARANUM-1, "지온가"
+		CALL SET_SKILL, CHARANUM-1, "마하・지온가"
+		CALL SET_SKILL, CHARANUM-1, "로마・풀멘"
+		CALL SET_SKILL, CHARANUM-1, "메기도"
+		BASE:(CHARANUM-1):전격 = 0
+		BASE:(CHARANUM-1):수격 = 150
+		BASE:(CHARANUM-1):핵열 = 150
+ENDSELECT
+CFLAG:(CHARANUM-1):행동횟수 = 2
+CSTR:(CHARANUM-1):사고패턴 = COL_6_ネミッサ
+CFLAG:(CHARANUM-1):강제악마화 = 1
+CALL SYNC_STATUS, (CHARANUM-1)
+CALL HEALTH_CHARA, (CHARANUM-1)
+
+;IF LOCAL == 1
+;	ABL:(CHARANUM-1):스킬1 = 1301
+;	ABL:(CHARANUM-1):스킬2 = 705
+;ELSEIF LOCAL == 2
+;	ABL:(CHARANUM-1):스킬1 = 1401
+;	ABL:(CHARANUM-1):스킬2 = 805
+;ELSEIF LOCAL == 3
+;	ABL:(CHARANUM-1):스킬1 = 1211
+;	ABL:(CHARANUM-1):스킬2 = 905
+;ENDIF
+
+
+CALL BATTLE_START
+CUSTOMDRAWLINE =
+PRINTW 「빅…토……녀석…속……어……」
+PRINTW 「…」
+PRINTW 상품으로 기절한 여자들을 받고 링을 뒤로했다。
+PRINTW 메어리와 네밋사가 노예가 되었다。
+CALL ADD_NEW_COMPANION, [[キャラ:메어리]],500
+CALL ADD_NEW_COMPANION, NEMISSA_TABLE:(闘技場フラグ:6:1), 500
+
+CUSTOMDRAWLINE =
+WAIT
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+PRINTW ￥30000을 상금으로 받고、명성 125를 얻었다。
+MONEY += 30000
+FLAG:명성 += 125
+FLAG:투기장명성 += 125
+SAVESTR:랜덤대전팀 =
+CALL SELECT_COLOSSEUM_RANDOMBATTLE
+闘技場フラグ:6:0 = 1
+
+FOR LOCAL,0,CHARANUM
+	CALL HEALTH_CHARA,LOCAL
+NEXT
+
+
+;メアリの思考パターン
+;ンダの数に応じた確率でデクンダ
+;ターンの偶奇+行動の遇奇で回復+カジャンダ+壁or肉弾orドナムを行う
+@SET_ACTION_COL_6_メアリ,ARG
+#DIM LCOUNT, 2
+#DIM L_KAJA_SUM
+L_KAJA_SUM = 0
+CFLAG:ARG:타겟 = -1
+;カジャンダのマイナス補正を拾う
+FOR LCOUNT:1, 7, 17
+	SIF POS(LCOUNT:1) < 0
+		CONTINUE
+	FOR LCOUNT, 0, VARSIZE("KAJA_TABLE")
+		L_KAJA_SUM -= MIN(CFLAG:POS(LCOUNT:1):LCOUNT, 0)
+	NEXT
+NEXT
+IF RAND:100 < L_KAJA_SUM
+	CFLAG:ARG:입력행동 = SKILL_NUM_F("데・쿤다")
+ELSE
+	IF CFLAG:ARG:행동한횟수 == 0
+		IF FLAG:경과턴수 % 2 == 0
+			SELECTCASE RAND:100
+				CASE IS < 35
+					CFLAG:ARG:입력행동 = SKILL_NUM_F("디아라마")
+				CASE IS < 70
+					CFLAG:ARG:입력행동 = SKILL_NUM_F("마카・카쟈")
+				CASEELSE
+					;壁の補助はネミッサの弱点にあわせる
+					SELECTCASE 闘技場フラグ:6:1
+						CASE 1
+							IF POS(10) >= 0 && !CFLAG:POS(10):빙결무효화횟수
+								CFLAG:ARG:입력행동 = SKILL_NUM_F("불의벽")
+							ELSE
+								CFLAG:ARG:입력행동 = SKILL_NUM_F("스쿠・카쟈")
+							ENDIF
+						CASE 2
+							IF POS(10) >= 0 && !CFLAG:POS(10):화염무효화횟수
+								CFLAG:ARG:입력행동 = SKILL_NUM_F("물의벽")
+							ELSE
+								CFLAG:ARG:입력행동 = SKILL_NUM_F("스쿠・카쟈")
+							ENDIF
+						CASE 3
+							IF POS(10) >= 0 && !CFLAG:POS(10):수격무효화횟수
+								CFLAG:ARG:입력행동 = SKILL_NUM_F("번개의벽")
+							ELSE
+								CFLAG:ARG:입력행동 = SKILL_NUM_F("스쿠・카쟈")
+							ENDIF
+					ENDSELECT
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:100
+				CASE IS < 35
+					CFLAG:ARG:입력행동 = SKILL_NUM_F("메・디아라마")
+				CASE IS < 70
+					CFLAG:ARG:입력행동 = SKILL_NUM_F("스쿠・카쟈")
+				CASEELSE
+					SELECTCASE 闘技場フラグ:6:1
+						CASE 1
+							IF POS(10) >= 0 && !CFLAG:POS(10):수격무효화횟수
+								CFLAG:ARG:입력행동 = SKILL_NUM_F("번개의벽")
+							ELSE
+								CFLAG:ARG:입력행동 = SKILL_NUM_F("스쿠・카쟈")
+							ENDIF
+						CASE 2
+							IF POS(10) >= 0 && !CFLAG:POS(10):핵열무효화횟수
+								CFLAG:ARG:입력행동 = SKILL_NUM_F("수정의벽")
+							ELSE
+								CFLAG:ARG:입력행동 = SKILL_NUM_F("스쿠・카쟈")
+							ENDIF
+						CASE 3
+							IF POS(10) >= 0 && !CFLAG:POS(10):핵열무효화횟수
+								CFLAG:ARG:입력행동 = SKILL_NUM_F("수정의벽")
+							ELSE
+								CFLAG:ARG:입력행동 = SKILL_NUM_F("스쿠・카쟈")
+							ENDIF
+					ENDSELECT
+			ENDSELECT
+		ENDIF
+	ELSE
+		IF FLAG:경과턴수 % 2 == 0
+			SELECTCASE RAND:100
+				CASE IS < 35
+					CFLAG:ARG:입력행동 = SKILL_NUM_F("디아라마")
+				CASE IS < 70
+					CFLAG:ARG:입력행동 = SKILL_NUM_F("타룬・다")
+				CASEELSE
+					;攻撃枠はネミッサにドナムをかけることで実現する。
+					;ネミッサが落ちたあとは肉弾に
+					IF POS(10) >= 0
+						CFLAG:ARG:입력행동 = SKILL_NUM_F("마의도눔")
+						CFLAG:ARG:타겟 = 10
+					ELSE
+						CFLAG:ARG:입력행동 = SKILL_NUM_F("육탄")
+					ENDIF
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:100
+				CASE IS < 35
+					CFLAG:ARG:입력행동 = SKILL_NUM_F("메・디아라마")
+				CASE IS < 70
+					CFLAG:ARG:입력행동 = SKILL_NUM_F("스쿤・다")
+				CASEELSE
+					IF POS(10) >= 0
+						CFLAG:ARG:입력행동 = SKILL_NUM_F("마의도눔")
+						CFLAG:ARG:타겟 = 10
+					ELSE
+						CFLAG:ARG:입력행동 = SKILL_NUM_F("육탄")
+					ENDIF
+			ENDSELECT
+		ENDIF
+	ENDIF
+ENDIF
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT
+	RETURN 1
+CALL ランダム行動, ARG
+
+;メイン属性3種 + サブ属性2種でHPが減る毎に使うスキルが上等になっていくパターン
+;闘技場かつダメージ属性がひとつなので、スキルの水準はそれなりに高め
+@SET_ACTION_COL_6_ネミッサ,ARG
+CFLAG:ARG:타겟 = -1
+SELECTCASE 現HP割合(ARG)
+	CASE IS < 25
+		IF CFLAG:ARG:타인집중플래그
+			CFLAG:ARG:입력행동 = SKILL_NUM_F("로마・카롤")
+		ELSE
+			SELECTCASE RAND:100
+				CASE IS < 20
+					CFLAG:ARG:입력행동 = SKILL_NUM_F("아기라오")
+				;ロマが通常選択肢に入る
+				CASE IS < 40
+					IF CFLAG:ARG:행동한횟수 == 1
+						CFLAG:ARG:입력행동 = SKILL_NUM_F("로마・카롤")
+					ELSE
+						CFLAG:ARG:입력행동 = SKILL_NUM_F("아기라오")
+					ENDIF
+				CASE IS < 75
+					CFLAG:ARG:입력행동 = SKILL_NUM_F("마하・라기온")
+				CASEELSE
+					CFLAG:ARG:입력행동 = SKILL_NUM_F("마한마")
+			ENDSELECT
+		ENDIF
+	CASE IS < 50
+		IF CFLAG:ARG:타인집중플래그
+			CFLAG:ARG:입력행동 = SKILL_NUM_F("로마・카롤")
+		ELSE
+			SELECTCASE RAND:100
+				CASE IS < 50
+					CFLAG:ARG:입력행동 = SKILL_NUM_F("아기라오")
+				CASE IS < 75
+					CFLAG:ARG:입력행동 = SKILL_NUM_F("마하・라기온")
+				CASEELSE
+					IF RAND:2
+						CFLAG:ARG:입력행동 = SKILL_NUM_F("한마")
+					ELSE
+						CFLAG:ARG:입력행동 = SKILL_NUM_F("마한마")
+					ENDIF
+			ENDSELECT
+		ENDIF
+	CASEELSE
+		IF CFLAG:ARG:타인집중플래그
+			CFLAG:ARG:입력행동 = SKILL_NUM_F("마하・라기온")
+		ELSE
+			SELECTCASE RAND:100
+				CASE IS < 75
+					CFLAG:ARG:입력행동 = SKILL_NUM_F("아기라오")
+				CASEELSE
+					CFLAG:ARG:입력행동 = SKILL_NUM_F("한마")
+			ENDSELECT
+		ENDIF
+ENDSELECT
+;性格に応じて振り分ける
+IF 闘技場フラグ:6:1 == 2
+	SELECTCASE CFLAG:ARG:입력행동
+		CASE SKILL_NUM_F("아기라오")
+			CFLAG:ARG:입력행동 = SKILL_NUM_F("부흐라")
+		CASE SKILL_NUM_F("마하・라기온")
+			CFLAG:ARG:입력행동 = SKILL_NUM_F("마하・부흐라")
+		CASE SKILL_NUM_F("로마・카롤")
+			CFLAG:ARG:입력행동 = SKILL_NUM_F("로마・그랜드")
+		CASE SKILL_NUM_F("한마")
+			CFLAG:ARG:입력행동 = SKILL_NUM_F("무드")
+		CASE SKILL_NUM_F("마한마")
+			CFLAG:ARG:입력행동 = SKILL_NUM_F("마하무드")
+	ENDSELECT
+ENDIF
+IF 闘技場フラグ:6:1 == 3
+	SELECTCASE CFLAG:ARG:입력행동
+		CASE SKILL_NUM_F("아기라오")
+			CFLAG:ARG:입력행동 = SKILL_NUM_F("지온가")
+		CASE SKILL_NUM_F("마하・라기온")
+			CFLAG:ARG:입력행동 = SKILL_NUM_F("마하・지온가")
+		CASE SKILL_NUM_F("로마・카롤")
+			CFLAG:ARG:입력행동 = SKILL_NUM_F("로마・풀멘")
+		CASE SKILL_NUM_F("한마")
+			CFLAG:ARG:입력행동 = SKILL_NUM_F("마린카린")
+		CASE SKILL_NUM_F("마한마")
+			CFLAG:ARG:입력행동 = SKILL_NUM_F("메기도")
+	ENDSELECT
+ENDIF
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT
+	RETURN 1
+CALL ランダム行動, ARG

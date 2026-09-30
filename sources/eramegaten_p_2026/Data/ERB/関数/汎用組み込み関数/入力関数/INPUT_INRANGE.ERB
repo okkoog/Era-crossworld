@@ -1,0 +1,34 @@
+﻿;-------------------------------------------------
+;数値範囲型インプット関数@INPUTRANGE
+;　引数0/1：入力可能な数字範囲
+;　引数2：範囲外でも0or-1の入力を認める(1の場合0、2の場合-1が入力可)
+;INPUTINT改変
+;引数の範囲内で数値の入力待ちをします。範囲外の数字を選んだら自動的に入力待ちをし直します
+;有効な数字が入力されたらそれをRESULTへ返して戻ります
+;選択肢を汎用処理するため、ループの構文を書く必要がなくなります
+;-------------------------------------------------
+@INPUT_INRANGE(入力値:0 = 0, 入力値:1 = 1, 例外指定 = 0)
+#DIM DYNAMIC 入力値, 2
+#DIM DYNAMIC 例外指定
+#DIM DYNAMIC 最小値
+#DIM DYNAMIC 最大値
+最小値 = MIN(入力値:0, 入力値:1)
+最大値 = MAX(入力値:0, 入力値:1)
+IF 例外指定 == 2
+	INPUT
+ELSE
+	IF 最小値 >= 0 && 最大値 <= 9
+		ONEINPUT
+	ELSE
+		INPUT
+	ENDIF
+ENDIF
+IF 最小値 <= RESULT && 最大値 >= RESULT
+	RETURN RESULT
+ELSEIF (例外指定 == 1 && RESULT == 0) || (例外指定 == 2 && RESULT == -1)
+	;例外処理
+	RETURN RESULT
+ENDIF
+CLEARLINE 1
+REUSELASTLINE
+RESTART

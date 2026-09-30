@@ -1,0 +1,1113 @@
+﻿
+;=======================================================================
+;경시청
+;真Iの旧警視庁イベントを再現するべく作成
+;フラグ1～6：宝箱
+;フラグ11:ボス戦フラグ
+;フラグ12:報酬フラグ
+;フラグ13:突入フラグ
+;フラグ14:壊れた扉のメッセージを見たかどうか
+;フラグ20:ナイトテイル（ばら売り）イベント　入り口
+;フラグ21:ナイトテイル（ばら売り）イベント　宮下さんGET=1　スルー=2
+;フラグ22:ナイトテイル（ばら売り）イベント　水紀くんGET=1　グロマン=2　붕괴=3　マンイーター=4　ウェンディゴ=5　ミノタウロス=6　アリオク=7　スライム=8　宮下さんGET=100
+;2015/07/14 宮下さんの台詞追加
+;2015/07/21 再突入時に初回突入時の文章が出るミスを修正
+;2019/02/12 ナイトテイル（ばら売り）イベント追加　by(ﾟдﾟ)
+;2019/03/03 宮下さんの習得スキルをcsvに合わせ変更、アリオク様のスキルミス修正　by(ﾟдﾟ)
+;2020/06/09 オイィィィ　宮下さんがずっと戦闘参加不可能状態で加入していたのを修正　by kamedakeisuke(ﾟдﾟ)
+;2020/12/09 Ｂ１Ｆのマップ表示がおかしくなる問題を修正　by JK好き
+;2024/01/30 ５ＦのＩＤカードを…の位置でターミナル判定になる問題を修正　by JK好き
+;作者：トドもどき
+;=======================================================================
+
+
+
+
+;=======================================================================
+;攻略条件
+;=======================================================================
+@PREREQUISITE_DUNGEON_8
+SIF BASE:MASTER:LV < 30
+	RETURN 0
+RETURN 1
+
+
+;=======================================================================
+;ダンジョン名
+;=======================================================================
+@GET_DUNGEON_NAME_8
+#FUNCTIONS
+RESULTS_F = 警視庁
+
+
+;=======================================================================
+;フロア名表示
+;=======================================================================
+@FLOORNAME_8
+PRINT 경시청
+SELECTCASE FLAG:현M
+	CASE 0
+		PRINTL Ｂ１Ｆ
+	CASE 1
+		PRINTL １Ｆ
+	CASE 2
+		PRINTL ２Ｆ
+	CASE 3
+		PRINTL ３Ｆ
+	CASE 4
+		PRINTL ４Ｆ
+	CASEELSE
+		PRINTL ５Ｆ
+ENDSELECT
+
+;=======================================================================
+;ターミナルマップ
+;=======================================================================
+@TERMINAL_MAP_8, IS_START
+#DIM DYNAMIC IS_START
+RESULT:5 = 1
+RESULTS:5 '= "터미널"
+RETURN RESULT
+
+;=======================================================================
+;特殊タイル表示
+;=======================================================================
+
+@TILE_MARK_COMMON_8_9, ARG, ARG:1, ARG:2
+IF FLAG:현M < 5
+	IF GET_FLOOR_ANALYZE_T(ARG:1, ARG:2) == 2
+		RESULTS = 穴
+	ELSE
+		RESULTS = □
+	ENDIF
+ELSE
+	RESULTS = 扉
+ENDIF
+
+@TILE_MARK_8_5_8_5
+RESULTS = □
+
+@TILE_MARK_8_5_3_1
+RESULTS = Ｔ
+
+;=======================================================================
+;スタート地点入力
+;=======================================================================
+@START_DUNGEON_8,ARG
+FLAG:현M = 0
+FLAG:현X = 9
+FLAG:현Y = 15
+;CALL AUTOMAP
+
+;=======================================================================
+;スタート時イベント
+;=======================================================================
+@EVENT_DUNGEON_START_8
+IF ダンジョンフラグ:8:13 == 0
+	CALL MESSAGE_WINDOW_D, , "＞" + CALLNAME:MASTER + "는 경시청의 의뢰를 받았다/＞아무래도 경시청이 갑자기 이계화、경비 로봇도 폭주한 것 같다"
+	CALL MESSAGE_WINDOW_D, , "＞경비 로봇은 국가 기밀이기 때문에、실력자라 불리는 " + CALLNAME:MASTER + "에게 비밀리에 해결을 요청한 것 같다"
+	
+	;나이트・테일 루트를 타고 있고、미야시타 동행 시에는 텍스트가 늘어난다
+	IF FINDCHARA_B([[キャラ:쇼고]],0) == 2 && イベントフラグ:30:0 == 1
+		CALL MESSAGE_WINDOW_D, "미야시타 쇼고" , "원래대로라면 저희 0과의 담당입니다./뭐니 뭐니 해도 저희는 내부 사람이니까、/“비밀리에” 처리하기엔 안성맞춤이겠죠. 하지만……"
+		CALL MESSAGE_WINDOW_D, , "＞미야시타는 장비를 점검하면서 말을 잇는다"
+		CALL MESSAGE_WINDOW_D, "미야시타 쇼고" , "공안이 훼방을 놓아온 겁니다./SAT를 돌입시킬 테니、뻔히 청사를 빼앗긴 『오컬트 동호회』에는 맡길 수 없다면서요./네에、관료 조직의 약점이라는 놈이죠。"
+		CALL MESSAGE_WINDOW_D, , "＞거기서 이권이니 체면이니 하며 옥신각신하다가、이야기가 풀리지 않게 된 모양이다。/그래서 사태를 무겁게 본 미야시타의 아버지――부총감이다――가、/뒷줄을 써서 팬텀・소사이어티에 접근해 온 모양이다"
+		CALL MESSAGE_WINDOW_D, "미야시타 쇼고" , "네에、저희 아버지가 말씀하시길、/「수단을 가릴 틈이 있겠냐？」/라면서요"
+		CALL MESSAGE_WINDOW_D, , "＞지당한 이야기다"
+		;추가로 고토우 동행 시
+		IF FINDCHARA_B([[キャラ:고토우]],0) == 2
+			CALL MESSAGE_WINDOW_D, "고토우", "나라면、이것을 개입의 실마리로 삼겠다。군도 눈독을 들이고 있겠지"
+			CALL MESSAGE_WINDOW_D, , "＞고토우의 덧붙임에、미야시타는 크게 한숨을 쉬었다"
+		ENDIF
+		CALL MESSAGE_WINDOW_D, "미야시타 쇼고" , "더 이상의 방해가 들어오기 전에、우선은 팬텀의 용병이 돌입、/정보 수집과 이계화의 근원을 무너뜨린 뒤에、/그 다음 SAT든 기동대든 뭐든 쳐넣어서 소탕하면 된다……라는 겁니다"
+		CALL MESSAGE_WINDOW_D, , "＞" + CALLNAME:MASTER + "는 고액의 보수를 기대하면서 이계화한 경시청으로 발을 들여놓았다…"
+	ELSE
+		CALL MESSAGE_WINDOW_D, , "＞" + CALLNAME:MASTER + "는 고액의 보수를 기대하면서 이계화한 경시청으로 발을 들여놓았다…"
+	ENDIF
+	ダンジョンフラグ:8:13 = 1
+ENDIF
+;=======================================================================
+;脱出時のイベント
+;=======================================================================
+@EVENT_DUNGEON_END_8
+IF ダンジョンフラグ:8:11 && !ダンジョンフラグ:8:12
+	CALL SHOW_PICTURE, "D"
+	CALL MESSAGE_WINDOW_D, "", "＞경시청을 구한 보수로 100,000엔을 입수했다/＞또한、200의 명성을 얻었다"
+	MONEY += 100000
+	FLAG:명성 += 200
+	ダンジョンフラグ:8:12 = 1
+ENDIF
+
+;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@JUDGE_CAN_ENTER_8, L_X, L_Y, L_DIRECTION, L_ROUTENUM = -1, DUNGEON_TILE_SEARCH_TASK
+#DIM DYNAMIC L_X
+#DIM DYNAMIC L_Y
+#DIM DYNAMIC L_TILE
+#DIM DYNAMIC L_DIRECTION
+#DIM DYNAMIC L_ROUTENUM
+#DIM REF DUNGEON_TILE_SEARCH_TASK
+CALL CAN_ENTER, L_X, L_Y
+RETURN RESULT
+
+;=======================================================================
+;タイル侵入時時イベント
+;=======================================================================
+@DUNGEON_BEFORE_ENTER_EVENT_8,L_X,L_Y,L_DIRECTION
+#DIM DYNAMIC L_X
+#DIM DYNAMIC L_Y
+#DIM DYNAMIC L_TILE
+#DIM DYNAMIC L_DIRECTION
+IF DA:L_X:L_Y == 9 && FLAG:현M == 5 && !ダンジョンフラグ:8:14
+	CALL MESSAGE_WINDOW_D, , "＞ＩＤ카드를…ＩＤ카드를…/＞ＩＤ카드를…ＩＤ카드를…"
+	CALL MESSAGE_WINDOW_D, , "＞문은 망가져 있는 것 같다…"
+ENDIF
+CALL CAN_ENTER,L_X,L_Y
+RETURN RESULT
+;=======================================================================
+;フロアデータ
+;=======================================================================
+@MAKE_FLOOR_8
+SELECTCASE FLAG:현M
+	CASE 0
+		FLAG:최대X = 10
+		FLAG:최대Y = 17
+		;						 01234567890123456
+		CALL MAKE_FLOOR_LINE, 0,"          "
+		CALL MAKE_FLOOR_LINE, 1," DDDDDDDD "
+		CALL MAKE_FLOOR_LINE, 2," D      D "
+		CALL MAKE_FLOOR_LINE, 3," D 1DD  D "
+		CALL MAKE_FLOOR_LINE, 4," D   D  D "
+		CALL MAKE_FLOOR_LINE, 5," DDDDD  D "
+		CALL MAKE_FLOOR_LINE, 6," D   1  D "
+		CALL MAKE_FLOOR_LINE, 7," 1  11  D "
+		CALL MAKE_FLOOR_LINE, 8,"    1   D "
+		CALL MAKE_FLOOR_LINE, 9,"    16  D "
+		CALL MAKE_FLOOR_LINE,10," E  1   D "
+		CALL MAKE_FLOOR_LINE,11," 2  11  D "
+		CALL MAKE_FLOOR_LINE,12," 1111   D "
+		CALL MAKE_FLOOR_LINE,13,"       DD "
+		CALL MAKE_FLOOR_LINE,14,"       D  "
+		CALL MAKE_FLOOR_LINE,15," DDDDDDD28"
+		CALL MAKE_FLOOR_LINE,16,"          "
+
+		;ナイト・テイルばら売りルート　入り口
+		SIF イベントフラグ:30:0 == 3 && ダンジョンフラグ:8:20 == 0
+			CALL SET_TILE,7,15,ダンジョンフラグ:8:20,0,1004
+		;ナイト・テイルばら売りルート　宮下さん
+		SIF イベントフラグ:30:0 == 3 && ダンジョンフラグ:8:21 == 0
+			CALL SET_TILE,4,9,ダンジョンフラグ:8:21,0,1014
+
+	CASE 1
+		FLAG:최대X = 10
+		FLAG:최대Y = 17
+		;						 01234567890123456
+		CALL MAKE_FLOOR_LINE, 0,"          "
+		CALL MAKE_FLOOR_LINE, 1," DDDDDDDD "
+		CALL MAKE_FLOOR_LINE, 2," D      D "
+		CALL MAKE_FLOOR_LINE, 3," D21 111D "
+		CALL MAKE_FLOOR_LINE, 4," D   1  D "
+		CALL MAKE_FLOOR_LINE, 5," D   1  D "
+		CALL MAKE_FLOOR_LINE, 6," D   1  D "
+		CALL MAKE_FLOOR_LINE, 7," D   6  9 "
+		CALL MAKE_FLOOR_LINE, 8," DDD      "
+		CALL MAKE_FLOOR_LINE, 9,"   D 7DDD "
+		CALL MAKE_FLOOR_LINE,10," E D    D "
+		CALL MAKE_FLOOR_LINE,11," 2 D    D "
+		CALL MAKE_FLOOR_LINE,12," 1 DDDDDD "
+		CALL MAKE_FLOOR_LINE,13," 1 D 2 DD "
+		CALL MAKE_FLOOR_LINE,14," 1DD 8 DD "
+		CALL MAKE_FLOOR_LINE,15,"          "
+		CALL MAKE_FLOOR_LINE,16,"          "
+
+		;宝箱の設置
+		CALL SET_TILE,3,3,ダンジョンフラグ:8:0,0,3
+
+	CASE 2
+		FLAG:최대X = 10
+		FLAG:최대Y = 17
+		;						 01234567890123456
+		CALL MAKE_FLOOR_LINE, 0,"          "
+		CALL MAKE_FLOOR_LINE, 1," DD111111 "
+		CALL MAKE_FLOOR_LINE, 2," 9 D    1 "
+		CALL MAKE_FLOOR_LINE, 3," D D  121 "
+		CALL MAKE_FLOOR_LINE, 4," DDD    1 "
+		CALL MAKE_FLOOR_LINE, 5," 2 D    1 "
+		CALL MAKE_FLOOR_LINE, 6," 1 D    1 "
+		CALL MAKE_FLOOR_LINE, 7,"   D 7111 "
+		CALL MAKE_FLOOR_LINE, 8," DDD    1 "
+		CALL MAKE_FLOOR_LINE, 9,"   DD6  1 "
+		CALL MAKE_FLOOR_LINE,10," E D    1 "
+		CALL MAKE_FLOOR_LINE,11," 2 D    1 "
+		CALL MAKE_FLOOR_LINE,12," 1   1111 "
+		CALL MAKE_FLOOR_LINE,13," 1   1    "
+		CALL MAKE_FLOOR_LINE,14," 11111121 "
+		CALL MAKE_FLOOR_LINE,15,"          "
+		CALL MAKE_FLOOR_LINE,16,"          "
+
+		;宝箱の設置
+		CALL SET_TILE,1,6,ダンジョンフラグ:8:1,0,3
+		CALL SET_TILE,8,14,ダンジョンフラグ:8:2,0,3
+
+	CASE 3
+		FLAG:최대X = 10
+		FLAG:최대Y = 17
+		;						 01234567890123456
+		CALL MAKE_FLOOR_LINE, 0,"          "
+		CALL MAKE_FLOOR_LINE, 1," DD211111 "
+		CALL MAKE_FLOOR_LINE, 2," D    2 1 "
+		CALL MAKE_FLOOR_LINE, 3," D    1 1 "
+		CALL MAKE_FLOOR_LINE, 4," DD9    1 "
+		CALL MAKE_FLOOR_LINE, 5," D   1111 "
+		CALL MAKE_FLOOR_LINE, 6," D   2  2 "
+		CALL MAKE_FLOOR_LINE, 7," D   6  1 "
+		CALL MAKE_FLOOR_LINE, 8," DDD      "
+		CALL MAKE_FLOOR_LINE, 9,"   D 7DDD "
+		CALL MAKE_FLOOR_LINE,10," E D    D "
+		CALL MAKE_FLOOR_LINE,11," 2 DDD  D "
+		CALL MAKE_FLOOR_LINE,12," 1 2 D  D "
+		CALL MAKE_FLOOR_LINE,13," 111 D  D "
+		CALL MAKE_FLOOR_LINE,14,"   1 DDDD "
+		CALL MAKE_FLOOR_LINE,15," 121      "
+		CALL MAKE_FLOOR_LINE,16,"          "
+
+		;宝箱の設置
+		CALL SET_TILE,1,15,ダンジョンフラグ:8:3,0,3
+
+	CASE 4
+		FLAG:최대X = 10
+		FLAG:최대Y = 17
+		;						 01234567890123456
+		CALL MAKE_FLOOR_LINE, 0,"          "
+		CALL MAKE_FLOOR_LINE, 1," DDDDDDDD "
+		CALL MAKE_FLOOR_LINE, 2," D  2   D "
+		CALL MAKE_FLOOR_LINE, 3," D  1 1 D "
+		CALL MAKE_FLOOR_LINE, 4," D    2 D "
+		CALL MAKE_FLOOR_LINE, 5," D DDDDDD "
+		CALL MAKE_FLOOR_LINE, 6," 2 D    D "
+		CALL MAKE_FLOOR_LINE, 7," 1   72DD "
+		CALL MAKE_FLOOR_LINE, 8," 111    D "
+		CALL MAKE_FLOOR_LINE, 9,"   116  D "
+		CALL MAKE_FLOOR_LINE,10," E 1    D "
+		CALL MAKE_FLOOR_LINE,11," 2 11   D "
+		CALL MAKE_FLOOR_LINE,12," 1 1  12D "
+		CALL MAKE_FLOOR_LINE,13," 1 1    D "
+		CALL MAKE_FLOOR_LINE,14," 11111 9D "
+		CALL MAKE_FLOOR_LINE,15,"          "
+		CALL MAKE_FLOOR_LINE,16,"          "
+
+		;宝箱の設置
+		CALL SET_TILE,6,3,ダンジョンフラグ:8:4,0,3
+		CALL SET_TILE,6,12,ダンジョンフラグ:8:5,0,3
+
+	CASE 5
+		FLAG:최대X = 10
+		FLAG:최대Y = 17
+		;						 01234567890123456
+		CALL MAKE_FLOOR_LINE, 0,"          "
+		CALL MAKE_FLOOR_LINE, 1," 1 T 1111 "
+		CALL MAKE_FLOOR_LINE, 2," 1 2 1  1 "
+		CALL MAKE_FLOOR_LINE, 3," 11111  1 "
+		CALL MAKE_FLOOR_LINE, 4,"        9 "
+		CALL MAKE_FLOOR_LINE, 5," D2111111 "
+		CALL MAKE_FLOOR_LINE, 6," D        "
+		CALL MAKE_FLOOR_LINE, 7," D   12DD "
+		CALL MAKE_FLOOR_LINE, 8," D2D    D "
+		CALL MAKE_FLOOR_LINE, 9,"   D 7DDD "
+		CALL MAKE_FLOOR_LINE,10," E D    D "
+		CALL MAKE_FLOOR_LINE,11," 2 D 1  D "
+		CALL MAKE_FLOOR_LINE,12," 1 D 2  D "
+		CALL MAKE_FLOOR_LINE,13," 1 D DDDD "
+		CALL MAKE_FLOOR_LINE,14," 1 D    D "
+		CALL MAKE_FLOOR_LINE,15," 12DDDD2D "
+		CALL MAKE_FLOOR_LINE,16,"          "
+
+		CALL SET_TILE,5,7,ダンジョンフラグ:8:6,0,3
+		CALL SET_TILE,8,4,ダンジョンフラグ:8:14,1,2
+		;CALL SET_TILE,3,1,ダンジョンフラグ:8:11,1,9
+		CALL SET_TILE,3,1,ダンジョンフラグ:8:11,0,4
+		
+		;水紀さんフラグ
+		SIF イベントフラグ:30:0 == 3 && ダンジョンフラグ:8:22 == 0
+			CALL SET_TILE,5,11,ダンジョンフラグ:8:22,0,5004
+	CASEELSE
+ENDSELECT
+
+
+
+;=======================================================================
+;[5]調べる　実行時のイベント
+;=======================================================================
+@EVENT_CHECK_DUNGEON_8
+
+;==========
+;出口の処理
+;==========
+IF DA:(FLAG:현X):(FLAG:현Y) == 8
+	CALL DUNGEON_EXIT
+	RETURN 1
+;========
+;宝の処理
+;========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 3
+	CALL TREASURE_8
+	RETURN RESULT
+	
+;=======
+;階段
+;=======
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 6
+	CALL UPSTAIRS_8
+	RETURN RESULT
+
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 7
+	CALL DOWNSTAIRS_8
+	RETURN RESULT
+ELSE
+	CALL MESSAGE_WINDOW_D, , "＞아무것도 없는 것 같다"
+	RETURN 0
+ENDIF
+
+;=======================================================================
+;タイル進入時のイベント
+;=======================================================================
+@EVENT_ENTER_DUNGEON_8,ARG
+;ARG = 進入時の向き　0の場合ワープなど
+;==========
+;出口の処理
+;==========
+IF DA:(FLAG:현X):(FLAG:현Y) == 8
+	CALL DUNGEON_EXIT
+	RETURN 1
+;========
+;宝の処理
+;========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 3
+	CALL TREASURE_8
+	RETURN RESULT
+	
+;=======
+;階段
+;=======
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 6
+	CALL UPSTAIRS_8
+	RETURN RESULT
+
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 7
+	CALL DOWNSTAIRS_8
+	RETURN RESULT
+
+
+;==========
+;扉の処理
+;==========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 2
+	CALL DUNGEON_DOOR,ARG
+	RETURN 1
+
+
+;========================
+;이벤트
+;========================
+	
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 1004 && ダンジョンフラグ:8:20 != 1
+	;나이트・테일(단품 판매) 시、생존자의 기척을 느낀다
+	IF イベントフラグ:30:0 == 3
+		CALL MESSAGE_WINDOW_D, , "＞쾅쾅쾅……콰직……우지끈……！/＞격렬한 전투음이 어디선가 울려 퍼지고 있다"
+		CALL MESSAGE_WINDOW_D, , "＞이 이계에、아직 생존자가 있는 모양이다"
+		ダンジョンフラグ:8:20 = 1
+		DA:(FLAG:현X):(FLAG:현Y) = -1
+		RETURN 1
+	ENDIF
+	
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 1014 && ダンジョンフラグ:8:21 != 1
+	;나이트・테일(단품 판매) 시、미야시타 GET 이벤트 발생
+	IF イベントフラグ:30:0 == 3
+		CALL MESSAGE_WINDOW_D, , "＞기계 잔해 위에서 무장한 경찰관 차림의 남자가 주저앉아 있다。/＞옷이나 장비는 너덜너덜하지만、눈빛은 아직 살아있다。/＞좀비는 아닌 것 같다。"
+		CALL MESSAGE_WINDOW_D, "미야시타 쇼고" , "「당신은…… 그렇군、팬텀의 데빌서머너인가」"
+		CALL MESSAGE_WINDOW_D, "미야시타 쇼고" , "「위층에 남겨진 직원이 있어。/　동료들도 당했지。나 혼자서 어떻게든 해보려 했지만……/　한심하게도 보다시피 이 꼴이다、라는 거지」"
+		CALL MESSAGE_WINDOW_D, "미야시타 쇼고" , "「부탁하네、당신이 어떤 자들인지는 알고 있지만、/　협력해주지 않겠나？」"
+		CALL INPUT_YN_D
+			IF RESULT == 0;y
+					CALL MESSAGE_WINDOW_D, "미야시타 쇼고" ,"「고맙군。당신에게 방해는 되지 않겠네」"
+					CALL MESSAGE_WINDOW_D, , "＞미야시타 쇼고가 당신의 뒤를 따라온다……/　조금 신경 쓰이지만、저쪽은 저쪽대로 스스로 지킬 수 있는 모양이다。/　내버려 두자。"
+					ダンジョンフラグ:8:21 = 1
+					
+			ELSEIF RESULT == 1;n
+					CALL MESSAGE_WINDOW_D, "미야시타 쇼고" ,"「그런가…… 뭐、그렇겠지」"
+					CALL MESSAGE_WINDOW_D, , "＞남자는 천천히 일어서더니、아무 말도 없이 위층을 향해 걸어갔다……"
+					ダンジョンフラグ:8:21 = 2
+					
+			ENDIF
+
+		DA:(FLAG:현X):(FLAG:현Y) = 1
+		RETURN 1
+	ENDIF
+
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 5004 && ダンジョンフラグ:8:22 < 1
+	IF イベントフラグ:30:0 == 3
+		CALL MESSAGE_WINDOW_D, , "＞문을 열자、그곳은 슬라임과 마그네타이트의 바다가 되어 있었다。/　엄청난 악취와 함께、육신과 오물이 뒤섞인/　어중간한 말로들이 꿈틀거리고 있었다。"
+		
+		;미야시타를 지나쳤을 경우、마가미 미즈키를 어찌어찌할 수 있다
+		IF ダンジョンフラグ:8:21 == 2
+			CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「큭、놓으라고、놓으란 말야……읏！」"
+			CALL MESSAGE_WINDOW_D, , "＞정장 차림의 안경을 쓴 영리해 보이는 여성이 부패한 살점과 점액의 촉수에 얽혀 있다。/＞그녀의 주변에는 “이루어지지 못한” 슬라임들이 물 밖에 내던져진 물고기처럼/　퍼덕퍼덕 몸부림치고 있었다。"
+			CALL MESSAGE_WINDOW_D, , "＞저 여성、영매 체질인 것 같다。/＞이계화에 휘말린 탓에 보유하고 있던 마그네타이트가 폭주、/　주변에 악마가 “어중간하게” 실체화하고 있는 상태인가？"
+			CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「뭐야、이거、으으、구역질 나……읏！/　아앗！？ 뭐、뭘 하는 거야、그만둬、오지 마……읏！/　쿨럭、푸하앗！ 컥、콜록！」"
+			CALL MESSAGE_WINDOW_D, , "＞천장에서 떨어진 슬라임이 여성의 몸을 덮쳐 옷을 지글지글 녹여가고 있다。/　내버려 두면 재미있는 꼴을 볼 수 있을 것 같지만…… 그래、구해줄까？"
+			CALL INPUT_YN_D
+			;깨끗한 누님
+			IF RESULT == 0;y
+				CALL MESSAGE_WINDOW_D, , "＞당신은 무기를 겨누고 슬라임들에게 덤벼들었다！"
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				CALL SET_ENEMY,7,[[キャラ:슬라임]],35,0,1
+				CALL SET_ENEMY,8,[[キャラ:슬라임]],35,0,1
+				CALL SET_ENEMY,9,[[キャラ:슬라임]],35,0,1
+				CALL SET_ENEMY,10,[[キャラ:슬라임]],35,0,1
+				CALL SET_ENEMY,11,[[キャラ:슬라임]],35,0,1
+				CALL SET_ENEMY,13,[[キャラ:슬라임]],35,0,1
+				CALL SET_ENEMY,14,[[キャラ:슬라임]],35,0,1
+				CALL SET_ENEMY,15,[[キャラ:슬라임]],35,0,1
+				CALL BATTLE_START
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+				CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「콜록、콜록、감사합니다、하지만、당신은……？」"
+				CALL MESSAGE_WINDOW_D, , "＞당신은 경시청이 괴멸했다는 것、이곳이 악마와 폭주 기계의 소굴이라는 것、/　그리고 자신이 팬텀・소사이어티 소속이라는 것을 전했다。/＞여자는 그것만으로 사태를 파악한 모양인지、씁쓸한 표정으로 당신을 노려보았다。"
+				CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「……거부권은 없는 모양이군요。/　알겠습니다、저항하지 않겠습니다。당신에게 투항하죠」"
+				
+				CALL ADD_NEW_COMPANION,[[キャラ:미즈키]],0
+				
+				CALL MESSAGE_WINDOW_D, , "＞인간　마가미 미즈키가 노예가 되었다"
+				
+				ダンジョンフラグ:8:22 = 1
+				
+			;그로테스크 누님
+			ELSEIF RESULT == 1;n
+				
+				CALL MESSAGE_WINDOW_D, , "＞지켜보고 있자、갑자기 슬라임들이 맥동치더니 한 가닥 굵은 촉수로 변했다。"
+				CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「아앗、그만둬요！ 싫어……읏！」"
+				CALL MESSAGE_WINDOW_D, , "＞여자의 다리가 억지로 크게 벌려졌다。/＞잘 정돈된 음모가 슬라임의 점액에 둔탁하게 끈적이며 번들거렸다。"
+				CALL MESSAGE_WINDOW_D, , "＞여자의 비명보다 빠르게、슬라임의 촉수가 육색의 크레바스를 꿰뚫었다。"
+				CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「큭……！？」"
+				CALL MESSAGE_WINDOW_D, , "＞선혈이 튀었다。/＞처녀였을지도 모르겠지만、설령 그렇지 않았다 해도 팔보다 굵은 촉수다、/　여성기에 극심한 열상이 일어났음은 쉽게 짐작할 수 있었다。"
+				CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「크아아앗……！？ 아파、그만、그만해애애애읏！/　히익……、히익……、찢어져！ 찢어진단 말야아！/　움직이지、말아줘…… 크아아아아아！」"
+				CALL MESSAGE_WINDOW_D, , "＞뿌지직、뚝、우지끈！/＞슬라임의 점액으로 억지 추삽질을 당하며、여자의 성기는 눈 깜짝할 사이에 파괴되어 간다。/＞지금이라면 간단히 구출할 수 있을 것 같은데、도와줄까？"
+				
+				CALL INPUT_YN_D
+				IF RESULT == 0;y
+					CALL MESSAGE_WINDOW_D, , "＞다행히도、“성교”에 열중하고 있는 슬라임은 처치하기 쉽다。/＞당신은 일격으로 촉수를 베어내고 여자를 구속에서 해방시켰다。"
+					
+					CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「커헉、커헉…… 다、당신、은……」"
+					CALL MESSAGE_WINDOW_D, , "＞당신은 경시청이 괴멸했다는 것、이곳이 악마와 폭주 기계의 소굴이라는 것、/　그리고 자신이 팬텀・소사이어티 소속이라는 것을 전했다。/＞여자는 그것만으로 사태를 파악한 모양인지、고통에 눈물을 흘리며 억울한 듯 얼굴을 떨구었다。"
+					CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「……누구에게 먹히느냐가 달라질 뿐、이로군요。/알겠습니다、저항하지 않겠습니다。당신에게 투항하죠」"
+					
+					CALL ADD_NEW_COMPANION,[[キャラ:미즈키]],0,2, 0, 0, 20
+					CALL MESSAGE_WINDOW_D, , "＞인간　마가미 미즈키가 노예가 되었다"
+					ダンジョンフラグ:8:22 = 2
+						
+				;오줌싸개 누님
+				ELSEIF RESULT == 1;n
+					CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「응기이이이익！？ 드、들어와、들어온다아아아아！/　나、내 안으로오、크엑、내가 아닌、것이…… 크아아、끄에에에에에에엑！/　배가앗、배가…… 부풀어、부풀어 올라서、우웨액、컥……/　우웨에에에에에에엑！？」"
+					CALL MESSAGE_WINDOW_D, , "＞슬라임이 여성의 자궁으로 침입을 시작했다。/＞가늘었던 허리는 뚝뚝 소리를 내며 부풀어 오르고、/　총명함이 느껴지던 얼굴도 이제는 지성을 잃고 눈물과 토사물을 흩뿌리는/　구멍투성이로 변해버렸다。"
+					CALL MESSAGE_WINDOW_D, , "＞격렬한 물소리와 함께 압박당한 방광에서 기세 좋게 오줌이 뿜어져 나왔다。"
+					CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「으…… 으궤엑、구보옥……/　도와줘요、과장님…… 이대로는、나……/　우븝！？」"
+					CALL MESSAGE_WINDOW_D, , "＞슬라임의 “추가분”이 천장에서 쏟아져 내렸다。/＞그것들은 여자의 안면에 엉겨 붙어 턱을 억지로 비틀어 열고、/　늘어난 입술 속으로 밀려 들어간다。"
+					CALL MESSAGE_WINDOW_D, , "＞날씬했던 몸이 익사체처럼 부풀어 올라、/　우두둑、뚝、하고/　살과 뼈가 억지로 찢겨 나가는 소리가 겹쳤다。"
+					CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「구보복、고겍……/　푸하앗、후우……！ 싫어、이런 거、싫어어/　도와줘、도와줘、도와…… 으아」"
+					CALL MESSAGE_WINDOW_D, , "＞펑。"
+					CALL MESSAGE_WINDOW_D, , "＞여자의 몸이 팝콘처럼 부풀어 올랐다。"
+					CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「오오…… 겨보、에에……」"
+					CALL MESSAGE_WINDOW_D, , "＞완전히 늦어버렸지만、더 이상은 이쪽에도 위험이 미칠 것 같다。/　구출할까？"
+					CALL INPUT_YN_D
+					IF RESULT == 0;y
+						CALL ADD_NEW_COMPANION,[[キャラ:미즈키]], 0, 3, 0, 0 , 40
+						
+						CALL MESSAGE_WINDOW_D, , "＞이 상태의 슬라임은 무방비하다。/＞당신은 간단한 술법으로 슬라임을 그저 마그네타이트로 변환시켜、/　여성을 구속에서 해방시켰다。"
+						CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「게보옥……」"
+						CALL MESSAGE_WINDOW_D, , "＞하지만 예상대로 너무 늦은 모양이었다。/＞여성은 마음뿐만 아니라 육체조차도 망가져 있었다。/＞온갖 구멍이란 구멍에서 피와 오물을 흘리며 늘어날 대로 늘어난 전신의 가죽을 철썩거리며 두세 걸음 걷더니……"
+						CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「게픽」"
+						CALL MESSAGE_WINDOW_D, , "＞짓눌린 개구리처럼 스스로 흩뿌린 분뇨 위로 무너져 내렸다。"
+						CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「히기기…… 나、나아、이런……」"
+					
+						CALL MESSAGE_WINDOW_D, , "＞이 짧은 시간에 완전히 흉측하게 붕괴한 그녀지만、/　썩어도 영매 체질이다、쓸모는 있을 것이다。전리품으로 삼는다。/＞처분이야 언제든 할 수 있으니까。"
+						CALL MESSAGE_WINDOW_D, , "＞인간　축 늘어진 여자를 주웠다"
+						
+						ダンジョンフラグ:8:22 = 3
+						
+					;누님의 몸에서 무언가가 폭탄 탄생!
+					ELSEIF RESULT == 1;n
+						CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「아아아……/　후슈、후슈욱、구보보보복……」"
+						CALL MESSAGE_WINDOW_D, , "＞비대해진 안면에 밀려 여자의 안경이 철퍽거리며 오물 위로 떨어졌다。"
+						CALL MESSAGE_WINDOW_D, , "＞그녀의 몸은 원래의 3배 정도로 부풀어 올라 있었다。/＞완전히 탈구되어 벌어진 채가 된 턱 안에서 살색 슬라임 물방울이/　끓는 물처럼 어지럽게 튀어 오르고 있었다。"
+						CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「구보복」"
+						CALL MESSAGE_WINDOW_D, , "＞지금의 그녀는 막대한 에너지를 내포한 마그네타이트의 알이다。/　저것을 매개로 악마를 소환한다면 평소보다 강력한 개체가 동료마가 되어줄 것이다。/　……당신이 조복할 수 있다면、말이지만。"
+						CALL MESSAGE_WINDOW_D, , "＞자、선택지는 여러 개 있다。어떻게 해야 할까。"
+						
+						$HAPPY_BIRTHDAY_LOOP
+						PRINTFORML 
+						PRINTFORML [100]　유귀　맨이터의 매개체로 삼는다 (보통)
+						PRINTFORML [200]　사귀　웬디고의 매개체로 삼는다 (강함)
+						PRINTFORML [300]　마수　미노타우로스의 매개체로 삼는다 (위험)
+						PRINTFORML [400]　마왕　아리오크의 매개체로 삼는다 (초위험！)
+						PRINTFORML [500]　내버려 둔다
+						
+						INPUT
+						
+						IF RESULT == 100
+							;유귀　맨이터
+							CALL MESSAGE_WINDOW_D, , "＞지성파 미녀의 말로로부터 남자에 미친 난잡한 여자를 소환하는 것도 나쁘지 않다。/　가학적인 착상을 실행에 옮기고자、당신은 소환 커맨드를 입력했다。"
+							CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「구보、구보보보보복！」"
+							CALL MESSAGE_WINDOW_D, , "＞여자의 배가 한층 더 부풀어 오른다。/＞퍽！/＞압력을 견디지 못하고 하얀 눈알이 천장을 향해 튀어나왔다。"
+							CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「구엑」"
+							CALL MESSAGE_WINDOW_D, , "＞배꼽에서 점액투성이 팔이 튀어나왔다。/＞틈새에서 장이 뱀 폭죽 같은 움직임으로 쏟아져 나왔다。"
+							CALL MESSAGE_WINDOW_D, , "＞여자의 배를 찢어발기며 한 마리의 악마가 태어났다！"
+								
+							FLAG:도주불가플래그 = 1
+							FLAG:회화불능플래그 = 1
+							FLAG:선제기습취소 = 1
+							CALL SET_ENEMY,7,[[キャラ:슬라임]],35,1
+							CALL SET_ENEMY,8,[[キャラ:슬라임]],35,1
+							CALL SET_ENEMY,9,[[キャラ:슬라임]],35,1
+							CALL SET_ENEMY,10,[[キャラ:슬라임]],35,1
+							CALL SET_ENEMY,11,[[キャラ:슬라임]],35,1
+							CALL SET_ENEMY,13,[[キャラ:슬라임]],35,1
+							CALL SET_ENEMY,14,[[キャラ:맨이터]],40,2
+							;특별 맨이터
+							MAXBASE:(CHARANUM-1):검격 = 100
+							BASE:(CHARANUM-1):검격 = 100
+							MAXBASE:(CHARANUM-1):전격 = 100
+							BASE:(CHARANUM-1):전격 = 100
+							CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+							CFLAG:(CHARANUM-1):ＭＰ보정 += 500
+							CFLAG:(CHARANUM-1):속도보정 = 5
+							CFLAG:(CHARANUM-1):행동횟수 = 2
+							CALL SET_ENEMY,15,[[キャラ:슬라임]],35,1
+							CUSTOMDRAWLINE =
+							
+							PRINTFORML 
+							PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+							PRINTFORML ┃아ー、맛있었어♪ 뭐야 이 인텔리 여자　　　　┃
+							PRINTFORML ┃이 나이까지 처녀에… 동경하는 상사를 짝사랑…┃
+							PRINTFORML ┃아하、흉측한 꼴！ 낳아줘서 고・마・워♪　　 ┃
+							PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+							PRINTFORMW ＞유귀　맨이터가 나타났다！
+							CALL BATTLE_START
+							FLAG:도주불가플래그 = 0
+							FLAG:회화불능플래그 = 0
+							FLAG:선제기습취소 = 0
+								
+							CALL MESSAGE_WINDOW_D, "맨이터" , "「너、제법 강하네。너라면 따라줘도 괜찮겠어/　하지만 그 전에……」"
+							CALL MESSAGE_WINDOW_D, ,"＞맨이터는 탈피되어 허물처럼 변한 여자의 머리를 집어 올렸다。/＞마그네타이트의 영향인지 아직 숨이 붙어 있는 모양이다。/　뭉개진 성대로 쉼 없이 누군가의 이름을 부르고 있다。"
+							CALL MESSAGE_WINDOW_D, "맨이터" , "「안심해、혼기 놓친 인텔리 안경 씨。/　네 기억은 전부 내가 먹어치웠으니까。/　네 지위도、가족도、마음에 둔 사람도。전부 내가 먹어치워 줄게……♪」"
+							CALL MESSAGE_WINDOW_D, , "＞여자는 안구를 잃고 퀭해진 눈두덩을 맨이터 쪽으로 향했다。"
+							CALL MESSAGE_WINDOW_D, , "＞맨이터는 가학적인 미소를 짓더니/　철퍽！ 하고 여자의 몸뚱이를 벽으로 내던졌다。"
+							CALL MESSAGE_WINDOW_D, "유귀 미즈키" , "「자、가자、서머너 씨。아직 할 일이 남았잖아？」"
+							CALL MESSAGE_WINDOW_D, , "＞벽에 부딪혀 토마토처럼 으스러진 여자의 시신을 흘낏 쳐다보고/　맨이터는 바닥에 떨어진 안경을 집어 들더니……"
+							CALL MESSAGE_WINDOW_D, , "＞마찬가지로 던져버렸다。"
+							CALL MESSAGE_WINDOW_D, "유귀 미즈키" , "「역시 새 걸로 사야겠어」"
+							CALL MESSAGE_WINDOW_D, , "＞유귀　미즈키를 동료마로 삼았다。/＞미즈키는 거처의 서버로 제멋대로 돌아갔다……"
+							
+							CALL ADD_NEW_COMPANION,[[キャラ:미즈키]], 0, 1, 0, 0, 40
+							ダンジョンフラグ:8:22 = 4
+						ELSEIF RESULT == 200
+							;사귀　웬디고
+							CALL MESSAGE_WINDOW_D, , "＞흠、아무래도 웬디고와 상성이 좋은 육체인 것 같다。/　당신은 COMP의 커맨드를 두드려 사귀 소환을 실행했다。"
+							CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「구보、구보보보보복！」"
+							CALL MESSAGE_WINDOW_D, , "＞여자의 배가 한층 더 부풀어 오른다。/＞퍽！/＞압력을 견디지 못하고 하얀 눈알이 천장을 향해 튀어나왔다。"
+							CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「구엑」"
+							CALL MESSAGE_WINDOW_D, , "＞배꼽에서 점액투성이의 털북숭이 팔이 튀어나왔다。/　그리고 틈새에서 장이 뱀 폭죽 같은 움직임으로 쏟아져 나왔다。"
+							CALL MESSAGE_WINDOW_D, , "＞여자의 배를 찢어발기며 한 마리의 악마가 태어났다！"
+							
+							FLAG:도주불가플래그 = 1
+							FLAG:회화불능플래그 = 1
+							FLAG:선제기습취소 = 1
+							CALL SET_ENEMY,7,[[キャラ:슬라임]],35,2
+							CALL SET_ENEMY,8,[[キャラ:슬라임]],35,2
+							CALL SET_ENEMY,9,[[キャラ:슬라임]],35,2
+							CALL SET_ENEMY,10,[[キャラ:슬라임]],35,2
+							CALL SET_ENEMY,11,[[キャラ:슬라임]],35,2
+							CALL SET_ENEMY,13,[[キャラ:슬라임]],35,2
+							CALL SET_ENEMY,14,[[キャラ:웬디고]],45,3
+							;특별 웬디고
+							MAXBASE:(CHARANUM-1):만능 = 100
+							BASE:(CHARANUM-1):만능 = 100
+							CFLAG:(CHARANUM-1):ＨＰ보정 = 500
+							CFLAG:(CHARANUM-1):ＭＰ보정 = 9999
+							CFLAG:(CHARANUM-1):속도보정 = 5
+							CFLAG:(CHARANUM-1):행동횟수 = 3
+							
+							;펜파트라를 침체된 공기로
+							ABL:(CHARANUM-1):스킬6 = 519
+							
+							TALENT:(CHARANUM-1):남자 = 0
+							TALENT:(CHARANUM-1):절벽 = 0
+							TALENT:(CHARANUM-1):우둔 = 0
+							;무인
+							ABL:(CHARANUM-1):회화타입 = 311
+							
+							CALL SET_ENEMY,15,[[キャラ:슬라임]],35,1
+							CUSTOMDRAWLINE =
+							
+							PRINTFORML 
+							PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+							PRINTFORML ┃악취미인 소환이다、하지만 그렇기에 내가 불렸지┃
+							PRINTFORML ┃인간이여、힘을 보여라　　　　　　　　　　　　┃
+							PRINTFORML ┃나를 쓰러뜨릴 수 있다면 너를 따르겠다　　　┃
+							PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+							PRINTFORMW ＞요귀　웬디고가 나타났다！
+							CALL BATTLE_START
+							FLAG:도주불가플래그 = 0
+							FLAG:회화불능플래그 = 0
+							FLAG:선제기습취소 = 0
+							
+							CALL ADD_NEW_COMPANION,[[キャラ:웬디고]],200,1,0,0,45
+							
+							CALL MESSAGE_WINDOW_D, "웬디고" , "「과연、나는 다른 “나”들보다 조금은 영리한 모양이군。/　내 입으로 말하긴 뭐하지만 유창하게 말을 할 수가 있다。/　이 여자의 기억을 먹어치운 덕분이겠지」"
+							CALL MESSAGE_WINDOW_D, , "＞웬디고는 탈피되어 허물처럼 변한 여자의 머리를 집어 올렸다。/＞마그네타이트의 영향인지 아직 숨이 붙어 있는 모양이다。/　뭉개진 성대로 쉼 없이 누군가의 이름을 부르고 있다。"
+							CALL MESSAGE_WINDOW_D, "웬디고" , "「가련한 녀석이군」"
+							CALL MESSAGE_WINDOW_D, , "＞여자는 안구를 잃고 퀭해진 눈두덩을 웬디고 쪽으로 향했다。/＞웬디고는 야채 스틱이라도 갉아 먹는 듯한 가벼운 태도로/　여자의 머리를 물어뜯었다。"
+							CALL MESSAGE_WINDOW_D, "웬디고" , "「음、좋은 맛이다。/　자、이걸로 마가미 미즈키의 기억을 가진 자는/　나 혼자가 된 셈이군」"
+							CALL MESSAGE_WINDOW_D, , "＞웬디고…… 아니、“미즈키”는/　남은 여자의 육체를 부지런히 입안에 쑤셔 넣고는 만족스럽게 입가를 훔쳤다。"
+							CALL MESSAGE_WINDOW_D, "미즈키" , "「가자 마스터、이제 이곳에 볼일은 없겠지？」"
+							CALL MESSAGE_WINDOW_D, , "＞사귀　미즈키를 동료마로 삼았다。"
+							
+							
+							ダンジョンフラグ:8:22 = 5
+							
+						ELSEIF RESULT == 300
+							;미노
+							CALL MESSAGE_WINDOW_D, , "＞이 정도의 마그네타이트가 있다면 거물을 불러낼 수 있을 것이다。/당신은 COMP의 콘솔을 두드려 마수 소환 커맨드를 입력했다。"
+							CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「구보、구보보보보복！」"
+							CALL MESSAGE_WINDOW_D, , "＞여자의 배가 한층 더 부풀어 오른다。/＞퍽！/＞압력을 견디지 못하고 하얀 눈알이 천장을 향해 튀어나왔다。"
+							CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「오고고고…… 고겍…… 고게겍……/　……게벡」"
+							CALL MESSAGE_WINDOW_D, , "＞그것이 재녀의 단말마가 되었다。"
+							CALL MESSAGE_WINDOW_D, , "＞한계까지 부풀어 오른 몸이 물풍선처럼 파열했다。"
+							FLAG:도주불가플래그 = 1
+							FLAG:회화불능플래그 = 1
+							FLAG:선제기습취소 = 1
+							CALL SET_ENEMY,9,[[キャラ:미노타우로스]],55,3
+							;특별 미노타우로스
+							CFLAG:(CHARANUM-1):ＨＰ보정 = 1000
+							CFLAG:(CHARANUM-1):ＭＰ보정 = 5000
+							CFLAG:(CHARANUM-1):속도보정 = 5
+							CFLAG:(CHARANUM-1):행동횟수 = 4
+							CSTR:(CHARANUM-1):종족명 = 마수
+							;짐승
+							ABL:(CHARANUM-1):회화타입 = 329
+							
+							CUSTOMDRAWLINE =
+							
+							PRINTFORML 
+							PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+							PRINTFORML ┃크아앗！ 나 태어났다！ 축하해라！　　　　┃
+							PRINTFORML ┃나 날뛸 거다！ 방해하지 마라！ 아아　　 ┃
+							PRINTFORML ┃뭐야 이 몸 이런 거 내가……　　　　　　┃
+							PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+							PRINTFORMW ＞마수　미노타우로스가 나타났다！
+							CALL BATTLE_START
+							FLAG:도주불가플래그 = 0
+							FLAG:회화불능플래그 = 0
+							FLAG:선제기습취소 = 0
+							
+							CALL ADD_NEW_COMPANION, [[キャラ:미노타우로스]],200,1, , , 55
+							CALL MESSAGE_WINDOW_D, "미노타우로스" , "「나　나는 악마가 아니야……/　어 어째서 이런 아아！」"
+							CALL MESSAGE_WINDOW_D, , "＞아무래도 비정상적인 소환이었던 탓에/　미노타우로스의 정체성이 혼란에 빠진 모양이다。"
+							CALL MESSAGE_WINDOW_D, "미노타우로스" , "「거 거짓말이야 이런 건 말도 안 돼……/　도와줘 도와줘 쇼고 씨/　이런 털북숭이 몸 싫어어…… 부모오오오옹！」"
+							CALL MESSAGE_WINDOW_D, , "＞거대한 소 귀신은 겉모습에 어울리지 않는 나약한 비명을 지르며 머리를 감싸 쥐고 뒹굴고 있다。/　가랑이 사이에서는 곤봉 같은 남성기가 불끈불끈 솟아올라 있었다。/＞몸도 마음도 이상해진 모양이다。적어도 정신을 안정시키지 않으면 써먹을 수 없겠는데……。"
+							CALL MESSAGE_WINDOW_D, , "＞문득 미노타우로스의 움직임이 멈추었다。/　악마는 발치에 떨어져 있던 걸레 조각 같은 것을 집어 들더니 의아한 듯 고개를 갸웃거렸다。"
+							CALL MESSAGE_WINDOW_D, "미노타우로스" ,"「인간의 머리다」"
+							CALL MESSAGE_WINDOW_D, , "＞터져 날아간 여자의 잔해일 것이다。/　미노타우로스는 주저 없이 덥석 입에 털어 넣더니 한동안 우적우적 씹었다。"
+							CALL MESSAGE_WINDOW_D, "미노타우로스" , "「음음 인간 여자로군。/　이왕이면 살아있는 여자를 자지로 꿰뚫고 싶었는데 말이지。/　……왜 그러지、인간。나를 부릴 셈이 아닌가？」"
+							CALL MESSAGE_WINDOW_D, , "그렇게 말하며 소 귀신은 웃었다。"
+							CALL MESSAGE_WINDOW_D, "미노타우로스" , "「너는 강하다、강한 녀석은 훌륭하지。그렇지 않나？」"
+							CALL MESSAGE_WINDOW_D, , "＞모체의 잔해와 함께 영혼까지 먹어치운 것인가？/＞갑자기 이성을 보이기 시작한 미노타우로스였지만、써먹을 수 있다면 땡잡은 셈이다。"
+							CALL MESSAGE_WINDOW_D, "미노타우로스" , "「날 미즈키라고 불러라。/　그 이름으로 불리면 신기하게도 자지가 발기하거든/　흥분된단 말이지」"
+							CALL MESSAGE_WINDOW_D, , "＞마수　미즈키를 동료마로 삼았다。"
+							
+							ダンジョンフラグ:8:22 = 6
+							
+						ELSEIF RESULT == 400
+						
+							;아리오크　파고들기 요소다
+							CALL MESSAGE_WINDOW_D, , "＞이 정도의 마그네타이트가 있다면 거물을 불러낼 수 있을 것이다。/　게다가 이곳은 이계다。평소라면 있을 수 없는 존재라도 불러낼 수 있다。/　당신은 기대감에 가슴을 부풀리며 『마왕 소환』 커맨드를 입력했다。"
+							CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「구보、구보보보보복！」"
+							CALL MESSAGE_WINDOW_D, , "＞여자의 배가 한층 더 부풀어 오른다。/　퍽！/　압력을 견디지 못하고 하얀 눈알이 천장을 향해 튀어나왔다。"
+							CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「오고고고…… 고겍…… 고게겍……/　……게베」"
+							CALL MESSAGE_WINDOW_D, , "＞그것이 그녀의 인간으로서의 마지막 말이 되었다。"
+							CALL MESSAGE_WINDOW_D, , "＞팽창이 멈추었다。불길한 장기로 경치가 일그러져 간다。/＞누군가의 웃음소리가 들린다。/＞한계까지 부풀어 오른 여자의 몸이 보라색으로 변색된다！"
+							FLAG:도주불가플래그 = 1
+							FLAG:회화불능플래그 = 1
+							FLAG:선제기습취소 = 1
+							CALL SET_ENEMY,9,[[キャラ:아리오크]],72,3
+							;특별 아리오크
+							CFLAG:(CHARANUM-1):ＨＰ보정 = 2500
+							CFLAG:(CHARANUM-1):ＭＰ보정 = 5000
+							CFLAG:(CHARANUM-1):속도보정 = 5
+							CFLAG:(CHARANUM-1):행동횟수 = 5
+							
+							;마하・부프다인 추가
+							ABL:(CHARANUM-1):스킬7 = 806
+							;마하・무드온 추가
+							ABL:(CHARANUM-1):스킬8 = 1413
+							
+							CUSTOMDRAWLINE =
+							
+							PRINTFORML 
+							SETCOLOR 0xff0033
+							PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+							PRINTFORML ┃욕망에 눈이 멀었구나、왜소한 자여……。　　 ┃
+							PRINTFORML ┃내 몸은 복수。내 이름은 마왕 아리오크。　 ┃
+							PRINTFORML ┃여자의 원한으로 벼려낸 내 어금니의 날카로움┃
+							PRINTFORML ┃똑똑히 맛보아라　　　　　　　　　　　　　　┃
+							PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+							RESETCOLOR
+							PRINTFORMW ＞마왕　아리오크가 나타났다！
+							CALL BATTLE_START
+							FLAG:도주불가플래그 = 0
+							FLAG:회화불능플래그 = 0
+							FLAG:선제기습취소 = 0
+							
+							CALL ADD_NEW_COMPANION, [[キャラ:아리오크]],200,1
+							
+							CALL MESSAGE_WINDOW_D, "아리오크" , "「고작 인간 따위라 얕보았구나。/　자、숨통을 끊어라、검은 꺾이고 내 관 또한 부서졌다」"
+							CALL MESSAGE_WINDOW_D, , "＞만신창이가 된 마왕은 결연히 그 자리에 주저앉았다。/＞죽여버려서는 의미가 없다。/＞당신은 강한 동료마를 찾고 있다는 것、자신의 군문으로 들어왔으면 한다는 것을 전했다。"
+							CALL MESSAGE_WINDOW_D, "아리오크" , "「뭐라、내 힘을 원하는가！/　인간이여、제법 보는 눈이 있구나。/　게다가 자세히 보니、과연、좋은 낯짝을 하고 있군……。」"
+							CALL MESSAGE_WINDOW_D, , "＞아리오크는 당신을 품평하듯 바라보더니 대담한 미소를 지었다。"
+							CALL MESSAGE_WINDOW_D, "아리오크" , "「이놈、가소로운 인간 녀석。/　내 복수의 어금니를 꺾은 것으로도 모자라、내 마음까지 사로잡으려 들다니。/　……좋다」"
+							CALL MESSAGE_WINDOW_D, , "＞마왕은 동의하고 당신과 계약을 맺었다。"
+							CALL MESSAGE_WINDOW_D, "아리오크" , "「허나、결코 잊지 마라、내 어금니의 날카로움을 말이다」"
+							CALL MESSAGE_WINDOW_D, , "＞마왕　미즈키・아리오크를 동료마로 삼았다。"
+							
+							ダンジョンフラグ:8:22 = 7
+							
+						ELSEIF RESULT == 500
+							;방치 플레이
+							CALL MESSAGE_WINDOW_D, , "＞이대로 내버려 두면 어떻게 될까？/　당신은 호기심이 이끄는 대로 상황을 지켜보기로 했다。"
+							CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「구보、구보보보보복！」"
+							CALL MESSAGE_WINDOW_D, , "＞여자의 배가 한층 더 부풀어 오른다。/＞퍽！/＞압력을 견디지 못하고 하얀 눈알이 천장을 향해 튀어나왔다。"
+							CALL MESSAGE_WINDOW_D, , "＞장은 탈항되고 배꼽이 불끈 소리를 내며 뒤집혔다。"
+							CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「구보복、보보」"
+							CALL MESSAGE_WINDOW_D, , "＞피부가 투명해져 간다……/　육체의 분자 결합이 고압의 마그네타이트를 이기지 못하고 용해되어 가는 모양이다。/＞신경 또한 오작동을 시작한 모양인지/　흐물흐물하게 부풀어 오른 손발이 전기가 통한 것처럼 경련하고 있다。"
+							CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「고폑」"
+							CALL MESSAGE_WINDOW_D, , "＞그것이 아름답던 재녀의 마지막 말이 되었다。/＞걸쭉하게 실을 늘어뜨리며 목구멍이 갈라지고、/　목이、입꼬리가 미치미치 소리를 내며 찢겨져 실을 끈 채 바닥으로 떨어졌다。"
+							CALL MESSAGE_WINDOW_D, , "＞툭、투둑。"
+							CALL MESSAGE_WINDOW_D, , "＞피부가 터진다。/　녹색 점액이 살의 틈새에서 튀어나온다。/＞순식간에 몸이 무너져 내리고 거대한 슬라임이 바닥 위로 쏟아져 내렸다……。"
+							
+							FLAG:도주불가플래그 = 1
+							FLAG:회화불능플래그 = 1
+							FLAG:선제기습취소 = 1
+							CALL SET_ENEMY,9,[[キャラ:슬라임]],40,2
+							;특별 슬라임
+							CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+							CFLAG:(CHARANUM-1):ＭＰ보정 += 500
+							CFLAG:(CHARANUM-1):속도보정 = 5
+							CFLAG:(CHARANUM-1):행동횟수 = 3
+							
+							CUSTOMDRAWLINE =
+							
+							PRINTFORML 
+							PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+							PRINTFORML ┃우웨에에에에……　　　　　　　　　　　　　　┃
+							PRINTFORML ┃나…… 어째서어……　　　　　　　　　　　　┃
+							PRINTFORML ┃어째서…… 슬라임이…… 되어버린 거야아……┃
+							PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+							PRINTFORMW ＞외도　슬라임이 나타났다！
+							CALL BATTLE_START
+							FLAG:도주불가플래그 = 0
+							FLAG:회화불능플래그 = 0
+							FLAG:선제기습취소 = 0
+							
+							CALL ADD_NEW_COMPANION,[[キャラ:슬라임]],200,1
+							CALL MESSAGE_WINDOW_D, "슬라임" , "「우웨에에에에……」"
+							CALL MESSAGE_WINDOW_D, , "＞두들겨 팬 슬라임을 술식으로 강제 조복한다。/　이만한 거물은 드물다、그저 멸하기엔 아까운 존재다。"
+							CALL MESSAGE_WINDOW_D, "슬라임" , "「싫어어…… 나…… 나아아아…… 어째서 흐물흐물한 거야아……/　고게겍…… 괴로워……/　우웨에…… 도와줘어어어어……」"
+							CALL MESSAGE_WINDOW_D, , "＞하지만 정신에 불순물이 섞여 있는 모양이다。/　모체의 기억이 슬라임의 정체성을 좀먹고 있는 것으로 보인다。/　참으로 번거로운 일이다。“진짜”는 질척하게 녹아 진작에 절명했는데。"
+							CALL MESSAGE_WINDOW_D, "슬라임" , "「나 인간이야아아아 인간이란 말이야아아아……/　어째서 어째서 몸이 녹고 있는 거야아아아……/　슬라임 따위로오오오 슬라임 따위가 되고 싶지 않아아아아……」"
+							CALL MESSAGE_WINDOW_D, , "＞지리멸렬한 소리를 하고 있지만 운용에는 지장이 없다。/　슬라임은 어차피 “이루어지지 못한 자”、움직이는 마그네타이트 덩어리다。/　아무리 저항한다 한들 간단한 술식으로 자유자재인 꼭두각시로 만들 수 있다。"
+							CALL MESSAGE_WINDOW_D, "슬라임" , "「나　나는 인간이야아아아……/　유우키…… 알겠지이이이…… 언니야아아아……/　도와줘…… 도와주세요…… 쇼고…… 씨…… 우웨에에에에에……」"
+							CALL MESSAGE_WINDOW_D, , "＞외도　미즈키・슬라임을 동료마로 삼았다。"
+							ダンジョンフラグ:8:22 = 8
+						ELSE
+							GOTO HAPPY_BIRTHDAY_LOOP
+						ENDIF
+					ENDIF
+				ENDIF
+			ENDIF			
+		;미야시타가 있는 경우
+		ELSEIF ダンジョンフラグ:8:21 == 1
+			CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「큭、놓으라고、놓으란 말야……읏！」"
+			CALL MESSAGE_WINDOW_D, , "＞정장 차림의 안경을 쓴 영리해 보이는 여성이 부패한 살점과 점액의 촉수에 얽혀 있다。/＞그녀의 주변에는 “이루어지지 못한” 슬라임들이 물 밖에 내던져진 물고기처럼/　퍼덕퍼덕 몸부림치고 있었다。"
+			CALL MESSAGE_WINDOW_D, , "＞저 여성、영매 체질인 것 같다。/＞이계화에 휘말린 탓에 보유하고 있던 마그네타이트가 폭주、/　주변에 악마가 “어중간하게” 실체화하고 있는 상태인가？"
+			CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「뭐야、이거、으으、구역질 나……읏！/　아앗！？ 뭐、뭘 하는 거야、그만둬、오지 마……읏！/　쿨럭、푸하앗！ 컥、콜록！」"
+			CALL MESSAGE_WINDOW_D, , "＞천장에서 떨어진 슬라임이 여성의 몸을 덮쳐 옷을 지글지글 녹여가고 있다。/이대로 내버려 두면 어떻게 될지는 불 보듯 뻔하다。"
+			CALL MESSAGE_WINDOW_D, "미야시타 쇼고" , "「미즈키 군、지금 구해줄게！」"
+			CALL MESSAGE_WINDOW_D, , "＞미야시타는 슬라임 무리를 향해 돌격했다。/　자、이쪽도 가세해야겠다。"
+			CALL MESSAGE_WINDOW_D, , "＞당신은 무기를 겨누고 슬라임들을 덮쳤다！"
+			
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			CALL SET_ENEMY,7,[[キャラ:슬라임]],35,0,1
+			CALL SET_ENEMY,8,[[キャラ:슬라임]],35,0,1
+			CALL SET_ENEMY,9,[[キャラ:슬라임]],35,0,1
+			CALL SET_ENEMY,10,[[キャラ:슬라임]],35,0,1
+			CALL SET_ENEMY,11,[[キャラ:슬라임]],35,0,1
+			CALL SET_ENEMY,13,[[キャラ:슬라임]],35,0,1
+			CALL SET_ENEMY,14,[[キャラ:슬라임]],35,0,1
+			CALL SET_ENEMY,15,[[キャラ:슬라임]],35,0,1
+			CALL BATTLE_START
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「콜록、콜록、감사합니다」"
+			CALL MESSAGE_WINDOW_D, "미야시타 쇼고" , "「미즈키 군、어째서 이런 무모한 짓을 한 건가、자네에겐 싸울 힘이 없는데도……」"
+			CALL MESSAGE_WINDOW_D, "마가미 미즈키" , "「죄송합니다、도저히、도저히 남겨진 사람들을 버려둘 수가 없어서……」"
+			CALL MESSAGE_WINDOW_D, , "＞미야시타는 당신을 향해 돌아서서 깊이 고개를 숙였다。"
+			CALL MESSAGE_WINDOW_D, "미야시타 쇼고" , "「덕분에 살았네、솔직히 말해 당신이 여기까지 어울려 줄 거라곤 생각지 못했어。/　곤란한 일이 있다면 언제든 불러주게、내가 할 수 있는 일이라면 뭐든 힘이 되어주겠네」"
+			CALL MESSAGE_WINDOW_D, , "＞인간　미야시타 쇼고가 협력해 주기로 했다。"
+			
+			CALL ADD_NEW_COMPANION,[[キャラ:쇼고]],0,1
+			SIF RESULT == 1
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+			ダンジョンフラグ:8:22 = 100
+		;그 외에는 상정 외 동작
+		ELSE
+			CALL MESSAGE_WINDOW_D, "버그" , "「냐앙」"
+			CALL MESSAGE_WINDOW_D, , "＞뭐야 버그인가……/　이 메시지가 나온다면 오류입니다、스레드에 보고해 주시길"
+		ENDIF
+		RETURN 1
+	ENDIF
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 5004 && ダンジョンフラグ:8:22 > 0
+	
+	IF ダンジョンフラグ:8:22 > 4 && ダンジョンフラグ:8:22 < 9
+		CALL MESSAGE_WINDOW_D, , "＞이제 이곳에는 아무것도 없다……"
+		CALL MESSAGE_WINDOW_D, , "＞고 생각했으나、그 여자가 흩뿌린 오물 속에 그녀의 안경이 가라앉아 있었다。"
+		CALL MESSAGE_WINDOW_D, , "＞……마그네타이트의 영향으로 매직 아이템화되어 있다。/　조금 지저분하지만 방치해 두는 것도 아까울 것이다。"
+		CALL MESSAGE_WINDOW_D, , "＞메가 인텔리 안경을 손에 넣었다"
+		CALL GET_ITEM,5022,1
+		DA:(FLAG:현X):(FLAG:현Y) = 1
+	ELSE
+		CALL MESSAGE_WINDOW_D, , "＞이제 이곳에는 아무것도 없다……"
+	ENDIF
+	
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 9
+	SELECTCASE FLAG:현M
+		CASE 1
+			CALL MESSAGE_WINDOW_D, , "＞함정이다！"
+			CALL DUNGEON_WORP,0,8,7
+		CASE 2
+			CALL MESSAGE_WINDOW_D, , "＞함정이다！"
+			CALL DUNGEON_WORP,1,1,2
+		CASE 3
+			CALL MESSAGE_WINDOW_D, , "＞함정이다！"
+			CALL DUNGEON_WORP,2,3,4
+		CASE 4
+			CALL MESSAGE_WINDOW_D, , "＞함정이다！"
+			CALL DUNGEON_WORP,3,7,14
+		CASE 5
+			ダンジョンフラグ:8:14 = 1
+			CALL MAKE_FLOOR, FLAG:현던전
+			CALL DUNGEON_DOOR,ARG
+			RETURN 1
+		CASEELSE
+	ENDSELECT
+	RETURN 1
+
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 4
+	CALL MESSAGE_WINDOW_D, , "＞한 노인이 컴퓨터를 조작하고 있다…"
+	CALL MESSAGE_WINDOW_D, "매드 사이언티스트" , "히히히힛　움직였다　움직였어/로보트 경관의 컨트롤 시스템이"
+	CALL MESSAGE_WINDOW_D, "매드 사이언티스트" , "이걸로 사람도 악마도 몰살이다/모두 지옥에 가버려라！/히히히"
+	CALL MESSAGE_WINDOW_D, "매드 사이언티스트" , "…설마 방해하러 온 게냐？/그렇겐 못한다！/가라앗！　로보트 경관！"
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+	CALL SET_ENEMY,7,[[キャラ:T95메두사]],45,0,2	
+	CALL SET_ENEMY,8,[[キャラ:T95메두사]],45,0,2
+	CALL SET_ENEMY,9,[[キャラ:T95메두사]],45,0,2
+	CALL SET_ENEMY,10,[[キャラ:T95메두사]],45,0,2
+	CALL SET_ENEMY,11,[[キャラ:T95메두사]],45,0,2
+	CALL SET_ENEMY,13,[[キャラ:T95메두사]],45,0,2
+	CALL SET_ENEMY,14,[[キャラ:T95메두사]],45,0,2
+	CALL SET_ENEMY,15,[[キャラ:T95메두사]],45,0,2
+	CALL BATTLE_START
+	CALL MESSAGE_WINDOW_D, "경비 시스템" , "긴급사태！　시스템 작동 개시/직접 침입자를 배제합니다"
+	CALL SET_ENEMY,9,[[キャラ:라비]],50,0,5
+	CFLAG:(CHARANUM-1):행동횟수 = 3
+	NAME:(CHARANUM-1) = 경비 시스템
+	CALLNAME:(CHARANUM-1) = 경비 시스템
+	BASE:(CHARANUM-1):힘 += 6
+	BASE:(CHARANUM-1):지혜 += 6
+	BASE:(CHARANUM-1):마력 += 6
+	BASE:(CHARANUM-1):내구 += 5
+	BASE:(CHARANUM-1):속도 += 5
+	BASE:(CHARANUM-1):운 += 5
+	CALL BATTLE_START
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+	CALL MESSAGE_WINDOW_D, "매드 사이언티스트" , "오오… 이 몸의 메카 로보트 군단이…"
+	CALL MESSAGE_WINDOW_D, "" , "＞실의에 빠진 노인의 곁에、경시청 제품으로 여겨지는 로봇들의 잔해가 널려 있다/＞가만 보면 꽤 쓸만하다、이걸로 ＣＯＭＰ를 강화할 수 있겠지…"
+	CALL MESSAGE_WINDOW_D, "" , "………………/＞…………/＞……"
+	CALL MESSAGE_WINDOW_D, "" , "＞ＣＯＭＰ의 용량이 1 증가했다"
+	CALL SIZEUP_COMP_BY_EVEMT, "D8_警視庁特典"
+	;FLAG:ＣＯＭＰ용량 += 1
+	ダンジョンフラグ:8:11 = 1
+	DA:(FLAG:현X):(FLAG:현Y) = -9
+ENDIF
+RETURN 0
+
+
+;=======================================================================
+;宝箱の中身
+;=======================================================================
+@TREASURE_8
+SELECTCASE FLAG:현M
+	CASE 1
+		CALL GET_TREASURE_TRAP, "ＨＰ", 25 , GET_TYPE_NUM("만능") , FLAG:현던전, LOCAL , 0
+		ダンジョンフラグ:8:0 = 1
+	CASE 2
+		IF (FLAG:현X) == 1
+			CALL GET_TREASURE_TRAP, "ＨＰ", 25 , GET_TYPE_NUM("만능") , FLAG:현던전, LOCAL , 1
+			ダンジョンフラグ:8:1 = 1
+		ELSE
+			CALL GET_TREASURE, 276 , 1 , FLAG:현던전, LOCAL , 2
+			ダンジョンフラグ:8:2 = 1
+		ENDIF
+	CASE 3
+		CALL GET_TREASURE_TRAP, "ＨＰ", 25 , GET_TYPE_NUM("만능") , FLAG:현던전, LOCAL , 3
+		ダンジョンフラグ:8:3 = 1
+	CASE 4
+		IF FLAG:현Y == 3
+			CALL GET_TREASURE, 1014 , 1 , FLAG:현던전, LOCAL , 4
+			ダンジョンフラグ:8:4 = 1
+		ELSE
+			CALL GET_TREASURE, 1015 , 1 , FLAG:현던전, LOCAL , 5
+			ダンジョンフラグ:8:5 = 1
+		ENDIF
+	CASEELSE
+		CALL GET_TREASURE_TRAP, "ＨＰ", 25 , GET_TYPE_NUM("만능") , FLAG:현던전, LOCAL , 1
+		ダンジョンフラグ:8:6 = 1
+ENDSELECT
+RETURN 1
+
+;=======================================================================
+;階段置き場
+;=======================================================================
+@UPSTAIRS_8
+SELECTCASE FLAG:현M
+	CASE 0
+		CALL DUNGEON_UPSTAIRS,1,5,9
+	CASE 1
+		CALL DUNGEON_UPSTAIRS,2,5,7
+	CASE 2
+		CALL DUNGEON_UPSTAIRS,3,5,9
+	CASE 3
+		CALL DUNGEON_UPSTAIRS,4,5,7
+	CASE 4
+		CALL DUNGEON_UPSTAIRS,5,5,9
+	CASEELSE
+ENDSELECT
+RETURN 1
+
+@DOWNSTAIRS_8
+SELECTCASE FLAG:현M
+	CASE 1
+		CALL DUNGEON_DOWNSTAIRS,0,5,9
+	CASE 2
+		CALL DUNGEON_DOWNSTAIRS,1,5,7
+	CASE 3
+		CALL DUNGEON_DOWNSTAIRS,2,5,9
+	CASE 4
+		CALL DUNGEON_DOWNSTAIRS,3,5,7
+	CASE 5
+		CALL DUNGEON_DOWNSTAIRS,4,5,9
+ENDSELECT
+RETURN 1
+
+;=======================================================================
+;인카운트율
+;=======================================================================
+@ENCOUNT_RATE_8
+	FLAG:인카운트율 = FLAG:미조우걸음수*5
+
+
+;=======================================================================
+;必要レベル目安
+;推奨LV 雑魚最低LV 雑魚最高LV ボスLV 
+;=======================================================================
+@GET_DUNGEON_LV_8
+RETURN 38, 28, 38, 50
+;=======================================================================
+;エンカウント処理
+;=======================================================================
+@CHECK_ENCOUNT_8
+IF RAND:100 < FLAG:인카운트율
+	RETURN 1
+ELSE
+	FLAG:미조우걸음수 += 1
+	RETURN 0
+ENDIF
+
+;=======================================================================
+;敵の種族の種類数
+;=======================================================================
+@CLASS_NUM_8
+SELECTCASE RAND:100
+	CASE IS < 40
+		RETURN 1
+	CASE IS < 80
+		RETURN 2
+	CASEELSE
+		RETURN 3
+ENDSELECT
+;=======================================================================
+;敵の総数
+;=======================================================================
+@ENEMY_NUM_8, ARG
+RETURN ENEMY_NUM_COMMON("中級", ARG)
+;=======================================================================
+;敵の種類
+;=======================================================================
+@ENEMY_8, ARG
+SELECTCASE RAND:100
+	CASE IS < 20
+		;30%でピットボール
+		RETURN [[キャラ:비트볼]],35
+	CASE IS < 45
+		;25%でゴーレム
+		RETURN [[キャラ:T95골렘]],38
+	CASE IS < 70
+		;25%でゾンビコップ
+		RETURN [[キャラ:좀비캅]],33
+	CASE IS < 90
+		;20%でコープス
+		RETURN [[キャラ:콥스]],30
+	CASE IS < 100
+		;10%でスライム、ブラックウーズの代理
+		RETURN [[キャラ:슬라임]],28
+ENDSELECT
+
+;=======================================================================
+;エレベーター定義
+;=======================================================================
+;ARGはそのエレベーターのタイル
+@DUNGEON_ELEVATOR_8, ARG
+;RESULT:1～5にエレベータが存在するマップの番号を代入し、RESULTS:1～5には表示したい名称を代入、RETURNでは-1を返しておく
+RESULT:1 = 0
+RESULT:2 = 1
+RESULT:3 = 2
+RESULT:4 = 3
+RESULT:5 = 4
+RESULT:6 = 5
+RESULTS:1 = Ｂ１Ｆ
+RESULTS:2 = １Ｆ
+RESULTS:3 = ２Ｆ
+RESULTS:4 = ３Ｆ
+RESULTS:5 = ４Ｆ
+RESULTS:6 = ５Ｆ
+RETURN -1

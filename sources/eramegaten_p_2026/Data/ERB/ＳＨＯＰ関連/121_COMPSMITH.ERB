@@ -1,0 +1,882 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/07/31		P(bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@SHOPCOMABLE_121
+RETURN 0
+
+@SHOP_COM_121, ARG
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_LINE
+IF !IS_VISITED_COMP_SMITH
+	CALL FIRST_IN_COMP_SMITH
+ENDIF
+L_LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - L_LINE
+DRAWLINE
+PRINTFORM ＣＯＭＰ ＳＭＩＴＨ 　　　　ＣＯＭＰ용량:{GET_COMPSIZE()}　　　　마카:{MONEY:1}
+SIF COUNT_TRADE_TOTEM_MEMORY < 4
+	PRINTFORM 　　　　　토템메모리:{ITEM:토템메모리}
+PRINTL 
+DRAWLINE
+VARI MES_LINE = LINECOUNT
+FOR LCOUNT, 0, 7
+	PRINTL 
+NEXT
+DRAWLINE
+PRINTBUTTON "[1] 인스톨소프트와 교환", "1"
+PRINTL 
+PRINTBUTTON "[2] 스킬에뮬레이터와 교환", "2"
+PRINTL 
+PRINTBUTTON @"[3] ＣＯＭＰ 용량 확장 (필요 마카：{GET_COST_FOR_COMP_SIZEUP()})", "3_MOUSE"
+PRINTL 
+PRINTBUTTON "[4] 인스톨소프트 셋업", "4"
+PRINTL 
+PRINTBUTTON "[5] 스킬에뮬레이터 셋업", "5"
+PRINTL 
+IF COUNT_TRADE_TOTEM_MEMORY < 4
+	SIF ITEM:토템메모리 == 0
+		SETCOLOR COLOR("gray")
+	PRINTBUTTON "[6] 토템메모리와 인스톨소프트를 교환", "6"
+	PRINTL 
+	PRINTBUTTON "[7] 토템메모리와 스킬에뮬레이터를 교환", "7"
+	PRINTL 
+	PRINTBUTTON "[8] 토템메모리와 교환해 ＣＯＭＰ 용량을 확장", "8_MOUSE"
+	PRINTL 
+	RESETCOLOR
+ENDIF
+DRAWLINE
+CALL GET_TALK_BY_ADDRESS, "타타라짱", "tataratang", "어서와_오늘은 무슨일이야？"
+HTML_PRINT SET_BUTTON_TAG("[0] 돌아간다", "0") + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+$INPUT_LOOP
+ONEINPUTS
+VARI L_RESULT
+L_RESULT = TOINT(AUTO_SPLIT(RESULTS, "_", 0))
+VARI IS_MOUSE
+IS_MOUSE = AUTO_SPLIT(RESULTS, "_", 1) == "MOUSE"
+CLEARLINE 2
+SIF ITEM:토템메모리 <= 0 && INRANGE(L_RESULT, 6, 8)
+	GOTO START
+SELECTCASE L_RESULT
+	CASE 0
+		CALL GET_TALK_BY_ADDRESS, "타타라짱", "tataratang", "COMP를 좀 손보고 싶어졌다! 싶으면 언제든 다시 오라구"
+		HTML_PRINT SET_BUTTON_TAG("[0] 돌아간다", "0") + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+		WAIT
+		RETURN 0
+	CASE 1
+		CALL GET_TALK_BY_ADDRESS, "타타라짱", "tataratang", "좋아, COMP에 추가하고 싶은 소프트를 골라봐"
+		HTML_PRINT SET_BUTTON_TAG("[0] 돌아간다", "0") + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+		WAIT
+		CLEARLINE 1
+		CALL EXCHANGE_SOFT
+	CASE 2
+		IF GET_SUMMONER_MLV() < 3
+			CALL GET_TALK_BY_ADDRESS, "타타라짱", "tataratang", "에뮬레이터를 추가하는 건 상관없지만_파티에 서머너 기능이 Lv3 이상인 녀석이 없으면_의미 없으니까 조심하라구?"
+		ELSE
+			CALL GET_TALK_BY_ADDRESS, "타타라짱", "tataratang", "원하는 에뮬레이터를 골라봐"
+		ENDIF
+		HTML_PRINT SET_BUTTON_TAG("[0] 돌아간다", "0") + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+		WAIT
+		CLEARLINE 1
+		CALL EXCHANGE_SKILL_EMULATOR
+	CASE 3, 8
+		IF L_RESULT == 3 && GET_COST_FOR_COMP_SIZEUP() > MONEY:1
+			CALL GET_TALK_BY_ADDRESS, "타타라짱", "tataratang", "마카가 부족하잖아_공교롭게도 난 헐값에 넘기지 않는 주의라서 말이지._미안하지만 대금을 제대로 마련해와 줘"
+			HTML_PRINT SET_BUTTON_TAG("[0] 돌아간다", "0") + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+			WAIT
+			CLEARLINE 1
+		ELSE
+			IF L_RESULT == 3
+				CALL GET_TALK_BY_ADDRESS, "타타라짱", "tataratang", @"{GET_COST_FOR_COMP_SIZEUP()} 마카를 받을 텐데,_정말 용량을 늘려도 괜찮겠어?"
+			ELSE
+				CALL GET_TALK_BY_ADDRESS, "타타라짱", "tataratang", @"토템메모리 1개와 교환인데,_정말 용량을 늘려도 괜찮겠어?"
+			ENDIF
+			VARS L_MES
+			IF IS_MOUSE
+				L_MES '= SET_BUTTON_TAG("[0] 돌아간다", "0")
+				HTML_PRINT L_MES + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+				CALL INPUT_YN_POPUP
+			ELSE
+				L_MES '= SET_BUTTON_TAG("[0] 예", "0") + "　" + SET_BUTTON_TAG("[1] 아니오", "1")
+				HTML_PRINT L_MES + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+				ONEINPUT
+				CLEARLINE 1
+			ENDIF
+			CLEARLINE 1
+			IF RESULT == 0
+				IF L_RESULT == 3
+					MONEY:1 -= GET_COST_FOR_COMP_SIZEUP()
+				ELSE
+					COUNT_TRADE_TOTEM_MEMORY += 1
+					ITEM:토템메모리 -= 1
+				ENDIF
+				FLAG:마카에의한Ｃ용량증가 += 1
+				CALL GET_TALK_BY_ADDRESS, "타타라짱", "tataratang", "오케이_잠깐만 기다려봐…"
+				HTML_PRINT L_MES + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+				WAIT
+				CLEARLINE 1
+				CALL GET_TALK_BY_ADDRESS, "", "BLANK_IMG", "＞COMP의 용량이 증가했다!"
+				HTML_PRINT L_MES + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+				WAIT
+				CLEARLINE 1
+				HTML_PRINT L_MES + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+				WAIT
+			ELSE
+				CALL GET_TALK_BY_ADDRESS, "타타라짱", "tataratang", "그래? 아직 무슨 볼일 있어?"
+				HTML_PRINT L_MES + @"<div display = 'absolute-leftbottom' xpos = '60' ypos = '{(MES_LINE - LINECOUNT - 1) * 100}'>" + RESULTS + "</div>"
+				WAIT
+			ENDIF
+		ENDIF
+	CASE 4
+		CALL SETUP_SOFT
+	CASE 5
+		CALL EQUIP_SKILL_EMULATOR_MAIN_UI
+	CASE 6
+		CALL TAKE_FREE_INSTALLSOFT, COUNT_TRADE_TOTEM_MEMORY ? 1000 # 200
+	CASE 7
+		CALL TAKE_FREE_SKILL_EMULATOR, COUNT_TRADE_TOTEM_MEMORY ? 1000 # 200
+	CASEELSE
+		GOTO INPUT_LOOP
+ENDSELECT
+IF COUNT_TRADE_TOTEM_MEMORY == 4
+	CALL FINISHED_EVENT_IN_COMP_SMITH
+ENDIF
+GOTO START
+
+@GET_COST_FOR_COMP_SIZEUP, ARG = -1
+#FUNCTION 
+SIF ARG == -1
+	ARG = FLAG:마카에의한Ｃ용량증가 + 1
+RETURNF SQRT(POWER(ARG, 3)) * 100
+
+@EXCHANGE_SOFT
+#DIM LCOUNT, 3
+#DIM L_LINE,3
+#DIMS TEMPS
+#DIM SELL_LIST, 60
+#DIM BUY_UNABLE, 60
+#DIM BUY_LIST, 60
+#DIM SELECT_BUYNUM
+#DIM SELECT_SOFT
+#DIMS SELECT_TYPE
+#DIMS L_TEXT
+#DIMS L_BUTTON
+#DIMS L_TITLE
+#DIM L_PRICE
+#DIM L_PRICE_SUM
+#DIMS L_PRICES
+#DIMS SHOW_LINE
+#DIM CONST SHOWNUM = 20
+#DIM L_SOFT
+#DIM L_PAGE
+#DIMS L_COLOR
+#DIM LISTNUM
+#DIM L_REDRAW
+#DIMS BEGINNER_TIPS, 7
+
+L_REDRAW = CURRENTREDRAW()
+REDRAW 0
+
+VARSET BUY_LIST, -1
+VARSET BEGINNER_TIPS
+L_LINE = LINECOUNT
+SIF SELECT_TYPE == ""
+	SELECT_TYPE = 탐색보조
+SELECT_BUYNUM = -1
+SELECT_SOFT = -1
+L_PAGE = 0
+$START
+CLEARLINE LINECOUNT - L_LINE
+DRAWLINE
+PRINTFORML 인스톨소프트
+DRAWLINE
+VARSET SELL_LIST, -1
+VARSET BUY_UNABLE, -1
+IF SELECT_TYPE == "Ｐ・Ｓ추천"
+	SELL_LIST:0 = GET_INSTALLSOFT_NUM("하쿠타로우")
+	BEGINNER_TIPS:0 = 백어택은 최악의 경우 아무것도 못하고 전멸당할 수도 있는 위험이 있다./그것을 막는 것은 이 업계에서 살아가는 데 있어 거의 필수라고 해도 과언이 아니다./물론 백어택 따위 신경 쓰지 않을 정도로 강해진다면 필요 없어지겠지만…
+	SELL_LIST:1 = GET_INSTALLSOFT_NUM("ＤＤＭ")
+	BEGINNER_TIPS:1 = 한 번 거점으로 돌아갈 필요는 있지만 합체용 소재 악마를 대량으로 준비할 수 있게 된다./전력 확충을 위한 선택지가 크게 늘어나므로 도입을 강력히 권장한다.
+	SELL_LIST:2 = GET_INSTALLSOFT_NUM("DDS-DUO")
+	BEGINNER_TIPS:2 = 악마를 유연하게 운용할 수 있게 해주는 대단히 강력한 소프트./어느 정도 쓸 만한 동료마의 수가 필요하지만, 성능은 보증되어 있다.
+	SELL_LIST:3 = GET_INSTALLSOFT_NUM("백어퍼")
+	BEGINNER_TIPS:3 = 대단히 비용은 무겁지만 시간과 노력의 손실을 최소한으로 줄일 수 있다./도입에 따른 부담은 크지만 리턴은 충분할 것이다.
+	SELL_LIST:4 = GET_INSTALLSOFT_NUM("화이트앨범")
+	BEGINNER_TIPS:4 = 주로 소재가 되는 악마의 성장에 유용한 소프트./성장한 악마가 가져오는 스킬이 전력 확충에 도움이 될 것이다.
+	SELL_LIST:5 = GET_INSTALLSOFT_NUM("하모나이저")
+	BEGINNER_TIPS:5 = 용량 소비가 크고, 악마를 운용하는 데는 문제가 따르지만 전력의 강화 폭은 크다./악마보다 인간을 메인으로 부린다면 유력한 소프트라고 할 수 있다.
+	SELL_LIST:6 = GET_INSTALLSOFT_NUM("デビルチェンバー")
+	BEGINNER_TIPS:6 = 갓 입문한 초보 서머너를 위한 소프트./빈약한 COMP라도 많은 인스톨소프트를 도입하기 쉬워진다.
+ELSE
+	FOR LCOUNT, 0, INSTALLSOFTNUM
+		;名称未定義は弾く
+		SIF GET_INSTALLSOFT_NAME(LCOUNT) == ""
+			CONTINUE
+		;タイプチェック
+		TRYCCALLFORM INSTALLSOFT_TYPE_{LCOUNT}
+			SIF RESULTS != SELECT_TYPE
+				CONTINUE
+		CATCH
+		ENDCATCH
+		;販売条件チェック
+		TRYCCALLFORM INSTALLSOFT_SELLABLE_{LCOUNT}
+			SIF !RESULT
+				CONTINUE
+		CATCH
+			CONTINUE
+		ENDCATCH
+		;販売にリストに登録
+		SELL_LIST:FINDELEMENT(SELL_LIST, -1) = LCOUNT
+	NEXT
+ENDIF
+
+;---------------------------------------------------
+;代金の取得
+;---------------------------------------------------
+L_PRICE_SUM = 0
+LCOUNT = 0
+WHILE BUY_LIST:LCOUNT >= 0
+	;---- EDIT 018 ADD START -------------------------
+	;持ってるソフトは価格に加算しない
+	IF !HAVE_INSTALLSOFT:(BUY_LIST:LCOUNT)
+		CALLFORM INSTALLSOFT_PRICE_{BUY_LIST:LCOUNT}
+		L_PRICE_SUM += RESULT
+	ENDIF
+	LCOUNT++
+	;---- EDIT 018 ADD END ---------------------------
+WEND
+;---------------------------------------------------
+;商品の表示
+;---------------------------------------------------
+LCOUNT:2 = 0
+FOR LCOUNT, 0, SHOWNUM
+	LISTNUM = LCOUNT + L_PAGE * SHOWNUM
+	L_SOFT = SELL_LIST:LISTNUM
+	SIF L_SOFT < 0
+		CONTINUE
+	;デフォルトカラーセット
+	L_COLOR = %TOSTR_HTML(GETDEFCOLOR())%
+	;所持しているソフト
+	IF HAVE_INSTALLSOFT:L_SOFT
+		BUY_UNABLE:FINDELEMENT(BUY_UNABLE, -1) = L_SOFT
+		L_COLOR = %TOSTR_HTML(COLOR("DARK-GRAY"))%
+		L_PRICES = 　　취득완료
+	ELSE
+		CALLFORM INSTALLSOFT_PRICE_{L_SOFT}
+		L_PRICE = RESULT
+		;購入予定リストに入っている場合
+		IF FINDELEMENT(BUY_LIST, L_SOFT) >= 0
+			L_COLOR = %TOSTR_HTML(L_SOFT == SELECT_SOFT ? COLOR("aqua") # COLOR("パ緑"))%
+		ELSE
+			IF MONEY:1 < L_PRICE + L_PRICE_SUM
+				BUY_UNABLE:FINDELEMENT(BUY_UNABLE, -1) = L_SOFT
+				L_COLOR = %TOSTR_HTML(COLOR("DARK-GRAY"))%
+			ENDIF
+		ENDIF
+		L_PRICES = {L_PRICE, 7} 마카
+	ENDIF
+	CALL SET_VAR_INSTALLSOFT_EXPLAIN, L_SOFT, L_TITLE
+	RESULTS:10 = 
+	CALLFORM INSTALLSOFT_EXPLAIN_{L_SOFT}
+	;長過ぎる場合の代替テキスト
+	SIF RESULTS:10 != ""
+		RESULTS = %RESULTS:10% 
+	SHOW_LINE = <button value = '{LISTNUM + 100 }' title = '%L_TITLE%'><font color = '%L_COLOR%'>
+	SHOW_LINE += @"[{LISTNUM + 100}] %GET_INSTALLSOFT_NAME(L_SOFT), 24, LEFT%" + L_PRICES
+	SHOW_LINE += "</font>" + "</button>"
+	SHOW_LINE += "　　　" + @"<font color = '%L_COLOR%'>" + RESULTS + "</font>"
+	HTML_PRINT SHOW_LINE
+	IF SELECT_TYPE == "Ｐ・Ｓ추천"
+		FOR LCOUNT:1, 0, 3
+			HTML_PRINT @"<font color = '%L_COLOR%'>" + " " * 48 + AUTO_SPLIT(BEGINNER_TIPS:(LCOUNT:2), "/", LCOUNT:1) + "</font>"
+		NEXT
+		LCOUNT:2++
+	ENDIF
+NEXT
+WHILE LINECOUNT < L_LINE + SHOWNUM + 3
+	PRINTFORML 
+WEND
+PRINTL 
+IF SELL_LIST:SHOWNUM >= 0
+	FOR LCOUNT, 0, 3
+		SIF SELL_LIST:(LCOUNT * SHOWNUM) == -1
+			CONTINUE
+		CALL PRINT_COLOR, @"[{10 + LCOUNT}] Page.{LCOUNT}　　　" , LCOUNT == L_PAGE ? COLOR("aqua") # GETDEFCOLOR()
+	NEXT
+ENDIF
+PRINTL 
+DRAWLINE
+L_LINE:1 = LINECOUNT
+IF SELECT_SOFT >= 0
+	PRINTFORML %GET_INSTALLSOFT_NAME(SELECT_SOFT)%
+	CALL SET_VAR_INSTALLSOFT_EXPLAIN, SELECT_SOFT, L_TITLE
+	CALL PRINTFORM_LF, L_TITLE
+ENDIF
+WHILE LINECOUNT < L_LINE:1 + 6
+	PRINTFORML 
+WEND
+DRAWLINE
+SHOW_LINE = 
+FOR LCOUNT, 0, VARSIZE("INSTALLSOFTTYPE") + 1
+	TEMPS = \@LCOUNT == VARSIZE("INSTALLSOFTTYPE") ? Ｐ・Ｓ추천 # %INSTALLSOFTTYPE:LCOUNT%\@
+	SIF TEMPS == "컨버터"
+		CONTINUE
+	L_COLOR = %TOSTR_HTML(SELECT_TYPE == TEMPS ? COLOR("aqua") # GETDEFCOLOR())%
+	SHOW_LINE += @"<font color = '%L_COLOR%'>" + @"<button value = '{50 + LCOUNT}'>"
+	SHOW_LINE += @"[{50 + LCOUNT}] %TEMPS%　　　"
+	SHOW_LINE += "</button>" + "</font>"
+NEXT
+HTML_PRINT SHOW_LINE
+CUSTOMDRAWLINE =
+PRINTFORML 【소지마카:{MONEY:1}】 / 【필요마카{L_PRICE_SUM}】
+CUSTOMDRAWLINE =
+L_LINE:2 = LINECOUNT
+CALL PRINT_COLOR, "[ 0] 구입한다", L_PRICE_SUM > 0 && MONEY:1 >= L_PRICE_SUM ? GETDEFCOLOR() # COLOR("DARK-GRAY")
+PRINTL 　　　[ 9] 돌아간다　　　　　　※ALTKEY・마우스 사이드 버튼을 누른 채 클릭하면 한 번에 여러 개 구매 가능합니다。
+INPUT
+SELECTCASE RESULT
+	CASE 0
+		IF L_PRICE_SUM > 0 && MONEY:1 >= L_PRICE_SUM
+			MONEY:1 -= L_PRICE_SUM
+			LCOUNT = 0
+			WHILE BUY_LIST:LCOUNT >= 0
+				CALL GET_INSTALLSOFT, BUY_LIST:LCOUNT
+				LCOUNT++
+			WEND
+			SELECT_BUYNUM = RESULT
+			VARSET BUY_LIST, -1
+			BUY_LIST:FINDELEMENT(BUY_LIST, -1) = SELECT_SOFT
+			CLEARLINE LINECOUNT - L_LINE:1
+			PRINTFORML 인스톨소프트를 구입했습니다。
+			WHILE LINECOUNT < L_LINE:2
+				PRINTL 
+			WEND
+			PRINTFORM [0] 구입한다
+			PRINTW 　　　[9] 돌아간다　　　　　　※ALTKEY・마우스 사이드 버튼을 누른 채 클릭하면 한 번에 여러 개 구매 가능합니다。
+		ENDIF
+	CASE 9
+		REDRAW L_REDRAW
+		RETURN 0
+	CASE 10 TO 10 + ((VARSIZE("SELL_LIST") -1) / SHOWNUM)
+		RESULT -= 10
+		SIF SELL_LIST:(RESULT * SHOWNUM) >= 0
+			L_PAGE = RESULT
+	;表示区分変更
+	CASE 50 TO 50 + VARSIZE("INSTALLSOFTTYPE") + 1
+		RESULT -= 50
+		IF RESULT == VARSIZE("INSTALLSOFTTYPE")
+			SELECT_TYPE = Ｐ・Ｓ추천
+		ELSE
+			SIF INSTALLSOFTTYPE:RESULT == "컨버터"
+				GOTO START
+			SELECT_TYPE = %INSTALLSOFTTYPE:RESULT%
+		ENDIF
+		L_PAGE = 0
+		SELECT_BUYNUM = -1
+		SELECT_SOFT = -1
+		VARSET BUY_LIST, -1
+	CASE 100 TO 100 + VARSIZE("SELL_LIST")
+		RESULT -= 100
+		IF SELL_LIST:RESULT >= 0
+			;ALT or マウスサイドキー
+			;---- EDIT 020 ADD START -------------------------
+			;IF (GETKEY(0x12) || GETKEY(0x05)) && !HAVE_INSTALLSOFT:RESULT
+			IF (GETKEY(0x12) || GETKEY(0x05)) && !HAVE_INSTALLSOFT:(SELL_LIST:RESULT)
+			;---- EDIT 020 MOD END ---------------------------
+				IF FINDELEMENT(BUY_LIST, SELL_LIST:RESULT) >= 0
+					BUY_LIST:FINDELEMENT(BUY_LIST, SELL_LIST:RESULT) = -1;EDIT 018 MOD
+				ELSE
+					SIF FINDELEMENT(BUY_UNABLE, SELL_LIST:RESULT) < 0
+						BUY_LIST:FINDELEMENT(BUY_LIST, -1) = SELL_LIST:RESULT
+				ENDIF
+			ELSE
+				IF SELL_LIST:RESULT == SELECT_SOFT && FINDELEMENT(BUY_LIST, SELECT_SOFT) >= 0
+					IF L_PRICE_SUM > 0 && L_PRICE_SUM <= MONEY:1 && !HAVE_INSTALLSOFT:SELECT_SOFT
+						CLEARLINE LINECOUNT - L_LINE:1
+						PRINTFORML %GET_INSTALLSOFT_NAME(SELECT_SOFT)%을(를) 구입하겠습니까？
+						PRINTL [0] 네
+						PRINTL [1] 아니오
+						WHILE LINECOUNT < L_LINE:2
+							PRINTL 
+						WEND
+						PRINTL 
+						CALL INPUTINT, 0, 1
+						IF RESULT == 0
+							MONEY:1 -= L_PRICE_SUM
+							CALL GET_INSTALLSOFT, SELECT_SOFT
+							CLEARLINE LINECOUNT - L_LINE:1
+							PRINTFORML %GET_INSTALLSOFT_NAME(SELECT_SOFT)%을(를) 구입했습니다。
+							SELECT_BUYNUM = -1
+							SELECT_SOFT = -1
+							VARSET BUY_LIST, -1
+							WHILE LINECOUNT < L_LINE:2
+								PRINTL 
+							WEND
+							PRINTFORM [0] 구입한다
+							PRINTW 　　　[9] 돌아간다　　　　　　※ALTKEY・마우스 사이드 버튼을 누른 채 클릭하면 한 번에 여러 개 구매 가능합니다。
+						ENDIF
+					ENDIF
+				ELSE
+					SELECT_BUYNUM = RESULT
+					SELECT_SOFT = SELL_LIST:SELECT_BUYNUM
+					VARSET BUY_LIST, -1
+					BUY_LIST:FINDELEMENT(BUY_LIST, -1) = SELECT_SOFT
+				ENDIF
+			ENDIF
+		ENDIF
+ENDSELECT
+GOTO START
+
+@TAKE_FREE_INSTALLSOFT, LIMIT_PRICE
+#DIM DYNAMIC LCOUNT, 3
+#DIM DYNAMIC LIMIT_PRICE
+#DIM DYNAMIC L_LINE, 3
+#DIMS SHOW_LINE
+#DIM CONST SHOWNUM = 20
+#DIM DYNAMIC LISTNUM
+#DIMS L_TEXT
+#DIMS L_BUTTON
+#DIMS L_TITLE
+#DIM DYNAMIC L_REDRAW
+#DIM SELECT_SOFT
+#DIM DYNAMIC L_SOFT
+#DIM DYNAMIC L_PAGE
+#DIMS DYNAMIC L_COLOR
+#DIM DYNAMIC L_PRICE
+#DIMS DYNAMIC L_PRICES
+#DIM DYNAMIC SELL_LIST, 60
+
+L_REDRAW = CURRENTREDRAW()
+REDRAW 0
+
+L_LINE = LINECOUNT
+SELECT_SOFT = -1
+L_PAGE = 0
+$START
+CLEARLINE LINECOUNT - L_LINE
+VARSET SELL_LIST, -1
+FOR LCOUNT, 0, INSTALLSOFTNUM
+	;名称未定義は弾く
+	SIF GET_INSTALLSOFT_NAME(LCOUNT) == ""
+		CONTINUE
+	;持っているソフトは弾く
+	SIF HAVE_INSTALLSOFT:LCOUNT
+		CONTINUE
+	;販売条件チェック
+	TRYCCALLFORM INSTALLSOFT_SELLABLE_{LCOUNT}
+		SIF !RESULT
+			CONTINUE
+	CATCH
+		CONTINUE
+	ENDCATCH
+	CALLFORM INSTALLSOFT_PRICE_{LCOUNT}
+	;指定金額を超えている場合は外す
+	SIF RESULT > LIMIT_PRICE
+		CONTINUE
+	;販売にリストに登録
+	SELL_LIST:FINDELEMENT(SELL_LIST, -1) = LCOUNT
+NEXT
+;---------------------------------------------------
+;商品の表示
+;---------------------------------------------------
+DRAWLINE
+PRINTFORML {LIMIT_PRICE}마카까지의 인스톨소프트를 무상으로 받을 수 있습니다
+DRAWLINE
+LCOUNT:2 = 0
+FOR LCOUNT, 0, SHOWNUM
+	LISTNUM = LCOUNT + L_PAGE * SHOWNUM
+	L_SOFT = SELL_LIST:LISTNUM
+	SIF L_SOFT < 0
+		CONTINUE
+	;カラーセット
+	IF L_SOFT == SELECT_SOFT
+		L_COLOR = %TOSTR_HTML(COLOR("aqua"))%
+	ELSE
+		L_COLOR = %TOSTR_HTML(GETDEFCOLOR())%
+	ENDIF
+	CALLFORM INSTALLSOFT_PRICE_{L_SOFT}
+	L_PRICE = RESULT
+	L_PRICES = {L_PRICE, 7} 마카
+
+	CALL SET_VAR_INSTALLSOFT_EXPLAIN, L_SOFT, L_TITLE
+	RESULTS:10 = 
+	CALLFORM INSTALLSOFT_EXPLAIN_{L_SOFT}
+	;長過ぎる場合の代替テキスト
+	SIF RESULTS:10 != ""
+		RESULTS = %RESULTS:10% 
+	SHOW_LINE = <button value = '{LISTNUM + 100}' title = '%L_TITLE%'><font color = '%L_COLOR%'>
+	SHOW_LINE += @"[{LISTNUM + 100}] %GET_INSTALLSOFT_NAME(L_SOFT), 24, LEFT%" + L_PRICES
+	SHOW_LINE += "</font>" + "</button>"
+	SHOW_LINE += "　　　" + @"<font color = '%L_COLOR%'>" + RESULTS + "</font>"
+	HTML_PRINT SHOW_LINE
+NEXT
+WHILE LINECOUNT < L_LINE + SHOWNUM + 3
+	PRINTFORML 
+WEND
+PRINTL 
+IF SELL_LIST:SHOWNUM >= 0
+	FOR LCOUNT, 0, 3
+		SIF SELL_LIST:(LCOUNT * SHOWNUM) == -1
+			CONTINUE
+		CALL PRINT_COLOR, @"[{10 + LCOUNT}] Page.{LCOUNT}　　　" , LCOUNT == L_PAGE ? COLOR("aqua") # GETDEFCOLOR()
+	NEXT
+ENDIF
+PRINTL 
+DRAWLINE
+L_LINE:1 = LINECOUNT
+IF SELECT_SOFT >= 0
+	PRINTFORML %GET_INSTALLSOFT_NAME(SELECT_SOFT)%
+	CALL SET_VAR_INSTALLSOFT_EXPLAIN, SELECT_SOFT, L_TITLE
+	CALL PRINTFORM_LF, L_TITLE
+ENDIF
+WHILE LINECOUNT < L_LINE:1 + 6
+	PRINTFORML 
+WEND
+DRAWLINE
+CALL PRINT_COLOR, "[ 0] 교환한다", SELECT_SOFT >= 0 ? GETDEFCOLOR() # COLOR("DARK-GRAY")
+PRINTL 　　　[ 9] 돌아간다
+L_LINE:2 = LINECOUNT
+INPUT
+SELECTCASE RESULT
+	CASE 0
+		IF SELECT_SOFT > 0
+			CALL GET_INSTALLSOFT, SELECT_SOFT
+			CLEARLINE LINECOUNT - L_LINE:1
+			PRINTFORML 토템메모리와 인스톨소프트를 교환했습니다。
+			ITEM:토템메모리 -= 1
+			COUNT_TRADE_TOTEM_MEMORY++
+			WHILE LINECOUNT < L_LINE:2
+				PRINTL 
+			WEND
+			PRINTFORM [0] 교환한다
+			PRINTW 　　　[9] 돌아간다
+			RETURN 1
+		ENDIF
+	CASE 9
+		REDRAW L_REDRAW
+		RETURN 0
+	CASE 10 TO 10 + ((VARSIZE("SELL_LIST") -1) / SHOWNUM)
+		RESULT -= 10
+		SIF SELL_LIST:(RESULT * SHOWNUM) >= 0
+			L_PAGE = RESULT
+	CASE 100 TO 100 + VARSIZE("SELL_LIST")
+		RESULT -= 100
+		IF SELL_LIST:RESULT >= 0
+			IF SELL_LIST:RESULT == SELECT_SOFT
+				CLEARLINE LINECOUNT - L_LINE:1
+				PRINTFORML %조사처리(GET_INSTALLSOFT_NAME(SELECT_SOFT),"와")% 교환합니까？
+				PRINTL [0] 네
+				PRINTL [1] 아니오
+				WHILE LINECOUNT < L_LINE:2
+					PRINTL 
+				WEND
+				CALL INPUTINT, 0, 1
+				IF RESULT == 0
+					CALL GET_INSTALLSOFT, SELECT_SOFT
+					CLEARLINE LINECOUNT - L_LINE:1
+					PRINTFORML %조사처리(GET_INSTALLSOFT_NAME(SELECT_SOFT),"와")% 교환했습니다。
+					ITEM:토템메모리 -= 1
+					COUNT_TRADE_TOTEM_MEMORY++
+					SELECT_SOFT = -1
+					WHILE LINECOUNT < L_LINE:2
+						PRINTL 
+					WEND
+					PRINTFORM [0] 교환한다
+					PRINTW 　　　[9] 돌아간다
+					RETURN 1
+				ENDIF
+			ELSE
+				SELECT_SOFT = SELL_LIST:RESULT
+			ENDIF
+		ENDIF
+ENDSELECT
+GOTO START
+
+@TAKE_FREE_SKILL_EMULATOR, LIMIT_PRICE
+#DIM DYNAMIC LIMIT_PRICE
+#DIM DYNAMIC LCOUNT, 3
+#DIM DYNAMIC L_LINE,3
+#DIM DYNAMIC L_REDRAW
+#DIMS DYNAMIC TEMPS
+#DIM DYNAMIC SELL_LIST, 100
+#DIM DYNAMIC BUY_UNABLE, 100
+#DIM DYNAMIC BUY_LIST, 100
+#DIM DYNAMIC SELECT_BUYNUM
+#DIM DYNAMIC SELECT_EMU
+#DIMS DYNAMIC SELECT_TYPE
+#DIMS DYNAMIC L_TEXT
+#DIMS DYNAMIC L_BUTTON
+#DIMS DYNAMIC L_TITLE
+#DIM DYNAMIC L_PRICE
+#DIM DYNAMIC L_PRICE_SUM
+#DIMS DYNAMIC L_PRICES
+#DIMS DYNAMIC SHOW_LINE
+#DIM CONST SHOWNUM = 20
+#DIM DYNAMIC L_EMU
+#DIM DYNAMIC L_PAGE
+#DIMS DYNAMIC L_COLOR
+#DIM DYNAMIC LISTNUM
+
+L_REDRAW = CURRENTREDRAW()
+REDRAW 0
+
+VARSET BUY_LIST
+L_LINE = LINECOUNT
+SIF SELECT_TYPE == ""
+	SELECT_TYPE = %SKILL_EMULATOR_TYPE:0%
+SELECT_BUYNUM = -1
+SELECT_EMU = -1
+L_PAGE = 0
+$START
+CLEARLINE LINECOUNT - L_LINE
+DRAWLINE
+PRINTFORML {LIMIT_PRICE}마카까지의 에뮬레이터를 무상으로 받을 수 있습니다
+DRAWLINE
+
+;---------------------------------------------------
+;販売リストの作成
+;---------------------------------------------------
+VARSET SELL_LIST
+VARSET BUY_UNABLE
+
+FOR LCOUNT, 0, SKILL_EMULATOR_NUM
+	;名称未定義は弾く
+	SIF GET_SKILL_EMULATOR_NAME(LCOUNT) == ""
+		CONTINUE
+	;所持しているエミュレータは省く
+	SIF HAVE_SKILL_EMULATOR:LCOUNT
+		CONTINUE
+	;販売条件チェック
+	TRYCCALLFORM SKILL_EMULATOR_SELLABLE_{LCOUNT}
+		SIF !RESULT
+			CONTINUE
+	CATCH
+		CONTINUE
+	ENDCATCH
+	CALLFORM SKILL_EMULATOR_PRICE_{LCOUNT}
+	;指定金額を超えている場合は外す
+	SIF RESULT > LIMIT_PRICE
+		CONTINUE
+	;販売にリストに登録
+	SELL_LIST:FINDELEMENT(SELL_LIST, 0) = LCOUNT
+NEXT
+
+;---------------------------------------------------
+;商品の表示
+;---------------------------------------------------
+LCOUNT:2 = 0
+FOR LCOUNT, 0, SHOWNUM
+	LISTNUM = LCOUNT + L_PAGE * SHOWNUM
+	L_EMU = SELL_LIST:LISTNUM
+	SIF !L_EMU
+		CONTINUE
+	;カラーセット
+	IF L_EMU == SELECT_EMU
+		L_COLOR = %TOSTR_HTML(COLOR("aqua"))%
+	ELSE
+		L_COLOR = %TOSTR_HTML(GETDEFCOLOR())%
+	ENDIF
+	CALLFORM SKILL_EMULATOR_PRICE_{L_EMU}
+	L_PRICE = RESULT
+	L_PRICES = {L_PRICE, 7} 마카
+	VARSET RESULTS, "", 0, 11
+	L_TITLE = 
+	CALL SET_VAR_SKILL_EMULATOR_EXPLAIN, L_EMU, L_TITLE;EDIT 002 ADD
+	CALLFORM SKILL_EMULATOR_EXPLAIN_{L_EMU}
+	;長過ぎる場合の代替テキスト
+	SIF RESULTS:10 != ""
+		RESULTS = %RESULTS:10%
+	SHOW_LINE = <button value = '{LISTNUM + 100 }' title = '%L_TITLE%'><font color = '%L_COLOR%'>
+	SHOW_LINE += @"[{LISTNUM + 100}] %GET_SKILL_EMULATOR_NAME(L_EMU), 28, LEFT%" + L_PRICES
+	SHOW_LINE += "</font>" + "</button>"
+	SHOW_LINE += "　　　" + @"<font color = '%L_COLOR%'>" + RESULTS + "</font>"
+	HTML_PRINT SHOW_LINE
+NEXT
+WHILE LINECOUNT < L_LINE + SHOWNUM + 3
+	PRINTFORML 
+WEND
+
+;ページ部分の表示
+PRINTL 
+IF SELL_LIST:SHOWNUM
+	FOR LCOUNT, 0, 5
+		SIF !SELL_LIST:(LCOUNT * SHOWNUM)
+			CONTINUE
+		CALL PRINT_COLOR, @"[{10 + LCOUNT}] Page.{LCOUNT}　　　" , LCOUNT == L_PAGE ? COLOR("aqua") # GETDEFCOLOR()
+	NEXT
+ENDIF
+PRINTL 
+DRAWLINE
+SHOW_LINE = 
+L_LINE:1 = LINECOUNT
+IF SELECT_EMU > 0
+	PRINTFORML %GET_SKILL_EMULATOR_NAME(SELECT_EMU)%
+	CALL SET_VAR_SKILL_EMULATOR_EXPLAIN, SELECT_EMU, L_TITLE
+	CALL PRINTFORM_LF, L_TITLE
+ENDIF
+WHILE LINECOUNT < L_LINE:1 + 6
+	PRINTFORML 
+WEND
+HTML_PRINT SHOW_LINE
+L_LINE:2 = LINECOUNT
+CALL PRINT_COLOR, "[ 0] 교환한다", SELECT_EMU > 0 ? GETDEFCOLOR() # COLOR("DARK-GRAY")
+PRINTL 　　　[ 9] 돌아간다　　　　　　
+INPUT
+SELECTCASE RESULT
+	CASE 0
+		IF SELECT_EMU > 0
+			CALL ADD_SKILL_EMULATOR, SELECT_EMU
+			CLEARLINE LINECOUNT - L_LINE:1
+			PRINTFORML 토템메모리와 스킬에뮬레이터를 교환했습니다。
+			ITEM:토템메모리 -= 1
+			COUNT_TRADE_TOTEM_MEMORY++
+			WHILE LINECOUNT < L_LINE:2
+				PRINTL 
+			WEND
+			PRINTFORM [0] 교환한다
+			PRINTW 　　　[9] 돌아간다
+			RETURN 1
+		ENDIF
+	CASE 9
+		REDRAW L_REDRAW
+		RETURN 0
+	;ページの切り替え
+	CASE 10 TO 10 + ((VARSIZE("SELL_LIST") -1) / SHOWNUM)
+		RESULT -= 10
+		SIF SELL_LIST:(RESULT * SHOWNUM) >= 0
+			L_PAGE = RESULT
+	CASE 100 TO 100 + VARSIZE("SELL_LIST")
+		RESULT -= 100
+		IF SELL_LIST:RESULT >= 0
+			IF SELL_LIST:RESULT == SELECT_EMU
+				CLEARLINE LINECOUNT - L_LINE:1
+				PRINTFORML %조사처리(GET_SKILL_EMULATOR_NAME(SELECT_EMU),"와")% 교환합니까？
+				PRINTL [0] 네
+				PRINTL [9] 아니오
+				WHILE LINECOUNT < L_LINE:2 + 2
+					PRINTL 
+				WEND
+				CALL INPUTINT, 0, 1, 9
+				IF RESULT == 0
+					CALL ADD_SKILL_EMULATOR, SELECT_EMU
+					CLEARLINE LINECOUNT - L_LINE:1
+					PRINTFORML %조사처리(GET_SKILL_EMULATOR_NAME(SELECT_EMU),"와")% 교환했습니다。
+					ITEM:토템메모리 -= 1
+					COUNT_TRADE_TOTEM_MEMORY++
+					SELECT_EMU = -1
+					WHILE LINECOUNT < L_LINE:2
+						PRINTL 
+					WEND
+					PRINTFORM [0] 교환한다
+					PRINTW 　　　[9] 돌아간다
+					RETURN 1
+				ENDIF
+			ELSE
+				SELECT_EMU = SELL_LIST:RESULT
+			ENDIF
+		ENDIF
+ENDSELECT
+GOTO START
+
+@FIRST_IN_COMP_SMITH
+#DIMS DYNAMIC L_CALLNAME
+#DIM DYNAMIC L_LINE
+
+IS_VISITED_COMP_SMITH = 1
+IS_USEABLE_EVENT = 1
+
+IF IS_LOOKSLIKE_MALE(MASTER)
+	L_CALLNAME = 형씨
+ELSE
+	L_CALLNAME = 아가씨
+ENDIF
+FLAG:윈도우메시지스킵 = 0
+CALL SHOW_PICTURE, "NONFLOORD", "ＣＯＭＰ ＳＭＩＴＨ"
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞%MASTER는% ＣＯＭＰ ＳＭＩＴＨ에 발을 들였다。/＞점내에는 일반적인 핸드벨트 컴퓨터와 함께 무기나 악기 등、/＞다양한 물품이 진열되어 있다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "tataratang", "", "여자", @"어서와。/이 가게는 처음인 듯 한데 개조인가？/구매를 원한다면 여기 있는 물건이라면 바로 넘겨줄 수 있고、/원한다면 맞춤 제작도 맡아주지", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞여자는 그렇게 말하며 물품을 가리켰다…/＞보아하니 총이나 악기…심지어 우산까지도 전부 ＣＯＭＰ인 모양이다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞기계적으로 악마를 소환하기 위한 장치인 ＣＯＭＰ지만/＞위장목적이나 개인 취미 등으로、다른 도구를 본뜬 것을 사용하는 서머너도 많다/＞납득하려던 참에 %CALLNAME:MASTER%은(는) 용건을 떠올리고、/＞자신이 의뢰를 받고 찾아왔음을 전했다", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "tataratang", "", "여자", @"어이쿠、미안해/너무 신기한 듯이 보고 있길래/의뢰를 받아준 사람이라고는 생각지도 못했어", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "tataratang", "", "여자", @"%L_CALLNAME%、나는 타라라라고 해。/편하게 타타라짱이라고 불러줘！", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "tataratang", "", "타타라짱", @"그럼、요청하고 싶은 내용은 이거다", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞타타라짱은 그렇게 말하며 기계 부품 같은 것을 건네왔다/＞아마도 ＰＣ 부품…메모리일까…？", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "tataratang", "", "타타라짱", @"이건 토템메모리라고 불리는 것으로/이계화된 토지에서 발견되는데、ＣＯＭＰ에 집어넣거나 등등/꽤 편리하고 재밌는 소재야", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "tataratang", "", "타타라짱", @"그래서、너는 이걸 모아와줬으면 좋겠어/요컨대 던전을 탐색하다가 줍게 되면/이쪽으로 가져와달라는 얘기지", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "tataratang", "", "타타라짱", @"가져와주면、대가로 %L_CALLNAME%의 ＣＯＭＰ를 개조해줄께/물론 메모리가 없어도 ＣＯＭＰ상태가 나쁘거나、/뭔가 개조하고 싶어！진다면/사양말고 언제든지 와도 괜찮다구。", , , , , 4
+IF !HAVE_INSTALLSOFT("걸리버・매직")
+	CALL MESSAGE_WINDOW_ICON, , "tataratang", "", "타타라짱", @"아、그렇지/친해지고 싶어서 주는 건 아니지만 %L_CALLNAME%가 죽어버리면 이쪽도 곤란하니까/선불로 치고 조금 개조해줄께/ＣＯＭＰ를 줘봐", , , , , 4
+	CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞………/＞……/＞…", , , , , 4
+	CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞인스톨소프트『걸리버매직』을 손에 넣었다！", , , , , 4
+	IF GET_SUMMONER_MLV() > 0
+		CALL MESSAGE_WINDOW_ICON, , "tataratang", "", "타타라짱", @"이 녀석을 쓰면 탐색도 훨씬 수월해질 거야/탐색하러 가기 전에 잊지 말고 세트해 두라구", , , , , 4
+	ELSE
+		CALL MESSAGE_WINDOW_ICON, , "tataratang", "", "타타라짱", @"이 녀석을 쓰면 탐색도 훨씬 수월해질 텐데 말이지…/서머너 기능을 가진 녀석이 한 명이라도 없으면 안 돌아간단 말이지 이게…/있으면 도움 될 건 확실하니까 아무튼 어떻게든 해보라구", , , , , 4
+	ENDIF
+	CALL GETS_INSTALLSOFT("걸리버・매직")
+ENDIF
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞타타라짱으로부터 정식으로 의뢰를 받았습니다。/이후 토템메모리를 ＣＯＭＰ ＳＭＩＴＨ에게 가지고 오는 것으로/마카로 교환받을 수 있습니다 。", , , , , 4
+
+L_LINE = LINECOUNT
+DRAWLINE
+PRINTL ＣＯＭＰ의 기능강화
+DRAWLINE
+PRINTFORML □ＣＯＭＰ란？
+PRINTFORML 　악마소환 프로그램이 인스톨된 휴대가능한 소형 컴퓨터의 총칭입니다。
+PRINTFORML 　일반적인 서머너(악마소환사)는 ＣＯＭＰ를 이용해、악마를 사역하고、
+PRINTFORML 　ＣＯＭＰ의 성능이 높으면 악마를 데리고 다니는 수가 늘어나、파티의 능력이 강화되며、
+PRINTFORML 　악마와의 교섭을 유리하게 만들거나、악마합체를 통해 더욱 강력한 악마를 입수할 수 있는 등 다양한 혜택을 누릴 수 있습니다。
+PRINTFORML 
+PRINTFORML □인스톨소프트
+PRINTFORML 　ＣＯＭＰ에 기능을 추가하는 어플리케이션입니다。
+PRINTFORML 　방금 손에 넣은『걸리버매직』은 탐색중 걷는 것으로 %CALLNAME:MASTER%의 ＨＰ가 회복되게 됩니다。
+PRINTFORML 　단、이 효과는 ＣＯＭＰ의 용량을 소비해、세트하지 않으면 발휘되지 않습니다。
+PRINTFORML 　사용하기 위해선 셋업 화면을 열고、인스톨소프트를 선택해 세트해주세요。
+PRINTFORML 　또한、인스톨소프트는 소프트마다 필요한 서머너 레벨이 설정되어 있어、
+PRINTFORML 　파티 내 일정 레벨 이상의 서머너기능을 가진 동료마가 없으면 효과를 발휘하지 못하니 주의해주세요。
+PRINTFORML 　이 떄문에、이 게임에서는 서머너기능을 가진 동료마를 파티에 한 명은 넣어두는 것이 권장됩니다。
+PRINTFORML 
+PRINTFORML □ＣＯＭＰ 용량과 스톡 용량
+PRINTFORML 　ＣＯＭＰ의 용량은 인스톨소프트를 넣기 위한 용량이며 마카를 지불하는 것으로 타타라짱에게 증가시켜받을 수 있습니다。
+PRINTFORML 　스톡 용량은 악마를 스톡하기 위한 용량이며、이를 늘리면 탐색과 전투에 사용할 수 있는 악마의 수가 늘어납니다。
+PRINTFORML 　이는 특수한 기재를 사용하기 때문에、마카로는 증가시킬수 없습니다。
+PRINTFORML 　납금 등을 통해 조직에 기여하면、팬텀・소사이어티에게 지원을 받을 수 있고、그것으로 늘릴 수 있습니다。
+PRINTFORML 
+PRINTFORML □스킬애뮬레이터
+PRINTFORML 　인스톨소프트가 %MASTER가% 가진 ＣＯＭＰ에 기능을 추가하는 어플리케이션인 반면
+PRINTFORML 　스킬애뮬레이터는 서머너기능을 가진 동료마가 개인이 가진 ＣＯＭＰ에 기능을 추가하는 것입니다。
+PRINTFORML 　서머너기능이 Lv3 이상인 동료마 만이 사용 가능하며、이것 또한 셋업에서 장착할 필요가 있습니다。
+PRINTFORML 　서머너 본인이나 파티 멤버를 강화하거나、턴을 소비하지 않고 회복하는 등、전략적인 요소가 많고、
+PRINTFORML 　매우 강력한 것이 많으니、서머너기능을 가진 동료마를 채용할 경우 적극적으로 구입해 사용하면 좋습니다。
+WHILE LINECOUNT - L_LINE < (GET_HEIGHTLENS() - G_PRINT_FEWLINE_MODE * 9)
+	PRINTL 
+WEND
+FORCEWAIT
+CALL 暗転ウェイト実行
+@FINISHED_EVENT_IN_COMP_SMITH
+#DIMS DYNAMIC L_CALLNAME
+#DIM DYNAMIC L_LINE
+
+IS_VISITED_COMP_SMITH = 1
+IS_USEABLE_SHOPCOM = 1
+
+IF IS_LOOKSLIKE_MALE(MASTER)
+	L_CALLNAME = 형씨
+ELSE
+	L_CALLNAME = 아가씨
+ENDIF
+FLAG:윈도우메시지스킵 = 0
+CALL 暗転ウェイト実行
+
+CALL SHOW_PICTURE, "NONFLOORD", "ＣＯＭＰ ＳＭＩＴＨ"
+CALL MESSAGE_WINDOW_ICON, , "tataratang_L", "", "타타라짱", @"%L_CALLNAME%、고마워/덕분에 충분한 수의 토템메모리를 손에 넣었다。/덕분에 기분이 좋다구！", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "tataratang_L", "", "타타라짱", @"추가보너스…라고나 할까/ＣＯＭＰ의 용량을 늘려줄께", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞여자는 그렇게 말하고는 물건을 가리켰다…/＞보아하니 총이나 악기…심지어 우산까지도 전부 ＣＯＭＰ인 모양이다。/그런 이유로、그녀석을 줘봐", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞………/＞……/＞…", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞ＣＯＭＰ의 용량이 증가했다！", , , , , 4
+
+CALL SIZEUP_COMP_BY_EVEMT, "RQ1_トーテムメモリー蒐集"
+COUNT_TRADE_TOTEM_MEMORY = 5

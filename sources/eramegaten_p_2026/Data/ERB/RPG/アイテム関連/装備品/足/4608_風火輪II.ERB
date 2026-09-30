@@ -1,0 +1,178 @@
+﻿
+;======================================================
+;装備品のデータ
+;풍화륜II
+;合成アイテム
+;人間・半魔人専用、作りにくい、装備条件ありなのでかなり高め
+;======================================================
+;Lv100想定
+@基本能力修正_4608,ARG,ARG:1 = -1
+
+SELECTCASE ARG
+ENDSELECT
+RETURN 0
+
+@戦闘能力修正_4608,ARG,ARG:1 = -1
+
+SELECTCASE ARG
+	;공격
+	CASE 0
+		SIF ARG:1 == -1
+			RETURN 0
+		SIF EQUIP:(ARG:1):검 == 0 && TALENT:(ARG:1):마샬아츠
+			RETURN 272
+	;명중
+	CASE 1
+		SIF ARG:1 == -1
+			RETURN 0
+		SIF EQUIP:(ARG:1):검 == 0 && TALENT:(ARG:1):마샬아츠
+			RETURN 205
+	;방어
+	CASE 2
+		RETURN 10
+	;회피
+	CASE 3
+		RETURN 78
+	;마법위력
+	CASE 4
+		SIF ARG:1 == -1
+			RETURN 0
+		SIF EQUIP:(ARG:1):검 == 0 && TALENT:(ARG:1):마샬아츠
+			RETURN 184
+	;마법효과
+	CASE 5
+		SIF ARG:1 == -1
+			RETURN 16
+		SIF EQUIP:(ARG:1):검 == 0 && TALENT:(ARG:1):마샬아츠
+			RETURN 90
+		RETURN 16
+ENDSELECT
+RETURN 0
+
+@防御相性_4608,ARG,ARG:1 = -1
+;0,검격
+;1,비구
+;2,타격
+;3,전술
+;4,화염
+;5,빙결
+;6,전격
+;7,충격
+;8,신경
+;9,정신
+;10,파마
+;11,주살
+;一応
+;12,지변
+;13,수격
+;14,질풍
+;15,중력
+;16,핵열
+;17,만능
+;18,사이코
+SELECTCASE ARG
+	CASE 4
+		RETURN -50
+	CASE 7
+		RETURN 0
+	CASE 2,6
+		RETURN 140
+ENDSELECT
+RETURN 100
+
+@攻撃相性_4608, ARG = -1
+
+RETURN 2
+
+@最低攻撃回数_4608, ARG = -1
+
+RETURN 1
+
+@最大攻撃回数_4608, ARG = -1
+
+RETURN 1
+
+@射程_4608, ARG = -1
+
+RETURN 1
+
+@攻撃範囲_4608, ARG = -1
+
+RETURN 1
+
+@装備箇所_4608
+
+RETURN GET_EQUIPNUM("발")
+
+@条件つき装備追加スキル_4608
+RETURN 1
+
+@装備追加スキル_4608,ARG,ARG:1 = -1
+SIF ARG:1 == -1
+	RETURN 0
+SIF EQUIP:(ARG:1):검
+	RETURN 0
+IF GET_ROLE_PROP("CAN_USE_WEAPON_MASTERY", ARG:1) && TALENT:(ARG:1):마샬아츠
+	;IF MAXBASE:(ARG:1):ＭＰ < 1
+	IF !GET_ROLE_PROP("HAVE_MP", ARG:1)
+		SELECTCASE ARG
+			CASE 0
+				RETURN [[스킬:결단]]
+			CASE 1
+				RETURN [[스킬:타격부스터]]
+		ENDSELECT
+	ELSE
+		SELECTCASE ARG
+			CASE 0
+				RETURN [[스킬:화쇄열풍파]]
+			CASE 1
+				RETURN [[스킬:열풍격]]
+		ENDSELECT
+	ENDIF
+ENDIF
+RETURN 0
+
+@必要レベル_4608
+RETURN 70
+
+@必要ステータス_4608
+RESULTS = 속도
+RESULTS:1 = OR
+RETURN 40
+
+@装備条件_4608,ARG
+SIF (ABL:ARG:종족 == 0 || ABL:ARG:종족 == 36) == 0
+	RETURN 0
+;SIF BASE:ARG:속도 < 40
+;	RETURN 0
+;SIF BASE:ARG:LV < 70
+;	RETURN 0
+RETURN 1
+
+@装備解説_4608
+PRINTFORML 나타태자가 발에 차고 있던 보패
+PRINTFORML 무술을 극에 달한 자는 이 장비를 무구로 다룰 수 있다
+PRINTL 
+PRINTL 性能強化条件:[검:ＥＭＰＴＹ] + [마샬아츠]
+PRINTL 추가 스킬　:[결단],[타격부스터]　추가 조건:[검:ＥＭＰＴＹ] + [마샬아츠] + [ＭＰ미소지]
+PRINTL 추가 스킬　:[화쇄열풍파],[열풍격]　　추가 조건:[검:ＥＭＰＴＹ] + [마샬아츠] + [ＭＰ소지]
+;SETCOLOR 0x87ceeb
+;PRINTL マーシャルアーツ専用《剣：EMPTY》
+;RESETCOLOR
+
+@装備条件説明_4608
+;PRINTL 装備条件：人間、半魔人 LV70～　速さ40以上
+PRINTL 装備条件：人間、半魔人
+
+@購入条件_4608
+RETURN 0
+
+@引継ぎ可不可_4608
+RETURN 1
+
+@WIKI備考欄_4608
+;WIKIの備考欄に記載するもの|は使わないでおく、PRINTL、PRINTFORMLも使わない
+PRINT 검 미장비와 마샬아츠로~~
+PRINT 攻撃：272　命中：205　防御：10~~
+PRINT 魔威：184　魔効：_90　回避：78~~
+PRINT 스킬이 2개 붙는다

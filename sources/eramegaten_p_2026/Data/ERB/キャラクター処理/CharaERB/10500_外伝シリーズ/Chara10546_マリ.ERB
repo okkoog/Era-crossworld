@@ -1,0 +1,542 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara4506_マリ.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Comment		:イベント加入フラグ
+;					1:肉便器経験あり
+;					2:ふたなり化
+;					3:崩壊後加入
+;					4:ふたなり崩壊
+;					5:エージェント化
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/02/05		P(bazzile)				新規作成
+;	002		2025/03/14		epizo					画像パターン設定
+;	003		2025/07/24		epizo					画像パターン更に追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;--------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:마리]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+CALL SET_BASE_[[キャラ:마리]], ARG, ARG:2
+CALL SET_BTL_TALENT_[[キャラ:마리]], ARG, ARG:2
+IF ARG:2 == 5
+	CALL CLEAR_ALL_SKILL, ARG
+	CALL CLEAR_LEARNED_SKILL_ALL, ARG
+ENDIF
+CALL SET_LEARN_SKILL_[[キャラ:마리]], ARG, ARG:2
+
+;ARG:1はイベントフラグ
+@SET_BASE_[[キャラ:마리]], ARG, ARG:1
+#DIM L_DAY
+SELECTCASE ARG:1
+	CASE 1, 2
+		L_DAY = LIMIT(DAY, 35, 60)
+	CASE 3, 4
+		L_DAY = MAX(DAY, 60)
+	CASE 5
+		L_DAY = MAX(DAY, 80)
+ENDSELECT
+SELECTCASE ARG:1
+	CASE 1,3,5
+		TALENT:ARG:처녀 = 0
+		ABL:ARG:Ｃ감각 = 1
+		ABL:ARG:Ｖ감각 = 3
+		ABL:ARG:Ａ감각 = 3
+		ABL:ARG:Ｂ감각 = 1
+		ABL:ARG:순종 = 2
+		ABL:ARG:욕망 = 3
+		ABL:ARG:기교 = 2
+		ABL:ARG:봉사정신 = 2
+		ABL:ARG:노출증 = 1
+		ABL:ARG:마조끼 = 3
+		ABL:ARG:레즈끼 = 1
+		ABL:ARG:자위중독 = 1
+		ABL:ARG:정액중독 = 1
+		MARK:ARG:반발각인 = 3
+		MARK:ARG:4 = 3
+		EXP:ARG:키스경험 = (L_DAY-20)*10
+		EXP:ARG:Ｖ경험 = (L_DAY-20)*10
+		EXP:ARG:Ａ경험 = (L_DAY-20)*10
+		EXP:ARG:절정경험 = (L_DAY-20)*25
+		EXP:ARG:성교경험 = (L_DAY-20)*20
+		EXP:ARG:질사경험 = (L_DAY-20)*10
+		EXP:ARG:자위경험 = (L_DAY-20)*5
+		EXP:ARG:조교자위경험 = (L_DAY-20)*15
+		EXP:ARG:정액경험 = (L_DAY-20)*55
+		EXP:ARG:봉사쾌락경험 = (L_DAY-20)*5
+		EXP:ARG:펠라경험 = (L_DAY-20)*30
+		EXP:ARG:고통쾌락경험 = (L_DAY-20)*10
+		EXP:ARG:방뇨경험 = (L_DAY-20)*5
+		EXP:ARG:레즈경험 = (L_DAY-20)*10
+		EXP:ARG:긴박경험 = (L_DAY-20)*5
+		CALL ADDS_ABNORMAL_EXP("処女喪失（輪姦）", ARG)
+		CALL SHOW_ABNORMAL_EXP , ARG, 0
+		CFLAG:ARG:초기이상경험 = 2
+		EXP:ARG:이상경험 = 2
+		IF ARG:1 == 3
+			ABL:ARG:Ｃ감각 = 3
+			ABL:ARG:Ｖ감각 = 5
+			ABL:ARG:Ａ감각 = 5
+			ABL:ARG:Ｂ감각 = 3
+			ABL:ARG:순종 = 3
+			ABL:ARG:욕망 = 4
+			ABL:ARG:기교 = 3
+			ABL:ARG:봉사정신 = 4
+			ABL:ARG:노출증 = 3
+			ABL:ARG:마조끼 = 5
+			ABL:ARG:레즈끼 = 3
+			ABL:ARG:섹스중독 = 1
+			ABL:ARG:자위중독 = 3
+			ABL:ARG:정액중독 = 3
+			MARK:ARG:반발각인 = 0
+			EXP:ARG:키스경험 = 400 + (L_DAY-60)*5
+			EXP:ARG:Ｖ경험 = 400 + (L_DAY-60)*5
+			EXP:ARG:Ａ경험 = 400 + (L_DAY-60)*5
+			EXP:ARG:성교경험 = 400 + (L_DAY-60)*15
+			EXP:ARG:질사경험 = 400 + (L_DAY-60)*3
+			EXP:ARG:자위경험 = 200 + (L_DAY-60)*10
+			EXP:ARG:정액경험 = 220 + (L_DAY-60)*20
+			EXP:ARG:펠라경험 = 1200 + (L_DAY-60)*10
+			EXP:ARG:수간경험 = (L_DAY-60)*10
+			EXP:ARG:고통쾌락경험 = (L_DAY-60)*10
+			EXP:ARG:방뇨경험 = (L_DAY-60)*5
+			CALL ADDS_ABNORMAL_EXP("処女喪失（輪姦）", ARG)
+			CALL ADDS_ABNORMAL_EXP("獣姦", ARG)
+			CALL SHOW_ABNORMAL_EXP , ARG, 0
+			CFLAG:ARG:초기이상경험 = 3
+			EXP:ARG:이상경험 = 3
+		ELSE
+			TALENT:ARG:처녀 = 0
+			TALENT:ARG:붕괴 = 1
+			TALENT:ARG:솔직함 = 1
+			TALENT:ARG:습득빠름 = 0
+			TALENT:ARG:습득느림 = 1
+			TALENT:ARG:정조관념 = 0
+			TALENT:ARG:정조관결여 = 1
+			TALENT:ARG:일선을넘지않음 = 0
+			TALENT:ARG:해방 = 1
+			TALENT:ARG:젖기쉬움 = 1
+			TALENT:ARG:불결무시 = 1
+			TALENT:ARG:마조 = 1
+			TALENT:ARG:섹스광 = 1
+
+			ABL:ARG:Ｃ감각 = 2
+			ABL:ARG:Ｖ감각 = 4
+			ABL:ARG:Ａ감각 = 4
+			ABL:ARG:Ｂ감각 = 2
+			ABL:ARG:순종 = 2
+			ABL:ARG:욕망 = 3
+			ABL:ARG:기교 = 3
+			ABL:ARG:봉사정신 = 1
+			ABL:ARG:노출증 = 5
+			ABL:ARG:마조끼 = 4
+			ABL:ARG:레즈끼 = 1
+			ABL:ARG:자위중독 = 4
+			ABL:ARG:정액중독 = 2
+			EXP:ARG:키스경험 = 600 + (L_DAY-60)*2
+			EXP:ARG:Ｖ경험 = 600 + (L_DAY-60)*3
+			EXP:ARG:Ａ경험 = 600 + (L_DAY-60)*2
+			EXP:ARG:절정경험 = 220 + (L_DAY-60)*5
+			EXP:ARG:성교경험 = 1200 + (L_DAY-60)*5
+			EXP:ARG:질사경험 = 600 + (L_DAY-60)*2
+			EXP:ARG:자위경험 = 1400 + (L_DAY-60)*10
+			EXP:ARG:조교자위경험 = 400
+			EXP:ARG:정액경험 = 220 + (L_DAY-60)*5
+			EXP:ARG:펠라경험 = 1200 + (L_DAY-60)*5
+			EXP:ARG:방뇨경험 = 200
+			EXP:ARG:긴박경험 = 200
+			MARK:ARG:굴복각인 = 3
+			MARK:ARG:반발각인 = 0
+
+			BASE:ARG:LV = 15
+			BASE:ARG:힘 = 12
+			BASE:ARG:지혜 = 1
+			BASE:ARG:마력 = 4
+			BASE:ARG:내구 = 8
+			BASE:ARG:속도 = 12
+			BASE:ARG:운 = 4
+
+			;口上を決め打ち
+			CFLAG:ARG:구상셀렉트 = 2
+			CSTR:ARG:일인칭 = マリちゃん
+			CSTR:ARG:이인칭 = はんちょう
+			CSTR:ARG:타이틀 = きょにゅうガール
+
+			;初期衣装を脱がし、初期装備(비전의단도)を着ける
+			CFLAG:ARG:초기옷 = 0
+			CFLAG:ARG:초기하의 = 0
+			CFLAG:ARG:초기속옷（상） = 0
+			CFLAG:ARG:초기속옷（하） = 0
+			CFLAG:ARG:초기양말 = 0
+			CFLAG:ARG:옷 = 0
+			CFLAG:ARG:하의 = 0
+			CFLAG:ARG:속옷（상） = 0
+			CFLAG:ARG:속옷（하） = 0
+			CFLAG:ARG:양말 = 0
+			EQUIP:ARG:검 = 2010
+
+			;スキルを設定する
+			;ABL:ARG:스킬1 = [[스킬:양팔찍기]]
+			;ABL:ARG:스킬2 = [[스킬:디아]]
+			;ABL:ARG:스킬3 = [[스킬:파트라]]
+			;ABL:ARG:스킬4 = [[스킬:이할의활천]]
+
+			;キャラ解説　オリジナルと変わっている部分だけ書き換え
+			CSTR:ARG:33 = 
+			CSTR:ARG:34 = 
+			CSTR:ARG:35 = ＊＊＊　以降ShinEraTenseiオリジナル　＊＊＊
+			CSTR:ARG:36 = 以前はとある小学校で養護教諭をしていたが、組織に捕らえられて性奴隷として扱われていたが
+			CSTR:ARG:37 = 日数が経過して飽きられてきたので、戦闘訓練を施され組織のメンバーとして生まれ変わる。
+			CSTR:ARG:38 = 
+			CSTR:ARG:39 = なお、様々な経験から精神を崩壊しており、幼児退行をおこしている。
+			CSTR:ARG:40 = 
+			CSTR:ARG:41 = このキャラクターは忠誠度10000以上にすることで周回引き継ぎが可能となる。
+
+		ENDIF
+	CASE 2,4
+		TALENT:ARG:처녀 = 0
+		TALENT:ARG:후타나리 = 1
+		TALENT:ARG:정조관념 = 0
+		TALENT:ARG:일선을넘지않음 = 0
+		TALENT:ARG:해방 = 1
+		TALENT:ARG:불결무시 = 1
+		ABL:ARG:Ｃ감각 = 1
+		ABL:ARG:Ｖ감각 = 3
+		ABL:ARG:Ａ감각 = 3
+		ABL:ARG:Ｂ감각 = 1
+		ABL:ARG:순종 = 2
+		ABL:ARG:욕망 = 3
+		ABL:ARG:기교 = 2
+		ABL:ARG:봉사정신 = 2
+		ABL:ARG:노출증 = 1
+		ABL:ARG:마조끼 = 3
+		ABL:ARG:레즈끼 = 3
+		ABL:ARG:자위중독 = 1
+		ABL:ARG:정액중독 = 1
+		MARK:ARG:반발각인 = 3
+		MARK:ARG:4 = 3
+		EXP:ARG:키스경험 = (L_DAY-20)*30
+		EXP:ARG:Ｖ경험 = (L_DAY-20)*50
+		EXP:ARG:Ａ경험 = (L_DAY-20)*40
+		EXP:ARG:절정경험 = (L_DAY-20)*95
+		EXP:ARG:성교경험 = (L_DAY-20)*110
+		EXP:ARG:질사경험 = (L_DAY-20)*40
+		EXP:ARG:자위경험 = (L_DAY-20)*5
+		EXP:ARG:조교자위경험 = (L_DAY-20)*15
+		EXP:ARG:정액경험 = (L_DAY-20)*55
+		EXP:ARG:봉사쾌락경험 = (L_DAY-20)*10
+		EXP:ARG:펠라경험 = (L_DAY-20)*30
+		EXP:ARG:고통쾌락경험 = (L_DAY-20)*15
+		EXP:ARG:방뇨경험 = (L_DAY-20)*5
+		EXP:ARG:레즈경험 = (L_DAY-20)*20
+		EXP:ARG:긴박경험 = (L_DAY-20)*5
+		EXP:ARG:사정경험 = (L_DAY-20)*15
+		CALL ADDS_ABNORMAL_EXP("処女喪失（輪姦）", ARG)
+		CALL ADDS_ABNORMAL_EXP("射精", ARG)
+		CALL SHOW_ABNORMAL_EXP , ARG, 0
+		CFLAG:ARG:초기이상경험 = 3
+		EXP:ARG:이상경험 = 3
+		IF ARG:1 == 4
+			TALENT:ARG:거유 = 0
+			TALENT:ARG:폭유 = 1
+			ABL:ARG:Ｃ감각 = 4
+			ABL:ARG:Ｖ감각 = 5
+			ABL:ARG:Ａ감각 = 5
+			ABL:ARG:Ｂ감각 = 3
+			ABL:ARG:순종 = 3
+			ABL:ARG:욕망 = 5
+			ABL:ARG:기교 = 3
+			ABL:ARG:봉사정신 = 4
+			ABL:ARG:노출증 = 3
+			ABL:ARG:마조끼 = 4
+			ABL:ARG:레즈끼 = 4
+			ABL:ARG:섹스중독 = 1
+			ABL:ARG:정액중독 = 3
+			CALL ADDS_ABNORMAL_EXP("処女喪失（輪姦）", ARG)
+			CALL ADDS_ABNORMAL_EXP("獣姦", ARG)
+			CALL ADDS_ABNORMAL_EXP("射精", ARG)
+			CALL SHOW_ABNORMAL_EXP , ARG, 0
+			CFLAG:ARG:초기이상경험 = 4
+			EXP:ARG:이상경험 = 4
+		ENDIF
+ENDSELECT
+
+@SET_BTL_TALENT_[[キャラ:마리]], ARG, ARG:1
+IF ARG:1 == 5
+	;達人はスキルの処理で問題がでるので先に初期スキルを消しておく
+	CALL CLEAR_ALL_SKILL, ARG
+	CALL CHANGE_ROLE, ARG, "달인_1/공격의심득_3", , , "サブ素質引継ぎなし"
+	;CALL CLEAR_ROLE_TALENT, ARG
+	;;戦闘素質：達人を付ける、サマナーを消す
+	;TALENT:ARG:달인 = 1
+	;TALENT:ARG:공격의심득 = 3
+	;TALENT:ARG:도술 = 1
+ENDIF
+
+@SET_LEARN_SKILL_[[キャラ:마리]], ARG, ARG:1
+IF ARG:1 == 5
+	;スキルを設定する
+	CALL CLEAR_ALL_LEARN_SKILL, ARG
+	CALL SET_LEARN_SKILL, ARG, "양팔찍기", 1
+	CALL SET_LEARN_SKILL, ARG, "디아", 1
+	CALL SET_LEARN_SKILL, ARG, "파트라", 1
+	CALL SET_LEARN_SKILL, ARG, "이할의활천", 10
+	CALL SET_LEARN_SKILL, ARG, "디아라마", 19
+	CALL SET_LEARN_SKILL, ARG, "대나무베기", 22
+	CALL SET_LEARN_SKILL, ARG, "이악물기", 30
+	CALL SET_LEARN_SKILL, ARG, "데스바운드", 36
+	CALL SET_LEARN_SKILL, ARG, "이할의마맥", 41
+	CALL SET_LEARN_SKILL, ARG, "관통", 45
+	CALL SET_LEARN_SKILL, ARG, "결단", 50
+	CALL SET_LEARN_SKILL, ARG, "맹반격", 62
+	CALL SET_LEARN_SKILL, ARG, "오의일섬", 76
+	CALL SET_LEARN_SKILL, ARG, "화차베기", 80
+ENDIF
+
+;特殊な周回引き継ぎ条件
+;達人マリは陥落で判定をクリアするのが不可能なので代替条件を設定
+@SELECT_YOME_[[キャラ:마리]], ARG
+IF CFLAG:ARG:이벤트가입 == 5
+	SIF GET_CHARA_LOYALTY(ARG) >= 10000
+		RETURN 1
+	RETURN 0
+ELSE
+	RETURN -1
+ENDIF
+
+;--------------------------------------------------
+;キャラクター独自変数名称定義関数
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:마리]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_EV
+	;周回時にリセットされる数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_EV
+	;周回時にリセットされる文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる数値型変数です
+	;スキルゲージHとほぼ互換です。基本的にはゲージHが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる文字列型変数です
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる数値型変数
+	;スキルゲージFとほぼ互換です。基本的にはゲージFが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる文字列型変数
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:마리]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("マリ_FACE_6")
+			RETURNF ""
+		SIF !SPRITECREATED("マリ_FACE_7")
+			RETURNF ""
+		SIF !SPRITECREATED("マリ_FACE_8")
+			RETURNF ""
+		SIF !SPRITECREATED("マリ_FACE_9")
+			RETURNF ""
+		SIF !SPRITECREATED("マリ_FACE_10")
+			RETURNF ""
+		SIF !SPRITECREATED("マリ_FACE_11")
+			RETURNF ""
+		SIF !SPRITECREATED("マリ_FACE_12")
+			RETURNF ""
+		SIF !SPRITECREATED("マリ_FACE_13")
+			RETURNF ""
+		SIF !SPRITECREATED("マリ_FACE_EX_0")
+			RETURNF ""
+		SIF !SPRITECREATED("マリ_FACE_EX_1")
+			RETURNF ""
+		SIF !SPRITECREATED("マリ_FACE_EX_2")
+			RETURNF ""
+		SIF !SPRITECREATED("マリ_FACE_EX_3")
+			RETURNF ""
+		RESULTS_F = 新型
+		CALLF DISPOSE_SPRITE_FORCE_F, TEMP_GID_START, "マリ新型"
+		GCREATE TEMP_GID_START, 360, 360
+		GDRAWSPRITE TEMP_GID_START, "マリ_FACE_6", 0, 0, 180, 180
+		GDRAWSPRITE TEMP_GID_START, "マリ_FACE_8", 180, 0, 180, 180
+		GDRAWSPRITE TEMP_GID_START, "マリ_FACE_10", 0, 180, 180, 180
+		GDRAWSPRITE TEMP_GID_START, "マリ_FACE_12", 180, 180, 180, 180
+		SPRITECREATE "マリ新型", TEMP_GID_START
+		RESULTS_F:2 = マリ新型
+		RESULTS_F:1 = マリ_FACE_6
+	CASE 1
+		;画像チェック
+		SIF !SPRITECREATED("マリ_FACE_3")
+			RETURNF ""
+		SIF !SPRITECREATED("マリ_FACE_4")
+			RETURNF ""
+		SIF !SPRITECREATED("マリ_FACE_5")
+			RETURNF ""
+		RESULTS_F = デフォルト
+		RESULTS_F:1 = マリ_FACE_3
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:마리]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "新型"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+				CALLF 陥落(L_CHARA)
+				IF RESULTS == "연모"
+					RESULTS_F = マリ_FACE_9
+				ELSEIF RESULTS == "음란"
+					RESULTS_F = マリ_FACE_11
+				ELSEIF RESULTS == "복종"
+					RESULTS_F = マリ_FACE_13
+				ELSEIF RESULTS == "신뢰"
+					RESULTS_F = マリ_FACE_9
+				ELSE
+					RESULTS_F = マリ_FACE_7
+				ENDIF
+			CASEELSE
+				SELECTCASE L_SITUATION:1
+					;戦闘不能になった時
+					CASE "DYING"
+						RESULTS_F = マリ_FACE_EX_0
+					;魅了にされた時
+					CASE "CHARM"
+						RESULTS_F = マリ_FACE_EX_1
+					;睡眠にされた時
+					CASE "SLEEP" 
+						RESULTS_F = マリ_FACE_EX_2
+					;上記以外の状態異常の時
+					CASE "STONE", "FLY", "PALYZE", "BRAND", "CURSE", "FLAME", "BOMB", "POISON", "CLOSE", "BIND", "SLIP", "FREEZE", "PANIC", "SHOCK", "HAPPY"
+						RESULTS_F = マリ_FACE_EX_3
+					;通常時
+				CASEELSE
+					CALLF 陥落(L_CHARA)
+					IF RESULTS == "연모"
+						RESULTS_F = マリ_FACE_8
+					ELSEIF RESULTS == "음란"
+						RESULTS_F = マリ_FACE_10
+					ELSEIF RESULTS == "복종"
+						RESULTS_F = マリ_FACE_12
+					ELSEIF RESULTS == "신뢰"
+						RESULTS_F = マリ_FACE_8
+					ELSE
+						RESULTS_F = マリ_FACE_6
+					ENDIF
+				ENDSELECT
+				;HPが25%未満だとDYINGまでこれに固定する
+				IF 現HP割合(L_CHARA) < 25
+					RESULTS_F = マリ_FACE_EX_0
+				ENDIF
+		ENDSELECT
+	CASE "デフォルト"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+				RESULTS_F = マリ_FACE_4
+			CASEELSE
+				IF IS_BADSTATE(L_CHARA, "CHARM")
+					RESULTS_F = マリ_FACE_4
+				ELSEIF L_SITUATION:1 == "DYING"
+					RESULTS_F = マリ_FACE_5
+					;DYINGでの色相変換を回避させるための指定
+					RESULT_F:1 = 1
+				ELSE
+					RESULTS_F = マリ_FACE_3
+				ENDIF
+		ENDSELECT
+	CASEELSE
+ENDSELECT

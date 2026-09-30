@@ -1,0 +1,156 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_ER_サウザンド・サーペント, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	IF FLAG:행동순1 == ARG
+		RESULTS = 루미너스 이클립스
+	ELSE
+		RESULTS = ﾙﾐﾅｽ･ｴｸﾘﾌﾟｽ
+	ENDIF
+ELSE
+	IF FLAG:행동순1 == ARG
+		RESULTS = 서우전드 서펀트
+	ELSE
+		RESULTS = ｻｳｻﾞﾝﾄﾞ･ｻｰﾍﾟﾝﾄ
+	ENDIF
+ENDIF
+
+;　명중
+@SKILL_HITRATE_ER_サウザンド・サーペント, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_ER_サウザンド・サーペント, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	RETURN 400
+ELSE
+	RETURN 250
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ER_サウザンド・サーペント, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ER_サウザンド・サーペント, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ER_サウザンド・サーペント, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ER_サウザンド・サーペント, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	RETURN 50
+ELSE
+	RETURN 35
+ENDIF
+
+;　相性
+@SKILL_TYPE_ER_サウザンド・サーペント, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	RETURN GET_TYPE_NUM("비구")
+ELSE
+	RETURN GET_TYPE_NUM("검격")
+ENDIF
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ER_サウザンド・サーペント
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ER_サウザンド・サーペント, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ER_サウザンド・サーペント, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_ER_サウザンド・サーペント, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ER_サウザンド・サーペント, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	RETURN 1
+ELSE
+	RETURN 3
+ENDIF
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ER_サウザンド・サーペント, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_ER_サウザンド・サーペント, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ER_サウザンド・サーペント
+RETURN 0
+
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+@SKILL_DAMAGE_EFFECT_ER_サウザンド・サーペント, ARG, ARG:1, ARG:2
+SIF ARG:1 < 0
+	RETURN 0
+SIF ARG:2 < -1
+	RETURN 0
+
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	; デバフ
+	CALL SKILL_SET_カジャンダ, ARG, ARG:1, "攻撃_防御_回避", -4, "短縮", "", "", -4
+ENDIF
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ER_サウザンド・サーペント, ARG, ARG:1, SKILL_NUM
+#LOCALSIZE 4
+#DIM SKILL_NUM
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM
+ELSE
+	CALL ATTACK_FIELD, ARG, ARG:1, SKILL_NUM
+	
+	; 自バフ
+	CALL SKILL_SET_カジャンダ, ARG, ARG, "攻撃_クリティカル", 4, "短縮", "", "", 4
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_ER_サウザンド・サーペント, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	PRINTL 
+	PRINTL 마의 힘을 해방하여 장총검 에스티카 로우로 꿰뚫는다.
+	PRINTL 적 단체에 비구 속성 대위력의 물리 공격을 행한다.
+	PRINTL 
+ELSE
+	PRINTL 
+	PRINTL 사렵검 서펀트 팽을 뽑아 크게 휘두른다.
+	PRINTL 적 전체에 검격 속성의 물리 공격을 행한다.
+	PRINTL 
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ER_サウザンド・サーペント, ARG
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_ER_サウザンド・サーペント, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	RESULTS:0 = 마의 힘을 해방하여 장총검 에스티카 로우로 꿰뚫는다.
+	RESULTS:1 = 적 단체에 비구 속성 대위력의 물리 공격을 행한다.
+ELSE
+	RESULTS:0 = 사렵검 서펀트 팽을 뽑아 크게 휘두른다.
+	RESULTS:1 = 적 전체에 검격 속성의 물리 공격을 행한다.
+ENDIF

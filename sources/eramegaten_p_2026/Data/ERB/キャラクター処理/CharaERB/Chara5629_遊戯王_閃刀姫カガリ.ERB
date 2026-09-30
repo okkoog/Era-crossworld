@@ -1,0 +1,256 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5629_閃刀姫カガリ.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/06/20		P(bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;====================================================
+;追加コマンド
+;====================================================
+@INPUT_COM_NAME_CHARA_[[キャラ:섬도희카가리]], L_CHARA
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC BUTTON_NUM
+#DIMS DYNAMIC L_BUTTON, LINKCHARANUM
+#DIMS DYNAMIC TEMPS
+#DIMS DYNAMIC COMMAND_LIST_TABLE = "リンク召喚_レイ本体", "リンク召喚_レイリンク体_0", "リンク召喚_レイリンク体_1", "リンク召喚_レイリンク体_2", "リンク召喚_レイリンク体_3"
+#DIMS DYNAMIC L_TITLE
+#DIM DYNAMIC L_TARGET
+BUTTON_NUM = FINDELEMENT(COMMAND_LIST_P, "", 1, , 1)
+COMMAND_LIST_SHOWNAME:0 '= SET_COLOR_TAG("[-] Ｌ-ＳＵＭＭＯＮ", "デフォルト")
+COMMAND_LIST_CATEGORY:0 = 2
+FOR LCOUNT, 0, VARSIZE("COMMAND_LIST_TABLE")
+	COMMAND_LIST_NAME:LCOUNT '= COMMAND_LIST_TABLE:LCOUNT
+	COMMAND_LIST_UNABLE:LCOUNT = 1
+	IF LCOUNT == 0
+		L_TARGET = FINDCHARA_TIMEID(CFLAG:L_CHARA:피링크캐릭터실제가입시간)
+	ELSE
+		L_TARGET = FINDCHARA_LINK(FINDCHARA_TIMEID(CFLAG:L_CHARA:피링크캐릭터실제가입시간), LCOUNT - 1)
+	ENDIF
+	SIF L_TARGET < 0
+		CONTINUE
+	SIF L_CHARA == L_TARGET
+		CONTINUE
+	SIF !IS_JOINABLE_BATTLE(L_TARGET)
+		CONTINUE
+	L_BUTTON:LCOUNT '= @"[{BUTTON_NUM + LCOUNT, 2}] " + CALLNAME:L_TARGET
+	L_TITLE '= @"召喚可能回数:[{COUNT_SUMMONABLE()}/{COUNT_SUMMONABLE_MAX()}]"
+	IF IS_BADSTATE(L_TARGET, "DYING") || !COUNT_SUMMONABLE()
+		L_BUTTON:LCOUNT '= SET_COLOR_TAG(L_BUTTON:LCOUNT, "gray")
+		SIF IS_BADSTATE(L_TARGET, "DYING")
+			L_TITLE '= "戦闘不能"
+	ELSE
+		COMMAND_LIST_UNABLE:LCOUNT = 0
+	ENDIF
+	L_BUTTON:LCOUNT '= SET_BUTTON_TAG(L_BUTTON:LCOUNT, TOSTR(BUTTON_NUM + LCOUNT), L_TITLE)
+	COMMAND_LIST_SHOWNAME:0 += "<br>" + "　　" + L_BUTTON:LCOUNT
+NEXT
+RETURN 2
+
+@INPUT_COM_ABLE_リンク召喚_レイ本体, ARG
+SIF !COUNT_SUMMONABLE()
+	RETURN -1
+RETURN 1
+
+@INPUT_COM_リンク召喚_レイ本体, ARG
+CALL INPUT_COM_リンク召喚_レイ, ARG, FINDCHARA_TIMEID(CFLAG:ARG:피링크캐릭터실제가입시간)
+RETURN RESULT, RESULT:1
+
+@INPUT_COM_リンク召喚_レイリンク体_0, ARG
+CALL INPUT_COM_リンク召喚_レイ, ARG, FINDCHARA_LINK(FINDCHARA_TIMEID(CFLAG:ARG:피링크캐릭터실제가입시간), 0)
+RETURN RESULT, RESULT:1
+
+@INPUT_COM_リンク召喚_レイリンク体_1, ARG
+CALL INPUT_COM_リンク召喚_レイ, ARG, FINDCHARA_LINK(FINDCHARA_TIMEID(CFLAG:ARG:피링크캐릭터실제가입시간), 1)
+RETURN RESULT, RESULT:1
+
+@INPUT_COM_リンク召喚_レイリンク体_2, ARG
+CALL INPUT_COM_リンク召喚_レイ, ARG, FINDCHARA_LINK(FINDCHARA_TIMEID(CFLAG:ARG:피링크캐릭터실제가입시간), 2)
+RETURN RESULT, RESULT:1
+
+@INPUT_COM_リンク召喚_レイリンク体_3, ARG
+CALL INPUT_COM_リンク召喚_レイ, ARG, FINDCHARA_LINK(FINDCHARA_TIMEID(CFLAG:ARG:피링크캐릭터실제가입시간), 3)
+RETURN RESULT, RESULT:1
+
+@SKILL_BATTLE_ENTER_CHARA_[[キャラ:섬도희카가리]], ARG, ARG:1
+CALL SKILL_BATTLE_ENTER_閃刀姫, ARG, "カガリ"
+
+@SKILL_BATTLE_ENTER_CHARA_[[キャラ:섬도희시즈쿠]], ARG, ARG:1
+CALL SKILL_BATTLE_ENTER_閃刀姫, ARG, "シズク"
+
+@SKILL_BATTLE_ENTER_CHARA_[[キャラ:섬도희하야테]], ARG, ARG:1
+CALL SKILL_BATTLE_ENTER_閃刀姫, ARG, "ハヤテ"
+
+@SKILL_BATTLE_ENTER_CHARA_[[キャラ:섬도희카이나]], ARG, ARG:1
+CALL SKILL_BATTLE_ENTER_閃刀姫, ARG, "カイナ"
+
+;--------------------------------------------------
+;MAG強化回数
+;レイと同じ回数まで強化できる
+;-------------------------------------------------
+@MAG_CALC_ENHANCE_BASE_CHARA_[[キャラ:섬도희카가리]], ARG, ARG:1, ARG:2
+#FUNCTION
+#DIM DYNAMIC L_REI
+#DIM DYNAMIC COUNT_ENHANCEABLE
+L_REI = FINDCHARA_TIMEID(CFLAG:ARG:피링크캐릭터실제가입시간)
+IF L_REI < 0
+	RESULT_F = -1
+	RETURNF -1
+ENDIF
+RESULTS_F '= "　" + CALLNAME:L_REI + "の能力を強化した回数に応じて強化できる。"
+COUNT_ENHANCEABLE = CFLAG:L_REI:능력강화횟수
+SIF CFLAG:L_REI:베어내기플래그
+	COUNT_ENHANCEABLE = MIN(COUNT_ENHANCEABLE, BASE:L_REI:LV * 3/ 2 + 18)
+CFLAG:ARG:능력강화횟수 = MAX(CFLAG:ARG:능력강화횟수, COUNT_ENHANCEABLE)
+IF COUNT_FREE_MAG_ENHANCE_BASE(ARG) > ARG:1
+	RESULT_F = 0
+	RETURNF 0
+ENDIF
+RESULT_F = -1
+RETURNF -1
+
+@SKILL_PASSIVE_BTL_EFFECT_CHARA_[[キャラ:섬도희카가리]], ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			IF L_ダメージタイプ == "物理"
+				SIF GET_RPG_CFLAG_BTL(FINDCHARA_TIMEID(CFLAG:L_P:피링크캐릭터실제가입시간), "ハーキュリーベース") > FLAG:경과턴수
+					RETURN 50
+			ENDIF
+	ENDSELECT
+ENDIF
+RETURN 0
+
+;====================================================
+;トリガー発動条件
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_CHARA_[[キャラ:섬도희카가리]],ARG,ARG:1
+;行動した自身のみ判定
+SIF ARG != FLAG:행동순1
+	RETURN 0
+SIF ARG != ARG:1
+	RETURN 0
+SIF CFLAG:ARG:피링크캐릭터실제가입시간 == 0
+	RETURN 0
+CALL SKILL_TRIGGER_ACTIONABLE_閃刀姫_ホーネットビット, FINDCHARA_TIMEID(CFLAG:ARG:피링크캐릭터실제가입시간),ARG:1
+RETURN RESULT, RESULT:1
+
+;====================================================
+;行動によるスキルゲージ操作
+;各キャラクターの通常の行動後に全キャラで呼び出される
+;ARG:		このスキルの持ち主のキャラ番号
+;ARG:1		行動したキャラクターのキャラ番号
+;
+;RESULT 		獲得したゲージの量を返すことで獲得量を表示させる。つまり、他人の行動に反応させることなども可能。
+;RESULT:1		獲得表示のときの文字色を指定できる。ゲージが溜まったときの表示わけなどに
+;RESULTS		ゲージの名称 「<<XXXX>>」という形で表示される
+;RESULTS:1		ゲージの単位。半角の%を使いたい場合は「\%」と言うかたちで退避記号を使うと良い
+;RESULTS;2		色指定以外の要素を使わずに文字列を返す。ゲージ式の獲得量で表現したい場合などに
+;====================================================
+@SKILLGAGE_CHARGE_CHARA_[[キャラ:섬도희카가리]], L_CHARA, ARG:1
+#DIM DYNAMIC L_CHARA
+CALL SKILLGAGE_CHARGE_CHARA_[[キャラ:섬도희레이]], L_CHARA, ARG:1
+RETURN RESULT
+
+@SKILL_EX_DISPLAY_CHARA_[[キャラ:섬도희카가리]], ARG, ARGS
+CALL SKILL_EX_DISPLAY_CHARA_[[キャラ:섬도희레이]], ARG, ARGS
+RETURN RESULT
+
+@SKILL_BATTLE_END_CHARA_[[キャラ:섬도희카가리]], ARG, ARG:1
+#DIM DYNAMIC STOCK_POS
+SIF CPOS(ARG) == 0
+	RETURN 0
+SIF FINDCHARA_TIMEID(CFLAG:ARG:피링크캐릭터실제가입시간) < 0
+	RETURN 0
+STOCK_POS = CPOS(ARG)
+CALL REMOVE_POSITION, CPOS(ARG)
+CALL INSERT_POSITION, STOCK_POS, FINDCHARA_TIMEID(CFLAG:ARG:피링크캐릭터실제가입시간)
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:섬도희카가리]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("閃刀姫カガリ_FACE_0")
+			RETURNF ""
+		SIF !SPRITECREATED("閃刀姫カガリ_FACE_EX_0")
+			RETURNF ""
+		SIF !SPRITECREATED("閃刀姫カガリ_FACE_EX_1")
+			RETURNF ""
+		SIF !SPRITECREATED("閃刀姫カガリ_FACE_EX_2")
+			RETURNF ""
+		SIF !SPRITECREATED("閃刀姫カガリ_FACE_EX_3")
+			RETURNF ""
+		RESULTS_F = デフォルト
+		RESULTS_F:1 = 閃刀姫カガリ_FACE_0
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:섬도희카가리]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "デフォルト"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+				RESULTS_F =閃刀姫カガリ_FACE_0
+			CASEELSE
+				SELECTCASE L_SITUATION:1
+					;戦闘不能になった時
+					CASE "DYING"
+						RESULTS_F =閃刀姫カガリ_FACE_EX_0
+					;CHARMになった時
+					CASE "CHARM"
+						RESULTS_F =閃刀姫カガリ_FACE_EX_1
+					;SLEEPになった時
+					CASE "SLEEP"
+						RESULTS_F =閃刀姫カガリ_FACE_EX_2
+					;上記以外の状態異常の時
+					CASE "STONE", "FLY", "PALYZE", "BRAND", "CURSE", "FLAME", "BOMB", "POISON", "CLOSE", "BIND", "SLIP", "FREEZE", "PANIC", "SHOCK", "HAPPY"
+						RESULTS_F =閃刀姫カガリ_FACE_EX_3
+					;通常時
+					CASEELSE
+						RESULTS_F =閃刀姫カガリ_FACE_0
+				ENDSELECT
+				;HPが25%未満だとDYINGまでこれに固定する
+				IF 現HP割合(L_CHARA) < 25
+					RESULTS_F =閃刀姫カガリ_FACE_EX_0
+				ENDIF
+		ENDSELECT
+	CASEELSE
+ENDSELECT

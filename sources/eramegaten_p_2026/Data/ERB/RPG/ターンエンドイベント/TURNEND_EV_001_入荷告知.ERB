@@ -1,0 +1,113 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_100_絶縁状1.ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2023/05/02		P(bazzile)				作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;====================
+;定義名
+;====================
+@TURNEND_EV_NAME_1
+RESULTS = 入荷告知
+
+;====================
+;条件
+;====================
+@PLAYABLE_TURNEND_EV_1
+#DIM LCOUNT
+#DIM TEMP
+#DIMS TEMPS
+SIF GET_STR_TURNEND_EV("入荷告知", "告知文") == ""
+	RETURN 0
+FOR LCOUNT, 0, STRCOUNT(GET_STR_TURNEND_EV("入荷告知", "告知文"), "/") + 1
+	TEMPS = %AUTO_SPLIT(GET_STR_TURNEND_EV("入荷告知", "告知文"), "/", LCOUNT)%
+	;日数条件を確認する
+	SIF TOINT(AUTO_SPLIT(TEMPS, "_", 1)) <= DAY
+		RETURN 1
+NEXT
+RETURN 0
+
+;====================
+;内容
+;====================
+@TURNEND_EV_1
+#DIM LCOUNT
+#DIMS TEMPS
+#DIM TEMP
+FOR LCOUNT, 0, STRCOUNT(GET_STR_TURNEND_EV("入荷告知", "告知文"), "/") + 1
+	TEMPS = %AUTO_SPLIT(GET_STR_TURNEND_EV("入荷告知", "告知文"), "/", LCOUNT)%
+	IF TOINT(AUTO_SPLIT(TEMPS, "_", 1)) <= DAY
+		IF TEMP == 0
+			PRINTFORMW ………
+			PRINTFORMW ……
+			PRINTFORMW …
+			PRINTFORMW ＞메일이 도착해 있다
+		ENDIF
+		TEMP = 1
+		;特殊な処置が必要場合
+		SELECTCASE AUTO_SPLIT(TEMPS, "_", 2)
+			CASE "風花"
+				HAVE_RECORD_SKILL_EMULATOR:GET_SKILL_EMULATOR_NUM("오라클") = 1
+			CASE "りせ"
+				HAVE_RECORD_SKILL_EMULATOR:GET_SKILL_EMULATOR_NUM("치어링") = 1
+				HAVE_RECORD_SKILL_EMULATOR:GET_SKILL_EMULATOR_NUM("원기의노래") = 1
+		ENDSELECT
+
+		PRINTFORMW %AUTO_SPLIT(TEMPS, "_", 0)%
+		CALL SET_STR_TURNEND_EV, "入荷告知", "告知文", DEL_SPLIT(GET_STR_TURNEND_EV("入荷告知", "告知文"), "/", TEMPS)
+	ENDIF
+NEXT
+RETURN TEMP
+;====================
+;フラグ名称定義
+;====================
+;--------------------
+;通常のセーブされ、周回でリセットされる数値型のフラグ
+;--------------------
+@TURNEND_EV_FLAGNAME_1
+RESULTS:0 = 
+RESULTS:1 =
+RESULTS:2 =
+RESULTS:3 = 
+RESULTS:4 = 
+RESULTS:5 = 
+RESULTS:6 = 
+RESULTS:7 = 
+RESULTS:8 = 
+RESULTS:9 = 
+
+;--------------------
+;通常のセーブされ、周回でリセットされる文字列型のフラグ
+;--------------------
+@TURNEND_EV_STRNAME_1
+RESULTS:0 = 告知文
+RESULTS:1 = 
+RESULTS:2 = 
+RESULTS:3 = 
+RESULTS:4 = 
+
+;--------------------
+;周回後も引き継がれる数値型のフラグ
+;--------------------
+@TURNEND_EV_TAKEOVER_FLAGNAME_1
+RESULTS:0 = 
+RESULTS:1 = 
+RESULTS:2 = 
+RESULTS:3 = 
+RESULTS:4 = 
+
+;--------------------
+;周回後も文字列フラグ
+;--------------------
+@TURNEND_EV_TAKEOVER_STRNAME_1
+RESULTS:0 = 
+RESULTS:1 = 
+RESULTS:2 = 
+RESULTS:3 = 
+RESULTS:4 = 

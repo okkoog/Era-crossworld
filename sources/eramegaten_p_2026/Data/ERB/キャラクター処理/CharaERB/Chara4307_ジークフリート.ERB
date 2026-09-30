@@ -1,0 +1,245 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara4307_ジークフリート.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2023/10/03		P(bazzile)				新規作成
+;	002		2024/05/26		P(bazzile)				口上のフラグ領域を犯してた部分を修正
+;	003		2025/06/25		epizo					画像パターン追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;--------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:지크프리트]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+CALL SET_BASE_[[キャラ:지크프리트]], ARG, ARG:2
+IF ARG:2 == 1
+	;スキル初期化
+	CALL CLEAR_ALL_SKILL, ARG
+	CALL CLEAR_LEARNED_SKILL_ALL, ARG
+ENDIF
+CALL SET_LEARN_SKILL_[[キャラ:지크프리트]], ARG, ARG:2
+
+;1	単発イベント7
+;ARG:1はイベントフラグ
+@SET_BASE_[[キャラ:지크프리트]], ARG, ARG:1
+SELECTCASE ARG:1
+	CASE 1
+		;いろいろいじろう
+		NAME:ARG = Sw・ｼﾞｰｸﾌﾘｰﾄ
+		CALLNAME:ARG = Sw・ｼﾞｰｸﾌﾘｰﾄ
+		ABL:ARG:가창기능 = 3
+		EXP:ARG:가창경험 = 50
+		EXP:ARG:라이브경험 = 20
+		
+		CSTR:ARG:피부색 = 赤
+		TALENT:ARG:솔직함 = 1
+		TALENT:ARG:정조관결여 = 1
+		
+		;우애
+		TALENT:ARG:우애 = 1
+		;冷静ではない
+		TALENT:ARG:냉정 = 0
+		
+		ABL:ARG:순종 = 0
+		ABL:ARG:욕망 = 1
+		
+		CSTR:ARG:일인칭 = 俺
+		CSTR:ARG:이인칭 = お前
+		
+		CFLAG:ARG:매각불가플래그 = 1
+		CFLAG:ARG:합체소재사용금지 = 1
+		
+		;---- EDIT 002 DEL START -------------------------
+		;ここで『劇場憑きの悪魔』であることを定義
+		;CFLAG:ARG:998 = 1
+		;---- EDIT 002 DEL END ---------------------------
+		
+		CSTR:ARG:35 = この個体はあなたの劇場に憑いた悪魔である。存在するだけで収入を上昇させる。
+		CSTR:ARG:36 = 我が非常に強いため、売却・合体は不可能である。
+ENDSELECT
+
+@SET_LEARN_SKILL_[[キャラ:지크프리트]], ARG, ARG:1
+IF ARG:1 == 1
+	CALL CLEAR_ALL_LEARN_SKILL, ARG
+	CALL SET_LEARN_SKILL, ARG, "러브・하트", 1
+	CALL SET_LEARN_SKILL, ARG, "사랑의채찍", 1
+	CALL SET_LEARN_SKILL, ARG, "극락왕생파", 1
+	CALL SET_LEARN_SKILL, ARG, "기합", 1
+	CALL SET_LEARN_SKILL, ARG, "히트라이저", 1
+	CALL SET_LEARN_SKILL, ARG, "레볼루션", 1
+	CALL SET_LEARN_SKILL, ARG, "가이아브레이크", 1
+	CALL SET_LEARN_SKILL, ARG, "스쿠카쟈오토", 1
+ENDIF
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:지크프리트]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+SELECTCASE L_NO
+	CASE 0
+		IF L_CHARA >= 0 && CFLAG:L_CHARA:이벤트가입 == 1
+			RESULTS_F = シナリオライター
+			;アイコン設定時の表示に使うアイコン
+			RESULTS_F:1 = ジークフリート_FACE_EX_0
+		ENDIF
+	CASE 1
+		;画像チェック
+		SIF !SPRITECREATED("ジークフリート_FACE_0")
+			RETURNF ""
+		SIF !SPRITECREATED("ジークフリート_FACE_1")
+			RETURNF ""
+		SIF !SPRITECREATED("ジークフリート_FACE_EX_1")
+			RETURNF ""
+		SIF !SPRITECREATED("ジークフリート_FACE_EX_2")
+			RETURNF ""
+		SIF !SPRITECREATED("ジークフリート_FACE_EX_3")
+			RETURNF ""
+		SIF !SPRITECREATED("ジークフリート_FACE_EX_4")
+			RETURNF ""
+		RESULTS_F = デフォルト
+		RESULTS_F:1 = ジークフリート_FACE_0
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:지크프리트]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "シナリオライター"
+		RESULTS_F = ジークフリート_FACE_EX_0
+	CASE "デフォルト"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+				RESULTS_F = ジークフリート_FACE_1
+			CASEELSE
+				SELECTCASE GET_STATE(CFLAG:L_CHARA:상태이상)
+					;戦闘不能になった時
+					CASE "DYING"
+						RESULTS_F = ジークフリート_FACE_EX_1
+					;魅了にされた時
+					CASE "CHARM"
+						RESULTS_F = ジークフリート_FACE_EX_2
+					;睡眠にされた時
+					CASE "SLEEP" 
+						RESULTS_F = ジークフリート_FACE_EX_3
+					;上記以外の状態異常の時
+					CASE "STONE", "FLY", "PALYZE", "BRAND", "CURSE", "FLAME", "BOMB", "POISON", "CLOSE", "BIND", "SLIP", "FREEZE", "PANIC", "SHOCK", "HAPPY"
+						RESULTS_F = ジークフリート_FACE_EX_4
+					;通常時
+					CASEELSE
+						RESULTS_F = ジークフリート_FACE_0
+				ENDSELECT
+		ENDSELECT
+	CASEELSE
+ENDSELECT
+;--------------------------------------------------
+;キャラクター独自変数名称定義関数
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:지크프리트]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_EV
+	;周回時にリセットされる数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_EV
+	;周回時にリセットされる文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる数値型変数です
+	;スキルゲージHとほぼ互換です。基本的にはゲージHが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる文字列型変数です
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる数値型変数
+	;スキルゲージFとほぼ互換です。基本的にはゲージFが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる文字列型変数
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS

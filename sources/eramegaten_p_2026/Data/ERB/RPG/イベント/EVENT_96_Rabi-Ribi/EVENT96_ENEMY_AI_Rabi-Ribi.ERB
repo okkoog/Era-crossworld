@@ -1,0 +1,882 @@
+﻿;-------------------------------------------------
+;EVENT96_2_ WARP DESTINATION
+;-------------------------------------------------
+@EVENT_BATTLE_ACTEND_EV96_ノア_2戦目
+#DIM DYNAMIC L_NOA
+L_NOA = GET_ENEMY("ノア")
+;HP5割以下、アリウスに移行
+IF 現HP割合(L_NOA) < 50
+	イベントフラグ:96:2 = 2
+	FORCEWAIT
+	PRINTL 
+	PRINTL 「아아, 이런 참……
+	PRINTW 　요정도, 거기 너도, 줄기차게 방해만 해대고 말이야……」
+	PRINTL 
+	PRINTL 반액체 상태의 몸을 나른하게 떨며, 노아가 서서히 입을 열었고,
+	PRINTW 그것을 신호로, 노아의 바로 옆에 에리나 일행과 똑 닮은 무언가가 형상을 갖추어 간다……
+	PRINTL 
+	PRINTW 에리나 일행과 똑 닮은……?
+	PRINTL 
+	PRINTL 아니
+	PRINTL 환영처럼 흐릿하고 칙칙한 색을 띠고 있지만
+	PRINTW 그것은, 에리나와 리본 그 자체였다.
+	PRINTL 
+	PRINTW 「또, 또 다른 우리들……! 당신의 짓이었군요!」
+	PRINTL 
+	PRINTL 「지금은 상대해 줄 틈이 없어. 당분간 여기서 시간 좀 때우고 있어 줄래?
+	PRINTW 　확실히 다음 기회라고 말하긴 했지만, 너무 이른 건 곤란해」
+	PRINTL 
+	PRINTL 「그리고, 거기 조그만 요정과, 당신……
+	PRINTW 　이게 마지막 경고야. 더 이상 얽힌다면……」
+	PRINTL 
+	PRINTW 이쪽을 노려보면서, 노아가 모습을 감춘다.
+	PRINTW 남겨진 누군가가, 해머를 치켜들었다.
+	PRINTL 
+	PRINTL 
+	PRINTW ＞환영　일루전・아리우스가 나타났다.
+	PRINTL 
+	PRINTL 
+	CALL REMOVE_POSITION,CPOS(L_NOA)
+	CALL SET_BOSS_ENEMY_EVENT_96, "ノアリウス"
+ENDIF
+
+@EVENT_BATTLE_ACTEND_EVENT96_ノアリウス
+#DIM DYNAMIC L_ALIUS
+L_ALIUS = GET_ENEMY("ノアリウス")
+IF 現HP割合(L_ALIUS) < 25
+	イベントフラグ:96:2 = 3
+	CFLAG:L_ALIUS:행동횟수 = 1
+	CSTR:L_ALIUS:43 = ＊＊　이제 곧　태어나！！！！！　＊＊
+	VARSET CSTR:L_ALIUS:랜덤선택금지스킬
+	CALL CLEAR_ALL_SKILL, L_ALIUS
+	ABL:L_ALIUS:스킬1 = [[스킬:옥쇄파]]
+	PRINTL 
+	PRINTW 「……」
+	PRINTL 
+	PRINTL 움직임을 멈춘 무언가가, 안쪽으로부터 섬광을 발하기 시작한다。
+	PRINTL 
+	PRINTW ……자폭인가。
+	PRINTL 
+	PRINTL 「여기에 말려들면 어떻게 되는거야！？」
+	PRINTW 「리본！　빨리 도망쳐야 해！」
+	PRINTL 
+	PRINTW 에리나 일행은 도망쳐도 되겠지만, 이쪽은 그럴수도 없다。
+	PRINTW 팰 수밖에 없겠다
+ENDIF
+
+@SET_ACTION_アリウスの頭, ARG
+IF イベントフラグ:96:3 == 1
+	;自爆阻止失敗フラグ
+	イベントフラグ:96:2 = 4
+	CALL SET_ACTION_SKILL, ARG, [[스킬:옥쇄파]]
+;自爆モードオン時
+ELSEIF 現HP割合(ARG) < 25
+	PRINTL 
+	PRINTL 무언가가 발하는 섬광이, 강해졌다。
+	PRINTL 
+	イベントフラグ:96:3 = 1
+	CALL SET_ACTION_SKILL, ARG, [[스킬:행동불능]]
+;自爆モード入っていない
+ELSE
+	CALL ランダム行動 , ARG
+ENDIF
+
+;-------------------------------------------------
+;EVENT96_3_真実、語られる事なく
+;-------------------------------------------------
+;Miru Syndrome戦　完全固定パターン
+@SET_ACTION_MiruSyndrome, ARG
+#DIM ループ用
+IF (FLAG:경과턴수+1) % 5 == 1
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:마하에이하]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:마하무드온]]
+	ENDIF
+ELSEIF (FLAG:경과턴수+1) % 5 == 2
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:데・카쟈]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:주살가드브레이크]]
+	ENDIF
+ELSEIF (FLAG:경과턴수+1) % 5 == 3
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:마하에이하]]
+	ENDIF
+ELSEIF (FLAG:경과턴수+1) % 5 == 4
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:마하무드온]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:컨센트레이트]]
+	ENDIF
+ELSEIF (FLAG:경과턴수+1) % 5 == 0
+	IF CFLAG:ARG:행동한횟수 == 0
+		PRINTL 
+		PRINTL 미루의, 취옥색 눈동자가 기이하게 빛난다！
+		PRINTL 
+		CALL SET_ACTION_SKILL, ARG, [[스킬:나락의파동]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:어둠의포미러버]]
+	ENDIF
+ENDIF
+
+
+
+
+@SET_ACTION_在りし日の彼女, ARG
+#DIM ループ用
+IF イベントフラグ:96:4 == 4
+	;1順後は加速してランダム
+	CALL ランダム行動 , ARG
+ELSEIF (FLAG:경과턴수+1) == 1
+	CALL SET_ACTION_SKILL, ARG, [[스킬:메기도라]]
+ELSEIF (FLAG:경과턴수+1) == 2
+	CALL SET_ACTION_SKILL, ARG, [[스킬:거대화의주탄]]
+ELSEIF (FLAG:경과턴수+1) == 3
+	CALL SET_ACTION_SKILL, ARG, [[스킬:축소화의주탄]]
+ELSEIF (FLAG:경과턴수+1) == 4
+	CALL SET_ACTION_SKILL, ARG, [[스킬:도발]]
+ELSEIF (FLAG:경과턴수+1) == 5
+	CALL SET_ACTION_SKILL, ARG, [[스킬:데・카쟈]]
+ELSEIF (FLAG:경과턴수+1) == 6
+	CALL SET_ACTION_SKILL, ARG, [[스킬:기합]]
+ELSEIF (FLAG:경과턴수+1) == 7
+	CALL SET_ACTION_SKILL, ARG, [[스킬:만마의일격]]
+ELSEIF (FLAG:경과턴수+1) == 8
+	CALL SET_ACTION_SKILL, ARG, [[스킬:데・쿤다]]
+ELSEIF (FLAG:경과턴수+1) == 9
+	CALL SET_ACTION_SKILL, ARG, [[스킬:컨센트레이트]]
+ELSEIF (FLAG:경과턴수+1) == 10
+	イベントフラグ:96:4 = 4
+	CALL SET_ACTION_SKILL, ARG, [[스킬:메기도라]]
+	CFLAG:ARG:행동횟수 = 2
+ENDIF
+
+@EVENT_BATTLE_START_EVENT96_ノア_3戦目
+PRINTFORML 
+PRINTFORML ＞마인　노아가 나타났다.
+PRINTFORML 
+
+@EVENT_BATTLE_ACTEND_EVENT96_ノア_3戦目
+#DIM DYNAMIC L_NOA
+L_NOA = GET_ENEMY("ノア")
+;75以下まで減らしたときのACTEND	
+IF イベントフラグ:96:4 == 0 && 現HP割合(L_NOA) < 75
+	;ノア75以下に進行
+	イベントフラグ:96:4 = 1
+	PRINTFORML 
+	PRINTFORML 전투 도중, 또다시 목소리가 들렸다。
+	PRINTFORML 
+	PRINTFORMW 『이 아이와 소중한 토끼를 떼어놓으면…… 커다란 부의 감정이 생겨나……』
+	PRINTFORML 
+	PRINTFORMW 『부의 감정은 이 아이의 체내에 있는 방대한 마력을 이끌어내지……。　그 마력을 사용하면, 옛날로 돌아갈 수 있을지도 몰라……』
+	PRINTFORML 
+	PRINTFORMW 『때는 왔어…… 겨우 돌아갈 수 있어……！』
+	PRINTFORML 
+	PRINTFORML ……이 공간은 노아의 힘이 더욱 진한 것 같다。
+	PRINTFORMW 그녀가 마음속으로 숨겨왔던 생각이 들려오는 것도 그 때문일 것이다。
+	PRINTFORML 
+	PRINTFORMW 「뭐야……！그거, 무슨 뜻이야！？」
+	PRINTFORMW 「역시, 우리들에게 뭔가 전하려고 하는 거구나…… 좀 더, 평화롭게 해결할 수 없는 거야？」
+	PRINTFORML 
+	PRINTFORMW 「……무리야」
+	PRINTFORML 
+	PRINTFORML 에리나의 질문에 노아는 확실한 거절의 의사를 표한다…… 하지만 긴 침묵과 표정은 다른 감정을 보이고 있었다。
+	PRINTFORML 
+	PRINTFORMW 「……。……하아…… 무슨 생각하는 걸까！　지금은 감상에 빠질 때가 아닌데！
+	PRINTFORMW 　전부 들려버렸네…… 아～아, 부끄러워라…… 하고」
+	PRINTFORML 
+	PRINTFORMW 「……지금은, 너희들의 정신을 흐트려놓으려고 한 것일 뿐이야. 너무 곰곰히 생각하지 마！」
+	PRINTFORML 
+	PRINTFORML 서투른 『거짓말』과 함께。
+	PRINTFORML 노아는 공격을 재개한다。
+	PRINTFORML 
+	BASE:L_NOA:ＨＰ = MAXBASE:L_NOA:ＨＰ
+	TIMES BASE:L_NOA:ＨＰ, 0.75
+ELSEIF イベントフラグ:96:4 == 1 && 現HP割合(L_NOA) < 50
+	イベントフラグ:96:4 = 2
+	PRINTFORMW 전투의 도중, 에리나가 입을 연다。
+	PRINTFORML 
+	PRINTFORML 「노아 씨에게 무슨 일이 있었는지는 모르겠지만……。
+	PRINTFORMW 　분명, 분명 이것 말고도 다른 해결방법이 있었을 거야……！」
+	PRINTFORML 「……다른 해결방법이라고？
+	PRINTFORMW 　네가 생각하고 있는 건, 자기의 안전 뿐이잖아？
+	PRINTFORMW 　……미안해, 노아는 역시 좋아해. 손 쉬운 쪽을……」
+	PRINTFORML 
+	PRINTFORMW 상처를 입은 노아의 몸이, 거센 빛에 휩싸인다！
+	PRINTFORML 
+	PRINTFORMW 「……이, 이 마력은 뭐야！？」
+	PRINTFORML 
+	ALIGNMENT RIGHT
+	SETCOLOR 0x999999
+	;悔やむんじゃねぇ。
+	PRINTFORML ＢＧＭ：【Ｎｏ　Ｒｅｍｏｒｓｅ】
+	RESETCOLOR
+	ALIGNMENT LEFT
+
+	PRINTFORMW 빛이 사라지고, 노아는 토끼귀가 나있는 발광체로 변하였다。
+	PRINTFORML 
+	;ノア第2へ変身。不死フラグ解除……したらイベントが狂うんで解除オミット。HP残量1まで削れ！
+	;CFLAG:(CHARANUM-1):불사신플래그 = 0
+	CALLNAME:L_NOA = 発光体・ノア
+	BASE:L_NOA:검격 = 150
+	BASE:L_NOA:비구 = 150
+	BASE:L_NOA:타격 = 150
+	BASE:L_NOA:전술 = 150
+	BASE:L_NOA:화염 = 50
+	BASE:L_NOA:빙결 = 50
+	BASE:L_NOA:전격 = 50
+	BASE:L_NOA:신경 = 100
+	BASE:L_NOA:정신 = 100
+	BASE:L_NOA:파마 = 0
+	BASE:L_NOA:주살 = 0
+	BASE:L_NOA:충격 = 50
+	BASE:L_NOA:지변 = 50
+	BASE:L_NOA:수격 = 50
+	BASE:L_NOA:질풍 = 50
+	BASE:L_NOA:중력 = 50
+	BASE:L_NOA:핵열 = 50
+	BASE:L_NOA:만능 = 100
+	CALL CLEAR_ALL_SKILL, L_NOA
+
+	ABL:L_NOA:스킬1 = [[스킬:마하・라기다인]]
+	ABL:L_NOA:스킬2 = [[스킬:마하・부흐다인]]
+	ABL:L_NOA:스킬3 = [[스킬:마하・지오다인]]
+	ABL:L_NOA:스킬4 = [[스킬:마하・잔다인]]
+	CSTR:(CHARANUM-1):30 = 이름：노아　　등장작품：Rabi-Ribi　메인 게임 라스트 보스 3/4
+	;CSTR,31,種族：ウサミミ族
+	;CSTR,32,
+	CSTR:(CHARANUM-1):33 = 노아는 데미지를 받고、 빛을 발하는 마력의 덩어리가 되었다。
+	CSTR:(CHARANUM-1):34 = 
+	CSTR:(CHARANUM-1):35 = 애널라이즈 결과、 표층의 마력 껍질로 지켜지는 중앙부의 마력 압축을 확인。
+	CSTR:(CHARANUM-1):36 = 재생을 도모하고 있는 듯 하다。
+	;捏造なんだよなぁ。
+	CSTR:(CHARANUM-1):37 = 흘러나오는 마력이 다양한 속성을 형성해 무작위로 공격을 행한다。
+	CSTR:(CHARANUM-1):38 = 마법에 강한 대신、 물리적인 공격에는 내성이 없다。
+	CSTR:L_NOA:39 = 
+	CSTR:L_NOA:40 = 
+	BASE:L_NOA:ＨＰ = (MAXBASE:L_NOA:ＨＰ)
+	TIMES BASE:L_NOA:ＨＰ, 0.50
+ELSEIF イベントフラグ:96:4 == 2 && BASE:L_NOA:ＨＰ < 2
+	;ノア2撃破
+	PRINTFORML 빛이 약해진 발광체로부터, 노아의 목소리가 들려온다……。
+	PRINTFORML 
+	PRINTFORMW 「이런 거, 내 계획과는 달라……！　어째서 내게 거스르는 거야……？」
+	PRINTFORML 
+	PRINTFORMW 「돌아가서 모두를 만나고 싶어……！　그렇지만, 역시…… 돌아갈 수 없는 운명인거야……？」
+	PRINTFORML 
+	PRINTFORMW 그것은, 피를 토하는 한탄이었다。
+	PRINTFORML 
+	PRINTFORML 「긴 시간에 걸쳐, 이 아이에게서 마력을 모았는데……。
+	PRINTFORMW 　전부, 헛수고가 되어버려……」
+	PRINTFORML 
+	PRINTFORMW ……그녀는, 단지 돌아가고 싶었을 뿐이었다。
+	PRINTFORML 
+	PRINTFORMW 「……아니……돌아갈 수 없다면……！」
+	PRINTFORML 
+	PRINTFORMW 비명과 함께, 발광체의 몸이 터져나간다……。
+	PRINTFORML 
+	CALL REMOVE_POSITION,CPOS(L_NOA)
+ENDIF
+
+;-------------------------------------------------
+;EVENT96_5_ Delicious Food……？
+;-------------------------------------------------
+@EVENT_BATTLE_TURNTOP_デリシャスフード
+IF FLAG:경과턴수 > 0
+	IF (FLAG:경과턴수+1) % 5 == 1
+		;ブレイク
+		SETBIT TFLAG:마카라브레이크,1
+		SETBIT TFLAG:배리어브레이크,1
+		SETBIT TFLAG:실드브레이크,1
+		PRINTL 
+		PRINT ＞리본이 마법을 영창한다. 모이는 마력의 여파가
+		SETCOLOR 0x33ffcc
+		PRINT 『마법반사・무효화와
+		SETCOLOR 0xff0000
+		PRINT 화염내성
+		SETCOLOR 0x33ffcc
+		PRINT 을 파괴』
+		RESETCOLOR
+		PRINTW 한다！
+		PRINTL 
+
+		FOR LOCAL,1, 7
+			SIF POS(LOCAL) < 0 || CFLAG:POS(LOCAL):상태이상 == GET_STATE_NUM("DYING")
+				CONTINUE
+			;ガーキル追加
+			CFLAG:POS(LOCAL):수호의방패 = 0
+			CFLAG:POS(LOCAL):화염무효화횟수 = 0
+			CFLAG:POS(LOCAL):화염가드킬 = 1
+		NEXT
+	ELSEIF (FLAG:경과턴수+1) % 5 == 2
+		;ブレイク
+		SETBIT TFLAG:마카라브레이크,1
+		SETBIT TFLAG:배리어브레이크,1
+		SETBIT TFLAG:실드브레이크,1
+		PRINTL 
+		PRINT ＞리본이 마법을 영창한다. 모이는 마력의 여파가
+		SETCOLOR 0x33ffcc
+		PRINT 『마법반사・무효화와
+		SETCOLOR 0xff0000
+		PRINT 빙결내성
+		SETCOLOR 0x33ffcc
+		PRINT 을 파괴』
+		RESETCOLOR
+		PRINTW 한다！
+		PRINTL 
+
+		FOR LOCAL,1, 7
+			SIF POS(LOCAL) < 0 || CFLAG:POS(LOCAL):상태이상 == GET_STATE_NUM("DYING")
+				CONTINUE
+			;ガーキル追加
+			CFLAG:POS(LOCAL):수호의방패 = 0
+			CFLAG:POS(LOCAL):빙결무효화횟수 = 0
+			CFLAG:POS(LOCAL):빙결가드킬 = 1
+		NEXT
+	ELSEIF (FLAG:경과턴수+1) % 5 == 3
+		;ブレイク
+		SETBIT TFLAG:마카라브레이크,1
+		SETBIT TFLAG:배리어브레이크,1
+		SETBIT TFLAG:실드브레이크,1
+		PRINTL 
+		PRINT ＞리본이 마법을 영창한다. 모이는 마력의 여파가
+		SETCOLOR 0x33ffcc
+		PRINT 『마법반사・무효화와
+		SETCOLOR 0xff0000
+		PRINT 충격내성
+		SETCOLOR 0x33ffcc
+		PRINT 을 파괴』
+		RESETCOLOR
+		PRINTW 한다！
+		PRINTL 
+
+		FOR LOCAL,1, 7
+			SIF POS(LOCAL) < 0 || CFLAG:POS(LOCAL):상태이상 == GET_STATE_NUM("DYING")
+				CONTINUE
+			;ガーキル追加
+			CFLAG:POS(LOCAL):수호의방패 = 0
+			CFLAG:POS(LOCAL):충격무효화횟수 = 0
+			CFLAG:POS(LOCAL):충격가드킬 = 1
+		NEXT
+	ELSEIF (FLAG:경과턴수+1) % 5 == 4
+		;ブレイク
+		SETBIT TFLAG:마카라브레이크,1
+		SETBIT TFLAG:배리어브레이크,1
+		SETBIT TFLAG:실드브레이크,1
+		PRINTL 
+		PRINT ＞리본이 마법을 영창한다. 모이는 마력의 여파가
+		SETCOLOR 0x33ffcc
+		PRINT 『마법반사・무효화와
+		SETCOLOR 0xff0000
+		PRINT 핵열내성
+		SETCOLOR 0x33ffcc
+		PRINT 을 파괴』
+		RESETCOLOR
+		PRINTW 한다！
+		PRINTL 
+
+		FOR LOCAL,1, 7
+			SIF POS(LOCAL) < 0 || CFLAG:POS(LOCAL):상태이상 == GET_STATE_NUM("DYING")
+				CONTINUE
+			;ガーキル追加
+			CFLAG:POS(LOCAL):핵열무효화횟수 = 0
+			CFLAG:POS(LOCAL):수호의방패 = 0
+			CFLAG:POS(LOCAL):핵열가드킬 = 1
+		NEXT
+	ELSEIF (FLAG:경과턴수+1) % 5 == 0
+		;ブレイク
+		SETBIT TFLAG:마카라브레이크,1
+		SETBIT TFLAG:배리어브레이크,1
+		SETBIT TFLAG:실드브레이크,1
+		PRINTL 
+		PRINT ＞리본이 마법을 영창한다. 모이는 마력의 여파가
+		SETCOLOR 0x33ffcc
+		PRINT 『마법반사・무효화와
+		SETCOLOR 0xff0000
+		PRINT 마법방어
+		SETCOLOR 0x33ffcc
+		PRINT 을 파괴』
+		RESETCOLOR
+		PRINTW 한다！
+		PRINTL 
+		FOR LOCAL,1, 7
+			SIF POS(LOCAL) < 0 || CFLAG:POS(LOCAL):상태이상 == GET_STATE_NUM("DYING")
+				CONTINUE
+			;ガーキル追加
+			CFLAG:POS(LOCAL):수호의방패 = 0
+			;CFLAG:POS(LOCAL):방어강화 = MAX(-16, CFLAG:POS(LOCAL):마법효과강화 - 4)
+		NEXT
+		CALL SKILL_SET_カジャンダ, , 19, "마법효과", -4, "範囲", "NOMES"
+	ENDIF
+ENDIF
+
+;DeliciousFoodリボンちゃん
+;HP半分以下になると第三行動追加、第一以外がランダムに。つまりマインドチャージ+再攻撃も噛ませてくる。2連続マインドチャージはご愛嬌
+;ほぼ固定でそのうちの万能は少なめな分マカラカーンで対策を取ると弱かったので反射無効化禁止。
+@SET_ACTION_デリシャスフード, ARG
+#DIM ループ用
+SIF 現HP割合(CHARANUM-1) < 50
+	CFLAG:(CHARANUM-1):행동횟수 = 3
+	;HP5割以下になると行動回数が加速し2ランダム行動
+IF (FLAG:경과턴수+1) % 5 == 1
+	IF CFLAG:ARG:행동한횟수 == 0
+	;初手でいきなり火をつけてから竜巻で煽るスタイル。
+		CALL SET_ACTION_SKILL, ARG, [[스킬:겁화소환]]
+	ELSEIF 現HP割合(CHARANUM-1) < 50
+		CALL ランダム行動 , ARG
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:회오리]]
+	ENDIF
+ELSEIF (FLAG:경과턴수+1) % 5 == 2
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:절대영도]]
+	ELSEIF 現HP割合(CHARANUM-1) < 50
+		CALL ランダム行動 , ARG
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:작열의꽃]]
+	ENDIF
+ELSEIF (FLAG:경과턴수+1) % 5 == 3
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:회오리]]
+	ELSEIF 現HP割合(CHARANUM-1) < 50
+		CALL ランダム行動 , ARG
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:겁화소환]]
+	ENDIF
+ELSEIF (FLAG:경과턴수+1) % 5 == 4
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:작열의꽃]]
+	ELSEIF 現HP割合(CHARANUM-1) < 50
+		CALL ランダム行動 , ARG
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:빛나는낙인]]
+	ENDIF
+ELSEIF (FLAG:경과턴수+1) % 5 == 0
+	IF CFLAG:ARG:행동한횟수 == 0
+		;５ターン目初手確実にマインドチャージ。HP5割以下ならそのままメギドラオン固定。
+		CALL SET_ACTION_SKILL, ARG, [[스킬:컨센트레이트]]
+	ELSEIF 現HP割合(CHARANUM-1) < 50
+		CALL SET_ACTION_SKILL, ARG, [[스킬:메기도라온]]
+	ELSE
+		CALL ランダム行動 , ARG
+	ENDIF
+ENDIF
+
+
+;-------------------------------------------------
+;EVENT96_6_ In Digital Devil Land
+;-------------------------------------------------
+
+@EVENT_BATTLE_TURNTOP_イリスインデーモンランド
+#DIM DYNAMIC L_IRISU
+L_IRISU = GET_ENEMY("イリス_SP")
+;２ターンに一回、バックヤードに逃げる
+IF FLAG:경과턴수 > 0
+	IF (FLAG:경과턴수) % 2 == 1
+		PRINTFORML 
+		PRINTFORM ＞이리스가 뛰어오르더니, 연기처럼 사라졌다。
+		SETCOLOR COLOR("red")
+		PRINTFORML 이번 턴, 『데미지가 있는 공격은 효과가 없다』
+		RESETCOLOR
+		CFLAG:L_IRISU:물리피데미지보정 = -100
+		CFLAG:L_IRISU:마법피데미지보정 = -100
+		PRINTFORML 
+	ELSE
+		PRINTFORML 
+		PRINTFORM ＞이리스가 회중시계를 타고, 모습을 드러냈다。
+		SETCOLOR 0x33ffcc
+		PRINTFORML 『공격은 유효해졌다』
+		RESETCOLOR
+		;割とイライラギミックなので現れている時の受けるダメージは少し足す。つまり実質破魔以外弱点だよ。
+		CFLAG:L_IRISU:물리피데미지보정 = 12
+		CFLAG:L_IRISU:마법피데미지보정 = 12
+		PRINTFORML 
+	ENDIF
+ENDIF
+@EVENT_BATTLE_TURNEND_イリスインデーモンランド
+#DIM DYNAMIC L_IRISU
+L_IRISU = GET_ENEMY("イリス_SP")
+IF 現HP割合(L_IRISU) < 34 && イベントフラグ:96:4 == 6
+	SETBGCOLOR 0x662142
+	PRINTFORML 
+	PRINTFORML ＞이리스의 눈동자 색이 변하고, 거기에 분위기가 변하였다。
+	PRINTFORML 
+	;Irisu In Wonderland　後期フラグをセット
+	;ライフを３３％に再設定
+	;不死フラグ解除。ただし食いしばる。
+	イベントフラグ:96:4 = 7
+	BASE:L_IRISU:ＨＰ = (MAXBASE:L_IRISU:ＨＰ)
+	TIMES BASE:L_IRISU:ＨＰ, 0.33
+	CFLAG:L_IRISU:불사신플래그 = 0
+
+	ABL:L_IRISU:스킬13 = [[스킬:겁화소환]]
+	ABL:L_IRISU:스킬14 = [[스킬:주극의거포]]
+	ABL:L_IRISU:스킬15 = [[스킬:암흑의뇌광]]
+	ABL:L_IRISU:스킬16 = [[스킬:데스허리케인]]
+	ABL:L_IRISU:스킬17 = [[스킬:드래곤퀘이크]]
+	ABL:L_IRISU:스킬18 = [[스킬:선풍진]]
+	ABL:L_IRISU:스킬19 = [[스킬:프레이다인]]
+	ABL:L_IRISU:스킬20 = [[스킬:피어트렌트]]
+ELSEIF 現HP割合(L_IRISU) < 67 && イベントフラグ:96:4 == 5
+	SETCOLOR 0x770000
+	PRINTFORML 
+	PRINTFORML ＞이리스가 또다시 모습을 감추었다。
+	PRINTFORML 
+	PRINTFORML ＞……나타났을 때는 다른 마력에 휩싸여 있었다。
+	PRINTFORML 
+	RESETCOLOR
+	;　Irisu In Wonderland　中期フラグをセット
+	;ライフを６６％に再設定
+	イベントフラグ:96:4 = 6
+	BASE:L_IRISU:ＨＰ = (MAXBASE:L_IRISU:ＨＰ)
+	TIMES BASE:L_IRISU:ＨＰ, 0.66
+
+	ABL:L_IRISU:스킬13 = [[스킬:마하기가리온]]
+	ABL:L_IRISU:스킬14 = [[스킬:마하・그라다인]]
+	ABL:L_IRISU:스킬15 = [[스킬:마하・아쿠다인]]
+	ABL:L_IRISU:스킬16 = [[스킬:마하・마그다인]]
+ELSEIF 現HP割合(L_IRISU) <= 100
+	;　Irisu In Wonderland　初期フラグをセット
+	IF イベントフラグ:96:4 < 5
+		イベントフラグ:96:4 = 5
+		PRINTFORML 
+		PRINTFORML ＞헤매는 듯 했던 이리스의 시선이, 이쪽을 응시하고 있다。
+		PRINTFORML 
+	ENDIF
+ENDIF
+
+;Irisu In Wonderland
+;１：開幕デバフガン撒きガーブレ即死
+;２：護り盾を2ターンに1回打ち、常に逃げながら攻撃をしてくる。⇒護りをダメージ量カットにすることで対応。会心の覇気で必ず吸収する嫌な女に
+;３：毎ターン最後にHP吸収全体攻撃を行いチクチク吸収してくる。⇒2ターンに1回会心の覇気で必中会心
+;４：HP３段階、激化していく。構想の基盤はイリスイン・ワンダーランド。構文はトップスァイベント。亀さんほんとありがとう
+;５：ラスト耐久は考え中。⇒オミットするかなぁ……
+@SET_ACTION_イリスインデーモンランド, ARG
+#DIM DYNAMIC ループ用
+#DIM DYNAMIC L_IRISU
+L_IRISU = GET_ENEMY("イリス_SP")
+;残り33%~
+IF イベントフラグ:96:4 == 7
+	IF (FLAG:경과턴수) % 4 == 1
+	;4n+2
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:회심의패기]]
+		ELSEIF CFLAG:ARG:행동한횟수 <= 2
+			IF RAND:2 == 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:겁화소환]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:주극의거포]]
+			ENDIF
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, 0
+		ENDIF
+	;4n+3
+	ELSEIF (FLAG:경과턴수) % 4 == 2
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		ELSEIF CFLAG:ARG:행동한횟수 <= 2
+			IF RAND:2 == 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:암흑의뇌광]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:데스허리케인]]
+			ENDIF
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, 0
+		ENDIF
+	;4n+0
+	ELSEIF (FLAG:경과턴수) % 4 == 3
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:회심의패기]]
+		ELSEIF CFLAG:ARG:행동한횟수 <= 2
+			IF RAND:2 == 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:드래곤퀘이크]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:선풍진]]
+			ENDIF
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, 0
+		ENDIF
+	;1以外の4n+1
+	ELSEIF (FLAG:경과턴수) % 4 == 0
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:데・쿤다]]
+		ELSEIF CFLAG:ARG:행동한횟수 <= 2
+			IF RAND:2 == 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:프레이다인]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:피어트렌트]]
+			ENDIF
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, 0
+		ENDIF
+	ENDIF
+
+;66~34%
+ELSEIF イベントフラグ:96:4 == 6
+	IF (FLAG:경과턴수) % 4 == 1
+	;4n+2
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:회심의패기]]
+		ELSEIF CFLAG:ARG:행동한횟수 <= 2
+			IF RAND:2 == 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마하기가리온]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마하・그라다인]]
+			ENDIF
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, 0
+		ENDIF
+	;4n+3
+	ELSEIF (FLAG:경과턴수) % 4 == 2
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		ELSEIF CFLAG:ARG:행동한횟수 <= 2
+			IF RAND:2 == 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마하・그라다인]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마하・아쿠다인]]
+			ENDIF
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, 0
+		ENDIF
+	;4n+0
+	ELSEIF (FLAG:경과턴수) % 4 == 3
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:회심의패기]]
+		ELSEIF CFLAG:ARG:행동한횟수 <= 2
+			IF RAND:2 == 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마하・아쿠다인]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마하・마그다인]]
+			ENDIF
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, 0
+		ENDIF
+	;1以外の4n+1
+	ELSEIF (FLAG:경과턴수) % 4 == 0
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:데・쿤다]]
+		ELSEIF CFLAG:ARG:행동한횟수 <= 2
+			IF RAND:2 == 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마하・마그다인]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마하기가리온]]
+			ENDIF
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, 0
+		ENDIF
+	ENDIF
+;100~66%
+ELSE
+	;１ターン目
+	IF FLAG:경과턴수 == 0
+		IF CFLAG:ARG:행동한횟수 == 0
+		SETCOLOR 0x770000
+			PRINTFORML 
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃싫어…… 오지 마……！　　　　　　　　　　┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━┛
+			PRINTFORML 
+		RESETCOLOR
+			CFLAG:(CHARANUM-1):행동횟수 = 7
+			CALL SET_ACTION_SKILL, ARG, [[스킬:데・카쟈]]
+		ELSEIF CFLAG:ARG:행동한횟수 < 4
+			CALL SET_ACTION_SKILL, ARG, [[스킬:랜더마이저]]
+		ELSEIF CFLAG:ARG:행동한횟수 == 5
+			CALL SET_ACTION_SKILL, ARG, [[스킬:파마가드브레이크]]
+		ELSEIF CFLAG:ARG:행동한횟수 == 6
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "BUNNY’sEXTINCTION")
+		ENDIF
+	ELSEIF (FLAG:경과턴수) % 4 == 1
+	;4n+2
+		IF FLAG:경과턴수 == 1
+			CFLAG:(CHARANUM-1):속도보정 -= 30
+			CFLAG:(CHARANUM-1):행동횟수 = 4
+		ENDIF
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:회심의패기]]
+		ELSEIF CFLAG:ARG:행동한횟수 <= 2
+			IF RAND:2 == 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마하・라기다인]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마하・부흐다인]]
+			ENDIF
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, 0
+		ENDIF
+	;4n+3
+	ELSEIF (FLAG:경과턴수) % 4 == 2
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		ELSEIF CFLAG:ARG:행동한횟수 <= 2
+			IF RAND:2 == 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마하・부흐다인]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마하・지오다인]]
+			ENDIF
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, 0
+		ENDIF
+	;4n+0
+	ELSEIF (FLAG:경과턴수) % 4 == 3
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:회심의패기]]
+		ELSEIF CFLAG:ARG:행동한횟수 <= 2
+			IF RAND:2 == 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마하・지오다인]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마하・잔다인]]
+			ENDIF
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, 0
+		ENDIF
+	;1以外の4n+1
+	ELSEIF (FLAG:경과턴수) % 4 == 0
+		IF CFLAG:ARG:행동한횟수 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:데・쿤다]]
+		ELSEIF CFLAG:ARG:행동한횟수 <= 2
+			IF RAND:2 == 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마하・잔다인]]
+			ELSE
+				CALL SET_ACTION_SKILL, ARG, [[스킬:마하・라기다인]]
+			ENDIF
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;EVENT96_7_She's Returns
+;-------------------------------------------------
+@SET_ACTION_ミルリターンズ, ARG
+#DIM ループ用
+;MiruSyndromeReturns
+;呪殺を常にガードブレイク。
+;付与された状態異常を餌食にしていく。呪いを麻痺・石化・強制ダイイングの３アウト式に悪化する付与を行う。
+;２ターンに１回、攻撃に対し身構え、受けるダメージが増える。常にHP最大値の10%以上のダメージを受けると呪殺＋万能攻撃で反撃。
+;HPは高い。ソーナンスみたいなスタイル
+IF (FLAG:경과턴수+1) % 6 == 1
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:저주비문]]
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		CALL SET_ACTION_SKILL, ARG, [[스킬:컨센트레이트]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:어둠의포미러버]]
+	ENDIF
+ELSEIF (FLAG:경과턴수+1) % 6 == 2
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:마카라칸]]
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		CALL SET_ACTION_SKILL, ARG, [[스킬:마카・카쟈]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:데・카쟈]]
+	ENDIF
+ELSEIF (FLAG:경과턴수+1) % 6 == 3
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:심판의천둥]]
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		CALL SET_ACTION_SKILL, ARG, [[스킬:이클립스미러]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:나락의파동]]
+	ENDIF
+ELSEIF (FLAG:경과턴수+1) % 6 == 4
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:테트라칸]]
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		CALL SET_ACTION_SKILL, ARG, [[스킬:라쿠・카쟈]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:데・카쟈]]
+	ENDIF
+ELSEIF (FLAG:경과턴수+1) % 6 == 5
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:철사권]]
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		CALL SET_ACTION_SKILL, ARG, [[스킬:컨센트레이트]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:질투의폭압]]
+	ENDIF
+ELSEIF (FLAG:경과턴수+1) % 6 == 0
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:스쿠・카쟈]]
+	ELSEIF CFLAG:ARG:행동한횟수 == 1
+		CALL SET_ACTION_SKILL, ARG, [[스킬:데・카쟈]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:쿼드커즈]]
+	ENDIF
+ENDIF
+
+@EVENT_BATTLE_TURNTOP_ミルリターンズ
+IF FLAG:경과턴수 > 0
+	PRINTL 
+	PRINT ＞미루의 마력이 공간을 잠식한다……
+	SETCOLOR 0x33ffcc
+	PRINT 『
+	SETCOLOR 0xff0000
+	PRINT 주살내성
+	SETCOLOR 0x33ffcc
+	PRINT 이 파괴되어간다』
+	RESETCOLOR
+	PRINTL 
+	FOR LOCAL,1, 7
+		SIF POS(LOCAL) < 0 || CFLAG:POS(LOCAL):상태이상 == GET_STATE_NUM("DYING")
+			CONTINUE
+		;ガーキル追加
+		CFLAG:POS(LOCAL):주살무효화횟수 = 0
+		CFLAG:POS(LOCAL):주살가드킬 = 1
+	NEXT
+	IF (FLAG:경과턴수) % 2 == 1
+		PRINTFORML 
+		PRINTFORML ＞미루가 토끼 인형을 띄우며, 마법에 집중한다。
+		SETCOLOR 0x33ffcc
+		PRINTFORM ＞마법영창을 하는 미루는 빈틈투성이로 보이나、
+			SETCOLOR 0x33ffcc
+		PRINTFORML 『유인하는』 것처럼 보이기도 한다。
+		RESETCOLOR
+		;受けるダメージ倍加。ただしニアデスリベンジが発動しやすくなるってことでもあるんだぜ
+		CFLAG:(CHARANUM-1):물리피데미지보정 = 100
+		CFLAG:(CHARANUM-1):마법피데미지보정 = 100
+		PRINTFORML 
+	ELSE
+		PRINTFORML 
+		PRINTFORM ＞미루가 영창을 끝내고, 이쪽을 노려본다。
+		SETCOLOR 0x33ffcc
+		PRINTFORML 공격으로 넘어갈 듯 하다。
+		RESETCOLOR
+		CFLAG:(CHARANUM-1):물리피데미지보정 = 0
+		CFLAG:(CHARANUM-1):마법피데미지보정 = 0
+		PRINTFORML 
+	ENDIF
+ENDIF
+
+
+@EVENT_BATTLE_TURNEND_ミルリターンズ
+#DIM ループ用
+PRINTL ＞미루의 마력이 넘쳐흐른다……。
+FOR ループ用, 1, 7
+	;誰もいない、または死んでる場合、スルー
+	IF POS(ループ用) < 0 || GET_STATE(CFLAG:POS(ループ用):상태이상) == "DYING"
+	;石化⇒即死
+	ELSEIF GET_STATE(CFLAG:POS(ループ用):상태이상) == "STONE"
+		;実際にDYINGする処理
+		PRINTFORML 　　TARGET:[{ループ用,2}] %CALLNAME:POS(ループ用),20,LEFT%　>>>>>>　DYING！　석화자의 생명을 빼앗는다!
+		CFLAG:POS(ループ用):상태이상 = GET_STATE_NUM("DYING")
+		CALL DEAD_CHARA, POS(ループ用)
+	;麻痺⇒石化
+	ELSEIF GET_STATE(CFLAG:POS(ループ用):상태이상) == "PALYZE"
+		;実際にSTONEする処理
+		PRINTFORML 　　TARGET:[{ループ用,2}] %CALLNAME:POS(ループ用),20,LEFT%　>>>>>>　STONE！　마비자의 몸을 돌로 바꾸어 간다!
+		CFLAG:POS(ループ用):상태이상 = GET_STATE_NUM("STONE")
+		CALL SYNC_STATUS,POS(ループ用)
+	;呪⇒麻痺
+	ELSEIF GET_STATE(CFLAG:POS(ループ用):상태이상) == "CURSE"
+		;実際にPALYZEする処理
+		PRINTFORML 　　TARGET:[{ループ用,2}] %CALLNAME:POS(ループ用),20,LEFT%　>>>>>>　PALYZE！　저주받은 자를 마비시킨다!
+		CFLAG:POS(ループ用):상태이상 = GET_STATE_NUM("PALYZE")
+		CALL SYNC_STATUS,POS(ループ用)
+	ENDIF
+NEXT
+

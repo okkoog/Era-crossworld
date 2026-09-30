@@ -1,0 +1,1130 @@
+﻿
+
+;====================
+;条件
+;====================
+@GET_COLOSSEUM_NAME_89
+#FUNCTIONS
+RESULTS_F '= "宝石争奪戦"
+RETURNF RESULTS_F
+
+@PLAYABLE_COLOSSEUM_89
+SIF (FLAG:조직공헌도 + FLAG:명성 * 100 ) < 60000 || MONEY < 10000
+	RETURN 0
+IF 闘技場フラグ:89:0 < 1
+	CALL MESSAGE_WINDOW, "", "밖을 걷고 있자 선배가 말을 걸어왔다"
+	CALL MESSAGE_WINDOW, "선배", "여어　제법 열심히 하고 있잖아/네 활약은 꽤 전해 듣고 있다고"
+	CALL MESSAGE_WINDOW, "선배", "그런 너한테 좋은 곳을 알려주지/이기면 보석을 손에 넣을 수 있는 투기장이다/래그 아저씨가 갖고 싶어하는 녀석이지"
+	CALL MESSAGE_WINDOW, "선배", "그 대신 참가비가 필요하지만 말이야…"
+	闘技場フラグ:89:0 = 1
+ENDIF
+RESULTS = 보석쟁탈전(참가비:￥10000)
+RETURN 1
+
+
+;====================
+;内容
+;====================
+@COLOSSEUM_89
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC CNT_GET_RAGJUEL, RAGJUELNUM
+#DIM DYNAMIC GET_RAGJUEL_NUM;宝石が手に入る個数（10以外は4つだが必ず4以上手に入る）
+#DIM DYNAMIC GET_RAGJUEL_RANK_RATE = 10, 10, 10;低ランク・中ランク・高ランクの宝石の入手率
+;LOCAL:0 = 10;低ランクの宝石が手に入る確率
+;LOCAL:1 = 10;中ランクの宝石が手に入る確率
+;LOCAL:2 = 10;高ランクの宝石が手に入る確率
+;LOCAL:3 = 0;宝石が手に入る個数（10以外は4つだが必ず4以上手に入る）
+MONEY -= 10000
+闘技場フラグ:89:1 = 0
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+$LP
+CUSTOMDRAWLINE =
+PRINTL 어느 난이도로 싸웁니까？
+PRINT 　[1]
+SIF FLAG:투기장랭크 > 0 && 闘技場フラグ:89:2 > 0;e
+	PRINT 　[2]
+SIF FLAG:투기장랭크 > 1 && 闘技場フラグ:89:2 > 1;d
+	PRINT 　[3]
+SIF FLAG:투기장랭크 > 2 && 闘技場フラグ:89:2 > 2;c
+	PRINTL 　[4]
+SIF FLAG:투기장랭크 > 3 && 闘技場フラグ:89:2 > 3;b
+	PRINT 　[5]
+SIF FLAG:투기장랭크 > 4 && 闘技場フラグ:89:2 > 4;a
+	PRINT 　[6]
+SIF FLAG:투기장랭크 > 4 && 闘技場フラグ:89:2 > 5;a
+	PRINT 　[7]
+SIF FLAG:투기장랭크 > 4 && 闘技場フラグ:89:2 > 6;a
+	PRINTL 　[8]
+SIF FLAG:투기장랭크 > 4 && 闘技場フラグ:89:2 > 7;a
+	PRINT 　[9]
+;SIF FLAG:투기장랭크 > 4 && 闘技場フラグ:89:2 > 8;a
+;	PRINTL 　[10]EX
+PRINTL 
+PRINTL 　[99] 출전을 취소한다
+INPUT
+SIF RESULT == 99
+	RETURN -1
+SIF 闘技場フラグ:89:2 < RESULT-1
+	GOTO LP
+IF FLAG:투기장랭크 < 5
+	SIF FLAG:투기장랭크 < RESULT-1
+		GOTO LP
+ENDIF
+闘技場フラグ:89:1 = RESULT
+SIF 闘技場フラグ:89:2 < RESULT
+	闘技場フラグ:89:2 = RESULT
+SELECTCASE RESULT
+	CASE 1
+		IF RAND:2
+			;物理攻撃
+			CALL SET_ENEMY,7,[[キャラ:화백]],10,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:아기]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마하・라기]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:라쿠・카쟈]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,8,[[キャラ:쵸우케신]],10,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:부흐]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마하・부흐]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:디아]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,9,[[キャラ:안드라스]],10,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:기가]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마하기가]]
+			ABL:(CHARANUM-1):스킬3 = 0
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,10,[[キャラ:라미아]],10,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:지오]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마하・지오]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:사마・카쟈]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,11,[[キャラ:임프]],10,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:잔]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마하・잔]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:스쿤・다]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,12,[[キャラ:아케트라브]],10,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:마그나]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마하・마그나]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:마카・카쟈]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,13,[[キャラ:뎁스]],10,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:아쿠아]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마하・아쿠아]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:스쿤・다]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,15,[[キャラ:파리카]],10,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:갈]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마하・갈]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:마칸・다]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,16,[[キャラ:드라이어드]],10,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:그라이]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마하・그라이]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:파트라]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ELSE
+			;魔法攻撃
+			CALL SET_ENEMY,7,[[キャラ:브라우니]],10,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:마구날뛰기]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:돌려차기]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:스쿤・다]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+
+			CALL SET_ENEMY,8,[[キャラ:브라우니]],10,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:마구날뛰기]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:돌려차기]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:스쿤・다]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,10,[[キャラ:브라우니]],10,0,0
+			ABL:(CHARANUM-1):스킬2 = [[스킬:일문자베기]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+
+			CALL SET_ENEMY,11,[[キャラ:브라우니]],10,0,1
+			ABL:(CHARANUM-1):스킬2 = [[스킬:일문자베기]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,12,[[キャラ:고획조]],10,0,0
+			ABL:(CHARANUM-1):스킬2 = [[스킬:타루・카쟈]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+
+			CALL SET_ENEMY,13,[[キャラ:고획조]],10,0,1
+			ABL:(CHARANUM-1):스킬2 = [[스킬:타루・카쟈]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,15,[[キャラ:좀비캅]],10,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:싱글샷]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:산탄사격]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+
+			CALL SET_ENEMY,16,[[キャラ:좀비캅]],10,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:싱글샷]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:산탄사격]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ENDIF
+		GET_RAGJUEL_RANK_RATE:0 = 90
+		GET_RAGJUEL_RANK_RATE:1 = 10
+		GET_RAGJUEL_RANK_RATE:2 = 0
+		闘技場フラグ:89:1 = 1
+	CASE 2
+		IF RAND:2
+			;物理攻撃+タルカジャ
+			CALL SET_ENEMY,7,[[キャラ:오니]],20,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:번개찌르기]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:히트웨이브]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:몽견침]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:산탄사격]]
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,8,[[キャラ:가름]],20,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:소닉펀치]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:돌려차기]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:메가클로]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:혈제]]
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,10,[[キャラ:가름]],20,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:소닉펀치]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:돌려차기]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:메가클로]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:혈제]]
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,11,[[キャラ:오니]],20,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:번개찌르기]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:히트웨이브]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:몽견침]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:산탄사격]]
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,12,[[キャラ:아리안로드]],20,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:양팔찍기]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:안개베기]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:타루・카쟈]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			
+			CALL SET_ENEMY,16,[[キャラ:아리안로드]],20,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:양팔찍기]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:안개베기]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:타루・카쟈]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ELSE
+			;精神異常攻撃
+			CALL SET_ENEMY,7,[[キャラ:오퀴페테]],20,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:날개짓]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:할퀴기]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:고양의노래]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,8,[[キャラ:오퀴페테]],20,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:날개짓]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:할퀴기]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:고양의노래]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,10,[[キャラ:페르세포네]],20,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:마린카린]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:부흐라]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:마하・지오]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,11,[[キャラ:페르세포네]],20,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:마린카린]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:부흐라]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:마하・지오]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,12,[[キャラ:랴난시]],20,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:자장가]]
+			ABL:(CHARANUM-1):스킬2 = 0
+			ABL:(CHARANUM-1):스킬3 = 0
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,16,[[キャラ:색정인연령]],20,0,0
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ENDIF
+		GET_RAGJUEL_RANK_RATE:0 = 75
+		GET_RAGJUEL_RANK_RATE:1 = 20
+		GET_RAGJUEL_RANK_RATE:2 = 5
+		闘技場フラグ:89:1 = 2
+	CASE 3
+		IF RAND:2
+			;神経異常攻撃
+			CALL SET_ENEMY,7,[[キャラ:모스맨]],30,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:마하・지온가]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:지오다인]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:바인드보이스]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:시바브]]
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,8,[[キャラ:모스맨]],30,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:마하・지온가]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:지오다인]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:바인드보이스]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:시바브]]
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,10,[[キャラ:알케니]],30,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:백발침]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:독침]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:파라라아이]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,11,[[キャラ:알케니]],30,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:백발침]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:독침]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:파라라아이]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,12,[[キャラ:사라시나히메]],30,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:파라라아이]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:바인드보이스]]
+			ABL:(CHARANUM-1):스킬3 = 0
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,16,[[キャラ:사라시나히메]],30,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:파라라아이]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:바인드보이스]]
+			ABL:(CHARANUM-1):스킬3 = 0
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ELSE
+			;魔法攻撃+マカカジャ
+			CALL SET_ENEMY,7,[[キャラ:헬]],30,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:마그나스]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마하・부흐라]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:부흐다인]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:마하・마그나스]]
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,8,[[キャラ:메가이라]],30,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:지오다인]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마하・지온가]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:갈다인]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:마하・갈라]]
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,10,[[キャラ:피닉스]],30,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:마하・라기온]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:아기다인]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:기가리온]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:마하기가온]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:프레이]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,11,[[キャラ:메가이라]],30,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:지오다인]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마하・지온가]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:갈다인]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:마하・갈라]]
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,12,[[キャラ:토트]],30,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:잔다인]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마하・잔마]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:그라다인]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:마카・카쟈]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:마카・카쟈]]
+			ABL:(CHARANUM-1):스킬6 = [[스킬:마카・카쟈]]
+			ABL:(CHARANUM-1):스킬7 = [[스킬:마카・카쟈]]
+			ABL:(CHARANUM-1):스킬8 = [[스킬:마카・카쟈]]
+			ABL:(CHARANUM-1):스킬9 = [[스킬:마카・카쟈]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			
+			CALL SET_ENEMY,16,[[キャラ:포르투나]],30,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:갈다인]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마하・갈라]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:잔다인]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:마카・카쟈]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:마카・카쟈]]
+			ABL:(CHARANUM-1):스킬6 = [[스킬:마카・카쟈]]
+			ABL:(CHARANUM-1):스킬7 = [[스킬:마카・카쟈]]
+			ABL:(CHARANUM-1):스킬8 = [[스킬:마카・카쟈]]
+			ABL:(CHARANUM-1):스킬9 = [[스킬:마카・카쟈]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ENDIF
+		GET_RAGJUEL_RANK_RATE:0 = 45
+		GET_RAGJUEL_RANK_RATE:1 = 50
+		GET_RAGJUEL_RANK_RATE:2 = 5
+		闘技場フラグ:89:1 = 3
+	CASE 4
+		IF RAND:2
+			;異常+공격
+			CALL SET_ENEMY,7,[[キャラ:타마모]],40,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:텐타라후]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:섹시댄스]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:던지는키스]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,8,[[キャラ:타마모]],40,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:텐타라후]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:섹시댄스]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:던지는키스]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,10,[[キャラ:마르코시아스]],40,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:파라라・웨이브]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:아라크노와이어]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:뉴로크런치]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,11,[[キャラ:마르코시아스]],40,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:파라라・웨이브]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:아라크노와이어]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:뉴로크런치]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,12,[[キャラ:마르코시아스]],40,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:파라라・웨이브]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:아라크노와이어]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:뉴로크런치]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,16,[[キャラ:타마모]],40,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:텐타라후]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:섹시댄스]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:던지는키스]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ELSE
+			;チャージ+物理
+			CALL SET_ENEMY,9,[[キャラ:나타태자]],45,0,1
+			CSTR:(CHARANUM-1):사고패턴 = チャージマン
+			CFLAG:(CHARANUM-1):행동횟수 = 2
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			CFLAG:(CHARANUM-1):ＭＰ보정 = 99999
+			ABL:(CHARANUM-1):스킬1 = [[스킬:기간피스트]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:자연난타]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:성불권]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:백열찌르기]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:약자필멸권]]
+			ABL:(CHARANUM-1):스킬6 = [[스킬:브레인쉐이크]]
+			ABL:(CHARANUM-1):스킬7 = [[스킬:어설트다이브]]
+			ABL:(CHARANUM-1):스킬8 = [[스킬:타슬람샷]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ENDIF
+		GET_RAGJUEL_RANK_RATE:0 = 20
+		GET_RAGJUEL_RANK_RATE:1 = 70
+		GET_RAGJUEL_RANK_RATE:2 = 10
+		闘技場フラグ:89:1 = 4
+	CASE 5
+		IF RAND:2
+			;キル+공격
+			CALL SET_ENEMY,7,[[キャラ:멜키세덱]],50,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:기간피스트]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:아카샤아츠]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:메테오피스트]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:팔상발파]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:타격가드브레이크]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,8,[[キャラ:멜키세덱]],50,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:기간피스트]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:아카샤아츠]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:메테오피스트]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:팔상발파]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:타격가드브레이크]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,10,[[キャラ:아타파구]],50,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:이악물기]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:아카샤아츠]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:어드바이스]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:오의방어부수기]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:타격가드브레이크]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,11,[[キャラ:마르코시아스]],50,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:이악물기]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:아카샤아츠]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:어드바이스]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:오의방어부수기]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:타격가드브레이크]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,12,[[キャラ:바르바토스]],50,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:원샷킬]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:멸살수전]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:엔젤애로]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:찰나장대비쏘기]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:비구가드브레이크]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,16,[[キャラ:바르바토스]],50,0,0
+			ABL:(CHARANUM-1):스킬1 = [[스킬:원샷킬]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:멸살수전]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:엔젤애로]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:찰나장대비쏘기]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:비구가드브레이크]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ELSE
+			;메기도
+			CALL SET_ENEMY,9,[[キャラ:길가메시]],50,0,1
+			BASE:(CHARANUM-1):검격 = 100
+			BASE:(CHARANUM-1):타격 = 100
+			BASE:(CHARANUM-1):비구 = 100
+			BASE:(CHARANUM-1):전술 = 100
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			CFLAG:(CHARANUM-1):ＭＰ보정 = 99999
+			ABL:(CHARANUM-1):스킬1 = [[스킬:메기도크로스]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:끝나는세계]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:만마의일격]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:어드바이스]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,14,[[キャラ:고모리]],50,0,1
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			CFLAG:(CHARANUM-1):ＭＰ보정 = 99999
+			ABL:(CHARANUM-1):스킬1 = [[스킬:메기도라]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:메기도]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:라스타캔디]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ENDIF
+		GET_RAGJUEL_RANK_RATE:0 = 10
+		GET_RAGJUEL_RANK_RATE:1 = 70
+		GET_RAGJUEL_RANK_RATE:2 = 20
+		闘技場フラグ:89:1 = 5
+	CASE 6
+		IF RAND:2
+			;即死
+			CALL SET_ENEMY,7,[[キャラ:쿠치사케]],60,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:축시의참배]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:헬즈아이]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:산산조각베기]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,8,[[キャラ:쿠치사케]],60,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:축시의참배]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:헬즈아이]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:산산조각베기]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,10,[[キャラ:카마엘]],60,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:파마의뇌광]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마한마온]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:아카샤아츠]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,11,[[キャラ:카마엘]],60,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:파마의뇌광]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마한마온]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:아카샤아츠]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,12,[[キャラ:사리엘]],60,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,16,[[キャラ:사리엘]],60,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ELSE
+			;魔法+集中
+			CALL SET_ENEMY,9,[[キャラ:라]],67,0,1
+			CSTR:(CHARANUM-1):사고패턴 = 魔法集中
+			CFLAG:(CHARANUM-1):행동횟수 = 2
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			CFLAG:(CHARANUM-1):ＭＰ보정 = 99999
+			ABL:(CHARANUM-1):스킬1 = [[스킬:인페르노]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:대염상]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:마하・라기다인]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:프레이라]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:뉴클리어미사일]]
+			ABL:(CHARANUM-1):스킬6 = [[스킬:마하기가리온]]
+			ABL:(CHARANUM-1):스킬7 = [[스킬:다무도라온]]
+			ABL:(CHARANUM-1):스킬8 = [[스킬:메기도]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ENDIF
+		GET_RAGJUEL_RANK_RATE:0 = 10
+		GET_RAGJUEL_RANK_RATE:1 = 60
+		GET_RAGJUEL_RANK_RATE:2 = 30
+		闘技場フラグ:89:1 = 6
+		
+	CASE 7
+		IF RAND:2
+			;即死
+			CALL SET_ENEMY,7,[[キャラ:흐레스벨그]],70,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:배드비트]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:철사권]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:흑점격]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:나락의파동]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:저주비문]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,8,[[キャラ:흐레스벨그]],70,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:배드비트]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:철사권]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:흑점격]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:나락의파동]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:저주비문]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,10,[[キャラ:솔레온]],70,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:낙인의일격]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:흑점격]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:댐네이션]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:헤븐즈도어]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:혼의단죄]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,11,[[キャラ:솔레온]],70,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:낙인의일격]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:흑점격]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:댐네이션]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:헤븐즈도어]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:혼의단죄]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,12,[[キャラ:산달폰]],70,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:빛나는낙인]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마한마온]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:파마의뇌광]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,13,[[キャラ:산달폰]],70,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:빛나는낙인]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마한마온]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:파마의뇌광]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,15,[[キャラ:도철]],70,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:축시의참배]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마하무드온]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:헬즈아이]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:베어먹기]]
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,16,[[キャラ:도철]],70,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:축시의참배]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마하무드온]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:헬즈아이]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:베어먹기]]
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ELSE
+			;チャージ+物理
+			CALL SET_ENEMY,9,[[キャラ:마하칼라]],77,0,1
+			CSTR:(CHARANUM-1):사고패턴 = チャージマン
+			CFLAG:(CHARANUM-1):행동횟수 = 2
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			CFLAG:(CHARANUM-1):ＭＰ보정 = 99999
+			ABL:(CHARANUM-1):스킬1 = [[스킬:허공참파]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:끝나는세계]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:만마의일격]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:찰나장대비쏘기]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:명계의문]]
+			ABL:(CHARANUM-1):스킬6 = [[스킬:메가톤프레스]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ENDIF
+		GET_RAGJUEL_RANK_RATE:0 = 10
+		GET_RAGJUEL_RANK_RATE:1 = 50
+		GET_RAGJUEL_RANK_RATE:2 = 40
+		闘技場フラグ:89:1 = 7
+
+	CASE 8
+		IF RAND:2
+			;即死
+			CALL SET_ENEMY,7,[[キャラ:쿠치사케]],80,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:축시의참배]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:헬즈아이]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:산산조각베기]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,8,[[キャラ:쿠치사케]],80,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:축시의참배]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:헬즈아이]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:산산조각베기]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,10,[[キャラ:카마엘]],80,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:파마의뇌광]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마한마온]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:아카샤아츠]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY,11,[[キャラ:카마엘]],80,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:파마의뇌광]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:마한마온]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:아카샤아츠]]
+			ABL:(CHARANUM-1):스킬4 = 0
+			ABL:(CHARANUM-1):스킬5 = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY,13,[[キャラ:사리엘]],80,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			
+			CALL SET_ENEMY, 15, [[キャラ:사리엘]],80,0,0
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ELSE
+			;魔法+集中
+			CALL SET_ENEMY,9,[[キャラ:미트라스]],87,0,1
+			CSTR:(CHARANUM-1):사고패턴 = 魔法集中
+			CFLAG:(CHARANUM-1):행동횟수 = 2
+			CFLAG:(CHARANUM-1):BS무효플래그 = 1
+			CFLAG:(CHARANUM-1):ＭＰ보정 = 99999
+			ABL:(CHARANUM-1):스킬1 = [[스킬:메기도라온]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:메기도라온]]
+			ABL:(CHARANUM-1):스킬3 = [[스킬:메기도라온]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:메기도라온]]
+			ABL:(CHARANUM-1):스킬5 = [[스킬:메기도라온]]
+			ABL:(CHARANUM-1):스킬6 = [[스킬:메기도라온]]
+			ABL:(CHARANUM-1):스킬7 = [[스킬:메기도라온]]
+			ABL:(CHARANUM-1):스킬8 = [[스킬:메기도라온]]
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ENDIF
+		GET_RAGJUEL_RANK_RATE:0 = 10
+		GET_RAGJUEL_RANK_RATE:1 = 30
+		GET_RAGJUEL_RANK_RATE:2 = 60
+		闘技場フラグ:89:1 = 8
+
+	CASE 9
+	IF RAND:2
+		;90物理
+		CALL SET_ENEMY,9,[[キャラ:라마]],97,0,1
+		CSTR:(CHARANUM-1):사고패턴 = 90物理
+		CFLAG:(CHARANUM-1):행동횟수 = 3
+		CFLAG:(CHARANUM-1):BS무효플래그 = 1
+		CFLAG:(CHARANUM-1):ＭＰ보정 = 99999
+		ABL:(CHARANUM-1):스킬1 = [[스킬:브라흐마스트라]]
+		ABL:(CHARANUM-1):스킬2 = 0
+		ABL:(CHARANUM-1):스킬3 = [[스킬:끝나는세계]]
+		ABL:(CHARANUM-1):스킬4 = 0
+		ABL:(CHARANUM-1):스킬5 = [[스킬:관통]]
+		ABL:(CHARANUM-1):스킬6 = [[스킬:엑스트라원]]
+		ABL:(CHARANUM-1):스킬7 = [[스킬:정천의회심]]
+		ABL:(CHARANUM-1):스킬8 = [[스킬:황천의회심]]
+		CALL SYNC_STATUS,(CHARANUM-1)
+		CALL HEALTH_CHARA,(CHARANUM-1)
+	ELSE
+		;90魔法
+		CALL SET_ENEMY,9,[[キャラ:비슈누]],97,0,1
+		CSTR:(CHARANUM-1):사고패턴 = 90魔法
+		CFLAG:(CHARANUM-1):행동횟수 = 3
+		CFLAG:(CHARANUM-1):BS무효플래그 = 1
+		CFLAG:(CHARANUM-1):ＭＰ보정 = 99999
+		ABL:(CHARANUM-1):스킬1 = [[스킬:메기도라온]]
+		ABL:(CHARANUM-1):스킬2 = [[스킬:위대한로고스]]
+		ABL:(CHARANUM-1):스킬3 = 0
+		ABL:(CHARANUM-1):스킬4 = 0
+		ABL:(CHARANUM-1):스킬5 = [[스킬:빛나는낙인]]
+		ABL:(CHARANUM-1):스킬6 = 0
+		ABL:(CHARANUM-1):스킬7 = [[스킬:색즉시공]]
+		ABL:(CHARANUM-1):스킬8 = [[스킬:올드・원]]
+		CALL SYNC_STATUS,(CHARANUM-1)
+		CALL HEALTH_CHARA,(CHARANUM-1)
+	ENDIF
+	GET_RAGJUEL_RANK_RATE:0 = 10
+	GET_RAGJUEL_RANK_RATE:1 = 10
+	GET_RAGJUEL_RANK_RATE:2 = 80
+	闘技場フラグ:89:1 = 9
+
+ENDSELECT
+
+FOR LOCAL:4,7,17
+	SIF POS(LOCAL:4) > -1
+		BREAK
+	SIF LOCAL:4 == 16
+		GOTO LP
+NEXT
+
+FLAG:현던전 = [[ダンジョン:콜로세움던전]]
+FLAG:현M = 1
+FLAG:현X = 4
+FLAG:현Y = 6
+CALL MAKE_FLOOR, FLAG:현던전
+DA:4:4 = 4
+CALL FLOOR_ANALYZE
+CALL SHOW_FLOOR
+CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+
+CALL MESSAGE_WINDOW_D, "사회자", @"레이디이이이스！ 앤！ 젠틀맨！/오래 기다리셨습니다！ 오늘 주목할 카드는 이쪽！"
+CALL MESSAGE_WINDOW_D, "", @"＞스크린에、%CALLNAME:MASTER% 일행과 상태 팀이 비춰졌다…"
+CALL MESSAGE_WINDOW_D, "사회자", @"과연 어떠한 시합으로 우리를 매료시켜줄까요？/그러면 곧바로 시작해보겠습니다！/레디～………"
+CALL MESSAGE_WINDOW_D, "사회자", @"파이트！！" , , , , , , , , , "CENTER"
+
+CALL BATTLE_START
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+IF 闘技場フラグ:89:1 > 0
+	FLAG:명성 += 10 * 闘技場フラグ:89:1
+	FLAG:투기장명성 += 10 * 闘技場フラグ:89:1
+	VARSET CNT_GET_RAGJUEL
+	SIF 闘技場フラグ:89:1 < 10 || GET_RAGJUEL_NUM < 4
+		GET_RAGJUEL_NUM = 4
+	;IF 0 == LOCAL:0 + LOCAL:1 + LOCAL:2
+	;	LOCAL:0 = 10
+	;	LOCAL:1 = 10
+	;	LOCAL:2 = 10
+	;ENDIF
+	VARSET CNT_GET_RAGJUEL
+	FOR LCOUNT, 0, GET_RAGJUEL_NUM
+		SELECTCASE RAND:SUMARRAY(GET_RAGJUEL_RANK_RATE)
+			CASE IS < GET_RAGJUEL_RANK_RATE:0
+				SELECTCASE RAND:4
+					CASE 0
+						CNT_GET_RAGJUEL:FINDELEMENT(RAGJUEL_TABLE, "에메랄드", , ,1) += 1
+					CASE 1
+						CNT_GET_RAGJUEL:FINDELEMENT(RAGJUEL_TABLE, "아메지스트", , ,1) += 1
+					CASE 2
+						CNT_GET_RAGJUEL:FINDELEMENT(RAGJUEL_TABLE, "오팔", , ,1) += 1
+					CASE 3
+						CNT_GET_RAGJUEL:FINDELEMENT(RAGJUEL_TABLE, "가넷", , ,1) += 1
+				ENDSELECT
+			CASE IS < GET_RAGJUEL_RANK_RATE:0 + GET_RAGJUEL_RANK_RATE:1
+				SELECTCASE RAND:4
+					CASE 0
+						CNT_GET_RAGJUEL:FINDELEMENT(RAGJUEL_TABLE, "오닉스", , ,1) += 1
+					CASE 1
+						CNT_GET_RAGJUEL:FINDELEMENT(RAGJUEL_TABLE, "아쿠아마린", , ,1) += 1
+					CASE 2
+						CNT_GET_RAGJUEL:FINDELEMENT(RAGJUEL_TABLE, "터키석", , ,1) += 1
+					CASE 3
+						CNT_GET_RAGJUEL:FINDELEMENT(RAGJUEL_TABLE, "토파즈", , ,1) += 1
+				ENDSELECT
+			CASEELSE
+				SELECTCASE RAND:4
+					CASE 0
+						CNT_GET_RAGJUEL:FINDELEMENT(RAGJUEL_TABLE, "사파이어", , ,1) += 1
+					CASE 1
+						CNT_GET_RAGJUEL:FINDELEMENT(RAGJUEL_TABLE, "진주", , ,1) += 1
+					CASE 2
+						CNT_GET_RAGJUEL:FINDELEMENT(RAGJUEL_TABLE, "루비", , ,1) += 1
+					CASE 3
+						CNT_GET_RAGJUEL:FINDELEMENT(RAGJUEL_TABLE, "다이아몬드", , ,1) += 1
+				ENDSELECT
+		ENDSELECT
+	NEXT
+	PRINTFORMW 승부에서 이겨 보석을 받았다
+	FOR LCOUNT, 0, RAGJUELNUM
+		SIF !CNT_GET_RAGJUEL:LCOUNT
+			CONTINUE
+		CALL GET_ITEMS, RAGJUEL_TABLE:LCOUNT, CNT_GET_RAGJUEL:LCOUNT
+		PRINTFORML %RAGJUEL_TABLE:LCOUNT%을(를) {CNT_GET_RAGJUEL:LCOUNT}개 손에 넣었다
+	NEXT
+	WAIT
+	;LOCAL:4 = LOCAL:0 + LOCAL:1 + LOCAL:2
+	;FOR LOCAL:5,0,GET_RAGJUEL_NUM
+	;	LOCAL:6 = RAND:(LOCAL:4)
+	;	IF LOCAL:6 < LOCAL:0
+	;		LOCAL:(10 + RAND:4)++
+	;	ELSEIF LOCAL:6 < LOCAL:0 + LOCAL:1
+	;		LOCAL:(14 + RAND:4)++
+	;	ELSE
+	;		LOCAL:(18 + RAND:4)++
+	;	ENDIF
+	;NEXT
+	;PRINTFORMW 勝負に勝ったことで宝石を貰った
+	;IF LOCAL:10 > 0
+	;	PRINTFORML エメラルドを{LOCAL:10}個手に入れた
+	;	ITEM:278 += LOCAL:10
+	;ENDIF
+	;IF LOCAL:11 > 0
+	;	PRINTFORML アメジストを{LOCAL:11}個手に入れた
+	;	ITEM:275 += LOCAL:11
+	;ENDIF
+	;IF LOCAL:12 > 0
+	;	PRINTFORML オパールを{LOCAL:12}個手に入れた
+	;	ITEM:283 += LOCAL:12
+	;ENDIF
+	;IF LOCAL:13 > 0
+	;	PRINTFORML ガーネットを{LOCAL:13}個手に入れた
+	;	ITEM:274 += LOCAL:13
+	;ENDIF
+	;IF LOCAL:14 > 0
+	;	PRINTFORML オニキスを{LOCAL:14}個手に入れた
+	;	ITEM:281 += LOCAL:14
+	;ENDIF
+	;IF LOCAL:15 > 0
+	;	PRINTFORML アクアマリンを{LOCAL:15}個手に入れた
+	;	ITEM:276 += LOCAL:15
+	;ENDIF
+	;IF LOCAL:16 > 0
+	;	PRINTFORML ターコイズを{LOCAL:16}個手に入れた
+	;	ITEM:285 += LOCAL:16
+	;ENDIF
+	;IF LOCAL:17 > 0
+	;	PRINTFORML トパーズを{LOCAL:17}個手に入れた
+	;	ITEM:284 += LOCAL:17
+	;ENDIF
+	;IF LOCAL:18 > 0
+	;	PRINTFORML サファイアを{LOCAL:18}個手に入れた
+	;	ITEM:282 += LOCAL:18
+	;ENDIF
+	;IF LOCAL:19 > 0
+	;	PRINTFORML パールを{LOCAL:19}個手に入れた
+	;	ITEM:279 += LOCAL:19
+	;ENDIF
+	;IF LOCAL:20 > 0
+	;	PRINTFORML ルビーを{LOCAL:20}個手に入れた
+	;	ITEM:280 += LOCAL:20
+	;ENDIF
+	;IF LOCAL:21 > 0
+	;	PRINTFORML ダイヤモンドを{LOCAL:21}個手に入れた
+	;	ITEM:277 += LOCAL:21
+	;ENDIF
+	;PRINTFORMW
+ELSE
+	PRINTFORMW 승부에서 지고 말았다…
+ENDIF
+RETURN 0
+
+@EVENT_COLOSSEUM_LOSE_89
+#LOCALSIZE 10
+;一応、複数回きてしまうことに対策しておく
+SIF FLAG:승리플래그
+	RETURN 1
+;進行させるために勝利フラグを通すようにする
+FLAG:승리플래그 = 1
+
+闘技場フラグ:89:1 = 0
+
+
+@SET_ACTION_90魔法,ARG
+	IF CFLAG:ARG:행동한횟수 == 0 && CFLAG:ARG:집중플래그 == 0 && RAND:4
+		CFLAG:ARG:입력행동 = 512
+		CALL RANDOM_TARGET,ARG,512
+		RETURN 1
+	ENDIF
+IF CFLAG:ARG:행동한횟수 == 2 && RAND:3
+	IF !RAND:3
+		CFLAG:ARG:입력행동 = 4205
+		CALL RANDOM_TARGET,ARG,4205
+		RETURN 1
+	ELSEIF RAND:2
+		CFLAG:ARG:입력행동 = 4216
+		CALL RANDOM_TARGET,ARG,4216
+		RETURN 1
+	ELSE
+		CFLAG:ARG:입력행동 = 2066
+		CALL RANDOM_TARGET,ARG,2066
+		RETURN 1
+	ENDIF
+ENDIF
+CALL ランダム行動 , ARG
+
+@SET_ACTION_90物理,ARG
+IF CFLAG:ARG:행동한횟수 == 0 && FLAG:경과턴수 % 6 == 0
+		CFLAG:ARG:입력행동 = 517
+		CALL RANDOM_TARGET,ARG,517
+		RETURN 1
+ELSEIF CFLAG:ARG:행동한횟수 == 0 && CFLAG:ARG:気合フラグ == 0 && RAND:4
+		CFLAG:ARG:입력행동 = 511
+		CALL RANDOM_TARGET,ARG,511
+		RETURN 1
+ELSEIF CFLAG:ARG:행동한횟수 == 0 && CFLAG:ARG:회심의패기플래그 == 0 && RAND:4
+		CFLAG:ARG:입력행동 = 534
+		CALL RANDOM_TARGET,ARG,534
+		RETURN 1
+ENDIF
+IF CFLAG:ARG:１more플래그 > 0
+	IF !RAND:3
+		CFLAG:ARG:입력행동 = [[스킬:라스타캔디]]
+		CALL RANDOM_TARGET,ARG,[[스킬:라스타캔디]]
+		RETURN 1
+	ELSEIF RAND:2
+		CFLAG:ARG:입력행동 = 523
+		CALL RANDOM_TARGET,ARG,523
+		RETURN 1
+	ELSE
+		CFLAG:ARG:입력행동 = 2066
+		CALL RANDOM_TARGET,ARG,2066
+		RETURN 1
+	ENDIF
+ENDIF
+CALL ランダム行動 , ARG
+
+
+@SET_ACTION_魔法集中,ARG
+	IF CFLAG:ARG:집중플래그 == 0
+		CFLAG:ARG:입력행동 = 512
+		CALL RANDOM_TARGET,ARG,512
+		RETURN 1
+	ENDIF
+CALL ランダム行動 , ARG
+
+@SET_ACTION_チャージマン,ARG
+	IF CFLAG:ARG:気合フラグ == 0
+		CFLAG:ARG:입력행동 = 511
+		CALL RANDOM_TARGET,ARG,511
+		RETURN 1
+	ENDIF
+CALL ランダム行動 , ARG

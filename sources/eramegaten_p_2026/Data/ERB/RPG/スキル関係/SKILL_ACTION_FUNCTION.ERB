@@ -1,0 +1,810 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILL_ACTION_FUNCTION.ERB
+;	Facility	:スキル実行に関与する関数群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/05/02		P(bazziel)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;@SKILL_ACTION									アクション関数の呼び出し
+;@ACTION_FIELD								フィールドでのアクション関数の呼び出し
+;@CONVERT_SKILLNUM_TO_STR					専用スキルや覚醒スキルを呼び出し用の文字列に変換する
+;@GET(S)_SKILL_PROP							スキルのプロパティ呼び出し関数
+;@GET_SKILL_ATTACKTYPE						スキルの攻撃タイプの呼び出し関数
+;@CONVERT_SKILLNUM_TO_STR					専用スキルや覚醒スキルを呼び出し用の文字列に変換する
+;@TRYSKILLNUM								スキル・キャラクターの補正処理の呼び出し総数
+;@GET_TRYSKILL								スキル・キャラクターの補正処理の呼び出しように関数名を取得する関数
+;@CALC_ATTACK_SKILL_HIT_NUMBER				スキルのヒット回数計算関数
+;@MEASURE									拡散スキル用の敵の距離測定関数
+;@GET_SKILL_EXPLAIN_TEXT					スキルの説明文をHTML表示におけるウィンドウとして取得する関数
+;@GET_SKILL_EXPLAIN_TOOLTIP					スキルの説明文をHTML表示におけるツールチップ機能に使用する平文として取得する関数
+;@SKILL_EXPLAIN_PERFORMANCE					スキル基本性能説明関数
+;@GET_SKILL_TARGET_STR						スキルの対象と範囲を文字列化してRESULTSにいれて返す関数。
+;@IS_COMP内効果有効							 指定したキャラがCOMP内効果の対象になれるかどうかを取得する
+;@CHECK_SKILL_TAG							SKILL_TAGの確認関数
+;@SET_FLAG_HYPER_COUNTER					カウンタフラグを立てるための関数
+;@SHOW_HAVE_SKILL_F							特定キャラの所持スキルの名称をデバッグコンソールに一覧出力する
+;@SET_SKILL_F								スキルセット関数(デバッグコンソールから呼び出す用)
+;@SET_PU_SKILL_F							スキルセット関数(デバッグコンソールから呼び出す用)
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;-------------------------------------------------
+;アクション関数の呼び出し
+;-------------------------------------------------
+@SKILL_ACTION, L_SKILL, L_CHARA = -1, L_TARGET
+#DIM DYNAMIC L_SKILL
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_TARGET
+CALLFORM ACTION_%CONVERT_SKILLNUM_TO_STR(L_CHARA, L_SKILL)%, L_CHARA, L_TARGET, L_SKILL
+
+;-------------------------------------------------
+;フィールドでのアクション関数の呼び出し
+;-------------------------------------------------
+@ACTION_FIELD, L_SKILL, L_CHARA = -1, L_TARGET
+#DIM DYNAMIC L_SKILL
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_TARGET
+CALL PAY_COST, L_CHARA, L_SKILL
+CALLFORM ACTION_FIELD_%CONVERT_SKILLNUM_TO_STR(L_CHARA, L_SKILL)%, L_CHARA, L_TARGET, L_SKILL
+
+;-------------------------------------------------
+;専用スキルや覚醒スキルを呼び出し用の文字列に変換する
+;ARG:0		キャラクター番号
+;ARG:1		スキル番号
+;-------------------------------------------------
+@CONVERT_SKILLNUM_TO_STR, ARG, ARG:1
+#FUNCTIONS
+#DIMS DYNAMIC L_RESULTS
+SELECTCASE ARG:1
+	CASE [[스킬:각성스킬]]
+		L_RESULTS '= @"AW_{ABL:ARG:각성스킬}"
+	CASE [[스킬:비소지스킬]]
+		L_RESULTS '= CSTR:ARG:비소지스킬
+	CASE [[스킬:마가츠히스킬]]
+		L_RESULTS '= "MAGATSUHI_" + CHARA_SETED_MAGATSUHI_SKILL:ARG:0
+	CASEELSE
+		;---- EDIT P 004 ADD END ---------------------------
+		IF IS_PU_SKILLNUM(ARG:1)
+			L_RESULTS '= GET_PU_SKILL_CSTR(ARG, ARG:1 - [[스킬:전용기1]] + 1)
+		ELSE
+			L_RESULTS '= TOSTR(ARG:1)
+		ENDIF
+ENDSELECT
+IF EXISTFUNCTION("SKILL_SWITCHING_" + L_RESULTS)
+	CALLFORMF SKILL_SWITCHING_%L_RESULTS%, ARG
+	L_RESULTS '= RESULTS_F
+	RESULTS_F '= ""
+ENDIF
+RETURNF L_RESULTS
+
+;-------------------------------------------------
+;スキルのプロパティ呼び出し関数
+;-------------------------------------------------
+@GET_SKILL_PROP, L_PROP, L_SKILL, L_ACTOR = -1, L_TARGET = -1
+#DIMS DYNAMIC L_PROP
+#DIM DYNAMIC L_SKILL
+#DIM DYNAMIC L_ACTOR
+#DIM DYNAMIC L_TARGET
+IF L_ACTOR >= 0
+	CALL GETS_SKILL_PROP, L_PROP, CONVERT_SKILLNUM_TO_STR(L_ACTOR, L_SKILL), L_ACTOR, L_TARGET
+ELSE
+	CALL GETS_SKILL_PROP, L_PROP, TOSTR(L_SKILL), L_ACTOR, L_TARGET
+ENDIF
+RETURN RESULT
+
+@GETS_SKILL_PROP, L_PROP, L_SKILLS, L_ACTOR = -1, L_TARGET = -1
+#DIMS DYNAMIC L_PROP
+#DIMS DYNAMIC L_SKILLS
+#DIM DYNAMIC L_ACTOR
+#DIM DYNAMIC L_TARGET
+#DIM DYNAMIC STOCK_ACTOR
+VARSET RESULT, 0, 0, 10
+VARSET RESULTS, "", 0, 10
+SELECTCASE L_PROP
+	CASE "SKILL_TYPE", "SKILL_ADDTIONAL_TYPE"
+		VARSET RESULT, -1, 0, TYPENUM
+		TRYCALLFORM %L_PROP%_%L_SKILLS%, L_ACTOR
+	;コンバート処理を入れる関数
+	CASE "SKILL_DAMAGETYPE"
+		IF L_ACTOR >= 0
+			TRYCALLFORM COVERT_%L_PROP%_%CSTR:L_ACTOR:특수적보정패턴%, L_SKILLS, L_ACTOR
+			SIF RESULT > 0
+				RETURN RESULT
+			TRYCALLFORM COVERT_%L_PROP%_CHARA_{NO:L_ACTOR}, L_SKILLS, L_ACTOR
+			SIF RESULT > 0
+				RETURN RESULT
+			TRYCALLFORM COVERT_%L_PROP%_ROLE_%CSTR:L_ACTOR:롤%, L_SKILLS, L_ACTOR
+			SIF RESULT > 0
+				RETURN RESULT
+		ENDIF
+		TRYCALLFORM %L_PROP%_%L_SKILLS%, L_ACTOR
+	CASE "SKILL_ATTACKTYPE"
+		CALL GET_SKILL_ATTACKTYPE, L_SKILLS, L_ACTOR
+	CASE "SKILL_DECIDE_TYPE", "SKILL_RANKUP", "SKILL_ACTIONABLE_FIELD", "SKILL_IS_RESUSCITATION", "SKILL_IS_ITEMSKILL", "SKILL_IS_SUMMON", "SKILL_TAG", "링크불능", "置換スキル", "継承不能", "ロール専用", "味方専用", "敵専用", "SKILL_ENHANCE_NOTABLE", "SKILL_IS_DEMERIT"
+		TRYCALLFORM %L_PROP%_%L_SKILLS%
+	CASE "SKILL_CRITICAL_RATE"
+		TRYCCALLFORM %L_PROP%_%L_SKILLS%, L_ACTOR
+		CATCH
+			RESULT = 5
+		ENDCATCH
+	CASE "SKILL_MAXATK_PER"
+		RESULT = 1
+		TRYCCALLFORM SKILL_MAXATK_PER_%L_SKILLS%,L_ACTOR
+		CATCH
+			TRYCALLFORM SKILL_MAXATTACKNUMBER_%L_SKILLS%,L_ACTOR
+		ENDCATCH
+	CASE "SKILL_MINATK_PER"
+		RESULT = 1
+		TRYCCALLFORM SKILL_MINATK_PER_%L_SKILLS%,L_ACTOR
+		CATCH
+			TRYCALLFORM SKILL_MINATTACKNUMBER_%L_SKILLS%,L_ACTOR
+		ENDCATCH
+	CASE "SKILL_SUCCESSION_TYPE"
+		RESULT = 23
+		TRYCALLFORM %L_PROP%_%L_SKILLS%
+	CASE "SKILL_ACTIONABLE_BATTLE", "SKILL_SELECTABLE_BY_AUTO", "SKILL_SPECIAL_ACTIONABLE", "SKILL_MINATTACKNUMBER"
+		RESULT = 1
+		TRYCALLFORM %L_PROP%_%L_SKILLS%, L_ACTOR
+	CASE "SKILL_PENETRATION_RANK", "SKILL_IS_ITEMSKILL"
+		TRYCALLFORM %L_PROP%_%L_SKILLS%, L_ACTOR, L_TARGET
+	CASE "SKILL_TARGETABLE"
+		RESULT = 1
+		TRYCALLFORM %L_PROP%_%L_SKILLS%, L_ACTOR, L_TARGET
+	;異常回復があるかどうか自体をこの関数の有無で採るケースがあるので-1を返せるようにしておく
+	;また、この関数で送るのは対象ではなくステートの種別なので注意
+	CASE "SKILL_CURE_STATE"
+		RESULT = -1
+		VARI L_STATE = L_TARGET
+		TRYCALLFORM %L_PROP%_%L_SKILLS%, L_STATE
+	CASE "継承不能"
+		;非実体スキル出は継承不能2をデフォにする
+		SIF !ISNUMERIC(L_SKILLS)
+			RESULT = 2
+		TRYCALLFORM 継承不能_%L_SKILLS%
+	CASE "SKILL_PASSIVE_BTL_EFFECT", "SKILL_ADD_STATUS", "SKILL_PASSIVE_PENETRATION_RANK"
+		THROW 引数の型が違うため未対応
+	CASE "ACTION_FIELD", "SKILL_COUNTER_ACTIONABLE", "SKILL_TRIGGER_ACTIONABLE", "SKILL_JUDGE_EXTRA_COOP", "SKILL_DAMAGE_EFFECT", "SKILLGAGE_CHARGE", "SKILL_EX_DISPLAY", "SKILL_COVERING", "SKILL_DAMAGE_EFFECT"
+		THROW プロパティ参照じゃないので未対応
+	CASE "SKILL_GET_LEADER_SKILL_NAME", "SKILL_BATTLE_MAIN_TOOLTIP", "SKILL_BATTLE_MAIN_FACE_TOOLTIP", "SKILL_EXPLAIN_TOOLTIP"
+		THROW 現行では所持スキル以外も呼ぶ関係で呼び出し形態が違うので未対応
+	CASEELSE
+		TRYCALLFORM %L_PROP%_%L_SKILLS%, L_ACTOR
+ENDSELECT
+RETURN RESULT
+
+;-------------------------------------------------
+;スキルの攻撃タイプの呼び出し関数
+;コンバート処理は干渉問題と処理量を考えてキャラ・ロール・敵指定補正のみをみてスキルを入れない。
+;-------------------------------------------------
+@GET_SKILL_ATTACKTYPE, L_SKILLS, L_ACTOR = 1
+#DIMS DYNAMIC L_SKILLS
+#DIM DYNAMIC L_ACTOR
+#DIM DYNAMIC L_ATTACK_TYPE
+IF L_ACTOR >= 0
+	RESULT = 0
+	TRYCALLFORM COVERT_SKILL_ATTACKTYPE_%CSTR:L_ACTOR:특수적보정패턴%, L_SKILLS, L_ACTOR
+	SIF RESULT > 0
+		RETURN RESULT
+	TRYCALLFORM COVERT_SKILL_ATTACKTYPE_CHARA_{NO:L_ACTOR}, L_SKILLS, L_ACTOR
+	SIF RESULT > 0
+		RETURN RESULT
+	TRYCALLFORM COVERT_SKILL_ATTACKTYPE_ROLE_%CSTR:L_ACTOR:롤%, L_SKILLS, L_ACTOR
+	SIF RESULT > 0
+		RETURN RESULT
+ENDIF
+TRYCCALLFORM SKILL_ATTACKTYPE_%L_SKILLS%, L_ACTOR
+CATCH
+	TRYCALLFORM SKILL_DAMAGETYPE_%L_SKILLS%, L_ACTOR
+ENDCATCH
+RETURN RESULT
+
+;-------------------------------------------------
+;スキル・キャラクターの補正処理の呼び出し総数
+;ARG:0		キャラクター番号
+;-------------------------------------------------
+@TRYSKILLNUM, ARG
+#FUNCTION
+#DIM L_RESULT
+L_RESULT = 0
+
+;CHARA.ERB関数
+L_RESULT += 1
+;ROLE関数
+L_RESULT += 1
+L_RESULT += CHARA_SKILLCOUNT(ARG)
+L_RESULT += HAVEABLE_EQ_SKILLNUM
+L_RESULT += COUNT_ACTIVE_LEADER_SKILL:(CFLAG:ARG:PT플래그 == 0)
+SIF C_BTL_EFFECT:ARG:0 != ""
+	L_RESULT += STRCOUNT(C_BTL_EFFECT:ARG:0, "/") + 1
+SIF C_BTL_EFFECT_PERMANENCE:ARG:0 != ""
+	L_RESULT += STRCOUNT(C_BTL_EFFECT_PERMANENCE:ARG:0, "/") + 1
+SIF C_BTL_EFFECT_CHARGE:ARG:0 != ""
+	L_RESULT += STRCOUNT(C_BTL_EFFECT_CHARGE:ARG:0, "/") + 1
+RETURNF L_RESULT
+
+;-------------------------------------------------
+;スキル・キャラクターの補正処理の呼び出しように関数名を取得する関数
+;ARG:0		キャラクター番号
+;ARG:1		カウント数(FORNEXT文でまわす際に使うのを想定)
+;ARGS		オプション指定
+;ARGS:1		要素指定
+;
+;RESULT_F	スキルの効果の持ち主(リーダースキル等、ARGが持っていないスキルの効果主を主にとる)
+;RESULTS_F	スキルの分類
+;-------------------------------------------------
+@GET_TRYSKILL, ARG, ARG:1, ARGS
+#FUNCTIONS
+#DIM L_CHARA
+#DIMS TEMPS
+TRYSKILL_VAR = 0
+
+;---------------------------------------------
+;キャラクター帰属要素のチェック
+;---------------------------------------------
+TRYSKILL_STR = CHARA
+IF ARG:1 == 0
+	IF CSTR:ARG:특수적보정패턴 != ""
+		RETURNF CSTR:ARG:특수적보정패턴
+	ELSE
+		;ペルソナとAion式による番号変化は対象の顔グラの変化を見に行かない
+		IF COUNT_SPLIT(ARGS, "/", "PRINT_SPECIAL_FACE")
+			SIF TALENT:ARG:페르소나구사자
+				RETURNF TOSTR(NO:ARG)
+			SIF TALENT:ARG:Aion식소환술
+				RETURNF TOSTR(NO:ARG)
+		ENDIF
+		RETURNF "CHARA_" + TOSTR(BTL_NO(ARG))
+	ENDIF
+ENDIF
+;所属グループを抜ける度に指定番号を調整していく
+ARG:1 -= 1
+
+;---------------------------------------------
+;ロール帰属要素のチェック
+;---------------------------------------------
+TRYSKILL_STR = ROLE
+IF ARG:1 == 0
+	RETURNF "ROLE_" + CSTR:ARG:롤
+ENDIF
+;所属グループを抜ける度に指定番号を調整していく
+ARG:1 -= 1
+
+;-----------------------------------------------
+;スキルのチェック
+;-----------------------------------------------
+TRYSKILL_STR = SKILL
+IF ARG:1 < CHARA_SKILLCOUNT(ARG)
+	RETURNF CONVERT_SKILLNUM_TO_STR(ARG, ABL:ARG:@"스킬{ARG:1 + 1}")
+ENDIF
+;所属グループを抜ける度に指定番号を調整していく
+ARG:1 -= CHARA_SKILLCOUNT(ARG)
+
+;-----------------------------------------------
+;装備スキルのチェック
+;-----------------------------------------------
+TRYSKILL_STR = EQUIP
+IF ARG:1 < HAVEABLE_EQ_SKILLNUM
+	IF COUNT_SPLIT(ARGS, "/", "CONVERT")
+		RETURNF CONVERT_SKILLNUM_TO_STR(ARG, ABL:ARG:@"장비스킬{ARG:1 + 1}")
+	ELSE
+		RETURNF TOSTR(ABL:ARG:@"장비스킬{ARG:1 + 1}")
+	ENDIF
+ENDIF
+;所属グループを抜ける度に指定番号を調整していく
+ARG:1 -= HAVEABLE_EQ_SKILLNUM
+;---- EDIT 010 ADD START -------------------------
+;-----------------------------------------------
+;リーダースキルのチェック
+;-----------------------------------------------
+IF ARG:1 < COUNT_ACTIVE_LEADER_SKILL:(CFLAG:ARG:PT플래그 == 0)
+	TRYSKILL_STR = LEADER
+	TRYSKILL_VAR = -1
+	IF CFLAG:ARG:PT플래그 > 0
+		TRYSKILL_VAR = ACTIVE_LEADER_SKILL_HAVE_CHARA:(ARG:1)
+		RETURNF "LEADER_" + ACTIVE_LEADER_SKILL:(ARG:1)
+	ELSE
+		TRYSKILL_VAR = ACTIVE_ENEMY_LEADER_SKILL_HAVE_CHARA:(ARG:1)
+		RETURNF "LEADER_" + ACTIVE_ENEMY_LEADER_SKILL:(ARG:1)
+	ENDIF
+ENDIF
+ARG:1 -= COUNT_ACTIVE_LEADER_SKILL:(CFLAG:ARG:PT플래그 == 0)
+
+;-----------------------------------------------
+;戦闘効果のチェック
+;-----------------------------------------------
+IF C_BTL_EFFECT:ARG:0 != ""
+	IF ARG:1 < (STRCOUNT(C_BTL_EFFECT:ARG:0, "/") + 1)
+		TRYSKILL_STR = C_BTL_EFFECT
+		TEMPS = %AUTO_SPLIT(C_BTL_EFFECT:ARG:0, "/", ARG:1)%
+		;効果の発動者をとる
+		TRYSKILL_VAR = TOINT(AUTO_SPLIT(TEMPS, "_", 1))
+		RETURNF "C_BTL_EFFECT_" + AUTO_SPLIT(TEMPS, "_", 0)
+	ELSE
+		ARG:1 -= (STRCOUNT(C_BTL_EFFECT:ARG:0, "/") + 1)
+	ENDIF
+ENDIF
+
+IF C_BTL_EFFECT_PERMANENCE:ARG:0 != "";EDIT 016 MOD
+	IF ARG:1 < (STRCOUNT(C_BTL_EFFECT_PERMANENCE:ARG:0, "/") + 1)
+		TRYSKILL_STR = C_BTL_EFFECT_PERMANENCE
+		TEMPS = %AUTO_SPLIT(C_BTL_EFFECT_PERMANENCE:ARG:0, "/", ARG:1)%
+		;効果の発動者をとる
+		TRYSKILL_VAR = TOINT(AUTO_SPLIT(TEMPS, "_", 1))
+		RETURNF "C_BTL_EFFECT_" + AUTO_SPLIT(TEMPS, "_", 0)
+	ELSE
+		ARG:1 -= (STRCOUNT(C_BTL_EFFECT_PERMANENCE:ARG:0, "/") + 1)
+	ENDIF
+ENDIF
+
+IF C_BTL_EFFECT_CHARGE:ARG:0 != ""
+	IF ARG:1 < (STRCOUNT(C_BTL_EFFECT_CHARGE:ARG:0, "/") + 1)
+		TRYSKILL_STR = C_BTL_EFFECT_CHARGE
+		TEMPS = %AUTO_SPLIT(C_BTL_EFFECT_CHARGE:ARG:0, "/", ARG:1)%
+		;効果の発動者をとる
+		TRYSKILL_VAR = TOINT(AUTO_SPLIT(TEMPS, "_", 1))
+		RETURNF "C_BTL_EFFECT_" + AUTO_SPLIT(TEMPS, "_", 0)
+	ELSE
+		ARG:1 -= (STRCOUNT(C_BTL_EFFECT_CHARGE:ARG:0, "/") + 1)
+	ENDIF
+ENDIF
+TRYSKILL_STR = 
+RETURNF "数値が範囲外です"
+
+;=========================================
+;ヒット回数の計算関数
+;=========================================
+@CALC_ATTACK_SKILL_HIT_NUMBER, L_P, L_スキル
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_スキル
+#DIM DYNAMIC L_攻撃回数上限
+#DIM DYNAMIC L_MAX_HIT
+#DIM DYNAMIC L_MIN_HIT
+
+CALL GET_SKILL_PROP, "SKILL_MAXATTACKNUMBER", L_スキル, L_P
+L_MAX_HIT = RESULT
+CALL GET_SKILL_PROP, "SKILL_MINATTACKNUMBER", L_スキル, L_P
+L_MIN_HIT = MIN(RESULT, L_MAX_HIT)
+SIF HAVE_AW_SKILL(L_P, "狂嵐の宴")
+	L_MAX_HIT += (L_MAX_HIT - L_MIN_HIT) * 40 / 100 + ((L_MAX_HIT - L_MIN_HIT) * 40 % 100 > RAND:100)
+SIF COUNT_ACTIVE_LEADER_SKILL("マドンナリリー", L_P)
+	L_MAX_HIT += (L_MAX_HIT - L_MIN_HIT) * 25 / 100 + ((L_MAX_HIT - L_MIN_HIT) * 25 % 100 > RAND:100)
+;攻撃回数上限が設定(ランダム攻撃で敵全体の単体攻撃回数の合計)されてるなら調整する
+IF CFLAG:L_P:다단공격횟수상한고정
+	RESULT = 0
+	CALL GET_SKILL_PROP, "SKILL_ATTACKTYPE", L_スキル, L_P
+	;スキルに限定する…のはまぁマシンガンが怖いから。銃に調整が入る場合は再調整すべし
+	SIF (RESULT == 0 || GROUPMATCH(GET_攻撃タイプ(RESULT), "物理", "魔法")) && L_スキル != [[스킬:ＡＴＴＡＣＫ]]
+		RETURN L_MAX_HIT
+ENDIF
+RETURN RAND(L_MIN_HIT, L_MAX_HIT + 1)
+
+;=========================================
+;拡散攻撃用、距離測定関数
+;ARGとARG:1の間の距離を取る
+;=========================================
+@MEASURE(ARG, ARG:1)
+#FUNCTION
+SELECTCASE ARG
+	CASE IS < 4
+		SELECTCASE ARG:1
+			CASE IS < 4
+				RETURNF ABS(ARG-ARG:1)
+			CASE IS < 7
+				RETURNF ABS(ARG-((ARG:1-3)))+1
+		ENDSELECT
+	CASE IS < 7
+		SELECTCASE ARG:1
+			CASE IS < 4
+				RETURNF ABS(ARG-((ARG:1+3)))+1
+			CASE IS < 7
+				RETURNF ABS(ARG-ARG:1)
+		ENDSELECT
+	CASE IS < 12
+		SELECTCASE ARG:1
+			CASE IS < 12
+				RETURNF ABS(ARG-ARG:1)
+			CASE IS < 17
+				RETURNF ABS(ARG-((ARG:1-5)))+1
+		ENDSELECT
+	CASE IS < 17
+		SELECTCASE ARG:1
+			CASE IS < 12
+				RETURNF ABS(ARG-((ARG:1+5)))+1
+			CASE IS < 17
+				RETURNF ABS(ARG-ARG:1)
+		ENDSELECT
+ENDSELECT
+RETURNF -1
+
+;-------------------------------------------------
+;@GET_SKILL_EXPLAIN_TEXT
+;スキルの説明文をHTML表示におけるウィンドウとして取得する関数
+;L_SKILLNUM		スキル番号
+;L_CHARA		指定キャラ
+;L_SKILLNAME	スキル名称指定（省略するとスキル番号のみで判定）
+;L_OPT			オプション指定
+;-------------------------------------------------
+@GET_SKILL_EXPLAIN_TEXT, L_SKILLNUM, L_CHARA = -1, L_SKILLNAME, L_OPT = "スペック表示"
+#DIM LCOUNT,2
+#DIM L_LINE
+#DIMS L_TITLE
+#DIM L_SKILLNUM
+#DIMS L_SKILLNAME
+#DIMS L_OPT
+#DIM L_CHARA
+#DIM STOCK_U
+#DIM STOCK_REDRAW
+STOCK_U = U
+U = L_CHARA
+SIF L_SKILLNAME == "" 
+	L_SKILLNAME = %TOSTR(L_SKILLNUM)%
+L_TITLE = 
+L_LINE = LINECOUNT
+STOCK_REDRAW = CURRENTREDRAW()
+REDRAW 0
+
+SIF STRCOUNT(L_OPT , "スペック表示")
+	CALL SKILL_EXPLAIN_PERFORMANCE, L_SKILLNUM, L_CHARA, L_SKILLNAME
+CALL GETS_SKILL_PROP, "SKILL_EXPLAIN", L_SKILLNAME, L_CHARA
+
+VARI STRSIZE = 0
+FOR LCOUNT, 0, LINECOUNT - L_LINE
+	SIF LCOUNT
+		L_TITLE += "<br>"
+	L_TITLE += "<div>" + HTML_GETPRINTEDSTR(LINECOUNT - L_LINE - LCOUNT - 1) + "</div>"
+	SIF STRSIZE < STRLENS(HTML_TOPLAINTEXT(HTML_GETPRINTEDSTR(LINECOUNT - L_LINE - LCOUNT - 1)))
+		STRSIZE = STRLENS(HTML_TOPLAINTEXT(HTML_GETPRINTEDSTR(LINECOUNT - L_LINE - LCOUNT - 1)))
+NEXT
+CLEARLINE LINECOUNT - L_LINE
+REDRAW STOCK_REDRAW
+U = STOCK_U
+RESULTS = %L_TITLE%
+RETURN STRSIZE , LCOUNT
+
+;-------------------------------------------------
+;@GET_SKILL_EXPLAIN_TOOLTIP
+;スキルの説明文をHTML表示におけるツールチップ機能に使用する平文として取得する関数
+;L_SKILLNUM		スキル番号
+;L_CHARA		指定キャラ
+;L_SKILLNAME	スキル名称指定（省略するとスキル番号のみで判定）
+;L_OPT			オプション指定
+;-------------------------------------------------
+@GET_SKILL_EXPLAIN_TOOLTIP, L_SKILLNUM, L_CHARA = -1, L_SKILLNAME, L_OPT
+#DIM LCOUNT,2
+#DIM L_LINE
+#DIMS L_TITLE
+#DIM L_SKILLNUM
+#DIMS L_SKILLNAME
+#DIMS L_OPT
+#DIM L_CHARA
+#DIM STOCK_U
+#DIM STOCK_REDRAW
+STOCK_U = U
+U = L_CHARA
+IF L_SKILLNAME == "" 
+	IF L_CHARA >= 0
+		L_SKILLNAME = %CONVERT_SKILLNUM_TO_STR(L_CHARA, L_SKILLNUM)%
+	ELSE
+		L_SKILLNAME = %TOSTR(L_SKILLNUM)%
+	ENDIF
+ENDIF
+L_TITLE = 
+L_LINE = LINECOUNT
+STOCK_REDRAW = CURRENTREDRAW()
+REDRAW 0
+IF L_SKILLNUM >= 0
+	L_LINE = LINECOUNT
+	VARSET RESULTS, "", 0, 10
+	TRYCCALLFORM SKILL_EXPLAIN_TOOLTIP_%L_SKILLNAME%, L_CHARA
+		FOR LCOUNT:1, 0, 10
+			SIF RESULTS:(LCOUNT:1) == ""
+				BREAK
+			IF L_OPT == "表計算出力"
+				SIF LCOUNT:1 > 0
+					L_TITLE += "&CHAR(10)&"
+				L_TITLE += "\"" + RESULTS:(LCOUNT:1) + "\""
+			ELSE
+				SIF LCOUNT:1
+					L_TITLE += UNICODE(0x000D)
+				L_TITLE += RESULTS:(LCOUNT:1)
+			ENDIF
+		NEXT
+	CATCH
+		;---- EDIT 009 MOD START -------------------------
+		CALL GETS_SKILL_PROP, "SKILL_EXPLAIN", L_SKILLNAME, L_CHARA
+		FOR LCOUNT, 0, LINECOUNT - L_LINE
+			IF L_OPT == "表計算出力"
+				SIF LCOUNT > 0
+					L_TITLE +="&CHAR(10)&"
+				L_TITLE += "\"" + HTML_TOPLAINTEXT(HTML_GETPRINTEDSTR(LINECOUNT - L_LINE - LCOUNT - 1)) + "\""
+			ELSE
+				SIF LCOUNT
+					L_TITLE += UNICODE(0x000D)
+				L_TITLE += HTML_TOPLAINTEXT(HTML_GETPRINTEDSTR(LINECOUNT - L_LINE - LCOUNT - 1))
+			ENDIF
+		NEXT
+		;---- EDIT 009 MOD END ---------------------------
+	ENDCATCH
+ENDIF
+CLEARLINE LINECOUNT - L_LINE
+REDRAW STOCK_REDRAW
+U = STOCK_U
+RESULTS = %L_TITLE%
+RETURN 1
+;-------------------------------------------------
+;スキル基本性能説明
+;-------------------------------------------------
+@SKILL_EXPLAIN_PERFORMANCE, L_SKILL = -1, L_CHARA = -1, L_SKILLS
+#DIMS CONST EFFECT = "？？？", "공격", "회복", "상태변화", "특수", "상태회복", "자동효과"
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_SKILL
+#DIMS DYNAMIC L_SKILLS
+#LOCALSIZE 11
+;現時点では、手を入れないと表示詐欺になるスキルがパッチでそれなりにある状況なのでキャラ渡しは一時封印
+;リンケージの説明も手を入れないと落ちるものがパッチであるので一時封印中
+;そのうち表示情報増やして追加効果とか確率とか入れたい気はするけど、親切過ぎるのも考え物なんだろうか？
+;ARG:1 = -1				;強制-1化を除外
+LOCAL:2 = RESULT		;RESULT保護
+LOCAL:10 = U			;U保護
+スキル属性表示中 = 1	;うまく表示出来ないスキルはこの情報見て回避したいけど、未対応なら以下のでっち上げで回避を試みる
+;スキル属性表示中で判定しないと表示詐欺になるであろうスキルの目安
+;・威力がリンケージ参加者で変動するスキルのうち、単独リンケージの場合の判定がないスキル
+;・ランダム属性のスキル
+;・敵の状態等により、相性や威力が変化するスキル
+;・拡散フラグを用途外利用しているスキル(現ＨＰ割合や残ＭＰを見ている場合が多い)
+
+SIF L_SKILLS == ""
+	L_SKILLS '= CONVERT_SKILLNUM_TO_STR(L_CHARA, L_SKILL)
+
+;念の為、キャラ情報渡された場合は未対応を考慮して各情報をでっち上げる
+IF L_CHARA >= 0
+	;リンケージの場合は基本的に参加者取れないと思うので、単独リンケージの値を表示
+	LOCAL:3 = CFLAG:L_CHARA:단독링케이지
+	CFLAG:L_CHARA:단독링케이지 = 1
+	;ターゲットが影響するスキルは表示詐欺だけど手抜きで。ポジションが絡むので、必ずいるMASTERを指定
+	LOCAL:4 = CFLAG:L_CHARA:타겟
+	CFLAG:L_CHARA:타겟 = CFLAG:MASTER:포지션
+	FOR LOCAL:0, 1, 6	;これも表示詐欺だけど手抜きで。全部自分
+		LOCAL:(LOCAL:0 + 4) = CFLAG:L_CHARA:@"링케이지참가자{LOCAL:0}"
+		CFLAG:L_CHARA:@"링케이지참가자{LOCAL:0}" = L_CHARA
+	NEXT
+	;拡散フラグの用途外利用には全く対応できないので、そういうスキルも表示詐欺になる
+ENDIF
+
+;最初に種別
+CALL GETS_SKILL_PROP, "SKILL_EFECT", L_SKILLS, L_CHARA
+LOCAL:0 = RESULT
+U = L_CHARA
+;---- EDIT 015 MOD START -------------------------
+PRINTFORM 종류：%GET_SKILL_EFFECT(LOCAL:0)%　
+;自動効果・パーティ効果は攻撃に関係する表示を省く
+IF !GROUPMATCH(GET_SKILL_EFFECT(LOCAL:0), "자동효과", "파티효과")
+	;相性表示
+	IF GROUPMATCH(LOCAL:0, 1, 3)
+		CALL GETS_SKILL_PROP, "SKILL_TYPE", L_SKILLS, L_CHARA
+		PRINTFORM 　상성：%GET_TYPE(RESULT)%
+	ENDIF
+	;範囲表示　
+	CALL GET_SKILL_TARGET_STR, , L_CHARA, L_SKILLS
+	PRINTFORM 　범위:%RESULTS%
+
+	;威力表示
+	IF INRANGE(LOCAL:0, 1, 3)
+		CALL GETS_SKILL_PROP, "SKILL_POWER", L_SKILLS, L_CHARA
+		IF RESULT <= 0
+			PRINTFORM 　위력：없음
+		ELSE
+			PRINTFORM 　위력：{RESULT}
+		ENDIF
+	ENDIF
+	;命中表示
+	IF INRANGE(LOCAL:0, 1, 3)
+		CALL GETS_SKILL_PROP, "SKILL_HITRATE", L_SKILLS, L_CHARA
+		IF RESULT >= 999
+			PRINTFORM 　명중：필중공격
+		ELSE
+			PRINTFORM 　명중：{RESULT}
+		ENDIF
+	ENDIF
+	;回数表示
+	IF INRANGE(LOCAL:0, 1, 3)
+		CALL GETS_SKILL_PROP, "SKILL_MINATTACKNUMBER", L_SKILLS,L_CHARA
+		PRINTFORM 　횟수:{RESULT}～
+		CALL GETS_SKILL_PROP, "SKILL_MAXATTACKNUMBER", L_SKILLS,L_CHARA
+		PRINTFORM {RESULT}
+	ENDIF
+	IF LOCAL:0 != 6
+		;消費表示
+		CALL GETS_SKILL_PROP, "SKILL_COSTTYPE", L_SKILLS, L_CHARA
+		IF RESULT == 2
+			CALL GETS_SKILL_PROP, "SKILL_COST", L_SKILLS, L_CHARA
+			PRINTFORM 　소비：ＨＰ{RESULT}％
+		ELSEIF RESULT == 3
+			CALL GETS_SKILL_PROP, "SKILL_COST", L_SKILLS, L_CHARA
+			PRINTFORM 　소비：{RESULT}ＭＰ
+		ENDIF
+	ENDIF
+	;物理/魔法ダメージ表示
+	IF INRANGE(LOCAL:0, 1, 3)
+		CALL GETS_SKILL_PROP, "SKILL_DAMAGETYPE", L_SKILLS, L_CHARA
+		PRINTFORM 　산출：%(RESULT == 1 ? "물리" # "마법")%
+	ENDIF
+ENDIF
+;---- EDIT 015 MOD END ---------------------------
+PRINTL 
+;キャラ情報渡された場合はここで各情報を戻す
+IF L_CHARA >= 0
+	CFLAG:L_CHARA:단독링케이지 = LOCAL:3
+	CFLAG:L_CHARA:타겟     = LOCAL:4
+	FOR LOCAL:0, 1, 6
+		CFLAG:L_CHARA:@"링케이지참가자{LOCAL:0}" = LOCAL:(4 + LOCAL:0)
+	NEXT
+ENDIF
+スキル属性表示中 = 0	;スキル属性表示終了
+U = LOCAL:10
+RETURN LOCAL:2
+
+;-------------------------------------------------
+;スキルの対象と範囲を文字列化してRESULTSにいれて返す関数。
+;-------------------------------------------------
+@GET_SKILL_TARGET_STR, L_SKILL, L_CHARA = -1, L_SKILLS
+#DIM DYNAMIC L_SKILL
+#DIMS DYNAMIC L_SKILLS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_TARGET
+#DIMS DYNAMIC L_SPHERE
+SIF L_SKILLS == ""
+	L_SKILLS '= CONVERT_SKILLNUM_TO_STR(L_CHARA, L_SKILL)
+CALL GETS_SKILL_PROP, "SKILL_SPREAD", L_SKILLS, L_CHARA
+IF RESULT > 0
+	RESULTS '= @"拡散{RESULT}"
+ELSE
+	CALL GETS_SKILL_PROP, "SKILL_TARGET", L_SKILLS, L_CHARA
+	L_TARGET '= GET_SKILL_TARGET(RESULT)
+	CALL GETS_SKILL_PROP, "SKILL_SPHERE", L_SKILLS, L_CHARA
+	L_SPHERE '= GET_SPHERE(RESULT, 1)
+	SELECTCASE L_TARGET
+		CASE "아군", "적"
+			RESULTS '= L_TARGET + L_SPHERE
+		CASE "전투전체"
+			RESULTS '= "적아군"
+		CASEELSE
+			RESULTS '= L_TARGET
+	ENDSELECT
+ENDIF
+
+;-------------------------------------------------
+;@IS_COMP内効果有効
+;ARGのキャラがCOMP内効果の対象になれるかどうか
+;-------------------------------------------------
+@IS_COMP内効果有効, ARG
+#FUNCTION
+;戦闘に参加できる必要がある
+SIF !IS_JOINABLE_BATTLE(ARG)
+	RETURNF 0
+SIF CFLAG:ARG:PT플래그 == 0
+	RETURNF 0
+RETURNF 1
+
+;-------------------------------------------------
+;SKILL_TAGの確認関数
+;ARG		キャラクター番号
+;ARG:1		スキル番号
+;ARGS		検索するタグの文字列
+;-------------------------------------------------
+@CHECK_SKILL_TAG,ARG,ARG:1,ARGS
+;引数が不正値だったり、検索するタグの文字列が見つからなかったりしたら0を返す
+SIF ARG < 0 || ARG:1 < 0 || ARGS == ""
+	RETURN 0
+CALL GET_SKILL_PROP, "SKILL_TAG", ARG:1, ARG
+SIF STRCOUNT(@"/%RESULTS%/",@"/%ARGS%/")
+	RETURN 1
+RETURN 0
+
+;==================================================================
+;カウンタフラグを立てるための関数
+;計算式を通るたびにランダムで数値が変動するのが問題があるので発動するかどうかをフラグで確定させておく
+;今はハイパーカウンタ専用だけど同種のカウンタを増やすならここで
+;
+;ARG		判定対象(キャラ番号)
+;==================================================================
+@SET_FLAG_HYPER_COUNTER, ARG, ARG:1
+#DIM L_RAND
+L_RAND = RAND:100
+TFLAG:카운터 = 0
+IF HAVE_SKILL(ARG:1, [[스킬:하이퍼카운터]])
+	;ハイパーカウンタは20%
+	SIF L_RAND < 20
+		TFLAG:카운터 = 1
+ENDIF
+
+;==================================================================
+;特定キャラの所持スキルの名称をデバッグコンソールに一覧出力する
+;==================================================================
+@SHOW_HAVE_SKILL_F, ARG
+#FUNCTIONS
+#DIMS L_RESULTS
+#DIM LCOUNT
+L_RESULTS = 
+FOR LCOUNT, 1, 21
+	SIF ABL:ARG:@"스킬{LCOUNT}" == 0
+		CONTINUE
+	L_RESULTS += @"[{LCOUNT,2}]" + SKILL_NAME_F(ABL:ARG:@"스킬{LCOUNT}") + UNICODE(0x000D)
+NEXT
+RETURNF L_RESULTS
+
+;==========================================
+;スキルセット関数
+;デバッグコンソールから呼び出す用
+;==========================================
+@SET_SKILL_F, ARG, ARGS, ARG:1 = -1
+#FUNCTIONS
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_SKILL
+#DIMS DYNAMIC L_RESULTS
+IF ISNUMERIC(ARGS)
+	L_SKILL = TOINT(ARGS)
+ELSE
+	L_SKILL = SKILL_NUM_F(ARGS)
+ENDIF
+IF SKILL_NUM_F(ARGS) < 0 
+	RETURNF SET_PU_SKILL_F(ARG, ARGS, ARG:1)
+ELSE
+	SIF HAVE_SKILL(ARG, L_SKILL)
+		RETURNF "すでに所持しているスキルです"
+	IF ARG:1 < 0
+		FOR LCOUNT, 1, CHARA_SKILLCOUNT(ARG) + 1
+			SIF ABL:ARG:@"스킬{LCOUNT}"
+				CONTINUE
+			ARG:1 = LCOUNT
+			BREAK
+		NEXT
+		SIF ARG:1 < 0
+			ARG:1 = 1
+	ENDIF
+	L_RESULTS = %CALLNAME:ARG%のスキル{ARG:1}を
+	SIF ABL:ARG:@"스킬{ARG:1}" > 0
+		L_RESULTS += "[" + SKILL_NAME_F(ABL:ARG:@"스킬{ARG:1}") + "]から"
+	L_RESULTS += "[" + ARGS + "]に変更"
+	ABL:ARG:@"스킬{ARG:1}" = L_SKILL
+	RETURNF L_RESULTS
+ENDIF
+
+;==========================================
+;スキルセット関数
+;デバッグコンソールから呼び出す用
+;==========================================
+@SET_PU_SKILL_F, ARG, ARGS, ARG:1 = -1, ARG:2 = -1
+#FUNCTIONS
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC L_RESULTS
+#DIM DYNAMIC L_SKILL
+SIF HAVE_PU_SKILL(ARG, ARGS)
+	RETURNF "すでに所持しているスキルです"
+IF ARG:1 < 0
+	FOR LCOUNT, 1, CHARA_SKILLCOUNT(ARG) + 1
+		SIF ABL:ARG:@"스킬{LCOUNT}"
+			CONTINUE
+		ARG:1 = LCOUNT
+		BREAK
+	NEXT
+	SIF ARG:1 < 0
+		ARG:1 = 1
+ENDIF
+
+IF ARG:2 == -1
+	CALLF PU_SKILL_ADD_F, ARG, ARGS
+	L_SKILL = PU_SKILLNUM_GET(ARG, ARGS)
+	SIF L_SKILL == 0 
+		RETURNF "スキルのセットに失敗"
+	ARG:2 = L_SKILL - SKILL_NUM_F("전용기1") + 1
+ELSE
+	L_SKILL = SKILL_NUM_F("전용기1") + ARG:2 - 1
+ENDIF
+ABL:ARG:@"스킬{ARG:1}" = L_SKILL
+CSTR:ARG:@"전용기{ARG:2}" = %ARGS%
+L_RESULTS = %CALLNAME:ARG%のスキル{ARG:1}に専用技{ARG:2}として%ARGS%をセット
+RETURNF L_RESULTS

@@ -1,0 +1,107 @@
+﻿;================================================================
+;[16] スキルカード確認
+;================================================================
+@SKILLCARD_CHECK
+#DIM L_I
+#DIM L_継承タイプ
+#DIM L_継承不能
+#DIM L_スキルアップ数
+#DIM COUNT_ALL_SKILLCARD
+#DIM COUNT_GET_SKILLCARD
+
+PRINT --- 스킬카드 일람
+;SETCOLOR COLOR("light-gray")
+;PRINT (継承不能)
+SETCOLOR COLOR("PASTEL-RED")
+PRINT (복제 불가)
+RESETCOLOR
+PRINT ---
+PRINTL
+
+COUNT = 0
+;FOR L_I, 1 ,3000
+FOR L_I, 1, SKILLNUM
+	CALL SKIP_スキルカード化不能領域, L_I
+	;총～システム系はスキップ
+	;SIF L_I == 2101
+	;	L_I = 2400
+
+	RESULT = 0 
+	CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", L_I, -1
+	L_継承タイプ = RESULT
+	
+	RESULT = 0
+	CALL GET_SKILL_PROP, "継承不能", L_I, -1
+	L_継承不能 = RESULT
+
+	RESULT = 0
+	CALL GET_SKILL_PROP, "SKILL_RANKUP", L_I, -1
+	L_スキルアップ数 = RESULT
+
+	;継承不能の場合は処理を飛ばす
+	SIF L_継承タイプ == 0
+		CONTINUE
+	SIF L_継承不能
+		CONTINUE
+
+	;スキルカード種別数カウント
+	COUNT_ALL_SKILLCARD = COUNT_ALL_SKILLCARD + 1
+
+	IF SKILLCARD_CHECK_複製不可(L_I)
+		;複製不可の場合は処理を飛ばす
+		CONTINUE
+		;SETCOLOR COLOR("PASTEL-RED")
+	ELSE
+		COUNT_GET_SKILLCARD = COUNT_GET_SKILLCARD + 1
+	ENDIF
+
+	SIF L_継承不能
+		SETCOLOR COLOR("light-gray")
+
+	;所持スキルカード種別数カウント
+	COUNT = COUNT + 1
+
+	;スキルカード表示
+	CALL GET_SKILL_PROP, "SKILL_NAME", L_I, -1
+	LOCALS = 【%RESULTS%】
+	PRINTFORM [%TOSTR(COUNT),3,RIGHT%] ×{ITEM:(10000+L_I)}%LOCALS:0,20,LEFT%
+	RESETCOLOR
+
+	;ランクアップスキル表示
+	FOR LOCAL, 1, L_スキルアップ数+1
+		CALL GET_SKILL_PROP, "SKILL_NAME", D:LOCAL, -1
+		SIF SKILLCARD_CHECK_複製不可(D:LOCAL)
+			SETCOLOR COLOR("PASTEL-RED")
+		PRINTFORM ->%RESULTS:0,16,LEFT% 
+		RESETCOLOR
+	NEXT
+
+	PRINTL
+NEXT
+
+PRINTFORML --- 스킬카드 총수({COUNT_GET_SKILLCARD}/{COUNT_ALL_SKILLCARD}) ---
+
+RETURN -1
+
+@SKILLCARD_CHECK_複製不可(ARG)
+#FUNCTION
+SIF (ITEM:(10000+ARG) < 1) && !ABLE_MAKESKILLCARD(ARG)
+	RETURNF 1
+RETURNF 0
+
+@SKIP_スキルカード化不能領域, L_SKILL
+#DIM REF L_SKILL
+SELECTCASE L_SKILL
+	;총～システム系はスキップ
+	CASE 2101
+		L_SKILL = 2400
+	;アイテム系はスキップ
+	CASE MIN_ITEMSKILLNUM
+		L_SKILL = MAX_ITEMSKILLNUM + 1
+	;オリジナルスキル系はスキップ
+	CASE 3900
+		L_SKILL = 3920
+	;リンケージはスキップ
+	CASE MIN_LINKAGENUM
+		L_SKILL = MAX_LINKAGENUM
+ENDSELECT

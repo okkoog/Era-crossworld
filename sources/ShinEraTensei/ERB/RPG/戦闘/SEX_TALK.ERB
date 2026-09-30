@@ -1,0 +1,1470 @@
+
+;性的交渉関係の関数置き場
+
+@仮_異性を要求するか？(ARG)
+#FUNCTION
+LOCAL:1 = 0
+SIF FLAG:ムフフ展開 == 0
+	RETURNF 0
+
+LOCAL:1 -= TALENT:ARG:オトコ * 10
+LOCAL:1 += TALENT:ARG:処女 * 50
+LOCAL:1 += TALENT:ARG:貞操観念 * 10
+LOCAL:1 += TALENT:ARG:自制心 * 3
+LOCAL:1 += TALENT:ARG:気丈 * 3
+LOCAL:1 += TALENT:ARG:感情乏しい * 3
+LOCAL:1 += TALENT:ARG:保守的 * 3
+LOCAL:1 += TALENT:ARG:一線越えない * 10
+LOCAL:1 += TALENT:ARG:快感の否定 * 35
+LOCAL:1 -= TALENT:ARG:快感に素直 * 6
+LOCAL:1 -= TALENT:ARG:好奇心 * 3
+LOCAL:1 -= TALENT:ARG:解放 * 10
+LOCAL:1 -= TALENT:ARG:恥薄い * 3
+LOCAL:1 -= TALENT:ARG:貞操無頓着 * 3
+LOCAL:1 -= ABL:ARG:欲望 * 5
+SIF FLAG:月齢 == 8
+	LOCAL:1 -= 20
+
+SIF LOCAL:1 < 30
+	RETURNF 1
+RETURNF 0
+
+@仮_犯してくれるか？(ARG,ARG:1)
+#FUNCTION
+LOCAL:1 = 0
+;四文字「産めよ増やせよ」
+IF STR:(ABL:ARG:種族) == "天使"
+	;妊娠できないor既に妊娠してる＆ARGを妊娠させられない場合は絶対に怒る
+	SIF !((HAVE_PENIS(ARG) && HAVE_VAGINA(ARG:1) && !TALENT:(ARG:1):妊娠) || (HAVE_VAGINA(ARG) && HAVE_PENIS(ARG:1)))
+		RETURNF 0
+	;避妊してSEXするような奴には天罰
+	SIF CFLAG:(ARG:1):子宮内避妊結界
+		RETURNF 0
+	IF STR:(ABL:(ARG:1):種族) == "人間"
+		;人間の子作りには積極的に協力してくれる
+		RETURNF 2
+	ELSE
+		;人間以外の子供は積極的には作ろうとしないが、それでも判定値にボーナス
+		LOCAL:1 += 20
+	ENDIF
+ENDIF
+
+
+IF TALENT:ARG:オトコ
+	LOCAL:1 += ABL:ARG:Ｃ感覚 * 15
+	LOCAL:1 += ABL:ARG:Ｂ感覚 * 3
+	IF TALENT:ARG:男の娘
+		LOCAL:1 += ABL:ARG:Ｂ感覚 * 7
+		LOCAL:1 += ABL:ARG:Ａ感覚 * 15
+	ENDIF
+	IF HAVE_VAGINA(ARG:1)
+		LOCAL:1 += 45
+	ELSEIF TALENT:(ARG:1):男の娘
+		LOCAL:1 += 40
+	ELSEIF ABL:ARG:ＢＬっ気 > 0 || EXP:ARG:ＢＬ経験 || TALENT:ARG:両刀
+		LOCAL:1 += (ABL:ARG:ＢＬっ気*10 + ABL:ARG:Ａ感覚*5)
+	ELSE
+		LOCAL:1 -= 90
+	ENDIF
+ELSE
+	LOCAL:1 += ABL:ARG:Ｃ感覚 * 10
+	LOCAL:1 += ABL:ARG:Ｂ感覚 * 5
+
+	IF HAVE_PENIS(ARG:1)
+		LOCAL:1 += 20
+		SIF TALENT:ARG:処女
+			LOCAL:1 -= 100
+		LOCAL:1 += ABL:ARG:Ｖ感覚 * 10
+		LOCAL:1 += ABL:ARG:Ａ感覚 * 10
+	ENDIF
+	IF TALENT:(ARG:1):オトコ == 0
+		IF ABL:ARG:レズっ気 || EXP:ARG:レズ経験 || TALENT:ARG:両刀
+			LOCAL:1 += (ABL:ARG:レズっ気*10 + ABL:ARG:Ｃ感覚*5)
+		ELSE
+			LOCAL:1 -= 15
+		ENDIF
+	ENDIF
+
+	IF HAVE_PENIS(ARG)
+		LOCAL:1 += ABL:ARG:Ｃ感覚 * 5
+		IF HAVE_VAGINA(ARG:1) || TALENT:(ARG:1):男の娘
+			LOCAL:1 += 25
+		ELSE
+			LOCAL:1 += 15
+		ENDIF
+	ENDIF
+ENDIF
+
+LOCAL:1 += TALENT:(ARG:1):謎の魅力 * 20
+
+LOCAL:1 -= TALENT:ARG:貞操観念 * 20
+LOCAL:1 -= TALENT:ARG:自制心 * 15
+LOCAL:1 -= TALENT:ARG:気丈 * 10
+LOCAL:1 -= TALENT:ARG:感情乏しい * 10
+LOCAL:1 -= TALENT:ARG:保守的 * 15
+LOCAL:1 -= TALENT:ARG:恥じらい * 15
+LOCAL:1 -= TALENT:ARG:一線越えない * 20
+LOCAL:1 -= TALENT:ARG:快感の否定 * 80
+LOCAL:1 += TALENT:ARG:快感に素直 * 20
+LOCAL:1 += TALENT:ARG:好奇心 * 15
+LOCAL:1 += TALENT:ARG:解放 * 10
+LOCAL:1 += TALENT:ARG:恥薄い * 15
+LOCAL:1 += TALENT:ARG:貞操無頓着 * 3
+LOCAL:1 += TALENT:ARG:サド * 15
+LOCAL:1 += TALENT:ARG:小悪魔 * 15
+LOCAL:1 += ABL:ARG:欲望 * 5
+LOCAL:1 += ABL:ARG:奉仕精神 * 4
+LOCAL:1 += ABL:ARG:従順 * 2
+LOCAL:1 += ABL:ARG:技巧 * 2
+LOCAL:1 += ABL:ARG:露出癖 * 5
+LOCAL:1 += ABL:ARG:サドっ気 * 5
+LOCAL:1 += ABL:ARG:精液中毒 * 10
+SIF FLAG:月齢 == 8
+	LOCAL:1 += 20
+
+;格好の補正
+
+
+SELECTCASE LOCAL:1
+	CASE IS < 10
+		RETURNF 0
+	CASE IS < 50
+		RETURNF 1
+	CASEELSE
+		RETURNF 2
+ENDSELECT
+
+
+@仮_やらせてくれるか？(ARG,ARG:1)
+#FUNCTION
+LOCAL:1 = 0
+;四文字「産めよ増やせよ」
+IF STR:(ABL:ARG:種族) == "天使"
+	;妊娠できないor既に妊娠してる＆ARGを妊娠させられない場合は絶対に怒る
+	SIF !((HAVE_PENIS(ARG) && HAVE_VAGINA(ARG:1) && !TALENT:(ARG:1):妊娠) || (HAVE_VAGINA(ARG) && HAVE_PENIS(ARG:1)))
+		RETURNF 0
+	;避妊してSEXするような奴には天罰
+	SIF CFLAG:(ARG:1):子宮内避妊結界
+		RETURNF 0
+	IF STR:(ABL:(ARG:1):種族) == "人間"
+		;人間の子作りには積極的に協力してくれる
+		RETURNF 2
+	ELSE
+		;人間以外の子供は積極的には作ろうとしないが、それでも判定値にボーナス
+		LOCAL:1 += 20
+	ENDIF
+ENDIF
+
+
+IF TALENT:ARG:オトコ
+	LOCAL:1 += ABL:ARG:Ｃ感覚 * 15
+	LOCAL:1 += ABL:ARG:Ｂ感覚 * 3
+	IF TALENT:ARG:男の娘
+		LOCAL:1 += ABL:ARG:Ｂ感覚 * 7
+		LOCAL:1 += ABL:ARG:Ａ感覚 * 15
+	ENDIF
+	IF HAVE_VAGINA(ARG:1)
+		LOCAL:1 += 45
+	ELSEIF TALENT:(ARG:1):男の娘
+		LOCAL:1 += 40
+	ELSEIF ABL:ARG:ＢＬっ気 > 0 || EXP:ARG:ＢＬ経験 || TALENT:ARG:両刀
+		LOCAL:1 += (ABL:ARG:ＢＬっ気*10 + ABL:ARG:Ａ感覚*5)
+	ELSE
+		LOCAL:1 -= 90
+	ENDIF
+ELSE
+	LOCAL:1 += ABL:ARG:Ｃ感覚 * 10
+	LOCAL:1 += ABL:ARG:Ｂ感覚 * 5
+
+	IF HAVE_PENIS(ARG:1)
+		LOCAL:1 += 20
+		IF TALENT:ARG:処女
+			LOCAL:1 -= 100
+			;誘惑がある場合処女のマイナス処理を打ち消す
+			SIF HAVE_SKILL(ARG,[[スキル:誘惑]])
+				LOCAL:1 += 100
+		ENDIF
+		LOCAL:1 += ABL:ARG:Ｖ感覚 * 10
+		LOCAL:1 += ABL:ARG:Ａ感覚 * 10
+	ENDIF
+	IF TALENT:(ARG:1):オトコ == 0
+		IF ABL:ARG:レズっ気 || EXP:ARG:レズ経験 || TALENT:ARG:両刀
+			LOCAL:1 += (ABL:ARG:レズっ気*10 + ABL:ARG:Ｃ感覚*5)
+		ELSE
+			LOCAL:1 -= 15
+		ENDIF
+	ENDIF
+
+	IF HAVE_PENIS(ARG)
+		LOCAL:1 += ABL:ARG:Ｃ感覚 * 5
+		IF HAVE_VAGINA(ARG:1) || TALENT:(ARG:1):男の娘
+			LOCAL:1 += 25
+		ELSE
+			LOCAL:1 += 15
+		ENDIF
+	ENDIF
+ENDIF
+
+LOCAL:1 += TALENT:(ARG:1):謎の魅力 * 20
+
+LOCAL:1 -= TALENT:ARG:貞操観念 * 20
+LOCAL:1 -= TALENT:ARG:自制心 * 15
+LOCAL:1 -= TALENT:ARG:気丈 * 10
+LOCAL:1 -= TALENT:ARG:感情乏しい * 10
+LOCAL:1 -= TALENT:ARG:保守的 * 15
+LOCAL:1 -= TALENT:ARG:恥じらい * 15
+LOCAL:1 -= TALENT:ARG:一線越えない * 20
+LOCAL:1 -= TALENT:ARG:快感の否定 * 80
+LOCAL:1 += TALENT:ARG:快感に素直 * 20
+LOCAL:1 += TALENT:ARG:好奇心 * 15
+LOCAL:1 += TALENT:ARG:解放 * 10
+LOCAL:1 += TALENT:ARG:恥薄い * 15
+LOCAL:1 += TALENT:ARG:貞操無頓着 * 3
+LOCAL:1 += TALENT:ARG:マゾ * 15
+LOCAL:1 += TALENT:ARG:小悪魔 * 15
+LOCAL:1 += ABL:ARG:欲望 * 5
+LOCAL:1 += ABL:ARG:奉仕精神 * 4
+LOCAL:1 += ABL:ARG:従順 * 2
+LOCAL:1 += ABL:ARG:技巧 * 2
+LOCAL:1 += ABL:ARG:露出癖 * 5
+LOCAL:1 += ABL:ARG:マゾっ気 * 5
+LOCAL:1 += ABL:ARG:精液中毒 * 10
+SIF FLAG:月齢 == 8
+	LOCAL:1 += 20
+
+;格好の補正
+
+SELECTCASE LOCAL:1
+	CASE IS < 10
+		RETURNF 0
+	CASE IS < 50
+		RETURNF 1
+	CASEELSE
+		RETURNF 2
+ENDSELECT
+
+
+@SEXIAL_ヤらせてもらう,ARG,ARG:1
+VARSET NOWEX:ARG:0,0
+VARSET NOWEX:(ARG:1):0,0
+
+;ストレス増加値
+LOCAL:4 = 0
+;悪魔満足度
+LOCAL:7 = 0
+;技巧用入れ物
+LOCAL:6 = 0
+CALL ADD_SEXTALK_PLAY,ARG,ARG:1,1
+
+LOCAL:4 = 1+(CFLAG:(ARG:1):本番回数+CFLAG:(ARG:1):アナル回数+CFLAG:(ARG:1):フェラ回数+CFLAG:(ARG:1):クリ責め回数+CFLAG:(ARG:1):胸責め回数)*2/5
+
+
+	PRINTL
+	PRINTFORML %CALLNAME:(ARG:1)%の交渉
+	IF TCVAR:(ARG:1):獲得Ｖ経験
+		IF TALENT:(ARG:1):処女
+			PRINTFORML 処女喪失
+			TALENT:(ARG:1):処女 = 0
+		ELSEIF TALENT:(ARG:1):再生処女
+			PRINTFORML 再生処女喪失
+			TALENT:(ARG:1):再生処女 = 0
+		ENDIF
+	ENDIF
+	;妊娠判定用
+	IF PREGNANCY_ABLE(ARG:1)
+		IF TALENT:(ARG:1):オトコ == 0 
+			CFLAG:(ARG:1):顧客の中出氏による妊娠判定 = TCVAR:(ARG:1):獲得膣射経験*2
+			CALL PREGNANCY_CHECK, ARG:1
+			;妊娠確定
+			SIF RESULT
+				CALL SET_FATHERINFO, ARG:1, NO:ARG, -1, NAME:ARG
+		ELSEIF TALENT:(ARG:1):男の娘 == 1
+			CFLAG:(ARG:1):顧客の中出氏による妊娠判定 = TCVAR:(ARG:1):獲得Ａ経験*2
+			;妊娠確定
+			SIF RESULT
+				CALL SET_FATHERINFO, ARG:1, NO:ARG, -1, NAME:ARG
+		ENDIF
+	ENDIF
+	;周囲のキャラに欲情を加算
+	FOR LOCAL,1,7
+		SIF POS(LOCAL) > -1 && POS(LOCAL) != ARG:1
+			PALAM:POS(LOCAL):欲情 += 5 + 5*ABL:POS(LOCAL):欲望
+	NEXT
+	CALL SOURCE_CHECK_DUNGEON , ARG:1,ARG
+	CALL SHOW_ADD_EXP, ARG:1
+
+	CFLAG:(ARG:1):NTRフラグ += 1
+	;ストレス判定用
+	SIF TALENT:(ARG:1):淫乱 || TALENT:(ARG:1):娼婦 || TALENT:(ARG:1):服従 || TALENT:(ARG:1):隷属
+		LOCAL:4 /= 15
+	SIF TALENT:(ARG:1):恋慕 || TALENT:(ARG:1):親愛
+		LOCAL:4 *= 2
+	IF ARG:1 != MASTER
+		GOTJUEL:(ARG:1):否定 += LOCAL:4*100*(1+MARK:(ARG:1):3)*(1+MARK:(ARG:1):3)/MAX(1,ABL:(ARG:1):従順)
+		CFLAG:(ARG:1):ストレス値 += LOCAL:4
+	ENDIF
+	CALL SHOW_JUEL_CHECK,ARG:1
+	
+	;汚れ付着
+	SIF CFLAG:(ARG:1):本番回数
+		SETBIT STAIN:(ARG:1):3 , 4
+	SIF CFLAG:(ARG:1):アナル回数
+		SETBIT STAIN:(ARG:1):4 , 4
+		
+	;ＮＴＲ可能な場合、淫乱度が増加
+	SIF FLAG:ＮＴＲ機能
+		CFLAG:(ARG:1):淫乱度 += CFLAG:(ARG:1):本番回数 + CFLAG:(ARG:1):アナル回数 + SUMARRAY(NOWEX:(ARG:1):0, 0, 4)*4
+	
+	;ＭＡＧを吸収
+	PRINTFORML ＭＡＧ +{(CFLAG:(ARG:1):本番回数*4+CFLAG:(ARG:1):アナル回数*4+CFLAG:(ARG:1):フェラ回数*2)*MAXBASE:(ARG:1):LV}
+	CALL CONTROL_MAG,ARG:1,(CFLAG:(ARG:1):本番回数*4+CFLAG:(ARG:1):アナル回数*4+CFLAG:(ARG:1):フェラ回数*2)*MAXBASE:(ARG:1):LV
+	;ＨＰ・ＭＰを消費
+	LOCAL = (CFLAG:(ARG:1):本番回数 * 2 + CFLAG:(ARG:1):アナル回数 * 2 + CFLAG:(ARG:1):フェラ回数 * 1 + NOWEX:(ARG:1):0 + NOWEX:(ARG:1):1 + NOWEX:(ARG:1):2 + NOWEX:(ARG:1):3)/2
+	IF BASE:(ARG:1):ＭＰ > 0
+		PRINTFORML ＨＰ -{MAX(1,MAXBASE:(ARG:1):ＨＰ * LOCAL/100) * (11 - ABL:(ARG:1):セックス中毒)/10}
+		PRINTFORML ＭＰ -{MAX(1,MAXBASE:(ARG:1):ＭＰ * LOCAL/200) * (11 - ABL:(ARG:1):セックス中毒)/10}
+		CALL VAR_MP,ARG:1,-MAX(1,MAXBASE:(ARG:1):ＭＰ * LOCAL/200) * (11 - ABL:(ARG:1):セックス中毒)/10
+		CALL VAR_HP,ARG:1,-MAX(1,MAXBASE:(ARG:1):ＨＰ * LOCAL/100) * (11 - ABL:(ARG:1):セックス中毒)/10
+	ELSE
+		PRINTFORML ＨＰ -{MAX(1,MAXBASE:(ARG:1):ＨＰ * LOCAL*2/100) * (11 - ABL:(ARG:1):セックス中毒)/10}
+		CALL VAR_HP,ARG:1,-MAX(1,MAXBASE:(ARG:1):ＨＰ * LOCAL*2/100) * (11 - ABL:(ARG:1):セックス中毒)/10
+	ENDIF
+	;体力・気力消費
+	;気力が0になってしまう場合は、体力から差分の半分の値を引く
+	IF (BASE:(ARG:1):気力 - LIMIT(LOCAL*10,100,MAXBASE:(ARG:1):気力)) <= 0
+		PRINTFORML 体力 -{LIMIT(((LIMIT(LOCAL*10,100,MAXBASE:(ARG:1):気力 - BASE:(ARG:1):気力)) / 2),1,BASE:(ARG:1):体力) + LIMIT(LOCAL*10,50,BASE:(ARG:1):体力)}
+		PRINTFORML 気力 -{BASE:(ARG:1):気力}
+		BASE:(ARG:1):体力 -= LIMIT(((LIMIT(LOCAL*10,100,MAXBASE:(ARG:1):気力 - BASE:(ARG:1):気力)) / 2),1,BASE:(ARG:1):体力) + LIMIT(LOCAL*10,50,BASE:(ARG:1):体力)
+		BASE:(ARG:1):気力 = 0
+	ELSE
+		PRINTFORML 体力 -{LIMIT(LOCAL*10,50,BASE:(ARG:1):体力)}
+		PRINTFORML 気力 -{LIMIT(LOCAL*10,100,BASE:(ARG:1):気力)}
+		BASE:(ARG:1):体力 -= LIMIT(LOCAL*10,50,BASE:(ARG:1):体力)
+		BASE:(ARG:1):気力 -= LIMIT(LOCAL*10,100,BASE:(ARG:1):気力)
+	ENDIF
+	
+	;相手側悪魔に適応
+	FOR LOCAL,0,100
+		EXP:ARG:LOCAL = TCVAR:ARG:LOCAL
+		TCVAR:ARG:LOCAL = 0
+	NEXT
+	
+	;成功度判定
+	;満足度判定
+	;ランダムで40を追加します。売春経験に応じて期待値は上昇します。
+	IF EXP:(ARG:1):売春経験 > 30000
+		LOCAL:7 = 60
+	ELSEIF EXP:(ARG:1):売春経験 > 10000
+		LOCAL:7 = RAND:31 + 30
+	ELSEIF EXP:(ARG:1):売春経験 > 5000
+		LOCAL:7 = RAND:36 + 25
+	ELSEIF EXP:(ARG:1):売春経験 > 3000
+		LOCAL:7 = RAND:41 + 20
+	ELSEIF EXP:(ARG:1):売春経験 > 1000
+		LOCAL:7 = RAND:46 + 15
+	ELSEIF EXP:(ARG:1):売春経験 > 500
+		LOCAL:7 = RAND:51 + 10
+	ELSEIF EXP:(ARG:1):売春経験 > 100
+		LOCAL:7 = RAND:56 + 5
+	ELSE
+		LOCAL:7 = RAND:61
+	ENDIF
+
+	;欲望をチェックする。欲望が相手の欲望を上回るかどうか。成功なら欲望レベルの２倍、失敗なら１倍入ります。
+	;CBVA売春では、相手の欲望の最大値が4です。
+	IF ABL:ARG:欲望 <= ABL:(ARG:1):欲望
+		LOCAL:7 += ABL:(ARG:1):欲望
+		LOCAL:7 += ABL:(ARG:1):欲望
+	ELSE
+		LOCAL:7 += ABL:(ARG:1):欲望
+	ENDIF
+	
+	;相手からの行動が発生します。相手の技巧がこちらの欲望以下の場合、不満そうな表情が出る可能性があります。
+	;相手の技巧＋こちらの従順の２倍＞こちらの欲望＋２なら、問題なく行為を露出癖と奉仕精神を加える事が出来ます。
+	;足りない場合は加えられません。
+	LOCAL:6 = ABL:ARG:技巧 + ABL:(ARG:1):従順 + ABL:(ARG:1):従順 - 2
+	
+	IF LOCAL:6 >= ABL:(ARG:1):欲望
+		LOCAL:7 += ABL:(ARG:1):奉仕精神
+		LOCAL:7 += ABL:(ARG:1):露出癖
+	ENDIF
+	;ここまでで最大120％
+	SIF LOCAL:7 > 120
+		LOCAL:7 = 120
+	;従順が3LVないと、著しく微妙になります
+	IF ABL:(ARG:1):従順 < 3 && ARG:1 != MASTER
+		LOCAL:7 /= 2
+	ENDIF
+	PRINTFORML 満足度:{LOCAL:7}％
+	FLAG:悪魔満足度 = LOCAL:7
+	
+	;倒れてしまうとMAGを大量に奪われる
+	IF CFLAG:(ARG:1):ステート == GET_STATE_NUM("DYING")
+		PRINTFORML ＭＡＧを奪われた！
+		CALL CONTROL_MAG,ARG:1,-1000*MAXBASE:ARG:LV
+	ENDIF
+CALL FIGHT_IT_OUT
+RETURN LOCAL:7
+
+
+@SEXIAL_犯してもらう,ARG,ARG:1
+VARSET NOWEX:ARG:0,0
+VARSET NOWEX:(ARG:1):0,0
+
+;ストレス増加値
+LOCAL:4 = 0
+;悪魔満足度
+LOCAL:7 = 0
+;技巧用入れ物
+LOCAL:6 = 0
+CALL ADD_SEXTALK_PLAY,ARG,ARG:1,2
+
+LOCAL:4 = 1+(CFLAG:(ARG:1):本番回数+CFLAG:(ARG:1):アナル回数+CFLAG:(ARG:1):フェラ回数+CFLAG:(ARG:1):クリ責め回数+CFLAG:(ARG:1):胸責め回数)*2/5
+
+
+	PRINTL
+	PRINTFORML %CALLNAME:(ARG:1)%の交渉
+	IF TCVAR:(ARG:1):獲得Ｖ経験
+		IF TALENT:(ARG:1):処女
+			PRINTFORML 処女喪失
+			TALENT:(ARG:1):処女 = 0
+		ELSEIF TALENT:(ARG:1):再生処女
+			PRINTFORML 再生処女喪失
+			TALENT:(ARG:1):再生処女 = 0
+		ENDIF
+	ENDIF
+	;妊娠判定用
+	IF PREGNANCY_ABLE(ARG:1)
+		IF TALENT:(ARG:1):オトコ == 0
+			CFLAG:(ARG:1):顧客の中出氏による妊娠判定 = TCVAR:(ARG:1):獲得膣射経験*2
+			CALL PREGNANCY_CHECK
+			;妊娠
+			SIF RESULT
+				CALL SET_FATHERINFO, ARG:1, NO:ARG, , NAME:ARG
+		ELSEIF TALENT:(ARG:1):男の娘 == 1
+			CFLAG:(ARG:1):顧客の中出氏による妊娠判定 = TCVAR:(ARG:1):獲得Ａ経験*2
+			CALL PREGNANCY_CHECK
+			;妊娠
+			SIF RESULT
+				CALL SET_FATHERINFO, ARG:1, NO:ARG, , NAME:ARG
+		ENDIF
+	ENDIF
+	;周囲のキャラに欲情を加算
+	FOR LOCAL,1,7
+		SIF POS(LOCAL) > -1 && POS(LOCAL) != ARG:1
+			PALAM:POS(LOCAL):欲情 += 5 + 5*ABL:POS(LOCAL):欲望
+	NEXT
+	CALL SOURCE_CHECK_DUNGEON , ARG:1,ARG
+	CALL SHOW_ADD_EXP, ARG:1
+
+	CFLAG:(ARG:1):NTRフラグ += 1
+	;ストレス判定用
+	SIF TALENT:(ARG:1):淫乱 || TALENT:(ARG:1):娼婦 || TALENT:(ARG:1):服従 || TALENT:(ARG:1):隷属
+		LOCAL:4 /= 15
+	SIF TALENT:(ARG:1):恋慕 || TALENT:(ARG:1):親愛
+		LOCAL:4 *= 2
+	IF ARG:1 != MASTER
+		GOTJUEL:(ARG:1):否定 += LOCAL:4*100*(1+MARK:(ARG:1):3)*(1+MARK:(ARG:1):3)/MAX(1,ABL:(ARG:1):従順)
+		CFLAG:(ARG:1):ストレス値 += LOCAL:4
+	ENDIF
+	CALL SHOW_JUEL_CHECK,ARG:1
+	
+	;汚れ付着
+	SIF CFLAG:(ARG:1):本番回数
+		SETBIT STAIN:(ARG:1):3 , 4
+	SIF CFLAG:(ARG:1):アナル回数
+		SETBIT STAIN:(ARG:1):4 , 4
+
+
+	;ＮＴＲ可能な場合、淫乱度が増加
+	SIF FLAG:ＮＴＲ機能
+		CFLAG:(ARG:1):淫乱度 += CFLAG:(ARG:1):本番回数 + CFLAG:(ARG:1):アナル回数 + SUMARRAY(NOWEX:(ARG:1):0, 0, 4)*4
+	
+	;ＭＡＧを吸収
+	PRINTFORML ＭＡＧ +{(CFLAG:(ARG:1):本番回数*4+CFLAG:(ARG:1):アナル回数*4+CFLAG:(ARG:1):フェラ回数*2)*MAXBASE:(ARG:1):LV}
+	CALL CONTROL_MAG,ARG:1,(CFLAG:(ARG:1):本番回数*4+CFLAG:(ARG:1):アナル回数*4+CFLAG:(ARG:1):フェラ回数*2)*MAXBASE:(ARG:1):LV
+	;ＨＰ・ＭＰを消費
+	LOCAL = (CFLAG:(ARG:1):本番回数 * 2 + CFLAG:(ARG:1):アナル回数 * 2 + CFLAG:(ARG:1):フェラ回数 * 1 + NOWEX:(ARG:1):0 + NOWEX:(ARG:1):1 + NOWEX:(ARG:1):2 + NOWEX:(ARG:1):3)/2
+	IF BASE:(ARG:1):ＭＰ > 0
+		PRINTFORML ＨＰ -{MAX(1,MAXBASE:(ARG:1):ＨＰ * LOCAL/100) * (11 - ABL:(ARG:1):セックス中毒)/10}
+		PRINTFORML ＭＰ -{MAX(1,MAXBASE:(ARG:1):ＭＰ * LOCAL/200) * (11 - ABL:(ARG:1):セックス中毒)/10}
+		CALL VAR_MP,ARG:1,-MAX(1,MAXBASE:(ARG:1):ＭＰ * LOCAL/200) * (11 - ABL:(ARG:1):セックス中毒)/10
+		CALL VAR_HP,ARG:1,-MAX(1,MAXBASE:(ARG:1):ＨＰ * LOCAL/100) * (11 - ABL:(ARG:1):セックス中毒)/10
+	ELSE
+		PRINTFORML ＨＰ -{MAX(1,MAXBASE:(ARG:1):ＨＰ * LOCAL*2/100) * (11 - ABL:(ARG:1):セックス中毒)/10}
+		CALL VAR_HP,ARG:1,-MAX(1,MAXBASE:(ARG:1):ＨＰ * LOCAL*2/100) * (11 - ABL:(ARG:1):セックス中毒)/10
+	ENDIF
+	;体力・気力消費
+	;犯されているので気力を多く減らしてます
+	;気力が0になってしまう場合は、体力から差分の半分の値を引く
+	;発情している場合は気力の消費が減る
+	LOCAL:8 = 1
+	SIF 危険日(ARG:1) == 2
+		LOCAL:8 = 5
+	IF (BASE:(ARG:1):気力 - LIMIT(LOCAL*20/LOCAL:8,100/LOCAL:8,MAXBASE:(ARG:1):気力)) <= 0
+		PRINTFORML 体力 -{LIMIT(((LIMIT(LOCAL*20/LOCAL:8,100/LOCAL:8,MAXBASE:(ARG:1):気力 - BASE:(ARG:1):気力)) / 2) + LIMIT(LOCAL*10,50,BASE:(ARG:1):体力),1,BASE:(ARG:1):体力)}
+		PRINTFORML 気力 -{BASE:(ARG:1):気力}
+		BASE:(ARG:1):体力 -= LIMIT(((LIMIT(LOCAL*20/LOCAL:8,100/LOCAL:8,MAXBASE:(ARG:1):気力 - BASE:(ARG:1):気力)) / 2) + LIMIT(LOCAL*10,50,BASE:(ARG:1):体力),1,BASE:(ARG:1):体力)
+		BASE:(ARG:1):気力 = 0
+	ELSE
+		PRINTFORML 体力 -{LIMIT(LOCAL*10,50,BASE:(ARG:1):体力)}
+		PRINTFORML 気力 -{LIMIT(LOCAL*20/LOCAL:8,100/LOCAL:8,BASE:(ARG:1):気力)}
+		BASE:(ARG:1):体力 -= LIMIT(LOCAL*10,50,BASE:(ARG:1):体力)
+		BASE:(ARG:1):気力 -= LIMIT(LOCAL*20/LOCAL:8,100/LOCAL:8,BASE:(ARG:1):気力)
+	ENDIF
+
+	;ＮＴＲ可能な場合、淫乱度が増加
+	SIF FLAG:ＮＴＲ機能
+		CFLAG:(ARG:1):淫乱度 += CFLAG:(ARG:1):本番回数 + CFLAG:(ARG:1):アナル回数 + SUMARRAY(NOWEX:(ARG:1):0, 0, 4)*4
+		;ステータスが魅了の場合
+		IF CFLAG:(ARG:1):ステート == GET_STATE_NUM("CHARM")
+			PRINTFORMW 魅了状態の%CALLNAME:(ARG:1)%は、%CALLNAME:ARG%とまるで恋人同士のように愛し合っている
+			PRINTFORML 
+			PRINTFORML 
+			IF BASE:(ARG:1):気力 > 0 && RAND:100 < 30
+				PRINTFORMW %CALLNAME:(ARG:1)%の魅了が解けた
+				PRINTFORMW %CALLNAME:(ARG:1)%は自分が%CALLNAME:ARG%に犯されている状況を理解できずにパニックに陥った
+				CFLAG:(ARG:1):ステート = GET_STATE_NUM("PANIC")
+				PRINTFORML 
+				PRINTFORML 気力 -{LIMIT(50+(RAND:6*10),50,BASE:(ARG:1):気力)}
+				BASE:(ARG:1):気力 -= LIMIT(50+(RAND:6*10),50,BASE:(ARG:1):気力)
+			ENDIF
+		ENDIF
+		
+	IF FLAG:ＮＴＲハードモード
+		A = 0
+		A += FLAG:戦闘難易度 * 10
+		SIF TALENT:(ARG:1):ＮＴＲ == 2
+			A += 20
+		SIF TALENT:(ARG:1):淫乱 || TALENT:(ARG:1):娼婦
+			A += 10
+		IF RAND:100 < 10 + A && !(CFLAG:(ARG:1):ステート == GET_STATE_NUM("CHARM"))
+			IF TALENT:ARG:オトコ 
+				IF TALENT:(ARG:1):恋慕 || TALENT:(ARG:1):親愛
+					IF RAND:5 == 0
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:MASTER%の前である事を忘れ、%CALLNAME:ARG%の激しい責めに我を忘れて喘いでいる
+					ELSEIF RAND:4 == 0
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:MASTER%の見ている前で%CALLNAME:ARG%の巧みな腰使いに堕ち、為すがままに犯されている
+					ELSEIF RAND:3 == 0
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%の逞しいペニスの虜になってしまい、自ら腰を使いながら『%CALLNAME:MASTER%より大きい』と喘いでいる
+					ELSEIF RAND:2 == 0
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%の放った濃密な精の臭いに身体の疼きを抑えきれず
+						PRINTFORMW %CALLNAME:MASTER%の前である事を忘れ、蕩けた顔で%CALLNAME:ARG%のペニスをしゃぶり続けている
+					ELSE
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%に濃厚な子種を注ぎ込まれるたびに瞳の色が快楽に濁り
+						PRINTFORMW %CALLNAME:MASTER%が見ている事もお構い無しに『もっと種付けして下さい』と懇願している
+					ENDIF
+				ELSE
+					IF RAND:5 == 0
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%の激しい責めに我を忘れて喘いでいる
+					ELSEIF RAND:4 == 0
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%の巧みな腰使いに堕ち、為すがままに犯されている
+					ELSEIF RAND:3 == 0
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%の逞しいペニスの虜になっている
+					ELSEIF RAND:2 == 0
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%の放った濃密な精の臭いに身体の疼きを抑えられない
+					ELSE
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%に濃厚な子種を注ぎ込まれるたび、瞳の色が快楽に濁っていく
+					ENDIF
+				ENDIF
+			ELSE
+				IF RAND:2 == 0
+					PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%の激しい責めに我を忘れて喘いでいる
+				ELSE
+					PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%の巧みな腰使いに堕ち、為すがままに犯されている
+				ENDIF
+			ENDIF
+			;30％でDYING、70％or気力0で女は魅了、男は睡眠
+			;魅了の場合はDYINGにならない
+			IF RAND:100 < 30 && !(CFLAG:(ARG:1):ステート == GET_STATE_NUM("CHARM"))
+				PRINTFORMW %CALLNAME:(ARG:1)%は意識を失うまで犯された
+				CALL VAR_HP,ARG:1,-MAX(1,MAXBASE:(ARG:1):ＨＰ)
+			ELSEIF !(CFLAG:(ARG:1):ステート == GET_STATE_NUM("CHARM")) && (TALENT:(ARG:1):オトコ == 0 || BASE:(ARG:1):気力 == 0 && TALENT:(ARG:1):オトコ == 0)
+				PRINTFORMW %CALLNAME:(ARG:1)%は激しい陵辱に心が折れ、目の前の悪魔を虚ろな目で見上げている
+				CFLAG:(ARG:1):ステート = GET_STATE_NUM("CHARM")
+			ELSEIF !(CFLAG:(ARG:1):ステート == GET_STATE_NUM("SLEEP")) || !(CFLAG:(ARG:1):ステート == GET_STATE_NUM("SLEEP")) && BASE:(ARG:1):気力 == 0
+				PRINTFORMW %CALLNAME:(ARG:1)%は激しい陵辱に疲れ果て、気を失った
+				CFLAG:(ARG:1):ステート = GET_STATE_NUM("SLEEP")
+			ENDIF
+				
+		ENDIF
+	ENDIF
+	;相手側悪魔に適応
+	FOR LOCAL,0,100
+		EXP:ARG:LOCAL = TCVAR:ARG:LOCAL
+		TCVAR:ARG:LOCAL = 0
+	NEXT
+	
+	
+	;成功度判定
+	;満足度判定
+	;ランダムで40を追加します。売春経験に応じて期待値は上昇します。
+	IF EXP:(ARG:1):売春経験 > 30000
+		LOCAL:7 = 60
+	ELSEIF EXP:(ARG:1):売春経験 > 10000
+		LOCAL:7 = RAND:31 + 30
+	ELSEIF EXP:(ARG:1):売春経験 > 5000
+		LOCAL:7 = RAND:36 + 25
+	ELSEIF EXP:(ARG:1):売春経験 > 3000
+		LOCAL:7 = RAND:41 + 20
+	ELSEIF EXP:(ARG:1):売春経験 > 1000
+		LOCAL:7 = RAND:46 + 15
+	ELSEIF EXP:(ARG:1):売春経験 > 500
+		LOCAL:7 = RAND:51 + 10
+	ELSEIF EXP:(ARG:1):売春経験 > 100
+		LOCAL:7 = RAND:56 + 5
+	ELSE
+		LOCAL:7 = RAND:61
+	ENDIF
+
+	;欲望をチェックする。欲望が相手の欲望を上回るかどうか。成功なら欲望レベルの２倍、失敗なら１倍入ります。
+	;CBVA売春では、相手の欲望の最大値が4です。
+	IF ABL:ARG:欲望 <= ABL:(ARG:1):欲望
+		LOCAL:7 += ABL:(ARG:1):欲望
+		LOCAL:7 += ABL:(ARG:1):欲望
+	ELSE
+		LOCAL:7 += ABL:(ARG:1):欲望
+	ENDIF
+	
+	;相手からの行動が発生します。相手の技巧がこちらの欲望以下の場合、不満そうな表情が出る可能性があります。
+	;相手の技巧＋こちらの従順の２倍＞こちらの欲望＋２なら、露出癖と奉仕精神を満足度に加える事が出来ます。
+	;足りない場合は加えられません。
+	LOCAL:6 = ABL:ARG:技巧 + ABL:(ARG:1):従順 + ABL:(ARG:1):従順 - 2
+	
+	IF LOCAL:6 >= ABL:(ARG:1):欲望
+		LOCAL:7 += ABL:(ARG:1):奉仕精神
+		LOCAL:7 += ABL:(ARG:1):露出癖
+	ENDIF
+
+	;ここまでで最大120％
+	
+	;従順が3LVないと、著しく微妙になります
+	IF ABL:(ARG:1):従順 < 3 && ARG:1 != MASTER
+		LOCAL:7 /= 2
+	ENDIF
+	PRINTFORML 満足度:{LOCAL:7}％
+	FLAG:悪魔満足度 = LOCAL:7
+	;魅了or倒れてしまうとMAGを大量に奪われる
+	IF CFLAG:(ARG:1):ステート == GET_STATE_NUM("DYING") || CFLAG:(ARG:1):ステート == GET_STATE_NUM("CHARM")
+		PRINTFORML ＭＡＧを奪われた！
+		CALL CONTROL_MAG,ARG:1,-1000*MAXBASE:ARG:LV
+		IF CFLAG:(ARG:1):ステート == GET_STATE_NUM("CHARM") && !(CFLAG:(ARG:1):ステート == GET_STATE_NUM("DYING"))
+			PRINTFORMW %CALLNAME:(ARG:1)%はトロンとした目で逢瀬の余韻に浸っている
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORMW %CALLNAME:(ARG:1)%は意識が無いにも拘らず腰を動かしている
+			ELSE
+				PRINTFORMW %CALLNAME:(ARG:1)%は開放されたにも拘らず虚ろな目で自慰をしている
+			ENDIF
+		ENDIF
+		;ＮＴＲペナルティありの場合、倒れてしまうと好感度が10%下がり、淫乱度が上がる
+		;淫ＮＴＲで無い場合、ＮＴＲ判定を行う
+		IF FLAG:ＮＴＲハードモード
+			A = 0
+			$KOUKANDOGENSYOU_LOOP
+			IF !CFLAG:(ARG:1):(2098 - A) == 0
+				SIF CFLAG:(ARG:1):(2098 - A) < 0
+					CFLAG:(ARG:1):(2098 - A) += (CFLAG:(ARG:1):(2098 - A) * (-1)) / 10
+				SIF CFLAG:(ARG:1):(2098 - A) > 0
+					CFLAG:(ARG:1):(2098 - A) -= CFLAG:(ARG:1):(2098 - A) / 10
+			ENDIF
+			A += 1
+			SIF A < 13
+				GOTO KOUKANDOGENSYOU_LOOP
+			CFLAG:(ARG:1):淫乱度 += MAXBASE:ARG:LV * (CFLAG:(ARG:1):本番回数 + CFLAG:(ARG:1):アナル回数)
+			IF !(TALENT:(ARG:1):ＮＴＲ == 2)
+				CFLAG:(ARG:1):淫ＮＴＲ進行度 = 2
+				MARK:(ARG:1):快楽刻印 = 3
+				CALL NTR_CHECK , (ARG:1) , 1
+			ENDIF
+		ENDIF
+	ENDIF
+CALL FIGHT_IT_OUT
+RETURN LOCAL:7
+
+@SEX_TALK,ARG,ARG:1
+;ARG = 交渉対象
+;ARG:1 = あてがわれたキャラ
+
+;最初に性的交渉を嫌がるかの判定
+LOCAL:10 = 0
+LOCAL:11 = 0
+
+LOCAL:10 += TALENT:ARG:貞操観念 * 5
+LOCAL:10 -= TALENT:ARG:貞操無頓着 * 5
+LOCAL:10 += TALENT:ARG:自制心 * 5
+LOCAL:10 += TALENT:ARG:気丈 * 5
+LOCAL:10 += TALENT:ARG:快感の否定 * 5
+
+;性的交渉可能かどうかの判定用関数
+@SEX_TALKABLE(ARG,ARG:1)
+#FUNCTION
+;ARG = 交渉対象
+;ARG:1 = あてがうキャラ
+;従順3以上か、欲望3以上が必要
+SIF ABL:(ARG:1):従順 < 3 && ABL:(ARG:1):欲望 < 3 && ARG:1 != MASTER
+	RETURNF 0
+;オトコかどうかで大きく分岐
+IF TALENT:ARG:オトコ
+	;ＢＬっ気１以上じゃないと男の娘以外のオトコには起たない
+	SIF ABL:ARG:ＢＬっ気 == 0 && (TALENT:(ARG:1):オトコ && TALENT:(ARG:1):男の娘 == 0)
+		RETURNF 0
+ELSE
+	;レズっ気１以上じゃないと女には起たない
+	SIF (ABL:ARG:レズっ気 == 0 && (TALENT:(ARG:1):オトコ == 0)) && TALENT:ARG:ふたなり == 0
+		RETURNF 0
+ENDIF
+RETURNF 1
+
+
+;交渉中の性的要求に応じた場合の関数
+@SEXIAL_NEGOCIATE,ARG,ARG:1
+VARSET NOWEX:ARG:0,0
+VARSET NOWEX:(ARG:1):0,0
+
+;ストレス増加値
+LOCAL:4 = 0
+;悪魔満足度
+LOCAL:7 = 0
+;技巧用入れ物
+LOCAL:6 = 0
+CALL ADD_SEXTALK_PLAY,ARG,ARG:1,1
+
+LOCAL:4 = 1+(CFLAG:(ARG:1):本番回数+CFLAG:(ARG:1):アナル回数+CFLAG:(ARG:1):フェラ回数+CFLAG:(ARG:1):クリ責め回数+CFLAG:(ARG:1):胸責め回数)*2/5
+
+
+	PRINTL
+	PRINTFORML %CALLNAME:(ARG:1)%の交渉
+	IF TCVAR:(ARG:1):獲得Ｖ経験
+		IF TALENT:(ARG:1):処女
+			PRINTFORML 処女喪失
+			TALENT:(ARG:1):処女 = 0
+		ELSEIF TALENT:(ARG:1):再生処女
+			PRINTFORML 再生処女喪失
+			TALENT:(ARG:1):再生処女 = 0
+		ENDIF
+	ENDIF
+	;妊娠判定用
+	IF PREGNANCY_ABLE(ARG:1)
+			CFLAG:(ARG:1):顧客の中出氏による妊娠判定 = TCVAR:(ARG:1):獲得膣射経験*2
+			CALL PREGNANCY_CHECK
+			;妊娠
+			SIF RESULT
+				CALL SET_FATHERINFO, ARG:1, NO:ARG, , NAME:ARG
+		ELSEIF TALENT:(ARG:1):男の娘 == 1
+			CFLAG:(ARG:1):顧客の中出氏による妊娠判定 = TCVAR:(ARG:1):獲得Ａ経験*2
+			CALL PREGNANCY_CHECK
+			;妊娠
+			SIF RESULT
+				CALL SET_FATHERINFO, ARG:1, NO:ARG, , NAME:ARG
+	ENDIF
+	;周囲のキャラに欲情を加算
+	FOR LOCAL,1,7
+		SIF POS(LOCAL) > -1 && POS(LOCAL) != ARG:1
+			PALAM:POS(LOCAL):欲情 += 5 + 5*ABL:POS(LOCAL):欲望
+	NEXT
+	
+	
+	CALL SOURCE_CHECK_DUNGEON , ARG:1,ARG
+	CALL SHOW_ADD_EXP, ARG:1
+
+	CFLAG:(ARG:1):NTRフラグ += 1
+	;ストレス判定用
+	SIF TALENT:(ARG:1):淫乱 || TALENT:(ARG:1):娼婦 || TALENT:(ARG:1):服従 || TALENT:(ARG:1):隷属
+		LOCAL:4 /= 15
+	SIF TALENT:(ARG:1):恋慕 || TALENT:(ARG:1):親愛
+		LOCAL:4 *= 2
+	IF ARG:1 != MASTER
+		GOTJUEL:(ARG:1):否定 += LOCAL:4*100*(1+MARK:(ARG:1):3)*(1+MARK:(ARG:1):3)/MAX(1,ABL:(ARG:1):従順)
+		CFLAG:(ARG:1):ストレス値 += LOCAL:4
+	ENDIF
+	CALL SHOW_JUEL_CHECK,ARG:1
+	
+	;ＮＴＲ可能な場合、淫乱度が増加
+	SIF FLAG:ＮＴＲ機能
+		CFLAG:(ARG:1):淫乱度 += CFLAG:(ARG:1):本番回数 + CFLAG:(ARG:1):アナル回数 + SUMARRAY(NOWEX:(ARG:1):0, 0, 4)*2
+		;ステータスが魅了の場合
+		IF CFLAG:(ARG:1):ステート == GET_STATE_NUM("CHARM")
+			PRINTFORMW 魅了状態の%CALLNAME:(ARG:1)%は、%CALLNAME:ARG%とまるで恋人同士のように愛し合っている
+		ENDIF
+
+	IF FLAG:ＮＴＲハードモード
+		A = 0
+		A += FLAG:戦闘難易度 * 10
+		SIF TALENT:(ARG:1):ＮＴＲ == 2
+			A += 20
+		SIF TALENT:(ARG:1):淫乱 || TALENT:(ARG:1):娼婦
+			A += 10
+		IF RAND:100 < 10 + A && !(CFLAG:(ARG:1):ステート == GET_STATE_NUM("CHARM"))
+			IF TALENT:ARG:オトコ 
+				IF TALENT:(ARG:1):恋慕 || TALENT:(ARG:1):親愛
+					IF RAND:5 == 0
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:MASTER%の前である事を忘れ、%CALLNAME:ARG%の激しい責めに我を忘れて喘いでいる
+					ELSEIF RAND:4 == 0
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:MASTER%の見ている前で%CALLNAME:ARG%の巧みな腰使いに堕ち、為すがままに犯されている
+					ELSEIF RAND:3 == 0
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%の逞しいペニスの虜になってしまい、自ら腰を使いながら『%CALLNAME:MASTER%より大きい』と喘いでいる
+					ELSEIF RAND:2 == 0
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%の放った濃密な精の臭いに身体の疼きを抑えきれず
+						PRINTFORMW %CALLNAME:MASTER%の前である事を忘れ、蕩けた顔で%CALLNAME:ARG%のペニスをしゃぶり続けている
+					ELSE
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%に濃厚な子種を注ぎ込まれるたびに瞳の色が快楽に濁り
+						PRINTFORMW %CALLNAME:MASTER%が見ている事もお構い無しに『もっと種付けして下さい』と懇願している
+					ENDIF
+				ELSE
+					IF RAND:5 == 0
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%の激しい責めに我を忘れて喘いでいる
+					ELSEIF RAND:4 == 0
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%の巧みな腰使いに堕ち、為すがままに犯されている
+					ELSEIF RAND:3 == 0
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%の逞しいペニスの虜になっている
+					ELSEIF RAND:2 == 0
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%の放った濃密な精の臭いに身体の疼きを抑えられない
+					ELSE
+						PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%に濃厚な子種を注ぎ込まれるたび、瞳の色が快楽に濁っていく
+					ENDIF
+				ENDIF
+			ELSE
+				IF RAND:2 == 0
+					PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%の激しい責めに我を忘れて喘いでいる
+				ELSE
+					PRINTFORMW %CALLNAME:(ARG:1)%は%CALLNAME:ARG%の巧みな腰使いに堕ち、為すがままに犯されている
+				ENDIF
+			ENDIF
+			;30％でDYING、70％or気力0で女は魅了、男は睡眠
+			;魅了の場合はDYINGにならない
+			IF RAND:100 < 30 && !(CFLAG:(ARG:1):ステート == GET_STATE_NUM("CHARM"))
+				PRINTFORMW %CALLNAME:(ARG:1)%は意識を失うまで犯された
+				CALL VAR_HP,ARG:1,-MAX(1,MAXBASE:(ARG:1):ＨＰ)
+			ELSEIF !(CFLAG:(ARG:1):ステート == GET_STATE_NUM("CHARM")) && (TALENT:(ARG:1):オトコ == 0 || BASE:(ARG:1):気力 == 0 && TALENT:(ARG:1):オトコ == 0)
+				PRINTFORMW %CALLNAME:(ARG:1)%は激しい陵辱に心が折れ、目の前の悪魔を虚ろな目で見上げている
+				CFLAG:(ARG:1):ステート = GET_STATE_NUM("CHARM")
+			ELSEIF !(CFLAG:(ARG:1):ステート == GET_STATE_NUM("SLEEP")) || !(CFLAG:(ARG:1):ステート == GET_STATE_NUM("SLEEP")) && BASE:(ARG:1):気力 == 0
+				PRINTFORMW %CALLNAME:(ARG:1)%は激しい陵辱に疲れ果て、気を失った
+				CFLAG:(ARG:1):ステート = GET_STATE_NUM("SLEEP")
+			ENDIF
+				
+		ENDIF
+	ENDIF
+	;ＭＡＧを吸収
+	PRINTFORML ＭＡＧ +{(CFLAG:(ARG:1):本番回数*4+CFLAG:(ARG:1):アナル回数*4+CFLAG:(ARG:1):フェラ回数*2)*MAXBASE:(ARG:1):LV}
+	CALL CONTROL_MAG,ARG:1,(CFLAG:(ARG:1):本番回数*4+CFLAG:(ARG:1):アナル回数*4+CFLAG:(ARG:1):フェラ回数*2)*MAXBASE:(ARG:1):LV
+	;ＨＰ・ＭＰを消費
+	LOCAL = (CFLAG:(ARG:1):本番回数 * 2 + CFLAG:(ARG:1):アナル回数 * 2 + CFLAG:(ARG:1):フェラ回数 * 1 + NOWEX:(ARG:1):0 + NOWEX:(ARG:1):1 + NOWEX:(ARG:1):2 + NOWEX:(ARG:1):3)/2
+	IF BASE:(ARG:1):ＭＰ > 0
+		PRINTFORML ＨＰ -{MAX(1,MAXBASE:(ARG:1):ＨＰ * LOCAL/100) * (11 - ABL:(ARG:1):セックス中毒)/10}
+		PRINTFORML ＭＰ -{MAX(1,MAXBASE:(ARG:1):ＭＰ * LOCAL/200) * (11 - ABL:(ARG:1):セックス中毒)/10}
+		CALL VAR_MP,ARG:1,-MAX(1,MAXBASE:(ARG:1):ＭＰ * LOCAL/200) * (11 - ABL:(ARG:1):セックス中毒)/10
+		CALL VAR_HP,ARG:1,-MAX(1,MAXBASE:(ARG:1):ＨＰ * LOCAL/100) * (11 - ABL:(ARG:1):セックス中毒)/10
+	ELSE
+		PRINTFORML ＨＰ -{MAX(1,MAXBASE:(ARG:1):ＨＰ * LOCAL*2/100) * (11 - ABL:(ARG:1):セックス中毒)/10}
+		CALL VAR_HP,ARG:1,-MAX(1,MAXBASE:(ARG:1):ＨＰ * LOCAL*2/100) * (11 - ABL:(ARG:1):セックス中毒)/10
+	ENDIF
+	;体力・気力消費
+	;犯されているので気力を多く減らしてます
+	;気力が0になってしまう場合は、体力から差分の半分の値を引く
+	;発情している場合は気力の消費が減る
+	LOCAL:8 = 1
+	SIF 危険日(ARG:1) == 2
+		LOCAL:8 = 5
+	IF (BASE:(ARG:1):気力 - LIMIT(LOCAL*20/LOCAL:8,100/LOCAL:8,MAXBASE:(ARG:1):気力)) <= 0
+		PRINTFORML 体力 -{LIMIT(((LIMIT(LOCAL*20/LOCAL:8,100/LOCAL:8,MAXBASE:(ARG:1):気力 - BASE:(ARG:1):気力)) / 2) + LIMIT(LOCAL*10,50,BASE:(ARG:1):体力),1,BASE:(ARG:1):体力)}
+		PRINTFORML 気力 -{BASE:(ARG:1):気力}
+		BASE:(ARG:1):体力 -= LIMIT(((LIMIT(LOCAL*20/LOCAL:8,100/LOCAL:8,MAXBASE:(ARG:1):気力 - BASE:(ARG:1):気力)) / 2) + LIMIT(LOCAL*10,50,BASE:(ARG:1):体力),1,BASE:(ARG:1):体力)
+		BASE:(ARG:1):気力 = 0
+	ELSE
+		PRINTFORML 体力 -{LIMIT(LOCAL*10,50,BASE:(ARG:1):体力)}
+		PRINTFORML 気力 -{LIMIT(LOCAL*20/LOCAL:8,100/LOCAL:8,BASE:(ARG:1):気力)}
+		BASE:(ARG:1):体力 -= LIMIT(LOCAL*10,50,BASE:(ARG:1):体力)
+		BASE:(ARG:1):気力 -= LIMIT(LOCAL*20/LOCAL:8,100/LOCAL:8,BASE:(ARG:1):気力)
+	ENDIF
+	
+	;相手側悪魔に適応
+	FOR LOCAL,0,100
+		EXP:ARG:LOCAL = TCVAR:ARG:LOCAL
+		TCVAR:ARG:LOCAL = 0
+	NEXT
+	
+	;成功度判定
+	;満足度判定
+	;ランダムで40を追加します。売春経験に応じて期待値は上昇します。
+	IF EXP:(ARG:1):売春経験 > 30000
+		LOCAL:7 = 60
+	ELSEIF EXP:(ARG:1):売春経験 > 10000
+		LOCAL:7 = RAND:31 + 30
+	ELSEIF EXP:(ARG:1):売春経験 > 5000
+		LOCAL:7 = RAND:36 + 25
+	ELSEIF EXP:(ARG:1):売春経験 > 3000
+		LOCAL:7 = RAND:41 + 20
+	ELSEIF EXP:(ARG:1):売春経験 > 1000
+		LOCAL:7 = RAND:46 + 15
+	ELSEIF EXP:(ARG:1):売春経験 > 500
+		LOCAL:7 = RAND:51 + 10
+	ELSEIF EXP:(ARG:1):売春経験 > 100
+		LOCAL:7 = RAND:56 + 5
+	ELSE
+		LOCAL:7 = RAND:61
+	ENDIF
+
+	;欲望をチェックする。欲望が相手の欲望を上回るかどうか。成功なら欲望レベルの２倍、失敗なら１倍入ります。
+	;CBVA売春では、相手の欲望の最大値が4です。
+	IF ABL:ARG:欲望 <= ABL:(ARG:1):欲望
+		LOCAL:7 += ABL:(ARG:1):欲望
+		LOCAL:7 += ABL:(ARG:1):欲望
+	ELSE
+		LOCAL:7 += ABL:(ARG:1):欲望
+	ENDIF
+	
+	;相手からの行動が発生します。相手の技巧がこちらの欲望以下の場合、不満そうな表情が出る可能性があります。
+	;相手の技巧＋こちらの従順の２倍＞こちらの欲望＋２なら、問題なく行為を露出癖と奉仕精神を加える事が出来ます。
+	;足りない場合は加えられません。
+	LOCAL:6 = ABL:ARG:技巧 + ABL:(ARG:1):従順 + ABL:(ARG:1):従順 - 2
+	
+	IF LOCAL:6 >= ABL:(ARG:1):欲望
+		LOCAL:7 += ABL:(ARG:1):奉仕精神
+		LOCAL:7 += ABL:(ARG:1):露出癖
+	ENDIF
+	;ここまでで最大120％
+	SIF LOCAL:7 > 120
+		LOCAL:7 = 120
+		
+	;従順が3LVないと、著しく微妙になります
+	IF ABL:(ARG:1):従順 < 3 && ARG:1 != MASTER
+		LOCAL:7 /= 2
+	ENDIF
+	PRINTFORML 満足度:{LOCAL:7}％
+	FLAG:悪魔満足度 = LOCAL:7
+	
+	;魅了or倒れてしまうとMAGを大量に奪われる
+	IF CFLAG:(ARG:1):ステート == GET_STATE_NUM("DYING") || CFLAG:(ARG:1):ステート == GET_STATE_NUM("CHARM")
+		PRINTFORML ＭＡＧを奪われた！
+		CALL CONTROL_MAG,ARG:1,-1000*MAXBASE:ARG:LV
+		IF CFLAG:(ARG:1):ステート == GET_STATE_NUM("CHARM") && !(CFLAG:(ARG:1):ステート == GET_STATE_NUM("DYING"))
+			PRINTFORMW %CALLNAME:(ARG:1)%はトロンとした目で逢瀬の余韻に浸っている
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORMW %CALLNAME:(ARG:1)%は意識が無いにも拘らず腰を動かしている
+			ELSE
+				PRINTFORMW %CALLNAME:(ARG:1)%は開放されたにも拘らず虚ろな目で自慰をしている
+			ENDIF
+		ENDIF
+		;ＮＴＲペナルティありの場合、倒れてしまうと好感度が10%下がり、淫乱度が上がる
+		;淫ＮＴＲで無い場合、ＮＴＲ判定を行う
+		IF FLAG:ＮＴＲハードモード
+			A = 0
+			$KOUKANDOGENSYOU_LOOP
+			IF !CFLAG:(ARG:1):(2098 - A) == 0
+				SIF CFLAG:(ARG:1):(2098 - A) < 0
+					CFLAG:(ARG:1):(2098 - A) += (CFLAG:(ARG:1):(2098 - A) * (-1)) / 10
+				SIF CFLAG:(ARG:1):(2098 - A) > 0
+					CFLAG:(ARG:1):(2098 - A) -= CFLAG:(ARG:1):(2098 - A) / 10
+			ENDIF
+			A += 1
+			SIF A < 13
+				GOTO KOUKANDOGENSYOU_LOOP
+			CFLAG:(ARG:1):淫乱度 += MAXBASE:ARG:LV * (CFLAG:(ARG:1):本番回数 + CFLAG:(ARG:1):アナル回数)
+			IF !(TALENT:(ARG:1):ＮＴＲ == 2)
+				CFLAG:(ARG:1):淫ＮＴＲ進行度 = 2
+				MARK:(ARG:1):快楽刻印 = 3
+				CALL NTR_CHECK , (ARG:1) , 1
+			ENDIF
+		ENDIF
+
+	ENDIF
+CALL FIGHT_IT_OUT
+RETURN LOCAL:7
+;===================================
+;プレイ回数計算
+;===================================
+@ADD_SEXTALK_PLAY,ARG,ARG:1,ARG:2
+#DIM CHARA , 1
+;ARG = 交渉対象
+;ARG:1 = 宛がわれたキャラ
+;ARG:2 = 0 相手からの要求 1 犯して欲しい 2 やらせて欲しい
+;初期化
+FOR LOCAL,0,2
+	CFLAG:(ARG:LOCAL):挿入回数 = 0
+	CFLAG:(ARG:LOCAL):本番回数 = 0
+	CFLAG:(ARG:LOCAL):アナル回数 = 0
+	CFLAG:(ARG:LOCAL):フェラ回数 = 0
+	CFLAG:(ARG:LOCAL):クリ責め回数 = 0
+	CFLAG:(ARG:LOCAL):胸責め回数 = 0
+NEXT
+
+;対象がペニス付きならフェラ・Ｖ・Ａ増加
+IF HAVE_PENIS(ARG)
+	IF HAVE_VAGINA(ARG:1)
+		CFLAG:ARG:挿入回数 += 1+(3+ABL:(ARG:1):Ｖ感覚)/2
+		CFLAG:(ARG:1):本番回数 += CFLAG:ARG:挿入回数
+	ELSE
+		CFLAG:ARG:挿入回数 += 1+(3+ABL:(ARG:1):Ａ感覚)/2
+		CFLAG:(ARG:1):アナル回数 += CFLAG:ARG:挿入回数
+	ENDIF
+	CFLAG:ARG:挿入回数 += 1+(3+ABL:(ARG:1):Ａ感覚)/2
+	CFLAG:(ARG:1):アナル回数 += CFLAG:ARG:挿入回数 - CFLAG:(ARG:1):本番回数
+	CFLAG:(ARG:1):フェラ回数 += 1+(5+ABL:(ARG:1):奉仕精神)/2
+ELSE
+	CFLAG:(ARG):クリ責め回数 += (6+ ABL:ARG:技巧)/2
+ENDIF
+;仲魔がペニスつきならフェラ・Ｖ・Ａ増加
+IF HAVE_PENIS(ARG:1)
+	IF HAVE_VAGINA(ARG)
+		CFLAG:(ARG:1):挿入回数 += 1+(3+ ABL:ARG:技巧)/2
+		CFLAG:(ARG):本番回数 += CFLAG:(ARG:1):挿入回数
+	ELSE
+		IF TALENT:ARG:オトコ == 0 || ABL:ARG:Ａ感覚 || (ABL:ARG:ＢＬっ気 && TALENT:(ARG:1):オトコ) || TALENT:(ARG:1):男の娘
+			CFLAG:(ARG:1):挿入回数 += 1+(3+ ABL:ARG:技巧)/2
+			CFLAG:(ARG):アナル回数 += CFLAG:(ARG:1):挿入回数 - CFLAG:ARG:本番回数
+		ENDIF
+	ENDIF
+		IF TALENT:ARG:オトコ == 0 || ABL:ARG:Ａ感覚 || (ABL:ARG:ＢＬっ気 && TALENT:(ARG:1):オトコ) || TALENT:(ARG:1):男の娘
+			CFLAG:(ARG:1):挿入回数 += 1+(3+ ABL:ARG:技巧)/2
+			CFLAG:(ARG):アナル回数 += CFLAG:(ARG:1):挿入回数 - CFLAG:ARG:本番回数
+		ENDIF
+	SIF TALENT:ARG:オトコ == 0 || TALENT:ARG:男の娘 || (ABL:ARG:ＢＬっ気 && TALENT:(ARG:1):オトコ)
+		CFLAG:(ARG):フェラ回数 += 1+(5+ ABL:ARG:技巧)/2
+ELSE
+	CFLAG:(ARG:1):クリ責め回数 += (6+ABL:(ARG:1):Ｃ感覚)/2
+ENDIF
+
+
+SIF TALENT:(ARG:1):男の娘 || TALENT:(ARG:1):オトコ == 0
+	CFLAG:(ARG:1):胸責め回数 += (6+ABL:(ARG:1):Ｂ感覚)/2
+SIF TALENT:(ARG):男の娘 || TALENT:(ARG):オトコ == 0
+	CFLAG:ARG:胸責め回数 += (6 + ABL:ARG:技巧)/2
+
+IF !(HAVE_PENIS(ARG) || HAVE_PENIS(ARG:1))
+	TIMES CFLAG:ARG:クリ責め回数 , 2.00
+	TIMES CFLAG:ARG:胸責め回数 , 2.00
+	TIMES CFLAG:(ARG:1):クリ責め回数 , 2.00
+	TIMES CFLAG:(ARG:1):胸責め回数 , 2.00
+ENDIF
+
+SIF TALENT:(ARG:1):処女 && ARG:2 == 0
+	CALL ADDS_ABNORMAL_EXP, "処女喪失（売春）", ARG:1
+
+FOR LOCAL,0,2
+	TCVAR:(ARG:LOCAL):獲得フェラ経験 = CFLAG:(ARG:LOCAL):フェラ回数
+	TCVAR:(ARG:LOCAL):獲得Ｖ経験 = CFLAG:(ARG:LOCAL):本番回数
+	TCVAR:(ARG:LOCAL):獲得Ａ経験 = CFLAG:(ARG:LOCAL):アナル回数
+	TCVAR:(ARG:LOCAL):獲得性交経験 = CFLAG:(ARG:LOCAL):挿入回数 + CFLAG:(ARG:LOCAL):本番回数 + CFLAG:(ARG:LOCAL):アナル回数
+NEXT
+TCVAR:(ARG:1):獲得膣射経験 = CFLAG:(ARG:1):本番回数 * 2
+TCVAR:ARG:獲得絶頂経験 = CFLAG:ARG:挿入回数 + CFLAG:ARG:本番回数 + CFLAG:ARG:アナル回数
+TCVAR:(ARG:1):獲得売春経験 = 1 + TCVAR:(ARG:1):獲得性交経験
+TCVAR:(ARG:1):獲得精液経験 = TCVAR:(ARG:1):獲得性交経験 * 2
+SIF !(TALENT:(ARG:1):獣 || TALENT:(ARG:1):鳥) && (TALENT:ARG:獣 || TALENT:ARG:鳥)
+	TCVAR:(ARG:1):獲得獣姦経験 = TCVAR:(ARG:1):獲得性交経験
+SIF (TALENT:(ARG:1):獣 || TALENT:(ARG:1):鳥) && !(TALENT:ARG:獣 || TALENT:ARG:鳥)
+	TCVAR:ARG:獲得獣姦経験 = TCVAR:ARG:獲得性交経験
+
+;ソースの獲得
+SOURCE:(ARG:1):快Ｃ = CFLAG:(ARG:1):クリ責め回数*25 + CFLAG:ARG:フェラ回数 * 25 + CFLAG:(ARG:1):挿入回数 * 50
+SOURCE:(ARG:1):快Ｖ = CFLAG:(ARG:1):本番回数*50
+SOURCE:(ARG:1):快Ａ += CFLAG:(ARG:1):アナル回数*50
+SOURCE:(ARG:1):快Ｂ += CFLAG:(ARG:1):胸責め回数*25
+SOURCE:(ARG:1):欲情 += TCVAR:(ARG:1):獲得精液経験*5 * (ABL:(ARG:1):精液中毒)
+
+
+;===================================
+;敗北時の処理
+;===================================
+@SEXTALK_LOSE,ARG
+PRINTFORML その後、%CALLNAME:MASTER%は二度と解放される事は無かった……
+JUMP GAME_OVER
+
+;口上呼び出し関数
+@SEX_TALK_COM_MESSAGE,ARG
+IF CFLAG:ARG:PTフラグ == 0
+	TRYCCALLFORM ENEMY_SEXTALK_COM_{NO:ARG}
+	CATCH
+		TRYCCALLFORM ENEMY_SEXTALK_COM_{ABL:ARG:会話タイプ}
+		CATCH
+			TRYCALLFORM SEXTALK_COM_MESSAGE,ARG,ARG:1,0
+		ENDCATCH
+	ENDCATCH
+ELSE
+	TRYCCALLFORM SEXTALK_COM_{NO:(ARG:1)}
+	CATCH
+		TRYCCALLFORM SEXTALK_COM_{ABL:(ARG:1):会話タイプ}
+		CATCH
+			TRYCALLFORM SEXTALK_COM_MESSAGE,ARG,ARG:1,1
+		ENDCATCH
+	ENDCATCH
+ENDIF
+
+
+@SEX_TALK_MESSAGE,ARG
+IF CFLAG:ARG:PTフラグ == 0
+	TRYCCALLFORM ENEMY_SEXTALK_{NO:ARG}
+	CATCH
+		TRYCCALLFORM ENEMY_SEXTALK_{ABL:ARG:会話タイプ}
+		CATCH
+			TRYCALLFORM SEXTALK_MESSAGE,ARG,ARG:1,0
+		ENDCATCH
+	ENDCATCH
+ELSE
+	TRYCCALLFORM SEXTALK_{NO:(ARG:1)}
+	CATCH
+		TRYCCALLFORM SEXTALK_{ABL:(ARG:1):会話タイプ}
+		CATCH
+			TRYCALLFORM SEXTALK_MESSAGE,ARG,ARG:1,1
+		ENDCATCH
+	ENDCATCH
+ENDIF
+
+;===================================
+;探索中の絶頂チェック
+;===================================
+@EX_CHECK_DUNGEON,ARG
+ARG:1 = 0
+SELECTCASE PALAM:ARG:快Ｃ
+	CASE IS > 20000
+		;強絶頂
+		ARG:1 = PALAM:ARG:快Ｃ / 10000
+		PALAM:ARG:欲情 -= 300
+		PALAM:ARG:快Ｃ = 0
+	CASE IS > 10000
+		;強絶頂
+		ARG:1 = 1
+		PALAM:ARG:欲情 -= 250
+		PALAM:ARG:快Ｃ = 0
+ENDSELECT
+SIF HAVE_PENIS(ARG)
+	NOWEX:ARG:射精 += ARG:1
+SIF TALENT:ARG:オトコ == 0
+	NOWEX:ARG:Ｃ絶頂 += ARG:1
+
+SELECTCASE PALAM:ARG:快Ｖ
+	CASE IS > 20000
+		;強絶頂
+		NOWEX:ARG:Ｖ絶頂 += PALAM:ARG:快Ｖ / 10000
+		EX:ARG:Ｖ絶頂 += PALAM:ARG:快Ｖ / 10000
+		PALAM:ARG:欲情 -= 250
+		PALAM:ARG:快Ｖ = 0
+	CASE IS > 10000
+		;強絶頂
+		NOWEX:ARG:Ｖ絶頂 += 1
+		EX:ARG:Ｖ絶頂 += 1
+		PALAM:ARG:欲情 -= 150
+		PALAM:ARG:快Ｖ = 0
+ENDSELECT
+
+SELECTCASE PALAM:ARG:快Ａ
+	CASE IS > 20000
+		;強絶頂
+		NOWEX:ARG:Ａ絶頂 += PALAM:ARG:快Ａ / 10000
+		EX:ARG:Ａ絶頂 += PALAM:ARG:快Ａ / 10000
+		PALAM:ARG:欲情 -= 250
+		PALAM:ARG:快Ａ = 0
+	CASE IS > 10000
+		;強絶頂
+		NOWEX:ARG:Ａ絶頂 += 1
+		EX:ARG:Ａ絶頂 += 1
+		PALAM:ARG:欲情 -= 150
+		PALAM:ARG:快Ａ = 0
+ENDSELECT
+
+SELECTCASE PALAM:ARG:快Ｂ
+	CASE IS > 20000
+		;強絶頂
+		NOWEX:ARG:Ｂ絶頂 += PALAM:ARG:快Ｂ / 10000
+		EX:ARG:Ｂ絶頂 += PALAM:ARG:快Ｂ / 10000
+		PALAM:ARG:欲情 -= 300
+		PALAM:ARG:快Ｂ = 0
+	CASE IS > 10000
+		;強絶頂
+		NOWEX:ARG:Ｂ絶頂 += 1
+		EX:ARG:Ｂ絶頂 += 1
+		PALAM:ARG:欲情 -= 250
+		PALAM:ARG:快Ｂ = 0
+ENDSELECT
+IF TALENT:ARG:母乳体質
+	NOWEX:ARG:噴乳 += NOWEX:ARG:Ｂ絶頂
+	EX:ARG:噴乳 += NOWEX:ARG:Ｂ絶頂
+	TCVAR:ARG:獲得噴乳経験 += NOWEX:ARG:噴乳
+ENDIF
+
+;ＴＳして女になっているキャラがＶ絶頂すると異常経験付与
+SIF NOWEX:ARG:Ｖ絶頂 && EXP:ARG:ＴＳ経験 % 2 == 1 && !IS_MALE(ARG)
+	CALL ADDS_ABNORMAL_EXP , "ＴＳＶ絶頂" , ARG
+
+TCVAR:ARG:獲得絶頂経験 += NOWEX:ARG:Ｃ絶頂 + NOWEX:ARG:Ｖ絶頂 + NOWEX:ARG:Ａ絶頂 + NOWEX:ARG:Ｂ絶頂
+SELECTCASE MAXARRAY(NOWEX:ARG:0)
+	CASE IS > 6
+		TIMES PALAM:ARG:欲情 , 0.35
+	CASE IS > 3
+		TIMES PALAM:ARG:欲情 , 0.50
+	CASE IS > 1
+		TIMES PALAM:ARG:欲情 , 0.65
+	CASE 1
+		TIMES PALAM:ARG:欲情 , 0.80
+ENDSELECT
+SIF PALAM:ARG:欲情 < 0
+	PALAM:ARG:欲情 = 0
+
+;===================================
+;探索中のソースチェック
+;===================================
+@SOURCE_CHECK_DUNGEON, ARG , ARG:1 =  -1
+	FOR LOCAL:2 , 0 , 4
+		SELECTCASE LOCAL:2
+			CASE 0
+				LOCALS = Ｃ
+			CASE 1
+				LOCALS = Ｖ
+			CASE 2
+				LOCALS = Ａ
+			CASE 3
+				LOCALS = Ｂ
+		ENDSELECT
+		SIF TALENT:ARG:(LOCALS + "鈍感")
+			TIMES SOURCE:ARG:("快" + LOCALS) , 0.50
+		SIF TALENT:ARG:(LOCALS + "敏感")
+			TIMES SOURCE:ARG:("快" + LOCALS) , 2.00
+		SELECTCASE ABL:ARG:(LOCALS + "感覚")
+			CASE  0
+				TIMES SOURCE:ARG:("快" + LOCALS) , 0.50
+			CASE  1
+				TIMES SOURCE:ARG:("快" + LOCALS) , 1.80
+			CASE  2
+				TIMES SOURCE:ARG:("快" + LOCALS) , 3.00
+			CASE  3
+				TIMES SOURCE:ARG:("快" + LOCALS) , 5.00
+			CASE  4
+				TIMES SOURCE:ARG:("快" + LOCALS) , 7.00
+			CASE  5
+				TIMES SOURCE:ARG:("快" + LOCALS) , 9.00
+			CASE  6
+				TIMES SOURCE:ARG:("快" + LOCALS) , 11.00
+			CASE  7
+				TIMES SOURCE:ARG:("快" + LOCALS) , 13.00
+			CASE  8
+				TIMES SOURCE:ARG:("快" + LOCALS) , 15.00
+			CASE  9
+				TIMES SOURCE:ARG:("快" + LOCALS) , 17.00
+			CASEELSE
+				TIMES SOURCE:ARG:("快" + LOCALS) , 20.00
+		ENDSELECT
+		SIF TALENT:ARG:男の娘 && (LOCAL:2 == 2 || LOCAL:2 == 3)
+			TIMES SOURCE:ARG:("快" + LOCALS) , 1.50
+		
+		SIF 危険日(ARG) == 2
+			TIMES SOURCE:ARG:("快"+ LOCALS) , 1.80
+		IF LOCAL:2 == 1 || LOCAL:2 == 2
+			;EXP:ARG:経験をみる
+			IF EXP:ARG:(LOCAL:2 -1) < EXPLV:1
+				TIMES SOURCE:ARG:("快"+ LOCALS) , 0.20
+			ELSEIF EXP:ARG:(LOCAL:2 -1) < EXPLV:2
+				TIMES SOURCE:ARG:("快"+ LOCALS) , 0.60
+			ELSEIF EXP:ARG:(LOCAL:2 -1) < EXPLV:3
+				TIMES SOURCE:ARG:("快"+ LOCALS) , 1.00
+			ELSEIF EXP:ARG:(LOCAL:2 -1) < EXPLV:4
+				TIMES SOURCE:ARG:("快"+ LOCALS) , 1.20
+			ELSEIF EXP:ARG:(LOCAL:2 -1) < EXPLV:5
+				TIMES SOURCE:ARG:("快"+ LOCALS) , 1.30
+			ELSEIF EXP:ARG:(LOCAL:2 -1) >= EXPLV:5
+				TIMES SOURCE:ARG:("快"+ LOCALS) , 1.40
+			ENDIF
+			;PALAM:潤滑をみる
+			IF PALAM:ARG:潤滑 < PALAMLV:1
+				TIMES SOURCE:ARG:("快"+ LOCALS) , 0.10
+			ELSEIF PALAM:ARG:潤滑 < PALAMLV:2
+				TIMES SOURCE:ARG:("快"+ LOCALS) , 0.40
+			ELSEIF PALAM:ARG:潤滑 < PALAMLV:3
+				TIMES SOURCE:ARG:("快"+ LOCALS) , 1.00
+			ELSEIF PALAM:ARG:潤滑 < PALAMLV:4
+				TIMES SOURCE:ARG:("快"+ LOCALS) , 1.10
+			ELSEIF PALAM:ARG:潤滑 >= PALAMLV:4
+				TIMES SOURCE:ARG:("快"+ LOCALS) , 1.20
+			ENDIF
+		ENDIF
+		
+		LOCAL = SOURCE:ARG:("快"+ LOCALS)
+
+		;PALAM:欲情をみる
+		IF PALAM:ARG:欲情 < PALAMLV:1
+			TIMES LOCAL , 0.80
+		ELSEIF PALAM:ARG:欲情 < PALAMLV:2
+			TIMES LOCAL , 1.10
+		ELSEIF PALAM:ARG:欲情 < PALAMLV:3
+			TIMES LOCAL , 1.40
+		ELSEIF PALAM:ARG:欲情 < PALAMLV:4
+			TIMES LOCAL , 1.70
+		ELSEIF PALAM:ARG:欲情 >= PALAMLV:4
+			TIMES LOCAL , 2.00
+		ENDIF
+
+		LOCAL:1 = SOURCE:ARG:("快" + LOCALS)
+		;ABL:欲望をみる
+		SELECTCASE ABL:ARG:欲望
+			CASE 0
+				TIMES LOCAL:1 , 0.75
+			CASE 1
+				TIMES LOCAL:1 , 0.80
+			CASE 2
+				TIMES LOCAL:1 , 0.85
+			CASE 3
+				TIMES LOCAL:1 , 0.90
+			CASE 4
+				TIMES LOCAL:1 , 0.95
+			CASE 5
+				TIMES LOCAL:1 , 1.00
+			CASE 6
+				TIMES LOCAL:1 , 1.05
+			CASE 7
+				TIMES LOCAL:1 , 1.10
+			CASE 8
+				TIMES LOCAL:1 , 1.15
+			CASE 9
+				TIMES LOCAL:1 , 1.20
+			CASEELSE
+				TIMES LOCAL:1 , 1.40
+		ENDSELECT
+		;小人体型
+		IF TALENT:ARG:小人体型 && (LOCAL:2 == 1 || LOCAL:2 == 2)
+			TIMES LOCAL , 0.50
+			TIMES LOCAL:1 , 1.50
+		ENDIF
+		CUP:ARG:("快" + LOCALS) += LOCAL
+		CUP:ARG:欲情 += LOCAL:1 / 10
+
+	NEXT
+	;-------------------------------------------------
+	;快感の否定は、快ソースの数値に応じて、抑鬱増加（淫乱、娼婦で無効）
+	;-------------------------------------------------
+	SIF TALENT:ARG:71 && (TALENT:ARG:4 == 0 && TALENT:ARG:7 == 0)
+		SOURCE:ARG:鬱屈 += (CUP:ARG:快Ｃ+UP:1+CUP:ARG:快Ａ+CUP:ARG:快Ｂ)/10
+
+
+	;-------------------------------------------------
+	;陥落素質
+	;-------------------------------------------------
+	;淫乱
+	IF TALENT:ARG:淫乱
+		TIMES CUP:ARG:快Ｃ , 1.20
+		TIMES CUP:ARG:快Ｖ , 1.20
+		TIMES CUP:ARG:快Ａ , 1.20
+		TIMES CUP:ARG:快Ｂ , 1.20
+	ENDIF
+
+	;娼婦
+	IF TALENT:ARG:娼婦
+		TIMES CUP:ARG:快Ｃ , 1.50
+		TIMES CUP:ARG:快Ｖ , 1.50
+		TIMES CUP:ARG:快Ａ , 1.50
+		TIMES CUP:ARG:快Ｂ , 1.50
+	ENDIF
+
+	;-------------------------------------------------
+	;素質
+	;-------------------------------------------------
+	;自制心
+	IF TALENT:ARG:20
+		TIMES CUP:ARG:快Ｃ , 0.70
+		TIMES CUP:ARG:快Ｖ , 0.90
+		TIMES CUP:ARG:快Ａ , 1.00
+		TIMES CUP:ARG:快Ｂ , 0.70
+	ENDIF
+
+	;即落ち
+	IF TALENT:ARG:73
+		TIMES CUP:ARG:快Ｃ , 2.00
+		TIMES CUP:ARG:快Ｖ , 2.00
+		TIMES CUP:ARG:快Ａ , 2.00
+		TIMES CUP:ARG:快Ｂ , 2.00
+	ENDIF
+	;自慰狂い
+	SIF TALENT:ARG:74
+		TIMES CUP:ARG:快Ｃ , 1.20
+	;セックス狂い
+	SIF TALENT:ARG:75
+		TIMES CUP:ARG:快Ｖ , 1.20
+	;尻穴狂い
+	SIF TALENT:ARG:76
+		TIMES CUP:ARG:快Ａ , 1.20
+	;淫乳
+	SIF TALENT:ARG:77
+		TIMES CUP:ARG:快Ｂ , 1.20
+
+	;オトコ
+	IF IS_MALE(ARG)
+		TIMES CUP:ARG:快Ａ , 1.30
+	ENDIF
+
+	;-------------------------------------------------
+	;愛液処理
+	;-------------------------------------------------
+	LOCAL = CUP:ARG:快Ｃ + CUP:ARG:快Ｖ + CUP:ARG:快Ａ + CUP:ARG:快Ｂ
+	;快Ｃ＋快Ｖ＋快Ａ＋快Ｂが合わせて100以上上昇ならその20%の液体のソースが加わる（オトコはダメ）
+	IF LOCAL > 100
+		;濡れやすいと濡れにくいはここで処理
+		SIF TALENT:ARG:42
+			TIMES LOCAL , 3.00
+		SIF TALENT:ARG:43
+			TIMES LOCAL , 0.40
+		CUP:ARG:潤滑 += LOCAL / 5
+	ENDIF
+	;-------------------------------------------------
+	;液体のソース
+	;-------------------------------------------------
+	LOCAL = SOURCE:ARG:液体
+
+	CUP:ARG:潤滑 += SOURCE:ARG:液体
+
+	;-------------------------------------------------
+	;欲情のソース
+	;-------------------------------------------------
+
+	;忠誠度による修正
+	;LOCAL = (BASE:ARG:忠誠度 >= 500 ? LIMIT(BASE:忠誠度*3/4,500,750) # LIMIT(BASE:忠誠度/2,1,500))
+
+	;SOURCE:ARG:欲情 *= LOCAL
+	;SOURCE:ARG:欲情 /= 500
+
+	LOCAL = SOURCE:ARG:欲情
+
+	;欲望を見る
+	SELECTCASE ABL:ARG:欲望
+		CASE 0
+			TIMES LOCAL , 0.10
+		CASE 1
+			TIMES LOCAL , 0.40
+		CASE 2
+			TIMES LOCAL , 0.80
+		CASE 3
+			TIMES LOCAL , 1.20
+		CASE 4
+			TIMES LOCAL , 1.60
+		CASE 5
+			TIMES LOCAL , 2.00
+		CASE 6
+			TIMES LOCAL , 2.40
+		CASE 7
+			TIMES LOCAL , 2.80
+		CASE 8
+			TIMES LOCAL , 3.20
+		CASE 9
+			TIMES LOCAL , 3.60
+		CASEELSE
+			TIMES LOCAL , 5.00
+	ENDSELECT
+		
+	CUP:ARG:欲情 += LOCAL
+IF 危険日(ARG) >= 2
+	CUP:ARG:快Ｃ *= 2
+	CUP:ARG:快Ｖ *= 2
+	CUP:ARG:快Ａ *= 2
+	CUP:ARG:快Ｂ *= 2
+	CUP:ARG:欲情 *= 2
+	CUP:ARG:潤滑 *= 2
+ENDIF
+
+FOR LOCAL , 0 , 20
+	PALAM:ARG:LOCAL += CUP:ARG:LOCAL
+	CUP:ARG:LOCAL = 0
+NEXT
+VARSET SOURCE:ARG:0 , 0
+
+CALL EX_CHECK_DUNGEON,ARG
+

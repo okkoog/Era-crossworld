@@ -1,0 +1,249 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:専用スキル関数.ERB
+;	Facility	:専用スキル用の関数群
+;
+;	Licence		:。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		Jガン					新規作成
+;	002		2022/10/27		P(bazzile)				専用スキルの定義数関数を追加し、数が変わっても追随できるように既存関数を修正
+;													任意のスキルが指定した専用技であるかを確認するための関数を作成
+;	003		2022/11/10		P(bazzile)				PU_SKILL_ADDの配列の指定ミスを修正
+;													不正な専用スキルを修正するための関数としてDEL_BROKEN_PU_SKILLを作成。
+;	004		2022/11/26		P(bazzile)				リンク悪魔を考慮して専用技のCSTRを取得する関数@GET_PU_SKILL_CSTRを追加
+;	005		2022/12/25		P(bazzile)				Aion式召喚術を起動している際に固有スキルの番号取得処理が非常に重くなっていたのを修正
+;	006		2022/12/29		P(bazzile)				指定した番号が専用技の番号であるかどうかを返す関数IS_PU_SKILLNUMを追加
+;													SKILL_NUM_Fを用いていた他の処理もリネームに変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;===============================
+;専用スキルの定義数
+;===============================
+@PU_NUM
+#FUNCTION
+RETURNF 12
+
+;===============================
+;任意の番号が専用スキルの番号であるかどうかを返す
+;ARG   	対象のキャラ番号
+;==============================
+@IS_PU_SKILLNUM, ARG
+#FUNCTION
+RETURNF INRANGE(ARG, [[스킬:전용기1]], [[스킬:전용기1]] + PU_NUM())
+
+;===============================
+;任意のスキルが指定した専用スキルかどうかを返す
+;ARG   	対象のキャラ番号
+;ARG:1	対象のスキル番号
+;ARGS	対象の名称
+;RETURN 成否
+;==============================
+@IS_PU_SKILL, ARG, ARG:1, ARGS
+#FUNCTION
+RETURNF PU_SKILLNUM_GET(ARG, ARGS) == ARG:1 && IS_PU_SKILLNUM(ARG:1)
+
+;===============================
+;対象のキャラクターの入力行動が指定した専用スキルかどうかを返す
+;ARG   	対象のキャラ番号
+;ARGS	対象の名称
+;RETURN 成否
+;==============================
+@IS_PU_SKILL_入力行動, ARG, ARGS
+#FUNCTION
+RETURNF IS_PU_SKILL(ARG, CFLAG:ARG:입력행동, ARGS)
+
+;---- EDIT 004 ADD START -------------------------
+;===============================
+;専用技に対応するCSTRの中身を取得する
+;シフターやAion式召喚術の場合、本人以外のCSTRを見に行かないといけないのでそのフォロー用の関数
+;
+;ARG   		対象のキャラ番号
+;ARG:1		対象の専用技の番号(1~12) もしくは専用スキルの番号
+;RESULTS	専用技の名称
+;==============================
+@GET_PU_SKILL_CSTR, ARG, ARG:1
+#FUNCTIONS
+#DIM LCOUNT
+;デバックモードのスキルカード一覧生成呼び出しなど
+SIF ARG == -1
+	RETURNF "CSTR専用技"
+SIF IS_PU_SKILLNUM(ARG:1)
+	ARG:1 = ARG:1 - [[스킬:전용기1]] + 1
+SIF !INRANGE(ARG:1, 1, PU_NUM())
+	THROW @GET_PU_SKILL_CSTRのARG:1[={ARG:1}]の指定が異常です。
+;汎用悪魔変身中のシフターはリンク悪魔のCSTRを参照する
+SIF TALENT:ARG:데빌시프터 && CFLAG:ARG:악마변신 && CFLAG:ARG:링크캐릭터실제가입시간0 > 0
+	RETURNF CSTR:FINDCHARA_LINK(ARG):@"전용기{ARG:1}"
+;Aion式召喚術はスキルが人間のもの(스킬5~12)ならリンク悪魔のCSTRを参照する
+IF TALENT:ARG:Aion식소환술 && CFLAG:ARG:링크캐릭터실제가입시간0 > 0
+	FOR LCOUNT, 5, CHARA_SKILLCOUNT(ARG) + 1
+		SIF ARG:1 + [[스킬:전용기1]] - 1 == ABL:ARG:@"스킬{LCOUNT}";EDIT 005 MOD
+			RETURNF CSTR:FINDCHARA_LINK(ARG):@"전용기{ARG:1}"
+	NEXT
+ENDIF
+RETURNF CSTR:ARG:@"전용기{ARG:1}"
+;---- EDIT 004 ADD END ---------------------------
+;===============================
+;専用スキルのスキル番号を返す
+;ARG   対象のキャラ
+;ARGS  専用技名
+;==============================
+@PU_SKILLNUM_GET,ARG,ARGS = ""
+#FUNCTION
+#LOCALSIZE 1
+SIF ARGS == ""
+	RETURNF 0
+FOR LOCAL, 0, PU_NUM()
+	;SIF ARGS == CSTR:ARG:("전용기"+TOSTR(LOCAL+1))
+	SIF ARGS == GET_PU_SKILL_CSTR(ARG, LOCAL + 1)
+		RETURNF [[스킬:전용기1]] + LOCAL
+		;RETURNF SKILL_NUM_F("전용기1") + LOCAL
+NEXT
+RETURNF -1
+
+;===============================
+;専用スキルが設定されているかどうか
+;ARG   対象のキャラ
+;ARGS  専用技名
+;ARG:1 専用技の位置を返すかどうか
+;==============================
+@PU_SKILL_CHECK,ARG,ARGS = "",ARG:1 = 0
+#FUNCTION
+#LOCALSIZE 1
+SIF ARGS == ""
+	RETURNF 0
+FOR LOCAL, 0, PU_NUM()
+	;IF CSTR:ARG:("전용기"+TOSTR(LOCAL+1)) == ARGS
+	IF ARGS == GET_PU_SKILL_CSTR(ARG, LOCAL + 1)
+		SIF ARG:1 == 1
+			RETURNF [[스킬:전용기1]] + LOCAL
+		RETURNF 1
+	ENDIF
+NEXT
+RETURNF 0
+
+;===============================
+;専用スキルを設定する
+;ARG   対象のキャラ
+;ARGS  専用技名
+;RETURN 追加できたかどうか
+;==============================
+@PU_SKILL_ADD,ARG,ARGS = ""
+RETURN PU_SKILL_ADD_F(ARG, ARGS)
+
+@PU_SKILL_ADD_F,ARG,ARGS = ""
+#FUNCTION
+#DIM DYNAMIC TEMP
+SIF ARGS == ""
+	RETURNF 0
+SIF FINDELEMENT(CSTR:ARG:0, ARGS, GETNUM(CSTR, "전용기1"), GETNUM(CSTR, "전용기1") + PU_NUM(), 1) >= 0
+	RETURNF 0
+TEMP = FINDELEMENT(CSTR:ARG:0, "", GETNUM(CSTR, "전용기1"), GETNUM(CSTR, "전용기1") + PU_NUM(), 1)
+SIF TEMP < 0
+	RETURNF 0
+CSTR:ARG:TEMP '= ARGS
+DEBUGPRINTFORML CSTR:%CALLNAME:ARG%:%CSTRNAME:TEMP% に %ARGS%をセットしました
+RETURNF 1
+
+;===============================
+;特定の専用スキルを習得しているかどうか
+;ARG   対象のキャラ
+;ARGS  専用技名
+;ARG:1 位置情報を返すかどうか
+;ARGS:1 形態の指定
+;==============================
+@HAVE_PU_SKILL(ARG,ARGS = "",ARG:1 = 0,ARGS:1)
+#FUNCTION
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,ARGS)
+SIF SKILL_NUM < 0
+	RETURNF 0
+RETURNF HAVE_SKILL(ARG,SKILL_NUM,ARG:1,ARGS:1)
+
+;===============================
+;専用スキル習得
+;ARG = 専用スキルを習得するキャラ
+;ARGS = 習得する専用スキル名
+;ARG:1 = 初期変身悪魔習得スキルの場合は真(1)
+;===============================
+@LEARN_PU_SKILL, ARG, ARGS = "", ARG:1, ARGS:1
+#DIM SKILL_NUM
+SIF ARGS == ""
+	RETURN 0
+IF PU_SKILLNUM_GET(ARG,ARGS) >= 0
+	;CSTRはあるがABLがない場合はその番号に習得させる
+	IF HAVE_SKILL(ARG, PU_SKILLNUM_GET(ARG,ARGS))
+		[IF_DEBUG]
+			PRINTFORMW すでに%ARGS%を習得していたため、%ARGS%を覚えられませんでした。
+		[ENDIF]
+		RETURN 0
+	;ABLとCSTRが揃ってる場合は習得済みなので終わる
+	ELSE
+		SKILL_NUM = PU_SKILLNUM_GET(ARG,ARGS)
+	ENDIF
+ELSE
+	;CSTRが存在しない場合は空き番号を探して習得させる
+	CALL PU_SKILL_ADD,ARG,ARGS
+	IF RESULT < 1
+		SIF !(CSTR:ARG:전용기12 == "")
+			PRINT 専用技枠がいっぱいで
+		PRINTFORMW %ARGS%を覚えられませんでした。
+		RETURN 0
+	ENDIF
+	SKILL_NUM = PU_SKILLNUM_GET(ARG, ARGS)
+ENDIF
+CALL LEARN_SKILL,ARG,SKILL_NUM,ARG:1,ARGS:1
+RETURN RESULT
+;===============================
+;異常になってしまった専用スキルを所持スキルから削除するための関数
+;ARG = 専用スキルを習得するキャラ
+;===============================
+@DEL_BROKEN_PU_SKILL, ARG
+#DIM LCOUNT
+#DIM SKILL_NUM
+#DIMS L_PUNAME
+DRAWLINE
+PRINTFORML %CALLNAME:ARG%の専用スキルに異常がないか確認します
+PRINTFORML スキルの専用技Xに対応するCSTRの専用技Xがないか、あるいはその逆のケースで削除を実行しますが
+PRINTFORML 処理に誤りがないか、確認をお願いします。
+DRAWLINE
+FOR LCOUNT, 0 , 20
+	SKILL_NUM = ABL:ARG:@"스킬{LCOUNT+1}"
+	SIF !SKILL_NUM 
+		CONTINUE
+	CALL GET_SKILL_PROP, "SKILL_NAME", SKILL_NUM, ARG
+	PRINTFORM [{LCOUNT, 2}] %RESULTS, 20, LEFT%
+	IF INRANGE(SKILL_NUM, SKILL_NUM_F("전용기1"), SKILL_NUM_F(@"전용기{PU_NUM()}"))
+		PRINTFORML (전용기{SKILL_NUM - SKILL_NUM_F("전용기1") + 1})
+	ELSE
+		PRINTFORML ({SKILL_NUM})
+	ENDIF
+NEXT
+DRAWLINE
+FOR LCOUNT, 0 , PU_NUM()
+	PRINTFORML [{LCOUNT, 2}] CSTR:전용기{LCOUNT+1} = %CSTR:ARG:@"전용기{LCOUNT+1}"%
+NEXT
+WAIT
+FOR LCOUNT, 0, 20
+	SKILL_NUM = ABL:ARG:@"스킬{LCOUNT+1}"
+	SIF !INRANGE(SKILL_NUM, SKILL_NUM_F("전용기1"), SKILL_NUM_F(@"전용기{PU_NUM()}"))
+		CONTINUE
+	SIF CSTR:ARG:@"전용기{SKILL_NUM - SKILL_NUM_F("전용기1")+1}" != ""
+		CONTINUE
+	PRINTFORMW %CALLNAME:ARG%の不正なスキル<전용기{SKILL_NUM - SKILL_NUM_F("전용기1") + 1}>を削除
+	 ABL:ARG:@"스킬{LCOUNT+1}" = 0
+NEXT
+FOR LCOUNT, 0 , PU_NUM()
+	L_PUNAME '= CSTR:ARG:@"전용기{LCOUNT+1}"
+	SKILL_NUM = SKILL_NUM_F(@"전용기{LCOUNT+1}")
+	SIF L_PUNAME == ""
+		CONTINUE
+	SIF HAVE_SKILL(ARG, SKILL_NUM)
+		CONTINUE
+	PRINTFORMW %CALLNAME:ARG%の不正な専用技<%CSTR:ARG:@"전용기{LCOUNT+1}"%>を削除
+	CSTR:ARG:@"전용기{LCOUNT+1}" =
+NEXT
+

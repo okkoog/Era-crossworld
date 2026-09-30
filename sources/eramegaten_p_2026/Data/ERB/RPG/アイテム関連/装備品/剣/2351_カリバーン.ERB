@@ -1,0 +1,147 @@
+﻿;======================================================
+;装備品のデータ
+;칼리번
+;ヒノカグツチの剣のパクリ。攻撃と魔威高め
+;性能の計算は魔晶剣とほぼ同じで、悪魔狩人あなたのステータスの影響を受ける
+;======================================================
+@基本能力修正_2351,ARG,ARG:1 = -1
+#LOCALSIZE 1
+#LOCALSSIZE 1
+SIF ARG:1 == GETCHARA([[キャラ:더미아나타]])
+	LOCAL = GETCHARA([[キャラ:더미아나타]])
+SIF ARG:1 == GETCHARA([[キャラ:당신]])
+	LOCAL = GETCHARA([[キャラ:당신]])
+SIF LOCAL < 0
+	RETURN 0
+SIF ARG:1 < 0
+	RETURN 0
+SIF ARG:1 == GETCHARA([[キャラ:더미아나타]]) || ARG:1 == GETCHARA([[キャラ:당신]]) || (FAVORITE_1(LOCAL) == ARG:1 && 陥落(LOCAL))
+	RETURN BASE:LOCAL:GET_BASESTATUS(ARG) / 10
+RETURN 0
+
+@戦闘能力修正_2351,ARG,ARG:1 = -1
+#LOCALSIZE 3
+LOCAL = GETCHARA([[キャラ:당신]])
+LOCAL:1 = 0
+LOCAL:2 = 40
+;剣のレベル設定。あなたが陥落している場合、あなたのレベルの半分が加算される
+SIF ARG:1 >= 0 && (NO:(ARG:1) == [[キャラ:더미아나타]] || NO:(ARG:1) == [[キャラ:당신]] || (NO:(ARG:1) == [[キャラ:다크서머너_구당신]] && (CFLAG:(ARG:1):당신의전공분야 == 7)) || (LOCAL >=0 && 陥落(LOCAL, ARG:1)))
+	LOCAL:2 += MIN(BASE:(ARG:1):LV / 2, 40)
+LOCAL:2 += 5
+;レベルによる戦闘能力値
+SELECTCASE GET_BATTLESTATUS(ARG)
+	CASE "공격"
+		LOCAL:1 = LOCAL:2 * 3/2
+	CASE "명중"
+		LOCAL:1 = LOCAL:2
+	CASE "마법위력"
+		LOCAL:1 = LOCAL:2 * 3/2
+	CASE "마법효과"
+		LOCAL:1 = LOCAL:2
+ENDSELECT
+;STATUSによる能力値　あなた陥落でステータスによって性能が加算される
+IF ARG:1 >= 0 && (NO:(ARG:1) == [[キャラ:더미아나타]] || NO:(ARG:1) == [[キャラ:당신]] || (NO:(ARG:1) == [[キャラ:다크서머너_구당신]] && (CFLAG:(ARG:1):당신의전공분야 == 7)) || (LOCAL >=0 && 陥落(LOCAL, ARG:1)))
+	SELECTCASE GET_BATTLESTATUS(ARG)
+		CASE "공격"
+			LOCAL:1 +=  BASE:(ARG:1):힘*3/2 + BASE:(ARG:1):내구 / 2
+		CASE "명중"
+			LOCAL:1 += BASE:(ARG:1):속도*3/2 + BASE:(ARG:1):운/2
+		CASE "마법위력"
+			LOCAL:1 += BASE:(ARG:1):마력*3/2 + BASE:(ARG:1):지혜 / 2
+		CASE "마법효과"
+			LOCAL:1 += BASE:(ARG:1):지혜 + BASE:(ARG:1):운/2 + BASE:(ARG:1):마력/2
+	ENDSELECT
+ENDIF
+;剣仕様に変更
+SELECTCASE GET_BATTLESTATUS(ARG)
+	CASE "공격"
+		TIMES LOCAL:1, 1.10
+	CASE "명중"
+		LOCAL:1 += 10
+	CASE "마법위력"
+		TIMES LOCAL:1, 0.90
+	CASE "마법효과"
+		TIMES LOCAL:1, 0.40
+ENDSELECT
+;最低でも40レベル剣の性能は保証される
+SELECTCASE GET_BATTLESTATUS(ARG)
+	CASE "공격"
+		RETURN MAX(107, LOCAL:1)
+	CASE "명중"
+		RETURN MAX(94, LOCAL:1)
+	CASE "마법위력"
+		RETURN MAX(85, LOCAL:1)
+	CASE "마법효과"
+		RETURN MAX(33, LOCAL:1)
+ENDSELECT
+
+@防御相性_2351,ARG,ARG:1 = -1
+SELECTCASE ARG
+ENDSELECT
+RETURN 100
+
+@攻撃相性_2351, ARG = -1
+RETURN GET_TYPE_NUM("검격")
+
+@最低攻撃回数_2351, ARG = -1
+RETURN 1
+
+@最大攻撃回数_2351, ARG = -1
+RETURN 1
+
+@射程_2351, ARG = -1
+RETURN 1
+
+@攻撃範囲_2351, ARG = -1
+RETURN 1
+
+@装備箇所_2351
+RETURN GET_EQUIPNUM("검")
+
+@装備追加スキル_2351,ARG,ARG:1 = -1
+;IF ARG:1 > -1
+;	SELECTCASE ARG
+;		CASE 0
+;			SIF (NO:ARG == 0 || NO:ARG == キャラ:다크서머너_구당신 || NO:ARG == キャラ:당신) && (CFLAG:MASTER:당신의전공분야 == 7)
+;				RETURN [[스킬:데빌트리거]]
+;	ENDSELECT
+;ENDIF
+RETURN 0
+
+;-----------------------------
+;- ショップ
+;-----------------------------
+@購入条件_2351
+RETURN 0
+
+@必要レベル_2351
+RETURN 1
+
+@最大所持数_2351
+RETURN 1
+
+@装備条件_2351,ARG
+SIF (NO:ARG == [[キャラ:더미아나타]] || NO:ARG == [[キャラ:당신]]) && (CFLAG:MASTER:당신의전공분야 == 7)
+	RETURN 1
+SIF NO:ARG == [[キャラ:다크서머너_구당신]] && (CFLAG:ARG:당신의전공분야 == 7)
+	RETURN 1
+SIF TALENT:ARG:석세서 == 0
+	RETURN 0
+;SIF TALENT:ARG:무기 == 0
+;	RETURN 0
+RETURN 1
+
+@装備条件説明_2351
+;PRINTL 装備条件：悪魔狩人あなた専用
+PRINTL 장비 조건: [석세서] 또는 악마사냥꾼 당신
+
+@装備解説_2351
+PRINTL 모 교단에 소속된 일반 검사용으로 양산된 대검.
+
+@引継ぎ可不可_2351
+RETURN 1
+
+@剣タイプ_2351
+;1 = 刀　2 =레이피어　3 = 弓　　　　4 = 검　5 = 槍　　　6 = 斧、鈍器
+;7 = 채찍　8 =投具　　　9 = 杖、祭具　10= 棍　11= 拳闘具
+RETURN 4

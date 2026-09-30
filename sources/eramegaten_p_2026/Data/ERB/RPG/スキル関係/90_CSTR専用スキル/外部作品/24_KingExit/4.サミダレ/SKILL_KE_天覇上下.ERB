@@ -1,0 +1,121 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_KE_天覇上下, ARG
+	RESULTS = 天覇上下
+
+;　명중
+@SKILL_HITRATE_KE_天覇上下, ARG
+RETURN 999
+
+;　威力
+@SKILL_POWER_KE_天覇上下, ARG
+RETURN 500
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_KE_天覇上下, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_KE_天覇上下, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_KE_天覇上下, ARG
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 100
+	RETURN 1
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_KE_天覇上下, ARG
+IF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 100
+	RESULTS = %"100ＴＰ"%
+	RETURN 0
+ENDIF
+RETURN 20
+
+;　相性
+@SKILL_TYPE_KE_天覇上下, ARG
+RETURN GET_TYPE_NUM("타격")
+;타격
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_KE_天覇上下
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_KE_天覇上下, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_KE_天覇上下, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_KE_天覇上下, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_KE_天覇上下, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_KE_天覇上下, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_KE_天覇上下, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_KE_天覇上下
+RETURN 0
+
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_KE_天覇上下, ARG = -1, ARG:1 = -1
+RETURN 4
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_KE_天覇上下, ARG, ARG:1, SKILL_NUM
+#LOCALSIZE 4
+#DIM SKILL_NUM
+
+;Fゲージ再回収できる様に起動前にTP100消費。
+CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", 100, "-="
+
+CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_KE_天覇上下, ARG
+PRINTL 
+PRINTL 무국 야마토의 창시자가 엮어낸 결전 오의 『천패상하』.
+PRINTL 타격 내성・반사・흡수를 무시하고 적 단체에 특대 위력의 필중 물리 공격을 가한다.
+PRINTL 
+PRINTL 무국 야마토 여왕 사미다레의 스킬(CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_KE_天覇上下, ARG
+;ゲージが100のときのみ
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 100
+	RETURN 0
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_KE_天覇上下, ARG
+RESULTS:0 = 타격 내성・반사・흡수를 무시하고 적 단체에 특대 위력의 필중 물리 공격을 가한다.
+RESULTS:1 = TP消費 100
+SIF ARG >= 0 && GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 100
+	RESULTS:1 = %RESULTS:1%(不足)

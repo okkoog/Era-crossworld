@@ -1,0 +1,161 @@
+﻿;
+;スキル名
+@SKILL_NAME_2567,ARG
+RESULTS = 백화요란
+
+;　명중
+@SKILL_HITRATE_2567, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2567, ARG
+RETURN 200
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2567,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2567,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2567, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2567,ARG
+RETURN 40
+
+@SKILL_TYPE_2567,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2567
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2567, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2567, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2567,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2567,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2567, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입,継承不能
+@SKILL_SUCCESSION_TYPE_2567
+RETURN GET_SUCCESSION_NUM("만능")
+;속도보정
+@SKILL_SPEED_2567, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2567
+RETURN 0
+
+;スキル変化？用ランク,もちろん不可
+@SKILL_RANK_2567, ARG = -1
+RETURN 15
+
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_2567,ARG
+RETURN 0
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_2567,ARG
+RETURN 0
+
+;基礎値高いけど上限は低め
+@SKILL_ADDTIONAL_BASE_RATE_2567,ARG
+RETURN 0
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_2567,ARG
+RETURN 0
+
+@敵専用_2567
+RETURN 1
+
+
+;====================================================
+;ダメージ発動時
+;ARG:0	行動者のキャラ番号
+;ARG:1	対象のキャラ番号
+;ARG:2	1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;
+;備考:標準の追加効果付与はblock・吸収の場合は発動しない。
+;====================================================
+@SKILL_DAMAGE_EFFECT_2567, ARG, ARG:1, ARG:2
+SIF ARG:1 < 0
+	RETURN 0
+;無効以下では発動しない
+SIF ARG:2 <= -2
+	RETURN 0
+CALL SKILL_SET_カジャンダ, ARG, ARG:1, "공격_마법위력_명중", -4, "短縮"
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2567, ARG, ARG:1, ARG:2
+CALL ATTACK_FIELD, ARG, ARG:1, 2567
+;IF CFLAG:ARG:포지션 < 7
+;	LOCAL:1 = 7
+;	LOCAL:2 = 17 
+;ELSE
+;	LOCAL:1 = 1
+;	LOCAL:2 = 7
+;ENDIF
+;FOR LOCAL, LOCAL:1, LOCAL:2
+;	LOCALS = 포지션{LOCAL}
+;	SIF FLAG:LOCALS < 0
+;		CONTINUE
+;	SIF GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) == "DYING"
+;		CONTINUE
+;	CFLAG:ARG:타겟 = LOCAL
+;	LOCAL:3 = BASE:(FLAG:LOCALS):ＨＰ
+;	CALL ATTACK_SINGLE, ARG, FLAG:LOCALS, 2567
+;	IF FLAG:LOCALS > 0 && LOCAL:3 > BASE:(FLAG:LOCALS):ＨＰ && GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) != "DYING"
+;		PRINTFORMW 　　TARGET:[{LOCAL,2}] %CALLNAME:(FLAG:LOCALS),20,LEFT%　>>>>>>　攻撃力と魔法威力と命中を下げた！
+;		CFLAG:(FLAG:LOCALS):명중강화 -= 4
+;		SIF CFLAG:(FLAG:LOCALS):명중강화 < -16
+;			CFLAG:(FLAG:LOCALS):명중강화 = -16
+;		CFLAG:(FLAG:LOCALS):공격강화 -= 4
+;		SIF CFLAG:(FLAG:LOCALS):공격강화 < -16
+;			CFLAG:(FLAG:LOCALS):공격강화 = -16
+;		CFLAG:(FLAG:LOCALS):마법위력강화 -= 4
+;		SIF CFLAG:(FLAG:LOCALS):마법위력강화 < -16
+;			CFLAG:(FLAG:LOCALS):마법위력강화 = -16
+;	ENDIF
+;NEXT
+;CFLAG:ARG:타겟 = CFLAG:ARG:포지션 < 7 ? 22 # 19
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2567, ARG
+PRINTL 적 전체에 만능 속성의 데미지를 주고、명중・공격・마법위력을 낮춘다
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2567,ARG
+RETURN 1
+;とくにない
+

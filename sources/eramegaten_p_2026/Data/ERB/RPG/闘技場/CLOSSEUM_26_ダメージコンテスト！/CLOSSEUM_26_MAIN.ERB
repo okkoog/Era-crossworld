@@ -1,0 +1,1757 @@
+﻿;---------------------------------------------------------------------------------------------------------------------------------
+;데미지콘테스트！
+;サンドバッグの敵に攻撃を加えてダメージコンテストを行う闘技場イベントです。
+;また、レベル・耐性・敵の種類・使用してくるスキルを指定した敵を用意することで
+;耐性・弱点持ちの敵相手へのダメージを確認したり、逆に敵に任意のスキルを使用させたりのテストもできるよ！
+;上記目的に沿っていただければどなたでも追記・修正大歓迎です。
+
+;更新日時　　　更新者				更新内容
+;2021/06/25　　ロッド@カヤノソト	以下の3つのレギュレーションを作成。
+;										・1ターンのダメージで競争
+;										・5ターンのダメージで競争
+;									バフ・デバフ等の準備し放題で競争(ダメージが最初に発生したターンのみ測定)
+;2021/08/31　　	ロッド@カヤノソト	以下の4点の修正を実施
+;										・イベントバトル(犬を連れた少年)を強制バトルから任意バトルに変更
+;										・ダメージコンテストに参加せず、戦闘テストなどの場合はコロシアム参加済みにならないように変更
+;										・ダメージコンテストなどの終了後に全員全回復する処理を追加
+;										・PTメンバーを入れ替えることができる機能を追加
+;2022/01/04　　	ロッド@カヤノソト	次の2点の微調整を実施	①測定器に即死と石化以外の状態異常が通るようにする(状態異常を利用してダメージを伸ばせるように)　②ダメコン本編では戦闘難易度をNORMALで固定する (戦闘テストなどダメコン以外の要素は変更なし)
+;---------------------------------------------------------------------------------------------------------------------------------
+
+
+;====================
+;条件
+;====================
+@GET_COLOSSEUM_NAME_26
+#FUNCTIONS
+RESULTS_F '= "ダメージコンテスト"
+RETURNF RESULTS_F
+
+@PLAYABLE_COLOSSEUM_26
+IF (ANALYZE_COUNT_CHECK(1, 100, 100, 1, 999, -1) >= 100 && BASE:MASTER:LV >= 50) || FLAG:DEBUG
+	RESULTS = 데미지콘테스트！
+	RETURN 1
+ENDIF
+
+;====================
+;内容
+;====================
+@COLOSSEUM_26
+
+;-------------
+;変数定義
+;-------------
+;指定されたレベル
+#DIM SELECT_LEVEL
+
+;属性を指定するかどうかのフラグ
+#DIM SELECT_TAISEI_FLG
+
+;指定された属性耐性。順番に([0]검격, [1]비구, [2]타격, [3]전술, [4]화염, [5]빙결, [6]전격, [7]충격, [8]신경, [9]정신, [10]파마, [11]주살, [12]지변, [13]수격, [14]질풍, [15]중력, [16]핵열, [17]만능)
+#DIM SELECT_TAISEI, 18
+
+;耐性値を変更する属性の番号。上記の属性耐性の番号(0～17)に対応
+#DIM SELECT_ZOKUSEI_NUM
+
+;呼び出すキャラクター番号
+#DIM SELECT_CHARACTOR_NUM
+
+;呼び出すキャラクターの名称
+#DIMS SELECT_CHARACTOR_NAME
+
+;使用してくるスキルを指定するかどうかのフラグ
+#DIM SELECT_SKILL_FLG
+
+;使用してくるスキルの番号
+#DIM SELECT_SKILL_NO
+
+;使用してくるスキルの名称
+#DIMS SELECT_SKILL_NAME
+
+;挑戦可能な特殊イベントの数
+#DIM SPECIAL_EVENT_COUNT
+
+;-------------
+;定数定義
+;-------------
+;コンテスト用の敵キャラのレベル
+#DIM CONST CONTEST_LEVEL = 30
+
+;コンテスト用の敵キャラの耐性。順番に([0]검격, [1]비구, [2]타격, [3]전술, [4]화염, [5]빙결, [6]전격, [7]충격, [8]신경, [9]정신, [10]파마, [11]주살, [12]지변, [13]수격, [14]질풍, [15]중력, [16]핵열, [17]만능)
+#DIM CONST CONTEST_TAISEI, 18 = 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100
+
+
+;-------------
+;変数の値を初期化
+;-------------
+;指定されたレベル
+SELECT_LEVEL = 30
+
+;属性を指定するかどうかのフラグ
+SELECT_TAISEI_FLG = 0
+
+;指定された属性耐性。順番に([0]검격, [1]비구, [2]타격, [3]전술, [4]화염, [5]빙결, [6]전격, [7]충격, [8]신경, [9]정신, [10]파마, [11]주살, [12]지변, [13]수격, [14]질풍, [15]중력, [16]핵열, [17]만능)
+SELECT_TAISEI = 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100
+
+;呼び出すキャラクター番号
+SELECT_CHARACTOR_NUM = 517
+
+;呼び出すキャラクターの名称
+SELECT_CHARACTOR_NAME = %CSVCALLNAME(SELECT_CHARACTOR_NUM)%
+
+;使用してくるスキルを指定するかどうかのフラグ
+SELECT_SKILL_FLG = 0
+
+;使用してくるスキルの番号
+SELECT_SKILL_NO = 701
+
+;挑戦可能な特殊イベントの数
+SPECIAL_EVENT_COUNT = 0
+
+;ダメージコンテストに参加したかどうかのフラグ
+;※テスト戦闘のみの場合、その日のコロシアム参加が終了していない扱いとする。
+ATTEND_CONTEST_FLG = 0
+
+;-------------
+;ここから本処理
+;-------------
+DRAWLINE
+PRINTFORML    -----------------------------------------------------------------------------------------------------
+PRINTFORML   | ┏━━┓┏┳┓  ┏┓┏┓            ┏━┓┏┓┏┳┓┏━━┓┏━┓┏┓┏━━┓┏━━┓  ┏┓    ┏┓|
+PRINTFORML   | ┃┏┓┃┃┃┃  ┃┗┛┃            ┗━┛┃┃┃┃┃┗━┓┃┗━┛┃┃┗━━┛┗━┓┃  ┃┃    ┃┃|
+PRINTFORML   | ┃┗┛┃┗┻┛  ┗┓  ┗┓┏━━━┓┏━┓┃┃┗┻┛    ┃┃      ┃┃┏━━┓  ┏┛┗┓┃┗━┓┃┃|
+PRINTFORML   | ┃┏┓┃        ┏┛┏┓┃┗━━━┛┗━┛┃┃          ┃┃    ┏┛┃┗┓┏┛  ┃┏┓┃┃┏━┛┗┛|
+PRINTFORML   | ┗┛┃┃      ┏┛┏┛┗┛          ┏━━┛┃      ┏━┛┃┏━┛┏┛┏┛┃  ┏┛┃┃┃┃┃    ┏┓|
+PRINTFORML   |     ┗┛      ┗━┛                ┗━━━┛      ┗━━┛┗━━┛  ┗━┛  ┗━┛┗┛┗┛    ┗┛|
+PRINTFORML    -----------------------------------------------------------------------------------------------------
+PRINTFORML                                    ＿＿
+PRINTFORML                                   / jjjj           ＿＿
+PRINTFORML                                 ／  タ            (!!!_ヽ
+PRINTFORML                               ,/    ﾉ              ~`､  ＼          ＿
+PRINTFORML                               `､   `ヽ.    ∧＿∧   ,‐'`ﾉ        ／  `j
+PRINTFORML          ∧＿∧                 ＼    `ヽ(´･ω･｀)".ノ／       ／  /`ｰ'
+PRINTFORML         (´･ω･｀)￣"⌒ヽ        ｀､ヽ.    ｀`Y"     r'       〈   `ヽ
+PRINTFORML        ／） ヽ'  ／    ､ `､        ｉ. ､     ￥     ﾉ           `､    ヽ∧＿∧
+PRINTFORML      γ  --‐  '       λ.  ;       `､` -‐´;｀ー.ｲ              〉     ´･ω）       ,-､、
+PRINTFORML      ｆ    ､  ヾ     ／      ）      ｉ 彡  ｉ  ミ/              / ノ     ￣⌒ヽ     「    〉
+PRINTFORML       !   ﾉヽ､._,  ／   _,.'"        ｉ          (              ﾉ    ' L         `ヽ.／   /
+PRINTFORML       |  ￣`ｰ-`ヽ〈   <_  ヽ.       ／           `＼          ／  , '       ノ＼    ´   /
+PRINTFORML       !､＿＿,,,    ＼_,ソ  ﾉ       /      ／ヽ、    ヽ.     （         ∠_      ヽ､＿,／
+PRINTFORML
+PRINTFORML
+PRINTFORML 화력이야말로 사나이의 로망！ 오라、완력을 자랑하는 맹자들이여！
+PRINTFORML 이곳에서는 측정기에 공격을 가해 피해량을 겨루는 경기를 개최하고 있다。
+PRINTFORML 또한 연습용으로 다양한 레벨・내성의 상대와의 전투 테스트도 서비스로 진행하고 있다네。
+PRINTFORML
+PRINTFORML 부디 그 힘을 보여 다오！
+PRINTFORML
+WHILE 1
+	;挑戦可能な特殊イベントを集計する
+	SPECIAL_EVENT_COUNT = ADD_UP_SPECIAL_EVENT()
+	PRINTFORML [  1] 데미지 콘테스트에 참가한다
+	PRINTFORML [  2] 전투 테스트를 하고 싶다
+	PRINTFORML [  3] 특수 이벤트(현재 {SPECIAL_EVENT_COUNT}건)
+	PRINTFORML [  9] 파티 멤버를 교체
+	PRINTFORML [100] 그만둔다
+	$MENU_TOP_INPUT_LOOP
+	INPUT
+	IF RESULT == 1
+		;------------------
+		;데미지콘테스트
+		;------------------
+		SELECT_TAISEI = CONTEST_TAISEI
+		DRAWLINE
+		PRINTFORML
+		PRINTFORML 오옷！ 미래의 챔피언！
+		PRINTFORML 데미지 콘테스트는 몇 가지 규정이 있다네。
+		PRINTFORML 참고로 DEVIL CO-OP의 추가 피해는 무효이므로 주의해 주게。
+		PRINTFORML 어느 것에 참가하겠나？
+		PRINTFORML
+		PRINTFORML ※측정기는 반드시 HP가 1 남습니다。오버킬 분량의 피해도 산출됩니다。
+		PRINTFORML ※상태이상은 모두 무효입니다。
+		PRINTFORML
+		WHILE 1
+			$DAMAGE_CONTEST
+			;ランキング作成処理(あなたの最高得点に応じて、順位の作成を行う)
+			CALL COLOSSEUM_26_GET_RANK
+			;ランキング一位達成時のご褒美イベント
+			CALL COLOSSEUM_26_RANKING_EVENT
+
+			PRINTFORML [  0] 랭킹 표시
+			PRINTFORML [  1] 1턴 피해량으로 경쟁
+			PRINTFORML [  2] 5턴 피해량으로 경쟁
+			PRINTFORML [  3] 무제한 준비 후 경쟁(피해가 최초 발생한 턴만 측정)
+			PRINTFORML [100] 그만둔다
+			$DAMAGE_CONTEST_INPUT_LOOP
+			INPUT
+			IF RESULT == 0
+				WHILE 1
+					;------------------
+					;ランキング表示
+					;------------------
+					DRAWLINE
+					PRINTFORML 현재 랭킹은 다음과 같다！
+					PRINTFORML 
+					DRAWLINE
+					;ランキングを表示する
+					CALL COLOSSEUM_26_DISPLAY_RANK
+					DRAWLINE
+
+					;選択画面に戻る
+					BREAK
+				WEND
+			ELSEIF RESULT == 1
+				COLOSSEUM_26_REGULATION_NO = 1
+				WHILE 1
+					;------------------
+					;レギュレーション1
+					;------------------
+					;1ターンのダメージで競争
+					DRAWLINE
+					PRINTFORML 여기서는 1턴 동안 총공격을 펼쳐 측정기에 입힌 피해를 겨룬다네。
+					PRINTFORML 파티 구성이나 레벨・스킬은 일체 불문이다。
+					PRINTFORML 선제필승！ 속공으로 피해를 입혀라！
+					PRINTFORML
+					PRINTFORML 준비는 되었는가？
+					PRINTFORML
+					PRINTFORML [  0] 참가한다
+					PRINTFORML [100] 그만둔다
+					PRINTFORML
+					$REGULATION1_INPUT_LOOP
+					INPUT
+					IF RESULT == 0
+						;ダメージコンテストの戦闘開始
+						;戦闘処理の関数を呼び出す
+						CALL COLOSSEUM_26_BATTLE, SELECT_CHARACTOR_NUM, CONTEST_LEVEL, 1, SELECT_TAISEI, 0, SELECT_SKILL_NO
+						BREAK
+
+					ELSEIF RESULT == 100
+						;選択画面に戻る
+						DRAWLINE
+						BREAK
+
+					ELSE
+						;入力ミスのためやり直し
+						GOTO REGULATION1_INPUT_LOOP
+					ENDIF
+					DRAWLINE
+				WEND
+			ELSEIF RESULT == 2
+				COLOSSEUM_26_REGULATION_NO = 2
+				WHILE 1
+					;------------------
+					;レギュレーション2
+					;------------------
+					;5ターンのダメージで競争
+					DRAWLINE
+					PRINTFORML 여기서는 5턴 동안 총공격을 펼쳐 측정기에 입힌 피해를 겨룬다네。
+					PRINTFORML 타루・카쟈 등의 보조 마법도 유효하다네。
+					PRINTFORML 파티 멤버들의 종합력을 보여 다오！
+					PRINTFORML
+					PRINTFORML 준비는 되었는가？
+					PRINTFORML
+					PRINTFORML [  0] 참가한다
+					PRINTFORML [100] 그만둔다
+					PRINTFORML
+					$REGULATION2_INPUT_LOOP
+					INPUT
+					IF RESULT == 0
+						;ダメージコンテストの戦闘開始
+						;戦闘処理の関数を呼び出す
+						CALL COLOSSEUM_26_BATTLE, SELECT_CHARACTOR_NUM, CONTEST_LEVEL, 1, SELECT_TAISEI, 0, SELECT_SKILL_NO
+						BREAK
+
+					ELSEIF RESULT == 100
+						;選択画面に戻る
+						DRAWLINE
+						BREAK
+
+					ELSE
+						;入力ミスのためやり直し
+						GOTO REGULATION2_INPUT_LOOP
+					ENDIF
+					DRAWLINE
+				WEND
+
+			ELSEIF RESULT == 3
+				COLOSSEUM_26_REGULATION_NO = 3
+				WHILE 1
+					;------------------
+					;レギュレーション3
+					;------------------
+					;準備し放題で競争(ダメージが最初に発生したターンのみ測定)
+					DRAWLINE
+					PRINTFORML 여기서는 원하는 만큼 준비를 마친 뒤 측정기에 입힌 피해를 겨룬다네。
+					PRINTFORML 측정기를 때리지 않는 한 몇 턴이든 태세를 정비해도 좋다네。
+					PRINTFORML 최대 화력이야말로 남자의 로망！ 자네는 몇 자릿수의 피해를 뿜어낼 수 있을 것인가！？
+					PRINTFORML
+					PRINTFORML 준비는 되었는가？
+					PRINTFORML
+					PRINTFORML [  0] 참가한다
+					PRINTFORML [100] 그만둔다
+					PRINTFORML
+					$REGULATION3_INPUT_LOOP
+					INPUT
+					IF RESULT == 0
+						;ダメージコンテストの戦闘開始
+						;戦闘処理の関数を呼び出す
+						CALL COLOSSEUM_26_BATTLE, SELECT_CHARACTOR_NUM, CONTEST_LEVEL, 1, SELECT_TAISEI, 0, SELECT_SKILL_NO
+						BREAK
+
+					ELSEIF RESULT == 100
+						;選択画面に戻る
+						DRAWLINE
+						BREAK
+
+					ELSE
+						;入力ミスのためやり直し
+						GOTO REGULATION3_INPUT_LOOP
+					ENDIF
+					DRAWLINE
+				WEND
+
+			ELSEIF RESULT == 100
+				;選択画面に戻る
+				PRINTFORML
+				DRAWLINE
+				BREAK
+
+			ELSE
+				;入力ミスのためやり直し
+				GOTO DAMAGE_CONTEST_INPUT_LOOP
+			ENDIF
+		WEND
+
+	ELSEIF RESULT == 2
+		;-------------
+		;전투테스트
+		;-------------
+		COLOSSEUM_26_REGULATION_NO = 0
+		DRAWLINE
+		PRINTFORML 이곳은 전투 테스트용 시설이다。
+		PRINTFORML 레벨・내성・적의 종류・적의 스킬을 설정하여 전투할 수 있다네。
+		PRINTFORML 그 대신 경험치와 MAG는 얻을 수 없으며、동료마 권유도 금지되어 있다네。
+		PRINTFORML
+		PRINTFORML 그럼 싸우고 싶은 상대를 지정해 주게。
+		PRINTFORML
+		WHILE 1
+			PRINTFORML [  1] 레벨을 지정한다(현재 {SELECT_LEVEL}레벨)
+			IF SELECT_TAISEI_FLG
+				;属性耐性を設定している場合
+				PRINTFORML [  2] 내성을 지정한다(현재는 속성 내성 설정 있음)
+
+			ELSE
+				;属性耐性を設定していない場合
+				PRINTFORML [  2] 내성을 지정한다(현재는 기본값)
+			ENDIF
+
+			IF FLAG:DEBUG
+				PRINTFORML [  3] 실체화할 인간・악마를 지정한다(현재는 「{SELECT_CHARACTOR_NUM}:%SELECT_CHARACTOR_NAME%」 지정)
+				IF SELECT_SKILL_FLG
+					;属性耐性を設定している場合
+					PRINTFORML [  4] 적이 사용할 스킬을 지정한다(현재는 「{SELECT_SKILL_NO}:%SELECT_SKILL_NAME%」 지정)
+
+				ELSE
+					;属性耐性を設定していない場合
+					PRINTFORML [  4] 적이 사용할 스킬을 지정한다(현재는 기본값)
+				ENDIF
+			ENDIF
+
+			DRAWLINE
+			PRINTFORML [  0] 현재 설정으로 실체화한다
+			PRINTFORML [100] 그만둔다
+			$TEST_BATTLE_INPUT_LOOP
+			INPUT
+			IF RESULT == 1
+				;---------------------
+				;レベルを画面から入力
+				;---------------------
+				DRAWLINE
+				PRINTFORML 적의 레벨을 지정해 주십시오。(1～200)
+				PRINTFORML [1000]그만둔다
+				$INPUT_LOOP_LEVEL
+				INPUT
+				IF RESULT == 1000
+					;選択画面に戻る
+					PRINTFORML 
+					DRAWLINE
+
+				ELSEIF RESULT >= 1 && RESULT <= 200
+					;入力されたレベルを取得する
+					SELECT_LEVEL = RESULT
+					PRINTFORMW 레벨을 {SELECT_LEVEL}(으)로 설정했다。
+					PRINTFORML
+					DRAWLINE
+
+				ELSE
+					;入力ミスのためやり直し
+					GOTO INPUT_LOOP_LEVEL
+				ENDIF
+
+			ELSEIF RESULT == 2
+				;--------------------
+				;耐性を画面から入力
+				;--------------------
+				DRAWLINE
+				SELECT_TAISEI_FLG = 1
+				WHILE 1
+					PRINTFORML 내성을 변경할 속성을 지정해 주십시오。
+					PRINTFORML [  1]剣撃耐性(現在{SELECT_TAISEI:0})　[  2]飛具耐性(現在{SELECT_TAISEI:1})　[  3]打撃耐性(現在{SELECT_TAISEI:2})　[  4]戦技耐性(現在{SELECT_TAISEI:3})
+					PRINTFORML
+					PRINTFORML [  5]火炎耐性(現在{SELECT_TAISEI:4})　[  6]氷結耐性(現在{SELECT_TAISEI:5})　[  7]電撃耐性(現在{SELECT_TAISEI:6})　[  8]衝撃耐性(現在{SELECT_TAISEI:7})
+					PRINTFORML
+					PRINTFORML [  9]神経耐性(現在{SELECT_TAISEI:8})　[ 10]精神耐性(現在{SELECT_TAISEI:9})　[ 11]破魔耐性(現在{SELECT_TAISEI:10})　[ 12]呪殺耐性(現在{SELECT_TAISEI:11})
+					PRINTFORML
+					PRINTFORML [ 13]地変耐性(現在{SELECT_TAISEI:12})　[ 14]水撃耐性(現在{SELECT_TAISEI:13})　[ 15]疾風耐性(現在{SELECT_TAISEI:14})　[ 16]重力耐性(現在{SELECT_TAISEI:15})
+					PRINTFORML
+					PRINTFORML [ 17]核熱耐性(現在{SELECT_TAISEI:16})　[ 18]万能耐性(現在{SELECT_TAISEI:17})
+					PRINTFORML
+					DRAWLINE
+					PRINTFORML [  0]設定完了
+					PRINTFORML [100] 그만둔다(속성 설정을 기본값으로 돌린다)
+					$INPUT_LOOP_ZOKUSEI_SELECT
+					INPUT
+					IF RESULT == 100
+						;選択画面に戻る
+						SELECT_TAISEI_FLG = 0
+						SELECT_TAISEI = CONTEST_TAISEI
+						PRINTFORMW 내성 수치를 기본값으로 되돌렸다。
+						PRINTFORML
+						DRAWLINE
+						BREAK
+
+					ELSEIF RESULT >= 1 && RESULT <= 18
+						;属性耐性の値を入力する
+						DRAWLINE
+						SELECT_ZOKUSEI_NUM = RESULT - 1
+						PRINTFORML 내성의 강약을 지정해 주십시오。(400～101: 약점  100: 보통  99～1: 내성  0: 무효  -1～-100: 흡수  999: 반사)
+						PRINTFORML [1000]그만둔다
+						$INPUT_LOOP_ZOKUSEI_NUM
+						INPUT
+						IF RESULT == 1000
+							;属性選択画面に戻る
+							DRAWLINE
+
+						ELSEIF RESULT >= -100 && RESULT <= 400
+							;入力された属性値を取得する
+							SELECT_TAISEI:SELECT_ZOKUSEI_NUM = RESULT
+							PRINTFORMW 내성 수치를 {SELECT_TAISEI:SELECT_ZOKUSEI_NUM}(으)로 설정했다。
+							DRAWLINE
+							PRINTFORML
+
+						ELSEIF RESULT == 999
+							;999(反射)の場合の値を取得する
+							SELECT_TAISEI:SELECT_ZOKUSEI_NUM = RESULT
+							PRINTFORMW 내성 수치를 {SELECT_TAISEI:SELECT_ZOKUSEI_NUM}(으)로 설정했다。
+							PRINTFORML
+							DRAWLINE
+
+						ELSE
+							;入力ミスのためやり直し
+							GOTO INPUT_LOOP_ZOKUSEI_NUM
+						ENDIF
+						;属性選択画面に戻る
+						PRINTFORML 
+
+					ELSEIF RESULT == 0
+						;属性耐性の指定を決定する
+						PRINTFORMW 속성 내성을 결정했다。
+						PRINTFORML
+						SELECT_TAISEI_FLG = 1
+						DRAWLINE
+						BREAK
+
+					ELSE
+						;入力ミスのためやり直し
+						GOTO INPUT_LOOP_ZOKUSEI_SELECT
+					ENDIF
+				WEND
+
+			ELSEIF RESULT == 3
+				;-------------------------------
+				;キャラクター番号を画面から入力
+				;-------------------------------
+				DRAWLINE
+				IF FLAG:DEBUG == 0
+					;デバッグモードではない場合、選択画面に戻る
+					GOTO TEST_BATTLE_INPUT_LOOP
+				ENDIF
+
+				PRINTFORML 누구의 데이터를 실체화할지 번호를 지정해 주게。
+				PRINTFORML (예: 501→픽시)
+				PRINTFORML
+				PRINTFORML [0] 그만둔다
+				$INPUT_LOOP_CHARACTOR
+				INPUT
+				IF RESULT == 0
+					;選択画面に戻る
+					PRINTFORML 
+					DRAWLINE
+
+				ELSEIF RESULT >= 1 && RESULT <= 9999
+					;入力されたキャラクター番号が存在するかどうか確認する。
+					IF EXISTCSV(RESULT, 0) == 0
+						;存在しないキャラクター番号の場合
+						PRINTFORML 존재하지 않는 캐릭터 번호입니다。다시 입력해 주십시오。
+						PRINTFORML
+						GOTO INPUT_LOOP_CHARACTOR
+
+					ELSE
+						;存在するキャラクター番号の場合
+						;入力されたキャラクターを召喚するように設定する。
+						SELECT_CHARACTOR_NUM = RESULT
+						SELECT_CHARACTOR_NAME = %CSVCALLNAME(SELECT_CHARACTOR_NUM)%
+						PRINTFORMW 소환 대상을 「{SELECT_CHARACTOR_NUM}:%SELECT_CHARACTOR_NAME%」(으)로 설정했다。
+						PRINTFORML
+						DRAWLINE
+					ENDIF
+
+				ELSE
+					;入力ミスのためやり直し
+					GOTO INPUT_LOOP_CHARACTOR
+				ENDIF
+
+			ELSEIF RESULT == 4
+				;----------------------------------
+				;敵の使用するスキルを画面から入力
+				;----------------------------------
+				DRAWLINE
+				IF FLAG:DEBUG == 0
+					;デバッグモードではない場合、選択画面に戻る
+					GOTO TEST_BATTLE_INPUT_LOOP
+				ENDIF
+
+				PRINTFORML 어느 스킬을 사용하게 할지 번호를 지정해 주게。
+				PRINTFORML (예: 701→아기)
+				PRINTFORML
+				PRINTFORML [0] 그만둔다(사용할 스킬을 기본값으로 돌린다)
+				$INPUT_LOOP_SKILL
+				INPUT
+				IF RESULT == 0
+					;選択画面に戻る
+					SELECT_SKILL_FLG = 0
+					PRINTFORMW 적이 사용할 스킬을 기본값으로 되돌렸다。
+					PRINTFORML 
+					DRAWLINE
+
+				ELSEIF RESULT >= 1 && RESULT <= 9999
+					;入力されたスキル番号を取得する(入力値「RESULT」が次の不正チェックで上書きされてしまう前にここで取得しておく)
+					SELECT_SKILL_NO = RESULT
+
+					;入力されたスキル番号が実在するかどうか確認する。
+					CALL GET_SKILL_PROP, "SKILL_NAME", SELECT_SKILL_NO
+					IF RESULTS != ""
+						;存在するスキル番号の場合
+						;入力されたスキルを使用するように設定する。
+						SELECT_SKILL_FLG = 1
+						SELECT_SKILL_NAME = %RESULTS%
+						PRINTFORMW 적이 사용할 스킬을 「{SELECT_SKILL_NO}:%SELECT_SKILL_NAME%」(으)로 설정했다。
+						PRINTFORML
+						DRAWLINE
+					ELSE
+						;存在しないスキル番号の場合
+						PRINTFORML 존재하지 않는 스킬 번호입니다。다시 입력해 주십시오。
+						PRINTFORML
+						GOTO INPUT_LOOP_SKILL
+					ENDIF
+				ELSE
+					;入力ミスのためやり直し
+					GOTO INPUT_LOOP_SKILL
+				ENDIF
+
+			ELSEIF RESULT == 0
+				;--------------------
+				;テスト戦闘を実行
+				;--------------------
+				;戦闘処理の関数を呼び出す
+				CALL COLOSSEUM_26_BATTLE, SELECT_CHARACTOR_NUM, SELECT_LEVEL, SELECT_TAISEI_FLG, SELECT_TAISEI, SELECT_SKILL_FLG, SELECT_SKILL_NO
+
+			ELSEIF RESULT == 100
+				;-------------
+				;やめる
+				;-------------
+				;トップメニューに戻る
+				BREAK
+
+			ELSE
+				;入力ミスのためやり直し
+				GOTO TEST_BATTLE_INPUT_LOOP
+
+			ENDIF
+		WEND
+
+	ELSEIF RESULT == 3
+		;------------------------------
+		;特殊イベント
+		;------------------------------
+		;実行可能な特殊イベントが存在しない場合、入力に戻る
+		IF SPECIAL_EVENT_COUNT ==0
+			PRINTFORML 현재 실행 가능한 특수 이벤트가 없습니다。
+			GOTO MENU_TOP_INPUT_LOOP
+		ENDIF
+
+		DRAWLINE
+		PRINTFORML 당신은 투기장으로 발걸음을 옮겼다。
+		PRINTFORML 오늘의 용무는...
+		PRINTFORML
+		WHILE 1
+			;実行可能な特殊イベントを集計する
+			SPECIAL_EVENT_COUNT = ADD_UP_SPECIAL_EVENT()
+
+			;実行可能な特殊イベントが存在しない場合、トップメニューに戻る
+			IF SPECIAL_EVENT_COUNT == 0
+				BREAK
+			ENDIF
+
+			;実行可能なイベント一覧を表示する
+			FOR LOCAL, 0, 9
+				;進行度1～8(進行中)の特殊イベントである場合
+				IF COLOSSEUM_26_SPECIAL_EVENT_FLG:LOCAL >= 1 && COLOSSEUM_26_SPECIAL_EVENT_FLG:LOCAL <= 8
+					IF COLOSSEUM_26_SPECIAL_EVENT_FLG:LOCAL == 1
+						;進行度1の場合、イベント名に(その1)と付けない　※1回だけで終了のイベントの可能性があるため
+						PRINTFORML [  {LOCAL + 1}]%COLOSSEUM_26_SPECIAL_EVENT_NAME:LOCAL%
+					ELSE
+						;進行度2～8の場合、イベント名に(その2～8)と付ける
+						PRINTFORML [  {LOCAL + 1}]%COLOSSEUM_26_SPECIAL_EVENT_NAME:LOCAL%(그 {COLOSSEUM_26_SPECIAL_EVENT_FLG:LOCAL})
+					ENDIF
+				ENDIF
+			NEXT
+			PRINTFORML [100] 그만둔다
+			
+			;どの特殊イベントを実行するか入力受付
+			$SPECIAL_EVENT_INPUT_LOOP
+			INPUT
+			IF RESULT >= 1 && RESULT <= 8
+				;---------------------
+				;特殊イベントを実行
+				;---------------------
+				;※入力された特殊イベントが実際に実行可能であるかどうかをチェックする
+				IF COLOSSEUM_26_SPECIAL_EVENT_FLG:(RESULT - 1) == 0 || COLOSSEUM_26_SPECIAL_EVENT_FLG:(RESULT - 1) == 9
+					;(0:未発生)または(9:完了済み)の場合、誤入力扱いで入力に戻る
+					GOTO SPECIAL_EVENT_INPUT_LOOP
+				ENDIF
+				;※入力された特殊イベントを実行する
+				CALL COLOSSEUM_26_SPECIAL_EVENT, (RESULT - 1)
+
+			ELSEIF RESULT == 100
+				;-------------
+				;やめる
+				;-------------
+				;トップメニューに戻る
+				BREAK
+
+			ELSE
+				;入力ミスのためやり直し
+				GOTO SPECIAL_EVENT_INPUT_LOOP
+
+			ENDIF
+		WEND
+
+	ELSEIF RESULT == 9
+		;------------------------------
+		;パーティーメンバーを入れ替え
+		;------------------------------
+		CALL RECONSTRUCTION
+
+	ELSEIF RESULT == 100
+		;闘技場から出る
+		
+		;コンテストに参加していない場合、コロシアム参加済みフラグを0(未参加)にする。(テスト戦闘だけならコロシアム参加済みとみなさない)
+		IF ATTEND_CONTEST_FLG == 0
+			FLAG:콜로세움참가완료 = 0
+		ENDIF
+		PRINTFORML
+		PRINTFORMW 부디 또 와 주게！
+		DRAWLINE
+		BREAK
+	ELSE
+		;入力ミスのためやり直し
+		GOTO MENU_TOP_INPUT_LOOP
+	ENDIF
+WEND
+
+;===============================
+;ここから先は関数などの定義です
+;===============================
+
+;---------------------------------
+;戦闘を行う関数
+;---------------------------------
+;返り値の説明
+;	0	:戦闘終了
+;	1	:もう一度同じ戦闘を行う
+;---------------------------------
+@COLOSSEUM_26_BATTLE, SELECT_CHARACTOR_NUM, SELECT_LEVEL, SELECT_TAISEI_FLG, SELECT_TAISEI, SELECT_SKILL_FLG, SELECT_SKILL_NO
+
+;-------------
+;変数定義
+;-------------
+;呼び出すキャラクター番号
+#DIM SELECT_CHARACTOR_NUM
+
+;指定されたレベル
+#DIM SELECT_LEVEL
+
+;属性を指定するかどうかのフラグ
+#DIM SELECT_TAISEI_FLG
+
+;指定された属性耐性。順番に([0]검격, [1]비구, [2]타격, [3]전술, [4]화염, [5]빙결, [6]전격, [7]충격, [8]신경, [9]정신, [10]파마, [11]주살, [12]지변, [13]수격, [14]질풍, [15]중력, [16]핵열, [17]만능)
+#DIM REF SELECT_TAISEI
+
+;使用してくるスキルを指定するかどうかのフラグ
+#DIM SELECT_SKILL_FLG
+
+;使用してくるスキルの番号
+#DIM SELECT_SKILL_NO
+
+;元の戦闘難易度(1:EASY / 2:NORMAL / 3:HARD / 4:MANIACS / 5:LUNATIC / 6:悪夢モード)	※ダメージコンテストの目的上、一時的に難易度をNORMALに変更するため元の難易度を保存する必要がある
+#DIM DIFFICULTY_FLG
+
+;-------------
+;本処理
+;-------------
+;元の戦闘難易度を保存する
+DIFFICULTY_FLG = FLAG:전투난이도
+
+WHILE 1
+	DRAWLINE
+	PRINTFORML
+	PRINTFORMW 마법진 위에 마그네타이트가 소용돌이치며、그것은 이윽고 형태를 갖추었다。
+	PRINTFORML
+	;戦闘
+	FLAG:선제기습취소 = 1
+
+	;ダメージコンテストの場合、戦闘難易度を「2:NORMAL」に設定する
+	IF COLOSSEUM_26_REGULATION_NO != 0
+		FLAG:전투난이도 = 2										;戦闘難易度をNORMALに変更する
+	ENDIF
+
+	;レベル、キャラクター番号を指定して敵キャラを呼び出す。
+	CALL SET_ENEMY, 9, SELECT_CHARACTOR_NUM, SELECT_LEVEL, 0, 0
+
+	;데미지콘테스트(テスト戦闘以外)の場合の設定
+	IF COLOSSEUM_26_REGULATION_NO != 0
+		;敵キャラの名称を「測定器」に変更
+		CALLNAME:(CHARANUM-1) = 測定器(レギュレーション{COLOSSEUM_26_REGULATION_NO})
+		;テスト戦闘以外の場合、戦闘パターンを「아무것도안한다」に設定
+		CSTR:(CHARANUM-1):사고패턴 = COLOSSEUM_26
+		;不死身フラグをONにする
+		CFLAG:(CHARANUM-1):불사신플래그 = 1
+		;HPを100万に設定します。
+		CALL SET_BATTLE_STATUS(CHARANUM-1, 100, "ＨＰ")
+		;MPを100万に設定します。
+		CALL SET_BATTLE_STATUS(CHARANUM-1, 100, "ＭＰ")
+		;BS無効設定(測定器が即死とか石化とか、いけない。)
+		BASE:(CHARANUM-1):GETNUM(BASE,"STONE") = -100			;石化無効(BASE)
+		MAXBASE:(CHARANUM-1):GETNUM(BASE,"STONE") = -100		;石化無効(MAXBASE)
+		BASE:(CHARANUM-1):GETNUM(BASE,"DYING") = -100			;即死無効(BASE)
+		MAXBASE:(CHARANUM-1):GETNUM(BASE,"DYING") = -100		;即死無効(MAXBASE)
+		;ダメージコンテストに参加したかどうかのフラグを1(参加済み)にする
+		ATTEND_CONTEST_FLG = 1
+	ENDIF
+
+	;属性耐性の設定
+	IF SELECT_TAISEI_FLG
+		;属性耐性を設定している場合
+		BASE:(CHARANUM-1):검격 = SELECT_TAISEI:0
+		BASE:(CHARANUM-1):비구 = SELECT_TAISEI:1
+		BASE:(CHARANUM-1):타격 = SELECT_TAISEI:2
+		BASE:(CHARANUM-1):전술 = SELECT_TAISEI:3
+		BASE:(CHARANUM-1):화염 = SELECT_TAISEI:4
+		BASE:(CHARANUM-1):빙결 = SELECT_TAISEI:5
+		BASE:(CHARANUM-1):전격 = SELECT_TAISEI:6
+		BASE:(CHARANUM-1):충격 = SELECT_TAISEI:7
+		BASE:(CHARANUM-1):신경 = SELECT_TAISEI:8
+		BASE:(CHARANUM-1):정신 = SELECT_TAISEI:9
+		BASE:(CHARANUM-1):파마 = SELECT_TAISEI:10
+		BASE:(CHARANUM-1):주살 = SELECT_TAISEI:11
+		BASE:(CHARANUM-1):지변 = SELECT_TAISEI:12
+		BASE:(CHARANUM-1):수격 = SELECT_TAISEI:13
+		BASE:(CHARANUM-1):질풍 = SELECT_TAISEI:14
+		BASE:(CHARANUM-1):중력 = SELECT_TAISEI:15
+		BASE:(CHARANUM-1):핵열 = SELECT_TAISEI:16
+		BASE:(CHARANUM-1):만능 = SELECT_TAISEI:17
+	ENDIF
+
+	;使用してくるスキルの設定
+	IF SELECT_SKILL_FLG
+		;使用してくるスキルを設定している場合
+		ABL:(CHARANUM-1):스킬1 = SELECT_SKILL_NO
+		ABL:(CHARANUM-1):스킬2 = SELECT_SKILL_NO
+		ABL:(CHARANUM-1):스킬3 = SELECT_SKILL_NO
+		ABL:(CHARANUM-1):스킬4 = SELECT_SKILL_NO
+		ABL:(CHARANUM-1):스킬5 = SELECT_SKILL_NO
+		ABL:(CHARANUM-1):스킬6 = SELECT_SKILL_NO
+		ABL:(CHARANUM-1):스킬7 = SELECT_SKILL_NO
+		ABL:(CHARANUM-1):스킬8 = SELECT_SKILL_NO
+	ENDIF
+
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+
+	;経験値処理をスキップする
+	FLAG:RESULT스킵 = 1
+	;会話不能にする(ここで無限に仲魔入手は仕様外です)
+	FLAG:회화불능플래그 = 1
+
+	;ここで戦闘開始
+	CALL BATTLE_START
+	RESETCOLOR
+
+	;経験値処理をデフォルトに戻す
+	FLAG:RESULT스킵 = 0
+	;会話不能フラグをデフォルトに戻す
+	FLAG:회화불능플래그 = 0
+
+	;戦闘難易度を元に戻す
+	FLAG:전투난이도 = DIFFICULTY_FLG
+
+	;PTメンバーのHP・MPを全回復する
+	CALL COLOSSEUM_26_RECOVERY_ALL
+
+	DRAWLINE
+	
+	;もう一度戦闘を行うかどうか確認
+	IF COLOSSEUM_26_REGULATION_NO == 0
+		;テスト戦闘の場合
+		PRINTFORML 실체화되었던 적성체는 사라지고、시설에 정적이 되돌아왔다。
+		PRINTFORML 다시 한 번 같은 상대와 싸우겠습니까？
+	ELSE
+		;ダメージコンテストの場合
+		CALL UPDATE_HISCORE
+		PRINTFORML 재도전하겠습니까？
+	ENDIF
+
+	PRINTFORML
+	PRINTFORML [  0] 도전한다
+	PRINTFORML [100] 그만둔다
+	PRINTFORML
+	$INPUT_LOOP_BATTLE1
+	INPUT
+	IF RESULT == 0
+		;もう一度同じ戦闘を行う
+		DRAWLINE
+
+	ELSEIF RESULT == 100
+		;選択画面に戻る
+		PRINTFORML 
+		DRAWLINE
+		BREAK
+	ELSE
+		;入力ミスのためやり直し
+		GOTO INPUT_LOOP_BATTLE1
+	ENDIF
+WEND
+
+
+;-----------------------------------------------------------
+;敵キャラの行動パターン
+;-----------------------------------------------------------
+;ダメージコンテスト用・何もしない
+@SET_ACTION_COLOSSEUM_26, ARG
+;아무것도안한다。
+RETURN 1
+
+;ご褒美イベント3(犬を連れた少年)
+@SET_ACTION_COLOSSEUM_26_EVENT3, ARG
+
+;行動パターン(2回行動を前提としています。)
+IF (FLAG:경과턴수 + 1) % 4 == 0
+	;4の倍数ターンの場合
+	IF CFLAG:ARG:행동한횟수 == 0
+		;1回目の行動は「데카쟈의돌」を使用する。
+		CALL SET_ACTION_SKILL,ARG,[[스킬:데카쟈의돌]]
+	ELSE
+		;2回目の行動は「데쿤다의돌」を使用する。
+		CALL SET_ACTION_SKILL,ARG,[[스킬:데쿤다의돌]]
+	ENDIF
+ELSE
+	;4の倍数ターンではない場合
+	IF CFLAG:ARG:행동한횟수 == 0
+		;1回目の行動は確率で「물반경」または「마반경」を使用する(50%)
+		SELECTCASE RAND:2
+			CASE 0
+				CALL SET_ACTION_SKILL,ARG,[[스킬:물반경]]
+
+			CASE 1
+				CALL SET_ACTION_SKILL,ARG,[[스킬:마반경]]
+
+			CASEELSE
+				PRINTFORML 이상한 값이 검출되었습니다。행동 패턴의 난수 설정에 오류가 발생했습니다。
+				PRINTFORML 「CLOSSEUM_26_MAIN.ERB」 파일의 「@SET_ACTION_COLOSSEUM_26_EVENT3」 처리를 재검토해 주십시오。
+		ENDSELECT
+	ELSE
+		;2回目の行動はランダム行動(通常攻撃およびスキルからランダムで選択される)
+		CALL ランダム行動 , ARG
+	ENDIF
+ENDIF
+
+RETURN 1
+
+
+
+;-----------------------------------------------------------
+;バトル開始時の行動(ダメージ記録用の変数を初期化する)
+;-----------------------------------------------------------
+@EVENT_BATTLE_START_COLOSSEUM26
+
+;今ターンまでの総ダメージ
+COLOSSEUM_26_TOTAL_DAMAGE = 0
+
+;前ターンまでの総ダメージ
+COLOSSEUM_26_PRE_TOTAL_DAMAGE = 0
+
+;今ターン中に受けたダメージ
+COLOSSEUM_26_THIS_TURN_DAMAGE = 0
+
+RETURN 1
+
+;-----------------------------------------------------------
+;ターン終了時の行動(ダメージコンテスト用・ダメージ計測)
+;-----------------------------------------------------------
+@EVENT_BATTLE_TURNEND_COLOSSEUM26
+;戦闘終了フラグ
+#DIM BATTLE_END_FLG = 0
+
+;2ターン目以降の場合、前ターンまでの総ダメージを取得する
+IF FLAG:경과턴수 >= 2
+	COLOSSEUM_26_PRE_TOTAL_DAMAGE = COLOSSEUM_26_TOTAL_DAMAGE
+ENDIF
+
+;今ターンまでの総ダメージを取得する
+;COLOSSEUM_26_TOTAL_DAMAGE = CFLAG:32:축적데미지
+COLOSSEUM_26_TOTAL_DAMAGE = CFLAG:(CHARANUM - 1):축적데미지
+
+;今ターン中に受けたダメージを取得する。
+COLOSSEUM_26_THIS_TURN_DAMAGE = COLOSSEUM_26_TOTAL_DAMAGE - COLOSSEUM_26_PRE_TOTAL_DAMAGE
+
+;経過発表と戦闘終了処理(レギュレーション毎に異なる)
+SELECTCASE COLOSSEUM_26_REGULATION_NO
+	CASE 1
+		;レギュレーション1の場合、1ターン目の終了時に戦闘終了
+		CALL REMOVE_POSITION,9 
+		BATTLE_END_FLG = 1
+
+	CASE 2
+		;レギュレーション2の場合、5ターン目の終了時に戦闘終了
+		IF FLAG:경과턴수 == 5
+			CALL REMOVE_POSITION,9 
+			BATTLE_END_FLG = 1
+		ENDIF
+
+	CASE 3
+		;レギュレーション3の場合、ダメージが発生したターンの終了時に戦闘終了
+		IF COLOSSEUM_26_THIS_TURN_DAMAGE > 0
+			CALL REMOVE_POSITION,9 
+			BATTLE_END_FLG = 1
+		ENDIF
+
+	CASEELSE
+		;그외(테스트전투)の場合、何もしない。(普通に倒す、または逃げる)
+
+ENDSELECT
+
+;ターン終了時にポイントの報告を行う。
+IF 1 <= COLOSSEUM_26_REGULATION_NO && COLOSSEUM_26_REGULATION_NO <= 10
+	;レギュレーション1～10の場合(4以降は予備となっています。)
+	DRAWLINE
+	PRINTFORML
+	PRINTFORML {FLAG:경과턴수}턴째가 종료되었습니다。
+	PRINTFORML 이번 턴의 득점: {COLOSSEUM_26_THIS_TURN_DAMAGE}포인트
+	PRINTFORML 총 득점: {COLOSSEUM_26_TOTAL_DAMAGE}포인트
+	PRINTFORMW	
+ENDIF
+
+RETURN 1
+
+;-----------------------------------------------------------
+;バトル終了時の行動(得点を記録する)
+;-----------------------------------------------------------
+@UPDATE_HISCORE
+IF 1 <= COLOSSEUM_26_REGULATION_NO && COLOSSEUM_26_REGULATION_NO <= 10
+	;レギュレーション1～10の場合(4以降は予備となっています。)
+
+	;今周回の最高得点更新処理
+	IF COLOSSEUM_26_MAX_DAMAGE:(COLOSSEUM_26_REGULATION_NO - 1) < COLOSSEUM_26_TOTAL_DAMAGE
+		DRAWLINE
+		PRINTFORML
+		PRINTFORML 하이스코어 갱신！
+		PRINTFORML {COLOSSEUM_26_MAX_DAMAGE:(COLOSSEUM_26_REGULATION_NO - 1)}포인트 => {COLOSSEUM_26_TOTAL_DAMAGE}포인트
+		PRINTFORMW 
+		COLOSSEUM_26_MAX_DAMAGE:(COLOSSEUM_26_REGULATION_NO - 1) = COLOSSEUM_26_TOTAL_DAMAGE
+		DRAWLINE
+	ENDIF
+
+	;すべての周回の最高得点更新処理
+	IF COLOSSEUM_26_TOTAL_LOOP_MAX_DAMAGE:(COLOSSEUM_26_REGULATION_NO - 1) < COLOSSEUM_26_TOTAL_DAMAGE
+		COLOSSEUM_26_TOTAL_LOOP_MAX_DAMAGE:(COLOSSEUM_26_REGULATION_NO - 1) = COLOSSEUM_26_TOTAL_DAMAGE
+	ENDIF
+ENDIF
+
+
+;---------------------------------
+;順位の作成を行う
+;---------------------------------
+@COLOSSEUM_26_GET_RANK
+
+;-------------
+;変数定義
+;-------------
+;今週回のあなたの最高得点
+#DIM TEMP_POINT = 0
+;今週回のあなたの順位
+#DIM TEMP_RANK = 0
+;あなた以外のランカーの点数
+#DIM TEMP_OTHER_RANKING_POINT, 3
+
+
+;-------------
+;本処理
+;-------------
+;レギュレーション1～3の順位を取得する
+;※同点の場合はあなたの勝利とする。
+;※「LOCAL」は0～2の値とし、それぞれレギュレーション1～3と対応させる
+FOR LOCAL,0,3
+	;該当レギュレーションのあなたの最高得点
+	TEMP_POINT = COLOSSEUM_26_MAX_DAMAGE:LOCAL
+
+	;該当レギュレーションのあなた以外のランカーの点数を取得する
+	SELECTCASE LOCAL
+		CASE 0
+			;レギュレーション1の場合
+			FOR LOCAL:1,0,3
+				TEMP_OTHER_RANKING_POINT:(LOCAL:1) = OTHER_RANKING_POINT_1:(LOCAL:1)
+			NEXT
+
+		CASE 1
+			;レギュレーション2の場合
+			FOR LOCAL:1,0,3
+				TEMP_OTHER_RANKING_POINT:(LOCAL:1) = OTHER_RANKING_POINT_2:(LOCAL:1)
+			NEXT
+
+		CASE 2
+			;レギュレーション3の場合
+			FOR LOCAL:1,0,3
+				TEMP_OTHER_RANKING_POINT:(LOCAL:1) = OTHER_RANKING_POINT_3:(LOCAL:1)
+			NEXT
+
+	ENDSELECT
+
+	;順位の作成
+	IF TEMP_POINT >= TEMP_OTHER_RANKING_POINT:0
+		;得点が一位の場合
+		TEMP_RANK = 1
+
+	ELSEIF TEMP_POINT >= TEMP_OTHER_RANKING_POINT:1
+		;得点が二位の場合
+		TEMP_RANK = 2
+
+	ELSEIF TEMP_POINT >= TEMP_OTHER_RANKING_POINT:2
+		;得点が三位の場合
+		TEMP_RANK = 3
+
+	ELSE
+		;ランキング外の場合
+		TEMP_RANK = 0
+
+	ENDIF
+
+	;取得した順位の登録
+	YOUR_RANK:LOCAL = TEMP_RANK
+
+NEXT
+
+RETURN 1
+
+;---------------------------------
+;順位の表示を行う
+;---------------------------------
+@COLOSSEUM_26_DISPLAY_RANK
+
+;-------------
+;変数定義
+;-------------
+;今週回のあなたの最高得点
+#DIM TEMP_POINT = 0
+;今週回のあなたの順位
+#DIM TEMP_RANK = 0
+;あなた以外のランカーの点数
+#DIM TEMP_OTHER_RANKING_POINT, 3
+;あなた以外のランカーの名前
+#DIMS TEMP_OTHER_RANKING_NAME, 3
+;レギュレーションの名称
+#DIMS REGULATION_NAME, 3 = "1ターンのダメージ", "5ターンのダメージ", "準備し放題"
+
+
+;ランキング1位～3位のポイント
+#DIM TEMP_RANKERS_POINT, 3
+;ランキング1位～3位の名前
+#DIMS TEMP_RANKERS_NAME, 3
+
+;-------------
+;本処理
+;-------------
+;レギュレーション1～3の順位を表示する
+;※「LOCAL」は0～2の値とし、それぞれレギュレーション1～3と対応させる
+FOR LOCAL,0,3
+	;該当レギュレーションのあなたの最高得点
+	TEMP_POINT = COLOSSEUM_26_MAX_DAMAGE:LOCAL
+
+	;該当レギュレーションのあなたの順位
+	TEMP_RANK = YOUR_RANK:LOCAL
+
+	;該当レギュレーションのあなた以外のランカーの点数と名前を取得する
+	SELECTCASE LOCAL
+		CASE 0
+			;レギュレーション1の場合
+			FOR LOCAL:1,0,3
+				TEMP_OTHER_RANKING_NAME:(LOCAL:1) = %OTHER_RANKING_NAME_1:(LOCAL:1)%
+				TEMP_OTHER_RANKING_POINT:(LOCAL:1) = OTHER_RANKING_POINT_1:(LOCAL:1)
+			NEXT
+
+		CASE 1
+			;レギュレーション2の場合
+			FOR LOCAL:1,0,3
+				TEMP_OTHER_RANKING_NAME:(LOCAL:1) = %OTHER_RANKING_NAME_2:(LOCAL:1)%
+				TEMP_OTHER_RANKING_POINT:(LOCAL:1) = OTHER_RANKING_POINT_2:(LOCAL:1)
+			NEXT
+
+		CASE 2
+			;レギュレーション3の場合
+			FOR LOCAL:1,0,3
+				TEMP_OTHER_RANKING_NAME:(LOCAL:1) = %OTHER_RANKING_NAME_3:(LOCAL:1)%
+				TEMP_OTHER_RANKING_POINT:(LOCAL:1) = OTHER_RANKING_POINT_3:(LOCAL:1)
+			NEXT
+
+	ENDSELECT
+
+	;ランキングの作成
+	IF TEMP_RANK == 1
+		;一位の場合
+		TEMP_RANKERS_NAME:0 = %CALLNAME:MASTER%
+		TEMP_RANKERS_POINT:0 = TEMP_POINT
+		TEMP_RANKERS_NAME:1 = %TEMP_OTHER_RANKING_NAME:0%
+		TEMP_RANKERS_POINT:1 = TEMP_OTHER_RANKING_POINT:0
+		TEMP_RANKERS_NAME:2 = %TEMP_OTHER_RANKING_NAME:1%
+		TEMP_RANKERS_POINT:2 = TEMP_OTHER_RANKING_POINT:1
+
+	ELSEIF TEMP_RANK == 2
+		;得点が二位の場合
+		TEMP_RANKERS_NAME:0 = %TEMP_OTHER_RANKING_NAME:0%
+		TEMP_RANKERS_POINT:0 = TEMP_OTHER_RANKING_POINT:0
+		TEMP_RANKERS_NAME:1 = %CALLNAME:MASTER%
+		TEMP_RANKERS_POINT:1 = TEMP_POINT
+		TEMP_RANKERS_NAME:2 = %TEMP_OTHER_RANKING_NAME:1%
+		TEMP_RANKERS_POINT:2 = TEMP_OTHER_RANKING_POINT:1
+
+	ELSEIF TEMP_RANK == 3
+		;得点が三位の場合
+		TEMP_RANKERS_NAME:0 = %TEMP_OTHER_RANKING_NAME:0%
+		TEMP_RANKERS_POINT:0 = TEMP_OTHER_RANKING_POINT:0
+		TEMP_RANKERS_NAME:1 = %TEMP_OTHER_RANKING_NAME:1%
+		TEMP_RANKERS_POINT:1 = TEMP_OTHER_RANKING_POINT:1
+		TEMP_RANKERS_NAME:2 = %CALLNAME:MASTER%
+		TEMP_RANKERS_POINT:2 = TEMP_POINT
+
+	ELSE
+		;ランキング外の場合
+		TEMP_RANKERS_NAME:0 = %TEMP_OTHER_RANKING_NAME:0%
+		TEMP_RANKERS_POINT:0 = TEMP_OTHER_RANKING_POINT:0
+		TEMP_RANKERS_NAME:1 = %TEMP_OTHER_RANKING_NAME:1%
+		TEMP_RANKERS_POINT:1 = TEMP_OTHER_RANKING_POINT:1
+		TEMP_RANKERS_NAME:2 = %TEMP_OTHER_RANKING_NAME:2%
+		TEMP_RANKERS_POINT:2 = TEMP_OTHER_RANKING_POINT:2
+
+	ENDIF
+
+	;ランキングの表示
+	PRINTFORML --------------------------
+	PRINTFORML %REGULATION_NAME:LOCAL%   
+	PRINTFORML --------------------------
+	PRINTFORML 1위: %TEMP_RANKERS_NAME:0%({TEMP_RANKERS_POINT:0}포인트)
+	PRINTFORML 2위: %TEMP_RANKERS_NAME:1%({TEMP_RANKERS_POINT:1}포인트)
+	PRINTFORML 3위: %TEMP_RANKERS_NAME:2%({TEMP_RANKERS_POINT:2}포인트)
+	PRINTFORML 
+NEXT
+
+;あなた個人の得点を表示する。(ランキング外の場合に得点を確認できるように。もちろん、開発者としてもデバッグやりやすいしね！)
+PRINTFORML --------------------------
+PRINTFORML 당신의 기록(이번 회차/전체 회차)
+PRINTFORML --------------------------
+FOR LOCAL,0,3
+	PRINTFORML %REGULATION_NAME:LOCAL%：({COLOSSEUM_26_MAX_DAMAGE:LOCAL} / {COLOSSEUM_26_TOTAL_LOOP_MAX_DAMAGE:LOCAL})
+NEXT
+PRINTFORMW
+
+;デバッグモード用追加メニュー ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+;デバッグモードの場合
+IF FLAG:DEBUG
+	;ご褒美イベント達成フラグの表示
+	DRAWLINE
+	PRINTFORML 포상 이벤트 달성 상황을 표시합니다。(디버그 모드 한정)
+	FOR LOCAL,0,9
+		IF COLOSSEUM_26_RANKING_EVENT_FLG:LOCAL == 1
+			;ご褒美イベント達成済み
+			PRINTFORML 레귤레이션 {LOCAL + 1}: 달성 완료
+		ELSE
+			;ご褒美イベント未達成
+			PRINTFORML 레귤레이션 {LOCAL + 1}: 미달성
+		ENDIF
+	NEXT
+
+	;ランキングデータのリセット機能(開発者用)
+	WHILE 1
+		DRAWLINE
+		PRINTFORML 랭킹 리셋 기능입니다。(디버그 모드 한정)
+		PRINTFORML [  1] 이번 회차의 기록을 삭제한다(포상 달성 상황도 리셋)
+		PRINTFORML [  2] 모든 회차의 기록을 삭제한다(포상 달성 상황도 리셋)
+		PRINTFORML [100] 그만둔다
+		INPUT
+		IF RESULT == 1
+			;今週回の記録を削除する(ご褒美達成状況もリセット)
+			COLOSSEUM_26_MAX_DAMAGE = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+			COLOSSEUM_26_RANKING_EVENT_FLG = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+			BREAK
+		ELSEIF RESULT == 2
+			;すべての周回の記録を削除する(ご褒美達成状況もリセット)
+			COLOSSEUM_26_MAX_DAMAGE = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+			COLOSSEUM_26_TOTAL_LOOP_MAX_DAMAGE = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+			COLOSSEUM_26_RANKING_EVENT_FLG = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+			BREAK
+
+		ELSEIF RESULT == 100
+			;やめる
+			BREAK
+
+		ELSE
+			;その他の場合(入力ミス)
+		ENDIF
+	WEND
+
+ENDIF
+;デバッグモード用追加メニュー ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+
+RETURN 1
+
+
+;---------------------------------
+;ご褒美イベントチェック
+;---------------------------------
+@COLOSSEUM_26_RANKING_EVENT
+;レギュレーションごとに順位とイベント発生済みフラグの確認を行う。　※レギュレーション4以降は予備です。
+FOR LOCAL,0,10
+	;ランキング一位、かつご褒美イベントがまだ発生していない場合
+	IF YOUR_RANK:LOCAL == 1 && COLOSSEUM_26_RANKING_EVENT_FLG:LOCAL == 0
+		CALL COLOSSEUM_26_RANKING_EVENT_REGULATION, LOCAL
+		;ご褒美イベントのフラグを"1"(達成済み)に更新する
+		COLOSSEUM_26_RANKING_EVENT_FLG:LOCAL = 1
+		DRAWLINE
+	ENDIF
+NEXT
+
+RETURN 1
+
+
+;---------------------------------
+;ランキングご褒美イベント
+;---------------------------------
+@COLOSSEUM_26_RANKING_EVENT_REGULATION, TEMP_REGULATION
+;-------------
+;変数定義
+;-------------
+;何回目のイベントであるか
+#DIM EVENT_NO
+
+;イベント発生時のレギュレーション
+#DIM TEMP_REGULATION
+
+;電光掲示板に表示するメッセージ(一位の名前と得点)
+#DIMS TEMP_MESSEGE
+
+;-------------
+;本処理
+;-------------
+;ご褒美イベント中はレギュレーション99とする(ターン終了時のポイント表示などをさせないため)
+COLOSSEUM_26_REGULATION_NO = 99
+
+;何回目のご褒美イベントかを取得する
+EVENT_NO = 1
+FOR LOCAL,0,10
+	;ご褒美イベント発生済の場合、カウント+1
+	;※この時点では、現在発生しているイベントはカウントされないため「EVENT_NO」の初期値は0ではなく1としている。
+	IF COLOSSEUM_26_RANKING_EVENT_FLG:LOCAL == 1
+		EVENT_NO += 1
+	ENDIF
+NEXT
+
+;電光掲示板に表示するメッセージを作成
+TEMP_MESSEGE = 1位：%CALLNAME:MASTER%({COLOSSEUM_26_MAX_DAMAGE:TEMP_REGULATION}ポイント)
+
+;X回目イベントを発生させる。
+SELECTCASE EVENT_NO
+	CASE 1
+		;1回目のご褒美イベント
+		PRINTFORML 당신은 측정기를 후려치고 표시된 득점을 보며 엷은 미소를 띄웠다。
+		PRINTFORMW 콜로세움의 전광판이 점멸하며 순위가 뒤바뀐다。
+		PRINTFORML 
+		CALL MESSAGE_WINDOW, "" , TEMP_MESSEGE
+		PRINTFORMW 겨드랑이에 스케치북을 끼고 카운터로 향한다。
+		PRINTFORML 데미지 콘테스트 기록 갱신자에게는 경품으로
+		PRINTFORMW 원하는 디자인의 오리지널 COMP를 마련해 준다고 한다。
+		PRINTFORMW 그런 소식을 듣고 덥석 달려들고 마는 것을 보니、당신도 훌륭한 팬텀 서머너였다。
+		PRINTFORML
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		PRINTFORML
+		IF COMP_SIZEUP_BY_EVENT:COMP_SIZEUP_EVENTNUM("CL26_ダメージコンテスト特典1")
+			;COMP容量が30以上の場合、COMP容量の増加はなし(代わりに先輩サマナーにアイテムをもらう)
+			PRINTFORML 엣、이 이상 강력한 COMP는 준비할 수 없다고？
+			PRINTFORML 그럼 성능은 떨어져도 좋으니까 이 노트대로 디자인을…… 저기、피네간 씨？
+			PRINTFORML 죽어버리니까 안 돼？ 실동부대로서 그건 용납할 수 없어？
+			PRINTFORML 그런……
+			PRINTFORML
+			CALL MESSAGE_WINDOW, "" , "피네간에게 메리켄 사크를 받았다"
+			CALL GET_ITEMS, "너클더스터", 1
+			CALL MESSAGE_WINDOW, "" , "마요네에게 섹시 힐을 받았다"
+			CALL GET_ITEMS, "섹시힐", 1
+		ELSE
+			;COMP容量が28以下の場合、COMP容量が2増加
+			CALL MESSAGE_WINDOW, "" , "＞COMP의 용량이 1 늘어났다"
+			;FLAG:ＣＯＭＰ용량 += 1
+			CALL SIZEUP_COMP_BY_EVEMT, "CL26_ダメージコンテスト特典1"
+			PRINTFORML
+		ENDIF
+		CALL MESSAGE_WINDOW, "" , "＞1000마카를 손에 넣었다"
+		MONEY:1 += 1000
+		PRINTFORML
+
+	CASE 2
+		;2回目のご褒美イベント
+		PRINTFORML 측정 종료 버저가 울리고、당신은 숨을 헐떡이며 전광판을 올려다보았다。
+		PRINTFORMW 
+		CALL MESSAGE_WINDOW, "" , TEMP_MESSEGE
+		PRINTFORMW 사방에서 터져 나오는 환호성에 손을 흔들어 화답하며 당신은 선수석으로 돌아왔다。
+		PRINTFORML 스스로를 단련하고 힘을 피로한다。
+		PRINTFORML 원치 않는 채로 조직에 얽매여 울굴한 나날을 보내던 당신이었으나
+		PRINTFORMW 어느샌가 투기장에서의 활동에 보람을 느끼고 있었다。
+		PRINTFORMW 메시아교 지배하의 콜로세움까지 일부러 발걸음을 옮길 정도로。
+		PRINTFORML
+		CALL MESSAGE_WINDOW, "" , "＞1000마카를 손에 넣었다"
+		MONEY:1 += 1000
+		PRINTFORML
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		PRINTFORML
+		PRINTFORML 상금을 수령하고 출구로 향하려던 당신은
+		PRINTFORMW 개를 데리고 있는 소년이 멍하니 동상을 올려다보고 있는 것을 알아차렸다。
+		PRINTFORMW 분명 이 콜로세움의 초대 챔피언 동상이다。
+		PRINTFORML
+		PRINTFORMW 소년이 뒤를 돌아보았다。
+		PRINTFORML 아무래도 정신을 차려보니 이곳에 있었던 모양인지 상황을 잘 파악하지 못하고 있는 듯하다。
+		PRINTFORMW 당신에게 몇 가지 질문을 던져왔다。
+		PRINTFORML
+		PRINTFORMW 이 일대는 이미 사회가 붕괴되어 사람들의 명운은 신마들의 손에 쥐여져 있다。
+		PRINTFORML 천사에 의한 관리、그리고 악마들의 습격과 약탈。
+		PRINTFORMW 사람들을 둘러싼 현 상황을 들을 때마다 소년은 표정을 어둡게 흐렸다。
+		PRINTFORML 그는 한 여성에 대해 물어왔다。
+		PRINTFORML 해당하는 이름의 여성 -- 이 시설에서 마담이라 불리던 미망인 -- 의 전말을 들려주자
+		PRINTFORMW 몹시 큰 충격을 받은 모양이다。
+		PRINTFORML
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		PRINTFORML
+		PRINTFORMW 소년은 팔에 장착하고 있는 기계를 COMP로서 사용하고 있는 듯하다。
+		PRINTFORMW 이것은…… 새로운 디자인！ 개성적인 COMP다！
+		PRINTFORML 갑자기 텐션이 오른 당신에게 쓴웃음을 지으면서도 소년은 상품명과 부품 번호를 가르쳐 주었다。
+		PRINTFORMW 어서 잡화점으로 쇼핑을 하러 가자！
+		PRINTFORML
+		;IF FLAG:ＣＯＭＰ용량 >= 30
+		IF COMP_SIZEUP_BY_EVENT:COMP_SIZEUP_EVENTNUM("CL26_ダメージコンテスト特典2")
+			;COMP容量が30以上の場合、COMP容量の増加はなし(代わりに先輩サマナーにアイテムをもらう)
+			PRINTFORML 에？ 핸드벨트 컴퓨터는 골동품이라고？
+			PRINTFORML 가지고 있는 악마소환 프로그램을 구동하기엔 용량이 부족하다고？
+			PRINTFORML 멋진데……
+			PRINTFORML
+		ELSE
+			;COMP容量が28以下の場合、COMP容量が2増加
+			CALL MESSAGE_WINDOW, "" , "＞COMP의 용량이 1 늘어났다"
+			CALL SIZEUP_COMP_BY_EVEMT, "CL26_ダメージコンテスト特典2"
+			;FLAG:ＣＯＭＰ용량 += 1
+			PRINTFORML
+		ENDIF
+		PRINTFORML
+
+	CASE 3
+		;3回目のご褒美イベント
+		PRINTFORML 터져 나오는 환호성을 등 뒤로 받으며 당신은 포효를 내질렀다。
+		PRINTFORML 
+		CALL MESSAGE_WINDOW, "" , TEMP_MESSEGE
+		PRINTFORMW 장비를 모았다。자신과 동료들을 철저히 단련했다。그리고 전술을 갈고닦았다。
+		PRINTFORML 즐겁다。
+		PRINTFORMW 싸우는 것이。겨루는 것이。
+		PRINTFORMW 힘을 떨치는 그 순간 당신은 자유로웠다。
+		PRINTFORML 조직의 굴레를、그리고 조교사의 일을 잊고
+		PRINTFORMW 그저 한 명의 전사로서 당신은 그곳에 있었다。
+		PRINTFORML
+		CALL MESSAGE_WINDOW, "" , "＞1000마카를 손에 넣었다"
+		MONEY:1 += 1000
+		PRINTFORMW
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		PRINTFORML
+		PRINTFORMW 경기를 마치고 선수석으로 돌아오자 개를 데리고 있는 소년이 말을 걸어왔다。
+		PRINTFORML 그 역시 이 콜로세움에 참가하고 있는 선수다。
+		PRINTFORML 요전에 알게 된 이후로 가끔 얼굴을 마주하며 대화하고 있다。
+		PRINTFORML
+		PRINTFORMW 아무래도 겨뤄보고 싶은 모양이다。
+		PRINTFORML 당신은 알고 있었다。그가 진지하게、그리고 무언가에 쫓기듯 훈련에 매진하고 있음을。
+		PRINTFORML 때때로 슬픈 듯이 이 시설과 사람들을 바라보는 모습을。
+		PRINTFORML 그의 사정은 당신이 알 바가 아니다。
+		PRINTFORMW 그럼에도 조금 어린 COMP 동료의 요청에 당신은 흔쾌히 응하기로 했다。
+		PRINTFORML
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃특수 이벤트가 해금되었습니다　　　　　　　　┃
+		PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+
+		;特殊イベント1:『犬を連れた少年』の進行度を1(発生)に変更
+		COLOSSEUM_26_SPECIAL_EVENT_FLG:0 = 1
+
+	CASEELSE
+		;その他の場合、存在しない番号なので何もしない　※エラー処理作ってなくてごめんね！
+		PRINTFORMW 오류: 존재하지 않는 이벤트({EVENT_NO}번째 포상)를 호출하려 하고 있습니다。
+ENDSELECT
+
+RETURN 1
+
+
+;敗北時イベント
+@EVENT_COLOSSEUM_LOSE_26
+PRINTFORMW 힘이 부쳐、당신은 쓰러지고 말았다。
+FLAG:승리플래그 = 1 ;勝利フラグを建てることで無理やり戦闘を終了させる。(戦闘終了後のイベントは勝敗に関係なく進行できる感じで設定すること)
+RETURN 1
+
+
+;---------------------------------
+;特殊イベント
+;---------------------------------
+@COLOSSEUM_26_SPECIAL_EVENT, EVENT_NO
+;-------------
+;変数定義
+;-------------
+;特殊イベントの番号
+#DIM EVENT_NO
+
+;-------------
+;本処理
+;-------------
+IF EVENT_NO == 0
+	;特殊イベント0：犬を連れた少年
+	;※進行度なし、1回で完了のイベント
+
+	DRAWLINE
+	PRINTFORML
+	PRINTFORML                                                  _.. ―--,,,                              |､＼                       ／ ｌ
+	PRINTFORML                                              .／ : ::::::､ﾞ'‐､                           l.! ::＼                 ／:: /
+	PRINTFORML                                             ./        : ::::ヽ.;＼                         || :::::＼,..-'''''-､,./ ::iﾘ
+	PRINTFORML                                             / .,-'''､::::: .ｌ;:; ｌ,                      !.ｌ, ::::::::   :::::´:./.l
+	PRINTFORML                                ＿＿  ＿    .! . !   ! ::::::: !;;;,!                       i.ヽ::::::     : :::::: ／ lﾞ
+	PRINTFORML                            ィ:::::::::::フ:ヽ;.!   ._" :::::: / ;;;:|                   ;―┘::::::::   : ::::::"   ./
+	;PRINTFORML                         /::::::::::::::::::::＼   ／ :::::,./ ;;;./                  .／::::::::      :(ﾞ｝:: :::::ﾞ'-､
+	PRINTFORML                        /::::::::::::::ヽ:j:､::::) / .゛ :::.／.;;;;./               ..."::: ::: : ｌ＼: ゛: ._..-､:    :ヽ
+	PRINTFORML                      ｒy´￣｀ヽ/:::!::ﾄ､:Y!:j!:|/`.,．:::: l ;;;;;／     .＿_.    i､,!:::   : :.  ""゛.  . ."""'"／:::.!
+	PRINTFORML                      |_X    ｒj):::!:/ィ_ｊ:/!:/八./ ::::: .!;:;;;./   ., / ﾞ.;;;;;~ゝ､゛:::i  ' ｉ .,!   │    ／.l::::.!
+	PRINTFORML                      ﾏ_ｊト-≠‐､::ﾘ ｆ殲ｊﾘ::(7_ヾ !::::::: .!;;;;｀''"゛;_......-､､;;;;  .!    ヽ  ..<''ゝ ;／  .ヽ:|,:ｌ
+	PRINTFORML                      从ヾ:ｷﾞ守ﾄ/    ´￣ ﾉィ:/:ﾉ￣  .!::::::_ -､,;:._, / ﾞ::::::::.＼;;;j  !      ヽ .,:ｰ､ ./    /.,!::"::!
+	PRINTFORML                          Ｖ:人＾´ L:.    ´ﾉ:'Kｌ:::::::ｒ＜ミヽ＼ ／ .,-'"    ／ ;;::/;; l   ::: ､ﾞ'〈__iｼ′  / . / 、::,!
+	PRINTFORML                          (´  ヽ   ｰ  ´ , ｲ´￣(   ,    ヾ. ｀   ,!,, -,ﾞ゛::'":.／. |:::;;!   i .＼.  ヽ     /   /  |:::!
+	PRINTFORML                          ヽ     )≧-ｱ    ｒ ┴ァ＝ｭ､ ､ヽ ヽヽ )､   ):, :./ ;;;;  |::.!;:;;.ｌ  (  ｀!  .`-... !    !   /ﾞ l
+	PRINTFORML                              ｀ｰ/  人/      ィ´  /￣｀ヽ ｀ト-イ  ｊ／,//;;;; l ::.!;:;;;ｌ ゝ.ﾞL       ‐,ﾞ        !;:./
+	PRINTFORML                            _ ィ(  /  |'   ／      (        ヾL     人/ │;;;;; l ::.| ;;;;ゝ､..ｌ        ./         .／./
+	PRINTFORML                          /7   Ｖ    ｊ／         ﾊ          ｢   ／ ／ﾍ.l.;;;;;;!:::./＼;;;;..ヽ ﾞ    .''"          l ;./
+	PRINTFORML                          f      |   /    ＿＿    )､         ヾ ｢｀Y   ﾊ|;;;;;;;;ヽ ｌ...＼ヽ;;;＼  ヽ  /         ./ .．lﾞ
+	PRINTFORML                         jﾘ--ォi! / ｊ￣  ＿ﾉ⌒７个  、       人ｧ ｧ   (_ﾊ!;;;;;;;;;.lﾞ;;;;;ヽヽ ;;.／,／ヽ, '  _,.ｒ"ﾝﾝ‐l
+	PRINTFORML                        仆ーｲ |/  /ア´   /   / /      ヾ    [  [     ｲ／| | ;;;;;;; !;:;;;;;;:,ヽﾆﾝ'"゛   .ヽ.,／ﾞ'-､./;/
+	PRINTFORML                        ｊﾘ  _ﾉ /   (＿＿ノ   /  人       ｀ｰﾏミ7｀ﾍ   ／  lﾞ;;;;;;;.ｌ ;;;;ノ/゛           /",  i'ﾞヽ;./
+	PRINTFORML                        /ｊ￣   ｊ/´            ｊ  /   ヽ     ＼≧≠｢    /;;;;;;;..-| _..-ﾞ/          _.‐´;＼ヽ._/ヽヽ
+	PRINTFORML                     _/ｲ      /               'イ      ､             |!   / ;;;;;;;;;;.//,ﾞ..-'"    _-‐'´;;/''ヾ／: :｀/
+	PRINTFORML                     八/     /    ＿＿ ｚｭ､/  ｊ        ハ            ! i";;;;;;;;;;./ ./ ::::::.／.!;;;;;;./    |/ : ::/
+	PRINTFORML                   /ｱ_  -‐オ´￣￣￣    ｀ｒ '            ＼         ﾉ;;;;;;;;;;./ . ｌ :   ::/   !;;;;;;;!     !     : lﾞ
+	PRINTFORML                  /７´    / !            ＿__ｊ             ｀ー― ´゛:'l,;;;;; /    |:      /   /;;;;;;;;/   .!､     !
+	PRINTFORML                 / (＿__ノ  ｀ー―  ´￣￣）､                       │:  ヽ;;;.／      !:    ./   / ;;;;;;;/     .ｌ.     l
+	PRINTFORML               /   」_＿  ｒ-－＝ニ三￣三ﾍ                           !     .／         l     l   ｌ,;;;;; /      .ﾞl、    !
+	PRINTFORML              (    [      |!＿＿  ＿三ニ＝ ﾍ                        /     !            l     l  .ｌ;::;.lﾞ          !     ｌ
+	PRINTFORML              ﾄ ､ｊ 〒ー ｒｒ-ニ三    |      ﾊ                     /    ｌ            /      !    |;;:;.l          /  /   ,|
+	PRINTFORML              |    |  !    ﾏ           ｌ                         (     |            |     : l   .| ;;; !         i,,ｌ  / ｌ,
+	PRINTFORML    「]      _ァ-ｒ|  |     ﾏ           i      i            ＿   ――                !      .!    ヽ'､ ;;ヽ          ｌ  ､ 〈
+	PRINTFORML ＿_j/l ｒー' ｭ､ノ |  !     ゞｭ          l       |―  ￣￣             ＿            ｌ       (     ｌ,;;;.ヽ         ｌ  ｌ ＼
+	PRINTFORML Y  j/|T￣￣￣     |  ｌ        ミ        l       i!＿＿  ――   ￣   ｌ           .,, '"   . ｌ    ヽ;;;;ﾞ'''ｰ 、    ｌ .＼  ￣''-､、
+	PRINTFORML ┴┤ｊ!---「]-(Y)     !        ハ         l       |       ﾞ‐'ﾞ‐''~‐''ﾞ'-ゝ     .i;_. ＿,!ｲ､.ｌ    .｀ ''ｰ- ＿＿/     ヽ―‐'――ナ'ゝ
+	PRINTFORML    !/!           ^|   ｌ           |ﾏ      ｌ      !                          
+	PRINTFORML    ¨´           |    !          ｊ  ヽ     !      |                          
+	PRINTFORML
+	PRINTFORML
+	PRINTFORML
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃이벤트: 개를 데리고 있는 소년과 모의전을 치릅니다┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORML
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃승패와 무관하게 1회 한정 이벤트입니다　　　　┃
+	PRINTFORML ┃승리／패배 어느 쪽이든 특별한 변화는 없습니다┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORML
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃대전 상대는 역전의 순수 서머너와 동료마인 개입니다┃
+	PRINTFORML ┃모의전 상대인 소년은 한계(99)까지 레벨을 올리고┃
+	PRINTFORML ┃거기에 향으로 대폭 강화되어 있습니다　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORML
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃또한 일반적인 서머너와 마찬가지로　　　　　　┃
+	PRINTFORML ┃공격 아이템의 사용이나 선제를 잡아 물반경을 쓰는 등┃
+	PRINTFORML ┃아이템을 구사한 전투에 능숙합니다　　　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORML
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃모의전을 개시하겠습니까？　　　　　　　　　　┃
+	PRINTFORML ┃(1: 개시한다  ／  0: 역시 그만둔다)　　　　　┃
+	PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORML
+	
+	;イベントを本当に実行するかどうか確認
+	WHILE 1
+		INPUT
+		IF RESULT == 1
+			;１：開始する
+			BREAK
+
+		ELSEIF RESULT == 0
+			;０：やっぱりやめる
+			DRAWLINE
+			RETURN 0
+
+		ELSE
+			;入力ミスのためやり直し
+
+		ENDIF
+	WEND
+
+	;イベントを続行する
+	DRAWLINE
+	PRINTFORML 사적인 결투라는 이유로 투기장을 나와 몇 시간 뒤、당신은 개를 데리고 있는 소년과 황야로 자리를 옮겼다。
+	PRINTFORMW 사는 사람도 없는 불모의 땅。배회하는 것은 난잡한 악마들뿐이다。
+	PRINTFORML 
+	PRINTFORML 대파괴、그리고 대홍수에 의한 정화로부터 수십 년
+	PRINTFORMW 아직도 황폐하여 사람이 살 수 없는 불모의 대지를 소년은 가만히 바라보고 있다。
+	PRINTFORML 
+	PRINTFORML 소년이 당신을 향해 돌아선다。
+	PRINTFORMW 자、시합을 시작하자。
+	PRINTFORML
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃＊이상한 꿈을 꾸었다……　　　　　　　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORML
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃＊악마에게 먹히는 어머니의 모습을　　　　　┃
+	PRINTFORML ┃　언젠가 만날 친구를 손수 처단하는 날을　　┃
+	PRINTFORML ┃　연인마저 불행하게 만들어 버리는 결말을　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORML
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃＊만약 나에게 미래를 선택할 권리가 있다면　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORML
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃＊운명을 누군가에게 내맡기거나 하지 않아！┃
+	PRINTFORML ┃　신에게도！ 악마에게도！！　　　　　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORML 
+	PRINTFORML 초인　※※※※이(가) 나타났다！
+	PRINTFORMW 개　※※※※이(가) 나타났다！
+	PRINTFORML 
+	;-------------
+	;戦闘処理
+	;-------------
+	;レベル、キャラクター番号を指定して「犬を連れた少年」を呼び出す　※まだ存在しないので「CSVNo.0：あなた」のデータを参照
+	CALL SET_ENEMY, 9, 0, 99, 0, 1
+	;ステータスを調節(お香とかMAG強化してくる想定)
+	;※めっちゃ素早い上に二階行動で物反鏡とか使ってくる。ずるい！
+	;CFLAG:(CHARANUM-1):ＨＰ보정 += MAXBASE:(CHARANUM-1):ＨＰ * 1
+	BASE:(CHARANUM-1):힘 += 100
+	BASE:(CHARANUM-1):지혜 += 160
+	BASE:(CHARANUM-1):마력 += 160
+	BASE:(CHARANUM-1):내구 += 50
+	BASE:(CHARANUM-1):속도 += 90
+	BASE:(CHARANUM-1):운 += 5
+	;敵キャラの名称を「소년」に変更
+	CALLNAME:(CHARANUM-1) = 소년
+
+	;行動パターンをセット
+	;※通常行動とは別口で物反鏡と魔反鏡をランダムで使ってくる。ずるい！
+	CSTR:(CHARANUM-1):사고패턴 = COLOSSEUM_26_EVENT3
+
+	;装備をセット
+	EQUIP:(CHARANUM-1):검 = GETNUM(ITEM, "마사카도의검")
+	EQUIP:(CHARANUM-1):총 = GETNUM(ITEM, "레일건")
+	EQUIP:(CHARANUM-1):머리 = GETNUM(ITEM, "마사카도의투구")
+	EQUIP:(CHARANUM-1):몸통 = GETNUM(ITEM, "마사카도의갑주")
+	EQUIP:(CHARANUM-1):팔 = GETNUM(ITEM, "마사카도의토시")
+	EQUIP:(CHARANUM-1):발 = GETNUM(ITEM, "기간트폴")
+
+	;スキルを設定
+	;※MPが0だけどアイテムを使ってくる。消費MPなしでアイテム個数制限なし。ずるい！
+	ABL:(CHARANUM-1):스킬1 = [[스킬:마석]]
+	ABL:(CHARANUM-1):스킬2 = [[스킬:메기도스톤]]
+	ABL:(CHARANUM-1):스킬3 = [[스킬:신경탄]]
+	ABL:(CHARANUM-1):스킬4 = [[스킬:아이템숙련]]
+	ABL:(CHARANUM-1):스킬5 = [[스킬:아이템숙련]]
+	ABL:(CHARANUM-1):스킬6 = [[스킬:아이템숙련]]
+
+	;行動回数を設定
+	CFLAG:(CHARANUM-1):행동횟수 = 2
+
+	;全BS無効(ジオハメ、ダメ！ゼッタイ！)
+	FOR LOCAL,GETNUM(BASE,"HAPPY"),GETNUM(BASE,"BRAND")+1
+		BASE:(CHARANUM-1):LOCAL = -100
+		MAXBASE:(CHARANUM-1):LOCAL = -100
+	NEXT
+
+	;ステータスなどの設定値を反映させる。
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+
+	;レベル、キャラクター番号を指定して「ペットの犬」を呼び出す　※「CSVNo.852：ケルベロス」のデータを参照
+	CALL SET_ENEMY, 10, [[キャラ:케르베로스]], 99, 0, 1
+
+	;敵キャラの名称を「ペットの犬」に変更
+	CALLNAME:(CHARANUM-1) = ペットの犬
+
+	;全BS無効(ジオハメ、ダメ！ゼッタイ！)
+	FOR LOCAL,GETNUM(BASE,"HAPPY"),GETNUM(BASE,"BRAND")+1
+		BASE:(CHARANUM-1):LOCAL = -100
+		MAXBASE:(CHARANUM-1):LOCAL = -100
+	NEXT
+
+	;ステータスを調節
+	;※物理系のステータス補正をかける。強い。
+	BASE:(CHARANUM-1):힘 += 100
+	BASE:(CHARANUM-1):지혜 += 30
+	BASE:(CHARANUM-1):마력 += 80
+	BASE:(CHARANUM-1):내구 += 50
+	BASE:(CHARANUM-1):속도 += 80
+	BASE:(CHARANUM-1):운 += 5
+
+	;スキルを設定
+	ABL:(CHARANUM-1):스킬4 = [[스킬:기합]]	;スキル4の『지옥의업화』は魔法なので合わないため入れ替え
+
+	;ステータスなどの設定値を反映させる。
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+
+	;経験値処理をスキップする
+	FLAG:RESULT스킵 = 1
+	;会話不能にする(ここで無限に仲魔入手は仕様外です)
+	FLAG:회화불능플래그 = 1
+
+	;ここで戦闘開始
+	CALL BATTLE_START
+	RESETCOLOR
+
+	;経験値処理をデフォルトに戻す
+	FLAG:RESULT스킵 = 0
+	;会話不能フラグをデフォルトに戻す
+	FLAG:회화불능플래그 = 0
+
+	;PTメンバーのHP・MPを全回復する
+	CALL COLOSSEUM_26_RECOVERY_ALL
+
+	;-------------
+	;戦闘終了後
+	;-------------
+	PRINTFORML
+	PRINTFORML 문득 정신을 차려보니 소년은 어디에도 없었다。
+	PRINTFORML 몇 가지 장비와 핸드벨트 컴퓨터만이 지면에 남아 있다。
+	PRINTFORML
+	PRINTFORML 『운명을 누군가에게 내맡기거나 하지 않아！』
+	PRINTFORMW 『신에게도！ 악마에게도！！』
+	PRINTFORML
+	PRINTFORMW 그렇게 주장하던 그의 모습이 눈에 박혀 떠나지 않는다。
+	PRINTFORMW 당신은、조직의 개다。
+	PRINTFORMW 살아가는 방식조차 선택할 수 없다。
+	PRINTFORMW
+	PRINTFORMW ………
+	PRINTFORMW ……
+	PRINTFORMW …
+	PRINTFORML
+	DRAWLINE
+	IF COMP_SIZEUP_BY_EVENT:COMP_SIZEUP_EVENTNUM("CL26_ダメージコンテスト特典2")
+		;COMP容量が30以上の場合、COMP容量の増加はなし(代わりに先輩サマナーにアイテムをもらう)
+		PRINTFORML 에？ 이 악마소환 프로그램、유용할 수 없다고？
+		PRINTFORML 애초에 구조가 다르다고？ BASIC으로 기술되어 있다고？
+		PRINTFORML 그렇구나…… 엣 BASIC？
+		PRINTFORML
+	ELSE
+		CALL MESSAGE_WINDOW, "" , "＞COMP의 용량이 1 늘어났다"
+		CALL SIZEUP_COMP_BY_EVEMT, "CL26_ダメージコンテスト特典2"
+		PRINTFORML
+	ENDIF
+	PRINTFORML
+	CALL MESSAGE_WINDOW, "" , "빛의 소태도를 손에 넣었다"
+	CALL GET_ITEMS, "빛의소태도", 1
+	CALL MESSAGE_WINDOW, "" , "단두대 도끼를 손에 넣었다"
+	CALL GET_ITEMS, "길로틴액스", 1
+
+	;特殊イベントを(9:終了済)にする
+	COLOSSEUM_26_SPECIAL_EVENT_FLG:EVENT_NO = 9
+ENDIF
+
+RETURN 1
+
+
+;---------------------------------
+;HP・MP全回復処理
+;---------------------------------
+@COLOSSEUM_26_RECOVERY_ALL
+;ダメージコンテストやテスト戦闘などの終了後に回復処理を挟む
+FOR LOCAL, 0, CHARANUM
+	CALL HEALTH_CHARA, LOCAL
+NEXT
+RETURN 1
+
+
+;---------------------------------
+;挑戦可能な特殊イベントの数を集計する
+;---------------------------------
+@ADD_UP_SPECIAL_EVENT
+#FUNCTION
+#LOCALSIZE  1
+#LOCALSSIZE 1
+
+;-------------
+;変数定義
+;-------------
+;挑戦可能な特殊イベントの数
+#DIM SPECIAL_EVENT_COUNT
+
+;-------------
+;本処理
+;-------------
+SPECIAL_EVENT_COUNT = 0
+
+;特殊イベント1～10の内、挑戦可能(進行中)のものを集計する
+FOR LOCAL,0,9
+	;ランキング一位、かつご褒美イベントがまだ発生していない場合
+	IF COLOSSEUM_26_SPECIAL_EVENT_FLG:LOCAL >= 1 && COLOSSEUM_26_SPECIAL_EVENT_FLG:LOCAL <= 8
+	SPECIAL_EVENT_COUNT ++
+	ENDIF
+NEXT
+
+RETURNF SPECIAL_EVENT_COUNT
+
+
+
+

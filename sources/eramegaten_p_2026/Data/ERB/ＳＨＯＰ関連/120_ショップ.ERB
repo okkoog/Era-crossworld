@@ -1,0 +1,105 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/08/01		Bazzile					新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@SHOPCOMABLE_120
+SIF !IS_USEABLE_SHOP
+	RETURN 0
+;---- EDIT 002 ADD START -------------------------
+;初回訪問フラグ:初期化
+M:1 = 0
+;---- EDIT 002 ADD END ---------------------------
+RESULT:1 = 1
+RESULTS = SHOP
+RETURN 1
+
+
+@SHOP_COM_120, ARG
+#DIM DYNAMIC LCOUNT, 2
+#DIM CONST SHOP_TABLE =  [[ショップ:정크숍]], [[ショップ:COMPSMITH]], [[ショップ:요요조]], [[ショップ:라그의가게]], [[ショップ:로사・칸디타지점]]
+#DIMS CONST SHOP_NAME_TABLE =  "정크숍", "COMPSMITH", "요요조", "라그의가게", "로사・칸디타지점"
+#DIMS SHOW_LINE
+#DIM STOCK_REDRAW
+#DIM L_LINE
+IF !IS_VISITED_SHOP
+	CALL SHOW_PICTURE, "NONFLOORD", "만세이 렐름"
+	CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞%MASTER는% ＣＯＭＰ의 데이터를 따라/＞만세이 렐름에 방문했다。", , , , , 4
+	CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞다국적인 건물이 뒤섞인 화려한 거리에는/＞그에 못지않게 다양한 인간과 악마의 모습이 가득하다。", , , , , 4
+	CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞이 렐름은 데빌서머너만이 방문할 수 있는 영역이며、/＞팬텀・소사이어티를 포함한 다양한 조직의 정치적 거래로 탄생하여、/＞완충지대로 활용되고 있다", , , , , 4
+	CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "", @"＞팬텀・소사이어티의 일원이 된 %MASTER는%/＞앞으로、이 땅에서 물자와 전력을 조달하게 될 것이다。", , , , , 4
+	IS_VISITED_SHOP = 1
+ENDIF
+STOCK_REDRAW = CURRENTREDRAW()
+L_LINE = LINECOUNT
+DO
+	REDRAW 2
+	CLEARLINE LINECOUNT - L_LINE
+	DRAWLINE
+	PRINTL SHOP
+	DRAWLINE
+	FOR LCOUNT, 0, VARSIZE("SHOP_TABLE")
+		TRYCCALLFORM SHOP_USEABLE_{SHOP_TABLE:LCOUNT}
+			SIF !RESULT
+				CONTINUE
+		CATCH
+		ENDCATCH
+		SHOW_LINE '= @"<button value = '{LCOUNT}'>" + "<div>"
+		SELECTCASE LCOUNT
+			CASE 0
+				SHOW_LINE += "┏" + "[0] 정크숍" + "━" * ((96 - STRLENS("[0] 정크숍")) / 2) + "┓"
+				SHOW_LINE += "<br>" + "┃" + TOALIGNMENT("검이나 총 같은 무기、다양한 방어구、공격아이템이나 회복아이템 등", 96, "LEFT") + "┃"
+				SHOW_LINE += "<br>" + "┃" + TOALIGNMENT("전투에 필요한 다양한 물품을 취급하는 가게", 96, "LEFT") + "┃"
+				SHOW_LINE += "<br>" + "┃" + TOALIGNMENT("소사이어티와 깊은 관계가 있으며、조직에 공헌하면 편의를 제공받을 수 있다", 96, "LEFT") + "┃"
+				SHOW_LINE += "<br>" + "┗" + "━" * 48 + "┛"
+			CASE 1
+				SHOW_LINE += "┏" + "[1] COMP SMITH" + "━" * ((96 - STRLENS("[1] COMP SMITH")) / 2) + "┓"
+				SHOW_LINE += "<br>" + "┃" + TOALIGNMENT("ＣＯＭＰ의 개조를 맡아주는 가게", 96, "LEFT") + "┃"
+				SHOW_LINE += "<br>" + "┃" + TOALIGNMENT("메모리영역 확장이나 인스톨소프트나 에뮬레이터 추가를 해준다。", 96, "LEFT") + "┃"
+				SHOW_LINE += "<br>" + "┃" + TOALIGNMENT("서머너에게 큰 도움이 되지만、여러 사정으로 마카 지불만 받으니 주의", 96, "LEFT") + "┃"
+				SHOW_LINE += "<br>" + "┗" + "━" * 48 + "┛"
+			CASE 2
+				SHOW_LINE += "┏" + "[2] 요요조" + "━" * ((96 - STRLENS("[2] 요요조")) / 2) + "┓"
+				SHOW_LINE += "<br>" + "┃" + TOALIGNMENT("일반적으로는 유통되지 않는 특수한 물품을 취급하는 가게", 96, "LEFT") + "┃"
+				SHOW_LINE += "<br>" + "┃" + TOALIGNMENT("정크숍과 마찬가지로 다양한 물품을 취급하고 있지만", 96, "LEFT") + "┃"
+				SHOW_LINE += "<br>" + "┃" + TOALIGNMENT("상품의 희소성 때문에 일반적인 화폐로는 거래할 수 없다。", 96, "LEFT") + "┃"
+				SHOW_LINE += "<br>" + "┗" + "━" * 48 + "┛"
+			CASE 3
+				SHOW_LINE += "┏" + "[3] 라그의가게" + "━" * ((96 - STRLENS("[3] 라그의가게")) / 2) + "┓"
+				SHOW_LINE += "<br>" + "┃" + TOALIGNMENT("기묘한 작은 남자 라그가 주인을 맡고 있는 쥬얼숍", 96, "LEFT") + "┃"
+				SHOW_LINE += "<br>" + "┃" + TOALIGNMENT("그렇다고는 해도、보석을 파는 가게가 아니라 보석과 교환하여 희귀한 물품을 파는 가게이다。", 96, "LEFT") + "┃"
+				SHOW_LINE += "<br>" + "┃" + TOALIGNMENT("최근에는 조교사용 물품의 입고에도 주력하고 있어、희귀한 도구 외에도 희귀한 악마나 인간을 구입할 수 있다。", 96, "LEFT") + "┃"
+				SHOW_LINE += "<br>" + "┗" + "━" * 48 + "┛"
+			CASE 4
+				SHOW_LINE += "┏" + "[4] 로사・칸디타 만세이 렐름점 " + "━" * ((96 - STRLENS("[4] 로사・칸디타 만세이 렐름점 ")) / 2) + "┓"
+				SHOW_LINE += "<br>" + "┃" + TOALIGNMENT("뒷세계의 성과 아름다움을 테마로 내세우는 신진 부티크", 96, "LEFT") + "┃"
+				SHOW_LINE += "<br>" + "┃" + TOALIGNMENT("이 거리에서는 드물게、전투에 사용되는 물품을 취급하지 않는다。", 96, "LEFT") + "┃"
+				SHOW_LINE += "<br>" + "┃" + TOALIGNMENT("만、표면세계에 내놓기엔 꺼려지는 옷을 대량으로 입고하고 있어、일부 호사가들에게 사랑받고 있다。", 96, "LEFT") + "┃"
+				SHOW_LINE += "<br>" + "┗" + "━" * 48 + "┛"
+		ENDSELECT
+		SHOW_LINE += "</div>" + "</button>"
+		HTML_PRINT SHOW_LINE
+		FOR LCOUNT:1, 0, 5
+			PRINTL 
+		NEXT
+	NEXT
+	DRAWLINE
+	PRINTL [9] 돌아간다
+	ONEINPUT
+	IF INRANGE(RESULT, 0, VARSIZE("SHOP_TABLE") - 1)
+		VARI L_RESULT = RESULT
+		RESULT = 1
+		TRYCALLFORM SHOP_USEABLE_{SHOP_TABLE:L_RESULT}
+		IF RESULT
+			REDRAW STOCK_REDRAW
+			M:1 = 0
+			FLAG:SHOP커맨드 = SHOP_TABLE:L_RESULT
+			CALLFORM SHOP_COM_{FLAG:SHOP커맨드}
+			FLAG:SHOP커맨드 = [[ショップ:상점]]
+		ENDIF
+	ENDIF
+LOOP RESULT != 9
+REDRAW STOCK_REDRAW
+RETURN 1

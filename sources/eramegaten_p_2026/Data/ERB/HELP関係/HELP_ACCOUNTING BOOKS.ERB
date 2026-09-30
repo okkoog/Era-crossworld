@@ -1,0 +1,233 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:HELP_ACCOUNTING BOOKS.ERB
+;	Facility	:HELP関係の帳簿閲覧関連の関数群です。
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2012/05/31		ネトリス				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+@ACCOUNTING_BOOKS_MAIN
+CLEARLINE LINECOUNT
+DRAWLINE
+PRINTFORML 
+
+
+PRINT [0] 매각액
+PRINT 　　[1] 노역이익
+PRINTL 　　[2] 돌아간다
+CALL INPUTINT(0,1,2,)
+
+SELECTCASE RESULT
+	CASE 0
+		CALL 売却額表示
+	CASE 1
+		CALL 労役利益表示
+	CASE 2
+		RETURN
+ENDSELECT
+
+
+
+
+@売却額表示
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC L_TABLE_FALLEN = "", "（연모친애）", "（음란창부）", "（복종예속）"
+LOCAL:1 = 0
+CLEARLINE LINECOUNT
+DRAWLINE
+FOR LCOUNT, 0, 4
+	IF LCOUNT == 0
+		PRINTFORML 노예 종합 매각액
+	ELSEIF LCOUNT == 1
+		PRINTFORML 연모・친애 매각액
+		LOCAL:1 = 10
+	ELSEIF LCOUNT == 2
+		PRINTFORML 음란･창부 매각액
+		LOCAL:1 = 20
+	ELSEIF LCOUNT == 3
+		PRINTFORML 복종・예속 매각액
+		LOCAL:1 = 30
+	ENDIF
+	;総額
+	PRINTFORML 　　　　　　　　총액：{FLAG:("총노예매각총액" + L_TABLE_FALLEN:LCOUNT), 8}마카　　　　　　　　　　　　　　　　　　　（이번 매각 총금액：{FLAG:("노예매각총액" + L_TABLE_FALLEN:LCOUNT), 8}마카）
+	;平均額
+	PRINTFORM 　　　　　　　평균액：
+	IF FLAG:("총매각인수" + L_TABLE_FALLEN:LCOUNT) == 0
+		PRINTFORM 　　　 0
+	ELSE
+		PRINTFORM {FLAG:("총노예매각총액" + L_TABLE_FALLEN:LCOUNT)/FLAG:("총매각인수" + L_TABLE_FALLEN:LCOUNT), 8}
+	ENDIF
+	PRINTFORM 마카　　　　　　　　　　　　　　　　　　　（　ヽヽ　　평균액：
+	IF FLAG:("매각인수" + L_TABLE_FALLEN:LCOUNT) == 0
+		PRINTFORM 　　　 0
+	ELSE
+		PRINTFORM {FLAG:("노예매각총액" + L_TABLE_FALLEN:LCOUNT)/FLAG:("매각인수" + L_TABLE_FALLEN:LCOUNT), 8}
+	ENDIF
+	PRINTFORML 마카）
+	PRINTFORML 　　　　　　　　　　：
+	;最高額
+	PRINTFORM 　　　　　　　최고액：{FLAG:("총노예매각최고액" + L_TABLE_FALLEN:LCOUNT), 8}마카
+
+	IF FLAG:("총매각인수" + L_TABLE_FALLEN:LCOUNT) > 0
+		PRINTFORM 　　최고액노예：%奴隷売却最高額キャラ名:LCOUNT, 20,LEFT%
+	ELSE
+		PRINTFORM 　　　　　　　　　　　　　　　　　　
+	ENDIF
+	PRINTFORML 　（　ヽヽ　　최고액：{FLAG:("노예매각최고액" + L_TABLE_FALLEN:LCOUNT), 8}마카）
+	;最低額
+	PRINTFORM 　　　　　　　최저액：{FLAG:("총노예매각최저액" + L_TABLE_FALLEN:LCOUNT), 8}마카
+	IF FLAG:("총매각인수" + L_TABLE_FALLEN:LCOUNT) > 0
+		PRINTFORM 　　최저액노예：%奴隷売却最低額キャラ名:LCOUNT, 20,LEFT%
+	ELSE
+		PRINTFORM 　　　　　　　　　　　　　　　　　　
+	ENDIF
+	PRINTFORML 　（　ヽヽ　　최저액：{FLAG:("노예매각최저액" + L_TABLE_FALLEN:LCOUNT), 8}마카）
+	CUSTOMDRAWLINE ･
+NEXT
+
+PRINT [0] 매각액
+PRINT 　　[1] 노역이익
+PRINTL 　　[2] 돌아간다
+CALL INPUTINT(0,1,2,)
+SELECTCASE RESULT
+	CASE 0
+		CALL 売却額表示
+	CASE 1
+		CALL 労役利益表示
+	CASE 2
+		RETURN
+ENDSELECT
+
+
+@労役利益表示
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC SHOW_LINE
+#DIMS DYNAMIC TEMP_LINE
+#DIMS CONST L_TABLE = "식당", "창관", "공중변소", "렌탈", "극장", "콘서트"
+CLEARLINE LINECOUNT
+DRAWLINE
+FOR LCOUNT, 0, 6
+	TEMP_LINE '= L_TABLE:LCOUNT
+	TEMP_LINE += "<br>"
+	TEMP_LINE += "<br>"
+	IF L_TABLE:LCOUNT == "콘서트"
+		TEMP_LINE += @"　　　　　총이익：￥%TOSTR(FLAG:("총" + L_TABLE:LCOUNT + "총이익"), "#,###"), 11%（이번의총이익：￥%TOSTR(FLAG:(L_TABLE:LCOUNT + "총이익"), "#,###"), 11%）"
+	ELSE
+		TEMP_LINE += @"　　　　　총이익：%TOSTR(FLAG:("총" + L_TABLE:LCOUNT + "총이익"), "#,###"), 9%마카（이번의총이익：%TOSTR(FLAG:(L_TABLE:LCOUNT + "총이익"), "#,###"), 9%마카）"
+	ENDIF
+	TEMP_LINE += "<br>"
+	TEMP_LINE += "　" * 8 + "："
+	TEMP_LINE += "<br>"
+
+	;最高利益
+	IF L_TABLE:LCOUNT == "극장"
+		TEMP_LINE += @"　　　　최고이익：%TOSTR(FLAG:(L_TABLE:LCOUNT + "최고이익"), "#,###"), 9%마카"
+	ELSEIF L_TABLE:LCOUNT == "콘서트"
+		TEMP_LINE += @"　　최고개인이익：￥%TOSTR(FLAG:(1448+LOCAL:2), "#,###"), 11%"
+	ELSE
+		TEMP_LINE += @"　　최고개인이익：%TOSTR(FLAG:(L_TABLE:LCOUNT + "최고이익"), "#,###"), 9%마카"
+	ENDIF
+	SIF 労役最高利益キャラ名:LCOUNT != "" && L_TABLE:LCOUNT != "극장"
+		TEMP_LINE += @"　：%労役最高利益キャラ名:LCOUNT, 20,LEFT%"
+	TEMP_LINE += "<br>"
+	;最高接客数
+	IF GROUPMATCH(L_TABLE:LCOUNT, "식당", "창관", "공중변소")
+		TEMP_LINE += @"하루 최고 접객수：{FLAG:(L_TABLE:LCOUNT + "최고접객수"), 9}인"
+		SIF 労役最高接客数キャラ名:LCOUNT != ""
+			TEMP_LINE += @"　　：%労役最高接客数キャラ名:LCOUNT, 20,LEFT%"
+	ENDIF
+	SHOW_LINE += @"<div xpos = '{LCOUNT % 2 * 50 * 75 + 100}' ypos = '{LCOUNT / 2 * 100 * 7}'>" + TEMP_LINE + "</div>"
+NEXT
+FOR LCOUNT, 0, 3
+	SHOW_LINE += @"<div xpos = '0' ypos = '{LCOUNT * 100 * 7 + 600}'>" + "・" * (LINELENS / 2) + "</div>"
+	SHOW_LINE += @"<div xpos = '{50 * 75}' ypos = '{LCOUNT * 100 * 7}'>" + ("│" + "<br>")* (6 - 1) + "│" + "</div>"
+NEXT
+HTML_PRINT SHOW_LINE
+FOR LCOUNT, 0, 20
+	PRINTL 
+NEXT
+PRINT [0] 매각액
+PRINT 　　[1] 노역이익
+PRINTL 　　[2] 돌아간다
+CALL INPUTINT(0,1,2,)
+SELECTCASE RESULT
+	CASE 0
+		CALL 売却額表示
+	CASE 1
+		CALL 労役利益表示
+	CASE 2
+		RETURN
+ENDSELECT
+
+@帳簿閲覧, ARG, ARG:1
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC L_TABLE_FALLEN = "", "（연모친애）", "（음란창부）", "（복종예속）"
+;ARG = 売却されたキャラ
+;ARG:1 = 売却金額
+FOR LCOUNT, 0, 4
+	SELECTCASE LCOUNT
+		CASE 1
+			SIF !恋慕系陥落(ARG)
+				CONTINUE
+		CASE 2
+			SIF !淫乱系陥落(ARG)
+				CONTINUE
+		CASE 3
+			SIF !服従系陥落(ARG)
+				CONTINUE
+	ENDSELECT
+	;総額に足す
+	FLAG:("총노예매각총액" + L_TABLE_FALLEN:LCOUNT) += ARG:1
+	FLAG:("노예매각총액" + L_TABLE_FALLEN:LCOUNT) += ARG:1
+
+	;最高額と比べる
+	IF ARG:1 > FLAG:("총노예매각최고액" + L_TABLE_FALLEN:LCOUNT)
+		FLAG:("총노예매각최고액" + L_TABLE_FALLEN:LCOUNT) = ARG:1
+		奴隷売却最高額キャラ名:LCOUNT '= CALLNAME:ARG
+	ENDIF
+	SIF ARG:1 > FLAG:("노예매각최고액" + L_TABLE_FALLEN:LCOUNT)
+		FLAG:("노예매각최고액" + L_TABLE_FALLEN:LCOUNT) = ARG:1
+	
+	;最低額と比べる
+	IF ARG:1 < FLAG:("총노예매각최저액" + L_TABLE_FALLEN:LCOUNT) || FLAG:("총노예매각최저액" + L_TABLE_FALLEN:LCOUNT) == 0
+		FLAG:("총노예매각최저액" + L_TABLE_FALLEN:LCOUNT) = ARG:1
+		奴隷売却最低額キャラ名:LCOUNT '= CALLNAME:ARG
+	ENDIF
+	SIF ARG:1 < FLAG:("노예매각최저액" + L_TABLE_FALLEN:LCOUNT) || FLAG:("노예매각최저액" + L_TABLE_FALLEN:LCOUNT) == 0
+		FLAG:("노예매각최저액" + L_TABLE_FALLEN:LCOUNT) = ARG:1
+		
+	;売却人数を足す
+	FLAG:("총매각인수" + L_TABLE_FALLEN:LCOUNT) += 1
+	FLAG:("매각인수" + L_TABLE_FALLEN:LCOUNT) += 1
+NEXT
+
+
+@帳簿閲覧_労役, ARG, ARG:1, ARG:2, ARG:3
+#DIMS CONST L_TABLE = "", "식당", "창관", "공중변소", "렌탈", "극장", "콘서트"
+;ARG = 労役キャラ
+;ARG:1 = 報酬金額
+;ARG:2 = 접객인수
+;ARG:3 = 労役の種類（1.식당　2.창관　3.공중변소　4.レンタル　5.劇場　6.コンサート
+;総利益に足す
+FLAG:("총" + L_TABLE:(ARG:3) + "총이익") += ARG:1
+FLAG:(L_TABLE:(ARG:3) + "총이익") += ARG:1
+
+;最高利益と比べる
+IF ARG:1 > FLAG:(L_TABLE:(ARG:3) + "최고이익") && L_TABLE:(ARG:3) != "극장"
+	FLAG:(L_TABLE:(ARG:3) + "최고이익") = ARG:1
+	労役最高利益キャラ名:(ARG:3 - 1) '= CALLNAME:ARG
+ELSEIF ARG:3 == 5
+	FLAG:(L_TABLE:(ARG:3) + "최고이익") = ARG:1
+ENDIF
+;最高接客数と比べる
+IF GROUPMATCH(L_TABLE:(ARG:3), "식당", "창관", "공중변소")
+	IF ARG:2 > FLAG:(L_TABLE:(ARG:3) + "최고접객수")
+		FLAG:(L_TABLE:(ARG:3) + "최고접객수") = ARG:2
+		労役最高接客数キャラ名:(ARG:3 - 1) '= CALLNAME:ARG
+	ENDIF
+ENDIF

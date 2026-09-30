@@ -1,0 +1,155 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_5620,ARG
+RESULTS = 컨버트
+
+;　명중
+@SKILL_HITRATE_5620, ARG
+RETURN 0
+
+@SKILL_POWER_5620, ARG = -1
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_5620,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_5620,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_5620, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("TURN")
+
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_5620,ARG
+RETURN 3
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_5620
+RETURN GET_SKILL_DECIDE_TYPE_NUM("AS")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_5620, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_5620,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_5620,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_5620, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_5620
+RETURN GET_SUCCESSION_NUM("자동효과")
+;속도보정
+@SKILL_SPEED_5620, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_5620
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_5620, ARG = -1
+RETURN 4
+
+
+
+;============================================
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_5620, ARG, ARG:1, ARG:2
+#DIMS L_SKILL_NAME
+CALL GET_SKILL_PROP, "SKILL_NAME", SKILL_NUM_F("변신악마변경"), POS(ARG:1)
+
+L_SKILL_NAME = %RESULTS%
+CALL PRINT_HIT_MESSAGE, POS(ARG:1), L_SKILL_NAME, "W"
+CALL SKILL_ACTION, SKILL_NUM_F("변신악마변경"), POS(ARG:1)
+SIF !RESULT
+	RETURN 0
+CALL PRINT_ACT_MESSAGE, POS(ARG:1), SKILL_NUM_F("변신악마변경")
+PRINTFORMW 　%조사처리(CALLNAME:POS(ARG:1), "는")% %조사처리(L_SKILL_NAME,"을")% 실행했다！
+RETURN 1
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_5620, ARG
+PRINTL 아군 한 명의 링크악마、혹은 세트악마를 변경한다。
+
+@SKILL_EXPLAIN_TOOLTIP_5620, ARG
+CALL GET_CAST_SKILL_EMULATOR, 5620, ARG
+IF ARG < 0
+	RESULTS = 어시스트스킬:필요턴수%TOFULL(TOSTR(RESULT))%
+ELSE
+	IF RESULT <= 0
+		RESULTS = 어시스트스킬:ＲＥＡＤＹ
+	ELSE
+		RESULTS = 어시스트스킬:필요턴수%TOFULL(TOSTR(RESULT))%
+	ENDIF
+ENDIF
+RESULTS:1 = 아군 한 명의 링크악마、혹은 세트악마를 변경한다。
+
+@SKILL_BATTLE_MAIN_TOOLTIP_5620, ARG, ARG:1
+CALL GET_CAST_SKILL_EMULATOR, ARG:1, ARG
+RESULTS = □컨버트
+IF RESULT <= 0
+	RESULTS:1 = 　READY
+ELSE
+	RESULTS:1 =　필요턴수:{RESULT}
+ENDIF
+
+@ロール専用_5620
+RESULTS = Aion식 서머너
+RETURN 1
+
+@SKILL_EX_DISPLAY_5620, ARG, ARGS
+CALL ASSIST_SKILL_EX_DISPLAY, ARG, ARGS, 5620, "Convert"
+RETURN RESULT
+
+
+
+
+;ターゲット条件
+@SKILL_TARGETABLE_5620,ARG, ARG:1
+SIF !GET_ROLE_PROP("CAN_USE_LINK", ARG:1)
+	RETURN 0
+SIF RESULTS_F:3 != "悪魔一般"
+	RETURN 0
+SIF !INPUTABLE_CHARA_F(ARG:1)
+	RETURN 0
+RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_5620, ARG
+#DIM L_POS
+RESULTS = 対象不在
+FOR L_POS, 1, 7
+	SIF !GET_ROLE_PROP("CAN_USE_LINK", POS(L_POS))
+		CONTINUE
+	SIF RESULTS_F:3 != "悪魔一般"
+		CONTINUE
+	SIF !INPUTABLE_CHARA_F(POS(L_POS))
+		CONTINUE
+	RETURN 1
+NEXT
+RETURN 0
+;とくにない
+

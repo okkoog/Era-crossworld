@@ -1,0 +1,76 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILL_ACTION_BADSTATE.ERB
+;	Facility	:回復スキルの実行関数群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/05/02		P(bazziel)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;@SINGLE_BADSTATE			単体バッドステート
+;@FIELD_BADSTATE			範囲バッドステート
+;@CAN_COVEART_DYING			即死変換効果の確認関数
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=========================================
+;単体バッドステータス付与基本
+;ARG:0 使用者
+;ARG:1 対象
+;ARG:2 使用スキル
+;ARG:3 真の場合最後にWAITで待たない
+;=========================================
+@SINGLE_BADSTATE, ARG, ARG:1, ARG:2, ARG:3
+#DIM STOCK
+CALL GET_SKILL_PROP, "SKILL_ADDTIONAL_STATE", ARG:2, ARG
+IF GET_STATE(RESULT) == "DYING" && CAN_COVEART_DYING(ARG:1)
+	TFLAG:치환원스킬 = ARG:2
+	CFLAG:ARG:입력행동 = [[스킬:즉사치환스킬]]
+	CALL GET_SKILL_PROP, "SKILL_ADDTIONAL_TYPE", ARG:2, ARG
+	TFLAG:오변환시이상허용 = CHECK_WEAKNESS(MAXBASE:(ARG:1):GET_TYPE(RESULT)) > 0
+	CALL ATTACK_TARGET, ARG, ARG:1, [[스킬:즉사치환스킬]], 0, ARG:3
+	CFLAG:ARG:입력행동 = TFLAG:치환원스킬
+	TFLAG:치환원스킬 = 0
+ELSE
+	CALL ATTACK_TARGET, ARG, ARG:1, ARG:2, 1, ARG:3
+ENDIF
+RETURN 0
+
+;=========================================
+;全体・列バッドステータス付与基本
+;ARG:0 使用者
+;ARG:1 対象
+;ARG:2 使用スキル
+;ARG:3 真の場合最後にWAITで待たない
+;=========================================
+@FIELD_BADSTATE, ARG, ARG:1, ARG:2, ARG:3
+#DIM LCOUNT
+#DIM POSMIN
+#DIM POSMAX
+#DIM STOCK
+#DIM L_T
+STOCK = CFLAG:ARG:타겟
+FOR LCOUNT, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1) + 1
+	CFLAG:ARG:타겟 = LCOUNT
+	SIF POS(LCOUNT) < 0
+		CONTINUE
+	CALL GET_SKILL_PROP, "SKILL_TARGETABLE", ARG:2, ARG, POS(LCOUNT)
+	SIF !RESULT
+		CONTINUE
+	CALL SINGLE_BADSTATE, ARG, POS(LCOUNT), ARG:2, ARG:3
+NEXT
+CFLAG:ARG:타겟 = STOCK
+RETURN 0
+
+;=========================================
+;即死変換するかどうか
+;=========================================
+@CAN_COVEART_DYING, L_CHARA
+#FUNCTION
+#DIM DYNAMIC L_CHARA
+SIF IS_EQUIPED_KAMUI_BY_CHARA(L_CHARA, "신의 섭리·오(伍)") 
+	RETURNF 1
+SIF HAVE_PU_SKILL(L_CHARA, "彼方からの存在")
+	RETURNF 1
+RETURNF 0

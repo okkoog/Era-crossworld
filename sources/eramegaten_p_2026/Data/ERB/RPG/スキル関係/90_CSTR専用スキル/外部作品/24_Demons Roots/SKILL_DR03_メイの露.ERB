@@ -1,0 +1,214 @@
+﻿;メイの露。　原作ではHPMPTPを２０％ずつ回復という、ぽりゅちゃん毎ターンこれしてればいいよ的なスキル。
+;MPの回復は流石にまずいのでオミット。代わりに回復力を変更。
+;デスポリュカにしかついてないCSTR状態を参照するのでデスポリュカ以外が持つと落ちるぞ！
+
+
+;スキル名
+@SKILL_NAME_メイの露,ARG
+RESULTS = 메이의 이슬
+
+;　명중
+@SKILL_HITRATE_メイの露, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_メイの露, ARG
+;メディラマよりちょっと下ぐらい
+IF GET_RPG_CSTR_TAKEOVER(ARG, "使徒変身状態") == "起動"
+	RETURN 150
+ELSE
+	RETURN 295
+ENDIF
+
+;特殊な参照値
+@SKILL_CALC_BATTTLE_STATUS_メイの露, ARGS, ARG, ARG:1
+SIF ARG < 0
+	RETURN 0
+SELECTCASE ARGS
+	;回復は魔法効果(影響大),마법위력(影響小)の2変数を置換する
+	CASE "HEAL"
+		RETURN MAXBASE:ARG:공격, MAXBASE:ARG:방어
+ENDSELECT
+
+;;クリティカル率
+;@SKILL_CRITICAL_RATE_メイの露, ARG
+;RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_メイの露, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_メイの露,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_メイの露,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_メイの露,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_メイの露,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_メイの露, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_メイの露,ARG
+RETURN 35
+;35
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_メイの露
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_メイの露,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+@SKILL_HEAL_TYPE_メイの露, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("통상")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_メイの露,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_メイの露,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_メイの露,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_メイの露,ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_メイの露
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_メイの露, ARG = -1
+RETURN 20
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_メイの露
+RETURN 0
+
+;没
+;@SKILL_RANK_メイの露, ARG = -1
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_メイの露,ARG
+;RETURN GET_STATE_NUM("SLIP")
+RETURN 0
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_メイの露,ARG
+;RETURN GET_TYPE_NUM("검격")
+RETURN 0
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_メイの露,ARG
+RETURN 0
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_メイの露,ARG
+RETURN 0
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_メイの露,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;====================================================
+;@SKILL_TRIGGER_ACTIONABLE_メイの露,ARG,ARG:1
+;RETURN 0
+
+;====================================================
+;カウンター発動条件
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_メイの露,ARG,ARG:1
+;RETURN RESULT
+
+;====================================================
+;ダメージ発動時
+;====================================================
+;@SKILL_DAMAGE_EFFECT_メイの露,ARG,ARG:1
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_メイの露,ARG,ARG:1
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_メイの露,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM 魔力退避値１
+#DIM 魔力退避値２
+
+;魔力退避値１ = MAXBASE:ARG:마법위력
+;魔力退避値２ = MAXBASE:ARG:마법효과
+;
+;MAXBASE:ARG:마법위력 = MAXBASE:ARG:공격
+;MAXBASE:ARG:마법효과 = MAXBASE:ARG:방어
+
+CALL HEAL_FIELD,ARG,ARG:1,SKILL_NUM		;範囲回復(列、全体)
+
+;MAXBASE:ARG:마법위력 = 魔力退避値１
+;MAXBASE:ARG:마법효과 = 魔力退避値２
+
+
+;CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+;CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+;CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM;		拡散攻撃
+;CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM;			ランダム攻撃
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_メイの露,ARG
+PRINTL 『메이의 이슬』
+IF GET_RPG_CSTR_TAKEOVER(ARG, "使徒変身状態") == "起動"
+	PRINTL 아군 전체를 소위력으로 회복한다. 발동이 빠르다.
+ELSE
+	PRINTL 아군 전체를 중위력으로 회복한다. 발동이 빠르다.
+ENDIF
+PRINTL 회복 대상에게 TP 게이지(DR)가 있을 경우 20 회복한다.
+PRINTL 회복량은 마법 위력・마법 효과가 아니라 공격과 방어로 산출된다.
+PRINTL 각 전용 기능은 TP 게이지(DR)를 추가로 10 플러스하는 효과를 지닌다.
+PRINTL 
+PRINTL 생명력이 불어넣어진 꽃에서 떨어지는 이슬을 뿌려 아군을 회복하는 스킬.
+PRINTL 과거에는 정신력에도 효능이 있었던 모양이지만, 이곳에서는 방식이 다른 듯하다.
+PRINTL 마족 데스폴류카의 식물을 다루는 마족 기능 중 하나(CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_メイの露,ARG
+RETURN 1
+;CALL SKILLGAGE_H_ADD,ARG,PU_SKILLNUM_GET(ARG,"メイの露"),0

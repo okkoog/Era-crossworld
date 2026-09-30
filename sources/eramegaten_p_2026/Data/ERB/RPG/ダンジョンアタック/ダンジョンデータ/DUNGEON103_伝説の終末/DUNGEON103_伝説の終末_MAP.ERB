@@ -1,0 +1,472 @@
+﻿;KingExit世界のダンジョン
+;世界のどこかにある、重要人物ばかりを収容していた監獄の奥にある溶岩地帯
+;尋常ではない熱気と殺気に満ちており、魔王の存在を確信させる場所
+;
+;ダンジョンフラグ:0～4　宝箱
+;ダンジョンフラグ:5　　 出口場所記憶
+;ダンジョンフラグ:6 	お宝発見
+;ダンジョンフラグ:7		お宝取得
+;ダンジョンフラグ:8		竜討伐
+;ダンジョンフラグ:9		鎧穴
+;ダンジョンフラグ:10	タマネギ穴
+;ダンジョンフラグ:11	戦闘中デスソース使用フラグ
+;ダンジョンフラグ:12	魔王様発狂段階
+;ダンジョンフラグ:13	魔王様討伐完了
+;
+;=======================================================================
+;攻略条件
+;=======================================================================
+@PREREQUISITE_DUNGEON_103
+; クリア済みはNG
+SIF ダンジョンフラグ:103:13
+	RETURN 0
+
+;KingExitイベントを進めていないとNG
+SIF イベントフラグ:111:0 != 2
+	RETURN 0
+
+;デスポリュカと＠のみがパーティにいる事が条件
+FOR LOCAL, 1, 7
+	;空きポジションは勘定外
+	SIF POS(LOCAL) < 0
+		CONTINUE
+	;主人は勘定外
+	SIF POS(LOCAL) == MASTER
+		CONTINUE
+	;デスポリュカ・KE組以外がパーティにいるとNG
+	IF !(GROUPMATCH(NO:POS(LOCAL), [[キャラ:데스포르카_DR]], [[キャラ:아벤트_KE]], [[キャラ:빌로우_KE]], [[キャラ:브루_KE]], [[キャラ:레스터_KE]], [[キャラ:사미다레_KE]], [[キャラ:스티아라_KE]], [[キャラ:귀네_KE]], [[キャラ:게오루이스_KE]]))
+		RESULTS = 데스포르카(DR), 혹은 KingExit의 캐릭터만 편성
+		RETURN -1
+	ENDIF
+NEXT
+
+RETURN 1
+
+;=======================================================================
+;ダンジョン名
+;=======================================================================
+@GET_DUNGEON_NAME_103
+#FUNCTIONS
+RESULTS_F = 伝説の終末
+
+;=======================================================================
+;フロア名表示
+;=======================================================================
+@FLOORNAME_103
+SELECTCASE FLAG:현M
+	CASE 8
+		PRINTL   溶岩広場
+	CASE 9, 10
+		PRINTL   古洞窟
+	CASE 11
+		PRINTL   溶岩洞窟
+	CASEELSE
+		PRINTL   전설의종말
+ENDSELECT
+
+;=======================================================================
+;特殊タイル表示
+;=======================================================================
+@TILE_MARK_103_0_11_1
+RESULTS = ↑
+@TILE_MARK_103_1_18_1
+RESULTS = →
+@TILE_MARK_103_2_1_4
+RESULTS = ←
+@TILE_MARK_103_2_12_1
+RESULTS = ↑
+@TILE_MARK_103_2_23_3
+RESULTS = →
+@TILE_MARK_103_2_23_4
+RESULTS = →
+@TILE_MARK_103_2_23_15
+RESULTS = →
+@TILE_MARK_103_3_1_6
+RESULTS = ←
+@TILE_MARK_103_3_1_7
+RESULTS = ←
+@TILE_MARK_103_4_19_2
+RESULTS = →
+@TILE_MARK_103_5_1_5
+RESULTS = ←
+@TILE_MARK_103_5_1_6
+RESULTS = ←
+@TILE_MARK_103_5_8_1
+RESULTS = ↑
+@TILE_MARK_103_6_1_1
+RESULTS = ↑
+@TILE_MARK_103_6_2_1
+RESULTS = ↑
+@TILE_MARK_103_6_3_1
+RESULTS = ↑
+@TILE_MARK_103_7_1_9
+RESULTS = ←
+@TILE_MARK_103_7_10_1
+RESULTS = ↑
+@TILE_MARK_103_8_7_12
+RESULTS = ↓
+@TILE_MARK_103_8_8_12
+RESULTS = ↓
+@TILE_MARK_103_9_4_8
+RESULTS = ↓
+@TILE_MARK_103_10_4_8
+RESULTS = ↓
+@TILE_MARK_103_11_6_8
+RESULTS = ↓
+
+@TILE_MARK_103_8_7_1
+RESULTS = 검
+@TILE_MARK_103_8_7_3
+RESULTS = 竜
+
+@TILE_MARK_103_9_4_1
+RESULTS = 休
+@TILE_MARK_103_10_4_1
+RESULTS = 休
+@TILE_MARK_103_11_6_1
+RESULTS = 休
+
+;=======================================================================
+;スタート地点入力
+;=======================================================================
+@START_DUNGEON_103,ARG
+IF ダンジョンフラグ:(FLAG:현던전):5 == 1
+	FLAG:현M = 9
+	FLAG:현X = 4
+	FLAG:현Y = 2
+ELSEIF ダンジョンフラグ:(FLAG:현던전):5 == 2
+	FLAG:현M = 10
+	FLAG:현X = 4
+	FLAG:현Y = 2
+ELSEIF ダンジョンフラグ:(FLAG:현던전):5 == 3
+	FLAG:현M = 11
+	FLAG:현X = 6
+	FLAG:현Y = 2
+ELSE
+	FLAG:현M = 0
+	FLAG:현X = 3
+	FLAG:현Y = 4
+ENDIF
+FLAG:탈출스킬금지 = 1
+
+;=======================================================================
+;フロアデータ
+;=======================================================================
+@MAKE_FLOOR_103
+SELECTCASE FLAG:현M
+	CASE 0
+	;１階a
+		FLAG:최대X = 26
+		FLAG:최대Y = 8
+							    ;01234567890123456789012345678901234
+		CALL MAKE_FLOOR_LINE, 0,"                          "
+		CALL MAKE_FLOOR_LINE, 1,"           9          6   "
+		CALL MAKE_FLOOR_LINE, 2,"  11     11111       111  "
+		CALL MAKE_FLOOR_LINE, 3," 1111    111 1   11 11111 "
+		CALL MAKE_FLOOR_LINE, 4," 1111    11  11 111 11111 "
+		CALL MAKE_FLOOR_LINE, 5," 1111111 1   1111 1111111 "
+		CALL MAKE_FLOOR_LINE, 6," 11111 111   111    11111 "
+		CALL MAKE_FLOOR_LINE, 7,"                          "
+
+	CASE 1
+	;２階a
+		FLAG:최대X = 20
+		FLAG:최대Y = 18
+							    ;01234567890123456789012345678901234
+		CALL MAKE_FLOOR_LINE, 0,"                    "
+		CALL MAKE_FLOOR_LINE, 1,"        1111    119 "
+		CALL MAKE_FLOOR_LINE, 2,"    1111111111  11  "
+		CALL MAKE_FLOOR_LINE, 3,"   11   1141 1  11  "
+		CALL MAKE_FLOOR_LINE, 4," 111      1  1111   "
+		CALL MAKE_FLOOR_LINE, 5," 11    111113 11    "
+		CALL MAKE_FLOOR_LINE, 6,"  1    4111         "
+		CALL MAKE_FLOOR_LINE, 7,"  11    1 14        "
+		CALL MAKE_FLOOR_LINE, 8,"  111               "
+		CALL MAKE_FLOOR_LINE, 9,"   111111           "
+		CALL MAKE_FLOOR_LINE,10,"      111           "
+		CALL MAKE_FLOOR_LINE,11,"     11             "
+		CALL MAKE_FLOOR_LINE,12,"   111              "
+		CALL MAKE_FLOOR_LINE,13," 1111  1111  111    "
+		CALL MAKE_FLOOR_LINE,14," 11 1 11  11  11    "
+		CALL MAKE_FLOOR_LINE,15," 1  111    11111    "
+		CALL MAKE_FLOOR_LINE,16,"              7     "
+		CALL MAKE_FLOOR_LINE,17,"                    "
+
+	CASE 2
+	;２階b
+		FLAG:최대X = 25
+		FLAG:최대Y = 17
+							    ;0123456789012345678901234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"                         "
+		CALL MAKE_FLOOR_LINE, 1,"   111      9            "
+		CALL MAKE_FLOOR_LINE, 2,"  11 1     1111          "
+		CALL MAKE_FLOOR_LINE, 3,"  11 11    11111      19 "
+		CALL MAKE_FLOOR_LINE, 4," 91  111    1         19 ";２階fへ
+		CALL MAKE_FLOOR_LINE, 5,"     1111  11111     11  "
+		CALL MAKE_FLOOR_LINE, 6,"     11 1111   11   11   "
+		CALL MAKE_FLOOR_LINE, 7,"    111         11111    "
+		CALL MAKE_FLOOR_LINE, 8,"    111           111    "
+		CALL MAKE_FLOOR_LINE, 9,"    111           111    "
+		CALL MAKE_FLOOR_LINE,10,"     1            111    "
+		CALL MAKE_FLOOR_LINE,11,"   11113           1     "
+		CALL MAKE_FLOOR_LINE,12,"    111         1 11     "
+		CALL MAKE_FLOOR_LINE,13,"               31111     "
+		CALL MAKE_FLOOR_LINE,14,"              1111 11    "
+		CALL MAKE_FLOOR_LINE,15,"                1   1119 "
+		CALL MAKE_FLOOR_LINE,16,"                         "
+
+	CASE 3
+	;１階b
+		FLAG:최대X = 17
+		FLAG:최대Y = 11
+							    ;0123456789012345678901234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"                 "
+		CALL MAKE_FLOOR_LINE, 1,"   11            "
+		CALL MAKE_FLOOR_LINE, 2,"  111         6  "
+		CALL MAKE_FLOOR_LINE, 3,"   111       11  "
+		CALL MAKE_FLOOR_LINE, 4,"   1       1111  "
+		CALL MAKE_FLOOR_LINE, 5,"   111111  11 11 "
+		CALL MAKE_FLOOR_LINE, 6," 9111 1 1  1   1 "
+		CALL MAKE_FLOOR_LINE, 7," 91   1111 1     "
+		CALL MAKE_FLOOR_LINE, 8,"         111     "
+		CALL MAKE_FLOOR_LINE, 9,"          1      "
+		CALL MAKE_FLOOR_LINE,10,"                 "
+
+	CASE 4
+	;２階c
+		FLAG:최대X = 21
+		FLAG:최대Y = 11
+							    ;0123456789012345678901234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"                     "
+		CALL MAKE_FLOOR_LINE, 1,"                  1  "
+		CALL MAKE_FLOOR_LINE, 2," 3               119 "
+		CALL MAKE_FLOOR_LINE, 3," 111 11        1111  "
+		CALL MAKE_FLOOR_LINE, 4,"   1111     1111111  "
+		CALL MAKE_FLOOR_LINE, 5,"     1111    11      "
+		CALL MAKE_FLOOR_LINE, 6,"        111  11      "
+		CALL MAKE_FLOOR_LINE, 7,"          11111      "
+		CALL MAKE_FLOOR_LINE, 8,"          11111      "
+		CALL MAKE_FLOOR_LINE, 9,"             7       "
+		CALL MAKE_FLOOR_LINE,10,"                     "
+
+	CASE 5
+	;２階d
+		FLAG:최대X = 17
+		FLAG:최대Y = 11
+							    ;0123456789012345678901234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"                 "
+		CALL MAKE_FLOOR_LINE, 1,"        9        "
+		CALL MAKE_FLOOR_LINE, 2,"        11    6  "
+		CALL MAKE_FLOOR_LINE, 3,"         1   11  "
+		CALL MAKE_FLOOR_LINE, 4,"      1111   111 "
+		CALL MAKE_FLOOR_LINE, 5," 9111  111   111 "
+		CALL MAKE_FLOOR_LINE, 6," 9111 11111  111 "
+		CALL MAKE_FLOOR_LINE, 7,"   11  1  111111 "
+		CALL MAKE_FLOOR_LINE, 8,"    1 11   11    "
+		CALL MAKE_FLOOR_LINE, 9,"    111          "
+		CALL MAKE_FLOOR_LINE,10,"                 "
+
+	CASE 6
+	;３階
+		FLAG:최대X = 5
+		FLAG:최대Y = 12
+							    ;0123456789012345678901234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"     "
+		CALL MAKE_FLOOR_LINE, 1,"  9  "
+		CALL MAKE_FLOOR_LINE, 2," 111 "
+		CALL MAKE_FLOOR_LINE, 3," 111 "
+		CALL MAKE_FLOOR_LINE, 4," 111 "
+		CALL MAKE_FLOOR_LINE, 5," 111 "
+		CALL MAKE_FLOOR_LINE, 6," 111 "
+		CALL MAKE_FLOOR_LINE, 7," 111 "
+		CALL MAKE_FLOOR_LINE, 8," 111 "
+		CALL MAKE_FLOOR_LINE, 9," 111 "
+		CALL MAKE_FLOOR_LINE,10,"  7  "
+		CALL MAKE_FLOOR_LINE,11,"     "
+
+	CASE 7
+	;２階f
+		FLAG:최대X = 12
+		FLAG:최대Y = 15
+							    ;0123456789012345678901234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"            "
+		CALL MAKE_FLOOR_LINE, 1,"          9 ";溶岩広場へ
+		CALL MAKE_FLOOR_LINE, 2,"          1 "
+		CALL MAKE_FLOOR_LINE, 3,"      11  1 "
+		CALL MAKE_FLOOR_LINE, 4,"      11111 "
+		CALL MAKE_FLOOR_LINE, 5,"      11    "
+		CALL MAKE_FLOOR_LINE, 6,"      11    "
+		CALL MAKE_FLOOR_LINE, 7,"      111   "
+		CALL MAKE_FLOOR_LINE, 8,"     1111   "
+		CALL MAKE_FLOOR_LINE, 9," 91111  11  ";２階bから
+		CALL MAKE_FLOOR_LINE,10,"   11   11  "
+		CALL MAKE_FLOOR_LINE,11,"    11   1  "
+		CALL MAKE_FLOOR_LINE,12,"     1   1  "
+		CALL MAKE_FLOOR_LINE,13,"     11111  "
+		CALL MAKE_FLOOR_LINE,14,"            "
+
+	CASE 8
+	;溶岩広場
+		FLAG:최대X = 17
+		FLAG:최대Y = 14
+							    ;0123456789012345678901234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"                 "
+		CALL MAKE_FLOOR_LINE, 1,"       9 11      "
+		CALL MAKE_FLOOR_LINE, 2,"      11111      "
+		CALL MAKE_FLOOR_LINE, 3,"       9         "
+		CALL MAKE_FLOOR_LINE, 4,"  11   1   1     "
+		CALL MAKE_FLOOR_LINE, 5,"  1111 4 111     "
+		CALL MAKE_FLOOR_LINE, 6," 111111111111    "
+		CALL MAKE_FLOOR_LINE, 7," 11  1111   1 31 "
+		CALL MAKE_FLOOR_LINE, 8," 1   11111  1  1 "
+		CALL MAKE_FLOOR_LINE, 9,"       1    1111 "
+		CALL MAKE_FLOOR_LINE,10,"       11        "
+		CALL MAKE_FLOOR_LINE,11,"       11        "
+		CALL MAKE_FLOOR_LINE,12,"       99        ";２階fから
+		CALL MAKE_FLOOR_LINE,13,"                 "
+
+	CASE 9
+	;古洞窟
+		FLAG:최대X = 9
+		FLAG:최대Y = 10
+							    ;01234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"         "
+		CALL MAKE_FLOOR_LINE, 1," 111911  "
+		CALL MAKE_FLOOR_LINE, 2," 1111111 "
+		CALL MAKE_FLOOR_LINE, 3," 111111  "
+		CALL MAKE_FLOOR_LINE, 4," 111111  "
+		CALL MAKE_FLOOR_LINE, 5,"  1111   "
+		CALL MAKE_FLOOR_LINE, 6,"   111   "
+		CALL MAKE_FLOOR_LINE, 7,"    1    "
+		CALL MAKE_FLOOR_LINE, 8,"    9    ";１階aから
+		CALL MAKE_FLOOR_LINE, 9,"         "
+
+	CASE 10
+	;古洞窟
+		FLAG:최대X = 8
+		FLAG:최대Y = 10
+							    ;01234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"        "
+		CALL MAKE_FLOOR_LINE, 1,"    9   "
+		CALL MAKE_FLOOR_LINE, 2,"   11   "
+		CALL MAKE_FLOOR_LINE, 3,"   111  "
+		CALL MAKE_FLOOR_LINE, 4,"  11111 "
+		CALL MAKE_FLOOR_LINE, 5," 11111  "
+		CALL MAKE_FLOOR_LINE, 6,"   11   "
+		CALL MAKE_FLOOR_LINE, 7,"    1   "
+		CALL MAKE_FLOOR_LINE, 8,"    9   ";２階bから
+		CALL MAKE_FLOOR_LINE, 9,"        "
+
+	CASE 11
+	;溶岩洞窟
+		FLAG:최대X = 11
+		FLAG:최대Y = 10
+								;01234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"           "
+		CALL MAKE_FLOOR_LINE, 1,"    119111 "
+		CALL MAKE_FLOOR_LINE, 2," 1111111   "
+		CALL MAKE_FLOOR_LINE, 3," 111111    "
+		CALL MAKE_FLOOR_LINE, 4," 111111    "
+		CALL MAKE_FLOOR_LINE, 5,"   1111    "
+		CALL MAKE_FLOOR_LINE, 6,"    111    "
+		CALL MAKE_FLOOR_LINE, 7,"      1    "
+		CALL MAKE_FLOOR_LINE, 8,"      9    ";２階dから
+		CALL MAKE_FLOOR_LINE, 9,"           "
+	CASE 12
+	;魔王フロア
+		FLAG:최대X = 7
+		FLAG:최대Y = 9
+								;0123456789
+		CALL MAKE_FLOOR_LINE, 0,"       "
+		CALL MAKE_FLOOR_LINE, 1," 11111 "
+		CALL MAKE_FLOOR_LINE, 2," 11111 "
+		CALL MAKE_FLOOR_LINE, 3," 11411 "
+		CALL MAKE_FLOOR_LINE, 4," 11111 "
+		CALL MAKE_FLOOR_LINE, 5,"  111  "
+		CALL MAKE_FLOOR_LINE, 6,"   1   "
+		CALL MAKE_FLOOR_LINE, 7,"   1   "
+		CALL MAKE_FLOOR_LINE, 8,"       "
+
+ENDSELECT
+
+;=======================================================================
+;タイル表示
+;=======================================================================
+@TILE_MARK_COMMON_103_4, ARG , ARG:1 , ARG:2
+IF FLAG:현M == 1 && ARG % 10 == 4
+	SELECTCASE ARG 
+		CASE 1014
+			IF ダンジョンフラグ:(FLAG:현던전):9 != 2
+				RESULTS = □
+				RETURN 0
+			ENDIF
+		CASE 1024
+			IF ダンジョンフラグ:(FLAG:현던전):10 != 2
+				RESULTS = □
+				RETURN 0
+			ENDIF
+	ENDSELECT
+ENDIF
+RETURN 1
+
+;=======================================================================
+;タイル調整
+;=======================================================================
+;ARG:1、ARG:2はそれぞれX座標とY座標
+;ARGはその座標に現在代入されている番号
+;0：壁　1：床もしくは通路　2：扉　3：宝箱　4：イベント　5：罠　6：上り階段 7：下り階段　8：出口　9：その他特殊処理等
+;これらの内、3～9が代入されているマスに、個別の番号を与える処理を実行します。
+;この処理を行った後、これらのマスには 「マップ番号*1000 + そのマスがそのマップで左上から数えて何個目のARGタイプのマスか*10 + ARG」が代入されます
+;例えば 2003 であった場合、「2番のマップ＝３Ｆで、左上から数えて0個目の3＝宝箱である」ということを意味しています
+;尚、0～2はどのマップにも大量に設置されるので、ここでは基本的に個別の番号を与えません。
+;
+;何個目のARGタイプのマスなのか、は左上の(0,0)から右まで探し、その後一つ下の段に移って同様に探す、というのを右下まで繰り返して数えます。
+@MAKE_FLOOR_LINE_COMMON_103, ARG, ARG:1, ARG:2
+#LOCALSIZE 10
+;LOCAL:0～9 それぞれ何個目のARGなのかを記憶しています
+;指定された座標が(0,0)である場合、つまり新しいマップを読み込んだ時はLOCALを消去します
+SIF ARG:1 == 0 && ARG:2 == 0
+	VARSET LOCAL
+SELECTCASE ARG
+	CASE 3 TO 9
+		DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:ARG * 10 + ARG
+		LOCAL:ARG++
+	CASE IS > 9
+		DA:(ARG:1):(ARG:2) = ARG
+ENDSELECT
+CALL REPLACE_TILE_DUNGEON_103, DA:(ARG:1):(ARG:2), ARG:1, ARG:2
+
+;=======================================================================
+;タイル破棄
+;イベントが終わった床・扉を通常マスに置き換える
+;=======================================================================
+@REPLACE_TILE_DUNGEON_103, ARG, ARG:1, ARG:2
+SELECTCASE ARG
+	CASE 1003
+		SIF ダンジョンフラグ:(FLAG:현던전):0 == 1
+			DA:(ARG:1):(ARG:2) = 1
+	CASE 1004
+		SIF ダンジョンフラグ:(FLAG:현던전):9 > 0 || ダンジョンフラグ:(FLAG:현던전):10 > 0
+			DA:(ARG:1):(ARG:2) = 1
+	CASE 2003
+		SIF ダンジョンフラグ:(FLAG:현던전):1 == 1
+			DA:(ARG:1):(ARG:2) = 1
+	CASE 2013
+		SIF ダンジョンフラグ:(FLAG:현던전):2 == 1
+			DA:(ARG:1):(ARG:2) = 1
+	CASE 4003
+		SIF ダンジョンフラグ:(FLAG:현던전):3 == 1
+			DA:(ARG:1):(ARG:2) = 1
+	CASE 8003
+		SIF ダンジョンフラグ:(FLAG:현던전):4 == 1
+			DA:(ARG:1):(ARG:2) = 1
+	CASE 8004
+		SIF ダンジョンフラグ:(FLAG:현던전):6 == 1
+			DA:(ARG:1):(ARG:2) = 1
+	CASE 8009
+		SIF ダンジョンフラグ:(FLAG:현던전):7 == 1
+			DA:(ARG:1):(ARG:2) = 1
+	CASE 8019
+		SIF ダンジョンフラグ:(FLAG:현던전):8 == 1
+			DA:(ARG:1):(ARG:2) = 1
+ENDSELECT

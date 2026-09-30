@@ -1,0 +1,125 @@
+﻿;デビチルより、デ・カジャ＋デ・クンダを敵味方全体にかけるスキル。
+
+;スキル名
+@SKILL_NAME_544,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:사키]])
+	RESULTS = 아메지스트 반지여!
+ELSE
+	RESULTS = 이니셜라이즈
+ENDIF
+
+;　명중
+@SKILL_HITRATE_544, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_544, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_544,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_544,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_544, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_544,ARG
+RETURN 22
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_544
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_544, ARG
+RETURN GET_SKILL_TARGET_NUM("전투전체")
+
+;　사거리
+@SKILL_RANGE_544,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_544,ARG
+RETURN GET_SPHERE_NUM("적아군전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_544, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_544
+RETURN GET_SUCCESSION_NUM("지원")
+;속도보정
+@SKILL_SPEED_544, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_544
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_544, ARG = -1
+RETURN 12
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_544, ARG, ARG:1, ARG:2
+FOR LOCAL,1, 17
+	SIF !IS_TARGET_ABLE(POS(LOCAL))
+		CONTINUE
+	FOR LOCAL:1, GETNUM(CFLAG,"공격강화"), GETNUM(CFLAG,"마법효과강화")+1
+		CFLAG:POS(LOCAL):(LOCAL:1) = 0
+	NEXT
+	CALL PRINT_HIT_MESSAGE, POS(LOCAL), "능력 상승과 저하가 해제되었다！"
+NEXT
+;PRINTFORMW 敵味方全てのカジャ系・ンダ系効果が解除された！
+
+
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_544, ARG
+IF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:사키]]
+	PRINTL 마를 쫓는 반지가 구분 없이 주술을 베어가른다
+	PRINTL 적 아군 전체의 능력의 상승과 저하를 해제한다
+ELSE
+	PRINTL 적 아군 전체의 능력의 상승과 저하를 해제한다
+ENDIF
+
+@SKILL_EXPLAIN_TOOLTIP_544, ARG
+RESULTS = 적 아군 전체의 능력의 상승과 저하를 해제한다
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_544,ARG
+RETURN 1
+;とくにない
+

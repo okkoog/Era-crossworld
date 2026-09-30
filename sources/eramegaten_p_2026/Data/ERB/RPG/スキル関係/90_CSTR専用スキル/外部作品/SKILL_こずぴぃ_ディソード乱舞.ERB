@@ -1,0 +1,110 @@
+﻿;ディソード乱舞　命中90　威力120　攻撃回数1-1　消費18　全体　검격　対象の魔法効果を1段階下げる
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_ディソード乱舞,ARG
+RESULTS = 디소드 난무
+
+;　명중
+@SKILL_HITRATE_ディソード乱舞, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_ディソード乱舞, ARG
+RETURN 150
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ディソード乱舞,ARG
+RETURN 8
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ディソード乱舞,ARG
+RETURN 8
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ディソード乱舞, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ディソード乱舞,ARG
+RETURN 50
+
+;　相性
+@SKILL_TYPE_ディソード乱舞,ARG
+RETURN GET_TYPE_NUM("만능")
+;검격
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ディソード乱舞
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　攻撃タイプ
+@SKILL_ATTACKTYPE_ディソード乱舞,ARG
+RETURN GET_攻撃タイプ_NUM("物理")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ディソード乱舞, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ディソード乱舞,ARG
+RETURN GET_SKILL_TARGET_NUM("전투전체")
+
+;　사거리
+@SKILL_RANGE_ディソード乱舞,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ディソード乱舞,ARG
+RETURN GET_SPHERE_NUM("적아군전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ディソード乱舞,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_ディソード乱舞
+RETURN GET_SUCCESSION_NUM("검격")
+;검격
+
+;スキル変化？用ランク
+@SKILL_RANK_ディソード乱舞, ARG = -1
+RETURN 15
+
+;スキルがランダム範囲かどうか
+@SKILL_RAND_TARGET_ディソード乱舞,ARG
+RETURN 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ディソード乱舞,ARG,ARG:1,ARG:2
+CALL ATTACK_SKILL, ARG, ARG:1, ARG:2
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_ディソード乱舞, ARG
+PRINTL 망상의 검으로 주위를 난도질한다.
+PRINTL 적아군 전체에서 자신과 함락 대상을 제외한 무작위 대상에게 8회의 만능 상성 물리 데미지
+
+;ターゲット条件
+@SKILL_TARGETABLE_ディソード乱舞,ARG, ARG:1
+SIF ARG == ARG:1
+	RETURN 0
+;淫乱系はだれであっても陥落扱いになるのでMASTERに陥落しているものとして扱う
+IF 淫乱系陥落(ARG)
+	SIF ARG:1 == MASTER
+		RETURN 0
+ELSE
+	SIF 陥落(ARG, ARG:1)
+		RETURN 0
+ENDIF
+RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ディソード乱舞,ARG
+RETURN 1
+;とくにない

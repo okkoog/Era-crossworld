@@ -1,0 +1,1432 @@
+;==================================================
+;キャラクターステータスの表示関連
+;==================================================
+
+@SHOPCOMABLE_110
+RESULTS = 能力確認
+IF CHARANUM > 0
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+@SHOP_COM_110
+#LOCALSIZE 3
+Z = 0
+;表示させるキャラを抽出（Q:*に表示するキャラの登録番号、LOCAL:2に人数）
+CALL INPUT_CHARA_LIST("ステータスを表示させたいキャラを選んでください", "CASTING_SHOW_STATUS" , "UP_PRINT_SHOP_COM_110" , , "MODECHANGE_SHOP_COM_110")
+SIF RESULT == 1000
+	RETURN 0
+LOCAL:2 = A
+
+IF FLAG:ショップコマンド == 110
+	CALL SHOW_CHARADATA_PAGE,1, LOCAL:2
+ELSE
+	CALL SHOW_CHARADATA_PAGE,2, LOCAL:2
+ENDIF
+RESTART
+
+@CASTING_SHOW_STATUS
+SIF CFLAG:COUNT:ボスフラグ
+	RETURN 0
+SIF CFLAG:COUNT:PTフラグ == 0 && FLAG:(20000+NO:COUNT) < 100
+	RETURN 0
+SIF FLAG:ショップコマンド == [[ショップ:探索]] && (CFLAG:COUNT:所属ＣＯＭＰ == -1 || ABL:COUNT:種族 == 0) && CFLAG:COUNT:PTフラグ == 1
+	RETURN 0
+SIF CFLAG:COUNT:労役フラグ == 3 && (FLAG:ショップコマンド != 110)
+	RETURN 0
+SIF CFLAG:COUNT:この場に居ないフラグ == 1
+	RETURN 0
+SIF CFLAG:COUNT:フィルタリングフラグ
+	RETURN 0
+SIF Z == 1 && !陥落(COUNT)
+	RETURN 0
+SIF Z == 2 && !CFLAG:COUNT:労役フラグ
+	RETURN 0
+SIF Z == 3 && CFLAG:COUNT:売却可能 && !CFLAG:COUNT:売却不可フラグ
+	RETURN 0
+RETURN 1
+
+@UP_PRINT_SHOP_COM_110
+	PRINTFORM ステータスを表示させたいキャラを選んでください　
+	SIF A > 20
+		PRINTFORM ＜page.{P}/{A / 20}＞
+	PRINTL
+DRAWLINE
+PRINTL 　　　☆:調教中 ★:助手 ○:助手可 ●:元助手
+
+@MODECHANGE_SHOP_COM_110 , ARG
+SELECTCASE ARG
+	CASE -1
+		PRINTL 
+		PRINTFORMLC [1010]全員
+		PRINTFORMLC [1011]陥落
+		PRINTFORMLC [1012]労役中
+		PRINTFORMLC [1013]売却不可
+	CASE 1010 TO 1013
+		Z = ARG - 1010
+		RETURN ARG , -1
+		
+ENDSELECT
+RETURN ARG , 1
+
+
+;-------------------------------------------------
+;ステータス表示(各キャラごと)
+;-------------------------------------------------
+@SHOW_CHARADATA_PAGE, ARG, ARG:1
+#LOCALSIZE 6
+#DIM ループ
+
+;ページ判別はLOCALで
+LOCAL = ARG
+U = RESULT
+;リストの何人目かをLOCAL:1に保存
+LOCAL:1 = FINDELEMENT(Q, RESULT)
+;リストは何人分あるかをLOCAL:2に保存
+LOCAL:2 = ARG:1
+
+;現在の行数をLOCAL:5に保存、$PRINT_PAGEに戻るときにCLEARLINE LINECOUNT - LOCAL:5
+LOCAL:5 = LINECOUNT
+
+$PRINT_PAGE
+CLEARLINE LINECOUNT - LOCAL:5
+;味方でない場合、赤表示
+SIF CFLAG:U:PTフラグ == 0
+	SETCOLOR 0x66EEEE
+CUSTOMDRAWLINE =
+;IF U != MASTER && FLAG:12 & 4
+;	CALL PRINT_SLAVE_STATUS
+;ELSEIF U == MASTER && FLAG:12 & 4
+;	CALL PRINT_MASTER_STATUS
+;ENDIF
+CALL SHOW_INFO_NAME
+CALLFORM SHOW_INFO_PAGE_{LOCAL}
+IF LINECOUNT - LOCAL:5 < 38
+	FOR ループ , 0 , 38 - (LINECOUNT - LOCAL:5)
+		PRINTL
+	NEXT
+ENDIF
+
+RESETCOLOR
+PRINTFORMLC \@(LOCAL == 1) ? %" " * 16% # [1007]前のページ\@
+PRINTLC   [1000]リストに戻る
+PRINTFORMLC \@ LOCAL == 4 ? %" " * 16% # [1009]次のページ\@
+PRINTL 
+PRINTFORMLC \@(LOCAL:1 == 0) ? %" " * 16% # [1001]前のキャラ\@
+PRINTFORMLC   %" " * 18%
+PRINTFORMLC \@(LOCAL:1 == LOCAL:2-1) ? %" " * 16% # [1003]次のキャラ\@
+PRINTFORMLC \@ABL:U:スキル1 && LOCAL == 2 && !TALENT:U:デビルシフター ? [1020]スキル並び替え # %" " * 16%\@
+$INPUT_LOOP_2
+INPUTS
+IF RESULTS == "1000"
+	RETURN 0
+ELSEIF RESULTS == "1007" && LOCAL > 1
+	LOCAL -= 1
+	GOTO PRINT_PAGE
+ELSEIF RESULTS == "1009" && LOCAL < 4
+	LOCAL += 1
+	GOTO PRINT_PAGE
+ELSEIF RESULTS == "1001" && LOCAL:1 > 0
+	LOCAL:1 -= 1
+	U = Q:(LOCAL:1)
+	GOTO PRINT_PAGE
+ELSEIF RESULTS == "1003" && LOCAL:1 < LOCAL:2-1
+	LOCAL:1 += 1
+	U = Q:(LOCAL:1)
+	GOTO PRINT_PAGE
+ELSEIF LOCAL == 2 && RESULTS == "1020"
+	$INPUT_LOOP_SKILLCHANGE
+	PRINTL ひとつ目のスキルを選んで下さい
+	FOR LOCAL:3, 0, FLAG:スキル数
+		LOCALS:2 = スキル{LOCAL:3+1}
+		IF ABL:U:(LOCALS:2)
+			CALLFORM SKILL_NAME_{ABL:U:(LOCALS:2)}, U
+			PRINTFORM 　[{LOCAL:3+1}]%RESULTS,20,LEFT%
+		ENDIF
+		SIF LOCAL:3 % 4 == 3
+			PRINTL
+	NEXT
+	PRINTL 　[9] キャンセル
+	INPUT
+	SIF RESULT == 9
+		GOTO PRINT_PAGE
+	SIF RESULT < 0 || RESULT > 9
+		GOTO INPUT_LOOP_SKILLCHANGE
+	LOCALS = スキル{RESULT}
+	SIF ABL:U:LOCALS <= 0
+		GOTO INPUT_LOOP_SKILLCHANGE
+	PRINTFORML ふたつ目のスキルを選んでください
+	FOR LOCAL:3, 0, FLAG:スキル数
+		LOCALS:2 = スキル{LOCAL:3+1}
+		SIF ABL:U:LOCALS == ABL:U:(LOCALS:2)
+			SETCOLOR 102, 255, 255
+		IF ABL:U:(LOCALS:2)
+			CALLFORM SKILL_NAME_{ABL:U:(LOCALS:2)}, U
+			PRINTFORM 　[{LOCAL:3+1}]%RESULTS,20,LEFT%
+		ENDIF
+		RESETCOLOR
+		SIF LOCAL:3 % 4 == 3
+			PRINTL
+	NEXT
+	PRINTL 　[9] キャンセル
+	INPUT
+	SIF RESULT == 9
+		GOTO PRINT_PAGE
+	SIF RESULT < 0 || RESULT > 9
+		GOTO INPUT_LOOP_SKILLCHANGE
+	LOCALS:1 = スキル{RESULT}
+	SIF ABL:U:(LOCALS:1) <= 0
+		GOTO INPUT_LOOP_SKILLCHANGE
+	SIF TALENT:U:ペルソナ使い
+		SWAP DITEMTYPE:(EQUIP:U:装備ペルソナ):ペルソナ(LOCALS), DITEMTYPE:(EQUIP:U:装備ペルソナ):ペルソナ(LOCALS:1)
+	SWAP ABL:U:LOCALS, ABL:U:(LOCALS:1)
+	GOTO PRINT_PAGE
+ELSEIF LOCAL == 2 && RESULTS == "2000"
+	CALL PRINT_LINKAGE
+	GOTO PRINT_PAGE
+ELSEIF LOCAL == 2 && TOINT(RESULTS) > 0 && TOINT(RESULTS) <= FLAG:スキル数
+	LOCALS = スキル%RESULTS%
+	IF ABL:U:LOCALS > 0
+		SIF FLAG:スキル属性表示設定 == 1
+			CALLFORM SKILL_EXPLAIN_PERFORMANCE, ABL:U:LOCALS
+		CALLFORM SKILL_EXPLAIN_{ABL:U:LOCALS}
+		WAIT
+		GOTO PRINT_PAGE
+	ELSE
+		GOTO INPUT_LOOP_2
+	ENDIF
+;ELSEIF LOCAL == 2 && TOINT(RESULTS) >= 40 && TOINT(RESULTS) <= 43 && TALENT:U:ペルソナ使い
+;	RESULT = TOINT(RESULTS) - 40
+;	LOCALS = 所持ペルソナ{RESULT}
+;	IF RESULT == 0 && CFLAG:U:初期ペルソナナンバー
+;		CALL PERSONA_STATUS(CFLAG:U:初期ペルソナナンバー)
+;		WAIT
+;		GOTO PRINT_PAGE
+;	ELSEIF EQUIP:U:LOCALS
+;		CALL PERSONA_STATUS(EQUIP:U:LOCALS)
+;		WAIT
+;		GOTO PRINT_PAGE
+;	ELSE
+;		GOTO INPUT_LOOP_2
+;	ENDIF
+ELSEIF LOCAL == 2 && RESULTS == "50" && GET_DEVIL(U) && GROUPMATCH(FLAG:ショップコマンド , [[ショップ:セットアップ]] , [[ショップ:能力確認]])
+	CALL CHANGE_PLUGIN_SOFT, U
+	;CALL EQUIPMENT, U , 6
+	GOTO PRINT_PAGE
+ELSEIF LOCAL == 2 && RANGE(TOINT(RESULTS), 50, 56) && !TFLAG:戦闘中 && (ABL:U:種族 == 0 || ABL:U:種族 == 36)
+	;CALL EQUIP_CHANGE, TOINT(RESULTS) - 50, U, 1
+	CALL EQUIPMENT, U , TOINT(RESULTS) - 50
+	
+	;ステータス参照用リスト作り直し
+	VARSET Q , -1
+	REPEAT CHARANUM
+		CALL CASTING_SHOW_STATUS
+		SIF RESULT
+			Q:FINDELEMENT(Q, -1) = COUNT
+	REND
+	
+	GOTO PRINT_PAGE
+	
+ELSEIF LOCAL == 2 && RESULTS == "悪魔変更" && (TALENT:U:ペルソナ使い || TALENT:U:デビルシフター)
+	IF TALENT:U:ペルソナ使い
+		CALL CHANGE_PERSONA(U)
+	ELSE
+		CALL ACTION_2311, U
+	ENDIF
+ELSEIF LOCAL == 2 && RESULTS == "57" && !TFLAG:戦闘中 && TALENT:U:ガンスリンガー > 0 && EQUIP:U:銃 > 0
+	CALL EQUIP_SPECIAL_BULLET, U
+	GOTO PRINT_PAGE
+ELSEIF LOCAL == 2 && RANGE(TOINT(RESULTS), 4000, 4999)
+	LOCAL:3 = TOINT(RESULTS)
+	CALLFORM 発動者条件_{LOCAL:3}, U
+	IF RESULT && GETBIT(FLAG:(1202+LOCAL:3 / 63), LOCAL:3 % 63)
+		CALLFORM SKILL_NAME_{LOCAL:3}
+		PRINTFORML %RESULTS%
+		
+		PRINT 発動者 　
+		CALLFORM SKILL_COSTTYPE_{LOCAL:3}, ARG
+		IF RESULT == 2
+			CALLFORM SKILL_COST_{LOCAL:3}, ARG
+			PRINTFORM ＨＰ{RESULT,3}％　
+		ELSE
+			CALLFORM SKILL_COST_{LOCAL:3}, ARG
+			PRINTFORM ＭＰ{RESULT,3}　　
+		ENDIF
+		CALLFORM 参加人数_{LOCAL:3}
+		FOR LOCAL:4, 1, RESULT + 1
+			PRINTFORM 参加者{LOCAL:4}　
+			CALLFORM リンケージコストタイプ_{LOCAL:3}, LOCAL:4
+			IF RESULT == 2
+				CALLFORM リンケージコスト_{LOCAL:3}, LOCAL:4
+				PRINTFORM ＨＰ{RESULT,3}％　
+			ELSE
+				CALLFORM リンケージコスト_{LOCAL:3}, LOCAL:4
+				PRINTFORM ＭＰ{RESULT,3}　　
+			ENDIF
+		NEXT
+		PRINTL 
+		
+		CALLFORM SKILL_EXPLAIN_{LOCAL:3}
+		WAIT
+		GOTO PRINT_PAGE
+	ELSE
+		GOTO INPUT_LOOP_2
+	ENDIF
+ELSE
+	GOTO INPUT_LOOP_2
+ENDIF
+
+@SHOW_INFO_NAME
+PRINTFORM \@ CSTR:U:種族名 != "" ? %CSTR:U:種族名% # %STR:(ABL:U:種族)% \@　　%CALLNAME:U%　　
+IF TALENT:U:ペルソナ使い
+	IF EQUIP:U:装備ペルソナ
+		PRINTFORM %CSVCALLNAME(DITEMTYPE:(EQUIP:U:装備ペルソナ):ペルソナ("NO"),0)%降魔中
+	ELSEIF !EQUIP:U:装備ペルソナ && ABL:U:初期ペルソナ
+		PRINTFORM %CSVCALLNAME(ABL:U:初期ペルソナ,0)%降魔中
+	ENDIF
+ELSEIF TALENT:U:デビルシフター
+	IF CFLAG:U:リンク悪魔 > 0
+		PRINTFORM %CALLNAME:FINDCHARA_ID(CFLAG:U:リンク悪魔)%\@CFLAG:U:悪魔変身 ?変身中#リンク中\@
+	ELSE
+		PRINTFORM %CSVCALLNAME(CFLAG:U:初期リンク悪魔, 0)%\@CFLAG:U:悪魔変身 ?変身中#リンク中\@
+	ENDIF
+ELSEIF TALENT:U:喰奴
+		PRINTFORM %CSVCALLNAME(CFLAG:U:初期リンク悪魔, 0)%\@CFLAG:U:悪魔変身 ?変身中#変身可\@
+ENDIF
+SELECTCASE 危険日(U)
+	CASE 1
+		SETCOLOR 0xCC33FF
+			CALL HEARTB
+		PRINTFORM 危険日
+			CALL HEARTB
+		RESETCOLOR
+	CASE 2
+		SETCOLOR 0xCC33FF
+			CALL HEARTB
+		PRINTFORM 発情中
+			CALL HEARTB
+		RESETCOLOR
+	CASE 3, -2
+		SETCOLOR 0xCC33FF
+			CALL HEARTB
+		PRINTFORM 満月発情中
+			CALL HEARTB
+		RESETCOLOR
+ENDSELECT
+PRINTL 
+SIF TALENT:MASTER:998
+	PRINTFORM 　キャラ番号:{NO:U, 3}
+;-------------------------------------------------
+;キャラ能力表示(種族他)
+;-------------------------------------------------
+;能力を見る選択のとき、各キャラの横で種族、体力、気力が表示されます。
+;一応完成。
+@SHOW_RACE
+PRINTFORM 　　種族:\@ CSTR:U:種族名 != "" ? %CSTR:U:種族名% # %STR:(ABL:U:種族)% \@
+SIF TALENT:MASTER:998
+	PRINTFORM 　キャラ番号:{NO:U, 3}
+PRINTL
+PRINTFORML 　体力:({BASE:U:0, 4}/{MAXBASE:U:0, 4})　気力:({BASE:U:1, 4}/{MAXBASE:U:1, 4})
+;一言呼び出し
+;SIF U != MASTER && FLAG:1200 & 4
+;	CALL IMPRESSION_MAIN,U
+IF U == MASTER && FLAG:12 & 4
+	CALL PRINT_MASTER_STATUS
+ELSEIF FLAG:12 & 4
+	CALL PRINT_SLAVE_STATUS
+ENDIF
+
+
+;-------------------------------------------------
+;奴隷用汎用ステータス表示処理
+;-------------------------------------------------
+@PRINT_SLAVE_STATUS
+PRINTFORML (\@(TALENT:MASTER:覚) ? 依存度:{CFLAG:U:2}　 # \@ストレス:{CFLAG:U:ストレス値} 異常経験:{EXP:U:異常経験})
+
+
+
+
+;-------------------------------------------------
+;主人用ステータス表示処理
+;-------------------------------------------------
+@PRINT_MASTER_STATUS
+PRINTFORML □　情報
+PRINT 表の職業	：
+IF CFLAG:MASTER:72 == 0
+	PRINTFORML ないしょ
+ELSEIF CFLAG:MASTER:72 == 1
+	PRINTFORML 生粋のデビルサマナー
+ELSEIF CFLAG:MASTER:72 == 2
+	PRINTFORML 学生
+ELSEIF CFLAG:MASTER:72 == 3
+	PRINTFORML フリーター
+ELSEIF CFLAG:MASTER:72 == 4
+	PRINTFORML 社会人
+ELSEIF CFLAG:MASTER:72 == 5
+	PRINTFORML 深窓の令嬢
+ELSEIF CFLAG:MASTER:72 == 6
+	PRINTFORML 公衆便所
+ELSEIF CFLAG:MASTER:72 == 7
+	PRINTFORML 女王様
+ELSEIF CFLAG:MASTER:72 == 8
+	PRINTFORML 渡世人
+ELSEIF CFLAG:MASTER:72 == 9
+	PRINTFORML メイド
+ELSEIF CFLAG:MASTER:72 == 10
+	PRINTFORML 執事
+ELSEIF CFLAG:MASTER:72 == 11
+	PRINTFORML 仏僧
+ELSEIF CFLAG:MASTER:72 == 12
+	PRINTFORML シスター
+ENDIF
+PRINT 戦闘資質	：
+IF CFLAG:MASTER:73 == 0
+	PRINTFORML なし
+ELSEIF CFLAG:MASTER:73 == 1
+	PRINTFORML デビルサマナー
+ELSEIF CFLAG:MASTER:73 == 2
+	PRINTFORML ペルソナ使い
+ELSEIF CFLAG:MASTER:73 == 3
+	PRINTFORML 異能者
+ELSEIF CFLAG:MASTER:73 == 4
+	PRINTFORML 一般人
+ELSEIF CFLAG:MASTER:73 == 5
+	PRINTFORML 喰奴
+ENDIF
+DRAWLINE
+;-------------------------------------------------
+PRINTFORML □　調教
+PRINT 堕した奴隷の総数　　　　　:
+IF (FLAG:30+FLAG:31+FLAG:32) > 9999
+	;エロ卿「にとり博士、事情を説明してもらおうかね?」
+	;にとり博士「今少し(自慰をする)時間と(ローターを買う)予算をいただければ……」
+	;エロ卿「弁解は罪悪と知り給え」
+	;PRINT [エロ卿のコレクション]
+	PRINT [萬 姦 全 籍]
+ELSEIF (FLAG:30+FLAG:31+FLAG:32) > 999
+	PRINT [ミレニアム]
+ELSEIF (FLAG:30+FLAG:31+FLAG:32) > 99
+	PRINT [百人斬り]
+ELSE
+	PRINTFORM {(FLAG:恋慕人数+FLAG:淫乱人数+FLAG:服従人数), 5}人
+ENDIF
+PRINTFORML 　(今回堕した人数:{(FLAG:今周回恋慕人数+FLAG:今周回淫乱人数+FLAG:今周回服従人数), 5}人)
+SIF FLAG:奴隷売却総数
+	PRINTFORML 今まで売却した悪魔の総数　:{FLAG:奴隷売却総数, 5}人(今回売却した人数:{FLAG:奴隷売却数, 5}人)
+SIF FLAG:恋慕人数
+	PRINTFORML 今まで恋慕にした悪魔の総数　:{FLAG:恋慕人数, 5}人(今回恋慕にした人数:{FLAG:今周回恋慕人数, 5}人)
+SIF FLAG:淫乱人数
+	PRINTFORML 今まで淫乱にした悪魔の総数　:{FLAG:淫乱人数, 5}人(今回淫乱にした人数:{FLAG:今周回淫乱人数, 5}人)
+SIF FLAG:服従人数
+	PRINTFORML 今まで服従にした悪魔の総数　:{FLAG:服従人数, 5}人(今回服従にした人数:{FLAG:今周回服従人数, 5}人)
+SIF FLAG:人気取得者数
+	PRINTFORML ビデオで人気を得た悪魔の総数:{FLAG:人気取得者数, 5}人
+PRINTFORML 名声：{FLAG:名声}　調教師名声：{FLAG:調教師名声}　組織貢献度：{FLAG:組織貢献度}　闘技場名声：{FLAG:闘技場名声}
+;称号・エンディング到達表示
+;STRLENS NICKNAME:MASTER
+;SIF FLAG:9 || RESULT > 0
+;	CALL PRINT_MASTER_MEDAL
+;-------------------------------------------------
+;能力確認の処理(1ページ目・総合)
+;-------------------------------------------------
+;オプションによって表示タイプ変更
+;調教中での能力表示はこのページが表示される
+@SHOW_INFO_PAGE_1
+PRINTFORML 　体力:({BASE:U:0, 4}/{MAXBASE:U:0, 4})　気力:({BASE:U:1, 4}/{MAXBASE:U:1, 4})
+IF U == 0
+	CALL PRINT_MASTER_STATUS
+ELSE
+	CALL PRINT_SLAVE_STATUS
+ENDIF
+CUSTOMDRAWLINE ･
+
+;人間以外なら外見表示
+CALL PRINT_APPEARANCE
+;危険日を表示
+IF (TALENT:U:オトコ == 0 || TALENT:U:男の娘) && CFLAG:U:PTフラグ > 0
+PRINTFORM 　危険日：
+;SETFONT "Times New Roman"
+
+	SELECTCASE CFLAG:U:危険日
+		CASE 8
+			SETCOLOR 0xFFCCFF
+			CALL HEART
+			PRINTFORM ＦＵＬＬ ＭＯＯＮ
+			CALL HEART
+			RESETCOLOR
+		CASE 0
+			SETCOLOR 0xFFCCFF
+			PRINTFORM ＮＥＷ ＭＯＯＮ
+			RESETCOLOR
+		CASE IS > 8
+			SETCOLOR 0xFFCCFF
+			CALL HEART
+			PRINTFORM {16-CFLAG:U:危険日}/8 ＯＬＤ ＭＯＯＮ
+			CALL HEART
+			RESETCOLOR
+		CASEELSE
+			SETCOLOR 0xFFCCFF
+			CALL HEART
+			PRINTFORM {CFLAG:U:危険日}/8 ＹＯＵＮＧ ＭＯＯＮ
+			CALL HEART
+			RESETCOLOR
+	ENDSELECT
+	PRINTL
+ENDIF
+IF TALENT:U:妊娠 == 1 && CFLAG:U:PTフラグ > 0
+	LOCAL:4 = FINDCHARA_ID(CFLAG:U:父親の固有番号親)
+	SIF LOCAL:4 == -1 && CFLAG:U:父親の固有番号親 < 0
+		LOCAL:4 = CFLAG:U:父親の固有番号親
+	IF LOCAL:4 == U
+		PRINTFORM 自分の触手で孕んだ子
+	ELSEIF LOCAL:4 >= 0
+		PRINTFORM %CALLNAME:(LOCAL:4)%の子
+	ELSEIF CFLAG:U:父親失踪 == 1
+		PRINT もういない誰かの子
+	ELSEIF LOCAL:4 == -2
+		PRINT 触手の子
+	ELSEIF LOCAL:4 == -1
+		PRINT 名も知らぬ悪魔の子
+	ELSEIF LOCAL:4 < 0
+		PRINT 名も知らぬ人間の子
+	ELSE
+		PRINT 
+	ENDIF
+	PRINTFORML 出産まであと{CFLAG:U:出産予定日 - DAY}日
+ENDIF
+IF TALENT:U:育児中 == 1 && CFLAG:U:PTフラグ > 0
+	LOCAL:4 = -1
+	LOCAL:5 = -1
+	FOR LOCAL:6, 0, CHARANUM
+		SIF CFLAG:U:娘の産みの親の固有番号親 == CFLAG:(LOCAL:6):キャラ固有の番号
+			LOCAL:5 = LOCAL:6
+		SIF CFLAG:(LOCAL:6):キャラ固有の番号 == CFLAG:U:父親の固有番号親
+			LOCAL:4 = (LOCAL:6)
+	NEXT
+	IF GROUPMATCH(U , LOCAL:4 , LOCAL:5) == 2
+		PRINTFORM 自分の触手で孕んだ
+	ELSEIF LOCAL:4 >= 0
+		PRINTFORM %CALLNAME:(LOCAL:4)%と
+	ELSEIF CFLAG:U:父親失踪 == 1
+		PRINT もういない誰かと
+	ELSEIF LOCAL:4 == -2
+		PRINT 触手の子
+	ELSEIF LOCAL:4 == -1
+		PRINT 名も知らぬ悪魔と
+	ELSEIF LOCAL:4 < 0
+		PRINT 名も知らぬ人間と
+	ELSE
+		PRINT 
+	ENDIF
+	IF U == LOCAL:5
+		PRINTFORML 自分の子 育児中
+	ELSEIF LOCAL:5 >= 0
+		PRINTFORML %CALLNAME:(LOCAL:5)%の子 育児中
+	ELSE
+		PRINTFORML もういない誰かの子 育児中
+	ENDIF
+ENDIF
+SETFONT
+CUSTOMDRAWLINE ･
+;弐型表示
+	;親
+	SIF TALENT:U:子供
+		CALL NEW_PRINT_DAUGHTER
+	;人気
+	CALL NEW_PRINT_POPULARITY
+	;能力
+	CALL NEW_PRINT_ABL
+	;素質
+;	SIF FLAG:3 < 4 || U == MASTER || TALENT:U:998
+		CALL NEW_PRINT_TALENT
+	;刻印
+	SIF U != MASTER
+		CALL NEW_PRINT_MARK
+	;経験
+	CALL NEW_PRINT_EXP
+	;異常経験
+	CALL NEW_PRINT_ABNORMAL_EXP
+;	;珠
+;	CALL NEW_PRINT_JUEL
+
+;-------------------------------------------------
+;能力確認の処理(2ページ目)
+;戦闘に関係ある能力全てを表示
+;ARGで表示元　1 = 装備変更時
+;-------------------------------------------------
+;主人かそれ以外かで表示タイプ変更
+@SHOW_INFO_PAGE_2, ARG
+#LOCALSIZE 2
+;暫定的に
+CLEARLINE 1
+
+CALL SET_PICTURE , , , "消去"
+
+CALL STATUS_WINDOW_MAIN , U , 0 , 0
+
+CALL STATUS_WINDOW_BATTLE_STATUS , U , 0 , 46
+
+CALL STATUS_WINDOW_BASE_STATUS , U , 22 , 0
+CALL STATUS_WINDOW_DEFTYPE , U , 22 , 50
+CALL STATUS_WINDOW_EQUIP , U , 12 , 0
+CALL STATUS_WINDOW_SKILL , U , 9 , 46
+SIF TALENT:U:デビルシフター || TALENT:U:ペルソナ使い
+	CALL STATUS_WINDOW_EQUIPDEVIL , U , 9 , 0
+CALL SET_PICTURE ,  , 0 , "表示" , 35
+CUSTOMDRAWLINE =
+
+RETURN 0
+
+
+;1行目にレベル・属性・ペルソナ相性(ペルソナ使い限定)・解析度(悪魔限定)を表示
+CALL PRINT_BASE_STATUS, U
+;2行目にHP・忠誠度を表示
+
+PRINTFORML ＨＰ[{BASE:U:ＨＰ,4}/{MAXBASE:U:ＨＰ,4}]　　　　　忠誠度:{BASE:U:忠誠度,6}　　ＭＡＧ:{BASE:U:ＭＡＧ,6}/{MAXBASE:U:ＭＡＧ,6}
+
+
+;3行目にＭＰ・ＥＸＰを表示
+PRINTFORM ＭＰ[{BASE:U:ＭＰ,4}/
+PRINTFORML {MAXBASE:U:ＭＰ,4}]　　　　　ＥＸＰ：{BASE:U:ＥＸＰ,8}/{MAXBASE:U:ＥＸＰ,8}　　ＣＰ:{MAXBASE:U:CP,3}
+;4行目に通常攻撃の性能を表示
+PRINTFORM 通常攻撃：%GET_TYPE(ABL:U:攻撃相性),6,LEFT%　{ABL:U:最低攻撃回数,2}-{ABL:U:最大攻撃回数,2}回　射程
+IF ABL:U:射程 == 1
+	PRINT Ｓ
+ELSEIF ABL:U:射程 == 2
+	PRINT Ｍ
+ELSEIF ABL:U:射程 == 3
+	PRINT Ｌ
+ENDIF
+PRINTFORML  %GET_SPHERE(ABL:U:攻撃範囲),4,LEFT%
+IF ABL:U:追加効果 > 0
+	PRINTFORML 　　　　追加効果：%GET_STATE(ABL:U:追加効果),6,LEFT%　追加効果相性：%GET_TYPE(ABL:U:追加効果相性)%
+ENDIF
+
+IF ARG != 1
+	;SIF TALENT:U:異能者 || TALENT:U:達人 || TALENT:U:ペルソナ使い || TALENT:U:デビルシフター || TALENT:U:喰奴 || ABL:U:種族 != 0
+		CALL PRINT_SKILL
+	SIF TALENT:U:ペルソナ使い && (ABL:U:初期ペルソナ || EQUIP:U:所持ペルソナ1)
+		CALL PRINT_PERSONA
+ENDIF
+SIF ABL:U:種族 == 0 || ABL:U:種族 == 36
+	CALL PRINT_ESKILL
+IF ARG != 1
+	SIF ABL:U:種族 == 0 || ABL:U:種族 == 36
+		CALL PRINT_EQUIP, !TFLAG:戦闘中
+	SIF GET_DEVIL(U)
+		CALL PRINT_PLUGIN
+ENDIF
+;SIF FLAG:ショップコマンド == [[ショップ:能力確認]]
+;	CALL PRINT_LINKAGE
+
+;-------------------------------------------------
+;能力確認の処理(3ページ目)
+;解説表示ページ
+;-------------------------------------------------
+;主人かそれ以外かで表示タイプ変更
+@SHOW_INFO_PAGE_3
+;1行目にレベル・属性・ペルソナ相性(ペルソナ使い限定)・解析度(悪魔限定)を表示
+CALL PRINT_BASE_STATUS, U
+DRAWLINE
+;2行目以降に解説文表示
+FOR LOCAL,0, 20
+	IF U == MASTER || NO:U == 3501 || NO:U == 3502
+		PRINTFORML %CSTR:U:(30+LOCAL)%
+	ELSE
+		PRINTFORML %CSVCSTR(NO:U,30+LOCAL,0)%
+	ENDIF
+NEXT
+PRINTL
+DRAWLINE
+
+
+;=============================================================================
+;能力表示(弐型表示)
+;=============================================================================
+;表示順
+; 0,Ｃ感覚　　 1,Ｖ感覚　　 2,Ａ感覚　　 3,Ｂ感覚
+;10,従順　　　11,欲望　　　12,技巧　　　13,奉仕精神
+;14,露出癖　　20,サドっ気　21,マゾっ気　22,レズっ気(23,ＢＬっ気)
+;30,自慰中毒　31,精液中毒　32,レズ中毒(33,ＢＬ中毒)　
+; 0,Ｃ感覚　　 1,Ｖ感覚　　 2,Ａ感覚　　 3,Ｂ感覚
+; 4,従順　　　　5,欲望　　　6,技巧　　　 7,奉仕精神
+; 8,露出癖　　　9,サドっ気　10,マゾっ気　11,レズっ気(12,ＢＬっ気)
+;13,自慰中毒　 14,精液中毒　15,レズ中毒(16,ＢＬ中毒)　
+@NEW_PRINT_ABL
+PRINTL □ 能力
+;X = 0
+;S = 0
+;REPEAT 17
+;	X = -1
+;	SELECTCASE COUNT
+;		CASE 0 TO 3
+;			X = COUNT
+;		CASE 4 TO 8
+;			X = COUNT
+;		CASE 9, 10
+;			X = COUNT
+;		CASE 11
+;			;男ならレズっ気、女ならＢＬっ気はないよね？
+;			X = 11 + TALENT:U:120
+;		CASE 12, 13
+;			X = COUNT + 1
+;		CASE 14
+;			;男ならレズ中毒、女ならＢＬ中毒はないよね？
+;			X = 15 + TALENT:U:120
+;	ENDSELECT
+;
+;	SIF X < 0
+;		CONTINUE
+;
+;	IF ABL:U:X > 0
+;		PRINTFORM %ABLNAME:X, 8%:LV{ABL:U:X}
+;		S += 1
+;		;改行するのか？ 続けて出力するのか？
+;		IF S >= 5
+;			PRINTL 
+;			S = 0
+;		ELSE
+;			PRINT 　
+;		ENDIF
+;	ENDIF
+;REND
+;SIF S != 0
+;	PRINTL 
+;CUSTOMDRAWLINE ･
+
+LOCAL = 0
+REPEAT 24
+	;表示概要
+	;　　　　 0,従順 　　　　 1,欲望 　　　　 2,技巧 　　　 3,Ｃ感覚
+	;　　　 4,Ｖ感覚 　　　 5,Ａ感覚 　　　 6,Ｂ感覚 　　 7,奉仕精神
+	;　　　 8,露出癖 　　 9,マゾっ気 　　10,サドっ気 　　11,レズっ気
+	;　　12,料理技能 　　13,撮影技能 　　14,歌唱技能 　　15,自慰中毒
+	;　　16,精液中毒 　　17,レズ中毒 18,セックス中毒 　　19,噴乳中毒
+	;　　20,ＢＬっ気 　　21,ＢＬ中毒 　　22,獣姦中毒 　　23,触手中毒
+	
+	IF ABL:U:COUNT > 0
+		;表示位置あわせ
+		IF COUNT == 7 || COUNT == 9 || COUNT == 10 || COUNT == 11 || COUNT == 12 || COUNT == 13 || COUNT == 14 || COUNT == 15 || COUNT == 16 || COUNT == 17 || COUNT == 19 || COUNT == 20 || COUNT == 21 || COUNT == 22 || COUNT == 23
+			PRINT 　　
+		ELSEIF COUNT == 3 || COUNT == 4 || COUNT == 5 || COUNT == 6 || COUNT == 8
+			PRINT 　　　
+		ELSEIF COUNT == 0 || COUNT == 1 || COUNT == 2
+			PRINT 　　　　
+		ENDIF
+		
+		;表示
+		PRINTFORM %ABLNAME:COUNT%:LV{ABL:U:COUNT,2}
+		;数字の表示位置をそろえる
+		LOCAL += 1
+		;改行するのか？ 続けて出力するのか？
+		IF LOCAL == 4
+			PRINTL 
+			LOCAL = 0
+		ELSE
+			PRINT 　
+		ENDIF
+	ENDIF
+REND
+PRINTL 
+CUSTOMDRAWLINE ･
+
+;============================================================================
+;仲魔間の感情度
+;============================================================================
+@SHOW_INFO_PAGE_4
+#DIM トップ , 10
+#LOCALSIZE 5
+
+;1行目にレベル・属性・ペルソナ相性(ペルソナ使い限定)・解析度(悪魔限定)を表示
+CALL PRINT_BASE_STATUS, U
+IF FLAG:ＮＴＲ機能
+	IF 陥落(U) || TALENT:U:ＮＴＲ
+		PRINTFORM 　　陥落対象:%NTRNAME(CFLAG:U:陥落キャラ)%
+		SIF TALENT:MASTER:覚 == 1
+			PRINTFORM 　＜好感度{FAVORITE_ID(U,CFLAG:U:陥落キャラ),6,RIGHT}＞
+		PRINTL
+	ENDIF
+	DRAWLINE
+	PRINT ◆好感度順位◆ 
+	SIF TALENT:MASTER:覚 == 1
+		PRINTFORM 　＜淫乱度{CFLAG:U:淫乱度,6,RIGHT}＞
+	PRINTL
+	DRAWLINE
+	;トップ10算出
+	VARSET トップ , 0
+	FOR LOCAL , -99, 200
+		SIF LOCAL == 0
+			CONTINUE
+		FOR LOCAL:1 , 0 , 10
+	;同性間好感度のキャップが反映されず、覚所有時の好感度表示と噛み合わなくなるため修正
+	;		IF トップ:(LOCAL:1) == 0 && ABS(CFLAG:U:(2100+LOCAL)) > 0
+			IF トップ:(LOCAL:1) == 0 && ABS(FAVORITE_ID(U, LOCAL)) > 0
+				トップ:(LOCAL:1) = LOCAL
+				BREAK
+	;		ELSEIF ABS(CFLAG:U:(2100+LOCAL)) > ABS(CFLAG:U:(2100+トップ:(LOCAL:1)))
+			ELSEIF ABS(FAVORITE_ID(U, LOCAL)) > ABS(FAVORITE_ID(U, トップ:(LOCAL:1)))
+				ARRAYSHIFT トップ, 1, LOCAL, LOCAL:1
+				BREAK
+			ENDIF
+		NEXT
+	NEXT
+	FOR LOCAL,0, 10
+		IF (トップ:LOCAL) != MASTER
+			PRINTFORM {LOCAL+1}．%NTRNAME((トップ:LOCAL)),21,LEFT%
+			SIF TALENT:MASTER:覚 == 1
+				PRINTFORM 　＜好感度{FAVORITE_ID(U,トップ:LOCAL),6,RIGHT}＞
+			PRINTL
+			;IF ABS(FAVORITE(U,トップ:LOCAL)) > ABS(FAVORITE(U,MASTER))
+			;	PRINTFORM %CALLNAME:U%は%CALLNAME:(LOCAL:4)%のことを%CALLNAME:MASTER%より気にかけている。　
+			;	IF FAVORITE(U,トップ:LOCAL) > 0
+			;		IF FAVORITE(U:トップ:LOCAL) > 1000
+			;			PRINTFORM %CALLNAME:MASTER%より愛している
+			;		ELSEIF FAVORITE(U:トップ:LOCAL) > 500
+			;			PRINTFORM %CALLNAME:MASTER%より気に入っている
+			;			
+			;		ENDIF
+			;	ELSE
+			;	
+			;	
+			;	ENDIF
+			;	IF TALENT:MASTER:覚 == 1
+			;	＜好感度{FAVORITE(U,LOCAL:4)}＞
+			;	PRINTL
+			;ELSEIF FAVORITE(U,LOCAL:4) > 10000 && LOCAL:4 != MASTER
+			;	IF TALENT:MASTER:覚 == 1
+			;		PRINTFORML %CALLNAME:U%は%CALLNAME:(LOCAL:4)%の性癖を知り尽くしている。　＜好感度{FAVORITE(U,LOCAL:4)}＞
+			;	ELSE
+			;		PRINTFORML %CALLNAME:U%は%CALLNAME:(LOCAL:4)%の性癖を知り尽くしている。
+			;	ENDIF
+			;ELSEIF FAVORITE(U,LOCAL:4) > 5000 && LOCAL:4 != MASTER
+			;	IF TALENT:MASTER:覚 == 1
+			;		PRINTFORML %CALLNAME:U%は%CALLNAME:(LOCAL:4)%のことを凄く気に入っている。　＜好感度{FAVORITE(U,LOCAL:4)}＞
+			;	ELSE
+			;		PRINTFORML %CALLNAME:U%は%CALLNAME:(LOCAL:4)%のことを凄く気に入っている。
+			;	ENDIF
+			;ELSEIF FAVORITE(U,LOCAL:4) > 2500 && LOCAL:4 != MASTER
+			;	IF TALENT:MASTER:覚 == 1
+			;		PRINTFORML %CALLNAME:U%は%CALLNAME:(LOCAL:4)%と確かな絆を感じている。　＜好感度{FAVORITE(U,LOCAL:4)}＞
+			;	ELSE
+			;		PRINTFORML %CALLNAME:U%は%CALLNAME:(LOCAL:4)%と確かな絆を感じている。
+			;	ENDIF
+			;ELSEIF FAVORITE(U,LOCAL:4) > 1500 && LOCAL:4 != MASTER
+			;	IF TALENT:MASTER:覚 == 1
+			;		PRINTFORML %CALLNAME:U%は%CALLNAME:(LOCAL:4)%との行為を楽しみにしている。　＜好感度{FAVORITE(U,LOCAL:4)}＞
+			;	ELSE
+			;		PRINTFORML %CALLNAME:U%は%CALLNAME:(LOCAL:4)%との行為を楽しみにしている。
+			;	ENDIF
+			;ELSEIF FAVORITE(U,LOCAL:4) > 1000 && LOCAL:4 != MASTER
+			;	IF TALENT:MASTER:覚 == 1
+			;		PRINTFORML %CALLNAME:U%は%CALLNAME:(LOCAL:4)%のことが気になっている。　＜好感度{FAVORITE(U,LOCAL:4)}＞
+			;	ELSE
+			;		PRINTFORML %CALLNAME:U%は%CALLNAME:(LOCAL:4)%のことが気になっている。
+			;	ENDIF
+			;ELSEIF LOCAL:4 != MASTER
+			;	IF TALENT:MASTER:覚 == 1
+			;		PRINTFORML %CALLNAME:U%は%CALLNAME:(LOCAL:4)%と性行為を行ったことがある。　＜好感度{FAVORITE(U,LOCAL:4)}＞
+			;	ELSE
+			;		PRINTFORML %CALLNAME:U%は%CALLNAME:(LOCAL:4)%と性行為を行ったことがある。
+			;	ENDIF
+			;ELSE
+			;
+			;ENDIF
+		ELSE
+			PRINTL
+		ENDIF
+	NEXT
+	PRINTL
+ENDIF
+IF U == MASTER
+	DRAWLINE
+	PRINTL 発見済みのエンディング
+	DRAWLINE
+	FOR LOCAL ,0, 64
+		SIF !GETBIT(FLAG:発見ED, LOCAL)
+			CONTINUE
+		PRINT 　
+		SELECTCASE LOCAL
+			CASE 0
+				PRINTL Ending No.000 (ファントム幹部エンド)
+			CASE 1
+
+			CASE 2
+				PRINTL Ending No.002 (調教師エンド)
+			CASE 3
+				PRINTL Ending No.003 (調教師エンド"Master of slave")
+			CASE 4
+				
+			CASE 5
+				
+			CASE 6
+				
+			CASE 7
+				
+			CASE 8
+				
+			CASE 9
+				
+			CASE 10
+				PRINTL Ending No.010 (食堂運営エンド"Neutral restaurant")
+			CASE 11
+				
+			CASE 12
+				PRINTL Ending No.012 (娼館経営エンド)
+			CASE 13
+				PRINTFORML Ending No.013 (夜の\@TALENT:MASTER:オトコ ? 王 # 女王 \@エンド)
+			CASE 14
+				
+			CASE 15
+				PRINTL Ending No.015 (堕落エンド)
+			CASE 16
+				
+			CASE 17
+				
+			CASE 18
+				
+			CASE 19
+				PRINTL Ending No.019 (アイドルエンド)
+			CASE 20
+				PRINTL Ending No.020 (武断派ハーレムエンド)
+			CASE 30
+				PRINTL Ending No.030 (ペルソナ２罪エンド"Innocent Sin")
+			CASEELSE
+				
+		ENDSELECT
+	NEXT
+	PRINTL
+ENDIF
+DRAWLINE
+;=============================================================================
+;素質表示(弐型表示)
+;=============================================================================
+;PRINT_TALENT （素質）との入れ替え
+@NEW_PRINT_TALENT
+#LOCALSIZE 1
+PRINTL □ 素質
+LOCAL = 0
+;リピート回数-1 の番号までの素質が表示される
+;リピート回数をあらかじめ大きめに設定（最大1000）しておくと、
+;素質の最大番号が増えたときに書き換える手間が減るが、
+;増やしすぎると処理速度に影響するので要注意
+REPEAT 250
+	SIF COUNT > 212 && COUNT < 219
+		CONTINUE
+	IF TALENT:U:COUNT
+		IF COUNT == GETNUM(TALENT, "サマナー") || COUNT == GETNUM(TALENT, "道具知識")
+			PRINTFORM [%TALENTNAME:COUNT%{TALENT:U:COUNT}Lv] 
+		ELSEIF COUNT == GETNUM(TALENT, "ＮＴＲ")
+			SELECTCASE TALENT:U:COUNT
+				CASE 1
+					PRINTFORM [愛ＮＴＲ] 
+				CASE 2
+					PRINTFORM [淫ＮＴＲ] 
+				CASE 3
+					PRINTFORM [隷ＮＴＲ] 
+			ENDSELECT
+		ELSEIF COUNT == GETNUM(TALENT, "幼児／幼児退行")
+			IF MARK:U:6 >= 1
+				PRINTFORM [幼児] 
+			ELSE
+				PRINTFORM [幼児退行] 
+			ENDIF
+		ELSE
+			SIF FLAG:二身合体表示 && U == CHARANUM - 1 && !CSVTALENT(NO:U, COUNT, 0)
+				SETCOLOR COLOR("aqua")
+			PRINTFORM [%TALENTNAME:COUNT%] 
+			RESETCOLOR
+		ENDIF
+	ELSE
+		IF FLAG:二身合体表示 && U == CHARANUM - 1 && CSVTALENT(NO:U, COUNT, 0)
+			SETCOLOR COLOR("gray")
+		ELSE
+			CONTINUE
+		ENDIF
+		PRINTFORM [%TALENTNAME:COUNT%] 
+		RESETCOLOR
+	ENDIF
+	;改行するのか？ 続けて出力するのか？
+	LOCAL += 1
+	SIF LOCAL%6 == 0
+		PRINTL 
+REND
+;最後のループで改行してなかったら、ここで改行しておく
+SIF LOCAL%6 != 0
+	PRINTL 
+CUSTOMDRAWLINE ･
+
+
+;改行処理
+@CHANGE_LINE_NEW_PRINT_TALENT
+S += 1
+SIF S%6 == 0
+	PRINTL 
+
+;=============================================================================
+;刻印表示(弐型表示)
+;=============================================================================
+;PRINT_MARK （刻印）との入れ替え
+@NEW_PRINT_MARK
+PRINTL □ 刻印
+REPEAT 4
+	PRINTFORM %MARKNAME:COUNT%:LV{MARK:U:COUNT} 
+	BAR MARK:U:COUNT, 3, 3
+	
+	;最後のループ以外では間隔をあける
+	SIF COUNT < 3
+		PRINT 　
+REND
+PRINTL 
+CUSTOMDRAWLINE ･
+;=============================================================================
+;経験表示(弐型表示)
+;=============================================================================
+	;表示概要
+	;　　　 0.Ｖ経験　　　 1.Ａ経験　　 2.絶頂経験　　 3.射精経験
+	;　　 4.性交経験　　 5.膣射経験　　10.自慰経験11.調教自慰経験
+	;　　20.精液経験21.奉仕快楽経験　22.フェラ経験　　23.愛情経験
+	;30.苦痛快楽経験　　31.放尿経験32.嗜虐快楽経験33.野外露出経験
+	;　　40.レズ経験　　41.ゲイ経験　　50.異常経験　　51.緊縛経験
+	;　52.Ｖ拡張経験　53.Ａ拡張経験　　54.噴乳経験　　55.触手経験
+	;　　56.吸血経験　　57.獣姦経験　　60.出産経験　　61.家事経験
+	;　　62.撮影経験　　63.被写経験　　64.歌唱経験　　70.調教経験
+	;　　82,輪姦経験
+	;　　71.外食労役経験72.売春経験　　73.貸し出し経験
+@NEW_PRINT_EXP
+#LOCALSIZE 2
+PRINTL □ 経験
+LOCAL:1 = 0
+FOR LOCAL , 0 , VARSIZE("EXP")
+	;CSVで定義してない物・表示したくない物・後に回したいものを除外
+	SELECTCASE EXPNAME:LOCAL
+		CASE ""
+		CASE "外食労役経験" , "売春経験" , "貸し出し経験"
+		CASEELSE
+			SIF EXP:U:LOCAL == 0
+				CONTINUE
+			PRINTFORM 　%EXPNAME:LOCAL , 12%：{EXP:U:LOCAL , 7}
+			LOCAL:1 ++
+			IF LOCAL:1 == 4
+				LOCAL:1 = 0
+				PRINTL
+			ENDIF
+	ENDSELECT
+NEXT
+SIF !LINEISEMPTY()
+	PRINTL
+;労役系はここで追加表示
+FOR LOCAL , 0 , VARSIZE("EXP")
+	SELECTCASE EXPNAME:LOCAL
+		CASE "外食労役経験" , "売春経験" , "貸し出し経験"
+			SIF EXP:U:LOCAL == 0
+				CONTINUE
+			PRINTFORM 　%EXPNAME:LOCAL , 12%：{EXP:U:LOCAL , 7}
+	ENDSELECT
+NEXT
+SIF !LINEISEMPTY()
+	PRINTL
+CUSTOMDRAWLINE ･
+
+;=============================================================================
+;異常経験
+;=============================================================================
+;異常経験
+@NEW_PRINT_ABNORMAL_EXP
+SIF EXP:U:異常経験 == 0
+	RETURN 0
+PRINTL □ 異常経験
+
+SETCOLOR COLOR("red")
+PRINT 　　
+LOCAL:1 = 0
+FOR LOCAL , 0 , 64
+	IF GETBIT(CFLAG:U:異常経験記録 , LOCAL)
+		IF LOCAL:1 % 4 == 3
+			PRINTL
+			PRINT 　　
+		ENDIF
+		PRINTFORM % "[" + NAME_ABNORMAL_EXP(LOCAL) + "]" , 24 , LEFT%　
+		LOCAL:1 ++
+	ENDIF
+NEXT
+SIF !LINEISEMPTY()
+	PRINTL
+
+RESETCOLOR
+
+CUSTOMDRAWLINE ･
+
+;=============================================================================
+;珠表示(弐型表示)
+;=============================================================================
+;表示順
+; 0,快Ｃ　 1,快Ｖ　 2,快Ａ　 3,快Ｂ
+; 5,恭順　 6,欲情　 7,屈服　 8,習得
+; 9,恥情　10,苦痛　11,恐怖 100,否定
+@NEW_PRINT_JUEL
+#LOCALSIZE 2
+PRINTL □ 珠
+LOCAL:1 = 0
+FOR LOCAL , 0 , VARSIZE("PALAM")
+	;CSVで定義してない物・表示したくない物・後に回したいものを除外
+	SELECTCASE PALAMNAME:LOCAL
+		CASE ""
+		CASEELSE
+			PRINTFORM 　%PALAMNAME:LOCAL%の珠：{JUEL:U:LOCAL , 7}
+			LOCAL:1 ++
+			IF LOCAL:1 == 4
+				LOCAL:1 = 0
+				PRINTL
+			ENDIF
+	ENDSELECT
+NEXT
+SIF !LINEISEMPTY()
+	PRINTL
+CUSTOMDRAWLINE ･
+
+;=============================================================================
+;親表示
+;=============================================================================
+@NEW_PRINT_DAUGHTER
+
+PRINTL □親
+PRINTFORML 父祖父:%CSTR:U:24%　父祖母:%CSTR:U:25%　　　　母祖父:%CSTR:U:26%　母祖母:%CSTR:U:27%
+PRINTFORM 　　　　父:%CSTR:U:22%　　　　　　　母:%CSTR:U:23%
+PRINTL
+CUSTOMDRAWLINE ･
+
+;=============================================================================
+;人気表示
+;=============================================================================
+@NEW_PRINT_POPULARITY
+#LOCALSIZE 2
+PRINTL □人気
+LOCAL:1 = 0
+;主人とそれ以外とで表示変更
+;IF U == MASTER
+;	IF ITEM:屋台 || ITEM:食堂
+;		PRINTFORM \@ ITEM:食堂 ? 食堂 # 屋台 \@人気　　：{CFLAG:U:料理人気,5}　　
+;		LOCAL:1 += 1
+;	ENDIF
+;	IF ITEM:安宿 || ITEM:娼館
+;		PRINTFORM \@ ITEM:娼館 ? 娼館 # 宿屋 \@人気　　：{CFLAG:U:売春人気,5}　　
+;		LOCAL:1 += 1
+;	ENDIF
+;	IF CFLAG:U:レンタル人気
+;		PRINTFORM レンタル人気：{CFLAG:U:レンタル人気,5}
+;		LOCAL:1 += 1
+;	ENDIF
+;	IF LOCAL:1 % 3 == 0 && LOCAL:1 > 0
+;		PRINTL
+;		LOCAL:1 = 0
+;	ENDIF
+;	IF CFLAG:U:アイドル人気
+;		PRINTFORM 事務所人気　：{CFLAG:U:アイドル人気,5}
+;		LOCAL:1 += 1
+;	ENDIF
+;	SIF LOCAL:1 % 3 == 0 && LOCAL:1 > 0
+;		PRINTL
+;	IF CFLAG:U:便器人気
+;		PRINTFORM トイレ人気　：{CFLAG:U:便器人気,5}
+;	ENDIF
+;ELSE
+	FOR LOCAL,0, 6
+		IF LOCAL:1 % 3 == 0 && LOCAL:1 > 0
+			PRINTL
+			LOCAL:1 = 0
+		ENDIF
+		SIF LOCAL == 2
+			CONTINUE
+		IF CFLAG:U:(1020+LOCAL)
+			PRINTFORM %CFLAGNAME:(1020+LOCAL),12,LEFT%：{CFLAG:U:(1020+LOCAL),5}　　
+			LOCAL:1 += 1
+		ENDIF
+		IF LOCAL == 4 && CFLAG:U:便器人気
+			PRINTFORM 便器人気　　：{CFLAG:U:便器人気,5}　　
+			LOCAL:1 += 1
+		ENDIF
+		IF LOCAL == 5 && CFLAG:U:劇場人気
+			PRINTFORM 劇場人気　　：{CFLAG:U:劇場人気,5}　　
+			LOCAL:1 += 1
+		ENDIF
+	NEXT
+;ENDIF
+PRINTL
+CUSTOMDRAWLINE ･
+
+;============================================================================
+;ステータス画面の一行目(レベル/属性/ペルソナ相性/解析度)を表示する。
+; <引数>
+;	ARG   = 表示対象キャラ
+; <戻り値>
+;	なし
+;============================================================================
+@PRINT_BASE_STATUS, ARG
+#LOCALSIZE 1
+PRINTFORM 　　LV{BASE:ARG:LV,3}　　　
+CALL PRINT_ALIGNMENT, ARG
+IF TALENT:ARG:ペルソナ使い
+	PRINT 　　ペルソナ相性:
+	LOCAL = GET_P_FITNESS(ARG)
+	IF LOCAL == 3
+		PRINT ☆
+	ELSEIF LOCAL == 2
+		PRINT ◎
+	ELSEIF LOCAL == 1
+		PRINT ○
+	ELSE
+		PRINT △
+	ENDIF
+ENDIF
+;色を戻す
+SIF ABL:ARG:種族 > 0 && ABL:ARG:種族 < 45
+	PRINTFORM 　　ANALYZE: \@FLAG:(20000+NO:ARG) >= 1000 ? COMPLETE! # {FLAG:(20000+NO:ARG)/10}％ \@
+PRINTL
+
+;============================================================================
+;属性の表示
+; <引数>
+;	ARG   = 表示対象キャラ
+;	ARG:1 = 省略表示有無 (0[省略時]:全文字表示／0以外:頭文字のみ表示)
+;	ARG:2 = 表示対象属性 (0[省略時]:LD軸LC軸両方／1:LD軸／2:LC軸)
+; <戻り値>
+;	なし
+;============================================================================
+@PRINT_ALIGNMENT, ARG, ARG:1=0, ARG:2=0
+#LOCALSIZE 1
+;対象キャラのLD・LC属性を表示する。
+LOCAL = GETCOLOR()
+IF ARG:2 != 2
+	;現在の色を退避しておく
+	SELECTCASE ABL:ARG:属性LD
+		CASE 1
+			SETCOLOR COLOR("AQUA")
+		CASE 2
+			SETCOLOR COLOR("WHITE")
+		CASE 3
+			SETCOLOR COLOR("RED")
+	ENDSELECT
+	IF ARG:1
+		PRINTFORM %SUBSTRING(GET_ALI1(ABL:ARG:属性LD), 0, 1)%
+	ELSE
+		PRINTFORM %GET_ALI1(ABL:ARG:属性LD),7%
+	ENDIF
+	SETCOLOR LOCAL
+ENDIF
+SIF ARG:2 == 0
+	PRINT /
+
+IF ARG:2 != 1
+	SELECTCASE ABL:ARG:属性LC
+		CASE 1
+			SETCOLOR COLOR("AQUA")
+		CASE 2
+			SETCOLOR COLOR("WHITE")
+		CASE 3
+			SETCOLOR COLOR("RED")
+	ENDSELECT
+	IF ARG:1
+		PRINTFORM %SUBSTRING(GET_ALI2(ABL:ARG:属性LC), 0, 1)%
+	ELSE
+		PRINTFORM %GET_ALI2(ABL:ARG:属性LC),7%
+	ENDIF
+	SETCOLOR LOCAL
+ENDIF
+
+;===========================================================================
+;HP・MP表示
+;===========================================================================
+@PRINT_HPMP
+;HPを表示
+STRLENFORM {BASE:U:ＨＰ}
+PRINTFORM ＨＰ[{BASE:U:ＨＰ,4}/{MAXBASE:U:ＨＰ,4}]
+PRINTFORM  ＭＰ[{BASE:U:ＭＰ,4}/{MAXBASE:U:ＭＰ,4}]
+
+@PRINT_LOYALTY_EXPERIENCE_MAG
+PRINTFORML 忠誠度:{BASE:U:忠誠度}　　ＭＡＧ:{BASE:U:ＭＡＧ}
+PRINTFORM ＥＸＰ:{BASE:U:ＥＸＰ}/{MAXBASE:U:ＥＸＰ}
+
+;============================================================================
+;所持スキルの表示(ステータス画面)
+;============================================================================
+@PRINT_SKILL
+#LOCALSIZE 2
+#LOCALSSIZE 2
+SIF FLAG:二身合体表示
+	RETURN 0
+PRINTFORML 所持スキル [2000]リンケージ表示
+FOR LOCAL,0, FLAG:スキル数
+	LOCALS = スキル{LOCAL+1}
+	IF ABL:U:LOCALS
+		CALLFORM SKILL_NAME_{ABL:U:LOCALS}, U
+		PRINTFORM 　[{LOCAL+1}]%RESULTS,20,LEFT%
+	ENDIF
+	SIF LOCAL % 4 == 3
+		PRINTL
+NEXT
+IF CFLAG:U:PTフラグ > 0
+	;LOCAL:1 = 表示する習得予定スキル
+	LOCAL:1 = 0
+	
+	FOR LOCAL,1, 21
+		LOCALS:1 = 習得LV{LOCAL}
+		IF ABL:U:(LOCALS:1) > 0
+			IF LOCAL:1 == 0
+				LOCAL:1 = LOCAL
+			ELSE
+				SIF ABL:U:("習得LV" + TOSTR(LOCAL:1)) > ABL:U:(LOCALS:1)
+					LOCAL:1 = LOCAL
+			ENDIF
+		ENDIF
+	NEXT
+	IF LOCAL:1 > 0
+		LOCALS:1 = 習得LV{LOCAL:1}
+		LOCALS = 習得スキル{LOCAL:1}
+		IF ABL:U:(LOCALS:1) > (BASE:U:LV)+5
+			SETCOLOR 0x666666
+			PRINTFORML    NEXT[????????]  習得LV {ABL:U:(LOCALS:1)}
+			RESETCOLOR
+		ELSE
+			CALLFORM SKILL_NAME_{ABL:U:LOCALS}, U
+			SETCOLOR 0x666666
+			PRINTFORML    NEXT[%RESULTS%]  習得LV {ABL:U:(LOCALS:1)}
+			RESETCOLOR
+		ENDIF
+	ENDIF
+ENDIF
+DRAWLINE
+;============================================================================
+;装備所持スキルの表示(ステータス画面)
+;============================================================================
+@PRINT_PERSONA
+#LOCALSIZE 2
+PRINTL 所持ペルソナ
+FOR LOCAL, 0, 4
+	LOCALS = 所持ペルソナ{LOCAL}
+	IF LOCAL == 0
+		SIF ABL:U:初期ペルソナ == 0
+			CONTINUE
+		PRINTFORM [{LOCAL + 40}] %CSVCALLNAME(ABL:U:初期ペルソナ,0), 20, LEFT%
+	ELSE
+		SIF !EQUIP:U:LOCALS
+			BREAK
+		PRINTFORM [{LOCAL + 40}] %CSVCALLNAME((DITEMTYPE:(EQUIP:U:LOCALS):ペルソナ("NO")),0), 20, LEFT%
+		LOCAL:1++
+	ENDIF
+NEXT
+PRINTL 
+DRAWLINE
+;============================================================================
+;装備所持スキルの表示(ステータス画面)
+;============================================================================
+@PRINT_ESKILL
+#LOCALSIZE 2
+PRINTL 装備品所持スキル
+LOCAL:1 = 0
+FOR LOCAL,0, 21
+	LOCALS = 装備スキル{LOCAL+1}
+	IF ABL:U:LOCALS > 0
+		CALLFORM SKILL_NAME_{ABL:U:LOCALS}, U
+		PRINTFORM 　[{LOCAL+21}]%RESULTS,20,LEFT%
+		LOCAL:1 += 1
+	ENDIF
+	SIF LOCAL:1 % 4 == 3
+		PRINTL
+NEXT
+PRINTL
+DRAWLINE
+
+;============================================================================
+;調教中の能力確認
+;============================================================================
+@SHOW_CHARADATA, ARG
+U = ARG
+
+PRINTFORML 　体力:({BASE:U:0, 4}/{MAXBASE:U:0, 4})　気力:({BASE:U:1, 4}/{MAXBASE:U:1, 4})
+IF U == 0
+;	CALL PRINT_MASTER_STATUS
+ELSE
+	CALL PRINT_SLAVE_STATUS
+ENDIF
+
+;弐型表示
+	;能力
+	CALL NEW_PRINT_ABL
+	;素質
+;	SIF FLAG:3 < 4 || U == MASTER || TALENT:U:998
+		CALL NEW_PRINT_TALENT
+	;刻印
+	SIF U != MASTER
+		CALL NEW_PRINT_MARK
+	;経験
+	CALL NEW_PRINT_EXP
+	;異常経験
+	CALL NEW_PRINT_ABNORMAL_EXP
+
+
+;============================================================================
+;外見の特徴表示
+;============================================================================
+@PRINT_APPEARANCE
+;人型がそれ以外か
+PRINT 　　外見：
+;(造魔対応版)順番変更
+IF TALENT:U:不定形
+	PRINT 不定形
+ELSEIF TALENT:U:鳥
+	PRINT 鳥型
+ELSEIF TALENT:U:爬虫類
+	PRINT 爬虫類
+ELSEIF TALENT:U:魚
+	PRINT 魚
+ELSEIF TALENT:U:獣
+	PRINT 獣
+ELSE
+	PRINT 人型
+ENDIF
+PRINT 　　
+FOR LOCAL,301, 320
+	SIF TALENT:U:LOCAL
+		PRINTFORM [%TALENTNAME:LOCAL%]　
+NEXT
+PRINTL
+
+@PRINT_LINKAGE
+#LOCALSIZE 3
+DRAWLINE
+FOR LOCAL, 4000, 5000
+	;SIF !GETBIT(FLAG:(1202 + LOCAL / 63), LOCAL % 63)
+	;	CONTINUE
+	TRYCALLFORM LINKAGE_{LOCAL}
+	IF RESULT
+		CALLFORM 発動者条件_{LOCAL}, U
+		IF RESULT
+			IF !GETBIT(FLAG:(1202+LOCAL / 63), LOCAL % 63)
+				PRINTFORM [{LOCAL}] %"？？？？", 20, LEFT% 
+				CALLFORM 参加人数_{LOCAL}
+				LOCAL:2 = RESULT
+				FOR LOCAL:1, 1, 1 + LOCAL:2
+					SIF LOCAL:1 > 1
+						PRINT 　→　
+					PRINT ？？？
+				NEXT
+				PRINT 　→　
+				CALLFORM 参加条件表示_{LOCAL}, 1 + LOCAL:2
+			ELSE
+				CALLFORM SKILL_NAME_{LOCAL}
+				PRINTFORM [{LOCAL}] %RESULTS, 20, LEFT% 
+				CALLFORM 参加人数_{LOCAL}
+				FOR LOCAL:1, 1, 2 + RESULT
+					SIF LOCAL:1 > 1
+						PRINT 　→　
+					CALLFORM 参加条件表示_{LOCAL}, LOCAL:1
+				NEXT
+			ENDIF
+			SIF !LINEISEMPTY()
+				PRINTL 
+		ENDIF
+	ENDIF
+NEXT
+DRAWLINE
+WAIT

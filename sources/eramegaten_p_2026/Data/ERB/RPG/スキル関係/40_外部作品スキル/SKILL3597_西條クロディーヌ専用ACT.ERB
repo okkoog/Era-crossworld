@@ -1,0 +1,299 @@
+﻿;更新履歴
+;001	2020/10/13		kamedakeisuke(ﾟдﾟ)			新規作成
+;002	2020/12/08		kamedakeisuke(ﾟдﾟ)			なんかやたらコストが安かったので消費MPを調整
+;003	2022/02/12		kamedakeisuke(ﾟдﾟ)			非CR時の基礎威力上昇
+;004	2022/06/05		kamedakeisuke(ﾟдﾟ)			非CR時の基礎威力上昇、クリティカル率に不具合があったため修正、エラー避けのおまじない追加
+
+;西條クロディーヌ（ヘラクレス）専用スキル
+
+;---
+;CAスキルは意図的に強力にする
+;使用条件がイベント後半まで進行＆星のティアラをアクセサリー欄に装備＆キラめきチャージ完了時に１発だけ、なので。
+;入手の際の代償もあるし、それに見合った性能に。
+
+;通常スキルに使用条件は無し
+;だけどこちらも使えるようになるタイミングは同じなので多少は盛る
+;---
+
+;クライマックス・アクトは消費無し（そのかわり撃ったらクライマックスレヴュー終了
+;性能は超高速の特大力魔合算複合相性ダメージ。てんこ盛りかよ
+;っていうかノヴァサイザー式強すぎない？？？　とりあえず踏襲したけど理論上の最大値がヤバすぎワロタ
+;修正は何か言われたら考える
+
+;Renameは『질풍의상동곡』のほうで
+
+;スキル名
+@SKILL_NAME_3597,ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RESULTS = 헤라클레스의 영광
+ELSE
+	RESULTS = 질풍의상동곡
+ENDIF
+
+;　명중
+@SKILL_HITRATE_3597, ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN 150
+ELSE
+	RETURN 100
+ENDIF
+
+;
+@SKILL_CRITICAL_RATE_3597, ARG
+RETURN 5
+
+;　威力
+@SKILL_POWER_3597, ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN 640
+ELSE
+	RETURN 340
+ENDIF
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3597,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3597,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3597, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3597,ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	;消費無し（代わりにゲージをゼロに）
+	RETURN 0
+ELSE
+	RETURN 24
+ENDIF
+
+;　複合相性
+@SKILL_TYPE_3597,ARG
+;重力・地変・疾風のうち、最も効果のある相性で攻撃
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN GET_TYPE_NUM("질풍"), GET_TYPE_NUM("중력"), GET_TYPE_NUM("지변")
+ELSE
+	RETURN GET_TYPE_NUM("질풍")
+ENDIF
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3597
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3597, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3597, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_3597,ARG
+RETURN 3
+
+;　範囲　1単体　2列　3全体　4　敵味方全体
+@SKILL_SPHERE_3597,ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN 1
+ELSE
+	RETURN 3
+ENDIF
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3597, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3597
+RETURN GET_SUCCESSION_NUM("질풍")
+
+;속도보정
+@SKILL_SPEED_3597, ARG = -1
+RETURN 50
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3597
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3597, ARG = -1
+RETURN 16
+
+@継承不能_3597
+RETURN 2
+
+@リンク不能_3597
+RETURN 1
+
+;====================================================
+;独自のカジャ処理
+;ARG		攻撃側のキャラ登録番号
+;ARG:1		防御側のキャラ登録番号
+;RESULT 	= 強化値
+;RESULT:1	= 基準値	(基準値 + x) / 基準値 あるいは　(基準値 * 2 - x) /基準値 * 2倍になる
+;			　デフォは基準値32で、最大で(32 + 32) / 32 or (64 - 32) / 64倍になる
+;====================================================
+@SKILL_CALC_BUFF_3597, ARGS, ARG, ARG:1
+SELECTCASE ARGS
+	CASE "ATK"
+		;ノヴァサイザー式
+		LOCAL = MIN(MAXBASE:ARG:힘, MAXBASE:ARG:마력)
+		LOCAL = MAX(LOCAL, 1)
+		LOCAL = LOCAL * 64 / (MAXBASE:ARG:힘 + MAXBASE:ARG:마력)
+		RETURN CFLAG:ARG:공격강화 + LOCAL, 32
+ENDSELECT
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3597, ARG, ARG:1, ARG:2
+
+;このへんノヴァサイザーから移植
+;0除算回避に+1をつける
+;LOCAL = MIN(MAXBASE:ARG:힘, MAXBASE:ARG:마력)
+;SIF LOCAL <= 0
+;	LOCAL = 1
+;LOCAL = LOCAL * 64 / (MAXBASE:ARG:힘+MAXBASE:ARG:마력)
+;CFLAG:ARG:공격강화 += LOCAL
+;ここまで
+
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	ALIGNMENT CENTER
+	SETCOLOR 0xff8e48
+	PRINTL 【ＣＬＩＭＡＸ　ＡＣＴ】
+	RESETCOLOR
+	ALIGNMENT LEFT
+
+	;西條パワーアップイベント中かつボスが最終形態時のみ、ボスの不死フラグを剥がして攻撃
+	IF GETBIT(イベントフラグ:93:19, 5) && (イベントフラグ:93:0 == 12 || イベントフラグ:93:0 == 13) && (イベントフラグ:93:10 == [[キャラ:클로딘]])
+		CFLAG:(CHARANUM-1):불사신플래그 = 0
+	ENDIF
+	
+	LOCAL:1 = POS(ARG:1)
+	CALL ATTACK_SINGLE,ARG,(LOCAL:1),3597
+
+	;西條パワーアップイベント中かつボスが最終形態時のみ、撃破時に敵が喋る
+	IF GETBIT(イベントフラグ:93:19, 5) && (イベントフラグ:93:0 == 12 || イベントフラグ:93:0 == 13) && (イベントフラグ:93:10 == [[キャラ:클로딘]])
+
+		;ボスのHPがぴったり1の場合、『すでに削り切ったけど、攻撃をミスってとどめを刺せていない』状況と見る
+		IF BASE:(CHARANUM-1):ＨＰ == 1
+			PRINTL
+			SETCOLOR COLOR("FRIEND")
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"하르페 전개! 이 에너지의 여파로오오오오!!",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			PRINTL
+			ALIGNMENT CENTER
+			PRINTFORML ┏━━━━━━━━━━┓
+			PRINTFORML ┃　　 　1more！　　　┃
+			PRINTFORMW ┗━━━━━━━━━━┛
+			RESETCOLOR
+			ALIGNMENT LEFT
+			
+			;テイクツー
+			CFLAG:(CHARANUM-1):불사신플래그 = 0
+			TFLAG:필중 = 1
+			;CFLAG:ARG:회심의패기플래그 = 1
+			
+			CALL ATTACK_SINGLE,ARG,(LOCAL:1),3597
+			
+		ENDIF
+		
+		;ボス撃破
+		IF BASE:(CHARANUM-1):ＨＰ < 1
+			ALIGNMENT CENTER
+			SETCOLOR 0xffffff
+			PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　　　　　　　　┃
+			PRINTL ┃　　　　　　　이피클레스! 너는 지금……　　　　　　　┃
+			PRINTL ┃　　　　　　　　세상의 누구보다, 아름다워!　　　　　　　┃
+			PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　　　　　　　　┃
+			PRINTW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			PRINTL 
+			ALIGNMENT LEFT
+			SETCOLOR 0xffffff
+			PRINTL 　　　무대에서 살아가고 있어――
+			SETCOLOR 0xff8e48
+			PRINTL 　　　　　　　칼끝에 영광 깃들어라――!
+			PRINTL
+		ENDIF
+	ELSE
+		;クライマックスレヴュー終了。ゲージ取得をとめるために-1で送ってむこうで0にする
+		CALL SET_ROLE_CFLAG_DUNGEON, ARG,  "클라이맥스레뷰지속시간" , -1
+	ENDIF
+
+	ALIGNMENT CENTER
+	SETCOLOR 0xff8e48
+	PRINTW 【ＣＬＩＭＡＸ　ＲＥＶＵＥ／ＦＩＮＩＳＨ】
+	PRINTL
+	RESETCOLOR
+	ALIGNMENT LEFT
+	;クライマックスレヴュー終了
+	;CALL SET_ROLE_CFLAG_DUNGEON, ARG,  "클라이맥스레뷰지속시간" , 0
+
+;それ以外
+ELSE
+	CALL ATTACK_FIELD,ARG,ARG:1,3597
+ENDIF
+
+;このへんノヴァサイザーから移植
+;CFLAG:ARG:공격강화 -= LOCAL
+;ここまで
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3597, ARG
+#LOCALSIZE 1
+IF CFLAG:(CHARANUM-1):PT플래그 || ARG < 0 || ARG >= CHARANUM
+	PRINTL 【通常時】
+	PRINTL 적 전체에 물리 질풍 상성의 초고속 대 데미지. 최종 위력은 힘과 마 수치가 가까울수록 상승한다
+	PRINTL 
+	PRINTL 【클라이맥스 레뷰 발동 시】
+	PRINTL 적 1체에 초고속 『중력·지변·질풍』 복합 초특대 데미지. 최종 위력은 힘과 마 수치가 가까울수록 상승한다
+ELSE
+	;CR展開時
+	IF GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+		SETCOLOR 0xff8e48
+		PRINTL 【ＣＬＩＭＡＸ　ＡＣＴ】
+		RESETCOLOR
+		PRINTL 애마 페가수스에 올라타 별이 된 자기 자신을 상대의 머리 위에서 내리꽂는 이피클레스·헤라클레스의 필살기
+		PRINTL 적 1체에 초고속 『중력·지변·질풍』 복합 초특대 데미지. 최종 위력은 힘과 마 수치가 가까울수록 상승한다
+		;クロ子パワーアップイベント中かつボスが最終形態時のみ撃ち放題
+		IF GETBIT(イベントフラグ:93:19, 5) && (イベントフラグ:93:0 == 12 || イベントフラグ:93:0 == 13) && (イベントフラグ:93:10 == [[キャラ:클로딘]])
+			SETCOLOR 0xff8e48
+			PRINTL 혼신의 일격으로 이 레뷰에 결착을!
+			RESETCOLOR
+		;通常
+		ELSE
+			PRINTL 사용하면 클라이맥스 레뷰는 종료된다
+		ENDIF
+	ELSE
+		PRINTL 적 전체에 물리 질풍 상성의 초고속 대 데미지. 최종 위력은 힘과 마 수치가 가까울수록 상승한다
+		PRINTL 클라이맥스 레뷰 발동 중에는 성능이 변화한다
+	ENDIF
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3597,ARG
+RETURN 1
+;とくにない
+

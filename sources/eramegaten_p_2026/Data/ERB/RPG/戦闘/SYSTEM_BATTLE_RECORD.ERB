@@ -1,0 +1,340 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SYSTEM_BATTLE_RECORD.ERB
+;	Facility	:戦闘履歴システム
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/10/29		P(bazzile)				新規作成
+;	002		2022/11/25		P(bazzile)				@GET_CREC関数の条件取得に複数指定(ORのみ)を追加
+;	003		2022/12/03		P(bzzzile)				@GET_CREC_ACT_SUM関数が敵が死亡している場合、ただしく数値を取れなかったのを修正
+;													また処理を軽量化
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;===============================================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name						Explanation
+;	・ GET_RECNUM						文字列からC_RECORDS変数の位置を取得
+;	・ GET_CREC							C_RECORDから任意の情報を取得。
+;		・ GET_CREC_ACT					実際の利用は変数の位置の確定まで含む以下の関数を通して行う
+;		・ GET_CREC_TURN				
+;		・ GET_CREC_BATTLE				
+;	・ GET_CREC_SUM						C_RECORDから任意の情報を取得。
+;		・ GET_CREC_ACT_SUM				この関数は任意の条件がキャラクター何体で達成されたかを見る。
+;		・ GET_CREC_TURN_SUM			
+;		・ GET_CREC_BATTLE_SUM			
+;	・ SET_CRECORDS						戦闘の記録をC_RECORDSにセットする。
+;	・ CONVERT_NAME_C_RECORDS			GET_CREC系の式中関数を利用する場合の文字列の表記ゆれをある程度吸収させるための式中関数
+;===============================================================================
+;===============================================================================
+;変数名の位置取得関数
+;ERH変数は名称を設定できないので基本的にはその代用
+;
+;ARGS = 位置の名称
+;RESULT = 変数の位置
+;===============================================================================
+@GET_RECNUM, ARGS
+#FUNCTION
+SELECTCASE TOUPPER(ARGS)
+	CASE "ACT"
+		RETURNF 0
+	CASE "TURN"
+		RETURNF 2
+	CASE "BATTLE"
+		RETURNF 4
+ENDSELECT
+RETURNF -1
+;---- EDIT 002 複数条件指定追加 MOD START -------------------------
+;===============================================================================
+;キャラ履歴の内容取得関数
+;ARGがARG:1に対してARGSをしたかどうかを返す。
+;ARGS:1がある場合はさらにARGS:1も同時に満たしていたかどうかになる。
+;原則的にこの関数を利用せずにGET_CREC_ACTなどの下位の関数を経由して履歴を取得すること
+;
+;ARG:0		行為者のキャラ番号(省略された場合はARG:1が相手を問わず内容をみたしてたかどうかになる)
+;ARG:1		対象のキャラ番号(省略された場合はARGが相手を問わず内容をみたしてたかどうかになる)
+;ARGS		取得する内容1;"/"で複数指定。ただしOR判定のみ
+;ARGS:1		取得する内容2;"/"で複数指定。ただしOR判定のみ
+;ARGS:2		対象の変数の位置
+;===============================================================================
+@GET_CREC, ARG = -1, ARG:1 = -1, ARGS, ARGS:1, ARGS:2
+#FUNCTION
+#DIM LCOUNT, 3
+#DIMS L_RECORDS
+#DIMS TEMP_CONDS, 2;個別の条件
+#DIM LRECNUM
+
+;つかう配列を確定する
+LRECNUM = GET_RECNUM(ARGS:2)
+FOR LCOUNT:2, 0, STRCOUNT(ARGS, "/") + 1
+	TEMP_CONDS '= AUTO_SPLIT(ARGS, "/", LCOUNT:2)
+	FOR LCOUNT:1, 0, STRCOUNT(ARGS:1, "/") + 1
+		TEMP_CONDS:1 '= AUTO_SPLIT(ARGS:1, "/", LCOUNT:1)
+		IF ARG == -1
+			;被弾判定用に番号をずらす
+			LRECNUM += 1
+			IF TEMP_CONDS:1 == ""
+				L_RECORDS = /%CONVERT_NAME_C_RECORDS(TEMP_CONDS)%_
+				SIF STRFIND("/" + C_RECORDS:(ARG:1):LRECNUM + "/", L_RECORDS) >= 0
+					RETURNF 1
+			ELSE
+				FOR LCOUNT, 0, BCHARANUM
+					L_RECORDS = /%CONVERT_NAME_C_RECORDS(TEMP_CONDS)%_{BCHARA:LCOUNT}_%TEMP_CONDS:1%
+					SIF STRFIND("/" + C_RECORDS:(ARG:1):LRECNUM + "/", L_RECORDS) >= 0
+						RETURNF 1
+				NEXT
+				;RETURNF 0
+			ENDIF
+		ELSE
+			IF ARG:1 == -1
+				IF TEMP_CONDS:1 == ""
+					L_RECORDS = /%CONVERT_NAME_C_RECORDS(TEMP_CONDS)%_
+				ELSE
+					FOR LCOUNT, 0, BCHARANUM
+						L_RECORDS = /%CONVERT_NAME_C_RECORDS(TEMP_CONDS)%_{BCHARA:LCOUNT}_%TEMP_CONDS:1%
+						SIF STRFIND("/" + C_RECORDS:ARG:LRECNUM + "/", L_RECORDS) >= 0
+							RETURNF 1
+					NEXT
+					;RETURNF 0
+				ENDIF
+			ELSE
+				IF TEMP_CONDS:1 == ""
+					L_RECORDS = /%CONVERT_NAME_C_RECORDS(TEMP_CONDS)%_{ARG:1}_
+				ELSE
+					L_RECORDS = /%CONVERT_NAME_C_RECORDS(TEMP_CONDS)%_{ARG:1}_%TEMP_CONDS:1%/
+				ENDIF
+			ENDIF
+			SIF STRFIND("/" + C_RECORDS:ARG:LRECNUM + "_", L_RECORDS) >= 0
+				RETURNF 1
+			;RETURNF STRFIND("/" + C_RECORDS:ARG:LRECNUM + "_", L_RECORDS) >= 0
+		ENDIF
+	NEXT
+NEXT
+RETURNF 0
+;---- EDIT 002 複数条件指定追加 MOD END ---------------------------
+@GET_CREC_ACT, ARG = -1, ARG:1 = -1, ARGS, ARGS:1
+#FUNCTION
+RETURNF GET_CREC(ARG, ARG:1, ARGS, ARGS:1, "ACT")
+
+@GET_CREC_TURN, ARG = -1, ARG:1 = -1, ARGS, ARGS:1
+#FUNCTION
+RETURNF GET_CREC(ARG, ARG:1, ARGS, ARGS:1, "TURN")
+
+@GET_CREC_BATTLE, ARG = -1, ARG:1 = -1, ARGS, ARGS:1
+#FUNCTION
+RETURNF GET_CREC(ARG, ARG:1, ARGS, ARGS:1, "BATTLE")
+
+;---- EDIT 003 敵の死亡に対応 MOD START -------------------------
+;===============================================================================
+;キャラ履歴の内容のヒット数取得関数
+;ARGがARGSの対象にたいして何体内容を成立させたかを取得する
+;原則的にこの関数を利用せずにGET_CREC_ACT_SUMなどの下位の関数を経由して履歴を取得すること
+;
+;ARG:0		行為者のキャラ番号(省略された場合はARG:1が相手を問わず内容をみたしてたかどうかになる)
+;ARGS		対象の範囲を文字列で指定する。
+;ARGS:1		取得する内容1
+;ARGS:2		取得する内容2
+;ARGS:3		逆転指定。逆転と指定されていた場合。ARGに対して成立させたキャラクターの数を取得する
+;ARGS:4		対象の変数の位置
+;===============================================================================
+@GET_CREC_SUM, ARG, ARGS, ARGS:1, ARGS:2, ARGS:3, ARGS:4
+#FUNCTION
+#DIM L_P
+#DIM L_T
+#DIM L_NUM
+#DIM LCOUNT
+#DIM POSMAX
+#DIM POSMIN
+L_P = ARG
+
+SELECTCASE ARGS
+	CASE "敵", "敵全体", "22", "적"
+		IF CFLAG:L_P:PT플래그 > 0
+			POSMIN = 7
+			POSMAX = 16
+		ELSE
+			POSMIN = 1
+			POSMAX = 6
+		ENDIF
+	CASE "敵前列", "敵前", "20"
+		IF CFLAG:L_P:PT플래그 > 0
+			POSMIN = 7
+			POSMAX = 11
+		ELSE
+			POSMIN = 1
+			POSMAX = 3
+		ENDIF
+	CASE "敵後列", "敵後ろ", "21"
+		IF CFLAG:L_P:PT플래그 > 0
+			POSMIN = 11
+			POSMAX = 16
+		ELSE
+			POSMIN = 4
+			POSMAX = 6
+		ENDIF
+	CASE "味方", "味方全体", "19", "아군"
+		IF CFLAG:L_P:PT플래그 > 0
+			POSMIN = 1
+			POSMAX = 6
+		ELSE
+			POSMIN = 7
+			POSMAX = 16
+		ENDIF
+	CASE "味方前列", "味方前", "17"
+		IF CFLAG:L_P:PT플래그 > 0
+			POSMIN = 1
+			POSMAX = 3
+		ELSE
+			POSMIN = 7
+			POSMAX = 11
+		ENDIF
+	CASE "味方後列", "味方後ろ", "18"
+		IF CFLAG:L_P:PT플래그 > 0
+			POSMIN = 4
+			POSMAX = 6
+		ELSE
+			POSMIN = 11
+			POSMAX = 16
+		ENDIF
+	CASE "敵味方全体", "23", "적아군전체"
+		POSMIN = 1
+		POSMAX = 16
+	CASE "味方全部", "敵全部"
+		POSMIN = 0
+		POSMAX = 0
+	CASEELSE
+		RETURNF 0
+ENDSELECT
+L_NUM = 0
+;敵ポジション指定。性質上ACTのときのみ
+IF POSMIN && POSMAX && ARGS:4 == "ACT"
+	FOR LCOUNT, POSMIN, POSMAX + 1
+		;敵死亡でポジション指定が崩れるのでACT開始前にとっておいたポジションを利用して判定する
+		L_T = POS_REC:LCOUNT
+		SIF L_T < 0
+			CONTINUE
+		IF ARGS:3 == "逆転"
+			SIF !GET_CREC(L_T, L_P, ARGS:1, ARGS:2, ARGS:4)
+				CONTINUE
+		ELSE
+			SIF !GET_CREC(L_P, L_T, ARGS:1, ARGS:2, ARGS:4)
+				CONTINUE
+		ENDIF
+		L_NUM++
+	NEXT
+ELSE
+	;戦闘キャラ全まわし
+	FOR LCOUNT, 0, BCHARANUM
+		L_T = BCHARA:LCOUNT
+		IF ARGS != "敵味方全体" && ARGS != "적아군전체"
+			SIF (ARGS == "味方" || ARGS == "아군") && !IS_FRIEND(L_P, L_T)
+				CONTINUE
+			SIF (ARGS == "敵" || ARGS == "적") && IS_FRIEND(L_P, L_T)
+				CONTINUE
+		ENDIF
+		IF ARGS:3 == "逆転"
+			SIF !GET_CREC(L_T, L_P, ARGS:1, ARGS:2, ARGS:4)
+				CONTINUE
+		ELSE
+			SIF !GET_CREC(L_P, L_T, ARGS:1, ARGS:2, ARGS:4)
+				CONTINUE
+		ENDIF
+		L_NUM++
+	NEXT
+ENDIF
+RETURNF L_NUM
+;---- EDIT 002 敵の死亡に対応 MOD START -------------------------
+
+@GET_CREC_ACT_SUM, ARG, ARGS, ARGS:1, ARGS:2, ARGS:3
+#FUNCTION
+RETURNF GET_CREC_SUM(ARG, ARGS, ARGS:1, ARGS:2, ARGS:3, "ACT")
+
+@GET_CREC_TURN_SUM, ARG, ARGS, ARGS:1, ARGS:2, ARGS:3
+#FUNCTION
+RETURNF GET_CREC_SUM(ARG, ARGS, ARGS:1, ARGS:2, ARGS:3, "TURN")
+
+@GET_CREC_BATTLE_SUM, ARG, ARGS, ARGS:1, ARGS:2, ARGS:3
+#FUNCTION
+RETURNF GET_CREC_SUM(ARG, ARGS, ARGS:1, ARGS:2, ARGS:3, "BATTLE")
+
+
+;===============================================================================
+;キャラ履歴のセット関数
+;ERH変数は名称を設定できないので基本的にはその代用
+;
+;ARG		行為者のキャラ番号
+;ARG:1		対象のキャラ番号
+;ARGS		記録内容1(HITやWEAKなど)
+;ARGS:1		記録内容2(相性・バステ名など)
+;===============================================================================
+@SET_C_RECORDS, ARG = -1, ARG:1 = -1, ARGS, ARGS:1
+#DIM LCOUNT
+#DIM LRECNUM
+#DIMS L_RECORDS
+;重さの試験をするまではとりあえずACTのみ動くように
+FOR LCOUNT, 0, 3 - 2
+	LRECNUM = GET_RECNUM(AUTO_SPLIT("ACT/TURN/BATTLE", "/", LCOUNT))
+	L_RECORDS = %CONVERT_NAME_C_RECORDS(ARGS)%_{ARG:1}_%ARGS:1%
+	IF STRFIND("/" + C_RECORDS:ARG:LRECNUM + "/", "/" + L_RECORDS + "/") == -1
+		SIF C_RECORDS:ARG:LRECNUM != ""
+			C_RECORDS:ARG:LRECNUM += "/"
+		C_RECORDS:ARG:LRECNUM += L_RECORDS
+	ENDIF
+	;被弾側は数値を1ずらす
+	LRECNUM += 1
+	L_RECORDS = %CONVERT_NAME_C_RECORDS(ARGS)%_{ARG}_%ARGS:1%
+	IF STRFIND("/" + C_RECORDS:(ARG:1):1 + "/", "/" + L_RECORDS + "/") == -1
+		SIF C_RECORDS:(ARG:1):LRECNUM != ""
+			C_RECORDS:(ARG:1):LRECNUM += "/"
+		C_RECORDS:(ARG:1):LRECNUM += L_RECORDS
+	ENDIF
+NEXT
+
+;===============================================================================
+;表記ゆれの吸収用関数
+;文字列指定は揺れやすいので変換関数を噛ませる
+;===============================================================================
+@CONVERT_NAME_C_RECORDS, ARGS
+#FUNCTIONS
+SELECTCASE ARGS
+	;ヒットしたかどうかなどを問わず、とりあえず攻撃がしかけられているという記録
+	CASE "ATTACK", "攻撃", "공격"
+		RETURNF "ATTACK"
+	;ヒットしたかどうかなどを問わず、とりあえずBS攻撃がしかけられているという記録
+	CASE "BSATTACK", "バステ攻撃"
+		RETURNF "BSATTACK"
+	CASE "KILL", "殺害", "キル"
+		RETURNF "KILL"
+	;0ダメージ以上が入っている状態で、無効や吸収はヒットしていない扱いになります
+	CASE "HIT", "ヒット"
+		RETURNF "HIT"
+	CASE "AVOID", "回避", "MISS", "ミス", "회피"
+		RETURNF "AVOID"
+	CASE "CRT", "クリティカル", "CRITICAL", "크리티컬"
+		RETURNF "CRT"
+	CASE "BADSTATE", "バステ付与", "BAD_STATE", "BS"
+		RETURNF "BADSTATE"
+	CASE "BSAVOID", "BSMISS", "バステミス"
+		RETURNF "BSAVOID"
+	CASE "WEAKNESS", "弱点", "WEAK", "약점"
+		RETURNF "WEAK"
+	CASE "BLOCK", "無効", "무효"
+		RETURNF "BLOCK"
+	CASE "DRAIN", "ABSO", "吸収", "흡수"
+		RETURNF "DRAIN"
+	CASE "REFLECT", "反射", "반사"
+		RETURNF "REFLECT"
+	;物理攻撃がヒットしている場合
+	CASE "物理"
+		RETURNF "物理"
+	;魔法攻撃がヒットしている場合
+	CASE "魔法"
+		RETURNF "魔法"
+	CASEELSE
+		RETURNF ARGS
+ENDSELECT
+

@@ -1,0 +1,172 @@
+﻿;依頼名===================================================================
+;依頼難易度は敵の最大レベルによって変動
+; 1～10　☆、11～20　☆☆、21～30　☆☆☆、以下略
+;ダンジョン攻略が必要な場合は☆が★になる。
+
+@TITLE_RANDOM_REQUEST_108_33
+RESULTS = 침공 세력 조사 (난이도 ☆☆)
+RETURN 1
+
+;説明================================================
+@REQUEST_EXPLAIN_108_33
+	PRINTL 
+	PRINTL 【의뢰주】메시아교
+	PRINTL 
+	PRINTL 　산악 지대에 잠복한 가이아교도들이 눈엣가시인 모양이다.
+	PRINTL 　잠입하여 놈들을 배제하라.
+	PRINTL 
+	PRINTL 【작전영역】산악 지대
+	PRINTL 【적의 전력】불명
+	PRINTL 【성공조건】적 부대 격파
+	PRINTL 【특기사항】작전은 언제든 중단 가능. 보수는 토벌 수에 따라 가산.
+	PRINTL 
+
+;内容====================================================================
+@REQUEST_108_33
+;-------------------
+;変数定義
+;-------------------
+#DIM DYNAMIC BATTLE_CNT;戦闘回数
+#DIM DYNAMIC LOOP_CNT;ループ処理用
+
+;-------------------
+;ここから本処理
+;-------------------
+CUSTOMDRAWLINE =
+PRINTW ―산악 지대―
+PRINTL 
+PRINTW ＞산악 지대에 가이아교의 대규모 부대가 잠복해 있다는 모양이다.
+PRINTW ＞우선 소수로 서성거리던 정찰대를 발견하여 기습을 가했다.
+PRINTFORML 
+PRINTFORML 가이아교도
+PRINTFORMW 「침입자인가, 살려서 돌려보내진 않겠다!」
+
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+FOR LOOP_CNT, 7, 12
+	CALL SET_ENEMY, LOOP_CNT,[[キャラ:괴뢰자]],8+RAND:5,0,0
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+NEXT
+
+CALL BATTLE_START
+
+	
+PRINTW ＞가이아교의 정찰 부대를 쓰러뜨렸다.
+PRINTFORML 
+PRINTFORMW 아마 이제부터 대량의 증원군이 몰려올 것이다.
+PRINTFORMW ＞위험해지면 후퇴 결정을 내리도록 하자.
+;撤退を選択 or 戦闘回数51以上で終了
+;ループ内でBREAKする
+WHILE 1
+	PRINTW ＞가이아교의 증원군이 나타났다.
+	;戦闘回数によって現れる敵が強化される。
+	IF BATTLE_CNT <= 5
+		IF RAND:2 == 0
+			FOR LOOP_CNT, 7, 17
+				CALL SET_ENEMY, LOOP_CNT ,[[キャラ:오니]],20+RAND:5,1,0
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+		ELSE
+			FOR LOOP_CNT, 7, 17
+				CALL SET_ENEMY, LOOP_CNT ,[[キャラ:파계승]],25+RAND:5,0,0
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+		ENDIF
+	ELSEIF BATTLE_CNT <= 10
+		IF RAND:2 == 0
+			FOR LOOP_CNT, 7, 17
+				CALL SET_ENEMY, LOOP_CNT ,[[キャラ:어새신]],35+RAND:5,1,0
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+		ELSE
+			FOR LOOP_CNT, 7, 17
+				CALL SET_ENEMY, LOOP_CNT ,[[キャラ:오니죠로]],34+RAND:5,0,0
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+		ENDIF
+	ELSEIF BATTLE_CNT <= 15
+		IF RAND:2 == 0
+			FOR LOOP_CNT, 7, 17
+				CALL SET_ENEMY, LOOP_CNT ,[[キャラ:아마존]],43+RAND:5,1,0
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+		ELSE
+			FOR LOOP_CNT, 7, 17
+				CALL SET_ENEMY, LOOP_CNT ,[[キャラ:가면성]],39+RAND:5,0,0
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+		ENDIF
+	ELSE
+		IF RAND:2 == 0
+			FOR LOOP_CNT, 7, 17
+				CALL SET_ENEMY, LOOP_CNT ,[[キャラ:사이클롭스]],51+RAND:5,1,0
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+		ELSE
+			FOR LOOP_CNT, 7, 17
+				CALL SET_ENEMY, LOOP_CNT ,[[キャラ:암법사]],52+RAND:5,0,0
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+			NEXT
+		ENDIF
+	ENDIF
+	
+	CALL BATTLE_START
+	;戦闘回数をカウント
+	BATTLE_CNT += 1
+	PRINTW >가이아교의 증원 부대를 쓰러뜨렸다.
+	IF BATTLE_CNT == 1
+		PRINTL 
+		PRINTL ＞최소한의 일은 해냈다고 할 수 있으리라.
+	ELSEIF BATTLE_CNT == 5
+		PRINTL ＞충분한 전과를 올렸다고 할 수 있으리라.
+		PRINTL 
+	ELSEIF BATTLE_CNT == 10
+		PRINTL ＞제법 쏠쏠한 전과를 올렸다고 할 수 있으리라.
+		PRINTL 
+	ELSEIF BATTLE_CNT == 15
+		PRINTL ＞상당한 전과를 올렸다고 할 수 있으리라!
+		PRINTL 
+	ELSE
+		PRINTL 
+	ENDIF
+	IF BATTLE_CNT >= 50
+		PRINTW 가이아교의 침공 부대를 괴멸시켰다.
+		BREAK
+	ELSE
+		PRINTL 
+		PRINTW ＞후퇴하시겠습니까?
+		PRINTL 
+		PRINTL [0] 전투를 계속한다.
+		PRINTL [1] 후퇴한다.
+		CALL INPUTINT,0,1
+		IF RESULT == 1
+			PRINTW 작전 목표를 달성했다.
+			BREAK
+		ENDIF
+	ENDIF
+WEND
+
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+;-------------------
+;報酬処理
+;-------------------
+;報酬
+;難易度
+依頼フラグ:[[依頼:랜덤의뢰]]:5 = 3
+;メシア教
+依頼フラグ:[[依頼:랜덤의뢰]]:7 = 1
+CALL PRIZE_REQUEST_108

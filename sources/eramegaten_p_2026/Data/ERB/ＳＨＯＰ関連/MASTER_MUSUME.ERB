@@ -1,0 +1,68 @@
+﻿;=============================================================================
+;娘or息子マスター引き継ぎ
+;=============================================================================
+@MASTER_MUSUME
+#DIM 主人位置
+;CALL INPUT_CHARA_LIST("マスターにするキャラを選んでください", "MASTER_BLOOD")
+{
+CALL INPUT_CHARA_LIST
+	, "FUNC_PROPSET_LIST"
+	, "마스터로 할 캐릭터를 선택해주세요"
+	, "MASTER_BLOOD" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+IF RESULT == 1000
+	RETURN 0
+ENDIF
+
+LOCAL = RESULT
+主人位置 = CFLAG:MASTER:포지션
+COPYCHARA LOCAL,0
+CALL キャラ削除, LOCAL
+;ポジションの設定がされていなかったので追加
+CFLAG:MASTER:PT플래그 = 2
+CFLAG:MASTER:포지션 = 主人位置
+LOCALS = 포지션{主人位置}
+FLAG:LOCALS = MASTER
+;陥落・契約素質は外しておく
+TALENT:MASTER:연모 = 0
+TALENT:MASTER:친애 = 0
+TALENT:MASTER:음란 = 0
+TALENT:MASTER:창부 = 0
+TALENT:MASTER:복종 = 0
+TALENT:MASTER:예속 = 0
+TALENT:MASTER:신뢰 = 0
+TALENT:MASTER:동료 = 0
+TALENT:MASTER:아내 = 0
+TALENT:MASTER:남편 = 0
+TALENT:MASTER:음마 = 0
+TALENT:MASTER:노리개 = 0
+TALENT:MASTER:맹우 = 0
+;引継ぎ回数もリセット
+CFLAG:MASTER:인계횟수 = 0
+;あなたがNTRてたら困る
+TALENT:MASTER:ＮＴＲ = 0
+CFLAG:MASTER:NTR플래그 = 0
+CFLAG:MASTER:애ＮＴＲ진행도 = 0
+CFLAG:MASTER:음ＮＴＲ진행도 = 0
+CFLAG:MASTER:예ＮＴＲ진행도 = 0
+CFLAG:MASTER:현ＮＴＲ진행도 = 0
+CFLAG:MASTER:AV아이돌 = 0
+CFLAG:MASTER:방문판매플래그 = 0
+;NTRからの再陥落対策
+CFLAG:MASTER:캐릭터고유번호 = 0
+
+@MASTER_BLOOD(ARG)
+SIF TALENT:ARG:마스터의혈통
+	RETURN 1
+SIF ARG == MASTER
+	RETURN 0
+SIF CFLAG:ARG:이자리에없는플래그 == 1
+	RETURN 0
+RETURN 0

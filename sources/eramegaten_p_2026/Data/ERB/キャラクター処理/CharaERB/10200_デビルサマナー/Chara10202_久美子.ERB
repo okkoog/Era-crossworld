@@ -1,0 +1,277 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara4599_久美子.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/02/05		P(bazzile)				新規作成
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;ERB\RPG\ダンジョンアタック\ダンジョンデータ\DUNGEON85_古墳迷宮.ERBで加入時に分岐
+;--------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:쿠미코]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+IF ARG:2 == 1
+	CALL SET_BASE_[[キャラ:쿠미코]], ARG, ARG:2
+	CALL SET_BTL_TALENT_[[キャラ:쿠미코]], ARG, ARG:2
+	CALL SET_SKILL_[[キャラ:쿠미코]], ARG, ARG:2
+	CALL SET_LEARN_SKILL_[[キャラ:쿠미코]], ARG, ARG:2
+ENDIF
+
+;ARG:1はイベントフラグ
+@SET_BASE_[[キャラ:쿠미코]], ARG, ARG:1
+SELECTCASE ARG:1
+	CASE 1 
+		NAME:ARG = イナルナ姫
+		CALLNAME:ARG = イナルナ姫
+
+		;素質を変更（心がへし折れてるのでまあそんな感じに）
+		;久美子の素質をイナルナっぽく変更し、心をへし折る
+		ABL:ARG:순종 = 3
+		ABL:ARG:Ｃ감각 = 1
+		ABL:ARG:Ｖ감각 = 2
+		ABL:ARG:Ａ감각 = 1
+		ABL:ARG:Ｂ감각 = 1
+		ABL:ARG:노출증 = 1
+		ABL:ARG:마조끼 = 2
+		ABL:ARG:정액중독 = 1
+		MARK:ARG:고통각인 = 3
+		MARK:ARG:반발각인 = 3
+		MARK:ARG:4 = 3
+		TALENT:ARG:처녀 = 0
+		;心へし折りセット
+		TALENT:ARG:겁쟁이 = 1
+		TALENT:ARG:프라이드낮음 = 1
+		TALENT:ARG:비관적 = 1
+		TALENT:ARG:아픔에약함 = 1
+		TALENT:ARG:약점 = 1
+		TALENT:ARG:巨尻 = 1 ;動画で見てみたらいいケツしてたので
+
+		EXP:ARG:Ｖ경험 = 20
+		EXP:ARG:Ａ경험 = 10
+		EXP:ARG:절정경험 = 5
+		EXP:ARG:성교경험 = 20
+		EXP:ARG:질사경험 = 10
+		EXP:ARG:자위경험 = 5
+		EXP:ARG:조교자위경험 = 5
+		EXP:ARG:정액경험 = 15
+		EXP:ARG:펠라경험 = 10
+		EXP:ARG:고통쾌락경험 = 5
+		EXP:ARG:긴박경험 = 20
+		CALL ADDS_ABNORMAL_EXP("処女喪失（強姦）", ARG)
+		CALL ADDS_ABNORMAL_EXP("処女喪失（騎乗位）", ARG)
+		CALL SHOW_ABNORMAL_EXP , ARG, 0
+
+		;LVとか補正
+		;コイツの運がいいわけない
+		BASE:ARG:LV = 40
+		BASE:ARG:힘 = 16
+		BASE:ARG:지혜 = 12
+		BASE:ARG:마력 = 23
+		BASE:ARG:내구 = 13
+		BASE:ARG:속도 = 17
+		BASE:ARG:운 = 1
+		BASE:ARG:ＥＸＰ = 5*(BASE:ARG:LV - 1)*(BASE:ARG:LV)*(BASE:ARG:LV + 1)/3
+		CFLAG:ARG:초기LV = BASE:ARG:LV
+
+		CALL SYNC_STATUS,ARG
+		CALL HEALTH_CHARA,ARG
+
+		;解説を変更
+		CSTR:ARG:30 = 秦野 久美子（はたの・くみこ）／伊那瑠奈（いなるな）。
+		CSTR:ARG:31 = 
+		CSTR:ARG:32 = 平崎市の北山大学に通う学生で、雲雀ヶ丘在住のお嬢様。
+		CSTR:ARG:33 = 主人公のガールフレンドであり、異端的な考古学に接した結果陰謀に巻き込まれることになる。
+		CSTR:ARG:34 = 主人公はさらにその巻き添えである。
+		CSTR:ARG:35 = 
+		CSTR:ARG:36 = 遠い祖先であるイナルナの依代とされる過程で異常な経験を得ており、秦野久美子の人格は壊され、残っていない。
+		CSTR:ARG:37 = イナルナ姫が秦野久美子を乗っ取った（乗っ取らされた）形となっている。
+		CSTR:ARG:38 = そのイナルナ姫も恐怖心を抱いているようだ。
+		CSTR:ARG:39 = 
+		CSTR:ARG:40 = 当然、原作ではこのような展開にはならない。
+		CSTR:ARG:41 = 『キョウジ』によって恨みを晴らされたイナルナ姫は、久美子を解放して消えていく。
+		CSTR:ARG:42 = そうしてひとりのデビルサマナーが生まれるのだが……
+		CSTR:ARG:43 = 
+		CSTR:ARG:44 = 
+		CSTR:ARG:45 = 
+		CSTR:ARG:46 = 
+		CSTR:ARG:47 = 
+		CSTR:ARG:48 = 
+		CSTR:ARG:49 = 登場作品『真・女神転生デビルサマナー』／ShinEraTenseiオリジナル
+	CASE 2
+		TALENT:ARG:붕괴 = 1
+		TALENT:ARG:처녀 = 0
+		ABL:ARG:Ｃ감각 = 1
+		ABL:ARG:Ｖ감각 = 2
+		ABL:ARG:Ａ감각 = 1
+		ABL:ARG:Ｂ감각 = 1
+		ABL:ARG:노출증 = 1
+		ABL:ARG:마조끼 = 2
+		ABL:ARG:정액중독 = 1
+		MARK:ARG:반발각인 = 3
+		MARK:ARG:4 = 3
+		EXP:ARG:Ｖ경험 = 20
+		EXP:ARG:Ａ경험 = 10
+		EXP:ARG:절정경험 = 5
+		EXP:ARG:성교경험 = 20
+		EXP:ARG:질사경험 = 10
+		EXP:ARG:자위경험 = 5
+		EXP:ARG:조교자위경험 = 5
+		EXP:ARG:정액경험 = 15
+		EXP:ARG:펠라경험 = 10
+		EXP:ARG:고통쾌락경험 = 5
+		EXP:ARG:긴박경험 = 20
+		CALL ADDS_ABNORMAL_EXP("処女喪失（強姦）", LOCAL)
+		CALL ADDS_ABNORMAL_EXP("処女喪失（騎乗位）", LOCAL)
+		CALL SHOW_ABNORMAL_EXP , LOCAL, 0
+ENDSELECT
+
+@SET_BTL_TALENT_[[キャラ:쿠미코]], ARG, ARG:1
+IF ARG:1 == 1
+	;初期リンク悪魔をイナルナ姫に変更
+	;強いか弱いかで言うと個人的には「あんまりつよくない」かな……
+	;なお、デビルシフターにはなるが、ガンスリンガーなどは取得できない。
+	;非戦闘員を削除
+	ABL:ARG:초기링크악마공격상성 = 2
+	ABL:ARG:초기링크악마사거리 = 3
+	ABL:ARG:초기링크악마공격범위 = 1
+	ABL:ARG:초기링크악마최저공격횟수 = 1
+	ABL:ARG:초기링크악마최대공격횟수 = 1
+	CALL CHANGE_ROLE, ARG, "데빌시프터_1", , , "サブ素質引継ぎなし"
+	CFLAG:ARG:초기링크악마 = [[キャラ:이나루나]]
+
+ENDIF
+
+@SET_SKILL_[[キャラ:쿠미코]], ARG, ARG:1
+IF ARG:1 == 1
+	CALL CLEAR_ALL_SKILL, ARG
+	;レベルアップで覚えるスキルなどは既に覚えた状態＋ボーナスというかアレで、千年のジュオン。
+	CALL SET_LEARN_SKILL, ARG, "절대영도", 1, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "나루카미", 1, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "색즉시공", 1, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "메기도라온", 1, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "나선의뱀", 1, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "데・쿤다", 1, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "데・카쟈", 1, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "천년의저주", 1, "変身形態"
+ENDIF
+@SET_LEARN_SKILL_[[キャラ:쿠미코]], ARG, ARG:1
+IF ARG:1 == 1
+	CALL CLEAR_ALL_LEARN_SKILL, ARG
+	;覚え直し用セット
+	;これ引き継いだ時どうなるんだっけ？ →　CSV登録になるんで引き継ぎに呼び出し処理を追加
+	;低レベル用にマハジオマハブフをセット、おまけでスクカジャ
+	;螺旋の蛇だけ異様に覚えるのが遅いのはイナルナ再現、まあ取得時点ではフツーに覚えてるけど
+	;なお螺旋の蛇、物理スキルの模様。
+	CALL SET_LEARN_SKILL, ARG, "마하・부흐", 5, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "마하・지오", 9, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "스쿠・카쟈", 13, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "메기도", 20, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "데・쿤다", 21, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "데・카쟈", 22, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "색즉시공", 40, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "절대영도", 45, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "나루카미", 48, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "메기도라온", 55, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "천년의저주", 60, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "나선의뱀", 100, "変身形態"
+ENDIF
+;--------------------------------------------------
+;キャラクター独自変数名称定義関数
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:쿠미코]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_EV
+	;周回時にリセットされる数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_EV
+	;周回時にリセットされる文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる数値型変数です
+	;スキルゲージHとほぼ互換です。基本的にはゲージHが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる文字列型変数です
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる数値型変数
+	;スキルゲージFとほぼ互換です。基本的にはゲージFが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる文字列型変数
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS

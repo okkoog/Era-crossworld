@@ -1,0 +1,287 @@
+﻿;スキル名
+@SKILL_NAME_ガンマ・レイ,ARG
+#DIM ガンマ履歴
+ガンマ履歴 = PU_SKILLNUM_GET(ARG,"ガンマ・レイ")
+;追撃中は名前チェンジ
+	IF ARG > -1
+		SIF SKILLGAGE_H_GET(ARG,ガンマ履歴) == 1
+			RESULTS = 레이 펜타그마 반격
+		SIF SKILLGAGE_H_GET(ARG,ガンマ履歴) == 2
+			RESULTS = 레이 펜타그마 추격
+		SIF SKILLGAGE_H_GET(ARG,ガンマ履歴) == 3
+			RESULTS = 레이 펜타그마 추격
+	ENDIF
+;１戦闘中、ガンマレイ一度使用後は追撃のペンタグマへ
+IF SKILLGAGE_F_GET(ARG,ガンマ履歴) >= 1
+	RESULTS = 레이 펜타그마
+ELSE
+	RESULTS = 감마 레이
+ENDIF
+
+;　명중
+@SKILL_HITRATE_ガンマ・レイ, ARG
+RETURN 200
+
+;　威力
+@SKILL_POWER_ガンマ・レイ, ARG
+#DIM ガンマ履歴
+ガンマ履歴 = PU_SKILLNUM_GET(ARG,"ガンマ・レイ")
+;追・反撃中の威力は落ちる
+	IF ARG > -1
+		SIF SKILLGAGE_H_GET(ARG,ガンマ履歴) == 1
+			RETURN 60
+		SIF SKILLGAGE_H_GET(ARG,ガンマ履歴) == 2
+			RETURN 60
+		SIF SKILLGAGE_H_GET(ARG,ガンマ履歴) == 3
+			RETURN 60
+	ENDIF
+;１戦闘中、ガンマレイ一度使用後はペンタグマへ
+SIF SKILLGAGE_F_GET(ARG,ガンマ履歴) >= 1
+	RETURN 0
+RETURN 360
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ガンマ・レイ,ARG
+;追撃中2-3、通常1
+IF FLAG:총공격중 || FLAG:카운터중
+	RETURN 2
+ELSE
+	RETURN 1
+ENDIF
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ガンマ・レイ,ARG
+IF FLAG:총공격중 || FLAG:카운터중
+	RETURN 3
+ELSE
+	RETURN 1
+ENDIF
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ガンマ・レイ, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ガンマ・レイ,ARG
+#DIM ガンマ履歴
+ガンマ履歴 = PU_SKILLNUM_GET(ARG,"ガンマ・レイ")
+;ガンマ・レイのみ高い
+IF SKILLGAGE_F_GET(ARG,ガンマ履歴) >= 1
+	RETURN 40
+ELSE
+	RETURN 60
+ENDIF
+
+;　相性
+@SKILL_TYPE_ガンマ・レイ,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ガンマ・レイ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　攻撃タイプ
+@SKILL_ATTACKTYPE_ガンマ・レイ,ARG
+RETURN GET_攻撃タイプ_NUM("物理")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ガンマ・レイ,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ガンマ・レイ,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_ガンマ・レイ,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ガンマ・レイ,ARG
+#DIM ガンマ履歴
+ガンマ履歴 = PU_SKILLNUM_GET(ARG,"ガンマ・レイ")
+IF ARG > -1
+	SIF SKILLGAGE_H_GET(ARG,ガンマ履歴) == 1
+		RETURN 1
+	SIF SKILLGAGE_H_GET(ARG,ガンマ履歴) == 2
+		RETURN 1
+	SIF SKILLGAGE_H_GET(ARG,ガンマ履歴) == 3
+		RETURN 3
+ENDIF
+;１戦闘中、ガンマレイ一度使用後は追撃のペンタグマへ
+SIF SKILLGAGE_F_GET(ARG,ガンマ履歴) >= 1
+	RETURN 1
+RETURN 3
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ガンマ・レイ,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_ガンマ・レイ, ARG = -1
+RETURN -20
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ガンマ・レイ
+RETURN 0
+
+
+;====================================================
+;独自のカジャ処理
+;ARG		攻撃側のキャラ登録番号
+;ARG:1		防御側のキャラ登録番号
+;RESULT 	= 強化値
+;RESULT:1	= 基準値	(基準値 + x) / 基準値 あるいは　(基準値 * 2 - x) /基準値 * 2倍になる
+;			　デフォは基準値32で、最大で(32 + 32) / 32 or (64 - 32) / 64倍になる
+;====================================================
+@SKILL_CALC_BUFF_ガンマ・レイ, ARGS, ARG, ARG:1
+SELECTCASE ARGS
+	CASE "ATK"
+		RETURN LIMIT(CFLAG:ARG:공격강화 + CFLAG:ARG:마법위력강화, -48, 64), 32
+ENDSELECT
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_ガンマ・レイ,ARG,ARG:1
+#DIM ガンマ履歴
+ガンマ履歴 = PU_SKILLNUM_GET(ARG,"ガンマ・レイ")
+;効果時間中
+SIF SKILLGAGE_D_GET(ARG,ガンマ履歴) < 1
+	RETURN 0
+;攻撃者が自分である
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+;味方には発動しない
+SIF IS_FRIEND(ARG, ARG:1)
+	RETURN 0
+;攻撃を実行している
+SIF !GET_CREC_ACT(ARG, ARG:1, "ATTACK")
+	RETURN 0
+;判定は1回
+SIF TFLAG:스킬트리거용1++
+	RETURN 0
+;ターゲットが死んでいない状態で、単体には単体、範囲には範囲で追撃。
+IF CFLAG:ARG:타겟 < 17
+	CALL SKILLGAGE_H_SET,ARG,ガンマ履歴,2
+	RETURN 1, CFLAG:ARG:타겟
+ELSEIF CFLAG:ARG:타겟 < 20
+	CALL SKILLGAGE_H_SET,ARG,ガンマ履歴,3
+	RETURN 1, 19
+ELSE
+	CALL SKILLGAGE_H_SET,ARG,ガンマ履歴,3
+	RETURN 1, 22
+ENDIF
+
+;====================================================
+;カウンター発動条件
+;ARG			このスキルの持ち主
+;ARG:1			攻撃者のキャラ番号
+
+;RESULT			1 = 反撃成立。ただし実行までの間に行動者が行動不能になった場合は不発する
+;RESULT:1		反撃対象のPOS(ACTION_XXXのARG:1に送られる)。システム側で敵の生存・存在判定による不発判定をおこなうが、RESULT:1が0の場合は相手の状態に関わらず判定を通す
+;RESULT:2		-1 = デフォルトのスキル名表示を省く
+;====================================================
+@SKILL_COUNTER_ACTIONABLE_ガンマ・レイ,ARG,ARG:1
+#DIM ガンマ履歴
+ガンマ履歴 = PU_SKILLNUM_GET(ARG,"ガンマ・レイ")
+;スキル効果時間中
+SIF SKILLGAGE_D_GET(ARG,ガンマ履歴) < 1
+	RETURN 0
+SIF !GET_CREC_ACT(ARG:1, ARG, "HIT")
+	RETURN 0
+;確率６６％
+SIF RAND:3 == 0
+	RETURN 0
+CALL SKILLGAGE_H_SET,ARG,ガンマ履歴,1
+RETURN 1, CPOS(ARG:1)
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ガンマ・レイ,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#LOCALSIZE 4
+#DIM ガンマ履歴
+ガンマ履歴 = PU_SKILLNUM_GET(ARG,"ガンマ・レイ")
+;トリガー追撃中は攻撃するだけ
+IF FLAG:카운터중 || FLAG:총공격중
+	;単体攻撃
+	IF ARG:1 < 17
+		CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+	ELSE
+		CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+	ENDIF
+	;攻撃内容リセット
+	CALL SKILLGAGE_H_SET,ARG,ガンマ履歴,0
+ELSE
+	;
+	IF SKILLGAGE_F_GET(ARG,ガンマ履歴) == 0
+		CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+		CALL SKILLGAGE_F_SET,ARG,ガンマ履歴,1
+		PRINTL 
+		PRINTL 감마 레이의 가호가 다해, 레이 펜타그마가 되었다.
+	ELSE
+	;ガンマレイ使用後の場合レイペンタグマセット
+		CALL SKILLGAGE_D_SET,ARG,ガンマ履歴,6
+		PRINTL 레이 펜타그마, 세트!
+	ENDIF
+ENDIF
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_ガンマ・レイ,ARG
+IF PU_SKILLGAGE_F_GET(ARG,"ガンマ・レイ") > 0 && PU_SKILLGAGE_D_GET(ARG,"ガンマ・レイ") > 0
+	RESULTS = 레이 펜타그마:{PU_SKILLGAGE_D_GET(ARG,"ガンマ・レイ")}T
+	RETURN 3
+ENDIF
+
+;　説明文の表示
+@SKILL_EXPLAIN_ガンマ・レイ,ARG
+#DIM ガンマ履歴
+ガンマ履歴 = PU_SKILLNUM_GET(ARG,"ガンマ・レイ")
+IF SKILLGAGE_F_GET(ARG,ガンマ履歴) > 1
+	PRINTL 『레이 펜타그마』
+	PRINTL 발동 후 6턴 동안 자신의 공격에 따라 추격을 가한다. 발동이 느리다.
+	PRINTL 또한, 적으로부터 공격을 받았을 때 확률로 반격을 가하게 된다.
+	PRINTL 데미지 계산은 『공격』 의존으로 이루어지며, 마카카자와 동시에 타루카자의 영향을 합산한다.
+	PRINTL 
+	PRINTL 마법진을 구성하여 추격·반격을 가하는 화살을 발생시킨다.
+ELSE
+	PRINTL 『감마 레이』
+	PRINTL 적 전체에게 만능 속성의 대위력 마법 공격을 1회 가한다. 발동이 느리다.
+	PRINTL 1출격 1회까지. 이후에는 추격·반격을 세팅하는 『레이 펜타그마』가 된다.
+	PRINTL 데미지 계산은 『공격』 의존으로 이루어지며, 마카카자와 동시에 타루카자의 영향을 합산한다.
+	PRINTL 
+	PRINTL 1출격에 1번만, 마력이 충만한 마법진을 전개하여 작렬시킴으로써 대위력의 마법 공격을 가한다.
+ENDIF
+PRINTL 창기사 루나리에의 마법의 힘. (CSTR 전용)
+
+@SKILL_EX_DISPLAY_ガンマ・レイ, ARG, ARGS
+IF HAVE_PU_SKILL(ARG, "ファヤダーン")
+	RETURN 0
+ELSE
+	CALL SKILL_EX_DISPLAY_ファヤダーン, ARG, ARGS
+	RETURN RESULT
+ENDIF
+
+@SKILL_BATTLE_MAIN_TOOLTIP_ガンマ・レイ, ARG, ARG:1
+IF SKILLGAGE_D_GET(ARG, ARG:1) > 0
+	RESULTS = □레이 펜타그마
+	RESULTS:1 = 　효과 시간: 남은 {SKILLGAGE_D_GET(ARG, ARG:1)}턴
+ENDIF
+
+@SKILL_BATTLE_MAIN_FACE_TOOLTIP_ガンマ・レイ, ARG, ARG:1
+IF SKILLGAGE_D_GET(ARG, ARG:1) > 0
+	RESULTS = □레이 펜타그마
+	RESULTS:1 = 　자신의 공격에 추격이 발생한다.
+	RESULTS:2 = 　一定確率で敵の攻撃を受けた際に反撃を行う。
+ENDIF
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ガンマ・レイ,ARG
+RETURN 1
+

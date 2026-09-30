@@ -1,0 +1,169 @@
+﻿;スキル名
+@SKILL_NAME_幻想の鉄処女,ARG
+RESULTS = 환상의 철처녀
+
+;　명중
+@SKILL_HITRATE_幻想の鉄処女, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_幻想の鉄処女, ARG
+#DIM L_T
+SIF ARG < 0
+	RETURN 400
+SIF !INRANGE(CFLAG:ARG:타겟, 1, 16)
+	RETURN 400
+L_T = POS(CFLAG:ARG:타겟)
+SIF L_T < 0
+	RETURN 400
+SIF TALENT:L_T:남자 || TALENT:L_T:오토코노코
+	RETURN 400
+IF TALENT:L_T:처녀
+	RETURN 800
+ELSE
+	RETURN 600
+ENDIF
+
+;;クリティカル率
+@SKILL_CRITICAL_RATE_幻想の鉄処女, ARG
+RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_幻想の鉄処女, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_幻想の鉄処女, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_幻想の鉄処女, ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_幻想の鉄処女,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_幻想の鉄処女,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_幻想の鉄処女,ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_幻想の鉄処女,ARG
+RETURN 50
+
+;　相性
+@SKILL_TYPE_幻想の鉄処女,ARG
+RETURN GET_TYPE_NUM("주살"), GET_TYPE_NUM("검격")
+;呪殺と剣撃
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_幻想の鉄処女
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_幻想の鉄処女,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_幻想の鉄処女,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_幻想の鉄処女,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_幻想の鉄処女,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_幻想の鉄処女,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_幻想の鉄処女
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_幻想の鉄処女, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_幻想の鉄処女
+RETURN 0
+
+;没
+;@SKILL_RANK_幻想の鉄処女, ARG = -1
+
+
+;拡散攻撃用追加処理
+;ブレスなどの拡散攻撃に使う
+@SKILL_SPREAD_幻想の鉄処女,ARG
+RETURN 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_幻想の鉄処女,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+SIF !IS_MALE(POS(ARG:1))
+	PRINTFORML ＞대상은 여성! 데미지 증가!
+SIF TALENT:POS(ARG:1):처녀
+	PRINTFORML ＞대상은 처녀! 데미지 증가!
+
+;CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM
+CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+;CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+;CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM;		拡散攻撃
+;CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM;			ランダム攻撃
+
+IF BASE:ARG:ＨＰ >= MAXBASE:ARG:ＨＰ
+ELSE
+	BASE:ARG:ＨＰ += MAXBASE:ARG:ＨＰ/10
+		SIF BASE:ARG:ＨＰ > MAXBASE:ARG:ＨＰ
+			BASE:ARG:ＨＰ = MAXBASE:ARG:ＨＰ
+ENDIF
+;CFLAG:ARG:공격강화 = MIN(32, CFLAG:ARG:공격강화 + 4)
+CALL SKILL_SET_カジャンダ, ARG, ARG, "공격", 4, "단체", "NOMES"
+PRINTFORMW ＞【환상의 철처녀】 효과로 %CALLNAME:ARG%의 HP가 회복되고 공격력이 올랐다!
+
+CALL SKILLGAGE_D_SET,ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム"),0
+CALL SKILLGAGE_F_SET,ARG,PU_SKILLNUM_GET(ARG,"幻想の鉄処女"),0
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_幻想の鉄処女,ARG
+PRINTL 『환상의 철처녀(팬텀 메이든)』
+PRINTFORML %CALLNAME:ARG%(이)가 소환하는 거대한 고문기구, 철의 처녀(아이언 메이든).
+PRINTL 
+PRINTL 적 단체에 주살+검격 복합 특대 데미지를 가한다.
+PRINTL 대상이 여성일 경우 주는 데미지 증가. 처녀일 경우 더욱 주는 데미지가 증가한다.
+PRINTL 공격 후 자신의 HP를 최대 HP의 10% 회복하고, 공격력도 올린다.
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_幻想の鉄処女,ARG
+SIF SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム")) == 0
+	RETURN 0
+RETURN 1
+
+;スキルのタグ、他の処理でこのスキルがどういう物か調べる時に使う
+@SKILL_TAG_幻想の鉄処女
+RESULTS = 宝具

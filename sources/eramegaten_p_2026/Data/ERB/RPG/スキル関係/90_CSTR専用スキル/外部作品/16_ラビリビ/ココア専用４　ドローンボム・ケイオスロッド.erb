@@ -1,0 +1,119 @@
+﻿;スキル名
+@SKILL_NAME_D・ケイオスロッド,ARG
+RESULTS = D・ケイオスロッド
+
+
+;　명중
+@SKILL_HITRATE_D・ケイオスロッド, ARG
+RETURN 0
+
+;　威力
+@SKILL_POWER_D・ケイオスロッド, ARG
+RETURN 0
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_D・ケイオスロッド, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_D・ケイオスロッド,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_D・ケイオスロッド,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_D・ケイオスロッド, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量　HPだと％になるんだ。しらそん
+@SKILL_COST_D・ケイオスロッド,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_D・ケイオスロッド,ARG
+RETURN GET_TYPE_NUM("없음")
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_D・ケイオスロッド
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_D・ケイオスロッド,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_D・ケイオスロッド,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_D・ケイオスロッド,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_D・ケイオスロッド,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_D・ケイオスロッド,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_D・ケイオスロッド
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_D・ケイオスロッド, ARG = -1
+RETURN 50
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_D・ケイオスロッド
+RETURN 0
+
+;没
+;@SKILL_RANK_D・ケイオスロッド, ARG = -1
+
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_D・ケイオスロッド,ARG
+;RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_D・ケイオスロッド,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM ボムストック
+ボムストック = PU_SKILLNUM_GET(ARG,"ボムリロード")
+CALL SKILLGAGE_F_ADD,ARG,ボムストック,2
+CALL SKILL_INVALID_WALL, ARG, ARG:1, "수호의방패", "範囲"
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_D・ケイオスロッド,ARG
+PRINTL 味方全体に、全属性を１回防ぐシールドを展開。
+PRINTL 追加効果：速度補正『強』　条件：ボムストック２消費。
+PRINTL 
+PRINTL ココアが調合し持ち歩いているボムに、リボンの魔法を組み合わせたドローン爆弾。
+PRINTL ケイオスロッドを配合すると、全攻撃を１回防ぐ効果がある。
+PRINTL 具体的には、バリアを展開することで攻撃に対して短時間無敵になるスキル。ただしボムコストが重い。
+PRINTL また、使用にはボムリロードスキルの所持が必要。ネコ耳族　ココアの技能（専用）
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_D・ケイオスロッド,ARG
+#DIM ボムストック
+ボムストック = PU_SKILLNUM_GET(ARG,"ボムリロード")
+IF SKILLGAGE_F_GET(ARG,ボムストック) > 2
+	RETURN 0
+ELSEIF HAVE_SKILL(ARG,ボムストック)
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF

@@ -1,0 +1,78 @@
+﻿;スキル名
+@SKILL_NAME_常在効果_ロゼ,ARG
+RESULTS = 常在効果
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_常在効果_ロゼ,ARG
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_常在効果_ロゼ,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_常在効果_ロゼ
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_常在効果_ロゼ, ARG = -1
+RETURN 0
+
+;　説明文の表示
+@SKILL_EXPLAIN_常在効果_ロゼ,ARG
+PRINTL 자동: 아군 ＜섬도희＞가 링크 소환을 실행할 때마다 섬도 카운터를 얻는다.
+PRINTL 　　액티브 아군에 특정 동료마가 있을 경우, 【로제 전용 스킬】은 이하의 공격 속성을 추가로 얻는다.
+PRINTL 　　섬도희-카가리:화염
+PRINTL 　　섬도희-시즈쿠:수격
+PRINTL 　　섬도희-하야테:질풍
+PRINTL 　　섬도희-카이나:지변
+
+@SKILL_カウンター獲得処理_ロゼ, ARG
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_TARGET
+#DIM DYNAMIC COUNT_EFFECT
+FOR LCOUNT, 1, 7
+	L_TARGET = POS(LCOUNT)
+	;場にでて健在じゃないとだめ
+	SIF !IS_TARGET_ABLE(L_TARGET)
+		CONTINUE
+	SIF NO:L_TARGET != [[キャラ:섬도희로제]]
+		CONTINUE
+	SIF !HAVE_PU_SKILL(L_TARGET, "常在効果_ロゼ")
+		CONTINUE
+	SIF GET_RPG_CFLAG_BTL(L_TARGET, "閃刀カウンター") >= 3
+		CONTINUE
+	CALL PRINT_ACT_MESSAGE, L_TARGET, , , , "常在効果", "NOWAIT"
+	CALL PRINT_HIT_MESSAGE, L_TARGET, "閃刀カウンターを獲得", "w"
+	CALL SET_RPG_CFLAG_BTL, L_TARGET, "閃刀カウンター", 1, "+="
+NEXT
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_常在効果_ロゼ,ARG
+RETURN 0
+
+@リンク不能_常在効果_ロゼ
+RETURN 1
+
+@GET_ADD_TYPE_ROZE_SKILL, ARG
+#FUNCTION
+#DIM DYNAMIC LCOUNT
+IF HAVE_PU_SKILL(ARG, "常在効果_ロゼ")
+	FOR LCOUNT, 1, 17
+		SIF !IS_TARGET_ABLE(POS(LCOUNT))
+			CONTINUE
+		SIF !IS_FRIEND(POS(LCOUNT), ARG)
+			CONTINUE
+		SELECTCASE NO:POS(LCOUNT)
+			CASE [[キャラ:섬도희카가리]]
+				RETURNF GET_TYPE_NUM("화염")
+			CASE [[キャラ:섬도희시즈쿠]]
+				RETURNF GET_TYPE_NUM("수격")
+			CASE [[キャラ:섬도희하야테]]
+				RETURNF GET_TYPE_NUM("질풍")
+			CASE [[キャラ:섬도희카이나]]
+				RETURNF GET_TYPE_NUM("지변")
+		ENDSELECT
+	NEXT
+ENDIF
+RETURNF -1

@@ -1,0 +1,154 @@
+﻿;スキル名
+@SKILL_NAME_狩人の刻,ARG
+RESULTS = 사냥꾼의 시간
+
+;　명중
+@SKILL_HITRATE_狩人の刻, ARG
+RETURN 90
+
+;　威力
+@SKILL_POWER_狩人の刻, ARG
+SIF ARG < 0
+	RETURN 120
+CALL GET_SKILL_POWER_狩人の刻(GET_ROLE_CFLAG_TAKEOVER(ARG, "通常スキルランク"))
+RETURN RESULT
+
+@GET_SKILL_POWER_狩人の刻, ARG, ARG:1 = -1
+SELECTCASE ARG
+	CASE 15
+		RESULT = 420
+	CASE 11 TO 14
+		RESULT = 360 + (ARG - 10) * 12
+	CASE 10
+		RESULT = 360
+	CASE 2 TO 9
+		RESULT = 70 + 30 * ARG
+	CASE 0, 1
+		RESULT = 100
+	CASEELSE
+		RESULT = 0
+ENDSELECT
+SIF ARG:1 == -1
+	RETURN RESULT
+RETURN RESULT * GET_CHARGE_POWER_月下遊猟(ARG:1) / 100
+
+;;クリティカル率
+@SKILL_CRITICAL_RATE_狩人の刻, ARG
+RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_狩人の刻,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_狩人の刻,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_狩人の刻, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_狩人の刻,ARG
+SIF ARG < 0
+	RETURN 4
+CALL GET_SKILL_COST_狩人の刻(GET_ROLE_CFLAG_TAKEOVER(ARG, "通常スキルランク"))
+RETURN RESULT
+
+;　コストの量
+@GET_SKILL_COST_狩人の刻,ARG
+SELECTCASE ARG
+	CASE 15
+		RETURN 38
+	CASE 0, 1
+		RETURN 10
+	CASEELSE
+		RETURN 8 + ARG * 2
+ENDSELECT
+
+;　相性
+;複合相性
+@SKILL_TYPE_狩人の刻,ARG
+IF ARG >= 0 && HAVE_PU_SKILL(ARG, "執事の教養")
+	RETURN GET_TYPE_NUM("빙결"), GET_TYPE_NUM("타격")
+ELSE
+	RETURN GET_TYPE_NUM("빙결")
+ENDIF
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_狩人の刻
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_狩人の刻,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_狩人の刻,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_狩人の刻,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_狩人の刻,ARG
+RETURN GET_SPHERE_NUM("일렬")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_狩人の刻,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_狩人の刻, ARG = -1
+RETURN 0
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_狩人の刻, ARG = -1, ARG:1 = -1
+IF ARG >= 0 && HAVE_PU_SKILL(ARG, "アルファの本性")
+	RETURN 0, 4
+ELSE
+	RETURN 0, 0
+ENDIF
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_狩人の刻,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL ATTACK_SKILL,ARG,ARG:1,SKILL_NUM
+
+;　説明文の表示
+@SKILL_EXPLAIN_狩人の刻,ARG
+PRINTL 【일반】【라이칸 전용 스킬】
+PRINTL 적 1열에 빙결 상성의 물리 속성 데미지를 준다.
+PRINTL 이 스킬의 위력과 획득 데시벨은 차지 단계에 따라 증가한다.
+
+;　説明文の表示
+@ENHANCE_SKILL_EXPLAIN_狩人の刻,ARG
+RESULTS '= "敵一列に氷結相性の物理属性ダメージを与える。" + "<br>"
+RESULTS += "このスキルの威力と獲得デシベル値はチャージ段階によって増加する。"
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_狩人の刻,ARG
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_狩人の刻, ARG = -1
+RETURN 1
+
+@SKILL_TAG_狩人の刻
+RESULTS = 젠제로 일반 스킬
+
+@BASE_DECIBEL_PTS_狩人の刻, ARG
+IF HAVE_PU_SKILL(ARG, "満月に備えよ")
+	RETURN 100 + (1 + GET_CHARGE_月下遊猟(ARG)) * 35
+ELSE
+	RETURN 100 + (1 + GET_CHARGE_月下遊猟(ARG)) * 25
+ENDIF

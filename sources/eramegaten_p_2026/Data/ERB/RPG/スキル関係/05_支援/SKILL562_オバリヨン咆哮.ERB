@@ -1,0 +1,163 @@
+﻿;20230331	NEO		凪専用スキル　高効率な雄たけび
+;					凪のレベルに応じて強化される
+;					エンディングを迎えていると常に最高状態に
+
+;スキル名
+@SKILL_NAME_562,ARG
+RESULTS = 오바리욘포효
+
+
+;　명중
+@SKILL_HITRATE_562, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_562, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_562,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_562,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_562, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_562,ARG
+RETURN 15
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_562
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_562, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_562,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_562,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_562, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_562
+RETURN GET_SUCCESSION_NUM("지원")
+
+;속도보정
+@SKILL_SPEED_562, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_562
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_562, ARG = -1
+RETURN 0
+
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_562, ARG, ARG:1, ARG:2
+#DIMS L_EFFECT
+L_EFFECT = 공격・마법위력
+SIF BASE:ARG:LV >= 30 || (SKILL_CHANGE(ARG, [[キャラ:나기]]) && GETBIT(FLAG:발견ED, 27))
+	L_EFFECT += "・명중"
+;;Lv60以上、またはエンドを見ている場合
+SIF BASE:ARG:LV >= 60 || (SKILL_CHANGE(ARG, [[キャラ:나기]]) && GETBIT(FLAG:발견ED, 27))
+	L_EFFECT += "・회피"
+CALL SKILL_SET_カジャンダ, ARG, ARG:1, L_EFFECT, -4, "範囲"
+
+;#LOCALSIZE 3
+;IF CFLAG:(ARG):PT플래그 == 0
+;	LOCAL:1 = 1
+;	LOCAL:2 = 7
+;ELSE
+;	LOCAL:1 = 7
+;	LOCAL:2 = 17
+;ENDIF
+;
+;FOR LOCAL,LOCAL:1,LOCAL:2
+;	SIF POS(LOCAL) < 0
+;		CONTINUE
+;	CFLAG:POS(LOCAL):공격강화 = MAX(-16, CFLAG:POS(LOCAL):공격강화 - 4)
+;	CFLAG:POS(LOCAL):마법위력강화 = MAX(-16, CFLAG:POS(LOCAL):마법위력강화 - 4)
+;
+;	;Lv30以上なら命中ダウンも追加
+;	SIF SKILL_CHANGE(ARG, [[キャラ:나기]]) && (BASE:ARG:LV >= 30 || GETBIT(FLAG:발견ED, 27))
+;		CFLAG:POS(LOCAL):마법위력강화 = MAX(-16, CFLAG:POS(LOCAL):명중강화 - 4)
+;NEXT
+;
+;IF SKILL_CHANGE(ARG, [[キャラ:나기]]) && (BASE:ARG:LV >= 30 || GETBIT(FLAG:발견ED, 27))
+;	PRINTFORMW \@ CFLAG:ARG:PT플래그 == 2 ? 敵 # 味方 \@の攻撃力と魔法攻撃力と命中を下げた！
+;ELSE
+;	PRINTFORMW \@ CFLAG:ARG:PT플래그 == 2 ? 敵 # 味方 \@の攻撃力と魔法攻撃力を下げた！
+;ENDIF
+;
+;;Lv60以上、またはエンドを見ている場合
+;IF SKILL_CHANGE(ARG, [[キャラ:나기]]) && (BASE:ARG:LV >= 60 || GETBIT(FLAG:발견ED, 27))
+;	FOR LOCAL,LOCAL:1,LOCAL:2
+;		SIF POS(LOCAL) < 0
+;			CONTINUE
+;		CFLAG:(POS(LOCAL)):속도보정 -= 3
+;
+;	NEXT
+;	PRINTFORMW さらに、\@ CFLAG:ARG:PT플래그 == 2 ? 敵 # 味方 \@の行動速度を下げた！
+;ENDIF
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_562, ARG
+PRINTL 적 전체의 공격력과 마법위력을 낮춘다。
+PRINTL 레벨이 상승함에 따라、이하의 효과가 추가된다。
+PRINTL ・Lv30이상：명중약화
+PRINTL ・Lv60이상：회피약화
+PRINTL 
+SIF GETBIT(FLAG:발견ED, 27)
+	PRINTL 나기가 사용할 경우 레벨에 관계없이 최대 효과가 발휘된다.
+PRINTL  
+PRINTL 오바리욘을 소환해 포효를 지르게 하여 적을 약화시킨다.
+PRINTL 야타가라스 나기의 전용 스킬.
+
+@継承部位_562,ARG
+;RESULTS = 입
+;RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_562,ARG
+RETURN 1
+;とくにない

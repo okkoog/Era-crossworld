@@ -1,0 +1,210 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_3534,ARG
+;修羅
+;SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0
+	RESULTS = 카무이・림세
+;羅刹
+SIF ARG > -1 && SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 1
+	RESULTS = 레라 무츠베
+
+;　명중
+@SKILL_HITRATE_3534, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_3534, ARG
+IF ARG > -1
+	;修羅
+	SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0
+		RETURN 250
+	;羅刹
+	SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 1
+		RETURN 350
+ENDIF
+RETURN 250
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3534,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3534,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3534, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3534,ARG
+IF ARG > -1
+	;修羅
+	SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0
+		RETURN 25
+	;羅刹
+	SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 1
+		RETURN 25
+ENDIF
+RETURN 25
+
+;　相性
+@SKILL_TYPE_3534,ARG
+#LOCALSSIZE 3
+#LOCALSIZE 5
+VARSET LOCALS
+IF ARG > -1
+	;修羅
+	IF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0
+		RETURN 10
+	;羅刹
+	ELSEIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 1
+		RETURN GET_TYPE_NUM("검격"), GET_TYPE_NUM("충격")
+		;LOCALS = 검격
+		;LOCALS:1 = 충격
+	ENDIF
+ENDIF
+RETURN GET_TYPE_NUM("검격")
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3534
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　攻撃タイプ
+@SKILL_ATTACKTYPE_3534,ARG
+RETURN GET_攻撃タイプ_NUM("魔法")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3534, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3534, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_3534,ARG
+IF ARG > -1
+	;修羅
+	SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0
+		RETURN 2
+	;羅刹
+	SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 1
+		RETURN 2
+ENDIF
+RETURN 2
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3534,ARG
+IF ARG > -1
+	;修羅
+	SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0
+		RETURN 2
+	;羅刹
+	SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 1
+		RETURN 1
+ENDIF
+RETURN 1
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3534, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3534
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;속도보정
+@SKILL_SPEED_3534, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3534
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3534, ARG = -1
+RETURN 23
+
+
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+@SKILL_DAMAGE_EFFECT_3534,ARG,ARG:1,ARG:2
+SIF ARG:1 < 0
+	RETURN 0
+;無効以下では発動しない
+SIF ARG:2 <= -2
+	RETURN 0
+;修羅
+IF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0
+	CALL SKILL_SET_カジャンダ, ARG, ARG:1, "마법위력", -4, "短縮"
+	;IF CFLAG:(ARG:1):마법위력강화 > -16
+	;	PRINT  & 魔法威力低下
+	;	CFLAG:(ARG:1):마법위력강화 = MAX(-16, CFLAG:(ARG:1):마법위력강화 - 4)
+	;ENDIF
+;羅刹
+ELSE
+ENDIF
+;====================================================
+;スキル及び行動の実行
+;====================================================
+
+@ACTION_3534, ARG, ARG:1, ARG:2
+#DIM STOCK,2
+
+;STOCK:0 = MAXBASE:ARG:공격
+;STOCK:1 = CFLAG:ARG:공격강화
+;MAXBASE:ARG:공격 = MAXBASE:ARG:마법위력
+;CFLAG:ARG:공격강화 = CFLAG:ARG:마법위력강화
+;修羅
+IF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0
+	CALL ATTACK_FIELD,ARG,ARG:1,3534
+;羅刹
+ELSE
+	CALL ATTACK_SINGLE,ARG,POS(ARG:1),3534,1
+	CALL SKILL_SET_カジャンダ, ARG, ARG, "명중/회피", 4, "단체"
+	;CFLAG:ARG:명중강화 = MIN(32, CFLAG:ARG:명중강화 + 4)
+	;CFLAG:ARG:회피강화 = MIN(32, CFLAG:ARG:회피강화 + 4)
+	;PRINTFORMW %CALLNAME:ARG%の命中・回避が上がった！
+ENDIF
+;MAXBASE:ARG:공격 = STOCK:0
+;CFLAG:ARG:공격강화 = STOCK:1
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3534, ARG
+IF TFLAG:전투중 == 0
+	PRINTL 【修羅】
+	PRINTL 적 전열에 파마 상성의 중 데미지 + 마법 위력 저하
+	PRINTL 【羅刹】
+	PRINTL 단체에 검격 + 충격 대 데미지 + 자신의 명중·회피 상승
+ELSEIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0 || TFLAG:전투중 == 0
+	PRINTL 신의 윤무. 적 전열에 파마 상성의 중 데미지 + 마법 위력을 저하시킨다.
+	PRINTL 이 스킬은 마법 위력으로 데미지를 계산한다.
+ELSEIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 1
+	PRINTL 바람의 칼날. 단체에 검격 + 충격 대 데미지 + 자신의 명중·회피 상승한다
+	PRINTL 이 스킬은 마법 위력으로 데미지를 계산한다.
+ENDIF
+
+
+;とくにない
+
+@SKILL_ACTIONABLE_BATTLE_3534, ARG
+RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3534,ARG
+RETURN 1
+;とくにない
+

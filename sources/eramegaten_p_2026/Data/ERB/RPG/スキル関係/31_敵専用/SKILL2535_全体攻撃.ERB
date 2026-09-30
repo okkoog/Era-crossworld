@@ -1,0 +1,143 @@
+﻿;
+
+;スキル名
+@SKILL_NAME_2535,ARG
+RESULTS = 적전용전체공격
+SIF SKILL_CHANGE(ARG, [[キャラ:아수라왕]]) && CFLAG:ARG:보스플래그 && FLAG:현던전 == 96
+	RESULTS = 阿修羅乱撃
+
+;　명중
+@SKILL_HITRATE_2535, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2535, ARG
+SIF SKILL_CHANGE(ARG, [[キャラ:아수라왕]]) && CFLAG:ARG:보스플래그 && FLAG:현던전 == 96
+	RETURN 140
+RETURN 1
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2535,ARG
+SIF SKILL_CHANGE(ARG, [[キャラ:아수라왕]]) && CFLAG:ARG:보스플래그 && FLAG:현던전 == 96
+	RETURN 3
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2535,ARG
+SIF SKILL_CHANGE(ARG, [[キャラ:아수라왕]]) && CFLAG:ARG:보스플래그 && FLAG:현던전 == 96
+	RETURN 3
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2535, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2535,ARG
+RETURN 10
+
+;　相性
+@SKILL_TYPE_2535,ARG
+SIF SKILL_CHANGE(ARG, [[キャラ:아수라왕]]) && CFLAG:ARG:보스플래그 && FLAG:현던전 == 96
+	RETURN GET_TYPE_NUM("타격")
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2535
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2535, ARG
+SIF SKILL_CHANGE((FLAG:행동순1), [[キャラ:아수라왕]]) && CFLAG:(FLAG:행동순1):보스플래그 && FLAG:현던전 == 96
+	RETURN 1
+RETURN 1
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2535, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2535,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2535,ARG
+SIF SKILL_CHANGE(ARG, [[キャラ:아수라왕]]) && CFLAG:ARG:보스플래그 && FLAG:현던전 == 96
+	RETURN 3
+RETURN 1
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2535, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2535
+RETURN GET_SUCCESSION_NUM("만능")
+
+;속도보정
+@SKILL_SPEED_2535, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2535
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2535, ARG = -1
+RETURN 23
+
+
+
+@敵専用_2535
+RETURN 1
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2535, ARG, ARG:1, ARG:2
+#LOCALSIZE 3
+SIF CFLAG:ARG:PT플래그 > 0
+	RETURN 0
+IF SKILL_CHANGE(ARG, [[キャラ:아수라왕]]) && CFLAG:ARG:보스플래그 && FLAG:현던전 == 96
+	FOR LOCAL, 1, 7
+		SIF POS(LOCAL) < 0
+			CONTINUE
+		SIF GET_STATE(CFLAG:POS(LOCAL):상태이상) == "DYING"
+			CONTINUE
+		CFLAG:ARG:타겟 = LOCAL
+		LOCAL:1 = BASE:POS(LOCAL):ＨＰ
+		CALL ATTACK_SINGLE, ARG, POS(LOCAL), 2535, 1
+		IF POS(LOCAL) > 0 && LOCAL:1 > BASE:POS(LOCAL):ＨＰ && GET_STATE(CFLAG:POS(LOCAL):상태이상) != "DYING"
+			PRINTFORML 　　TARGET:[{LOCAL,2}] %CALLNAME:POS(LOCAL),20,LEFT%　>>>>>>　올랐던 능력을 내렸다！
+			FOR LOCAL:2,0,6
+				;CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LOCAL:2) + "강화") > 0 
+				CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LOCAL:2) + "강화") -= CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LOCAL:2) + "강화") > 0 ? 4 # 0
+			NEXT
+		ENDIF
+		WAIT
+	NEXT
+ENDIF
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2535, ARG
+PRINTL 적 전용의 전체 공격
+
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2535,ARG
+RETURN 1
+;とくにない
+
+@継承不能_2535
+RETURN 2

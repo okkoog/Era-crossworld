@@ -1,0 +1,526 @@
+﻿
+;======================================================
+;装備品のデータ
+;======================================================
+
+
+@基本能力修正_2781,ARG,ARG:1 = -1
+SELECTCASE ARG
+ENDSELECT
+RETURN 0
+
+
+@戦闘能力修正_2781,ARG,ARG:1 = -1
+SELECTCASE ARG
+ENDSELECT
+RETURN 0
+
+@防御相性_2781,ARG,ARG:1 = -1
+SELECTCASE ARG
+ENDSELECT
+RETURN 100
+
+@攻撃相性_2781,ARG,ARG:1 = -1
+RETURN 13
+;수격
+
+@最低攻撃回数_2781,ARG = -1
+SIF ARG == -1
+	RETURN 1
+IF ARG > -1
+	;初期化
+	LOCAL = 0
+		IF TALENT:ARG:모유체질 == 1
+	;普通体格を+3とし、上下に二段階
+	;「普通体格」素質は存在しないので、基準値としてまず足し算する
+	;体格は持ってれば「１」が返ってくるので、掛け算してやることで値が出る
+	LOCAL += 2 + (TALENT:ARG:거체 * 3) + (TALENT:ARG:큰체형)  - (TALENT:ARG:유아체형)  - (TALENT:ARG:소인체형 * 2)
+	;乳サイズは便利な関数があるのでそっち。 あとバストの重要性を高めるために倍加する
+	LOCAL += (BUST(ARG) * 2)
+
+	;評価最大
+	IF LOCAL >= 13
+		RETURN 1
+	;評価大
+	ELSEIF LOCAL >= 11
+		LOCAL = 1
+		RETURN LOCAL
+	;評価中
+	ELSEIF LOCAL >= 9
+		RETURN 2
+	;評価小
+	ELSEIF LOCAL >= 7
+		LOCAL = 1 + MIN( MIN((EXP:(ARG):분유경험 / 1200) , 1) + (ABL:(ARG):분유중독 / 10) , 1)
+		RETURN LOCAL
+	;評価最小
+	ELSE
+		LOCAL = 2 + MIN((EXP:(ARG):분유경험 / 1000) + (ABL:(ARG):분유중독 / 5) , 4)
+		RETURN LOCAL
+	ENDIF
+			ELSEIF TALENT:ARG:모유체질 == 0
+			RETURN 0
+		ENDIF
+ELSE
+	RETURN 1
+ENDIF
+
+@最大攻撃回数_2781,ARG = -1
+SIF ARG == -1
+	RETURN 1
+IF ARG > -1
+	;初期化
+	LOCAL = 0
+		IF TALENT:ARG:모유체질 == 1
+	;普通体格を+3とし、上下に二段階
+	;「普通体格」素質は存在しないので、基準値としてまず足し算する
+	;体格は持ってれば「１」が返ってくるので、掛け算してやることで値が出る
+	LOCAL += 2 + (TALENT:ARG:거체 * 3) + (TALENT:ARG:큰체형)  - (TALENT:ARG:유아체형)  - (TALENT:ARG:소인체형 * 2)
+	;乳サイズは便利な関数があるのでそっち。 あとバストの重要性を高めるために倍加する
+	LOCAL += (BUST(ARG) * 2)
+
+	;評価最大
+	IF LOCAL >= 13
+		LOCAL = 1
+		RETURN LOCAL
+	;評価大
+	ELSEIF LOCAL >= 11
+		LOCAL = 1 + MIN( (EXP:(ARG):분유경험 / 1000)  + (ABL:(ARG):분유중독 / 10) , 1)
+		RETURN LOCAL
+	;評価中
+	ELSEIF LOCAL >= 9
+		RETURN 2 + MIN( (EXP:(ARG):분유경험 / 2000) + (ABL:(ARG):분유중독 / 10) , 2)
+	;評価小
+	ELSEIF LOCAL >= 7
+		LOCAL = 1 + MIN( MIN((EXP:(ARG):분유경험 / 1500) , 1) + (ABL:(ARG):분유중독 / 6) , 2)
+		RETURN LOCAL
+	;評価最小
+	ELSE
+		LOCAL = 2 + MIN( (EXP:(ARG):분유경험 / 500) + (ABL:(ARG):분유중독 / 5) , 6)
+		RETURN LOCAL
+	ENDIF
+			ELSEIF TALENT:ARG:모유체질 == 0
+			RETURN 0
+		ENDIF
+ELSE
+	RETURN 1
+ENDIF
+
+@射程_2781,ARG,ARG:1 = -1
+RETURN 3
+
+@攻撃範囲_2781,ARG = -1
+SIF ARG == -1
+	RETURN 1
+IF ARG > -1
+	;初期化
+	LOCAL = 0
+	;普通体格を+3とし、上下に二段階
+	;「普通体格」素質は存在しないので、基準値としてまず足し算する
+	;体格は持ってれば「１」が返ってくるので、掛け算してやることで値が出る
+	LOCAL += 2 + (TALENT:ARG:거체 * 3) + (TALENT:ARG:큰체형)  - (TALENT:ARG:유아체형)  - (TALENT:ARG:소인체형 * 2)
+	;乳サイズは便利な関数があるのでそっち。 あとバストの重要性を高めるために倍加する
+	LOCAL += (BUST(ARG) * 2)
+
+	;評価最大
+	IF LOCAL >= 13
+		RETURN 3
+	;評価大
+	ELSEIF LOCAL >= 11
+		RETURN 2
+	;評価中
+	ELSEIF LOCAL >= 9
+		RETURN 1
+	;評価小
+	ELSEIF LOCAL >= 7
+		RETURN 2
+	;評価最小
+	ELSE
+		RETURN 1
+	ENDIF
+ELSE
+	RETURN 1
+ENDIF
+
+
+@追加効果_2781,ARG = -1
+SIF ARG == -1
+	RETURN 0
+IF ARG > -1
+	;初期化
+	LOCAL = 0
+		IF TALENT:ARG:모유체질 == 1
+	;普通体格を+3とし、上下に二段階
+	;「普通体格」素質は存在しないので、基準値としてまず足し算する
+	;体格は持ってれば「１」が返ってくるので、掛け算してやることで値が出る
+	LOCAL += 2 + (TALENT:ARG:거체 * 3) + (TALENT:ARG:큰체형)  - (TALENT:ARG:유아체형)  - (TALENT:ARG:소인체형 * 2)
+	;乳サイズは便利な関数があるのでそっち。 あとバストの重要性を高めるために倍加する
+	LOCAL += (BUST(ARG) * 2)
+
+	;評価最大
+	IF LOCAL >= 13
+	RETURN GET_STATE_NUM("HAPPY")
+	;評価大
+	ELSEIF LOCAL >= 11
+	RETURN GET_STATE_NUM("HAPPY")
+	;評価中
+	ELSEIF LOCAL >= 9
+	RETURN GET_STATE_NUM("HAPPY")
+	;評価小
+	ELSEIF LOCAL >= 7
+	RETURN GET_STATE_NUM("HAPPY")
+	;評価最小
+	ELSE
+	RETURN GET_STATE_NUM("HAPPY")
+	ENDIF
+		ELSEIF TALENT:ARG:모유체질 == 0
+			RETURN 0
+		ENDIF
+ELSE
+	RETURN 0
+ENDIF
+
+@追加効果相性_2781,ARG = -1
+SIF ARG == -1
+	RETURN 0
+IF ARG > -1
+	;初期化
+	LOCAL = 0
+		IF TALENT:ARG:모유체질 == 1
+	;普通体格を+3とし、上下に二段階
+	;「普通体格」素質は存在しないので、基準値としてまず足し算する
+	;体格は持ってれば「１」が返ってくるので、掛け算してやることで値が出る
+	LOCAL += 2 + (TALENT:ARG:거체 * 3) + (TALENT:ARG:큰체형)  - (TALENT:ARG:유아체형)  - (TALENT:ARG:소인체형 * 2)
+	;乳サイズは便利な関数があるのでそっち。 あとバストの重要性を高めるために倍加する
+	LOCAL += (BUST(ARG) * 2)
+
+	;評価最大
+	IF LOCAL >= 13
+	RETURN 9
+	;評価大
+	ELSEIF LOCAL >= 11
+	RETURN 9
+	;評価中
+	ELSEIF LOCAL >= 9
+	RETURN 9
+	;評価小
+	ELSEIF LOCAL >= 7
+	RETURN 9
+	;評価最小
+	ELSE
+	RETURN 9
+	ENDIF
+		ELSEIF TALENT:ARG:모유체질 == 0
+			RETURN 0
+		ENDIF
+ELSE
+	RETURN 0
+ENDIF
+
+@追加効果命中率_2781,ARG = -1
+SIF ARG == -1
+	RETURN 0
+IF ARG > -1
+	;初期化
+	LOCAL = 0
+		IF TALENT:ARG:모유체질 == 1
+	;普通体格を+3とし、上下に二段階
+	;「普通体格」素質は存在しないので、基準値としてまず足し算する
+	;体格は持ってれば「１」が返ってくるので、掛け算してやることで値が出る
+	LOCAL += 2 + (TALENT:ARG:거체 * 3) + (TALENT:ARG:큰체형)  - (TALENT:ARG:유아체형)  - (TALENT:ARG:소인체형 * 2)
+	;乳サイズは便利な関数があるのでそっち。 あとバストの重要性を高めるために倍加する
+	LOCAL += (BUST(ARG) * 2)
+
+	;評価最大
+	IF LOCAL >= 13
+	LOCAL = 0 + MIN((EXP:(ARG):분유경험 / 600) + (ABL:(ARG):분유중독 / 5) , 5)
+	RETURN LOCAL
+	;評価大
+	ELSEIF LOCAL >= 11
+	LOCAL = 0 + MIN((EXP:(ARG):분유경험 / 400) + (ABL:(ARG):분유중독 / 2) , 10)
+	RETURN LOCAL
+	;評価中
+	ELSEIF LOCAL >= 9
+	LOCAL = 0 + MIN((EXP:(ARG):분유경험 / 200) + (ABL:(ARG):분유중독) , 20)
+	RETURN LOCAL
+	;評価小
+	ELSEIF LOCAL >= 7
+	LOCAL = 0 + MIN((EXP:(ARG):분유경험 / 200) + (ABL:(ARG):분유중독) , 20)
+	RETURN LOCAL
+	;評価最小
+	ELSE
+	LOCAL = 0 + MIN((EXP:(ARG):분유경험 / 100) + (ABL:(ARG):분유중독) , 30)
+	RETURN LOCAL
+	ENDIF
+		ELSEIF TALENT:ARG:모유체질 == 0
+			RETURN 0
+		ENDIF
+ELSE
+	RETURN 0
+ENDIF
+
+@追加効果最大命中率_2781,ARG = -1
+SIF ARG == -1
+	RETURN 0
+IF ARG > -1
+	;初期化
+	LOCAL = 0
+		IF TALENT:ARG:모유체질 == 1
+	;普通体格を+3とし、上下に二段階
+	;「普通体格」素質は存在しないので、基準値としてまず足し算する
+	;体格は持ってれば「１」が返ってくるので、掛け算してやることで値が出る
+	LOCAL += 2 + (TALENT:ARG:거체 * 3) + (TALENT:ARG:큰체형)  - (TALENT:ARG:유아체형)  - (TALENT:ARG:소인체형 * 2)
+	;乳サイズは便利な関数があるのでそっち。 あとバストの重要性を高めるために倍加する
+	LOCAL += (BUST(ARG) * 2)
+
+	;評価最大
+	IF LOCAL >= 13
+	LOCAL = 0 + MIN((EXP:(ARG):분유경험 / 400) + (ABL:(ARG):분유중독 / 2) , 10)
+	RETURN LOCAL
+	;評価大
+	ELSEIF LOCAL >= 11
+	LOCAL = 0 + MIN((EXP:(ARG):분유경험 / 200) + (ABL:(ARG):분유중독 ) , 20)
+	RETURN LOCAL
+	;評価中
+	ELSEIF LOCAL >= 9
+	LOCAL = 0 + MIN((EXP:(ARG):분유경험 / 100) + (ABL:(ARG):분유중독 * 2) , 40)
+	RETURN LOCAL
+	;評価小
+	ELSEIF LOCAL >= 7
+	LOCAL = 0 + MIN((EXP:(ARG):분유경험 / 100) + (ABL:(ARG):분유중독 * 2) , 40)
+	RETURN LOCAL
+	;評価最小
+	ELSE
+	LOCAL = 0 + MIN((EXP:(ARG):분유경험 / 50) + (ABL:(ARG):분유중독 * 2) , 60)
+	RETURN LOCAL
+	ENDIF
+		ELSEIF TALENT:ARG:모유체질 == 0
+			RETURN 0
+		ENDIF
+ELSE
+	RETURN 0
+ENDIF
+
+
+@装備解説_2781,ARG
+PRINTL 착유기로 짠 모유를 MAG로 증폭하여 공격에 사용하는 기상천외한 총. 구조상 극에 달한 모유 체질이 아니면 성능이 극단적으로 저하된다.
+PRINTL 분유 경험이나 분유 중독에 따라 성능이 변화한다. 특수탄은 운용할 수 없지만 수격 상성을 지니며 HAPPY 상태를 부여하고 가슴 크기와 체격에 따라 성능이 변동한다.
+PRINTL 극 마이너 성벽인 밀크 건 성벽 더더욱 늘어나라. 참고로 모유 총포라는 호칭도 있어.
+PRINTL 빈유 이하：단체 다단 기관권총 / 평유：1열 다단 경산탄총 / 거유：단체 다중 히트 라이플 / 폭유：고화력 중산탄총 / 마유：고화력 전체 공격 런처
+;ミルクガン性癖増えろ
+RESETCOLOR
+
+@装備箇所_2781,ARG
+RETURN GET_EQUIPNUM("총")
+
+@必要レベル_2781,ARG
+RETURN 40
+
+@必要素質_2781
+RESULTS = 모유체질
+RESULTS:1 = OR
+RETURN 1
+
+@装備条件_2781,ARG
+;SIF TALENT:ARG:모유체질 == 1
+;	RETURN 1
+;RETURN 0
+RETURN 1
+
+@装備条件説明_2781
+;PRINTL 装備条件：[모유체질] Lv40
+RETURN 1
+
+@購入条件_2781,ARG
+RETURN 0
+
+@銃攻撃_2781,ARG = -1
+SIF ARG == -1
+	RETURN 0
+IF ARG > -1
+	;初期化
+	LOCAL = 0
+		IF TALENT:ARG:모유체질 == 1
+	;普通体格を+3とし、上下に二段階
+	;「普通体格」素質は存在しないので、基準値としてまず足し算する
+	;体格は持ってれば「１」が返ってくるので、掛け算してやることで値が出る
+	LOCAL += 2 + (TALENT:ARG:거체 * 3) + (TALENT:ARG:큰체형)  - (TALENT:ARG:유아체형)  - (TALENT:ARG:소인체형 * 2)
+	;乳サイズは便利な関数があるのでそっち。 あとバストの重要性を高めるために倍加する
+	LOCAL += (BUST(ARG) * 2)
+
+	;評価最大
+	IF LOCAL >= 13
+	LOCAL = 0 + MIN((EXP:(ARG):분유경험 / 20) + (ABL:(ARG):분유중독 * 10) , 200)
+		RETURN LOCAL
+	;評価大
+	ELSEIF LOCAL >= 11
+	LOCAL = 5 + MIN((EXP:(ARG):분유경험 / 40) + (ABL:(ARG):분유중독 * 7) , 140)
+	RETURN LOCAL
+	;評価中
+	ELSEIF LOCAL >= 9
+	LOCAL = 10 + MIN((EXP:(ARG):분유경험 / 10) + (ABL:(ARG):분유중독 * 5) , 150)
+	RETURN LOCAL
+	;評価小
+	ELSEIF LOCAL >= 7
+	LOCAL = 10 + MIN((EXP:(ARG):분유경험 / 100) + (ABL:(ARG):분유중독 * 4) , 60)
+	RETURN LOCAL
+	;評価最小
+	ELSE
+	LOCAL = 0 + MIN((EXP:(ARG):분유경험 / 100) + (ABL:(ARG):분유중독) , 30)
+	RETURN LOCAL
+	ENDIF
+		ELSEIF TALENT:ARG:모유체질 == 0
+			RETURN 0
+		ENDIF
+ELSE
+	RETURN 0
+ENDIF
+
+@銃命中_2781,ARG = -1
+SIF ARG == -1
+	RETURN 0
+IF ARG > -1
+	;初期化
+	LOCAL = 0
+		IF TALENT:ARG:모유체질 == 1
+	;普通体格を+3とし、上下に二段階
+	;「普通体格」素質は存在しないので、基準値としてまず足し算する
+	;体格は持ってれば「１」が返ってくるので、掛け算してやることで値が出る
+	LOCAL += 2 + (TALENT:ARG:거체 * 3) + (TALENT:ARG:큰체형)  - (TALENT:ARG:유아체형)  - (TALENT:ARG:소인체형 * 2)
+	;乳サイズは便利な関数があるのでそっち。 あとバストの重要性を高めるために倍加する
+	LOCAL += (BUST(ARG) * 2)
+
+	;評価最大
+	IF LOCAL >= 13
+		LOCAL = 0 + MIN((EXP:(ARG):분유경험 / 20) + (ABL:(ARG):분유중독 * 5) , 120)
+		RETURN LOCAL
+	;評価大
+	ELSEIF LOCAL >= 11
+		LOCAL = 20 + MIN((EXP:(ARG):분유경험 / 30) + (ABL:(ARG):분유중독 * 5) , 80)
+		RETURN LOCAL
+	;評価中
+	ELSEIF LOCAL >= 9
+		LOCAL = 10 + MIN((EXP:(ARG):분유경험 / 40) + (ABL:(ARG):분유중독 * 4) , 90)
+		RETURN LOCAL
+	;評価小
+	ELSEIF LOCAL >= 7
+		LOCAL = 10 + MIN((EXP:(ARG):분유경험 / 40) + (ABL:(ARG):분유중독 * 5) , 100)
+		RETURN LOCAL
+	;評価最小
+	ELSE
+		RETURN 0
+	ENDIF
+		ELSEIF TALENT:ARG:모유체질 == 0
+			RETURN 0
+		ENDIF
+ELSE
+	RETURN 0
+ENDIF
+
+@特殊弾倉_2781,ARG = -1
+RETURN 0
+
+@GUN_RANDOMTARGET_2781,ARG = -1
+RETURN 0
+;※形だけ残してます。
+SIF ARG == -1
+	RETURN 0
+	;初期化
+	LOCAL = 0
+	;攻撃や命中のと同じ構文、最大は全体攻撃、大は列攻撃、中が全体ランダム、小が列ランダム、最小は単体攻撃なのでランダムターゲットを切るのに使う。
+	LOCAL += 2 + (TALENT:ARG:거체 * 3) + (TALENT:ARG:큰체형)  - (TALENT:ARG:유아체형)  - (TALENT:ARG:소인체형 * 2)
+	LOCAL += (BUST(ARG) * 2)
+
+	LOCAL += 2 + (TALENT:ARG:거체 * 3) + (TALENT:ARG:큰체형)  - (TALENT:ARG:유아체형)  - (TALENT:ARG:소인체형 * 2)
+	;乳サイズは便利な関数があるのでそっち。 あとバストの重要性を高めるために倍加する
+	LOCAL += (BUST(ARG) * 2)
+
+	;評価最大
+	IF LOCAL >= 13
+		RETURN 0
+	;評価大
+	ELSEIF LOCAL >= 11
+		RETURN 0
+	;評価中
+	ELSEIF LOCAL >= 9
+		RETURN 1
+	;評価小
+	ELSEIF LOCAL >= 7
+		RETURN 1
+	;評価最小
+	ELSE
+		RETURN 0
+	ENDIF
+
+@銃タイプ_2781,ARG
+;1 == ハンドガン 2 == ショットガン 3 == アサルトライフル、マシンガン 4 == 狙撃ライフル 5 == 그외
+RETURN 5
+
+;※現状多分機能してねーです。
+SIF ARG == -1
+	RETURN 5
+IF ARG > -1
+	;初期化
+	LOCAL = 0
+	;攻撃や命中のと同じ構文、最大は重火器、大はショットガン、中小最小はマシンガン扱い
+	LOCAL += 2 + (TALENT:ARG:거체 * 3) + (TALENT:ARG:큰체형)  - (TALENT:ARG:유아체형)  - (TALENT:ARG:소인체형 * 2)
+	LOCAL += (BUST(ARG) * 2)
+
+	;評価最大
+	IF LOCAL >= 13
+		RETURN 5
+	;評価大
+	ELSEIF LOCAL >= 11
+		RETURN 2
+	;評価中
+	ELSEIF LOCAL >= 9
+		RETURN 3
+	;評価小
+	ELSEIF LOCAL >= 7
+		RETURN 3
+	;評価最小
+	ELSE
+		RETURN 3
+	ENDIF
+ELSE
+	RETURN 5
+ENDIF
+
+@速度補正_2781,ARG
+;※現状機能してません
+SIF ARG == -1
+	RETURN 0
+IF ARG > -1
+	;初期化
+	LOCAL = 0
+	;攻撃や命中のと同じ構文、最大は行動が最も遅く、最小は早い
+	LOCAL += 2 + (TALENT:ARG:거체 * 3) + (TALENT:ARG:큰체형)  - (TALENT:ARG:유아체형)  - (TALENT:ARG:소인체형 * 2)
+	LOCAL += (BUST(ARG) * 2)
+
+	;評価最大
+	IF LOCAL >= 13
+		RETURN -10
+	;評価大
+	ELSEIF LOCAL >= 11
+		RETURN 0
+	;評価中
+	ELSEIF LOCAL >= 9
+		RETURN 0
+	;評価小
+	ELSEIF LOCAL >= 7
+		RETURN 0
+	;評価最小
+	ELSE
+		RETURN 10
+	ENDIF
+ELSE
+ENDIF
+
+@装備追加スキル_2781,ARG,ARG:1 = -1
+SIF ARG:1 == -1
+	RETURN 0
+SIF TALENT:(ARG:1):모유체질 == 0
+	RETURN 0
+SELECTCASE ARG
+	CASE 0
+		RETURN [[스킬:생명소모(착유)]]
+ENDSELECT

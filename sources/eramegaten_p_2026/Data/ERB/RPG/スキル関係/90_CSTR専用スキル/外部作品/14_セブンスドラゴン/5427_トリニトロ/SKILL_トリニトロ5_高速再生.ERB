@@ -1,0 +1,111 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_高速再生,ARG
+RESULTS = 高速再生
+
+
+;　명중
+@SKILL_HITRATE_高速再生, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_高速再生, ARG
+RETURN 200
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_高速再生,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_高速再生,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_高速再生, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_高速再生,ARG
+RETURN 7
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_高速再生
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+
+@SKILL_HEAL_TYPE_高速再生, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("통상")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_高速再生, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_高速再生,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_高速再生,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_高速再生, ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_高速再生
+RETURN GET_SUCCESSION_NUM("회복")
+
+;속도보정
+@SKILL_SPEED_高速再生, ARG = -1
+RETURN 2
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_高速再生
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_高速再生, ARG = -1
+RETURN 15
+
+@継承不能_高速再生
+RETURN 1
+
+@敵専用_高速再生
+RETURN 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_高速再生, ARG, ARG:1, ARG:2
+CALL HEAL_SINGLE,ARG,POS(ARG:1),ARG:2, , , "ＨＰ再生効果"
+CALL PU_SKILLGAGE_H_SET, ARG, "高速再生", 1
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_高速再生, ARG
+PRINTL 아군 1명을 회복하고, 턴 종료마다 회복하게 된다.
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_高速再生,ARG
+RETURN 1
+;とくにない
+
+;RESULT:0 = HP回復量
+;RESULT:1 = MP回復量
+;RESULT:2 = MAG消費量
+@SKILL_REGEN_AT_TURNEND_高速再生,ARG
+SIF !PU_SKILLGAGE_H_GET(ARG, "高速再生")
+	RETURN 0
+RESULTS = 高速再生
+RETURN MAXBASE:ARG:ＨＰ * 3 / 100

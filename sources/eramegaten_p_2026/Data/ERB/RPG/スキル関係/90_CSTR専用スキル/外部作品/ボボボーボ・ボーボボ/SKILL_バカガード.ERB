@@ -1,0 +1,124 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_バカガード,ARG
+RESULTS = 바보 가드
+
+;　명중
+@SKILL_HITRATE_バカガード, ARG
+RETURN 0
+
+;　威力
+@SKILL_POWER_バカガード, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_バカガード,ARG
+RETURN 0
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_バカガード,ARG
+RETURN 0
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_バカガード, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_バカガード,ARG
+RETURN 18
+
+
+@SKILL_DECIDE_TYPE_バカガード
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_バカガード,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_バカガード,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_バカガード,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_バカガード, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_バカガード
+RETURN GET_SUCCESSION_NUM("방어")
+;방어
+
+;속도보정
+@SKILL_SPEED_バカガード, ARG = -1
+RETURN 800
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_バカガード
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_バカガード, ARG = -1
+RETURN 10
+
+
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_バカガード,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM L_T
+#DIM L_R
+LOCAL = 0
+L_T = POS(ARG:1)
+L_R = -1
+SIF CPOS(ARG) > -1
+	L_R = POS(CPOS(ARG) + (CPOS(ARG) > 6 ? 5 # 3))
+
+;自分と対象が前列にいる
+IF IS_FRONT(ARG) && IS_FRONT(L_T) && ARG != L_T
+	CALL SET_C_BTL_EFFECT_SINGLE,L_T,  ARG, "バカガード"
+	SIF L_R > -1
+		CALL SET_C_BTL_EFFECT_SINGLE,L_T,  L_R, "バカガード"
+	CFLAG:L_T:방어플래그 = 0
+	CFLAG:L_T:입력행동 = -1
+	PRINTFORMW %CALLNAME:(L_T)%(을)를 방패로 삼았다.
+	;CALL SKILLGAGE_D_SET, ARG, SKILL_NUM, 5
+ELSE
+	PRINTW 제대로 들어맞지 않았다
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_バカガード, ARG
+PRINTL 아군 1체를 방패로 삼아 1턴 동안 자신과 자신 뒤쪽 아군의 데미지를 대신 받게 한다.
+PRINTL 자신과 대상이 서로 전열에 있지 않으면 실패한다.
+PRINTL 단 방패가 된 아군은 방어, 회피, 행동을 할 수 없게 된다.
+
+@SKILL_EXPLAIN_TOOLTIP_バカガード, ARG
+RESULTS = 아군 1체를 방패로 삼아 1턴 동안 자신과 자신 뒤쪽 아군의 데미지를 대신 받게 한다.
+
+@継承不能_バカガード
+RETURN 2
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_バカガード,ARG
+#DIM SKILL_NUM
+;SIF SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"バカガード")) > 0
+;	RETURN 0
+RETURN IS_FRONT(ARG)
+;前列にいると使える
+

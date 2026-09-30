@@ -1,0 +1,175 @@
+﻿;=================================================================
+;BADエンドに関する関数群
+;グローバル値にbitで記録する
+;バッドエンド記録1　No.0～63用
+;バッドエンド記録2　No.64～127用
+;
+;No. 0～　RPG系全滅エンドを想定(闘技場含む)
+;No.30～　調教系バットエンドを想定
+;No.40～　シナリオ上のバットエンドを想定
+;No.50～　EXTRA系のバットエンドを想定
+;
+;バットエンドメッセージは以下みたいな感じで
+;	PRINTW 
+;	PRINTW 　　　　　　　　――  Bad Ending No.006 ( 全滅END -ソウルハッカーズ編- )
+;	CALL GLOBAL_BADEND_SET(6)
+;=================================================================
+
+
+;-----------------------------------------------------------------
+;@GLOBAL_BADEND_INIT
+;BADエンド関係の変数値を初期化
+;　引数、戻り値は特になし
+;-----------------------------------------------------------------
+@GLOBAL_BADEND_INIT
+	GLOBAL:バッドエンド記録1 = 0
+	GLOBAL:バッドエンド記録2 = 0
+	SAVEGLOBAL
+	RETURN 1
+
+;-----------------------------------------------------------------
+;@SHOPCOMABLE_700, @SHOP_COM_700
+;BADエンド関係デバック用リセットSHOPメニュー(700)
+;　引数、戻り値は特になし
+;-----------------------------------------------------------------
+@SHOPCOMABLE_700
+	[IF_DEBUG]
+		RESULTS = 배드엔딩 기록 리셋
+		RETURN 1
+	[ENDIF]
+	IF FLAG:DEBUG
+		RESULTS = 배드엔딩 기록 리셋
+		RETURN 1
+	ENDIF
+	RETURN -1
+
+@SHOP_COM_700, ARG
+	CALL GLOBAL_BADEND_INIT
+	PRINTL 배드엔딩 기록을 리셋했습니다
+
+;-----------------------------------------------------------------
+;@GLOBAL_BADEND_SET
+;指定されたBADエンドNo.を記録する
+;　ARG:0 記録するBADエンドのNo.
+;　戻り値は特になし
+;-----------------------------------------------------------------
+@GLOBAL_BADEND_SET, ARG
+	LOADGLOBAL
+	
+	IF ARG < 64
+		SETBIT GLOBAL:バッドエンド記録1, ARG
+	ELSE
+		LOCAL = ARG - 64
+		SETBIT GLOBAL:バッドエンド記録2, LOCAL
+	ENDIF
+	
+	SAVEGLOBAL
+	RETURN 1
+
+;-----------------------------------------------------------------
+;@GLOBAL_BADEND_GET
+;指定されたBADエンドNo.が記録済か返す
+;　ARG:0 記録済か判定するBADエンドのNo.
+;　RESULT 真:記録済 偽:記録なし
+;-----------------------------------------------------------------
+@GLOBAL_BADEND_GET, ARG
+	LOADGLOBAL
+
+	IF ARG < 64
+		LOCAL = GETBIT(GLOBAL:バッドエンド記録1, ARG)
+	ELSE
+		LOCAL = ARG - 64
+		LOCAL = GETBIT(GLOBAL:バッドエンド記録2, LOCAL)
+		LOCAL = LOCAL + 64
+	ENDIF
+	
+	RETURN LOCAL
+
+
+;-----------------------------------------------------------------
+;@GLOBAL_BADEND_DISP_BADENDLIST
+;BADエンドの一覧(No.とタイトル)を表示出力する
+;　引数、戻り値は特になし
+;-----------------------------------------------------------------
+@GLOBAL_BADEND_DISP_BADENDLIST
+	DRAWLINE
+	PRINTL 발견 완료된 BAD엔딩
+	DRAWLINE
+	FOR LOCAL ,0, 127
+		CALL GLOBAL_BADEND_GET(LOCAL)
+		SIF RESULT == 0
+			CONTINUE
+		PRINT 　
+		SELECTCASE LOCAL
+			CASE 0
+				PRINTL Bad Ending No.000 ( 全滅END -真女神転生（ＳＦＣ版）編- )
+			CASE 1
+				PRINTL Bad Ending No.001 ( 全滅END -真女神転生（ＧＢＡ版）編- )
+			CASE 2
+				PRINTL Bad Ending No.002 ( 全滅END -真女神転生2編- )
+			CASE 3
+				PRINTL Bad Ending No.003 ( 全滅END -真女神転生3編- )
+			CASE 4
+				PRINTL Bad Ending No.004 ( 전멸 END -아바타 튜너 편- )
+			CASE 5
+				PRINTL Bad Ending No.005 ( 전멸 END -아바타 튜너 2 편- )
+			CASE 6
+				PRINTL Bad Ending No.006 ( 전멸 END -소울 해커즈 편- )
+			CASE 7
+				PRINTL Bad Ending No.007 ( 전멸 END -페르소나 3 편- )
+			CASE 8
+				PRINTL Bad Ending No.008 ( 전멸 END -페르소나 4 편- )
+			CASE 9
+				PRINTL Bad Ending No.009 ( 전멸 END -스트레인지 저니 편- )
+			CASE 10
+				PRINTL Bad Ending No.010 ( 전멸 END -여신이문록 페르소나 (PSP판) 편- )
+			CASE 11
+				PRINTL Bad Ending No.011 ( 전멸 END -페르소나 2 죄 Innocent sin. (PS판) 편- )
+			CASE 12
+				PRINTL Bad Ending No.012 ( 全滅END -魔神転生編- )
+			CASE 20
+				PRINTL Bad Ending No.020 ( 전멸 END -향연 끝의 끝- )
+			CASE 21
+				PRINTL Bad Ending No.021 ( 투기장패배END -연회의 끝- )
+			CASE 22
+				PRINTL Bad Ending No.022 ( 투기장패배END -이렇게 귀여운 변기가 여자 아이일 리가 없어- )
+			CASE 23
+				PRINTL Bad Ending No.023 ( 투기장패배END -봉사인형- )
+			CASE 24
+				PRINTL Bad Ending No.024 ( 투기장패배END -사정기계- )
+			CASE 25
+				PRINTL Bad Ending No.025 ( 투기장패배END -이렇게 귀여운 검체가 여자 아이일 리가 없어- )
+			CASE 26
+				PRINTL Bad Ending No.026 ( 闘技場敗北END -出産機械- )
+			CASE 30
+				PRINTL Bad Ending No.030 ( 빚 미변제 END -쓸모없는 자의 말로- )
+			CASE 31
+				PRINTL Bad Ending No.031 ( 빚 미변제 END -고기구멍의 말로- )
+			CASE 32
+				PRINTL Bad Ending No.032 ( 빚 미변제 END -얼간이의 말로- )
+			CASE 33
+				PRINTL Bad Ending No.033 ( 빚 미변제 END -성처리 변기의 말로- )
+			CASE 34
+				PRINTL Bad Ending No.034 ( 빚 미변제 END -창녀의 말로- )
+			CASE 35
+				PRINTL Bad Ending No.035 ( 빚 미변제 END -제물의 말로- )
+			CASE 36
+				PRINTL Bad Ending No.036 ( 빚 미변제 END -공중육변기의 말로- )
+			CASE 40
+				PRINTL Bad Ending No.040 ( 앨리스의 노리개END -친 구- )
+			CASE 41
+				PRINTL Bad Ending No.041 ( 간부의 애인END )
+			CASE 42
+				PRINTL Bad Ending No.042 ( 사자의 남자END )
+			CASE 43
+				PRINTL Bad Ending No.043 ( 데미난디 번식노예END -생육하고 번성하라- )
+			CASE 50
+				PRINTL Bad Ending No.050 ( 전멸 END -용철의 마르푸샤 편- )
+			CASEELSE
+				
+		ENDSELECT
+
+	NEXT
+	PRINTL
+
+	RETURN 1

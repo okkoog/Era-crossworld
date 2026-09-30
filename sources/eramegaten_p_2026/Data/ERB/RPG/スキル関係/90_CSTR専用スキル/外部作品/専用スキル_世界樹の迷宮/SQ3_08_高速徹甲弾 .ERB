@@ -1,0 +1,172 @@
+﻿;スキル名
+@SKILL_NAME_高速徹甲弾,ARG
+RESULTS = 高速徹甲弾
+
+;　명중
+@SKILL_HITRATE_高速徹甲弾, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_高速徹甲弾, ARG
+RETURN 240
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_高速徹甲弾, ARG
+RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_高速徹甲弾, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_高速徹甲弾,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_高速徹甲弾,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_高速徹甲弾,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_高速徹甲弾,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_高速徹甲弾, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_高速徹甲弾,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_高速徹甲弾,ARG
+RETURN GET_TYPE_NUM("비구")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_高速徹甲弾
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_高速徹甲弾,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;====================================================
+;攻撃手段
+;1.物理攻撃 2.魔法攻撃 3.총공격 4.アイテム攻撃(ダメージ計算時の依存ステータスに関わる)
+;関数がない場合はダメージタイプとおなじになる
+;====================================================
+@SKILL_ATTACKTYPE_高速徹甲弾, ARG
+RETURN GET_攻撃タイプ_NUM("物理")
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_高速徹甲弾, ARG = -1, ARG:1 = -1
+RETURN 0
+
+;====================================================
+;耐性変化スキルの貫通強度。こちらは突破したときはもともとの相性値を適用する
+;1 - 耐性(1~99%)を無効にする。対応先も対応元も2022年10月時点ではない
+;2 - 1に加えて、無効に対応する。壁や護符、無効化付与、ブレイク(ウェイトスキル)。
+;3 - 2に加えて、吸収に対応する。ドレイン(ウェイトスキル)
+;4 - 3に加えて、反射に対応する。カーン・ハイパーカウンタ・リフレクト(ウェイトスキル)
+;====================================================
+@SKILL_ADD_PENETRATION_RANK_高速徹甲弾, ARG
+RETURN 0
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_高速徹甲弾,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_高速徹甲弾,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_高速徹甲弾,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_高速徹甲弾,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_高速徹甲弾
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_高速徹甲弾, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_高速徹甲弾
+RETURN 0
+
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+@SKILLGAGE_CHARGE_高速徹甲弾,ARG,ARG:1
+CALL SKILLGAGE_CHARGE_SQ3_LIMIT, ARG, ARG:1, "高速徹甲弾"
+
+;====================================================
+;独自のカジャ処理
+;ARG		攻撃側のキャラ登録番号
+;ARG:1		防御側のキャラ登録番号
+;RESULT 	= 強化値
+;RESULT:1	= 基準値	(基準値 + x) / 基準値 あるいは　(基準値 * 2 - x) /基準値 * 2倍になる
+;			　デフォは基準値32で、最大で(32 + 32) / 32 or (64 - 32) / 64倍になる
+;====================================================
+@SKILL_CALC_BUFF_高速徹甲弾, ARGS, ARG, ARG:1
+SELECTCASE ARGS
+	CASE "DEF"
+		RETURN -32, 32
+ENDSELECT
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_高速徹甲弾,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_高速徹甲弾,ARG
+IF PU_SKILLGAGE_H_GET(ARG,"高速徹甲弾") < 100
+    RESULTS '= SET_COLOR_TAG(@"LIMIT:{PU_SKILLGAGE_H_GET(ARG,"高速徹甲弾") ,3}％", "#cc52b8")
+ELSE
+    RESULTS '= SET_COLOR_TAG(@"LIMIT:{PU_SKILLGAGE_H_GET(ARG,"高速徹甲弾") ,3}％", "#fffacd")
+ENDIF
+RETURN 3
+
+@SKILL_EX_DISPLAY_高速徹甲弾, ARG, ARGS
+CALL SKILL_EX_DISPLAY_SQ3_LIMIT, ARG, ARGS, "高速徹甲弾"
+RETURN 1
+
+;　説明文の表示
+@SKILL_EXPLAIN_高速徹甲弾,ARG
+PRINTL 「발리스타」의 리미트 스킬.
+PRINTL 적 1체에게 비구 속성으로 대 데미지를 가한다.
+PRINTL 이 스킬에 의한 데미지는 공격대상의 방어력을 최대로 낮춘 상태에서 계산된다。
+PRINTL 사용 후 리미트 게이지는 0이 된다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_高速徹甲弾,ARG
+SIF PU_SKILLGAGE_H_GET(ARG, "高速徹甲弾") < 100
+	RETURN 0
+RETURN 1
+
+@SKILL_TAG_LIMIT_高速徹甲弾
+RESULTS = SQ3_LIMIT

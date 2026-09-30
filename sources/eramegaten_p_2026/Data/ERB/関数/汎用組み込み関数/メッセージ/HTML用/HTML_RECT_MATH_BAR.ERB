@@ -1,0 +1,64 @@
+﻿;-------------------------------------------------------------------------------
+;    @HTML_RECT_BARと同様のバーを表示する。
+;   ただし、現在値・変動値・最大値　の3色で表示する。
+;   変動値がプラスなら(現在値-変動値)・変動値・（最大値-現在値&変動値）の3本、
+;   変動値がマイナスなら現在値・変動値・（最大値-現在値&変動値）の3本を表示する。
+;----------------------------------------------------------------------------
+;===============================================================================
+@HTML_RECT_MATH_BAR, L_VALUE , L_MATH , MAX_VALUE, MAXLENS, L_COLOR = -1 , L_MATHCOLOR = -1 ,  L_BGCOLOR = -1, L_HEIGHT = 50, L_YPOS = 25
+#FUNCTIONS
+#DIMS L_BAR, 3		;バーそれぞれの文字列を格納する変数
+#DIM L_LENS , 3		;計算されたバーそれぞれの長さを保持する変数
+#DIM L_VALUE		;バーの前景＆変動色・背景色の割合を決めるための基準値
+#DIM L_MATH			;バーの変動色の割合を決めるための基準値
+#DIM MAX_VALUE		;基準値に対する最大値	ex：50と+30と100なら前景色と変動色と背景色で2:3:5となる
+#DIM MAXLENS		;バーの長さ。単位は半角1フォント単位。
+#DIM L_COLOR		;バーの色
+#DIM L_MATHCOLOR	;バーの変動部分の色
+#DIM L_BGCOLOR		;バーの背景色
+#DIM L_HEIGHT		;バーの高さ(縦幅)
+#DIM L_YPOS			;バーのYPOS
+#DIM LCOUNT
+#DIM D_COLOR , 3
+
+;引数なしで渡された色に対するセットアップ
+;変動分の色はプラスとマイナスで変わる
+L_COLOR = (L_COLOR >=0 ? L_COLOR # COLOR("白"))
+IF L_MATH >= 0
+	L_MATHCOLOR = (L_MATHCOLOR >=0 ? L_MATHCOLOR # COLOR("水色"))
+ELSE
+	L_MATHCOLOR = (L_MATHCOLOR >=0 ? L_MATHCOLOR # COLOR("赤"))
+ENDIF
+L_BGCOLOR = (L_BGCOLOR >=0 ? L_BGCOLOR # COLOR("黒"))
+
+;前景色と変動色の割合を決める
+;L_MATHの値とL_VALUEとの比較によって決まる
+IF L_MATH < 0 
+	;L_MATHがマイナスだった場合、その値の長さだけ背景色を削ってマイナス色の長さに。
+	;L_VALUEとの合計がMAX_VALUEを超えないようにする。
+	L_MATH = MIN(L_MATH*-1 , MAX_VALUE - L_VALUE)
+ELSEIF L_MATH >= L_VALUE
+	;L_MATHがL_VALUEを超えていた場合、全部変動色として表示するように
+	L_MATH = L_VALUE
+	L_VALUE = 0
+ELSE
+	;それ以外の場合、L_VALUEの値をL_MATHの分だけ減少させる。L_MATHはそのまま表示。
+	L_VALUE -= L_MATH
+ENDIF
+;三色それぞれの長さを計算
+L_LENS:0 = MIN(L_VALUE, MAX_VALUE) * (MAXLENS * 50) / MAX_VALUE
+L_LENS:1 = MIN(L_MATH, MAX_VALUE) * (MAXLENS * 50) / MAX_VALUE
+L_LENS:2 = MIN(MAX_VALUE-L_VALUE-L_MATH, MAX_VALUE) * (MAXLENS * 50) / MAX_VALUE
+;三つの色をループ用変数に格納
+D_COLOR = L_COLOR , L_MATHCOLOR , L_BGCOLOR
+;描画用HTML文章を作成
+
+FOR LCOUNT , 0 , 3
+	IF L_LENS:LCOUNT > 0
+		L_BAR:LCOUNT = <shape type = 'rect' param = '0, {L_YPOS}, {L_LENS:LCOUNT}, {L_HEIGHT}' color = '%TOSTR_HTML(D_COLOR:LCOUNT)%'>
+	ELSE
+		L_BAR:LCOUNT = 
+	ENDIF
+NEXT
+;全部結合したものをRETURN
+RETURNF L_BAR + L_BAR:1 + L_BAR:2

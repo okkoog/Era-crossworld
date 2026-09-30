@@ -1,0 +1,267 @@
+﻿;専用スキル用のテンプレート
+;「エリキシル剤」を別の名前に置き換えてください
+
+;アクティブスキルに必須なものはそのままにしており
+;なくてもいいものはコメントアウトしております
+;必要だと思ったらコメントアウトを外して設定してください
+;スキルのテンプレートになっています
+
+;理想は「チャージ20ターンかかるが蘇生とHP全回復と状態異常全回復」だった。
+;が技術不足で「チャージ15ターン、HP回復と状態異常回復」
+;誰か後は頼んだ
+
+
+
+;スキル名
+@SKILL_NAME_エリキシル剤,ARG
+RESULTS = 엘릭서 제
+
+;　명중
+@SKILL_HITRATE_エリキシル剤, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_エリキシル剤, ARG
+RETURN 1000
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_エリキシル剤,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_エリキシル剤,ARG
+RETURN 1
+
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_エリキシル剤, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_エリキシル剤,ARG
+SIF ARG >= 0
+	RESULTS = {SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"エリキシル剤")), 3}％
+RETURN 0
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_エリキシル剤
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_エリキシル剤,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_エリキシル剤,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_エリキシル剤,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_エリキシル剤,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_エリキシル剤,ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+@SKILL_HEAL_TYPE_エリキシル剤, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("割合")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_エリキシル剤
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_エリキシル剤, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_エリキシル剤
+RETURN 0
+
+;没
+;@SKILL_RANK_エリキシル剤, ARG = -1
+
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_エリキシル剤,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;====================================================
+;@SKILL_TRIGGER_ACTIONABLE_エリキシル剤,ARG,ARG:1
+;RETURN 0
+
+;====================================================
+;カウンター発動条件
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_エリキシル剤,ARG,ARG:1
+;RETURN RESULT
+
+;====================================================
+;ダメージ発動時
+;====================================================
+;@SKILL_DAMAGE_EFFECT_エリキシル剤,ARG,ARG:1
+
+;====================================================
+;行動によるスキルゲージ操作
+;各キャラクターの通常の行動後に全キャラで呼び出される
+;ARG:		このスキルの持ち主のキャラ番号
+;ARG:1		行動したキャラクターのキャラ番号
+;
+;RESULT 		獲得したゲージの量を返すことで獲得量を表示させる。つまり、他人の行動に反応させることなども可能。
+;RESULT:1		獲得表示のときの文字色を指定できる。ゲージが溜まったときの表示わけなどに
+;RESULTS		ゲージの名称 「<<XXXX>>」という形で表示される
+;RESULTS:1		ゲージの単位。半角の%を使いたい場合は「\%」と言うかたちで退避記号を使うと良い
+;RESULTS;2		色指定以外の要素を使わずに文字列を返す。ゲージ式の獲得量で表現したい場合などに
+;====================================================
+@SKILLGAGE_CHARGE_エリキシル剤,ARG,ARG:1
+#LOCALSIZE 1
+#DIM SKILL_NUM
+#DIM L_T
+#DIM 調合率
+#DIM L_GP
+#DIM L_GP_LIMIT
+#DIM L_COLOR
+L_GP = 0
+L_GP_LIMIT = 100
+L_COLOR = 0x34EBA7
+
+;PU_SKILLNUM_GET(使用者,"専用技の名前")を組み込むことで、その専用技に対応するスキル番号が返ってくる
+;使用者の番号が不正値（-1など）だった場合はエラーを吐くので注意
+;SKILL_NUM に専用技のスキル番号を代入
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"エリキシル剤")
+
+;SKILLGAGE_F_GET(使用者,スキル番号)を組み込む事で、該当するスキルのHゲージの値が返ってくる
+
+;自身の行動でなければ終了
+SIF ARG != ARG:1
+	RETURN 0
+
+;自身の手番の時に上昇率は10しか増加しない
+
+L_GP += 10
+
+;SKILLGAGE_F_SET(使用者,スキル番号,設定する数値)を呼ぶ事で、該当するスキルのHゲージが上書きされる
+;以下の場合、 L_GP と 現在のHスキルゲージ を合算した数値か、もしくは上限値である 100 がHゲージの値に設定される
+CALL SKILLGAGE_F_SET(ARG,SKILL_NUM,MIN(L_GP + SKILLGAGE_F_GET(ARG,SKILL_NUM), L_GP_LIMIT))
+
+;増加によってゲージが上限に到達した場合、調合完了のメッセージを表示する
+IF SKILLGAGE_F_GET(ARG,SKILL_NUM) == L_GP_LIMIT
+	RESULTS = 調合完了！
+	RESULT:1 = L_COLOR
+ELSE
+	RESULTS = 調合中……
+ENDIF
+
+RESULTS:1 = \%
+RETURN L_GP
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_エリキシル剤,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM LCOUNT
+#DIM L_CHARA
+#LOCALSIZE 4
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"エリキシル剤")
+
+;味方の場合、COMPの中にまで効果が及ぶ
+IF CFLAG:ARG:PT플래그 == 0
+	FOR L_CHARA, 0, CHARANUM
+		SIF !IS_COMP内効果有効(L_CHARA)
+			CONTINUE
+		IF CFLAG:L_CHARA:상태이상 == GET_STATE_NUM("DYING")
+			CFLAG:L_CHARA:상태이상 = GET_STATE_NUM("GOOD")
+			CALL HEAL_SINGLE, ARG, L_CHARA, SKILL_NUM, 1, , "蘇生"
+		ELSE
+			CALL HEAL_SINGLE, ARG, L_CHARA, SKILL_NUM, 1
+		ENDIF
+	NEXT
+ELSE
+	;敵の場合は場に出てるやつにのみ
+	;味方の効果をCOMPの中に届かせないなら、この部分は味方にも適用されるので上の分岐をけしてここだけ残してください
+	FOR LCOUNT, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1) + 1
+		L_CHARA = POS(LCOUNT)
+		SIF L_CHARA < 0
+			CONTINUE
+		IF CFLAG:L_CHARA:상태이상 == GET_STATE_NUM("DYING")
+			CFLAG:L_CHARA:상태이상 = GET_STATE_NUM("GOOD")
+			CALL HEAL_SINGLE, ARG, L_CHARA, SKILL_NUM, 1, , "蘇生"
+		ELSE
+			CALL HEAL_SINGLE, ARG, L_CHARA, SKILL_NUM, 1
+		ENDIF
+	NEXT
+ENDIF
+WAIT
+;CALL CURE_STATE_FIELD,ARG,ARG:1,416
+;CALL HEAL_FIELD,ARG,ARG:1,420
+
+CALL SKILLGAGE_F_SET,ARG,PU_SKILLNUM_GET(ARG,"エリキシル剤"),0
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_エリキシル剤,ARG
+;ゲージ量を表示。チャージ完了時カラーで強調
+IF PU_SKILLGAGE_F_GET(ARG,"エリキシル剤") == 100
+	RESULTS '= SET_COLOR_TAG(@"エリキシル剤：{PU_SKILLGAGE_F_GET(ARG,"エリキシル剤")}％", "#34EBA7")
+ELSE
+	RESULTS '= SET_COLOR_TAG(@"エリキシル剤：{PU_SKILLGAGE_F_GET(ARG,"エリキシル剤")}％", "#999999")
+ENDIF
+RETURN 3
+
+@SKILL_EX_DISPLAY_エリキシル剤, ARG, ARGS
+#DIM BARLENS
+BARLENS = SKILL_EX_DISPLAY_LENS - 2
+IF PU_SKILLGAGE_H_GET(ARG, "エリキシル剤") >= 100
+	RESULTS = %SET_COLOR_TAG(UNICODE(0x2728), "パ緑")%
+	RESULTS += SET_COLOR_TAG(" " * (BARLENS - 5) + "Ready", "パ緑")
+ELSE
+	RESULTS = %SET_COLOR_TAG(UNICODE(0x2728), "yellow")%
+	RESULTS += HTML_RECT_BAR(PU_SKILLGAGE_H_GET(ARG, "エリキシル剤"), 100, BARLENS, BARCOLORSET("緑"), RESULT:1)
+ENDIF
+RETURN 1
+;　説明文の表示
+@SKILL_EXPLAIN_エリキシル剤,ARG
+;PRINTL 味方全体のＨＰ、状態異常を全回復し、更に瀕死の味方をも万全の状態で復活させる。
+;PRINTL ……が、一つ調合するのに20ターンかかる。短縮不可。
+PRINTL 아군 전체의 HP, 상태이상을 회복시킨다.
+PRINTL ……하지만 하나를 조합하는 데 10턴이 걸린다. 단축 불가.
+PRINTL 어떤 부상이나 질병도 치료한다고 전해지는 물약.
+PRINTL 연금술사만이 다룰 수 있는 특수 아이템 (CSTR 전용)
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_エリキシル剤,ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"エリキシル剤")
+RESULTS = 調合中
+IF SKILLGAGE_F_GET(ARG,SKILL_NUM) == 100
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+;何のバッドステータスを治せるか
+@SKILL_CURE_STATE_エリキシル剤,ARG
+SELECTCASE GET_STATE(ARG)
+	CASE "FLY","GOOD","DYING","ORGY","HEAT"
+		RETURN 0
+	CASEELSE
+		RETURN 1
+ENDSELECT
+RETURN 0
+
+;この技を複数持てるか
+
+
+
+
+;CALL SKILLGAGE_F_SET,ARG,PU_SKILLNUM_GET(ARG,"エリキシル剤"),0
+

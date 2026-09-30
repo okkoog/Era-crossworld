@@ -1,0 +1,72 @@
+﻿
+;特技名
+@CGSP_NAME_1900, ARGS, ARG
+RESULTS = ゾアの調和
+
+;　コストの量
+@CGSP_COST_1900, ARGS, ARG
+RETURN 0
+;自動発動なので0
+
+;　타겟(選択するかしないか)
+@CGSP_TARGET_1900, ARGS, ARG
+RETURN 0
+;0-無し　　　1-味方1体　2-味方1体(自身含む)　3-敵1体　4-敵1体(サマナー含む)
+;5-敵味方1体　6-サマナーどちらか
+;自動発動なので0
+
+;　発動タイミング
+@CGSP_TIMING_1900, ARGS, ARG
+RETURN 3
+;0-アクティブ　1-味方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　2-相手ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　3-両方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ
+
+;====================================================
+;特技発動
+;====================================================
+@CGSP_ACTION_1900, ARGS, ARG, ARG:1
+#DIM L_D
+#DIM L_B
+
+IF FIELD_DEMON_DATE_V:ARG:CBV_HOST == CS1_ONESELF
+	LOCAL:1 = CBF_ALLY_POS1
+	LOCAL:2 = CBF_ALLY_POS6 + 1
+ELSE
+	LOCAL:1 = CBF_ENEMY_POS1
+	LOCAL:2 = CBF_ENEMY_POS6 + 1
+ENDIF
+
+L_B = 0
+L_D = 0
+FOR LOCAL, LOCAL:1, LOCAL:2
+	IF FIELD_DEMON_DATE_V:LOCAL:CBV_NO == 415 && !GETBIT(L_B, 0)
+        SETBIT L_B, 0
+        L_D ++
+	ELSEIF FIELD_DEMON_DATE_V:LOCAL:CBV_NO == 416 && !GETBIT(L_B, 1)
+        SETBIT L_B, 1
+        L_D ++
+	ELSEIF FIELD_DEMON_DATE_V:LOCAL:CBV_NO == 417 && !GETBIT(L_B, 2)
+        SETBIT L_B, 2
+        L_D ++
+	ELSEIF FIELD_DEMON_DATE_V:LOCAL:CBV_NO == 418 && !GETBIT(L_B, 3)
+        SETBIT L_B, 3
+        L_D ++
+    ENDIF
+NEXT
+SIF L_D > 0
+    CALL SP_PUWER_UP, ARG, L_D, 0
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;発動後どうなるか
+@CGSP_ACTION_AFTER_1900, ARGS, ARG, ARG:1
+RETURN 0
+;0-何もなし　1-フリーズ状態　2-山札に戻る　3-即死する
+
+;　 説明文の表示
+@CGSP_EXPLAIN_1900, ARGS, ARG
+RESULTS = ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ時に「ユリゼン」「サーマス」「アーソナ」「ルヴァ」が味方の場にいる場合、自身は1体につきAP+1にする(最大+4)。ただし、同カードや同名の重複はしない。『アルビオン専用のSP』
+
+
+

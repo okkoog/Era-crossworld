@@ -1,0 +1,382 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara4559_古代.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author				Reason
+;	001		2023/03/22		P(bazzile)			新規作成
+;	002		2025/11/25		epizo				画像パターン作成
+;	003		2026/01/31		epizo				トール(リンク体)の変身時画像パターンが設定されない不具合修正
+;	Comment
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@ADD_NEW_COMPANION_[[キャラ:코시로]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+IF ARG:2 == 1 || ARG:2 == 2
+	CALL SET_BASE_[[キャラ:코시로]], ARG, ARG:2
+	CALL SET_LEARN_SKILL_[[キャラ:코시로]], ARG, ARG:2
+ENDIF
+
+;ARG:1はイベントフラグ
+@SET_BASE_[[キャラ:코시로]], ARG, ARG:1
+IF ARG:1 == 1
+	CALL SET_LINK_DEVIL, ARG, [[キャラ:토르_진노코시로]], "攻撃性能"
+ELSEIF ARG:1 == 2
+	CALL SET_LINK_DEVIL, ARG, [[キャラ:가장새로운신_링크전용]], "攻撃性能"
+ENDIF
+
+@SET_LEARN_SKILL_[[キャラ:코시로]], ARG, ARG:1
+#DIM BASE_LEARN_LV
+
+IF ARG:1 == 1 || ARG:1 == 2
+	BASE_LEARN_LV = MAX(BASE:ARG:LV, 40)
+	CALL SET_LEARN_SKILL, ARG, "토르해머", BASE_LEARN_LV + 1, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "파계의번개", BASE_LEARN_LV + 2, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "사마리캄", BASE_LEARN_LV + 3, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "뇌진왕모의발차기", BASE_LEARN_LV + 5, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "진리의번개", BASE_LEARN_LV + 7, "変身形態"
+	CALL SET_LEARN_SKILL, ARG, "타루카쟈오토", BASE_LEARN_LV + 7, "変身形態"
+ENDIF
+
+;--------------------------------------------------
+;キャラクター独自変数名称定義関数
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:코시로]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_EV
+	;周回時にリセットされる数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_EV
+	;周回時にリセットされる文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる数値型変数です
+	;スキルゲージHとほぼ互換です。基本的にはゲージHが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる文字列型変数です
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる数値型変数
+	;スキルゲージFとほぼ互換です。基本的にはゲージFが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 使用済み命運点
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる文字列型変数
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS
+
+
+@SKILL_EX_DISPLAY_CHARA_[[キャラ:코시로]], ARG, ARGS
+SIF !HAVE_PU_SKILL(ARG, "命運点を使う！", , "通常形態")
+	RETURN 0
+SIF !GET_USE_FATE_MAXNUM_CHARA_[[キャラ:코시로]](ARG)
+	RETURN 0
+RESULTS = %SET_COLOR_TAG("命", "aqua")%
+RESULTS += " " + HTML_RECT_SPLIT_BAR(GET_USEABLE_FATE_NUM_CHARA_[[キャラ:코시로]](ARG), 10, SKILL_EX_DISPLAY_LENS - 3, BARCOLORSET("緑"), RESULT:1)
+RESULTS:1 = 命運点
+RETURN 1
+;====================================================
+;追加コマンド(一番下)
+;====================================================
+@INPUT_COM_NAME_CHARA_[[キャラ:코시로]],ARG
+RESULTS = 命運点を使う！
+RESULTS:1 = 命運点を使う！
+RETURN 2
+
+@INPUT_COM_ABLE_命運点を使う！,ARG
+SIF !HAVE_PU_SKILL(ARG, "命運点を使う！", , "通常形態")
+	RETURN 0
+RESULTS = 命運点枯渇
+SIF !GET_USEABLE_FATE_NUM_CHARA_[[キャラ:코시로]](ARG)
+	RETURN -1
+RETURN 1
+
+@GET_USE_FATE_MAXNUM_CHARA_[[キャラ:코시로]], ARG
+#FUNCTION
+SIF !HAVE_PU_SKILL(ARG, "命運点を使う！", , "通常形態")
+	RETURNF 0
+RETURNF LIMIT(BASE:ARG:운 / 10, 1, 10)
+
+@GET_USEABLE_FATE_NUM_CHARA_[[キャラ:코시로]], ARG
+#FUNCTION
+SIF !HAVE_PU_SKILL(ARG, "命運点を使う！", , "通常形態")
+	RETURNF 0
+RETURNF GET_USE_FATE_MAXNUM_CHARA_[[キャラ:코시로]](ARG) - GET_RPG_CFLAG_DUNGEON(ARG, "使用済み命運点")
+
+;====================================================
+;命運点を使う
+;====================================================
+@INPUT_COM_命運点を使う！, ARG, ARG:1 = -1
+#DIM STOCK_ACT
+#DIM STOCK_TARGET
+SIF !GET_USEABLE_FATE_NUM_CHARA_[[キャラ:코시로]](ARG)
+	RETURN 0
+CALL PRINT_ACT_MESSAGE, ARG, , , , "命運点を使う！"
+PRINTFORML ＞%CALLNAME:ARG%은(는) 주사위를 쥐었다
+
+PRINTL 자기 자신에 대해――
+IF GET_USEABLE_FATE_NUM_CHARA_[[キャラ:코시로]](ARG) > 0
+	PRINTL [0] 배드스테이터스 완전 회피! (명운점-1) 즉사・배드스테이터스를 각각 한 번만 무효화한다
+ELSE
+	SETCOLOR COLOR("gray")
+	PRINTL [-] 배드스테이터스 완전 회피! (명운점-1) 즉사・배드스테이터스를 각각 한 번만 무효화한다
+	RESETCOLOR
+ENDIF
+IF GET_USEABLE_FATE_NUM_CHARA_[[キャラ:코시로]](ARG) > 1
+	PRINTL [1] 데미지 판정 2배!        (명운점-2) 다음 물리공격・마법공격이 각각 강화된다
+ELSE
+	SETCOLOR COLOR("gray")
+	PRINTL [-] 데미지 판정 2배!        (명운점-2) 다음 물리공격・마법공격이 각각 강화된다
+	RESETCOLOR
+ENDIF
+IF GET_USEABLE_FATE_NUM_CHARA_[[キャラ:코시로]](ARG) > 2
+	PRINTL [2] 신위【인과응보】!!     (명운점-3) 물리반사・마법반사를 동시에 전개한다 (만능은 막을 수 없다)
+ELSE
+	SETCOLOR COLOR("gray")
+	PRINTL [-] 신위【인과응보】!!     (명운점-3) 물리반사・마법반사를 동시에 전개한다 (만능은 막을 수 없다)
+	RESETCOLOR
+ENDIF
+
+PRINTL 
+PRINTL [100] 다시 생각한다
+CALL INPUTINT, 0 , 1 , 2 , 100
+;バステ完全回避
+IF RESULT == 0 && GET_USEABLE_FATE_NUM_CHARA_[[キャラ:코시로]](ARG) > 0
+	CALL SKILL_INVALID_WALL, ARG, ARG, "聖なる加護_テトラジャ", "단체", "NOMES"
+	SETCOLOR 0x33ffcc
+	PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓
+	PRINTFORM ┃[{CPOS(ARG),2}] %CALLNAME:ARG,21,LEFT%┃　┃
+	PRINTL 명운점 소비: 즉사・배드스테이터스 완전 회피!┃
+	PRINTFORML ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃%"準備万端！　ハマでもムドでも持ってこい！！",72,LEFT%┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+	PRINTFORML ＞%CALLNAME:ARG%은(는) 치명상에 대비했다
+	
+	CALL SET_RPG_CFLAG_DUNGEON, ARG, "使用済み命運点", 1, "+="
+
+;ダメージ判定倍化
+ELSEIF RESULT == 1 && GET_USEABLE_FATE_NUM_CHARA_[[キャラ:코시로]](ARG) > 1
+	CFLAG:ARG:気合フラグ = 1
+	CFLAG:ARG:집중플래그 = 1
+
+	SETCOLOR 0x33ffcc
+	PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓
+	PRINTFORM ┃[{CPOS(ARG),2}] %CALLNAME:ARG,21,LEFT%┃　┃
+	PRINTL 명운점 소비: 데미지 판정 2배!            ┃
+	PRINTFORML ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃%"デカいの一発、叩きこむ！",72,LEFT%┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+	PRINTFORML ＞%CALLNAME:ARG%은(는) 집중하여, 기합을 넣었다
+
+	CALL SET_RPG_CFLAG_DUNGEON, ARG, "使用済み命運点", 2, "+="
+
+;神威【因果応報】
+ELSEIF RESULT == 2 && GET_USEABLE_FATE_NUM_CHARA_[[キャラ:코시로]](ARG) > 2
+	CFLAG:ARG:물리반사플래그 = 1
+	CFLAG:ARG:마법반사플래그 = 1
+
+	SETCOLOR 0x33ffcc
+	PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓
+	PRINTFORM ┃[{CPOS(ARG),2}] %CALLNAME:ARG,21,LEFT%┃　┃
+	PRINTL 命運点消費：神威【因果応報】！　　　　　┃
+	PRINTFORML ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃%"ボクの命運点をコストに神威を切ります！　【因果応報】！",72,LEFT%┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+	PRINTFORML ＞%CALLNAME:ARG%은(는) 카운터 자세에 들어갔다
+
+	CALL SET_RPG_CFLAG_DUNGEON, ARG, "使用済み命運点", 3, "+="
+	
+ELSEIF RESULT == 100
+	;PRINT 考え直す
+ENDIF
+WAIT
+RETURN 1
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:코시로]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("古代_FACE_17")
+			RETURNF ""
+		SIF !SPRITECREATED("古代_FACE_18")
+			RETURNF ""
+		SIF !SPRITECREATED("古代_FACE_EX_0")
+			RETURNF ""
+		SIF !SPRITECREATED("古代_FACE_EX_1")
+			RETURNF ""
+		SIF !SPRITECREATED("古代_FACE_EX_2")
+			RETURNF ""
+		SIF !SPRITECREATED("古代_FACE_EX_3")
+			RETURNF ""
+		SIF !SPRITECREATED("古代_FACE_EX_4")
+			RETURNF ""
+		SIF !SPRITECREATED("古代_FACE_EX_5")
+			RETURNF ""
+		SIF !SPRITECREATED("古代_FACE_EX_6")
+			RETURNF ""
+		SIF !SPRITECREATED("古代_FACE_EX_7")
+			RETURNF ""
+		SIF !SPRITECREATED("古代_FACE_EX_8")
+			RETURNF ""
+		SIF !SPRITECREATED("古代_FACE_EX_9")
+			RETURNF ""
+		SIF !SPRITECREATED("古代_FACE_EX_10")
+			RETURNF ""
+		SIF !SPRITECREATED("古代_FACE_EX_11")
+			RETURNF ""
+		RESULTS_F = 1
+		RESULTS_F:1 = 古代_FACE_17
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:코시로]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "1"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+				RESULTS_F = 古代_FACE_18
+			CASEELSE
+				SELECTCASE L_SITUATION:1
+					;戦闘不能になった時
+					CASE "DYING"
+						RESULTS_F = 古代_FACE_EX_0
+					;CHARMになった時
+					CASE "CHARM"
+						RESULTS_F = 古代_FACE_EX_1
+					;SLEEPになった時
+					CASE "SLEEP"
+						RESULTS_F = 古代_FACE_EX_2
+					;上記以外の状態異常の時
+					CASE "STONE", "FLY", "PALYZE", "BRAND", "CURSE", "FLAME", "BOMB", "POISON", "CLOSE", "BIND", "SLIP", "FREEZE", "PANIC", "SHOCK", "HAPPY"
+						RESULTS_F = 古代_FACE_EX_3
+					;通常時
+					CASEELSE
+						RESULTS_F = 古代_FACE_17
+				ENDSELECT
+				IF CFLAG:L_CHARA:악마변신
+					VARI LINK_DEVIL = FINDCHARA_LINK(L_CHARA)
+					SELECTCASE LINK_DEVIL >= 0 ? NO:LINK_DEVIL # CFLAG:L_CHARA:초기링크악마
+						CASE [[キャラ:아리안로드]]
+							SELECTCASE L_SITUATION:1
+								;戦闘不能になった時
+								CASE "DYING"
+									RESULTS_F = 古代_FACE_EX_8
+								CASEELSE
+									RESULTS_F = 古代_FACE_EX_4
+								ENDSELECT
+						CASE [[キャラ:토르]],[[キャラ:토르_진노코시로]]
+							SELECTCASE L_SITUATION:1
+								;戦闘不能になった時
+								CASE "DYING"
+									RESULTS_F = 古代_FACE_EX_9
+								CASEELSE
+									RESULTS_F = 古代_FACE_EX_5
+								ENDSELECT
+						CASE [[キャラ:체르노보그]]
+							SELECTCASE L_SITUATION:1
+								;戦闘不能になった時
+								CASE "DYING"
+									RESULTS_F = 古代_FACE_EX_10
+								CASEELSE
+									RESULTS_F = 古代_FACE_EX_6
+								ENDSELECT
+						CASE [[キャラ:가장새로운신_링크전용]]
+							SELECTCASE L_SITUATION:1
+								;戦闘不能になった時
+								CASE "DYING"
+									RESULTS_F = 古代_FACE_EX_11
+								CASEELSE
+									RESULTS_F = 古代_FACE_EX_7
+								ENDSELECT
+					ENDSELECT
+				ENDIF
+		ENDSELECT
+	CASEELSE
+ENDSELECT

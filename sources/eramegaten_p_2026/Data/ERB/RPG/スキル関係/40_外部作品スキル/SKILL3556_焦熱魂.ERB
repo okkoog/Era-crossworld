@@ -1,0 +1,321 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_3556,ARG
+;修羅
+;SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0
+	RESULTS = 초열혼
+	SIF SKILLGAGE_H_GET(ARG,3556) == 1
+		RESULTS += "・災炎壱"
+	SIF SKILLGAGE_H_GET(ARG,3556) == 2
+		RESULTS += "・災炎弐"
+	SIF SKILLGAGE_H_GET(ARG,3556) == 3
+		RESULTS += "・災炎参"
+;羅刹
+SIF ARG > -1 && SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 1
+	RESULTS = 不動撃
+
+;　명중
+@SKILL_HITRATE_3556, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_3556, ARG
+IF ARG > -1
+	;修羅
+	IF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0
+		SIF SKILLGAGE_H_GET(ARG,3556) == 0
+			RETURN 70
+		SIF SKILLGAGE_H_GET(ARG,3556) == 1
+			RETURN 170
+		SIF SKILLGAGE_H_GET(ARG,3556) == 2
+			RETURN 290
+		SIF SKILLGAGE_H_GET(ARG,3556) == 3
+			RETURN 590
+	ENDIF
+	;羅刹
+	SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 1
+		RETURN 300
+ENDIF
+RETURN 70
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3556,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3556,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3556, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3556,ARG
+IF ARG > -1
+	;修羅
+	IF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0
+		SIF SKILLGAGE_H_GET(ARG,3556) == 0
+			RETURN 0
+		SIF SKILLGAGE_H_GET(ARG,3556) == 1
+			RETURN 9
+		SIF SKILLGAGE_H_GET(ARG,3556) == 2
+			RETURN 20
+		SIF SKILLGAGE_H_GET(ARG,3556) == 3
+			RETURN 44
+	ENDIF
+	;羅刹
+	SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 1
+		RETURN 25
+ENDIF
+RETURN 0
+
+;　相性
+@SKILL_TYPE_3556,ARG
+RETURN GET_TYPE_NUM("화염")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3556
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　攻撃タイプ
+@SKILL_ATTACKTYPE_3556,ARG
+IF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0
+	RETURN GET_攻撃タイプ_NUM("物理")
+ELSE
+	RETURN GET_攻撃タイプ_NUM("魔法")
+ENDIF
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3556, ARG
+IF CHARANUM_CHECK(ARG)
+	;修羅
+	SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0
+		RETURN 2
+	;羅刹
+	SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 1
+		RETURN 1
+ENDIF
+RETURN 2
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3556, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_3556,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3556,ARG
+IF ARG > -1
+	;修羅
+	IF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0
+		SIF SKILLGAGE_H_GET(ARG,3556) == 0
+			RETURN 2
+		SIF SKILLGAGE_H_GET(ARG,3556) == 1
+			RETURN 2
+		SIF SKILLGAGE_H_GET(ARG,3556) == 2
+			RETURN 3
+		SIF SKILLGAGE_H_GET(ARG,3556) == 3
+			RETURN 3
+	ENDIF
+	;羅刹
+	SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 1
+		RETURN 3
+ENDIF
+RETURN 2
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3556, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3556
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;속도보정
+@SKILL_SPEED_3556, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3556
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3556, ARG = -1
+RETURN 23
+
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_3556,ARG
+SIF ARG < 0 || (SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0 && SKILLGAGE_H_GET(ARG,3556) == 0)
+	RETURN 0
+RETURN 18
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_3556,ARG
+SIF ARG < 0 || (SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0 && SKILLGAGE_H_GET(ARG,3556) == 0)
+	RETURN 0
+RETURN 4
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_3556,ARG
+IF ARG > -1
+	;修羅
+	IF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0
+		SIF SKILLGAGE_H_GET(ARG,3556) == 0
+			RETURN 0
+		SIF SKILLGAGE_H_GET(ARG,3556) == 1
+			RETURN 20
+		SIF SKILLGAGE_H_GET(ARG,3556) == 2
+			RETURN 30
+		SIF SKILLGAGE_H_GET(ARG,3556) == 3
+			RETURN 40
+	ENDIF
+	;羅刹
+	SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 1
+		RETURN 60
+ENDIF
+RETURN 0
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_3556,ARG
+RETURN 95
+
+;====================================================
+;行動によるスキルゲージ操作
+;各キャラクターの通常の行動後に全キャラで呼び出される
+;ARG:		このスキルの持ち主のキャラ番号
+;ARG:1		行動したキャラクターのキャラ番号
+;
+;RESULT 		獲得したゲージの量を返すことで獲得量を表示させる。つまり、他人の行動に反応させることなども可能。
+;RESULT:1		獲得表示のときの文字色を指定できる。ゲージが溜まったときの表示わけなどに
+;RESULTS		ゲージの名称 「<<XXXX>>」という形で表示される
+;RESULTS:1		ゲージの単位。半角の%を使いたい場合は「\%」と言うかたちで退避記号を使うと良い
+;RESULTS;2		色指定以外の要素を使わずに文字列を返す。ゲージ式の獲得量で表現したい場合などに
+;====================================================
+@SKILLGAGE_CHARGE_3556,ARG,ARG:1
+SIF FLAG:행동순2 < 0 && SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0
+	CALL SKILLGAGE_H_SET(ARG,3556,MIN(SKILLGAGE_H_GET(ARG,[[스킬:재염]]),SKILLGAGE_F_GET(ARG,3556)))
+
+;====================================================
+;独自のカジャ処理
+;ARG		攻撃側のキャラ登録番号
+;ARG:1		防御側のキャラ登録番号
+;RESULT 	= 強化値
+;RESULT:1	= 基準値	(基準値 + x) / 基準値 あるいは　(基準値 * 2 - x) /基準値 * 2倍になる
+;			　デフォは基準値32で、最大で(32 + 32) / 32 or (64 - 32) / 64倍になる
+;====================================================
+@SKILL_CALC_BUFF_3556, ARGS, ARG, ARG:1
+SELECTCASE ARGS
+	CASE "ATK"
+		SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0 && SKILLGAGE_H_GET(ARG,3556) > 1
+			RETURN LIMIT(CFLAG:ARG:공격강화 + CFLAG:ARG:마법위력강화, -48, 64), 32
+		RETURN 0
+ENDSELECT
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+
+@ACTION_3556, ARG, ARG:1, ARG:2
+#DIM STOCK,2
+
+;修羅
+IF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0
+	;STOCK:0 = MAXBASE:ARG:마법위력
+	;STOCK:1 = CFLAG:ARG:마법위력강화
+	;MAXBASE:ARG:마법위력 = MAXBASE:ARG:공격
+	;SIF SKILLGAGE_H_GET(ARG,3556) > 1
+	;	CFLAG:ARG:마법위력강화 += CFLAG:ARG:공격강화
+	CALL ATTACK_FIELD,ARG,ARG:1,3556
+	;MAXBASE:ARG:마법위력 = STOCK:0
+	;CFLAG:ARG:마법위력강화 = STOCK:1
+	
+	CALL SKILLGAGE_H_ADD(ARG,[[스킬:재염]],-SKILLGAGE_H_GET(ARG,3556))
+;羅刹
+ELSE
+	CALL ATTACK_FIELD,ARG,ARG:1,3556
+ENDIF
+
+;====================================================
+;追加コマンド(一番下)
+;====================================================
+@INPUT_COM_NAME_3556,ARG
+RESULTS = 焦熱魂
+RESULTS:1 = 焦熱魂災炎出力
+SELECTCASE SKILLGAGE_F_GET(ARG, [[스킬:초열혼]])
+	CASE  3
+		RESULTS:2 = 0xea5550
+	CASE  2
+		RESULTS:2 = 0xeb6a50
+	CASE  1
+		RESULTS:2 = 0xeb8350
+	CASE  0
+		RESULTS:2 = 0xebeb50
+ENDSELECT
+RETURN 0
+
+@INPUT_COM_ABLE_焦熱魂,ARG
+SIF !HAVE_SKILL(ARG,[[스킬:재염]])
+	RETURN 0
+SIF !HAVE_SKILL(ARG,[[스킬:분노폭발]])
+	RETURN 0
+SIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) != 0
+	RETURN -1
+RETURN 1
+
+;====================================================
+;コマンド実行
+;====================================================
+@INPUT_COM_焦熱魂,ARG
+#LOCALSIZE 2
+LOCAL = SKILLGAGE_F_GET(ARG,3556)
+LOCAL:1 = SKILLGAGE_H_GET(ARG,3556)
+CALL SKILLGAGE_F_SET(ARG,3556,(LOCAL + 1)%4)
+CALL SKILLGAGE_H_SET(ARG,3556,MIN(SKILLGAGE_H_GET(ARG,[[스킬:재염]]),SKILLGAGE_F_GET(ARG,3556)))
+IF CFLAG:ARG:입력행동 == 3556 && (LOCAL/2 != SKILLGAGE_H_GET(ARG,3556)/2)
+	CFLAG:ARG:입력행동 = -1
+	CFLAG:ARG:타겟 = -1
+ENDIF
+RETURN -1
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3556, ARG
+IF TFLAG:전투중 == 0
+	PRINTL 【修羅】
+	PRINTL 적에게 화염 상성의 데미지, 재염 사용으로 강화
+	PRINTL 【羅刹】
+	PRINTL 적 전체에 화염 상성의 물리 데미지 + 연소
+ELSEIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 0 || TFLAG:전투중 == 0
+	IF HAVE_SKILL(ARG,[[스킬:재염]])
+		PRINTL 적의 광범위에 화염 속성의 마법 공격을 행한다. 데미지는 공격력에 의존한다
+		PRINTL 【재염·0】적 일렬에 극소 위력의 공격을 행한다
+		PRINTL 【재염·1】적 일렬에 중위력의 공격을 행하고 연소시킨다
+		PRINTL 【재염·2】적 전체에 대위력의 공격을 행하고 연소시킨다. 타루카쟈의 영향을 받는다
+		PRINTL 【재염·3】적 전체에 초특대 위력의 공격을 행하고 연소시킨다. 타루카쟈의 영향을 받는다
+	ELSE
+		PRINTL 적 일렬에 화염 속성 극소 위력의 마법 공격을 행한다. 데미지는 공격력에 의존한다. 코스트 소비 없음
+	ENDIF
+ELSEIF SKILLGAGE_F_GET(ARG,[[스킬:분노폭발]]) == 1
+	PRINTL 적 전체에 화염 속성의 대위력 물리 공격을 행한다
+	PRINTL 追加効果：FLAME
+ENDIF
+
+
+;とくにない
+
+@SKILL_ACTIONABLE_BATTLE_3556, ARG
+RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3556,ARG
+RETURN 1
+;とくにない
+

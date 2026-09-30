@@ -1,0 +1,57 @@
+﻿
+;======================================================
+;装備品のデータ
+;매지컬실크햇
+;======================================================
+
+@基本能力修正_3231,ARG,ARG:1 = -1
+
+SELECTCASE ARG
+ENDSELECT
+RETURN 0
+
+@戦闘能力修正_3231,ARG,ARG:1 = -1
+SELECTCASE GET_BATTLESTATUS(ARG)
+	CASE "방어"
+		RETURN 1
+	CASE "회피"
+		RETURN 0
+	CASE "마법위력"
+		RETURN 0
+	CASE "마법효과"
+		RETURN 0
+ENDSELECT
+RETURN 0
+
+@防御相性_3231,ARG,ARG:1 = -1
+RETURN 100
+
+@装備箇所_3231
+RETURN GET_EQUIPNUM("머리")
+
+@必要レベル_3231
+RETURN 1
+
+;K_TABLEに無効化どれするか入れてシャッフルして1から3の数値を出してCFLAGで壁貼る処理する。
+@戦闘開始時効果_3231, ARG
+#DIM LCOUNT
+#DIM KCOUNT
+#DIMS DYNAMIC K_TABLE = "검격무효화횟수" , "비구무효화횟수" , "타격무효화횟수" , "전술무효화횟수"
+CALL SHUFFLE_ARRAY_STR, K_TABLE
+KCOUNT = RAND:3 + 1
+FOR LCOUNT, 0, KCOUNT
+    CFLAG:ARG:(K_TABLE:LCOUNT) += 1
+NEXT
+
+@装備解説_3231
+PRINTL 마술사가 사용하는 마법의 실크햇.
+PRINTL 
+PRINTL 전투 개시 시에 검격・비구・타격・전기 상성 중에서,
+PRINTL 중복 없이 무작위로 1~3종류, 선택된 공격 상성을 1회만 무효화하는 장벽을 친다.
+
+@装備条件_3231,ARG
+RETURN 1
+
+@購入条件_3231
+RETURN 0
+

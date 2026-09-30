@@ -1,0 +1,216 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara4766_Pアイン.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/01/08		P(bazzile)				新規作成
+;	002		2025/05/17		epizo					画像パターン作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:아인]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+CALL SELECT_BTL_TALENT_[[キャラ:아인]], ARG, ARG:2
+
+@SELECT_BTL_TALENT_[[キャラ:아인]], ARG, ARG:1
+IF FLAG:CP제한무효화
+	DRAWLINE
+	PRINTFORML 戦闘素質選択
+	DRAWLINE
+	PRINTFORML 아인의 소질은 다른 캐릭터와의 밸런스를 맞추기 위해 변경되었습니다만
+	PRINTFORML 조정 전의 상태로 가입시키는 것을 선택할 수도 있습니다.
+	PRINTFORML 다음 패턴 중에서 소질을 선택해 주십시오
+	PRINTFORML ※포인트는 소질의 강도로, 이능자의 경우는 합계 20 이내로 맞추는 것이 표준 성능입니다.
+	DRAWLINE
+	PRINTFORML [0] 調整版
+	PRINTFORML 　거너 Lv2(20P)
+	PRINTFORML 　거너 Lv2를 보유함으로써 일반적인 경우보다 강한 총과 다양한 특수탄을 사용할 수 있습니다.
+	PRINTFORML 　마카탄 등 일부 극도로 강력한 탄환 외에는 거의 전부 쓸 수 있어 통상 이능자보다 패가 매우 다양해집니다.
+	PRINTFORML 　단, 일반 이능자가 지닌 소비 코스트 경감이 없어 단순히 스킬만 쓰면 불리해집니다.
+	PRINTFORML 
+	PRINTFORML [1] 오리지널판
+	PRINTFORML 　거너 Lv3(30P)
+	PRINTFORML 　모든 총탄과 특수한 총을 사용할 수 있습니다.
+	PRINTFORML 　업데이트로 총 및 총탄이 크게 강화되어, 거너 자체가 스킬 없이도 일선에서 활약할 수 있는 소질이 되었으므로
+	PRINTFORML 　자유롭게 스킬을 쓸 수 있는 거너는 그것만으로도 매우 강력한 존재라 할 수 있습니다.
+	CALL INPUT_YN, , , 0
+	IF RESULT == 0
+		PRINTFORMW 아인의 소질을 조정판으로 했습니다.
+		CALL SET_RPG_CSTR_TAKEOVER, ARG, "戦闘素質設定", "調整版"
+		TALENT:ARG:건슬링거 = 2
+	ELSE
+		PRINTFORMW 아인의 소질을 오리지널판으로 했습니다.
+		CALL SET_RPG_CSTR_TAKEOVER, ARG, "戦闘素質設定", "オリジナル版"
+		TALENT:ARG:건슬링거 = 3
+	ENDIF
+ELSE
+	IF !GET_RPG_CFLAG_TAKEOVER(ARG, "互換処理") && TALENT:ARG:건슬링거 == 1
+		PRINTFORMW %CALLNAME:ARG%의 서브 소질을 [거너 Lv2]로 변경했습니다.
+		TALENT:ARG:건슬링거 = 2
+	ENDIF
+ENDIF
+CALL SET_RPG_CFLAG_TAKEOVER(ARG, "互換処理", 1)
+;--------------------------------------------------
+;キャラクター独自変数名称定義関数
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:아인]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_EV
+	;周回時にリセットされる数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_EV
+	;周回時にリセットされる文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 互換処理
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 戦闘素質設定
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる数値型変数です
+	;スキルゲージHとほぼ互換です。基本的にはゲージHが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる文字列型変数です
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる数値型変数
+	;スキルゲージFとほぼ互換です。基本的にはゲージFが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる文字列型変数
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:아인]], L_CHARA, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("アイン_FACE_3")
+			RETURNF ""
+		SIF !SPRITECREATED("アイン_FACE_4")
+			RETURNF ""
+		SIF !SPRITECREATED("アイン_FACE_EX_0")
+			RETURNF ""
+		SIF !SPRITECREATED("アイン_FACE_EX_1")
+			RETURNF ""
+		SIF !SPRITECREATED("アイン_FACE_EX_2")
+			RETURNF ""
+		SIF !SPRITECREATED("アイン_FACE_EX_3")
+			RETURNF ""
+		RESULTS_F = デフォルト
+		RESULTS_F:1 = アイン_FACE_3
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:아인]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "デフォルト"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+				RESULTS_F = アイン_FACE_4
+			CASEELSE
+				SELECTCASE L_SITUATION:1
+					;戦闘不能になった時
+					CASE "DYING"
+						RESULTS_F = アイン_FACE_EX_0
+					;魅了にされた時
+					CASE "CHARM"
+						RESULTS_F = アイン_FACE_EX_1
+					;睡眠にされた時
+					CASE "SLEEP" 
+						RESULTS_F = アイン_FACE_EX_2
+					;上記以外の状態異常の時
+					CASE "STONE", "FLY", "PALYZE", "BRAND", "CURSE", "FLAME", "BOMB", "POISON", "CLOSE", "BIND", "SLIP", "FREEZE", "PANIC", "SHOCK", "HAPPY"
+						RESULTS_F = アイン_FACE_EX_3
+					;通常時
+					CASEELSE
+						RESULTS_F = アイン_FACE_3
+				ENDSELECT
+		ENDSELECT
+	CASEELSE
+ENDSELECT

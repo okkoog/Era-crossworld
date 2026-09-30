@@ -1,0 +1,81 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@C_BTL_EFFECT_CONTROL_NO_ELD_5,ARG
+RESULTS = 거짓된 연명
+
+;スキル名
+@SKILL_NAME_C_BTL_EFFECT_偽りの延命,ARG
+RESULTS = 거짓된 연명
+
+;　威力
+@SKILL_POWER_C_BTL_EFFECT_偽りの延命, ARG
+RETURN 1000
+
+;重複可能な数
+@C_BTL_EFFECT_COUNT_LIMIT_偽りの延命
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_C_BTL_EFFECT_偽りの延命, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_C_BTL_EFFECT_偽りの延命, ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_C_BTL_EFFECT_偽りの延命
+RETURN GET_SUCCESSION_NUM("계통없음")
+
+;効果時間　最大10ターンまで、0を指定した場合は戦闘中永続
+@C_BTL_EFFECT_CONTINUE_TIME_偽りの延命
+RETURN 0
+
+@SKILL_HEAL_TYPE_C_BTL_EFFECT_偽りの延命, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("割合")
+
+;排他となる効果
+;戻り値
+; RESULTS = 効果名
+; RESULT
+; 0 = 排他
+;-1 = 上書き不能
+; 1 = 上書き(対象も1なら相互上書き)
+@C_BTL_EFFECT_EXCLUSIVE_偽りの延命
+RESULTS = 
+RETURN 0
+
+;個別の対象条件
+;ARG 	効果を受けるキャラの登録番号
+;ARG:1	効果を与えるキャラの登録番号
+@C_BTL_EFFECT_SPECIAL_TARGET_偽りの延命, ARG, ARG:1
+SIF IS_BADSTATE(ARG, "DYING")
+	RETURN 0
+RETURN 1
+
+@SKILL_TURNEND_C_BTL_EFFECT_偽りの延命, ARG, ARG:1
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CNT
+#DIM DYNAMIC STOCK_HP
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+	RETURN 0
+;HPが全快なら終わる
+SIF 現HP割合(ARG) >= 100
+	RETURN 0
+CALL PRINT_ACT_MESSAGE, ARG, , , , "거짓된 연명"
+CSTR:(ARG:1):비소지스킬 '= "C_BTL_EFFECT_偽りの延命"
+STOCK_HP = 現HP割合(ARG)
+CALL HEAL_SINGLE, ARG:1, ARG, [[스킬:비소지스킬]]
+L_CNT = (現HP割合(ARG) - STOCK_HP) / 10 + 1
+CSTR:(ARG:1):비소지스킬 '= ""
+FOR LCOUNT, 0, L_CNT
+	CALL SKILL_SET_カジャンダ, ARG, ARG, BASE_KAJA_TABLE:(RAND:VARSIZE("BASE_KAJA_TABLE")), -4, "단체", "NOWAIT"
+NEXT
+WAIT
+
+@SKILL_BATTLE_MAIN_TOOLTIP_C_BTL_EFFECT_偽りの延命, ARG, ARG:1
+RESULTS:0 '= "□거짓된 연명"
+RESULTS:1 '= "　턴 종료시에 이하의 연동효과가 발동한다。"
+RESULTS:2 '= "　「ＨＰ를 크게 회복하고、회복량에 따른 횟수로、랜덤한 능력치가 저하한다」"

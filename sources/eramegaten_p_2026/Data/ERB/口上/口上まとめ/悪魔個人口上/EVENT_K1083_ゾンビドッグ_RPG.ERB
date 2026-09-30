@@ -1,0 +1,493 @@
+﻿;-------------------------------------------------
+;ライセンスフリー
+;-------------------------------------------------
+;ゾンビドッグ戦闘口上
+;悪魔会話口上が英語の鳴き声だったのでそれに合わせた形で
+;それっぽい音を合わせているだけで新規作成者は英語圏の犬の鳴き声エアプです
+;	Modification Data:
+;	Edit	Date			Author					Reason
+;	001		2025/08/01		午後6時くらい			EVENT_[[キャラ:좀비독]]_RPG VER.2（SinEraTemseiP0.5.1同梱）を元に新規作成
+;-------------------------------------------------
+;-------------------------------------------------
+;戦闘中のイベント関連
+;-------------------------------------------------
+@KOJO_BATTLE_EVENT_[[キャラ:좀비독]], ARG, ARG:1, ARG:2
+SELECTCASE GET_BATTLE_EVENT(TFLAG:전투이벤트)
+	;COOP発動 発動者の番号はARGに格納されている
+	CASE "COOP発動"
+		BTL_KOJO_RESULTS:0 = WOOOF！
+	;COOP参加
+	CASE "COOP参加"
+		;主人がCOOP発動
+		IF FLAG:행동순1 != -1 && FLAG:행동순1 == MASTER
+			BTL_KOJO_RESULTS:0 = GRRR！
+		;それ以外
+		ELSE
+			BTL_KOJO_RESULTS:0 = GOW！
+		ENDIF
+	;被召喚時
+	CASE "被召喚"
+		BTL_KOJO_RESULTS:0 = BAW！
+	;공격　ARGが攻撃をする仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE "与ダメージ_単体"
+		;味方に攻撃した
+		;IF CFLAG:ARG:PT플래그 == CFLAG:(ARG:1):PT플래그
+		;相手が死んだ
+		IF BASE:(ARG:1):ＨＰ <= 0
+			BTL_KOJO_RESULTS:0 = WOOON！
+		;弱点をついた。つまりCOOP
+		ELSEIF GET_CREC_ACT(ARG, ARG:1, "WEAK")
+			IF CFLAG:(ARG:1):방어플래그
+				BTL_KOJO_RESULTS:0 = FOOO……！
+			ELSE
+				;こっちはCOOP発動に回すためにカット
+				RETURN 0
+			ENDIF
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 50
+			BTL_KOJO_RESULTS:0 = SIII……！
+		;ダメージ
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 25
+			BTL_KOJO_RESULTS:0 = GRR……
+		;小ダメージ（１以上）
+		ELSEIF ARG:2 > 0
+			BTL_KOJO_RESULTS:0 = BOW
+		;ダメージなし（無効・吸収を含む）
+		ELSE
+			BTL_KOJO_RESULTS:0 = GI！？
+		ENDIF
+	;反射された
+	CASE "反射された"
+		BTL_KOJO_RESULTS:0 = CAN！？
+	;回避された
+	CASE "回避された"
+		BTL_KOJO_RESULTS:0 = GI！
+	;被ダメージ
+	;ARGが攻撃を受ける仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE "被ダメージ_単体"
+		;味方に攻撃された
+		;IF CFLAG:ARG:PT플래그 == CFLAG:(ARG:1):PT플래그
+		;死んだ
+		IF BASE:ARG:ＨＰ <= 0
+			BTL_KOJO_RESULTS:0 = FU……F……o……
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 50
+			BTL_KOJO_RESULTS:0 = GAN！？
+		;瀕死
+		ELSEIF 現HP割合(ARG) < 25
+			BTL_KOJO_RESULTS:0 = ZIFF……！
+		;ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 20
+			BTL_KOJO_RESULTS:0 = GA！？
+		;小ダメージ
+		ELSE
+			BTL_KOJO_RESULTS:0 = HAF
+		ENDIF
+	;無効化した
+	CASE "無効化した"
+		;吸収した
+		IF GET_CREC_ACT(ARG:1, ARG, "DRAIN")
+			BTL_KOJO_RESULTS:0 = SI……！
+		;無効化した
+		ELSE
+			BTL_KOJO_RESULTS:0 = ZIFF……！
+		ENDIF
+	;反射した
+	CASE "反射した"
+		BTL_KOJO_RESULTS:0 = GI！
+	;回避した
+	CASE "回避した"
+		BTL_KOJO_RESULTS:0 = AON！
+	;範囲攻撃
+	;ARGが攻撃をする仲魔、ARG:1が攻撃された敵数、ARG:2が無効数(回避も含む)
+	CASE "与ダメージ_範囲_ランダム"
+		;全弾命中した
+		IF GET_CREC_ACT_SUM(ARG, "敵", "MISS/BLOCK/DRAIN/REFLECT") == 0
+			BTL_KOJO_RESULTS:0 = WOOF！
+		;全弾回避された
+		ELSEIF GET_CREC_ACT_SUM(ARG, "敵", "HIT") == 0
+			BTL_KOJO_RESULTS:0 = GRRR……
+		;普通
+		ELSE
+			BTL_KOJO_RESULTS:0 = NNN……
+		ENDIF
+	;範囲攻撃で敵を撃破した
+	;ARGが攻撃をする仲魔、ARG:1が攻撃された敵数、ARG:2が撃破数
+	CASE "与ダメージ_範囲_ランダム_撃破あり"
+		;全員撃破
+		IF GET_CREC_ACT_SUM(ARG, "敵", "ATTACK") == ARG:2
+			BTL_KOJO_RESULTS:0 = BOW　WOW！！
+		ELSE
+			BTL_KOJO_RESULTS:0 = AOOON！
+		ENDIF
+	;敵味方全体攻撃(詳細処理無し)
+	;CASE "敵味方全体攻撃"
+	;	BTL_KOJO_RESULTS:0 = 
+	;反撃を発動した
+	CASE "反撃発動"
+		SELECTCASE TFLAG:발동연동스킬
+			;例えば「ダッジカウンターが発動した場合」を指定したい場合は、スキル番号2484を指定する
+			CASE [[스킬:닷지카운터]]
+				BTL_KOJO_RESULTS:0 = BOW！
+			;その他
+			CASEELSE
+				BTL_KOJO_RESULTS:0 = GAW！ 
+		ENDSELECT
+	;トリガースキルを発動した
+	CASE "追撃発動"
+		SELECTCASE TFLAG:발동연동스킬
+			;スキルを指定したい場合、反撃と同様、対象スキルの番号をCASEに記載する
+			;CASE (対象スキル番号)
+			;	BTL_KOJO_RESULTS:0 = 
+			;その他
+			CASEELSE
+				BTL_KOJO_RESULTS:0 = 
+		ENDSELECT
+	;バッドステータスを受けた
+	CASE "被バステ付着"
+		;現在の状態で分岐
+		SELECTCASE GET_STATE(CFLAG:ARG:상태이상)
+			CASE "HAPPY"
+				BTL_KOJO_RESULTS:0 = AOOO～？
+			CASE "SHOCK","FREEZE","BIND","PALYZE"
+				BTL_KOJO_RESULTS:0 = …………！
+			CASE "PANIC"
+				BTL_KOJO_RESULTS:0 = HUN？　HA？
+			CASE "SLEEP"
+				BTL_KOJO_RESULTS:0 = ZZZ……
+			;CASE "CLOSE"
+			CASE "POISON"
+				BTL_KOJO_RESULTS:0 = UR……
+			;CASE "BOMB"
+			CASE "CHARM"
+				BTL_KOJO_RESULTS:0 = HEM！HEM！
+			;CASE "CURSE"
+			;CASE "FLY"
+			;CASE "STONE"
+			CASE "FLAME"
+				BTL_KOJO_RESULTS:0 = GIII！？AAAA！！
+			CASE "SLIP"
+				BTL_KOJO_RESULTS:0 = CHAM！？
+			;その他の状態
+			CASEELSE
+				;DYING状態ではないがDYINGを受け、その行動で食いしばりが発動した。つまり即死を食いしばりした場合
+				IF GET_STATE(CFLAG:ARG:상태이상) != "DYING" && GET_CREC_ACT(ARG:1, ARG, "BAD_STATE", "DYING") && CFLAG:ARG:이악물기발동
+					BTL_KOJO_RESULTS:0 = GF……！
+				ENDIF
+		ENDSELECT
+	;食いしばり等で耐えた。バステで食いしばりした場合は被バステ付着の分岐に入るのでここには来ない
+	CASE "이악물기발동"
+		;이악물기
+		IF BASE:ARG:ＨＰ == 1
+			BTL_KOJO_RESULTS:0 = GF……！
+		;その他
+		ELSE
+			BTL_KOJO_RESULTS:0 = OOOOW！！
+		ENDIF
+	;回復してもらった
+	CASE "被回復"
+		;ARG:2　回復量
+		LOCAL = ARG:2 * 100 / BASE:ARG:ＨＰ
+		;LOCAL　回復量割合
+		IF 0
+		;50%以上 & HPほぼ満タン
+		ELSEIF LOCAL > 50 && 現HP割合(ARG) > 90
+			BTL_KOJO_RESULTS:0 = 
+		;50%以上
+		ELSEIF LOCAL > 50
+			BTL_KOJO_RESULTS:0 = 
+		;その他
+		ELSE
+			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;状態異常を直してもらった
+	CASE "被バステ治癒"
+		;ARG:2　直ったバステ
+		IF 0
+		ELSE
+			SELECTCASE GET_STATE(ARG:2)
+				CASE "SLEEP"
+					BTL_KOJO_RESULTS:0 = WA！？Oo……
+				;その他の状態異常
+				CASEELSE
+					BTL_KOJO_RESULTS:0 = HAF！
+			ENDSELECT
+		ENDIF
+	;戦闘中イって行動不能にならず耐えた(ムフフ展開時のみ)
+	CASE "戦闘中イって行動不能にならず耐えた"
+		;歯を食いしばって快楽に耐えた
+		BTL_KOJO_RESULTS:0 = NNN……！
+	;行動中イって行動不能になった(ムフフ展開時のみ 50%の確率でHAPPYに)
+	CASE "行動中イって行動不能になった"
+		;IS_BADSTATE(ARG, "HAPPY")
+		
+		;絶頂の余韻に浸っている
+		BTL_KOJO_RESULTS:0 = HE……HAA……
+	;ターン終了時状態異常が自然回復した
+	CASE "バステ自然回復"
+		SELECTCASE GET_STATE(CFLAG:ARG:상태이상)
+			CASE "SLEEP"
+				BTL_KOJO_RESULTS:0 = URRR……！
+			;その他の状態異常
+			CASEELSE
+				BTL_KOJO_RESULTS:0 = GU……AON！
+		ENDSELECT
+	;ターン終了時今の状態による口上
+	CASE "ターン終了時口上"
+		;ムフフ展開系
+		IF FLAG:무후후전개 && (BATTLE_H_EVENT_PRO(ARG) > 30 || CFLAG:ARG:던전내발정용욕정치 > 5000) && !RAND:2
+			;BATTLE_H_EVENT_PRO(ARG)…戦闘中イく確率
+			IF     BATTLE_H_EVENT_PRO(ARG) > 80
+				BTL_KOJO_RESULTS:0 = 
+			ELSEIF BATTLE_H_EVENT_PRO(ARG) > 50
+				BTL_KOJO_RESULTS:0 = 
+			ELSEIF BATTLE_H_EVENT_PRO(ARG) > 30
+				BTL_KOJO_RESULTS:0 = 
+			ELSEIF CFLAG:ARG:던전내발정용욕정치 > 10000
+				BTL_KOJO_RESULTS:0 = 
+			ELSEIF CFLAG:ARG:던전내발정용욕정치 > 5000
+				BTL_KOJO_RESULTS:0 = 
+			ENDIF
+			;書いた内容がピンク色で表示されるようにここで色設定をセット
+			FOR LOCAL, 0, VARSIZE("BTL_KOJO_RESULTS")
+				SIF BTL_KOJO_RESULTS:LOCAL != ""
+					BTL_KOJO_RESULTS:LOCAL = %SET_COLOR_TAG(BTL_KOJO_RESULTS:LOCAL, "pink")%
+			NEXT
+		ENDIF
+		;状態異常継続中
+		IF BTL_KOJO_RESULTS:0 == "" && KSTR:0 == ""
+			SELECTCASE GET_STATE(CFLAG:ARG:상태이상)
+				CASE "SLEEP"
+					BTL_KOJO_RESULTS:0 = ZZZ……
+				;その他の状態異常
+				CASEELSE
+					BTL_KOJO_RESULTS:0 = GG……GR……！
+			ENDSELECT
+		ENDIF
+		;残りHP関連
+		IF BTL_KOJO_RESULTS:0 == ""
+			IF 0
+			;HP20%以下
+			ELSEIF 現HP割合(ARG) < 20
+				BTL_KOJO_RESULTS:0 = HAP　HAP
+			;HP50%以下
+			ELSEIF 現HP割合(ARG) < 50
+				BTL_KOJO_RESULTS:0 = UR……R……
+			ENDIF
+		ENDIF
+	;ターン終了時ORGYがHEATになった(機械の乙女専用)
+	;CASE "HEAT移行"
+	;	BTL_KOJO_RESULTS:0 = 
+	;ターン終了時エクスリンケージ装備時のイベント口上(ムフフ展開時のみ)
+	CASE "ターン終了時エクスリンケージ装備時のイベント口上"
+		;発情によってHAPPYになった
+		IF CFLAG:ARG:던전내발정 == 1 && IS_BADSTATE(ARG, "HAPPY")
+			BTL_KOJO_RESULTS:0 = WOOOOO～！
+		;頭の中がピンクに染まった
+		ELSEIF CFLAG:ARG:던전내발정 == 1
+			BTL_KOJO_RESULTS:0 = FUU……FAA……！
+		;落ち着いた
+		ELSEIF CFLAG:ARG:던전내발정 == 0
+			BTL_KOJO_RESULTS:0 = FUNN……
+		ENDIF
+	;ターン終了時エクスリンケージ装備時のイベント口上2(ムフフ展開時のみ)
+	CASE "ターン終了時エクスリンケージ装備時のイベント口上2"
+		;中に注がれた精液が垂れてきた…
+		BTL_KOJO_RESULTS:0 = 
+	;バトルに勝利した
+	CASE "戦闘勝利"
+		BTL_KOJO_RESULTS:0 = WOOOO！
+	;レベルアップした
+	CASE "レベルアップ"
+		BTL_KOJO_RESULTS:0 = HAN！HAN！
+	;逃走に成功した
+	CASE "逃走成功"
+		BTL_KOJO_RESULTS:0 = HA……HA！
+	;逃走に失敗した
+	CASE "逃走失敗"
+		BTL_KOJO_RESULTS:0 = GRRR！
+	;戦闘開始時
+	CASE "戦闘開始時"
+		;瀕死
+		IF 現HP割合(ARG) < 25
+			BTL_KOJO_RESULTS:0 = GG……AO！
+		ELSE
+			BTL_KOJO_RESULTS:0 = …………ZI
+		ENDIF
+	;先制攻撃に成功
+	CASE "先制攻撃"
+		BTL_KOJO_RESULTS:0 = 
+	;バックアタックを受けた
+	CASE "バックアタック"
+		;瀕死
+		IF 現HP割合(ARG) < 25
+			BTL_KOJO_RESULTS:0 = SI……FU……
+		ELSE
+			BTL_KOJO_RESULTS:0 = WA！？
+		ENDIF
+	;敵の先制攻撃を受けた
+	CASE "不意打ち"
+		;瀕死
+		IF 現HP割合(ARG) < 25
+			BTL_KOJO_RESULTS:0 = GR……！UR……
+		ELSE
+			BTL_KOJO_RESULTS:0 = GA！？
+		ENDIF
+	;バックアタックを百太郎で阻止した
+	CASE "バックアタック阻止"
+		;瀕死
+		IF 現HP割合(ARG) < 25
+			BTL_KOJO_RESULTS:0 = 
+		ELSE
+			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;敵の先制攻撃を百太郎で阻止した
+	CASE "不意打ち阻止"
+		;瀕死
+		IF 現HP割合(ARG) < 25
+			BTL_KOJO_RESULTS:0 = 
+		ELSE
+			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;リンケージに参加した
+	CASE "링케이지참가"
+		BTL_KOJO_RESULTS:0 = 
+ENDSELECT
+
+;-------------------------------------------------
+;スキル発動時の口上
+;-------------------------------------------------
+@KOJO_BATTLE_MESSAGE_[[キャラ:좀비독]],ARG,ARG:1 = 0
+;コメントアウトしやすいようにここでIFを消費
+IF 1 == 0
+;-------------------------------------------------
+;状態異常時
+;-------------------------------------------------
+;魅了時
+ELSEIF IS_BADSTATE(ARG, "CHARM")
+	;行動不能（ムラムラしている）
+	IF CFLAG:ARG:입력행동 == [[스킬:행동불능]]
+		BTL_KOJO_RESULTS:0 = HAAA～？
+	ELSE
+		BTL_KOJO_RESULTS:0 = WOOO～N！
+	ENDIF
+;混乱時
+ELSEIF IS_BADSTATE(ARG, "PANIC")
+	;금전뿌리기
+	IF CFLAG:ARG:입력행동 == [[스킬:금전뿌리기]]
+		BTL_KOJO_RESULTS:0 = GAF！AFF！
+	;行動不能（ぼんやりしている）
+	ELSEIF CFLAG:ARG:입력행동 == [[스킬:행동불능]]
+		BTL_KOJO_RESULTS:0 = A……？
+	ELSE
+		BTL_KOJO_RESULTS:0 = N……NN？
+	ENDIF
+;幸福時の行動不能
+ELSEIF IS_BADSTATE(ARG, "HAPPY") && CFLAG:ARG:입력행동 == [[스킬:행동불능]]
+	;自分の体をまさぐっている(発情中+ムフフ展開時のみ)
+	IF 위험일(ARG) == 2 && FLAG:무후후전개
+		BTL_KOJO_RESULTS:0 = 
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;（通常そのキャラが習得するスキルは、ここで個別でしゃべるようにするといいと思うよ）
+;-------------------------------------------------
+;これは通常攻撃
+ELSEIF GROUPMATCH(CFLAG:ARG:입력행동, [[스킬:ＳＷＯＲＤ]], [[스킬:ＡＴＴＡＣＫ]])
+	BTL_KOJO_RESULTS:0 = GRR！
+;캔디보이스
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:캔디보이스]]
+	BTL_KOJO_RESULTS:0 = CUU～
+;-------------------------------------------------
+;基本行動
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,2301, 2400)
+	;ＣＨＡＮＧＥ
+	IF CFLAG:ARG:입력행동 == [[스킬:ＣＨＡＮＧＥ]]
+		BTL_KOJO_RESULTS:0 = NN……
+	ELSE
+		BTL_KOJO_RESULTS:0 = WAF
+	ENDIF
+;-------------------------------------------------
+;汎用スキル
+;-------------------------------------------------
+;スキルの継承相性ごとに喋らせる口上
+;-------------------------------------------------
+ELSE
+	SELECTCASE TSTR:사용스킬계통
+		CASE "검격"
+			BTL_KOJO_RESULTS:0 = AAAAGF！ 
+		CASE "비구"
+			BTL_KOJO_RESULTS:0 = BFFF！ 
+		CASE "타격"
+			BTL_KOJO_RESULTS:0 = GAF！ 
+		CASE "전술"
+			IF GROUPMATCH(CFLAG:ARG:입력행동, [[스킬:물어뜯기]], [[스킬:독물어뜯기]], [[스킬:마비물어뜯기]], [[스킬:매혹물어뜯기]], [[스킬:석화물어뜯기]])
+				BTL_KOJO_RESULTS:0 = CRUSH！ 
+			ELSE
+				BTL_KOJO_RESULTS:0 = GRRR！ 
+			ENDIF
+		CASE "회복"
+			;全体回復
+			IF CFLAG:ARG:타겟 > 6
+				BTL_KOJO_RESULTS:0 = WOOOOF！ 
+			ELSE
+				BTL_KOJO_RESULTS:0 = AON！ 
+			ENDIF
+		CASE "지원"
+			;強化系
+			IF GROUPMATCH(CFLAG:ARG:입력행동, [[스킬:타루・카쟈]], [[스킬:스쿠・카쟈]], [[스킬:마카・카쟈]], [[스킬:라쿠・카쟈]], [[스킬:데・쿤다]], [[스킬:사마・카쟈]])
+				BTL_KOJO_RESULTS:0 = BR！ 
+			;弱体系
+			ELSEIF GROUPMATCH(CFLAG:ARG:입력행동, [[스킬:타룬・다]], [[스킬:스쿤・다]], [[스킬:마칸・다]], [[스킬:라쿤・다]], [[스킬:데・카쟈]], [[스킬:사만・다]])
+				BTL_KOJO_RESULTS:0 = CAF！ 
+			;도발
+			ELSEIF CFLAG:ARG:입력행동 == [[스킬:도발]]
+				BTL_KOJO_RESULTS:0 = PAF！PAF！ 
+			;その他
+			ELSE
+				BTL_KOJO_RESULTS:0 = WON！ 
+			ENDIF
+		CASE "방어"
+			BTL_KOJO_RESULTS:0 = NNN…！ 
+		CASE "화염"
+			BTL_KOJO_RESULTS:0 = GGA！ 
+		CASE "빙결"
+			BTL_KOJO_RESULTS:0 = FOOO！ 
+		CASE "전격"
+			BTL_KOJO_RESULTS:0 = WOOOF！ 
+		CASE "충격"
+			BTL_KOJO_RESULTS:0 = SII！ 
+		CASE "신경"
+			BTL_KOJO_RESULTS:0 = CAFF！ 
+		CASE "정신"
+			BTL_KOJO_RESULTS:0 = RRRR…！ 
+		CASE "파마"
+			BTL_KOJO_RESULTS:0 = ……BRR 
+		CASE "주살"
+			BTL_KOJO_RESULTS:0 = AAAG！ 
+		CASE "지변"
+			BTL_KOJO_RESULTS:0 = GOOF！ 
+		CASE "수격"
+			BTL_KOJO_RESULTS:0 = BUSSH！ 
+		CASE "질풍"
+			BTL_KOJO_RESULTS:0 = HOOO～ 
+		CASE "중력"
+			BTL_KOJO_RESULTS:0 = NN……GWOW！ 
+		CASE "핵열"
+			BTL_KOJO_RESULTS:0 = GOOOOH！ 
+		CASE "만능"
+			;自爆系
+			IF GROUPMATCH(CFLAG:ARG:입력행동, [[스킬:자폭]], [[스킬:옥쇄파]], [[스킬:바이널스트라이크]])
+				BTL_KOJO_RESULTS:0 = …………！ 
+			ELSE
+				BTL_KOJO_RESULTS:0 = WOOOOOOF！！ 
+			ENDIF
+		;その他汎用スキルセリフ
+		CASEELSE
+			BTL_KOJO_RESULTS:0 =  
+	ENDSELECT
+ENDIF

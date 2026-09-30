@@ -1,0 +1,41 @@
+﻿@MESSAGE_POPUP,L_MESSAGE = "", L_LAYER_NO = 99
+#DIMS DYNAMIC L_MESSAGE
+#DIM DYNAMIC L_LAYER_NO
+#DIM DYNAMIC STOCK_REDRAW
+#DIMS DYNAMIC MESSAGE_WINDOW
+#DIM DYNAMIC L_XPOS
+#DIM DYNAMIC L_YPOS
+#DIM DYNAMIC L_HEIGHT
+#DIM DYNAMIC L_WIDTH
+
+STOCK_REDRAW = CURRENTREDRAW()
+L_HEIGHT = (1 + (L_MESSAGE != "") + STRCOUNT(L_MESSAGE, "<br>")) * GETCONFIG("フォントサイズ")
+L_WIDTH = (STRLENS(L_MESSAGE) + 2) * GETCONFIG("フォントサイズ") / 2
+L_WIDTH = MAX(L_WIDTH, GETCONFIG("フォントサイズ") * 6)
+L_XPOS = MAX((MOUSEX()) - GETCONFIG("フォントサイズ"), 0)
+L_YPOS = MIN((MOUSEY()) - GETCONFIG("フォントサイズ") / 2, -L_HEIGHT - GETCONFIG("フォントサイズ") * 2)
+SIF L_WIDTH + L_XPOS > CLIENTWIDTH()
+	L_XPOS = CLIENTWIDTH() - L_WIDTH - 50
+SIF L_MESSAGE != ""
+	MESSAGE_WINDOW += L_MESSAGE + "<br>"
+{
+	HTML_PRINT_ISLAND 
+	@"<div 
+		display = 'absolute-leftbottom'
+		xpos = '{L_XPOS}px' ypos = '{L_YPOS}px'
+		height = '{L_HEIGHT}px' width = '{L_WIDTH}px'
+		padding = '60'
+		border_width = '30' border_color = '%TOSTR_HTML(COLOR("p-green"))%'
+		background_color = '%TOSTR_HTML(GETBGCOLOR())%'
+	  >"
+	+ MESSAGE_WINDOW
+	+ "</div>", L_LAYER_NO
+}
+;画面内のこれ以下のレイヤーをうっすら暗くする
+HTML_PRINT_ISLAND @"<div display = 'absolute-lefttop'><button value='キャンセル'>%不可フィルタ(LINELENS *100 , 10000)%</button></div>" , L_LAYER_NO - 1
+TWAIT 100, 0
+WAITANYKEY
+HTML_PRINT_ISLAND_CLEAR L_LAYER_NO
+HTML_PRINT_ISLAND_CLEAR L_LAYER_NO - 1
+REDRAW STOCK_REDRAW
+RETURN RESULT

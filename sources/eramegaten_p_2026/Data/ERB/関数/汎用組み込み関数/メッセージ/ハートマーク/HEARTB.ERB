@@ -1,0 +1,54 @@
+﻿;-------------------------------------------------
+;黒ハートマーク関数@HEARTB
+;	引数0：ハートの数（省略すると1つ）
+;	引数1：使用するフォント名（省略するとSymbol）
+;塗りつぶしのハートマークを表示します
+;-------------------------------------------------
+@HEARTB(ARG = 1, ARGS)
+LOCAL = RESULT
+IF CHKFONT("Times New Roman")
+	ARGS = \@ ARGS == "" ? Times New Roman # %ARGS% \@
+ELSEIF CHKFONT("Verdana")
+	ARGS = \@ ARGS == "" ? Verdana # %ARGS% \@
+ENDIF
+LOCALS = %GETFONT()%
+
+SETFONT CHKFONT(ARGS) ? ARGS # LOCALS
+
+IF GETFONT() == "Symbol"
+	PRINTFORM %UNICODE(0xA9)*ARG%
+ELSE
+	PRINTFORM %UNICODE(0x2665)*ARG%
+ENDIF
+
+SETFONT LOCALS
+RETURN LOCAL
+
+@HEARTB_HTML(L_COLOR = -1, L_FONT)
+#FUNCTIONS
+#DIMS DYNAMIC L_RESULTS
+#DIMS DYNAMIC L_FONT, 2
+#DIM L_COLOR
+#DIMS L_COLORS
+IF GETFONT() == "Symbol"
+	L_RESULTS '= UNICODE(0xA9)
+ELSE
+	L_RESULTS '= UNICODE(0x2665)
+ENDIF
+
+IF L_COLOR == -1
+	L_COLORS '= TOSTR_HTML(GETCOLOR())
+ELSE
+	L_COLORS '= TOSTR_HTML(L_COLOR)
+ENDIF
+
+IF L_FONT == ""
+	IF CHKFONT("Times New Roman")
+		L_FONT '= "Times New Roman"
+	ELSEIF CHKFONT("Verdana")
+		L_FONT '= "Verdana"
+	ELSE
+		L_FONT = %GETFONT()%
+	ENDIF
+ENDIF
+RETURNF @"<font face = '%L_FONT%' color = '%L_COLORS%'>" + L_RESULTS + "</font>"

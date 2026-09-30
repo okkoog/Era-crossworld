@@ -1,0 +1,85 @@
+﻿;原作では食いしばりのみ。それだけだと寂しいので色々追加
+;処理が怪しいので、間違ってたら修正お願いします
+
+
+@SKILL_NAME_2958,ARG
+RESULTS = 네버기브업
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2958
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2958, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2958
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+@継承不能_2958
+RETURN 1
+;不可
+
+@SKILL_SKILLEND_2958, ARG
+;食いしばり発動時に動作
+SIF !CFLAG:ARG:이악물기발동
+	RETURN 0
+;いちおう生存確認
+SIF IS_BADSTATE(ARG, "DYING")
+	RETURN 0
+SIF !HAVE_SKILL(ARG, [[스킬:데빌트리거]])
+	RETURN 0
+SIF SKILLGAGE_F_GET(ARG, [[스킬:데빌트리거]]) < 20
+	RETURN 0
+CALL PRINT_ACT_MESSAGE, ARG, [[스킬:데빌트리거]], , , , "NOWAIT"
+CALL SKILLGAGE_D_SET,ARG,[[스킬:데빌트리거]],SKILLGAGE_F_GET(ARG, [[스킬:데빌트리거]]) / 20
+CALL SKILLGAGE_F_SET,ARG,[[스킬:데빌트리거]],0
+PRINTFORML %ARG는% 데빌트리거를 사용해 마인화했다
+WAIT
+
+;スキル変化？用ランク
+@SKILL_RANK_2958, ARG = -1
+RETURN 15
+;変化不可
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2958, ARG
+PRINTL 자동：최대 ＨＰ가 ３할 상승한다。이 효과는 활천계 스킬로 취급된다。
+PRINTL 　　　최대 ＭＰ가 ３할 상승한다。이 효과는 마맥계 스킬로 취급된다
+PRINTL 　　　전투중 한 번만 ＨＰ가 ０이 되어도 ＨＰ 최대로 부활한다
+PRINTL 　　　데빌트리거를 소지하고 있을 경우、이 스킬을 발동할 때 게이지를 소비해 마인화한다。
+
+@SKILL_ACTIONABLE_BATTLE_2958, ARG
+RETURN 0
+
+
+
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_2958, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	;RESULT = 修正値
+	;RESULTS = 加算/乗算/固定値/活泉/魔脈
+	;加算はそのまま固定値を加算する。乗算は(100+X)/100倍にする。固定値は必ずその数値にする(55ならなにがあろうと最大HP55になる)
+	;活泉/魔脈はそのまま同種スキルと同じ枠となりもっとも効果量が高いものを優先する形になる
+	CASE "HP補正"
+		RESULTS = 活泉
+		RETURN 30
+	CASE "MP補正"
+		RESULTS = 魔脈
+		RETURN 30
+ENDSELECT
+RETURN 0

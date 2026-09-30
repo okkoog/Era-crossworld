@@ -1,0 +1,79 @@
+﻿;----------------------------------------------
+;サブロール(追加素質)の設定
+;----------------------------------------------
+;----------------------------------------------
+;トリガーになる素質名
+;----------------------------------------------
+@SUB_ROLE_TALENT_14, ARG
+#FUNCTIONS
+RESULTS_F = 방어의심득
+RETURNF RESULTS_F
+
+;----------------------------------------------
+;表示用の名称変化
+;----------------------------------------------
+@SUB_ROLE_NAME_방어의심득, ARG = -1, ARGS, ARG:1
+#FUNCTIONS
+#DIM L_LV
+L_LV = ARG >= 0 ? GET_BTL_TALENT_LV("방어의심득", ARG, ARGS) # ARG:1
+IF L_LV > 0
+	RESULTS_F = 방어의심득 Lv{L_Lv}
+ELSE
+	RESULTS_F = 방어의심득
+ENDIF
+RETURNF RESULTS_F
+
+;----------------------------------------------
+;最大レベルの定義
+;----------------------------------------------
+@SUB_ROLE_MAXLV_방어의심득, ARG = -1, ARGS, ARG:1
+#FUNCTION
+RESULT_F = 5
+RETURNF RESULT_F
+
+;----------------------------------------------
+;素質のコスト設定
+;各キャラのコストは各メインロール毎にもつキャパシティ内に収める必要がある
+;----------------------------------------------
+@SUB_ROLE_COST_방어의심득, ARG = -1, ARGS, ARG:1
+#FUNCTION
+#DIM L_LV
+L_LV = ARG >= 0 ? GET_BTL_TALENT_LV("방어의심득", ARG, ARGS) # ARG:1
+SELECTCASE L_LV
+	CASE 5
+		RESULT_F = 15
+	CASE 4
+		RESULT_F = 12
+	CASE 3
+		RESULT_F = 10
+	CASE 2
+		RESULT_F = 7
+	CASE 1
+		RESULT_F = 3
+	CASEELSE
+		RESULT_F = 0
+ENDSELECT
+RETURNF RESULT_F
+
+;----------------------------------------------
+;説明文
+;----------------------------------------------
+@SUB_ROLE_EXPLAIN_방어의심득, ARG = -1, ARGS, ARG:1
+#DIM L_LV
+L_LV = ARG >= 0 ? GET_BTL_TALENT_LV("방어의심득", ARG, ARGS) # ARG:1
+PRINTFORML □방어의심득 Lv{L_LV}
+PRINTFORML 　적에게서 받는 데미지가 {L_LV * 5 + 5}\% 감소한다。
+
+;----------------------------------------------
+;説明文2
+;----------------------------------------------
+@SUB_ROLE_EXPLAIN_TOOLTIP_방어의심득, ARG = -1, ARG:1 = -1
+RESULTS '=  "적에게서 받는 데미지가 감소한다。"
+
+;10% ~ 30%
+;耐久力換算だと以下の通り
+;Lv1 約1.11倍
+;Lv2 約1.18倍
+;Lv3 約1.25倍
+;Lv4 約1.33倍
+;Lv5 約1.43倍

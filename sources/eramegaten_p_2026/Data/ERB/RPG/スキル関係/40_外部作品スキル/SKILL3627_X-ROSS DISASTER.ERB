@@ -1,0 +1,228 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILL3627_X-ROSS DISASTER.ERB
+;	Facility	:SKILL:3627 (X-ROSS DISASTER)。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2021/03/15		木綿豆腐				新規作成
+;	002		2021/03/21		木綿豆腐				ゲージ周りの処理を変更。
+;	003		2021/03/30		木綿豆腐				ダークネストリガーに関する処理を変更。
+;	004		2021/06/19		木綿豆腐				クールタイムを10T→5Tに短縮。
+;	005		2021/07/10		木綿豆腐				通常時の威力を劣化メギドラオン、SONG OF DIVA中は劣化大いなるロゴス級に変更
+;	006		2021/08/24		木綿豆腐				念のため継承できないようにした
+;	007		2021/10/04		木綿豆腐				クードスがリセットされたメッセージに名前も出すようにした
+;													ついでにボスをこのスキルで倒した場合、メッセージが出るようにした
+;	008		2022/05/12		木綿豆腐				イクス2ルートに対応
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_3627, ARG
+IF SKILL_CHANGE(ARG, [[キャラ:아큐라_X]]) && CFLAG:ARG:800 >= 99
+	RESULTS = STRIKE SAW
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:아큐라_X]]) && GET_RPG_CSTR_TAKEOVER(ARG, "モード") == "X2"
+	RESULTS = XRoSS STROM
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:마더_X2]])
+	RESULTS = ATTACK CODE:SS
+ELSE
+	RESULTS = X-ROSS DISASTER
+ENDIF
+
+;　명중
+@SKILL_HITRATE_3627, ARG
+RETURN 300
+
+;　威力
+@SKILL_POWER_3627, ARG
+#DIM DIVA_F
+#DIM DIVA_H
+#DIM DKTG_H
+SIF ARG < 0
+	RETURN 300
+SIF SKILL_CHANGE(ARG, [[キャラ:마더_X2]])
+	RETURN 480
+DIVA_F = SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]])
+DIVA_H = SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]])
+DKTG_H = SKILLGAGE_H_GET(ARG, [[스킬:DARKNESS TRIGGER]])
+IF DKTG_H == 1
+	RETURN 400
+ELSEIF DIVA_F == 1 || DIVA_H == 1
+	RETURN 480
+ELSE
+	RETURN 400
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3627, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3627, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3627, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3627, ARG
+RETURN 50
+
+;　相性
+@SKILL_TYPE_3627, ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3627
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3627, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3627, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_3627, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3627, ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3627, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3627
+RETURN GET_SUCCESSION_NUM("만능")
+
+;속도보정
+@SKILL_SPEED_3627, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3627
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3627, ARG = -1
+RETURN 23
+
+@継承不能_3627
+RETURN 1
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3627, ARG, ARG:1, ARG:2
+#DIM ループ用
+#DIM ボス殺したフラグ
+#DIM ボス検索配列, 17
+
+ボス殺したフラグ = 0
+VARSET ボス検索配列, 0
+IF CFLAG:ARG:PT플래그 > 0
+	FOR ループ用, 7, 17
+		LOCALS = 포지션{ループ用}
+		SIF FLAG:LOCALS == -1
+			CONTINUE
+		SIF GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) == "DYING"
+			CONTINUE
+		;生きてるボスの位置を記録
+		SIF CFLAG:(FLAG:LOCALS):보스플래그 == 1
+			ボス検索配列:ループ用 = 1
+	NEXT
+ENDIF
+
+CALL ATTACK_FIELD, ARG, ARG:1, 3627
+
+IF CFLAG:ARG:PT플래그 > 0
+	FOR ループ用, 7, 17
+		;攻撃前に生きてたボスの場所じゃないなら飛ばすぞ
+		SIF ボス検索配列:ループ用 == 0
+			CONTINUE
+		LOCALS = 포지션{ループ用}
+		;この攻撃でボスが死んだら
+		IF FLAG:LOCALS == -1
+			ボス殺したフラグ += 1
+		ELSEIF GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) == "DYING"
+			ボス殺したフラグ += 1
+		ENDIF
+	NEXT
+ENDIF
+
+IF ボス殺したフラグ > 0
+	IF SKILL_CHANGE(ARG, [[キャラ:아큐라_X]]) && GET_RPG_CSTR_TAKEOVER(ARG, "モード") == "X2"
+		PRINTFORMW X BREAK!!　Kudos + 500
+	ELSE
+		PRINTFORMW SP FINISH　Kudos + 500
+	ENDIF
+	SIF SKILLGAGE_F_GET(ARG, [[스킬:블리츠대쉬]]) == 0
+		CALL SKILLGAGE_F_SET, ARG, [[스킬:블리츠대쉬]], 1
+ENDIF
+
+;時間で減少するDゲージに10をセット→やっぱ5に変更
+;SIF CFLAG:ARG:PT플래그 > 0
+	CALL SKILLGAGE_D_ADD, ARG, [[스킬:X-ROSS DISASTER]], 5
+
+;クードス没収
+SIF SKILLGAGE_F_GET(ARG, [[스킬:블리츠대쉬]]) > 0
+	PRINTFORML ＞%CALLNAME:ARG%의 쿠도스가 리셋되었다!
+SIF HAVE_SKILL(ARG, [[스킬:블리츠대쉬]])
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:블리츠대쉬]], 0
+;モード・ディーヴァ終了（ブリッツダッシュ側で終了させてもいいんだが）
+SIF HAVE_SKILL(ARG, [[스킬:SONG OF DIVA]])
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:SONG OF DIVA]], 0
+IF SKILLGAGE_H_GET(ARG, [[스킬:DARKNESS TRIGGER]]) == 1
+	;ダークネストリガー終了（もう使えない）
+	CALL SKILLGAGE_H_SET, ARG, [[스킬:DARKNESS TRIGGER]], 2
+	PRINTL ＞모드 다크니스 강제 종료!
+ENDIF
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3627, ARG
+IF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:마더_X2]]
+	PRINTL 마더의 SP 스킬.
+	;ストライクソウのオマージュ
+	PRINTL 춤추는 것은 나의 절조, 토멸할 것은 가치 없는 세계. 종언을 가져오는 무진의 절조.
+	PRINTL 　
+	PRINTL 적 전체에 만능 상성으로 대 데미지를 준다.
+	PRINTL 단, 사용 후에는 쿠도스가 0이 되며 재사용까지 5턴의 쿨타임을 요한다.
+ELSE
+	PRINTL 아큐라와 RoRo의 SP 스킬.
+	IF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:아큐라_X]] && GET_RPG_CSTR_TAKEOVER(ARG, "モード") == "X2"
+		PRINTL 모든 것을 찢어발기는 조류, 빛과 어둠은 눈 깜짝할 사이에 폭포처럼 달려나간다.
+	ELSE
+		PRINTL 굳건한 신념 아래 두 사람은 두 자루의 칼날이 되어 가열찬 춤을 연출한다.
+	ENDIF
+	PRINTL 　
+	PRINTL 적 전체에 만능 상성으로 대 데미지를 준다.
+	PRINTL 모드 디바 및 모드 어웨이크닝 발동 시 위력이 증가한다.
+	PRINTL 단, 사용 후에는 쿠도스가 0이 되며 재사용까지 5턴의 쿨타임을 요한다.
+ENDIF
+
+;継承に必要な部位
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3627, ARG
+IF CFLAG:ARG:PT플래그 > 0
+	SIF SKILLGAGE_D_GET(ARG, [[스킬:X-ROSS DISASTER]])
+		RETURN 0
+	RETURN 1
+	;リキャストゲージが残っていると不可
+	;クワッドカーズより拝借。サンキューシュロットニキ
+ELSE
+	RETURN 1
+ENDIF
+

@@ -1,0 +1,118 @@
+﻿
+;スキル名
+@SKILL_NAME_AW_501,ARG
+RESULTS = 작은 파트너
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_AW_501,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_AW_501, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_AW_501, ARG
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;속도보정
+@SKILL_SPEEDAW_501, ARG = -1
+RETURN 0
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_AW_501,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;　 説明文の表示
+@SKILL_EXPLAIN_AW_501, ARG
+PRINTFORML 요정 픽시의 각성 스킬
+PRINTFORML 전투에 참가했을 때, 1회만 이하의 연동 효과가 발동한다.
+PRINTFORML 「%CALLNAME:MASTER%의 능력 중 강화 단계가 2랭크 미만인 것을 모두 상승시킨다.」
+PRINTFORML 턴 시작 시 확률로 이하의 연동 효과가 발동한다.
+PRINTFORML 「%CALLNAME:MASTER%가 사용하는 스킬에 따라 다음 공격 위력을 상승시키는 차지 효과를 부여한다.」
+
+@SKILL_EXPLAIN_TOOLTIP_AW_501, ARG
+RESULTS:0 = 전투에 참가했을 때, 1회만 이하의 연동 효과가 발동한다.
+RESULTS:1 = 「%CALLNAME:MASTER%의 능력 중 강화 단계가 2랭크 미만인 것을 모두 상승시킨다.」
+RESULTS:2 = 턴 시작 시 이하의 연동 효과가 발동한다.
+RESULTS:3 = 「%CALLNAME:MASTER%가 사용하는 스킬에 따라 다음 공격 위력을 상승시키는 차지 효과를 부여한다.」
+
+@SKILL_ACTIONABLE_BATTLE_AW_501, ARG
+RETURN 1
+
+@SKILL_TURNSTART_AW_501, ARG
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+	RETURN 0
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(MASTER)
+	RETURN 0
+SIF CFLAG:MASTER:입력행동 < 0
+	RETURN 0
+;発動率50%
+SIF RAND:2
+	RETURN 0
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:MASTER:입력행동
+SIF GET_SKILL_EFFECT(RESULT) != "공격"
+	RETURN 0
+CALL GET_SKILL_PROP, "SKILL_ATTACKTYPE", CFLAG:MASTER:입력행동
+SELECTCASE GET_攻撃タイプ(RESULT)
+	CASE "物理"
+		SIF CFLAG:MASTER:타인기합플래그
+			RETURN 0
+		CALL PRINT_ACT_MESSAGE, ARG, , , , "작은 파트너"
+		CALL PRINT_HIT_MESSAGE, MASTER, "다음 물리공격의 위력 상승！", "w"
+		CFLAG:MASTER:타인기합플래그 = 1
+	CASE "魔法"
+		CALL PRINT_ACT_MESSAGE, ARG, , , , "작은 파트너"
+		SIF CFLAG:MASTER:타인집중플래그
+			RETURN 0
+		CALL PRINT_HIT_MESSAGE, MASTER, "다음 마법공격의 위력 상승！", "w"
+		CFLAG:MASTER:타인집중플래그 = 1
+ENDSELECT
+;CALL SKILL_SET_カジャンダ, ARG:1, "攻撃_命中_防御_回避_魔法威力_魔法効果_クリティカル_BS付着率", 4, "단체"
+;=========================================
+;カジャンダ(戦闘能力強化セット)스킬
+;ARG:0		使用者
+;ARG:1		対象(単体・短縮指定の場合はキャラ番号・範囲の場合はポジション指定)
+;ARGS 		効果; 文字列で指定。右の項目のうち、必要なものだけ入れて使う("攻撃_命中_防御_回避_魔法威力_魔法効果_クリティカル_BS付着率")
+;ARG:2 		効果量。増減対応。1ランクが±4、2ランクが±8
+;ARGS:1		範囲・メッセージ方式指定(単体・範囲はそのまま、短縮は攻撃スキルの追加効果用でダメージ & ↓공격　のようにでる)
+;ARGS:2		NOWAIT:WAITで止まらない(短縮では無関係) NOMES:メッセージ表示なし
+;ARGS:3		代替メッセージ
+;ARG:3		上限
+;AEG:4		下限
+;凡例
+;CALL SKILL_SET_カジャンダ, ARG, ARG:1, "攻撃_命中", -4, "短縮";ARG:1のキャラ番号の敵に攻撃と命中を1ランクさげる(-4)
+;=========================================
+;入場時に行う効果
+@SKILL_BATTLE_ENTER_AW_501, ARG
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC L_EFFECT
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+	RETURN 0
+;入力可能な状態じゃないとだめ
+SIF !ACTIONABLE_CHARA_F(ARG)
+	RETURN 0
+;入場一回目のみ発動
+SIF CFLAG:ARG:입장플래그 != 1
+	RETURN 0
+;自身の入場のみで発動
+SIF TFLAG:입장캐릭터 >= 0 && TFLAG:입장캐릭터 != ARG
+	RETURN 0
+CALL PRINT_ACT_MESSAGE, ARG, , , , "작은 파트너"
+FOR LCOUNT, 0, VARSIZE("BASE_KAJA_TABLE")
+	SIF CFLAG:MASTER:(BASE_KAJA_TABLE:LCOUNT + "강화") < 8
+		L_EFFECT '= ADD_SPLIT(L_EFFECT, "/", BASE_KAJA_TABLE:LCOUNT)
+NEXT
+IF CPOS(MASTER) <= 0
+	CALL PRINT_HIT_MESSAGE, ARG, "효과대상이 없다！"
+ELSEIF L_EFFECT == "" || !IS_TARGET_ABLE(MASTER)
+	CALL PRINT_HIT_MESSAGE, MASTER, "효과가 없었다！"
+ELSE
+	CALL SKILL_SET_カジャンダ, ARG, MASTER, L_EFFECT, 4, "단체"
+ENDIF
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_AW_501,ARG
+RETURN 1

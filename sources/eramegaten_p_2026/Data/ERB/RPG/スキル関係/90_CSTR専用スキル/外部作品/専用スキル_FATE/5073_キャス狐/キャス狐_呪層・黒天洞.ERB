@@ -1,0 +1,171 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_呪層・黒天洞,ARG
+RESULTS = 呪層・黒天洞
+
+;　명중
+@SKILL_HITRATE_呪層・黒天洞, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_呪層・黒天洞, ARG
+RETURN 18
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_呪層・黒天洞,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_呪層・黒天洞,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_呪層・黒天洞, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_呪層・黒天洞,ARG
+RETURN 120
+
+;　相性
+@SKILL_TYPE_呪層・黒天洞,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_呪層・黒天洞
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_呪層・黒天洞,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_呪層・黒天洞,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_呪層・黒天洞,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_呪層・黒天洞,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_呪層・黒天洞,ARG
+RETURN GET_SUCCESSION_NUM("방어")
+
+@継承不能_呪層・黒天洞
+RETURN 2
+;不可
+
+;속도보정
+@SKILL_SPEED_呪層・黒天洞, ARG = -1
+RETURN 20
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_呪層・黒天洞
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_呪層・黒天洞, ARG = -1
+RETURN 15
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_呪層・黒天洞,ARG,ARG:1,ARG:2
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC DRAIN_MP
+IF FLAG:총공격중
+	DRAIN_MP = MIN(PU_SKILLGAGE_H_GET(ARG, "呪層・黒天洞"), BASE:POS(ARG:1):ＭＰ)
+	CALL VAR_MP, POS(ARG:1), -DRAIN_MP
+	CALL VAR_MP, ARG, DRAIN_MP
+	CALL PRINT_HIT_MESSAGE, POS(ARG:1), @"ＭＰ:{DRAIN_MP}데미지", "L"
+	CALL PRINT_HIT_MESSAGE, ARG, @"ＭＰ:{DRAIN_MP}회복", "W"
+	CALL PU_SKILLGAGE_H_SET, ARG, "呪層・黒天洞",0
+ELSE
+	CALL SET_C_BTL_EFFECT_FIELD, ARG, ARG:1, "呪層・黒天洞"
+	CALL PU_SKILLGAGE_F_SET, ARG, "呪層・黒天洞", 5
+ENDIF
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_呪層・黒天洞,ARG
+PRINTL 1턴 동안 아군이 받는 데미지를 75% 감소시킨다
+PRINTL 이 효과를 가진 아군이 피격당했을 때 이하의 연동효과가 발동한다.
+PRINTL 「공격해 온 적의 MP를 흡수한다.」
+PRINTL 
+PRINTL 사용 후 4턴 동안 이 스킬은 사용할 수 없다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_呪層・黒天洞,ARG
+RESULTS = ＣＴ：{PU_SKILLGAGE_F_GET(ARG,"呪層・黒天洞")}
+SIF PU_SKILLGAGE_F_GET(ARG,"呪層・黒天洞") > 0
+	RETURN 0
+RETURN 1
+;とくにない
+
+;====================================================
+;반격
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_呪層・黒天洞, ARG, ARG:1
+#DIM L_CNT
+SIF IS_FRIEND(ARG:1, FLAG:행동순1)
+	RETURN 0
+SIF !IS_ACTIVE_C_BTL_EFFECT("呪層・黒天洞", ARG:1)
+	RETURN 0
+;攻撃に当たっている
+SIF !GET_CREC_ACT(FLAG:행동순1, ARG:1, "HIT")
+	RETURN 0
+CALL PU_SKILLGAGE_H_ADD, ARG, "呪層・黒天洞", 10
+SIF TFLAG:스킬트리거용1
+	RETURN 0
+TFLAG:스킬트리거용1 = 1
+;攻撃してきた相手を対象にする
+RETURN 1, CPOS(FLAG:행동순1)
+
+
+;====================================================
+;ターン終了時に行う処理
+;====================================================
+@SKILL_TURNEND_呪層・黒天洞,ARG
+;CT1ターン減
+SIF PU_SKILLGAGE_F_GET(ARG,"呪層・黒天洞") > 0
+	CALL PU_SKILLGAGE_F_ADD, ARG, "呪層・黒天洞",-1
+
+;====================================================
+;戦闘終了時に行う処理
+;====================================================
+@SKILL_BATTLE_END_呪層・黒天洞,ARG
+;CT1ターン減
+SIF PU_SKILLGAGE_F_GET(ARG,"呪層・黒天洞") > 0
+	CALL PU_SKILLGAGE_F_ADD, ARG, "呪層・黒天洞",-1
+
+;====================================================
+;実行内容ここまで
+;====================================================
+@SKILL_EX_DISPLAY_呪層・黒天洞, ARG, ARGS
+RESULTS '= ""
+IF PU_SKILLGAGE_F_GET(ARG,"呪層・黒天洞") == 0
+	IF INPUTABLE_CHARA_F(ARG)
+		RESULTS '= SET_BUTTON_TAG(SET_COLOR_TAG(@"%"黒天洞", SKILL_EX_DISPLAY_LENS - 10, LEFT%", "パ緑"), ARGS)
+		IF IS_PU_SKILL_入力行動(ARG, "呪層・黒天洞") && !CFLAG:ARG:방어플래그
+			RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG(@"[ Set ]", "パ緑"), @"INPUT/SKILL/{ARG}/{PU_SKILLNUM_GET(ARG, "呪層・黒天洞")}", @"呪層・黒天洞を使用予定")
+		ELSE
+			RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG(@"[Ready]", "パ緑"), @"INPUT/SKILL/{ARG}/{PU_SKILLNUM_GET(ARG, "呪層・黒天洞")}", @"呪層・黒天洞を使用")
+		ENDIF
+	ELSE
+		RESULTS '= SET_BUTTON_TAG(SET_COLOR_TAG(@"%"黒天洞", SKILL_EX_DISPLAY_LENS - 10, LEFT%", "gray"), ARGS)
+		RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG(@"[Ready]", "gray"), , @"행동불능")
+	ENDIF
+ELSE
+	RESULTS += @"%"黒天洞", SKILL_EX_DISPLAY_LENS - 9, LEFT%%HTML_ESCAPE(@"<CT:0{PU_SKILLGAGE_F_GET(ARG,"呪層・黒天洞")}>")%"
+ENDIF
+RESULTS:1 = 呪層・黒天洞
+RETURN 1

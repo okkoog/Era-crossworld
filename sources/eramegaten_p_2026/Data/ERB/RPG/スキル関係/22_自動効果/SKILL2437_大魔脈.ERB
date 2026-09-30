@@ -1,0 +1,62 @@
+﻿;達人専用。効果が強烈なので付与する際は要注意
+
+@SKILL_NAME_2437,ARG
+RESULTS = 마술의소양
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2437
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2437, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2437
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;スキル変化？用ランク
+@SKILL_RANK_2437, ARG = -1
+RETURN 9
+;変化不可
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2437, ARG
+PRINTL 자동：최대ＭＰ가 ６할 상승한다。
+
+@SKILL_ACTIONABLE_BATTLE_2437, ARG
+RETURN 0
+
+
+
+@ロール専用_2437
+RESULTS = 달인
+RETURN 1
+@置換スキル_2437
+RETURN [[스킬:삼할의마맥]]
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_2437, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	;RESULT = 修正値
+	;RESULTS = 加算/乗算/固定値/活泉/魔脈
+	;加算はそのまま固定値を加算する。乗算は(100+X)/100倍にする。固定値は必ずその数値にする(55ならなにがあろうと最大HP55になる)
+	;活泉/魔脈はそのまま同種スキルと同じ枠となりもっとも効果量が高いものを優先する形になる
+	;HP半減
+	CASE "MP補正"
+		RESULTS = 魔脈
+		RETURN 60
+ENDSELECT
+RETURN 0

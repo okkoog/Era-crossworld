@@ -1,0 +1,189 @@
+﻿;スキル名
+@SKILL_NAME_3528, ARG
+RESULTS = 산산히흩어지는벚꽃
+
+;　명중
+@SKILL_HITRATE_3528, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_3528, ARG
+SIF SKILLGAGE_F_GET(ARG, 3528) == 100
+	RETURN 650
+RETURN 450
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3528, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3528, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3528, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+;異能者によるコスト減を考慮してなかったので減らす
+@SKILL_COST_3528, ARG
+SIF SKILLGAGE_F_GET(ARG, 3528) == 100
+	RETURN 70
+RETURN 49
+
+;　相性
+@SKILL_TYPE_3528, ARG
+RETURN GET_TYPE_NUM("검격")
+;검격
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3528
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3528, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3528, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_3528, ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3528, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3528, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3528
+RETURN GET_SUCCESSION_NUM("검격")
+
+;속도보정
+@SKILL_SPEED_3528, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3528
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3528, ARG = -1
+RETURN 16
+
+@継承不能_3528
+RETURN 1
+;不可
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_3528, ARG = -1, ARG:1 = -1
+SIF SKILLGAGE_F_GET(ARG, 3528) == 100
+	RETURN 4
+RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3528, ARG, ARG:1, ARG:2
+IF SKILLGAGE_F_GET(ARG, 3528) == 100
+	CALL ATTACK_SINGLE, ARG, POS(ARG:1), 3528
+	;一発撃ったら0に戻す
+	CALL SKILLGAGE_F_SET, ARG, 3528, 0
+ELSE
+	CALL ATTACK_SINGLE, ARG, POS(ARG:1), 3528
+ENDIF
+
+;====================================================
+;行動によるスキルゲージ操作
+;各キャラクターの通常の行動後に全キャラで呼び出される
+;ARG:		このスキルの持ち主のキャラ番号
+;ARG:1		行動したキャラクターのキャラ番号
+;
+;RESULT 		獲得したゲージの量を返すことで獲得量を表示させる。つまり、他人の行動に反応させることなども可能。
+;RESULT:1		獲得表示のときの文字色を指定できる。ゲージが溜まったときの表示わけなどに
+;RESULTS		ゲージの名称 「<<XXXX>>」という形で表示される
+;RESULTS:1		ゲージの単位。半角の%を使いたい場合は「\%」と言うかたちで退避記号を使うと良い
+;RESULTS;2		色指定以外の要素を使わずに文字列を返す。ゲージ式の獲得量で表現したい場合などに
+;====================================================
+@SKILLGAGE_CHARGE_3528, ARG, ARG:1
+#LOCALSIZE 1
+#DIM L_T
+#DIM L_GP
+#DIM SKILL_NUM
+SKILL_NUM = [[스킬:산산히흩어지는벚꽃]]
+;自分の行動の場合
+L_GP = 0
+SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) == 100
+	RETURN 0
+IF ARG == ARG:1
+	;乱れ散々桜を使ったらゲージは溜めない
+	SIF CFLAG:ARG:입력행동 == SKILL_NUM
+		RETURN 0
+	FOR LOCAL, 0, BCHARANUM
+		L_T = BCHARA:LOCAL
+		SIF IS_FRIEND(ARG, L_T)
+			CONTINUE
+		SIF GET_CREC_ACT(ARG, L_T, "HIT")
+			L_GP += 2
+		SIF GET_CREC_ACT(ARG, L_T, "CRT")
+			L_GP += 3
+		SIF GET_CREC_ACT(ARG, L_T, "WEAK")
+			L_GP += 3
+	NEXT
+	;気合を入れても上がる
+	SIF CFLAG:ARG:입력행동 == [[스킬:기합]]
+		L_GP += 10
+ENDIF
+;ダメージを受けた又はカウンター、トリガー以外の攻撃を受けたら
+;ゲージが増える
+SIF GET_CREC_ACT(ARG:1, ARG, "HIT")
+	L_GP += MAX(30 * CFLAG:ARG:현데미지 / MAXBASE:ARG:ＨＰ, 2)
+;スキルゲージが100以上だと100にする
+CALL SKILLGAGE_F_SET,ARG,SKILL_NUM,MIN(100, L_GP + SKILLGAGE_F_GET(ARG,SKILL_NUM))
+;SIF SKILLGAGE_F_GET(ARG, SKILL_NUM) > 100
+;	CALL SKILLGAGE_F_SET, ARG, SKILL_NUM, 100
+IF SKILLGAGE_F_GET(ARG,SKILL_NUM) == 100
+	SETCOLOR 0xebffaa
+	RESULTS = ＥＸＨＡＵＳＴ ＲＥＡＤＹ
+ELSE
+	RESULTS = EXHAUST
+ENDIF
+RESULTS:1 = \%
+RETURN L_GP
+
+@SKILL_EX_DISPLAY_3528, ARG, ARGS 
+RESULTS += SET_COLOR_TAG(UNICODE(0x2694), TOSTR(0xebffaa))
+RESULTS += HTML_RECT_BAR(SKILLGAGE_F_GET(ARG, 3528), 100, SKILL_EX_DISPLAY_LENS - 2, BARCOLORSET("緑"), RESULT:1)
+RESULTS:1 = EXHAUST 게이지
+RETURN 1
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3528, ARG
+PRINTL 적 １체에 검격 상성의 특대 데미지를 준다
+PRINTL 신체능력 Ｓ랭크 사무라이의 오의 스킬
+PRINTL EXHAUST 게이지를 최대까지 모으면 위력이 상승하고、
+PRINTL 모든 방어상성을 관통한다。
+
+;継承に必要な部位
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3528, ARG
+RETURN 1
+;とくにない
+

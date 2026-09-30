@@ -1,0 +1,85 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_深海使者の盟約,ARG
+RESULTS = 【심해사절의 맹약】
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_深海使者の盟約
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_深海使者の盟約,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_深海使者の盟約
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+@継承不能_深海使者の盟約
+RETURN 2
+;不可、造魔や子供にも継承せず
+
+;スキル変化？用ランク
+@SKILL_RANK_深海使者の盟約, ARG = -1
+RETURN 0
+;変化不可
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_深海使者の盟約,ARG
+PRINTL 자동: 회피율이 오른다.
+PRINTL 　　　HP 50% 이하의 적에 대해 가하는 데미지가 증가한다.
+
+@SKILL_ACTIONABLE_BATTLE_深海使者の盟約, ARG
+RETURN 0
+
+@SKILL_DEL_UNABLE_深海使者の盟約,ARG
+RETURN 1
+;削除不可
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_深海使者の盟約, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			;敵のHPが50%以下でダメージ加算
+			IF 現HP割合(L_TARGET) <= 50
+				RETURN 20
+			ENDIF
+	ENDSELECT
+;自分が防御側
+ELSE
+	SELECTCASE ARGS
+		;カジャの枠。つまり0からなら加算は32/(32+x)の減少、減算は32/(32-x)の増加(カジャは+4)　通常枠の上限下限を超えて加減される(ただし、減算側は安全のために8を下限にしてあるので注意)
+		;この補正を999以上で指定した場合は絶対回避、-999以下で指定した場合は回避不能となる
+		CASE "追加回避強化"
+			RETURN 8
+	ENDSELECT
+ENDIF
+RETURN 0

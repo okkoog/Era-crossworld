@@ -1,0 +1,478 @@
+﻿;-------------------------------------------------
+;유우키 유우나 개인 이벤트
+;-------------------------------------------------
+@INDIVIDUAL_EVENT_K5350, ARG, ARG:1 = 0, ARG:2 = -1
+#LOCALSIZE 2
+#LOCALSSIZE 1
+#DIM 導入フラグ
+;ARG:0　キャラ番号
+;ARG:1　関数種類　1,開放条件　2,타이틀　3,이벤트
+;ARG:2　イベント番号（0～63まで）
+
+;リストにキャラを表示する条件
+IF ARG:1 == 0
+	;イベント3で全部終了
+	SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 3)
+		RETURN 0
+	RETURN 1
+ENDIF
+
+SELECTCASE ARG:2
+CASE 0
+	;解放条件
+	IF ARG:1 == 1
+		SIF GET_VALUE_TALENT_JOINABLE(ARG) == 0
+			RETURN 0
+		SIF BASE:ARG:LV < 40 
+			RETURN 0
+		RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방, ARG:2)
+			;타이틀
+			RESULTS = 유우키 유우나　그 1：용사부 활동 보고
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			RESULTS = (%CALLNAME:ARG%의 LV40 이상으로 해방)
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		$INDIVIDUAL_EVENT_K5350_GOTO1
+		CUSTOMDRAWLINE =
+		PRINTL
+		PRINTL
+
+		FLAG:도주불가플래그 = 1
+		FLAG:회화불능플래그 = 1
+		FLAG:선제기습취소 = 1
+
+		CALL SET_ENEMY, 9, [[キャラ:미노타4호]], 40, 0, 1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 5000
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 5000
+		;BASE:(CHARANUM-1):힘 += 10
+		;BASE:(CHARANUM-1):지혜 += 5
+		;BASE:(CHARANUM-1):마력 += 5
+		;BASE:(CHARANUM-1):내구 += 5
+		;BASE:(CHARANUM-1):속도 += 10
+
+		CALL SYNC_STATUS, (CHARANUM-1)
+		CALL HEALTH_CHARA, (CHARANUM-1)
+		CALL BATTLE_START
+		
+		FLAG:도주불가플래그 = 0
+		FLAG:회화불능플래그 = 0
+		FLAG:선제기습취소 = 0
+
+		PRINTFORMW  「좋았어, 우시오니 겟-!」
+		PRINTW  「아앗, 유우나 쨩 귀여워………」
+		PRINTL
+		PRINTFORMW  　%CALLNAME:ARG%가 데포르메된 악마와 놀고 있었다. 우시오니인가? 우시오니인 모양이다
+		PRINTW  　저건 뭐냐고, 최근 존재감이 옅어진 오오쿠니누시 대신 토고에게 물어보았다
+		PRINTL
+		PRINTL
+		PRINTW  「저것은 용사를 섬기는 정령이랍니다」
+		PRINTL
+		PRINTL
+		PRINTW  　의식의 전환이 빠르기도 하지
+		PRINTL　　정령이라 해도, 파라켈수스가 분류한 그것과는 다른 모양이지만………
+		PRINTL
+		PRINTW  「일본에 잠든 영혼들이 힘을 빌려주고 있어요. 요괴도 영웅도, 여기서는 정령이라 부르고 있답니다」
+		PRINTL
+		PRINTL
+		PRINTW  　전장에 서는 소녀들에 맞춘 호칭, 이라는 뜻일까.
+		PRINTFORMW  　
+		PRINTFORMW  「그렇게 생각하셔도 무방합니다. 유우나 쨩의 곁에 있는 것이라면, 저것은 정령인 거예요. 그렇죠?」
+		PRINTL
+		PRINTL
+		PRINTFORMW  　거리가 가깝다. 압박이 강하다, 사랑이 무겁다.
+		PRINTL
+		PRINTL
+		PRINTFORMW  「……게다가, 악마의 힘을 빌리고 있다고 여겨지는 것보다,
+		PRINTW  　정령이라는 말을 쓰는 편이 반응이 좋으니까요」
+		PRINTL
+		PRINTL
+		PRINTFORMW  　용사들의 활동은 모두가 알고 있는 것이 되어 있다. 전문적인 것도, 사소한 선의로 이루어진 것도.
+		PRINTFORMW  　열람 가능한 역대 용사들의 활동을 감안할 때, 용사의 실재를 숨기지 않는 편이 소녀들을 지킬 수 있다고 판단한 모양이다.
+		PRINTL
+		PRINTL
+		PRINTFORMW  「……정령의 힘이 미치는 한, 용사의 안전은 지켜집니다.
+		PRINTW  　그 뒤는, 무리하지만 말아준다면야………」
+		PRINTL
+		PRINTL
+		PRINTW  　……이때의 토고는, 유우나를 보고 있는 듯하면서도, 용사라는 역사를 보고 있는 듯하기도 했다
+		PRINTL
+		PRINTL
+		PRINTW  「괜-찮아! 토고 씨는 내가 지켜줄 테니까!」
+		PRINTL
+		PRINTW  「네, 유우나 쨩은 제가 반드시 지킬게요」
+		PRINTL
+		PRINTL
+		PRINTL
+		PRINTW  　……그것을 위해서라면 뭐든지 하겠다, 고 말할 법한 두 사람의 모습에, 조금 불안해졌다
+		PRINTL
+		PRINTL
+		PRINTL
+		PRINTW  「부장인 내가 있으니까 말이지. 턱 하고 맡겨만 두셔!」
+		PRINTL
+		PRINTL
+		PRINTW  　으-음.
+		PRINTL
+		PRINTL
+		PRINTW  「뭔가 불만 있어!?」
+		PRINTL
+		PRINTL
+		PRINTFORMW  　멘탈 면에서는 제일 온전해서, 불안은 없네. 지금으로선
+		PRINTL
+		PRINTL
+		PRINTW  「마음에 걸리는 말투네…… 뭐, 됐어. 특별히 용서해 줄게」
+		PRINTL
+		PRINTL
+		PRINTFORMW  　제대로 리더를 맡고 있기에 혼자 짊어질 것 같다, 고는 말하지 않기로 한다.
+		PRINTL
+		PRINTL
+		PRINTL  …………
+		PRINTL  ………
+		PRINTL  ……
+		PRINTL
+		;IF TOINT(CSTR:ARG:102) < 1
+		;	CSTR:ARG:102 = 1
+			IF GET_RPG_CFLAG_TAKEOVER(ARG, "個人イベント強化度") < 1
+				CALL SET_RPG_CFLAG_TAKEOVER, ARG, "個人イベント強化度", 1
+				;LOCAL:0 = GETCHARA([[キャラ:유우나]])
+				;BASE:(LOCAL:0):지혜 += 2
+				;PRINTFORMW ＞%CALLNAME:ARG%の知恵が2上がった　　　　　　　　　　　　　　　　　　　　 
+			ENDIF
+		;ENDIF
+		RETURN 1
+	ENDIF
+CASE 1
+	;解放条件
+	IF ARG:1 == 1
+		SIF 陥落(ARG) == 0
+			RETURN 0
+		SIF BASE:ARG:LV < 50
+			RETURN 0
+		SIF !GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+			RETURN 0
+		RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방, ARG:2)
+			;타이틀
+			RESULTS = 유우키 유우나　그 2：노기 소노코는 용사이다
+		ELSE
+			IF GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+				;未開放時のタイトル（解放条件を入れておく）
+				RESULTS = (%CALLNAME:ARG%의 함락과, LV50 이상으로 해방)
+			ELSE
+				RESULTS = ？？？？？？？？？？？？
+			ENDIF
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		$INDIVIDUAL_EVENT_K5350_GOTO2
+		CUSTOMDRAWLINE =
+		PRINTL
+		PRINTL
+		PRINTFORMW  　정령의 힘이 미치는 한 안전. 그것은, 어느 정도의 것일까
+		PRINTW  　용사부 감독 틈틈이 연구 기록을 뒤적이는 나날 속에서, 목소리가 들려왔다
+		PRINTL
+		PRINTL
+		PRINTW  『알고 싶어? 그럼, 내가 있는 곳으로 오면 돼~』
+		PRINTL
+		PRINTL
+		PRINTW  　……출입금지 구역을 몇 개나 빠져나갔다. 상위 권한을 지닌 자의 인도다.
+		PRINTW  　오늘의 밀회도, 공식적으로는 없는 일이 되겠지. 그것도, 대사다움이라는 것을 배웠다
+		PRINTL
+		PRINTL
+		PRINTW  「처음 뵈려나 서머너 씨? 선대 용사인 노기 씨란다」
+		PRINTL
+		PRINTL
+		PRINTFORMW  　붕대 너머에서, 목소리가 났다. 하지만, 입술이 움직였는지는 확실치 않다
+		PRINTW  　애초에, 그녀에게 움직일 수 있는 몸이 남아있기는 한 걸까? 그 정도로 이질적인 광경이었다.
+		PRINTW  　간신히 뼈대에, 희미하게 살점이 남아있는 것을 확인할 수 있었다
+		PRINTW  　하지만. 이불 위에서, 마치 사지가 없는 것처럼 보여 섬뜩해지고 말았다.
+		PRINTL
+		PRINTL
+		PRINTW  「이 상태로도 생명 활동에는 문제가 없다는 점을, 알려줄게. 대단하지, 신령님」
+		PRINTL
+		PRINTL
+		PRINTL
+		PRINTL
+		PRINTFORMW  　오오쿠니누시가 희미한 존재가 되면서도 그녀의 곁에 머물러 있었다.
+		PRINTFORMW  　용사 시스템의 작성, 운영을 담당하는 신도 진작에 완전히 피폐해져 있다.
+		PRINTL
+		PRINTL
+		PRINTW  「지금까지 수많은 처참한 죽음을 보아온 대사와 신령님은 용사가 죽지 않도록 힘썼어
+		PRINTW  　그걸 탓할 마음은 별로 없어. 친구가 죽기 전에, 그것이 제때 닿았더라면…… 하고도 생각했고」
+		PRINTL
+		PRINTW  　그렇다면, 서머너를 부른 노기의 진의는 무엇인가
+		PRINTFORMW  　되묻기 직전, 노기가 조금 힘을 해방했다. 용사를 따르는 정령이 모습을 드러낸다.
+		PRINTW  　현대의 용사부에서는, 넉넉히 봐도 3체. 그것을, 21체나 전개하고 있다
+		PRINTW  　………악마를, 그 정도 수효로 동시에 운용할 수 있는 서머너가, 얼마나 될까.
+		PRINTL
+		PRINTL
+		PRINTW  「이 아이들의 수만큼, 노기 씨는 죽을 뻔한 운명을 극복해 온 거야
+		PRINTW  　하지만 그 대가로, 이렇게 되어버렸어」
+		PRINTL
+		PRINTL
+		PRINTW  　대가. 신체 기능의 상실이라 할 수 있겠군
+		PRINTL
+		PRINTW  「신체 기능에만 국한된 건 아니지만 말이야?」
+		PRINTL
+		PRINTW  「나의 어머니로부터 전수받은 불사의 비술. 인간의 몸에는 과분한 힘이었던 것이다
+		PRINTW  　대사도, 나도, 이렇게 될 줄 알고 있었던 것은 아니다」
+		PRINTL
+		PRINTW  「서머너 씨는, 그 아이들이 나처럼 되는 걸 보고 싶어?」
+		PRINTL
+		PRINTL
+		PRINTW  　그런 취미는 없다. 게다가, 그럴 필요도 없다
+		PRINTFORMW  　죽음의 문턱을 넘어설 대비책이라면, 이쪽에도 있다
+		PRINTL
+		PRINTL
+		PRINTW  「…………그렇다면, 그것까지 포함해서 시스템을 조정해 볼까」
+		PRINTL
+		PRINTL
+		PRINTL  …………
+		PRINTL  ………
+		PRINTL  ……
+		PRINTL
+              
+		;IF TOINT(CSTR:ARG:102) < 2
+		;	CSTR:ARG:102 = 2
+		IF GET_RPG_CFLAG_TAKEOVER(ARG, "個人イベント強化度") < 2
+			CALL SET_RPG_CFLAG_TAKEOVER, ARG, "個人イベント強化度", 2
+			PRINTFORMW  　만개 시스템의 디메리트가 조정되었습니다.
+			PRINTFORMW  　라는 이유로, 산화 관련 사양이 변화했다고 생각해 주십시오.
+			
+		ENDIF
+		RETURN 1
+	ENDIF
+CASE 2
+	IF ARG:1 == 1
+		SIF 陥落(ARG) == 0
+			RETURN 0
+		SIF BASE:ARG:LV < 70
+			RETURN 0
+		SIF !GETBIT(CFLAG:ARG:개별이벤트읽음, 1)
+			RETURN 0
+		RETURN 1
+	ELSEIF ARG:1 == 2
+		;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방, ARG:2)
+			;타이틀
+			RESULTS = 유우키 유우나　그 3：당신에게 미소 짓다
+		ELSE
+			IF GETBIT(CFLAG:ARG:개별이벤트읽음, 1)
+				;未開放時のタイトル（解放条件を入れておく）
+				RESULTS = (%CALLNAME:ARG%의 함락과, LV70 이상)
+			ELSE
+				RESULTS = ？？？？？？？？？？？？
+			ENDIF
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		$INDIVIDUAL_EVENT_K5350_GOTO3
+		CUSTOMDRAWLINE =
+		PRINTL
+		PRINTL
+		PRINTFORMW  　그 누구의 안전도 보장되지 않은 채, 하늘의 신과의 싸움은 계속되고 있다
+		PRINTFORMW  　%CALLNAME:ARG%는 누구보다도 앞장서 나가고, 그리고 웃는 얼굴로 돌아온다
+		PRINTL
+		PRINTL
+		PRINTW  「좋-았어, 살아났다-♪ 가끔은, 마사지 받는 쪽도 참 좋네요♪」
+		PRINTL
+		PRINTL
+		PRINTFORMW 　용사 시스템의 과거와 미래에 대해 듣고 움츠러들었던 %CALLNAME:ARG%도, 지금은 기운을 차렸다
+		PRINTW  　다른 용사부 동료들과는, 종종 주먹으로 대화하는 처지가 되고 말았지만,
+		PRINTW  　극복해 냈다면, 문제없다. 지나고 보면. 역시 그 녀석들 폭주했었지 하고 웃어넘길 수 있다
+		PRINTL
+		PRINTW  「음후후-………… 응응앗!?」
+		PRINTL
+		PRINTL
+		PRINTFORMW  　너무 심하게 했으려나. 유우나는 오늘 대접받는 쪽이다. 반혼향 냄새가 아직 남아있지만
+		PRINTL
+		PRINTL
+		PRINTL
+		PRINTW  「훗훗후-………… 답례!」
+		PRINTL
+		PRINTL
+		PRINTFORMW  　…………갓 핸드 유우나에게, 듬뿍 되갚음을 당하고 말았다
+		PRINTL
+		PRINTL
+		PRINTW  「……서머너 씨는, 신을 죽인 자라고 불려본 적 있으신가요?」
+		PRINTL
+		PRINTL
+		PRINTW  　신을 죽이는 것은, 인간이어야만 한다. 그렇지 않다면 의미가 없다.
+		PRINTFORMW  　그 수준의 골칫거리에 휘말려 본 적이 있을지도 모르고, 없을지도 모른다
+		PRINTL
+		PRINTL
+		PRINTW  「저는 말이죠-, 그 신살자라는 모양이에요」
+		PRINTL
+		PRINTL
+		PRINTFORMW  　%CALLNAME:ARG% 일행의 격투 끝이었을까. 아니, 어쩌면 처음부터 그랬던 걸까
+		PRINTFORMW  　%CALLNAME:ARG%의 주먹은, 하늘의 신에게 유독 잘 먹힌다.
+		PRINTFORMW  　그것은 신목의 축복을 짙게 받은 자의 힘이며, 용사들 중에서도 이질적인 것이다
+		PRINTL
+		PRINTW  「갓 핸드 때문에, 웃을 수 없게 되어버린 걸까……」
+		PRINTL
+		PRINTL
+		PRINTFORMW  　그렇지 않다. %CALLNAME:ARG%의 곁에는 언제나 웃는 얼굴이 어울린다
+		PRINTL
+		PRINTL
+		PRINTW  「~~~그렇구나아. 서머너 씨는 언제나, 저를 되살려 주시네요
+		PRINTW   정말 좋아하는 사람이 여기에 있으니까…… 저는 꺾이지 않고 있을 수 있는 거예요」
+		PRINTL
+		PRINTL
+		PRINTL
+		PRINTL  …………
+		PRINTL  ………
+		PRINTL  ……
+		;IF TOINT(CSTR:ARG:102) < 3
+			;CSTR:ARG:102 = 3
+			IF GET_RPG_CFLAG_TAKEOVER(ARG, "個人イベント強化度") < 3
+				CALL SET_RPG_CFLAG_TAKEOVER, ARG, "個人イベント強化度", 3
+				PRINTFORMW  　%CALLNAME:ARG%의 『용사 파-안치!』가 강화되어, 『만개! 용사 파-안치!』로 승화했다!
+				CALL SET_RPG_CFLAG_TAKEOVER, ARG, "満開！勇者パーンチ！取得", 1
+				;CSTR:ARG:전용기3 = 『満開！勇者パーンチ！』
+			ENDIF
+		;ENDIF
+		RETURN 1
+	ENDIF
+CASE 3
+	IF ARG:1 == 1
+		SIF 陥落(ARG) == 0
+			RETURN 0
+		SIF BASE:ARG:LV < 80
+			RETURN 0
+		SIF !GETBIT(CFLAG:ARG:개별이벤트읽음, 2)
+			RETURN 0
+		RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방, ARG:2)
+			;타이틀
+			RESULTS = 유우키 유우나　그 4：진・여신전생 II. 불꽃색의 꽃
+		ELSE
+			IF GETBIT(CFLAG:ARG:개별이벤트읽음, 2)
+				;未開放時のタイトル（解放条件を入れておく）
+				RESULTS = (%CALLNAME:ARG%의 LV80 이상, 및 함락 완료)
+			ELSE
+				RESULTS = ？？？？？？？？？？？？
+			ENDIF
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		$INDIVIDUAL_EVENT_K5350_GOTO4
+		CUSTOMDRAWLINE =
+		PRINTL
+		PRINTL
+		PRINTW  「에헤헤, 오늘은 제 차례 맞죠. 와버렸어요♪」
+		PRINTFORMW  　그런 사이가 되고 나서도, %CALLNAME:ARG% 일행과의 나날은 이어진다
+		PRINTW  　버텍스라는 별들을 물리치고, 찰나의 평온을 손에 넣었다.
+		PRINTW  　신령 한 기가 숨어든 뒤 노기 소노코도, 용사부에 복귀하여 청춘을 구가하고 있다.
+		PRINTL
+		PRINTW  「따뜻하게 데워두었답니다-♪」
+		PRINTFORMW  　한밤중, 서머너의 방에서 기다리고 있던 %CALLNAME:ARG%의 행위는 기쁘다. 하지만 너는, 누구지?
+		PRINTL
+		PRINTW  「후후………… 알아채 주는 사람이 여기에도 있다니, 참 행복한 일이겠지」
+		PRINTL
+		PRINTL
+		PRINTFORMW  　내방객이 술법을 풀고, 정체를 드러낸다. 그래도 다소 그을렸을 뿐, 유우나의 모습을 하고 있었다
+		PRINTL
+		PRINTW  「뭐 그야, 나도 유우나니까 말이야. …………신령님의 마음에 드는 아이?」
+		PRINTL
+		PRINTL
+		PRINTFORMW  　신목이니 하늘의 신이니. 큰 틀로만 말해서는 곤란하다. 누구의 사주냐?
+		PRINTL
+		PRINTL
+		PRINTW  「지금은, 조반 신령님이려나. 신목 님의 권능, 좀 쓰고 있거든」
+		PRINTL
+		PRINTL
+		PRINTW  　수해화 현상. 버텍스에 대항하는 방어 기구가 발동하고 있다.
+		PRINTFORMW  　공격 측이 그것을 하고 있다는 것은, 일종의 선전포고인가.
+		PRINTL
+		PRINTW  「방해받지 않겠다, 는 것뿐이니까 안심해
+		PRINTW  　서머너 씨는 다른 시간대에서 온 거지. 혹시, 세계가 멸망하는 이유에 짐작 가는 곳 없어?」
+		PRINTL
+		PRINTL
+		PRINTFORMW  　글쎄. 짐작 가는 곳이 너무 많아서 모르겠다, 라고 답할 수밖에 없다.
+		PRINTFORMW  　인간과 신 사이에도, 신과 인간 사이에도, 불씨는 얼마든지 굴러다니고 있었다.
+		PRINTL
+		PRINTW  「……정답은 그 아이의 안에 있을지도 몰라?」
+		PRINTL
+		PRINTL
+		PRINTW  「경보는 안 울리고, 멋대로 변신하고 왠지 이상해요!? 랄까 내가 또 있어-!?」
+		PRINTL
+		PRINTL
+		PRINTW  「후후, 틈을 노려 쾅!　
+		PRINTW   기왕 하는 김에 이쪽도…… 쾅!」
+		PRINTL  …………
+		PRINTL  ………
+		PRINTW  「자아, 어떻게 되려나?」
+		PRINTL
+		PRINTL  …………
+		PRINTFORML  ………기억의 세계로 %CALLNAME:ARG%는 날아갔다. 서머너도 같은 위상으로 보내졌다.
+		PRINTL  ……그곳은 땅속 깊은 바닥, 혹은 하늘의 끝자락. 그곳에, 아마테라스는 사로잡혀 있었다
+		PRINTL
+		PRINTW  　(나, 어째서 여기에 갇혀 있는 거야? 서머너 씨, 살려--)
+		PRINTW  「인간이여. 이 몸이 어찌하여, 여기에 묶여 있는지 알겠느냐?」
+		PRINTW  　
+		PRINTW  　
+		PRINTW  　(말할 수가 없어. 유령이 되어 이 사람과 겹쳐져 있는 거야)
+		PRINTW  「그놈들 국진신이, 헤브라이 신족과 공모하여 이 몸 일행을 배신한 것이니라」
+		PRINTW  　
+		PRINTW  　(이 사람의 분노가, 슬픔이 전해져 와………)
+		PRINTW  「결국, 이용당하고 버려질 뿐이라는 것을. 얼마나 어리석은 짓인가………」
+		PRINTL
+		PRINTW  　(내가 여기에 있고, 서머너 씨도 여기에 있어. 그렇다면………)
+		PRINTW  「서로 원한이 없다고는 생각지 않는다. 하지만 그때, 해야 했던 일은 서로 다투는 것이 아니었다」
+		PRINTL
+		PRINTFORMW  　아마테라스를 해방하겠습니까? 그런 문구가 머릿속에 떠올랐다. 동료마는, 없는 건가. 뭐 상관없지
+		PRINTL
+		PRINTW  　(서머너 씨 혼자만으론 부족해. 그렇다면………!)
+		PRINTW  「이 족쇄를 부수겠다는 게냐? 그만두어라. 이것은, 스사노오급 신력이 아니라면………」
+		PRINTL
+		PRINTW  「즉, 내가 있으면 충분할지도 모르겠네. 하지만, 돕지 않을 거야」
+		PRINTW  　돌연 나타난 아카미네가, 버텍스의 정점과 동일한 존재에게 차가운 시선을 보낸다.
+		PRINTFORMW  　그 시선에, 아마테라스는 반응하지 않는다. 정확히는 돕지 않는 것이 아니라, 도울 수 없는 모양이다.
+		PRINTW  　이 꿈에서 아카미네는 방관자다. 어차피 기대도 하지 않았다. 무시하고 탄환을 장전하여, 계속 사격한다. 
+		PRINTL
+		PRINTW  「………상관없지만 말야」
+		PRINTL
+		PRINTL
+		PRINTW  　(기다리는 사람이 있다면, 포기하지 마!)
+		PRINTW  「불행해지고 싶지 않다면 그만두어라. 저주를 받을 게다」
+		PRINTL
+		PRINTW  　아마테라스의 신력은 현재 여신의 제어 아래에 있지 않다. 다가오는 자에게 재앙을 내리고, 세상을 저주한다.
+		PRINTW  　그래서 어쨌다는 건가. 해야 할 일은 변하지 않는다. %CALLNAME:ARG%는 한 번 죽고, 타카마가하라에 불려 갔다가
+		PRINTW  　간신히 귀환했다. 포기하지 않는 바보를 믿고 끝까지 함께해 주는 것이 서머너의 역할이다.
+		PRINTL
+		PRINTW  　(용사부 다섯 가지 수칙-! 가급적 포기하지 않는-다!)
+		PRINTW  「어찌하여, 거기까지………」
+		PRINTL
+		PRINTW  　그곳에, 희망이 있다고 느꼈기 때문이다. 느껴지지 않나? 용기가
+		PRINTW  　(이런 곳에 있는 건 싫잖아!? 좀 더 제대로, 살아가고 싶잖아!?)
+		PRINTL  …………
+		PRINTL  ………
+		PRINTW  　(용사부 다섯 가지 수칙-! 하면 대체로 어떻게든 된-다!)
+		PRINTW  「대, 만개! 용사 파-안치!」
+		PRINTW  　주먹 형태를 빚어낸 두 사람의 의지가, 금 간 결계를 꿰뚫었다.
+		PRINTL  …………
+		PRINTL  ………
+		PRINTW  「이것은 나무에 기록된 기억. 불꽃색의 꿈
+		PRINTW  　이걸로 무엇이 바뀔지는, 난 몰라. 하지만, 아카미네 씨는 지켜봐 주도록 할게」
+		PRINTL
+		PRINTL
+		IF GET_RPG_CFLAG_TAKEOVER(ARG, "個人イベント強化度") < 4
+			CALL SET_RPG_CFLAG_TAKEOVER, ARG, "個人イベント強化度", 4
+			;CSTR:ARG:102 = 4
+			;LOCAL:0 = GETCHARA([[キャラ:유우나]])
+			;BASE:(LOCAL:0):힘 += 4
+			;PRINTFORMW ＞%CALLNAME:ARG%の力が4上がった　　　
+			;BASE:(LOCAL:0):운 += 4
+			;PRINTFORMW ＞%CALLNAME:ARG%の運が4上がった　　　　　　　　　　　　　　　　　　　 
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDSELECT

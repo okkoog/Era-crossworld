@@ -1,0 +1,173 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_触れれば転倒！,ARG
+RESULTS = 닿으면 넘어짐!
+
+;　명중
+@SKILL_HITRATE_触れれば転倒！,ARG
+SIF ARG == -1
+	RETURN 90
+SIF EQUIP:(ARG):악세서리 == GETNUM(ITEM, "플러그인／이세상의것이아닌환마")
+	RETURN 100
+RETURN 90
+
+;　威力
+@SKILL_POWER_触れれば転倒！,ARG
+SIF ARG == -1
+	RETURN 160
+SIF EQUIP:(ARG):악세서리 == GETNUM(ITEM, "플러그인／이세상의것이아닌환마")
+	RETURN 260
+RETURN 160
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_触れれば転倒！,ARG
+SIF ARG == -1
+	RETURN 0
+SIF EQUIP:(ARG):악세서리 == GETNUM(ITEM, "플러그인／이세상의것이아닌환마")
+	RETURN 5
+RETURN 0
+;発生しない
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_触れれば転倒！,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_触れれば転倒！,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_触れれば転倒！,ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_触れれば転倒！,ARG
+SIF ARG == -1
+	RETURN 8
+SIF EQUIP:(ARG):악세서리 == GETNUM(ITEM, "플러그인／이세상의것이아닌환마")
+	RETURN 18
+RETURN 8
+
+;　相性
+@SKILL_TYPE_触れれば転倒！,ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_触れれば転倒！
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_触れれば転倒！,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_触れれば転倒！,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+;敵
+
+;　사거리
+@SKILL_RANGE_触れれば転倒！,ARG
+RETURN 1
+;前列から前列まで
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_触れれば転倒！,ARG
+SIF ARG == -1
+	RETURN 1
+SIF EQUIP:(ARG):악세서리 == GETNUM(ITEM, "플러그인／이세상의것이아닌환마")
+	RETURN 2
+	;一列
+RETURN 1
+;単体
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_触れれば転倒！,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_触れれば転倒！
+RETURN GET_SUCCESSION_NUM("검격")
+
+@継承不能_触れれば転倒！
+RETURN 2
+;不可、造魔や子供にも継承せず
+
+;속도보정
+@SKILL_SPEED_触れれば転倒！,ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_触れれば転倒！
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_触れれば転倒！, ARG = -1
+RETURN 8
+
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_触れれば転倒！,ARG
+RETURN GET_STATE_NUM("SLIP")
+;SLIP
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_触れれば転倒！,ARG
+RETURN GET_TYPE_NUM("검격")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_触れれば転倒！,ARG
+SIF ARG == -1
+	RETURN 30
+SIF EQUIP:(ARG):악세서리 == GETNUM(ITEM, "플러그인／이세상의것이아닌환마")
+	RETURN 45
+RETURN 30
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_触れれば転倒！,ARG
+SIF ARG == -1
+	RETURN 75
+SIF EQUIP:(ARG):악세서리 == GETNUM(ITEM, "플러그인／이세상의것이아닌환마")
+	RETURN 95
+RETURN 75
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_触れれば転倒！,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+IF EQUIP:(ARG):악세서리 == GETNUM(ITEM, "플러그인／이세상의것이아닌환마")
+	CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM
+ELSE
+	CALL ATTACK_SKILL,ARG,ARG:1,SKILL_NUM
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_触れれば転倒！,ARG
+IF EQUIP:(ARG):악세서리 == GETNUM(ITEM, "플러그인／이세상의것이아닌환마")
+	PRINTL 전열 1열에 검격 속성의 중 데미지를 가하고, 확률로 SLIP 상태로 만든다.
+	PRINTL 
+	PRINTL 아스톨포가 지닌 마상창 보구인 닿으면 넘어짐!《트랩 오브 아르갈리아》
+	PRINTL 플러그인 소프트: 이 세상 것이 아닌 환마로 성능이 강화된 상태.
+ELSE
+	PRINTL 전열 1체에 검격 속성의 소 데미지를 가하고, 확률로 SLIP 상태로 만든다.
+	PRINTL 명중률이 약간 낮고, 크리티컬이 발생하지 않는다.
+	PRINTL 
+	PRINTL 아스톨포가 지닌 마상창 보구인 닿으면 넘어짐!《트랩 오브 아르갈리아》
+	PRINTL 플러그인 소프트: 이 세상 것이 아닌 환마를 장비하여 성능이 강화된다.
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_触れれば転倒！,ARG
+RETURN 1
+;とくにない
+

@@ -1,0 +1,231 @@
+﻿;	002		2022/09/17			kamedakeisuke		Aion式召喚術まわりの仕様を追加
+;	003		2022/12/28			P(bazzile)			ロール方式に合わせて記述を変更し、拡張の余地を追加
+;	004		2024/02/23			P(bazzile)			リンク悪魔解除の処理を関数として切り出し、ほかでも使えるように修正
+;													一部変数がリセットされなせいでおかしくなっていた不具合を修正
+;	005		2024/05/08			P(bazzile)			リンク悪魔の指定条件を変更
+
+;ＣＨＡＮＧＥ
+;システム用スキルです
+
+;スキル名
+@SKILL_NAME_2311,ARG
+;キャラ指定なしまたは凡例表示(remane含む)の場合
+IF ARG == -1
+	RESULTS = 변신악마변경
+;通常処理
+ELSE
+	RESULT = 0
+	TRYCALLFORM ROLE_LINK_CHANGE_NAME_%CSTR:ARG:롤%
+	SIF !RESULT
+		RESULTS = 변신악마변경
+ENDIF
+
+
+;　명중
+@SKILL_HITRATE_2311, ARG
+RETURN 0
+
+;　威力
+@SKILL_POWER_2311, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2311,ARG
+RETURN 0
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2311,ARG
+RETURN 0
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2311, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2311,ARG
+RETURN 0
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2311
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2311, ARG
+RETURN GET_SKILL_TARGET_NUM("특수")
+
+;　사거리
+@SKILL_RANGE_2311,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2311,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2311, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2311
+RETURN GET_SUCCESSION_NUM("검격")
+
+;속도보정
+@SKILL_SPEED_2311, ARG = -1
+RETURN 10
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2311
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_2311, ARG = -1
+RETURN 0
+;変化不可
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@CASTING_LINK_DEVIL(ARG:0)
+TRYCCALLFORM CASTING_LINK_DEVIL_%CSTR:CASTING_CHARA:롤%, ARG:0
+	SIF !RESULT
+		RETURN 0
+CATCH
+	;---- EDIT 005 MOD START -------------------------
+	SIF CSTR:(ARG:0):롤 != "悪魔"
+		RETURN 0
+	SIF !GET_ROLE_PROP("CAN_PUT_IN_COMP", ARG)
+		RETURN 0
+	;スキルが習得できない場合は無理
+	SIF !GET_ROLE_PROP("CHANGEABLE_SKILLCOUNT", ARG)
+		RETURN 0
+	SIF CHARA_SKILLCOUNT(CASTING_CHARA, "変身形態") < CHARA_SKILLCOUNT(ARG)
+		RETURN 0
+	IF GROUPMATCH(FLAG:SHOP커맨드, [[ショップ:탐색]],[[ショップ:콜로세움참가]],[[ショップ:이벤트]],[[ショップ:의뢰청부]])
+		SIF CPOS(ARG:0) > 0 && CFLAG:(ARG:0):소속ＣＯＭＰ < 0
+			RETURN 0
+	ENDIF
+	;---- EDIT 005 MOD END ---------------------------
+ENDCATCH
+SIF CFLAG:(ARG:0):링크불능
+	RETURN 0
+SIF CFLAG:(ARG:0):피링크캐릭터실제가입시간 > 0
+	RETURN 0
+SIF TALENT:(ARG:0):비전투원
+	RETURN 0
+SIF CFLAG:(ARG:0):이자리에없는플래그 == 1
+	RETURN 0
+SIF CFLAG:(ARG:0):전투이외불능
+	RETURN 0
+;レンタル中は除外
+SIF IS_RENTING(ARG:0)
+	CONTINUE
+SIF CFLAG:(ARG:0):PT플래그 == 0
+	RETURN 0
+RETURN 1
+
+@UP_PRINT_ACTION_2311
+PRINTFORM 누구와 링크할까？　
+SIF A > リスト表示数()
+	PRINTFORM ＜page.{P + 1}/{A / リスト表示数() + 1}＞
+PRINTL
+DRAWLINE
+
+PRINTFORML 　　　[1001] %CSVNAME(CFLAG:CASTING_CHARA:초기링크악마,0)%
+
+@CASTING_RESULT_ACTION_2311 , ARG
+SIF ARG == 1001
+	RETURN 1001 , 0
+RETURN ARG , 1
+
+@ACTION_2311, ARG, ARG:1, ARG:2
+#LOCALSIZE 1
+#DIM DYNAMIC L_RESULT
+#DIMS L_UP_PRINT_ACTION_2311
+#DIMS L_CASTING_RESULT_ACTION_2311
+L_UP_PRINT_ACTION_2311 = UP_PRINT_ACTION_2311
+L_CASTING_RESULT_ACTION_2311 = CASTING_RESULT_ACTION_2311
+
+CASTING_CHARA = ARG
+
+RESULT = 0
+TRYCALLFORM ROLE_UP_PRINT_ACTION_2311_%CSTR:ARG:롤%, ARG
+SIF RESULT
+	L_UP_PRINT_ACTION_2311 += "_" + CSTR:ARG:롤
+RESULT = 0
+;CALL INPUT_CHARA_LIST("誰とリンクする？", "CASTING_LINK_DEVIL", L_UP_PRINT_ACTION_2311 , , L_CASTING_RESULT_ACTION_2311)
+{
+CALL INPUT_CHARA_LIST
+	, "FUNC_PROPSET_LIST_BATTLE"
+	, "누구와 링크할까？"
+	, "CASTING_LINK_DEVIL" 
+	, L_UP_PRINT_ACTION_2311
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, L_CASTING_RESULT_ACTION_2311
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT == 1001
+	CALL REMOVE_LINK_DEVIL, ARG
+	RETURN 1
+ENDIF
+L_RESULT = RESULT
+IF FINDCHARA_LINK(ARG) > 0
+	CFLAG:FINDCHARA_LINK(ARG):피링크캐릭터실제가입시간 = 0
+	CFLAG:FINDCHARA_LINK(ARG):피변신플래그 = 0
+ENDIF
+
+;変身している場合変身解除
+CALL TRANS_DEVIL , ARG, 0, "変身解除"
+
+CFLAG:L_RESULT:피링크캐릭터실제가입시간 = CFLAG:ARG:실제가입시간
+CFLAG:L_RESULT:피변신플래그 = 0
+CFLAG:ARG:링크캐릭터실제가입시간0 = CFLAG:L_RESULT:실제가입시간
+
+;リンクした時点で変更がかかるロールの処理
+TRYCALLFORM ROLE_LINK_ACT_%CSTR:ARG:롤%, ARG
+RETURN 1
+
+;リンク悪魔の解除処理
+@REMOVE_LINK_DEVIL, ARG, ARG:1 = -1, ARG:2 = -1
+#DIM DYNAMIC LCOUNT
+;変身している場合変身解除
+CALL TRANS_DEVIL, ARG, 0, "変身解除"
+FOR LCOUNT, 0, 5
+	;番号指定があった場合
+	SIF ARG:1 >= 0 && ARG:1 != LCOUNT
+		CONTINUE
+	;キャラ指定で外す場合
+	SIF ARG:2 >= 0 && FINDCHARA_LINK(ARG, LCOUNT) != ARG:2
+		CONTINUE
+	IF FINDCHARA_LINK(ARG, LCOUNT) > 0
+		CFLAG:FINDCHARA_LINK(ARG, LCOUNT):피링크캐릭터실제가입시간 = 0
+		CFLAG:FINDCHARA_LINK(ARG, LCOUNT):피변신플래그 = 0
+	ENDIF
+	CFLAG:ARG:@"링크캐릭터실제가입시간{LCOUNT}" = 0
+NEXT
+
+;リンクした時点で変更がかかるロールの処理
+;例:Aion式サマナーのスキル登録処理
+TRYCALLFORM ROLE_LINK_ACT_%CSTR:ARG:롤%, ARG
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2311, ARG
+PRINTL 변신할 악마를 변경한다。
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2311,ARG
+RETURN 1
+;とくにない
+

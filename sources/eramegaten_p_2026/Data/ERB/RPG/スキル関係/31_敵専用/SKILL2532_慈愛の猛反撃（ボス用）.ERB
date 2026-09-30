@@ -1,0 +1,187 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2532,ARG
+;双葉（舞台少女）が使用する場合
+IF SKILL_CHANGE(ARG, [[キャラ:후타바_무대소녀]])
+	RESULTS = 쿄코 건드리지 마!
+ELSE
+	IF FLAG:카운터중
+		RESULTS = 자애의 맹반격
+	ELSE
+		RESULTS = 자애의맹반격（보스용）
+	ENDIF
+ENDIF
+
+;　명중
+;9999は必中(絶対に回避されるフラグが立ってなければ命中する)
+@SKILL_HITRATE_2532, ARG
+RETURN 9999
+
+;　威力
+@SKILL_POWER_2532, ARG
+IF SKILL_CHANGE(ARG, [[キャラ:후타바_무대소녀]])
+	RETURN 120
+ELSE
+	RETURN 300
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2532,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2532,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2532, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2532,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_2532,ARG
+;ステータス画面でエラーを噴かないように
+SIF ARG < 0
+	RETURN GET_TYPE_NUM("不定")
+;双葉（舞台少女）は衝撃
+IF SKILL_CHANGE(ARG, [[キャラ:후타바_무대소녀]])
+	RETURN GET_TYPE_NUM("충격")
+;デフォは素の攻撃相性
+ELSE
+	RETURN ABL:ARG:공격상성
+ENDIF
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2532
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2532, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2532, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2532,ARG
+;L
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2532,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2532, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2532
+RETURN GET_SUCCESSION_NUM("자동효과")
+;속도보정
+@SKILL_SPEED_2532, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2532
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2532, ARG = -1
+RETURN 12
+
+
+;====================================================
+;カウンター発動条件
+;ARG			このスキルの持ち主
+;ARG:1			攻撃者のキャラ番号
+
+;RESULT			1 = 反撃成立。ただし実行までの間に行動者が行動不能になった場合は不発する
+;RESULT:1		反撃対象のPOS(ACTION_XXXのARG:1に送られる)。システム側で敵の生存・存在判定による不発判定をおこなうが、RESULT:1が0の場合は相手の状態に関わらず判定を通す
+;RESULT:2		-1 = デフォルトのスキル名表示を省く
+;
+;慈愛の猛反撃:自分以外の味方が攻撃を受けていたら反撃
+;====================================================
+@SKILL_COUNTER_ACTIONABLE_2532,ARG,ARG:1
+#DIM L_T
+#DIM ループ用
+#DIM ぶん殴りスイッチ
+ぶん殴りスイッチ = 0
+FOR ループ用, 0, BCHARANUM
+	L_T = BCHARA:ループ用
+	SIF L_T < 0
+		CONTINUE
+	;自分自身は除外
+	SIF ARG == L_T
+		CONTINUE
+	;ダメージを受けているのが敵ならパス
+	SIF !IS_FRIEND(ARG, L_T)
+		CONTINUE
+	;SIF POS(ループ用) < 0 || POS(ループ用) == ARG
+		;CONTINUE
+	;誰かが攻撃をHITさせられていたら
+	SIF GET_CREC_ACT(ARG:1, L_T, "HIT")
+		RETURN 1, CPOS(ARG:1)
+	;味方のうち誰かが被弾していたら反撃フラグを立てる
+	;IF GETBIT(CFLAG:(POS(ループ用)):受けフラグ,18) || GETBIT(CFLAG:(POS(ループ用)):受けフラグ,19)
+		;ぶん殴りスイッチ = 1
+		;BREAK
+	;ENDIF
+NEXT
+RETURN 0
+;SIF ぶん殴りスイッチ < 1
+;	RETURN 0
+;SIF ARG:1 < 0 || GET_STATE(CFLAG:(ARG:1):상태이상) == "DYING"
+;	RETURN 0
+;RETURN 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+
+@ACTION_2532, ARG, ARG:1, ARG:2
+TFLAG:필중 = 1
+TFLAG:반사0데미지화 = 1
+TFLAG:흡수0데미지화 = 1
+CALL ATTACK_SINGLE, ARG, POS(ARG:1), 2532
+TFLAG:필중 = 0
+TFLAG:반사0데미지화 = 0
+TFLAG:흡수0데미지화 = 0
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2532, ARG
+;IF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:후타바]]
+IF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:후타바_무대소녀]]
+	PRINTL 쿄코가 공격받았을 때, 적을 향해 충격 상성으로 반격한다
+ELSE
+	PRINTL 아군이 공격받을 경우、적을 향해 반격한다
+	PRINTL 상성은 통상공격에 의존한다
+ENDIF
+
+@敵専用_2532
+RETURN 1
+
+
+;とくにない
+
+@SKILL_ACTIONABLE_BATTLE_2532, ARG
+RETURN 0
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2532,ARG
+RETURN 0
+;とくにない
+

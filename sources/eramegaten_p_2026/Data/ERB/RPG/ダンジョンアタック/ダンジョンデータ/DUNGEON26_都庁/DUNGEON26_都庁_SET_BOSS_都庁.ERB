@@ -1,0 +1,213 @@
+﻿@SET_BOSS_ENEMY_DUNGEON_26, L_ENEMY_NAME, L_NO = -1, L_OPT
+#DIM DYNAMIC L_NO
+#DIM DYNAMIC L_ENEMY
+#DIMS DYNAMIC L_ENEMY_NAME
+#DIMS DYNAMIC L_OPT
+#DIMS DYNAMIC L_ENEMY_TABLE, 10
+
+L_ENEMY_TABLE:0 '= "スサノオ単独", "ツクヨミ単独", "アマテラス単独", "兄弟協力", "三貴子協力"
+
+IF L_NO >= 0
+	SIF !INRANGE(L_NO, 0, VARSIZE("L_ENEMY_TABLE") - 1)
+		RETURN 0
+	L_ENEMY_NAME '= L_ENEMY_TABLE:L_NO
+ENDIF
+IF L_OPT == "名称取得"
+	SIF L_ENEMY_TABLE:L_NO == ""
+		RETURN 0
+	RESULTS '= L_ENEMY_NAME
+	RETURN 1
+ENDIF
+
+SELECTCASE L_ENEMY_NAME
+	CASE "スサノオ単独"
+		;スサノオ単体との戦闘用フラグをセット
+		ダンジョンフラグ:(FLAG:현던전):5 = 1
+		;大雑把に「自己強化」「しかる後に殴る」AI
+		CALL SET_ENEMY,9,[[キャラ:스사노오]],60,1,1
+		L_ENEMY = CHARANUM - 1
+		CFLAG:L_ENEMY:ＨＰ보정 = 2000
+		CFLAG:L_ENEMY:ＭＰ보정 = 4000
+		CFLAG:L_ENEMY:속도보정 = 5
+		CFLAG:L_ENEMY:행동횟수 = 3
+
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+
+		CALL SET_SKILL, L_ENEMY, "천손강림"
+		CALL SET_SKILL, L_ENEMY, "검격가드브레이크"
+		CALL SET_SKILL, L_ENEMY, "이검난무"
+		CALL SET_SKILL, L_ENEMY, "데스바운드"
+		CALL SET_SKILL, L_ENEMY, "길로틴블레이드"
+		CALL SET_SKILL, L_ENEMY, "천경지폭단"
+		CALL SET_SKILL, L_ENEMY, "허공참파"
+		CALL SET_SKILL, L_ENEMY, "마하・지오다인"
+		CALL SET_SKILL, L_ENEMY, "나루카미"
+		CALL SET_SKILL, L_ENEMY, "마하・잔바리온"
+		CALL SET_SKILL, L_ENEMY, "마하・잔다인"
+		CALL SET_SKILL, L_ENEMY, "기합"
+		CALL SET_SKILL, L_ENEMY, "포효"
+		CALL SET_SKILL, L_ENEMY, "타루・카쟈"
+		CALL SET_SKILL, L_ENEMY, "라쿠・카쟈"
+
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "スサノオ"
+		CSTR:L_ENEMY:사고패턴 = 都庁_スサノオ_単独
+		CSTR:L_ENEMY:랜덤선택금지스킬 = [[스킬:천손강림]]
+		TSTR:전투이벤트패턴 = 都庁_スサノオ_単独
+	CASE "ツクヨミ単独"
+		CALL SET_ENEMY,9,[[キャラ:츠쿠요미]],60,1,1
+		L_ENEMY = CHARANUM - 1
+		CFLAG:L_ENEMY:ＨＰ보정 = 2000
+		CFLAG:L_ENEMY:ＭＰ보정 = 4000
+		CFLAG:L_ENEMY:속도보정 = 5
+		CFLAG:L_ENEMY:행동횟수 = 3
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "천손강림"
+		CALL SET_SKILL, L_ENEMY, "빛의심판"
+		CALL SET_SKILL, L_ENEMY, "코우가온"
+		CALL SET_SKILL, L_ENEMY, "플레어라이트"
+		CALL SET_SKILL, L_ENEMY, "마한마온"
+		CALL SET_SKILL, L_ENEMY, "댐네이션"
+		CALL SET_SKILL, L_ENEMY, "어둠의심판"
+		CALL SET_SKILL, L_ENEMY, "에이가온"
+		CALL SET_SKILL, L_ENEMY, "도무디"
+		CALL SET_SKILL, L_ENEMY, "마하주온"
+		CALL SET_SKILL, L_ENEMY, "마하무드온"
+		CALL SET_SKILL, L_ENEMY, "다무도라온"
+		CALL SET_SKILL, L_ENEMY, "마하・그라다인"
+		CALL SET_SKILL, L_ENEMY, "칠성강천"
+		CALL SET_SKILL, L_ENEMY, "중력가드브레이크"
+		CALL SET_SKILL, L_ENEMY, "컨센트레이트"
+		CALL SET_SKILL, L_ENEMY, "사만・다"
+		CALL SET_SKILL, L_ENEMY, "스쿠・카쟈"
+		CALL SET_SKILL, L_ENEMY, "사마・카쟈"
+		CSTR:L_ENEMY:사고패턴 = 都庁_ツクヨミ_単独
+		CSTR:L_ENEMY:랜덤선택금지스킬 = [[스킬:천손강림]]
+		TSTR:전투이벤트패턴 = 都庁_ツクヨミ_単独
+		
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ツクヨミ"
+	CASE "アマテラス単独"
+		;アマテラス単体との戦闘用フラグをセット
+		ダンジョンフラグ:[[ダンジョン:도청]]:5 = 3
+		CALL SET_ENEMY,9,[[キャラ:아마테라스]],65,1,1
+		L_ENEMY = CHARANUM - 1
+		CFLAG:L_ENEMY:ＨＰ보정 = MAXBASE:L_ENEMY:ＨＰ*4
+		CFLAG:L_ENEMY:ＭＰ보정 = MAXBASE:L_ENEMY:ＭＰ*4
+		CFLAG:L_ENEMY:속도보정 = 5
+		CFLAG:L_ENEMY:행동횟수 = 3
+
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "영세의기도"
+		CALL SET_SKILL, L_ENEMY, "데・카쟈"
+		CALL SET_SKILL, L_ENEMY, "데・쿤다"
+		CALL SET_SKILL, L_ENEMY, "트리스아기온"
+		CALL SET_SKILL, L_ENEMY, "프로미넌스"
+		CALL SET_SKILL, L_ENEMY, "염군의춤"
+		CALL SET_SKILL, L_ENEMY, "코즈믹플레어"
+		CALL SET_SKILL, L_ENEMY, "아토믹플레어"
+		CALL SET_SKILL, L_ENEMY, "마하기가리온"
+		CALL SET_SKILL, L_ENEMY, "마하・라기다인"
+		CALL SET_SKILL, L_ENEMY, "프레이다인"
+		CALL SET_SKILL, L_ENEMY, "파워브레스"
+		CALL SET_SKILL, L_ENEMY, "천상의춤"
+		CALL SET_SKILL, L_ENEMY, "마카・카쟈"
+		CALL SET_SKILL, L_ENEMY, "사마・카쟈"
+		CALL SET_SKILL, L_ENEMY, "타룬・다"
+		CALL SET_SKILL, L_ENEMY, "무거운공기"
+		CALL SET_SKILL, L_ENEMY, "테트라칸"
+		CALL SET_SKILL, L_ENEMY, "마카라칸"
+		CALL SET_SKILL, L_ENEMY, "메기도라"
+		CALL SET_SKILL, L_ENEMY, "메기도라온"
+
+		CSTR:L_ENEMY:사고패턴 = 都庁_アマテラス_単独
+		TSTR:전투이벤트패턴 = 都庁_アマテラス_単独
+		
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "アマテラス"
+	CASE "兄弟協力", "三貴子協力"
+		CALL SET_ENEMY,8,[[キャラ:스사노오]],60,1,1
+		L_ENEMY = CHARANUM - 1
+		CFLAG:L_ENEMY:ＨＰ보정 = 2000
+		CFLAG:L_ENEMY:ＭＰ보정 = 4000
+		CFLAG:L_ENEMY:속도보정 = 5
+		CFLAG:L_ENEMY:행동횟수 = 3
+		CSTR:L_ENEMY:사고패턴 = 都庁_スサノオ_協力
+		CALL SET_SKILL, L_ENEMY, "천손강림"
+		CALL SET_SKILL, L_ENEMY, "허공참파"
+		CALL SET_SKILL, L_ENEMY, "천경지폭단"
+		CALL SET_SKILL, L_ENEMY, "길로틴블레이드"
+		CALL SET_SKILL, L_ENEMY, "나루카미"
+		CALL SET_SKILL, L_ENEMY, "마하・잔바리온"
+		CALL SET_SKILL, L_ENEMY, "만마의일격"
+		CALL SET_SKILL, L_ENEMY, "기합"
+		CALL SET_SKILL, L_ENEMY, "검격가드브레이크"
+		CALL SET_SKILL, L_ENEMY, "히트라이저"
+		CALL SET_SKILL, L_ENEMY, "포효"
+		CSTR:L_ENEMY:랜덤선택금지스킬 = [[스킬:천손강림]]
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "スサノオ"
+
+		IF L_ENEMY_NAME == "三貴子協力"
+			CALL SET_ENEMY,9,[[キャラ:아마테라스]],65,1,1
+			L_ENEMY = CHARANUM - 1
+
+			CFLAG:L_ENEMY:ＨＰ보정 = MAXBASE:L_ENEMY:ＨＰ*4
+			CFLAG:L_ENEMY:ＭＰ보정 = MAXBASE:L_ENEMY:ＭＰ*4
+			CFLAG:L_ENEMY:속도보정 = 5
+			CFLAG:L_ENEMY:행동횟수 = 3
+			CSTR:L_ENEMY:사고패턴 = 都庁_アマテラス_協力
+			CALL SET_SKILL, L_ENEMY, "천손강림"
+			CALL SET_SKILL, L_ENEMY, "영세의기도"
+			CALL SET_SKILL, L_ENEMY, "마하・라기다인"
+			CALL SET_SKILL, L_ENEMY, "프로미넌스"
+			CALL SET_SKILL, L_ENEMY, "트리스아기온"
+			CALL SET_SKILL, L_ENEMY, "코즈믹플레어"
+			CALL SET_SKILL, L_ENEMY, "화염가드브레이크"
+			CALL SET_SKILL, L_ENEMY, "마하기가리온"
+			CALL SET_SKILL, L_ENEMY, "메기도라"
+			CALL SET_SKILL, L_ENEMY, "메기도라온"
+			CALL SET_SKILL, L_ENEMY, "컨센트레이트"
+			CALL SET_SKILL, L_ENEMY, "데・카쟈"
+			CALL SET_SKILL, L_ENEMY, "데・쿤다"
+			CALL SET_SKILL, L_ENEMY, "아토믹플레어"
+			CALL SET_SKILL, L_ENEMY, "프레이다인"
+			CALL SET_SKILL, L_ENEMY, "파워브레스"
+			CALL SET_SKILL, L_ENEMY, "천상의춤"
+			CALL SET_SKILL, L_ENEMY, "타룬・다"
+			CALL SET_SKILL, L_ENEMY, "테트라칸"
+			CALL SET_SKILL, L_ENEMY, "마카라칸"
+			
+			CALL SET_ENEMY_TIMEID, L_ENEMY, "アマテラス"
+			CSTR:L_ENEMY:랜덤선택금지스킬 = [[스킬:천손강림]]
+			TSTR:전투이벤트패턴 '= "都庁_三貴子"
+		ELSE
+			TSTR:전투이벤트패턴 '= "都庁_兄弟協力"
+		ENDIF
+
+		CALL SET_ENEMY,10,[[キャラ:츠쿠요미]],60,1,1
+		L_ENEMY = CHARANUM - 1
+
+		CFLAG:L_ENEMY:ＨＰ보정 = 2000
+		CFLAG:L_ENEMY:ＭＰ보정 = 4000
+		CFLAG:L_ENEMY:속도보정 = 5
+		CFLAG:L_ENEMY:행동횟수 = 3
+		CSTR:L_ENEMY:사고패턴 = 都庁_ツクヨミ_協力
+		CALL SET_SKILL, L_ENEMY, "천손강림"
+		CALL SET_SKILL, L_ENEMY, "빛의심판"
+		CALL SET_SKILL, L_ENEMY, "코우가온"
+		CALL SET_SKILL, L_ENEMY, "댐네이션"
+		CALL SET_SKILL, L_ENEMY, "어둠의심판"
+		CALL SET_SKILL, L_ENEMY, "에이가온"
+		CALL SET_SKILL, L_ENEMY, "마하주온"
+		CALL SET_SKILL, L_ENEMY, "중력가드브레이크"
+		CALL SET_SKILL, L_ENEMY, "칠성강천"
+		CALL SET_SKILL, L_ENEMY, "다무도라온"
+		CALL SET_SKILL, L_ENEMY, "만마의난무"
+		CALL SET_SKILL, L_ENEMY, "크레센트미러"
+		CALL SET_SKILL, L_ENEMY, "다크브레스"
+		CALL SET_SKILL, L_ENEMY, "랜더마이저"
+		CALL SET_SKILL, L_ENEMY, "컨센트레이트"
+		CSTR:L_ENEMY:랜덤선택금지스킬 = [[스킬:천손강림]]
+
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ツクヨミ"
+ENDSELECT
+
+;ステータス同期と回復
+CALL SET_UP_ENEMY

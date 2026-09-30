@@ -1,0 +1,279 @@
+﻿
+; 使用フラグ　イベントフラグ:63:0 0:未実施 1:ゆきかぜ協力 2:ゆきかぜ捕獲 3:ゆきかぜ引き渡し 99:依頼破棄
+
+@GET_EVENT_NAME_63
+#FUNCTIONS
+RESULTS_F '= "대마인"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_63
+;EXフィルタとイベントフィルタチェック
+SIF !GETS_USEABLE_EXTRA_TITLE("対魔忍")
+	RETURN 0
+;貢献度が低すぎる場合は離脱（政府からの依頼が来る程度には、組織からの信頼がある程度必要なように改変）
+SIF FLAG:조직공헌도 < 10000
+	RETURN 0
+;戦闘が予想されるので、ある程度戦闘面の信頼も必要（5→30へ改変）
+IF BASE:MASTER:LV >= 30 && イベントフラグ:63:0 == 0
+	RESULTS = （EX:대마인）밤의 방문
+	RETURN 1
+ENDIF
+RETURN 0
+;====
+;内容
+;====
+@SHOPCOM_EVENT_63
+
+CUSTOMDRAWLINE =
+
+PRINTFORML 어느 날 밤, 세이프하우스의 문을 두드리는 소리가 손님이 찾아왔음을 %CALLNAME:MASTER%에게 알렸다.
+PRINTFORML
+PRINTFORML 문구멍을 내다보니, 굳은 표정을 한 정장 차림의 남자… 아마도 정부 관리…가 2명 서 있었다.
+PRINTFORML 거점의 위치를 알고 있다는 것은 팬텀과 연결되어 있는 인간이겠지만… 경계해서 나쁠 것은 없다.
+PRINTFORMW 남몰래 무기를 쥐면서, %CALLNAME:MASTER%는 정중하게 손님을 맞이하기로 했다.
+PRINTFORML
+PRINTFORML 「최근 눈부신 활약을 보이고 있는 네게 맡기고 싶은 일이 있다. 지금은 우리도 고양이 손이라도 빌리고 싶은 상황이라서 말이지」
+PRINTFORML 「팬텀 측으로부터도 너를 차출하는 것에 대해 양해를 구해 두었다. 이것이 세부 사항이다. 다 읽는 대로 곧바로 현지로 가주어야겠다」
+PRINTFORML
+PRINTFORML 일방적이고 무례한 부탁 방식. 공복(공무원) 주제에, 라고 입 밖으로 튀어나올 뻔했으나, 지금 눈앞에 있는 것은 명색이 팬텀의 관계자다.
+PRINTFORML 조직 내 입지를 함부로 좁히고 싶지는 않다. 여기는 참아 넘기자.
+PRINTFORML
+PRINTFORMW 스윽 내밀어진 봉투를 받아들고, 서류 내용으로 시선을 떨구었다.
+;====================
+;内容
+;====================
+
+PRINTFORML 정부는 얼마 전부터 악마 관련 안건 대처로 골머리를 앓고 있었던 모양이다.
+PRINTFORML 이에 일본 내 다양한 악마 관련 위협에 대처하기 위한 총괄 부서를 새로이 신설하고,
+PRINTFORML 그런 위협에 대항할 수 있는 각지의 다양한 인원을 고용하여 봉쇄할 계획을 세웠다.
+PRINTFORML 그러나 최근의 안건에서 실패하여, 그 결과 대마인이라 불리는 외부 공작원 중 한 명이 행방불명되고 말았다는 것이다.
+PRINTFORML 
+;次世代のホープの救出を外部の人間に任せるのは違和感があったので、政府の内ゲバに巻き込まれる形に改変
+PRINTFORML 이 사태는 대마인의 존재를 눈엣가시로 여기던 대립 부서에게는 절호의 기회였다.
+;パワードスーツは怪しまれたら派手な戦闘になっちゃうからね仕方ないね
+PRINTFORML 사이보그나 파워드 슈트 등 외장 장비에 의한 개인 전투력 강화를 추구하는 그들에게 있어, 돌출된 개체인 대마인은 방해되는 존재였다.
+PRINTFORML 이에 대마인의 분석과 전력 약화를 도모하기 위해, 부상을 입었을 것으로 추정되는 그 인물을 포획·구속할 것을 의뢰한 것이다.
+PRINTFORMW 젊은 대마인 미즈키 유키카제의 확보. 그것이 이번 일의 내용이다.
+PRINTFORML 
+PRINTFORML 「네가 맡지 않겠다면 다른 자에게 넘어갈 뿐이다. 네가 팬텀에서 가치를 끌어올릴 기회가 하나 사라질 뿐이지」
+PRINTFORML 이 일을 맡겠습니까?
+PRINTFORML 
+PRINTFORML [0] …어쩔 수 없지, 맡는다
+PRINTFORML [1] 무례한 녀석들이다, 돌아가라고 한다
+$INPUT_LOOP
+ONEINPUT
+
+IF RESULT == 0
+	PRINTFORML 「현명한 판단이다. 밖에서 기다릴 테니 어서 채비해라」
+	PRINTFORMW 그렇게 말하며 자리에서 일어선 정장 차림의 남자들은 여전히 무례한 태도로 방을 나갔다…‥
+	PRINTFORML 
+	PRINTFORML .........
+	PRINTFORML ......
+	PRINTFORML ...
+	PRINTFORML 이튿날, %CALLNAME:MASTER%는 오키나와 본섬 부근에 있는 작은 섬에 도착했다.
+	PRINTFORMW 동승해 온 의뢰인 에이전트를 헬기에 남겨두고, 현장으로 걸어 들어간다.
+	PRINTFORML 
+	;ノマドってそんな組織だっけ？改変
+;	PRINTFORMW 自らを「ノマド」と名乗るそのテロリストたちは、政府を転覆させることを掲げている。
+	PRINTFORML 이번에 이곳에 대마인이 파견된 이유는 어느 테러리스트 그룹의 범행 예고가 있었기 때문이라는 모양이다.
+	PRINTFORML 종종 성명과 함께 쓸데없는 소동을 일으키던 이 테러리스트들은 정부 전복을 표방하고 있었다.
+	PRINTFORML 서구 열강에 굴복한 정부를 타도하고, 주권을 국민의 손으로 되찾겠다고 부르짖는 모양이다.
+	PRINTFORML 
+	PRINTFORML 그러나 지나치게 과격한 행동이 두드러졌던 그들은 점차 시민들의 지지를 잃어갔다.
+	PRINTFORML 그들의 명분과 행동에 대해 모두가 의문과 민폐를 느끼고 있었던 것이다.
+	PRINTFORML 
+	;生物兵器ってなに？　赤い薬ってなに？　ってなったので書き直し
+	; PRINTFORML 今回のケースでは、彼らは何らかの方法で生物兵器を入手し、沖縄でそれを解き放った。
+	; PRINTFORML かつてそこにあった米軍基地の機密性を考えると、これはおそらく象徴的な攻撃だったのだろう。
+	; PRINTFORML 
+	; PRINTFORML 소동을 듣고 %CALLNAME:MASTER%가 현장에 도착하자, 그곳에는 혼돈에 빠진 지옥도가 펼쳐져 있었다.
+	; PRINTFORMW 観光客や一般市民で賑わっていたメインストリートは、今や変わり果てた姿になり、悪魔が暴れまわっている。
+	; PRINTFORML
+	; PRINTFORML 事前に知らされた詳細の通り、放たれた生物兵器の効果は東京の地下に出回っていると噂される「赤い錠剤」に似ているようだった。
+	; PRINTFORML その効果は、人を悪魔に変える。被害規模から、この兵器は空気感染するように改良された可能性が高い。
+	; PRINTFORML 
+	; PRINTFORMW %CALLNAME:MASTER%はその効果に曝されないように注意を払いながら、かつて人間だった悪魔たちが襲いかかってくるのを迎え撃った。
+
+	PRINTFORML 이번에 그들은 모종의 방법으로 악마를 대량으로 입수하여, 오키나와에 풀어놓았다.
+	PRINTFORML 그 땅에 미군 기지가 있었다는 점을 생각하면, 아마도 미국에 대한 반항을 상징하는 공격이었으리라.
+	PRINTFORML 
+	PRINTFORML 소동을 듣고 %CALLNAME:MASTER%가 현장에 도착하자, 그곳에는 혼돈에 빠진 지옥도가 펼쳐져 있었다.
+	PRINTFORMW 관광객과 일반 시민들로 붐비던 메인 스트리트는 이제 끔찍한 모습으로 변해 있었고, 사람들의 모습은 어디에도 없었다.
+	PRINTFORML
+	PRINTFORML 곳곳에 아마도 전격에 의해 그을린 자국들이 남아 있어, 그곳에서 격렬한 전투가 벌어졌음을 말해주고 있었다.
+	PRINTFORML 풀려났던 대다수 악마는 이미 소멸한 상태였으나, 얼마 남지 않은 잔당들에게 발각되고 만 모양이다.
+	PRINTFORML 
+	PRINTFORMW 악마의 잔당이 덮쳐왔다!
+
+	
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+	CUSTOMDRAWLINE =
+	CALL SET_ENEMY, 7, [[キャラ:좀비쨩]],25,0,0
+	CALL SET_ENEMY, 8, [[キャラ:좀비군]],25,0,0
+	CALL SET_ENEMY, 9, [[キャラ:좀비캅]],25,0,1
+	CALL SET_ENEMY, 10, [[キャラ:좀비아미]],25,0,0
+	CUSTOMDRAWLINE =
+	CALL BATTLE_START
+	WAIT
+	CUSTOMDRAWLINE =
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+	PRINTL
+	PRINTFORML 전투는 끝나고, 황폐해진 거리에 잠시간의 평온이 찾아왔다.
+	PRINTFORML 여유를 되찾은 %CALLNAME:MASTER%는 행방불명된 소녀에 관한 단서를 찾기 위해 거리를 샅샅이 뒤지기 시작했다.
+	PRINTFORML
+	PRINTFORML .........
+	PRINTFORML ......
+	PRINTFORMW ...
+	PRINTFORML
+	PRINTFORML %CALLNAME:MASTER%는 방치된 감시 카메라에서 습격 당시의 기록 영상을 찾아내는 데 성공했다.
+	PRINTFORML 아직 10대로 보이는 화려한 차림의 소녀가 일종의 하이테크 전투용 레오타드를 입고 쌍권총을 능숙하게 휘두르는 모습이 카메라에 찍혀 있었다.
+	PRINTFORML 처음에는 악마 떼를 상대로 건투했으나, 점차 물량에 압도되어 부상을 입고 도주할 수밖에 없었던 모양이다.
+	PRINTFORML 영상은 끝났으나, 그녀가 향한 방향을 알았으니 나머지는 전투의 흔적을 추적하기만 하면 된다.
+	PRINTFORMW 미즈키 유키카제는 「닌자」치고는 섬세한 타입은 아닌 듯하여, 요란한 전투 흔적을 따라가는 것은 손쉬운 일이었다.
+	PRINTFORML 
+	PRINTFORML ...
+	PRINTFORML 
+	PRINTFORMW 미즈키 유키카제가 숨어들었을 것으로 보이는 빌딩 안으로 발을 들여놓는다.
+	PRINTFORML 
+	PRINTFORML ！！
+	PRINTFORML 
+	PRINTFORMW 기척에 반사적으로 몸을 숙인 %CALLNAME:MASTER%의 머리 위로 번갯불이 스쳐 지나갔다…
+	PRINTFORML 
+	PRINTFORML 「당신, 누구야!?」
+	PRINTFORML 
+	PRINTFORML %CALLNAME:MASTER%에게 총구를 겨누며 그늘에서 모습을 드러낸 것은, 틀림없이 부상을 입은 미즈키 유키카제였다.
+	PRINTFORML 중상을 입어 혼자 힘으로 탈출하기는 어려울 것이다. 통신 수단도 여의치 않아 구원 요청도 하지 못한 듯했다.
+	PRINTFORML 	
+	PRINTFORML 숨을 헐떡이며 옆구리를 누른 채, 쓰러질 듯한 몸을 가누며 %CALLNAME:MASTER%를 노려보고 있다.
+	PRINTFORML 
+	PRINTFORMW %CALLNAME:MASTER%는 적의가 없음을 보이기 위해 양손을 들고, 정부의 의뢰로 구원하러 왔음을 알렸다.
+	PRINTFORML 
+	;ここでガッツリ性的な目で見るのは早い　ステイッ、ステイッ　まだだッ、まだだッ
+;	PRINTFORMW HE_SHE(MASTER)%が説明すると、%YOUR()%の視線は、彼女の汗ばんだ日に焼けた肌にまとわりつき、成熟した曲線を惜しげもなくさらけ出した、彼女のスケスケの制服に注がれる。
+	PRINTFORML 
+	PRINTFORML 유키카제는 그 말을 곱씹는 데 잠시 시간을 들이더니, 이내 팔을 내렸다.
+	PRINTFORML 
+	PRINTFORML 「드디어… 온 거구나…. 정말이지, 외부인에게 도움을 받다니, 참……」
+	PRINTFORML  다음 순간, 팽팽하게 당겨져 있던 긴장의 끈이 끊어지며, 유키카제는 의식을 잃고 옆으로 쓰러졌다.
+	PRINTFORML 
+	PRINTFORMW .......
+	PRINTFORML 
+	PRINTFORML 쓰러진 유키카제를 바라보며, 그녀를 어떻게 처리할지 생각한다.
+	PRINTFORML 그녀를 탈환한 이상 %CALLNAME:MASTER%는 정부의 요청에 따라 유키카제를 인계하고 마땅한 보수를 받아야 한다.
+	PRINTFORML 한편으로 유키카제는 어리고 미모도 뛰어나다. 지금이라면 %CALLNAME:MASTER%가 아무것도 찾지 못했다고 보고하고, 비밀리에 그녀를 손에 넣는 것은 식은 죽 먹기일 것이다.
+	PRINTFORML 
+	PRINTFORML 어떻게 할까?
+	CALL INPUT_YN("유키카제를 확보한다", "유키카제를 노예로 삼는다")
+	IF RESULT == 0
+		PRINTFORML 임무를 완수하면 팬텀 상층부의 평판도 좋아지고 정부로부터 보수도 나온다.
+		PRINTFORML 역시 여기서는 당초 목적대로 구출하여 정부에 인계하기로 한다.
+		PRINTFORML 
+		PRINTFORMW .......
+		PRINTFORML 
+		PRINTFORML 기절한 유키카제를 안고 헬리포트로 향하자 전투 소리가 들려왔다.
+		PRINTFORML 그늘에 숨어 확인해 보니, 아무래도 대마인의 구원부대가 도착했고 에이전트들이 그들을 저지하고 있었다.
+		PRINTFORML 서로 무장은 하고 있으나 치열한 전투까지는 상정하지 않았던 탓인지 결정타가 부족하여 교착 상태다.
+		PRINTFORML 여기서 %CALLNAME:MASTER%가 참전한다면 균형이 무너지며 단숨에 결판이 날 것이다.
+		CALL INPUT_YN("대마인 편을 든다", "임무를 완수한다")
+		IF RESULT == 0
+			PRINTFORML 여기서, 이 일을 의뢰해 온 에이전트의 태도와 얼굴이 뇌리에 스쳤다.
+			PRINTFORML 그리고 대치하고 있는 대마인은 멀리서 보아도 아름다운 여성임을 알 수 있었다.
+			PRINTFORML 
+			PRINTFORML 남자라면 나오는 결론은 하나다.
+			PRINTFORML 무례한 아저씨보다 미녀의 편을 들어 은혜를 베풀어 두는 쪽이 훨씬 이득이다. 절대로.
+			PRINTFORMW 게다가 대마인 또한 실질적으로 정부 산하 부대이니, 정부의 의뢰를 수행한다는 의미에서도 틀린 건 아닐 터다.
+			PRINTFORML 
+			;そら(戦闘員でもない奴に後ろから銃撃ったら)そう(特に戦闘になることもなく死ぬ)よ。
+			PRINTFORML 엄폐하고 있는 에이전트들의 등 뒤로 돌아 들어가 조준을 맞춘다.
+			PRINTFORML 그리고 저 밥맛 떨어지는 뒤통수를 겨누어 거침없이 총탄을 쑤셔 박는다.
+			PRINTFORMW 등 뒤에서 난데없이 저격당한 그들은 무슨 일이 일어났는지 이해할 겨를도 없이 고꾸라졌다.
+			PRINTFORML 
+			PRINTFORML 영문 모를 원군에 당혹스러워하는 그녀의 앞에 모습을 드러내며 부상당한 유키카제를 운반한다.
+			PRINTFORML 축 늘어진 유키카제를 구호 헬기에 태우자, 구호 대마인이 감사의 인사와 함께 정중하게 머리를 숙였다.
+			PRINTFORML 
+			PRINTFORML 그 모습에 눈부심을 느껴버린 %CALLNAME:MASTER%는 보수를 받을 연락처만 전하고 발걸음을 재촉해 자리를 떴다.
+			PRINTFORMW 의뢰인에게는 구원하러 온 대마인 부대와 전투가 벌어져 타깃을 빼앗겨 버렸다고 보고해 두기로 하자…‥
+			PRINTFORML 
+			PRINTFORML .......
+			PRINTFORML 며칠 후, %CALLNAME:MASTER%에게 보수 25,000엔의 지급과 유키카제와의 연락 방법이 전달되었다.
+			PRINTFORML 아무래도 그녀는 목숨을 건진 빚을 갚아야 한다고 생각하는 듯하여, 필요하다면 전력으로 달려올 용의가 있다고 한다.
+			PRINTFORML 
+			PRINTFORMW 미즈키 유키카제가 협력해 주기로 했다.
+			MONEY += 25000
+			CALL ADD_NEW_COMPANION,[[キャラ:유키카제]],200,1
+			SIF RESULT
+				CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+			;関係ない依頼（依頼：悪魔憑き）のフラグを弄ってたのでコメントアウト
+			;依頼フラグ:[[依頼:악마빙의자]]:0 = 1
+			イベントフラグ:63:0 = 1
+		ELSE
+			PRINTFORML 자신의 일은 의뢰인에게 타깃을 인계하는 것.
+			PRINTFORML 그것을 위한 장애물이라면 전투도 불사해야 한다.
+			PRINTFORML 
+			PRINTFORML %CALLNAME:MASTER%는 무기를 뽑아들고 덮쳐들었다.
+			PRINTFORML 
+			;対・モブ対魔忍　現在はガワを被せた秋山凜子
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			CUSTOMDRAWLINE =
+			CALL SET_ENEMY,7,[[キャラ:아키야마린코]],30,0,0
+			NAME:(CHARANUM-1) = 구원의 대마인
+			CALLNAME:(CHARANUM-1) = 구원의 대마인
+			CUSTOMDRAWLINE =
+			CALL BATTLE_START
+			WAIT
+			CUSTOMDRAWLINE =
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			PRINTFORML 
+			PRINTFORML 달려든 대마인에게 부상을 입혔으나 아슬아슬한 순간에 놓치고 말았다.
+			PRINTFORML 가능하다면 사로잡고 싶었지만… 놓친 물고기가 더 크다는 게 바로 이런 건가.
+			PRINTFORML 
+			PRINTFORML 그 후 무례한 태도가 조금 누그러진 에이전트에게 미즈키 유키카제를 넘겨주고 임무는 완료되었다.
+			PRINTFORMW 그녀의 앞날이 어떻게 될 것인지, 그것은 %CALLNAME:MASTER%로서는 알 수 없는 일이다.
+			PRINTFORML 
+			PRINTFORMW 보수로 50,000엔이 입금되었다.
+			MONEY += 50000
+			イベントフラグ:63:0 = 3
+		ENDIF
+	ELSE
+		;今だいけっ！　ゴーゴーゴー！
+		PRINTFORML 역시 여기서 아무것도 하지 않고 그냥 넘기기에는 너무 아깝다. 그녀의 미모도 몸매도, 재능도… 쉽게 얻을 수 있는 것이 아니기 때문이다.
+		PRINTFORML 그렇게 생각하는 %CALLNAME:MASTER%의 시선은 그녀의 땀에 젖은 그을린 피부와 몸매 라인을 아낌없이 드러낸 속이 비치는 제복으로 쏠린다.
+		PRINTFORMW 이 풋풋한 열매를 어떻게 요리할지 기대되는군, 하며 %CALLNAME:MASTER%는 엷게 미소를 지었다.
+		PRINTFORML 
+		PRINTFORML 이렇게 하여 임무는 실패로 보고되었다.
+		PRINTFORML 타깃과 전투가 벌어져 무심코 깊은 상처를 입힌 찰나에 좀비 떼에게 습격당했다는 거짓말을 꾸며내고,
+		PRINTFORML 불에 그을리고 피가 묻은 머리카락 일부와 너덜너덜해진 리본을 내밀자 에이전트도 납득한 모양이었다.
+		PRINTFORML 타깃이 사망했다면 그것은 그것대로 상관없다는 뜻이리라.
+		PRINTFORML 모처럼 오키나와까지 왔으니 조금 관광이나 하다가 가겠다며 귀환 헬기 탑승을 거절하자 이상한 눈초리로 쳐다보았다.
+		PRINTFORML 심정은 이해하지만, 새로운 노예를 떠안고 헬기에 탈 수는 없는 노릇이다.
+		PRINTFORMW 알아서 돌아갈 테니 걱정 말라고 하자, 그제야 떠나가는 헬기를 배웅할 수 있었다.
+		PRINTFORML 
+		PRINTFORML 이번 임무에서 실패한 %CALLNAME:MASTER%에게는 아마도 이제 이런 유의 의뢰는 들어오지 않을 것이다.
+		PRINTFORML 
+		PRINTFORML 하지만 미즈키 유키카제는 지금 %CALLNAME:MASTER%의 손아귀에 있으며, 마음대로 다룰 수 있다.
+		PRINTFORML 어리고 미모가 뛰어난 그녀는 노예로서 높은 평가를 받을 수 있을 것이다.
+		PRINTFORML 또한 지금은 거칠지만 적절히 훈련시킨다면 유능한 전투원조차 될 수 있을지도 모른다. 그 소질도 충분하다.
+		PRINTFORML 
+		PRINTFORMW 미즈키 유키카제를 포획했습니다.
+		CALL ADD_NEW_COMPANION,[[キャラ:유키카제]],0,2
+		イベントフラグ:63:0 = 2
+	ENDIF
+
+ELSEIF RESULT == 1
+	PRINTFORML 「…결렬인가. 흥, 아쉽지만 어쩔 수 없지」
+	PRINTFORMW 그렇게 말하며 자리에서 일어선 정장 차림의 남자들은 작별 인사 한마디 없이 문을 열고 뒤도 돌아보지 않은 채 떠나갔다…
+
+	イベントフラグ:63:0 = 99
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+

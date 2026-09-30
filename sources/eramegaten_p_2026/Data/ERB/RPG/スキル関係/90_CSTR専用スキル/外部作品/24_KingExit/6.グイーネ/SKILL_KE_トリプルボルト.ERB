@@ -1,0 +1,125 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_KE_トリプルボルト, ARG
+	RESULTS = 트리플 볼트
+
+;　명중
+@SKILL_HITRATE_KE_トリプルボルト, ARG
+RETURN 100
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_KE_トリプルボルト, ARG
+RETURN 5
+
+;　威力
+@SKILL_POWER_KE_トリプルボルト, ARG
+RETURN 100
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_KE_トリプルボルト, ARG
+RETURN 3
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_KE_トリプルボルト, ARG
+RETURN 3
+
+;一体辺りの最大ＨＩＴ数
+@SKILL_MAXATK_PER_トリプルボルト,ARG
+RETURN 3
+
+;一体辺りの最低ＨＩＴ数
+@SKILL_MINATK_PER_トリプルボルト,ARG
+RETURN 3
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_KE_トリプルボルト, ARG
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 10
+	RETURN 1
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_KE_トリプルボルト, ARG
+IF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 10
+	RESULTS = %" 10ＴＰ"%
+	RETURN 0
+ENDIF
+RETURN 20
+
+;　相性
+@SKILL_TYPE_KE_トリプルボルト, ARG
+SIF ARG < 0
+	RETURN 1
+CALLFORM 攻撃相性_{EQUIP:ARG:검},ARG
+RETURN RESULT
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_KE_トリプルボルト
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_KE_トリプルボルト, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_KE_トリプルボルト, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_KE_トリプルボルト, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_KE_トリプルボルト, ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_KE_トリプルボルト, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_KE_トリプルボルト, ARG = -1
+RETURN 60
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_KE_トリプルボルト
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_KE_トリプルボルト, ARG, ARG:1, SKILL_NUM
+#LOCALSIZE 4
+#DIM SKILL_NUM
+
+;Fゲージ再回収できる様に起動前にTP10消費。
+CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", 10, "-="
+
+CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_KE_トリプルボルト, ARG
+PRINTL 
+PRINTL 날렵한 움직임으로 3회 공격을 가한다.
+PRINTL 적 전체 랜덤에게 장비한 무기 속성으로 3회 공격.
+PRINTL 
+PRINTL 구세주 구이네의 스킬(CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_KE_トリプルボルト, ARG
+;ゲージが10以上のときのみ
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 10
+	RETURN 0
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_KE_トリプルボルト, ARG
+RESULTS:0 = 적 전체 랜덤에게 장비한 무기 속성으로 3회 공격.
+RESULTS:1 = TP消費 10
+SIF ARG >= 0 && GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 10
+	RESULTS:1 = %RESULTS:1%(不足)

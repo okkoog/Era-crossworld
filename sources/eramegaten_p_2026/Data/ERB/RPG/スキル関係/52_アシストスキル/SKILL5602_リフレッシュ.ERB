@@ -1,0 +1,148 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_5602,ARG
+RESULTS = 리프레시
+
+;　명중
+@SKILL_HITRATE_5602, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_5602, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_5602,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_5602,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_5602, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("TURN")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_5602,ARG
+RETURN 2
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_5602
+RETURN GET_SKILL_DECIDE_TYPE_NUM("AS")
+;魔法
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_5602, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_5602,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_5602,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_5602, ARG
+RETURN GET_SKILL_EFFECT_NUM("상태회복")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_5602
+RETURN GET_SUCCESSION_NUM("회복")
+
+;속도보정
+@SKILL_SPEED_5602, ARG = -1
+RETURN 2
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_5602
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_5602, ARG = -1
+RETURN 4
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_5602, ARG, ARG:1, ARG:2
+;コスト支払い
+CALL CURE_STATE_SINGLE, ARG, ARG:1, 5602, 1
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_5602, ARG
+PRINTL 대기를 포함한 아군 １체의 FLY,DYING,ORGY,HEAT 이외의 상태이상을 회복한다。
+
+@SKILL_EXPLAIN_TOOLTIP_5602, ARG
+CALL GET_CAST_SKILL_EMULATOR, 5602, ARG
+IF ARG < 0
+	RESULTS = 어시스트스킬:필요턴수%TOFULL(TOSTR(RESULT))%
+ELSE
+	IF RESULT <= 0
+		RESULTS = 어시스트스킬:ＲＥＡＤＹ
+	ELSE
+		RESULTS = 어시스트스킬:필요턴수%TOFULL(TOSTR(RESULT))%
+	ENDIF
+ENDIF
+RESULTS:1 = 대기를 포함한 아군 １체의 FLY,DYING,ORGY,HEAT 이외의 상태이상을 회복한다。
+
+@SKILL_BATTLE_MAIN_TOOLTIP_5602, ARG, ARG:1
+CALL GET_CAST_SKILL_EMULATOR, ARG:1, ARG
+RESULTS = □리프레시
+IF RESULT <= 0
+	RESULTS:1 = 　READY
+ELSE
+	RESULTS:1 =　필요턴수:{RESULT}
+ENDIF
+
+@SKILL_EX_DISPLAY_5602, ARG, ARGS
+CALL ASSIST_SKILL_EX_DISPLAY, ARG, ARGS, 5602, "Refresh"
+RETURN RESULT
+
+@ロール専用_5602
+RESULTS = Aion식 서머너
+RETURN 1
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_5602,ARG
+RETURN 1
+;とくにない
+
+;ターゲット条件
+@SKILL_TARGETABLE_5602,ARG, ARG:1
+CALL SKILL_CURE_STATE_5602, CFLAG:(ARG:1):상태이상
+RETURN RESULT
+
+;控えに使えるか
+@SKILL_T_RESERVE_5602, ARG
+RETURN 1
+
+;何のバッドステータスを治せるか
+@SKILL_CURE_STATE_5602,ARG
+SELECTCASE GET_STATE(ARG)
+	CASE "FLY","GOOD","DYING","ORGY","HEAT"
+		RETURN 0
+	CASEELSE
+		RETURN 1
+ENDSELECT
+

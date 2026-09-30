@@ -1,0 +1,257 @@
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/02/16		Ｎ鳥					悪魔ストレージ機能追加
+;	003		2011/03/23		UNP						セットアップ画面での誤爆クリックを予防
+;	004		2011/03/23		Ｐ						プラグインソフトの装着処理呼び出しを追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;戦闘や探索の準備を行う画面
+
+
+@SHOPCOMABLE_106
+#LOCALSIZE 2
+RESULTS = セットアップ
+IF CHARANUM > 0
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+
+
+@SHOP_COM_106
+;メインメニュー表示
+PRINTL
+DRAWLINE
+DRAWLINE
+CALL SHOW_NOW_FORMATION_P,0,2, 3, 1
+PRINTL
+DRAWLINE
+PRINTL 　　　　　　　　　　[1] - 召喚/編入 　　[2] - ポジション変更 　　 [3] - 帰還/外す
+PRINTL 　　　　　　　　　　[4] - 装備変更  　　[5] - インストールソフト  [6] - 仲魔と別れる
+;---- EDIT 004 MOD START -------------------------
+PRINTL 　　　　　　　　　　[7] - 悪魔ストレージ[8] - プラグインソフト
+;---- EDIT 004 MOD END   -------------------------
+PRINTL
+DRAWLINE
+PRINTC [110] - 能力確認
+
+PRINTC [100] - 戻る
+PRINTC  
+PRINTFORMC [120] - 弱点表示[\@ FLAG:相性等表示ON == 0 ? OFF # ON \@]
+
+$INPUT_LOOP
+INPUT
+IF RESULT ==1
+	CALL SETUP_SUMON
+ELSEIF RESULT == 2
+	CALL SETUP_FORMATION
+ELSEIF RESULT == 4
+	CALL EQUIPMENT
+ELSEIF RESULT == 3
+	CALL SETUP_REMOVE
+ELSEIF RESULT == 5
+	CALL SETUP_SOFT
+ELSEIF RESULT == 6 && NUM_NAKAMA() > 0
+	CALL SETUP_PARTING
+ELSEIF RESULT == 7
+	CALL DEVIL_STORAGE
+;---- EDIT 004 ADD START -------------------------
+ELSEIF RESULT == 8
+	CALL EQUIP_PLUGIN_SOFT
+ELSEIF RANGE(RESULT, 21, 26)
+	RESULT = POS(RESULT - 20)
+	IF RESULT >= 0
+		LOCAL:1 = 0
+		FOR LOCAL, 1, 7
+			SIF POS(LOCAL) < 0
+				CONTINUE
+			Q:(LOCAL:1) = POS(LOCAL)
+			LOCAL:1++
+		NEXT
+		CALL SHOW_CHARADATA_PAGE, 2, LOCAL:1
+	ENDIF
+;---- EDIT 004 ADD END   -------------------------
+ELSEIF RESULT == 110
+	CALL SHOP_COM_110
+ELSEIF RESULT == 120
+	FLAG:相性等表示ON += 1
+	SIF FLAG:相性等表示ON > 1
+		FLAG:相性等表示ON = 0
+ELSEIF RESULT == 100
+	RETURN 0
+ENDIF
+RESTART
+
+
+
+;=================================================================
+;仲魔と別れる
+;=================================================================
+@SETUP_PARTING
+
+P = 0
+;表示させるキャラを抽出（Q:*に表示するキャラの登録番号、LOCAL:2に人数）
+VARSET Q, -1
+A = 0
+REPEAT CHARANUM
+	SIF COUNT == MASTER
+		CONTINUE
+	SIF (ABL:COUNT:種族 == 0 || ABL:COUNT:種族 > 44) && NO:COUNT != 3501 && NO:COUNT != 3502
+		CONTINUE
+	SIF CFLAG:COUNT:この場に居ないフラグ == 1
+		CONTINUE
+	SIF CFLAG:COUNT:所属ＣＯＭＰ == -1 && FLAG:ショップコマンド ==[[ショップ:探索]]
+		CONTINUE
+	Q:A = COUNT
+	A += 1
+REND
+LOCAL:2 = A
+
+DRAWLINE
+
+$PRINT_LIST
+PRINTFORML 誰を仲魔から外しますか？　＜page.{P}＞
+CALL SHOW_CHARA_LIST
+DRAWLINE
+PRINTFORMLC \@(P <= 0) ? %" " * 16% # [1007]前のページ\@
+PRINTLC [1000]戻る
+PRINTFORMLC \@(P >= (LOCAL:2 - 1) / 20) ? %" " * 16% # [1009]次のページ\@
+
+$INPUT_LOOP_1
+INPUT
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT == 1007
+	IF P > 0
+		P -= 1
+		GOTO PRINT_LIST
+	ELSE
+		GOTO INPUT_LOOP_1
+	ENDIF
+ELSEIF RESULT == 1009
+	LOCAL = (LOCAL:2 - 1) / 20
+	IF P < LOCAL
+		P += 1
+		GOTO PRINT_LIST
+	ELSE
+		GOTO INPUT_LOOP_1
+	ENDIF
+ELSEIF RESULT < 1 || RESULT >= CHARANUM || MATCH(Q,RESULT,0) == 0
+	GOTO INPUT_LOOP_1
+ELSE
+	SIF CFLAG:RESULT:12 > 0
+		GOTO INPUT_LOOP_1
+	LOCAL:20 = RESULT
+	IF ABL:(LOCAL:20):種族 != 0
+		PRINTFORML %NAME:(LOCAL:20)%のデータをＣＯＭＰから削除しますか？
+	ELSE
+		PRINTFORML %NAME:(LOCAL:20)%を解放しますか？
+	ENDIF
+	
+	CALL INPUT_YN,"Yes","No",2
+
+	SELECTCASE RESULT
+		CASE 0
+			;死んでるか石化してる仲魔だったら主人属性値ダウン
+			IF CFLAG:(LOCAL:20):ステート == GET_STATE_NUM("DYING") || CFLAG:(LOCAL:20):ステート == GET_STATE_NUM("STONE")
+				CALL INCREASE_LD,-5
+			ENDIF
+			CALL キャラ削除, LOCAL:20
+		CASE 1
+			GOTO PRINT_LIST
+	ENDSELECT
+
+	;フォーメーション再読み込み
+	CALL REFRESH_POS
+
+ENDIF
+
+
+;=================================================================
+;悪魔ストレージ
+;=================================================================
+@DEVIL_STORAGE
+
+P = 0
+;表示させるキャラを抽出（Q:*に表示するキャラの登録番号、LOCAL:2に人数）
+VARSET Q, -1
+A = 0
+REPEAT CHARANUM
+	SIF COUNT == MASTER
+		CONTINUE
+	SIF (ABL:COUNT:種族 == 0 || ABL:COUNT:種族 > 45)
+		CONTINUE
+	SIF CFLAG:COUNT:この場に居ないフラグ == 1
+		CONTINUE
+	SIF CFLAG:COUNT:容量未使用
+		CONTINUE
+	Q:A = COUNT
+	A += 1
+REND
+LOCAL:2 = A
+
+DRAWLINE
+
+$PRINT_LIST
+PRINTFORML ＣＯＭＰ-自宅サーバ間を転送させる悪魔を選んでください　＜page.{P}＞　ＣＯＭＰ：{NUM_NAKAMA()+ソフト容量()}/{FLAG:ＣＯＭＰ容量}
+FOR LOCAL, P*20 , MIN(P*20+20,LOCAL:2)
+	CALL ARRANGE_CHARALIST, Q:LOCAL
+	CALL ARRANGE_CHARALIFE, Q:LOCAL
+	PRINTFORML [\@ CFLAG:(Q:LOCAL):所属ＣＯＭＰ == -1 ? 自宅サーバ # ＣＯＭＰ \@]
+	
+NEXT
+
+DRAWLINE
+PRINTFORMLC \@(P <= 0) ? %" " * 16% # [1007]前のページ\@
+PRINTLC [1000]戻る
+PRINTFORMLC \@(P >= (LOCAL:2 - 1) / 20) ? %" " * 16% # [1009]次のページ\@
+
+$INPUT_LOOP_1
+INPUT
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT == 1007
+	IF P > 0
+		P -= 1
+		GOTO PRINT_LIST
+	ELSE
+		GOTO INPUT_LOOP_1
+	ENDIF
+ELSEIF RESULT == 1009
+	LOCAL = (LOCAL:2 - 1) / 20
+	IF P < LOCAL
+		P += 1
+		GOTO PRINT_LIST
+	ELSE
+		GOTO INPUT_LOOP_1
+	ENDIF
+ELSEIF RESULT < 1 || RESULT >= CHARANUM || MATCH(Q,RESULT,0) == 0
+	GOTO INPUT_LOOP_1
+ELSE
+	IF CFLAG:RESULT:所属ＣＯＭＰ == -1
+		LOCAL = RESULT
+		IF FLAG:ＣＯＭＰ容量 <= NUM_NAKAMA() + ソフト容量()
+			PRINTW ＣＯＭＰの容量が一杯です
+			CLEARLINE 2
+			GOTO INPUT_LOOP_1
+		ENDIF
+		IF NO:LOCAL != 3501 && NO:LOCAL != 3502 && NO:LOCAL != 4402
+			FOR LOCAL:1,0,CHARANUM
+				IF 契約(LOCAL:1) == 0 && NO:(LOCAL:1) == NO:LOCAL && 契約(LOCAL) == 0 && CFLAG:(LOCAL:1):所属ＣＯＭＰ != -1
+					PRINTW 同じ悪魔がＣＯＭＰに居ます
+					CLEARLINE 2
+					GOTO INPUT_LOOP_1
+				ENDIF
+			NEXT
+		ENDIF
+		CFLAG:RESULT:所属ＣＯＭＰ = 0
+	ELSE
+		CFLAG:RESULT:所属ＣＯＭＰ = -1
+	ENDIF
+	GOTO PRINT_LIST
+ENDIF

@@ -1,0 +1,219 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_3960,ARG
+RESULTS = 다단촉수고문
+
+;　명중
+@SKILL_HITRATE_3960, ARG
+RETURN 100
+
+;　威力
+;最大まで育てれば240～360でダイン系ぐらいな感じ。 初期でも80は入る。
+@SKILL_POWER_3960, ARG
+LOCAL = 40 + MIN((FLAG:촉수레벨 / 5) , 20)
+RETURN LOCAL
+
+;初期でも最低限使い物になるように2-2は確保。
+;最大まで育てると4～6でバステ付きとかなりの性能になる。
+;최저공격횟수
+@SKILL_MINATTACKNUMBER_3960,ARG
+LOCAL = 2 + MIN((FLAG:촉수레벨 / 50) , 2)
+RETURN LOCAL
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3960,ARG
+LOCAL = 2 + MIN((FLAG:촉수레벨 / 25) , 4)
+RETURN LOCAL
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3960, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3960,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_3960,ARG
+RETURN GET_TYPE_NUM("전술")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3960
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3960, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3960, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_3960,ARG
+RETURN 2
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3960,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3960, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3960
+RETURN GET_SUCCESSION_NUM("전술")
+
+;속도보정
+@SKILL_SPEED_3960, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3960
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3960, ARG = -1
+RETURN 0
+
+@SKILL_RANKUP_3960
+;ランクアップなし
+RETURN 0
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_3960,ARG
+SIF FLAG:공격횟수 == 5
+	RETURN GET_STATE_NUM("HAPPY")
+SIF FLAG:공격횟수 == 4
+	RETURN GET_STATE_NUM("CHARM")
+SIF FLAG:공격횟수 == 3
+	RETURN GET_STATE_NUM("BIND")
+SIF FLAG:공격횟수 == 2
+	RETURN GET_STATE_NUM("PALYZE")
+SIF FLAG:공격횟수 == 1
+	RETURN GET_STATE_NUM("POISON")
+	RETURN GET_STATE_NUM("HAPPY")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_3960,ARG
+SIF FLAG:공격횟수 == 5
+;ムフフONで発生する発情状態は精神耐性に寄らないのをイメージし、性感による万能HAPPYを与える。
+	RETURN GET_TYPE_NUM("만능")
+SIF FLAG:공격횟수 == 4
+	RETURN GET_TYPE_NUM("정신")
+SIF FLAG:공격횟수 == 3
+	RETURN GET_TYPE_NUM("신경")
+SIF FLAG:공격횟수 == 2
+	RETURN GET_TYPE_NUM("신경")
+SIF FLAG:공격횟수 == 1
+	RETURN GET_TYPE_NUM("신경")
+	RETURN GET_TYPE_NUM("정신")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_3960,ARG
+LOCAL = 10 + MIN((FLAG:촉수레벨 / 10) , 10)
+RETURN LOCAL
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_3960,ARG
+LOCAL = 20 + MIN((FLAG:촉수레벨 / 5) , 20)
+RETURN LOCAL
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3960, ARG, ARG:1, ARG:2
+IF CFLAG:ARG:PT플래그 > 0
+	IF GET_CHARA_STOCK_MAG((ARG)) < MAX(GET_CHARA_MAXMAG(ARG)/20,1)
+		FLAG:촉수에너지 += (GET_CHARA_STOCK_MAG((ARG)))
+		PRINTFORML %조사처리(CALLNAME:(ARG),"는")% 건넬 ＭＡＧ가 부족해 촉수에게 벌을 받았다！
+		CFLAG:ARG:상태이상 = GET_STATE_NUM("HAPPY")
+	ELSE
+		FLAG:촉수에너지 += MAX(GET_CHARA_MAXMAG(ARG)/200,1)
+		CALL ATTACK_SINGLE,ARG,POS(CFLAG:(ARG):타겟),3960
+		PRINTFORML %CALLNAME:ARG% >>>>> {MAX(GET_CHARA_MAXMAG(ARG)/20,1)} 소비 (나머지{GET_CHARA_STOCK_MAG(ARG)})
+	ENDIF
+	CALL CONTROL_MAG, ARG, -MAX(GET_CHARA_MAXMAG(ARG)/20,1)
+ELSE
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3960, ARG
+PRINTL 길러낸 다종다양한 촉수를 휘둘러、적 １체에 전술 상성의 공격을 여러 차례 행하면서 다양한 배드 스테이터스를 부여한다。
+PRINTL 사용자의 MAG를 5% 소비하고、소비 MAG의 1할은 촉수에너지로 환원된다。촉수 레벨이 낮으면 성능을 발휘할 수 없다。
+SIF ARG >= 0
+	PRINTFORML %CALLNAME:ARG% 의 남은 MAG {GET_CHARA_STOCK_MAG(ARG)} 예상소비 {MAX(GET_CHARA_MAXMAG(ARG)/20,1)} 사용후 MAG {GET_CHARA_STOCK_MAG(ARG) - MAX(GET_CHARA_MAXMAG(ARG)/20,1)}
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3960,ARG
+RETURN 1
+;とくにない
+;====================================================
+;追加コマンド(一番下)
+;====================================================
+@INPUT_COM_NAME_3960,ARG
+RESULTS = 多段触手責め
+RESULTS:1 = ＴＥＮＴＡＣＬＥ
+RETURN 2
+
+@INPUT_COM_ABLE_多段触手責め,ARG
+RETURN 1
+
+;====================================================
+;コマンド実行
+;====================================================
+@INPUT_COM_多段触手責め,ARG
+#DIM DYNAMIC L_USEABLE, 2
+$INPUT_LOOP
+;GOTO用のラベルを設定
+PRINTFORML 촉수에 의한 특수공격을 선택
+CALL CHECK_ACTIONABLE,ARG,3960
+IF RESULT
+	PRINTL [1] 다단촉수고문
+	L_USEABLE:0 = 1
+ELSE
+	HTML_PRINT SET_COLOR_TAG(SET_BUTTON_TAG("[1] 다단촉수고문", "1", RESULTS), "gray")
+ENDIF
+CALL CHECK_ACTIONABLE,ARG,3961
+IF RESULT
+	PRINTL [2] 촉수흉포화
+	L_USEABLE:1 = 2
+ELSE
+	HTML_PRINT SET_COLOR_TAG(SET_BUTTON_TAG("[2] 촉수흉포화", "2", RESULTS), "gray")
+ENDIF
+DRAWLINE
+PRINTL [0] ＣＡＮＣＥＬ
+CALL INPUTINT(0,L_USEABLE:0, L_USEABLE:1)
+;INPUTINTの時点で指定した値を選択した時にループが入るのでELSEは要らない
+IF RESULT == 1
+	CALL GET_SKILL_PROP, "SKILL_EXPLAIN", 3960, ARG
+	CALL SELECT_SKILL_TARGET,3960,ARG
+	SIF RESULT == -1
+		GOTO INPUT_LOOP
+	CFLAG:(ARG):타겟 = RESULT
+	CFLAG:(ARG):입력행동 = 3960
+	CALL SET_REPEAT_CHARA, ARG
+	RETURN 1
+ENDIF
+IF RESULT == 2
+	CALL GET_SKILL_PROP, "SKILL_EXPLAIN", 3961, ARG
+	CALL SELECT_SKILL_TARGET,3961,ARG
+	SIF RESULT == -1
+		GOTO INPUT_LOOP
+	CFLAG:(ARG):타겟 = RESULT
+	CFLAG:(ARG):입력행동 = 3961
+	CALL SET_REPEAT_CHARA, ARG
+	RETURN 1
+ENDIF
+RETURN -1

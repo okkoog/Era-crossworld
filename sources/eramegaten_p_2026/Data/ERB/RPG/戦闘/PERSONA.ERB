@@ -1,0 +1,917 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:PERSONA.ERB
+;	Facility	:ペルソナ使いのステータス算出に関わる処理。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	000		20xx/xx/xx		----					新規作成
+;	001		2010/01/12		P						ペルソナの相性変更追加
+;	002		2010/01/13		P						バグ修正
+;	003		2010/01/14		P						陥落による経験値補正を修正
+;	004		2010/03/28		P						経験値上限による陥落度の影響が初期ペルソナと一般ペルソナで逆転してたのを修正。PEXPの下限値を1に修正
+;	005		2010/04/26		P						変異後にステータス同期を行うように変更
+;	006		2012/12/8		GATA					潜在能力追加
+;	007		2015/09/07		名無し					ペルソナ使いのステータス方式を変更
+;	008		2016/12/11		Jガン					1moreフラグ使用変更のため追記
+;	009		2020/04/27		木綿豆腐				初期ペルソナのランクが上がらない不具合を修正
+;	010		2020/07/31		Jガン					1moreフラグ処理統一のため追記
+;	011		2020/08/16		マリーちゃんの中の人	初期ペルソナのランクが上がらない不具合を修正
+;	012		2020/08/20		マリーちゃんの中の人	EXP二倍処理が抜けていたので追加
+;	013		2020/08/20		マリーちゃんの中の人	ペルソナ使い追加ステ設定を試用版として実装
+;	014		2020/08/27		Jガン					スキルが変わったときのスキルゲージ処理追加
+;	015		2020/09/06		Jガン					ペルソナ新型処理追加
+;	016		2020/09/08		マリーちゃんの中の人	ペルソナ使いが獲得したEXPが所持している全ペルソナに対して加算される様に変更
+;	017		2020/09/21		Jガン					ペルソナ変異時の不具合修正
+;	018		2021/08/27		JK好き					@SENZAI_BOUGYO　敵がGUN攻撃した場合の潜在防御エラー応急処置
+;	019		2022/10/13		P(bazzile)				@SENZAI_BOUGYO　式中関数化し、処理を上層に移動。HPの割合判定が切り下げの影響で歪な推移になっていたのでリニアに推移するように改定
+;	020		2024/04/14		ironlizardster			@CHECK_LEVEL_UP_AUTO3を参考にペルソナの自動ステータス分配をFLAG:레벨업시인터페이스설정 == 4の時に実行
+;	021		2024/04/26		ironlizardster			ペルソナの自動ステータス分配設定を追加
+;	022		2024/09/24		P(bazzile)				本来扱われないはずの0番のペルソナを装備してしまっている場合のステータス同期処理を追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name
+;
+; *- 戦闘(RPG)
+;
+;	# ステータス調整
+;	・ SYNC_STATUS_P
+;	# ペルソナの経験値獲得及びランクアップ関連
+;	・ PRANK_COLLECTION_VALUE
+;	・ INCREASE_PERSONA_EXP
+;	・ CHECK_PRANK_UP
+;	・ GET_P_FITNESS
+;	# 잠재능력
+;	・ SENZAI_HO_KA_KO
+;	・ SENZAI_BOUGYO
+;
+;=================================================
+;===============================
+;ペルソナ使い用、戦闘システムファイル
+;SYSTEM_BATTLE.ERBはアクセス多いので
+;なるべくタッチしないで済むようにこっちに記述していく
+;ALI補正撤廃、ペルソナランクで能力値に補正を加える
+;===============================
+@SYNC_STATUS_P, ARG
+	EXISTCSV ABL:ARG:초기페르소나, 0
+	IF RESULT == 0
+		PRINTFORMW %CALLNAME:ARG%의 초기 페르소나가 비정상 상태입니다
+		PRINTFORML 죄송하지만, 올바른 번호를 CSV에서 확인하여 입력해 주십시오
+		PRINTFORML 또한, 초기 페르소나의 번호는 {ABL:ARG:초기페르소나}입니다
+		PRINTFORML 이상이 발생한 캐릭터와 함께 보고해 주시면 큰 도움이 되므로 잘 부탁드립니다
+		PRINTFORML (0을 입력한 경우, 가입 시의 초기 페르소나가 됩니다)
+		$INPUT_LOOP
+		INPUT
+		IF RESULT == 0
+			ABL:ARG:초기페르소나 = CSVABL(NO:ARG, GETNUM(ABL, "초기페르소나"), 0)
+		ELSE
+			LOCAL:99 = RESULT
+			EXISTCSV LOCAL:99, 0
+			IF RESULT
+				PRINTFORML %CSVCALLNAME(LOCAL:99, 0)%(으)로 괜찮습니까?
+				CALL INPUT_YN
+				IF RESULT == 0
+					ABL:ARG:초기페르소나 = LOCAL:99
+				ELSE
+					PRINTFORML 그럼, 입력을 다시 해주십시오
+					GOTO INPUT_LOOP
+				ENDIF
+			ELSE
+				PRINTFORML 수치가 부정확합니다. 입력을 다시 해주십시오
+				GOTO INPUT_LOOP
+			ENDIF
+		ENDIF
+		PRINTFORMW 초기 페르소나를 %CSVCALLNAME(ABL:ARG:초기페르소나, 0)%(으)로 설정했습니다
+	ENDIF
+
+			
+	;初期ペルソナ登録処理
+	IF !CFLAG:ARG:초기페르소나넘버 && ABL:ARG:초기페르소나
+		;敵キャラはここで処理終了。つまり、ペルソナ使いとして処理されない = 敵キャラとして出す場合はペルソナなし前提でCSV組んでください
+		SIF CFLAG:ARG:PT플래그 == 0
+			RETURN 0
+		CFLAG:ARG:초기페르소나넘버 = 50
+		WHILE 1
+			SIF !DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("装備状態")
+				BREAK
+			CFLAG:ARG:초기페르소나넘버++
+		WEND
+		LOCAL:1 = ABL:ARG:초기페르소나
+		;悪魔の所持スキルをフラグに引移して行く
+		FOR LOCAL, 1, 9
+			LOCALS = 스킬{LOCAL}
+			CALL GET_SKILL_PROP, "敵専用", CSVABL(LOCAL:1 , GETNUM(ABL, LOCALS), 0), -1
+			SIF RESULT
+				CONTINUE
+			CALL GET_SKILL_PROP, "ロール専用", CSVABL(LOCAL:1 , GETNUM(ABL, LOCALS), 0), -1
+			SIF RESULT
+				CONTINUE
+			DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):(페르소나(LOCALS)) = CSVABL(LOCAL:1 , GETNUM(ABL, LOCALS), 0)
+		NEXT
+		FOR LOCAL, 0, 20
+			DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):(LOCAL+페르소나("습득스킬1")) = CSVABL(LOCAL:1 , GETNUM(ABL, "습득스킬1") + LOCAL, 0)
+			DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):(LOCAL+페르소나("습득LV1")) = CSVABL(LOCAL:1 , GETNUM(ABL, "습득LV1") + LOCAL, 0)
+		NEXT
+		;ペルソナのキャラ番号を登録
+		DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("NO") = LOCAL:1
+		;ペルソナ装備状態に固有の番号を格納
+		DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("装備状態") = 3
+		DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("ペルソナ所持者") = CFLAG:ARG:캐릭터고유번호
+		;悪魔のステータスを記録
+		FOR LOCAL, 0, 7
+			DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):(페르소나("LV") + LOCAL) = CSVBASE(LOCAL:1, GETNUM(BASE, "LV")+LOCAL, 0)
+		NEXT
+		DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("속성LD") = CSVABL(LOCAL:1, GETNUM(ABL, "속성LD"), 0)
+		DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("속성LC") = CSVABL(LOCAL:1, GETNUM(ABL, "속성LC"), 0)
+		DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("陥落") = 2
+		;잠재능력
+		DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("잠재능력") = CSVABL(LOCAL:1, GETNUM(ABL, "잠재능력"), 0)
+		
+		CALL GET_CP_PERSONA, LOCAL:1, CFLAG:ARG:초기페르소나넘버
+		;CALL キャラ削除, LOCAL:1
+	ELSE
+		;初期ペルソナが変更されていた場合の処理
+		IF ABL:ARG:초기페르소나 != DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("NO")
+			LOCAL:1 = CFLAG:ARG:초기페르소나넘버
+			LOCAL:2 = ABL:ARG:초기페르소나
+			LOCAL:3 = DITEMTYPE:LOCAL:페르소나("NO")
+			;レベルに応じて強化可能回数を加える
+			DITEMTYPE:(LOCAL:1):페르소나("強化可能回数") += MAX(CSVBASE(LOCAL:2, GETNUM(BASE, "LV"),0) - DITEMTYPE:(LOCAL:1):페르소나("LV") ,0) * 3 / 2
+			DITEMTYPE:(LOCAL:1):페르소나("LV") = MAX(DITEMTYPE:(LOCAL:1):페르소나("LV"), CSVBASE(LOCAL:2, GETNUM(BASE, "LV"),0))
+	;		FOR LOCAL, 1, 8
+	;			LOCALS = 스킬{LOCAL}
+	;			DITEMTYPE:(LOCAL:1):페르소나(LOCALS) = CSVABL(LOCAL:2, GETNUM(ABL, LOCALS),0)
+	;		NEXT
+			FOR LOCAL, 0, 20
+				DITEMTYPE:(LOCAL:1):(LOCAL+페르소나("습득스킬1")) = CSVABL(LOCAL:2, (GETNUM(ABL, "습득스킬1") + LOCAL), 0)
+				DITEMTYPE:(LOCAL:1):(LOCAL+페르소나("습득LV1")) = CSVABL(LOCAL:2, (GETNUM(ABL, "습득LV1") + LOCAL), 0)
+			NEXT
+			DITEMTYPE:(LOCAL:1):페르소나("속성LD") = CSVABL(LOCAL:2, GETNUM(ABL, "속성LD"),0)
+			DITEMTYPE:(LOCAL:1):페르소나("속성LC") = CSVABL(LOCAL:2, GETNUM(ABL, "속성LC"),0)
+			DITEMTYPE:(LOCAL:1):페르소나("NO") = LOCAL:2
+			DITEMTYPE:(LOCAL:1):페르소나("변경상성1") = 0
+			DITEMTYPE:(LOCAL:1):페르소나("변경상성치1") = 0
+			;잠재능력
+			DITEMTYPE:(LOCAL:1):페르소나("잠재능력") = CSVABL(LOCAL:2, GETNUM(ABL, "잠재능력"), 0)
+
+			CALL GET_CP_PERSONA, LOCAL:2, CFLAG:ARG:초기페르소나넘버
+			CALL EVENT_LEVELUP_P, LOCAL:1
+		ENDIF
+	ENDIF
+	IF EQUIP:ARG:장비페르소나
+		LOCAL = EQUIP:ARG:장비페르소나
+	ELSE
+		LOCAL = CFLAG:ARG:초기페르소나넘버
+	ENDIF
+	;ペルソナがない場合
+	IF LOCAL == 0
+		FOR LOCAL:2, 0, 6
+			MAXBASE:ARG:GET_BASESTATUS(1+LOCAL:2) = 1
+		NEXT
+		FOR LOCAL:2, 0, TYPENUM+1
+			MAXBASE:ARG:GET_TYPE(LOCAL:2) = 100
+		NEXT
+		FOR LOCAL:2, 0, BADSTATENUM
+			MAXBASE:ARG:(GET_STATE(LOCAL:2)) = 0
+		NEXT
+		FOR LOCAL:2, 0, 8
+			ABL:ARG:(GETNUM(ABL, "스킬1") + LOCAL:2) = 0
+		NEXT
+	ELSE
+		LOCAL:3 = DITEMTYPE:LOCAL:페르소나("NO")
+		FOR LOCAL:2, 0, 6
+		;---- EDIT 007 ADD START -------------------------
+			;ペルソナ使いのステータスはそのまま１００％
+		;	MAXBASE:ARG:GET_BASESTATUS(1+LOCAL:2) -= BASE:ARG:GET_BASESTATUS(1+LOCAL:2)/2
+
+		;	LOCAL:4 = (DITEMTYPE:(EQUIP:ARG:장비페르소나):(페르소나("힘") + LOCAL:2)) * PRANK_COLLECTION_VALUE(ARG)/100
+			;陥落2までは主人の方がレベル高い場合のみ、陥落3なら違う
+		;		IF DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("陥落")
+		;			IF BASE:MASTER:LV > DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("LV")
+		;				LOCAL:5 = DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("陥落") >= 2 ? BASE:MASTER:LV * 15+ 180 # (BASE:MASTER:LV + DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("LV"))/2 * 15+ 180
+		;				LOCAL:4 += LOCAL:4 * LOCAL:5 / (DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("LV") * 15+ 180)
+		;			ELSEIF DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("陥落") == 3
+		;				LOCAL:4 -= LOCAL:4 * (DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("LV") * 15+ 180) / (BASE:MASTER:LV * 15 + 180)
+		;			ENDIF
+		;		ENDIF
+			;ペルソナ使いのステータス＋ペルソナのCSVステータスの10分の1
+			;初期ペルソナは現在ステータスの10分の1
+		;	MAXBASE:ARG:GET_BASESTATUS(1+LOCAL:2) += (DITEMTYPE:LOCAL:(페르소나("힘") + LOCAL:2)) * PRANK_COLLECTION_VALUE(ARG)/200
+		;---- EDIT 013 ADD START -------------------------
+			IF EQUIP:ARG:장비페르소나 == 0 || FLAG:페르소나구사자추가스탯설정
+				MAXBASE:ARG:GET_BASESTATUS(1+LOCAL:2) += (DITEMTYPE:LOCAL:(페르소나("힘") + LOCAL:2)) * PRANK_COLLECTION_VALUE(ARG)/1000
+			ELSE
+				MAXBASE:ARG:GET_BASESTATUS(1+LOCAL:2) += CSVBASE((DITEMTYPE:LOCAL:(페르소나("NO"))), GETNUM(BASE, "힘") + LOCAL:2, 0) * PRANK_COLLECTION_VALUE(ARG)/1000
+			ENDIF
+		;---- EDIT 007 ADD END -------------------------
+		;---- EDIT 013 ADD END -------------------------
+			;場合によってここで0以下になるのでその場合は1にしとく
+			SIF MAXBASE:ARG:GET_BASESTATUS(1+LOCAL:2) <= 0
+				MAXBASE:ARG:GET_BASESTATUS(1+LOCAL:2) = 1
+
+			SIF SOFT_ON("어져스트먼트기어")
+				MAXBASE:ARG:GET_BASESTATUS(1+LOCAL:2) += 1
+
+		NEXT
+		;---- EDIT 001 ADD START -------------------------
+		;相性をとったあと変化するように変更
+		;---- EDIT 002 ADD START -------------------------
+		;DITEMTYPE:ARG:페르소나→DITEMTYPE:LOCAL:페르소나
+		FOR LOCAL:2, 0, TYPENUM+1
+			MAXBASE:ARG:GET_TYPE(LOCAL:2) = CSVBASE(LOCAL:3, GETNUM(BASE, GET_TYPE(LOCAL:2)),0)
+			SIF DITEMTYPE:LOCAL:페르소나("변경상성1") - 1 == LOCAL:2
+				MAXBASE:ARG:GET_TYPE(LOCAL:2) = DITEMTYPE:LOCAL:페르소나("변경상성치1")
+			SIF DITEMTYPE:LOCAL:페르소나("변경상성2") - 1 == LOCAL:2
+				MAXBASE:ARG:GET_TYPE(LOCAL:2) = DITEMTYPE:LOCAL:페르소나("변경상성치2")
+			SIF DITEMTYPE:LOCAL:페르소나("変更相性3") - 1 == LOCAL:2
+				MAXBASE:ARG:GET_TYPE(LOCAL:2) = DITEMTYPE:LOCAL:페르소나("変更相性値3")
+		NEXT
+		;---- EDIT 001 ADD END -------------------------
+		;---- EDIT 002 ADD END -------------------------
+		FOR LOCAL:2, 0, BADSTATENUM
+			MAXBASE:ARG:(GET_STATE(LOCAL:2)) = CSVBASE(LOCAL:3, GETNUM(BASE, GET_STATE(LOCAL:2)), 0)
+		NEXT
+		FOR LOCAL:2, 0, 8
+			ABL:ARG:(GETNUM(ABL, "스킬1") + LOCAL:2) = DITEMTYPE:LOCAL:(페르소나("스킬1")+LOCAL:2)
+		NEXT
+		;잠재능력
+		ABL:ARG:잠재능력 = DITEMTYPE:LOCAL:페르소나("잠재능력")
+	ENDIF
+;ARGはペルソナ使い、ARG:1はペルソナ番号、基本的にペルソナ番号優先
+@PRANK_COLLECTION_VALUE(ARG = -1, ARG:1 = -1)
+	#FUNCTION
+	#LOCALSIZE 2
+	;初期ペルソナは100%固定
+	SIF (ARG >=0 && EQUIP:ARG:장비페르소나 == 0) || ARG:1 >= 50
+		RETURNF 100
+	;ランク取得
+	IF ARG:1 >= 0
+		LOCAL = DITEMTYPE:(ARG:1):페르소나("ランク")
+		LOCAL:1 = ARG:1
+	ELSE
+		LOCAL = DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("ランク")
+		LOCAL:1 = EQUIP:ARG:장비페르소나
+		;アジャストメントギアがある場合はランク+5
+		SIF SOFT_ON("어져스트먼트기어")
+			LOCAL = MIN(LOCAL+5, 10)
+	ENDIF
+	;陥落によってステ補正テーブルが変化する
+	SELECTCASE DITEMTYPE:(LOCAL:1):페르소나("陥落")
+		CASE 0
+			RETURNF 70 + LOCAL * 3
+		CASE 1
+			RETURNF 80 + LOCAL * 2
+		CASE 2
+			RETURNF 90 + LOCAL
+		CASE 3
+			RETURNF 100
+	ENDSELECT
+
+;ペルソナの経験値増加
+@INCREASE_PERSONA_EXP(ARG, ARG:1, ARG:2, ARG:3)
+	;ARG キャラ   ARG:1 基本値   ARG:2 範囲,COOP参加者かどうか   ARG:3 노역플래그
+	#LOCALSIZE 10
+	#DIM PEXP, 1
+	#DIM PERSONA, 1
+	#DIM ELV, 1
+	SIF TALENT:ARG:페르소나구사자 == 0
+		RETURN 0
+	PERSONA = EQUIP:ARG:장비페르소나 ? EQUIP:ARG:장비페르소나 # CFLAG:ARG:초기페르소나넘버
+	SIF PERSONA == 0
+		RETURN 0
+	;COOP時は色々すっとばす
+	IF ARG:2 > 29
+		GOTO RESERVE_COOP
+	ENDIF
+	;労役時は色々すっとばす
+	IF ARG:3
+		ELV = BASE:ARG:LV
+		GOTO RESERVE
+	ENDIF
+	;ペルソナ能力を使ったどうかの判定
+	;行動不能な時は加算が発生しない
+	CALL ACTIONABLE_CHARA, ARG
+	SIF RESULT == 0
+		RETURN 0
+	;通常攻撃及びGUARDははじく。なお、行動は終了時に-1が代入されてしまうのでリピート行動を見る
+	SIF C_REPEAT_SKILL:ARG:0 < 1
+		RETURN 0
+	;防御時も弾く
+	SIF CFLAG:ARG:방어플래그
+		RETURN 0
+	;利用したスキルを所持していない場合も弾く
+	SIF !HAVE_SKILL(ARG, C_REPEAT_SKILL:ARG:0)
+		RETURN 0
+	ELV = 0
+	RESULT = 0
+	;控えに使うスキルはキャラ番号そのままになる
+	CALL GET_SKILL_PROP, "SKILL_T_RESERVE", CFLAG:ARG:입력행동, ARG
+	IF RESULT
+		ELV = BASE:(CFLAG:ARG:타겟):LV
+		GOTO RESERVE
+	ENDIF
+	;範囲攻撃は範囲内で最もレベルの高いキャラ
+	;COOPはCOOPの対象のうちでもっとレベルの高いキャラ
+	SELECTCASE ARG:2
+		CASE 1 TO 16
+			LOCAL:4 = 0
+			LOCAL:6 = 0
+			ELV = POS(ARG:2) >= 0 ? BASE:(POS(ARG:2)):LV # BASE:ARG:LV
+		CASE 17
+			LOCAL:4 = 1
+			LOCAL:6 = 4
+		CASE 18
+			LOCAL:4 = 4
+			LOCAL:6 = 7
+		CASE 19
+			LOCAL:4 = 1
+			LOCAL:6 = 7
+		CASE 20
+			LOCAL:4 = 7
+			LOCAL:6 = 12
+		CASE 21
+			LOCAL:4 = 12
+			LOCAL:6 = 17
+		CASE 0 , 22
+			LOCAL:4 = 7
+			LOCAL:6 = 17
+		CASE 23
+			LOCAL:4 = 1
+			LOCAL:6 = 17
+		;該当なしの場合はとりあえず自分のレベルを用いる
+		CASEELSE
+			ELV = BASE:ARG:LV
+			LOCAL:4 = 0
+			LOCAL:6 = 0
+	ENDSELECT
+	$RESERVE_COOP
+	IF ARG:2 > 29
+		FOR LOCAL, 7, 17
+			LOCALS = 포지션{LOCAL}
+			IF FLAG:LOCALS > -1
+				SIF CFLAG:(FLAG:LOCALS):ＣＯＯＰ플래그 == 0
+					CONTINUE
+				ELV = MAX(BASE:(FLAG:LOCALS):LV, ELV)
+			ENDIF
+		NEXT
+	ENDIF
+	;基本係数設定開始
+	$RESERVE
+	PEXP = 0
+	;---- EDIT 016 ADD START -------------------------
+	IF FLAG:소지페르소나EXP증가설정 == 0
+		;レベル差補正を加える(ペルソナと対象のレベル差の1/4で切り捨て)
+		PEXP += (ELV - DITEMTYPE:(PERSONA):페르소나("LV")) / 4
+	ENDIF
+	;---- EDIT 016 ADD END   -------------------------
+	;シンクロナイズギアは基本係数 + 2
+	PEXP += (SOFT_ON("싱크로나이즈기어")) * 2
+	;属性の補正 
+	PEXP += GET_P_FITNESS(ARG)
+	IF !ARG:3
+		;アジャストメントギアは半減
+		SIF SOFT_ON("어져스트먼트기어")
+			PEXP /= 2
+	ENDIF
+	;---- EDIT 003 ADD START -------------------------
+	;補正撤廃
+	;新規追加
+	SIF TALENT:ARG:비전투원
+		PEXP = PEXP * 3 / 2
+	;---- EDIT 003 ADD END   -------------------------
+	;基本係数が1未満になってしまった場合は1に直す
+	PEXP = MAX(PEXP, 1)
+	;---- EDIT 003 ADD END -------------------------
+	;経験値獲得前の数値を保持しておく
+	LOCAL = DITEMTYPE:(PERSONA):페르소나("EXP")
+	;上限の式の変更
+	;獲得の上限は100 + 陥落*50(初期ペルソナは＋所持者の陥落を見る)に、非戦闘員の場合は最後に1.5倍
+	;---- EDIT 016 ADD START -------------------------
+	;デフォルトでは敵とのレベル補正がマイナスだった場合、負の数字を吐いて、大幅な足かせになっていたので是正
+	;個別に控えのペルソナにもレベル補正をかけた経験値が入る様に是正
+	IF PERSONA < 50 && FLAG:소지페르소나EXP증가설정 == 0
+		DITEMTYPE:(PERSONA):페르소나("EXP") += MIN(ARG:1 * PEXP, (100 + DITEMTYPE:(PERSONA):페르소나("陥落") * 50) * (TALENT:ARG:비전투원 + 2) / 2)
+	ELSE
+		DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("EXP") += MIN(ARG:1 * PEXP, ((100 + 陥落(ARG) * 50 + MAX(0,((ELV - DITEMTYPE:(PERSONA):페르소나("LV")) / 4)) * (TALENT:ARG:비전투원 + 1)) * (TALENT:ARG:비전투원 + 2) / 2))
+		FOR LOCAL:2, 1, 4
+			LOCALS = 소지페르소나{LOCAL:2}
+			IF EQUIP:ARG:LOCALS
+				DITEMTYPE:(EQUIP:ARG:LOCALS):페르소나("EXP")+= MIN(ARG:1 * PEXP, ((100 + 陥落(ARG) * 50 + MAX(0,((ELV - DITEMTYPE:(PERSONA):페르소나("LV")) / 4)) * (TALENT:ARG:비전투원 + 1)) * (TALENT:ARG:비전투원 + 2) / 2))
+			ELSE
+				BREAK
+			ENDIF
+		NEXT
+	ENDIF
+	;---- EDIT 016 ADD END   -------------------------
+	;使用した技のコスト分ペルソナ経験値が追加で増える(COOP時は無効)
+	IF ARG:2 > 29
+		LOCAL:1 = 0
+	ELSE
+		CALL GET_SKILL_PROP, "SKILL_COST", CFLAG:ARG:입력행동
+		LOCAL:1 = RESULT
+	ENDIF
+	;---- EDIT 016 ADD START -------------------------
+	IF FLAG:소지페르소나EXP증가설정 == 0
+		DITEMTYPE:(PERSONA):페르소나("EXP") += LOCAL:1
+	ELSE
+		DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("EXP") += LOCAL:1
+		FOR LOCAL:2, 1, 4
+			LOCALS = 소지페르소나{LOCAL:2}
+			IF EQUIP:ARG:LOCALS
+				DITEMTYPE:(EQUIP:ARG:LOCALS):페르소나("EXP") += LOCAL:1
+			ELSE
+				BREAK
+			ENDIF
+		NEXT
+	ENDIF
+	;---- EDIT 016 ADD END   -------------------------
+	;---- EDIT 003 ADD START -------------------------
+	;DITEMTYPE:PEXP:페르소나("EXP") += ARG:1 * PALI_COLLECTION_VALUE(ARG, ARG:2)
+	IF DITEMTYPE:(PERSONA):페르소나("EXP") > 1000
+		;余剰EXPの獲得(労役時は獲得せず、ミューテーションギアで1.5倍となる)
+		IF !ARG:3
+			DITEMTYPE:(PERSONA):페르소나("余剰EXP") += (DITEMTYPE:(PERSONA):페르소나("EXP") - 1000)  * ((SOFT_ON("뮤테이션기어")) * 5 + 10)/10
+			DITEMTYPE:(PERSONA):페르소나("変異判定フラグ") = 1
+		ELSE
+			DITEMTYPE:(PERSONA):페르소나("変異判定フラグ") = 0
+		ENDIF
+		DITEMTYPE:(PERSONA):페르소나("EXP") = 1000
+	ENDIF
+	;獲得した経験値を返す
+	;PRINTFORMW 獲得EXP{DITEMTYPE:(PERSONA):페르소나("EXP") - LOCAL}　PEXP = {PEXP}
+
+	RETURN DITEMTYPE:(PERSONA):페르소나("EXP") - LOCAL
+	;PRINTFORML %CALLNAME:ARG%の加算経験値 {ARG:1 * LOCAL:7}
+	;PRINTFORMW 総経験値は{DITEMTYPE:(PERSONA):페르소나("EXP")}
+	;パリコレ？もとい、ALI相性を返す関数。一致してる属性の数+1が補正になる
+	;取得経験値のこの補正値をかけた値になる。つまり相性普通を基準にするなら0.5倍～1.5倍
+	;P3/4系ペルソナ使いは成長がやや早い
+	;インストールソフト「싱크로나이즈기어」は成長を早め、「어져스트먼트기어」は成長を遅らせる
+	;ARG:1はターゲットがはいる。0の場合はCOOPで来たと判断
+
+
+@CHECK_PRANK_UP(ARG)
+	#LOCALSIZE 3
+	; 1/ 2/  3/  4/  5/  6/  7/   8/ 9/  10 LV
+	;10/20/ 50/ 70/ 90/110/130/150/170/ 190 必要経験値
+	;10/40/ 90/160/250/360/490/640/810/1000 必要累計経験値(LV^2 * 10)
+	SIF TALENT:ARG:페르소나구사자 == 0
+		RETURN 0
+	SIF ABL:ARG:초기페르소나 == 0
+		RETURN 0
+	;とりあえず現在はランク10なら何の処理も無し
+	SIF DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("ランク") == 10
+		RETURN 0
+	;---- EDIT 009 ADD START -------------------------
+	;装備してるペルソナが初期ペルソナ　かつ　ランク10なら何の処理も無し
+	SIF DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("ランク") == 10 && DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("NO") == 0
+		RETURN 0
+	;初期ペルソナを装備している　初期ペルソナだとNO,LV,ランク,EXPが全部0になる(なんで？)ので初期ペルソナのステータスを参照させる
+	IF DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("NO") == 0
+		LOCAL = 0
+		;元々のランクを記録
+		LOCAL:2 = DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("ランク")
+		WHILE 1
+			LOCAL += 1
+			IF DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("EXP") < LOCAL * LOCAL * 10
+				DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("ランク") = LOCAL - 1
+				BREAK
+			ENDIF
+		WEND
+		;ランク変化
+		IF DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("ランク") != LOCAL:2
+			SETCOLOR 0x66FFFF
+			CALL MESSAGE_B(1, @"%CALLNAME:ARG%の%CSVCALLNAME(DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("NO"), 0)%のランクが{DITEMTYPE:(CFLAG:ARG:초기페르소나넘버):페르소나("ランク")}になりました")
+			RESETCOLOR
+		ENDIF
+	;---- EDIT 009 ADD END   -------------------------
+	;初期ペルソナ以外を装備している
+	ELSE
+		LOCAL = 0
+		;元々のランクを記録
+		LOCAL:2 = DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("ランク")
+		WHILE 1
+			LOCAL += 1
+			IF DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("EXP") < LOCAL * LOCAL * 10
+				DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("ランク") = LOCAL - 1
+				BREAK
+			ENDIF
+		WEND
+		;ランク変化
+		IF DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("ランク") != LOCAL:2
+			SETCOLOR 0x66FFFF
+			CALL MESSAGE_B(1, @"%CALLNAME:ARG%の%CSVCALLNAME(DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("NO"), 0)%のランクが{DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("ランク")}になりました")
+			RESETCOLOR
+		ENDIF
+	ENDIF
+
+	;ARGはペルソナ使い・ARG:1はペルソナ番号、ARG:1が0の場合、装備ペルソナを見る
+	@GET_P_FITNESS(ARG, ARG:1 = 0)
+	#FUNCTION
+	LOCAL = ARG:1 ? ARG:1 # EQUIP:ARG:장비페르소나
+	;初期ペルソナは3固定
+	SIF LOCAL >= 50
+		RETURNF 3
+	LOCAL:1 = CSVABL(NO:ARG, GETNUM(ABL, "속성LD"), 0)
+	LOCAL:2 = DITEMTYPE:LOCAL:페르소나("속성LD")
+	LOCAL:3 = CSVABL(NO:ARG, GETNUM(ABL, "속성LC"), 0)
+	LOCAL:4 = DITEMTYPE:LOCAL:페르소나("속성LC")
+	;主人公は初期ペルソナに依存する
+	IF ARG == MASTER
+		LOCAL:1 = CSVABL(ABL:ARG:초기페르소나, GETNUM(ABL, "속성LD"), 0)
+		LOCAL:3 = CSVABL(ABL:ARG:초기페르소나, GETNUM(ABL, "속성LC"), 0)
+	ENDIF
+	;CSVに属性が未設定の場合も初期ペルソナに依存する(念のため、初期ペルソナもない場合はN扱いにする)
+	SIF LOCAL:1 == 0
+		LOCAL:1 = CSVABL(ABL:ARG:초기페르소나, GETNUM(ABL, "속성LD"), 0)
+	SIF LOCAL:1 == 0
+		LOCAL:1 =  2
+	SIF LOCAL:3 == 0
+		LOCAL:3 = CSVABL(ABL:ARG:초기페르소나, GETNUM(ABL, "속성LC"), 0)
+	SIF LOCAL:3 == 0
+		LOCAL:3 =  2
+	
+	SIF LOCAL == 0 || ((LOCAL:1 == LOCAL:2) && (LOCAL:3 == LOCAL:4))
+		RETURNF 3
+	IF LOCAL:1 == 2 || LOCAL:2 == 2
+		LOCAL:5 = 1
+	ELSEIF LOCAL:1 == LOCAL:2
+		LOCAL:5 = 2
+	ELSE
+		LOCAL:5 = 0
+	ENDIF
+	IF LOCAL:3 == 2 || LOCAL:4 == 2
+		LOCAL:5 += 1
+	ELSEIF LOCAL:3 == LOCAL:4
+		LOCAL:5 += 2
+	ELSE
+		LOCAL:5 += 0
+	ENDIF
+
+	IF LOCAL:5 >= 3
+		RETURNF 2
+	ELSEIF LOCAL:5 >= 2
+		RETURNF 1
+	ELSE
+		RETURNF 0
+	ENDIF
+
+@MARK_P_FITNESS(ARG , ARG:1 = 0)
+	#FUNCTIONS
+	RETURNF AUTO_SPLIT("△_○_◎_☆" , "_" , GET_P_FITNESS(ARG , ARG:1))
+
+;----------------------------
+;突然変異
+;Rank10の時のみ発生する
+;とりあえず、レベルアップのみ
+;余剰EXPが200増加するごとに確率が倍になっていく
+;陥落は1段階につきEXP100相当
+;相性は1段階につきEXP200相当
+;
+;余剰0として相性最良で1/64となり、最悪で1/256となる
+;----------------------------
+@CHECK_PERSONA_MUTATION, ARG
+	#LOCALSSIZE 1
+	#LOCALSIZE 5
+	#DIM 前スキル, 8
+	#DIM PERSONA, 1
+	#DIM PROB, 1
+	#DIM LINE, 1
+	SIF !TALENT:ARG:페르소나구사자
+		RETURN 0
+	;面倒なのでステータス異常を持ってる時は戻る
+	SIF CFLAG:ARG:상태이상
+		RETURN 0
+	FOR LOCAL, 0, 4
+		PERSONA = LOCAL ? EQUIP:ARG:@"소지페르소나{LOCAL}"# CFLAG:ARG:초기페르소나넘버
+		SIF PERSONA == 0
+			CONTINUE
+		SIF PERSONA >= 50 && BASE:ARG:LV <= DITEMTYPE:PERSONA:페르소나("LV")
+			CONTINUE
+		SIF PERSONA < 50 && BASE:MASTER:LV <= DITEMTYPE:PERSONA:페르소나("LV")
+			CONTINUE
+		SIF !DITEMTYPE:PERSONA:페르소나("変異判定フラグ") 
+			CONTINUE
+		DITEMTYPE:PERSONA:페르소나("変異判定フラグ") = 0
+		PROB = ARG > 50 ? 陥落(ARG) * 100 # DITEMTYPE:PERSONA:페르소나("陥落") * 100
+		;余剰経験値はミューテーションギアの効果で1.5倍になる
+		PROB += DITEMTYPE:PERSONA:페르소나("余剰EXP")
+		PROB += GET_P_FITNESS(ARG, PERSONA) * 200
+		;1/8 ~ 1/512
+		SIF RAND:POWER(2, MAX(9 - PROB/200, 3))
+			CONTINUE
+		DITEMTYPE:PERSONA:페르소나("余剰EXP") = 0
+		SETCOLOR COLOR("aqua")
+		CALL MESSAGE_B(2, "ＰＥＲＳＯＮＡ　ＭＵＴＡＴＩＯＮ", CSVNAME(DITEMTYPE:PERSONA:페르소나("NO"), 0)+"のレベルがあがった！")
+		RESETCOLOR
+		DITEMTYPE:PERSONA:페르소나("強化可能回数") += 1 + DITEMTYPE:PERSONA:페르소나("LV") % 2
+		DITEMTYPE:PERSONA:페르소나("LV") += 1
+		PRINTW 페르소나의 스테이터스를 올릴 수 있습니다
+
+		;ペルソナのステータス上昇時確認オプションが「確認する」の時、ワンクッション置く
+		IF FLAG:페르소나스테이터스상승확인설정 == 1
+			PRINTFORML 스테이터스를 상승시키겠습니까?
+			PRINTFORML 
+			PRINTFORML [0] 예
+			PRINTFORML [1] 아니오
+
+			CALL INPUTINT(0,1)
+			IF RESULT == 0
+				;ステータスアップの方に飛ぶ
+				GOTO P_MUTATION_STATUS_UP
+			ELSEIF RESULT == 1
+				;なにもしない
+			ENDIF
+		;ペルソナのステータス上昇時確認オプションがオフ、または、オンの時に上昇させる選択肢を選べばこっち
+		ELSE
+			$P_MUTATION_STATUS_UP
+
+			LINE = LINECOUNT
+			WHILE 1
+				CLEARLINE LINECOUNT - LINE
+				DRAWLINE
+				PRINTFORML LV {DITEMTYPE:PERSONA:페르소나("LV")} %CSVNAME(DITEMTYPE:PERSONA:페르소나("NO"), 0)%
+				;---- EDIT 020 ADD START -------------------------
+				IF FLAG:페르소나스테이터스상승시분배설정
+					CALL CHECK_PERSONA_LEVEL_UP_AUTO3(PERSONA,DITEMTYPE:PERSONA:페르소나("強化可能回数"))
+					DITEMTYPE:PERSONA:페르소나("強化可能回数") = 0
+					BREAK
+				ELSE
+					PRINTFORML 강화가능횟수：{DITEMTYPE:PERSONA:페르소나("強化可能回数")}회
+					CUSTOMDRAWLINE ･
+					PRINTL 어느 능력을 올릴까？
+					LOCAL:1 = 0
+					;---- EDIT 017 (LOCAL → LOCAL:2) -------------------------
+					FOR LOCAL:2, 페르소나("힘"), 페르소나("운") + 1
+						LOCAL:1++
+						PRINTFORML [{LOCAL:1}]%GET_BASESTATUS(LOCAL:1),4% {DITEMTYPE:PERSONA:(LOCAL:2),3}　
+					NEXT
+					PRINTL [9] 캔슬
+					CALL INPUTINT(1,2,3,4,5,6,9)
+					IF RESULT == 9
+						PRINTW 페르소나의 능력치 상승을 종료합니다
+						BREAK
+					ENDIF
+					DITEMTYPE:PERSONA:페르소나("強化可能回数") -= 1
+					DITEMTYPE:PERSONA:페르소나(GET_BASESTATUS(RESULT)) += 1
+					PRINTFORMW %CSVNAME(DITEMTYPE:PERSONA:페르소나("NO"), 0)%의 %GET_BASESTATUS(RESULT)%은(는) {DITEMTYPE:PERSONA:페르소나(GET_BASESTATUS(RESULT))}이(가) 되었다！
+					IF DITEMTYPE:PERSONA:페르소나("強化可能回数") == 0
+						PRINTW 강화 가능 횟수가 0이 되었으므로, 페르소나의 능력치 상승을 종료합니다
+						BREAK
+					ENDIF
+				ENDIF
+				;---- EDIT 020 ADD END -------------------------
+			WEND
+
+		ENDIF
+
+
+		;---- EDIT 014 ADD START -------------------------
+		FOR LOCAL:1 , 0 , 8
+			LOCALS = 스킬{LOCAL:1 + 1}
+			前スキル:(LOCAL:1) = DITEMTYPE:PERSONA:페르소나(LOCALS)
+		NEXT
+		;---- EDIT 014 ADD END   -------------------------
+		CALL EVENT_LEVELUP_P, PERSONA
+		;---- EDIT 014 ADD START -------------------------
+		FOR LOCAL:1 , 0 , 8
+			LOCALS = 스킬{LOCAL:1 + 1}
+			SIF 前スキル:(LOCAL:1) != DITEMTYPE:PERSONA:페르소나(LOCALS)
+				CALL SKILLGAGE_DIRECT_CLEAR,ARG,(LOCAL:1 + 1) + LOCAL * 8 
+		NEXT
+		;---- EDIT 014 ADD END   -------------------------
+		CALL SYNC_STATUS, ARG
+	NEXT
+
+;---- EDIT 020 ADD START -------------------------
+;===============================
+;ペルソナレベルアップ処理　AUTO
+;===============================
+@CHECK_PERSONA_LEVEL_UP_AUTO3,PERSONANO,STATUS_BONUS
+#DIM PERSONANO
+#DIM STATUS_BONUS
+#DIM PERSONA_CSV
+#DIM LCOUNT
+#DIM 上昇率, 6
+#DIM STATUS_CHECK, 7
+#DIM STATUS_UP, 7
+#DIMS PERSONA_NAME
+
+;実際ボーナスを分配する必要があるとき
+IF STATUS_BONUS
+	;ARG:1 レベルアップ回数
+	VARSET LOCAL
+
+	PERSONA_CSV = DITEMTYPE:PERSONANO:페르소나("NO")
+	PERSONA_NAME = %CSVNAME(PERSONA_CSV, 0)%
+
+	IF FLAG:페르소나스테이터스상승시분배설정 == 2
+		REPEAT 6
+			LOCAL:COUNT = DITEMTYPE:PERSONANO:(페르소나("힘상승률")+COUNT)
+		REND
+		;すべてが0だった場合初期化する
+		IF !(SUMARRAY(LOCAL,0,6))
+			CALL PERSONA_PARAM_DIST_INIT(PERSONANO)
+		ENDIF
+		REPEAT 6
+			上昇率:COUNT = DITEMTYPE:PERSONANO:(페르소나("힘상승률")+COUNT)
+		REND
+	ELSE
+		REPEAT 6
+			上昇率:COUNT = CSVBASE(PERSONA_CSV,GETNUM(BASE,"힘")+COUNT)
+		REND
+		;すべてが0だった場合全部に１足して最低限の確率を確保するとともに0で割ることを回避
+		IF !(SUMARRAY(上昇率,0,6))
+			REPEAT 6
+				上昇率:COUNT++
+			REND
+		ENDIF
+	ENDIF
+	
+	LOCAL:1 = SUMARRAY(上昇率,0,6)
+	FOR LOCAL,0,6
+		上昇率:LOCAL = 上昇率:LOCAL * 100 / LOCAL:1
+	NEXT
+
+	VARSET STATUS_UP
+
+	;最も高いステータスの値を確認
+	STATUS_CHECK:0 = MAXARRAY(上昇率:0, 0, 6)
+	;ERBでは少数が使えないため、制度を高める為に上昇率を最低100倍してから現在ステータスで除算する
+	;ステータスが高くなっても問題ないように、現在の最大ステータスも使用
+	FOR LCOUNT, 1, 7
+		STATUS_CHECK:LCOUNT = 上昇率:(LCOUNT - 1) * 100 * STATUS_CHECK:0 / MAX(DITEMTYPE:PERSONANO:페르소나(GET_BASESTATUS(LCOUNT)), 1)
+	NEXT
+	FOR LCOUNT, 0, STATUS_BONUS
+		;最も優先度の高いステータスを確認
+		STATUS_UP:0 = FINDELEMENT(STATUS_CHECK, MAXARRAY(STATUS_CHECK, 1, 7), 1, 7)
+		;優先度の高いステータスに上昇予定を１つ加算し、優先度を再計算
+		STATUS_UP:(STATUS_UP:0) += 1
+		STATUS_CHECK:(STATUS_UP:0) = 上昇率:(STATUS_UP:0 - 1) * 100 * STATUS_CHECK:0 / MAX(DITEMTYPE:PERSONANO:페르소나(GET_BASESTATUS(STATUS_UP:0)) + STATUS_UP:(STATUS_UP:0), 1)
+	NEXT
+		CUSTOMDRAWLINE ･
+	FOR LCOUNT, 1, 7
+		DITEMTYPE:PERSONANO:페르소나(GET_BASESTATUS(LCOUNT)) += STATUS_UP:LCOUNT
+		PRINTFORMW %PERSONA_NAME%의 %GET_BASESTATUS(LCOUNT)%은(는) {DITEMTYPE:PERSONANO:페르소나(GET_BASESTATUS(LCOUNT))}(+{STATUS_UP:LCOUNT})이(가) 되었다！
+	NEXT
+	PRINTW 	
+ENDIF
+;---- EDIT 020 ADD END ---------------------------
+
+;잠재능력------------------------------------------------------------------
+;補助・回復・攻撃・反撃
+@SENZAI_HO_KA_KO,ARG,ARG:1
+	;ARG:0 攻撃側
+	;ARG:1 防御側
+	;HP>0かつHP1/4以下の時残りHPに応じた確率で発動
+								;CFLAG:(LOCAL:1):잠재능력발동횟수 > 3
+	SIF !CFLAG:(ARG:1):PT플래그 || CFLAG:(LOCAL:1):1263 > 3
+		RETURN
+	IF BASE:(ARG:1):ＨＰ > 0 && BASE:(ARG:1):ＨＰ * 4 / MAXBASE:(ARG:1):ＨＰ <= 1 && RAND:(MAX(2, BASE:(ARG:1):ＨＰ * 16 / MAXBASE:(ARG:1):ＨＰ)) == 0
+		;相性☆のとき
+		IF GET_P_FITNESS(ARG:1, 0) >= 3
+			;잠재능력	６：潜在補助　１：潜在回復　５：潜在攻撃　０：潜在反撃
+			SELECTCASE ABL:(ARG:1):잠재능력
+				;CASE 0
+				;	SETCOLOR 0x66FFFF
+				;	PRINTL 　　잠재반격 
+				;	RESETCOLOR
+				;	PRINTFORM 　　TARGET:[{CPOS(ARG),2}] %CALLNAME:ARG,20,LEFT%　>>>>>>　
+				;	;威力500の万能物理で反撃
+				;	CALLFORM DAMAGE_1, ARG:1, ARG, 500, 17, -100
+				CASE 1
+					SETCOLOR 0x66FFFF
+					PRINT 　　잠재회복 
+					RESETCOLOR
+					BASE:(ARG:1):ＨＰ = MAXBASE:(ARG:1):ＨＰ
+					CFLAG:(ARG:1):상태이상 = 0
+					PRINTFORM %CALLNAME:(ARG:1),20,LEFT%　>>>>>>　HP全回復、状態回復！
+				CASE 5
+					SETCOLOR 0x66FFFF
+					PRINTFORML 　　%CALLNAME:(ARG:1)% 잠재공격 
+					RESETCOLOR
+					CALLFORM ACTION_2002, ARG:1, 22
+				CASE 6
+					SETCOLOR 0x66FFFF
+					PRINTFORML 　　%CALLNAME:(ARG:1)% 잠재보조 
+					RESETCOLOR
+					CALLFORM ACTION_2550, ARG:1, 19
+			ENDSELECT
+		;相性◎のとき
+		ELSEIF GET_P_FITNESS(ARG:1, 0) == 2
+			SELECTCASE ABL:(ARG:1):잠재능력
+				CASE 1
+					SETCOLOR 0x66FFFF
+					PRINT 잠재회복 
+					RESETCOLOR
+					BASE:(ARG:1):ＨＰ = MAXBASE:(ARG:1):ＨＰ
+					PRINTFORM %CALLNAME:(ARG:1),20,LEFT%　>>>>>>　HP全回復
+				CASE 5
+					SETCOLOR 0x66FFFF
+					PRINTFORML %CALLNAME:(ARG:1)% 잠재공격 
+					RESETCOLOR
+					CALLFORM ACTION_2001, ARG:1, 22
+				CASE 6
+					SETCOLOR 0x66FFFF
+					PRINTFORML %CALLNAME:(ARG:1)% 잠재보조 
+					RESETCOLOR
+					CALLFORM ACTION_504, ARG:1, 19
+					CALLFORM ACTION_502, ARG:1, 19
+			ENDSELECT
+		ENDIF
+		PRINTL
+		CFLAG:(LOCAL:1):1263 ++
+	ELSEIF BASE:(ARG:1):ＨＰ < 1
+		CALL DEAD_CHARA,ARG:1
+	ENDIF
+
+;潜在防御
+@GET_SENZAI_BOUGYO, ARG
+#FUNCTION
+#DIM L_P
+#DIM L_HP_PER
+L_P = ARG
+;---- EDIT 019 MOD START-------------------------
+;反射させる関係上、引数を共有し、流れをそのままつかえる上流で処理するためにメイン処理を移して判定関数に変更
+;カウンター中と反射中はでないように
+SIF !CFLAG:L_P:PT플래그
+	RETURNF 0
+SIF CFLAG:L_P:잠재능력발동횟수 > 3
+	RETURNF 0
+SIF TALENT:L_P:페르소나구사자 < 1
+	RETURNF 0
+SIF ABL:L_P:잠재능력 != 2
+	RETURNF 0
+SIF GET_P_FITNESS(L_P, 0) < 2
+	RETURNF 0
+SIF TFLAG:반사중
+	RETURNF 0
+SIF FLAG:카운터중
+	RETURNF 0
+;小数点以下を扱えないおかげで切り下げの影響を激しく受けるので数値を増やして対処する。
+L_HP_PER = (BASE:L_P:ＨＰ * 100 * 100) / MAXBASE:L_P:ＨＰ
+;HP1/4以下時残りＨＰに応じた確率で発動(25%ちょうどで1/4, 12.5%で1/2でキャップ)
+IF L_HP_PER <= 2500 && RAND:MAX(L_HP_PER, 1250) < 625
+	SIF GET_P_FITNESS(ARG:1, 0) >= 3
+		RETURNF 2
+	SIF GET_P_FITNESS(ARG:1, 0) == 2
+		RETURNF 1
+ELSE
+	RETURNF 0
+ENDIF
+;@SENZAI_BOUGYO, ARG, ARG:1, ARG:2, ARG:3
+	;ARG:0 攻撃側
+	;ARG:1 防御側
+	;ARG:2 物理／魔法
+	;ARG:3 スキル威力
+	;ARG:2 == 3の時つまりGUN攻撃の場合
+;	SIF ARG:2 == 3
+;		ARG:2 = 1
+;	;0<HPかつペルソナ使いかつ
+;	;CFLAG:(LOCAL:1):잠재능력발동횟수 > 3
+;	SIF !CFLAG:(ARG:1):PT플래그 || CFLAG:(LOCAL:1):1263 > 3
+;		RETURN 0
+;	IF BASE:(ARG:1):ＨＰ > 0 && TALENT:(ARG:1):페르소나구사자 >= 1
+;		;HP1/4以下時残りＨＰに応じた確率で発動
+;		IF BASE:(ARG:1):ＨＰ * 4 / MAXBASE:(ARG:1):ＨＰ <= 1 && RAND:(MAX(2, BASE:(ARG:1):ＨＰ * 16 / MAXBASE:(ARG:1):ＨＰ)) == 0
+;			;相性☆のときクリティカル率5、ＨＰ消費物理スキルの追加威力1、万能相性に変えて反射
+;			IF GET_P_FITNESS(ARG:1, 0) >= 3
+;				SETCOLOR 0x66FFFF
+;				PRINT 潜在防御
+;				RESETCOLOR
+;				---- EDIT 010 ADD -------------------------
+;				CALL ONE_MORE_POINT_ADD,ARG,-2
+;				PRINTL 　しまったはねかえされた
+;				PRINTFORM 　　TARGET:[{CPOS(ARG),2}] %CALLNAME:ARG,20,LEFT%　>>>>>>　
+;					LOCAL = CFLAG:ARG:使用スキル
+;					CFLAG:ARG:使用スキル = [[스킬:潜在防御]]
+;					CALLFORM DAMAGE_{ARG:2}, ARG, ARG, ARG:3, 17, 5, 0
+;					CFLAG:ARG:使用スキル = LOCAL
+;				PRINTL 
+;				RETURN 1
+;			;相性◎のとき
+;			ELSEIF GET_P_FITNESS(ARG:1, 0) == 2
+;				SETCOLOR 0x66FFFF
+;				PRINT 潜在防御
+;				RESETCOLOR
+;			;---- EDIT 010 ADD -------------------------
+;				CALL ONE_MORE_POINT_ADD,ARG,-1
+;				PRINTFORMW 　BLOCK
+;				RETURN 1
+;			ENDIF
+;			;CFLAG:(LOCAL:1):잠재능력발동횟수 ++
+;			CFLAG:(LOCAL:1):1263 ++
+;			PRINTL
+;		ELSE
+;			RETURN 0
+;		ENDIF
+;	ELSE
+;		RETURN 0
+;	ENDIF
+
+;---- EDIT 019 MOD END-------------------------

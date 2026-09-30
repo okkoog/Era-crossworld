@@ -1,0 +1,110 @@
+﻿;=================================================================
+;悪魔の解析状況を返す関数群をここに置きます。
+;
+;更新日時　　　更新者				更新内容
+;2021/06/25　　ロッド@カヤノソト	ファイルを新規作成。解析済の悪魔の種類を返す関数「ANALYZE_COUNT_CHECK」を新規作成
+;=================================================================
+
+
+;-----------------------------------------------------------------
+;解析済みの悪魔の種類を返す関数
+;-----------------------------------------------------------------
+;引数
+;	MEGATEN_ONLY_FLG	：女神転生が出典の場合のみ対象とするかどうか(0:全てをカウント / 1:女神転生が出典の場合のみカウント)
+;	ANALYZE_BOTTOM		：カウント対象となる悪魔のアナライズ率下限
+;	ANALYZE_TOP			：カウント対象となる悪魔のアナライズ率上限
+;	LEVEL_BOTTOM		：カウント対象となる悪魔のレベル下限
+;	LEVEL_TOP			：カウント対象となる悪魔のレベル上限
+;	CATEGORY			：カウント対象となる悪魔の種族(指定しない場合は-1)　※各種族の値は「Str.csv」ファイルの「종족」項目を参照。
+;返り値
+;	関数内でカウントした解析済みの悪魔の種類を返す。(30種類なら30を返す)
+;-----------------------------------------------------------------
+@ANALYZE_COUNT_CHECK, MEGATEN_ONLY_FLG, ANALYZE_BOTTOM, ANALYZE_TOP, LEVEL_BOTTOM, LEVEL_TOP, CATEGORY
+#FUNCTION
+#LOCALSIZE  1
+#LOCALSSIZE 1
+
+;-------------
+;変数定義
+;-------------
+;女神転生が出典の場合のみ対象とするかどうか
+#DIM MEGATEN_ONLY_FLG
+
+;カウント対象となる悪魔のアナライズ率下限
+#DIM ANALYZE_BOTTOM
+
+;カウント対象となる悪魔のアナライズ率上限
+#DIM ANALYZE_TOP
+
+;カウント対象となる悪魔のレベル下限
+#DIM LEVEL_BOTTOM
+
+;カウント対象となる悪魔のレベル上限
+#DIM LEVEL_TOP
+
+;カウント対象となる悪魔の種族(種族を指定しない場合は-1)
+#DIM CATEGORY
+
+;集計結果
+#DIM ANALYZE_COUNT
+
+;-------------
+;本処理
+;-------------
+ANALYZE_COUNT = 0
+
+FOR i, 1, CSVCHARANUM
+	;該当の番号のCSVが存在しない場合、パスして次へ
+	IF !EXISTCSV(i, 0)
+		CONTINUE
+	ENDIF
+	;特定の種族の悪魔を除外する
+	SIF !SHOW_ABLE_RACE_DEVIL_COMPENDIUM(CSVABL(i, (GETNUM(ABL, "종족")), 0))
+		CONTINUE
+	SELECTCASE i
+		CASE [[キャラ:인수라F]]
+			CONTINUE
+		CASE [[キャラ:인수라M]]
+			CONTINUE
+	ENDSELECT
+
+	;EXTRA出典の悪魔をカウントするかどうか
+	IF MEGATEN_ONLY_FLG == 1
+		;女神転生オンリーフラグが1(ON)の場合
+		IF CSVCFLAG(i, (GETNUM(CFLAG,"EXTRA출전")), 0) >= 1
+			;EXTRA出典の場合、カウントしない
+			;※「EXTRA출전」が-2(偽典),-1(デビチル)の場合は女神転生系統なので除外しない。
+			CONTINUE
+		ENDIF
+	ENDIF
+
+	;出典99は解析度を取るのが不可能な存在になるので除外する
+	SIF CSVCFLAG(i, (GETNUM(CFLAG,"EXTRA출전")), 0) == 99
+		CONTINUE
+	
+	;レベル上限・下限チェック
+	IF !(LEVEL_BOTTOM <= CSVBASE(i, (GETNUM(BASE, "LV")), 0) && CSVBASE(i, (GETNUM(BASE, "LV")), 0) <= LEVEL_TOP)
+		;レベルが指定の範囲内ではない場合、除外する
+		CONTINUE
+	ENDIF
+
+	;悪魔の種族チェック
+	IF CATEGORY != -1
+		;種族が指定されている場合(CATEGORY = -1の場合は指定なし)
+		IF CSVABL(i, (GETNUM(ABL, "종족")), 0) != CATEGORY
+			;指定の種族ではない場合、除外する
+			CONTINUE
+		ENDIF
+	ENDIF
+
+	;解析率チェック
+	IF !INRANGE(ANALYSIS_RATE:i, ANALYZE_BOTTOM, ANALYZE_TOP)
+		;解析率が指定の範囲内ではない場合、除外する
+		CONTINUE
+	ENDIF
+
+	;すべてのチェックをパスした場合、カウントする
+	ANALYZE_COUNT ++
+NEXT
+
+RETURNF ANALYZE_COUNT

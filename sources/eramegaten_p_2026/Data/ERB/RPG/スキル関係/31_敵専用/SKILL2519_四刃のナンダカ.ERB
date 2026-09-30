@@ -1,0 +1,197 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2519,ARG
+IF FLAG:행동순1 > -1 && FLAG:행동순1 == ARG && CFLAG:ARG:PT플래그 < 1
+	CFLAG:ARG:820 = RAND:4 + 8
+	IF CFLAG:ARG:820 == 8
+		RESULTS = 박인의 난다카
+		CFLAG:ARG:821 = 6
+		CFLAG:ARG:822 = 8
+	ELSEIF CFLAG:ARG:820 == 9
+		RESULTS = 수인의 난다카
+		CFLAG:ARG:821 = 4
+		CFLAG:ARG:822 = 9
+	ELSEIF CFLAG:ARG:820 == 10
+		RESULTS = 광인의 난다카
+		CFLAG:ARG:821 = 20
+		CFLAG:ARG:822 = 11
+	ELSEIF CFLAG:ARG:820 == 11
+		RESULTS = 암인의 난다카
+		CFLAG:ARG:821 = 12
+		CFLAG:ARG:822 = 10
+	ENDIF
+ELSE
+	RESULTS = 사인 난다카
+ENDIF
+
+;　명중
+@SKILL_HITRATE_2519, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2519, ARG
+RETURN 250
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2519,ARG
+SIF FLAG:확산플래그 == 1
+	RETURN 1
+RETURN 4
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2519,ARG
+SIF FLAG:확산플래그 == 1
+	RETURN 1
+RETURN 4
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2519, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2519,ARG
+RETURN 15
+
+;　相性
+@SKILL_TYPE_2519,ARG
+#LOCALSSIZE 1
+#LOCALSIZE 8
+#DIM LCOUNT
+#DIM L_T
+IF ARG >= 0 && CFLAG:ARG:PT플래그 < 1
+	RETURN GET_TYPE_NUM("만능"), GET_TYPE_NUM("검격"), CFLAG:ARG:820
+ELSE
+	RETURN GET_TYPE_NUM("만능"), GET_TYPE_NUM("검격")
+ENDIF
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2519
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2519, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2519, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2519,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2519,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;スキルがランダム範囲かどうか
+@SKILL_RAND_TARGET_2519,ARG
+RETURN 1
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2519, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2519
+RETURN GET_SUCCESSION_NUM("만능")
+;何でも
+
+;속도보정
+@SKILL_SPEED_2519, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2519
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2519, ARG = -1
+RETURN 15
+
+
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_2519,ARG
+SIF FLAG:행동순1 < 0 || FLAG:행동순1 != ARG
+	RETURN 0
+SIF CFLAG:ARG:PT플래그 < 1
+	RETURN CFLAG:ARG:821
+RETURN 0
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_2519,ARG
+SIF FLAG:행동순1 < 0 || FLAG:행동순1 != ARG
+	RETURN 0
+SIF CFLAG:ARG:PT플래그 < 1
+	RETURN CFLAG:ARG:822
+RETURN 0
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_2519,ARG
+RETURN 50
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_2519,ARG
+RETURN 95
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2519, ARG, ARG:1, ARG:2
+#LOCALSIZE 1
+#LOCALSSIZE 1
+CALL ATTACK_RAND, ARG,ARG:1, 2519
+
+FLAG:확산플래그 = 0
+IF CFLAG:ARG:PT플래그 < 1
+	FOR LOCAL, 8, 12
+		CFLAG:ARG:물리피데미지보정 = -20
+		CFLAG:ARG:마법피데미지보정 = -20
+		LOCALS = %GET_TYPE(LOCAL)%
+		MAXBASE:ARG:LOCALS = 999
+		BASE:ARG:LOCALS = 999
+		IF CFLAG:ARG:822 == LOCAL
+			BASE:ARG:LOCALS = 150
+			MAXBASE:ARG:LOCALS = 150
+			PRINTFORMW 약점이 %LOCALS%(으)로 변화했다
+		ENDIF
+	NEXT
+ENDIF
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2519, ARG
+PRINTL 검격、만능의 복합 속성으로 적 전체 랜덤으로 최대 ４회 공격。
+PRINTL 적이 사용하면 또 하나의 상성이 추가되고、상태이상을 부여한다
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2519,ARG
+RETURN 1
+;とくにない
+
+@敵専用_2519
+RETURN 1

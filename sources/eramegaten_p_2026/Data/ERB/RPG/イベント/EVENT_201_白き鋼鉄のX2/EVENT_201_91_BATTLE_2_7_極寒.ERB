@@ -1,0 +1,337 @@
+﻿@SET_BOSS_ENEMY_EVENT_201_極寒, L_ENEMY_NAME
+#DIMS DYNAMIC L_ENEMY_NAME
+#DIM DYNAMIC L_ENEMY
+#DIM DYNAMIC ADD_LV
+ADD_LV = GROUPMATCH(1, FLAG_白き鋼鉄のX2_光芒クリア, FLAG_白き鋼鉄のX2_鋼獣クリア, FLAG_白き鋼鉄のX2_極寒クリア, FLAG_白き鋼鉄のX2_飛刀クリア) * 3
+SELECTCASE L_ENEMY_NAME
+	CASE "極寒1"
+		TSTR:전투이벤트패턴 = EVENT_201_2_7_極寒
+		CALL SET_ENEMY, 7, [[キャラ:다키니]], 42 + ADD_LV
+		CALL SET_ENEMY, 8, [[キャラ:베르세르크]], 42 + ADD_LV
+		CALL SET_ENEMY, 10, [[キャラ:스크랩런처]], 41 + ADD_LV
+		CALL SET_ENEMY, 12, [[キャラ:화염방사워커]], 41 + ADD_LV
+		CALL SET_ENEMY, 15, [[キャラ:폭격드론]], 40 + ADD_LV
+	CASE "極寒2"
+		TSTR:전투이벤트패턴 = EVENT_201_2_7_極寒
+		CALL SET_ENEMY, 9, [[キャラ:아이스인조드]], 43 + ADD_LV, 1, 1
+	CASE "極寒3"
+		TSTR:전투이벤트패턴 = EVENT_201_2_7_極寒
+		CALL SET_ENEMY, 7, [[キャラ:베르세르크]], 43 + ADD_LV
+		CALL SET_ENEMY, 8, [[キャラ:타나토스]], 41 + ADD_LV
+		CALL SET_ENEMY, 10, [[キャラ:스크랩런처]], 41 + ADD_LV
+		CALL SET_ENEMY, 11, [[キャラ:화염방사워커]], 41 + ADD_LV
+		CALL SET_ENEMY, 13, [[キャラ:비비안]], 40 + ADD_LV
+		CALL SET_ENEMY, 15, [[キャラ:비비안]], 40 + ADD_LV
+	CASE "ヘイル"
+		TSTR:전투이벤트패턴 = EVENT_201_2_7_ヘイル
+
+		CALL SET_ENEMY, 9, [[キャラ:헤일_X2]], 45 + ADD_LV, 1, 1
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ヘイル"
+		CFLAG:L_ENEMY:ＨＰ보정 += 3000
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		BASE:L_ENEMY:SHOCK = -25
+		CSTR:L_ENEMY:사고패턴 = フリジッドステイシス
+		
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "ＳＰスキル"
+		CALL SET_SKILL, L_ENEMY, "부흐다인"
+		CALL SET_SKILL, L_ENEMY, "마하・부흐다인"
+		CALL SET_SKILL, L_ENEMY, "얼음의난무"
+		CALL SET_SKILL, L_ENEMY, "무거운공기"
+		CALL SET_SKILL, L_ENEMY, "천상의춤"
+		CALL SET_SKILL, L_ENEMY, "컨센트레이트"
+		CALL SET_SKILL, L_ENEMY, "빙결가드킬"
+		CALL SET_SKILL, L_ENEMY, "절대영도"
+		CALL SET_SKILL, L_ENEMY, "사마카쟈오토"
+		CALL SET_SKILL, L_ENEMY, "아이스・크래시"
+
+		CSTR:L_ENEMY:랜덤선택금지스킬 '= "ＳＰスキル"
+ENDSELECT
+
+;=============================================
+;EVENT_201_2_7_ヘイル
+;=============================================
+@SET_ACTION_フリジッドステイシス, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:컨센트레이트]]
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	;ガンヴォルトあるある：HPが1/3切ったらSPスキル使う　5Tに1回打ってくるぞ
+	IF CFLAG:ARG:800 == 3 && PU_SKILLGAGE_D_GET(ARG, "ＳＰスキル") == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:전용기1]]
+	ELSE
+		IF FLAG:경과턴수 % 6 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:무거운공기]]
+		ELSEIF FLAG:경과턴수 % 6 == 1
+			CALL SET_ACTION_SKILL, ARG, [[스킬:천상의춤]]
+		ELSEIF FLAG:경과턴수 % 6 == 2
+			CALL SET_ACTION_SKILL, ARG, [[스킬:빙결가드킬]]
+		ELSEIF FLAG:경과턴수 % 6 == 3
+			CALL SET_ACTION_SKILL, ARG, [[스킬:부흐다인]]
+		ELSEIF FLAG:경과턴수 % 6 == 4
+			CALL SET_ACTION_SKILL, ARG, [[스킬:악마의위협]]
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:천상의춤]]
+		ENDIF
+	ENDIF
+ELSE
+	IF FLAG:경과턴수 % 6 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:마하・부흐다인]]
+	ELSEIF FLAG:경과턴수 % 6 == 1
+		CALL SET_ACTION_SKILL, ARG, [[스킬:얼음의난무]]
+	ELSEIF FLAG:경과턴수 % 6 == 2
+		CALL SET_ACTION_SKILL, ARG, [[스킬:절대영도]]
+	ELSEIF FLAG:경과턴수 % 6 == 3
+		CALL SET_ACTION_SKILL, ARG, [[스킬:천상의춤]]
+	ELSEIF FLAG:경과턴수 % 6 == 4
+		CALL SET_ACTION_SKILL, ARG, [[스킬:절대영도]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:얼음의난무]]
+	ENDIF
+ENDIF
+
+@CHANGE_ACTION_フリジッドステイシス, ARG
+IF CFLAG:ARG:800 == 2 
+	CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+	CFLAG:ARG:800 = 3
+ELSE
+	;スタグネーションワールドで全員凍結する可能性も一応考慮する。ここでは。
+	SIF IS_BADSTATE_FRIEND("FREEZE")
+		CALL SET_ACTION_SKILL, ARG, [[스킬:아이스・크래시]]
+ENDIF
+
+@EVENT_BATTLE_DYING_EVENT_201_2_7_ヘイル, L_T, L_P, L_SKIP
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_SKIP
+IF L_T == GET_ENEMY("ヘイル") && CFLAG:L_T:800 == 0
+	TSTR:스킬메시지추가 = %CALLNAME:L_T%은(는) 일어섰다!!
+	
+	CFLAG:L_T:상태이상 = GET_STATE_NUM("GOOD")
+	BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ / 3
+	CFLAG:L_T:800 = 1
+	CFLAG:L_T:공격대상제외_ACT = 1
+ENDIF
+
+@EVENT_BATTLE_ACTEND_EVENT_201_2_7_ヘイル
+IF CFLAG:GET_ENEMY("ヘイル"):800 == 1
+	BTL_KOJO_RESULTS:0 = もうダメですぅ……
+	SETCOLOR COLOR("ENEMY")
+	CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("ヘイル")
+	CFLAG:GET_ENEMY("ヘイル"):800 = 2
+ENDIF
+
+@EVENT_BATTLE_TURNEND_EVENT_201_2_7_極寒
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_DAMAGE
+#DIM DYNAMIC L_TYPE_VALUE
+CALL PRINT_ACT_MESSAGE, , , COLOR("ENEMY"), "ブリザード", "氷結相性ダメージ", "NOWAIT"
+FOR LCOUNT, 1, 17
+	SIF !IS_TARGET_ABLE(POS(LCOUNT))
+		CONTINUE
+	TSTR:스킬메시지결과 '= ""
+	TSTR:스킬메시지추가 '= ""
+	L_DAMAGE = RAND(15, 25)
+	CALL BTL_CALC_AISYOU, -1, POS(LCOUNT), -1, GET_TYPE_NUM("빙결")
+	L_TYPE_VALUE = RESULT
+	IF L_TYPE_VALUE == 999
+		L_TYPE_VALUE = 0
+		L_DAMAGE = 0
+	ELSE
+		L_DAMAGE = L_DAMAGE * RESULT / 100
+	ENDIF
+	TSTR:스킬메시지대상 = 　　TARGET:[{CPOS(POS(LCOUNT)),2}] %CALLNAME:(POS(LCOUNT)),20,LEFT%
+	TSTR:스킬메시지화살표 = 　>>>>>>　
+	CALL BTL_CALC_DAMAGE_EXE, -1, POS(LCOUNT), L_DAMAGE, GET_TYPE_NUM("빙결"), L_TYPE_VALUE
+	CALL PRINT_SKILL_MESSAGE
+	PRINTL 
+NEXT
+WAIT
+
+@EVENT_BATTLE_TURNEND_EVENT_201_2_7_ヘイル
+CALL EVENT_BATTLE_TURNEND_EVENT_201_2_7_極寒
+
+;ヘイル戦専用ライブノベル
+@EVENT_BATTLE_TURNSTART_EVENT_201_2_7_ヘイル
+#DIM 進行度
+#DIM DYNAMIC COPEN
+SIF 進行度 == 30
+	RETURN 0
+SIF FINDCHARA_B([[キャラ:아큐라_X]])  != 2
+	RETURN 0
+COPEN = RESULT:1
+SELECTCASE 進行度
+	CASE 0
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = あまり抵抗しないでくださいよぉ
+		BTL_KOJO_RESULTS:1 = 侵入者さんを倒さないとぉ、わたしぃ、眠れないんです～
+		LOCAL = 0
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("ヘイル")
+		
+		SETCOLOR COLOR("FRIEND")
+		CALL SET_RORO_KOJO_FLAG, COPEN
+		BTL_KOJO_RESULTS:0 = 冗談じゃないよ、凍ったら粉々に砕くんでしょ？
+		BTL_KOJO_RESULTS:1 = そんなのアキュラくんだってただじゃ済まないよ！
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = だってぇ、さっきも言いましたけどぉ、
+		BTL_KOJO_RESULTS:1 = あなたたちを倒すのがお姉さんの使命ですから～
+		LOCAL = 0
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("ヘイル")
+		
+		進行度 = 10
+		RESETCOLOR
+	CASE 10
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 眠りたいのなら、使命など捨て置いて眠りにつけばいい
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = そうですけどぉ……でもやっぱり、できないわねぇ
+		BTL_KOJO_RESULTS:1 = お姉さんはぁ、そのために作られたんですもの～
+		LOCAL = 0
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("ヘイル")
+		
+		BTL_KOJO_RESULTS:0 = 例えば、永久に使命を果たす機会を失ったとしても、
+		BTL_KOJO_RESULTS:1 = わたしたちは使命に縛られ続けるの……何十年もぉ、何百年でも～
+		LOCAL = 0
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("ヘイル")
+		
+		進行度 = 20
+		RESETCOLOR
+	CASE 20
+		SETCOLOR COLOR("FRIEND")
+		CALL SET_RORO_KOJO_FLAG, COPEN
+		BTL_KOJO_RESULTS:0 = もしかして、キミが眠りたいのって……
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = うふ……想像に、お任せしますねぇ
+		LOCAL = 0
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("ヘイル")
+		
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = ……ならば、せめて。この手で眠らせてやる
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		進行度 = 30
+		RESETCOLOR
+ENDSELECT
+
+;ヘイル・敵対時の口上
+@KOJO_ENEMY_BATTLE_MESSAGE_K[[キャラ:헤일_X2]], ARG, ARG:1 = 0
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;これは通常攻撃
+SELECTCASE CFLAG:ARG:입력행동
+	CASE 0
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = よいしょ～
+			CASE 1
+				BTL_KOJO_RESULTS:0 = やあっ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 当たってくださぁい
+		ENDSELECT
+;-------------------------------------------------
+;汎用スキル
+;-------------------------------------------------
+	CASE [[스킬:컨센트레이트]]
+		BTL_KOJO_RESULTS:0 = すごいので、いきますねぇ
+	CASE [[스킬:무거운공기]], [[스킬:한숨]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = ふぅ～……♪
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 凍らせちゃいますねぇ
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 逃がしません
+		ENDSELECT
+	CASE [[스킬:천상의춤]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = こんな感じでぇ、どうでしょぉ～
+			CASE 1
+				BTL_KOJO_RESULTS:0 = よい、しょっと……
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 踊っちゃいます
+		ENDSELECT
+	CASE [[스킬:악마의위협]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = そんなに暴れちゃ、めー！　ですよ～？
+			CASE 1
+				BTL_KOJO_RESULTS:0 = お痛は、だめなんですからねぇ
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ちゃぁんと、反省してくださいねぇ？
+		ENDSELECT
+	CASE [[스킬:빙결가드킬]], [[스킬:빙결가드브레이크]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 凍らないなんて、ずるですよぉ
+			CASE 1
+				BTL_KOJO_RESULTS:0 = ずるはだめです、没収で～す
+			CASE 2
+				BTL_KOJO_RESULTS:0 = そういうことをするなら……これです
+		ENDSELECT
+	CASE [[스킬:부흐다인]], [[스킬:마하・부흐다인]], [[스킬:부흐바리온]], [[스킬:마하・부흐바리온]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = これで、凍って？
+			CASE 1
+				BTL_KOJO_RESULTS:0 = こういうのはお好きですか～？
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 冷え冷えになれますよぉ
+		ENDSELECT
+	CASE [[스킬:아이스・크래시]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = お休みなさぁい
+			CASE 1
+				BTL_KOJO_RESULTS:0 = さようなら、です
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 綺麗でしょ～？
+		ENDSELECT
+	CASE [[스킬:얼음의난무]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 逃げようとしても無駄です、えいっ
+			CASE 1
+				BTL_KOJO_RESULTS:0 = そこから、動かないで？
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 氷が踊るので、ご覧くださいねぇ
+		ENDSELECT
+	CASE [[스킬:절대영도]], [[스킬:대냉계]], [[스킬:니플헤임]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 逃がしませんからねぇ
+			CASE 1
+				BTL_KOJO_RESULTS:0 = みんなで仲良く、眠りましょ？
+			CASE 2
+				BTL_KOJO_RESULTS:0 = みんな一緒に眠れば、怖くありませんよぉ
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+		BTL_KOJO_RESULTS:0 = とっておきです
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		ALIGNMENT RIGHT
+		RESETCOLOR
+		PRINTFORML 　　　　Extreme cold air freezes even time　　　　　　　 
+		PRINTFORML 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+		PRINTFORML
+		PRINTFORML 　　Beyond the absolute zero　　　　　　　　　　　　　　 
+		SETCOLOR 0xe8307c
+		PRINTFORML 　　　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　
+		RESETCOLOR
+		PRINTFORML
+		PRINTFORML 　　　　Wrapped in a blizzard, sleep, world　　　　　　　
+		PRINTFORMW 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+		ALIGNMENT LEFT
+		SETCOLOR COLOR("ENEMY")
+		LOCAL = 0
+		BTL_KOJO_RESULTS:0 = スタグネーションワールドぉ
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		TFLAG:전투구상직접출력 = 1
+ENDSELECT

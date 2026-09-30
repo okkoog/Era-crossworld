@@ -1,0 +1,130 @@
+﻿;221019	NEO		ARGついてなかったの修正、攻撃相性返すのを新式書式に変更、あと文言微修正
+;				コスト40はさすがに軽いので60にナーフ
+
+;スキル名
+@SKILL_NAME_2962,ARG
+RESULTS = 영봉을밟고끌어안는명부의풀무
+
+;　명중
+@SKILL_HITRATE_2962, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2962, ARG
+RETURN 350
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2962, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2962, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2962, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2962, ARG
+RETURN 60
+
+;　相性　地変、打撃、重力、呪殺複合
+@SKILL_TYPE_2962, ARG
+RETURN GET_TYPE_NUM("지변"), GET_TYPE_NUM("타격"), GET_TYPE_NUM("중력"), GET_TYPE_NUM("주살")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2962
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2962, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2962, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2962,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2962,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2962, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2962
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+@継承不能_2962
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_2962, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2962
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2962, ARG = -1
+RETURN 0
+
+;　クリティカル率
+@SKILL_CRITICAL_RATE_2962,ARG
+	;魔法攻撃なので意味がないが、魔法CTアリフラグとか出た時に……ということで残しておく
+	RETURN 30
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+
+@ACTION_2962, ARG, ARG:1, ARG:2
+#DIM SKILL_NUM
+#DIM DYNAMIC LCOUNT
+IF FLAG:총공격중
+	FOR LCOUNT, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1) + 1
+		SIF !IS_TARGET_ABLE(POS(LCOUNT))
+			CONTINUE
+		TSTR:스킬메시지추가효과 '= ""
+		CALL SKILL_INVALID_WALL, ARG, POS(LCOUNT), "테트라쟈", "短縮"
+		CALL SKILL_SET_カジャンダ, ARG, POS(LCOUNT), "방어", 4, "短縮"
+		CALL PRINT_HIT_MESSAGE, POS(LCOUNT), TSTR:스킬메시지추가효과, "L"
+	NEXT
+	WAIT
+ELSE
+	CALL ATTACK_FIELD,ARG,ARG:1,2962
+ENDIF
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2962, ARG
+PRINTL 적 전체에 지변, 타격, 중력, 주살 복합 상성으로 대위력의 마법 공격을 행한다.
+PRINTL 공격 후 아군 전체의 방어력을 올리고, 즉사 무효화를 부여한다.
+PRINTL 　
+PRINTL 영봉을밟고끌어안는명부의풀무＜쿠르 키 갈 이르칼라＞。
+PRINTL 에레슈키갈이 지닌, 땅 밑에서부터 직통으로 내리쳐지는 명계 여주인의 철퇴.
+PRINTL 자매인 이슈타르의 보구 안 갈 타·키 갈 슈와 비슷한 성질을 지녔으나, 주위를 명계의 속성으로 물들이고 명부신으로서의 에레슈키갈의 가호로 주위를 채운다.
+
+
+;とくにない
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2962,ARG
+RETURN 1
+;とくにない
+

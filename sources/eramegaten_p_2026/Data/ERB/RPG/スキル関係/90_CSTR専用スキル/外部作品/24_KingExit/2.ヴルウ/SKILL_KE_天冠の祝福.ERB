@@ -1,0 +1,133 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_KE_天冠の祝福, ARG
+RESULTS = 천관의 축복
+
+;　명중
+@SKILL_HITRATE_KE_天冠の祝福, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_KE_天冠の祝福, ARG
+RETURN 160
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_KE_天冠の祝福, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_KE_天冠の祝福, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_KE_天冠の祝福, ARG
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 25
+	RETURN 1
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_KE_天冠の祝福, ARG
+IF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 25
+	RESULTS = %" 25ＴＰ"%
+	RETURN 0
+ENDIF
+RETURN 5
+
+;　相性
+@SKILL_TYPE_KE_天冠の祝福, ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_KE_天冠の祝福
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_KE_天冠の祝福, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+@SKILL_HEAL_TYPE_KE_天冠の祝福, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("통상")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_KE_天冠の祝福, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_KE_天冠の祝福, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_KE_天冠の祝福, ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_KE_天冠の祝福, ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+;속도보정
+@SKILL_SPEED_KE_天冠の祝福, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_KE_天冠の祝福
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_KE_天冠の祝福, ARG, ARG:1, SKILL_NUM
+#LOCALSIZE 4
+#DIM SKILL_NUM
+
+;ゲージ再回収できる様に起動前にTP25消費。
+CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", 25, "-="
+;発動時回復
+CALL HEAL_FIELD,ARG,ARG:1,SKILL_NUM
+;継続回復状態付与
+CALL SET_C_BTL_EFFECT_FIELD, ARG, ARG:1, "天冠の祝福"
+
+;Dゲージ5。使用後4ターン。
+CALL SKILLGAGE_D_SET, ARG, PU_SKILLNUM_GET(ARG,"KE_天冠の祝福"),5
+
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_KE_天冠の祝福,ARG
+IF PU_SKILLGAGE_D_GET(ARG,"KE_天冠の祝福") == 0
+	RESULTS '= SET_COLOR_TAG(@"天冠の祝福：STAND BY！", "#ffef00")
+ELSE
+	RESULTS = 천관의 축복:CT{PU_SKILLGAGE_D_GET(ARG,"KE_天冠の祝福")}
+ENDIF
+RETURN 3
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_KE_天冠の祝福, ARG
+PRINTL 
+PRINTL 아군에게 축복을 내린다.
+PRINTL 발동 시 아군 전체의 HP를 회복하고, 4턴 동안 턴 종료 시 HP를 회복한다.
+PRINTL 
+PRINTL 강철승려 브루의 스킬(CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_KE_天冠の祝福, ARG
+;クールタイムが0のときのみ
+SIF SKILLGAGE_D_GET(ARG, PU_SKILLNUM_GET(ARG, "KE_天冠の祝福")) != 0
+	RETURN 0
+;ゲージが25以上のときのみ
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 25
+	RETURN 0
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_KE_天冠の祝福, ARG
+RESULTS:0 = 발동 시 아군 전체의 HP를 회복하고, 4턴 동안 턴 종료 시 HP를 회복한다.
+RESULTS:1 = TP消費 25
+SIF ARG >= 0 && GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 25
+	RESULTS:1 = %RESULTS:1%(不足)

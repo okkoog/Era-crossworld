@@ -1,0 +1,43 @@
+﻿;タイトル表示になんらかの条件を付ける場合
+;戻り値が0の場合は表示されない。また戻り値を増やすとその分抽選されやすくなる
+@IS_TITLE_USEABLE_23
+IF G_USEABLE_TITLE_PICTURE:23 >= 999
+	G_USEABLE_TITLE_PICTURE:23 = 1000
+	SAVEGLOBAL
+	RETURN 999
+ENDIF
+RETURN G_USEABLE_TITLE_PICTURE:23
+
+;セーブするときにタイトル抽選用のフラグをセットする
+@SET_FLAG_USEABLE_TITLE_23
+#DIM DYNAMIC LCOUNT
+;確定タイトルをみたあとはフラグを折る
+SIF G_USEABLE_TITLE_PICTURE:23 == 1000 && イベントフラグ:52:0 == 2
+	イベントフラグ:52:0 = 3
+G_USEABLE_TITLE_PICTURE:23 = 0
+;店を潰した場合、次のロードまで確定状態にする
+IF イベントフラグ:52:0 == 2
+	G_USEABLE_TITLE_PICTURE:23 = 999
+	RETURN 0
+ENDIF
+;ダマナーが上位陥落してないとでない
+IF GET_陥落履歴_陥落強度([[キャラ:동기다크서머너]]) >= 2
+	IF イベントフラグ:52:0 == 3
+		G_USEABLE_TITLE_PICTURE:23 = 10
+	ELSE
+		G_USEABLE_TITLE_PICTURE:23 = 1
+	ENDIF
+	FOR LCOUNT, 1, 7
+		SIF POS(LCOUNT) < 0
+			CONTINUE
+		SIF !GROUPMATCH(NO:POS(LCOUNT), [[キャラ:동기다크서머너]])
+			CONTINUE
+		G_USEABLE_TITLE_PICTURE:23 += 10
+		RETURN 0
+	NEXT
+ELSE
+	;店がつぶれてる場合高確率ででてくる
+	SIF イベントフラグ:52:0 == 3
+		G_USEABLE_TITLE_PICTURE:23 = 10
+ENDIF
+RETURN 0

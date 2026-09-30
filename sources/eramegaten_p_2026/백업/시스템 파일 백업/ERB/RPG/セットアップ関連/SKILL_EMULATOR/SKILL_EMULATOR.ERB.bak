@@ -1,0 +1,761 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILL_EMULATOR.ERB
+;	Facility	:サマナー用の個人ソフトの処理・設定群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Edit	Date			Author					Reason
+;	001		2023/03/22		P(bazzile)				新規作成
+;	002		2023/04/19		P(bazzile)				スキルエミュレータ購入時の商品のツールチップ内容を取得し忘れていたのを修正
+;	003		2023/05/05		P(bazzile)				コマンダースキル/アシストスキルの経過ターンをスキル毎に持たせるように変更
+;	004		2023/05/18		P(bazzile)				購入済みのスキルエミュレータを購入出来てしまっていた不具合を修正
+;	005		2023/12/11		しゃけ					CSとAS以外のスキルでもターンが設定されていればその値を返す、これに伴いショートカットはCSとASのみ作用するように変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;===============================================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name						Explanation
+;
+;	・ EQUIP_SKILL_EMULATOR_MAIN_UI		スキルエミュレータの装備UI
+;	・ EXCHANGE_SKILL_EMULATOR			スキルエミュレータの購入処理(魔貨)
+;	・ SET_SKILL_EMULATOR_VAR			スキルエミュレータ用の変数登録処理
+;	・ GET_USEABLE_SKILL_EMULATOR_NUM	装備可能なエミュレータ数の取得関数
+;	・ GET_CAST_SKILL_EMULATOR			コマンダー・アシストスキルの必要ターン数の取得関数
+;	・ GET_SKILL_EMULATOR_NAME			スキルエミュレータの名称取得関数
+;	・ GET_SKILL_EMULATOR_NUM			スキルエミュレータの番号取得関数
+;	・ HAVE_SKILL_EMULATOR				スキルエミュレータの所持判定関数
+;	・ ADD_SKILL_EMULATOR				スキルエミュレータを獲得させる関数
+;	・ ADDS_SKILL_EMULATOR				スキルエミュレータを獲得させる関数(文字列指定番)
+;	・ SET_VAR_SKILL_EMULATOR_EXPLAIN	スキルエミュレータの解説文の生成・代入処理
+;===============================================================================
+;======================================
+;スキルエミュレータの装備UI
+;======================================
+@EQUIP_SKILL_EMULATOR_MAIN_UI
+#DIM CONST SHOW_NAME_LENS = 28
+#DIM CONST SHOW_NAME_LENS_SHORT = 24
+#DIM CONST SHOW_LINE_NUM = 20
+#DIM LCOUNT, 3
+#DIM L_LENS
+#DIM TEMP
+#DIMS TEMPS
+#DIM CHARA
+#DIM L_REDRAW
+#DIM L_EMU
+#DIMS L_SKILL
+#DIM L_LINE, 3
+#DIMS L_COLOR_TAG
+#DIMS L_BUTTON_VALUE
+#DIMS L_TITLE
+#DIM SELECT_CHARA
+#DIM SELECT_POSNUM
+#DIM SELECT_EMU
+#DIMS SELECT_TYPE
+#DIMS STOCK_LS_EXPLAIN
+#DIM L_PAGE
+#DIM LISTNUM
+#DIM SHOW_HAVE_LIST, 100
+#DIMS L_LEADER_SKILL_EXPLAIN, 60
+#DIM POSNUM, 7
+#DIM USEABLE_EMU, 7
+#DIMS SHOW_LINE, 7
+#DIM SET_SKILL_LIST, 100
+#DIM IS_NON_ACTIVE, 7, 5
+L_REDRAW = CURRENTREDRAW()
+REDRAW 0
+L_LINE = LINECOUNT
+SELECT_POSNUM = -1
+SELECT_CHARA = -1
+SELECT_EMU = 0
+SELECT_TYPE = 발동중효과
+VARSET IS_NON_ACTIVE
+$START
+CLEARLINE LINECOUNT - L_LINE
+CALL SET_LEADER_SKILL
+;------------------------------------------------
+;表示するソフトの取得関連
+;------------------------------------------------
+VARSET SHOW_HAVE_LIST, -1
+FOR LCOUNT, 0, SKILL_EMULATOR_NUM
+	SIF GET_SKILL_EMULATOR_NAME(LCOUNT) == ""
+		CONTINUE
+	SIF !HAVE_SKILL_EMULATOR:LCOUNT
+		CONTINUE
+	CALLFORM SKILL_EMULATOR_TYPE_{LCOUNT}
+	SIF RESULTS != SELECT_TYPE
+		CONTINUE
+	SHOW_HAVE_LIST:FINDELEMENT(SHOW_HAVE_LIST, -1) = LCOUNT
+NEXT
+
+;色つけのために全員の装備を確認し、変数にまとめる
+VARSET SET_SKILL_LIST, 0
+FOR POSNUM, 1, 7
+	CHARA = POS(POSNUM)
+	SIF CHARA < 0
+		CONTINUE
+	FOR LCOUNT, 0, 5
+		SET_SKILL_LIST:FINDELEMENT(SET_SKILL_LIST, 0) = EQUIP_SKILL_EMULATOR:CHARA:LCOUNT
+	NEXT
+NEXT
+
+;------------------------------------------------
+;スキルエミュレータのパーティ効果解説
+;------------------------------------------------
+VARSET L_LEADER_SKILL_EXPLAIN
+STOCK_LS_EXPLAIN = 
+FOR LCOUNT, 0, SKILL_EMULATOR_NUM
+	SIF GET_SKILL_EMULATOR_NAME(LCOUNT) == ""
+		CONTINUE
+	CALLFORM SKILL_EMULATOR_TYPE_{LCOUNT}
+	SIF RESULTS != "리더스킬"
+		CONTINUE
+	;リーダースキルの効果名称を探す
+	TRYCCALLFORM SKILL_EMULATOR_EQUIP_SKILL_{LCOUNT}
+	CATCH
+		CONTINUE
+	ENDCATCH
+	TRYCCALLFORM SKILL_GET_LEADER_SKILL_NAME_{RESULT}
+	CATCH
+		CONTINUE
+	ENDCATCH
+	L_SKILL = %RESULTS%
+	SIF !MATCH(ACTIVE_LEADER_SKILL, L_SKILL)
+		CONTINUE
+	SIF COUNT_SPLIT(STOCK_LS_EXPLAIN, "/", L_SKILL)
+		CONTINUE
+	STOCK_LS_EXPLAIN = %ADD_SPLIT(STOCK_LS_EXPLAIN, "/", L_SKILL)%
+	CALLFORM SET_VAR_LEADER_SKILL_EXPLAIN_%L_SKILL%, TEMPS
+	L_LEADER_SKILL_EXPLAIN:FINDELEMENT(L_LEADER_SKILL_EXPLAIN, "", , , 1) = %L_SKILL, 24, LEFT%　　%TEMPS%
+NEXT
+;------------------------------------------------
+;表示開始
+;------------------------------------------------
+DRAWLINE
+PRINTL 스킬에뮬레이터 세트
+DRAWLINE
+
+;------------------------------------------------
+;上部のPT画面
+;------------------------------------------------
+FOR LCOUNT:1, 0, 2
+	VARSET SHOW_LINE, "　　　"
+	FOR LCOUNT, 0, 3
+		POSNUM = LCOUNT + LCOUNT:1 * 3 + 1
+		CHARA = POS(POSNUM)
+
+		;얼굴이미지
+		FOR LCOUNT:2, 0, 6
+			IF CHARA >= 0 && LCOUNT:2 == 0
+				SHOW_LINE:(LCOUNT:2) += GET_FACE_BY_CHARA_AS_HTML(CHARA, 600, "基本", "")
+			ELSE
+				SHOW_LINE:(LCOUNT:2) += " " * 12
+			ENDIF
+		NEXT
+		;色・ボタンの取得
+		IF CHARA < 0 || !GET_USEABLE_SKILL_EMULATOR_NUM(CHARA)
+			L_COLOR_TAG = %"color = " + "'" + TOSTR_HTML(COLOR("DARK-GRAY")) + "'"%
+			L_BUTTON_VALUE = 
+			USEABLE_EMU:POSNUM = 0
+		ELSE
+			IF POSNUM == SELECT_POSNUM
+				L_COLOR_TAG = %"color = " + "'" + TOSTR_HTML(COLOR("aqua")) + "'"%
+			ELSE
+				L_COLOR_TAG = %"color = " + "'" + TOSTR_HTML(GETDEFCOLOR()) + "'"%
+			ENDIF
+			L_BUTTON_VALUE = {POSNUM}
+			USEABLE_EMU:POSNUM = 1
+		ENDIF
+
+		;表示内容の作成
+		L_LENS = LINELENS() > 145 ? SHOW_NAME_LENS # SHOW_NAME_LENS_SHORT
+		SHOW_LINE:0 += "<font " + L_COLOR_TAG + ">" + @"<button value = '%L_BUTTON_VALUE%'>"+ @"[{POSNUM, 2} ]" +@"%S_NAME(CHARA, L_LENS, 2, "EMPTY"), L_LENS, LEFT%" + "</button>" + "</font>"
+		FOR LCOUNT:2, 0, 5
+			IF CHARA < 0
+				SHOW_LINE:(LCOUNT:2 + 1) += " " * (L_LENS + 5)
+			ELSE
+				IF (LCOUNT:2 + 1) <= GET_USEABLE_SKILL_EMULATOR_NUM(CHARA)
+					L_EMU = EQUIP_SKILL_EMULATOR:CHARA:(LCOUNT:2)
+					IF L_EMU
+						TEMPS = %SUBSTRING(GET_SKILL_EMULATOR_NAME(L_EMU), 0, L_LENS - 1)%
+						CALLFORM SKILL_EMULATOR_EXPLAIN_{L_EMU}
+						IF POSNUM == SELECT_POSNUM
+							L_BUTTON_VALUE = {POSNUM * 1000 + LCOUNT:2}
+							IF IS_NON_ACTIVE:POSNUM:(LCOUNT:2)
+								L_COLOR_TAG = color = %"'"  + TOSTR_HTML(COLOR("DARK-GRAY")) + "' bcolor = '" + TOSTR_HTML(COLOR("茶色")) + "'"%
+							ELSE
+								L_COLOR_TAG = color = %"'"  + TOSTR_HTML(COLOR("aqua")) + "' bcolor = '" + TOSTR_HTML(COLOR("藍色")) + "'"%
+							ENDIF
+						ELSE
+							L_COLOR_TAG = %"color = " + "'" + TOSTR_HTML(GETDEFCOLOR()) + "'"%
+						ENDIF
+					ELSE
+						TEMPS = EMPTY
+						RESULTS = 
+					ENDIF
+					SHOW_LINE:(LCOUNT:2 + 1) += @"<font %L_COLOR_TAG%>" + @"<button value = '%L_BUTTON_VALUE%' title = '%RESULTS%'>" + " " * 5 + @"%TEMPS, L_LENS, LEFT%" + "</button>" + "</font>"
+				ELSE
+					SHOW_LINE:(LCOUNT:2 + 1) += " " * (L_LENS + 5)
+				ENDIF
+			ENDIF
+		NEXT
+	NEXT
+
+	;表示
+	FOR LCOUNT:2, 0, 6
+		HTML_PRINT SHOW_LINE:(LCOUNT:2)
+	NEXT
+NEXT
+DRAWLINE
+;------------------------------------------------
+;セットするソフトの選定画面
+;------------------------------------------------
+L_LINE:1 = LINECOUNT
+FOR LCOUNT, 0, SHOW_LINE_NUM
+	LISTNUM = L_PAGE * SHOW_LINE_NUM + LCOUNT
+	IF SELECT_TYPE == "발동중효과"
+		HTML_PRINT L_LEADER_SKILL_EXPLAIN:LISTNUM
+	ELSE
+		L_EMU = SHOW_HAVE_LIST:LISTNUM
+		SIF L_EMU < 0
+			CONTINUE
+		CALLFORM SKILL_EMULATOR_EXPLAIN_{L_EMU}
+		SHOW_LINE = [{LISTNUM + 100}] %GET_SKILL_EMULATOR_NAME(L_EMU), SHOW_NAME_LENS, LEFT%　%RESULTS%
+		IF SELECT_CHARA >= 0 && FINDELEMENT(EQUIP_SKILL_EMULATOR:SELECT_CHARA:0, L_EMU) >= 0
+			L_COLOR_TAG = <font color = '%TOSTR_HTML(COLOR("aqua"))%' bcolor = '%TOSTR_HTML(COLOR("藍色"))%'>
+		ELSEIF FINDELEMENT(SET_SKILL_LIST, L_EMU) >= 0
+			L_COLOR_TAG = <font color = '%TOSTR_HTML(COLOR("パ緑"))%' bcolor = '%TOSTR_HTML(COLOR("パ紫"))%'>
+		ELSE
+			L_COLOR_TAG = <font color = '%TOSTR_HTML(COLOR("DEF"))%'>
+		ENDIF
+		SHOW_LINE = <button value = '{LISTNUM + 100}'>%SHOW_LINE%</button>
+		SHOW_LINE = %L_COLOR_TAG%%SHOW_LINE%</font>
+		HTML_PRINT SHOW_LINE
+	ENDIF
+NEXT
+WHILE LINECOUNT < L_LINE:1 + SHOW_LINE_NUM
+	PRINTL 
+WEND
+;ページ数表示
+PRINTL 
+IF SHOW_HAVE_LIST:SHOW_LINE_NUM >= 0
+	FOR LCOUNT, 0, 5
+		SIF SHOW_HAVE_LIST:(LCOUNT * SHOW_LINE_NUM) < 0
+			CONTINUE
+		CALL PRINT_COLOR, @"[{10 + LCOUNT}] Page.{LCOUNT}　　　" , LCOUNT == L_PAGE ? COLOR("aqua") # GETDEFCOLOR()
+	NEXT
+ENDIF
+PRINTL 
+DRAWLINE
+L_LINE:2 = LINECOUNT
+IF SELECT_EMU > 0
+	PRINTFORML %GET_SKILL_EMULATOR_NAME(SELECT_EMU)%
+	CALL SET_VAR_SKILL_EMULATOR_EXPLAIN, SELECT_EMU, L_TITLE
+	CALL PRINTFORM_LF, L_TITLE
+ENDIF
+WHILE LINECOUNT < L_LINE:2 + 6
+	PRINTFORML 
+WEND
+SHOW_LINE = 
+FOR LCOUNT, -1, VARSIZE("SKILL_EMULATOR_TYPE")
+	IF LCOUNT < 0
+		L_COLOR_TAG = <font color = '%TOSTR_HTML(SELECT_TYPE == "발동중효과" ? COLOR("aqua") # GETDEFCOLOR())%'>
+		SHOW_LINE += L_COLOR_TAG + @"<button value = '500'>"
+		SHOW_LINE += @"[500] 발동중효과　　　"
+	ELSE
+		L_COLOR_TAG = <font color = '%TOSTR_HTML(SELECT_TYPE == SKILL_EMULATOR_TYPE:LCOUNT ? COLOR("aqua") # GETDEFCOLOR())%'>
+		SHOW_LINE += L_COLOR_TAG + @"<button value = '{501 + LCOUNT}'>"
+		SHOW_LINE += @"[{501 + LCOUNT}] %SKILL_EMULATOR_TYPE:LCOUNT%　　　"
+	ENDIF
+	SHOW_LINE += "</button>" + "</font>"
+NEXT
+HTML_PRINT SHOW_LINE
+DRAWLINE
+PRINTL [999] 돌아간다　　　　　　[888] 해설
+L_LINE:2 = LINECOUNT
+INPUT
+SELECTCASE RESULT
+	CASE 1 TO 6
+		IF USEABLE_EMU:RESULT
+			IF SELECT_POSNUM == RESULT
+				SELECT_POSNUM = -1
+				SELECT_CHARA = -1
+			ELSE
+				SELECT_POSNUM = RESULT
+				SELECT_CHARA = POS(SELECT_POSNUM)
+			ENDIF
+		ENDIF
+	CASE 10 TO 14
+		RESULT -= 10
+		SIF SHOW_HAVE_LIST:(RESULT * SHOW_LINE_NUM) >= 0
+			L_PAGE = RESULT
+	CASE 100 TO 100 + VARSIZE("SHOW_HAVE_LIST")
+		L_EMU = SHOW_HAVE_LIST:(RESULT - 100)
+		IF L_EMU >= 0 && SELECT_CHARA >= 0 && SELECT_TYPE != "발동중효과"
+			SELECT_EMU = L_EMU
+			IF FINDELEMENT(EQUIP_SKILL_EMULATOR:SELECT_CHARA:0, L_EMU) >= 0
+				EQUIP_SKILL_EMULATOR:SELECT_CHARA:FINDELEMENT(EQUIP_SKILL_EMULATOR:SELECT_CHARA:0, L_EMU) = 0
+			ELSE
+				IF FINDELEMENT(EQUIP_SKILL_EMULATOR:SELECT_CHARA:0, 0, 0, GET_USEABLE_SKILL_EMULATOR_NUM(SELECT_CHARA)) >= 0
+					EQUIP_SKILL_EMULATOR:SELECT_CHARA:FINDELEMENT(EQUIP_SKILL_EMULATOR:SELECT_CHARA:0, 0, 0, GET_USEABLE_SKILL_EMULATOR_NUM(SELECT_CHARA)) = L_EMU
+				ELSE
+					FOR LCOUNT, 0, 5
+						SIF !IS_NON_ACTIVE:SELECT_POSNUM:LCOUNT
+							CONTINUE
+						EQUIP_SKILL_EMULATOR:SELECT_CHARA:LCOUNT = L_EMU
+						IS_NON_ACTIVE:SELECT_POSNUM:LCOUNT = 0
+						BREAK
+					NEXT
+				ENDIF
+			ENDIF
+		ENDIF
+	CASE 500
+		SELECT_TYPE = 발동중효과
+		L_PAGE = 0
+		SELECT_EMU = 0
+	CASE 501 TO 501 + VARSIZE("SKILL_EMULATOR_TYPE")
+		RESULT -= 501
+		IF SELECT_TYPE != SKILL_EMULATOR_TYPE:RESULT
+			L_PAGE = 0
+			SELECT_EMU = 0
+			SELECT_TYPE = %SKILL_EMULATOR_TYPE:RESULT%
+		ENDIF
+	CASE 1000 TO 7004
+		SIF INRANGE(RESULT % 1000, 0, 4) && EQUIP_SKILL_EMULATOR:POS(RESULT / 1000):(RESULT % 1000)
+			IS_NON_ACTIVE:(RESULT / 1000):(RESULT % 1000) = !IS_NON_ACTIVE:(RESULT / 1000):(RESULT % 1000)
+	CASE 888
+		CLEARLINE LINECOUNT - L_LINE:1 
+		CALL SHOW_EXPLAIN_SKILL_EMULATOR
+		WHILE LINECOUNT < L_LINE:2
+			PRINTL 
+		WEND
+		WAIT
+	CASE 999
+		REDRAW L_REDRAW
+		RETURN 0
+	CASEELSE
+ENDSELECT
+SIF SELECT_CHARA >= 0
+	CALL SYNC_STATUS, SELECT_CHARA, "HPMP割合保持"
+GOTO START
+
+;==========================================================
+;@スキルエミュレータの購入処理(魔貨)
+;==========================================================
+@EXCHANGE_SKILL_EMULATOR
+#DIM LCOUNT, 3
+#DIM L_LINE,3
+#DIM L_REDRAW
+#DIMS TEMPS
+#DIM SELL_LIST, 100
+#DIM BUY_UNABLE, 100
+#DIM BUY_LIST, 100
+#DIM SELECT_BUYNUM
+#DIM SELECT_EMU
+#DIMS SELECT_TYPE
+#DIMS L_TEXT
+#DIMS L_BUTTON
+#DIMS L_TITLE
+#DIM L_PRICE
+#DIM L_PRICE_SUM
+#DIMS L_PRICES
+#DIMS SHOW_LINE
+#DIM CONST SHOWNUM = 20
+#DIM L_EMU
+#DIM L_PAGE
+#DIMS L_COLOR
+#DIM LISTNUM
+
+L_REDRAW = CURRENTREDRAW()
+REDRAW 0
+
+VARSET BUY_LIST
+L_LINE = LINECOUNT
+SIF SELECT_TYPE == ""
+	SELECT_TYPE = %SKILL_EMULATOR_TYPE:0%
+SELECT_BUYNUM = -1
+SELECT_EMU = -1
+L_PAGE = 0
+$START
+CLEARLINE LINECOUNT - L_LINE
+DRAWLINE
+PRINTFORML 스킬에뮬레이터
+DRAWLINE
+
+;---------------------------------------------------
+;販売リストの作成
+;---------------------------------------------------
+VARSET SELL_LIST
+VARSET BUY_UNABLE
+
+FOR LCOUNT, 0, SKILL_EMULATOR_NUM
+	;名称未定義は弾く
+	SIF GET_SKILL_EMULATOR_NAME(LCOUNT) == ""
+		CONTINUE
+	;タイプチェック
+	TRYCCALLFORM SKILL_EMULATOR_TYPE_{LCOUNT}
+		SIF RESULTS != SELECT_TYPE
+			CONTINUE
+	CATCH
+	ENDCATCH
+	;販売条件チェック
+	TRYCCALLFORM SKILL_EMULATOR_SELLABLE_{LCOUNT}
+		SIF !RESULT
+			CONTINUE
+	CATCH
+		CONTINUE
+	ENDCATCH
+	;販売にリストに登録
+	SELL_LIST:FINDELEMENT(SELL_LIST, 0) = LCOUNT
+NEXT
+
+;---------------------------------------------------
+;代金の取得
+;---------------------------------------------------
+L_PRICE_SUM = 0
+LCOUNT = 0
+WHILE BUY_LIST:LCOUNT
+	;---- EDIT 004 ADD START -------------------------
+	IF !HAVE_SKILL_EMULATOR:(BUY_LIST:LCOUNT)
+		CALLFORM SKILL_EMULATOR_PRICE_{BUY_LIST:LCOUNT}
+		L_PRICE_SUM += RESULT
+	ENDIF
+	;---- EDIT 004 ADD END ---------------------------
+	LCOUNT++
+WEND
+;---------------------------------------------------
+;商品の表示
+;---------------------------------------------------
+LCOUNT:2 = 0
+FOR LCOUNT, 0, SHOWNUM
+	LISTNUM = LCOUNT + L_PAGE * SHOWNUM
+	L_EMU = SELL_LIST:LISTNUM
+	SIF !L_EMU
+		CONTINUE
+	;デフォルトカラーセット
+	L_COLOR = %TOSTR_HTML(GETDEFCOLOR())%
+	;所持しているソフト
+	IF HAVE_SKILL_EMULATOR:L_EMU
+		BUY_UNABLE:FINDELEMENT(BUY_UNABLE, 0) = L_EMU
+		L_COLOR = %TOSTR_HTML(COLOR("DARK-GRAY"))%
+		L_PRICES = 　　取得済み
+	ELSE
+		CALLFORM SKILL_EMULATOR_PRICE_{L_EMU}
+		L_PRICE = RESULT
+		;購入予定リストに入っている場合
+		IF FINDELEMENT(BUY_LIST, L_EMU) >= 0
+			L_COLOR = %TOSTR_HTML(L_EMU == SELECT_EMU ? COLOR("aqua") # COLOR("パ緑"))%
+		ELSE
+			IF MONEY:1 < L_PRICE + L_PRICE_SUM
+				BUY_UNABLE:FINDELEMENT(BUY_UNABLE, 0) = L_EMU
+				L_COLOR = %TOSTR_HTML(COLOR("DARK-GRAY"))%
+			ENDIF
+		ENDIF
+		L_PRICES = {L_PRICE, 7} 마카
+	ENDIF
+	VARSET RESULTS, "", 0, 11
+	L_TITLE = 
+	CALL SET_VAR_SKILL_EMULATOR_EXPLAIN, L_EMU, L_TITLE;EDIT 002 ADD
+	CALLFORM SKILL_EMULATOR_EXPLAIN_{L_EMU}
+	;長過ぎる場合の代替テキスト
+	SIF RESULTS:10 != ""
+		RESULTS = %RESULTS:10%
+	SHOW_LINE = <button value = '{LISTNUM + 100 }' title = '%L_TITLE%'><font color = '%L_COLOR%'>
+	SHOW_LINE += @"[{LISTNUM + 100}] %GET_SKILL_EMULATOR_NAME(L_EMU), 28, LEFT%" + L_PRICES
+	SHOW_LINE += "</font>" + "</button>"
+	SHOW_LINE += "　　　" + @"<font color = '%L_COLOR%'>" + RESULTS + "</font>"
+	HTML_PRINT SHOW_LINE
+NEXT
+WHILE LINECOUNT < L_LINE + SHOWNUM + 3
+	PRINTFORML 
+WEND
+
+;ページ部分の表示
+PRINTL 
+IF SELL_LIST:SHOWNUM
+	FOR LCOUNT, 0, 5
+		SIF !SELL_LIST:(LCOUNT * SHOWNUM)
+			CONTINUE
+		CALL PRINT_COLOR, @"[{10 + LCOUNT}] Page.{LCOUNT}　　　" , LCOUNT == L_PAGE ? COLOR("aqua") # GETDEFCOLOR()
+	NEXT
+ENDIF
+PRINTL 
+DRAWLINE
+SHOW_LINE = 
+FOR LCOUNT, 0, VARSIZE("SKILL_EMULATOR_TYPE")
+	TEMPS = %SKILL_EMULATOR_TYPE:LCOUNT%
+	L_COLOR = %TOSTR_HTML(SELECT_TYPE == TEMPS ? COLOR("aqua") # GETDEFCOLOR())%
+	SHOW_LINE += @"<font color = '%L_COLOR%'>" + @"<button value = '{50 + LCOUNT}'>"
+	SHOW_LINE += @"[{50 + LCOUNT}] %TEMPS%　　　"
+	SHOW_LINE += "</button>" + "</font>"
+NEXT
+L_LINE:1 = LINECOUNT
+IF SELECT_EMU > 0
+	PRINTFORML %GET_SKILL_EMULATOR_NAME(SELECT_EMU)%
+	CALL SET_VAR_SKILL_EMULATOR_EXPLAIN, SELECT_EMU, L_TITLE
+	CALL PRINTFORM_LF, L_TITLE
+ENDIF
+WHILE LINECOUNT < L_LINE:1 + 6
+	PRINTFORML 
+WEND
+HTML_PRINT SHOW_LINE
+CUSTOMDRAWLINE =
+PRINTFORML 【소지마카:{MONEY:1}】 / 【필요마카{L_PRICE_SUM}】
+CUSTOMDRAWLINE =
+L_LINE:2 = LINECOUNT
+CALL PRINT_COLOR, "[ 0] 구입한다", L_PRICE_SUM > 0 && MONEY:1 >= L_PRICE_SUM ? GETDEFCOLOR() # COLOR("DARK-GRAY")
+PRINTL 　　　[ 9] 돌아간다　　　　　　※ALTKEY・마우스 사이드 버튼을 누른 채 클릭하면 한 번에 여러 개 구매 가능합니다。
+INPUT
+SELECTCASE RESULT
+	CASE 0
+		IF L_PRICE_SUM > 0 && MONEY:1 >= L_PRICE_SUM
+			MONEY:1 -= L_PRICE_SUM
+			LCOUNT = 0
+			WHILE BUY_LIST:LCOUNT
+				CALL ADD_SKILL_EMULATOR, BUY_LIST:LCOUNT
+				LCOUNT++
+			WEND
+			SELECT_BUYNUM = RESULT
+			VARSET BUY_LIST, 0
+			BUY_LIST:FINDELEMENT(BUY_LIST, 0) = SELECT_EMU
+			CLEARLINE LINECOUNT - L_LINE:1
+			PRINTFORML 스킬에뮬레이터를 구입했습니다。
+			WHILE LINECOUNT < L_LINE:2
+				PRINTL 
+			WEND
+			PRINTFORM [0] 구입한다
+			PRINTW 　　　[9] 돌아간다　　　　　　※ALTKEY・마우스 사이드 버튼을 누른 채 클릭하면 한 번에 여러 개 구매 가능합니다。
+		ENDIF
+	CASE 9
+		REDRAW L_REDRAW
+		RETURN 0
+	;ページの切り替え
+	CASE 10 TO 10 + ((VARSIZE("SELL_LIST") -1) / SHOWNUM)
+		RESULT -= 10
+		SIF SELL_LIST:(RESULT * SHOWNUM) >= 0
+			L_PAGE = RESULT
+	;表示区分変更
+	CASE 50 TO 50 + VARSIZE("SKILL_EMULATOR_TYPE") + 1
+		RESULT -= 50
+		SELECT_TYPE = %SKILL_EMULATOR_TYPE:RESULT%
+		L_PAGE = 0
+		SELECT_BUYNUM = -1
+		SELECT_EMU = -1
+		VARSET BUY_LIST, 0
+	CASE 100 TO 100 + VARSIZE("SELL_LIST")
+		RESULT -= 100
+		IF SELL_LIST:RESULT
+			;ALT or マウスサイドキー
+			IF GETKEY(0x12) || GETKEY(0x05)
+				IF FINDELEMENT(BUY_LIST, SELL_LIST:RESULT) >= 0
+					BUY_LIST:FINDELEMENT(BUY_LIST, SELL_LIST:RESULT) = 0
+				ELSE
+					SIF FINDELEMENT(BUY_UNABLE, SELL_LIST:RESULT) < 0
+						BUY_LIST:FINDELEMENT(BUY_LIST, 0) = SELL_LIST:RESULT
+				ENDIF
+				SELECT_BUYNUM = RESULT
+				SELECT_EMU = SELL_LIST:SELECT_BUYNUM
+			ELSE
+				IF SELL_LIST:RESULT == SELECT_EMU && FINDELEMENT(BUY_LIST, SELECT_EMU) >= 0
+					IF L_PRICE_SUM > 0 && MONEY:1 >= L_PRICE_SUM
+						CLEARLINE LINECOUNT - L_LINE:1
+						PRINTFORML %조사처리(GET_SKILL_EMULATOR_NAME(SELECT_EMU), "을")% 구입하시겠습니까？
+						PRINTL [0] 네
+						PRINTL [1] 아니오
+						WHILE LINECOUNT < L_LINE:2
+							PRINTL 
+						WEND
+						PRINTL 
+						CALL INPUTINT, 0, 1
+						IF RESULT == 0
+							MONEY:1 -= L_PRICE_SUM
+							CALL ADD_SKILL_EMULATOR, SELECT_EMU
+							CLEARLINE LINECOUNT - L_LINE:1
+							PRINTFORML %조사처리(GET_SKILL_EMULATOR_NAME(SELECT_EMU), "을")% 구입했습니다。
+							SELECT_BUYNUM = -1
+							SELECT_EMU = -1
+							VARSET BUY_LIST, 0
+							WHILE LINECOUNT < L_LINE:2
+								PRINTL 
+							WEND
+							PRINTFORM [0] 구입한다
+							PRINTW 　　　[9] 돌아간다　　　　　　※ALTKEY・마우스 사이드 버튼을 누른 채 클릭하면 한 번에 여러 개 구매 가능합니다。
+						ENDIF
+					ENDIF
+				ELSE
+					SELECT_BUYNUM = RESULT
+					SELECT_EMU = SELL_LIST:SELECT_BUYNUM
+					VARSET BUY_LIST, 0
+					BUY_LIST:FINDELEMENT(BUY_LIST, 0) = SELECT_EMU
+				ENDIF
+			ENDIF
+		ENDIF
+ENDSELECT
+GOTO START
+
+;==========================================================
+;@システム全体の解説文
+;==========================================================
+@SHOW_EXPLAIN_SKILL_EMULATOR
+PRINTL □스킬에물레이터
+PRINTL 　Lv3 이상의 서머너 소질을 지닌 캐릭터용 스킬 습득 소프트입니다。
+PRINTL 　각 캐릭터의 서머너기능에 따라、임의의 수를 개별적으로 세트할 수 있습니다。
+PRINTL 　이를 통해、서머너 자신이나 파티를 강화하거나、서머너에게 지원행동을 실행시키는 등이 가능해집니다。
+PRINTL 　참고로、스킬에뮬레이터는 이벤트로 손에 넣을수도 있지만、대부분은 마카로 교환하는 것으로 입수 가능합니다。
+PRINTL 
+PRINTL □리더스킬
+PRINTL 　파티 전체에 효과를 발휘하는 스킬입니다。
+PRINTL 　세트한 서머너가 건재할 시에 효과를 발휘합니다。
+PRINTL 　
+PRINTL □서머너스킬
+PRINTL 　서머너 본인을 강화하는 스킬입니다。
+PRINTL 　기본적으로는 통상의 자동효과 스킬과 다르지 않지만、일부 독자적인 것이 있습니다。
+PRINTL 
+PRINTL □커맨드스킬
+PRINTL 　대상을 지정해 발동하는、이른바 액티브 스킬입니다。
+PRINTL 　기본적으로 ＨＰ나 ＭＰ와 같은 소비 코스트는 존재하지 않지만、사용하려면 일정 턴 수가 경과할 필요가 있습니다。
+PRINTL 　또한、한 번 스킬이 사용되면 경과 턴이 리셋되어、다시 사용할 때까지 턴 경과를 기다릴 필요가 있습니다。
+PRINTL 
+PRINTL □어시스트스킬
+PRINTL 　대상을 지정해 발동하는、이른바 액티브 스킬입니다。
+PRINTL 　원칙적으로는 커맨드스킬과 같은 조건으로 사용됩니다만、어시스트스킬은 턴을 소비하지 않고 즉시 발동합니다。
+PRINTL 　
+;==========================================================
+;@SET_SKILL_EMULATOR_VAR
+;#FUNCTION内でTRYをしないように済ますために変数として取得させておくための変数
+;==========================================================
+@SET_SKILL_EMULATOR_VAR
+#DIM LCOUNT
+FOR LCOUNT, 0, SKILL_EMULATOR_NUM
+	TRYCCALLFORM SKILL_EMULATOR_NAME_{LCOUNT}
+		SKILL_EMULATOR_NAME:LCOUNT = %RESULTS%
+	CATCH
+		CONTINUE
+	ENDCATCH
+NEXT
+
+;==========================================================
+;@GET_USEABLE_SKILL_EMULATOR_NUM
+;エミュレータ可能数
+;==========================================================
+@GET_USEABLE_SKILL_EMULATOR_NUM, ARG
+#FUNCTION
+#DIM L_RESULT
+L_RESULT = 0
+L_RESULT += TOINT(AUTO_SPLIT("0/0/0/1/2/3", "/", GET_BTL_TALENT_LV("서머너", ARG)))
+SIF L_RESULT
+	L_RESULT += (GET_BTL_TALENT_LV("컴퓨터기능", ARG) > 0) * 2
+RETURNF L_RESULT
+
+;---- EDIT 003 MOD START -------------------------
+;==========================================================
+;@GET_CAST_SKILL_EMULATOR
+;コマンダースキルの必要ターン数の取得
+;==========================================================
+@GET_CAST_SKILL_EMULATOR, ARG, ARG:1 = -1
+#DIM L_COST
+#DIMS L_TYPE
+RESULT = 0
+CALL GET_SKILL_PROP, "SKILL_COSTTYPE", ARG, ARG:1
+SIF GET_SKILL_COST_TYPE(RESULT) != "TURN"
+	RETURN 0
+RESULT = 0
+CALL GET_SKILL_PROP, "SKILL_COST", ARG, ARG:1
+IF ARG:1 >= 0
+	L_COST = RESULT
+	CALL GET_SKILL_PROP, "SKILL_DECIDE_TYPE", ARG, ARG:1
+	L_TYPE = %GET_SKILL_DECIDE_TYPE(RESULT)%
+	SIF GROUPMATCH(L_TYPE,"CS","AS") && HAVE_SKILL(ARG:1, [[스킬:숏컷]])
+		L_COST -= 1
+	SELECTCASE L_TYPE
+		CASE "CS"
+			SIF FINDELEMENT(C_COMMANDER_SKILL:(ARG:1):0, ARG) >= 0
+				L_COST -= C_COMMANDER_SKILL_CT:(ARG:1):FINDELEMENT(C_COMMANDER_SKILL:(ARG:1):0, ARG)
+		CASE "AS"
+			SIF FINDELEMENT(C_ASSIST_SKILL:(ARG:1):0, ARG) >= 0
+				L_COST -= C_ASSIST_SKILL_CT:(ARG:1):FINDELEMENT(C_ASSIST_SKILL:(ARG:1):0, ARG)
+	ENDSELECT
+ENDIF
+RETURN MAX(L_COST, 0)
+;---- EDIT 003 MOD END ---------------------------
+;==========================================================
+;@GET_SKILL_EMULATOR
+;番号からアプリの名称を返す
+;==========================================================
+@GET_SKILL_EMULATOR_NAME, ARG
+#FUNCTIONS
+RETURNF SKILL_EMULATOR_NAME:ARG
+
+;==========================================================
+;@GET_SKILL_EMULATOR_NUM
+;名称からアプリの番号を返す
+;==========================================================
+@GET_SKILL_EMULATOR_NUM, ARGS
+#FUNCTION
+#DIM LCOUNT
+LOCAL = FINDELEMENT(SKILL_EMULATOR_NAME, ARGS)
+SIF LOCAL >= 0
+	RETURNF LOCAL
+;접두사(LS - / SS - / CS - / AS - 등) 누락 시 부분 일치 호환 검색
+FOR LCOUNT, 0, SKILL_EMULATOR_NUM
+	SIF SKILL_EMULATOR_NAME:LCOUNT == ""
+		CONTINUE
+	IF STRFIND(SKILL_EMULATOR_NAME:LCOUNT, ARGS) >= 0
+		RETURNF LCOUNT
+	ENDIF
+NEXT
+RETURNF -1
+
+;==========================================================
+;@HAVE_SKILL_EMULATOR
+;名称からアプリの所持状態を返す
+;==========================================================
+@HAVE_SKILL_EMULATOR, ARGS
+#FUNCTION
+LOCAL = GET_SKILL_EMULATOR_NUM(ARGS)
+SIF LOCAL < 0
+	RETURNF 0
+RETURNF HAVE_SKILL_EMULATOR:LOCAL
+
+;==========================================================
+;@GET_SKILL_EMULATOR_NUM
+;指定した番号のアプリを所持品に追加する
+;==========================================================
+@ADD_SKILL_EMULATOR, ARG
+HAVE_SKILL_EMULATOR:ARG = 1
+HAVE_RECORD_SKILL_EMULATOR:ARG = 1
+
+;==========================================================
+;@GET_SKILL_EMULATOR_NUM
+;指定した名称のアプリを所持品に追加する
+;==========================================================
+@ADDS_SKILL_EMULATOR, ARGS
+LOCAL = GET_SKILL_EMULATOR_NUM(ARGS)
+SIF LOCAL < 0
+	RETURN 0
+HAVE_SKILL_EMULATOR:LOCAL = 1
+HAVE_RECORD_SKILL_EMULATOR:LOCAL = 1
+
+;==========================================================
+;@L_EXPLAIN変数にARGのエミュレータの説明文を入れて返す
+;==========================================================
+@SET_VAR_SKILL_EMULATOR_EXPLAIN, ARG, L_EXPLAIN
+#DIM LCOUNT
+#DIM L_SKILL
+#DIMS REF L_EXPLAIN
+CALLFORM SKILL_EMULATOR_EQUIP_SKILL_{ARG}
+L_SKILL = RESULT
+CALL GET_SKILL_PROP, "SKILL_EFECT", L_SKILL, -1
+IF GET_SKILL_EFFECT(RESULT) == "자동효과"
+	L_EXPLAIN = 자동효과
+ELSE
+	CALL GET_SKILL_PROP, "SKILL_COST", L_SKILL
+	L_EXPLAIN = 必要ターン数:{RESULT,2}　
+ENDIF
+VARSET RESULTS, "", 0, 10
+CALLFORM SKILL_EMULATOR_EXPLAIN_{ARG}
+FOR LCOUNT, 0, 10
+	SIF RESULTS:LCOUNT == ""
+		CONTINUE
+	L_EXPLAIN += UNICODE(0X000D) + RESULTS:LCOUNT
+NEXT

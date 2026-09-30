@@ -1,0 +1,109 @@
+﻿;スキル名
+@SKILL_NAME_心羅万絃大合奏,ARG
+IF ARG >= 0 && GET_RPG_CFLAG_TAKEOVER(ARG, "満開！心羅万絃大合奏取得")
+	RESULTS = 満開！心羅万絃大合奏
+ELSE
+	RESULTS = 心羅万絃大合奏
+ENDIF
+;　명중
+@SKILL_HITRATE_心羅万絃大合奏, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_心羅万絃大合奏, ARG
+RETURN 180
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_心羅万絃大合奏, ARG
+RETURN 3
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_心羅万絃大合奏, ARG
+RETURN 3
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_心羅万絃大合奏, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_心羅万絃大合奏, ARG
+IF ARG >= 0 && GET_RPG_CFLAG_TAKEOVER(ARG, "満開！心羅万絃大合奏取得")
+	RETURN 80
+ELSE
+	RETURN 60
+ENDIF
+
+;　相性
+@SKILL_TYPE_心羅万絃大合奏, ARG
+
+IF ARG >= 0 && GET_RPG_CFLAG_TAKEOVER(ARG, "満開！心羅万絃大合奏取得")
+	RETURN GET_TYPE_NUM("신경"), GET_TYPE_NUM("충격"), GET_TYPE_NUM("전격")
+ELSE
+	RETURN GET_TYPE_NUM("신경"), GET_TYPE_NUM("충격")
+ENDIF
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_心羅万絃大合奏
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_心羅万絃大合奏, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_心羅万絃大合奏, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_心羅万絃大合奏, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_心羅万絃大合奏, ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_心羅万絃大合奏, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_心羅万絃大合奏, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_心羅万絃大合奏
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_心羅万絃大合奏, ARG, ARG:1, SKILL_NUM
+#LOCALSIZE 3
+#DIM SKILL_NUM
+
+CALL ATTACK_FIELD, ARG, ARG:1, SKILL_NUM
+CALL SKILLGAGE_D_SET, ARG, SKILL_NUM, 6
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_心羅万絃大合奏, ARG
+PRINTFORML 와이어를 다루는 %CALLNAME:ARG%의 SP 스킬.
+PRINTL 덩굴 같은 고리 모양의 장식에서 사출되는 와이어로 잘게 썬다
+PRINTL 나무의 정령 운외경도 빔으로 추격한다
+PRINTL 적 전체에 충격과 신경의 복합 속성으로 3회 데미지를 준다.
+PRINTL 단 재사용까지 5턴의 쿨타임이 필요하다.
+PRINTL 원래는 노란색 속성의 필살기이므로 개별 이벤트 후에는 뇌격도.
+
+	
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_心羅万絃大合奏, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG, "心羅万絃大合奏")
+RESULTS = 쿨타임:%TOFULL(TOSTR(SKILLGAGE_D_GET(ARG,SKILL_NUM)))%턴
+SIF SKILLGAGE_D_GET(ARG, SKILL_NUM)
+	RETURN 0
+RETURN 1
+

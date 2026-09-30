@@ -1,0 +1,43 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@C_BTL_EFFECT_CONTROL_NO_FGO_55,ARG
+RESULTS = 蛍火γ
+
+;スキル名
+@SKILL_NAME_C_BTL_EFFECT_蛍火γ,ARG
+RESULTS = 공격을 받았을 때 NP 게이지 획득량 증가
+
+;重複可能な数
+@C_BTL_EFFECT_COUNT_LIMIT_蛍火γ
+RETURN 10
+
+;効果時間　最大10ターンまで、0を指定した場合は戦闘中永続
+@C_BTL_EFFECT_CONTINUE_TIME_蛍火γ
+RETURN 1
+
+;排他となる効果
+;戻り値
+; RESULTS = 効果名
+; RESULT
+; 0 = 排他
+;-1 = 上書き不能
+; 1 = 上書き(対象も1なら相互上書き)
+@C_BTL_EFFECT_EXCLUSIVE_蛍火γ
+RESULTS = 強化無効
+RETURN -1
+
+;個別の対象条件
+;ARG 	効果を受けるキャラの登録番号
+;ARG:1	効果を与えるキャラの登録番号
+@C_BTL_EFFECT_SPECIAL_TARGET_蛍火γ, ARG, ARG:1
+;対象がDYINGの場合は無効
+SIF IS_BADSTATE(ARG, "DYING")
+	RETURN 0
+RETURN 1
+
+@NP_CHARGE_C_BTL_EFFECT_蛍火γ, ARG, GIVE_EFFECT_CHARA
+#DIM GIVE_EFFECT_CHARA
+;攻撃を受けた時、被弾したかに関わらずNP獲得量50%増加、固定値12加算
+SIF GET_CREC_ACT(-1,ARG,"ATTACK")
+	RETURN 50,12

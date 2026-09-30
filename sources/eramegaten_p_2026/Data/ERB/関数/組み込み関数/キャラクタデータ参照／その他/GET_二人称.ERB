@@ -1,0 +1,40 @@
+﻿;-------------------------------------------------
+;@GET_二人称
+;指定されたキャラが生成されている場合は生成された人称を参照し
+;生成されていない場合はCSVあるいは直指定の人称を参照して返す関数
+;性質上、複数生成が可能なキャラにあてると事故がありうるので制限をいれている。
+;
+;ARGS = 識別名でキャラクターを指定する
+;L_EVENT_NO = イベント番号
+;EVENTSTR = CSVと違う呼称がデフォルトになっている場合、直で指定する
+;-------------------------------------------------
+@GET_二人称, ARGS, L_EVENT_NO, EVENTSTR
+#FUNCTIONS
+#DIM DYNAMIC L_CSVNO
+#DIM DYNAMIC L_EVENT_NO
+#DIMS DYNAMIC EVENTSTR
+L_CSVNO = GET_識別番号(ARGS)
+SIF L_CSVNO < 0
+	THROW 식별명이 올바르지 않습니다
+;イベントナンバーの指定がある場合
+IF L_EVENT_NO
+	IF FINDCHARA_B(L_CSVNO, L_EVENT_NO) >= 0
+		RETURNF CSTR:(RESULT:1):이인칭
+	ELSE
+		SIF EVENTSTR != ""
+			RETURNF EVENTSTR
+		RETURNF STRFORM(CSVCSTR(L_CSVNO, GETNUM(CSTR, "이인칭")))
+	ENDIF
+ELSE
+	SIF CSVCFLAG(L_CSVNO,GETNUM(CFLAG,"복수생성가능"),0)
+		THROW 복수 생성 가능한 캐릭터에는 대응하지 않습니다.
+	IF !GROUPMATCH(GET_RACE(CSVABL(L_CSVNO,GETNUM(ABL,"종족"),0)), "인간", "반마인", "악마인", "조마")
+		SIF !CSVCFLAG(L_CSVNO,GETNUM(CFLAG,"１체만"),0)
+			THROW 복수 생성 가능한 캐릭터에는 대응하지 않습니다.
+	ENDIF
+	SIF GETCHARA(L_CSVNO) < 0
+		RETURNF STRFORM(CSVCSTR(L_CSVNO, GETNUM(CSTR, "이인칭")))
+	SIF EVENTSTR != ""
+		RETURNF EVENTSTR
+	RETURNF CSTR:GETCHARA(L_CSVNO, L_EVENT_NO):이인칭
+ENDIF

@@ -1,0 +1,131 @@
+﻿;====================
+;조건
+;====================
+@PLAYABLE_EVENT_112
+SIF イベントフラグ:112:0
+	RETURN 0
+SIF BASE:MASTER:LV <= 30
+	RETURN 0
+SIF !GETS_USEABLE_EXTRA_TITLE()
+	RETURN 0
+RESULTS = 양산형인 그 아이
+RETURN 1
+
+;====================
+;내용
+;====================
+;마스캣 나타나다
+@SHOPCOM_EVENT_112
+PRINTFORMW 본부로부터 의뢰 연락이다….
+PRINTFORMW 도쿄의 특정 지역에서 전기가 번쩍거리고 쓰레기와 고철이 쏟아져 내리는 괴현상이 목격되고 있다.
+PRINTFORMW 이에 따라 근처에 있는 다크 서머너들에게 조사를 의뢰하고 있는 모양이다.
+PRINTFORMW 또한 조사에 응할지 여부는 임의라고 한다.
+PRINTFORML 
+PRINTFORMW 자, 어떻게 할까?
+PRINTFORML [0] 의뢰를 받는다
+PRINTFORML [1] 관둔다
+CALL INPUTINT,0,1
+IF RESULT == 1
+	PRINTFORML  귀찮으니 패스. 다른 누군가가 하겠지.
+	RETURN 0
+ELSE
+	PRINTFORMW 조사를 위해 차출된 %CALLNAME:MASTER%의 앞에 유난히 크고 눈부신 광구가 나타났다.
+	PRINTFORMW 너무나 눈부신 열량에 눈이 타들어 갈 것 같아 똑바로 쳐다보지 못하고 고개를 돌린다.
+	PRINTFORMW 열기가 가라앉은 뒤, 콘크리트 바닥에 작은 크레이터가 생겨 있었고, 그 중심에 터미◯이터의 포즈로 출현한 것은……
+	PRINTFORMW 백발 네코미미 드레스 미소녀.
+	PRINTFORMW 백발 네코미미 드레스 미소녀였다.
+	PRINTFORMW 울퉁불퉁 전라 마초맨 살인머신이 아니었다.
+	PRINTFORML  
+	PRINTFORMW ？？？
+	PRINTFORMW 「지정된 시대로 전송 완료. 위치 정보 확인…… 일본의 도쿄로 추정.
+	PRINTFORMW  주변 스캔. 생명 활동 확인. 원주민과 접촉하여 다시 시대를 확인합니다.
+	PRINTFORMW  거기 있는 당신. 지금은 서력 몇 년 몇 월 며칠입니까」
+	PRINTFORML  
+	PRINTFORMW 딱 봐도 수상하다. 인터뷰 시간이다!
+	PRINTFORML  
+	PRINTFORMW  ？？？
+	PRINTFORMW 「적대 행동 확인. 배제합니다」
+	;전투 시작
+	LOCAL = 30
+
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+
+	CALL SET_ENEMY,9,[[キャラ:마스캣]],LOCAL,0,1
+	NAME:(CHARANUM-1) = 마스캣
+	CALLNAME:(CHARANUM-1) = 마스캣
+	ABL:(CHARANUM-1):종족 = 12
+	CSTR:(CHARANUM-1):종족명 = 전투용 안드로이드
+	CFLAG:(CHARANUM-1):ＨＰ보정 += 100
+	CFLAG:(CHARANUM-1):ＭＰ보정 += 10000
+	CFLAG:(CHARANUM-1):행동횟수 = 2
+	BASE:(CHARANUM-1):힘 = 30
+	BASE:(CHARANUM-1):내구 = 20
+	BASE:(CHARANUM-1):속도 = 30
+	ABL:(CHARANUM-1):공격상성 = 1
+	ABL:(CHARANUM-1):최저공격횟수 = 1
+	ABL:(CHARANUM-1):최대공격횟수 = 1
+	ABL:(CHARANUM-1):사거리 = 2
+	ABL:(CHARANUM-1):공격범위 = 3
+	ABL:(CHARANUM-1):스킬1 =  [[스킬:번개찌르기]]
+	ABL:(CHARANUM-1):스킬2 =  [[스킬:데스바운드]]
+	ABL:(CHARANUM-1):스킬3 =  [[스킬:산탄사격]]
+	ABL:(CHARANUM-1):스킬4 =  [[스킬:연속사격]]
+	ABL:(CHARANUM-1):스킬5 =  [[스킬:일문자베기]]
+	ABL:(CHARANUM-1):스킬6 =  [[스킬:돌려차기]]
+	ABL:(CHARANUM-1):스킬7 =  [[스킬:섬머솔트]]
+	ABL:(CHARANUM-1):스킬8 =  [[스킬:맹반격]]
+	ABL:(CHARANUM-1):스킬9 =  [[스킬:캔디보이스]]
+
+	CALL BATTLE_START
+
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+
+	;전투 종료
+	PRINTFORMW ？？？
+	PRINTFORMW 「손상 확대…… 기능 저하. 보존된 데이터와의 오차 큼.
+	PRINTFORMW  이무라 인더스트리얼 본사에 오퍼레이션 변경을 신청…… 승인.
+	PRINTFORMW  무장 해제. 현재 교전 중인 세력에게. 본 기체는 정전을 제안합니다.
+	PRINTFORMW  정전을 받아들이지 않으실 경우 자폭합니다」
+	PRINTFORML  
+	PRINTFORMW 단단하고, 빠르고, 공격이 비정상적으로 정확한, 명백히 인간이 아닌 무언가라는 것은 잘 알겠다.
+	PRINTFORMW 자폭이라는 것도 허세는 아니겠지. 무기인 블레이드와 총도 버렸으니 정전을 받아들인다.
+	PRINTFORML  
+	PRINTFORML  ？？？
+	PRINTFORMW 「협력에 감사드립니다. 저는 Mass Production NORA_CAT, 마스캣이라고 불러 주십시오.
+	PRINTFORMW  그쪽도 정보 수집을 목적으로 접촉한 것으로 추정됩니다. 정보 교환을 제안합니다만, 받아들이시겠습니까?」
+	PRINTFORMW 
+	PRINTFORMW 이쪽도 알고 싶은 것이 산더미처럼 많으니 정보 교환은 바라던 바다.
+	PRINTFORMW 아지트로 데려와 은밀히 해킹을 시도했으나, 프로텍트가 미지의 기술이라 아무것도 알 수 없어서 비웃음을 샀기에 얌전히 구두로 정보 교환을 하게 되었다.
+	PRINTFORMW 
+	PRINTFORMW 그녀의 정체는 미래에서 보내진 전투용 안드로이드.
+	PRINTFORMW 이무라 인더스트리얼에서 제조한, 양산형 노라캣 타입 안드로이드.
+	PRINTFORMW 미래 시점에서의 제1차 지구 제압 작전은 실패했지만, 기술이 미발달한 과거의 지구라면 제압할 수 있지 않을까?
+	PRINTFORMW 역사를 개변하여 자원 낭비도 억제하고 이무라가 지구의 자원을 무제한으로 쓰며 돈방석에 앉을 수 있지 않을까?
+	PRINTFORMW 그렇게 생각한 암흑 메가코프, 이무라 인더스트리가 미래에서 보낸 양산형 노라캣.
+	PRINTFORMW 전송 좌표를 잘못 설정하여, 과거는 과거인데 평행세계로 보내져 버린 모양이다.
+	PRINTFORMW 이무라 인더스트리얼 왈, 통신 채널에 상당한 에너지를 소모하므로 곧 채널도 닫힌다고 한다.
+	PRINTFORMW 해당 개체의 회수는 불가능하므로 그냥 드리겠습니다, 라고 한다.
+	PRINTFORMW 오리지널, 아니 선행양산형은 따로 있는 모양이지만 한 기밖에 남아 있지 않다.
+	PRINTFORMW 애초에 여기에 보내진 것 자체가 실수이므로 이쪽으로 올 일은 아마 없을 것 같다.
+	PRINTFORMW 정보 교환은 종료.
+	PRINTFORMW 
+	PRINTFORML  마스캣
+	PRINTFORMW 「소유자 변경 코드를 수신. 당신을 새로운 소유자로 설정하시겠습니까.
+	PRINTFORMW  ……소유자 변경 완료. 이후, 본 기체는 마스터의 명령에 따릅니다.
+	PRINTFORMW  본 기체는 Mass Production NORA_CAT Class Android Gen2 No126이라고 합니다. 새로운 이름을 설정하시겠습니까?
+	PRINTFORMW  이름을 입력해 주십시오. 지정이 없을 경우 기본 이름인 『마스캣』을 권장합니다.
+	PRINTFORMW  ……기본 이름인 마스캣이군요. 기체명 설정 완료. 도모, 마스터=상. 저의 이름은 마스캣입니다. 앞으로도 잘 부탁드립니다(ㅇㅏㅍㅡㄹㅗㄷㅗ ㅈㅏㄹ ㅂㅜㅌㅏㅋ)」
+	PRINTFORML  
+	PRINTFORMW 전투용 안드로이드, 마스캣이 동료마가 되었다
+	PRINTFORML  
+	CALL ADD_NEW_COMPANION,[[キャラ:마스캣]],500
+ENDIF
+
+イベントフラグ:112:0 = 1

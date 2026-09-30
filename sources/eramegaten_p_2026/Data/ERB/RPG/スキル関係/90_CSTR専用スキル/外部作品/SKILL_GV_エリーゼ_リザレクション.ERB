@@ -1,0 +1,239 @@
+﻿;スキル名
+@SKILL_NAME_リザレクション, ARG
+IF SKILL_CHANGE(ARG, [[キャラ:엘리제2_GV]])
+	RESULTS = 리더렉션
+ELSE
+	RESULTS = RESURRECTION
+ENDIF
+
+;　명중
+@SKILL_HITRATE_リザレクション, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_リザレクション, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_リザレクション, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_リザレクション, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_リザレクション, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_リザレクション, ARG
+RETURN 24
+
+;　相性
+@SKILL_TYPE_リザレクション, ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+;グリードスナッチャーで封殺されるあたりMAGICでいい気がする
+@SKILL_DECIDE_TYPE_リザレクション
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_リザレクション, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_リザレクション, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_リザレクション, ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_リザレクション, ARG
+RETURN GET_SKILL_EFFECT_NUM("상태회복")
+
+;속도보정
+@SKILL_SPEED_リザレクション, ARG = -1
+RETURN 5
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_リザレクション
+RETURN 1
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_リザレクション, ARG, ARG:1, SKILL_NUM
+#DIM SKILL_NUM
+#LOCALSIZE 3
+#LOCALSSIZE 1
+#DIM ELISE_COUNT
+
+IF ARG:1 == 19
+	LOCAL:1 = 1
+	LOCAL:2 = 7
+ELSE
+	LOCAL:1 = 7
+	LOCAL:2 = 17
+ENDIF
+
+CALL ELISE_COUNT_CHECK, ARG
+ELISE_COUNT = RESULT
+
+FOR LOCAL, LOCAL:1, LOCAL:2
+	LOCALS = 포지션{LOCAL}
+	SIF FLAG:LOCALS < 0
+		CONTINUE
+	
+	CALL SKILL_CURE_STATE_リザレクション, CFLAG:(FLAG:LOCALS):상태이상
+	IF RESULT == 1
+		PRINTFORML 　　TARGET:[{LOCAL, 2}] %CALLNAME:(FLAG:LOCALS), 20, LEFT%　>>>>>>　숨을 되찾았다
+		CFLAG:(FLAG:LOCALS):상태이상 = 0
+		CFLAG:(FLAG:LOCALS):상태이상경과턴수 = 0
+		SELECTCASE ELISE_COUNT
+		CASE 0, 1
+			;PTにエリーゼがいない・あるいは一人しかいない。リカームより回復量低し
+			;最も戦闘中に0になることはないと思うけど
+			CALL VAR_HP, FLAG:LOCALS, MAXBASE:(FLAG:LOCALS):ＨＰ / 10
+		CASE 2
+			;PTに二人以上エリーゼがいればソーマ神権現よりコスト安し
+			CALL VAR_HP, FLAG:LOCALS, MAXBASE:(FLAG:LOCALS):ＨＰ / 4
+		CASE 3
+			;PTに三人エリーゼがいればなんと半分も回復
+			CALL VAR_HP, FLAG:LOCALS, MAXBASE:(FLAG:LOCALS):ＨＰ / 2
+		ENDSELECT
+	ENDIF
+NEXT
+WAIT
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+@ACTION_FIELD_リザレクション, ARG, ARG:1, SKILL_NUM
+#DIM SKILL_NUM
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIM ELISE_COUNT
+
+CALL ELISE_COUNT_CHECK, ARG
+ELISE_COUNT = RESULT
+
+FOR LOCAL, 1, 7
+	LOCALS = 포지션{LOCAL}
+	SIF FLAG:LOCALS < 0
+		CONTINUE
+	
+	CALL SKILL_CURE_STATE_リザレクション, CFLAG:(FLAG:LOCALS):상태이상
+	IF RESULT == 1
+		PRINTFORML 　　TARGET:[{LOCAL, 2}] %CALLNAME:(FLAG:LOCALS), 20, LEFT%　>>>>>>　숨을 되찾았다
+		CFLAG:(FLAG:LOCALS):상태이상 = 0
+		CFLAG:(FLAG:LOCALS):상태이상경과턴수 = 0
+		SELECTCASE ELISE_COUNT
+		CASE 0, 1
+			;PTにエリーゼがいない・あるいは一人しかいない。リカームより回復量低し
+			CALL VAR_HP, FLAG:LOCALS, MAXBASE:(FLAG:LOCALS):ＨＰ / 10
+		CASE 2
+			;PTに二人以上エリーゼがいればソーマ神権現よりコスト安し
+			CALL VAR_HP, FLAG:LOCALS, MAXBASE:(FLAG:LOCALS):ＨＰ / 4
+		CASE 3
+			;PTに三人エリーゼがいればなんと半分も回復
+			CALL VAR_HP, FLAG:LOCALS, MAXBASE:(FLAG:LOCALS):ＨＰ / 2
+		ENDSELECT
+	ENDIF
+NEXT
+WAIT
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_リザレクション, ARG
+#DIM ELISE_COUNT
+PRINTFORML 영혼을 조종하여 죽은 생명마저 부활시키는 %CALLNAME:ARG%의 SP스킬.
+PRINTL 　
+PRINTL 아군 전체의 DYING을 회복한다.
+PRINTL 소생 후의 HP 회복량은 파티 내의 엘리제 수에 따라 변화한다.
+PRINTL 
+
+CALL ELISE_COUNT_CHECK, ARG
+ELISE_COUNT = RESULT
+IF ELISE_COUNT <= 1
+	PRINTL 1명 이하：HP 최대치의 10% 회복 (현재 적용 중)
+ELSE
+	PRINTL 1명 이하：HP 최대치의 10% 회복
+ENDIF
+IF ELISE_COUNT == 2
+	PRINTL 2명　　：HP 최대치의 25% 회복 (현재 적용 중)
+ELSE
+	PRINTL 2명　　：HP 최대치의 25% 회복
+ENDIF
+IF ELISE_COUNT == 3
+	PRINTL 3명　　：HP 최대치의 50% 회복 (현재 적용 중)
+ELSE
+	PRINTL 3명　　：HP 최대치의 50% 회복
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_リザレクション, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG, "リザレクション")
+SIF SKILLGAGE_D_GET(ARG, SKILL_NUM)
+	RETURN 0
+RETURN 1
+
+@SKILL_CURE_STATE_リザレクション, ARG
+SELECTCASE GET_STATE(ARG)
+	CASE "DYING"
+		RETURN 1
+	CASEELSE
+		RETURN 0
+ENDSELECT
+
+@ELISE_COUNT_CHECK, ARG
+;PT内にエリーゼがどんだけいるかを数える関数（生死は問わない）
+#LOCALSIZE 3
+#LOCALSSIZE 1
+#DIM ELISE_COUNT
+;メモ　PT플래그…0:敵/1:味方かつPT外/2:味方かつPT内
+IF CFLAG:(ARG):PT플래그 == 0
+	LOCAL:1 = 7
+	LOCAL:2 = 17
+ELSE
+	LOCAL:1 = 1
+	LOCAL:2 = 7
+ENDIF
+
+ELISE_COUNT = 0
+
+IF SKILL_CHANGE(ARG, [[キャラ:엘리제1_GV]]) || SKILL_CHANGE(ARG, [[キャラ:엘리제2_GV]]) || SKILL_CHANGE(ARG, [[キャラ:엘리제3_GV]])
+	SIF CFLAG:ARG:PT플래그 == 2 || CFLAG:ARG:PT플래그 == 0
+		ELISE_COUNT += 1
+ENDIF
+FOR LOCAL, LOCAL:1, LOCAL:2
+	LOCALS = 포지션{LOCAL}
+	SIF FLAG:LOCALS < 0
+		CONTINUE
+	
+	IF SKILL_CHANGE(ARG, [[キャラ:엘리제1_GV]])
+		SIF NO:(FLAG:LOCALS) == [[キャラ:엘리제2_GV]] || NO:(FLAG:LOCALS) == [[キャラ:엘리제3_GV]]
+			ELISE_COUNT += 1
+	ELSEIF SKILL_CHANGE(ARG, [[キャラ:엘리제2_GV]])
+		SIF NO:(FLAG:LOCALS) == [[キャラ:엘리제1_GV]] || NO:(FLAG:LOCALS) == [[キャラ:엘리제3_GV]]
+			ELISE_COUNT += 1
+	ELSEIF SKILL_CHANGE(ARG, [[キャラ:엘리제3_GV]])
+		SIF NO:(FLAG:LOCALS) == [[キャラ:엘리제1_GV]] || NO:(FLAG:LOCALS) == [[キャラ:엘리제2_GV]]
+			ELISE_COUNT += 1
+	ENDIF
+NEXT
+
+RETURN ELISE_COUNT
+

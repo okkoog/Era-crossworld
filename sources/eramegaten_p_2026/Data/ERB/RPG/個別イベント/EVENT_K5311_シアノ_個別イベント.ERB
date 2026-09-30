@@ -1,0 +1,121 @@
+﻿;-------------------------------------------------
+;
+;-------------------------------------------------
+@INDIVIDUAL_EVENT_K5311, ARG, ARG:1 = 0, ARG:2 = -1
+;ARG:0　キャラ番号
+;ARG:1　関数種類　1,開放条件　2,타이틀　3,이벤트
+;ARG:2　イベント番号（0～63まで）
+
+;リストにキャラを表示する条件
+IF ARG:1 == 0
+	;イベント0で全部終了
+	SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+		RETURN 0
+	RETURN 1
+ENDIF
+
+SELECTCASE ARG:2
+CASE 0
+	;解放条件
+	IF ARG:1 == 1
+		SIF GET_VALUE_TALENT_JOINABLE(ARG) == 0
+			RETURN 0
+		SIF MONEY < 500
+			RETURN 0
+		SIF (GET_CHARA_LOYALTY(ARG)+TCVAR:ARG:획득충성도) >= 10000
+			RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			RESULTS = %CALLNAME:ARG%와(과) 인형뽑기
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			RESULTS = (전투 가능 상태、소지금 500 이상、충성도 10000 이상)
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		
+		PRINTFORMW 거리를 산책하고 있자 오락실 근처에 %CALLNAME:ARG%이(가) 있다
+		PRINTFORMW %CALLNAME:ARG%은(는) 인형뽑기 기계 앞에서 곤란해하고 있는 것처럼 보인다
+		PRINTFORMW 「아, 마침 좋은 곳에… 야ー！」
+		PRINTFORMW %CALLNAME:ARG%은(는) 당신을 부르고 있는 모양이다
+		CALL INPUT_SELECT,1,@"%CALLNAME:ARG% 쪽으로 간다",2,"무시한다"
+		IF RESULT == 1
+			PRINTFORMW %CALLNAME:ARG%의 부름에 응했다
+		ELSEIF RESULT == 2
+			PRINTFORMW 오히려 %CALLNAME:ARG%이(가) 이쪽으로 다가왔다
+			PRINTFORMW 「이쪽 눈치챈 거 다 들켰거든?」
+			PRINTFORMW 「뭐, 시간 얼마 안 걸릴 것 같으니까, 잠깐만 같이 있어줘」
+		ENDIF
+		PRINTFORMW 「사실, 곤란한 일이 있어서 말이지…」
+		PRINTFORMW 「이거… 뽑아줬으면 좋겠는데」
+		PRINTFORMW 인형뽑기 쪽을 살펴보니 %CALLNAME:ARG%의 취향일 법한 괴수 피규어가 있다
+		CALL INPUT_SELECT,1,"직접 뽑으면 되잖아",2,"돈이 없어？"
+		PRINTFORMW 「실은 지금까지, 계속 인형뽑기 하고 있었거든…」
+		PRINTFORMW 「그랬더니 어느새 돈이 다 떨어져서…」
+		PRINTFORMW 「부탁이야! 돈만 빌려줘도 되니까! 보례도 할게!」
+		CALL INPUT_SELECT,1,"내가 한다",2,"돈을 건넨다"
+		MONEY -= 500
+		IF RESULT == 1
+			PRINTFORMW %CALLNAME:MASTER%이(가) 직접 플레이하기로 했다
+			PRINTFORMW 「힘내!」
+		ELSEIF RESULT == 2
+			PRINTFORMW %CALLNAME:ARG%에게 500엔을 건네주기로 했다
+			PRINTFORMW 「좋ー아…」
+			PRINTFORM %CALLNAME:ARG%은(는) 
+		ENDIF
+		PRINTFORMW 크레인을 피규어 위치 옆으로 맞추고…
+		PRINTFORMW 다음엔 안쪽으로 위치를 맞춘다…
+		PRINTFORMW 크레인은 피규어를 향해 떨어져 내려가, 그대로 단단히 붙잡았다
+		PRINTFORMW 그대로 천천히 피규어를 운반해 간다…
+		PRINTFORMW 「조금만 더… 조금만 더…」
+		PRINTFORMW 그대로 목적지까지 가서, 구멍 안으로 떨어뜨렸다
+		PRINTFORMW 「해냈다ー! 고마워 %CSTR:ARG:이인칭%!」
+		PRINTFORMW 「자, 이거 답례야」
+		CALL GET_ITEMS("아쿠아마린",5)
+		PRINTFORMW ＞아쿠아마린을 5개 손에 넣었다
+		PRINTFORMW 「그럼, 또 봐」
+		PRINTFORMW ＞%CALLNAME:ARG%에게 상당한 호감을 산 것 같은 기분이 들었다
+		
+		
+		CFLAG:ARG:(MASTER + 2100) += 100
+		TCVAR:ARG:획득충성도 += 1000
+		TCVAR:ARG:획득의존도 += 50
+		;好感度以外は後に上昇値が表示される
+		;CFLAG:ARG:(MASTER + 2100) += (好感度)
+		;TCVAR:ARG:획득의존도 += 
+		;TCVAR:ARG:획득충성도 += 
+		;CALL ADDS_EXP("○○経験", 1, ARG)
+		RETURN 1
+	ENDIF
+CASE 1
+	;解放条件
+	IF ARG:1 == 1
+		;前イベントの　シアノとクレーンゲーム　既読後
+		;SIF GETBIT(CFLAG:CAST:개별이벤트읽음,0)
+		;	RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			RESULTS = 
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			;RESULTS = (%CALLNAME:ARG%とクレーンゲームを見ている)
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		
+		
+		
+		
+		;好感度以外は後に上昇値が表示される
+		;CFLAG:ARG:(MASTER + 2100) += (好感度)
+		;TCVAR:ARG:획득의존도 += 
+		;TCVAR:ARG:획득충성도 += 
+		;CALL ADDS_EXP("○○経験", 1, ARG)
+		RETURN 1
+	ENDIF
+ENDSELECT
+RETURN 0

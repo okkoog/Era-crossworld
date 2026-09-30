@@ -1,0 +1,105 @@
+﻿
+;スキル名
+@SKILL_NAME_隙、ミツケた,ARG
+RESULTS = 빈틈, 찾 았 다
+
+;　명중
+@SKILL_HITRATE_隙、ミツケた, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_隙、ミツケた, ARG
+SIF TFLAG:스킬용1 == 1
+	RETURN 375
+RETURN 250
+
+@SKILL_CRITICAL_RATE_隙、ミツケた, ARG
+SIF TFLAG:스킬용1 == 1
+	RETURN 15
+RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_隙、ミツケた,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_隙、ミツケた,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_隙、ミツケた, ARG
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_隙、ミツケた,ARG
+RETURN 12
+
+;　相性
+@SKILL_TYPE_隙、ミツケた,ARG
+RETURN GET_TYPE_NUM("타격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_隙、ミツケた
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_隙、ミツケた,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_隙、ミツケた,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_隙、ミツケた,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_隙、ミツケた,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_隙、ミツケた,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+@SKILL_SUCCESSION_TYPE_隙、ミツケた,ARG
+RETURN GET_SUCCESSION_NUM("타격")
+
+@SKILL_RANK_隙、ミツケた, ARG = -1
+RETURN 4
+
+;속도보정
+@SKILL_SPEED_隙、ミツケた, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_隙、ミツケた
+RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_隙、ミツケた,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+TFLAG:스킬용1 = 0
+SIF CFLAG:POS(ARG:1):상태이상 != GET_STATE_NUM("GOOD")
+	TFLAG:스킬용1 = 1
+CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM
+TFLAG:스킬용1 = 0
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_隙、ミツケた,ARG
+PRINTL 적 단체에 타격 상성으로 데미지를 준다.
+PRINTL 대상이 PANIC 상태인 경우 위력과 크리티컬률이 대폭 상승한다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_隙、ミツケた, ARG
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_隙、ミツケた, ARG
+RESULTS:0 = 적 단체에 타격 상성으로 데미지를 준다.
+RESULTS:1 = 대상에게 상태이상이 부여되어 있는 경우 위력과 크리티컬률이 대폭 상승한다.

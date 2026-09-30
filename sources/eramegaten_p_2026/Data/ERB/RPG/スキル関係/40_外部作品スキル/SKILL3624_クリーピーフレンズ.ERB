@@ -1,0 +1,595 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+;スキル名
+@SKILL_NAME_3624,ARG
+RESULTS = 크리피프렌즈
+
+;　명중
+@SKILL_HITRATE_3624, ARG
+RETURN 150
+
+;　威力
+@SKILL_POWER_3624, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3624,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3624,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3624, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3624,ARG
+LOCAL = SKILLGAGE_H_GET(ARG,3622)
+SELECTCASE LOCAL
+CASE 0,1,2
+	RETURN 10
+CASE 3,4,5
+	RETURN 14
+CASE 6,7,8
+	RETURN 18
+CASE 9,10
+	RETURN 22
+ENDSELECT
+;　相性
+@SKILL_TYPE_3624,ARG
+RETURN GET_TYPE_NUM("주살")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3624
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3624, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3624, ARG
+RETURN GET_SKILL_TARGET_NUM("전투전체")
+
+;　사거리
+@SKILL_RANGE_3624,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3624,ARG
+RETURN GET_SPHERE_NUM("적아군전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3624, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3624
+RETURN GET_SUCCESSION_NUM("지원")
+
+;속도보정
+@SKILL_SPEED_3624, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3624
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3624, ARG = -1
+RETURN 16
+
+@継承不能_3624
+RETURN 1
+
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_3624,ARG
+;SPECIAL_ACTIONで呼び出す前にスキルゲージFに対応する数を突っ込んで分岐させる
+SELECTCASE  SKILLGAGE_F_GET(ARG,3624)
+CASE 1
+	;イッショニアソボウ、精神相性PANIC
+	RETURN GET_STATE_NUM("PANIC")
+CASE 2
+	;イドルハンズ、神経相性BIND
+	RETURN GET_STATE_NUM("BIND")
+CASE 3
+	;ポイズンリリックA、PANICかCHARM(精神相性)かPOISONかBIND(神経相性)
+	IF RAND:2 == 0
+		RETURN GET_STATE_NUM("PANIC")
+	ELSE
+		RETURN GET_STATE_NUM("CHARM")
+	ENDIF
+CASE 4
+	;ポイズンリリックB、POISONかBIND(神経相性)
+	IF RAND:2 == 0
+		RETURN GET_STATE_NUM("POISON")
+	ELSE
+		RETURN GET_STATE_NUM("BIND")
+	ENDIF
+CASE 5,6
+	;コッチニオイデ、呪殺相性DYING(確率小)
+	;ニガサナイヨ、呪殺相性DYING(確率中)
+	RETURN GET_STATE_NUM("DYING")
+CASEELSE
+	RETURN 0
+ENDSELECT
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_3624,ARG
+;SPECIAL_ACTION内でSINGLE_BADSTATEを呼び出す前にスキルゲージFに対応する数を突っ込んで分岐させる。
+;呼んだ後はちゃんと0に戻すんだぞ俺。
+SELECTCASE  SKILLGAGE_F_GET(ARG,3624)
+CASE 1
+	;イッショニアソボウ、精神相性PANIC
+	RETURN 9
+CASE 2
+	;イドルハンズ、神経相性BIND
+	RETURN 8
+CASE 3
+	;ポイズンリリックA、PANICかCHARM(精神相性)か
+	RETURN 9
+CASE 4
+	;ポイズンリリックB、POISONかBIND(神経相性)
+	RETURN 8
+CASE 5,6
+	;コッチニオイデ、呪殺相性DYING(確率小)
+	;ニガサナイヨ、呪殺相性DYING(確率中)
+	RETURN 11
+CASEELSE
+	RETURN 0
+ENDSELECT
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_3624,ARG
+SELECTCASE  SKILLGAGE_F_GET(ARG,3624)
+CASE 1
+	;イッショニアソボウ、30-65
+	RETURN 30
+CASE 2
+	;イドルハンズ、40-70
+	RETURN 40
+CASE 3,4
+	;ポイズンリリック、60-90
+	RETURN 60
+CASE 5
+	;コッチニオイデ、30-60
+	RETURN 30
+CASE 6
+	;ニガサナイヨ、50-80
+	RETURN 50
+CASEELSE
+	RETURN 0
+ENDSELECT
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_3624,ARG
+SELECTCASE  SKILLGAGE_F_GET(ARG,3624)
+CASE 1
+	;イッショニアソボウ、30-65
+	RETURN 65
+CASE 2
+	;イドルハンズ、40-70
+	RETURN 70
+CASE 3,4
+	;ポイズンリリック、60-90
+	RETURN 95
+CASE 5
+	;コッチニオイデ、30-60
+	RETURN 60
+CASE 6
+	;ニガサナイヨ、50-80
+	RETURN 80
+CASEELSE
+	RETURN 0
+ENDSELECT
+
+;====================================================
+;カウンター発動条件
+;ARG			このスキルの持ち主
+;ARG:1			攻撃者のキャラ番号
+
+;RESULT			1 = 反撃成立。ただし実行までの間に行動者が行動不能になった場合は不発する
+;RESULT:1		反撃対象のPOS(ACTION_XXXのARG:1に送られる)。システム側で敵の生存・存在判定による不発判定をおこなうが、RESULT:1が0の場合は相手の状態に関わらず判定を通す
+;RESULT:2		-1 = デフォルトのスキル名表示を省く
+;====================================================
+@SKILL_COUNTER_ACTIONABLE_3624,ARG,ARG:1
+SIF !GET_CREC_ACT(ARG:1, ARG, "HIT")
+	RETURN 0
+;SIF !GETBIT(CFLAG:ARG:受けフラグ,18) && !GETBIT(CFLAG:ARG:受けフラグ,19)
+;	RETURN 0
+LOCAL:2=0
+FOR LOCAL,7,17
+	SIF POS(LOCAL)>0 && GET_STATE(CFLAG:(POS(LOCAL)):상태이상) != "DYING"
+		LOCAL:2++
+NEXT
+SIF LOCAL:2 == 0
+	RETURN 0
+;戻り値の-1はシステム側のスキル名表示を省く
+SIF RAND:10 < 5 && SKILLGAGE_D_GET(ARG,3624) > 0
+	RETURN 1, 0, -1
+RETURN 0
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_3624,ARG,ARG:1
+SIF ARG != FLAG:행동순1
+	RETURN 0
+SIF ARG != ARG:1
+	RETURN 0
+SIF SKILLGAGE_D_GET(ARG,3624) <= 0 || SKILLGAGE_H_GET(ARG,3622) <= 0 
+	;活性残ターンが残っていても死霊カウンターが乗ってないなら発動できない
+	RETURN 0
+IF CFLAG:ARG:입력행동 == 501 || CFLAG:ARG:입력행동 == 507 || CFLAG:ARG:입력행동 == 1423
+;タルカジャ、ラクンダ、カースエピタフなら75%で発動
+	SIF RAND:100 <= 75
+		RETURN 1, -1
+ELSEIF CFLAG:ARG:입력행동 == 3622 
+;リビングデッド使用時は30%で発動。どんぶり勘定。
+	SIF RAND:100 <= 30
+		RETURN 1, -1
+ENDIF
+RETURN 0
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3624, ARG, ARG:1, ARG:2
+;IF FLAG:카운터중 
+IF FLAG:총공격중 || FLAG:카운터중
+	PRINTL
+	;ここからカウンター発動時の処理。
+	;スキル名は基本的に原作の何かしらから引用。
+	LOCAL = ARG
+	;LOCAL:2にクリーピーフレンズの基準レベル(1～4)を入れておく
+	LOCAL:2 = SKILLGAGE_H_GET(ARG,3624)
+	;追加発動スキルのレベルを選定。
+	LOCAL:10 = RAND(1,LOCAL:2 + 1)
+	$CREEPYFRIENDS_REACT
+	;敵が全員死んでいたらその時点でループ制御に使用しているLOCAL:10を0に
+	LOCAL:11 = 0
+	FOR LOCAL:5,7,17
+		IF POS(LOCAL:5) > 0
+			LOCAL:11++
+		ENDIF
+	NEXT
+	SIF LOCAL:11 == 0
+		LOCAL:10 = 0
+
+	;追加行動の発動。
+	IF RAND:100 <= 75 && LOCAL:10 > 0 
+	;PRINTFORML ●追加行動発動:{LOCAL:10}
+		;LV4
+		IF LOCAL:10 > 3 && RAND:100 <= 75
+			IF RAND:4 == 0
+				;ランダム敵1～4体にPANICかCHARM(精神相性)かPOISONかBIND(神経相性)。
+				;付与率は高いが選定率がまず低いのでバランスが取れて…取れてると…いいな……
+				;【シンデレラガールズ】ユニット名
+				SETCOLOR 0x33ffcc
+				PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓9
+				PRINTFORM ┃[{CPOS(LOCAL),2}] %CALLNAME:(LOCAL),21,LEFT%┃　┃
+				PRINTFORML %"포이즌 리릭",40,LEFT%┃
+				PRINTFORMW ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+				RESETCOLOR
+				
+				LOCAL:4 = RAND(1,4)
+				LOCAL:3 = RAND(6,15)
+				$CREEPYFRIENDS_09
+				LOCAL:3 ++
+				SIF LOCAL:3 == 17
+					LOCAL:3 = 7
+				IF POS(LOCAL:3) > 0 && GET_STATE(CFLAG:POS(LOCAL:3):상태이상) != "DYING"
+						PRINTFORM 　　TARGET：[{LOCAL:3,2}]%CALLNAME:POS(LOCAL:3),20,LEFT%　>>>>>　
+					IF RAND:2 == 0
+						CALL SKILLGAGE_F_SET,ARG,3624,3
+					ELSE
+						CALL SKILLGAGE_F_SET,ARG,3624,4
+					ENDIF
+					CALL SINGLE_BADSTATE,ARG,POS(LOCAL:3),3624
+					CALL SKILLGAGE_F_SET,ARG,3624,0
+				ELSE
+					GOTO CREEPYFRIENDS_09
+				ENDIF
+				IF LOCAL:4 > 0
+					LOCAL:4 --
+					GOTO CREEPYFRIENDS_09
+				ENDIF
+				
+			ELSE
+				;ランダム単体呪殺(確率中)
+				;【デッドリーチェイス】特技名
+				SETCOLOR 0x33ffcc
+				PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓8
+				PRINTFORM ┃[{CPOS(LOCAL),2}] ＵＮＫＮＯＷＮ　　　 ┃　┃
+				PRINTFORML %"놓치지않을거야",40,LEFT%┃
+				PRINTFORMW ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+				RESETCOLOR
+				CALL ACTION_501,POS(LOCAL),22
+				LOCAL:3 = RAND(6,15)
+				$CREEPYFRIENDS_08
+				LOCAL:3 ++
+				SIF LOCAL:3 == 17
+					LOCAL:3 = 7
+				IF POS(LOCAL:3) > 0 && GET_STATE(CFLAG:POS(LOCAL:3):상태이상) != "DYING"
+					CALL SKILLGAGE_F_SET,ARG,3624,6
+					CALL SINGLE_BADSTATE,ARG,POS(LOCAL:3),3624
+					CALL SKILLGAGE_F_SET,ARG,3624,0
+				ELSE
+					GOTO CREEPYFRIENDS_08
+				ENDIF
+			ENDIF
+		;LV3
+		ELSEIF LOCAL:10 > 2 && RAND:100 <= 75
+			IF RAND:4 == 0
+				;自己限定の能力強化(種類ランダム)
+				;これだけオリジナル、それっぽい名前が出てこなかった…
+				SETCOLOR 0x33ffcc
+				PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓7
+				PRINTFORM ┃[{CPOS(LOCAL),2}] ＵＮＫＮＯＷＮ　　　 ┃　┃
+				PRINTFORML %"함께있을게",40,LEFT%┃
+				PRINTFORMW ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+				RESETCOLOR
+				CALL SKILL_SET_カジャンダ, ARG, ARG, RAND_SPLIT("명중/마법위력/마법효과", "/"), 4, "단체"
+				;SELECTCASE RAND:3
+				;	CASE 0
+				;		CFLAG:(LOCAL):명중강화 = MIN(32, CFLAG:(ARG):명중강화 + 4)
+				;		PRINTFORMW 　　TARGET:[{CPOS(LOCAL),2}] %CALLNAME:ARG,20,LEFT%　>>>>>>　命中が上がった！
+				;	CASE 1
+				;		CFLAG:(LOCAL):마법위력강화 = MIN(32, CFLAG:(ARG):마법위력강화 + 4)
+				;		PRINTFORMW 　　TARGET:[{CPOS(LOCAL),2}] %CALLNAME:ARG,20,LEFT%　>>>>>>　魔法威力が上がった！
+				;	CASE 2
+				;		CFLAG:(LOCAL):마법효과강화 = MIN(32, CFLAG:(ARG):마법효과강화 + 4)
+				;		PRINTFORMW 　　TARGET:[{CPOS(LOCAL),2}] %CALLNAME:ARG,20,LEFT%　>>>>>>　魔法効果が上がった！
+				;ENDSELECT
+			ELSE
+				;스쿤・다
+				;【ダークインバイト】カード名
+				SETCOLOR 0x33ffcc
+				PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓6
+				PRINTFORM ┃[{CPOS(LOCAL),2}] %CALLNAME:(LOCAL),21,LEFT%┃　┃
+				PRINTFORML %"다크 인바이트",40,LEFT%┃
+				PRINTFORMW ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+				RESETCOLOR
+				LOCAL:3 = RAND(6,15)
+				$CREEPYFRIENDS_06
+				LOCAL:3 ++
+				SIF LOCAL:3 == 17
+					LOCAL:3 = 7
+				IF POS(LOCAL:3) > 0 && GET_STATE(CFLAG:POS(LOCAL:3):상태이상) != "DYING"
+					CALL SKILL_SET_カジャンダ, ARG, POS(LOCAL:3), "魔法威力_魔法効果", -4, "단체"
+					;CFLAG:(LOCAL):마법위력강화 = MIN(32, CFLAG:(ARG):마법위력강화 - 4)
+					;PRINTFORMW 　　TARGET:[{(LOCAL:3),2}] %CALLNAME:POS(LOCAL:3),20,LEFT%　>>>>>>　魔法威力が下がった！
+					
+					;CFLAG:(LOCAL):마법효과강화 = MIN(32, CFLAG:(ARG):마법효과강화 - 4)
+					;PRINTFORMW 　　TARGET:[{(LOCAL:3),2}] %CALLNAME:POS(LOCAL:3),20,LEFT%　>>>>>>　魔法効果が下がった！
+				ELSE
+					GOTO CREEPYFRIENDS_06
+				ENDIF
+				WAIT
+			ENDIF
+		;LV2
+		ELSEIF LOCAL:10 > 1 && RAND:100 <= 75
+			IF RAND:3 == 0
+				;ランダム敵1～3体にBIND(神経相性)
+				;【アンデッド・ダンスロック】コミュイベントエンディング名(Idol Hands)
+				SETCOLOR 0x33ffcc
+				PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓5
+				PRINTFORM ┃[{CPOS(LOCAL),2}] %CALLNAME:(LOCAL),21,LEFT%┃　┃
+				PRINTFORML %"아이들 핸즈",40,LEFT%┃
+				PRINTFORMW ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+				RESETCOLOR
+				
+				LOCAL:4 = RAND(1,3)
+				LOCAL:3 = RAND(6,15)
+				$CREEPYFRIENDS_05
+				LOCAL:3 ++
+				SIF LOCAL:3 == 17
+					LOCAL:3 = 7
+				IF POS(LOCAL:3) > 0 && GET_STATE(CFLAG:POS(LOCAL:3):상태이상) != "DYING"
+					CALL SKILLGAGE_F_SET,ARG,3624,2
+					CALL SINGLE_BADSTATE,ARG,POS(LOCAL:3),3624
+					CALL SKILLGAGE_F_SET,ARG,3624,0
+				ELSE
+					GOTO CREEPYFRIENDS_05
+				ENDIF
+				IF LOCAL:4 > 0
+					LOCAL:4 --
+					GOTO CREEPYFRIENDS_05
+				ENDIF
+			ELSEIF RAND:2==0
+				;ランダム単体能力ランダム減少。
+				;【小さな恋の密室事件】一節引用
+				SETCOLOR 0x33ffcc
+				PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓4
+				PRINTFORM ┃[{CPOS(LOCAL),2}] ＵＮＫＮＯＷＮ　　　 ┃　┃
+				PRINTFORML %"당신은누구야",40,LEFT%┃
+				PRINTFORMW ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+				RESETCOLOR
+				
+				LOCAL:3 = RAND(6,15)
+				$CREEPYFRIENDS_04
+				LOCAL:3 ++
+				SIF LOCAL:3 == 17
+					LOCAL:3 = 7
+				IF POS(LOCAL:3) > 0 && GET_STATE(CFLAG:POS(LOCAL:3):상태이상) != "DYING"
+					CALL SKILL_SET_カジャンダ, ARG, POS(LOCAL:3), RAND_SPLIT("명중/마법위력/마법효과/회피", "/"), -4, "단체"
+					;SELECTCASE RAND:4
+					;CASE 0
+					;	CFLAG:(POS(LOCAL:3)):마법효과강화 = MIN(32, CFLAG:(POS(LOCAL:3)):마법효과강화 - 4)
+					;	PRINTFORMW 　　TARGET:[{(LOCAL:3),2}] %CALLNAME:POS(LOCAL:3),20,LEFT%　>>>>>>　魔法効果が下がった！
+					;CASE 1
+					;	CFLAG:(POS(LOCAL:3)):마법위력강화 = MIN(32, CFLAG:(POS(LOCAL:3)):마법위력강화 - 4)
+					;	PRINTFORMW 　　TARGET:[{(LOCAL:3),2}] %CALLNAME:POS(LOCAL:3),20,LEFT%　>>>>>>　魔法威力が下がった！
+					;CASE 2
+					;	CFLAG:(POS(LOCAL:3)):명중강화 = MIN(32, CFLAG:(POS(LOCAL:3)):명중강화 - 4)
+					;	PRINTFORMW 　　TARGET:[{(LOCAL:3),2}] %CALLNAME:POS(LOCAL:3),20,LEFT%　>>>>>>　命中が下がった！
+					;CASE 3
+					;	CFLAG:(POS(LOCAL:3)):회피강화 = MIN(32, CFLAG:(POS(LOCAL:3)):회피강화 - 4)
+					;	PRINTFORMW 　　TARGET:[{(LOCAL:3),2}] %CALLNAME:POS(LOCAL:3),20,LEFT%　>>>>>>　回避が下がった！
+					;ENDSELECT
+				ELSE
+					GOTO CREEPYFRIENDS_04
+				ENDIF
+				
+			ELSE
+				;ランダム単体呪殺(確率低)
+				;【크리피프렌즈】特技名
+				SETCOLOR 0x33ffcc
+				PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓3
+				PRINTFORM ┃[{CPOS(LOCAL),2}] ＵＮＫＮＯＷＮ　　　 ┃　┃
+				PRINTFORML %"이리온",40,LEFT%┃
+				PRINTFORMW ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+				RESETCOLOR
+				
+				LOCAL:3 = RAND(6,15)
+				$CREEPYFRIENDS_03
+				LOCAL:3 ++
+				SIF LOCAL:3 == 17
+					LOCAL:3 = 7
+				IF POS(LOCAL:3) > 0 && GET_STATE(CFLAG:POS(LOCAL:3):상태이상) != "DYING"
+					CALL SKILLGAGE_F_SET,ARG,3624,5
+					CALL SINGLE_BADSTATE,ARG,POS(LOCAL:3),3624
+					CALL SKILLGAGE_F_SET,ARG,3624,0
+				ELSE
+					GOTO CREEPYFRIENDS_03
+				ENDIF
+			ENDIF
+		;LV1
+		ELSE
+			IF RAND:2 == 0
+				;ランダム1～2体にバステ付着率上昇
+				;【ハスリングコール】特技名
+				SETCOLOR 0x33ffcc
+				PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓2
+				PRINTFORM ┃[{CPOS(LOCAL),2}] ＵＮＫＮＯＷＮ　　　 ┃　┃
+				PRINTFORML %"이어져있어",40,LEFT%┃
+				PRINTFORMW ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+				RESETCOLOR
+				
+				IF RAND:10 <= 7
+					LOCAL:4 = 1
+				ELSE
+					LOCAL:4 = 2
+				ENDIF
+				LOCAL:3 = RAND(6,15)
+				$CREEPYFRIENDS_02
+				LOCAL:3 ++
+				SIF LOCAL:3 == 17
+					LOCAL:3 = 7
+				IF POS(LOCAL:3) > 0 && GET_STATE(CFLAG:POS(LOCAL:3):상태이상) != "DYING"
+					CALL SKILL_SET_カジャンダ, ARG, POS(LOCAL:3), "BS부착률", 4, "단체"
+					;CFLAG:POS(LOCAL:3):BS부착률강화 = MIN(4, CFLAG:POS(LOCAL:3):BS부착률강화 + 4)
+					;PRINTFORMW 　　TARGET:[{LOCAL:3,2}] %CALLNAME:POS(LOCAL:3),20,LEFT%　>>>>>>　BS付着率が上がった！
+				ELSE
+					GOTO CREEPYFRIENDS_02
+				ENDIF
+				IF LOCAL:4 > 0
+					LOCAL:4 --
+					GOTO CREEPYFRIENDS_02
+				ENDIF
+			ELSE
+				;ランダム1体に精神相性でPANIC
+				;【ヨモスガラ・パーティ】特技名
+				SETCOLOR 0x33ffcc
+				PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓1
+				PRINTFORM ┃[{CPOS(LOCAL),2}] ＵＮＫＮＯＷＮ　　　 ┃　┃
+				PRINTFORML %"함께놀자",40,LEFT%┃
+				PRINTFORMW ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+				RESETCOLOR
+				LOCAL:3 = RAND(6,15)
+				$CREEPYFRIENDS_01
+				LOCAL:3 ++
+				SIF LOCAL:3 == 17
+					LOCAL:3 = 7
+				IF POS(LOCAL:3) > 0 && GET_STATE(CFLAG:POS(LOCAL:3):상태이상) != "DYING"
+					CALL SKILLGAGE_F_SET,ARG,3624,1
+					CALL SINGLE_BADSTATE,ARG,POS(LOCAL:3),3624
+					CALL SKILLGAGE_F_SET,ARG,3624,0
+				ELSE
+					GOTO CREEPYFRIENDS_01
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+	PRINTL
+	SIF RAND:100 <= 80
+		LOCAL:10 --
+	IF LOCAL:10 > 0
+		GOTO CREEPYFRIENDS_REACT
+	ENDIF
+	RESETCOLOR
+ELSE
+	;ここから任意発動時の動作。活性化処理。
+	;現在の死霊カウンターを取得
+	LOCAL = SKILLGAGE_H_GET(ARG,3622)
+	SELECTCASE LOCAL
+	CASE 0
+		PRINTFORM ＞발동할 수 있을 만큼 사령을 소환하지 않았다!
+	CASE 1,2
+		LOCAL:2 = 1
+	CASE 3,4,5
+		LOCAL:2 = 2
+	CASE 6,7,8
+		LOCAL:2 = 3
+	CASE 9,10
+		LOCAL:2 = 4
+	ENDSELECT
+	IF LOCAL != 0
+		;Ｄゲージ(ターンが減るほど減少)は5に(残ターン管理)
+		CALL SKILLGAGE_D_SET(ARG,3624,5)
+		;ＨゲージはＣＰ累積量によって変動させる(レベル管理)
+		CALL SKILLGAGE_H_SET(ARG,3624,(LOCAL:2))
+		PRINTFORML ＞%CALLNAME:ARG%은(는) 마력을 해방하여, 주위의 사령들을 활성화시켰다!
+	ENDIF
+ENDIF
+;@SPECIAL_ACTION_3624,ARG
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_3624,ARG
+SIF SKILLGAGE_D_GET(ARG,3624) == 0
+	RETURN 0
+RESULTS = 크리피프렌즈Lv{SKILLGAGE_H_GET(ARG,3624)}:%TOFULL(TOSTR(SKILLGAGE_D_GET(ARG,3624)))%Ｔ
+RETURN 2
+
+@SKILL_EX_DISPLAY_3624, ARG, ARGS
+RESULTS += SET_COLOR_TAG(UNICODE(0x2620), "yellow")
+RESULTS += HTML_RECT_SPLIT_BAR(SKILLGAGE_D_GET(ARG, 3624), 5, SKILL_EX_DISPLAY_LENS - 2, BARCOLORSET("赤"), RESULT:1)
+RESULTS:1 = 크리피프렌즈
+SIF SKILLGAGE_H_GET(ARG,3624)
+	RESULTS:1 += @"LV{SKILLGAGE_H_GET(ARG,3624)}"
+RETURN 1
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3624, ARG
+PRINTL 발동자 주위에 모인 사령들에게 마력을 부여해 활성화시킨다.
+PRINTL 5턴 동안, 사령 카운터를 소비하는 스킬을 발동했을 경우 일정 확률로 사령들이 추가 행동을 행하게 된다.
+PRINTL 
+PRINTL 이 스킬의 소비 MP는 누적된 사령 카운터의 양에 따라 변화한다.
+PRINTL 추가 행동의 횟수와 종류는 이 스킬을 발동한 시점의 사령 카운터에 따라 결정된다.
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3624,ARG
+SIF SKILLGAGE_H_GET(ARG,3622) >= 1
+	RETURN 1
+RETURN 0
+

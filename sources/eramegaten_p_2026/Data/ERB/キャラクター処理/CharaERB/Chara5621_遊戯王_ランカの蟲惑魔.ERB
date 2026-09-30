@@ -1,0 +1,80 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5621_遊戯王_ランカの蟲惑魔.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/06/17		epizo				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:란카의충혹마]], L_CHARA, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("ランカの蟲惑魔_FACE_0")
+			RETURNF ""
+		SIF !SPRITECREATED("ランカの蟲惑魔_FACE_1")
+			RETURNF ""
+		SIF !SPRITECREATED("ランカの蟲惑魔_FACE_EX_0")
+			RETURNF ""
+		SIF !SPRITECREATED("ランカの蟲惑魔_FACE_EX_1")
+			RETURNF ""
+		SIF !SPRITECREATED("ランカの蟲惑魔_FACE_EX_2")
+			RETURNF ""
+		SIF !SPRITECREATED("ランカの蟲惑魔_FACE_EX_3")
+			RETURNF ""
+		RESULTS_F = デフォルト
+		RESULTS_F:1 = ランカの蟲惑魔_FACE_0
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:란카의충혹마]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "デフォルト"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+				RESULTS_F = ランカの蟲惑魔_FACE_1
+			CASEELSE
+				SELECTCASE L_SITUATION:1
+					;戦闘不能になった時
+					CASE "DYING"
+						RESULTS_F = ランカの蟲惑魔_FACE_EX_0
+					;CHARMになった時
+					CASE "CHARM"
+						RESULTS_F = ランカの蟲惑魔_FACE_EX_1
+					;SLEEPになった時
+					CASE "SLEEP"
+						RESULTS_F = ランカの蟲惑魔_FACE_EX_2
+					;上記以外の状態異常の時
+					CASE "STONE", "FLY", "PALYZE", "BRAND", "CURSE", "FLAME", "BOMB", "POISON", "CLOSE", "BIND", "SLIP", "FREEZE", "PANIC", "SHOCK", "HAPPY"
+						RESULTS_F = ランカの蟲惑魔_FACE_EX_3
+					;通常時
+					CASEELSE
+						RESULTS_F = ランカの蟲惑魔_FACE_0
+				ENDSELECT
+		ENDSELECT
+	CASEELSE
+ENDSELECT

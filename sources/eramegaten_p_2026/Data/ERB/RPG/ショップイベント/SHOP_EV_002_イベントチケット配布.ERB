@@ -1,0 +1,109 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_200_마요네 님의 노고 치하.ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/02/04		P(bazzile)				作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;====================
+;定義名
+;====================
+@SHOP_EV_NAME_2
+RESULTS = 이벤트 티켓 배포
+
+;====================
+;条件
+;====================
+@PLAYABLE_SHOP_EV_2
+#DIM DYNAMIC LCOUNT
+SIF !IS_USEABLE_RAGSHOP
+	RETURN 0
+;EXTRAがONのときのみ
+SIF !GETS_USEABLE_EXTRA_TITLE("")
+	RETURN 0
+SIF ITEM:라그티켓【Inv】
+	RETURN 0
+;すでに持ってる場合は受取日を更新する。
+SIF ITEM:라그티켓【Ev】
+	CALL SET_FLAG_SHOP_EV_TAKEOVER, "이벤트 티켓 배포", "티켓 수령일", SHOP_EV_2_TAKE_DAY_END(), "SET"
+;受取日の確認
+SIF GET_FLAG_SHOP_EV_TAKEOVER("이벤트 티켓 배포", "티켓 수령일") >= SHOP_EV_2_TAKE_DAY_END()
+	RETURN 0
+;探索を一回はしている(チュートリアルが発生しなくなっている必要がある)
+SIF !FLAG:첫탐색종료
+	RETURN 0
+RETURN 1
+
+;====================
+;内容
+;====================
+@SHOP_EV_2
+CALL SHOW_PICTURE, "NONFLOORD", "세이프하우스"
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "",  @"………………/…………/……", , , , 88, 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "",  @"＞%CALLNAME:MASTER% 앞으로 한 통의 편지가 와 있다…", , , , 88, 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "",  @"＞보석을 가져오시면 언제든지 대환영/＞GINZA 쥬와이오쿠츄르 라그", , , , 88, 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "",  @"＞봉투 안에서 한 장의 종이쪽지가 흘러나왔다…", , , , 88, 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "",  @"＞신작 다수 입고/＞지금이라면 한 분 무료", , , , 88, 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "",  @"＞라그 티켓【Ev】를 손에 넣었다。", , , , 88, 4
+CALL GET_ITEMS, "라그티켓【Ev】", 1
+CALL SET_FLAG_SHOP_EV_TAKEOVER, "이벤트 티켓 배포", "티켓 수령일", SHOP_EV_2_TAKE_DAY_END(), "SET"
+;====================
+;フラグ名称定義
+;====================
+;--------------------
+;通常のセーブされ、周回でリセットされる数値型のフラグ
+;--------------------
+@SHOP_EV_FLAGNAME_2
+RESULTS:0 = 
+RESULTS:1 = 
+RESULTS:2 = 
+RESULTS:3 = 
+RESULTS:4 = 
+RESULTS:5 = 
+RESULTS:6 = 
+RESULTS:7 = 
+RESULTS:8 = 
+RESULTS:9 = 
+
+;--------------------
+;通常のセーブされ、周回でリセットされる文字列型のフラグ
+;--------------------
+@SHOP_EV_STRNAME_2
+RESULTS:0 = 
+RESULTS:1 = 
+RESULTS:2 = 
+RESULTS:3 = 
+RESULTS:4 = 
+
+;--------------------
+;周回後も引き継がれる数値型のフラグ
+;--------------------
+@SHOP_EV_TAKEOVER_FLAGNAME_2
+RESULTS:0 = 티켓 수령일
+RESULTS:1 = 
+RESULTS:2 = 
+RESULTS:3 = 
+RESULTS:4 = 
+
+;--------------------
+;周回後も文字列フラグ
+;--------------------
+@SHOP_EV_TAKEOVER_STRNAME_2
+RESULTS:0 = 
+RESULTS:1 = 
+RESULTS:2 = 
+RESULTS:3 = 
+RESULTS:4 = 
+
+@SHOP_EV_2_TAKE_DAY_START
+#FUNCTION
+RETURNF 20250701
+
+@SHOP_EV_2_TAKE_DAY_END
+#FUNCTION
+RETURNF 20251001

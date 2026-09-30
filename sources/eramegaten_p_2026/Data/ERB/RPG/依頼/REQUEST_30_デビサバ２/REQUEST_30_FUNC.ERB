@@ -1,0 +1,916 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:REQUEST_xxx_yyy.ERB
+;	Facility	:依頼:030(デビルサバイバー２) 関数置き場。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2013/06/16		旅人					新規作成
+;	002		2015/01/01		セーロGUN				関数追加。ウサミミの加入処理を追加した関数に移行
+;	003		2015/01/15		セーロGUN				イオちゃんデビオク加入処理を追加しました
+;											ロナウドとヤマトの加入処理を加筆
+;	004		2015/02/28		セーロGUN				イオちゃんデビオク加入処理削除
+;											ニカイア画面表示処理追加してみる
+;	004		2015/03/13		セーロGUN				ニカイア画面表示処理を修正
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;===============================================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name						Explanation
+;
+;	・ REQUEST_30_TEMP_GET				依頼:仮入手
+;	・ REQUEST_30_GETAFTER_SETUP			依頼:後半で入手後のLVUP調整。主人公は初期設定も行う
+;	・ REQUEST_30_NICAEA_BOOTVIEW			依頼:ニカイア起動画面表示
+;
+;===============================================================================
+
+
+;=================================================
+;   sub REQUEST_30_TEMP_GET
+;=================================================
+;   依頼:仮入手
+;-------------------------------------------------
+@REQUEST_30_TEMP_GET
+#DIM L_T
+#DIM L_INPUT
+#DIM L_ADD
+
+PRINTFORMW ＞집스로부터、인재의 전달에 대한 소식이 왔다。
+PRINTFORMW ＞아무래도 아직 본편의 계속이 준비되어 있지 않는 것 같아서、잠정 대응으로 각 캐릭터를 노예로 입수 할 수있는 것 같다。
+PRINTFORMW ＞다음이 만들어 질 때까지、여기서 필요한 캐릭터를 입수하자。
+PRINTL
+PRINTFORMW ＞또한、본편의 다음이 작성되면、요청의 제목도 바뀐다고 생각된다。
+PRINTFORMW ＞…본편에 대해선、느긋하게 기다리기로하자。
+PRINTFORMW ＞………
+PRINTFORMW ＞……
+PRINTFORMW ＞…
+;-----------------------------
+;- リスト表示
+;-----------------------------
+$LIST_TOP
+DRAWLINE
+;PRINTL ＞どのキャラを入手しますか？
+;PRINTL
+
+
+;PRINTFORMLC [ 1] 九条緋那子
+;PRINTFORMLC [ 2] 伴亜衣梨
+;PRINTL
+;PRINTFORMLC [ 3] 迫真琴
+;PRINTFORMLC [ 4] 管野史
+;PRINTFORMLC [ 5] 柳谷乙女
+;PRINTL
+;PRINTFORMLC [ 6] ティコ
+;PRINTL
+;PRINTL
+
+;PRINTFORMLC [ 7] デビサバ２主人公
+;PRINTFORMLC [ 8] 志島大地
+;PRINTFORMLC [ 9] 峰津院大和
+;PRINTL
+;PRINTFORMLC [10] 和久井啓太
+;PRINTFORMLC [11] 鳥居純吾
+;PRINTFORMLC [12] 秋江譲
+;PRINTL
+;PRINTFORMLC [13] 栗木ロナウド
+;PRINTFORMLC [14] 憂う者
+;PRINTL
+;PRINTL
+PRINTL ＞현재, 이 의뢰로 입수할 수 있는 것은 호츠인 미야코뿐입니다
+PRINTL ＞입수합니까？
+
+PRINTL [15] 입수한다
+PRINTL [ 0] 끝낸다
+
+$INPUT_LOOP
+INPUT
+L_INPUT = RESULT
+L_ADD = 200
+
+SELECTCASE L_INPUT
+	CASE 0
+		RETURN
+;	;-----------------------------
+;	;- 女
+;	;-----------------------------
+;	CASE 1
+;		L_T = [[キャラ:히나코]]
+;		L_ADD = 400
+;	CASE 2
+;		L_T = [[キャラ:아이리]]
+;		L_ADD = 400
+;	CASE 3
+;		L_T = [[キャラ:마코토]]
+;		L_ADD = 600
+;	CASE 4
+;		L_T = [[キャラ:후미]]
+;		L_ADD = 400
+;	CASE 5
+;		L_T = [[キャラ:오토메]]
+;		L_ADD = 400
+;	CASE 6
+;		L_T = [[キャラ:티코]]
+	
+	CASE 15
+		L_T = [[キャラ:미야코]]
+
+;	;-----------------------------
+;	;- 男
+;	;-----------------------------
+;	CASE 7
+;		L_T = [[キャラ:데빌서바２주인공]]
+;	CASE 8
+;		L_T = [[キャラ:다이치]]
+;	CASE 9
+;		L_T = [[キャラ:야마토]]
+;		L_ADD = 600
+;	CASE 10
+;		L_T = [[キャラ:케이타]]
+;	CASE 11
+;		L_T = [[キャラ:준고]]
+;	CASE 12
+;		L_T = [[キャラ:죠]]
+;	CASE 13
+;		L_T = [[キャラ:로나우도]]
+;	CASE 14
+;		L_T = [[キャラ:사다크]]
+;		L_ADD = 600
+	CASEELSE
+		CLEARLINE 1
+		GOTO INPUT_LOOP
+ENDSELECT
+
+IF GETCHARA(L_T) > -1
+	CLEARLINE 1
+	REUSELASTLINE （이미 그 캐릭터는 입수되어있습니다）
+	GOTO INPUT_LOOP
+ENDIF
+
+;- キャラ追加
+CALL ADD_NEW_COMPANION,L_T,L_ADD
+
+L_T = (CHARANUM - 1)
+
+;戦闘には常に参加可能
+CALL SET_TALENT_PARTY_JOINABLE, L_T, "参加可能"
+
+SELECTCASE NO:L_T
+	;-----------------------------
+	;- 女
+	;-----------------------------
+;	CASE [[キャラ:히나코]]
+;		PRINTFORMW ＞ヒナコを引き取る為、彼女の部屋に向かった…
+;		PRINTL
+;		PRINTFORMW 「サマナーはん、どうしたん？」
+;		PRINTFORMW 「え？引き取りに来た？」
+;		PRINTFORMW 「五日目に出番あるって聞いてたんやけど」
+;		PRINTFORMW ＞あなたは事情を説明した…
+;		PRINTL
+;		PRINTFORMW 「へー、そうなんや。そりゃしゃーないわ」
+;		PRINTFORMW 「でも奴隷って…何するん？」
+;		PRINTFORMW 「え、エッチな事！？」
+;
+;	CASE [[キャラ:아이리]]
+;		PRINTFORMW ＞アイリを引き取る為、彼女の部屋に向かった…
+;		PRINTL
+;		PRINTFORMW 「サマナーさんじゃん、どうしたの？」
+;		PRINTFORMW 「え？引き取りに来た？」
+;		PRINTFORMW 「五日目に出番あるって聞いてたんだけど」
+;		PRINTFORMW ＞あなたは事情を説明した…
+;		PRINTL
+;		PRINTFORMW 「バッッッッッッカじゃないの！？」
+;		PRINTFORMW 「１６歳の女の子に性奴隷になれとか…」
+;		PRINTFORMW 「何もこんな時に発情しなくても…」
+;
+;	CASE [[キャラ:마코토]]
+;		PRINTFORMW ＞マコトを引き取る為、彼女の部屋に向かった…
+;		PRINTL
+;		PRINTFORMW 「ん？サ、サマナー？」
+;		PRINTFORMW 「いや、すまない…不意を突かれただけだ…」
+;		PRINTFORMW 「私を引き取りに…？」
+;		PRINTFORMW ＞あなたは事情を説明した…
+;		PRINTL
+;		PRINTFORMW 「そうか。そういう話が…」
+;		PRINTFORMW 「いや、サマナーの下ならば不満は無い」
+;		PRINTFORMW 「だがその…希望を言わせてもらえば、身体を売る様な真似はしたくない…」
+;		PRINTFORMW 「サマナーが相手ならまだしも…」
+;
+;	CASE [[キャラ:후미]]
+;		PRINTFORMW ＞フミを引き取る為、彼女の部屋に向かった…
+;		PRINTL
+;		PRINTFORMW 「サマナー、おつかれちん」
+;		PRINTFORMW 「え？引き取りに来た？」
+;		PRINTFORMW 「六日目に出番あるって聞いてたんだけど」
+;		PRINTFORMW ＞あなたは事情を説明した…
+;		PRINTL
+;		PRINTFORMW 「ふーん、超めんどくさそう」
+;		PRINTFORMW 「ま、奴隷なら奴隷で、研究機材持っていくから」
+;		PRINTFORMW 「機材置ける広い部屋用意しといてね」
+;		PRINTFORMW 「奴隷って私にいやらしい事する気？したい？」
+;		PRINTFORMW 「アンタになら少しは興味あるけど…」
+;
+;	CASE [[キャラ:오토메]]
+;		PRINTFORMW ＞オトメを引き取る為、彼女の部屋に向かった…
+;		PRINTL
+;		PRINTFORMW 「あらサマナーさん、どうしたの？」
+;		PRINTFORMW 「ああ、私を引き取りに…」
+;		PRINTFORMW 「でも、私は６日目にフミちゃんとマコトさんと一緒に引き取られるとか…」
+;		PRINTFORMW 「あの話は無くなったのかしら」
+;		PRINTFORMW ＞あなたは事情を説明した…
+;		PRINTL
+;		PRINTFORMW 「事情は分かったわ」
+;		PRINTFORMW 「でも、奴隷って何をさせられるの？」
+;		PRINTFORMW 「私も女だから、いやらしい事は許して欲しいかな」
+;		PRINTFORMW 「あ、でもサマナーさんなら…」
+;
+;	CASE [[キャラ:티코]]
+;		PRINTFORMW ＞ティコを引き取る為、自室の携帯端末を開いた…
+;		PRINTL
+;		PRINTFORMW 「あれ～？どうしたのサマナーっち？」
+;		PRINTFORMW 「えっ？あなたのティコティコ、ティコりんが欲しいって？」
+;		PRINTFORMW ＞%CALLNAME:MASTER%は事情を説明した…
+;		PRINTL
+;		PRINTFORMW 「ティコりんはあの方のお手伝いをしないといけないんだけど…ま、いっか～☆」
+;		PRINTFORMW 「サマナーっちはあの方も認める人間。一緒に付いて行ってあげてもいいよ～☆」
+;		PRINTFORMW ＞そういうと、ティコは実体化した…
+;		PRINTFORMW 「それではサマナーっち、これからよろ…いやこっちかな？」
+;		PRINTL
+;		PRINTFORMW 「ティコりんは電霊ティコ…コンゴトモヨロシク…☆」
+;
+	CASE [[キャラ:미야코]]
+		PRINTFORMW ＞미야코를 인수하기 위해 그녀의 방에 향했다…
+		PRINTL
+		PRINTFORMW 「팬텀의 악마술사。무슨 용무입니까？」
+		PRINTFORMW 「…내가 필요, 한 것입니까？」
+		PRINTFORMW 「그러나, 내가 당신의 동료가 되는 장면은 좀 더 후일 것입니다만…」
+		PRINTFORMW ＞%CALLNAME:MASTER%는 사정을 설명했다…
+		PRINTL
+		PRINTFORMW 「사정은 알았습니다」
+		PRINTFORMW 「이것도, 세계의 섭리에 의한 것일지도 모릅니다…. 당신에게 몸을 바칩시다」
+		PRINTFORMW 「…입니다만, 그… 서, 성적 교섭은 삼가해 받을 수 있으면…」
+		
+	;-----------------------------
+	;- 男
+	;-----------------------------
+;	CASE [[キャラ:데빌서바２주인공]]
+;		PRINTFORMW ＞デビサバ２主人公を引き取る為、彼の部屋に向かった…
+;		PRINTL
+;		PRINTFORMW ＞部屋にはデビサバ２主人公が居る…
+;		PRINTFORMW ＞彼の成長タイプはどれだろう…？
+;		;デビサバ２用の加入後処理を呼ぶ
+;		CALL REQUEST_30_GETAFTER_SETUP(L_T)
+;
+;	CASE [[キャラ:다이치]]
+;		PRINTFORMW ＞ダイチを引き取る為、彼の部屋に向かった…
+;		PRINTL
+;		PRINTFORMW 「あ、サマナーさん、俺に何か用っすか？」
+;		PRINTFORMW 「俺を引き取りに？」
+;		PRINTFORMW ＞あなたは事情を説明した…
+;		PRINTL
+;		PRINTFORMW 「ど、奴隷なんて…」
+;		PRINTFORMW 「うう、でも拒否権とか無いんです…よね？」
+;		PRINTFORMW 「は、はい！がんばります！」
+;		PRINTFORMW 「うう、昨日まで普通の高校生だったのに…」
+;
+;	CASE [[キャラ:야마토]]
+;		PRINTFORMW ＞ヤマトを引き取る為、彼の部屋に向かった…
+;		PRINTL
+;		PRINTFORMW 「サマナー、私に何か用か？」
+;		PRINTFORMW 「ほう、私を引き取りに来たか」
+;		PRINTFORMW 「君ほどの人間なら私を欲しがるのも頷ける…良いだろう」
+;
+;	CASE [[キャラ:케이타]]
+;		PRINTFORMW ＞ケイタを引き取る為、彼の部屋に向かった…
+;		PRINTL
+;		PRINTFORMW 「なんやサマナー、俺になんか用か？」
+;		PRINTFORMW 「あん？俺を引き取りに来た？」
+;		PRINTFORMW 「フン、あのヤマトが７日目に暴れられる言うてたけど嘘かい」
+;		PRINTFORMW ＞あなたは事情を説明した…
+;		PRINTL
+;		PRINTFORMW 「よく分からんけど、お前んとこで奴隷になれって事か」
+;		PRINTFORMW 「まぁこっちもええけど、お前んとこでも十分鍛えられそうやしな」
+;		PRINTFORMW 「力を付けられるんならこの際どこでもええわ」
+;		PRINTFORMW 「奴隷でも何でもやったるから、強い奴用意せえよ」
+;
+;	CASE [[キャラ:준고]]
+;		PRINTFORMW ＞ジュンゴを引き取る為、彼の部屋に向かった…
+;		PRINTL
+;		PRINTFORMW 「サマナーさん、お久しぶり」
+;		PRINTFORMW 「？ジュンゴを引き取りに？」
+;		PRINTFORMW 「ジュンゴ、じゅんごとなら一緒に行く…」
+;		PRINTFORMW 「ジュンゴ、じゅんごを置いて行けない…」
+;		PRINTFORMW ＞ジュンゴは猫を抱えている…
+;		PRINTFORMW ＞ジュンゴに猫のじゅんごも連れてくる様に伝えた…
+;		PRINTL
+;		PRINTFORMW 「サマナーさん、ありがとう」
+;		PRINTFORMW 「じゅんご、引越ししよう」
+;		PRINTFORMW ＞ジュンゴは猫のじゅんごを撫でている…
+;
+;	CASE [[キャラ:죠]]
+;		PRINTFORMW ＞ジョーを引き取る為、彼の部屋に向かった…
+;		PRINTL
+;		PRINTFORMW 「あれ、どったのサマナーさん？」
+;		PRINTFORMW 「え？引き取りに来た？」
+;		PRINTFORMW 「あれ、確か『ドキッ！男しか居ない７日目！』で俺たち出番あるんじゃなかったっけ？」
+;		PRINTFORMW ＞あなたは事情を説明した…
+;		PRINTL
+;		PRINTFORMW 「へー、作成が追い付かないから取りあえず引き取れる様にしたんだ」
+;		PRINTFORMW 「まぁジプスの官舎も良いけど、サマナーさんのとこも居心地良いのかな？」
+;		PRINTFORMW 「それじゃ荷物まとめてくるから、またね～っ」
+;
+;	CASE [[キャラ:로나우도]]
+;		PRINTFORMW ＞ロナウドを引き取る為、彼の部屋に向かった…
+;		PRINTL
+;		PRINTFORMW 「サマナーか、どうした？」
+;		PRINTFORMW 「何？俺を引き取りに？」
+;		PRINTFORMW ＞あなたは事情を説明した…
+;		PRINTL
+;		PRINTFORMW 「そうか…君には俺が必要か…」
+;		PRINTFORMW 「いや、そこまで言われると悪い気はしない」
+;		PRINTFORMW 「私物はそれほど多くないが、幾つか荷をまとめてから伺おう。また後でな」
+;
+;	CASE [[キャラ:사다크]]
+;		PRINTFORMW ＞憂う者を引き取る為、自室に戻った…
+;		PRINTL
+;		PRINTFORMW 「やぁ、輝く者よ」
+;		PRINTFORMW 「今日はどうしたんだい？」
+;		PRINTFORMW ＞あなたは事情を説明した…
+;		PRINTL
+;		PRINTFORMW 「そうか…そういう可能性もあるのか…」
+;		PRINTFORMW 「自分では思い付かなかったが、それも悪くない…」
+;		PRINTFORMW 「そうだな…その前に私の名前を教えておこう」
+;		PRINTFORMW 「私はサダク。アル・サダクだ」
+;		PRINTFORMW 「…それで、君の物になった後は、私は何をすれば良いんだい？」
+ENDSELECT
+SELECTCASE NO:L_T
+	CASE [[キャラ:히나코]], [[キャラ:아이리]], [[キャラ:마코토]], [[キャラ:후미]], [[キャラ:오토메]], [[キャラ:미야코]]
+		PRINTFORMW %CALLNAME:L_T%는 %CALLNAME:MASTER%에게 범해지는 망상을 하고있었는지、얼굴을 붉게 물들이고있다…
+ENDSELECT
+
+PRINTFORMW ………
+PRINTFORMW ……
+PRINTFORMW …
+PRINTFORMW ＞%CALLNAME:L_T%를 인수했다
+
+GOTO LIST_TOP
+
+;=================================================
+;   sub REQUEST_30_GETAFTER_SETUP
+;=================================================
+;   依頼:後半入手後のレベル調整
+;-------------------------------------------------
+; Input:
+;  ARG:0				キャラの番号
+;  ARG:1				LV
+;-------------------------------------------------
+@REQUEST_30_GETAFTER_SETUP(ARG:0,ARG:1)
+#DIM L_NO
+
+L_NO = ARG:0
+BASE:L_NO:LV = (ARG:1)
+
+SELECTCASE NO:L_NO
+	CASE [[キャラ:이오]]
+		SELECTCASE BASE:L_NO:LV
+			;35レベル
+			CASE 35
+				BASE:L_NO:힘 = 18
+				BASE:L_NO:지혜 = 15
+				BASE:L_NO:마력 = 18
+				BASE:L_NO:내구 = 9
+				BASE:L_NO:속도 = 9
+				BASE:L_NO:운 = 1
+				ABL:L_NO:스킬1 = [[스킬:디아라마]]
+				ABL:L_NO:스킬2 = [[스킬:마하・지온가]]
+				ABL:L_NO:스킬3 = [[스킬:마하・지오다인]]
+				ABL:L_NO:스킬4 = [[스킬:히트웨이브]]
+				ABL:L_NO:스킬5 = [[스킬:리캄]]
+				ABL:L_NO:스킬6 = [[스킬:데스바운드]]
+				ABL:L_NO:스킬7 = [[스킬:메・디아라마]]
+				ABL:L_NO:스킬8 = [[스킬:돌려차기]]
+		ENDSELECT
+	CASE [[キャラ:다이치]]
+		SELECTCASE BASE:L_NO:LV
+			;35レベル
+			CASE 35
+				BASE:L_NO:힘 = 18
+				BASE:L_NO:지혜 = 9
+				BASE:L_NO:마력 = 6
+				BASE:L_NO:내구 = 9
+				BASE:L_NO:속도 = 18
+				BASE:L_NO:운 = 10
+				ABL:L_NO:스킬1 = [[스킬:지온가]]
+				ABL:L_NO:스킬2 = [[스킬:트라프리]]
+				ABL:L_NO:스킬3 = [[스킬:기합]]
+				ABL:L_NO:스킬4 = [[스킬:베어넘기기]]
+				ABL:L_NO:스킬5 = [[스킬:마구날뛰기]]
+				ABL:L_NO:스킬6 = [[스킬:라쿤・다]]
+				ABL:L_NO:스킬7 = [[스킬:포효]]
+				ABL:L_NO:스킬8 = [[스킬:추격의심득]]
+		ENDSELECT
+	CASE [[キャラ:죠]]
+		SELECTCASE BASE:L_NO:LV
+			;35レベル
+			CASE 35
+				BASE:L_NO:힘 = 2
+				BASE:L_NO:지혜 = 11
+				BASE:L_NO:마력 = 22
+				BASE:L_NO:내구 = 5
+				BASE:L_NO:속도 = 22
+				BASE:L_NO:운 = 8
+				ABL:L_NO:스킬1 = [[스킬:디아라마]]
+				ABL:L_NO:스킬2 = [[스킬:갈라]]
+				ABL:L_NO:스킬3 = [[스킬:일할의마맥]]
+				ABL:L_NO:스킬4 = [[스킬:펨파트라]]
+				ABL:L_NO:스킬5 = [[스킬:마하・갈라]]
+				ABL:L_NO:스킬6 = [[스킬:패닉보이스]]
+				ABL:L_NO:스킬7 = [[스킬:타룬・다]]
+				ABL:L_NO:스킬8 = [[스킬:리캄]]
+			;40レベル
+			CASE 40
+				BASE:L_NO:힘 = 2
+				BASE:L_NO:지혜 = 12
+				BASE:L_NO:마력 = 25
+				BASE:L_NO:내구 = 6
+				BASE:L_NO:속도 = 25
+				BASE:L_NO:운 = 8
+				ABL:L_NO:스킬1 = [[스킬:디아라마]]
+				ABL:L_NO:스킬2 = [[스킬:갈라]]
+				ABL:L_NO:스킬3 = [[스킬:일할의마맥]]
+				ABL:L_NO:스킬4 = [[스킬:펨파트라]]
+				ABL:L_NO:스킬5 = [[스킬:테트라쟈]]
+				ABL:L_NO:스킬6 = [[스킬:패닉보이스]]
+				ABL:L_NO:스킬7 = [[스킬:타룬・다]]
+				ABL:L_NO:스킬8 = [[스킬:리캄]]
+		ENDSELECT
+	CASE [[キャラ:야마토]]
+		SELECTCASE BASE:L_NO:LV
+			;35レベル
+			CASE 35
+				BASE:L_NO:힘 = 15
+				BASE:L_NO:지혜 = 17
+				BASE:L_NO:마력 = 17
+				BASE:L_NO:내구 = 6
+				BASE:L_NO:속도 = 7
+				BASE:L_NO:운 = 6
+				ABL:L_NO:스킬1 = [[스킬:디아라마]]
+				ABL:L_NO:스킬2 = [[스킬:코우하]]
+				ABL:L_NO:스킬3 = [[스킬:하마온]]
+				ABL:L_NO:스킬4 = [[스킬:마한마]]
+				ABL:L_NO:스킬5 = [[스킬:메・디아라마]]
+				ABL:L_NO:스킬6 = [[스킬:어드바이스]]
+				ABL:L_NO:스킬7 = [[스킬:테트라쟈]]
+				ABL:L_NO:스킬8 = [[스킬:바이코우하]]
+			;40レベル
+			CASE 40
+				BASE:L_NO:힘 = 15
+				BASE:L_NO:지혜 = 20
+				BASE:L_NO:마력 = 20
+				BASE:L_NO:내구 = 6
+				BASE:L_NO:속도 = 9
+				BASE:L_NO:운 = 6
+				ABL:L_NO:스킬1 = [[스킬:디아라마]]
+				ABL:L_NO:스킬2 = [[스킬:메기도]]
+				ABL:L_NO:스킬3 = [[스킬:하마온]]
+				ABL:L_NO:스킬4 = [[스킬:마한마]]
+				ABL:L_NO:스킬5 = [[스킬:메・디아라마]]
+				ABL:L_NO:스킬6 = [[스킬:어드바이스]]
+				ABL:L_NO:스킬7 = [[스킬:테트라쟈]]
+				ABL:L_NO:스킬8 = [[스킬:바이코우하]]
+		ENDSELECT
+	CASE [[キャラ:마코토]]
+		SELECTCASE BASE:L_NO:LV
+			;35レベル
+			CASE 35
+				BASE:L_NO:힘 = 19
+				BASE:L_NO:지혜 = 15
+				BASE:L_NO:마력 = 10
+				BASE:L_NO:내구 = 10
+				BASE:L_NO:속도 = 12
+				BASE:L_NO:운 = 4
+				ABL:L_NO:스킬1 = [[스킬:아쿠아다인]]
+				ABL:L_NO:스킬2 = [[스킬:베어넘기기]]
+				ABL:L_NO:스킬3 = [[스킬:라쿠・카쟈]]
+				ABL:L_NO:스킬4 = [[스킬:라쿠카쟈오토]]
+				ABL:L_NO:스킬5 = [[스킬:삼할의활천]]
+				ABL:L_NO:스킬6 = [[스킬:디아라한]]
+				ABL:L_NO:스킬7 = [[스킬:기합]]
+				ABL:L_NO:스킬8 = [[스킬:얼음의난무]]
+			;40レベル
+			CASE 40
+				BASE:L_NO:힘 = 20
+				BASE:L_NO:지혜 = 17
+				BASE:L_NO:마력 = 14
+				BASE:L_NO:내구 = 11
+				BASE:L_NO:속도 = 12
+				BASE:L_NO:운 = 4
+				ABL:L_NO:스킬1 = [[스킬:아쿠아다인]]
+				ABL:L_NO:스킬2 = [[스킬:베어넘기기]]
+				ABL:L_NO:스킬3 = [[스킬:라쿠・카쟈]]
+				ABL:L_NO:스킬4 = [[스킬:라쿠카쟈오토]]
+				ABL:L_NO:스킬5 = [[스킬:삼할의활천]]
+				ABL:L_NO:스킬6 = [[스킬:디아라한]]
+				ABL:L_NO:스킬7 = [[스킬:기합]]
+				ABL:L_NO:스킬8 = [[스킬:테트라칸]]
+		ENDSELECT
+		
+	CASE [[キャラ:히나코]]
+		SELECTCASE BASE:L_NO:LV
+			;35レベル
+			CASE 35
+				BASE:L_NO:힘 = 20
+				BASE:L_NO:지혜 = 9
+				BASE:L_NO:마력 = 3
+				BASE:L_NO:내구 = 7
+				BASE:L_NO:속도 = 20
+				BASE:L_NO:운 = 11
+				
+				ABL:L_NO:스킬1 = [[스킬:해피스텝]]
+				ABL:L_NO:스킬2 = [[스킬:돌격]]
+				ABL:L_NO:스킬3 = [[스킬:파트라]]
+				ABL:L_NO:스킬4 = [[스킬:데・카쟈]]
+				ABL:L_NO:스킬5 = [[스킬:돌려차기]]
+				ABL:L_NO:스킬6 = [[스킬:이악물기]]
+				ABL:L_NO:스킬7 = [[스킬:섹시댄스]]
+				ABL:L_NO:스킬8 = [[스킬:도발]]
+		ENDSELECT
+		
+	CASE [[キャラ:케이타]]
+		SELECTCASE BASE:L_NO:LV
+			;35レベル
+			CASE 35
+				BASE:L_NO:힘 = 23
+				BASE:L_NO:지혜 = 5
+				BASE:L_NO:마력 = 2
+				BASE:L_NO:내구 = 16
+				BASE:L_NO:속도 = 21
+				BASE:L_NO:운 = 3
+				
+				ABL:L_NO:스킬1 = [[스킬:소닉펀치]]
+				ABL:L_NO:스킬2 = [[스킬:일할의활천]]
+				ABL:L_NO:스킬3 = [[스킬:방어부수기]]
+				ABL:L_NO:스킬4 = [[스킬:전광석화]]
+				ABL:L_NO:스킬5 = [[스킬:약자필멸권]]
+				ABL:L_NO:스킬6 = [[스킬:도발]]
+				ABL:L_NO:스킬7 = [[스킬:리베라마]]
+				ABL:L_NO:스킬8 = [[스킬:눌러으깨기]]
+		ENDSELECT
+		
+	CASE [[キャラ:아이리]]
+		SELECTCASE BASE:L_NO:LV
+			;30レベル
+			CASE 30
+				BASE:L_NO:힘 = 3
+				BASE:L_NO:지혜 = 12
+				BASE:L_NO:마력 = 16
+				BASE:L_NO:내구 = 9
+				BASE:L_NO:속도 = 18
+				BASE:L_NO:운 = 5
+				ABL:L_NO:스킬1 = [[스킬:잔마]]
+				ABL:L_NO:스킬2 = [[스킬:펨파트라]]
+				ABL:L_NO:스킬3 = [[스킬:태풍의난무]]
+				ABL:L_NO:스킬4 = [[스킬:번개의난무]]
+				ABL:L_NO:스킬5 = [[스킬:일할의마맥]]
+				ABL:L_NO:스킬6 = [[스킬:마린카린]]
+				ABL:L_NO:스킬7 = [[스킬:마카카쟈오토]]
+				ABL:L_NO:스킬8 = [[스킬:디아라한]]
+			;;35レベル
+			;CASE 35
+			;	BASE:L_NO:힘 = 3
+			;	BASE:L_NO:지혜 = 13
+			;	BASE:L_NO:마력 = 19
+			;	BASE:L_NO:내구 = 10
+			;	BASE:L_NO:속도 = 20
+			;	BASE:L_NO:운 = 5
+			;	ABL:L_NO:스킬1 = [[스킬:잔마]]
+			;	ABL:L_NO:스킬2 = [[스킬:암리타]]
+			;	ABL:L_NO:스킬3 = [[스킬:태풍의난무]]
+			;	ABL:L_NO:스킬4 = [[스킬:번개의난무]]
+			;	ABL:L_NO:스킬5 = [[스킬:일할의마맥]]
+			;	ABL:L_NO:스킬6 = [[스킬:마린카린]]
+			;	ABL:L_NO:스킬7 = [[스킬:마카카쟈오토]]
+			;	ABL:L_NO:스킬8 = [[스킬:디아라한]]
+		ENDSELECT
+		
+	CASE [[キャラ:준고]]
+		SELECTCASE BASE:L_NO:LV
+			;35レベル
+			CASE 35
+				BASE:L_NO:힘 = 36
+				BASE:L_NO:지혜 = 1
+				BASE:L_NO:마력 = 1
+				BASE:L_NO:내구 = 13
+				BASE:L_NO:속도 = 10
+				BASE:L_NO:운 = 9
+				
+				ABL:L_NO:스킬1 = [[스킬:베어넘기기]]
+				ABL:L_NO:스킬2 = [[스킬:디아라마]]
+				ABL:L_NO:스킬3 = [[스킬:일할의마맥]]
+				ABL:L_NO:스킬4 = [[스킬:섬머솔트]]
+				ABL:L_NO:스킬5 = [[스킬:에스트마]]
+				ABL:L_NO:스킬6 = [[스킬:이악물기]]
+				ABL:L_NO:스킬7 = [[스킬:비공찌르기]]
+				ABL:L_NO:스킬8 = [[스킬:기합]]
+		ENDSELECT
+		
+	CASE [[キャラ:후미]]
+		SELECTCASE BASE:L_NO:LV
+			;35レベル
+			CASE 35
+				BASE:L_NO:힘 = 3
+				BASE:L_NO:지혜 = 21
+				BASE:L_NO:마력 = 16
+				BASE:L_NO:내구 = 6
+				BASE:L_NO:속도 = 21
+				BASE:L_NO:운 = 6
+				ABL:L_NO:스킬1 = [[스킬:메・디아]]
+				ABL:L_NO:스킬2 = [[스킬:마하・부흐라]]
+				ABL:L_NO:스킬3 = [[스킬:이할의마맥]]
+				ABL:L_NO:스킬4 = [[스킬:텐타라후]]
+				ABL:L_NO:스킬5 = [[스킬:얼음의난무]]
+				ABL:L_NO:스킬6 = [[스킬:컨센트레이트]]
+				ABL:L_NO:스킬7 = [[스킬:테트라쟈]]
+				ABL:L_NO:스킬8 = [[스킬:마카쟈마]]
+		ENDSELECT
+		
+	CASE [[キャラ:오토메]]
+		SELECTCASE BASE:L_NO:LV
+			;30レベル
+			CASE 30
+				BASE:L_NO:힘 = 3
+				BASE:L_NO:지혜 = 16
+				BASE:L_NO:마력 = 14
+				BASE:L_NO:내구 = 13
+				BASE:L_NO:속도 = 10
+				BASE:L_NO:운 = 7
+				ABL:L_NO:스킬1 = [[스킬:디아라마]]
+				ABL:L_NO:스킬3 = [[스킬:포즈무디]]
+				ABL:L_NO:스킬4 = [[스킬:파트라]]
+				ABL:L_NO:스킬5 = [[스킬:라쿠・카쟈]]
+				ABL:L_NO:스킬6 = [[스킬:메・디아]]
+				ABL:L_NO:스킬7 = [[스킬:도루미나]]
+				ABL:L_NO:스킬8 = [[스킬:리캄]]
+			;35レベル
+			;CASE 35
+			;	BASE:L_NO:힘 = 3
+			;	BASE:L_NO:지혜 = 17
+			;	BASE:L_NO:마력 = 17
+			;	BASE:L_NO:내구 = 16
+			;	BASE:L_NO:속도 = 10
+			;	BASE:L_NO:운 = 7
+			;	ABL:L_NO:스킬1 = [[스킬:디아라마]]
+			;	ABL:L_NO:스킬3 = [[스킬:포즈무디]]
+			;	ABL:L_NO:스킬4 = [[스킬:파트라]]
+			;	ABL:L_NO:스킬5 = [[스킬:라쿠・카쟈]]
+			;	ABL:L_NO:스킬6 = [[스킬:챰디]]
+			;	ABL:L_NO:스킬7 = [[스킬:도루미나]]
+			;	ABL:L_NO:스킬8 = [[스킬:리캄]]
+			;40レベル
+			CASE 40
+				BASE:L_NO:힘 = 3
+				BASE:L_NO:지혜 = 20
+				BASE:L_NO:마력 = 20
+				BASE:L_NO:내구 = 18
+				BASE:L_NO:속도 = 10
+				BASE:L_NO:운 = 7
+				ABL:L_NO:스킬1 = [[스킬:디아라한]]
+				ABL:L_NO:스킬3 = [[스킬:포즈무디]]
+				ABL:L_NO:스킬4 = [[스킬:파트라]]
+				ABL:L_NO:스킬5 = [[스킬:라쿠・카쟈]]
+				ABL:L_NO:스킬6 = [[스킬:챰디]]
+				ABL:L_NO:스킬7 = [[스킬:도루미나]]
+				ABL:L_NO:스킬8 = [[스킬:리캄]]
+		ENDSELECT
+	CASE [[キャラ:로나우도]]
+		SELECTCASE BASE:L_NO:LV
+			;35レベル
+			CASE 35
+				BASE:L_NO:힘 = 23
+				BASE:L_NO:지혜 = 16
+				BASE:L_NO:마력 = 2
+				BASE:L_NO:내구 = 20
+				BASE:L_NO:속도 = 6
+				BASE:L_NO:운 = 3
+				ABL:L_NO:스킬1 = [[스킬:디아라마]]
+				ABL:L_NO:스킬2 = [[스킬:기합]]
+				ABL:L_NO:스킬3 = [[스킬:산탄사격]]
+				ABL:L_NO:스킬4 = [[스킬:연속사격]]
+				ABL:L_NO:스킬5 = [[스킬:기공(소)]]
+				ABL:L_NO:스킬6 = [[스킬:코칭]]
+				ABL:L_NO:스킬7 = [[스킬:미들샷]]
+				ABL:L_NO:스킬8 = [[스킬:저격]]
+			;40レベル
+			CASE 40
+				BASE:L_NO:힘 = 25
+				BASE:L_NO:지혜 = 19
+				BASE:L_NO:마력 = 2
+				BASE:L_NO:내구 = 22
+				BASE:L_NO:속도 = 7
+				BASE:L_NO:운 = 3
+				ABL:L_NO:스킬1 = [[스킬:디아라한]]
+				ABL:L_NO:스킬2 = [[스킬:기합]]
+				ABL:L_NO:스킬3 = [[스킬:산탄사격]]
+				ABL:L_NO:스킬4 = [[스킬:연속사격]]
+				ABL:L_NO:스킬5 = [[스킬:기공(중)]]
+				ABL:L_NO:스킬6 = [[스킬:코칭]]
+				ABL:L_NO:스킬7 = [[스킬:미들샷]]
+				ABL:L_NO:스킬8 = [[스킬:저격]]
+				
+		ENDSELECT
+		
+	CASE [[キャラ:사다크]]
+		SELECTCASE BASE:L_NO:LV
+			;35レベル
+			CASE 35
+				BASE:L_NO:힘 = 12
+				BASE:L_NO:지혜 = 16
+				BASE:L_NO:마력 = 13
+				BASE:L_NO:내구 = 12
+				BASE:L_NO:속도 = 12
+				BASE:L_NO:운 = 5
+				
+				ABL:L_NO:스킬1 = [[스킬:베어넘기기]]
+				ABL:L_NO:스킬2 = [[스킬:불꽃의난무]]
+				ABL:L_NO:스킬3 = [[스킬:일할의마맥]]
+				ABL:L_NO:스킬4 = [[스킬:번개의난무]]
+				ABL:L_NO:스킬5 = [[스킬:태풍의난무]]
+				ABL:L_NO:스킬6 = [[스킬:지온가]]
+				ABL:L_NO:스킬7 = [[스킬:잔마]]
+				ABL:L_NO:스킬8 = [[스킬:마하・라기]]
+		ENDSELECT
+		
+	CASE [[キャラ:데빌서바２주인공]]
+		PRINTW 데빌서바２주인공의 성장 타입을 결정해 주세요
+		PRINTL
+		PRINTL
+		PRINTL [1] 물리계통
+		PRINTL [2] 마법계통
+		
+		CALL INPUTINT(1,2)
+		
+		L_NO = ARG:0
+		BASE:L_NO:LV = (ARG:1)
+		
+		ABL:L_NO:습득LV1 = 10
+		ABL:L_NO:습득LV2 = 14
+		ABL:L_NO:습득LV3 = 18
+		ABL:L_NO:습득LV4 = 22
+		ABL:L_NO:습득LV5 = 26
+		ABL:L_NO:습득LV6 = 30
+		ABL:L_NO:습득LV7 = 34
+		ABL:L_NO:습득LV8 = 38
+		ABL:L_NO:습득LV9 = 42
+		ABL:L_NO:습득LV10 = 46
+		ABL:L_NO:습득LV11 = 50
+		
+		SELECTCASE RESULT
+			;力型
+			CASE 1
+				;物理系を覚える（剣撃、打撃）
+				ABL:L_NO:습득스킬1	= [[스킬:이검난무]]
+				ABL:L_NO:습득스킬2	= [[스킬:일할의활천]]
+				ABL:L_NO:습득스킬3	= [[스킬:돌려차기]]
+				ABL:L_NO:습득스킬4	= [[스킬:섬머솔트]]
+				ABL:L_NO:습득스킬5	= [[스킬:기합]]
+				ABL:L_NO:습득스킬6	= [[스킬:타루・카쟈]]
+				ABL:L_NO:습득스킬7	= [[스킬:토라에스트]]
+				ABL:L_NO:습득스킬8	= [[스킬:이악물기]]
+				ABL:L_NO:습득스킬9	= [[스킬:삼할의활천]]
+				ABL:L_NO:습득스킬10	= [[스킬:데스바운드]]
+				ABL:L_NO:습득스킬11	= [[스킬:만마의일격]]
+				
+				TALENT:L_NO:검격 = 1
+				TALENT:L_NO:타격= 1
+				TALENT:L_NO:지원 = 1
+				TALENT:L_NO:만능 = 1
+				SELECTCASE BASE:L_NO:LV
+					CASE 35
+						BASE:L_NO:힘 = 20
+						BASE:L_NO:지혜 = 4
+						BASE:L_NO:마력 = 4
+						BASE:L_NO:내구 = 12
+						BASE:L_NO:속도 = 18
+						BASE:L_NO:운 = 12
+						
+						ABL:L_NO:스킬1 = [[스킬:토라에스트]]
+						ABL:L_NO:스킬2 = [[스킬:마구날뛰기]]
+						ABL:L_NO:스킬3 = [[스킬:이검난무]]
+						ABL:L_NO:스킬4 = [[스킬:일할의활천]]
+						ABL:L_NO:스킬5 = [[스킬:돌려차기]]
+						ABL:L_NO:스킬6 = [[스킬:섬머솔트]]
+						ABL:L_NO:스킬7 = [[스킬:기합]]
+						ABL:L_NO:스킬8 = [[스킬:타루・카쟈]]
+					CASEELSE
+						ABL:L_NO:스킬1	= [[스킬:디아]]
+						ABL:L_NO:스킬2	= [[스킬:돌격]]
+				
+				ENDSELECT
+				
+				PRINTL
+				PRINTL ＞이름을 물으면, 아토라 쇼타로라고 답한다…
+				
+				NAME:L_NO	= 아토라 쇼타로우
+				CALLNAME:L_NO	= 쇼타로우
+			;魔型
+			CASE 2
+				;魔法系を覚える（回復・衝撃）※相手を翻弄する衝撃的なセクハラ
+				ABL:L_NO:습득스킬1	= [[스킬:마하・잔]]
+				ABL:L_NO:습득스킬2	= [[스킬:일할의마맥]]
+				ABL:L_NO:습득스킬3	= [[스킬:메・디아]]
+				ABL:L_NO:습득스킬4	= [[스킬:태풍의난무]]
+				ABL:L_NO:습득스킬5	= [[스킬:컨센트레이트]]
+				ABL:L_NO:습득스킬6	= [[스킬:마카・카쟈]]
+				ABL:L_NO:습득스킬7	= [[스킬:토라에스트]]
+				ABL:L_NO:습득스킬8	= [[스킬:이악물기]]
+				ABL:L_NO:습득스킬9	= [[스킬:디아라한]]
+				ABL:L_NO:습득스킬10	= [[스킬:리캄]]
+				ABL:L_NO:습득스킬11	= [[스킬:만마의난무]]
+				
+				TALENT:L_NO:충격 = 1
+				TALENT:L_NO:회복= 1
+				TALENT:L_NO:지원 = 1
+				TALENT:L_NO:만능 = 1
+				SELECTCASE BASE:L_NO:LV
+					;35レベル
+					CASE 35
+						BASE:L_NO:힘 = 4
+						BASE:L_NO:지혜 = 15
+						BASE:L_NO:마력 = 21
+						BASE:L_NO:내구 = 8
+						BASE:L_NO:속도 = 18
+						BASE:L_NO:운 = 5	
+						
+						ABL:L_NO:스킬1 = [[스킬:디아라마]]
+						ABL:L_NO:스킬2 = [[스킬:잔마]]
+						ABL:L_NO:스킬3 = [[스킬:토라에스트]]
+						ABL:L_NO:스킬4 = [[스킬:일할의마맥]]
+						ABL:L_NO:스킬5 = [[스킬:메・디아]]
+						ABL:L_NO:스킬6 = [[스킬:태풍의난무]]
+						ABL:L_NO:스킬7 = [[스킬:컨센트레이트]]
+						ABL:L_NO:스킬8 = [[스킬:마카・카쟈]]
+						
+					CASEELSE
+						ABL:L_NO:스킬1	= [[스킬:디아]]
+						ABL:L_NO:스킬2	= [[스킬:잔]]
+				ENDSELECT
+				
+				;アニメ版終盤の彼はどう考えても魔型なので…
+				PRINTL
+				PRINTL ＞이름을 물으면, 쿠제 히비키라고 답한다…
+		
+				NAME:L_NO	= 쿠제 히비키
+				CALLNAME:L_NO	= 히비키
+				
+		ENDSELECT
+		
+		PRINTL ＞이름과 명칭을 바꾸겠습니까？
+		CALL INPUT_YN
+		IF RESULT == 0
+			PRINTL ＞새로운 이름을 입력해주세요
+			PRINTL ＞이름을 변경하지 않으려면、공백으로 해주세요
+			PRINTL
+			INPUTS
+			SIF RESULTS != ""
+				NAME:L_NO = %RESULTS%
+			
+			PRINTL ＞새로운 호칭을 입력해주세요
+			PRINTL ＞명칭을 변경하지 않으려면、공백으로 해주세요
+			PRINTL
+			INPUTS
+			SIF RESULTS != ""
+				CALLNAME:L_NO = %RESULTS%
+		ENDIF
+ENDSELECT
+CALL SYNC_STATUS,(L_NO)
+CALL HEALTH_CHARA,(L_NO)
+
+;=================================================
+;   sub REQUEST_30_NICAEA_BOOTVIEW
+;=================================================
+;   依頼:ニカイア起動画面表示
+;-------------------------------------------------
+;   フォーマットは下記
+;
+; ┏━━━━━━━━━━━━━┓
+; ┃Nicaea βver.　　　　　　 ┃
+; ┃Death Face Delivery Site　┃
+; ┗━━━━━━━━━━━━━┛
+;-------------------------------------------------
+; Input:
+;  ARGS:0				ニカイアバージョン
+;  ARGS:1				サブタイトル
+;-------------------------------------------------
+@REQUEST_30_NICAEA_BOOTVIEW(ARGS,ARGS:1)
+CUSTOMDRAWLINE =
+LOCALS = Nicaea %ARGS%
+PRINTFORML ┏━━━━━━━━━━━━━┓
+PRINTFORML ┃%LOCALS,26,LEFT%┃
+PRINTFORML ┃%ARGS:1,26,LEFT%┃
+PRINTFORML ┗━━━━━━━━━━━━━┛
+CUSTOMDRAWLINE =
+WAIT

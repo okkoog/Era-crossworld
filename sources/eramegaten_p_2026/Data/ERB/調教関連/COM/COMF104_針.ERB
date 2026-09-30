@@ -1,0 +1,83 @@
+﻿;-------------------------------------------------
+;바늘
+;SM系コマンド、レベル4
+;-------------------------------------------------
+@ACT_COM104
+PRINTL 바늘
+TSTR:0 = 바늘
+;CALL KOJO_MESSAGE_COM
+
+;調教者→調教対象
+TFLAG:28 = 2
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 120
+DOWNBASE:TARGET:기력 += 100
+
+SOURCE:TARGET:아픔 = 5000
+SOURCE:TARGET:무서움 = 4000
+SOURCE:TARGET:일탈 = 500
+SOURCE:TARGET:반감 = 1200
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;苦痛のパラメータによる苦痛のソース増加は先に処理しておく
+IF PALAM:10 < PALAMLV:1
+	TIMES SOURCE:TARGET:아픔 , 1.00
+ELSEIF PALAM:10 < PALAMLV:2
+	TIMES SOURCE:TARGET:아픔 , 1.50
+ELSEIF PALAM:10 < PALAMLV:3
+	TIMES SOURCE:TARGET:아픔 , 2.00
+ELSEIF PALAM:10 < PALAMLV:4
+	TIMES SOURCE:TARGET:아픔 , 2.50
+ELSEIF PALAM:10 >= PALAMLV:4
+	TIMES SOURCE:TARGET:아픔 , 3.00
+ENDIF
+
+;-------------------------------------------------
+;吸精処理
+;-------------------------------------------------
+IF CFLAG:PLAYER:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:1+1) * BASE:LV
+	CALL DRAIN_MAG,PLAYER,LOCAL,TARGET
+ELSEIF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:1+1) * BASE:LV
+	CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+ENDIF
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+A = 2
+IF IS_LESBIAN(TARGET,PLAYER)
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, PLAYER)
+ELSEIF IS_GAY(TARGET,PLAYER)
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+ENDIF
+
+;依存度ベクトル
+TFLAG:33 = 5
+
+;依存度補正値(服従で1、隷属で2）
+IF TALENT:복종 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:예속 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_104
+RETURN COMTYPE("ＳＭ系")
+
+

@@ -1,0 +1,1010 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EQUIPMENT_FUNC.ERB
+;	Facility	:装備品関数。
+;
+;				 装備品処理で使用する共通関数を纏める。
+;				 記載関数には先頭に"EQ_"を付ける。(EQUIPMENTの略)
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2011/10/23		旅人					新規作成
+;	002		2015/10/02		魔晶拡張パッチ			EQ_GETNAME_魔晶装備に名称自由変更の処理を追加
+;	003		2020/10/18		Jガン					装備確認の関数追加
+;	004		2022/01/05		P(bazzile)				
+;	005		2022/04/20		P(bazzile)				解説テキストの取得時にメタ文字をエスケープする処理を追加
+;	006		2022/04/20		P(bazzile)				解説テキストのスキルの表示が狂っていた不具合を修正
+;	007		2023/06/10		P(bazzile)				装備追加スキルが複数設定されている時、解説欄に1つ目しか出てこなかった不具合を修正
+;	008		2023/06/18		P(bazzile)				機械の乙女のステータス緩和処理が機能していなかった不具合を修正
+;	009		2023/06/20		P(bazzile)				装備の条件取得関数の範囲を銃以外にも拡大
+;													装備固有の必要レベルとステータスの軽減処理を追加
+;	010		2023/06/23		P(bazzile)				標準装備のステータス生成+取得関数を追加
+;	011		2023/09/10		P(bazzile)				解説テキストの取得時に実体を持たないスキルに対して登録番号を遅れてないなかった不具合を修正
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;===============================================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name						Explanation
+;
+;	・ EQ_装備箇所_魔晶装備				EQ:装備箇所(魔晶装備)
+;	・ EQ_GETID_魔晶装備				EQ:アイテムID取得(魔晶装備)
+;	・ EQ_GETNAME_魔晶装備_ITEM			EQ:名称取得(魔晶装備)-ITEM由来
+;	・ EQ_GETNAME_魔晶装備_CHARA		EQ:名称取得(魔晶装備)-CHARA由来
+;	・ EQ_GETNAME_魔晶装備				EQ:名称取得(魔晶装備)
+;	・ EQUIPMENT_CHECK					指定されたキャラが指定された装備を装備しているかを取得する
+;	・ EQUIPMENT_COUNT					指定された装備を装備しているキャラクターの数を取得する
+;	・ EQ_装備可能確認					指定されたキャラクターが指定された装備の装備条件を満たしているかを確認する。
+;	・ EQ_必要レベル取得				指定された装備の必要レベルを返す
+;	・ EQ_必要ステータス取得			指定された装備の必要ステータスを返す
+;	・ EQ_必要素質取得					指定された装備の必要素質を返す
+;	・ EQ_性別制限取得					指定された装備の性別制限を返す
+;	・ EQ_装備条件説明					装備プロパティから装備条件の説明を生成して表示する
+;	・ EQ_戦闘ステータス生成			レベル・装備種から生成した標準的な戦闘ステータスを帰す
+; *- 그외
+;
+;	・ EQ_画面モード切替				EQ:画面モード切替
+;	・ EQ_射程名称						EQ:射程名称
+;
+;===============================================================================
+
+;=================================================
+;   sub EQ_装備箇所_魔晶装備
+;=================================================
+;   EQ:装備箇所(魔晶装備)
+;-------------------------------------------------
+; Input:
+;  ARGS					アイテムNo
+; Output:
+;  RETURNF				装備箇所
+;-------------------------------------------------
+@EQ_装備箇所_魔晶装備(ARG)
+#FUNCTION
+#DIM L_I
+#DIM L_TMP
+L_TMP=0
+
+FOR L_I,0,7
+	IF ARG < 2500 + L_I*500
+		L_TMP = L_I
+		BREAK
+	ENDIF
+NEXT
+RETURNF L_TMP
+
+
+;=================================================
+;   sub EQ_GETID_魔晶装備
+;=================================================
+;   EQ:アイテムID取得(魔晶装備)
+;-------------------------------------------------
+;   アイテムNoから魔晶装備のIDを取得する
+;-------------------------------------------------
+; Input:
+;  ARGS					アイテムNo
+; Output:
+;  RETURNF				装備箇所
+;-------------------------------------------------
+@EQ_GETID_魔晶装備(ARG)
+#FUNCTION
+#DIM L_POINT
+
+;- EQ:装備箇所(魔晶装備)
+L_POINT = EQ_装備箇所_魔晶装備(ARG)
+
+RETURNF ARG - 2450 - L_POINT * 450
+
+
+;=================================================
+;   sub EQ_GETNAME_魔晶装備_ITEM
+;=================================================
+;   EQ:名称取得(魔晶装備)-ITEM由来
+;-------------------------------------------------
+;   アイテムNoから魔晶装備の名称を返す
+;-------------------------------------------------
+; Input:
+;  ARG					アイテムNo
+; Output:
+;  RETURNF				명칭
+;-------------------------------------------------
+@EQ_GETNAME_魔晶装備_ITEM(ARG)
+#FUNCTIONS
+#DIM L_TMP
+
+L_TMP = EQ_GETID_魔晶装備(ARG)
+
+RETURNF EQ_GETNAME_魔晶装備(L_TMP)
+
+
+;=================================================
+;   sub EQ_GETNAME_魔晶装備_CHARA
+;=================================================
+;   EQ:名称取得(魔晶装備)-CHARA由来
+;-------------------------------------------------
+;   指定したキャラの装備箇所にセットしてある装備から魔晶装備の名称を返す
+;-------------------------------------------------
+; Input:
+;  ARG:0				キャラ
+;  ARG:1				装備箇所
+; Output:
+;  RETURNF				명칭
+;-------------------------------------------------
+@EQ_GETNAME_魔晶装備_CHARA(ARG:0, ARG:1)
+#FUNCTIONS
+#DIM L_TMP
+
+;- 装備中のアイテムNoを取得
+L_TMP = EQUIP:ARG:(GET_EQUIP(ARG:1))
+
+RETURNF EQ_GETNAME_魔晶装備_ITEM(L_TMP)
+
+
+;=================================================
+;   sub EQ_GETNAME_魔晶装備
+;=================================================
+;   EQ:名称取得(魔晶装備)
+;-------------------------------------------------
+; Input:
+;  ARG					データベース位置
+; Output:
+;  RETURNF				명칭
+;-------------------------------------------------
+@EQ_GETNAME_魔晶装備(ARG)
+#FUNCTIONS
+	SIF DC:ARG:49 == 19
+	RETURNF SAVESTR:(550+ARG)
+RETURNF STR:(DC:ARG:49+100)
+
+
+;-------------------------------------------------------------------------------
+;   그외
+;-------------------------------------------------------------------------------
+
+;=================================================
+;   sub EQ_画面モード切替
+;=================================================
+;   EQ:画面モード切替
+;-------------------------------------------------
+@EQ_画面モード切替
+
+;- 反転
+FLAG:아이템리스트화면모드설정 = !FLAG:아이템리스트화면모드설정
+
+
+
+;=================================================
+;   sub EQ_射程名称
+;=================================================
+;   EQ:射程名称
+;-------------------------------------------------
+; Input:
+;  ARG					사거리
+; Output:
+;  RETURNF				명칭
+;-------------------------------------------------
+@EQ_射程名称(ARG)
+#FUNCTIONS
+
+SELECTCASE ARG
+	CASE 1
+		RETURNF "Ｓ"
+	CASE 2
+		RETURNF "Ｍ"
+	CASE 3
+		RETURNF "Ｌ"
+	CASE 4
+		RETURNF "S+"
+	CASEELSE
+		;- 引っかからない場合はERROR
+		RETURNF "E!"
+ENDSELECT
+;------- MOD 003 ADD START -----------------------
+;=================================================
+;   sub EQUIPMENT_CHECK
+;=================================================
+;   EQ:EQUIPMENT_CHECK(そのキャラが装備してるかのチェック)
+;-------------------------------------------------
+; Input:
+;  ARG					キャラ番号
+;  ARG:1				装備番号
+; Output:
+;  RETURNF				0-装備してない
+;						1-装備してる
+;-------------------------------------------------
+@EQUIPMENT_CHECK(ARG,ARG:1)
+#FUNCTION
+FOR LOCAL,10,17
+	SIF EQUIP:ARG:LOCAL == ARG:1
+		RETURNF 1
+	SIF 改造装備(EQUIP:ARG:LOCAL) && ARG:1 == ベース装備番号:改造装備番号(EQUIP:ARG:LOCAL)
+		RETURNF 1
+NEXT
+RETURNF 0
+
+;=================================================
+;   sub EQUIPMENT_COUNT
+;=================================================
+;   EQ:EQUIPMENT_COUNT(装備してる人数のチェック)
+;-------------------------------------------------
+; Input:
+;  ARG					装備番号
+; Output:
+;  RETURNF				装備者の人数
+;-------------------------------------------------
+@EQUIPMENT_COUNT(ARG)
+#FUNCTION
+LOCAL:1 = 0
+FOR LOCAL,0,CHARANUM
+	SIF EQUIPMENT_CHECK(LOCAL,ARG)
+		LOCAL:1 ++
+NEXT
+RETURNF LOCAL:1
+
+;------- MOD 003 ADD END   -----------------------
+;=================================================
+;   sub EQ_装備可能確認
+;=================================================
+;   指定されたキャラが指定された装備を利用できるか取得する
+;-------------------------------------------------
+; Input:
+;  ARG					キャラクター登録番号
+;  ARG:1				装備番号
+;  ARG:2				装備箇所
+; Output:
+;  RESULT				装備が可能なら真
+;-------------------------------------------------
+@EQ_装備可能確認(ARG,ARG:1,ARG:2)
+#DIM LCOUNT
+#DIM L_RESULT, 2
+#DIMS TEMPS
+#DIM L_TALENT_LV
+#DIMS L_TALENT
+;ARG:0 装備キャラ
+;ARG:1 アイテム番号
+;ARG:2 装備箇所
+IF 魔晶装備(ARG:1)
+	TRYCCALLFORM 装備条件_魔晶装備,ARG,ARG:1 - 2450 - 450 * ARG:2
+		RETURN RESULT
+	CATCH
+		RETURN 0
+	ENDCATCH
+ELSE
+	SELECTCASE GET_EQUIP(ARG:2)
+		CASE "총"
+			SIF !GET_ROLE_PROP("CAN_EQUIP_GUN", ARG)
+				RETURN 0
+		CASE "탄환"
+			;特殊弾の判定
+			TRYCCALLFORM 弾レベル_{ARG:1}
+				SIF GET_BTL_TALENT_LV("건슬링거", ARG) < RESULT
+					RETURN 0
+			CATCH
+			ENDCATCH
+		CASE "악세서리"
+			;プラグイン
+			IF INRANGE(ARG:1, 8000, 8499)
+				SIF !GET_ROLE_PROP("CAN_USE_PLUGIN", ARG)
+					RETURN 0
+			ELSE
+				SIF !GET_ROLE_PROP("CAN_USE_EQUIP", ARG)
+					RETURN 0
+			ENDIF
+		CASEELSE
+			SIF !GET_ROLE_PROP("CAN_USE_EQUIP", ARG)
+				RETURN 0
+	ENDSELECT
+	;必要レベルのチェック
+	CALL EQ_必要レベル取得, ARG, ARG:1, ARG:2
+	SIF BASE:ARG:LV < RESULT
+		RETURN 0
+	;必要ステータスのチェック
+	CALL EQ_必要ステータス取得, ARG, ARG:1, ARG:2
+	IF RESULT
+		L_RESULT = RESULT
+		L_RESULT:1 = 0
+		FOR LCOUNT, 0, STRCOUNT(RESULTS, "/") + 1
+			SELECTCASE RESULTS:1 
+				CASE "合計"
+					L_RESULT -= BASE:ARG:AUTO_SPLIT(RESULTS, "/", LCOUNT)
+					;ひいていって0以下になったら合計値がこえていることになる
+					SIF L_RESULT > 0
+						CONTINUE
+					L_RESULT:1 = 1
+					BREAK
+				CASE "OR", "いずれか" 
+					SIF BASE:ARG:AUTO_SPLIT(RESULTS, "/", LCOUNT) < L_RESULT
+						CONTINUE
+					L_RESULT:1 = 1
+					BREAK
+				CASE "AND", "すべて"
+					;抜けたときに真となるのでここで設定する
+					L_RESULT:1 = 1
+					SIF BASE:ARG:AUTO_SPLIT(RESULTS, "/", LCOUNT) >= L_RESULT
+						CONTINUE
+					L_RESULT:1 = 0
+					BREAK
+			ENDSELECT
+		NEXT
+		SIF !L_RESULT:1
+			RETURN 0
+	ENDIF
+	;必要素質のチェック
+	CALL EQ_必要素質取得, ARG, ARG:1, ARG:2
+	IF RESULT
+		L_RESULT = RESULT
+		L_RESULT:1 = 0
+		FOR LCOUNT, 0, STRCOUNT(RESULTS, "/") + 1
+			TEMPS '= AUTO_SPLIT(RESULTS, "/", LCOUNT)
+			L_TALENT = %AUTO_SPLIT(TEMPS, "_", 0)%
+			L_TALENT_LV = MAX(TOINT(AUTO_SPLIT(TEMPS, "_", 1)), 1)
+			SELECTCASE RESULTS:1
+				CASE "OR", "いずれか"
+					IF GET_SUB_ROLE_NUM(L_TALENT) >= 0
+						SIF GET_BTL_TALENT_LV(L_TALENT, ARG) < L_TALENT_LV
+							CONTINUE
+					ELSE
+						SIF TALENT:ARG:L_TALENT < L_TALENT_LV
+							CONTINUE
+					ENDIF
+					L_RESULT:1 = 1
+					BREAK
+				CASE "AND", "すべて"
+					;抜けたときに真となるのでここで設定する
+					L_RESULT:1 = 1
+					IF GET_SUB_ROLE_NUM(L_TALENT) >= 0
+						SIF GET_BTL_TALENT_LV(L_TALENT, ARG) >= L_TALENT_LV
+							CONTINUE
+					ELSE
+						SIF TALENT:ARG:L_TALENT >= L_TALENT_LV
+							CONTINUE
+					ENDIF
+					L_RESULT:1 = 0
+					BREAK
+			ENDSELECT
+		NEXT
+		SIF !L_RESULT:1
+			RETURN 0
+	ENDIF
+	;性別制限のチェック
+	CALL EQ_性別制限取得, ARG, ARG:1, ARG:2
+	IF RESULT
+		SIF RESULT:1 && !IS_LOOKSLIKE_MALE(ARG)
+			RETURN 0
+		SIF RESULT:2 && IS_LOOKSLIKE_MALE(ARG)
+			RETURN 0
+	ENDIF
+
+	TRYCCALLFORM 装備条件_{ARG:1},ARG
+		RETURN RESULT
+	CATCH
+		RETURN 0
+	ENDCATCH
+ENDIF
+
+;=================================================
+;   sub EQ_必要レベル取得
+;=================================================
+;   指定された装備の必要レベルを返す
+;-------------------------------------------------
+; Input:
+;  ARG					キャラクター登録番号(省略された場合はキャラクターによる補正をかける前の数値を返す)
+;  ARG:1				装備番号
+;  ARG:2				装備箇所(省略された場合は自動的に取得する)
+; Output:
+;  RESULT				キャラクター補正済みの必要レベル
+;  RESULT:1				キャラクター補正前の必要レベル
+;-------------------------------------------------
+@EQ_必要レベル取得(ARG = -1, ARG:1, ARG:2 = -1)
+#DIM L_RESULT, 2
+RESULT = 0
+TRYCALLFORM 必要レベル_{ARG:1}
+L_RESULT = RESULT, RESULT
+IF ARG:2 < 0
+	TRYCCALLFORM 装備箇所_{ARG:1}
+		ARG:2 = RESULT
+	CATCH
+	ENDCATCH
+ENDIF
+;キャラ未指定の場合は補正処理をせずに終わる
+SIF ARG < 0
+	RETURN L_RESULT, L_RESULT
+;---- EDIT 009 ADD START -------------------------
+;装備固有の軽減処理
+TRYCCALLFORM 必要レベル軽減_{ARG:1}, ARG
+	SIF RESULT > 0
+		L_RESULT -= RESULT
+CATCH
+ENDCATCH
+;---- EDIT 009 ADD END ---------------------------
+;装備種毎の特性
+SELECTCASE GET_EQUIP(ARG:2)
+	CASE "총"
+		;銃はガンスリンガー所持で必要レベルが緩和される
+		SIF GET_BTL_TALENT_LV("건슬링거", ARG) > 0
+			L_RESULT -= 5
+ENDSELECT
+RETURN MAX(L_RESULT, 1), MAX(L_RESULT:1, 1)
+
+;=================================================
+;   sub EQ_必要ステータス取得取得
+;=================================================
+;   指定された装備の必要素質を返す
+;-------------------------------------------------
+; Input:
+;  ARG					キャラクター登録番号(省略された場合はキャラクターによる補正をかける前の数値を返す)
+;  ARG:1				装備番号
+;  ARG:2				装備箇所(省略された場合は自動的に取得する)
+; Output:
+;  RESULT				必要なステータスの数値
+;  RESULT:1				必要なステータスの数値(キャラクターによる補正をかけるまえ)
+;  RESULTS				必要なステータスの定義(ステータス名/)
+;  RESULTS:1			必要ステータスが複数ある場合に合計 ・ OR ・ AND で条件を定義
+;-------------------------------------------------
+@EQ_必要ステータス取得(ARG = -1, ARG:1, ARG:2 = -1)
+#DIM L_RESULT, 2
+RESULTS = 
+RESULTS:1 = 
+IF ARG:2 < 0
+	TRYCCALLFORM 装備箇所_{ARG:1}
+		ARG:2 = RESULT
+	CATCH
+	ENDCATCH
+ENDIF
+TRYCCALLFORM 必要ステータス_{ARG:1}
+	;---- EDIT 009 ADD START -------------------------
+	SIF RESULT <= 0
+		RETURN 0
+	L_RESULT = RESULT, RESULT
+	SIF ARG < 0
+		RETURN L_RESULT, L_RESULT
+	;装備毎の軽減処理
+	TRYCCALLFORM 必要ステータス軽減_{ARG:1}, ARG
+		SIF RESULT > 0
+			L_RESULT -= RESULT
+	CATCH
+	ENDCATCH
+	;---- EDIT 009 ADD END ---------------------------
+	;装備種毎の特性
+	SELECTCASE GET_EQUIP(ARG:2)
+		CASE "총"
+			;銃はガンスリンガー所持で必要ステータスが緩和される
+			SIF GET_BTL_TALENT_LV("건슬링거", ARG) > 0
+				L_RESULT = L_RESULT * 80 / 100
+			;機械の乙女は固定値で緩和される
+			;---- EDIT 008 MOD START -------------------------
+			;SIF (RESULTS:1 == "힘/내구") && (GET_BTL_TALENT_LV("기계의처녀", ARG) > 0)
+			SIF (RESULTS == "힘/내구") && (GET_BTL_TALENT_LV("기계의처녀", ARG) > 0)
+				L_RESULT -= 30
+			;---- EDIT 008 MOD END ---------------------------
+	ENDSELECT
+	RETURN MAX(L_RESULT, 1), L_RESULT:1
+CATCH
+	RETURN 0
+ENDCATCH
+
+;=================================================
+;   sub EQ_必要素質取得
+;=================================================
+;   指定された装備の必要素質を返す
+;-------------------------------------------------
+; Input:
+;  ARG					キャラクター登録番号(省略された場合はキャラクターによる補正をかける前の数値を返す)
+;  ARG:1				装備番号
+;  ARG:2				装備箇所(省略された場合は自動的に取得する)
+; Output:
+;  RESULT				必要な素質が設定されているならば真
+;  RESULTS				必要な素質の定義(素質名_素質レベル/)
+;  RESULTS:1			素質が複数ある場合にOR ・ AND で条件を定義
+;-------------------------------------------------
+@EQ_必要素質取得(ARG = -1, ARG:1, ARG:2 = -1)
+RESULTS = 
+RESULTS:1 = 
+IF ARG:2 < 0
+	TRYCCALLFORM 装備箇所_{ARG:1}
+		ARG:2 = RESULT
+	CATCH
+	ENDCATCH
+ENDIF
+TRYCCALLFORM 必要素質_{ARG:1}
+	;装備種毎の特性
+	SELECTCASE GET_EQUIP(ARG:2)
+		CASE "총"
+	ENDSELECT
+	RETURN RESULT
+CATCH
+	RETURN 0
+ENDCATCH
+
+;=================================================
+;   sub EQ_性別制限取得
+;=================================================
+;   指定された装備の性別制限を返す
+;-------------------------------------------------
+; Input:
+;  ARG					キャラクター登録番号(省略された場合はキャラクターによる補正をかける前の数値を返す)
+;  ARG:1				装備番号
+;  ARG:2				装備箇所(省略された場合は自動的に取得する)
+; Output:
+;  RESULT				性別の制限が設定されているならば真
+;  RESULT:1				男性のみ装備可能ならば真
+;  RESULT:2				女性のみ装備可能ならば真
+;-------------------------------------------------
+@EQ_性別制限取得(ARG = -1, ARG:1, ARG:2 = -1)
+IF ARG:2 < 0
+	TRYCCALLFORM 装備箇所_{ARG:1}
+		ARG:2 = RESULT
+	CATCH
+	ENDCATCH
+ENDIF
+TRYCCALLFORM 性別制限_{ARG:1}
+	;装備種毎の特性
+	SELECTCASE GET_EQUIP(ARG:2)
+		CASE "총"
+	ENDSELECT
+	RESULT:1 = (RESULT == 1)
+	RESULT:2 = (RESULT == 2)
+	RETURN RESULT:1 || RESULT:2
+CATCH
+	RETURN 0
+ENDCATCH
+
+;=================================================
+;   sub EQ_装備条件説明
+;=================================================
+;   装備プロパティから装備条件の説明を生成して表示する
+;-------------------------------------------------
+; Input:
+;  ARG					装備番号
+;  ARG:1				キャラクター登録番号(省略された場合はキャラクターによる補正をかける前の数値を返す)
+;  ARG:2				装備箇所(省略された場合は自動的に取得する)
+;-------------------------------------------------
+@EQ_装備条件説明, ARG, ARG:1 = -1, ARG:2 = -1
+#DIM LCOUNT
+#DIMS L_LV
+#DIMS L_TALENT
+#DIM L_RESULT, 2
+#DIMS TEMPS
+#DIMS L_STATUS
+IF ARG:2 < 0
+	TRYCCALLFORM 装備箇所_{ARG}
+		ARG:2 = RESULT
+	CATCH
+	ENDCATCH
+ENDIF
+;装備種毎の特性
+L_TALENT = 
+L_STATUS = 
+SELECTCASE GET_EQUIP(ARG:2)
+	;他装備品も追加
+	CASE "검", "총", "머리", "몸통", "팔", "발", "악세서리"
+		CALL EQ_必要レベル取得, ARG:1, ARG, ARG:2
+		IF RESULT != RESULT:1
+			L_LV = {RESULT}({RESULT:1})
+		ELSE
+			L_LV = {RESULT}
+		ENDIF
+		CALL EQ_必要素質取得, ARG:1, ARG, ARG:2
+		IF RESULT
+			FOR LCOUNT, 0, STRCOUNT(RESULTS, "/") + 1
+				IF LCOUNT > 0
+					IF RESULTS:1 == "AND"
+						L_TALENT += " & "
+					ELSE
+						L_TALENT += "　"
+					ENDIF
+				ENDIF
+				TEMPS = %AUTO_SPLIT(RESULTS, "/", LCOUNT)%
+				IF STRCOUNT(TEMPS, "_")
+					L_TALENT += @"[%AUTO_SPLIT(TEMPS, "_", 0)%Lv%AUTO_SPLIT(TEMPS, "_", 1)%]"
+				ELSE
+					L_TALENT += @"[%TEMPS%]"
+				ENDIF
+			NEXT
+		ENDIF
+		CALL EQ_必要ステータス取得, ARG:1, ARG, ARG:2
+		IF RESULT
+			L_RESULT = RESULT, RESULT:1
+			FOR LCOUNT, 0, STRCOUNT(RESULTS, "/") + 1
+				SIF LCOUNT > 0
+					L_STATUS += "・"
+				L_STATUS += AUTO_SPLIT(RESULTS, "/", LCOUNT)
+			NEXT
+			IF STRCOUNT(L_STATUS, "・")
+				SELECTCASE RESULTS:1
+					CASE "合計", "합계"
+						L_STATUS += @"의 합계치"
+					CASE "OR", "いずれか", "어느하나"
+						L_STATUS += @" 중 어느 하나"
+					CASE "AND", "すべて", "모두"
+						L_STATUS += @" 모두"
+				ENDSELECT
+			ENDIF
+			IF L_RESULT != L_RESULT:1
+				L_STATUS += @"가 {L_RESULT}({L_RESULT:1}) 이상"
+			ELSE
+				L_STATUS += @"가 {L_RESULT} 이상"
+			ENDIF
+		ENDIF
+		PRINTFORM 필요 레벨:%L_LV%　
+		SIF L_TALENT != ""
+			PRINTFORM 　필요 소질:%L_TALENT%
+		IF L_STATUS != ""
+			PRINTL 
+			PRINTFORM 필요 능력치:%L_STATUS%
+		ENDIF
+		CALL EQ_性別制限取得, ARG:1, ARG, ARG:2
+		IF RESULT
+			SIF RESULT:1
+				PRINT 　성별 제한：♂
+			SIF RESULT:2
+				PRINT 　성별 제한：♀
+		ENDIF
+		PRINTL 
+	CASE "탄환"
+		CALLFORM 弾レベル_{ARG}
+		PRINTFORML 필요소질:건슬링거Lv{RESULT}
+ENDSELECT
+TRYCCALLFORM 装備条件説明_{ARG}
+CATCH
+ENDCATCH
+RETURN RESULT
+
+;=================================================
+;   sub EQ_装備解説
+;=================================================
+;   装備プロパティから装備条件の説明を生成して表示する
+;-------------------------------------------------
+; Input:
+;  ARG					装備番号
+;  ARG:1				キャラクター登録番号(省略された場合はキャラクターによる補正をかける前の数値を返す)
+;  ARG:2				装備箇所(省略された場合は自動的に取得する)
+;  ARG:3				速度のためにボタン作製を省く
+;-------------------------------------------------
+@EQ_装備解説, ARG, ARG:1 = -1, ARG:2 = -1, ARG:3
+#DIM LCOUNT, 3
+#DIM L_RESULT, 3
+#DIM L_SKILLNUM
+#DIMS L_TITLE
+#DIMS TEMPS
+#DIMS SHOW_LINE, 20
+#DIM SHOW_LINE_NUM
+#DIMS L_SPLIT, 10
+#DIMS L_SKILLS, 10
+#DIM L_LINE, 2
+#DIM L_FORNUM
+#DIM STCOK_U
+L_LINE = LINECOUNT
+IF ARG:2 < 0
+	TRYCCALLFORM 装備箇所_{ARG}
+		ARG:2 = RESULT
+	CATCH
+	ENDCATCH
+ENDIF
+VARSET SHOW_LINE
+VARSET L_SKILLS
+STCOK_U = U
+TRYCCALLFORM 装備解説_{ARG}
+CATCH
+ENDCATCH
+TRYCCALLFORM 引継ぎ可不可_{ARG}
+	SIF RESULT == 0
+		PRINT 【인계 불가】
+CATCH
+ENDCATCH
+TRYCCALLFORM 最大所持数_{ARG}
+	SIF RESULT > 0
+		PRINTFORM 【소지수 제한:{RESULT}】
+CATCH
+ENDCATCH
+SIF !LINEISEMPTY()
+	PRINTL 
+SELECTCASE GET_EQUIP(ARG:2)
+	CASE "악세서리"
+		IF INRANGE(ARG, MIN_PLUGINNUM, MAX_PLUGINNUM - 1)
+			PRINTL 
+			CALLFORM 必要レベル_{ARG}
+			PRINTFORML 필요 레벨:{RESULT}
+			CALLFORM 増加CP_{ARG}
+			PRINTFORML CP 보정:\@RESULT < 0 ?－#＋\@{ABS(RESULT)}\%
+		ENDIF
+ENDSELECT
+
+
+;条件つきのものは装備解説にかかせる
+TRYCCALLFORM 条件つき装備追加スキル_{ARG}
+CATCH
+	VARSET L_RESULT;EDIT 007 ADD
+	FOR LCOUNT, 0, 3
+		TRYCCALLFORM 装備追加スキル_{ARG}, LCOUNT;EDIT 007 MOD
+			SIF !RESULT
+				CONTINUE
+			SIF MATCH(L_RESULT, RESULT)
+				CONTINUE
+			L_RESULT:LCOUNT = RESULT
+			IF LCOUNT == 0
+				SIF !INRANGE(ARG, MIN_PLUGINNUM, MAX_PLUGINNUM - 1)
+					PRINTL 
+				PRINT 추가스킬：
+			ELSE
+				PRINT ,
+			ENDIF
+			PRINTFORM 【%SKILL_NAME_F(RESULT)%】
+		CATCH
+		ENDCATCH
+	NEXT
+	SIF !LINEISEMPTY()
+		PRINTL 
+ENDCATCH
+
+SELECTCASE GET_EQUIP(ARG:2)
+	CASE "검"
+		CALL GET_DEVIL_ARMS_SKILL, ARG
+		IF MATCH(RESULT, 0, 0, 3) < 3
+			L_RESULT = RESULT, RESULT:1, RESULT:2
+			SIF !STRCOUNT(HTML_GETPRINTEDSTR(0), "追加")
+				PRINTL 
+			PRINT 추가스킬:
+			FOR LCOUNT, 0, 3
+				SIF !L_RESULT:LCOUNT
+					CONTINUE
+				SIF LCOUNT
+					PRINT ,
+				PRINTFORM 【%SKILL_NAME_F(L_RESULT:LCOUNT)%】
+			NEXT
+			PRINTL 　추가조건:[데빌암즈]
+		ENDIF
+ENDSELECT
+
+IF L_LINE != LINECOUNT
+	L_FORNUM = LINECOUNT - L_LINE
+	FOR LCOUNT, 0, L_FORNUM
+		SHOW_LINE_NUM = L_FORNUM - LCOUNT - 1
+		TEMPS = %HTML_TOPLAINTEXT(HTML_GETPRINTEDSTR(SHOW_LINE_NUM))%
+		;---- EDIT 005 START END ---------------------------
+		TEMPS = %HTML_ESCAPE(TEMPS)%
+		;---- EDIT 005 ADD END -----------------------------
+		SPLIT TEMPS, "【", L_SPLIT
+		L_RESULT = RESULT
+		IF L_RESULT > 1
+			FOR LCOUNT:1, 0, L_RESULT
+				;---- EDIT 006 MOD START -------------------------
+				IF STRCOUNT(L_SPLIT:(LCOUNT:1), "】")
+					L_SKILLS:(LCOUNT:1) = %AUTO_SPLIT(L_SPLIT:(LCOUNT:1), "】", 0)%
+					L_SKILLNUM = SKILL_NUM_F(L_SKILLS:(LCOUNT:1))
+					CALL GET_SKILL_EXPLAIN_TOOLTIP, L_SKILLNUM, ARG:1
+					L_TITLE = %RESULTS%
+					L_SKILLS:(LCOUNT:1) = <nonbutton title = '%L_TITLE%'>【%L_SKILLS:(LCOUNT:1)%】</nonbutton>
+					SHOW_LINE:LCOUNT += L_SKILLS:(LCOUNT:1) + AUTO_SPLIT(L_SPLIT:(LCOUNT:1), "】", 1) 
+				ELSE
+					SHOW_LINE:LCOUNT += L_SPLIT:(LCOUNT:1)
+				ENDIF
+				;---- EDIT 006 MOD END ---------------------------
+			NEXT
+		ELSE
+			SHOW_LINE:LCOUNT = %TEMPS%
+		ENDIF
+	NEXT
+ENDIF
+CLEARLINE LINECOUNT - L_LINE
+FOR LCOUNT, 0, L_FORNUM
+	HTML_PRINT SHOW_LINE:LCOUNT
+NEXT
+U = STCOK_U
+RETURN L_LINE != LINECOUNT
+
+;---- EDIT 010 ADD START -------------------------
+;=================================================
+;   sub EQ_装備解説
+;=================================================
+;   LVと装備種を指定して標準的な戦闘ステータスを生成する
+;   性能値自体はRev148段階の強めの装備とそうずれないようにする
+;   式変更で改定する予定
+;-------------------------------------------------
+; Input:
+;  EQ_ST					戦闘ステータス
+;  EQ_TYPE					装備種
+;  EQ_LV					LV
+;-------------------------------------------------
+@EQ_戦闘ステータス生成, EQ_ST, EQ_TYPE, EQ_LV
+#FUNCTION
+#DIM TEMP
+#DIM L_RESULT
+#DIMS EQ_ST
+#DIMS EQ_TYPE
+#DIM EQ_LV
+#DIM BASE_ST
+#DIM VAR_BT_ST_MULTI, GUN_BATTLESTATUSNUM
+#DIM CONST ADD_LV = 5;補正レベル
+#DIM CONST MAX_LV = 80;一応上限をきっておく(システム側でこれ以上のレベルに対して補正をあたえだすので)
+
+;レベルの補正を入れる(装備を5レベル刻み目安にするので基本はLV5の差となる)
+EQ_LV = MIN(EQ_LV, MAX_LV) + ADD_LV
+;合計ステータス(小数点以下を扱えないので100倍を入れておく)
+BASE_ST = (EQ_LV * 100 * 3 / 2 + 1800)
+;各ステータス
+BASE_ST = BASE_ST / 6
+
+;ステータスの補正 悪魔がMAGでステータスを伸ばしていると仮定してのステータス
+;ゲームが進行するほど悪魔のステータスの偏りが大きくなるのを見込んでここの係数をずらす
+;仕様的に合計値は人間が安定して高く、個々の数値の特化は悪魔が有利…になるはず
+;将来的にはステータス1点の伸びを同じにしてこの措置をいらないようにすべき
+;160%~240%+αを想定
+BASE_ST = BASE_ST * (160 + EQ_LV) / 100
+
+;基準値の算出
+;レベル点
+SELECTCASE EQ_ST
+	CASE "공격", "마법위력"
+		L_RESULT = EQ_LV * 300 / 2
+	CASEELSE
+		L_RESULT = EQ_LV * 200 / 2
+ENDSELECT
+;ステータス点
+SELECTCASE EQ_ST
+	CASE "방어"
+		L_RESULT += BASE_ST * 5 / 2
+	CASEELSE
+		L_RESULT += BASE_ST * 2
+ENDSELECT
+
+;係数補正
+SELECTCASE EQ_TYPE
+							;공격 	명중	방어	회피	마법위력	마법효과
+	CASE "검"
+		VAR_BT_ST_MULTI = 	 110,	100,		0,		0,		90,			50
+	CASE "刀"
+		VAR_BT_ST_MULTI = 	 120,	 90,		0,		0,		65,			30
+	CASE "레이피어"
+		VAR_BT_ST_MULTI = 	  95,	120,		0,		0,		100,		70
+	CASE "斧", "鈍器", "斧・鈍器"
+		VAR_BT_ST_MULTI = 	 130,	 75,		0,		0,		60,			25
+	CASE "棍"
+		VAR_BT_ST_MULTI = 	 100,	105,		0,		0,		105,		55
+	CASE "槍"
+		VAR_BT_ST_MULTI = 	 110,	 95,		0,		0,		85,			40
+	CASE "채찍"
+		VAR_BT_ST_MULTI = 	 105,	 90,		0,		0,		110,		55
+	CASE "弓"
+		VAR_BT_ST_MULTI = 	 115,	 70,		0,		0,		95,			45
+	CASE "投具"
+		VAR_BT_ST_MULTI = 	  85,	100,		0,		0,		115,		60
+	CASE "杖", "祭具", "杖・祭具"
+		VAR_BT_ST_MULTI = 	  50,	 80,		0,		0,		130,		40
+	CASE "拳闘具"
+		VAR_BT_ST_MULTI = 	 115,	110,		0,		0,		80,			35
+	CASE "その他武器"
+		VAR_BT_ST_MULTI = 	  80,	 80,		0,	 	0,		80,			30
+
+							;공격 	명중	방어	회피	마법위력	마법효과
+	CASE "머리"
+		VAR_BT_ST_MULTI = 	 	0,		0,	 20,	 15,		0,			20
+	CASE "魔頭"
+		VAR_BT_ST_MULTI = 	 	0,		0,	 10,	 10,		0,			25
+	CASE "몸통"
+		VAR_BT_ST_MULTI = 	 	0,		0,	 40,	 30,		0,			10
+	CASE "魔胴"
+		VAR_BT_ST_MULTI = 	 	0,		0,	 30,	 25,		0,			15
+	CASE "팔"
+		VAR_BT_ST_MULTI = 	 	0,		0,	 20,	 15,		0,			10
+	CASE "魔腕"
+		VAR_BT_ST_MULTI = 	 	0,		0,	 10,	 10,		0,			15
+	CASE "발"
+		VAR_BT_ST_MULTI = 	 	0,		0,	 20,	 40,		0,			10
+	CASE "魔足"
+		VAR_BT_ST_MULTI = 	 	0,		0,	 10,	 35,		0,			15
+							;공격 	명중	방어	회피	마법위력	마법효과
+	CASEELSE
+		RETURNF 0
+ENDSELECT
+;係数をかける
+IF EQ_ST == "合計値"
+	TEMP = L_RESULT * (SUMARRAY(VAR_BT_ST_MULTI) - VAR_BT_ST_MULTI:GET_BATTLESTATUS_NUM("명중")) / 100
+	;命中だけ数値變動が少なすぎるときに下限にする
+	IF VAR_BT_ST_MULTI:GET_BATTLESTATUS_NUM(EQ_ST) >= 100
+		L_RESULT = TEMP + MAX(L_RESULT * VAR_BT_ST_MULTI:GET_BATTLESTATUS_NUM(EQ_ST) / 100, L_RESULT + VAR_BT_ST_MULTI:GET_BATTLESTATUS_NUM(EQ_ST) - 100)
+	ELSE
+		L_RESULT = TEMP + MIN(L_RESULT * VAR_BT_ST_MULTI:GET_BATTLESTATUS_NUM(EQ_ST) / 100, L_RESULT + VAR_BT_ST_MULTI:GET_BATTLESTATUS_NUM(EQ_ST) - 100)
+	ENDIF
+ELSE
+	IF EQ_ST == "명중"
+		;命中だけ数値變動が少なすぎるときに下限にする
+		IF VAR_BT_ST_MULTI:GET_BATTLESTATUS_NUM(EQ_ST) >= 100
+			L_RESULT = MAX(L_RESULT * VAR_BT_ST_MULTI:GET_BATTLESTATUS_NUM(EQ_ST) / 100, L_RESULT + VAR_BT_ST_MULTI:GET_BATTLESTATUS_NUM(EQ_ST) - 100)
+		ELSE
+			L_RESULT = MIN(L_RESULT * VAR_BT_ST_MULTI:GET_BATTLESTATUS_NUM(EQ_ST) / 100, L_RESULT + VAR_BT_ST_MULTI:GET_BATTLESTATUS_NUM(EQ_ST) - 100)
+		ENDIF
+	ELSE
+		L_RESULT = L_RESULT * VAR_BT_ST_MULTI:GET_BATTLESTATUS_NUM(EQ_ST) / 100
+	ENDIF
+ENDIF
+;切り捨て対策部分を戻す
+L_RESULT /= 100
+RETURNF L_RESULT
+;---- EDIT 010 ADD END ---------------------------
+
+
+;=================================================
+;   sub EQ_売却価格
+;=================================================
+;   装備の販売価格を算出する
+;-------------------------------------------------
+@EQ_売却価格, ARG
+#DIM L_PRICE
+#DIM L_LV
+#DIM L_RANK
+;価格1と0は売却不能となる
+SIF ITEMPRICE:ARG <= 1
+	RETURN 0
+
+RESULT = 0
+;購入条件でジャンク品かどうかを判別する
+;※条件を満たしていないジャンク品も含まれるのに注意
+TRYCALLFORM 購入条件_{ARG}
+IF !RESULT
+	TRYCCALLFORM 必要レベル_{ARG}
+		L_LV = RESULT
+		L_RANK = LIMIT(L_LV / 5, 0, PAYMENT_MAXRANK() - 1)
+		;納金価格から算出する
+		L_PRICE = GET_PAYMENT_TABLE_FOR_NEXT_RANK(L_RANK)
+		TIMES L_PRICE, 0.02
+		;端数レベルの補正
+		L_PRICE = L_PRICE * ((L_LV - L_RANK * 5) * 2 + 100) / 100
+		TRYCCALLFORM 装備箇所_{ARG}
+			SELECTCASE GET_EQUIP(RESULT)
+				CASE "검"
+					TIMES L_PRICE, 1.00
+				CASE "머리"
+					TIMES L_PRICE, 0.50
+				CASE "몸통"
+					TIMES L_PRICE, 0.80
+				CASE "손"
+					TIMES L_PRICE, 0.50
+				CASE "발"
+					TIMES L_PRICE, 0.40
+				CASE "악세서리"
+					TIMES L_PRICE, 0.45
+				CASEELSE
+					TIMES L_PRICE, 0.50
+			ENDSELECT
+		CATCH
+		ENDCATCH
+		;端数処理
+		L_PRICE /= 10
+		L_PRICE *= 10
+		RETURN L_PRICE
+	CATCH
+		RETURN ITEMPRICE:ARG / 2
+	ENDCATCH
+ENDIF
+RETURN ITEMPRICE:ARG / 2
+
+
+@DISPOSE_EQUIP_CHARA, L_CHARA, L_EQUIPNUM
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_EQUIPNUM
+FOR LCOUNT, 0, EQUIP_PARTNUM
+	SIF EQUIP:L_CHARA:GET_EQUIP(LCOUNT) == L_EQUIPNUM
+		EQUIP:L_CHARA:GET_EQUIP(LCOUNT) = 0
+	IF GET_EQUIP(LCOUNT) != "탄환"
+		FOR LCOUNT:1, 1, 7
+			SIF CFLAG:L_CHARA:@"등록장비%GET_EQUIP(LCOUNT)%{LCOUNT:1}" == L_EQUIPNUM
+				CFLAG:L_CHARA:@"등록장비%GET_EQUIP(LCOUNT)%{LCOUNT:1}" = 0
+		NEXT
+	ENDIF
+NEXT
+CALL 装備強化_CSTR, "削除", L_CHARA, L_EQUIPNUM
+
+@SET_EQUIP_VAR, ARG
+#DIM LCOUNT
+FOR LCOUNT, 0, EQUIPNUM
+	TRYCCALLFORM 装備箇所_{LCOUNT + MIN_EQUIPNUM}
+		EQUIP_PART:LCOUNT = RESULT
+	CATCH
+	ENDCATCH
+NEXT
+

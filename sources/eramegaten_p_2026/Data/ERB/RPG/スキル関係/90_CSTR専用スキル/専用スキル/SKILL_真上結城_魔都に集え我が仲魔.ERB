@@ -1,0 +1,581 @@
+﻿;スキル名
+@SKILL_NAME_魔都に集え我が仲魔,ARG
+RESULTS = 마도에 모여라 나의 동료마
+
+;　명중
+@SKILL_HITRATE_魔都に集え我が仲魔, ARG
+RETURN 200
+
+;　威力
+@SKILL_POWER_魔都に集え我が仲魔, ARG
+SIF ARG == -1
+	RETURN 100
+IF BASE:ARG:LV < 10
+	RETURN 100
+ELSEIF BASE:ARG:LV < 20
+	RETURN 125
+ELSEIF BASE:ARG:LV < 30
+	RETURN 150
+ELSEIF BASE:ARG:LV < 40
+	;2回攻撃
+	RETURN 100
+ELSEIF BASE:ARG:LV < 50
+	;2回攻撃
+	RETURN 125
+ELSEIF BASE:ARG:LV < 60
+	;3回攻撃
+	RETURN 90
+ELSE
+	;3回攻撃
+	RETURN 95
+ENDIF
+
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_魔都に集え我が仲魔, ARG
+RETURN 0
+
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_魔都に集え我が仲魔,ARG
+SIF ARG == -1
+	RETURN 1
+IF BASE:ARG:LV < 10
+	RETURN 1
+ELSEIF BASE:ARG:LV < 20
+	RETURN 1
+ELSEIF BASE:ARG:LV < 30
+	RETURN 1
+ELSEIF BASE:ARG:LV < 40
+	;2回攻撃
+	RETURN 2
+ELSEIF BASE:ARG:LV < 50
+	;2回攻撃
+	RETURN 2
+ELSEIF BASE:ARG:LV < 60
+	;3回攻撃
+	RETURN 3
+ELSE
+	;3回攻撃
+	RETURN 3
+ENDIF
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_魔都に集え我が仲魔,ARG
+SIF ARG == -1
+	RETURN 1
+IF BASE:ARG:LV < 10
+	RETURN 1
+ELSEIF BASE:ARG:LV < 20
+	RETURN 1
+ELSEIF BASE:ARG:LV < 30
+	RETURN 1
+ELSEIF BASE:ARG:LV < 40
+	;2回攻撃
+	RETURN 2
+ELSEIF BASE:ARG:LV < 50
+	;2回攻撃
+	RETURN 2
+ELSEIF BASE:ARG:LV < 60
+	;3回攻撃
+	RETURN 3
+ELSE
+	;3回攻撃
+	RETURN 3
+ENDIF
+
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_魔都に集え我が仲魔, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_魔都に集え我が仲魔,ARG
+#DIM 魔都に集え我が仲魔待機
+魔都に集え我が仲魔待機 = PU_SKILLNUM_GET(ARG, "魔都に集え我が仲魔")
+;発射準備済み
+IF SKILLGAGE_H_GET(ARG, 魔都に集え我が仲魔待機)
+	RETURN 0
+;発射準備まだ（準備のときにMPを消費する）
+ELSE
+	;チャージを要するので控えめ（ご意見あれば調整ﾖﾛ）
+	SIF ARG == -1
+		RETURN 16
+	IF BASE:ARG:LV < 10
+		;ダメージ＋スクンダ
+		RETURN 16
+	ELSEIF BASE:ARG:LV < 20
+		;タルカジャ追加
+		RETURN 18
+	ELSEIF BASE:ARG:LV < 30
+		;複合相性＋万能バステ追加
+		RETURN 22
+	ELSEIF BASE:ARG:LV < 40
+		;2回攻撃化
+		RETURN 24
+	ELSEIF BASE:ARG:LV < 50
+		;タルンダ追加
+		RETURN 28
+	ELSEIF BASE:ARG:LV < 60
+		;3回攻撃化
+		RETURN 30
+	ELSE
+		;攻撃力上昇のみ
+		RETURN 31
+	ENDIF
+ENDIF
+
+
+
+;　相性
+@SKILL_TYPE_魔都に集え我が仲魔,ARG
+;LV30以上で複合相性化
+IF ARG >= 0 && BASE:ARG:LV > 29
+	RETURN GET_TYPE_NUM("빙결"), GET_TYPE_NUM("정신")
+ELSE
+	RETURN GET_TYPE_NUM("빙결")
+ENDIF
+;#LOCALSSIZE 5
+;#LOCALSIZE 4
+;LV30以上で複合相性化
+;IF BASE:ARG:LV > 29
+;	SIF ARG < 0 || スキル属性表示中
+;		RETURN GET_TYPE_NUM("빙결")
+;	SIF CFLAG:ARG:타겟 > 16 || CFLAG:ARG:타겟 < 1
+;		RETURN GET_TYPE_NUM("빙결")
+;	LOCAL = POS(CFLAG:ARG:타겟)
+;	SIF LOCAL < 0
+;		RETURN GET_TYPE_NUM("빙결")
+;		
+;	LOCAL:2 = -300
+;	;全部-400とかないとおもうけど、あったらあれなんで、電撃をいれとく
+;	LOCALS = 빙결
+;	LOCALS:1 = 빙결
+;	LOCALS:2 = 정신
+;	FOR LOCAL:1, 1, 3
+;		;判定用に数値をしまう。反射は-200扱い
+;		LOCAL:3 = MAXBASE:LOCAL:(LOCALS:(LOCAL:1)) == 999 ? -200 # MAXBASE:LOCAL:(LOCALS:(LOCAL:1))
+;		LOCAL:3 = !(HAVE_SKILL(ARG,[[스킬:영세라이도우]]) || HAVE_SKILL(ARG,2947)) && CFLAG:LOCAL:(LOCALS:(LOCAL:1)+"무효화횟수") ? -5 # LOCAL:3
+;		LOCAL:3 = CFLAG:LOCAL:(LOCALS:(LOCAL:1)+"가드킬") && LOCAL:3 < 100 ? 100 # LOCAL:3
+;		SELECTCASE LOCAL:1
+;			CASE 1 TO 2
+;				LOCAL:3 = CFLAG:LOCAL:물리반사플래그 ? -200 # LOCAL:3
+;			CASE 3
+;				LOCAL:3 = CFLAG:LOCAL:마법반사플래그 ? -200 # LOCAL:3
+;			CASEELSE
+;		ENDSELECT
+;		IF LOCAL:3 > LOCAL:2
+;			LOCAL:2 = LOCAL:3
+;			LOCALS = %LOCALS:(LOCAL:1)%
+;		ENDIF
+;	NEXT
+;	PRINT 属性相性：
+;	PRINTS LOCALS
+;	PRINTL ！
+;	RETURN GET_TYPE_NUM(LOCALS)
+;	
+;;それ未満は氷結のみ
+;ELSE
+;	RETURN 5
+;ENDIF
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_魔都に集え我が仲魔
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_魔都に集え我が仲魔,ARG
+;魔法ダメージ
+RETURN 2
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_魔都に集え我が仲魔,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_魔都に集え我が仲魔,ARG
+RETURN 3
+
+;　範囲　1単体　2列　3全体　4　敵味方全体
+@SKILL_SPHERE_魔都に集え我が仲魔,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_魔都に集え我が仲魔,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_魔都に集え我が仲魔
+;RETURN 23
+;
+
+;속도보정
+@SKILL_SPEED_魔都に集え我が仲魔, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_魔都に集え我が仲魔
+;できない
+RETURN 0
+
+;没
+;@SKILL_RANK_魔都に集え我が仲魔, ARG = -1
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_魔都に集え我が仲魔,ARG
+;メルクリウス追加後から
+IF BASE:ARG:LV > 29
+	IF !RAND:4
+		RETURN GET_STATE_NUM("CLOSE")
+	ELSEIF !RAND:3
+		RETURN GET_STATE_NUM("FREEZE")
+	ELSEIF !RAND:2
+		RETURN GET_STATE_NUM("SLEEP")
+	ELSE
+		RETURN GET_STATE_NUM("PANIC")
+	ENDIF
+ENDIF
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_魔都に集え我が仲魔,ARG
+RETURN 17
+;만능
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_魔都に集え我が仲魔,ARG
+;メルクリウス追加後から
+IF BASE:ARG:LV > 29
+	RETURN 50
+ENDIF
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_魔都に集え我が仲魔,ARG
+;メルクリウス追加後から
+IF BASE:ARG:LV > 29
+	RETURN 50
+ENDIF
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_魔都に集え我が仲魔,ARG
+;RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_魔都に集え我が仲魔,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#LOCALSIZE 3
+
+;発射準備済み
+IF SKILLGAGE_H_GET(ARG, SKILL_NUM)
+	
+	
+	;フォッグブレス部分
+	;IF CFLAG:(ARG):PT플래그 == 0
+	;	LOCAL:1 = 1
+	;	LOCAL:2 = 7
+	;ELSE
+	;	LOCAL:1 = 7
+	;	LOCAL:2 = 17
+	;ENDIF
+	;FOR LOCAL,LOCAL:1,LOCAL:2
+	;	SIF POS(LOCAL) < 0
+	;		CONTINUE
+	;	CFLAG:POS(LOCAL):명중강화 = MAX(-16, CFLAG:POS(LOCAL):명중강화 - 4)
+	;	CFLAG:POS(LOCAL):회피강화 = MAX(-16, CFLAG:POS(LOCAL):회피강화 - 4)
+	;NEXT
+	PRINTFORML ＞일제 소환 프로그램 GO
+	PRINTL
+	IF CFLAG:ARG:PT플래그 == 0
+		SETCOLOR 0xff0033
+	ELSE
+		SETCOLOR 0x33ffcc
+	ENDIF
+	PRINTFORML ┏>요귀 웬디고　━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃%"【포그브레스】！",72,LEFT%┃
+	PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+	CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ? 22 # 19, "命中_回避", -8, "範囲", "NOMES"
+	PRINTFORML \@ CFLAG:ARG:PT플래그 ? 적 # 아군 \@의 명중·회피를 대폭 낮췄다!
+
+	;ガンダルヴァ追加
+	IF BASE:ARG:LV > 19
+		;カジャ部分
+		;IF CFLAG:(ARG):PT플래그 == 0
+		;	LOCAL:1 = 7
+		;	LOCAL:2 = 17
+		;ELSE
+		;	LOCAL:1 = 1
+		;	LOCAL:2 = 7
+		;ENDIF
+		;FOR LOCAL,LOCAL:1,LOCAL:2
+		;	SIF POS(LOCAL) < 0
+		;		CONTINUE
+		;	CFLAG:POS(LOCAL):공격강화 = MIN(32, CFLAG:POS(LOCAL):공격강화 + 4)
+		;NEXT	
+		CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ?19 # 22, "공격", 4, "範囲", "NOMES"
+		PRINTL
+		IF CFLAG:ARG:PT플래그 == 0
+			SETCOLOR 0xff0033
+		ELSE
+			SETCOLOR 0x33ffcc
+		ENDIF
+		PRINTFORML ┏>요정 간다르바　━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"내게 맡겨줘~!",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		RESETCOLOR
+		PRINTFORML \@ CFLAG:ARG:PT플래그 == 0 ? 적 # 아군 \@의 공격력이 올라갔다!
+		
+	ENDIF
+	;ニギミタマ追加
+	IF BASE:ARG:LV > 49
+		;ンダ
+		;IF CFLAG:(ARG):PT플래그 == 0
+		;	LOCAL:1 = 1
+		;	LOCAL:2 = 7
+		;ELSE
+		;	LOCAL:1 = 7
+		;	LOCAL:2 = 17
+		;ENDIF
+		;FOR LOCAL,LOCAL:1,LOCAL:2
+		;	SIF POS(LOCAL) < 0
+		;		CONTINUE
+		;	CFLAG:POS(LOCAL):공격강화 = MAX(-16, CFLAG:POS(LOCAL):공격강화 - 4)
+		;NEXT
+		PRINTL
+		IF CFLAG:ARG:PT플래그 == 0
+			SETCOLOR 0xff0033
+		ELSE
+			SETCOLOR 0x33ffcc
+		ENDIF
+		CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ? 22 # 19, "공격", -4, "範囲", "NOMES"
+		PRINTFORML ┏>어령 니기미타마　━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"니기니기하겠소!",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		RESETCOLOR
+		PRINTFORML \@ CFLAG:ARG:PT플래그 ? 적 # 아군 \@의 공격력을 낮췄다!
+	ENDIF
+	;攻撃発射
+	PRINTL
+	IF CFLAG:ARG:PT플래그 == 0
+		SETCOLOR 0xff0033
+	ELSE
+		SETCOLOR 0x33ffcc
+	ENDIF
+	;メルクリウス追加
+	IF BASE:ARG:LV > 29
+		PRINTFORML ┏>요마 메르쿠리우스　━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"준비는 척척. 자, 눈보라를 부르지 않겠나, 설인이여",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		PRINTFORML ┏>요귀 웬디고　━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"네놈이나 해라, 썩을 영감이",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>요귀 웬디고　━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"――산의 하양에 미쳐서, 죽어라",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+	RESETCOLOR
+	CALL ATTACK_FIELD, ARG, ARG:1, SKILL_NUM, 1
+	IF CFLAG:ARG:PT플래그 == 0
+		SETCOLOR 0xff0033
+	ELSE
+		SETCOLOR 0x33ffcc
+	ENDIF
+	;メルクリウス追加後
+	IF BASE:ARG:LV > 29
+		PRINTFORML ┏>요귀 웬디고　━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"――산의 하양에 미쳐서, 죽어라",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+	ENDIF
+	RESETCOLOR
+	
+	;発射準備解除
+	CALL SKILLGAGE_H_SET, ARG, SKILL_NUM,0
+;発射準備まだ
+ELSE
+	CALL SKILLGAGE_H_ADD, ARG, SKILL_NUM,1
+	PRINTW ＞CALL "마도에 모여라 나의 동료마" READY
+ENDIF
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_魔都に集え我が仲魔,ARG
+#LOCALSIZE 1
+#DIM 魔都に集え我が仲魔待機
+魔都に集え我が仲魔待機 = PU_SKILLNUM_GET(ARG, "魔都に集え我が仲魔")
+
+IF CFLAG:(CHARANUM-1):PT플래그 || ARG < 0 || ARG >= CHARANUM
+	PRINTL 술자 개인의 동료마를 일제 소환하여 다양한 효과를 일으킨다
+
+	IF ARG == -1
+		;PRINTL ……と言いたいところだがレベルが低すぎてウェンディゴしか呼べない。全体氷結中ダメージ。
+	;ウェンディゴ単体
+	ELSEIF BASE:ARG:LV < 10
+		PRINTL 　적 전체에게 빙결 소 데미지
+		PRINTL 　＋적 전체의 명중 회피를 1단계 다운
+	;ガンダルヴァ追加
+	ELSEIF BASE:ARG:LV < 20
+		PRINTL 　적 전체에게 빙결 소 데미지
+		PRINTL 　＋적 전체의 명중 회피를 1단계 다운
+		PRINTL 　＋아군 전원의 공격력 1단계 업
+	;メルクリウス追加
+	ELSEIF BASE:ARG:LV < 30
+		PRINTL 　적 전체 『빙결·정신』 복합 중 데미지,
+		PRINTL 　＋적 전체에게 만능 상성으로 『마봉·동결·수면·혼란』 무작위 부여, 중확률
+		PRINTL 　＋적 전체에게 명중 회피를 1단계 다운
+		PRINTL 　＋아군 전원의 공격력 1단계 업
+	;攻撃力上昇のみ
+	ELSEIF BASE:ARG:LV < 40
+		PRINTL 　적 전체 『빙결·정신』 복합 2HIT 중 데미지
+		PRINTL 　＋적 전체에게 만능 상성으로 『마봉·동결·수면·혼란』 무작위 부여, 중확률
+		PRINTL 　＋적 전체에게 명중 회피를 1단계 다운
+		PRINTL 　＋아군 전원의 공격력 1단계 업
+	;ニギミタマ追加
+	ELSEIF BASE:ARG:LV < 50
+		PRINTL 　적 전체 『빙결·정신』 복합 2HIT 중 데미지
+		PRINTL 　＋적 전체에게 만능 상성으로 『마봉·동결·수면·혼란』 무작위 부여, 중확률
+		PRINTL 　＋적 전체에게 공격력 1단계 다운, 명중 회피를 1단계 다운
+		PRINTL 　＋아군 전체의 공격력 1단계 업
+	;攻撃力上昇のみ
+	ELSEIF BASE:ARG:LV < 60
+		PRINTL 　적 전체 『빙결·정신』 복합 3HIT 중 데미지
+		PRINTL 　＋적 전체에게 만능 상성으로 『마봉·동결·수면·혼란』 무작위 부여, 중확률
+		PRINTL 　＋적 전체에게 공격력 1단계 다운, 명중 회피를 1단계 다운
+		PRINTL 　＋아군 전체의 공격력 1단계 업
+	;攻撃力上昇のみ
+	ELSE
+		PRINTL 　적 전체 『빙결·정신』 복합 3HIT 대 데미지
+		PRINTL 　＋적 전체에게 만능 상성으로 『마봉·동결·수면·혼란』 무작위 부여, 중확률
+		PRINTL 　＋적 전체에게 공격력 1단계 다운, 명중 회피를 1단계 다운
+		PRINTL 　＋아군 전체의 공격력 1단계 업
+	ENDIF
+	PRINTL 　발동을 위해 1턴의 준비를 요한다
+
+	;天井はLv60
+	IF BASE:ARG:LV < 60
+		PRINTL 술자의 Lv이 10 오를 때마다 성능이 강화된다
+	ENDIF
+
+ELSE
+	;発射準備完了
+	IF SKILLGAGE_H_GET(ARG, 魔都に集え我が仲魔待機)
+		PRINTL 술자 개인의 동료마를 일제 소환하여 다양한 효과를 일으킨다
+		IF ARG == -1
+			;PRINTL ……と言いたいところだがレベルが低すぎてウェンディゴしか呼べない。全体氷結中ダメージ。
+		;ウェンディゴ単体
+		ELSEIF BASE:ARG:LV < 10
+			PRINTL 　적 전체에게 빙결 소 데미지
+			PRINTL 　＋적 전체의 명중 회피를 1단계 다운
+		;ガンダルヴァ追加
+		ELSEIF BASE:ARG:LV < 20
+			PRINTL 　적 전체에게 빙결 소 데미지
+			PRINTL 　＋적 전체의 명중 회피를 1단계 다운
+			PRINTL 　＋아군 전원의 공격력 1단계 업
+		;メルクリウス追加
+		ELSEIF BASE:ARG:LV < 30
+			PRINTL 　적 전체 『빙결·정신』 복합 중 데미지,
+			PRINTL 　＋적 전체에게 만능 상성으로 『마봉·동결·수면·혼란』 무작위 부여, 중확률
+			PRINTL 　＋적 전체에게 명중 회피를 1단계 다운
+			PRINTL 　＋아군 전원의 공격력 1단계 업
+		;攻撃力上昇のみ
+		ELSEIF BASE:ARG:LV < 40
+			PRINTL 　적 전체 『빙결·정신』 복합 2HIT 중 데미지
+			PRINTL 　＋적 전체에게 만능 상성으로 『마봉·동결·수면·혼란』 무작위 부여, 중확률
+			PRINTL 　＋적 전체에게 명중 회피를 1단계 다운
+			PRINTL 　＋아군 전원의 공격력 1단계 업
+		;ニギミタマ追加
+		ELSEIF BASE:ARG:LV < 50
+			PRINTL 　적 전체 『빙결·정신』 복합 2HIT 중 데미지
+			PRINTL 　＋적 전체에게 만능 상성으로 『마봉·동결·수면·혼란』 무작위 부여, 중확률
+			PRINTL 　＋적 전체에게 공격력 1단계 다운, 명중 회피를 1단계 다운
+			PRINTL 　＋아군 전체의 공격력 1단계 업
+		;攻撃力上昇のみ
+		ELSEIF BASE:ARG:LV < 60
+			PRINTL 　적 전체 『빙결·정신』 복합 3HIT 중 데미지
+			PRINTL 　＋적 전체에게 만능 상성으로 『마봉·동결·수면·혼란』 무작위 부여, 중확률
+			PRINTL 　＋적 전체에게 공격력 1단계 다운, 명중 회피를 1단계 다운
+			PRINTL 　＋아군 전체의 공격력 1단계 업
+		;攻撃力上昇のみ
+		ELSE
+			PRINTL 　적 전체 『빙결·정신』 복합 3HIT 대 데미지
+			PRINTL 　＋적 전체에게 만능 상성으로 『마봉·동결·수면·혼란』 무작위 부여, 중확률
+			PRINTL 　＋적 전체에게 공격력 1단계 다운, 명중 회피를 1단계 다운
+			PRINTL 　＋아군 전체의 공격력 1단계 업
+		ENDIF
+		;天井はLv60
+		IF BASE:ARG:LV < 60
+			PRINTL 술자의 Lv이 10 오를 때마다 성능이 강화된다
+		ENDIF
+		PRINTL 발동에 1턴의 준비를 필요로 한다 (MP는 준비할 때 소비한다)
+		PRINTL 
+		PRINTL 【"마도에 모여라 나의 동료마" READY】
+		
+	;発射準備まだ
+	ELSE
+		PRINTL 술자 개인의 동료마를 일제 소환하여 다양한 효과를 일으킨다
+		IF ARG == -1
+			;PRINTL ……と言いたいところだがレベルが低すぎてウェンディゴしか呼べない。全体氷結中ダメージ。
+		;ウェンディゴ単体
+		ELSEIF BASE:ARG:LV < 10
+			PRINTL 　적 전체에게 빙결 소 데미지
+			PRINTL 　＋적 전체의 명중 회피를 1단계 다운
+		;ガンダルヴァ追加
+		ELSEIF BASE:ARG:LV < 20
+			PRINTL 　적 전체에게 빙결 소 데미지
+			PRINTL 　＋적 전체의 명중 회피를 1단계 다운
+			PRINTL 　＋아군 전원의 공격력 1단계 업
+		;メルクリウス追加
+		ELSEIF BASE:ARG:LV < 30
+			PRINTL 　적 전체 『빙결·정신』 복합 중 데미지,
+			PRINTL 　＋적 전체에게 만능 상성으로 『마봉·동결·수면·혼란』 무작위 부여, 중확률
+			PRINTL 　＋적 전체에게 명중 회피를 1단계 다운
+			PRINTL 　＋아군 전원의 공격력 1단계 업
+		;攻撃力上昇のみ
+		ELSEIF BASE:ARG:LV < 40
+			PRINTL 　적 전체 『빙결·정신』 복합 2HIT 중 데미지
+			PRINTL 　＋적 전체에게 만능 상성으로 『마봉·동결·수면·혼란』 무작위 부여, 중확률
+			PRINTL 　＋적 전체에게 명중 회피를 1단계 다운
+			PRINTL 　＋아군 전원의 공격력 1단계 업
+		;ニギミタマ追加
+		ELSEIF BASE:ARG:LV < 50
+			PRINTL 　적 전체 『빙결·정신』 복합 2HIT 중 데미지
+			PRINTL 　＋적 전체에게 만능 상성으로 『마봉·동결·수면·혼란』 무작위 부여, 중확률
+			PRINTL 　＋적 전체에게 공격력 1단계 다운, 명중 회피를 1단계 다운
+			PRINTL 　＋아군 전체의 공격력 1단계 업
+		;攻撃力上昇のみ
+		ELSEIF BASE:ARG:LV < 60
+			PRINTL 　적 전체 『빙결·정신』 복합 3HIT 중 데미지
+			PRINTL 　＋적 전체에게 만능 상성으로 『마봉·동결·수면·혼란』 무작위 부여, 중확률
+			PRINTL 　＋적 전체에게 공격력 1단계 다운, 명중 회피를 1단계 다운
+			PRINTL 　＋아군 전체의 공격력 1단계 업
+		;攻撃力上昇のみ
+		ELSE
+			PRINTL 　적 전체 『빙결·정신』 복합 3HIT 대 데미지
+			PRINTL 　＋적 전체에게 만능 상성으로 『마봉·동결·수면·혼란』 무작위 부여, 중확률
+			PRINTL 　＋적 전체에게 공격력 1단계 다운, 명중 회피를 1단계 다운
+			PRINTL 　＋아군 전체의 공격력 1단계 업
+		ENDIF
+
+		;天井はLv60
+		IF BASE:ARG:LV < 60
+			PRINTL 술자의 Lv이 10 오를 때마다 성능이 강화된다
+		ENDIF
+		PRINTL 발동에 1턴의 준비를 필요로 한다 (MP는 준비할 때 소비한다)
+	ENDIF
+	
+ENDIF
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_魔都に集え我が仲魔,ARG
+RETURN 1

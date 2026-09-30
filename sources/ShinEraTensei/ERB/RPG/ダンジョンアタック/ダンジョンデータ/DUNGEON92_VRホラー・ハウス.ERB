@@ -1,0 +1,1795 @@
+;=======================================================================
+;ＶＲホラー・ハウス
+;ボス・怨霊エリカ
+;ダンジョンナンバー92　ＭＡＰ0~9
+;登場悪魔レベル21~25　ボスレベル31
+;フラグ
+;ダンジョンフラグ:92:0 ボス：０（撃破前）　１（ＣＦＬＡＧバグ修正前撃破）　２（ＣＦＬＡＧバグ修正後撃破）
+;ダンジョンフラグ:92:1 ダンジョン進行度：０（突入前）　１～３（受付）　４～６（記憶）　７（鏡）　８（忘音）
+;ダンジョンフラグ:92:2～12 宝箱
+;ダンジョンフラグ:92:13～15 夜の魔物　13ゴッギー　14ルゲイエ　15バグス
+;ダンジョンフラグ:92:16 全召喚時フラグ
+;ダンジョンフラグ:92:17 記憶の回廊ナレーションフラグ
+;=======================================================================
+
+;=======================================================================
+;攻略条件
+;=======================================================================
+@PREREQUISITE_DUNGEON_92
+;ＶＲ美術館のクリア
+SIF (ダンジョンフラグ:90:1 == 3 && ダンジョンフラグ:92:0 == 0) || ダンジョンフラグ:92:0 == 1 || FLAG:DEBUG
+	RETURN 1
+RETURN 0
+
+;=======================================================================
+;ダンジョン名
+;=======================================================================
+@GET_DUNGEON_NAME_92
+RESULTS = ＶＲホラー・ハウス
+
+
+;=======================================================================
+;フロア名表示
+;=======================================================================
+@FLOORNAME_92
+PRINT ＶＲホラー・ハウス
+SELECTCASE FLAG:現M
+	CASE 0
+		PRINTL Ｂ１Ｆ
+	CASE 1
+		PRINTL １Ｆ
+	CASE 2
+		PRINTL ２Ｆ
+	CASE 3
+		PRINTL ３Ｆ
+	CASE 4
+		PRINTL ４Ｆ
+	CASE 5
+		PRINTL ５Ｆ
+	CASE 6
+		PRINTL ６Ｆ
+	CASE 7
+		PRINTL 幼き思い出
+	CASE 8
+		PRINTL 追憶の風
+	CASE 9
+		PRINTL 過去への扉
+	CASEELSE
+		PRINTL
+ENDSELECT
+
+
+;=======================================================================
+;特殊タイル表示
+;=======================================================================
+@TILE_MARK_ID_92_0_19
+SETCOLOR 0x00ff00
+RESULTS = ｍ
+@TILE_MARK_ID_92_0_29
+SETCOLOR 0x00ff00
+RESULTS = ｍ
+
+@TILE_MARK_ID_92_1_9
+RESULTS = Ｔ
+
+@TILE_MARK_ID_92_7_39
+SETCOLOR 0x00ff00
+RESULTS = ｍ
+@TILE_MARK_ID_92_8_39
+SETCOLOR 0x00ff00
+RESULTS = ｍ
+@TILE_MARK_ID_92_9_39
+SETCOLOR 0x00ff00
+RESULTS = ｍ
+
+;=======================================================================
+;スタート地点入力
+;=======================================================================
+@START_DUNGEON_92,ARG
+FLAG:現M = 1
+FLAG:現X = 7
+FLAG:現Y = 15
+;CALL AUTOMAP
+
+;=======================================================================
+;スタート時イベント
+;=======================================================================
+@EVENT_DUNGEON_START_92
+IF ダンジョンフラグ:92:1 == 0
+	PRINTFORMW ＶＲ美術館での事件のしばらく後、組織から連絡があった。
+	PRINTFORMW 組織への背任行為につながってしまったのかと思ったがその連絡は想定とは違ったものだった。
+	PRINTFORMW なんでもネットを介せるある悪魔達を利用した計画があるらしく、パラダイムＸはその悪魔達の通行路でもあるらしい。
+	PRINTFORMW その悪魔達自体は意思がほぼ無いが稀に自我をもつ個体が発生してしまう。
+	PRINTFORMW その個体の一つがＶＲ美術館にいた悪魔であったのだ。
+	PRINTFORMW そういった個体はパラダイムＸ内部に異界を作り、人間の魂を取り込んでいく。
+	PRINTFORMW もし放置している状態が続けば他の悪魔達も自我を持ってしまう。
+	PRINTFORMW すなわち計画の遅れを意味し、下手を打てば計画の失敗につながるため速やかに対処する必要があるのだ。
+	PRINTFORMW そのため今後は今回実績を立てた%CALLNAME:MASTER%に同種の事件の対処を任せることが決定されたという連絡だった。
+	PRINTFORML 
+	PRINTFORMW その後、同種の自我の芽生えた悪魔に対する事件の対処を依頼された。
+	PRINTFORMW 何でもその個体は開発中であったＶＲホラー・ハウスに異界を発生させ、利用者の一人を取り込んだらしい。
+	PRINTFORMW %CALLNAME:MASTER%は組織が手配したハッカーの手を借りて、
+	PRINTFORMW プログラム内部で実体化するべく電脳空間の海へと身を躍らせた……
+	ダンジョンフラグ:92:1 = 1
+	ダンジョンフラグ:92:17 = 4
+	CALL DUNGEON_WORP,1,7,15
+
+ELSEIF ダンジョンフラグ:92:0 == 1
+	PRINTFORMW ＣＦＬＡＧバグの修正を行います……
+	IF CFLAG:(LOCAL:2):戦闘参加不可能 == 1
+		CFLAG:(LOCAL:2):戦闘参加不可能 = 0
+		PRINTFORMW 修正完了
+	ENDIF
+	ダンジョンフラグ:92:0 = 2
+	TIME = TIME-1
+	FLAG:脱出 = 1
+	RETURN 1
+ELSEIF ダンジョンフラグ:92:1 == 1
+	PRINTFORML 事件への対処はまだ完了していない。
+	PRINTFORMW 早急に解決しなければ、%CALLNAME:MASTER%の評判にも響くかもしれない……
+ELSE
+ENDIF
+
+
+;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@CAN_ENTER_92,ARG,ARG:1
+CALL CAN_ENTER,ARG,ARG:1
+RETURN RESULT
+
+;=======================================================================
+;フロアデータ
+;=======================================================================
+@MAKE_FLOOR_92
+SELECTCASE FLAG:現M
+	CASE 0
+	;Ｂ１階
+		FLAG:最大X = 19
+		FLAG:最大Y = 19
+		CALL MAKE_FLOOR_LINE, 0,"                   "
+		CALL MAKE_FLOOR_LINE, 1," 11111 11111 11111 "
+		CALL MAKE_FLOOR_LINE, 2," 2   2 2   2 2   2 "
+		CALL MAKE_FLOOR_LINE, 3," 4 9 1 4 6 1 4 9 1 "
+		CALL MAKE_FLOOR_LINE, 4,"   1     1     1   "
+		CALL MAKE_FLOOR_LINE, 5,"  111  11111  111  "
+		CALL MAKE_FLOOR_LINE, 6," 11 11 1   1 11 11 "
+		CALL MAKE_FLOOR_LINE, 7," 11111 1 9 1 11111 "
+		CALL MAKE_FLOOR_LINE, 8,"   1   11111   1   "
+		CALL MAKE_FLOOR_LINE, 9,"  111    2    111  "
+		CALL MAKE_FLOOR_LINE,10," 11119 1111111111  "
+		CALL MAKE_FLOOR_LINE,11," 11 11111111    1  "
+		CALL MAKE_FLOOR_LINE,12," 11111111111 1  11 "
+		CALL MAKE_FLOOR_LINE,13," 111111      2   1 "
+		CALL MAKE_FLOOR_LINE,14," 111111  1   11111 "
+		CALL MAKE_FLOOR_LINE,15," 111111  2       1 "
+		CALL MAKE_FLOOR_LINE,16," 2 2 2   1111111 1 "
+		CALL MAKE_FLOOR_LINE,17," 1 1 1  11     111 "
+		CALL MAKE_FLOOR_LINE,18,"                   "
+		CALL SET_TILE,9, 14, ダンジョンフラグ:92:8 ,0, 73
+		CALL SET_TILE,13,12, ダンジョンフラグ:92:9 ,0, 83
+		DA:10:3 += 10
+
+		DA:3:3 += 10
+		DA:5:10 += 10
+		DA:15:3 += 10
+		DA:9:3 += 10
+		DA:9:7 += 20
+
+		DA:1:3 += 70
+		DA:7:3 += 70
+		DA:13:3 += 70
+
+		;イベントの設置
+		CALL SET_TILE,5,1,ダンジョンフラグ:92:17,2,44
+		CALL SET_TILE,11,1,ダンジョンフラグ:92:17,2,44
+		CALL SET_TILE,17,1,ダンジョンフラグ:92:17,2,44
+
+	CASE 1
+	;１階
+		FLAG:最大X = 15
+		FLAG:最大Y = 17
+		CALL MAKE_FLOOR_LINE, 0,"               "
+		CALL MAKE_FLOOR_LINE, 1,"       6       "
+		CALL MAKE_FLOOR_LINE, 2,"       2       "
+		CALL MAKE_FLOOR_LINE, 3,"     11111     "
+		CALL MAKE_FLOOR_LINE, 4," 11111   11111 "
+		CALL MAKE_FLOOR_LINE, 5," 1   1 4 1   1 "
+		CALL MAKE_FLOOR_LINE, 6," 1 4 1 2 1 4 1 "
+		CALL MAKE_FLOOR_LINE, 7," 1 2 11111 2 1 "
+		CALL MAKE_FLOOR_LINE, 8," 1111111111111 "
+		CALL MAKE_FLOOR_LINE, 9," 2   2 2 2   2 "
+		CALL MAKE_FLOOR_LINE,10," 111 9 1 7 111 "
+		CALL MAKE_FLOOR_LINE,11,"   1   2   1   "
+		CALL MAKE_FLOOR_LINE,12," 1 1   1   1 1 "
+		CALL MAKE_FLOOR_LINE,13," 2 1   2   1 2 "
+		CALL MAKE_FLOOR_LINE,14," 1 1   1   1 1 "
+		CALL MAKE_FLOOR_LINE,15," 111   1   111 "
+		CALL MAKE_FLOOR_LINE,16,"       8       "
+		CALL SET_TILE,13,12, ダンジョンフラグ:92:2 ,0, 13
+		DA:9:10 += 10
+		DA:7:1 += 20
+		DA:7:5 += 20
+		DA:3:6 += 20
+		DA:11:6 += 20
+
+		CALL SET_TILE,7,14,ダンジョンフラグ:92:1,1,14
+		CALL SET_TILE,7,12,ダンジョンフラグ:92:1,2,14
+		CALL SET_TILE,7,10,ダンジョンフラグ:92:1,3,14
+		CALL SET_TILE,7,8,ダンジョンフラグ:92:17,4,44
+
+	CASE 2
+	;２階
+		FLAG:最大X = 11
+		FLAG:最大Y = 11
+		CALL MAKE_FLOOR_LINE, 0,"           "
+		CALL MAKE_FLOOR_LINE, 1," 1 1   121 "
+		CALL MAKE_FLOOR_LINE, 2," 2 1   1   "
+		CALL MAKE_FLOOR_LINE, 3," 111111111 "
+		CALL MAKE_FLOOR_LINE, 4,"   1 2 1   "
+		CALL MAKE_FLOOR_LINE, 5,"   1 7 1   "
+		CALL MAKE_FLOOR_LINE, 6,"   1   1   "
+		CALL MAKE_FLOOR_LINE, 7," 111111111 "
+		CALL MAKE_FLOOR_LINE, 8,"   1   1 2 "
+		CALL MAKE_FLOOR_LINE, 9," 621   1 1 "
+		CALL MAKE_FLOOR_LINE,10,"           "
+		CALL SET_TILE,1, 1, ダンジョンフラグ:92:3 ,0, 23
+		DA:5:5 += 20
+		DA:1:9 += 30
+
+	CASE 3
+	;３階
+		FLAG:最大X = 11
+		FLAG:最大Y = 11
+		CALL MAKE_FLOOR_LINE, 0,"           "
+		CALL MAKE_FLOOR_LINE, 1," 1 1   126 "
+		CALL MAKE_FLOOR_LINE, 2," 2 1   1   "
+		CALL MAKE_FLOOR_LINE, 3," 111111111 "
+		CALL MAKE_FLOOR_LINE, 4,"   1 2 1   "
+		CALL MAKE_FLOOR_LINE, 5,"   1 1 1   "
+		CALL MAKE_FLOOR_LINE, 6,"   1   1   "
+		CALL MAKE_FLOOR_LINE, 7," 111111111 "
+		CALL MAKE_FLOOR_LINE, 8,"   1   1 2 "
+		CALL MAKE_FLOOR_LINE, 9," 721   1 1 "
+		CALL MAKE_FLOOR_LINE,10,"           "
+		CALL SET_TILE,5, 5, ダンジョンフラグ:92:4 ,0, 33
+		DA:1:9 += 30
+		DA:9:1 += 40
+		
+
+	CASE 4
+	;４階
+		FLAG:最大X = 11
+		FLAG:最大Y = 11
+		CALL MAKE_FLOOR_LINE, 0,"           "
+		CALL MAKE_FLOOR_LINE, 1," 1 1   127 "
+		CALL MAKE_FLOOR_LINE, 2," 2 1   1   "
+		CALL MAKE_FLOOR_LINE, 3," 111111111 "
+		CALL MAKE_FLOOR_LINE, 4,"   1 2 1   "
+		CALL MAKE_FLOOR_LINE, 5,"   1 1 1   "
+		CALL MAKE_FLOOR_LINE, 6,"   1   1   "
+		CALL MAKE_FLOOR_LINE, 7," 111111111 "
+		CALL MAKE_FLOOR_LINE, 8,"   1   1 2 "
+		CALL MAKE_FLOOR_LINE, 9," 621   1 1 "
+		CALL MAKE_FLOOR_LINE,10,"           "
+		CALL SET_TILE,9, 9, ダンジョンフラグ:92:5 ,0, 43
+		DA:9:1 += 40
+		DA:1:9 += 50
+
+	CASE 5
+	;５階
+		FLAG:最大X = 11 
+		FLAG:最大Y = 11 
+		CALL MAKE_FLOOR_LINE, 0,"           "
+		CALL MAKE_FLOOR_LINE, 1," 1 1   121 "
+		CALL MAKE_FLOOR_LINE, 2," 2 1   1   "
+		CALL MAKE_FLOOR_LINE, 3," 111111111 "
+		CALL MAKE_FLOOR_LINE, 4,"   1 2 1   "
+		CALL MAKE_FLOOR_LINE, 5,"   1 6 1   "
+		CALL MAKE_FLOOR_LINE, 6,"   1   1   "
+		CALL MAKE_FLOOR_LINE, 7," 111111111 "
+		CALL MAKE_FLOOR_LINE, 8,"   1   1 2 "
+		CALL MAKE_FLOOR_LINE, 9," 721   1 1 "
+		CALL MAKE_FLOOR_LINE,10,"           "
+		CALL SET_TILE,9, 1, ダンジョンフラグ:92:6 ,0, 53
+		DA:1:9 += 50
+		DA:5:5 += 60
+
+	CASE 6
+	;６階
+		FLAG:最大X = 15
+		FLAG:最大Y = 17
+		CALL MAKE_FLOOR_LINE, 0,"               "
+		CALL MAKE_FLOOR_LINE, 1,"  1    4    1  "
+		CALL MAKE_FLOOR_LINE, 2,"  2    2    2  "
+		CALL MAKE_FLOOR_LINE, 3," 111  111  111 "
+		CALL MAKE_FLOOR_LINE, 4," 111 11111 111 "
+		CALL MAKE_FLOOR_LINE, 5,"  2  11111  2  "
+		CALL MAKE_FLOOR_LINE, 6,"  1  11111  1  "
+		CALL MAKE_FLOOR_LINE, 7,"  11211111211  "
+		CALL MAKE_FLOOR_LINE, 8,"  1  11111  1  "
+		CALL MAKE_FLOOR_LINE, 9,"  1   111   1  "
+		CALL MAKE_FLOOR_LINE,10,"  2         2  "
+		CALL MAKE_FLOOR_LINE,11,"  1    4    1  "
+		CALL MAKE_FLOOR_LINE,12," 1111211121111 "
+		CALL MAKE_FLOOR_LINE,13," 111  111  111 "
+		CALL MAKE_FLOOR_LINE,14,"  2    2    2  "
+		CALL MAKE_FLOOR_LINE,15,"  1    7    1  "
+		CALL MAKE_FLOOR_LINE,16,"               "
+		CALL SET_TILE,2, 1, ダンジョンフラグ:92:7 ,0, 63
+		DA:7:15 += 60
+		DA:7:11 += 80
+		DA:7:1 += 90
+		
+		CALL SET_TILE,7,11,ダンジョンフラグ:92:1,8,11
+		CALL SET_TILE,7,10,ダンジョンフラグ:92:1,8,11
+
+	CASE 7
+	;幼き思い出
+		FLAG:最大X = 20
+		FLAG:最大Y = 20
+		CALL MAKE_FLOOR_LINE, 0,"                    "
+		CALL MAKE_FLOOR_LINE, 1," 11111 4211111111 4 "
+		CALL MAKE_FLOOR_LINE, 2," 1  2      1    1 2 "
+		CALL MAKE_FLOOR_LINE, 3," 1 111     1    111 "
+		CALL MAKE_FLOOR_LINE, 4," 1   1111111121   1 "
+		CALL MAKE_FLOOR_LINE, 5," 1 4 1     1  111 1 "
+		CALL MAKE_FLOOR_LINE, 6," 1 2 111 1 11 1 1 1 "
+		CALL MAKE_FLOOR_LINE, 7," 1 911   2  1 1 1 1 "
+		CALL MAKE_FLOOR_LINE, 8," 1   1 11111  1 1 1 "
+		CALL MAKE_FLOOR_LINE, 9," 1 111 1   1  1 1 1 "
+		CALL MAKE_FLOOR_LINE,10," 1     1 4 1  11111 "
+		CALL MAKE_FLOOR_LINE,11," 1121  1 2 1 11 2 1 "
+		CALL MAKE_FLOOR_LINE,12," 1  1  11911 1  1 1 "
+		CALL MAKE_FLOOR_LINE,13,"    1        1    1 "
+		CALL MAKE_FLOOR_LINE,14," 1211  4211111111 1 "
+		CALL MAKE_FLOOR_LINE,15,"    2        2  1 1 "
+		CALL MAKE_FLOOR_LINE,16," 1111  11111 4  1 1 "
+		CALL MAKE_FLOOR_LINE,17," 2 11  1 2 1    1 2 "
+		CALL MAKE_FLOOR_LINE,18," 4 11111 4 111111 1 "
+		CALL MAKE_FLOOR_LINE,19,"                    "
+		CALL SET_TILE,18, 18, ダンジョンフラグ:92:10 ,0, 93
+		DA:3:7 += 30
+		DA:9:12 += 30
+		DA:9:18 += 30
+		DA:9:10 += 10
+		DA:1:18 += 50
+		DA:7:14 += 50
+		DA:13:16 += 50
+		DA:7:1 += 50
+		DA:18:1 += 50
+		DA:3:5 += 60
+
+		;イベントの設置
+		CALL SET_TILE,9,16,ダンジョンフラグ:92:17,0,44
+		CALL SET_TILE,5,4,ダンジョンフラグ:92:17,1,44
+
+	CASE 8
+	;追憶の風
+		FLAG:最大X = 20
+		FLAG:最大Y = 20
+		CALL MAKE_FLOOR_LINE, 0,"                    "
+		CALL MAKE_FLOOR_LINE, 1," 1111111   111 11 4 "
+		CALL MAKE_FLOOR_LINE, 2," 1   1 1 4 1 1  1 2 "
+		CALL MAKE_FLOOR_LINE, 3," 1 4 1 1 2   1  111 "
+		CALL MAKE_FLOOR_LINE, 4," 1 2 1 1111111    1 "
+		CALL MAKE_FLOOR_LINE, 5," 11911  1   2  11 1 "
+		CALL MAKE_FLOOR_LINE, 6,"        1   1  1  1 "
+		CALL MAKE_FLOOR_LINE, 7," 121 1    121  1121 "
+		CALL MAKE_FLOOR_LINE, 8," 1   2    1 1  1  2 "
+		CALL MAKE_FLOOR_LINE, 9," 1 11111  1 1  1  1 "
+		CALL MAKE_FLOOR_LINE,10," 1 1   1  111111  1 "
+		CALL MAKE_FLOOR_LINE,11," 1 1 4 1     2 1111 "
+		CALL MAKE_FLOOR_LINE,12," 1 1 2 1  4  1    1 "
+		CALL MAKE_FLOOR_LINE,13," 1 11911  2       1 "
+		CALL MAKE_FLOOR_LINE,14," 1       11111111 1 "
+		CALL MAKE_FLOOR_LINE,15," 111   111    2 1 2 "
+		CALL MAKE_FLOOR_LINE,16," 1 1 1211111  4 1 1 "
+		CALL MAKE_FLOOR_LINE,17," 2 1   1 2 1    1 1 "
+		CALL MAKE_FLOOR_LINE,18," 4 11121 4 11111121 "
+		CALL MAKE_FLOOR_LINE,19,"                    "
+		CALL SET_TILE,12, 12, ダンジョンフラグ:92:11 ,0, 103
+		DA:3:5 += 30
+		DA:5:13 += 30
+		DA:9:18 += 30
+		DA:5:11 += 10
+		DA:1:18 += 50
+		DA:9:2 += 50
+		DA:10:12 += 50
+		DA:14:16 += 50
+		DA:18:1 += 50
+		DA:3:3 += 60
+
+		;イベントの設置
+		CALL SET_TILE,9,16,ダンジョンフラグ:92:17,0,44
+		CALL SET_TILE,11,4,ダンジョンフラグ:92:17,1,44
+
+	CASE 9
+	;過去への扉
+		FLAG:最大X = 20
+		FLAG:最大Y = 20
+		CALL MAKE_FLOOR_LINE, 0,"                    "
+		CALL MAKE_FLOOR_LINE, 1," 111 112111211111 4 "
+		CALL MAKE_FLOOR_LINE, 2," 1 2 1   1  1   1 2 "
+		CALL MAKE_FLOOR_LINE, 3," 1 1 124 1    1 111 "
+		CALL MAKE_FLOOR_LINE, 4," 1   1   1    2   1 "
+		CALL MAKE_FLOOR_LINE, 5," 1111111 1  11111 1 "
+		CALL MAKE_FLOOR_LINE, 6,"       1 1  1   1 1 "
+		CALL MAKE_FLOOR_LINE, 7," 42911 1 1  1 4 1 2 "
+		CALL MAKE_FLOOR_LINE, 8,"     1 1 1  1 2 1 1 "
+		CALL MAKE_FLOOR_LINE, 9," 11111 2 1  11911 1 "
+		CALL MAKE_FLOOR_LINE,10," 2     1 1        1 "
+		CALL MAKE_FLOOR_LINE,11," 111   1 1 1      1 "
+		CALL MAKE_FLOOR_LINE,12,"   1 111 1 11111111 "
+		CALL MAKE_FLOOR_LINE,13,"   1 1   1 1      1 "
+		CALL MAKE_FLOOR_LINE,14," 1112124 1 11111  1 "
+		CALL MAKE_FLOOR_LINE,15," 1   1   1   2 1  2 "
+		CALL MAKE_FLOOR_LINE,16," 1 121 11111 4 1  1 "
+		CALL MAKE_FLOOR_LINE,17," 2   1 1 2 1   1  2 "
+		CALL MAKE_FLOOR_LINE,18," 4 121 1 4 11111  1 "
+		CALL MAKE_FLOOR_LINE,19,"                    "
+		CALL SET_TILE,11, 11, ダンジョンフラグ:92:12 ,0, 113
+		DA:3:7 += 30
+		DA:14:9 += 30
+		DA:9:18 += 30
+		DA:14:7 += 10
+		DA:1:18 += 50
+		DA:7:3 += 50
+		DA:7:14 += 50
+		DA:13:16 += 50
+		DA:18:1 += 50
+		DA:1:7 += 60
+
+
+		;イベントの設置
+		CALL SET_TILE,9,16,ダンジョンフラグ:92:17,0,44
+		CALL SET_TILE,5,12,ダンジョンフラグ:92:17,1,44
+
+	CASEELSE
+ENDSELECT
+
+;=======================================================================
+;[5]調べる　実行時のイベント
+;=======================================================================
+@EVENT_CHECK_DUNGEON_92
+
+;==========
+;出口の処理
+;==========
+IF DA:(FLAG:現X):(FLAG:現Y) == 8
+	CALL DUNGEON_EXIT
+	RETURN 1
+;========
+;宝の処理
+;========
+;% 10は10で割ったあまり、つまり下一桁がでてきます
+;そして、下一桁はタイルの種類を表す
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) % 10 == 3
+	CALL TREASURE_1
+	RETURN RESULT
+;=======
+;階段
+;=======
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) % 10 == 6
+	CALL UPSTAIRS_1
+	RETURN RESULT
+
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) % 10 == 7
+	CALL DOWNSTAIRS_1
+	RETURN RESULT
+
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) % 10 == 9
+	SELECTCASE DA:(FLAG:現X):(FLAG:現Y) / 10
+		CASE 1
+			PRINTW ＞石版状の墓がある……　どうしますか？
+			PRINTL [0]話しかける
+			PRINTL [1]けってみる
+			PRINTL [2]何もしない
+			
+			$INPUT_LOOP1
+			INPUT
+
+			IF RESULT == 0
+				PRINTW 墓が語りかけてきた。
+				PRINTL 『おへやにライトは２つあるある。１つはあっちで、１つはそっち。
+				PRINTW 　くわしいはなしは、じゅうじかで……』
+			ELSEIF RESULT == 1
+				PRINTW 墓から巨大な石の脚が生えて蹴り返された！
+				CALL DUNGEON_TRAP_HP,20
+			ELSEIF RESULT == 2
+				PRINTFORMW %CALLNAME:MASTER%はそっとその場から離れた。
+			ELSE
+				GOTO INPUT_LOOP1
+			ENDIF
+
+		CASE 2
+			PRINTW ＞十字架がある……　どうしますか？
+			PRINTL [0]話しかける
+			PRINTL [1]石を投げる
+			PRINTL [2]何もしない
+			
+			$INPUT_LOOP2
+			INPUT
+
+			IF RESULT == 0
+				PRINTW 十字架が語りかけてきた。
+				PRINTL 『「記憶の部屋」の天井にはライトが２つある。
+				PRINTL 　１つは魂の眠る所……
+				PRINTW 　そしてもう１つは、そこへ誘う所……』
+			ELSEIF RESULT == 1
+				PRINTW 十字架の後ろから石つぶてが雨あられと飛んできた！
+				CALL DUNGEON_TRAP_HP,20
+			ELSEIF RESULT == 2
+				PRINTFORMW %CALLNAME:MASTER%はそっとその場から離れた。
+			ELSE
+				GOTO INPUT_LOOP2
+			ENDIF
+
+		CASE 3
+			PRINTW 天井のライトがこの一角を照らしている
+		CASEELSE
+			CALL DUNGEON_TERMINAL
+			RETURN 1
+	ENDSELECT
+ELSE
+	PRINTW 何も無いようだ
+	RETURN 0
+ENDIF
+
+;=======================================================================
+;タイル進入時のイベント
+;=======================================================================
+@EVENT_ENTER_DUNGEON_92,ARG
+;ARG = 進入時の向き　0の場合ワープなど
+;==========
+;出口の処理
+;==========
+IF DA:(FLAG:現X):(FLAG:現Y) % 10 == 8
+	CALL DUNGEON_EXIT
+	RETURN 1
+;========
+;宝の処理
+;========
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) % 10 == 3
+	CALL TREASURE_92
+	RETURN RESULT
+;=======
+;階段
+;=======
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) % 10 == 6
+	CALL UPSTAIRS_92
+	RETURN RESULT
+
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) % 10 == 7
+	CALL DOWNSTAIRS_92
+	RETURN RESULT
+
+;==========
+;扉の処理
+;==========
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) % 10 == 2
+	CALL DUNGEON_DOOR,ARG
+	RETURN 1
+
+
+;========================
+;イベント
+;========================
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) % 10 == 4
+	SELECTCASE DA:(FLAG:現X):(FLAG:現Y) /10
+		CASE 1
+			IF ダンジョンフラグ:92:1 == 1
+				PRINTL 黒いスーツを着て眼鏡をかけている老人が話しかけてきた。
+				PRINTW ネームプレートには「受付」としか書かれていない。
+				PRINTL 受付
+				PRINTL 「ヴァーチャル・ホラーハウスへようこそ……
+				PRINTW 　貴方も、人の心の暗闇を除きに来たのですかな……？」
+				PRINTL 「誰の心の中にもある、忘れられた記憶……
+				PRINTW 　しかし、時としてそんな記憶には、魔が憑くものです」
+				PRINTL 「魔に憑かれた記憶は、心の影で大きく育ち、やがて……
+				PRINTW 　「悪魔」を生むのです」
+				PRINTL 「そんなバカな、と笑っておられるかな？　いやいや、これがどうして。
+				PRINTW 　本来、魔とは心の中に住むものなのです」
+				PRINTL 「その証拠にそう、この館にも……そんな悪魔が出てきてしまいました。
+				PRINTW 　恐ろしいことです……」
+				ダンジョンフラグ:92:1 = 2
+				DA:7:14 = 1
+				CALL DUNGEON_WORP,1,7,13
+			ELSEIF ダンジョンフラグ:92:1 == 2
+				PRINTL 黒いスーツを着て眼鏡をかけている老人が話しかけてきた。
+				PRINTW ネームプレートには「受付の兄」としか書かれていない。
+				PRINTL 受付の兄
+				PRINTL 「今回、悪魔を生んでしまったのは、ある少年です。
+				PRINTW 　まあ、仮にＡ君としておきましょう」
+				PRINTL 「Ａ君から生まれた悪魔は、たくみに姿を変え、この館に潜んでおりましたが、
+				PRINTW 　ついに、彼を捕らえてしまいました」
+				PRINTL 「ああ、哀れなＡ君は、何もできずにこのまま、
+				PRINTW 　悪魔に魂を奪われてしまうのでしょうか？」
+				PRINTW 「それでは、Ａ君の記憶の世界へ」
+				PRINTL 「……いつまでもＡ君と呼んでいるのも、味気ないですね。
+				PRINTW 　では、仮に、彼の名前を…………「シンゴ」君としておきましょうか」
+				PRINTW 「さあ、中へどうぞ……」
+				ダンジョンフラグ:92:1 = 3
+				DA:7:12 = 1
+				CALL DUNGEON_WORP,1,7,11
+			ELSEIF ダンジョンフラグ:92:1 == 3
+				PRINTL 黒いスーツを着て眼鏡をかけている老人が話しかけてきた。
+				PRINTW ネームプレートには「受付の父」としか書かれていない。
+;				PRINTW ……どんな家族だ。
+				PRINTL 受付の父
+				PRINTL 「もしも貴方が、かなりのお人好しで、
+				PRINTW 　シンゴ君を助けたいなどと思っておられるのなら……」
+				PRINTL 「この館にある「記憶の部屋」をお探しなさい。
+				PRINTW 　私に教えられるのは１つのヒントだけです……」
+				PRINTL 「「記憶に宿る音」。
+				PRINTW 　いいですか、音をお探しなさい。」
+				ダンジョンフラグ:92:1 = 4
+				DA:7:10 = 1
+				CALL DUNGEON_WORP,1,7,9
+			ELSEIF ダンジョンフラグ:92:1 == 4
+				PRINTW 「思い出の部屋」と書かれている扉を開いて部屋に入った時、視界が暗転した。
+				PRINTFORMW 光が戻った時には今までとは様相が違う部屋に居ることに%CALLNAME:MASTER%は気づいた。
+				PRINTW 少し暖かい感じがする部屋の中に小さなベッドが二つある。
+				PRINTW そのベッドの上にパジャマを着た気弱そうな男の子が座っていた。
+				PRINTL 男の子
+				PRINTW 「おねえちゃん……眠れないよ……」
+				PRINTFORMW 男の子はそうつぶやいた。その時に%CALLNAME:MASTER%に気がついたのだろうか、顔をこちらに向けてきた。
+				PRINTL 「あれ……だれ？
+				PRINTW 　こんな夜なのに……オバケ？」
+				PRINTW この男の子が先ほど聞こえてきた声に出てたシンゴだろうか。
+				PRINTFORML %CALLNAME:MASTER%はつい訊ねていた。
+				PRINTW 「うん、ボクの名前はシンゴって言うんだけど……」
+				PRINTFORML 「お\@ TALENT:MASTER:オトコ ? にぃ # ねぇ \@ちゃんたちはさぁ、いったい何しにきたの？
+				PRINTW 　わるい人じゃないよね？」
+				PRINTL 男の子はこちらを警戒のまなざしで見ている……
+				PRINTW どうしますか？
+				PRINTL [0]連れて行く
+				PRINTL [1]様子を見る
+
+				$INPUT_LOOP3
+				INPUT
+
+				IF RESULT == 0
+					ダンジョンフラグ:92:13 = 1
+					PRINTL 男の子
+					PRINTL 「えっ？
+					PRINTL 　ボクを連れて行くの？
+					PRINTW 　いやだよ、ボク行きたくないよ！」
+					PRINTFORML %CALLNAME:MASTER%が無理やり連れ出そうとして手を掴むと男の子は涙目になって嫌がった。
+					PRINTFORML 「お\@ TALENT:MASTER:オトコ ? にぃ # ねぇ \@ちゃんたちは、ボクを夜だけの国につれて行くんだ！
+					PRINTW 　あのオバケみたいに！」
+					PRINTL 「いやだよ、コワいよう！
+					PRINTL 　助けて、だれか……
+					PRINTW 　おねえちゃん、助けてぇー！！」
+					PRINTFORMW そう男の子が叫んだ瞬間、まるで見えない手に掃われたかのように%CALLNAME:MASTER%は男の子から引き離された。
+					PRINTW いつのまにかワンピースを着て、赤いランドセルを背負ったかわいらしい女の子がこちらに背を向けて立っている。
+					PRINTL 女の子
+					PRINTL 「どうしたのシンゴ。
+					PRINTW 　大きな声だしちゃダメじゃない」
+					PRINTL 「いい子にしてないと、大毛虫のゴッギーがやってきて
+					PRINTW 　あんたの首を食べちゃうわよ」
+					PRINTW そう女の子が語りかけると男の子は静かになった。
+					PRINTL 「さあ、しずかにねてなさい。
+					PRINTL 　シンゴはお姉ちゃんが守ってあげる。
+					PRINTW 　だれにもあなたを渡さないから……」
+				ELSEIF RESULT == 1
+					PRINTL 男の子
+					PRINTFORML 「ふーん、お\@ TALENT:MASTER:オトコ ? にぃ # ねぇ \@ちゃんたち悪い人じゃないみたいだね。
+					PRINTW 　よかった」
+					PRINTW こちらが何もしなさそうだと分かると、男の子は安堵したようだ。
+					PRINTW そして興味津々と言った様子でこちらに話しかけてきた
+					PRINTFORML 「そうだ、お\@ TALENT:MASTER:オトコ ? にぃ # ねぇ \@ちゃんたち何かお話してよ。おもしろいお話。
+					PRINTL 　あっ、コワイ話はイヤだよ。
+					PRINTW 　ぼく、トイレに行けなくなっちゃう」
+					PRINTFORMW そういわれて%CALLNAME:MASTER%がどうするか考えた時、不意に部屋の扉が開いた。
+					PRINTW そこからワンピースを着て、赤いランドセルを背負ったかわいらしい女の子が出てくる。
+					PRINTL 女の子
+					PRINTL 「どうしたの、シンゴ？
+					PRINTW 　早くねないと駄目でしょ。お母さんにおこられるわよ。」
+					PRINTFORMW 言った直後にこちらのことに気がついたのか女の子はいぶかしげに%CALLNAME:MASTER%を見つめてきた。
+					PRINTL 「あなたたち誰？　何しに来たの？
+					PRINTL 　ダメだよシンゴ。知らない人たちと話しちゃ。
+					PRINTW 　さあ、行こう……」
+				ELSE
+					GOTO INPUT_LOOP3
+				ENDIF
+				PRINTFORMW その瞬間%CALLNAME:MASTER%の視界が暗転し、光が戻った時には記憶の部屋の入り口前へと戻されていた。
+				ダンジョンフラグ:92:1 = 5
+				ダンジョンフラグ:92:17 = 0
+				CALL DUNGEON_WORP,1,7,8
+				
+			ELSEIF ダンジョンフラグ:92:1 == 5
+				PRINTW 「追憶の部屋」と書かれている扉を開いて部屋に入った時、視界が暗転した。
+				PRINTFORMW 光が戻った時にはまた様相が違う部屋に居ることに%CALLNAME:MASTER%は気づいた。
+				PRINTW 床にはほこりが少しかぶっていて低めの天井には窓が付いている。どうやらどこかの屋根裏らしい。
+				PRINTL 男の子
+				PRINTFORMW 「あー！お\@ TALENT:MASTER:オトコ ? にぃ # ねぇ \@ちゃんたち、また来たの？」
+				PRINTW 横からそう大きな声が聞こえてきた。振り向くとと先程の男の子が驚いた表情でこちらを見ている。
+				PRINTL 「ダメだよ、かってにここに入っちゃ。
+				PRINTW 　ここはボクとおねえちゃんのヒミツキチなんだから。」
+				PRINTW そういったあと男の子は何かに気がついたように怯え始めた。
+				PRINTW 「……もしかしてボクをつれてくの？　どこに？」
+				PRINTL 「イヤだよ。
+				PRINTL 　ボクここから出たくないよ……」
+				PRINTW 男の子は怯えた表情でこちらを見ている……
+				PRINTL どうしますか？
+				PRINTL [0]連れて行く
+				PRINTL [1]様子を見る
+
+				$INPUT_LOOP4
+				INPUT
+
+				IF RESULT == 0
+					ダンジョンフラグ:92:14 = 1
+					PRINTL 男の子
+					PRINTL 「そうなんだ！
+					PRINTFORML お\@ TALENT:MASTER:オトコ ? にぃ # ねぇ \@ちゃんたちは悪い人なんだ！
+					PRINTW 　ボクをつれてくなんて！」
+					PRINTFORMW %CALLNAME:MASTER%が無理やり連れ出そうとして手を掴むと男の子は涙目になって嫌がった。
+					PRINTL 「やだよ、ボク行きたくないよ！
+					PRINTW 　おねえちゃん、助けてぇ！」
+					PRINTFORMW そう男の子が叫んだ瞬間、まるで見えない手に弾き飛ばされたかのように%CALLNAME:MASTER%は男の子から引き離された。
+					PRINTW みると、またあの時の女の子が男の子のそばに立っている。
+					PRINTL 女の子
+					PRINTL 「何よ、シンゴ！
+					PRINTW 　またさわいでんの？」
+					PRINTL 「おとなしくしてないと、小人のルゲイエがやってきて、
+					PRINTW 　あなたの目を見えなくしちゃうわよ！」
+					PRINTW そう女の子が叱りつけると男の子はおとなしくなった。
+					PRINTL 「あなたたち誰？
+					PRINTW 　もしかして、シンゴを連れて行くつもりなの？」
+					PRINTW 女の子はこちらを一瞥したあと、男の子にやさしく語りかけた。
+					PRINTL 「だいじょうぶよ、シンゴ。
+					PRINTW 　お姉ちゃんが、この人たちからあなたを逃がしてあげるから……」
+					
+				ELSEIF RESULT == 1
+					PRINTL 男の子
+					PRINTFORMW 「ああ良かった。お\@ TALENT:MASTER:オトコ ? にぃ # ねぇ \@ちゃんたち何もしないよね」
+					PRINTW こちらが何もしなさそうだと分かると、男の子は安堵したようだ。
+					PRINTW そして脇にあった箱を漁りながら楽しそうにこちらに話しかけてきた。
+					PRINTL 「だったらこれ見せたげる。
+					PRINTW 　えっと、お父さんに買ってもらったモデルガンなんだ」
+					PRINTL 「あっ、タマも出るんだよ。
+					PRINTW 　ええっと、どこにやったっけ……」
+					PRINTFORMW そう探している最中音も無く%CALLNAME:MASTER%の横の床下が開き、そこから先程の女の子が出てきた。
+					PRINTL 女の子
+					PRINTL 「シンゴー。
+					PRINTW 　あっ、いたいた。」
+					PRINTFORMW そう言った時に気がついたのか、女の子は%CALLNAME:MASTER%をいぶかしげに見つめてきた。
+					PRINTW 「あれ、この人たちまた来たんだ。　ふーん。」
+					PRINTL 「ダメだよシンゴ。知らない人たちをここに入れちゃ。
+					PRINTW 　さあ、行こう……」
+				ELSE
+					GOTO INPUT_LOOP4
+				ENDIF
+				PRINTFORMW その瞬間%CALLNAME:MASTER%の視界が暗転し、光が戻った時には記憶の部屋の入り口前へと戻されていた。
+				ダンジョンフラグ:92:1 = 6
+				ダンジョンフラグ:92:17 = 0
+				CALL DUNGEON_WORP,1,7,8
+
+			ELSEIF ダンジョンフラグ:92:1 == 6
+				PRINTW 「過去の部屋」と書かれている扉を開いて部屋に入った時、視界が暗転した。
+				PRINTFORMW 光が戻った時、今度は少し広めの廊下にいることに%CALLNAME:MASTER%は気づいた。
+				PRINTL 男の子
+				PRINTL 「ウ…グス……グス……ウウ…
+				PRINTL 　こわれちゃった……こわれちゃったよ……
+				PRINTW 　お人形がこわれちゃ……ウウ……」
+				PRINTW 廊下の端にある階段の途中ではあの男の子が血を流し続けている人形を抑えながら泣いている。
+				PRINTL 「どうしよう……　ねえ、どうしよう……
+				PRINTL 　血がとまらない……おさえてもどんどん出てきちゃう……
+				PRINTW 　とまらないよぉ……」
+				PRINTW 男の子は人形の血を流している部分を必死に抑えるが止まる様子がなく、血は階段を伝って流れ落ちている。
+				PRINTL 「死んじゃう……
+				PRINTL 　お人形が死んじゃう……
+				PRINTW 　ぼくのせいで……」
+				PRINTW 男の子は泣き続け人形の血は止まらない。
+				PRINTW このままほおっておくのは危険な状態だ。
+				PRINTL どうしますか？
+				PRINTL [0]捕まえる
+				PRINTL [1]話しかける
+
+				$INPUT_LOOP5
+				INPUT
+
+				IF RESULT == 0
+					ダンジョンフラグ:92:15 = 1
+					PRINTFORMW %CALLNAME:MASTER%が強く引っ張り上げても反応が薄い。
+					PRINTW 心ここにあらずの状態で男の子は泣き続けてる。
+					PRINTL 男の子
+					PRINTL 「……きっとボクは人ごろしのつみでつかまっちゃうんだ
+					PRINTW 　そしてずっと一人ぼっちで……」
+					PRINTL 「イヤだ、そんなのイヤだよ……
+					PRINTW 　うっ、うわぁーん……」
+					PRINTFORMW 男の子が更に涙を流した瞬間、%CALLNAME:MASTER%は強い力で吹き飛ばされた！
+					PRINTL 女の子の声
+					PRINTW 「何を泣いているの、シンゴ？」
+					PRINTL 「そんなに泣いてばかりだと、オバケのバグスがやってきて、
+					PRINTW 　あなたを連れてくわよ」
+					PRINTW 今までとは違いあの女の子の姿は見えない、だが声だけははっきりと響いている！
+					PRINTL 男の子
+					PRINTL 「うう、うう……
+					PRINTL 　ゴメンね、おねえちゃん。
+					PRINTW 　ボクおねえちゃんのお人形……」
+					PRINTW そう男の子が答えた時、不意に男の子の動きが止まる。
+					PRINTW その顔は更なる絶望の事実に気がついたかのように恐怖に染まっていた。
+					PRINTL 男の子
+					PRINTL 「！！
+					PRINTW 　ちがう、ぼくがおとしたのはお人形じゃないんだ！」
+					PRINTL 「ぼくがふざけて、おしたから……
+					PRINTW 　おねえちゃんは階段から……」
+					PRINTL 「ああ、なんで……
+					PRINTW 　ごめんなさい、おねえちゃん……」
+					PRINTW 男の子は完全に茫然自失としていた。
+					PRINTL 女の子の声
+					PRINTL 「ふふ、もういいんだよ。
+					PRINTW 　だってお姉ちゃん、死なない体になれたんだから」
+					PRINTL 「さあ、行こう。
+					PRINTW 　ここにはあなたを捕まえようとしてる恐い人たちがいるから……」
+				ELSEIF RESULT == 1
+					PRINTFORML %CALLNAME:MASTER%がやさしく話しかけると男の子は先程よりは少し落ち着いたようだ。
+					PRINTW うつむいたまま語り始めた。
+					PRINTL 男の子
+					PRINTL 「……ちがう。
+					PRINTW 　ボクがこわしたのは、人形なんかじゃない」
+					PRINTL 「そうだよ、ボクがおとしちゃったのはお人形なんかじゃなくて
+					PRINTW 　おねえちゃん……」
+					PRINTL 「ぼくが……ぼくがふざけて、おしたから……
+					PRINTW 　おねえちゃんは階段から落ちて……」
+					PRINTW 男の子の涙が更に床に落ちたとき、ふいに声が聞こえてきた。
+					PRINTL 女の子の声
+					PRINTL 「しょうがないわねえ、あなたは。
+					PRINTW 　どうしたっていうの、シンゴ？」
+					PRINTW 今までとは違いあの女の子の姿は見えない、だが声だけはやさしく響いていた。
+					PRINTL 男の子
+					PRINTL 「おねえちゃん……
+					PRINTW 　どうして、おねえちゃんがいるの？」
+					PRINTW 男の子の涙は止まっていた。その声には何故という感情がこもっている。
+					PRINTL 女の子の声
+					PRINTL 「フフ。
+					PRINTW 　どうしてお姉ちゃんがいるかって？」
+					PRINTW 「だってシンゴと約束したじゃない。」
+					PRINTW 声はやさしく響いている、まるで男の子を安心させようとしているように。
+					PRINTL 「お姉ちゃんはいつもシンゴのそばにいるからって……
+					PRINTW 　さあ、奥の部屋で遊ぼう」
+					PRINTW 「ここには、恐い人たちがいるから……」
+				ELSE
+					GOTO INPUT_LOOP5
+				ENDIF
+				PRINTFORMW その瞬間%CALLNAME:MASTER%の視界が暗転し、光が戻った時には記憶の部屋の入り口前へと戻されていた。
+				ダンジョンフラグ:92:1 = 7
+				ダンジョンフラグ:92:17 = 0
+				CALL DUNGEON_WORP,1,7,8
+			ENDIF
+		CASE 2
+			IF FLAG:現X == 7
+				IF ダンジョンフラグ:92:1 == 4
+					PRINTW 古びたオルゴールがある。
+					PRINTL 鳴らしますか？
+					PRINTL [0]YES
+					PRINTL [1]NO
+					$INPUT_LOOP6
+					INPUT
+
+					IF RESULT == 0
+						PRINTW ………………
+						PRINTL …………
+						CALL DUNGEON_WORP,7,9,17
+					ELSEIF RESULT == 1
+						PRINTW そのまま放置した。
+					ELSE
+						GOTO INPUT_LOOP6
+					ENDIF
+				ELSE
+					PRINTW 鍵がかかっている。
+					FLAG:現Y = 7
+				ENDIF
+			ELSEIF FLAG:現X == 3
+				IF ダンジョンフラグ:92:1 == 5
+					PRINTW 古びたオルゴールがある。
+					PRINTW 鳴らしますか？
+					PRINTL [0]YES
+					PRINTL [1]NO
+					$INPUT_LOOP7
+					INPUT
+
+					IF RESULT == 0
+						PRINTW ………………
+						PRINTW …………
+						CALL DUNGEON_WORP,8,9,17
+					ELSEIF RESULT == 1
+						PRINTW そのまま放置した。
+					ELSE
+						GOTO INPUT_LOOP7
+					ENDIF
+				ELSE
+					PRINTW 鍵がかかっている。
+						FLAG:現Y = 8
+				ENDIF
+			ELSEIF FLAG:現X == 11
+				IF ダンジョンフラグ:92:1 == 6
+					PRINTW 古びたオルゴールがある。
+					PRINTW 鳴らしますか？
+					PRINTL [0]YES
+					PRINTL [1]NO
+					$INPUT_LOOP8
+					INPUT
+
+					IF RESULT == 0
+						PRINTW ………………
+						PRINTW …………
+						CALL DUNGEON_WORP,9,9,17
+					ELSEIF RESULT == 1
+						PRINTW そのまま放置した。
+					ELSE
+						GOTO INPUT_LOOP8
+					ENDIF
+				ELSE
+					PRINTW 鍵がかかっている。
+					FLAG:現Y = 8
+				ENDIF
+			ENDIF
+
+		CASE 3
+			IF FLAG:現M == 7
+				PRINTW オルゴールが鳴っている。
+				PRINTW 止めますか？
+				PRINTL [0]YES
+				PRINTL [1]NO
+				$INPUT_LOOP9
+				INPUT
+
+				IF RESULT == 0
+					PRINTW ………………
+					PRINTW …………
+					CALL DUNGEON_WORP,1,7,7
+				ELSEIF RESULT == 1
+					PRINTW そのまま放置した。
+				ELSE
+					GOTO INPUT_LOOP9
+				ENDIF
+			ELSEIF FLAG:現M == 8
+				PRINTW オルゴールが鳴っている。
+				PRINTW 止めますか？
+				PRINTL [0]YES
+				PRINTL [1]NO
+				$INPUT_LOOP10
+				INPUT
+
+				IF RESULT == 0
+					PRINTW ………………
+					PRINTW …………
+					CALL DUNGEON_WORP,1,3,8
+				ELSEIF RESULT == 1
+					PRINTW そのまま放置した。
+				ELSE
+					GOTO INPUT_LOOP10
+				ENDIF
+			ELSEIF FLAG:現X == 9
+				PRINTW オルゴールが鳴っている。
+				PRINTW 止めますか？
+				PRINTL [0]YES
+				PRINTL [1]NO
+				$INPUT_LOOP11
+				INPUT
+
+				IF RESULT == 0
+					PRINTW ………………
+					PRINTL …………
+					CALL DUNGEON_WORP,1,11,8
+				ELSEIF RESULT == 1
+					PRINTW そのまま放置した。
+				ELSE
+					GOTO INPUT_LOOP11
+				ENDIF
+			ENDIF
+		CASE 4
+			PRINTW ……どこからか声が聞こえてきた……
+			IF FLAG:現M == 1
+					PRINTL 女の子の声
+					PRINTL 「……クスクス……
+					PRINTW 　今度はお姉ちゃんが、ご本を読んであげる……」
+					PRINTL 「シンゴ、楽しい？
+					PRINTW 　お姉ちゃんと、ずっと一緒に遊んでようね」
+					PRINTL 男の子の声
+					PRINTL 「うん、おねえちゃん……
+					PRINTW ボク、ずっとおねえちゃんと一緒に遊ぶんだ……」
+					ダンジョンフラグ:92:17 = 0
+					DA:7:8 = 1
+					CALL DUNGEON_WORP,(FLAG:現M),7,7
+			ELSEIF FLAG:現M == 7
+				IF ダンジョンフラグ:92:17 == 0
+					PRINTL 声
+					PRINTL 「ようこそ、記憶の部屋へ……
+					PRINTW 　あなたは、ふと幼少の出来事を、思い出したりしませんか……？」
+					PRINTL 「それは、良い出来事であったり……
+					PRINTL 　または、悪い出来事であったり……
+					PRINTW 　いずれも思い出には変わりませんが……」
+					PRINTL 「少年が思い出したのは、いったいどんな出来事でしょうか？
+					PRINTW 　その答えの鍵は……」
+					PRINTL 「ひょっとしたら貴方かもしれません……
+					PRINTW 　それではこのへんで……」
+					PRINTL 「「幼き思い出」の開演です。
+					PRINTW 　「記憶に宿る音」は、きっとあの鏡に再び力を与えるでしょう……」
+					ダンジョンフラグ:92:17 = 1
+					DA:(FLAG:現X):(FLAG:現Y) = 1
+					CALL DUNGEON_WORP,(FLAG:現M),9,17
+				ELSE 
+					PRINTL 女の子の声
+					PRINTL 「シンゴ、もう、寝る時間だよ。
+					PRINTW 　ベッドに入らなきゃ」
+					PRINTL 男の子の声
+					PRINTL 「おねえちゃん、ボク怖いよ。
+					PRINTL 　窓の外、オバケがいるんじゃない？
+					PRINTW 　……ほら！　今、何か動いたよ！」
+					PRINTL 女の子の声
+					PRINTL 「いい子にしてないと、本当にオバケが来ちゃうよ。
+					PRINTW 　さあ、もう寝よう」
+					ダンジョンフラグ:92:17 = 2
+					DA:(FLAG:現X):(FLAG:現Y) = 1
+				ENDIF
+			ELSEIF FLAG:現M == 8
+				IF ダンジョンフラグ:92:17 == 0
+					PRINTL 声
+					PRINTL 「ようこそ、記憶の部屋へ……
+					PRINTW 　あなたは、追憶の彼方になにがあるか考えた事は、ありませんか？」
+					PRINTL 「私は、そこには大なり小なりの、
+					PRINTL 　記憶達が浮き沈みしていると思います……
+					PRINTW 　楽しかった事も、悲しかった事も……」
+					PRINTL 「少年が追憶の彼方に見たものは、いったいどちらなのでしょうか？
+					PRINTW 　その答えの鍵は……」
+					PRINTL 「ひょっとしたら貴方かもしれません……
+					PRINTW 　それではこのへんで……」
+					PRINTL 「「追憶の風」の開演です。
+					PRINTW 　「記憶に宿る音」は、きっとあの鏡に再び力を与えるでしょう……」
+					ダンジョンフラグ:92:17 = 1
+					DA:(FLAG:現X):(FLAG:現Y) = 1
+					CALL DUNGEON_WORP,(FLAG:現M),9,17
+				ELSE 
+					PRINTL 男の子の声
+					PRINTW 「おねえちゃん、ここにいたら誰にも見つからないかなぁ？」
+					PRINTL 女の子の声
+					PRINTL 「そうだよ。ずっとここにいれば、
+					PRINTW 　学校にも行かなくてすむし、歯医者にも行かなくてすむよ。」
+					PRINTL 「ここのことは、誰にも内緒だからね。
+					PRINTW 　お父さんにも、お母さんにも、誰にも言っちゃダメだよ。」
+					ダンジョンフラグ:92:17 = 2
+					DA:(FLAG:現X):(FLAG:現Y) = 1
+				ENDIF
+			ELSEIF FLAG:現M == 9
+				IF ダンジョンフラグ:92:17 == 0
+					PRINTL 声
+					PRINTL 「ようこそ、記憶の部屋へ……
+					PRINTW 　あなたは、過去や未来へいける扉があるとしたら、どちらへ行きますか？」
+					PRINTL 「きっと大半の人は過去へ行くでしょう……
+					PRINTL 　そしてもう一度あの時、あの場所から、
+					PRINTW 　やり直せる扉に手をかけるでしょう……」
+					PRINTL 「少年が開けた扉の向こうには、いったい何が待っているのでしょうか？
+					PRINTW 　その答えの鍵は……」
+					PRINTL 「ひょっとしたら貴方かもしれません……
+					PRINTW 　それではこのへんで……」
+					PRINTL 「「過去への扉」の開演です。
+					PRINTW 　「記憶に宿る音」は、きっとあの鏡に再び力を与えるでしょう……」
+					ダンジョンフラグ:92:17 = 1
+					DA:(FLAG:現X):(FLAG:現Y) = 1
+					CALL DUNGEON_WORP,(FLAG:現M),9,17
+				ELSE 
+					PRINTL 女の子の声
+					PRINTL 「シンゴ……シンゴ……　どこ？
+					PRINTW 　どこにいるの……？」
+					PRINTL 「ずっと一緒に居るって、約束したのに……
+					PRINTW 　シンゴ、どこ……？」
+					ダンジョンフラグ:92:17 = 2
+					DA:(FLAG:現X):(FLAG:現Y) = 1
+				ENDIF
+			ELSE
+				PRINTL 声
+				PRINTL 「お待ちしておりました。
+				PRINTW 　ここから先は、少年の心に触れる事のできる部屋へ続く記憶の回廊……」
+				PRINTL 「あとは……
+				PRINTL 　おっと、これは失礼しました。
+				PRINTW 　あなた自身で、お確かめ下さい」
+				PRINTL 「「記憶に宿る音」は、きっとあの鏡に再び力を与えるでしょう。
+				PRINTW 　これをお忘れなく……」
+				ダンジョンフラグ:92:17 = 3
+				DA:(FLAG:現X):(FLAG:現Y) = 1
+			ENDIF
+		CASE 5
+			IF FLAG:現M == 7
+				CALL DUNGEON_WORP,0,1,17
+			ELSEIF FLAG:現M == 8
+				CALL DUNGEON_WORP,0,3,17
+			ELSE
+				CALL DUNGEON_WORP,0,5,17
+			ENDIF
+		CASE 6
+			IF FLAG:現M == 7
+				CALL DUNGEON_WORP,0,5,3
+			ELSEIF FLAG:現M == 8
+				CALL DUNGEON_WORP,0,11,3
+			ELSE
+				CALL DUNGEON_WORP,0,17,3
+			ENDIF
+		CASE 7
+			IF FLAG:現X == 1
+				CALL DUNGEON_WORP,7,9,6
+			ELSEIF FLAG:現X == 7
+				CALL DUNGEON_WORP,8,5,7
+			ELSE
+				CALL DUNGEON_WORP,9,14,3
+			ENDIF
+		CASE 8
+			IF ダンジョンフラグ:92:1 == 7
+				PRINTW 壁にかけられた鏡の中にいる男の子が耳を澄ましている。
+				PRINTL 鏡の中の男の子
+				PRINTFORMW 「……お\@ TALENT:MASTER:オトコ ? にぃ # ねぇ \@ちゃんたち、何か聞こえない？」
+				PRINTFORMW そう言われ、%CALLNAME:MASTER%はどこからか微かにオルゴールの音が鳴り響いているのに気づいた。
+				PRINTL 鏡の中の男の子
+				PRINTL 「ねぇねぇ……
+				PRINTW 　ボク、この曲どこかで聞いた事あるよ」
+				PRINTL 「そうだ……そうだよ。
+				PRINTW 　この曲は、おねえちゃんが大好きだった曲」
+				PRINTW 「ボク、忘れてなんかいないよ……」
+				PRINTW そして鏡は光を放ち、壁ごと消滅した。
+				PRINTW 奥に通路が続いておりオルゴールの音はその奥から鳴っているようだ。
+				ダンジョンフラグ:92:1 = 8
+				CALL DUNGEON_WORP,6,7,12
+			ELSE
+				PRINTW 壁にかけられた鏡の中から男の子が不思議そうにこちらを見ている。
+				PRINTL 鏡の中の男の子
+				PRINTFORMW 「……お\@ TALENT:MASTER:オトコ ? にぃ # ねぇ \@ちゃんたち……だれ……？」
+			ENDIF
+		CASE 9
+			PRINTW 扉には忘音の部屋と書かれている。
+			IF ダンジョンフラグ:92:1 == 8
+				PRINTW ……扉の向こうから強大な悪魔の気配がする。入りますか？
+				PRINTL [0]YES
+				PRINTL [1]NO
+				INPUT
+
+				IF RESULT == 0
+					PRINTW 部屋に入ると一人の子供と、椅子に座っている一人の青年が目に付いた。
+					PRINTW 椅子に座っているそれなりに端正な顔をしている青年はあの男の子の面影が見える。
+					PRINTW だがその顔は魂を抜かれたかのように蒼白で心ここに非ずといった状態だ。
+					PRINTW 子供のほうはあの女の子で、その青年に向け語りかけている。
+					PRINTL 女の子
+					PRINTL 「ひどいよね、シンゴは。
+					PRINTW 　ずっと私のこと忘れているんですもの。」
+					PRINTL 青年
+					PRINTW 「……」
+					PRINTL 女の子
+					PRINTL 「シンゴはいつも「お姉ちゃんとはずっと一緒だよ」って言ってたじゃない。
+					PRINTW 　なのにだよ、すっかり忘れちゃって」
+					PRINTL 「なんだか、エリカとっても裏切られた気分。
+					PRINTW 　やっぱり、人間っていなくなった人のことなんか忘れちゃうのかなぁ」
+					PRINTL 青年
+					PRINTW 「そんなこと……無い」
+					PRINTW 初めて青年……シンゴが反応して声を出すものの、
+					PRINTW かろうじて搾り出したらしく、力がこもっていなかった。
+					PRINTL 女の子
+					PRINTL 「ウソばっかし。
+					PRINTL 　エリカを閉じ込めておいたのはシンゴじゃない。
+					PRINTW 　エリカはずっと、シンゴの心の、光の当たらないところにいたんだから……」
+					PRINTW 女の子……エリカのほうは淡々とそれを否定する。
+					PRINTL エリカ
+					PRINTL 「でも、もういいんだよ。
+					PRINTW 　これからはね、シンゴとエリカはまたずっと一緒だから」
+					PRINTW 先ほどの淡白さと打って変わってうれしそうな声で言ったがシンゴの様子は変わらない。
+					PRINTL シンゴ
+					PRINTL 「だけど……ここは本当のせかいじゃないし、
+					PRINTW 　おねえちゃんも……もうホントは生きてない……」
+					PRINTL エリカ
+					PRINTL 「それは違うよ。
+					PRINTL 　この世界でだって、生きることはできるの。
+					PRINTW 　ただ、シンゴが知らないだけ」
+					PRINTW 「それに、そうシンゴの本当の心まで分かっているのはエリカだけじゃない。」
+					PRINTL 「強がって見せても、本当は恐がりで、さみしがりで……
+					PRINTW 　でも、ここにエリカといればもうそんな無理する必要もないじゃない」
+					PRINTW 「……誰？」
+					PRINTW どうやらこちらに気がついたようだ。
+					PRINTW エリカはこちらに体を向けて立ちふさがった。
+					PRINTL 「あなたたち、シンゴを捕まえに来た人ね。
+					PRINTW 　でもだめだよ、シンゴは渡さない。シンゴは一生ここにいるの！」
+					PRINTW こちらの目的はそうではなく、ここを異界化した悪魔への対処なのだが……
+					PRINTW 状況からして目の前の少女が件の悪魔だと見て間違いないだろう。
+					PRINTFORMW それに本人の霊が変質した悪魔であれ、青年の記憶に取り憑いた悪魔であれ%CALLNAME:MASTER%には関係の無いことだ。
+					PRINTFORMW 引く様子を見せない%CALLNAME:MASTER%に対してエリカも引く様子を見せない。
+					PRINTL 「あなたたちが、ここで消えてしまえば、シンゴはあたしのとこにいる。
+					PRINTL 　だから……シンゴ、あなたはここにいてね」
+					PRINTW 　お姉ちゃん、あなたを守るから……」
+					PRINTW 氷結魔法によりシンゴは氷の中に閉じ込められた。
+					PRINTW おそらく、術者を倒さない限り溶けないだろう。
+					PRINTW そして、通せんぼをするかのようにエリカは主人公たちの前に立ちふさがった。
+					PRINTW その目は敵意に満ち溢れるかのように赤く染まっている！
+					PRINTW 「あんたたちなんかにシンゴは渡さないんだから！」
+					PRINTL 「来なさい、夜の魔物たち！！
+					PRINTW 　ゴッギー！　ルゲイエ！　バグス！」
+					IF ダンジョンフラグ:92:13 == 1 && ダンジョンフラグ:92:14 == 1 && ダンジョンフラグ:92:15 == 1
+						ダンジョンフラグ:92:16 = 1
+						PRINTW その呼びかけに答えたかのように空気が変わり悪魔が出現した！
+						PRINTL 「よくきたね、みんな。
+						PRINTW 　ゴッギー、ルゲイエ、バグス」
+						PRINTW 「ゴッギーはあいつらをかみくだいて」
+						PRINTW 「ルゲイエはあいつらの目をうばうの」
+						PRINTW 「バグスは闇で包んでちょうだい」
+						PRINTL 「さあ、行くよ。
+						PRINTW 　シンゴは渡さないから！」
+					ELSEIF ダンジョンフラグ:92:13 == 1 || ダンジョンフラグ:92:14 == 1 || ダンジョンフラグ:92:15 == 1
+						PRINTW その呼びかけに答えたかのように空気が変わり悪魔が出現した！
+						PRINTL 「よくきたね。
+						PRINTFORMW \@ ダンジョンフラグ:92:13 ? ゴッギー # …… \@、\@ ダンジョンフラグ:92:14 ? ルゲイエ # …… \@、\@ ダンジョンフラグ:92:15 ? バグス # …… \@」
+						SIF ダンジョンフラグ:92:13 == 1
+							PRINTW 「ゴッギーはあいつらをかみくだいて」
+						SIF ダンジョンフラグ:92:14 == 1
+							PRINTW 「ルゲイエはあいつらの目をうばうの」
+						SIF ダンジョンフラグ:92:15 == 1
+							PRINTW 「バグスは闇で包んでちょうだい」
+						PRINTW だが呼んだ数に対して少し足りない。
+						PRINTFORML 「\@ ダンジョンフラグ:92:13 ? …… # ゴッギー \@、\@ ダンジョンフラグ:92:14 ? …… # ルゲイエ \@、\@ ダンジョンフラグ:92:15 ? …… # バグス \@こない……」
+						PRINTW 「心の音にやられたから……」
+						PRINTL 「さあ、行くよ。
+						PRINTW 　シンゴは渡さないから！」
+					ELSE
+						PRINTW だがその声はむなしく響き渡っただけだった。
+						PRINTW 無言の空気の中、オルゴールの音だけがやさしく響いている。
+						PRINTL 「誰も来ない……
+						PRINTW 　みんな心の音にやられたから……」
+						PRINTW 「そう、わたしひとり……」
+						PRINTW 「だけどシンゴは渡さないから！」
+					ENDIF
+					PRINTL 
+					PRINTL 怨霊 エリカが１体現われた！
+					SIF ダンジョンフラグ:92:13 == 1
+						PRINTL 妖虫 ゴッギーが一体出た！
+					SIF ダンジョンフラグ:92:14 == 1
+						PRINTL 妖魔 ルゲイエが一体出た！
+					SIF ダンジョンフラグ:92:15 == 1
+						PRINTL 妖精 バグスが一体出た！
+					PRINTW 
+					CUSTOMDRAWLINE =
+					WAIT
+					FLAG:逃走不可フラグ = 1
+					FLAG:会話不能フラグ = 1
+					FLAG:先制不意打ちキャンセル = 1
+					;ゴッギー
+					IF ダンジョンフラグ:92:13 == 1
+						CALL SET_ENEMY,8,881,25,0,1
+						CALL SYNC_STATUS, (CHARANUM-1)
+						CALL HEALTH_CHARA, (CHARANUM-1)
+					ENDIF
+					;ルゲイエ
+					IF ダンジョンフラグ:92:14 == 1
+						CALL SET_ENEMY,9,464,24,0,1
+						CALL SYNC_STATUS, (CHARANUM-1)
+						CALL HEALTH_CHARA, (CHARANUM-1)
+					ENDIF
+					;バグス
+					IF ダンジョンフラグ:92:15 == 1
+						CALL SET_ENEMY,10,556,26,0,1
+						CALL SYNC_STATUS, (CHARANUM-1)
+						CALL HEALTH_CHARA, (CHARANUM-1)
+					ENDIF
+					;エリカ
+					CALL SET_ENEMY,14,1012,31,0,1
+					CFLAG:(CHARANUM-1):ＨＰ補正 += 250
+					CFLAG:(CHARANUM-1):ＭＰ補正 += 200
+					CSTR:(CHARANUM-1):思考パターン = 1012
+					CALL SYNC_STATUS,(CHARANUM-1)
+					CALL HEALTH_CHARA,(CHARANUM-1)
+					CALL BATTLE_START
+					FLAG:逃走不可フラグ = 0
+					FLAG:会話不能フラグ = 0
+					FLAG:先制不意打ちキャンセル = 0
+					CUSTOMDRAWLINE =
+					IF ダンジョンフラグ:92:16 == 1
+						PRINTL エリカ
+						PRINTW 「シ……ン……ゴ……」
+						PRINTW 悪魔の使役もしたせいでほとんどの力を使い果たしたのだろう。
+						PRINTW エリカは消滅しかけている。
+						PRINTW また、氷から開放されたシンゴも気絶しているのかピクリとも動かない。
+						PRINTW さて、どうするか……
+						PRINTL [0]ほおって置く
+						PRINTL [1]エリカを捕まえる
+						PRINTL [2]シンゴを捕まえる
+						PRINTL [3]両方捕まえる
+						$INPUT_LOOP12
+						INPUT
+
+						IF RESULT == 0
+							PRINTW 止めをさす必要は無いしこれで依頼は完了したと見て良さそうだ。
+							PRINTW それにシンゴのほうはおそらくこの場所での出来事は忘れてしまうだろう。
+							PRINTW 適当な場所で開放すればよいはずだ。
+							PRINTFORMW 最後まで弟のことを思った悪魔の消滅を、%CALLNAME:MASTER%は見届けた。
+						ELSEIF RESULT == 1
+							PRINTW 端正な顔立ちをしているし、実力のほうも先ほどの戦いで折り紙つきだ。
+							PRINTW 言うことを聞かせるまでが苦労するだろうがその分の価値はあるだろう。
+							PRINTW それにシンゴのほうはおそらくこの場所での出来事は忘れてしまうだろう。
+							PRINTW 適当な場所で開放すればよいはずだ。
+							CALL ADD_NEW_COMPANION, 1012, 0, 1
+							IF RESULT
+								CFLAG:(RESULT:1):戦闘参加不可能 = 1
+							ENDIF
+						ELSEIF RESULT == 2
+							PRINTW 一応端正な顔立ちはしているので利用方法もあるだろう。
+							PRINTW 悪魔の消滅を見届けた後にシンゴを連れて帰った。
+							CALL ADD_NEW_COMPANION, 4594, 200, 1
+							IF RESULT
+								CFLAG:(RESULT:1):戦闘参加不可能 = 1
+							ENDIF
+						ELSEIF RESULT == 3
+							PRINTW 端正な顔立ちをしているし、実力のほうも先ほどの戦いで折り紙つきだ。
+							PRINTW 言うことを聞かせるまでが苦労するだろうがその分の価値はあるだろう。
+							PRINTW それに弟への強い執着も利用できる。
+							PRINTW いざとなればそちらからアプローチすれば楽に言うことを聞かせることができるはずだ。
+							PRINTL 消滅間際でほぼ意識の無い悪魔をＣＯＭＰの中に封じ、シンゴを連れて帰った。
+							CALL ADD_NEW_COMPANION, 4594, 200, 1
+							IF RESULT
+								CFLAG:(RESULT:1):戦闘参加不可能 = 1
+							ENDIF
+							CALL ADD_NEW_COMPANION, 1012, 0, 1
+							IF RESULT
+								CFLAG:(RESULT:1):戦闘参加不可能 = 1
+							ENDIF
+						ELSE
+							GOTO INPUT_LOOP12
+						ENDIF
+					ELSE
+						PRINTW エリカが倒れると同時にシンゴを覆っていた氷が砕け散った。
+						PRINTL エリカ
+						PRINTL 「ゴメン………でも……にまも……からぁ……
+						PRINTW 　……なたた…わた…さない……！！」
+						PRINTW だがエリカがそうつぶやいた瞬間シンゴの姿は忽然と消えた。
+						PRINTW おそらくエリカが最後の力を振り絞ってパラダイムＸから元の場所に戻したのだろう。
+						PRINTW 守ろうとして力を使い果たしたのか、エリカは消滅しかけている……
+						PRINTL [0]ほおって置く
+						PRINTL [1]エリカを捕まえる
+						
+						$INPUT_LOOP13
+						INPUT
+
+						IF RESULT == 0
+							PRINTW 止めをさす必要は無いしこれで依頼は完了したと見て良さそうだ。
+							PRINTFORMW 最後まで弟のことを思った悪魔の消滅を、%CALLNAME:MASTER%は見届けた。
+						ELSEIF RESULT == 1
+							PRINTW 端正な顔立ちをしているし、実力のほうも先ほどの戦いで折り紙つきだ。
+							PRINTL 言うことを聞かせるまでが苦労するだろうがその分の価値はあるだろう。
+							CALL ADD_NEW_COMPANION, 1012, 0, 1
+							IF RESULT
+								CFLAG:(RESULT:1):戦闘参加不可能 = 1
+							ENDIF
+						ELSE
+							GOTO INPUT_LOOP13
+						ENDIF
+					ENDIF
+					PRINTW 報酬として口座に￥50000が支払われた
+					CUSTOMDRAWLINE =
+					MONEY += 50000
+					ダンジョンフラグ:92:0 = 2
+					DA:(FLAG:現X):(FLAG:現Y) = 1
+					FLAG:脱出 = 1
+					RETURN 1
+				ELSE
+					FLAG:現Y = 3
+				ENDIF
+			ELSE
+				PRINTW 鍵がかかっていて開かない。
+				FLAG:現Y = 3
+			ENDIF
+	CASEELSE
+		CALL DUNGEON_TERMINAL
+	RETURN 1
+	ENDSELECT
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) %10 == 9
+	SELECTCASE DA:(FLAG:現X):(FLAG:現Y) /10
+		CASE 0
+			CALL DUNGEON_TERMINAL
+			RETURN 1
+	ENDSELECT
+ENDIF
+RETURN 0
+
+
+
+
+
+;=======================================================================
+;エンカウント率
+;=======================================================================
+@ENCOUNT_RATE_92
+SELECTCASE FLAG:現M
+	CASE 0
+		FLAG:エンカウント率 = FLAG:未遭遇歩数*3
+	CASE 1
+		FLAG:エンカウント率 = 0
+	CASE 6
+		FLAG:エンカウント率 = FLAG:未遭遇歩数*3
+	CASE 7
+		FLAG:エンカウント率 = FLAG:未遭遇歩数*3
+	CASE 8
+		FLAG:エンカウント率 = FLAG:未遭遇歩数*3
+	CASE 9
+		FLAG:エンカウント率 = FLAG:未遭遇歩数*3
+	CASEELSE
+		FLAG:エンカウント率 = FLAG:未遭遇歩数*3
+ENDSELECT
+SIF FLAG:未遭遇歩数 < 5
+	FLAG:エンカウント率 = 0
+;=======================================================================
+;必要レベル目安
+;推奨LV 雑魚最低LV 雑魚最高LV ボスLV 
+;=======================================================================
+@GET_DUNGEON_LV_92
+RETURN 20, 19, 24, 31
+;=======================================================================
+;エンカウント処理
+;=======================================================================
+@CHECK_ENCOUNT_92
+IF FLAG:現M == 1
+
+ELSE
+	IF RAND:100 < FLAG:エンカウント率
+		CALL ENEMY_TABLE
+		RETURN 1
+	ELSE
+		FLAG:未遭遇歩数 += 1
+		RETURN 0
+	ENDIF
+ENDIF
+;=======================================================================
+;敵の種族の種類数
+;=======================================================================
+@CLASS_NUM_92
+RETURN CLASS_NUM_COMMON("中級")
+;=======================================================================
+;敵の総数
+;=======================================================================
+@ENEMY_NUM_92, ARG
+RETURN ENEMY_NUM_COMMON("中級", ARG)
+;=======================================================================
+;敵の種類
+;=======================================================================
+@ENEMY_92, ARG
+SELECTCASE FLAG:現M
+	CASE 7
+	;幼き思い出での遭遇
+		SELECTCASE RAND:100
+			CASE IS < 25
+				;25%でネコマタ
+				RETURN 801, 19
+			CASE IS < 50
+				;25%でノヅチ
+				RETURN 403, 20
+			CASE IS < 80
+				;30%でジャックフロスト
+				RETURN 512, 20
+			CASE IS < 100
+				;20%でグーラー
+				RETURN 1005, 22
+		ENDSELECT
+	CASE 8
+	;追憶の風での遭遇
+		SELECTCASE RAND:100
+			CASE IS < 25
+				;25%でイソラ
+				RETURN 461, 23
+			CASE IS < 50
+				;25%でノヅチ
+				RETURN 403, 20
+			CASE IS < 80
+				;30%でニケー
+				RETURN 302, 23
+			CASE IS < 100
+				;20%でアークエンジェル
+				RETURN 359, 24
+		ENDSELECT
+	CASE 9
+	;過去への扉での遭遇
+		SELECTCASE RAND:100
+			CASE IS < 30
+				;25%でコッパテング
+				RETURN 451, 20
+			CASE IS < 55
+				;25%でミジャクシさま
+				RETURN 1511, 24
+			CASE IS < 80
+				;30%で二ケー
+				RETURN 302, 23
+			CASE IS < 100
+				;20%でイシュタム
+				RETURN 212, 23
+		ENDSELECT
+	CASEELSE
+	;Ｂ１Ｆ、２～６Ｆでの遭遇
+		SELECTCASE RAND:100
+			CASE IS < 30
+				;30%でジャックランタン
+				RETURN 513, 20
+			CASE IS < 45
+				;ヤマチチ
+				RETURN 963, 23
+			CASE IS < 60
+				;ナハトコボルト
+				RETURN 467, 20
+			CASE IS < 70
+				;25%でオルトロス
+				RETURN 851, 20
+			CASE IS < 85
+				;30%でエロス
+				RETURN 414, 21
+			CASE IS < 100
+				;15%でブラックウィドウ
+				RETURN 804, 25
+		ENDSELECT
+	ENDSELECT
+
+;=======================================================================
+;宝箱の中身
+;=======================================================================
+@TREASURE_92
+;/10はIDを10で割る。つまり、下一桁をなくして、二桁目と三桁目を二桁の数字として取り出している
+SELECTCASE DA:(FLAG:現X):(FLAG:現Y) / 10
+			CASE 1
+				CALL GET_TREASURE_MAG, , 1500,FLAG:現ダンジョン,2
+			CASE 2
+				CALL GET_TREASURE,3031,1,FLAG:現ダンジョン,3
+			CASE 3
+				CALL GET_TREASURE,4024,1,FLAG:現ダンジョン,4
+			CASE 4
+				CALL GET_TREASURE,4527,1,FLAG:現ダンジョン,5
+			CASE 5
+				CALL GET_TREASURE,5501,5,FLAG:現ダンジョン,6
+			CASE 6
+				CALL GET_TREASURE,3542,1,FLAG:現ダンジョン,7
+			CASE 7
+				CALL GET_TREASURE,2074,1,FLAG:現ダンジョン,8
+			CASE 8
+				CALL GET_TREASURE,203,2,FLAG:現ダンジョン,9
+			CASE 9
+				CALL GET_TREASURE_MAG, , 4500, FLAG:現ダンジョン,10
+			CASE 10
+				CALL GET_TREASURE,2500,2,FLAG:現ダンジョン,11
+			CASE 11
+				CALL GET_TREASURE_MAG, ,9000, FLAG:現ダンジョン,12
+ENDSELECT
+RETURN 1
+
+;=======================================================================
+;階段置き場
+;=======================================================================
+@UPSTAIRS_92
+SELECTCASE DA:(FLAG:現X):(FLAG:現Y) /10
+	;IDを示す
+	CASE 1
+			CALL DUNGEON_UPSTAIRS_ID,1,17
+	CASE 2
+			CALL DUNGEON_UPSTAIRS_ID,2,27
+	CASE 3
+			CALL DUNGEON_UPSTAIRS_ID,3,37
+	CASE 4
+			CALL DUNGEON_UPSTAIRS_ID,4,47
+	CASE 5
+			CALL DUNGEON_UPSTAIRS_ID,5,57
+	CASE 6
+			CALL DUNGEON_UPSTAIRS_ID,6,67
+	CASEELSE
+ENDSELECT
+RETURN 1
+
+@DOWNSTAIRS_92
+SELECTCASE DA:(FLAG:現X):(FLAG:現Y) / 10
+	CASE 1
+			CALL DUNGEON_DOWNSTAIRS_ID,0,16
+	CASE 2
+			CALL DUNGEON_DOWNSTAIRS_ID,1,26
+	CASE 3
+			CALL DUNGEON_DOWNSTAIRS_ID,2,36
+	CASE 4
+			CALL DUNGEON_DOWNSTAIRS_ID,3,46
+	CASE 5
+			CALL DUNGEON_DOWNSTAIRS_ID,4,56
+	CASE 6
+			CALL DUNGEON_DOWNSTAIRS_ID,5,66
+	CASEELSE
+ENDSELECT
+RETURN 1
+
+;=================================
+;思考パターン
+;=================================
+;エリカの思考パターン
+;本来はマリンカリンも「大人って～」のパターンですが、
+;某４コマでの造魔を魅了した際の台詞が妙に印象に残ったのでそちらをしゃべります。
+;別に２パターンしかないから追加したかった訳でｈ（ｒｙ
+@ENEMY_BATTLE_MESSAGE_K1012, ARG
+IF CFLAG:ARG:入力行動 == 2050
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃私のシンゴを奪わないでっ！！　　　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━┛
+ELSEIF CFLAG:ARG:入力行動 == 1211
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃シンゴは渡さないんだから！　　　　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━┛
+ELSE
+	SELECTCASE RAND:100
+		;30％
+		CASE IS < 30
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃大人ってだいっきらいっ！　　　　　　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━┛
+	ENDSELECT
+ENDIF
+
+;エリカの思考パターン
+@SET_ACTION_1012,ARG
+;1moreではマハブフーラかマリンカリンをしてきます
+;自分ひとりの場合はメギドラも使ってきます。
+IF CFLAG:ARG:１moreフラグ == 2
+	IF RAND:3 == 0
+		IF POS(8) == -1 && POS(10) == -1 && POS(14) == -1
+			;メギドラ
+			CALL CHECK_ACTIONABLE,ARG,2002
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:入力行動 = 2002
+			CALL RANDOM_TARGET,ARG,2002
+			RETURN 1
+		ELSE
+			;マハブフーラ
+			CALL CHECK_ACTIONABLE,ARG,805
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:入力行動 = 805
+			CALL RANDOM_TARGET,ARG,805
+			RETURN 1
+		ENDIF
+	ELSEIF RAND:2 == 0
+		;マハブフーラ
+		CALL CHECK_ACTIONABLE,ARG,805
+		SIF RESULT == 0
+			GOTO DECIDE_ACTION
+		CFLAG:ARG:入力行動 = 805
+		CALL RANDOM_TARGET,ARG,805
+		RETURN 1
+	ELSE
+		;マリンカリン
+		CALL CHECK_ACTIONABLE,ARG,1211
+		SIF RESULT == 0
+			GOTO DECIDE_ACTION
+		CFLAG:ARG:入力行動 = 1211
+		CALL RANDOM_TARGET,ARG,1211
+		RETURN 1
+	ENDIF
+;夜の魔物たちがいる時はメギドラとマハムドは使ってきません。
+;前列にいるとたまにポカポカしてくる。かわうい。
+ELSEIF POS(8) >= 0 || POS(10) >= 0 || POS(14) >= 0
+	SELECTCASE RAND:100
+		;35％　マハブフーラ
+		CASE IS < 35
+			CALL CHECK_ACTIONABLE,ARG,805
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:入力行動 = 805
+			CALL RANDOM_TARGET,ARG,805
+			RETURN 1
+		;35％　マリンカリン
+		CASE IS < 70
+			CALL CHECK_ACTIONABLE,ARG,1211
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:入力行動 = 1211
+			CALL RANDOM_TARGET,ARG,1211
+			RETURN 1
+		;20％　ハテナ・ボックス
+		CASE IS < 90
+			CALL CHECK_ACTIONABLE,ARG,2050
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:入力行動 = 2050
+			CALL RANDOM_TARGET,ARG,2050
+			RETURN 1
+		;10％　前列：ポカポカ叩く　後列：ハテナ・ボックス
+		CASE IS < 100
+			IF CPOS(ARG) == 9
+				CALL CHECK_ACTIONABLE,ARG,0
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:入力行動 = 0
+				CALL RANDOM_TARGET,ARG,0
+				RETURN 1
+			ELSE
+				CALL CHECK_ACTIONABLE,ARG,2050
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:入力行動 = 2050
+				CALL RANDOM_TARGET,ARG,2050
+				RETURN 1
+			ENDIF
+	ENDSELECT
+;自分ひとりの場合はメギドラとマハムドも使ってきます。
+;たまにポカポカしてくる。かわうい。
+ELSEIF POS(8) == -1 && POS(10)== -1 && POS(14) == -1
+	SELECTCASE RAND:100
+		;20％　メギドラ
+		CASE IS < 20
+			CALL CHECK_ACTIONABLE,ARG,2002
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:入力行動 = 2002
+			CALL RANDOM_TARGET,ARG,2002
+			RETURN 1
+		;20％　マハブフーラ
+		CASE IS < 40
+			CALL CHECK_ACTIONABLE,ARG,805
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:入力行動 = 805
+			CALL RANDOM_TARGET,ARG,805
+			RETURN 1
+		;20％　マハムド
+		CASE IS < 60
+			CALL CHECK_ACTIONABLE,ARG,1402
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:入力行動 = 1402
+			CALL RANDOM_TARGET,ARG,1402
+			RETURN 1
+		;15％　マリンカリン
+		CASE IS < 75
+			CALL CHECK_ACTIONABLE,ARG,1211
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:入力行動 = 1211
+			CALL RANDOM_TARGET,ARG,1211
+			RETURN 1
+		;15％　ハテナ・ボックス
+		CASE IS < 90
+			CALL CHECK_ACTIONABLE,ARG,2050
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:入力行動 = 2050
+			CALL RANDOM_TARGET,ARG,2050
+			RETURN 1
+		;10％　ポカポカ叩く
+		CASE IS < 100
+			CALL CHECK_ACTIONABLE,ARG,0
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:入力行動 = 0
+			CALL RANDOM_TARGET,ARG,0
+			RETURN 1
+	ENDSELECT
+ELSE
+	$DECIDE_ACTION
+	CALL SEARCH_ACT,ARG
+	IF RESULT == 0
+		CFLAG:ARG:入力行動 = -1
+		CFLAG:ARG:防御フラグ = 1
+		RETURN 0
+	ENDIF
+;	PRINTFORML [{CFLAG:ARG:5}]のスキル数 {RESULT}
+	LOCAL = RAND:RESULT
+	;スキル番号決定
+	LOCAL:1 = S:(10+LOCAL)
+;	PRINTFORML [{CFLAG:ARG:5}]のスキル {LOCAL:1}
+	$TARGET_LOOP
+	
+	CALL RANDOM_TARGET,ARG,LOCAL:1
+	CALLFORM SKILL_TARGET_{LOCAL:1}
+	;ここでスキル番号を行動内容に代入
+	SIF CFLAG:ARG:ターゲット == -1
+		GOTO DECIDE_ACTION
+	CFLAG:ARG:入力行動 = LOCAL:1
+ENDIF
+
+
+;=======================================================================
+;輪姦参加悪魔
+;=======================================================================
+@DUNGEON_RAPE_DEVIL_92
+;ランダムにどの悪魔が出るか決定
+;RETURN CSV番号 , 人数 , レベル
+SELECTCASE RAND:2
+	CASE 0
+		RETURN [[キャラ:ナハトコボルト]] , 3 + RAND:10 , CSVBASE([[キャラ:ナハトコボルト]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 1
+		RETURN [[キャラ:アークエンジェル]] , 3 + RAND:10 , CSVBASE([[キャラ:アークエンジェル]] , GETNUM(BASE , "LV") , 0) + RAND:3
+ENDSELECT

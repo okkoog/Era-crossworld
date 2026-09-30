@@ -1,0 +1,50 @@
+﻿;依頼名===================================================================
+;依頼難易度は敵の最大レベルによって変動
+; 1～10　☆、11～20　☆☆、21～30　☆☆☆、以下略
+;ダンジョン攻略が必要な場合は☆が★になる。
+
+@TITLE_RANDOM_REQUEST_108_4
+RESULTS = 정의의 서머너 요격（난이도 ☆☆）
+RETURN 1
+
+;説明===================================================================
+@REQUEST_EXPLAIN_108_4
+	PRINTL 
+	PRINTL 【의뢰주】골목공장 공장장
+	PRINTL 
+	PRINTL 　조직이 소유한 공장이 정의의 서머너라는 놈의 습격을 받고 있다。
+	PRINTL 　공장을 습격으로부터 지켜내라。
+	PRINTL 
+	PRINTL 【작전영역】공장
+	PRINTL 【적의전력】자칭 정의의 서머너(비구 유효)
+	PRINTL 【성공조건】시설 방위
+	PRINTL 
+;内容====================================================================
+@REQUEST_108_4
+CALL MESSAGE_WINDOW, "MESSAGE" , @"――공장――", , , , , 4
+CALL MESSAGE_WINDOW, "MESSAGE" , @"＞공장 앞에서 기다리고 있자 땅딸막한 사내 한 명이 다가왔다。", , , , , 4
+CALL MESSAGE_WINDOW, "자칭 정의의 서머너" , @"오호라、이것 참 이것 참…… 악의 조직의 공장을 지킬 셈입니까 당신？", , , , , 4
+CALL MESSAGE_WINDOW, "자칭 정의의 서머너" , @"정말이지、정의를 집행해야겠군요…… Go！ 쇼보 땅！", , , , , 4
+CALL MESSAGE_WINDOW, "MESSAGE" , @"＞모 쇼보 무리가 덤벼들었다！", , , , , 4
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+FOR LOCAL:2, 7, 17
+	CALL SET_ENEMY, LOCAL:2 ,[[キャラ:모・쇼보]],15+RAND:5,0,0
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+NEXT
+
+CALL BATTLE_START
+
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+CALL MESSAGE_WINDOW, "MESSAGE" , @"＞공장 습격을 막아냈다。", , , , , 4
+
+;報酬
+依頼フラグ:[[依頼:랜덤의뢰]]:5 = 2;難易度
+依頼フラグ:[[依頼:랜덤의뢰]]:7 = 0;그외
+CALL PRIZE_REQUEST_108

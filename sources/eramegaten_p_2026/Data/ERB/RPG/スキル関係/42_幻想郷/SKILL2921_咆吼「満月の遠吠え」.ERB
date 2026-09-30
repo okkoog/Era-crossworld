@@ -1,0 +1,168 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2921,ARG
+RESULTS = 포효「만월의울부짖음」
+
+
+;　명중
+@SKILL_HITRATE_2921, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2921, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2921,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2921,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2921, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2921,ARG
+SIF FLAG:월령 == 0
+	RETURN 56
+RETURN 36
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2921
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2921, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2921,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2921,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2921, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2921
+RETURN GET_SUCCESSION_NUM("지원")
+
+;속도보정
+@SKILL_SPEED_2921, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2921
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2921, ARG = -1
+RETURN 7
+
+@継承不能_2921
+RETURN 1
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2921, ARG, ARG:1, ARG:2
+SELECTCASE FLAG:월령
+	CASE 8
+		CALL SKILL_SET_カジャンダ, ARG, ARG:1, "攻撃_魔法威力", -8, "範囲", "NOMES"
+		CALL SKILL_SET_カジャンダ, ARG, ARG:1, "命中_回避", -4, "範囲", "", "↓↓攻撃・魔法威力 & ↓命中率・回避率"
+	CASEELSE
+		CALL SKILL_SET_カジャンダ, ARG, ARG:1, "攻撃_魔法威力", -8, "範囲"
+ENDSELECT
+;#LOCALSIZE 3
+;IF CFLAG:(ARG):PT플래그 == 0
+;	LOCAL:1 = 1
+;	LOCAL:2 = 7
+;ELSE
+;	LOCAL:1 = 7
+;	LOCAL:2 = 17
+;ENDIF
+;
+;IF FLAG:월령 == 8
+;FOR LOCAL,LOCAL:1,LOCAL:2
+;	SIF POS(LOCAL) < 0
+;		CONTINUE
+;		CFLAG:POS(LOCAL):공격강화 = MAX(-16, CFLAG:POS(LOCAL):공격강화 - 8)
+;		CFLAG:POS(LOCAL):마법위력강화 = MAX(-16, CFLAG:POS(LOCAL):마법위력강화 - 8)
+;		CFLAG:POS(LOCAL):명중강화 = MAX(-16, CFLAG:POS(LOCAL):명중강화 - 4)
+;		CFLAG:POS(LOCAL):회피강화 = MAX(-16, CFLAG:POS(LOCAL):회피강화 - 4)
+;	NEXT
+;	PRINTFORMW \@ CFLAG:ARG:PT플래그 == 2 ? 敵 # 味方 \@の物理・魔法攻撃力を大幅に下げた！
+;	PRINTFORMW \@ CFLAG:ARG:PT플래그 == 2 ? 敵 # 味方 \@の命中・回避力を下げた！
+;ELSEIF FLAG:월령 == 0
+;FOR LOCAL,LOCAL:1,LOCAL:2
+;	SIF POS(LOCAL) < 0
+;		CONTINUE
+;		CFLAG:POS(LOCAL):공격강화 = MAX(-16, CFLAG:POS(LOCAL):공격강화 - 8)
+;	NEXT
+;	PRINTFORMW \@ CFLAG:ARG:PT플래그 == 2 ? 敵 # 味方 \@の物理攻撃力を大幅に下げた！
+;ELSE
+;FOR LOCAL,LOCAL:1,LOCAL:2
+;	SIF POS(LOCAL) < 0
+;		CONTINUE
+;		CFLAG:POS(LOCAL):공격강화 = MAX(-16, CFLAG:POS(LOCAL):공격강화 - 8)
+;	NEXT
+;	PRINTFORMW \@ CFLAG:ARG:PT플래그 == 2 ? 敵 # 味方 \@の物理攻撃力を大幅に下げた！
+;ENDIF
+;
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2921, ARG
+IF FLAG:월령 == 8
+	PRINTL 적 전체의 물리·마법 공격을 2단계, 명중·회피를 1단계 낮춘다.
+	PRINTL 기묘한 하울링을 내질러 적을 위압한다.
+	PRINTL 만월이기 때문에 최대한의 위력을 발휘한다.
+	PRINTL 마수 이마이즈미 카게로우의 스펠카드. (전용)
+ELSEIF FLAG:월령 == 0
+	PRINTL 적 전체의 물리 공격력을 2단계 낮춘다.
+	PRINTL 기묘한 하울링을 내질러 적을 위압한다.
+	PRINTL 단, 삭(신월)이기 때문에 연비가 악화되어 있다.
+	PRINTL 마수 이마이즈미 카게로우의 스펠카드. (전용)
+ELSE
+	PRINTL 적 전체의 물리 공격력을 2단계 낮춘다.
+	PRINTL 条件：満月時追加効果・新月時消費増大。
+	PRINTL 기묘한 하울링을 내질러 적을 위압한다.
+	PRINTL 마수 이마이즈미 카게로우의 스펠카드. (전용)
+ENDIF
+
+
+@継承部位_2921,ARG
+;RESULTS = 입
+;RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2921,ARG
+RETURN 1
+;とくにない
+

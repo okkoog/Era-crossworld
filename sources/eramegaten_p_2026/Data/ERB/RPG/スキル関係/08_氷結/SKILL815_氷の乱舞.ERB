@@ -1,0 +1,152 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_815,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:아키라_무대소녀]])
+	RESULTS = 白銀乱舞
+ELSE
+	RESULTS = 얼음의난무
+ENDIF
+;　명중
+@SKILL_HITRATE_815, ARG
+RETURN 90
+
+;　威力
+;仕様上,単体相手なら1~3回になるのでダイン相当の320
+;上限HIT数に引っかからなければ単体あたりの期待値は240
+@SKILL_POWER_815, ARG
+RETURN 160
+
+;最低がここで渋いのは同ランクにあたるマハ系が最大5HITしかできないから
+;敵総数の判定を全後列合計にできるという強みもあるので、ここで少し絞っといても総HIT数は割合稼げる…はず
+;최저공격횟수
+@SKILL_MINATTACKNUMBER_815,ARG
+RETURN 2
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_815,ARG
+RETURN 8
+
+;一体辺りの最大ＨＩＴ数
+@SKILL_MAXATK_PER_815,ARG
+RETURN 3
+
+;一体辺りの最低ＨＩＴ数
+@SKILL_MINATK_PER_815,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_815, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_815,ARG
+RETURN 20
+
+;　相性
+@SKILL_TYPE_815,ARG
+RETURN GET_TYPE_NUM("빙결")
+;화염
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_815
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_815, ARG
+IF SKILL_CHANGE(ARG, [[キャラ:아키라_무대소녀]])
+	RETURN 1
+ELSE
+	RETURN 2
+ENDIF
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_815, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_815,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_815,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;スキルがランダム範囲かどうか
+@SKILL_RAND_TARGET_815,ARG
+RETURN 1
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_815, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_815
+RETURN GET_SUCCESSION_NUM("빙결")
+
+;속도보정
+@SKILL_SPEED_815, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_815
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_815, ARG = -1
+RETURN 7
+
+@SKILL_RANKUP_815
+;ランクアップなし
+RETURN 0
+
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_815,ARG
+RETURN GET_STATE_NUM("FREEZE")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_815,ARG
+RETURN GET_TYPE_NUM("빙결")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_815,ARG
+RETURN 15
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_815,ARG
+RETURN 95
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_815, ARG, ARG:1, ARG:2
+CALL ATTACK_RAND,ARG,ARG:1,815
+
+
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_815, ARG
+IF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:아키라_무대소녀]]
+	PRINTL 얼음을 휘감으며 적진을 헤쳐나가、닥치는 대로 얼려버린다。
+	PRINTL 적 전체 랜덤으로 최대 ８회의 빙결 상성의 물리 소 데미지
+ELSE
+	PRINTL 냉기로 적 전체에 랜덤으로 최대 ８회 공격한다。
+ENDIF
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_815,ARG
+RETURN 1
+;とくにない
+

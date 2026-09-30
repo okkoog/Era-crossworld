@@ -1,0 +1,171 @@
+﻿;スキル名
+@SKILL_NAME_復讐の反攻,ARG
+RESULTS = 복수의 반격
+SIF FLAG:총공격중
+	TSTR:스킬메시지행동자 '= CALLNAME:GET_ROLE_CFLAG_BTL(ARG, "突撃スキル発動者")
+
+;　명중
+@SKILL_HITRATE_復讐の反攻, ARG
+RETURN 999
+
+;クリティカル
+@SKILL_CRITICAL_RATE_復讐の反攻, ARG
+RETURN 5
+
+;　威力
+@SKILL_POWER_復讐の反攻, ARG
+SIF ARG < 0
+	RETURN 75
+CALL GET_SKILL_POWER_復讐の反攻(GET_ROLE_CFLAG_TAKEOVER(ARG, "支援スキルランク"))
+RETURN RESULT
+
+@GET_SKILL_POWER_復讐の反攻, ARG
+SELECTCASE ARG
+	CASE 15
+		RESULT = 335
+	CASE 11 TO 14
+		RESULT = 285 + (ARG - 10) * 10
+	CASE 10
+		RESULT = 285
+	CASE 2 TO 9
+		RESULT = 60 + 15 * ARG
+	CASE 0, 1
+		RESULT = 75
+	CASEELSE
+		RESULT = 0
+ENDSELECT
+SIF FLAG:확산플래그
+	RETURN RESULT / 2
+RETURN RESULT
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_復讐の反攻,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_復讐の反攻,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_復讐の反攻, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_復讐の反攻,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_復讐の反攻,ARG
+IF ARG >= 0 && HAVE_PU_SKILL(ARG, "執事の教養")
+	RETURN GET_TYPE_NUM("빙결"), GET_TYPE_NUM("타격")
+ELSE
+	RETURN GET_TYPE_NUM("빙결")
+ENDIF
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_復讐の反攻
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　攻撃タイプ
+@SKILL_ATTACKTYPE_復讐の反攻,ARG
+RETURN GET_攻撃タイプ_NUM("物理")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_復讐の反攻, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_復讐の反攻,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_復讐の反攻,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_復讐の反攻,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_復讐の反攻
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_復讐の反攻,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_復讐の反攻, ARG = -1, ARG:1 = -1
+IF ARG >= 0 && HAVE_PU_SKILL(ARG, "アルファの本性")
+	RETURN 0, 4
+ELSE
+	RETURN 0, 0
+ENDIF
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_復讐の反攻,ARG,ARG:1,ARG:2
+#DIM DYNAMIC L_ACTOR
+#DIM DYNAMIC STOCK_ACT
+L_ACTOR = GET_ROLE_CFLAG_BTL(ARG, "突撃スキル発動者")
+TFLAG:소환공격스킬 = ARG:2
+FLAG:소환공격중 = 1
+
+CFLAG:(ARG):소환예정캐릭터 = CFLAG:L_ACTOR:캐릭터고유번호
+
+CFLAG:L_ACTOR:피소환플래그 = 1
+CFLAG:L_ACTOR:소환자ID = CFLAG:ARG:캐릭터고유번호
+STOCK_ACT = CFLAG:L_ACTOR:입력행동
+CFLAG:L_ACTOR:입력행동 = PU_SKILLNUM_GET(L_ACTOR, "復讐の反攻")
+
+CALL ATTACK_SKILL, L_ACTOR, ARG:1, CFLAG:L_ACTOR:입력행동
+CALL SKILLGAGE_CHARGE_ROLE_ホロウエージェント, L_ACTOR, L_ACTOR
+CALL SET_ROLE_CFLAG_BTL, ARG, "獲得デシベル値", RESULT
+CFLAG:L_ACTOR:입력행동 = STOCK_ACT
+CFLAG:L_ACTOR:피소환플래그 = 0
+CFLAG:L_ACTOR:소환자ID = -1
+CFLAG:(ARG):소환예정캐릭터 = -1
+
+@BASE_DECIBEL_PTS_復讐の反攻,ARG
+RETURN 100
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_復讐の反攻,ARG
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_復讐の反攻, ARG = -1
+RETURN 5
+
+@リンク不能_復讐の反攻
+RETURN 1
+
+@継承不能_復讐の反攻
+RETURN 2
+
+@SKILL_ACTIONABLE_BATTLE_復讐の反攻, ARG
+RETURN 0
+
+;　説明文の表示
+@SKILL_EXPLAIN_復讐の反攻,ARG
+PRINTL 【돌격 지원】【라이칸 전용 스킬】
+PRINTL 자동효과: 『패링 지원』 발동 후, 이하의 연동 효과가 발동한다.
+PRINTL 　　　　 「적 단체에 빙결 상성의 물리 소데미지를 준다」
+
+@SKILL_EXPLAIN_TOOLTIP_復讐の反攻, ARG
+RESULTS:0 = 자동효과: 『패링 지원』 발동 후, 이하의 연동 효과가 발동한다.
+RESULTS:1 = 　　　　 「적 단체에 빙결 상성의 물리 소데미지를 준다」
+
+@ENHANCE_SKILL_EXPLAIN_復讐の反攻, ARG
+RESULTS '= "『パリィ支援』発動後、以下の連動効果が発動する。" + "<br>"
+RESULTS += "「敵単体に氷結相性の物理小ダメージを与える」"
+
+@SKILL_TAG_復讐の反攻
+RESULTS = 젠제로 패링 지원 돌격
+
+@SKILL_ZENZERO_PARRY_ATTACK_復讐の反攻
+RETURN 2

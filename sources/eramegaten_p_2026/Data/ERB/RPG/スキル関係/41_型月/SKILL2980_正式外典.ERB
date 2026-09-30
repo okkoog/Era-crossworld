@@ -1,0 +1,161 @@
+﻿;221013		NEO		説明文などを変更、名称変化と演出を追加
+;					消費増量(消費20→50)、威力に比してちょっとお安すぎたため。その分やや強化
+;					BH状態なら自身に物魔反射＋状態異常無効盾を付与する……盾的なスキルであるが、リーズはアタッカーな感じだよなァ。
+
+;スキル名
+@SKILL_NAME_2980,ARG
+	;ARGがいない、戦闘中でない、行動時に表示するタイミングでない、なら通常のスキル名を返す
+	;あくまで「使用する瞬間に」この名前になる
+	IF ARG == -1 || TFLAG:전투중 == 0 || FLAG:행동순1 != ARG
+		RESULTS = 정식외전
+	ELSEIF FLAG:총공격중
+		RESULTS = 가말리엘의 가호
+	;ブラッドヒート状態ならラストアークの名称に変更
+	ELSEIF 現HP割合(ARG) < 33
+		RESULTS = 正式外典・原罪抱擁
+	ELSE
+		RESULTS = 정식외전
+	ENDIF
+
+
+;　명중
+@SKILL_HITRATE_2980, ARG
+RETURN 110
+
+;　威力
+@SKILL_POWER_2980, ARG
+	IF ARG == -1
+		RETURN 200
+	ENDIF
+	;ブラッドヒート状態だと300+500＝800
+	IF 現HP割合(ARG) < 33
+		SIF FLAG:공격횟수 == 1
+			RETURN 500
+		RETURN 300
+	;通常状態だと200+350＝550
+	ELSE
+		SIF FLAG:공격횟수 == 1
+			RETURN 350
+		RETURN 200
+	ENDIF
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2980,ARG
+RETURN 2
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2980,ARG
+RETURN 2
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2980, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2980,ARG
+RETURN 50
+
+;　相性
+@SKILL_TYPE_2980,ARG
+	;타격→剣撃、突進してからパイルバンクする攻撃です
+	SIF FLAG:공격횟수 == 1
+		RETURN GET_TYPE_NUM("검격")
+	RETURN GET_TYPE_NUM("타격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2980
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2980, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2980, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2980,ARG
+	RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2980,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2980, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2980
+RETURN GET_SUCCESSION_NUM("타격")
+
+@継承不能_2980
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_2980, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2980
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2980, ARG = -1
+RETURN 15
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2980, ARG, ARG:1, ARG:2
+IF !FLAG:총공격중
+	;メッセージ表示
+	;HP条件をチェックし、強化状態であったら「BLOOD HEAT!!」を表示する
+	CALL MELTY_BLOOD_IS_BLOOD_HEAT_HP_CONDITIONS(ARG)
+	CALL ATTACK_SINGLE,ARG,POS(ARG:1),2980
+ELSE
+	CALL SKILL_INVALID_WALL, ARG, ARG, "護りの盾_聖なる加護_テトラジャ", "단체"
+ENDIF
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_2980,ARG,ARG:1
+;自分以外ならNG
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+SIF CFLAG:ARG:입력행동 != 2980
+	RETURN 0
+SIF NO:ARG != [[キャラ:리즈]]
+	RETURN 0
+SIF 現HP割合(ARG) >= 33
+	RETURN 0
+RETURN 1, CPOS(ARG)
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2980, ARG
+PRINTL 적 단체에 검격 상성과 타격 상성으로 대위력의 물리 공격을 2회 행한다.
+PRINTL 사용자의 HP가 얼마 남지 않았을 경우 위력이 향상되며, 이하의 연동 효과가 발동한다.
+PRINTL 「자신에게 데미지 방벽·상태이상 방벽·즉사 방벽을 부여한다.」
+PRINTL 　
+PRINTL 『멸망』의 개념무장, 바이올린 형태의 대방패 파일벙커, 정식외전 가말리엘을 사용한 공격.
+PRINTL 가말리엘을 겨누고 돌격하여 내리치고, 파일벙커를 박아 넣으며 선율로 올바른 질서를 구현화한다.
+PRINTL 성방패의 기사 리즈바이페의 필살기
+
+@継承部位_2980,ARG
+RESULTS = 무기
+RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2980,ARG
+RETURN 1
+;とくにない
+

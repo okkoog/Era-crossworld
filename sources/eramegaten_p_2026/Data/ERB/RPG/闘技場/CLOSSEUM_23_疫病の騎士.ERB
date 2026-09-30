@@ -1,0 +1,203 @@
+﻿
+;====================
+;条件
+;====================
+@GET_COLOSSEUM_NAME_23
+#FUNCTIONS
+RESULTS_F '= "疫病の騎士"
+RETURNF RESULTS_F
+
+@PLAYABLE_COLOSSEUM_23
+
+IF 闘技場フラグ:20:0 && 闘技場フラグ:21:0 && 闘技場フラグ:22:0 && 闘技場フラグ:23:0 == 0
+	RESULTS = 시합 랭크Ｂ　ＶＳ 역병의기사
+	RETURN 1
+ENDIF
+RETURN 0
+
+
+;====================
+;内容
+;====================
+@COLOSSEUM_23
+CUSTOMDRAWLINE =
+
+PRINTFORML 　사회자
+PRINTFORML 「레이디이이이스！ 앤！ 젠틀맨！
+PRINTFORMW 　오래 기다리셨습니다！ 오늘 주목할 카드는 이쪽！」
+PRINTFORML 
+PRINTFORMW ＞스크린에、%CALLNAME:MASTER% 일행과 상태 팀이 비춰졌다…"
+PRINTFORML 
+PRINTFORMW ＞・・・
+PRINTFORMW ＞・・・메노라의 불길이 일렁이고 있다
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+
+PRINTFORMW 「・・・마침내 최후의 결판을 낼 때가 온 것 같군」
+PRINTFORML 「우리 4기사마저 물리치는 힘・・・
+PRINTFORMW 　과연 네게 그만한 힘이 있는지 없는지」
+PRINTFORML 「고작 사람의 자식이・・・
+PRINTFORML 　어둠의 힘을 얻은 까닭에, 정명한 죽음마저 넘을 수 있는 존재가 되는지・・・」
+PRINTFORMW 「이 페일 라이더가, 최종심리를 거행하마！」
+
+CUSTOMDRAWLINE =
+WAIT
+
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+CALL SET_BOSS_ENEMY_COLOSSEUM_23, "ペイルライダー"
+CALL BATTLE_START
+CUSTOMDRAWLINE =
+
+PRINTW 마인 페일 라이더를 쓰러트렸다
+PRINTL 
+
+CUSTOMDRAWLINE =
+WAIT
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+PRINTW ￥75000을 상금으로 받았다
+PRINTFORMW %MASTER는% 150의 명성을 얻었다
+MONEY += 75000
+FLAG:명성 += 150
+FLAG:투기장명성 += 150
+闘技場フラグ:23:0 = 1
+
+;合体解禁しておく
+CALL LIFTING_A_BAN([[キャラ:페일라이더]])
+
+@SET_BOSS_ENEMY_COLOSSEUM_23, L_ENEMY_NAME, L_NO = -1, L_OPT
+#DIM DYNAMIC L_NO
+#DIM DYNAMIC L_ENEMY
+#DIMS DYNAMIC L_ENEMY_NAME
+#DIMS DYNAMIC L_OPT
+#DIMS DYNAMIC L_ENEMY_TABLE, 10
+
+L_ENEMY_TABLE:0 '= "ペイルライダー"
+
+IF L_NO >= 0
+	SIF !INRANGE(L_NO, 0, VARSIZE("L_ENEMY_TABLE") - 1)
+		RETURN 0
+	L_ENEMY_NAME '= L_ENEMY_TABLE:L_NO
+ENDIF
+IF L_OPT == "名称取得"
+	SIF L_ENEMY_TABLE:L_NO == ""
+		RETURN 0
+	RESULTS '= L_ENEMY_NAME
+	RETURN 1
+ENDIF
+
+CALL SET_ENEMY,9,[[キャラ:페일라이더]],70,0, 1
+L_ENEMY = CHARANUM - 1
+CFLAG:L_ENEMY:ＨＰ보정 += 4000
+CFLAG:L_ENEMY:ＭＰ보정 += 5000
+CFLAG:L_ENEMY:행동횟수 = 2
+CSTR:L_ENEMY:증원패턴 = ペイルライダーの
+ABL:L_ENEMY:스킬6 = [[스킬:황천의회심]]
+CSTR:L_ENEMY:사고패턴 = 闘技場ペイルライダー
+ABL:L_ENEMY:아이템1 = GETNUM(ITEM, "왕관의메노라")
+ABL:L_ENEMY:입수확률1 = 100
+ABL:L_ENEMY:아이템2 = GETNUM(ITEM, "스킬카드【전염병생산】")
+ABL:L_ENEMY:입수확률2 = 100
+
+CALL CLEAR_ALL_SKILL, L_ENEMY
+CALL SET_SKILL, L_ENEMY, "전염병생산"
+CALL SET_SKILL, L_ENEMY, "부흐바리온"
+CALL SET_SKILL, L_ENEMY, "마하・부흐바리온"
+CALL SET_SKILL, L_ENEMY, "베놈재퍼"
+CALL SET_SKILL, L_ENEMY, "혼탁의장기"
+CALL SET_SKILL, L_ENEMY, "황천의회심"
+CALL SET_SKILL, L_ENEMY, "용의안광"
+
+VARI L_POS, 4
+VARI LCOUNT
+L_POS = 15, 8, 10, 13
+FOR LCOUNT, 0 , 4
+	CALL SET_ENEMY,L_POS:LCOUNT,[[キャラ:로아]],63,0,0
+	L_ENEMY = CHARANUM - 1
+	CFLAG:L_ENEMY:ＨＰ보정 += 500
+	CFLAG:L_ENEMY:ＭＰ보정 += 500
+	ABL:L_ENEMY:스킬1 = [[스킬:무드온]]
+	ABL:L_ENEMY:스킬2 = [[스킬:무거운한숨]]
+	ABL:L_ENEMY:스킬3 = [[스킬:부흐다인]]
+	ABL:L_ENEMY:스킬4 = [[스킬:무거운공기]]
+	ABL:L_ENEMY:스킬5 = [[스킬:옥쇄파]]
+NEXT
+
+;=======================================================================
+;ペイルライダー行動パターン
+;=======================================================================
+@SET_ACTION_闘技場ペイルライダー,ARG
+#DIM DYNAMIC LCOUNT
+CFLAG:ARG:입력행동 = 0
+CFLAG:ARG:타겟 = 0
+;HPが半分以下の場合は眼光の判定を行う
+IF RAND:2 == 0 && 現HP割合(ARG) < 50 && CFLAG:ARG:추가행동횟수 == 0
+	CFLAG:ARG:입력행동 = [[스킬:용의안광]]
+ELSEIF FLAG:경과턴수 == 0 && CFLAG:ARG:행동한횟수 == 0
+	CFLAG:ARG:입력행동 = [[스킬:혼탁의장기]]
+ELSE
+	;異常もちの数だけペストクロップの追加判定を行う
+	FOR LCOUNT, 1, 7
+		SIF !IS_TARGET_ABLE(POS(LCOUNT))
+			CONTINUE
+		SIF IS_BADSTATE(POS(LCOUNT), "GOOD")
+			CONTINUE
+		SIF RAND:4
+			CONTINUE
+		CFLAG:ARG:입력행동 = [[스킬:전염병생산]]
+		BREAK
+	NEXT
+ENDIF
+IF CFLAG:ARG:입력행동 == 0
+	SELECTCASE RAND:100
+		CASE IS < 10
+			CFLAG:ARG:입력행동 = 0
+		CASE IS < 30
+			CFLAG:ARG:입력행동 = [[스킬:전염병생산]]
+		CASE IS < 40
+			CFLAG:ARG:입력행동 = [[스킬:부흐바리온]]
+		CASE IS < 50
+			CFLAG:ARG:입력행동 = [[스킬:마하・부흐바리온]]
+		CASE IS < 60
+			CFLAG:ARG:입력행동 = [[스킬:혼탁의장기]]
+		CASE IS < 70
+			CFLAG:ARG:입력행동 = [[스킬:베놈재퍼]]
+		CASEELSE
+			FOR LCOUNT, 7, 17
+				SIF POS(LCOUNT) >= 0
+					CONTINUE
+				BREAK
+			NEXT
+			IF LCOUNT == 17
+				CFLAG:ARG:입력행동 = 0
+			ELSE
+				CFLAG:ARG:입력행동 = [[스킬:소환]]
+			ENDIF
+	ENDSELECT
+ENDIF
+
+CALL CHECK_ACTIONABLE,ARG,CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+SIF CFLAG:ARG:타겟 == 0
+	CALL RANDOM_TARGET,ARG,CFLAG:ARG:입력행동
+RETURN 0
+
+@増援パターン_ペイルライダーの, ARG, ARG:1, ARG:2
+CALL SET_ENEMY,ARG:1,[[キャラ:로아]],63,0,0
+CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+CFLAG:(CHARANUM-1):ＭＰ보정 += 500
+ABL:(CHARANUM-1):스킬1 = [[스킬:무드온]]
+ABL:(CHARANUM-1):스킬2 = [[스킬:무거운한숨]]
+ABL:(CHARANUM-1):스킬3 = [[스킬:부흐다인]]
+ABL:(CHARANUM-1):스킬4 = [[스킬:무거운공기]]
+ABL:(CHARANUM-1):스킬5 = [[스킬:옥쇄파]]
+CALL SYNC_STATUS,(CHARANUM-1)
+CALL HEALTH_CHARA,(CHARANUM-1)
+SIF ARG:2 == 2
+	RETURN 1
+RETURN 0

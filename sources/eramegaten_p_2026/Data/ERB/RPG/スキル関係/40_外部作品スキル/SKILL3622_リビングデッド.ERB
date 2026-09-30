@@ -1,0 +1,369 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+;スキル名
+@SKILL_NAME_3622,ARG
+RESULTS = 리빙데드
+
+;　명중
+@SKILL_HITRATE_3622, ARG
+RETURN 80
+
+;　威力
+@SKILL_POWER_3622, ARG
+RETURN 80;基本はゲージ増加技なので威力は低く。
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3622,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3622,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3622, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3622,ARG
+RETURN 6
+
+;　相性
+@SKILL_TYPE_3622,ARG
+RETURN GET_TYPE_NUM("주살")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3622
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3622, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3622, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_3622,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3622,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3622, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3622
+RETURN GET_SUCCESSION_NUM("지원")
+
+;속도보정
+@SKILL_SPEED_3622, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3622
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3622, ARG = -1
+RETURN 16
+
+@継承不能_3622
+RETURN 1
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3622, ARG, ARG:1, ARG:2
+#LOCALSSIZE 2
+
+LOCAL = POS(ARG:1)
+;自分には確定で3付与なのでここでやる。
+CALL SKILLGAGE_H_ADD,ARG,3622,3
+PRINTFORM ＞%CALLNAME:ARG%의 주위에서 무수한 사령이 솟구쳐
+CALL BTL_JUDG_HIT, ARG, LOCAL, 150, GET_TYPE_NUM("주살"), 2, 2
+;CALL BTL_JUDG_HIT_2,ARG,LOCAL,150
+IF RESULT == 1
+	PRINTFORMW 나와 %CALLNAME:LOCAL%에게 덮쳐들었다!
+	PRINTL
+	;ダメージ処理はここでやっておく
+	CALL ATTACK_SINGLE,ARG,LOCAL,3622
+	
+	;死霊カウンター付与合計が10以上の場合は10へと修正する
+	LOCAL = SKILLGAGE_H_GET(ARG,3622)
+	SIF LOCAL > 10
+		CALL SKILLGAGE_H_SET(ARG,3622,10)
+		
+	IF (POS(ARG:1)) > 0
+		;対象の呪殺相性が反射吸収でなく、かつ相手がまだ生きていたら相手にも死霊カウンターを付与する。
+		;でもよく考えたら別に呪殺耐性持ちを除外する必要はない気がする。判断は保留。
+		;付与には自身のスキルゲージDを使用。1桁目にダミー噛ませた上でPOS7（2桁目）～POS16（11桁目）を使用して疑似再現。
+		LOCAL = POS(ARG:1)
+		IF (MAXBASE:LOCAL:주살 != 999 || MAXBASE:LOCAL:주살 >= 0)
+			;ARG:1に対応したDゲージの桁の入力数を抽出
+			LOCAL:2 = SKILLGAGE_D_GET(ARG,3622)
+			LOCAL:4 = LOCAL:2 / POWER(10,ARG:1 - 6)
+			LOCAL:4 = LOCAL:4 - ((LOCAL:4 / 10)*10)
+			;加算値の確定。桁溢れしそうな場合は加算値を減らす。
+			IF LOCAL:4 >=  8
+				LOCAL:3 = 9 - LOCAL:4
+			ELSE
+				LOCAL:3 = 2
+			ENDIF
+			;加算処理本体。数値の調整は既にやってあるのでポジションに対応した桁に直接ADDすればいいはず
+			CALL SKILLGAGE_D_ADD,ARG,3622,LOCAL:3 * POWER(10,(ARG:1-6))
+			;PRINTFORML ●SKILLGAGE_D_3622＝{SKILLGAGE_D_GET(ARG,3622)}
+			PRINTL
+			PRINTFORMW ＞%CALLNAME:(POS(ARG:1))%에게 무수한 사령이 달라붙었다!
+			
+			IF SKILLGAGE_H_GET(ARG,3622) >= 5
+				;この時点で自身の死霊カウンターが6以上の場合、付与範囲を拡大する。(前後左右4体が対象。死んでるか不在なら飛ばす)
+				;付与値は固定1。発動率も死霊カウンター累積値に依存。複数対象に2点固定配布は流石に…
+				FOR LOCAL:6,1,4
+					SELECTCASE LOCAL:6
+					CASE 1
+						LOCAL:5 =ARG:1 - 1
+					CASE 2
+						LOCAL:5 =ARG:1 + 1
+					CASE 3
+						IF ARG:1 <=11
+							LOCAL:5 =ARG:1 + 5
+						ELSE
+							LOCAL:5 =ARG:1 - 5
+						ENDIF
+					ENDSELECT
+					SIF LOCAL:5 == 6 || LOCAL:5 == 17
+							CONTINUE
+					SIF POS(LOCAL:5) < 0
+							CONTINUE
+					IF GET_STATE(CFLAG:(POS(LOCAL:5)):상태이상) != "DYING" && RAND:10 <= SKILLGAGE_H_GET(ARG,3622)
+						LOCAL:4 = LOCAL:2 / POWER(10,LOCAL:5 - 6)
+						LOCAL:4 = LOCAL:4 - ((LOCAL:4 / 10)*10)
+						;PRINTFORMW ＞[{LOCAL:5,2}]%CALLNAME:(POS(LOCAL:5))%波及：現在数{LOCAL:4}
+						IF LOCAL:4 >= 8
+							LOCAL:3 = 9 - LOCAL:4
+						ELSE
+							LOCAL:3 = 1
+						ENDIF
+						CALL SKILLGAGE_D_ADD,ARG,3622,LOCAL:3 * POWER(10,(LOCAL:5 - 6))
+						PRINTFORMW ＞넘쳐흐른 사령이 [{LOCAL:5,2}]%CALLNAME:(POS(LOCAL:5))%에게 달라붙었다!
+					ENDIF
+				NEXT
+			ENDIF
+		ENDIF
+	ENDIF
+ELSE
+	;外した
+	PRINTFORMW 려 했으나, 제어에 실패해 주위로 흩어져버렸다……
+ENDIF
+;クリーピーフレンズが発動できるなら発動する
+;SIF SKILLGAGE_D_GET(ARG,3622) > 0 && SKILLGAGE_H_GET(ARG,3622) > 0
+;	CALL SPECIAL_ACTION_3622,ARG
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;被弾時の防御処理。
+;ゲージ蓄積が入っている場合は確率でダメージを減衰する。
+@SKILLGAGE_CHARGE_3622,ARG,ARG:1
+
+;敵死亡時の疑似付与の変動処理。
+;LOCAL:11のビットをスイッチにして二重処理を防ぐ。
+LOCAL:2 = SKILLGAGE_D_GET(ARG,3622)
+FOR LOCAL,7,17
+	;この記述は敵味方の行動後、ダメージ処理の直後に毎回挟まれるので
+	;前列への後衛エネミーの繰り上がりはこの処理が挟まった後に処理される。
+	;対象ポジションが死んでるか不在かだったら代入、消去処理を挟むだけでいいはず。
+	LOCAL:4 = LOCAL:2 / POWER(10,LOCAL - 6)
+	LOCAL:4 = LOCAL:4 - ((LOCAL:4 / 10)*10)
+	IF LOCAL:4 > 0
+		IF POS(LOCAL) < 0 || GET_STATE(CFLAG:(POS(LOCAL)):상태이상) == "DYING" 
+			IF LOCAL < 12
+				;対象が前列で、死霊カウンター付与されていて死んでいるか消滅している場合
+				;後列に誰かが居て生きてるなら数値の移し替えを行い”代入元”のビットをONにする。この処理だけ二重処理を防止すればいいはず。
+				IF POS(LOCAL+5) >= 0 && GET_STATE(CFLAG:(POS(LOCAL+5)):상태이상) != "DYING" 
+					SIF GETBIT(LOCAL:11,LOCAL)
+						CONTINUE
+					LOCAL:5 = LOCAL:2 / POWER(10,LOCAL - 1)
+					LOCAL:5 = LOCAL:5 - ((LOCAL:5 / 10)*10)
+					CALL SKILLGAGE_D_ADD,ARG,3622,-LOCAL:4 * POWER(10,(LOCAL-6))
+					CALL SKILLGAGE_D_ADD,ARG,3622,-LOCAL:5 * POWER(10,(LOCAL-1))
+					CALL SKILLGAGE_D_ADD,ARG,3622, LOCAL:5 * POWER(10,(LOCAL-6))
+					LOCAL:10 += LOCAL:4
+					SETBIT LOCAL:11,LOCAL
+				ELSE
+				;こっちのELSEに入ったなら後ろに誰も居ないか後ろも死んでるはずなので値を除去する
+					CALL SKILLGAGE_D_ADD,ARG,3622,-LOCAL:4 * POWER(10,(LOCAL-6))
+					LOCAL:10 += LOCAL:4
+				ENDIF
+			ELSE
+				;対象が後列・死霊カウンター付与されていてかつ死んでる場合
+				;前列への繰り上がり時の処理は前述済なので一律で除去。
+				CALL SKILLGAGE_D_ADD,ARG,3622,-LOCAL:4 * POWER(10,(LOCAL-6))
+					LOCAL:10 += LOCAL:4
+			ENDIF
+		ELSE
+			IF LOCAL >= 12 && (POS(LOCAL - 5) < 0 || GET_STATE(CFLAG:(POS(LOCAL - 5)):상태이상) == "DYING")
+			;対象が死霊カウンター付与されていて死んでおらず、後列かつ前列が死んでいるか消滅している場合
+			;前列に代入処理をかけ”代入先”のビットをONにする。
+				SIF GETBIT(LOCAL:11,LOCAL - 5)
+					CONTINUE
+				LOCAL:5 = LOCAL:2 / POWER(10,LOCAL - 11)
+				LOCAL:5 = LOCAL:5 - ((LOCAL:5 / 10)*10)
+				CALL SKILLGAGE_D_ADD,ARG,3622,-LOCAL:4 * POWER(10,(LOCAL-6))
+				CALL SKILLGAGE_D_ADD,ARG,3622,-LOCAL:5 * POWER(10,(LOCAL-11))
+				CALL SKILLGAGE_D_ADD,ARG,3622, LOCAL:4 * POWER(10,(LOCAL-11))
+				LOCAL:10 += LOCAL:5
+				SETBIT LOCAL:11,LOCAL-5
+			ENDIF
+		ENDIF
+	ENDIF
+NEXT
+;ここまで書いて気付いたがこれ行動終了後のダメージ清算時に処理挟むから
+;ターン終了後にバステのスリップダメージで死んでると対処できんのでは……？
+
+;スキルゲージDの1桁目(減衰対策用ダミー)の調整用。一か所でも入力されている場合は自分の行動終了時に0にならないように加算をかける。
+IF SKILLGAGE_D_GET(ARG,3622) > 0 && ARG == ARG:1
+	LOCAL:2 = (SKILLGAGE_D_GET(ARG,3622) /10) *10
+	LOCAL:3 = SKILLGAGE_D_GET(ARG,3622) 
+	IF LOCAL:3 - LOCAL:2 <= 1
+		CALL SKILLGAGE_D_ADD,ARG,3622,5
+	ENDIF
+ENDIF
+;敵の死霊カウンターが除去されてた場合。浮いた死霊カウンターの一部を自分の行動ターンに回収する。
+IF ARG == ARG:1 && LOCAL:10 > 0
+	IF LOCAL:10 > 1
+		PRINTL
+		PRINTFORMW ＞주위로 흩어져 있던 무수한 사령이 %CALLNAME:ARG%의 곁으로 모여든다……
+		PRINTL
+		CALL SKILLGAGE_H_ADD,ARG,3622,RAND(1,LOCAL:10)
+	ENDIF
+	LOCAL:10 = 0
+	LOCAL:11 = 0
+ENDIF
+;IF (GETBIT(CFLAG:ARG:受けフラグ,18) || GETBIT(CFLAG:ARG:受けフラグ,19)) && SKILLGAGE_H_GET(ARG,3622) > 0
+;攻撃を受けている場合
+IF GET_CREC_ACT(ARG:1, ARG, "ATTACK") && SKILLGAGE_H_GET(ARG,3622) > 0
+	;発動率は現状のスキルゲージ量に依存。
+	IF RAND:15 <= SKILLGAGE_H_GET(ARG,3622)
+		;IF CFLAG:ARG:현데미지 > 0 && GET_STATE(CFLAG:(ARG):상태이상) != "DYING" 
+		;ダメージを受けている場合
+		IF CFLAG:ARG:현데미지 > 0 && GET_STATE(CFLAG:(ARG):상태이상) != "DYING"
+			;通常：生きてたら１～４割のダメージ減衰(ダメージ食らった後に処理が入るので正確には減衰量分の回復)
+			LOCAL:2 = RAND(1,4)
+			SIF LOCAL:2 > SKILLGAGE_H_GET(ARG,3622) 
+				LOCAL:2 = SKILLGAGE_H_GET(ARG,3622) 
+			LOCAL = (CFLAG:ARG:현데미지 / 10) * (LOCAL:2)
+			PRINTFORML 
+			PRINTFORMW ＞%CALLNAME:ARG% 주위의 사령이 데미지의 일부를 대신 받아내고 소멸했다!
+			PRINTFORML 
+			PRINTFORML 　　TARGET:[{CPOS(ARG),2}]%CALLNAME:ARG,20,LEFT%　>>>>>　데미지 {LOCAL} 감쇠
+			CALL VAR_HP,(ARG),LOCAL
+			CALL SKILLGAGE_H_ADD,ARG,3622,-LOCAL:2
+		;呪殺：ダメージ無しの技ならゲージを増加させる。即死してかつゲージが9以上あるならゲージを全消費してHP1/10で蘇生。
+		;ELSEIF (GETBIT(CFLAG:ARG:受けフラグ,11)) && SKILLGAGE_H_GET(ARG,3622) > 0
+		ELSEIF GET_CREC_ACT(ARG:1, ARG, "ATTACK", "주살")
+			IF GET_STATE(CFLAG:(ARG):상태이상) == "DYING" && SKILLGAGE_H_GET(ARG,3622) > 8
+				PRINTFORML
+				PRINTFORMW ＞%CALLNAME:(ARG)%의 무너져 내린 신체에 무수한 영혼이 모여 활력을 불어넣는다!
+				CFLAG:(ARG):상태이상 = 0
+				CALL VAR_HP,(ARG),MAXBASE:(ARG):ＨＰ/10
+				CALL SKILLGAGE_H_SET,ARG,3622,0
+			ELSE
+				PRINTFORML
+				PRINTFORMW ＞사예의 마력에 반응해 %CALLNAME:ARG% 주위의 사령들이 활성화되었다!
+				CALL SKILLGAGE_H_ADD,ARG,3622,1
+				;スキルゲージの上限突破防止
+				SIF SKILLGAGE_H_GET(ARG,3622) > 10
+					CALL SKILLGAGE_H_SET,ARG,3622,10
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+;スキルゲージが上限突破しないように調整
+SIF SKILLGAGE_H_GET(ARG,3622) > 10
+	CALL SKILLGAGE_H_SET,ARG,3622,10
+RETURN 0
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@SKILLGAGE_DISPLAY_3622,ARG
+#LOCALSSIZE 1
+
+SETCOLOR 0xFF0000
+	;味方分を見る(ほぼありえないけど一応全員分確認)
+	FOR LOCAL:2,1,7
+		SIF POS(LOCAL:2) >= 0
+			LOCAL = SKILLGAGE_H_GET(POS(LOCAL:2),3622)
+		IF LOCAL > 0 && POS(LOCAL:2) > 0
+			PRINTL 
+			PRINTFORM ＞%CALLNAME:POS(LOCAL:2)%의 주위
+			SELECTCASE LOCAL
+			CASE 1,2
+				PRINTFORM 에, 무수한 도깨비불이 춤추고 있다…
+			CASE 3,4,5
+				PRINTFORM 에서, 대량의 원령이 소용돌이치고 있다…
+			CASE 6,7,8
+				PRINTFORM 의 지면에서 무수한 시체가 기어 나와 꿈틀거리고 있다…
+			CASE 9,10
+				PRINTFORM 에서, 무수한 사령과 원령이 끔찍한 소리를 지르고 있다…
+			ENDSELECT
+			PRINTFORML (사령 카운터: {LOCAL})
+		ENDIF
+	NEXT
+	
+	;敵の疑似付与分を見る
+	;Dゲージの2桁目～11桁目にPOS7～17に対応した付与値が格納されているのでざっと。
+	LOCAL:3 =SKILLGAGE_D_GET(ARG,3622)
+	FOR LOCAL:2,7,17
+		LOCAL:4 = LOCAL:3 / POWER(10,LOCAL:2 - 6)
+		LOCAL:4 = LOCAL:4 - ((LOCAL:4 / 10)*10)
+		IF POS(LOCAL:2) >= 0 && LOCAL:4 > 0
+			PRINTFORM ＞[{LOCAL:2,2}]%CALLNAME:(POS(LOCAL:2))%의 주위
+			SELECTCASE LOCAL:4
+			CASE 1,2
+				PRINTFORM 에, 무수한 도깨비불이 춤추고 있다…
+			CASE 3,4,5
+				PRINTFORM 에서, 대량의 원령이 소용돌이치고 있다…
+			CASE 6,7,8
+				PRINTFORM 의 지면에서 무수한 시체가 기어 나와 꿈틀거리고 있다…
+			CASE 9,10
+				PRINTFORM 에서, 무시무시할 정도로 사령과 원령이 끔찍한 소리를 지르고 있다…
+			ENDSELECT
+			PRINTFORML (사령 카운터: {LOCAL:4})
+		ENDIF
+	NEXT
+RESETCOLOR
+
+@SKILL_EXPLAIN_3622, ARG
+PRINTL 무수한 사령과 영혼을 불러일으켜, 적 1체를 향해 해방하여 공격한다.
+PRINTL 적 1체에 주살 상성으로 소 데미지를 준다. 후열 사용 가능.
+PRINTL 
+PRINTL 이 기술로 불러낸 사령의 일부는 그대로 발동자와 대상의 곁에 잔류한다.
+PRINTL (자신의 사령 카운터를 3 증가시킨다, 상대가 주살 무효, 반사, 흡수가 아닌 경우 상대에게 사령 카운터를 2 부여한다)
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3622,ARG
+RETURN 1
+;とくにない
+

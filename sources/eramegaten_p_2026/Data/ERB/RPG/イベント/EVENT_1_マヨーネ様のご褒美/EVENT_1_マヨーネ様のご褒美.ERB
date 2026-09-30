@@ -1,0 +1,550 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_01.ERB
+;	Facility	:マヨーネ様のご褒美イベント群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		XXXX					作成
+;	002		2017/09/19		kuma					マヨーネ加入条件レベルの変更
+;	003		2019/03/02		JK好き					マヨーネ入手後そのまま調教する選択肢追加 調教しない場合時間経過しない様に変更
+;	004		2020/06/13		名無し					ドリーとマリに初期異常経験が付く様に
+;													これで親愛ルートが捗るね
+;													さらに　CFLAG:LOCAL:이벤트가입　を設定しました。口上を書く時に利用してください
+;													CFLAG:1		輪姦されちゃいました
+;													CFLAG:2		ふたなりに改造されちゃいました
+;													CFLAG:3		輪姦調教されて60日が経ちました。獣とのSEXも経験しました
+;													CFLAG:4		輪姦調教とふたなり改造されて60日が経ちました。獣とのSEXも経験しました
+;													CFLAG:5		輪姦調教されて60日が経ちました。崩壊して達人になりました。
+;	005		2022/05/04		名無し					スキルや素質が異なる達人化したドリマリの加入イベントを作りました。
+;	006		2023/02/06		P(bazzile)				キャラデータの保持を考慮してChara.ERBでフラグ処理をする形にしました。
+;													事前情報無しでイベントの条件をみたすのが絶望的なので、20日以内達成であえて保留して5日で壊してもらうルートを追加しました
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;	001		2024/06/10		P(bazzile)				マヨーネを調教する場合、調教手番を消費しないように変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;イベントフラグ:1:0 = マヨ様の状態( 3仲魔に )
+;イベントフラグ:1:1 = 組織から警告を受けたか( -1未受領 0イベント未発生 1受けた(イベント前) 2受けた(イベント後) )
+;イベントフラグ:1:2 = 保留して崩壊させるか、達人にするか(1 = 붕괴　2 = 달인)
+;イベントフラグ:1:3 = 受け取りの保留日
+;====================
+;条件
+;====================
+@GET_EVENT_NAME_1
+#FUNCTIONS
+RESULTS_F '= "마요네님의포상"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_1
+;ノルマ3回達成後
+;IF FLAG:조직공헌도 >= 350000 && (イベントフラグ:1:0 < 2 || (イベントフラグ:1:0 == 2 && BASE:MASTER:LV > 30))
+;	SIF イベントフラグ:1:1 == 0
+;		イベントフラグ:1:1 = -1
+;	RESULTS = 마요네님의포상
+;	RETURN 1
+;エンドレス突入前で50日経過
+;ELSEIF DAY > 50 && GROUPMATCH(イベントフラグ:1:1,0,1) && FLAG:게임모드 < 9
+;	イベントフラグ:1:1 = 1
+;	RESULTS = マヨーネ様の警告
+;	RETURN 1
+;ENDIF
+;RETURN 0
+;---- EDIT 006 ADD START -------------------------
+;保留している場合は日数の条件を満たすことでイベントを再出現させる
+IF イベントフラグ:1:2
+	IF DAY >= イベントフラグ:1:3 + 5
+		RESULTS = 마요네님의포상
+		RETURN 1
+	ENDIF
+	RETURN 0
+ENDIF
+;---- EDIT 006 ADD END -------------------------
+;2022/04/01　修正。５０日以降経過時に貢献度35万いくと、イベント名が「ご褒美」なのに内容が「警告」になるので、順番変更
+;エンドレス突入前で50日経過
+IF DAY > 50 && GROUPMATCH(イベントフラグ:1:1,0,1) && FLAG:게임모드 < 9
+	イベントフラグ:1:1 = 1
+	RESULTS = 마요네 님의 경고
+	RETURN 1
+ELSEIF FLAG:조직공헌도 >= 350000 && (イベントフラグ:1:0 < 2 || (イベントフラグ:1:0 == 2 && BASE:MASTER:LV > 30))
+	SIF イベントフラグ:1:1 == 0
+		イベントフラグ:1:1 = -1
+	RESULTS = 마요네 님의 포상
+	RETURN 1
+ENDIF
+RETURN 0
+
+
+
+
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_1
+#DIM TRAIN_STATE;キャラ加入時の調教段階 ≒ イベント加入フラグ
+VARSET LOCAL,0
+;保留して崩壊
+IF イベントフラグ:1:2 == 1
+	イベントフラグ:1:2 = 0
+	SIF FLAG:초기파트너 == [[キャラ:도리]]
+		GOTO COLLAPSE_4506
+	SIF FLAG:초기파트너 == [[キャラ:마리]]
+		GOTO COLLAPSE_4505
+;保留して達人
+ELSEIF イベントフラグ:1:2 == 2
+	イベントフラグ:1:2 = 0
+	SIF FLAG:초기파트너 == [[キャラ:도리]]
+		GOTO TECHNIC_4506
+	SIF FLAG:초기파트너 == [[キャラ:마리]]
+		GOTO TECHNIC_4505
+ELSEIF イベントフラグ:1:1 == 1
+	;マヨーネ様の警告
+	イベントフラグ:1:1 = 2
+	PRINTFORMW 어느날, 갑자기 마요네가 %CALLNAME:MASTER%의 사무실을 찾아왔다
+	PRINTFORMW 표정을 보면 좋은 소식이 있어서 방문한건 아닌 것 같다…
+	PRINTL
+	PRINTW 「성실하게 임무를 수행하고 있는 것일까. 후후후」
+	PRINTW 「오늘은 당신에게 통보…아니, 경고를 하러 왔어요」
+	PRINTL
+	PRINTW 마요네는 미소를 지은채, 말을 이었다
+	PRINTL
+	PRINTW 「요컨대, 조직내에서 당신의 입장이 의심된다 이거야」
+	PRINTW 「이대로라면…이렇게, 누군가 쓸모없는 돼지를 처리해야 될지도 몰라요」
+	PRINTL
+	PRINTW 시선을 떨어뜨린 채, 손에 든 우산형 COMP를 돌리는 마요네。
+	PRINTW …여기에서 저항의 의지를 보인다면, 지금 당장이라도…해버리려는 듯이 보인다。
+	PRINTL
+	PRINTW 「그건 매우 실망스러운 일이에요. 당신에게도…그리고 나를 위해서도」
+	PRINTW 「잊어버렸나요, 조직이 무엇을 요구하는지」
+	IF TALENT:MASTER:복종 || TALENT:MASTER:예속
+		PRINTW 「응답에 따라서는 즉시 머리를 날려버릴 수 있어요. 그 동물 수준의 뇌 구조에서 필사적으로 생각해주세요？」
+	ENDIF
+	PRINTL
+	PRINTW ――조직의 명령을 받고, 의뢰를 완수하는 것。
+	PRINTW ――조직의 혈액…자금을 차질없이 납부하는 것。
+	PRINTFORMW 바싹 마른 구멍에서, 나올리 없는 침을 삼키면서 %MASTER는% 대답했다。
+	PRINTL
+	IF TALENT:MASTER:복종 || TALENT:MASTER:예속
+		PRINTW 「돼지로서는 괜찮은 대답이군요」
+	ELSE
+		PRINTW 「그 말대로」
+	ENDIF
+	PRINTW 「후후후…당신도 조직의 일원으로서의 의식이 있는 것 같아 안심했어요」
+	PRINTL
+	PRINTW 우산을 접고, 발길을 돌린다。
+	PRINTW …용건은 끝났단 말인가。
+	PRINTFORMW 순간 긴장이 풀린 %CALLNAME:MASTER%에게 용건을 끝낸 것처럼, 마요네가 입을 열었다。
+	PRINTL
+	PRINTW 「다음에 만날 때가 기대되는 군요, 그럼 안녕히」
+	PRINTL
+	PRINTFORMW 《일부 엔딩을 달성할 수 없게 되었습니다》
+
+	;PRINTW 「もしもし、労働基準監督署ですか」
+	;PRINTW 「残念だったなぁ、その番号はファントム・ソサエティ労働監察局だよ」
+	;PRINTW 「うわあああああ」
+	
+	;マヨーネ様のご褒美が出現した時の為にイベント発生フラグをきっておく
+	CALL RESET_ANNOUNCE_FLAG
+		
+ELSEIF イベントフラグ:1:0 < 2
+	;마요네님의포상
+	PRINTFORMW 자금도 순조롭게 납금하는 나날의 하루, 갑자기 마요네가 %CALLNAME:MASTER%의 사무소를 방문해 왔다。
+	PRINTL
+	PRINTW 「성실하게 임무를 수행하고 있는 것 같네요. 기특하네, 기특해」
+	SIF FLAG:게임모드 != 9
+		PRINTW 「그렇다고해도 잠시 방심하면 금새 어쩔 방법이 없게 되어요? 후후후」
+	PRINTL 
+	PRINTL 그렇게 말하면서 마요네가 손가락을 튕기자、
+	
+	;経過日数で分岐　20日以内なら綺麗な状態、それ以後は調教済み
+	IF DAY < 21
+		SELECTCASE FLAG:초기파트너
+			CASE [[キャラ:도리]]
+				PRINTW 여자를 넣은 우리가 옮겨져 들어왔다。
+				PRINTL 
+				PRINTW 「오늘은 성실한 당신에게 포상을 준비해 왔어요」
+				PRINTL 
+				PRINTW 어딘가 덧없어 보이는 그 여성은, 자신의 몸을 감싸면서 마요네를 강하고 노려보고 있다。
+				PRINTW 그렇지만, 단 한 장의 백의밖에 입지 않아서 얼굴을 붉히고, 수치심에 떨고 있다。
+				PRINTL 
+				PRINTW 「이 아이가 노력한 당신에게의 포상. 오늘을 위해서 깨끗한 상태로 해 두었어요」
+				PRINTW 「어때? 그럴듯하겠지요？」
+				PRINTL 
+				CALL INPUT_YN, "받는다", "어딘가 부족하다고 답한다"
+				IF RESULT
+					PRINTW 「어머, 별로 기뻐 보이지 않네」
+					PRINTW 「이런 신품은 취향에 안 맞으려나」
+					PRINTL 
+					PRINTW 마요네는 뺨에 손을 대고, 잠시 생각에 잠겼다…
+					PRINTL 
+					PRINTW 「모처럼 준비한 포상인데 기뻐해 주지 않으면 나로서도 곤란한걸」
+					PRINTW 「그래. 조금만 더 시간을 준다면 재미있게 만들어 줄게」
+					PRINTW 「아니면 그러네… 에이전트로서 쓸모가 있게 만들어 주는 것도 좋겠어」
+					PRINTW 「뭐, 어느 쪽이든 망가져 버릴 것 같긴 하지만…」
+					PRINTL 
+					PRINTW 마요네의 말을 듣고, 끌려온 여자의 안색이 새파랗게 질려간다…
+					PRINTL 
+					PRINTW 자, 어떻게 할까？
+					PRINTL 
+					PRINTL [0] 역시 순순히 받는다
+					PRINTL [1] 재미있게 만들어 달라 한다
+					PRINTL [2] 쓸모 있게 만들어 달라 한다
+					CALL INPUTINT, 0, 1, 2
+					IF RESULT
+						イベントフラグ:1:2 = RESULT
+						イベントフラグ:1:3 = DAY
+						PRINTW 「그럼, 그러네… 5일 정도 기다려 줄 수 있을까? 서둘러서 마무리해 둘 테니까」
+						PRINTW 「후후, 점점 기대되는걸」
+						PRINTL 
+						PRINTW 마요네는 여자를 데리고 돌아갔다…
+						;マヨーネ様のご褒美が出現した時の為にイベント発生フラグをきっておく
+						CALL RESET_ANNOUNCE_FLAG
+						RETURN 0
+					ENDIF
+				ENDIF
+				PRINTW 양호교사 모치즈키 마리를 손에 넣었다.
+				PRINTL 
+				CALL ADD_NEW_COMPANION,[[キャラ:마리]],500
+				LOCAL:1 = GETCHARA([[キャラ:마리]])
+			CASE [[キャラ:마리]]
+				PRINTW 소녀를 넣은 우리가 옮겨져 들어왔다。
+				PRINTL 
+				PRINTW 「오늘은 성실한 당신에게 포상을 준비해 왔어요」
+				PRINTL 
+				PRINTW 약이 효과가 있는지, 실오라기 하나 감기지 않는 모습이라고 하는데 차가운 우리 안에서 한가하게 숨소리를 내고 있다。
+				PRINTW 유두도 비렬도, 한번도 사용되지 않은 것을 나타내듯이 깨끗한 핑크색을 유지하고 있다。
+				PRINTL 
+				PRINTW 「이 아이가 노력한 당신에게의 포상.오늘을 위해서 깨끗한 상태로 해 두었어요」
+				PRINTW 「어때? 그럴듯하겠지요？」
+				PRINTL 
+				CALL INPUT_YN, "받는다", "어딘가 부족하다고 답한다"
+				IF RESULT
+					PRINTW 「어머, 별로 기뻐 보이지 않네」
+					PRINTW 「이런 신품은 취향에 안 맞으려나」
+					PRINTL 
+					PRINTW 마요네는 뺨에 손을 대고, 잠시 생각에 잠겼다…
+					PRINTL 
+					PRINTW 「모처럼 준비한 포상인데 기뻐해 주지 않으면 나로서도 곤란한걸」
+					PRINTW 「그래. 조금만 더 시간을 준다면 재미있게 만들어 줄게」
+					PRINTW 「아니면 그러네… 에이전트로서 쓸모가 있게 만들어 주는 것도 좋겠어」
+					PRINTW 「뭐, 어느 쪽이든 망가져 버릴 것 같긴 하지만…」
+					PRINTL 
+					PRINTW 자, 어떻게 할까？
+					PRINTL 
+					PRINTL [0] 역시 순순히 받는다
+					PRINTL [1] 재미있게 만들어 달라 한다
+					PRINTL [2] 쓸모 있게 만들어 달라 한다
+					CALL INPUTINT, 0, 1, 2
+					IF RESULT
+						イベントフラグ:1:2 = RESULT
+						イベントフラグ:1:3 = DAY
+						PRINTW 「그럼, 그러네… 5일 정도 기다려 줄 수 있을까? 서둘러서 마무리해 둘 테니까」
+						PRINTW 「후후, 점점 기대되는걸」
+						PRINTL 
+						PRINTW 마요네는 소녀를 데리고 돌아갔다…
+						;イベント終了
+						CALL RESET_ANNOUNCE_FLAG
+						RETURN 0
+					ENDIF
+				ENDIF
+				PRINTW 넷 아이돌 코마키 미도리를 손에 넣었다.
+				PRINTL 
+				CALL ADD_NEW_COMPANION,[[キャラ:도리]],500
+				LOCAL:1 = GETCHARA([[キャラ:도리]])
+			CASEELSE
+				PRINTW 두 명의 여자를 넣은 우리가 옮겨져 들어왔다。
+				PRINTL 
+				PRINTW 「오늘은 성실한 당신에게 포상을 준비해 왔어요」
+				PRINTL 
+				PRINTW 태어날 때 그대로의 모습으로 우리에 들어가 있는 두 명은, 이를 위해서인지 깨끗한 상태이다。
+				PRINTL 
+				PRINTW 「이 아이들이 노력한 당신에게로의 포상. 오늘을 위해서 깨끗한 상태로 해 두었어요」
+				PRINTW 「어때? 그럴듯하겠지요？」
+				PRINTL 
+				PRINTW 양호교사 모치즈키 마리와 넷 아이돌 코마키 미도리를 손에 넣었다
+				PRINTL 
+				CALL ADD_NEW_COMPANION,[[キャラ:마리]],500
+				CALL ADD_NEW_COMPANION,[[キャラ:도리]],500
+				LOCAL:1 = GETCHARA([[キャラ:도리]])
+				LOCAL:2 = GETCHARA([[キャラ:마리]])
+		ENDSELECT
+		IF FLAG:전투난이도 < 3 && FLAG:미조교시함락 > 1
+;			;戦闘難易度がNOMAL以下かつ未調教時陥落オプションがオンの場合、戦力として加入させることが出来る
+			PRINTL 
+			PRINTFORML 그럼, 그녀\@ LOCAL:2 ?  들 #  \@의 처우를 어떻게 할까……
+			CALL INPUT_YN("노예로 삼는다","전력으로 삼는다")
+			IF RESULT == 0
+				PRINTFORML %MASTER는%, 그녀\@ LOCAL:2 ? 들 #  \@을(를) 노예 방으로 집어넣으라고 부하에게 명령했다。
+			ELSE
+				PRINTFORML 마요네가 떠난 후, %MASTER는% 어떠한 이유로 팬텀에 따르고 있고
+				PRINTW 얌전히 자신을 도우면 당장은 아니지만 돌아갈 수도 있다, 라고 설명했다。
+				PRINTFORML 별로 신빙성도 없고 설득력도 부족한 이야기였지만, \@ LOCAL:2 ? 그녀들은 #  \@ 노리개가 되는 것보다는…하고 마지못해 납득한 모양이다。
+				CALL SET_TALENT_PARTY_JOINABLE, (LOCAL:1), "신용"
+				SIF LOCAL:2 > 0
+					CALL SET_TALENT_PARTY_JOINABLE, (LOCAL:2), "신용"
+			ENDIF
+		ENDIF
+	ELSE
+		SELECTCASE FLAG:초기파트너
+			CASE [[キャラ:도리]]
+				;特定の条件で達人化
+				IF DAY > 80 && DAY % 7 == 0
+					$TECHNIC_4506
+					IF イベントフラグ:1:2
+						PRINTW 「약속대로, 다시 당신을 위한 포상을 준비해 드렸어요」
+					ELSE
+						PRINTW 「오늘은 당신에게 포상을 준비해 왔어요」
+					ENDIF
+					PRINTL 「들어오렴」
+					IF イベントフラグ:1:2
+						PRINTW 마요네의 명령에, 이전에 보았던 여성이 들어왔다.
+						PRINTL 백의 한 장만을 걸친 모습의 여성은 두리번거리며 주위를 둘러보고 있다.
+						PRINTW 그 몸짓은 마치 어린아이 같아서, 이전과 같은 가련한 분위기는 사라져 있었다.
+					ELSE
+						PRINTW 마요네의 명령을 받고 한 여자가 찾아왔다。
+						PRINTL 백의 한 벌만 입은 여자는 주변을 힐끔힐끔 보고 있다。
+						PRINTW 그 동작은 마치 어린 아이 같다
+					ENDIF
+					PRINTL 
+					PRINTL 「오늘부터 이 아이는 당신의 것이에요」
+					PRINTW 「다소 버릇이 있지만 칼솜씨는 일류에요」
+					PRINTL 
+					PRINTL 「마리 쨩입니다. 잘 부탁드립니다！」
+					PRINTW 여자는 한껏 큰소리로 인사를 했다
+					PRINTL 
+					PRINTW 전직 성노예인 에이전트・모치즈키 마리를 손에 넣었다
+					TRAIN_STATE = 5
+				ELSE
+					$COLLAPSE_4506
+					PRINTW 여자를 넣은 우리가 옮겨졌다。
+					PRINTFORML 
+					IF イベントフラグ:1:2
+						PRINTW 「약속대로, 다시 당신을 위한 포상을 준비해 드렸어요」
+						PRINTL 
+						PRINTW 다시 당신 앞으로 끌려온 여성은, 자위행위를 멈출 수 없을 정도로 조교를 당한 듯, 젖꼭지와 비열을 만지작거리는 손을 멈추지 못하고 있다.
+						PRINTL 낯선 장소인데도 불구하고, 색소가 침착된 젖꼭지와 거칠게 사용되었을 비열을 숨기려 하지도 않은 채
+						PRINTW 그저 쾌락을 탐닉하고 있을 뿐이다.
+					ELSE
+						SIF DAY < 35
+							PRINTW 「오늘은 당신에게 포상을 준비해 왔어요」
+						PRINTL 
+					PRINTW 어딘가 덧없어 보이는 그 여성은, 백의 한 장만을 입은 모습으로 마요네를 약하게 노려보고 있다。
+					PRINTW 그렇지만, 이미 자위행위를 멈출 수 없을 정도로 조교되어 버렸는지, 유두나 비렬을 만지는 손이 멈추지 않는다。
+					PRINTL 낯선 장소임에도, 색소가 침착되어 있는 유두나 사용되어버린 비렬을 숨기려고도 하지 않고
+					PRINTW 그저 쾌락만을 계속 탐내고 있다。
+					ENDIF
+					PRINTL 
+					PRINTW 「오늘부터 이 아이는 당신의 것이야」
+					PRINTL 
+					IF イベントフラグ:1:2
+						PRINTW 「부하들에게도 도움을 받아서 서둘러 마무리했단다」
+						PRINTW 「다들 아직 더 쓰고 싶어 했지만, 이 정도가 즐기기엔 딱 좋지 않을까 싶어서 가져왔어」
+						PRINTW 「그런 셈이니, 확실하게 써 줘야 해?」
+						TRAIN_STATE = 3
+					;2ヶ月も使ってたんで
+					ELSEIF DAY > 60
+						PRINTW 「한동안 부하들에게 변기나 노리개 대신으로 쓰게 했지만」
+						PRINTW 「이젠 쓰는 사람도 별로 없으니까 마음대로 해도 좋아요」
+						TRAIN_STATE = 3
+					ELSE
+						PRINTW 「몇번인가 다른 부하에게 변기나 노리개 대신으로 쓰게해서, 조금 버릇이 들어버렸지만」
+						PRINTW 「성욕처리를 하는데는 지장은 없으니, 마음대로 써도 좋아요」
+						TRAIN_STATE = 1
+					ENDIF
+					PRINTL 
+					PRINTW 전직 양호교사인 성 노예・모치즈키 마리를 손에 넣었다。
+					TRAIN_STATE = DAY >= 60 ? 3 # 1
+				ENDIF
+				PRINTL 
+				CALL ADD_NEW_COMPANION, [[キャラ:마리]],500,TRAIN_STATE
+			CASE 4506
+				;特定の条件で達人化
+				IF DAY > 80 && DAY % 7 == 0
+					$TECHNIC_4505
+					IF イベントフラグ:1:2
+						PRINTW 「약속대로, 다시 당신을 위한 포상을 준비해 드렸어요」
+						PRINTL 「들어오렴」
+						PRINTL 마요네의 명령에, 이전에 보았던 소녀가 들어왔다.
+						PRINTW 오늘은 무슨 애니메이션 캐릭터 같은 옷차림을 하고 있지만, 옷 위로도 알아볼 수 있을 정도로 젖꼭지가 발기해 있다
+					ELSE
+						PRINTW 「오늘은 당신에게 포상을 준비해 왔어요」
+						PRINTL 「들어오세요」
+						PRINTW 마요네의 명령을 받고 한 여자가 찾아왔다。
+						PRINTL 어느 애니메이션 캐릭터처럼 생겼는데, 옷 위로도 알 수 있을 정도로 젖꼭지가 발기되어 있다
+					ENDIF
+					PRINTL 　
+					PRINTL 「오늘부터 이 아이는 당신의 것이에요」
+					PRINTW 「다소 버릇이 있지만 마법에 재능이 있어요」
+					PRINTL 　
+					PRINTW 「이 사람이 새로운 상사래」
+					PRINTL 「어떠려나, 프로스트 군？」
+					PRINTW 소녀는 허공을 향해 이야기를 하고 있다…
+					PRINTL 　
+					PRINTW 전직 넷 아이돌인 성노예・코마키 미도리를 손에 넣었다
+					TRAIN_STATE = 5
+				ELSE
+					$COLLAPSE_4505
+					PRINTW 소녀를 담은 우리가 옮겨졌다。
+					PRINTL 
+					IF イベントフラグ:1:2
+						PRINTW 「약속대로, 다시 당신을 위한 포상을 준비해 드렸어요」
+					ELSE
+						SIF DAY < 35
+							PRINTW 「오늘은 당신에게 포상을 준비해 왔어요」
+					ENDIF
+					PRINTL 
+					PRINTW 차가운 우리안, 실오라기 하나 감기지 않은 모습으로 오로지 자위에 빠져, 추잡한 냄새를 흩뿌리고 있다。
+					PRINTFORMW %CALLNAME:MASTER%의 모습을 알아차리자, 멈추기는 커녕 마치 과시하는 것 같은 행동으로, 한층 격렬하게 자위를 계속했다。
+					PRINTL 
+					PRINTW 「오늘부터 이 아이는 당신의 것이야」
+					PRINTL 
+					IF イベントフラグ:1:2
+						PRINTW 「부하들에게도 도움을 받아서 서둘러 마무리했단다」
+						PRINTW 「젊은 여자라고 다들 의욕을 내 준 건 좋은데, 빼앗아 오는 게 정말 한바탕 일이었단다」
+						PRINTW 「그 덕에 부하들에게 원망도 잔뜩 샀으니까, 제대로 감사하고 듬뿍 즐겨 주렴?」
+						TRAIN_STATE = 3
+					ELSEIF DAY > 60
+						PRINTW 「처음에는 젊은 여자라서 부하들도 변기나 노리개 대신으로 많이 애용했지만」
+						PRINTW 「이젠 거들떠보지도 않는 모양이니 마음대로 하세요」
+						TRAIN_STATE = 3
+					ELSE
+						PRINTW 「몇번인가 다른 부하에게 변기나 노리개 대신으로 쓰게해서, 조금 버릇이 들어버렸지만」
+						PRINTW 「성욕처리를 하는데는 지장은 없으니, 마음대로 써도 좋아요」
+						TRAIN_STATE = 1
+					ENDIF
+					PRINTL 
+					PRINTW 전직 넷 아이돌인 성노예・코마키 미도리를 손에 넣었다。
+				ENDIF
+				PRINTL 
+				CALL ADD_NEW_COMPANION, [[キャラ:도리]],500,TRAIN_STATE
+			CASEELSE
+				PRINTW 두 명의 여자를 넣은 우리가 옮겨져 들어왔다。
+				PRINTL 
+				SIF DAY < 35
+					PRINTW 「오늘은 당신을 위한 포상을 준비해뒀어」
+				PRINTL 
+				PRINTW 태어날 때 그대로의 모습으로 우리에 들어가있는 두사람은, 옮겨져 온 것조차 깨닫지 못하고 몸을 섞고 있다。
+				PRINTW 서로의 유두, 애널, 비렬, 그리고 마요네에 의해 자라난 페니스를 서로 빨고, 물고, 서로 삽입한다。
+				PRINTL 
+				PRINTW 「오늘부터 이 아이들은 당신의 것이에요」
+				PRINTL 
+				IF DAY > 60
+					PRINTW 「처음에는 범해지면서 사정해서 부하들도 즐겁게 사용했었지만」
+					PRINTW 「아무도 상대해주지 않으면 이 꼴이야」
+				ELSE
+					PRINTW 「페니스를 달고서 놔두니 이렇게 되어버려서, 몇 번인가 부하들에게 변기나 노리개 대신으로 사용하게 했었지만」
+				ENDIF
+				PRINTW 「성욕처리를 하는데는 지장은 없으니, 마음대로 써도 좋아요」
+				PRINTL 
+				PRINTW 전직 양호교사・모치즈키 마리와 전직 넷 아이돌・코마키 미도리를 손에 넣었다
+				PRINTL 
+				TRAIN_STATE = DAY > 60 ? 4 # 2
+				CALL ADD_NEW_COMPANION,[[キャラ:도리]],500,TRAIN_STATE
+				CALL ADD_NEW_COMPANION,[[キャラ:마리]],500,TRAIN_STATE
+		ENDSELECT
+	ENDIF
+	IF イベントフラグ:1:0 == 0
+		PRINTL
+		PRINTFORMW 「……아직, 뭔가 더 가지고 싶은 것이 있는 것 같네？」
+		PRINTL
+		PRINTL [0] 마요네를 갖고 싶다
+		PRINTL [1] 딱히 없다
+		$INPUT_LOOP1
+		INPUT
+		IF RESULT == 0
+			IF BASE:MASTER:LV > 40
+				PRINTW 「후후…좋아요」
+				PRINTW 「강자가 약자를 먹고, 부린다」
+				PRINTW 「그것이 이 세상의 이치이며, 우리들 팬텀･소사이어티의 룰」
+				PRINTW 「지금의 당신은, 나보다 강해」
+				PRINTW 「자 주인님, 나의 몸을 마음껏 유린해 주세요」
+				PRINTL 
+				イベントフラグ:1:0 = 3
+				;BEGIN TRAIN
+				GOTO END_EVENT
+				
+			ELSE
+				PRINTW 「후후후, 빈말이라도 기뻐요」
+				PRINTL 
+				PRINTW 「그렇지만 아직 안되어요」
+				PRINTW 「당신이 나보다 강해지면, 한번 더 오세요」
+				PRINTL 
+				イベントフラグ:1:0 = 2
+			ENDIF
+		ELSEIF RESULT == 1
+			PRINTW 「어머, 그래？」
+			PRINTW 「그러면 실례하겠어요, 후후후」
+			PRINTL 
+			イベントフラグ:1:0 = 2
+		ELSE
+			GOTO INPUT_LOOP1
+		ENDIF
+		
+	ELSEIF イベントフラグ:1:0 == 1
+		IF BASE:MASTER:LV > 40
+				PRINTW 「그리고 하나 더, 선물이 있어요」
+				PRINTL 
+				PRINTW 마요네는 그런 말과 함께 스르륵 옷을 벗기 시작했다。
+				PRINTFORMW 눈과 같이 흰 피부와 함께, 유방이나 비소가 %CALLNAME:MASTER%의 눈앞에서 드러내진다。
+				PRINTL 
+				PRINTW 「이전에 당신이 원했던 나 자신이, 당신에 대한 포상입니다」
+				PRINTW 「그 때와 달리 몰라 볼 정도로 강해진 당신이라면, 나를 마음대로 할 권리가 있습니다」
+				PRINTW 「나의 몸을 마음껏 유린해 주세요, 주인님」
+				PRINTL 
+				イベントフラグ:1:0 = 3
+				;BEGIN TRAIN
+				GOTO END_EVENT
+		ELSE
+			PRINTL 
+			PRINTW 「그러면 실례하겠어요」
+			PRINTW 「다음에 만날 때는……나를 저릿저릿하게 할 정도로 강해질 거죠？」
+		PRINTL 
+			イベントフラグ:1:0 = 2
+		ENDIF
+		
+	ENDIF
+ELSE
+
+	PRINTW 사무소에 마요네를 불렀다。
+	IF BASE:MASTER:LV > 40
+		PRINTFORMW 부하인 %CALLNAME:MASTER%에게 불려 온 그녀는 잠깐 말 없이%CALLNAME:MASTER%의 몸을 바라보거나, 가볍게 만지거나했다。
+		PRINTL 
+		PRINTW 잠시동안 그러더니 마요네는 입을 열었다。
+		PRINTL 
+		PRINTW 「강하게 되었군요. 으음, 씩씩하고」
+		PRINTL 
+		PRINTW 마요네은 그렇게 말하고 스르륵 옷을 벗기 시작했다。
+		PRINTFORMW 눈과 같이 흰 피부와 함께, 유방이나 비소가 %CALLNAME:MASTER%의 눈앞에서 드러내진다。
+		PRINTL 
+		PRINTW 「강해진 것에 대해 포상을 내리겠어요」
+		PRINTW 「포상은 나 자신. 나는, 나보다도 강해진 당신을 따르겠습니다」
+		PRINTW 「자아, 나의 몸을 원하는 때에 원하는 만큼 사용해주세요, 주인님」
+		PRINTL 
+		イベントフラグ:1:0 = 3
+		;BEGIN TRAIN
+	ELSE
+		PRINTW 하지만 "지금은 바쁘다"라며 호출이 거부되었다…。
+		PRINTW …더욱 실력을 기르면 그녀도 당신의 호출을 무시할 수 없을 것이다。
+	ENDIF
+	
+	$END_EVENT
+	IF イベントフラグ:1:0 == 3
+		CALL ADD_NEW_COMPANION,[[キャラ:마요네]],1000
+		SIF RESULT
+			CALL SET_TALENT_PARTY_JOINABLE, LOCAL, "参加可能"
+		PRINTL 이대로 마요네를 조교합니까？
+		PRINTL 
+		CALL INPUT_YN("조교한다", "그만둔다")
+		IF RESULT == 0
+			TARGET = GETCHARA([[キャラ:마요네]])
+			CALL SHOP_COM_201, , "調教手番消費なし"
+		ELSE
+			PRINTW 지금은 그만두자。
+		ENDIF
+	ENDIF
+	FOR LOCAL,0,CHARANUM
+		CALL HEALTH_CHARA,LOCAL
+	NEXT
+ENDIF

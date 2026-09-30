@@ -1,0 +1,429 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILL_ACTION_HEAL.ERB
+;	Facility	:回復スキルの実行関数群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/05/02		P(bazziel)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;@GET_BASEHEAL_IN_CALC		回復スキルの効果量のベース算出関数
+;@HEAL_TARGET				回復の実動部分
+;@HEAL_SKILL				SINGLEとFIELDを統合した回復スキル
+;@HEAL_SINGLE				単体回復スキル
+;@HEAL_FIELD				範囲回復スキル
+;@CURE_STATE_SINGLE			バッドステータス回復単体
+;@CURE_STATE_FIELD			バッドステータス回復範囲
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=========================================
+;回復スキルの効果量のベース算出関数
+;L_STAT 	メインとなる戦闘ステータス
+;L_STAT:1	サブとなる戦闘ステータス
+;=========================================
+@GET_BASEHEAL_IN_CALC, L_STAT = -1, L_STAT:1 = -1
+#FUNCTION
+#DIM DYNAMIC L_STAT, 2
+RETURNF (L_STAT / 4 + L_STAT:1 / 8 + 10) * 2
+
+;=========================================
+;回復スキルの実行部分
+;ARG:0 		使用者
+;ARG:1		対象
+;ARG:2 		使用スキル
+;ARG:3 		真の場合最後にWAITで待たない
+;ARGS  		状態回復時の文章
+;ARGS:1		その他追加効果の文章
+;ARGS:2		威力判定か割合判定か
+;=========================================
+@HEAL_TARGET, ARG, ARG:1, ARG:2, ARG:3, ARGS = "", ARGS:1 = ""
+#DIM DYNAMIC TEMP
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_スキル
+#DIM DYNAMIC L_威力
+#DIM DYNAMIC L_回復量
+#DIM DYNAMIC L_回復タイプ
+#DIM DYNAMIC L_継承タイプ
+#DIM DYNAMIC L_超過回復量
+#DIM DYNAMIC 回復前HP
+#DIM DYNAMIC IS_NOWAIT
+#DIM DYNAMIC IS_HEAL_ENHANCE_NOTABLE
+#DIMS DYNAMIC MES_BADSTATE
+#DIMS DYNAMIC MES_ADDEFFECT
+
+L_P = ARG
+L_T = ARG:1
+L_スキル = ARG:2
+L_超過回復量 = 0
+IS_NOWAIT = ARG:3
+回復前HP = BASE:L_T:ＨＰ
+
+IS_HEAL_ENHANCE_NOTABLE = 0
+CALL GET_SKILL_PROP, "SKILL_ENHANCE_NOTABLE", L_スキル, L_P
+SIF RESULT
+	IS_HEAL_ENHANCE_NOTABLE = 1
+MES_BADSTATE '= ARGS
+MES_ADDEFFECT '= ARGS:1
+CALL GET_SKILL_PROP, "SKILL_POWER", L_スキル, ARG
+L_威力 = RESULT
+CALL GET_SKILL_PROP, "SKILL_HEAL_TYPE", L_スキル, ARG
+L_回復タイプ = RESULT
+
+CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", L_スキル, ARG
+L_継承タイプ = RESULT
+;-----------------------------------------------------------
+;異常の治療判定
+;BRAND(回復不能)があるので先に回復させる
+;-----------------------------------------------------------
+CALL GET_SKILL_PROP, "SKILL_CURE_STATE", L_スキル, ARG, 0
+SIF RESULT != -1
+	CALL CURE_STATE_SINGLE, L_P, L_T, L_スキル, 1, 1, 1, MES_BADSTATE
+;メッセージ部分の作成。
+IF RESULT
+	SIF MES_BADSTATE == ""
+		MES_BADSTATE = %RESULTS%
+ELSE
+	MES_BADSTATE = 
+ENDIF
+
+PRINTFORM 　　TARGET:[\@CPOS(L_T) > 0 ? {CPOS(L_T),2} # --\@] %CALLNAME:L_T,20,LEFT%　>>>>>>　
+
+;回復量
+SELECTCASE GET_SKILL_HEAL_TYPE(L_回復タイプ)
+	CASE "통상"
+		RESULT = 0, 0
+		TRYCALLFORM SKILL_CALC_BATTTLE_STATUS_%CONVERT_SKILLNUM_TO_STR(L_P, L_スキル)%, "HEAL", L_P, L_T
+		IF RESULT > 0 || RESULT:1 > 0
+			L_回復量 = L_威力 * GET_BASEHEAL_IN_CALC(RESULT, RESULT:1) / 100
+		ELSE
+			L_回復量 = L_威力 * GET_BASEHEAL_IN_CALC(MAXBASE:ARG:마법효과, MAXBASE:ARG:마법위력) / 100
+		ENDIF
+	CASE "割合"
+		L_回復量 = MAXBASE:L_T:ＨＰ * L_威力 / 1000
+	CASE "固定"
+		L_回復量 = L_威力
+	CASEELSE
+		PRINTFORMW 회복 방식의 지정이 비정상입니다.
+		PRINTFORMW 처리를 중단하고 돌아갑니다.
+		RETURN 0
+ENDSELECT
+
+L_回復量 = MAX(L_回復量,0)
+IF !IS_HEAL_ENHANCE_NOTABLE
+	IF L_P >= 0
+		RESULT = 0
+		CALL GET_SKILL_PROP, "SKILL_IS_ITEMSKILL", L_スキル, L_P
+		IF RESULT
+			TEMP = 0
+			SIF GET_BTL_TALENT_LV("아이템숙련", L_P)
+				TEMP += 50
+			SIF HAVE_SKILL(L_P, [[스킬:성대한접대]])
+				TEMP += 50
+			;신들의가호　　　250 / 225 / 200 / 175 / 150
+			SIF GET_BTL_TALENT_LV("신들의가호", L_P)
+				TEMP += GET_BTL_TALENT_LV("신들의가호", L_P) * 25
+		ELSE
+			;回復素質による補正
+			;스킬적성　Lv3 250 / 225 / 200 / 175 / 150
+			;스킬적성　Lv2 225 / 200 / 175 / 150 / 125
+			;스킬적성　Lv1 200 / 175 / 150 / 125 / 110
+			IF GET_BTL_TALENT_LV("스킬적성", L_P) && 相性素質チェック_F(L_P, L_継承タイプ)
+				TEMP = SUB_ROLE_스킬적성효과("回復量", L_P)
+			ELSE
+				TEMP = 0
+			ENDIF
+			;신들의가호　　　250 / 225 / 200 / 175 / 150
+			SIF GET_BTL_TALENT_LV("신들의가호", L_P)
+				TEMP = MAX(TEMP, GET_BTL_TALENT_LV("신들의가호", L_P) * 25 + 25)
+		ENDIF
+		L_回復量 = L_回復量 * (TEMP + 100) / 100
+		SIF HAVE_PU_SKILL(L_P,"∞黒餡子")
+			L_回復量 = L_回復量 * 3 / 2
+		;割合回復はこの時点で100%を越えない
+		;また下限として1の回復を保証する
+		SIF GET_SKILL_HEAL_TYPE(L_回復タイプ) == "割合"
+			L_回復量 = LIMIT(L_回復量, 1, MAXBASE:L_T:ＨＰ)
+	ENDIF
+
+	;被回復量補正の処理
+	IF TFLAG:전투중
+		VARI LCOUNT
+		VARI TEMP_SKILL
+		FOR LCOUNT, 0, TRYSKILLNUM(L_T)
+			RESULT = 0, 0
+			TRYCCALLFORM SKILL_PASSIVE_BTL_EFFECT_%GET_TRYSKILL(L_T, LCOUNT)%, "被回復量補正", L_T, L_P, L_T, "L_相性名", , "L_ダメージタイプ", "L_攻撃タイプ", "ステート名", , TEMP_SKILL, TRYSKILL_VAR
+				SIF RESULT
+					L_回復量 = L_回復量 * RESULT:1 / 100
+			CATCH
+			ENDCATCH
+		NEXT
+	ENDIF
+ENDIF
+SIF CFLAG:L_T:상태이상 == GET_STATE_NUM("BRAND")
+	L_回復量 = 0
+SIF CFLAG:L_T:회복불능플래그
+	L_回復量 = 0
+SIF IS_BADSTATE(L_T, "DYING")
+	L_回復量 = 0
+;戦闘中のみ神々の加護を所持しているときは上限を超えて回復する
+SIF TFLAG:전투중 && !IS_HEAL_ENHANCE_NOTABLE && L_P >= 0
+	L_超過回復量 = MIN(L_回復量, MAX(0, MAXBASE:L_T:ＨＰ * (100 + 5 * GET_BTL_TALENT_LV("신들의가호", ARG)) / 100 - BASE:L_T:ＨＰ))
+IF GET_SKILL_HEAL_TYPE(L_回復タイプ) == "割合"
+	;味方からボスに対しての割合回復は回復量に制限を入れる
+	IF L_P >= 0 && CFLAG:ARG:PT플래그 && CFLAG:L_T:보스플래그
+		L_超過回復量 = 0
+		SELECTCASE MAXBASE:L_T:ＨＰ
+			CASE IS > 500000
+				L_回復量 = MIN(L_回復量, 99999)
+			CASE IS > 50000
+				L_回復量 = MIN(L_回復量, 9999)
+			CASE IS > 5000
+				L_回復量 = MIN(L_回復量, 999)
+			CASEELSE
+				L_回復量 = MIN(L_回復量, MAXBASE:L_T:ＨＰ * 25 / 100)
+		ENDSELECT
+	ENDIF
+	;いちおう割合回復は100%を超えてないように見せておく
+	SIF !L_超過回復量
+		L_回復量 = MIN(L_回復量, MAXBASE:L_T:ＨＰ)
+ENDIF
+PRINTFORM {L_回復量}회복
+IF L_超過回復量
+	;---- EDIT 031 MOD START -------------------------
+	;L_回復量 = (MAXBASE:L_T:ＨＰ - BASE:L_T:ＨＰ) + L_超過回復量
+	;CALL VAR_HP, L_T, L_回復量, "超過回復"
+	CALL VAR_HP, L_T, L_超過回復量, "超過回復"
+	;---- EDIT 031 MOD END ---------------------------
+ELSE
+	CALL VAR_HP, L_T, L_回復量, "회복"
+ENDIF
+CFLAG:L_T:HP회복_ACT = 回復前HP - BASE:L_T:ＨＰ
+SIF MES_BADSTATE != ""
+	PRINTFORM  & %MES_BADSTATE% 
+SIF MES_ADDEFFECT != ""
+	PRINTFORM  & %MES_ADDEFFECT% 
+PRINTL 
+SIF !IS_NOWAIT
+	WAIT
+
+;=========================================
+;回復スキル基本
+;ARG:0 使用者
+;ARG:1 対象
+;ARG:2 使用スキル
+;ARG:3 真の場合最後にWAITで待たない
+;ARGS  状態回復時の文章
+;ARGS:1 追加の文章指定
+;ARGS:2 COMP内有効の指定
+;=========================================
+@HEAL_SKILL, ARG, ARG:1, ARG:2, ARG:3, ARGS = "", ARGS:1 = "", ARGS:2 = "COMP内無効"
+CALL GET_SKILL_PROP, "SKILL_SPHERE", ARG:2, ARG:0
+IF GET_SPHERE(RESULT) == "단체"
+	CALL GET_SKILL_PROP, "SKILL_T_RESERVE", ARG:2, ARG:0
+	IF RESULT
+		CALL HEAL_SINGLE, ARG, ARG:1, ARG:2, ARG:3, ARGS, ARGS:1
+	ELSE
+		CALL HEAL_SINGLE, ARG, POS(ARG:1), ARG:2, ARG:3, ARGS, ARGS:1
+	ENDIF
+ELSE
+	CALL HEAL_FIELD, ARG, ARG:1, ARG:2, ARG:3, ARGS, ARGS:1, ARGS:2
+ENDIF
+
+;=========================================
+;単体回復スキル基本
+;ARG:0 使用者
+;ARG:1 対象
+;ARG:2 使用スキル
+;ARG:3 真の場合最後にWAITで待たない
+;ARGS  状態回復時の文章
+;ARGS:1 追加の文章指定
+;=========================================
+@HEAL_SINGLE, ARG, ARG:1, ARG:2, ARG:3, ARGS = "", ARGS:1 = ""
+CALL HEAL_TARGET, ARG, ARG:1, ARG:2, ARG:3, ARGS, ARGS:1
+
+;=========================================
+;範囲回復スキル基本
+;ARG:0 使用者
+;ARG:1 対象
+;ARG:2 使用スキル
+;ARG:3 真の場合最後にWAITで待たない
+;ARGS  状態回復時の文章
+;ARGS:1 追加の文章指定
+;ARGS:2 COMP内有効の指定
+;=========================================
+@HEAL_FIELD, ARG, ARG:1, ARG:2, ARG:3, ARGS = "", ARGS:1, ARGS:2 = "COMP内無効"
+#DIM LCOUNT
+IF ARGS:2 == "COMP内有効" && CFLAG:ARG:PT플래그
+	FOR LCOUNT, 0, CHARANUM
+		SIF !IS_COMP内効果有効(LCOUNT)
+			CONTINUE
+		SIF IS_BADSTATE(LCOUNT, "DYING")
+			CONTINUE
+		CALL GET_SKILL_PROP, "SKILL_TARGETABLE", ARG:2, ARG, LCOUNT
+		SIF !RESULT
+			CONTINUE
+		CALL HEAL_SINGLE, ARG, LCOUNT, ARG:2, 1, ARGS, ARGS:1
+	NEXT
+ELSE
+	FOR LCOUNT, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1) + 1
+		SIF POS(LCOUNT) < 0
+			CONTINUE
+		SIF IS_BADSTATE(POS(LCOUNT), "DYING")
+			CONTINUE
+		CALL GET_SKILL_PROP, "SKILL_TARGETABLE", ARG:2, ARG, POS(LCOUNT)
+		SIF !RESULT
+			CONTINUE
+		CALL HEAL_SINGLE, ARG, POS(LCOUNT), ARG:2, 1, ARGS, ARGS:1
+	NEXT
+ENDIF
+WAIT
+
+;=========================================
+;バッドステータス回復基本単体
+;ARG:0 使用者
+;ARG:1 対象キャラNo.
+;ARG:2 使用スキル番号
+;ARG:3 対象にPT外のキャラも含めるか? 0=含めない 1=含める
+;ARG:4 最後にWAITで待たないか? 0=待つ 1=待たない
+;ARG:5 表示の有無 0=する 1=しない
+;ARGS  治ったときの文章
+;LOCAL:0  = キャラクターのPT内位置 POS(ARG:1) 1～16
+;LOCALS:0 = 対象キャラのPT内位置表示　PT内にいない場合は"--"で表示
+;=========================================
+@CURE_STATE_SINGLE, ARG:0 , ARG:1 = -1, ARG:2, ARG:3 = 0, ARG:4 = 1, ARG:5 = 0, ARGS = ""
+#DIM DYNAMIC DO_SET_REPEAT
+;異常なキャラNo.の指定
+SIF CHARANUM_CHECK(ARG:1) < 1
+	RETURN 0
+LOCAL:0 = CPOS(ARG:1)
+;対象キャラをPT内に限定する場合PT範囲内か?
+IF (ARG:3) == 0
+	SIF (LOCAL:0) < 0 || (LOCAL:0) > 16
+		RETURN 0
+ENDIF
+;対象が死んでいる場合は回復不可
+SIF GET_STATE(CFLAG:(ARG:1):상태이상) == "DYING"
+	RETURN 0
+
+;位置表示設定
+IF 0 < (LOCAL:0) && (LOCAL:0) < 17
+	LOCALS:0 = {(LOCAL:0),2}
+ELSE
+	LOCALS:0 = --
+ENDIF
+
+;状態異常回復処理
+SELECTCASE GET_STATE(CFLAG:(ARG:1):상태이상)
+	;治せない状態異常を除外
+	CASE "FLY","GOOD","DYING","ORGY","HEAT"
+		;---- EDIT 026 MODで START -------------------------
+		SIF ARG:5 == 0
+			PRINTFORML 　　TARGET:[%(LOCALS:0)%] %CALLNAME:(ARG:1),20,LEFT%　>>>>>>　효과가 없었다。
+		SIF ARG:5 == 1
+			RESULTS = 
+		;---- EDIT 026 MODで END ---------------------------
+		RETURN 0
+	CASEELSE
+		CALL GET_SKILL_PROP, "SKILL_CURE_STATE", ARG:2, ARG, CFLAG:(ARG:1):상태이상
+		IF RESULT > 0
+			IF ARGS == ""
+				SELECTCASE CFLAG:(ARG:1):상태이상
+					CASE 1,3,10
+						ARGS = 제정신으로 돌아왔다
+					CASE 2,5,6,11,14
+						ARGS = 움직일 수 있게 되었다
+					CASE 4,19
+						ARGS = 일어났다
+					CASE 7
+						ARGS = 봉인이 풀렸다
+					CASE 8
+						ARGS = 독이 빠졌다
+					CASE 9
+						ARGS = 폭탄화가 풀렸다
+					CASE 12
+						ARGS = 저주가 풀렸다
+					CASE 18
+						ARGS = 불길을 껐다
+					CASE 20
+						ARGS = 각인이 풀렸다
+					CASEELSE
+						ARGS = 상태회복！
+				ENDSELECT
+			ENDIF
+			;---- EDIT P 005 MOD START -------------------------
+			;CALL BATTLE_EVENT_ATTACK, ARG , ARG:1, CFLAG:(ARG:1):상태이상, 7
+			;SIF (GET_STATE(CFLAG:(ARG:1):상태이상) == "PANIC" || GET_STATE(CFLAG:(ARG:1):상태이상) == "CHARM") && TFLAG:전투중
+			;	CFLAG:(ARG:1):混乱魅了リカバー = 1
+			IF TFLAG:전투중
+				IF (!ACTIONABLE_CHARA_F(ARG:1) || GET_STATE(CFLAG:(ARG:1):상태이상) == "PANIC" || GET_STATE(CFLAG:(ARG:1):상태이상) == "CHARM")
+					IF TFLAG:전투턴진행중
+						CFLAG:(ARG:1):입력행동 = -1
+						CFLAG:(ARG:1):행동한횟수 = 999
+						CALL BATTLE_DECIDE_INITIATIVE, ARG
+					ELSE
+						DO_SET_REPEAT = 1
+					ENDIF
+				ENDIF
+			ENDIF
+			;---- EDIT P 005 MOD END ---------------------------
+			SIF ARG:5 == 0
+				PRINTFORML 　　TARGET:[%(LOCALS:0)%] %CALLNAME:(ARG:1),20,LEFT%　>>>>>>　%ARGS%
+			SIF ARG:5 == 1
+				RESULTS = %ARGS%
+			CALL SET_C_RECORDS, ARG, ARG:1, "CURE", GET_STATE(CFLAG:(ARG:1):상태이상)
+			CFLAG:(ARG:1):바스테치료 = CFLAG:(ARG:1):상태이상
+			CFLAG:(ARG:1):상태이상 = 0
+			CFLAG:(ARG:1):상태이상경과턴수 = 0
+			SIF DO_SET_REPEAT
+				CALL COMMAND_REPEAT, ARG:1
+		ELSE
+			;---- EDIT 026 MODで START -------------------------
+			SIF ARG:5 == 0
+				PRINTFORML 　　TARGET:[%(LOCALS:0)%] %CALLNAME:(ARG:1),20,LEFT%　>>>>>>　효과가 없었다。
+			SIF ARG:5 == 1
+				RESULTS = 
+			;---- EDIT 026 MODで END ---------------------------
+			RETURN 0
+		ENDIF
+ENDSELECT
+SIF !ARG:4 && !ARG:5
+	WAIT
+;直せれば1を返す
+RETURN 1
+
+;=========================================
+;バッドステータス回復基本範囲
+;ARG:0 使用者
+;ARG:1 타겟
+;ARG:2 使用スキル番号
+;ARG:3 対象にPT外のキャラも含めるか? 0=含めない 1=含める
+;ARG:4 最後にWAITで待たないか? 0=待つ 1=待たない
+;ARGS  治ったときの文章
+;=========================================
+@CURE_STATE_FIELD, L_P, L_T = -1, L_SKILL, IS_COMPABLE = 0, IS_NOWAIT = 0, L_TEXT = ""
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_SKILL
+#DIM DYNAMIC IS_COMPABLE
+#DIMS DYNAMIC L_TEXT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC STOCK
+#DIM DYNAMIC IS_CURED
+#DIM DYNAMIC IS_NOWAIT
+FOR LCOUNT,GET_POS_MIN(L_T), GET_POS_MAX(L_T) + 1
+	L_CHARA = POS(LCOUNT)
+	SIF L_CHARA < 0
+		CONTINUE
+	SIF GET_STATE(CFLAG:L_CHARA:상태이상) == "DYING"
+		CONTINUE
+	CALL CURE_STATE_SINGLE, L_P, L_CHARA, L_SKILL, IS_COMPABLE, 1, , L_TEXT
+	SIF RESULT
+		IS_CURED = 1
+NEXT
+SIF !IS_NOWAIT
+	WAIT
+RETURN IS_CURED

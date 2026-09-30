@@ -1,0 +1,212 @@
+﻿;スキル名
+@SKILL_NAME_ガトリングスコール, ARG
+RESULTS = 개틀링 스콜
+IF FLAG:총공격중
+	TSTR:스킬메시지행동자 = RoRo
+	TFLAG:스킬행동자컬러 = 0x9933cd
+ENDIF
+
+;　명중
+@SKILL_HITRATE_ガトリングスコール, ARG
+#DIM SKILL_NUM
+IF SKILL_CHANGE(ARG, [[キャラ:브리게이드_X2]])
+	RETURN 95
+ELSE
+	SKILL_NUM = PU_SKILLNUM_GET(ARG, "ガトリングスコール")
+	IF SKILLGAGE_D_GET(ARG, SKILL_NUM) > 0
+		RETURN 95
+	ELSE
+		RETURN 50
+	ENDIF
+ENDIF
+
+;　威力
+@SKILL_POWER_ガトリングスコール, ARG
+IF SKILL_CHANGE(ARG, [[キャラ:브리게이드_X2]])
+	RETURN 120
+ELSE
+	IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "다크니스트리거Ｘ") && FLAG:총공격중
+		;約1.25倍
+		RETURN 150
+	ELSE
+		RETURN 120
+	ENDIF
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ガトリングスコール, ARG
+RETURN 2
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ガトリングスコール, ARG
+IF SKILL_CHANGE(ARG, [[キャラ:브리게이드_X2]])
+	RETURN 8
+ELSE
+	RETURN 4
+ENDIF
+
+;一体辺りの最大ＨＩＴ数
+;※ブリガド限定
+@SKILL_MAXATK_PER_ガトリングスコール, ARG
+RETURN 4
+
+;一体辺りの最低ＨＩＴ数
+;※ブリガド限定
+@SKILL_MINATK_PER_ガトリングスコール, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ガトリングスコール, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ガトリングスコール, ARG
+;ダークネストリガー発動中はコスト1/3
+SIF SKILLGAGE_H_GET(ARG, [[스킬:DARKNESS TRIGGER]]) == 1
+	RETURN 10
+RETURN 32
+
+;　相性
+@SKILL_TYPE_ガトリングスコール, ARG
+RETURN GET_TYPE_NUM("비구")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ガトリングスコール
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ガトリングスコール, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ガトリングスコール, ARG
+;ロック中の攻撃・ロック対象に強制
+IF ARG >= 0 && NO:ARG == [[キャラ:아큐라_X]] && BLITZ_TARGET_JUDG(ARG) == 1
+	RETURN 4
+;非ロック中の攻撃・敵単体
+ELSE
+	RETURN 1
+ENDIF
+
+;　사거리
+@SKILL_RANGE_ガトリングスコール, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ガトリングスコール, ARG
+IF SKILL_CHANGE(ARG, [[キャラ:브리게이드_X2]])
+	RETURN 3
+ELSE
+	;ロック中の攻撃・ロック対象に強制
+	IF BLITZ_TARGET_JUDG(ARG) == 1
+		RETURN 4
+	;非ロック中の攻撃・敵単体
+	ELSE
+		RETURN 1
+	ENDIF
+ENDIF
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ガトリングスコール, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_ガトリングスコール, ARG = -1
+IF SKILL_CHANGE(ARG, [[キャラ:브리게이드_X2]])
+	RETURN 0
+ELSE
+	;ロック中の攻撃
+	IF BLITZ_TARGET_JUDG(ARG) == 1
+		RETURN 0
+	;非ロック中の攻撃
+	ELSE
+		RETURN -10
+	ENDIF
+ENDIF
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ガトリングスコール
+RETURN 0
+
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_ガトリングスコール, ARG, ARG:1
+#DIM SKILL_NUM
+#DIM ROCK_H
+
+;ダークネストリガー追撃条件共通
+IF DTRIGGER_ABLE(ARG, "ガトリングスコール")
+	ROCK_H = SKILLGAGE_H_GET(ARG, [[스킬:블리츠대쉬]]) / 10
+	SKILL_NUM = PU_SKILLNUM_GET(ARG, "ガトリングスコール")
+	CALL SKILLGAGE_D_SET, ARG, SKILL_NUM, 1
+	;200000をつけることで行動不能時にも追撃をするようになる
+	RETURN 1, 200000 + 23
+ENDIF
+RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ガトリングスコール, ARG, ARG:1, SKILL_NUM
+#DIM SKILL_NUM
+#DIM ROCK_H
+#DIM 加算クードス
+
+IF SKILL_CHANGE(ARG, [[キャラ:브리게이드_X2]])
+	CALL ATTACK_RAND, ARG, ARG:1, SKILL_NUM
+ELSE
+	;ロック中かつロック対象が生存中なら強制的にロック対象へ攻撃
+	IF ARG:1 == 23
+		IF BLITZ_TARGET_JUDG(ARG) == 1
+			SIF FLAG:총공격중
+				TFLAG:반사후0데미지화 = 1
+			ROCK_H = SKILLGAGE_H_GET(ARG, [[스킬:블리츠대쉬]]) / 10
+			CALL SKILLGAGE_D_SET, ARG, SKILL_NUM, 1
+			CALL ATTACK_SINGLE, ARG, ROCK_H, SKILL_NUM
+		ENDIF
+	ELSE
+		CALL ATTACK_SINGLE, ARG, POS(ARG:1), SKILL_NUM
+	ENDIF
+	;撃破数1につき20の基礎クードスを得る。(上限20)
+	加算クードス = MIN(GET_CREC_ACT_SUM(ARG, "적", "KILL"), 1) * 20
+	CALL SET_加算クードス, ARG, 加算クードス
+	;EXウェポン10番=ガトリングスコール
+	SIF HAVE_SKILL(ARG, [[스킬:DARKNESS TRIGGER]])
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:DARKNESS TRIGGER]], 10
+ENDIF
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_ガトリングスコール, ARG
+IF SKILL_CHANGE(ARG, [[キャラ:브리게이드_X2]])
+	PRINTL 개틀링 포를 전개하여 일제 사격을 행한다.
+	PRINTL 적 복수 체에 비구 상성으로 2~8회 소데미지를 준다.
+ELSE
+	PRINTL 중화기를 다루는 워커 브리가드의 능력을 재현한 EX 웨폰.
+	PRINTL HP를 소비하는 커맨드 「블리츠 대시」로 록온된 적이 있는 경우 강제적으로 그 대상을 공격한다.
+	PRINTL 
+	PRINTL 공격 대상이 록온 상태인 경우… 적 단체에 비구 상성으로 2~4회 소데미지를 준다.
+	PRINTL 공격 대상이 비록온 상태인 경우… 적 단체에 비구 상성으로 2~4회 소데미지를 준다. 발동이 느리고, 명중률이 낮다.
+	IF ARG > 0 && ARG < CHARANUM && IS_CHARA_EQUIPED(ARG, "다크니스트리거Ｘ") && SKILLGAGE_H_GET(ARG, [[스킬:DARKNESS TRIGGER]]) == 1
+		SETCOLOR 0x9933cd
+		PRINTL 다크니스 트리거 X 장비 중 다크니스 트리거에 의한 추격 시의 데미지 상승
+		RESETCOLOR
+	ENDIF
+	PRINTL ※이 스킬로 적을 격파했을 경우 쿠도스가 20 가산된다
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ガトリングスコール, ARG
+SIF SKILL_CHANGE(ARG, [[キャラ:브리게이드_X2]])
+	RETURN 1
+;타겟=23が入るのはロック中のみ
+;かつ実行時にターゲットが死んだりするとダメ
+SIF ARG > 0 && CFLAG:ARG:타겟 == 23 && BLITZ_TARGET_JUDG(ARG) != 1
+	RETURN 0
+RETURN 1
+

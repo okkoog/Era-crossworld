@@ -1,0 +1,291 @@
+﻿;-------------------------------------------------
+;更新履歴
+;-------------------------------------------------
+;	MOD-NO	DATE		EDITOR
+;	0								新規作成
+;	1		2019/11/13	絹延		露出していない恋慕奴隷が恐怖や羞恥を感じないように
+;	2		2019/11/13	絹延		処理の最適化
+
+;-------------------------------------------------
+;야외플레이
+;特殊なコマンド
+;-------------------------------------------------
+@COMNAME184
+RESULTS = 야외플레이
+SIF TEQUIP:29
+	RESULTS = 플레이 장소 변경
+;ビット説明
+;TEUIP:29
+;廃ビル=1
+;森林=2
+;公園=4
+;川辺=8
+
+@ACT_COM184
+PRINT 현재의 장소：[
+SELECTCASE TEQUIP:29
+CASE 0
+	PRINT 자택
+CASE 1
+	PRINT 폐빌딩
+CASE 2
+	PRINT 삼림
+CASE 4
+	PRINT 공원
+CASE 8
+	PRINT 강변
+ENDSELECT
+PRINTL ]
+PRINTFORMW %CALLNAME:PLAYER%은(는) %CALLNAME:TARGET%을(를)……
+PRINTFORMW 
+
+;---MOD-2	START
+PRINTFORML [0]폐빌딩\@ TEQUIP:29 == 1 ? 에서 돌아간다#로 데려간다\@
+PRINTFORML [1]삼림\@ TEQUIP:29 == 2 ? 에서 돌아간다#로 데려간다\@
+PRINTFORML [2]공원\@ TEQUIP:29 == 4 ? 에서 돌아간다#로 데려간다\@
+PRINTFORML [3]강변\@ TEQUIP:29 == 8 ? 에서 돌아간다#로 데려간다\@
+PRINTFORML [100] 이동을 그만둔다
+;---MOD-2	END
+
+PRINTL 
+
+$INPUT_LOOP
+INPUT
+
+SIF (RESULT < 0 || RESULT > 3) && RESULT != 100
+	GOTO INPUT_LOOP
+
+X = RESULT
+
+;屋外への出入り
+;終了時は修正なし
+IF (TEQUIP:29 & 1 && X == 0) || (TEQUIP:29 & 2 && X == 1) || (TEQUIP:29 & 4 && X == 2) || (TEQUIP:29 & 8 && X == 3)
+	PRINTL 야외플레이(귀가)
+	TSTR:0 = 야외플레이(귀가)
+	TEQUIP:29 = 0
+	TEQUIP:45 = 0
+	TEQUIP:46 = 0
+	TEQUIP:47 = 0
+	;口上→総括Ｍ→個別セルコム
+	;CALL KOJO_MESSAGE_COM
+	RETURN 1
+;移動キャンセル時も修正なし。
+ELSEIF RESULT == 100
+	PRINTFORML %CALLNAME:MASTER%은(는), 장소 이동을 그만두었다.
+	RETURN 1
+;---MOD-2	ERASE
+ENDIF
+
+TEQUIP:29 = 0
+TEQUIP:45 = 0
+TEQUIP:46 = 0
+TEQUIP:47 = 0
+
+IF X == 0
+	TFLAG:73 = 1
+	CALL ACT_COM184_B
+ELSEIF X == 1
+	TFLAG:73 = 2
+	CALL ACT_COM184_F
+ELSEIF X == 2
+	TFLAG:73 = 3
+	CALL ACT_COM184_P
+ELSEIF X == 3
+	TFLAG:73 = 4
+	CALL ACT_COM184_U
+ENDIF
+
+RETURN 1
+
+;-------------------------------------------------
+;野外調教追加処理
+;-------------------------------------------------
+@EQUIP_COM184
+
+IF SELECTCOM == 184
+	PRINTL
+	;---MOD-1	START
+	IF TEQUIP:유방노출 && TEQUIP:유두노출 && TEQUIP:음순노출 && TEQUIP:둔부노출 && TEQUIP:음순보임 != -1 && TEQUIP:둔부보임 != -1 && (TALENT:연모 || TALENT:친애)
+		PRINTFORM %CALLNAME:TARGET%은(는) 편안한 모습으로 주변을 둘러보고 있다.
+	ELSE
+		PRINTFORM %CALLNAME:TARGET%은(는) 어색한 듯이 주위를 둘러보고 있다.
+	ENDIF
+	;---MOD-1	END
+	PRINTL
+ELSEIF TEQUIP:46 == 0
+	;---MOD-1	START
+	;---MOD-1	COMMENT		あれこれすれば「訓練に野次馬が付く」も作れると思うけど気力が足りない。
+	IF TEQUIP:유방노출 && TEQUIP:유두노출 && TEQUIP:음순노출 && TEQUIP:둔부노출 && TEQUIP:음순보임 != -1 && TEQUIP:둔부보임 != -1 && (TALENT:연모 || TALENT:친애)
+		SELECTCASE TFLAG:73
+		CASE 1
+		;廃ビルならば
+			IF RAND:100 > 5
+				PRINTFORMW 여전히 인기척은 없다.
+			ELSE
+				PRINTL 근처에서 누군가 걷는 발소리가 들려온다.
+				PRINTFORMW %CALLNAME:TARGET%은(는) 가르쳐 준 대로 그늘에 몸을 숨기고 숨을 죽였다….
+			ENDIF
+		CASE 2
+		;森林ならば
+			IF RAND:100 > 5
+				PRINTFORMW 여전히 인기척은 없다.
+			ELSE
+				PRINTL 근처에서 누군가 걷는 발소리가 들려온다.
+				PRINTFORMW %CALLNAME:TARGET%은(는) 트레이닝을 계속하고 있다.
+			ENDIF
+		CASE 3
+		;公園ならば
+			IF RAND:100 > 60
+				PRINTFORMW 주변은 한산하다.
+			ELSE
+				SELECTCASE RAND:3
+				CASE 0
+					PRINTL 근처에서 아이들이 놀고 있다.
+				CASE 1
+					PRINTL 근처를 걷는 사람이 눈에 띄었다.
+				CASE 2
+					PRINTL 근처에서 아낙네들의 수다가 시작되었다….
+				ENDSELECT
+				PRINTFORMW %CALLNAME:TARGET%은(는) 편안해 보이는 모양이다.
+			ENDIF
+		CASE 4
+		;水辺ならば
+			IF RAND:100 > 15
+				PRINTFORMW 여전히 인기척은 없다.
+			ELSE
+				SELECTCASE RAND:3
+				CASE 0
+					PRINTL 근처에서 아이들이 놀고 있다.
+				CASE 1
+					PRINTL 근처를 걷는 사람이 눈에 띄었다.
+				CASE 2
+					PRINTL 웬 도구를 들고 서성거리는 사람이 있다.
+				ENDSELECT
+				PRINTFORMW %CALLNAME:TARGET%은(는) 수면을 바라보고 있는 모양이다.
+			ENDIF
+		ENDSELECT
+	ELSE
+		IF RAND:100 > 15 + ABL:노출증
+			PRINTL
+			PRINTFORM 변함없이, 
+			IF TEQUIP:45 == 0
+				PRINTL 주위에 인기척은 없다.
+			ELSEIF TEQUIP:45 == 1
+				PRINTL 근처에서 누군가 걷는 발소리가 들려온다.
+				DOWNBASE:TARGET:기력 += 50
+				SOURCE:TARGET:무서움 += 200
+				SOURCE:TARGET:노출 += 400
+				SOURCE:TARGET:일탈 += 60
+				SOURCE:TARGET:반감 += 150
+			ENDIF
+			PRINTFORMW %CALLNAME:TARGET%은(는) \@(ABL:노출증 >= 3) ? 어쩐지 조금 따분해 보인다 # 언제 누가 올지 조마조마하다\@.
+			PRINTL
+		ELSE
+			TEQUIP:45 += 1
+			PRINTL
+			IF TEQUIP:45 == 0
+				PRINTL 주위에 인기척은 없다.
+			ELSEIF TEQUIP:45 == 1
+				PRINTL 근처에서 누군가 걷는 발소리가 들려온다.
+				PRINTFORMW %CALLNAME:TARGET%\@(ABL:노출증 >= 3) ? 의 눈동자는 기대와 수치심으로 촉촉해져 있다. # 은(는) 공포와 수치심에 겨워, 저도 모르게 몸을 굳혔다.\@
+				DOWNBASE:TARGET:기력 += 50
+				SOURCE:TARGET:무서움 += 200
+				SOURCE:TARGET:노출 += 400
+				SOURCE:TARGET:일탈 += 60
+				SOURCE:TARGET:반감 += 150
+			ELSE
+				PRINTFORMW 문득 깨닫고 보니, 누군가가 %CALLNAME:TARGET%을(를) 바라보고 있다.
+				PRINTL 
+				PRINTFORMW %CALLNAME:TARGET%은(는) 무심코 \@(ABL:노출증 >= 3) ? 기대에 찬 시선을 그쪽으로 보냈다. # 시선을 돌렸다.\@
+				DOWNBASE:TARGET:기력 += 100
+				SOURCE:TARGET:무서움 += 300
+				SOURCE:TARGET:노출 += 600
+				SOURCE:TARGET:일탈 += 100
+				SOURCE:TARGET:반감 += 200
+			ENDIF
+			IF TEQUIP:45 == 2
+				IF RAND:2
+					PRINTFORML 발견한 누군가는 %CALLNAME:TARGET% 일행의 모습과 행위를 보고는,
+					PRINTW 얼빠진 비명을 지르며 도망쳐 버렸다.
+					TEQUIP:45 = 0
+				ELSE
+					PRINTFORM %CALLNAME:TARGET%을(를) 발견한 
+					IF TALENT:남자 == 0 || TALENT:오토코노코 == 1
+						PRINT 그들은 
+					ELSE
+						PRINT 그녀들은 
+					ENDIF
+					PRINTFORML 넋을 잃고 %CALLNAME:TARGET%의 치태를 바라보기 시작했다.
+					PRINTFORMW %CALLNAME:TARGET%은(는) 무심코 \@(ABL:노출증 >= 3) ? 아주 기쁜 듯이 웃었다. # 지금이라도 울음을 터뜨릴 것 같다.\@
+					TEQUIP:46 += 1
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+	;---MOD-1	END
+ELSE
+	DOWNBASE:TARGET:기력 += 100 + (TEQUIP:46 * 10)
+	SOURCE:TARGET:무서움 *= 100 + (TEQUIP:47 * 10)
+	SOURCE:TARGET:노출 *= 100 + (TEQUIP:46 * 10)
+	SOURCE:TARGET:일탈 *= 100 + (TEQUIP:46 * 10)
+	SOURCE:TARGET:반감 *= 100 + (TEQUIP:46 * 10)
+	
+	SOURCE:TARGET:무서움 /= 100
+	SOURCE:TARGET:노출 /= 100
+	SOURCE:TARGET:일탈 /= 100
+	SOURCE:TARGET:반감 /= 100
+	
+	SOURCE:TARGET:무서움 += 300
+	SOURCE:TARGET:욕정 += ABL:노출증 * TEQUIP:46 * TEQUIP:47
+	SOURCE:TARGET:노출 += 600
+	SOURCE:TARGET:일탈 += 100
+	SOURCE:TARGET:반감 += 200
+	SIF RAND:2
+		TEQUIP:46 += RAND:3
+	SIF TEQUIP:46 >= 100
+		TEQUIP:46 = 100
+	TEQUIP:47 += RAND:30
+	SIF TEQUIP:47 >= 100
+		TEQUIP:47 = 100
+	IF TEQUIP:47 <= 20
+		PRINTFORMW 발견한 누군가는 넋을 잃고 %CALLNAME:TARGET%의 치태를 바라보고 있다.
+	ELSEIF TEQUIP:47 <= 60
+		PRINTFORMW 발견한 누군가는 꽤 흥분한 모습으로 %CALLNAME:TARGET%의 치태를 바라보고 있다.
+	ENDIF
+	IF ABL:노출증 >= 3 && !TALENT:부끄럼쟁이
+		A = RAND:3
+		IF PALAM:6 >= PALAMLV:8
+			PRINTFORMW %CALLNAME:TARGET%은(는) 너무 절정에 달한 탓인지, 똑바로 현상을 파악하지 못하는 모양이다.
+		ELSEIF A == 0
+			PRINTFORMW %CALLNAME:TARGET%은(는) 보여지는 것이 기쁜지, 그쪽을 향해 손을 흔들며 화답했다.
+		ELSEIF A == 1
+			PRINTFORMW %CALLNAME:TARGET%이(가) 부끄러워하는 표정을 짓자, 주변 사람들은 더욱 들뜨기 시작했다.
+		ELSEIF A == 2
+			PRINTFORMW %CALLNAME:TARGET%은(는) 보여지며 느끼고 있는 것인지, 한층 더 얼굴을 붉혔다.
+		ENDIF
+	ELSE
+		PRINTFORMW %CALLNAME:TARGET%은(는) 필사적으로 부끄러움을 견디고 있다.
+	ENDIF
+ENDIF
+
+IF TEQUIP:유두노출 == -1 || TEQUIP:음순노출 == -1 || TEQUIP:둔부노출 == -1
+	CALL ADDS_EXP("야외노출경험", 1, TARGET)
+;	PRINTFORML 야외노출경험 + 1
+ENDIF
+IF TEQUIP:MASTER:유두노출 == -1 || TEQUIP:MASTER:음순노출 == -1 || TEQUIP:MASTER:둔부노출 == -1
+	CALL ADDS_EXP("야외노출경험", 1, MASTER)
+;	PRINTFORML 야외노출경험 + 1(%CALLNAME:MASTER%)
+ENDIF
+IF ASSI > 0
+	IF TEQUIP:ASSI:유두노출 == -1 || TEQUIP:ASSI:음순노출 == -1 || TEQUIP:ASSI:둔부노출 == -1
+		CALL ADDS_EXP("야외노출경험", 1, ASSI)
+	;	PRINTFORML 야외노출경험 + 1(%CALLNAME:ASSI%)
+	ENDIF
+ENDIF
+
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_184
+RETURN COMTYPE("特殊コマンド系")
+

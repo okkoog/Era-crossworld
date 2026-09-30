@@ -1,0 +1,1381 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SYSTEM.ERB
+;	Facility	:ゲーム開始時・ロード時等に行う処理群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/01/19		P						労役のシフト処理を追加
+;	003		2011/01/19		P						トリッシュの処理を変更
+;	004		2011/01/19		Ｎ鳥					破産ゲームオーバーをコメントアウト
+;	005		2011/02/04		P						ダンジョン内調教終了時にABLチェックに飛ぶように
+;	006		2011/02/06		Rsp暇人					ターン終了時に酔い覚まし処理を追加
+;	007		2011/04/24		P						ゲーム開始時にPALAMLV10~13を定義するように
+;	008		2012/12/02		ネトリス				ダンジョンから帰還したときに『CFLAG:던전내발정용욕정치』を０にするように変更
+;													ダンジョンから帰還したときに汚れもリセット
+;	009		2013/01/07		TR						エンディング日数制限をENDING.ERBで個別処理するように
+;	010		2014/10/21		ネトリス				デビオク処理を追加
+;	011		2018/08/09		JK好き					ゲーム開始時にダンジョン内操作設定をGLOBALから読み込むように追記
+;	012		2018/08/25		名無					呪いのレッドカーペット追加
+;	013		2019/04/16		TR(SAYA)				ゲーム開始時のオプションUIを変更
+;	014		2019/04/17		名無					敵強化オプション追加
+;	015		2019/07/11		名無					毎日貢献度の5%JPをもらうように
+;	016		2019/08/28		空気					戦闘オプションの解説文を分かりやすく、実際の仕様に即したものに変更。ゲームバランスを考慮し、一周目NEWGAME時の戦闘オプションを変更
+;	017		2019/11/15		(ﾟдﾟ)					舞台少女の非戦闘員化処理
+;	018		2020/04/11		Jガン					交流関連フラグの処理追加
+;	019		2020/04/18		(ﾟдﾟ)					舞台少女の記録処理挿入
+;	020		2020/04/23		Jガン					集会関連フラグの処理追加
+;	021		2020/05/19		がめら					NTR好感度処理をCDFLAGに変更
+;	022		2020/07/07		木綿豆腐				ペルソナ強化フラグを時間経過ごとに立てるように
+;	023		2020/08/16		マリーちゃんの中の人	ペルソナ使いのデメリット。P1/P2キャラのバステ無効無視。P3キャラ以降のＰ・チェンジ１ターンを排除します
+;	024		2020/08/20		マリーちゃんの中の人	設定追加
+;	025		2020/09/21		JK好き					夜まで休憩時に1回分しか休憩していなかった問題を修正
+;	026		2021/01/29		Rsp暇人					ゲーム開始時の戦闘オプション設定に道具命中/道具威力を使用する選択肢を追加
+;	027		2021/02/24		名無					ランダム依頼のデイリーイベントを追加
+;	028		2021/21/28		亜人いいよね			EXTRAイベントとEXTRA強化の分離
+;	029		2021/03/05		JK好き					陥落数によるあなたペルソナ進化フラグの計算にFLAG:信頼人数を含むように修正
+;	030		2021/05/25		SUIHOU					好餌イベント　あなたの体力が500未満の場合は発生しないように処理追記
+;	031		2021/11/28		Schrott					プレイ時間の表示について、99999時間までセーブデータで表示されるように変更。
+;	032		2022/05/14		ロッド＠カヤノソト		ランダム依頼の依頼・ダンジョンが軽子坂高校と同じソースになっていたため分離。また、一日の終了時に発生するランダム依頼のログについて、ランダム依頼を初回実行するまで発生しないように修正
+;	033		2022/06/10		Collared				UI整理プロジェクトによりショップコマンドフラグを参照するように変更
+;	034		2022/07/10		名無し					強化オプションの初期値が想定した動作になっていなかったため修正（強化オプションフィルタがデフォルトで全てONになっており、これまで基本OFFになっていたものが勝手にONで、出てきてしまう為EXTRAイベントフィルタと同じ動作に修正）
+;	035		2022/08/14		kamedakeisuke(ﾟдﾟ)		相性等表示ONのデフォの値を1（相性表示）にした。あと画像表示オプションの項目名が空欄になっていたのも修正した
+;	036		2022/08/21		kamedakeisuke(ﾟдﾟ)		開始時オプションをカテゴリごとに分けて表示するように
+;													人間ステータス計算方式の変更を開始時オプション一覧からオミット（実装時より圧倒的に人間が強くなり役目を終えた／どうしても使いたい場合は1を押したら従来通り入ります）
+;	037		2022/09/21		aroaro					日次処理に非妊娠時の拡大した子宮サイズを少し縮める処理を追加
+;	038		2022/10/20		匿名					人間ステータス計算方式変更オプションの非表示化を差し戻し
+;	039		2022/12/19		P(bazzile)				廃棄属性を付与したアイテムをターンエンド毎に廃棄する処理を追加
+;	040		2023/03/01		JK好き					@EVENTLOAD ダンジョン内セーブデータをロードした際に画像_自家製フォルダの読み込みが正常に行われていなかった問題を修正
+;	041		2023/01/08		P(bazzile)				戦闘素質の影響をオプションから撤廃し、デフォルト化
+;													EXTRA強化フィルタにCP制限無効化を追加
+;	042		2023/03/22		P(bazzile)				ゲームスタート時にインストールソフトの変数登録処理を追加
+;													スキルエミュレーターの変数登録処理を追加
+;													リーダースキルの変数登録処理を追加
+;	043		2023/04/19		JK好き					@EVENTFIRST NEWGAME時にGLOBALセーブデータから相性カラー設定を読み込むように追加
+;	044		2023/04/24		JK好き					@EVENTTURNEND レンタル労役がシフトの影響を受けないように修正
+;	045		2023/05/14		P(bazzile)				コンティニュー用のデータ処理措置を追加
+;	046		2023/07/01		P(bazzile)				最後にセーブしたデータを緑色で表示するように変更
+;	047		2023/07/03		P(bazzile)				セーブの表示画面にPT情報を付与するオプションを追加
+;													セーブデータの内容メモの表示がある程度まで揃うように余白を調整
+;	048		2024/01/21		oktwr					ターン終了時イベントの呼び出しに労役:依頼に関する文を追加
+;	049		2024/04/15		P(bazzile)				セーブの表示画面にPT情報で表示される顔画像を増加
+;	050		2024/04/16		P(bazzile)				マスター生成時にリアル加入時間を設定する処理を追加
+;													ゲームスタート時にパーティ編成セットの初期値のセット処理を追加
+;													ゲームスタート時に最後のパーティ編成の記録を更新するように
+;	051		2024/05/08		P(bazzile)				互換処理にキャラ個別の処理を追加
+;	052		2024/04/23		SUIHOU					好餌イベントの発生フラグをＮＴＲ機能に修正
+;	053		2024/06/03		P(bazzile)				キャラ番号を操作する互換処理を独立した処理に変更し、まず最初に実行させるように変更
+;	055		2024/06/15		P(bazzile)				一時的に作ったモブ画像のグラフィックだけでなくスプライトも破棄するように変更
+;	056		2024/06/25		P(bazzile)				好餌イベントが始動イベントの通過を確認していなかった不具合を修正
+;	057		2024/06/25		P(bazzile)				バージョン互換処理の呼び出し以降のフローをVERUP.ERBに移動
+;	058		2024/11/01		P(bazzile)				戦闘オプションのまとめて設定を選ぶと廃止された戦闘素質の影響オプションを設定できてしまう不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2024/05/30		P(bazzile)				セーブデータのテキストを修正
+;	002		2024/06/13		P(bazzile)				コンサート実行日の初期化処理を追加
+;	003		2024/06/19		一ノ瀬					BEGIN_TRAIN抹消につき、調教関係のイベント関数を一部改名して移動。
+;	004		2024/08/21		P(bazzile)				開始時のオプション関連を整理
+;	005		2024/11/01		P(bazzile)				戦闘オプションのみ実装項目をひとつ削除
+;	006		2025/06/18		D5991					調教難易度と戦闘難易度を選択するとき、難易度による変化に関する説明を追加&修正
+;	007		2025/11/02		JK好き					好餌イベ(他)呼び出しの処理を調整し、追加分に対応
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+
+
+@EVENTFIRST
+#DIM LCOUNT
+#DIM TEMP
+;---- FONT LEAK GUARD START -------------------------
+SETFONT
+;---- FONT LEAK GUARD END ---------------------------
+;FOR LOCAL , 0 , 100
+;	PRINTFORML CASE {LOCAL}
+;	PRINTFORML 	VARSIZE ダンジョン%TOSTR(LOCAL , "00")%
+;NEXT
+;WAIT
+
+
+IF FLAG:SHOP→SHOP플래그
+	FLAG:SHOP→SHOP플래그 = 0
+	BEGIN SHOP
+ENDIF
+DAY = 1
+DAY:1 = 10
+;MONEY:2 = 50000
+FLAG:1 = 0
+FLAG:지정던전=-1
+FLAG:탐색시초기착의설정 = 0
+FLAG:6 = 1
+;FLAG:今までのキャラ数 = 1
+FLAG:사정전선택 = 8
+FLAG:소프트용량 = 8
+FLAG:ＣＯＭＰ용량 = 4
+;ITEM:알버트 = 0
+;EQUIP:MASTER:알버트 = 0
+FLAG:합체소재악마1 = -1
+FLAG:합체소재악마2 = -1
+TARGET:1 = -1
+TARGET:2 = -1
+TARGET:3 = -1
+ASSI:1 = -1
+ASSI:2 = -1
+;ITEM:저주의레드카펫 = 0
+;---- EDIT P 002 ADD START -------------------------
+コンサート実行日 = -1
+;---- EDIT P 002 ADD END ---------------------------
+;GLOBAL変数読み込みor設定
+;GLOBAL:メッセージ速度 = 1
+GLOBAL:メッセージ速度 = 5
+GLOBAL:オート時ウェイト = 500
+GLOBAL:右クリック時ウェイト = 1000
+GLOBAL:メッセージアニメ利用 = 1
+LOADGLOBAL
+SIF GLOBAL:던전내조작설정 == 1
+	FLAG:던전내조작설정 = 1
+
+SIF G_OPT_USE_ICON == ""
+	G_OPT_USE_ICON '= G_OPT_USE_ICON_TABLE:0
+SIF G_OPT_REPLACE_ICON == ""
+	G_OPT_REPLACE_ICON '= G_OPT_REPLACE_ICON_TABLE:0
+SIF G_OPT_USE_LINK_DEVIL_ICON == ""
+	G_OPT_USE_LINK_DEVIL_ICON '= G_OPT_USE_LINK_DEVIL_ICON_TABLE:0
+
+MouseUIStore_Enable = 1
+FLAG:던전의권장레벨표시설정 = 1
+SETBIT FLAG:스킬속성표시설정, 0
+SETBIT FLAG:바애니메이션스킵, 0
+
+;FLAG:信頼系陥落設定 = 1
+
+;相性表示
+FLAG:상성등표시ON = 1
+
+;---- EDIT P 002 DEL START -------------------------
+;項目名初期設定
+;IF 項目名設定 < 1
+;	項目名_セットアップ画面 = セットアップ画面
+;	項目名_ショップ画面 = ショップ画面
+;	項目名_能力確認画面 = 能力確認画面
+;	項目名_調教画面 = 調教画面
+;	項目名_悪魔変身 = 악마변신
+;	項目名_汎用悪魔変身 = 汎用悪魔変身
+;ENDIF
+;---- EDIT P 002 DEL END ---------------------------
+
+;---- EDIT 050 ADD START -------------------------
+CFLAG:MASTER:실제가입시간 = GETMILLISECOND()
+FOR LCOUNT, 0, BATTLE_MEMBERSETNUM
+	BATTLE_MEMBERSET:LCOUNT:2 = CFLAG:0:실제가입시간
+NEXT
+;---- EDIT 050 ADD END ---------------------------
+
+;相性カラー初期設定
+FLAG:통상컬러 = 192192192
+FLAG:약점컬러 = 102255255
+FLAG:내성컬러 = 102102102
+FLAG:무효컬러 = 153000000
+FLAG:흡수컬러 = 153000000
+FLAG:반사컬러 = 153000000
+;合計0ならカラー設定が無いってことのはず
+IF GLOBAL:통상컬러 + GLOBAL:약점컬러 + GLOBAL:내성컬러 + GLOBAL:무효컬러 + GLOBAL:흡수컬러 + GLOBAL:반사컬러 == 0
+	GLOBAL:통상컬러 = FLAG:통상컬러
+	GLOBAL:약점컬러 = FLAG:약점컬러
+	GLOBAL:내성컬러 = FLAG:내성컬러
+	GLOBAL:무효컬러 = FLAG:무효컬러
+	GLOBAL:흡수컬러 = FLAG:흡수컬러
+	GLOBAL:반사컬러 = FLAG:반사컬러
+	SAVEGLOBAL
+ELSE
+	FLAG:통상컬러 = GLOBAL:통상컬러
+	FLAG:약점컬러 = GLOBAL:약점컬러
+	FLAG:내성컬러 = GLOBAL:내성컬러
+	FLAG:무효컬러 = GLOBAL:무효컬러
+	FLAG:흡수컬러 = GLOBAL:흡수컬러
+	FLAG:반사컬러 = GLOBAL:반사컬러
+ENDIF
+;オートリカバー初期設定
+FLAG:오토리커버설정1 = 15
+FLAG:오토리커버설정2 = 505050505050505
+FLAG:오토리커버설정3 = 90000
+;FLAG:플레이개시시간 = GETMILLISECOND()
+FLAG:SHOP커맨드의나열수 = 3
+FLAG:조교커맨드의나열수 = PRINTCPERLINE() > 0 ? PRINTCPERLINE() # 3
+FLAG:조교파라미터의나열수 = PRINTCPERLINE() > 0 ? PRINTCPERLINE() # 4
+
+FLAG:디폴트툴팁시간 = 500
+;画面幅を取得
+;CALL SET_LINELENS
+;ゲームを開始するために必要な変数を取得する(LOAD時と共通の処理)
+CALL SET_GAMEPLAY_START
+;現在のバージョン管理補助番号をセット
+CALL VERUP_TEMP
+
+MONEY = 3000
+;---- EDIT 049 ADD START -------------------------
+FLAG:누적기준LV = 3
+;---- EDIT 049 ADD END ---------------------------
+;能力や相性などの要素数を指定
+;CALL CONFIG_ELEMENT_NUM
+
+;ポジション初期化
+FOR LCOUNT, 0, 16
+	LOCALS = 포지션{LCOUNT+1}
+	FLAG:LOCALS = -1
+NEXT
+;ポジション2に指定
+CFLAG:MASTER:포지션 = 2
+FLAG:포지션2 = 0
+CFLAG:MASTER:PT플래그 = 2
+TFLAG:3 = -1
+
+;---- EDIT 016 ADD START -------------------------
+IF FLAG:주회횟수 == 0
+	CALL BATTLE_SETTING_SET_BAD_STATUS, 1
+	CALL BATTLE_SETTING_SET_1MORE, 1
+	CALL BATTLE_SETTING_SET_EQUIPTHEORY, 1
+ENDIF
+;---- EDIT 016 ADD END -------------------------
+
+FLAG:조교난이도 = 2
+FLAG:전투난이도 = 2
+CALL SET_DIFFICULT
+CALL SET_EXTRAEVENT
+CALL SELECT_COLOSSEUM_RANDOMBATTLE
+CALL SET_MASTER
+CFLAG:MASTER:딸의부친고유번호딸 = -1
+CFLAG:MASTER:딸의친부모고유번호딸 = -1
+;主人の経験値、マグネタイトの初期化
+BASE:MASTER:ＥＸＰ = 200
+BASE:MASTER:ＭＡＧ = 3000
+
+;初期ステータス割り振り　ステータス合計値がデフォから変わってたら飛ばす
+TEMP = 0
+IF NO:MASTER == [[キャラ:더미아나타]] || NO:MASTER == [[キャラ:당신]]
+	FOR LCOUNT, 1, BASESTATUSNUM
+		TEMP += BASE:MASTER:GET_BASESTATUS(LCOUNT) != CSVBASE(NO:MASTER, GETNUM(BASE, GET_BASESTATUS(LCOUNT)))
+	NEXT
+ENDIF
+IF TEMP == 0
+	IF FLAG:레벨업시인터페이스설정 == 1
+		CALLFORM STATUS_BONUS_1,MASTER,12
+	ELSE
+		CALLFORM STATUS_BONUS_0,MASTER,12
+	ENDIF
+ENDIF
+;能力の同期化
+CALL SYNC_STATUS,0
+CALL HEALTH_CHARA,0
+
+;---- EDIT 011 ADD START -------------------------
+;呪いのレッドカーペット設定
+;EQUIP:MASTER:저주의레드카펫 = ITEM:저주의레드카펫
+;---- EDIT 011 ADD END -------------------------
+
+
+
+CALL OPENING
+
+
+TARGET = 1
+SIF FLAG:DEBUG
+	TRYCALL DEBUG_MODE
+;---- EDIT 050 ADD START -------------------------
+CALL SET_LAST_BATTLE_MEMBERSET
+;---- EDIT 050 ADD END ---------------------------
+
+; -KR- JPNAME 빌드 (새 게임 시작 시에도 상성/캐릭터 이름 한글 매핑 생성)
+CALL BUILD_JPNAME
+
+BEGIN SHOP
+
+;-----------------------------------------------------------------
+;難易度設定
+;-----------------------------------------------------------------
+@SET_DIFFICULT
+#DIM LCOUNT
+#DIM _PAGE
+#DIM _LINE
+_PAGE = 0
+_LINE = LINECOUNT
+FLAG:저주의레드카펫 = 0
+$DIFF_TOP
+IF FLAG:DEBUG && FLAG:저주의레드카펫
+	SETCOLOR COLOR("PASTEL-PURPLE")
+ELSEIF FLAG:DEBUG
+	SETCOLOR COLOR("PASTEL-RED")
+ELSEIF FLAG:저주의레드카펫 || FLAG:던전재진입금지
+	SETCOLOR COLOR("PASTEL-BLUE")
+ENDIF
+CUSTOMDRAWLINE =
+PRINTL ★★★게임 시작 전에 각종 옵션을 설정할 수 있습니다★★★
+CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL ■기본
+PRINTFORML [ 0] 조교난이도                     현재의설정:%AUTO_SPLIT( "EASY/NORMAL/HARD" , "/" , FLAG:조교난이도-1)%
+PRINTFORML [ 1] 전투난이도                     현재의설정:%AUTO_SPLIT( "EASY/NORMAL/HARD/MANIACS/LUNATIC/A KU MU" , "/" , FLAG:전투난이도-1)%
+PRINTFORML [ 2] 전투옵션설정　　　　　　　　　　　　
+;---- EDIT 028 MOD START -------------------------
+	PRINTL 
+	PRINTL ■추가요소
+PRINTFORML [ 3] 스리사이즈기능               현재의설정:\@ SETTING_IS_3SIZE() ? 이용한다 # 이용하지 않는다 \@
+	PRINTL 
+	PRINTL ■게임밸런스 대폭 변경
+PRINTFORML [ 4] 강화 옵션 설정             현재의설정:\@ MAXARRAY(FLAG, EXTRA_GAME_OPTION_STARTNUM(), EXTRA_GAME_OPTION_STARTNUM() + EXTRA_GAME_OPTIONNUM()) ? ON # OFF \@
+SIF FLAG:주회횟수 > 0
+	PRINTFORML [ 5] 가챠모드                   현재의설정:%AUTO_SPLIT( "사용하지 않는다/사용한다/가챠 제한" , "/" , FLAG:악마가챠모드)%
+SIF FLAG:경험ED수 > 0
+	PRINTFORML [ 6] 마카 환율 변동                 현재의설정:1마카 \@ SETTING_IS_MAKKA_RATE() ? ￥1～100의 변동제 # ￥50으로 고정(디폴트) \@
+;---- EDIT 028 MOD END ---------------------------
+PRINTL 
+PRINTL ■제한플레이
+PRINTFORML [80] 저주의레드카펫              현재의설정:\@ FLAG:저주의레드카펫 ? ON # OFF(디폴트) \@
+PRINTFORML [81] 던전재진입금지                현재의설정:\@ FLAG:던전재진입금지 ? ON # OFF(디폴트) \@
+	PRINTL 
+	PRINTL ■개발자용
+PRINTFORML [91] DEBUG MODE                     현재의설정:\@ FLAG:DEBUG ? ON # OFF(디폴트) \@
+	PRINTL 
+	PRINTL 
+	PRINTL 
+PRINTFORML [99] 설정완료
+RESETCOLOR 
+INPUT
+SELECTCASE RESULT
+	CASE 0
+		CALL SET_DIFFICULT_TRAIN
+	CASE 1
+		CALL SET_DIFFICULT_BATTLE
+	CASE 2
+		CALL SET_BATTLEOPTION
+;---- EDIT 028 MOD START -------------------------
+	CASE 3
+		CALL SET_VITALSTAT
+	CASE 4
+		CALL SELECT_USE_EXTRA_GAME_OPTION
+	CASE 5
+		SIF FLAG:주회횟수 > 0
+			CALL SET_GACHAMODE
+	CASE 6
+		SIF FLAG:경험ED수 > 0
+			CALL SET_MAKKALATE
+;---- EDIT 028 MOD END ---------------------------
+	CASE 80
+		IF !FLAG:저주의레드카펫
+			PRINTFORML 적과 조우하지 않고、이동시의 MAG 소비도 없어집니다만
+			PRINTFORMW 통상 몬스터를 이용해 벌 수 없는 저주의 레드카펫 모드가 됩니다、
+			FLAG:저주의레드카펫 = 1
+		ELSE
+			PRINTFORMW 저주의 레드카펫을 해제했습니다。
+			FLAG:저주의레드카펫 = 0
+		ENDIF
+	CASE 81
+		IF !FLAG:던전재진입금지
+			PRINTFORML 던전에서 한 번 나가면 다음 턴까지 진입할 수 없게 됩니다。
+			PRINTFORML 2024년 이전의 클래식한 사양에 가깝게 만들기 위한 것이며、
+			PRINTFORMW 더 큰 전멸 위험과 더 엄격한 리소스 관리를 즐기고 싶은 사람들을 위한 제한입니다。
+			FLAG:던전재진입금지 = 1
+		ELSE
+			PRINTFORMW 던전 재진입 금지를 해제했습니다。
+			FLAG:던전재진입금지 = 0
+		ENDIF
+	CASE 91
+		FLAG:DEBUG = FLAG:DEBUG ? 0 # 1
+	CASE 99
+		RETURN
+ENDSELECT
+CLEARLINE LINECOUNT-_LINE
+GOTO DIFF_TOP
+
+;===========================================================
+;難易度オプション
+;===========================================================
+
+@SET_DIFFICULT_TRAIN
+PRINTL ★★조교 난이도를 선택해주세요★★
+PRINTL 난이도에 따라 조교시 획득하는 소스와 판매・노역의 보상액에 보정이 달라집니다。
+PRINTL [0]EASY
+PRINTL [1]NORMAL
+PRINTL [2]HARD
+CALL INPUTINT,0,1,2
+FLAG:조교난이도 = RESULT+1
+
+@SET_VITALSTAT
+
+PRINTL ★★외모・스리사이즈 기능을 이용하시겠습니까？★★
+PRINTL [0] 이용하지 않는다
+PRINTL 설명　：외모・스리사이즈 기능을 이용하지 않습니다。
+PRINTL [1] 이용한다
+PRINTL 설명　：외모・스리사이즈 기능을 이용합니다。
+PRINTL 　　　　외모・스리사이즈가 표시됩니다。또한、변경용 아이템이 추가됩니다。
+CALL INPUTINT( 0, 1)
+CALL SETTING_SET_3SIZE, RESULT
+PRINTL
+
+@SET_DIFFICULT_BATTLE
+PRINTL ★★전투 난이도를 선택해주세요★★
+PRINTL [0]EASY - 아군의 피데미지가 0.75배가 되고、여데미지가 1.4배가 됩니다。
+PRINTL [1]NORMAL - 적 아군 모두 보정이 없습니다。
+PRINTL [2]HARD - 아군의 피데미지가 1.5배가 되고、적의 HP가 1.5배가 됩니다。
+PRINTL [3]MANIACS - HARD + 적의 능력치가 높아집니다。
+PRINTL [4]LUNATIC - 아군의 피데미지가 2배가 되고、적의 능력치가 더욱 높아집니다。
+PRINTL [5]A KU MU - 아군의 피데미지가 3배가 되고、적의 능력치가 엄청나게 높아집니다。
+CALL INPUTINT,0,1,2,3,4,5
+FLAG:전투난이도 = RESULT+1
+
+@SET_EXTRAEVENT, IS_RESTART
+#DIM DYNAMIC IS_RESTART
+IF IS_RESTART
+	PRINTL EXTRA 이벤트 이용・필터 설정을 변경하시겠습니까？
+	CALL INPUT_YN
+	SIF RESULT
+		RETURN 0
+	PRINTL 
+	PRINTL 
+ENDIF
+PRINTL ★★EXTRA이벤트(메가텐계 이외의 이벤트)의 설정을 선택해주세요★★
+PRINTL [0] 없음
+PRINTL 설명　：메가텐계 이외의 이벤트 발생을 허가하지 않습니다。
+PRINTL 　　　　또한 일부 던전의 출현악마에 대해서도 메가텐계가 이외의 출현을 억제합니다。
+PRINTL [1] 있음
+PRINTL 설명　：메가텐계 이외의 이벤트 발생을 허가합니다。
+PRINTL 　　　　또한 일부 던전의 출현악마에 대해서도 메가텐계가 이외의 출현을 허가합니다。
+CALL INPUTINT( 0, 1)
+IF RESULT == 0
+	IS_USEABLE_EXTRA_TITLE = 0
+ELSE
+	IS_USEABLE_EXTRA_TITLE = 1
+	CALL EXTRA_EVENT_FILTER
+ENDIF
+
+@SET_BATTLEOPTION
+#DIM _LINE
+_LINE = LINECOUNT
+$SET_TOP
+CUSTOMDRAWLINE =
+PRINTL ★★전투와 관련된 다양한 옵션을 설정할 수 있습니다★★
+CUSTOMDRAWLINE =
+PRINTFORML [ 3] 행동불능시 회피불능                        %AUTO_SPLIT( "회피가 발생/회피불능" , "/" , BATTLE_SETTING_IS_BAD_STATUS())%
+PRINTFORML [ 4] 적의 1MORE발동률                             %AUTO_SPLIT( "약점을 찌르면 반드시 발동/동료의 무효나 반사에 따라 발동률 변동" , "/" , BATTLE_SETTING_IS_1MORE())%
+PRINTFORML [ 6] 장비지식사양과 Ｐ사용자의 상태이상 방어 변경       %AUTO_SPLIT( "바닐라 설정/개변판" , "/" , BATTLE_SETTING_IS_EQUIPTHEORY())%
+PRINTFORML [ 7] 데빌시프터 스테이터스 계산식              %AUTO_SPLIT( "악마 측의 능력 비율을 참고/인간 능력에 가산" , "/" , FLAG:데빌시프터스탯설정)%
+PRINTFORML [ 9] 적강화옵션                            강화치(0으로 무효):{FLAG:적강화옵션}
+PRINTFORML [11] 공격아이템 사용 시 능력치의 영향            %AUTO_SPLIT( "디폴트/위력 계산만 변경한다/ERROR/위력・명중 계산을 모두 변경한다" , "/" , BATTLE_SETTING_IS_ITEM_DAMAGE()+BATTLE_SETTING_IS_ITEM_HITRATE()*2)%
+
+PRINTFORML [90] 일괄설정
+PRINTFORML [91] 모두 디폴트로 되돌린다
+PRINTFORML [92] 모두 바닐라 설정으로 변경
+PRINTFORML [99] 이전 화면으로 돌아간다
+INPUT
+SELECTCASE RESULT
+CASE 99
+	RETURN
+CASE 90
+	CALL SET_BATTLEOPTION_BUDSTATE
+	PRINTL 
+	CALL SET_BATTLEOPTION_1MORE
+	PRINTL 
+	CALL SET_BATTLEOPTION_EQUIPLATE2
+	PRINTL 
+	CALL SET_BATTLEOPTION_SHIFTER
+	PRINTL 
+	CALL SET_ENEMY_WASSHOI
+	PRINTL 
+	CALL OPTION_攻撃アイテムの計算式設定
+	PRINTL 
+
+;---- EDIT 016 MOD START -------------------------
+	CASE 91
+	;まとめて初期化
+		FLAG:데빌시프터스탯설정 = 0
+		FLAG:데빌시프터스탯설정 = 0
+		FLAG:페르소나구사자추가스탯설정 = 0
+		CALL BATTLE_SETTING_SET_BAD_STATUS, 1
+		CALL BATTLE_SETTING_SET_1MORE, 1
+		CALL BATTLE_SETTING_SET_EQUIPTHEORY, 1
+		CALL BATTLE_SETTING_SET_ITEM_DAMAGE, 0
+		CALL BATTLE_SETTING_SET_ITEM_HITRATE, 0
+	CASE 92
+	;まとめて初期化
+		FLAG:데빌시프터스탯설정 = 0
+		FLAG:페르소나구사자추가스탯설정 = 0
+		FLAG:전투난이도관련설정스위치 = 0
+		CALL BATTLE_SETTING_SET_ITEM_DAMAGE, 0
+		CALL BATTLE_SETTING_SET_ITEM_HITRATE, 0
+;---- EDIT 016 MOD END -------------------------
+	CASE 3
+		CALL SET_BATTLEOPTION_BUDSTATE
+	CASE 4
+		CALL SET_BATTLEOPTION_1MORE
+	CASE 6
+		CALL SET_BATTLEOPTION_EQUIPLATE2
+	CASE 7
+		CALL SET_BATTLEOPTION_SHIFTER
+	CASE 9
+		CALL SET_ENEMY_WASSHOI
+	CASE 11
+		CALL OPTION_攻撃アイテムの計算式設定
+ENDSELECT
+;---- EDIT 026 ADD END -------------------------
+CLEARLINE LINECOUNT-_LINE
+GOTO SET_TOP
+
+@SET_BATTLEOPTION_BUDSTATE
+PRINTL ★★전투시의 상태이상 필중 설정★★
+PRINTL [0] 바닐라 설정
+PRINTL 설명　：ShinEraTensei 본래의 설정。
+PRINTL 　　　　움직일 수 없는 상태이상에서도 회피가 발생한다。
+PRINTL [1] 변경판
+PRINTL 설명　：움직일 수 없는 상태이상에서
+PRINTL 　　　　회피가 불가능해진다。
+CALL INPUTINT( 0, 1)
+CALL BATTLE_SETTING_SET_BAD_STATUS, RESULT
+
+@SET_BATTLEOPTION_1MORE
+PRINTL ★★전투시의 1more동작 설정★★
+PRINTL [0] 바닐라 설정
+PRINTL 설명　：ShinEraTensei 본래의 설정。
+PRINTL 　　　　적에게 약점을 한 번이라도 찔리면 １MORE가 발생한다。
+PRINTL [1] 개변판
+PRINTL 설명　：무효나 반사、흡수나 회피로
+PRINTL 　　　　적이 １MORE하기 어려워진다。
+CALL INPUTINT( 0, 1)
+CALL BATTLE_SETTING_SET_1MORE, RESULT
+
+@SET_BATTLEOPTION_SHIFTER
+PRINTL ★★데빌시프터의 스테이터스 계산 방식을 선택해주세요★★
+PRINTL [0] 통상(바닐라 설정)
+PRINTL 설명　：ShinEraTensei 본래의 설정。
+PRINTL 　　　　링크악마의 스텟에 따라、본체 능력의 합계를 교환한 뒤、강화치를 더한다。
+PRINTL 　　　　초기링크악마는csv스테이터스를 기반으로 계산한다。
+PRINTL [1] 계산식 변경
+PRINTL 설명　：링크악마의 각 스테이터스/10을 본체에 더한다。
+PRINTL 　　　　초기링크악마는、각 csv스테이터스/5 와 본체의 레벨/30을 더한다。
+CALL INPUTINT( 0, 1)
+FLAG:데빌시프터스탯설정 = RESULT
+
+@SET_BATTLEOPTION_EQUIPLATE2
+PRINTL ★★장비에 의한 효과의 영향을 선택해주세요★★
+PRINTL [0] 바닐라 설정
+PRINTL 설명　：ShinEraTensei 본래의 설정。
+PRINTL 　　　　장비지식스킬을 갖고 있는 악마는 장비에 의해 공격력・방어력・마법효과 등이 상승합니다。
+PRINTL 　　　　
+PRINTL 　　　　또한、페르소나１・２사양의 페르소나구사자는 장비에 의한 상태이상내성 변경이 무효입니다。
+PRINTL [1] 개변판
+PRINTL 설명　：장비지식스킬을 갖고 있는 악마는、총 이외의 장비로는 공격력・방어력・마법효과 등이 상승하지 않습니다。
+PRINTL 　　　　통상공격의 속성・사거리・범위는 무기에 의존하고、마력이나 지혜 등의 기본능력치 보정은 유효합니다。
+PRINTL 　　　　
+PRINTL 　　　　또한、페르소나１・２사양의 페르소나구사자라도 장비에 의한 상태이상내성 변경이 유효입니다。
+CALL INPUTINT( 0, 1)
+CALL BATTLE_SETTING_SET_EQUIPTHEORY, RESULT
+
+;2周目以降限定
+@SET_GACHAMODE
+PRINTL ★★소셜 게임풍 가챠 모드 설정★★
+PRINTL [0] 통상 (바닐라 설정)
+PRINTL 설명　：이 기능을 사용하지 않습니다。
+PRINTL [1] 가챠 기동
+PRINTL 설명　：마카를 사용하여、가챠를 돌릴 수 있습니다。
+PRINTL 　　　　가챠산 악마는 전용 소질을 가져、그 외 악마와는 구별 됩니다。
+PRINTL 　　　　밸런스를 무너뜨리기 때문에 남용하는 것은 권장하지 않습니다。
+PRINTL [2] 가챠 악마 온리
+PRINTL 설명　：마카、또는 전용 포인트를 사용하여 얻은 가챠산 악마 이외의 악마는
+PRINTL 　　　　스테이터스、및 노예매각에 큰 패널티를 얻습니다。
+PRINTL 　　　　제한 플레이에 추천합니다。
+CALL INPUTINT( 0, 1, 2)
+FLAG:악마가챠모드 = RESULT
+
+;エンディング1つ以上発見済
+@SET_MAKKALATE
+PRINTL ★★마카 환율 변동 설정★★
+PRINTL [0] 통상 (바닐라 설정)
+PRINTL 설명　：ShinEraTensei 본래의 설정。
+PRINTL 　　　　마카 환율은 변동없이 1 마카＝￥50입니다。
+PRINTL [1] 변경한다
+PRINTL 설명　：매일 마카 환율이 변동합니다。
+PRINTL 　　　　환율 범위는 1마카＝￥1～￥100입니다。
+CALL INPUTINT( 0, 1)
+CALL SETTING_SET_MAKKA_RATE, RESULT
+
+
+@SET_ENEMY_WASSHOI
+PRINTL 적의 강화 수준을 입력해주세요。입력 가능한 범위는 0～20입니다　(0으로 강화설정 무효)
+CALL INPUT_MANY(0,20)
+FLAG:적강화옵션 = RESULT
+
+
+;;=================================================================================
+;;レベルアップ・イベントでの能力ボーナス
+;;=================================================================================
+;=================================================================================
+;@STATUS_BONUS_0
+;新レベルアップ・イベントでの能力ボーナス
+;ARG   対象キャラ
+;ARG:1 ボーナスポイント
+;ARG:2 レベルアップ回数
+;=================================================================================
+
+@STATUS_BONUS_0, ARG, CNT_STATUS_BONUS, CNT_LVUP
+#DIM LCOUNT, 2
+#DIM L_LINE
+#DIM ADD_BASE_STATUS, BASESTATUSNUM
+#DIM CNT_LVUP
+#DIM CNT_STATUS_BONUS
+#DIM IS_TRANSFORMED
+#DIM REMAINING_BONUS
+#DIM STOCK_REDRAW
+#DIMS SHOW_LINE, 7
+#DIM SHOW_LINE_MAXLENS
+
+STOCK_REDRAW = CURRENTREDRAW()
+VARSET ADD_BASE_STATUS
+L_LINE = LINECOUNT
+
+WHILE 1
+	REDRAW 0
+	CLEARLINE LINECOUNT - L_LINE
+	;残りボーナスを取得
+	REMAINING_BONUS = CNT_STATUS_BONUS - SUMARRAY(ADD_BASE_STATUS)
+	DRAWLINE
+	PRINTFORML %종족명(ARG)%　　%CALLNAME:ARG%　　
+	PRINTFORML 　　LV{BASE:ARG:LV+CNT_LVUP,3}　　　%GET_ALI1(ABL:ARG:속성LD),7%/%GET_ALI2(ABL:ARG:속성LC),7%
+	CUSTOMDRAWLINE ･
+	;ボーナスが残っているのなら取得の選択をさせる
+	PRINTL 어느 능력을 올릴까？
+	PRINTFORML 나머지 {REMAINING_BONUS,2}포인트
+	DRAWLINE
+	SHOW_LINE_MAXLENS = 0
+	FOR LCOUNT, 1, 7
+		SHOW_LINE:LCOUNT = 
+		SHOW_LINE:LCOUNT += @"[{LCOUNT}] %GET_BASESTATUS(LCOUNT),4%："
+		SHOW_LINE:LCOUNT += @"{BASE:ARG:GET_BASESTATUS(LCOUNT), 4}"
+		SHOW_LINE:LCOUNT += @"({MAXBASE:ARG:GET_BASESTATUS(LCOUNT), 4})"
+		SHOW_LINE:LCOUNT += @"【+{ADD_BASE_STATUS:LCOUNT,3}】"
+		SHOW_LINE_MAXLENS = MAX(STRLENS(SHOW_LINE:LCOUNT), SHOW_LINE_MAXLENS)
+	NEXT
+	PRINTFORML %" " * SHOW_LINE_MAXLENS%　　 +5 　　+10 %"+" + TOSTR(REMAINING_BONUS), 7, RIGHT%
+	FOR LCOUNT, 1, BASESTATUSNUM
+		PRINTBUTTON SHOW_LINE:LCOUNT, LCOUNT
+		PRINT 　　
+		SETCOLOR REMAINING_BONUS < 5 ? COLOR("gray") # GETDEFCOLOR()
+		PRINTBUTTON @"[{LCOUNT + 10}]", LCOUNT + 10
+		PRINT 　　
+		SETCOLOR REMAINING_BONUS < 10 ? COLOR("gray") # GETDEFCOLOR()
+		PRINTBUTTON @"[{LCOUNT + 20}]", LCOUNT + 20
+		PRINT 　　
+		RESETCOLOR
+		PRINTBUTTON @"[{LCOUNT + 30}]", LCOUNT + 30
+		PRINTL 
+	NEXT
+	DRAWLINE
+	;ボーナスが残っているのなら取得の選択をさせる
+	IF REMAINING_BONUS
+		PRINTL [ 0] 리셋
+		PRINTL [-1] 자동(현재의 기본 스테이터스 비율을 유지)
+		PRINTL [-2] 자동(현재의 최대 스테이터스 비율을 유지)
+		INPUT
+		SELECTCASE RESULT
+			CASE 0
+				VARSET ADD_BASE_STATUS
+			CASE 1 TO 6
+				ADD_BASE_STATUS:RESULT += 1
+			CASE 11 TO 16
+				SIF REMAINING_BONUS >= 5
+					ADD_BASE_STATUS:(RESULT % 10) += 5
+			CASE 21 TO 26
+				SIF REMAINING_BONUS >= 10
+					ADD_BASE_STATUS:(RESULT % 10) += 10
+			CASE 31 TO 36
+				ADD_BASE_STATUS:(RESULT % 10) += REMAINING_BONUS
+			CASE -1
+				CALL AUTO_ALLOCATE_BASE_STATUS_BY_LEVELUP, ARG, 0, CNT_STATUS_BONUS, ADD_BASE_STATUS
+			CASE -2
+				CALL AUTO_ALLOCATE_BASE_STATUS_BY_LEVELUP, ARG, 1, CNT_STATUS_BONUS, ADD_BASE_STATUS
+		ENDSELECT
+	ELSE
+		;ボーナスがなくなっていたら決定
+		PRINTL 괜찮겠습니까？
+		CALL INPUT_YN
+		SIF RESULT == 0
+			BREAK
+		VARSET ADD_BASE_STATUS
+	ENDIF
+WEND
+;ステータスを加算する
+FOR LCOUNT, 0, BASESTATUSNUM
+	BASE:ARG:GET_BASESTATUS(LCOUNT) += ADD_BASE_STATUS:LCOUNT
+NEXT
+REDRAW STOCK_REDRAW
+RETURN 1
+;=================================================================================
+;@STATUS_BONUS_1
+;新レベルアップ・イベントでの能力ボーナス
+;ARG   対象キャラ
+;ARG:1 ボーナスポイント
+;ARG:2 レベルアップ回数
+;=================================================================================
+@STATUS_BONUS_1,ARG,ARG:1,ARG:2 = 0
+#DIM DYNAMIC 消費済み,1
+#DIM DYNAMIC カーソル,1
+#DIM DYNAMIC 能力値上昇,6
+#DIMS DYNAMIC 元値表示,6
+#DIMS キー,4
+SPLIT \@ FLAG:던전내조작설정 == 0 ? 8_4_6_2 # w_a_s_d \@,"_",キー
+REDRAW 0
+
+FOR LOCAL,0,6
+	LOCALS = %GET_BASESTATUS(LOCAL+1)%
+	元値表示:LOCAL =  %LOCALS,4%：{BASE:ARG:LOCALS,4}({MAXBASE:ARG:LOCALS,4}) 
+NEXT
+
+CUSTOMDRAWLINE ･
+PRINTFORML %종족명(ARG)%　　%CALLNAME:ARG%　　
+PRINTFORML 　　LV{BASE:ARG:LV+ARG:2}　　　%GET_ALI1(ABL:ARG:속성LD),7%/%GET_ALI2(ABL:ARG:속성LC),7%
+CUSTOMDRAWLINE ･
+PRINTL 어느 능력을 올릴까？
+
+WHILE 1
+	PRINTFORML 〔나머지 {ARG:1-消費済み,2}점〕
+	FOR LOCAL,0,6
+		PRINTFORML % カーソル == LOCAL ? "●→" # "　　"% %元値表示:LOCAL% + {能力値上昇:LOCAL,2}
+	NEXT
+
+	VARSET RESULTS,"",0,20
+	RESULTS:16 = _Enter_確定_%ARG:1 == 消費済み ? "" # "0x404040"%
+	CALL INPUT_ONEKEY_TAP_RESULTS(FLAG:던전내조작설정,"=","_")
+	SELECTCASE RESULTS
+		CASE "4","a","A"
+			IF 能力値上昇:カーソル > 0
+				能力値上昇:カーソル -= 1
+				消費済み -= 1
+			ENDIF
+		CASE "6","d","D"
+			IF ARG:1 > 消費済み
+				能力値上昇:カーソル += 1
+				消費済み += 1
+			ENDIF
+		CASE "8","w","W"
+			カーソル = カーソル == 0 ? 5 # カーソル-1
+		CASE "2","s","S"
+			カーソル = カーソル == 5 ? 0 # カーソル+1
+		CASE ""
+			IF ARG:1 == 消費済み 
+				PRINTL 괜찮겠습니까？
+				CALL INPUT_YN
+				SIF RESULT == 1
+					RESTART
+				FOR LOCAL,0,6
+					BASE:ARG:(GET_BASESTATUS(LOCAL+1)) += 能力値上昇:LOCAL
+				NEXT
+				REDRAW 3
+				RETURN
+			ENDIF
+	ENDSELECT
+	CLEARLINE 13
+WEND
+
+;========================================================================
+;ゲームオーバー
+;========================================================================
+@GAME_OVER
+CUSTOMDRAWLINE =
+PRINTLC [0]종료한다
+PRINTLC [1]데이터를 로드해서 계속한다
+;PRINTLC [2]最初からやり直す
+PRINTL 
+
+CALL INPUTINT,0,1
+SELECTCASE RESULT
+	CASE 0
+		PRINTW 수고 많으셨습니다。Emuera를 종료합니다。
+		PRINTW 쉬는 동안 악마에게 몸을 빼앗기지 않도록 주의하세요……
+	CASE 1
+		CALL TITLE_LOADGAME
+		PRINTW 데이터를 로드하지 않아 종료합니다
+;	CASE 2
+;		FLAG:탈출 = 0
+;		FLAG:SHOP커맨드 = 0
+;		FLAG:소마기프트 = 0
+;		FLAG:보옥륜기프트 = 0
+;		FLAG:주회횟수 -= 1
+;		FLAG:SHOP→SHOP플래그 = 1
+;		JUMP SHOP_COM_777
+;		IF RESULT == 0
+;			PRINTW お疲れ様でした。Emueraを終了します。
+;			PRINTW 쉬는 동안 악마에게 몸을 빼앗기지 않도록 주의하세요……
+;		ENDIF
+ENDSELECT
+QUIT
+
+
+
+@EVENTTURNEND
+#PRI
+#DIM LCOUNT
+;-----------------------------------------------------
+;던전내조교
+;調教後に通常の流れにいかずにダンジョン探索に差し戻す
+;-----------------------------------------------------
+IF FLAG:던전내조교 == 1
+	ASSI = FLAG:던전내조교조수대피
+	FLAG:던전내조교 = 0
+	FLAG:SHOP커맨드 = [[ショップ:탐색]]
+	;---- EDIT 003 ADD START -------------------------
+	;トリッシュテイクアウトの位置をSYSTEM_DUNGEON内に変更
+	IF FLAG:트리슈조교 == 1
+		PRINTW ＞트리슈와 헤어져、회복의 샘에서 나왔다…
+		FLAG:트리슈조교 = 2
+		CFLAG:자궁내피임결계 = 0
+		TARGET = -1
+	ELSE
+		TRYCALLFORM TRAIN_DUNGEON_{FLAG:현던전}
+	ENDIF
+	;---- EDIT 003 ADD START -------------------------
+	BEGIN SHOP
+ENDIF
+
+CALL EVENT_PHASEEND
+SIF FLAG:턴이행시
+	CALL EVENT_TURN_END
+BEGIN SHOP
+
+@EVENT_PHASEEND
+#DIM LCOUNT
+;-----------------------------------------------------
+;フラグ処理
+;-----------------------------------------------------
+;ダンジョン内で発情した場合ココで治す
+CVARSET CFLAG , GETNUM(CFLAG , "던전내발정") , 0
+CVARSET CFLAG , GETNUM(CFLAG , "던전내발정용욕정치") , 0
+
+;汚れも落とす
+FOR LCOUNT, 0, CHARANUM
+	RESET_STAIN LCOUNT
+;---- EDIT 019 ADD -------------------------------
+	SIF LCOUNT > 0
+		CLEARBIT CFLAG:LCOUNT:교류끝플래그,1
+NEXT
+;---- EDIT 018 ADD -------------------------------
+;MASTERの変化は調教外の部分が多いのでここでも見る
+IF MASTER >= 0
+	CALL EVENTCHECK_M
+	IF FLAG:주인함락기능
+		SIF MASTER > -1
+			CALL 主人陥落
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;体力・気力・ストレスの処理
+;-------------------------------------------------
+CALL FHASEEND_HEALTH
+
+;-------------------------------------------------
+;ターン終了時イベントの呼び出し
+;-------------------------------------------------
+FOR LCOUNT, 0, TURNEND_EV_NUM + 1
+	TRYCCALLFORM PLAYABLE_TURNEND_EV_{LCOUNT}
+		IF RESULT
+			;強制WAITを入れてスキップを殺す
+			TWAIT 100, 0
+			CALLFORM TURNEND_EV_{LCOUNT}
+			;イベントがあった場合、休憩が連続しないようにする。
+			FLAG:휴식플래그 = MIN(FLAG:휴식플래그, 2)
+		ENDIF
+	CATCH
+		;未定義関数をひいたらを終わる = 間をあけて番号を設定した場合はイベントが通らない
+		BREAK
+	ENDCATCH
+NEXT
+
+;好餌イベ(他)呼び出し
+IF GETBIT(FLAG:ＮＴＲ기능 , 9) && イベントフラグ:81:0 == 1 && RAND:2 == 0
+	IF TIME == 0
+		LCOUNT = RAND:2
+		SELECTCASE LCOUNT
+			;狩の獲物
+			CASE 0
+				CALL HUNTING_SEX
+			;公園で休息
+			CASE 1
+				CALL RESTING_IN_THE_PARK
+		ENDSELECT
+	ELSEIF TIME == 1 || TIME == 2
+		LCOUNT = RAND:4
+		SELECTCASE LCOUNT
+			;騎乗セックスフラグ確認
+			CASE 0
+				CALL RIDING_SEX
+			;幸せのトイレフラグ確認
+			CASE 1
+				CALL HAPPY_TOILET_SEX
+			;狩の獲物
+			CASE 2
+				CALL HUNTING_SEX
+			;公園で休息
+			CASE 3
+				CALL RESTING_IN_THE_PARK
+		ENDSELECT
+	ELSEIF TIME == 3
+		;好餌イベ（MASTER派生）呼び出し
+		LCOUNT = RAND:3
+		SELECTCASE LCOUNT
+			CASE 0
+				CALL MASTER_SEX_TRAIN
+			;竿姉妹イベフラグ確認
+			CASE 1
+				CALL MASTER_SEX_3PTRAIN
+			;痴漢
+			CASE 2
+				CALL CHIKAN_MASTER
+		ENDSELECT
+	ENDIF
+ENDIF
+
+;---- EDIT 019 ADD START -------------------------
+CALL EVENT_93_大場なな_毎日の判定
+;---- EDIT 019 ADD END -------------------------
+
+;強制的に酔い覚まし
+CALL 酔い覚まし,1
+FLAG:휴식플래그 = 0
+;既存テキストのセリフ分岐などのために内部的に時間は動かしておく
+TIME = TIME == 3 ? 0 # TIME + 1
+
+
+;;朝まで休憩でない、もしくは夜の場合休憩フラグ値を0に
+;IF FLAG:휴식플래그 == 4
+;	;夜になるので休憩終わり
+;	IF TIME == 2
+;		FLAG:휴식플래그 = 0
+;	ENDIF
+;ELSEIF FLAG:휴식플래그 == 3
+;	;朝になるので休憩終わり
+;	IF TIME == 3
+;		FLAG:휴식플래그 = 0
+;	ENDIF
+;ELSE
+;	FLAG:휴식플래그 = 0
+;ENDIF
+
+IF FLAG:임신기능
+	;全体の妊娠判定の処理
+	CALL IN_VAGINA
+ENDIF
+
+;---- EDIT 022 ADD START -------------------------
+;一括で呼び出す
+FOR LCOUNT, 0, CHARANUM
+	CALL ISABLE_EVOLUTE_PERSONA, LCOUNT
+NEXT
+
+;時間経過表現の一助として月齢をずらす
+;ターンの終了時処理でもMOONを呼んでいるため、ターンを終了すると決まっているときは処理が重複しないようにMOONを呼び出さない
+SIF FLAG:턴이행시 == 0
+	CALL MOON
+
+;========================================================================
+;ロード時の処理
+;========================================================================
+@EVENTLOAD
+#DIM LCOUNT
+;---- FONT LEAK GUARD START -------------------------
+SETFONT
+;---- FONT LEAK GUARD END ---------------------------
+LOADGLOBAL
+IF FLAG:임시세이브관리
+	DELDATA LASTLOAD_NO
+	;一時セーブをコピーしてた場合の措置
+	IF FLAG:임시세이브관리 != GLOBAL
+		PRINTL 잘못된 데이터입니다
+		BEGIN TITLE
+	ENDIF
+	FLAG:임시세이브관리 = 0
+	DO
+		LOCAL = RAND:10000 + 1
+	LOOP GLOBAL == LOCAL
+	GLOBAL = LOCAL
+	SAVEGLOBAL
+ENDIF
+SIF LASTLOAD_NO != SAVEDATA_NUM_FOR_CONTINUE
+	DELDATA SAVEDATA_NUM_FOR_CONTINUE;EDIT 045 ADD
+;---- EDIT 058 MOD START -------------------------
+;カロンの使用済みフラグを立てる
+SIF USE_CONTINUE_GLOBAL
+	USE_CONTINUE = 1
+USE_CONTINUE_GLOBAL = 0
+;SIF USE_CONTINUE_DAY_GLOBAL
+;	USE_CONTINUE_DAY = USE_CONTINUE_DAY_GLOBAL
+;USE_CONTINUE_DAY_GLOBAL = 0
+;---- EDIT 058 MOD END ---------------------------…
+SAVEGLOBAL
+;ゲームを開始するために必要な変数を取得・設定する(ゲーム開始時と共通の処理)
+CALL SET_GAMEPLAY_START
+CALL VERUP_BASE
+;ダンジョン内でセーブしていた場合、ダンジョンアタックを再度呼び出す
+IF FLAG:SHOP커맨드 == [[ショップ:탐색]]
+	BEGIN SHOP
+ENDIF
+
+; -KR- JPNAME 빌드
+CALL BUILD_JPNAME
+
+@SET_GAMEPLAY_START
+#DIM DYNAMIC LCOUNT
+FLAG:플레이개시시간 = GETMILLISECOND()
+;画面幅を取得
+CALL SET_LINELENS
+;能力や相性などの要素数を指定
+CALL CONFIG_ELEMENT_NUM
+CALL SET_INSTALLSOFT_VAR
+CALL SET_SKILL_EMULATOR_VAR
+CALL SET_EQUIP_VAR
+CALL SET_TURNEND_EV_VAR
+CALL SET_SHOP_EV_VAR
+CALL モブ画像_全リセット
+CALL SET_EXTRA_TITLE_VAR
+
+CALL マスター回転画像作成
+
+;メッセージウィンドウの設定を初期化
+CALL INITIALIZE_MESSAGE
+
+CALL SET_FLAG_USEABLE_TITLE
+
+;タイトルように作った画像と画像作成の履歴をいったんすべて削除
+CALL DISPOSE_GRAPHICS, "CHARA"
+SAVEGLOBAL
+
+IS_DEBUG = FLAG:DEBUG ? 1 # 0 
+;#;IS_DEBUG = 1
+
+CALL DISPOSE_GRAPHICS, "TEMP"
+
+;---- EDIT 047 MOD START -------------------------
+@TITLE_LOADGAME
+#DIM L_LINE
+#DIM LCOUNT
+#DIM PAGE, 3
+#DIM MAX_PAGE, 3
+#DIMS TEMPS
+#DIM L_AREA
+LOADGLOBAL
+PAGE = LAST_PAGE_IN_SAVEDATA, LAST_PAGE_IN_SAVEDATA:1, LAST_PAGE_IN_SAVEDATA:2
+L_AREA = LAST_SHOW_AREA_IN_SAVEDATA
+REDRAW 0
+L_LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - L_LINE
+
+MAX_PAGE = 200 / SAVEDATA_SHOWNUM:0
+MAX_PAGE:1 = (20 / SAVEDATA_SHOWNUM:0)
+MAX_PAGE:2 = (20 / SAVEDATA_SHOWNUM:0)
+
+;値域合わせ
+PAGE:L_AREA = LIMIT(PAGE:L_AREA, 0, MAX_PAGE:L_AREA)
+CALL PRINT_SAVEDATA_LIST, L_AREA, PAGE, PAGE:1, PAGE:2
+
+IF !GETCONFIG("オートセーブを行なう") && L_AREA == 0
+	PRINTFORML 
+ELSE
+	LOCAL =  L_AREA ? 400 # 300
+	CHKDATA LOCAL
+	;---- EDIT 046 ADD START -------------------------
+	IF !RESULT
+		SIF LOCAL == LASTSAVE_NO - 1
+			SETCOLOR COLOR("パ緑")
+		SIF LOCAL == LASTLOAD_NO
+			SETCOLOR COLOR("aqua")
+		PRINTFORML [{LOCAL}] %AUTO_SPLIT(RESULTS, UNICODE(10001), 0)%
+	ELSE
+		PRINTFORML [{LOCAL}] ----
+	ENDIF
+ENDIF
+;---- EDIT 046 ADD END ---------------------------
+RESETCOLOR
+DRAWLINE
+PRINTFORMLC \@ !MAX_PAGE:L_AREA ? %" " * 16% # [1000] 이전페이지\@ 
+PRINTFORMLC [1001] 돌아간다
+PRINTFORMLC \@ !MAX_PAGE:L_AREA ? %" " * 16% # [1002] 다음페이지\@ 
+PRINTL 
+
+SIF AREANAME_IN_SAVEDATA:L_AREA == "통상영역"
+	SETCOLOR COLOR("aqua")
+PRINTFORM [1004] %"통상영역",19,LEFT%
+RESETCOLOR
+SIF AREANAME_IN_SAVEDATA:L_AREA == "던전내영역"
+	SETCOLOR COLOR("aqua")
+PRINTFORM [1005] %"던전내영역",19,LEFT%
+RESETCOLOR
+;SIF RANGE(GLOBAL:1, 20, 29)
+IF GETCONFIG("オートセーブを行なう")
+	SIF AREANAME_IN_SAVEDATA:L_AREA == "자동세이브영역"
+		SETCOLOR COLOR("aqua")
+	PRINTFORM [1006] %"자동세이브영역",19,LEFT%
+ENDIF
+RESETCOLOR
+$INPUT_LOOP
+INPUT
+SELECTCASE RESULT
+	CASE 1001
+		REDRAW 1
+		RETURN 0
+	CASE 1000
+		PAGE:L_AREA = PAGE:L_AREA <= 0 ? MAX_PAGE:L_AREA - 1 # PAGE:L_AREA - 1
+	CASE 1002
+		PAGE:L_AREA = PAGE:L_AREA >= MAX_PAGE:L_AREA - 1 ? 0 # PAGE:L_AREA + 1
+	CASE 1004
+		L_AREA = FINDELEMENT(AREANAME_IN_SAVEDATA, "통상영역")
+	CASE 1005
+		L_AREA = FINDELEMENT(AREANAME_IN_SAVEDATA, "던전내영역")
+	CASE 1006
+		IF GETCONFIG("オートセーブを行なう")
+			L_AREA = FINDELEMENT(AREANAME_IN_SAVEDATA, "자동세이브영역")	
+			PAGE = GLOBAL:2 / SAVEDATA_SHOWNUM:0
+		ENDIF
+	CASEELSE
+		LOCAL = RESULT
+		SIF LOCAL == 300 && !GETCONFIG("オートセーブを行なう")
+			GOTO START
+		CHKDATA LOCAL
+		IF RESULT
+			CLEARLINE 1
+			REUSELASTLINE 무효인 값입니다
+			GOTO INPUT_LOOP
+		ENDIF
+		LAST_PAGE_IN_SAVEDATA = PAGE, PAGE:1, PAGE:2
+		LAST_ACCESS_SAVE_NO = LOCAL + 1
+		LAST_SHOW_AREA_IN_SAVEDATA = L_AREA
+		SAVEGLOBAL
+		LOADDATA LOCAL
+ENDSELECT
+GOTO START
+;---- EDIT 047 MOD END ---------------------------
+
+;---- EDIT 047 MOD START -------------------------
+@TITLE_SAVEGAME
+#LOCALSIZE 2
+#DIM LCOUNT
+#DIM PAGE, 3
+#DIM MAX_PAGE, 2
+#DIMS TEMPS
+#DIM L_AREA
+
+LOADGLOBAL
+PAGE = LAST_PAGE_IN_SAVEDATA, LAST_PAGE_IN_SAVEDATA:1, LAST_PAGE_IN_SAVEDATA:2
+;探索中は探索中領域を指定する
+L_AREA = (FLAG:SHOP커맨드 == [[ショップ:탐색]]) ? FINDELEMENT(AREANAME_IN_SAVEDATA, "던전내영역") # FINDELEMENT(AREANAME_IN_SAVEDATA, "통상영역")
+REDRAW 0
+$START
+MAX_PAGE = 200 / SAVEDATA_SHOWNUM:0
+MAX_PAGE:1 = 0
+PAGE:L_AREA = LIMIT(PAGE:L_AREA, 0, MAX_PAGE:L_AREA)
+
+CALL PRINT_SAVEDATA_LIST, L_AREA, PAGE, PAGE:1, PAGE:2
+PRINTFORMLC \@ MAX_PAGE == 0 ? %" " * 16% # [1000] 이전페이지\@ 
+PRINTFORMLC [1001] 돌아간다
+;PRINTFORMLC \@ PAGE >= 9 || FLAG:SHOP커맨드 == [[ショップ:탐색]]? %" " * 16% # [1002] 다음페이지\@
+PRINTFORMLC \@ MAX_PAGE == 0 ? %" " * 16% # [1002] 다음페이지\@
+PRINTL 
+PRINTFORML [1004]세이브 데이터 메모\@STRLENS(SAVESTR:99)? 변경 (%SAVESTR:99%) # 작성\@
+$INPUT_LOOP
+INPUT
+IF RESULT == 1001
+	REDRAW 1
+	RETURN 0
+ELSEIF RESULT == 1000
+	PAGE:L_AREA = PAGE:L_AREA <= 0 ? MAX_PAGE:L_AREA - 1 # PAGE:L_AREA - 1
+	GOTO START
+ELSEIF RESULT == 1002
+	PAGE:L_AREA = PAGE:L_AREA >= MAX_PAGE:L_AREA - 1 ? 0 # PAGE:L_AREA + 1
+	GOTO START
+ELSEIF RESULT == 1004
+	PRINTL 세이브 데이터 내용에 붙일 메모를 입력해주세요
+	INPUTS
+	SAVESTR:99 = %RESULTS%
+	PRINTFORML 다음부터 세이브할 때는 %SAVESTR:99% %조사만처리(SAVESTR:99,"가")% 세이브 데이터에 부여됩니다
+	PRINTFORML 다른 메모를 붙이고 싶을 때는 재설정해주세요
+	GOTO START
+ENDIF
+IF FLAG:SHOP커맨드 == [[ショップ:탐색]]
+	IF !RANGE(RESULT, 200, 219)
+		CLEARLINE 1
+		REUSELASTLINE 무효인 값입니다
+		GOTO INPUT_LOOP
+	ENDIF
+ELSE
+	IF !RANGE(RESULT, 0, 199)
+		CLEARLINE 1
+		REUSELASTLINE 무효인 값입니다
+		GOTO INPUT_LOOP
+	ENDIF
+ENDIF
+LOCAL = RESULT
+CHKDATA LOCAL
+IF !RESULT
+	PRINTL 이미 데이터가 존재합니다。덮어쓰시겠습니까？
+	CALL INPUT_YN
+	IF RESULT == 1
+		REDRAW 1
+		RETURN 0
+	ENDIF
+ENDIF
+;GLOBAL:1 = PAGE + ((FLAG:SHOP커맨드 == [[ショップ:탐색]]) + PAGE:1) * 1000 
+DELDATA SAVEDATA_NUM_FOR_CONTINUE
+
+;---- EDIT 046 ADD START -------------------------
+LAST_PAGE_IN_SAVEDATA = PAGE, PAGE:1, PAGE:2
+LASTSAVE_NO = LOCAL + 1
+CALL SET_FLAG_USEABLE_TITLE
+
+;---- EDIT 046 ADD END ---------------------------
+SAVEGLOBAL
+
+SAVEDATA LOCAL, DISP_SAVETEXT()
+REDRAW 1
+;---- EDIT 047 MOD END ---------------------------
+;---- EDIT 047 MOD START -------------------------
+@SYSTEM_AUTOSAVE
+#DIMS TEMPS
+SAVEDATA 300, DISP_SAVETEXT()
+
+@SET_FLAG_USEABLE_TITLE
+#DIM DYNAMIC LCOUNT
+USING_EXTRA_IN_LAST_SAVE = GET_USEABLE_EXTRA_TITLE()
+FOR LCOUNT, 0, TITLE_PICTURE_NUM
+	TRYCALLFORM SET_FLAG_USEABLE_TITLE_{LCOUNT}
+NEXT
+
+;=======================================================
+;セーブデータのリスト表示
+;L_AREA		どの領域かを表示するかの指定
+;PAGE		通常の表示ページ
+;PAGE:1		ダンジョン内領域の表示ページ
+;PAGE:2		自動セーブ領域の表示ページ
+;=======================================================
+@PRINT_SAVEDATA_LIST, L_AREA, PAGE, PAGE:1, PAGE:2
+#DIM DYNAMIC SAVEDATA_NO
+#DIMS DYNAMIC L_DISP
+#DIM DYNAMIC L_AREA
+#DIM DYNAMIC PAGE_STARTNUM
+#DIM DYNAMIC LINENUM
+#DIM DYNAMIC LCOUNT,2
+#DIM DYNAMIC PAGE, 3
+#DIM DYNAMIC IMG_NO
+#DIMS DYNAMIC TEMPS, 10
+
+;初期番号の確定
+PAGE_STARTNUM = PAGE:L_AREA * SAVEDATA_SHOWNUM:0
+PAGE_STARTNUM += (L_AREA > 0) * 200
+PAGE_STARTNUM += (L_AREA == 2) * 20
+
+FOR SAVEDATA_NO, PAGE_STARTNUM, PAGE_STARTNUM + SAVEDATA_SHOWNUM:0
+	CHKDATA SAVEDATA_NO
+	IF !RESULT
+		SIF SAVEDATA_NO == LASTSAVE_NO - 1
+			SETCOLOR COLOR("パ緑")
+		SIF SAVEDATA_NO == LASTLOAD_NO
+			SETCOLOR COLOR("aqua")
+		IF GLOBAL:2 == 0
+			SIF SAVEDATA_NO == 239
+				SETCOLOR COLOR("深紅")
+		ELSE
+			SIF SAVEDATA_NO == GLOBAL:2 + 220 - 1
+				SETCOLOR COLOR("深紅")
+		ENDIF
+		;---- EDIT 049 ADD START -------------------------
+		L_DISP '= RESULTS
+		;---- EDIT 049 ADD END ---------------------------
+		TEMPS = [{SAVEDATA_NO,3}] %AUTO_SPLIT(L_DISP, UNICODE(10001), 0)%
+	ELSE
+		TEMPS = [{SAVEDATA_NO,3}] ----
+	ENDIF
+	PRINTFORML %TEMPS%
+	RESETCOLOR
+NEXT
+DRAWLINE
+;---- EDIT 047 ADD END ---------------------------
+;=======================================================
+;セーブデータ表示
+;=======================================================
+@DISP_SAVETEXT
+#FUNCTIONS
+#LOCALSSIZE 1
+#DIM DYNAMIC TEMP_GAMEBASE_VERSION
+#DIM LCOUNT
+LOCALS = 
+;---- EDIT P 001 MOD START -------------------------
+GETTIME
+LOCALS += RESULTS
+LOCALS  += @" {DAY,3}TURN "
+LOCALS  += @"주인:%CALLNAME:MASTER% LV{BASE:MASTER:LV} "
+LOCALS  += @"［%AUTO_SPLIT("E,N,H",",",FLAG:조교난이도-1)% / %AUTO_SPLIT("E,N,H,M,L,悪夢   ",",",FLAG:전투난이도-1)%］"
+
+SIF FLAG:게임모드 == 9
+	LOCALS  += "☆ "
+SIF FLAG:주회횟수 > 0
+	LOCALS  += @"{FLAG:주회횟수+1}주차"
+IF FLAG:SHOP커맨드 == [[ショップ:탐색]]
+	IF FLAG:임시세이브관리
+		LOCALS  += "  중단세이브"
+	ELSE
+		LOCALS  += "  던전탐색중"
+	ENDIF
+ENDIF
+TEMP_GAMEBASE_VERSION = GAMEBASE_VERSION
+TEMP_GAMEBASE_VERSION = TEMP_GAMEBASE_VERSION  / 1000 / 1000
+LOCALS += @"  Ver%TOSTR(TEMP_GAMEBASE_VERSION / 100 / 100, "0")%.%TOSTR(TEMP_GAMEBASE_VERSION / 100 % 100, "0")%.%TOSTR(TEMP_GAMEBASE_VERSION % 100 % 100, "0")%"
+GETMILLISECOND
+FLAG:플레이시간 += RESULT - FLAG:플레이개시시간
+FLAG:플레이개시시간 = RESULT
+LOCALS  += @" 【{MIN(FLAG:플레이시간 / 1000 / 60 / 60, 99999)}:"
+IF FLAG:플레이시간 / 1000 / 60 / 60 > 99999
+	LOCALS  += "59】"
+ELSEIF (FLAG:플레이시간 / 1000 / 60) % 60 < 10
+	LOCALS  += @"0{(FLAG:플레이시간 / 1000 / 60) % 60}】"
+ELSE
+	LOCALS  += @"{(FLAG:플레이시간 / 1000 / 60) % 60}】"
+ENDIF
+SIF STRLENS(SAVESTR:99)
+	LOCALS  += @"  (%SAVESTR:99%)"
+;---- EDIT P 001 MOD END ---------------------------	
+
+;セーブデータサイズ削減処理
+VARSET A
+VARSET B
+VARSET C
+VARSET D
+VARSET E
+VARSET F
+VARSET G
+VARSET H
+VARSET I
+VARSET J
+VARSET K
+VARSET L
+VARSET M
+VARSET N
+VARSET O
+VARSET P
+VARSET Q
+VARSET R
+VARSET S
+VARSET T
+VARSET U
+VARSET V
+VARSET W
+VARSET X
+VARSET Y
+VARSET Z
+
+FOR LCOUNT, 0, CHARANUM
+	VARSET GOTJUEL:LCOUNT:0
+	VARSET EX:LCOUNT:0
+	VARSET PALAM:LCOUNT:0
+	VARSET SOURCE:LCOUNT:0
+NEXT
+RETURNF LOCALS
+
+;---- EDIT 047 ADD START -------------------------

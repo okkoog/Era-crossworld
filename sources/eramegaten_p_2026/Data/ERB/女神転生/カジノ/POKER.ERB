@@ -1,0 +1,708 @@
+﻿@POKER
+#LOCALSIZE 10
+#LOCALSSIZE 10
+;山札
+#DIM DECK,53
+;手札
+#DIM HAND,5
+#DIM HOLD,5
+;勝ち枚数
+#DIM WIN, 1
+#DIM LINE,2
+PRINTL 바니걸:
+PRINTL 「아찔한 행운의 세계에 오신 것을 환영해요
+PRINTW 　이 포커에서는 담력과 발을 뺄 때를 꿰뚫어 보는 안목이 시험받아요!」
+PRINTL 「어떻게 하실래요?」
+$INPUT_START
+CALL INPUT_SELECT(1, "게임 스타트", 2, "조언을 듣는다", 3, "화면이 밀린다", 9, "밖으로 나간다")
+IF RESULT > 1
+	PRINTL 바니걸:
+	IF RESULT == 2
+		PRINTL 「포커 H&L에서는 게임에서 사용하는 코인을
+		PRINTL 　1코인, 5코인, 10코인 중에서 고를 수 있어요」
+		PRINTL 「이 포커에는 POKER와
+		PRINTW 　EXTRA 게임이 붙어있어요」
+		PRINTL 「POKER에서는 남겨두고 싶은
+		PRINTL 　카드가 있다면 HOLD해 둘 수 있어요
+		PRINTW 　왼쪽부터 [1]・[2]・[3]・[4]・[5]로 남길 카드를 정해주세요」
+		PRINTL 「정하셨다면 DRAW 해주세요!
+		PRINTL 　버린 카드와 똑같은 매수만큼 카드를 뽑아요
+		PRINTW 　그래서 족보가 완성되면 코인을 획득!」
+		PRINTW 「족보를 알려드릴게요!」
+		CALL SHOW_CARD(1, 101, 5, 305, 211)
+		PRINTL 바니걸:
+		PRINTL 「2 PAIR는 이런 느낌으로 같은 숫자의 카드가 2장씩 있을 때예요
+		PRINTW 　낮은 패지만, 그만큼 자주 신세를 지게 된답니다」
+		CALL SHOW_CARD(1, 101, 201, 305, 211)
+		PRINTL 바니걸:
+		PRINTL 「3 OF A KIND는 이런 느낌으로 같은 숫자의 카드가 3장 있을 때예요
+		PRINTW 　한국에선 트리플이라고 부르는 경우가 더 많을지도 몰라요」
+		CALL SHOW_CARD(1, 101, 201, 301, 211)
+		PRINTL 바니걸:
+		PRINTL 「4 OF A KIND는 같은 숫자의 카드가 4장 있을 때
+		PRINTW 　3까지는 자주 보여도 이 아이는 좀처럼 보기 힘들답니다」
+		CALL SHOW_CARD(1, 101, 201, 301, 9999)
+		PRINTL 바니걸:
+		PRINTL 「이것이 5 OF A KIND, 와일드카드+4 OF A KIND예요
+		PRINTL 　와일드카드가 없는 포커에선 나올 수 없는 패죠
+		PRINTL 　와일드카드라는 건, 무엇으로든 쓸 수 있는 카드를 말하며
+		PRINTW 　JOKER 카드가 사용되는 경우가 많아요」
+		CALL SHOW_CARD(1, 101, 201, 105, 205)
+		PRINTL 바니걸:
+		PRINTL 「FULL HOUSE는 3장과 2장의 조합
+		PRINTW 　제법 강한 패니까, 만들어지면 기쁘겠죠」
+		CALL SHOW_CARD(1, 102, 103, 204, 305)
+		CALL SHOW_CARD(10, 11, 212, 313, 301)
+		CALL SHOW_CARD(112,113,201,202,303)
+		PRINTL 바니걸:
+		PRINTL 「STRAIGHT는 5장의 카드가 연속된 숫자일 때,
+		PRINTL 　가장 높은 것은 물론, A는 2뿐만 아니라 K와도 이어지므로 마운틴이라도 완성할 수 있어요
+		PRINTW 　하지만 K-A-2로는 이어지지 않으니 주의하세요」
+		CALL SHOW_CARD(202, 205, 207, 209, 211)
+		PRINTL 바니걸:
+		PRINTL 「모든 문양이 똑같다면 FLUSH
+		PRINTW 　알기 쉽지만 의외로 잘 모이지 않아요」
+		CALL SHOW_CARD(302, 303, 304, 305, 306)
+		PRINTL 바니걸:
+		PRINTL 「FLUSH와 STRAIGHT의 조건을 동시에 만족하면
+		PRINTW 　STRAIGHT FLUSH, 후후, 말 그대로죠」
+		CALL SHOW_CARD(10, 11, 12, 13, 1)
+		PRINTL 바니걸:
+		PRINTL 「10・J・Q・K・A의 조합으로 STRAIGHT FLUSH를 달성하면
+		PRINTW 　ROYAL FLUSH예요! 이 게임에서 가장 강한 패!」
+		PRINTL 「게다가 10코인을 걸었을 때 ROYAL FLUSH가 나오면, JACK POT
+		PRINTL  JACK POT의 점수를 전부 딸 수 있어요!
+		PRINTW  JACK POT은 누군가 코인을 넣을 때마다 점점 커지니까, 크게 자라있다면 엄청난 대박이 될 거예요」
+		PRINTL 「그리고… 그래요, 아까도 살짝 말했지만 JOKER는
+		PRINTW 　어떤 카드로도 대신할 수 있으니 잘 활용해 보세요」
+		PRINTL 「그리고 족보를 완성하면 그에 맞는 코인을 받게 되는데,
+		PRINTW 　여기서부터가 EXTRA 게임의 시작이에요」
+		PRINTL 「EXTRA 게임은 HIGH & LOW!
+		PRINTL 　5장의 카드 중에서 한 장을 골라
+		PRINTW 　그것이 딜러가 낸 카드보다 큰 숫자라면 더블 업!」
+		PRINTL 「받을 수 있는 코인이 2배가 돼요
+		PRINTL 　그리고 더블 업은 연속해서 도전할 수 있답니다
+		PRINTW 　계속 이기면 2배, 4배, 8배… 점점 코인이 불어나죠」
+		PRINTL 「하지만 한 번이라도 지면 코인은 0장이 되어
+		PRINTL 　한 장도 가져갈 수 없게 돼요
+		PRINTW 　지기 전에 TAKE OUT해서 코인을 챙겨가세요」
+		PRINTW 「ＬＥＴ’Ｓ ＴＲＹ！！」
+	ELSEIF RESULT == 3
+		PRINTW 「EMUERA 그리기에 쓰이는 GDI+ 특성상 색을 입히면 약간 어긋날 수 있어요」
+		PRINTL 「창 상단의 환경설정을 열어 표시 탭을 선택하고
+		PRINTW 　그리기를 GDI+에서 GDI로 변경하면 어긋나지 않으니 신경 쓰이는 분은 시도해 보세요」
+	ELSEIF RESULT  == 9
+		PRINTFORMW 「손님의 코인은 {MONEY:3}장이에요. 또 오세요!」
+		REDRAW 1
+		RETURN 1
+	ENDIF
+	PRINTL 바니걸:
+	PRINTL 「어떻게 하실래요?」
+	GOTO INPUT_START
+ENDIF
+REDRAW 0
+FONTSTYLE 3
+PRINTL ＰＯＫＥＲ
+FONTSTYLE 0
+DRAWLINE
+PRINTFORML ┌────────┬───┬───┬───┐
+PRINTFORML │%"ODDS", 16,LEFT%│%"BET1",6%│%"BET5",6%│%"BET10",6%│
+PRINTFORML ├────────┼───┼───┼───┤
+PRINTFORML │%"ROYAL FLUSH", 16,LEFT%│{300,6}│{1500,6}│%"ＪＰ",6%│
+PRINTFORML │%"5 OF A KIND", 16,LEFT%│{100,6}│{500,6}│{1000,6}│
+PRINTFORML │%"STRAIGHT FLUSH", 16,LEFT%│{50,6}│{250,6}│{500,6}│
+PRINTFORML │%"4 OF A KIND", 16,LEFT%│{30,6}│{150,6}│{300,6}│
+PRINTFORML │%"FLUSH", 16,LEFT%│{10,6}│{50,6}│{100,6}│
+PRINTFORML │%"STRAIGHT", 16,LEFT%│{5,6}│{25,6}│{50,6}│
+PRINTFORML │%"3 OF A KIND", 16,LEFT%│{3,6}│{15,6}│{30,6}│
+PRINTFORML │%"2 PAIR", 16,LEFT%│{2,6}│{10,6}│{20,6}│
+PRINTFORML │%"HIGH CARD", 16,LEFT%│{0,6}│{0,6}│{0,6}│
+PRINTFORML ├────────┼───┴───┴───┤
+PRINTFORML │%"JACK POT", 16,LEFT%│{FLAG:잭팟/100,17}COINS│
+PRINTFORML └────────┴───────────┘
+LINE = LINECOUNT
+$START
+VARSET HOLD
+CLEARLINE LINECOUNT - LINE
+PRINTFORML ＣＯＩＮＳ：{MONEY:3} ＢＥＴ：{WIN}
+DRAWLINE
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL
+PRINTL
+DRAWLINE
+CALL SHOW_CARD(0,0,0,0,0)
+DRAWLINE
+PRINTL ＢＥＴ [1] １ ＣＯＩＮ [2] ５ ＣＯＩＮＳ [3] １０ ＣＯＩＮＳ
+PRINTL [9] ＥＸＩＴ
+CALL INPUTINT(1,2,3,9)
+IF RESULT == 9
+	PRINTFORMW 「손님의 코인은 {MONEY:3}장이에요. 또 오세요!」
+	REDRAW 1
+	RETURN 1
+ELSEIF RESULT == 1
+	LOCAL = 1
+ELSEIF RESULT == 2
+	LOCAL = 5
+ELSE
+	LOCAL = 10
+ENDIF
+SIF MONEY:3 < LOCAL
+	GOTO START
+WIN = LOCAL
+MONEY:3 -= LOCAL
+CLEARLINE LINECOUNT - LINE
+
+FLAG:잭팟 += 10 * WIN
+;山札の作成
+;カードはスート(スペード0, クラブ1,ハート2,ダイア3)*100+2~13の数で登録する
+FOR LOCAL, 0, 53
+	DECK:LOCAL = (LOCAL/13 * 100)+LOCAL % 13+1
+NEXT
+;53枚目の山札はJOKER(9999)にする
+DECK:52 = 9999
+;山札をシャッフルする
+FOR LOCAL, 0, 53
+	LOCAL:1 = RAND:53
+	SWAP DECK:LOCAL, DECK:(LOCAL:1)
+NEXT
+;最初の手札を配る
+FOR LOCAL, 0, 5
+	HAND:LOCAL = DECK:LOCAL
+NEXT
+;山札から札を削除
+ARRAYREMOVE DECK, 0, 5
+;手札の整列
+DO 
+	LOCAL:1 = 0
+	FOR LOCAL, 0, 4
+		IF HAND:LOCAL > HAND:(LOCAL+1)
+			SWAP HAND:LOCAL, HAND:(LOCAL+1)
+			LOCAL:1 = 1
+		ENDIF
+	NEXT
+LOOP LOCAL:1
+$CHOICE_HOLD
+CLEARLINE LINECOUNT-LINE
+PRINTFORML ＣＯＩＮＳ：{MONEY:3} ＢＥＴ：{WIN}
+DRAWLINE
+PRINTL 
+PRINTL 
+PRINTL 
+PRINTL
+PRINTL
+DRAWLINE
+CALL SHOW_CARD(HAND:0,HAND:1,HAND:2,HAND:3,HAND:4, HOLD*COLOR("aqua"), HOLD:1*COLOR("aqua"), HOLD:2*COLOR("aqua"), HOLD:3*COLOR("aqua"), HOLD:4*COLOR("aqua"))
+DRAWLINE
+FOR LOCAL, 0, 5
+	IF HOLD:LOCAL
+		SETCOLOR COLOR("aqua")
+	ELSE
+		SETCOLOR COLOR("gray")
+	ENDIF
+	PRINTFORM [{LOCAL+1}] 
+	PRINT HELD　
+NEXT
+RESETCOLOR
+PRINTL 
+PRINTL [0] ＤＲＡＷ
+CALL INPUTINT(0 ,1 ,2 ,3, 4, 5)
+IF RESULT > 0
+	INVERTBIT HOLD:(RESULT-1),0
+	GOTO CHOICE_HOLD
+ENDIF
+IF MATCH(HOLD, 0)
+	VARSET LOCAL, -1, 2, 7
+	LOCAL:1 = 0
+	FOR LOCAL, 0, 5
+		IF !HOLD:LOCAL
+			HAND:LOCAL = DECK:(LOCAL:1)
+			LOCAL:(LOCAL:1+2) = DECK:(LOCAL:1)
+			LOCAL:1++ 
+		ENDIF
+	NEXT
+	;山札から札を削除
+	ARRAYREMOVE DECK, 0, MATCH(HOLD, 0)
+	;手札の整列
+	DO 
+		LOCAL:1 = 0
+		FOR LOCAL, 0, 4
+			IF HAND:LOCAL > HAND:(LOCAL+1)
+				SWAP HAND:LOCAL, HAND:(LOCAL+1)
+				LOCAL:1 = 1
+			ENDIF
+		NEXT
+	LOOP LOCAL:1
+	CLEARLINE LINECOUNT-LINE
+	PRINTFORML ＣＯＩＮＳ：{MONEY:3} ＢＥＴ：{WIN}
+	DRAWLINE
+	CALL MESSAGE_BL, 1, "ＤＲＡＷ ＣＡＲＤＳ"
+	PRINTL
+	PRINTL 
+	;ひいたカードの提示
+	DRAWLINE
+	CALL SHOW_CARD, LOCAL:2, LOCAL:3, LOCAL:4, LOCAL:5, LOCAL:6
+	DRAWLINE
+	SETCOLOR COLOR("gray")
+	FOR LOCAL, 0, 5
+		PRINTFORM [{LOCAL+1}] 
+		PRINT HELD　
+	NEXT
+	RESETCOLOR
+	PRINTL
+	PRINTL [0] ＤＲＡＷ
+	RESETCOLOR
+	WAIT
+ENDIF
+CLEARLINE LINECOUNT-LINE
+PRINTFORML ＣＯＩＮＳ：{MONEY:3} ＢＥＴ：{WIN}
+DRAWLINE
+;役の判定
+;JOKERがある場合　HAND:4はJOKERになってるはずなので、HAND:3までのみをみる
+IF MATCH(HAND,9999)
+	;10-J-Q-K-Aのストレートは別判定しておく。それぞれが含まれているかをチェック
+	VARSET LOCAL,0, 1, 6
+	FOR LOCAL, 0, 4
+		SELECTCASE HAND:LOCAL % 100
+			CASE 1
+				LOCAL:1 = 1
+			CASE 10
+				LOCAL:2 = 1
+			CASE 11	
+				LOCAL:3 = 1
+			CASE 12
+				LOCAL:4 = 1
+			CASE 13
+				LOCAL:5 = 1
+		ENDSELECT
+	NEXT
+	;以上のカードの内４枚が含まれていれば、10-Aの並びのストレート
+	LOCAL:8 = LOCAL:1+LOCAL:2+LOCAL:3+LOCAL:4+LOCAL:5
+	VARSET LOCAL, 0, 1, 5
+	;同一カード系の判定 LOCAL:1~4に1枚~4枚揃いのカードがあるごとに+1
+	FOR LOCAL, 0, 5
+		LOCAL:GROUPMATCH(HAND:LOCAL%100, HAND%100, HAND:1%100, HAND:2%100, HAND:3%100) += 1
+	NEXT
+	;最小と最大の差が４以下かつ４枚全てが別カードならストレート
+	IF LOCAL:8 == 4 || (MAX(HAND%100, HAND:1%100, HAND:2%100, HAND:3%100) - MIN(HAND%100, HAND:1%100, HAND:2%100, HAND:3%100) <= 4 && LOCAL:1 == 4)
+		;フラッシュの判定　カードの最小と最大の差が13未満ならフラッシュ
+		IF MAX(HAND, HAND:1, HAND:2, HAND:3) - MIN(HAND, HAND:1, HAND:2, HAND:3) < 13
+			;ロイヤルフラッシュの判定　上記で判定してるのを流用
+			IF LOCAL:8 == 4
+				LOCALS = ＲＯＹＡＬ ＦＬＵＳＨ！
+				WIN *= 300
+			;ストレートフラッシュ
+			ELSE
+				LOCALS = ＳＴＲＡＩＧＨＴ ＦＬＵＳＨ！
+				WIN *= 50
+			ENDIF
+		;ストレート
+		ELSE
+			LOCALS = ＳＴＲＡＩＧＨＴ！
+			WIN *= 5
+		ENDIF
+	ELSE
+		;5 OF AKINDの判定
+		IF LOCAL:4 == 4
+			LOCALS = ５ ＯＦ Ａ ＫＩＮＤ！
+			WIN *= 100
+		;4 OF AKINDの判定
+		ELSEIF LOCAL:3 == 3
+			LOCALS = ４ ＯＦ Ａ ＫＩＮＤ！
+			WIN *= 30
+		;フルハウスの判定
+		ELSEIF LOCAL:2 == 4
+			LOCALS = ＦＵＬＬ ＨＯＵＳＥ！
+			WIN *= 20
+		ELSE
+			;フラッシュの判定　カードの最小と最大の差が13未満ならフラッシュ
+			IF MAX(HAND, HAND:1, HAND:2, HAND:3) - MIN(HAND, HAND:1, HAND:2, HAND:3) < 13
+				LOCALS = ＦＬＵＳＨ！
+				WIN *= 10
+			ELSE
+				;3 OF AKINDの判定
+				IF LOCAL:2 == 2
+					LOCALS = ３ ＯＦ Ａ ＫＩＮＤ！
+					WIN *= 3
+				;役なし
+				ELSE
+					LOCALS = ＨＩＧＨ ＣＡＲＤ
+					WIN *= 0
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+ELSE
+	;10-J-Q-K-Aのストレートは別判定しておく。それぞれが含まれているかをチェック
+	VARSET LOCAL,0, 1, 6
+	FOR LOCAL, 0, 5
+		SELECTCASE HAND:LOCAL % 100
+			CASE 1
+				LOCAL:1 = 1
+			CASE 10
+				LOCAL:2 = 1
+			CASE 11
+				LOCAL:3 = 1
+			CASE 12
+				LOCAL:4 = 1
+			CASE 13
+				LOCAL:5 = 1
+		ENDSELECT
+	NEXT
+	;以上のカードの内５枚が含まれていれば、10-Aの並びのストレート
+	LOCAL:8 = LOCAL:1+LOCAL:2+LOCAL:3+LOCAL:4+LOCAL:5
+	VARSET LOCAL, 0, 1, 6
+	;同一カード系の判定 LOCAL:1~4に1枚~4枚揃いのカードがあるごとに+1
+	FOR LOCAL, 0, 5
+		LOCAL:GROUPMATCH(HAND:LOCAL%100, HAND%100, HAND:1%100, HAND:2%100, HAND:3%100, HAND:4%100) += 1
+	NEXT
+	;最小と最大の差が4かつ、全てのカードが別のカードであるならストレート
+	IF LOCAL:8 == 5 || (MAX(HAND%100, HAND:1%100, HAND:2%100, HAND:3%100, HAND:4%100) - MIN(HAND%100, HAND:1%100, HAND:2%100, HAND:3%100, HAND:4%100) == 4 && LOCAL:1 == 5)
+		;フラッシュの判定　カードの最小と最大の差が13未満ならフラッシュ
+		IF MAX(HAND, HAND:1, HAND:2, HAND:3, HAND:4) - MIN(HAND, HAND:1, HAND:2, HAND:3, HAND:4) < 13
+			;ロイヤルフラッシュの判定 上記判定の流用
+			IF LOCAL:8 == 5
+				LOCALS = ＲＯＹＡＬ ＦＬＵＳＨ！
+				WIN *= 300
+			;ストレートフラッシュ
+			ELSE
+				LOCALS = ＳＴＲＡＩＧＨＴ ＦＬＵＳＨ！
+				WIN *= 50
+			ENDIF
+		;ストレート
+		ELSE
+			LOCALS = ＳＴＲＡＩＧＨＴ！
+			WIN *= 5
+		ENDIF
+	ELSE
+		;4 OF AKINDの判定
+		IF LOCAL:4 == 4
+			LOCALS = ４ ＯＦ Ａ ＫＩＮＤ！
+			WIN *= 30
+		;フルハウス
+		ELSEIF LOCAL:3 == 3 && LOCAL:2 == 2
+			LOCALS = ＦＵＬＬ ＨＯＵＳＥ！
+			WIN *= 20
+		ELSE
+			;フラッシュの判定　カードの最小と最大の差が13未満ならフラッシュ
+			IF MAX(HAND, HAND:1, HAND:2, HAND:3, HAND:4) - MIN(HAND, HAND:1, HAND:2, HAND:3, HAND:4) < 13
+				LOCALS = ＦＬＵＳＨ！
+				WIN *= 10
+			ELSE
+				;3 OF AKINDの判定
+				IF LOCAL:3 == 3
+					LOCALS = ３ ＯＦ Ａ ＫＩＮＤ！
+					WIN *= 3
+				;2ペアの判定。2枚ぞろいのカードは4枚あることに注意
+				ELSEIF LOCAL:2 == 4
+					LOCALS = ２ ＰＡＩＲ！
+					WIN *= 2
+				;役なし
+				ELSE
+					LOCALS = ＨＩＧＨ ＣＡＲＤ
+					WIN *= 0
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+IF WIN
+	IF WIN == 3000
+		CALL MESSAGE_BL, 3, LOCALS, "ＪＡＣＫ ＰＯＴ！！", "ＧＥＴ "+TOSTR(FLAG:잭팟/100)+"ＣＯＩＮＳ！！"
+		WIN = 0
+		MONEY:3 += FLAG:잭팟/100
+		FLAG:잭팟 = 10000 * 100
+	ELSE
+		CALL MESSAGE_BL, 3, LOCALS, "ＧＥＴ "+TOSTR(WIN)+"ＣＯＩＮＳ！！", "ＥＸＴＲＡ ＧＡＭＥ ＳＴＡＲＴ！！"
+	ENDIF
+ELSE
+	CALL MESSAGE_BL, 2, LOCALS, "ＹＯＵ ＬＯＳＴ！"
+	PRINTL 
+ENDIF
+DRAWLINE
+CALL SHOW_CARD, HAND, HAND:1, HAND:2, HAND:3, HAND:4
+DRAWLINE
+SETCOLOR COLOR("gray")
+FOR LOCAL, 0, 5
+	PRINTFORM [{LOCAL+1}] 
+	PRINT HELD　
+NEXT
+RESETCOLOR
+PRINTL
+PRINTL [0] ＤＲＡＷ
+RESETCOLOR
+WAIT
+SIF WIN == 0
+	GOTO START
+;Aは14にする
+FOR LOCAL,0, 53
+	SIF DECK:LOCAL % 100 == 1
+		DECK:LOCAL += 13
+NEXT
+WHILE WIN
+	;イカサマあり→降りやすいし、なにより必要なコイン枚数が原作ほど多くないしでサマなしの勝率50%に変更しておきます
+	;親が最も強いカードである場合、子のカードのいずれかと入れ替わる
+	;引き分けと山札の在庫を置いておけば、20%~100%が当分にでるので、これで勝率6割
+	;異聞録の実測が70%なんで、10%ほど負けてるけど、そのかわりドロップのタイミングを優遇しておく
+	;TAKE OUTはいつでも可能にしておきます
+	;IF DECK % 100 > MAX(DECK:1 % 100, DECK:2 % 100 ,  DECK:3 % 100 , DECK:4 % 100, DECK:5 %100)
+	;	LOCAL = RAND:5
+	;	SWAP DECK, DECK:LOCAL
+	;ENDIF
+	CLEARLINE LINECOUNT - LINE
+	PRINTFORML ＣＯＩＮＳ：{MONEY:3} ＢＥＴ：{WIN}
+	DRAWLINE
+	CALL SHOW_CARD , , , DECK
+	DRAWLINE
+	CALL SHOW_CARD , 0, 0, 0, 0, 0
+	DRAWLINE
+	PRINTL [1] RAISE [2] RAISE [3] RAISE [4] RAISE [5] RAISE
+	PRINTL [9] ＴＡＫＥ ＯＵＴ
+	CALL INPUTINT(1,2,3,4,5,9)
+	IF RESULT == 9
+		CLEARLINE LINECOUNT - LINE
+		PRINTFORML ＣＯＩＮＳ：{MONEY:3} ＢＥＴ：{WIN}
+		DRAWLINE
+		CALL MESSAGE_BL, 1, "ＴＡＫＥ "+TOSTR(WIN)+"ＣＯＩＮＳ！！"
+		PRINTL 
+		MONEY:3 += WIN
+		WIN = 0
+	ELSE
+		VARSET LOCAL, 0, 1, 6
+		LOCAL = RESULT
+		CLEARLINE LINECOUNT - LINE
+		PRINTFORML ＣＯＩＮＳ：{MONEY:3} ＢＥＴ：{WIN}
+		DRAWLINE
+		LOCAL:RESULT = COLOR("aqua")
+		CALL SHOW_CARD , , , DECK,
+		DRAWLINE
+		CALL SHOW_CARD , DECK:1 , DECK:2, DECK:3, DECK:4, DECK:5, LOCAL:1, LOCAL:2, LOCAL:3, LOCAL:4, LOCAL:5
+		DRAWLINE
+		FOR LOCAL:6, 1, 6
+			SIF LOCAL:(LOCAL:6)
+			SETCOLOR COLOR("aqua")
+			PRINTFORM [{LOCAL:6}]
+			PRINT  RAISE 
+			RESETCOLOR
+		NEXT
+		PRINTL 
+		SETCOLOR COLOR("gray")
+		PRINTL [9] ＴＡＫＥ ＯＵＴ
+		RESETCOLOR
+		WAIT
+		CLEARLINE LINECOUNT - LINE
+		PRINTFORML ＣＯＩＮＳ：{MONEY:3} ＢＥＴ：{WIN}
+		DRAWLINE
+		IF DECK % 100 < DECK:LOCAL % 100
+			WIN *= 2
+			CALL MESSAGE_BL, 2, "ＤＯＵＢＬＥ ＵＰ！", "ＧＥＴ "+TOSTR(WIN)+"ＣＯＩＮＳ！！"
+		ELSEIF DECK % 100 == DECK:LOCAL % 100
+			CALL MESSAGE_BL, 2, "ＤＲＡＷＮ　ＭＡＴＣＨ！", "ＲＥＴＲＹ"
+		ELSE
+			CALL MESSAGE_BL, 2, "ＹＯＵ ＬＯＳＥ", "ＥＸＴＲＡ ＧＡＭＥ ＥＮＤ"
+			WIN = 0
+		ENDIF
+		;山札から札を削除
+		ARRAYREMOVE DECK, 0, 6
+	ENDIF
+	PRINTL 
+	DRAWLINE
+	PRINTL 
+	PRINTL 
+	PRINTL 
+	PRINTL 
+	PRINTL 
+	DRAWLINE
+	FOR LOCAL:6, 1, 6
+		SIF LOCAL:(LOCAL:6)
+			SETCOLOR COLOR("aqua")
+		PRINTFORM [{LOCAL:6}]
+		PRINT  RAISE 
+		RESETCOLOR
+	NEXT
+	PRINTL 
+	SETCOLOR COLOR("gray")
+	PRINTL [9] ＴＡＫＥ ＯＵＴ
+	RESETCOLOR
+	WAIT
+	;山札が切れたら再生成
+	IF MATCH(DECK, 0) > 46
+		CALL MESSAGE_B, 2, "ＤＥＣＫ ＯＵＴ！", "ＭＡＫＥ ＮＥＷ ＤＥＣＫ！"
+		;山札の作成
+		FOR LOCAL, 0, 53
+			DECK:LOCAL = (LOCAL/13 * 100)+LOCAL % 13+2
+		NEXT
+		;53枚目の山札はJOKER(9999)にする
+		DECK:52 = 9999
+		;山札をシャッフルする
+		FOR LOCAL, 0, 53
+			LOCAL:1 = RAND:53
+			SWAP DECK:LOCAL, DECK:(LOCAL:1)
+		NEXT
+	ENDIF
+WEND
+GOTO START
+@SHOW_CARD, ARG = -1, ARG:1 = -1, ARG:2 = -1, ARG:3= -1, ARG:4= -1, ARG:5, ARG:6, ARG:7, ARG:8, ARG:9
+#LOCALSIZE 10
+#LOCALSSIZE 10
+GETCOLOR
+LOCAL:9 = RESULT
+VARSET LOCALS
+FOR LOCAL, 0 ,5
+	IF ARG:(LOCAL+5)
+		SETCOLOR ARG:(LOCAL+5)
+	ELSE
+		SETCOLOR LOCAL:9
+	ENDIF
+	SELECTCASE ARG:LOCAL
+		CASE 9999
+			PRINT  J──┐　
+		CASE 0
+			PRINT  ┌-─┐　
+		CASE -1
+			PRINT 　　　　　
+		CASEELSE
+			PRINT  
+			CALL SHOW_TRUMP_SUIT(ARG:LOCAL)
+			PRINT ──┐　
+	ENDSELECT
+NEXT
+PRINTL 
+FOR LOCAL, 0 ,5
+	IF ARG:(LOCAL+5)
+		SETCOLOR ARG:(LOCAL+5)
+	ELSE
+		SETCOLOR LOCAL:9
+	ENDIF
+	SELECTCASE ARG:LOCAL
+		CASE 9999
+			PRINT  │o  │　
+		CASE -1
+			PRINT 　　　　　
+		CASEELSE
+			PRINT  │   │　
+	ENDSELECT
+NEXT
+PRINTL 
+FOR LOCAL, 0 ,5
+	IF ARG:(LOCAL+5)
+		SETCOLOR ARG:(LOCAL+5)
+	ELSE
+		SETCOLOR LOCAL:9
+	ENDIF
+	SELECTCASE ARG:LOCAL
+		CASE 9999
+			PRINT  │ k │　
+		CASE 0
+			PRINT  │
+			SETCOLOR COLOR("red")
+			PRINT DD
+			SETCOLOR COLOR("aqua")
+			PRINT S
+			IF ARG:(LOCAL+5)
+				SETCOLOR ARG:(LOCAL+5)
+			ELSE
+				SETCOLOR LOCAL:9
+			ENDIF
+			PRINT │　
+		CASE -1
+			PRINT 　　　　　
+		CASEELSE
+			PRINTFORM  │
+			CALL SHOW_TRUMP_NUM(ARG:LOCAL)
+			PRINTFORM  │　
+	ENDSELECT
+NEXT
+PRINTL 
+FOR LOCAL, 0 ,5
+	IF ARG:(LOCAL+5)
+		SETCOLOR ARG:(LOCAL+5)
+	ELSE
+		SETCOLOR LOCAL:9
+	ENDIF
+	SELECTCASE ARG:LOCAL
+		CASE 9999
+			PRINT  │  e│　
+		CASE 0
+			PRINT  │   │　
+		CASE -1
+			PRINT 　　　　　
+		CASEELSE
+			PRINT  │   │　
+	ENDSELECT
+NEXT
+PRINTL 
+FOR LOCAL, 0 ,5
+	IF ARG:(LOCAL+5)
+		SETCOLOR ARG:(LOCAL+5)
+	ELSE
+		SETCOLOR LOCAL:9
+	ENDIF
+	SELECTCASE ARG:LOCAL
+		CASE 9999
+			PRINT  └─-r 　
+		CASE 0
+			PRINT  └─-┘　
+		CASE -1
+			PRINT 　　　　　
+		CASEELSE
+			PRINTFORM  └──
+			CALL SHOW_TRUMP_SUIT(ARG:LOCAL)
+			PRINT 　
+	ENDSELECT
+NEXT
+PRINTL 
+SETCOLOR LOCAL:9
+@SHOW_TRUMP_SUIT, ARG
+#LOCALSIZE 10
+#LOCALSSIZE 10
+GETCOLOR
+SIF ARG == 0
+	PRINTFORM EMPTY
+SIF ARG == 9999
+	PRINTFORM JOKER
+SELECTCASE ARG / 100
+	;スペード
+	CASE 0
+		SETCOLOR 0x0000ff
+		PRINTFORM %UNICODE(0x2660)%
+	;クラブ
+	CASE 1
+		SETCOLOR 0x228b22
+		PRINTFORM %UNICODE(0x2663)%
+	;ハート
+	CASE 2
+		SETCOLOR 0xff69b4
+		PRINTFORM %UNICODE(0x2665)%
+	CASE 3
+	;ダイヤ
+		SETCOLOR COLOR("red")
+		PRINTFORM %UNICODE(0x2666)%
+ENDSELECT
+SETCOLOR RESULT
+@SHOW_TRUMP_NUM, ARG
+#LOCALSIZE 10
+#LOCALSSIZE 10
+GETCOLOR
+SIF ARG == 0
+	PRINTFORM EMPTY
+SIF ARG == 9999
+	PRINTFORM JOKER
+SELECTCASE ARG % 100
+	CASE 1, 14
+		SETCOLOR COLOR("red")
+		PRINTFORM  A
+	CASE 11
+		PRINTFORM  J
+	CASE 12
+		SETCOLOR 0xff69b4
+		PRINTFORM  Q
+	CASE 13
+		PRINTFORM  K
+	CASE 10
+		PRINT 10
+	CASEELSE
+		PRINTFORM  {ARG%100}
+ENDSELECT
+SETCOLOR RESULT

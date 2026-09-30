@@ -1,0 +1,94 @@
+﻿
+
+;====================
+;条件
+;====================
+@GET_COLOSSEUM_NAME_86
+#FUNCTIONS
+RESULTS_F '= "我が怠惰"
+RETURNF RESULTS_F
+
+@PLAYABLE_COLOSSEUM_86
+;IF (闘技場フラグ:4:0 == 1 || 闘技場フラグ:3:0 == 1) && 闘技場フラグ:5:0 == 0
+;	IF GETCHARA([[キャラ:유즈]]) > -1 || FLAG:34507 > 0
+IF 闘技場フラグ:86:0 == 0 && イベントフラグ:98:0 == 5
+			RESULTS = 우리의나태
+			RETURN 1
+;	ELSE
+;		RESULTS = 시합 랭크Ｄ　ＶＳ ゲーム機型ＣＯＭＰ使い
+;		RETURN 1
+;	ENDIF
+ENDIF
+RETURN 0
+
+
+;====================
+;内容
+;====================
+@COLOSSEUM_86
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+CUSTOMDRAWLINE =
+PRINTW ＞쌍검을 든 악마와 트윈 테일의 미소녀가 상대인 모양이다…
+CUSTOMDRAWLINE =
+WAIT
+;凛
+;人間の強化は武器防具で
+CALL SET_ENEMY, 14, [[キャラ:린Fate]],55,0,1
+CFLAG:(CHARANUM-1):행동횟수 = 2
+ABL:(CHARANUM-1):스킬1 = 406;メディアラハン
+ABL:(CHARANUM-1):스킬2 = 2034;만마의난무
+ABL:(CHARANUM-1):스킬3 = 815;얼음의난무
+ABL:(CHARANUM-1):스킬4 = 717;불꽃의난무
+ABL:(CHARANUM-1):스킬5 = 905;マハジオンガ
+ABL:(CHARANUM-1):스킬6 = 1705;マハガルーラ
+ABL:(CHARANUM-1):스킬7 = 0
+ABL:(CHARANUM-1):스킬8 = 0
+EQUIP:(CHARANUM-1):검 = GETNUM(ITEM, "영조의지팡이")
+EQUIP:(CHARANUM-1):머리 = GETNUM(ITEM, "돌핀헬름")
+EQUIP:(CHARANUM-1):몸통 = GETNUM(ITEM, "스피릿로브")
+EQUIP:(CHARANUM-1):팔 = GETNUM(ITEM, "재밍암")
+EQUIP:(CHARANUM-1):발 = GETNUM(ITEM, "바람을가르는꼬리")
+EQUIP:(CHARANUM-1):악세서리 = GETNUM(ITEM, "조정용")
+CALL SYNC_STATUS,(CHARANUM-1)
+CALL HEALTH_CHARA,(CHARANUM-1)
+
+;アーチャー
+CALL SET_ENEMY, 9, [[キャラ:아처]],55,0,1
+CFLAG:(CHARANUM-1):행동횟수 = 2
+ABL:(CHARANUM-1):스킬1 = 2966;무한의검제
+ABL:(CHARANUM-1):스킬2 = 151;지고의마탄
+ABL:(CHARANUM-1):스킬3 = 511;기합
+ABL:(CHARANUM-1):스킬4 = 112;連続うち
+ABL:(CHARANUM-1):스킬5 = 515;도발
+ABL:(CHARANUM-1):스킬6 = 2406;이악물기
+ABL:(CHARANUM-1):스킬7 = 0
+ABL:(CHARANUM-1):스킬8 = 0
+CALL SYNC_STATUS,(CHARANUM-1)
+CALL HEALTH_CHARA,(CHARANUM-1)
+
+
+CALL BATTLE_START
+CUSTOMDRAWLINE =
+PRINTW 토오사카 린＆아처에게 승리했다
+
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+PRINTW ＞토오사카 린과 아처는 환상이었던 것처럼 사라져 갔다…
+;CALL ADD_NEW_COMPANION, [[キャラ:린Fate]],500,1
+PRINTW ￥200000과 명성 10을 얻었다
+MONEY += 200000
+FLAG:명성 += 10
+闘技場フラグ:86:0 = 1
+
+FLAG:투기장명성 += 10
+CALL SELECT_COLOSSEUM_RANDOMBATTLE
+
+FOR LOCAL,0,CHARANUM
+	CALL HEALTH_CHARA,LOCAL
+NEXT
+RETURN 1
+
+

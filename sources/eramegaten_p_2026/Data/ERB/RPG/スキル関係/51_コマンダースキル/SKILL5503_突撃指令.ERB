@@ -1,0 +1,129 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_5503,ARG
+RESULTS = 돌격지령
+
+;　명중
+@SKILL_HITRATE_5503, ARG
+RETURN 100
+
+@SKILL_POWER_5503, ARG = -1
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_5503,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_5503,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_5503, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("TURN")
+
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_5503,ARG
+RETURN 4
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_5503
+RETURN GET_SKILL_DECIDE_TYPE_NUM("CS")
+;魔法
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_5503, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_5503,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_5503,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_5503, ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_5503
+RETURN GET_SUCCESSION_NUM("회복")
+
+;속도보정
+@SKILL_SPEED_5503, ARG = -1
+RETURN 999
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_5503
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_5503, ARG = -1
+RETURN 8
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_5503, ARG, ARG:1, ARG:2
+#DIM L_POS
+#DIM L_CHARA
+CALL SET_C_BTL_EFFECT_FIELD, ARG, ARG:1, "突撃指令"
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;ターゲット条件
+@SKILL_TARGETABLE_5503,ARG, ARG:1
+RETURN 1
+
+;　 説明文の表示
+@SKILL_EXPLAIN_5503, ARG
+PRINTFORML 아군 전체에、１턴간、주는 데미지를 30\% 증가시키는 효과를 부여한다。
+
+@SKILL_BATTLE_MAIN_TOOLTIP_5503, ARG, ARG:1
+CALL GET_CAST_SKILL_EMULATOR, ARG:1, ARG
+RESULTS = □돌격지령
+IF RESULT <= 0
+	RESULTS:1 = 　READY
+ELSE
+	RESULTS:1 =　필요턴수:{RESULT}
+ENDIF
+
+@SKILL_EXPLAIN_TOOLTIP_5503, ARG
+CALL GET_CAST_SKILL_EMULATOR, 5503, ARG
+IF ARG < 0
+	RESULTS = 커맨드스킬:필요턴수%TOFULL(TOSTR(RESULT))%
+ELSE
+	IF RESULT <= 0
+		RESULTS = 커맨드스킬:ＲＥＡＤＹ
+	ELSE
+		RESULTS = 커맨드스킬:필요턴수%TOFULL(TOSTR(RESULT))%
+	ENDIF
+ENDIF
+RESULTS:1 = 아군 전체에、１턴간、주는 데미지를 30\% 증가시키는 효과를 부여한다。
+
+@SKILL_EX_DISPLAY_5503, ARG, ARGS
+CALL COMMANDER_SKILL_EX_DISPLAY, ARG, ARGS, 5503, "A‐Com"
+RETURN RESULT
+
+@継承不能_5503
+RETURN 2
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_5503,ARG
+RETURN 1
+;とくにない
+

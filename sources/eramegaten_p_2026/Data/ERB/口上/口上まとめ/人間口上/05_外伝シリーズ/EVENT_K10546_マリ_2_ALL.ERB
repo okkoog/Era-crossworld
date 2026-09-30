@@ -1,0 +1,5322 @@
+﻿;-------------------------------------------------
+;マリ口上２
+;
+;
+;マリ口上２のキャラクター
+;マリちゃんは遊ぶのが大好きだけどお仕事もちゃんとやる
+;素直でいい子です。
+;
+;……白衣の下は全裸の巨乳で大人の女性だけど
+;-------------------------------------------------
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_K[[キャラ:마리]]_2.ERB
+;	Facility	:マリ口上：組織のエージェント時口上
+;
+;	Modification Data:
+;	Edit	Date			Author					Reason
+;	001		2022/05/07		ななし					女_子供口上をベースに作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;ライセンスについて
+;	・基本項目(許可する項目を"○"に、許可しない項目を"×"に変更してください。)
+;	+----+----+-------------------------------+
+;	|番号|許可|ライセンス内容                 |
+;	+----+----+-------------------------------+
+;	|   1| ○ | 処理上のバグ修正              |
+;	+----+----+-------------------------------+
+;	|   2| ○ | 口上の誤字・脱字の修正        |
+;	+----+----+-------------------------------+
+;	|   3| ○ | 口上まとめへの収録            |
+;	+----+----+-------------------------------+
+;	|   4| ○ | 口上の新規追加                |
+;	+----+----+-------------------------------+
+;	|   5| ○ | 既存口上の改変                |
+;	+----+----+-------------------------------+
+;	|   6| ○ | 改変した口上の自由な再配布    |
+;	+----+----+-------------------------------+
+;	|   7| ○ | 口上内容の転載                |
+;	+----+----+-------------------------------+
+
+;--------------------------------------------------
+;口上セレクト機能：口上説明
+;--------------------------------------------------
+@セレクト口上説明_K[[キャラ:마리]]_2,ARG = 0
+SIF CFLAG:이벤트가입 != 5
+	RETURN -1
+SIF ARG == 1
+	RETURN 0
+;口上名
+PRINTFORML 마리 쨩 구상
+;口上説明文
+PRINTFORML 　 
+
+;--------------------------------------------------
+;エキストラモード構文　CFLAG:220を使用
+;はいを選択した時に初調教時に口上設定用の素質に変更できます
+;下記に処女化する場合の構文をサンプルとして載せておきます
+;--------------------------------------------------
+;IF CFLAG:220 == 0
+;	PRINTL 処女モードに移行しますか？
+;	PRINTL [0] はい
+;	PRINTL [1] いいえ
+;	$INPUT_LOOP
+;	INPUT
+;	IF RESULT == 0
+;		PRINTFORMW ―処女モードに素質、能力を変更します―
+;		TALENT:TARGET:0 = 1
+;		ABL:TARGET:4 = 0
+;		EXP:TARGET:0 = 0
+;	ELSEIF RESULT == 1
+;		PRINTFORMW ―通常モードで調教を開始します―
+;	ELSE
+;		GOTO INPUT_LOOP
+;	ENDIF
+;	CFLAG:220 = 1
+;ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL EVENTTRAIN_PY1_K[[キャラ:마리]]_2
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL EVENTTRAIN_PY1_K[[キャラ:마리]]_2
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;--------------------------------------------------
+;簡易助手口上の発動時に初調教時口上をスキップ（Y1を助手のキャラ番号にする）
+;複数人いる際には、SIF NO:ASSI == Y1 || NO:ASSI == Z1と追加していく
+;--------------------------------------------------
+;IF CFLAG:201 == 0 && ASSI > 0
+;	SIF NO:ASSI == Y1
+;		CFLAG:201 =1
+;ENDIF
+;--------------------------------------------------
+;EVENTTRAIN関係（4402_3をキャラ番号に置換）
+;調教開始時のセリフ CFLAG 201～219を使用
+;--------------------------------------------------
+@EVENTTRAIN_K[[キャラ:마리]]_2
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL TRAIN_MESSAGE
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;調教開始時（一回のみ） CFLAG201
+;-------------------------------------------------
+DRAWLINE
+;初調教時
+IF CFLAG:201 == 0 && TALENT:연모 == 0
+	PRINTFORML 「네! %CSTR:일인칭%예요!」
+	PRINTFORML 「오늘 잘 부탁드려요!」
+	PRINTFORMW 천진난만하게 이쪽을 보며 미소 짓는 %CALLNAME%
+	PRINTFORMW 정말로 유아퇴행을 일으킨 %CALLNAME%을 어떻게 다뤄야 할지 생각하고 있으려니……
+	PRINTFORML 
+	PRINTFORML 「응……차」
+	PRINTFORMW %CALLNAME%은 스스로 옷을 벗기 시작했다……
+	PRINTFORML 
+	PRINTFORML 「다 벗었어요!」
+	PRINTFORML 여전한 미소로 이쪽을 올려다보는 %CALLNAME%
+	PRINTFORMW 「빨리 놀아요♪」
+	CFLAG:201 = 1
+	RETURN 0
+;屈服刻印Lv1
+ELSEIF CFLAG:201 < 2 && MARK:2 == 1
+	PRINTFORMW 
+	CFLAG:201 = 2
+	RETURN 0
+;屈服刻印Lv2
+ELSEIF CFLAG:201 < 3 && MARK:2 == 2
+	PRINTFORMW 「아, %CSTR:이인칭%다」
+	PRINTFORML 「오늘은 뭐 하고 놀아요?」
+	PRINTFORMW %CALLNAME%은 호기심 가득한 눈동자로 %CALLNAME:MASTER%를 바라보고 있다.
+	CFLAG:201 = 3
+	RETURN 0
+;屈服刻印Lv3
+ELSEIF CFLAG:201 < 4 && MARK:2 == 3 && 陥落() == 0
+	PRINTFORMW 「%CSTR:이인칭%, 오늘도 잔뜩 놀자♪」
+	CFLAG:201 = 4
+	RETURN 0
+;陥落
+;ELSEIF CFLAG:201 < 5 && (TALENT:연모 || TALENT:음란 || TALENT:예속)
+;	;연모
+;	IF TALENT:연모
+;		PRINTFORMW 「%CSTR:일인칭%ねぇ、%CSTR:이인칭%のこと」
+;		PRINTFORMW 「だ～いすきです%ハート()%」
+;		PRINTFORMW 「だから……」
+;		PRINTFORMW 「はやくあそびましょう♪」
+;	;음란
+;	ELSEIF TALENT:음란
+;		PRINTFORMW 「%CSTR:이인칭%とあそんでると」
+;		PRINTFORMW 「すっご～くきもちよくてたのしいです♪」
+;		PRINTFORMW 「だから……」
+;		PRINTFORML 「もっとも～っと、%CSTR:일인칭%と、たくさんあそびましょう♪」
+;		PRINTFORMW 淫らな笑みを浮かべながら%CALLNAME%は%CALLNAME:MASTER%に嬉しそうに抱きついた
+;	;복종
+;	ELSEIF TALENT:예속
+;		PRINTFORMW 「ごめんなさい……」
+;		PRINTFORMW 「これからはちゃんといいこにしますから」
+;		PRINTFORMW 「%CSTR:일인칭%とあそんでください」
+;		PRINTFORMW 泣きそうな顔をしている%CALLNAME%の頭を撫でてやると思い切り尻を叩いてやった
+;		PRINTFORML 
+;		PRINTFORMW 「ごめんなさい！　ごめんなさい、ごめんなさい！」
+;		PRINTFORMW 尻を叩く度に泣きながら謝る%CALLNAME%。
+;		PRINTFORMW 叩きながらこれからは言う事を聞くように命令する%CALLNAME:MASTER%。
+;		PRINTFORML 
+;		PRINTFORML 「これからは%CSTR:이인칭%のいうとおりに……します……」
+;		PRINTFORMW %CALLNAME%はベッドに突っ伏したまま切れ切れになりながら服従の誓いを述べた……
+;	ENDIF
+;	CFLAG:201 = 5
+ENDIF
+RETURN 0
+
+;-------------------------------------------------
+;簡易助手口上（Y1を助手のキャラ番号に置換、X1をキャラ番号に変更する) CFLAG203
+;掛け合いをするキャラを増やす場合は、構文をコピー＆ペーストをして、CFLAGの数を204、205と増やす
+;-------------------------------------------------
+;助手の有無をチェック（いない場合は二回目以降へ飛ぶ）
+IF ASSI < 0 
+	CALL EVENTTRAIN_SECOND_K[[キャラ:마리]]_2
+;助手
+;ELSEIF NO:ASSI == Y1
+	;初めて
+;	IF CFLAG:203 == 0
+		;陥落済み＋陥落時初口上が発生済み
+;		IF 陥落() && CFLAG:201 >= 5
+;			PRINTFORMW 
+		;それ以外
+;		ELSE
+;			PRINTFORMW 
+;		ENDIF
+;		CFLAG:203 = 1
+	;二回目以降
+;	ELSEIF CFLAG:203 < 2 || FLAG:7 ==2
+		;陥落済み
+;		IF TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8
+;			PRINTFORMW 
+		;それ以外
+;		ELSE
+;			PRINTFORMW 
+;		ENDIF
+;		CFLAG:203 = 2
+;	ENDIF
+;口上のある助手が居ない場合は、通常の二回目以降の口上へ飛ぶ
+ELSE
+	CALL EVENTTRAIN_SECOND_K[[キャラ:마리]]_2
+ENDIF
+
+;-------------------------------------------------
+;調教開始時（2回目以降、X1をキャラ番号に変更する）
+;-------------------------------------------------
+@EVENTTRAIN_SECOND_K[[キャラ:마리]]_2
+;反発刻印Lv3
+IF MARK:3 == 3 && (CFLAG:202 < 4 || FLAG:7 == 2)
+	IF RAND:2 == 0
+		PRINTFORMW 「아, %CSTR:이인칭%다」
+		PRINTFORMW 「어쩔 수 없으니까 놀아줄게요」
+	ELSE
+		PRINTFORML 「아, %CSTR:이인칭%다…」
+		PRINTFORMW %CALLNAME%은 기분이 언짢은 표정으로 이쪽을 보고 있다
+	ENDIF
+	CFLAG:202 = 4
+;屈服刻印Lv3
+ELSEIF MARK:2 == 3  && (CFLAG:202 < 4 || FLAG:7 == 2)
+	IF RAND:5 == 0
+		PRINTFORMW 「%CSTR:이인칭%, 오늘도 많이많이 놀아요♪」
+	ELSEIF RAND:4 == 0
+		PRINTFORML 「오늘은 뭐 하고 놀까요?」
+		PRINTFORMW 「말타기 놀이? 의사 선생님 놀이? 소꿉놀이?」
+	ELSEIF RAND:3 == 0
+		PRINTFORML 「와~아」
+		PRINTFORML 「__P0__다아~__P1__」
+		PRINTFORMW %CALLNAME%은 이쪽으로 달려오더니 넘어뜨리듯이 안겨 왔다
+		PRINTFORMW 「오늘도 신나는 거 해요♪」
+	ELSEIF RAND:2 == 0
+		PRINTFORMW 「오늘도 %CSTR:일인칭%랑 놀아주세요♪」
+		PRINTFORMW 「오늘은 누가 먼저 위로 올라갈까요?」
+	ELSE
+		PRINTFORMW 「%CSTR:일인칭%는 시킨 대로」
+		PRINTFORML 「착하게 화장실 다녀왔어요!」
+		PRINTFORMW 착하다 착해
+	ENDIF
+	CFLAG:202 = 4
+;屈服刻印Lv2
+ELSE
+	PRINTFORMW 「아, %CSTR:이인칭%다」
+	PRINTFORML 「오늘은 뭐 하고 놀아요?」
+	PRINTFORMW %CALLNAME%은 호기심 가득한 눈동자로 %CALLNAME:MASTER%를 바라보고 있다.
+	CFLAG:202 = 3
+ENDIF
+RETURN 0
+
+;-------------------------------------------------
+;EVENTEND関係（X1をキャラ番号に置換）
+;調教終了時のセリフ
+;-------------------------------------------------
+@EVENTEND_K[[キャラ:마리]]_2
+;SIF FLAG:7 <= 0
+;	RETURN 0
+;SIF TCVAR:0 == 1
+;	RETURN 0
+;SIF ABL:TARGET:회화타입 != 302
+;	RETURN 0
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL EVENTEND_PY1_K[[キャラ:마리]]
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	SIF NO:ASSI == Y1
+;	CALL EVENTEND_PY1_K[[キャラ:마리]]
+;	RETURN 0
+;ENDIF
+;--------------------------------------------------
+;調教終了時のセリフ
+;--------------------------------------------------
+DRAWLINE
+;反発刻印Lv3
+IF MARK:3 == 3 && (CFLAG:217 < 1 || FLAG:7 == 2)
+	IF RAND:2 == 0
+		PRINTFORMW 「재미없었어……」
+	ELSE
+		PRINTFORML 「바이바이」
+		PRINTFORMW 무성의하게 손을 흔들었다
+	ENDIF
+	CFLAG:217 = 1
+;屈服刻印Lv3
+ELSEIF MARK:2 == 3
+	;体力500未満
+	IF BASE:0 < 500
+		IF RAND:4 == 0
+			PRINTFORMW 「피곤해요……」
+			PRINTFORMW 「더 %CSTR:일인칭%랑 놀고 싶은데……」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「%CSTR:일인칭%는 이제 지쳤어요……」
+			PRINTFORMW %CALLNAME%은 침대에 엎어지더니 그대로 잠들어 버렸다
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「쿨……」
+			PRINTFORMW %CALLNAME%은 새근새근 숨소리를 내며 자고 있다
+		ELSE
+			PRINTFORMW 「더 놀고 싶지만……」
+			PRINTFORML 「%CSTR:일인칭%는 일도 열심히 해야 하니까 쉴게요!」
+			PRINTFORMW %CALLNAME%은 파자마로 갈아입더니 침대 속으로 기어 들어갔다
+			PRINTFORMW 「안녕히 주무세요, __P0____P1__」
+		ENDIF
+	ELSE
+		IF RAND:4 == 0
+			PRINTFORML 「즐거웠어요」
+			PRINTFORMW 「%CSTR:이인칭%도 즐거웠나요?」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「%CSTR:일인칭%는 착한 아이로 있을 테니까」
+			PRINTFORMW 「내일도 와주세요 __P0__」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「오늘은 이걸로 끝인가요?」
+			PRINTFORMW 「%CSTR:일인칭%는 더 %CSTR:이인칭%랑 놀고 싶어요」
+			PRINTFORML 사탕알 2개를 주자
+			PRINTFORMW 「와~아, 사탕이다♪」
+		ELSE
+			PRINTFORMW 「놀고 난 다음엔 일할 시간이에요」
+			PRINTFORMW 「%CSTR:일인칭%는 일 열심히 할게요!」
+		ENDIF
+	ENDIF
+	CFLAG:219 = 3
+ELSE
+	;体力500未満
+	IF BASE:0 < 500
+		PRINTFORML 「다 끝났어요……」
+		PRINTFORMW %CALLNAME%은 침대에 엎어지더니 그대로 잠들어 버렸다
+	ELSE
+		PRINTFORML 「에에, 벌써 끝이에요?」
+		PRINTFORMW 「%CSTR:일인칭%, 더 놀고 싶어요」
+	ENDIF
+	CFLAG:219 = 2
+
+ENDIF
+RETURN 0
+
+;--------------------------------------------------
+;@KOJO_MESSAGE_COM関係（X1をキャラ番号に置換）
+;コマンド実行時に出力されます
+;--------------------------------------------------
+@KOJO_MESSAGE_COM_K[[キャラ:마리]]_2
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL TRAIN_MESSAGE
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_COM_PY1_K[[キャラ:마리]]_2
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_COM_PY1_K[[キャラ:마리]]_2
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;コマンド実行時のセリフ CFLAG 300～500
+;-------------------------------------------------
+;=================================================
+;愛撫系コマンド
+;=================================================
+;-------------------------------------------------
+;0,애무
+;-------------------------------------------------
+SELECTCASE SELECTCOM
+	CASE 0
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「쓰다듬쓰다듬받으니까 기분 좋아요」
+			PRINTFORML 「그러니까 더 쓰다듬어 주세요♪」
+			PRINTFORMW %CALLNAME%은 촉촉해진 눈동자로 이쪽을 올려다보며, %CALLNAME:MASTER%의 몸에 온몸을 비벼댄다.
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「서로 만져주기, 신나요♪」
+			PRINTFORMW %CALLNAME%은 애무의 보답으로 %CALLNAME:MASTER%의 몸을 짝짝 만져왔다
+		ELSE
+			PRINTFORMW 「%CSTR:일인칭%의 몸, 따뜻해졌어요」
+			PRINTFORMW 달아오른 몸을 쓰다듬는 동안 %CALLNAME%은 달콤한 교성을 내기 시작했다.
+		ENDIF
+		CFLAG:300 = 2
+
+;-------------------------------------------------
+;1,커닐링구스
+;-------------------------------------------------
+	CASE 1
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			;主人の性器を舐めたことがある場合、一文追加
+			SIF CFLAG:345 || CFLAG:362 || CFLAG:369
+				PRINTFORML 「%CSTR:일인칭%의 가랑이, 핥으면 맛있는데」
+			PRINTFORMW 「%CSTR:이인칭%의 콩알, 맛있나요?」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「핥아지면 기분 좋아져서」
+			PRINTFORMW 「쉬마려워져 버리지만」
+			PRINTFORMW 「%CSTR:일인칭%는 어린애가 아니니까 참을게요」
+		ELSE
+			PRINTFORMW 「핥아지는 건 기분 좋아요」
+			PRINTFORMW 「%CSTR:이인칭%도 안 핥아도 돼?」
+		ENDIF
+		CFLAG:301 = 2
+
+;-------------------------------------------------
+;2,펠라한다
+;-------------------------------------------------
+	CASE 2
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			;主人の性器を舐めたことがある場合、一文追加
+			SIF CFLAG:345 || CFLAG:362 || CFLAG:369
+				PRINTFORMW 「%CSTR:일인칭% 거는 핥으면 맛있는데」
+			PRINTFORMW 「%CSTR:이인칭%의 고추, 맛있나요?」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「핥아지면 기분 좋아져서」
+			IF RAND:2 == 0
+				PRINTFORMW 「하얀 거 나와버리지만, 시킨 대로 참을게요」
+			ELSE
+				PRINTFORMW 「하얀 거 나와버릴 것 같은데, 마셔줄래요?」
+			ENDIF
+		ELSE
+			PRINTFORMW 「핥아지는 건 기분 좋아요」
+			PRINTFORMW 「%CSTR:이인칭%도 안 핥아도 돼?」
+		ENDIF
+		CFLAG:302 = 2
+
+;-------------------------------------------------
+;3,손가락삽입
+;-------------------------------------------------
+	CASE 3
+		CALL TRAIN_MESSAGE
+		IF RAND:4 == 0
+			PRINTFORML 「손가락도 기분 좋지만요」
+			PRINTFORMW 「커다란 바이브도 좋아요♪」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「손가락도 기분 좋지만요」
+			PRINTFORMW 「고추 넣어주는 것도 %CSTR:일인칭%는 좋아요」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「거기 더 꾸물꾸물 만져주세요」
+			PRINTFORMW 「%CSTR:일인칭%, 거기 주물주물당하는 거 엄청 좋아해요」
+			PRINTFORMW 「후아아… 기분 좋아요오♪」
+		ELSE
+			PRINTFORML 「하아아…… 손가락이… 천~천히 들어왔어요♪」
+			PRINTFORMW 「기분 좋아요오……읏 __P0__」
+		ENDIF
+		CFLAG:303 = 2
+
+;-------------------------------------------------
+;4,애널핥기
+;-------------------------------------------------
+	CASE 4
+		CALL TRAIN_MESSAGE
+		IF RAND:4 == 0
+			PRINTFORML 「아앙… 엉덩이 낼름낼름당하는 거 기분 좋아요오」
+			PRINTFORMW 「더, 더 낼름낼름해 주세요♪」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「그렇게 낼름낼름당하면」
+			PRINTFORMW 「엉덩이가 고추를 원해서 근질근질해져 버려요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「엉덩이 근질근질해졌어요」
+			PRINTFORMW 「엉덩이에 고추 넣어주세요♪」
+		ELSE
+			PRINTFORMW 「히야우웅♪ 엉덩이 기분 좋아요오♪」
+			PRINTFORMW 「혀가 따뜻하고 미끌미끌어서 기분 조아아 __P0__」
+		ENDIF
+		CFLAG:304 = 2
+
+;-------------------------------------------------
+;5,애널애무
+;-------------------------------------------------
+	CASE 5
+		CALL TRAIN_MESSAGE
+		;陥落済み
+		;浣腸器＋プラグor拡張バルーンor触手　装備中
+		IF TEQUIP:21 || TEQUIP:22 || TEQUIP:25
+			IF RAND:2 == 0
+				PRINTFORMW 「배 속, 괴롭지만……」
+				PRINTFORMW 「화장실에서 응가할 때보다, 훨씬 기분 좋아요♪」
+			ELSE
+				PRINTFORMW 「%CSTR:일인칭%의 배 속, 가득 찼지만」
+				PRINTFORMW 「%CSTR:일인칭%도 잔뜩 기분 좋아요!」
+			ENDIF
+		;アナルバイブorアナルビーズ　装備中
+		ELSEIF TEQUIP:14 || TEQUIP:15
+			IF RAND:2 == 0
+				PRINTFORMW 「이것도 기분 좋지만」
+				PRINTFORMW 「고추로 배 속에 쉬해주는 것도 %CSTR:일인칭%는 좋아요♪」
+			ELSE
+				PRINTFORMW 「배 깊은 곳까지 닿아서 기분 좋아요♪」
+			ENDIF
+		;애널전극
+		ELSEIF TEQUIP:23
+			IF RAND:2 == 0
+				PRINTFORMW 「어어어, 엉, 엉덩이, 찌릿찌릿해요」
+				PRINTFORMW 「대단해요, 기분 좋아요!」
+			ELSE
+				PRINTFORMW 「배 속, 괴롭지만……」
+				PRINTFORMW 「화장실에서 응가할 때보다, 훨씬 기분 좋아요♪」
+			ENDIF
+		ELSE
+			IF RAND:4 == 0
+				PRINTFORMW 「엉덩이 구멍, 기분 좋아요」
+				PRINTFORMW 「화장실에서 응가할 때보다 조아요♪」
+			ELSEIF RAND:3 == 0
+				PRINTFORMW 「손가락도 기분 좋지만요」
+				PRINTFORMW 「커다란 바이브도 좋아요」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「손가락도 기분 좋지만요」
+				PRINTFORMW 「고추로 쉬해주는 것도 %CSTR:일인칭%는 좋아요」
+			ELSE
+				PRINTFORMW 「엉덩이 좋아요」
+				PRINTFORMW 「손가락으로 푹푹 당하면, 오싹오싹해져 버려요♪」
+			ENDIF
+		ENDIF
+		CFLAG:305 = 2
+
+;-------------------------------------------------
+;6,가슴주무르기
+;-------------------------------------------------
+	CASE 6
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0 && BUST() > 3
+			PRINTFORMW 「%CSTR:일인칭%의 가슴 탱글탱글 떨려서 기분 좋아요」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「가, 가스음♪ 맘마통오오♪ 찌찌, 대다내요오오옷♪」
+			PRINTFORMW %CALLNAME%은 비명에 가까운 큰 목소리로 계속해서 헐떡인다…
+			PRINTFORML 「아아아앗♪ 응히이이익♪ 」
+			PRINTFORMW 「%CSTR:일인칭%의 가슴, 이상해져버려여어어어♪」
+		ELSE
+			PRINTFORMW 「손바닥이, 가슴에 착 달라붙어서……」
+			PRINTFORMW 「무척 따뜻해요」
+		ENDIF
+		CFLAG:306 = 2
+
+
+;-------------------------------------------------
+;7,유두자극
+;-------------------------------------------------
+	CASE 7
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「가슴 꼭지, 만져지거나 하는 거 기분 좋아요」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「가, 가스음♪ 맘마통오오♪ 찌찌, 대다내요오오옷♪」
+			PRINTFORMW %CALLNAME%은 비명에 가까운 큰 목소리로 계속해서 헐떡인다…
+			PRINTFORMW 「평소랑 다른 곳, 기분 좋아요♪」
+		ELSE
+			PRINTFORML 「싫어, …가슴 꼭지……」
+			PRINTFORMW 「주물…거리지 마……」
+			PRINTFORML 「히야우우♪」
+			PRINTFORMW 「주세여어…읏♪」
+		ENDIF
+		CFLAG:307 = 2
+
+;-------------------------------------------------
+;8,가슴애무
+;-------------------------------------------------
+	CASE 8
+		CALL TRAIN_MESSAGE
+		IF RAND:4 == 0 && BUST() > 3
+			PRINTFORML 「가슴이 크면 힘든가요?」
+			PRINTFORMW 「하지만, %CSTR:일인칭%는 엄청 기분 좋아요♪」
+		ELSEIF RAND:3 == 0
+			PRINTFORMW 「그렇게 만져주는 거, 엄청 기분 좋아요!」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「가, 가스음♪ 맘마통오오♪ 찌찌, 대다내요오오옷♪」
+			PRINTFORMW %CALLNAME%은 비명에 가까운 큰 목소리로 계속해서 헐떡인다…
+			PRINTFORMW 「아아아앗♪ 응히이이익♪ 」
+			PRINTFORMW 「%CSTR:일인칭%의 가슴, 이상해져버려여어어어♪」
+		ELSE
+			PRINTFORMW 「이렇게 만져주니까……」
+			PRINTFORMW 「무척 따뜻해요」
+			CFLAG:308 = 3
+		ENDIF
+		CFLAG:308 = 2
+
+;-------------------------------------------------
+;9,조개젖히기
+;-------------------------------------------------
+	CASE 9
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0 && TALENT:임신 == 0
+			PRINTFORMW 「배 속의 아기 보여요?」
+		ELSEIF RAND:2 == 0 && TALENT:임신
+			PRINTFORMW 「%CSTR:일인칭% 속에는 아무것도 안 들어있어요」
+			PRINTFORMW 「뭔가 넣어주세요!」
+		ELSE
+			PRINTFORMW 「잘 보여요?」
+			PRINTFORML 「만져도 핥아도」
+			PRINTFORMW 「뭔가 넣어도 괜찮아요」
+		ENDIF
+		CFLAG:309 = 2
+
+;-------------------------------------------------
+;10,가슴자위
+;-------------------------------------------------
+	CASE 10
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「어때요?」
+			PRINTFORMW 「%CSTR:이인칭%도 같이 %CSTR:일인칭% 가슴 만져도 괜찮아요」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「가슴 만지는 거 기분 좋지만」
+			PRINTFORMW 「%CSTR:이인칭%가 만져주는 편이 더 기분 좋아요♪」
+		ELSE
+			PRINTFORML 「응, 하앙, 젖꼭지 기분 좋아요」
+			PRINTFORMW 「앙, 찌릿찌릿 왔어요♪」
+		ENDIF
+		CFLAG:310 = 2
+
+;-------------------------------------------------
+;11,자위
+;-------------------------------------------------
+	CASE 11
+		CALL TRAIN_MESSAGE
+		IF RAND:4 == 0
+			PRINTFORMW 「어때요?」
+			PRINTFORMW 「%CSTR:이인칭%도 같이 조물조물해도 괜찮아요」
+		ELSEIF RAND:3 == 0
+			PRINTFORMW 「%CSTR:일인칭%가 여러 가지 하는 거 봐주세요」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「%CSTR:이인칭%도 같이 하지 않을래요?」
+		ELSE
+			PRINTFORMW 「어때요?」
+			PRINTFORMW 「보고 있으니까 재미있나요?」
+		ENDIF
+		CFLAG:311 = 2
+
+;-------------------------------------------------
+;12,날개애무
+;-------------------------------------------------
+	CASE 12
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:435 == 0 && FLAG:7 == 2
+			PRINTFORML 「%CSTR:일인칭%, 날개가 돋아서 요정님 같아요♪」
+			PRINTFORMW 「%CSTR:이인칭%도 만져보고 싶은 거죠」
+			CFLAG:435 = 1
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORMW 「거기 만져지는 거, 이상한 느낌이지만……」
+				PRINTFORMW 「기분 좋아요♪」
+			ELSE
+				PRINTFORMW 「그렇게 %CSTR:일인칭% 날개가 신기한가요?」
+			ENDIF
+		ENDIF
+		CFLAG:435 = 2
+
+;-------------------------------------------------
+;13,꼬리애무
+;-------------------------------------------------
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:436 == 0 && FLAG:7 == 2
+			PRINTFORMW 「%CSTR:일인칭%, 꼬리가 생겨서 고양이 씨 같아요♪」
+			CFLAG:436 = 1
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORMW 「거기 만져지는 거, 이상한 느낌이지만……」
+				PRINTFORMW 「기분 좋아요♪」
+			ELSE
+				PRINTFORMW 「그렇게 %CSTR:일인칭% 꼬리가 신기한가요?」
+			ENDIF
+		ENDIF
+		CFLAG:436 = 2
+
+;-------------------------------------------------
+;14,클리애무
+;-------------------------------------------------
+		CALL TRAIN_MESSAGE
+		IF RAND:4 == 0
+			PRINTFORMW 「어때요?」
+			PRINTFORMW 「만져도 괜찮아요」
+		ELSEIF RAND:3 == 0
+			PRINTFORMW 「그렇게 하면 이상해져 버려요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「손가락 기분 좋아… 히야웃♪」
+			PRINTFORMW 「더 해주세요♪」
+		ELSE
+			PRINTFORMW 「기분 좋으니까, 더 만져주세요」
+		ENDIF
+		CFLAG:442 = 2
+
+;-------------------------------------------------
+;15,엉덩이애무
+;-------------------------------------------------
+	CASE 15
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「엉덩이 쓰다듬쓰다듬받으니까 신나고 기분 좋아요」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「엉덩이 만져지니까, 몸이 뜨거워져요」
+		ELSE
+			PRINTFORML 「거기 기분 좋아요, 더 해주세요♪」
+			PRINTFORMW 엉덩이를 어루만져질 때마다 %CALLNAME%은 달콤한 교성을 지른다.
+		ENDIF
+		CFLAG:445 = 2
+
+
+;=================================================
+;コミュニケーション系コマンド
+;=================================================
+;-------------------------------------------------
+;20,키스한다
+;-------------------------------------------------
+	CASE 20
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「으음, 쪽♪ 쪼오옵, 츕…… 푸하아♪」
+			PRINTFORML 「뽀뽀~ 했어요」
+			PRINTFORMW 「한 번 더 하고 싶어요!」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「응쥬부붑♪ 으음, 응츄우웃♪」
+			PRINTFORML 「%CSTR:일인칭%, 키스 잘했나요?」
+			PRINTFORMW %CALLNAME:MASTER%는 대답하는 대신 다시금 %CALLNAME%과 혀를 얽어 맞추었다…
+		ELSE
+			PRINTFORML 「츄우우…… 하아, 쥬루우웃! …푸하아♪」
+			PRINTFORMW %CALLNAME%은 적극적으로 혀를 빨아들이고 있다…
+		ENDIF
+		CFLAG:312 = 2
+
+;-------------------------------------------------
+;21,아무것도안한다
+;-------------------------------------------------
+	CASE 21
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「어른은 금방 피곤해지니까, 쉬어야겠네요」
+			PRINTFORML 「%CSTR:일인칭%는 아직 쌩쌩해요」
+			PRINTFORMW %CALLNAME%은 그림을 그리기 시작했다
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「휴식인가요?」
+		ELSE
+			PRINTFORMW 「뭔가 하지 않을래요?」
+		ENDIF
+		CFLAG:313 = 2
+
+
+;-------------------------------------------------
+;22,회화　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 22
+		CALL TRAIN_MESSAGE
+		IF RAND:2 == 0
+			PRINTFORML 「어제는 말이죠……」
+		ELSE
+			PRINTFORML 「얼마 전에는요……」
+		ENDIF
+		PRINTFORMW %CALLNAME%은 자기 이야기를 늘어놓고 있다
+		CFLAG:314 = 2
+
+;-------------------------------------------------
+;23,프레젠트　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 23
+		CALL TRAIN_MESSAGE
+		IF RAND:2 == 0
+			PRINTFORMW 「이걸 %CSTR:일인칭%한테 주는 건가요?」
+			PRINTFORML 「고맙습니다!」
+			PRINTFORMW %CALLNAME%은 만면에 미소를 띠며 감사를 표했다
+		ELSE
+			PRINTFORML 「와~아♪」
+			PRINTFORMW %CALLNAME%은 활짝 미소를 짓고 있다
+		ENDIF
+		CFLAG:315 = 2
+
+;-------------------------------------------------
+;24,스킨쉽　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 24
+		CALL TRAIN_MESSAGE
+		IF RAND:2 == 0
+			PRINTFORML 「정말 좋아해요♪」
+			CFLAG:316 = 1
+		ELSE
+			PRINTFORMW 「다음에는 뭐 하고 놀까요?」
+			PRINTFORML 「%CSTR:일인칭%는 말이죠……」
+		ENDIF
+		PRINTFORML 　
+		PRINTFORMW 꽁냥꽁냥 거렸다.
+		CFLAG:316 = 2
+
+;-------------------------------------------------
+;25,느긋하게있는다　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 25
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「%CSTR:일인칭%는, %CSTR:이인칭%가……」
+			PRINTFORMW 「정말 좋아요♪」
+			CFLAG:316 = 1
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「다음에는 뭐 할까요?」
+			PRINTFORMW 「%CSTR:일인칭%는 말이죠……」
+		ELSE
+			PRINTFORML 「그럼, 그림 그리기 해요!」
+			PRINTFORMW 「%CSTR:일인칭%는 그림 잘 그리거든요」
+		ENDIF
+		PRINTFORML 　
+		PRINTFORMW 느긋하게 쉬었다.
+		CFLAG:317 = 2
+
+;-------------------------------------------------
+;26,가사　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 26
+		CALL TRAIN_MESSAGE
+		IF RAND:4 == 0
+			PRINTFORML 「다 만들면 다 같이 먹어요!」
+			PRINTFORMW %CALLNAME%과 함께 과자를 만들었다
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「악마처럼 갈기갈기 썰어버릴게요♪」
+			PRINTFORMW %CALLNAME%은 식칼을 상단세로 치켜들고 있다
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「고양이 씨 손이에요」
+			PRINTFORMW %CALLNAME%과 함께 요리를 했다
+		ELSE
+			PRINTFORML 「거기 쓰레기 떨어져 있어요」
+			PRINTFORML 「저쪽에도!」
+			PRINTFORMW %CALLNAME%과 함께 청소를 했다
+		ENDIF
+		CFLAG:318 = 2
+
+;-------------------------------------------------
+;27,노래연습　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 27
+		CALL TRAIN_MESSAGE
+		IF RAND:2 == 0
+			PRINTFORML 「커~다란 밤나무 밑에서~」
+		ELSE
+			PRINTFORML 「도는!」
+			PRINTFORML 「는 도넛의 도!」
+		ENDIF
+		PRINTFORMW %CALLNAME%은 힘껏 노래를 부르고 있다
+		CFLAG:319 = 2
+
+;-------------------------------------------------
+;28,매도
+;-------------------------------------------------
+	CASE 28
+		CALL TRAIN_MESSAGE
+		;陥落済み
+		IF 陥落() && (CFLAG:320 < 4 || FLAG:7 == 2)
+			PRINTFORMW 「죄송해요, %CSTR:일인칭%…」
+			PRINTFORMW 「미워하지 말아주세요」
+			CFLAG:320 = 4
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:320 < 3 || FLAG:7 == 2)
+			PRINTFORML 「죄송해요, %CSTR:일인칭%, 착한 아이로 있을 테니까」
+			PRINTFORMW 「벌 받는 거 싫어요」
+			CFLAG:320 = 3
+		;それ以外
+		ELSEIF CFLAG:320 < 2 || FLAG:7 == 2
+			PRINTFORML 「죄송해요, %CSTR:일인칭%, 착한 아이로 있을 테니까」
+			PRINTFORMW 「벌 받는 거 싫어요」
+			CFLAG:320 = 2
+		ENDIF
+
+;-------------------------------------------------
+;29,비디오감상　陥落済みのみ
+;-------------------------------------------------
+	CASE 29
+		CALL TRAIN_MESSAGE
+		IF RAND:2 == 0
+			PRINTFORML 「봐요, %CSTR:일인칭%가 비쳐요!」
+		ELSE
+			PRINTFORML 「이거, 한 번 더 찍어주셔도 돼요?」
+		ENDIF
+		PRINTFORMW %CALLNAME%은 화면에 비친 자신을 가리키고 있다
+		CFLAG:321 = 2
+
+
+;=================================================
+;道具使用コマンド
+;=================================================
+;40,로터
+;-------------------------------------------------
+	CASE 40
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「부르르 떨려서…… 기분 좋아요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「%CSTR:일인칭%는 이거 정말 좋아해요♪」
+		ELSE
+			PRINTFORMW 「가랑이…… 찌릿찌릿해졌어요」
+		ENDIF
+		CFLAG:322 = 2
+
+;-------------------------------------------------
+;41,전기마사지기
+;-------------------------------------------------
+	CASE 41
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「부르르 떨려서…… 기분 좋아요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「%CSTR:일인칭%는 이거 정말 좋아해요♪」
+		ELSE
+			PRINTFORMW 「가랑이…… 찌릿찌릿해졌어요」
+		ENDIF
+		CFLAG:323 = 2
+
+;-------------------------------------------------
+;42,클리캡
+;-------------------------------------------------
+	CASE 42
+		CALL TRAIN_MESSAGE
+		IF TEQUIP:11 == 1
+			;IF RAND:2 == 0
+				PRINTFORMW 「그거 차면, 가랑이가 엄청 기분 좋아져요!」
+			;ELSE
+			;ENDIF
+		ELSE
+;			IF RAND:2 == 0
+				PRINTFORMW 「빼버리는 건가요?」
+;			ELSE
+;			ENDIF
+		ENDIF
+		CFLAG:324 = 1
+
+;-------------------------------------------------
+;43,오나홀
+;-------------------------------------------------
+	CASE 43
+		CALL TRAIN_MESSAGE
+		IF TEQUIP:12 == 1
+			IF RAND:2 == 0
+				PRINTFORMW 「그거 쓰면 고추가 엄청 기분 좋아져요!」
+			ELSE
+				PRINTFORMW 「%CSTR:일인칭% 고추, 괴롭히지 말아주세요♪」
+			ENDIF
+		ELSE
+;			IF RAND:2 == 0
+				PRINTFORMW 「빼버리는 건가요?」
+;			ELSE
+;			ENDIF
+		ENDIF
+		CFLAG:325 = 1
+
+;-------------------------------------------------
+;44,바이브
+;-------------------------------------------------
+	CASE 44
+		CALL TRAIN_MESSAGE
+		IF TEQUIP:13 == 1
+			IF RAND:3 == 0
+				PRINTFORMW 「그거 가랑이에 넣으면 엄청 기분 좋아져요」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「가랑이에 넣어주는 건가요?」
+				PRINTFORMW 「고맙습니다♪」
+			ELSE
+				PRINTFORMW 「%CSTR:일인칭% 가랑이 괴롭히지 말아주세요♪」
+			ENDIF
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORMW 「빼버리는 건가요?」
+			ELSE
+				PRINTFORMW 「고추 넣어주는 건가요♪」
+			ENDIF
+		ENDIF
+		CFLAG:326 = 1
+
+;-------------------------------------------------
+;45,애널바이브
+;-------------------------------------------------
+	CASE 45
+		CALL TRAIN_MESSAGE
+		IF TEQUIP:14 == 1
+			IF RAND:3 == 0
+				PRINTFORMW 「그거 엉덩이에 넣으면 엄청 기분 좋아져요」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「엉덩이에 넣어주는 건가요?」
+				PRINTFORMW 「고맙습니다♪」
+			ELSE
+				PRINTFORMW 「%CSTR:일인칭% 엉덩이 괴롭히지 말아주세요♪」
+			ENDIF
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORMW 「빼버리는 건가요?」
+			ELSE
+				PRINTFORMW 「고추 넣어주는 건가요♪」
+			ENDIF
+		ENDIF
+		CFLAG:327 = 1
+
+;-------------------------------------------------
+;46,애널비즈
+;-------------------------------------------------
+	CASE 46
+		CALL TRAIN_MESSAGE
+		IF TEQUIP:15 == 1
+			IF TALENT:꼬리 && RAND:4 == 0
+				PRINTFORMW 「__P0__, 꼬리가 돋았어요 __P1__」
+			ELSEIF RAND:3 == 0
+				PRINTFORMW 「그거 엉덩이에 넣으면 엄청 기분 좋아져요」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「엉덩이에 넣어주는 건가요?」
+				PRINTFORMW 「고맙습니다♪」
+			ELSE
+				PRINTFORMW 「%CSTR:일인칭% 엉덩이 괴롭히지 말아주세요♪」
+			ENDIF
+		ELSE
+			IF CFLAG:328 == 1 || FLAG:7 == 2
+				IF RAND:2 == 0
+					PRINTFORMW 「응가했을 때보다 훨씬 대단했어요♪」
+				ELSE
+					PRINTFORMW 「엉덩이 속에 아무것도 없어져 버렸지만……」
+					PRINTFORMW 「기분 좋았어요♪」
+				ENDIF
+			ENDIF
+		ENDIF
+		CFLAG:328 = 1
+
+;-------------------------------------------------
+;47,유두캡
+;-------------------------------------------------
+	CASE 47
+		CALL TRAIN_MESSAGE
+		IF TEQUIP:16 == 1
+			IF RAND:2 == 0
+				PRINTFORMW 「그거 가슴에 달면 엄청 기분 좋아져요」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「가슴에 달아주는 건가요?」
+				PRINTFORMW 「고맙습니다♪」
+			ELSE
+				PRINTFORMW 「응쿠우, 으응, 가슴이 찌릿찌릿해요오♪」
+				CFLAG:329 = 2
+			ENDIF
+		ELSE
+;			IF RAND:2 == 0
+				PRINTFORMW 「빼버리는 건가요?」
+;			ENDIF
+		ENDIF
+		CFLAG:329 = 1
+
+;-------------------------------------------------
+;48,유두로터
+;-------------------------------------------------
+	CASE 48
+		CALL TRAIN_MESSAGE
+		IF RAND:2 == 0
+			PRINTFORMW 「그거 쓰면 가슴이 엄청 기분 좋아져요!」
+		ELSE
+			PRINTFORMW 「가슴 꼭지가……기분 좋아요 __P0__」
+		ENDIF
+		CFLAG:330 = 2
+
+;-------------------------------------------------
+;49,착유기
+;-------------------------------------------------
+	CASE 49
+		CALL TRAIN_MESSAGE
+		IF TEQUIP:17 == 1
+			IF RAND:3 == 0
+					PRINTFORMW 「젖소 씨처럼 우유를 짜는 거네요」
+					PRINTFORMW 「%CSTR:일인칭%도 열심히 우유 낼게요!」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「가슴에 달아주는 건가요?」
+				PRINTFORMW 「고맙습니다♪」
+			ELSE
+				PRINTFORMW 「아기 우유, 없어져 버려요」
+			ENDIF
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORMW 「떼어내는 건가요?」
+			ELSE
+				PRINTFORMW 「얼마나 나왔나요?」
+			ENDIF
+		ENDIF
+		CFLAG:331 = 1
+
+
+;=================================================
+;セックス系コマンド
+;=================================================
+;-------------------------------------------------
+;60,정상위
+;-------------------------------------------------
+	CASE 60
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「가랑이에 고추가 들어왔어요!」
+			PRINTFORMW 「많이많이 움직여서 놀아주세요」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「같이 놀아주는 거군요」
+			PRINTFORMW 「%CSTR:일인칭%도 힘낼게요♪」
+		ELSE
+			PRINTFORMW 「고추 놀이, 기분 좋아요♪」
+			PRINTFORMW 「%CSTR:이인칭%도 즐겁나요?」
+		ENDIF
+		CFLAG:332 = 1
+
+;-------------------------------------------------
+;61,후배위
+;-------------------------------------------------
+	CASE 61
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「가랑이에 고추가 들어왔어요!」
+			PRINTFORMW 「많이많이 움직여서 놀아주세요」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「같이 놀아주는 거군요」
+			PRINTFORMW 「%CSTR:일인칭%도 힘낼게요♪」
+		ELSE
+			PRINTFORMW 「말타기 놀이, 기분 좋아요♪」
+			PRINTFORMW 「%CSTR:이인칭%도 즐겁나요?」
+		ENDIF
+		CFLAG:333 = 1
+
+;-------------------------------------------------
+;62,정상위애널
+;-------------------------------------------------
+	CASE 62
+		CALL TRAIN_MESSAGE
+		;陥落済み
+		IF RAND:3 == 0
+			PRINTFORMW 「엉덩이에 고추가 들어왔어요!」
+			PRINTFORMW 「많이많이 움직여서 놀아주세요」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「같이 놀아주는 거군요」
+			PRINTFORMW 「%CSTR:일인칭%도 힘낼게요♪」
+		ELSE
+			PRINTFORMW 「고추 놀이, 기분 좋아요♪」
+			PRINTFORMW 「%CSTR:이인칭%도 즐겁나요?」
+		ENDIF
+		CFLAG:334 = 1
+
+;-------------------------------------------------
+;63,후배위애널
+;-------------------------------------------------
+	CASE 63
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「엉덩이에 고추가 들어왔어요!」
+			PRINTFORMW 「많이많이 움직여서 놀아주세요」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「같이 놀아주는 거군요」
+			PRINTFORMW 「%CSTR:일인칭%도 힘낼게요♪」
+		ELSE
+			PRINTFORMW 「말타기 놀이, 기분 좋아요♪」
+			PRINTFORMW 「%CSTR:이인칭%도 즐겁나요?」
+		ENDIF
+		CFLAG:335 = 2
+
+;-------------------------------------------------
+;64,역강간
+;-------------------------------------------------
+	CASE 64
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「가랑이에 고추가 들어가 버렸어요!」
+			PRINTFORMW 「%CSTR:일인칭% 고추 기분 좋으니까, 많이 움직여서 놀아주세요」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「같이 놀아주는 거군요」
+			PRINTFORMW 「%CSTR:일인칭%도 힘낼게요♪」
+		ELSE
+			PRINTFORMW 「고추, 기분 좋아요♪」
+			PRINTFORMW 「%CSTR:이인칭%도 즐겁나요?」
+		ENDIF
+		CFLAG:336 = 1
+
+;-------------------------------------------------
+;65,젖성교
+;-------------------------------------------------
+	CASE 65
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「가슴 사이에 고추가 들어가 버렸어요, 대단해요!」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「같이 놀아주는 거군요」
+			PRINTFORMW 「%CSTR:일인칭%도 힘낼게요♪」
+		ELSE
+			PRINTFORMW 「고추, 즐겁나요?」
+		ENDIF
+		CFLAG:337 = 1
+
+;-------------------------------------------------
+;66,기승위
+;-------------------------------------------------
+	CASE 66
+		CALL TRAIN_MESSAGE
+		IF RAND:4 == 0
+			PRINTFORML 「말타기 놀이네요」
+			PRINTFORMW 「많이많이 움직여서 힘낼게요!」
+		ELSEIF RAND:3 == 0
+			PRINTFORMW 「같이 놀아주는 거군요」
+			PRINTFORMW 「%CSTR:일인칭%도 열심히 움직일게요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「고추 놀이, 기분 좋아요♪」
+			PRINTFORMW 「%CSTR:이인칭%도 즐겁나요?」
+		ELSE
+			PRINTFORML 「가랑이에 고추가 들어와 있으니까요」
+			PRINTFORMW 「__P0__ 많이많이 움직일게요 __P1__」
+		ENDIF
+		CFLAG:338 = 1
+
+;-------------------------------------------------
+;67,기승위애널
+;-------------------------------------------------
+	CASE 67
+		CALL TRAIN_MESSAGE
+		IF RAND:4 == 0
+			PRINTFORML 「말타기 놀이네요」
+			PRINTFORMW 「많이많이 움직여서 힘낼게요!」
+		ELSEIF RAND:3 == 0
+				PRINTFORMW 「같이 놀아주는 거군요」
+				PRINTFORMW 「%CSTR:일인칭%도 열심히 움직일게요♪」
+		ELSEIF RAND:2 == 0
+				PRINTFORMW 「고추 놀이, 기분 좋아요♪」
+				PRINTFORMW 「%CSTR:이인칭%도 즐겁나요?」
+		ELSE
+			PRINTFORML 「엉덩이에 고추가 들어와 있으니까요」
+			PRINTFORMW 「__P0__ 많이많이 움직일게요 __P1__」
+		ENDIF
+		CFLAG:339 = 1
+
+;-------------------------------------------------
+;68,대면좌위
+;-------------------------------------------------
+	CASE 68
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「꼬옥 안아주세요 __P0__」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「안기면서 고추가 들어와서」
+			PRINTFORMW 「%CSTR:일인칭%, 가득 행복해요♪」
+		ELSE
+			PRINTFORML 「격렬해요♪」
+			PRINTFORMW %CALLNAME%은 쾌락을 놓치지 않으려는 듯 스스로 안겨 왔다
+		ENDIF
+		CFLAG:340 = 1
+
+;-------------------------------------------------
+;69,배면좌위
+;-------------------------------------------------
+	CASE 69
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「덜컹거려서 롤러코스터 같아요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「꼬옥 안기면서 고추가 들어와서」
+			PRINTFORMW 「%CSTR:일인칭%, 가득 행복해요♪」
+		ELSE
+			PRINTFORML 「격렬해요♪」
+			PRINTFORMW %CALLNAME%은 %CALLNAME:MASTER%의 허벅지에 손을 얹고, 떨어지지 않으려 하고 있다
+		ENDIF
+		CFLAG:341 = 1
+
+;-------------------------------------------------
+;70,대면좌위애널
+;-------------------------------------------------
+	CASE 70
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「꼬옥 안아주세요 __P0__」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「안기면서 고추가 들어와서」
+			PRINTFORMW 「%CSTR:일인칭%, 가득 행복해요♪」
+		ELSE
+			PRINTFORML 「격렬해요♪」
+			PRINTFORMW %CALLNAME%은 쾌락을 놓치지 않으려는 듯 스스로 안겨 왔다
+		ENDIF
+		CFLAG:340 = 1
+
+;-------------------------------------------------
+;71,배면좌위애널
+;-------------------------------------------------
+	CASE 71
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「덜컹거려서 롤러코스터 같아요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「꼬옥 안기면서 고추가 들어와서」
+			PRINTFORMW 「%CSTR:일인칭%, 가득 행복해요♪」
+		ELSE
+			PRINTFORML 「격렬해요♪」
+			PRINTFORMW %CALLNAME%은 %CALLNAME:MASTER%의 허벅지에 손을 얹고, 떨어지지 않으려 하고 있다
+		ENDIF
+		CFLAG:343 = 1
+
+;-------------------------------------------------
+;72,속옷비켜삽입
+;-------------------------------------------------
+	CASE 72
+		CALL TRAIN_MESSAGE
+		;なにかスイッチが入った模様
+		IF RAND:1024 == 0
+			PRINTFORML 「아아아아아악!」
+			PRINTFORML 「그만해, 그만둬그만둬그만둬!」
+			PRINTFORML 「나한텐 좋아하는 사람이 있단 말야! 처음은 그 사람과 맺어질 거라고!」
+			PRINTFORML 「처음은 그 사람과, 라고 정했단 말이야!」
+			PRINTFORML 「그러니까 이런 곳에서 내보내 줘 구해줘 풀어줘!」
+			PRINTFORMW 과거의 트라우마 스위치가 켜진 것인지 %CALLNAME%은 별안간 아우성치기 시작했다
+			PRINTFORMW …평소와 다른 플레이를 즐겨두기로 하자
+		ELSEIF RAND:3 == 0
+			PRINTFORMW 「마음에 드는 옷이 늘어나 버려요」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「안 벗어도 괜찮아요?」
+		ELSE
+			PRINTFORML 「격렬해요♪」
+			PRINTFORMW %CALLNAME%은 %CALLNAME:MASTER%의 허벅지에 손을 얹고, 떨어지지 않으려 하고 있다
+		ENDIF
+		CFLAG:420 = 1
+
+;-------------------------------------------------
+;73,속옷비켜삽입애널
+;-------------------------------------------------
+	CASE 73
+		CALL TRAIN_MESSAGE
+		IF RAND:1024 == 0
+			PRINTFORML 「아아아아아악!」
+			PRINTFORML 「그만해, 그만둬그만둬그만둬!」
+			PRINTFORML 「엉덩이 구멍은 그런 짓 하라고 있는 게 아니란 말야!」
+			PRINTFORML 「부탁이에요, 이런 곳에서 내보내 줘요 구해줘요 풀어주세요!」
+			PRINTFORMW 과거의 트라우마 스위치가 켜진 것인지 %CALLNAME%은 별안간 아우성치기 시작했다
+			PRINTFORMW …평소와 다른 플레이를 즐겨두기로 하자
+		ELSEIF RAND:3 == 0
+			PRINTFORMW 「마음에 드는 옷이 늘어나 버려요」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「안 벗어도 괜찮아요?」
+		ELSE
+			PRINTFORML 「격렬해요♪」
+			PRINTFORMW %CALLNAME%은 %CALLNAME:MASTER%의 허벅지에 손을 얹고, 떨어지지 않으려 하고 있다
+		ENDIF
+		CFLAG:421 = 1
+
+
+;=================================================
+;奉仕系コマンド
+;=================================================
+;-------------------------------------------------
+;80,수음
+;-------------------------------------------------
+	CASE 80
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「저기요, 핥으면 안 돼요?」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「고추, 점점 딱딱해져 왔어요 __P0__」
+		ELSE
+			PRINTFORML 「고추 쓱싹쓱싹 문지를게요!」
+			PRINTFORMW %CALLNAME%은 필사적으로 페니스를 훑어 올리고 있다
+		ENDIF
+		CFLAG:344 = 1
+
+;-------------------------------------------------
+;81,펠라치오
+;-------------------------------------------------
+	CASE 81
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「아앙… 으응, 으부우, 츄릅, 쪽…… 쥬르르르륵」
+			PRINTFORML 「쪽… 냠, 읏츄우… 쪽, 으무우…♪ 후훗♪ 기분 좋아 보이는 얼굴이에요오♪」
+			PRINTFORMW %CALLNAME%은 %CALLNAME:MASTER%의 페니스를, 입속에서 혀를 능숙하게 놀려 애무하고 있다…
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「아앙… 응, 츄릅, 쫍…… 하앙」
+			PRINTFORMW 「하후우…… %CSTR:이인칭% 입속, 기분 좋나요오?」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「네, %CSTR:일인칭%가 고추 깨끗하게 해줄게요!」
+			PRINTFORMW %CALLNAME%은 일말의 주저함도 없이 %CALLNAME:MASTER%의 페니스를 게걸스럽게 물었다
+		ELSE
+			PRINTFORML 「응, 츕, 쫩, 으응……」
+			PRINTFORMW 「입안에서 펄떡펄떡 뛰어요오… 으츄… 츄르릅…」
+		ENDIF
+		CFLAG:345 = 1
+
+;-------------------------------------------------
+;82,파이즈리
+;-------------------------------------------------
+	CASE 82
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			IF BUST() > 4
+				PRINTFORML 「고추가 가슴 사이에 숨어버렸어요」
+				PRINTFORMW 「숨바꼭질하고 있지만, 펄떡펄떡 뛰니까 어디 있는지 다 알아요♪」
+			ELSE
+				PRINTFORML 「죄송해요」
+				PRINTFORMW 「고추가 너무 커서, 가슴으로 샌드가 안 돼요…」
+			ENDIF
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「%CSTR:일인칭% 가슴으로 부비부비해버릴게요♪」
+			PRINTFORMW 「언제든 좋아하는 때에 싸주세요♪」
+		ELSE
+			PRINTFORMW 「%CSTR:이인칭%, 기분 좋아요?」
+			PRINTFORML 「기뻐해 줘서 기뻐요♪」
+			PRINTFORMW 「%CSTR:일인칭%, 더 힘낼게요♪」
+		ENDIF
+		CFLAG:346 = 1
+
+;-------------------------------------------------
+;83,스마타
+;-------------------------------------------------
+	CASE 83
+		CALL TRAIN_MESSAGE
+		IF RAND:4 == 0
+			PRINTFORML 「고추 안 넣어도 괜찮아요?」
+			PRINTFORMW %CALLNAME%은 고개를 갸웃거리고 있다
+		ELSEIF RAND:3 == 0
+			PRINTFORMW 「하우웅, 고추 안 넣어주는 건가요」
+			PRINTFORML 「그래도… 이쪽도 기분 좋아요♪」
+			PRINTFORMW %CALLNAME%은 스스로 허리를 앞뒤로 흔들고 있다
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「가랑이 쓱싹쓱싹 비벼지는 것보다」
+			PRINTFORMW 「고추 넣어주는 편이 더 기분 좋아요」
+			PRINTFORML 「빨리 고추 주세요!」
+			PRINTFORMW %CALLNAME%은 재촉하듯 페니스에 허리를 바짝 밀어붙이고 있다
+		ELSE
+			PRINTFORML 「으음… 이런 걸로 기분 좋은 거예요오?」
+			PRINTFORMW 「%CSTR:이인칭%는 별로 안 즐거워 보여요오」
+		ENDIF
+		CFLAG:347 = 1
+
+;-------------------------------------------------
+;84,거품춤
+;-------------------------------------------------
+	CASE 84
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「%CSTR:일인칭% 스펀지로 깨끗하게 씻어줄게요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「거품 놀이도 하고, 깨끗해지고, 기분 좋아지고, 세 배로 이득이에요!」
+			PRINTFORMW 「미끌미끌하고 보글보글해서 기분 좋나요?」
+		ELSE
+			PRINTFORML 「고추는 깨끗하게 안 하면 병 걸리니까」
+			PRINTFORMW 「%CSTR:일인칭%가 깨끗깨끗하게 해줄게요♪」
+		ENDIF
+		CFLAG:348 = 1
+
+;-------------------------------------------------
+;85,풋잡
+;-------------------------------------------------
+	CASE 85
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「발로 밟는 건가요?」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「손이랑 다르게, 발로 하니까 어려워요」
+		ELSE
+			PRINTFORML 「고추, 커지면 넣어주세요♪」
+		ENDIF
+		CFLAG:349 = 1
+
+;-------------------------------------------------
+;86,다리핥기강제
+;-------------------------------------------------
+	CASE 86
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「핥짝, 츕」
+			PRINTFORMW 「발가락, 응, 한 개 한 개 전부, 쪽쪽, 깨끗깨끗하게 해줄게요」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「전부 핥으면 상 주세요!」
+		ELSE
+			PRINTFORML 
+		ENDIF
+		CFLAG:350 = 1
+
+;-------------------------------------------------
+;87,세로파이즈리
+;-------------------------------------------------
+	CASE 87
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「가슴 사이에 고추가 들어가 버렸어요」
+			PRINTFORMW 「숨바꼭질하고 있지만, 펄떡펄떡 뛰니까 어디 있는지 다 알아요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「%CSTR:일인칭% 가슴으로 샌드해 버릴게요」
+			PRINTFORMW 「언제든 좋아하는 때에 싸주세요♪」
+		ELSE
+			PRINTFORMW 「%CSTR:이인칭%, 기분 좋아요?」
+			PRINTFORML 「기뻐해 줘서 기뻐요♪」
+			PRINTFORMW 「%CSTR:일인칭%, 더 힘낼게요♪」
+		ENDIF
+		CFLAG:351 = 1
+
+;-------------------------------------------------
+;88,파이즈리펠라
+;-------------------------------------------------
+	CASE 88
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORMW 「%CSTR:일인칭% 가슴이랑 입으로 기분 좋게 해줄게요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「입에 쌀 건가요? 가슴에 쌀 건가요?」
+			PRINTFORMW 「원하는 곳에 싸주세요」
+		ELSE
+			PRINTFORMW 「%CSTR:이인칭%, 기분 좋아요?」
+			PRINTFORML 「기뻐해 줘서 기뻐요♪」
+			PRINTFORMW 「%CSTR:일인칭%, 더 힘낼게요♪」
+		ENDIF
+		CFLAG:352 = 1
+
+;-------------------------------------------------
+;89,모유마시기　陥落済みのみ
+;-------------------------------------------------
+	CASE 89
+		IF RAND:3 == 0
+			PRINTFORML 「에헤헤, 엄마가 된 기분이에요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「맛있나요?」
+		ELSE
+			PRINTFORML 「착하다 착해♪」
+		ENDIF
+		CFLAG:353 = 1
+
+
+;=================================================
+;調教者奉仕系コマンド
+;=================================================
+;-------------------------------------------------
+;수음한다
+;-------------------------------------------------
+	CASE 90
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「고추 기분 좋아요」
+			PRINTFORMW 「더 해주세요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「고, 고추 기분 좋아요 __P0__」
+			PRINTFORMW 「다들 이렇게 기분 좋았던 거군요♪」
+			PRINTFORMW 「기분 좋아서 몸이 사르르 녹아버려요♪」
+		ELSE
+			PRINTFORML 
+		ENDIF
+		CFLAG:423 = 1
+
+;-------------------------------------------------
+;파이즈리한다
+;-------------------------------------------------
+	CASE 91
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:424 == 0
+			PRINTFORML 「가슴 따뜻하고 부드러워서」
+			PRINTFORMW 「다들 고추 이렇게 기분 좋았던 거군요♪」
+			CFLAG:424 = 1
+		ELSE
+			IF HAVE_PENIS(PLAYER) && RAND:3 == 0
+				PRINTFORML 「다음에는 %CSTR:일인칭%한테 해주세요♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORML 「파이즈리 샌드, 기분 좋아요♪」
+	;		ELSE
+	;			PRINTFORML 
+			ENDIF
+		CFLAG:424 = 2
+		ENDIF
+
+;-------------------------------------------------
+;정상위시킨다
+;-------------------------------------------------
+	CASE 92
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:425 == 0 && CFLAG:426 == 0 && CFLAG:427 == 0
+			PRINTFORMW 「하와아아아아아아 __P0__」
+			PRINTFORMW 「다들 이렇게 기분 좋았던 거군요」
+			PRINTFORML 「치사해요, 치사해요」
+			PRINTFORML 「%CSTR:일인칭%도 삐걱삐걱 흔들어서 더 기분 좋게 할래요♪」
+			PRINTFORMW %CALLNAME%은 처음이지만 어설프게 흉내를 내며 허리를 흔들고 있다
+			CFLAG:425 = 1
+		;二回目以降
+		ELSE
+			IF RAND:3 == 0
+				PRINTFORML 「둘이서 같이 기분 좋아져요♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「기분 좋아요?」
+				PRINTFORMW 「%CSTR:일인칭%는 엄청엄청 기분 좋아요♪」
+			ELSE
+				PRINTFORML 「그렇게 가랑이를 꽉 조여대면 금방 나와버려요」
+			ENDIF
+			CFLAG:425 = 2
+		ENDIF
+
+;-------------------------------------------------
+;후배위시킨다
+;-------------------------------------------------
+	CASE 93
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:425 == 0 && CFLAG:426 == 0 && CFLAG:427 == 0
+			PRINTFORMW 「하와아아아아아아 __P0__」
+			PRINTFORMW 「다들 이렇게 기분 좋았던 거군요」
+			PRINTFORML 「치사해요, 치사해요」
+			PRINTFORML 「%CSTR:일인칭%도 팡팡 부딪치며 더 기분 좋아질래요♪」
+			PRINTFORMW %CALLNAME%은 쉼 없이 허리를 흔들어대고 있다
+			CFLAG:426 = 1
+		;二回目以降
+		ELSE
+			IF RAND:3 == 0
+				PRINTFORML 「둘이서 같이 기분 좋아져요♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「기분 좋아요?」
+				PRINTFORMW 「%CSTR:일인칭%는 엄청엄청 기분 좋아요♪」
+			ELSE
+				PRINTFORML 「그렇게 가랑이를 꽉 조여대면 금방 나와버려요」
+			ENDIF
+			CFLAG:426 = 2
+		ENDIF
+
+;-------------------------------------------------
+;기승위한다
+;-------------------------------------------------
+	CASE 94
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:425 == 0 && CFLAG:426 == 0 && CFLAG:427 == 0
+			PRINTFORMW 「하와아아아아아아 __P0__」
+			PRINTFORMW 「위에 올라타는 거, 이렇게 기분 좋았던 거군요」
+			PRINTFORML 「치사해요, 치사해요」
+			PRINTFORML 「%CSTR:일인칭%도 아래에서 쿵쿵 찔러서 더 기분 좋아질래요♪」
+			PRINTFORMW %CALLNAME%은 쉼 없이 허리를 흔들어대고 있다
+			CFLAG:427 = 1
+		;二回目以降
+		ELSE
+			IF RAND:3 == 0
+				PRINTFORML 「더 움직여주세요♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「기분 좋아요?」
+				PRINTFORMW 「%CSTR:일인칭%는 엄청엄청 기분 좋아요♪」
+			ELSE
+				PRINTFORML 「그렇게 가랑이를 꽉 조여대면 금방 나와버려요」
+			ENDIF
+			CFLAG:427 = 2
+		ENDIF
+
+;-------------------------------------------------
+;애널정상위시킨다
+;-------------------------------------------------
+	CASE 95
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:428 == 0 &&  CFLAG:429 ==  0 && CFLAG:430 == 0
+			PRINTFORMW 「하와아아아아아아 __P0__」
+			PRINTFORMW 「엉덩이 구멍이란 거, 이렇게 기분 좋았던 거군요」
+			PRINTFORML 「치사해요, 치사해요」
+			PRINTFORML 「%CSTR:일인칭%도 퍽퍽 박아서 더 기분 좋게 할래요♪」
+			PRINTFORMW %CALLNAME%은 처음이지만 어설프게 흉내를 내며 허리를 흔들고 있다
+			CFLAG:428 = 1
+		;二回目以降
+		ELSE
+			IF RAND:3 == 0
+				PRINTFORML 「엉덩이 기분 좋아 보이네요♪」
+				PRINTFORMW %CALLNAME%은 %CALLNAME:MASTER%의 가랑이를 보며 기쁜 듯이 미소 짓고 있다
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「기분 좋아요?」
+				PRINTFORMW 「%CSTR:일인칭%는 엄청엄청 기분 좋아요♪」
+			ELSE
+				PRINTFORML 「그렇게 엉덩이를 꽉 조여대면 금방 나와버려요」
+			ENDIF
+			CFLAG:428 = 2
+		ENDIF
+
+;-------------------------------------------------
+;애널후배위시킨다
+;-------------------------------------------------
+	CASE 96
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:428 == 0 &&  CFLAG:429 ==  0 && CFLAG:430 == 0
+			PRINTFORMW 「하와아아아아아아 __P0__」
+			PRINTFORMW 「엉덩이 구멍이란 거, 이렇게 기분 좋았던 거군요」
+			PRINTFORML 「치사해요, 치사해요」
+			PRINTFORML 「%CSTR:일인칭%도 아래에서 쿵쿵 찔러서 더 기분 좋아질래요♪」
+			PRINTFORMW %CALLNAME%은 쉼 없이 허리를 흔들어대고 있다
+			CFLAG:429 = 1
+		;二回目以降
+		ELSE
+			IF RAND:3 == 0
+				PRINTFORML 「엉덩이에서 꾸럭꾸럭 소리가 나네요」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「기분 좋아요?」
+				PRINTFORMW 「%CSTR:일인칭%는 엄청엄청 기분 좋아요♪」
+			ELSE
+				PRINTFORML 「그렇게 엉덩이를 꽉 조여대면 금방 나와버려요」
+			ENDIF
+			CFLAG:429 = 2
+		ENDIF
+
+;-------------------------------------------------
+;애널기승위한다
+;-------------------------------------------------
+	CASE 97
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:428 == 0 &&  CFLAG:429 ==  0 && CFLAG:430 == 0
+			PRINTFORMW 「하와아아아아아아 __P0__」
+			PRINTFORMW 「엉덩이 구멍이란 거, 이렇게 기분 좋았던 거군요」
+			PRINTFORML 「치사해요, 치사해요」
+			PRINTFORML 「%CSTR:일인칭%도 뒤에서 퍽퍽 박아서 더 기분 좋게 할래요♪」
+			PRINTFORMW %CALLNAME%은 처음이지만 어설프게 흉내를 내며 허리를 흔들고 있다
+			CFLAG:430 = 1
+		;二回目以降
+		ELSE
+			IF RAND:3 == 0
+				PRINTFORML 「더 움직여주세요♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「기분 좋아요?」
+				PRINTFORMW 「%CSTR:일인칭%는 엄청엄청 기분 좋아요♪」
+			ELSE
+				PRINTFORML 「그렇게 엉덩이를 꽉 조여대면 금방 나와버려요」
+			ENDIF
+			CFLAG:430 = 2
+		ENDIF
+
+
+;=================================================
+;SM系コマンド
+;=================================================
+;-------------------------------------------------
+;100,스팽킹
+;-------------------------------------------------
+	CASE 100
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「잘못했어요, 잘못했어요!」
+			PRINTFORMW 「%CSTR:일인칭%, 착한 아이로 있을 테니까 때리지 말아주세요!!」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「아파요, 아파요!」
+			PRINTFORMW %CALLNAME%은 아픔에 울부짖고 있다
+		ELSE
+			PRINTFORML 
+		ENDIF
+		CFLAG:354 = 1
+
+;-------------------------------------------------
+;101,젖스팽킹
+;-------------------------------------------------
+	CASE 101
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「잘못했어요, 잘못했어요!」
+			PRINTFORMW 「%CSTR:일인칭%, 착한 아이로 있을 테니까 때리지 말아주세요!!」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「아파요, 아파요!」
+			PRINTFORMW %CALLNAME%은 아픔에 울부짖고 있다
+		ELSE
+			PRINTFORML 「아파요, 아파요」
+			PRINTFORML 「가슴 떨어져 나가겠어요!」
+			PRINTFORMW %CALLNAME%은 아픔에 울부짖고 있다
+		ENDIF
+		CFLAG:355 = 1
+
+;-------------------------------------------------
+;102,채찍
+;-------------------------------------------------
+	CASE 102
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「잘못했어요, 잘못했어요!」
+			PRINTFORMW 「%CSTR:일인칭%, 착한 아이로 있을 테니까 때리지 말아주세요!!」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「아파요, 아파요!」
+			PRINTFORMW %CALLNAME%은 아픔에 울부짖고 있다
+		ELSE
+			PRINTFORML 
+		ENDIF
+		CFLAG:356 = 1
+
+;-------------------------------------------------
+;103,양초
+;-------------------------------------------------
+	CASE 103
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「잘못했어요, 잘못했어요!」
+			PRINTFORMW 「%CSTR:일인칭%, 착한 아이로 있을 테니까 뜨거운 거 그만해주세요!!」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「뜨거워요! 아파요!」
+			PRINTFORMW %CALLNAME%은 아픔에 울부짖고 있다
+		ELSE
+			PRINTFORML 「뜨거워요! 타 죽어버려요!」
+			PRINTFORMW %CALLNAME%은 아픔에 울부짖고 있다
+		ENDIF
+		CFLAG:355 = 1
+
+;-------------------------------------------------
+;104,바늘
+;-------------------------------------------------
+	CASE 104
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「잘못했어요, 잘못했어요!」
+			PRINTFORMW 「%CSTR:일인칭%, 착한 아이로 있을 테니까 주사 싫어요!!」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「주사 아파요!」
+			PRINTFORMW %CALLNAME%은 아픔에 울부짖고 있다
+		ELSE
+			PRINTFORML 「아파요! %CSTR:일인칭%, 구멍투성이가 돼버려요!」
+			PRINTFORMW %CALLNAME%은 아픔에 울부짖고 있다
+		ENDIF
+		CFLAG:358 = 1
+
+;-------------------------------------------------
+;105,아이마스크
+;-------------------------------------------------
+	CASE 105
+		CALL TRAIN_MESSAGE
+		IF TEQUIP:18 == 1
+			IF RAND:3 == 0
+				PRINTFORML 「새까매요」
+			ELSEIF RAND:2 == 0
+				PRINTFORML 「숨바꼭질인가요?」
+;			ELSE
+;				PRINTFORML 
+			ENDIF
+			CFLAG:359 = 1
+		ELSE
+;			IF FLAG:7 == 2
+;				PRINTFORML 
+;			ENDIF
+			CFLAG:359 = 2
+		ENDIF
+
+;-------------------------------------------------
+;106,밧줄
+;-------------------------------------------------
+	CASE 106
+		CALL TRAIN_MESSAGE
+		IF TEQUIP:19 == 1
+			IF RAND:3 == 0
+				PRINTFORMW 「%CSTR:일인칭%, 붙잡혀 버렸어요」
+				PRINTFORML 「페더맨이 구하러 와줄까요?」
+				PRINTFORMW 히어로 놀이로 착각하고 있는 모양이다
+;			ELSEIF RAND:2 == 0
+;				PRINTFORML 
+;			ELSE
+;				PRINTFORML 
+			ENDIF
+			CFLAG:360 = 1
+		ELSE
+;			IF FLAG:7 == 2
+;				PRINTFORML 
+;			ENDIF
+			CFLAG:360 = 2
+		ENDIF
+
+;-------------------------------------------------
+;107,볼재갈
+;-------------------------------------------------
+	CASE 107
+		CALL TRAIN_MESSAGE
+		IF TEQUIP:20 == 1
+			IF RAND:3 == 0
+				PRINTFORML 「읍, 으브, 으읍」
+;			ELSEIF RAND:2 == 0
+;				PRINTFORML 
+;			ELSE
+;				PRINTFORML 
+			ENDIF
+			CFLAG:361 = 1
+		ELSE
+;			IF FLAG:7 == 2
+;				PRINTFORML 
+;			ENDIF
+			CFLAG:362 = 2
+		ENDIF
+
+
+;=================================================
+;助手によるコマンド、及びレズプレイ
+;=================================================
+;-------------------------------------------------
+;120,커닐링구스강제
+;-------------------------------------------------
+	CASE 120
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「강아지 씨처럼 낼름낼름할게요」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「핥아도 핥아도 흥건해요♪」
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:362 = 1
+
+;-------------------------------------------------
+;121,조개맞대기
+;-------------------------------------------------
+	CASE 121
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「둘이서 소중이 비비기 놀이, 신나요♪」
+;		ELSEIF RAND:2 == 0
+;			PRINTFORML 
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:363 = 1
+
+;-------------------------------------------------
+;122,조수를범하게한다
+;-------------------------------------------------
+	CASE 122
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「%CSTR:일인칭% 고추 기분 좋아요?」
+			PRINTFORMW %CALLNAME%은 지금까지 당해온 경험을 살려 %CALLNAME:PLAYER%를 공략하고 있다
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「%CSTR:이인칭%, %CSTR:일인칭% 잘하고 있나요?」
+			PRINTFORMW %CALLNAME%은 지금까지 당해온 경험을 살려 %CALLNAME:PLAYER%를 공략하고 있다
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:364 = 1
+
+;-------------------------------------------------
+;123,풋잡한다
+;-------------------------------------------------
+	CASE 123
+		CALL TRAIN_MESSAGE
+		IF CFLAG:365 == 0
+			PRINTFORML 「당해보는 건 처음이지만, 엄청 기분 좋아요 __P0__」
+			PRINTFORML 「%CSTR:일인칭%, 다들한테 이렇게 기분 좋은 걸 해줬던 거군요♪」
+		ELSE
+			IF RAND:3 == 0
+				PRINTFORML 「더, 더 꽉꽉 밟아주세요♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORML 「고추 기분 좋아요♪」
+;			ELSE
+;				PRINTFORML 
+			ENDIF
+			CFLAG:365 = 1
+		ENDIF
+
+;-------------------------------------------------
+;124,더블펠라
+;-------------------------------------------------
+	CASE 124
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「%CSTR:일인칭% 쪽이 더 잘하죠?」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「%CSTR:일인칭%도 지지 않아요♪」
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:366 = 1
+
+;-------------------------------------------------
+;125,더블파이즈리
+;-------------------------------------------------
+	CASE 125
+		CALL TRAIN_MESSAGE
+		PRINTFORML 「영차, 영차♪」
+		IF RAND:3 == 0
+			PRINTFORML 「%CSTR:일인칭% 쪽이 더 잘하죠?」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「__P0__도 지지 않아요 __P1__」
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:367 = 1
+
+;-------------------------------------------------
+;126,가슴맞대기
+;-------------------------------------------------
+	CASE 126
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「%CSTR:일인칭% 쪽이 더 잘하죠?」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「%CSTR:일인칭%도 지지 않아요♪」
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:368 = 1
+
+;-------------------------------------------------
+;127,자위과시
+;-------------------------------------------------
+	CASE 127
+		CALL TRAIN_MESSAGE
+		IF HAVE_PENIS(PLAYER) && RAND:4 == 0
+			PRINTFORML 「%CSTR:일인칭%는 고추 안 만져도 괜찮아요?」
+		ELSEIF HAVE_VAGINA(PLAYER) && RAND:3 == 0
+			PRINTFORML 「%CSTR:일인칭%는 가랑이 안 핥아도 괜찮아요?」
+;			PRINTFORML 
+;		ELSEIF RAND:2 == 0
+;			PRINTFORML 
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:432 = 1
+
+;-------------------------------------------------
+;128,조개젖히기과시
+;-------------------------------------------------
+	CASE 127
+		CALL TRAIN_MESSAGE
+		IF HAVE_PENIS() && RAND:4 == 0
+			PRINTFORML 「%CSTR:일인칭% 고추, 넣어도 돼요?」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「%CSTR:일인칭% 가랑이도 그렇게 돼 있나요?」
+			PRINTFORMW %CALLNAME%은 자신의 가랑이를 들여다보고 있다
+;		ELSEIF RAND:2 == 0
+;			PRINTFORML 
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:465 = 1
+
+;-------------------------------------------------
+;129,자위구음과시
+;-------------------------------------------------
+	CASE 127
+		CALL TRAIN_MESSAGE
+		IF HAVE_PENIS() && RAND:4 == 0
+			PRINTFORML 「%CSTR:일인칭%도 도전해 볼래요♪」
+			PRINTFORMW %CALLNAME%은 몸을 둥글게 말고 끙끙대고 있다
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「%CSTR:일인칭%는 고추 낼름낼름 안 해도 괜찮아요?」
+;		ELSEIF RAND:2 == 0
+;			PRINTFORML 
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:466 = 1
+
+
+;=================================================
+;ハードな調教コマンド
+;=================================================
+;-------------------------------------------------
+;140,이라마치오
+;-------------------------------------------------
+	CASE 140
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML （괴로워요……）
+;		ELSEIF RAND:2 == 0
+;			PRINTFORML 
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:369 = 1
+
+;-------------------------------------------------
+;141,피스트퍽　服従、隷属のみ
+;-------------------------------------------------
+	CASE 141
+		IF RAND:3 == 0
+			PRINTFORML 「다시 벌어진 채로 남아버렸어요」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「%CSTR:일인칭%의 뱃속, 어떻게 돼 있어요?」
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:370 = 1
+
+;-------------------------------------------------
+;142,애널피스트　服従、隷属のみ
+;-------------------------------------------------
+	CASE 142
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「다시 벌어진 채로 남아버렸어요」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「%CSTR:일인칭%의 뱃속, 어떻게 돼 있어요?」
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:371 = 1
+
+;-------------------------------------------------
+;143,양구멍피스트　服従、隷属のみ
+;-------------------------------------------------
+	CASE 143
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「다시 벌어진 채로 남아버렸어요오…」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「%CSTR:일인칭%의 뱃속, 어떻게 돼 있어요?」
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:372 = 4
+
+;-------------------------------------------------
+;144,방뇨
+;-------------------------------------------------
+	CASE 144
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「여기서 쉬하는 건가요?」
+			PRINTFORML 「알겠어요」
+;		ELSEIF RAND:2 == 0
+;			PRINTFORML 
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:373 = 1
+
+;-------------------------------------------------
+;145,애널봉사강제
+;-------------------------------------------------
+	CASE 145
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「엉덩이 핥는 건가요?」
+			PRINTFORML 「알겠어요」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「깨끗하게 해줄게요♪」
+		ELSE
+			PRINTFORML 
+		ENDIF
+		CFLAG:374 = 1
+
+;-------------------------------------------------
+;146,관장기＋플러그
+;-------------------------------------------------
+	CASE 146
+		CALL TRAIN_MESSAGE
+		IF TEQUIP:21
+			IF RAND:3 == 0
+				PRINTFORML 「주사 괴로워요…」
+;			ELSEIF RAND:2 == 0
+;				PRINTFORML 
+;			ELSE
+;				PRINTFORML 
+			ENDIF
+			CFLAG:375 = 1
+		ELSE
+			IF CFLAG:375 == 1 || FLAG:7 == 2
+				PRINTFORML 
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;147,공기관장
+;-------------------------------------------------
+	CASE 147
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「고구마 안 먹었는데 방귀가 나와요」
+			PRINTFORMW 「신기해요」
+;		ELSEIF RAND:2 == 0
+;			PRINTFORML 
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:376 = 1
+
+;-------------------------------------------------
+;148,확장벌룬
+;-------------------------------------------------
+	CASE 148
+		CALL TRAIN_MESSAGE
+;		IF TEQUIP:22
+;			IF RAND:3 == 0
+;				PRINTFORML 
+;			ELSEIF RAND:2 == 0
+				PRINTFORML 
+;			ELSE
+;				PRINTFORML 
+;			ENDIF
+			CFLAG:377 = 1
+;		ELSE
+;			PRINTFORMW 
+;		ENDIF
+
+;-------------------------------------------------
+;149,애널전극　服従、隷属のみ
+;-------------------------------------------------
+	CASE 149
+		CALL TRAIN_MESSAGE
+;		IF TEQUIP:23
+;			IF RAND:3 == 0
+;				PRINTFORML 
+;			ELSEIF RAND:2 == 0
+;				PRINTFORML 
+;			ELSE
+				PRINTFORML 
+;			ENDIF
+			CFLAG:378 = 1
+;		ELSE
+;			PRINTFORMW 
+;		ENDIF
+
+;-------------------------------------------------
+;150,유방전극　服従、隷属のみ
+;-------------------------------------------------
+	CASE 150
+		CALL TRAIN_MESSAGE
+;		IF TEQUIP:24
+;			IF RAND:3 == 0
+;				PRINTFORML 
+;			ELSEIF RAND:2 == 0
+				PRINTFORML 
+;			ELSE
+;				PRINTFORML 
+;			ENDIF
+			CFLAG:379 = 1
+;		ELSE
+;			PRINTFORMW 
+;		ENDIF
+
+;-------------------------------------------------
+;151,뱀장어욕탕　服従、隷属のみ
+;-------------------------------------------------
+	CASE 151
+		CALL TRAIN_MESSAGE
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:380 < 3 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORML 
+			ELSEIF RAND:2 == 0
+				PRINTFORML 
+			ELSE
+				PRINTFORML 
+			ENDIF
+			CFLAG:380 = 4
+		ELSEIF CFLAG:380 < 2 || FLAG:7 == 2
+			PRINTFORML 
+			CFLAG:380 = 2
+		ENDIF
+
+;-------------------------------------------------
+;152,벌레욕탕　服従、隷属のみ
+;-------------------------------------------------
+	CASE 152
+		CALL TRAIN_MESSAGE
+;		IF RAND:3 == 0
+;			PRINTFORML 
+;		ELSEIF RAND:2 == 0
+;			PRINTFORML 
+;		ELSE
+			PRINTFORML 
+;		ENDIF
+		CFLAG:381 = 1
+
+;-------------------------------------------------
+;154,요정오나홀　小人体系のみ
+;-------------------------------------------------
+	CASE 154
+		CALL TRAIN_MESSAGE
+;		IF RAND:3 == 0
+;			PRINTFORML 
+;		ELSEIF RAND:2 == 0
+;			PRINTFORML 
+;		ELSE
+			PRINTFORML 
+;		ENDIF
+		CFLAG:422 = 1
+
+
+;=================================================
+;触手系コマンド
+;=================================================
+;-------------------------------------------------
+;160,촉수소환
+;-------------------------------------------------
+	CASE 160
+		IF TEQUIP:25
+			CALL TRAIN_MESSAGE
+			;初めて
+			IF CFLAG:382 == 0
+				PRINTFORML 「악마예요!」
+				PRINTFORMW 「베어버릴게요!」
+				CFLAG:382 = 1
+			;二回目以降
+			ELSE
+				IF RAND:2 == 0
+					PRINTFORML 「또 악마인가요?」
+				ELSE
+					PRINTFORML 
+				ENDIF
+				CFLAG:382 = 2
+			ENDIF
+		ELSE
+			CALL TRAIN_MESSAGE
+			PRINTFORML 
+		ENDIF
+
+;-------------------------------------------------
+;161,촉수삽입
+;-------------------------------------------------
+	CASE 161
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:383 == 0
+			PRINTFORML 
+			CFLAG:383 = 1
+		;二回目以降
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORML 
+			ELSE
+				PRINTFORML 
+			ENDIF
+			CFLAG:383 = 2
+		ENDIF
+
+;-------------------------------------------------
+;162,애널촉수
+;-------------------------------------------------
+	CASE 162
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:384 == 0
+			PRINTFORML 
+			CFLAG:384 = 1
+		;二回目以降
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORML 
+			ELSE
+				PRINTFORML 
+			ENDIF
+			CFLAG:384 = 2
+		ENDIF
+
+;-------------------------------------------------
+;163,촉수클리자극
+;-------------------------------------------------
+	CASE 163
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:385 == 0
+			PRINTFORML 
+			CFLAG:385 = 1
+		;二回目以降
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORML 
+			ELSE
+				PRINTFORML 
+			ENDIF
+			CFLAG:385 = 2
+		ENDIF
+
+;-------------------------------------------------
+;164,촉수유두자극
+;-------------------------------------------------
+	CASE 164
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:386 == 0
+			PRINTFORML 
+			CFLAG:386 = 1
+		;二回目以降
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORML 
+			ELSE
+				PRINTFORML 
+			ENDIF
+			CFLAG:386 = 2
+		ENDIF
+
+;-------------------------------------------------
+;165,촉수착유
+;-------------------------------------------------
+	CASE 165
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:387 == 0
+			PRINTFORML 
+			CFLAG:387 = 1
+		;二回目以降
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORML 
+			ELSE
+				PRINTFORML 
+			ENDIF
+			CFLAG:387 = 2
+		ENDIF
+
+;-------------------------------------------------
+;166,촉수긴박
+;-------------------------------------------------
+	CASE 166
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:388 == 0
+			PRINTFORML 
+			CFLAG:388 = 1
+		;二回目以降
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORML 
+			ELSE
+				PRINTFORML 
+			ENDIF
+			CFLAG:388 = 2
+		ENDIF
+
+;-------------------------------------------------
+;167,촉수관장
+;-------------------------------------------------
+	CASE 167
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:389 == 0
+			PRINTFORML 
+			CFLAG:389 = 1
+		;二回目以降
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORML 
+			ELSE
+				PRINTFORML 
+			ENDIF
+			CFLAG:389 = 2
+		ENDIF
+
+;-------------------------------------------------
+;168,촉수구욕
+;-------------------------------------------------
+	CASE 168
+		IF TEQUIP:36
+			CALL TRAIN_MESSAGE
+			;初めて
+			IF CFLAG:390 == 0
+				PRINTFORMW 
+				CFLAG:390 = 1
+			;二回目以降
+			ELSE
+				IF RAND:2 == 0
+					PRINTFORML 
+				ELSE
+					PRINTFORML 
+				ENDIF
+				CFLAG:390 = 2
+			ENDIF
+		ELSE
+			CALL TRAIN_MESSAGE
+			PRINTFORMW 
+		ENDIF
+
+;-------------------------------------------------
+;169,촉수페니스자극
+;-------------------------------------------------
+	CASE 169
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:391 == 0
+;			PRINTFORMW 
+			CFLAG:391 = 1
+		;二回目以降
+		ELSE
+;			IF RAND:2 == 0
+;				PRINTFORML 
+;			ELSE
+;				PRINTFORML 
+;			ENDIF
+			CFLAG:391 = 4
+		ENDIF
+
+
+;=================================================
+;特殊コマンド
+;=================================================
+;-------------------------------------------------
+;180,로션,
+;-------------------------------------------------
+	CASE 180
+		CALL TRAIN_MESSAGE
+;		IF RAND:3 == 0
+;			PRINTFORML 
+;		ELSEIF RAND:2 == 0
+;			PRINTFORML 
+;		ELSE
+			PRINTFORML 
+;		ENDIF
+		CFLAG:392 = 1
+
+;-------------------------------------------------
+;181,미약,
+;-------------------------------------------------
+	CASE 181
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「이 약, 먹으면 몸이 따끈따끈해져요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「늘 먹던 약이네요♪」
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:393 = 1
+
+;-------------------------------------------------
+;182,이뇨제,
+;-------------------------------------------------
+	CASE 182
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「%CSTR:일인칭%, 쉬하러 가고 싶어졌어요…」
+;		ELSEIF RAND:2 == 0
+;			PRINTFORML 
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:394 = 2
+
+;-------------------------------------------------
+;183,비디오카메라,
+;-------------------------------------------------
+	CASE 183
+		IF TEQUIP:28
+			CALL TRAIN_MESSAGE
+			;初めて
+			IF CFLAG:395 == 0
+				PRINTFORMW 「이거 뭐예요?」
+				PRINTFORML 　
+				PRINTFORMW 「대단해요!」
+				PRINTFORML 「%CSTR:일인칭%가 텔레비전에 나오는 거군요」
+				PRINTFORML 「%CSTR:일인칭%, 아이돌이 될 수 있는 거네요!」
+				PRINTFORMW %CALLNAME%에게 비디오카메라의 기능을 설명했지만 조금 착각하고 있는 것 같다
+				CFLAG:395 = 1
+			;二回目以降
+			ELSE
+				IF RAND:3 == 0
+					PRINTFORML 「__P0__예~요 __P1__」
+					PRINTFORMW %CALLNAME%은 카메라를 향해 손을 흔들고 있다
+				ELSEIF RAND:2 == 0
+					PRINTFORML 「모두의 아이돌, __P0__예요 __P1__」
+					PRINTFORMW %CALLNAME%은 스텝을 밟으면서 포즈를 취하고 있다
+;				ELSE
+;					PRINTFORML 
+				ENDIF
+				CFLAG:395 = 2
+			ENDIF
+		ELSE
+			IF CFLAG:395 == 1 || FLAG:7 == 2
+				CALL TRAIN_MESSAGE
+				IF RAND:2 == 0
+					PRINTFORML 「모두 %CSTR:일인칭%를 봐줄까요오?」
+				ELSE
+					PRINTFORML 「%CSTR:일인칭%, 잘하고 있었나요?」
+				ENDIF
+				PRINTFORMW %CALLNAME%은 %CALLNAME:MASTER%에게 비디오 감상을 물어보았다
+			ENDIF
+		ENDIF
+
+;-------------------------------------------------
+;184,야외플레이,
+;-------------------------------------------------
+	CASE 184
+		CALL TRAIN_MESSAGE
+		IF TEQUIP:29
+			PRINTFORMW 「외출이네요」
+			IF RAND:3 == 0
+				PRINTFORMW 「놀이공원인가요♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「병원은 아니겠죠……」
+;			ELSE
+;				PRINTFORML 
+			ENDIF
+			CFLAG:396 = 1
+		ELSE
+			CALL TRAIN_MESSAGE
+;			PRINTFORML 
+		ENDIF
+
+;-------------------------------------------------
+;185,조수를범한다,
+;-------------------------------------------------
+	CASE 185
+		CALL TRAIN_MESSAGE
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:397 < 3 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORML 「%CSTR:일인칭%만 외톨이인 건가요……」
+			ELSEIF RAND:2 == 0
+				PRINTFORML 「%CSTR:일인칭%도 끼워주세요」
+;			ELSE
+;				PRINTFORML 
+			ENDIF
+			CFLAG:397 = 4
+		ELSEIF CFLAG:397 < 2 || FLAG:7 == 2
+;			PRINTFORML 
+			CFLAG:397 = 2
+		ENDIF
+
+;-------------------------------------------------
+;186,수치플레이,
+;-------------------------------------------------
+	CASE 186
+		CALL TRAIN_MESSAGE
+		IF TEQUIP:30
+			IF RAND:3 == 0
+				PRINTFORML 「거울에 %CSTR:일인칭%가 비쳐요♪」
+				PRINTFORMW %CALLNAME%은 거울 너머의 자신을 향해 손을 흔들고 있다
+	;		ELSEIF RAND:2 == 0
+	;			PRINTFORML 
+	;		ELSE
+	;			PRINTFORML 
+			ENDIF
+			CFLAG:398 = 1
+		ELSE
+;			PRINTFORML 
+			CFLAG:398 = 2
+		ENDIF
+	
+;-------------------------------------------------
+;187,목욕탕플레이,
+;-------------------------------------------------
+	CASE 187
+		CALL TRAIN_MESSAGE
+		IF TEQUIP:31
+			IF RAND:3 == 0
+				PRINTFORML 「욕실에서 뭐 하고 놀까요?」
+			ELSEIF RAND:2 == 0
+				PRINTFORML 「목욕이네요!」
+				PRINTFORMW 「몸 쓱싹쓱싹 씻어서 깨끗깨끗해질래요♪」
+			ELSE
+				PRINTFORML 「이것도 챙겨갈게요」
+				PRINTFORMW %CALLNAME%은 샴푸 캡을 가져왔다
+			ENDIF
+			CFLAG:399 = 1
+		ELSE
+			PRINTFORML 「목욕 즐거웠어요♪」
+		ENDIF
+
+;-------------------------------------------------
+;188,샤워,
+;-------------------------------------------------
+	CASE 188
+		IF TEQUIP:32
+			CALL TRAIN_MESSAGE
+			;初めて
+			IF CFLAG:400 == 0
+				PRINTFORML 「여기 샤워기는 따뜻한 물이 나와요. 대단해요!」
+				CFLAG:400 = 1
+			;二回目以降
+			ELSE
+	;		IF RAND:3 == 0
+				PRINTFORML 　
+	;		ELSEIF RAND:2 == 0
+	;			PRINTFORML 
+	;		ELSE
+	;			PRINTFORML 
+			ENDIF
+			CFLAG:400 = 1
+		ELSE
+			CALL TRAIN_MESSAGE
+;			PRINTFORML 
+		ENDIF
+
+;-------------------------------------------------
+;189,새댁플레이,　恋慕、親愛のみ
+;-------------------------------------------------
+	CASE 189
+		CALL TRAIN_MESSAGE
+		IF TEQUIP:33
+			IF RAND:3 == 0
+				PRINTFORML 「소꿉놀이인가요?」
+			ELSEIF RAND:2 == 0
+				PRINTFORML 「%CSTR:일인칭%한테 앞치마 잘 어울리나요?」
+;			ELSE
+;				PRINTFORML 
+			ENDIF
+			CFLAG:401 = 1
+		ELSE
+;			PRINTFORML 
+		ENDIF
+
+;-------------------------------------------------
+;190,사진촬영,
+;-------------------------------------------------
+	CASE 190
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:402 == 0
+			PRINTFORML 
+			CFLAG:402 = 1
+		;二回目以降
+		ELSE
+			IF RAND:3 == 0
+				PRINTFORML 「%CSTR:일인칭%, 신문에 나와버리는 건가요?」
+			ELSEIF RAND:2 == 0
+				PRINTFORML 「치~즈♪」
+				PRINTFORMW %CALLNAME%은 카메라를 향해 브이 사인을 하고 있다
+	;		ELSE
+	;			PRINTFORML 
+			ENDIF
+			CFLAG:402 = 2
+		ENDIF
+
+;-------------------------------------------------
+;191,강정신약,
+;-------------------------------------------------
+	CASE 191
+		CALL TRAIN_MESSAGE
+	;		IF RAND:3 == 0
+	;			PRINTFORML  
+	;		ELSEIF RAND:2 == 0
+				PRINTFORML 　
+	;		ELSE
+	;			PRINTFORML 
+	;		ENDIF
+			CFLAG:403 = 1
+
+;-------------------------------------------------
+;192,콘돔정음（노예）
+;-------------------------------------------------
+	CASE 192
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:404 == 0
+			PRINTFORML 「풍선인가요? 주는 건가요?」
+			CFLAG:404 = 1
+		;二回目以降
+		ELSE
+;			IF RAND:3 == 0
+;				PRINTFORML  
+;			ELSEIF RAND:2 == 0
+;				PRINTFORML 　
+;			ELSE
+;				PRINTFORML 
+;			ENDIF
+			CFLAG:404 = 2
+		ENDIF
+
+;-------------------------------------------------
+;193,콘돔정음（조수）
+;-------------------------------------------------
+	CASE 193
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:405 == 0
+			;たまごアイス
+			PRINTFORML 「아이스크림 다 녹아버렸네요」
+			CFLAG:405 = 1
+		;二回目以降
+		ELSE
+;			IF RAND:3 == 0
+;				PRINTFORML  
+;			ELSEIF RAND:2 == 0
+;				PRINTFORML 　
+;			ELSE
+;				PRINTFORML 
+;			ENDIF
+			CFLAG:405 = 2
+		ENDIF
+
+;-------------------------------------------------
+;194,정액키스
+;-------------------------------------------------
+	CASE 194
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:406 == 0
+			PRINTFORML 
+			CFLAG:406 = 1
+		;二回目以降
+		ELSE
+	;		IF RAND:3 == 0
+	;			PRINTFORML  
+	;		ELSEIF RAND:2 == 0
+				PRINTFORML 　
+	;		ELSE
+	;			PRINTFORML 
+	;		ENDIF
+			CFLAG:406 = 2
+		ENDIF
+
+;-------------------------------------------------
+;195,유선개발
+;-------------------------------------------------
+	CASE 195
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:431 == 0
+			PRINTFORML  
+			CFLAG:431 = 1
+		;二回目以降
+		ELSE
+	;		IF RAND:3 == 0
+	;			PRINTFORML  
+	;		ELSEIF RAND:2 == 0
+				PRINTFORML 　
+	;		ELSE
+	;			PRINTFORML 
+	;		ENDIF
+			CFLAG:431 = 2
+		ENDIF
+
+;-------------------------------------------------
+;200,사람을부른다
+;-------------------------------------------------
+	CASE 200
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:433 == 0
+;			PRINTFORML 
+			CFLAG:433 = 1
+		;二回目以降
+		ELSE
+			IF RAND:3 == 0
+				PRINTFORML 「%CSTR:일인칭%랑 같이 놀지 않을래요?」
+			ELSEIF RAND:2 == 0
+				PRINTFORML 「다 같이 놀아요♪」
+;			ELSE
+;				PRINTFORML 
+			ENDIF
+			CFLAG:433 = 2
+		ENDIF
+
+;-------------------------------------------------
+;201,윤간
+;-------------------------------------------------
+	CASE 201
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「즐거웠어요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「또 놀아주세요 __P0__」
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:434 = 1
+
+
+;=================================================
+;500番台,派生コマンド
+;=================================================
+;-------------------------------------------------
+;500,３Ｐ
+;-------------------------------------------------
+	CASE 500
+		CALL TRAIN_MESSAGE
+;		IF RAND:3 == 0
+;			PRINTFORML  
+;		ELSEIF RAND:2 == 0
+			PRINTFORML 　
+;		ELSE
+;			PRINTFORML 
+;		ENDIF
+		CFLAG:407 = 1
+
+;-------------------------------------------------
+;501,식스나인
+;-------------------------------------------------
+	CASE 501
+		CALL TRAIN_MESSAGE
+			IF RAND:3 == 0
+				PRINTFORMW 「서로 핥아주는 거네요」
+				PRINTFORMW 「%CSTR:일인칭%, 잘해요♪」
+	;		ELSEIF RAND:2 == 0
+	;			PRINTFORML 　
+	;		ELSE
+	;			PRINTFORML 
+			ENDIF
+			CFLAG:408 = 2
+
+;-------------------------------------------------
+;502,이와시미즈
+;-------------------------------------------------
+	CASE 502
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「가랑이 기분 좋아요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「기분 좋은 게 멈추질 없어요 __P0__」
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		PRINTFORMW %CALLNAME%은 더욱 기분 좋아지려는 듯 %CALLNAME:PLAYER%의 얼굴에 가랑이를 밀어붙이고 있다
+		CFLAG:409 = 1
+
+;-------------------------------------------------
+;503,G스팟자극
+;-------------------------------------------------
+	CASE 503
+		CALL TRAIN_MESSAGE
+;		IF RAND:3 == 0
+;			PRINTFORML  
+;		ELSEIF RAND:2 == 0
+			PRINTFORML 　
+;		ELSE
+;			PRINTFORML 
+;		ENDIF
+		CFLAG:410 = 2
+
+;-------------------------------------------------
+;504,흐트러진모란
+;-------------------------------------------------
+	CASE 504
+		CALL TRAIN_MESSAGE
+;		IF RAND:3 == 0
+;			PRINTFORML  
+;		ELSEIF RAND:2 == 0
+			PRINTFORML 　
+;		ELSE
+;			PRINTFORML 
+;		ENDIF
+		CFLAG:411 = 2
+
+;-------------------------------------------------
+;515,애널흐트러진모란
+;-------------------------------------------------
+	CASE 515
+		CALL TRAIN_MESSAGE
+;		IF RAND:3 == 0
+;			PRINTFORML  
+;		ELSEIF RAND:2 == 0
+			PRINTFORML 　
+;		ELSE
+;			PRINTFORML 
+;		ENDIF
+		CFLAG:441 = 2
+
+;-------------------------------------------------
+;513,입과바기나를범한다
+;-------------------------------------------------
+	CASE 513
+		CALL TRAIN_MESSAGE
+;		IF RAND:3 == 0
+			PRINTFORML （가랑이 기분 좋아요♪）
+			PRINTFORML （%CSTR:일인칭%도 입으로 기분 좋게 해줄게요♪）
+;		ELSEIF RAND:2 == 0
+			PRINTFORML 　
+;		ELSE
+;			PRINTFORML 
+;		ENDIF
+		CFLAG:439 = 1
+
+;-------------------------------------------------
+;514,입과애널을범한다
+;-------------------------------------------------
+	CASE 514
+		CALL TRAIN_MESSAGE
+;		IF RAND:3 == 0
+			PRINTFORML （엉덩이 기분 좋아요♪）
+			PRINTFORML （%CSTR:일인칭%도 입으로 기분 좋게 해줄게요♪）
+;		ELSEIF RAND:2 == 0
+			PRINTFORML 　
+;		ELSE
+;			PRINTFORML 
+;		ENDIF
+		CFLAG:440 = 1
+
+;-------------------------------------------------
+;505,기승유방자위
+;-------------------------------------------------
+	CASE 505
+		CALL TRAIN_MESSAGE
+;		IF RAND:3 == 0
+;			PRINTFORML  
+;		ELSEIF RAND:2 == 0
+			PRINTFORML 　
+;		ELSE
+;			PRINTFORML 
+;		ENDIF
+		CFLAG:412 = 1
+
+;-------------------------------------------------
+;512,애널기승유방자위
+;-------------------------------------------------
+	CASE 512
+		CALL TRAIN_MESSAGE
+;		IF RAND:3 == 0
+;			PRINTFORML  
+;		ELSEIF RAND:2 == 0
+			PRINTFORML 　
+;		ELSE
+;			PRINTFORML 
+;		ENDIF
+		CFLAG:419 = 1
+
+;-------------------------------------------------
+;506,挿入Ｇスポ責め
+;-------------------------------------------------
+	CASE 506
+		CALL TRAIN_MESSAGE
+;		IF RAND:3 == 0
+;			PRINTFORML  
+;		ELSEIF RAND:2 == 0
+			PRINTFORML 　
+;		ELSE
+;			PRINTFORML 
+;		ENDIF
+		CFLAG:413 = 1
+
+;-------------------------------------------------
+;507,삽입자궁구자극
+;-------------------------------------------------
+	CASE 507
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「배 속이 고추로 가득 찼어요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 
+		ELSE
+			PRINTFORML 
+		ENDIF
+		CFLAG:414 = 1
+
+;-------------------------------------------------
+;508,６９파이즈리
+;-------------------------------------------------
+	CASE 508
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「가랑이가 기분 좋아서」
+			PRINTFORMW 「파이즈리 샌드, 잘 안돼요 __P0__」
+;		ELSEIF RAND:2 == 0
+			PRINTFORML 　
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:415 = 1
+
+;-------------------------------------------------
+;509,착유
+;-------------------------------------------------
+	CASE 509
+		CALL TRAIN_MESSAGE
+		;初めて
+		IF CFLAG:416 == 0
+			PRINTFORML 「%CSTR:일인칭%, 젖소 씨처럼 돼버렸어요」
+			PRINTFORML 「음메~♪」
+			CFLAG:416 = 1
+		;二回目以降
+		ELSE
+	;		IF RAND:3 == 0
+	;			PRINTFORML  
+	;		ELSEIF RAND:2 == 0
+				PRINTFORML 　
+	;		ELSE
+	;			PRINTFORML 
+	;		ENDIF
+			CFLAG:419 = 6
+		ENDIF
+
+;-------------------------------------------------
+;510,더블스마타
+;-------------------------------------------------
+	CASE 510
+		CALL TRAIN_MESSAGE
+;		IF RAND:3 == 0
+;			PRINTFORML  
+;		ELSEIF RAND:2 == 0
+			PRINTFORML 　
+;		ELSE
+;			PRINTFORML 
+;		ENDIF
+		CFLAG:417 = 1
+
+;-------------------------------------------------
+;511,두개펠라
+;-------------------------------------------------
+	CASE 511
+		CALL TRAIN_MESSAGE
+		IF RAND:3 == 0
+			PRINTFORML 「둘 다 고추 기분 좋게 해줄게요♪」
+;		ELSEIF RAND:2 == 0
+			PRINTFORML 　
+;		ELSE
+;			PRINTFORML 
+		ENDIF
+		CFLAG:418 = 1
+
+;-------------------------------------------------
+;516,전립선자극
+;-------------------------------------------------
+	CASE 516
+		CALL TRAIN_MESSAGE
+
+	CASEELSE
+		CALL TRAIN_MESSAGE
+ENDSELECT
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG関係（X1をキャラ番号に置換）
+;パラメータ変化などをトリガーにした口上　CFLAG 221～260を使用
+;-------------------------------------------------
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_A（X1をキャラ番号に置換）
+;調教者の射精をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_A_K[[キャラ:마리]]_2
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_A
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_A_PY1_K[[キャラ:마리]]_2
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_A_PY1_K[[キャラ:마리]]_2
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;調教者の射精時のテキスト
+;-------------------------------------------------
+;-------------------------------------------------
+;射精箇所変更時のテキスト　有効時はここで関数終了
+;-------------------------------------------------
+IF CFLAG:106
+	CALL PALAM_MESSAGE_A
+	;머리카락
+	IF CFLAG:106 == 1
+		IF RAND:3 == 0
+			PRINTFORMW 「아후우, 머리카락이 끈적끈적해져 버렸어요오…♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「%CSTR:일인칭%, 눈 아파지니까 샴푸 싫어요」
+		ELSE
+			PRINTFORML 
+		ENDIF
+		CFLAG:221 = 1
+	;顔
+	ELSEIF CFLAG:106 == 2
+		IF RAND:3 == 0
+			PRINTFORML 「얼굴이 끈적끈적해져 버렸어요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「얼굴에서 냄새나게 돼버렸어요」
+		ELSE
+			PRINTFORML 
+		ENDIF
+		PRINTFORMW %CALLNAME%은 얼굴에 묻은 정액을 손가락으로 훔쳐내어 핥아먹고 있다.
+		CFLAG:222 = 1
+	;가슴
+	ELSEIF CFLAG:106 == 3
+		PRINTFORMW 「하얀 거 잔뜩 묻었어요」
+		CFLAG:223 = 1
+	;腹
+	ELSEIF CFLAG:106 == 4
+		IF RAND:2 == 0
+			PRINTFORMW 「배꼽 구멍, 하얀 것 때문에 안 보이게 돼버렸어요♪」
+		ELSE
+			PRINTFORMW 「하얀 거 잔뜩 묻었어요」
+		ENDIF
+		CFLAG:224 = 1
+	;腋
+	ELSEIF CFLAG:106 == 5
+		PRINTFORMW 「하얀 거 잔뜩 묻었어요」
+		CFLAG:225 = 1
+	;太腿
+	ELSEIF CFLAG:106 == 6
+		PRINTFORMW 「하얀 거 잔뜩 묻었어요」
+		CFLAG:226 = 1
+	;割れ目
+	ELSEIF CFLAG:106 == 7
+		PRINTFORML 
+		CFLAG:227 = 1
+	;尻
+	ELSEIF CFLAG:106 == 8
+		PRINTFORML 
+		CFLAG:228 = 1
+	;ゴム
+	ELSEIF CFLAG:106 == 9
+		;セックスで射精かつ、アナルセックス以外を実行時
+		IF GROUPMATCH(SELECTCOM , 60 , 61 , 66 , 68 , 69 , 72)
+			PRINTFORML 
+			CFLAG:229 = 1
+		ELSE
+			PRINTFORML 
+			CFLAG:230 = 1
+		ENDIF
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;手、口以外で射精
+;対応コマンドはキス、素股、足コキ、アナル強制奉仕、ダブル素股
+;-------------------------------------------------
+IF TFLAG:9 == 1
+	CALL PALAM_MESSAGE_A
+	IF RAND:3 == 0
+		PRINTFORML 「잔뜩 나왔네요오♪ 에헤헤♪」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「아까워요」
+	ELSE
+		PRINTFORML 「기분 좋았나요?」
+	ENDIF
+	CFLAG:231 = 1
+ENDIF
+
+;-------------------------------------------------
+;조수를범한다로사정
+;-------------------------------------------------
+IF TFLAG:7 > 0
+	PRINTFORML 
+	CFLAG:232 = 1
+ENDIF
+
+;-------------------------------------------------
+;입으로사정
+;-------------------------------------------------
+IF TFLAG:0 > 0
+	CALL PALAM_MESSAGE_A
+	;イラマチオで射精
+	IF SELECTCOM == 140
+		IF MARK:2 == 3 && (CFLAG:233 < 3 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:233 = 3
+		;それ以外
+		ELSEIF CFLAG:233 < 2 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:233 = 2
+		ENDIF
+	;それ以外の口射精
+	ELSE
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:233 < 3 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORML 「꿀꺽… 꿀꺽… 꿀꺽…… 푸하」
+				PRINTFORMW 「하아… 이제 배불러요오…♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「응, 읏, 으응! 후아, 대단해… 앙♪」
+				PRINTFORML 「아직 남아있네요, 츄르 __P0__」
+				PRINTFORMW %CALLNAME%은 다시금 페니스를 물고는, 요도에 남아있는 정액을 빨아올렸다
+			ELSE
+				PRINTFORML 「잘 머것씁니다아♪」
+			ENDIF
+			CFLAG:233 = 4
+		ELSEIF CFLAG:233 < 2 || FLAG:7 == 2
+			PRINTFORML 「으응… 별로 맛없어요…」
+			CFLAG:233 = 2
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;손으로사정
+;-------------------------------------------------
+IF TFLAG:1 > 0
+	CALL PALAM_MESSAGE_A
+	IF RAND:3 == 0
+		PRINTFORMW 「손이 끈적끈적해요♪ 에헤헤♪」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「아까워요」
+		PRINTFORMW %CALLNAME%은 손에 묻은 정액을 핥아먹고 있다
+	ELSE
+		PRINTFORML 
+	ENDIF
+	CFLAG:234 = 1
+ENDIF
+
+;-------------------------------------------------
+;가슴으로사정
+;-------------------------------------------------
+IF TFLAG:34 > 0
+	CALL PALAM_MESSAGE_A
+	IF RAND:3 == 0
+		PRINTFORMW 「앗♪ 앗♪」
+		PRINTFORML 「가슴 속, 뜨거워져서」
+		PRINTFORMW 「고추가 울컥울컥 뛰고 있어요♪」
+	ELSEIF RAND:2 == 0
+		PRINTFORMW 「%CSTR:일인칭% 가슴, 끈적끈적해져 버렸어요」
+		PRINTFORMW 「더 끈적끈적하게 만들어도 돼요♪」
+	ELSE
+		PRINTFORMW 「%CSTR:일인칭% 가슴, 좋았나요?」
+	ENDIF
+	CFLAG:235 = 1
+ENDIF
+
+;-------------------------------------------------
+;섹스로사정
+;-------------------------------------------------
+IF TFLAG:2 > 0
+	CALL PALAM_MESSAGE_A
+	;アナルセックス系
+	IF SELECTCOM == 62 || SELECTCOM == 63 || SELECTCOM == 67 || SELECTCOM == 70 || SELECTCOM == 71 || (SELECTCOM == 505 && TFLAG:40 == 2)
+		IF RAND:3 == 0
+			PRINTFORML 「앗♪」
+			PRINTFORMW 「엉덩이 속에 뜨거운 게 나오고 있어요 __P0__」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「앗…」
+			PRINTFORMW 「울컥울컥하고, 넘쳐흐르고 있어요」
+		ELSE
+			PRINTFORML 
+		ENDIF
+		CFLAG:237 = 1
+;	;奥攻めセックス系
+	ELSEIF SELECTCOM == 506 || SELECTCOM == 507
+		IF RAND:3 == 0
+			PRINTFORML 「아하앙♪」
+			PRINTFORMW 「%CSTR:일인칭% 배 속, 가득 차 버렸어요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「잔뜩 나왔어요」
+			PRINTFORML 「배가 빵빵해요♪」
+		ELSE
+			PRINTFORML 
+		ENDIF
+		CFLAG:238 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;逆レイプで射精させた
+;-------------------------------------------------
+IF SELECTCOM == 64 && TFLAG:10 > 0
+	CALL PALAM_MESSAGE_A
+	PRINTFORML 
+	CFLAG:239 = 1
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_E（X1をキャラ番号に置換）
+;触手の射精をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_E_K[[キャラ:마리]]_2
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_E
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_E_PY1_K[[キャラ:마리]]_2
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_E_PY1_K[[キャラ:마리]]_2
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;触手の射精時のテキスト
+;-------------------------------------------------
+;-------------------------------------------------
+;촉수가사정
+;-------------------------------------------------
+IF TFLAG:15 >0
+	CALL PALAM_MESSAGE_E
+	PRINTFORML 
+	CFLAG:240 = 1
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_B関係（X1をキャラ番号に置換）
+;奴隷の絶頂をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_B_K[[キャラ:마리]]_2
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_B
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_B_PY1_K[[キャラ:마리]]_2
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_B_PY1_K[[キャラ:마리]]_2
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;奴隷の絶頂時のテキスト
+;-------------------------------------------------
+;初めての絶頂？　とっくに経験済みよ
+;-------------------------------------------------
+;初めてC絶頂
+;-------------------------------------------------
+IF NOWEX:0 > 0 && CFLAG:241 == 0
+;	PRINTFORML 
+	CFLAG:241 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めてV絶頂
+;-------------------------------------------------
+IF NOWEX:1 > 0 && CFLAG:242 == 0
+;	PRINTFORML 
+	CFLAG:242 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めてA絶頂
+;-------------------------------------------------
+IF NOWEX:2 > 0 && CFLAG:243 == 0
+;	PRINTFORML 
+	CFLAG:243 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めてB絶頂
+;-------------------------------------------------
+IF NOWEX:3 > 0 && CFLAG:244 == 0
+;	PRINTFORML 
+	CFLAG:244 = 1
+ENDIF
+
+;-------------------------------------------------
+;절정
+;-------------------------------------------------
+;強絶頂
+IF TFLAG:29 > 1
+	CALL PALAM_MESSAGE_B
+	IF RAND:3 == 0
+		PRINTFORML 「왔어요, 기분 좋은 거 왔어요♪」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「대단해요♪ 머리가 펑 터져버릴 것 같아요♪」
+	ELSE
+		PRINTFORML 「이거, 진짜 좋아요옷 __P0__」
+	ENDIF
+	PRINTFORMW %CALLNAME%은 몸을 크게 떨며 온몸으로 절정을 맞이했다
+	CFLAG:245 = 2
+;절정
+ELSEIF TFLAG:29 > 0
+	CALL PALAM_MESSAGE_B
+	IF RAND:3 == 0
+		PRINTFORML 「기분 좋아요오♪」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「%CSTR:일인칭%, 행복해요♪」
+	ELSE
+		PRINTFORML 
+	ENDIF
+	PRINTFORMW %CALLNAME%은 몸을 떨며 온몸으로 절정을 맞이했다
+	CFLAG:245 = 1
+ENDIF
+
+;-------------------------------------------------
+;사정
+;-------------------------------------------------
+;射精している
+IF TFLAG:10 > 0
+	IF EXP:사정경험 == 0
+		PRINTFORML 「뭔가 나와버려요옷」
+		PRINTFORMW %CALLNAME%은 첫 사정의 감각에 당혹스러워하고 있다.
+		PRINTFORML 「허리가 제멋대로 움직여요 __P0__」
+		PRINTFORMW %CALLNAME%은 크게 경련하는가 싶더니 허리를 쑥 내밀며 페니스에서 사정을 했다.
+		CFLAG:246 = 1
+	ELSE
+		IF RAND:3 == 0
+			PRINTFORML 「%CSTR:일인칭%도 다들처럼 하얀 거 내보내 버렸어요♪」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「하얀 거 내보내는 거 기분 좋아요♪」
+		ELSE
+			PRINTFORML 
+		ENDIF
+		CFLAG:246 = 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;분유
+;-------------------------------------------------
+;噴乳している
+IF TFLAG:11 > 0
+	PRINTFORML 「모유 나와버렸어요♪」
+	CFLAG:247 = 1
+ENDIF
+
+;-------------------------------------------------
+;방뇨
+;-------------------------------------------------
+;放尿している
+IF TFLAG:29 > 0 && (TEQUIP:27 || TALENT:57)
+	IF RAND:2 == 0
+		PRINTFORML 「죄송해요… 쉬가 안 멈춰요…♪」
+	ELSE
+		PRINTFORML 「가랑이에 힘이 안 들어가요…♪」
+	ENDIF
+	CFLAG:248 = 1
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_C関係（X1をキャラ番号に置換）
+;調教後の変化をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_C_K[[キャラ:마리]]_2
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_C
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_C_PY1_K[[キャラ:마리]]_2
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_C_PY1_K[[キャラ:마리]]_2
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;調教後のテキスト
+;-------------------------------------------------
+;-------------------------------------------------
+;処女喪失(処女のみ)
+;またまた御冗談を
+;-------------------------------------------------
+IF TFLAG:3 > 0
+	CALL PALAM_MESSAGE_C
+	PRINTFORML 
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_D関係（X1をキャラ番号に置換）
+;パラメータ変化をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_D_K[[キャラ:마리]]_2
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL PALAM_MESSAGE_D
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_PALAMCNG_D_PY1_K[[キャラ:마리]]_2
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_PALAMCNG_D_PY1_K[[キャラ:마리]]_2
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;パラメータ変化時のテキスト
+;-------------------------------------------------
+;-------------------------------------------------
+;初めて潤滑がLV3超えた
+;-------------------------------------------------
+P = PALAM:4 + UP:4
+IF P > PALAMLV:4 && CFLAG:245 == 0
+	CALL PALAM_MESSAGE_D
+	CFLAG:245 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて欲情がLV2超えた
+;-------------------------------------------------
+P = PALAM:6 + UP:6
+IF P > PALAMLV:3 && CFLAG:246 == 0
+	CALL PALAM_MESSAGE_D
+	CFLAG:246 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて屈服がLV3超えた
+;-------------------------------------------------
+P = PALAM:7 + UP:7
+IF P > PALAMLV:3 && CFLAG:247 == 0
+	CALL PALAM_MESSAGE_D
+	PRINTFORML
+	CFLAG:247 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて恭順がLV3超えた
+;-------------------------------------------------
+P = PALAM:5 + UP:5
+IF P > PALAMLV:3 && CFLAG:248 == 0
+	CALL PALAM_MESSAGE_D
+	PRINTFORMW 
+	CFLAG:248 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて恐怖がLV3超えた
+;-------------------------------------------------
+P = PALAM:11 + UP:11
+IF P > PALAMLV:3 && CFLAG:249 == 0
+	CALL PALAM_MESSAGE_D
+	PRINTFORML 
+	CFLAG:249 = 1
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_MARKCNG関係（X1をキャラ番号に置換）
+;刻印変動をトリガーにした口上
+;刻印変動後に口上を発動します
+;-------------------------------------------------
+@KOJO_MESSAGE_MARKCNG_K[[キャラ:마리]]_2
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;ボールギャグ着用時には地の文を表示して口上をスキップする
+IF TEQUIP:20 &&  SELECTCOM != 107
+	CALL MARK_MESSAGE
+	RETURN 0
+ENDIF
+;--------------------------------------------------
+;特定キャラが助手、主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_MARKCNG_PY1_K[[キャラ:마리]]_2
+;	RETURN 0
+;ENDIF
+;IF ASSI > 0 && ASSIPLAY
+;	IF NO:ASSI == Y1
+;		CALL KOJO_MESSAGE_MARKCNG_PY1_K[[キャラ:마리]]_2
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;-------------------------------------------------
+;苦痛刻印Lv3
+;-------------------------------------------------
+IF TFLAG:22 == 3
+	CALL MARK_MESSAGE_A
+	PRINTFORML 
+ENDIF
+
+;-------------------------------------------------
+;快楽刻印Lv3
+;-------------------------------------------------
+IF TFLAG:23 == 3
+	CALL MARK_MESSAGE_P
+	PRINTFORML 
+ENDIF
+
+;-------------------------------------------------
+;屈服刻印Lv3
+;-------------------------------------------------
+IF TFLAG:24 == 13 || TFLAG:24 == 23 || TFLAG:24 == 33
+	CALL MARK_MESSAGE_S
+	;快楽による屈服
+	IF TFLAG:24 == 13
+		PRINTFORMW 
+	;恐怖と苦痛による屈服
+	ELSEIF TFLAG:24 == 23
+		PRINTFORMW 
+	;屈服と恭順による屈服
+	ELSEIF TFLAG:24 == 33
+		PRINTFORMW 
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;反発刻印Lv3
+;-------------------------------------------------
+IF TFLAG:21 == 3
+	CALL MARK_MESSAGE_R
+	PRINTFORMW 「%CSTR:이인칭% 따위 제일 싫어!」
+ENDIF
+
+;-------------------------------------------------
+;イベント口上集（X1、X2をキャラ番号に置換する） CFLAG 261～299を使用
+;-------------------------------------------------
+@KOJO_MESSAGE_EVENT_K[[キャラ:마리]]_2
+;--------------------------------------------------
+;特定主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_EVENT_PY1_K[[キャラ:마리]]_2
+;	RETURN 0
+;ENDIF
+;-------------------------------------------------
+;朝フェラ
+;-------------------------------------------------
+SELECTCASE TFLAG:13
+	CASE 1
+	CALL EVENT_MESSAGE
+	PRINTFORML 　
+	CFLAG:261 = 1
+
+
+;-------------------------------------------------
+;朝パイズリ
+;-------------------------------------------------
+CASE 2
+	CALL EVENT_MESSAGE
+;陥落済み
+	IF 陥落() && (CFLAG:262 < 1 || FLAG:7 == 2)
+		;母乳体質かどうか
+		IF TALENT:149
+			PRINTFORML 　
+		ELSE
+			PRINTFORML 　
+		ENDIF
+		CFLAG:262 = 1
+	ENDIF
+
+;-------------------------------------------------
+;朝騎乗位
+;-------------------------------------------------
+CASE 3
+	CALL EVENT_MESSAGE
+	PRINTFORML 　
+	CFLAG:263 = 1
+
+;-------------------------------------------------
+;朝騎乗位A
+;-------------------------------------------------
+CASE 24
+	CALL EVENT_MESSAGE
+	PRINTFORML 　
+	CFLAG:263 = 1
+
+;-------------------------------------------------
+;朝キス
+;-------------------------------------------------
+CASE 25
+	CALL EVENT_MESSAGE
+	PRINTFORML 「일어났나요 __P0__」
+	CFLAG:263 = 2
+
+;-------------------------------------------------
+;朝食
+;-------------------------------------------------
+CASE 26
+	CALL EVENT_MESSAGE
+	;歌いながらかどうか
+	IF (TALENT:25 || TALENT:28) && ABL:14 >= 2
+		PRINTFORML 　
+	ELSE
+		PRINTFORML 　
+	ENDIF
+	CFLAG:263 = 1
+
+;-------------------------------------------------
+;起きたら隣で寝てる
+;-------------------------------------------------
+CASE 27
+	CALL EVENT_MESSAGE
+	IF RAND:3 == 0
+		PRINTFORML 「안녕… 하세요……」
+		PRINTFORMW %CALLNAME%은 비틀거리면서 아침 인사를 건네고 있다
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「쿨-」
+		PRINTFORMW %CALLNAME%은 몸을 둥글게 말고 색색 숨소리를 내며 자고 있다
+	ELSE
+		PRINTFORML 
+	ENDIF
+	CFLAG:263 = 1
+
+;-------------------------------------------------
+;朝の足コキ
+;-------------------------------------------------
+CASE 28
+	CALL EVENT_MESSAGE
+	PRINTFORML 　
+	CFLAG:263 = 1
+
+;-------------------------------------------------
+;;朝の搾りたてミルク
+;-------------------------------------------------
+CASE 29
+	CALL EVENT_MESSAGE
+	IF RAND:2 == 0
+		PRINTFORML 「%CSTR:일인칭% 우유예요♪」
+	ELSE
+		PRINTFORML 「아침 우유예요♪」
+	ENDIF
+	CFLAG:263 = 1
+
+;-------------------------------------------------
+;;お寝小
+;-------------------------------------------------
+CASE 30
+	CALL EVENT_MESSAGE
+	IF RAND:2 == 0
+		PRINTFORML 「아, 아무것도 안 했어요」
+	ELSE
+		PRINTFORML 「이불 빨래해요」
+	ENDIF
+	CFLAG:263 = 1
+
+;-------------------------------------------------
+;調教後レズプレイ
+;-------------------------------------------------
+CASE 4
+	CALL EVENT_MESSAGE
+		PRINTFORML 　
+		CFLAG:264 = 1
+
+;-------------------------------------------------
+;調教後セックス
+;-------------------------------------------------
+CASE 5
+	CALL EVENT_MESSAGE
+	IF RAND:3 == 0
+		PRINTFORML 한번 더 해주세요 __P0__
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「더, 더 많이♪」
+		PRINTFORMW %CALLNAME%이 졸라대서 연장전을 치렀다
+	ELSE
+		PRINTFORML 
+	ENDIF
+	CFLAG:265 = 1
+
+;-------------------------------------------------
+;強精神薬の反動
+;-------------------------------------------------
+CASE 6
+	CALL EVENT_MESSAGE
+	PRINTFORML 「대단해요♪」
+	PRINTFORML 「기분 좋아요♪」
+	CFLAG:266 = 1
+
+;-------------------------------------------------
+;調教後搾乳
+;-------------------------------------------------
+CASE 7
+	CALL EVENT_MESSAGE
+	IF RAND:2 == 0
+		PRINTFORML 「%CSTR:일인칭% 우유예요」
+	ELSE
+		PRINTFORML 「우유 안 마실래요?」
+	ENDIF
+	CFLAG:267 = 1
+
+;-------------------------------------------------
+;調教後自慰
+;-------------------------------------------------
+CASE 8
+	CALL EVENT_MESSAGE
+	IF RAND:3 == 0
+		PRINTFORML 「더 하고 싶었는데…」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「아직 더 할 수 있어요♪」
+	ELSE
+		PRINTFORML 「몸이 뜨거워요……」
+	ENDIF
+	CFLAG:268 = 1
+
+;-------------------------------------------------
+;夜這い（主人C 相手V）
+;-------------------------------------------------
+CASE 9
+	CALL EVENT_MESSAGE
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:269 < 3 || FLAG:7 == 2)
+		IF RAND:3 == 0
+			PRINTFORML 「%CSTR:일인칭%, 아직 부족해요…」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「자기 전에… 놀아주세요…」
+		ELSE
+			PRINTFORML 「가랑이가 뜨거워서… 잠이 안 와요……」
+		ENDIF
+		;マリちゃんのおまたは
+		IF RAND:2 == 0
+			PRINTFORMW 가랑이를 만지작거리며 %CALLNAME%이 방으로 찾아왔다.
+		ELSE
+			PRINTFORMW 허벅지를 배배 꼬면서 %CALLNAME%이 방으로 찾아왔다.
+		ENDIF
+		;コミュニケーション
+		PRINTFORML 
+		IF RAND:2 == 0
+			PRINTFORML 「__P0__, 기분 좋아요 __P1__」
+			PRINTFORMW 이미 준비가 끝난 %CALLNAME%의 구멍을 즐겼다
+		ELSE
+			PRINTFORML 「%CSTR:일인칭% 가랑이 괜찮나요♪」
+			PRINTFORML 「하얀 거 잔뜩 내보내 주세요 __P0__」
+			PRINTFORMW 원하는 대로 %CALLNAME%의 구멍에 『하얀 것』을 잔뜩 내보내 주었다
+		ENDIF
+		CFLAG:269 = 4
+	ELSEIF CFLAG:269 < 2 || FLAG:7 == 2
+			PRINTFORML 「고추 주세요♪」
+		CFLAG:269 = 2
+	ENDIF
+
+
+
+;-------------------------------------------------
+;夜這い（主人C 相手A）
+;-------------------------------------------------
+CASE 31
+	CALL EVENT_MESSAGE
+	IF MARK:2 == 3 && (CFLAG:269 < 3 || FLAG:7 == 2)
+		IF RAND:3 == 0
+			PRINTFORML 「%CSTR:일인칭%, 아직 부족해요…」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「자기 전에… 놀아주세요…」
+		ELSE
+			PRINTFORML 「가랑이가 뜨거워서… 잠이 안 와요……」
+		ENDIF
+		;マリちゃんのおまたは
+		IF RAND:2 == 0
+			PRINTFORMW 가랑이를 만지작거리며 %CALLNAME%이 방으로 찾아왔다.
+		ELSE
+			PRINTFORMW 허벅지를 배배 꼬면서 %CALLNAME%이 방으로 찾아왔다.
+		ENDIF
+		;コミュニケーション
+		PRINTFORML 
+		IF RAND:2 == 0
+			PRINTFORML 「__P0__, 기분 좋아요 __P1__」
+			PRINTFORMW 이미 준비가 끝난 %CALLNAME%의 구멍을 즐겼다
+		ELSE
+			PRINTFORML 「%CSTR:일인칭% 가랑이 괜찮나요♪」
+			PRINTFORML 「하얀 거 잔뜩 내보내 주세요 __P0__」
+			PRINTFORMW 원하는 대로 %CALLNAME%의 구멍에 『하얀 것』을 잔뜩 내보내 주었다
+		ENDIF
+		CFLAG:269 = 4
+	ELSEIF CFLAG:269 < 2 || FLAG:7 == 2
+			PRINTFORML 「고추 주세요♪」
+		CFLAG:269 = 2
+	ENDIF
+
+;-------------------------------------------------
+;夜這い（主人V 相手C）
+;-------------------------------------------------
+CASE 32
+	CALL EVENT_MESSAGE
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:269 < 3 || FLAG:7 == 2)
+		IF RAND:3 == 0
+			PRINTFORML 「%CSTR:일인칭% 고추, 계속 커진 채예요…」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「자기 전에… 놀아주세요…」
+		ELSE
+			PRINTFORML 「%CSTR:이인칭% 가랑이, 써도 될까요?」
+		ENDIF
+		;マリちゃんのおまたは
+		IF RAND:2 == 0
+			PRINTFORMW 페니스를 부르르 떨며 %CALLNAME%이 방으로 찾아왔다.
+		ELSE
+			PRINTFORMW 허벅지를 배배 꼬면서 %CALLNAME%이 방으로 찾아왔다.
+		ENDIF
+		;コミュニケーション
+		PRINTFORML 
+		IF RAND:2 == 0
+			PRINTFORML 「__P0__ 가랑이, 기분 좋아요 __P1__」
+			PRINTFORMW 이쪽 사정 따윈 아랑곳하지 않고 %CALLNAME%은 쿵쾅쿵쾅 허리를 놀려댔다
+		ELSE
+			PRINTFORML 「%CSTR:일인칭%의, 하얀 거, 잔뜩 선물할게요♪」
+			PRINTFORMW %CALLNAME:MASTER%의 구멍을 쓰며 %CALLNAME%은 『선물』을 준비하고 있다
+		ENDIF
+		CFLAG:269 = 4
+	ELSEIF CFLAG:269 < 2 || FLAG:7 == 2
+		PRINTFORML 「가랑이 쓰게 해주세요♪」
+		CFLAG:269 = 2
+	ENDIF
+
+;-------------------------------------------------
+;夜這い（主人A 相手C）
+;-------------------------------------------------
+CASE 33
+	CALL EVENT_MESSAGE
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:269 < 3 || FLAG:7 == 2)
+		IF RAND:3 == 0
+			PRINTFORML 「%CSTR:일인칭% 고추, 계속 커진 채예요…」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「자기 전에… 놀아주세요…」
+		ELSE
+			PRINTFORML 「%CSTR:이인칭% 가랑이, 써도 될까요?」
+		ENDIF
+		;マリちゃんのおまたは
+		IF RAND:2 == 0
+			PRINTFORMW 페니스를 부르르 떨며 %CALLNAME%이 방으로 찾아왔다.
+		ELSE
+			PRINTFORMW 허벅지를 배배 꼬면서 %CALLNAME%이 방으로 찾아왔다.
+		ENDIF
+		;コミュニケーション
+		PRINTFORML 
+		IF RAND:2 == 0
+			PRINTFORML 「__P0__ 가랑이, 기분 좋아요 __P1__」
+			PRINTFORMW 이쪽 사정 따윈 아랑곳하지 않고 %CALLNAME%은 쿵쾅쿵쾅 허리를 놀려댔다
+		ELSE
+			PRINTFORML 「%CSTR:일인칭%의, 하얀 거, 잔뜩 선물할게요♪」
+			PRINTFORMW %CALLNAME:MASTER%의 구멍을 쓰며 %CALLNAME%은 『선물』을 준비하고 있다
+		ENDIF
+		CFLAG:269 = 4
+	ELSEIF CFLAG:269 < 2 || FLAG:7 == 2
+		PRINTFORML 「가랑이 쓰게 해주세요♪」
+		CFLAG:269 = 2
+	ENDIF
+
+;-------------------------------------------------
+;夜這い（両者C（素股）・両者C（貝合わせ））
+;-------------------------------------------------
+CASE 34
+	CALL EVENT_MESSAGE
+;陥落済み
+	IF 陥落() && (CFLAG:269 < 1 || FLAG:7 == 2)
+		;恋慕、親愛
+		IF 陥落() == 1
+			PRINTFORMW 
+		;淫乱、娼婦
+		ELSEIF 陥落() == 2
+			PRINTFORMW 
+		;服従、隷属
+		ELSEIF 陥落() == 3
+			PRINTFORMW 
+		ENDIF
+		CFLAG:269 = 1
+	ENDIF
+
+;-------------------------------------------------
+;夜自慰
+;-------------------------------------------------
+CASE 35
+	CALL EVENT_MESSAGE
+;陥落済み
+	IF 陥落() && (CFLAG:269 < 1 || FLAG:7 == 2)
+		;恋慕、親愛
+		IF 陥落() == 1
+			PRINTFORMW 
+		;淫乱、娼婦
+		ELSEIF 陥落() == 2
+			PRINTFORMW 
+		;服従、隷属
+		ELSEIF 陥落() == 3
+			PRINTFORMW 
+		ENDIF
+		CFLAG:269 = 1
+	ENDIF
+
+;-------------------------------------------------
+;一緒に寝る
+;-------------------------------------------------
+CASE 36
+	CALL EVENT_MESSAGE
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:269 < 3 || FLAG:7 == 2)
+		IF RAND:3 == 0
+			PRINTFORML 「%CSTR:이인칭%, 같이 자줄 건가요?」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「혼자 자는 건 무서워요……」
+		ELSE
+			PRINTFORML 「파자마 파티예요♪」
+		ENDIF
+		PRINTFORMW %CALLNAME%이 베개를 들고 %CALLNAME:MASTER%의 방으로 찾아왔다
+		CFLAG:269 = 4
+	ELSEIF CFLAG:269 < 2 || FLAG:7 == 2
+		PRINTFORML 
+		CFLAG:269 = 2
+	ENDIF
+
+;-------------------------------------------------
+;黄色のキャンディ使用時
+;-------------------------------------------------
+CASE 10
+	CALL EVENT_MESSAGE
+;陥落済み
+	IF 陥落() && (CFLAG:270 < 2 || FLAG:7 == 2)
+		;恋慕、親愛
+		IF 陥落() == 1
+			PRINTFORMW 
+		;淫乱、娼婦
+		ELSEIF 陥落() == 2
+			PRINTFORMW 
+		;服従、隷属
+		ELSEIF 陥落() == 3
+			PRINTFORMW 
+		ENDIF
+		CFLAG:270 = 2
+	ELSEIF CFLAG:270 < 1 || FLAG:7 == 2
+		PRINTFORMW 
+		CFLAG:270 = 1
+	ENDIF
+
+;-------------------------------------------------
+;妊娠発覚時
+;-------------------------------------------------
+CASE 11
+	SIF CFLAG:271 >= 1 && FLAG:7 != 2
+		RETURN 0
+	CALL EVENT_MESSAGE
+	IF RAND:2 == 0
+		PRINTFORMW 「큰일이에요」
+		PRINTFORML 「꿈속에서 황새님이 찾아왔어요」
+		PRINTFORMW 「아기가 생겼어요!」
+	ELSE
+		PRINTFORML 「쉬를 묻혔더니 줄이 두 개나 나왔어요. 대단해요!」
+		PRINTFORMW %CALLNAME%은 임신 테스트기를 %CALLNAME:MASTER%에게 보여주고 있다
+	ENDIF
+	CFLAG:271 = 1
+
+;-------------------------------------------------
+;出産時
+;-------------------------------------------------
+CASE 12
+	CALL EVENT_MESSAGE
+	IF CFLAG:272 == 0
+		IF RAND:2 == 0
+			PRINTFORML 「엄청 아팠어요…」
+		ELSE
+			PRINTFORML 「%CSTR:일인칭% 뱃속에서 아기가 나왔어요」
+			PRINTFORMW 「대단해요!」
+		ENDIF
+	ELSE
+		IF RAND:2 == 0
+			PRINTFORML 「배가 편안해졌어요♪」
+		ELSE
+			PRINTFORML 「뱃속이 텅 비니까 배가 고파졌어요」
+			PRINTFORML 「우동 먹고 싶어요♪」
+		ENDIF
+	ENDIF
+	CFLAG:272 = 1
+
+;-------------------------------------------------
+;育児室
+;-------------------------------------------------
+CASE 13
+	CALL EVENT_MESSAGE
+;出産前
+	IF TALENT:153
+		;陥落済み
+		IF 陥落() && (CFLAG:273 < 2 || FLAG:7 == 2)
+			;恋慕、親愛
+			IF 陥落() == 1
+				PRINTFORMW 
+			;淫乱、娼婦
+			ELSEIF 陥落() == 2
+				PRINTFORMW 
+			;服従、隷属
+			ELSEIF 陥落() == 3
+				PRINTFORMW 
+			ENDIF
+			CFLAG:273 = 2
+		ELSEIF CFLAG:273 < 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:273 = 1
+		ENDIF
+;出産後
+	ELSE
+		;陥落済み
+		IF 陥落() && (CFLAG:273 < 4 || FLAG:7 == 2)
+			;恋慕、親愛
+			IF 陥落() == 1
+				PRINTFORMW 
+			;淫乱、娼婦
+			ELSEIF 陥落() == 2
+				PRINTFORMW 
+			;服従、隷属
+			ELSEIF 陥落() == 3
+				PRINTFORMW 
+			ENDIF
+			CFLAG:273 = 4
+		ELSEIF CFLAG:273 < 3 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:273 = 3
+		ENDIF
+	ENDIF
+
+;-------------------------------------------------
+;親離れ時
+;-------------------------------------------------
+CASE 14
+	CALL EVENT_MESSAGE
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:274 < 3 || FLAG:7 == 2)
+		IF RAND:3 == 0
+			PRINTFORML 「바이바이…」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「다음에 같이 놀자♪」
+		ELSE
+			PRINTFORML 
+		ENDIF
+		CFLAG:274 = 4
+	ELSEIF CFLAG:274 < 2 || FLAG:7 == 2
+		PRINTFORML 
+		CFLAG:274 = 2
+	ENDIF
+
+
+;-------------------------------------------------
+;定食屋台時
+;-------------------------------------------------
+CASE 15
+	CALL EVENT_MESSAGE
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:275 < 3 || FLAG:7 == 2)
+		IF RAND:3 == 0
+			PRINTFORML 
+		ELSEIF RAND:2 == 0
+			PRINTFORML 
+		ELSE
+			PRINTFORML 
+		ENDIF
+		CFLAG:275 = 4
+	ELSEIF CFLAG:275 < 2 || FLAG:7 == 2
+		PRINTFORML 
+		CFLAG:275 = 2
+	ENDIF
+
+;-------------------------------------------------
+;定食屋台で実際に働いたとき
+;-------------------------------------------------
+	CASE 97
+		CALL EVENT_MESSAGE
+		;失敗。給料半分
+		IF TFLAG:86 == 1
+			IF RAND:3 == 0
+				PRINTFORML 「혼나버렸어요……」
+			ELSEIF RAND:2 == 0
+				PRINTFORML 「실패해버렸어요……」
+			ELSE
+				PRINTFORML 「설탕이랑 소금을 헷갈려 버렸어요」
+			ENDIF
+		ELSEIF TFLAG:86 == 0
+			IF RAND:3 == 0
+				PRINTFORML 「칭찬받았어요♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORML 「맛있게 구워졌어요♪」
+			ELSE
+				PRINTFORML 
+			ENDIF
+		ENDIF
+
+
+;-------------------------------------------------
+;娼館でバイト時
+;-------------------------------------------------
+CASE 16
+	CALL EVENT_MESSAGE
+;初めて
+	IF CFLAG:276 == 0
+		PRINTFORMW 
+		CFLAG:276 = 1
+;それ以外
+	ELSEIF CFLAG:276 < 1 || FLAG:7 == 2
+		PRINTFORMW 
+		CFLAG:276 = 1
+	ENDIF
+
+;-------------------------------------------------
+;娼館でバイト・実行時
+;-------------------------------------------------
+CASE 63
+	CALL EVENT_MESSAGE
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:606 < 3 || FLAG:7 == 2)
+		IF RAND:4 == 0
+			PRINTFORML 「벌써 끝이에요?」
+			PRINTFORML 「그럼……이야기해요 __P0__」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「기분 좋았나요?」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「에헤헤 __P0__」
+			PRINTFORMW %CALLNAME%은 손님이 머리를 쓰다듬어 주자 기뻐하고 있다
+		ELSE
+			PRINTFORML 「잔뜩 나왔네요. 착하다 착해♪」
+			PRINTFORMW %CALLNAME%은 손님의 머리를 다정하게 쓰다듬고 있다
+		ENDIF
+		CFLAG:606 = 4
+	ELSEIF CFLAG:606 < 2 || FLAG:7 == 2
+		PRINTFORML 
+		CFLAG:606 = 2
+	ENDIF
+
+;-------------------------------------------------
+;レンタル時
+;-------------------------------------------------
+CASE 17
+	CALL EVENT_MESSAGE
+;初めて
+	IF CFLAG:277 == 0
+		PRINTFORMW 
+		CFLAG:277 = 1
+;それ以外
+	ELSEIF CFLAG:277 < 1 || FLAG:7 == 2
+		PRINTFORMW 
+		CFLAG:277 = 1
+	ENDIF
+
+;-------------------------------------------------
+;売却時
+;-------------------------------------------------
+CASE 18
+	CALL EVENT_MESSAGE
+;陥落済み
+	IF TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8
+		;恋慕、親愛+反発刻印Lv3未満
+		IF (陥落() == 1) && MARK:3 < 3
+			PRINTFORMW 
+		;淫乱、娼婦+反発刻印Lv3未満
+		ELSEIF (陥落() == 2) && MARK:3 < 3
+			PRINTFORMW 
+		;服従、隷属+反発刻印Lv3未満
+		ELSEIF (陥落() == 3) && MARK:3 < 3
+			PRINTFORMW 
+		ENDIF
+;反発刻印Lv3
+	ELSEIF MARK:3 == 3
+		PRINTFORMW 
+;それ以外
+	ELSE
+		PRINTFORMW 
+	ENDIF
+
+;-------------------------------------------------
+;ビデオ売却時
+;-------------------------------------------------
+CASE 19
+	CALL EVENT_MESSAGE
+;陥落済み
+	IF 陥落() && (CFLAG:278 < 2 || FLAG:7 == 2)
+		;恋慕、親愛
+		IF 陥落() == 1
+			PRINTFORMW 
+		;淫乱、娼婦
+		ELSEIF 陥落() == 2
+			PRINTFORMW 
+		;服従、隷属
+		ELSEIF 陥落() == 3
+			PRINTFORMW 
+		ENDIF
+		CFLAG:278 = 2
+	ELSEIF CFLAG:278 < 1 || FLAG:7 == 2
+		PRINTFORMW 
+		CFLAG:278 = 1
+	ENDIF
+
+;-------------------------------------------------
+;コンサート時
+;-------------------------------------------------
+CASE 20
+	CALL EVENT_MESSAGE
+;初めて
+	IF CFLAG:279 == 0
+		PRINTFORMW 
+		CFLAG:279 = 1
+;それ以外
+	ELSEIF CFLAG:279 < 1 || FLAG:7 == 2
+		PRINTFORMW 「%CSTR:일인칭%예요, 열심히 노래할게요!」
+		CFLAG:279 = 1
+	ENDIF
+
+;-------------------------------------------------
+;乱交ライブ時
+;-------------------------------------------------
+CASE 21
+	CALL EVENT_MESSAGE
+;初めて
+	IF CFLAG:280 == 0
+		PRINTFORMW 
+		CFLAG:280 = 1
+;それ以外
+	ELSEIF CFLAG:280 < 1 || FLAG:7 == 2
+		PRINTFORMW 
+		CFLAG:280 = 1
+	ENDIF
+
+;-------------------------------------------------
+;公衆便所プレイ時
+;-------------------------------------------------
+CASE 22
+	CALL EVENT_MESSAGE
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:281 < 3 || FLAG:7 == 2)
+		IF CFLAG:MASTER:노역플래그 == CFLAG:노역플래그 && CFLAG:MASTER:개별성적서비스 & 64 && CFLAG:개별성적서비스 & 64 && CFLAG:질내사정횟수
+			IF RAND:2 == 0
+				PRINTFORML 「%CSTR:이인칭%도 다 같이 놀아준 거군요♪」
+			ELSE
+				PRINTFORML 「%CSTR:이인칭%도 온몸이 새하얘요♪」
+			ENDIF
+		ELSE
+			IF RAND:3 == 0
+				PRINTFORML 「%CSTR:일인칭% 몸도 새하얘요♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORML 「다들 놀아줘서, %CSTR:일인칭%, 즐거웠어요♪」
+			ELSE
+				PRINTFORML 「피곤해요……」
+			ENDIF
+		ENDIF
+		CFLAG:281 = 4
+	ELSEIF CFLAG:281 < 2 || FLAG:7 == 2
+		PRINTFORML 
+		CFLAG:281 = 2
+	ENDIF
+
+;-------------------------------------------------
+;ビデオ保有時
+;-------------------------------------------------
+CASE 23
+	CALL EVENT_MESSAGE
+;陥落済み
+	IF 陥落() && (CFLAG:282 < 2 || FLAG:7 == 2)
+		;恋慕、親愛
+		IF 陥落() == 1
+			PRINTFORMW 
+		;淫乱、娼婦
+		ELSEIF 陥落() == 2
+			PRINTFORMW 
+		;服従、隷属
+		ELSEIF 陥落() == 3
+			PRINTFORMW 
+		ENDIF
+		CFLAG:282 = 2
+	ELSEIF CFLAG:282 < 1 || FLAG:7 == 2
+		PRINTFORMW 
+		CFLAG:282 = 1
+	ENDIF
+
+;-------------------------------------------------
+;記憶消去薬使用時
+;-------------------------------------------------
+CASE 30
+	CALL EVENT_MESSAGE
+;陥落済み
+	IF 陥落() && (CFLAG:283 < 2 || FLAG:7 == 2)
+		;恋慕、親愛
+		IF 陥落() == 1
+			PRINTFORMW 
+		;淫乱、娼婦
+		ELSEIF 陥落() == 2
+			PRINTFORMW 
+		;服従、隷属
+		ELSEIF 陥落() == 3
+			PRINTFORMW 
+		ENDIF
+		CFLAG:283 = 2
+	ELSEIF CFLAG:283 < 1 || FLAG:7 == 2
+		PRINTFORMW 
+		CFLAG:283 = 1
+	ENDIF
+
+;-------------------------------------------------
+;;[아내][남편]取得時
+;-------------------------------------------------
+CASE 40
+	CALL EVENT_MESSAGE
+;陥落済み
+	IF 陥落() && (CFLAG:283 < 1 || FLAG:7 == 2)
+		;恋慕、親愛
+		IF 陥落() == 1
+			PRINTFORMW 
+		;淫乱、娼婦
+		ELSEIF 陥落() == 2
+			PRINTFORMW 
+		;服従、隷属
+		ELSEIF 陥落() == 3
+			PRINTFORMW 
+		ENDIF
+		CFLAG:283 = 1
+	ENDIF
+
+;-------------------------------------------------
+;;[음마]取得時
+;-------------------------------------------------
+CASE 41
+	CALL EVENT_MESSAGE
+;陥落済み
+	IF 陥落() && (CFLAG:284 < 1 || FLAG:7 == 2)
+		;恋慕、親愛
+		IF 陥落() == 1
+			PRINTFORMW 
+		;淫乱、娼婦
+		ELSEIF 陥落() == 2
+			PRINTFORMW 
+		;服従、隷属
+		ELSEIF 陥落() == 3
+			PRINTFORMW 
+		ENDIF
+		CFLAG:284 = 1
+	ENDIF
+
+;-------------------------------------------------
+;;[노리개]取得時
+;-------------------------------------------------
+CASE 42
+	CALL EVENT_MESSAGE
+;陥落済み
+	IF 陥落() && (CFLAG:285 < 1 || FLAG:7 == 2)
+		;恋慕、親愛
+		IF 陥落() == 1
+			PRINTFORMW 
+		;淫乱、娼婦
+		ELSEIF 陥落() == 2
+			PRINTFORMW 
+		;服従、隷属
+		ELSEIF 陥落() == 3
+			PRINTFORMW 
+		ENDIF
+		CFLAG:285 = 1
+	ENDIF
+
+		;-------------------------------------------------
+		;;[愛ＮＴＲ]イベント時
+		;-------------------------------------------------
+	CASE 45
+		CALL EVENT_MESSAGE
+		;陥落済み
+		IF (CFLAG:288 < 1 || FLAG:7 == 2)
+			IF CFLAG:함락캐릭터 == CFLAG:MASTER:캐릭터고유번호
+				;主人に陥落しているor誰にも陥落してない状態でＮＴＲ
+				;恋慕、親愛
+				IF 陥落() == 1
+					;進行度分岐
+					;初回
+					IF CFLAG:애ＮＴＲ진행도 == 0
+						PRINTFORMW 
+					;二回目（リーチ）
+					ELSEIF CFLAG:애ＮＴＲ진행도 == 1
+						PRINTFORMW 「아…… 이 사람 좋을지도……」
+					;三回目（陥落）
+					ELSEIF CFLAG:애ＮＴＲ진행도 == 2
+						IF RAND:2 == 0
+							PRINTFORMW 「바이바이, %CSTR:이인칭%♪」
+							PRINTFORMW %CALLNAME%은 아무도 없는 뒤를 돌아보며 손을 흔들었다
+						ELSE
+							PRINTFORMW 「%CALLNAME:MASTER%？」
+							PRINTFORMW 「으~음……」
+							PRINTFORMW 「아무래도 상관없어♪」
+						ENDIF
+					ENDIF
+				;淫乱、娼婦
+				ELSEIF 陥落() == 2
+					;進行度分岐
+					;初回
+					IF CFLAG:애ＮＴＲ진행도 == 0
+						PRINTFORMW 
+					;二回目（リーチ）
+					ELSEIF CFLAG:애ＮＴＲ진행도 == 1
+						PRINTFORMW 
+					;三回目（陥落）
+					ELSEIF CFLAG:애ＮＴＲ진행도 == 2
+						PRINTFORMW 
+					ENDIF
+				;服従、隷属
+				ELSEIF 陥落() == 3
+					;進行度分岐
+					;初回
+					IF CFLAG:애ＮＴＲ진행도 == 0
+						PRINTFORMW 
+					;二回目（リーチ）
+					ELSEIF CFLAG:애ＮＴＲ진행도 == 1
+						PRINTFORMW 
+					;三回目（陥落）
+					ELSEIF CFLAG:애ＮＴＲ진행도 == 2
+						PRINTFORMW 
+					ENDIF
+				;その他
+				ELSE
+					;進行度分岐
+					;初回
+					IF CFLAG:애ＮＴＲ진행도 == 0
+						PRINTFORMW 
+					;二回目（リーチ）
+					ELSEIF CFLAG:애ＮＴＲ진행도 == 1
+						PRINTFORMW 
+					;三回目（陥落）
+					ELSEIF CFLAG:애ＮＴＲ진행도 == 2
+						PRINTFORMW 
+					ENDIF
+				ENDIF
+			ELSE
+				;主人以外の誰かに陥落している状態で更に別のキャラにＮＴＲ
+				;進行度分岐
+				;初回
+				IF CFLAG:애ＮＴＲ진행도 == 0
+					PRINTFORMW 
+				;二回目（リーチ）
+				ELSEIF CFLAG:애ＮＴＲ진행도 == 1
+					PRINTFORMW 
+				;三回目（陥落）
+				ELSEIF CFLAG:애ＮＴＲ진행도 == 2
+					PRINTFORMW 
+				ENDIF
+			ENDIF
+			CFLAG:288 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;[淫ＮＴＲ]イベント時
+		;-------------------------------------------------
+	CASE 46
+		CALL EVENT_MESSAGE
+		;陥落済み
+		IF (CFLAG:289 < 1 || FLAG:7 == 2)
+			IF CFLAG:함락캐릭터 == CFLAG:MASTER:캐릭터고유번호
+				;主人に陥落しているor誰にも陥落してない状態でＮＴＲ
+				;恋慕、親愛
+				IF 陥落() == 1
+					;進行度分岐
+					;初回
+					IF CFLAG:음ＮＴＲ진행도 == 0
+						PRINTFORMW 
+					;二回目（リーチ）
+					ELSEIF CFLAG:음ＮＴＲ진행도 == 1
+						PRINTFORMW 
+					;三回目（陥落）
+					ELSEIF CFLAG:음ＮＴＲ진행도 == 2
+						PRINTFORMW 
+					ENDIF
+				;淫乱、娼婦
+				ELSEIF 陥落() == 2
+					;進行度分岐
+					;初回
+					IF CFLAG:음ＮＴＲ진행도 == 0
+						PRINTFORMW 
+					;二回目（リーチ）
+					ELSEIF CFLAG:음ＮＴＲ진행도 == 1
+						PRINTFORMW 
+					;三回目（陥落）
+					ELSEIF CFLAG:음ＮＴＲ진행도 == 2
+						PRINTFORMW 
+					ENDIF
+				;服従、隷属
+				ELSEIF 陥落() == 3
+					;進行度分岐
+					;初回
+					IF CFLAG:음ＮＴＲ진행도 == 0
+						PRINTFORMW 
+					;二回目（リーチ）
+					ELSEIF CFLAG:음ＮＴＲ진행도 == 1
+						PRINTFORMW 
+					;三回目（陥落）
+					ELSEIF CFLAG:음ＮＴＲ진행도 == 2
+						PRINTFORMW 
+					ENDIF
+				;その他
+				ELSE
+					;進行度分岐
+					;初回
+					IF CFLAG:음ＮＴＲ진행도 == 0
+						PRINTFORMW 
+					;二回目（リーチ）
+					ELSEIF CFLAG:음ＮＴＲ진행도 == 1
+						PRINTFORMW 
+					;三回目（陥落）
+					ELSEIF CFLAG:음ＮＴＲ진행도 == 2
+						PRINTFORMW 
+					ENDIF
+				ENDIF
+			ELSE
+				;主人以外の誰かに陥落している状態で更に別のキャラにＮＴＲ
+				;進行度分岐
+				;初回
+				IF CFLAG:음ＮＴＲ진행도 == 0
+					PRINTFORMW 
+				;二回目（リーチ）
+				ELSEIF CFLAG:음ＮＴＲ진행도 == 1
+					PRINTFORMW 
+				;三回目（陥落）
+				ELSEIF CFLAG:음ＮＴＲ진행도 == 2
+					PRINTFORMW 
+				ENDIF
+			ENDIF
+			CFLAG:289 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;[隷ＮＴＲ]イベント時
+		;-------------------------------------------------
+	CASE 47
+		CALL EVENT_MESSAGE
+		;陥落済み
+		IF (CFLAG:290 < 1 || FLAG:7 == 2)
+			IF CFLAG:함락캐릭터 == CFLAG:MASTER:캐릭터고유번호
+				;主人に陥落しているor誰にも陥落してない状態でＮＴＲ
+				;恋慕、親愛
+				IF 陥落() == 1
+					;進行度分岐
+					;初回
+					IF CFLAG:예ＮＴＲ진행도 == 0
+						PRINTFORMW 
+					;二回目（リーチ）
+					ELSEIF CFLAG:예ＮＴＲ진행도 == 1
+						PRINTFORMW 
+					;三回目（陥落）
+					ELSEIF CFLAG:예ＮＴＲ진행도 == 2
+						PRINTFORMW 
+					ENDIF
+				;淫乱、娼婦
+				ELSEIF 陥落() == 2
+					;進行度分岐
+					;初回
+					IF CFLAG:예ＮＴＲ진행도 == 0
+						PRINTFORMW 
+					;二回目（リーチ）
+					ELSEIF CFLAG:예ＮＴＲ진행도 == 1
+						PRINTFORMW 
+					;三回目（陥落）
+					ELSEIF CFLAG:예ＮＴＲ진행도 == 2
+						PRINTFORMW 
+					ENDIF
+				;服従、隷属
+				ELSEIF 陥落() == 3
+					;進行度分岐
+					;初回
+					IF CFLAG:예ＮＴＲ진행도 == 0
+						PRINTFORMW 
+					;二回目（リーチ）
+					ELSEIF CFLAG:예ＮＴＲ진행도 == 1
+						PRINTFORMW 
+					;三回目（陥落）
+					ELSEIF CFLAG:예ＮＴＲ진행도 == 2
+						PRINTFORMW 
+					ENDIF
+				;その他
+				ELSE
+					;進行度分岐
+					;初回
+					IF CFLAG:예ＮＴＲ진행도 == 0
+						PRINTFORMW 
+					;二回目（リーチ）
+					ELSEIF CFLAG:예ＮＴＲ진행도 == 1
+						PRINTFORMW 
+					;三回目（陥落）
+					ELSEIF CFLAG:예ＮＴＲ진행도 == 2
+						PRINTFORMW 
+					ENDIF
+				ENDIF
+			ELSE
+				;主人以外の誰かに陥落している状態で更に別のキャラにＮＴＲ
+				;進行度分岐
+				;初回
+				IF CFLAG:예ＮＴＲ진행도 == 0
+					PRINTFORMW 
+				;二回目（リーチ）
+				ELSEIF CFLAG:예ＮＴＲ진행도 == 1
+					PRINTFORMW 
+				;三回目（陥落）
+				ELSEIF CFLAG:예ＮＴＲ진행도 == 2
+					PRINTFORMW 
+				ENDIF
+			ENDIF
+			CFLAG:290 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;愛系再陥落時
+		;;主人に対して恋慕系陥落している、もしくは一度愛系ＮＴＲ状態にされたキャラに再び陥落させられる時
+		;-------------------------------------------------
+	CASE 48
+		CALL EVENT_MESSAGE
+		;再陥落前に陥落しているキャラ→CFLAG:함락캐릭터 で取得可能、名前は%NTRNAME(CFLAG:함락캐릭터)%
+		;再陥落先のキャラ→ FAVORITE_1_ID(TARGET)　で取得可能、名前は%NTRNAME(FAVORITE_1_ID(TARGET))%
+		;やや煩雑になるのでLOCAL、あるいは#DIM等を使用して分かりやすくする事を推奨します
+		
+		IF (CFLAG:291 < 1 || FLAG:7 == 2)
+			;主人に対して陥落し直し
+			IF FAVORITE_1_ID(TARGET) == CFLAG:MASTER:캐릭터고유번호
+				PRINTFORMW 
+			;その他のキャラ・ＮＰＣにＮＴＲし直し
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:291 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;淫系再陥落時
+		;;主人に対して淫乱系陥落している、もしくは一度淫系ＮＴＲ状態にされたキャラに再び陥落させられる時
+		;-------------------------------------------------
+	CASE 49
+		CALL EVENT_MESSAGE
+		;再陥落前に陥落しているキャラ→CFLAG:함락캐릭터 で取得可能、名前は%NTRNAME(CFLAG:함락캐릭터)%
+		;再陥落先のキャラ→ FAVORITE_1_ID(TARGET)　で取得可能、名前は%NTRNAME(FAVORITE_1_ID(TARGET))%
+		;やや煩雑になるのでLOCAL、あるいは#DIM等を使用して分かりやすくする事を推奨します
+					
+		IF (CFLAG:292 < 1 || FLAG:7 == 2)
+			;主人に対して陥落し直し
+			IF FAVORITE_1_ID(TARGET) == CFLAG:MASTER:캐릭터고유번호
+				PRINTFORMW 
+			;その他のキャラ・ＮＰＣにＮＴＲし直し
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:292 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;隷系再陥落時
+		;;主人に対して服従系陥落している、もしくは一度隷系ＮＴＲ状態にされたキャラに再び陥落させられる時
+		;-------------------------------------------------
+	CASE 50
+		CALL EVENT_MESSAGE
+		;再陥落前に陥落しているキャラ→CFLAG:함락캐릭터 で取得可能、名前は%NTRNAME(CFLAG:함락캐릭터)%
+		;再陥落先のキャラ→ FAVORITE_1_ID(TARGET)　で取得可能、名前は%NTRNAME(FAVORITE_1_ID(TARGET))%
+		;やや煩雑になるのでLOCAL、あるいは#DIM等を使用して分かりやすくする事を推奨します
+					
+		IF (CFLAG:293 < 1 || FLAG:7 == 2)
+			;主人に対して陥落し直し
+			IF FAVORITE_1_ID(TARGET) == CFLAG:MASTER:캐릭터고유번호
+				PRINTFORMW 
+			;その他のキャラ・ＮＰＣにＮＴＲし直し
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:293 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・乱交パーティ
+		;;淫ＮＴＲ状態（TALENT:ＮＴＲ == 2 か TALENT:ＮＴＲ == 5）である時のみ
+		;-------------------------------------------------
+	CASE 51
+		CALL EVENT_MESSAGE
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:294 < 3 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORML 「와~아, 다들 %CSTR:일인칭%랑 놀아주는 거군요♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORML 「고추 한가득이에요 __P0__」
+			ELSE
+				PRINTFORML 
+			ENDIF
+			CFLAG:294 = 4
+		ELSEIF CFLAG:294 < 2 || FLAG:7 == 2
+			PRINTFORML 
+			CFLAG:294 = 2
+		ENDIF
+
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・公園
+		;;淫ＮＴＲ状態（TALENT:ＮＴＲ == 2 か TALENT:ＮＴＲ == 5）である時のみ
+		;-------------------------------------------------
+	CASE 52
+		CALL EVENT_MESSAGE
+		IF (CFLAG:295 < 1 || FLAG:7 == 2)
+			IF TALENT:연모 || TALENT:친애
+				;以前恋慕ルートだった場合
+				PRINTFORMW 
+			ELSEIF TALENT:음란 || TALENT:창부
+				;以前淫乱ルートだった場合
+				PRINTFORMW 
+			ELSEIF TALENT:복종 || TALENT:예속
+				;以前服従ルートだった場合
+				PRINTFORMW 
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:295 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・便器
+		;;淫ＮＴＲ状態（TALENT:ＮＴＲ == 2 か TALENT:ＮＴＲ == 5）である時のみ
+		;-------------------------------------------------
+	CASE 53
+		CALL EVENT_MESSAGE
+		IF (CFLAG:296 < 1 || FLAG:7 == 2)
+			IF TALENT:연모 || TALENT:친애
+				;以前恋慕ルートだった場合
+				PRINTFORMW 
+			ELSEIF TALENT:음란 || TALENT:창부
+				;以前淫乱ルートだった場合
+				PRINTFORMW 
+			ELSEIF TALENT:복종 || TALENT:예속
+				;以前服従ルートだった場合
+				PRINTFORMW 
+			ELSE
+				IF TALENT:섹스광 && RAND:2 == 0
+					PRINTFORMW 
+				ELSE
+					PRINTFORMW 
+				ENDIF
+			ENDIF
+			CFLAG:296 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・夜の街
+		;;淫ＮＴＲ状態（TALENT:ＮＴＲ == 2 か TALENT:ＮＴＲ == 5）である時のみ
+		;-------------------------------------------------
+	CASE 54
+		CALL EVENT_MESSAGE
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:296 < 3 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORMW 「저기요」
+				PRINTFORML 「__P0__랑 놀아주세요 __P1__」
+				PRINTFORMW %CALLNAME%은 가운을 활짝 열어젖히며 남자에게 나체를 드러냈다
+			ELSEIF RAND:2 == 0
+				PRINTFORML 「고추 주세요♪」
+				PRINTFORMW %CALLNAME%은 남자에게 안기더니 능숙한 손놀림으로 지퍼를 내리고 안에서 페니스를 꺼냈다
+			ELSE
+				PRINTFORML 「가랑이가 외로워요……」
+				PRINTFORMW %CALLNAME%은 남자의 손을 잡아 자신의 가랑이에 가져다 대었다
+			ENDIF
+			CFLAG:296 = 4
+		ELSEIF CFLAG:296 < 2 || FLAG:7 == 2
+			PRINTFORML 
+			CFLAG:296 = 2
+		ENDIF
+
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・ＮＴＲ前逢引
+		;;ＮＴＲ状態になる前に逢引する時
+		;-------------------------------------------------
+	CASE 55
+		CALL EVENT_MESSAGE
+		IF (CFLAG:297 < 1 || FLAG:7 == 2)
+			IF CFLAG:함락캐릭터 != 0
+				;主人以外に陥落している場合
+				PRINTFORMW 
+			ELSEIF TALENT:연모 || TALENT:친애
+				;恋慕ルート
+				PRINTFORMW 
+			ELSEIF TALENT:음란 || TALENT:창부
+				;淫乱ルート
+				PRINTFORMW 
+			ELSEIF TALENT:복종 || TALENT:예속
+				;服従ルート
+				PRINTFORMW 
+			ELSE
+				PRINTFORMW
+			ENDIF
+			CFLAG:297 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・ＮＴＲ後初逢引
+		;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)になった直後の一日の終了後、一度だけ行う
+		;別のキャラに陥落する度に起こる。同じキャラに再度陥落した場合は起こらない
+		;-------------------------------------------------
+	CASE 56
+		CALL EVENT_MESSAGE
+		IF (CFLAG:298 < 1 || FLAG:7 == 2)
+			IF TALENT:ＮＴＲ == 1 || TALENT:ＮＴＲ == 4
+				;愛ＮＴＲ
+					PRINTFORMW 
+			ELSEIF TALENT:ＮＴＲ == 3 || TALENT:ＮＴＲ == 6
+				;隷ＮＴＲ
+					PRINTFORMW 
+			ENDIF
+			CFLAG:298 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・デート
+		;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)で１日の終了時に発生。
+		;-------------------------------------------------
+	CASE 57
+		CALL EVENT_MESSAGE
+		IF (CFLAG:299 < 1 || FLAG:7 == 2)
+			IF TALENT:ＮＴＲ == 1 || TALENT:ＮＴＲ == 4
+				;愛ＮＴＲ
+				PRINTFORMW 
+			ELSEIF TALENT:ＮＴＲ == 3 || TALENT:ＮＴＲ == 6
+				;隷ＮＴＲ
+				PRINTFORMW 
+			ENDIF
+			CFLAG:299 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・本番
+		;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)で１日の終了時に発生。
+		;女性であれば入れられる側、男性であれば入れる側で固定
+		;-------------------------------------------------
+	CASE 58
+		CALL EVENT_MESSAGE
+		IF (CFLAG:601 < 1 || FLAG:7 == 2)
+			IF TALENT:ＮＴＲ == 1 || TALENT:ＮＴＲ == 4
+				;愛ＮＴＲ
+				PRINTFORMW 
+			ELSEIF TALENT:ＮＴＲ == 3 || TALENT:ＮＴＲ == 6
+				;隷ＮＴＲ
+				PRINTFORMW 
+			ENDIF
+			CFLAG:601 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・自慰見せ合い
+		;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)で１日の終了時に発生。
+		;愛ＮＴＲ状態の場合、露出癖3か自慰中毒1のどちらかを満たしている事が条件になります。
+		;-------------------------------------------------
+	CASE 59
+		CALL EVENT_MESSAGE
+		IF (CFLAG:602 < 1 || FLAG:7 == 2)
+			IF TALENT:ＮＴＲ == 1 || TALENT:ＮＴＲ == 4
+				;愛ＮＴＲ
+				PRINTFORMW 
+			ELSEIF TALENT:ＮＴＲ == 3 || TALENT:ＮＴＲ == 6
+				;隷ＮＴＲ
+				PRINTFORMW 
+			ENDIF
+			CFLAG:602 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・アナル
+		;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)で１日の終了時に発生。
+		;CFLAG:アナル回数が1以上なら入れられている、CFLAG:挿入回数が1以上なら入れています。
+		;両方立っている場合は、地の文では入れられている側が優先されます。
+		;-------------------------------------------------
+	CASE 60
+		CALL EVENT_MESSAGE
+		IF (CFLAG:603 < 1 || FLAG:7 == 2)
+			IF TALENT:ＮＴＲ == 1 || TALENT:ＮＴＲ == 4
+				;愛ＮＴＲ
+				PRINTFORMW 
+			ELSEIF TALENT:ＮＴＲ == 3 || TALENT:ＮＴＲ == 6
+				;隷ＮＴＲ
+				PRINTFORMW 
+			ENDIF
+			CFLAG:603 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・野外プレイ
+		;;愛ＮＴＲか隷ＮＴＲ状態(TALENT:ＮＴＲが 1 か 3 か 4 か 6)で１日の終了時に発生。
+		;愛ＮＴＲの場合、露出癖が4以上でないと発生しません
+		;-------------------------------------------------
+	CASE 61
+		CALL EVENT_MESSAGE
+		IF (CFLAG:604 < 1 || FLAG:7 == 2)
+			IF TALENT:ＮＴＲ == 1 || TALENT:ＮＴＲ == 4
+				;愛ＮＴＲ
+				PRINTFORMW 
+			ELSEIF TALENT:ＮＴＲ == 3 || TALENT:ＮＴＲ == 6
+				;隷ＮＴＲ
+				PRINTFORMW 
+			ENDIF
+			CFLAG:604 = 1
+		ENDIF
+		;-------------------------------------------------
+		;;ＮＴＲ夜這い・野外調教
+		;;隷ＮＴＲ状態(TALENT:ＮＴＲが 3 か 6)でCFLAG:現ＮＴＲ進行度が6以上の場合１日の終了時に発生。
+		;-------------------------------------------------
+	CASE 62
+		CALL EVENT_MESSAGE
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:605 < 3 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORML 「공원에서 놀아요♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORML 
+			ELSE
+				PRINTFORML 
+			ENDIF
+			CFLAG:605 = 4
+		ELSEIF CFLAG:605 < 2 || FLAG:7 == 2
+			PRINTFORML 
+			CFLAG:605 = 2
+		ENDIF
+	CASEELSE
+		CALL EVENT_MESSAGE
+ENDSELECT
+
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_ENDING関係(X1、X2をキャラ番号に置換する)
+;-------------------------------------------------
+;-------------------------------------------------
+;条件設定
+;-------------------------------------------------
+@EVENTTURNEND_K[[キャラ:마리]]_2
+;#LATER
+;SIF TARGET < 0
+;	RETURN 0
+;SIF NO:TARGET != X1
+;	RETURN 0
+;特殊ハーレムエンド用条件判定構文サンプル
+;XX内に条件とするキャラのキャラ番号を入れると、好きな組み合わせのハーレムエンドを設定できる
+;ハーレムエンドの条件を満たしたとき、ここの特殊ハーレムエンドの条件も満たしている場合、ハーレムエンドから派生する
+;A = 0
+;B = 0
+;REPEAT CHARANUM
+;	IF NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX
+;		SIF TALENT:COUNT:6 || TALENT:COUNT:7 || TALENT:COUNT:8
+;			A += 1
+;		SIF TALENT:COUNT:3 || TALENT:COUNT:4 || TALENT:COUNT:5 || TALENT:COUNT:6 || TALENT:COUNT:7 || TALENT:COUNT:8
+;			B += 1
+;	ENDIF
+;REND
+;SIF A && A+B >= XXX
+;	CFLAG:21 = 2
+;単体エンド用分岐フラグ、単体エンドのある上位陥落素質のみコメントアウトを解除する
+;SIF TALENT:6
+;	CFLAG:21 = 1
+;SIF TALENT:7
+;	CFLAG:21 = 1
+;SIF TALENT:8
+;	CFLAG:21 = 1
+;-------------------------------------------------
+;エンド本文
+;-------------------------------------------------
+@KOJO_MESSAGE_ENDING_K[[キャラ:마리]]_2
+;--------------------------------------------------
+;特定主人時に特殊キャラ口上を呼び出す(Y1を特定キャラ、X1を奴隷のキャラ番号に置換）
+;--------------------------------------------------
+;IF NO:MASTER == Y1
+;	CALL KOJO_MESSAGE_ENDING_PY1_K[[キャラ:마리]]_2
+;	RETURN 0
+;ENDIF
+;--------------------------------------------------
+;恋慕単体エンド
+;IF TALENT:6 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.1X2A (○○エンド)
+;淫乱単体エンド
+;ELSEIF TALENT:7 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.1X2B (○○エンド)
+;服従単体エンド
+;ELSEIF TALENT:8 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.1X2C (○○エンド)
+;ENDIF
+
+;特殊ハーレムエンド
+;IF CFLAG:21 == 2
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.2X2 (○○エンド)
+;ENDIF
+
+;CALL GAME_CONTINUE
+;RETURN 0
+
+;=============================================================
+;戦闘メッセージ
+;=============================================================
+;--------------------------------------------------
+;リアクション
+;--------------------------------------------------
+@ENEMY_BATTLE_EVENT_K[[キャラ:마리]]_2, ARG, ARG:1, ARG:2
+
+;味方パーティでのデビルＣＯ－ＯＰ発動時の台詞
+IF TFLAG:전투이벤트 == 1
+	IF RAND:2 == 0
+			PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃__P0__┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+			PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃__P0__┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+ENDIF
+
+;味方パーティでのデビルＣＯ－ＯＰ参加時の台詞
+IF TFLAG:전투이벤트 == 2
+	IF RAND:2 == 0
+			PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃__P0__┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+			PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃__P0__┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+ENDIF
+
+;被弾（死亡）
+IF TFLAG:전투이벤트 == 12 && BASE:ARG:ＨＰ <= 0
+	IF RAND:2 == 0
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSEIF RAND:2 == 0
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;残り２０％以下
+ELSEIF TFLAG:전투이벤트 == 12 && 現HP割合(ARG) < 20
+	IF RAND:2 == 0
+		PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+ENDIF
+
+;회피
+IF TFLAG:전투이벤트 == 18
+	IF RAND:2 == 0
+		PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+ENDIF
+
+	;反撃スキル発動した
+IF TFLAG:전투이벤트 == 20
+	IF RAND:2 == 0
+		PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏┓＠%CALLNAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+ENDIF
+
+;バトルに勝利した
+IF TFLAG:전투이벤트 == 90
+	IF RAND:4 == 0
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSEIF RAND:3 == 0
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSEIF RAND:2 == 0
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+ENDIF
+
+;レベルアップした
+IF TFLAG:전투이벤트 == 91
+	IF RAND:3
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSEIF RAND:2 == 0
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+ENDIF
+
+;--------------------------------------------------
+;スキル使用時
+;--------------------------------------------------
+@KOJO_BATTLE_MESSAGE_K[[キャラ:마리]]_2,ARG,ARG:1 = 0
+
+;양팔찍기
+IF CFLAG:ARG:입력행동 == 4
+	IF RAND:2 == 0
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+	
+;대나무베기
+ELSEIF CFLAG:ARG:입력행동 == 5
+	IF RAND:2 == 0
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+
+;데스바운드
+ELSEIF CFLAG:ARG:입력행동 == 10
+	IF RAND:2 == 0
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+
+;오의일섬
+ELSEIF CFLAG:ARG:입력행동 == 70
+	IF RAND:100 == 0
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┃%"……",72,LEFT%┃
+		PRINTFORML ┃%"…",72,LEFT%┃
+		PRINTFORML ┃%"오의일섬！",72,LEFT%┃
+		PRINTFORML ┃%"",72,LEFT%┃
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSEIF RAND:2 == 0
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+
+;回復系
+ELSEIF TALENT:ARG:회복 && (CFLAG:ARG:입력행동 >= 400 && CFLAG:ARG:입력행동 <= 499)
+	IF RAND:2 == 0
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏┓＠%NAME:ARG,20,LEFT%　┏━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃__P0__┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+
+
+ENDIF

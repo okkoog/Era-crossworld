@@ -1,0 +1,62 @@
+﻿
+
+@SKILL_NAME_3920, ARG
+RESULTS = 각성스킬
+
+;スキル変化？用ランク
+@SKILL_RANK_3920, ARG = -1
+RETURN 15
+
+
+@継承不能_3920
+RETURN 2
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;====================================================
+;顔グラの変更
+;====================================================
+@PRINT_SPECIAL_FACE_3920,ARG, ARG:1, ARG:2, ARG:3
+IF CHARANUM_CHECK(ARG)
+	TRYCALLFORM PRINT_SPECIAL_FACE_AW_{GET_AW_SKILL_NO(ARG)},ARG, ARG:1, ARG:2, ARG:3, 3920
+	RETURN RESULT
+ENDIF
+
+@GET_AW_SKILLNUM_BY_CSV, ARG
+;CSVで指定があるなら最優先
+SIF CSVABL(NO:ARG, GETNUM(ABL, "각성스킬")) > 0
+	RETURN CSVABL(NO:ARG, GETNUM(ABL, "각성스킬"))
+;NOのスキルが存在するか確認し、存在すればそれを返す
+TRYCCALLFORM SKILL_NAME_AW_{NO:ARG}, ARG
+	RETURN NO:ARG
+CATCH
+ENDCATCH
+;特殊なグループがあればそれで
+SIF CSTR:ARG:상성그룹 == "ヘブライ天使"
+	RETURN [[キャラ:엔젤]]
+RETURN 0
+
+@HAVE_AW_SKILL, ARG, ARGS
+#FUNCTION
+SIF !HAVE_SKILL(ARG, SKILL_NUM_F("각성스킬"))
+	RETURNF 0
+SIF ABL:ARG:각성스킬 != GET_AW_SKILL_NUM(ARGS)
+	RETURNF 0
+RETURNF 1
+
+;覚醒スキルの番号を返す。要するにリンク先がもっていた場合に使えるように番号を変換する
+@GET_AW_SKILL_NO, ARG = -1
+#FUNCTION
+;デバックモードのスキルカード一覧生成呼び出しなど
+SIF ARG == -1
+	RETURNF 0
+;汎用悪魔変身中のシフターはリンク悪魔のCSTRを参照する
+SIF TALENT:ARG:데빌시프터 && CFLAG:ARG:악마변신 && CFLAG:ARG:링크캐릭터실제가입시간0 > 0
+	RETURNF ABL:FINDCHARA_LINK(ARG):각성스킬
+;Aion式召喚術はスキルが人間のもの(스킬5~12)ならリンク悪魔のCSTRを参照する
+SIF TALENT:ARG:Aion식소환술 && CFLAG:ARG:링크캐릭터실제가입시간0 > 0
+	RETURNF ABL:FINDCHARA_LINK(ARG):각성스킬
+RETURNF ABL:ARG:각성스킬

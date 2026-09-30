@@ -1,0 +1,109 @@
+﻿
+;スキル名
+@SKILL_NAME_召喚術【殃禍顕現★】,ARG
+RESULTS = 召喚術【殃禍顕現★】
+
+;　명중
+@SKILL_HITRATE_召喚術【殃禍顕現★】, ARG
+RETURN 120
+
+;　威力
+@SKILL_POWER_召喚術【殃禍顕現★】, ARG
+RETURN 480
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_召喚術【殃禍顕現★】,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_召喚術【殃禍顕現★】,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_召喚術【殃禍顕現★】, ARG
+SIF GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 9
+	RETURN 1
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_召喚術【殃禍顕現★】,ARG
+IF ARG >= 0 && GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 9
+	RESULTS = %"ＣＨ:9"%
+	RETURN 0
+ENDIF
+RETURN 60
+
+;　相性
+@SKILL_TYPE_召喚術【殃禍顕現★】,ARG
+RETURN GET_TYPE_NUM("주살"), GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_召喚術【殃禍顕現★】
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_召喚術【殃禍顕現★】,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_召喚術【殃禍顕現★】,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_召喚術【殃禍顕現★】,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_召喚術【殃禍顕現★】,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_召喚術【殃禍顕現★】,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+@SKILL_SUCCESSION_TYPE_召喚術【殃禍顕現★】,ARG
+RETURN GET_SUCCESSION_NUM("주살")
+
+@SKILL_RANK_召喚術【殃禍顕現★】, ARG = -1
+RETURN 0
+
+;속도보정
+@SKILL_SPEED_召喚術【殃禍顕現★】, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_召喚術【殃禍顕現★】
+RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_召喚術【殃禍顕現★】,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+CALL SET_RPG_CFLAG_BTL, ARG, "KFチャージスキル", 9, "-="
+
+CALL ATTACK_FIELD, ARG, ARG:1, SKILL_NUM
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_召喚術【殃禍顕現★】,ARG
+PRINTL 적 전체에 초강력한 주살 속성+만능 속성의 마법 데미지를 준다.
+PRINTL 사용 시 차지 9 소비.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_召喚術【殃禍顕現★】, ARG
+RESULTS = 차지 부족
+SIF GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 9
+	RETURN 0
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_召喚術【殃禍顕現★】, ARG
+RESULTS:0 = 적 전체에 초강력한 주살 속성+만능 속성의 마법 데미지를 준다.
+RESULTS:1 = 사용 시 차지 9 소비.
+
+@SKILL_TAG_召喚術【殃禍顕現★】
+RESULTS = KF 차지 스킬

@@ -1,0 +1,180 @@
+﻿
+
+;スキル名
+@SKILL_NAME_4601,ARG
+RESULTS = Ｌ마하・마그나
+
+;　명중
+@SKILL_HITRATE_4601, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_4601, ARG
+RETURN 130
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_4601,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_4601,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_4601, ARG, ARG:1
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_4601, ARG
+RETURN 3
+
+;　相性
+@SKILL_TYPE_4601,ARG
+RETURN GET_TYPE_NUM("지변")
+;　1EXTRAか2MAGICか
+
+@SKILL_DECIDE_TYPE_4601
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_4601, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_4601, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_4601,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_4601,ARG
+RETURN GET_SPHERE_NUM("일렬")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_4601, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_4601
+RETURN GET_SUCCESSION_NUM("계통없음")
+
+;속도보정
+@SKILL_SPEED_4601, ARG = -1
+RETURN 20
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_4601
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_4601, ARG = -1
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_4601, ARG, ARG:1, ARG:2
+CALL ATTACK_FIELD, ARG, ARG:1, 4601
+
+
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_4601, ARG
+PRINTL 적 １열에 지변 상성의 데미지를 준다。
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_4601,ARG
+CALL CHECK_COST,ARG,4601
+SIF RESULT == 0
+	RETURN 0
+RETURN 1
+;とくにない
+
+
+;=====================================================
+;リンケージ設定
+;=====================================================
+@LINKAGE_4601
+RETURN 1
+
+@参加人数_4601
+RETURN 1
+
+@参加条件表示_4601,ARG
+SELECTCASE ARG
+	CASE 1
+		PRINTFORM 아쿠아계 １체 마법
+	CASE 2
+		PRINTFORM 마그나계 １체 마법
+ENDSELECT
+
+@発動者条件_4601 , ARG
+;マグナ系単体魔法を使えること
+IF HAVE_SKILL(ARG, [[스킬:마그나]])
+	CALL CHECK_ACTIONABLE , ARG , [[스킬:마그나]]
+	SIF RESULT
+		RETURN 1
+ENDIF
+IF HAVE_SKILL(ARG, [[스킬:마그나스]])
+	CALL CHECK_ACTIONABLE , ARG , [[스킬:마그나스]]
+	SIF RESULT
+		RETURN 1
+ENDIF
+IF HAVE_SKILL(ARG, [[스킬:마그다인]])
+	CALL CHECK_ACTIONABLE , ARG , [[스킬:마그다인]]
+	SIF RESULT
+		RETURN 1
+ENDIF
+RETURN 0
+
+
+@参加者条件_4601, ARG , ARG:1
+SIF CPOS(ARG) < 1 || CPOS(ARG) > 6
+	RETURN 0
+CALL CHECK_COST_LINCAGE, ARG, 4601, ARG:1
+SIF RESULT == 0
+	RETURN 0
+SELECTCASE ARG:1
+	CASE 1
+		;アクア系単体魔法を使えること
+		IF HAVE_SKILL(ARG, [[스킬:아쿠아]])
+			CALL CHECK_ACTIONABLE , ARG , [[스킬:아쿠아]]
+			SIF RESULT
+				RETURN 1
+		ENDIF
+		IF HAVE_SKILL(ARG, [[스킬:아쿠에스]])
+			CALL CHECK_ACTIONABLE , ARG , [[스킬:아쿠에스]]
+			SIF RESULT
+				RETURN 1
+		ENDIF
+		IF HAVE_SKILL(ARG, [[스킬:아쿠아다인]])
+			CALL CHECK_ACTIONABLE , ARG , [[스킬:아쿠아다인]]
+			SIF RESULT
+				RETURN 1
+		ENDIF
+		RETURN 0
+ENDSELECT
+
+@リンケージコストタイプ_4601, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 3
+ENDSELECT
+@リンケージコスト_4601, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 3
+ENDSELECT

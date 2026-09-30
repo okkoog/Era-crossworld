@@ -1,0 +1,142 @@
+﻿;サマーソルトをスキルチェンジで作ろうと思ったけど競合したら嫌だなぁって思って作りました
+
+;スキル名
+@SKILL_NAME_インフェルノドロップ, ARG
+IF SKILL_CHANGE(ARG, [[キャラ:입실론_X2]]) || SKILL_CHANGE(ARG, [[キャラ:창조주_X2]])
+	RESULTS = 프로미넌스 어퍼
+ELSE
+	RESULTS = 인페르노 드롭
+ENDIF
+
+;　명중
+@SKILL_HITRATE_インフェルノドロップ, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_インフェルノドロップ, ARG
+;LV60以上でコークスクリュー級の威力に
+IF BASE:ARG:LV > 59
+	RETURN 380
+;LV40以上でギガンフィスト級の威力に
+ELSEIF BASE:ARG:LV > 39
+	RETURN 320
+ELSE
+	RETURN 235
+ENDIF
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_インフェルノドロップ, ARG
+;LV60以上でコークスクリュー級に
+SIF BASE:ARG:LV > 59
+	RETURN 10
+RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_インフェルノドロップ, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_インフェルノドロップ, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_インフェルノドロップ, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_インフェルノドロップ, ARG
+IF BASE:ARG:LV > 59
+	RETURN 15
+ELSEIF BASE:ARG:LV > 39
+	RETURN 10
+ELSE
+	RETURN 4
+ENDIF
+
+;　相性
+@SKILL_TYPE_インフェルノドロップ, ARG
+RETURN GET_TYPE_NUM("타격"), GET_TYPE_NUM("화염")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_インフェルノドロップ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_インフェルノドロップ, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_インフェルノドロップ, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_インフェルノドロップ, ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_インフェルノドロップ, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_インフェルノドロップ, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_インフェルノドロップ, ARG = -1
+;「イプシロンがシールドストライクを使った次のターン」限定で超加速
+SIF (SKILL_CHANGE(ARG, [[キャラ:입실론_X2]]) || SKILL_CHANGE(ARG, [[キャラ:창조주_X2]])) && PU_SKILLGAGE_D_GET(ARG, "シールドストライク")
+	RETURN 10
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_インフェルノドロップ
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_インフェルノドロップ, ARG, ARG:1, SKILL_NUM
+#DIM SKILL_NUM
+
+CALL ATTACK_SINGLE, ARG, POS(ARG:1), SKILL_NUM
+SIF HAVE_PU_SKILL(ARG, "シールドストライク")
+	CALL PU_SKILLGAGE_D_SET, ARG, "シールドストライク", 0
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_インフェルノドロップ, ARG
+IF SKILL_CHANGE(ARG, [[キャラ:입실론_X2]]) || SKILL_CHANGE(ARG, [[キャラ:창조주_X2]])
+	PRINTL 화염을 다루는 워커 데이사이트의 능력을 복사한 재현 병장.
+	PRINTL 불꽃으로 대형 방패를 감싸고 어퍼컷을 날린다.
+	PRINT 적 1체에 타격과 화염의 복합 상성으로
+	IF BASE:ARG:LV > 39
+		PRINT 大
+	ELSE
+		PRINT 中
+	ENDIF
+	PRINTL 데미지를 준다.
+	IF CFLAG:ARG:고유게이지D1 > 0
+		SETCOLOR COLOR("FRIEND")
+		PRINTL 직전 턴에 「실드 스트라이크」를 사용했기 때문에 발동이 매우 빨라졌다.
+		RESETCOLOR
+	ELSE
+		PRINTL 직전 턴에 「실드 스트라이크」를 사용했을 경우 발동이 매우 빨라진다.
+	ENDIF
+ELSE
+	PRINTL 불꽃으로 몸을 감싸고 서머솔트 킥을 날린다.
+	PRINT 적 1체에 타격과 화염의 복합 상성으로
+	IF BASE:ARG:LV > 39
+		PRINT 大
+	ELSE
+		PRINT 中
+	ENDIF
+	PRINTL 데미지를 준다.
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_インフェルノドロップ, ARG
+RETURN 1
+

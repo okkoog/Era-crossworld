@@ -1,0 +1,153 @@
+﻿;-------------------------------------------------
+;손가락삽입
+;愛撫系コマンド、レベル1
+;-------------------------------------------------
+@JUMP_COM3
+;-------------------------------------------------
+;特殊派生処理
+;-------------------------------------------------
+;非処女で前回の調教が指挿入れかつプレイヤの技巧３以上だとＧスポット刺激に
+SIF PREVCOM == 3 || PREVCOM == 503
+	RETURN 503
+
+;非処女で前回の調教がGスポットならさらにＧスポット刺激に
+;IF PREVCOM == 503 && TALENT:처녀 == 0 && TALENT:재생처녀 == 0
+;	CALL COM_ABLE_COMMON, 503
+;	SIF RESULT == 1
+;		JUMP COM503
+;ENDIF
+RETURN -1
+@ACT_COM3
+
+
+
+PRINTL 손가락삽입
+TSTR:0 = 손가락삽입
+;CALL KOJO_MESSAGE_COM
+
+;V経験を伴うコマンドのフラグ(処女膜再生対応)
+SIF TALENT:처녀 == 0 && TALENT:재생처녀 == 0
+	TFLAG:19 = 1
+
+;調教者→調教対象
+TFLAG:28 = 2
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 30
+DOWNBASE:TARGET:기력 += 80
+
+
+IF TALENT:처녀 == 0 && TALENT:재생처녀 == 0
+	SOURCE:TARGET:쾌Ｖ = 120
+	SOURCE:TARGET:아픔 = 15
+	SOURCE:TARGET:노출 = 10
+	SOURCE:TARGET:일탈 = 20
+	SOURCE:TARGET:반감 = 20
+;V経験が0の時はV経験を伴わない物に派生
+;Vの珠は入らないが、快Vが高いと慣らしてあるため処女喪失時に影響
+ELSE
+	SIF PALAM:1 < 100
+		SOURCE:TARGET:쾌Ｖ = 60
+	SOURCE:TARGET:아픔 = 10
+	SOURCE:TARGET:노출 = 30
+	SOURCE:TARGET:일탈 = 30
+	SOURCE:TARGET:반감 = 30
+ENDIF
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;抑圧、抵抗持ちには、抑鬱ソース追加
+IF TALENT:억압 || TALENT:저항
+	SOURCE:TARGET:울굴 += 20
+	;처녀
+	SIF TALENT:처녀
+		SOURCE:TARGET:울굴 += 10
+ENDIF
+
+;Vへの苦痛は先に処理しておく
+;EXP:Ｖ経験をみる（処女の反感は別途処理済みなので省略）
+IF EXP:Ｖ경험 < EXPLV:1
+	TIMES SOURCE:TARGET:아픔 , 2.50
+ELSEIF EXP:Ｖ경험 < EXPLV:2
+	TIMES SOURCE:TARGET:아픔 , 0.80
+	TIMES SOURCE:TARGET:반감 , 1.20
+ELSEIF EXP:Ｖ경험 < EXPLV:3
+	TIMES SOURCE:TARGET:아픔 , 0.40
+ELSEIF EXP:Ｖ경험 < EXPLV:4
+	TIMES SOURCE:TARGET:아픔 , 0.10
+ELSEIF EXP:Ｖ경험 < EXPLV:5
+	TIMES SOURCE:TARGET:아픔 , 0.00
+ELSEIF EXP:Ｖ경험 >= EXPLV:5
+	TIMES SOURCE:TARGET:아픔 , 0.00
+ENDIF
+
+;PALAM:潤滑をみる
+IF PALAM:윤활 < PALAMLV:1
+	TIMES SOURCE:TARGET:아픔 , 1.20
+	TIMES SOURCE:TARGET:반감 , 1.50
+ELSEIF PALAM:윤활 < PALAMLV:2
+	TIMES SOURCE:TARGET:아픔 , 0.70
+	TIMES SOURCE:TARGET:반감 , 1.20
+ELSEIF PALAM:윤활 < PALAMLV:3
+	TIMES SOURCE:TARGET:아픔 , 0.40
+ELSEIF PALAM:윤활 < PALAMLV:4
+	TIMES SOURCE:TARGET:아픔 , 0.10
+ELSEIF PALAM:윤활 >= PALAMLV:4
+	TIMES SOURCE:TARGET:아픔 , 0.10
+ENDIF
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;奴隷の膣内⇔調教者の指の汚れが移動
+CALL MOVE_STAIN("질내", TARGET, "손", PLAYER)
+
+;-------------------------------------------------
+;吸精処理
+;-------------------------------------------------
+IF CFLAG:PLAYER:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:4+1) * BASE:LV
+	CALL DRAIN_MAG,PLAYER,LOCAL,TARGET
+ELSEIF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:4+1) * BASE:LV
+	CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+ENDIF
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+;V経験
+SIF TALENT:처녀 == 0 && TALENT:재생처녀 == 0
+	CALL ADDS_EXP("Ｖ경험", 1, TARGET)
+
+;레즈경험
+A = 1
+IF IS_LESBIAN(TARGET,PLAYER)
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, PLAYER)
+ELSEIF IS_GAY(TARGET,PLAYER)
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+ENDIF
+
+;依存度ベクトル
+IF TALENT:처녀
+	TFLAG:33 = 3
+ELSE
+	TFLAG:33 = 1
+ENDIF
+
+
+RETURN 1
+
+
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_3
+RETURN COMTYPE("愛撫系")
+

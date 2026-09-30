@@ -1,0 +1,52 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:BTL_NO
+;	Facility	:ペルソナやリンクを考慮したNOを取得する
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/11/23		P(bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;====================================================
+;ペルソナやリンクを考慮したNOを取得する
+;装備ペルソナ・リンク悪魔の番号を返すが
+;初期ペルソナ・初期リンク悪魔に関してはCSVで記述がある=汎用キャラや特殊な変化をしてるキャラでないならば当人のNOをかえさせる
+;
+;ARG		対象のキャラ番号
+;====================================================
+@BTL_NO, ARG, ARGS
+#FUNCTION
+IF TALENT:ARG:데빌시프터 && CFLAG:ARG:악마변신
+	IF CFLAG:ARG:링크캐릭터실제가입시간0 > 0 && FINDCHARA_LINK(ARG) > 0
+		RETURNF NO:FINDCHARA_LINK(ARG)
+	ELSE
+		IF CSVCFLAG(NO:ARG, GETNUM(CFLAG, "초기링크악마"))
+			RETURNF NO:ARG
+		ELSE
+			RETURNF CFLAG:ARG:초기링크악마
+		ENDIF
+	ENDIF
+ELSEIF TALENT:ARG:식노 && CFLAG:ARG:악마변신
+	IF CSVCFLAG(NO:ARG, GETNUM(CFLAG, "초기링크악마"))
+		RETURNF NO:ARG
+	ELSE
+		RETURNF CFLAG:ARG:초기링크악마
+	ENDIF
+ELSEIF TALENT:ARG:Aion식소환술
+	IF CFLAG:ARG:링크캐릭터실제가입시간0 > 0
+		RETURNF NO:FINDCHARA_LINK(ARG)
+	ELSE
+		RETURNF NO:ARG
+	ENDIF
+ELSEIF TALENT:ARG:페르소나구사자
+	IF EQUIP:ARG:장비페르소나 == 0
+		RETURNF NO:ARG
+	ELSE
+		RETURNF DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("NO")
+	ENDIF
+ELSE
+	RETURNF NO:ARG
+ENDIF

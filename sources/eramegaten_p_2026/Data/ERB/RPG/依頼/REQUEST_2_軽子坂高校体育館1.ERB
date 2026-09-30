@@ -1,0 +1,96 @@
+﻿;====================
+;条件
+;====================
+@GET_REQUEST_NAME_2
+#FUNCTIONS
+RESULTS_F '= "軽子坂高校体育館(1)"
+RETURNF RESULTS_F
+
+@PLAYABLE_REQUEST_2
+IF 依頼フラグ:[[依頼:카루코자카고교체육관(1)]]:0 == 0
+	RESULTS = 카루코자카 고교 체육관(1)
+	RETURN 1
+ENDIF
+RETURN 0
+
+;====================
+;説明
+;====================
+@EXPLAIN_REQUEST_2
+IF 依頼フラグ:[[依頼:카루코자카고교체육관(1)]]:0 == 0 && 依頼フラグ:[[依頼:카루코자카고교체육관(2)]]:0 == 1
+	PRINTL
+	PRINTFORML 이전에 마지막 악마를 쓰러뜨린 카루코자카 고교의 체육관에 다시 악마가 나타난 것 같다.
+	PRINTFORML 또한 부근에서 마신황에게 협력하는 인간의 모습도 보이고 있다.
+	PRINTFORML 다시 체육관에 가서 방해하는 존재가 있다면 이를 제거하라.
+	PRINTL
+ELSEIF 依頼フラグ:[[依頼:카루코자카고교체육관(1)]]:0 == 0 && 依頼フラグ:[[依頼:카루코자카고교체육관(2)]]:0 == 0
+	PRINTL
+	PRINTFORML 카루코자카 고교는 자칭 마신황이라는 자로 말미암아 마계로 떨어졌다.
+	PRINTFORML 학생들은 뿔뿔이 흩어져 학교에 유폐되었고, 그 중에는 용감하게도 악마들과 싸우는 사람도 있는 모양이다.
+	PRINTFORML 그런 상태에 빠진 학생들의 구조와 학교를 마계에서 풀어줄 것을 요청해온 것이다.
+	PRINTFORML 우선 체육관에 자리잡은 악마를 쓰러뜨려 안전한 진입 경로를 확보하자.
+	PRINTL
+ENDIF
+
+;====================
+;内容
+;====================
+@REQUEST_2
+IF 依頼フラグ:[[依頼:카루코자카고교체육관(1)]]:0 == 0
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+	CUSTOMDRAWLINE =
+	PRINTL ―카루코자카 고교 체육관―
+	PRINTW 체육관 바닥에 수수께끼의 마법진이 그려져 있다.
+	PRINTW 그리고 학생들은 １체의 마수와 싸우다가 맥없이 쓰러져 갔다.
+	PRINTL 마수　멜뤼지느가 １체 나타났다！
+
+	CUSTOMDRAWLINE =
+	WAIT
+	CALL SET_ENEMY, 9, [[キャラ:멜뤼지느]],9,0,1
+	ABL:(CHARANUM-1):스킬3 = [[스킬:마린카린]]
+	ABL:(CHARANUM-1):아이템3 = GETNUM(ITEM, "사파이어")
+	ABL:(CHARANUM-1):입수확률3 = 100
+	CALL BATTLE_START
+	CUSTOMDRAWLINE =
+	PRINTL 멜뤼지느는 힘이 다했다.
+	CUSTOMDRAWLINE =
+	WAIT
+	PRINTW 마수와 싸우고 있던 학생 중, 불량해 보이는 여학생을 확보했다.
+	CALL ADD_NEW_COMPANION, [[キャラ:유미]],500,0
+	SIF RESULT == 1
+		CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+	依頼フラグ:[[依頼:카루코자카고교체육관(1)]]:0 = 1
+	
+	;軽子坂高校体育館(2)もクリア済みならオオツキとの戦闘
+	IF 依頼フラグ:[[依頼:카루코자카고교체육관(2)]]:0 == 1
+		PRINTFORMW 학교를 떠나려는 %CALLNAME:MASTER% 앞을 백의의 남자가 가로막았다.
+		PRINTW 「들어오려고 해도 마음대로 들어올 수 없는 학교에서 제멋대로 구는 너는, 학생도 아닌 주제에 여기서 뭐하고 있는 거냐!?」
+		PRINTW 「……아무튼 좋아, 어쨌든 너에게는 죽음뿐!」
+		PRINTW 「네가 여기서 무사히 나갈 수 있는 과학적 근거는 없다!」
+		PRINTL 교사 오오츠키가 １체 나타났다！
+		CUSTOMDRAWLINE =
+		WAIT
+		CALL SET_ENEMY, 9, [[キャラ:오오츠키]],15,0,1
+		ABL:(CHARANUM-1):아이템3 = GETNUM(ITEM, "진주")
+		ABL:(CHARANUM-1):입수확률3 = 100
+		CALL BATTLE_START
+		CUSTOMDRAWLINE =
+		PRINTL ＞오오츠키는 힘이 다했다.
+		PRINTW 「이럴 수가, 말도 안 돼…… 과학적 근거를…… 보여……」
+		PRINTFORML ＞%MASTER는% 45의 명성을 얻었다
+		CUSTOMDRAWLINE =
+		WAIT
+		FLAG:명성 += 45
+	ENDIF
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+
+	FOR LOCAL,0,CHARANUM
+		CALL HEALTH_CHARA,LOCAL
+	NEXT
+ENDIF
+
+

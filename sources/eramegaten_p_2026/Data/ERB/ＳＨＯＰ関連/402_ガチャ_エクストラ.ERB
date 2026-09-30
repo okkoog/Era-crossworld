@@ -1,0 +1,103 @@
+﻿;エクストラという名の実質原神ガチャ実装のためのヤツ
+;↑スタレ実装したいからちゃんとエクストライベントガチャにします
+
+@エクストライベントガチャ,ARG
+#DIM LCOUNT
+#DIM CONST キャラ一覧 = [[キャラ:기묘한바르바토스]], [[キャラ:기묘한모라쿠스]], [[キャラ:기묘한바알]], [[キャラ:비묘한부에르]], [[キャラ:기묘한포칼로스]], [[キャラ:기묘한하보림]]
+#DIM DYNAMIC ゲシン点呼
+IF ARG == 1
+	FOR LCOUNT, 0, VARSIZE("キャラ一覧")
+		SIF FINDCHARA_B(キャラ一覧:LCOUNT) > -1 && GET_RPG_CFLAG_TAKEOVER(RESULT:1, "命の星座") == 6
+			SETBIT ゲシン点呼, LCOUNT
+	NEXT
+	FOR LCOUNT, 0, VARSIZE("キャラ一覧")
+		IF !GETBIT(ゲシン点呼, LCOUNT)
+			DO
+				RESULT = RAND:VARSIZE("キャラ一覧")
+			LOOP GETBIT(ゲシン点呼, RESULT)
+			CALL 奇妙な召喚, キャラ一覧:RESULT
+			RETURN
+		ENDIF
+	NEXT
+	SETCOLOR 0x00EEEE
+	PRINTFORML (모든 인원의 운명의 자리 한계로 인해 800 마카가 반환되었습니다)
+	MONEY:1 += 800
+	RESETCOLOR
+ELSEIF ARG == 2
+	SELECTCASE RAND:3
+		CASE 0
+			IF FINDCHARA_B([[キャラ:제레]]) < 1
+				SETCOLOR 0x00EEEE
+				PRINTL [칼날의 나비]　제레
+				RESETCOLOR
+				CALL ADD_NEW_COMPANION, [[キャラ:제레]], 100
+				SIF RESULT > 0
+					CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+			ELSE
+				SETCOLOR 0x00EEEE
+				PRINTL [성혼 획득]　제레의 성혼
+				RESETCOLOR
+				IF GET_RPG_CFLAG_TAKEOVER(GETCHARA([[キャラ:제레]]), "星魂") == 6
+					PRINTL 이 성혼은 더 이상 동조할 수 없기 때문에, 800 마카가 반환되었습니다.
+					MONEY:1 += 800
+				ELSE
+					CALL SET_RPG_CFLAG_TAKEOVER, GETCHARA([[キャラ:제레]]), "星魂", 1, "+="
+				ENDIF
+			ENDIF
+		CASE 1
+			IF FINDCHARA_B([[キャラ:은랑]]) < 1
+				SETCOLOR 0x00EEEE
+				PRINTL [零号協定]　銀狼
+				RESETCOLOR
+				CALL ADD_NEW_COMPANION, [[キャラ:은랑]], 100
+				SIF RESULT > 0
+					CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+			ELSE
+				SETCOLOR 0x00EEEE
+				PRINTL [성혼 획득]　은랑의 성혼
+				RESETCOLOR
+				IF GET_RPG_CFLAG_TAKEOVER(GETCHARA([[キャラ:은랑]]), "星魂") == 6
+					PRINTL 이 성혼은 더 이상 동조할 수 없기 때문에, 800 마카가 반환되었습니다.
+					MONEY:1 += 800
+				ELSE
+					CALL SET_RPG_CFLAG_TAKEOVER, GETCHARA([[キャラ:은랑]]), "星魂", 1, "+="
+				ENDIF
+			ENDIF
+		CASE 2
+			IF FINDCHARA_B([[キャラ:카프카]]) < 1
+				SETCOLOR 0x00EEEE
+				PRINTL [공주는 잠 못 이루고]　카프카
+				RESETCOLOR
+				CALL ADD_NEW_COMPANION, [[キャラ:카프카]], 100
+				SIF RESULT > 0
+					CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+			ELSE
+				SETCOLOR 0x00EEEE
+				PRINTL [성혼 획득]　카프카의 성혼
+				RESETCOLOR
+				IF GET_RPG_CFLAG_TAKEOVER(GETCHARA([[キャラ:카프카]]), "星魂") == 6
+					PRINTL 이 성혼은 더 이상 동조할 수 없기 때문에, 800 마카가 반환되었습니다.
+					MONEY:1 += 800
+				ELSE
+					CALL SET_RPG_CFLAG_TAKEOVER, GETCHARA([[キャラ:카프카]]), "星魂", 1, "+="
+				ENDIF
+			ENDIF
+	ENDSELECT
+ENDIF
+
+@奇妙な召喚, ARG
+#DIM 本人確認
+本人確認 = GETCHARA(ARG)
+IF 本人確認 >= 0
+	CALL SET_RPG_CFLAG_TAKEOVER, 本人確認, "命の星座", 1, "+="
+	SETCOLOR 0x00EEEE
+	PRINTFORML [운명의 자리]　%CSVNAME(ARG)%의 성진
+	RESETCOLOR
+ELSE
+	SETCOLOR 0x00EEEE
+	PRINTFORML [★５%CSVCSTR(ARG, GETNUM(CSTR, "종족명"))%]　%CSVNAME(ARG)%
+	RESETCOLOR
+	CALL ADD_NEW_COMPANION, ARG, 100
+	SIF RESULT > 0
+		CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+ENDIF

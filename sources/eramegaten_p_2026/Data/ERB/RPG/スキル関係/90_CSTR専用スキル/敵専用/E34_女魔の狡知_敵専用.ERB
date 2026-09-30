@@ -1,0 +1,64 @@
+﻿
+;スキル名
+@SKILL_NAME_E34女魔の狡知, ARG
+RESULTS = 여마의 교지
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_E34女魔の狡知, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;スキル変化？用ランク
+@SKILL_RANK_E34女魔の狡知, ARG = -1
+RETURN 15
+;変化不可
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_E34女魔の狡知, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_E34女魔の狡知, ARG
+RETURN 0
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_E34女魔の狡知, ARG
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+@敵専用_E34女魔の狡知, ARG
+RETURN 1
+
+;　 説明文の表示
+@SKILL_EXPLAIN_E34女魔の狡知, ARG
+PRINTL 자동: 마법 공격에서 크리티컬이 발생하며 만능 상성의 데미지가 20% 증가한다
+
+@SKILL_EXPLAIN_TOOLTIP_E34女魔の狡知, ARG
+RESULTS:0 = 자동: 마법 공격에서 크리티컬이 발생하며 만능 상성의 데미지가 20% 증가한다
+
+@SKILL_PASSIVE_BTL_EFFECT_E34女魔の狡知, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に加減要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			IF L_相性名 == "만능"
+				RETURN 20
+			ENDIF
+		CASE "クリティカル有効化"
+			RETURN 1
+	ENDSELECT
+ENDIF
+
+RETURN 0

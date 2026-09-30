@@ -1,0 +1,82 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_TAG
+
+variables:
+  GAME_ALL_DIR: 'erauma-with-engine-${CI_COMMIT_TAG}'
+  GAME_DIR: 'erauma-${CI_COMMIT_TAG}'
+  BASE_URL: '${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/base/${CI_COMMIT_TAG}/base.zip'
+  GAME_BUNDLE_DIR: 'erauma-android-${CI_COMMIT_TAG}'
+  CALL_SIGN: 'ryuki'
+  GIT_LFS_SKIP_SMUDGE: "1"
+
+build:
+  stage: build
+  tags:
+    - shell
+  variables:
+    NODE_OPTIONS: "--openssl-legacy-provider"
+    GAME_ALL_ZIP: '${GAME_ALL_DIR}-win-x64.7z'
+    GAME_ZIP: '${GAME_DIR}.7z'
+  script:
+    - pnpm install
+    - node ci/build.js
+    - 'mega-login "$MEGA_EMAIL" "$MEGA_PWD" || true'
+    - 'mega-put -c "engine/${GAME_ALL_ZIP}" /erauma/${CI_COMMIT_TAG}/'
+    - 'mega-put -c "engine/${GAME_ALL_DIR}/${GAME_ZIP}" /erauma/${CI_COMMIT_TAG}/'
+    - 'if [ -f "engine/${GAME_ALL_DIR}/game/base.zip" ]; then curl --fail-with-body --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file "engine/${GAME_ALL_DIR}/game/base.zip" "${BASE_URL}"; fi'
+  artifacts:
+    reports:
+      dotenv: res.env
+
+android:
+  stage: build
+  tags:
+    - shell
+  variables:
+    GAME_BUNDLE_ZIP: '${GAME_BUNDLE_DIR}.zip'
+  script:
+    - pnpm install
+    - node ci/android.js
+    - 'mega-login "$MEGA_EMAIL" "$MEGA_PWD" || true'
+    - 'mega-put -c "${GAME_BUNDLE_ZIP}" /erauma/${CI_COMMIT_TAG}/'
+
+pages:
+  stage: deploy
+  tags:
+    - shell
+  script:
+    - node ci/pages.js
+    - 'mega-login "$MEGA_EMAIL" "$MEGA_PWD" || true'
+    - 'MEGA_URL=$(mega-export -a "/erauma/${CI_COMMIT_TAG}" 2>&1 | grep -o "https://mega.nz/[^ ]*" | head -n1)'
+    - 'echo "MEGA_URL=${MEGA_URL}" > mega.env'
+  artifacts:
+    paths:
+      - public
+    reports:
+      dotenv: mega.env
+
+release:
+  stage: deploy
+  image: registry.gitlab.com/gitlab-org/release-cli:v0.24.0
+  needs:
+    - job: build
+      artifacts: true
+    - job: pages
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: on_success
+  tags:
+    - docker
+  script:
+    - sed -i '1,4d' ./RELEASE.md
+    - >
+      release-cli create
+      --name "EraUma v${CI_COMMIT_TAG} (${CALL_SIGN})"
+      --tag-name "${CI_COMMIT_TAG}"
+      --ref "${CI_COMMIT_SHA}"
+      --description "$(cat ./RELEASE.md)"
+      --assets-link "{\"name\":\"[游戏包] EraUma ${CI_COMMIT_TAG}（Win10 绿色版 / PC 游戏包 / 安卓游戏包，解压密码：era）\",\"url\":\"${MEGA_URL}\",\"link_type\":\"package\"}"
+      --assets-link "{\"name\":\"[通用资源包] uma-resource-${RES_VERSION}.zip (版本号 ${RES_VERSION}，原地解压之后将解压出的 res 放到游戏文件夹下，在游戏设置中启用资源)\",\"url\":\"https://umaera.gitgud.site/data/uma-resource/full.html\"}"
+      --assets-link "{\"name\":\"[资源差分包] erauma-res-${RES_VERSION}-${OLD_VERSION}.zip (原地解压之后将解压出的 res 文件和游戏文件夹下的 res 文件夹合并，冲突项选覆盖，仅用于升级 ${OLD_VERSION} 版本的资源包)\",\"url\":\"https://umaera.gitgud.site/data/uma-resource/index.html\"}"

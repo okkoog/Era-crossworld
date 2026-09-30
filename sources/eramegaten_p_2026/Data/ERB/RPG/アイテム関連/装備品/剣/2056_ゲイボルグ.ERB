@@ -1,0 +1,147 @@
+﻿
+;======================================================
+;装備品のデータ
+;게이볼그
+;19/04/26 Ｐ３合体剣仕様(疾風ハイブースタ)、Ｐ１仕様(CHARM付与)をペルソナ使い専用効果として実装
+;元がスカアハの奥義なのに♂専用ってどうなのと思うの
+;======================================================
+
+
+@基本能力修正_2056,ARG,ARG:1 = -1
+SELECTCASE ARG
+ENDSELECT
+RETURN 0
+
+
+@戦闘能力修正_2056,ARG,ARG:1 = -1
+SELECTCASE ARG
+	CASE 0
+		RETURN 155
+	CASE 1
+		RETURN 97
+	CASE 4
+		RETURN 110
+	CASE 5
+		RETURN 40
+ENDSELECT
+RETURN 0
+
+
+@追加効果_2056, ARG = -1
+SIF ARG == -1
+	RETURN 0
+SIF TALENT:ARG:페르소나구사자
+	RETURN GET_STATE_NUM("CHARM")
+
+@追加効果相性_2056, ARG = -1
+SIF ARG == -1
+	RETURN 0
+SIF TALENT:ARG:페르소나구사자
+	RETURN GET_TYPE_NUM("정신")
+
+@追加効果命中率_2056, ARG = -1
+RETURN 10
+
+@追加効果最大命中率_2056, ARG = -1
+RETURN 30
+
+@防御相性_2056,ARG,ARG:1 = -1
+RETURN 100
+
+@攻撃相性_2056, ARG = -1
+RETURN 0
+
+@最低攻撃回数_2056, ARG = -1
+RETURN 1
+
+@最大攻撃回数_2056, ARG = -1
+RETURN 1
+
+@射程_2056, ARG = -1
+RETURN 4
+
+@攻撃範囲_2056, ARG = -1
+RETURN 5
+
+@装備箇所_2056
+RETURN GET_EQUIPNUM("검")
+
+;찰나장대비쏘기(반마인
+;찰나장대비쏘기＆갑옷관통(半魔人かつセット装備
+;질풍부스터(페르소나구사자
+@装備追加スキル_2056,ARG,ARG:1 = -1
+SIF ARG:1 == -1
+	RETURN 0
+IF ITEMNAME:(EQUIP:(ARG:1):머리) == "쿠훌린투구" && ITEMNAME:(EQUIP:(ARG:1):몸통) == "쿠훌린갑옷"
+	SELECTCASE ARG
+		CASE 0
+			RETURN [[스킬:관통]]
+		CASE 1
+			RETURN [[스킬:데스바운드]]
+	ENDSELECT
+ENDIF
+
+@条件つき装備追加スキル_2056
+RETURN 1
+
+;IF ABL:(ARG:1):종족 == 36
+;	IF EQUIP:(ARG:1):머리 == 3206 && EQUIP:(ARG:1):몸통 == 3606
+;		SELECTCASE ARG
+;			CASE 0
+;				RETURN 108
+;			CASE 1
+;				RETURN 53
+;		ENDSELECT
+;	ELSE
+;		SELECTCASE ARG
+;			CASE 0
+;				RETURN 108
+;		ENDSELECT
+;	ENDIF
+;ELSEIF TALENT:(ARG:1):페르소나구사자 && ARG == 0
+;	RETURN 2464
+;ENDIF
+;RETURN 0
+
+;-----------------------------
+;- ショップ
+;-----------------------------
+@購入条件_2056
+RETURN 0
+
+@必要レベル_2056
+RETURN 40
+
+@性別制限_2056
+RETURN 1
+
+@装備条件_2056,ARG
+;SIF !IS_LOOKSLIKE_MALE(ARG)
+;	RETURN 0
+;SIF BASE:ARG:LV < 40
+;	RETURN 0
+RETURN 1
+
+@装備条件説明_2056
+;PRINTL 装備条件：LV40～
+;PRINTL 装備条件：♂
+
+@装備解説_2056
+PRINTL 쿠 훌린이 스카사하에게 하사받은 마창. 거대 생물의 뼈로 만들어져 외형은 작살에 가깝다.
+PRINTL 이 창을 손에 쥐는 자는 강대한 힘의 대가로 비애의 십자가를 짊어진다. 「톱니 모양의 내던지는 것」이라는 뜻을 지닌다.
+;SETCOLOR 0xdc143c
+;PRINTL 半魔追加スキルあり(セット装備でさらに追加)《クー・フーリン頭　쿠훌린갑옷》
+;PRINTL ペルソナ使いが持つと追加スキルあり＋低確率でCHARM付与
+PRINTL 페르소나 구사자가 장비하면 낮은 확률로 CHARM 부여
+;RESETCOLOR
+PRINTL 
+PRINTL 추가 스킬:【관통】,【데스바운드】
+PRINTL 追加条件　:[검:게이볼그] + [머리:쿠훌린투구] + [몸통:쿠훌린갑옷]
+@引継ぎ可不可_2056
+RETURN 1
+
+
+@剣タイプ_2056
+;1 = 刀　2 =레이피어　3 = 弓　　　　4 = 검　5 = 槍　　　6 = 斧、鈍器
+;7 = 채찍　8 =投具　　　9 = 杖、祭具　10= 棍　11= 拳闘具
+RETURN GET_ARMS_TYPE_NUM("槍")

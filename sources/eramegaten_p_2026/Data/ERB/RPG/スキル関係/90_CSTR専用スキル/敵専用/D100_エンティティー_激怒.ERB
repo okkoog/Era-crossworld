@@ -1,0 +1,66 @@
+﻿;スキル名
+@SKILL_NAME_激怒,ARG
+RESULTS = 激怒
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_激怒
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_激怒,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_激怒,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_激怒,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_激怒,ARG
+RETURN GET_SKILL_EFFECT_NUM("상태변화")
+
+;スキル変化？用ランク
+@SKILL_RANK_激怒, ARG = -1
+RETURN 15
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_激怒
+RETURN 0
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_激怒,ARG,ARG:1
+;自分の行動のみ
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+SIF ARG != ARG:1
+	RETURN 0
+;一回目の行動の時のみ
+SIF CFLAG:ARG:행동한횟수
+	RETURN 0
+SIF CFLAG:ARG:１more플래그
+	RETURN 0
+SIF 現HP割合(ARG) > 40
+	RETURN 0
+RETURN 1, CPOS(ARG)
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_激怒,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL SKILL_SET_カジャンダ, ARG, ARG, "공격/방어", 4, "단체", , "怒りが攻撃力と防御力を増加させる！"
+
+;　説明文の表示
+@SKILL_EXPLAIN_激怒,ARG
+PRINTL 자동: HP가 40% 이하일 때 행동할 때마다 이하의 연동 효과가 발동한다.
+PRINTL 　　　「자신의 공격력과 방어력을 상승시킨다.」
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_激怒,ARG
+RETURN 0

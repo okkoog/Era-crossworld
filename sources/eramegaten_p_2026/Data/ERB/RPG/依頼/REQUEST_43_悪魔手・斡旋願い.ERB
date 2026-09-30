@@ -1,0 +1,562 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:REQUEST_43.ERB
+;	Facility	:악마의손・중개요청
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2021/02/09		NEO						新規作成
+;	002		2021/02/09		名無し					イベント発生をイージーに限定、報酬を増額
+;	003		2023/05/11		P(bazzile)				インストールソフトの所持判定が逆転してしまっていた不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=================================================
+;●イージーモード支援依頼
+;　キャラを中々売れない初心者のため、「キャラを売ればマッカが手に入るよ」と知らせる
+;　今回は特別に未調教でもいいけどな！って。
+;　報酬は、イージーモード用に「하쿠타로우」などのインストールソフト。
+;　ぶっちゃけて言えば「長期的に見ればまったく割に合わない」依頼とする。
+;　単発依頼でもいいっちゃいいけど、初心者支援なので「独立して、見やすい感じのやつ」にする
+;　……しかしなんで依頼主、全書召喚しないんだろうな……？
+;
+;-------------------------------------------------
+;●ハンドアウト
+;　あなたのもとにメールが届く。
+;　緊急で人材を融通してほしいとのことだ。
+;　未調教でもいいらしいが、レベルは「一定以上」は欲しいとのことだ。
+;　さて、戦力に余裕はあっただろうか……
+;-------------------------------------------------
+;●報酬
+;　1.多少のマッカ
+;　2.インストールソフト数種orスキルカード
+;　　2-1.하쿠타로우
+;　　2-2.アルバート、DDM
+;　　2-3.Hi-DAS、ギボ・アイズ
+;　　2-4.ダークスキャナー、ゲートキーパー
+;　　2-5.低級のスキルカード
+;　　　Lv10：アギジオザンブフ、ディア
+;　　　Lv15/20：アクアグライマグナガルフレイ
+;　　　Lv30：カジャ5種種詰め合わせ+솔빙오브
+;　3.依頼完走時、少々の名声
+;-------------------------------------------------
+;●フラグ
+;依頼フラグ:[[依頼:악마의손・중개요청]]:0
+;　必要な悪魔※人間でもいい※のレベル。
+;　これが31以上になると（要求悪魔レベルが31を超えると）発生しなくなる。
+;依頼フラグ:[[依頼:악마의손・중개요청]]:1
+;　売却回数フラグ。
+;　このフラグ×戦闘難易度に応じた数値により、斡旋対象のレベルが決定される。
+;依頼フラグ:[[依頼:악마의손・중개요청]]:2
+;　その回の依頼を見たかのフラグ。
+;　0なら見ていない、1なら見ている。
+;依頼フラグ:[[依頼:악마의손・중개요청]]:3
+;　売却対象。
+;依頼フラグ:[[依頼:악마의손・중개요청]]:4
+;　前回奴隷を渡した日。2回目以後のイベントは即日発生はしない。
+;-------------------------------------------------
+
+
+;====================
+;条件
+;====================
+@GET_REQUEST_NAME_43
+#FUNCTIONS
+RESULTS_F '= "悪魔手・斡旋願い"
+RETURNF RESULTS_F
+
+@PLAYABLE_REQUEST_43
+
+	;イージーは3日目から
+	SIF DAY < 1 && FLAG:전투난이도 == 1
+		RETURN 0
+
+	;ノーマルは7日目から
+	;SIF DAY < 7 && FLAG:전투난이도 == 2
+	;	RETURN 0
+
+	;依頼を受けてから数日経たないと次のイベントは発生しない
+	SIF DAY < ((依頼フラグ:[[依頼:악마의손・중개요청]]:4) + (FLAG:전투난이도))
+		RETURN 0
+
+	;おまじない
+	依頼フラグ:[[依頼:악마의손・중개요청]]:0 = 999
+
+	;戦闘難易度、周回フラグに応じて発生回数が変動
+	;初周回だと低レベルで発生
+	IF FLAG:주회횟수 == 0
+		;イージーでは10.20.30の3回発生
+		SIF FLAG:전투난이도 == 1
+			依頼フラグ:[[依頼:악마의손・중개요청]]:0 = 10
+		;ノーマルでは15.30の2回
+		;SIF FLAG:전투난이도 == 2
+		;	依頼フラグ:[[依頼:악마의손・중개요청]]:0 = 15
+	ELSE
+		;イージーでは15.30の2回発生
+		SIF FLAG:전투난이도 == 1
+			依頼フラグ:[[依頼:악마의손・중개요청]]:0 = 15
+		;ノーマルでは30の1回
+		;SIF FLAG:전투난이도 == 2
+		;	依頼フラグ:[[依頼:악마의손・중개요청]]:0 = 30
+	ENDIF
+	;それ以上だと発生しない
+	SIF FLAG:전투난이도 >= 2
+		RETURN 0
+
+	;フラグ1は売却回数
+	依頼フラグ:[[依頼:악마의손・중개요청]]:0 = 依頼フラグ:[[依頼:악마의손・중개요청]]:0 * ((依頼フラグ:[[依頼:악마의손・중개요청]]:1) + 1)
+	
+	
+	;結果が30を越えたら終了
+	SIF 依頼フラグ:[[依頼:악마의손・중개요청]]:0 >= 31
+		RETURN 0
+
+	;マスターのレベルが結果レベル必要
+	SIF BASE:MASTER:LV < 依頼フラグ:[[依頼:악마의손・중개요청]]:0
+		RETURN 0
+
+	;条件ぜんぶ越えたら発生
+	RESULTS = 악마의손・중개요청
+	RETURN 1
+
+;====================
+;説明
+;====================
+@EXPLAIN_REQUEST_43
+	PRINTFORML 
+	;初回：まだ売却したことがない
+	IF 依頼フラグ:[[依頼:악마의손・중개요청]]:1 == 0
+		PRINTFORML %CALLNAME:MASTER%에게 메일이 도착했다.
+		PRINTFORML 긴급하게 인재(악마 포함)를 융통해 주었으면 한다는 내용이다.
+	ELSE
+		PRINTFORML %CALLNAME:MASTER%에게, 낯익은 주소로부터 메일이 도착했다.
+		PRINTFORML 긴급하게 인재(악마 포함)를 융통해 주었으면 한다는 내용이다.
+	ENDIF
+	PRINTFORML 인재의 질에 대해서는 거의 요구 사항이 없고, 단지 레벨이 {依頼フラグ:[[依頼:악마의손・중개요청]]:0} 이상이기만 하면 된다는 것 같다.
+	PRINTFORML 보수는 그리 좋지 않은 모양이지만, 『조교』도 하지 않은 노예를 넘기는 것치고는 나쁘지 않다.
+	PRINTFORML 그건 그렇고, 전력에 여유가 있었던가?
+	PRINTFORML 　
+	PRINTFORML 보수: 진짜 약간의 마카와 얼마간의 현물
+	PRINTFORML 추신: 「무리하지 않고 포주 짓을 하는 편이 벌이가 낫겠지만 의지할 수 있는 게 너밖에 없어」
+	PRINTFORML 　
+
+
+;====================
+;内容
+;====================
+@REQUEST_43
+
+	;レベル制限のためここで一文字変数にin
+	E = 依頼フラグ:[[依頼:악마의손・중개요청]]:0
+
+	PRINTFORML 　
+	PRINTFORML ………………
+	PRINTFORML …………
+	PRINTFORML ……
+	PRINTFORML 　
+
+	;初回
+	;まだ一回も斡旋したことがない
+	IF 依頼フラグ:[[依頼:악마의손・중개요청]]:1 == 0
+		;依頼を受けてもいない
+		IF 依頼フラグ:[[依頼:악마의손・중개요청]]:2 == 0
+			PRINTFORML 「아아, 미안하다. 일부러 불러내서 말이야……」
+			PRINTFORML 　
+			PRINTFORML ＞남자는 그렇게 말하고 수상쩍은 자양강장제 병을 주머니에 쑤셔 넣었다.
+			PRINTFORML ＞그 또한 %CALLNAME:MASTER%와 마찬가지로 팬텀에 소속된 다크 서머너다.
+			PRINTFORML ＞거의 동기라고 할 수 있는 입단 시기로, 몇 번인가 얼굴을 마주친 적이 있다.
+			PRINTFORMW ＞요 근래 바쁘다고 들었는데, 과연 눈 밑에는 짙은 다크서클이 드리워져 있다……
+			PRINTFORML 　
+			PRINTFORML 「일손이 좀 부족해서 말이지…… 네가 포주 비스무리한 짓을 하고 있다는 게 생각나서……
+			PRINTFORML 　레벨이 {依頼フラグ:[[依頼:악마의손・중개요청]]:0} 이상인…… 일손을, 좀 융통해 줄 수 없을까……?
+			PRINTFORML 　노예로 부려먹으려는 게 아니야, 일손에 조금이라도 보탬이 되면 그걸로 족해……
+			PRINTFORML 　악마든 인간이든 기계든 뭐, 내 말을 들어주기만 하면 상관없어……
+			PRINTFORML 　하지만 솔직히 지금 가진 돈이 전혀 없어서……
+			PRINTFORMW 　너라면 아마 공들여 키워서 호사가에게 파는 편이 낫겠지만……
+			PRINTFORMW 　절반 정도는 현물 지급이 되어버리는데…… 부탁해도 될까…… 하아……」
+			PRINTFORML 　
+			PRINTFORML ＞남자는 넋이 나간 듯한 한숨을 내쉰다.
+			PRINTFORML ＞남남인 것도 아니고, 은혜를 입혀두기엔 좋은 기회다.
+			;依頼文を一度見たフラグを立てる
+			依頼フラグ:[[依頼:악마의손・중개요청]]:2 = 1
+		;改めて依頼を受けに来た
+		ELSE
+			PRINTFORML 「여어……」
+			PRINTFORML 　
+			PRINTFORML ＞남자는 죽은 눈으로 %CALLNAME:MASTER%을(를) 바라본다.
+			PRINTFORML ＞그 또한 %CALLNAME:MASTER%와 마찬가지로 팬텀에 소속된 다크 서머너다.
+			PRINTFORML ＞거의 동기라고 할 수 있는 입단 시기로, 몇 번인가 얼굴을 마주친 적이 있다.
+			PRINTFORML ＞이전에 {依頼フラグ:[[依頼:악마의손・중개요청]]:0} 이상의 일손을 융통해 줄 수 없겠냐는…… 의뢰를 들은 적이 있다.
+			PRINTFORMW ＞요 근래 바쁘다고 들었는데, 저번에 만났을 때보다 눈 밑의 다크서클이 더 짙어졌다……
+			PRINTFORML 　
+			PRINTFORML 「뭐야, 레벨 {依頼フラグ:[[依頼:악마의손・중개요청]]:0} 이상의 일손, 준비된 거야……?
+			PRINTFORML 　하하, 억지를 부릴 생각은 없지만 지금이라도 받을 수 있다면 기쁘겠어…… 쿨럭……」
+			PRINTFORML 　
+			PRINTFORML ＞남자는 넋이 나간 듯한 숨을 내쉰다.
+			PRINTFORML ＞남남인 것도 아니고, 은혜를 입혀두기엔 좋은 기회다.
+		ENDIF
+	;2回目以後
+	ELSEIF 依頼フラグ:[[依頼:악마의손・중개요청]]:1 > 0
+		;依頼を受けてもいない
+		IF 依頼フラグ:[[依頼:악마의손・중개요청]]:2 == 0
+			PRINTFORML 「아아, 미안하다. 일부러 불러내서…… 또 그렇다……」
+			PRINTFORML 　
+			PRINTFORML ＞남자는 그렇게 말하며 수상쩍은 약을 삼켰다.
+			PRINTFORML ＞최근에 또 바빠진 모양인데……
+			PRINTFORML 　
+			PRINTFORML 「일손이 너무나도 부족해서……
+			PRINTFORML 　저번처럼…… 레벨 {依頼フラグ:[[依頼:악마의손・중개요청]]:0} 이상의 일손을 좀 융통해 줄 수 없을까……?
+			PRINTFORML 　보수는 저번처럼 또 현물이 되어버리겠지만…… 휴우……」
+			PRINTFORML 　
+			PRINTFORML ＞아, 이런 영혼이 입에서 빠져나오고 있다……
+			PRINTFORML ＞빠져나오는 영혼을 붙잡아 남자의 입속으로 도로 밀어 넣으며 %CALLNAME:MASTER%은(는) 생각했다.
+			;依頼文を一度見たフラグを立てる
+			依頼フラグ:[[依頼:악마의손・중개요청]]:2 = 1
+		ELSE
+			PRINTFORML 「여어……」
+			PRINTFORML 　
+			PRINTFORML ＞남자는 죽은 눈으로 %CALLNAME:MASTER%을(를) 바라본다.
+			PRINTFORML ＞그 또한 %CALLNAME:MASTER%와 마찬가지로 팬텀에 소속된 다크 서머너다.
+			PRINTFORML ＞거의 동기라고 할 수 있는 입단 시기로, 몇 번인가 얼굴을 마주친 적이 있다.
+			PRINTFORML ＞이전에 {依頼フラグ:[[依頼:악마의손・중개요청]]:0} 이상의 일손을 융통해 줄 수 없겠냐는…… 의뢰를 들은 적이 있다.
+			PRINTFORMW ＞요 근래 바쁘다고 들었는데, 저번에 만났을 때보다 눈 밑의 다크서클이 더 짙어졌다……
+			PRINTFORML 　
+			PRINTFORML 「뭐야, 레벨 {依頼フラグ:[[依頼:악마의손・중개요청]]:0} 이상의 일손, 준비된 거야……?
+			PRINTFORML 　하하, 억지를 부릴 생각은 없지만 지금이라도 받을 수 있다면 기쁘겠어…… 쿨럭……」
+			PRINTFORML 　
+			PRINTFORML ＞남자는 넋이 나간 듯한 숨을 내쉰다.
+			PRINTFORML ＞남남인 것도 아니고, 은혜를 입혀두기엔 좋은 기회다.
+		ENDIF
+
+	
+	ENDIF
+
+	;選択部分
+	PRINTFORMW ＞그나저나 Lv{依頼フラグ:[[依頼:악마의손・중개요청]]:0} 이상의 노예라……
+	PRINTFORML 　
+	CALL INPUT_YN("의뢰를 수락한다", "거절한다")
+	;Lv一定以上の仲魔を選択
+	IF RESULT == 0
+		$D_ASSEN_LIST
+		;CALL INPUT_CHARA_LIST("누구를 넘기겠습니까?", "CASTING_REQUEST_43")
+		{
+		CALL INPUT_CHARA_LIST
+			, "FUNC_PROPSET_LIST"
+			, "누구를 넘기겠습니까?"
+			, "CASTING_REQUEST_43" 
+			, "SHOW_ADD_UP_FUNCTION"
+			, "SHOW_ADD_DOWN_FUNCTION"
+			, "ADD_SELECT_FUNCTION"
+			, "L_CANCELS"
+			, "FUNC_CUSTOM_TITLE"
+			, "FUNC_CUSTOM_COLOR"
+			, -1
+		}
+		IF RESULT == 1000
+			GOTO D_ASSEN_NO
+		ELSE
+			;売却処理用にキャラ番号を保存
+			依頼フラグ:[[依頼:악마의손・중개요청]]:3 = RESULT
+		ENDIF
+		;売却確認
+		PRINTFORML %NAME:(依頼フラグ:[[依頼:악마의손・중개요청]]:3)%을(를) 양도하시겠습니까? 
+		PRINTFORML 　
+		PRINTFORML ※넘겨준 노예는 되돌아오지 않습니다!※
+		PRINTFORML 　
+		CALL INPUT_YN
+		IF RESULT == 0
+			;選択キャラの削除
+			CALL キャラ削除(依頼フラグ:[[依頼:악마의손・중개요청]]:3)
+
+			;念のため綺麗にする
+			依頼フラグ:[[依頼:악마의손・중개요청]]:3 = 0
+
+			GOTO D_ASSEN_YES
+		ELSE
+			GOTO D_ASSEN_LIST
+		ENDIF
+
+	;断る
+	ELSE
+		GOTO D_ASSEN_NO
+	ENDIF
+	
+
+
+
+	;依頼終了：受けた
+	;通常はここには入れない（ジャンプして入る）
+	IF 0
+		$D_ASSEN_YES
+
+
+		PRINTFORML 「미안하다, 고마워, 은혜는 잊지 않을게……!」
+		PRINTFORML 　
+		PRINTFORML ＞남자는 그렇게 말하며 울상이 된 채 %CALLNAME:MASTER%의 손을 덥석 쥐고 격렬하게 흔들었다.
+		PRINTFORMW ＞손을 놔주지 않으면 인계도 해줄 수 없는데 말이다……
+		PRINTFORML 　
+		PRINTFORML ………………
+		PRINTFORML …………
+		PRINTFORML ……
+		PRINTFORML 　
+		PRINTFORML 「……좋아, 이걸로 어떻게든 되겠어……!」
+		PRINTFORML 　
+		PRINTFORML ＞다소 기운을 되찾은 남자는 주머니를 뒤져 얼마간의 마카와 USB 메모리를 꺼냈다……
+		;Lv*10のマッカ入手
+		;⇒ Lv*100マッカに増額
+		LOCAL:1 = 依頼フラグ:[[依頼:악마의손・중개요청]]:0 * 100
+		;PRINTFORMW ＞{LOCAL:1}マッカを手に入れた
+		MONEY:1 += LOCAL:1
+		PRINTFORML 　
+		PRINTFORML 「미안해, 지금 수중에 진짜 이것밖에 없어.
+		PRINTFORML 　얼마 안 되지만 이건 받아둬…… 그리고 여긴 인스톨 소프트야.
+		PRINTFORML 　하나 정도 골라잡아」
+		PRINTFORML 　
+		PRINTFORML ＞이게 현물인가…… USB 메모리에는 꼼꼼하게 들어있을 인스톨 소프트의 이름이 적혀 있다.
+		PRINTFORML 　
+		$D_ASSEN_YES_LOOP
+		PRINTFORML ＞어느 것을 고를까……
+		PRINTFORML 　
+		PRINTFORML [0] 인스톨 소프트 「하쿠타로우」
+		PRINTFORML [1] 인스톨 소프트 「알버트」＆「ＤＤＭ」
+		PRINTFORML [2] 인스톨 소프트 「호프・아이즈」＆「Ｈｉ－ＤＡＳ」
+		PRINTFORML [3] 인스톨 소프트 「다크스캐너」＆「게이트서치」
+		PRINTFORML [4] 스킬 카드는 없어?
+		PRINTFORML 　
+		CALL INPUTINT, 0 , 1 , 2 , 3 , 4
+		IF RESULT == 0
+			IF HAVE_INSTALLSOFT("하쿠타로우")
+				PRINTFORML ……하쿠타로우는 이미 가지고 있다.
+				PRINTFORMW 다른 소프트를 고르자.
+				GOTO D_ASSEN_YES_LOOP
+			ELSE
+				PRINTFORML 「하쿠타로우로 하려고?
+				PRINTFORML 　그것보다, 안 가지고 있었던 거야……?
+				PRINTFORML 　기습당하면 바로 골로 가니까 이건 특히 추천하지.
+				PRINTFORML 　그보다 이 중에서 제일 비싼 놈이네…… 눈썰미가 제법인걸」
+				PRINTFORML 　
+				PRINTFORML ＞기습을 감지해 한순간 빠르게 경고해 주는 인스톨 소프트다.
+				PRINTFORML ＞남자의 말대로 필수라 불리는 소프트지만, 아직 가지고 있지 않다……
+				PRINTFORML ＞이것을 받을까?
+				PRINTFORML 　
+				CALL INPUT_YN("받는다", "다시 생각한다")
+				IF RESULT == 0
+					PRINTFORML 「오케이, 거래 성립이다.
+					PRINTFORML 　앗, 당연하지만 인스톨해 두지 않으면 의미 없는 거 알지?」
+					PRINTFORML 　
+					PRINTFORML ＞{LOCAL:1} 마카와 인스톨 소프트 「하쿠타로우」를 손에 넣었다.
+					CALL GETS_INSTALLSOFT, "하쿠타로우"
+				ELSE
+					GOTO D_ASSEN_YES_LOOP
+				ENDIF
+			ENDIF
+		ELSEIF RESULT == 1
+			IF HAVE_INSTALLSOFT("알버트") && HAVE_INSTALLSOFT("ＤＤＭ") 
+				PRINTFORML ……알버트도 ＤＤＭ도 이미 가지고 있다.
+				PRINTFORMW 다른 소프트를 고르자.
+				GOTO D_ASSEN_YES_LOOP
+			ELSE
+				PRINTFORML 「응? 이 두 가지인가.
+				PRINTFORML 　이계에서는 ＣＯＭＰ 용량이 빡빡해지니까 제법 쓸만하다고.
+				PRINTFORML 　스카우트할 때도 편리하지 않아?」
+				PRINTFORML 　
+				PRINTFORML ＞간이식이긴 해도 수중의 ＣＯＭＰ로 합체를 가능하게 해주는 소프트와, 서버로 악마를 전송할 수 있는 소프트다.
+				PRINTFORML ＞꽤나 편리해 보이는 소프트지만, 아직 가지고 있지 않다……
+				PRINTFORML ＞이것을 받을까?
+				PRINTFORML 　
+				CALL INPUT_YN("받는다", "다시 생각한다")
+				IF RESULT == 0
+					PRINTFORML 「오케이, 거래 성립이다.
+					PRINTFORML 　앗, 당연하지만 인스톨해 두지 않으면 의미 없는 거 알지?」
+					PRINTFORML 　
+					PRINTFORML ＞{LOCAL:1} 마카와 인스톨 소프트 「알버트」「ＤＤＭ」을 손에 넣었다.
+					CALL GETS_INSTALLSOFT, "알버트"
+					CALL GETS_INSTALLSOFT, "ＤＤＭ"
+				ELSE
+					GOTO D_ASSEN_YES_LOOP
+				ENDIF
+			ENDIF
+		ELSEIF RESULT == 2
+			IF HAVE_INSTALLSOFT("호프・아이즈") && HAVE_INSTALLSOFT("Ｈｉ－ＤＡＳ") 
+				PRINTFORML ……호프・아이즈도 Ｈｉ－ＤＡＳ도 이미 가지고 있다.
+				PRINTFORMW 다른 소프트를 고르자.
+				GOTO D_ASSEN_YES_LOOP
+			ELSE
+				PRINTFORML 「응? 이 두 가지인가.
+				PRINTFORML 　처음 보는 악마는 성가시니까…… 갖고 있으면 안심이 되겠지.
+				PRINTFORML 　이 녀석들로 할래?」
+				PRINTFORML 　
+				PRINTFORML ＞특수한 내성을 경고해 주는 소프트와, 능동 해석을 가능하게 해주는 소프트다.
+				PRINTFORML ＞꽤나 편리해 보이는 소프트지만, 아직 가지고 있지 않다……
+				PRINTFORML ＞이것을 받을까?
+				PRINTFORML 　
+				CALL INPUT_YN("받는다", "다시 생각한다")
+				IF RESULT == 0
+					PRINTFORML 「오케이, 거래 성립이다.
+					PRINTFORML 　앗, 당연하지만 인스톨해 두지 않으면 의미 없는 거 알지?」
+					PRINTFORML 　
+					PRINTFORML ＞{LOCAL:1} 마카와 인스톨 소프트 「호프・아이즈」「Ｈｉ－ＤＡＳ」를 손에 넣었다.
+					CALL GETS_INSTALLSOFT, "호프・아이즈"
+					CALL GETS_INSTALLSOFT, "Ｈｉ－ＤＡＳ"
+				ELSE
+					GOTO D_ASSEN_YES_LOOP
+				ENDIF
+			ENDIF
+		ELSEIF RESULT == 3
+			IF HAVE_INSTALLSOFT("다크스캐너") && HAVE_INSTALLSOFT("게이트서치") 
+				PRINTFORML ……다크스캐너도 게이트서치도 이미 가지고 있다.
+				PRINTFORMW 다른 소프트를 고르자.
+				GOTO D_ASSEN_YES_LOOP
+			ELSE
+				PRINTFORML 「응? 이 두 가지인가.
+				PRINTFORML 　이계에서 편리하긴 한데…… 솔직히 별로 쓸모는 없다고.
+				PRINTFORML 　다크스캐너는 같은 효과를 내는 마법이나 도구도 있으니까.
+				PRINTFORML 　이 녀석들로 할래?」
+				PRINTFORML 　
+				PRINTFORML ＞어둠 속에서도 다양한 정보를 통해 맵을 표시해 주는 소프트와, 주술적 혹은 시각적으로 숨겨진 문을 찾아내는 소프트다.
+				PRINTFORML ＞쓸모 있는 상황은 적지만 유용할 땐 아주 유용하겠지.
+				PRINTFORML ＞이것을 받을까?
+				PRINTFORML 　
+				CALL INPUT_YN("받는다", "다시 생각한다")
+				IF RESULT == 0
+					PRINTFORML 「오케이, 거래 성립이다.
+					PRINTFORML 　앗, 당연하지만 인스톨해 두지 않으면 의미 없는 거 알지?」
+					PRINTFORML 　
+					PRINTFORML ＞{LOCAL:1} 마카와 인스톨 소프트 「다크스캐너」「게이트서치」를 손에 넣었다.
+					CALL GETS_INSTALLSOFT, "다크스캐너"
+					CALL GETS_INSTALLSOFT, "게이트서치"
+				ELSE
+					GOTO D_ASSEN_YES_LOOP
+				ENDIF
+			ENDIF
+		ELSEIF RESULT == 4
+			PRINTFORML 「스킬 카드라…… 어─ 그러니까……」
+			PRINTFORML 　
+			PRINTFORML ＞남자는 가방을 부스럭거리며 뒤지더니 '오' 하고 소리를 내며 카드 케이스를 꺼냈다.
+			PRINTFORML 　
+			PRINTFORML 「전에 모둠으로 받아둔 게 있었지. 필요해?」
+			PRINTFORML 　
+			CALL INPUT_YN("받는다", "다시 생각한다")
+				IF RESULT == 0
+					;詰め合わせは今回要求悪魔のレベルで変動
+					;10：アギジオマハブフ、ディア、パトラ
+					;15、20：アクアグライマグナガルフレイ
+					;30：カジャンダ全部詰め合わせ
+					;LV30だとけっこう嬉しい
+					PRINTFORML 「오케이, 거래 성립이다.
+					PRINTFORML 　그쪽도 전력 보강에 도움이 되면 좋겠네」
+					PRINTFORML 　
+					PRINTFORM ＞{LOCAL:1} 마카와
+					IF 依頼フラグ:[[依頼:악마의손・중개요청]]:0 >= 30
+						PRINTFORML 스킬 카드 「타루・카쟈」「스쿠・카쟈」「마카・카쟈」「라쿠・카쟈」「사마・카쟈」를 손에 넣었다.
+						PRINTFORMW 　
+						PRINTFORMW 　
+						PRINTFORMW 　
+						PRINTFORML 「……아! 맞다 맞아. 모처럼 넘겨줬으니 알려줘야지.
+						PRINTFORML 　알고 있을지도 모르지만 『카쟈』 계열 중 4종을 4명이 함께 사용하면 효과가 더욱 높아지는 강력한 린케이지가 있다는 모양이야.
+						PRINTFORML 　나도 남한테 들었을 뿐이라 자세히는 모르지만…… 괜찮다면 이것도 가져가」
+						PRINTFORML 　
+						PRINTFORML ＞아이템 「솔빙오브」를 5개 손에 넣었다
+						PRINTFORMW ＞사용하면 협력 기술이 천계처럼 번뜩인다는 아이템이다……
+						ITEM:스킬카드【타루・카쟈】 += 1
+						ITEM:스킬카드【스쿠・카쟈】 += 1
+						ITEM:스킬카드【마카・카쟈】 += 1
+						ITEM:스킬카드【라쿠・카쟈】 += 1
+						ITEM:스킬카드【사마・카쟈】 += 1
+						ITEM:솔빙오브 += 5
+					ELSEIF 依頼フラグ:[[依頼:악마의손・중개요청]]:0 >= 15
+						PRINTFORML 스킬 카드 「아쿠아」「그라이」「마그나」「갈」「프레이」를 손에 넣었다.
+						ITEM:스킬카드【아쿠아】 += 1
+						ITEM:스킬카드【그라이】 += 1
+						ITEM:스킬카드【마그나】 += 1
+						ITEM:스킬카드【갈】 += 1
+						ITEM:스킬카드【프레이】 += 1
+					ELSE
+						PRINTFORML 스킬 카드 「아기」「지오」「잔」「부흐」「디아」를 손에 넣었다.
+						ITEM:스킬카드【아기】 += 1
+						ITEM:스킬카드【지오】 += 1
+						ITEM:스킬카드【잔】 += 1
+						ITEM:스킬카드【부흐】 += 1
+						ITEM:스킬카드【디아】 += 1
+					ENDIF
+				ELSE
+					GOTO D_ASSEN_YES_LOOP
+				ENDIF
+		ELSE
+			GOTO D_ASSEN_YES_LOOP
+		ENDIF
+
+		;売却回数カウント
+		依頼フラグ:[[依頼:악마의손・중개요청]]:1 += 1
+		;一度依頼を見たかフラグをリセット
+		依頼フラグ:[[依頼:악마의손・중개요청]]:2 = 0
+		;依頼を受けた日を保存
+		依頼フラグ:[[依頼:악마의손・중개요청]]:4 = DAY
+
+		PRINTFORML 　
+		PRINTFORML 「미안하다, 포주 짓으로 팔아넘기는 게 훨씬 벌이가 좋을 텐데……
+		PRINTFORML 　하지만 덕분에 어떻게든 될 것 같아. 고마워, 너도 힘내라……!」
+		PRINTFORML 　
+		PRINTFORML ＞남자는 비틀거리며 떠나갔다.
+
+
+		;依頼を完遂するとちょっとだけ名声がもらえる
+		IF 依頼フラグ:[[依頼:악마의손・중개요청]]:0 >= 30
+			PRINTFORML 　
+			PRINTFORML ………………
+			PRINTFORML …………
+			PRINTFORML ……
+			PRINTFORMW 　
+			PRINTFORML ＞……그 후의 일.
+			PRINTFORML ＞아무래도 남자는 무사히 『성수기』를 탈출한 모양이다──라는 것을 감사 메일을 통해 알게 되었다.
+			PRINTFORML ＞어디에 썼는지는 모르겠지만 양도해 준 일손이 대활약했다고 한다.
+			PRINTFORML ＞또한 남자는 아무래도 %CALLNAME:MASTER%에 대한 좋은 소문을 조직 내에 퍼뜨려 준 모양이다.
+			PRINTFORML ＞라이벌이 되지 않는 한 일손은 많을수록 좋다.
+			PRINTFORML ＞그게 조금이라도 도움이 된다면 더더욱 그렇다.
+			PRINTFORML 　
+			PRINTFORMW ＞%CALLNAME:MASTER%은(는) 500의 명성을 얻었다。
+			FLAG:명성 += 500
+		;30未満の場合、続き物だよ～って示す
+		ELSE
+			PRINTFORML ＞……어쩐지 또 비슷한 의뢰가 들어올 것 같은 예감이 든다.
+			PRINTFORMW ＞메일 확인은 수시로 해두기로 하자……
+		ENDIF
+
+	ENDIF
+
+	;依頼終了：断った
+	;通常はここには入れない（ジャンプして入る）
+	IF 0
+		$D_ASSEN_NO
+		PRINTFORML 　
+		PRINTFORML 「갑자기 이런 말을 들으면 곤란하겠지…… 네 경우 장사 밑천이기도 하니까……
+		PRINTFORML 　미안해…… 고마워…… 어떻게든…… 해볼게……」
+		PRINTFORML 　
+		PRINTFORML ＞그렇게 말하고 남자는 비틀비틀 어디론가 걸어갔다.
+		PRINTFORML ＞……죽어버리면 아무래도 뒷맛이 나쁘다.
+		PRINTFORMW ＞마련해 주는 편이 나을지도 모르겠다……
+	ENDIF
+
+
+@CASTING_REQUEST_43(ARG:0)
+;あなたを弾く
+SIF ARG == MASTER
+	RETURN 0
+;レベルが要求以下の場合弾く
+SIF BASE:(ARG:0):LV < E
+	RETURN 0
+SIF CFLAG:ARG:이자리에없는플래그 == 1
+	RETURN 0
+SIF CFLAG:ARG:전투이외불능
+	RETURN 0
+;育児部屋に移動しているキャラは除外
+SIF CHECK_CHILD_CARE(ARG) && FLAG:출산기능ONOFF == 1
+	RETURN 0
+SIF IS_RENTING(ARG)
+	RETURN 0
+RETURN 1
+
+
+
+

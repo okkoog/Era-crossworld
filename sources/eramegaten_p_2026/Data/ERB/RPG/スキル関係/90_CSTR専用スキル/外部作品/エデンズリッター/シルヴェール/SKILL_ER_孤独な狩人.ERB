@@ -1,0 +1,115 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_ER_孤独な狩人, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	RESULTS = 빛나는 일식
+ELSE
+	RESULTS = 고독한 사냥꾼
+ENDIF
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ER_孤独な狩人
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ER_孤独な狩人, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;====================================================
+;ダメージ計算時の追加補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_ER_孤独な狩人, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;ステート名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+; 自分の攻撃、かつリッター形態の場合
+IF L_P == L_ACTOR && GET_RPG_CSTR_BTL(L_P, "エデンズリッター変身状態") == "起動"
+	SELECTCASE ARGS
+		CASE "ダメージ補正加算"
+			; 相手にデバフが入ってるかどうか判定
+			FOR LOCAL, 0, 6
+				SIF CFLAG:L_TARGET:(AUTO_SPLIT("공격/방어/마법위력/마법효과/명중/회피", "/", LOCAL) + "강화") < 0
+					RETURN 10
+			NEXT
+			RETURN 0
+	ENDSELECT
+ENDIF
+RETURN 0
+
+;====================================================
+;スキル独自のステータス補正
+;====================================================
+@SKILL_ADD_STATUS_ER_孤独な狩人, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") != "起動"
+	SELECTCASE ARGS
+		;RESULT = 修正値
+		;RESULTS = 加算/乗算/固定値/活泉/魔脈
+		;加算はそのまま固定値を加算する。乗算は(100+X)/100倍にする。固定値は必ずその数値にする(55ならなにがあろうと最大HP55になる)
+		;活泉/魔脈はそのまま同種スキルと同じ枠となりもっとも効果量が高いものを優先する形になる
+
+		CASE "基本ステータス"
+			LOCAL:2 = 0
+			FOR LOCAL, 1, 7
+				LOCAL:1 = POS(LOCAL)
+				; 居なかったら次
+				SIF LOCAL:1 < 0
+					CONTINUE
+				; 死んでたら次
+				SIF GET_STATE(CFLAG:(LOCAL:1):상태이상) == "DYING"
+					CONTINUE
+				; 生きてる人数に加算
+				LOCAL:2 += 1
+			NEXT
+			; 生存者が3人以下ならステータス加算
+			IF LOCAL:2 <= 3
+				RESULTS = 加算
+				; ステータス1.2倍
+				RETURN ARG:1 / 5
+			ELSE
+				RETURN 0
+			ENDIF
+	ENDSELECT
+ENDIF
+RETURN 0
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_ER_孤独な狩人, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	PRINTL 
+	PRINTL 마를 품고, 마를 사냥하는 자.
+	PRINTL 자동: 디버프가 걸려 있는 상대를 향한 데미지가 상승한다.
+ELSE
+	PRINTL 
+	PRINTL 고독하게 걷는 사냥꾼.
+	PRINTL 자동: 생존해 있는 아군이 (자신 포함) 3명 이하일 경우 자신의 능력치에 상승 보정.
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ER_孤独な狩人, ARG
+RETURN 0
+
+; @SKILL_EXPLAIN_TOOLTIP_ER_孤独な狩人, ARG
+; IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+; 	RESULTS:0 = 魔を宿し、魔を狩る者。
+; 	RESULTS:1 = 自動：デバフの入っている相手に対するダメージが上昇する。
+; ELSE
+; 	RESULTS:0 = 孤独に歩む狩人。
+; 	RESULTS:1 = 自動：生存している味方が（自分含めて）3人以下なら、自身のステータスに上昇補正。
+; ENDIF

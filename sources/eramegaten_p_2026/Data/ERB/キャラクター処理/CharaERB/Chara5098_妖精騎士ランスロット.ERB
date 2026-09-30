@@ -1,0 +1,326 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5098_妖精騎士ランスロット.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2023/09/02		しゃけ					新規作成
+;	002		2023/10/19		P(bazzile)				L_TARGETとすべき変数がL_Tとなっていた不具合を修正
+;	003		2023/10/21		しゃけ					各形態時の名前、あとついでにスキル（水着形態）CSTR変数を追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@ADD_NEW_COMPANION_[[キャラ:ＦＫ・랜슬롯]],ARG ,ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+#DIM LCOUNT,2
+#DIM SKILL_NUM
+#DIMS L_STR,2
+;;デバッグ用処理
+;[IF_DEBUG]
+;	VARSET LCOUNT
+;	FOR LCOUNT:0, 1, CHARA_SKILLCOUNT(ARG) + 1
+;		SIF LCOUNT:0 < 5
+;			CONTINUE
+;		SKILL_NUM = AUTO_SPLIT_INT(@"{[[스킬:전용기4]]}/{[[스킬:전용기5]]}/{[[스킬:전용기6]]}/{[[스킬:전용기7]]}/{[[스킬:백열찌르기]]}/{[[스킬:브레이브재퍼]]}","/",LCOUNT:1)
+;		CALL SET_FRIEND_HAVE_SKILL(ARG,SKILL_NUM,,LCOUNT:0)
+;		LCOUNT:1 += 1
+;	NEXT
+;	VARSET LCOUNT
+;	VARSET L_STR
+;	FOR LCOUNT:0, 1, CHARA_SKILLCOUNT(ARG) + 1
+;		IF !IS_PU_SKILLNUM(ABL:ARG:@"스킬{LCOUNT:0}")
+;			L_STR:0 = %AUTO_SPLIT(@"{[[스킬:집중부스터]]}/{[[스킬:프로미넌스]]}/{[[스킬:코즈믹플레어]]}/{[[스킬:메기도라온]]}/{[[스킬:삼할의마맥]]}","/",LCOUNT:1)%
+;			LCOUNT:1 += 1
+;		ELSE
+;			L_STR:0 = %TOSTR(ABL:ARG:@"스킬{LCOUNT:0}")%
+;		ENDIF
+;		L_STR:1 = %L_STR:1%\@L_STR:1 != "" ? / #\@%L_STR:0%
+;	NEXT
+;	CSTR:ARG:전용기6 = レイ・ホライゾン
+;	CSTR:ARG:전용기7 = 竜炎励起
+;	CALL SET_RPG_CSTR_TAKEOVER(ARG,"スキル（竜骸形態）",L_STR:1)
+;[ENDIF]
+
+;スキル習得時に各スキル枠にも保存する関数
+;FIX_CHARA_TRANS_SKILL関数を真似たやつ
+@EVENT_LEVELUP_[[キャラ:ＦＫ・랜슬롯]], ARG, ARG:1
+#DIM LCOUNT
+#DIMS L_SKILLS,20
+
+IF HAVE_PU_SKILL(ARG,"ランサー")
+	IF GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 0
+		;騎士形態で新しいスキルを覚えた場合、そのスキルをスキル（騎士形態）に追加して保存する
+		FOR LCOUNT,0,CHARA_SKILLCOUNT(ARG)
+			L_SKILLS:LCOUNT = TOSTR(ABL:ARG:@"스킬{LCOUNT + 1}")
+		NEXT
+		CALL SET_RPG_CSTR_TAKEOVER(ARG,"スキル（騎士形態）",STRJOIN(L_SKILLS,"/",0,CHARA_SKILLCOUNT(ARG)))
+	ELSEIF GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 1
+		;竜骸形態で新しいスキルを覚えた場合、そのスキルをスキル（竜骸形態）に追加して保存する
+		FOR LCOUNT,0,CHARA_SKILLCOUNT(ARG)
+			L_SKILLS:LCOUNT = TOSTR(ABL:ARG:@"스킬{LCOUNT + 1}")
+		NEXT
+		CALL SET_RPG_CSTR_TAKEOVER(ARG,"スキル（竜骸形態）",STRJOIN(L_SKILLS,"/",0,CHARA_SKILLCOUNT(ARG)))
+	ENDIF
+ENDIF
+
+@SET_LEARN_SKILL_[[キャラ:ＦＫ・랜슬롯]], ARG, ARG:1
+
+CALL CLEAR_ALL_LEARN_SKILL, ARG
+CALL SET_LEARN_SKILL, ARG, "CSTR専用スキル/ランサー", 1
+CALL SET_LEARN_SKILL, ARG, "CSTR専用スキル/ノウブル・ファンタズム", 1
+CALL SET_LEARN_SKILL, ARG, "CSTR専用スキル/今は知らず、無垢なる湖光", 1
+CALL SET_LEARN_SKILL, ARG, "CSTR専用スキル/ドラゴンハート", 1
+IF HAVE_PU_SKILL(ARG,"ランサー")
+	IF GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 0
+		CALL SET_LEARN_SKILL, ARG, "결단", 1
+		CALL SET_LEARN_SKILL, ARG, "백열찌르기", 1
+		CALL SET_LEARN_SKILL, ARG, "브레이브재퍼", 1
+		CALL SET_LEARN_SKILL, ARG, "관통", 55
+		CALL SET_LEARN_SKILL, ARG, "CSTR専用スキル/ペリー・ダンサー", 60
+		CALL SET_LEARN_SKILL, ARG, "기공(대)", 70
+	ELSEIF GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 1
+		CALL SET_LEARN_SKILL, ARG, "집중부스터", 1
+		CALL SET_LEARN_SKILL, ARG, "프로미넌스", 1
+		CALL SET_LEARN_SKILL, ARG, "코즈믹플레어", 1
+		CALL SET_LEARN_SKILL, ARG, "메기도라온", 55
+		CALL SET_LEARN_SKILL, ARG, "CSTR専用スキル/ペリー・ダンサー", 60
+		CALL SET_LEARN_SKILL, ARG, "삼할의마맥", 70
+	ENDIF
+ELSEIF HAVE_PU_SKILL(ARG,"ルーラー")
+ENDIF
+
+;-------------------------------------------------
+;キャラクター独自変数名称定義関数
+;5098の部分にキャラのNOをいれます
+;
+;キャラクター独自変数は名称が定義されていないキャラクター(NO)の参照と代入で落ちる仕組みになっているので
+;NOが確定している状況(個別イベント内・SKILL_CHANGE関数通過後、専用技内…など)で利用してください。
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:ＦＫ・랜슬롯]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_EV
+	;周回時にリセットされる数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_EV
+	;周回時にリセットされる文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_EV"
+		SELECTCASE ARG
+			CASE 0
+				;いくつかの選択肢のなかのひとつの状態を示すようなフラグは文字列で扱うとわかりやすいと思います
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 形態換装フラグ
+			CASE 1
+				RESULTS = 宝具再臨（ランサー）
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = スキル（騎士形態）
+			CASE 1
+				RESULTS = スキル（竜骸形態）
+			CASE 2
+				RESULTS = スキル（水着形態）
+			CASE 3
+				RESULTS = 各形態時の名前
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる数値型変数です
+	;スキルゲージHとほぼ互換です。基本的にはゲージHが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる文字列型変数です
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる数値型変数
+	;スキルゲージFとほぼ互換です。基本的にはゲージFが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる文字列型変数
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_CHARA_[[キャラ:ＦＫ・랜슬롯]], ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+#DIM L_NUM
+
+VARSET L_NUM
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		CASE "ダメージ補正加算"
+			IF HAVE_PU_SKILL(L_P,"ランサー")
+				;合致した素質で攻撃した場合、ダメージが9％増加（陣地作成 Ｂ＋）
+				L_NUM += 相性素質チェック_F(L_P,GET_SUCCESSION_NUM(L_相性名)) ? 9 # 0
+			ELSEIF HAVE_PU_SKILL(L_P,"ルーラー")
+				;合致した素質で攻撃した場合、ダメージが11％増加（騎乗 Ａ＋）
+				L_NUM += 相性素質チェック_F(L_P,GET_SUCCESSION_NUM(L_相性名)) ? 11 # 0
+				;クリティカル時、対象が人間としてカウントされる場合は与えるダメージが12％増加する（妖精騎士 Ｃ）
+				;メモ：必要性が出てきたらちゃんとした人属性関数を用意する
+				L_NUM += L_CRT && IS_HUMAN(L_TARGET) ? 12 # 0
+			ENDIF
+			RETURN L_NUM
+		CASE "クリティカル補正A"
+			IF HAVE_PU_SKILL(L_P,"ルーラー")
+				;クリティカル補正が11％増加（騎乗 Ａ＋）
+				L_NUM += 11
+			ENDIF
+			RETURN L_NUM
+	ENDSELECT
+ENDIF
+RETURN 0
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_CHARA_[[キャラ:ＦＫ・랜슬롯]], ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	CASE "상태이상"
+		;DYING以外のバステに18％の耐性付与（対魔力 Ｂ）
+		SIF ARGS != "DYING"
+			RETURN -18
+ENDSELECT
+
+RETURN 0
+
+;ARG = キャラ登録番号
+;ARG:1 = 使用スキル番号
+;ARG:2 = 効果付与の場合の付与者
+@SKILL_COST_CHANGE_CHARA_[[キャラ:ＦＫ・랜슬롯]], ARG, ARG:1, ARG:2
+SIF HAVE_PU_SKILL(ARG,"ランサー") && GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 1
+	RETURN -20
+
+;NPゲージ獲得量の補正
+;RESULT:0 = 獲得量への倍率補正
+;RESULT:1 = 獲得固定値
+@NP_CHARGE_CHARA_[[キャラ:ＦＫ・랜슬롯]],ARG,GIVE_SKILL_CHARA
+#DIM L_NUM,2
+#DIM GIVE_SKILL_CHARA
+VARSET L_NUM,0
+IF HAVE_PU_SKILL(ARG,"ランサー")
+	;NP獲得量が9％増加する（陣地作成 Ｂ＋）
+	L_NUM:0 += 9
+ELSEIF HAVE_PU_SKILL(ARG,"ルーラー")
+	CALL GET_SKILL_PROP, "SKILL_SUCCESSION", CFLAG:ARG:입력행동, ARG
+	;合致する素質ならNP獲得量が11％増加する（騎乗 Ａ＋）
+	L_NUM:0 += 相性素質チェック_F(ARG, RESULT) ? 11 # 0
+ENDIF
+RETURN L_NUM:0,L_NUM:1
+
+;プロフィール更新関数
+;ARG	対象キャラ
+;ARG:1	条件分岐用の引数
+@SET_PROFILE_[[キャラ:ＦＫ・랜슬롯]],ARG,ARG:1
+CALLF SET_PROFILE_F_[[キャラ:ＦＫ・랜슬롯]],ARG,ARG:1
+
+;プロフィール更新関数　組み込み関数版
+;ARG	対象キャラ
+;ARG:1	条件分岐用の引数
+@SET_PROFILE_F_[[キャラ:ＦＫ・랜슬롯]],ARG,ARG:1
+#FUNCTION
+CSTR:ARG:30 = 【メリュジーヌ】
+CSTR:ARG:31 = こことは違う遠い別の世界にて『湖の騎士』の名を着名した可憐なる妖精騎士。
+CSTR:ARG:32 = ”竜”の妖精という類稀なる種族であり、その名に違わぬ戦闘力を誇る。
+CSTR:ARG:33 = その正体は純血の幻想種である竜・アルビオンの左腕が分離し、人の形を写し取った者。
+SIF ARG:1 == 10000
+	CSTR:ARG:33 = %UNICODE(0x2588) * 56%、人の形を写し取った者。
+CSTR:ARG:34 = 輝ける極光の手によって暗い沼から掬いあげられ、竜の妖精として『新生』し、水妖の名を与えられた。
+SIF ARG:1 == 10000
+	CSTR:ARG:34 = %UNICODE(0x2588) * 44%、竜の妖精として『%UNICODE(0x2588) * 4%』し、水妖の名を与えられた。
+CSTR:ARG:37 = 妖精騎士として振る舞っているときは王子的な立ち振る舞いを見せるが、
+CSTR:ARG:38 = メリュジーヌの本来の性質は天然にして自虐的な寂しがり屋である。
+CSTR:ARG:39 = 『淋しく捨てられてたもの』故か、強い愛を一途に向けるタイプであり、
+SIF ARG:1 == 10000
+	CSTR:ARG:39 = 『%UNICODE(0x2588) * 22%』故か、強い愛を一途に向けるタイプであり、
+CSTR:ARG:40 = 反転すれば愛を守るために強硬な手段を選ぶことを辞さない重い一面を持つ。
+CSTR:ARG:41 = 
+CSTR:ARG:42 = 
+CSTR:ARG:43 = 
+CSTR:ARG:44 = 
+CSTR:ARG:45 = 宝具は『誰も知らぬ、無垢なる鼓動』。『本来の姿』になったメリュジーヌが放つドラゴンブレス。
+SIF ARG:1 == 10000
+	CSTR:ARG:45 = 宝具は『誰も知らぬ、無垢なる鼓動』。『%UNICODE(0x2588) * 8%』になったメリュジーヌが放つドラゴンブレス。
+CSTR:ARG:46 = 竜の残骸へと回帰した姿はもはや妖精とは呼べず、その心臓から零れた光で全てを破壊する『炎の厄災』となる。
+SIF ARG:1 == 10000
+	CSTR:ARG:46 = %UNICODE(0x2588) * 8%へと回帰した姿はもはや妖精とは呼べず、その心臓から零れた光で全てを破壊する『%UNICODE(0x2588) * 8%』となる。
+CSTR:ARG:47 = 
+RETURNF

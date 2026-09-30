@@ -1,0 +1,76 @@
+﻿;-------------------------------------------------
+;ARGS　　画像アドレス(CSV定義名)
+;ARG 　　画像サイズ。フォントサイズのX倍となる(元画像を縮小・拡大する)
+;ARGS:1　LEFT/CENTER/RIGHT
+;L_TEXT　画像の右にメッセージを出したい場合は"一行目/二行目/…"のSPLIT形式で指定してください
+;画像は登録された一枚絵をそのまま使う形なので行に合わせた分割はいらないです
+;
+;20240603
+;横テキスト表示が仕様上難しくなったのでオミット
+;divで実現すべき案件なので、余裕ができたら、あるいは必要になったら再実装する構えで
+;-------------------------------------------------
+@PRINT_EVENT_PICTURE, ARGS, ARG = -1, ARGS:1 = "LEFT", IS_WAIT = 1, DISUSE_BLANK = 0
+#DIM LCOUNT
+#DIMS TEMPS
+;#DIMS L_TEXT, 30
+#DIM IS_WAIT
+#DIM LINE
+#DIM STOCK_REDRAW
+#DIM DYNAMIC L_HEIGHT
+#DIM DYNAMIC L_WIDTH
+#DIM DYNAMIC L_SPACE
+#DIM DYNAMIC IS_SHOWABLE
+#DIM DYNAMIC DISUSE_BLANK	;画像がなかった時に空行をいれて補うかどうか
+STOCK_REDRAW = CURRENTREDRAW()
+REDRAW 0
+LINE = LINECOUNT
+$SHOW_START
+IS_WAIT = 0
+;画像の表示チェック
+IF ARGS != "BLANK"
+	SPRITECREATED ARGS
+	IF RESULT
+		IS_SHOWABLE = 1
+		IF ARG > 0
+			L_HEIGHT = ARG * 100
+			L_WIDTH = SPRITEWIDTH(ARGS) * (ARG * GETCONFIG("フォントサイズ")) / SPRITEHEIGHT(ARGS)
+		ELSE
+			L_HEIGHT = SPRITEHEIGHT(ARGS) * 100 / GETCONFIG("フォントサイズ") 
+			IF SPRITEWIDTH(ARGS) > CLIENTWIDTH()
+				L_HEIGHT = L_HEIGHT * CLIENTWIDTH() / SPRITEWIDTH(ARGS)
+				L_WIDTH = CLIENTWIDTH()
+			ELSE
+				L_WIDTH = SPRITEWIDTH(ARGS)
+			ENDIF
+			L_HEIGHT = L_HEIGHT * GETCONFIG("フォントサイズ") / DEFAULT_FONTSIZE
+			L_WIDTH = L_WIDTH * GETCONFIG("フォントサイズ") / DEFAULT_FONTSIZE
+		ENDIF
+		TEMPS '= @"<img src = '%ARGS%' height = '{L_HEIGHT}'>"
+		SELECTCASE ARGS:1
+			CASE "LEFT"
+				L_SPACE = 0
+			CASE "RIGHT"
+				L_SPACE = MAX(CLIENTWIDTH() - L_WIDTH, 0)
+			CASE "CENTER"
+				L_SPACE = MAX(CLIENTWIDTH() - L_WIDTH, 0) / 2
+		ENDSELECT
+	ELSE
+		DEBUGPRINTFORML イベント画像 [%ARGS%]は存在しませんでした
+		IF DISUSE_BLANK
+			REDRAW STOCK_REDRAW
+			RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+CLEARLINE LINECOUNT - LINE
+FOR LCOUNT, 0, L_HEIGHT / 100 + (L_HEIGHT % 100 > 0) - 1
+	PRINTL 
+NEXT
+SIF IS_SHOWABLE
+	HTML_PRINT @"<div xpos = '{L_SPACE}px' ypos = '-{(L_HEIGHT / 100 + (L_HEIGHT % 100 > 0) - 1) * 100}'>" + TEMPS + "</div>"
+IF IS_WAIT
+	WAIT
+	GOTO SHOW_START
+ENDIF
+REDRAW STOCK_REDRAW
+RETURN 1

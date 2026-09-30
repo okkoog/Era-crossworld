@@ -1,0 +1,70 @@
+@CREATE_RANDOM_NAME_IF(ARGS = "英語圏の女性_英語圏の男性_ドイツ人女性_ドイツ人男性_フランス人女性_フランス人男性_イタリア人女性_イタリア人男性_スペイン人女性_スペイン人男性_スウェーデン人女性_スウェーデン人男性_フィンランド人女性_フィンランド人男性_ロシア人女性_ロシア人男性_アラブ人女性_アラブ人男性_インド人女性_インド人男性_ギリシャ人女性_ギリシャ人男性_中国人女性_中国人男性_日本人男性_日本人女性_姫君風／中世日本_姫君風／近代日本_姫君風／中国伝奇_ランダム女性名")
+#DIMS NAMES,17
+#DIMS 最有力候補,1
+#DIMS 生成法,1
+#LOCALSSIZE 10000
+最有力候補 = 
+$INPUT_LOOP
+FOR COUNT,0,100
+	生成法 = %AUTO_SPLIT(ARGS,"_",COUNT)%
+	SIF STRLENS(生成法) == 0
+		BREAK
+	TRYCCALLFORM NAMEDIC_%生成法%,0
+		PRINTFORMLC [{COUNT,2}]%生成法%
+	CATCH
+	ENDCATCH
+NEXT
+PRINTL 
+PRINTL 
+PRINTL [100]自分で名前を入力する
+DO
+	INPUT
+	SELECTCASE RESULT
+		CASE 100
+			PRINTL 名前を入力してください
+			INPUTS
+			最有力候補 = %RESULTS%
+			GOTO 確認
+		CASE 0 TO (STRCOUNT(ARGS,"_") + 1)
+			SWAP RESULT,COUNT
+			VARSET RESULTS
+			生成法 = %AUTO_SPLIT(ARGS,"_",COUNT)%
+			TRYCCALLFORM NAMEDIC_%生成法%,16
+			CATCH
+				CONTINUE
+			ENDCATCH
+			GOTO 選択
+	ENDSELECT
+LOOP 1
+
+$確認
+PRINTFORML 「%最有力候補%」でよろしいですか？
+CALL INPUT_YN,"Yes","No"
+SIF RESULT == 1
+	GOTO INPUT_LOOP
+RESULTS = %最有力候補%
+RETURN
+
+$選択
+FOR COUNT,1,17
+	NAMES:COUNT = %RESULTS:(COUNT-1)%
+	PRINTFORMLC [{COUNT,2}]%NAMES:COUNT%
+NEXT
+PRINTL 
+PRINTL 
+PRINTLC	[100]別の候補
+PRINTLC	[200]考え直す
+DO
+	INPUT
+	SELECTCASE RESULT
+		CASE 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+			最有力候補 = %NAMES:RESULT%
+			GOTO 確認
+		CASE 100
+			VARSET RESULTS
+			CALLFORM NAMEDIC_%生成法%,16
+			GOTO 選択
+		CASE 200
+			GOTO INPUT_LOOP
+	ENDSELECT
+LOOP 1

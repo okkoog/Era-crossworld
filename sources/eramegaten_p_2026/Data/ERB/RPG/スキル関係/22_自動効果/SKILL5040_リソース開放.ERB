@@ -1,0 +1,64 @@
+﻿;サマナースキル　
+;スキル名
+@SKILL_NAME_5040,ARG
+RESULTS = 리소스개방
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_5040
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_5040, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_5040
+RETURN GET_SUCCESSION_NUM("자동효과")
+@継承不能_5040
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_5040, ARG = -1
+RETURN 15
+;変化不可
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_5040, ARG, ARG:1, ARG:2
+;100.00%の還元
+CALL BACK_COST, POS(ARG:1), 10000
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;
+;一定ターン攻撃した対象に対し、『万能属性と対応属性の複合』で小威力の物理追撃を行う。
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_5040,ARG,ARG:1
+;自分じゃなければNG
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+;一度のみの判定にする
+SIF ARG != ARG:1
+	RETURN 0
+;HPかMPを消費している必要がある。
+SIF !(CFLAG:ARG:소비HP || CFLAG:ARG:소비MP)
+	RETURN 0
+;20%の確率
+SIF RAND:100 >= 20
+	RETURN 0
+RETURN 1, CPOS(ARG)
+
+;　 説明文の表示
+@SKILL_EXPLAIN_5040, ARG
+PRINTFORML 자동：전투중에 스킬을 사용하면、20\%의 확률로 소비 ＭＰ의 100\%가 환원된다。
+
+@SKILL_ACTIONABLE_BATTLE_5040, ARG
+RETURN 0
+
+@ロール専用_5040
+RESULTS = Aion식 서머너
+RETURN 1

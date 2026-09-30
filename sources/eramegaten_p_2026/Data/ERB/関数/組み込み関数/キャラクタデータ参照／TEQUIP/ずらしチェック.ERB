@@ -1,0 +1,37 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2022/11/19		っとっとき				CLOTHES.ERBから関数化
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;=================================================
+;Ｖ/Ａずらし可不可のチェック
+;=================================================
+@ずらしチェック,ARG
+#DIM 衣装部位 , 1
+#DIM 調査部位 , 1
+#LOCALSIZE 1
+#LOCALSSIZE 2
+FOR 調査部位 ,0 , 2
+	LOCALS = \@ 調査部位 == 0 ? Ｖ # Ａ \@
+	LOCALS:1 = \@ 調査部位 == 0 ? 음순 # 둔부 \@
+	TEQUIP:ARG:(LOCALS + "비켜놓기가능") = 1
+	IF TEQUIP:ARG:(LOCALS:1 + "노출") == -1
+		TEQUIP:ARG:(LOCALS + "비켜놓기가능") = 0
+		CONTINUE
+	ENDIF
+	FOR 衣装部位 , 0 , 14
+		RESULT = 0
+		TRYCALLFORM CLOTHES_EXPOSE_{TEQUIP:ARG:GET_CLOTHESNAME(衣装部位)},7+調査部位
+		SIF RESULT == 1
+			CONTINUE
+		TRYCALLFORM CLOTHES_CROTCH_{TEQUIP:ARG:GET_CLOTHESNAME(衣装部位)}
+		IF RESULT != 2
+			TEQUIP:ARG:(LOCALS + "비켜놓기가능") = 0
+			BREAK
+		ENDIF
+	NEXT
+NEXT

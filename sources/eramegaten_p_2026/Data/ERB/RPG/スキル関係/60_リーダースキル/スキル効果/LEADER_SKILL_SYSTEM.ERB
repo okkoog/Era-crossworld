@@ -1,0 +1,167 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:LEADER_SKILL_SYSTEM.ERB
+;	Facility	:リーダースキル(パーティ対象の自動効果)の処理
+;
+;	Licence		:ライセンスフリー。
+;
+;	Edit	Date			Author					Reason
+;	001		2023/03/22		P(bazzile)				新規作成
+;	002		2023/08/11		P(bazzile)				リーダースキルのセット時に覚醒スキル等で誤認が発生する不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;===============================================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name						Explanation
+;
+;	・ SET_LEADER_SKILL				リーダースキルの所持状況をリスト化する処理
+;===============================================================================
+
+;==========================================================
+;@SET_LEADER_SKILL
+;リーダースキルの所持状況をリスト化する
+;==========================================================
+@SET_LEADER_SKILL
+#DIM DYNAMIC L_POS
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC IS_ENEMY
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_SKILL
+#DIM DYNAMIC TEMP_CNT, 2
+#DIM DYNAMIC TEMP_RAND_KEY, 2
+#DIM DYNAMIC STOCK_RAND_KEY, 2
+#DIM DYNAMIC IS_FRIEND_EFFECT
+#DIM DYNAMIC IS_ENEMY_EFFECT
+COUNT_ACTIVE_LEADER_SKILL = 0, 0
+VARSET ACTIVE_LEADER_SKILL
+VARSET ACTIVE_LEADER_SKILL_HAVE_CHARA, -1
+VARSET ACTIVE_ENEMY_LEADER_SKILL
+VARSET ACTIVE_ENEMY_LEADER_SKILL_HAVE_CHARA, -1
+
+;固定乱数を利用して装備状況をID化する
+RANDOMIZE 0
+TEMP_CNT = 0, 0
+TEMP_RAND_KEY = 0
+FOR L_POS, 1, 17
+	L_CHARA = POS(L_POS)
+	SIF !IS_TARGET_ABLE(L_CHARA)
+		CONTINUE
+	SIF !INPUTABLE_CHARA_F(L_CHARA)
+		CONTINUE
+	IS_ENEMY = (CFLAG:L_CHARA:PT플래그 == 0)
+	;必要でないはずなので削除
+	;TEMP_RAND_KEY = RAND(1, L_CHARA + 1P31)
+	FOR LCOUNT, 0, TRYSKILLNUM(L_CHARA)
+		;---- EDIT 002 MOD START -------------------------
+		RESULTS = 
+		TRYCCALLFORM SKILL_GET_LEADER_SKILL_NAME_%GET_TRYSKILL(L_CHARA, LCOUNT)%, L_CHARA
+			SIF RESULTS == ""
+				CONTINUE
+			L_SKILL = %RESULTS%
+		CATCH
+			CONTINUE
+		ENDCATCH
+		;効果対象の取得
+		IF !IS_ENEMY
+			IS_FRIEND_EFFECT = 1
+			IS_ENEMY_EFFECT = 0
+		ELSE
+			IS_FRIEND_EFFECT = 0
+			IS_ENEMY_EFFECT = 1
+		ENDIF
+		RESULT = 0, 0
+		TRYCCALLFORM SKILL_GET_LEADER_SKILL_TARGET_%L_SKILL%, L_CHARA
+			IF IS_ENEMY
+				IS_FRIEND_EFFECT = RESULT:1
+				IS_ENEMY_EFFECT = RESULT:0
+			ELSE
+				IS_FRIEND_EFFECT = RESULT
+				IS_ENEMY_EFFECT = RESULT:1
+			ENDIF
+		CATCH
+		ENDCATCH
+		;---- EDIT 002 MOD END ---------------------------
+		RESULT = 1
+		;重複可能数チェック
+		TRYCALLFORM LEADER_SKILL_COUNT_LIMIT_%L_SKILL%
+		IF IS_FRIEND_EFFECT
+			SIF MATCH(ACTIVE_LEADER_SKILL, L_SKILL) >= RESULT
+				CONTINUE
+			ACTIVE_LEADER_SKILL:TEMP_CNT = %L_SKILL%
+			ACTIVE_LEADER_SKILL_HAVE_CHARA:TEMP_CNT = L_CHARA
+			TEMP_CNT:0 += 1
+			TEMP_RAND_KEY:0 = RAND(1 + L_CHARA, 1P31 + ENCODETOUNI(L_SKILL))
+		ENDIF
+		IF IS_ENEMY_EFFECT
+			SIF MATCH(ACTIVE_ENEMY_LEADER_SKILL, L_SKILL) >= RESULT
+				CONTINUE
+			ACTIVE_ENEMY_LEADER_SKILL:(TEMP_CNT:1) = %L_SKILL%
+			ACTIVE_ENEMY_LEADER_SKILL_HAVE_CHARA:(TEMP_CNT:1) = L_CHARA
+			TEMP_CNT:1 += 1
+			TEMP_RAND_KEY:1 = RAND(1 + L_CHARA, 1P31 + ENCODETOUNI(L_SKILL))
+		ENDIF
+	NEXT
+NEXT
+;カウントを増やすとTRYCSKILLNUM関数の数が増えてしまうので判定が終わってから数値の更新をする
+COUNT_ACTIVE_LEADER_SKILL:0 = TEMP_CNT:0
+;内容に変更があった場合は場にでているキャラのステータス同期だけする
+IF STOCK_RAND_KEY:0 != TEMP_RAND_KEY:0
+	STOCK_RAND_KEY:0 = TEMP_RAND_KEY:0
+	FOR L_POS, 1, 7
+		SIF POS(L_POS) < 0
+			CONTINUE
+		CALL SYNC_STATUS, POS(L_POS), "HPMP割合保持"
+	NEXT
+ENDIF
+
+COUNT_ACTIVE_LEADER_SKILL:1 = TEMP_CNT:1
+;内容に変更があった場合は場にでているキャラのステータス同期だけする
+IF STOCK_RAND_KEY:1 != TEMP_RAND_KEY:1
+	STOCK_RAND_KEY:1 = TEMP_RAND_KEY:1
+	FOR L_POS, 7, 17
+		SIF POS(L_POS) < 0
+			CONTINUE
+		CALL SYNC_STATUS, POS(L_POS), "HPMP割合保持"
+	NEXT
+ENDIF
+
+;乱数の不定化
+RANDOMIZE GETMILLISECOND()
+
+;==========================================================
+;@COUNT_ACTIVE_LEADER_SKILL
+;
+;発動中のリーダースキルの効果の数を返す
+;ARGS = スキル名称
+;ARG  = 対象のキャラ番号(敵味方で変数が変わるので、未指定なら味方)
+;==========================================================
+@COUNT_ACTIVE_LEADER_SKILL, ARGS, ARG = -1
+#FUNCTION
+IF ARG == -1 || CFLAG:ARG:PT플래그 > 0
+	RETURNF MATCH(ACTIVE_LEADER_SKILL, ARGS, 0, COUNT_ACTIVE_LEADER_SKILL:0)
+ELSE
+	RETURNF MATCH(ACTIVE_ENEMY_LEADER_SKILL, ARGS, 0, COUNT_ACTIVE_LEADER_SKILL:1)
+ENDIF
+
+;==========================================================
+;@IS_FIRST_ACTIVE_LEADER_SKILL
+;
+;ARGが持っているARGSが最初に判定されたARGSがどうかを返す。使い方はホローポイントなどを見てください
+;ARGS = スキル名称
+;ARG  = リーダースキルの持ち主のキャラ登録番号
+;ARG:1  = 対象のキャラ番号(敵味方で変数が変わるので、未指定なら味方)
+;==========================================================
+@IS_FIRST_ACTIVE_LEADER_SKILL, ARGS, ARG, ARG:1 = -1
+#FUNCTION
+#DIM TEMP
+IF ARG:1 == -1 || CFLAG:(ARG:1):PT플래그 > 0
+	TEMP = FINDELEMENT(ACTIVE_LEADER_SKILL, ARGS, 0, COUNT_ACTIVE_LEADER_SKILL:0, 1)
+	SIF TEMP < 0
+		RETURNF 0
+	RETURNF ACTIVE_LEADER_SKILL_HAVE_CHARA:TEMP == ARG
+ELSE
+	TEMP = FINDELEMENT(ACTIVE_ENEMY_LEADER_SKILL, ARGS, 0, COUNT_ACTIVE_LEADER_SKILL:1, 1)
+	SIF TEMP < 0
+		RETURNF 0
+	RETURNF ACTIVE_ENEMY_LEADER_SKILL_HAVE_CHARA:TEMP == ARG
+ENDIF

@@ -1,0 +1,166 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2719,ARG
+RESULTS = 란카인
+
+;　명중
+@SKILL_HITRATE_2719, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2719, ARG
+RETURN 420
+;RETURN 2800
+;500 * 4 * 14 / 10 = 2800 大いなるロゴスの4回分の1.4倍
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2719,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2719,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2719, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2719,ARG
+RETURN 60
+
+;　相性
+@SKILL_TYPE_2719,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2719
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2719, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2719, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2719,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2719,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2719, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2719
+RETURN GET_SUCCESSION_NUM("만능")
+
+@継承不能_2719
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_2719, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2719
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2719, ARG = -1
+RETURN 15
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2719, ARG, ARG:1, ARG:2
+
+IF SKILLGAGE_D_GET(ARG,2719) < 1
+	CALL SKILLGAGE_H_SET,ARG,2719,1
+ELSE
+	CALL SKILLGAGE_H_ADD,ARG,2719,1
+ENDIF
+
+CALL SKILLGAGE_D_SET,ARG,2719,2
+
+IF SKILLGAGE_H_GET(ARG,2719) == 1
+	PRINTW ＞온　알파…
+ELSEIF SKILLGAGE_H_GET(ARG,2719) == 2
+	PRINTW ＞온　알파　에토　오메가…
+ELSEIF SKILLGAGE_H_GET(ARG,2719) == 3
+	PRINTW ＞온　알파　에토　오메가　이오토…
+ELSEIF SKILLGAGE_H_GET(ARG,2719) == 4
+	PRINTL ＞온　알파　에토　오메가　이오토　테트라그라마톤！
+	CALL ATTACK_FIELD,ARG,ARG:1,2719
+	
+	CALL SKILLGAGE_H_SET,ARG,2719,0
+	CALL SKILLGAGE_D_SET,ARG,2719,0
+ENDIF
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_2719,ARG
+SIF SKILLGAGE_H_GET(ARG,2719) == 0
+	RETURN 0
+RESULTS '= SET_COLOR_TAG(@"란카인　영창{SKILLGAGE_H_GET(ARG,2719)}턴",  "DARK-PINK")
+RETURN 4
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2719, ARG
+PRINTL 복창함으로써 막대한 힘을 해방한다
+PRINTL 4턴 연속으로 영창함으로써 적 전체에 특대위력의 만능 공격을 행한다。
+PRINTL 이 스킬의 공격 데미지를 400% 가산해서 공격한다。
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_2719, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+#DIM TOTAL_DMG_B
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			SIF CFLAG:L_P:입력행동 == 2719 && SKILLGAGE_H_GET(L_P,2719) > 3
+				RETURN 400
+			RETURN 0
+	ENDSELECT
+ENDIF
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2719,ARG
+RETURN 1
+;とくにない
+

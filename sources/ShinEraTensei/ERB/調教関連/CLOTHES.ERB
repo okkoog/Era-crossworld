@@ -1,0 +1,1170 @@
+;着衣処理の改定
+;着る服をCFLAGに格納して、カスタムできるようにする
+;-------------------------------------------------
+@SHOPCOMABLE_170
+RESULTS = 衣装部屋
+RETURN 1
+
+@SHOP_COM_170
+CALL CLOTHES_SETTING_USUALLY
+
+;=================================================
+;着衣に関するFUNCTION
+;=================================================
+;着衣部位の番号
+@GET_CLOTHES(ARGS)
+#FUNCTION
+RETURNF GETNUM(TEQUIP,ARGS) - GETNUM(TEQUIP,"帽子")
+
+@NAME_EXPOSE(ARG)
+#FUNCTIONS
+RETURNF TEQUIPNAME:(GETNUM(TEQUIP,"腕露出")+ARG)
+
+@GET_CLOTHESNAME(ARG)
+#FUNCTIONS
+RETURNF TEQUIPNAME:(GETNUM(TEQUIP,"帽子")+ARG)
+
+@CLOTHESNAMEF(ARG = -99,ARG:1)
+#FUNCTIONS
+SIF ARG == -99
+	ARG = TARGET
+IF ARG:1 < 0 || ARG:1 > 11
+	PRINTFORM %CALLNAME:ARG%番の衣装名を参照する際に、不正な番号{ARG:1}が衣装の部位として指定されました
+	PRINTFORM 意図しない動作・不具合である可能性が高いので、報告をお願いします
+	RETURNF "不正な衣装名"
+ENDIF
+RETURNF ITEMNAME:(6000 + CFLAG:ARG:(GET_CLOTHESNAME(ARG:1)))
+
+;=================================================
+;露出状況のチェック
+;=================================================
+@CHECK_EXPOSE(ARG)
+#DIM 衣装部位 , 1
+#DIM 調査部位 , 1
+#LOCALSIZE 12
+FOR 調査部位,0,8
+	VARSET LOCAL
+	TEQUIP:ARG:(NAME_EXPOSE(調査部位)) = -1
+	
+	SIF (調査部位 == 3 || 調査部位 == 4) && TEQUIP:ARG:胸前開き == 1
+		CONTINUE
+	
+	FOR 衣装部位,0,12
+		TRYCALLFORM CLOTHES_EXPOSE_{TEQUIP:ARG:(GET_CLOTHESNAME(衣装部位))},調査部位+1
+		SIF RESULT == 0
+			LOCAL:衣装部位 = 1
+	NEXT
+
+	;その他→上着→全身服→服→下衣→帽子→靴→全身下着→手→靴下→下着上下
+	IF LOCAL:11
+		TEQUIP:ARG:(NAME_EXPOSE(調査部位)) = 11
+	ELSEIF LOCAL:10
+		TEQUIP:ARG:(NAME_EXPOSE(調査部位)) = 10
+	ELSEIF LOCAL:3
+		TEQUIP:ARG:(NAME_EXPOSE(調査部位)) = 3
+	ELSEIF LOCAL:1
+		TEQUIP:ARG:(NAME_EXPOSE(調査部位)) = 1
+	ELSEIF LOCAL:2
+		TEQUIP:ARG:(NAME_EXPOSE(調査部位)) = 2
+	ELSEIF LOCAL:0
+		TEQUIP:ARG:(NAME_EXPOSE(調査部位)) = 0
+	ELSEIF LOCAL:9
+		TEQUIP:ARG:(NAME_EXPOSE(調査部位)) = 9
+	ELSEIF LOCAL:7
+		TEQUIP:ARG:(NAME_EXPOSE(調査部位)) = 7
+	ELSEIF LOCAL:4
+		TEQUIP:ARG:(NAME_EXPOSE(調査部位)) = 4
+	ELSEIF LOCAL:8
+		TEQUIP:ARG:(NAME_EXPOSE(調査部位)) = 8
+	ELSEIF LOCAL:5
+		TEQUIP:ARG:(NAME_EXPOSE(調査部位)) = 5
+	ELSEIF LOCAL:6
+		TEQUIP:ARG:(NAME_EXPOSE(調査部位)) = 6
+	ENDIF
+NEXT
+
+@CHECK_EXP(ARG)
+FOR LOCAL,0,12
+		IF TEQUIP:ARG:GET_CLOTHESNAME(LOCAL)
+			TRYCALLFORM CLOTHES_EXP_{TEQUIP:ARG:GET_CLOTHESNAME(LOCAL)},ARG
+		ENDIF
+NEXT
+
+@CHECK_SOURCE(ARG)
+FOR LOCAL,0,12
+		IF TEQUIP:ARG:GET_CLOTHESNAME(LOCAL)
+			TRYCALLFORM CLOTHES_SOURCE_{TEQUIP:ARG:GET_CLOTHESNAME(LOCAL)},ARG
+		ENDIF
+NEXT
+;FOR LOCAL,0,80
+;	LOCAL:2 = 0
+;	FOR LOCAL:1,0,12
+;		IF TEQUIP:ARG:GET_CLOTHESNAME(LOCAL:1)
+;			TRYCALLFORM CLOTHES_EXP_{TEQUIP:ARG:GET_CLOTHESNAME(LOCAL:1)},LOCAL
+;			LOCAL:2 += RESULT
+;		ENDIF
+;	NEXT
+;	EXP:ARG:LOCAL = EXP:ARG:LOCAL + LOCAL:2
+;	IF LOCAL:2 > 0
+;		SIF ARG == TARGET
+;			PRINTFORML %EXPNAME:LOCAL%+{LOCAL:2}
+;		SIF ARG == ASSI
+;			PRINTFORML %EXPNAME:LOCAL%+{LOCAL:2}(助手)
+;		SIF ARG == MASTER
+;			PRINTFORML %EXPNAME:LOCAL%+{LOCAL:2}(主人)
+;	ENDIF
+;NEXT
+
+;=================================================
+;触覚状況のチェック
+;=================================================
+@触覚チェック,ARG
+#DIM 衣装部位 , 1
+#DIM 調査部位 , 1
+#DIM 触覚 , 12
+#LOCALSIZE 3
+#LOCALSSIZE 2
+
+FOR 調査部位 , 0 , 5
+	VARSET 触覚 , 1
+	SELECTCASE 調査部位
+		CASE 0
+			LOCALS = Ｃ
+			LOCALS:1 = 陰唇
+			LOCAL = 7
+			LOCAL:1 = 0
+		CASE 1
+			LOCALS = Ｖ
+			LOCALS:1 = 陰唇
+			LOCAL = 7
+			LOCAL:1 = 1
+		CASE 2
+			LOCALS = Ａ
+			LOCALS:1 = 臀部
+			LOCAL = 8
+			LOCAL:1 = 2
+		CASE 3
+			LOCALS = 乳首
+			LOCALS:1 = 乳首
+			LOCAL = 5
+			LOCAL:1 = 3
+		CASE 4
+			LOCALS:1 = 乳房
+			LOCALS = 乳房
+			LOCAL = 4
+			LOCAL:1 = 4
+	ENDSELECT
+	TEQUIP:ARG:(LOCALS + "触覚") = 1
+	TEQUIP:ARG:("被覆愛撫" + LOCALS) = 0
+	TEQUIP:ARG:("服内部愛撫" + LOCALS) = 0
+
+	;露出している部位
+	IF (TEQUIP:ARG:(LOCALS:1 + "露出")) == -1
+		CONTINUE
+	ENDIF
+
+	FOR 衣装部位 , 0 , 12
+		RESULT = 0
+		TRYCALLFORM CLOTHES_EXPOSE_{TEQUIP:ARG:GET_CLOTHESNAME(衣装部位)},LOCAL
+		RESULT:1 = RESULT
+		;胸前開き
+		IF RESULT != 1 && (LOCAL == 4 || LOCAL == 5) && TEQUIP:ARG:胸前開き
+			RESULT = 0
+			TRYCALLFORM CLOTHES_OPENFRONT_{TEQUIP:ARG:GET_CLOTHESNAME(衣装部位)}
+			SIF RESULT
+				RESULT:1 = 1
+		ENDIF
+		
+		;露出
+		IF RESULT:1 == 1
+			触覚:衣装部位 = 1
+		;被覆
+		ELSE
+			TRYCCALLFORM CLOTHES_触覚_{TEQUIP:ARG:GET_CLOTHESNAME(衣装部位)},LOCAL:1
+				IF RESULT == 0
+					TEQUIP:ARG:(LOCALS + "触覚") = 0
+					BREAK
+				ENDIF
+				触覚:衣装部位 = RESULT
+			CATCH
+				TEQUIP:ARG:(LOCALS + "触覚") = 0
+				BREAK
+			ENDCATCH
+		ENDIF
+	NEXT
+	SIF TEQUIP:ARG:(LOCALS + "触覚") == 0
+		CONTINUE
+
+	;上から伝わる
+	LOCAL:2 = 0
+	FOR 衣装部位 , 0 ,12
+		;上から伝わらない服
+		IF 触覚:衣装部位 != 1 && (触覚:衣装部位 & 2 == 0)
+			LOCAL:2 += 2
+			BREAK
+		ENDIF
+		;上から伝わる服
+		SIF 触覚:衣装部位 & 2
+			LOCAL:2 += 1
+	NEXT
+	;着込みすぎ
+	IF LOCAL:2 > 1
+		TEQUIP:ARG:(LOCALS + "触覚") = 0
+		CONTINUE
+	;上から伝わる服を一枚だけ着ている
+	ELSEIF LOCAL:2 == 1
+		TEQUIP:ARG:(LOCALS + "触覚") = 2
+		TEQUIP:ARG:("被覆愛撫" + LOCALS) = 1
+	ENDIF
+
+	;潜り込ませられる
+	LOCAL:2 = 0
+	FOR 衣装部位 , 0 ,12
+		;潜り込ませられない
+		IF 触覚:衣装部位 != 1 && (触覚:衣装部位 & 4 == 0)
+			TEQUIP:ARG:(LOCALS + "触覚") = 0
+			LOCAL:2 = 0
+			BREAK
+		ENDIF
+		;潜り込ませられる
+		SIF 触覚:衣装部位 != 1 && (触覚:衣装部位 & 4)
+			LOCAL:2 += 1
+	NEXT
+	IF LOCAL:2 > 0
+		SIF TEQUIP:ARG:(LOCALS + "触覚") == 1
+			TEQUIP:ARG:(LOCALS + "触覚") = 0
+		TEQUIP:ARG:(LOCALS + "触覚") += 4
+		TEQUIP:ARG:("服内部愛撫" + LOCALS) = 1
+	ENDIF
+NEXT
+
+;=================================================
+;Ｖ/Ａずらし可不可のチェック
+;=================================================
+@ずらしチェック,ARG
+#DIM 衣装部位 , 1
+#DIM 調査部位 , 1
+#LOCALSIZE 1
+#LOCALSSIZE 2
+FOR 調査部位 ,0 , 2
+	LOCALS = \@ 調査部位 == 0 ? Ｖ # Ａ \@
+	LOCALS:1 = \@ 調査部位 == 0 ? 陰唇 # 臀部 \@
+	TEQUIP:ARG:(LOCALS + "ずらし可") = 1
+	IF TEQUIP:ARG:(LOCALS:1 + "露出") == -1
+		TEQUIP:ARG:(LOCALS + "ずらし可") = 0
+		CONTINUE
+	ENDIF
+	FOR 衣装部位 , 0 , 12
+		RESULT = 0
+		TRYCALLFORM CLOTHES_EXPOSE_{TEQUIP:ARG:GET_CLOTHESNAME(衣装部位)},7+調査部位
+		SIF RESULT == 1
+			CONTINUE
+		TRYCALLFORM CLOTHES_CROTCH_{TEQUIP:ARG:GET_CLOTHESNAME(衣装部位)}
+		IF RESULT != 2
+			TEQUIP:ARG:(LOCALS + "ずらし可") = 0
+			BREAK
+		ENDIF
+	NEXT
+NEXT
+;=================================================
+;おっぱいオープンのチェック
+;=================================================
+@おっぱいオープンチェック,ARG
+#DIM 衣装部位 , 1
+#DIM オープン可否 , 12
+#LOCALSIZE 1
+
+VARSET オープン可否 , 0
+TEQUIP:ARG:胸構造 = 0
+FOR 衣装部位 , 0 , 12
+	RESULT = 0
+	TRYCALLFORM CLOTHES_EXPOSE_{TEQUIP:ARG:GET_CLOTHESNAME(衣装部位)},4
+	RESULT:1 = RESULT
+	TRYCALLFORM CLOTHES_EXPOSE_{TEQUIP:ARG:GET_CLOTHESNAME(衣装部位)},5
+	SIF RESULT == 1 && RESULT:1 == 1
+		CONTINUE
+	TRYCCALLFORM CLOTHES_BREAST_{TEQUIP:ARG:GET_CLOTHESNAME(衣装部位)}
+		IF RESULT == 0
+			TEQUIP:ARG:胸前開き = 0
+			RETURN 0
+		ENDIF
+		オープン可否:衣装部位 = RESULT
+	CATCH
+		TEQUIP:ARG:胸前開き = 0
+		RETURN 0
+	ENDCATCH
+NEXT
+;その他→上着→全身服→服→下衣→帽子→靴→全身下着→手→靴下→下着上下
+IF オープン可否:10
+	TEQUIP:ARG:胸構造 = オープン可否:10
+ELSEIF オープン可否:3
+	TEQUIP:ARG:胸構造 = オープン可否:3
+ELSEIF オープン可否:1
+	TEQUIP:ARG:胸構造 = オープン可否:1
+ELSEIF オープン可否:2
+	TEQUIP:ARG:胸構造 = オープン可否:2
+ELSEIF オープン可否:0
+	TEQUIP:ARG:胸構造 = オープン可否:0
+ELSEIF オープン可否:9
+	TEQUIP:ARG:胸構造 = オープン可否:9
+ELSEIF オープン可否:7
+	TEQUIP:ARG:胸構造 = オープン可否:7
+ELSEIF オープン可否:4
+	TEQUIP:ARG:胸構造 = オープン可否:4
+ELSEIF オープン可否:8
+	TEQUIP:ARG:胸構造 = オープン可否:8
+ELSEIF オープン可否:5
+	TEQUIP:ARG:胸構造 = オープン可否:5
+ELSEIF オープン可否:6
+	TEQUIP:ARG:胸構造 = オープン可否:6
+ENDIF
+SIF TEQUIP:ARG:胸構造 == 6
+	TEQUIP:ARG:胸前開き = 1
+;=================================================
+;股間構造のチェック
+;TEQUIP:股間構造 BIT演算 6以降はスカート
+;0 = ズボン、1 = ビキニタイプ、2 = 穴開き、3 前開き、4 開閉可能
+;10 = 具チラ 11 = ミニ 12 = 通常 13 = ロング 14 = タイト
+;=================================================
+@股間構造チェック,ARG
+#DIM 衣装部位 , 1
+#DIM 構造 , 12
+#LOCALSIZE 1
+
+VARSET 構造 , 0
+TEQUIP:ARG:股間構造 = 0
+TEQUIP:ARG:スカートたくし上げ = 0
+
+;可視状況初期化
+TEQUIP:ARG:陰唇可視 = TEQUIP:ARG:陰唇露出
+TEQUIP:ARG:臀部可視 = TEQUIP:ARG:臀部露出
+
+FOR 衣装部位 , 0 , 12
+	RESULT = 0
+	TRYCCALLFORM CLOTHES_CROTCH_{TEQUIP:ARG:GET_CLOTHESNAME(衣装部位)}
+		IF RESULT <= 0
+			CONTINUE
+		ELSEIF RESULT == 3
+			;スカートの場合、スカートのタイプを股間構造に放り込む
+			TRYCCALLFORM CLOTHES_SKIRT_{TEQUIP:ARG:GET_CLOTHESNAME(衣装部位)}
+				SIF RESULT == 0
+					RESULT = 3
+				SETBIT TEQUIP:ARG:股間構造 , 9 + RESULT
+			CATCH
+				SETBIT TEQUIP:ARG:股間構造 , 12
+			ENDCATCH
+		ELSEIF TEQUIP:ARG:陰唇露出 == 衣装部位
+			SIF	RESULT > 3
+				RESULT -= 1
+			;スカート以外の場合、一番上の衣装であれば股間構造を放り込む
+				SETBIT TEQUIP:ARG:股間構造 , RESULT - 1
+		ENDIF
+		構造:衣装部位 = RESULT
+	CATCH
+	ENDCATCH
+NEXT
+;陰唇露出しているのであれば、股間の構造に穴開きがあれば放り込む
+SIF TEQUIP:ARG:陰唇露出 == -1 && MATCH(構造,4)
+	SETBIT TEQUIP:ARG:股間構造 , 2
+
+;スカートの長さに基づく諸処理
+;ロング
+IF GETBIT(TEQUIP:ARG:股間構造,13)
+	TEQUIP:ARG:スカートたくし上げ = 4
+	TEQUIP:ARG:陰唇可視 = 0
+	TEQUIP:ARG:臀部可視 = 0
+;通常
+ELSEIF GETBIT(TEQUIP:ARG:股間構造,12)
+	TEQUIP:ARG:スカートたくし上げ = 3
+	TEQUIP:ARG:陰唇可視 = 0
+	TEQUIP:ARG:臀部可視 = 0
+;タイト
+ELSEIF GETBIT(TEQUIP:ARG:股間構造,14)
+	TEQUIP:ARG:スカートたくし上げ = 1
+	SIF !HAVE_PENIS(ARG)
+		TEQUIP:ARG:陰唇可視 = 0
+	TEQUIP:ARG:臀部可視 = 0
+;ミニ
+ELSEIF GETBIT(TEQUIP:ARG:股間構造,11)
+	TEQUIP:ARG:スカートたくし上げ = 2
+	SIF !HAVE_PENIS(ARG)
+		TEQUIP:ARG:陰唇可視 = 0
+	TEQUIP:ARG:臀部可視 = 0
+;具チラ
+ELSEIF GETBIT(TEQUIP:ARG:股間構造,10)
+	TEQUIP:ARG:スカートたくし上げ = 1
+ENDIF
+
+;==================================================
+;着衣の初期化処理
+;==================================================
+@CLOTHES_INITIALIZE,ARG
+LOCAL = 1
+REPEAT 12
+	IF CFLAG:ARG:(60+COUNT) == -1
+		CFLAG:ARG:(GET_CLOTHESNAME(COUNT)) = 0
+	ELSE
+		CFLAG:ARG:(GET_CLOTHESNAME(COUNT)) = CFLAG:ARG:(60+COUNT) ? CFLAG:ARG:(60+COUNT) # CSVCFLAG(NO:ARG,40+COUNT,0)
+	ENDIF
+	SIF CFLAG:ARG:(GET_CLOTHESNAME(COUNT)) < 0
+		CFLAG:ARG:(GET_CLOTHESNAME(COUNT)) = 0
+	SIF CFLAG:ARG:GET_CLOTHESNAME(COUNT)
+		CFLAG:ARG:23 |= LOCAL
+	LOCAL *= 2
+REND
+
+
+
+@EVENTTRAIN
+#PRI
+CALL CLOTHES_TRAIN,MASTER
+SIF TARGET >= 0
+	CALL CLOTHES_TRAIN,TARGET
+SIF ASSI >= 0
+	CALL CLOTHES_TRAIN,ASSI
+
+
+
+;服装の着用
+@CLOTHES_TRAIN,ARG,ARG:1 = 0
+;ARG:1 == 1の場合、ダンジョン探索の記録をチェックする
+REPEAT 12
+	TEQUIP:ARG:(GET_CLOTHESNAME(COUNT)) = CFLAG:ARG:(GET_CLOTHESNAME(COUNT))
+REND
+SIF ARG:1 == 1 && CFLAG:ARG:戦闘参加不可能
+	RETURN 0
+SIF ARG:1 == 1 && FLAG:探索時初期着衣設定 == 5 && CFLAG:ARG:PTフラグ > 0
+	ARG:1 = 0
+;初期着衣設定に応じて、服の設定をする
+;前回設定
+IF (FLAG:1 == 4 && ARG:1 == 0) || (ARG:1 == 1 && FLAG:探索時初期着衣設定 == 4)
+	LOCAL = 1
+	REPEAT 12
+		SIF (CFLAG:ARG:(23+ARG:1) & LOCAL)  == 0
+			TEQUIP:ARG:GET_CLOTHESNAME(COUNT) = 0
+		LOCAL *= 2
+	REND
+	CALL おっぱいオープンチェック(ARG)
+	CALL CHECK_EXPOSE(ARG)
+	CALL 股間構造チェック,ARG
+	CALL 触覚チェック(ARG)
+	CALL ずらしチェック(ARG)
+	LOCAL:1 = 0
+	SIF  (TEQUIP:ARG:胸構造 & 1 || TEQUIP:ARG:胸構造 & 2 || TEQUIP:ARG:胸構造 & 4 || TEQUIP:ARG:胸構造 & 8 || TEQUIP:ARG:胸構造 & 16) 
+		LOCAL:1 = 1
+	SIF GETBIT(CFLAG:ARG:23,12) && LOCAL:1
+		TEQUIP:ARG:胸前開き = 1
+;全裸
+ELSEIF (FLAG:1 == 3 && ARG:1 == 0) || (ARG:1 == 1 && FLAG:探索時初期着衣設定 == 3)
+	REPEAT 12
+		TEQUIP:ARG:(GET_CLOTHESNAME(COUNT)) = 0
+	REND
+;下着姿
+ELSEIF (FLAG:1 == 2 && ARG:1 == 0) || (ARG:1 == 1 && FLAG:探索時初期着衣設定 == 2)
+	TEQUIP:ARG:下衣 = 0
+	TEQUIP:ARG:服 = 0
+	TEQUIP:ARG:全身服 = 0
+;半脱ぎ
+ELSEIF (FLAG:1 == 1 && ARG:1 == 0) || (ARG:1 == 1 && FLAG:探索時初期着衣設定 == 1)
+	TEQUIP:ARG:下着（上） = 0
+	TEQUIP:ARG:下着（下） = 0
+	TEQUIP:ARG:全身下着 = 0
+ENDIF
+CALL おっぱいオープンチェック(ARG)
+CALL CHECK_EXPOSE(ARG)
+CALL 股間構造チェック,ARG
+CALL 触覚チェック(ARG)
+CALL ずらしチェック(ARG)
+
+
+
+@EVENTTURNEND
+CALL SAVE_CLOTHES,MASTER
+
+SIF TARGET >= 0
+	CALL SAVE_CLOTHES,TARGET
+SIF ASSI >= 0
+	CALL SAVE_CLOTHES,ASSI
+
+@SAVE_CLOTHES,ARG,ARG:1 = 0
+	;着衣状態の保存処理
+	LOCAL = 1
+	CFLAG:ARG:(23+ARG:1) = 0
+	REPEAT 12
+		SIF TEQUIP:ARG:GET_CLOTHESNAME(COUNT)
+			CFLAG:ARG:(23+ARG:1) |= LOCAL
+		LOCAL *= 2
+	REND
+	SIF TEQUIP:ARG:胸前開き
+		SETBIT CFLAG:ARG:(23+ARG:1),12
+
+
+;-------------------------------------------------
+;着衣の表示
+;-------------------------------------------------
+@CLOTHES_CHANGE,ARG , ARG:1 = 0
+;C = NO:TARGET
+#DIM LINE,2
+#DIM 胸開放可能, 3
+#DIM CHARA, 1
+#DIM 非表示, 3
+#DIM 陰唇露出状態, 3
+#DIM 乳房露出状態, 3
+#DIM 口上チェック可, 1
+#LOCALSIZE 3
+LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - LINE
+PRINTL 着衣について設定します
+;特殊な着衣状態を表示
+;全身着か上下着着用で下着無しは半脱ぎ（脱がすまたは着せる過程で半脱ぎ状態にしていると脳内変換）
+;IF (TEQUIP:6 > 0 || (TEQUIP:5 > 0 && TEQUIP:4 > 0)) && TEQUIP:3 == 0 && TEQUIP:2 == 0
+;	PRINTL 【半脱ぎ】
+;	PRINTL 　
+;全身着及び上下着が無く、下着を上下共につけている場合に表示
+;ELSEIF TEQUIP:全身服 == 0 && TEQUIP:5 == 0 && TEQUIP:4 == 0 && TEQUIP:3 > 0 && TEQUIP:2 > 0
+;	PRINTL 【下着姿】
+;	PRINTL 　
+;何もつけていない時に表示
+;ELSEIF TEQUIP:6 == 0 && TEQUIP:5 == 0 && TEQUIP:4 == 0 && TEQUIP:3 == 0 && TEQUIP:2 == 0 && TEQUIP:1 == 0 && TEQUIP:0 == 0
+;	PRINTL 【全裸】
+;	PRINTL 　
+;ENDIF
+;胸ぼろん以外は可能
+口上チェック可 = 1
+;着衣名関数から着衣を呼び出していく
+FOR LOCAL:1, 0 , (ARG:1 == 1 ? 1 # 3)
+	SIF LOCAL:1 == 0
+		CHARA = ARG
+	SIF LOCAL:1 == 1
+		CHARA = MASTER
+	SIF LOCAL:1 == 2
+		CHARA = ASSI
+	SIF CHARA < 0
+		CONTINUE
+	;口上の判定用に取得しておく
+	陰唇露出状態:(LOCAL:1) = TEQUIP:CHARA:陰唇露出
+	乳房露出状態:(LOCAL:1) = TEQUIP:CHARA:乳房露出
+	;現在来ている服を表示、PRINTLは改行用
+	DRAWLINE
+	PRINTFORM %CALLNAME:CHARA,35,LEFT% 
+	SIF !非表示:(LOCAL:1)
+		SETCOLOR COLOR("aqua")
+			PRINTBUTTON @"[{LOCAL:1*100+98,3}] 表示　", LOCAL:1*100+98
+	RESETCOLOR
+	SIF 非表示:(LOCAL:1)
+		SETCOLOR COLOR("aqua")
+			PRINTFORML [{LOCAL:1*100+99,3}] 非表示
+	RESETCOLOR
+	SIF 非表示:(LOCAL:1)
+		CONTINUE
+	; \@ TEQUIP:ARG:胸前開き ? [胸開放中] #\@
+	FOR LOCAL, 0, 12
+		SIF !CFLAG:CHARA:(GET_CLOTHESNAME(LOCAL))
+			CONTINUE
+		TRYCCALLFORM CLOTHES_NAME_{CFLAG:CHARA:(GET_CLOTHESNAME(LOCAL))}
+			PRINTFORM %"【"+GET_CLOTHESNAME(LOCAL)+"】",14,LEFT% %RESULTS,20,LEFT% 
+			SIF TEQUIP:CHARA:(GET_CLOTHESNAME(LOCAL))
+				SETCOLOR COLOR("aqua")
+			PRINTBUTTON @"[{LOCAL+LOCAL:1*100,3}] 着衣　", LOCAL+LOCAL:1*100
+			RESETCOLOR
+			SIF !TEQUIP:CHARA:(GET_CLOTHESNAME(LOCAL))
+				SETCOLOR COLOR("aqua")
+			PRINTFORM [{LOCAL+20+LOCAL:1*100,3}] 脱衣
+			RESETCOLOR
+			SIF STAIN:CHARA:(LOCAL+10) & 1
+				PRINT <愛液>
+			SIF STAIN:CHARA:(LOCAL+10) & 2
+				PRINT <ペニス>
+			SIF STAIN:CHARA:(LOCAL+10) & 4
+				PRINT <精液>
+			SIF STAIN:CHARA:(LOCAL+10) & 8
+				PRINT <アナル>
+			SIF STAIN:CHARA:(LOCAL+10) & 16
+				PRINT <母乳>
+			SIF STAIN:CHARA:(LOCAL+10) & 32
+				PRINT <粘液>
+			SIF STAIN:CHARA:(LOCAL+10) & 64
+				PRINT <破瓜の血>
+			PRINTL 
+		CATCH
+		ENDCATCH
+	NEXT
+	PRINTFORM %"【全ての衣服】",35,LEFT% 
+	SIF SUMARRAY(TEQUIP:CHARA:0, GETNUM(TEQUIP, GET_CLOTHESNAME(0)), GETNUM(TEQUIP, GET_CLOTHESNAME(11))+1) == SUMARRAY(CFLAG:CHARA:0, GETNUM(CFLAG, GET_CLOTHESNAME(0)), GETNUM(CFLAG, GET_CLOTHESNAME(11))+1)
+		SETCOLOR COLOR("aqua")
+			PRINTBUTTON @"[{LOCAL:1*100+50,3}] 着衣　", LOCAL:1*100+50
+	RESETCOLOR
+	SIF SUMARRAY(TEQUIP:CHARA:0, GETNUM(TEQUIP, GET_CLOTHESNAME(0)), GETNUM(TEQUIP, GET_CLOTHESNAME(11))+1) == 0
+		SETCOLOR COLOR("aqua")
+			PRINTFORML [{LOCAL:1*100+51,3}] 脱衣
+	RESETCOLOR
+	;胸
+	SIF FLAG:ショップコマンド == [[ショップ:衣装部屋]] || FLAG:ショップコマンド == [[ショップ:オプション]]
+		BREAK
+	PRINTFORM %"【胸構造】",14,LEFT% 
+	胸開放可能:(LOCAL:1) = 0
+	SIF (TEQUIP:CHARA:胸構造 & (1 + 2 + 4 + 8 + 16))
+		胸開放可能:(LOCAL:1) = 1
+	PRINTFORM \@胸開放可能:(LOCAL:1) ? %"開放可能",20,LEFT% # %"開放不能",20,LEFT%\@ 
+	IF 胸開放可能:(LOCAL:1) == 0
+		SETCOLOR COLOR("light-gray")
+		PRINTBUTTON @"[{LOCAL:1*100+60,3}] 開放　", LOCAL:1*100+60
+		PRINTFORM [{LOCAL:1*100+61,3}] 格納
+	ELSE
+		SIF TEQUIP:CHARA:胸前開き
+			SETCOLOR COLOR("aqua")
+		PRINTBUTTON @"[{LOCAL:1*100+60,3}] 開放　", LOCAL:1*100+60
+		RESETCOLOR
+		SIF !TEQUIP:CHARA:胸前開き
+			SETCOLOR COLOR("aqua")
+			PRINTFORM [{LOCAL:1*100+61,3}] 格納
+	ENDIF
+	RESETCOLOR
+	PRINTL 
+NEXT
+;REPEAT 12
+;	IF TEQUIP:ARG:(GET_CLOTHESNAME(COUNT)) > 0
+;		LOCAL = COUNT
+;		PRINT 【
+;		CALL CLOTHES_NAME,LOCAL,ARG
+;		PRINTL 】
+;	ENDIF
+;REND
+DRAWLINE
+PRINTL [999] 戻る
+;CUSTOMDRAWLINE ・
+
+;-------------------------------------------------
+;着衣の設定
+;-------------------------------------------------
+;REPEAT 12
+;	IF TEQUIP:ARG:(GET_CLOTHESNAME(COUNT))
+;		PRINTFORM [{COUNT}] 
+;		LOCAL = COUNT
+;		CALL CLOTHES_NAME,LOCAL,ARG
+;		IF ARG == PLAYER
+;			PRINTL を脱ぐ
+;		ELSE
+;			PRINTL を脱がす
+;		ENDIF
+;	ENDIF
+;REND
+;REPEAT 12
+;	IF TEQUIP:ARG:(GET_CLOTHESNAME(COUNT)) == 0 && CFLAG:ARG:(GET_CLOTHESNAME(COUNT))
+;		PRINTFORM [{COUNT+12}] 
+;		LOCAL = COUNT
+;		CALL CLOTHES_NAME,LOCAL,ARG
+;		PRINT を
+;		
+;		SELECTCASE LOCAL
+;			CASE 0,4,5,11
+;				PRINTL つける
+;			CASE 1,3,7,10
+;				IF ARG == PLAYER
+;					PRINTL 着る
+;				ELSE
+;					PRINTL 着せる
+;				ENDIF
+;			CASE 2,6,8,9
+;				IF ARG == PLAYER
+;					PRINTL 穿く
+;				ELSE
+;;					PRINTL 穿かせる
+;				ENDIF
+;		ENDSELECT
+;	ENDIF
+;REND
+;REPEAT 12
+;	IF TEQUIP:ARG:(GET_CLOTHESNAME(COUNT)) > 0
+;		IF ARG == PLAYER
+;			PRINTL [30] すべて脱ぐ
+;		ELSE
+;			PRINTL [30] すべて脱がす
+;		ENDIF
+;		BREAK
+;	ENDIF
+;REND
+;REPEAT 12
+;	IF TEQUIP:ARG:(GET_CLOTHESNAME(COUNT)) == 0 && CFLAG:ARG:(GET_CLOTHESNAME(COUNT))
+;		IF ARG == PLAYER
+;			PRINTL [40] すべて着る
+;		ELSE
+;			PRINTL [40] すべて着せる
+;		ENDIF
+;		BREAK
+;	ENDIF
+;REND
+;SIF  (TEQUIP:ARG:胸構造 & 1 || TEQUIP:ARG:胸構造 & 2 || TEQUIP:ARG:胸構造 & 4 || TEQUIP:ARG:胸構造 & 8 || TEQUIP:ARG:胸構造 & 16) 
+;	LOCAL:1 = 1
+;SIF TEQUIP:ARG:胸構造 > 0 && LOCAL:1 && FLAG:ショップコマンド != [[ショップ:衣装部屋]] && FLAG:ショップコマンド != [[ショップ:オプション]]
+;	PRINTFORML [98]\@ TEQUIP:ARG:胸前開き ? 胸をしまう # 胸を出す \@
+;PRINTL [100]戻る
+LINE:1 = LINECOUNT
+$INPUT_LOOP
+CLEARLINE LINECOUNT - LINE:1
+INPUT
+SIF RESULT == 999
+	RETURN 0
+LOCAL = RESULT % 100
+LOCAL:1 = (RESULT) / 100
+CHARA = -1
+SIF LOCAL:1 == 0
+	CHARA = ARG
+SIF LOCAL:1 == 1
+	CHARA = MASTER
+SIF LOCAL:1 == 2
+	CHARA = ASSI
+SIF CHARA == -1
+	GOTO START
+;胸の開閉
+;ELSEIF RESULT == 98 && TEQUIP:ARG:胸構造 > 0 && LOCAL:1 && FLAG:ショップコマンド != [[ショップ:衣装部屋]] && FLAG:ショップコマンド != [[ショップ:オプション]]
+IF LOCAL == 98
+	非表示:(LOCAL:1) = 0
+ELSEIF LOCAL == 99 && RESULT > 0
+	非表示:(LOCAL:1) = 1
+ELSEIF (LOCAL == 60 || LOCAL == 61) && (TEQUIP:CHARA:胸前開き == LOCAL % 10) && 胸開放可能:(LOCAL:1)
+	INVERTBIT TEQUIP:CHARA:胸前開き , 0
+	TFLAG:13 = 44
+	SWAP CHARA , TARGET
+	CALL KOJO_MESSAGE_EVENT
+	SWAP TARGET , CHARA
+	口上チェック可 = 0
+;すべて脱がせる
+ELSEIF LOCAL == 51
+	REPEAT 12
+		TEQUIP:CHARA:(GET_CLOTHESNAME(COUNT)) = 0
+	REND
+;すべて着せる
+ELSEIF LOCAL == 50
+	REPEAT 12
+		TEQUIP:CHARA:(GET_CLOTHESNAME(COUNT)) = CFLAG:CHARA:(GET_CLOTHESNAME(COUNT))
+	REND
+;服を着せる場合
+ELSEIF LOCAL < 20
+	IF TEQUIP:CHARA:(GET_CLOTHESNAME(LOCAL)) == 0 && CFLAG:CHARA:(GET_CLOTHESNAME(LOCAL))
+		IF LOCAL == 3
+			TEQUIP:CHARA:服 = 0
+			TEQUIP:CHARA:下衣 = 0
+		ELSEIF LOCAL == 1 || LOCAL == 2
+			TEQUIP:CHARA:全身服 = 0
+		ELSEIF LOCAL == 5 || LOCAL == 6
+			TEQUIP:CHARA:全身下着 = 0
+		ELSEIF LOCAL == 7
+			TEQUIP:CHARA:下着（上） = 0
+			TEQUIP:CHARA:下着（下） = 0
+		ENDIF
+		TEQUIP:CHARA:(GET_CLOTHESNAME(LOCAL)) = CFLAG:CHARA:(GET_CLOTHESNAME(LOCAL))
+	ELSE
+		GOTO INPUT_LOOP
+	ENDIF
+	;着せる処理の後にテキストを呼ぶ
+	TRYCCALLFORM CLOTHES_MESSAGE_{NO:CHARA}, LOCAL, 1, CHARA
+	CATCH
+		CALL CLOTHES_MESSAGE,LOCAL,1,CHARA
+	ENDCATCH
+;服を脱がせる場合
+ELSEIF LOCAL < 40
+	LOCAL -= 20
+	;着ていない場合は再入力
+	SIF TEQUIP:CHARA:(GET_CLOTHESNAME(LOCAL)) == 0
+		GOTO INPUT_LOOP
+	;脱がせる処理の前にテキストを呼ぶ
+	TRYCCALLFORM CLOTHES_MESSAGE_K{NO:CHARA}, LOCAL, 0, CHARA
+	CATCH
+		CALL CLOTHES_MESSAGE,LOCAL, 0, CHARA
+	ENDCATCH
+	TEQUIP:CHARA:(GET_CLOTHESNAME(LOCAL)) = 0
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+CALL おっぱいオープンチェック(CHARA)
+CALL CHECK_EXPOSE(CHARA)
+CALL 股間構造チェック,CHARA
+CALL 触覚チェック(CHARA)
+CALL ずらしチェック(CHARA)
+IF 口上チェック可
+	SIF CHARA == TARGET
+		LOCAL:1 = 0
+	SIF CHARA == MASTER
+		LOCAL:1 = 1
+	SIF CHARA == ASSI
+		LOCAL:1 = 2
+	TFLAG:13 = 0
+	IF 陰唇露出状態:(LOCAL:1) >= 0 && TEQUIP:CHARA:陰唇露出 == -1
+		IF 乳房露出状態:(LOCAL:1) >= 0 && TEQUIP:CHARA:乳房露出 == -1
+			TFLAG:13 = 70+LOCAL:1
+		ELSE
+			TFLAG:13 = 73+LOCAL:1
+		ENDIF
+	ELSE
+		SIF 乳房露出状態:(LOCAL:1) >= 0 && TEQUIP:CHARA:乳房露出 == -1
+			TFLAG:13 = 76+LOCAL:1
+	ENDIF
+	IF TFLAG:13
+		SWAP CHARA , TARGET
+		CALL KOJO_MESSAGE_EVENT
+		SWAP TARGET , CHARA
+	ENDIF
+;	IF 陰唇露出状態:(LOCAL:1) == -1 && TEQUIP:CHARA:陰唇露出陰唇 >= 0
+;		IF 乳房露出状態:(LOCAL:1) == -1 && TEQUIP:CHARA:乳房露出 >= 0
+;		ELSE
+;		ENDIF
+;	ELSE
+;		IF 乳房露出状態:(LOCAL:1) == -1 && TEQUIP:CHARA:乳房露出 >= 0
+;		ENDIF
+;	ENDIF
+ENDIF
+GOTO START
+;RESTART
+
+;-------------------------------------------------
+;着衣の状態によって、調教中のソースが若干変動する
+;-------------------------------------------------
+@EQUIP_CLOTHES
+;着衣状態によるソースを付加（手以外の１箇所ごとに露出+5、未陥落時反感+5）
+;EQUIPによる制御に変更するまで封印
+;予定・胸とヴァギナが露出するような組み合わせだとさらに＋5
+
+
+;脚露出
+IF TEQUIP:脚露出 == -1
+	SOURCE:13 += 3
+	;陥落時は反感を加算しない
+	SIF (TALENT:恋慕 || TALENT:淫乱 || TALENT:服従 || TALENT:親愛 || TALENT:娼婦 || TALENT:隷属) == 0
+		SOURCE:18 += 3
+ENDIF
+
+;臍露出
+IF TEQUIP:臍露出 == -1
+	SOURCE:13 += 3
+	;陥落時は反感を加算しない
+	SIF (TALENT:恋慕 || TALENT:淫乱 || TALENT:服従 || TALENT:親愛 || TALENT:娼婦 || TALENT:隷属) == 0
+		SOURCE:18 += 3
+ENDIF
+
+;乳房露出
+IF TEQUIP:乳房露出 == -1
+	SOURCE:13 += 3
+	;陥落時は反感を加算しない
+	SIF (TALENT:恋慕 || TALENT:淫乱 || TALENT:服従 || TALENT:親愛 || TALENT:娼婦 || TALENT:隷属) == 0
+		SOURCE:18 += 3
+ENDIF
+
+;乳首露出
+IF TEQUIP:乳首露出 == -1
+	SOURCE:13 += 10
+	;陥落時は反感を加算しない
+	SIF (TALENT:恋慕 || TALENT:淫乱 || TALENT:服従 || TALENT:親愛 || TALENT:娼婦 || TALENT:隷属) == 0
+		SOURCE:18 += 10
+	;乳房は隠れているのに乳首が出てたら+6
+	IF TEQUIP:乳房露出 != -1
+		SOURCE:13 += 6
+		;陥落時は反感を加算しない
+		SIF (TALENT:恋慕 || TALENT:淫乱 || TALENT:服従 || TALENT:親愛 || TALENT:娼婦 || TALENT:隷属) == 0
+			SOURCE:18 += 6
+	ENDIF
+ENDIF
+
+;陰唇露出
+IF TEQUIP:陰唇露出 == -1
+	SOURCE:13 += 10
+	;陥落時は反感を加算しない
+	SIF (TALENT:恋慕 || TALENT:淫乱 || TALENT:服従 || TALENT:親愛 || TALENT:娼婦 || TALENT:隷属) == 0
+		SOURCE:18 += 10
+	;脚は隠れているのに陰唇が出てたら+3
+	IF TEQUIP:脚露出 != -1
+		SOURCE:13 += 3
+		;陥落時は反感を加算しない
+		SIF (TALENT:恋慕 || TALENT:淫乱 || TALENT:服従 || TALENT:親愛 || TALENT:娼婦 || TALENT:隷属) == 0
+			SOURCE:18 += 3
+	ENDIF
+	;臍は隠れているのに陰唇が出てたら+3
+	IF TEQUIP:臍露出 != -1
+		SOURCE:13 += 3
+		;陥落時は反感を加算しない
+		SIF (TALENT:恋慕 || TALENT:淫乱 || TALENT:服従 || TALENT:親愛 || TALENT:娼婦 || TALENT:隷属) == 0
+			SOURCE:18 += 3
+	ENDIF
+ENDIF
+
+;臀部露出
+IF TEQUIP:臀部露出 == -1
+	SOURCE:13 += 10
+	;陥落時は反感を加算しない
+	SIF (TALENT:恋慕 || TALENT:淫乱 || TALENT:服従 || TALENT:親愛 || TALENT:娼婦 || TALENT:隷属) == 0
+		SOURCE:18 += 10
+ENDIF
+
+
+RETURN 1
+
+;-------------------------------------------------
+;服の名前を関数で呼び出せるようにする。A+40の数値でCFLAGの数値を分岐
+;-------------------------------------------------
+@CLOTHES_NAME,ARG,ARG:1
+;TRYCALLFORM CLOTHES_NAME_{CFLAG:(ARG:1):(GET_CLOTHESNAME(ARG))}
+;PRINTFORM %RESULTS%
+PRINTFORM %ITEMNAME:(6000+CFLAG:(ARG:1):(GET_CLOTHESNAME(ARG)))%
+
+
+
+;-------------------------------------------------
+;着衣の実行時のメッセージ処理
+;-------------------------------------------------
+@CLOTHES_MESSAGE,ARG,ARG:1,ARG:2
+CALL CLOTHES_NAME,ARG,ARG:2
+PRINT を
+IF ARG:1 == 0
+	IF ARG == 11
+		IF ARG:2 == PLAYER
+			PRINTW 外した
+		ELSE
+			PRINTW 外させた
+		ENDIF
+	ELSE
+		IF ARG:2 == PLAYER
+			PRINTW 脱いだ
+		ELSE
+			PRINTW 脱がした
+		ENDIF
+	ENDIF
+ELSE
+	SELECTCASE ARG
+		CASE 0,4,5,11
+			PRINTW つけた
+		CASE 1,3,7,10
+			IF ARG:2 == PLAYER
+				PRINTW 着た
+			ELSE
+				PRINTW 着せた
+			ENDIF
+		CASE 2,6,8,9
+			IF ARG:2 == PLAYER
+				PRINTW 穿いた
+			ELSE
+				PRINTW 穿かせた
+			ENDIF
+	ENDSELECT
+ENDIF
+
+;==============================================================
+;オプション内の衣装関連項目、及び衣装変更機能
+;==============================================================
+;初期着衣設定
+@CLOTHES_SETTING
+Z = 0
+PRINTL 設定する項目を選択してください
+PRINTL [1] - 調教開始時の着衣状態設定
+PRINTL [2] - 服装の設定
+PRINTL [3] - 探索開始時の着衣状態設定
+PRINTL [0] - 戻る
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	RETURN 1
+ELSEIF RESULT == 1
+	CALL CLOTHES_SETTING_TRAIN
+ELSEIF RESULT == 2
+	CALL CLOTHES_SETTING_USUALLY
+ELSEIF RESULT == 3
+	CALL CLOTHES_SETTING_DUNGEON
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+RESTART
+
+
+
+@CLOTHES_SETTING_TRAIN
+Z = 0
+PRINTL 初期の着衣を設定してください
+PRINTL [0] - 全着
+PRINTL [1] - 半脱ぎ
+PRINTL [2] - 下着姿
+PRINTL [3] - 全裸
+PRINTL [4] - 前回終了時
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	PRINTW 初期の着衣を全着に設定しました
+	FLAG:1 = 0
+ELSEIF RESULT == 1
+	PRINTW 初期の着衣を半脱ぎに設定しました
+	FLAG:1 = 1
+ELSEIF RESULT == 2
+	PRINTW 初期の着衣を下着姿に設定しました
+	FLAG:1 = 2
+ELSEIF RESULT == 3
+	PRINTW 初期の着衣を全裸に設定しました
+	FLAG:1 = 3
+ELSEIF RESULT == 4
+	PRINTW 初期の着衣を前回終了時の状態に設定しました
+	FLAG:1 = 4
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+@CLOTHES_SETTING_DUNGEON
+PRINTL 初期の着衣を設定してください
+PRINTL [0] - 全着
+PRINTL [1] - 半脱ぎ
+PRINTL [2] - 下着姿
+PRINTL [3] - 全裸
+PRINTL [4] - 前回終了時
+PRINTL [5] - 前回調教終了時
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	PRINTW 初期の着衣を全着に設定しました
+	FLAG:探索時初期着衣設定 = 0
+ELSEIF RESULT == 1
+	PRINTW 初期の着衣を半脱ぎに設定しました
+	FLAG:探索時初期着衣設定 = 1
+ELSEIF RESULT == 2
+	PRINTW 初期の着衣を下着姿に設定しました
+	FLAG:探索時初期着衣設定 = 2
+ELSEIF RESULT == 3
+	PRINTW 初期の着衣を全裸に設定しました
+	FLAG:探索時初期着衣設定 = 3
+ELSEIF RESULT == 4
+	PRINTW 初期の着衣を前回終了時の状態に設定しました
+	FLAG:探索時初期着衣設定 = 4
+ELSEIF RESULT == 5
+	PRINTW 初期の着衣を前回調教終了時の状態に設定しました
+	FLAG:探索時初期着衣設定 = 5
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+@CLOTHES_SETTING_USUALLY
+;キャラリストを表示・選択
+CALL INPUT_CHARA_LIST("着衣の設定をするキャラを選択してください","CASTING_CLOTHES_SETTING_USUALLY")
+SIF RESULT == 1000
+	RETURN 0
+LOCAL = RESULT
+CALL CLOTHES_SETTING_USUALLY_A,LOCAL
+
+RESTART
+
+@CASTING_CLOTHES_SETTING_USUALLY
+SIF CFLAG:COUNT:この場に居ないフラグ == 1
+	RETURN 0
+RETURN 1
+
+@CLOTHES_SETTING_USUALLY_A,ARG
+PRINTL 着衣の変更をしたい部位を選択してください
+PRINTL
+PRINTFORML □%NAME:ARG%の服装
+DRAWLINE
+FOR LOCAL,0,12
+	PRINTFORML [{LOCAL,3}] %GET_CLOTHESNAME(LOCAL),14,LEFT%: \@ CFLAG:ARG:GET_CLOTHESNAME(LOCAL) ? %CLOTHESNAMEF(ARG,LOCAL)% # \@
+NEXT
+DRAWLINE
+;PRINTL [0] 帽子
+;PRINTL [1] 服
+;PRINTL [2] 下衣
+;PRINTL [3] 全身服
+;PRINTL [1] 下着（上）
+;PRINTL [2] 下着（下）
+;PRINTL [3] アクセサリー（足元）
+;PRINTL [4] アクセサリー（その他）
+;SIF ITEM:26 || NOITEM
+;	PRINTL [7] コスプレの設定
+LOCAL:1 = 0
+PRINTL [ 99] 着衣設定の初期化
+PRINTL [100] 戻る
+$INPUT_LOOP_2
+INPUT
+SIF RESULT == 100
+	RETURN 0
+IF RESULT == 99
+	CALL CLOTHES_INITIALIZE,ARG
+	PRINTFORML ＜%NAME:ARG%の服装を初期化しました＞
+	RESTART
+ENDIF
+SIF RESULT < 0 || RESULT > 11
+	GOTO INPUT_LOOP_2
+
+CALL CLOTHES_SETTING_PART,ARG,RESULT
+
+RESTART
+
+@CLOTHES_SETTING_PART,ARG,ARG:1
+#LOCALSIZE 4
+PRINTFORML %GET_CLOTHESNAME(ARG:1)%に何を着ますか？  （現在の服装：\@ CFLAG:ARG:GET_CLOTHESNAME(ARG:1) ? %CLOTHESNAMEF(ARG,ARG:1)% # 未装備 \@）
+DRAWLINE
+LOCAL:3 = 24
+LOCAL:1 = 0
+VARSET G,-1
+;選別
+FOR LOCAL,1,1500
+	SIF ITEM:(6000+LOCAL) < 1 && CSVCFLAG(NO:ARG,40+GET_CLOTHES(GET_CLOTHESNAME(ARG:1)),0) != LOCAL && CFLAG:ARG:(60+GET_CLOTHES(GET_CLOTHESNAME(ARG:1))) != LOCAL
+		CONTINUE
+	RESULT = 12
+	TRYCALLFORM CLOTHES_PART_{LOCAL}
+	SIF RESULT != ARG:1
+		CONTINUE
+	RESULT = 1
+	TRYCALLFORM CLOTHES_PREREQUISITE_{LOCAL},ARG
+	SIF RESULT == 0
+		CONTINUE
+	;アイテム名の長さを保存
+	SIF STRLENS(ITEMNAME:(6000+LOCAL)) > LOCAL:3
+		LOCAL:3 = STRLENS(ITEMNAME:(6000+LOCAL))
+	G:(LOCAL:1) = LOCAL
+	LOCAL:1 += 1
+NEXT
+;表示
+IF LOCAL:1
+	FOR LOCAL , 0 , LOCAL:1
+		PRINTFORM [{G:LOCAL,4}] 
+		IF G:LOCAL == CFLAG:ARG:GET_CLOTHESNAME(ARG:1)
+			LOCAL:2 = GETCOLOR()
+			SETCOLOR COLOR("PASTEL-BLUE")
+			PRINTFORM %ITEMNAME:(6000+G:LOCAL),LOCAL:3,LEFT%
+			SETCOLOR LOCAL:2
+		ELSE
+			PRINTFORM %ITEMNAME:(6000+G:LOCAL),LOCAL:3,LEFT%
+		ENDIF
+		SIF LOCAL % 3 == 2
+			PRINTL
+	NEXT
+ENDIF
+SIF !LINEISEMPTY()
+	PRINTL
+PRINTL
+PRINTL [   0] 着用しない
+DRAWLINE
+PRINT [ 100] 戻る
+
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	CFLAG:ARG:GET_CLOTHESNAME(ARG:1) = 0
+ELSEIF RESULT == 100
+	RETURN 0
+ELSEIF MATCH(G,RESULT,0) > 0
+	SIF ARG:1 == 1 || ARG:1 == 2
+		CFLAG:ARG:全身服 = 0
+	IF ARG:1 == 3
+		CFLAG:ARG:服 = 0
+		CFLAG:ARG:下衣 = 0
+	ENDIF
+	SIF ARG:1 == 5 || ARG:1 == 6
+		CFLAG:ARG:全身下着 = 0
+	IF ARG:1 == 7
+		CFLAG:ARG:下着（上） = 0
+		CFLAG:ARG:下着（下） = 0
+	ENDIF
+		
+	CFLAG:ARG:GET_CLOTHESNAME(ARG:1) = RESULT
+	SIF CFLAG:ARG:GET_CLOTHESNAME(ARG:1)
+		CFLAG:ARG:23 |= POWER(2,ARG:1)
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+RETURN 0
+

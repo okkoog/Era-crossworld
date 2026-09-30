@@ -1,0 +1,1134 @@
+﻿
+;=======================================================================
+;천사의탑
+;
+;ダンジョンフラグ:97:0 = 1.ボス
+;ダンジョンフラグ:97:1 = 1.初回
+;ダンジョンフラグ:97:2 = 1.メッセージ
+;ダンジョンフラグ:97:3-11 = 1.鏡
+;ダンジョンフラグ:97:12 = レナと話した回数
+
+;ダンジョンフラグ:97:18 = 1.カマイタチ
+;ダンジョンフラグ:97:19 = 1.BOSS強さ
+;ダンジョンフラグ:97:30-31 = 1.アイテム
+
+;ダンジョンナンバー97
+;=======================================================================
+;更新日時　　更新者　　　内容
+;2022/02/23		実績中毒者		ダンジョンナンバーを移動　推奨レベルが他ダンジョンからのコピペだったので変更
+;2022/11/07		JK好き			@EVENTING_CALLING_97 強制妊娠処理の引数間違いを修正
+;2023/01/05		JK好き			@CAN_ENTER_97 ボス撃破後の再入場時に扉から脱出出来なかった問題を修正
+
+;=======================================================================
+;攻略条件
+;=======================================================================
+@PREREQUISITE_DUNGEON_97
+IF イベントフラグ:101:0 == 1
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+;=======================================================================
+;ダンジョン名
+;=======================================================================
+@GET_DUNGEON_NAME_97
+#FUNCTIONS
+RESULTS_F = 天使の塔
+
+
+;=======================================================================
+;フロア名表示
+;=======================================================================
+@FLOORNAME_97
+PRINT 천사의탑
+SELECTCASE FLAG:현M
+	CASE 0
+		PRINTL   Ｂ１Ｆ
+	CASE 1, 6
+		PRINTL   １Ｆ
+	CASE 2
+		PRINTL   ２Ｆ
+	CASE 3
+		PRINTL   ３Ｆ
+	CASE 4
+		PRINTL   ４Ｆ
+	CASEELSE
+		PRINTL
+ENDSELECT
+
+
+;=======================================================================
+;特殊タイル表示
+;=======================================================================
+;@TILE_MARK_97_4_4_6
+;IF ダンジョンフラグ:97:17 == 1
+;	RESULTS = 記
+;ELSE
+;	RESULTS = ！
+;ENDIF
+;=======================================================================
+;スタート地点入力
+;=======================================================================
+@START_DUNGEON_97,ARG
+;IF ダンジョンフラグ:97:0 == 0 || ダンジョンフラグ:97:17 == 1
+	FLAG:현M = 1
+	FLAG:현X = 3
+	FLAG:현Y = 6
+;ELSEIF ダンジョンフラグ:97:0 == 1 && ダンジョンフラグ:97:17 == 0
+;	FLAG:현M = 6
+;	FLAG:현X = 1
+;	FLAG:현Y = 4
+;ENDIF
+;CALL AUTOMAP
+
+;=======================================================================
+;スタート時イベント
+;=======================================================================
+@EVENT_DUNGEON_START_97
+IF ダンジョンフラグ:97:1 == 0
+	CALL SHOW_PICTURE, "NONFLOORD"
+	CALL MESSAGE_WINDOW_D, "메피스토" , 	@"＞어서 오너라 데빌 칠드런, 진/＞광대가 공손하게 머리를 숙인다/＞안쪽에서는 거대한 천사에게 아이들이 수납되어 간다."
+	CALL MESSAGE_WINDOW_D, "진" , 	@"＞또 만났구나 메피스토!/　레나를, 아이들을 돌려줘!"
+	CALL MESSAGE_WINDOW_D, "메피스토" , 	@"＞돌려달라, 라니/하지만 아이들이 그것을 바랄까요?/그들은 성스러운 싸움을 치르기 위해 선택받았으니까요!"
+	
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1		
+	CALL SET_ENEMY,9,[[キャラ:메피스토]],59,0,0
+	CFLAG:(CHARANUM-1):ＨＰ보정 += 200
+	CFLAG:(CHARANUM-1):ＭＰ보정 += 50
+	NAME:(CHARANUM-1) = メフィスト
+	CALLNAME:(CHARANUM-1) = メフィスト
+	ABL:(CHARANUM-1):아이템3 = GETNUM(ITEM, "에메랄드")
+	ABL:(CHARANUM-1):입수확률3 = 100
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	
+	CALL BATTLE_START
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+	PRINTL 
+	CALL MESSAGE_WINDOW_D, "메피스토" , 	@"＞아직입니다, 진…"
+	CALL MESSAGE_WINDOW_D, "란드" , 	@"＞이 녀석, 분명 쓰러뜨렸을 텐데!"
+	CALL MESSAGE_WINDOW_D, "진" , 	@"＞설마, 불사신인가!?"
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1		
+	CALL SET_ENEMY,9,[[キャラ:헤이룽]],59,0,0
+	CFLAG:(CHARANUM-1):ＨＰ보정 += 200
+	CFLAG:(CHARANUM-1):ＭＰ보정 += 50
+	NAME:(CHARANUM-1) = メフィスト
+	CALLNAME:(CHARANUM-1) = メフィスト
+	ABL:(CHARANUM-1):아이템3 = GETNUM(ITEM, "에메랄드")
+	ABL:(CHARANUM-1):입수확률3 = 100
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	
+	CALL BATTLE_START
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+
+	CALL MESSAGE_WINDOW_D, "하밀", "너희들, 언제까지 속고 있는 거야!/＞임프의 일갈이/진실을 일깨운다…"
+	CALL MESSAGE_WINDOW_D, "진", "메피스토가 아키라!?/어떻게 된 거야, 이게!"
+	CALL MESSAGE_WINDOW_D, "파쿠", @"＞둘 다 환상을 보고 있었던 거라니까요/이사크와 메피스토의 짓이에요"
+	CALL MESSAGE_WINDOW_D, "아키라", @"＞레나에게도 무슨 일이 있었던 건가/실은 아미도…"	
+	CALL MESSAGE_WINDOW_D, "하밀", "공주님을 구하고 싶잖아/우리가 안내해 줄 테니까 빨리빨리 가자고/"
+	CALL MESSAGE_WINDOW_D, "" , 	@"＞임프가 아키라를 데리고 마계 깊은 곳으로 사라졌다/＞큐피트가 레나가 있는 곳으로 안내하는 듯하다/＞두 갈래로 갈라졌다…"
+	ダンジョンフラグ:97:1 = 1
+ENDIF
+
+;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@CAN_ENTER_97,ARG,ARG:1
+IF DA:ARG:(ARG:1) == 12
+	IF ダンジョンフラグ:97:0 == 1
+	ELSEIF ダンジョンフラグ:97:12 >= 9
+		CALL MESSAGE_WINDOW_D, "", "＞문 너머에서 사악한 기운이 느껴진다/＞문을 열까？"
+		CALL INPUT_YN_D
+		SIF RESULT == 1
+			RETURN 0
+	ELSE
+		CALL MESSAGE_WINDOW_D, "", "＞문은 수수께끼의 힘으로 닫혀 있다"
+		RETURN 0
+	ENDIF
+ELSEIF DA:ARG:(ARG:1) == 22
+	IF ダンジョンフラグ:97:0 == 1
+	ELSE
+		CALL MESSAGE_WINDOW_D, "", "＞문은 수수께끼의 힘으로 닫혀 있다"
+		RETURN 0
+	ENDIF
+ENDIF
+CALL CAN_ENTER,ARG,ARG:1
+RETURN RESULT
+
+;=======================================================================
+;フロアデータ
+;=======================================================================
+@MAKE_FLOOR_97
+SELECTCASE FLAG:현M
+	CASE 0
+	;B1階
+		FLAG:최대X = 7
+		FLAG:최대Y = 10
+
+							    ;0123456
+		CALL MAKE_FLOOR_LINE, 0,"       "
+		CALL MAKE_FLOOR_LINE, 1," 11111 "
+		CALL MAKE_FLOOR_LINE, 2," 1  2  "
+		CALL MAKE_FLOOR_LINE, 3," 1 A1A "
+		CALL MAKE_FLOOR_LINE, 4," 1 A1A"
+		CALL MAKE_FLOOR_LINE, 5," 1  G  "
+		CALL MAKE_FLOOR_LINE, 6," 1  B  "
+		CALL MAKE_FLOOR_LINE, 7," 2     "
+		CALL MAKE_FLOOR_LINE, 8," E     "
+		CALL MAKE_FLOOR_LINE, 9,"       "
+							    ;0123456
+		;A 本3-6
+		DA:3:3 = ダンジョンフラグ:97:3 ? 1 # 34
+		DA:3:4 = ダンジョンフラグ:97:4 ? 1 # 44
+		DA:5:3 = ダンジョンフラグ:97:5 ? 1 # 54
+		DA:5:4 = ダンジョンフラグ:97:6 ? 1 # 64
+		;ボス
+		DA:4:6 = ダンジョンフラグ:97:0 ? 1 # 4
+		;G ボス前の扉
+		DA:4:5 = 12
+	CASE 1
+	;1階
+		FLAG:최대X = 11
+		FLAG:최대Y = 11
+							    ;01234567890
+		CALL MAKE_FLOOR_LINE, 0,"           "
+		CALL MAKE_FLOOR_LINE, 1," 11111111A "
+		CALL MAKE_FLOOR_LINE, 2," 1       2 "
+		CALL MAKE_FLOOR_LINE, 3," 1  111  B "
+		CALL MAKE_FLOOR_LINE, 4," 1  2 1    "
+		CALL MAKE_FLOOR_LINE, 5," 1 11 11 6 "
+		CALL MAKE_FLOOR_LINE, 6," 1 11 C1 2 "
+		CALL MAKE_FLOOR_LINE, 7," 2 G  1  1 "
+		CALL MAKE_FLOOR_LINE, 8," E 8  1  1 "
+		CALL MAKE_FLOOR_LINE, 9,"      1111 "
+		CALL MAKE_FLOOR_LINE,10,"           "
+							    ;01234567890
+		;A カマイタチ
+		DA:9:1 = IS_LOOKSLIKE_MALE(MASTER) || ダンジョンフラグ:97:18 ? 1 # 184
+		;B 本7
+		DA:9:3 = ダンジョンフラグ:97:7 ? 1 # 74
+		;C メッセージ
+		DA:6:6 = ダンジョンフラグ:97:2 ? 1 # 11
+		;G 出口前の扉
+		DA:3:7 = 22
+	CASE 2
+	;2階
+		FLAG:최대X = 11
+		FLAG:최대Y = 11
+							    ;01234567890
+		CALL MAKE_FLOOR_LINE, 0,"           "
+		CALL MAKE_FLOOR_LINE, 1," 1111 1111 "
+		CALL MAKE_FLOOR_LINE, 2," 1  1 1  1 "
+		CALL MAKE_FLOOR_LINE, 3," 1  1 1  1 "
+		CALL MAKE_FLOOR_LINE, 4," 1  2 1  2 "
+		CALL MAKE_FLOOR_LINE, 5," 1 11 11 7 "
+		CALL MAKE_FLOOR_LINE, 6," 1 A1 11   "
+		CALL MAKE_FLOOR_LINE, 7," 2    1  6 "
+		CALL MAKE_FLOOR_LINE, 8," E    1  2 "
+		CALL MAKE_FLOOR_LINE, 9,"      1111 "
+		CALL MAKE_FLOOR_LINE,10,"           "
+							    ;01234567890
+		;A 本8
+		DA:3:6 = ダンジョンフラグ:97:8 ? 1 # 84
+
+	CASE 3
+	;3階
+		FLAG:최대X = 11
+		FLAG:최대Y = 11
+							    ;01234567890
+		CALL MAKE_FLOOR_LINE, 0,"           "
+		CALL MAKE_FLOOR_LINE, 1," A 6211  B "
+		CALL MAKE_FLOOR_LINE, 2," 2    2  1 "
+		CALL MAKE_FLOOR_LINE, 3," 1   11  1 "
+		CALL MAKE_FLOOR_LINE, 4," 1   11  1 "
+		CALL MAKE_FLOOR_LINE, 5," 11  11211 "
+		CALL MAKE_FLOOR_LINE, 6," 11  11  2 "
+		CALL MAKE_FLOOR_LINE, 7," 2    2  7 "
+		CALL MAKE_FLOOR_LINE, 8," E    1    "
+		CALL MAKE_FLOOR_LINE, 9,"      111C "
+		CALL MAKE_FLOOR_LINE,10,"           "
+							    ;01234567890
+		;A 本9
+		DA:1:1 = ダンジョンフラグ:97:9 ? 1 # 94
+		;B 宝箱30
+		DA:9:1 = ダンジョンフラグ:97:30 ? 1 # 303
+		;C 本10
+		DA:9:9 = ダンジョンフラグ:97:10 ? 1 # 104
+
+	CASE 4
+	;4階
+		FLAG:최대X = 11
+		FLAG:최대Y = 11
+							    ;01234567890
+		CALL MAKE_FLOOR_LINE, 0,"           "
+		CALL MAKE_FLOOR_LINE, 1," 127 11 A1 "
+		CALL MAKE_FLOOR_LINE, 2," 1   11  1 "
+		CALL MAKE_FLOOR_LINE, 3," 1    1 B1 "
+		CALL MAKE_FLOOR_LINE, 4," 1211 2  2 "
+		CALL MAKE_FLOOR_LINE, 5," 1 1111  1 "
+		CALL MAKE_FLOOR_LINE, 6," 1    1  1 "
+		CALL MAKE_FLOOR_LINE, 7," 2    1  1 "
+		CALL MAKE_FLOOR_LINE, 8," E    1  1 "
+		CALL MAKE_FLOOR_LINE, 9,"      1111 "
+		CALL MAKE_FLOOR_LINE,10,"           "
+							    ;01234567890
+		;本11
+		DA:8:3 = ダンジョンフラグ:97:11 ? 1 # 114
+		;宝箱31
+		DA:8:1 = ダンジョンフラグ:97:31 ? 1 # 313
+
+;	CASE 6
+;	;表一階
+;		FLAG:최대X = 12
+;		FLAG:최대Y = 8
+;
+;							    ;012345678901
+;		CALL MAKE_FLOOR_LINE, 0,"            "
+;		CALL MAKE_FLOOR_LINE, 1,"  11119     "
+;		CALL MAKE_FLOOR_LINE, 2,"  2 1111111 "
+;		CALL MAKE_FLOOR_LINE, 3," 11 1 1 1 1 "
+;		CALL MAKE_FLOOR_LINE, 4," 11 1 1 1 1 "
+;		CALL MAKE_FLOOR_LINE, 5," 2  1111111 "
+;		CALL MAKE_FLOOR_LINE, 6," 8          "
+;		CALL MAKE_FLOOR_LINE, 7,"            "
+;							    ;0123456
+;		;司書
+;		CALL SET_TILE,5,1,ダンジョンフラグ:97:0,1,4
+;		;
+;		CALL SET_TILE,4,3,ダンジョンフラグ:97:13,0,4
+;		;
+;		CALL SET_TILE,4,4,ダンジョンフラグ:97:14,0,4
+;		;刑事
+;		CALL SET_TILE,6,3,ダンジョンフラグ:97:15,0,4
+;		;
+;		CALL SET_TILE,8,4,ダンジョンフラグ:42:16,0,4
+;		;入り口
+;		CALL SET_TILE,10,4,ダンジョンフラグ:97:17,0,4
+	CASEELSE
+ENDSELECT
+
+
+
+;=======================================================================
+;[5]調べる　実行時のイベント
+;=======================================================================
+@EVENT_CHECK_DUNGEON_97
+;==========
+;出口の処理
+;==========
+IF DA:(FLAG:현X):(FLAG:현Y) == 8
+	CALL DUNGEON_EXIT
+	RETURN 1
+;========
+;宝の処理
+;========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 3
+	CALL TRESURING_CALLING_97
+	RETURN 1
+;==========
+;イベントの処理
+;==========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 4
+	CALL EVENTING_CALLING_97
+	RETURN 1
+;=======
+;階段
+;=======
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 6
+	CALL DUNGEON_UPSTAIRS_ID, FLAG:현M+1, 7
+	RETURN 1
+
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 7
+	CALL DUNGEON_UPSTAIRS_ID, FLAG:현M-1, 6
+	RETURN 1
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 9
+	CALL MESSAGE_WINDOW_D, "", "＞아무것도 없는 것 같다"
+	RETURN 0
+ENDIF
+
+;=======================================================================
+;タイル進入時のイベント
+;=======================================================================
+@EVENT_ENTER_DUNGEON_97,ARG
+;ARG = 進入時の向き　0の場合ワープなど
+IF DA:(FLAG:현X):(FLAG:현Y) == 11
+	CALL MESSAGE_WINDOW_D, "", "＞갑자기 어디선가 목소리가 울려 퍼졌다"
+	CALL MESSAGE_WINDOW_D, "목소리", "축하한다, 레나/너는 선택받았다"
+	
+	CALL MESSAGE_WINDOW_D, "목소리", "아니, 선택해 줘서 고맙다/그렇게 말해야 하려나?"
+ダンジョンフラグ:97:2 = 1
+	CALL CLEAR_TILE
+;==========
+;出口の処理
+;==========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 8
+	CALL DUNGEON_EXIT
+	RETURN 1
+;========
+;宝の処理
+;========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 3
+	CALL TRESURING_CALLING_97
+	RETURN 1
+;==========
+;イベントの処理
+;==========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 4
+	CALL EVENTING_CALLING_97
+	RETURN 1
+;=======
+;階段
+;=======
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 6
+	CALL DUNGEON_UPSTAIRS_ID, FLAG:현M+1, 7
+	RETURN 1
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 7
+	CALL DUNGEON_UPSTAIRS_ID, FLAG:현M-1, 6
+	RETURN 1
+;==========
+;扉の処理
+;==========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 2
+	CALL DUNGEON_DOOR,ARG
+	RETURN 1
+
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) == 9
+	RETURN 0
+ENDIF
+RETURN 0
+
+
+;=======================================================================
+;인카운트율
+;=======================================================================
+@ENCOUNT_RATE_97
+IF FLAG:현M < 4
+	FLAG:인카운트율 =( FLAG:미조우걸음수 - 5) * 5
+ELSEIF FLAG:현M == 4
+	FLAG:인카운트율 = (FLAG:미조우걸음수 * 7 - 5) + 10
+ELSE
+	FLAG:인카운트율 = 0
+ENDIF
+
+;=======================================================================
+;必要レベル目安
+;推奨LV 雑魚最低LV 雑魚最高LV ボスLV 
+;=======================================================================
+@GET_DUNGEON_LV_97
+RETURN 50, 50, 59, 66
+
+;=======================================================================
+;エンカウント処理
+;=======================================================================
+@CHECK_ENCOUNT_97
+IF RAND:100 < FLAG:인카운트율
+	RETURN 1
+ELSE
+	FLAG:미조우걸음수 += 1
+	RETURN 0
+ENDIF
+;=======================================================================
+;敵の種族の種類数
+;=======================================================================
+@CLASS_NUM_97
+RETURN CLASS_NUM_COMMON("初級")
+;=======================================================================
+;敵の総数
+;ARGは出現する敵の種類です
+;=======================================================================
+@ENEMY_NUM_97, ARG
+RETURN ENEMY_NUM_COMMON("初級", ARG)
+;=======================================================================
+;敵の種類
+;=======================================================================
+@ENEMY_97, ARG
+SELECTCASE FLAG:현M
+	CASE 0
+	;一階
+		SELECTCASE RAND:100
+			CASE IS < 15
+				;15％　死神アンクウ
+				RETURN [[キャラ:앙쿠]], 59
+			CASE IS < 30
+				;15%　女神クロト　
+				RETURN [[キャラ:클로토]], 57
+			CASE IS < 40
+				;10%　堕天使ゼパール　
+				RETURN [[キャラ:제파르]], 57
+			CASE IS < 60
+				;15%　妖鳥フェニックス　Lv50
+				RETURN [[キャラ:피닉스]], 50
+			CASE IS < 75
+				;15%　天使アムルタート　Lv59
+				RETURN [[キャラ:아무르타트]], 59
+			CASE IS < 90
+				;10%　天使ガムビエル　
+				RETURN [[キャラ:감비엘]], 58
+			CASE IS < 100
+				;15%　天使バキエル　
+				RETURN [[キャラ:바키엘]], 58
+		ENDSELECT
+	CASE 1
+	;二階
+		SELECTCASE RAND:100
+			CASE IS < 15
+				;10%　堕天使ゼパール　Lv57
+				RETURN [[キャラ:제파르]], 57
+			CASE IS < 30
+				;15%　女神ラケシス　Lv54
+				RETURN [[キャラ:라케시스]], 54
+			CASE IS < 40
+				;15％　死神アンクウ
+				RETURN [[キャラ:앙쿠]], 59
+			CASE IS < 60
+				;15%　妖鳥フェニックス　Lv50
+				RETURN [[キャラ:피닉스]], 50
+			CASE IS < 75
+				;15%　天使アムルタート　Lv59
+				RETURN [[キャラ:아무르타트]], 59
+			CASE IS < 90
+				;10%　天使ガムビエル　Lv58
+				RETURN [[キャラ:감비엘]], 58
+			CASE IS < 100
+				;20%　天使バキエル　Lv58
+				RETURN [[キャラ:바키엘]], 58
+		ENDSELECT
+	CASE 2
+	;三階
+		SELECTCASE RAND:100
+			CASE IS < 15
+				;10%　堕天使ゼパール　Lv57
+				RETURN [[キャラ:제파르]], 57
+			CASE IS < 30
+				;15%　女神アトロポス　Lv51
+				RETURN [[キャラ:아트로포스]], 51
+			CASE IS < 40
+				;15％　死神アンクウ
+				RETURN [[キャラ:앙쿠]], 59
+				CASE IS < 60
+				;15%　妖鳥フェニックス　Lv50
+				RETURN [[キャラ:피닉스]], 50
+			CASE IS < 75
+				;15%　天使アムルタート　Lv59
+				RETURN [[キャラ:아무르타트]], 59
+			CASE IS < 90
+				;10%　天使ガムビエル　Lv58
+				RETURN [[キャラ:감비엘]], 58
+			CASE IS < 100
+				;20%　天使バキエル　Lv58
+				RETURN [[キャラ:바키엘]], 58
+		ENDSELECT
+	CASE 3
+	;四階
+		SELECTCASE RAND:100
+			CASE IS < 15
+				;15％　女神アリアンフロッドLv59
+				RETURN [[キャラ:아리안로드]], 59
+			CASE IS < 30
+				;10%　堕天使ゼパール　Lv57
+				RETURN [[キャラ:제파르]], 57
+			CASE IS < 45
+				;15％　死神アンクウ
+				RETURN [[キャラ:앙쿠]], 59
+			CASE IS < 60
+				;15%　妖鳥フェニックス　Lv50
+				RETURN [[キャラ:피닉스]], 50
+			CASE IS < 75
+				;15%　天使アムルタート　Lv59
+				RETURN [[キャラ:아무르타트]], 59
+			CASE IS < 90
+				;15%　天使ガムビエル　Lv58
+				RETURN [[キャラ:감비엘]], 58
+			CASE IS < 100
+				;15%　天使バキエル　Lv58
+				RETURN [[キャラ:바키엘]], 58
+		ENDSELECT
+	CASE 4
+	;地下一階
+		SELECTCASE RAND:100
+			CASE IS < 15
+				;15％　女神スカアハLv59
+				RETURN [[キャラ:스카아하]], 59
+			CASE IS < 30
+				;15%　堕天使ゼパール　Lv57
+				RETURN [[キャラ:제파르]], 57
+			CASE IS < 45
+				;15％　死神アンクウ
+				RETURN [[キャラ:앙쿠]], 59
+			CASE IS < 60
+				;15%　妖鳥フェニックス　Lv50
+				RETURN [[キャラ:피닉스]], 50
+			CASE IS < 75
+				;15%　天使アムルタート　Lv59
+				RETURN [[キャラ:아무르타트]], 59
+			CASE IS < 90
+				;10%　天使ガムビエル　Lv58
+				RETURN [[キャラ:감비엘]], 58
+			CASE IS < 100
+				;15%　天使バキエル　Lv58
+				RETURN [[キャラ:바키엘]], 58
+
+		ENDSELECT
+	CASEELSE
+
+ENDSELECT
+
+;=======================================================================
+;イベントまとめ
+;=======================================================================
+@EVENTING_CALLING_97
+CALL SHOW_PICTURE, "D"
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 0
+		CALL MESSAGE_WINDOW_D, "", "＞하라주쿠에 갑자기 나타난 천사의 탑/＞그 깊은 안쪽에 그 소녀는 있었다"
+		CALL MESSAGE_WINDOW_D, "엔젤 칠드런 레나", "와버렸다면 싸울 수밖에 없잖아"
+		CALL MESSAGE_WINDOW_D, "천사 레미엘", "데빌 칠드런 이상의 힘을 보여주는 것이,/에녹 님에게 부여받은 저의 사명"
+		IF IS_LOOKSLIKE_MALE(MASTER)
+			CALL MESSAGE_WINDOW_D, "엔젤 칠드런 레나", "어머니가 되는 건 나 하나로 족해/선생님도 아미도/말려들게 할 순 없어"
+		ELSE
+			CALL MESSAGE_WINDOW_D, "엔젤 칠드런 레나", "선생님까지/왜 와버린 건지/"
+		ENDIF
+		IF FLAG:전투난이도 >= 3 && FLAG:주회횟수 >= 1 && BASE:MASTER:LV >= 21
+			CALL MESSAGE_WINDOW_D, "", "＞천사 레미엘이 2체 나타났다!/＞엔젤 칠드런 레나가 1체 나타났다!"
+		ELSE
+			CALL MESSAGE_WINDOW_D, "", "＞엔젤 칠드런 레나가 1체 나타났다!"
+		ENDIF
+		FLAG:도주불가플래그 = 1
+		FLAG:회화불능플래그 = 1
+		FLAG:선제기습취소 = 1
+		IF FLAG:전투난이도 >= 3 && FLAG:주회횟수 >= 1 && BASE:MASTER:LV >= 21
+			ダンジョンフラグ:97:19 = 1
+			;레미엘
+			CALL SET_ENEMY,8,[[キャラ:레미엘]],60,0,1
+			;마하・마그나스
+			ABL:(CHARANUM-1):스킬5 = 1505
+			;タルカジャ
+			ABL:(CHARANUM-1):스킬6 = 501
+			;마구날뛰기
+			ABL:(CHARANUM-1):스킬7 = 203
+			ABL:(CHARANUM-1):스킬8 = 0
+			CFLAG:(CHARANUM-1):속도보정 += 10
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			;레미엘
+			CALL SET_ENEMY,10,[[キャラ:레미엘]],60,0,1
+			;마하・마그나스
+			ABL:(CHARANUM-1):스킬5 = 1505
+			;タルカジャ
+			ABL:(CHARANUM-1):스킬6 = 501
+			;마구날뛰기
+			ABL:(CHARANUM-1):스킬7 = 203
+			ABL:(CHARANUM-1):스킬8 = 0
+			CFLAG:(CHARANUM-1):속도보정 += 10
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+
+		;レナ
+			CALL SET_ENEMY,9,[[キャラ:레나]],62,0,1
+			CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+			CFLAG:(CHARANUM-1):ＭＰ보정 += 5000
+			CFLAG:(CHARANUM-1):행동횟수 = 2
+			CSTR:(CHARANUM-1):사고패턴 = 611
+			CFLAG:(CHARANUM-1):속도보정 = 15
+			ABL:(CHARANUM-1):스킬2 = 401
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ELSE
+			CALL SET_ENEMY,9,[[キャラ:레나]],66,0,1
+			CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+			CFLAG:(CHARANUM-1):ＭＰ보정 += 5000
+			CSTR:(CHARANUM-1):사고패턴 = 611
+			ABL:(CHARANUM-1):스킬2 = 401
+			ABL:(CHARANUM-1):스킬5 = 704
+			MAXBASE:(CHARANUM-1):검격 = 150
+			MAXBASE:(CHARANUM-1):빙결 = 200
+			MAXBASE:(CHARANUM-1):수격 = 200
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		ENDIF
+		CALL BATTLE_START
+		FLAG:도주불가플래그 = 0
+		FLAG:회화불능플래그 = 0
+		FLAG:선제기습취소 = 0
+		IF IS_LOOKSLIKE_MALE(MASTER)
+			CALL MESSAGE_WINDOW_D, "에녹", "아아, 레나/창세에는 당신이 어울립니다…"
+		ELSE
+			CALL MESSAGE_WINDOW_D, "에녹", "아아, 레나/창세는 당신의 손으로…"
+		ENDIF
+		CALL MESSAGE_WINDOW_D, "", "＞엔젤 칠드런 레나는 의식을 잃었다…/＞그녀들은 에녹이라 자칭한 천사가 데리고 사라졌다/＞천사의 탑 진정화 보수로 ￥100,000이 지불되었다"
+			MONEY += 100000
+		ダンジョンフラグ:97:0 = 1
+		DA:(FLAG:현X):(FLAG:현Y) = 1
+		FLAG:탈출스킬금지 = 0
+		FLAG:탈출 = 1
+		RETURN 1
+	CASE 18
+		CALL MESSAGE_WINDOW_D, "", "＞길을 카마이타치 무리가 막아서고 있다"
+		IF IS_LOOKSLIKE_MALE(MASTER)
+			CALL MESSAGE_WINDOW_D, "카마이타치들", "인간이다"
+			CALL MESSAGE_WINDOW_D, "카마이타치들", "데빌 칠드런이다"
+			CALL MESSAGE_WINDOW_D, "카마이타치들", "못 지나간다"
+			CALL MESSAGE_WINDOW_D, "카마이타치들", "돌아가라, 돌아가라"
+			CALL MESSAGE_WINDOW_D, "카마이타치들", "물러나라!!"
+			CALL MESSAGE_WINDOW_D, "", "＞카마이타치가 10체 나타났다!"
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			CALL SET_ENEMY,7,[[キャラ:카마이타치]],53,0,0
+			CALL SET_ENEMY,8,[[キャラ:카마이타치]],53,0,0
+			CALL SET_ENEMY,9,[[キャラ:카마이타치]],53,0,0
+			CALL SET_ENEMY,10,[[キャラ:카마이타치]],53,0,0
+			CALL SET_ENEMY,11,[[キャラ:카마이타치]],53,0,0
+			CALL SET_ENEMY,12,[[キャラ:카마이타치]],53,0,0
+			CALL SET_ENEMY,13,[[キャラ:카마이타치]],53,0,0
+			CALL SET_ENEMY,14,[[キャラ:카마이타치]],53,0,0
+			CALL SET_ENEMY,15,[[キャラ:카마이타치]],53,0,0
+			CALL SET_ENEMY,16,[[キャラ:카마이타치]],53,0,0
+			CALL BATTLE_START
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			ダンジョンフラグ:97:18 = 1
+		ELSE
+			CALL MESSAGE_WINDOW_D, "카마이타치들", "놀자"
+			CALL MESSAGE_WINDOW_D, "카마이타치들", "놀래?"
+			CALL MESSAGE_WINDOW_D, "카마이타치들", "귀여운, 장난감"
+			CALL MESSAGE_WINDOW_D, "", "＞카마이타치의 요구에 따르겠습니까?"
+			CALL INPUT_YN_D
+			IF RESULT == 0
+				CALL MESSAGE_WINDOW_D, "카마이타치들", "아하하하"
+				CALL MESSAGE_WINDOW_D, "카마이타치들", "선생님, 변태"
+				CALL MESSAGE_WINDOW_D, "카마이타치들", "학생, 앞인데도"
+				CALL MESSAGE_WINDOW_D, "", @"＞%CALLNAME:MASTER%는 옷이 찢겨지고, 살갗이 찢겨진 뒤, 치료된다/＞이윽고, 약효가 돌기를 기다리고 있는 것이다/＞소중한 곳을 어루만져지는 것만으로는 만족할 수 없게 되는 것을"
+				CALL MESSAGE_WINDOW_D, "", @"＞%\@TALENT:MASTER:오토코노코?#거기를\@% 애널을 스스로 벌린다/＞숨이 막힐 듯한 정액 냄새와 카마이타치의 체취를 삼켜간다……＞절정을 반복하며 백탁을 받아내는 것을 멈출 수 없다"
+				CALL MESSAGE_WINDOW_D, "", @"＞거기에 카마이타치는 %\@TALENT:MASTER:오토코노코?항문#양쪽 구멍\@%에서 정액을 흘리는 %CALLNAME:MASTER%를 짓누르더니…/＞벌려진 구멍을 정돈하고, 다시 꿰뚫었다/＞찢어지는 듯한 둔한 아픔과 함께 %CALLNAME:MASTER%의 의식은 끊어졌다……"
+				CALL MESSAGE_WINDOW_D, "", "………………/…………/……눈을 떴을 때, 통증도 나른함도 없다. 그뿐만 아니라 무언가 치명적인 것이 치료되어 있는 듯한……"
+				CALL SHOW_PICTURE, "EMPTY"
+				CALL SHOW_PICTURE, "NONFLOORD"
+				CALL MESSAGE_WINDOW_D, "", @"＞%CALLNAME:MASTER%는 카마이타치 무리에게 윤간당했습니다"
+				;처녀
+				IF TALENT:MASTER:재생처녀 || TALENT:MASTER:처녀
+					PRINTFORML \@ TALENT:MASTER:처녀 ? 처녀 # 재생처녀 \@상실
+					SIF TALENT:MASTER:처녀
+						CALL ADDS_ABNORMAL_EXP("処女喪失（輪姦）", MASTER)
+					TALENT:MASTER:처녀 = 0
+					TALENT:MASTER:재생처녀 = 0
+				ENDIF
+				IF TALENT:MASTER:오토코노코
+					PRINTL Ａ경험 + 150
+					EXP:MASTER:Ａ경험 += 150
+				ELSE
+					PRINTL Ｖ경험 + 100
+					EXP:MASTER:Ｖ경험 += 100
+					PRINTL Ａ경험 + 80
+					EXP:MASTER:Ａ경험 += 80
+				ENDIF
+				PRINTL 절정경험 + 50
+				EXP:MASTER:절정경험 += 50
+				PRINTL 성교경험 + 50
+				EXP:MASTER:성교경험 += 50
+				IF TALENT:MASTER:오토코노코 == 0
+					PRINTL 질사경험 + 55
+					EXP:MASTER:질사경험 += 55
+				ENDIF
+				PRINTL 정액경험 + 70
+				EXP:MASTER:정액경험 += 70
+				PRINTL 봉사쾌락경험 + 70
+				EXP:MASTER:봉사쾌락경험 += 70
+				IF TALENT:MASTER:오토코노코
+					PRINTL 펠라경험 + 65
+					EXP:MASTER:펠라경험 += 65
+				ELSE
+					PRINTL 펠라경험 + 35
+					EXP:MASTER:펠라경험 += 35
+				ENDIF
+				PRINTL 고통쾌락경험 + 55
+				EXP:MASTER:고통쾌락경험 += 55
+				;Ｖ,Ａ확장경험
+				SIF EXP:MASTER:Ｖ확장경험 == 0 || EXP:MASTER:Ａ확장경험 == 0
+					CALL ADDS_ABNORMAL_EXP("拡張初体験", MASTER)
+				IF TALENT:MASTER:오토코노코
+					PRINTL Ａ확장경험 + 60
+					EXP:MASTER:Ａ확장경험 += 60
+				ELSE
+					PRINTL Ｖ확장경험 + 30
+					EXP:MASTER:Ｖ확장경험 += 30
+					PRINTL Ａ확장경험 + 30
+					EXP:MASTER:Ａ확장경험 += 30
+				ENDIF
+				CALL SHOW_ABNORMAL_EXP , MASTER
+				PRINTL 
+				PRINTW 
+				IF PREGNANCY_ABLE(MASTER)
+					PRINTFORMW %CALLNAME:MASTER%는 카마이타치에게 【임신】당했다
+					;CALL PREGNANCY_CHECK, MASTER, 4
+					;CALL SET_FATHERINFO, MASTER, 1093, -1, "カマイタチ"
+					CALL SET_FETUS_STATUS, MASTER, -1, [[キャラ:카마이타치]]
+					CALL CHANGE_N_STATUS, MASTER
+					TALENT:MASTER:임신 = 1
+				ENDIF
+				CALL SHOW_PICTURE, "EMPTY"
+				CALL SHOW_PICTURE, "NONFLOORD"
+				CALL MESSAGE_WINDOW_D, "", @"＞%CALLNAME:MASTER%가 눈을 뜨자/＞이미 카마이타치 무리는 어디론가 가버린 모양이다…/＞윤간당해 체력을 소모하고 말았다……/＞오늘은 더 이상 탐색을 계속하기 어려울 것이다"
+				FLAG:탈출 = 1
+			ELSEIF RESULT == 1
+				CALL MESSAGE_WINDOW_D, "카마이타치들", "부수고, 고친다!!"
+				CALL MESSAGE_WINDOW_D, "", "＞카마이타치가 10체 나타났다!"
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				CALL SET_ENEMY,7,[[キャラ:카마이타치]],53,0,0
+				CALL SET_ENEMY,8,[[キャラ:카마이타치]],53,0,0
+				CALL SET_ENEMY,9,[[キャラ:카마이타치]],53,0,0
+				CALL SET_ENEMY,10,[[キャラ:카마이타치]],53,0,0
+				CALL SET_ENEMY,11,[[キャラ:카마이타치]],53,0,0
+				CALL SET_ENEMY,12,[[キャラ:카마이타치]],53,0,0
+				CALL SET_ENEMY,13,[[キャラ:카마이타치]],53,0,0
+				CALL SET_ENEMY,14,[[キャラ:카마이타치]],53,0,0
+				CALL SET_ENEMY,15,[[キャラ:카마이타치]],53,0,0
+				CALL SET_ENEMY,16,[[キャラ:카마이타치]],53,0,0
+				CALL BATTLE_START
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+			ENDIF
+			ダンジョンフラグ:97:18 = 1
+			CALL CLEAR_TILE
+		ENDIF
+	CASE 3 TO 11
+		CALL MESSAGE_WINDOW_D, "", "＞수경(물거울)이 있다/＞조사하겠습니까?"
+		CALL INPUT_YN_D
+		IF RESULT == 0
+			SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+				CASE 3
+					CALL MESSAGE_WINDOW_D, "진", @"＞찾았다, 자. 같이 하라주쿠로 돌아가자"
+					CALL MESSAGE_WINDOW_D, "레나", @"＞나, 안 돌아가. 여기에 있을 거야"
+					CALL MESSAGE_WINDOW_D, "", "＞상태가 이상하다. 완전히 변해버린 모습을 똑똑히 보라고 도중의 악마는 말했었지만."
+				CASE 4
+					CALL MESSAGE_WINDOW_D, "진", @"＞너, 대체 어떻게 된 거야"
+					CALL MESSAGE_WINDOW_D, "레나", @"＞나 말이지, 천사들의 마음에 든 모양이야. 모두 함께 있어."
+				CASE 5
+					CALL MESSAGE_WINDOW_D, "진", @"＞무슨 소릴 하는 거야. 그렇다면 앞으로 어쩔 셈인데!!"
+					CALL MESSAGE_WINDOW_D, "진", @"＞아이들을 구하기로 한 거 아니었냐고!!"
+				CASE 6
+					CALL MESSAGE_WINDOW_D, "레나", @"＞난 이제 됐으니까. 진은 얌전히 돌아가"
+					CALL MESSAGE_WINDOW_D, "", "＞이 말만은 『천사의 총애』로서가 아니라 친구로서의 배려로 보였지만…"
+				CASE 7
+					CALL MESSAGE_WINDOW_D, "레나" , 	@"「쫓아오지 마, 진. 난 엔젤 칠드런으로서 싸울 역할을 부여받았어」"
+					CALL MESSAGE_WINDOW_D, "진", @"＞……이상한 옷차림을 하고 무슨 소릴 하는 거야. …너, 정말 레나 맞아?"
+				CASE 8
+					CALL MESSAGE_WINDOW_D, "레나" , 	@"＞천사들은 내게 빛의 힘을 주었어. 그리고 천사들을 중마 삼아 아마겟돈을 싸우라고 말했지」"
+					CALL MESSAGE_WINDOW_D, "진", @"＞너, 자기가 무슨 말을 하는지 알고나 있는 거야 납치당한 아이들은 어쩌고"
+				CASE 9
+					CALL MESSAGE_WINDOW_D, "레나", @"＞진하고는 상관없어"
+				CASE 10
+					CALL MESSAGE_WINDOW_D, "레미엘", @"＞레나에게 달라붙는 것은 삼가주시기 바랍니다"
+				CASE 11
+					CALL MESSAGE_WINDOW_D, "레미엘", @"＞엔젤 칠드런의 파트너인 제가/데빌 칠드런의 힘을 시험해 보도록 하죠"
+			ENDSELECT
+
+			ダンジョンフラグ:97:(DA:(FLAG:현X):(FLAG:현Y)/10) = 1
+			ダンジョンフラグ:97:12 += 1
+
+			SELECTCASE ダンジョンフラグ:97:12
+				CASE 1
+					CALL MESSAGE_WINDOW_D, "", "＞어디선가 목소리가 울려 퍼졌다"
+					CALL MESSAGE_WINDOW_D, "목소리", "파트너는 제가 골랐습니다"
+				CASE 5
+					CALL MESSAGE_WINDOW_D, "", "＞어디선가 목소리가 울려 퍼졌다"
+					CALL MESSAGE_WINDOW_D, "목소리", "레미엘, 기대하고 있겠습니다"
+				CASE 9
+					CALL MESSAGE_WINDOW_D, "", "＞어디선가 목소리가 울려 퍼졌다"
+					CALL MESSAGE_WINDOW_D, "목소리", "당신들에게는 감사하고 있습니다/덕분에 레나의 가능성을 알 수 있었으니까요!!"
+					FLAG:탈출스킬금지 = 1
+			ENDSELECT
+			CALL CLEAR_TILE
+		ELSE
+			CALL MESSAGE_WINDOW_D, "", "＞거울에서 물러났다"
+		ENDIF
+ENDSELECT
+RETURN 1
+;=======================================================================
+;宝箱まとめ
+;=======================================================================
+@TRESURING_CALLING_97
+SELECTCASE FLAG:현M
+	CASE 3
+		;화제신부
+		CALL GET_TREASURE,1031,1,97,30
+	CASE 4
+		;디스포이즌
+		CALL GET_TREASURE,1017,2,97,31
+ENDSELECT
+RETURN 0
+
+;=======================================================================
+;エレベーター定義
+;=======================================================================
+@DUNGEON_ELEVATOR_97, ARG
+VARSET RESULT, -1
+VARSET RESULTS
+RESULT:1 = 0
+RESULT:2 = 1
+RESULT:3 = 2
+RESULT:4 = 3
+RESULT:5 = 4
+RESULTS:1 = Ｂ１Ｆ
+RESULTS:2 = １Ｆ
+RESULTS:3 = ２Ｆ
+RESULTS:4 = ３Ｆ
+RESULTS:5 = ４Ｆ
+RETURN -1
+
+@SET_ACTION_4969,ARG
+;1more
+IF CFLAG:ARG:１more플래그 > 0
+	IF 現HP割合(ARG) >= 50
+		IF ダンジョンフラグ:97:19 == 1
+			IF RAND:2 == 0
+				;マハラギ・オン
+				CALL CHECK_ACTIONABLE,ARG,705
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 705
+				CALL RANDOM_TARGET,ARG,705
+				RETURN 1
+			ELSE
+				;자장가
+				CALL CHECK_ACTIONABLE,ARG,1223
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 1223
+				CALL RANDOM_TARGET,ARG,1223
+				RETURN 1
+			ENDIF
+		ELSE
+			IF RAND:2 == 0
+				;マハラギ
+				CALL CHECK_ACTIONABLE,ARG,704
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 704
+				CALL RANDOM_TARGET,ARG,704
+				RETURN 1
+			ELSE
+				;시나이의신화
+				CALL CHECK_ACTIONABLE,ARG,2080
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 2080
+				CALL RANDOM_TARGET,ARG,2080
+				RETURN 1
+			ENDIF
+		ENDIF
+	ELSE
+		IF RAND:2 == 0
+			;천벌
+			CALL CHECK_ACTIONABLE,ARG,20101
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 20101
+			CALL RANDOM_TARGET,ARG,20101
+			RETURN 1
+		ELSE
+			;도루미나
+			CALL CHECK_ACTIONABLE,ARG,20101
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 20101
+			CALL RANDOM_TARGET,ARG,20101
+			RETURN 1
+		ENDIF
+	ENDIF
+ELSEIF CFLAG:MASTER:공격강화 > 4 || CFLAG:MASTER:명중강화 > 4 || CFLAG:MASTER:방어강화 > 4 || CFLAG:MASTER:명중강화 > 4
+	IF RAND:2 == 0
+		;デカジャ
+		CFLAG:(CHARANUM-1):속도보정 = 15
+		CALL CHECK_ACTIONABLE,ARG,509
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+		CFLAG:ARG:입력행동 = 509
+		CALL RANDOM_TARGET,ARG,509
+		RETURN 1
+	ELSE
+		IF RAND:2 == 0
+			IF ダンジョンフラグ:97:19 == 1
+				;マハラギ・オン
+				CALL CHECK_ACTIONABLE,ARG,705
+					SIF RESULT == 0
+						GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 705
+				CALL RANDOM_TARGET,ARG,705
+				RETURN 1
+			ELSE
+				;시나이의신화
+				CALL CHECK_ACTIONABLE,ARG,2080
+					SIF RESULT == 0
+						GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 2080
+				CALL RANDOM_TARGET,ARG,2080
+				RETURN 1
+			ENDIF
+		ELSE
+			;자장가
+			CALL CHECK_ACTIONABLE,ARG,1223
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 1223
+			CALL RANDOM_TARGET,ARG,1223
+			RETURN 1
+		ENDIF
+	ENDIF
+ELSEIF 現HP割合(ARG) >= 50
+	SELECTCASE RAND:100
+		;20％で天罰
+		CASE IS < 20
+			CALL CHECK_ACTIONABLE,ARG,20101
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 20101
+			CALL RANDOM_TARGET,ARG,20101
+			RETURN 1
+		;20％でアギラオ
+		CASE IS < 40
+			CALL CHECK_ACTIONABLE,ARG,702
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 702
+			CALL RANDOM_TARGET,ARG,702
+			RETURN 1
+		;20％でマハ･ラギ
+		CASE IS < 60
+			IF ダンジョンフラグ:97:19 == 1
+				CALL CHECK_ACTIONABLE,ARG,705
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 705
+				CALL RANDOM_TARGET,ARG,705
+				RETURN 1
+			ELSE
+				CALL CHECK_ACTIONABLE,ARG,704
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 704
+				CALL RANDOM_TARGET,ARG,704
+				RETURN 1
+			ENDIF
+		;10％でシナイの神火
+		CASE IS < 60
+			CALL CHECK_ACTIONABLE,ARG,2080
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 2080
+			CALL RANDOM_TARGET,ARG,2080
+			RETURN 1
+		;10％でドルミナー
+		CASE IS < 80
+			CALL CHECK_ACTIONABLE,ARG,1222
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 1222
+			CALL RANDOM_TARGET,ARG,1222
+			RETURN 1
+		;10％で通常攻撃
+		CASE IS < 100
+			CALL CHECK_ACTIONABLE,ARG,0
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 0
+			CALL RANDOM_TARGET,ARG,0
+			RETURN 1
+	ENDSELECT
+ELSEIF 現HP割合(ARG) < 50
+	SELECTCASE RAND:100
+		;5％でディア
+		CASE IS < 5
+			CALL CHECK_ACTIONABLE,ARG,401
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 401
+			CALL RANDOM_TARGET,ARG,401
+			RETURN 1
+		;20％で天罰
+		CASE IS < 25
+			CALL CHECK_ACTIONABLE,ARG,20101
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 702
+			CALL RANDOM_TARGET,ARG,702
+			RETURN 1
+		;30％でマハ･ラギ
+		CASE IS < 55
+			CALL CHECK_ACTIONABLE,ARG,704
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 704
+			CALL RANDOM_TARGET,ARG,704
+			RETURN 1
+		CASE IS < 75
+			;20％で子守唄
+			CALL CHECK_ACTIONABLE,ARG,1223
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 1223
+			CALL RANDOM_TARGET,ARG,1223
+			RETURN 1
+		CASE IS < 85
+			;10％でマハラギ・オン
+			IF ダンジョンフラグ:97:19 == 1
+				CALL CHECK_ACTIONABLE,ARG,705
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 705
+				CALL RANDOM_TARGET,ARG,705
+				RETURN 1
+			ELSE
+				;시나이의신화
+				CALL CHECK_ACTIONABLE,ARG,2080
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+				CFLAG:ARG:입력행동 = 2080
+				CALL RANDOM_TARGET,ARG,2080
+				RETURN 1
+			ENDIF
+		;15％で通常攻撃
+		CASE IS < 100
+			CALL CHECK_ACTIONABLE,ARG,0
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 0
+			CALL RANDOM_TARGET,ARG,0
+			RETURN 1
+	ENDSELECT
+ELSE
+	$DECIDE_ACTION
+	CALL ランダム行動, ARG
+ENDIF
+
+;=======================================================================
+;輪姦参加悪魔
+;=======================================================================
+@DUNGEON_RAPE_DEVIL_97
+;ランダムにどの悪魔が出るか決定
+;RETURN CSV番号 , 人数 , レベル
+SELECTCASE RAND:5
+	CASE 0
+		RETURN [[キャラ:앙쿠]] , 3 + RAND:10 , CSVBASE([[キャラ:앙쿠]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 1
+		RETURN [[キャラ:카마이타치]] , 3 + RAND:10 , CSVBASE([[キャラ:카마이타치]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 2
+		RETURN [[キャラ:피닉스]] , 3 + RAND:10 , CSVBASE([[キャラ:피닉스]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	
+ENDSELECT
+
+

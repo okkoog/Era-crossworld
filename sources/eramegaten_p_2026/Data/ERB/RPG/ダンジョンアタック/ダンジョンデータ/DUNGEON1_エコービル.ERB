@@ -1,0 +1,1049 @@
+﻿
+;=======================================================================
+;에코빌딩
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		?????					?????
+;	XXX 	2022/11/14		無名の山寨				タイトル画像・情景画像・会話部分に顔グラを表示
+;	002 	2024/01/21		D5991					ダークサマナーの会話修正
+;	003 	2024/07/01		一ノ瀬					4Fのダークサマナーが侵入した時点でドウマンのヒントを口にするように。また、1回目のメッセージから水の壁について言及。
+;													ドウマンの思考ルーチンを追加。また、マハ・ラギを撃つターンの直前に予兆として台詞を表示するように。
+;	004 	2024/10/07		P(bazzile)				ドウマンのMPが枯れるとエラー落ちする不具合を修正
+;ボス・ドウマン
+;ダンジョンナンバー1　ＭＡＰ0~2
+;フラグ
+;ダンジョンフラグ:1:1  クリアフラグ
+;ダンジョンフラグ:1:10 最初のダークサマナーとの会話フラグ
+;ダンジョンフラグ:1:11 ドウマン撃破フラグ
+;ダンジョンフラグ:1:12 ターミナル解放フラグ
+;ダンジョンフラグ:1:13 エレベータのドア解放用変数(ビット演算)
+;ダンジョンフラグ:1:14 ４Ｆのダークサマナーとの会話フラグ
+;ダンジョンフラグ:1:70 １Ｆの宝箱管理用変数（ビット演算）
+;ダンジョンフラグ:1:71 ２Ｆの宝箱管理用変数（ビット演算）
+;ダンジョンフラグ:1:72 ３Ｆの宝箱管理用変数（ビット演算）
+;ダンジョンフラグ:1:73 ４Ｆの宝箱管理用変数（ビット演算）
+;ダンジョンフラグ:1:74 ５Ｆの宝箱管理用変数（ビット演算）
+
+;=======================================================================
+
+;=======================================================================
+;攻略条件
+;=======================================================================
+@PREREQUISITE_DUNGEON_1
+;特になし
+RETURN 1
+
+
+
+;=======================================================================
+;ダンジョン名
+;=======================================================================
+@GET_DUNGEON_NAME_1
+#FUNCTIONS
+RESULTS_F = エコービル
+
+
+;=======================================================================
+;フロア名表示
+;=======================================================================
+@FLOORNAME_1
+PRINT 에코빌딩
+SELECTCASE FLAG:현M
+	CASE 0
+		PRINTL １Ｆ
+	CASE 1
+		PRINTL ２Ｆ
+	CASE 2
+		PRINTL ３Ｆ
+	CASE 3
+		PRINTL ４Ｆ
+	CASE 4
+		PRINTL ５Ｆ
+	CASEELSE
+		PRINTL
+ENDSELECT
+
+;=======================================================================
+;ターミナルマップ
+;RESULT:X = 1で階層Mのマップのターミナルを登録できる
+;登録されたターミナル同士は相互で移動が可能になり、スタート地点から選べるようになる
+;
+;RESULTS:100は入り口の名称。入り口のままでいいなら定義する必要はない
+;=======================================================================
+@TERMINAL_MAP_1, IS_START
+#DIM DYNAMIC IS_START
+RESULT:4 = 1
+RESULTS:4 '= "터미널"
+RETURN RESULT
+
+;=======================================================================
+;スタート地点入力
+;=======================================================================
+@START_DUNGEON_1,ARG
+FLAG:현M = 0
+FLAG:현X = 5
+FLAG:현Y = 7
+;CALL AUTOMAP
+
+;=======================================================================
+;攻略開始時のイベント
+;=======================================================================
+@EVENT_DUNGEON_START_1
+;１Ｆのエレベーターの扉を開けておく
+SETBIT ダンジョンフラグ:(FLAG:현던전):13 , 0
+PRINTL
+;タイトル画像表示
+CALL PRINT_EVENT_PICTURE, "エコービル_タイトルA", 10, "CENTER"
+WAIT
+;ALIGNMENT CENTER
+;PRINTFORML
+;PRINTFORMW
+DRAWLINE
+
+;=======================================================================
+;脱出時のイベント
+;=======================================================================
+@EVENT_DUNGEON_END_1
+;ダンジョン脱出時、クリアフラグが立っておらず、ドウマンを撃破済みならクリアフラグを立てて賞金と名声を得ます。
+;また、同時にターミナルに立ち寄った事にしておきます
+IF !ダンジョンフラグ:1:1 && ダンジョンフラグ:1:11
+	CALL SHOW_PICTURE, "D"
+	CALL MESSAGE_WINDOW_D, "", @"＞수배자・초인 도우만을 토벌해、계좌에 ￥25000 입금되고、명성 20을 얻었다%\@ダンジョンフラグ:1:12?#/＞터미널이 개방되어、봉쇄되었던 신주쿠위생병원에 갈 수 있게 되었다\@%"
+	MONEY += 25000
+	FLAG:명성 += 20
+	ダンジョンフラグ:1:1 = 1
+	ダンジョンフラグ:1:12 = 1
+ENDIF
+;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@CAN_ENTER_1,ARG,ARG:1
+;ARG、ARG:1はそれぞれ対象のマスのX、Y座標を表しています。
+;このダンジョンではエレベーターの扉が一度右側から開けておかないと左側からは開けられない、という処理に使用しています。
+;どのマップでも座標(2,7)がエレベータの扉。ダンジョンフラグ:1:13 ＝ エレベータフラグ管理用変数の{現在のマップ番号}番目のビットが立っていなければ開けられるかどうかの判定を行う
+IF ARG == 2 && ARG:1 == 7 && !GETBIT(ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M) 
+	;西からは開けられない
+	IF FLAG:현X < ARG
+		CALL MESSAGE_WINDOW_D, "", "＞문은 닫혀있다/＞일단 반대편에서 열어야 할 것같다"
+		RETURN 0
+	ELSE
+		CALL MESSAGE_WINDOW_D, "", "＞닫혀있던 문을 열었다"
+		SETBIT ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M
+		;ここでそのまま下の処理に移って通させてもいいのですが、個人的にここで一度切ってもう一度入力させてからエレベーターに乗せた方がなんとなく良かったので
+		RETURN 0
+	ENDIF
+;ID指定の場合、4002は2として表示され扱われますが、DAで見ることで4002が入っているのを確認できます
+;この場合はドウマンの前の扉で確認をさせるのにつかっています
+ELSEIF DA:ARG:(ARG:1) == 4002 && ダンジョンフラグ:1:11 == 0
+	CALL MESSAGE_WINDOW_D, "", "문 너머에서 무서운 기운이 느껴진다…"
+	CALL INPUT_SELECT_D, "[0] 문을 연다/[1] 열지 않는다 "
+	SIF RESULT
+		RETURN 0
+	RETURN 1
+ENDIF
+CALL CAN_ENTER,ARG,ARG:1
+RETURN RESULT
+
+;=======================================================================
+;フロアデータ
+;=======================================================================
+@MAKE_FLOOR_1
+SELECTCASE FLAG:현M
+	CASE 0
+	;１階
+		FLAG:최대X = 9
+		FLAG:최대Y = 9
+
+;X座標をこんな形でふっとくと、見やすいかもしれません
+;								      ↓
+;								           1         2
+;								 012345678901234567890
+		CALL MAKE_FLOOR_LINE,0, "         "
+		CALL MAKE_FLOOR_LINE,1, " 3211111 "
+		CALL MAKE_FLOOR_LINE,2, "   1   1 "
+		CALL MAKE_FLOOR_LINE,3, " 41426 1 "
+		CALL MAKE_FLOOR_LINE,4, "   1   1 "
+		CALL MAKE_FLOOR_LINE,5, " 3211111 "
+		CALL MAKE_FLOOR_LINE,6, "   1 2 1 "
+		CALL MAKE_FLOOR_LINE,7, " E21 8 1 "
+		CALL MAKE_FLOOR_LINE,8, "         "
+		;左下、座標(1,7)の"E"はエレベーターを表しています。
+		;このように数字の代わりにEを記述した場合、「-29」が代入されて共通のエレベーターイベントが設置されている物と扱われます。
+		;詳しくはSET_DUNGEON内の@DEFINE_TILESとSYSTEM_DUNGEON内の@DUNGEON_ATTACKをお読みください
+		
+		
+		
+	CASE 1
+	;２階
+		FLAG:최대X = 9
+		FLAG:최대Y = 9
+;								 012345678
+		CALL MAKE_FLOOR_LINE,0, "         "
+		CALL MAKE_FLOOR_LINE,1, " 123 624 "
+		CALL MAKE_FLOOR_LINE,2, " 1     1 "
+		CALL MAKE_FLOOR_LINE,3, " 123 721 "
+		CALL MAKE_FLOOR_LINE,4, " 1     1 "
+		CALL MAKE_FLOOR_LINE,5, " 1111124 "
+		CALL MAKE_FLOOR_LINE,6, "       1 "
+		CALL MAKE_FLOOR_LINE,7, " E211411 "
+		CALL MAKE_FLOOR_LINE,8, "         "
+		
+		;アイテム合成オプションがオフのときはアイテム合成についてふれているメッセンジャーを排除する
+		CALL SET_TILE, 5 , 7 , FLAG:아이템합성해금 ,  0, 1
+	CASE 2
+	;３階
+		FLAG:최대X = 9
+		FLAG:최대Y = 9
+;								 012345678
+		CALL MAKE_FLOOR_LINE,0, "         "
+		CALL MAKE_FLOOR_LINE,1, " 32127 1 "
+		CALL MAKE_FLOOR_LINE,2, "   1   1 "
+		CALL MAKE_FLOOR_LINE,3, " 3 126 1 "
+		CALL MAKE_FLOOR_LINE,4, " 2 1   1 "
+		CALL MAKE_FLOOR_LINE,5, " 1111121 "
+		CALL MAKE_FLOOR_LINE,6, "       1 "
+		CALL MAKE_FLOOR_LINE,7, " E211111 "
+		CALL MAKE_FLOOR_LINE,8, "         "
+	CASE 3
+	;４階
+		FLAG:최대X = 9
+		FLAG:최대Y = 9
+;								 012345678
+		CALL MAKE_FLOOR_LINE,0, "         "
+		CALL MAKE_FLOOR_LINE,1, " 321 621 "
+		CALL MAKE_FLOOR_LINE,2, "   1   4 "
+		CALL MAKE_FLOOR_LINE,3, " 321 721 "
+		CALL MAKE_FLOOR_LINE,4, "   1   1 "
+		CALL MAKE_FLOOR_LINE,5, " 3211121 "
+		CALL MAKE_FLOOR_LINE,6, "       1 "
+		CALL MAKE_FLOOR_LINE,7, " E211111 "
+		CALL MAKE_FLOOR_LINE,8, "         "
+		
+		
+		
+		
+	CASE 4
+	;５階
+		FLAG:최대X = 9
+		FLAG:최대Y = 9
+;								 012345678
+		CALL MAKE_FLOOR_LINE,0, "         "
+		CALL MAKE_FLOOR_LINE,1, " 3 127 T "
+		CALL MAKE_FLOOR_LINE,2, " 2 1   2 "
+		CALL MAKE_FLOOR_LINE,3, " 1 111 1 "
+		CALL MAKE_FLOOR_LINE,4, " 1   1 1 "
+		CALL MAKE_FLOOR_LINE,5, " 111 1 1 "
+		CALL MAKE_FLOOR_LINE,6, "   1 2 1 "
+		CALL MAKE_FLOOR_LINE,7, " E211111 "
+		CALL MAKE_FLOOR_LINE,8, "         "
+		;※座標(7,1)の"T"はターミナルを表しています。
+		;このように数字の代わりにTを記述した場合、「-9」が代入されて共通のターミナルイベントが設置されている物と扱われます。
+		;詳しくはSET_DUNGEON内の@DEFINE_TILESとSYSTEM_DUNGEON内の@DUNGEON_ATTACKをお読みください
+
+		;イベントの設置
+		;１Ｆのノッカー（スキルカードの持ち主）同様、特定の条件を満たしている場合のイベントとして、
+		;ボス悪魔であるドウマンを設置します。
+		;@SET_TILE,X座標, Y座標, 使用するフラグ, フラグがいくつのときにタイルを設置するか, 設置するタイル
+		;つまり、これはX座標7、Y座標1の位置に、ダンジョンフラグ:1:11(ドウマン撃破フラグ)が0のときのみ、IDが400番の、4（イベント）を置く
+		;この4004は マップ番号である4*1000 + タイルの種類を表す4で構成されています。
+		CALL SET_TILE, 7 , 1 , ダンジョンフラグ:1:11 , 0 , 4004
+		;同様にID400のドアをドウマンの前におきます
+		CALL SET_TILE, 7 , 2 , ダンジョンフラグ:1:11 , 0 , 4002
+		;なお、ダンジョンフラグ:1:11はダンジョンフラグ:{FLAG:현던전}:11や、ダンジョンフラグ:[[ダンジョン:에코빌딩]]:11という記述もできます
+		;基本的には前者推奨、ダンジョンの外やほかのダンジョンからフラグを見たいときは後者もいいでしょう
+	CASEELSE
+
+
+
+
+
+ENDSELECT
+;参考例:半角スペース（壁）は0でも記述可能,見やすさの好みで0と使い分ける
+;		CALL MAKE_FLOOR_LINE,0, "000000000"
+;		CALL MAKE_FLOOR_LINE,1, "032111110"
+;		CALL MAKE_FLOOR_LINE,2, "000100010"
+;		CALL MAKE_FLOOR_LINE,3, "041426010"
+;		CALL MAKE_FLOOR_LINE,4, "000100010"
+;		CALL MAKE_FLOOR_LINE,5, "032111110"
+;		CALL MAKE_FLOOR_LINE,6, "000102010"
+;		CALL MAKE_FLOOR_LINE,7, "0E2108010"
+;		CALL MAKE_FLOOR_LINE,8, "000000000"
+
+;=======================================================================
+;タイル調整
+;=======================================================================
+;ARG:1、ARG:2はそれぞれX座標とY座標
+;ARGはその座標に現在代入されている番号
+;0：壁　1：床もしくは通路　2：扉　3：宝箱　4：イベント　5：罠　6：上り階段 7：下り階段　8：出口　9：その他特殊処理等
+;これらの内、3～9が代入されているマスに、個別の番号を与える処理を実行します。
+;この処理を行った後、これらのマスには 「マップ番号*1000 + そのマスがそのマップで左上から数えて何個目のARGタイプのマスか*10 + ARG」が代入されます
+;例えば 2003 であった場合、「2番のマップ＝３Ｆで、左上から数えて0個目の3＝宝箱である」という事を意味しています
+;尚、0～2はどのマップにも大量に設置されるので、ここでは基本的に個別の番号を与えません。
+;
+;何個目のARGタイプのマスなのか、は左上の(0,0)から右まで探し、その後一つ下の段に移って同様に探す、というのを右下まで繰り返して数えます。
+@MAKE_FLOOR_LINE_COMMON_1, ARG, ARG:1, ARG:2
+#LOCALSIZE 10
+;LOCAL:0～9 それぞれ何個目のARGなのかを記憶しています
+;LOCAL:3 宝箱→使用フラグはダンジョンフラグ:70~74
+;指定された座標が(0,0)である場合、つまり新しいマップを読み込んだ時はLOCALを消去します
+SIF ARG:1 == 0 && ARG:2 == 0
+	VARSET LOCAL
+SELECTCASE ARG
+	CASE 3
+		;宝箱は多くの場合、開けたフラグが立っていると床を代入します
+		;そのマップでどの宝箱を開けたかは、そのマップの宝箱管理用変数の何番目のビットが立っているかで判断します
+		IF GETBIT(ダンジョンフラグ:(FLAG:현던전):(FLAG:현M+70), LOCAL:3)
+			DA:(ARG:1):(ARG:2) = 1
+			;特殊処理
+			;１Ｆ1番目の宝箱を取ると、そこには0024を代入(ノッカー)
+			SIF FLAG:현M == 0 && LOCAL:3 == 1
+				DA:(ARG:1):(ARG:2) = 24
+				
+		ELSE
+			DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:3 * 10 + 3
+		ENDIF
+		LOCAL:3++
+	CASE 4 TO 9
+		DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:ARG * 10 + ARG
+		LOCAL:ARG++
+	
+ENDSELECT
+
+
+;=======================================================================
+;特殊タイル表示
+;TILE_MARK_COMMON_{FLAG:현던전}_X
+;=======================================================================
+;ARG:1、ARG:2がX座標とY座標
+;ARGはそこに代入されている値
+;RESULTSに代入した文字がマップに表示されますが、必ず全角1文字分になるようにしてください。そうでないと表示が崩れます。
+
+;イベントタイル特殊表示
+;末尾の_4はイベントであることを示す4
+@TILE_MARK_COMMON_1_4, ARG , ARG:1 , ARG:2
+SELECTCASE ARG / 10
+	;メッセンジャーを緑色で"ｍ"と表示
+	CASE 0 TO 2 , 100 , 101 , 102 , 300
+		SETCOLOR 0x00ff00
+		RESULTS = ｍ
+	CASEELSE
+		;特に設定しない場合、"！"と表示されます
+		RETURN 1
+ENDSELECT
+
+;特殊タイルの表示
+;末尾の_9は特殊タイルであることを示す9
+@TILE_MARK_COMMON_1_9, ARG , ARG:1 , ARG:2
+SELECTCASE ARG / 10
+	;５Ｆに設置されたターミナル
+	CASE 400
+		RESULTS = Ｔ
+	CASEELSE
+		;特に設定しない場合、"■"が表示されます
+		RETURN 1
+ENDSELECT
+
+;=======================================================================
+;[5]調べる　実行時のイベント
+;=======================================================================
+@EVENT_CHECK_DUNGEON_1
+
+;==========
+;出口の処理
+;==========
+IF DA:(FLAG:현X):(FLAG:현Y) == 8
+	CALL DUNGEON_EXIT
+	RETURN 1
+;========
+;宝の処理
+;========
+;% 10は10で割ったあまり、つまり下一桁がでてきます
+;そして、下一桁はタイルの種類を表す
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 3
+	CALL TREASURE_1
+	RETURN RESULT
+;=======
+;階段
+;=======
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 6
+	CALL UPSTAIRS_1
+	RETURN RESULT
+
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 7
+	CALL DOWNSTAIRS_1
+	RETURN RESULT
+;========
+;이벤트
+;========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 4
+	SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+		;１Ｆイベント
+		CASE 0
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:픽시]], "CSV", , "요정 픽시", "저기저기 아줌마/최근 서머너가 자주 보이네 "
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아프사라스]], "CSV", , "요마 아프사라스", "그러네. TALK로 교섭을 걸어서, 동료마를 모으고 있는 것 같아/하지만 너는 아직 어리니까, 말을 걸어도 따라가면 안돼/그리고 나는 언니야"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:픽시]], "CSV", , "요정 픽시", "지금은 ＣＯＭＰ이라는 기계로 우리들을 소환할 수 있다는데！/과학의 힘이란거 굉장해! 그치? 아줌마！"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아프사라스]], "CSV", , "요마 아프사라스", "그래？/기계같은 건 잘 모르니까 말이지/그리고 나는 언니야"
+		CASE 1
+			CALL MESSAGE_WINDOW_D_ICON, , "04_新米ダークサマナー", , "풋내기 다크서머너", "현상 수배된 악마가 있다 라고 들어 여기까지 왔지만/TALK로 악마를 동료마로 만들어도、ＭＡＧ가 부족해서 불러낼 수가 없고……/따르고 있던 동료마들도 ＭＡＧ가 부족해서 쓰러졌으니, 엎친데 덮친 격이야"
+		CASE 2
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:노커]], "CSV", , "요정 노커", "이봐 너/이 근처에 뒀던 나의 스킬카드 못 봤냐?/그거랑 ＭＡＧ가 있으면 [122]동료마강화에서/새로운 스킬을 배울 수 있을 텐데……/젠장！ 훔친 자식 보이기만 해봐라！"
+		;２Ｆイベント
+		CASE 100
+			CALL MESSAGE_WINDOW_D_ICON, , "01_ダークサマナー", , "다크서머너", "너、ＤＥＶＩＬ－ＣＯＯＰ는 이용하고 있어？/약점만 찌르면, 동료마와 협력해서 추격할 수 있어/하지만、속성……사상이 다른 동료마는 협력해주지 않으니까。/조심하라구"
+		CASE 101
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:하피]], "CSV", , "요조 하피", "우우우、픽시는 저렇게나 귀여운데 정말 무서워…/지오 같은 전격은 데미지 뿐만 아니라 SHOCK로 움직일 수 없게 되어 버려/SHOCK상태가 되면 물리공격은 반드시 크리티컬이 되고、부흐 같은 빙결공격은 2배의 데미지고…"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:하피]], "CSV", , "요조 하피", "…그렇다면 부흐 같은 걸로 FREEZE 상태가 되어도 같은 효과인건가/나같이 전격에 약한 자는 GUARD해서 흘려버리지 않으면。/이라니、아무도 듣고있지 않은거지？"
+		CASE 102
+			CALL MESSAGE_WINDOW_D_ICON, , "01_ダークサマナー", , "다크서머너", "이 지역의 악마가 합성에 사용되는 소재를 가지고 있는 것 같아/마카 복권으로 맞춘 합성 가이드북에 그렇게 써있었구만/이 지역의 소재를 모으면、학습장치를 합성할 수 있을 거다"
+		;４Ｆイベント
+		CASE 300
+			;ドウマン撃破済み
+			IF ダンジョンフラグ:(FLAG:현던전):11
+				CALL MESSAGE_WINDOW_D_ICON, , "01_ダークサマナー", , "다크서머너", "뭐라고！？/현상수배범을 잡아버렸다고！？"
+				CALL MESSAGE_WINDOW_D_ICON, , "01_ダークサマナー", , "다크서머너", "제엔장、부릴 악마를 좀 더 모았으면 상금은 내꺼였을텐데！"
+			;一度話しかけた事がある
+			ELSE
+				CALL MESSAGE_WINDOW_D_ICON, , "01_ダークサマナー", , "다크서머너", "화염 공격을 막는 물의 벽……/저 현상 수배범을 쓰러뜨리려면、그걸 쓸 수 있는 요정 실키를 합체로 만드는 수밖에 없나……"
+			ENDIF
+	ENDSELECT
+ELSE
+	CALL MESSAGE_WINDOW_D, "", "＞아무것도 없는 것 같다"
+	RETURN 0
+ENDIF
+
+;=======================================================================
+;タイル進入時のイベント
+;=======================================================================
+@EVENT_ENTER_DUNGEON_1,ARG
+;ARG = 進入時の向き　0の場合ワープなど
+;==========
+;出口の処理
+;==========
+IF DA:(FLAG:현X):(FLAG:현Y) % 10 == 8
+	CALL DUNGEON_EXIT
+	RETURN 1
+;========
+;宝の処理
+;========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 3
+	CALL TREASURE_1
+	RETURN RESULT
+;=======
+;階段
+;=======
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 6
+	CALL UPSTAIRS_1
+	RETURN RESULT
+
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 7
+	CALL DOWNSTAIRS_1
+	RETURN RESULT
+
+;==========
+;扉の処理
+;==========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 2
+	CALL DUNGEON_DOOR,ARG
+	RETURN 1
+
+
+;========================
+;이벤트
+;========================
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 4
+	SELECTCASE DA:(FLAG:현X):(FLAG:현Y) /10
+		;１Ｆイベント
+		CASE 1
+			IF ダンジョンフラグ:1:10 == 0
+				CALL MESSAGE_WINDOW_D_ICON, , "04_新米ダークサマナー", , "풋내기 다크서머너", "현상금 걸린 악마가 있다고 해서 여기 왔지만/TALK로 악마를 동료마로 했더니、ＭＡＧ가 부족해서 소환할 수 없어……/데려온 악마도 ＭＡＧ가 부족해서 쓰러져버렸고、엎친데 덮친 격이야/……그래그래、나의 이야기를 한번 더 듣고싶다면 [5]조사하기 야"
+				ダンジョンフラグ:1:10 = 1
+				RETURN 1
+			ENDIF
+			RETURN 0
+		;４Ｆイベント
+		CASE 300
+			;ドウマン撃破済み
+			IF ダンジョンフラグ:(FLAG:현던전):12 == 0
+				CALL MESSAGE_WINDOW_D_ICON, , "01_ダークサマナー", , "다크서머너", "쳇…… 실수했군/설마 내 좀비들이 한꺼번에 구워져 버릴 줄이야…"
+				CALL MESSAGE_WINDOW_D_ICON, , "01_ダークサマナー", , "다크서머너", "……이 앞을 지나갈 셈인가？ 그만두라고/위층에는 현상금이 걸린 악마가 있지만/어설픈 솜씨로는 녀석의 불꽃에 한꺼번에 불타버리는 게 고작일 테니까"
+				CALL MESSAGE_WINDOW_D_ICON, , "01_ダークサマナー", , "다크서머너", "화염 공격을 막는 물의 벽……/그걸 쓸 수 있는 요정 실키를 합체로 만드는 수밖에 없나……"
+				ダンジョンフラグ:(FLAG:현던전):12 = 1
+				RETURN 1
+			ENDIF
+			RETURN 0
+		;５Ｆ
+		CASE 400
+			;現在地をイベントマスからターミナルに変更する
+			DA:(FLAG:현X):(FLAG:현Y) = -9
+			;メッセージと画像を表示
+			CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "エコービル_儀式ターミナル/10", "", "＞수상한 방에, 수상한 남자가 무언가 의식을 하고 있는 듯 하다"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:도우만]] , "NO", "エコービル_ターミナルwithドウマン/10", "수상한 남자", "우리 동포여, 지금 이 순간 마계로부터 오라！"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:도우만]]  , "NO", "エコービル_ターミナルwithドウマン/10", "수상한 남자", "……음！？/수상한 녀석、누군지는 모르겠지만 의식을 방해하게 두지 않겠다"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:도우만]]  , "NO", "エコービル_ターミナルwithドウマン/10", "수상한 남자", "하지만 마계에서 올 동포를 맞이할 장소를 너희들의 피로 더럽힐 수는 없겠지…/꺼져라！"
+			;下方向に２マス強制移動
+			CALL SHOW_FORCEMOVE("D<2>", "D", "", , "")
+			CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "", "" , @"＞%CALLNAME:MASTER% 일행은 충격파에 휩쓸려 방 밖으로 튕겨 나갔다"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:도우만]]  , "NO", "エコービル_ドウマン戦闘前/10", "수상한 남자", "의식을 목격한 자는 살려 보내지 않겠다/이 아시야 도우만과 만난 불행을 저주해라！"
+			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:도우만]]  , "NO", "エコービル_ドウマン戦闘前/10", "", "/＞초인 도우만이 １체 나타났다！/"
+			;イベント戦闘用二各種フラグを追加
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+
+			;ボスを配置
+			CALL SET_BOSS_ENEMY_DUNGEON_1, "ドウマン"
+			;戦闘開始
+			CALL BATTLE_START
+			;戦闘が終わるとここに戻ってくる。
+			;各種イベント戦闘用のフラグを消し、メッセージを表示
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			CALL SHOW_PICTURE, "D"
+			CALL MESSAGE_WINDOW_D, "", "/＞초인 도우만은 힘이 다했다/" , , , , , , , , , "CENTER"
+			;ドウマンを倒したフラグを立てる
+			ダンジョンフラグ:1:11 = 1
+			RETURN 1
+	ENDSELECT
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) %10 == 9
+ENDIF
+RETURN 0
+
+@DUNGEON_ENTER_TERMINAL_1
+SIF !ダンジョンフラグ:1:12
+	CALL MESSAGE_WINDOW_D, "", "＞터미널을 개방해서、봉쇄되었던 신주쿠 위생병원에 갈 수 있게 되었다"
+ダンジョンフラグ:1:12 = 1
+
+
+;=======================================================================
+;인카운트율
+;=======================================================================
+@ENCOUNT_RATE_1
+SELECTCASE FLAG:현M
+	CASE 0 , 1
+		FLAG:인카운트율 = FLAG:미조우걸음수*5
+	CASE 2 , 3
+		FLAG:인카운트율 = FLAG:미조우걸음수*5
+	CASE 4
+		FLAG:인카운트율 = FLAG:미조우걸음수*5
+	CASEELSE
+		FLAG:인카운트율 = FLAG:미조우걸음수*5
+ENDSELECT
+SIF FLAG:미조우걸음수 < 5
+	FLAG:인카운트율 = 0
+;=======================================================================
+;必要レベル目安
+;推奨LV 雑魚最低LV 雑魚最高LV ボスLV 
+;=======================================================================
+@GET_DUNGEON_LV_1
+RETURN 5, 3, 9, 10
+;=======================================================================
+;エンカウント処理
+;=======================================================================
+@CHECK_ENCOUNT_1
+IF RAND:100 < FLAG:인카운트율
+	RETURN 1
+ELSE
+	FLAG:미조우걸음수 += 1
+	RETURN 0
+ENDIF
+
+@SET_ENEMY_STATUS_1, L_ENEMY
+#DIM DYNAMIC L_ENEMY
+#DIM DYNAMIC LCOUNT
+IF FLAG:아이템합성해금
+	FOR LCOUNT, 7, 17
+		SIF POS(LCOUNT) < 0
+			CONTINUE
+		L_ENEMY = POS(LCOUNT)
+		BREAK
+	NEXT
+	IF !GROUPMATCH(ABL:L_ENEMY:아이템2, GETNUM(ITEM, "기계의조각Ａ"), GETNUM(ITEM, "기계의조각Ｂ"), GETNUM(ITEM, "기계의조각Ｃ"))
+		IF RAND:3 == 1
+			ABL:L_ENEMY:아이템2 = GETNUM(ITEM, "기계의조각Ａ")
+		ELSEIF RAND:2 == 1
+			ABL:L_ENEMY:아이템2 = GETNUM(ITEM, "기계의조각Ｂ")
+		ELSE
+			ABL:L_ENEMY:아이템2 = GETNUM(ITEM, "기계의조각Ｃ")
+		ENDIF
+		ABL:L_ENEMY:입수확률2 = 8
+	ENDIF
+ENDIF
+
+;=======================================================================
+;敵の種族の種類数
+;RETURN X でXが種類の数になります
+;あまりいろんなのが混ざっているとCOOPがとりにくくなったり
+;敵の攻撃属性が多くなる傾向にあるので、
+;種類の数は1・2種類を主体に時々3種類くらいを基本にするのが望ましいと思われます
+;=======================================================================
+@CLASS_NUM_1
+SELECTCASE FLAG:현M
+	CASE 0 , 1
+		SELECTCASE RAND:100
+			CASE IS < 50
+				RETURN 1
+			CASEELSE
+				RETURN 2
+		ENDSELECT
+	CASE 2 , 3
+		SELECTCASE RAND:100
+			CASE IS < 50
+				RETURN 1
+			CASEELSE
+				RETURN 2
+		ENDSELECT
+	CASE 4
+		SELECTCASE RAND:100
+			CASE IS < 35
+				RETURN 1
+			CASEELSE
+				RETURN 2
+		ENDSELECT
+ENDSELECT
+
+;=======================================================================
+;敵の総数
+;ARGは出現する敵の種類です
+;RAND(X, Y)はX～Y-1のうちのどれかになるRANDです
+;なお、ここで帰った数字は下限を種族数、上限を10として自動的に調整されます
+;
+;エコービルは最初のダンジョンということで少なめで、最大でも6体ということに
+;=======================================================================
+@ENEMY_NUM_1, ARG
+SELECTCASE FLAG:현M
+	CASE 0 , 1
+		;1~2あるいは2~4
+		RETURN RAND(ARG, ARG*2+1)
+	CASE 1 , 2, 3
+		;1~3あるいは2~5
+		RETURN RAND(ARG, ARG*2+2)
+	CASE 4
+		;1~4あるいは2~6
+		RETURN RAND(ARG, ARG*2+3)
+ENDSELECT
+;=======================================================================
+;敵の種類
+;=======================================================================
+@ENEMY_1, ARG
+SELECTCASE FLAG:현M
+	CASE 0 , 1
+		SELECTCASE RAND:100
+			CASE IS < 20
+				;20%でピクシー
+				;RETURN [登場悪魔のキャラ番号], LV　となっています
+				RETURN [[キャラ:픽시]], 3
+				;参考例　以下の記述でも動きます。数字を指定するのと文字列を指定するのは好みでどうぞ
+				;なお、文字列指定は予め、_Rename.csvで登録していないと無理です。ｃｓｖを見てみましょう
+				;RETURN [[キャラ:픽시]],3
+			CASE IS < 35
+				;15%でハーピー
+				RETURN [[キャラ:하피]],4
+			CASE IS < 50
+				;15%でゾンビちゃん
+				RETURN [[キャラ:좀비쨩]],4
+			CASE IS < 65
+				;15%でアプサラス
+				RETURN [[キャラ:아프사라스]],5
+			CASE IS < 74
+				;9%でノッカー
+				RETURN [[キャラ:노커]],4
+			CASE IS < 83
+				;9%でゾンビドッグ
+				RETURN [[キャラ:좀비독]], 1
+			CASE IS < 92
+				;9%でチョンチョン
+				RETURN [[キャラ:춍춍]],4
+			CASE IS < 100
+				;8%でガキ
+				RETURN [[キャラ:아귀]],4
+		ENDSELECT
+	CASE 2 , 3
+		SELECTCASE RAND:100
+			CASE IS < 14
+				;14%でピクシー
+				RETURN [[キャラ:픽시]],3
+			CASE IS < 28
+				;14%でハーピー
+				RETURN [[キャラ:하피]],4
+			CASE IS < 42
+				;14%でゾンビちゃん
+				RETURN [[キャラ:좀비쨩]],4
+			CASE IS < 56
+				;14%でアプサラス
+				RETURN [[キャラ:아프사라스]],5
+			CASE IS < 61
+				;7%でピクシーランク１
+				RETURN [[キャラ:픽시]],6
+			CASE IS < 64
+				;3%でハーピーランク１
+				RETURN [[キャラ:하피]],7
+			CASE IS < 67
+				;3%でゾンビちゃんランク１
+				RETURN [[キャラ:좀비쨩]],7
+			CASE IS < 70
+				;3%でノッカーランク１
+				RETURN [[キャラ:노커]],7
+			CASE IS < 73
+				;3%でガキランク１
+				RETURN [[キャラ:아귀]],7
+			CASE IS < 76
+				;3%でチョンチョンランク１
+				RETURN [[キャラ:춍춍]],7
+			CASE IS < 83
+				;7%でコボルト
+				RETURN [[キャラ:코볼트]],5
+			CASE IS < 86
+				;3%でゾンビドッグ
+				RETURN [[キャラ:좀비독]], 1
+			CASE IS < 100
+				;14%でカハク
+				RETURN [[キャラ:화백]],7
+		ENDSELECT
+	CASE 4
+		SELECTCASE RAND:100
+			CASE IS < 10
+				;10%でピクシーランク１
+				RETURN [[キャラ:픽시]],7
+			CASE IS < 20
+				;10%でハーピーランク１
+				RETURN [[キャラ:하피]],7
+			CASE IS < 30
+				;10%でゾンビちゃんランク１
+				RETURN [[キャラ:좀비쨩]],7
+			CASE IS < 40
+				;10%でアプサラスランク1
+				RETURN [[キャラ:아프사라스]],7
+			CASE IS < 50
+				;10%でピクシーランク２
+				RETURN [[キャラ:픽시]],9
+			CASE IS < 60
+				;10%でチョンチョンランク１
+				RETURN [[キャラ:춍춍]],7
+			CASE IS < 70
+				;10%でノッカーランク1
+				RETURN [[キャラ:노커]],7
+			CASE IS < 80
+				;10%でゾンビくん
+				RETURN [[キャラ:좀비군]],7
+			CASE IS < 90
+				;10%でコボルト
+				RETURN [[キャラ:코볼트]],7
+			CASE IS < 100
+				;10%でカハク
+				RETURN [[キャラ:화백]],7
+		ENDSELECT
+ENDSELECT
+
+
+;=======================================================================
+;宝箱の中身
+;=======================================================================
+@TREASURE_1
+#LOCALSIZE 3
+;宝箱のフラグ管理用変数の番号
+LOCAL = FLAG:현M + 70
+;そのマップの何番目の宝箱か
+LOCAL:1 = (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+
+;/10はIDを10で割る。つまり、下一桁をなくして、二桁目と三桁目を二桁の数字として取り出している
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	;マップ番号*100+そのマップで何番目の宝箱かを示す数値でどの宝箱かを判別します。
+	;例えば0の場合、0版のマップの0番目の宝箱であることを表しています。
+	CASE 0
+		;@GET_TREASURE,アイテム番号 , 入手個数 , ダンジョンナンバー , 開けた時に操作する変数の番号 , 変数に立てるビット
+		;GETNUM(ITEM, "외상약")は_Rename.csvによって1001番が置換されて渡されます。これは傷薬のアイテム番号です。
+		;そしてその個数が1個、ダンジョンナンバーは宝箱あけるときはよそのダンジョンをあけることがないだろうのでFLAG:現ダンジョンが無難です
+		;LOCALはこの場合マップ番号の0+70で70が代入されています。そして、LOCAL:1にはこの宝箱がこのマップで何番目の宝箱か、つまり0が入っています
+		;このように記述すると、宝箱を開けた場合ダンジョンフラグ:1(エコービルの番号):70 の0番目のビットが立ちます。
+		;MAPをつくるときにこの宝箱はダンジョンフラグ:1(에코빌딩):70の0番目のビットが立っていない時しか置かないことになってるので、宝箱を開けるとこれで消えます
+		CALL GET_TREASURE, GETNUM(ITEM, "외상약") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 1
+		CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【숏잽】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+		SIF RESULT
+			DA:(FLAG:현X):(FLAG:현Y) = 24
+	;百の位が1になりました。
+	;これで以下の二つの宝箱はマップ番号1＝エコービル２Ｆの0番目、1番目の宝箱という事になります
+	CASE 100
+		CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【아쿠아】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 101
+		CALL GET_TREASURE, GETNUM(ITEM, "퀸뷰트") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 200
+		;罠箱
+		;@GET_TREASURE_TRAP , 罠の種類 , ダメージ量or確率 , 相性番号 , ダンジョンナンバー , 開けた時に操作する変数の番号 , 変数に立てるビット
+		;第一引数が"ＨＰ"か"ＭＰ"なら最大値に対する第二引数％の割合ダメージを、
+		;バッドステータス名であれば第二引数％の確率でそのバッドステータスになります。この場合、第三引数の番号の相性に対する耐性で確率が変化します
+		;この箱は味方全員のHPを25%減らす罠です。
+		CALL GET_TREASURE_TRAP, "ＨＰ", 25 , GET_TYPE_NUM("만능") , FLAG:현던전, LOCAL , LOCAL:1
+		
+	CASE 201
+		;@MAGIC_BOX , 指定する月齢 , 月齢が正しい時のアイテム、月齢が正しくない時のアイテム , 入手個数 , ダンジョンナンバー , 開けた時に操作する変数の番号 , 変数に立てるビット
+		;現在の月齢によって手に入るアイテムの変わる箱です。
+		;この場合、月齢8＝満月である場合に宝玉が1個手に入り、そうでない場合魔石1個が手に入ります
+		CALL MAGIC_BOX , 8 , GETNUM(ITEM, "보옥") , GETNUM(ITEM, "마석") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 300
+		CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【그라이】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 301
+		;@GET_TREASURE_MONEY ,￥or魔貨 , 入手額 , ダンジョンナンバー , 開けた時に操作する変数の番号 , 変数に立てるビット
+		;第一引数が0なら￥、1なら魔貨を入手します
+		;この宝箱には￥3000が入っています
+		CALL GET_TREASURE_MONEY, 0 , 3000 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 302
+		;トーテムメモリーを入手したことがあるかどうか
+		IF IS_TOTEM_MEMORY_TAKEN:0
+			;@GET_TREASURE_MAG ,  , 入手量 , ダンジョンナンバー , 開けた時に操作する変数の番号 , 変数に立てるビット
+			;この宝箱には10000MAGが入っています
+			CALL GET_TREASURE_MAG, , 10000 , FLAG:현던전, LOCAL , LOCAL:1
+		ELSE
+			CALL GET_TREASURE, GETNUM(ITEM, "토템메모리") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			IS_TOTEM_MEMORY_TAKEN:0 = RESULT
+		ENDIF
+	CASE 400
+		CALL GET_TREASURE, GETNUM(ITEM, "갖지못한자의반지") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+		
+;	CASE 3
+;		CALL GET_TREASURE,5000,2,FLAG:현던전,3
+	;なお、1001はGETNUM(ITEM, "외상약")という記述も可能です
+ENDSELECT
+RETURN 1
+
+;=======================================================================
+;階段置き場
+;=======================================================================
+;上り階段処理
+@UPSTAIRS_1
+;SELECTCASE DA:(FLAG:현X):(FLAG:현Y) /10
+;	;IDで分岐
+;	;１Ｆ上り階段
+;	CASE 0
+;			;@DUNGEON_UPSTAIRS_ID , 階段を進んだ先のマップ番号 , 移動先のタイルのID
+;			;２Ｆ＝マップ番号1番の0番目の下り階段 = 1 * 1000 + 0 * 10 + 7 = 1007へと飛ぶ
+;			CALL DUNGEON_UPSTAIRS_ID, 1 , 1007
+;	CASE 100
+;			CALL DUNGEON_UPSTAIRS_ID, 2 , 2007
+;	CASE 200
+;			CALL DUNGEON_UPSTAIRS_ID, 3 , 3007
+;	CASE 300
+;			CALL DUNGEON_UPSTAIRS_ID, 4 , 4007
+;	CASEELSE
+;ENDSELECT
+
+;入り組んだダンジョンで階段がたくさん入り乱れている状態であれば、上記のように階段毎に指定してあげる必要があります。
+;しかしこのエコービルは1つのマップに上り階段が１つ、下り階段が１つ、上の階に進む＝マップ番号が一つ増えるという構造になっています
+;なので、下記のように書けば一行で済みます
+CALL DUNGEON_UPSTAIRS_ID, FLAG:현M+1 , (FLAG:현M + 1) * 1000 + 7
+RETURN 1
+
+;下り階段処理
+@DOWNSTAIRS_1
+;上り階段同様に、エコービルは下り階段も1行で記述できます
+CALL DUNGEON_DOWNSTAIRS_ID, FLAG:현M-1 , (FLAG:현M - 1) * 1000 + 6
+RETURN 1
+
+;=======================================================================
+;エレベーター定義
+;=======================================================================
+;ARGはそのエレベーターのタイル
+@DUNGEON_ELEVATOR_1, ARG
+;RESULT:1～5にエレベータが存在するマップの番号を代入し、RESULTS:1～5には表示したい名称を代入、RETURNでは-1を返しておく
+RESULT:1 = 0
+RESULT:2 = 1
+RESULT:3 = 2
+RESULT:4 = 3
+RESULT:5 = 4
+RESULTS:1 = １Ｆ
+RESULTS:2 = ２Ｆ
+RESULTS:3 = ３Ｆ
+RESULTS:4 = ４Ｆ
+RESULTS:5 = ５Ｆ
+RETURN -1
+
+;=======================================================================
+;輪姦参加悪魔
+;=======================================================================
+@DUNGEON_RAPE_DEVIL_1
+;ランダムにどの悪魔が出るか決定
+;RETURN CSV番号 , 人数 , レベル
+SELECTCASE RAND:3
+	CASE 0
+		RETURN [[キャラ:아귀]] , 3 + RAND:10 , CSVBASE([[キャラ:아귀]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 1
+		RETURN [[キャラ:코볼트]] , 3 + RAND:10 , CSVBASE([[キャラ:코볼트]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 2
+		RETURN [[キャラ:좀비군]] , 3 + RAND:10 , CSVBASE([[キャラ:좀비군]] , GETNUM(BASE , "LV") , 0) + RAND:3
+ENDSELECT
+
+
+@SET_BOSS_ENEMY_DUNGEON_1, L_ENEMY_NAME, L_NO = -1, L_OPT
+#DIM DYNAMIC L_NO
+#DIM DYNAMIC L_ENEMY
+#DIMS DYNAMIC L_ENEMY_NAME
+#DIMS DYNAMIC L_OPT
+#DIMS DYNAMIC L_ENEMY_TABLE, 10
+
+L_ENEMY_TABLE:0 '= "ドウマン"
+
+IF L_NO >= 0
+	SIF !INRANGE(L_NO, 0, VARSIZE("L_ENEMY_TABLE") - 1)
+		RETURN 0
+	L_ENEMY_NAME '= L_ENEMY_TABLE:L_NO
+ENDIF
+IF L_OPT == "名称取得"
+	SIF L_ENEMY_TABLE:L_NO == ""
+		RETURN 0
+	RESULTS '= L_ENEMY_NAME
+	RETURN 1
+ENDIF
+
+SELECTCASE L_ENEMY_NAME
+	CASE "ドウマン"
+		CALL SET_ENEMY,9,[[キャラ:도우만]],10,0,1
+		L_ENEMY = CHARANUM - 1
+		;ボスフラグを立てたドウマンを配置
+		;既にボスフラグによって強化されているが、更に個別に調整する。
+		CFLAG:L_ENEMY:행동횟수 = 2
+		CFLAG:L_ENEMY:ＨＰ보정 += 500
+		TSTR:전투이벤트패턴 = エコービルドウマン
+		CSTR:L_ENEMY:사고패턴 = エコービルドウマン
+		ABL:L_ENEMY:스킬2 = [[스킬:잔]]
+		ABL:L_ENEMY:스킬3 = [[스킬:숏잽]]
+		ABL:L_ENEMY:스킬4 = [[스킬:돌려차기]]
+		ABL:L_ENEMY:아이템1 = GETNUM(ITEM, "스킬카드【마하・라기】")
+		ABL:L_ENEMY:입수확률1 = 100
+		ABL:L_ENEMY:아이템2 = GETNUM(ITEM, "스킬카드【지오】")
+		ABL:L_ENEMY:입수확률2 = 100
+		ABL:L_ENEMY:아이템3 = GETNUM(ITEM, "터키석")
+		ABL:L_ENEMY:입수확률3 = 100
+		;戦闘中に登録番号をとるためにセットする。
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ドウマン"
+ENDSELECT
+;ステータス同期と回復
+CALL SET_UP_ENEMY
+;=======================================================================
+
+;敵特殊思考パターン
+
+;=======================================================================
+@SET_ACTION_エコービルドウマン, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+;ワンモア（クリティカルか、弱点を突いた場合の行動）
+IF CFLAG:ARG:１more플래그 > 0
+	;1more時はザンを打つ
+	CALL SET_ACTION_SKILL, ARG, [[스킬:잔]]
+;n+1ターンではザンor通常攻撃→ショートジャブ、n+2ターンはショートジャブを回し蹴りに
+ELSEIF GROUPMATCH(FLAG:경과턴수 % 3 , 0 , 1)
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:잔]] # 0 )
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, ( FLAG:경과턴수 % 3 == 1 ? [[스킬:돌려차기]] # [[스킬:숏잽]] )
+	ENDIF
+;3の倍数ターンでは、マハ・ラギを前列→後列に。
+;3ターンに1回確定で二回撃つようになっているが、それ以外のターンには絶対に撃たず、また水の壁が消されたところに二発目を打ち込まれる事もなくなっているので、
+;水の壁やGUARDをきちんと使って攻略する場合は変更前より容易にドウマンの攻撃を防ぎやすくなっている。
+ELSE
+	CALL SET_ACTION_SKILL, ARG, [[스킬:마하・라기]]
+	IF RESULT
+		;1回目は前列にマハ・ラギ
+		IF CFLAG:ARG:행동한횟수 == 0
+			CFLAG:ARG:타겟 = 17
+		;2回目は後列にマハ・ラギ
+		ELSE
+			CFLAG:ARG:타겟 = 18
+		ENDIF
+	ENDIF
+ENDIF
+
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;行動未決定時のおまじない
+SIF CFLAG:ARG:입력행동 == -1
+	CALL ランダム行動 , ARG
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+;========================================
+
+;戦闘開始時の処理
+
+;========================================
+@EVENT_BATTLE_START_エコービルドウマン
+
+;========================================
+
+;行動終了時の処理
+
+;========================================
+@EVENT_BATTLE_ACTEND_エコービルドウマン
+
+;========================================
+
+;ターン終了時の処理
+
+;========================================
+@EVENT_BATTLE_TURNEND_エコービルドウマン
+;一番最後のキャラがドウマンであればドウマンとのボス戦
+
+IF FLAG:경과턴수 % 3 == 2
+	;n*2ターンの終了時、次にマハ・ラギを使うと予兆を出す
+	;(FLAG:経過ターン数はこの関数を呼び出す前に加算されている。1ターン目は0、1ターン目終了時に1になる。)
+	SETCOLOR 0xff0033
+	PRINTL
+	PRINTL
+	DRAWLINE
+	SELECTCASE FLAG:경과턴수 / 3
+		CASE 2
+			CALL MESSAGE_B2( , , "도우만의 주위에 불꽃의 마력이 소용돌이친다…")
+			BTL_KOJO_RESULTS:0 = 끈질긴 놈들이로군
+			BTL_KOJO_RESULTS:1 = 하지만 나의 비의에 어디까지 버틸 수 있을까？
+		CASE 1
+			CALL MESSAGE_B2( , , "도우만의 주위에 불꽃의 마력이 소용돌이친다…")
+			BTL_KOJO_RESULTS:0 = 화기(火氣)는 금(金)을 이기고、원적을 소작의 지옥으로 이끌지어다！
+			BTL_KOJO_RESULTS:1 = 나의 음양의 비술을 받아라앗！
+		CASEELSE
+			CALL MESSAGE_B2( , , "도우만의 주위에 불꽃의 마력이 소용돌이친다…")
+			BTL_KOJO_RESULTS:0 = 나의 화행(火行)으로、네놈들 전원을 불살라 주마！
+	ENDSELECT
+	CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("ドウマン")
+	DRAWLINE
+	RESETCOLOR
+ENDIF
+
+@ADD_ICON_BATTLE_EFFECT_エコービルドウマン, L_CHARA
+#DIM DYNAMIC L_CHARA
+IF FLAG:경과턴수 > 0 && FLAG:경과턴수 % 3 == 2
+	IF ACTIONABLE_CHARA_F(GET_ENEMY("ドウマン")) && !IS_BADSTATE(L_CHARA, "DYING")
+		CALL CREATE_SPRITE_ICON_EFFECT, "WARNING1"
+		CALL MAKE_ANIME_BLINKING, "WARNING1_点滅アニメ", "WARNING1", , , 4
+		RESULTS '= "WARNING1_点滅アニメ"
+		RETURN 1
+	ENDIF
+ENDIF
+
+@PICTURENAME_TABLE_DUNGEON_1, ARG
+#FUNCTIONS
+SELECTCASE ARG
+	CASE 0
+		;RESULTS_F '= "00_エコービルタイトル"
+		RESULTS_F '= "エコービル_タイトルA"
+	CASE 1
+		RESULTS_F '= "01_ダークサマナー"
+		RESULTS_F '= "01_ダークサマナー"
+	CASE 2
+		;RESULTS_F '= "02_ドウマン登場"
+		RESULTS_F '= "エコービル_ドウマン戦闘前"
+	CASE 3
+		;RESULTS_F '= "03_怪しげな部屋"
+		RESULTS_F '= "エコービル_儀式ターミナル"
+	CASE 4
+		RESULTS_F '= "04_新米ダークサマナー"
+	CASE 5
+		RESULTS_F '= "エコービル_ターミナルwithドウマン"
+ENDSELECT

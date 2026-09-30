@@ -1,0 +1,625 @@
+﻿
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SYSYTEM_TITLE.ERB
+;	Facility	:タイトル画面の表示・処理
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2024/02/22		P(bazzile)				タイトルに戻るを考慮してGIDの初期化処理を追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@SYSTEM_TITLE
+#DIM LCOUNT,21
+#DIM L_LINE
+LOADGLOBAL
+;タイトルに戻るはGLOBALは維持されるがスプライトが破棄されるので
+;リセットをかける
+VARSET IS_TRYMAKE_FACE
+;---- EDIT P 001 ADD START -------------------------
+VARSET USED_CHARA_GID
+VARSET CHARA_GID_SPRITENAME
+
+;モブ画像生成の領域を最初に確保
+CALLF 合成画像領域初期化
+;---- EDIT P 001 ADD END ---------------------------
+RESETCOLOR
+RESETBGCOLOR
+;PRINTFORMW {LINECOUNT}
+;[IF_DEBUG]
+;	PRINTW エラーチェック平気？
+;[ENDIF]
+
+SIF LINECOUNT > 1
+	WAIT
+;gitclonerからの更新を考慮して更新内容の告知を出す
+CALL ANNOUNCE_MINOR_VERUP
+
+SIF GLOBAL:4
+	GOTO PRINT_TITLE
+VARSET LOCAL
+VARSET LOCALS
+
+B = GETMILLISECOND()
+
+REDRAW 0
+IF RAND:256 == 0
+	IF RAND:30 == 0
+		CALL CURSE_CHIKUWA
+		RESTART
+	ELSE
+		CALL CURSE
+		RESTART
+	ENDIF
+ENDIF
+
+ALIGNMENT CENTER
+FOR LOCAL , 0 , 50
+	CLEARLINE LINECOUNT
+	SETCOLOR 255 * MIN(LOCAL , 30) / 30 , 255 * MIN(LOCAL , 30) / 30 , 255 * MIN(LOCAL , 30) / 30
+	FOR LCOUNT, 0, 23
+		PRINTBUTTON " " * 80 , "0"
+		PRINTL
+	NEXT
+	PRINTBUTTON " " * 22 + "이 게임은 픽션이며" + " " * 22 , "0"
+	PRINTL
+	PRINTBUTTON " " * 16 + "등장하는 인물이나 집단은 실재의 개인" + " " * 16 , "0"
+	PRINTL
+	PRINTBUTTON " " * 16 + "및 단체와는 일체 관계가 없습니다" + " " * 16 , "0"
+	PRINTL
+	FOR LCOUNT, 0, 22
+		PRINTBUTTON " " * 80 , 0
+		PRINTL
+	NEXT
+	;[クリックorEnter待ち]表示
+	A = (GETMILLISECOND()) % 3000
+	A =  255 * ( A > 1500 ? (3000 - A) # (A) ) / 1500
+	SETCOLOR A , A , 0
+	PRINTBUTTON " " * 27 +  "[Click or Hit Return key]" + " " * 27 , "1"
+	PRINTL
+	;ALIGNMENT LEFT
+	RESETCOLOR
+	;TINPUTS 100, "-1" , 0
+	;SIF RESULTS != "-1"
+	INPUTMOUSEKEY 100
+	SIF RESULT != 4
+		GOTO PRINT_TITLE
+NEXT
+CLEARLINE LINECOUNT
+ALIGNMENT LEFT
+
+
+
+;----------------------------------------------------------------------------------------------------------------------------
+;2025/02/25　OPデモは、ほぼほぼ真Ⅰの演出をパクっているのでコメントアウト
+;いつか誰かが、あのOPにインスパイアされてもっと独創的なアレっぽいOPを思い付いて実装し終える時まで、参考コードとして残しておく
+;いつか誰かが、それを成し遂げた時に消します。けれどそれは今日ではない
+;----------------------------------------------------------------------------------------------------------------------------
+;CALL DEMO_PRINT , "" , 0 , 1
+;LOCALS:0  = RESET：
+;LOCALS:1  = SEI
+;LOCALS:2  = CLC
+;LOCALS:3  = XCE
+;LOCALS:4  = CLD
+;LOCALS:5  = 　
+;LOCALS:6  = X16
+;LOCALS:7  = M8
+;LOCALS:8  = 　
+;LOCALS:9  = LDX  #1FFFH
+;LOCALS:10 = TXS
+;LOCALS:11 = STZ  NMTIME
+;LOCALS:12 = LDA  #BLANKING
+;LOCALS:13 = STA  INIDSP
+;LOCALS:14 = 　
+;LOCALS:15 = BJSR  ERAITA
+;LOCALS:16 = "EL ELOHIM ELOHO ELOHIM SEBAOTH"
+;LOCALS:17 = "ELION EIECH ADIER EIECH ADONAI"
+;LOCALS:18 = "JAH SADAI TETRAGRAMMATON SADAI"
+;LOCALS:19 = "AGIOS O THEOS ISCHIROS ATHANATON"
+;LOCALS:20 = "AGLA AMEN"
+;REPEAT 5
+;	LOCAL:(16+COUNT) = 1000
+;REND
+;LOCAL:20 += 500
+;SETCOLOR 255,255,0
+;CLEARLINE 1
+;FOR COUNT,0,21
+;	CALL DEMO_PRINT , LOCALS:COUNT,LOCAL:COUNT
+;	SIF RESULTS != "-1"
+;		GOTO PRINT_TITLE
+;NEXT
+;FOR COUNT , 0 , 5
+;	CLEARLINE LINECOUNT
+;	CALL DEMO_PRINT
+;	FOR COUNT:1 , 0 , 10 + COUNT
+;		PRINTL
+;	NEXT
+;	;[クリックorEnter待ち]表示
+;	A = (GETMILLISECOND()) % 3000
+;	A =  255 * ( A > 1500 ? (3000 - A) # (A) ) / 1500
+;	SETCOLOR A , A , 0
+;	ALIGNMENT CENTER
+;	PRINTBUTTON " " * 27 +  "[Click or Hit Return key]" + " " * 27 , "1"
+;	PRINTL
+;	SETCOLOR 255,255,0
+;	ALIGNMENT LEFT
+;	TINPUTS 100 , "-1" , 0
+;	SIF RESULTS != "-1"
+;		GOTO PRINT_TITLE
+;NEXT
+;
+;CALL DEMO_TENSEI
+
+
+
+
+$PRINT_TITLE
+RESETCOLOR
+CLEARLINE LINECOUNT
+
+DRAWLINE
+PRINTL
+ALIGNMENT CENTER
+
+;ランダムでタイトルAA　or　画像
+;グローバル設定を参照
+CALL PRINT_TITLE
+DRAWLINE
+PRINTFORML %GAMEBASE_TITLE%
+;PRINTFORML Ver{GAMEBASE_VERSION / 1000}.{GAMEBASE_VERSION % 1000}
+VARI TEMP_GAMEVASE_VERSION = GAMEBASE_VERSION / 1000 / 1000
+PRINTFORML Ver %TOSTR(TEMP_GAMEVASE_VERSION / 100 / 100, "0")%.%TOSTR(TEMP_GAMEVASE_VERSION / 100 % 100, "0")%.%TOSTR(TEMP_GAMEVASE_VERSION % 100 % 100, "0")%
+;PRINTFORML Ver.{LOCAL:81 / 1000}.{LOCAL:81 % 1000} + 私家版Rev.{LOCAL:82}ぐらい
+PRINTFORML %GAMEBASE_AUTHOR%
+PRINTFORML (%GAMEBASE_YEAR%)
+PRINTFORML
+PRINTFORML %GAMEBASE_INFO%
+DRAWLINE
+L_LINE = LINECOUNT
+$SHOW_SELECT
+ALIGNMENT CENTER
+PRINTL [0]  ＮＥＷ  ＧＡＭＥ
+PRINTL [1] ＬＯＡＤ ＧＡＭＥ
+IF LAST_ACCESS_SAVE_NO > 0
+	CHKDATA LAST_ACCESS_SAVE_NO - 1
+	SIF !RESULT
+		PRINTL [2]  ＣＯＮＴＩＮＵＥ
+ENDIF
+CHKDATA SAVEDATA_NUM_FOR_CONTINUE
+SIF !RESULT
+	PRINTL [9]  ＲＥＣＯＶＥＲＹ
+WHILE L_LINE + 5 > LINECOUNT
+	PRINTL 
+WEND
+TRYCCALL KOJO_VER
+	IF RESULT < LATEST_KOJO_VER
+		HTML_PRINT @"<div xpos = '{50 * (STRLENS(DRAWLINESTR) - 20) - 80}' ypos = '0'>" + SET_COLOR_TAG("[구상 모음집 업데이트 있음]", "p-red") + "</div>"
+	ELSE
+		HTML_PRINT @"<div xpos = '{50 * (STRLENS(DRAWLINESTR) - 16) - 80}' ypos = '0'>" + SET_COLOR_TAG("[최신 구상 적용중]", "p-green") + "</div>"
+	ENDIF
+CATCH
+	IF HIDE_KOJO_UPDATE_ANNOUNCEMENT
+		HTML_PRINT @"<div xpos = '{50 * (STRLENS(DRAWLINESTR) - 40) - 80}' ypos = '-200'>" + SET_BUTTON_TAG(SET_COLOR_TAG("[구상 미적용]" + "<br>" + "적용방법에 대해서는"+ "<br>" + "「구상적용방법.txt」를 참조해 주십시오.", TOSTR(GETBGCOLOR())), "999") + "</div>"
+	ELSE
+		HTML_PRINT @"<div xpos = '{50 * (STRLENS(DRAWLINESTR) - 40) - 80}' ypos = '-200'>" + SET_BUTTON_TAG(SET_COLOR_TAG("[구상 미적용]", "p-green") + "<br>" + "적용방법에 대해서는"+ "<br>" + "「구상적용방법.txt」를 참조해 주십시오.", "999") + "</div>"
+	ENDIF
+ENDCATCH
+
+;PRINTL
+;PRINTL
+;PRINTL
+;PRINTL
+ALIGNMENT LEFT
+REDRAW 1
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	CLEARLINE LINECOUNT
+	DRAWLINE
+	RESETDATA
+	ADDCHARA 0
+	BEGIN FIRST
+ELSEIF RESULT == 1
+	DRAWLINE
+	CLEARLINE LINECOUNT
+	CALL TITLE_LOADGAME
+	GOTO PRINT_TITLE
+ELSEIF RESULT == 2
+	IF LAST_ACCESS_SAVE_NO > 0
+		CHKDATA LAST_ACCESS_SAVE_NO - 1
+		IF !RESULT
+			CLEARLINE LINECOUNT
+			LOADDATA LAST_ACCESS_SAVE_NO - 1
+		ENDIF
+	ENDIF
+	GOTO INPUT_LOOP
+ELSEIF RESULT == 999
+	HIDE_KOJO_UPDATE_ANNOUNCEMENT = !HIDE_KOJO_UPDATE_ANNOUNCEMENT
+	SAVEGLOBAL
+	CLEARLINE LINECOUNT - L_LINE
+	GOTO SHOW_SELECT
+ELSEIF RESULT == 9
+	CHKDATA SAVEDATA_NUM_FOR_CONTINUE
+	SIF RESULT
+		GOTO INPUT_LOOP
+	CLEARLINE LINECOUNT
+	LOADDATA SAVEDATA_NUM_FOR_CONTINUE
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+@DEMO_PRINT , ARGS = "" , ARG , ARG:2 = 0
+IF ARG:2 == 1
+	VARSET LOCALS , " " * 80
+	LOCAL:1 = 0
+	RETURN -1
+ENDIF
+;表示されているものを一旦消去
+;SIF LOCAL:1 > 0
+;	CLEARLINE LINECOUNT
+;空文字列を渡された場合は、全部表示して終わり
+IF ARGS == ""
+	;直前までの行のメッセージをボタンで表示
+	FOR LOCAL:2 , 0 , 10
+		PRINTBUTTON " " * 80 , "1"
+		PRINTL
+	NEXT
+	FOR LOCAL:2,0,LOCAL:1
+		PRINTBUTTON (LOCAL:2 == 0 ? "" # " " * 8) + LOCALS:(LOCAL:2) + " " * (72 - STRLENSU(LOCALS:(LOCAL:2))) , "1"
+		PRINTL
+	NEXT
+	RETURN -1
+ENDIF
+FOR LOCAL , 0 , STRLENSU(ARGS)
+	;直前までの行のメッセージをボタンで表示
+	FOR LOCAL:2 , 0 , 10
+		PRINTBUTTON " " * 80 , "1"
+		PRINTL
+	NEXT
+	FOR LOCAL:2,0,LOCAL:1
+		PRINTBUTTON (LOCAL:2 == 0 ? "" # " " * 8) + LOCALS:(LOCAL:2) + " " * (72 - STRLENSU(LOCALS:(LOCAL:2))) , "1"
+		PRINTL
+	NEXT
+	;ここまで前の行
+	PRINTBUTTON (LOCAL:1 == 0 ? "" # " " * 8) + (SUBSTRINGU(ARGS, 0, LOCAL) + "_") , 1
+	PRINTL
+	FOR LOCAL:2,0, 29 - LOCAL:1
+		PRINTBUTTON " " * 80 , "1"
+		PRINTL
+	NEXT
+	;[クリックorEnter待ち]表示
+	A = (GETMILLISECOND()) % 3000
+	A =  255 * ( A > 1500 ? (3000 - A) # (A) ) / 1500
+	SETCOLOR A , A , 0
+	ALIGNMENT CENTER
+	PRINTBUTTON " " * 27 +  "[Click or Hit Return key]" + " " * 27 , "1"
+	PRINTL
+	SETCOLOR 255,255,0
+	ALIGNMENT LEFT
+	;描画パート1終わり
+	;TINPUTS 100 , "-1" , 0
+	;IF RESULTS != "-1"
+	;	CLEARLINE LINECOUNT
+	;	RETURN 1
+	;ENDIF
+	INPUTMOUSEKEY 100
+	SIF RESULT != 4
+		RETURN 1
+	RESULT = 0
+	CLEARLINE LINECOUNT
+NEXT
+FOR LOCAL,0 , ARG/100
+	;直前までの行のメッセージをボタンで表示
+	FOR LOCAL:2 , 0 , 10
+		PRINTBUTTON " " * 80 , "1"
+		PRINTL
+	NEXT
+	FOR LOCAL:2,0,LOCAL:1
+		PRINTBUTTON (LOCAL:2 == 0 ? "" # " " * 8) + LOCALS:(LOCAL:2) + " " * (72 - STRLENSU(LOCALS:(LOCAL:2))) , "1"
+		PRINTL
+	NEXT
+	;ここまで前の行
+	PRINTBUTTON (LOCAL:1 == 0 ? "" # " " * 8) + ARGS + (LOCAL%2 == 0 ? "_" # " ") + (79-STRLENS(ARGS)) * " ", "1"
+	PRINTL
+	FOR LOCAL:2,0, 29 - LOCAL:1
+		PRINTBUTTON " " * 80 , "1"
+		PRINTL
+	NEXT
+	;[クリックorEnter待ち]表示
+	A = (GETMILLISECOND()) % 3000
+	A =  255 * ( A > 1500 ? (3000 - A) # (A) ) / 1500
+	SETCOLOR A , A , 0
+	ALIGNMENT CENTER
+	PRINTBUTTON " " * 27 +  "[Click or Hit Return key]" + " " * 27 , "1"
+	PRINTL
+	SETCOLOR 255,255,0
+	ALIGNMENT LEFT
+	;描画パート2終わり
+	;TINPUTS 100, "-1" , 0
+	;IF RESULTS != "-1"
+	;	CLEARLINE LINECOUNT
+	;	RETURN 1
+	;ENDIF
+	INPUTMOUSEKEY 100
+	SIF RESULT != 4
+		RETURN 1
+	RESULT = 0
+	CLEARLINE LINECOUNT
+NEXT
+RESULT = 0
+PRINTBUTTON (LOCAL:1 == 0 ? "" # " " * 8) + ARGS+ (80-STRLENS(ARGS)) * " ", "1"
+
+LOCALS:(LOCAL:1) = %ARGS%
+LOCAL:1 += 1
+FOR LOCAL,0, 31 - LOCAL:1
+	PRINTFORML %" " * 80%
+NEXT
+RETURN -1
+
+@DEMO_MEGAMITENSEI
+;LOCAL:3 何回呼び出されたか
+SELECTCASE LOCAL:3
+	CASE 0
+		LOCALS = SHIN
+		LOCAL = 600
+	CASE 1
+		LOCALS = 新・
+		LOCAL = 600
+	CASE 2
+		LOCALS = 神・
+		LOCAL = 600
+	CASE 3
+		LOCALS = 真・
+		LOCAL = 600
+	CASE 4
+		LOCALS = 真・DIGITAL DEVIL STORY
+		LOCAL = 800
+	CASE 5
+		LOCALS = 真・女神転生
+		LOCAL = 1200
+	CASE 6
+		LOCALS = era・ShinEraTensei
+		LOCAL = 2000
+ENDSELECT
+
+
+IF LOCAL:3 == 0 || LOCAL:3 == 4
+	FOR LOCAL:2 , (LOCAL:3 == 4 ? 4 # 0 ) , STRLENSU(LOCALS) * 2
+		CLEARLINE LINECOUNT
+		CALL DEMO_PRINT
+		FOR LOCAL:4,0,4
+			PRINTBUTTON " " * 80 , "1"
+			PRINTL
+		NEXT
+		PRINTBUTTON (" " * 8) + (SUBSTRINGU(LOCALS, 0, LOCAL:2 / 2) + "_") , "1"
+		PRINTL
+		FOR LOCAL:4,0,9
+			PRINTBUTTON " " * 80 , "1"
+			PRINTL
+		NEXT
+		;[クリックorEnter待ち]表示
+		A = (GETMILLISECOND()) % 3000
+		A =  255 * ( A > 1500 ? (3000 - A) # (A) ) / 1500
+		SETCOLOR A , A , 0
+		ALIGNMENT CENTER
+		PRINTBUTTON " " * 27 +  "[Click or Hit Return key]" + " " * 27 , "1"
+		PRINTL
+		SETCOLOR 255,255,0
+		ALIGNMENT LEFT
+		;TINPUTS 100 , "-1" , 0
+		;IF RESULTS != "-1"
+		;	CLEARLINE LINECOUNT
+		;	RETURN 1
+		;ENDIF
+		INPUTMOUSEKEY 100
+		SIF RESULT != 4
+			RETURN 1
+		RESULT = 0
+		
+	NEXT
+ENDIF
+FOR LOCAL:2 , 0 , LOCAL/100
+	CLEARLINE LINECOUNT
+	CALL DEMO_PRINT
+	FOR LOCAL:4,0,4
+		PRINTBUTTON " " * 80 , "1"
+		PRINTL
+	NEXT
+	PRINTBUTTON (" " * 8) + LOCALS+ (50-STRLENS(LOCALS)) * " ", "1"
+	PRINTL
+	FOR LOCAL:4,0,9
+		PRINTBUTTON " " * 80 , "1"
+		PRINTL
+	NEXT
+	;[クリックorEnter待ち]表示
+	A = (GETMILLISECOND()) % 3000
+	A =  255 * ( A > 1500 ? (3000 - A) # (A) ) / 1500
+	SETCOLOR A , A , 0
+	ALIGNMENT CENTER
+	PRINTBUTTON " " * 27 +  "[Click or Hit Return key]" + " " * 27 , "1"
+	PRINTL
+	SETCOLOR 255,255,0
+	ALIGNMENT LEFT
+	;TINPUTS 100 , "-1" , 0
+	;IF RESULTS != "-1"
+	;	CLEARLINE LINECOUNT
+	;	RETURN 1
+	;ENDIF
+	INPUTMOUSEKEY 100
+	SIF RESULT != 4
+		RETURN 1
+NEXT
+
+SIF LOCAL:3 == 6
+	RETURN 0
+LOCAL:3 += 1
+RESTART
+
+@SHOW_EXPALAIN_BACKUP
+DRAWLINE
+PRINTL 【던전 내 에러 튕김 대책에 대하여】
+DRAWLINE
+PRINTL 【백업에 의한 리커버리】
+PRINTL 던전 내에서는 매 전투마다 백업으로 세이브 데이터가 생성됩니다.
+PRINTW 이 때문에, 불의의 오류 등으로 중단된 경우, 백업을 이용하여 어느 정도 복구할 수 있습니다.
+PRINTL 
+PRINTL 【이용 방법】
+PRINTL 백업 데이터는 SAV 폴더 내의 「save401.sav」로 저장되어 있습니다.
+PRINTL 이 상태로는 직접 불러올 수 없으므로, 이름을 변경하여 「401」 부분을 0~199 중 하나의 수치로 변경해 주십시오.
+PRINTW 이를 통해, 변경한 번호의 세이브 데이터로서 불러올 수 있게 됩니다.
+
+@CURSE
+SETCOLOR COLOR("red")
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORMW すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+RETURN 0
+
+@CURSE_CHIKUWA
+SETCOLOR COLOR("red")
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけちくわ大明神すぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORML すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+PRINTFORMW すぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせすぐにけせ
+RETURN 0

@@ -1,0 +1,147 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@LEADER_SKILL_CONTROL_NO_8,ARG
+RESULTS = 리커버리
+;スキル名
+@SKILL_NAME_LEADER_リカバリー,ARG
+RESULTS = 리커버리
+
+;　 説明文の設定
+@SET_VAR_LEADER_SKILL_EXPLAIN_リカバリー, L_TEXT
+#DIMS REF L_TEXT
+L_TEXT = 턴 종료시에 일정확률로 ＣＯＭＰ 내의 동료마의 ＨＰ를 회복한다。
+
+;重複可能な数
+@LEADER_SKILL_COUNT_LIMIT_リカバリー
+RETURN 6
+
+;ターン終了時に行う処理
+@SKILL_TURNEND_LEADER_リカバリー,ARG,ARG:1
+#DIM LCOUNT, 2
+#DIM L_CHARA
+#DIM L_CNT_SKILL
+#DIM SHOWED_MES
+SHOWED_MES = 0
+;25% ~ 100%
+SIF (10 + COUNT_ACTIVE_LEADER_SKILL("リカバリー")) * 15 < RAND:100
+	RETURN 0
+FOR L_CHARA, 0, CHARANUM
+	;場に出てるキャラは省く
+	IF CPOS(L_CHARA)
+		;Aion式サマナーはリンク先が効果を受けられるなら効果を受ける
+		IF GETS_ROLE_PROP("CAN_USE_SPECIAL_SKILL", L_CHARA) == "Aion式サマナー"
+			SIF CFLAG:L_CHARA:링크캐릭터실제가입시간0 <= 0
+				CONTINUE
+			SIF !IS_COMP内効果有効(FINDCHARA_LINK(L_CHARA))
+				CONTINUE
+		ELSE
+			CONTINUE
+		ENDIF
+	ENDIF
+	SIF !IS_COMP内効果有効(L_CHARA)
+		CONTINUE
+	SIF IS_BADSTATE(L_CHARA, "DYING")
+		CONTINUE
+	SIF BASE:L_CHARA:ＨＰ >= MAXBASE:L_CHARA:ＨＰ
+		CONTINUE
+	IF !SHOWED_MES
+		SETCOLOR COLOR("FRIEND")
+		PRINTFORML ┏━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃　　　　　　　　　 리커버리 　　　　　　　　　┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━┛
+		;PRINTFORM ┃         ﾘｶﾊﾞﾘｰ         ┃
+		SHOWED_MES = 1
+		RESETCOLOR
+	ENDIF
+	CSTR:(ARG:1):비소지스킬 = LSリカバリー
+	CALL HEAL_SINGLE, ARG:1, L_CHARA, [[스킬:비소지스킬]], 1
+NEXT
+SIF SHOWED_MES
+	WAIT
+
+;同種のスキルが複数あっても一回しか発動しない
+@SKILL_TURNEND_ONCE_LEADER_リカバリー
+RETURN 1
+
+;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名 ;-KR- リカバリー > LSリカバリー
+@SKILL_NAME_LSリカバリー,ARG
+RESULTS = LS 리커버리
+
+;　명중
+@SKILL_HITRATE_LSリカバリー, ARG
+RETURN 100
+
+@SKILL_POWER_LSリカバリー, ARG = -1
+RETURN 350
+
+;素質などの補正を受けない
+@SKILL_ENHANCE_NOTABLE_LSリカバリー
+RETURN 1
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_LSリカバリー,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_LSリカバリー,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_LSリカバリー, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_LSリカバリー,ARG
+RETURN 2
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_LSリカバリー
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;魔法
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_LSリカバリー
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_LSリカバリー,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_LSリカバリー,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_LSリカバリー
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+@SKILL_HEAL_TYPE_LSリカバリー, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("割合")
+
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_LSリカバリー
+RETURN GET_SUCCESSION_NUM("회복")
+
+;속도보정
+@SKILL_SPEED_LSリカバリー, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_LSリカバリー
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_LSリカバリー, ARG = -1
+RETURN 23
+
+

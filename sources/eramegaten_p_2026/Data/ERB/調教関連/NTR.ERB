@@ -1,0 +1,226 @@
+﻿;======================================================================
+;ＮＴＲ関係の処理
+;======================================================================
+;@NTR_CHECK ARG番のキャラのNTR判定
+;----------------------------------------------------------------------
+@NTR_CHECK,ARG,ARG:1 = 0
+#DIM 好きな人,1
+#DIM 好きな人ID,1
+#LOCALSIZE 2
+#LOCALSSIZE 1
+LOCAL = 0
+IF CFLAG:ARG:함락캐릭터 == -1
+	LOCAL = CFLAG:ARG:음란도 + 500
+ELSE
+	LOCAL = FAVORITE_ID(ARG,CFLAG:ARG:함락캐릭터) + 500
+ENDIF
+好きな人 = FAVORITE_1(ARG)
+IF 好きな人 > -1
+	好きな人ID = CFLAG:好きな人:캐릭터고유번호
+ELSE
+	好きな人ID = 好きな人
+ENDIF
+;以前陥落していたキャラが再び1位になった場合、その時点で陥落し直す
+IF (CDFLAG:ARG:캐릭터간함락소질:(100+好きな人ID) && CFLAG:ARG:함락캐릭터 != 好きな人ID) && CFLAG:ARG:음란도 <= ABS(FAVORITE(ARG,好きな人))
+	CALL 再陥落(ARG,好きな人ID)
+	RETURN 0
+ELSEIF (CDFLAG:ARG:캐릭터간함락소질:98 == 2 && CFLAG:ARG:음란도 > ABS(FAVORITE(ARG,好きな人))) && ARG:1
+	CALL 再陥落(ARG,-1)
+	RETURN 0
+ENDIF
+
+;主人に対してはＮＴＲ返ししか発生しない
+SIF 好きな人 == 0 && (CFLAG:ARG:음란도 <= ABS(FAVORITE(ARG,好きな人)))
+	RETURN 0
+;===========================================================
+;淫系ＮＴＲ
+;===========================================================
+IF ARG:1 && TALENT:ARG:ＮＴＲ != 2 && (CFLAG:ARG:음란도 > ABS(FAVORITE(ARG,好きな人)) && CFLAG:ARG:음란도 >= 500) && MARK:ARG:쾌락각인 == 3 && !(TALENT:ARG:음란 || TALENT:ARG:창부)
+	;１日の終了時にしか発生しない
+	;淫乱度が好きな人への好感度を上回っていると淫ＮＴＲ状態に変更
+	;淫乱系陥落をしている場合、淫乱系ＮＴＲにはならない
+	;２度猶予がある
+	;進行度1に付き500ずつ必要淫乱度上昇
+	LOCAL += CFLAG:ARG:음ＮＴＲ진행도*500
+	SIF CFLAG:ARG:음란도 < LOCAL +1000
+		RETURN 0
+	;口上呼び出し
+	DRAWLINE
+	SWAP TARGET,ARG
+	TFLAG:13 = 46
+	CALL KOJO_MESSAGE_EVENT
+	SWAP TARGET,ARG
+	CFLAG:ARG:음ＮＴＲ진행도 ++
+	IF CFLAG:ARG:음ＮＴＲ진행도 == 3
+		TALENT:ARG:ＮＴＲ = 2
+		CFLAG:ARG:함락캐릭터 = -1
+		CFLAG:ARG:음ＮＴＲ진행도 = 0
+		CFLAG:ARG:현ＮＴＲ진행도 = 1
+		CDFLAG:ARG:캐릭터간함락소질:(1+CFLAG:ARG:함락캐릭터) = 2
+	ENDIF
+;===============================================
+;愛系ＮＴＲ
+;===============================================
+ELSEIF 好きな人ID != CFLAG:ARG:함락캐릭터 && FAVORITE(ARG,好きな人) >= 1000 && CFLAG:ARG:음란도 <= FAVORITE(ARG,好きな人)
+	;主人以外のキャラへの好感度が高い場合かつ絶対値1000以上
+	;２度猶予がある
+	;進行度1に付き500ずつ必要淫乱度上昇
+	LOCAL += CFLAG:ARG:애ＮＴＲ진행도*500
+	SIF ABS(FAVORITE(ARG,好きな人)) < LOCAL + 1000
+		RETURN 0
+	SIF 好きな人ID < 0 && ARG:1 == 0 && CFLAG:ARG:애ＮＴＲ진행도 == 2
+		RETURN 0
+	;口上呼び出し
+	DRAWLINE
+	SWAP TARGET,ARG
+	TFLAG:13 = 45
+	CALL KOJO_MESSAGE_EVENT
+	SWAP TARGET,ARG
+	CFLAG:ARG:애ＮＴＲ진행도 ++
+	IF CFLAG:ARG:애ＮＴＲ진행도 == 3
+		;好きな人がＮＰＣであった場合、夜のチェックでなければスキップ
+		;ＮＰＣかつ夜だった場合、一夜を共にする
+		TALENT:ARG:ＮＴＲ = 1
+		CFLAG:ARG:함락캐릭터 = 好きな人ID
+		CFLAG:ARG:애ＮＴＲ진행도 = 0
+		CFLAG:ARG:현ＮＴＲ진행도 = 1
+		CDFLAG:ARG:캐릭터간함락소질:(100+CFLAG:ARG:함락캐릭터) = 1
+		;仮地の文
+	ENDIF
+
+;===============================================
+;隷系ＮＴＲ
+;===============================================
+ELSEIF 好きな人ID != CFLAG:ARG:함락캐릭터 && FAVORITE(ARG,好きな人) <= -1000 && CFLAG:ARG:음란도 <= ABS(FAVORITE(ARG,好きな人))
+	;主人以外のキャラへの好感度が高い場合かつ絶対値1000以上
+	;２度猶予がある
+	;進行度1に付き500ずつ必要淫乱度上昇
+	LOCAL += CFLAG:ARG:예ＮＴＲ진행도*500
+	SIF ABS(FAVORITE(ARG,好きな人)) < LOCAL + 1000
+		RETURN 0
+	SIF 好きな人ID < 0 && ARG:1 == 0 && CFLAG:ARG:예ＮＴＲ진행도 == 2
+		RETURN 0
+	;口上呼び出し
+	DRAWLINE
+	SWAP TARGET,ARG
+	TFLAG:13 = 47
+	CALL KOJO_MESSAGE_EVENT
+	SWAP TARGET,ARG
+	CFLAG:ARG:예ＮＴＲ진행도 ++
+	IF CFLAG:ARG:예ＮＴＲ진행도 == 3
+		;好きな人がＮＰＣであった場合、夜のチェックでなければスキップ
+		;ＮＰＣかつ夜だった場合、一夜を共にする
+		TALENT:ARG:ＮＴＲ = 3
+		CFLAG:ARG:함락캐릭터 = 好きな人ID
+		CFLAG:ARG:예ＮＴＲ진행도 = 0
+		CFLAG:ARG:현ＮＴＲ진행도 = 1
+		CDFLAG:ARG:캐릭터간함락소질:(100+CFLAG:ARG:함락캐릭터) = 3
+	ENDIF
+ENDIF
+
+
+
+
+@再陥落,ARG,ARG:1
+;口上呼び出し
+DRAWLINE
+SWAP TARGET,ARG
+IF ARG:1 == CFLAG:MASTER:캐릭터고유번호
+	IF TALENT:연모 || TALENT:친애
+		TFLAG:13 = 48
+	ELSEIF TALENT:음란 || TALENT:창부
+		TFLAG:13 = 49
+	ELSE
+		TFLAG:13 = 50
+	ENDIF
+ELSE
+	TFLAG:13 = (48 + (CDFLAG:TARGET:캐릭터간함락소질:(100 + ARG:1) - 1)% 3)
+ENDIF
+CALL KOJO_MESSAGE_EVENT
+SWAP TARGET,ARG
+IF ARG:1 == CFLAG:MASTER:캐릭터고유번호
+	;主人の下に戻る
+	TALENT:ARG:ＮＴＲ = 0
+	CFLAG:ARG:함락캐릭터 =0
+	CFLAG:ARG:현ＮＴＲ진행도 = 0
+	IF TALENT:ARG:73 == 1
+		TALENT:ARG:73 = 0
+		PRINTFORMW %CALLNAME:ARG%은(는) 【즉각함락】을(를) 잃었다
+	ENDIF
+	;上司イベント
+	IF CFLAG:ARG:상사이벤트진행도 >= 9
+		PRINTFORML %CALLNAME:ARG%은(는) 간부인 남자와의 계약을 파기했다
+		;戦闘員だった場合は非戦闘員が外れる
+		;非戦闘員素質付与の悪用防止措置。
+		IF TALENT:ARG:반역
+			CALL SET_TALENT_PARTY_JOINABLE, ARG, "参加可能"
+			PRINTFORML %CALLNAME:ARG%을(를) 파티에 편입할 수 있게 되었습니다
+		ENDIF
+		CFLAG:ARG:노역플래그 = 0
+		CFLAG:ARG:매각가능 = 1
+		PRINTFORML %CALLNAME:ARG%은(는) 노역에 투입할 수 있게 되었습니다
+		PRINTFORML %CALLNAME:ARG%을(를) 매각할 수 있게 되었습니다
+		CFLAG:ARG:상사이벤트진행도 = 0
+	ENDIF
+ELSE
+	TALENT:ARG:ＮＴＲ = CDFLAG:ARG:캐릭터간함락소질:(100+ARG:1)
+	CFLAG:ARG:함락캐릭터 = ARG:1
+	CFLAG:ARG:현ＮＴＲ진행도 = -1
+ENDIF
+
+
+@主人陥落
+
+@NTRNAME,ARG
+#FUNCTIONS
+SELECTCASE ARG
+	CASE -1
+		RETURNF "不特定多数"
+	CASE -2,-3
+		RETURNF "食堂の常連客"
+	CASE -4,-5
+		RETURNF "娼館の常連客"
+	CASE -6,-7
+		RETURNF "便所の常連客"
+	CASE -8,-9
+		RETURNF "奴隷レンタルの常連客"
+	CASE -11,-12
+		RETURNF "劇場の常連客"
+	CASE -14
+		RETURNF "スカウト"
+	CASE -15
+		RETURNF "チンピラ"
+	CASE -16
+		RETURNF "訪問販売員"
+	CASE -20
+		RETURNF "幹部の男"
+	CASEELSE
+		SIF FINDCHARA_ID(ARG) > -1
+			RETURNF CALLNAME:(FINDCHARA_ID(ARG))
+ENDSELECT
+
+;対象以外への好感度を減らし、対象への好感度を上げる（中出しなど用処理）
+@NTR_SHOOT,出された人,出した人,上昇量
+#LOCALSIZE 1
+#DIM 出した人
+#DIM 出された人
+#DIM 上昇量
+FOR LOCAL , -MAX_NTR_CHARA, MAX_PLAYER_CHARA
+	SIF LOCAL == 出した人
+		CONTINUE
+	IF CDFLAG:出された人:캐릭터간호감도:(100+LOCAL) > 0
+		CDFLAG:出された人:캐릭터간호감도:(100+LOCAL) -= 上昇量
+		SIF CDFLAG:出された人:캐릭터간호감도:(100+LOCAL) < 0
+			CDFLAG:出された人:캐릭터간호감도:(100+LOCAL) = 0
+	ELSEIF CDFLAG:出された人:캐릭터간호감도:(100+LOCAL) < 0
+		CDFLAG:出された人:캐릭터간호감도:(100+LOCAL) += 上昇量
+		SIF CDFLAG:出された人:캐릭터간호감도:(100+LOCAL) > 0
+			CDFLAG:出された人:캐릭터간호감도:(100+LOCAL) = 0
+	ENDIF
+NEXT
+IF CDFLAG:出された人:캐릭터간호감도:(100+出した人) >= 0
+	CDFLAG:出された人:캐릭터간호감도:(100+出した人) += 上昇量
+ELSE
+	CDFLAG:出された人:캐릭터간호감도:(100+出した人) -= 上昇量
+ENDIF
+;

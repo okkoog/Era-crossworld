@@ -1,0 +1,31 @@
+﻿;-------------------------------------------------------------------------------
+;    RECTで背景色ありのバーを作る命令
+;    HTML_PRINTで出力できるような形で返します
+;-------------------------------------------------------------------------------
+;===============================================================================
+@HTML_RECT_BAR, L_VALUE, MAX_VALUE, MAXLENS, L_COLOR = -1, L_BGCOLOR = -1, L_HEIGHT = 50, L_YPOS = 25
+#FUNCTIONS
+#DIMS L_BAR, 2		;
+#DIM L_VALUE		;バーの前景色・背景色の割合を決めるための基準値
+#DIM MAX_VALUE		;基準値に対する最大値	ex：20と100なら前景色と背景色で2:8となる
+#DIM MAXLENS		;バーの全体の長さ。単位は半角1フォント単位
+#DIM L_BARLENS		;バーの長さ
+#DIM L_COLOR		;バーの色
+#DIM L_BGCOLOR		;バーの背景色
+#DIM L_HEIGHT		;バーの高さ(縦幅)
+#DIM L_YPOS			;バーのYPOS
+L_BARLENS = MIN(L_VALUE, MAX_VALUE) * (MAXLENS * 50) / MAX_VALUE
+IF L_BARLENS > 0
+	L_BAR = <shape type = 'rect' param = '0, {L_YPOS}, {L_BARLENS}, {L_HEIGHT}' color = '%TOSTR_HTML(L_COLOR >=0 ? L_COLOR # GETCOLOR())%'>
+ELSE
+	L_BAR = 
+ENDIF
+L_VALUE = MAX_VALUE - L_VALUE
+L_BARLENS = MIN(L_VALUE, MAX_VALUE) * (MAXLENS * 50) / MAX_VALUE
+IF L_BARLENS > 0
+	L_BAR:1 = <shape type = 'rect' param = '0, {L_YPOS}, {L_BARLENS}, {L_HEIGHT}' color = '%TOSTR_HTML(L_BGCOLOR >=0 ? L_BGCOLOR # GETCOLOR())%'>
+	L_BAR:1 = %SET_COLOR_TAG(L_BAR:1, "red")%
+ELSE
+	L_BAR:1 = 
+ENDIF
+RETURNF L_BAR + L_BAR:1

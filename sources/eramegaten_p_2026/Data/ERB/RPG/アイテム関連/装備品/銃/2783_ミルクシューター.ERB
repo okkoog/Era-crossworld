@@ -1,0 +1,126 @@
+﻿
+;======================================================
+;装備品のデータ
+;======================================================
+
+
+@基本能力修正_2783,ARG,ARG:1 = -1
+SELECTCASE ARG
+ENDSELECT
+RETURN 0
+
+
+@戦闘能力修正_2783,ARG,ARG:1 = -1
+SELECTCASE ARG
+ENDSELECT
+RETURN 0
+
+@防御相性_2783,ARG,ARG:1 = -1
+SELECTCASE ARG
+ENDSELECT
+RETURN 100
+
+@攻撃相性_2783,ARG,ARG:1 = -1
+RETURN 13
+;수격
+
+@最低攻撃回数_2783,ARG = -1
+RETURN 2
+
+@最大攻撃回数_2783,ARG = -1
+RETURN 4
+
+@射程_2783,ARG,ARG:1 = -1
+RETURN 2
+
+@攻撃範囲_2783,ARG = -1
+	RETURN 2
+
+@装備解説_2783,ARG
+PRINTL 착유기로 짠 모유를 공격에 사용하는 기상천외한 총. 양산화를 위해 절벽 가슴이라도 장비할 수 있도록 마이너 체인지되었다.
+PRINTL 분유 경험이나 분유 중독에 따라 성능이 변화한다. 특수탄은 운용할 수 없지만 수격 상성을 지니며 사용한 콘돔을 활용한 서브 웨폰을 지닌다.
+PRINTL 극 마이너 성벽인 밀크 건 성벽 더 늘어나라. 이런 성벽을 만들어내다니 루시퍼조차 인간에게 기겁할 지경이다.
+PRINTL (最大威力/命中：120/120　速度補正10)
+;ミルクガン性癖増えろ
+RESETCOLOR
+
+@装備箇所_2783,ARG
+RETURN GET_EQUIPNUM("총")
+
+@必要レベル_2783,ARG
+RETURN 40
+
+@必要素質_2783
+RESULTS = 모유체질/절벽
+RESULTS:1 = OR
+RETURN 1
+
+@装備条件_2783,ARG
+;SIF BASE:ARG:LV > 40 && TALENT:ARG:모유체질 == 1 || TALENT:ARG:절벽 == 1
+;	RETURN 1
+;RETURN 0
+RETURN 1
+
+@装備条件説明_2783
+;PRINTL 装備条件：[모유체질] もしくは [절벽] と Lv40
+RETURN 1
+
+@購入条件_2783,ARG
+RETURN 0
+
+@銃攻撃_2783,ARG = -1
+SIF ARG == -1
+	RETURN 120
+IF ARG > -1
+	;初期化
+	LOCAL = 0
+	IF TALENT:ARG:모유체질 == 1 || TALENT:ARG:절벽 == 1
+		LOCAL = 10 + MIN((EXP:(ARG):분유경험 / 5) + (ABL:(ARG):분유중독 * 10) , 110)
+		RETURN LOCAL
+	ELSE
+		RETURN 0
+	ENDIF
+ENDIF
+
+@銃命中_2783,ARG = -1
+SIF ARG == -1
+	RETURN 120
+IF ARG > -1
+	;初期化
+	LOCAL = 0
+	IF TALENT:ARG:모유체질 == 1 || TALENT:ARG:절벽 == 1
+		LOCAL = 10 + MIN((EXP:(ARG):분유경험 / 5) + (ABL:(ARG):분유중독 * 10) , 110)
+		RETURN LOCAL
+	ELSE
+		RETURN 0
+	ENDIF
+ENDIF
+
+@特殊弾倉_2783,ARG = -1
+RETURN 0
+
+@GUN_RANDOMTARGET_2783,ARG:1 = -1
+RETURN 1
+
+@銃タイプ_2783,ARG
+;1 == ハンドガン 2 == ショットガン 3 == アサルトライフル、マシンガン 4 == 狙撃ライフル 5 == 그외
+RETURN 3
+
+@速度補正_2783,ARG
+RETURN 10
+
+@装備追加スキル_2783,ARG,ARG:1 = -1
+SIF ARG:1 == -1
+	RETURN 0
+IF TALENT:(ARG:1):모유체질 == 0 && TALENT:(ARG:1):절벽 == 0
+	RETURN 0
+ELSE
+	SELECTCASE ARG
+		CASE 0
+			RETURN [[스킬:생명소모(착유)]]
+		CASE 1
+			RETURN [[스킬:스펌봄]]
+		CASE 2
+			RETURN [[스킬:스펌봄러시]]
+	ENDSELECT
+ENDIF

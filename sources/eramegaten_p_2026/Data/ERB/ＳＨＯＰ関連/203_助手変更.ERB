@@ -1,0 +1,164 @@
+﻿;	Edit	Date			Author					Reason
+;	000		20xx/xx/xx		----					新規作成
+;	001		2022/06/07		Collared				UI整理プロジェクトにより配置変更
+;	002		2023/01/13		JK好き					@ASSI_LIST 助手選択画面のレイアウト調整
+;	003		2023/02/28		JK好き					@PARTNER_ABLE@ASSI_ABLE 妊娠中の調教不可能になるタイミングを育児室行きのタイミングに合うように変更
+@SHOPCOMABLE_203
+#DIM DYNAMIC LCOUNT
+SIF !IS_USEABLE_SHOPCOM
+	RETURN 0
+RESULT:1 = 2
+RESULTS = 조수변경
+FOR LCOUNT, 1, CHARANUM
+	SIF ASSI_ABLE(LCOUNT)
+		RETURN 1
+NEXT
+RETURN 0
+
+@ASSI_ABLE, ARG
+#FUNCTION
+SIF MARK:ARG:반발각인 > 0
+	RETURNF 0
+;主人は除外
+SIF ARG == MASTER
+	RETURNF 0
+;労役中キャラは除外
+SIF IS_RENTING(ARG)
+	RETURNF 0
+SIF CHECK_CHILD_CARE(ARG)
+	RETURNF 0
+;失踪中などこの場にいないなら除外
+SIF CFLAG:ARG:이자리에없는플래그
+	RETURNF 0
+SIF CFLAG:ARG:전투이외불능
+	RETURNF 0
+;助手可能でないものは除外
+SIF CFLAG:ARG:매각가능 < 2
+	RETURNF 0
+RETURNF 1
+
+@SHOP_COM_203, ARG
+#DIM LCOUNT
+P = 0
+;表示させるキャラを抽出（Q:*に表示するキャラの登録番号、LOCAL:2に人数）
+VARSET Q, 0
+A = 0
+FOR LCOUNT, 0, CHARANUM
+	SIF !ASSI_ABLE(LCOUNT)
+		CONTINUE
+	SIF CFLAG:LCOUNT:필터링플래그
+		CONTINUE
+	Q:A = LCOUNT
+	A += 1
+;	MARK:LCOUNT:98 = 1
+NEXT
+LOCAL:2 = A
+
+$PRINT_LIST
+CALL ASSI_LIST
+DRAWLINE
+PRINTFORMLC \@(P <= 0) ? %" " * 16% # [1001]이전페이지\@
+PRINTLC [1000]돌아간다
+PRINTFORMLC \@(P >= (LOCAL:2 - 1) / リスト表示数()) ? %" " * 16% # [1009]다음페이지\@
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT == 1001
+	IF P > 0
+		P -= 1
+		GOTO PRINT_LIST
+	ELSE
+		GOTO INPUT_LOOP
+	ENDIF
+ELSEIF RESULT == 1009
+	LOCAL = (LOCAL:2 - 1) / リスト表示数()
+	IF P < LOCAL
+		P += 1
+		GOTO PRINT_LIST
+	ELSE
+		GOTO INPUT_LOOP
+	ENDIF
+ELSEIF RESULT == 0
+	ASSI = -1
+	RETURN 0
+ELSEIF RESULT < 0 || RESULT >= CHARANUM || MATCH(Q,RESULT,0) == 0
+	GOTO INPUT_LOOP
+;ELSEIF MARK:RESULT:98 == 0
+;	GOTO INPUT_LOOP
+ENDIF
+
+ASSI = RESULT
+CALL ASSI_CHANGE
+;ISASSI:ASSI = 1
+IF ASSI == TARGET
+	TARGET = -1
+	FLAG:996 = -1
+ENDIF
+
+
+
+;-------------------------------------------------
+;助手可能キャラ一覧の表示処理
+;-------------------------------------------------
+@ASSI_LIST
+#DIM LCOUNT
+DRAWLINE
+PRINT 현재
+PRINTFORML \@(ASSI >= 0) ? %ASSI가% 조수 # 조수는 없습니다\@
+PRINTFORML 누구를 조수로 합니까？(현재 조수는 ☆、현재 조교대상은 ★) ＜page.{P + 1}＞
+DRAWLINE
+PRINTL   [ 0]조수없음
+DRAWLINE
+FOR LCOUNT, 0, リスト表示数()
+	LOCAL = Q:(LCOUNT + P * リスト表示数())
+	SIF LOCAL == 0
+		CONTINUE
+
+	IF LOCAL == ASSI
+		PRINT ☆
+	ELSEIF LOCAL == TARGET
+		PRINT ★
+	ELSE
+		PRINT 　
+	ENDIF
+	CALL ARRANGE_CHARALIST, LOCAL
+	IF !ISASSI:LOCAL
+		PRINT [미경험] 
+	ELSEIF LOCAL == ASSI
+		PRINT 　　　　 
+	ELSE
+		PRINT [원조수] 
+	ENDIF
+	PRINTFORM 기교Lv{ABL:LOCAL:기교,2,RIGHT} 
+	IF TALENT:LOCAL:남자
+		PRINTFORM ＢＬ끼Lv{ABL:LOCAL:ＢＬ끼,2,RIGHT} ＢＬ중독Lv{ABL:LOCAL:ＢＬ중독,2,RIGHT} 
+	ELSE
+		PRINTFORM 레즈끼Lv{ABL:LOCAL:레즈끼,2,RIGHT} 레즈중독Lv{ABL:LOCAL:레즈중독,2,RIGHT} 
+	ENDIF
+	PRINTFORM 촬영기능Lv{ABL:LOCAL:촬영기능,2,RIGHT} 
+	SIF TALENT:LOCAL:바이
+		PRINT [바이]
+	SIF TALENT:LOCAL:치료
+		PRINT [치료]
+	SIF TALENT:LOCAL:고무
+		PRINT [고무]
+	SIF TALENT:LOCAL:조합지식
+		PRINT [조합]
+	SIF TALENT:LOCAL:구현 || TALENT:LOCAL:이상한뿌리
+		PRINT [구현]
+	SIF TALENT:LOCAL:매혹
+		PRINT [매혹]
+	SIF TALENT:LOCAL:수수께끼의매력
+		PRINT [수수께끼의매력]
+	SIF TALENT:LOCAL:유아／유아퇴행 || TALENT:LOCAL:유치
+		PRINT [유치]
+	SIF TALENT:LOCAL:여우 || TALENT:LOCAL:요호
+		PRINT [요호]
+	SIF TALENT:LOCAL:짐승 || TALENT:LOCAL:새
+		PRINT [수간]
+	PRINTL 
+;沢山素質持ってると溢れるかもしれないけどそんなやつおらんやろ～
+NEXT
+

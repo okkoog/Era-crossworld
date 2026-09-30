@@ -1,0 +1,153 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_5604,ARG
+RESULTS = 리부트
+
+;　명중
+@SKILL_HITRATE_5604, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_5604, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_5604,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_5604,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_5604, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("TURN")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_5604,ARG
+RETURN 5
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_5604
+RETURN GET_SKILL_DECIDE_TYPE_NUM("AS")
+;魔法
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_5604, ARG
+RETURN GET_SKILL_TARGET_NUM("특수")
+
+;　사거리
+@SKILL_RANGE_5604,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_5604,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_5604, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_5604
+RETURN GET_SUCCESSION_NUM("회복")
+
+;속도보정
+@SKILL_SPEED_5604, ARG = -1
+RETURN 2
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_5604
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_5604, ARG = -1
+RETURN 15
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_5604, ARG, ARG:1, ARG:2
+#DIM L_POS
+#DIM L_CHARA
+#DIM SUMMON_DEVIL
+#DIM IS_SUMMON_ABLE
+;控えも含めて死者を全員起こす
+FOR L_CHARA, 0, CHARANUM
+	SIF !IS_COMP内効果有効(L_CHARA)
+		CONTINUE
+	SIF CFLAG:L_CHARA:상태이상 != GET_STATE_NUM("DYING")
+		CONTINUE
+	CFLAG:L_CHARA:상태이상 = 0
+	CFLAG:L_CHARA:상태이상경과턴수 = 0
+	CALL VAR_HP, L_CHARA, MAXBASE:L_CHARA:ＨＰ
+	CALL COMMAND_REPEAT, L_CHARA
+	CALL PRINT_HIT_MESSAGE, L_CHARA, "되살아났다", "L"
+NEXT
+TFLAG:추가소환권 += 3
+PRINTFORMW 추가로 ３회의 ＳＵＭＭＯＮ을 사용 가능해졌다！
+WAIT
+CALL SKILLGAGE_H_SET, ARG, 5604, 1
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_5604, ARG
+PRINTL 빈사의 아군을 전원 부활시키고、추가로 이 턴간、추가로 ３회의 소환권을 얻는다。
+
+@SKILL_EXPLAIN_TOOLTIP_5604, ARG
+CALL GET_CAST_SKILL_EMULATOR, 5604, ARG
+IF ARG < 0
+	RESULTS = 어시스트스킬:필요턴수%TOFULL(TOSTR(RESULT))%
+ELSE
+	IF RESULT <= 0
+		RESULTS = 어시스트스킬:ＲＥＡＤＹ
+	ELSE
+		RESULTS = 어시스트스킬:필요턴수%TOFULL(TOSTR(RESULT))%
+	ENDIF
+ENDIF
+RESULTS = 빈사의 아군을 전원 부활시키고、추가로 이 턴간、추가로 추가로 ３회의 소환권을 얻는다。
+
+@SKILL_BATTLE_MAIN_TOOLTIP_5604, ARG, ARG:1
+CALL GET_CAST_SKILL_EMULATOR, ARG:1, ARG
+RESULTS = □리부트
+IF RESULT <= 0
+	RESULTS:1 = 　READY
+ELSE
+	RESULTS:1 =　필요턴수:{RESULT}
+ENDIF
+
+@SKILL_EX_DISPLAY_5604, ARG, ARGS
+CALL ASSIST_SKILL_EX_DISPLAY, ARG, ARGS, 5604, "Reboot"
+RETURN RESULT
+
+
+@ロール専用_5604
+RESULTS = Aion식 서머너
+RETURN 1
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_5604,ARG
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC COUNT_DEAD
+RESULTS = 사용 완료
+SIF SKILLGAGE_H_GET(ARG, 5604)
+	RETURN 0
+RETURN 1
+;とくにない
+

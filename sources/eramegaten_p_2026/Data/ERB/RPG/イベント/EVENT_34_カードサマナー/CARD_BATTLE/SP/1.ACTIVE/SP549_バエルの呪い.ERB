@@ -1,0 +1,60 @@
+﻿
+;特技名
+@CGSP_NAME_549, ARGS, ARG
+RESULTS = バエルの呪い
+
+;　コストの量
+@CGSP_COST_549, ARGS, ARG
+RETURN 2
+;1
+
+;　타겟(選択するかしないか)
+@CGSP_TARGET_549, ARGS, ARG
+RETURN 0
+;0-無し　　　1-味方1体　2-味方1体(自身含む)　3-敵1体　4-敵1体(サマナー含む)
+;5-敵味方1体　6-サマナーどちらか
+;自動発動なので0
+
+;　発動タイミング
+@CGSP_TIMING_549, ARGS, ARG
+RETURN 0
+;0-アクティブ　1-味方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　2-相手ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　3-両方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ
+
+;====================================================
+;特技発動
+;====================================================
+@CGSP_ACTION_549, ARGS, ARG, ARG:1
+;
+IF FIELD_DEMON_DATE_V:ARG:CBV_HOST == CS1_ONESELF
+	LOCAL = CS1_OPPONENT
+ELSE
+	LOCAL = CS1_ONESELF
+ENDIF
+CALL CS_DICEROLL(1, ARG, 20 + LOCAL)
+IF RESULT
+	CALL CS_HANDCARD_DEL, LOCAL, RAND:HAND_CARDS(LOCAL)
+	CALL CARDBATTLE_MESSAGE, SUMMONER_INFO:LOCAL:CSI2_NANE + @"は手札を１枚捨てた。"
+ENDIF
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;発動後どうなるか
+@CGSP_ACTION_AFTER_549, ARGS, ARG, ARG:1
+RETURN 0
+;0-何もなし　1-フリーズ状態　2-山札に戻る　3-即死する
+
+;　 説明文の表示
+@CGSP_EXPLAIN_549, ARGS, ARG
+RESULTS = 敵サマナーは1/6（16％）の確率で手札を1枚すてる。
+;　　　　 １２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０
+
+
+;　スキルタイプ
+;　主にこのターンパワーアップとアギとかのダメージ系で使用
+;　それ以外は省略
+;　20 サマナー妨害
+@CGSP_TYPE_549, ARGS, ARG
+RETURN 21, 1, 1
+

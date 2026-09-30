@@ -1,0 +1,89 @@
+﻿;エイプリル(알프)
+@SORP_PLAY_1016, ARGS
+#DIMS DYNAMIC ICON_ADDRESS
+ICON_ADDRESS = 71_エイプリル
+SELECTCASE ARGS
+	CASE "娼婦番号"
+		RESULTS = [1016]
+	CASE "キャラ名"
+	RESULTS = 에이프릴
+	CASE "指名名"
+	RESULTS = 에이프릴(알프)
+	CASE "所属"
+		;表なら1、裏なら2
+		RETURN 1
+	CASE "判定"
+		;指名可能なら0、不可なら1
+		;ウェンディー身請け済なら出現
+		CALL SORP_PLAY_1006, "判定"
+		SIF !RESULT
+			RETURN 1
+		RETURN 0
+	CASE "価格"
+		RETURN 300
+	CASE "紹介文"
+		IF 六本木娼婦フラグ:16 == 0
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"과연, 에이프릴 양을 희망하십니까/그녀는 뭐라고 해야 하나 미아라서 말이지요？/"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"마계에서 인간계로 놀러 온 모양입니다만/돌아가는 길을 잃어버려서/동료마가 데리러 올 때까지 이 거리에서 기다리기로 했다고 합니다"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"하지만 일하지 않는 자는 먹지도 말라며/조세핀 양이 보호자 대신 돌봐주는 한편, 저희 가게에서 손님을 받고 있는 상황이지요/"
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"과연, 에이프릴 양입니까/손님도 참 좋은 취향이시군요/"
+		ENDIF
+	CASE "確認"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그럼, 에이프릴 양입니다만…/하룻밤에 ３００마카가 되겠습니다/"
+	CASE "プレイ口上"
+		CALL DUNGEON_WORP,1,15,3
+		IF 六本木娼婦フラグ:16 == 0
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"에이프릴", @"안녀엉, 난 에이프릴！ 지명 땡큐우~//"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞명랑한 알프 1마리가 나타났다.//"
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"에이프릴", @"그럼, 한밤중 둘만의 비밀 무도회, 시작해 볼까~//"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+			CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"/＞즐겁게 놀았습니다…/"
+			六本木娼婦フラグ:16 = 1
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"에이프릴", @"날 불렀어~？ 부른 거 맞지~？/그럼 오늘은 전보다 더 깊은 곳까지 파고들어 줘！/"
+		CALL MESSAGE_WINDOW_D_ICON, , ICON_ADDRESS, ,"에이프릴", @"다른 누구에게도 보여줄 수 없는 하룻밤의 꿈(댄스)！/내 하트에 아로새겨 줘！/"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+			CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"/＞즐겁게 놀았습니다…/"
+		ENDIF
+		EXP:MASTER:삽입경험 += ABL:MASTER:기교 * 2 + 1
+		EXP:MASTER:절정경험 += ABL:MASTER:기교
+		JUEL:MASTER:쾌Ｃ += ABL:MASTER:기교 * (300) + 300
+		JUEL:MASTER:쾌Ｂ += ABL:MASTER:기교 * (100) + 100
+		JUEL:MASTER:욕정 += ABL:MASTER:기교 * (100) + 300
+		JUEL:MASTER:습득 += ABL:MASTER:기교 * (100) + 300
+		IF !TALENT:MASTER:남자
+			EXP:MASTER:레즈경험 += ABL:MASTER:기교 * 2 + 1
+			JUEL:MASTER:쾌Ｖ += ABL:MASTER:기교 * (200) + 200
+		ENDIF
+		IF TALENT:MASTER:남자 || TALENT:MASTER:후타나리
+			EXP:MASTER:질사경험 += ABL:MASTER:기교
+			EXP:MASTER:사정경험 += ABL:MASTER:기교
+			CALL CONTROL_MAG, MASTER, -(ABL:MASTER:기교 * 2000 + 1000)
+		ENDIF
+		IF TALENT:MASTER:모유체질
+			EXP:MASTER:분유경험 += (ABL:MASTER:기교 + 1)
+			JUEL:MASTER:쾌Ｂ += (ABL:MASTER:기교 + 1) * 100
+			CALL CONTROL_MAG, MASTER, -(ABL:MASTER:기교 * 2000 + 1000)
+		ENDIF
+		;CALL INCREASE_LC,5  意図が不明かつ変動量が強烈で、ユーザー側から認識できない場所での変動なので除外します。必要性があって再実装する場合は右記の点に注意して再実装してください。
+	CASE "身受け価格"
+		RETURN 99999
+	CASE "身受け確認"
+		;
+	CASE "身受け口上"
+		;
+	CASE "宣伝"
+		PRINTL
+		PRINTL 에이프릴
+		SETCOLOR COLOR("ハートピンク")
+		PRINTL 『하룻밤의 댄스 파트너, 모·집·중이에요』
+		RESETCOLOR
+		PRINTW (편집자 주기: 그저 천진난만한 아이입니다. 재미있게 놀아주세요)
+	CASE "リスト"
+		RESULTS '= ICON_ADDRESS
+
+		RESULTS:1 = 하룻밤의 댄스 파트너, 모·집·중
+ENDSELECT

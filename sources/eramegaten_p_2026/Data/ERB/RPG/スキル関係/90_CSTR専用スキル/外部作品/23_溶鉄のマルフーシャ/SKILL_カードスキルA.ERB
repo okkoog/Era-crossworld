@@ -1,0 +1,785 @@
+﻿;スキル名
+@SKILL_NAME_カードスキルA,ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"カードスキルA")
+;専用技が封印されている
+IF CFLAG:ARG:998 == 0
+	RESULTS = ？？？？？
+ELSEIF TFLAG:전투중 == 0 && SKILLGAGE_F_GET(ARG,SKILL_NUM) == 0
+	RESULTS = 무기 스킬
+ELSE
+	SELECTCASE SKILLGAGE_F_GET(ARG,SKILL_NUM)
+		CASE 1
+			RESULTS = 와이드 샷
+		CASE 2
+			RESULTS = 버즈소 샷
+		CASE 3
+			RESULTS = 시저스 샷
+		CASE 4
+			RESULTS = 크레딧 샷
+		CASE 5
+			RESULTS = 리페어 샷
+		CASE 6
+			RESULTS = 電熱砲
+		CASE 7
+			RESULTS = 파일 샷
+		CASEELSE
+			RESULTS = ＥＭＰＴＹ
+	ENDSELECT
+ENDIF
+
+
+;　명중
+@SKILL_HITRATE_カードスキルA, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"カードスキルA")
+SELECTCASE SKILLGAGE_F_GET(ARG,SKILL_NUM)
+	CASE 1
+		;ワイドショット
+		RETURN 140
+	CASE 2
+		;バズソーショット
+		SIF FLAG:확산플래그
+			RETURN 100
+		RETURN 120
+	CASE 3
+		;シザーズショット
+		RETURN 160
+	CASE 4
+		;クレジットショット
+		RETURN 100
+	CASE 5
+		;リペアショット
+		RETURN 100
+	CASE 6
+		;電熱砲
+		SELECTCASE FLAG:확산플래그 + TFLAG:스킬용1
+			CASE 3
+				RETURN 220
+			CASE 2
+				RETURN 200
+			CASE 1
+				RETURN 190
+			CASEELSE
+				RETURN 180
+		ENDSELECT
+		;IF FLAG:확산플래그 == 3
+		;	RETURN 220
+		;ELSEIF FLAG:확산플래그 == 2
+		;	RETURN 200
+		;ELSEIF FLAG:확산플래그 == 1
+		;	RETURN 190
+		;ELSE
+		;	RETURN 180
+		;ENDIF
+	CASE 7
+		;パイルショット
+		RETURN 150
+	CASEELSE
+		;ＥＭＰＴＹ
+		RETURN 100
+ENDSELECT
+
+;特殊な参照値
+@SKILL_CALC_BATTTLE_STATUS_カードスキルA, ARGS, ARG, ARG:1
+SIF ARG < 0
+	RETURN 0
+SELECTCASE ARGS
+	CASE "ATK"
+		IF GET_ROLE_PROP("CAN_USE_GUN", ARG) && EQUIP:ARG:총
+			RETURN MAXBASE:ARG:총공격
+		ELSE
+			RETURN MAXBASE:ARG:공격 / 2
+		ENDIF
+ENDSELECT
+
+;　威力
+@SKILL_POWER_カードスキルA, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"カードスキルA")
+SELECTCASE SKILLGAGE_F_GET(ARG,SKILL_NUM)
+	CASE 1
+		;ワイドショット(一列　1500)
+		;イベント用
+		SIF CFLAG:ARG:998 == 2
+			RETURN 350
+		RETURN 300
+	CASE 2
+		;バズソーショット(拡散　1450)
+		;イベント用
+		IF CFLAG:ARG:998 == 2
+			SIF FLAG:확산플래그
+				RETURN 400
+			RETURN 450
+		ELSE
+			SIF FLAG:확산플래그
+				RETURN 350
+			RETURN 400
+		ENDIF
+	CASE 3
+		;シザーズショット(敵の前列と後列を貫く　900*125%=1125)
+		;イベント用
+		SIF CFLAG:ARG:998 == 2
+			RETURN 500
+		RETURN 450
+	CASE 4
+		;クレジットショット(一列　１～５回　特殊通貨の量による　3750)
+		;イベント用
+		SIF CFLAG:ARG:998 == 2
+			RETURN 200
+		RETURN 150
+	CASE 5
+		;リペアショット(회복　150)
+		;イベント用
+		SIF CFLAG:ARG:998 == 2
+			RETURN 200
+		RETURN 150
+	CASE 6
+		;電熱砲(全体～単体　切り札　マルフーシャ専用　800～5000*125%=1000～6250)
+		;相性貫通ダメージアップ＋防御半減
+		;『溶鉄のマルフーシャ』はラスボスも電熱砲で一発で倒せる
+		;イベント用
+		IF CFLAG:ARG:998 == 2
+			SELECTCASE FLAG:확산플래그 + TFLAG:스킬용1
+				CASE 3
+					RETURN 2000
+				CASE 2
+					RETURN 1500
+				CASE 1
+					RETURN 999
+				CASEELSE
+					RETURN 800
+			ENDSELECT
+			;１体＋相性貫通
+			;IF FLAG:확산플래그 == 3
+			;	RETURN 2000
+			;１体 or ２～３体＋相性貫通
+			;ELSEIF FLAG:확산플래그 == 2
+			;	RETURN 1500
+			;２～３体 or 相性貫通
+			;ELSEIF FLAG:확산플래그 == 1
+			;	RETURN 999
+			;ELSE
+			;	RETURN 800
+			;ENDIF
+		ELSE
+			SELECTCASE FLAG:확산플래그 + TFLAG:스킬용1
+				CASE 3
+					RETURN 999
+				CASE 2
+					RETURN 800
+				CASE 1
+					RETURN 650
+				CASEELSE
+					RETURN 50
+			ENDSELECT
+			;１体＋相性貫通
+			;IF FLAG:확산플래그 == 3
+			;	RETURN 999
+			;１体 or ２～３体＋相性貫通
+			;ELSEIF FLAG:확산플래그 == 2
+			;	RETURN 800
+			;２～３体 or 相性貫通
+			;ELSEIF FLAG:확산플래그 == 1
+			;	RETURN 650
+			;ELSE
+			;	RETURN 500
+			;ENDIF
+		ENDIF
+	CASE 7
+		;パイルショット(単体　250*3*125%=937.5)
+		;イベント用
+		SIF CFLAG:ARG:998 == 2
+			RETURN 350
+		RETURN 250
+	CASEELSE
+		;ＥＭＰＴＹ
+		RETURN 100
+ENDSELECT
+
+;　クリティカル率
+@SKILL_CRITICAL_RATE_カードスキルA, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"カードスキルA")
+SELECTCASE SKILLGAGE_F_GET(ARG,SKILL_NUM)
+	CASE 1
+		;ワイドショット
+		RETURN 6
+	CASE 2
+		;バズソーショット
+		RETURN 10
+	CASE 3
+		;シザーズショット
+		RETURN 4
+	CASE 4
+		;クレジットショット
+		RETURN 6
+	CASE 5
+		;リペアショット
+		RETURN 0
+	CASE 6
+		;電熱砲
+		RETURN 1
+	CASE 7
+		;パイルショット
+		RETURN 8
+	CASEELSE
+		;ＥＭＰＴＹ
+		RETURN 5
+ENDSELECT
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_カードスキルA,ARG
+;クレジットショット
+IF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 4
+	SELECTCASE SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カード購入"))
+		CASE IS >= 100
+			RETURN 5
+		CASE IS >= 60
+			RETURN 4
+		CASE IS >= 30
+			RETURN 3
+		CASE IS >= 10
+			RETURN 2
+	ENDSELECT
+ENDIF
+;パイルショット
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 7
+	RETURN 3
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_カードスキルA,ARG
+;クレジットショット
+IF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 4
+	SELECTCASE SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カード購入"))
+		CASE IS >= 100
+			RETURN 5
+		CASE IS >= 60
+			RETURN 4
+		CASE IS >= 30
+			RETURN 3
+		CASE IS >= 10
+			RETURN 2
+	ENDSELECT
+ENDIF
+;パイルショット
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 7
+	RETURN 3
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_カードスキルA, ARG
+;ＥＭＰＴＹ
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 0
+	RETURN 1
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_カードスキルA,ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"カードスキルA")
+SIF SKILLGAGE_D_GET(ARG,SKILL_NUM) > 0
+	RETURN 0
+SELECTCASE SKILLGAGE_F_GET(ARG,SKILL_NUM)
+	CASE 1
+		;ワイドショット
+		;イベント用
+		SIF CFLAG:ARG:998 == 2
+			RETURN 15
+		RETURN 30
+	CASE 2
+		;バズソーショット
+		;イベント用
+		SIF CFLAG:ARG:998 == 2
+			RETURN 15
+		RETURN 30
+	CASE 3
+		;シザーズショット
+		;イベント用
+		SIF CFLAG:ARG:998 == 2
+			RETURN 15
+		RETURN 30
+	CASE 4
+		;クレジットショット
+		;イベント用
+		SIF CFLAG:ARG:998 == 2
+			RETURN 20
+		RETURN 40
+	CASE 5
+		;リペアショット
+		;イベント用
+		SIF CFLAG:ARG:998 == 2
+			RETURN 10
+		RETURN 20
+	CASE 6
+		;電熱砲
+		;イベント用
+		IF CFLAG:ARG:998 == 2 && GETCHARA([[キャラ:국경문]]) > -1
+			IF MAXBASE:ARG:ＭＰ < 100
+				IF BASE:ARG:ＭＰ < MAXBASE:ARG:ＭＰ && BASE:GETCHARA([[キャラ:국경문]]):ＨＰ < MAXBASE:GETCHARA([[キャラ:국경문]]):ＨＰ / 3
+					RETURN BASE:ARG:ＭＰ
+				ELSE
+					RETURN MAXBASE:ARG:ＭＰ
+				ENDIF
+			ELSEIF BASE:ARG:ＭＰ < 100 && BASE:GETCHARA([[キャラ:국경문]]):ＨＰ < MAXBASE:GETCHARA([[キャラ:국경문]]):ＨＰ / 3
+				RETURN BASE:ARG:ＭＰ
+			ELSE
+				RETURN 100
+			ENDIF
+		ELSE
+			IF MAXBASE:ARG:ＭＰ > 50 && MAXBASE:ARG:ＭＰ < 150
+				IF BASE:ARG:ＭＰ < MAXBASE:ARG:ＭＰ && BASE:ARG:ＨＰ < MAXBASE:ARG:ＨＰ / 3
+					RETURN BASE:ARG:ＭＰ
+				ELSE
+					RETURN MAXBASE:ARG:ＭＰ
+				ENDIF
+			ELSEIF BASE:ARG:ＭＰ < 150 && BASE:ARG:ＨＰ < MAXBASE:ARG:ＨＰ / 3
+				RETURN BASE:ARG:ＭＰ
+			ELSE
+				RETURN 150
+			ENDIF
+		ENDIF
+	CASE 7
+		;パイルショット
+		;イベント用
+		SIF CFLAG:ARG:998 == 2
+			RETURN 20
+		RETURN 40
+	CASEELSE
+		;ＥＭＰＴＹ
+		RETURN 0
+ENDSELECT
+
+;　相性
+@SKILL_TYPE_カードスキルA,ARG
+#DIM SKILL_NUM
+#LOCALSSIZE 3
+#LOCALSIZE 4
+SIF ARG < 0
+	RETURN GET_TYPE_NUM("비구")
+
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"カードスキルA")
+SELECTCASE SKILLGAGE_F_GET(ARG,SKILL_NUM)
+	CASE 1
+		;ワイドショット
+		RETURN GET_TYPE_NUM("비구")
+	CASE 2
+		;バズソーショット
+		RETURN GET_TYPE_NUM("검격")
+	CASE 3
+		;シザーズショット
+		RETURN GET_TYPE_NUM("핵열")
+	CASE 4
+		;クレジットショット
+		RETURN GET_TYPE_NUM("비구")
+	CASE 5
+		;リペアショット
+		RETURN 0
+	CASE 6
+		;複合相性
+		RETURN GET_TYPE_NUM("핵열"), GET_TYPE_NUM("화염")
+	CASE 7
+		;パイルショット
+		RETURN GET_TYPE_NUM("핵열")
+	CASEELSE
+		;ＥＭＰＴＹ
+		RETURN GET_TYPE_NUM("비구")
+ENDSELECT
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_カードスキルA
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_カードスキルA,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_カードスキルA,ARG
+;ＥＭＰＴＹ
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 0
+	RETURN 4
+;リペアショット
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 5
+	RETURN 2
+RETURN 1
+
+;　사거리
+@SKILL_RANGE_カードスキルA,ARG
+;ワイドショット
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 1
+	RETURN 2
+;シザーズショット
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 3
+	RETURN 2
+;クレジットショット
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 4
+	RETURN 2
+;パイルショット
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 7
+	RETURN 2
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_カードスキルA,ARG
+;ＥＭＰＴＹ
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 0
+	RETURN 4
+;ワイドショット
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 1
+	RETURN 2
+;クレジットショット
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 4
+	RETURN 2
+;電熱砲
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 6
+	RETURN 3
+RETURN 1
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_カードスキルA,ARG
+;ＥＭＰＴＹ
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 0
+	RETURN 4
+;リペアショット
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 5
+	RETURN 2
+RETURN 1
+
+@SKILL_HEAL_TYPE_カードスキルA, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("통상")
+
+;속도보정
+@SKILL_SPEED_カードスキルA, ARG = -1
+;電熱砲
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 6
+	RETURN -2
+;パイルショット
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 7
+	RETURN 2
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_カードスキルA
+RETURN 0
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_カードスキルA,ARG
+;パイルショット
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 7
+	RETURN GET_STATE_NUM("BRAND")
+RETURN 0
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_カードスキルA,ARG
+;パイルショット
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 7
+	RETURN 10
+RETURN 0
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_カードスキルA,ARG
+;パイルショット
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 7
+	RETURN 25
+RETURN 0
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_カードスキルA,ARG
+;パイルショット
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 7
+	RETURN 50
+RETURN 0
+
+;拡散攻撃用追加処理
+;ブレスなどの拡散攻撃に使う
+@SKILL_SPREAD_カードスキルA,ARG
+;バズソーショット
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 2
+	RETURN 1
+RETURN 0
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_カードスキルA, ARG = -1, ARG:1 = -1
+;電熱砲は貫通
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 6
+	RETURN 4
+RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_カードスキルA,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM LCOUNT
+#DIM L_T
+#DIM POSMIN
+#DIM POSMAX
+#DIM STOCK
+IF INRANGE(ARG:1, 1, 16)
+	LOCAL = POS(ARG:1)
+ELSE
+	LOCAL = 0
+ENDIF
+LOCAL:1 = 0
+LOCAL:2 = 0
+LOCAL:3 = 0
+;LOCAL:10 = MAXBASE:ARG:공격
+;LOCAL:11 = MAXBASE:ARG:명중
+;LOCAL:12 = MAXBASE:ARG:마법위력
+;LOCAL:13 = MAXBASE:ARG:마법효과
+;IF EQUIP:ARG:총 != 0
+;	MAXBASE:ARG:공격 = MAXBASE:ARG:총공격
+;	MAXBASE:ARG:명중 = MAXBASE:ARG:총명중
+;	MAXBASE:ARG:마법위력 = MAXBASE:ARG:총공격
+;	MAXBASE:ARG:마법효과 = MAXBASE:ARG:총명중
+;ELSE
+;	MAXBASE:ARG:공격 /= 2
+;	MAXBASE:ARG:마법위력 /= 2
+;ENDIF
+SELECTCASE SKILLGAGE_F_GET(ARG,SKILL_NUM)
+	CASE 1
+		;ワイドショット
+		CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM
+	CASE 2
+		;バズソーショット
+		CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM
+	CASE 3
+		;シザーズショット
+		CALL ATTACK_SINGLE,ARG,LOCAL,SKILL_NUM
+		IF CFLAG:ARG:PT플래그 == 0
+			IF ARG:1 < 4
+				LOCAL:1 = ARG:1 + 3
+			ENDIF
+		ELSE
+			IF ARG:1 < 12
+				LOCAL:1 = ARG:1 + 5
+			ENDIF
+		ENDIF
+		LOCALS = 포지션{LOCAL:1}
+		IF FLAG:LOCALS > -1 && GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) != "DYING"
+			PRINTW ＞열선이 후열의 적까지 관통했다!
+			CALL ATTACK_SINGLE, ARG, POS(LOCAL:1), SKILL_NUM
+		ENDIF
+	CASE 4
+		;クレジットショット
+		CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM
+	CASE 5
+		;リペアショット
+		CALL HEAL_SINGLE,ARG,LOCAL,SKILL_NUM
+	CASE 6
+		;電熱砲
+		IF GETCONFIGS("描画インターフェース") != "WINAPI"
+			SIF NO:ARG == [[キャラ:마르푸샤]]
+				CALL 電熱砲
+		ENDIF
+		POSMIN = CFLAG:ARG:PT플래그 > 0 ? 7 # 1
+		POSMAX = CFLAG:ARG:PT플래그 > 0 ? 17 # 7
+		LOCAL = 0
+		;敵の数をカウント
+		FOR LCOUNT, POSMIN, POSMAX
+			SIF POS(LCOUNT) < 0
+				CONTINUE
+			SIF GET_STATE(CFLAG:POS(LCOUNT):상태이상) == "DYING"
+				CONTINUE
+			LOCAL++
+		NEXT
+		IF LOCAL == 1
+			FLAG:확산플래그 = 2
+		ELSEIF INRANGE(LOCAL, 2, 3)
+			FLAG:확산플래그 = 1
+		ELSE
+			FLAG:확산플래그 = 0
+		ENDIF
+		TFLAG:스킬용1 = 1
+		STOCK = CFLAG:ARG:타겟
+		;敵の数をカウント
+		FOR LCOUNT, POSMIN, POSMAX
+			L_T = POS(LCOUNT)
+			CFLAG:ARG:타겟 = LCOUNT
+			SIF L_T < 0
+				CONTINUE
+			SIF GET_STATE(CFLAG:L_T:상태이상) == "DYING"
+				CONTINUE
+			;相性計算を行い、戻りで貫通か無効が発生してたら拡散フラグを増加
+			CALL BTL_CALC_AISYOU, ARG, L_T, SKILL_NUM
+			IF (STRFIND(RESULTS, "관통") >= 0) || (STRFIND(RESULTS, "무효") >= 0)
+				TFLAG:스킬용1 = 1
+			ELSE
+				TFLAG:스킬용1 = 0
+			ENDIF
+			CALL ATTACK_SINGLE, ARG, L_T, SKILL_NUM
+		NEXT
+		CFLAG:ARG:타겟 = STOCK
+	CASE 7
+		;パイルショット
+		CALL ATTACK_SINGLE,ARG,LOCAL,SKILL_NUM
+	CASEELSE
+		;ＥＭＰＴＹ
+ENDSELECT
+;MAXBASE:ARG:공격 = LOCAL:10
+;MAXBASE:ARG:명중 = LOCAL:11
+;MAXBASE:ARG:마법위력 = LOCAL:12
+;MAXBASE:ARG:마법효과 = LOCAL:13
+CALL SKILLGAGE_F_SET,ARG,SKILL_NUM,0
+
+;CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+;CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+;CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM;		拡散攻撃
+;CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM;			ランダム攻撃
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_カードスキルA,ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"カードスキルA")
+;専用技が封印されている
+IF CFLAG:ARG:998 == 0
+	PRINTL (개별 이벤트 전용 스킬 & 개별 이벤트 1~4를 모두 클리어하면…?)
+ELSE
+	SELECTCASE SKILLGAGE_F_GET(ARG,SKILL_NUM)
+		CASE 1
+			;ワイドショット
+			PRINTL 7방향 동시에 사격하는 와이드 샷을 쏩니다
+			;イベント用
+			SIF CFLAG:ARG:998 == 2
+				SETCOLOR 0xFFA500
+			PRINTL 적 전열에 비구 속성의 대 데미지
+			RESETCOLOR
+		CASE 2
+			;バズソーショット
+			PRINTL 적을 베어가르는 톱날을 쏘아냅니다
+			;イベント用
+			SIF CFLAG:ARG:998 == 2
+				SETCOLOR 0xFFA500
+			PRINT 대상과 그 주위에 검격 속성의 대 데미지
+			RESETCOLOR
+			PRINTL 　크리티컬률이 약간 높다
+		CASE 3
+			;シザーズショット
+			PRINTL 적을 협공하는 열선을 쏩니다
+			;イベント用
+			SIF CFLAG:ARG:998 == 2
+				SETCOLOR 0xFFA500
+			PRINT 적 1체와 그 뒤의 적에게 핵열 속성의 대 데미지
+			RESETCOLOR
+			PRINTL 　크리티컬률이 약간 낮다
+		CASE 4
+			;クレジットショット
+			PRINTL 강력한 산탄을 쏩니다. 특수 통화가 많을수록 공격 횟수가 증가합니다
+			;イベント用
+			SIF CFLAG:ARG:998 == 2
+				SETCOLOR 0xFFA500
+			PRINTL 적 전열에 1~5회 비구 속성의 중 데미지
+			RESETCOLOR
+		CASE 5
+			;リペアショット
+			PRINTL 동료를 향해 쏘면 회복하는 탄환을 쏩니다
+			;イベント用
+			SIF CFLAG:ARG:998 == 2
+				SETCOLOR 0xFFA500
+			PRINTL 아군 1명을 크게 회복한다
+			RESETCOLOR
+		CASE 6
+			;電熱砲
+			PRINTL 적을 일소하는 전열포를 사용합니다
+			;イベント用
+			IF CFLAG:ARG:998 == 2
+				SETCOLOR 0xFFA500
+				PRINTL 온갖 방호를 꿰뚫는 포격으로 적 전체~적 1체에 화염+핵열 복합 상성의 초특대~??? 데미지
+				RESETCOLOR
+			ELSE
+				PRINTL 온갖 방호를 꿰뚫는 포격으로 적 전체~적 1체에 화염+핵열 복합 상성의 특대~초특대 데미지
+			ENDIF
+			PRINTL 매우 강력하지만 코스트가 무겁고, 크리티컬률이 극히 낮으나 위기 상황에서는 저코스트로 사용할 수 있다
+			;相性貫通ダメージアップ＋防御力を二分の一として計算します。
+		CASE 7
+			;パイルショット
+			PRINTL 사거리가 짧은 열말뚝을 3발 박아넣습니다
+			;イベント用
+			IF CFLAG:ARG:998 == 2
+				SETCOLOR 0xFFA500
+				PRINTL 전열의 적 1체에 3회 핵열 상성의 대데미지를 입히고, 낙인 상태로 만든다
+				RESETCOLOR
+			ELSE
+				PRINTL 전열의 적 1체에 3회 핵열 상성의 중데미지를 입히고, 낙인 상태로 만든다
+			ENDIF
+		CASEELSE
+			;ＥＭＰＴＹ
+			PRINTL 일회용 무기의 스킬
+			PRINTL 특정 카드를 뽑으면, 대응하는 무기 스킬로 전환됩니다
+	ENDSELECT
+	SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) > 0
+		PRINTL 이 스킬은 총공격과 총명중으로 데미지를 계산하며, 사용 후에는 「EMPTY」로 돌아갑니다
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_カードスキルA,ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"カードスキルA")
+;専用技が封印されている
+SIF CFLAG:ARG:998 == 0
+	RETURN 0
+SIF SKILLGAGE_F_GET(ARG, SKILL_NUM) > 0
+	RETURN 1
+RETURN 0
+
+@リンク不能_カードスキルA
+RETURN 1
+
+@電熱砲, BASE_XPOS = 100, BASE_YPOS = -500
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC BASE_XPOS
+#DIM DYNAMIC BASE_YPOS
+#DIM DYNAMIC GID
+#DIMS DYNAMIC SHOW_RAYER
+#DIMS DYNAMIC L_SPRITENAME
+#DIMS DYNAMIC L_ADDRESS
+#DIM DYNAMIC L_HEIGHT = 1250
+#DIM DYNAMIC L_WIDTH
+#DIM DYNAMIC L_SPACE
+L_ADDRESS '= "80_スキル画像" + "\\" + "CSTR_カードスキルA" + "\\" + "電熱砲" + "_"
+
+IF !SPRITECREATED("電熱砲_0")
+	FOR LCOUNT, 0, 31
+		GID = GET_FREE_TEMP_GID()
+		SIF !GCREATEFROMFILE(GID, L_ADDRESS + TOSTR(LCOUNT, "00") + ".png")
+			RETURN 0
+		L_SPRITENAME '= "電熱砲_" + TOSTR(LCOUNT)
+		SPRITECREATE L_SPRITENAME, GID, 0, 0, GWIDTH(GID), GHEIGHT(GID)
+		CALL PUSH_ARRAY_STR, TEMP_GID_SPRITENAME, L_SPRITENAME
+	NEXT
+ENDIF
+
+L_WIDTH = L_HEIGHT * SPRITEWIDTH("電熱砲_0") / SPRITEHEIGHT("電熱砲_0") + 50
+FOR LCOUNT, 0, 31
+	SHOW_RAYER '= @"<img src = '電熱砲_{LCOUNT}' height = '{L_HEIGHT}'>"
+	{
+	SHOW_RAYER '= @"<div xpos = '{BASE_XPOS + 150 - MAX((LCOUNT - 27) * 50, 0)}' ypos = '{BASE_YPOS - L_HEIGHT}'
+					height = '{L_HEIGHT + 50}' width = {L_WIDTH}
+					padding = '25'
+					background_color = '%TOSTR_HTML(GETBGCOLOR())%' display = 'absolute-leftbottom'
+					>" + SHOW_RAYER + "</div>"
+	}
+	{
+	SHOW_RAYER += @"<div xpos = '{BASE_XPOS}' ypos = '{BASE_YPOS - L_HEIGHT}'
+					height = '{L_HEIGHT + 50}' width = {L_WIDTH}
+					display = 'absolute-leftbottom' border_width = '3px'>" + "</div>"
+	}
+	HTML_PRINT_ISLAND SHOW_RAYER
+	INPUTMOUSEKEY 100
+	HTML_PRINT_ISLAND_CLEAR
+	SIF RESULT != 4
+		BREAK
+NEXT

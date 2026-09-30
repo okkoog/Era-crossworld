@@ -1,0 +1,50 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@LEADER_SKILL_CONTROL_NO_60,ARG
+RESULTS = 反応装甲
+
+;スキル名
+@SKILL_NAME_LEADER_反応装甲,ARG
+RESULTS = 반응장갑
+
+;　 説明文の設定
+@SET_VAR_LEADER_SKILL_EXPLAIN_反応装甲, L_TEXT
+#DIMS REF L_TEXT
+#DIM L_CNT
+L_CNT = COUNT_ACTIVE_LEADER_SKILL("反応装甲")
+IF L_CNT
+	L_TEXT = 아군이 공격을 받았을 경우 방어력과 마법효과가 %AUTO_SPLIT("30/45/60/75/90/100", "/", L_CNT)%의 확률로 UP한다。
+ELSE
+	L_TEXT = 아군이 공격을 받았을 경우 방어력과 마법효과가 일정확률로 UP한다。
+ENDIF
+;重複可能な数
+@LEADER_SKILL_COUNT_LIMIT_反応装甲
+RETURN 6
+
+@ACTION_LEADER_反応装甲,ARG,ARG:1,ARG:2
+#DIM L_TABLE
+#DIM LCOUNT
+#DIM L_CNT
+#DIMS L_RESULTS
+#DIMS TEMPS
+CALL SKILL_SET_カジャンダ, ARG, POS(ARG:1), "방어력/마법효과", 4, "단체"
+;====================================================
+;반격
+;====================================================
+@SKILL_COUNTER_ACTIONABLE_LEADER_反応装甲, ARG, ARG:1
+#DIM L_CNT
+;複数登録されている最初の一個目でまとめて判定してあとは飛ばす(LEARDERスキルのTRYSKILL_VARにはLEADERスキルの持ち主が入れられる)
+SIF !IS_FIRST_ACTIVE_LEADER_SKILL("反応装甲", TRYSKILL_VAR, ARG)
+	RETURN 0
+SIF IS_FRIEND(ARG, ARG:1)
+	RETURN 0
+;攻撃に当たっている
+SIF !GET_CREC_ACT(ARG:1, ARG, "HIT")
+	RETURN 0
+L_CNT = COUNT_ACTIVE_LEADER_SKILL("反応装甲")
+SIF RAND:100 >= TOINT(AUTO_SPLIT("30/45/60/75/90/100", "/", L_CNT))
+	RETURN 0
+;自分自身を対象にする
+RETURN 1, CPOS(ARG)
+

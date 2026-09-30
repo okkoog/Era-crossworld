@@ -1,0 +1,127 @@
+﻿;サクラコ専用スキル。
+;単体飛具破魔複合物理、威力205、MP18、ランク4
+;攻撃後に自身の攻撃力1段階上昇
+
+;スキル名
+@SKILL_NAME_洗礼の印,ARG
+RESULTS = 세례의 인
+
+;　명중
+@SKILL_HITRATE_洗礼の印, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_洗礼の印, ARG
+RETURN 205
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_洗礼の印,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_洗礼の印,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_洗礼の印, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_洗礼の印,ARG
+RETURN 18
+
+;　相性
+@SKILL_TYPE_洗礼の印,ARG
+RETURN GET_TYPE_NUM("비구"), GET_TYPE_NUM("파마")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_洗礼の印
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_洗礼の印,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_洗礼の印,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_洗礼の印,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_洗礼の印,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_洗礼の印,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_洗礼の印, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_洗礼の印
+RETURN 0
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_洗礼の印
+RETURN GET_SUCCESSION_NUM("비구")
+;====================================================
+;トリガー発動条件
+;
+;詳しい仕様については資料フォルダの解説を参照してください
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_洗礼の印,ARG,ARG:1
+
+;自分自身の行動でないと誘発しない
+SIF ARG != FLAG:행동순1
+	RETURN 0
+;判定は1回
+SIF ARG != ARG:1
+	RETURN 0
+;場にでて健在じゃないと駄目
+SIF !IS_TARGET_ABLE(ARG)
+	RETURN 0
+;命中しないと駄目
+SIF !GET_CREC_ACT(ARG, , "HIT")
+	RETURN 0
+SIF CFLAG:ARG:입력행동 != PU_SKILLNUM_GET(ARG, "洗礼の印")
+	RETURN 0
+RETURN 1, CPOS(ARG)
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_洗礼の印,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+IF FLAG:총공격중
+	CALL SKILL_SET_カジャンダ, ARG, ARG, "공격", 4, "단체"
+ELSE
+	CALL ATTACK_SKILL,ARG,ARG:1,SKILL_NUM
+ENDIF
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_洗礼の印,ARG
+PRINTL 축복을 담은 총탄으로 적을 꿰뚫는다.
+PRINTL 적 단체에 『비구·파마』 복합 상성의 물리 중데미지. 후열 사용 가능.
+PRINTL 공격에 성공했을 때 이하의 연동 효과가 발동한다.
+PRINTL 「자신의 공격력이 상승한다.」
+
+@SKILL_EXPLAIN_TOOLTIP_洗礼の印, ARG
+RESULTS:0 = 축복을 담은 총탄으로 적을 꿰뚫는다.
+RESULTS:1 = 적 단체에 『비구·파마』 복합 상성의 물리 중데미지. 후열 사용 가능.
+RESULTS:2 = 攻撃に成功した時、以下の連動効果が発動する。
+RESULTS:3 = 「自身の攻撃力が上昇する。」
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_洗礼の印,ARG
+RETURN 1
+
+;スキル変化用ランク
+@SKILL_RANK_洗礼の印, ARG = -1
+RETURN 6

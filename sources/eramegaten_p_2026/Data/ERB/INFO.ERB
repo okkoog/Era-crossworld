@@ -1,0 +1,649 @@
+﻿;キャラクターをリスト表示
+;=============================================================================
+;キャラリスト表示＋入力関数@INPUT_CHARA_LIST
+;ARGS   == 説明文(ARGS:2が呼び出された場合は省略されます)
+;ARGS:1 == 表示の可否を判断する関数名
+;    キャラクター(引数で渡す)が特定の条件を満たしたかどうかを判定し、
+;    表示可能な場合は1、表示できない場合は0を返す関数を別途に作ってください。
+;    この関数に引数は一切指定できません。
+;    指定した関数が存在しない場合は無条件で全てのキャラを表示します。
+;
+;ARGS:2 == 上部追加表示を行う関数名
+;ARGS:3 == 下部追加表示を行う関数名
+;    それぞれリストの上部、下部に何か特殊な表示をしたい時に指定します。
+;    この関数に引数は一切指定できません。
+;    単なる表示処理のみを想定しており、返り値が参照される事もありません。
+;
+;ARGS:4 == 選択肢を追加するための関数名
+;    キャラ選択、ページ送り、キャンセル以外の選択肢が必要な場合に指定します。
+;    引数は数値変数1つのみ指定できます。
+;    この関数は選択肢の表示時(引数=0)とINPUT直後(引数=RESULT)の2回呼び出されます。
+;    引数が0の時に選択肢の表示、それ以外の時に選択後の処理を行うよう設計してください。
+;    また、新たに関数をCALLする事でRESULTの値が変化する事に留意してください。
+;
+;ARGS:5 == キャンセル時の選択肢の文言。キャンセル不可を指定するとキャンセルできなくなる。
+;ARG    == キャラクターを指定して一気にリストを通した状態まで飛ばすための指定
+;ARGS:6 == FUNC_CUSTOM_TITLE
+;ARGS:7 == FUNC_CUSTOM_COLOR(独自の色定義)
+;ARGS:8 == FUNC_CUSTOM_COMMENT(独自のコメント定義)
+;    選択後に呼び出した後はRESULT:1を参照します。
+;    RESULT:1が0であれば現在のRESULTで処理を終了、それ以外ならRESTARTします。
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2013/03/23		銃Ｐ					二身合体の二体目と三身合体の三体目にＬＶを表示、キャラ一覧表示時で体力・気力表示時にＬＶを表示
+;	003		2015/09/23		Rsp暇人					悪魔全書登録の際、既登録との差異があれば色を変更するように。一覧から口上の有無を表示
+;	004		2017/01/10								仲魔リスト表示時の各労役を色分け。おまけで非処女判別機能追加（性別アイコンを暗い赤で表示）。
+;	005		2017/06/23		kuni					キャラ一覧の表示情報を切り替える機能を追加。
+;	006		2018/04/20		JK好き					@ARRANGE_SEXに育児中表記の追加。
+;	007		2018/11/12		焼肉					キャラ一覧の表示情報の中で精神相性の表示が抜けていたのを修正
+;	008		2019/02/08		JK好き					道場追加に対応　カラーは未定とりあえず白誰か変えて
+;	009		2019/02/27		TR(SAYA)				체력/気力が5桁を超えると表示が崩れる不具合を修正
+;	010		2019/03/02		JK好き					悪魔合体不可時(×の時)のレイアウト崩れを修正
+;	011		2019/04/25		JK好き					合体用ソフトクイック設定の為に@INPUT_CHARA_LISTに追記
+;	012		2019/10/30		ypa 					信頼系陥落追加
+;	013		2020/01/25		Jガン 					一時陥落素質変更処理追加
+;	014		2020/08/26		MkjX 					触手研究でも現在MAG/最大MAGを表示するように修正
+;	015		2021/02/07		Rsp暇人					名前等変更画面での文字数溢れを修正
+;	016		2022/06/10		Collared				UI整理プロジェクトによりショップコマンド参照部の番号変更
+;	017		2022/09/29		JK好き					@ARRANGE_CHARALIFE 仲魔強化時は体力気力表示になるように変更
+;	018		2022/12/10		P(bazzile)				キャラクターの能力表示に直飛び設定を追加
+;	019		2022/12/19		JK好き					@ARRANGE_CHARALIFE 悪魔合体時に名前の長い悪魔が作成される際にレイアウトが崩れる問題を修正
+;	020		2023/03/10		P(bazzile)				REDRAWを0に変更し、RESTARTをGOTOに変更
+;	021		2023/03/26		P(bazzile)				@ARRANGE_CHARALIFE　戦闘中の選択時にステートの表示を追加
+;													さらにHP/MPの着色とKMBT表記に対応
+;	022		2023/04/19		P(bazzile)				名前部分の色と0ページ目の追加コメント部分を引数で送った関数からいじれる仕様を追加
+;	023		2023/06/04		P(bazzile)				INPUT_CHARA_LISTに自動でのソート機能を追加
+;													ポジションを表示する場所にポジションにツイていないが戦闘可能なキャラを示す記号を追加
+;	024		2023/07/05		P(BAZZILE)				口上の存在確認を専用関数で実施させるように変更
+;	025		2024/01/21		oktwr					労役:依頼 関係のカラーコードを設定
+;	026		2024/03/23		P(BAZZILE)				@INPUT_CHARA_LISTをリファクタリング
+;													旧ファイルは資料フォルダへ
+;	027		2024/05/07		P(BAZZILE)				INFO_COLOR_ALLが行ごとに付与されていなかった不具合を修正
+;=============================================================================
+;{
+;CALL INPUT_CHARA_LIST
+;	, "FUNC_PROPSET_LIST"
+;	, "L_EXPLAIN"
+;	, "CASTING_CHARA_FUNCTION" 
+;	, "SHOW_ADD_UP_FUNCTION"
+;	, "SHOW_ADD_DOWN_FUNCTION"
+;	, "ADD_SELECT_FUNCTION"
+;	, "L_CANCELS"
+;	, "FUNC_CUSTOM_TITLE"
+;	, "FUNC_CUSTOM_COLOR"
+;	, -1
+;}
+@INPUT_CHARA_LIST, FUNC_PROPSET_LIST, L_EXPLAIN, CASTING_CHARA_FUNCTION = "", SHOW_ADD_UP_FUNCTION = "", SHOW_ADD_DOWN_FUNCTION = "", ADD_SELECT_FUNCTION = "", L_CANCELS = "돌아간다", FUNC_CUSTOM_TITLE, FUNC_CUSTOM_COLOR, L_SELECT_CHARA = -1
+#LOCALSSIZE 1
+#DIMS DYNAMIC FUNC_PROPSET_LIST
+#DIMS DYNAMIC L_EXPLAIN
+#DIMS DYNAMIC CASTING_CHARA_FUNCTION
+#DIMS DYNAMIC SHOW_ADD_UP_FUNCTION
+#DIMS DYNAMIC SHOW_ADD_DOWN_FUNCTION
+#DIMS DYNAMIC ADD_SELECT_FUNCTION
+#DIMS DYNAMIC L_CANCELS
+#DIM DYNAMIC L_SELECT_CHARA
+#DIMS DYNAMIC FUNC_CUSTOM_TITLE
+#DIMS DYNAMIC FUNC_CUSTOM_COLOR
+#DIM DYNAMIC LINE, 2
+#DIM DYNAMIC LLOCK
+#DIM DYNAMIC LREDRAW
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_RESULT
+#DIM DYNAMIC LISTMAXNUM
+#DIM DYNAMIC L_PROPSETNUM
+#DIMS DYNAMIC FUNC_PROPSET, 20
+#DIM DYNAMIC SORT_KEY, VARSIZE("Q")
+#DIMS DYNAMIC SORT_FUNC
+#DIMS DYNAMIC SORT_ARGMENT
+
+SIF FUNC_PROPSET_LIST == "FUNC_PROPSET_LIST" || FUNC_PROPSET_LIST == ""
+	FUNC_PROPSET_LIST '= "조교/전투/육성정보/기본스탯/방어상성1/방어상성2"
+SIF FUNC_PROPSET_LIST == "FUNC_PROPSET_LIST_BATTLE"
+	FUNC_PROPSET_LIST '= "전투/육성정보/조교/기본스탯/방어상성1/방어상성2"
+SIF L_EXPLAIN == "L_EXPLAIN"
+	L_EXPLAIN '= ""
+SIF CASTING_CHARA_FUNCTION == "CASTING_CHARA_FUNCTION"
+	CASTING_CHARA_FUNCTION '= ""
+SIF SHOW_ADD_UP_FUNCTION == "SHOW_ADD_UP_FUNCTION"
+	SHOW_ADD_UP_FUNCTION '= ""
+SIF SHOW_ADD_DOWN_FUNCTION == "SHOW_ADD_DOWN_FUNCTION"
+	SHOW_ADD_DOWN_FUNCTION '= ""
+SIF ADD_SELECT_FUNCTION == "ADD_SELECT_FUNCTION"
+	ADD_SELECT_FUNCTION '= ""
+SIF L_CANCELS == "L_CANCELS"
+	L_CANCELS '= "돌아간다"
+SIF FUNC_CUSTOM_TITLE == "FUNC_CUSTOM_TITLE"
+	FUNC_CUSTOM_TITLE '= ""
+SIF FUNC_CUSTOM_COLOR == "FUNC_CUSTOM_COLOR"
+	FUNC_CUSTOM_COLOR '= ""
+
+LREDRAW = CURRENTREDRAW()
+SPLIT FUNC_PROPSET_LIST, "/", FUNC_PROPSET
+$START
+LINE = LINECOUNT
+REDRAW 0
+;表示させるキャラを抽出（Q:*に表示するキャラの登録番号、Aに人数)
+VARSET Q, -1
+SIF LOCALS != CASTING_CHARA_FUNCTION
+	P = 0
+LOCALS = %CASTING_CHARA_FUNCTION%
+LISTMAXNUM = 0
+VARS TEMP_CASTING_CHARA_FUNCTION, 2
+SIF STRCOUNT(CASTING_CHARA_FUNCTION, ",")
+	SPLIT CASTING_CHARA_FUNCTION, "," , TEMP_CASTING_CHARA_FUNCTION
+FOR LCOUNT, 0, CHARANUM
+	IF TEMP_CASTING_CHARA_FUNCTION != ""
+		CALLFORM %TEMP_CASTING_CHARA_FUNCTION:0%, LCOUNT, TEMP_CASTING_CHARA_FUNCTION:1
+	ELSE
+		TRYCCALLFORM %CASTING_CHARA_FUNCTION%, LCOUNT
+		CATCH
+			RESULT = 1
+		ENDCATCH
+	ENDIF
+	SIF RESULT == 0
+		CONTINUE
+	Q:LISTMAXNUM = LCOUNT
+	LISTMAXNUM += 1
+NEXT
+P = LIMIT(P, 0, (LISTMAXNUM - 1) / リスト表示数())
+
+;最後に見ていた表示情報を保存していた
+IF FINDELEMENT(INFO_LASTEST_PAGESET, FUNC_PROPSET_LIST, , , 1) >= 0
+	L_PROPSETNUM = INFO_LASTEST_PAGE:FINDELEMENT(INFO_LASTEST_PAGESET, FUNC_PROPSET_LIST, , , 1)
+	;ページが存在しない場合は0にする
+	SIF FUNC_PROPSET:L_PROPSETNUM == ""
+		L_PROPSETNUM = 0
+ELSE
+	L_PROPSETNUM = 0
+ENDIF
+
+CALL AUTO_SORT_FOR_INPUT_CHARA_LIST, "TOP"
+$PRINT_LIST
+CLEARLINE LINECOUNT - LINE
+DRAWLINE
+TRYCCALLFORM %SHOW_ADD_UP_FUNCTION%
+	SIF !LINEISEMPTY()
+		PRINTL 
+CATCH
+	PRINTFORM %L_EXPLAIN%　
+	SIF LISTMAXNUM > リスト表示数()
+		PRINTFORM ＜page.{P + 1}/{FINDELEMENT(Q, -1) / リスト表示数() + 1}＞
+	PRINTL
+ENDCATCH
+DRAWLINE
+LINE:1 = LINECOUNT
+
+;------------------------------------------------------------------------------
+;リスト表示
+;------------------------------------------------------------------------------
+CALL GET_INFO_PROPSET, FUNC_PROPSET:L_PROPSETNUM
+CALL SHOW_CHARA_LIST, FUNC_CUSTOM_TITLE, FUNC_CUSTOM_COLOR, RESULTS
+;高さ合わせ
+WHILE LINECOUNT < LINE:1 + リスト表示数() + 1
+	PRINTL 
+WEND
+
+;------------------------------------------------------------------------------
+;下部の選択肢表示
+;------------------------------------------------------------------------------
+DRAWLINE
+PRINTFORMLC \@ LISTMAXNUM > リスト表示数() ?[1006]이전페이지# [----] \@
+PRINTFORMLC \@ L_CANCELS != "キャンセル不可" ? [1000]%L_CANCELS% # [----] \@
+PRINTFORMLC \@ LISTMAXNUM > リスト表示数() ?[1007]다음페이지# [----] \@
+SIF FUNC_PROPSET:1 != ""
+	PRINTLC [1008]표시정보전환
+PRINTFORMLC [1009]자동정렬<%AUTO_SORT_MODE:OPT_AUTO_SORT%>
+TRYCALLFORM %ADD_SELECT_FUNCTION%(-1)
+
+TRYCALLFORM %SHOW_ADD_DOWN_FUNCTION%
+
+$INPUT_LOOP_1
+;キャラクターが指定されている場合、一気に飛ばす
+IF L_SELECT_CHARA >= 0
+	RESULTS '= TOSTR(L_SELECT_CHARA)
+ELSE
+	INPUTS
+	CLEARLINE 1
+ENDIF
+
+IF ISNUMERIC(RESULTS)
+	RESULT = TOINT(RESULTS)
+	TRYCCALLFORM %ADD_SELECT_FUNCTION%(RESULT)
+		IF !RESULT:1
+			LLOCK = 0
+			REDRAW LREDRAW
+			RETURN RESULT
+		ENDIF
+		SIF RESULT:1 == -1
+			GOTO START
+	CATCH
+	ENDCATCH
+	SELECTCASE RESULT
+		CASE 1000
+			IF L_CANCELS != "キャンセル不可"
+				LLOCK = 0
+				REDRAW LREDRAW
+				RETURN RESULT
+			ENDIF
+			CLEARLINE 1
+			GOTO INPUT_LOOP_1
+		CASE 1006
+			P = P <= 0 ? (LISTMAXNUM - 1) / リスト表示数() # P - 1
+		CASE 1007
+			P = P >= (LISTMAXNUM - 1) / リスト表示数() ? 0 # P + 1
+		CASE 1008
+			L_PROPSETNUM += 1
+			SIF FUNC_PROPSET:L_PROPSETNUM == ""
+				L_PROPSETNUM = 0
+			SIF (FLAG:표시정보페이지보존 % 10)
+				FLAG:표시정보페이지보존 = (L_PROPSETNUM * 100 + 1)
+		CASE 1009
+			OPT_AUTO_SORT = OPT_AUTO_SORT == VARSIZE("AUTO_SORT_MODE") - 1 ? 0 # OPT_AUTO_SORT + 1
+			SAVEGLOBAL
+			GOTO START
+		CASEELSE
+			SIF RESULT < 0 || RESULT >= CHARANUM || MATCH(Q,RESULT,0) == 0
+				GOTO INPUT_LOOP_1
+			LLOCK = 0
+			REDRAW LREDRAW
+			RETURN RESULT, LISTMAXNUM
+	ENDSELECT
+ELSE
+	SELECTCASE AUTO_SPLIT(RESULTS, ",", 0)
+		CASE "SORT"
+			IF AUTO_SPLIT(RESULTS, ",", 1) != SORT_FUNC
+				INFO_CNT_SORT = 0
+				SORT_FUNC '= AUTO_SPLIT(RESULTS, ",", 1)
+			ENDIF
+			SORT_ARGMENT '= AUTO_SPLIT(RESULTS, ",", 2)
+			FOR LCOUNT, 0, VARSIZE("Q")
+				;キャラが入ってないところがあとにくるように中身をつっこむ
+				IF Q:LCOUNT < 0
+					SORT_KEY:LCOUNT = 0
+					BREAK
+				ELSE
+					;RESULT:1が真の場合、常に降順にする。
+					RESULT:1 = 0
+					CALLFORM GET_INFO_SORT_KEY_%SORT_FUNC%, Q:LCOUNT, SORT_ARGMENT
+					IF INFO_CNT_SORT % 2 && !RESULT:1
+						SORT_KEY:LCOUNT = LCOUNT
+						SORT_KEY:LCOUNT += RESULT * 10000
+					ELSE
+						;現在の並びをソートに反映させる
+						SORT_KEY:LCOUNT = -(MAX_PLAYER_CHARA - LCOUNT)
+						SORT_KEY:LCOUNT += RESULT * -10000
+					ENDIF
+				ENDIF
+			NEXT
+			ARRAYMSORT SORT_KEY, Q
+			INFO_CNT_SORT++
+			;自動ソートをかける
+			CALL AUTO_SORT_FOR_INPUT_CHARA_LIST, "SORT"
+		CASE "FUNC"
+			CALLFORM INFO_FUNC_%AUTO_SPLIT(RESULTS, ",", 1)%, AUTO_SPLIT(RESULTS, ",", 2), AUTO_SPLIT(RESULTS, ",", 3), AUTO_SPLIT(RESULTS, ",", 4)
+	ENDSELECT
+ENDIF
+
+;最後に見ていた表示情報を保存
+SIF FINDELEMENT(INFO_LASTEST_PAGESET, FUNC_PROPSET_LIST, , , 1) < 0
+	ARRAYSHIFT INFO_LASTEST_PAGESET, 1, FUNC_PROPSET_LIST, 0, 1
+INFO_LASTEST_PAGE:FINDELEMENT(INFO_LASTEST_PAGESET, FUNC_PROPSET_LIST) = L_PROPSETNUM
+GOTO PRINT_LIST
+
+
+;---- EDIT 023 ADD START -------------------------
+@AUTO_SORT_FOR_INPUT_CHARA_LIST, ARGS
+#DIM L_CHARA
+#DIM LCOUNT
+#DIM SORT_KEY, VARSIZE("Q")
+VARSET SORT_KEY
+SIF !OPT_AUTO_SORT
+	RETURN 0
+FOR LCOUNT, 0, VARSIZE("Q")
+	L_CHARA = Q:LCOUNT
+	SIF Q:LCOUNT < 0
+		BREAK
+	SELECTCASE AUTO_SORT_MODE:OPT_AUTO_SORT
+		CASE "전투참가"
+			SELECTCASE CFLAG:L_CHARA:PT플래그
+				CASE 2
+					SELECTCASE ARGS
+						CASE "TOP"
+							SORT_KEY:LCOUNT = -(7 - CPOS(L_CHARA)) * 100 * 100 * 100
+						CASE "SORT"
+							SORT_KEY:LCOUNT = -100 * 100 * 100 - (1000 - LCOUNT)
+					ENDSELECT
+				CASE 1
+					IF IS_JOINABLE_BATTLE(L_CHARA)
+						SELECTCASE ARGS
+							CASE "TOP"
+								SORT_KEY:LCOUNT = -200 * 100 - (1000 - LCOUNT)
+							CASE "SORT"
+								SORT_KEY:LCOUNT = -100 * 100 * 100 - (1000 - LCOUNT)
+						ENDSELECT
+					ELSE
+						SORT_KEY:LCOUNT = -100 * 100 - (1000 - LCOUNT)
+					ENDIF
+				CASE 0
+					IF CPOS(L_CHARA) > 0
+						SELECTCASE ARGS
+							CASE "TOP"
+								SORT_KEY:LCOUNT = -(18 - CPOS(L_CHARA))
+							CASE "SORT"
+								SORT_KEY:LCOUNT = -100 * 100 * 100 - (1000 - LCOUNT)
+						ENDSELECT
+					ELSE
+						SORT_KEY:LCOUNT = -1
+					ENDIF
+			ENDSELECT
+		CASE "조교일"
+			SORT_KEY:LCOUNT = -(CFLAG:L_CHARA:최종훈련일 + 1) * 10000 - (1000 - LCOUNT)
+	ENDSELECT
+NEXT
+SAVEGLOBAL
+ARRAYMSORT SORT_KEY, Q
+;---- EDIT 023 ADD END ---------------------------
+;=============================================================================
+;情報表示補助処理
+;=============================================================================
+;-------------------------------------------------
+;キャラ一覧表示時に[]内の数字を整列させる処理
+;-------------------------------------------------
+@ARRANGE_CHARALIST, ARG
+IF STRLENS(CALLNAME:ARG) <= 18
+	PRINTFORM [{ARG, 3}]%CALLNAME:ARG, 18, LEFT%
+ELSE
+	SUBSTRING CALLNAME:ARG, 0, 16
+	PRINTFORM [{ARG, 3}]\@ STRLENS(RESULTS) == 16 ? %RESULTS% # %SUBSTRING(CALLNAME:ARG, 0, 15)%. \@..
+ENDIF
+
+@ARRANGE_CHARALIST_2, ARG
+IF STRLENS(CALLNAME:ARG) <= 18
+	PRINTFORM %CALLNAME:ARG, 18, LEFT%
+ELSE
+	SUBSTRING CALLNAME:ARG, 0, 16
+	PRINTFORM \@ STRLENS(RESULTS) == 16 ? %RESULTS% # %SUBSTRING(CALLNAME:ARG, 0, 15)%. \@..
+ENDIF
+
+;-------------------------------------------------
+;キャラ一覧表示時に体力・気力を表示させる処理
+;-------------------------------------------------
+@ARRANGE_CHARALIFE, ARG
+#DIM LCOUNT
+LOCAL = FLAG:SHOP커맨드
+
+IF EQUALCHECK(LOCAL,[[ショップ:콜로세움참가]],[[ショップ:이벤트]],[[ショップ:의뢰청부]],[[ショップ:셋업]]) || TFLAG:전투중
+	LOCAL = 1
+ELSE
+	LOCAL = 4
+ENDIF
+
+SELECTCASE LOCAL
+	CASE 1
+		RESETCOLOR
+		PRINTFORM LV:{BASE:ARG:LV,3} 
+		PRINTFORM ({CSVBASE(NO:ARG,GETNUM(BASE,"LV"),0),3}) 
+		FOR LCOUNT, 0, 2
+			IF MAXBASE:ARG:AUTO_SPLIT("ＨＰ/ＭＰ", "/", LCOUNT) == 0
+				CALL PRINT_COLOR, AUTO_SPLIT("HP/MP", "/", LCOUNT) + "[-----/-----] ", COLOR("gray")
+			ELSE
+				PRINTFORM %AUTO_SPLIT("HP/MP", "/", LCOUNT)%[
+				SELECTCASE BASE:ARG:AUTO_SPLIT("ＨＰ/ＭＰ", "/", LCOUNT) * 100 / MAXBASE:ARG:AUTO_SPLIT("ＨＰ/ＭＰ", "/", LCOUNT)
+					CASE 0
+						SETCOLOR COLOR("RED")
+					CASE IS < 25
+						SETCOLOR 0xcc6666
+					CASE IS < 50
+						SETCOLOR 0xffcc66
+					CASEELSE
+				ENDSELECT
+				PRINTFORM %ADD_KMGT(BASE:ARG:AUTO_SPLIT("ＨＰ/ＭＰ", "/", LCOUNT))%
+				RESETCOLOR
+				PRINTFORM /%ADD_KMGT(MAXBASE:ARG:AUTO_SPLIT("ＨＰ/ＭＰ", "/", LCOUNT))%] 
+			ENDIF
+		NEXT
+		PRINT  
+		SETCOLOR BADSTATE_COLOR(CFLAG:ARG:상태이상)
+		PRINTFORM %GET_STATE(CFLAG:ARG:상태이상), 8% 
+		RESETCOLOR
+	CASE 4
+		LOCAL:1 = MAX(3,STRLENS(TOSTR(MAXCARRAY(BASE:ARG:LV))))
+		PRINTFORM LV:{BASE:ARG:LV,LOCAL:1} 
+		LOCAL:1 = MAX(4,STRLENS(TOSTR(MAXCARRAY(BASE:ARG:0))))
+		LOCAL:2 = MAX(4,STRLENS(TOSTR(MAXCARRAY(BASE:ARG:1))))
+		IF FLAG:커스텀게임화면
+			PRINTFORM 체력({BASE:ARG:0, LOCAL:1}/{MAXBASE:ARG:0, LOCAL:1}) 
+			PRINTFORM 기력({BASE:ARG:1, LOCAL:2}/{MAXBASE:ARG:1, LOCAL:2}) 
+		ELSE
+			PRINTFORM 체력({BASE:ARG:0, LOCAL:1}/{MAXBASE:ARG:0, LOCAL:1}) 
+			PRINTFORM 기력({BASE:ARG:1, LOCAL:2}/{MAXBASE:ARG:1, LOCAL:2}) 
+		ENDIF
+		PRINTFORM 스트레스:{CFLAG:ARG:스트레스치, 3}
+ENDSELECT
+;---- EDIT 057 MOD START -------------------------
+;-------------------------------------------------
+;キャラ一覧表示処理
+;-------------------------------------------------
+@SHOW_CHARA_LIST, FUNC_CUSTOM_TITLE, FUNC_CUSTOM_COLOR, INFO_PAGE
+#DIM LCOUNT, 2
+#DIM INFO_CHARA
+#DIMS SHOW_LINE
+#DIMS FUNC_CUSTOM_TITLE
+#DIMS FUNC_CUSTOM_COLOR;キャラごとの色指定を定義する関数を指定する
+#DIMS DYNAMIC TEMPS
+#DIMS DYNAMIC INFO_PAGE
+#DIMS DYNAMIC INFO_DATA, 20
+#DIM DYNAMIC CNT_INFO_DATA_NUM
+SPLIT INFO_PAGE, "_", INFO_DATA
+CNT_INFO_DATA_NUM = RESULT
+INFO_HEADER = 
+FOR LCOUNT, 0, CNT_INFO_DATA_NUM
+	CALLFORM SET_VAR_INFO_DATA_%INFO_DATA:LCOUNT%_HEADER
+	INFO_HEADER += INFO_SPACE
+NEXT
+HTML_PRINT INFO_HEADER
+VARSET INFO_LINE
+FOR LCOUNT, 0, CNT_INFO_DATA_NUM
+	FOR LCOUNT:1, 0, リスト表示数()
+		INFO_CHARA = Q:(LCOUNT:1 + P * リスト表示数())
+		SIF INFO_CHARA < 0
+			CONTINUE
+		INFO_COLOR_ALL:(LCOUNT:1) = 0
+		TRYCCALLFORM %FUNC_CUSTOM_COLOR%,INFO_CHARA
+			SIF RESULT
+				INFO_COLOR_ALL:(LCOUNT:1) = RESULT
+		CATCH
+		ENDCATCH
+		INFO_COLOR = 0
+		CALLFORM GET_VAR_INFO_DATA_%INFO_DATA:LCOUNT%, INFO_CHARA
+		TEMPS '= RESULTS
+		SIF !INFO_COLOR_ALL:(LCOUNT:1) && INFO_COLOR
+			TEMPS '= SET_COLOR_TAG(TEMPS, TOSTR(INFO_COLOR))
+		RESULT = 0
+		RESULTS = 
+		TRYCALLFORM %FUNC_CUSTOM_TITLE%, INFO_CHARA, INFO_DATA:LCOUNT
+		;関数があって戻り値が真なら個別にボタンをつける
+		IF RESULT
+			IF RESULTS == ""
+				TEMPS '= SET_BUTTON_TAG(TEMPS, TOSTR(INFO_CHARA))
+			ELSE
+				TEMPS '= SET_BUTTON_TAG(TEMPS, TOSTR(INFO_CHARA), RESULTS)
+			ENDIF
+		ENDIF
+		INFO_LINE:(LCOUNT:1) += TEMPS + INFO_SPACE
+	NEXT
+NEXT
+FOR LCOUNT, 0, リスト表示数()
+	INFO_CHARA = Q:(LCOUNT + P * リスト表示数())
+	SIF INFO_COLOR_ALL:LCOUNT
+		INFO_LINE:LCOUNT '= SET_COLOR_TAG(INFO_LINE:LCOUNT, TOSTR(INFO_COLOR_ALL:LCOUNT))
+	IF !STRCOUNT(INFO_LINE:LCOUNT, "<button") && INFO_CHARA >= 0
+		TRYCCALLFORM %FUNC_CUSTOM_TITLE%, INFO_CHARA
+			INFO_LINE:LCOUNT '= SET_BUTTON_TAG(INFO_LINE:LCOUNT, TOSTR(INFO_CHARA), RESULTS)
+		CATCH
+			INFO_LINE:LCOUNT '= SET_BUTTON_TAG(INFO_LINE:LCOUNT, TOSTR(INFO_CHARA))
+		ENDCATCH
+	ENDIF
+	HTML_PRINT INFO_LINE:LCOUNT
+NEXT
+RETURN 0
+;---- EDIT 057 MOD END ---------------------------
+;-------------------------------------------------
+;文字色の設定
+;ARG	表示するキャラクター
+;ARGS	関数で指定する場合
+;-------------------------------------------------
+@ARRANGE_SETCOLOR, ARG, ARGS
+IF ARGS != ""
+	CALLFORM %ARGS%, ARG
+ELSE
+	SIF CFLAG:ARG:PT플래그 == 0
+		SETCOLOR 0x990000
+	SIF (CFLAG:ARG:PT플래그 == 0 && CPOS(ARG) < 1) || CFLAG:ARG:피소환플래그
+		SETCOLOR 0x404040
+	IF FLAG:SHOP커맨드 == [[ショップ:캐릭터필터]] && CFLAG:ARG:필터링플래그
+		SETCOLOR 0x404040
+	ELSEIF FLAG:SHOP커맨드 == 1201 && 文字色変更 != 0
+		SETCOLOR 文字色変更
+	ELSEIF FLAG:SHOP커맨드 == [[ショップ:캐릭터필터]]
+		RESETCOLOR
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;調教対象・助手などの設定表示
+;-------------------------------------------------
+@ARRANGE_TARGETSIGN,ARG
+LOCAL = EQUALCHECK_TURN(1,ARG == TARGET,ARG == ASSI,ISASSI:ARG == 1,CFLAG:ARG:매각가능 == 2)
+PRINTFORM %AUTO_SPLIT("　,☆,★,●,○",",",LOCAL)%
+
+;-------------------------------------------------
+;名称・相性・一人称・二人称の表示
+;-------------------------------------------------
+@ARRANGE_NAMECALLS,ARG
+RESULTS = [{ARG, 2}]
+RESULTS = %RESULTS%명칭：
+IF FLAG:커스텀게임화면
+;---- EDIT 015 MOD START -------------------------
+	RESULTS = %RESULTS%%S_NAME(ARG, 34, 1), 34, LEFT% 
+	RESULTS = %RESULTS%애칭：
+	RESULTS = %RESULTS%%S_NAME(ARG, 18, 2), 18, LEFT% 
+	RESULTS = %RESULTS%일인칭：
+	RESULTS = %RESULTS%%CSTR:ARG:일인칭, 18, LEFT% 
+ELSE
+	RESULTS = %RESULTS%%S_NAME(ARG, 16, 1), 16, LEFT% 
+	RESULTS = %RESULTS%애칭：
+	RESULTS = %RESULTS%%S_NAME(ARG, 16, 2), 16, LEFT% 
+;---- EDIT 015 MOD END -------------------------
+	RESULTS = %RESULTS%일인칭：
+	RESULTS = %RESULTS%%CSTR:ARG:일인칭, 12, LEFT% 
+ENDIF
+IF ARG != MASTER
+	RESULTS = %RESULTS%%CALLNAME:MASTER%에의 이인칭：
+	RESULTS = %RESULTS%%CSTR:ARG:이인칭, 12, LEFT%
+ENDIF
+PRINTFORML %RESULTS%
+
+;-------------------------------------------------
+;性別表示
+;-------------------------------------------------
+@ARRANGE_SEX,ARG
+IF TALENT:ARG:남자
+	SETCOLOR 0x008B8B
+ELSEIF TALENT:ARG:처녀 || TALENT:ARG:재생처녀
+	SETCOLOR 0xCC0000
+ELSE
+	SETCOLOR 0x660022
+ENDIF
+IF TALENT:ARG:임신
+	SETCOLOR 0xCC33FF
+	PRINT 孕 
+ELSEIF TALENT:ARG:육아중
+	SETCOLOR 0x00ffe0
+	PRINT 育 
+ELSEIF TALENT:ARG:부정형 || TALENT:ARG:이형 || TALENT:ARG:오토코노코 || TALENT:ARG:후타나리
+	PRINT ？ 
+ELSE
+	PRINTFORM %TALENT:ARG:남자 ? "♂" # "♀" % 
+ENDIF
+RESETCOLOR
+
+
+;-------------------------------------------------
+;陥落素質表示
+;-------------------------------------------------
+@ARRANGE_FALLTALENT,ARG
+;---- EDIT 007 MOD START -------------------------
+; LOCAL = EQUALCHECK_TURN(1,TALENT:ARG:ＮＴＲ==1,TALENT:ARG:ＮＴＲ==2,TALENT:ARG:ＮＴＲ==3,TALENT:ARG:연모,TALENT:ARG:음란,TALENT:ARG:복종,TALENT:ARG:친애,TALENT:ARG:창부,TALENT:ARG:예속,TALENT:ARG:붕괴)
+; PRINTFORM %AUTO_SPLIT("－ ,Ｎ ,Ｎ ,Ｎ ,恋 ,淫 ,服 ,親 ,娼 ,隷 ,崩 ,",",",LOCAL)%
+LOCAL = EQUALCHECK_TURN(1,TALENT:ARG:ＮＴＲ==1,TALENT:ARG:ＮＴＲ==2,TALENT:ARG:ＮＴＲ==3,TALENT:ARG:연모,TALENT:ARG:음란,TALENT:ARG:복종,TALENT:ARG:친애,TALENT:ARG:창부,TALENT:ARG:예속,TALENT:ARG:신뢰,TALENT:ARG:동료,TALENT:ARG:붕괴)
+PRINTFORM %AUTO_SPLIT("－ ,Ｎ ,Ｎ ,Ｎ ,연 ,음 ,복 ,친 ,창 ,예 ,신 ,동 ,붕 ,",",",LOCAL)%
+;---- EDIT 007 MOD END -------------------------
+
+;-------------------------------------------------
+;ポジション表示
+;-------------------------------------------------
+@ARRANGE_CHARAPOSITION,ARG
+IF IS_JOINABLE_BATTLE(ARG)
+	IF CFLAG:ARG:포지션
+		PRINTFORM %AUTO_SPLIT("   ,① ,② ,③ , ④, ⑤, ⑥,⑦ ,⑧ ,⑨ ,⑩ ,⑪ ,⑫ ,⑬ , ⑭, ⑮, ⑯, ⑰, ⑱, ⑲, ⑳",",",CFLAG:ARG:포지션)%
+	ELSE
+		IF CFLAG:ARG:PT플래그
+			PRINT  ◯
+		ELSE
+			PRINT 　 
+		ENDIF
+	ENDIF
+ELSE
+	PRINT 　 
+ENDIF
+;-------------------------------------------------
+;危険日表示
+;-------------------------------------------------
+@ARRANGE_危険日,ARG
+SIF !GROUPMATCH(FLAG:SHOP커맨드, [[ショップ:파트너변경]], [[ショップ:조수변경]], [[ショップ:능력확인]], 531, 532, 533, 534, 535, 536, 537, 538, 539)
+	RETURN
+
+IF CHECK_CHILD_CARE(ARG) && FLAG:출산기능ONOFF
+	PRINT  육아실
+ELSEIF TALENT:ARG:임신
+	SELECTCASE 위험일(ARG)
+		CASE 2
+			SETCOLOR 0xCC33FF
+			LOCAL = 0
+		CASE 3
+			SETCOLOR 0xCC33FF
+			LOCAL = 1
+		CASEELSE
+			PRINT  임신중
+			RETURN
+	ENDSELECT
+	CALL HEARTB
+	PRINTFORM %AUTO_SPLIT("임신발정중,임신만월발정중",",",LOCAL)%
+	CALL HEARTB
+	RESETCOLOR
+ELSE
+	SELECTCASE 위험일(ARG)
+		CASE 1
+			SETCOLOR 0xCC33FF
+			LOCAL = 0
+		CASE 2
+			SETCOLOR 0xCC33FF
+			LOCAL = 1
+		CASE 3,-2
+			SETCOLOR 0xCC33FF
+			LOCAL = 2
+		CASEELSE
+			RETURN
+	ENDSELECT
+	CALL HEARTB
+	PRINTFORM %AUTO_SPLIT("위험일,발정중,만월발정중",",",LOCAL)%
+	CALL HEARTB
+	RESETCOLOR
+ENDIF
+

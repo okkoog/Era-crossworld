@@ -1,0 +1,143 @@
+﻿;======================================================
+;装備品のデータ
+;스파다
+;ヒノカグツチの剣のパクリ。攻撃と魔威高め
+;性能の計算は魔晶剣とほぼ同じで、トリッシュ(DMC)のステータスの影響を受ける
+;======================================================
+@基本能力修正_2372,ARG,ARG:1 = -1
+#LOCALSIZE 1
+#LOCALSSIZE 1
+LOCAL = GETCHARA([[キャラ:트리쉬_DMC]])
+SIF LOCAL < 0
+	RETURN 0
+SIF ARG:1 < 0
+	RETURN 0
+SIF ARG:1 == GETCHARA([[キャラ:트리쉬_DMC]]) || (FAVORITE_1(LOCAL) == ARG:1 && 陥落(LOCAL))
+	RETURN BASE:LOCAL:GET_BASESTATUS(ARG) / 10
+RETURN 0
+@戦闘能力修正_2372,ARG,ARG:1 = -1
+#LOCALSIZE 3
+LOCAL = GETCHARA([[キャラ:트리쉬_DMC]])
+LOCAL:1 = 0
+LOCAL:2 = 40
+;剣のレベル設定。トリッシュ(DMC)が陥落している場合、トリッシュ(DMC)のレベルの半分が加算される
+SIF ARG:1 >=0 && LOCAL >= 0 && (NO:(ARG:1) == [[キャラ:트리쉬_DMC]] || 陥落(LOCAL, ARG:1))
+	LOCAL:2 += MIN(BASE:LOCAL:LV / 2, 40)
+LOCAL:2 += 5
+;レベルによる戦闘能力値
+SELECTCASE GET_BATTLESTATUS(ARG)
+	CASE "공격"
+		LOCAL:1 = LOCAL:2 * 3/2
+	CASE "명중"
+		LOCAL:1 = LOCAL:2
+	CASE "마법위력"
+		LOCAL:1 = LOCAL:2 * 3/2
+	CASE "마법효과"
+		LOCAL:1 = LOCAL:2
+ENDSELECT
+;STATUSによる能力値　トリッシュ(DMC)ありはトリッシュ(DMC)陥落でステータスによって性能が加算される
+IF ARG:1 >= 0 && (NO:(ARG:1) == [[キャラ:트리쉬_DMC]] || (LOCAL >=0 && 陥落(LOCAL, ARG:1)))
+	SELECTCASE GET_BATTLESTATUS(ARG)
+		CASE "공격"
+			LOCAL:1 +=  BASE:(ARG:1):힘*3/2 + BASE:(ARG:1):내구 / 2
+		CASE "명중"
+			LOCAL:1 += BASE:(ARG:1):속도*3/2 + BASE:(ARG:1):운/2
+		CASE "마법위력"
+			LOCAL:1 += BASE:(ARG:1):마력*3/2 + BASE:(ARG:1):지혜 / 2
+		CASE "마법효과"
+			LOCAL:1 += BASE:(ARG:1):지혜 + BASE:(ARG:1):운/2 + BASE:(ARG:1):마력/2
+	ENDSELECT
+ENDIF
+;剣仕様に変更
+SELECTCASE GET_BATTLESTATUS(ARG)
+	CASE "공격"
+		TIMES LOCAL:1, 1.10
+	CASE "명중"
+		LOCAL:1 += 10
+	CASE "마법위력"
+		TIMES LOCAL:1, 0.90
+	CASE "마법효과"
+		TIMES LOCAL:1, 0.40
+ENDSELECT
+;最低でも40レベル剣の性能は保証される
+SELECTCASE GET_BATTLESTATUS(ARG)
+	CASE "공격"
+		RETURN MAX(107, LOCAL:1)
+	CASE "명중"
+		RETURN MAX(94, LOCAL:1)
+	CASE "마법위력"
+		RETURN MAX(85, LOCAL:1)
+	CASE "마법효과"
+		RETURN MAX(33, LOCAL:1)
+ENDSELECT
+@防御相性_2372,ARG,ARG:1 = -1
+SELECTCASE ARG
+ENDSELECT
+RETURN 100
+
+@攻撃相性_2372, ARG = -1
+RETURN GET_TYPE_NUM("검격")
+
+@最低攻撃回数_2372, ARG = -1
+RETURN 1
+
+@最大攻撃回数_2372, ARG = -1
+RETURN 1
+
+@射程_2372, ARG = -1
+RETURN 1
+
+@攻撃範囲_2372, ARG = -1
+RETURN 1
+
+@装備箇所_2372
+RETURN GET_EQUIPNUM("검")
+
+@条件つき装備追加スキル_2372
+RETURN 1
+
+@装備追加スキル_2372,ARG,ARG:1 = -1
+IF ARG:1 > -1 && ARG:1 == GETCHARA([[キャラ:트리쉬_DMC]])
+	SELECTCASE ARG
+		CASE 0
+			RETURN [[스킬:데빌트리거]]
+		CASE 1
+			RETURN [[스킬:라운드트립]]
+	ENDSELECT
+ENDIF
+RETURN 0
+
+;-----------------------------
+;- ショップ
+;-----------------------------
+@購入条件_2372
+RETURN 0
+
+@必要レベル_2372
+RETURN 40
+
+@最大所持数_2372
+RETURN 1
+
+@装備条件_2372,ARG
+SIF NO:ARG == [[キャラ:트리쉬_DMC]]
+	RETURN 1
+SIF TALENT:ARG:석세서 == 0
+	RETURN 0
+;SIF TALENT:ARG:무기 == 0
+;	RETURN 0
+RETURN 1
+
+@装備条件説明_2372
+;PRINTL 装備条件：トリッシュ(DMC)専用
+PRINTL 장비 조건: [석세서] 또는 트리시(DMC)
+
+@装備解説_2372
+PRINTL 전설의 마검사 스파다의 이름을 딴 마검.
+PRINTL 포스 엣지가 퍼펙트 애뮬릿과 결합하여 진정한 힘을 되찾은 모습.
+PRINTL 단테・버질 등이 사용한 적도 있으나 현재는 트리시(DMC)가 소지하고 있다.
+PRINTL 
+PRINTL 추가 스킬:【데빌트리거】,[스킬:라운드트립]　추가 조건:[트리시(DMC)]
+@引継ぎ可不可_2372
+RETURN 1
+

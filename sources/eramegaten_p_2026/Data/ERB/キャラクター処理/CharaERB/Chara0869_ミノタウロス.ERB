@@ -1,0 +1,194 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara869_ミノタウロス.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2023/10/03		P(bazzile)				新規作成
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;--------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:미노타우로스]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+CALL SET_BASE_[[キャラ:미노타우로스]], ARG, ARG:2
+IF ARG:2 == 1
+	;スキル初期化
+	CALL CLEAR_ALL_SKILL, ARG
+	CALL CLEAR_LEARNED_SKILL_ALL, ARG
+ENDIF
+CALL SET_LEARN_SKILL_[[キャラ:미노타우로스]], ARG, ARG:2
+CALL LEARN_SKILL_TO_NOW_LEVEL, ARG
+
+;ARG:1はイベントフラグ
+@SET_BASE_[[キャラ:미노타우로스]], ARG, ARG:1
+SELECTCASE ARG:1
+	CASE 1
+		;ある程度戦力にしやすくするためにMAG強化を与える
+		CALL SET_ENHANCE_BASE_FOR_NEW_CHARA, ARG, 50
+		;ミノタウロスミズキ　ごずき・めずき、みずきってね。		
+		TALENT:ARG:남자 = 0
+		TALENT:ARG:후타나리 = 1
+		TALENT:ARG:처녀 = 1
+		TALENT:ARG:거유 = 1
+		TALENT:ARG:巨尻 = 1
+		TALENT:ARG:후타나리 = 1
+		TALENT:ARG:눈에띄고싶어함 = 1
+		TALENT:ARG:바이 = 1
+		TALENT:ARG:저항 = 1
+		TALENT:ARG:프라이드높음 = 1
+		TALENT:ARG:건방짐 = 1
+		TALENT:ARG:반항적 = 1
+		TALENT:ARG:보수적 = 1
+		TALENT:ARG:젖기쉬움 = 1
+		TALENT:ARG:Ｃ민감 = 1
+		TALENT:ARG:Ｂ민감 = 1
+		TALENT:ARG:새드 = 1
+		TALENT:ARG:절륜 = 1
+		
+		TALENT:ARG:우둔 = 0
+		
+		TALENT:ARG:짐승 = 1
+		TALENT:ARG:모피 = 1
+		TALENT:ARG:꼬리 = 1
+		
+		;무인
+		ABL:ARG:회화타입 = 311
+		
+		;メガインテリメガネを産む！
+		ABL:ARG:수태아이템 = 5022
+		
+		CSTR:ARG:11 = 私
+		CSTR:ARG:12 = お前
+		
+		;마왕→魔獣へ
+		CSTR:ARG:종족명 = 마수
+		
+		CSTR:ARG:타이틀 = 巨根の牝牛
+		CSTR:ARG:43 = この個体は、真上水紀の身体を母体として召喚された特別な悪魔である。
+		
+		CSTR:ARG:45 = イレギュラーな召喚により、身体や精神に変調があるものの、その能力は通常の個体より高い。
+		CSTR:ARG:46 = ただし、その分、気位や凶暴さもこちらの方が上であり、扱いは慎重に行う必要がある。
+		
+		NAME:ARG = ミズキ
+		CALLNAME:ARG = ミズキ
+ENDSELECT
+
+@SET_LEARN_SKILL_[[キャラ:미노타우로스]], ARG, ARG:1
+#DIM LCOUNT
+;ミズキ
+IF ARG:1 == 1
+	CALL CLEAR_ALL_LEARN_SKILL, ARG
+	FOR LCOUNT, 1, 21
+		SIF CSVABL(NO:ARG, GETNUM(ABL, @"스킬{LCOUNT}")) == 0
+			CONTINUE
+		CALL SET_LEARN_SKILL, ARG, TOSTR(CSVABL(NO:ARG, GETNUM(ABL, @"스킬{LCOUNT}"))), 1
+	NEXT
+	FOR LCOUNT, 1, 21
+		SIF CSVABL(NO:ARG, GETNUM(ABL, @"습득스킬{LCOUNT}")) == 0
+			CONTINUE
+		CALL SET_LEARN_SKILL, ARG, TOSTR(CSVABL(NO:ARG, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:ARG, GETNUM(ABL, @"습득LV{LCOUNT}"))	
+	NEXT
+	CALL SET_LEARN_SKILL, ARG, "길로틴블레이드", 60
+	CALL SET_LEARN_SKILL, ARG, "이할의활천", 65
+	CALL SET_LEARN_SKILL, ARG, "육탄", 70
+ENDIF
+
+;--------------------------------------------------
+;キャラクター独自変数名称定義関数
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:미노타우로스]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_EV
+	;周回時にリセットされる数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_EV
+	;周回時にリセットされる文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる数値型変数です
+	;スキルゲージHとほぼ互換です。基本的にはゲージHが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる文字列型変数です
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる数値型変数
+	;スキルゲージFとほぼ互換です。基本的にはゲージFが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる文字列型変数
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS

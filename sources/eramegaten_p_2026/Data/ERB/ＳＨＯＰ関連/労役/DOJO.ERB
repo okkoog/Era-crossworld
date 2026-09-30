@@ -1,0 +1,232 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:DOJO.ERB
+;	Facility	:道場での修練に関する関数群です。
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2019/02/08		JK好き					新規作成　RESTRANTコピペで作成
+;	002		2019/02/17		JK好き					バグ修正
+;	003		2020/05/19		がめら					NTR好感度処理をCDFLAGに変更
+;	004		2020/05/30		JK好き					労役画面から武器素質取得画面に飛べるように
+;	005		2021/02/22		JK好き					整理・軽量化・覚書の追加
+;	006		2021/03/12		JK好き					半魔が道場の対象外となってしまっていた問題を修正　誰か指摘して！
+;	007		2022/06/22		JK好き					@END_DOJO 修練実行時に体力不足だった場合に実行しないように修正
+;	008		2024/01/20		JK好き					@END_DOJO 修練完遂時に武器素質が無い場合にその修練武器素質を取得するように修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;人間を道場で修練させ、武器熟練度を貯めさせる
+;面倒だし使いやすさ優先でお金は取らない
+;あなたの息がかかっていない場所なので道場主や他の生徒にNTRさせたい…させたかった
+
+;覚書
+;コンセプトとしてはMAG強化から一人一人チクチク武器修練させるのはちょっと無いなと思ったので半自動で修練してくれる労役を作りました
+;ついでに未陥落戦闘員にやることを与えつつ、ペルソナ使いにペルソナ経験値を与えられるようにしました
+;で、よく考えたら①未陥落キャラ相手にNTRも何もない②修練を終えたら道場は用済みであり、いつでも好きなように発生させたいNTRと相性が悪い　ということに気づき、NTRは無しになりました
+;また、お金を取って効率アップも考えましたが上記のように未陥落戦闘員にやることを与えるというコンセプトの為、早く終わらせる意味が薄いことにも気づいてこちらも無しになりました
+;道場を弄るのは自由ですがこの辺りを考慮した上で弄っていただけると幸いです　by JK好き
+;==========================================================
+;@DOJO
+; 道場で修練させる人間を選択する。
+;<引数>
+;	なし
+;<戻り値>
+;	なし
+;==========================================================
+@DOJO
+#DIM 修練キャラ
+$DOJO_TOP
+$PRINT_LIST
+;CALL INPUT_CHARA_LIST("修練させたい人間を選択してください", "CASTING_DOJO", "", "", "")
+{
+CALL INPUT_CHARA_LIST
+	, "FUNC_PROPSET_LIST_BATTLE"
+	, "修練させたい人間を選択してください"
+	, "CASTING_DOJO" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+IF RESULT == 1000
+	RETURN 0
+ENDIF
+
+修練キャラ = RESULT
+
+$SELECT_LOOP
+
+CALL CHOICE_DOJO, 修練キャラ
+SIF RESULT ==-1
+	RETURN
+CFLAG:修練キャラ:노역커맨드용 = RESULT
+
+DRAWLINE
+;道場コマンドを実行するか？
+IF FLAG:노역실행확인생략설정 == 0
+	PRINTFORML 오늘 하루, %CALLNAME:修練キャラ%에게 수련을 시키겠습니까?
+	CALL INPUT_YN,"수련시킨다","그만둔다"
+ELSE
+	;労役実行確認省略設定が有効な場合、実行確認は無条件で実行する(0)を設定
+	RESULT = 0
+ENDIF
+
+IF RESULT == 0
+	PRINTFORMW 도장에서 %CFLAGNAME:(1049 + CFLAG:修練キャラ:노역커맨드용)%을(를) 수련합니다
+	;イベント口上
+	T = TARGET
+	TARGET = 修練キャラ
+	TFLAG:13 = 90
+	CALL KOJO_MESSAGE_EVENT
+	TARGET = T
+	CFLAG:修練キャラ:노역플래그 = 6
+	PRINTL 　
+ELSE
+	RESTART
+ENDIF
+
+@CASTING_DOJO(ARG)
+;人間・半魔のみ可;未陥落可
+;SIF !IS_HUMAN(ARG)
+;	RETURN 0
+SIF !GET_ROLE_PROP("CAN_USE_WEAPON_MASTERY", ARG)
+	RETURN 0
+;非戦闘員不可
+SIF TALENT:ARG:비전투원
+	RETURN 0
+;この場にいない不可
+SIF CFLAG:ARG:이자리에없는플래그
+	RETURN 0
+;労役中は不可
+SIF CFLAG:ARG:노역플래그 > 0
+	RETURN 0
+;戦闘参加不可能を除外
+SIF GET_VALUE_TALENT_JOINABLE(ARG) == 0
+	RETURN 0
+SIF BASE:ARG:체력 < 500
+	RETURN 0
+SIF (CFLAG:ARG:도검숙련도 + CFLAG:ARG:레이피어숙련도 + CFLAG:ARG:활숙련도 + CFLAG:ARG:검숙련도 + CFLAG:ARG:창숙련도 + CFLAG:ARG:도끼、둔기숙련도 + CFLAG:ARG:투척숙련도 + CFLAG:ARG:지팡이・제구숙련도 + CFLAG:ARG:곤봉숙련도 + CFLAG:ARG:권투구숙련도) >= 10000
+	RETURN 0
+RETURN 1
+
+@CHOICE_DOJO(ARG)
+#LOCALSIZE 2
+$INPUT_LOOP
+DRAWLINE
+LOCAL:0 = 0
+PRINTL 수련할 무기 종류를 선택해 주십시오
+PRINTL 　
+PRINTL □숙련도 취득　☆: 소질 보유　★: 초기 소질
+FOR (LOCAL:1), 1, 12
+	IF (LOCAL:1) > 9
+		PRINTFORM [{LOCAL:1}]
+	ELSE
+		PRINTFORM [ {LOCAL:1}]
+	ENDIF
+	PRINTFORM %CFLAGNAME:(1049 + (LOCAL:1)),14,LEFT% 숙련도:{CFLAG:ARG:(1049 + (LOCAL:1))}
+	IF CSVTALENT(NO:ARG,(249 + (LOCAL:1)),0)
+		PRINTFORM ★
+	ELSEIF TALENT:ARG:(249 + (LOCAL:1))
+		PRINTFORM ☆
+	ENDIF
+	PRINTL 
+	SIF CFLAG:ARG:(1049 + (LOCAL:1))
+		LOCAL:0 += 1
+NEXT
+PRINTL 
+SIF LOCAL:0 > 0
+	PRINTFORML [50]소질 획득・변경
+PRINTFORML [99]돌아간다
+INPUT
+IF RESULT == 99
+	RETURN -1
+ELSEIF RESULT == 50 && LOCAL:0 > 0
+	CALL 武器素質付与,ARG
+	RETURN -1
+ELSEIF RESULT < 0 && RESULT > 12
+	GOTO INPUT_LOOP
+ELSEIF (TALENT:ARG:(249 + RESULT) || CSVTALENT(NO:ARG,(249 + RESULT),0))
+	PRINTW 이미 소질을 가지고 있습니다
+	CFLAG:ARG:(1049 + RESULT) = 1000
+	GOTO INPUT_LOOP
+ELSEIF CFLAG:ARG:(1049 + RESULT) >= 1000
+	PRINTFORMW 이미 충분한 숙련도를 획득했습니다
+	GOTO INPUT_LOOP
+ELSEIF !TALENT:ARG:(249 + RESULT)
+	RETURN RESULT
+ELSE
+	RETURN
+ENDIF
+
+;==========================================================
+;@END_DOJO
+; 道場での修練日報処理
+;<引数>
+;	ARG = 労役を行うキャラの登録番号
+;<戻り値>
+;	なし
+;==========================================================
+@END_DOJO,ARG
+#DIM 上昇量
+#DIM 雑用
+#DIM 修練回数
+
+CUSTOMDRAWLINE ･
+
+上昇量 = 0
+修練回数 = (BASE:ARG:체력 / 500) - 1
+IF 修練回数 <= 0
+	PRINTFORML x 체력 부족으로 이번 %CALLNAME:ARG%의 수련은 중지되었습니다
+	RETURN
+ENDIF
+FOR 雑用, 0, 修練回数
+	上昇量 += (40 + RAND:21)
+NEXT
+PRINTL □수련 실행
+PRINTFORML ○%CALLNAME:ARG%
+PRINTFORM %CFLAGNAME:(1049 + (CFLAG:ARG:노역커맨드용))%의 수련 실행
+PRINTFORML 실행 수:{修練回数}
+PRINTFORML 체력　:{BASE:ARG:체력,4}　→　{BASE:ARG:체력 - (500 * 修練回数)}
+PRINTFORML 숙련도:{CFLAG:ARG:(1049+(CFLAG:ARG:노역커맨드용)),4}　→　{CFLAG:ARG:(1049+(CFLAG:ARG:노역커맨드용)) + 上昇量}
+BASE:ARG:체력 -= (500 * 修練回数)
+CFLAG:ARG:(1049+(CFLAG:ARG:노역커맨드용)) += 上昇量
+IF CFLAG:ARG:(1049+(CFLAG:ARG:노역커맨드용)) >= 1000
+	PRINTFORML %CFLAGNAME:(1049 + (CFLAG:ARG:노역커맨드용))%이(가) 1000 이상이 되었으므로 수련을 종료합니다.
+	CFLAG:ARG:(1049+(CFLAG:ARG:노역커맨드용)) = 1000
+	CFLAG:ARG:노역플래그 = 0
+	IF TALENT:ARG:도술 || TALENT:ARG:팬서 || TALENT:ARG:궁술 || TALENT:ARG:검술 || TALENT:ARG:창술 || TALENT:ARG:도끼술 || TALENT:ARG:채찍술 || TALENT:ARG:투척술 || TALENT:ARG:제사 || TALENT:ARG:봉술 || TALENT:ARG:마샬아츠
+	ELSE
+		PRINTFORMW %CALLNAME:ARG%은(는) %TALENTNAME:(249 + (CFLAG:ARG:노역커맨드용))%을(를) 취득했다
+		TALENT:ARG:(249 + (CFLAG:ARG:노역커맨드용)) = 1
+	ENDIF
+ENDIF
+PRINTW
+;修練時の口上表示
+雑用 = TARGET
+TARGET = ARG
+TFLAG:13 = 91
+CALL KOJO_MESSAGE_EVENT
+TARGET = 雑用
+PRINTFORML
+;ペルソナ使いは装着中のペルソナの経験値獲得
+IF TALENT:ARG:페르소나구사자
+	CALL INCREASE_PERSONA_EXP, ARG, 50, -1 ,1
+	IF RESULT > 0
+		;新ペルソナ処理
+		IF BATTLE_SETTING_IS_PERSONA_NEW_FUNCTION()
+		;旧ペルソナ処理
+		ELSE
+			PRINTFORML 페르소나【\@EQUIP:ARG:장비페르소나 ? %CSVNAME(DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("NO"), 0)% # %CSVNAME(ABL:ARG:초기페르소나, 0)%\@】　EXP：+{RESULT}
+		ENDIF
+	ENDIF
+ENDIF
+
+CALL 気絶処理,ARG
+
+PRINTL

@@ -1,0 +1,879 @@
+﻿;-------------------------------------------------
+;イオ個別イベント。
+;ルーグが情けない性能だったのでアキュラ個別イベントベースに作成。
+;ちょっと一部に残骸残っているかも。一ヶ月ぐらい作業ファイルぶっ飛んだりしたので突貫工事だし。
+;ARGでイオの番号を拾えるらしいのでソレを採用ね。
+;
+;強化ルーグは主に耐性の強化がメインでスキルなどはタスラムショットがタスラムの魔弾に変化する以外は普通。
+;(2023/06/30追記：タスラムの魔弾は開発中に専用スキルになってたのをコメント更新忘れてた)
+;色々な作品の耐性部分を取り込みつつ、ペルソナのイルダーナ(ルーグの別名)が衝撃と重力弱点なので1.75倍弱点、
+;デビチルで明確に呪殺弱点なので2倍弱点に設定、溺れて死ぬ逸話を英語版Wikipediaで確認できたので水撃弱点。
+;破魔反射や神経精神が耐性止まりの作品が多いのだが、ゲームバランスと異能シフターの変身先である都合を考慮してこのような形に。
+;3反射、2耐性、電撃と致命4種の内3つ無効の4無効、呪殺含む4弱点 
+;-------------------------------------------------
+@INDIVIDUAL_EVENT_K[[キャラ:이오]], ARG, ARG:1 = 0, ARG:2 = -1
+#LOCALSIZE 3
+#LOCALSSIZE 1
+;ARG:0　キャラ番号
+;ARG:1　関数種類　1,開放条件　2,타이틀　3,이벤트
+;ARG:2　イベント番号（0～63まで）
+
+;リストにキャラを表示する条件
+IF ARG:1 == 0
+	;イベント0で全部終了
+	SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+		RETURN 0
+	RETURN 1
+ENDIF
+
+SELECTCASE ARG:2
+CASE 0
+	;解放条件
+	IF ARG:1 == 1
+		SIF FLAG:데빌서바２진행도 < 460
+			RETURN 0
+		;イオがいてシフターを持ってるか確認
+		;2023/06/30追記：ロール整理でイオはアウトサイダーに変更されたんで条件変更
+		SIF ARG < 0 || TALENT:ARG:아웃사이더 == 0
+			RETURN 0
+		RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방, ARG:2)
+			;타이틀
+			;元ネタ：ルーグの異名『長い腕』の意。 デビサバ2でも出てきてる。
+			RESULTS = 라우파다
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			RESULTS = (①아웃사이더가 된 %CALLNAME:ARG%이(가) 있다　②의뢰 『지프스로부터의 의뢰 (5TH DAY - 결전 2대 거두)』 클리어로 해방　※선택지에 따라 전투 있음)
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		PRINTFORMW 최근, %CALLNAME:ARG%의 상태가 이상하다…….
+		PRINTFORMW %CALLNAME:ARG%와(과) 융합한 루그가, 본래의 힘을 되찾아가는 모양이다.
+		PRINTFORML 　
+		PRINTFORMW 하지만 원래대로라면, 토지와 개념을 일체화시키고 있던 악마다.
+		PRINTFORML 적합하고 있다고는 하나, %CALLNAME:ARG%의 몸에는 그 힘이 너무 강한 듯하다…….
+		PRINTFORML 이대로 방치하면 돌이킬 수 없는 사태에 빠질지도 모른다.
+		PRINTFORMW 무언가 손을 써야 할 텐데…….
+		PRINTFORML 　
+		PRINTFORML [0] 루그와 대결하여 그 힘을 약화시킨다
+		PRINTFORML [1] 돈으로 해결한다
+		PRINTFORML [2] MAG를 쏟아붓는다
+		
+		SETCOLOR 0xff0033
+		PRINTFORML [3] 내버려 둔다
+		RESETCOLOR
+
+		SETCOLOR 0x33ffcc
+		PRINTFORML [4] 지켜본다
+		RESETCOLOR
+
+		PRINTFORML [99] 잠시 생각한다
+		
+		CALL INPUTINT, 0, 1, 2, 3, 4,99
+		IF RESULT == 0
+			PRINTFORML 루그는 아마도 %CALLNAME:ARG%의 힘을 흡수하여 그 힘을 키우고 있을 것이다……
+			PRINTFORML 그러나 루그의 힘을 %CALLNAME:ARG%이(가) 흡수한다면 전력이 된다.
+			PRINTFORMW 물론 패배한다면 %CALLNAME:ARG%은커녕 당신도 루그의 양분이 되어버리겠지만.
+			PRINTFORMW 이 방법으로 괜찮을까?
+			PRINTFORML 　
+			PRINTFORML [0] 루그와 싸운다
+			PRINTFORML [99] 다시 생각한다
+			PRINTFORML 　
+			CALL INPUTINT, 0,99
+			IF RESULT == 0
+				FOR LOCAL, 1, 7
+					;LOCALSにポジションにいる人を入れる
+					LOCALS = 포지션{LOCAL}
+					;中に誰もいないならループ離脱
+					SIF FLAG:LOCALS < 0
+					CONTINUE
+					;PTにイオはいるか？
+					IF NO:(FLAG:LOCALS) == [[キャラ:이오]]
+					PRINTFORML 루그와의 대결을 결정했을 때, %CALLNAME:ARG%이(가) 당신 곁에 있었다.
+					PRINTFORMW 
+					PRINTFORML %CALLNAME:ARG%
+					PRINTFORMW 「저도…… 싸우겠어요!」
+					PRINTFORML 
+					PRINTFORML %CALLNAME:MASTER%은(는) %CALLNAME:ARG%와(과) 함께 싸움에 대비했다.
+					PRINTFORMW 
+					ENDIF
+				NEXT
+				
+				PRINTFORMW 루그와 대결하기 위해 사이코 다이버를 불러 %CALLNAME:ARG%의 정신세계로 다이브한다…….
+				PRINTFORML 
+				PRINTFORML …
+				PRINTFORML ……
+				PRINTFORML ………
+				PRINTFORMW
+				PRINTFORML 정신세계에는 황금빛 갑주를 두른 무인 같은 악마가 서 있었다.
+				PRINTFORMW 저것이야말로 다난 신족의 태양신 루이자, 라우파다…… 긴 팔이라는 이명을 가진 빛의 신 루그일 것이다.
+				PRINTFORMW 루그는 당신들의 모습을 보자 조용히 창을 겨눈다. ……상대도 이미 준비는 되어 있는 모양이다.
+				PRINTFORML 
+				PRINTFORMW 마신 루그＝라우파다가 1체 나타났다!
+				
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				
+				CALL SET_ENEMY, 9, [[キャラ:루그＝라우파다_링크전용]], 75, 1, 2
+				NAME:(CHARANUM-1) = 루그＝라우파다
+				CALLNAME:(CHARANUM-1) = 루그＝라우파다
+				CFLAG:(CHARANUM-1):ＨＰ보정 += 7500
+				CFLAG:(CHARANUM-1):ＭＰ보정 += 50000
+				CFLAG:(CHARANUM-1):행동횟수 = 3
+				CFLAG:(CHARANUM-1):COOP피데미지보정 = -50
+				CSTR:(CHARANUM-1):사고패턴 = ラウファーダ用強化ルーグルーチン
+				BASE:(CHARANUM-1):힘 += 10
+				BASE:(CHARANUM-1):지혜 += 5
+				BASE:(CHARANUM-1):마력 += 5
+				BASE:(CHARANUM-1):내구 += 5
+				BASE:(CHARANUM-1):속도 += 10
+				BASE:(CHARANUM-1):운 += 5
+				
+				ABL:(CHARANUM-1):스킬1  = [[스킬:브류나크]]
+				ABL:(CHARANUM-1):스킬2  = [[스킬:전용기1]]
+				ABL:(CHARANUM-1):스킬3  = [[스킬:데스바운드]]
+				ABL:(CHARANUM-1):스킬4  = [[스킬:히트라이저]]
+				ABL:(CHARANUM-1):스킬5  = [[스킬:랜더마이저]]
+				ABL:(CHARANUM-1):스킬6  = [[스킬:이니셜라이즈]]
+				ABL:(CHARANUM-1):스킬7  = [[스킬:어드바이스]]
+				ABL:(CHARANUM-1):스킬8  = [[스킬:코칭]]
+				
+				CALL SYNC_STATUS, (CHARANUM-1)
+				CALL HEALTH_CHARA, (CHARANUM-1)
+				CALL BATTLE_START
+				
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+				
+				;このルートのみ、戦闘勝利報酬がある
+				;内容はスキルカード万魔の一撃
+				ITEM:12062 += 1
+				
+				PRINTFORMW 루그와의 싸움에서 승리한 너희들 앞에서 조용히 루그가 사라져 간다…….
+				PRINTFORMW 그 뒤에는 한 장의 카드가 남겨져 있었고, 그것을 회수하고서 그 자리를 떠났다.
+				PRINTFORML 
+				PRINTFORMW ＞스킬 카드, 만마의 일격을 손에 넣었다.
+				PRINTFORML 
+				PRINTFORML …
+				PRINTFORML ……
+				PRINTFORMW ………
+				PRINTFORML 
+				PRINTFORML 그 후, 루그의 힘을 흡수한 %CALLNAME:ARG%은(는) 그 힘을 완전히 제어하는 데 성공.
+				PRINTFORML %CALLNAME:ARG%은(는) 아웃사이더로서 한층 더 큰 힘을 얻은 것이었다…….
+				
+				;新しい処理になるのと、ここ関数化できるなと気付いたので変更
+				CALL IO_KANSU,ARG
+				RETURN 1
+			ELSEIF RESULT == 99
+				PRINTFORML 상대는 강대한 악마, 그것도 본래의 힘에 가까워진 빛의 신 루그다.
+				PRINTFORMW 도전한다 해도 준비나 숙고가 필요할지도 모른다.
+				PRINTFORML 
+				PRINTFORML ……하지만. 아직 약간은 유예가 있다.
+				PRINTFORMW 당신은 숨을 내쉬고 다른 작업으로 넘어갔다…….
+			ENDIF
+		ELSEIF RESULT == 1
+			PRINTFORMW 요는 완전히 견뎌내거나, 적합시켜 버리면 되는 것이다.
+			PRINTFORML 예를 들면 팬텀의 의료시설을 풀 활용하여 육체의 융해를 억누른다거나,
+			PRINTFORML 전속 주술사를 불러 루그에 대한 대항 개념을 새긴 부적을 준비하거나,
+			PRINTFORMW 그런 손을 써서 시간을 번다면 %CALLNAME:ARG%의 재능이라면 루그를 완전히 지배해 줄 것이다.
+			PRINTFORML 당연히 싼값은 아니다.
+			PRINTFORML 그러나 돈으로 기술을 살 수 있다면 그것이 가장 안전하고 편하다.
+			PRINTFORMW 이 방법으로 괜찮을까?
+			PRINTFORML 　
+			SIF MONEY < 1000000 || MONEY:1 < 20000
+				SETCOLOR 0x404040
+			PRINTFORML [0] 의료 시설이나 주구를 준비한다 (￥100만 또는 2만 마카 필요)
+			RESETCOLOR
+			PRINTFORML [99] 잠시 생각한다
+			CALL INPUTINT, 0, 99
+			IF RESULT == 0
+				IF MONEY > 1000000 || MONEY:1 > 20000
+					IF MONEY < 1000000
+						MONEY -= 1000000
+					ELSE
+						MONEY:1 -= 20000
+					ENDIF
+					PRINTFORML 그렇게 결정했다면 이야기는 빠르다.
+					PRINTFORMW %CALLNAME:MASTER%은(는) 기자재와 주구의 수배에 착수했다.
+					PRINTFORML 
+					PRINTFORML …
+					PRINTFORML ……
+					PRINTFORMW ………
+					PRINTFORML 
+					PRINTFORMW 이렇게 하여 삼엄할 정도의 지원 태세가 갖추어졌다.
+					PRINTFORML 최신 의료기기가 늘어선 방에는 숙련된 의료 스태프가 배치되고,
+					PRINTFORML 주위에 결계가 쳐진 침대에는 겹겹이 부적이 붙어 있다.
+					PRINTFORMW 거기에 복수의 전투원도 동원하여 만에 하나 루그가 밖으로 도망치더라도 즉시 조복할 수 있도록 자리를 마련했다.
+					PRINTFORML
+					PRINTFORML 거금으로 마련된 삼엄한 방에 %CALLNAME:ARG%도 당혹스러워했지만,
+					PRINTFORMW 자신을 위해 여기까지 자리를 마련해 준 당신에게 감사의 말을 전하고는 조용히 준비를 시작했다.
+					PRINTFORML 
+					PRINTFORML …
+					PRINTFORML ……
+					PRINTFORMW ………
+					PRINTFORML 
+					PRINTFORMW 그 뒤로는 딱히 말할 것도 없었다.
+					PRINTFORML 신뢰와 실적이 있는 시설과 스태프는 별다른 위기 없이,
+					PRINTFORML %CALLNAME:ARG%에게 무사히 루그를 적합시키는 데 성공.
+					PRINTFORMW %CALLNAME:ARG%은(는) 아웃사이더로서 한층 더 큰 힘을 얻은 것이었다…….
+					
+					;新しい処理になるのと、ここ関数化できるなと気付いたので変更
+					CALL IO_KANSU,ARG
+					RETURN 1
+				ELSE
+					PRINTFORML 
+					PRINTFORML 돈으로 해결하는 편이 낫겠다고 생각했으나,
+					PRINTFORMW 현재의 %CALLNAME:MASTER%에게는 그 정도의 자금이 없다.
+					PRINTFORML 
+					PRINTFORML ……하지만. 아직 약간은 유예가 있다.
+					PRINTFORMW 당신은 숨을 내쉬고 다른 작업으로 넘어갔다…….
+				ENDIF
+			ELSEIF RESULT == 99
+				PRINTFORML ……아니. 아직 약간은 유예가 있다.
+				PRINTFORMW 당신은 숨을 내쉬고 다른 작업으로 넘어갔다…….
+			ENDIF
+
+
+		ELSEIF RESULT == 2
+			PRINTFORML 루그의 힘에 견뎌낼 수 있을 만큼의 에너지를── MAG를 보충해 주면 된다.
+			PRINTFORML 그리고 그것은 당신의 특기 분야다.
+			PRINTFORMW 뭐, MAG를 쏟아붓기만 하는 거라면 %CALLNAME:MASTER% 이외여도 상관은 없지만……
+			PRINTFORMW 이 방법으로 괜찮을까?
+			PRINTFORML 　
+
+			SIF GET_CHARA_STOCK_MAG((MASTER)) < 1000000
+				SETCOLOR 0x404040
+			IF 신뢰(ARG) == 1
+				PRINTFORML [0] %CALLNAME:MASTER%이(가) MAG를 붓는다(100만 MAG 필요. 신뢰 상태일 경우 연모화합니다)
+			ELSE
+				PRINTFORML [0] %CALLNAME:MASTER%이(가) MAG를 붓는다(100만 MAG 필요)
+			ENDIF
+			RESETCOLOR
+			
+			IF FLAG:ＮＴＲ기능
+				SETCOLOR COLOR("pink")
+				PRINTFORML [1] 불특정 다수의 상대에게 MAG를 마련하게 한다(음란계 함락을 제외하고 NTR이 크게 진행됩니다)
+				RESETCOLOR
+			ELSE
+				PRINTFORML [1] 불특정 다수의 상대에게 MAG를 마련하게 한다
+			ENDIF
+			PRINTFORML [99] 잠시 생각한다
+			CALL INPUTINT, 0, 1,99
+			IF RESULT == 0
+				IF GET_CHARA_STOCK_MAG((MASTER)) > 999999
+					PRINTFORMW 그렇게 결정했다면 이야기는 빠르다.
+					PRINTFORMW %CALLNAME:MASTER%은(는) 즉시 %CALLNAME:ARG%을(를) 조교실로 데려갔다.
+					PRINTFORML 
+					PRINTFORML …
+					PRINTFORML ……
+					PRINTFORMW ………
+					PRINTFORML 
+					PRINTFORMW 어두컴컴한 방에 축축한 소리가 울려 퍼지고 있다…….
+					IF HAVE_VAGINA(ARG) == 1
+						IF HAVE_PENIS(MASTER)
+							PRINTFORMW %CALLNAME:MASTER%의 물건을 받아들이고 있는 %CALLNAME:ARG%은(는) 성교의 기쁨에 몸을 비틀고 있다.
+							IF TALENT:ARG:처녀
+								PRINTFORMW 방금 전까지 처녀였던 %CALLNAME:ARG%은(는) 처음엔 통증에 신음했지만 지금은 쾌락이 앞서고 있었다.
+								TALENT:ARG:처녀 = 0
+							ENDIF
+							PRINTFORMW 이어져 있는 두 사람은 MAG 전달이라는 목적도 한때 잊고 서로 사랑하며 교합을 이어간다…….
+							SIF 신뢰(ARG) == 1
+								PRINTFORMW ……설령 그것이 신뢰와 우정으로 이어진 두 사람의 관계를 바꾸어 버린다 해도 상관없었다.
+							PRINTFORML
+							IF ABL:ARG:Ｖ감각 < 1
+								ABL:ARG:Ｖ감각 = 1
+								PRINTFORML ＞%CALLNAME:ARG%의 V감각이 1이 되었다
+							ENDIF
+							EXP:ARG:Ｖ경험 += 125
+							PRINTFORML ＞%CALLNAME:ARG%은(는) V경험을 125 얻었다
+							EXP:ARG:성교경험 += 100
+							PRINTFORML ＞%CALLNAME:ARG%은(는) 성교경험을 100 얻었다
+							EXP:ARG:정액경험 += 100
+							PRINTFORML ＞%CALLNAME:ARG%은(는) 정액경험을 50 얻었다
+							EXP:ARG:펠라경험 += 25
+							PRINTFORML ＞%CALLNAME:ARG%은(는) 펠라경험을 25 얻었다
+							IF TALENT:MASTER:후타나리
+								EXP:(ARG):레즈경험 += 200
+								PRINTFORML ＞%CALLNAME:ARG%은(는) 레즈경험을 200 얻었다
+							ENDIF
+						;女同士
+						ELSE
+							PRINTFORMW 손을 맞잡은 채 혀를 얽는 %CALLNAME:MASTER%와(과) %CALLNAME:ARG%은(는), 한번 떨어지면 두 사람의 혀 사이로 타액이 실을 잇는다.
+							PRINTFORMW 잠시 둘이서 마주 보며 서로의 숨소리에 귀를 기울이고 있었지만, 심호흡을 하더니 다시 입술을 가까이하여 혀를 얽는다.
+							PRINTFORMW 이어져 있는 두 사람은 MAG 전달이라는 목적도 한때 잊고 서로 사랑하며 입맞춤을 이어간다…….
+							SIF 신뢰(ARG) == 1
+								PRINTFORMW ……설령 그것이 신뢰와 우정으로 이어진 두 사람의 관계를 바꾸어 버린다 해도 상관없었다.
+							PRINTFORML
+							EXP:(ARG):레즈경험 += 500
+							PRINTFORML ＞%CALLNAME:ARG%은(는) 레즈경험을 500 얻었다
+							EXP:(ARG):키스경험 += 500
+							PRINTFORML ＞%CALLNAME:ARG%은(는) 키스경험을 500 얻었다
+							IF ABL:(ARG):키스중독 < 1
+								ABL:(ARG):키스중독 = 1
+								PRINTFORML ＞%CALLNAME:ARG%은(는) 키스중독을 얻었다
+							ENDIF
+						ENDIF
+					ELSE
+						;イオを男にしていた場合
+						IF HAVE_PENIS(MASTER)
+							PRINTFORMW %CALLNAME:MASTER%의 물건을 받아들이고 있는 %CALLNAME:ARG%은(는) 성교의 기쁨에 몸을 비틀고 있다.
+							IF EXP:ARG:성교경험 == 0
+								PRINTFORMW 방금 전까지 성교 따윈 몰랐던 %CALLNAME:ARG%은(는) 처음엔 통증에 신음했지만 지금은 쾌락이 앞서고 있었다.
+							ENDIF
+							PRINTFORMW 이어져 있는 두 사람은 MAG 전달이라는 목적도 한때 잊고 서로 사랑하며 교합을 이어간다…….
+							SIF 신뢰(ARG) == 1
+								PRINTFORMW ……설령 그것이 신뢰와 우정으로 이어진 두 사람의 관계를 바꾸어 버린다 해도 상관없었다.
+							PRINTFORML
+							IF ABL:ARG:Ａ감각 < 1
+								ABL:ARG:Ａ감각 = 1
+								PRINTFORML ＞%CALLNAME:ARG%의 A감각이 1이 되었다
+							ENDIF
+							EXP:ARG:Ａ경험 += 125
+							PRINTFORML ＞%CALLNAME:ARG%은(는) A경험을 125 얻었다
+							EXP:ARG:성교경험 += 100
+							PRINTFORML ＞%CALLNAME:ARG%은(는) 성교경험을 100 얻었다
+							EXP:ARG:정액경험 += 100
+							PRINTFORML ＞%CALLNAME:ARG%은(는) 정액경험을 50 얻었다
+							EXP:ARG:펠라경험 += 25
+							PRINTFORML ＞%CALLNAME:ARG%은(는) 펠라경험을 25 얻었다
+							IF IS_GAY(ARG,MASTER)
+								EXP:(MASTER):ＢＬ경험 += 200
+								PRINTFORML ＞%CALLNAME:ARG%은(는) BL경험을 200 얻었다
+							ENDIF
+						;女×男
+						ELSE
+							PRINTFORMW 손을 맞잡은 채 혀를 얽는 %CALLNAME:MASTER%와(과) %CALLNAME:ARG%은(는), 한번 떨어지면 두 사람의 혀 사이로 타액이 실을 잇는다.
+							PRINTFORMW 잠시 둘이서 마주 보며 서로의 숨소리에 귀를 기울이고 있었지만, 심호흡을 하더니 다시 입술을 가까이하여 혀를 얽는다.
+							PRINTFORMW 이어져 있는 두 사람은 MAG 전달이라는 목적도 한때 잊고 서로 사랑하며 입맞춤을 이어간다…….
+							SIF 신뢰(ARG) == 1
+								PRINTFORMW ……설령 그것이 신뢰와 우정으로 이어진 두 사람의 관계를 바꾸어 버린다 해도 상관없었다.
+							PRINTFORML
+							EXP:(ARG):키스경험 += 500
+							PRINTFORML ＞%CALLNAME:ARG%은(는) 키스경험을 500 얻었다
+							IF ABL:(ARG):키스중독 < 1
+								ABL:(ARG):키스중독 = 1
+								PRINTFORML ＞%CALLNAME:ARG%은(는) 키스중독을 얻었다
+							ENDIF
+						ENDIF
+					ENDIF
+					;こっそり依存度増加
+					CFLAG:ARG:의존도 += 500
+					CALL CONTROL_MAG, MASTER, -1000000
+					PRINTFORML 
+					PRINTFORML …
+					PRINTFORML ……
+					PRINTFORMW ………
+					PRINTFORML 
+					PRINTFORML 그 후, %CALLNAME:ARG%은(는) 쏟아부어진 방대한 MAG로 인해 무사히 루그를 적합시키는 데 성공.
+					PRINTFORMW %CALLNAME:ARG%은(는) 아웃사이더로서 한층 더 큰 힘을 얻은 것이었다…….
+					
+					IF 신뢰(ARG) == 1
+						PRINTFORML 
+						PRINTFORMW 그러나 선을 넘은 두 사람의 관계는 이미 변해버리고 말았다.
+						IF 陥落(ARG) == 3
+							PRINTFORMW 더 이상 지금까지와 같을 수 없다고 생각한 %CALLNAME:MASTER%은(는)…….
+							PRINTFORML [0]결혼을 신청했다(연모 계약으로 변경. \@ TALENT:남자 ? [남편] # [아내] \@를 취득)
+							PRINTFORML [99]……아직, 결정을 내릴 수 없다(연모 함락으로 변경. [친애]를 취득)
+							CALL INPUTINT, 0,99
+							IF RESULT == 0
+								PRINTFORML 
+								PRINTFORML …
+								PRINTFORML ……
+								PRINTFORMW ………
+								PRINTFORML 
+								PRINTFORMW %CALLNAME:MASTER%은(는) %CALLNAME:ARG%에게 반지를 선물했다…
+								PRINTFORMW %CALLNAME:ARG%은(는) %CALLNAME:MASTER%의 \@ TALENT:남자 ? [남편] # [아내] \@가 되어, 영원한 사랑을 맹세했다……
+								CALL SET_契約素質, ARG, "妻・夫", 1
+							ELSEIF RESULT == 99
+								PRINTFORML 
+								PRINTFORMW 아직…… 자신으로선 결정을 내릴 수 없다.
+								PRINTFORMW %CALLNAME:MASTER%은(는) 마음을 당분간 가슴속에 묻어두기로 했다.
+								PRINTFORML 
+								PRINTFORMW ＞%CALLNAME:ARG%의 [맹우]는, [친애]로 변화했습니다.
+								TALENT:ARG:맹우 = 0
+								TALENT:ARG:동료 = 0
+								CALL SET_陥落素質, ARG, "친애"
+							ENDIF
+						ELSEIF 陥落(ARG) == 2
+							PRINTFORML 
+							PRINTFORMW ＞%CALLNAME:ARG%의 [동료]는, [친애]로 변화했습니다.
+							TALENT:ARG:동료 = 0
+							CALL SET_陥落素質, ARG, "친애"
+						ELSE
+							PRINTFORML 
+							PRINTFORMW ＞%CALLNAME:ARG%의 [신뢰]는, [연모]로 변화했습니다.
+							CALL SET_陥落素質, ARG, "연모"
+						ENDIF
+					ENDIF
+					;新しい処理になるのと、ここ関数化できるなと気付いたので変更
+					CALL IO_KANSU,ARG
+					RETURN 1
+				ELSE
+					PRINTFORML 
+					PRINTFORML 역시 스스로 해결하는 편이 낫겠다고 생각했으나,
+					PRINTFORMW 현재 %CALLNAME:MASTER%이(가) 보유한 MAG가 부족하다.
+					PRINTFORML 
+					PRINTFORML ……하지만. 아직 약간은 유예가 있다.
+					PRINTFORMW 당신은 숨을 내쉬고 다른 작업으로 넘어갔다……
+				ENDIF
+			ELSEIF RESULT == 1
+				PRINTFORML MAG 마련에도 품이 든다.
+				PRINTFORMW 여기서는 적당히 섹스시킬 상대를 물색하는 편이 빠를 것이다.
+				IF 음란(ARG) == 1
+					PRINTFORMW %CALLNAME:ARG%은(는) 음탕하게 혀맛을 다시었다.
+				ELSE
+					PRINTFORMW %CALLNAME:ARG%은(는) 당혹감을 감추지 못하고, 복잡한 표정으로 당신을 바라보고 있다…….
+				ENDIF
+				PRINTFORML 
+				PRINTFORML …
+				PRINTFORML ……
+				PRINTFORMW ………
+				PRINTFORML 
+				PRINTFORMW 이렇게 하여, %CALLNAME:MASTER%에 의해 섹스방의 준비가 갖추어졌다.
+				PRINTFORML 지프스 국원이나 %CALLNAME:ARG%의 지인, 인터넷 등에서 적당히 불러들인 상대 등이 있었고,
+				IF TALENT:ARG:인기 == 1
+					IF IS_MALE(ARG) == 1
+						PRINTFORML 특히 그의 팬을 자처하는 자들이 찾아옴으로써, 상상 이상의 인원이 모여 있었다.
+					ELSE
+						PRINTFORML 특히 그녀의 팬을 자처하는 자들이 찾아옴으로써, 상상 이상의 인원이 모여 있었다.
+					ENDIF
+				ENDIF
+				PRINTFORMW 그들은 %CALLNAME:ARG%을(를) 범하라는 사인이 떨어지기만을 학수고대하고 있다.
+				IF 음란(ARG) == 1
+					PRINTFORMW %CALLNAME:ARG%은(는) 침대에 걸터앉아, 몸을 옴짝달싹하며 남자들을 유혹하고 있었다.
+				ELSE
+					PRINTFORMW %CALLNAME:ARG%은(는) 당신 쪽을 바라보며, 불안한 듯 손을 흔들었다.
+				ENDIF
+				PRINTFORML 처음에는 남자들도 %CALLNAME:ARG%와(과) 자기소개 등 사소한 대화를 나누고 있었지만,
+				PRINTFORMW 시선은 이미 %CALLNAME:ARG%의 몸을 핥듯이 바라보고 있었다.
+				PRINTFORMW 그리고 약속된 시간이 되자 신호와 함께 둑이 터지듯 남자들이 %CALLNAME:ARG%에게 쇄도했다.
+				PRINTFORML 
+				PRINTFORMW …
+				PRINTFORMW ……
+				PRINTFORMW ………
+				PRINTFORML
+				SETCOLOR COLOR("pink")
+				PRINTFORML %CALLNAME:ARG%은(는) 옷이 벗겨져 남자들에게 범해지고 있다…….
+				SIF TALENT:ARG:처녀
+					PRINTFORML 방금 전까지 처녀였던 %CALLNAME:ARG%와(과) 남자의 결합부에는 파과의 붉은 피가 정액과 섞여 흘러나오고 있었다.
+				IF TALENT:ARG:남자
+					IF 음란(ARG) == 1
+						PRINTFORMW 쾌락에 몸을 맡긴 %CALLNAME:ARG%은(는), 남자들에게 올라타 적극적으로 허리를 흔들고 키스나 펠라를 하며 성행위를 즐기고 있다.
+						PRINTFORML 벌써 몇 번째인지도 모를 장내사정을 당하면서도, 정액을 핥아먹으며 적극적으로 쾌락을 탐하고 있었다.
+						PRINTFORML 남자들을 여러 명 한꺼번에 만족시키면서, 순서가 된 상대를 보자 %CALLNAME:ARG%은(는) 눈을 반짝였다.
+						PRINTFORMW 다음 상대는 유난히 거대한 대물을 가진 상대였고, %CALLNAME:ARG%은(는) 정액이 넘쳐흐르는 애널을 손가락으로 만지작거리며 엉덩이를 흔들어 조른다.
+						PRINTFORMW 상대도 그에 호응하여 대물을 쑤셔 넣었고, %CALLNAME:ARG%은(는) 환희에 떨며 성교를 계속 즐겼다.
+					ELSE
+						PRINTFORMW %CALLNAME:ARG%은(는) %CALLNAME:MASTER% 쪽을 바라보며 눈물을 흘리면서 남자들 위에서 범해지고, 손과 입으로 남자들을 상대하고 있다.
+						PRINTFORML 벌써 몇 번째인지도 모를 장내사정을 당하면서도, 몸을 떨며 흐느껴 울고 있었다.
+						PRINTFORML 남자들이 한 사람씩 제멋대로 만족해 가는 가운데, 순서가 된 상대를 보자 %CALLNAME:ARG%의 표정이 절망으로 일그러졌다.
+						PRINTFORMW 다음 상대는 유난히 거대한 대물을 가진 상대였고, %CALLNAME:ARG%은(는) 허리에 힘이 풀린 채로 도망치려 발버둥 친다.
+						PRINTFORMW 상대는 알 바 아니라는 듯 허리를 붙잡고 대물을 쑤셔 넣었고, %CALLNAME:ARG%은(는) 비명에 가까운 교성을 지르며 계속 범해졌다.
+					ENDIF
+				ELSE
+					IF 음란(ARG) == 1
+						PRINTFORMW 쾌락에 몸을 맡긴 %CALLNAME:ARG%은(는), 남자들에게 올라타 적극적으로 허리를 흔들고 키스나 펠라를 하며 성행위를 즐기고 있다.
+						PRINTFORML 벌써 몇 번째인지도 모를 질내사정을 당하면서도, 정액을 핥아먹으며 적극적으로 쾌락을 탐하고 있었다.
+						PRINTFORML 남자들을 여러 명 한꺼번에 만족시키면서, 순서가 된 상대를 보자 %CALLNAME:ARG%은(는) 눈을 반짝였다.
+						PRINTFORMW 다음 상대는 유난히 거대한 대물을 가진 상대였고, %CALLNAME:ARG%은(는) 정액이 넘쳐흐르는 보지를 손가락으로 만지작거리며 엉덩이를 흔들어 조른다.
+						PRINTFORMW 상대도 그에 호응하여 대물을 쑤셔 넣었고, %CALLNAME:ARG%은(는) 환희에 떨며 성교를 계속 즐겼다.
+					ELSE
+						PRINTFORMW %CALLNAME:ARG%은(는) %CALLNAME:MASTER% 쪽을 바라보며 눈물을 흘리면서 남자들 위에서 범해지고, 손과 입으로 남자들을 상대하고 있다.
+						PRINTFORML 벌써 몇 번째인지도 모를 질내사정을 당하면서도, 몸을 떨며 흐느껴 울고 있었다.
+						PRINTFORML 남자들이 한 사람씩 제멋대로 만족해 가는 가운데, 순서가 된 상대를 보자 %CALLNAME:ARG%의 표정이 절망으로 일그러졌다.
+						PRINTFORMW 다음 상대는 유난히 거대한 대물을 가진 상대였고, %CALLNAME:ARG%은(는) 허리에 힘이 풀린 채로 도망치려 발버둥 친다.
+						PRINTFORMW 상대는 알 바 아니라는 듯 허리를 붙잡고 대물을 쑤셔 넣었고, %CALLNAME:ARG%은(는) 비명에 가까운 교성을 지르며 계속 범해졌다.
+					ENDIF
+				ENDIF
+				PRINTFORML 
+				PRINTFORMW …
+				PRINTFORMW ……
+				PRINTFORMW ………
+				PRINTFORML
+				PRINTFORMW %CALLNAME:ARG%이(가) 범해지기 시작하고 몇 시간이 지난 후.
+				
+				IF TALENT:ARG:남자
+					PRINTFORML 확장되어 뻥 하니 입을 벌린 애널을 실룩거리며 %CALLNAME:ARG%은(는) 성교의 쾌락에 빠져,
+					PRINTFORML 남자들 전원을 만족시킨 뒤에도 쾌락을 바라며 스스로 애널을 만지작거리며 계속 졸라대고 있었다.
+					PRINTFORML 이에 남자들도 씩 웃으며 %CALLNAME:ARG%에게 덮쳐들어 난교는 계속된다.
+					PRINTFORMW 
+					PRINTFORMW %CALLNAME:MASTER%은(는) 그 자초지종을 내내 지켜보고 있었다…….
+				ELSE
+					PRINTFORML 확장되어 뻥 하니 입을 벌린 보지를 실룩거리며 %CALLNAME:ARG%은(는) 성교의 쾌락에 빠져,
+					PRINTFORML 남자들 전원을 만족시킨 뒤에도 쾌락을 바라며 스스로 보지와 애널을 만지작거리며 계속 졸라대고 있었다.
+					PRINTFORML 이에 남자들도 씩 웃으며 %CALLNAME:ARG%에게 덮쳐들어 난교는 계속된다.
+					PRINTFORMW 
+					PRINTFORMW %CALLNAME:MASTER%은(는) 그 자초지종을 내내 지켜보고 있었다…….
+				ENDIF
+				RESETCOLOR
+				PRINTFORML 
+				PRINTFORMW …
+				PRINTFORMW ……
+				PRINTFORMW ………
+				PRINTFORML
+				PRINTFORML 그 후, %CALLNAME:ARG%은(는) 쏟아부어진 방대한 MAG로 인해 무사히 루그를 적합시키는 데 성공.
+				PRINTFORMW %CALLNAME:ARG%은(는) 아웃사이더로서 한층 더 큰 힘을 얻은 것이었다…….
+				IF 음란(ARG) == 0
+					IF FLAG:ＮＴＲ기능
+						SETCOLOR COLOR("pink")
+						PRINTFORMW 그러나 %CALLNAME:ARG%은(는) 이제 그런 건 아무래도 좋다고 느낄 정도로 쾌락의 포로가 되어 있었다.
+						PRINTFORML 
+						IF TALENT:ARG:바람기
+							CFLAG:ARG:음란도 += 10000
+						ELSE
+							TALENT:ARG:바람기 = 1
+							RESETCOLOR
+							PRINTFORMW ＞%CALLNAME:ARG%은(는) 【바람기】를 얻었다.
+						ENDIF
+						CFLAG:ARG:음란도 += 10000
+					ENDIF
+				ENDIF
+				
+				RESETCOLOR
+				PRINTFORML 
+				
+				IF ABL:ARG:순종 < 2
+					ABL:ARG:순종 = 2
+					PRINTFORML ＞%CALLNAME:ARG%의 순종이 2가 되었다
+				ENDIF
+				IF ABL:ARG:Ｖ감각 < 1 && HAVE_VAGINA(ARG) == 1
+					ABL:ARG:Ｖ감각 = 1
+					PRINTFORML ＞%CALLNAME:ARG%의 V감각이 1이 되었다
+				ENDIF
+				IF ABL:ARG:Ａ감각 < 1
+					ABL:ARG:Ａ감각 = 1
+					PRINTFORML ＞%CALLNAME:ARG%의 A감각이 1이 되었다
+				ENDIF
+				IF ABL:ARG:마조끼 < 3
+					ABL:ARG:마조끼 = 3
+					PRINTFORML ＞%CALLNAME:ARG%의 마조끼가 3이 되었다
+				ENDIF
+				
+				IF TALENT:ARG:처녀
+					PRINTFORML ＞%CALLNAME:ARG%은(는) 처녀를 잃었다
+					CALL ADDS_ABNORMAL_EXP("処女喪失（輪姦）", ARG)
+					TALENT:ARG:처녀 = 0
+				ENDIF
+				
+				PRINTFORML ＞%CALLNAME:ARG%은(는) 이상경험(확장 첫경험)을 얻었다
+				CALL ADDS_ABNORMAL_EXP("拡張初体験", ARG)
+				
+				IF HAVE_VAGINA(ARG) == 1 && TALENT:ARG:인기 == 1
+					EXP:ARG:Ｖ경험 += 100
+					EXP:ARG:Ａ경험 += 100
+					EXP:ARG:Ｖ확장경험 += 40
+					EXP:ARG:Ａ확장경험 += 40
+					EXP:ARG:성교경험 += 200
+					EXP:ARG:피사경험 += 60
+					EXP:ARG:질사경험 += 20
+					EXP:ARG:정액경험 += 30
+				ELSEIF HAVE_VAGINA(ARG) == 1
+					EXP:ARG:Ｖ경험 += 50
+					EXP:ARG:Ａ경험 += 50
+					EXP:ARG:Ｖ확장경험 += 20
+					EXP:ARG:Ａ확장경험 += 20
+					EXP:ARG:성교경험 += 100
+					EXP:ARG:피사경험 += 30
+					EXP:ARG:질사경험 += 10
+					EXP:ARG:정액경험 += 15
+				ELSEIF TALENT:ARG:인기 == 1
+					EXP:ARG:Ａ경험 += 200
+					EXP:ARG:Ａ확장경험 += 80
+					EXP:ARG:성교경험 += 200
+					EXP:ARG:피사경험 += 60
+					EXP:ARG:정액경험 += 30
+				ELSE
+					EXP:ARG:Ａ경험 += 100
+					EXP:ARG:Ａ확장경험 += 40
+					EXP:ARG:성교경험 += 100
+					EXP:ARG:피사경험 += 30
+					EXP:ARG:정액경험 += 15
+				ENDIF
+				
+				IF MARK:ARG:굴복각인 < 3
+					MARK:ARG:굴복각인 = 3
+					PRINTFORML ＞%CALLNAME:ARG%은(는) 굴복각인 LV3을 얻었다
+				ENDIF
+				IF MARK:ARG:고통각인 < 2
+					MARK:ARG:고통각인 = 2
+					PRINTFORML ＞%CALLNAME:ARG%은(는) 고통각인 LV2를 얻었다
+				ENDIF
+				IF MARK:ARG:반발각인 < 2
+					MARK:ARG:반발각인 = 2
+					MARK:ARG:4 = 2
+					PRINTFORMW ＞%CALLNAME:ARG%은(는) 반발각인 LV2를 얻었다
+				ENDIF
+				PRINTFORML
+				
+				;こっそり依存度減少
+				CFLAG:ARG:의존도 -= 500
+				
+				RESETCOLOR
+				
+				;新しい処理になるのと、ここ関数化できるなと気付いたので変更
+				CALL IO_KANSU,ARG
+				RETURN 1
+			ELSEIF RESULT == 99
+				PRINTFORML 아무리 MAG를 위해서라지만 성행위에는 신중해야 할 것이다.
+				PRINTFORML ……하지만. 아직 약간은 유예가 있다.
+				PRINTFORMW 당신은 숨을 내쉬고 다른 작업으로 넘어갔다……
+			ENDIF
+		ELSEIF RESULT == 3
+			PRINTFORMW ……뭐 상관없나.
+			PRINTFORML 귀중하긴 하지만 동격 동급이 없는 것도 아니다.
+			PRINTFORML 그렇게까지 공을 들일 것도 아니다.
+			PRINTFORMW 뭐, 저대로 방치하면 처참하게 죽을 것은 뻔하지만.
+			PRINTFORMW 그래도 상관없을까?
+			SETCOLOR 0xff0033
+			PRINTFORML [0] 내버려 둔다(※%CALLNAME:ARG%이(가) 사망합니다)
+			RESETCOLOR
+			PRINTFORML [99] 다시 생각한다
+			CALL INPUTINT, 0,99
+			IF RESULT == 0
+				PRINTFORML 
+				PRINTFORML …
+				PRINTFORML ……
+				PRINTFORML ………
+				PRINTFORMW 
+				PRINTFORMW %CALLNAME:ARG%은(는) 고통에 몸부림치며 괴로워하기 시작하더니 눈과 입, 코 등 온몸의 구멍이란 구멍에서 녹색 점액을 줄줄 흘리기 시작했다.
+				PRINTFORMW 체내에 수용되어 있던 루그가 %CALLNAME:ARG%의 육체의 허용치를 넘어 모조품 슬라임으로 변해 체외로 넘쳐흐른 것이다.
+				PRINTFORMW 슬라임이 되어 넘쳐흐르는 점액은 %CALLNAME:ARG%의 체내에 있는 MAG를 빼앗으며 육체를 파괴해 간다…….
+				PRINTFORMW 붉은 피와 녹색 점액의 혼합물이 바닥에 흩뿌려지고 그 위에서 고통에 허덕이는 %CALLNAME:ARG%은(는)…… 마지막으로 %CALLNAME:MASTER%을(를) 향해 손을 뻗고 숨을 거둔다.
+				PRINTFORML 
+				PRINTFORMW ……그 후, %CALLNAME:ARG%의 유해를 흡수하고 붉은색과 녹색이 뒤섞인 슬라임이 꿈틀거리고 있었지만, 불완전한 모조품은 계약할 틈도 없이 흩어져 사라졌다.
+				PRINTFORML 
+				PRINTFORMW …
+				PRINTFORMW ……
+				PRINTFORMW ………
+				PRINTFORMW %CALLNAME:ARG% 이(가) 사망했습니다.
+				CALL キャラ削除, ARG
+			ELSEIF RESULT == 99
+				PRINTFORML ……아니. 그렇게 결정해 버리는 것은 섣부른 판단일 것이다.
+				PRINTFORMW 당신은 숨을 내쉬고 다른 작업으로 넘어갔다……
+			ENDIF
+		ELSEIF RESULT == 4
+			PRINTFORMW ……골똘히 생각하고 있자 어느샌가 %CALLNAME:ARG%이(가) 있었다.
+			PRINTFORML 
+			PRINTFORML %CALLNAME:ARG%
+			PRINTFORML 「……반드시, 견뎌내 보이겠어요」
+			PRINTFORMW 「당신과 함께라면 두렵지 않아요」
+			PRINTFORML  
+			PRINTFORML [0] %CALLNAME:ARG%에게 맡긴다
+			PRINTFORML [99] 다시 생각한다
+			CALL INPUTINT, 0,99
+			IF RESULT == 0
+				PRINTFORMW %CALLNAME:ARG%의 말에 조용히 고개를 끄덕이고는 맡기기로 했다.
+				PRINTFORML 
+				PRINTFORMW …
+				PRINTFORMW ……
+				PRINTFORMW ………
+				PRINTFORML 
+				PRINTFORML 그 후, 기적적이라고 해야 할지 %CALLNAME:ARG%은(는) 루그의 힘을 제어하여 완전히 적합해 냈다.
+				PRINTFORMW %CALLNAME:ARG%은(는) 아웃사이더로서 한층 더 큰 힘을 얻은 것이었다…….
+				
+				;新しい処理になるのと、ここ関数化できるなと気付いたので変更
+				CALL IO_KANSU,ARG
+				RETURN 1
+			ELSEIF RESULT == 99
+				PRINTFORML ……아니. 아무리 그래도 너무 위험하다.
+				PRINTFORMW 그렇게 전하자 당신은 숨을 내쉬고 다른 작업으로 넘어갔다……
+			ENDIF
+		ELSEIF RESULT == 99
+			PRINTFORML ……아니. 아직 약간은 유예가 있다.
+			PRINTFORMW 당신은 숨을 내쉬고 다른 작업으로 넘어갔다……
+		ENDIF
+	ENDIF
+ENDSELECT
+
+@SET_ACTION_ラウファーダ用強化ルーグルーチン, ARG
+#DIM 発狂ブリュ
+#DIM デスバ無効観測
+#DIM タスラムの魔弾狙い
+#LOCALSIZE 3
+#LOCALSSIZE 1
+
+IF 発狂ブリュ == 0
+	FOR LOCAL,1,7
+		LOCALS = 포지션{LOCAL}
+		SIF FLAG:LOCALS < 0
+			CONTINUE
+		SIF GROUPMATCH(GET_STATE(CFLAG:(FLAG:LOCALS):상태이상), "STONE", "DYING")
+			CONTINUE
+		;味方の入力行動に物理反射があった場合発狂(イニシャライズからのブリューナク連打パターン突入)
+		;物理相性攻撃をするのでテトラカーンも拾う
+		IF GROUPMATCH(CFLAG:(FLAG:LOCALS):입력행동,[[스킬:물반경]], [[스킬:테트라칸]], [[스킬:결계부・물리]])
+			発狂ブリュ = 1
+			SETCOLOR 0xff0033
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃루그는 난적을 상대로 전술을 바꾸었다!　　　　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+			RESETCOLOR
+		ENDIF
+	
+		;おまじない：なんらかの要因で既に反射フラグが立ってる場合も発狂
+		IF CFLAG:(FLAG:LOCALS):물리반사플래그 == 1
+			発狂ブリュ = 1
+			SETCOLOR 0xff0033
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃루그는 난적을 상대로 전술을 바꾸었다!　　　　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+			RESETCOLOR
+		ENDIF
+	
+		;万能無効をしても発狂
+		;IF CFLAG:(FLAG:LOCALS):만능무효화횟수 > 0
+		;	発狂ブリュ = 1
+		;	SETCOLOR 0xff0033
+		;	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+		;	PRINTFORML ┃루그는 난적을 상대로 전술을 바꾸었다!　　　　　　┃
+		;	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+		;	RESETCOLOR
+		;ENDIF
+	NEXT
+ENDIF
+
+IF 発狂ブリュ == 0
+	FOR LOCAL,1,4
+		LOCALS = 포지션{LOCAL}
+		SIF FLAG:LOCALS == -1
+			CONTINUE
+		SIF CFLAG:(FLAG:LOCALS):상태이상 == GET_STATE_NUM("DYING")
+			CONTINUE
+		;剣撃無効以上の仲魔の数をサーチ
+		IF MAXBASE:(FLAG:LOCALS):검격 == 999 || MAXBASE:(FLAG:LOCALS):검격 <= 0
+			デスバ無効観測 += 1
+		ENDIF
+	NEXT
+	IF デスバ無効観測 > 1
+		発狂ブリュ = 1
+		SETCOLOR 0xff0033
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃루그는 난적을 상대로 전술을 바꾸었다!　　　　　　┃
+		PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+		RESETCOLOR
+	ENDIF
+	デスバ無効観測 = 0
+ENDIF
+
+IF 発狂ブリュ == 0
+	FOR LOCAL,1,7
+		LOCALS = 포지션{LOCAL}
+		SIF FLAG:LOCALS == -1
+			CONTINUE
+		SIF CFLAG:(FLAG:LOCALS):상태이상 == GET_STATE_NUM("DYING")
+			CONTINUE
+		;強化が3段階以上のキャラをサーチ
+		FOR LOCAL, GETNUM(CFLAG,"공격강화"), GETNUM(CFLAG,"마법효과강화")+1
+			IF CFLAG:(FLAG:LOCALS):공격강화 >=12||CFLAG:(FLAG:LOCALS):방어강화 >=12||CFLAG:(FLAG:LOCALS):명중강화 >=12||CFLAG:(FLAG:LOCALS):회피강화 >=12||CFLAG:(FLAG:LOCALS):마법위력강화 >=12||CFLAG:(FLAG:LOCALS):마법효과강화 >=12
+				発狂ブリュ = 1
+			ENDIF
+		NEXT
+	NEXT
+	IF 発狂ブリュ == 1
+		SETCOLOR 0xff0033
+				PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+				PRINTFORML ┃루그는 난적을 상대로 전술을 바꾸었다!　　　　　　┃
+				PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+				RESETCOLOR
+	ELSE
+		FOR LOCAL,7,17
+			LOCALS = 포지션{LOCAL}
+			SIF FLAG:LOCALS == -1
+				CONTINUE
+			SIF CFLAG:(FLAG:LOCALS):상태이상 == GET_STATE_NUM("DYING")
+				CONTINUE
+			;弱体が3段階以上のキャラをサーチ
+			FOR LOCAL, GETNUM(CFLAG,"공격강화"), GETNUM(CFLAG,"마법효과강화")+1
+				IF CFLAG:(FLAG:LOCALS):공격강화 <=-12||CFLAG:(FLAG:LOCALS):방어강화 <=-12||CFLAG:(FLAG:LOCALS):명중강화 <=-12||CFLAG:(FLAG:LOCALS):회피강화 <=-12||CFLAG:(FLAG:LOCALS):마법위력강화 <=-12||CFLAG:(FLAG:LOCALS):마법효과강화 <=-12
+					発狂ブリュ = 1
+				ENDIF
+			NEXT
+		NEXT
+		IF 発狂ブリュ == 1
+			SETCOLOR 0xff0033
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃루그는 난적을 상대로 전술을 바꾸었다!　　　　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+			RESETCOLOR
+		ENDIF
+	ENDIF
+ENDIF
+
+;「前衛に剣撃無効以上になる仲魔が二人以上いる」「規定量以上の強度(3段階分)でバフ/デバフを行う」「強力な防御系のスキルを使用する」と発狂
+IF 発狂ブリュ == 1
+	;発狂後の初手は必ずイニシャライズ
+	IF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:이니셜라이즈]]
+	;それ以降はブリューナク連打
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:브류나크]]
+	ENDIF
+ELSE
+	;初手はバフかデバフ
+	IF CFLAG:ARG:행동한횟수 == 0 && RAND:2 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+	ELSEIF CFLAG:ARG:행동한횟수 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:랜더마이저]]
+	;2手目はブリューナク。ただし１moreしたらブリューナク以外になる
+	ELSEIF CFLAG:ARG:행동한횟수 == 1 && CFLAG:ARG:１more플래그 <= 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:브류나크]]
+	;それ以外はデスバウンドか3分の1の確率でのタスラムの魔弾のパターン
+	ELSEIF CFLAG:ARG:행동한횟수 >= 2 && RAND:3 == 0
+		;비구＆破魔で即死
+		FOR LOCAL,1,7
+			LOCALS = 포지션{LOCAL}
+			SIF FLAG:LOCALS == -1
+				CONTINUE
+			;タスラムの魔弾が有効な誰かを探してタスラムの魔弾狙いを保存
+			IF  (FLAG:LOCALS) >= 0 && GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) != "DYING" && MAXBASE:(FLAG:LOCALS):DYING >(-51) && MAXBASE:(FLAG:LOCALS):비구 > 0 && MAXBASE:(FLAG:LOCALS):비구 != 999 && MAXBASE:(FLAG:LOCALS):파마 > 49 && MAXBASE:(FLAG:LOCALS):파마 != 999
+				タスラムの魔弾狙い = CPOS(FLAG:LOCALS)
+				BREAK
+			ENDIF
+		タスラムの魔弾狙い = -1
+		NEXT
+		IF タスラムの魔弾狙い == -1
+		;비구＆破魔で即死
+			CALL SET_ACTION_SKILL, ARG, [[스킬:전용기1]]
+		;タスラムの魔弾が有効な相手ならそいつを殺そうとする
+		ELSE
+			SETCOLOR 0xff0033
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃루그는 표적을 정하고 돌팔매를 겨눈다!　　　　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+			RESETCOLOR
+			CFLAG:ARG:타겟 = タスラムの魔弾狙い
+			;비구＆破魔で即死
+			CFLAG:ARG:입력행동 = [[스킬:전용기1]]
+		ENDIF
+	ELSE
+		;검격
+		CALL SET_ACTION_SKILL, ARG, [[스킬:데스바운드]]
+	ENDIF
+ENDIF
+
+@IO_KANSU, ARG
+IF CFLAG:ARG:초기링크악마 == [[キャラ:루그]]
+	CFLAG:ARG:이벤트가입 = 3
+	CALL SET_BASE_[[キャラ:이오]], ARG, CFLAG:ARG:이벤트가입
+	CALL SET_LEARN_SKILL_[[キャラ:이오]], ARG, CFLAG:ARG:이벤트가입
+	CALL SET_EX_LEARN_SKILL_[[キャラ:이오]], ARG, CFLAG:ARG:이벤트가입
+ELSE
+	CALL SET_LEARN_SKILL_[[キャラ:이오]], ARG, CFLAG:ARG:이벤트가입
+	PRINTFORML 
+	BASE:ARG:힘 += 5
+	PRINTFORML %CALLNAME:ARG%은(는) 힘이 5 올랐다
+	BASE:ARG:지혜 += 5
+	PRINTFORML %CALLNAME:ARG%은(는) 지혜가 5 올랐다
+	BASE:ARG:마력 += 5
+	PRINTFORML %CALLNAME:ARG%은(는) 마력이 5 올랐다
+	BASE:ARG:내구 += 5
+	PRINTFORML %CALLNAME:ARG%은(는) 인내가 5 올랐다
+	BASE:ARG:속도 += 5
+	PRINTFORML %CALLNAME:ARG%은(는) 속도가 5 올랐다
+	BASE:ARG:운 += 5
+	PRINTFORMW %CALLNAME:ARG%은(는) 운이 5 올랐다
+ENDIF

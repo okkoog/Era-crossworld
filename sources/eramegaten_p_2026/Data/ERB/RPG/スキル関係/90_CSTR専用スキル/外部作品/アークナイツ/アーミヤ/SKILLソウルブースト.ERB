@@ -1,0 +1,313 @@
+﻿;スキル名
+@SKILL_NAME_ソウルブースト,ARG
+RESULTS = 소울 부스트
+
+;　명중
+@SKILL_HITRATE_ソウルブースト, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_ソウルブースト, ARG
+RESULT = 100
+CALL GET_SKILL_PROP, "SKILL_POWER", TFLAG:원입력행동,ARG
+SIF RESULT > 0
+	RETURN RESULT
+;クリティカル率
+;@SKILL_CRITICAL_RATE_ソウルブースト, ARG
+;RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_ソウルブースト, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ソウルブースト,ARG
+RETURN TOINT(AUTO_SPLIT("5_6_6_7","_",TOINT(CSTR:ARG:103)-1))
+
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ソウルブースト,ARG
+RETURN TOINT(AUTO_SPLIT("5_6_6_7","_",TOINT(CSTR:ARG:103)-1))
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+@SKILL_MAXATK_PER_ソウルブースト,ARG
+#LOCALSIZE 3
+#DIM LENEMY_COUNT,2
+LOCAL:1 = CFLAG:ARG:PT플래그 == 0 ? 1 # 7
+LOCAL:2 = CFLAG:ARG:PT플래그 == 0 ? 7 # 17
+LENEMY_COUNT:0 = 0
+LENEMY_COUNT:1 = TOINT(AUTO_SPLIT("5_6_6_7","_",TOINT(CSTR:ARG:103)-1))
+FOR LOCAL:0,LOCAL:1,LOCAL:2
+	SIF POS(LOCAL:0) < 0 || GET_STATE(CFLAG:POS(LOCAL:0):상태이상) == "DYING"
+		CONTINUE
+	LENEMY_COUNT:0 ++
+	SIF LENEMY_COUNT:0 == LENEMY_COUNT:1
+		BREAK
+NEXT
+LENEMY_COUNT:0 = (LENEMY_COUNT:1 - LENEMY_COUNT:0) + 1
+RETURN LENEMY_COUNT:0
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+@SKILL_MINATK_PER_ソウルブースト,ARG
+CALL SKILL_MAXATK_PER_ソウルブースト,ARG
+RETURN RESULT
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ソウルブースト, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ソウルブースト,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_ソウルブースト,ARG
+#DIM ATTACK_TYPE
+ATTACK_TYPE = 0
+IF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"ソウルブースト")) < 0 && FLAG:총공격중
+	CALL GET_SKILL_PROP, "SKILL_TYPE", TFLAG:원입력행동,ARG
+	ATTACK_TYPE = RESULT
+ENDIF
+RETURN ATTACK_TYPE
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ソウルブースト
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ソウルブースト,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ソウルブースト,ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_ソウルブースト,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ソウルブースト,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;スキルがランダム範囲かどうか
+@SKILL_RAND_TARGET_ソウルブースト,ARG
+RETURN 1
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ソウルブースト,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_ソウルブースト
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_ソウルブースト, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ソウルブースト
+RETURN 0
+
+;没
+;@SKILL_RANK_ソウルブースト, ARG = -1
+
+
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_ソウルブースト,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_ソウルブースト,ARG,ARG:1
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"ソウルブースト")
+SIF ARG != FLAG:행동순1
+	RETURN 0
+SIF ARG != ARG:1
+	RETURN 0
+SIF GET_STATE(CFLAG:ARG:상태이상) == "CLOSE"
+	RETURN 0
+SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) > -1
+	RETURN 0
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+SIF RESULT != 1 || CFLAG:ARG:타겟 < 1
+	RETURN 0
+TRYCALL GET_SKILL_PROP, "SKILL_DAMAGETYPE", CFLAG:ARG:입력행동,ARG
+SIF RESULT != 2
+	RETURN 0
+TRYCCALL GET_SKILL_PROP, "SKILL_ATTACKTYPE", CFLAG:ARG:입력행동, ARG
+	SIF RESULT == GET_攻撃タイプ_NUM("割合")
+		RETURN 0
+	CATCH
+ENDCATCH
+;追撃の威力・相性の参照用にコマンドを保存しておく
+CALL SKILLGAGE_H_SET(ARG,SKILL_NUM, CFLAG:ARG:입력행동)
+RETURN 1
+
+;ターン終了時に行う処理
+@SKILL_TURNEND_ソウルブースト,ARG
+#DIM SKILL_NUM
+#DIM L_GAGE
+#DIM L_MAX_F
+SIF ARG < 0 || CSTR:ARG:103 == ""
+	RETURN 0
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"ソウルブースト")
+;PRINTFORMW H1 {SKILLGAGE_H_GET(ARG,SKILL_NUM)}
+L_GAGE = SKILLGAGE_F_GET(ARG,SKILL_NUM)
+IF GET_STATE(CFLAG:ARG:상태이상) == "DYING"
+	;死んだ場合はゲージを初期値にリセットする
+	SIF L_GAGE != 0
+		CALL SKILLGAGE_F_SET,ARG,SKILL_NUM,0
+	RETURN 0
+ENDIF
+;PRINTFORMW H2 {SKILLGAGE_H_GET(ARG,SKILL_NUM)}
+;Fゲージが0or正の値（起動していない状態）か、負の値（効果発動中）で処理を変更
+L_GAGE = L_GAGE > -1 ? MIN(L_GAGE + 5,100) # MIN(L_GAGE + 5 ,0)
+IF L_GAGE == 0 && SKILLGAGE_F_GET(ARG,SKILL_NUM) < 0
+	;効果時間が終了した際の処理
+	PRINTFORMW %CALLNAME:ARG%(은)는 능력의 반동으로 자세가 무너져 버렸다!
+	;SETBIT CFLAG:ARG:受けフラグ,23
+	;SETBIT CFLAG:ARG:受けフラグ,23 + GET_STATE_NUM("SLIP")
+	;CALL RECEIVE_SET, ARG, GET_TYPE_NUM("만능")
+	;引数の1は口上を飛ばす
+	CALL SET_BAD_STATE, ARG, ARG, GET_STATE_NUM("SLIP"), 1
+	CALL SET_C_RECORDS, ARG, ARG, "BAD_STATE", "SLIP"
+	PRINTFORM 　　TARGET:[{CPOS(ARG),2}] %CALLNAME:(ARG),20,LEFT%　>>>>>>　
+	;CFLAG:ARG:상태이상 = GET_STATE_NUM("SLIP")
+	CFLAG:ARG:상태이상경과턴수 = -2
+	CFLAG:ARG:입력행동 = -1
+	PRINTFORM SLIP
+	PRINTL
+ELSEIF L_GAGE == 100 && SKILLGAGE_F_GET(ARG,SKILL_NUM) > -1
+	;上限まで溜まったタイミングで効果発動、L_GAGEを負の値にセット
+	L_GAGE = -25
+	CALL PRINT_ACT_MESSAGE, ARG, SKILL_NUM
+	PRINTFORMW %CALLNAME:ARG%의 배후에 불길한 마름모꼴 표식이 떠올랐다……!
+ENDIF
+CALL SKILLGAGE_F_SET(ARG,SKILL_NUM,L_GAGE)
+;PRINTFORMW H3 {SKILLGAGE_H_GET(ARG,SKILL_NUM)}
+RETURN 0
+
+;SHOP画面を開いた時に行う処理
+;@SKILL_INITIALIZE_ソウルブースト,ARG
+;RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ソウルブースト,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM SKILL_TARG
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"ソウルブースト")
+SKILL_TARG = CFLAG:ARG:PT플래그 == 0 ? 19 # 22
+CALL ATTACK_RAND,ARG,SKILL_TARG,SKILL_NUM
+;CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+;CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+;CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM;		拡散攻撃
+;CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM;			ランダム攻撃
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+;RETURN -1
+;-1 再びコマンド選択へ
+; 1 キャラ選択へ
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@SKILLGAGE_DISPLAY_ソウルブースト,ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"ソウルブースト")
+PRINTFORM ＥＸ―ＳＫＩＬＬ|
+CALL PRINT_COLORBAR, ABS(SKILLGAGE_F_GET(ARG,SKILL_NUM)), SKILLGAGE_F_GET(ARG,SKILL_NUM) > -1 ? 100 # 25, 25, UNICODE(0x2585), UNICODE(0x2585), SKILLGAGE_F_GET(ARG,SKILL_NUM) > -1 ? 0x9acd32 # 0xff8c00, 0x696969
+PRINTL
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_ソウルブースト,ARG
+PRINTL 스킬 게이지 추가. 턴 경과에 따라 게이지가 차오른다. 게이지 완충 시 자동으로 기동한다
+PRINTL 기동 중, 마법 공격을 행했을 때에 한해 마법 데미지를 주는 추격을 랜덤 대상에게 가한다
+PRINTL 적 전체를 대상으로 하는 사거리를 가지며, 적 1체에 가하는 최대 공격 수는 적의 수에 따라 변동하고, 위력은 직전에 사용한 마법 공격에 의존한다
+PRINTL 단, 추격 중에 가하는 데미지는 평소보다 낮아지며, 사용 후 일정 시간 뒤에 효과가 해제됨과 동시에 SLIP 상태가 된다
+PRINTL 
+PRINTL 스킬 랭크가 높을수록 추격 중에 가하는 데미지가 상승하고 공격 횟수가 증가한다
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ソウルブースト,ARG
+RETURN 0
+
+@リンク不能_ソウルブースト
+RETURN 1
+
+;====================================================
+;独自処理
+;====================================================
+;（予定）と付けられている方は仮置きの物。実際に採用されるかどうかはわからない。
+@AUTO_PU_SKILL_ソウルブースト,ARG,ARGS,ARG:1,ARG:2
+#DIM SKILL_RANK
+#DIM SKILL_NUM
+;ARG = 攻撃者
+;ARGS （ダメージ↑、被ダメージ↑、命中↑、回避↑、魔威↑、魔効↑、etc…）といった感じの奴
+;ARG:1 = 防御者
+;文字列を参考にする都合上、どの文字列を使うか事前に定めておいた方がいいかも
+;CSTR:ARG:100 = EXTRA勢出典作品、『アークナイツ』とでも書き込む（予定）
+;CSTR:ARG:101 = EXTRA勢出典作品でどのキャラなのか、とりあえず『アーミヤ（アークナイツ）』とでも書き込む（予定）
+;CSTR:ARG:102 = 専用スキルその1のスキルランク変数として使用、この場合は『戦術詠唱γ』が対象（予定）
+;CSTR:ARG:103 = 専用スキルその2のスキルランク変数として使用、この場合は『ソウルブースト』が対象（予定）
+;CSTR:ARG:104 = 専用スキルその3のスキルランク変数として使用、この場合は『キメラ』が対象（予定）
+SIF ARG < 0
+	RETURN 0
+SKILL_RANK = TOINT(CSTR:ARG:103)
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"ソウルブースト")
+;IF ARGS == "Hゲージ最大値"
+;	;スキルHゲージの最大値を決める処理
+;	RETURN 100
+;ELSEIF ARGS == "Hゲージ初期値"
+;	;スキルHゲージの初期値を決める処理
+;	RETURN 0
+;ELSEIF ARGS == "Dゲージ最大値"
+;	;スキルDゲージの最大値を決める処理
+;	RETURN 6
+;ENDIF
+IF SKILLGAGE_F_GET(ARG,SKILL_NUM) < 0
+	SELECTCASE ARGS
+		CASE "ダメージ↓"
+			SIF !FLAG:총공격중
+				RETURN 0
+			;与ダメージとかに挟む場合の処理
+			SELECTCASE SKILL_RANK
+				CASE 1
+					RETURN 17
+					;RETURN 33
+				CASE 2
+					RETURN 20
+					;RETURN 39
+				CASE 3
+					RETURN 23
+					;RETURN 45
+				CASE 4
+					RETURN 30
+					;RETURN 60
+			ENDSELECT
+		CASEELSE
+			RETURN 0
+	ENDSELECT
+ENDIF
+RETURN 0

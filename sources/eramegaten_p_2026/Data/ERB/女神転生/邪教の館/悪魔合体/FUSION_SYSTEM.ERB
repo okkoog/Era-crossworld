@@ -1,0 +1,1282 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:FUSION_SYSTEM.ERB
+;	Facility	:悪魔合体のシステム関数群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/05/11		P(bazziel)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;@FUSION_SUCCESS_BASE				継承のベース関数
+;@SET_SUCCESS_SKILLLIST				スキル継承用にスキルをリスト化して登録する
+;@IS_SUCCESSABLE_FUSION_SKILL		スキルごとの継承可能かどうかの確認関数
+;@ABL引き継ぎチェック					ABL引き継ぎ時に、そもそもそのレベルのABLが存在するかを調べる
+;@SUCCESS_TALENT					非戦闘素質の引継ぎ処理
+;@SUCCESS_TALENT_CHECK				継承素質の打ち消しチェック
+;@SUCCESS_BTL_TALENT				戦闘素質の継承・発現処理
+;@ADD_潜在戦闘素質					潜在戦闘素質の追加関数
+;@SUCCESS_BTL_EXP					合体時の経験値継承処理
+;@SUCCESS_MAG_ENHANCE				MAGとMAGの強化値の引き継ぎ
+;@JUDGE_FUSION_MAKEABLE				合体悪魔の作成可否チェック
+;@MAKE_FUSION_DEVIL					合体悪魔の本作成処理
+;@SHOW_SUCCESS_SKILL				継承選択時のスキル表示
+;@SELECT_SUCCESS_SKILL				継承スキル選択処理
+;@FUSION_ACCIDENT_CHECK				合体事故発生チェック
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;========================================
+;継承のベース関数
+;素質・戦闘素質・MAG・忠誠度を扱う。
+;========================================
+@FUSION_SUCCESS_BASE, 完成品, 素材:1, 素材:2, 素材:3, IS_ACCIDENT
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC IS_ACCIDENT
+#DIM DYNAMIC FUSION_NO
+#DIM DYNAMIC 素材 , 4
+#DIM DYNAMIC 完成品 , 1
+#DIM DYNAMIC レベル不足合体
+FUSION_NO = NO:完成品
+
+;スキル継承
+CALL SET_SUCCESS_SKILLLIST,完成品,素材:1,素材:2,素材:3
+;邪教の館なら更に素質も継承
+SIF (FLAG:SHOP커맨드 == [[ショップ:사교의관]] || IS_ACCIDENT) && !SOFT_ON("뉴턴")
+	CALL SUCCESS_TALENT,完成品,素材:1,素材:2,素材:3
+;戦闘素質の継承と発現
+CALL SUCCESS_BTL_TALENT,完成品,素材:1,素材:2,素材:3
+;MAG強化の引継ぎ
+CALL SUCCESS_MAG_ENHANCE,完成品,素材:1,素材:2,素材:3
+
+;忠誠度を決定
+BASE:完成品:충성도 = 0
+FOR LCOUNT, 1, 4
+	SIF 素材:LCOUNT < 0
+		CONTINUE
+	CALL CONTROL_LOYALTY, 完成品, GET_CHARA_LOYALTY((素材:LCOUNT)) / 2
+NEXT
+BASE:完成品:충성도 = MAX(GET_CHARA_LOYALTY(完成品), 100)
+
+;----------------------------------------
+;ガチャ素質の継承
+;素材全てがガチャ産である場合のみガチャ素質を継承する
+;----------------------------------------
+TALENT:完成品:가챠 = 1
+FOR LCOUNT, 1, 4
+	SIF 素材:LCOUNT < 0
+		CONTINUE
+	SIF TALENT:(素材:LCOUNT):가챠
+		CONTINUE
+	TALENT:完成品:가챠 = 0
+NEXT
+
+;ラジエルの書装備中なら一部素質やランクアップ先を変化
+SIF SOFT_ON("라지엘의서") && EXTRACHECK_DEVIL_CHILDREN(NO:完成品)
+	CALL EXTRA_DEVIL_CHILDREN , 完成品
+;ステータス強化
+CALL SUCCESS_BTL_EXP,完成品,素材:1,素材:2,素材:3
+CALL SYNC_STATUS,完成品
+	
+;表示用に忠誠度を変更しておく
+レベル不足合体 = 0
+IF (BASE:(完成品):LV > BASE:MASTER:LV) && (SOFT_ON("스티븐") == 0)
+	IF GET_CHARA_LOYALTY(完成品) >= POWER(BASE:(完成品):LV - (BASE:MASTER:LV + FLAG:경험ED수) , 2)*500
+		レベル不足合体 = 1
+		CALL CONTROL_LOYALTY, 完成品, -(POWER(BASE:(完成品):LV - (BASE:MASTER:LV + FLAG:경험ED수) , 2)*500)
+	ENDIF
+ENDIF
+RETURN レベル不足合体
+
+;=====================================================
+;スキル継承用にスキルをリスト化して登録する
+;=====================================================
+@SET_SUCCESS_SKILLLIST,ARG,ARG:1,ARG:2,ARG:3 = -1,ARG:4 = 0
+#DIM LCOUNT, 2
+#DIM CHARA , 1
+#DIM カウント , 1
+#DIM SKILL, 2
+;ARG = 合体後悪魔
+;ARG:1 = 合体前悪魔Ａ
+;ARG:2 = 同Ｂ
+;ARG:3 = 同Ｃ
+;ARG:4 = 真の時、邪教の館での合体扱いとなる
+;LOCAL = 継承スキル(仮)
+;LOCAL:1 = 優先度
+;LOCAL:3 = LOCALのスキルの優先度（保存用）
+;LOCALS:1 = 継承するスキル枠
+
+;継承を実行する前のスキルを記録しておく
+VARSET FUSION_CSV_HAVESKILL
+VARSET FUSION_SUCCESS_ABLE_LIST
+FOR LCOUNT, 0, CHARA_SKILLCOUNT(ARG)
+	FUSION_CSV_HAVESKILL:LCOUNT = ABL:ARG:@"스킬{LCOUNT + 1}"
+NEXT
+;スキルカードを使えないロールは継承できない(要するに達人ははじく)
+SIF !GET_ROLE_PROP("CAN_USE_SKILLCARD", ARG)
+	RETURN 0
+FOR LCOUNT:1, 1, 4
+	CHARA = ARG:(LCOUNT:1)
+	SIF CHARA <= 0
+		CONTINUE
+	FOR LCOUNT, 0, CHARA_SKILLCOUNT(CHARA)
+		SKILL = ABL:CHARA:@"스킬{LCOUNT+1}"
+		SKILL:1 = SKILL
+		CALL GET_REPLACE_SKILL, SKILL, CHARA
+		SKILL = RESULT
+		;ソート用NO
+		SIF !SKILL
+			CONTINUE
+		;所持しているスキルは省く
+		SIF MATCH(FUSION_CSV_HAVESKILL, SKILL)
+			CONTINUE
+		CALL IS_SUCCESSABLE_FUSION_SKILL, ARG, SKILL
+		IF RESULT
+			;ソート用に下一桁をあける
+			;素質あり・継承部位ありの場合は無視できる場合でも優先度をあげる(ランクよりは優先されない)
+			;条件無視スキルは判定しない
+			;継承タイプ読み込み、ARGが継承できるタイプでなければ次へ
+			CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", SKILL, ARG
+			SIF !RANGE(RESULT, 0, 22)
+				CONTINUE
+			SKILL:1 += 1 * 100000 * 100
+			;---- EDIT 039 MOD START -------------------------
+			;継承部位を持っている場合は優先度をあげる
+			CALL HAVE_SKILL_SUCCESSION_BODY, ARG, SKILL
+			IF RESULT
+				SKILL:1 += 1 * 100000 * 100
+			ENDIF
+			CALL GET_SKILL_PROP, "SKILL_RANK", SKILL, ARG
+			SIF !RESULT
+				CONTINUE
+			;整列用にランクをいれる
+			FUSION_SUCCESS_ABLE_LIST:FINDELEMENT(FUSION_SUCCESS_ABLE_LIST, 0) = SKILL:1 + RESULT * 100000
+		ENDIF
+	NEXT
+NEXT
+ARRAYSORT FUSION_SUCCESS_ABLE_LIST, BACK
+;ソート用の数値をひっぺがす
+FOR LCOUNT, 0, VARSIZE("FUSION_SUCCESS_ABLE_LIST")
+	SIF !FUSION_SUCCESS_ABLE_LIST
+		BREAK
+	FUSION_SUCCESS_ABLE_LIST:LCOUNT %= 100000
+NEXT
+
+;========================================
+;スキルごとの継承可能かどうかの確認関数
+;========================================
+@IS_SUCCESSABLE_FUSION_SKILL, L_CHARA, L_SKILL
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_SKILL
+#DIM DYNAMIC L_SUCCESSION
+CALL GET_SKILL_PROP, "継承不能", L_SKILL, L_CHARA
+SIF RESULT
+	RETURN 0
+CALL GET_SKILL_PROP, "ロール専用", L_SKILL, L_CHARA
+SIF RESULT
+	RETURN 0
+;継承タイプ読み込み、ARGが継承できるタイプでなければ次へ
+CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", L_SKILL, L_CHARA
+L_SUCCESSION = RESULT
+SIF !RANGE(L_SUCCESSION, 0, 22)
+	RETURN 0
+SELECTCASE GET_SKILL_CHANGEABLE_RANK(L_CHARA)
+	CASE 1
+		SIF L_SUCCESSION != 22
+			RETURN 0
+	CASE 2
+		SIF !TALENT:L_CHARA:GET_SUCCESSION(L_SUCCESSION)
+			RETURN 0
+ENDSELECT
+
+;---- EDIT 039 MOD START -------------------------
+;ランクが正常範囲でないスキルは継承しない
+CALL GET_SKILL_PROP, "SKILL_RANK",L_SKILL, L_CHARA
+SIF !RANGE(RESULT, 1, 15)
+	RETURN 0
+RETURN 1
+
+;========================================
+;ABL引き継ぎ時に、そもそもそのレベルのABLが存在するかを調べる
+;========================================
+@ABL引き継ぎチェック(ARG,ARG:1,ARG:2 = -1)
+#FUNCTION
+LOCAL:1 = 0
+IF ARG:2 < 1
+	FOR LOCAL,0,26
+		LOCAL:1 = MAX(ABL:ARG:LOCAL , ABL:(ARG:1):LOCAL , LOCAL:1)
+	NEXT
+ELSE
+	FOR LOCAL,0,26
+		LOCAL:1 = MAX(ABL:ARG:LOCAL , ABL:(ARG:1):LOCAL, ABL:(ARG:2):LOCAL , LOCAL:1)
+	NEXT
+ENDIF
+RETURNF LOCAL:1
+
+;=====================================================
+;素質継承
+;=====================================================
+@SUCCESS_TALENT,ARG,ARG:1 = -1,ARG:2 = -1,ARG:3 = -1
+#DIM CHARA , 1
+#DIM カウント , 1
+CALL SUCCESS_TALENT_CHECK, "처녀", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "겁쟁이", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "꿋꿋함", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "반항적", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "솔직함", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "얌전함", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "프라이드높음", "프라이드낮음" ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "건방짐", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "츤데레", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "자제심", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "무관심", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "감정결핍", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "호기심", "보수적" ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "낙관적", "비관적" ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "일선을넘지않음", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "눈에띄고싶어함", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "정조관념", "정조관결여" ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "억압", "해방" ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "저항", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "부끄럼쟁이", "부끄럼없음" ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "헌신적", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "소악마", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "광기", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "유치", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "아픔에강함", "아픔에약함" ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "젖기쉬움", "젖기어려움" ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "임신하기쉬움", "임신하기어려움" ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "습득빠름", "습득느림" ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "바늘다루기", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "약독내성", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "오줌싸개버릇", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "자위하기쉬움", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "악취민감", "악취둔감" ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "불결무시", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "쾌감에솔직", "쾌감을부정" ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "중독되기쉬움", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "도착적", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "바이", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "남성혐오", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "여성혐오", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "Ｃ민감", "Ｃ둔감" ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "Ｖ민감", "Ｖ둔감" ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "Ａ민감", "Ａ둔감" ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "Ｂ민감", "Ｂ둔감" ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "매력", ,ARG,ARG:1,ARG:2,ARG:3
+CALL SUCCESS_TALENT_CHECK, "매혹", ,ARG,ARG:1,ARG:2,ARG:3
+;胸・体格・性別・ふたなりはお薬で弄くれるのでとりあえず無し
+
+;=====================================================
+;素質継承チェック
+;=====================================================
+@SUCCESS_TALENT_CHECK,ARGS,ARGS:1 = "",ARG,ARG:1,ARG:2,ARG:3 = -1
+#LOCALSIZE 3
+;ARGS 継承チェックを行う素質
+;ARGS:1 その相反する素質
+LOCAL:1 = 0
+IF TALENT:ARG:ARGS
+	;ARGSを所持している場合
+	;相反する素質が指定されていれば、持っている素材悪魔の数を数える
+	IF ARGS:1 != ""
+		FOR LOCAL , 1, 4
+			SIF ARG:LOCAL < 0
+				CONTINUE
+			SIF TALENT:(ARG:LOCAL):(ARGS:1)
+				LOCAL:1 ++
+			SIF TALENT:(ARG:LOCAL):(ARGS)
+				LOCAL:1 --
+		NEXT
+		;１Ｐ以上で打ち消し
+		SIF LOCAL:1 >= 1
+			TALENT:ARG:ARGS = 0
+		;２Ｐ以上で相反する素質を継承
+		SIF LOCAL:1 >= 2
+			TALENT:ARG:(ARGS:1) = 1
+	ELSE
+		RETURN 0
+	ENDIF
+ELSEIF ARGS:1 != "" && TALENT:ARG:(ARGS:1)
+	;ARGS:1を所持している場合
+	;相反する素質が指定されていれば、持っている素材悪魔の数を数える
+	FOR LOCAL , 1 , 4
+		SIF ARG:LOCAL < 0
+			CONTINUE
+		SIF TALENT:(ARG:LOCAL):(ARGS)
+			LOCAL:1 ++
+		SIF TALENT:(ARG:LOCAL):(ARGS:1)
+			LOCAL:1 --
+	NEXT
+		;１Ｐ以上で打ち消し
+	SIF LOCAL:1 >= 1
+		TALENT:ARG:(ARGS:1) = 0
+		;２Ｐ以上で相反する素質を継承
+	SIF LOCAL:1 >= 2
+		TALENT:ARG:(ARGS) = 1
+ELSE
+	;どちらも持っていない場合
+	;素質:ARGSを所持している素材悪魔を数える
+	;相反する素質がある場合はその素質を持つ悪魔の数だけ減算
+	FOR LOCAL , 1 , 4
+		SIF ARG:LOCAL < 0
+			CONTINUE
+		SIF TALENT:(ARG:LOCAL):(ARGS)
+			LOCAL:1 ++
+		SIF ARGS:1 != "" && TALENT:(ARG:LOCAL):(ARGS:1)
+			LOCAL:1 --
+	NEXT
+	;２Ｐ(相反する素質がある素質なら１Ｐ)以上で継承
+	IF LOCAL:1 >= 2 || (ARGS:1 != "" && LOCAL:1 >= 1)
+		TALENT:ARG:(ARGS) = 1
+	;－１Ｐ以下なら相反する素質を継承
+	ELSEIF LOCAL:1 <= -1
+		TALENT:ARG:(ARGS:1) = 1
+	ENDIF
+ENDIF
+
+;=====================================================
+;戦闘素質の継承・発現処理
+;=====================================================
+@SUCCESS_BTL_TALENT, 完成品, 素材:0, 素材:1, 素材:2
+#DIM LCOUNT, 2
+#DIM L_CHARA
+#DIMS TEMPS
+#DIMS L_TALENT_LIST
+#DIMS L_TALENTS
+#DIMS CONST L_TALENT_TABLE = "파워부스터", "인트부스터", "매직부스터", "바이탈부스터", "스피드부스터", "럭부스터"
+#DIM L_TALENT_LV
+#DIM L_MAX_BASE_STAT
+#DIM 完成品
+#DIM 素材, 3
+;-----------------------------------------------------
+;完成品の発現素質を確認する
+;CSV段階に記述がなかった場合はステータスブースト系が発現
+;-----------------------------------------------------
+SIF !SOFT_ON("메리크리스마스")
+	RETURN 0
+;---- EDIT 047 MOD START -------------------------
+IF CSVCSTR(NO:完成品, GETNUM(CSTR, "잠재전투소질")) != ""
+	L_TALENT_LIST = %CSVCSTR(NO:完成品, GETNUM(CSTR, "잠재전투소질"))%
+	FOR LCOUNT, 0, STRCOUNT(L_TALENT_LIST, "/") + 1
+		TEMPS = %AUTO_SPLIT(L_TALENT_LIST, "/", LCOUNT)%
+		L_TALENTS = %AUTO_SPLIT(TEMPS, "_", 0)%
+		SIF GET_ROLE_PROP(@"CAN_USE_%L_TALENTS%", 完成品) < 2
+			CONTINUE
+		L_TALENT_LV = MAX(TOINT(AUTO_SPLIT(TEMPS, "_", 1)), 1)
+		TALENT:完成品:L_TALENTS = MAX(L_TALENT_LV, TALENT:完成品:L_TALENTS)
+	NEXT
+ELSE
+	L_MAX_BASE_STAT = 0
+	FOR LCOUNT, 1, BASESTATUSNUM
+		SIF BASE:完成品:GET_BASESTATUS(LCOUNT) > L_MAX_BASE_STAT / 100
+			L_MAX_BASE_STAT = BASE:完成品:GET_BASESTATUS(LCOUNT) * 100 + LCOUNT
+	NEXT
+	L_MAX_BASE_STAT %= 100
+	L_TALENTS '= L_TALENT_TABLE:(L_MAX_BASE_STAT - 1)
+	IF GET_ROLE_PROP(@"CAN_USE_%L_TALENTS%", 完成品) == 2
+		L_TALENT_LV = 1 + (BASE:完成品:LV >= 30) + (BASE:完成品:LV >= 60)
+		CSTR:完成品:잠재전투소질 = %L_TALENTS%_{L_TALENT_LV}
+		TALENT:完成品:L_TALENTS = MAX(L_TALENT_LV, TALENT:完成品:L_TALENTS)
+	ENDIF
+ENDIF
+FOR LCOUNT:1, 0, 3
+	L_CHARA = 素材:(LCOUNT:1)
+	SIF L_CHARA < 0
+		CONTINUE
+	SIF CSTR:L_CHARA:잠재전투소질 == ""
+		CONTINUE
+	L_TALENT_LIST = %CSTR:L_CHARA:잠재전투소질%
+	FOR LCOUNT, 0, STRCOUNT(L_TALENT_LIST, "/") + 1
+		TEMPS = %AUTO_SPLIT(L_TALENT_LIST, "/", LCOUNT)%
+		L_TALENTS = %AUTO_SPLIT(TEMPS, "_", 0)%
+		SIF GET_ROLE_PROP(@"CAN_USE_%L_TALENTS%", 完成品) < 2
+			CONTINUE
+		L_TALENT_LV = MAX(TOINT(AUTO_SPLIT(TEMPS, "_", 1)), 1)
+		SIF TALENT:完成品:L_TALENTS >= L_TALENT_LV
+			CONTINUE
+		TALENT:完成品:L_TALENTS = L_TALENT_LV
+		CALL ADD_潜在戦闘素質, 完成品, L_TALENTS, L_TALENT_LV
+	NEXT
+NEXT
+
+;========================================
+;潜在戦闘素質の追加関数
+;既存のリストにより高いレベルのものが来た場合は置換する
+;========================================
+@ADD_潜在戦闘素質, L_CHARA, L_TALENT, L_TALENT_LV
+#DIM LCOUNT
+#DIM L_CHARA
+#DIMS L_TALENT
+#DIM L_TALENT_LV
+#DIM TEMP
+#DIMS TEMPS
+#DIM TEMP_LV
+TEMP = STRFIND(CSTR:L_CHARA:잠재전투소질, L_TALENT) >= 0
+IF TEMP >= 0
+	TEMP_LV = TOINT(SUBSTRING(CSTR:L_CHARA:잠재전투소질, TEMP + STRLENS(L_TALENT) + 1))
+	SIF ISNUMERIC(SUBSTRING(CSTR:L_CHARA:잠재전투소질, TEMP + STRLENS(L_TALENT) + 2))
+		TEMP_LV = TEMP_LV * 10 + TOINT(SUBSTRING(CSTR:L_CHARA:잠재전투소질, TEMP + STRLENS(L_TALENT) + 2))
+	CSTR:L_CHARA:잠재전투소질 = %REPLACE(CSTR:L_CHARA:잠재전투소질, L_TALENT + "_\\d*/?", "")%
+	CSTR:L_CHARA:잠재전투소질 = %ADD_SPLIT(CSTR:L_CHARA:잠재전투소질, "/", L_TALENT + "_" + TOSTR(MAX(TEMP_LV, L_TALENT_LV)))%
+ELSE
+	CSTR:L_CHARA:잠재전투소질 = %ADD_SPLIT(CSTR:L_CHARA:잠재전투소질, "/", L_TALENT + "_" + TOSTR(L_TALENT_LV))%
+ENDIF
+
+;========================================
+;合体時の経験値継承処理
+;========================================
+@SUCCESS_BTL_EXP,ARG,ARG:1,ARG:2,ARG:3 = -1
+#DIM DYNAMIC 経験値
+#DIM DYNAMIC LCOUNT
+FOR LCOUNT , 1, 4
+	SIF ARG:LCOUNT < 0
+		CONTINUE
+	経験値 += TOTAL_TAKE_EXP:(ARG:LCOUNT):0
+NEXT
+
+SELECTCASE 3 - MATCH(ARG, -1, 1, 4)
+	CASE 3
+		TIMES 経験値, 0.5
+	CASE 2
+		TIMES 経験値, 0.7
+	CASE 1
+		TIMES 経験値, 1.0
+ENDSELECT
+IF FLAG:SHOP커맨드 != [[ショップ:사교의관]]
+	BASE:ARG:ＥＸＰ += 経験値/2
+ELSE
+	BASE:ARG:ＥＸＰ += 経験値
+ENDIF
+
+;========================================
+;MAGとMAGの強化値の引き継ぎ
+;========================================
+@SUCCESS_MAG_ENHANCE, 完成品, 素材:0, 素材:1, 素材:2
+#DIM LCOUNT
+#DIM 完成品
+#DIM 素材, 3
+#DIM L_HAVE_MAG
+#DIM L_USE_ENHANCE_MAG
+#DIM CNT_FREE_BASE_ENHANCE
+;能力強化に使った分は引き継がれる
+;ただ、MAGに還元して引き継がせると持ちきれないケースが発生するので
+;強化使用分は無償でMAG強化をするのに使えるという形で還元させる
+CNT_FREE_BASE_ENHANCE = 0
+L_HAVE_MAG = 0
+L_USE_ENHANCE_MAG = 0
+
+;MAGの取得
+FOR LCOUNT, 0, 3
+	SIF 素材:LCOUNT <= 0
+		CONTINUE
+	L_HAVE_MAG += GET_CHARA_STOCK_MAG(素材:LCOUNT)
+	L_HAVE_MAG += HIDDEN_MAG:(素材:LCOUNT):0
+	L_USE_ENHANCE_MAG += CFLAG:(素材:LCOUNT):강화사용ＭＡＧ
+NEXT
+
+;手持ちMAGが完成品の所持上限を超えてしまう場合は強化の判定にまわす
+IF GET_CHARA_MAXMAG(完成品) < L_HAVE_MAG
+	L_USE_ENHANCE_MAG += L_HAVE_MAG - GET_CHARA_MAXMAG(完成品)
+	L_HAVE_MAG = GET_CHARA_MAXMAG(完成品)
+ENDIF
+
+;ふれなくなるまでふらせる
+WHILE L_USE_ENHANCE_MAG >= MAG_CALC_ENHANCE_BASE(完成品, CNT_FREE_BASE_ENHANCE)
+	L_USE_ENHANCE_MAG -= MAG_CALC_ENHANCE_BASE(完成品, CNT_FREE_BASE_ENHANCE)
+	CFLAG:(完成品):강화사용ＭＡＧ += MAG_CALC_ENHANCE_BASE(完成品, CNT_FREE_BASE_ENHANCE)
+	CNT_FREE_BASE_ENHANCE++
+WEND
+;能力強化回数を確定。この回数が実際に振られてる数値より高い限り、必要コストが0になる。
+CFLAG:完成品:능력강화횟수 = CNT_FREE_BASE_ENHANCE
+;完成品の初期MAGは計算しておいた手持ちMAGの合計と強化MAGの余りになる
+CALL CONTROL_MAG,完成品, L_HAVE_MAG + L_USE_ENHANCE_MAG
+
+;========================================
+;合体悪魔の作成可否チェック
+;
+;戻り値
+;RESULT = 作成できら真
+;RESULTS = 作成できなかった時のテキスト
+;========================================
+@JUDGE_FUSION_MAKEABLE, 完成品, レベル不足合体
+#DIM DYNAMIC 完成品
+#DIM DYNAMIC FUSION_NO
+#DIM DYNAMIC レベル不足合体
+FUSION_NO = NO:完成品
+IF CSVCFLAG(FUSION_NO , GETNUM(CFLAG,"１체만"),0) && GETCHARA(FUSION_NO) != 完成品
+	IF FLAG:SHOP커맨드 != [[ショップ:사교의관]]
+		RESULTS = 유감이지만 이 악마는 2체 이상 동료마로 삼을 수 없다
+	ELSE
+		RESULTS = 2체 이상 동료마로 삼을 수 없는 악마입니다
+	ENDIF
+	RETURN 0
+ENDIF
+
+;合体結果の悪魔が既に仲魔(未契約かつＣＯＭＰに居る)である場合
+IF FINDCHARA_NO_C(FUSION_NO, 完成品) > -1 && FLAG:SHOP커맨드 != [[ショップ:사교의관]]
+	RESULTS = COMP 안에 같은 악마가 있습니다
+	RETURN 0
+ENDIF
+
+;合体結果の悪魔のレベル>主人のレベルだった場合駄目
+;스티븐
+IF (BASE:(完成品):LV > BASE:MASTER:LV + FLAG:경험ED수) && (SOFT_ON("스티븐") == 0) && レベル不足合体 == 0
+	IF FLAG:SHOP커맨드 != [[ショップ:탐색]]
+		RESULTS = 아쉽지만……네 레벨로는 다룰 수 없어
+	ELSE
+		RESULTS = 레벨이 부족합니다
+	ENDIF
+	RETURN 0
+ENDIF
+RETURN 1
+
+;========================================
+;合体悪魔の本作成処理
+;継承スキルの選択と合体事故もここで扱う
+;
+;戻り値:1 = 作成成功 2 = 作成せず
+;========================================
+@MAKE_FUSION_DEVIL, 完成品, 素材:1 = -1, 素材:2 = -1, 素材:3 = -1
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC 素材 , 4
+#DIM DYNAMIC 完成品 , 1
+#DIM DYNAMIC L_SUCCESS_LIST, HAVEABLE_SKILLNUM
+#DIMS DYNAMIC L_BTL_TALENT
+#DIM DYNAMIC CNT_FREE_BASE_ENHANCE
+CALL SELECT_SUCCESS_SKILL, 完成品, 素材:1, 素材:2, 素材:3, L_SUCCESS_LIST
+SIF !RESULT
+	RETURN 0
+;作成時のセリフを表示
+IF FLAG:SHOP커맨드 == [[ショップ:탐색]]
+	; 合体事故発生チェッ
+	IF FUSION_ACCIDENT_CHECK(素材:1,素材:2,素材:3)
+		CALL FUSION_ACCIDENT,完成品,素材:1,素材:2,素材:3,L_SUCCESS_LIST
+		PRINTFORMW 합체 사고 발생
+		PRINTFORMW 예정과 다른 악마 \@CSTR:(完成品):종족명 != "" ? %CSTR:(完成品):종족명% # %STR:(ABL:(完成品):종족)% \@%CALLNAME:完成品%이(가) 작성되었습니다
+	ELSE
+		PRINTFORML 새로운 소환 프로그램 작성
+		PRINTFORMW \@CSTR:(完成品):종족명 != "" ? %CSTR:(完成品):종족명% # %STR:(ABL:(完成品):종족)% \@%CALLNAME:完成品%을(를) 소환할 수 있게 되었습니다
+	ENDIF
+ELSE
+	; 合体事故発生チェック
+	IF FUSION_ACCIDENT_CHECK(素材:1,素材:2,素材:3)
+		CALL FUSION_ACCIDENT,完成品,素材:1,素材:2,素材:3,L_SUCCESS_LIST
+		PRINTFORMW 합체 사고 발생
+		PRINTFORMW 예정과 다른 악마 \@CSTR:(完成品):종족명 != "" ? %CSTR:(完成品):종족명% # %STR:(ABL:(完成品):종족)% \@%CALLNAME:完成品%이(가) 작성되었습니다
+	ELSE
+		TRYCCALLFORM FUSION_MESSAGE_K{NO:(完成品)},完成品
+		CATCH
+			TRYCALLFORM FUSION_MESSAGE_PUB{ABL:(完成品):회화타입},完成品
+		ENDCATCH
+	ENDIF
+ENDIF
+
+IF FLAG:SHOP커맨드 == [[ショップ:사교의관]]
+	VARI TEMP_DEVIL = 素材:1
+	;忠誠度の高い方の手紙を選択
+	SIF GET_CHARA_LOYALTY(TEMP_DEVIL) < GET_CHARA_LOYALTY((素材:2))
+		TEMP_DEVIL = 素材:2
+	SIF 素材:3 > -1 && GET_CHARA_LOYALTY(TEMP_DEVIL) < GET_CHARA_LOYALTY((素材:3))
+		TEMP_DEVIL = 素材:3
+	CALL FUSION_LETTER,TEMP_DEVIL,0
+ENDIF
+
+CALL SET_ROLE_CP, 完成品
+IF GET_ROLE_CP(完成品, "通常形態") < 0
+	DRAWLINE
+	PRINTFORML %CALLNAME:完成品%의 소질 코스트가 수용량의 상한을 초과했습니다.
+	PRINTFORMW 남길 소질을 선택해주세요.
+	DRAWLINE
+	CALL SET_VAR_HAVE_SUB_ROLE, 完成品, "通常形態", L_BTL_TALENT
+	;サブ素質を設定
+	CALL ENHANCE_ROLE, 完成品, "通常形態", L_BTL_TALENT, , "戻る不可"
+ENDIF
+
+;ここに忠誠度による素質変化とか予定
+SIF SOFT_ON("프라이데이") == 1 && BASE:(完成品):충성도 < 1000
+	BASE:(完成品):충성도 = 1000
+
+;LOCAL:7 ABL引き継ぎレベル
+LOCAL:7 = ABL引き継ぎチェック(素材:1,素材:2,素材:3)
+;---- EDIT 027 ADD START -------------------------
+IF GET_CHARA_LOYALTY((完成品)) >= 200 && LOCAL:7 >= 1
+;---- EDIT 027 ADD END -------------------------
+	PRINTL 충성도를 소비하여 조교에 관한 능력을 계승할 수 있습니다
+	
+	PRINTL [0] 인계하지 않는다
+	LOCAL:7 = ABL引き継ぎチェック(素材:1,素材:2,素材:3)
+	SIF GET_CHARA_LOYALTY((完成品)) >= 200 && LOCAL:7 >= 1
+		PRINTL [1] LV1까지 계승  -  소비 충성도 200
+	SIF GET_CHARA_LOYALTY((完成品)) >= 500 && LOCAL:7 >= 2
+		PRINTL [2] LV2까지 계승  -  소비 충성도 500
+	SIF GET_CHARA_LOYALTY((完成品)) >= 1000 && LOCAL:7 >= 3
+		PRINTL [3] LV3까지 계승  -  소비 충성도 1000
+	SIF GET_CHARA_LOYALTY((完成品)) >= 3000 && LOCAL:7 >= 4
+		PRINTL [4] LV4까지 계승  -  소비 충성도 3000
+	SIF GET_CHARA_LOYALTY((完成品)) >= 5000 && LOCAL:7 >= 5
+		PRINTL [5] LV5까지 계승  -  소비 충성도 5000
+	
+	$INPUT_LOOP_ABL
+	INPUT
+	IF RESULT == 0
+		LOCAL:7 = 0
+	ELSEIF RESULT == 1 && GET_CHARA_LOYALTY((完成品)) >= 200
+		LOCAL:7 = 1
+		CALL CONTROL_LOYALTY, (完成品), -200
+	ELSEIF RESULT == 2 && GET_CHARA_LOYALTY((完成品)) >= 500
+		LOCAL:7 = 2
+		CALL CONTROL_LOYALTY, (完成品), -500
+	ELSEIF RESULT == 3 && GET_CHARA_LOYALTY((完成品)) >= 1000
+		LOCAL:7 = 3
+		CALL CONTROL_LOYALTY, (完成品), -1000
+	ELSEIF RESULT == 4 && GET_CHARA_LOYALTY((完成品)) >= 3000
+		LOCAL:7 = 4
+		CALL CONTROL_LOYALTY, (完成品), -3000
+	ELSEIF RESULT == 5 && GET_CHARA_LOYALTY((完成品)) >= 5000
+		LOCAL:7 = 5
+		CALL CONTROL_LOYALTY, (完成品), -5000
+	ELSE
+		GOTO INPUT_LOOP_ABL
+	ENDIF
+	;調教効果の引き継ぎ
+	IF 素材:3 > 0
+		FOR LOCAL,0,26
+			ABL:(完成品):LOCAL = MAX(MIN(LOCAL:7 , MAX(ABL:(素材:1):LOCAL , ABL:(素材:2):LOCAL , ABL:(素材:3):LOCAL)) , ABL:(完成品):LOCAL)
+		NEXT
+	ELSE
+		FOR LOCAL,0,26
+			ABL:(完成品):LOCAL = MAX(MIN(LOCAL:7 , MAX(ABL:(素材:1):LOCAL , ABL:(素材:2):LOCAL)) , ABL:(完成品):LOCAL)
+		NEXT
+	ENDIF
+ENDIF
+MAXBASE:(完成品):충성도 = GET_CHARA_LOYALTY((完成品))
+
+PRINTFORMW %종족명(完成品)% %CALLNAME:(完成品)%이(가) 동료마가 되었다.
+
+;取得済みスキルの登録
+FOR LCOUNT, 1, HAVEABLE_SKILLNUM + 1
+	SIF ABL:完成品:@"스킬{LCOUNT}"
+		CALL SET_LEARNED_SKILL, 完成品, TOSTR(ABL:完成品:@"스킬{LCOUNT}"), "通常形態"
+	SIF ABL:完成品:@"초기변신악마스킬{LCOUNT}"
+		CALL SET_LEARNED_SKILL, 完成品, TOSTR(ABL:完成品:@"초기변신악마스킬{LCOUNT}"), "変身形態"
+NEXT
+;悪魔解析度が100未満なら100に。
+ANALYSIS_RATE:(NO:完成品) = ANALYSIS_COMPLETED
+SETBIT IS_CHARA_COMPANIONED:(NO:完成品), CFLAG:完成品:이벤트가입 < 0 ? 0 # CFLAG:完成品:이벤트가입
+
+;ハッピーバースデーの能力低下はここでやる
+IF SOFT_ON("해피버스데이")
+	LOCAL:7 = BASE:(完成品):LV
+	BASE:(完成品):LV = 1
+	BASE:(完成品):ＥＸＰ = 0
+	BASE:(完成品):ＭＡＧ = 0
+	FOR LCOUNT, 0, 6
+		BASE:(完成品):GET_BASESTATUS(LCOUNT + 1) = 3
+	NEXT
+ENDIF
+CALL SYNC_STATUS,完成品
+CALL HEALTH_CHARA,完成品
+
+CALL CHECK_LEVEL_UP,完成品
+CFLAG:(完成品):입력행동 = -1
+
+;素材にした悪魔が瀕死だと主人がDARKに傾く
+SIF GET_STATE(CFLAG:(素材:1):상태이상) == "DYING"
+	CALL INCREASE_LD,-7
+SIF GET_STATE(CFLAG:(素材:2):상태이상) == "DYING"
+	CALL INCREASE_LD,-7
+SIF 素材:3 > 0 && GET_STATE(CFLAG:(素材:3):상태이상) == "DYING"
+	CALL INCREASE_LD,-7
+;素材にした悪魔の反発刻印によってDARKに傾く
+CALL INCREASE_LD,-3*(MARK:(素材:1):반발각인 + MARK:(素材:2):반발각인)
+SIF 素材:3 > 0
+	CALL INCREASE_LD,-3*(MARK:(素材:3):반발각인)
+
+FOR LOCAL, CHARANUM-1 , 0 , -1
+	IF MATCH(素材 , LOCAL)
+		CALL キャラ削除, LOCAL
+		完成品 -= 1
+	ENDIF
+NEXT
+
+;COMP容量が足りない場合はサーバーに入れるやつはサーバーに入れる
+IF ストック空き容量() < 0 || FINDCHARA_NO_C(NO:完成品, 完成品) > -1
+	SIF GET_ROLE_PROP("CAN_PUT_IN_COMP", 完成品)
+		CFLAG:完成品:소속ＣＯＭＰ = -1
+ENDIF
+
+FLAG:작성예정악마 = -1
+FLAG:합체소재악마1 = -1
+FLAG:합체소재악마2 = -1
+FLAG:합체소재악마3 = -1
+RETURN 1
+
+;========================================
+;継承選択時のスキル表示
+;========================================
+@SHOW_SUCCESS_SKILL, L_MODE, 完成品, 素材:0, 素材:1, 素材:2, SP_FUSION_LISTNO
+#DIMS DYNAMIC  L_MODE
+#DIM DYNAMIC  完成品
+#DIM DYNAMIC  素材, 3
+#DIM DYNAMIC  L_LEARN_SKILL_NUM
+#DIM DYNAMIC  L_SKILL
+#DIM DYNAMIC  SKILLCOLOR
+#DIM DYNAMIC  LCOUNT, 3
+#DIMS DYNAMIC SHOW_LINE
+#DIM DYNAMIC TEMP
+#DIMS DYNAMIC TEMPS
+#DIM DYNAMIC  L_VALUE
+#DIMS DYNAMIC L_TITLE
+#DIM DYNAMIC SP_FUSION_LISTNO
+#DIM DYNAMIC CSV_HAVESKILL, HAVEABLE_SKILLNUM
+
+;色表示の問題があるので初期スキルを取っておく
+FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+	TEMP = CSVABL(NO:完成品, GETNUM(ABL, @"스킬{LCOUNT+1}"))
+	SIF TEMP == 0
+		CONTINUE
+	SIF !HAVE_SKILL(完成品, TEMP)
+	CSV_HAVESKILL:LCOUNT = TEMP
+NEXT
+
+IF GETBIT(FLAG:스테이터스화면타입,1) || L_MODE == "継承スキル選択中"
+	PRINTFORM 소지 스킬(합체 후:%CALLNAME:(完成品)%)
+	FOR LCOUNT,1,21
+		IF ABL:(完成品):@"습득스킬{LCOUNT}" > 0
+			IF L_LEARN_SKILL_NUM == 0
+				L_LEARN_SKILL_NUM = LCOUNT
+			ELSE
+				SIF ABL:(完成品):@"습득LV{L_LEARN_SKILL_NUM}" > ABL:(完成品):@"습득LV{LCOUNT}"
+					L_LEARN_SKILL_NUM = LCOUNT
+			ENDIF
+		ENDIF
+	NEXT
+	IF GETBIT(FLAG:커스텀게임화면,1)
+		IF L_LEARN_SKILL_NUM > 0
+			IF ABL:(完成品):@"습득LV{L_LEARN_SKILL_NUM}" > (BASE:(完成品):LV)+5
+				SETCOLOR 0x666666
+				PRINTFORML    NEXT[????????]  습득LV {ABL:(完成品):@"습득LV{L_LEARN_SKILL_NUM}"}
+				RESETCOLOR
+			ELSE
+				CALL GET_SKILL_PROP, "SKILL_NAME", ABL:(完成品):@"습득스킬{L_LEARN_SKILL_NUM}",完成品
+				SETCOLOR 0x666666
+				PRINTFORML    NEXT[%RESULTS%]  습득LV {ABL:(完成品):@"습득LV{L_LEARN_SKILL_NUM}"}
+				RESETCOLOR
+			ENDIF
+		ELSE
+			PRINTL
+		ENDIF
+	ELSE
+		PRINTL 
+	ENDIF
+	SHOW_LINE = 
+	FOR LCOUNT, 1, CHARA_SKILLCOUNT(完成品)+1
+		IF ABL:(完成品):@"스킬{LCOUNT}"
+			L_SKILL = ABL:(完成品):@"스킬{LCOUNT}"
+			CALL GET_REPLACE_SKILL, L_SKILL, 完成品
+			L_SKILL = RESULT
+			CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL,完成品
+			TEMPS = 　[{LCOUNT,3}] %RESULTS, SKILLNAMELENS:GETBIT(FLAG:커스텀게임화면,1), LEFT%
+			L_TITLE = スキルカード所持枚数:{ITEM:(10000 + L_SKILL)} \@ABLE_MAKESKILLCARD(L_SKILL) ? 複製:◯ # \@
+			CALL GET_SKILL_EXPLAIN_TOOLTIP, L_SKILL, 完成品
+			L_TITLE = %ADD_SPLIT(L_TITLE, UNICODE(0x000D) * 2, RESULTS)%
+			TEMPS = %SET_BUTTON_TAG(TEMPS, TOSTR(LCOUNT), L_TITLE)%
+			SKILLCOLOR = 0
+			;素材同士で共通しているスキルかどうか
+			FOR LCOUNT:2, 0, 3
+				SIF 素材:(LCOUNT:2) <= 0
+					CONTINUE
+				SIF HAVE_SKILL(素材:(LCOUNT:2), L_SKILL)
+					SETBIT SKILLCOLOR, LCOUNT:2 + 1
+			NEXT
+			;完成品の初期スキルにない場合は着色
+			IF !MATCH(FUSION_CSV_HAVESKILL, L_SKILL)
+				;素材が複数所持
+				IF GETBIT(SKILLCOLOR, 1) + GETBIT(SKILLCOLOR, 2) + GETBIT(SKILLCOLOR, 3) > 1
+					TEMPS = %SET_COLOR_TAG(TEMPS, "#ff69b4")%
+				ELSE
+					SIF GETBIT(SKILLCOLOR, 1)
+						TEMPS = %SET_COLOR_TAG(TEMPS, "aqua")%
+					SIF GETBIT(SKILLCOLOR, 2)
+						TEMPS = %SET_COLOR_TAG(TEMPS, "#00ff00")%
+					SIF GETBIT(SKILLCOLOR, 3)
+						TEMPS = %SET_COLOR_TAG(TEMPS, "yellow")%
+				ENDIF
+			ENDIF
+		ELSE
+			TEMPS = 　[{LCOUNT,3}] %"EMPTY", SKILLNAMELENS:GETBIT(FLAG:커스텀게임화면,1), LEFT%
+			TEMPS = %SET_COLOR_TAG(TEMPS, "gray")%
+		ENDIF
+		SHOW_LINE += TEMPS
+		IF GETBIT(FLAG:커스텀게임화면,1)
+			IF LCOUNT % 3 == 0
+				HTML_PRINT SHOW_LINE
+				SHOW_LINE = 
+			ENDIF
+		ELSE
+			IF LCOUNT % 4 == 0
+				HTML_PRINT SHOW_LINE
+				SHOW_LINE = 
+			ENDIF
+		ENDIF
+	NEXT
+	SIF SHOW_LINE != ""
+		HTML_PRINT SHOW_LINE
+	LCOUNT:1 = 0
+	IF GETBIT(FLAG:커스텀게임화면,1) == 0
+		IF L_LEARN_SKILL_NUM > 0
+			IF ABL:(完成品):@"습득LV{L_LEARN_SKILL_NUM}" > (BASE:(完成品):LV)+5
+				SETCOLOR 0x666666
+				PRINTFORML    NEXT[????????]  습득LV {ABL:(完成品):@"습득LV{L_LEARN_SKILL_NUM}"}
+				RESETCOLOR
+			ELSE
+				CALL GET_SKILL_PROP, "SKILL_NAME", ABL:(完成品):@"습득스킬{L_LEARN_SKILL_NUM}",完成品
+				SETCOLOR 0x666666
+				PRINTFORML    NEXT[%RESULTS%]  습득LV {ABL:(完成品):@"습득LV{L_LEARN_SKILL_NUM}"}
+				RESETCOLOR
+			ENDIF
+		ELSE
+			PRINTL 
+		ENDIF
+	ENDIF
+	DRAWLINE
+ENDIF
+
+IF L_MODE == "逆引き合体"
+	VARSET RESULT, 0, 0, 4
+	VARSET RESULTS, "", 0, 4
+	VARI SP_素材, 3
+	TRYCCALLFORM FUSION_SPECIAL_{SP_FUSION_LIST_DEVIL_NO:SP_FUSION_LISTNO}
+		SP_素材 = RESULT:1, RESULT:2, RESULT:3
+	CATCH
+	ENDCATCH
+ENDIF
+FOR LCOUNT:1, 0, 3
+	IF 素材:(LCOUNT:1) <= 0
+		IF L_MODE == "逆引き合体"
+			VARS TEMPS
+			IF SP_素材:(LCOUNT:1) == 0
+				PRINTL 
+				PRINTL 
+				PRINTL 
+			ELSE
+				IF SP_素材:(LCOUNT:1) > 0
+					TEMPS '= CSVCALLNAME(SP_素材:(LCOUNT:1))
+				ELSE
+					TEMPS '= GET_RACE(ABS(SP_素材:(LCOUNT:1)))
+				ENDIF
+				TEMPS '= @"[{900 + LCOUNT:1}] " + TEMPS
+				IF SP_FUSION_LIST_MAKEABLE:SP_FUSION_LISTNO
+					HTML_PRINT SET_BUTTON_TAG(TEMPS, TOSTR(900 + LCOUNT:1))
+				ELSE
+					HTML_PRINT TEMPS
+				ENDIF
+				PRINTL 
+				PRINTL 
+			ENDIF
+		ENDIF
+		SIF GETBIT(FLAG:커스텀게임화면,1) == 0
+			DRAWLINE
+	ELSE
+		IF L_MODE == "逆引き合体"
+			PRINTBUTTON @"[{900 + LCOUNT:1}] " + TOALIGNMENT(CALLNAME:(素材:(LCOUNT:1)), 24, "LEFT"), 900 + LCOUNT:1
+		ELSE
+			PRINTFORM 소지스킬 %CHARATU("첫두세", LCOUNT:1)%번째:%CALLNAME:(素材:(LCOUNT:1)), 24, LEFT%
+		ENDIF
+		IF L_MODE == "継承スキル選択中"
+			PRINT (
+			PRINTFORM 소지ＭＡＧ:{GET_CHARA_STOCK_MAG(素材:(LCOUNT:1)), 10}
+			PRINT 　　
+			PRINTFORM 충성도:{GET_CHARA_LOYALTY((素材:(LCOUNT:1))), 7} 　추출가능:
+			IF COUNT_ABLE_MAKE_SKILLCARD(素材:(LCOUNT:1)) == 100
+				PRINT 99+ 
+			ELSE
+				PRINTFORM {COUNT_ABLE_MAKE_SKILLCARD(素材:(LCOUNT:1)),2}회
+			ENDIF
+			PRINT )
+		ENDIF
+		PRINTL 
+		SHOW_LINE = 
+		FOR LCOUNT,1,CHARA_SKILLCOUNT(素材:(LCOUNT:1)) + 1
+			L_SKILL = ABL:(素材:(LCOUNT:1)):@"스킬{LCOUNT}"
+			VARS L_VALUES
+			IF L_MODE == "継承スキル選択中"
+				L_VALUES '= TOSTR((LCOUNT:1 + 4) * HAVEABLE_SKILLNUM + LCOUNT)
+			ELSE
+				L_VALUES '= TOSTR((LCOUNT:1 + 1) * HAVEABLE_SKILLNUM + LCOUNT)
+			ENDIF
+			TEMPS = %@"　[%L_VALUES,3%] "%
+			IF L_SKILL > 0
+				;置換チェック
+				CALL GET_REPLACE_SKILL, L_SKILL, 完成品
+				L_SKILL = RESULT
+				CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, 素材:(LCOUNT:1)
+				TEMPS += @"%RESULTS, SKILLNAMELENS:GETBIT(FLAG:커스텀게임화면,1), LEFT%"
+				;TEMPS = 　[{(LCOUNT:1 + 1) * HAVEABLE_SKILLNUM + LCOUNT,2}] %RESULTS, SKILLNAMELENS:GETBIT(FLAG:커스텀게임화면,1), LEFT%
+				L_TITLE = スキルカード所持枚数:{ITEM:(10000 + L_SKILL)} \@ABLE_MAKESKILLCARD(L_SKILL) ? 複製:◯ # \@
+				CALL GET_SKILL_EXPLAIN_TOOLTIP, L_SKILL, 素材:(LCOUNT:1)
+				L_TITLE = %ADD_SPLIT(L_TITLE, UNICODE(0x000D) * 2, RESULTS)%
+				TEMPS = %SET_BUTTON_TAG(TEMPS, L_VALUES, L_TITLE)%
+				SKILLCOLOR = 0
+				CALL IS_SUCCESSABLE_FUSION_SKILL, 完成品, L_SKILL
+				IF RESULT
+					;素材と完成品で共通しているスキルかどうか
+					SIF HAVE_SKILL(完成品, L_SKILL)
+						SETBIT SKILLCOLOR, 0
+					;素材同士で共通しているスキルかどうか
+					FOR LCOUNT:2, 0, 3
+						SIF 素材:(LCOUNT:2) <= 0
+							CONTINUE
+						SIF HAVE_SKILL(素材:(LCOUNT:2), L_SKILL)
+							SETBIT SKILLCOLOR, LCOUNT:2 + 1
+					NEXT
+					IF MATCH(FUSION_CSV_HAVESKILL, L_SKILL)
+						;継承確定時でない場合はグレー
+						IF L_MODE == "継承スキル選択中"
+							TEMPS = %SET_COLOR_TAG(TEMPS, "gray")%
+						ENDIF
+					;完成品の初期スキルにない場合は着色
+					ELSE
+						;完成品に継承されているスキル
+						IF GETBIT(SKILLCOLOR, 0)
+							;素材が複数所持
+							IF GETBIT(SKILLCOLOR, 1) + GETBIT(SKILLCOLOR, 2) + GETBIT(SKILLCOLOR, 3) > 1
+								TEMPS = %SET_COLOR_TAG(TEMPS, "#ff69b4")%
+								;SETCOLOR 0xff69b4
+							ELSE
+								SIF GETBIT(SKILLCOLOR, 1)
+									TEMPS = %SET_COLOR_TAG(TEMPS, "aqua")%
+								SIF GETBIT(SKILLCOLOR, 2)
+									TEMPS = %SET_COLOR_TAG(TEMPS, "#00ff00")%
+								SIF GETBIT(SKILLCOLOR, 3)
+									TEMPS = %SET_COLOR_TAG(TEMPS, "yellow")%
+							ENDIF
+						ENDIF
+					ENDIF
+				ELSE
+					;継承不能スキル
+					TEMPS = %SET_COLOR_TAG(TEMPS, "gray")%
+				ENDIF
+			ELSE
+				TEMPS += @"%"EMPTY", SKILLNAMELENS:GETBIT(FLAG:커스텀게임화면,1), LEFT%"
+				TEMPS = %SET_COLOR_TAG(TEMPS, "gray")%
+			ENDIF
+			SHOW_LINE += TEMPS
+			IF GETBIT(FLAG:커스텀게임화면,1)
+				IF LCOUNT % 3 == 0
+					HTML_PRINT SHOW_LINE
+					SHOW_LINE = 
+				ENDIF
+			ELSE
+				IF LCOUNT % 4 == 0
+					HTML_PRINT SHOW_LINE
+					SHOW_LINE = 
+				ENDIF
+			ENDIF
+		NEXT
+		SIF SHOW_LINE != ""
+			HTML_PRINT SHOW_LINE
+		SIF GETBIT(FLAG:커스텀게임화면,1) == 0
+			DRAWLINE
+	ENDIF
+NEXT
+
+;========================================
+;継承スキル選択処理
+;========================================
+@SELECT_SUCCESS_SKILL, 完成品, 素材:0, 素材:1, 素材:2, L_SUCCESS_LIST
+#DIM LCOUNT, 3
+#DIM L_CHARA
+#DIM L_SKILL,2
+#DIMS L_SKILLNAME
+#DIM L_LINE,2
+#DIM 完成品
+#DIM 素材, 3
+#DIM TEMP
+#DIMS TEMPS
+#DIM HAVE_SKILLNUM
+#DIMS SHOW_LINE
+#DIM L_COLOR
+#DIM L_SHOW_LIST, HAVEABLE_SKILLNUM * 4 + 1 + 1
+#DIM REF L_SUCCESS_LIST
+#DIM SKILL_DEL_ABLE
+#DIM SKILL_MAKECARD_ABLE
+#DIMS L_VALUE
+#DIMS L_TITLE
+#DIMS L_ADD_INFO
+#DIM CONST SHOWNUM = 24
+L_LINE = LINECOUNT
+VARSET L_SUCCESS_LIST
+$START
+CLEARLINE LINECOUNT - L_LINE
+
+VARSET L_SHOW_LIST
+;リスト作成
+FOR LCOUNT, 0, VARSIZE("FUSION_CSV_HAVESKILL")
+	L_SHOW_LIST:FINDELEMENT(L_SHOW_LIST, 0) = FUSION_CSV_HAVESKILL:LCOUNT
+NEXT
+FOR LCOUNT, 0, VARSIZE("FUSION_SUCCESS_ABLE_LIST")
+	SIF MATCH(L_SHOW_LIST, FUSION_SUCCESS_ABLE_LIST:LCOUNT)
+		CONTINUE
+	L_SHOW_LIST:FINDELEMENT(L_SHOW_LIST, 0) = FUSION_SUCCESS_ABLE_LIST:LCOUNT
+NEXT
+VARI CNT_SKILL
+FOR LCOUNT, 1, CHARA_SKILLCOUNT(完成品) + 1
+	ABL:完成品:@"스킬{LCOUNT}" = 0
+NEXT
+;継承候補が消えてたらリストからも抜く
+FOR LCOUNT, 0, HAVEABLE_SKILLNUM
+	SIF !MATCH(FUSION_SUCCESS_ABLE_LIST, L_SUCCESS_LIST:LCOUNT)
+		L_SUCCESS_LIST:LCOUNT = 0
+NEXT
+FOR LCOUNT, 0, VARSIZE("L_SHOW_LIST")
+	L_SKILL = L_SHOW_LIST:(LCOUNT)
+	SIF !MATCH(FUSION_CSV_HAVESKILL, L_SKILL) && !MATCH(L_SUCCESS_LIST, L_SKILL)
+		CONTINUE
+	ABL:完成品:@"스킬{CNT_SKILL + 1}" = L_SKILL
+	CNT_SKILL++
+	SIF CNT_SKILL > CHARA_SKILLCOUNT(完成品)
+		BREAK
+NEXT
+DRAWLINE
+PRINTL □스킬계승/추출
+DRAWLINE
+VARSET HAVE_SKILLNUM
+FOR LCOUNT, 0, SHOWNUM
+	SHOW_LINE = 
+	FOR LCOUNT:1, 0, 2
+		SIF LCOUNT:1
+			SHOW_LINE += " " * 4
+		TEMPS = 
+		L_SKILL = L_SHOW_LIST:(LCOUNT + LCOUNT:1 * SHOWNUM)
+		L_VALUE = {LCOUNT + LCOUNT:1 * SHOWNUM + 1}
+		L_TITLE '= ""
+		IF L_SKILL > 0
+			L_SKILL:1 = L_SKILL
+			CALL GET_REPLACE_SKILL, L_SKILL, 完成品
+			L_SKILL = RESULT
+			L_ADD_INFO = 
+			IF MATCH(FUSION_CSV_HAVESKILL, L_SKILL)
+				L_TITLE = %ADD_SPLIT(CALLNAME:完成品, UNICODE(0x00D), L_TITLE)%
+				CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, 完成品
+				TEMPS = [◎] [%L_VALUE,2%] %SUBSTRING(RESULTS, 0, 23), 23, LEFT%
+				L_ADD_INFO += " " * 26
+				CALL GET_SKILL_EXPLAIN_TOOLTIP, L_SKILL, 完成品
+				L_TITLE = %ADD_SPLIT(L_TITLE, UNICODE(0x000D) * 2, RESULTS)%
+			ELSE
+				CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", L_SKILL, 完成品
+				L_TITLE '= ""
+				IF TALENT:完成品:GET_SUCCESSION(RESULT)
+					L_ADD_INFO += SET_COLOR_TAG("素質:◯", "p-red")
+					L_TITLE += "素質:◯"
+				ELSE
+					L_ADD_INFO += "素質:×"
+					L_TITLE += "素質:×"
+				ENDIF
+				L_ADD_INFO += " "
+				L_ADD_INFO += @"カード:{ITEM:(10000 + L_SKILL), 3} "
+				IF ABLE_MAKESKILLCARD(L_SKILL)
+					L_ADD_INFO += SET_COLOR_TAG("複製:◯", "p-red")
+					L_TITLE += "複製:◯"
+				ELSE
+					L_ADD_INFO += "複製:×"
+					L_TITLE += "複製:×"
+				ENDIF
+				FOR LCOUNT:2, 0, 3
+					TEMP = HAVE_SKILL(素材:(LCOUNT:2), L_SKILL:1, 1)
+					SIF TEMP == 0
+						CONTINUE
+					L_TITLE = %ADD_SPLIT(CALLNAME:(素材:(LCOUNT:2)), UNICODE(0x00D), L_TITLE)%
+					CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, 素材:(LCOUNT:2)
+					TEMPS += @"[%L_VALUE, 2%] %SUBSTRING(RESULTS, 0, 23), 23, LEFT%"
+					IF HAVE_SKILL(完成品, L_SKILL:1)
+						SELECTCASE LCOUNT:2
+							CASE 0
+								TEMPS = %SET_COLOR_TAG(TEMPS, "aqua")%
+							CASE 1
+								TEMPS = %SET_COLOR_TAG(TEMPS, "0x00ff00")%
+							CASE 2
+								TEMPS = %SET_COLOR_TAG(TEMPS, "yellow")%
+						ENDSELECT
+						TEMPS = %SET_COLOR_TAG("[◯]", "p-red")% %TEMPS%
+					ELSE
+						TEMPS = %SET_COLOR_TAG("[✕]", "gray")% %TEMPS%
+					ENDIF
+					CALL GET_SKILL_EXPLAIN_TOOLTIP, L_SKILL, 素材:(LCOUNT:2)
+					L_TITLE = %ADD_SPLIT(L_TITLE, UNICODE(0x000D) * 2, RESULTS)%
+					BREAK
+				NEXT
+			ENDIF
+			TEMPS = %SET_BUTTON_TAG(TEMPS, L_VALUE, L_TITLE)%
+			TEMPS += " " * 2 + L_ADD_INFO
+			SHOW_LINE += TEMPS
+		ELSE
+			SHOW_LINE += " " * 64
+		ENDIF
+	NEXT
+	HTML_PRINT SHOW_LINE
+NEXT
+DRAWLINE
+CALL SHOW_SUCCESS_SKILL, "継承スキル選択中", 完成品, 素材:0, 素材:1, 素材:2
+PRINTL [ 0] 결정　　　　　[999] 취소
+INPUT
+IF RESULT == 0
+	IF MAXARRAY(L_SUCCESS_LIST) == 0
+		PRINTFORML 스킬 계승을 실행하지 않았습니다만 이대로 합체를 마치겠습니까?
+		CALL INPUT_YN
+		SIF RESULT == 1
+			GOTO START
+	ENDIF		
+	FOR LCOUNT, 1, CHARA_SKILLCOUNT(完成品) + 1
+		CALL GET_REPLACE_SKILL, ABL:完成品:@"스킬{LCOUNT}", 完成品
+		ABL:完成品:@"스킬{LCOUNT}" = RESULT
+	NEXT
+	RETURN 1
+ENDIF
+SIF RESULT == 999
+	RETURN 0
+IF INRANGE(RESULT, 1, FINDELEMENT(L_SHOW_LIST, 0))
+	RESULT -= 1
+	IF MATCH(L_SUCCESS_LIST, L_SHOW_LIST:RESULT)
+		L_SUCCESS_LIST:FINDELEMENT(L_SUCCESS_LIST, L_SHOW_LIST:RESULT) = 0
+	ELSE
+		IF (VARSIZE("FUSION_CSV_HAVESKILL") - MATCH(FUSION_CSV_HAVESKILL, 0) + VARSIZE("L_SUCCESS_LIST") - MATCH(L_SUCCESS_LIST, 0)) < CHARA_SKILLCOUNT(完成品)
+			L_SUCCESS_LIST:FINDELEMENT(L_SUCCESS_LIST, 0) = L_SHOW_LIST:RESULT
+		ENDIF
+	ENDIF
+	GOTO START
+ENDIF
+;継承選択用の番号を抜く
+RESULT -= HAVEABLE_SKILLNUM * 4
+SIF !INRANGE(RESULT, 1, HAVEABLE_SKILLNUM * 3 + 1)
+	GOTO START
+L_CHARA = 素材:(((RESULT-1) / HAVEABLE_SKILLNUM))
+SIF L_CHARA <= 0
+	GOTO START
+HAVE_SKILLNUM = RESULT % HAVEABLE_SKILLNUM
+L_SKILL = ABL:L_CHARA:@"스킬{HAVE_SKILLNUM}"
+SIF !L_SKILL
+	GOTO START
+CALL MAG_ENHANCE_INFO_CHARA, L_CHARA
+
+CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, L_CHARA
+L_SKILLNAME = %RESULTS%
+DRAWLINE
+PRINTFORML □%L_SKILLNAME%
+DRAWLINE
+SIF FLAG:스킬속성표시설정 == 1
+	CALL SKILL_EXPLAIN_PERFORMANCE, L_SKILL, L_CHARA
+CALL GET_SKILL_PROP, "SKILL_EXPLAIN", L_SKILL, L_CHARA
+DRAWLINE
+L_LINE:1 = LINECOUNT
+$START2
+CLEARLINE LINECOUNT - L_LINE:1
+PRINTL [0] 취소
+
+SKILL_DEL_ABLE = 0
+SKILL_MAKECARD_ABLE = 0
+IF !GET_ROLE_PROP("CAN_MAKE_SKILLCARD", L_CHARA)
+	CALL PRINT_COLOR, "[1] スキル抽出不能", COLOR("gray"), "L"
+ELSE
+	;抽出可能か確認
+	CALL IS_MAKEABLE_SKILLCARD, L_SKILL
+	IF RESULT
+		IF GET_LOYALTY_FOR_MAKE_SKILLCARD(L_CHARA, "必要") > GET_CHARA_LOYALTY(L_CHARA)
+			CALL PRINT_COLOR, @"[1] 忠誠度不足", COLOR("gray"), "L"
+		ELSE
+			PRINTFORML [1] 스킬 추출(충성도:{GET_LOYALTY_FOR_MAKE_SKILLCARD(L_CHARA, "消費")} 소비)
+			SKILL_MAKECARD_ABLE = 1
+		ENDIF
+	ELSE
+		CALL PRINT_COLOR, "[2] 抽出不能スキル", COLOR("gray"), "L"
+	ENDIF
+ENDIF
+CALL INPUTINT, 0, SKILL_MAKECARD_ABLE
+CLEARLINE LINECOUNT - L_LINE:1
+SELECTCASE RESULT
+	CASE 0
+		GOTO START
+	CASE 1
+		CLEARLINE LINECOUNT - L_LINE:1
+		PRINTFORMW %CALLNAME:L_CHARA%에게서 %L_SKILLNAME%의 스킬카드를 추출했다.
+		CALL GET_ITEM, 10000 + L_SKILL, 1
+		CALL CONTROL_LOYALTY, L_CHARA, -GET_LOYALTY_FOR_MAKE_SKILLCARD(L_CHARA, "消費")
+		CFLAG:L_CHARA:스킬추출횟수 += 1
+ENDSELECT
+CALL DEL_FRIEND_HAVE_SKILL, L_CHARA, , , HAVE_SKILLNUM
+CALL SKILL_EQUIPTHEORY_DEL_SKILL, L_CHARA, L_SKILL
+CALL SYNC_STATUS,L_CHARA
+CALL HEALTH_CHARA,L_CHARA
+
+;完成品のスキルを一旦差し戻して継承をやりなおす
+FOR LCOUNT, 0, VARSIZE("FUSION_CSV_HAVESKILL")
+	ABL:完成品:@"스킬{LCOUNT+1}" = FUSION_CSV_HAVESKILL:LCOUNT
+NEXT
+CALL SET_SUCCESS_SKILLLIST, 完成品, 素材:0, 素材:1, 素材:2, FLAG:SHOP커맨드 == [[ショップ:사교의관]]
+GOTO START
+
+;========================================
+;手紙システム
+;	ARG:1（0:通常合体　1:魔晶武具　2:スキルカード　3:造魔作成　4:造魔強化　5:造魔初期化 6:イケニエ）
+;========================================
+@FUSION_LETTER,ARG,ARG:1
+PRINTL 편지가 있습니다。읽어봅니까？		
+CALL INPUT_YN,"Yes","NO"
+IF RESULT == 0
+	TRYCCALLFORM FUSION_LETTER_MESSAGE_K{NO:ARG},ARG,ARG:1
+	CATCH
+		TRYCCALLFORM FUSION_LETTER_MESSAGE_PUB{ABL:(ARG):회화타입},ARG,ARG:1
+		CATCH
+			PRINTFORMW %CALLNAME:(ARG)%에게서 온 편지다.
+			CALL FUSION_LETTER_MESSAGE_PUB,ARG,ARG:1
+		ENDCATCH
+	ENDCATCH
+ENDIF
+
+;=====================================================
+;合体事故発生チェック
+;ARG = ダンジョンかどうか
+;=====================================================
+@FUSION_ACCIDENT_CHECK, L_MATERIAL:0, L_MATERIAL:1, L_MATERIAL:2 = -1
+#FUNCTION
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_RESULT
+#DIM DYNAMIC L_MATERIAL, 3
+;アルバートの効果中は発生しない
+SIF SOFT_ON("알버트")
+	RETURNF 0
+; 合体事故確率初期値設定
+L_RESULT = 1
+; 月齢をチェックして、基本確率を算出
+SELECTCASE FLAG:월령
+	; 新月は1%
+	CASE 0
+		L_RESULT *= 1
+	; 満月は4%
+	CASE 8
+		L_RESULT *= 4
+	; その他は2%
+	CASEELSE
+		L_RESULT *= 2
+ENDSELECT
+
+FOR LCOUNT, 0, 3
+	SIF L_MATERIAL:LCOUNT < 0
+		CONTINUE
+	;怪異を素材に使っている場合は事故率があがる。
+	SIF GET_RACE(ABL:(L_MATERIAL:LCOUNT):종족) == "괴이"
+		L_RESULT *= 3
+NEXT
+; 探索中なら3倍
+SIF FLAG:SHOP커맨드 == [[ショップ:탐색]]
+	L_RESULT = L_RESULT * 3
+; コペルニクスで五倍
+SIF SOFT_ON("코페르니쿠스")
+	L_RESULT = L_RESULT * 5
+DEBUGPRINTFORML 合体事故発生率:{L_RESULT}
+IF L_RESULT == 0
+	RETURNF 0
+ELSEIF RAND:100 < L_RESULT
+	RETURNF 1
+ENDIF
+RETURNF 0

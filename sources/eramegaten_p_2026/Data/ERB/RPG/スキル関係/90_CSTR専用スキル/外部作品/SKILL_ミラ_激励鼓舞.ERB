@@ -1,0 +1,69 @@
+﻿;スキル名
+@SKILL_NAME_激励鼓舞,ARG
+RESULTS = 激励鼓舞
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_激励鼓舞
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_激励鼓舞, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;　威力
+@SKILL_POWER_激励鼓舞, ARG
+RETURN 200
+
+@SKILL_HEAL_TYPE_激励鼓舞, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("통상")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_激励鼓舞, ARG
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+
+;スキル変化？用ランク
+@SKILL_RANK_激励鼓舞, ARG = -1
+RETURN 5
+;変化不可
+;-------------------------------------------------
+;COOP連動スキルの判定
+;戻り値は発動率。また、COOP連動効果は常にひとつしか発動しない。
+;-------------------------------------------------
+@SKILL_JUDGE_EXTRA_COOP_激励鼓舞, L_CHARA, L_OPT = "参加"
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_OPT;参加or発動
+SIF L_OPT != "参加"
+	RETURN 0
+RETURN 100
+
+@SKILL_ACTION_EXTRA_COOP_激励鼓舞, L_CHARA
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_TARGET
+#DIM DYNAMIC STOCK_HP
+FOR LCOUNT, 1, 7
+	SIF !IS_TARGET_ABLE(POS(LCOUNT))
+		CONTINUE
+	SIF STOCK_HP > (MAXBASE:POS(LCOUNT):ＨＰ - BASE:POS(LCOUNT):ＨＰ)
+		CONTINUE
+	STOCK_HP = MAXBASE:POS(LCOUNT):ＨＰ - BASE:POS(LCOUNT):ＨＰ
+	L_TARGET = LCOUNT
+NEXT
+CALL HEAL_SINGLE, L_CHARA, POS(L_TARGET), PU_SKILLNUM_GET(L_CHARA, "激励鼓舞")
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_激励鼓舞, ARG
+PRINTL 자동：DEVIL-COOP에 참가했을 때 높은 확률로 이하의 연동 효과가 발동한다.
+PRINTL 　　　「가장 HP 감소량이 큰 아군 1명의 HP를 크게 회복시킨다.」
+
+@SKILL_ACTIONABLE_BATTLE_激励鼓舞, ARG
+RETURN 0
+
+@ACTION_激励鼓舞,ARG,ARG:1,ARG:2
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_激励鼓舞,ARG
+RETURN 1

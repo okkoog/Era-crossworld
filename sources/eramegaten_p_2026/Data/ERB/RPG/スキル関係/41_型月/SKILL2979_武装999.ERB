@@ -1,0 +1,137 @@
+﻿;210810		NEO		消費MPを8から40に変更
+;210825		NEO		継承不能を付与
+;210825		NEO		間違って古いヤツ使っちゃってARG抜けてたのを追加
+;221013		NEO		説明文などを変更、名称変化と演出を追加、ところでわしすげー弄ってんなコレ
+
+
+;スキル名
+@SKILL_NAME_2979,ARG
+	RESULTS = 무장999
+
+;　명중
+@SKILL_HITRATE_2979, ARG
+	RETURN 100
+
+;　威力
+@SKILL_POWER_2979, ARG
+	RETURN 300
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2979,ARG
+	IF ARG == -1
+		RETURN 1
+	ENDIF
+	;ブラッドヒート状態だと攻撃回数＋１
+	IF 現HP割合(ARG) < 33
+		RETURN 2
+	ELSE
+		RETURN 1
+	ENDIF
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2979,ARG
+	IF ARG == -1
+		RETURN 3
+	ENDIF
+	;ブラッドヒート状態だと攻撃回数＋１
+	IF 現HP割合(ARG) < 33
+		RETURN 4
+	ELSE
+		RETURN 3
+	ENDIF
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2979, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+
+;　コストの量
+@SKILL_COST_2979,ARG
+	RETURN 40
+
+;　相性
+@SKILL_TYPE_2979,ARG
+	RETURN GET_TYPE_NUM("전술")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2979
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2979,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2979, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2979,ARG
+	RETURN 4
+
+;　範囲　1単体　50列　3全体　4　敵味方全体
+@SKILL_SPHERE_2979,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2979, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2979
+	RETURN GET_SUCCESSION_NUM("전술")
+
+;継承不能
+@継承不能_2979
+	RETURN 1
+
+;속도보정
+@SKILL_SPEED_2979, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2979
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2979, ARG = -1
+RETURN 15
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2979, ARG, ARG:1, ARG:2
+
+	;メッセージ表示
+	;HP条件をチェックし、強化状態であったら「BLOOD HEAT!!」を表示する
+	CALL MELTY_BLOOD_IS_BLOOD_HEAT_HP_CONDITIONS(ARG)
+
+	LOCAL = POS(ARG:1)
+	CALL ATTACK_SINGLE,ARG,LOCAL,2979
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2979, ARG
+PRINTL 적 단체에 전기 상성으로 대위력의 물리 공격을 1~3회 행한다.
+PRINTL 사용자의 HP가 얼마 남지 않았을 경우 공격 횟수가 2~4회로 변화한다.
+PRINTL 　
+PRINTL 짐승의 인자를 집중하여 밀도를 높여 내지르는 몸통 박치기.
+PRINTL 사도 네로 카오스의 필살기
+;必殺技……とは言うが、実際のところヤケクソタックルであるらしい
+
+
+@継承部位_2979,ARG
+;RESULTS = 입
+;RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2979,ARG
+RETURN 1
+;とくにない
+

@@ -1,0 +1,377 @@
+
+;====================
+;条件
+;====================
+@PLAYABLE_REQUEST_23
+;10F突破が条件、幾月がいない(最終指令を受け取る)と発生しない
+IF ダンジョンフラグ:[[ダンジョン:タルタロス]]:1 >= 2 && イベントフラグ:9:0 < 4
+	RESULTS = 研究材料蒐集
+	RETURN 1
+ENDIF
+RETURN 0
+
+;====================
+;説明
+;====================
+@EXPLAIN_REQUEST_23
+IF !STRFLAG_REQ("初回", 0, 23)
+	PRINTL 
+	PRINTFORML 幾月から連絡が入っている
+	PRINTFORML %CALLNAME:MASTER%に頼みたいことがあるらしい
+	PRINTL 
+ELSE
+	PRINTL 
+	PRINTFORML 幾月からの依頼
+	PRINTFORML シャドウの研究に役立ちそうなものを持って行こう
+	PRINTL 
+ENDIF
+;====================
+;内容
+;====================
+@REQUEST_23
+IF !STRFLAG_REQ("初回", 1, 23)
+	PRINTL ＞幾月に会う旨を伝えると、さっそくやってきた。
+	PRINTL ＞相変わらず脳天気そうな様子をしている…
+	PRINTL 
+	PRINTL 幾月:
+	PRINTW 「やぁ、タルタロスの攻略は順調みたいだね」
+	PRINTW 「おかげで僕も助かってるよ」
+	PRINTW 「ほんとに君を紹介しくれたマヨーネさんさまさまよね」
+	PRINTW 「あ、もちろん君にも感謝しているよ」
+	PRINTW 「いやぁほんと、優秀なサマナーさまさまなわけだ」
+	PRINTW 「それで、まぁ、今日の要件だけど…」
+	PRINTW 「ちょっと、シャドウの研究のほうもやらなくちゃいけなくなってね」
+	PRINTW 「そのための材料を集めるのを手伝ってもらえないかな」
+	PRINTW 「やつらシャドウは、しゃあどうしたもんだろうっていうような変なゴミをもってることがあってね」
+	PRINTW 「それを持ってきてくれればいい」
+	PRINTW 「そうしたら、それに応じてポイントつけるから」
+	PRINTW 「そのポイントに応じて景品と交換でいこうかんなぁ、と」
+	PRINTW 「景品は前にもちょっと話したけど、奴隷だね」
+	PRINTW 「探索のついででいいから、それっぽいものを見つけたら是非頼むよ」
+	PRINTL 
+	PRINTW ＞幾月の依頼を受けた
+	PRINTW ＞なにかそれらしいものを手に入れたら幾月に渡そう
+ELSE
+	IF STRFLAG_NUM_REQ("報告") > 0 && STRFLAG_NUM_REQ("報告") + 3 <= DAY && !STRFLAG_REQ("P4", 1)
+		PRINTL 幾月:
+		PRINTW 「例のパラダイムＸのシャドウのことだけど」
+		PRINTW 「上層部がけっこうこの調査に資金を出してくれてね」
+		PRINTW 「僕の調査のほうも、わりと自由にやれてるんだよ」
+		PRINTW 「で、それもこれも君のおかげというわけだし、僕なりに君に還元しようかとかんげんてみたわけだけど」
+		PRINTW 「人間が放りこまれている稲羽市のほうの調査のついでに、人を攫ってみることにしてみたんだ」
+		PRINTW 「と、いうわけで、これからは稲羽市の人間も奴隷としてポイント交換できるよ」
+		PRINTW 「商品の種類はおおいに越したことないだろう？」
+		PRINTW 「うんうん、充実の交換ラインナップで、君の僕に対する好感度も大アップとうわけだ」
+		PRINTW 「よし、それじゃあ、今日はなんのようかな？」
+	;ちょっとメティスイベントはさみますね
+	ELSEIF STRFLAG_NUM_REQ("累計点数") > 200 && ダンジョンフラグ:70:21 == 0 && ダンジョンフラグ:70:(1) >= 4
+		PRINTL 幾月:
+		PRINTFORMW 「やあやあ%CALLNAME:MASTER%くん」
+		PRINTW 「ところでお話があるんだけど、君ってロボットとかまで調教できたりするのかな？」
+		PRINTW 「いや、ちょっとうちの研究所から覚えの無い子が出てきてね……」
+		PRINTW 「調べようにもなかなか抵抗するもんで、正直厄介払いをしたいのさ」
+		PRINTW 「と、いうわけで欲しければポイントと交換するから、言ってね」
+		ダンジョンフラグ:70:21 = 1
+	ELSE
+		IF STRFLAG_NUM_REQ("累計点数") > 1000 && !ITEM:ミューテーションギア
+				PRINTL 幾月:
+				PRINTW 「やぁ、ちょっとこれを受け取ってくれたまえ」
+				PRINTL 
+				PRINTW ＞幾月はそう言うとディスクを渡してきた
+				PRINTL 
+				PRINTL 幾月:
+				PRINTW 「それはミューテーションギア、ペルソナの変異を促すインストールソフトだ」
+				PRINTW 「シャドウの研究の副産物として、生まれた土産物だよ」
+				PRINTW 「ん、ポイント？　ああ、それならいいよ」
+				PRINTL 「ちょっとＣＯＭＰ用に手直しするだけだったし
+				PRINTW 　純粋に贈り物として受け取ってくれ」
+				PRINTL 
+				PRINTW ＞インストールソフト【ミューテーションギア】を手に入れた
+				ITEM:ミューテーションギア = 1
+		ELSEIF STRFLAG_NUM_REQ("累計点数") > 750 && STRFLAG_REQ("マイナスカード販売") && !STRFLAG_REQ("EXPカード販売", 1)
+			PRINTL 幾月:
+			PRINTW 「いい加減、おなじみのことだだろうけど、これを受け取ってくれ」
+			PRINTL 
+			PRINTW ＞幾月にカードを渡された
+			PRINTL 
+			PRINTL 幾月:
+			PRINTW 「今度のカードはシャドウの力をペルソナに移すことができる」
+			PRINTW 「つまり、今までのカードと違い、純粋にペルソナを強めることができる」
+			PRINTW 「この強化が可能になったことで、今日から、ぜんぜん違うペルソナライフがはじまるんじゃないかな？」
+			PRINTW 「まぁ…作るのが厄介だから、それ相応のポイントがないとちょっと渡せないけど…」
+			PRINTL 
+			PRINTW >名花のカードを手に入れた
+			PRINTL 
+			ITEM:名花のカード += 1
+		ELSEIF STRFLAG_NUM_REQ("累計点数") > 500 && STRFLAG_REQ("インセンスカード販売") && !STRFLAG_REQ("マイナスカード販売", 1)
+			PRINTL 幾月:
+			PRINTW 「要件にはいるまえにこれをちょっと受け取ってくれ」
+			PRINTL 
+			PRINTW ＞幾月にカードを渡された
+			PRINTL 
+			PRINTL 幾月:
+			PRINTW 「それも前に渡したカードと同じで、ペルソナを変質させることができる」
+			PRINTW 「研究の結果、前とは違った力をシャドウから引き出せたんでね」
+			PRINTW 「大体、注意点は前のカードとおんなじだ」
+			PRINTW 「これからはこのカードも引換るから、使ってくれ」
+			PRINTL 
+			PRINTW >ALLマイナスカードを手に入れた
+			PRINTL 
+			ITEM:ALLマイナスカード += 1
+		;ベルベットルームにいったことがあるのも条件
+		ELSEIF STRFLAG_NUM_REQ("累計点数") > 250 && イベントフラグ:5:0 && !STRFLAG_REQ("インセンスカード販売", 1)
+			PRINTL 幾月:
+			PRINTW 「来てくれたか、とりあえずこれを貰ってくれ」
+			PRINTL 
+			PRINTW ＞幾月にカードを渡された
+			PRINTL 
+			PRINTL 幾月:
+			PRINTW 「君のおかげでシャドウの研究が進んでね」
+			PRINTW 「おかげでそんなものができたんだ」
+			PRINTL 「それはシャドウの力を抽出したもので、ペルソナに使うことで
+			PRINTW 　そのペルソナを変質させることができる」
+			PRINTW 「まぁ、しかるべき装置がないと、そう…ちっとも使えないけど」
+			PRINTW 「これは当て推量だけど、君はどうもペルソナ改造のコネを持っているようだし」
+			PRINTW 「ああ、いや詳しく言う必要はないよ」
+			PRINTW 「僕はシャドウの研究と、タルタロスの始末を手伝ってくれればそれだけで十分だ」
+			PRINTW 「君がよそでどうしていようが、気にしない」
+			PRINTW 「それを渡したのも、君に渡せば僕の仕事の助けになると思ったからだ」
+			PRINTW 「必要ないならそれでいいし、もっといるなら言ってくれ」
+			PRINTW 「ただし、それを作るのはちょっと面倒でね」
+			PRINTW 「次からは奴隷と同様、ポイントと交換だ」
+			PRINTL 
+			PRINTW >STRインセンスカードを手に入れた
+			PRINTL 
+			ITEM:STRインセンスカード += 1
+		ENDIF
+		$START
+		PRINTL 幾月:
+		PRINTW 「さて、なんの用かな？」
+	ENDIF
+	PRINTL 
+	PRINTL [0] シャドウからの戦利品を引きとってもらう
+	PRINTL [1] 奴隷購入
+	SIF STRFLAG_REQ("インセンスカード販売")
+		PRINTL [2] カード購入
+	SIF ダンジョンフラグ:[[ダンジョン:雪子姫の城]]:8 && STRFLAG_NUM_REQ("報告",,,,23) == 0
+		PRINTL [3] 雪子姫の城について話す
+	SIF ダンジョンフラグ:70:21 > 0
+		PRINTL [4] ロボットを買う
+	PRINTL [9] やめる
+	CALL INPUTINT(0, 1, STRFLAG_REQ("インセンスカード販売")*2, !STRFLAG_NUM_REQ("報告",,,,23)*3,!STRFLAG_NUM_REQ("メティス",,,,23)*4, 9)
+	IF RESULT == 0
+		IF SUMARRAY(ITEM, 300, 322)
+			PRINTL 幾月:
+			PRINTW 「それなら、ちょっと拝見させてもらうよ」
+			PRINTW 「拝見は、いけん…なんてことはないよね？」
+			PRINTW 「それじゃあ、えーと……」
+			LOCAL:1 = 0
+			;ちょっとメッセージの変化用
+			LOCAL:99 = 0
+			FOR LOCAL, 300 , 322
+				IF ITEM:LOCAL > 0
+					IF ITEMPRICE:LOCAL >= 50 && STRFLAG_REQ(ITEMNAME:LOCAL, 1)
+						IF LOCAL:99 == 0
+							PRINTFORML 「%ITEMNAME:LOCAL%か…。これは前にもらってるからポイントが少なくなるよ」
+							LOCAL:99 = 1
+						ELSE
+							PRINTFORML 「%ITEMNAME:LOCAL%ね…。これも前にもらってるからポイントが少なくなるよ」
+						ENDIF
+						PRINTFORMW 「%ITEMNAME:LOCAL%が{ITEM:LOCAL}個で、{20*ITEM:LOCAL}点…」
+						LOCAL:1 += 20*ITEM:LOCAL
+					ELSE
+						IF ITEMPRICE:LOCAL >= 50 && ITEM:LOCAL > 1
+							PRINTFORML 「%ITEMNAME:LOCAL%だね…いっぱいあるけど、
+							PRINTFORML 　1個目だけ{ITEMPRICE:LOCAL}点で、残りは20点で引き取らせてもらうよ」
+							PRINTFORMW 　そういうわけで、{ITEMPRICE:LOCAL+20*(ITEM:LOCAL-1)}点…」
+							LOCAL:1 += ITEMPRICE:LOCAL+20*(ITEM:LOCAL-1)
+						ELSE
+							LOCAL:1 += ITEMPRICE:LOCAL*ITEM:LOCAL
+							PRINTFORMW 「%ITEMNAME:LOCAL%が{ITEM:LOCAL}個で、{ITEMPRICE:LOCAL*ITEM:LOCAL}点…」
+						ENDIF
+					ENDIF
+					ITEM:LOCAL = 0
+				ENDIF
+			NEXT
+			PRINTFORMW 「全部合わせて、{LOCAL:1}点だね」
+			依頼フラグ:(FLAG:進行中依頼):0 += LOCAL:1
+			CALLF STRFLAG_NUM_REQ("累計点数", "+=", , LOCAL:1)
+			PRINTFORMW 「これで、君のポイントは{依頼フラグ:(FLAG:進行中依頼):0}点だ」
+			PRINTFORMW 「これからもよろしく頼むよ」
+		ELSE
+			PRINTFORMW ＞幾月に引きとってもらえそうなものがない……
+		ENDIF
+		GOTO START
+	ELSEIF RESULT == 1
+		PRINTL 幾月:
+		PRINTFORMW 「今の君のポイントは{依頼フラグ:(FLAG:進行中依頼):0}点だ」
+		IF 依頼フラグ:(FLAG:進行中依頼):0 < 100
+			PRINTW 「100点につき、奴隷一人だけど…足りないね」
+			PRINTW 「君にせわしない思いをさせて、お世話になってるけど」
+			PRINTW 「仮にも人間だからね。ただで渡すにはただならぬ商品だから我慢してよ」
+		ELSE
+			$CHOICE
+			PRINTL 「それじゃあ、どの子にするか選んでくれ」
+			VARSET LOCAL
+			COUNT = 1
+			FOR LOCAL, 4575, 4589
+				SELECTCASE LOCAL
+					CASE 4576, 4577 , 4578, 4579, 4583
+						IF GETCHARA(LOCAL) == -1 && !STRFLAG_REQ(CSVCALLNAME(LOCAL,0)) && STRFLAG_REQ("P4")
+							LOCAL:COUNT = LOCAL
+							PRINTFORM [{COUNT,2}] %CSVNAME(LOCAL,0),16, LEFT%
+							COUNT++
+							SIF COUNT % 2
+								PRINTL
+						ENDIF
+					CASE 4580, 4581, 4582
+						CONTINUE
+					CASEELSE
+						IF GETCHARA(LOCAL) == -1 && !STRFLAG_REQ(CSVCALLNAME(LOCAL,0))
+							LOCAL:COUNT = LOCAL
+							PRINTFORM [{COUNT,2}] %CSVNAME(LOCAL,0),16, LEFT%
+							COUNT++
+							SIF COUNT % 2
+								PRINTL
+						ENDIF
+				ENDSELECT
+			NEXT
+			PRINTL [99] 戻る
+			$INPUT_LOOP
+			INPUT
+			IF RESULT == 99
+				PRINTL 幾月:
+				PRINTW 「やめるのかい？」
+			ELSEIF RESULT <= 0 || RESULT > 99 || LOCAL:RESULT == 0 
+				GOTO INPUT_LOOP
+			ELSE
+				PRINTL 幾月:
+				PRINTFORMW 「%CSVNAME(LOCAL:RESULT,0)%でいいんだね？」
+				LOCAL = LOCAL:RESULT
+				CALL INPUT_YN
+				PRINTL 幾月:
+				IF RESULT == 0
+					PRINTW 「それじゃあ、事務所の方に届けさせとくよ」
+					PRINTL 
+					PRINTFORMW ＞%CSVNAME(LOCAL,0)%を手に入れた
+					CALLF STRFLAG_REQ(CSVCALLNAME(LOCAL,0), 1)
+					依頼フラグ:(FLAG:進行中依頼):0 -= 100
+					CALL ADD_NEW_COMPANION, LOCAL, 200
+				ELSE
+					PRINTW 「おや、違うのか」
+					PRINTW 「それじゃあ、選び直してくれ」
+					GOTO CHOICE
+				ENDIF
+			ENDIF
+		ENDIF
+	ELSEIF RESULT == 2
+		LOCAL:3 = LINECOUNT
+		$CARDCHOICE
+		CLEARLINE LINECOUNT - LOCAL:3
+		PRINTL 
+		PRINTL 幾月:
+		PRINTFORML 「今の君のポイントは{依頼フラグ:(FLAG:進行中依頼):0}点だ」
+		PRINTW 「それじゃあ、カードを選んでくれ」
+		DRAWLINE
+		FOR LOCAL, 0, 6
+			LOCAL:1 = GETNUM(ITEM, "STRインセンスカード") + LOCAL
+			PRINTFORM [{LOCAL,2}] %ITEMNAME:(LOCAL:1),20,LEFT% 100P　
+			SIF LOCAL % 2 == 1
+				PRINTL 
+		NEXT
+		IF STRFLAG_REQ("マイナスカード販売")
+			FOR LOCAL, 0, 6
+				LOCAL:1 = GETNUM(ITEM, "STRマイナスカード") + LOCAL
+				PRINTFORM [{LOCAL+6,2}] %ITEMNAME:(LOCAL:1),20,LEFT% 100P　
+				SIF LOCAL % 2 == 1
+					PRINTL 
+			NEXT
+			PRINTFORM [12] %"ALLマイナスカード",20,LEFT% 200P　
+		ENDIF
+		SIF STRFLAG_REQ("EXPカード販売")
+			PRINTFORM [13] %"名花のカード",20,LEFT% 200P　
+		PRINTL 
+		PRINTL [99] 戻る
+		$INPUT_CARD
+		INPUT
+		IF RESULT == 99
+			PRINTL 幾月:
+			PRINTW 「やめるのかい？」
+		ELSEIF RESULT < 0 || RESULT > 13 || (RESULT > 5 && !STRFLAG_REQ("マイナスカード販売")) || (RESULT == 13 && !STRFLAG_REQ("EXPカード販売"))
+			CLEARLINE 1
+			GOTO INPUT_CARD
+		ELSE
+			LOCAL:1 = RESULT < 12 ? 100 # 200
+			SELECTCASE RESULT
+				CASE IS < 6
+					LOCAL = GETNUM(ITEM, "STRインセンスカード") + RESULT
+				CASE IS < 13
+					LOCAL = GETNUM(ITEM, "STRマイナスカード") + RESULT - 6
+				CASE 13
+					LOCAL = GETNUM(ITEM, "名花のカード")
+			ENDSELECT
+			PRINTL 幾月:
+			PRINTFORM 「%ITEMNAME:LOCAL%か。それなら一枚{LOCAL:1}ポイントだ
+			IF 依頼フラグ:(FLAG:進行中依頼):0/LOCAL:1 == 0
+				PRINTL けど
+				PRINTL 　ポイントが足りないね。それじゃあちょっと交換できないよ」
+				GOTO START
+			ENDIF
+			PRINTL 
+			PRINTFORML 　何枚交換する？」
+			PRINTFORML ({ITEM:LOCAL}枚所持)
+			CALL INPUT_MANY(0, 依頼フラグ:(FLAG:進行中依頼):0/LOCAL:1)
+			IF RESULT == 0
+				PRINTL 幾月:
+				PRINTW 「そうか、交換はやめるのか」
+			ELSE
+				依頼フラグ:(FLAG:進行中依頼):0 -= LOCAL:1 * RESULT
+				ITEM:LOCAL += RESULT
+				PRINTFORMW >%ITEMNAME:LOCAL%を{RESULT}枚手に入れた
+				GOTO CARDCHOICE
+			ENDIF
+		ENDIF
+	ELSEIF RESULT == 3 && ダンジョンフラグ:[[ダンジョン:雪子姫の城]]:8 && STRFLAG_NUM_REQ("報告",,,,23) == 0
+		CALLF STRFLAG_NUM_REQ("報告", "=", , DAY)
+		PRINTL ＞パラダイムＸにおいて、雪子姫の城なるものが出来ていたこと、
+		PRINTW ＞また、そこがシャドウの巣窟となっていることを幾月に話した
+		PRINTL 
+		PRINTL 幾月:
+		PRINTW 「ううん…、あのタルタロス以外にもシャドウがいるとは……」
+		PRINTW 「わかったよ。こちらでも調査してみることにする」
+		PRINTW 「とりあえず、お礼に今回は50点ほど点数をつけさせてもらうよ」
+		PRINTW 「またなにかあったらよろしく」
+		依頼フラグ:(FLAG:進行中依頼):0 += 50
+	ELSEIF RESULT == 4
+		PRINTL 幾月:
+		PRINTFORML 「おや、買い取ってくれるのかい？」
+		PRINTW 「それじゃ、200点になるけど……」
+		IF 依頼フラグ:(FLAG:進行中依頼):0 >= 200
+			PRINTL 「どうする？」
+			PRINTFORML （現在 {依頼フラグ:(FLAG:進行中依頼):0}点）
+			CALL INPUT_YN
+			PRINTL 幾月:
+			IF RESULT == 0
+				PRINTW 「それじゃあ、事務所の方に届けさせとくけど……」
+				PRINTW 「なかなか暴れん坊だから、気をつけてくれよ？」
+				PRINTL 
+				PRINTFORMW ＞メティスを手に入れた
+				CALLF STRFLAG_NUM_REQ("メティス", "=", , DAY)
+				依頼フラグ:(FLAG:進行中依頼):0 -= 200
+				CALL ADD_NEW_COMPANION, 4556, 200
+			ELSE
+				PRINTW 「おや、やめるのか」
+				PRINTW 「それじゃあ、まだ何か用はあるかな？」
+			ENDIF
+		ELSE
+			PRINTW 「おっと、悪いけどポイントが足りないみたいだ」
+		ENDIF
+	ELSE
+		PRINTL 幾月:
+		PRINTW 「帰るのかい。じゃあ、次はいっぱい買えるようにがんばっておくれよ」
+		RETURN 0
+	ENDIF
+ENDIF
+DRAWLINE
+PRINTL 
+GOTO START

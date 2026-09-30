@@ -1,0 +1,77 @@
+﻿;スキル名
+@SKILL_NAME_水天日光天照八野鎮石,ARG
+RESULTS = 水天日光天照八野鎮石
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_水天日光天照八野鎮石
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_水天日光天照八野鎮石, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;　威力
+@SKILL_POWER_水天日光天照八野鎮石, ARG
+RETURN 200
+
+@SKILL_HEAL_TYPE_水天日光天照八野鎮石, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("통상")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_水天日光天照八野鎮石, ARG
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;スキル変化？用ランク
+@SKILL_RANK_水天日光天照八野鎮石, ARG = -1
+RETURN 15
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_水天日光天照八野鎮石
+RETURN 0
+
+;====================================================
+;トリガー発動条件
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_水天日光天照八野鎮石,ARG,ARG:1
+;判定は一回
+SIF ARG != ARG:1
+	RETURN 0
+;味方のみ
+SIF !IS_FRIEND(FLAG:행동순1, ARG)
+	RETURN 0
+CALL GET_SKILL_PROP, "SKILL_DECIDE_TYPE", CFLAG:(FLAG:행동순1):입력행동, FLAG:행동순1
+SIF !GROUPMATCH(GET_SKILL_DECIDE_TYPE(RESULT), "EX", "MA")
+	RETURN 0
+CALL PU_SKILLGAGE_H_ADD, ARG, "水天日光天照八野鎮石", 1
+SIF PU_SKILLGAGE_H_GET(ARG, "水天日光天照八野鎮石") < 9
+	RETURN 0
+RETURN 1, CPOS(FLAG:행동순1)
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_水天日光天照八野鎮石,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL BACK_COST, POS(ARG:1), 10000, "MP/HP", "NOWAIT/MES"
+CALL HEAL_SINGLE, ARG, POS(ARG:1), SKILL_NUM
+CALL PU_SKILLGAGE_H_SET, ARG, "水天日光天照八野鎮石", 0
+
+;　説明文の表示
+@SKILL_EXPLAIN_水天日光天照八野鎮石,ARG
+PRINTL 자동: 아군이 9회 스킬을 발동할 때마다 이하의 연동효과가 발동한다.
+PRINTL 　　　「소비 코스트를 모두 반환하고, HP를 크게 회복한다」
+
+@継承不能_水天日光天照八野鎮石
+RETURN 2
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_水天日光天照八野鎮石,ARG
+RETURN 0
+;====================================================
+;実行内容ここまで
+;====================================================
+@SKILL_EX_DISPLAY_水天日光天照八野鎮石, ARG, ARGS
+RESULTS '= ""
+RESULTS += SET_COLOR_TAG("宝具:", "yellow")
+RESULTS += HTML_RECT_SPLIT_BAR(PU_SKILLGAGE_H_GET(ARG, "水天日光天照八野鎮石"), 9, SKILL_EX_DISPLAY_LENS - 5, BARCOLORSET("黄"), RESULT:1)
+RESULTS:1 = 水天日光天照八野鎮石
+RETURN 1

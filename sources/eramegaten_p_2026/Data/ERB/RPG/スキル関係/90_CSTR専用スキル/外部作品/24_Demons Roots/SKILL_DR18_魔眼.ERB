@@ -1,0 +1,238 @@
+﻿;『魔眼』
+;ほんへでは睨んで麻痺するだけだったスキル。
+;弱いんだよぉ！　追撃化魔改造してやる！
+
+;スキル名
+@SKILL_NAME_魔眼,ARG
+RESULTS = 魔眼
+
+;　명중
+@SKILL_HITRATE_魔眼, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_魔眼, ARG
+RETURN 180
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_魔眼, ARG
+RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_魔眼, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_魔眼,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_魔眼,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_魔眼,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_魔眼,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_魔眼, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_魔眼,ARG
+IF SKILLGAGE_H_GET(ARG,PU_SKILLNUM_GET(ARG,"魔眼")) > 0
+	RETURN 0
+ELSE
+	RETURN 35
+	;35
+ENDIF
+
+;　相性
+@SKILL_TYPE_魔眼,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_魔眼
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_魔眼,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_魔眼,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_魔眼,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_魔眼,ARG
+IF ARG > -1
+	SIF SKILLGAGE_H_GET(ARG,PU_SKILLNUM_GET(ARG,"魔眼")) == 1
+		RETURN 1
+	;追撃単体
+	SIF SKILLGAGE_H_GET(ARG,PU_SKILLNUM_GET(ARG,"魔眼")) == 2
+		RETURN 1
+	;追撃範囲
+	SIF SKILLGAGE_H_GET(ARG,PU_SKILLNUM_GET(ARG,"魔眼")) == 3
+		RETURN 3
+ENDIF
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_魔眼,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_魔眼
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_魔眼, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_魔眼
+RETURN 0
+
+;没
+;@SKILL_RANK_魔眼, ARG = -1
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_魔眼,ARG
+RETURN GET_STATE_NUM("PALYZE")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_魔眼,ARG
+RETURN GET_TYPE_NUM("신경")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_魔眼,ARG
+RETURN 40
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_魔眼,ARG
+RETURN 95
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_魔眼,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_魔眼,ARG,ARG:1
+;魔眼起動中でないとダメ
+SIF SKILLGAGE_H_GET(ARG,PU_SKILLNUM_GET(ARG,"魔眼")) < 1
+	RETURN 0
+;魔眼を起動した後の自分の行動でないとダメ
+SIF ARG != ARG:1
+	RETURN 0
+;攻撃者が自分じゃなければNG
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+;一度のみの判定にする
+SIF ARG != ARG:1
+	RETURN 0
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+SIF RESULT != 1 || CFLAG:ARG:타겟 < 1
+	RETURN 0
+IF CFLAG:ARG:타겟 < 17
+	SIF POS(CFLAG:ARG:타겟) < 0 || GET_STATE(CFLAG:POS(CFLAG:ARG:타겟):상태이상) == "DYING"
+		RETURN 0
+	CALL SKILLGAGE_F_SET,ARG,PU_SKILLNUM_GET(ARG,"魔眼"),2
+	RESULT:1 = CFLAG:ARG:타겟
+ELSEIF CFLAG:ARG:타겟 < 20
+	CALL SKILLGAGE_F_SET,ARG,PU_SKILLNUM_GET(ARG,"魔眼"),3
+	RESULT:1 = 19
+ELSE
+	CALL SKILLGAGE_F_SET,ARG,PU_SKILLNUM_GET(ARG,"魔眼"),3
+	RESULT:1 = 22
+ENDIF
+RETURN 1
+
+;====================================================
+;カウンター発動条件
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_魔眼,ARG,ARG:1
+;RETURN RESULT
+
+;====================================================
+;ダメージ発動時
+;====================================================
+;@SKILL_DAMAGE_EFFECT_魔眼,ARG,ARG:1
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_魔眼,ARG,ARG:1
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_魔眼,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+;トリガー追撃中は攻撃するだけ
+IF SKILLGAGE_H_GET(ARG,PU_SKILLNUM_GET(ARG,"魔眼")) == 0
+	CALL SKILLGAGE_H_SET,ARG,PU_SKILLNUM_GET(ARG,"魔眼"),1
+	PRINTL 『메비우스의 마안』 기동!
+ELSE
+	IF FLAG:총공격중 == 1
+		;単体攻撃
+		IF ARG:1 < 17
+			CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+		ELSE
+			CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+		ENDIF
+		CALL SKILLGAGE_F_SET,ARG,PU_SKILLNUM_GET(ARG,"魔眼"),0
+	ELSE
+		CALL SKILLGAGE_H_SET,ARG,PU_SKILLNUM_GET(ARG,"魔眼"),0
+		PRINTL 『메비우스의 마안』 해제.
+	ENDIF
+ENDIF
+
+;CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+;CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+;CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM;		拡散攻撃
+;CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM;			ランダム攻撃
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+
+;ターン開始時処理
+@SKILL_TURNSTART_魔眼,ARG,ARG:1
+
+;　説明文の表示
+@SKILL_EXPLAIN_魔眼,ARG
+PRINTL 『魔眼』
+PRINTL 사용한 전투 중 자신이 공격을 가한 대상에 대해 만능 속성 소위력의 물리 공격으로 추격하게 된다.
+PRINTL 추가 효과: 신경 속성으로 마비를 부여한다. 재사용 시 해제.
+PRINTL 각 전용 기능은 TP 게이지(DR)를 추가로 10 플러스하는 효과를 지닌다.
+PRINTL 
+PRINTL 마력을 머금은 마안으로 적을 노려보아 공격과 동시에 마비시키는 스킬.
+PRINTL 양손으로 무기를 휘두를 때 눈은 자유롭다.
+PRINTL 잔재 메비우스의 기능(CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_魔眼,ARG
+RETURN 1
+
+;CALL SKILLGAGE_H_ADD,ARG,PU_SKILLNUM_GET(ARG,"魔眼"),0

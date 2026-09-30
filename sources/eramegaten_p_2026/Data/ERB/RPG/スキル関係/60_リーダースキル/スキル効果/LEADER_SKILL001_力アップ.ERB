@@ -1,0 +1,68 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@LEADER_SKILL_CONTROL_NO_1,ARG
+RESULTS = 힘 상승
+
+;スキル名
+@SKILL_NAME_LEADER_力アップ,ARG
+RESULTS = 힘UP
+
+;　 説明文の設定
+@SET_VAR_LEADER_SKILL_EXPLAIN_力アップ, L_TEXT
+#DIMS REF L_TEXT
+IF MATCH(ACTIVE_LEADER_SKILL, "힘UP")
+	L_TEXT = 아군의 힘이 {LEADER_SKILL_ADD_BASESTATUS_SUM_FUNC("힘UP")} UP한다。
+ELSE
+	L_TEXT = 아군의 힘이 UP한다。
+ENDIF
+;重複可能な数
+@LEADER_SKILL_COUNT_LIMIT_力アップ
+RETURN 6
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_LEADER_力アップ, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	;基本ステータス
+	;ARG:1 に悪魔変身後の配分済みBASEステータスを格納している(悪魔変身をしていない・出来ない場合はBASE:Xとおなじ)
+	;プラグイン等の割合計算はBASEの値を指定しているので、割合での増減を指定したい場合はARG:1に数字をかけて固定値で返してください
+	CASE "基本ステータス"
+		SELECTCASE ARGS:1
+			CASE "힘"
+				RETURN LEADER_SKILL_ADD_BASESTATUS_FUNC(GIVE_EFFECT_CHARA)
+		ENDSELECT
+ENDSELECT
+
+;====================================================
+;ステータスアップ系スキルの共通処理
+;====================================================
+;ひとりあたりの増加量
+@LEADER_SKILL_ADD_BASESTATUS_FUNC, ARG
+#FUNCTION
+RETURNF MIN(1 + BASE:ARG:LV / 20, 5)
+
+;増加量の合計値
+@LEADER_SKILL_ADD_BASESTATUS_SUM_FUNC, ARGS, ARG
+#FUNCTION
+#DIM LCOUNT
+#DIM L_RESULT
+L_RESULT = 0
+FOR LCOUNT, 0, VARSIZE("ACTIVE_LEADER_SKILL")
+	SIF ACTIVE_LEADER_SKILL:LCOUNT == ""
+		BREAK
+	SIF ACTIVE_LEADER_SKILL:LCOUNT == ARGS
+		L_RESULT += LEADER_SKILL_ADD_BASESTATUS_FUNC(ACTIVE_LEADER_SKILL_HAVE_CHARA:LCOUNT)
+NEXT
+RETURNF L_RESULT

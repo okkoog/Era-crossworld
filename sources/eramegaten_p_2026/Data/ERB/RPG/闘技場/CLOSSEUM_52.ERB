@@ -1,0 +1,1195 @@
+﻿;====================
+;20240312	NEO		選択肢次第で即死してたの。ふざけてんのか？と思ったので改変
+;====================
+
+;====================
+;条件
+;====================
+@GET_COLOSSEUM_NAME_52
+#FUNCTIONS
+RESULTS_F '= "女王達の剣～彼女ノトなリ～"
+RETURNF RESULTS_F
+
+@PLAYABLE_COLOSSEUM_52
+	IF FLAG:투기장랭크 >= 5 && FLAG:투기장명성 >= 1200 && 闘技場フラグ:52:0 == 0
+		RESULTS = 여왕들의 검～그녀의 옆～
+		RETURN 1
+	ENDIF
+	RETURN 0
+
+
+;====================
+;内容
+;====================
+@COLOSSEUM_52
+#LOCALSIZE 10
+#DIM CHARA_NUM
+#DIM 精力
+#DIM 凌辱ゲージ
+#DIM 技巧ポイント
+#DIM LOCAL4
+#DIM LOCAL5
+
+	精力 = 0
+	凌辱ゲージ = 0
+	技巧ポイント = ABL:MASTER:기교 / 2
+	LOCAL4 = 0
+	LOCAL5 = 1
+	CUSTOMDRAWLINE =
+	PRINTFORMW 「회원 전용 도박 시합『여왕들의 검』에 오신 것을 환영합니다」
+	PRINTFORMW 「이번엔 부디 %CALLNAME:MASTER% 님을 상대하고 싶다며 지명하신 분이 대전 상대이십니다」
+	PRINTFORMW 「우선 참가료로서 여성을 한 명 걸어 주셔야 합니다」
+		CALL SHOW_NOW_FORMATION_P,0,2,0
+		PRINTFORML 누구를 걸겠습니까？
+		$INPUT_LOOP_A
+		ONEINPUT
+		LOCAL = RESULT
+		IF LOCAL > 0 && LOCAL < 7
+			SIF POS(LOCAL) == -1
+				GOTO INPUT_LOOP_A
+			SIF  陥落(POS(LOCAL)) == 0 && POS(LOCAL) != MASTER
+				CALL INPUTABLE_CHARA,POS(LOCAL)
+			SIF RESULT == 0
+				GOTO INPUT_LOOP_A
+			闘技場フラグ:52:0 = POS(LOCAL)
+		ELSE
+			GOTO INPUT_LOOP_A
+		ENDIF
+	SIF TALENT:(闘技場フラグ:52:0):남자 == 1
+		RETURN 1
+	PRINTFORML 「걱정하지 않으셔도 시합 종료 시에 온전히 돌려드릴 테니까요」
+	PRINTFORML 「다만… 패배하셨을 경우의 처우는 대전 상대에게 일임되므로 양해해 주십시오」
+	PRINTFORML 「그러면 행운을 빕니다」
+	PRINTFORMW 		
+	PRINTFORMW 눈앞에 한 명의 아름다운 여성이 서 있다
+	PRINTFORMW 「후후、당신이 %CALLNAME:MASTER%？ 들었던 것보다 훨씬 괜찮은 남자인걸%ハート()%」
+	PRINTFORMW 「그・래・서、당신이 이번에 판돈으로 걸린 아가씨구나… 흐응」
+	IF TALENT:(闘技場フラグ:52:0):연모 || TALENT:(闘技場フラグ:52:0):친애
+		PRINTFORMW 「상당히 당신을 사랑하고 있는 모양이네、행복한 녀석이잖아 %CALLNAME:MASTER%%ハート()%」
+	ELSEIF TALENT:(闘技場フラグ:52:0):음란 || TALENT:(闘技場フラグ:52:0):창부
+		PRINTFORMW 「제법 야한 몸을 하고 있네、당신 아들내미 탓이려나%ハート()%」
+	ELSEIF TALENT:(闘技場フラグ:52:0):복종 || TALENT:(闘技場フラグ:52:0):예속
+		PRINTFORMW 「상당히 잘 길들여져 있네、과연 악마 조교사라는 걸까」
+	ELSE
+		PRINTFORMW 「귀여운 아가씨잖아、과연 멋쟁이 색남%ハート()%」
+	ENDIF
+	PRINTFORMW 「…하・지・만・ 시합이 끝난 뒤、그녀가 당신 곁에 남아 있을까？」
+	PRINTFORML 여성이 신호를 보내자 악마들이 뛰어들어왔다
+	PRINTFORML 「우선은 이 아이들이 상대야」
+	PRINTFORML 요정　고블린이 1체 나타났다！
+	PRINTFORML 요귀 코볼트가 2체 나타났다！
+	PRINTFORML 요귀 오크가 2체 나타났다！
+	PRINTFORML 외도 아귀가 5체 나타났다！
+
+	CUSTOMDRAWLINE =
+	WAIT
+
+	CALL COL_52_BATTLE1
+
+	SIF FLAG:패배플래그
+		GOTO HITOJITI
+
+	CUSTOMDRAWLINE =
+
+	PRINTFORML 「역시 그 아이들 정도로는 무리였나 보네」
+	PRINTFORML 「그럼 다음… 가렴」
+	PRINTFORMW 요마 임프가 4체 나타났다！
+	PRINTFORMW 요마 리림이 5체 나타났다！
+	PRINTFORMW 타천사 레오날드가 1체 나타났다！
+	CUSTOMDRAWLINE =
+	WAIT
+	CALL COL_52_BATTLE2
+	
+
+	SIF FLAG:패배플래그
+		GOTO HITOJITI
+
+	CUSTOMDRAWLINE =
+
+	PRINTFORML 「어머나、역시 강하네」
+	PRINTFORML 「그렇다면 이건 어떠려나」
+	PRINTFORMW 야마 인큐버스가 5체 나타났다！
+	PRINTFORMW 요마 서큐버스가 4체 나타났다！
+	PRINTFORMW 마왕 바포메트가 1체 나타났다！
+	CUSTOMDRAWLINE =
+	WAIT
+
+	CALL COL_52_BATTLE3
+
+	SIF FLAG:패배플래그
+		GOTO HITOJITI
+
+	CUSTOMDRAWLINE =
+
+	PRINTFORML 「설마 이렇게까지 강할 줄이야」
+	PRINTFORML 「마지막은 내가 상대해 줄게%ハート()%」
+	PRINTFORMW 야마 인큐버스가 3체 나타났다！
+	PRINTFORMW 타천사 레오날드가 3체 나타났다！
+	PRINTFORMW 마왕 바포메트가 3체 나타났다！
+	PRINTFORMW 마왕 뱀파이어가 1체 나타났다！
+	CUSTOMDRAWLINE =
+	WAIT
+
+	CALL COL_52_BATTLE4
+
+	SIF FLAG:패배플래그
+		GOTO HITOJITI
+
+	CUSTOMDRAWLINE =
+	WAIT
+	PRINTFORML ………
+	PRINTFORML ……
+	PRINTFORML …
+	PRINTFORML  
+	PRINTFORMW 「…설마 질 줄이야…… 윽」
+	PRINTFORML 상처가 아픈지 생각대로 움직이지 못하는 모양이다
+	PRINTFORML 「어쩔 거야？ …나를… 안을래？」
+	PRINTFORML 어떻게 하겠습니까？
+	PRINTFORML  
+	PRINTFORML [0] 범한다
+	PRINTFORML [1] 그대로 둔다
+	CALL INPUTINT(0, 1)
+	IF RESULT == 0
+		PRINTFORMW 「나도 그 여자처럼 타락시키겠다는 거야？ 할 수 있다면 어디 해 보시지」
+		PRINTFORMW 뱀파이어가 옷을 스르륵 벗어 던지자 병적일 정도로 새하얗고 아름다운 속살이 드러났다
+		PRINTFORMW 요염한 미소를 띄우며 사뿐사뿐 %CALLNAME:MASTER%에게 다가와、살며시 입을 맞췄다
+		PRINTFORMW 아마도 개시의 신호일 것이다
+		PRINTFORMW %MASTER는% 쿡쿡 웃는 뱀파이어를 덮쳐 눕혔다
+
+		IF FLAG:ＮＴＲ하드모드
+			$RYOJOKU_WIN_LOOP
+			IF 凌辱ゲージ > 8
+				PRINTFORML 　
+				PRINTFORMW 능욕은 아직 계속되고 있다
+				PRINTFORML 뱀파이어는 머리를 헝클어뜨린 채 터무니없는 교성을 지르며 %CALLNAME:MASTER%에게 씨앗을 주입당하고 있다
+				PRINTFORMW 관객들은 그 엄청난 변모에 눈을 떼지 못하고 있다
+				精力 += 5
+			ENDIF
+			SIF 精力 > 5
+				GOTO SKIP_RYOJOKU_WIN 
+			PRINTFORML 
+			PRINTFORMW 능욕은 아직 계속되고 있다
+			IF 凌辱ゲージ > 4
+				IF RAND:2 == 1
+					PRINTFORMW 뱀파이어는 애절한 표정을 지으며 %CALLNAME:MASTER%에게 범해지고 있다
+					精力 += 1
+					凌辱ゲージ += 技巧ポイント
+				ELSE
+					PRINTFORMW 뱀파이어는 눈을 감으며 질 내를 채우는 정액의 온기에 빠져들고 있다
+					精力 += 1
+					凌辱ゲージ += 技巧ポイント
+				ENDIF
+			ELSEIF RAND:2 == 1
+				PRINTFORMW 뱀파이어는 아직 여유로운 표정으로 %CALLNAME:MASTER%의 애무를 받고 있다
+				精力 += 1
+				凌辱ゲージ += 技巧ポイント
+			ELSE
+				PRINTFORMW 뱀파이어는 %CALLNAME:MASTER%가 질 내에 정액을 쏟아붓자 수고했다면서 입을 맞췄다
+				精力 += 1
+				凌辱ゲージ += 技巧ポイント
+			ENDIF
+			GOTO RYOJOKU_WIN_LOOP
+			$SKIP_RYOJOKU_WIN
+		ENDIF
+
+		IF 凌辱ゲージ > 8 
+			CALL ADD_NEW_COMPANION,[[キャラ:뱀파이어]], 100, 2
+			
+			PRINTFORML ………
+			PRINTFORML ……
+			PRINTFORML …
+			PRINTFORML  
+			PRINTFORMW 뱀파이어는 주어진 쾌락에 타락하여、%CALLNAME:MASTER%의 개로 삼아달라며 애원했다
+			PRINTFORMW 「…이럴… 리가…… 으응%ハート()%」
+			PRINTFORMW 뱀파이어가 동료마가 되었다
+			;仲魔にしたので連続受注不可
+			闘技場フラグ:52:0 = 1
+		ELSEIF 凌辱ゲージ < 9 && FLAG:ＮＴＲ하드모드
+			PRINTFORMW 「이 정도야？ 이번 승부、나의 승리네」
+			PRINTFORMW 「그럼、이번엔 이 아가씨가 범해질 차례네%ハート()%」
+			PRINTFORMW 뱀파이어가 신호를 보내자 악마들이 일제히 %CALLNAME:(闘技場フラグ:52:0)%에게 몰려들었다！
+			PRINTFORML 　
+			PRINTFORML [0] 당연히 죽인다
+			PRINTFORML [1] 범하게 내버려둔다
+			CALL INPUTINT(0, 1)
+			;もちろん殺す
+			IF RESULT == 0
+				PRINTFORML 자존심 같은 건 없는 걸까。
+				PRINTFORML 패배한 주제에、『그쪽 차례』라니、있을 리가 없잖아。
+				PRINTFORML  
+				PRINTFORMW 뱀파이어의 부하들이 덮쳐왔다！
+				CUSTOMDRAWLINE =
+				WAIT
+
+				CALL COL_52_BATTLE5
+
+				PRINTFORML ……성가신 상대였다。
+				PRINTFORML 부하도 많고 취미도 고약하다。
+				PRINTFORML %CALLNAME:MASTER%도 악당이기에 『비겁하다』고는 하지 않겠지만、불만은 남는다。
+				PRINTFORMW 　
+				PRINTFORML %MASTER는% 총을 뽑아 겨냥했다。
+				PRINTFORMW 　
+				PRINTFORML 「사、살려」
+				PRINTFORMW 　
+				PRINTFORML 시시한 단말마를 도중에 끊어버린다。
+				PRINTFORML 뇌수를 흘리는 뱀파이어에게 다가가、이번엔 검으로 심장을 도려낸다。
+				PRINTFORML 뱀파이어는 재가 되어 산산이 흩어졌다……
+				PRINTFORMW 　
+				PRINTFORMW ＞￥3000을 상금으로 받았다
+				PRINTFORMW ＞뱀파이어의 재산 ￥30000을 입수했다
+				PRINTFORMW 　
+				MONEY += 33000
+				;殺したので連続受注不可
+				闘技場フラグ:52:0 = 1
+				
+
+			;犯させる
+			ELSE
+				PRINTFORML 자존심 같은 건 없는 걸까。
+				PRINTFORML 이긴 쪽이 차례를 얻는다는 이야기라고 생각하는데……
+				PRINTFORML 뭐 좋다。그렇게까지 하고 싶다면 하게 해 주마。
+				PRINTFORML 
+				CALL SET_ENEMY,16,[[キャラ:바포멧트]],40,1,1
+				CALL SET_ENEMY,15,[[キャラ:바포멧트]],40,1,1
+				CALL SET_ENEMY,14,[[キャラ:오니]],36,1,1
+				CALL SET_ENEMY,13,[[キャラ:레오나르도]],40,1,1
+				CALL SET_ENEMY,12,[[キャラ:레오나르도]],40,1,1
+				CALL SET_ENEMY,11,[[キャラ:오크]],40,1,1
+				CALL SET_ENEMY,10,[[キャラ:오니]],40,1,1
+				CALL SET_ENEMY,9,[[キャラ:인큐버스]],40,1,1
+				CALL SET_ENEMY,8,[[キャラ:인큐버스]],40,1,1
+				CALL SET_ENEMY,7,[[キャラ:코볼트]],40,1,1
+				FLAG:패배플래그 = 1
+				FLAG:승리플래그 = 0
+				CALL BATTLE_LOSE
+				CALL DELENEMY
+				GOTO HITOJITI
+			ENDIF
+
+		ELSE
+			PRINTFORML 「…과연이네…、이번엔… 무승부라는…… 걸로 칠까……」
+			PRINTFORMW 뱀파이어는 또 보자、라는 말을 남기고 비틀거리며 떠나갔다
+			PRINTFORML  
+			PRINTFORML [0] 등 뒤에서 죽인다
+			PRINTFORML [1] 배웅한다
+			CALL INPUTINT(0, 1)
+			IF RESULT == 0
+				PRINTFORML 성가신 상대였다。
+				PRINTFORML 부하도 많고 취미도 고약하다。
+				PRINTFORMW 　
+				PRINTFORML %MASTER는% 총을 뽑아 비틀거리는 그 후두부를 쏴 뚫었다。
+				PRINTFORML 여기서 죽여 두는 게 옳겠지。
+				PRINTFORMW 　
+				PRINTFORML 「갸아――악――」
+				PRINTFORMW 　
+				PRINTFORML %MASTER는% 검으로 뱀파이어의 심장을 도려낸다。
+				PRINTFORML 뱀파이어는 재가 되어 산산이 흩어졌다……
+				PRINTFORMW 　
+				PRINTFORMW ＞￥3000을 상금으로 받았다
+				PRINTFORMW ＞뱀파이어의 재산 ￥30000을 입수했다
+				PRINTFORMW 　
+				MONEY += 33000
+				;殺したので連続受注不可
+				闘技場フラグ:52:0 = 1
+			ELSE
+				PRINTFORML 다음은 없다。
+				PRINTFORML 비틀거리는 그 등 뒤에 말을 걸자、뱀파이어의 매끈한 엉덩이가 움찔 떨렸다。
+				PRINTFORMW 　
+				PRINTFORML 뱀파이어는 허둥지둥 떠나갔다……
+				PRINTFORMW 　
+				PRINTFORMW ＞￥3000을 상금으로 받았다
+				PRINTFORMW 　
+				MONEY += 3000
+			ENDIF
+
+		ENDIF
+	;犯さないを選択
+	ELSE
+		;パッチ元文章
+		;ころすぞと思ったときにはもう殺していた
+		;１行目に二つ三つツッコミどころがある
+;		PRINTFORML ヴァンパイアを放置し立ち去ろうとした瞬間、後頭部に襲撃が走り%MASTER는% 地面に倒れた
+;		PRINTFORML 「ふふっ、甘いわね♪油断をした貴方が悪いのよ」
+;		PRINTFORMW 「そ・れ・じゃ%ハート()%この娘には気持ちよくなって貰いましょうか」
+;		PRINTFORMW 「貴方を忘れるくらいにね%ハート()%」
+;		CALL SET_ENEMY,16,[[キャラ:바포멧트]],40,1,1
+;		CALL SET_ENEMY,15,[[キャラ:바포멧트]],40,1,1
+;		CALL SET_ENEMY,14,[[キャラ:오니]],36,1,1
+;		CALL SET_ENEMY,13,[[キャラ:레오나르도]],40,1,1
+;		CALL SET_ENEMY,12,[[キャラ:레오나르도]],40,1,1
+;		CALL SET_ENEMY,11,[[キャラ:오크]],40,1,1
+;		CALL SET_ENEMY,10,[[キャラ:오니]],40,1,1
+;		CALL SET_ENEMY,9,[[キャラ:인큐버스]],40,1,1
+;		CALL SET_ENEMY,8,[[キャラ:인큐버스]],40,1,1
+;		CALL SET_ENEMY,7,[[キャラ:코볼트]],40,1,1
+;			FLAG:패배플래그 = 1
+;			FLAG:승리플래그 = 0
+;		CALL BATTLE_LOSE
+;		CALL DELENEMY
+;		GOTO HITOJITI
+		;勝利後：犯さないを選択後、不意打ちされる……までは構わないよ
+		PRINTFORML 뱀파이어를 방치하고 돌아서려던 순간――
+		;Lvが十分に高い
+		;ヴァンパイアがLv50なので、ここでは+10の60以上の時
+		IF BASE:MASTER:LV >= 60
+			PRINTFORML ――%MASTER는% 후두부에 약간의 피해를 입었다。
+			PRINTFORML ……천천히 뒤를 돌아본다。
+			PRINTFORML 실력 차이도 분간 못하는 바보 녀석。
+		ELSEIF SOFT_ON("하쿠타로우")
+			PRINTFORML ――모모타로에게 느낌이 있다。
+			PRINTFORML %MASTER는% 뒤돌아 날아오던 화염구를 쳐냈다。조금 따끔하다。
+			PRINTFORML 모모타로조차 고려하지 못한 어리석은 놈。
+		ELSE
+			PRINTFORML ――%MASTER는% 후두부에 피해를 입었다。
+			;20％くらいダメージ
+			;割合でダメージを受けてから戦闘に入る
+			FOR LOCAL,1,7
+				;マスター以外だと無視
+				IF POS(LOCAL) != MASTER
+				
+				ELSEIF POS(LOCAL) > -1 && GET_STATE(CFLAG:(POS(LOCAL)):상태이상) != "DYING"
+					PRINTFORML [{LOCAL}] %CALLNAME:POS(LOCAL)%　>>>>>>　{MAXBASE:(POS(LOCAL)):ＨＰ*20/100}데미지
+					CALL VAR_HP,POS(LOCAL),-MAXBASE:(POS(LOCAL)):ＨＰ*20/100
+				ENDIF
+			NEXT
+			
+			PRINTFORML ＞아찔했지만 어떻게든 버텨냈다。
+			PRINTFORML ＞뒤를 돌아보자 경련하듯 웃고 있는 뱀파이어가 보였다。
+			PRINTFORML ＞형편 좋게 기절이라도 할 줄 알았더냐。
+			PRINTFORML ＞설령 %CALLNAME:MASTER%이 기절한다 한들 남아있는 동료마가 자위하지 않을 거라 생각했는가。
+			PRINTFORML ＞너무나도 얕고 너무나도 어리석다。
+		ENDIF
+
+		PRINTFORML 여자라면 부족하지 않다。놓아 주자――고 생각한 것이 물렀던 모양이다。
+		PRINTFORML 아까운 목숨을 버릴 것도 없었을 텐데。
+		PRINTFORML 기사회생、건곤일척이라 하면 듣기엔 좋겠으나、그게 통하지 않았을 때의 각오를 하지 않았다고는 말 못 하겠지。
+		PRINTFORML 우선은――
+		PRINTFORML  
+
+		PRINTFORML [0] 즉시 죽인다
+		PRINTFORML [1] 잔학하게 굴어준다
+		PRINTFORML [2] 닳고 닳도록 써먹는다
+		PRINTFORML [3] 데리고 돌아간다
+		CALL INPUTINT(0, 1, 2, 3)
+		;即殺す
+		IF RESULT == 0
+			PRINTFORML %MASTER는% 총을 뽑아 쐈다。
+			PRINTFORML 총성과 거의 동시에 미간에 구멍이 뚫린 뱀파이어는 환상 속의 뇌수를 흘리며 죽었다。
+			PRINTFORML 만약을 위해 심장에도 두 발、은 탄환을 쏴 넣는다。
+			PRINTFORMW  
+			PRINTFORML 움직이지 않는다。
+			PRINTFORML 틀림없이 죽었다。
+			PRINTFORML MAG가 증발해가는 것을 바라보며 %MASTER는% 숨을 내쉬고는 겁에 질린 심판의 무릎을 총으로 쏴 뚫었다。
+			PRINTFORML 꺄악、하고 심판이 비명을 지르며 뒹군다。
+			PRINTFORMW  
+			PRINTFORML “규칙 무용이라면 이쪽에도 생각이 있다”
+			PRINTFORML  
+			PRINTFORML HP는 분명 0으로 만들었다。
+			PRINTFORML 그것이 움직일 수 있을 정도로 회복되어 있었으니、링 위에 있는 제3자인 심판이 무언가를 했음은 명백하다。
+			PRINTFORML 마석이라도 부쉈나？ 디아라도 써 줬나？ 설령 아니라 해도 말리지 않았고 말리지 못했으니 동죄다。
+			PRINTFORML   ﾅ ﾒ
+			PRINTFORML “건방진 짓을 하지 마라”
+			PRINTFORML 
+			PRINTFORML 멀쩡한 쪽 무릎도 총으로 쏴 뚫고 %MASTER는% 발길을 돌렸다。
+			PRINTFORML ……쥐 죽은 듯 고요해진 투기장을 %MASTER는% 뒤로했다。
+			PRINTFORML 
+			;闘技場からのお詫び入りなので賞金上乗せ
+			PRINTFORMW ＞￥30000을 상금으로 받았다
+			PRINTFORMW ＞뱀파이어의 재산 ￥30000을 입수했다
+			PRINTFORMW 　
+			MONEY += 60000
+			;殺したので連続受注不可
+			闘技場フラグ:52:0 = 1
+		;残虐に振る舞う
+		ELSEIF RESULT == 1
+			PRINTFORML ――그렇군。
+			PRINTFORML 공포가 부족했나。
+			PRINTFORML 예의가 너무 발랐던 모양이군。
+			PRINTFORMW  
+			;元パッチ、不意打ちで＠がやられたとして、仲魔たちが（未陥落だとしても）自衛しない理由がないので、なんか追加が襲ってきたんだろうと見る
+			PRINTFORML %MASTER는% 관객석에서 뛰어내려오는 수컷 악마들을 바라본다。
+			PRINTFORML 아마도 기습에 이은 추격 요원들이겠지。
+			PRINTFORML 수는 많다。
+			PRINTFORML 기습에 실패했다 한들 여기선 『최종적인』 승자가 모든 것이다。
+			PRINTFORML 여기서라도 질 수는 없다――。
+
+			CUSTOMDRAWLINE =
+			WAIT
+
+			CALL COL_52_BATTLE5
+
+			PRINTFORML %MASTER는% 뱀파이어의 손발을 총으로 쏴 뚫었다。
+			PRINTFORML 꺄악、하고 비명을 지르는 여자에게 다가가 뒹굴며 몸부림치는 곳을 짓밟는다。
+			PRINTFORML 치골을 짓밟아 부수고 입술과 뺨을 짓밟아 이를 부러뜨리고 손을 밟아 손가락을 으스러뜨리고 미간을 짓밟아 안구를 뭉개버린다。
+			PRINTFORML 뱀파이어는 생명력이 질긴 편이다。애초에 치명상은 주지 않았다。
+			PRINTFORML 오로지 철저하게 저항의 싹을 짓밟는다。
+			PRINTFORMW  
+			PRINTFORML 오오、하고 술렁이는 관객석 쪽에 총탄을 난사한다。
+			PRINTFORML 이미 승패는 났다。
+			PRINTFORML 기습 전에 시합은 끝났다。
+			PRINTFORML 관객석을 지키는 결계는 일시적으로 끊어져 있다。
+			PRINTFORML 관객 중 한 명이 미간을 꿰뚫려 쓰러졌다。
+			PRINTFORMW  
+			PRINTFORML 무슨 일이 일어났는지 이해하지 못한 관객석으로 도약한다。
+			PRINTFORML 해설 실황 마이크를 빼앗아 선언한다。
+			PRINTFORMW  
+			PRINTFORML 반죽음으로 만들어 주마―― %MASTER는% 선언한다。
+			PRINTFORML 네놈들 관객 중 절반을 죽이겠다。어디서부터 어디까지가 적인지 알 길이 없으니 말이다。
+			PRINTFORML 뭐、50% 확률로 살아남을 수 있으니 평소 행실이 바른 자들은 안심하기 바란다――。
+			PRINTFORMW  
+			PRINTFORML 근처의 외도를 베어 죽이고 멀리 있는 악귀를 쏴 죽인다。
+			PRINTFORML 고용주와 함께 호위들을 죽이고 출입구를 폭파하여 죽인다。
+			PRINTFORML 단 한 사람도 놓치지 않는다。
+			PRINTFORML 절반을 죽이기 전까진 놓치지 않는다。
+			PRINTFORMW  
+			PRINTFORML 그렇게 절반보다 조금 더 많이 죽였다。
+			PRINTFORML 선언대로 절반쯤에서 학살을 멈췄으나 도망치던 중 짓밟혀 죽은 자들이 있었기 때문이다。
+			PRINTFORMW 
+			PRINTFORML 지금은 링 위에서 뱀파이어를 살려 둔 채 오브제를 만들고 있다。
+			PRINTFORML 피부를 뒤집어까고 살을 도려내고 뼈를 뒤틀어 형태를 다듬는다。
+			PRINTFORML 끔찍한 오브제、피범벅의 조각상을 만들어 즐긴다。
+			PRINTFORML 파이프 오르간으로라도 개조할 수 있었다면 좋았겠으나 그 정도로 미치광이는 아니다。
+			PRINTFORML 광인인 척 연출하는 것도 제법 힘든 법이다。
+			PRINTFORML 오브제의 제목은――……『나팔』 정도이려나。
+			PRINTFORML 아―、아―、하고 신음 소리가 입에서 새어 나오고 있다。
+			PRINTFORMW 
+			PRINTFORML 이윽고 신음 소리가 완전히 멎는다。
+			PRINTFORML 마석을 던져도 반혼향을 던져도 반응이 없어진 시점에서 타임업。
+			PRINTFORML 완성된 오브제와 함께 셀카를 찍어 SNS에 업로드하고 %MASTER는% 주저앉은 심판을 향해 돌아선다。
+			PRINTFORML 이 자리에서 유일하게 살아남은 자에게로。
+			PRINTFORMW 
+			;ちいかわ！
+			PRINTFORML 「아…… 아와와…… 와아……」
+			PRINTFORMW 
+			PRINTFORML %MASTER는% 총탄을 재장전하며 묻는다。
+			PRINTFORML 승자는 누구인가。
+			PRINTFORMW 
+			PRINTFORML 「당…… 당신입니다……」
+			PRINTFORMW 
+			PRINTFORML 좋다。
+			PRINTFORML 앞으로도 공정한 시합 진행을 하도록。
+			PRINTFORML 장외 전술이라든가、승부가 난 뒤 기습이라든가、무한 증원이 쏟아져 나와 질 때까지 싸우게 한다든가 하는 것들。
+			PRINTFORML 투기장으로서의 취지나 명분에 어긋나지 않는가？
+			PRINTFORMW 
+			PRINTFORML “자중해라”
+			PRINTFORMW 
+			PRINTFORML 명령하고 %MASTER는% 발길을 돌렸다。
+			PRINTFORML 피웅덩이 속을 질척、질척거리며 걸어 나간다。
+			PRINTFORML ……아직도 비명이 울려 퍼지는 듯한 꼴의 투기장을 %MASTER는% 뒤로했다。
+			PRINTFORML  
+			;闘技場からのお詫び入りなので賞金上乗せ
+			PRINTFORMW ＞￥30000을 상금으로 받았다
+			PRINTFORMW ＞뱀파이어의 재산 ￥30000을 입수했다
+			PRINTFORMW ＞반죽음으로 만든 관객들로부터 ￥30000을 뜯어냈다
+			PRINTFORMW 　
+			MONEY += 90000
+			;殺したので連続受注不可
+			闘技場フラグ:52:0 = 1
+		;使い潰す
+		ELSEIF RESULT == 2
+
+			PRINTFORML 그저 죽이기만 해선 아깝지―― 그것만으론 속도 안 풀리고 무엇보다 자원 낭비다。
+			PRINTFORML %MASTER는% 관객석에서 뛰어내려오는 수컷 악마들을 바라본다。
+			PRINTFORML 아마도 기습에 이은 추격 요원들이겠지。
+			PRINTFORML 수는 많다。
+			PRINTFORML 기습에 실패했다 한들 여기선 『최종적인』 승자가 모든 것이다。
+			PRINTFORML 여기서라도 질 수는 없다――。
+			PRINTFORMW 
+
+			CUSTOMDRAWLINE =
+			WAIT
+
+			CALL COL_52_BATTLE5
+
+			PRINTFORML %MASTER는% 수컷 악마들을 몰살하고 다시 뱀파이어에게 다가갔다。
+			PRINTFORML COMP 화면상 HP는 0。
+			PRINTFORML 불굴의 근성이 있어 보이지는 않는다。이번에야말로 전투 불능이겠지。
+			PRINTFORMW  
+			PRINTFORML 우선은 %MASTER는% 뱀파이어를 알몸으로 홀랑 벗겨 관객석으로 집어던졌다。
+			PRINTFORML 범해도 좋다―、라고 가볍게 소리쳤다。질내사정 이외에는 금지로。
+			PRINTFORMW 
+			PRINTFORML 「싫、힉、네놈들、이 몸에게……！」
+			PRINTFORMW 
+			PRINTFORML 수컷들에게 둘러싸여 순식간에 뱀파이어의 모습은 보이지 않게 되었다。
+			PRINTFORMW  
+			PRINTFORML ………
+			PRINTFORML ……
+			PRINTFORML …
+			PRINTFORMW  
+			PRINTFORML ＞투기장 비치용 변기로 전락한 뱀파이어를 빨아들여 죽이고 대량의 MAG를 얻었다
+			PRINTFORMW ＞￥30000을 상금으로 받았다
+			PRINTFORMW ＞뱀파이어의 재산 ￥30000을 입수했다
+			
+			;大量のMAG。
+			;ヴァンパイアのＭＡＧが満杯になったところを吸い殺したってことで
+			;MAXBASE:ＭＡＧは「(15)*(L_LV)*(L_LV+1)*(L_LV+2)」という式
+			;今回のヴァンパイアはＬｖ50なのでMAX198万9000ＭＡＧ！得過ぎだな！
+			;戦闘終了時のは……「(COEFFICIENT_MAG(ABL:L_ENEMY:종족)+CFLAG:L_ENEMY:ＭＡＧ보정) * BASE:L_ENEMY:LV * (1+BASE:L_ENEMY:LV/8) * 4/5」
+			;今回のヴァンパイアに当てはめると「（128+50）*50*（1+50/8）*4/5」＝「178*50*6*4/5」＝42720、……50匹分！とか言うと普通に200万MAGとかになるなあ……
+			;ってことで素直に100万ＭＡＧにします
+			CALL CONTROL_MAG, MASTER, 1000000
+			;殺したので連続受注不可
+			闘技場フラグ:52:0 = 1
+		;持ち帰る
+		ELSEIF RESULT == 3
+			PRINTFORML 방심했다곤 해도 %CALLNAME:MASTER%을(를) 기습할 수 있는 인재다。
+			PRINTFORML 데리고 돌아가도 좋지 않겠는가。
+			PRINTFORML 여자라면 부족하지 않지만 있어서 손해 볼 것도 없는 게 확실하다。
+			PRINTFORML 게다가…… 저런 『양산형 속의 특별함』에는 약한 편이다。
+			PRINTFORML 데려가서 실컷 써먹기로 하자。
+			PRINTFORMW 
+			PRINTFORML 「큭！ 나설 차례다！ 무패의 %CALLNAME:MASTER%와(과) 한판 붙을 찬스라고!」
+			PRINTFORMW 
+			PRINTFORML 오오、하고 관객석에서 사내들이 내려온다。체면 따위 안중에도 없어졌군。
+			PRINTFORML 아마도 기습에 이은 추격 요원들이겠지。
+			PRINTFORML 수는 많다。
+			PRINTFORML 기습에 실패했다 한들 여기선 『최종적인』 승자가 모든 것이다。
+			PRINTFORML 여기서라도 질 수는 없다――。
+			PRINTFORMW 
+
+			CUSTOMDRAWLINE =
+			WAIT
+
+			CALL COL_52_BATTLE5
+
+
+			PRINTFORML 보기 좋게 격파한 %MASTER는% 투기장에서 빌린 미약을 치사량까지 주입하고 뱀파이어를 범했다。
+			PRINTFORML 관객놈들의 손도 빌려 호되게 범하고 길들이고 굴복시키고 항복시키고 행복으로 이끌며 지옥으로 떨어뜨린다。
+			PRINTFORML 「호오오오옥꺄아아아아아아아아악%ハート(3)% 억그에에에에에에엑%ハート(3)%」
+			PRINTFORML 남근이 쑤셔 박힐 때마다 포효 같은 소리를 지르며 뱀파이어는 미쳐 날뛰었다……
+			PRINTFORML 
+			PRINTFORML 
+			;技量が足りなくても調教後状態を入手できる
+			CALL ADD_NEW_COMPANION,[[キャラ:뱀파이어]], 100, 2
+			PRINTFORML ………
+			PRINTFORML ……
+			PRINTFORML …
+			PRINTFORML  
+			PRINTFORMW 뱀파이어는 주어진 쾌락에 타락하여、%CALLNAME:MASTER%의 개로 삼아달라며 애원했다
+			PRINTFORMW 「하악…… 바…… 윽…… 포에……%ハート()%」
+			PRINTFORMW 뱀파이어를 동료마로 삼았다
+			;仲魔にしたので連続受注不可
+			闘技場フラグ:52:0 = 1
+		ENDIF
+	ENDIF
+
+
+
+	FLAG:RESULT스킵 = 0
+	$HITOJITI
+	FOR LOCAL,0,CHARANUM
+		CALL HEALTH_CHARA,LOCAL
+		FLAG:RESULT스킵 = 0
+	NEXT
+
+
+
+
+
+
+
+@EVENT_COLOSSEUM_LOSE_52
+#DIM 精力
+#DIM 技巧ポイント
+#DIM 凌辱ゲージ
+#DIM LOCAL4
+#DIM LOCAL5
+#DIM LOCAL6
+
+	#LOCALSIZE 10
+	;一応、複数回きてしまうことに対策しておく
+	SIF FLAG:승리플래그
+		RETURN 1
+	;進行させるために勝利フラグを通すようにする
+	FLAG:승리플래그 = 1
+	FLAG:RESULT스킵 = 1
+	精力 = (BASE:POS(7):내구 + BASE:POS(8):내구 + BASE:POS(9):내구 + BASE:POS(10):내구 + BASE:POS(11):내구 + BASE:POS(12):내구 + BASE:POS(13):내구 + BASE:POS(14):내구 + BASE:POS(15):내구 + BASE:POS(16):내구) / 10
+	凌辱ゲージ = (精力 - 精力 / 4) + RAND:(精力)
+	PRINTFORMW %CALLNAME:MASTER% 일행은 시합에서 패배했다…
+	PRINTFORML ………
+	PRINTFORML ……
+	PRINTFORML …
+	SIF NO:POS(14) == [[キャラ:고블린]] || NO:POS(9) == [[キャラ:고블린]]
+		PRINTFORML 「그 아이들、보통 아이들보다 정력이 엄청 강하단다%ハート()% 듬뿍 즐기렴%ハート()%」
+	SIF NO:POS(14) == [[キャラ:레오나르도]] || NO:POS(14) == [[キャラ:바포멧트]] || NO:POS(9) == [[キャラ:레오나르도]] || NO:POS(9) == [[キャラ:바포멧트]]
+		PRINTFORML 「이번 사바트의 주역은 너란다♪ 느긋하게 즐기렴%ハート()%」
+	PRINTFORMW %CALLNAME:(闘技場フラグ:52:0)%에게 %CALLNAME:POS(7 + RAND:10)%이(가) 덮쳐들었다
+	PRINTFORMW %CALLNAME:(闘技場フラグ:52:0)%은(는) 위를 보고 밀쳐 넘겨져 드러난 비순에 %CALLNAME:POS(7 + RAND:10)%의 페니스가 꽂혀 세워졌다
+	PRINTFORMW 극심한 고통에 비명을 지르려 입을 벌린 순간 정액 냄새가 진동하는 %CALLNAME:POS(7 + RAND:10)%의 남근이 목구멍 깊숙이까지 단숨에 난입했다
+	PRINTFORMW 그대로 격렬하게 뒤흔들린 뒤 젤리 상태의 정액을 직접 위장 속에 흘려 넣었다
+	PRINTFORMW %CALLNAME:(闘技場フラグ:52:0)%은(는) 너무나 엄청난 충격에 의식을 놓칠 뻔했으나 질 내의 페니스가 팽창하는 것을 느끼고 밖으로 빼 달라고 간청했다
+	PRINTFORMW 그러나 소원은 허망하게도 %CALLNAME:POS(7 + RAND:10)%의 너무나도 짙은 짐승 같은 욕망의 덩어리가 %CALLNAME:(闘技場フラグ:52:0)%의 자궁을 가득 채워나갔다
+	IF FLAG:ＮＴＲ하드모드
+		技巧ポイント = 6
+		LOCAL4 = 0
+		LOCAL5 = 0
+		LOCAL6 = 0
+		$RYOUJOKU_LOOP
+		技巧ポイント += 1
+		SIF 技巧ポイント > 16
+			技巧ポイント = 16
+		SIF CFLAG:POS(技巧ポイント):상태이상 == GET_STATE_NUM("DYING") && 技巧ポイント < 16
+			技巧ポイント += 1
+		PRINTFORML 	 	
+		PRINTFORM 	
+		PRINTFORMW 능욕은 아직 계속되고 있다
+		凌辱ゲージ += (精力 - 精力 / 4) + RAND:(精力)
+		CALL CONTROL_LOYALTY, (闘技場フラグ:52:0), -凌辱ゲージ * 3
+		LOCAL4 += 凌辱ゲージ
+		SIF NO:POS(14) == [[キャラ:오니]]
+			LOCAL4 += 50
+		CALL NTR_SHOOT,(闘技場フラグ:52:0),-1,LOCAL4*5
+		CFLAG:(闘技場フラグ:52:0):2099 = 0
+		IF RAND:2 == 0
+			IF CFLAG:(闘技場フラグ:52:0):음란도 > ABS(FAVORITE_ID((闘技場フラグ:52:0),LOCAL)) || (창부((闘技場フラグ:52:0)) && RAND(2))
+				IF NO:POS(技巧ポイント) == [[キャラ:레오나르도]] || NO:POS(技巧ポイント) == [[キャラ:바포멧트]] || NO:POS(技巧ポイント) == [[キャラ:오니]]
+					PRINTFORML %CALLNAME:(闘技場フラグ:52:0)%은(는) %CALLNAME:POS(技巧ポイント)%의 목에 팔을 두르고 대면좌위 자세로 거대한 남근을 물고 있다
+					LOCAL:7 += BASE:POS(技巧ポイント):내구
+				ELSEIF IS_BEAST(POS(技巧ポイント))
+					PRINTFORML %CALLNAME:(闘技場フラグ:52:0)%은(는) 엉덩이에 손톱이 박히면서도 엉덩이를 높이 치켜들고 %CALLNAME:POS(技巧ポイント)%의 야수 같은 후배위를 받아들이고 있다
+					LOCAL:8 += BASE:POS(技巧ポイント):내구
+				ENDIF
+				PRINTFORML %CALLNAME:(闘技場フラグ:52:0)%은(는) 교성을 내지르며 %CALLNAME:POS(技巧ポイント)%에 맞추어 허리를 흔들고 있다
+				PRINTFORMW 질 내에 씨앗이 쏟아져 들어오자 희열의 교성을 지르며 등을 크게 젖혔다
+			ELSEIF CFLAG:(闘技場フラグ:52:0):음란도 > ABS(FAVORITE_ID((闘技場フラグ:52:0),LOCAL)) / 2 || (음란((闘技場フラグ:52:0)) && RAND(2))
+				IF NO:POS(技巧ポイント) == [[キャラ:레오나르도]] || NO:POS(技巧ポイント) == [[キャラ:바포멧트]] || NO:POS(技巧ポイント) == [[キャラ:오니]]
+					PRINTFORML %CALLNAME:(闘技場フラグ:52:0)%은(는) %CALLNAME:POS(技巧ポイント)%의 목에 팔을 두르고 대면좌위 자세로 거대한 남근을 물고 있다
+					LOCAL:7 += BASE:POS(技巧ポイント):내구
+				ELSEIF IS_BEAST(POS(技巧ポイント))
+					PRINTFORML %CALLNAME:(闘技場フラグ:52:0)%은(는) 엉덩이에 손톱이 박히면서도 후배위 자세로 %CALLNAME:POS(技巧ポイント)%의 야수 같은 남근을 받아들이고 있다
+					LOCAL:8 += BASE:POS(技巧ポイント):내구
+				ENDIF
+				PRINTFORMW %CALLNAME:(闘技場フラグ:52:0)%은(는) %CALLNAME:POS(技巧ポイント)%에게 꿰뚫릴 때마다 요염한 교성을 지르고 있다
+			ELSE
+				PRINTFORMW %CALLNAME:POS(技巧ポイント)%은(는) 울부짖는 %CALLNAME:(闘技場フラグ:52:0)%의 질 내에 정액을 쏟아부었다
+			ENDIF
+			IF CFLAG:(闘技場フラグ:52:0):음란도 > ABS(FAVORITE_ID((闘技場フラグ:52:0),LOCAL)) && !LOCAL5 == 1 && !TALENT:(闘技場フラグ:52:0):임신
+				PRINTFORMW 「아~아♪ 저건 들어찼네에♪ 우후훗、어떤 아이가 태어나려나%ハート()%」
+				LOCAL5 = 1
+			ENDIF
+			IF 凌辱ゲージ > 100 && !LOCAL5 == 1 && !TALENT:(闘技場フラグ:52:0):임신
+				PRINTFORMW 「우후후♪ 제법 짙은 걸 사정당해 버렸네에%ハート()% 임신해 버린 거 아니니？」
+				LOCAL5 = 1
+			ENDIF
+		ELSE
+			IF CFLAG:(闘技場フラグ:52:0):음란도 > ABS(FAVORITE_ID((闘技場フラグ:52:0),LOCAL)) || (창부((闘技場フラグ:52:0)) && RAND(2))
+				IF NO:POS(技巧ポイント) == [[キャラ:레오나르도]] || NO:POS(技巧ポイント) == [[キャラ:바포멧트]] || NO:POS(技巧ポイント) == [[キャラ:오니]]
+					PRINTFORML %CALLNAME:(闘技場フラグ:52:0)%은(는) %CALLNAME:POS(技巧ポイント)%의 거대한 페니스에 넋이 나간 표정으로 키스를 했다
+				ELSEIF IS_BEAST(POS(技巧ポイント))
+					PRINTFORML %CALLNAME:(闘技場フラグ:52:0)%은(는) %CALLNAME:POS(技巧ポイント)%의 이형 페니스에 넋이 나간 표정으로 키스를 했다
+				ENDIF
+				PRINTFORMW %CALLNAME:(闘技場フラグ:52:0)%이(가) %CALLNAME:POS(技巧ポイント)%의 페니스를 뿌리부터 핥아 올리며 귀두를 빨아올리며 비벼대자 대량의 정액이 입안으로 발사되었다
+				PRINTFORMW 사랑스럽다는 듯 타액과 정액으로 범벅된 페니스를 혀끝으로 깨끗하게 청소하고 있다
+			ELSEIF CFLAG:(闘技場フラグ:52:0):음란도 > ABS(FAVORITE_ID((闘技場フラグ:52:0),LOCAL)) / 2 || (음란((闘技場フラグ:52:0)) && RAND(2))
+				IF NO:POS(技巧ポイント) == [[キャラ:레오나르도]] || NO:POS(技巧ポイント) == [[キャラ:바포멧트]]
+					PRINTFORML %CALLNAME:(闘技場フラグ:52:0)%은(는) 눈앞에 들이밀어진 %CALLNAME:POS(技巧ポイント)%의 거대한 페니스에 무심코 숨을 삼켰다
+				ELSEIF IS_BEAST(POS(技巧ポイント))
+					PRINTFORML %CALLNAME:(闘技場フラグ:52:0)%은(는) 눈앞에 들이밀어진 %CALLNAME:POS(技巧ポイント)%의 이형 페니스에 스스로 혀를 내밀었다
+				ENDIF
+				PRINTFORMW %CALLNAME:(闘技場フラグ:52:0)%은(는) %CALLNAME:POS(技巧ポイント)%의 페니스를 물고 발사되는 정액을 삼키고 있다
+			ELSE
+				PRINTFORMW %CALLNAME:POS(技巧ポイント)%은(는) %CALLNAME:(闘技場フラグ:52:0)%에게 페니스를 물린 채 격렬하게 허리를 털어대며 그대로 입안에 사정했다
+			ENDIF
+			IF CFLAG:(闘技場フラグ:52:0):음란도 > ABS(FAVORITE_ID((闘技場フラグ:52:0),LOCAL)) && !LOCAL6 == 1
+				PRINTFORMW 「우후훗、저렇게 정성스럽게 청소하다니%ハート()% 어지간히 %CALLNAME:POS(技巧ポイント)%의 자지가 마음에 든 모양이네%ハート()%」
+				LOCAL6 = 1
+			ENDIF
+		ENDIF
+
+
+
+		SIF 技巧ポイント == 16
+			GOTO SKIP_RYOJOKU 
+		GOTO RYOUJOKU_LOOP
+		$SKIP_RYOJOKU
+
+		PRINTFORM 		
+		PRINTFORMW %CALLNAME:(闘技場フラグ:52:0)%을(를) 향한 능욕이 끝났다…
+		PRINTFORML ………
+		PRINTFORML ……
+		PRINTFORML …
+		;淫ＮＴＲ判定
+		IF CFLAG:(闘技場フラグ:52:0):음란도 > ABS(FAVORITE_ID((闘技場フラグ:52:0),LOCAL)) 
+			PRINTFORMW %CALLNAME:(闘技場フラグ:52:0)%은(는) 풀려났음에도 불구하고 %CALLNAME:POS(7 + RAND:10)%의 위에 올라타 황홀한 표정으로 허리를 흔들고 있다
+			PRINTFORMW 「어머 어머~♪ 타락해 버린 모양이네、안됐어라아♪」
+			PRINTFORMW 「이 아가씨、원래 당신 자지만 좋아했던 게 아닌 거 아냐？」
+			PRINTFORMW 「아직 부족한 모양이니 당신은 거기서 구경이나 하고 있으렴」
+			PRINTFORMW 「그녀가 타락해 가는 모습을 말이지%ハート()%」
+			CFLAG:(闘技場フラグ:52:0):음ＮＴＲ진행도 = 2
+			MARK:(闘技場フラグ:52:0):쾌락각인 = 3
+			CALL NTR_CHECK , (闘技場フラグ:52:0) , 1
+		ENDIF
+
+	ENDIF
+	;처녀상실플래그
+	IF TALENT:(闘技場フラグ:52:0):0 == 1
+		TALENT:(闘技場フラグ:52:0):처녀 = 0
+		CFLAG:(闘技場フラグ:52:0):처녀상실플래그 = 1
+	ENDIF
+	;재생처녀상실플래그
+	IF TALENT:(闘技場フラグ:52:0):1 == 1
+		TALENT:(闘技場フラグ:52:0):재생처녀 = 0
+		CFLAG:(闘技場フラグ:52:0):재생처녀상실플래그 = 1
+	ENDIF
+	IF CFLAG:(闘技場フラグ:52:0):처녀상실플래그
+		PRINTFORML 처녀상실
+		CFLAG:(闘技場フラグ:52:0):처녀상실플래그 = 0
+		;PRINTFORML 이상경험　처녀상실(윤간) + 2  
+		;EXP:(闘技場フラグ:52:0):이상경험 += 2
+		CALL ADDS_ABNORMAL_EXP, "処女喪失（輪姦）", (闘技場フラグ:52:0)
+	ELSEIF CFLAG:(闘技場フラグ:52:0):재생처녀상실플래그
+		CFLAG:(闘技場フラグ:52:0):재생처녀상실플래그 = 0
+		PRINTFORML 재생처녀상실
+	ENDIF
+
+	PRINTFORML Ｖ경험 ＋{凌辱ゲージ}
+	EXP:(闘技場フラグ:52:0):Ｖ경험 += 凌辱ゲージ
+	PRINTFORML Ａ경험 ＋{凌辱ゲージ/ 3}
+	EXP:(闘技場フラグ:52:0):Ａ경험 += 凌辱ゲージ / 3
+	PRINTFORML 성교경험 ＋{凌辱ゲージ + 凌辱ゲージ / 3}
+	EXP:(闘技場フラグ:52:0):성교경험 += 凌辱ゲージ + 凌辱ゲージ / 3
+	PRINTFORML 절정경험 ＋{(凌辱ゲージ + 凌辱ゲージ / 3) / 3}
+	EXP:(闘技場フラグ:52:0):절정경험 += (凌辱ゲージ + 凌辱ゲージ / 3) / 3
+	PRINTFORML 질사경험 ＋{凌辱ゲージ}
+	EXP:(闘技場フラグ:52:0):질사경험 += 凌辱ゲージ
+	PRINTFORML 펠라경험 ＋{凌辱ゲージ / 2}
+	EXP:(闘技場フラグ:52:0):펠라경험 += 凌辱ゲージ / 2
+	PRINTFORML 정액경험 ＋{凌辱ゲージ + 凌辱ゲージ / 3 + 凌辱ゲージ / 2}
+	EXP:(闘技場フラグ:52:0):정액경험 += 凌辱ゲージ + 凌辱ゲージ / 3 + 凌辱ゲージ / 2
+	IF LOCAL:7 > 0
+		SIF EXP:(闘技場フラグ:52:0):Ｖ확장경험 == 0 && EXP:(闘技場フラグ:52:0):Ａ확장경험 == 0
+			CALL ADDS_ABNORMAL_EXP, "拡張初体験", (闘技場フラグ:52:0)
+		PRINTFORML Ｖ확장경험 ＋{LOCAL:7 / 2}
+		EXP:(闘技場フラグ:52:0):Ｖ확장경험 += LOCAL:7 / 2
+		PRINTFORML Ａ확장경험 ＋{LOCAL:7 / 4}
+		EXP:(闘技場フラグ:52:0):Ａ확장경험 += LOCAL:7 / 4
+	ENDIF
+	IF LOCAL:8 > 0
+		PRINTFORML 수간경험 ＋{凌辱ゲージ + 凌辱ゲージ / 3}
+		SIF EXP:(闘技場フラグ:52:0):수간경험 == 0
+			CALL ADDS_ABNORMAL_EXP, "獣姦", (闘技場フラグ:52:0)
+		EXP:(闘技場フラグ:52:0):수간경험 += 凌辱ゲージ + 凌辱ゲージ / 3
+	ENDIF
+	PRINTFORML 윤간경험 ＋1
+	EXP:(闘技場フラグ:52:0):윤간경험 += 1
+	PRINTFORML 쾌Ｃ의 구슬　Ｘ{凌辱ゲージ / 4}
+	PRINTFORML 쾌Ｖ의 구슬　Ｘ{凌辱ゲージ}
+	PRINTFORML 쾌Ａ의 구슬　Ｘ{凌辱ゲージ / 3}
+	PRINTFORML 쾌Ｂ의 구슬　Ｘ{凌辱ゲージ / 4}
+	PRINTFORML 치정의 구슬　Ｘ{(凌辱ゲージ + 凌辱ゲージ / 3) / 3}
+	PRINTFORML 고통의 구슬　Ｘ{凌辱ゲージ + 凌辱ゲージ / 3}
+	PRINTFORML 공포의 구슬　Ｘ{凌辱ゲージ + 凌辱ゲージ / 3 + 凌辱ゲージ / 2}
+	PRINTFORML 부정의 구슬　Ｘ{凌辱ゲージ * 3}
+	CALL SHOW_ABNORMAL_EXP, (闘技場フラグ:52:0), 1
+	JUEL:(闘技場フラグ:52:0):쾌Ｃ += 凌辱ゲージ / 4
+	JUEL:(闘技場フラグ:52:0):쾌Ｖ += 凌辱ゲージ
+	JUEL:(闘技場フラグ:52:0):쾌Ａ += 凌辱ゲージ / 3
+	JUEL:(闘技場フラグ:52:0):쾌Ｂ += 凌辱ゲージ / 4
+	JUEL:(闘技場フラグ:52:0):치정 += (凌辱ゲージ + 凌辱ゲージ / 3) / 3
+	JUEL:(闘技場フラグ:52:0):고통 += 凌辱ゲージ + 凌辱ゲージ / 3
+	JUEL:(闘技場フラグ:52:0):공포 += 凌辱ゲージ + 凌辱ゲージ / 3 + 凌辱ゲージ / 2
+	JUEL:(闘技場フラグ:52:0):부정 += 凌辱ゲージ * 3
+	;妊娠判定用   	
+	IF FLAG:임신기능
+		CFLAG:(闘技場フラグ:52:0):자궁현재용량 += 凌辱ゲージ * 20
+		SIF 凌辱ゲージ > 30
+			凌辱ゲージ = 30
+			LOCAL:8 = POS(7 + RAND:10)
+		IF RAND:100 < 凌辱ゲージ  || CFLAG:(闘技場フラグ:52:0):음란도 > ABS(FAVORITE_ID((闘技場フラグ:52:0),LOCAL))
+			CFLAG:(闘技場フラグ:52:0):출산예정일 = DAY + 6
+			CFLAG:(闘技場フラグ:52:0):임신시부친판정 = 4
+			CFLAG:(闘技場フラグ:52:0):임신확정후의부친판정 = NO:(LOCAL:8)
+			CFLAG:(闘技場フラグ:52:0):부친의고유번호부모 = -1
+			CSTR:(闘技場フラグ:52:0):부친명칭 = %CALLNAME:(LOCAL:8)%
+		ENDIF
+	ENDIF
+	;ＮＴＲ可能な場合、淫乱度が増加
+	SIF FLAG:ＮＴＲ기능
+		CFLAG:(闘技場フラグ:52:0):음란도 += (凌辱ゲージ + 凌辱ゲージ / 3) * 10
+	PRINTFORMW 가혹한 능욕으로 기절한 %CALLNAME:(闘技場フラグ:52:0)%을(를) 데리고 콜로세움을 뒤로했다
+	RETURN 1
+
+
+
+
+;====================
+@COL_52_BATTLE1
+;====================
+#DIM CHARA_NUM
+
+	CALL SET_ENEMY,16,[[キャラ:오크]],30,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬3 = 515
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,15,[[キャラ:오크]],30,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬3 = 515
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,14,[[キャラ:고블린]],33,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬3 = 419
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,13,[[キャラ:코볼트]],30,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 514
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,12,[[キャラ:코볼트]],30,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 514
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,11,[[キャラ:아귀]],30,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 2005
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,10,[[キャラ:아귀]],30,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 2005
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,9,[[キャラ:아귀]],30,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 2005
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,8,[[キャラ:아귀]],30,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 2005
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,7,[[キャラ:아귀]],30,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 2005
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+
+	CALL BATTLE_START
+
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+
+
+
+
+;====================
+@COL_52_BATTLE2
+;====================
+#DIM CHARA_NUM
+	CALL SET_ENEMY,16,[[キャラ:리림]],33,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬3 = 1212
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,15,[[キャラ:리림]],33,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬3 = 404
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,14,[[キャラ:레오나르도]],36,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬4 = 520
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,13,[[キャラ:리림]],33,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬3 = 404
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,12,[[キャラ:리림]],33,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬3 = 1212
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,11,[[キャラ:임프]],33,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬4 = 1223
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,10,[[キャラ:임프]],33,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬4 = 1223
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,9,[[キャラ:리림]],33,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬3 = 1212
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,8,[[キャラ:임프]],33,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬4 = 1223
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,7,[[キャラ:임프]],33,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬4 = 1223
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+
+	CALL BATTLE_START
+
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+
+
+
+;====================
+@COL_52_BATTLE3
+;====================
+#DIM CHARA_NUM
+	CALL SET_ENEMY,16,[[キャラ:서큐버스]],37,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 1214
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,15,[[キャラ:서큐버스]],37,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 1214
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,14,[[キャラ:바포멧트]],40,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬4 = 520
+	ABL:CHARA_NUM:스킬4 = 1227
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,13,[[キャラ:서큐버스]],37,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 1214
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,12,[[キャラ:서큐버스]],37,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 1214
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,11,[[キャラ:인큐버스]],37,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 519
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,10,[[キャラ:인큐버스]],37,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 519
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,9,[[キャラ:인큐버스]],37,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 519
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,8,[[キャラ:인큐버스]],37,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 519
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,7,[[キャラ:인큐버스]],37,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 519
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+
+	CALL BATTLE_START
+
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+
+
+
+;====================
+@COL_52_BATTLE4
+;====================
+#DIM CHARA_NUM
+	CALL SET_ENEMY,16,[[キャラ:바포멧트]],40,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 519
+	ABL:CHARA_NUM:스킬3 = 1227
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,15,[[キャラ:바포멧트]],40,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 519
+	ABL:CHARA_NUM:스킬3 = 1227
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,14,[[キャラ:뱀파이어]],50,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 2426
+	ABL:CHARA_NUM:스킬2 = 1214
+	ABL:CHARA_NUM:스킬3 = 405
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,13,[[キャラ:레오나르도]],40,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬2 = 520
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,12,[[キャラ:레오나르도]],40,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬2 = 520
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,11,[[キャラ:바포멧트]],40,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 519
+	ABL:CHARA_NUM:스킬3 = 1227
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,10,[[キャラ:인큐버스]],40,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 1211
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,9,[[キャラ:인큐버스]],40,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 1211
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,8,[[キャラ:인큐버스]],40,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬1 = 1211
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+	CALL SET_ENEMY,7,[[キャラ:레오나르도]],40,1,1
+	CHARA_NUM = (CHARANUM - 1)
+	CFLAG:CHARA_NUM:ＭＰ보정 = 1000
+	ABL:CHARA_NUM:스킬2 = 520
+	CALL SYNC_STATUS,CHARA_NUM
+	CALL HEALTH_CHARA,CHARA_NUM
+
+
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+
+	CALL BATTLE_START
+
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+
+
+;====================
+@COL_52_BATTLE5
+;====================
+;こいつらは凌辱要員だし強化しなくていいか
+;====================
+
+	CALL SET_ENEMY,16,[[キャラ:바포멧트]],40,1,1
+	CALL SET_ENEMY,15,[[キャラ:바포멧트]],40,1,1
+	CALL SET_ENEMY,14,[[キャラ:오니]],36,1,1
+	CALL SET_ENEMY,13,[[キャラ:레오나르도]],40,1,1
+	CALL SET_ENEMY,12,[[キャラ:레오나르도]],40,1,1
+	CALL SET_ENEMY,11,[[キャラ:오크]],40,1,1
+	CALL SET_ENEMY,10,[[キャラ:오니]],40,1,1
+	CALL SET_ENEMY,9,[[キャラ:인큐버스]],40,1,1
+	CALL SET_ENEMY,8,[[キャラ:인큐버스]],40,1,1
+	CALL SET_ENEMY,7,[[キャラ:코볼트]],40,1,1
+
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+
+	CALL BATTLE_START
+
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+
+

@@ -1,0 +1,147 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2024/06/01		っとっとき				1回の調教で複数回できるように修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;-------------------------------------------------
+;사진촬영
+;特殊コマンド
+;-------------------------------------------------
+@ACT_COM190
+PRINTL 사진촬영
+TSTR:0 = 사진촬영
+;CALL KOJO_MESSAGE_COM
+
+;後の処理で行う
+;ITEM:필름 -= 1
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 0
+DOWNBASE:TARGET:기력 += 80
+
+SOURCE:TARGET:무서움 = 500
+SOURCE:TARGET:액체 = 100
+SOURCE:TARGET:노출 = 500
+SOURCE:TARGET:일탈 = 400
+SOURCE:TARGET:반감 = 400
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;抑圧、抵抗持ちには、抑鬱ソース追加
+SIF TALENT:억압 || TALENT:저항
+	SOURCE:TARGET:울굴 += 400
+
+;苦痛を伴わないマゾっ気及びマゾの処理は先にしておく
+;マゾっ気を見る
+IF ABL:마조끼 == 0
+	TIMES SOURCE:TARGET:노출 , 0.80
+	SOURCE:TARGET:액체 += 0
+	SOURCE:TARGET:욕정 += 0
+ELSEIF ABL:마조끼 == 1
+	TIMES SOURCE:TARGET:노출 , 1.00
+	SOURCE:TARGET:액체 += 20
+	SOURCE:TARGET:욕정 += 30
+ELSEIF ABL:마조끼 == 2
+	TIMES SOURCE:TARGET:노출 , 1.20
+	SOURCE:TARGET:액체 += 40
+	SOURCE:TARGET:욕정 += 70
+ELSEIF ABL:마조끼 == 3
+	TIMES SOURCE:TARGET:노출 , 1.40
+	SOURCE:TARGET:액체 += 70
+	SOURCE:TARGET:욕정 += 120
+ELSEIF ABL:마조끼 == 4
+	TIMES SOURCE:TARGET:노출 , 1.50
+	SOURCE:TARGET:액체 += 110
+	SOURCE:TARGET:욕정 += 180
+ELSEIF ABL:마조끼 == 5
+	TIMES SOURCE:TARGET:노출 , 1.70
+	SOURCE:TARGET:액체 += 150
+	SOURCE:TARGET:욕정 += 250
+ELSEIF ABL:마조끼 == 6
+	TIMES SOURCE:TARGET:노출 , 1.90
+	SOURCE:TARGET:액체 += 200
+	SOURCE:TARGET:욕정 += 300
+ELSEIF ABL:마조끼 == 7
+	TIMES SOURCE:TARGET:노출 , 2.10
+	SOURCE:TARGET:액체 += 250
+	SOURCE:TARGET:욕정 += 350
+ELSEIF ABL:마조끼 == 8
+	TIMES SOURCE:TARGET:노출 , 2.30
+	SOURCE:TARGET:액체 += 300
+	SOURCE:TARGET:욕정 += 400
+ELSEIF ABL:마조끼 == 9
+	TIMES SOURCE:TARGET:노출 , 2.50
+	SOURCE:TARGET:액체 += 350
+	SOURCE:TARGET:욕정 += 450
+ELSEIF ABL:마조끼 >= 10
+	TIMES SOURCE:TARGET:노출 , 3.00
+	SOURCE:TARGET:액체 += 500
+	SOURCE:TARGET:욕정 += 500
+ENDIF
+
+;マゾを見る
+IF TALENT:마조 == 1
+	TIMES SOURCE:TARGET:노출 , 2.50
+	TIMES SOURCE:TARGET:액체 , 1.20
+	TIMES SOURCE:TARGET:욕정 , 1.20
+ENDIF
+
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+;後の処理で行う
+;;値段の計算を行い、売却処理は後で行う
+;CALL PRICE_PICTURE
+
+CALL ADDS_EXP("촬영경험", 1, PLAYER)
+CALL ADDS_EXP("피사경험", 1, TARGET)
+
+;依存度ベクトル
+TFLAG:33 = 5
+
+;依存度補正値(服従で1、隷属で2）
+IF TALENT:복종 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:예속 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+;-------------------------------------------------
+;写真撮影の処理
+;-------------------------------------------------
+;金策に使えないように2回目以降はそれまでの売値を半額にして計算する
+;どれだけ沢山撮っても、2枚分未満の値に収まる想定
+;-------------------------------------------------
+;フィルムがある場合のみ、値段の計算、売却処理を行うようにする
+IF ITEM:필름 > 0
+	;金策に使えないように調整
+	SIF TFLAG:37 > 0
+		TFLAG:37 = (TFLAG:37 / 2)
+	;値段の計算を行い、売却処理は後で行う
+	CALL PRICE_PICTURE
+	;ここでフィルムを減らす
+	ITEM:필름 -= 1
+ELSE
+	;フィルムがない場合は処理なし。ビデオと同じようにアナウンス
+	PRINTL ＜필름이 없었습니다. 메모리 내 데이터로 삭제됩니다＞
+ENDIF
+
+RETURN 1
+
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_190
+RETURN COMTYPE("特殊コマンド系")
+
+

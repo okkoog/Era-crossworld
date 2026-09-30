@@ -1,0 +1,122 @@
+﻿
+@SKILL_NAME_JackTempest,ARG
+RESULTS = 황신나선참
+
+@SKILL_HITRATE_JackTempest, ARG
+RETURN 100
+
+@SKILL_POWER_JackTempest, ARG
+RETURN 40
+
+@SKILL_CRITICAL_RATE_JackTempest, ARG
+RETURN 5
+
+@SKILL_MINATTACKNUMBER_JackTempest,ARG
+RETURN 10
+
+@SKILL_MAXATTACKNUMBER_JackTempest,ARG
+RETURN 10
+
+@SKILL_COSTTYPE_JackTempest, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+
+@SKILL_COST_JackTempest,ARG
+RETURN 38
+
+@SKILL_TYPE_JackTempest,ARG
+RETURN GET_TYPE_NUM("빙결")
+
+@SKILL_DECIDE_TYPE_JackTempest
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+@SKILL_DAMAGETYPE_JackTempest,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+@SKILL_ATTACKTYPE_JackTempest, ARG
+RETURN GET_攻撃タイプ_NUM("物理")
+
+@SKILL_PENETRATION_RANK_JackTempest, ARG, ARG:1
+RETURN 0
+
+@SKILL_TARGET_JackTempest,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+@SKILL_RANGE_JackTempest,ARG
+RETURN 2
+
+@SKILL_SPHERE_JackTempest,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+@SKILL_EFECT_JackTempest,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+@SKILL_SUCCESSION_TYPE_JackTempest
+RETURN GET_SUCCESSION_NUM("빙결")
+
+@SKILL_SPEED_JackTempest, ARG = -1
+RETURN 0
+
+@SKILL_ACTIONABLE_FIELD_JackTempest
+RETURN 0
+
+@SKILL_ADDTIONAL_STATE_JackTempest,ARG
+RETURN 0
+
+@SKILL_ADDTIONAL_TYPE_JackTempest,ARG
+RETURN 0
+
+@SKILL_ADDTIONAL_BASE_RATE_JackTempest,ARG
+RETURN 0
+
+@SKILL_ADDTIONAL_MAX_RATE_JackTempest,ARG
+RETURN 0
+
+;====================================================
+;====================================================
+@ACTION_JackTempest,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM
+
+
+;====================================================
+;====================================================
+
+@SKILL_EXPLAIN_JackTempest,ARG
+PRINTL 나호비노가 사용하는 「황신나선참」을 모방한 전용 스킬.
+PRINTL 무작위 적에게 10회, 빙결 속성의 소 데미지를 준다.
+PRINTL 크리티컬 시 위력이 상승한다.
+
+@SKILL_SPECIAL_ACTIONABLE_JackTempest,ARG
+RETURN 1
+
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_JackTempest, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			SIF IS_PU_SKILL_入力行動(L_P, "JackTempest") && L_CRT
+				RETURN 100
+	ENDSELECT
+;自分が防御側
+ELSE
+ENDIF
+RETURN 0

@@ -1,0 +1,929 @@
+﻿;ARGは生成キャラの登録番号
+;高校生はサマナー、異能者、ペルソナ使い、シフター、喰奴と幅広く発現し、ランダムキャラとしては一番オーソドックスな扱い
+;レアキャラはアイドルのみ
+;異能者スキルのコンセプトは小学生を参照
+@RANDOMCHARA_4907, ARGS, ARG, ARG:1,ARGS:1
+#LOCALSSIZE 1
+SELECTCASE ARGS
+	CASE "일인칭"
+		IF TALENT:ARG:남자 == 1
+			RESULTS = 나
+		ELSE
+			RESULTS = 나
+		ENDIF
+	CASE "이인칭"
+		RESULTS = %CALLNAME:MASTER%
+	CASE "체력"
+		IF イベントフラグ:88:0 > 1
+			RETURN RAND(1300, 2800)
+		ELSE
+			RETURN RAND(800, 1800)
+		ENDIF
+	CASE "기력"
+		IF イベントフラグ:88:0 > 1
+			RETURN RAND(1300, 2500)
+		ELSE
+			RETURN RAND(800, 1500)
+		ENDIF
+	CASE "属性"
+		RETURN RAND(100, 200), RAND(100, 200)
+	CASE "종족"
+		RETURN 0
+	CASE "롤"
+		SELECTCASE RAND:100
+			CASE IS < 5
+				IF TALENT:ARG:남자 == 0
+					RESULTS = 魔法少女
+				ELSE
+					RESULTS = 아웃사이더
+				ENDIF
+			CASE IS < 15
+				RESULTS = 서머너
+			CASE IS < 40
+				RESULTS = 페르소나구사자
+			CASE IS < 65
+				RESULTS = 이능자
+			CASE IS < 75
+				RESULTS = 식노
+			CASE IS < 85
+				RESULTS = 데빌시프터
+			CASEELSE
+				RESULTS = 非戦闘員
+				IF !RAND:10
+					RESULTS = アイドル
+					SELECTCASE RAND:5
+						CASE 0
+							;1/5でフレーバーとして天使を付与
+							RESULTS:1 = %ADD_SPLIT(RESULTS:1, "/", "천사_1")%
+						CASE 1
+							;1/5で半フレーバーとして機械の乙女を付与
+							RESULTS:1 = %ADD_SPLIT(RESULTS:1, "/", "기계의처녀_1")%
+					ENDSELECT
+				ENDIF
+		ENDSELECT
+	;戻り値は0:ランダム それ以外は指定
+	CASE "초기페르소나"
+		RETURN 0
+	;戻り値は0:ランダム それ以外は指定
+	CASE "링크악마"
+		RETURN 0
+	;戻り値は0:ランダム それ以外は指定
+	CASE "初期ステータス比率"
+		RETURN 7, 7, 8, 7, 8, 10
+	CASE "스킬"
+		IF イベントフラグ:88:0 > 3 && TALENT:ARG:서머너 >= 5 && TALENT:ARG:이능자 == 0
+			;純サマ強化スキル
+			;とりあえず自動スキルを山盛り
+			RESULT = [[스킬:아이템숙련]]
+			RESULT:1 = [[스킬:어드바이스]]
+			RESULT:2 = [[스킬:이악물기]]
+			RESULT:3 = [[스킬:추격의심득]]
+			RESULT:4 = [[스킬:황천의회심]]
+			RESULT:5 = [[스킬:정천의회심]]
+			RESULT:6 = [[스킬:서드아이]]
+			RESULT:7 = [[스킬:관통]]
+			RETURN RESULT
+		ELSEIF ARGS:1 == "アイドル"
+			;アイドル用スキル
+			;(使うには陥落させた上に戦闘素質を付けないといけないので、ぶっちゃけ使う人は物好きと思われる)
+			;それっぽいスキル2つ
+			SELECTCASE RAND:4
+				CASE 0
+					RESULT = [[스킬:해피스텝]]
+				CASE 1
+					RESULT = [[스킬:고양의노래]]
+				CASE 2
+					RESULT = [[스킬:던지는키스]]
+				CASE 3
+					RESULT = [[스킬:자장가]]
+			ENDSELECT
+			SELECTCASE RAND:4
+				CASE 0
+					RESULT:1 = [[스킬:용분의춤]]
+				CASE 1
+					RESULT:1 = [[스킬:천상의춤]]
+				CASE 2
+					RESULT:1 = [[스킬:마음의외침]]
+				CASE 3
+					RESULT:1 = [[스킬:마계의조사]]
+			ENDSELECT
+			;持ち歌(歌唱スキル)を2曲ずつ
+			SELECTCASE RAND:4
+				CASE 0
+					RESULT:2 = [[스킬:Go-Round]]
+				CASE 1
+					RESULT:2 = [[스킬:Breakin’Through]]
+				CASE 2
+					RESULT:2 = [[스킬:MAZE OF LIFE]]
+				CASE 3
+					RESULT:2 = [[스킬:Time to Make History]]
+			ENDSELECT
+			SELECTCASE RAND:5
+				CASE 0
+					RESULT:3 = [[스킬:Burn my Dread]]
+				CASE 1
+					RESULT:3 = [[스킬:『너의눈은일만볼트』]]
+				CASE 2
+					RESULT:3 = [[스킬:『얼려버리는라인』]]
+				CASE 3
+					RESULT:3 = [[스킬:『봄버걸』]]
+				CASE 4
+					RESULT:3 = [[스킬:『불의전차』]]
+			ENDSELECT
+			IF GET_USEABLE_EXTRA_TITLE()
+				;最近のアイドルは魔法少女も兼ねていたりするため、魔法少女スキルもオマケで1つ
+				;パターンを増やし、幻想郷スキルも追加
+				SELECTCASE RAND:6
+					CASE 0
+						RESULT:4 = [[스킬:침식하는검은날개]]
+					CASE 1
+						RESULT:4 = [[스킬:티로・피날레]]
+					CASE 2
+						RESULT:4 = [[스킬:나의세계]]
+					CASE 3
+						RESULT:4 = [[스킬:피니투라・프레차]]
+					CASE 4
+						RESULT:4 = [[스킬:스쿠왈타토레]]
+					CASE 5
+						RESULT:4 = [[스킬:롯소・판타즈마]]
+				ENDSELECT
+			ENDIF
+			RETURN RESULT
+		ENDIF 
+		SIF !GET_ROLE_PROP("CAN_USE_SKILL", ARG)
+			RETURN 0
+		
+		;異能者スキル
+		;공격
+		SELECTCASE RAND:5
+			CASE 0
+				RESULT = [[스킬:아기]]
+				RESULT:1 = [[스킬:아기라오]]
+				RESULT:2 = [[스킬:아기다인]]
+				RESULT:3 = [[스킬:데들리번]]
+			CASE 1
+				RESULT = [[스킬:마그나]]
+				RESULT:1 = [[스킬:마그나스]]
+				RESULT:2 = [[스킬:마그다인]]
+				RESULT:3 = [[스킬:대지의분노]]
+			CASE 2
+				RESULT = [[스킬:아쿠아]]
+				RESULT:1 = [[스킬:아쿠에스]]
+				RESULT:2 = [[스킬:아쿠아다인]]
+				RESULT:3 = [[스킬:아쿠아리타이드]]
+			CASE 3
+				RESULT = [[스킬:갈]]
+				RESULT:1 = [[스킬:갈라]]
+				RESULT:2 = [[스킬:갈다인]]
+				RESULT:3 = [[스킬:선풍진]]
+			CASE 4
+				RESULT = [[스킬:코우하]]
+				RESULT:1 = [[스킬:바이코우하]]
+				RESULT:2 = [[스킬:마하코우하]]
+				RESULT:3 = [[스킬:사마리캄]]
+		ENDSELECT
+		;カジャ系
+		SELECTCASE RAND:4
+			CASE 0
+				RESULT:4 = [[스킬:타루・카쟈]]
+				RESULT:5 = [[스킬:다크브레스]]
+			CASE 1
+				RESULT:4 = [[스킬:스쿠・카쟈]]
+				RESULT:5 = [[스킬:도발]]
+			CASE 2
+				RESULT:4 = [[스킬:라쿠・카쟈]]
+				RESULT:5 = [[스킬:파워브레스]]
+			CASE 3
+				RESULT:4 = [[스킬:사마・카쟈]]
+				RESULT:5 = [[스킬:위협]]
+		ENDSELECT
+		;魔脈/コンセ
+		IF RAND:2 > 0
+			RESULT:6 = [[스킬:일할의마맥]]
+		ELSE
+			RESULT:6 = [[스킬:컨센트레이트]]
+		ENDIF
+		;만능
+		RESULT:7 = [[스킬:메기도]]
+		RESULT:8 = [[스킬:메기도라온]]
+		
+		;強化
+		IF イベントフラグ:88:0 > 3
+			RESULT:9 = [[스킬:데・카쟈]]
+			RESULT:10 = [[스킬:리캄드라]]
+			IF TALENT:ARG:서머너 == 0
+				;純異能者なら気功
+				RESULT:11 = [[스킬:기공(소)]]
+			ELSE
+				;異能サマならコンセと魔脈を両方
+				IF RESULT:6 == [[스킬:일할의마맥]]
+					RESULT:11 = [[스킬:컨센트레이트]]
+				ELSE
+					RESULT:11 = [[스킬:일할의마맥]]
+				ENDIF
+			ENDIF
+		ENDIF
+		RETURN RESULT
+	CASE "相性"
+		SELECTCASE GET_TYPE(ARG:1)
+			CASE "파마"
+				RETURN 0
+			CASEELSE
+				RETURN 100
+		ENDSELECT
+	CASE "素質"
+		RESULT = GETNUM(TALENT, "아픔에약함")
+		RESULT:1 = GETNUM(TALENT, "호기심")
+		IF ARGS:1 == "アイドル"
+			RESULT:2 = GETNUM(TALENT, "인기")
+		ENDIF
+		IF TALENT:ARG:천사 == 1
+			;天使の場合、羽を付与
+			RESULT:3 = GETNUM(TALENT, "날개")
+		ELSEIF TALENT:ARG:기계의처녀 == 1 && RAND:3 == 0
+			;機械の乙女の場合、1/3で動物耳を付与(ヘッドパーツとして付いている扱い)
+			RESULT:3 = GETNUM(TALENT, "동물귀")
+		ENDIF
+		RETURN RESULT
+	CASE "除外素質"
+		RETURN GETNUM(TALENT, "바늘다루기"), GETNUM(TALENT, "조합지식")
+	;処女は特別 0はランダム(20%), 1なら処女, 2なら非処女
+	CASE "처녀"
+		IF  RAND:5 == 0
+			RETURN 2
+		ELSE
+			RETURN 1
+		ENDIF
+	CASE "체형"
+		RESULTS '= RANDOMCHARA_COMMON_HAIRSTYILE(ARG)
+	CASE "アイコン区分"
+		RESULTS '= "青年"
+	;戻り値は0:ランダム 1:소인체형 2:유아체형 4:큰체형 5:거체
+	CASE "体型"
+		;機械の乙女の場合、小人体型の分岐を追加
+		IF TALENT:ARG:기계의처녀 == 1 && RAND:4 == 0
+			RETURN 1
+		ENDIF
+		SELECTCASE RAND:10
+			CASE IS < 2
+				RETURN 2
+			CASE IS < 8
+				RETURN 3
+			CASE IS < 9
+				RETURN 4
+		ENDSELECT
+	;戻り値は0:ランダム 1:절벽　2:빈유　3:並　4:거유　5:폭유
+	CASE "가슴"
+		IF TALENT:ARG:남자 == 0
+			SELECTCASE RAND:10
+				CASE IS < 6
+					RETURN 2
+				CASE IS < 8
+					RETURN 3
+				CASE IS < 9
+					RETURN 1
+				CASE IS < 10
+					IF RAND:10 == 0
+						RETURN 5
+					ELSE
+						RETURN 4
+					ENDIF
+			ENDSELECT
+		ELSEIF TALENT:ARG:오토코노코 == 1
+			SELECTCASE RAND:4
+				CASE IS < 2
+					RETURN 2
+				CASE IS < 4
+					RETURN 1
+			ENDSELECT
+		ELSE
+			RETURN 1
+		ENDIF
+	;追加対応。戻り値は0:ランダム 1:小尻　2:並尻　3:巨尻　4:爆尻
+	CASE "尻"
+		RETURN 0
+	;通常の人間と肉体部位が違う場合はここで直接代入してください
+	CASE "肉体部位"
+		RETURN 0
+	CASE "ABL"
+		SELECTCASE ABLNAME:(ARG:1)
+			CASE "순종", "욕망", "기교"
+				RETURN !RAND:3+!RAND:5
+			CASE "Ｃ감각", "Ｖ감각", "Ｂ감각"
+				RETURN !RAND:5
+			CASE "마조끼", "노출증", "봉사정신"
+				RETURN !RAND:10
+			CASE "새드끼"
+				RETURN !RAND:5 * !ABL:ARG:마조끼
+			CASE "Ａ감각", "자위중독", "정액중독", "레즈끼", "ＢＬ끼", "섹스중독"
+				RETURN !RAND:10
+			CASE "가창기능"
+				IF ARGS:1 == "アイドル"
+					;アイドルの場合、歌唱技能を1以上保証
+					RETURN RAND:5 + 1
+				ELSE
+					RETURN 0
+				ENDIF
+		ENDSELECT
+	;EXPはABLが1以上ある場合、ある程度調整される(ただし、ABL0の時は調整が動かないので適当に初期値をきめてください)
+	CASE "EXP"
+		;全く手付かずの場合
+		SIF !GROUPMATCH(1, !TALENT:ARG:처녀, ABL:ARG:Ｃ감각, ABL:ARG:Ｖ감각, ABL:ARG:Ａ감각, ABL:ARG:Ｂ감각, ABL:ARG:기교)
+			RETURN 0
+		SELECTCASE EXPNAME:(ARG:1)
+			CASE "Ｖ경험"
+				RETURN RAND(0, 20) * RAND:2
+			CASE "Ａ경험"
+				RETURN RAND(0, 20) * !RAND:5
+			CASE "절정경험"
+				RETURN RAND(0, 20) * RAND:2
+			CASE "사정경험"
+				RETURN RAND(0, 20) * RAND:2
+			CASE "성교경험"
+				RETURN 0
+			CASE "질사경험"
+				RETURN EXP:ARG:사정경험/2*EXP:ARG:성교경험 > 0
+			CASE "자위경험"
+				RETURN RAND(0, 20)
+			CASE "조교자위경험"
+				RETURN 0
+			CASE "정액경험"
+				RETURN RAND(0, 20) * RAND:2
+			CASE "봉사쾌락경험"
+				RETURN 0
+			CASE "펠라경험"
+				RETURN RAND(0, 10) * RAND:2
+			CASE "애정경험"
+				RETURN 0
+			CASE "고통쾌락경험"
+				RETURN RAND(0, 20) * !RAND:4
+			CASE "방뇨경험"
+				RETURN 0
+			CASE "가학쾌락경험"
+				RETURN RAND(0, 10) * !RAND:4
+			CASE "야외노출경험"
+				RETURN 0
+			CASE "레즈경험"
+				RETURN RAND(0, 20) * !RAND:4
+			CASE "ＢＬ경험"
+				RETURN RAND(0, 20) * !RAND:4
+			CASE "이상경험"
+				RETURN 0
+			CASE "긴박경험"
+				RETURN RAND(0, 10) * EXP:ARG:고통쾌락경험 > 0
+			CASE "가창경험"
+				IF ARGS:1 == "アイドル"
+					;アイドルの場合はそれなりに歌唱経験を付ける
+					RETURN (RAND(10, 20) * ABL:ARG:가창기능) + RAND:5
+				ELSE
+					RETURN 0
+				ENDIF
+		ENDSELECT
+	CASE "모자"
+		;動物耳がある場合はなし
+		SIF TALENT:ARG:동물귀 == 0 
+			RETURN 0
+		IF IS_MALE(ARG)
+			SELECTCASE RAND:3
+				CASE 0
+					RETURN [[衣装:모자]]
+				CASE 1
+					RETURN [[衣装:반다나]]
+				CASEELSE
+					RETURN 0
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:6
+				CASE 0
+					RETURN [[衣装:모자]]
+				CASE 1
+					RETURN [[衣装:리본]]
+				CASE 2
+					RETURN [[衣装:헤어밴드]]
+				CASE 3
+					RETURN [[衣装:카츄샤]]
+				CASE 4
+					RETURN [[衣装:머리끈]]
+				CASEELSE
+					RETURN 0
+			ENDSELECT
+		ENDIF
+	CASE "옷"
+		IF IS_MALE(ARG)
+			SELECTCASE RAND:2
+				CASE 0
+					RETURN [[衣装:깃세운옷]]
+				CASE 1
+					RETURN [[衣装:와이셔츠]]
+			ENDSELECT
+		ELSE
+			;女アイドルの場合はコスプレ中の場合を追加
+			IF ARGS:1 == "アイドル" && RAND:3 == 0
+				SELECTCASE RAND:6
+					CASE 0
+						RETURN [[衣装:기모노]]
+					CASE 1
+						RETURN [[衣装:유카타]]
+					CASE 2
+						RETURN [[衣装:간호사복]]
+					CASE 3
+						RETURN [[衣装:고스로리옷（흑）]]
+					CASE 4
+						RETURN [[衣装:고스로리옷（백）]]
+					CASEELSE
+						;全身服を設定する想定
+						RETURN 0
+				ENDSELECT
+			ENDIF
+			SELECTCASE RAND:3
+				CASE 0
+					RETURN [[衣装:체육복]]
+				CASE 1
+					RETURN [[衣装:세일러복]]
+				CASE 2
+					RETURN [[衣装:블라우스]]
+			ENDSELECT
+		ENDIF
+	CASE "하의"
+		IF CFLAG:ARG:옷 == [[衣装:체육복]]
+			RETURN [[衣装:블루머]]
+		ELSEIF CFLAG:ARG:옷 == [[衣装:깃세운옷]] || CFLAG:ARG:옷 == [[衣装:와이셔츠]]
+			RETURN [[衣装:바지]]
+		ELSEIF CFLAG:ARG:옷 == [[衣装:세일러복]] || CFLAG:ARG:옷 == [[衣装:블라우스]]
+			RETURN [[衣装:스커트]]
+		ELSEIF CFLAG:ARG:옷 == 0
+			;全身服を設定する想定
+			RETURN 0
+		ELSE
+			SELECTCASE RAND:8
+				CASE 0
+					RETURN [[衣装:스커트]]
+				CASE 1
+					RETURN [[衣装:롱스커트]]
+				CASE 2
+					RETURN [[衣装:미니스커트]]
+				CASE 3
+					RETURN [[衣装:타이트스커트]]
+				CASE 4
+					RETURN [[衣装:숏팬츠]]
+				CASE 5
+					RETURN [[衣装:플리츠스커트]]
+				CASE 6
+					RETURN [[衣装:플레어스커트]]
+				CASE 7
+					RETURN [[衣装:타이트미니스커트]]
+			ENDSELECT
+		ENDIF
+	CASE "전신복"
+		IF CFLAG:ARG:옷 == 0
+			SELECTCASE RAND:15
+				CASE 0
+					RETURN [[衣装:군복]]
+				CASE 1
+					RETURN [[衣装:바니수트]]
+				CASE 2
+					RETURN [[衣装:에이프런드레스]]
+				CASE 3
+					RETURN [[衣装:메이드복]]
+				CASE 4
+					RETURN [[衣装:프렌치메이드복]]
+				CASE 5
+					RETURN [[衣装:민족의상]]
+				CASE 6
+					RETURN [[衣装:도사복]]
+				CASE 7
+					RETURN [[衣装:차이나드레스]]
+				CASE 8
+					RETURN [[衣装:드레스]]
+				CASE 9
+					RETURN [[衣装:이브닝드레스(V넥)]]
+				CASE 10
+					RETURN [[衣装:치하야]]
+				CASE 11
+					RETURN [[衣装:고딕드레스(V넥)]]
+				CASE 12
+					RETURN [[衣装:고딕원피스]]
+				CASE 13
+					RETURN [[衣装:미니원피스]]
+				CASE 14
+					RETURN [[衣装:원피스]]
+			ENDSELECT
+		ELSE
+			RETURN 0
+		ENDIF
+	CASE "손"
+		RETURN 0
+	CASE "속옷（상）"
+		IF IS_MALE(ARG)
+			RETURN 0
+		ELSE
+			SELECTCASE RAND:5
+				CASE 0
+					RETURN 0
+				CASE 1
+					RETURN [[衣装:브래지어(흑)]]
+				CASE 2
+					RETURN [[衣装:브래지어(적)]]
+				CASE 3
+					RETURN [[衣装:레이스달린브래지어]]
+				CASEELSE
+					IF TALENT:ARG:거유 == 1 || TALENT:ARG:폭유 == 1 || TALENT:ARG:마유 == 1
+						RETURN [[衣装:브래지어]]
+					ELSE
+						RETURN [[衣装:스포츠브라]]
+					ENDIF
+			ENDSELECT
+		ENDIF
+	CASE "속옷（하）"
+		IF IS_MALE(ARG)
+			IF RAND:5
+				RETURN [[衣装:트렁크스]]
+			ELSE
+				RETURN [[衣装:부메랑팬츠]]
+			ENDIF
+		ELSE
+			SELECTCASE RAND:7
+				CASE 0
+					RETURN [[衣装:팬티]]
+				CASE 1
+					RETURN [[衣装:팬티(흑)]]
+				CASE 2
+					RETURN [[衣装:팬티(적)]]
+				CASE 3
+					RETURN [[衣装:레이스달린팬티]]
+				CASE 4
+					RETURN [[衣装:줄무늬팬티]]
+				CASE 5
+					RETURN [[衣装:스패츠]]
+				CASEELSE
+					RETURN 0
+			ENDSELECT
+		ENDIF
+	CASE "전신속옷"
+		RETURN 0
+	CASE "양말"
+		IF IS_MALE(ARG)
+			RETURN [[衣装:양말]]
+		ELSE
+			SELECTCASE RAND:7
+				CASE 0
+					RETURN [[衣装:하이삭스]]
+				CASE 1
+					RETURN [[衣装:양말]]
+				CASE 2
+					RETURN [[衣装:니삭스]]
+				CASE 3
+					RETURN [[衣装:사이하이삭스]]
+				CASE 4
+					RETURN [[衣装:가터스타킹]]
+				CASE 5
+					RETURN [[衣装:팬티스타킹]]
+				CASE 6
+					RETURN [[衣装:검은색타이즈]]
+			ENDSELECT
+		ENDIF
+	CASE "신발"
+		SELECTCASE RAND:3
+			CASE 0
+				RETURN [[衣装:스니커]]
+			CASE 1
+				RETURN [[衣装:슈즈]]
+			CASE 2
+				RETURN [[衣装:가죽구두]]
+		ENDSELECT
+	CASE "겉옷"
+		IF CFLAG:ARG:옷 == [[衣装:블라우스]] || CFLAG:ARG:옷 == [[衣装:와이셔츠]]
+			RETURN [[衣装:블레이저교복]]
+		ENDIF
+	CASE "그외"
+		IF CFLAG:ARG:겉옷 == [[衣装:블레이저교복]] || CFLAG:ARG:옷 == [[衣装:깃세운옷]] || CFLAG:ARG:옷 == [[衣装:세일러복]]
+			RETURN RAND:10 ? 0 # [[衣装:안경]]
+		ELSE
+			SELECTCASE RAND:10
+				CASE 0
+					RETURN [[衣装:머플러]]
+				CASE 1
+					RETURN [[衣装:안대]]
+				CASE 2
+					RETURN [[衣装:헤드폰]]
+				CASE 3
+					RETURN [[衣装:넥클리스]]
+				CASE 4
+					RETURN [[衣装:귀걸이]]
+				CASE 4
+					RETURN [[衣装:안경]]
+				CASEELSE
+					RETURN 0
+			ENDSELECT
+		ENDIF
+	CASE "회화타입"
+	;悪魔汎用使用しています0:ランダム 1:女_子供　2:女_少女　3:女_若者　4:女_大人　5:女_淑女　6:女_古風　7:男_若者　8:男_大人　9:獣_ケダモノ
+		IF TALENT:ARG:남자 == 0
+			SELECTCASE RAND:10
+				CASE 0
+					RETURN 6
+				CASE IS < 5
+					SELECTCASE RAND:2
+						CASE 0
+							RETURN 4
+						CASE 1
+							RETURN 5
+					ENDSELECT
+				CASEELSE
+					SELECTCASE RAND:3
+						CASE 0
+							RETURN 1
+						CASE 1
+							RETURN 2
+						CASE 2
+							RETURN 3
+					ENDSELECT
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					RETURN 7
+				CASE 1
+					RETURN 8
+				CASE 2
+					RETURN 10
+				CASE 3
+					RETURN 11
+			ENDSELECT
+		ENDIF
+	CASE "名前"
+		$SET_NAME
+		IF ARGS:1 == "アイドル"
+			;아이돌
+			IF ABL:ARG:가창기능 > 3
+				RESULTS = 이름난 
+			ELSEIF ABL:ARG:가창기능 > 1
+				RESULTS = 신인 
+			ELSE
+				RESULTS = 무명의 
+			ENDIF
+			IF TALENT:ARG:기계의처녀 == 1
+				;기계의 처녀는 전령 계열의 그것
+				RESULTS += "가상인형"
+			ELSEIF TALENT:ARG:자제심 == 0 && ( TALENT:ARG:부끄럼없음 == 1 || TALENT:ARG:눈에띄고싶어함 == 1 )
+				;자제심이 없고 부끄럼이 없거나 눈에 띄고 싶어하는 경우 방송인 취급
+				RESULTS += "스트리머"
+			ELSEIF TALENT:ARG:겁쟁이 == 1 || TALENT:ARG:일선을넘지않음 == 1 || TALENT:ARG:보수적 == 1
+				;아이돌 할 성격이 아닌 경우 인터넷 아이돌
+				RESULTS += "넷아이돌"
+			ELSE
+				RESULTS += "아이돌"
+			ENDIF
+		ELSE
+			IF TALENT:ARG:건슬링거 == 3
+				RESULTS = 마탄의 
+			ELSEIF TALENT:ARG:이능자 == 5
+				RESULTS = 신비계 
+			ELSEIF TALENT:ARG:서머너
+				RESULTS = 마계의 
+			ELSEIF TALENT:ARG:페르소나구사자 >= 1
+				RESULTS = 가면의 
+			ELSEIF TALENT:ARG:식노 == 1
+				RESULTS = 자의의 
+			ELSEIF TALENT:ARG:데빌시프터 == 1
+				RESULTS = 전신의 
+			ELSE
+			    RESULTS = 무명의 
+			ENDIF
+			IF TALENT:ARG:Ｖ민감 == 1 && EXP:ARG:Ｖ경험 > 0
+				RESULTS += "음란한 "
+			ELSEIF EXP:ARG:Ａ경험 > 0 && TALENT:ARG:Ａ민감 == 1
+				RESULTS += "항학의 "
+			ELSEIF TALENT:ARG:마유 == 1
+				RESULTS += "마유의 "
+			ELSEIF TALENT:ARG:폭유 == 1
+				RESULTS += "폭유 "
+			ELSEIF TALENT:ARG:거유 == 1
+				RESULTS += "거유 "
+			ENDIF
+			IF TALENT:ARG:남자 == 0
+				RESULTS += "여고생"
+			ELSEIF TALENT:ARG:오토코노코 == 1
+				RESULTS += "미소년 고교생"
+			ELSE
+				RESULTS += "남고생"
+			ENDIF
+		ENDIF
+	CASE "愛称"
+		;이름과 같으므로 생략
+		GOTO SET_NAME
+	CASE "해설"
+		IF ARGS:1 == "アイドル"
+			;아이돌
+			RESULTS = 　어느 시점부터 조직에 상품 가치를 인정받고 말았다
+			IF TALENT:ARG:기계의처녀 == 1
+				RESULTS += "생체 MAG에 의해 구현화되기에 이른 가상 세계의 주민"
+			ELSEIF TALENT:ARG:자제심 == 0 && ( TALENT:ARG:부끄럼없음 == 1 || TALENT:ARG:눈에띄고싶어함 == 1 )
+				RESULTS += "동영상 사이트를 통해 은밀한 인기를 얻고 있던 스트리머"
+			ELSEIF TALENT:ARG:겁쟁이 == 1 || TALENT:ARG:일선을넘지않음 == 1 || TALENT:ARG:보수적 == 1
+				RESULTS += "인터넷상에서 남몰래 코스프레나 음악 활동을 즐기던 평범한 고교생"
+			ELSE
+				RESULTS += "최근 데뷔한 지 얼마 안 된 신인 아이돌"
+			ENDIF
+			IF TALENT:ARG:천사 == 1
+				RESULTS:1 = 　또한、본인은 눈치채지 못했으나、천사의 가호를 받고 있는 듯하다
+			ELSEIF TALENT:ARG:동물귀 == 1 
+				RESULTS:1 = 　동물 귀 모양의 특징적인 헤드 파츠를 달고 있어、행동 등에서 본래 동물의 요소가 느껴질 때가 있다
+			ELSEIF TALENT:ARG:기계의처녀 == 1 
+				RESULTS:1 = 　최근 탄생한 지 얼마 되지 않아、인간 아이 수준의 힘밖에 갖추지 못한 듯하다
+			ELSE
+				RESULTS:1 = 　그 소질에 대해서는 갈고닦으면 빛날 무언가가 느껴지기도 한다
+			ENDIF
+		ELSE
+			RESULTS = 　인신매매 조직에 납치된 고교생
+			IF TALENT:ARG:건슬링거 == 3
+				RESULTS:1 = 　총기형 COMP에 우연히 적합하여、총잡이로서의 능력을 각성해 가고 있다
+			ELSEIF TALENT:ARG:서머너 == 1
+				RESULTS:1 = 　우연히 주운 게임기형 COMP를 사용하여、악마 소환을 공부 중인 모양이다
+			ELSEIF TALENT:ARG:이능자 == 5
+				RESULTS:1 = 　태어날 때부터 신기한 능력을 지니고 있어、동네의 평화를 지키고 있던 모양이다
+			ELSEIF TALENT:ARG:페르소나구사자 >= 1
+				RESULTS:1 = 　어느 날 갑자기 또 다른 자신과 마주치게 되어、운명이라는 빛 없는 길을 걸어가야 할 처지에 놓인 모양이다
+			ELSEIF TALENT:ARG:식노 == 1
+				RESULTS:1 = 　악마화 바이러스에 감염되어、날마다 진행되는 인간성의 상실에 떨고 있던 듯하다
+			ELSEIF TALENT:ARG:데빌시프터 == 1
+				RESULTS:1 = 　태어날 때부터 악마 변신 능력을 지니고 있었으나、숨긴 채 일반인으로서 살아가고 있었던 모양이다
+			ELSE
+				RESULTS:1 = 　통학 도중 갑자기 납치된 무력한 
+				IF TALENT:ARG:남자 == 0
+					RESULTS:1 += "소녀이다"
+				ELSE
+					RESULTS:1 += "소년이다"
+				ENDIF
+			ENDIF
+		ENDIF
+		RESULTS:2 = 　
+		RESULTS:3 = 　■출신지：
+		SELECTCASE RAND:13
+			CASE 0
+				RESULTS:3 += "도쿄"
+			CASE 1
+				RESULTS:3 += "간토 지방"
+			CASE 2
+				RESULTS:3 += "간사이 지방"
+			CASE 3
+				RESULTS:3 += "도호쿠 지방"
+			CASE 4
+				RESULTS:3 += "홋카이도"
+			CASE 5
+				RESULTS:3 += "신에츠 지방"
+			CASE 6
+				RESULTS:3 += "호쿠리쿠 지방"
+			CASE 7
+				RESULTS:3 += "도카이 지방"
+			CASE 8
+				RESULTS:3 += "긴키 지방"
+			CASE 9
+				RESULTS:3 += "주고쿠 지방"
+			CASE 10
+				RESULTS:3 += "시코쿠 지방"
+			CASE 11
+				RESULTS:3 += "규슈 지방"
+			CASE 12
+				RESULTS:3 += "오키나와"
+		ENDSELECT
+		RESULTS:3 += "　/■혈액형："
+		SELECTCASE RAND:4
+			CASE 0
+				RESULTS:3 += "Ａ형" 
+			CASE 1
+				RESULTS:3 += "Ｂ형"
+			CASE 2
+				RESULTS:3 += "ＡＢ형"
+			CASE 3
+				RESULTS:3 += "Ｏ형"
+		ENDSELECT
+		RESULTS:3 += "　/■좋아하는 음식："
+		SELECTCASE RAND:11
+			CASE 0
+				RESULTS:3 += "카레라이스"
+			CASE 1
+				RESULTS:3 += "라멘"
+			CASE 2
+				RESULTS:3 += "푸딩"
+			CASE 3
+				RESULTS:3 += "초밥"
+			CASE 4
+				RESULTS:3 += "함박스테이크" 
+			CASE 5
+				RESULTS:3 += "스파게티"
+			CASE 6
+				RESULTS:3 += "스테이크"
+			CASE 7
+				RESULTS:3 += "파인애플 샐러드"
+			CASE 8
+				RESULTS:3 += "새우볶음밥"
+			CASE 9
+				RESULTS:3 += "유부우동"
+			CASE 10
+				RESULTS:3 += "오므라이스（깃발 꽂힌）"
+		ENDSELECT
+		RESULTS:4 = 　
+		RESULTS:5 = 　
+		RESULTS:6 = 　
+		RESULTS:7 = 　
+		RESULTS:8 = 　
+		RESULTS:9 = 　
+		IF (TALENT:ARG:처녀 == 0 && TALENT:ARG:남자 == 0) || (EXP:ARG:Ａ경험 > 0 && TALENT:ARG:남자 == 1)
+			IF TALENT:ARG:남자 == 0
+				RESULTS:10 = 　%UNICODE(0x2661)%ロストバージンの思い出%UNICODE(0x2661)%
+			ELSEIF TALENT:ARG:남자 == 1
+				RESULTS:10 = 　%UNICODE(0x2661)%ロストアナルバージンの思い出%UNICODE(0x2661)%
+			ENDIF
+			SELECTCASE RAND:5
+				CASE 0
+					RESULTS:11 = 　誕生日に
+				CASE 1
+					RESULTS:11 = 　夏休みに
+				CASE 2
+					RESULTS:11 = 　クリスマスに
+				CASE 3
+					RESULTS:11 = 　バレンタインデーに
+				CASE 4
+					RESULTS:11 = 　両親の結婚記念日に
+			ENDSELECT
+			SELECTCASE RAND:5
+				CASE 0
+					RESULTS:11 += "ラブホテルで、"
+				CASE 1
+					RESULTS:11 += "自宅で、"
+				CASE 2
+					RESULTS:11 += "小学校で、"
+				CASE 3
+					RESULTS:11 += "市営プールで、"
+				CASE 4
+					RESULTS:11 += "近所の公園で、"
+			ENDSELECT
+			IF TALENT:ARG:남자 == 0
+				SELECTCASE RAND:10
+					CASE 0
+						RESULTS:11 += "お父さん"
+					CASE 1
+						RESULTS:11 += "知らないおじさん"
+					CASE 2
+						RESULTS:11 += "近所のおじさん"
+					CASE 3
+						RESULTS:11 += "お兄ちゃん"
+					CASE 4
+						RESULTS:11 += "担任の先生"
+					CASE 5
+						RESULTS:11 += "同級生の男の子"
+					CASE 6
+						RESULTS:11 += "上級生の男の子"
+					CASE 7
+						RESULTS:11 += "弟"
+					CASE 8
+						RESULTS:11 += "ネットで知り合った大学生たち"
+					CASE 9
+						RESULTS:11 += "老紳士とその愛犬"
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:12
+					CASE 0
+						RESULTS:11 += "お父さん"
+					CASE 1
+						RESULTS:11 += "知らないおじさん"
+					CASE 2
+						RESULTS:11 += "近所のおじさん"
+					CASE 3
+						RESULTS:11 += "お兄ちゃん"
+					CASE 4
+						RESULTS:11 += "担任の先生"
+					CASE 5
+						RESULTS:11 += "同級生の男の子"
+					CASE 6
+						RESULTS:11 += "上級生の男の子"
+					CASE 7
+						RESULTS:11 += "弟"
+					CASE 8
+						RESULTS:11 += "ネットで知り合った大学生たち"
+					CASE 9
+						RESULTS:11 += "老紳士とその愛犬"
+					CASE 10
+						RESULTS:11 += "野獣のような先輩"
+					CASE 11
+						RESULTS:11 += "ツナギの似合ういい男"
+				ENDSELECT
+			ENDIF
+			SELECTCASE RAND:5
+				CASE 0
+					RESULTS:11 += "にレイプされた"
+				CASE 1
+					RESULTS:11 += "にバックから犯された"
+				CASE 2
+					RESULTS:11 += "とラブラブエッチした"
+				CASE 3
+					RESULTS:11 += "に自分から捧げた"
+				CASE 4
+					RESULTS:11 += "に一回１万円でヤらせてあげた"
+			ENDSELECT
+		ENDIF
+	;最後に呼び出すので何らかの調整が必要な場合はここで
+	CASE "最終調整"
+		RETURN 0
+ENDSELECT

@@ -1,0 +1,386 @@
+﻿;スキル名
+@SKILL_NAME_戦術詠唱γ,ARG
+#DIM SKILL_NUM
+RESULTS = 戦術詠唱γ
+;　명중
+@SKILL_HITRATE_戦術詠唱γ, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_戦術詠唱γ, ARG
+RETURN 100
+
+;;クリティカル率
+;@SKILL_CRITICAL_RATE_戦術詠唱γ, ARG
+;RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_戦術詠唱γ, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_戦術詠唱γ,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_戦術詠唱γ,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_戦術詠唱γ,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_戦術詠唱γ,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_戦術詠唱γ, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_戦術詠唱γ,ARG
+RETURN 0
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_戦術詠唱γ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_戦術詠唱γ,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_戦術詠唱γ,ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_戦術詠唱γ,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_戦術詠唱γ,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_戦術詠唱γ,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_戦術詠唱γ
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_戦術詠唱γ, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_戦術詠唱γ
+RETURN 0
+
+;没
+;@SKILL_RANK_戦術詠唱γ, ARG = -1
+
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_戦術詠唱γ,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_戦術詠唱γ,ARG,ARG:1
+#DIM SKILL_NUM
+#DIM L_行動
+#DIM L_タゲ
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"戦術詠唱γ")
+SIF ARG != ARG:1 || SKILLGAGE_H_GET(ARG,SKILL_NUM) < 1
+	RETURN 0
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+L_行動 = SKILLGAGE_H_GET(ARG,SKILL_NUM) % 10000
+L_タゲ = SKILLGAGE_H_GET(ARG,SKILL_NUM) / 10000
+SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) > -1 || L_行動 < 1
+	RETURN 0
+CALL GET_SKILL_COST,L_行動,ARG
+SIF BASE:ARG:ＭＰ < RESULT
+	RETURN 0
+CALL GET_SKILL_PROP, "SKILL_EFECT", L_行動, ARG
+IF RESULT == 1 && L_タゲ < 17
+	SIF GET_STATE(CFLAG:POS(L_タゲ):상태이상) == "DYING"
+		RETURN 0
+ELSE
+	RETURN 0
+ENDIF
+RETURN 1
+
+;ターン終了時に行う処理
+@SKILL_TURNEND_戦術詠唱γ,ARG
+#DIM SKILL_NUM
+#DIM L_GAGE
+#DIM L_MAX_F
+SIF ARG < 0 || CSTR:ARG:102 == ""
+	RETURN 0
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"戦術詠唱γ")
+;PRINTFORMW H1 {SKILLGAGE_H_GET(ARG,SKILL_NUM)}
+L_GAGE = SKILLGAGE_F_GET(ARG,SKILL_NUM)
+IF GET_STATE(CFLAG:ARG:상태이상) == "DYING"
+	;死んだ場合はゲージを初期値にリセットする
+	L_MAX_F = TOINT(AUTO_SPLIT("0_5_10_15","_",TOINT(CSTR:ARG:102)-1))
+	SIF L_GAGE != L_MAX_F
+		CALL SKILLGAGE_F_SET(ARG,SKILL_NUM,L_MAX_F)
+	CALL SKILLGAGE_H_SET,ARG,SKILL_NUM,0
+	RETURN 0
+ENDIF
+;PRINTFORMW H2 {SKILLGAGE_H_GET(ARG,SKILL_NUM)}
+;スキルランクに応じて最大値を設定
+L_MAX_F = TOINT(AUTO_SPLIT("40_35_32_30","_",TOINT(CSTR:ARG:102)-1))
+;Fゲージが0or正の値（起動していない状態）か、負の値（効果発動中）で処理を変更
+L_GAGE = L_GAGE > -1 ? MIN(L_GAGE + 5,L_MAX_F) # MIN(L_GAGE + 5 ,0)
+;効果時間が終了した際にメッセージ表示
+IF L_GAGE == 0 && SKILLGAGE_F_GET(ARG,SKILL_NUM) < 0
+	PRINTFORMW %CALLNAME:ARG%의 전술영창 γ 효과가 종료되었다….
+	CALL SKILLGAGE_H_SET,ARG,SKILL_NUM,0
+ENDIF
+CALL SKILLGAGE_F_SET(ARG,SKILL_NUM,L_GAGE)
+;PRINTFORMW H3 {SKILLGAGE_H_GET(ARG,SKILL_NUM)}
+RETURN 0
+
+;SHOP画面を開いた時に行う処理
+@SKILL_INITIALIZE_戦術詠唱γ,ARG
+#DIM SKILL_NUM
+SIF ARG < 0 || CSTR:ARG:102 == ""
+	RETURN 0
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"戦術詠唱γ")
+;スキルランクに応じて初期値を設定
+CALL SKILLGAGE_F_SET(ARG,SKILL_NUM,TOINT(AUTO_SPLIT("0_5_10_15","_",TOINT(CSTR:ARG:102)-1)))
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_戦術詠唱γ,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM L_HOLD
+#DIM L_行動
+#DIM L_タゲ
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"戦術詠唱γ")
+;Fゲージ一本でSPゲージと効果時間を管理するので、HとDで入力行動とダゲを管理する必要が出てくる
+IF SKILLGAGE_F_GET(ARG,SKILL_NUM) > -1
+	CALL SKILLGAGE_H_SET,ARG,SKILL_NUM,0
+	CALL SKILLGAGE_F_SET,ARG,SKILL_NUM,-30
+	PRINTFORMW %CALLNAME:ARG%의 영창 속도가 가속되었다!
+ELSE
+	L_行動 = SKILLGAGE_H_GET(ARG,SKILL_NUM) % 10000
+	L_タゲ = SKILLGAGE_H_GET(ARG,SKILL_NUM) / 10000
+	;防御しながら攻撃したらバランスが崩れるから防御を維持しちゃダメだ！
+	SIF CFLAG:ARG:방어플래그 > 0
+		CFLAG:ARG:방어플래그 = 0
+	L_HOLD = CFLAG:ARG:입력행동
+	CFLAG:ARG:입력행동 = L_行動
+	CALL PAY_COST,ARG,L_行動
+	CALL PRINT_ACT_MESSAGE, ARG, SKILL_NUM
+	CALL SKILL_ACTION, L_行動, ARG, L_タゲ
+	CALL BATTLE_EVENT_ACT, ARG
+	CFLAG:ARG:입력행동 = L_HOLD
+	;PRINTFORMW H1 {SKILLGAGE_H_GET(ARG,SKILL_NUM)}
+	SELECTCASE L_行動
+		CASE [[스킬:사바트마]],[[스킬:초래의무도]]
+			CALL SKILLGAGE_H_SET,ARG,SKILL_NUM,0
+			;PRINTFORMW H2 {SKILLGAGE_H_GET(ARG,SKILL_NUM)}
+	ENDSELECT
+ENDIF
+;====================================================
+;追加コマンド(一番下)
+;====================================================
+@INPUT_COM_NAME_戦術詠唱γ,ARG
+RESULTS = 戦術詠唱γ
+IF PU_SKILLGAGE_F_GET(ARG,"戦術詠唱γ") < 0 && TOINT(CSTR:ARG:102) > 3
+	RESULTS:1 = ＥＸ－ＣＡＳＴ
+ELSE
+	RESULTS:1 = 戦術詠唱γ
+ENDIF
+RESULTS:2 = "0xffa500"
+RETURN 2
+
+@INPUT_COM_ABLE_戦術詠唱γ,ARG
+SIF PU_SKILLGAGE_F_GET(ARG,"戦術詠唱γ") < 0 && TOINT(CSTR:ARG:102) > 3
+	RETURN 1
+RESULTS = 게이지 부족
+SIF PU_SKILLGAGE_F_GET(ARG,"戦術詠唱γ") < TOINT(AUTO_SPLIT("40_35_32_30","_",TOINT(CSTR:ARG:102)-1))
+	RETURN -1
+RETURN 1
+
+;====================================================
+;コマンド実行
+;====================================================
+@INPUT_COM_戦術詠唱γ,ARG
+#LOCALSIZE 2
+#DIM SKILL_NUM
+#DIM T_SKILL_COST
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"戦術詠唱γ")
+IF SKILLGAGE_F_GET(ARG,SKILL_NUM) > -1
+	LOCAL = CFLAG:ARG:입력행동
+	CALL PRINT_ACT_MESSAGE, ARG, SKILL_NUM
+	CALL ACTION_戦術詠唱γ,ARG
+	CALL BATTLE_EVENT_ACT, ARG
+	CFLAG:ARG:입력행동 = LOCAL
+ELSEIF SKILLGAGE_F_GET(ARG,SKILL_NUM) < 0 && TOINT(CSTR:ARG:102) > 3
+	;スキル一覧を表示して、追加行動で使用するスキルを選択する
+	;ただし、表示するスキルはMAGICに該当する物のみに限定する
+	;魔法はCLOSEだと使えない
+	IF CFLAG:ARG:상태이상 == GET_STATE_NUM("CLOSE")
+		CALL SKILLGAGE_H_SET,ARG,SKILL_NUM,0
+		RETURN -1
+	ENDIF
+	CALL INPUT_COM_DO_SKILL, ARG, "MA", "UNABLE_SKILL_戦術詠唱γ"
+	IF RESULT <= 0
+		CALL SKILLGAGE_H_SET,ARG,SKILL_NUM,(SKILLGAGE_H_GET(ARG,SKILL_NUM) / 10000) * 10000
+		RETURN -1
+	ELSE	
+		;追加行動分のターゲットと追加行動の内容を設定
+		CALL SKILLGAGE_H_SET,ARG,SKILL_NUM,(RESULT:1*10000) + RESULT
+	ENDIF
+ENDIF
+RETURN -1
+;-1 再びコマンド選択へ
+; 1 キャラ選択へ
+
+@UNABLE_SKILL_戦術詠唱γ, ARG, ARG:1
+#DIM L_COST
+IF GROUPMATCH(SKILL_NAME_F(ARG), "悪魔召喚", "초래의무도", "사바트마")
+	RESULTS = 지정 불가 스킬
+	RETURN 0
+ENDIF
+;コスト確認
+CALL GET_SKILL_COST, ARG, ARG:1
+L_COST = RESULT
+SIF CFLAG:(ARG:1):입력행동 > -1
+	CALL GET_SKILL_COST, CFLAG:(ARG:1):입력행동, ARG:1
+L_COST += RESULT
+CALL GET_SKILL_PROP, "SKILL_COSTTYPE", ARG, ARG:1
+IF GET_SKILL_COST_TYPE(RESULT) == "MP"
+	IF BASE:(ARG:1):ＭＰ < L_COST
+		RESULTS = 코스트 부족: MP
+		RETURN 0
+	ENDIF
+ELSEIF GET_SKILL_COST_TYPE(RESULT) == "HP"
+	IF BASE:(ARG:1):ＨＰ < L_COST
+		RESULTS = 코스트 부족: HP
+		RETURN 0
+	ENDIF
+ELSE
+	RETURN 0
+ENDIF
+RETURN 1
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@SKILLGAGE_DISPLAY_戦術詠唱γ,ARG
+#DIM SKILL_NUM
+#DIM L_GAGE
+#DIM GAGE_LIMIT
+#DIM L_COLOR
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"戦術詠唱γ")
+L_GAGE = SKILLGAGE_F_GET(ARG,SKILL_NUM)
+;効果未発動なら獲得上限の値を、発動中なら最大効果時間をゲージ上限として代入
+GAGE_LIMIT = L_GAGE > -1 ? TOINT(AUTO_SPLIT("40_35_32_30","_",TOINT(CSTR:ARG:102)-1)) # 30
+;効果状態に応じてゲージの色を設定
+L_COLOR = L_GAGE > -1 ? 0x9acd32 # 0xff8c00
+PRINTFORM ＥＸ―ＳＫＩＬＬ|
+CALL PRINT_COLORBAR, ABS(L_GAGE), GAGE_LIMIT, 25, UNICODE(0x2585), UNICODE(0x2585), L_COLOR, 0x696969
+PRINTL
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_戦術詠唱γ,ARG
+PRINTL 스킬 게이지 추가. 턴 경과에 따라 게이지가 차오른다. 게이지 완충 시 기동 가능
+PRINTL 기동 중, 마법 공격으로 가하는 데미지가 상승하고, 마법 공격의 명중·회피 및 물리 공격에 대한 회피력이 상승한다
+IF TOINT(CSTR:ARG:102) == 4
+	PRINTL 또한, 마법 공격 스킬을 통상 행동 후에 발동하는 「EX-CAST」를 사용할 수 있게 된다
+ENDIF
+PRINTL 스킬 랭크가 높을수록 상승률이 높아지고, 스킬이 발동하기 쉬워진다
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_戦術詠唱γ,ARG
+RETURN 0
+
+@リンク不能_戦術詠唱γ
+RETURN 1
+
+
+;====================================================
+;独自処理
+;====================================================
+;（予定）と付けられている方は仮置きの物。実際に採用されるかどうかはわからない。
+@AUTO_PU_SKILL_戦術詠唱γ,ARG,ARGS,ARG:1,ARG:2
+#DIM SKILL_RANK
+#DIM SKILL_NUM
+#DIM FC_FLAG,2
+#DIM L_USER
+;ARG = 攻撃者
+;ARGS （ダメージ↑、被ダメージ↑、命中↑、回避↑、魔威↑、魔効↑、etc…）といった感じの奴
+;ARG:1 = 防御者
+;文字列を参考にする都合上、どの文字列を使うか事前に定めておいた方がいいかも
+;CSTR:ARG:100 = EXTRA勢出典作品、『アークナイツ』とでも書き込む（予定）
+;CSTR:ARG:101 = EXTRA勢出典作品でどのキャラなのか、とりあえず『アーミヤ（アークナイツ）』とでも書き込む（予定）
+;CSTR:ARG:102 = 専用スキルその2のスキルランク変数として使用、この場合は『戦術詠唱γ』が対象（予定）
+;CSTR:ARG:103 = 専用スキルその1のスキルランク変数として使用、この場合は『レーヴァテイン（ＡＮ）』が対象（予定）
+;CSTR:ARG:104 = 専用スキルその3のスキルランク変数として使用、この場合は『ラグナロク（ＡＮ）』が対象（予定）
+L_USER = -1
+SELECTCASE ARGS
+	CASE "ダメージ↑","魔法命中判定↑"
+		SIF CSTR:ARG:101 == "アーミヤ"
+			L_USER = ARG
+	CASE "魔法回避判定↑","物理回避判定↑"
+		SIF CSTR:(ARG:1):101 == "アーミヤ"
+			L_USER = ARG:1
+	;CASE "Hゲージ最大値","Hゲージ初期値","Dゲージ最大値"
+	;	L_USER = ARG
+ENDSELECT
+SIF L_USER == -1
+	RETURN 0
+SKILL_RANK = TOINT(CSTR:L_USER:102)
+SKILL_NUM = PU_SKILLNUM_GET(L_USER,"戦術詠唱γ")
+
+IF SKILLGAGE_F_GET(L_USER,SKILL_NUM) < 0
+	SELECTCASE ARGS
+		CASE "ダメージ↑"
+			;与ダメージとかに挟む場合の処理
+			SELECTCASE SKILL_RANK
+				CASE 1
+					RETURN 10
+				CASE IS > 1
+					RETURN 20
+			ENDSELECT
+		CASE "魔法命中判定↑"
+			;命中判定に挟む場合の処理
+			SELECTCASE SKILL_RANK
+				CASE 1,2
+					RETURN 4
+				CASE IS > 2
+					RETURN 8
+			ENDSELECT
+		CASE "魔法回避判定↑"
+			;命中判定に挟む場合の処理
+			SELECTCASE SKILL_RANK
+				CASE 1,2
+					RETURN 4
+				CASE IS > 2
+					RETURN 8
+			ENDSELECT
+		CASE "物理回避判定↑"
+			;命中判定に挟む場合の処理
+			RETURN 4
+	ENDSELECT
+ENDIF
+RETURN 0
+

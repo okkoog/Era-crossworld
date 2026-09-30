@@ -1,0 +1,1354 @@
+﻿
+;合身数 = 2なら２身合体、3なら３身合体検索
+@REVERSE_LOOKUP_DEVIL, 合身数 = 3
+#DIM DYNAMIC INIT
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC 合身数
+#DIM DYNAMIC レベル下限
+#DIM DYNAMIC レベル上限
+#DIM DYNAMIC FTABLE2, 12, 2, 10
+#DIM DYNAMIC FTABLE2NUM, 12
+#DIM DYNAMIC FTABLE3, 12, 3, 35
+#DIM DYNAMIC FTABLE3NUM, 12
+;合体パターン： FTABLE2:結果種族:合体元種族1or2:パターンNo
+;パターン数：   FTABLE2NUM:結果種族
+;마신～堕天使は-14して指定
+#DIM DYNAMIC 素質指定, 5
+#DIM DYNAMIC 素質指定数
+#DIM DYNAMIC スキル指定, 5
+#DIM DYNAMIC スキル指定数
+#DIM DYNAMIC 種族精霊
+#DIM DYNAMIC 選択種族
+#DIM DYNAMIC 目的の悪魔番号
+#DIM DYNAMIC 目的の悪魔性別
+#DIM DYNAMIC 目的の悪魔種族
+#DIM DYNAMIC 目的の悪魔LV
+#DIM DYNAMIC 検索用種族
+#DIM DYNAMIC 検索性別
+#DIM DYNAMIC 組み合わせ数
+#DIM DYNAMIC 目的の悪魔種族数
+#DIM DYNAMIC 選択合体パターン
+#DIM DYNAMIC BASE_LV
+#DIM DYNAMIC RACE1
+#DIM DYNAMIC RACE2
+#DIM DYNAMIC RACE3
+#DIM DYNAMIC DEVIL1
+#DIM DYNAMIC DEVIL2
+#DIM DYNAMIC DEVIL3
+#DIM DYNAMIC 素材リスト, 19, 200
+#DIM DYNAMIC 素材リスト数, 19
+#DIM DYNAMIC フィルタ更新
+#DIM DYNAMIC 合体候補種族1, 100
+#DIM DYNAMIC 合体候補種族2, 100
+#DIM DYNAMIC 合体候補種族3, 100
+#DIM DYNAMIC LSTART
+#DIM DYNAMIC LEND
+#DIM DYNAMIC LSTEP
+#DIM CONST SEARCH_MAX = 1000
+#DIM DYNAMIC 検索ヒット, 1000
+#DIM DYNAMIC 検索ヒット数
+#DIM DYNAMIC 結果表示数
+#DIM DYNAMIC ページ
+#DIM DYNAMIC LINE
+#LOCALSIZE 2
+
+SIF !GROUPMATCH(合身数, 2, 3)
+	RETURN 1
+
+IF !INIT
+	CALL MAKE_RLD_FUSION_RACE_TABLE, 合身数, FTABLE2, FTABLE2NUM, FTABLE3, FTABLE3NUM
+;PRINTFORML FTABLE2NUM:%STRJOIN(FTABLE2NUM)%
+;PRINTFORMW FTABLE3NUM:%STRJOIN(FTABLE3NUM)%
+	CALL MAKE_RLD_SKILL_SUCCESSION_TABLE
+	VARSET 素質指定, -1
+	VARSET スキル指定, -1
+	INIT = 1
+ENDIF
+
+PRINTL 어느 종족의 악마를 역검색 합니까？
+FOR RACE1, 1, 19
+	PRINTFORMLC [{RACE1,2}] %STR:RACE1,6,LEFT%
+NEXT
+
+PRINTL 
+DRAWLINE
+PRINTFORML [100] \@(FLAG:악마역순설정) ? 　 # ＞ \@ 성전환 후의 소재를 포함한다
+PRINTFORML [200] \@(FLAG:악마역순설정) ? ＞ # 　 \@ 성전환 후의 소재를 포함하지 않는다
+PRINTFORM [300] 　 소재 레벨대를 지정
+IF レベル下限 || レベル上限
+	PRINTFORM  현재：（\@ レベル下限 ? Lv{レベル下限} #\@～\@ レベル上限 ? Lv{レベル上限} #\@）
+ENDIF
+PRINTL
+PRINTFORM [400] 　합체 후 악마가 지닐 소질 지정
+IF 素質指定数 != 0
+	FOR LCOUNT, 0, 素質指定数
+		RESULTS:LCOUNT '= TALENTNAME:(素質指定:LCOUNT)
+	NEXT
+	PRINTFORM  （%STRJOIN(RESULTS, ",", 0, 素質指定数)%）
+ENDIF
+PRINTL
+PRINTFORM [500] 　합체 후 악마가 지닐 스킬 지정 
+IF スキル指定数 != 0
+	FOR LCOUNT, 0, スキル指定数
+		RESULTS:LCOUNT '= SKILL_NAME_F(スキル指定:LCOUNT)
+	NEXT
+	PRINTFORM  （%STRJOIN(RESULTS, ",", 0, スキル指定数)%）
+ENDIF
+PRINTL
+PRINTL [0] 돌아간다
+
+$INPUT_LOOP
+INPUT
+
+SELECTCASE RESULT
+CASE 0
+	RETURN 0
+CASE 100
+	FLAG:악마역순설정 = 0
+	フィルタ更新 = 0
+	RESTART
+CASE 200
+	FLAG:악마역순설정 = 1
+	フィルタ更新 = 0
+	RESTART
+CASE 300
+	DO
+		PRINTFORML [100] 하한레벨 지정 （현재：\@(レベル下限) ? Lv{レベル下限} # 지정없음\@)
+		PRINTFORML [200] 상한레벨 지정 （현재：\@(レベル上限) ? Lv{レベル上限} # 지정없음\@)
+		PRINTL [0] 돌아간다
+		$INPUT_LOOP4
+		INPUT
+		SIF RESULT == 0
+			RESTART
+		IF RESULT == 100
+			PRINTL 하한레벨을 입력해주세요 (0으로 취소)
+			INPUT
+			レベル下限 = LIMIT(RESULT, 0, 999)
+			フィルタ更新 = 0
+		ELSEIF RESULT == 200
+			PRINTL 상한레벨을 입력해주세요 (0으로 취소)
+			INPUT
+			レベル上限 = LIMIT(RESULT, 0, 999)
+			フィルタ更新 = 0
+		ELSE
+			GOTO INPUT_LOOP4
+		ENDIF
+	LOOP 1
+CASE 400
+	PRINTL 필터링할 소질을 선택해주세요 (최대 5개 까지)
+	DRAWLINE
+	CALL INPUT_SELECT_TALENTS, 素質指定, 5
+	素質指定数 = RESULT
+	RESTART
+	フィルタ更新 = 0
+CASE 500
+	PRINTL 필터링할 스킬을 선택해주세요 (최대 5개 까지)
+	DRAWLINE
+	CALL INPUT_SELECT_SKILLS, スキル指定, 5
+	スキル指定数 = RESULT
+	RESTART
+	フィルタ更新 = 0
+CASE 1 TO 18
+
+CASEELSE
+	CLEARLINE 1
+	GOTO INPUT_LOOP
+ENDSELECT
+
+選択種族 = RESULT
+
+;出力先は流用
+VARSET 合体候補種族1
+CALL MAKE_RLD_LIST2, RESULT, 合体候補種族1, 0, 1
+
+IF RESULT == 0
+	PRINTW 해당하는 악마가 등록되어 있지 않습니다
+	GOTO INPUT_LOOP
+ENDIF
+
+;件数保存
+目的の悪魔種族数 = RESULT
+
+CALL PRINT_RLD_LIST, 合体候補種族1
+
+PRINTL 어느 악마를 역검색합니까？
+PRINTL [0] 돌아간다
+$INPUT_LOOP2
+INPUT
+IF RESULT == 0
+	RESTART
+;入力チェック
+ELSEIF RESULT < 0 || RESULT > 目的の悪魔種族数
+	GOTO INPUT_LOOP2
+ENDIF
+
+目的の悪魔番号 = 合体候補種族1:(RESULT-1)
+目的の悪魔性別 = CSVTALENT(目的の悪魔番号, GETNUM(TALENT,"남자"), 0)
+目的の悪魔種族 = CSVABL(目的の悪魔番号, GETNUM(ABL,"종족"), 0)
+目的の悪魔LV = CSVBASE(目的の悪魔番号, GETNUM(BASE,"LV"), 0)
+VARSET 合体候補種族1
+
+種族精霊 = GET_RACE_NUM("정령")
+
+IF 目的の悪魔種族 == 種族精霊
+	CALL PRINT_RLD_ELEMENT, 目的の悪魔番号, 合身数
+	RESTART
+ENDIF
+
+IF FLAG:악마역순설정
+	IF 目的の悪魔性別
+		SIF 検索性別 != 1
+			フィルタ更新 = 0
+		検索性別 = 1
+	ELSE
+		SIF 検索性別 != 2
+			フィルタ更新 = 0
+		検索性別 = 2
+	ENDIF
+ELSE
+	SIF 検索性別 != 0
+		フィルタ更新 = 0
+	検索性別 = 0
+ENDIF
+
+
+IF フィルタ更新 == 0
+	;フィルタを適用した悪魔リストを作成
+	CALL MAKE_RLD_TABLE, 素材リスト, 素材リスト数, 検索性別, 0, レベル下限, レベル上限
+	フィルタ更新 = 1
+ENDIF
+
+;合体結果の検索用リストを変数Dに作成
+;OUTPUT_DEVIL、RESULT_ELEMENT_FUSIONで変数Dを使用
+CALL MAKE_RACE_LIST, 目的の悪魔種族, 目的の悪魔性別
+
+;귀신～堕天使は合体用の対応種族に変換
+SELECTCASE GET_RACE(目的の悪魔種族)
+	CASE "귀신"
+		検索用種族 = GET_RACE_NUM("지모신")
+	CASE "마신"
+		検索用種族 = GET_RACE_NUM("여신")
+	CASE "사신"
+		検索用種族 = GET_RACE_NUM("마왕")
+	CASE "타천사"
+		検索用種族 = GET_RACE_NUM("천사")
+	CASEELSE
+		検索用種族 = 目的の悪魔種族
+ENDSELECT
+
+;該当する合体種族の組み合わせ数
+組み合わせ数 = 0
+
+;数値は予め取得して関数呼び出しを抑える
+BASE_LV = GETNUM(BASE, "LV")
+
+;種族組み合わせを検索
+IF 合身数 == 2
+	FOR LCOUNT, 0, FTABLE2NUM:検索用種族
+		REUSELASTLINE 組み合わせを検索中です…{LCOUNT * 100 / FTABLE2NUM:検索用種族}％
+		AWAIT
+		RACE1 = FTABLE2:検索用種族:0:LCOUNT
+		RACE2 = FTABLE2:検索用種族:1:LCOUNT
+		;最後のループは目的のレベルによって照合の方向を変える
+		;目的のレベルが低ければ素材のレベルも低い方が見つけやすそうなので
+		IF 目的の悪魔LV > 50
+			LSTART = 0
+			LEND = 素材リスト数:RACE2
+			LSTEP = 1
+		ELSE
+			LSTART = 素材リスト数:RACE2 - 1
+			LEND = -1
+			LSTEP = -1
+		ENDIF
+		FOR DEVIL1, 0, 素材リスト数:RACE1
+			FOR DEVIL2, LSTART, LEND, LSTEP
+				{
+				SELECTCASE RLD_FUSION_TEST(素質指定, 素質指定数, スキル指定, スキル指定数,
+					目的の悪魔番号,
+					素材リスト:RACE1:DEVIL1, 素材リスト:RACE2:DEVIL2)
+				}
+				CASE 1
+					;該当ありの組み合わせと判明
+					合体候補種族1:組み合わせ数 = RACE1
+					合体候補種族2:組み合わせ数 = RACE2
+					組み合わせ数++
+					GOTO LOOKAHEAD_NEXT1
+				CASE -1
+					BREAK
+				ENDSELECT
+			NEXT
+		NEXT
+		$LOOKAHEAD_NEXT1
+	NEXT
+ELSE ;IF 合身数 == 3
+	FOR LCOUNT, 0, FTABLE3NUM:検索用種族
+		REUSELASTLINE 組み合わせを検索中です…{LCOUNT * 100 / FTABLE3NUM:検索用種族}％
+		AWAIT
+		RACE1 = FTABLE3:検索用種族:0:LCOUNT
+		RACE2 = FTABLE3:検索用種族:1:LCOUNT
+		RACE3 = FTABLE3:検索用種族:2:LCOUNT
+		IF 目的の悪魔LV > 50
+			LSTART = ((RACE2 != RACE3) ? 0 # DEVIL2 + 1)
+			LEND = 素材リスト数:RACE3
+			LSTEP = 1
+		ELSE
+			LSTART = 素材リスト数:RACE3 - 1
+			LEND = ((RACE2 != RACE3) ? 0 # DEVIL2 + 1) - 1
+			LSTEP = -1
+		ENDIF
+		FOR DEVIL1, 0, 素材リスト数:RACE1
+			FOR DEVIL2, ((RACE1 != RACE2) ? 0 # DEVIL1 + 1), 素材リスト数:RACE2
+				FOR DEVIL3, LSTART, LEND, LSTEP
+					{
+					SELECTCASE RLD_FUSION_TEST(素質指定, 素質指定数, スキル指定, スキル指定数,
+						目的の悪魔番号,
+						素材リスト:RACE1:DEVIL1, 素材リスト:RACE2:DEVIL2, 素材リスト:RACE3:DEVIL3)
+					}
+					CASE 1
+						;該当ありの組み合わせと判明
+						合体候補種族1:組み合わせ数 = RACE1
+						合体候補種族2:組み合わせ数 = RACE2
+						合体候補種族3:組み合わせ数 = RACE3
+						組み合わせ数++
+						GOTO LOOKAHEAD_NEXT2
+					CASE -1
+						BREAK
+					ENDSELECT
+				NEXT
+			NEXT
+		NEXT
+		$LOOKAHEAD_NEXT2
+	NEXT
+ENDIF
+
+
+;精霊合体は2身合体のみ有効
+IF 合身数 == 2
+	FOR DEVIL1, 0, 素材リスト数:種族精霊
+		FOR DEVIL2, 0, 素材リスト数:目的の悪魔種族
+			CALL RESULT_ELEMENT_FUSION, 素材リスト:目的の悪魔種族:DEVIL2, 素材リスト:種族精霊:DEVIL1
+			{
+			IF RESULT == 目的の悪魔番号
+				&& (素質指定数 == 0 || 素質継承テスト(素質指定, 素質指定数, 目的の悪魔番号, 素材リスト:目的の悪魔種族:DEVIL2, 素材リスト:種族精霊:DEVIL1))
+				&& (スキル指定数 == 0 || スキル継承テスト(スキル指定, スキル指定数, 目的の悪魔番号, 素材リスト:目的の悪魔種族:DEVIL2, 素材リスト:種族精霊:DEVIL1))
+			}
+				合体候補種族1:組み合わせ数 = 目的の悪魔種族
+				合体候補種族2:組み合わせ数 = 種族精霊
+				組み合わせ数++
+				GOTO ELEM_LOOKAHEAD_END
+			ENDIF
+		NEXT
+	NEXT
+ENDIF
+$ELEM_LOOKAHEAD_END
+
+IF 組み合わせ数 == 0
+	PRINTW 해당하는 합체 결과를 찾을 수 없었습니다
+	RESTART
+ENDIF
+
+$SEARCH1
+PRINTL 어느 조합으로 검색하시겠습니까?
+FOR LCOUNT, 0, 組み合わせ数
+	PRINTFORM [{LCOUNT+1, 2, RIGHT}] %GET_RACE(合体候補種族1:LCOUNT), 6, LEFT%× %GET_RACE(合体候補種族2:LCOUNT), 6, LEFT%
+	SIF 合身数 == 3
+		PRINTFORM × %GET_RACE(合体候補種族3:LCOUNT), 6, LEFT%
+	PRINTL
+NEXT
+DRAWLINE
+PRINTL [0] 돌아간다
+
+$INPUT_LOOP3
+INPUT
+IF !INRANGE(RESULT, 0, 組み合わせ数)
+	CLEARLINE 1
+	REUSELASTLINE
+	GOTO INPUT_LOOP3
+ENDIF
+SIF RESULT == 0
+	RESTART
+選択合体パターン = RESULT - 1
+
+RACE1 = 合体候補種族1:選択合体パターン
+RACE2 = 合体候補種族2:選択合体パターン
+
+VARSET 検索ヒット
+検索ヒット数 = 0
+
+IF 合身数 == 2
+	FOR DEVIL1, 0, 素材リスト数:RACE1
+		FOR DEVIL2, ((RACE1 != RACE2) ? 0 # DEVIL1 + 1), 素材リスト数:RACE2
+			{
+			IF RLD_FUSION_TEST(素質指定, 素質指定数, スキル指定, スキル指定数,
+				目的の悪魔番号,
+				素材リスト:RACE1:DEVIL1, 素材リスト:RACE2:DEVIL2, ,
+				0)
+				== 1
+			}
+				;2身合体で結果が溢れることは多分ないはずだが一応
+				SIF 検索ヒット数 == SEARCH_MAX
+					GOTO SEARCH_ABORT
+				検索ヒット:(検索ヒット数++) = DEVIL1 | (DEVIL2 << 8)
+			ENDIF
+		NEXT
+	NEXT
+ELSE
+	RACE3 = 合体候補種族3:選択合体パターン
+
+	FOR DEVIL1, 0, 素材リスト数:RACE1
+		FOR DEVIL2, ((RACE1 != RACE2) ? 0 # DEVIL1), 素材リスト数:RACE2
+			LCOUNT ^= 1
+			FOR DEVIL3, ((RACE2 != RACE3) ? 0 # DEVIL2), 素材リスト数:RACE3
+;				SIF !NOSAMES(素材リスト:RACE1:DEVIL1, 素材リスト:RACE2:DEVIL2, 素材リスト:RACE3:DEVIL3)
+;					CONTINUE
+				{
+				IF RLD_FUSION_TEST(素質指定, 素質指定数, スキル指定, スキル指定数,
+					目的の悪魔番号,
+					素材リスト:RACE1:DEVIL1, 素材リスト:RACE2:DEVIL2, 素材リスト:RACE3:DEVIL3,
+					0)
+					== 1
+				}
+					SIF 検索ヒット数 == SEARCH_MAX
+						GOTO SEARCH_ABORT
+					;組み合わせパターンを8bitx3にパックして保存
+					検索ヒット:(検索ヒット数++) = DEVIL1 | (DEVIL2 << 8) | (DEVIL3 << 16)
+				ENDIF
+			NEXT
+		NEXT
+	NEXT
+ENDIF
+$SEARCH_ABORT
+
+結果表示数 = 24
+ページ = 0
+REDRAW 0
+
+;結果表示
+PRINTL
+PRINTL 악마명을 클릭하면 그 악마가 포함된 조합을 제외합니다.
+SIF 検索ヒット数 == SEARCH_MAX
+	PRINTL ※ 검색 결과가 너무 많아 모든 조합이 표시되지 않습니다 ※
+SIF FLAG:악마역순설정 == 0
+	PRINTL ※ 주의! 목표 악마와 성별이 다른 소재는 성전환 후 사용해주세요
+LINE = LINECOUNT
+$SHOW_RESULT
+CLEARLINE LINECOUNT - LINE
+
+PRINTFORML {検索ヒット数,4}건 해당%" "*57%페이지 : {ページ+1,2}/{(検索ヒット数 - 1) / 結果表示数 + 1,2}
+DRAWLINE
+
+PRINTFORM  %"【" + GET_RACE(RACE1) + "】",18,LEFT%
+PRINTBUTTON "[▲]", 1001
+PRINTBUTTON "[▼]", 1002
+PRINTS " " * 4
+PRINTFORM %"【" + GET_RACE(RACE2) + "】",18,LEFT%
+PRINTBUTTON "[▲]", 1003
+PRINTBUTTON "[▼]", 1004
+IF 合身数 == 3
+	PRINTS " " * 4
+	PRINTFORM %"【" + GET_RACE(RACE3) + "】",18,LEFT%
+	PRINTBUTTON "[▲]", 1005
+	PRINTBUTTON "[▼]", 1006
+ENDIF
+PRINTL
+
+FOR LCOUNT, ページ * 結果表示数, MIN((ページ + 1) * 結果表示数, 検索ヒット数)
+	DEVIL1 = 検索ヒット:LCOUNT & 0xff
+	DEVIL2 = (検索ヒット:LCOUNT >> 8) & 0xff
+	PRINTBUTTON @" %CSVNAME(素材リスト:RACE1:DEVIL1,0),20,LEFT% Lv{CSVBASE(素材リスト:RACE1:DEVIL1,BASE_LV,0),3,RIGHT}", 2000 + DEVIL1
+	PRINTS " × "
+	PRINTBUTTON @"%CSVNAME(素材リスト:RACE2:DEVIL2,0),20,LEFT% Lv{CSVBASE(素材リスト:RACE2:DEVIL2,BASE_LV,0),3,RIGHT}", 3000 + DEVIL2
+	IF 合身数 == 3
+		DEVIL3 = (検索ヒット:LCOUNT >> 16) & 0xff
+		PRINTS " × "
+		PRINTBUTTON @"%CSVNAME(素材リスト:RACE3:DEVIL3,0),20,LEFT% Lv{CSVBASE(素材リスト:RACE3:DEVIL3,BASE_LV,0),3,RIGHT}", 4000 + DEVIL3
+	ENDIF
+	PRINTL
+NEXT
+FOR LCOUNT, 0, (結果表示数 + 3) - (LINECOUNT - LINE)
+	PRINTL
+NEXT
+DRAWLINE
+PRINTFORMLC \@ ページ != 0 ? [1010]이전페이지 # [----] \@
+PRINTFORMLC [1000]돌아간다
+PRINTFORMLC \@ (ページ + 1) * 結果表示数 < 検索ヒット数 ? [1011]다음페이지 # [----] \@
+
+$INPUT_LOOP5
+INPUT
+
+SELECTCASE RESULT
+CASE 1000
+	REDRAW 1
+	GOTO SEARCH1
+CASE 1010
+	ページ = MAX(ページ - 1, 0)
+CASE 1011
+	ページ = MIN(ページ + 1, (検索ヒット数 - 1) / 結果表示数)
+CASE 1001 TO 1006
+	;Lv整列
+	IF RESULT <= 1004 || 合身数 == 3
+		LOCAL = (RESULT - 1001) / 2  ;整列キー
+		LOCAL:1 = (RESULT - 1) % 2    ;整列方向
+		CALL RLD_RESULT_SORT, 素材リスト, CHOICE(LOCAL, RACE1, RACE2, RACE3), 検索ヒット, 検索ヒット数, LOCAL, LOCAL:1
+	ENDIF
+CASE 2000 TO 5000
+	;候補除外
+	IF RESULT < 3000
+		LOCAL = 0
+		DEVIL1 = RESULT - 2000
+	ELSEIF RESULT < 4000
+		LOCAL = 8
+		DEVIL1 = RESULT - 3000
+	ELSE
+		LOCAL = 16
+		DEVIL1 = RESULT - 4000
+	ENDIF
+	LOCAL:1 = 検索ヒット数
+	FOR LCOUNT, 0, 検索ヒット数
+		IF ((検索ヒット:LCOUNT >> LOCAL) & 0xff) == DEVIL1
+			検索ヒット:LCOUNT = 0
+			LOCAL:1--
+		ENDIF
+	NEXT
+	FOR LCOUNT, 0, 検索ヒット数
+		IF !検索ヒット:LCOUNT
+			FOR LOCAL, LCOUNT, 検索ヒット数
+				IF 検索ヒット:LOCAL
+					SWAP 検索ヒット:LCOUNT, 検索ヒット:LOCAL
+					BREAK
+				ENDIF
+			NEXT
+			SIF LOCAL == 検索ヒット数
+				BREAK
+		ENDIF
+	NEXT
+	検索ヒット数 = LOCAL:1
+	ページ = MIN(ページ, (検索ヒット数 - 1) / 結果表示数)
+CASEELSE
+	CLEARLINE 1
+	REUSELASTLINE
+	GOTO INPUT_LOOP5
+ENDSELECT
+
+GOTO SHOW_RESULT
+
+
+
+;KEY : 並べ替えの基準種族(0-2) それぞれRACE1-3に相当
+;DIR : 並べ替えの方向(0/1) 0なら昇順、1なら降順
+@RLD_RESULT_SORT, 素材リスト, RACE, 検索ヒット, 検索ヒット数, KEY, DIR
+#DIM REF 素材リスト, 0, 0
+#DIM DYNAMIC RACE
+#DIM REF 検索ヒット
+#DIM DYNAMIC 検索ヒット数
+#DIM DYNAMIC KEY
+#DIM DYNAMIC DIR
+#DIM DYNAMIC 検索ソート用, 1000
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC BASE_LV
+#DIM DYNAMIC 頻度, 100
+#DIM DYNAMIC OFFSET, 100
+#DIM DYNAMIC 結果, 1000
+#DIM DYNAMIC TMP
+
+BASE_LV = GETNUM(BASE, "LV")
+KEY *= 8
+IF DIR == 0
+	FOR LCOUNT, 0, 検索ヒット数
+		検索ソート用:LCOUNT = CSVBASE(素材リスト:RACE:((検索ヒット:LCOUNT >> KEY) & 0xff), BASE_LV, 0)
+	NEXT
+ELSE
+	FOR LCOUNT, 0, 検索ヒット数
+		検索ソート用:LCOUNT = 100 - CSVBASE(素材リスト:RACE:((検索ヒット:LCOUNT >> KEY) & 0xff), BASE_LV, 0)
+	NEXT
+ENDIF
+;ARRAYMSORTではソートが安定ではないので自前で
+FOR LCOUNT, 0, 検索ヒット数
+	頻度:(検索ソート用:LCOUNT)++
+NEXT
+OFFSET:0 = 0
+FOR LCOUNT, 1, 100
+	OFFSET:LCOUNT = OFFSET:(LCOUNT-1) + 頻度:(LCOUNT-1)
+NEXT
+FOR LCOUNT, 0, 検索ヒット数
+	TMP = 検索ソート用:LCOUNT
+	結果:(OFFSET:TMP++) = 検索ヒット:LCOUNT
+NEXT
+ARRAYCOPY "結果", "検索ヒット"
+
+
+
+;ARG:1+ARG:2(+ARG:3)の合体で結果がARGになるかどうか
+;素質とスキルの条件も考慮する
+@RLD_FUSION_TEST, 素質指定, 素質指定数, スキル指定, スキル指定数, ARG, ARG:1, ARG:2, ARG:3=-1, ARG:4=1
+#FUNCTION
+#DIM REF 素質指定
+#DIM 素質指定数
+#DIM REF スキル指定
+#DIM スキル指定数
+#DIM BASE_LV
+#DIM 目的の悪魔LV
+#DIM 合体結果
+
+;SIF !NOSAMES(ARG:1, ARG:2, ARG:3)
+;	RETURNF 0
+
+BASE_LV = GETNUM(BASE, "LV")
+目的の悪魔LV = CSVBASE(ARG, BASE_LV, 0)
+
+IF ARG:3 == -1
+	;ARG:2が精霊の場合
+	IF ARG:2 / 100 == 12
+		合体結果 = RESULT_ELEMENT_FUSION_F(ARG:1, ARG:2)
+	ELSE
+		{
+		合体結果 = OUTPUT_DEVIL_F(
+			( CSVBASE(ARG:1, BASE_LV, 0)
+			+ CSVBASE(ARG:2, BASE_LV, 0)
+			) / 2,
+			FUSION_PLUS_LV(2))
+		}
+	ENDIF
+ELSE
+	{
+	合体結果 = OUTPUT_DEVIL_F(
+		( CSVBASE(ARG:1, BASE_LV, 0)
+		+ CSVBASE(ARG:2, BASE_LV, 0)
+		+ CSVBASE(ARG:3, BASE_LV, 0)
+		) / 3,
+		FUSION_PLUS_LV(3))
+	}
+ENDIF
+{
+IF 合体結果 == ARG
+	&& (素質指定数 == 0 || 素質継承テスト(素質指定, 素質指定数, ARG, ARG:1, ARG:2, ARG:3))
+	&& (スキル指定数 == 0 || スキル継承テスト(スキル指定, スキル指定数, ARG, ARG:1, ARG:2, ARG:3))
+}
+	RETURNF 1
+ELSEIF !ARG:4
+	RETURNF 0
+ELSEIF 目的の悪魔LV > 50 && CSVBASE(合体結果, BASE_LV, 0) < 目的の悪魔LV
+	;素材の整列LVは降順のため合体試行結果のLVが目的の悪魔より低いならこのループで検索対象が出る可能性はないはずなので省略する
+	RETURNF -1
+ELSEIF 目的の悪魔LV <= 50 && CSVBASE(合体結果, BASE_LV, 0) > 目的の悪魔LV
+	;上の逆
+	RETURNF -1
+ENDIF
+RETURNF 0
+
+
+
+;検索フィルタ適用済みの全悪魔リスト作成
+;
+;종족 = 種族番号
+;OUT = 出力先配列
+;性別除外 = 0:不問, 1:男性のみ, 2:女性のみ
+;特殊のみ除外 = 0:特殊合体のみフラグのある悪魔を除外しない, 1:除外する
+;レベル下限 = 下限値
+;レベル上限 = 上限値
+@MAKE_RLD_LIST2, 종족, OUT, 性別除外, 特殊のみ除外, レベル下限 = 0, レベル上限 = 0
+#DIM 종족
+#DIM REF OUT, 0
+#DIM 性別除外
+#DIM 特殊のみ除外
+#DIM レベル下限
+#DIM レベル上限
+#DIM ヒット件数
+#DIM CHARANO
+#DIM DYNAMIC LV, 1000
+
+;PRINTFORM Race %GET_RACE(종족)%：
+
+VARSET OUT, -1
+ヒット件数 = 0
+
+FOR CHARANO, 1, 5050
+	IF INRANGE(CHARANO, 3100, 3200)  ;광인
+		CHARANO = 3201
+	ELSEIF INRANGE(CHARANO, 3500, 4000)  ;半魔～P2
+		CHARANO = 4001
+	ELSEIF INRANGE(CHARANO, 4200, 4300)  ;초인
+		CHARANO = 4301
+	ELSEIF INRANGE(CHARANO, 4400, 4799)  ;조마～
+		CHARANO = 4800
+	ENDIF
+	SIF !RLD_TEST(CHARANO, 종족, 性別除外, 特殊のみ除外, レベル下限, レベル上限)
+		CONTINUE
+	OUT:ヒット件数 = CHARANO
+	;降順ソートのために値を反転する
+	LV:ヒット件数 = -1 * CSVBASE(CHARANO, GETNUM(BASE,"LV"), 0)
+	ASSERT LV:ヒット件数 != 0
+	ヒット件数++
+NEXT
+;LVをキーとして整列
+ARRAYMSORT LV, OUT
+
+;PRINTFORML {ヒット件数}
+
+RETURN ヒット件数
+
+
+@MAKE_RLD_TABLE, OUT, OUTNUM, 性別除外, 特殊のみ除外, レベル下限 = 0, レベル上限 = 0
+#DIM 종족
+#DIM REF OUT, 0, 0 ;OUT:종족:個体
+#DIM REF OUTNUM, 0 ;種族ごとの結果数
+#DIM 性別除外
+#DIM 特殊のみ除外
+#DIM レベル下限
+#DIM レベル上限
+#DIM 特殊レアあり
+#DIM DYNAMIC ヒット件数
+#DIM DYNAMIC CHARANO
+#DIM DYNAMIC LV, 200
+;ソート用
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC 頻度, 100   ;整列キーの値域を全てカバーできるサイズ(LVは1～99のはず)
+#DIM DYNAMIC OFFSET, 100 ;
+#DIM DYNAMIC 結果, 200
+#DIM DYNAMIC TMP
+
+VARSET OUT, -1
+VARSET OUTNUM
+
+特殊レアあり = !GET_USEABLE_EXTRA_TITLE()
+
+FOR 종족, 1, 19
+	ヒット件数 = 0
+	;キャラ探索を総当たりではなく範囲決め打ちすれば高速化できるが想定外の番号には対応できなくなる
+	;英雄や魔人は逆引きできないっぽいので無視していい？
+	FOR CHARANO, (종족-1)*100+1, 종족*100
+;	FOR CHARANO, 1, 5050
+;		IF INRANGE(CHARANO, 3100, 3200)  ;광인
+;			CHARANO = 3201
+;		ELSEIF INRANGE(CHARANO, 3500, 4000)  ;半魔～P2
+;			CHARANO = 4001
+;		ELSEIF INRANGE(CHARANO, 4200, 4300)  ;초인
+;			CHARANO = 4301
+;		ELSEIF INRANGE(CHARANO, 4400, 4799)  ;조마～
+;			CHARANO = 4800
+;		ENDIF
+		SIF !RLD_TEST(CHARANO, 종족, 性別除外, 特殊のみ除外, レベル下限, レベル上限)
+			CONTINUE
+		OUT:종족:ヒット件数 = CHARANO
+		LV:ヒット件数 = CSVBASE(CHARANO, GETNUM(BASE,"LV"), 0)
+		ASSERT INRANGE(LV:ヒット件数, 1, 99)
+		ヒット件数++
+	NEXT
+	;特殊レア悪魔の対応
+	IF 特殊レアあり
+		FOR CHARANO, 5001, 5100
+			SIF !RLD_TEST(CHARANO, 종족, 性別除外, 特殊のみ除外, レベル下限, レベル上限)
+				CONTINUE
+			OUT:종족:ヒット件数 = CHARANO
+			LV:ヒット件数 = CSVBASE(CHARANO, GETNUM(BASE,"LV"), 0)
+			ASSERT INRANGE(LV:ヒット件数, 1, 99)
+			ヒット件数++
+		NEXT
+	ENDIF
+	ASSERT ヒット件数 <= 200
+	OUTNUM:종족 = ヒット件数
+	;LVをキーとして整列
+	;ARRAYSORTでは多次元配列の整列はできないので自前で
+	VARSET 頻度
+	VARSET OFFSET
+	VARSET 結果
+	FOR LCOUNT, 0, ヒット件数
+		頻度:(LV:LCOUNT)++
+	NEXT
+	OFFSET:0 = 0
+	FOR LCOUNT, 1, 100
+		OFFSET:LCOUNT = OFFSET:(LCOUNT-1) + 頻度:(LCOUNT-1)
+	NEXT
+	FOR LCOUNT, 0, ヒット件数
+		TMP = LV:LCOUNT
+;		結果:(OFFSET:TMP++) = TMP
+		結果:(OFFSET:TMP++) = OUT:종족:LCOUNT
+	NEXT
+	FOR LCOUNT, 0, ヒット件数
+		OUT:종족:LCOUNT = 結果:(ヒット件数-(LCOUNT+1))
+;		PRINTFORML LV{CSVBASE(OUT:종족:LCOUNT, GETNUM(BASE, "LV"))} %CSVNAME(OUT:종족:LCOUNT,0)%
+	NEXT
+NEXT
+
+
+@RLD_TEST, CHARANO, 종족, 性別除外, 特殊のみ除外, レベル下限, レベル上限
+#FUNCTION
+#DIM 종족
+#DIM 性別除外
+#DIM 特殊のみ除外
+#DIM レベル下限
+#DIM レベル上限
+#DIM CHARANO
+SIF !EXISTCSV(CHARANO, 0) || CSVABL(CHARANO, GETNUM(ABL, "종족"), 0) != 종족
+	RETURNF 0
+;合体解禁されていないなら検索出来ない
+SIF CSVCFLAG(CHARANO, GETNUM(CFLAG, "합체조건있음"), 0) == 1 && REMOVED_FUSION_LIMIT:CHARANO == 0
+	RETURNF 0
+;---- EDIT P MOD START -------------------------
+;アナライズ 0％の悪魔は検索出来ない
+;SIF FLAG:(20000 + CHARANO) == 0
+;	RETURNF 0
+;呼び出し不能な悪魔は対象外
+SIF !IS_CHARA_COMPANIONED:CHARANO
+	RETURNF 0
+;---- EDIT P MOD END ---------------------------
+SIF 性別除外 == 1 && CSVTALENT(CHARANO, GETNUM(TALENT, "남자"), 0) != 1
+	RETURNF 0
+SIF 性別除外 == 2 && CSVTALENT(CHARANO, GETNUM(TALENT, "남자"), 0) != 0
+	RETURNF 0
+SIF 特殊のみ除外 == 1 && CSVCFLAG(CHARANO, GETNUM(CFLAG,"특수합체만"), 0) == 1
+	RETURNF 0
+SIF レベル下限 > 0 && CSVBASE(CHARANO, GETNUM(BASE,"LV"), 0) < レベル下限
+	RETURNF 0
+SIF レベル上限 > 0 && CSVBASE(CHARANO, GETNUM(BASE,"LV"), 0) > レベル上限
+	RETURNF 0
+RETURNF 1
+
+
+@PRINT_RLD_LIST, LIST
+#DIM REF LIST, 0
+#DIM LCOUNT
+
+IF LIST:0 < 0
+	PRINTW 해당하는 악마는 등록되어 있지 않습니다
+	RETURN 0
+ENDIF
+
+DRAWLINE
+PRINTFORML □%STR:(CSVABL(LIST:0,GETNUM(ABL,"종족"),0))%
+DRAWLINE
+
+FOR LCOUNT, 0, VARSIZE("LIST")
+	SIF LIST:LCOUNT < 0
+		BREAK
+	PRINTFORM [{LCOUNT+1,3}] %CSVNAME(LIST:LCOUNT,0),20,LEFT%
+	;---- EDIT P MOD START -------------------------
+	;PRINTFORM  Lv{CSVBASE(LIST:LCOUNT,GETNUM(BASE,"LV"),0),3}  {FLAG:(20000 + LIST:LCOUNT) / 10,3}％ 
+	PRINTFORM Lv{CSVBASE(LIST:LCOUNT,GETNUM(BASE,"LV"),0),3}  
+	IF 	!IS_CHARA_COMPANIONED:(LIST:LCOUNT)
+		PRINT 열람 전용
+	ELSE
+		PRINT 　　　
+	ENDIF
+	;---- EDIT P MOD END ---------------------------
+	IF CSVTALENT(LIST:LCOUNT, GETNUM(TALENT, "남자"))
+		PRINTS \@ CSVTALENT(LIST:LCOUNT, GETNUM(TALENT, "오토코노코")) ? ？　 # ♂　 \@
+	ELSE
+		PRINTS \@ CSVTALENT(LIST:LCOUNT, GETNUM(TALENT, "후타나리")) ? 双　 # ♀　 \@
+	ENDIF
+	SIF LCOUNT % 3 == 2
+		PRINTL 
+NEXT
+SIF !LINEISEMPTY()
+	PRINTL
+DRAWLINE
+
+
+
+@PRINT_RLD_ELEMENT, ARG, ARG:1
+IF ARG:1 == 2
+	SELECTCASE ARG
+		CASE 1201,1203
+			;シルフ、ノーム
+			PRINTL [ 1]마왕　× 마왕
+			PRINTL [ 2]천사　× 천사
+			PRINTL [ 3]요정　× 요정
+			PRINTL [ 4]마수　× 마수
+			PRINTL [ 5]요조　× 요조
+			PRINTL [ 6]외도　× 외도
+		CASE 1202,1204
+			;ウンディーネ、サラマンダー
+			PRINTL [ 1]지모신× 지모신
+			PRINTL [ 2]여신　× 여신
+			PRINTL [ 3]요마　× 요마
+			PRINTL [ 4]요귀　× 요귀
+			PRINTL [ 5]용왕　× 용왕
+			PRINTL [ 6]귀신　× 귀신
+			PRINTL [ 7]마신　× 마신
+		CASEELSE
+			PRINTW 해당하는 합체 결과를 찾을 수 없었습니다
+			RETURN 0
+	ENDSELECT
+ENDIF
+DRAWLINE
+PRINTL 이상의 조합을 찾았습니다
+SIF FLAG:악마역순설정 == 0
+	PRINTL ※ 주의! 목표 악마와 성별이 다른 소재는 성전환 후 사용해주세요
+WAIT
+
+
+
+@LOOKUP_ELEMENT_FUSION, ARG, ARG:1, ARG:2, 素質指定, 素質指定数
+#DIM REF 素質指定, 0
+#DIM DYNAMIC 素質指定数
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC LCOUNT2
+#DIM DYNAMIC NUM1
+#DIM DYNAMIC NUM2
+#DIM DYNAMIC LIST1, 100
+#DIM DYNAMIC LIST2, 100
+
+;引数：悪魔番号
+;戻り値：精霊合体で目的の悪魔が作れるかどうか(0=作成不可 1=作成可能
+;目的の悪魔の種族リストを作成
+CALL MAKE_RLD_LIST2, CSVABL(ARG,GETNUM(ABL,"종족"),0), LIST1, 0, 0, ARG:1, ARG:2
+NUM2 = RESULT
+;精霊リストを作成
+CALL MAKE_RLD_LIST2, GET_RACE_NUM("정령"), LIST2, 0, 0, ARG:1, ARG:2
+NUM1 = RESULT
+FOR LCOUNT, 0, NUM1
+	FOR LCOUNT2, 0, NUM2
+		CALL RESULT_ELEMENT_FUSION, LIST1:LCOUNT2, LIST2:LCOUNT
+		IF RESULT == ARG && (素質指定数 == 0 || 素質継承テスト(素質指定, 素質指定数, LIST1:LCOUNT2, LIST2:LCOUNT))
+			RETURN 1
+		ENDIF
+	NEXT
+NEXT
+RETURN 0
+
+;目標の悪魔ARGが合体(ARG:1, ARG:2, ARG:3)の結果指定した素質を全て保有するかどうか判定
+@素質継承テスト, TAL, TNUM, ARG, ARG:1, ARG:2, ARG:3=-1
+#FUNCTION
+#DIM REF TAL
+#DIM TNUM
+#DIM LCOUNT
+IF ARG:3 == -1
+	FOR LCOUNT, 0, TNUM
+		SIF !素質継承テスト_f2(TAL:LCOUNT, ARG, ARG:1, ARG:2)
+			RETURNF 0
+	NEXT
+ELSE
+	FOR LCOUNT, 0, TNUM
+		SIF !素質継承テスト_f3(TAL:LCOUNT, ARG, ARG:1, ARG:2, ARG:3)
+			RETURNF 0
+	NEXT
+ENDIF
+RETURNF 1
+
+;(ARG:1 + ARG:2) -> ARG の悪魔合体で素質TALを保有するかどうかを判定
+@素質継承テスト_f2, TAL, ARG, ARG:1, ARG:2
+#FUNCTION
+#DIM TAL
+IF IS_OPPOSITION_TALENT(TAL)
+	RETURNF 0 < (CSVTALENT(ARG, TAL) + CSVTALENT(ARG:1, TAL) + CSVTALENT(ARG:2, TAL)) - (CSVTALENT(ARG, RESULT:1) + CSVTALENT(ARG:1, RESULT:1) + CSVTALENT(ARG:2, RESULT:1))
+ELSE
+	RETURNF CSVTALENT(ARG, TAL) || (CSVTALENT(ARG:1, TAL) && CSVTALENT(ARG:2, TAL))
+ENDIF
+
+;3身合体版
+@素質継承テスト_f3, TAL, ARG, ARG:1, ARG:2, ARG:3
+#FUNCTION
+#DIM TAL
+IF IS_OPPOSITION_TALENT(TAL)
+	RETURNF 0 < (CSVTALENT(ARG, TAL) + CSVTALENT(ARG:1, TAL) + CSVTALENT(ARG:2, TAL) + CSVTALENT(ARG:3, TAL)) - (CSVTALENT(ARG, RESULT:1) + CSVTALENT(ARG:1, RESULT:1) + CSVTALENT(ARG:2, RESULT:1) + CSVTALENT(ARG:3, RESULT:1))
+ELSE
+	RETURNF CSVTALENT(ARG, TAL) || 2 <= (CSVTALENT(ARG:1, TAL) + CSVTALENT(ARG:2, TAL) + CSVTALENT(ARG:3, TAL))
+ENDIF
+
+
+;目標の悪魔ARGが合体(ARG:1, ARG:2, ARG:3)の結果指定したスキルを全て保有するかどうか判定
+@スキル継承テスト, SKL, SNUM, ARG, ARG:1, ARG:2, ARG:3=-1
+#FUNCTION
+#DIM REF SKL
+#DIM SNUM
+#DIM SRC
+#DIM LCOUNT
+#DIM TEMP
+#DIM SUCNUM
+#DIM SUCLIST, 24
+#DIM RANKLIST, 24
+#DIM SLOT
+#DIM BLANKNUM
+
+VARSET SUCLIST
+VARSET RANKLIST, 101
+SUCNUM = 0
+SLOT = GETNUM(ABL, "스킬1")
+;継承スキルをリストアップする
+FOR SRC, 1, (ARG:3 == -1 ? 3 # 4)
+	FOR LCOUNT, 0, 8
+		TEMP = CSVABL(ARG:SRC, SLOT+LCOUNT)
+		SIF TEMP == 0
+			BREAK
+		IF IS_SUCCESS_SKILL(ARG, TEMP, COUNT_ELEMENT(SUCLIST, TEMP, 0, SUCNUM))
+			SUCLIST:SUCNUM = TEMP
+			RANKLIST:SUCNUM = 100 - ((Z:TEMP >> 4) & 0xf)  ;ランクは降順整列のため100からの減算にする
+			SUCNUM++
+		ENDIF
+	NEXT
+NEXT
+;継承スキルをランクで降順に整列
+ARRAYMSORT RANKLIST, SUCLIST
+;継承先の空きスロットを数える
+FOR LCOUNT, 0, 8
+	SIF CSVABL(ARG, SLOT+LCOUNT) == 0
+		BREAK
+NEXT
+BLANKNUM = MIN(8 - LCOUNT, SUCNUM)
+;指定スキルが継承リストから見つからなかったら0を返す
+FOR LCOUNT, 0, SNUM
+	SIF !CHECK_SKILL_CSV(ARG, SKL:LCOUNT) && FINDELEMENT(SUCLIST, SKL:LCOUNT, 0, BLANKNUM) == -1
+		RETURNF 0
+NEXT
+RETURNF 1
+
+;キャラARGがスキルARG:1を持っているかどうか
+@CHECK_SKILL_CSV(ARG, ARG:1)
+#FUNCTION
+#DIM LCOUNT
+#DIM SLOT
+#DIM SKL
+SLOT = GETNUM(ABL, "스킬1")
+FOR LCOUNT, 0, 8
+	SKL = CSVABL(ARG, SLOT+LCOUNT)
+	SIF SKL == 0
+		BREAK
+	SIF SKL == ARG:1
+		RETURNF 1
+NEXT
+RETURNF 0
+
+
+;スキルが対象の悪魔に継承できるかどうか
+;邪教の館での合体のみを想定
+@IS_SUCCESS_SKILL, DEST, SKL, SKLCNT
+#FUNCTION
+#DIM DEST
+#DIM SKL
+#DIM SKLCNT
+#DIM LCOUNT
+#DIM TEMP
+SIF Z:SKL & 1
+	RETURNF 0
+SIF SKLCNT && (SKLCNT + 1) > ((Z:SKL >> 1) & 0xf)
+	RETURNF 0
+FOR LCOUNT, GETNUM(ABL, "스킬1"), GETNUM(ABL, "스킬9")
+	TEMP = CSVABL(DEST, LCOUNT)
+	IF TEMP == SKL
+		SKLCNT++
+		BREAK
+	ENDIF
+NEXT
+SIF (SKLCNT + 1) > ((Z:SKL >> 1) & 0xf)
+	RETURNF 0
+RETURNF 1
+
+
+
+;相反する素質がある素質なら真、無ければ偽を返す
+;RESULT:1に相反する素質の番号、RESULTSにはその名前が入る
+@IS_OPPOSITION_TALENT, TAL
+#FUNCTION
+#DIM TAL
+;相反する素質を2個一組で交互に記述
+#DIMS CONST NAMES = "프라이드높음", "프라이드낮음", "호기심", "보수적", "낙관적", "비관적", "정조관념", "정조관결여", "억압", "해방", "부끄럼쟁이", "부끄럼없음", "아픔에강함", "아픔에약함", "젖기쉬움", "젖기어려움", "임신하기쉬움", "임신하기어려움", "습득빠름", "습득느림", "악취민감", "악취둔감", "쾌감에솔직", "쾌감을부정", "Ｃ민감", "Ｃ둔감", "Ｖ민감", "Ｖ둔감", "Ａ민감", "Ａ둔감", "Ｂ민감", "Ｂ둔감"
+#DIM OP, 50 = -99
+#DIM TABLE, 200  ;継承可能な素質の番号は200以内に収まるはず
+#DIM LCOUNT
+;ルックアップテーブルを作成
+IF OP:0 == -99
+	VARSET OP, -1
+	VARSET TABLE, -1
+	FOR LCOUNT, 0, VARSIZE("NAMES")
+		OP:LCOUNT = GETNUM(TALENT, NAMES:LCOUNT)
+		TABLE:GETNUM(TALENT, NAMES:LCOUNT) = LCOUNT
+	NEXT
+ENDIF
+SIF TAL >= 200 || TABLE:TAL == -1
+	RETURNF 0
+;指定された素質のテーブル上の位置が偶数なら奇数、奇数なら偶数が相反する素質（最下位ビットを反転させるだけでいい）
+RESULT:1 = OP:(TABLE:TAL ^ 1)
+RESULTS '= NAMES:(TABLE:TAL ^ 1)
+RETURNF 1
+
+;悪魔合体で継承され得る素質かどうかを判定
+@IS_SUCCESS_TALENT, TAL
+#FUNCTION
+#DIM TAL
+#DIMS CONST NAMES = "처녀", "겁쟁이", "꿋꿋함", "반항적", "솔직함", "얌전함", "건방짐", "츤데레", "자제심", "무관심", "감정결핍", "일선을넘지않음", "눈에띄고싶어함", "저항", "헌신적", "소악마", "광기", "유치", "바늘다루기", "약독내성", "오줌싸개버릇", "자위하기쉬움", "불결무시", "중독되기쉬움", "도착적", "바이", "남성혐오", "여성혐오", "매력", "매혹", "프라이드높음", "프라이드낮음", "호기심", "보수적", "낙관적", "비관적", "정조관념", "정조관결여", "억압", "해방", "부끄럼쟁이", "부끄럼없음", "아픔에강함", "아픔에약함", "젖기쉬움", "젖기어려움", "임신하기쉬움", "임신하기어려움", "습득빠름", "습득느림", "악취민감", "악취둔감", "쾌감에솔직", "쾌감을부정", "Ｃ민감", "Ｃ둔감", "Ｖ민감", "Ｖ둔감", "Ａ민감", "Ａ둔감", "Ｂ민감", "Ｂ둔감"
+#DIM TABLE, 200 = -99
+#DIM LCOUNT
+IF TABLE:0 == -99
+	TABLE:0 = 0
+	FOR LCOUNT, 0, VARSIZE("NAMES")
+		TABLE:GETNUM(TALENT, NAMES:LCOUNT) = 1
+	NEXT
+ENDIF
+RETURNF TAL < 200 && TABLE:TAL
+
+
+;素質選択処理
+;選択状態に応じてCURSELの値を変更する
+;CURSEL : [入出力]現在選択している素質リスト
+;MAXSEL : CURSELの最大要素数
+@INPUT_SELECT_TALENTS, CURSEL, MAXSEL
+#DIM REF CURSEL, 0
+#DIM DYNAMIC MAXSEL
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC SUCTAL, 160
+#DIM DYNAMIC SEL, 160
+#DIM DYNAMIC TNUM
+#DIM DYNAMIC SELNUM
+#DIM DYNAMIC NUM
+#DIM DYNAMIC LN
+#DIMS DYNAMIC TEMPS
+#LOCALSIZE 1
+FOR LCOUNT, 0, 160
+	SIF IS_SUCCESS_TALENT(LCOUNT)
+		SUCTAL:(TNUM++) = LCOUNT
+NEXT
+FOR LCOUNT, 0, TNUM
+	IF FINDELEMENT(CURSEL, SUCTAL:(LCOUNT)) != -1
+		SEL:LCOUNT = 1
+		SELNUM++
+	ENDIF
+NEXT
+PRINTL
+REDRAW 0
+LN = LINECOUNT
+$INPUT_LOOP
+CLEARLINE LINECOUNT - LN
+FOR LCOUNT, 0, TNUM
+	IF SEL:LCOUNT
+		SETCOLOR COLOR("AQUA")
+	ELSEIF SELNUM == MAXSEL
+		SETCOLOR COLOR("灰色")
+	ELSEIF IS_OPPOSITION_TALENT(SUCTAL:LCOUNT)
+		LOCAL = FINDELEMENT(SUCTAL, RESULT:1)
+		SIF LOCAL != -1 && SEL:LOCAL
+			SETCOLOR COLOR("灰色")
+	ENDIF
+	TEMPS = [%TALENTNAME:(SUCTAL:LCOUNT)%]
+	PRINTBUTTON @"%TEMPS,16,LEFT%", LCOUNT
+	RESETCOLOR
+NEXT
+PRINTL
+DRAWLINE
+PRINTL [1000]결정  [1010]모든 선택 해제
+INPUT
+IF RESULT == 1000
+	VARSET CURSEL, -1
+	LOCAL = 0
+	FOR LCOUNT, 0, TNUM
+		SIF LOCAL == MAXSEL
+			BREAK
+		SIF SEL:LCOUNT
+			CURSEL:(LOCAL++) = SUCTAL:LCOUNT
+	NEXT
+	REDRAW 1
+	RETURN LOCAL
+ELSEIF RESULT == 1010
+	VARSET SEL
+	SELNUM = 0
+ELSEIF INRANGE(RESULT, 0, TNUM-1)
+	NUM = RESULT
+	SIF SELNUM == MAXSEL && !SEL:NUM
+		GOTO INPUT_LOOP
+	IF IS_OPPOSITION_TALENT(SUCTAL:NUM)
+		LOCAL = FINDELEMENT(SUCTAL, RESULT:1)
+		SIF LOCAL != -1 && SEL:LOCAL
+			GOTO INPUT_LOOP
+	ENDIF
+	SEL:NUM = !SEL:NUM
+	SELNUM += SEL:NUM ? 1 # -1
+ENDIF
+GOTO INPUT_LOOP
+
+
+
+;スキル選択処理
+;処理としては素質と同じ
+@INPUT_SELECT_SKILLS, CURSEL, MAXSEL
+#DIM REF CURSEL
+#DIM DYNAMIC MAXSEL
+#DIM DYNAMIC LN
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC SELNUM
+#DIM DYNAMIC SKILL
+#DIM DYNAMIC NUM
+
+IF LN == 0
+	REDRAW 0
+	LN = LINECOUNT
+	SELNUM = FINDELEMENT(CURSEL, -1)
+	SIF SELNUM == -1
+		SELNUM = MAXSEL
+ENDIF
+
+PRINTL 필터링할 스킬명 또는 스킬번호를 입력해주세요。（빈 문자열로 종료）
+PRINTL 선택중인 스킬과 같은 이름이나 번호를 입력하면 선택이 해제됩니다。
+PRINTBUTTON "[결정]", ""
+PRINT     선택중：
+FOR LCOUNT, 0, SELNUM
+	PRINTBUTTON @"[%SKILL_NAME_F(CURSEL:LCOUNT)%]", CURSEL:LCOUNT
+NEXT
+PRINTL
+REUSELASTLINE
+INPUTS
+
+IF RESULTS == ""
+	REDRAW 1
+	RETURN SELNUM
+ENDIF
+
+SKILL = ISNUMERIC(RESULTS) ? TOINT(RESULTS) # SKILL_NUM_F(RESULTS)
+
+NUM = FINDELEMENT(CURSEL, SKILL)
+IF NUM != -1
+	IF NUM == MAXSEL - 1
+		CURSEL:(MAXSEL - 1) = -1
+	ELSE
+		ARRAYSHIFT CURSEL, -1, -1, NUM, SELNUM - NUM
+	ENDIF
+	SELNUM--
+ELSEIF SELNUM != MAXSEL
+	CALL GET_SKILL_PROP, "SKILL_NAME", SKILL, -1
+	SIF RESULTS != ""
+		CURSEL:(SELNUM++) = SKILL
+ENDIF
+
+CLEARLINE (LINECOUNT - LN)
+RESTART
+
+
+
+;継承の判断に必要なデータを予め調べて変数Zに保存しておく
+;最大スキル番号は2100で外部作品スキルは無視する
+;データはビットフィールドで保存
+;0x01 = 継承可能かどうか
+;0xf0 = スキルランク
+@MAKE_RLD_SKILL_SUCCESSION_TABLE
+#DIM DYNAMIC LCOUNT
+VARSET Z
+FOR LCOUNT, 0, 2499
+	SIF ITEMNAME:(10000+LCOUNT) == ""
+		CONTINUE
+	CALL GET_SKILL_PROP, "継承不能", LCOUNT
+	Z:LCOUNT = RESULT
+
+	IF !Z:LCOUNT
+		CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", LCOUNT, -1
+		;常に邪教の館扱い
+		SIF !INRANGE(RESULT, 0, 22) ;|| (CSVTALENT(DEST, GET_SUCCESSION(RESULT)) == 0 && RESULT != 22 && 사교의관 == 0)
+			Z:LCOUNT = 1
+	ENDIF
+	RESULT = 0
+	CALL GET_SKILL_PROP, "SKILL_RANK", LCOUNT, -1
+	Z:LCOUNT |= (RESULT << 4) & 0xf0
+NEXT
+
+
+;合体逆引き組み合わせを予め全てリストアップする
+@MAKE_RLD_FUSION_RACE_TABLE, 合身数, FTABLE2, FTABLE2NUM, FTABLE3, FTABLE3NUM
+#DIM DYNAMIC 合身数
+#DIM REF FTABLE2, 0, 0, 0
+#DIM REF FTABLE2NUM, 0
+#DIM REF FTABLE3, 0, 0, 0
+#DIM REF FTABLE3NUM, 0
+#DIM DYNAMIC RES
+#DIM DYNAMIC RACE1
+#DIM DYNAMIC RACE2
+#DIM DYNAMIC RACE3
+
+IF 合身数 == 2
+	FOR RACE1, 1, 12
+		FOR RACE2, RACE1, 12
+			IF RACE1 != RACE2
+				RES = SEARCH_RACE(RACE1, RACE2)
+				IF RES && RES != 13
+					FTABLE2:RES:0:(FTABLE2NUM:RES) = RACE1
+					FTABLE2:RES:1:(FTABLE2NUM:RES) = RACE2
+					FTABLE2NUM:RES++
+				ENDIF
+			ENDIF
+		NEXT
+	NEXT
+ELSEIF 合身数 == 3
+	FOR RACE1, 1, 12
+		FOR RACE2, RACE1, 12
+			FOR RACE3, RACE2, 12
+				RES = SEARCH_RACE(RACE1, RACE2, RACE3)
+				IF RES && RES != 13
+					FTABLE3:RES:0:(FTABLE3NUM:RES) = RACE1
+					FTABLE3:RES:1:(FTABLE3NUM:RES) = RACE2
+					FTABLE3:RES:2:(FTABLE3NUM:RES) = RACE3
+					FTABLE3NUM:RES++
+				ENDIF
+			NEXT
+		NEXT
+	NEXT
+ENDIF
+
+
+;OUTPUT_DEVILの関数版
+;元と同様、使用前にMAKE_RACE_LISTしておく必要がある
+@OUTPUT_DEVIL_F, 基準LV, 加算値
+#FUNCTION
+#DIM 基準LV
+#DIM 加算値
+#DIM HI
+#DIM LO
+;テーブル登録の変更にあわせて、基準LVから開始し、一つ減らすのと増やすのを交互に実行し、最初に引っかかった番号を返すように
+;条件のうち最大レベル
+HI = 基準LV + 加算値
+LO = HI
+DO
+	SIF D:HI >= 0
+		RETURNF D:HI
+	HI++
+	;先にマイナス突入した場合はCONTINUEいれる
+	SIF LO < 0
+		CONTINUE
+	SIF D:LO >= 0
+		RETURNF D:LO
+	LO--
+;とりあえず、150レベル超えたら撃ち切って0を返すように
+LOOP HI < 150
+RETURNF 0
+
+
+;RESULT_ELEMENT_FUSIONの関数版
+;元と同様、使用前にMAKE_RACE_LISTしておく必要がある
+@RESULT_ELEMENT_FUSION_F, DEVIL, ELEMENT
+#FUNCTION
+#DIM DEVIL
+#DIM ELEMENT
+#DIM ランク変化方向
+#DIM LV
+
+SELECTCASE CSVABL(DEVIL, GETNUM(ABL,"종족"),0)
+	;地母神、女神、妖魔、妖鬼、龍王、鬼神、魔神
+	CASE 1,2,5,7,8,15,16
+		ランク変化方向 = 1
+	;魔王、天使、妖精、魔獣、妖鳥、外道、邪神、堕天使
+	CASE 3,4,6,9,10,11,17,18
+		ランク変化方向 = -1
+	;精霊合体非対応種族
+	CASEELSE
+		RETURNF 0
+ENDSELECT
+
+SELECTCASE ELEMENT
+	;ウンディーネorサラマンダー
+	CASE 1202, 1204, 1205
+;		ランク変化方向 *= 1
+	;シルフorノーム
+	CASE 1201, 1203
+		ランク変化方向 *= -1
+	;精霊合体非対応精霊
+	CASEELSE
+		RETURNF 0
+ENDSELECT
+
+LV = CSVBASE(DEVIL, GETNUM(BASE, "LV"), 0)
+DO
+	LV += ランク変化方向
+	SIF !INRANGE(LV, 0, 150)
+		RETURNF 0
+	SIF D:LV >= 0
+		RETURNF D:LV
+;		RETURNF D:LV, 0, ランク変化方向
+LOOP 1
+
+
+

@@ -1,0 +1,1256 @@
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:DUNGEON40_市ヶ谷駐屯地.ERB
+;	Facility	:ダンジョンナンバー40　市ヶ谷駐屯地　ＭＡＰ0~3
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX								新規作成
+;	002		2011/02/03		風見ひなた				ゴトウと協定を結ぶとゆりこが仲間になるように変更。あとデバッグでネタ仕込んだ。
+;	003		2011/04/27		望崎					ゴトウの漢字表記統一。メガCD版なんてなかったんだ……
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=======================================================================
+;ボス・ゴトウさん
+;=======================================================================
+
+
+
+
+;=======================================================================
+;攻略条件
+;=======================================================================
+@PREREQUISITE_DUNGEON_40
+;マヨーネ様の依頼
+IF イベントフラグ:8:0 & 1
+	RETURN 1
+;暫定処理
+ELSEIF イベントフラグ:1:0 == 3
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+;=======================================================================
+;ダンジョン名
+;=======================================================================
+@GET_DUNGEON_NAME_40
+RESULTS = 市ヶ谷駐屯地
+
+
+;=======================================================================
+;フロア名表示
+;=======================================================================
+@FLOORNAME_40
+PRINT 市ヶ谷駐屯地
+SELECTCASE FLAG:現M
+	CASE 0
+		PRINTL 地下１Ｆ
+	CASE 1
+		PRINTL １Ｆ
+	CASE 2
+		PRINTL ２Ｆ
+	CASE 3
+		PRINTL ３Ｆ
+	CASEELSE
+		PRINTL
+ENDSELECT
+
+
+;=======================================================================
+;特殊タイル表示
+;=======================================================================
+;エレベーター表示
+@TILE_MARK_40_0_1_7
+RESULTS = Ｅ
+@TILE_MARK_40_1_1_7
+RESULTS = Ｅ
+@TILE_MARK_40_2_1_7
+RESULTS = Ｅ
+@TILE_MARK_40_3_1_7
+RESULTS = Ｅ
+
+;=======================================================================
+;スタート地点入力
+;=======================================================================
+@START_DUNGEON_40,ARG
+;階数
+FLAG:現M = 1
+FLAG:現X = 7
+FLAG:現Y = 7
+;CALL AUTOMAP
+
+
+;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@CAN_ENTER_40,ARG,ARG:1
+;女Ａ
+IF FLAG:現M == 0 && ARG == 3 && ARG:1 == 4 && ダンジョンフラグ:40:4 == 0
+	PRINTFORMW 地下牢には鍵がかかっている
+	RETURN 0
+ENDIF
+
+;少女Ａ
+IF FLAG:現M == 0 && ARG == 5 && ARG:1 == 4 && ダンジョンフラグ:40:4 == 0
+	PRINTFORMW 地下牢には鍵がかかっている
+	RETURN 0
+ENDIF
+
+;少女Ｂ
+IF FLAG:現M == 0 && ARG == 9 && ARG:1 == 4 && ダンジョンフラグ:40:4 == 0
+	PRINTFORMW 地下牢には鍵がかかっている
+	RETURN 0
+ENDIF
+
+IF FLAG:現M == 1 && ARG == 7 && ARG:1 == 6 && ダンジョンフラグ:40:23 == 0
+	PRINTFORMW 市ヶ谷駐屯地を訪れると警備の自衛隊員に呼び止められた。
+	;マヨーネの依頼
+	IF イベントフラグ:8:0 & 1
+		IF ダンジョンフラグ:40:1 == 0
+			PRINTFORMW 「民間人は立入禁止だ！　帰れ！」
+			PRINTFORMW 「何？」
+			PRINTFORMW マヨーネから預かったＩＤカードを示すと立ち入りを許可された。
+			PRINTFORMW 「ＩＤカードを持っているな　…良し通って良いぞ」
+			ダンジョンフラグ:40:1 = 1
+		ELSEIF ダンジョンフラグ:40:22 >= 1
+			PRINTFORMW 「五島司令官から滞在許可が出ている」
+			PRINTFORMW 「通ってよし」
+			PRINTFORMW 警備の自衛隊員にＩＤカードを提示し市ヶ谷駐屯地に入った。
+		ELSE
+			PRINTFORMW 「ＩＤカードを確認する」
+			PRINTFORMW 「良し通れ！」
+			PRINTFORMW 警備の自衛隊員にＩＤカードを提示し市ヶ谷駐屯地に入った。
+		ENDIF
+		RETURN 1
+	ELSE
+		PRINTFORMW 身分を証明する物が無ければ入れないようだ。
+		RETURN 0
+	ENDIF
+ENDIF
+
+IF FLAG:現M == 3 && ARG == 8 && ARG:1 == 5 && ダンジョンフラグ:40:20 ==0 && ダンジョンフラグ:40:21 == 0 && ダンジョンフラグ:40:22 == 0
+	PRINTFORMW 巨大な鉄の扉があなたの前に立ち塞がる。
+	PRINTFORMW マヨーネから預かったＩＤカードでは認証されないようだ。
+	PRINTFORMW 何か別の手段を考えなくてはならない。
+	ダンジョンフラグ:40:10 = 1
+	RETURN 0
+ENDIF
+
+
+CALL CAN_ENTER,ARG,ARG:1
+RETURN RESULT
+
+;=======================================================================
+;フロアデータ
+;=======================================================================
+@MAKE_FLOOR_40
+SELECTCASE FLAG:現M
+	CASE 0
+	;地下１階
+		FLAG:最大X = 17 
+		FLAG:最大Y = 9 
+;								 01234567890123456
+		CALL MAKE_FLOOR_LINE, 0,"                 "
+		CALL MAKE_FLOOR_LINE, 1," 111111111111119 "
+		CALL MAKE_FLOOR_LINE, 2," 1     1     1   "
+		CALL MAKE_FLOOR_LINE, 3," 1 1 1 1 1 1 1 6 "
+		CALL MAKE_FLOOR_LINE, 4," 1 2 2 1 2 2 1 2 "
+		CALL MAKE_FLOOR_LINE, 5," 111111111111111 "
+		CALL MAKE_FLOOR_LINE, 6," 1 2 2 1 2 2 2 2 "
+		CALL MAKE_FLOOR_LINE, 7," 9 1 1 9 1 1 1 1 "
+		CALL MAKE_FLOOR_LINE, 8,"                 "
+
+		;宝箱の設置
+		;チタニウムレッグ
+		CALL SET_TILE,3, 7, ダンジョンフラグ:40:11 ,0, 3
+		;軍服
+		CALL SET_TILE,13,7, ダンジョンフラグ:40:12 ,0, 3
+
+		;イベントの設置
+
+		;悪魔看守
+		CALL SET_TILE,7,7,ダンジョンフラグ:40:4,0,4
+
+		;監禁少女
+		CALL SET_TILE,3,3,ダンジョンフラグ:40:7,0,4
+		CALL SET_TILE,5,3,ダンジョンフラグ:40:8,0,4
+		CALL SET_TILE,9,3,ダンジョンフラグ:40:9,0,4
+
+		;輪姦イベント
+		CALL SET_TILE,15,1,ダンジョンフラグ:40:8,0,4
+		;誰もいない
+		CALL SET_TILE,15,1,ダンジョンフラグ:40:8,1,4
+		;鍵
+		CALL SET_TILE,15,1,ダンジョンフラグ:40:9,1,4
+		;エレベーター前
+		CALL SET_TILE,1,6,ダンジョンフラグ:40:22,0,4
+		CALL SET_TILE,1,6,ダンジョンフラグ:40:22,1,4
+
+
+		;宝箱の設置
+		;SET_TILE,X座標, Y座標, 使用するフラグ, フラグがいくつのときにタイルを設置するか,3（アイテム）
+		;宝箱はあけると自動的に使用するフラグを帰るので、ダンジョンフラグ:1:0 = 1となり、このたからばこはおかれなくなります 
+
+		;なお、ダンジョンフラグ:1:0はダンジョンフラグ:{FLAG:現ダンジョン}:0や、ダンジョンフラグ:[[ダンジョン:エコービル]]:0という記述もできます
+		;基本的には前者推奨、ダンジョンの外やほかのダンジョンからフラグを見たいときは後者もいいでしょう
+		
+		;X座標5、X座標4の位置にイベントID1を設置する（これもIDは10倍されている）
+		;ちなみにこのイベントは階段ででてくる先です
+		;また、記述としてはDA:5:4 = 16でもいいでしょう（いずれにしろ、DAであることに注意）
+		;DA:5:4 += 10
+		
+	CASE 1
+		;一階
+		FLAG:最大X = 17 
+		FLAG:最大Y = 9 
+;								 01234567890123456
+		CALL MAKE_FLOOR_LINE, 0,"                 "
+		CALL MAKE_FLOOR_LINE, 1," 111111111111111 "
+		CALL MAKE_FLOOR_LINE, 2," 1  2   2    2 2 "
+		CALL MAKE_FLOOR_LINE, 3," 1  111 111  6 7 "
+		CALL MAKE_FLOOR_LINE, 4," 121             "
+		CALL MAKE_FLOOR_LINE, 5," 1 1 11111 111 1 "
+		CALL MAKE_FLOOR_LINE, 6," 1 1 1 2 1   2 1 "
+		CALL MAKE_FLOOR_LINE, 7," 9 121 8 1111111 "
+		CALL MAKE_FLOOR_LINE, 8,"                 "
+		
+		;宝箱の設置
+		;フロッグヘルム
+		CALL SET_TILE,11, 5, ダンジョンフラグ:40:13 ,0, 3
+
+		;イベントの設置
+		;自衛隊員Ａ
+		CALL SET_TILE,6,3,ダンジョンフラグ:40:2,0,4
+		;エレベーター前
+		CALL SET_TILE,1,6,ダンジョンフラグ:40:22,0,4
+		CALL SET_TILE,1,6,ダンジョンフラグ:40:22,1,4
+
+	CASE 2
+		;二階
+		FLAG:最大X = 17 
+		FLAG:最大Y = 9 
+;								 01234567890123456
+		CALL MAKE_FLOOR_LINE, 0,"                 "
+		CALL MAKE_FLOOR_LINE, 1," 111111111111119 "
+		CALL MAKE_FLOOR_LINE, 2," 1 2 1   1 2     "
+		CALL MAKE_FLOOR_LINE, 3," 1 1 1 1 1 1     "
+		CALL MAKE_FLOOR_LINE, 4," 1 1 1 1 1 1 7 6 "
+		CALL MAKE_FLOOR_LINE, 5," 1 1 1 1 1 1 2 2 "
+		CALL MAKE_FLOOR_LINE, 6," 1   1 2 1   111 "
+		CALL MAKE_FLOOR_LINE, 7," 9 1111111111111 "
+		CALL MAKE_FLOOR_LINE, 8,"                 "
+		
+		;宝箱の設置
+		;ジャミングアーム
+		CALL SET_TILE,3, 5, ダンジョンフラグ:40:14 ,0, 3
+		;神経弾
+		CALL SET_TILE,7, 3, ダンジョンフラグ:40:15 ,0, 3
+		;魔力の香
+		CALL SET_TILE,11, 5, ダンジョンフラグ:40:16 ,0, 3
+
+		;イベントの設置
+		;自衛隊員Ｂ
+		CALL SET_TILE,15,1,ダンジョンフラグ:40:3,0,4
+		CALL SET_TILE,15,1,ダンジョンフラグ:40:3,1,4
+		;エレベーター前
+		CALL SET_TILE,1,6,ダンジョンフラグ:40:22,0,4
+		CALL SET_TILE,1,6,ダンジョンフラグ:40:22,1,4
+
+	CASE 3
+		;三階
+		FLAG:最大X = 17 
+		FLAG:最大Y = 9 
+;								 01234567890123456
+		CALL MAKE_FLOOR_LINE, 0,"                 "
+		CALL MAKE_FLOOR_LINE, 1," 111111111111111 "
+		CALL MAKE_FLOOR_LINE, 2," 1  1       1  1 "
+		CALL MAKE_FLOOR_LINE, 3," 1  1  111  1  2 "
+		CALL MAKE_FLOOR_LINE, 4," 1  1  111  1  7 "
+		CALL MAKE_FLOOR_LINE, 5," 11111  2  1111  "
+		CALL MAKE_FLOOR_LINE, 6," 1 1 2 111 2  11 "
+		CALL MAKE_FLOOR_LINE, 7," 9 1 11111111 11 "
+		CALL MAKE_FLOOR_LINE, 8,"                 "
+
+		;宝箱の設置
+		;カイザーアーマー
+		CALL SET_TILE,15, 7, ダンジョンフラグ:40:17 ,0, 3
+
+		;イベントの設置
+		;鍵2
+		CALL SET_TILE,8,6,ダンジョンフラグ:40:9,1,4
+		;ゴトウと会話
+		CALL SET_TILE,8,3,ダンジョンフラグ:40:22,0,4
+		CALL SET_TILE,8,3,ダンジョンフラグ:40:23,0,4
+		;エレベーター前
+		CALL SET_TILE,1,6,ダンジョンフラグ:40:22,0,4
+		CALL SET_TILE,1,6,ダンジョンフラグ:40:22,1,4
+	CASEELSE
+
+
+ENDSELECT
+
+
+;=======================================================================
+;[5]調べる　実行時のイベント
+;=======================================================================
+@EVENT_CHECK_DUNGEON_40
+
+;==========
+;出口の処理
+;==========
+IF DA:(FLAG:現X):(FLAG:現Y) == 8
+	CALL DUNGEON_EXIT
+	RETURN 1
+;========
+;宝の処理
+;========
+
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 3
+	SELECTCASE FLAG:現M
+		CASE 0
+			;地下一階のX1/Y7座標にアイテム設置
+			IF FLAG:現X == 3 && FLAG:現Y == 7
+				;4503,チタニウムブーツ,2400
+				CALL GET_TREASURE,4503,1,FLAG:現ダンジョン,11
+			ELSEIF FLAG:現X == 13 && FLAG:現Y == 7
+				;6316_軍服
+				CALL GET_TREASURE,6316,1,FLAG:現ダンジョン,12
+			ENDIF
+		CASE 1
+			;3005,フロッグヘルム,1400
+			IF FLAG:現X == 11 && FLAG:現Y == 5
+				CALL GET_TREASURE,3005,1,FLAG:現ダンジョン,13
+			ENDIF
+		CASE 2
+			;4003,ジャミングアーム,4800
+			IF FLAG:現X == 3 && FLAG:現Y == 5
+				CALL GET_TREASURE,4003,1,FLAG:現ダンジョン,14
+			;5507,神経弾,450
+			ELSEIF FLAG:現X == 7 && FLAG:現Y == 3
+				CALL GET_TREASURE,5507,20,FLAG:現ダンジョン,15
+			;1012,魔力の香,10000,
+			ELSEIF FLAG:現X == 11 && FLAG:現Y == 5
+				CALL GET_TREASURE,1012,1,FLAG:現ダンジョン,16
+			ENDIF
+		CASE 3
+			;3503,カイザーアーマー,2400
+			IF FLAG:現X == 15 && FLAG:現Y == 7
+				CALL GET_TREASURE,3503,1,FLAG:現ダンジョン,17
+			ENDIF
+	ENDSELECT
+	RETURN 1
+
+;=======
+;階段
+;=======
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 6
+	SELECTCASE FLAG:現M
+		;地下一階昇り階段
+		CASE 0
+			;地下一階　MAP6の座標を指定
+			SIF FLAG:現X == 15 && FLAG:現Y == 3
+				;一階下り階段
+				;CALL DUNGEON_UPSTAIRS,現M == 1,現X == 15,現Y == 3
+				CALL DUNGEON_UPSTAIRS,1,15,3
+		;一階昇り階段
+		CASE 1
+			;一階　MAP6の座標を指定
+			SIF FLAG:現X == 13 && FLAG:現Y == 3
+				;ニ階下り階段
+				;CALL DUNGEON_UPSTAIRS,現M == 2,現X == 13,現Y == 4
+				CALL DUNGEON_UPSTAIRS,2,13,4
+		;二階昇り階段
+		CASE 2
+			;ニ階　MAP6の座標を指定
+			SIF FLAG:現X == 15 && FLAG:現Y == 4
+				;三階下り階段 MAP7
+				;CALL DUNGEON_UPSTAIRS,現M == 3,現X == 15,現Y == 4
+				CALL DUNGEON_UPSTAIRS,3,15,4
+	ENDSELECT
+	RETURN 1
+	
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 7
+	SELECTCASE FLAG:現M
+		;一階下り階段　上記昇り階段の数値を入れ替える
+		CASE 1
+			;一階　MAP7の座標を指定
+			SIF FLAG:現X == 15 && FLAG:現Y == 3
+				;地下一階　MAP6の座標を指定
+				CALL DUNGEON_DOWNSTAIRS,0,15,3
+		;ニ階下り階段
+		CASE 2
+			;ニ階　MAP7の座標を指定
+			SIF FLAG:現X == 13 && FLAG:現Y == 4
+				;一階　MAP6の座標を指定
+				CALL DUNGEON_DOWNSTAIRS,1,13,3
+		CASE 3
+			;三階　MAP7の座標を指定
+			SIF FLAG:現X == 15 && FLAG:現Y == 4
+				;ニ階　MAP6の座標を指定
+				CALL DUNGEON_DOWNSTAIRS,2,15,4
+	ENDSELECT
+	RETURN 1
+	
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 9
+	SELECTCASE FLAG:現M
+		CASE 0
+			SIF FLAG:現X == 1 && FLAG:現Y == 7
+				CALL E_ICHIGAYA
+		CASE 1
+			SIF FLAG:現X == 1 && FLAG:現Y == 7
+				CALL E_ICHIGAYA
+		CASE 2
+			SIF FLAG:現X == 1 && FLAG:現Y == 7
+				CALL E_ICHIGAYA
+		CASE 3
+			SIF FLAG:現X == 1 && FLAG:現Y == 7
+				CALL E_ICHIGAYA
+		CASEELSE
+	ENDSELECT
+	RETURN 1
+
+
+ELSE
+	PRINTW 何も無いようだ
+	RETURN 0
+ENDIF
+
+;=======================================================================
+;タイル進入時のイベント
+;=======================================================================
+@EVENT_ENTER_DUNGEON_40,ARG
+;ARG = 進入時の向き　0の場合ワープなど
+;==========
+;出口の処理
+;==========
+IF DA:(FLAG:現X):(FLAG:現Y) == 8
+	CALL DUNGEON_EXIT
+	RETURN 1
+;========
+;宝の処理
+;========
+
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 3
+	SELECTCASE FLAG:現M
+		CASE 0
+			;地下一階のX1/Y7座標にアイテム設置
+			IF FLAG:現X == 3 && FLAG:現Y == 7
+				;4503,チタニウムブーツ,2400
+				CALL GET_TREASURE,4503,1,FLAG:現ダンジョン,11
+			ELSEIF FLAG:現X == 13 && FLAG:現Y == 7
+				;6316_軍服
+				CALL GET_TREASURE,6316,1,FLAG:現ダンジョン,12
+			ENDIF
+		CASE 1
+			;3005,フロッグヘルム,1400
+			IF FLAG:現X == 11 && FLAG:現Y == 5
+				CALL GET_TREASURE,3005,1,FLAG:現ダンジョン,13
+			ENDIF
+		CASE 2
+			;4003,ジャミングアーム,4800
+			IF FLAG:現X == 3 && FLAG:現Y == 5
+				CALL GET_TREASURE,4003,1,FLAG:現ダンジョン,14
+			;5507,神経弾,450
+			ELSEIF FLAG:現X == 7 && FLAG:現Y == 3
+				CALL GET_TREASURE,5507,20,FLAG:現ダンジョン,15
+			;1012,魔力の香,10000,
+			ELSEIF FLAG:現X == 11 && FLAG:現Y == 5
+				CALL GET_TREASURE,1012,1,FLAG:現ダンジョン,16
+			ENDIF
+		CASE 3
+			;3503,カイザーアーマー,2400
+			IF FLAG:現X == 15 && FLAG:現Y == 7
+				CALL GET_TREASURE,3503,1,FLAG:現ダンジョン,17
+			ENDIF
+	ENDSELECT
+	RETURN 1
+
+;=======
+;階段
+;=======
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 6
+	SELECTCASE FLAG:現M
+		;地下一階昇り階段
+		CASE 0
+			;地下一階　MAP6の座標を指定
+			SIF FLAG:現X == 15 && FLAG:現Y == 3
+				;一階下り階段
+				;CALL DUNGEON_UPSTAIRS,現M == 1,現X == 15,現Y == 3
+				CALL DUNGEON_UPSTAIRS,1,15,3
+		;一階昇り階段
+		CASE 1
+			;一階　MAP6の座標を指定
+			SIF FLAG:現X == 13 && FLAG:現Y == 3
+				;ニ階下り階段
+				;CALL DUNGEON_UPSTAIRS,現M == 2,現X == 13,現Y == 4
+				CALL DUNGEON_UPSTAIRS,2,13,4
+		;二階昇り階段
+		CASE 2
+			;ニ階　MAP6の座標を指定
+			SIF FLAG:現X == 15 && FLAG:現Y == 4
+				;三階下り階段 MAP7
+				;CALL DUNGEON_UPSTAIRS,現M == 2,現X == 15,現Y == 4
+				CALL DUNGEON_UPSTAIRS,3,15,4
+	ENDSELECT
+	RETURN 1
+
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 7
+	SELECTCASE FLAG:現M
+		;一階下り階段　上記昇り階段の数値を入れ替える
+		CASE 1
+			;一階　MAP7の座標を指定
+			SIF FLAG:現X == 15 && FLAG:現Y == 3
+				;地下一階　MAP6の座標を指定
+				CALL DUNGEON_DOWNSTAIRS,0,15,3
+		;ニ階下り階段
+		CASE 2
+			;ニ階　MAP7の座標を指定
+			SIF FLAG:現X == 13 && FLAG:現Y == 4
+				;一階　MAP6の座標を指定
+				CALL DUNGEON_DOWNSTAIRS,1,13,3
+		CASE 3
+			;三階　MAP7の座標を指定
+			SIF FLAG:現X == 15 && FLAG:現Y == 4
+				;ニ階　MAP6の座標を指定
+				CALL DUNGEON_DOWNSTAIRS,2,15,4
+	ENDSELECT
+	RETURN 1
+	
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 9
+	SELECTCASE FLAG:現M
+		CASE 0
+			SIF FLAG:現X == 1 && FLAG:現Y == 7
+				CALL E_ICHIGAYA
+		CASE 1
+			SIF FLAG:現X == 1 && FLAG:現Y == 7
+				CALL E_ICHIGAYA
+		CASE 2
+			SIF FLAG:現X == 1 && FLAG:現Y == 7
+				CALL E_ICHIGAYA
+		CASE 3
+			SIF FLAG:現X == 1 && FLAG:現Y == 7
+				CALL E_ICHIGAYA
+		CASEELSE
+	ENDSELECT
+	RETURN 1
+
+
+
+;==========
+;扉の処理
+;==========
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 2
+	IF FLAG:現M == 0 && FLAG:現X == 3 && FLAG:現Y == 4 && ダンジョンフラグ:40:4 == 1
+		PRINTFORMW 鍵束を使い鍵を開いた。
+		ダンジョンフラグ:40:24 = 1
+	ELSEIF FLAG:現M == 0 && FLAG:現X == 5 && FLAG:現Y == 4 && ダンジョンフラグ:40:4 == 1
+		PRINTFORMW 鍵束を使い鍵を開いた。
+		ダンジョンフラグ:40:24 = 2
+	ELSEIF FLAG:現M == 0 && FLAG:現X == 9 && FLAG:現Y == 4 && ダンジョンフラグ:40:4 == 1
+		PRINTFORMW 鍵束を使い鍵を開いた。
+		ダンジョンフラグ:40:24 = 3
+	ENDIF
+
+	IF FLAG:現M == 3 && FLAG:現X == 8 && FLAG:現Y == 5 && ダンジョンフラグ:40:20 == 1
+		IF ダンジョンフラグ:40:22 == 1
+			PRINTFORMW 新しいＩＤカードで扉を開き、あなたは部屋の中へと進む…
+		ELSE
+			PRINTFORMW あなたは輪姦された事でスムーズにゴトウへ近づく事が出来た。
+			PRINTFORMW 新しいＩＤカードで扉を開き、あなたは部屋の中へと進む…
+		ENDIF
+	ENDIF
+	
+	IF FLAG:現M == 3 && FLAG:現X == 8 && FLAG:現Y == 5 && ダンジョンフラグ:40:21 == 1
+		IF ダンジョンフラグ:40:22 == 1
+			PRINTFORMW 新しいＩＤカードで扉を開き、あなたは部屋の中へと進む…
+		ELSE
+			PRINTFORMW あなたは借りたＩＤカードで認証を済ませ巨大な鉄の扉を開いた。
+			PRINTFORMW この先にゴトウがいる……
+		ENDIF
+	ENDIF
+	CALL DUNGEON_DOOR,ARG
+	RETURN 1
+
+
+;========================
+;イベント
+;========================
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 4
+	
+	;一階　自衛隊員Ａ
+	IF FLAG:現M == 1 && FLAG:現X == 6 && FLAG:現Y == 3 && ダンジョンフラグ:40:2 == 0 && ダンジョンフラグ:40:23 == 0  
+		PRINTFORML 若い自衛隊員がいる。
+		PRINTFORML 「五島司令官は立派な方です」
+		PRINTFORMW 「あの方の命令なら自分はどんな事でもやります」
+		ダンジョンフラグ:40:2 = 1 
+
+	;ニ階　自衛隊員Ｂ
+	ELSEIF FLAG:現M == 2 && FLAG:現X == 15 && FLAG:現Y == 1 && ダンジョンフラグ:40:3 == 0 && ダンジョンフラグ:40:23 == 0 
+		PRINTFORML 部屋の隅に暗い顔をした自衛隊員が隠れていた。
+		PRINTFORML 「司令官の五島は悪魔まで呼び寄せて…」
+		PRINTFORML 「一体、何をするつもりなんだろう」
+		PRINTFORMW 「俺は怖くなって来た…」
+		ダンジョンフラグ:40:3 = 1 
+
+	;二回目
+	ELSEIF FLAG:現M == 2 && FLAG:現X == 15 && FLAG:現Y == 1 && ダンジョンフラグ:40:3 == 1 && ダンジョンフラグ:40:9 == 0 && ダンジョンフラグ:40:10 == 1 && ダンジョンフラグ:40:21 == 0 && ダンジョンフラグ:40:23 == 0 
+		PRINTFORML 「俺がここに隠れている事は誰にも言わないでくれ」
+		PRINTFORML 「頼むよ…」
+		PRINTFORML 「え？　ＩＤカードが欲しいのかい、しょうがないな…」
+		PRINTL
+		PRINTL 「￥10000で貸してあげてもいいよ」
+		PRINTL 
+		PRINTL [0] はい
+		PRINTL [1] いいえ
+		$INPUT_LOOP6
+				INPUT
+		IF RESULT == 0
+			PRINTFORML 「ありがとう、間違ってもなくさないでくれよ」
+			PRINTFORMW 「貸すだけだからね」
+			PRINTFORMW あなたは新しいＩＤカードを手に入れた。
+			ダンジョンフラグ:40:21 = 1
+			MONEY -= 10000
+		ELSEIF RESULT == 1
+			PRINTFORMW 「そうかい、気が変わったらまたくるといい」
+		ELSE
+			GOTO INPUT_LOOP6
+		ENDIF
+		
+	ELSEIF FLAG:現M == 0 && FLAG:現X == 7 && FLAG:現Y == 7 && ダンジョンフラグ:40:4 == 0 && ダンジョンフラグ:40:23 == 0
+		FLAG:逃走不可フラグ = 1
+		FLAG:会話不能フラグ = 1
+		FLAG:先制不意打ちキャンセル = 1
+		CUSTOMDRAWLINE =
+		PRINTFORML 「お前等、見かけない面だな」
+		PRINTFORMW 「何処から逃げ出した？　牢屋にぶちこんでやるっ!!」
+		PRINTL 妖鬼 オークが３体出た！
+		CUSTOMDRAWLINE =
+		WAIT
+		FLAG:逃走不可フラグ = 1
+		FLAG:会話不能フラグ = 1
+		FLAG:先制不意打ちキャンセル = 1
+		;オーク
+		CALL SET_ENEMY,8,[[キャラ:オーク]],23,0,0
+		CALL SET_ENEMY,9,[[キャラ:オーク]],23,0,0
+		CALL SET_ENEMY,10,[[キャラ:オーク]],23,0,0
+		CALL BATTLE_START
+		FLAG:逃走不可フラグ = 0
+		FLAG:会話不能フラグ = 0
+		FLAG:先制不意打ちキャンセル = 0
+		PRINTFORMW オーク達が逃げ出した後に鍵束が落ちていた。
+		ダンジョンフラグ:40:4 = 1
+
+	;女Ａ
+	ELSEIF FLAG:現M == 0 && FLAG:現X == 3 && FLAG:現Y == 3 && ダンジョンフラグ:40:5 == 0 && ダンジョンフラグ:40:23 == 0
+		PRINTFORML 檻の中には女が監禁されていた。
+		PRINTFORML 「助けて!!」
+		PRINTFORMW 「私は何も悪い事して無いのよ」
+		PRINTL 
+		PRINTL ＞助けますか？
+		PRINTL 
+		PRINTL [0] 助ける
+		PRINTL [1] 無視する
+		IF FLAG:DEBUG		
+			PRINTL [2] 犯す
+		ENDIF
+		$INPUT_LOOP1
+		INPUT
+		IF RESULT == 0
+			CALL INCREASE_LC,3
+			CALL INCREASE_LD,3
+			PRINTL 
+			PRINTFORML 「助かったわ」
+			PRINTFORML 「そういえば、もう一人居たんだけど…」
+			PRINTFORMW 「どこかへ、連れて行かれたわよ」
+		ELSEIF RESULT == 1
+			CALL INCREASE_LC,-3
+			CALL INCREASE_LD,-3
+			PRINTL 
+			PRINTFORML 助けたところで見返りは期待出来ないだろう。
+			PRINTFORMW そう思ったあなたはその場を立ち去った。
+		ELSEIF RESULT == 2
+			CALL INCREASE_LC,-5
+			CALL INCREASE_LD,-5
+			PRINTL 
+			PRINTFORML 「やめて、来ないで！」
+			PRINTFORML 「ひっ……！　そんなものを入れられたら死んじゃう！」
+			PRINTFORML 「やめて、もうやめて……がっ」
+			PRINTFORMW 女が白目を剥くまで犯し尽くして満足したあなたは、鼻歌混じりに探索を再会した。
+		ELSE
+			GOTO INPUT_LOOP1
+		ENDIF
+		ダンジョンフラグ:40:5 = 1
+	
+	;少女Ａ
+	ELSEIF FLAG:現M == 0 && FLAG:現X == 5 && FLAG:現Y == 3 && ダンジョンフラグ:40:6 == 0 && ダンジョンフラグ:40:23 == 0
+		PRINTFORML 檻の中には少女が監禁されていた…。
+		PRINTFORMW 「お願い助けて…」
+		PRINTL 
+		PRINTL [0] 助ける
+		PRINTL [1] 無視する
+		IF FLAG:DEBUG		
+			PRINTL [2] 犯す
+		ENDIF
+		$INPUT_LOOP2
+		INPUT
+		IF RESULT == 0
+			CALL INCREASE_LC,3
+			CALL INCREASE_LD,3
+			PRINTL 
+			IF FLAG:DEBUG
+				PRINTFORMW あなたのロリ…もといメシアとしての本能が幼女を助けなければならないと訴えかけてきた。
+			ENDIF
+			PRINTFORMW あなたは幼女を助ける事にした。
+			PRINTFORML 「ありがとう！」
+			PRINTFORML 「少し前に…メシア教の人が来たの」
+			PRINTFORMW 「私達を助けようとしたんだけど、見張りが大勢いてだめだったの」
+		ELSEIF RESULT == 1
+			CALL INCREASE_LC,-3
+			CALL INCREASE_LD,-3
+			PRINTL 
+			PRINTFORML 助けたところで見返りは期待出来ないだろう。
+			PRINTFORMW そう思ったあなたはその場を立ち去った。
+		ELSEIF RESULT == 2
+			CALL INCREASE_LC,-5
+			CALL INCREASE_LD,-5
+			PRINTL 
+			PRINTFORML 「イヤーーーーッ！　助けてママーーーーッ！」
+			PRINTFORML 「やめて……もう助けて……」
+			PRINTFORML 「…………」
+			PRINTFORMW 少女の瞳に光がなくなるまで犯しぬいて満足したあなたは、意気揚々と探索を再開した。
+		ELSE
+			GOTO INPUT_LOOP2
+		ENDIF
+		ダンジョンフラグ:40:6 = 1
+	
+	;少女Ｂ
+	ELSEIF FLAG:現M == 0 && FLAG:現X == 9 && FLAG:現Y == 3 && ダンジョンフラグ:40:7 == 0 && ダンジョンフラグ:40:23 == 0
+		PRINTFORML  檻の中には少女が監禁されていた…。
+		PRINTFORML 「助けてよー！　怖いよー！」
+		PRINTL 
+		PRINTL [0] 助ける
+		PRINTL [1] 無視する
+		IF FLAG:DEBUG		
+			PRINTL [2] 犯す
+		ENDIF
+		$INPUT_LOOP3
+		INPUT
+		IF RESULT == 0
+			CALL INCREASE_LC,3
+			CALL INCREASE_LD,3
+			PRINTL
+			PRINTFORML 「わーい！　ありがとう」
+			PRINTFORML 「私、兵隊のおじさんにここに連れてこられたの」
+			PRINTFORMW 少女は恥ずかしそうにしながら礼を言ってくれた。
+		ELSEIF RESULT == 1
+			CALL INCREASE_LC,-3
+			CALL INCREASE_LD,-3
+			PRINTL 
+			PRINTFORML あなたに少女の軽蔑の眼差しが突き刺さる。
+			PRINTFORML だが、自分には関係ない。
+			PRINTFORMW そう思ったあなたはその場を立ち去った。
+		ELSEIF RESULT == 2
+			CALL INCREASE_LC,-5
+			CALL INCREASE_LD,-5
+			PRINTL 
+			PRINTFORML 「あんっ、だめだよぉっ！　スカート下ろしちゃだめぇ！」
+			PRINTFORML 「ボク、男の子だよぉっ！」
+			PRINTFORML 「だめぇっ！　何か出ちゃうよぉぉぉっ！」
+			PRINTFORMW 男の娘がぐったりするまで幼い肢体を貪り尽くしたあなたは、珍しい体験をしたことに満足して探索を再開した。
+		ELSE
+			GOTO INPUT_LOOP3
+		ENDIF
+		ダンジョンフラグ:40:7 = 1
+
+	;地下一階　輪姦イベント　輪姦フラグなし
+	ELSEIF FLAG:現M == 0 && FLAG:現X == 15 && FLAG:現Y == 1 && ダンジョンフラグ:40:8 == 0 && ダンジョンフラグ:40:23 == 0
+		;男
+		IF TALENT:MASTER:140 == 1 && TALENT:MASTER:男の娘 == 0
+			PRINTFORMW 「君達も我が部隊に入りたくてここに来たのか？」
+			PRINTFORMW 自衛隊員が声をかけてきた。 
+			PRINTFORMW 「ここにいれば食料も女にも困る事は無い」
+			PRINTFORMW 「どうだ、羨ましいだろう？」
+			ダンジョンフラグ:40:8 = 1
+		ELSE
+			PRINTFORMW 「君達も我が部隊に入りたくてここに来たのか？」
+			PRINTFORMW 自衛隊員が声をかけてきた。 
+			PRINTFORMW 「ほう…なかなかの上玉じゃないか」
+			PRINTFORMW 「俺達にサービスするなら、五島司令官に口を聞いて部隊に入れてやってもいいぜ」
+			PRINTL [0] はい
+			PRINTL [1] いいえ
+			$INPUT_LOOP_4
+			INPUT
+			IF RESULT == 0
+				SIF TALENT:MASTER:157 == 1
+					PRINTFORMW 「女かと思ったら男かよ」
+				PRINTFORMW 「かまわねえ、輪姦しちまおうぜ」
+				PRINTW ………
+				PRINTW ……
+				PRINTW …
+				PRINTW ＞あなたは自衛隊員達に輪姦されました
+				;処女
+				IF TALENT:MASTER:再生処女 || TALENT:MASTER:処女
+					PRINTFORML \@ TALENT:MASTER:処女 ? 処女 # 再生処女 \@喪失
+					PRINTL 処女喪失
+					TALENT:MASTER:処女 = 0
+					TALENT:MASTER:再生処女 = 0
+					PRINTL 異常経験 + 1
+					EXP:MASTER:異常経験 += 1
+				ENDIF
+				IF TALENT:MASTER:157 == 0
+					PRINTL Ｖ経験 + 15
+					EXP:MASTER:Ｖ経験 += 15
+				ENDIF
+				PRINTL Ａ経験 + 10
+				EXP:MASTER:Ａ経験 += 10
+				PRINTL 絶頂経験 + 5
+				EXP:MASTER:絶頂経験 += 5
+				IF TALENT:MASTER:157 == 0
+					PRINTL 性交経験 + 25
+					EXP:MASTER:性交経験 += 25
+				ENDIF
+				PRINTL 膣射経験 + 15
+				EXP:MASTER:膣射経験 += 15
+				PRINTL 精液経験 + 20
+				EXP:MASTER:精液経験 += 20
+				PRINTL 奉仕快楽経験 + 10
+				EXP:MASTER:奉仕快楽経験 += 10
+				PRINTL フェラ経験 + 10
+				EXP:MASTER:フェラ経験 += 10
+				PRINTL 苦痛快楽経験 + 10
+				EXP:MASTER:苦痛快楽経験 += 10
+				PRINTL
+				WAIT
+				PRINTW ＞輪姦され体力を消耗してしまった……
+				PRINTW ＞今日はもう探索を継続する事が難しいだろう
+				PRINTL
+				;主人の精液中毒Lv1
+				IF ABL:MASTER:15 >= 1
+					PRINTFORMW 輪姦され火照る身体の疼きは収まらず家路の途中であなたは自慰に耽ってしまった…
+				ENDIF
+				ダンジョンフラグ:40:8 = 1 
+				ダンジョンフラグ:40:9 = 1
+				FLAG:脱出 = 1
+			ELSEIF RESULT == 1
+				PRINTFORMW 「残念だ」
+				PRINTFORMW 「また機会があったら宜しく頼むぜ」
+				ダンジョンフラグ:40:8 = 1
+			ELSE
+				GOTO INPUT_LOOP_4
+			ENDIF
+		ENDIF
+
+	;地下一階　輪姦イベント　鍵入手
+	ELSEIF FLAG:現M == 0 && FLAG:現X == 15 && FLAG:現Y == 1 && ダンジョンフラグ:40:9 == 1 && ダンジョンフラグ:40:10 == 1 && ダンジョンフラグ:40:23 == 0
+		PRINTFORML 「五島司令官が会うと伝えろとさ…」
+		PRINTFORML 「あんた一体何者なんだ？」
+		PRINTFORMW 自衛隊員からあなたは新しいＩＤカードを受け取った。
+		;フラグ消去
+		ダンジョンフラグ:40:8 = 1
+		ダンジョンフラグ:40:9 = 2
+		;鍵入手
+		ダンジョンフラグ:40:20 = 1
+
+	;三階　輪姦イベント　鍵入手
+	ELSEIF FLAG:現M == 3 && FLAG:現X == 8 && FLAG:現Y == 6 && ダンジョンフラグ:40:9 == 1 && ダンジョンフラグ:40:10 == 1 && ダンジョンフラグ:40:23 == 0
+		PRINTFORMW 「五島司令官がここを通せとさ…」
+		PRINTFORMW 「あんた一体何者なんだ？」
+		PRINTFORMW 自衛隊員はあなたに新しいＩＤカードを投げて寄越した。
+		;フラグ消去
+		ダンジョンフラグ:40:8 = 1
+		ダンジョンフラグ:40:9 = 2
+		;鍵入手
+		ダンジョンフラグ:40:20 = 1
+
+	;地下一階　輪姦イベント　輪姦フラグなし
+	ELSEIF FLAG:現M == 0 && FLAG:現X == 15 && FLAG:現Y == 1 && ダンジョンフラグ:40:8 == 1 && ダンジョンフラグ:40:23 == 0
+		PRINTFORMW 自衛隊員達は既にここには居ない。
+
+	ELSEIF FLAG:現X == 1 && FLAG:現Y == 6 && ダンジョンフラグ:40:22 == 0
+		;デバッグモード
+		IF FLAG:DEBUG
+			PRINTFORMW エレベーターに乗ろうとすると青色の服を纏ったエレベーターガールに呼び止められた。
+			PRINTFORMW 「私、縁あってこちらのエレベーターガールをさせていただいております　マーガレットと申します」
+			PRINTFORMW 「残念ですが、許可のない方のご搭乗はお断りさせていただきます」
+			PRINTFORMW 女とは思えない恐ろしい力であなたはエレベーターから引きずり出された。
+		ELSE
+			PRINTFORMW エレベーターに通じる扉の前に屈強な自衛隊員が立ち塞がっている。
+			PRINTFORMW 「民間人か？」
+			PRINTFORMW 「五島司令官の許可の無い者にエレベーターを使わせるわけにはいかん」
+		ENDIF
+		PRINTW ＞許可が必要らしい
+		FLAG:現Y -= 1
+		
+	ELSEIF FLAG:現X == 1 && FLAG:現Y == 6 && ダンジョンフラグ:40:22 == 1
+		;デバッグモード
+		IF FLAG:DEBUG
+			PRINTFORMW 「重畳ですわ、頂上まで向かいまーす%UNICODE(0x2661)%」
+			PRINTFORMW 極寒レベルのギャグを飛ばすこの女は正気だろうか…
+		ELSE
+			PRINTFORMW 「エレベーターの使用許可が出ている」
+			PRINTFORMW エレベーターの入り口を塞いでいた自衛隊員はどいてくれた。
+			PRINTFORMW ゴトウの邪魔をしない限り協力は惜しまないという事か…
+		ENDIF
+		ダンジョンフラグ:40:22 = 2
+
+
+	;三階　ゴトウ　一度目
+	ELSEIF FLAG:現M == 3 && FLAG:現X == 8 && FLAG:現Y == 3 && ダンジョンフラグ:40:22 == 0
+		PRINTFORML 市ヶ谷駐屯地の三階
+		PRINTFORML 近代的な建物の中にある広大な和室
+		PRINTFORML その中央に立つ半裸の男があなたを迎えた。
+		IF FLAG:DEBUG
+			PRINTFORMW 「君は気づいているのだろう？」
+			PRINTFORMW 「この世界は既に正常な時の流れから脱し、他の異なる複数の運命が共に交わってしまっている」
+			PRINTFORMW 「傍受した情報によりアメリカ軍の核攻撃に備え政府に見切りをつけクーデターの為の準備を整えていた我々の敵はメシア教、しいては天使になった」
+			PRINTFORMW 「敵が明確な悪魔となり、あるいは人と人が殺しあうよりは良しと考えるべきなのかもしれないがな」
+			PRINTFORMW 「いずれにせよ…我々人間が座して死を迎えるわけにはいかん」
+			PRINTFORMW 「力ある君には解らないかもしれんがな、弱い人間は抗い続けるしかないのだよ」
+			PRINTFORMW 「どうか、我々のする事を邪魔しないで欲しい」
+		ELSE
+			PRINTFORML 「ようこそファントム・ソサエティの諸君、待っていたよ」
+			PRINTFORML 「私が五島だ」
+			PRINTFORMW 「君達の目的は私の抹殺という所だろう」
+			PRINTFORML 「しかし…まず、私の話を聞いて欲しい」
+			PRINTFORML 「今…神の名の下に千年王国を作り上げる計画が進んでいる」
+			PRINTFORMW 「千年王国…そこに生きる民は永久の安らぎが約束されると言う」
+			PRINTFORML 「しかし……それは神に選ばれた一握りの者のみに許される事」
+			PRINTFORML 「そのほかの者は神の意思の下、メシア教徒と天使どもにより殺される」
+			PRINTFORMW 「更に今は味方と言えど、マントラ軍の動向も油断ならぬ」
+			PRINTFORML 「メシア教と今も諸君の知らない所で我々の同胞が戦っている」
+			PRINTFORML 「しかし、まだまだ我々の力は弱い」
+			PRINTFORMW 「もしも、ここで私が倒れる様な事があれば天秤は彼等の側に傾く」
+			PRINTFORML 「ファントム・ソサエティに属する君に我々と共に戦ってくれとは言わぬ」
+			PRINTFORML 「ここに留まる限りは便宜も図ろう」
+			PRINTFORMW 「どうか、我々のする事を邪魔しないで欲しい」
+		ENDIF
+		ダンジョンフラグ:40:22 = 1
+		PRINTW ＞部屋を出た
+		FLAG:現Y += 3
+		
+	;三階　ゴトウ　ニ度目
+	ELSEIF FLAG:現M == 3 && FLAG:現X == 8 && FLAG:現Y == 3 && ダンジョンフラグ:40:23 == 0
+		CUSTOMDRAWLINE =
+		PRINTFORML 「答えが出た様だな」
+		PRINTFORML 「聞かせてもらおう。君は我らの大義の前に立ち塞がるか？」
+		PRINTFORMW 
+		CALL INPUT_YN,"はい","いいえ"
+		IF RESULT == 0
+			FLAG:逃走不可フラグ = 1
+			FLAG:会話不能フラグ = 1
+			FLAG:先制不意打ちキャンセル = 1
+			PRINTFORML 「あくまで我等の邪魔をするというのならば、良かろう」
+			PRINTFORMW 「この場を貴様の墓場にしてくれる!!」
+			CUSTOMDRAWLINE =
+			PRINTW 外道 ガキが一体出た！
+			PRINTW 魔獣 ヌエが一体出た！
+			PRINTW 超人 ゴトウが一体出た！
+			CUSTOMDRAWLINE =
+			WAIT
+			
+			;SET_ENEMY,敵のポジション, 敵のキャラ番号、強化ランク、死体残存フラグとなっています
+			;敵のポジションは7~16のどれかを割り振る
+			;強化ランクは約3レベル分、強くなり、またレベルがあがることで習得予定スキルを覚えた状態で登場します
+			;死体残存フラグは死んだとき、HP0で場に残るようになります。敵にリカームをつかわせるときなどにどうぞ
+
+			;ヌエLv31（30）
+			CALL SET_ENEMY,8,[[キャラ:ヌエ]],31,1,0
+			BASE:(CHARANUM-1):LV -= 1
+			;BASE:(CHARANUM-1):力 -= 5
+			;BASE:(CHARANUM-1):知恵 -= 5
+			;BASE:(CHARANUM-1):魔力 -= 5
+			;BASE:(CHARANUM-1):耐力 -= 5
+			;BASE:(CHARANUM-1):速さ -= 5
+			;BASE:(CHARANUM-1):運 -= 2
+			;アイアンクロウ
+			ABL:(CHARANUM-1):スキル4 = 305
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)	
+	
+			;ガキ　Lv4（28）
+			CALL SET_ENEMY,10,[[キャラ:ガキ]],28,1,0
+			CFLAG:(CHARANUM-1):ＨＰ補正 += 500
+			;ソニックパンチ
+			ABL:(CHARANUM-1):スキル2 = 210
+			;毒ひっかき
+			ABL:(CHARANUM-1):スキル1 = 302
+			;淀んだ吐息
+			ABL:(CHARANUM-1):スキル3 = 518
+			;ムドラ
+			ABL:(CHARANUM-1):スキル4 = 1402
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+		
+			;ゴトウ
+			CALL SET_ENEMY,9,[[キャラ:ゴトウ]],30,0,1
+			CFLAG:(CHARANUM-1):ＨＰ補正 += 500
+			CFLAG:(CHARANUM-1):ＭＰ補正 += 500
+			CFLAG:(CHARANUM-1):行動回数 = 2
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+
+			CALL BATTLE_START
+			FLAG:逃走不可フラグ = 0
+			FLAG:会話不能フラグ = 0
+			FLAG:先制不意打ちキャンセル = 0
+			PRINTW 「無念…」
+			PRINTW ガイア教に組みする自衛隊右派の超人 ゴトウを討伐したことにより、メシア教団から口座に￥35000が支払われた
+			MONEY += 35000
+		ELSE
+			PRINTFORML 「では互いに相互不干渉ということでよろしいな？」
+			PRINTFORML 「有難い、では見返りとして優秀な人材をお貸ししよう」
+			PRINTFORML ゴトウの横に立っていた、妖艶な雰囲気を醸し出すスーツ姿の女性が一礼する。
+			PRINTFORML 「彼女はゆりこ君。これまで私の秘書官として働いてくれたが、この度一身上の都合で退官することになった」
+			PRINTFORML 「最早我々自衛隊とは関係のない人間だが、本人のたっての希望で新しい職場にファントム･ソサエティを希望している」
+			PRINTFORMW 
+			PRINTFORML つまりは見張り役を付けさせてもらうということか。
+			PRINTFORML そう思いながらも、%CALLNAME:MASTER%の視線はゆりこの男好きのする肢体に釘付けになっていた。
+			PRINTFORML ゴトウの思惑はともかくとして、奴隷商人としてこれだけの上玉を見逃す手はあるまい。
+			PRINTFORML 調教して服従を叩き込み、秘書としても役立たせるのも悪くない。
+			PRINTFORMW %CALLNAME:MASTER%はゴトウの言葉に頷き、相互不干渉を組織上層部に伝えると約束した。
+			PRINTFORML 「ではこれからよろしくお願いします、アダム……いえ、ご主人様」
+			PRINTFORML ゆりこはそう言って、薄く微笑んだ……。
+			PRINTFORML 
+			PRINTFORMW ＞ゆりこが仲魔になった
+			CALL ADD_NEW_COMPANION,424,500
+			PRINTW ゴトウと相互不可侵協定を結んだ功績により、組織上層部から口座に￥20000が支払われた
+			MONEY += 20000
+		ENDIF
+		DA:(FLAG:現X):(FLAG:現Y) = 1
+		ダンジョンフラグ:40:23 = 1
+	ENDIF
+ENDIF
+RETURN 0
+;=======================================================================
+;必要レベル目安
+;推奨LV 雑魚最低LV 雑魚最高LV ボスLV 
+;=======================================================================
+@GET_DUNGEON_LV_40
+RETURN 20, 17, 23, 31
+;=======================================================================
+;エンカウント率
+;=======================================================================
+@ENCOUNT_RATE_40
+SELECTCASE FLAG:現M
+	CASE 0
+		FLAG:エンカウント率 = FLAG:未遭遇歩数*5 + 10
+	CASE 1
+		FLAG:エンカウント率 = FLAG:未遭遇歩数*5 + 5
+	CASE 2
+		FLAG:エンカウント率 = FLAG:未遭遇歩数*5 + 5
+	CASE 3
+		FLAG:エンカウント率 = FLAG:未遭遇歩数*5 + 10
+ENDSELECT
+
+;=======================================================================
+;エンカウント処理
+;=======================================================================
+@CHECK_ENCOUNT_40
+IF RAND:100 < FLAG:エンカウント率
+	CALL ENEMY_TABLE
+	RETURN 1
+ELSE
+	FLAG:未遭遇歩数 += 1
+	RETURN 0
+ENDIF
+;=======================================================================
+;敵の種族の種類数
+;=======================================================================
+@CLASS_NUM_40
+RETURN CLASS_NUM_COMMON("上級")
+;=======================================================================
+;敵の総数
+;ARGは出現する敵の種類です
+;=======================================================================
+@ENEMY_NUM_40, ARG
+RETURN ENEMY_NUM_COMMON("上級", ARG)
+;=======================================================================
+;敵の種類
+;=======================================================================
+@ENEMY_40, ARG
+SELECTCASE FLAG:現M
+	CASE 0
+	;B1Fでの遭遇　特別枠/幼女監獄
+		SELECTCASE RAND:100
+			CASE IS < 20
+				;25%でゾンビアーミーランク1　Lv15（18）
+				RETURN [[キャラ:ゾンビアーミー]], 18
+			CASE IS < 27
+				;7%でゾンビドッグ
+				RETURN [[キャラ:ゾンビドッグ]], 13
+			CASE IS < 40
+				;13%でオークランク2　Lv11（17）
+				RETURN [[キャラ:オーク]], 17
+			CASE IS < 55
+				;15%でセエレランク1　Lv16（19）
+				RETURN [[キャラ:セエレ]], 19
+			CASE IS < 65
+				;10%でピクシーランク5　Lv3（18）
+				RETURN [[キャラ:ピクシー]], 18
+			CASE IS < 75
+				;10%でカハクランク4　Lv7（19）
+				RETURN [[キャラ:カハク]], 19
+			CASE IS < 90
+				;15%でチョウケシンランク2　Lv12（18）
+				RETURN [[キャラ:チョウケシン]], 18
+			CASE IS < 100
+				;10%でモー・ショボーランク1　Lv15（18）
+				RETURN [[キャラ:モー・ショボー]], 18
+		ENDSELECT
+	CASE 1
+	;1Fでの遭遇
+		SELECTCASE RAND:100
+			CASE IS < 15
+				;15%でゾンビアーミーランク1　Lv15（18）
+				RETURN [[キャラ:ゾンビアーミー]], 18
+			CASE IS < 20
+				;5%でゾンビドッグ
+				RETURN [[キャラ:ゾンビドッグ]], 13
+			CASE IS < 30
+				;イッポンダタラ
+				RETURN 664, 18
+			CASE IS < 40
+				;10%でオークランク2　Lv11（17）
+				RETURN [[キャラ:オーク]], 17
+			CASE IS < 50
+				;10%でセエレランク1　Lv16（19）
+				RETURN [[キャラ:セエレ]], 19
+			CASE IS < 60
+				;10%で狂人特攻隊ランク1　Lv15（18）
+				RETURN [[キャラ:特攻隊]], 18
+			CASE IS < 70
+				;5%でツチグモランク1　Lv15（18）
+				RETURN [[キャラ:ツチグモ]], 18
+			CASE IS < 80
+				;20%でダークエルフランク1　Lv15（18）
+				RETURN [[キャラ:ダークエルフ]], 18
+			CASE IS < 90
+				;15%でリャナンシー　Lv18
+				RETURN [[キャラ:リャナンシー]], 19
+			CASE IS < 100
+				;10%でモー・ショボーランク1　Lv15（18）
+				RETURN [[キャラ:モー・ショボー]], 18
+		ENDSELECT
+	CASE 2
+	;2Fでの遭遇
+		SELECTCASE RAND:100
+			CASE IS < 20
+				;20%でゾンビアーミーランク2　Lv15（21）
+				RETURN [[キャラ:ゾンビアーミー]], 21
+			CASE IS < 30
+				;10%でツチグモランク2　Lv15（21）
+				RETURN [[キャラ:ツチグモ]], 21
+			CASE IS < 40
+				;10%でセエレランク2　Lv16（22）
+				RETURN [[キャラ:セエレ]], 22
+			CASE IS < 50
+				;10%で狂人特攻隊ランク2　Lv15(21)
+				RETURN [[キャラ:特攻隊]], 21
+			CASE IS < 60
+				;イッポンダタラ
+				RETURN 664, 18
+			CASE IS < 70
+				;20%でダークエルフランク2　Lv15（21）
+				RETURN [[キャラ:ダークエルフ]], 18
+			CASE IS < 90
+				;20%でリャナンシーランク1　Lv18（21）
+				RETURN [[キャラ:リャナンシー]], 19
+			CASE IS < 100
+				;10%でモー・ショボーランク1　Lv15（18）
+				RETURN [[キャラ:モー・ショボー]], 18
+		ENDSELECT
+	CASE 3
+	;３Ｆでの遭遇
+		SELECTCASE RAND:100
+			CASE IS < 15
+				;15%でゾンビアーミーランク3　Lv15（21）
+				RETURN [[キャラ:ゾンビアーミー]], 21
+			CASE IS < 25
+				;10%でフォルネウス　Lv20
+				RETURN [[キャラ:フォルネウス]], 23
+			CASE IS < 35
+				;10%でオニランク1　Lv20
+				RETURN [[キャラ:オニ]], 23
+			CASE IS < 45
+				;10%でスクナヒコナ　Lv22
+				RETURN [[キャラ:スクナヒコナ]], 22
+			CASE IS < 55
+				;10%でダークエルフランク2　Lv15（21）
+				RETURN [[キャラ:ダークエルフ]], 21
+			CASE IS < 70
+				;15%でルサールカランク1　Lv18（21）
+				RETURN [[キャラ:ルサールカ]], 21
+			CASE IS < 85
+				;15%でリャナンシーランク1　Lv18（21）
+				RETURN [[キャラ:リャナンシー]], 21
+			CASE IS < 100
+				;15%でオキュペテー2　Lv19（22）
+				RETURN [[キャラ:オキュペテー]], 22
+		ENDSELECT
+ENDSELECT
+@E_ICHIGAYA
+PRINTL ここはエレベーターだ。
+PRINTW -行きたい階のボタンを押して下さい-
+PRINTL [0]
+PRINTL [1]
+PRINTL [2]
+PRINTL [3]
+$INPUT_LOOP_5A
+INPUT
+IF RESULT == 0
+	IF FLAG:現M == 0
+		RETURN 1
+	ELSE
+		FLAG:現M = 0
+		FLAG:現X = 1
+		FLAG:現Y = 5
+	ENDIF
+ELSEIF RESULT == 1
+	IF FLAG:現M == 1
+		RETURN 1
+	ELSE
+		FLAG:現M = 1
+		FLAG:現X = 1
+		FLAG:現Y = 5
+	ENDIF
+ELSEIF RESULT == 2
+	IF FLAG:現M == 2
+		RETURN 1
+	ELSE
+		FLAG:現M = 2
+		FLAG:現X = 1
+		FLAG:現Y = 5
+	ENDIF
+ELSEIF RESULT == 3
+	IF FLAG:現M == 3
+		RETURN 1
+	ELSE
+		FLAG:現M = 3
+		FLAG:現X = 1
+		FLAG:現Y = 5
+	ENDIF
+ELSE
+	GOTO INPUT_LOOP_5A
+ENDIF
+CALL MAKE_FLOOR, FLAG:現ダンジョン
+CALL AUTOMAP
+
+
+;=======================================================================
+;輪姦参加悪魔
+;=======================================================================
+@DUNGEON_RAPE_DEVIL_40
+;ランダムにどの悪魔が出るか決定
+;RETURN CSV番号 , 人数 , レベル
+SELECTCASE RAND:4
+	CASE 0
+		RETURN [[キャラ:セエレ]] , 3 + RAND:10 , CSVBASE([[キャラ:セエレ]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 1
+		RETURN [[キャラ:オーク]] , 3 + RAND:10 , CSVBASE([[キャラ:オーク]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 2
+		RETURN [[キャラ:オニ]] , 3 + RAND:10 , CSVBASE([[キャラ:オニ]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 3
+		RETURN [[キャラ:ゾンビアーミー]] , 3 + RAND:10 , CSVBASE([[キャラ:ゾンビアーミー]] , GETNUM(BASE , "LV") , 0) + RAND:3
+ENDSELECT

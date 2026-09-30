@@ -1,0 +1,1372 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SYSTEM_LEVELUP.ERB
+;	Facility	:レベルアップ時に行う処理群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/01/27		P						喰奴のスキル習得に関するバグを修正
+;	003		2011/02/02		P						002の修正に不備があったのでさらに修正
+;	004		2011/02/03		nameless				002の修正に不備があったのでさらに修正
+;	005		2011/02/06		Rsp暇人					複数習得可能スキルに対応。ついでに能力値選択をINPUTINT対応に
+;	006		2011/02/13		P						能力アップ系アプリの挙動を修正し、発動率を調整・ソース系アクセサリの処理を追加
+;	007		2011/02/20		Ｎ鳥					変身中のキャラのスキル習得が反映されてなかったのを修正、レベルアップ時のボーナス計算・ステアップ効果を修正
+;	008		2011/05/26		P						スキル習得時にスキルの説明を表示するように
+;	009		2013/11/30		ひみつ					変異時に文字列関係で更新してもよさそうなものを更新するように。
+;													変更可能なものについて変更されている場合は更新しないように。
+;													人間側(変身前の側)でもスキルを覚えるようなデビルシフターや喰奴に対応。
+;													スキル属性表示の適用範囲拡大
+;	010		2013/12/02		ひみつ					変異時に文字列関係で更新してもよさそうなものを更新するように。
+;													変更可能なものについて変更されている場合は更新しないように。
+;													人間側(変身前の側)でもスキルを覚えるようなデビルシフターや喰奴に対応。
+;													スキル属性表示の適用範囲拡大。スキル属性表示にキャラ情報を渡すように
+;	011		2015/04/12		54-762					エンジェルの変異パッチ用に修正。
+;													種族天使の悪魔が【음란】【복종】系の陥落素養を持っていたら【타천사】を
+;													その他の場合【천사】の素質を後付で付与するように修正
+;	012		2015/12/11		JK好き					異能者用のスキル習得処理を追加
+;	013		2017/02/07		名無し					自動レベルＵＰを追加
+;	014		2017/12/21		修正野郎				変異後の悪魔からもコーディングを入手できるように
+;	015		2018/06/21		JK好き					人修羅スキル枠増加処理
+;	016		2018/06/22		JK好き					ソフトやアクセサリーの処理をLVUP_BOOSTERに統一
+;	017		2018/04/28		TR(SAYA)				ステ振り自動I/F改を追加
+;	018		2018/08/27		空気					変異時に陥落履歴を記録するように。変異後に調教すれば記録されるのでバランス的にも問題ないはず
+;	019		2019/11/16		JK好き					変異後にキャラが死ぬパターンが発見されたため変異後にHP回復する様に追加
+;	020		2020/01/31		Jガン					レベルアップ時、口上を出せる処理を追加
+;	021		2020/02/19		JK好き					オートレベルアップ時のPRINT_ALIGNMENTの引数設定を誤っていた問題を修正
+;	022		2020/06/19		JK好き					@LEARN_SKILLに一文字関数Uにレベルアップしたキャラを入れておく
+;	023		2020/08/27		Jガン					スキル取得時のスキルゲージ処理追加
+;	024		2021/03/05		JK好き					@TRANSFORMに進化時に信頼・相棒の陥落履歴を保存するように追加　上位陥落を確認したら下位陥落の陥落履歴を埋めるように修正
+;	025		2021/04/07		Jガン					LEARN_SKILLにスキルロックの設定追加(「スキルロック」で検索すると変更場所がわかります)
+;	026		2021/08/06		Musue					デビルシフターがレベルアップ時に人間時スキルを習得しないバグ修正
+;	027		2021/12/29		JK好き					@CHECK_LEVEL_UP_AUTO2 元非戦闘員が上昇率未設定のままだとエラー落ちする問題を修正
+;	028		2022/01/07		JK好き					@CHECK_LEVEL_UP_AUTO2 ステータス未設定の戦闘員がエラー落ちする問題を再修正
+;	029		2022/02/19		軽木					力成長率が0だと成長傾向がリセットされる問題を修正
+;	030		2022/07/09		JK好き					@LEARN_SKILL デビルシフター初期変身悪魔が同じスキルを複数習得出来た問題を修正
+;	031		2022/09/17		kamedakeisuke(ﾟдﾟ)		Aion式召喚術まわりの仕様を追加
+;	032		2022/09/27		P						デビルシフター・喰奴が悪魔体でレベルアップをした場合でも、人間体のステータスで配分を決められるように変更
+;	033		2022/11/04		名無し					スキル枠が12個あって悪魔変身できるキャラがレベルアップした時、スキル9～12にスキルが追加されない問題を修正(@LEARN_SKILL)
+;	034		2022/11/14		Collared				変異時に色々と引き継ぐ処理を陥落合体流用で雑に追加。 ついでに衣服の処理を調整。
+;	035		2023/01/01		P						レベルアップ時のスキル取得関数をリファクタリング
+;													スキルに削除不能属性を追加
+;													EVENT_LEVEL_UP_Xの引き値を変更
+;													スキル習得時に自力習得のフラグをつけるように変更
+;													必要経験値算出の処理を変更
+;	036		2023/02/26		P						スキル習得時の敵専用とロール専用の判定のいちを変更し、さらに代替スキルの獲得処理を追加
+;	037		2023/03/01		P						経験値補正倍率が-1　=　レベルアップ不能のときにも必要経験値を通常の値で算出するように変更
+;	038 	2023/05/11		P						変身できるキャラクターがスキルを習得する際に枠数が正しい取得されない場合がある不具合を修正
+;	039 	2023/05/13		P						喰奴の習得スキルを他と同じく習得後にクリアするように変更
+;	040 	2023/05/26		P						スキルの習得処理を一部変更し、さらに関数をSYSTEM_SKILに移動。
+;	041 	2023/06/05		P						レベルアップ系の関数を整理し、共通部分をまとめてその他の部分を切り出す
+;													デフォルトタイプのUIの表示を調整し、簡易の自動割り振りを実装
+;	042		2023/06/15		P						変異時にロールと素質の再設定処理を追加
+;	043		2023/06/22		P(bazzile)				非戦闘員のステータス振りが発生してしまう不具合を修正
+;	044		2023/06/22		P(bazzile)				レベルアップ時インターフェース設定にランダムを含まない自動設定を追加_
+;	045		2023/10/15		P(bazzile)				・LEARN_SKILL_TO_NOW_LEVELが習得したスキルを習得予定スキルから削除していなかった不具合を修正
+;	046		2024/02/26		P(bazzile)				変異する際に変異先のレベルが現在のレベルより低い場合、レベルがそのまま維持されるように変更
+;													変異する際に再習得スキルをいったんクリアするように変更
+;	047		2024/02/26		P(bazzile)				コメントアウト部分を整理し、履歴を資料フォルダに移動
+;	048		2024/06/03		P(bazzile)				変異の際にDDMが仕事をしたふりをしないように修正
+;	049		2024/07/05		P(bazzile)				削除不能スキルの判定の間違いを修正
+;	050		2024/10/08		P(bazzile)				変異の際に戦闘素質が正しく設定されない不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;	P
+;	001		2024/05/XX		P(bazzile)				特訓の基準レベル算出用に関数を追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;===============================
+;必要経験値算出関数
+;ARG	:キャラクター番号
+;ARG:1	:レベル指定(主に現在のレベルに対する必要な経験値、BASE:LV-1をいれてつかうことになる)
+;===============================
+@GET_NEXT_EXP, ARG, ARG:1 = -1
+#FUNCTION
+#DIM L_LV
+#DIM BASE_NEXT_EXP
+L_LV = ARG:1 == -1 ? BASE:ARG:LV # ARG:1
+;---- EDIT 037 MOD START -------------------------
+BASE_NEXT_EXP = GET_ROLE_PROP("NEXT_EXP", ARG)
+BASE_NEXT_EXP = BASE_NEXT_EXP == -1 ? 100 # BASE_NEXT_EXP
+
+RETURNF GET_BASE_NEXT_EXP(L_LV) * BASE_NEXT_EXP / 100
+;RETURNF 5 * L_LV * (L_LV +1) * (L_LV + 2) / 3 * BASE_NEXT_EXP / 100
+;RETURNF 5 * ARG * (ARG+1) * (ARG+2) / 3 * (ARG:1 ? 5 # 4) / 4
+;---- EDIT 037 MOD END ---------------------------
+
+;---- EDIT 047 ADD START -------------------------
+;===============================
+;必要基本経験値算出関数
+;ARG	:基準レベル
+;===============================
+@GET_BASE_NEXT_EXP, ARG
+#FUNCTION
+RETURNF 5 * ARG * (ARG + 1) * (ARG+2) / 3
+;---- EDIT 047 ADD END ---------------------------
+
+@SET_NEXT_EXP, ARG
+MAXBASE:ARG:ＥＸＰ = GET_NEXT_EXP(ARG)
+BASE:ARG:ＥＸＰ = MAX(BASE:ARG:ＥＸＰ, GET_NEXT_EXP(ARG, BASE:ARG:LV - 1))
+
+;===============================
+;レベルアップ判定
+;===============================
+@CHECK_LEVEL_UP, ARG
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC CNT_LVUP
+#DIM DYNAMIC L_LINK_CHARA
+
+;レベルアップ回数の取得
+WHILE BASE:ARG:ＥＸＰ >= GET_NEXT_EXP(ARG, BASE:ARG:LV + CNT_LVUP)
+	CNT_LVUP += 1
+WEND
+
+SIF CNT_LVUP
+	CALL EXE_LEVEL_UP, ARG, CNT_LVUP
+FOR LCOUNT, 0, LINKCHARANUM
+	L_LINK_CHARA = FINDCHARA_LINK(ARG, LCOUNT)
+	SIF L_LINK_CHARA < 0
+		CONTINUE
+	SIF !CFLAG:L_LINK_CHARA:레벨링크
+		CONTINUE
+	SIF BASE:ARG:LV <= BASE:L_LINK_CHARA:LV
+		CONTINUE
+	CALL EXE_LEVEL_UP, L_LINK_CHARA, BASE:ARG:LV - BASE:L_LINK_CHARA:LV
+NEXT
+
+;===============================
+;レベルアップ処理
+;===============================
+@EXE_LEVEL_UP, ARG, CNT_LVUP
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC CNT_LVUP
+#DIM DYNAMIC CNT_STATUS_BONUS
+#DIM DYNAMIC TRANSFORMED
+;レベルアップでの追加ステータスの計算
+FOR LCOUNT, 0, CNT_LVUP
+	SIF (BASE:ARG:LV + LCOUNT) % 2 == 1
+		CNT_STATUS_BONUS += 1
+NEXT
+CNT_STATUS_BONUS += CNT_LVUP
+
+TRANSFORMED = 0
+;人間体でレベルをあげるために変身
+IF CFLAG:ARG:악마변신
+	CALL TRANS_DEVIL, ARG, 0, "変身解除"
+	TRANSFORMED = 1
+ENDIF
+
+;レベルを加算
+;非戦闘員はここまで
+;---- EDIT 043 MOD START -------------------------
+IF TALENT:ARG:비전투원 && CNT_LVUP
+	BASE:ARG:LV += CNT_LVUP
+	PRINTFORML LEVEL UP!
+	CALL SYNC_STATUS , ARG
+	RETURN 0
+ENDIF
+;---- EDIT 043 MOD END ---------------------------
+
+;メッセージと口上
+;PRINTFORMW %NAME:ARG%はレベルが上がった！
+PRINTFORMW %조사처리(NAME:ARG,"는")% 레벨이 {CNT_LVUP} 올랐다！
+SETCOLOR 0x33ffcc
+CALL BATTLE_EVENT, "レベルアップ", ARG
+RESETCOLOR
+
+;ステータスボーナスの配分
+SELECTCASE FLAG:레벨업시인터페이스설정
+	CASE 0
+		CALL ALLOCATE_BASE_STATUS_BY_LEVELUP, ARG, CNT_LVUP, CNT_STATUS_BONUS
+	CASE 1
+		CALL STATUS_BONUS_1, ARG, CNT_STATUS_BONUS, CNT_LVUP
+	CASE 2
+		CALL CHECK_LEVEL_UP_AUTO, ARG, CNT_LVUP, CNT_STATUS_BONUS
+	CASE 3
+		CALL CHECK_LEVEL_UP_AUTO2, ARG, CNT_LVUP, CNT_STATUS_BONUS
+	;---- EDIT 044 ADD START -------------------------
+	CASE 4
+		CALL CHECK_LEVEL_UP_AUTO3, ARG, CNT_LVUP, CNT_STATUS_BONUS
+	;---- EDIT 044 ADD END ---------------------------
+ENDSELECT
+;レベルを加算
+BASE:ARG:LV += CNT_LVUP
+
+CALL LVUP_BOOSTER, ARG, CNT_LVUP
+CALL LVUP_BOOSTER_MAGATAMA, ARG, CNT_LVUP
+
+CALL SYNC_STATUS, ARG, "HPMP割合保持"
+;変身していた場合戻す
+SIF TRANSFORMED
+	CALL TRANS_DEVIL, ARG
+
+;スキル習得等
+CALL EVENT_LEVELUP, ARG, CNT_LVUP
+;キャラ固有のイベント
+TRYCALLFORM EVENT_LEVELUP_{NO:ARG}, ARG, CNT_LVUP
+;マスターの最大到達レベルをとっておく
+SIF ARG == MASTER
+	MAX_MASTER_LV = MAX(MAX_MASTER_LV, BASE:ARG:LV)
+;人間なら全回復(COMPに入れないなら)
+IF !GET_ROLE_PROP("CAN_PUT_IN_COMP", ARG)
+	BASE:ARG:ＨＰ = MAXBASE:ARG:ＨＰ
+	CFLAG:ARG:상태이상 = GET_STATE_NUM("GOOD")
+ENDIF
+
+@ALLOCATE_BASE_STATUS_BY_LEVELUP, ARG, CNT_LVUP, CNT_STATUS_BONUS 
+#DIM LCOUNT, 2
+#DIM L_LINE
+#DIM ADD_BASE_STATUS, BASESTATUSNUM
+#DIM CNT_LVUP
+#DIM CNT_STATUS_BONUS
+#DIM IS_TRANSFORMED
+#DIM REMAINING_BONUS
+#DIM STOCK_REDRAW
+#DIMS SHOW_LINE, 7
+#DIM SHOW_LINE_MAXLENS
+
+SELECTCASE FLAG:레벨업시인터페이스설정
+	CASE 0
+		CALL STATUS_BONUS_0, ARG, CNT_STATUS_BONUS, CNT_LVUP
+	CASE 1
+		CALL STATUS_BONUS_1, ARG, CNT_STATUS_BONUS, CNT_LVUP
+	CASE 2
+		CALL CHECK_LEVEL_UP_AUTO, ARG, CNT_STATUS_BONUS
+	CASE 3
+		CALL CHECK_LEVEL_UP_AUTO2, ARG, CNT_STATUS_BONUS
+	;---- EDIT 044 ADD START -------------------------
+	CASE 4
+		CALL CHECK_LEVEL_UP_AUTO3, ARG, CNT_STATUS_BONUS
+	;---- EDIT 044 ADD END ---------------------------
+ENDSELECT
+
+
+@AUTO_ALLOCATE_BASE_STATUS_BY_LEVELUP, ARG, ARG:1, CNT_STATUS_BONUS, ADD_BASE_STATUS
+#DIM LCOUNT, 2
+#DIM CNT_STATUS_BONUS
+#DIM REF ADD_BASE_STATUS
+#DIM STOCK_BASE_STATUS, BASESTATUSNUM
+#DIM SUM_BASE_STATUS
+#DIM TEMP
+SELECTCASE ARG:1
+	CASE 0
+		SUM_BASE_STATUS = 0
+		FOR LCOUNT, 1, BASESTATUSNUM
+			SUM_BASE_STATUS += BASE:ARG:GET_BASESTATUS(LCOUNT)
+		NEXT
+		FOR LCOUNT, 1, BASESTATUSNUM
+			ADD_BASE_STATUS:LCOUNT = (BASE:ARG:GET_BASESTATUS(LCOUNT) * (SUM_BASE_STATUS + CNT_STATUS_BONUS) / SUM_BASE_STATUS) - BASE:ARG:GET_BASESTATUS(LCOUNT)
+		NEXT
+		;消失した点数の補填
+		LCOUNT:1 = 0
+		;ステータスが高い順に補填措置を入れる
+		WHILE SUMARRAY(ADD_BASE_STATUS) != CNT_STATUS_BONUS
+			IF LCOUNT:1 % 6 == 0
+				FOR LCOUNT, 1, BASESTATUSNUM
+					STOCK_BASE_STATUS:LCOUNT = BASE:ARG:GET_BASESTATUS(LCOUNT) + ADD_BASE_STATUS:LCOUNT
+				NEXT
+			ENDIF
+			TEMP = FINDELEMENT(STOCK_BASE_STATUS, MAXARRAY(STOCK_BASE_STATUS, 1, BASESTATUSNUM), 1, BASESTATUSNUM)
+			IF SUMARRAY(ADD_BASE_STATUS) < CNT_STATUS_BONUS
+				ADD_BASE_STATUS:TEMP += 1
+			ELSE
+				ADD_BASE_STATUS:TEMP -= 1
+			ENDIF
+			STOCK_BASE_STATUS:TEMP = 0
+			LCOUNT:1++
+		WEND
+	CASE 1
+		SUM_BASE_STATUS = 0
+		FOR LCOUNT, 1, BASESTATUSNUM
+			SUM_BASE_STATUS += MAXBASE:ARG:GET_BASESTATUS(LCOUNT)
+		NEXT
+		FOR LCOUNT, 1, BASESTATUSNUM
+			ADD_BASE_STATUS:LCOUNT = (MAXBASE:ARG:GET_BASESTATUS(LCOUNT) * (SUM_BASE_STATUS + CNT_STATUS_BONUS) / SUM_BASE_STATUS) - MAXBASE:ARG:GET_BASESTATUS(LCOUNT)
+		NEXT
+		;消失した点数の補填
+		LCOUNT:1 = 0
+		;ステータスが高い順に調整措置を入れる
+		WHILE SUMARRAY(ADD_BASE_STATUS) != CNT_STATUS_BONUS
+			IF LCOUNT:1 % 6 == 0
+				FOR LCOUNT, 1, BASESTATUSNUM
+					STOCK_BASE_STATUS:LCOUNT = MAXBASE:ARG:GET_BASESTATUS(LCOUNT) + ADD_BASE_STATUS:LCOUNT
+				NEXT
+			ENDIF
+			TEMP = FINDELEMENT(STOCK_BASE_STATUS, MAXARRAY(STOCK_BASE_STATUS, 1, BASESTATUSNUM), 1, BASESTATUSNUM)
+			IF SUMARRAY(ADD_BASE_STATUS) < CNT_STATUS_BONUS
+				ADD_BASE_STATUS:TEMP += 1
+			ELSE
+				ADD_BASE_STATUS:TEMP -= 1
+			ENDIF
+			STOCK_BASE_STATUS:TEMP = 0
+			LCOUNT:1++
+		WEND
+ENDSELECT
+
+;===============================
+;キャラレベルアップ関数
+;ARG	:キャラクター番号
+;ARG:1	:ARG:1になるようにレベルをあげる(30なら30レベルになる)
+;===============================
+@DO_LEVEL_UP, ARG, ARG:1
+SIF BASE:ARG:LV > ARG:1
+	RETURN 0
+BASE:ARG:ＥＸＰ = GET_NEXT_EXP(ARG, ARG:1-1)
+CALL CHECK_LEVEL_UP, ARG
+
+;===============================
+;レベルアップ判定＆処理　AUTO
+;===============================
+@CHECK_LEVEL_UP_AUTO, ARG, ARG:1, ARG:2
+#DIM LCOUNT
+LOCAL:1 = ARG:1
+LOCAL:10 = ARG:2
+IF LOCAL:10
+	LOCAL = 0
+	PRINTL 
+	PRINTL
+	$INPUT_UP_STATUS
+	LOCAL = 0
+	FOR LCOUNT, 0, 6
+		LOCAL:(LCOUNT+2) = 0
+	NEXT
+	DRAWLINE
+		PRINTFORML %종족명(ARG)%　　%CALLNAME:ARG%　　
+		PRINTFORM 　　LV{BASE:ARG:30+LOCAL:1,3}　　　
+		CALL PRINT_ALIGNMENT,ARG,0,0
+		PRINTFORML 
+		CUSTOMDRAWLINE ･
+		PRINTFORML 능력상승{LOCAL:10,3}포인트
+	WHILE LOCAL:10 > LOCAL
+		LOCAL:11 = LOCAL:10 - LOCAL
+		$AUTO_LEVELUP_LOOP
+		;特定のキャラのレベルアップをある程度方向づけたい場合
+		;例、魔=知>耐＝速>운>力の場合
+		IF ARG == GETCHARA([[キャラ:에이린]])
+			SELECTCASE RAND:17
+				CASE 0
+					LOCAL:2 += 1
+					LOCAL += 1
+				CASE 1,6,11,12
+					LOCAL:3 += 1
+					LOCAL += 1
+				CASE 2,7,13,14
+					LOCAL:4 += 1
+					LOCAL += 1
+				CASE 3,8,15
+					LOCAL:5 += 1
+					LOCAL += 1
+				CASE 4,9,16
+					LOCAL:6 += 1
+					LOCAL += 1
+				CASE 5,10
+					LOCAL:7 += 1
+					LOCAL += 1
+			ENDSELECT
+		;素質で分類してみた
+		ELSEIF TALENT:ARG:영맹 || TALENT:ARG:잔학
+		;力、速が少し伸びやすく、知、魔が少し伸びにくい
+			SELECTCASE RAND:17
+				CASE 0,6,10
+					LOCAL:2 += 1
+					LOCAL += 1
+				CASE 1
+					LOCAL:3 += 1
+					LOCAL += 1
+				CASE 2
+					LOCAL:4 += 1
+					LOCAL += 1
+				CASE 3,7
+					LOCAL:5 += 1
+					LOCAL += 1
+				CASE 4,8,11
+					LOCAL:6 += 1
+					LOCAL += 1
+				CASE 5,9
+					LOCAL:7 += 1
+					LOCAL += 1
+			ENDSELECT
+		ELSEIF TALENT:ARG:우애 || TALENT:ARG:천사
+		;力が少し伸びにくく、耐がすこし伸びやすい
+			SELECTCASE RAND:17
+				CASE 0
+					LOCAL:2 += 1
+					LOCAL += 1
+				CASE 1,6
+					LOCAL:3 += 1
+					LOCAL += 1
+				CASE 2,7
+					LOCAL:4 += 1
+					LOCAL += 1
+				CASE 3,8,11
+					LOCAL:5 += 1
+					LOCAL += 1
+				CASE 4,9
+					LOCAL:6 += 1
+					LOCAL += 1
+				CASE 5,10
+					LOCAL:7 += 1
+					LOCAL += 1
+			ENDSELECT
+		ELSEIF TALENT:ARG:냉정 || TALENT:ARG:현명 
+		;知が伸びやすい
+			SELECTCASE RAND:17
+				CASE 0
+					LOCAL:2 += 1
+					LOCAL += 1
+				CASE 1,6,7
+					LOCAL:3 += 1
+					LOCAL += 1
+				CASE 2
+					LOCAL:4 += 1
+					LOCAL += 1
+				CASE 3
+					LOCAL:5 += 1
+					LOCAL += 1
+				CASE 4
+					LOCAL:6 += 1
+					LOCAL += 1
+				CASE 5
+					LOCAL:7 += 1
+					LOCAL += 1
+			ENDSELECT
+		ELSEIF TALENT:ARG:교활
+		;知、速が少し伸びやすい
+			SELECTCASE RAND:17
+				CASE 0
+					LOCAL:2 += 1
+					LOCAL += 1
+				CASE 1,6
+					LOCAL:3 += 1
+					LOCAL += 1
+				CASE 2
+					LOCAL:4 += 1
+					LOCAL += 1
+				CASE 3
+					LOCAL:5 += 1
+					LOCAL += 1
+				CASE 4,7
+					LOCAL:6 += 1
+					LOCAL += 1
+				CASE 5
+					LOCAL:7 += 1
+					LOCAL += 1
+			ENDSELECT
+		ELSEIF TALENT:ARG:우둔 || TALENT:ARG:좀비 || TALENT:ARG:허심
+		;知、速が伸びにくい
+			SELECTCASE RAND:17
+				CASE 0,6,10
+					LOCAL:2 += 1
+					LOCAL += 1
+				CASE 1
+					LOCAL:3 += 1
+					LOCAL += 1
+				CASE 2,7,11
+					LOCAL:4 += 1
+					LOCAL += 1
+				CASE 3,8,12
+					LOCAL:5 += 1
+					LOCAL += 1
+				CASE 4
+					LOCAL:6 += 1
+					LOCAL += 1
+				CASE 5,9,13
+					LOCAL:7 += 1
+					LOCAL += 1
+			ENDSELECT
+		ELSEIF TALENT:ARG:교만 || TALENT:ARG:타천사
+		;知、魔がすこし伸びやすい
+			SELECTCASE RAND:17
+				CASE 0
+					LOCAL:2 += 1
+					LOCAL += 1
+				CASE 1,7
+					LOCAL:3 += 1
+					LOCAL += 1
+				CASE 2,8
+					LOCAL:4 += 1
+					LOCAL += 1
+				CASE 3
+					LOCAL:5 += 1
+					LOCAL += 1
+				CASE 4
+					LOCAL:6 += 1
+					LOCAL += 1
+				CASE 5
+					LOCAL:7 += 1
+					LOCAL += 1
+			ENDSELECT
+		;特に素質がない男の場合、力が上がりやすくする
+		ELSEIF TALENT:ARG:남자
+			SELECTCASE RAND:7
+				CASE 0,6
+					LOCAL:2 += 1
+					LOCAL += 1
+				CASE 1
+					LOCAL:3 += 1
+					LOCAL += 1
+				CASE 2
+					LOCAL:4 += 1
+					LOCAL += 1
+				CASE 3
+					LOCAL:5 += 1
+					LOCAL += 1
+				CASE 4
+					LOCAL:6 += 1
+					LOCAL += 1
+				CASE 5
+					LOCAL:7 += 1
+					LOCAL += 1
+			ENDSELECT
+		;特に素質がない女の場合、魔力が上がりやすくする
+		ELSEIF !TALENT:ARG:남자
+			SELECTCASE RAND:7
+				CASE 0
+					LOCAL:2 += 1
+					LOCAL += 1
+				CASE 1
+					LOCAL:3 += 1
+					LOCAL += 1
+				CASE 2,6
+					LOCAL:4 += 1
+					LOCAL += 1
+				CASE 3
+					LOCAL:5 += 1
+					LOCAL += 1
+				CASE 4
+					LOCAL:6 += 1
+					LOCAL += 1
+				CASE 5
+					LOCAL:7 += 1
+					LOCAL += 1
+			ENDSELECT
+		;それ以外は完全にランダム
+		ELSE
+			SELECTCASE RAND:6
+				CASE 0
+					LOCAL:2 += 1
+					LOCAL += 1
+				CASE 1
+					LOCAL:3 += 1
+					LOCAL += 1
+				CASE 2
+					LOCAL:4 += 1
+					LOCAL += 1
+				CASE 3
+					LOCAL:5 += 1
+					LOCAL += 1
+				CASE 4
+					LOCAL:6 += 1
+					LOCAL += 1
+				CASE 5
+					LOCAL:7 += 1
+					LOCAL += 1
+			ENDSELECT
+		ENDIF
+	WEND
+		CUSTOMDRAWLINE ･
+	FOR LCOUNT, 0, 6
+		PRINTFORML %GET_BASESTATUS(LCOUNT+1),4%：{MAXBASE:ARG:(GET_BASESTATUS(LCOUNT+1)) + LOCAL:(LCOUNT+2),4}(+{LOCAL:(LCOUNT+2),3})
+	NEXT
+		PRINTW 
+	$NO_MASTER
+	FOR LCOUNT, 1, 7
+		BASE:ARG:(GET_BASESTATUS(1*LCOUNT)) += LOCAL:(1+LCOUNT)
+	NEXT
+ENDIF
+	
+;===============================
+;レベルアップ判定＆処理　AUTO改
+;===============================
+@CHECK_LEVEL_UP_AUTO2,ARG,ARG:1,ARG:2
+#DIM LCOUNT
+VARSET LOCAL
+LOCAL:1 = ARG:1
+LOCAL:10 = ARG:2	
+;上昇比率が設定されていない場合ここで設定
+;特定のキャラ()
+IF CFLAG:ARG:힘상승률 == 0 & CFLAG:ARG:지상승률 == 0 & CFLAG:ARG:마상승률 == 0 & CFLAG:ARG:내상승률 == 0 & CFLAG:ARG:속상승률 == 0 & CFLAG:ARG:운상승률 == 0 
+	CALL LVUP_AUTOIF2_DEFAULT(ARG)
+	;DRAWLINE
+	;PRINTFORML %CALLNAME:ARG%に成長比率を設定しました
+	;DRAWLINE
+	;---- EDIT 027 MOD START -------------------------
+	LOCAL:2 = MAX(SUMARRAY(CFLAG:ARG:0,GETNUM(CFLAG,"힘상승률"),GETNUM(CFLAG,"운상승률")+1), 1)
+	;---- EDIT 027 MOD END ---------------------------
+	FOR LCOUNT,0,6
+		LOCAL = CFLAG:ARG:(GETNUM(CFLAG,"힘상승률")+LCOUNT) * 1000 / LOCAL:2
+		;PRINTFORML %CFLAGNAME:((GETNUM(CFLAG,"힘상승률")+LCOUNT))%…{LOCAL/10}.{LOCAL%10}\%
+	NEXT
+	DRAWLINE
+ENDIF
+VARSET LOCAL,0,2,8
+IF LOCAL:10
+	;現在の最大ＨＰ・ＭＰを記憶
+	LOCAL:8 = MAXBASE:ARG:ＨＰ
+	LOCAL:9 = MAXBASE:ARG:ＭＰ
+	PRINTL 
+	PRINTL
+	$INPUT_UP_STATUS
+	DRAWLINE
+		PRINTFORML %종족명(ARG)%　　%CALLNAME:ARG%　　
+		PRINTFORM 　　LV{BASE:ARG:30+LOCAL:1,3}　　　
+		CALL PRINT_ALIGNMENT,ARG,0,0
+		PRINTFORML 
+		CUSTOMDRAWLINE ･
+		PRINTFORML 능력상승{LOCAL:10,3}포인트
+	LOCAL = 0
+	WHILE LOCAL:10 > LOCAL
+		LOCAL:11 = LOCAL:10 - LOCAL
+		$AUTO_LEVELUP_LOOP
+		;ここに記述
+		SELECTCASE RAND:(MAX(SUMARRAY(CFLAG:ARG:0,GETNUM(CFLAG,"힘상승률"),GETNUM(CFLAG,"운상승률")+1),1))
+		CASE IS < CFLAG:ARG:힘상승률
+			LOCAL:2++
+		CASE IS < SUMARRAY(CFLAG:ARG:0,GETNUM(CFLAG,"힘상승률"),GETNUM(CFLAG,"지상승률")+1)
+			LOCAL:3++
+		CASE IS < SUMARRAY(CFLAG:ARG:0,GETNUM(CFLAG,"힘상승률"),GETNUM(CFLAG,"마상승률")+1)
+			LOCAL:4++
+		CASE IS < SUMARRAY(CFLAG:ARG:0,GETNUM(CFLAG,"힘상승률"),GETNUM(CFLAG,"내상승률")+1)
+			LOCAL:5++
+		CASE IS < SUMARRAY(CFLAG:ARG:0,GETNUM(CFLAG,"힘상승률"),GETNUM(CFLAG,"속상승률")+1)
+			LOCAL:6++
+		CASEELSE
+			LOCAL:7++
+		ENDSELECT
+		LOCAL++
+	WEND
+		CUSTOMDRAWLINE ･
+	FOR LCOUNT, 0, 6
+		PRINTFORML %GET_BASESTATUS(LCOUNT+1),4%：{MAXBASE:ARG:(GET_BASESTATUS(LCOUNT+1)) + LOCAL:(LCOUNT+2),4}(+{LOCAL:(LCOUNT+2),3})
+	NEXT
+		PRINTW 
+	$NO_MASTER
+	FOR LCOUNT, 1, 7
+		BASE:ARG:(GET_BASESTATUS(1*LCOUNT)) += LOCAL:(1+LCOUNT)
+	NEXT
+ENDIF
+
+;---- EDIT 044 ADD START -------------------------
+;===============================
+;レベルアップ判定＆処理　AUTO改
+;===============================
+@CHECK_LEVEL_UP_AUTO3,ARG,ARG:1,ARG:2
+#DIM LCOUNT
+#DIM STATUS_CHECK, 7
+#DIM STATUS_UP, 7
+;ARG:1 レベルアップ回数
+VARSET LOCAL
+;上昇比率が設定されていない場合ここで設定
+IF CFLAG:ARG:힘상승률 == 0 & CFLAG:ARG:지상승률 == 0 & CFLAG:ARG:마상승률 == 0 & CFLAG:ARG:내상승률 == 0 & CFLAG:ARG:속상승률 == 0 & CFLAG:ARG:운상승률 == 0 
+	CALL LVUP_AUTOIF2_DEFAULT(ARG)
+	DRAWLINE
+ENDIF
+VARSET STATUS_UP
+IF ARG:2
+	PRINTL 
+	PRINTL
+	$INPUT_UP_STATUS
+	DRAWLINE
+		PRINTFORML %종족명(ARG)%　　%CALLNAME:ARG%　　
+		PRINTFORM 　　LV{BASE:ARG:30+ARG:1,3}　　　
+		CALL PRINT_ALIGNMENT,ARG,0,0
+		PRINTFORML 
+		CUSTOMDRAWLINE ･
+		PRINTFORML 능력상승{ARG:2,3}포인트
+	;最も高いステータスの値を確認
+	STATUS_CHECK:0 = MAXARRAY(BASE:ARG:0, GETNUM(BASE, "힘"), GETNUM(BASE, "운")  + 1)
+	;ERBでは少数が使えないため、制度を高める為に上昇率を最低100倍してから現在ステータスで除算する
+	;ステータスが高くなっても問題ないように、現在の最大ステータスも使用
+	FOR LCOUNT, 1, 7
+		STATUS_CHECK:LCOUNT = CFLAG:ARG:(GETNUM(CFLAG,"힘상승률") + LCOUNT - 1) * 100 * STATUS_CHECK:0 / MAX(BASE:ARG:GET_BASESTATUS(LCOUNT), 1)
+	NEXT
+	FOR LCOUNT, 0, ARG:2
+		;最も優先度の高いステータスを確認
+		STATUS_UP:0 = FINDELEMENT(STATUS_CHECK, MAXARRAY(STATUS_CHECK, 1, 7), 1, 7)
+		;優先度の高いステータスに上昇予定を１つ加算し、優先度を再計算
+		STATUS_UP:(STATUS_UP:0) += 1
+		STATUS_CHECK:(STATUS_UP:0) = CFLAG:ARG:(GETNUM(CFLAG,"힘상승률") + STATUS_UP:0 - 1) * 100 * STATUS_CHECK:0 / MAX(BASE:ARG:GET_BASESTATUS(STATUS_UP:0) + STATUS_UP:(STATUS_UP:0), 1)
+	NEXT
+		CUSTOMDRAWLINE ･
+	FOR LCOUNT, 1, 7
+		BASE:ARG:(GET_BASESTATUS(LCOUNT)) += STATUS_UP:LCOUNT
+		PRINTFORML %GET_BASESTATUS(LCOUNT),4%：{BASE:ARG:(GET_BASESTATUS(LCOUNT)),4}(+{STATUS_UP:(LCOUNT),3})
+	NEXT
+	PRINTW 
+	
+	
+ENDIF
+;---- EDIT 044 ADD END ---------------------------
+;===============================
+;アクセサリ・プラグインの追加ステータスアップ
+;該当する装備箇所に対してMAG強化扱いで加算。
+;===============================
+@LVUP_BOOSTER, L_CHARA, CNT_LEVELUP
+#DIMS L_BASE_ST
+#DIM L_CHARA
+#DIM CNT_LEVELUP
+#DIM L_ENHANCE_MAG
+#DIMS CONST BOOSTER_ACCESSORY_NAME = "LV", "스트렝스소스","인텔리전스소스","매직소스","바이탈리티소스","어질리티소스","럭키소스"
+#DIMS CONST BOOSTER_PLUGIN_NAME = "LV", "헤라클레스의곤봉", "오디세우스의계략", "오르페우스의하프", "오라이온의활", "아킬레우스의갑옷", "테세우스의배"
+;制限中は効果を発揮しない
+SIF CFLAG:L_CHARA:베어내기플래그
+	RETURN 0
+IF FINDELEMENT(BOOSTER_ACCESSORY_NAME, ITEMNAME:(EQUIP:L_CHARA:악세서리), , , 1) >= 0
+	L_BASE_ST = %GET_BASESTATUS(FINDELEMENT(BOOSTER_ACCESSORY_NAME, ITEMNAME:(EQUIP:L_CHARA:악세서리)))%
+ELSEIF INRANGE(EQUIP:L_CHARA:악세서리, MIN_PLUGINNUM, MAX_PLUGINNUM) && FINDELEMENT(BOOSTER_PLUGIN_NAME, PLUGINNAME(EQUIP:L_CHARA:악세서리), , , 1) >= 0
+	L_BASE_ST = %GET_BASESTATUS(FINDELEMENT(BOOSTER_PLUGIN_NAME, PLUGINNAME(EQUIP:L_CHARA:악세서리)))%
+ELSE
+	RETURN 0
+ENDIF
+
+CFLAG:L_CHARA:(L_BASE_ST + "강화횟수") += CNT_LEVELUP
+CFLAG:L_CHARA:능력강화횟수 = MAX(SUMARRAY(CFLAG:L_CHARA:0, GETNUM(CFLAG, "힘강화횟수"), GETNUM(CFLAG, "운강화횟수")+1), CFLAG:L_CHARA:능력강화횟수)
+
+IF INRANGE(EQUIP:L_CHARA:악세서리, MIN_PLUGINNUM, MAX_PLUGINNUM) && FINDELEMENT(BOOSTER_PLUGIN_NAME, PLUGINNAME(EQUIP:L_CHARA:악세서리)) >= 0
+	PRINTFORML %PLUGINNAME(EQUIP:L_CHARA:악세서리)%의 효과로、%조사처리(L_BASE_ST,"이")% {CNT_LEVELUP}회 강화되었다
+ELSE
+	PRINTFORML %ITEMNAME:(EQUIP:L_CHARA:악세서리)%의 효과로、%조사처리(L_BASE_ST,"이")% {CNT_LEVELUP}회 강화되었다
+ENDIF
+RETURN CNT_LEVELUP
+
+;===============================
+;レベルアップ時のイベント
+;===============================
+@EVENT_LEVELUP,ARG,ARG:1
+;スキル習得判定
+;暫定的に習得スキルは20個までとします
+IF TALENT:ARG:인수라
+	;人修羅は特殊
+	IF EQUIP:ARG:(GET_EQUIP(6))
+		FOR LOCAL,0,20
+			RESULT = 0
+			TRYCALLFORM P習得スキル_{EQUIP:ARG:(GET_EQUIP(6))},LOCAL
+			LOCAL:9 = RESULT
+			LOCAL:10 = RESULT:1
+			;装備品に習得スキル&LVが存在してて、かつ習得経験が無いことが条件
+			LOCAL:2 = (EQUIP:ARG:(GET_EQUIP(6)))%5 +1
+			LOCAL:3 = (EQUIP:ARG:(GET_EQUIP(6))-8000)/5
+			IF LOCAL:9 > 0 && LOCAL:10 > 0 && !(CDFLAG:ARG:(LOCAL:2):(LOCAL:3) & POWER(2,LOCAL))
+				IF LOCAL:10 <= BASE:ARG:LV
+					CALL LEARN_SKILL,ARG,LOCAL:9
+					CDFLAG:ARG:(LOCAL:2):(LOCAL:3) |= POWER(2,LOCAL)
+				ENDIF
+			ENDIF
+		NEXT
+	ENDIF
+ELSE
+	FOR LOCAL,1,21
+		IF ABL:ARG:("습득스킬"+TOSTR(LOCAL)) > 0
+			IF ABL:ARG:("습득LV"+TOSTR(LOCAL)) <= BASE:ARG:LV
+				CALL LEARN_SKILL,ARG,ABL:ARG:("습득스킬"+TOSTR(LOCAL))
+				ABL:ARG:("습득스킬"+TOSTR(LOCAL)) = 0
+				ABL:ARG:("습득LV"+TOSTR(LOCAL)) = 0
+			ENDIF
+		ENDIF
+	NEXT
+ENDIF
+;IF TALENT:ARG:데빌시프터 || TALENT:ARG:식노 || TALENT:ARG:악마빙의자　EDIT 035
+IF GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+	FOR LOCAL,1,21
+		IF ABL:ARG:("초기변신악마습득스킬"+TOSTR(LOCAL)) > 0
+			IF ABL:ARG:("초기변신악마습득LV"+TOSTR(LOCAL)) <= BASE:ARG:LV
+				;---- EDIT 039 MOD START -------------------------
+				SIF GET_ROLE_PROP("CAN_USE_MANTRA", ARG)
+					PRINTFORMW %ARG는% 전술의 폭을 넓혔다！
+				CALL LEARN_SKILL,ARG,ABL:ARG:("초기변신악마습득스킬"+TOSTR(LOCAL)),1
+				ABL:ARG:("초기변신악마습득스킬"+TOSTR(LOCAL)) = 0
+				ABL:ARG:("초기변신악마습득LV"+TOSTR(LOCAL)) = 0
+			ENDIF
+		ENDIF
+	NEXT
+ENDIF
+
+;変異判定
+IF ABL:ARG:변이 > 0 && ABL:ARG:변이레벨 > 0
+	IF ABL:ARG:변이레벨 <= BASE:ARG:LV
+		IF FINDCHARA_NO_C(ABL:ARG:변이) == -1
+			IF BASE:MASTER:LV >= GET_NEED_TRANSFORM_MASTER_LV(ARG)
+				CALL TRANSFORM,ARG,ABL:ARG:변이
+			ELSE
+				PRINTFORMW %CALLNAME:ARG%의 몸에 이상 징후가 보인다……
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+
+@GET_NEED_TRANSFORM_MASTER_LV, L_CHARA
+#FUNCTION
+#DIM DYNAMIC L_CHARA
+RETURNF CSVBASE(ABL:L_CHARA:변이,GETNUM(BASE,"LV"),0) - (5 + FLAG:주회횟수*2)
+
+;---- EDIT 035 MOD START -------------------------
+;===============================
+;スキル習得
+;===============================
+@LEARN_SKILL,L_CHARA,L_LEARN_SKILL,IS_TRANS,L_OPT
+#LOCALSIZE 5
+#LOCALSSIZE 2
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_LEARN_SKILL
+#DIM DYNAMIC IS_TRANS
+#DIMS DYNAMIC L_OPT
+#DIM LCOUNT
+#DIM L_SKILLNUM
+#DIM LINE, 2
+#DIMS LOCKS
+#DIM DYNAMIC SKILLCOUNT
+#DIMS L_SKILLS
+#DIMS L_ABL_TYPE
+#DIM DEL_SKILL
+#DIMS DEL_SKILLS;セットするスキルの場所
+#DIM LEARN_SKILL_NUM
+#DIMS LEARN_SKILL_NAME
+#DIMS DEL_SKILL_NAME
+#DIM SKILL_DEL_UNABLE, 21
+;L_CHARA = レベルアップしたキャラ
+;L_CHARA:1 = 習得するスキル
+;IS_TRANS = 初期変身悪魔習得スキルの場合は真(1)
+;L_OPT = その他オプション
+
+;説明表示用に一文字関数Uにレベルアップしたキャラを入れておく
+U = L_CHARA
+
+DEL_SKILLS = 
+;---- EDIT 038 MOD START -------------------------
+;対象のスキルの配列を名称で取る
+IF IS_TRANS
+	IF CFLAG:L_CHARA:악마변신 && CFLAG:L_CHARA:링크캐릭터실제가입시간0 <= 0
+		L_ABL_TYPE = 스킬
+	ELSE
+		L_ABL_TYPE = 초기변신악마스킬
+	ENDIF
+ELSE
+	IF GET_ROLE_PROP("CAN_USE_TRANS", L_CHARA) && CFLAG:L_CHARA:악마변신
+		L_ABL_TYPE = 인간시스킬
+	ELSE
+		L_ABL_TYPE = 스킬
+	ENDIF
+ENDIF
+
+;まず空のスキル枠を探す
+IF IS_TRANS
+	LOCKS = 악마변신스킬잠금설정
+ELSE
+	LOCKS = 스킬잠금설정
+ENDIF
+;一文字関数Uにレベルアップしたキャラを入れておく
+U = L_CHARA
+SKILLCOUNT = GET_ROLE_PROP("CHANGEABLE_SKILLCOUNT", L_CHARA, ,\@IS_TRANS ? 変身形態 # 通常形態\@)
+;SKILLCOUNT = CHARA_SKILLCOUNT(L_CHARA)
+DEL_SKILLS =
+;---- EDIT 036 MOD START ------------------------- 
+CALL IS_SKILL_HAVEABLE, L_LEARN_SKILL, L_CHARA, \@IS_TRANS ? 変身形態 # 通常形態\@, "レベル習得時"
+;所持できないスキル
+IF !RESULT
+	;置換スキルがある場合はそれを見る
+	CALL GET_SKILL_PROP, "置換スキル", L_LEARN_SKILL, L_CHARA
+	IF RESULT > 0
+		L_LEARN_SKILL = RESULT
+		CALL IS_SKILL_HAVEABLE, L_LEARN_SKILL, L_CHARA, \@IS_TRANS ? 変身形態 # 通常形態\@, "レベル習得時"
+		SIF !RESULT
+			RETURN 0
+	ELSE
+		RETURN 0
+	ENDIF
+ENDIF
+
+;---- EDIT 038 MOD END ---------------------------
+;---- EDIT 035 ADD START -------------------------
+;ここまできたら習得スキルとして登録する
+IF !STRCOUNT(L_OPT, "習得スキル登録なし")
+	CALL SET_LEARNED_SKILL, L_CHARA, TOSTR(L_LEARN_SKILL), \@IS_TRANS ? 変身形態 # 通常形態\@
+	SIF GET_ROLE_PROP("CAN_USE_MANTRA", L_CHARA) == 2
+		CALL PUSH_LEARNED_MANTRA_SKILLLIST, L_CHARA, L_LEARN_SKILL
+ENDIF
+;---- EDIT 035 ADD END ---------------------------
+;すでに習得済みかどうかと空き番号があるかを探す
+FOR LCOUNT, 1, SKILLCOUNT + 1
+	L_SKILLS = %L_ABL_TYPE%{LCOUNT}
+	CALL GET_SKILL_PROP, "SKILL_NAME", ABL:L_CHARA:L_SKILLS,L_CHARA
+	IF RESULTS != ""
+		;習得スキルを所持していた場合
+		SIF ABL:L_CHARA:L_SKILLS == L_LEARN_SKILL
+			RETURN 0
+		IF ABL:L_CHARA:L_SKILLS < 1 && DEL_SKILLS == ""
+			LEARN_SKILL_NUM = LCOUNT
+			DEL_SKILLS = %L_SKILLS%
+		ENDIF
+	ELSE
+		ABL:L_CHARA:L_SKILLS = 0
+		IF DEL_SKILLS == ""
+			LEARN_SKILL_NUM = LCOUNT
+			DEL_SKILLS = %L_SKILLS%
+		ENDIF
+	ENDIF
+NEXT
+;---- EDIT 036 MOD END --------------------------- 
+CALL GET_SKILL_PROP, "SKILL_NAME", L_LEARN_SKILL,L_CHARA
+LEARN_SKILL_NAME = %RESULTS%
+;スキル枠に空きがあった場合
+IF DEL_SKILLS != ""
+	SIF !STRCOUNT(L_OPT, "NOMES")
+		PRINTFORMW %조사처리(CALLNAME:L_CHARA,"은")% %조사처리(LEARN_SKILL_NAME,"을")% 습득했다。
+ELSE
+	SIF STRCOUNT(L_OPT, "入れ替えなし")
+		RETURN 0
+	IF GET_ROLE_PROP("CAN_USE_MANTRA", L_CHARA) && IS_TRANS
+		PRINTFORML %조사처리(CALLNAME:L_CHARA,"은")% 스킬 중 하나를 %LEARN_SKILL_NAME%으로 교체할 수 있습니다。
+		PRINTW 교체할 스킬을 선택해주세요
+	ELSE
+		PRINTFORML %조사처리(CALLNAME:L_CHARA,"이")% %조사처리(LEARN_SKILL_NAME,"을")% 습득하기에는 스킬이 가득찼다。
+		PRINTW 파기할 스킬을 선택해주세요
+	ENDIF
+	LINE = LINECOUNT
+	$CHOICE
+	CLEARLINE LINECOUNT - LINE
+	;削除不能スキルの登録
+	VARSET SKILL_DEL_UNABLE
+	;---- EDIT 049 MOD START -------------------------
+	FOR LCOUNT, 1, VARSIZE("SKILL_DEL_UNABLE")
+		SIF GETBIT(CFLAG:L_CHARA:LOCKS,LCOUNT)
+			SKILL_DEL_UNABLE:LCOUNT = 1
+		L_SKILLS = %L_ABL_TYPE%{LCOUNT}
+		CALL GET_SKILL_PROP, "SKILL_DEL_UNABLE", ABL:L_CHARA:L_SKILLS, L_CHARA
+		SIF RESULT
+			SKILL_DEL_UNABLE:LCOUNT = 2
+	NEXT
+	;---- EDIT 049 MOD END ---------------------------
+	DRAWLINE
+	CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", L_LEARN_SKILL, L_CHARA
+	PRINTFORML 【%GET_SUCCESSION(RESULT)%】 %LEARN_SKILL_NAME%
+	SIF FLAG:스킬속성표시설정 == 1
+		CALL SKILL_EXPLAIN_PERFORMANCE, L_LEARN_SKILL, L_CHARA
+	CALL GET_SKILL_PROP, "SKILL_EXPLAIN", L_LEARN_SKILL, L_CHARA
+	DRAWLINE
+	;---------------------------------------
+	;選択肢の表示
+	;---------------------------------------
+	FOR LCOUNT, 1, SKILLCOUNT + 1
+		L_SKILLS = %L_ABL_TYPE%{LCOUNT}
+		IF ABL:L_CHARA:L_SKILLS > 0
+			CALL GET_SKILL_PROP, "SKILL_NAME", ABL:L_CHARA:L_SKILLS,L_CHARA
+			IF SKILL_DEL_UNABLE:LCOUNT == 1
+				SETCOLOR COLOR("黄色")
+				PRINTFORML LOCK %RESULTS%
+			ELSE
+				SIF SKILL_DEL_UNABLE:LCOUNT == 2
+					SETCOLOR COLOR("DARK-GRAY")
+				PRINTFORML [{LCOUNT, 2}] %RESULTS%
+			ENDIF
+			RESETCOLOR
+		ENDIF
+	NEXT
+	DRAWLINE	
+	IF FLAG:SHOP커맨드 == [[ショップ:동료마강화]]
+		PRINTFORML [0] 돌아간다　[99]스킬잠금설정
+	ELSE
+		PRINTFORML [0] %조사처리(LEARN_SKILL_NAME,"을")% 습득하지 않는다　[99]스킬잠금설정
+	ENDIF
+	LINE:1 = LINECOUNT
+	$INPUT_LOOP
+	CLEARLINE LINECOUNT - LINE:1
+	INPUT
+	SELECTCASE RESULT
+		CASE 0
+			IF GET_ROLE_PROP("CAN_USE_MANTRA", L_CHARA)
+				RETURN 1
+			ELSEIF FLAG:SHOP커맨드 == [[ショップ:동료마강화]]
+				RETURN 0
+			ELSE
+				PRINT 정말로 괜찮겠습니까？
+				CALL SP_SKILL_CHECK, L_LEARN_SKILL
+				SIF RESULT 
+					PRINTFORM ※%조사처리(LEARN_SKILL_NAME,"은")% 특별한 스킬입니다。
+				PRINTFORML \n[0] 아니오　[1] 네
+				CALL INPUTINT, 0, 1
+				SIF RESULT == 1
+					RETURN 0
+			ENDIF
+			GOTO CHOICE
+		CASE 99
+			;스킬잠금설정
+			CALL SKILL_ROCK_SETTING, L_CHARA, IS_TRANS
+			GOTO CHOICE
+		CASEELSE	
+			LEARN_SKILL_NUM = RESULT
+			SIF !INRANGE(LEARN_SKILL_NUM, 1, SKILLCOUNT)
+				GOTO INPUT_LOOP
+			;---- EDIT 038 MOD START -------------------------
+			DEL_SKILLS = %L_ABL_TYPE%{LEARN_SKILL_NUM}
+			DEL_SKILL = ABL:L_CHARA:DEL_SKILLS
+			CALL GET_SKILL_PROP, "SKILL_NAME", DEL_SKILL, L_CHARA
+			DEL_SKILL_NAME = %RESULTS%
+			IF SKILL_DEL_UNABLE:LEARN_SKILL_NUM == 1
+				PRINTFORMW %조사처리(DEL_SKILL_NAME,"은")% 잠겨있어 잊을 수 없습니다。
+				GOTO INPUT_LOOP
+			ENDIF
+			IF SKILL_DEL_UNABLE:LEARN_SKILL_NUM == 2
+				PRINTFORMW %조사처리(DEL_SKILL_NAME,"은")% 잊을 수 없는 스킬입니다。
+				GOTO INPUT_LOOP
+			ENDIF
+			;---- EDIT 038 MOD END ---------------------------
+			DRAWLINE
+			CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", DEL_SKILL, L_CHARA
+			PRINTFORM 【%GET_SUCCESSION(RESULT)%】 
+			CALL GET_SKILL_PROP, "SKILL_NAME", DEL_SKILL, L_CHARA
+			PRINTFORML %DEL_SKILL_NAME%
+			SIF FLAG:스킬속성표시설정 == 1
+				CALL SKILL_EXPLAIN_PERFORMANCE, DEL_SKILL, L_CHARA
+			CALL GET_SKILL_PROP, "SKILL_EXPLAIN", DEL_SKILL, L_CHARA
+			DRAWLINE
+			IF GET_ROLE_PROP("CAN_USE_MANTRA", L_CHARA) && IS_TRANS
+				PRINTFORML 정밀로 %조사처리(DEL_SKILL_NAME,"을")% 잊고、%조사처리(LEARN_SKILL_NAME,"을")% 습득해도 괜찮겠습니까？
+			ELSE
+				PRINTFORML 정말로 %조사처리(DEL_SKILL_NAME,"과")% %조사처리(LEARN_SKILL_NAME,"을")% 교체해도 괜찮겠습니까？
+			ENDIF
+			CALL INPUT_YN
+			SIF RESULT == 1
+				GOTO CHOICE
+	ENDSELECT
+ENDIF
+;---- EDIT 040 MOD START -------------------------
+;スキルを習得させる
+CALL SET_FRIEND_HAVE_SKILL, L_CHARA, L_LEARN_SKILL, \@IS_TRANS ? 変身形態 # 通常形態\@, LEARN_SKILL_NUM
+
+;対象キャラが悪魔で装備知識スキルが削除対象で装備知識スキル系をまったく所持していない場合は装備を解除する
+CALL SKILL_EQUIPTHEORY_DEL_SKILL, L_CHARA, DEL_SKILL
+
+;特殊スキルロック
+CALL SP_SKILL_CHECK,L_LEARN_SKILL
+SIF RESULT
+	SETBIT CFLAG:L_CHARA:LOCKS, LEARN_SKILL_NUM
+
+;---- EDIT 035 ADD START -------------------------
+;変身時などのスキルの調整
+CALL FIX_CHARA_TRANS_SKILL, L_CHARA
+;---- EDIT 035 ADD END ---------------------
+
+;覚醒スキルを所持していない場合はフラグを開ける
+SIF !HAVE_SKILL(L_CHARA, SKILL_NUM_F("각성스킬"))
+	ABL:L_CHARA:각성스킬 = 0
+;---- EDIT 045 ADD START -------------------------
+RETURN 1
+;---- EDIT 045 ADD END ---------------------------
+;---- EDIT 040 MOD END -------------------------
+;---- EDIT 035 MOD END -------------------------
+;===============================
+;現在のレベルまで空き枠がある限り習得スキルを習得させる
+;===============================
+@LEARN_SKILL_TO_NOW_LEVEL, ARG, ARGS:1 = "両形態", ARGS:2
+#DIM LCOUNT
+IF ARGS:1 == "通常形態" || ARGS:1 == "両形態"
+	FOR LCOUNT, 1, 21
+		SIF BASE:ARG:LV < ABL:ARG:@"습득LV{LCOUNT}"
+			CONTINUE
+		SIF !ABL:ARG:@"습득스킬{LCOUNT}"
+			CONTINUE
+		CALL LEARN_SKILL, ARG, ABL:ARG:@"습득스킬{LCOUNT}", 0, "NOMES/入れ替えなし"
+		;---- EDIT 045 ADD START -------------------------
+		IF RESULT
+			ABL:ARG:@"습득스킬{LCOUNT}" = 0
+			ABL:ARG:@"습득LV{LCOUNT}" = 0
+		ENDIF
+		;---- EDIT 045 ADD END ---------------------------
+	NEXT
+ENDIF
+
+IF GET_ROLE_PROP("CAN_USE_TRANS", ARG) || ARGS:1 == "変身形態" || ARGS:1 == "両形態"
+	FOR LCOUNT, 1, 21
+		SIF BASE:ARG:LV < ABL:ARG:@"초기변신악마습득LV{LCOUNT}"
+			CONTINUE
+		SIF !ABL:ARG:@"초기변신악마습득스킬{LCOUNT}"
+			CONTINUE
+		CALL LEARN_SKILL, ARG, ABL:ARG:@"초기변신악마습득스킬{LCOUNT}", 1, "NOMES/入れ替えなし"
+		;---- EDIT 045 ADD START -------------------------
+		IF RESULT
+			ABL:ARG:@"초기변신악마습득스킬{LCOUNT}" = 0
+			ABL:ARG:@"초기변신악마습득LV{LCOUNT}" = 0
+		;---- EDIT 045 ADD END ---------------------------
+		ENDIF
+	NEXT
+ENDIF
+;===============================
+;CSV上で定義したスキルを習得済みスキルにまわして、指定レベルでの所持スキルを調整する
+;===============================
+@INIT_CHARA_SKILL, L_CHARA
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+IF CSTR:L_CHARA:초기습득제한스킬 != ""
+	FOR LCOUNT, 1, 21
+		SIF ABL:L_CHARA:@"스킬{LCOUNT}" == 0
+			CONTINUE
+		SIF STRCOUNT("/" + CSTR:L_CHARA:초기습득제한스킬 + "/", "/" + CONVERT_SKILLNUM_TO_STR(L_CHARA, ABL:L_CHARA:@"스킬{LCOUNT}") + "/") > 0
+			ABL:L_CHARA:@"스킬{LCOUNT}" = 0
+	NEXT
+	FOR LCOUNT, 1, 21
+		SIF ABL:L_CHARA:@"습득스킬{LCOUNT}" == 0
+			CONTINUE
+		IF STRCOUNT("/" + CSTR:L_CHARA:초기습득제한스킬 + "/", "/" + CONVERT_SKILLNUM_TO_STR(L_CHARA, ABL:L_CHARA:@"습득스킬{LCOUNT}") + "/") > 0
+			ABL:L_CHARA:@"습득스킬{LCOUNT}" = 0
+			ABL:L_CHARA:@"습득LV{LCOUNT}" = 0
+		ENDIF
+	NEXT
+	FOR LCOUNT, 1, 21
+		SIF ABL:L_CHARA:@"초기변신악마스킬{LCOUNT}" == 0
+			CONTINUE
+		SIF STRCOUNT("/" + CSTR:L_CHARA:초기습득제한스킬 + "/", "/" + CONVERT_SKILLNUM_TO_STR(L_CHARA, ABL:L_CHARA:@"초기변신악마스킬{LCOUNT}") + "/")
+			ABL:L_CHARA:@"초기변신악마스킬{LCOUNT}" = 0
+	NEXT
+	FOR LCOUNT, 1, 21
+		SIF ABL:L_CHARA:@"초기변신악마습득스킬{LCOUNT}" == 0
+			CONTINUE
+		IF STRCOUNT("/" + CSTR:L_CHARA:초기습득제한스킬 + "/", "/" + CONVERT_SKILLNUM_TO_STR(L_CHARA, ABL:L_CHARA:@"초기변신악마습득스킬{LCOUNT}") + "/") > 0
+			ABL:L_CHARA:@"초기변신악마습득스킬{LCOUNT}" = 0
+			ABL:L_CHARA:@"초기변신악마습득LV{LCOUNT}" = 0
+		ENDIF
+	NEXT
+	;空き番号を詰める
+	FOR LCOUNT, 20, 1, -1
+		IF ABL:L_CHARA:@"스킬{LCOUNT - 1}" == 0 && ABL:L_CHARA:@"스킬{LCOUNT}" != 0
+			SWAP ABL:L_CHARA:@"스킬{LCOUNT - 1}", ABL:L_CHARA:@"스킬{LCOUNT}"
+			LCOUNT = 20
+		ENDIF
+	NEXT
+	FOR LCOUNT, 20, 1, -1
+		IF ABL:L_CHARA:@"초기변신악마스킬{LCOUNT - 1}" == 0 && ABL:L_CHARA:@"초기변신악마스킬{LCOUNT}" != 0
+			SWAP ABL:L_CHARA:@"초기변신악마스킬{LCOUNT - 1}", ABL:L_CHARA:@"스킬{LCOUNT}"
+			LCOUNT = 20
+		ENDIF
+	NEXT
+ENDIF
+;===============================
+;변이
+;===============================
+@TRANSFORM,ARG,ARG:1
+;---- EDIT 034 ADD START -------------------------
+#LOCALSIZE 5
+#LOCALSSIZE 1
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_LV
+#DIM DYNAMIC L_ST_SUM, 2
+#DIM DYNAMIC IMG_TYPE = 1
+#DIM DYNAMIC カウント , 1
+#DIM DYNAMIC リスト , 70
+#DIM DYNAMIC 調教対象保存
+;---- EDIT 034 ADD END   -------------------------
+PRINTFORML %CALLNAME:ARG%에게 변이의 징후가 나타나고 있다……
+PRINTFORML 지켜봅니까？
+CALL INPUT_YN,"Yes","No"
+IF RESULT == 1
+	PRINTFORMW %CALLNAME:ARG%의 변이의 징후는 사라졌다
+	ABL:ARG:변이레벨 = 0
+	ABL:ARG:변이 = 0
+ELSE
+	PRINTFORML %ARG는% %조사처리(CSVNAME(ARG:1,0),"으로")% 새롭게 태어났다！
+	;名称変更(変更されていない場合のみ)
+	NAME:ARG '= \@ NAME:ARG == CSVNAME(NO:ARG) ? %CSVNAME(ARG:1)% # %NAME:ARG% \@
+	CALLNAME:ARG '= \@ CALLNAME:ARG == CSVCALLNAME(NO:ARG) ? %CSVCALLNAME(ARG:1)% # %CALLNAME:ARG% \@
+	NICKNAME:ARG '= CSVNICKNAME(ARG:1)
+	;---- EDIT 034 ADD END   -------------------------
+	;---- EDIT 046 MOD START -------------------------
+	L_LV = BASE:ARG:LV
+	BASE:ARG:LV = CSVBASE(ARG:1,GETNUM(BASE, "LV"),0)
+	;能力値とレベル
+	IF BASE:ARG:LV >= L_LV
+		;FOR LOCAL,0,7
+		FOR LOCAL,1,7
+			BASE:ARG:GET_BASESTATUS(LOCAL) = CSVBASE(ARG:1,GETNUM(BASE,GET_BASESTATUS(LOCAL)),0)
+		NEXT
+	;変異先のレベルが低い場合、レベルに応じてステータスを自動的に振り込む
+	ELSE
+		L_ST_SUM = 0
+		FOR LOCAL,1,7
+			L_ST_SUM += CSVBASE(ARG:1,GETNUM(BASE,GET_BASESTATUS(LOCAL)),0)
+		NEXT
+		L_ST_SUM:1 = L_ST_SUM
+		WHILE BASE:ARG:LV < L_LV
+			BASE:ARG:LV++
+			L_ST_SUM++
+			SIF BASE:ARG:LV % 2
+				L_ST_SUM++
+		WEND
+		FOR LOCAL, 1, 7
+			BASE:ARG:GET_BASESTATUS(LOCAL) = CSVBASE(ARG:1,GETNUM(BASE,GET_BASESTATUS(LOCAL)),0) * L_ST_SUM / L_ST_SUM:1
+		NEXT
+		;振り分け元の合計ステータスと現在のステータスの合計が一致していない場合、もっとも低いものに加算、あるいは最も高いものに減算を繰り返して数値をあわせる
+		WHILE L_ST_SUM != SUMARRAY(BASE:ARG:0, GETNUM(BASE, "힘"), GETNUM(BASE, "운") + 1)
+			IF L_ST_SUM < SUMARRAY(BASE:ARG:0, GETNUM(BASE, "힘"), GETNUM(BASE, "운") + 1)
+				BASE:ARG:FINDELEMENT(BASE:ARG:0, MAXARRAY(BASE:ARG:0, GETNUM(BASE, "힘"), GETNUM(BASE, "운") + 1), GETNUM(BASE, "힘"), GETNUM(BASE, "운") + 1)--
+			ELSE
+				BASE:ARG:FINDELEMENT(BASE:ARG:0, MINARRAY(BASE:ARG:0, GETNUM(BASE, "힘"), GETNUM(BASE, "운") + 1), GETNUM(BASE, "힘"), GETNUM(BASE, "운") + 1)++
+			ENDIF
+		WEND
+	ENDIF
+	BASE:ARG:CP = CSVBASE(ARG:1,GETNUM(BASE,"CP"),0)
+	;---- EDIT 046 MOD END ---------------------------
+
+	;相性
+	FOR LOCAL,0,19
+		BASE:ARG:GET_TYPE(LOCAL) = CSVBASE(ARG:1,GETNUM(BASE,GET_TYPE(LOCAL)),0)
+	NEXT
+	;現在の経験値
+	SIF BASE:ARG:ＥＸＰ < GET_NEXT_EXP(ARG, BASE:ARG:LV-1)
+		BASE:ARG:ＥＸＰ = GET_NEXT_EXP(ARG, BASE:ARG:LV-1)
+	;회화타입
+	ABL:ARG:코딩 = CSVABL(ARG:1,GETNUM(ABL,"코딩"),0)
+	ABL:ARG:수태아이템 = CSVABL(ARG:1,GETNUM(ABL,"수태아이템"),0)
+;	ABL:ARG:회화타입 = CSVABL(ARG:1,GETNUM(ABL,"회화타입"),0)
+	ABL:ARG:공격상성 = CSVABL(ARG:1,GETNUM(ABL,"공격상성"),0)
+	ABL:ARG:최대공격횟수 = CSVABL(ARG:1,GETNUM(ABL,"최대공격횟수"),0)
+	ABL:ARG:최저공격횟수 = CSVABL(ARG:1,GETNUM(ABL,"최저공격횟수"),0)
+	ABL:ARG:사거리 = CSVABL(ARG:1,GETNUM(ABL,"사거리"),0)
+	ABL:ARG:공격범위 = CSVABL(ARG:1,GETNUM(ABL,"공격범위"),0)
+	ABL:ARG:추가효과 = CSVABL(ARG:1,GETNUM(ABL,"추가효과"),0)
+	ABL:ARG:추가효과상성 = CSVABL(ARG:1,GETNUM(ABL,"추가효과상성"),0)
+	ABL:ARG:추가효과명중률 = CSVABL(ARG:1,GETNUM(ABL,"추가효과명중률"),0)
+	ABL:ARG:추가효과최대명중률 = CSVABL(ARG:1,GETNUM(ABL,"추가효과최대명중률"),0)
+	
+	;---- EDIT 034 ADD START -------------------------
+	;素質
+	TALENT:ARG:소인체형 = CSVTALENT(ARG:1,GETNUM(TALENT,"소인체형"),0)
+	TALENT:ARG:유아체형 = CSVTALENT(ARG:1,GETNUM(TALENT,"유아체형"),0)
+	TALENT:ARG:흡혈귀 = CSVTALENT(ARG:1,GETNUM(TALENT,"흡혈귀"),0)
+	TALENT:ARG:일광욕 = CSVTALENT(ARG:1,GETNUM(TALENT,"일광욕"),0)
+	TALENT:ARG:월광욕 = CSVTALENT(ARG:1,GETNUM(TALENT,"월광욕"),0)
+	TALENT:ARG:동물귀 = CSVTALENT(ARG:1,GETNUM(TALENT,"동물귀"),0)
+	TALENT:ARG:큰체형 = CSVTALENT(ARG:1,GETNUM(TALENT,"큰체형"),0)
+	TALENT:ARG:거체 = CSVTALENT(ARG:1,GETNUM(TALENT,"거체"),0)
+	TALENT:ARG:절벽 = CSVTALENT(ARG:1,GETNUM(TALENT,"절벽"),0)
+	TALENT:ARG:빈유 = CSVTALENT(ARG:1,GETNUM(TALENT,"빈유"),0)
+	TALENT:ARG:거유 = CSVTALENT(ARG:1,GETNUM(TALENT,"거유"),0)
+	TALENT:ARG:폭유 = CSVTALENT(ARG:1,GETNUM(TALENT,"폭유"),0)
+	;---- EDIT 034 ADD END   -------------------------
+
+	;---- EDIT 046 ADD START -------------------------
+	;再習得用のリストを初期化する
+	CALL CLEAR_LEARNED_SKILL_ALL, ARG
+	;---- EDIT 046 ADD END ---------------------------
+
+	FOR LOCAL,201,342
+		TALENT:ARG:LOCAL = CSVTALENT(ARG:1,LOCAL,0)
+	NEXT
+	
+	;ロール素質を引き写す
+	FOR LOCAL, 0, SUB_ROLENUM
+		TALENT:ARG:GET_SUB_ROLE_NAME(LOCAL) = CSVTALENT(ARG:1,GETNUM(TALENT, GET_SUB_ROLE_NAME(LOCAL)),0)
+	NEXT
+
+	;スキル習得
+	FOR LOCAL,1,FLAG:스킬수 + 1
+		LOCALS = 스킬{LOCAL}
+		SIF CSVABL(ARG:1,GETNUM(ABL,LOCALS),0) > 0
+			CALL LEARN_SKILL,ARG,CSVABL(ARG:1,GETNUM(ABL,LOCALS),0)
+	NEXT
+	;習得予定スキル更新
+	FOR LOCAL,1,21
+		ABL:ARG:("습득스킬" + TOSTR(LOCAL)) = CSVABL(ARG:1,GETNUM(ABL,("습득스킬" + TOSTR(LOCAL))),0)
+		ABL:ARG:("습득LV" + TOSTR(LOCAL)) = CSVABL(ARG:1,GETNUM(ABL,("습득LV" + TOSTR(LOCAL))),0)
+	NEXT
+	;---- EDIT 046 ADD START -------------------------
+	;習得レベルを満たしているスキルを確認する
+	FOR LOCAL,1,21
+		SIF !ABL:ARG:("습득스킬" + TOSTR(LOCAL))
+			CONTINUE
+		 SIF BASE:ARG:LV < ABL:ARG:("습득LV" + TOSTR(LOCAL))
+		 	CONTINUE
+		CALL LEARN_SKILL, ARG, ABL:ARG:("습득스킬" + TOSTR(LOCAL))
+	NEXT
+	;---- EDIT 046 ADD END ---------------------------
+
+	;タイトル・種族名更新
+	CSTR:ARG:타이틀 '= CSVCSTR(ARG:1, GETNUM(CSTR, "타이틀"))
+	CSTR:ARG:종족명   '= CSVCSTR(ARG:1, GETNUM(CSTR, "종족명"))
+	
+	;解説更新(変更されていない場合のみ)
+	IF CSTR:ARG:해설1 == CSVCSTR(NO:ARG, GETNUM(CSTR, "해설1"))
+		FOR LOCAL, 1, 21
+			CSTR:ARG:@"해설{LOCAL}" '= CSVCSTR(ARG:1, GETNUM(CSTR, @"해설{LOCAL}"))
+		NEXT
+	ENDIF
+	
+	;相性グループを変更
+	CSTR:ARG:상성그룹 = %CSVCSTR(ARG:1 , GETNUM(CSTR , "상성그룹") , 0)%
+
+;---- EDIT 018 ADD START   -----------------------
+	;陥落履歴を記録
+	SIF CFLAG:ARG:피조교횟수 > 0
+		CALL SET_陥落履歴, ARG:1, "調教"
+	VARS FALLEN_TABLE, 8
+	FALLEN_TABLE '= "연모", "친애", "음란", "창부", "복종", "예속", "신뢰", "동료"
+	FOR LCOUNT, 0, VARSIZE("FALLEN_TABLE")
+		SIF !TALENT:ARG:(FALLEN_TABLE:(LCOUNT))
+			CONTINUE
+		CALL SET_陥落履歴, ARG:1, FALLEN_TABLE:(LCOUNT)
+	NEXT
+;---- EDIT 018 ADD END   -------------------------
+
+	;最後にナンバー変更
+	NO:ARG = ARG:1
+	ABL:ARG:종족 = CSVABL(ARG:1,GETNUM(ABL,"종족"),0)
+	ABL:ARG:변이레벨 = CSVABL(ARG:1,GETNUM(ABL,"변이레벨"),0)
+	ABL:ARG:변이 = CSVABL(ARG:1,GETNUM(ABL,"변이"),0)
+	
+	CSTR:ARG:基本アイコンファイルネーム '= ""
+	CSTR:ARG:悪魔変身アイコンファイルネーム '= ""
+	CSTR:ARG:調教アイコンファイルネーム '= ""
+	;引き継いでない場合は初期レベルを更新する
+	SIF CFLAG:ARG:인계횟수 == 0
+		CFLAG:ARG:초기LV = CSVBASE(ARG:1,GETNUM(BASE,"LV"),0)
+
+	CALL SET_DEFAULT_FACE, ARG
+
+	;陥落で【타천사】になった種族：天使の堕天使引継ぎ処理
+	IF ABL:ARG:종족 == 4
+		IF TALENT:ARG:4 || TALENT:ARG:5 || TALENT:ARG:7 || TALENT:ARG:8
+			TALENT:ARG:211 = 1
+		ELSE
+			TALENT:ARG:210 = 1
+		ENDIF
+	ENDIF
+	;---- EDIT 042 ADD START -------------------------
+	;ロールとロールごとの初期素質の設定
+	CALL SET_ROLE, ARG
+	CALL SET_BTL_TALENT_NEW, ARG
+	;---- EDIT 042 ADD END ---------------------------
+	;潜在素質の処理
+	IF CSTR:ARG:잠재전투소질 != ""
+		VARS TEMPS
+		VARS L_TALENTS
+		VARS L_BTL_TALENT
+		FOR LOCAL, 0, STRCOUNT(CSTR:ARG:잠재전투소질, "/") + 1
+			TEMPS = %AUTO_SPLIT(CSTR:ARG:잠재전투소질, "/", LOCAL)%
+			L_TALENTS = %AUTO_SPLIT(TEMPS, "_", 0)%
+			SIF GET_ROLE_PROP(@"CAN_USE_%L_TALENTS%", ARG) < 2
+				CONTINUE
+			TALENT:ARG:L_TALENTS = MAX(TOINT(AUTO_SPLIT(TEMPS, "_", 1)), 1, TALENT:ARG:L_TALENTS)
+		NEXT
+		CALL SET_ROLE_CP, ARG
+		IF GET_ROLE_CP(ARG, "通常形態") < 0
+			DRAWLINE
+			PRINTFORML %CALLNAME:ARG%의 소질의 코스트가 커패시티의 상한을 초과하고 있습니다。
+			PRINTFORMW 남길 소질을 선택해주세요。
+			DRAWLINE
+			CALL SET_VAR_HAVE_SUB_ROLE, ARG, "通常形態", L_BTL_TALENT
+			;サブ素質を設定
+			CALL ENHANCE_ROLE, ARG, "通常形態", L_BTL_TALENT, , "戻る不可"
+		ENDIF
+	ENDIF
+	;衣装初期化
+	CALL CLOTHES_INITIALIZE,ARG
+	FOR LOCAL,0,CLOTHES_PARTNUM
+		CFLAG:ARG:("초기" + GET_CLOTHESNAME(LOCAL)) = CSVCFLAG(NO:ARG,GETNUM(CFLAG,GET_CLOTHESNAME(LOCAL)),0)
+		CFLAG:ARG:GET_CLOTHESNAME(LOCAL) = CSVCFLAG(NO:ARG,GETNUM(CFLAG,GET_CLOTHESNAME(LOCAL)),0)
+	NEXT
+
+	;---- EDIT 034 ADD END   -------------------------
+	ANALYSIS_RATE:(NO:ARG) = ANALYSIS_COMPLETED
+	SETBIT IS_CHARA_COMPANIONED:(NO:ARG), CFLAG:ARG:이벤트가입 < 0 ? 0 # CFLAG:ARG:이벤트가입	;変異後にキャラが死ぬパターンが発見されたため変異後にHP回復する様に追加
+	BASE:ARG:ＨＰ = MAXBASE:ARG:ＨＰ
+ENDIF

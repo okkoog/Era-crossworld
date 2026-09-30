@@ -1,0 +1,360 @@
+﻿@EVENT_BATTLE_TURNEND_DUNGEON34
+SIF FLAG_D34_ゾンビ戦中断用 != 1
+	RETURN 0
+CALL MESSAGE_B(2, "흠、실패했나", "라이도우！　여기서는 일단、물러나자！")
+FLAG:승리플래그 = 1
+FLAG_D34_ゾンビ戦中断用 = 2
+PRINTL 
+PRINTFORMW 　　　　＞라이도우는 %CALLNAME:MASTER%의 팔을 붙잡고 달려나갔다
+PRINTL 
+RETURN -1
+
+@SET_ACTION_チュートリアルゾンビ, ARG
+CALL ランダム行動, ARG
+SIF 現HP割合(POS(CFLAG:ARG:타겟)) < 100 && INRANGE(CPOS(GETCHARA([[キャラ:라이도우]])), 1, 3)
+	CFLAG:ARG:타겟 = CPOS(GETCHARA([[キャラ:라이도우]]))
+
+@SET_ACTION_チュートリアルビットボール, ARG
+CFLAG:ARG:입력행동 = [[스킬:전격]]
+CFLAG:ARG:타겟 = CPOS(MASTER)
+
+@SET_ACTION_チュートリアルオキクムシ, ARG
+SELECTCASE NO:ARG
+	CASE [[キャラ:오키쿠무시]]
+		CFLAG:ARG:입력행동 = [[스킬:무드]]
+	CASE [[キャラ:엔젤]]
+		CFLAG:ARG:입력행동 = [[스킬:한마]]
+	CASE [[キャラ:리림]]
+		CFLAG:ARG:입력행동 = [[스킬:마린카린]]
+	CASE [[キャラ:요모츠시코메]]
+		CFLAG:ARG:입력행동 = [[스킬:시바브]]
+ENDSELECT
+CFLAG:ARG:타겟 = CPOS(MASTER)
+
+;아무것도안한다
+@SET_ACTION_D34_ラタトスク, ARG
+CFLAG:ARG:입력행동 = -1
+
+@EVENT_BATTLE_NAVI_DUNGEON34, ARGS
+SELECTCASE ARGS
+	CASE "メイン画面"
+		IF FLAG_D34_ラタトスク戦中
+			TSTR:전투구상캐릭터화상어드레스 = 00_ゴウト
+			BTL_KOJO_RESULTS:0 = [1] TALK를 선택해、악마회화를 실행해라
+			BTL_KOJO_RESULTS:1 = 이번에는 상대도 우호적이고 너에게 흥미가 있는것 같으니 고생하진 않겠지。
+			CALL PRINT_KOJO_RPG_MESSAGE, "ナビ_メイン画面"
+			RETURN 1
+		ELSEIF FLAG_D34_ゾンビちゃん戦中
+			IF FLAG_D34_ゾンビちゃんキルカウント < 3
+				TSTR:전투구상캐릭터화상어드레스 = 00_ゴウト
+				BTL_KOJO_RESULTS:0 = 적의 체력이 높군。이럴 때는 약점을 공격해 큰 대미지를 주고 싶다。
+				BTL_KOJO_RESULTS:1 = 적의 약점이 보이는가？　그렇다면、유효한 공격을 찾아보도록。
+				CALL PRINT_KOJO_RPG_MESSAGE, "ナビ_メイン画面"
+				RETURN 1
+			ELSE
+				TSTR:전투구상캐릭터화상어드레스 = 00_ゴウト
+				BTL_KOJO_RESULTS:0 = 라이도우에게 명령해、적을 일소하도록
+				CALL PRINT_KOJO_RPG_MESSAGE, "ナビ_メイン画面"
+				RETURN 1
+			ENDIF
+		ELSEIF FLAG_D34_オキクムシ戦闘中
+			IF FLAG_D34_バステガード実行済み == 0
+				TSTR:전투구상캐릭터화상어드레스 = 00_ゴウト
+				BTL_KOJO_RESULTS:0 = 알겠나。잊지 말고 GUARD를 사용해 적의 공격을 막도록？
+				CALL PRINT_KOJO_RPG_MESSAGE, "ナビ_メイン画面"
+				RETURN 1
+			ELSE
+				TSTR:전투구상캐릭터화상어드레스 = 00_ゴウト
+				BTL_KOJO_RESULTS:0 = 좋다、그대로 GUARD를 계속해라
+				CALL PRINT_KOJO_RPG_MESSAGE, "ナビ_メイン画面"
+				RETURN 1
+			ENDIF
+		ELSEIF FLAG_D34_ビットボール戦中
+			TSTR:전투구상캐릭터화상어드레스 = 00_ゴウト
+			BTL_KOJO_RESULTS:0 = 먼저 FIGHT를 선택하고、그 뒤 LINKAGE를 선택해라
+			BTL_KOJO_RESULTS:1 = 그러면 이 상황을 일격에 해결할 수 있는 선택지가 나타날 것이다！
+			CALL PRINT_KOJO_RPG_MESSAGE, "ナビ_メイン画面"
+			RETURN 1
+		ENDIF
+ENDSELECT
+
+@EVENT_BATTLE_TURNTOP_DUNGEON34
+IF FLAG:튜토리얼진행중 && FLAG:경과턴수 > 0
+	IF FLAG_D34_ラタトスク戦中
+		TFLAG:대화형캐릭터 = -1
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 아와와와와。그만두세요오
+		BTL_KOJO_RESULTS:1 = 이야기、이야기를 하는거에요오！
+		CALL PRINT_KOJO_RPG_MESSAGE, "", POS(9)
+		RESETCOLOR
+	ENDIF
+	IF FLAG_D34_ゾンビちゃん戦中 && FLAG_D34_ゾンビちゃんキルカウント >= 3 && !HAVE_SKILL(GETCHARA([[キャラ:라이도우]]), [[스킬:히토코토대풍]])
+		SETCOLOR COLOR("FRIEND")
+		TSTR:전투구상캐릭터화상어드레스 = 00_ゴウト
+		BTL_KOJO_RESULTS:0 = 이대로는 끝이 나지 않을 것 같군
+		BTL_KOJO_RESULTS:1 = 라이도우、한꺼번에 날려버려라
+
+		TFLAG:대화형캐릭터 = GETCHARA([[キャラ:라이도우]])
+		BTL_KOJO_REACT_RESULTS:0 = ……
+		CALL PRINT_KOJO_RPG_MESSAGE, ""
+		RESETCOLOR
+		PRINTFORML ＞라이도우는 고개를 끄덕이고 가슴 근처에서 관 같은 것을 꺼냈다。
+		PRINTFORMW ＞라이도우가 스킬「히토코토대풍」을 사용할 수 있게 되었다。
+		CALL SET_SKILL, GETCHARA([[キャラ:라이도우]]), "히토코토대풍"
+	ENDIF
+	RETURN 1
+ENDIF
+
+@EVENT_BATTLE_ACTEND_DUNGEON34
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_T
+IF FLAG:튜토리얼진행중
+	TFLAG:대화형캐릭터 = -1
+	IF !CFLAG:(FLAG:행동순1):PT플래그
+		FOR LCOUNT, 1, 7
+			L_T = POS(LCOUNT)
+			SIF L_T < 0
+				CONTINUE
+			SIF 現HP割合(L_T) >= 25
+				CONTINUE
+			SETCOLOR COLOR("FRIEND")
+			TSTR:전투구상캐릭터화상어드레스 = 00_ゴウト
+			BTL_KOJO_RESULTS:0 = 위험해！　이것을 사용해라！
+			CALL PRINT_KOJO_RPG_MESSAGE, ""
+			ALIGNMENT CENTER
+			PRINTFORML ┏━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃　　　  ＥＸＴＲＡ ＡＣＴ！ 　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━┛
+			RESETCOLOR
+			ALIGNMENT LEFT
+			CALL PRINT_ACT_MESSAGE, , , , "고우토", "우황단"
+			RESETCOLOR
+			CALL PRINT_HIT_MESSAGE, L_T, "200회복"
+			CALL VAR_HP, L_T, 200, "회복"
+			BREAK
+		NEXT
+		IF FLAG_D34_オキクムシ戦闘中
+			SIF CFLAG:MASTER:방어플래그
+				FLAG_D34_バステガード実行済み = 1
+		ENDIF
+		FOR LCOUNT, 1, 7
+			L_T = POS(LCOUNT)
+			SIF L_T < 0
+				CONTINUE
+			SIF IS_BADSTATE(L_T, "GOOD")
+				CONTINUE
+			SETCOLOR COLOR("FRIEND")
+			TSTR:전투구상캐릭터화상어드레스 = 00_ゴウト
+			BTL_KOJO_RESULTS:0 = 위험해！　이것을 사용해라！
+			CALL PRINT_KOJO_RPG_MESSAGE, ""
+			ALIGNMENT CENTER
+			PRINTFORML ┏━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃　　　  ＥＸＴＲＡ ＡＣＴ！ 　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━┛
+			RESETCOLOR
+			ALIGNMENT LEFT
+			CALL PRINT_ACT_MESSAGE, , , , "고우토", "암리타소다"
+			RESETCOLOR
+			CALL CURE_STATE_SINGLE, GETCHARA([[キャラ:라이도우]]), L_T,[[스킬:암리타소다]]
+			BREAK
+		NEXT
+	ELSE
+		L_T = FLAG:행동순1
+		IF MAXBASE:L_T:ＭＰ > 0 && 現MP割合(L_T) < 50
+			SETCOLOR COLOR("FRIEND")
+			TSTR:전투구상캐릭터화상어드레스 = 00_ゴウト
+			BTL_KOJO_RESULTS:0 = 소모가 심하군。회복시켜주지。
+			CALL PRINT_KOJO_RPG_MESSAGE, ""
+			ALIGNMENT CENTER
+			PRINTFORML ┏━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃　　　  ＥＸＴＲＡ ＡＣＴ！ 　　　┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━┛
+			RESETCOLOR
+			ALIGNMENT LEFT
+			CALL PRINT_ACT_MESSAGE, , , , "고우토", "챠크라포트"
+			RESETCOLOR
+			CALL PRINT_HIT_MESSAGE, L_T, "ＭＰ:" + TOSTR(MAXBASE:L_T:ＭＰ) + "회복", "W"
+			CALL VAR_MP,L_T,MAXBASE:L_T:ＭＰ,"회복"
+		ENDIF
+	ENDIF
+ENDIF
+
+
+@EVENT_BATTLE_DYING_DUNGEON34, L_T, L_P, L_SKIP
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_SKIP
+IF FLAG:튜토리얼진행중
+	IF FLAG_D34_ゾンビちゃん戦中 && NO:L_T == [[キャラ:좀비쨩]]
+		IF BASE:L_T:ＨＰ <= 0 && CFLAG:L_P:입력행동 != [[스킬:히토코토대풍]]
+			CFLAG:L_T:입력행동 = -1
+			CFLAG:L_T:ＣＯＯＰ플래그 = -1
+			CFLAG:L_T:공격대상제외_ACT = 1
+			BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ
+			TSTR:스킬메시지추가 = %CALLNAME:L_T%을 물리쳤다_W/하지만、새로운 %CALLNAME:L_T%이 나타났다！
+			FLAG_D34_ゾンビちゃんキルカウント++
+		ENDIF
+	ELSE
+		;味方は死なない
+		IF IS_FRIEND(MASTER, L_T)
+			BASE:L_T:ＨＰ = 1
+			CFLAG:L_T:공격대상제외_ACT = 1
+			TSTR:스킬메시지추가 = %CALLNAME:L_T%은 치명적인 공격을 받았지만、간신히 버텨냈다！
+		ENDIF
+	ENDIF
+ENDIF
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_D34_ラタトスク, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+ELSE
+	;全回避+全バステ回避にしておく
+	SELECTCASE ARGS
+		;カジャの枠。つまり0からなら加算は32/(32+x)の減少、減算は32/(32-x)の増加(カジャは+4)　通常枠の上限下限を超えて加減される(ただし、減算側は安全のために8を下限にしてあるので注意)
+		;この補正を999以上で指定した場合は絶対回避、-999以下で指定した場合は回避不能となる
+		CASE "追加回避強化"
+			RETURN 999
+		CASE "バステ補正"
+			RETURN -999
+	ENDSELECT
+ENDIF
+RETURN 0
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_D34_オキクムシ, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;필중
+		CASE "バステ補正"
+			RETURN 999
+	ENDSELECT
+;自分が防御側
+ELSE
+	;全回避+全バステ回避にしておく
+	SELECTCASE ARGS
+		;バステ回避を確認するまでは倒させない
+		CASE "追加回避強化"
+			SIF !CFLAG:MASTER:방어플래그
+				RETURN 999
+		CASE "バステ補正"
+			RETURN -999
+	ENDSELECT
+ENDIF
+RETURN 0
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_D34_ビットボール, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;与ダメージを大きく削っておく
+		CASE "ダメージ補正加算"
+			RETURN -80
+		;ショックを通さない
+		CASE "バステ補正"
+			RETURN -999
+	ENDSELECT
+;自分が防御側
+ELSE
+	;全回避+全バステ回避にしておく
+	SELECTCASE ARGS
+		;ダメージを軽減(COOPには適用されない)
+		CASE "ダメージ倍率"
+			RETURN -50
+		;回避不能
+		CASE "追加回避強化"
+			RETURN -999
+	ENDSELECT
+ENDIF
+RETURN 0
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_D34_ライドウ, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	;RESULT = 修正値
+	;RESULTS = 加算/乗算/固定値/活泉/魔脈
+	;加算はそのまま固定値を加算する。乗算は(100+X)/100倍にする。固定値は必ずその数値にする(55ならなにがあろうと最大HP55になる)
+	;活泉/魔脈はそのまま同種スキルと同じ枠となりもっとも効果量が高いものを優先する形になる
+	;HP半減
+	CASE "HP補正"
+		RESULTS = 加算
+		RETURN 200
+	;MP+100
+	CASE "MP補正"
+		RESULTS = 加算
+		RETURN 100
+	CASE "방어보정"
+		RESULTS = 加算
+		RETURN 50
+	CASE "마법효과보정"
+		RESULTS = 加算
+		RETURN 50
+	CASE "追加回避強化"
+		RETURN 999
+	;どちらにしろ、ステート耐性は0のときに通常(100%)のに注意。
+	CASE "상태이상"
+		RETURN -100
+ENDSELECT

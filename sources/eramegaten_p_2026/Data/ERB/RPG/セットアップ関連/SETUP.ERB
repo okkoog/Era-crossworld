@@ -1,0 +1,648 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/02/16		Ｎ鳥					悪魔ストレージ機能追加
+;	003		2011/03/23		UNP						セットアップ画面での誤爆クリックを予防
+;	004		2011/03/23		Ｐ						プラグインソフトの装着処理呼び出しを追加
+;	005		2013/02/25		銃Ｐ					悪魔ストレージに陥落素質表示とポジション表示を追加
+;	006		2013/03/05		銃Ｐ					悪魔ストレージのリストで最初のページと最後のページを行き来できるように加筆
+;	007		2013/11/24		ひみつ					リスト表示数設定
+;	008		2013/12/02		ひみつ					リスト表示数設定。装備変更画面のチラつき抑止
+;	009		2017/06/23		kuni					キャラ表示でINPUT_CHARA_LISTを使用するように変更
+;	010		2017/12/03		開発スレ【アルプLV7】の448さん		千代＆ゆりこ＆悪魔人の同行・待機切り替え可能に変更
+;	011		2017/12/21		修正野郎				悪魔ストレージのリスト表示の一部に固定値が使われていたのを変更
+;	012		2019/08/28		空気					デビルチェンバー使用時の挙動を修正
+;	013		2021/02/11		Rsp暇人 				セットアップ画面からリンケージ一覧を呼び出せるように
+;	014		2022/06/07		Collared				UI整理プロジェクトにより配置変更
+;	015		2022/11/04		JK好き					@DEVIL_STORAGE ストレージ表示時にアライメントが表示されるように変更
+;	016		2023/02/26		JK好き					@DEVIL_STORAGE ＣＯＭＰ容量最大時に容量未使用悪魔の所属を変更出来なかった問題を修正
+;	017		2024/03/30		P(bazzile)				ストレージの判定で同種生成が可能かどうかの判定をCSVから見るように変更	
+;	018		2024/03/16		P(bazzile)				INPUT_CHARA関数の変更に対応
+;	019		2024/04/15		P(bazzile)				パーティーのセット機能を追加
+;	020		2024/05/08		P(bazzile)				悪魔ストレージの送還条件を修正
+;	021		2024/05/16		P(bazzile)				悪魔ストレージの送還条件にミスがあったのを修正
+;	022		2024/06/19		P(bazzile)				ナビ表示時のナビボタンのずれを修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2024/05/28		P(bazzile)				セットPTボタンに位置ずれがあった不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;戦闘や探索の準備を行う画面
+
+
+@SHOPCOMABLE_110
+#LOCALSIZE 2
+SIF !IS_USEABLE_SHOPCOM
+	RETURN 0
+RESULT:1 = 1
+RESULTS = 셋업
+IF CHARANUM > 0
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+
+
+@SHOP_COM_110, ARG
+#DIM LCOUNT
+#DIM SPACE_LENS
+#DIMS DYNAMIC TEMPS
+#DIM L_CNT
+#DIM L_LINE, 2
+#DIM LREDRAW
+#DIMS L_MENU, 15
+#DIM CONST MENU_LENS = 22
+#DIMS L_TITLE, 15
+#DIM IS_MENU_UNABLE, 15
+#DIMS SHOW_LINE, 4
+
+SPACE_LENS = 17
+
+L_MENU:0 '= "소환/편입", "포지션변경", "귀환/제외"
+L_MENU:3 '= "장비변경", "동료마해방", "악마스토리지"
+L_MENU:6 '= "인스톨소프트", "플러그인소프트", "스킬에뮬레이터"
+L_MENU:9 '= "세트편성", "링케이지스킬확인", "네비게이터 지정"
+L_MENU:12'= "팀 구성"
+
+L_TITLE:FINDELEMENT(L_MENU, "소환/편입") = 전투에 참가할 멤버를 선택해、포지션을에 배치시킵니다。
+L_TITLE:FINDELEMENT(L_MENU, "포지션변경") = 천투에 참가중인 멤버의 포지션을 변경합니다。
+L_TITLE:FINDELEMENT(L_MENU, "귀환/제외") = 전투에 참가중인 멤버를 포지션에서 제외합니다。
+L_TITLE:FINDELEMENT(L_MENU, "장비변경") = 장비를 변경합니다。
+L_TITLE:FINDELEMENT(L_MENU, "동료마해방") = 동료마와 헤어집니다。헤어진 동료마는 등록이 삭제되며、두번 다시 만날 수 없게 됩니다。
+L_TITLE:FINDELEMENT(L_MENU, "악마스토리지") = 동료마의 소속을 변경합니다。%UNICODE(0x000D)%ＣＯＭＰ에 소속된 동료마는 전투중이나 탐색중에 소환이나 귀환을 이용해、파티와 대기를 오갈 수 있습니다。%UNICODE(0x000D)%자택서버에 소속된 동료마는 ＣＯＭＰ의 용량을 소비하지 않게 되는 대신 소환과 귀환이 불가능하게 됩니다。
+L_TITLE:FINDELEMENT(L_MENU, "인스톨소프트") = 탐색이나 전투를 유리하게 진행할 수 있게 하는 효과를 발휘하는 소프트웨어를 세트합니다。%UNICODE(0x000D)%소프트는 ＣＯＭＰ의 용량을 소비하고、%UNICODE(0x000D)%또한、효과를 발휘하하기 위해 소프트마다 설정된 서머너레벨을 파티 멤버의 누군가가 만족시킬 필요가 있습니다。
+L_TITLE:FINDELEMENT(L_MENU, "플러그인소프트") = 일부 동료마에게 능력을 강화하는 소프트를 장비시킵니다。%UNICODE(0x000D)%소프트는 악마해석을 진행하는 것으로 사교의관에서 획득할 수 있습니다。
+L_TITLE:FINDELEMENT(L_MENU, "스킬에뮬레이터") = 일정 이상의 서머너레벨을 가진 캐릭터가 이용할 수 있는 소프트를 장비시킵니다。%UNICODE(0x000D)%데빌서머너는 스킬에뮬레이터를 세팅함으로써 강화나 지원 능력을 얻을 수 있습니다。
+L_TITLE:FINDELEMENT(L_MENU, "세트편성") = 파티 구성을 세트로 등록・변경한다。
+L_TITLE:FINDELEMENT(L_MENU, "링케이지스킬확인") = 복수의 캐릭터가 협력해 발동하는 스킬인 링케이지의 조건을 확인할 수 있습니다。
+L_TITLE:FINDELEMENT(L_MENU, "네비게이터 지정") = 전투 중에 전황을 분석하여、보고하는 내비게이터를 지정할 수 있습니다。%UNICODE(0x000D)%단、내비게이터가 직접 전투에 참가하고 있으면 내비게이션을 할 수 없다는 점에 주의해 주세요。
+L_TITLE:FINDELEMENT(L_MENU, "팀 구성") = 특정 캐릭터들을 하나로 묶은 팀을 편성합니다。
+
+VARSET IS_MENU_UNABLE
+IS_MENU_UNABLE:FINDELEMENT(L_MENU, "네비게이터 지정") = !CAN_USE_NAVIGATOR
+IS_MENU_UNABLE:FINDELEMENT(L_MENU, "팀 구성") = 1
+FOR LCOUNT, 0, CHARANUM
+	SIF CSTR:LCOUNT:롤 != "ホロウエージェント"
+		CONTINUE
+	IS_MENU_UNABLE:FINDELEMENT(L_MENU, "팀 구성") = 0
+	BREAK
+NEXT
+L_LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - L_LINE
+
+;同期処理
+CALL SET_LEADER_SKILL
+FOR LCOUNT, 1, 7
+	SIF POS(LCOUNT) < 0
+		CONTINUE
+	CALL SYNC_STATUS, POS(LCOUNT), "HPMP割合保持"
+NEXT
+;メインメニュー表示
+PRINTL
+DRAWLINE
+DRAWLINE
+CALL SHOW_NOW_FORMATION_P,0,2, 3, "셋업"
+;---- EDIT 019 ADD START -------------------------
+FOR LCOUNT, 0, BATTLE_MEMBERSETNUM
+	IF LCOUNT % 3 == 0
+		IF LCOUNT == 0
+			PRINTFORM %"ＰＴ-ＳＥＴ", SPACE_LENS, LEFT%
+		ELSE
+			PRINTL 
+			PRINTFORM %" " * SPACE_LENS%
+		ENDIF
+	ENDIF
+	IF LCOUNT == BATTLE_MEMBERSETNUM - 1
+		TEMPS = ＬＡＳＴ ＰＡＲＴＹ
+	ELSEIF BATTLE_MEMBERSET_NAME:LCOUNT != ""
+		TEMPS = %BATTLE_MEMBERSET_NAME:LCOUNT%
+	ELSE
+		TEMPS = ＳＥＴ - %SUBSTRINGU("ＡＢＣＦＥＦＧ", LCOUNT, 1)%
+	ENDIF
+	TEMPS = [{30 + LCOUNT}] %TEMPS%
+	;---- EDIT P 001 MOD START -------------------------
+	PRINTBUTTON TOALIGNMENT(TEMPS, GET_CHARALENS_FORMATION_P(), "LEFT") + "　", 30 + LCOUNT
+	;---- EDIT P 001 MOD END ---------------------------
+NEXT
+SIF !LINEISEMPTY()
+	PRINTL 
+PRINTSL GETLINESTR("=")
+PRINTL
+;---- EDIT 019 ADD END ---------------------------
+DRAWLINE
+IF CAN_USE_NAVIGATOR && NAVIGATOR > 0
+	PRINTFORML %"ＮＡＶＩ", SPACE_LENS, LEFT%[12] %CALLNAME:NAVIGATOR%
+	HTML_PRINT @"<div xpos = '{SPACE_LENS * 50}'>" + GET_FACE_BY_CHARA_AS_HTML(NAVIGATOR, 400, "네비 확인") + "</div>"
+	FOR LCOUNT, 0, 4
+		PRINTL 
+	NEXT
+	DRAWLINE
+ENDIF
+L_CNT = 0
+SHOW_LINE = %" " * (FLAG:커스텀게임화면 ? 28 # 20)%
+FOR LCOUNT, 0, VARSIZE("L_MENU")
+	SIF IS_MENU_UNABLE:LCOUNT
+		CONTINUE
+	SIF L_MENU:LCOUNT == ""
+		CONTINUE
+	SHOW_LINE += @"<button value = '{LCOUNT + 1}' title = '%L_TITLE:LCOUNT%'>" + @"[{LCOUNT + 1, 2}] - %L_MENU:LCOUNT, MENU_LENS, LEFT%" + "</button>"
+	IF L_CNT % 3 == 2
+		HTML_PRINT SHOW_LINE
+		SHOW_LINE = %" " * (FLAG:커스텀게임화면 ? 28 # 20)%
+	ENDIF
+	L_CNT++
+NEXT
+SIF L_CNT % 3 != 0
+	HTML_PRINT SHOW_LINE
+
+;IF FLAG:커스텀게임화면
+;	PRINTL 　　　　　　　　　　　　　　[ 1] - 召喚/編入 　　　　　[ 2] - ポジション変更　　　　[ 3] - 帰還/外す
+;	PRINTL 　　　　　　　　　　　　　　[ 4] - 装備変更  　　　　　[ 5] - インストールソフト　　[ 6] - 仲魔と別れる
+;---- EDIT 013 MOD START ---------------------------
+	;---- EDIT 004 MOD START -------------------------
+;	PRINTL 　　　　　　　　　　　　　　[ 7] - 悪魔ストレージ　　　[ 8] - プラグインソフト　　　[ 9] - リンケージスキル確認
+	;---- EDIT 004 MOD END   -------------------------
+;---- EDIT 013 MOD END ---------------------------
+;ELSE
+;	PRINTL 　　　　　　　　　　[ 1] - 召喚/編入 　　　　　[ 2] - ポジション変更 　　　 [ 3] - 帰還/外す
+;	PRINTL 　　　　　　　　　　[ 4] - 装備変更  　　　　　[ 5] - 仲魔と別れる　　　　　[ 6] - 悪魔ストレージ
+;---- EDIT 013 MOD START ---------------------------
+	;---- EDIT 004 MOD START -------------------------
+;	PRINTL 　　　　　　　　　　[ 7] - インストールソフト　[ 8] - プラグインソフト　　　[ 9] - スキルエミュレータ　　
+;	PRINTL 　　　　　　　　　　[10] - リンケージスキル確認
+	;---- EDIT 004 MOD END   -------------------------
+;---- EDIT 013 MOD END ---------------------------
+;ENDIF
+PRINTL
+DRAWLINE
+PRINTC [110] - 능력확인
+
+PRINTC [100] - 돌아간다
+PRINTC  
+PRINTFORMC [120] - 약점표시[\@ FLAG:상성등표시ON == 0 ? OFF # ON \@]
+L_LINE:1 = LINECOUNT
+$INPUT_LOOP
+CLEARLINE LINECOUNT - L_LINE:1
+INPUT
+SELECTCASE RESULT
+	CASE 1 TO VARSIZE("L_MENU")
+		SIF IS_MENU_UNABLE:(RESULT - 1)
+			GOTO START
+		SELECTCASE L_MENU:(RESULT- 1)
+			CASE "소환/편입"
+				CALL SETUP_SUMMON
+			CASE "포지션변경"
+				CALL SETUP_FORMATION
+			CASE "귀환/제외"
+				CALL SETUP_REMOVE
+			CASE "장비변경"
+				LREDRAW = CURRENTREDRAW()
+				SIF LREDRAW != 2
+					REDRAW 2
+					CALL EQUIPMENT
+				SIF LREDRAW != 2
+					REDRAW LREDRAW
+			CASE "동료마해방"
+				CALL SETUP_PARTING
+			CASE "악마스토리지"
+				CALL DEVIL_STORAGE
+			CASE "인스톨소프트"
+				CALL SETUP_SOFT
+			CASE "플러그인소프트"
+				CALL EQUIP_PLUGIN_SOFT
+			CASE "스킬에뮬레이터"
+				CALL EQUIP_SKILL_EMULATOR_MAIN_UI
+			;---- EDIT 019 ADD START -------------------------
+			CASE "세트편성"
+				CALL SET_PARTYSET_MEMBER
+			;---- EDIT 019 ADD END ---------------------------
+			CASE "링케이지스킬확인"
+				CALL SHOW_LINKAGE
+			CASE "네비게이터 지정"
+				CALL SET_NAVIGATOR
+			CASE "팀 구성"
+				CALL MAKE_TEAM_ZENZERO
+		ENDSELECT
+	CASE 21 TO 26
+		IF POS(RESULT - 20) >= 0
+			VARSET Q, -1
+			RESULT = POS(RESULT - 20)
+			LOCAL:1 = 0
+			FOR LOCAL, 1, 7
+				SIF POS(LOCAL) < 0
+					CONTINUE
+				Q:(LOCAL:1) = POS(LOCAL)
+				LOCAL:1++
+			NEXT
+			CALL SHOW_CHARADATA_PAGE, 2, LOCAL:1
+		ELSE
+			CALL SETUP_SUMMON, RESULT - 20
+		ENDIF
+	;---- EDIT 019 ADD START -------------------------
+	CASE 30 TO 30 + BATTLE_MEMBERSETNUM
+		CALL CHANGE_BATTLE_MEMBERSET, RESULT - 30
+	;---- EDIT 019 ADD END ---------------------------
+	CASE 110
+		CALL SHOP_COM_301
+	CASE 120
+		FLAG:상성등표시ON += 1
+	SIF FLAG:상성등표시ON > 1
+		FLAG:상성등표시ON = 0
+	CASE 100
+		;---- EDIT 019 ADD START -------------------------
+		CALL SET_LAST_BATTLE_MEMBERSET
+		;---- EDIT 019 ADD END ---------------------------
+		RETURN 0
+	CASEELSE
+		GOTO INPUT_LOOP
+ENDSELECT
+GOTO START
+
+;IF RESULT == 1
+;	CALL SETUP_SUMMON
+;ELSEIF RESULT == 2
+;	CALL SETUP_FORMATION
+;ELSEIF RESULT == 3
+;	CALL SETUP_REMOVE
+;ELSEIF RESULT == 4
+;	LREDRAW = CURRENTREDRAW()
+;	SIF LREDRAW != 2
+;		REDRAW 2
+;	CALL EQUIPMENT
+;	SIF LREDRAW != 2
+;		REDRAW LREDRAW
+;ELSEIF RESULT == 6 && NUM_NAKAMA() > 0
+;ELSEIF RESULT == 5
+;	CALL SETUP_PARTING
+;ELSEIF RESULT == 6
+;	CALL DEVIL_STORAGE
+;---- EDIT 004 ADD START -------------------------
+;ELSEIF RESULT == 7
+;	CALL SETUP_SOFT
+;ELSEIF RESULT == 8
+;	CALL EQUIP_PLUGIN_SOFT
+;---- EDIT 013 MOD START ---------------------------
+;ELSEIF RESULT == 9
+;	CALL EQUIP_SKILL_EMULATOR_MAIN_UI
+;ELSEIF RESULT == 10
+;	CALL SHOW_LINKAGE
+;---- EDIT 013 MOD END ---------------------------
+;ELSEIF RESULT == 11 && CAN_USE_NAVIGATOR
+;	CALL SET_NAVIGATOR
+;ELSEIF RANGE(RESULT, 21, 26)
+;	RESULT = POS(RESULT - 20)
+;	IF RESULT >= 0
+;		LOCAL:1 = 0
+;		FOR LOCAL, 1, 7
+;			SIF POS(LOCAL) < 0
+;				CONTINUE
+;			Q:(LOCAL:1) = POS(LOCAL)
+;			LOCAL:1++
+;		NEXT
+;		CALL SHOW_CHARADATA_PAGE, 2, LOCAL:1
+;	ENDIF
+;---- EDIT 004 ADD END   -------------------------
+;ELSEIF RESULT == 110
+;	CALL SHOP_COM_301
+;ELSEIF RESULT == 120
+;	FLAG:상성등표시ON += 1
+;	SIF FLAG:상성등표시ON > 1
+;		FLAG:상성등표시ON = 0
+;ELSEIF RESULT == 100
+;	RETURN 0
+;ENDIF
+;RESTART
+
+
+
+;=================================================================
+;仲魔と別れる
+;=================================================================
+@SETUP_PARTING
+;---- EDIT 018 MOD START -------------------------
+;CALL INPUT_CHARA_LIST("誰を仲魔から外しますか？", "CASTING_SETUP_PARTING")
+{
+CALL INPUT_CHARA_LIST
+	, "FUNC_PROPSET_LIST"
+	, "누구를 동료마에서 제외합니까？"
+	, "CASTING_SETUP_PARTING"
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "그만둔다"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+;---- EDIT 018 MOD END ---------------------------
+IF RESULT == 1000
+	RETURN 0
+ELSE
+	SIF CFLAG:RESULT:12 > 0
+		RESTART
+	LOCAL:20 = RESULT
+	IF ABL:(LOCAL:20):종족 != 0
+		;PRINTFORML %NAME:(LOCAL:20)%のデータをＣＯＭＰから削除しますか？
+		PRINTFORML %NAME:(LOCAL:20)%의 데이터를 삭제하시겠습니까？
+	ELSE
+		PRINTFORML %조사처리(NAME:(LOCAL:20),"를")% 해방하시겠습니까？
+	ENDIF
+	
+	CALL INPUT_YN,"Yes","No",2
+
+	SELECTCASE RESULT
+		CASE 0
+			;死んでるか石化してる仲魔だったら主人属性値ダウン
+			IF CFLAG:(LOCAL:20):상태이상 == GET_STATE_NUM("DYING") || CFLAG:(LOCAL:20):상태이상 == GET_STATE_NUM("STONE")
+				CALL INCREASE_LD,-5
+			ENDIF
+			CALL キャラ削除, LOCAL:20
+		CASE 1
+			RESTART
+	ENDSELECT
+
+	;フォーメーション再読み込み
+	CALL REFRESH_POS
+
+ENDIF
+
+@CASTING_SETUP_PARTING(ARG:0)
+SIF ARG:0 == MASTER
+	RETURN 0
+IF GET_ROLE_PROP("CAN_PUT_IN_COMP", ARG)
+	SIF GET_RACE(ABL:ARG:종족) == "조마"
+		RETURN 0
+	SIF GROUPMATCH(GET_RACE(ABL:ARG:종족), "인간", "반마인", "악마인") && CSVCFLAG(NO:ARG,GETNUM(CFLAG,"복수생성가능"),0) != 1
+		RETURN 0
+ELSE
+	SIF CSVCFLAG(NO:ARG,GETNUM(CFLAG,"복수생성가능"),0) != 1
+		RETURN 0
+ENDIF
+SIF CFLAG:(ARG:0):이자리에없는플래그 == 1
+	RETURN 0
+SIF CFLAG:(ARG:0):소속ＣＯＭＰ == -1 && FLAG:SHOP커맨드 ==[[ショップ:탐색]]
+	RETURN 0
+RETURN 1
+
+
+;=================================================================
+;悪魔ストレージ
+;=================================================================
+@DEVIL_STORAGE
+#DIM LCOUNT
+
+P = 0
+;表示させるキャラを抽出（Q:*に表示するキャラの登録番号、LOCAL:2に人数）
+VARSET Q, -1
+LOCAL:2 = 0
+FOR LCOUNT, 0, CHARANUM
+	SIF LCOUNT == MASTER
+		CONTINUE
+	;---- EDIT 020 MOD START -------------------------
+	SIF !GET_ROLE_PROP("CAN_PUT_IN_COMP", LCOUNT)
+		CONTINUE
+	;SIF (ABL:LCOUNT:종족 == 0 || ABL:LCOUNT:종족 > 45) && ABL:LCOUNT:종족 != 73
+	;	CONTINUE
+	;IF TALENT:LCOUNT:인수라
+	;	CFLAG:LCOUNT:소속ＣＯＭＰ = -1
+	;	CONTINUE
+	;ENDIF
+	;---- EDIT 020 MOD END ---------------------------
+	SIF CFLAG:LCOUNT:이자리에없는플래그 == 1
+		CONTINUE
+	;SIF CFLAG:LCOUNT:용량미사용
+	;	CONTINUE
+	Q:(LOCAL:2) = LCOUNT
+	LOCAL:2 ++
+NEXT
+
+DRAWLINE
+
+$PRINT_LIST
+PRINTFORML ＣＯＭＰ-자택서버간 전송시킬 악마를 선택해주세요　＜page.{P + 1}＞　ＣＯＭＰ：{NUM_NAKAMA()}/{GET_STOCKSIZE()}
+FOR LOCAL, P * リスト表示数() , MIN(P * リスト表示数() + リスト表示数(), LOCAL:2)
+	CALL ARRANGE_CHARALIST, Q:LOCAL
+	CALL ARRANGE_CHARALIFE, Q:LOCAL
+;---- EDIT 005 MOD START -------------------------
+	PRINTFORM 　
+	CALL ARRANGE_FALLTALENT, Q:LOCAL
+	CALL PRINT_ALIGNMENT, Q:LOCAL, 1, 0
+	PRINTFORM %AUTO_SPLIT(" 　　, ①　, ②　, ③　, 　④, 　⑤, 　⑥",",",CFLAG:(Q:LOCAL):포지션)%
+;---- EDIT 005 MOD END   -------------------------
+	;IF CFLAG:(Q:LOCAL):용량미사용 || ABL:(Q:LOCAL):종족 == 73
+	;	PRINTFORML [\@ CFLAG:(Q:LOCAL):소속ＣＯＭＰ == -1 ? 待機中 # 同行中 \@]
+	;ELSE
+		PRINTFORML [\@ CFLAG:(Q:LOCAL):소속ＣＯＭＰ == -1 ? 자택서버 # ＣＯＭＰ \@]
+	;ENDIF
+NEXT
+;---- EDIT 006 MOD START -------------------------
+DRAWLINE
+PRINTFORMLC \@ LOCAL:2 > リスト表示数() ?[1007]이전페이지# [----] \@
+PRINTLC [1000]돌아간다
+PRINTFORMLC \@ LOCAL:2 > リスト表示数() ?[1009]다음페이지# [----] \@
+
+$INPUT_LOOP_1
+INPUT
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT == 1007
+	IF P > 0
+		P -= 1
+		GOTO PRINT_LIST
+	ELSEIF P == 0
+		P =(LOCAL:2-1) / リスト表示数() 
+		GOTO PRINT_LIST
+	ELSE
+		GOTO INPUT_LOOP_1
+	ENDIF
+ELSEIF RESULT == 1009
+	IF P == (LOCAL:2-1) / リスト表示数()
+		P = 0
+		GOTO PRINT_LIST
+	ELSEIF P < (LOCAL:2-1) / リスト表示数()
+		P += 1
+		GOTO PRINT_LIST
+	ENDIF
+;---- EDIT 006 MOD END   -------------------------
+ELSEIF RESULT < 1 || RESULT >= CHARANUM || MATCH(Q,RESULT,0) == 0
+	GOTO INPUT_LOOP_1
+ELSE
+	IF CFLAG:RESULT:소속ＣＯＭＰ == -1
+		LOCAL = RESULT
+		;IF CFLAG:RESULT:용량미사용 || ABL:RESULT:종족 == 73
+		;---- EDIT 004 MOD START -------------------------
+		;IF ストック空き容量() < 1 && SOFT_ON("デビルチェンバー") && NUM_NAKAMA_HEADCOUNT() == 6
+		;	PRINTW ＣＯＭＰの悪魔が６体を超えるとデビルチェンバーの効果が消えて容量オーバーしてしまいます！
+		;	CLEARLINE 2
+		;	GOTO INPUT_LOOP_1
+		;ELSEIF ストック空き容量() < 1
+		;---- EDIT 004 MOD END ---------------------------
+		IF NUM_NAKAMA() >= GET_STOCKSIZE()
+			PRINTW ＣＯＭＰ의 용량이 가득찼습니다
+			CLEARLINE 2
+			GOTO INPUT_LOOP_1
+		ENDIF
+		;---- EDIT 017 MOD START -------------------------
+		;IF NO:LOCAL != [[キャラ:당신의딸]] && NO:LOCAL != [[キャラ:노예의딸]] && NO:LOCAL != [[キャラ:조마]]
+		IF CSVCFLAG(NO:LOCAL,GETNUM(CFLAG,"복수생성가능"),0) != 1
+		;---- EDIT 017 MOD END ---------------------------
+			FOR LOCAL:1,0,CHARANUM
+				IF 계약(LOCAL:1) == 0 && NO:(LOCAL:1) == NO:LOCAL && 계약(LOCAL) == 0 && CFLAG:(LOCAL:1):소속ＣＯＭＰ != -1
+					PRINTW 같은 악마가 ＣＯＭＰ에 있습니다
+					CLEARLINE 2
+					GOTO INPUT_LOOP_1
+				ENDIF
+			NEXT
+		ENDIF
+		CFLAG:RESULT:소속ＣＯＭＰ = 0
+	ELSE
+		CFLAG:RESULT:소속ＣＯＭＰ = -1
+	ENDIF
+	GOTO PRINT_LIST
+ENDIF
+;---- EDIT 019 ADD START -------------------------
+;-------------------------------------------------
+;編成セットの登録関数
+;-------------------------------------------------
+@SET_PARTYSET_MEMBER
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC SHOW_LINE
+#DIMS DYNAMIC TEMP
+#DIMS DYNAMIC TEMPS
+#DIM DYNAMIC L_LINE
+#DIM DYNAMIC STOCK_REDRAW
+#DIM DYNAMIC SELECT_PARTYSET
+#DIM DYNAMIC SELECT_POS
+#DIM DYNAMIC SELECT_MODE
+#DIM DYNAMIC LEFT_SPACE_LENS
+#DIM DYNAMIC SELECT_CHANGE
+
+LEFT_SPACE_LENS = 17
+STOCK_REDRAW = CURRENTREDRAW()
+REDRAW 0
+L_LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - L_LINE
+;同期処理
+CALL SET_LEADER_SKILL
+FOR LCOUNT, 1, 7
+	SIF POS(LCOUNT) < 0
+		CONTINUE
+	CALL SYNC_STATUS, POS(LCOUNT), "HPMP割合保持"
+NEXT
+IF SELECT_CHANGE
+	SHOW_LINE = 
+	SHOW_LINE += LEFT_SPACE_LENS * " "
+	SHOW_LINE += ((SELECT_CHANGE -1) % 3) * GET_CHARALENS_FORMATION_P() * " "
+	SHOW_LINE += @"<shape type ='rect' param = '0, {(SELECT_CHANGE -1) > 2 ? 1100 # 500}, {GET_CHARALENS_FORMATION_P() * 50}, {FLAG:상성등표시ON > 0 ? 700 # 500}' color = '%TOSTR_HTML(BGCOLOR("LIGHT-BLACK"))%'>"
+	HTML_PRINT SHOW_LINE
+ELSE
+	PRINTL 
+ENDIF
+DRAWLINE
+DRAWLINE
+CALL SHOW_NOW_FORMATION_P,0,2, 3, , SELECT_PARTYSET
+FOR LCOUNT, 0, BATTLE_MEMBERSETNUM - 1
+	SIF LCOUNT % 3 == 0
+		PRINTFORM %" " * LEFT_SPACE_LENS%
+	IF BATTLE_MEMBERSET_NAME:LCOUNT != ""
+		TEMPS = %BATTLE_MEMBERSET_NAME:LCOUNT%
+	ELSE
+		TEMPS = ＳＥＴ - %SUBSTRINGU("ＡＢＣＦＥＦＧ", LCOUNT, 1)%
+	ENDIF
+	TEMPS = [{20 + LCOUNT}] %TEMPS%
+	SETCOLOR SELECT_PARTYSET == LCOUNT ? COLOR("p-green") # COLOR("DEF")
+	PRINTBUTTON TOALIGNMENT(TEMPS, GET_CHARALENS_FORMATION_P(), "LEFT"), 20 + LCOUNT
+	SIF LCOUNT % 3 == 2
+		PRINTL 
+NEXT
+RESETCOLOR
+SIF !LINEISEMPTY()
+	PRINTL 
+DRAWLINE
+SHOW_LINE '= " " * LEFT_SPACE_LENS
+SHOW_LINE += SET_COLOR_TAG(SET_BUTTON_TAG(@"%"[10] 소환/편입", GET_CHARALENS_FORMATION_P(), LEFT%", "10"), \@SELECT_MODE == 0 ? aqua # DEF\@)
+SHOW_LINE += SET_COLOR_TAG(SET_BUTTON_TAG(@"%"[11] 포지션변경", GET_CHARALENS_FORMATION_P(), LEFT%", "11"), \@SELECT_MODE == 1 ? aqua # DEF\@)
+SHOW_LINE += SET_COLOR_TAG(SET_BUTTON_TAG(@"%"[12] 귀환/제외", GET_CHARALENS_FORMATION_P(), LEFT%", "12"), \@SELECT_MODE == 2 ? aqua # DEF\@)
+HTML_PRINT SHOW_LINE
+DRAWLINE
+PRINTFORML [90] 현재 파티 편성을 복사한다
+PRINTFORML [91] 편성을 리셋한다
+PRINTFORML [92] 세트명 편집
+PRINTFORML [99] 돌아간다
+INPUT
+IF INRANGE(RESULT, 1, 7)
+	SELECT_POS = RESULT
+	L_CHARA = POS_FOR_FORMATION_P(SELECT_POS, SELECT_PARTYSET)
+ELSE
+	SELECT_CHANGE = 0
+ENDIF
+SELECTCASE RESULT
+	CASE 1 TO 7
+		SELECTCASE SELECT_MODE
+			CASE 0
+				IF L_CHARA != MASTER
+					CALL CHOOSE_COMPANION,"셋업"
+					IF RESULT != 1000
+						;既にほかのポジションに登録されている場合、はがす
+						FOR LCOUNT, 1, 7
+							SIF BATTLE_MEMBERSET:SELECT_PARTYSET:LCOUNT == CFLAG:RESULT:실제가입시간
+								BATTLE_MEMBERSET:SELECT_PARTYSET:LCOUNT = 0
+						NEXT
+						BATTLE_MEMBERSET:SELECT_PARTYSET:SELECT_POS = CFLAG:RESULT:실제가입시간
+					ENDIF
+				ENDIF
+			CASE 1
+				IF SELECT_CHANGE
+					SWAP BATTLE_MEMBERSET:SELECT_PARTYSET:SELECT_POS, BATTLE_MEMBERSET:SELECT_PARTYSET:SELECT_CHANGE
+					SELECT_CHANGE = 0
+				ELSE
+					SELECT_CHANGE = SELECT_POS
+				ENDIF
+			CASE 2
+				SIF L_CHARA >= 0 && L_CHARA != MASTER
+					BATTLE_MEMBERSET:SELECT_PARTYSET:SELECT_POS = 0
+		ENDSELECT
+	CASE 10 TO 12
+		SELECT_MODE = RESULT % 10
+	CASE 20 TO 20 + BATTLE_MEMBERSETNUM - 1
+		SELECT_PARTYSET = RESULT - 20
+	CASE 90
+		FOR LCOUNT, 1, 7
+			IF POS(LCOUNT) < 0
+				BATTLE_MEMBERSET:SELECT_PARTYSET:LCOUNT = 0
+			ELSE
+				BATTLE_MEMBERSET:SELECT_PARTYSET:LCOUNT = CFLAG:POS(LCOUNT):실제가입시간
+			ENDIF
+		NEXT
+	CASE 91
+		FOR LCOUNT, 1, 7
+			BATTLE_MEMBERSET:SELECT_PARTYSET:LCOUNT = 0
+		NEXT
+		BATTLE_MEMBERSET:SELECT_PARTYSET:2 = CFLAG:MASTER:실제가입시간
+	CASE 92
+		PRINTFORML 세트의 명칭을 입력해주세요
+		INPUTS
+		BATTLE_MEMBERSET_NAME:SELECT_PARTYSET = %SUBSTRING(RESULTS, 0, 20)%
+		PRINTFORMW 세트명을『%BATTLE_MEMBERSET_NAME:SELECT_PARTYSET%』로 변경했습니다。
+	CASE 99
+		REDRAW STOCK_REDRAW
+		RETURN 0
+ENDSELECT
+GOTO START
+;---- EDIT 019 ADD END ---------------------------
+
+
+;==========================================================
+;@GET_STOCKSIZE
+;ストックの容量の上限を取得する
+;==========================================================
+@GET_STOCKSIZE
+#FUNCTION
+RETURNF LIMIT(FLAG:소프트용량 + FLAG:조직공헌LV, 8, 24)

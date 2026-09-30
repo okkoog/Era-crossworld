@@ -1,0 +1,327 @@
+﻿;スキル名
+@SKILL_NAME_ヴォルティックチェーン, ARG
+RESULTS = VOLTIC CHAIN
+
+;　명중
+@SKILL_HITRATE_ヴォルティックチェーン, ARG
+RETURN 150
+
+;　威力
+@SKILL_POWER_ヴォルティックチェーン, ARG
+#DIM DIVA_F
+#DIM DIVA_H
+IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정")
+	IF CFLAG:ARG:気合フラグ > 0
+		SELECTCASE FLAG:확산플래그
+		CASE 1
+			RETURN 370
+		CASE 2
+			RETURN 420
+		CASE 3
+			RETURN 450
+		CASE 4
+			RETURN 470
+		CASE 5 TO 10
+			RETURN 500
+		CASE 999
+			RETURN 150
+		CASEELSE
+			RETURN 360
+		ENDSELECT
+	ELSE
+		SELECTCASE FLAG:확산플래그
+		CASE 1
+			RETURN 390
+		CASE 2
+			RETURN 440
+		CASE 3
+			RETURN 460
+		CASE 4
+			RETURN 480
+		CASE 5 TO 10
+			RETURN 510
+		CASE 99
+			RETURN 80
+		CASEELSE
+			RETURN 400
+		ENDSELECT
+	ENDIF
+ELSE
+	IF DIVA_F == 1 || DIVA_H == 1
+		SELECTCASE FLAG:확산플래그
+		CASE 1
+			RETURN 390
+		CASE 2
+			RETURN 440
+		CASE 3
+			RETURN 460
+		CASE 4
+			RETURN 480
+		CASE 5 TO 10
+			RETURN 510
+		CASE 99
+			RETURN 80
+		CASEELSE
+			RETURN 400
+		ENDSELECT
+	ELSE
+		SELECTCASE FLAG:확산플래그
+		CASE 1
+			RETURN 400
+		CASE 2
+			RETURN 450
+		CASE 3
+			RETURN 480
+		CASE 4
+			RETURN 510
+		CASE 5 TO 10
+			RETURN 540
+		CASEELSE
+			RETURN 400
+		ENDSELECT
+	ENDIF
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ヴォルティックチェーン, ARG
+SIF FLAG:확산플래그 == 99
+	RETURN 3
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ヴォルティックチェーン, ARG
+SIF FLAG:확산플래그 == 99
+	RETURN 3
+RETURN 1
+
+;一体辺りの最大ＨＩＴ数
+;※ランダム攻撃系に使う
+@SKILL_MAXATK_PER_ヴォルティックチェーン, ARG
+RETURN 1
+
+;一体辺りの最低ＨＩＴ数
+;※ランダム攻撃系に使う
+@SKILL_MINATK_PER_ヴォルティックチェーン, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ヴォルティックチェーン, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ヴォルティックチェーン, ARG
+SIF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정")
+	RETURN 51
+RETURN 34
+
+;　相性
+@SKILL_TYPE_ヴォルティックチェーン, ARG
+RETURN GET_TYPE_NUM("전격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ヴォルティックチェーン
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ヴォルティックチェーン, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ヴォルティックチェーン, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_ヴォルティックチェーン, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ヴォルティックチェーン, ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ヴォルティックチェーン, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_ヴォルティックチェーン, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ヴォルティックチェーン
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ヴォルティックチェーン, ARG, ARG:1, SKILL_NUM
+#LOCALSIZE 3
+#LOCALSSIZE 1
+#DIM SKILL_NUM
+#DIM DIVA_F
+#DIM DIVA_H
+#DIM ループ用
+#DIM ボス殺したフラグ
+#DIM ボス検索配列, 17
+
+DIVA_F = SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]])
+DIVA_H = SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]])
+
+FLAG:확산플래그 = 0
+IF CFLAG:ARG:PT플래그 == 0
+	LOCAL:1 = 1
+	LOCAL:2 = 7
+ELSE
+	LOCAL:1 = 7
+	LOCAL:2 = 17 
+ENDIF
+FOR LOCAL, LOCAL:1, LOCAL:2
+	LOCALS = 포지션{LOCAL}
+	SIF FLAG:LOCALS < 0
+		CONTINUE
+	SIF GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) == "DYING"
+		CONTINUE
+	FLAG:확산플래그 += 1
+NEXT
+
+;IF CFLAG:ARG:PT플래그 > 0
+;	ボス殺したフラグ = 0
+;	VARSET ボス検索配列, 0
+;	IF CFLAG:ARG:PT플래그 > 0
+;		FOR ループ用, 7, 17
+;			LOCALS = 포지션{ループ用}
+;			SIF FLAG:LOCALS == -1
+;				CONTINUE
+;			SIF GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) == "DYING"
+;				CONTINUE
+;			;生きてるボスの位置を記録
+;			SIF CFLAG:(FLAG:LOCALS):보스플래그 == 1
+;				ボス検索配列:ループ用 = 1
+;		NEXT
+;	ENDIF
+;ENDIF
+
+CALL ATTACK_FIELD, ARG, ARG:1, SKILL_NUM
+
+IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정")
+	IF ENEMY_COUNT() > 0 && CFLAG:ARG:気合フラグ > 0
+		TRYCALLFORM BATTLE_MESSAGE_K5357_SP, ARG, "ヴォルティックチェーン"
+		PRINTW ＞연이어 낙뢰가 쏟아져 내린다!
+		FLAG:확산플래그 = 999
+		CALL ATTACK_FIELD, ARG, ARG:1, SKILL_NUM
+		CFLAG:ARG:気合フラグ = 0
+	ELSEIF ENEMY_COUNT() > 0
+		TRYCALLFORM BATTLE_MESSAGE_K5357_SP, ARG, "ヴォルティックチェーン"
+		PRINTW ＞연이어 낙뢰가 쏟아져 내린다!
+		FLAG:확산플래그 = 99
+		CALL ATTACK_RAND, ARG, ARG:1, SKILL_NUM
+	ENDIF
+ELSE
+	IF ENEMY_COUNT() > 0 && (DIVA_F == 1 || DIVA_H == 1)
+		TRYCALLFORM BATTLE_MESSAGE_K5357_SP, ARG, "ヴォルティックチェーン"
+		PRINTW ＞연이어 낙뢰가 쏟아져 내린다!
+		FLAG:확산플래그 = 99
+		CALL ATTACK_RAND, ARG, ARG:1, SKILL_NUM
+	ENDIF
+ENDIF
+
+;IF CFLAG:ARG:PT플래그 > 0
+;	FOR ループ用, 7, 17
+;		;攻撃前に生きてたボスの場所じゃないなら飛ばすぞ
+;		SIF ボス検索配列:ループ用 == 0
+;			CONTINUE
+;		LOCALS = 포지션{ループ用}
+;		;この攻撃でボスが死んだら
+;		IF FLAG:LOCALS == -1
+;			ボス殺したフラグ += 1
+;		ELSEIF GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) == "DYING"
+;			ボス殺したフラグ += 1
+;		ENDIF
+;	NEXT
+;	SIF ボス殺したフラグ > 0
+;		PRINTFORMW SKILL FINISH　Kudos + 1000
+;ENDIF
+
+FLAG:확산플래그 = 0
+CFLAG:ARG:타겟 = CFLAG:ARG:포지션 < 7 ? 22 # 19
+
+IF CFLAG:ARG:PT플래그 > 0
+	LOCAL = RAND:4
+	IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정") && LOCAL == 0
+	ELSE
+		;IF ボス殺したフラグ > 0
+		;	SIF SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]]) == 0
+		;		CALL SKILLGAGE_F_SET, ARG, [[스킬:뇌격린]], 1
+		;ENDIF
+		;SONG OF DIVA/藍の運命終了
+		CALL SKILLGAGE_F_SET, ARG, [[스킬:SONG OF DIVA]], 0
+		;クードス没収
+		SIF SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]]) > 0
+			PRINTFORML ＞%CALLNAME:ARG%의 쿠도스가 리셋되었다!
+		CALL SKILLGAGE_F_SET, ARG, [[스킬:뇌격린]], 0
+		;SP3消費=ゲージDを12加算
+		CALL SKILLGAGE_D_ADD, ARG, [[스킬:뇌격린]], 12
+	ENDIF
+	CALL SKILLGAGE_D_SET, ARG, SKILL_NUM, 4
+ENDIF
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_ヴォルティックチェーン, ARG
+#DIM DIVA_F
+#DIM DIVA_H
+DIVA_F = SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]])
+DIVA_H = SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]])
+PRINTFORML 쇠사슬을 발생시켜 전격을 흘려 공격하는 %CALLNAME:ARG%의 SP 스킬.
+PRINTL 　
+PRINTL 적 전체에 전격 상성으로 대데미지를 준다. 데미지는 적의 수가 많을수록 상승한다.
+IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정")
+	SETCOLOR 0x144ff4
+	IF CFLAG:ARG:気合フラグ > 0
+		;吼雷降で超追撃！
+		PRINTL 추가로 적 전체에 전격 상성으로 추격을 행한다.
+	ELSE
+		;降雷吼で追撃！
+		PRINTL 추가로 적 전체에서 무작위로 전격 상성으로 추격을 3회 행한다.
+	ENDIF
+	RESETCOLOR
+ELSE
+	;降雷吼で追撃！
+	IF DIVA_H == 1
+		SETCOLOR 0x1d9eff
+		PRINTL SONG OF DIVA 발동 중: 추가로 적 전체에서 무작위로 전격 상성으로 추격을 3회 행한다.
+		RESETCOLOR
+	ELSEIF DIVA_F == 1
+		SETCOLOR 0x3f60a9
+		PRINTL SONG OF DIVA 발동 중: 추가로 적 전체에서 무작위로 전격 상성으로 추격을 3회 행한다.
+		RESETCOLOR
+	ENDIF
+ENDIF
+PRINTL 단 사용 후에는 쿠도스가 0이 되며, 재사용까지 4턴의 쿨타임이 필요하다.
+PRINTL MP와는 별개로 SP를 3 소비한다.
+PRINTL ※SP는 4턴에 1 회복되며, 전투 종료 후에 완전 회복된다.
+PRINTL ※스킬 「뇌격린」을 소지하지 않은 경우 사용 불가.
+IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정")
+	SETCOLOR 0x144ff4
+	PRINTL 번개의 렌즈 장비 중 25% 확률로 쿠도스·SP 소비를 회피
+	PRINTL 　　　　　　　　　　기합 상태일 경우 추격을 적 전체에 행하게 된다
+	RESETCOLOR
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ヴォルティックチェーン, ARG
+#DIM SKILL_NUM
+IF CFLAG:ARG:PT플래그 > 0
+	SKILL_NUM = PU_SKILLNUM_GET(ARG, "ヴォルティックチェーン")
+	SIF SKILLGAGE_D_GET(ARG, SKILL_NUM)
+		RETURN 0
+	SIF !HAVE_SKILL(ARG, [[스킬:뇌격린]])
+		RETURN 0
+	SIF SKILLGAGE_D_GET(ARG, [[스킬:뇌격린]]) != 0
+		RETURN 0
+	RETURN 1
+ELSE
+	RETURN 1
+ENDIF
+

@@ -1,0 +1,123 @@
+﻿;元ネタはTRPGのスキル「雲耀の太刀」。リプレイで最後に習得した。
+;本来は一列万能属性だが、拡散型としてみた。　残弾型なのはリプレイから。
+
+;スキル名
+@SKILL_NAME_雲耀の太刀,ARG
+RESULTS = 【운요의 태도】
+
+;　명중
+@SKILL_HITRATE_雲耀の太刀, ARG
+RETURN 999
+
+;基礎クリティカル率
+@SKILL_CRITICAL_RATE_雲耀の太刀, ARG
+RETURN 20
+
+;　威力
+@SKILL_POWER_雲耀の太刀, ARG
+SIF FLAG:확산플래그
+	RETURN 200
+RETURN 500
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_雲耀の太刀,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_雲耀の太刀,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_雲耀の太刀, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_雲耀の太刀,ARG
+;残弾式
+RETURN 0
+
+;　相性
+@SKILL_TYPE_雲耀の太刀,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_雲耀の太刀
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_雲耀の太刀,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_雲耀の太刀,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_雲耀の太刀,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_雲耀の太刀,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_雲耀の太刀,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_雲耀の太刀
+RETURN GET_SUCCESSION_NUM("만능")
+
+;속도보정
+@SKILL_SPEED_雲耀の太刀, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_雲耀の太刀
+RETURN 0
+
+@SKILL_PENETRATION_RANK_雲耀の太刀, ARG = -1, ARG:1 = -1
+RETURN 3
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_雲耀の太刀, ARG,ARG:1,SKILL_NUM
+#LOCALSIZE 4
+#DIM SKILL_NUM
+;CFLAG:ARG:회심의패기플래그 = 1
+CALL SKILLGAGE_F_ADD, ARG, SKILL_NUM,1
+CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　説明文の表示
+@SKILL_EXPLAIN_雲耀の太刀, ARG
+#LOCALSIZE 1
+#DIM 雲耀の太刀残弾
+雲耀の太刀残弾 = PU_SKILLNUM_GET(ARG, "雲耀の太刀")
+PRINTL 
+PRINTL 적 1체(확산)에 필중 효과를 지닌 만능 물리 데미지를 준다
+PRINTL 크리티컬률이 매우 높다
+IF !TFLAG:전투중 || ARG < 0 || ARG >= CHARANUM
+	PRINTL 1회 출격당 3회만 사용 가능
+ELSE
+	;残弾なし
+	IF SKILLGAGE_F_GET(ARG, 雲耀の太刀残弾) > 3
+		PRINTL 이미 사용했으므로 사용 불능
+	;残弾あり
+	ELSE
+		PRINT 残弾　
+		LOCAL = 1 - SKILLGAGE_F_GET(ARG, 雲耀の太刀残弾)
+		PRINTV LOCAL
+		PRINTL 発
+	ENDIF
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_雲耀の太刀, ARG
+#DIM 雲耀の太刀残弾
+雲耀の太刀残弾 = PU_SKILLNUM_GET(ARG, "雲耀の太刀")
+SIF SKILLGAGE_F_GET(ARG, 雲耀の太刀残弾) > 3
+	RETURN 0
+RETURN 1

@@ -1,0 +1,84 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@C_BTL_EFFECT_CONTROL_NO_ER001_エデンズフォース・オーバーロード,ARG
+RESULTS = 에덴즈 포스·오버로드
+
+;スキル名
+@SKILL_NAME_C_BTL_EFFECT_エデンズフォース・オーバーロード,ARG
+RESULTS = 에덴즈 포스・오버로드
+
+;重複可能な数
+@C_BTL_EFFECT_COUNT_LIMIT_エデンズフォース・オーバーロード
+RETURN 1
+
+;効果時間　最大10ターンまで、0を指定した場合は戦闘中永続
+@C_BTL_EFFECT_CONTINUE_TIME_エデンズフォース・オーバーロード
+RETURN 10
+
+;排他となる効果
+;戻り値
+; RESULTS = 効果名
+; RESULT
+; 0 = 排他
+;-1 = 上書き不能
+; 1 = 上書き(対象も1なら相互上書き)
+@C_BTL_EFFECT_EXCLUSIVE_エデンズフォース・オーバーロード
+RESULTS = 
+RETURN 0
+
+;個別の対象条件
+;ARG 	効果を受けるキャラの登録番号
+;ARG:1	効果を与えるキャラの登録番号
+@C_BTL_EFFECT_SPECIAL_TARGET_エデンズフォース・オーバーロード, ARG, ARG:1
+SIF IS_BADSTATE(ARG, "DYING")
+	RETURN 0
+RETURN 1
+
+;効果処理
+;ARG 	効果を受けるキャラの登録番号
+;ARG:1	効果を与えるキャラの登録番号
+@SKILL_TURNEND_C_BTL_EFFECT_エデンズフォース・オーバーロード, ARG, ARG:1
+#DIM 残スキルカウント
+#LOCALSIZE 2
+
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	残スキルカウント = 0
+	FOR LOCAL, 0, 10
+		IF C_BTL_EFFECT:(ARG):LOCAL != ""
+			残スキルカウント ++
+		ENDIF
+	NEXT
+	IF (BASE:ARG:ＭＰ > MAXBASE:ARG:ＭＰ / 10) && 残スキルカウント > 1
+		BASE:ARG:ＭＰ = BASE:ARG:ＭＰ - MAXBASE:ARG:ＭＰ / 10
+		PRINTFORML %ARG는% 리터로 변신한 대가로、ＭＰ를 10％ 잃었다！
+		PRINTFORML [{CPOS(ARG),2}] %CALLNAME:ARG%    :  (에덴즈 포스・오버로드 남은 턴：{残スキルカウント - 2})
+	ELSEIF 残スキルカウント == 1
+		CALL SET_RPG_CSTR_BTL, ARG, "エデンズリッター変身状態", "해제" 
+		BASE:ARG:ＭＰ = BASE:ARG:ＭＰ - MAXBASE:ARG:ＭＰ / 10
+		PRINTFORML %ARG는% 리터로 변신한 대가로、ＭＰ를 10％ 잃었다！
+		PRINTFORML %ARG는% 오래 변신하고 있었기 때문에、리터로의 변신이 풀려버렸다！
+		PRINTFORML
+		PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃[{CPOS(ARG),2}] %CALLNAME:ARG,21,LEFT%┃　┃에덴즈 에너지・릴리스　　　　　　　┃
+		PRINTFORMW ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+		FOR LOCAL, 0, 10
+			IF C_BTL_EFFECT:(ARG):LOCAL != ""
+				C_BTL_EFFECT:(ARG):LOCAL = ""
+			ENDIF
+		NEXT
+	ELSE
+		CALL SET_RPG_CSTR_BTL, ARG, "エデンズリッター変身状態", "해제" 
+		PRINTFORML %ARG는% ＭＰ 고갈로 인해、리터로의 변신이 풀려버렸다！
+		PRINTFORML
+		PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃[{CPOS(ARG),2}] %CALLNAME:ARG,21,LEFT%┃　┃에덴즈 에너지・릴리스　　　　　　　┃
+		PRINTFORMW ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+
+		FOR LOCAL, 0, 10
+			IF C_BTL_EFFECT:(ARG):LOCAL != ""
+				C_BTL_EFFECT:(ARG):LOCAL = ""
+			ENDIF
+		NEXT
+	ENDIF
+ENDIF

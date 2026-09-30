@@ -1,0 +1,1624 @@
+﻿
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SHOOT.ERB
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2012/06/18 		UNKNOWN					バグ修正
+;	003		2019/03/28		TR(SAYA)				ヘッダ作成。シャセトマが3日持続する様に
+;	004		2020/10/12		JK好き					@SAMEN_SHOOTにランダムにぶっかけを追加
+;	005		2021/04/25		JK好き					@IN_VAGINA_CHECK_TにTCVAR:TARGET:射精を参照して子宮現在容量を加算する処理追加
+;	006		2021/05/05		JK好き					@IN_VAGINA_CHECKのTCVAR:ARG:射精が5のときに0でRANDするパターンを修正
+;	007		2021/05/25		JK好き					@IN_VAGINA_CHECK男の娘でもないのにA射精で子宮現在容量が増えてしまう問題を修正
+;													@IN_VAGINA_CHECK_T男の娘のAに出した時の処理が不足していた問題を修正 ついでにマジックナンバーの掃除
+;	008		2021/09/09		JK好き					@IN_VAGINA_CHECK_T RANDに0が入ってしまうパターンを指摘の通りに修正
+;	009		2024/04/03		P(bazzile)				TALENT:男の娘を直接見ていた箇所があったのでIS_LOOKSLIKE_MALE関数を使うように修正
+;													中出し関連の処理を整理
+;	010		2024/04/21		名無し					中出し関連関数@SET_SAMEN_INTO_UTERUSの条件が誤っていたので修正
+;	011		2024/08/17		P(bazzile)				調教者奉仕系のコマンドにおける中田氏判定で行為者と被行為者が逆転していた不具合を修正
+;													背面座位させると対面座位させるが中田氏の判定から漏れていた不具合を修正
+;	011		2024/08/28		P(bazzile)				射精量が一定以上だと中出しした精液が自分の膣内に飛んでくる不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;---------------------------------------------------------
+;射精するかのチェック
+;---------------------------------------------------------
+;CALL予定箇所：SOURCE.ERB 844行目(調教対象射精チェックの直後)
+;主人、助手についてこの関数を呼ぶ
+;案としては、奴隷の射精チェックも此処に含めていいかもしれない
+;その場合、奴隷の射精による奴隷のソースやDOWNBASEの増加はこの関数内に記述する
+;---------------------------------------------------------
+@EJAC_CHECK,ARG
+#DIM 射精相手
+;射精ゲージはとりあえずコマンド内に残っているものを使う
+;もしくは調教対象射精と同様に快の合計から射精ゲージ上昇量を決めてもいいかもしれない
+;その場合、例えばパイズリなら胸が大きい方が射精させやすくするなど、ここでの倍率に何らかのTFLAGでボーナスを与えていても良いかも
+;でもそれならコマンド内で快をTIMESさせた方がいいか
+
+;;射精限界が来ている場合は、射精ゲージは強制的に0にする
+;IF CFLAG:ARG:射精残数の保存 == 0
+;	BASE:ARG:사정 = 0
+;ENDIF
+
+IF BASE:ARG:사정 > MAXBASE:ARG:사정 * 5
+	TCVAR:ARG:사정 = 5
+ELSEIF BASE:ARG:사정 > MAXBASE:ARG:사정 * 4
+	TCVAR:ARG:사정 = 4
+ELSEIF BASE:ARG:사정 > MAXBASE:ARG:사정 * 3
+	TCVAR:ARG:사정 = 3
+ELSEIF BASE:ARG:사정 > MAXBASE:ARG:사정 * 2
+	TCVAR:ARG:사정 = 2
+ELSEIF BASE:ARG:사정 > MAXBASE:ARG:사정
+	TCVAR:ARG:사정 = 1
+ELSE
+	TCVAR:ARG:사정 = 0
+ENDIF
+SIF TCVAR:ARG:사정 == 0 && ARG == PLAYER
+	TFLAG:8 = 0
+SIF TCVAR:ARG:사정 == 0
+	RETURN 0
+
+TCVAR:ARG:사정량 = TCVAR:ARG:사정
+射精相手 = TCVAR:ARG:페니스사용대상
+SIF 射精相手 == -1
+	RETURN 0
+IF 射精相手 % 10000 == TARGET || (射精相手 / 10000)-1 == TARGET
+	射精相手 = TARGET
+ELSE
+	RETURN 0
+ENDIF
+;相手が調教対象であれば射精のソース加算
+CALL SAMEN_SHOOT_CALC,ARG,TARGET
+
+;相手が調教対象で、妊娠しておらず、ゴムを付けていないのであれば中田氏時のソース追加処理
+SIF TALENT:(射精相手):임신 == 0 && 射精相手 == TARGET && (TCVAR:ARG:사정부위 == 1 || (TCVAR:ARG:사정부위 == 2 && TALENT:(射精相手):오토코노코)) && TEQUIP:ARG:콘돔 == 0
+	CALL SAMEN_SHOOT_SOURCE,ARG,射精相手
+
+
+
+;---------------------------------------------------------
+;射精、及び射精箇所選択
+;---------------------------------------------------------
+;CALL予定箇所：SOURCE.ERB 2104-2105行目間
+;TCVAR:射精が1以上のキャラについて、この関数を呼ぶ
+;---------------------------------------------------------
+;ARG = 射精するキャラ
+;---------------------------------------------------------
+@SAMEN_SHOOT,ARG
+#DIM 射精相手
+#LOCALSSIZE 1
+#DIM LCOUNT
+
+FONTREGULAR
+
+;精液汚れの設定
+;STAIN:P:2 |= 4
+CALL SET_STAIN("페니스", "精液", ARG)
+射精相手 = TCVAR:ARG:페니스사용대상
+SIF TCVAR:ARG:페니스사용대상 >= 10000
+	射精相手 = TCVAR:ARG:페니스사용대상 % 10000	
+
+;射精箇所選択機能	
+;(射精するのが調教対象でなく、射精相手が単体で、射精箇所選択がONであり、選択できないコマンドでないならば射精箇所選択処理)
+IF ARG != TARGET && FLAG:사정전선택 == 9 && TFLAG:사정대상선택가능 != 0 && TCVAR:ARG:페니스사용대상 > -1 && TCVAR:ARG:페니스사용대상 < 10000
+	PRINTFORMW %ARG의% 페니스는 한계까지 팽창하여, 이미 사정 직전이다……
+	PRINTFORMW 　
+	PRINTFORMW %CALLNAME:(TCVAR:ARG:페니스사용대상)%의 어디에 사정하겠습니까?
+	PRINTL [0] 「머리카락」
+	PRINTL [1] 「얼굴」
+	PRINTL [2] 「가슴」
+	PRINTL [3] 「배」
+	PRINTL [4] 「겨드랑이」
+	PRINTL [5] 「허벅지」
+	PRINTL [6] 「갈라진 틈」
+	PRINTL [7] 「엉덩이」
+	IF TEQUIP:ARG:콘돔
+		PRINTL [8] 「콘돔에 사정한다」
+	ELSE
+		PRINTL [8] 「그대로 사정한다」
+	ENDIF
+	CALL INPUTINT , 0 , 1 , 2 , 3 , 4 , 5 , 6 , 7 , 8
+	LOCAL = RESULT
+;ランダムにぶっかけ
+ELSEIF ARG != TARGET && FLAG:사정전선택 == 10 && TFLAG:704 != 0 && TCVAR:ARG:페니스사용대상 > -1 && TCVAR:ARG:페니스사용대상 < 10000
+	LOCAL = RAND:8
+ELSE
+	LOCAL = FLAG:사정전선택
+ENDIF
+SELECTCASE LOCAL
+	CASE 0
+		TCVAR:ARG:사정부위 = 6
+		SIF ARG == PLAYER && TCVAR:ARG:페니스사용대상 == TARGET
+			CFLAG:붓카케장소판별플래그 = 1
+	CASE 1
+		TCVAR:ARG:사정부위 = 7
+		SIF ARG == PLAYER && TCVAR:ARG:페니스사용대상 == TARGET
+			CFLAG:붓카케장소판별플래그 = 2
+	CASE 2
+		TCVAR:ARG:사정부위 = 5
+		SIF ARG == PLAYER && TCVAR:ARG:페니스사용대상 == TARGET
+			CFLAG:붓카케장소판별플래그 = 3
+	CASE 3
+		TCVAR:ARG:사정부위 = 8
+		SIF ARG == PLAYER && TCVAR:ARG:페니스사용대상 == TARGET
+			CFLAG:붓카케장소판별플래그 = 4
+	CASE 4
+		TCVAR:ARG:사정부위 = 9
+		SIF ARG == PLAYER && TCVAR:ARG:페니스사용대상 == TARGET
+			CFLAG:붓카케장소판별플래그 = 5
+	CASE 5
+		TCVAR:ARG:사정부위 = 10
+		SIF ARG == PLAYER && TCVAR:ARG:페니스사용대상 == TARGET
+			CFLAG:붓카케장소판별플래그 = 6
+	CASE 6
+		TCVAR:ARG:사정부위 = 11
+		SIF ARG == PLAYER && TCVAR:ARG:페니스사용대상 == TARGET
+			CFLAG:붓카케장소판별플래그 = 7
+	CASE 7
+		TCVAR:ARG:사정부위 = 12
+		SIF ARG == PLAYER && TCVAR:ARG:페니스사용대상 == TARGET
+			CFLAG:붓카케장소판별플래그 = 8
+	CASE 8
+		;TCVAR:ARG:사정부위 = 1
+		SIF TEQUIP:ARG:콘돔 == 1
+			TCVAR:ARG:사정부위 = 13
+ENDSELECT
+
+;射精表示
+PRINTFORM \@ TCVAR:ARG:사정부위 == 1 ? 질내 # \@\@TCVAR:ARG:사정 == 5 ? 궁극 # \@\@TCVAR:ARG:사정 == 4 ? 최강 # \@\@TCVAR:ARG:사정 == 3 ? 초대량 # \@\@TCVAR:ARG:사정 == 2 ? 대량 #  \@사정
+PRINT (
+SELECTCASE ARG
+	CASE MASTER
+		PRINTFORM 주인
+	CASE TARGET
+		PRINTFORM %CALLNAME:TARGET%
+	CASE ASSI
+		PRINTFORM 조수
+ENDSELECT
+IF TCVAR:ARG:사정부위 == 1
+	PRINT →
+	SELECTCASE TCVAR:ARG:페니스사용대상
+		CASE MASTER
+			PRINTFORM 주인
+		CASE TARGET
+			PRINTFORM %CALLNAME:TARGET%
+		CASE ASSI
+			PRINTFORM 조수
+	ENDSELECT
+ELSEIF TCVAR:ARG:사정부위 == 2 && TALENT:(TCVAR:ARG:페니스사용대상):오토코노코
+	PRINT →
+	SELECTCASE TCVAR:ARG:페니스사용대상
+		CASE MASTER
+			PRINTFORM 주인
+		CASE TARGET
+			PRINTFORM %CALLNAME:TARGET%
+		CASE ASSI
+			PRINTFORM 조수
+	ENDSELECT
+ENDIF
+PRINT )
+
+PRINTL
+
+FOR LOCAL , 0 , (TCVAR:ARG:페니스사용대상 >= 10000 ? 2 # 1)
+	SIF LOCAL == 1
+		射精相手 = TCVAR:ARG:페니스사용대상 / 10000 -1
+	;射精処理
+	SELECTCASE TCVAR:ARG:사정부위
+		CASE -1
+			;오나홀에사정
+			SIF ARG == PLAYER
+				TFLAG:16 = TCVAR:ARG:사정
+		CASE 1 , 2
+			;膣内射精 or ケツ射精
+			CALL IN_VAGINA_CHECK,ARG,射精相手
+			SIF ARG == PLAYER && 射精相手 == TARGET
+				TFLAG:2 = TCVAR:ARG:사정
+			SIF ASSI > -1 && ARG == MASTER && 射精相手 == ASSI
+				TFLAG:7 = TCVAR:ARG:사정
+		CASE 3
+			;手に射精
+			CALL SAMEN_SHOOT_OLD,ARG,射精相手,20
+			;팬티훑기
+			IF SELECTCOM == 197
+				LOCALS = \@ CFLAG:속옷（하） ? 속옷（하） # 전신속옷 \@
+				SETBIT STAIN:射精相手:LOCALS, 2
+			;手に射精 ネギ持って手こきは,無茶かと
+			ELSEIF TEQUIP:射精相手:손 == 401 || (RANGE(TEQUIP:射精相手:손, 404, 410) && TEQUIP:射精相手:손 != 408)
+				SETBIT STAIN:射精相手:14, 2
+			ENDIF
+			;手が隠れていない or パンツ扱きでない時は手にも付着
+			SIF !(TEQUIP:射精相手:손 == 401 || RANGE(TEQUIP:射精相手:손, 404, 407) || TEQUIP:射精相手:손 == 409 || SELECTCOM == 197)
+				CALL SET_STAIN("손" , "精液" , 射精相手)
+			SIF ARG == PLAYER && 射精相手 == TARGET
+				TFLAG:1 = TCVAR:ARG:사정
+		CASE 4
+			;口に射精
+			CALL SAMEN_SHOOT_OLD,ARG,射精相手,60,3
+			CALL SET_STAIN("입" , "精液" , 射精相手)
+			SIF ARG == PLAYER && 射精相手 == TARGET
+				TFLAG:0 = TCVAR:ARG:사정
+		CASE 5
+			;胸に射精
+			CALL SAMEN_SHOOT_OLD,ARG,射精相手,60,3
+			;胸隠してると服に、見えてるなら肌に汚れ
+			SIF (TEQUIP:射精相手:유방노출 > 0 || TEQUIP:射精相手:유방노출 > 0)
+				SETBIT STAIN:射精相手:(TEQUIP:射精相手:유방노출 + 10), 2
+			SIF (TEQUIP:射精相手:유방노출 == -1 && TEQUIP:射精相手:유방노출 == -1)
+				CALL SET_STAIN("가슴" , "精液" , 射精相手)
+			SIF ARG == PLAYER && 射精相手 == TARGET
+				TFLAG:34 = TCVAR:ARG:사정
+		CASE 6
+			;髪に射精
+			CALL SAMEN_SHOOT_OLD,ARG,射精相手,20
+			CALL SET_STAIN("머리카락" , "精液" , 射精相手)
+			;帽子があると帽子にも
+			SIF TEQUIP:射精相手:모자 > 0
+				SETBIT STAIN:射精相手:모자, 2
+		CASE 7
+			;顔に射精
+			CALL SAMEN_SHOOT_OLD,ARG,射精相手,60,3
+			CALL SET_STAIN("입" , "精液" , 射精相手)
+			;眼鏡、眼帯、サングラスにも付着
+			SIF (TEQUIP:射精相手:그외 == 1103 || TEQUIP:射精相手:그외 == 1114 || TEQUIP:射精相手:그외 == 1118)
+				SETBIT STAIN:射精相手:그외, 2
+			SIF ARG == PLAYER && 射精相手 == TARGET
+				TFLAG:0 = TCVAR:ARG:사정
+		CASE 8
+			;腹に射精
+			CALL SAMEN_SHOOT_OLD,ARG,射精相手,60,3
+			;たくしあげ可能な上着か 下に全身下着の場合で分岐
+			IF TEQUIP:배꼽노출 != -1
+				TRYCCALLFORM CLOTHES_BREAST_{TEQUIP:射精相手:옷}
+					IF !(RESULT & 8)
+						SETBIT STAIN:射精相手:옷, 2
+					ELSEIF TEQUIP:射精相手:전신속옷 > 0
+						TRYCALLFORM CLOTHES_EXPOSE_{TEQUIP:射精相手:전신속옷},6
+						SIF RESULT == 0
+							SETBIT STAIN:射精相手:전신속옷, 2
+					ENDIF
+				CATCH
+					IF TEQUIP:전신복 > 0 && TEQUIP:스커트걷어올림 >= 1
+						IF TEQUIP:射精相手:전신속옷 > 0
+							TRYCALLFORM CLOTHES_EXPOSE_{TEQUIP:射精相手:전신속옷},6
+							SIF RESULT == 0
+								SETBIT STAIN:射精相手:전신속옷, 2
+						ENDIF
+					ELSE
+						SETBIT STAIN:射精相手:(TEQUIP:射精相手:배꼽노출 + 10), 2
+					ENDIF
+				ENDCATCH
+			ENDIF
+		CASE 9
+			;腋に射精
+			CALL SAMEN_SHOOT_OLD,ARG,射精相手,60,3
+		CASE 10
+			;太ももに射精
+			CALL SAMEN_SHOOT_OLD,ARG,射精相手,60,3
+			IF TEQUIP:射精相手:스커트걷어올림 <= 1 && TEQUIP:射精相手:다리노출 > 0
+				SETBIT STAIN:射精相手:(TEQUIP:射精相手:다리노출 + 10), 2
+			;スカートの下
+			ELSEIF TEQUIP:射精相手:스커트걷어올림 > 1
+				;신발→양말→전신속옷 の順で腿被覆チェック
+				FOR LCOUNT, 0, 3
+					TRYCALLFORM CLOTHES_EXPOSE_{TEQUIP:射精相手:(GET_CLOTHESNAME(9 - LCOUNT))},3
+						IF RESULT == 0
+							SETBIT STAIN:射精相手:(19 - LCOUNT), 2
+							BREAK
+						ENDIF
+				NEXT
+			ENDIF
+		CASE 11
+			;割れ目に射精
+			CALL SAMEN_SHOOT_OLD,ARG,射精相手,100
+			IF TEQUIP:射精相手:음순노출 == -1
+				CALL SET_STAIN("바기나" , "精液" , 射精相手)
+			ELSE
+				SETBIT STAIN:射精相手:(TEQUIP:射精相手:음순노출 + 10), 2
+			ENDIF
+		CASE 12
+			;尻に射精
+			CALL SAMEN_SHOOT_OLD,ARG,射精相手,100
+			IF TEQUIP:射精相手:둔부노출 == -1
+				CALL SET_STAIN("애널" , "精液" , 射精相手)
+			ELSE
+				SETBIT STAIN:射精相手:(TEQUIP:射精相手:둔부노출 + 10), 2
+			ENDIF
+		CASE 13
+			CALL SAMEN_SHOOT_CONDOM,ARG,射精相手
+		CASE 14
+			;空中に射精
+			;풋잡
+			SIF SELECTCOM == 85
+				SETBIT STAIN:射精相手:(TEQUIP:射精相手:발노출 + 10), 2
+			SIF ARG == PLAYER
+				TFLAG:9 = TCVAR:ARG:사정
+		CASEELSE
+			CALL SAMEN_SHOOT_OLD,ARG,射精相手,5
+			
+		
+	ENDSELECT
+	;CALL SAMEN_SHOOT_CALC,ARG,射精相手
+NEXT
+
+SIF ARG == TARGET
+	TFLAG:10 = TCVAR:ARG:사정
+
+
+;経験加算
+CALL ADDS_EXP("사정경험", TCVAR:ARG:사정, ARG)
+
+;射精ゲージ減少
+BASE:ARG:사정 -= MAXBASE:ARG:사정
+SIF TCVAR:ARG:사정 == 2
+	BASE:ARG:사정 -= MAXBASE:ARG:사정
+SIF BASE:ARG:사정 >= MAXBASE:ARG:사정
+	BASE:ARG:사정 = MAXBASE:ARG:사정 - 1
+
+;;射精後は再装填の時間を設ける
+;;通常射精時
+;SIF TCVAR:ARG:사정 == 1
+;	CFLAG:ARG:射精ゲージ再装填 = 3
+;;大量射精時
+;SIF TCVAR:ARG:사정 == 2
+;	CFLAG:ARG:射精ゲージ再装填 = 5
+;;超大量射精時
+;SIF TCVAR:ARG:사정 == 3
+;	CFLAG:ARG:射精ゲージ再装填 = 6
+;;最強射精時
+;SIF TCVAR:ARG:사정 == 4
+;	CFLAG:ARG:射精ゲージ再装填 = 7
+;;究極射精時
+;SIF TCVAR:ARG:사정 == 5
+;	CFLAG:ARG:射精ゲージ再装填 = 2
+;CFLAG:ARG:射精残数の保存 -= 1
+
+;;無限射精薬が有効なら再装填時間を0に
+;SIF CFLAG:ARG:무한사정약플래그 > 0
+;	CFLAG:ARG:射精ゲージ再装填 = 0
+
+;コンドームは脱げる
+TEQUIP:ARG:콘돔 = 0
+
+;콘돔자동장착처리
+IF (FLAG:콘돔자동장착처리 & 4)
+	IF ITEM:콘돔 > 0
+		ITEM:콘돔 -= 1
+		TEQUIP:ARG:콘돔 = 1
+	ENDIF
+	IF ITEM:콘돔 == 0
+		PRINT <콘돔이 다 떨어졌으므로, 자동 장착을 해제합니다>
+		FLAG:콘돔자동장착처리 = 0
+	ENDIF
+ENDIF
+
+
+
+
+;---------------------------------------------------------
+;中出し・アナル射精処理
+;---------------------------------------------------------
+;ARG	出した側
+;ARG:1	出された側
+;@IN_VAGINA_CHECK,ARG,ARG:1
+@IN_VAGINA_CHECK,出した,出された
+#DIM DYNAMIC TEMP
+#DIM DYNAMIC 出した
+#DIM DYNAMIC 出された
+#DIMS DYNAMIC 妊娠判定フラグ名
+;---- EDIT 009 DEL START -------------------------
+;바람꽃의이슬
+;このタイミングで処理する意味がないので実際に数値を扱う場所に移動
+;LOCAL:1 = 1
+;IF FLAG:ＮＴＲ기능
+;	IF CFLAG:(出された):바람꽃의이슬 == 1
+;		LOCAL:1 = 50
+;		;あなたの場合浮気コロスパワーが超特大に
+;		IF 出した == MASTER
+;			SIF TALENT:出した:매혹
+;				TIMES LOCAL:1,1.2
+;			SIF TALENT:出した:매혹
+;				TIMES LOCAL:1,1.2
+;			SIF TALENT:出した:크고아름다움
+;				TIMES LOCAL:1,1.5
+;			SIF TALENT:出した:수수께끼의매력
+;				TIMES LOCAL:1,1.5
+;			;全部持ってると他者の3倍くらい
+;		ENDIF
+;	ENDIF
+;ENDIF
+;---- EDIT 009 DEL END ---------------------------
+
+;妊娠判定用の数字をLOCALに放り込む
+SELECTCASE 出した
+	CASE MASTER
+		妊娠判定フラグ名 = 주인의질내사정에의한임신판정
+	CASE TARGET
+		妊娠判定フラグ名 = 노예의질내사정에의한임신판정
+	CASE ASSI
+		妊娠判定フラグ名 = 조수의질내사정에의한임신판정
+ENDSELECT
+;SELECTCASE 出した
+;	CASE MASTER
+;		LOCAL = 1
+;	CASE TARGET
+;		LOCAL = 4
+;	CASE ASSI
+;		LOCAL = 3
+;ENDSELECT
+;---- EDIT 009 MOD START -------------------------
+;妊娠する可能性のある射精
+;IF TCVAR:出した:사정부위 == 1 || (TCVAR:出した:사정부위 == 2 && TALENT:(出された):오토코노코)
+IF TCVAR:出した:사정부위 == 1 || (TCVAR:出した:사정부위 == 2 && !IS_LOOKSLIKE_MALE(出された) && IS_MALE(出された))
+	IF CFLAG:(出された):자궁내피임결계
+		PRINTL <피임결계>
+	ELSE
+		;SIF !IS_MALE(出された)
+		SIF !IS_LOOKSLIKE_MALE(出された)
+			CALL ADDS_EXP("질사경험", TCVAR:出した:사정량, 出された)
+		CFLAG:(出された):妊娠判定フラグ名 += TCVAR:出した:사정량
+		SIF TALENT:(出された):임신 == 0 && 出された == TARGET
+			CALL SAMEN_SHOOT_SOURCE,出した,出された
+	ENDIF
+ENDIF
+;---- EDIT 009 MOD END ---------------------------
+CALL SET_SAMEN_INTO_UTERUS, 出した, 出された
+;FLAG未追加につきフラグ判定部分のみコメントアウト
+;IF FLAG:(出された):(精液ボテ腹) == 1
+;男の娘でもないのにAで妊娠する可能性があったので
+;IF (TCVAR:出した:사정부위 == 1 || (TCVAR:出した:사정부위 == 2 && TALENT:(出された):오토코노코)) && CFLAG:(出された):자궁내피임결계 == 0
+;	;射精強度関数「TCVAR:出した:사정」の数値に基づき、子宮現在容量の増加を判定
+;	SELECTCASE TCVAR:出した:사정
+;		CASE 1
+;			CFLAG:(出された):자궁현재용량 += 5
+;		CASE 2
+;			CFLAG:(出された):자궁현재용량 += 10
+;		CASE 3
+;			CFLAG:(出された):자궁현재용량 += 25
+;		CASE 4
+;			CFLAG:(出された):자궁현재용량 += 50
+;		CASE 5
+;			;せっかくなのでRANDを追加し、大量に注ぎ込めるように
+;			IF FLAG:쌍둥이플래그 > 0
+;				;射精側の絶倫（固定値100）、射精経験/2000によって最大値が雑めに増加
+;				;ただし+1900＝合計2000まで
+;				;あとで使うのでLOCAL:2に保存
+;				LOCAL:2 = 100 + RAND:(MIN(1900 , (1 + TALENT:出した:절륜 * 100 + (EXP:出した:사정경험 / 2000))))
+;				CFLAG:(出された):자궁현재용량 += LOCAL:2
+;			ELSE
+;				CFLAG:(出された):자궁현재용량 += 100
+;			ENDIF
+;	ENDSELECT
+;	;ふたごちゃんフラグオフの場合通常処理
+;	IF FLAG:쌍둥이플래그 == 0
+;		;子宮の最大容量増加の処置（暫定）
+;		;一部素質で増加量ブーストかけるのも手なのかもしれない。
+;		CALL 子宮最大容量初期設定,(出された)
+;		IF CFLAG:(出された):자궁현재용량 > CFLAG:(出された):자궁최대용량
+;			IF CFLAG:(出された):자궁최대용량 <= 5000
+;				CFLAG:(出された):자궁최대용량 += CFLAG:(出された):자궁현재용량 / 20 + 1
+;			ELSEIF CFLAG:(出された):자궁최대용량 >= 20000
+;				CFLAG:(出された):자궁최대용량 = 20000
+;			ELSE
+;				SELECTCASE TCVAR:出した:사정
+;				CASE 1
+;					CFLAG:(出された):자궁최대용량 += 1
+;				CASE 2
+;					CFLAG:(出された):자궁최대용량 += 4
+;				CASE 3
+;					CFLAG:(出された):자궁최대용량 += 9
+;				CASE 4
+;					CFLAG:(出された):자궁최대용량 += 16
+;				CASE 5
+;					CFLAG:(出された):자궁최대용량 += 25
+;				ENDSELECT
+;			ENDIF
+;		ENDIF
+;		;子宮容量増加後でも抱えきれなければ現在容量は最大容量まで下がる。
+;		CFLAG:(出された):자궁현재용량 = CFLAG:(出された):자궁최대용량
+;
+;	;ふたごちゃんフラグがオンの場合、子宮容量を拡張する（二重の意味で）
+;	ELSE
+;		;=====================
+;		;●子宮容量計算
+;		;=====================
+;		;現実的に言うと、非妊娠時の子宮は潰れており（中に誰もいないのだから当然）、
+;		;容積は2mlほど。妊娠時はこれが4000ml～5000ml程度になるらしい。
+;		;柔軟性は実際極めて高いようなので、（栓をされながら注ぎ込まれた場合として）普通体格で50ml程度を基準とする。
+;		;通常、射精は2-5ml程度。上記射精強度ごとの値で通常射精は+5とあるので、体積はそれを基準とする。
+;		;現実だと子宮口に阻まれて大半の精子はまず子宮内に入れないのだが、まあエロファンタジーエロファンタジー。
+;		;ボッテボテに精液ボテるの大好きなので成長も大きめにしたが、それはそれとして成長しすぎると
+;		;多胎率を上げるのが大変になるので最大値の成長は手加減する
+;
+;		;未設定の場合
+;		CALL 子宮最大容量初期設定,(出された)
+;
+;		;満タンにされた場合、拡張する
+;		IF CFLAG:(出された):자궁현재용량 > CFLAG:(出された):자궁최대용량
+;			;射精強度関数「TCVAR:出した:사정」の数値に基づき、増加値を決定する
+;			;射精量を1/4にした値に、[임신하기쉬움]で1.5倍、[출산경험]でさらにドン、の補正
+;			;ただし、まぁ、射精した量の半分は超えない程度に
+;			SELECTCASE TCVAR:出した:사정
+;				CASE 1
+;					LOCAL:2 = MIN(3, 2 * ( TALENT:(出された):임신하기쉬움 * 5 / 10 +1) * (EXP:(出された):출산경험 / 10 + 1))
+;				CASE 2
+;					LOCAL:2 = MIN(5, 3 * (TALENT:(出された):임신하기쉬움 * 5 / 10 +1) * (EXP:(出された):출산경험 / 10 + 1))
+;				CASE 3
+;					LOCAL:2 = MIN(12, 6 * (TALENT:(出された):임신하기쉬움 * 5 / 10 +1) * (EXP:(出された):출산경험 / 10 + 1))
+;				CASE 4
+;					LOCAL:2 = MIN(25, 12 * (TALENT:(出された):임신하기쉬움 * 5 / 10 +1) * (EXP:(出された):출산경험 / 10 + 1))
+;				CASE 5
+;					;あんまり子宮容量が成長しすぎると満タンにするのがキツくなるので、ここは手加減
+;					;射精量がランダムなので、ここは保存しておいた値を使う
+;					LOCAL:2 = MIN(100, (LOCAL:2 / 4 * (TALENT:(出された):임신하기쉬움 * 5 / 10 +1) * (EXP:(出された):출산경험 / 10 + 1)))
+;				CASEELSE
+;			ENDSELECT
+;			;おまじない
+;			SIF LOCAL:2 < 1
+;				LOCAL:2 = 1
+;
+;			;5000mlまではいいペースで増える
+;			IF CFLAG:(出された):자궁최대용량 <= 5000
+;				CFLAG:(出された):자궁최대용량 += LOCAL:2 + 1
+;			;10000mlまでは速度半減
+;			ELSEIF CFLAG:(出された):자궁최대용량 <= 10000
+;				CFLAG:(出された):자궁최대용량 += LOCAL:2 / 2 + 1
+;			;20000までは速度3割
+;			ELSEIF CFLAG:(出された):자궁최대용량 <= 20000
+;				CFLAG:(出された):자궁최대용량 += LOCAL:2 / 3 + 1
+;			;それ以上は25%
+;			ELSE
+;				CFLAG:(出された):자궁최대용량 += LOCAL:2 / 4 + 1
+;			ENDIF
+;
+;			;最強射精が1回1000程度として、50回ぶち込めば満タンになる程度の容量でカンスト
+;			;単純に考えて一般的妊婦さんの10倍だぞ10倍
+;			;ただし現在容量は注ぎ込めば注ぎ込むだけ増えるので、「限界を超えて膨らみつつ、平常時はこれが限度」という感じ
+;			SIF CFLAG:(出された):자궁최대용량 >= 50000
+;				CFLAG:(出された):자궁최대용량 = 50000
+;				;デバッグ
+;				DEBUGPRINTFORML %CALLNAME:(出された)%자궁현재용량{CFLAG:(出された):자궁현재용량}
+;				DEBUGPRINTFORML %CALLNAME:(出された)%자궁최대용량{CFLAG:(出された):자궁최대용량}
+;
+;			;ふたごちゃんパッチ環境下なら、現在容量が最大容量を超えていても、最大容量まで下がらない
+;			;※ステータス表示で「精液ボテ」と表示する。あと、多胎率が上昇する
+;		ENDIF
+;	ENDIF
+;ENDIF
+;
+;ENDIF
+
+CALL ADDS_EXP("정액경험", TCVAR:出した:사정, 出された)
+
+;精液付着
+IF TCVAR:出した:사정부위 == 1
+	CALL SET_STAIN("질내" , "精液" , 出された)
+	CALL SET_STAIN("바기나" , "精液" , 出された)
+ELSEIF TCVAR:出した:사정부위 == 2
+	CALL SET_STAIN("애널" , "精液" , 出された)
+ENDIF
+
+;お互い以外への好感度減少処理
+IF FLAG:ＮＴＲ기능
+	;---- EDIT 009 ADD START -------------------------
+	;바람꽃의이슬
+	IF CFLAG:(出された):바람꽃의이슬 == 1
+		TEMP = 50
+		;あなたの場合浮気コロスパワーが超特大に
+		IF 出した == MASTER
+			SIF TALENT:出した:매혹
+				TIMES TEMP,1.2
+			SIF TALENT:出した:매혹
+				TIMES TEMP,1.2
+			SIF TALENT:出した:크고아름다움
+				TIMES TEMP,1.5
+			SIF TALENT:出した:수수께끼의매력
+				TIMES TEMP,1.5
+			;全部持ってると他者の3倍くらい
+		ENDIF
+	ELSE
+		TEMP = 1
+	ENDIF
+	;---- EDIT 009 ADD END ---------------------------
+	CALL NTR_SHOOT, 出された, CFLAG:出した:캐릭터고유번호, TCVAR:出した:사정량 * TEMP
+	CALL NTR_SHOOT, 出した, CFLAG:(出された):캐릭터고유번호, TCVAR:出した:사정량 * TEMP
+ENDIF
+;ＭＡＧ吸収処理
+IF CFLAG:出した:ＭＡＧ비피흡수 == 0
+	TEMP = 100 * MAXBASE:(出された):LV * TCVAR:出した:사정량 * (5+MAX(ABL:(出された):순종, ABL:(出された):욕망, ABL:(出された):기교))/5
+	CALL DRAIN_MAG,出した,TEMP,出された
+ENDIF
+
+
+;---------------------------------------------------------
+;ゴム射精の処理
+;---------------------------------------------------------
+@SAMEN_SHOOT_CONDOM,ARG,ARG:1
+
+;コンドームに精液溜まる（主人:1、助手:2、奴隷:3）
+IF ARG == MASTER
+	CFLAG:(ARG:1):사용후콘돔판정 = 1
+ELSEIF ARG == ASSI
+	CFLAG:(ARG:1):사용후콘돔판정 = 2
+ELSEIF ARG == TARGET
+	CFLAG:(ARG:1):사용후콘돔판정 = 3
+ENDIF
+SIF ARG == PLAYER && ARG:1 == TARGET
+	CFLAG:붓카케장소판별플래그 = 9
+;---------------------------------------------------------
+;精液経験の増加とMAG
+;---------------------------------------------------------
+@SAMEN_SHOOT_OLD,ARG,ARG:1,ARG:2,ARG:3 = 1
+CALL ADDS_EXP("정액경험", ARG:3*TCVAR:ARG:사정, TARGET)
+;ＭＡＧ吸収処理
+IF CFLAG:ARG:ＭＡＧ비피흡수 == 0 && ARG:1 >= 0
+	LOCAL:2 = ARG:2 * MAXBASE:(ARG:1):LV * TCVAR:ARG:사정 * (5+MAX(ABL:(ARG:1):순종, ABL:(ARG:1):욕망, ABL:(ARG:1):기교))/5
+	CALL DRAIN_MAG,ARG,LOCAL:2,ARG:1
+ENDIF
+
+;---------------------------------------------------------
+;射精共通処理(ソースの増加のみ)
+;---------------------------------------------------------
+@SAMEN_SHOOT_CALC,ARG,ARG:1
+#DIM 中毒ソース , 2
+;射精時の共通処理
+
+
+;射精時に中毒充足のソースを追加
+;通常射精時
+SIF TCVAR:ARG:사정 == 1
+	中毒ソース = 200
+;大量射精時
+SIF TCVAR:ARG:사정 == 2
+	中毒ソース = 500
+;超大量射精時
+SIF TCVAR:ARG:사정 == 3
+	中毒ソース = 700
+;最強射精時
+SIF TCVAR:ARG:사정 == 4
+	中毒ソース = 1000
+;究極射精時
+SIF TCVAR:ARG:사정 == 5
+	中毒ソース = 1500
+
+IF TCVAR:ARG:사정 > 0
+	;精液中毒を見る
+	SELECTCASE ABL:16
+	CASE 0
+		TIMES 中毒ソース , 0.00
+	CASE 1
+		TIMES 中毒ソース , 0.05
+	CASE 2
+		TIMES 中毒ソース , 0.30
+	CASE 3
+		TIMES 中毒ソース , 0.60
+	CASE 4
+		TIMES 中毒ソース , 0.90
+	CASE 5
+		TIMES 中毒ソース , 1.20
+	CASE 6
+		TIMES 中毒ソース , 1.50
+	CASE 7
+		TIMES 中毒ソース , 1.80
+	CASE 8
+		TIMES 中毒ソース , 2.30
+	CASE 9
+		TIMES 中毒ソース , 3.00
+	CASE 10
+		TIMES 中毒ソース , 5.00
+	CASEELSE
+		中毒ソース = 中毒ソース * (ABL:16 * 2 - 13 + (ABL:16 - 10) / 2)
+	ENDSELECT
+ENDIF
+
+SOURCE:(ARG:1):중독충족 += 中毒ソース
+
+
+
+;-------------------------------------------------
+;中出しソースの計算
+;-------------------------------------------------
+@SAMEN_SHOOT_SOURCE,ARG,ARG:1
+#DIM 達成ソース , 1
+#DIM 反感ソース , 1
+#DIM 恐れソース , 1
+達成ソース = 0
+反感ソース = 0
+恐れソース = 0
+
+;中出ししてもらった相手が好きな人だと達成にボーナス
+IF 연모(ARG:1 , ARG) || 친애(ARG:1 , ARG)
+	SOURCE:(ARG:1):달성 += 1500
+ELSE
+	IF 위험일(ARG:1) == 1
+		SOURCE:(ARG:1):무서움 += 2500
+		SOURCE:(ARG:1):반감 += 1000
+	ELSEIF 위험일(ARG:1) > 1
+		SOURCE:(ARG:1):반감 += 125
+	ELSE
+		SOURCE:(ARG:1):무서움 += 1500
+		SOURCE:(ARG:1):반감 += 500
+	ENDIF
+ENDIF
+
+;陥落素質が無い場合反感追加
+IF !陥落(ARG:1)
+	SOURCE:(ARG:1):반감 += 1000
+	SIF 위험일(ARG:1) > 1
+		SOURCE:(ARG:1):반감 -= 750
+ENDIF
+
+;-------------------------------------------------
+;射精させたかどうかの関数
+;ARG:0　…　射精元キャラ位置
+;ARG:1　…　射精先キャラ位置
+;-------------------------------------------------
+@CHECK_EJAC_TARGET(ARG,ARG:1 = -1)
+#FUNCTION
+SIF ARG == -1
+	RETURNF 0
+SIF ARG:1 == -1
+	ARG:1 = TARGET
+SIF TCVAR:ARG:페니스사용대상 % 10000 != ARG:1 && (TCVAR:ARG:페니스사용대상 / 10000) -1 != ARG:1
+	RETURNF 0
+SIF TCVAR:ARG:사정 == 0
+	RETURNF 0
+RETURNF TCVAR:ARG:사정부위
+
+;---- EDIT 009 MOD START -------------------------
+;--------------------------------------
+;奴隷による主人・助手への中出し
+;いずれIN_VAGINA_CHECKと統合予定
+;--------------------------------------
+@IN_VAGINA_CHECK_T
+;奴隷の各コマンドでの中田氏チェック
+;各コマンドへの影響を小さくするのが目的（関数を呼ぶ、もしくはオミットするだけで良い）
+;TFLAG:10（中田氏）とTEQOIP:コンドーム（コンドーム）を条件に膣射を増やす処理を持つ
+;まずコンドームで分岐
+IF TEQUIP:TARGET:콘돔 == 1
+	PRINTL 노예 콘돔 사정
+	TEQUIP:TARGET:콘돔 = 0
+	;콘돔자동장착처리
+	IF (FLAG:콘돔자동장착처리 & 1)
+		IF ITEM:콘돔 > 0
+			ITEM:콘돔 -= 1
+			TEQUIP:TARGET:콘돔 = 1
+		ENDIF
+		IF ITEM:콘돔 == 0
+			PRINT <콘돔이 다 떨어졌으므로, 자동 장착을 해제합니다>
+			FLAG:콘돔자동장착처리 = 0
+		ENDIF
+	ENDIF
+	CFLAG:사용후콘돔판정 = 3
+;コンドームをしてないかつセックス系コマンドなら中出し
+ELSE
+	IF FLAG:콘돔자동장착처리 < 3
+		;調教者が女でセックス奉仕系あるいは調教者が男の娘でAセックス奉仕系
+		;IF (GROUPMATCH(TRAINNAME:SELECTCOM, "역강간", "정상위시킨다", "후배위시킨다", "대면좌위시킨다", "배면좌위시킨다","기승위한다", "조수를범하게한다") && !IS_MALE(PLAYER)) || (GROUPMATCH(TRAINNAME:SELECTCOM, "애널정상위시킨다", "애널후배위시킨다", "애널기승위한다") && !IS_LOOKSLIKE_MALE(PLAYER) && IS_MALE(PLAYER))
+			;CALL SET_SAMEN_INTO_UTERUS, PLAYER, TARGET
+		IF (TCVAR:TARGET:사정부위 == 1 && !IS_MALE(PLAYER)) || (TCVAR:TARGET:사정부위 == 2 && !IS_LOOKSLIKE_MALE(PLAYER) && IS_MALE(PLAYER))
+			CALL SET_SAMEN_INTO_UTERUS, TARGET, PLAYER
+			IF CFLAG:PLAYER:자궁내피임결계
+				PRINTL <피임결계>
+			ELSE
+				CALL ADDS_EXP("질사경험", TCVAR:TARGET:사정량, PLAYER)
+				CFLAG:PLAYER:노예의질내사정에의한임신판정 += TCVAR:TARGET:사정량
+				IF FLAG:ＮＴＲ기능
+					IF CFLAG:TARGET:바람꽃의이슬
+						CALL NTR_SHOOT,TARGET,CFLAG:PLAYER:캐릭터고유번호,TCVAR:TARGET:사정량 * 100
+						CALL NTR_SHOOT,PLAYER,CFLAG:TARGET:캐릭터고유번호,TCVAR:TARGET:사정량 * 100
+					ELSE
+						CALL NTR_SHOOT,TARGET,CFLAG:PLAYER:캐릭터고유번호,TCVAR:TARGET:사정량 * 2
+						CALL NTR_SHOOT,PLAYER,CFLAG:TARGET:캐릭터고유번호,TCVAR:TARGET:사정량 * 2
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDIF
+		;コンドーム未使用時、オトコはコマンドに応じて追加ソース
+		IF IS_MALE(TARGET)
+			SELECTCASE TRAINNAME:SELECTCOM
+				CASE "역강간", "정상위시킨다", "후배위시킨다", "기승위한다", "조수를범하게한다"
+					;中出し
+					;달성＋1000
+					SOURCE:TARGET:달성 += 1000 * (TCVAR:TARGET:사정량)/2
+					SOURCE:TARGET:정애 += 250 * (TCVAR:TARGET:사정량)/2
+					IF 위험일() == -2
+						SOURCE:TARGET:달성 += 1000 * (TCVAR:TARGET:사정량)/2
+						SOURCE:TARGET:욕정 += 1000 * (TCVAR:TARGET:사정량)/2
+						CFLAG:PLAYER:노예의질내사정에의한임신판정 += TCVAR:TARGET:사정량
+					ENDIF
+				CASE "애널정상위시킨다", "애널후배위시킨다", "애널기승위한다"
+					;アナル中出し
+					;달성＋750
+					SOURCE:TARGET:달성 += 750 * (TCVAR:TARGET:사정량)/2
+					SOURCE:TARGET:일탈 += 750 * (TCVAR:TARGET:사정량)/2
+					IF 위험일() == -2 && TALENT:PLAYER:오토코노코
+						SOURCE:TARGET:달성 += 1000 * (TCVAR:TARGET:사정량)/2
+						SOURCE:TARGET:욕정 += 1000 * (TCVAR:TARGET:사정량)/2
+						CFLAG:PLAYER:노예의질내사정에의한임신판정 += TCVAR:TARGET:사정량
+					ENDIF
+				CASE "펠라한다"
+					;입
+					;달성＋500
+					SOURCE:TARGET:달성 += 250 * (TCVAR:TARGET:사정량)/2
+					SOURCE:TARGET:욕정 += 750 * (TCVAR:TARGET:사정량)/2
+				CASE "수음한다", "파이즈리한다"
+					;입
+					;달성＋500
+					SOURCE:TARGET:달성 += 500 * (TCVAR:TARGET:사정량)/2
+					SOURCE:TARGET:욕정 += 500 * (TCVAR:TARGET:사정량)/2
+			ENDSELECT
+		ENDIF
+	ENDIF
+ENDIF
+;---- EDIT 009 MOD END ---------------------------
+	;IF CFLAG:PLAYER:자궁내피임결계 == 0
+	;	SELECTCASE TCVAR:TARGET:사정
+	;		CASE 1
+	;			CFLAG:PLAYER:자궁현재용량 += 5
+	;		CASE 2
+	;			CFLAG:PLAYER:자궁현재용량 += 10
+	;		CASE 3
+	;			CFLAG:PLAYER:자궁현재용량 += 25
+	;		CASE 4
+	;			CFLAG:PLAYER:자궁현재용량 += 50
+	;		CASE 5
+	;			;せっかくなのでRANDを追加し、大量に注ぎ込めるように
+	;			IF FLAG:쌍둥이플래그 > 0
+	;				;射精側の絶倫（固定値100）、射精経験/2000によって最大値が雑めに増加
+	;				;ただし+1900＝合計2000まで
+	;				;あとで使うのでLOCAL:2に保存
+	;				LOCAL:2 = 100 + RAND:(MIN(1900 , (TALENT:절륜 * 100 + (EXP:사정경험 / 2000) + 1)))
+	;				CFLAG:PLAYER:자궁현재용량 += LOCAL:2
+	;			ELSE
+	;				CFLAG:PLAYER:자궁현재용량 += 100
+	;			ENDIF
+	;	ENDSELECT
+	;	;ふたごちゃんフラグオフの場合通常処理
+	;	IF FLAG:쌍둥이플래그 == 0
+	;		;子宮の最大容量増加の処置（暫定）
+	;		;一部素質で増加量ブーストかけるのも手なのかもしれない。
+	;		CALL 子宮最大容量初期設定,PLAYER
+	;		IF CFLAG:PLAYER:자궁현재용량 > CFLAG:PLAYER:자궁최대용량
+	;			IF CFLAG:PLAYER:자궁최대용량 <= 5000
+	;				CFLAG:PLAYER:자궁최대용량 += CFLAG:PLAYER:자궁현재용량 / 20 + 1
+	;			ELSEIF CFLAG:PLAYER:자궁최대용량 >= 20000
+	;				CFLAG:PLAYER:자궁최대용량 = 20000
+	;			ELSE
+	;				SELECTCASE TCVAR:TARGET:사정
+	;				CASE 1
+	;					CFLAG:PLAYER:자궁최대용량 += 1
+	;				CASE 2
+	;					CFLAG:PLAYER:자궁최대용량 += 4
+	;				CASE 3
+	;					CFLAG:PLAYER:자궁최대용량 += 9
+	;				CASE 4
+	;					CFLAG:PLAYER:자궁최대용량 += 16
+	;				CASE 5
+	;					CFLAG:PLAYER:자궁최대용량 += 25
+	;				ENDSELECT
+	;			ENDIF
+	;		ENDIF
+	;		;子宮容量増加後でも抱えきれなければ現在容量は最大容量まで下がる。
+	;		CFLAG:PLAYER:자궁현재용량 = CFLAG:PLAYER:자궁최대용량
+	;
+	;	;ふたごちゃんフラグがオンの場合、子宮容量を拡張する（二重の意味で）
+	;	ELSE
+	;		;=====================
+	;		;●子宮容量計算
+	;		;=====================
+	;		;現実的に言うと、非妊娠時の子宮は潰れており（中に誰もいないのだから当然）、
+	;		;容積は2mlほど。妊娠時はこれが4000ml～5000ml程度になるらしい。
+	;		;柔軟性は実際極めて高いようなので、（栓をされながら注ぎ込まれた場合として）普通体格で50ml程度を基準とする。
+	;		;通常、射精は2-5ml程度。上記射精強度ごとの値で通常射精は+5とあるので、体積はそれを基準とする。
+	;		;現実だと子宮口に阻まれて大半の精子はまず子宮内に入れないのだが、まあエロファンタジーエロファンタジー。
+	;		;ボッテボテに精液ボテるの大好きなので成長も大きめにしたが、それはそれとして成長しすぎると
+	;		;多胎率を上げるのが大変になるので最大値の成長は手加減する
+	;		;未設定の場合
+	;		CALL 子宮最大容量初期設定,PLAYER
+	;
+	;		;デバッグ
+	;		DEBUGPRINTFORML %CALLNAME:PLAYER%자궁현재용량{CFLAG:PLAYER:자궁현재용량}
+	;		DEBUGPRINTFORML %CALLNAME:PLAYER%자궁최대용량{CFLAG:PLAYER:자궁최대용량}
+	;
+	;		;満タンにされた場合、拡張する
+	;		IF CFLAG:PLAYER:자궁현재용량 > CFLAG:PLAYER:자궁최대용량
+	;			;射精強度関数「TCVAR:TARGET:사정」の数値に基づき、増加値を決定する
+	;			;射精量を1/4にした値に、[임신하기쉬움]で1.5倍、[출산경험]でさらにドン、の補正
+	;			;ただし、まぁ、射精した量の半分は超えない程度に
+	;			DEBUGPRINTFORML 가득 찼다
+	;			SELECTCASE TCVAR:TARGET:사정
+	;				CASE 1
+	;					LOCAL:2 = MIN(3, 2 * ( TALENT:PLAYER:임신하기쉬움 * 5 / 10 +1) * (EXP:PLAYER:출산경험 / 10 + 1))
+	;				CASE 2
+	;					LOCAL:2 = MIN(5, 3 * (TALENT:PLAYER:임신하기쉬움 * 5 / 10 +1) * (EXP:PLAYER:출산경험 / 10 + 1))
+	;				CASE 3
+	;					LOCAL:2 = MIN(12, 6 * (TALENT:PLAYER:임신하기쉬움 * 5 / 10 +1) * (EXP:PLAYER:출산경험 / 10 + 1))
+	;				CASE 4
+	;					LOCAL:2 = MIN(25, 12 * (TALENT:PLAYER:임신하기쉬움 * 5 / 10 +1) * (EXP:PLAYER:출산경험 / 10 + 1))
+	;				CASE 5
+	;					;あんまり子宮容量が成長しすぎると満タンにするのがキツくなるので、ここは手加減
+	;					;射精量がランダムなので、ここは保存しておいた値を使う
+	;					LOCAL:2 = MIN(100, (LOCAL:2 / 4 * (TALENT:PLAYER:임신하기쉬움 * 5 / 10 +1) * (EXP:PLAYER:출산경험 / 10 + 1)))
+	;				CASEELSE
+	;			ENDSELECT
+	;			;おまじない
+	;			SIF LOCAL:2 < 1
+	;				LOCAL:2 = 1
+	;			DEBUGPRINTFORML LOCAL:2が{LOCAL:2}になった
+	;
+	;			;5000mlまではいいペースで増える
+	;			IF CFLAG:PLAYER:자궁최대용량 <= 5000
+	;				CFLAG:PLAYER:자궁최대용량 += LOCAL:2 + 1
+	;			;10000mlまでは速度半減
+	;			ELSEIF CFLAG:PLAYER:자궁최대용량 <= 10000
+	;				CFLAG:PLAYER:자궁최대용량 += LOCAL:2 / 2 + 1
+	;			;20000までは速度3割
+	;			ELSEIF CFLAG:PLAYER:자궁최대용량 <= 20000
+	;				CFLAG:PLAYER:자궁최대용량 += LOCAL:2 / 3 + 1
+	;			;それ以上は25%
+	;			ELSE
+	;				CFLAG:PLAYER:자궁최대용량 += LOCAL:2 / 4 + 1
+	;			ENDIF
+	;
+	;			;最強射精が1回1000程度として、50回ぶち込めば満タンになる程度の容量でカンスト
+	;			;単純に考えて一般的妊婦さんの10倍だぞ10倍
+	;			;ただし現在容量は注ぎ込めば注ぎ込むだけ増えるので、「限界を超えて膨らみつつ、平常時はこれが限度」という感じ
+	;			SIF CFLAG:PLAYER:자궁최대용량 >= 50000
+	;				CFLAG:PLAYER:자궁최대용량 = 50000
+	;			;デバッグ
+	;			DEBUGPRINTFORML %CALLNAME:PLAYER%자궁현재용량{CFLAG:PLAYER:자궁현재용량}
+	;			DEBUGPRINTFORML %CALLNAME:PLAYER%자궁최대용량{CFLAG:PLAYER:자궁최대용량}
+	;			
+	;			;ふたごちゃんパッチ環境下なら、現在容量が最大容量を超えていても、最大容量まで下がらない
+	;			;※ステータス表示で「精液ボテ」と表示する。あと、多胎率が上昇する
+	;		ENDIF
+	;	ENDIF
+	;ENDIF
+	;MASTERの時
+	;IF ASSIPLAY == 0
+	;	;主人以外への好感度減少処理
+	;	IF FLAG:ＮＴＲ기능
+	;		CALL NTR_SHOOT,TARGET,CFLAG:MASTER:캐릭터고유번호,TCVAR:MASTER:사정량*2 * LOCAL:1
+	;		CALL NTR_SHOOT,MASTER,CFLAG:TARGET:캐릭터고유번호,TCVAR:MASTER:사정량*2 * LOCAL:1
+	;	ENDIF
+	;	SELECTCASE E
+	;	CASE 5
+	;		;PRINTFORML 膣内究極射精(%CALLNAME:TARGET%)
+	;		IF CFLAG:MASTER:자궁내피임결계
+	;			PRINTL <피임결계>
+	;			TFLAG:10 = 5
+	;		ELSE
+	;			;PRINTL 主人の膣射経験+５
+	;			CALL ADDS_EXP("질사경험", 5, MASTER)
+	;			CFLAG:MASTER:노예의질내사정에의한임신판정 += 5
+	;			TFLAG:10 = 5
+	;		ENDIF
+	;	CASE 4
+	;		;PRINTFORML 膣内最強射精(%CALLNAME:TARGET%)
+	;		IF CFLAG:MASTER:자궁내피임결계
+	;			PRINTL <피임결계>
+	;			TFLAG:10 = 4
+	;		ELSE
+	;			;PRINTL 主人の膣射経験+４
+	;			CALL ADDS_EXP("질사경험", 4, MASTER)
+	;			CFLAG:MASTER:노예의질내사정에의한임신판정 += 4
+	;			TFLAG:10 = 4
+	;		ENDIF
+	;	CASE 3
+	;		;PRINTFORML 膣内超大量射精(%CALLNAME:TARGET%)
+	;		IF CFLAG:MASTER:자궁내피임결계
+	;			PRINTL <피임결계>
+	;			TFLAG:10 = 3
+	;		ELSE
+	;			;PRINTL 主人の膣射経験+３
+	;			CALL ADDS_EXP("질사경험", 3, MASTER)
+	;			CFLAG:MASTER:노예의질내사정에의한임신판정 += 3
+	;			TFLAG:10 = 3
+	;		ENDIF
+	;	CASE 2
+	;		;PRINTFORML 膣内大量射精(%CALLNAME:TARGET%)
+	;		IF CFLAG:MASTER:자궁내피임결계
+	;			PRINTL <피임결계>
+	;			TFLAG:10 = 2
+	;		ELSE
+	;			;PRINTL 主人の膣射経験+２
+	;			CALL ADDS_EXP("질사경험", 2, MASTER)
+	;			CFLAG:MASTER:노예의질내사정에의한임신판정 += 2
+	;			TFLAG:10 = 2
+	;		ENDIF
+	;	CASE 1
+	;		;PRINTFORML 膣内射精(%CALLNAME:TARGET%)
+	;		IF CFLAG:MASTER:자궁내피임결계
+	;			PRINTL <피임결계>
+	;			TFLAG:10 = 1
+	;		ELSE
+	;			;PRINTL 主人の膣射経験+１
+	;			CALL ADDS_EXP("질사경험", 1, MASTER)
+	;			CFLAG:MASTER:노예의질내사정에의한임신판정 += 1
+	;			TFLAG:10 = 1
+	;		ENDIF
+	;	ENDSELECT
+	;;ASSIの時
+	;ELSE
+	;	;助手以外への好感度減少処理
+	;	IF FLAG:ＮＴＲ기능
+	;		CALL NTR_SHOOT,TARGET,CFLAG:ASSI:캐릭터고유번호,E*2
+	;		CALL NTR_SHOOT,ASSI,CFLAG:TARGET:캐릭터고유번호,E*2
+	;	ENDIF
+	;	SELECTCASE E
+	;	CASE 5
+	;		;PRINTFORML 膣内究極射精(%CALLNAME:TARGET%)
+	;		IF CFLAG:ASSI:자궁내피임결계
+	;			PRINTL <피임결계>
+	;			TFLAG:10 = 5
+	;		ELSE
+	;			;PRINTL 助手の膣射経験+５
+	;			CALL ADDS_EXP("질사경험", 5, ASSI)
+	;			CFLAG:ASSI:노예의질내사정에의한임신판정 += 5
+	;			TFLAG:10 = 5
+	;		ENDIF
+	;	CASE 4
+	;		;PRINTFORML 膣内最強射精(%CALLNAME:TARGET%)
+	;		IF CFLAG:ASSI:자궁내피임결계
+	;			PRINTL <피임결계>
+	;			TFLAG:10 = 4
+	;		ELSE
+	;			;PRINTL 助手の膣射経験+４
+	;			CALL ADDS_EXP("질사경험", 4, ASSI)
+	;			CFLAG:ASSI:노예의질내사정에의한임신판정 += 4
+	;			TFLAG:10 = 4
+	;		ENDIF
+	;	CASE 3
+	;		;PRINTFORML 膣内超大量射精(%CALLNAME:TARGET%)
+	;		IF CFLAG:ASSI:자궁내피임결계
+	;			PRINTL <피임결계>
+	;			TFLAG:10 = 3
+	;		ELSE
+	;			;PRINTL 助手の膣射経験+３
+	;			CALL ADDS_EXP("질사경험", 3, ASSI)
+	;			CFLAG:ASSI:노예의질내사정에의한임신판정 += 3
+	;			TFLAG:10 = 3
+	;		ENDIF
+	;	CASE 2
+	;		;PRINTFORML 膣内大量射精(%CALLNAME:TARGET%)
+	;		IF CFLAG:ASSI:자궁내피임결계
+	;			PRINTL <피임결계>
+	;			TFLAG:10 = 2
+	;		ELSE
+	;			;PRINTL 助手の膣射経験+２
+	;			CALL ADDS_EXP("질사경험", 2, ASSI)
+	;			CFLAG:ASSI:노예의질내사정에의한임신판정 += 2
+	;			TFLAG:10 = 2
+	;		ENDIF
+	;	CASE 1
+	;		;PRINTFORML 膣内射精(%CALLNAME:TARGET%)
+	;		IF CFLAG:ASSI:자궁내피임결계
+	;			PRINTL <피임결계>
+	;			TFLAG:10 = 1
+	;		ELSE
+	;			;PRINTL 助手の膣射経験+１
+	;			CALL ADDS_EXP("질사경험", 1, ASSI)
+	;			CFLAG:ASSI:노예의질내사정에의한임신판정 += 1
+	;			TFLAG:10 = 1
+	;		ENDIF
+	;	ENDSELECT
+	;ENDIF
+;Aに出した場合
+;ELSEIF FLAG:콘돔자동장착처리 < 3 && (SELECTCOM == 95 || SELECTCOM == 96 || SELECTCOM == 97)
+;	;IF E == 5
+;	;	PRINTFORML 究極射精(%CALLNAME:TARGET%)
+;	;ELSEIF E == 4
+;	;	PRINTFORML 最強射精(%CALLNAME:TARGET%)
+;	;ELSEIF E == 3
+;	;	PRINTFORML 超大量射精(%CALLNAME:TARGET%)
+;	;ELSEIF E == 2
+;	;	PRINTFORML 大量射精(%CALLNAME:TARGET%)
+;	;ELSEIF E == 1
+;	;	PRINTFORML 사정(%CALLNAME:TARGET%)
+;	;ENDIF
+;	;調教者以外への好感度減少処理
+;	IF FLAG:ＮＴＲ기능
+;		CALL NTR_SHOOT,TARGET,CFLAG:PLAYER:캐릭터고유번호,TFLAG:10*2
+;		CALL NTR_SHOOT,PLAYER,CFLAG:TARGET:캐릭터고유번호,TFLAG:10*2
+;	ENDIF
+;	IF TALENT:PLAYER:오토코노코 && CFLAG:PLAYER:자궁내피임결계 == 0
+;		SELECTCASE TCVAR:TARGET:사정
+;			CASE 1
+;				CFLAG:PLAYER:자궁현재용량 += 5
+;			CASE 2
+;				CFLAG:PLAYER:자궁현재용량 += 10
+;			CASE 3
+;				CFLAG:PLAYER:자궁현재용량 += 25
+;			CASE 4
+;				CFLAG:PLAYER:자궁현재용량 += 50
+;			CASE 5
+;				;せっかくなのでRANDを追加し、大量に注ぎ込めるように
+;				IF FLAG:쌍둥이플래그 > 0
+;					;射精側の絶倫（固定値100）、射精経験/2000によって最大値が雑めに増加
+;					;ただし+1900＝合計2000まで
+;					;あとで使うのでLOCAL:2に保存
+;					LOCAL:2 = 100 + RAND:(MIN(1900 , (TALENT:PLAYER:절륜 * 100 + (EXP:PLAYER:사정경험 / 2000))))
+;					CFLAG:PLAYER:자궁현재용량 += LOCAL:2
+;				ELSE
+;					CFLAG:PLAYER:자궁현재용량 += 100
+;				ENDIF
+;		ENDSELECT
+;		;ふたごちゃんフラグオフの場合通常処理
+;		IF FLAG:쌍둥이플래그 == 0
+;			;子宮の最大容量増加の処置（暫定）
+;			;一部素質で増加量ブーストかけるのも手なのかもしれない。
+;			CALL 子宮最大容量初期設定,PLAYER
+;			IF CFLAG:PLAYER:자궁현재용량 > CFLAG:PLAYER:자궁최대용량
+;				IF CFLAG:PLAYER:자궁최대용량 <= 5000
+;					CFLAG:PLAYER:자궁최대용량 += CFLAG:PLAYER:자궁현재용량 / 20 + 1
+;				ELSEIF CFLAG:PLAYER:자궁최대용량 >= 20000
+;					CFLAG:PLAYER:자궁최대용량 = 20000
+;				ELSE
+;					SELECTCASE TCVAR:TARGET:사정
+;					CASE 1
+;						CFLAG:PLAYER:자궁최대용량 += 1
+;					CASE 2
+;						CFLAG:PLAYER:자궁최대용량 += 4
+;					CASE 3
+;						CFLAG:PLAYER:자궁최대용량 += 9
+;					CASE 4
+;						CFLAG:PLAYER:자궁최대용량 += 16
+;					CASE 5
+;						CFLAG:PLAYER:자궁최대용량 += 25
+;					ENDSELECT
+;				ENDIF
+;			ENDIF
+;			;子宮容量増加後でも抱えきれなければ現在容量は最大容量まで下がる。
+;			CFLAG:PLAYER:자궁현재용량 = CFLAG:PLAYER:자궁최대용량
+;
+;		;ふたごちゃんフラグがオンの場合、子宮容量を拡張する（二重の意味で）
+;		ELSE
+;			;=====================
+;			;●子宮容量計算
+;			;=====================
+;			;現実的に言うと、非妊娠時の子宮は潰れており（中に誰もいないのだから当然）、
+;			;容積は2mlほど。妊娠時はこれが4000ml～5000ml程度になるらしい。
+;			;柔軟性は実際極めて高いようなので、（栓をされながら注ぎ込まれた場合として）普通体格で50ml程度を基準とする。
+;			;通常、射精は2-5ml程度。上記射精強度ごとの値で通常射精は+5とあるので、体積はそれを基準とする。
+;			;現実だと子宮口に阻まれて大半の精子はまず子宮内に入れないのだが、まあエロファンタジーエロファンタジー。
+;			;ボッテボテに精液ボテるの大好きなので成長も大きめにしたが、それはそれとして成長しすぎると
+;			;多胎率を上げるのが大変になるので最大値の成長は手加減する
+;			;未設定の場合
+;			CALL 子宮最大容量初期設定,PLAYER
+;
+;	;デバッグ
+;			DEBUGPRINTFORML PLAYER子宮現在容量{CFLAG:PLAYER:자궁현재용량}
+;			DEBUGPRINTFORML PLAYER子宮最大容量{CFLAG:PLAYER:자궁최대용량}
+;
+;			;満タンにされた場合、拡張する
+;			IF CFLAG:PLAYER:자궁현재용량 > CFLAG:PLAYER:자궁최대용량
+;				;射精強度関数「TCVAR:TARGET:사정」の数値に基づき、増加値を決定する
+;				;射精量を1/4にした値に、[임신하기쉬움]で1.5倍、[출산경험]でさらにドン、の補正
+;				;ただし、まぁ、射精した量の半分は超えない程度に
+;				DEBUGPRINTFORML 가득 찼다
+;				SELECTCASE TCVAR:TARGET:사정
+;					CASE 1
+;						LOCAL:2 = MIN(3, 2 * ( TALENT:PLAYER:임신하기쉬움 * 5 / 10 +1) * (EXP:PLAYER:출산경험 / 10 + 1))
+;					CASE 2
+;						LOCAL:2 = MIN(5, 3 * (TALENT:PLAYER:임신하기쉬움 * 5 / 10 +1) * (EXP:PLAYER:출산경험 / 10 + 1))
+;					CASE 3
+;						LOCAL:2 = MIN(12, 6 * (TALENT:PLAYER:임신하기쉬움 * 5 / 10 +1) * (EXP:PLAYER:출산경험 / 10 + 1))
+;					CASE 4
+;						LOCAL:2 = MIN(25, 12 * (TALENT:PLAYER:임신하기쉬움 * 5 / 10 +1) * (EXP:PLAYER:출산경험 / 10 + 1))
+;					CASE 5
+;						;あんまり子宮容量が成長しすぎると満タンにするのがキツくなるので、ここは手加減
+;						;射精量がランダムなので、ここは保存しておいた値を使う
+;						LOCAL:2 = MIN(100, (LOCAL:2 / 4 * (TALENT:PLAYER:임신하기쉬움 * 5 / 10 +1) * (EXP:PLAYER:출산경험 / 10 + 1)))
+;					CASEELSE
+;				ENDSELECT
+;				;おまじない
+;				SIF LOCAL:2 < 1
+;					LOCAL:2 = 1
+;				DEBUGPRINTFORML LOCAL:2が{LOCAL:2}になった
+;
+;				;5000mlまではいいペースで増える
+;				IF CFLAG:PLAYER:자궁최대용량 <= 5000
+;					CFLAG:PLAYER:자궁최대용량 += LOCAL:2 + 1
+;				;10000mlまでは速度半減
+;				ELSEIF CFLAG:PLAYER:자궁최대용량 <= 10000
+;					CFLAG:PLAYER:자궁최대용량 += LOCAL:2 / 2 + 1
+;				;20000までは速度3割
+;				ELSEIF CFLAG:PLAYER:자궁최대용량 <= 20000
+;					CFLAG:PLAYER:자궁최대용량 += LOCAL:2 / 3 + 1
+;				;それ以上は25%
+;				ELSE
+;					CFLAG:PLAYER:자궁최대용량 += LOCAL:2 / 4 + 1
+;				ENDIF
+;
+;				;最強射精が1回1000程度として、50回ぶち込めば満タンになる程度の容量でカンスト
+;				;単純に考えて一般的妊婦さんの10倍だぞ10倍
+;				;ただし現在容量は注ぎ込めば注ぎ込むだけ増えるので、「限界を超えて膨らみつつ、平常時はこれが限度」という感じ
+;				SIF CFLAG:PLAYER:자궁최대용량 >= 50000
+;					CFLAG:PLAYER:자궁최대용량 = 50000
+;	;デバッグ
+;				DEBUGPRINTFORML PLAYER子宮現在容量{CFLAG:PLAYER:자궁현재용량}
+;				DEBUGPRINTFORML PLAYER子宮最大容量{CFLAG:PLAYER:자궁최대용량}
+;				
+;				;ふたごちゃんパッチ環境下なら、現在容量が最大容量を超えていても、最大容量まで下がらない
+;				;※ステータス表示で「精液ボテ」と表示する。あと、多胎率が上昇する
+;			ENDIF
+;		ENDIF
+;	ENDIF
+;	;MASTERの時
+;	IF ASSIPLAY == 0
+;		;主人以外への好感度減少処理
+;		IF FLAG:ＮＴＲ기능
+;			CALL NTR_SHOOT,TARGET,CFLAG:MASTER:캐릭터고유번호,E*2 * LOCAL:1
+;			CALL NTR_SHOOT,MASTER,CFLAG:TARGET:캐릭터고유번호,E*2 * LOCAL:1
+;		ENDIF
+;		SELECTCASE E
+;		CASE 5
+;			;PRINTFORML 膣内究極射精(%CALLNAME:TARGET%)
+;			IF CFLAG:MASTER:자궁내피임결계
+;				PRINTL <피임결계>
+;				TFLAG:10 = 5
+;			ELSE
+;				;PRINTL 主人の膣射経験+５
+;				CALL ADDS_EXP("질사경험", 5, MASTER)
+;				CFLAG:MASTER:노예의질내사정에의한임신판정 += 5
+;				TFLAG:10 = 5
+;			ENDIF
+;		CASE 4
+;			;PRINTFORML 膣内最強射精(%CALLNAME:TARGET%)
+;			IF CFLAG:MASTER:자궁내피임결계
+;				PRINTL <피임결계>
+;				TFLAG:10 = 4
+;			ELSE
+;				;PRINTL 主人の膣射経験+４
+;				CALL ADDS_EXP("질사경험", 4, MASTER)
+;				CFLAG:MASTER:노예의질내사정에의한임신판정 += 4
+;				TFLAG:10 = 4
+;			ENDIF
+;		CASE 3
+;			;PRINTFORML 膣内超大量射精(%CALLNAME:TARGET%)
+;			IF CFLAG:MASTER:자궁내피임결계
+;				PRINTL <피임결계>
+;				TFLAG:10 = 3
+;			ELSE
+;				;PRINTL 主人の膣射経験+３
+;				CALL ADDS_EXP("질사경험", 3, MASTER)
+;				CFLAG:MASTER:노예의질내사정에의한임신판정 += 3
+;				TFLAG:10 = 3
+;			ENDIF
+;		CASE 2
+;			;PRINTFORML 膣内大量射精(%CALLNAME:TARGET%)
+;			IF CFLAG:MASTER:자궁내피임결계
+;				PRINTL <피임결계>
+;				TFLAG:10 = 2
+;			ELSE
+;				;PRINTL 主人の膣射経験+２
+;				CALL ADDS_EXP("질사경험", 2, MASTER)
+;				CFLAG:MASTER:노예의질내사정에의한임신판정 += 2
+;				TFLAG:10 = 2
+;			ENDIF
+;		CASE 1
+;			;PRINTFORML 膣内射精(%CALLNAME:TARGET%)
+;			IF CFLAG:MASTER:자궁내피임결계
+;				PRINTL <피임결계>
+;				TFLAG:10 = 1
+;			ELSE
+;				;PRINTL 主人の膣射経験+１
+;				CALL ADDS_EXP("질사경험", 1, MASTER)
+;				CFLAG:MASTER:노예의질내사정에의한임신판정 += 1
+;				TFLAG:10 = 1
+;			ENDIF
+;		ENDSELECT
+;	;ASSIの時
+;	ELSE
+;		;助手以外への好感度減少処理
+;		IF FLAG:ＮＴＲ기능
+;			CALL NTR_SHOOT,TARGET,CFLAG:ASSI:캐릭터고유번호,E*2
+;			CALL NTR_SHOOT,ASSI,CFLAG:TARGET:캐릭터고유번호,E*2
+;		ENDIF
+;		SELECTCASE E
+;		CASE 5
+;			;PRINTFORML 膣内究極射精(%CALLNAME:TARGET%)
+;			IF CFLAG:ASSI:자궁내피임결계
+;				PRINTL <피임결계>
+;				TFLAG:10 = 5
+;			ELSE
+;				;PRINTL 助手の膣射経験+５
+;				CALL ADDS_EXP("질사경험", 5, ASSI)
+;				CFLAG:ASSI:노예의질내사정에의한임신판정 += 5
+;				TFLAG:10 = 5
+;			ENDIF
+;		CASE 4
+;			;PRINTFORML 膣内最強射精(%CALLNAME:TARGET%)
+;			IF CFLAG:ASSI:자궁내피임결계
+;				PRINTL <피임결계>
+;				TFLAG:10 = 4
+;			ELSE
+;				;PRINTL 助手の膣射経験+４
+;				CALL ADDS_EXP("질사경험", 4, ASSI)
+;				CFLAG:ASSI:노예의질내사정에의한임신판정 += 4
+;				TFLAG:10 = 4
+;			ENDIF
+;		CASE 3
+;			;PRINTFORML 膣内超大量射精(%CALLNAME:TARGET%)
+;			IF CFLAG:ASSI:자궁내피임결계
+;				PRINTL <피임결계>
+;				TFLAG:10 = 3
+;			ELSE
+;				;PRINTL 助手の膣射経験+３
+;				CALL ADDS_EXP("질사경험", 3, ASSI)
+;				CFLAG:ASSI:노예의질내사정에의한임신판정 += 3
+;				TFLAG:10 = 3
+;			ENDIF
+;		CASE 2
+;			;PRINTFORML 膣内大量射精(%CALLNAME:TARGET%)
+;			IF CFLAG:ASSI:자궁내피임결계
+;				PRINTL <피임결계>
+;				TFLAG:10 = 2
+;			ELSE
+;				;PRINTL 助手の膣射経験+２
+;				CALL ADDS_EXP("질사경험", 2, ASSI)
+;				CFLAG:ASSI:노예의질내사정에의한임신판정 += 2
+;				TFLAG:10 = 2
+;			ENDIF
+;		CASE 1
+;			;PRINTFORML 膣内射精(%CALLNAME:TARGET%)
+;			IF CFLAG:ASSI:자궁내피임결계
+;				PRINTL <피임결계>
+;				TFLAG:10 = 1
+;			ELSE
+;				;PRINTL 助手の膣射経験+１
+;				CALL ADDS_EXP("질사경험", 1, ASSI)
+;				CFLAG:ASSI:노예의질내사정에의한임신판정 += 1
+;				TFLAG:10 = 1
+;			ENDIF
+;		ENDSELECT
+;	ENDIF
+;ELSE
+;	IF E == 5
+;		PRINTFORML 究極射精(%CALLNAME:TARGET%)
+;	ELSEIF E == 4
+;		PRINTFORML 最強射精(%CALLNAME:TARGET%)
+;	ELSEIF E == 3
+;		PRINTFORML 超大量射精(%CALLNAME:TARGET%)
+;	ELSEIF E == 2
+;		PRINTFORML 大量射精(%CALLNAME:TARGET%)
+;	ELSEIF E == 1
+;		PRINTFORML 사정(%CALLNAME:TARGET%)
+;	ENDIF
+;ENDIF
+
+;コンドーム未使用時、オトコはコマンドに応じて追加ソース
+;IF FLAG:콘돔자동장착처리 < 3 && TALENT:남자
+;	SELECTCASE SELECTCOM
+;		CASE 64,92,93,94,122
+;			;中出し
+;			;달성＋1000
+;			SOURCE:TARGET:달성 += 1000 * E /2
+;			SOURCE:TARGET:정애 += 250 * E /2
+;			IF 위험일() == -2
+;				SOURCE:TARGET:달성 += 1000 * E /2
+;				SOURCE:TARGET:욕정 += 1000 * E /2
+;				CFLAG:PLAYER:노예의질내사정에의한임신판정 +=E
+;			ENDIF
+;		CASE 92,93,94
+;			;アナル中出し
+;			;달성＋750
+;			SOURCE:TARGET:달성 += 750 * E /2
+;			SOURCE:TARGET:일탈 += 750 * E /2
+;			IF 위험일() == -2 && TALENT:PLAYER:오토코노코
+;				SOURCE:TARGET:달성 += 1000 * E /2
+;				SOURCE:TARGET:욕정 += 1000 * E /2
+;				CFLAG:PLAYER:노예의질내사정에의한임신판정 += E
+;			ENDIF
+;		CASE 2
+;			;입
+;			;달성＋500
+;			SOURCE:TARGET:달성 += 250 * E /2
+;			SOURCE:TARGET:욕정 += 750 * E /2
+;		CASE 90,91
+;			;입
+;			;달성＋500
+;			SOURCE:TARGET:달성 += 500 * E /2
+;			SOURCE:TARGET:욕정 += 500 * E /2
+;	ENDSELECT
+;ENDIF
+
+;--------------------------------------
+;精液を子宮内にいれる関数
+;--------------------------------------
+@SET_SAMEN_INTO_UTERUS, 出した = -1, 出された = -1
+#DIM DYNAMIC 出した
+#DIM DYNAMIC 出された
+#DIM DYNAMIC AMOUNT_OF_SAMEN
+
+;---- EDIT 010 DEL START -------------------------
+;SIF TCVAR:出した:사정부위 == 1
+;	RETURN 0
+;ザーメンを子宮で受けられない条件を排除する
+;男で膣だし…はこれないはずだけど一応
+;SIF (TCVAR:出した:사정부위 == 1 && IS_MALE(出した))
+;	RETURN 0
+;アナルだしで中田氏扱いされるのは男の娘だけ
+;SIF (TCVAR:出した:사정부위 == 2 && IS_MALE(出した) && !IS_LOOKSLIKE_MALE(出した))
+;	RETURN 0
+;---- EDIT 010 DEL END -------------------------
+;---- EDIT 010 MOD START -------------------------
+;膣内射精以外かつ男の娘へのアナル中出しでもない
+IF TCVAR:出した:사정부위 != 1
+	SIF !(TCVAR:出した:사정부위 == 2 && IS_MALE(出された) && !IS_LOOKSLIKE_MALE(出された))
+		RETURN 0
+ENDIF
+;ザーメンを子宮で受けられない条件を排除する
+;男で膣だし…はこれないはずだけど一応
+SIF (TCVAR:出した:사정부위 == 1 && IS_MALE(出された))
+	RETURN 0
+;---- EDIT 010 MOD END -------------------------
+SIF TEQUIP:出した:콘돔
+	RETURN 0
+SIF CFLAG:出された:자궁내피임결계
+	RETURN 0
+SIF !TCVAR:出した:사정량
+	RETURN 0
+SELECTCASE TCVAR:出した:사정량
+	CASE 1
+		CFLAG:出された:자궁현재용량 += 5
+	CASE 2
+		CFLAG:出された:자궁현재용량 += 10
+	CASE 3
+		CFLAG:出された:자궁현재용량 += 25
+	CASE 4
+		CFLAG:出された:자궁현재용량 += 50
+	CASE 5
+		;---- EDIT 012 MOD START -------------------------
+		;せっかくなのでRANDを追加し、大量に注ぎ込めるように
+		IF FLAG:쌍둥이플래그 > 0
+			;射精側の絶倫（固定値100）、射精経験/2000によって最大値が雑めに増加
+			;ただし+1900＝合計2000まで
+			;あとで使うのでAMOUNT_OF_SAMENに保存
+			;20240423	あとのほうはRANDこみで代入してるんであとでは使われてないと思われる
+			AMOUNT_OF_SAMEN = 100 + RAND:(MIN(1900 , (TALENT:절륜 * 100 + (EXP:사정경험 / 2000) + 1)))
+			CFLAG:出された:자궁현재용량 += AMOUNT_OF_SAMEN
+		ELSE
+			CFLAG:出された:자궁현재용량 += 100
+		ENDIF
+		;---- EDIT 012 MOD END ---------------------------
+ENDSELECT
+
+CALL 子宮最大容量初期設定, 出された
+
+;子宮の拡張処理
+;ふたごちゃんフラグオフの場合通常処理
+IF FLAG:쌍둥이플래그 == 0
+	;子宮の最大容量増加の処置（暫定）
+	;一部素質で増加量ブーストかけるのも手なのかもしれない。
+	IF CFLAG:出された:자궁현재용량 > CFLAG:出された:자궁최대용량
+		IF CFLAG:出された:자궁최대용량 <= 5000
+			CFLAG:出された:자궁최대용량 += CFLAG:出された:자궁현재용량 / 20 + 1
+		ELSEIF CFLAG:出された:자궁최대용량 >= 20000
+			CFLAG:出された:자궁최대용량 = 20000
+		ELSE
+			SELECTCASE TCVAR:TARGET:사정
+				CASE 1
+					CFLAG:出された:자궁최대용량 += 1
+				CASE 2
+					CFLAG:出された:자궁최대용량 += 4
+				CASE 3
+					CFLAG:出された:자궁최대용량 += 9
+				CASE 4
+					CFLAG:出された:자궁최대용량 += 16
+				CASE 5
+					CFLAG:出された:자궁최대용량 += 25
+			ENDSELECT
+		ENDIF
+	ENDIF
+;ふたごちゃんフラグがオンの場合、子宮容量を拡張する（二重の意味で）
+ELSE
+	;=====================
+	;●子宮容量計算
+	;=====================
+	;現実的に言うと、非妊娠時の子宮は潰れており（中に誰もいないのだから当然）、
+	;容積は2mlほど。妊娠時はこれが4000ml～5000ml程度になるらしい。
+	;柔軟性は実際極めて高いようなので、（栓をされながら注ぎ込まれた場合として）普通体格で50ml程度を基準とする。
+	;通常、射精は2-5ml程度。上記射精強度ごとの値で通常射精は+5とあるので、体積はそれを基準とする。
+	;現実だと子宮口に阻まれて大半の精子はまず子宮内に入れないのだが、まあエロファンタジーエロファンタジー。
+	;ボッテボテに精液ボテるの大好きなので成長も大きめにしたが、それはそれとして成長しすぎると
+	;多胎率を上げるのが大変になるので最大値の成長は手加減する
+	;未設定の場合
+	;デバッグ
+	DEBUGPRINTFORML %CALLNAME:出された%자궁현재용량{CFLAG:出された:자궁현재용량}
+	DEBUGPRINTFORML %CALLNAME:出された%자궁최대용량{CFLAG:出された:자궁최대용량}
+	;満タンにされた場合、拡張する
+	IF CFLAG:出された:자궁현재용량 > CFLAG:出された:자궁최대용량
+		;射精強度関数「TCVAR:TARGET:사정」の数値に基づき、増加値を決定する
+		;射精量を1/4にした値に、[임신하기쉬움]で1.5倍、[출산경험]でさらにドン、の補正
+		;ただし、まぁ、射精した量の半分は超えない程度に
+		DEBUGPRINTFORML 가득 찼다
+		SELECTCASE TCVAR:TARGET:사정량
+			CASE 1
+				AMOUNT_OF_SAMEN = MIN(3, 2 * ( TALENT:出された:임신하기쉬움 * 5 / 10 +1) * (EXP:出された:출산경험 / 10 + 1))
+			CASE 2
+				AMOUNT_OF_SAMEN = MIN(5, 3 * (TALENT:出された:임신하기쉬움 * 5 / 10 +1) * (EXP:出された:출산경험 / 10 + 1))
+			CASE 3
+				AMOUNT_OF_SAMEN = MIN(12, 6 * (TALENT:出された:임신하기쉬움 * 5 / 10 +1) * (EXP:出された:출산경험 / 10 + 1))
+			CASE 4
+				AMOUNT_OF_SAMEN = MIN(25, 12 * (TALENT:出された:임신하기쉬움 * 5 / 10 +1) * (EXP:出された:출산경험 / 10 + 1))
+			CASE 5
+				;あんまり子宮容量が成長しすぎると満タンにするのがキツくなるので、ここは手加減
+				;射精量がランダムなので、ここは保存しておいた値を使う
+				AMOUNT_OF_SAMEN = MIN(100, (AMOUNT_OF_SAMEN / 4 * (TALENT:出された:임신하기쉬움 * 5 / 10 +1) * (EXP:出された:출산경험 / 10 + 1)))
+			CASEELSE
+		ENDSELECT
+		;おまじない
+		SIF AMOUNT_OF_SAMEN < 1
+			AMOUNT_OF_SAMEN = 1
+		DEBUGPRINTFORML AMOUNT_OF_SAMENが{AMOUNT_OF_SAMEN}になった
+		;5000mlまではいいペースで増える
+		IF CFLAG:出された:자궁최대용량 <= 5000
+			CFLAG:出された:자궁최대용량 += AMOUNT_OF_SAMEN + 1
+		;10000mlまでは速度半減
+		ELSEIF CFLAG:出された:자궁최대용량 <= 10000
+			CFLAG:出された:자궁최대용량 += AMOUNT_OF_SAMEN / 2 + 1
+		;20000までは速度3割
+		ELSEIF CFLAG:出された:자궁최대용량 <= 20000
+			CFLAG:出された:자궁최대용량 += AMOUNT_OF_SAMEN / 3 + 1
+		;それ以上は25%
+		ELSE
+			CFLAG:出された:자궁최대용량 += AMOUNT_OF_SAMEN / 4 + 1
+		ENDIF
+		;最強射精が1回1000程度として、50回ぶち込めば満タンになる程度の容量でカンスト
+		;単純に考えて一般的妊婦さんの10倍だぞ10倍
+		;ただし現在容量は注ぎ込めば注ぎ込むだけ増えるので、「限界を超えて膨らみつつ、平常時はこれが限度」という感じ
+		SIF CFLAG:出された:자궁최대용량 >= 50000
+			CFLAG:出された:자궁최대용량 = 50000
+		;デバッグ
+		DEBUGPRINTFORML %CALLNAME:出された%자궁현재용량{CFLAG:出された:자궁현재용량}
+		DEBUGPRINTFORML %CALLNAME:出された%자궁최대용량{CFLAG:出された:자궁최대용량}
+		
+		;ふたごちゃんパッチ環境下なら、現在容量が最大容量を超えていても、最大容量まで下がらない
+		;※ステータス表示で「精液ボテ」と表示する。あと、多胎率が上昇する
+	ENDIF
+ENDIF
+;子宮容量増加後でも抱えきれなければ現在容量は最大容量まで下がる。
+CFLAG:出された:자궁현재용량 = MIN(CFLAG:出された:자궁현재용량, CFLAG:出された:자궁최대용량)
+
+;--------------------------------------
+;奴隷の射精表示
+;--------------------------------------
+@SAMEN_SHOOT_TARGET
+;膣内射精
+;IF TEQUIP:TARGET:콘돔 == 0 && FLAG:콘돔자동장착처리 < 3 && (SELECTCOM == 64 || SELECTCOM == 92 || SELECTCOM == 93 || SELECTCOM == 94 || SELECTCOM == 122)
+IF TEQUIP:TARGET:콘돔 == 0 && FLAG:콘돔자동장착처리 < 3 && TCVAR:TARGET:사정부위 == 1
+	PRINT 질내
+	PRINTFORM \@TFLAG:10 == 5 ? 궁극 # \@\@TFLAG:10 == 4 ? 최강 # \@\@TFLAG:10 == 3 ? 초대량 # \@\@TFLAG:10 == 2 ? 대량 # \@사정
+	PRINTFORM (%CALLNAME:TARGET%
+	PRINT →
+	SELECTCASE PLAYER
+		CASE MASTER
+			PRINTFORM 주인)
+		CASE ASSI
+			PRINTFORM 조수)
+	ENDSELECT
+;男の娘中出し
+;ELSEIF TEQUIP:TARGET:콘돔 == 0 && FLAG:콘돔자동장착처리 < 3 && (SELECTCOM == 95 || SELECTCOM == 96 || SELECTCOM == 97) && TALENT:PLAYER:오토코노코
+ELSEIF TEQUIP:TARGET:콘돔 == 0 && FLAG:콘돔자동장착처리 < 3 && TCVAR:TARGET:사정부위 == 2 && TALENT:PLAYER:오토코노코
+	PRINTFORM \@TFLAG:10 == 5 ? 궁극 # \@\@TFLAG:10 == 4 ? 최강 # \@\@TFLAG:10 == 3 ? 초대량 # \@\@TFLAG:10 == 2 ? 대량 # \@사정
+	PRINTFORM (%CALLNAME:TARGET%
+	PRINT →
+	SELECTCASE PLAYER
+		CASE MASTER
+			PRINTFORM 주인)
+		CASE ASSI
+			PRINTFORM 조수)
+	ENDSELECT
+;그외
+ELSE
+	PRINTFORM \@TFLAG:10 == 5 ? 궁극 # \@\@TFLAG:10 == 4 ? 최강 # \@\@TFLAG:10 == 3 ? 초대량 # \@\@TFLAG:10 == 2 ? 대량 # \@사정(%CALLNAME:TARGET%)
+ENDIF
+PRINTL 
+

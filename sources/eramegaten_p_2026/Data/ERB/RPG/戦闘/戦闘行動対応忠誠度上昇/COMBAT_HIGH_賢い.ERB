@@ -1,0 +1,29 @@
+﻿;===============================
+;戦闘行動に応じて素質ごとの忠誠度上昇量を算出
+;ARG      対象キャラクタ
+;ARG:1    입력행동
+;RESULT   忠誠度上昇量
+;===============================
+;[현명]は弱点を突くか行動不能の敵に行動すれば忠誠度が上昇
+@COMBAT_HIGH_賢い(ARG,ARG:1)
+;攻撃でなければ終了
+CALL GET_SKILL_PROP, "SKILL_EFECT", ARG:1, ARG
+SIF RESULT != 1
+	RETURN 0
+;ターゲットが敵でないなら終了
+SIF CFLAG:ARG:타겟 <= 0 || CFLAG:ARG:타겟 >= 17
+	RETURN 0
+LOCAL = POS(CFLAG:ARG:타겟)
+
+;弱点を突いておらず、ターゲットが行動不能なわけでもなければ終了
+CALL GET_SKILL_PROP, "SKILL_TYPE", ARG:1, ARG
+IF RESULT >= 0 && INRANGE(MAXBASE:LOCAL:(GET_TYPE(RESULT)),101,998) == 0
+	;ターゲットが行動不能に陥っているわけでもない
+	CALL COOPABLE_CHARA,LOCAL
+	SIF RESULT != 0
+		RETURN 0
+ENDIF
+
+;スキルコストに応じた忠誠度上昇
+CALL GET_SKILL_PROP, "SKILL_COST", ARG:1, ARG
+RETURN RESULT/2

@@ -1,0 +1,188 @@
+﻿;====================
+;条件
+;====================
+@EVENT_TITLE_202_9
+RESULTS '= "Beyond the apeX"
+
+@EVENT_EXPLAIN_202_9
+RESULTS:0 '= "보수: 입실론 획득"
+IF GETCHARA([[キャラ:입실론_X2]]) >= 0
+	RESULTS:1 '= "　　 ※보수 소지 중"
+ELSE
+	RESULTS:1 '= "　　 ※보수를 수령하려면 도리 카드몬이 필요"
+ENDIF
+
+@PLAYABLE_EVENT_202_9
+SIF MINARRAY(EVENT_202_白き鋼鉄のXチャレンジバトル_クリアフラグ, 3, 9) < 1
+	RETURN 0
+RETURN 1
+
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_202_9
+PRINTFORML ………
+PRINTFORML ……
+PRINTFORMW …
+PRINTFORMW 그레이브 필러　최상층 엔트런스――
+PRINTFORML 사람이 떠나간 세계에 남겨진, 묘비 대신인 탑. 이곳은 그 최상층.
+PRINTFORMW 처참하게 파괴된 전송 단말이 그 존재를 주장하고 있다.
+PRINTFORML 　
+PRINTFORMW 「찾았다……ッ!!」
+PRINTFORML 　
+PRINTFORML 지난번과 마찬가지로, 붉은 잔상과 함께 나타난 것은 입실론.
+PRINTFORMW 아무래도 여전히 이쪽과 싸울 생각인 모양이다.
+PRINTFORML 　
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:입실론_X2]]), [[キャラ:입실론_X2]]
+PRINTFORMW 「나는 멸망하지 않는다…… 마더와 어깨를 나란히 하는 자로서, 몇 번이고 되살아난다ッ!」
+CLEARLINE 7
+PRINTFORML 「나는 멸망하지 않는다…… 마더와 어깨를 나란히 하는 자로서, 몇 번이고 되살아난다ッ!」
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:입실론_X2]]), [[キャラ:입실론_X2]]
+PRINTFORMW 「네놈을 쓰러뜨리고ッ! 네놈을 뛰어넘는다ッ!! 그것이야말로 나의 사명이다ッ!!」
+CLEARLINE 7
+PRINTFORML 「네놈을 쓰러뜨리고ッ! 네놈을 뛰어넘는다ッ!! 그것이야말로 나의 사명이다ッ!!」
+PRINTFORML 　
+PRINTFORMW 워커　입실론이　1체 나타났다!
+
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+CALL SET_BOSS_ENEMY_EVENT_202, "イプシロン"
+CALL BATTLE_START
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+SIF FLAG:패배플래그
+	RETURN 0
+
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:입실론_X2]]), [[キャラ:입실론_X2]]
+PRINTFORMW 「…………ッ！！」
+CLEARLINE 7
+PRINTFORML 「…………ッ！！」
+PRINTFORML 　
+PRINTFORML 입실론은 무너지더니, 마침내 성대한 폭발을 일으켰다.
+IF GETCHARA([[キャラ:입실론_X2]]) > 0 || ITEM:도리・카드몬 == 0
+	PRINTFORML 임종의 순간에 무언가 유언을 남겼을지도 모르지만, 귀를 찢는 폭음이 모든 것을 지워버린다.
+	PRINTFORML 묘지기의 그것을 훨씬 웃도는 기세는, 그를 구성하던 부품을 산탄처럼 날려버리고,
+	PRINTFORMW 업화는 주위로 흩어진 그의 Pix를 남김없이 불태우는 것이었다.
+ELSE
+	PRINTFORML 이대로 방치하면, 그의 흔적은 완전히 사라져 버릴 것이다.
+	PRINTFORML 과연, 도리 카드몬을 써야 할까?
+	CALL INPUT_YN, "예", "아니오"
+	IF RESULT == 0
+		PRINTFORML %CALLNAME:MASTER%은(는) 재빠르게 도리 카드몬을 집어던져,
+		PRINTFORML 소체의 대용품으로서 주위에 흩날린 Pix를 남김없이 흡수시켜 간다.
+		PRINTFORMW ……그렇게 완성된 것은, 악마로 다시 태어난 입실론의 모습이었다.
+		PRINTFORML 　
+		CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:입실론_X2]]), [[キャラ:입실론_X2]]
+		PRINTFORMW 「네놈ッ! 이건 대체 무슨 짓거리냐ッ! 나더러, 마더 이외의 존재에게 엎드리라는 속셈이냐ッ!?」
+		CLEARLINE 7
+		PRINTFORML 「네놈ッ! 이건 대체 무슨 짓거리냐ッ! 나더러, 마더 이외의 존재에게 엎드리라는 속셈이냐ッ!?」
+		PRINTFORML 　
+		PRINTFORML 격앙되어 있는 틈을 타, 능숙하게 계약을 진행하여――
+		PRINTFORMW 마침내 입실론은 %CALLNAME:MASTER%의 악마가 되는 것이었다.
+		PRINTFORML 　
+		PRINTFORMW ＞입실론이 동료마가 되었다.
+		ITEM:도리・카드몬 -= 1
+		CALL ADD_NEW_COMPANION, [[キャラ:입실론_X2]], 0
+	ELSE
+		PRINTFORML %CALLNAME:MASTER%은(는) 도리 카드몬을 쓰지 않기로 하고, 전말을 지켜보기로 했다.
+		PRINTFORML 임종의 순간에 무언가 유언을 남겼을지도 모르지만, 귀를 찢는 폭음이 모든 것을 지워버린다.
+		PRINTFORML 묘지기의 그것을 훨씬 웃도는 기세는, 그를 구성하던 부품을 산탄처럼 날려버리고,
+		PRINTFORMW 업화는 주위로 흩어진 그의 Pix를 남김없이 불태우는 것이었다.
+	ENDIF
+ENDIF
+CUSTOMDRAWLINE =
+RETURN 1
+
+@SET_ACTION_セラフィックルインX, ARG
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIM ターン保存
+#DIM SKILL_NUM
+#DIM バフチェック
+#DIM バフMAXチェック
+#DIM デバフチェック
+SKILL_NUM = PU_SKILLNUM_GET(ARG, "セラフィックデス")
+;CSTR:ARG:전용기1 = シールドストライク
+;CSTR:ARG:전용기2 = インフェルノドロップ
+;CSTR:ARG:전용기3 = オラージュリーゼ
+;CSTR:ARG:전용기4 = ＳＰスキル（今回は使わない）
+;CSTR:ARG:전용기5 = エイミングレイ
+;CSTR:ARG:전용기6 = タイムフリーザー
+;CSTR:ARG:전용기7 = ジャッジメントブレード
+;CSTR:ARG:전용기8 = φシュート
+;CSTR:ARG:전용기9 = セラフィックデス
+IF CFLAG:ARG:１more플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:기합]]
+;ガンヴォルトあるある：HPが1/3切ったらSPスキル使う　5Tに1回打ってくるぞ
+ELSEIF CFLAG:ARG:800 && PU_SKILLGAGE_D_GET(ARG, "セラフィックデス") == 0
+	CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "セラフィックデス")
+ELSE
+	IF RAND:5 == 0
+		IF GET_カジャンダ_MAX(ARG) < 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:외법의유혹]]
+		ELSEIF GET_カジャンダ_MIN(ARG) < 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:이니셜라이즈]]
+		ELSEIF GET_カジャンダ_MAX(ARG) < 32
+			CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:랜더마이저]]
+		ENDIF
+	ELSE
+		IF CFLAG:ARG:행동한횟수 == 0
+			IF PU_SKILLGAGE_D_GET(ARG, "シールドストライク") > 0 && RAND:10 > 5
+				CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "インフェルノドロップ")
+			ELSE
+				SELECTCASE RAND:5
+					CASE 0
+						CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "シールドストライク")
+					CASE 1
+						CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "オラージュリーゼ")
+					CASE 2
+						CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "エイミングレイ")
+					CASE 3
+						CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "タイムフリーザー")
+					CASEELSE
+						CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "φシュート")
+				ENDSELECT
+			ENDIF
+		ELSE
+			IF PU_SKILLGAGE_D_GET(ARG, "シールドストライク") > 0 && RAND:10 > 3
+				CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "インフェルノドロップ")
+			ELSE
+				SELECTCASE RAND:6
+					CASE 5
+						CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "シールドストライク")
+					CASE 4
+						CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ジャッジメントブレード")
+					CASE 3
+						CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "φシュート")
+					CASE 2
+						CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "オラージュリーゼ")
+					CASE 1
+						CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ジャッジメントブレード")
+					CASEELSE
+					CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "φシュート")
+				ENDSELECT
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+
+@CHANGE_ACTION_セラフィックルインX, ARG
+CALL CHANGE_ACTION_セラフィックルイン, ARG
+
+@EVENT_BATTLE_DYING_セラフィックルインX, L_T, L_P, L_SKIP
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_SKIP
+CALL EVENT_BATTLE_DYING_EVENT_201_4_イプシロン2, L_T, L_P, L_SKIP
+
+@EVENT_BATTLE_ACTEND_セラフィックルインX
+CALL EVENT_BATTLE_ACTEND_EVENT_201_4_イプシロン2
+
+@EVENT_BATTLE_LOSE_セラフィックルインX
+RETURN 1

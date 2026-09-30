@@ -1,0 +1,113 @@
+﻿
+;スキル名
+@SKILL_NAME_先手必勝,ARG
+RESULTS = 先手必勝
+
+;　명중
+@SKILL_HITRATE_先手必勝, ARG
+RETURN 150
+
+;　威力
+@SKILL_POWER_先手必勝, ARG
+RETURN 700
+
+;;クリティカル率
+@SKILL_CRITICAL_RATE_先手必勝, ARG
+RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_先手必勝,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_先手必勝,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_先手必勝, ARG
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_先手必勝,ARG
+RETURN 20
+
+;　相性
+@SKILL_TYPE_先手必勝,ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_先手必勝
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_先手必勝,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　1物理 2魔法 3銃 4アイテム 5割合
+@SKILL_ATTACKTYPE_先手必勝, ARG
+RETURN 5
+
+;ARG:5 割合計算　0-現在HP　1-最大HP　-1-現在HP(不殺)　-2-最大HP(不殺)
+@SKILL_RATE_DAMAGETYPE_先手必勝,ARG
+RETURN 1
+
+;割合ダメージの上限
+@SKILL_RATE_LIMIT_先手必勝,ARG
+SIF ARG == -1
+	RETURN 100
+RETURN BASE:ARG:LV * 15
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_先手必勝,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_先手必勝,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_先手必勝,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_先手必勝,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_先手必勝
+RETURN GET_SUCCESSION_NUM("검격")
+
+;속도보정
+@SKILL_SPEED_先手必勝, ARG = -1
+RETURN 25
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_先手必勝
+RETURN 0
+
+@SKILL_RANK_先手必勝, ARG = -1
+RETURN 6
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_先手必勝,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_先手必勝,ARG
+PRINTL 대상 최대 HP의 70%의 검격 데미지를 준다 (최대 데미지는 사용자의 레벨×15).
+PRINTL 재빠르게 발동하지만, 전투 개시 첫 번째 턴에만 사용 가능.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_先手必勝,ARG
+RESULTS = 첫 번째 턴이 아닙니다
+SIF FLAG:경과턴수 > 0
+	RETURN 0
+RETURN 1

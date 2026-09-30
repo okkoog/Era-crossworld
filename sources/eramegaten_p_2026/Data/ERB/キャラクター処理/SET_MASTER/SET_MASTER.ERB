@@ -1,0 +1,1790 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SET_MASTER.ERB
+;	Facility	:MASTERの能力設定関連の処理群です
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/05/01		Ｐ						ペルソナ選択時の表示がおかしかったのを修正
+;	003		2011/06/22		Ｐ						ペルソナ選択時の表示がおかしかったのを修正,サバトマの追加処理を廃止
+;	004		2011/06/24		Ｐ						一体のみの悪魔を初期ペルソナ化できないように
+;	005		2011/08/18		Wikiの中の人			男の娘で爆乳を選べるように
+;	006		2012/08/21		豚の娘の豚				異能者、ペルソナ使いあなたに道具知識１を付与、初期パートナー入手をPRESENT_SLAVEに分離
+;	007		2012/08/21		f						達人あなたを選択可能に
+;	008		2014/03/21		通りすがりのたかし		性別変更時に虹色のキャンディ用の処理を追加
+;	009		2014/04/06		Ｊ( 'ー`)し				悪魔狩人あなたと何かを追加
+;	010		2015/01/01		Iz						異能者強化パッチV4として、各クラスの改訂、素質追加
+;	011		2015/01/05		Iz						不具合修正
+;	012		2015/01/27		Iz						達人強化パッチとして、達人の素質調整等
+;	013		2016/07/04		Ｏ式					チェフェイ加入イベント追加
+;	014		2016/12/27		Ｊ( 'ー`)し				初回便器あなたでチェフェイ加入イベント追加
+;	015		2017/02/07		名無し					初期ピクシーを全書登録にする選択肢の追加
+;	016		2017/06/29		ああああ				元性別の扱いを変更
+;	017		2017/06/29		ああああ				元性別を使わないことに
+;	018		2018/05/15		JK好き					分岐の複雑化に伴いピクシー加入・チェフェイ加入をそれぞれCALLで呼ぶように分離
+;	019		2019/05/10		NNSI					引き継ぎしたピクシーのスキル３にアギが上書きされるのを修正。全書の方は未対応
+;	020		2019/06/29		JK好き					主人の専攻分野リセットで機械の乙女が消えるのを修正
+;	021		2019/08/30		空気					主人の専攻分野リセットでマーシャルアーツが消えないのを修正
+;	022		2019/11/03		131						娘or息子マスター引き継ぎ処理を追加
+;	023		2020/04/19		(ﾟдﾟ)					セーブデータID追加、スタァライトイベの特殊判定追加
+;	024		2020/06/01		(ﾟдﾟ)					デビルシフターあなたに道具知識LV3を付与
+;	025		2020/09/17		SUIHOU					デビルハンターあなたの取得スキルを調整
+;	026		2020/09/18		SUIHOU					悪魔狩人あなたの所持・習得予定スキルを変更
+;	027		2020/09/27		SUIHOU					悪魔狩人あなたの所持スキルにデビルトリガーを追加
+;	028		2020/10/11		MkjX					CSTR:MASTER:해설3～20を初期化
+;	029		2020/10/21		JK好き					オープニングを見た時と飛ばした時で貰えるものが変わってしまう問題を修正
+;	030		2020/11/20		SUIHOU					悪魔狩人あなたの所持銃をＥ＆Ｉから変更
+;	031		2021/01/21		名無しのあなた			初日に悪魔ほむほむのイベントを追加
+;	032		2021/02/10		kamedakeisuke(ﾟдﾟ)		↑に伴い大場まわりの処理追加
+;	033		2021/04/27		JK好き					@SET_MASTER_FRAMEにCFLAG子宮最大容量を設定する処理を追加
+;	034		2021/06/23		lemukot					異能者あなた時にある問いかけについて、技能→能力へ表記を変更。選択できる能力に半魔を追加
+;	035		2021/04/27		SUIHOU					@OPENING_MESSAGE_1を観光客、たけしのみ処理除外するように変更
+;	036		2021/08/09		元Wikiの中の人			ロリババァとショタジジィを追加
+;	037		2021/09/05		JK好き					喰奴あなたの初期スキルを喰奴習得スキルに登録する処理を追加
+;													@SET_MASTER_ILLEGAL_TALENT 小修正
+;	038		2021/10/10		Schrott					ふたなりロリババァと男の娘ジジィを創設。（ふたなりと男の娘をオンにしただけ）
+;	038		2022/01/16		kamedakeisuke(ﾟдﾟ)		いつのまにか増えてた半魔あなたをオミット（システム側で対応しておらずやっべー不具合があるため）
+;	039		2022/07/20		NEO						デビルハンターの開始時見ていたエンド番号を修正
+;	040		2022/09/19		★						主人のバスト設定のとき魔乳がリセットされないのを修正
+;	041		2022/11/05		kuuzya					あなたの性経験の初期設定を修正・関数化, ふたなりの場合PとVのどちらの経験も聞くように変更
+;	042		2022/11/22		ZMat					半魔人あなたを新規に追加(034の半魔とは別仕様)
+;	043		2022/02/02		P(bazzile)				キャラメイクをリファクタリング
+;													あなたのクラスにアウトサイダーを追加
+;													スキル定義などをSET_MASTER_DATAとして分離
+;													初期解析度設定にゾンビドッグ・
+;	044		2022/02/26		P(bazzile)				前の周で異能者以外を選んでいると周回時に異能者を選べなくなる不具合を修正
+;	045		2023/03/31		P(bazzile)				周回時のマスターリセット処理にスキルエミュレータの解除を追加
+;	046		2023/04/13		P(bazzile)				ペルソナ使いあなたの習得スキルのレベルが正しく設定されなかった不具合を修正
+;	047		2023/04/23		P(bazzile)				デビルハンターを選ぶ条件が異常になってしまっていたのを修正
+;	048		2023/04/26		P(bazzile)				観光客を選んだ際に正しく変数がセットされなかった不具合を修正
+;	049		2023/05/23		P(bazzile)				ロール説明で横幅が足りないときに落ちる不具合を修正
+;	050		2023/05/30		P(bazzile)				調教素質の説明文が正しくポップアップするように修正
+;	051		2023/06/15		P(bazzile)				達人あなたの戦闘素質の説明文が正しくポップアップしていなかった不具合を修正
+;	052		2023/06/28		P(bazzile)				周回時にマスターに本来残っていていては行けない素質が残るケースがある不具合を修正
+;													周回時にマスターの再習得スキルをリセットするように変更
+;	053		2023/07/23		不明					あなた素質追加質問追加
+;	054		2023/07/15		P(bazzile)				マスターの数値の初期化に所属COMPとリンク悪魔を追加
+;	055		2023/08/06		P(bazzile)				半魔人のクラスによるスキル取得が関数を通過していなかった不具合を修正
+;													関数の仕様変更にあわせてマスターのロール付与タイミングを変更
+;													習得済みスキルの設定のミスを修正
+;	056		2023/08/23		P(bazzile)				ペルソナの属性の表示ミスを修正
+;	057		2023/10/15		P(bazzile)				初期ピクシーの能力変更時にCALLを挟んでRESULT:1を使っていた部分を修正
+;													半魔人のマスターを周回時にサマナーにするとデビルアームズがセットされてしまっていた不具合を修正
+;	058		2024/02/19		P(bazzile)				機能していなかったCSTR:解説の初期化処理を削除
+;	059		2024/02/21		JK好き					@OPENING_MESSAGE_1 子供にMASTER引き継ぎさせた際に、オープニングを見たか見ないかで貰えるものが変わる現象を修正
+;	060		2024/03/02		kemedakeisuke			大場がレヴューをボイコットすることがある不具合を修正
+;	061		2024/04/07		P(bazzile)				マスターのロール決定後に装備を調整する処理を追加
+;	062		2024/04/25		P(bazzile)				最序盤の安定度をあげるために最初にもらえるピクシーを強化
+;	063		2024/09/15		P(bazzile)				ペルソナ使いでペルソナを引き継ぐ場合のスキルセットが正しく実行されなかった不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;	P
+;	001		2024/05/10		P(bazzile)				マスターのロールに合一神を追加
+;	002		2024/05/26		P(bazzile)				仮措置でマスターに最初から神意を3種セット
+;	003		2024/05/28		P(bazzile)				スキルと素質のポップアップが出なくなっていたので対処
+;	063		2024/06/18		一ノ瀬					 初期ピクシーの加入処理において、周回で初期ピクシーを引き継いでいた場合の処理が正しく機能していなかった不具合を修正
+;	005		2024/07/05		P(bazzile)				初期解析度が必要な喰ったので削除
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;========================================================================
+;主人をキャラメイク
+;========================================================================
+@SET_MASTER
+LOCAL = CHARANUM - 1
+CFLAG:LOCAL:본체버전정보 = GAMEBASE_VERSION
+CALL SET_MASTER_BASIC
+$SET_MAJORING
+CALL SET_MASTER_MAJORING
+CALL SET_MASTER_NAME
+CALL SET_MASTER_TALENTCHECK
+
+;========================================================================
+;主人の基本的な性別・体格等の設定
+;========================================================================
+@SET_MASTER_BASIC
+SIF FLAG:주회횟수 > 0
+	CALL SET_MASTER_TALENT_R
+CALL SET_MASTER_SEX
+CALL SET_MASTER_FRAME
+CALL SET_MASTER_INVERT
+CALL SET_MASTER_SEXLIFE
+CALL SET_MASTER_BUST
+CALL SET_MASTER_HIP
+CALL SET_MASTER_WAIST
+
+
+
+PRINTL 성적인 경험을 상세히 설정하겠습니까？
+CALL INPUT_YN,"Yes","No"
+IF RESULT == 0
+	;ITEM:5051 = 1
+	CALL SET_MASTER_ORALSEX
+	CALL SET_MASTER_ANALSEX
+	CALL SET_MASTER_MORETALENT
+	CALL SET_MASTER_SLAVERY
+ENDIF
+
+ABL:MASTER:순종 = MIN(ABL:MASTER:순종, 10)
+ABL:MASTER:욕망 = MIN(ABL:MASTER:욕망, 10)
+ABL:MASTER:기교 = MIN(ABL:MASTER:기교, 10)
+ABL:MASTER:Ｖ감각 = MIN(ABL:MASTER:Ｖ감각, 10)
+ABL:MASTER:Ａ감각 = MIN(ABL:MASTER:Ａ감각, 10)
+ABL:MASTER:봉사정신 = MIN(ABL:MASTER:봉사정신, 10)
+ABL:MASTER:마조끼 = MIN(ABL:MASTER:마조끼, 10)
+ABL:MASTER:정액중독 = MIN(ABL:MASTER:정액중독, 10)
+ABL:MASTER:섹스중독 = MIN(ABL:MASTER:섹스중독, 10)
+CALL MASTER_HUKUSO
+CALL CLOTHES_INITIALIZE,MASTER
+
+
+;========================================================================
+;主人の素質リセット
+;========================================================================
+@SET_MASTER_TALENT_R
+PRINTL 데모나이즈・당신합체 등으로 변화한 소질을 재설정하시겠습니까？
+PRINTL [0]리셋하지 않는다
+PRINTL [1]일반 인간의 육체로 돌아간다
+PRINTL [2]당신은 실은 개입니다
+PRINTL [3]당신은 여우입니다
+PRINTL [4]고양이입니다
+PRINTL [5]고양이는 있습니다
+CALL INPUTINT,0,1,2,3,4,5
+
+SELECTCASE RESULT
+	;リセットしない
+	CASE 0
+		PRINTL
+		RETURN
+	;素質をリセットして真っ当?な人間に
+	CASE 1
+		;サマナーから達人までの戦闘素質と非人型素質をCSV参照してリセット
+		FOR LOCAL,0,343
+			TALENT:MASTER:(LOCAL) = CSVTALENT(NO:MASTER,LOCAL,0)
+		NEXT
+		CFLAG:MASTER:1201 = 0
+	;素質をリセットして犬に
+	CASE 2
+		FOR LOCAL,0,343
+			TALENT:MASTER:(LOCAL) = 0
+		NEXT
+		CFLAG:MASTER:1201 = 0
+		TALENT:MASTER:동물귀 = 1
+		TALENT:MASTER:짐승 = 1
+		TALENT:MASTER:발정가능 = 1
+		TALENT:MASTER:머리 = 1
+		TALENT:MASTER:눈 = 1
+		TALENT:MASTER:입 = 1
+		TALENT:MASTER:갈퀴 = 1
+		TALENT:MASTER:발 = 1
+		TALENT:MASTER:꼬리 = 1
+		TALENT:MASTER:모피 = 1
+	;素質をリセットして狐に
+	CASE 3
+		FOR LOCAL,0,343
+			TALENT:MASTER:(LOCAL) = 0
+		NEXT
+		CFLAG:MASTER:1201 = 0
+		TALENT:MASTER:짐승 = 1
+		TALENT:MASTER:여우 = 1
+		TALENT:MASTER:발정가능 = 1
+		TALENT:MASTER:머리 = 1
+		TALENT:MASTER:눈 = 1
+		TALENT:MASTER:입 = 1
+		TALENT:MASTER:갈퀴 = 1
+		TALENT:MASTER:발 = 1
+		TALENT:MASTER:꼬리 = 1
+		TALENT:MASTER:모피 = 1
+	;素質をリセットして猫に
+	CASE 4
+		FOR LOCAL,0,343
+			TALENT:MASTER:(LOCAL) = 0
+		NEXT
+		CFLAG:MASTER:1201 = 0
+		TALENT:MASTER:짐승 = 1
+		TALENT:MASTER:고양이혀 = 1
+		TALENT:MASTER:발정가능 = 1
+		TALENT:MASTER:머리 = 1
+		TALENT:MASTER:눈 = 1
+		TALENT:MASTER:입 = 1
+		TALENT:MASTER:갈퀴 = 1
+		TALENT:MASTER:발 = 1
+		TALENT:MASTER:꼬리 = 1
+		TALENT:MASTER:모피 = 1
+	;素質をリセットして不定形に
+	CASE 5
+		FOR LOCAL,0,343
+			TALENT:MASTER:(LOCAL) = 0
+		NEXT
+		CFLAG:MASTER:1201 = 0
+		TALENT:MASTER:부정형 = 1
+		TALENT:MASTER:고양이혀 = 1
+		TALENT:MASTER:발정가능 = 1
+		TALENT:MASTER:머리 = 1
+		TALENT:MASTER:눈 = 1
+		TALENT:MASTER:입 = 1
+		TALENT:MASTER:갈퀴 = 1
+		TALENT:MASTER:발 = 1
+		TALENT:MASTER:꼬리 = 1
+		TALENT:MASTER:모피 = 1
+		TALENT:MASTER:촉수 = 1
+ENDSELECT
+
+
+;========================================================================
+;主人の性別設定
+;========================================================================
+@SET_MASTER_SEX
+;虹色のキャンディ用処理
+IF TALENT:MASTER:남자
+	CFLAG:MASTER:원오토코노코 = TALENT:MASTER:오토코노코
+	;男の娘あなたは胸サイズ自由に設定できるので保存。男の娘から♂に変えて虹飴のケースは考えてない。
+	SIF TALENT:MASTER:오토코노코
+		CFLAG:MASTER:원가슴사이즈 = BUST(MASTER)	
+ELSE
+	CFLAG:MASTER:원처녀 = TALENT:MASTER:처녀
+	CFLAG:MASTER:원후타나리 = TALENT:MASTER:후타나리
+	;CFLAG:MASTER:원Ｖ민감 = TALENT:MASTER:Ｖ민감
+	;CFLAG:MASTER:원Ｖ둔감 = TALENT:MASTER:Ｖ둔감
+	CFLAG:MASTER:원Ｖ감각 = ABL:MASTER:Ｖ감각
+	CFLAG:MASTER:원가슴사이즈 = BUST(MASTER)
+ENDIF
+
+;周回プレイ用処理
+CALL SET_初期衣装, "모자" , -1
+CALL SET_初期衣装, "옷" , -1
+CALL SET_初期衣装, "하의" , -1
+CALL SET_初期衣装, "전신복" , -1
+CALL SET_初期衣装, "손" , -1
+CALL SET_初期衣装, "속옷（상）" , -1
+CALL SET_初期衣装, "속옷（하）" , -1
+CALL SET_初期衣装, "전신속옷" , -1
+CALL SET_初期衣装, "양말" , -1
+CALL SET_初期衣装, "신발" , -1
+CALL SET_初期衣装, "겉옷" , -1
+CALL SET_初期衣装, "그외" , -1
+
+PRINTL 당신의 성별은？
+PRINTLC [0]♂
+PRINTLC [1]♀
+PRINTLC [2]오토코노코
+PRINTLC [3]후타나리
+PRINTL 
+;ババアジジイ系を、外見年齢問わずの長生き処理に移設。従来通り、幼生固定なり新フラグを設けるなりで判別できるはず
+CALL INPUTINT,0,1,2,3
+SELECTCASE RESULT
+	CASE 0
+		TALENT:MASTER:처녀 = 0
+		TALENT:MASTER:남자 = 1
+		TALENT:MASTER:후타나리 = 0
+		TALENT:MASTER:오토코노코 = 0
+		TALENT:MASTER:절벽 = 1
+		MAXBASE:MASTER:사정 = 10000
+		MAXBASE:MASTER:절정 = 10000
+		ABL:MASTER:Ｖ감각 = 0
+		CALL 初期衣装セット, MASTER,"겉옷", "바지", "트렁크스", "양말", "부츠"
+		PRINTW 성별：♂로 시작합니다
+	CASE 1
+		TALENT:MASTER:처녀 = 0
+		TALENT:MASTER:남자 = 0
+		TALENT:MASTER:후타나리 = 0
+		TALENT:MASTER:오토코노코 = 0
+		MAXBASE:MASTER:사정 = 10000
+		MAXBASE:MASTER:절정 = 10000
+		CALL 初期衣装セット, MASTER,"블라우스","스커트","브래지어","팬티","양말","부츠"
+		PRINTW 성별：♀로 시작합니다
+	CASE 2
+		TALENT:MASTER:남자 = 1
+		TALENT:MASTER:오토코노코 = 1
+		TALENT:MASTER:후타나리 = 0
+		MAXBASE:MASTER:사정 = 10000
+		MAXBASE:MASTER:절정 = 10000
+		ABL:MASTER:Ｖ감각 = 0
+		CALL 初期衣装セット, MASTER,"겉옷", "바지", "트렁크스", "양말", "부츠"
+		PRINTW [오토코노코]로 시작합니다
+	CASE 3
+		TALENT:MASTER:남자 = 0
+		TALENT:MASTER:후타나리 = 1
+		TALENT:MASTER:오토코노코 = 0
+		MAXBASE:MASTER:사정 = 10000
+		MAXBASE:MASTER:절정 = 10000
+		CALL 初期衣装セット, MASTER,"블라우스", "스커트", "브래지어", "팬티", "양말", "부츠"
+		PRINTW [후타나리]로 시작합니다
+ENDSELECT
+
+;虹色のキャンディ用処理
+IF TALENT:MASTER:남자
+	;CFLAG:MASTER:원성별 = 1
+	CFLAG:MASTER:원오토코노코 = 0
+ELSE
+	;CFLAG:MASTER:원성별 = 0
+	CFLAG:MASTER:원처녀 = 0
+	CFLAG:MASTER:원후타나리 = 0
+	;CFLAG:MASTER:원Ｖ민감 = 0
+	;CFLAG:MASTER:원Ｖ둔감 = 0
+	CFLAG:MASTER:원Ｖ감각 = 0
+	SIF !CFLAG:MASTER:원오토코노코
+		CFLAG:MASTER:원가슴사이즈 = 1
+ENDIF
+
+CALL CLOTHES_INITIALIZE,MASTER
+IF FLAG:주회횟수 == 0
+	;そこまで影響はないがイメージ的に初期の体力・気力を変更。単なるイメージってことで
+	MAXBASE:MASTER:체력 = (TALENT:MASTER:남자 && TALENT:MASTER:오토코노코 == 0) ? 2500 # 1800
+	MAXBASE:MASTER:기력 = (TALENT:MASTER:남자 && TALENT:MASTER:오토코노코 == 0) ? 1500 # 2000
+ENDIF
+;全快処理
+BASE:MASTER:체력 = MAXBASE:MASTER:체력
+BASE:MASTER:기력 = MAXBASE:MASTER:기력
+
+RETURN
+
+;========================================================================
+;主人の体型設定
+;========================================================================
+@SET_MASTER_FRAME
+TALENT:MASTER:유아체형 = 0
+TALENT:MASTER:소인체형 = 0
+TALENT:MASTER:큰체형 = 0
+TALENT:MASTER:거체 = 0
+PRINTL 
+PRINTL 당신의 체형은？
+PRINTL [0]보통
+PRINTL [1]작다
+PRINTL [2]요정 사이즈
+PRINTL [3]큰체형
+PRINTL [4]거인 사이즈
+PRINTL [5]오오미츠누 사이즈
+PRINTL [6]야소마가츠 사이즈
+PRINTL [7]구두룡 사이즈
+CALL INPUTINT,0,1,2,3,4,5,6,7
+SELECTCASE RESULT
+	CASE 1
+		TALENT:MASTER:유아체형 = 1
+	CASE 2
+		TALENT:MASTER:소인체형 = 1
+	CASE 3
+		TALENT:MASTER:큰체형 = 1
+	CASE 4, 5, 6, 7
+		TALENT:MASTER:거체 = 1
+ENDSELECT
+CALL 子宮最大容量初期設定,MASTER
+PRINTL
+RETURN
+
+;========================================================================
+;主人の同性愛設定
+;========================================================================
+@SET_MASTER_INVERT
+TALENT:MASTER:남성혐오 = 0
+TALENT:MASTER:여성혐오 = 0
+TALENT:MASTER:바이 = 0
+PRINTFORML %NAME:MASTER%의 취향은？
+PRINTL [0]남자든 여자든 다 가능한 축입니다
+IF TALENT:MASTER:남자
+	PRINTL [1]여악마들을 조교하고 싶은 정도의 흥미는 가지고 있습니다
+	PRINTL [2]사내자식 따위에 닿으면 두드러기가…！
+	PRINTL [3]실은 저、여성 알레르기예요！
+ELSE
+	PRINTL [1]진성 레즈 정도는 아니지만 조금 신경이 쓰입니다
+	PRINTL [2]이 세계에 남자같은 건 필요 없어！…라고 진심으로 생각하고 있습니다
+	PRINTL [3]여자는 나 혼자로 충분！
+ENDIF
+CALL INPUTINT,0,1,2,3
+SELECTCASE RESULT
+	CASE 0
+		TALENT:MASTER:바이 = 1
+	CASE 1
+		TALENT:MASTER:83 = 0
+		IF TALENT:MASTER:남자
+			TALENT:MASTER:남성혐오 = 0
+		ELSE
+			TALENT:MASTER:여성혐오 = 0
+		ENDIF
+	CASE 2
+		TALENT:MASTER:바이 = 0
+		TALENT:MASTER:남성혐오 = 1
+	CASE 3
+		TALENT:MASTER:바이 = 0
+		TALENT:MASTER:여성혐오 = 1
+ENDSELECT
+PRINTL
+RETURN
+
+;========================================================================
+;主人の性生活設定
+;========================================================================
+@SET_MASTER_SEXLIFE
+MARK:MASTER:쾌락각인 = 0
+MARK:MASTER:굴복각인 = 0
+TALENT:MASTER:복종 = 0
+PRINTL 경험은 있어？
+SIF HAVE_VAGINA(MASTER)
+	CALL SET_MASTER_SEXLIFE_VAGINA
+SIF HAVE_PENIS(MASTER)
+	CALL SET_MASTER_SEXLIFE_PENIS
+PRINTL
+RETURN
+
+@SET_MASTER_SEXLIFE_VAGINA
+PRINTL [0]싱싱한 숫처녀입니다
+PRINTL [1]비처녀인데 무슨 문제라도？
+PRINTL [2]경험은 풍부합니다
+PRINTL [3]누구에게라도 가랑이를 열어버립니다
+
+CALL INPUTINT,0,1,2,3
+SELECTCASE RESULT
+CASE 0
+	TALENT:MASTER:처녀 = 1
+	EXP:MASTER:Ｖ경험 = 0
+CASE 1
+	TALENT:MASTER:처녀 = 0
+	EXP:MASTER:Ｖ경험 += RAND:3+1
+	EXP:MASTER:성교경험 = EXP:MASTER:Ｖ경험
+	EXP:MASTER:질사경험 = 1
+	EXP:MASTER:정액경험 = EXP:MASTER:Ｖ경험
+CASE 2
+	TALENT:MASTER:처녀 = 0
+	EXP:MASTER:Ｖ경험 += RAND:30+10
+	EXP:MASTER:성교경험 = EXP:MASTER:Ｖ경험
+	EXP:MASTER:질사경험 = 15
+	EXP:MASTER:정액경험 = EXP:MASTER:Ｖ경험
+CASE 3
+	TALENT:MASTER:처녀 = 0
+	EXP:MASTER:Ｖ경험 += RAND:150+50
+	EXP:MASTER:성교경험 = EXP:MASTER:Ｖ경험
+	EXP:MASTER:질사경험 = EXP:MASTER:Ｖ경험*2
+	EXP:MASTER:정액경험 = EXP:MASTER:Ｖ경험*2
+	ABL:MASTER:Ｖ감각 += 2
+	ABL:MASTER:섹스중독 += 1
+ENDSELECT
+RETURN RESULT
+
+@SET_MASTER_SEXLIFE_PENIS
+PRINTL [0]실은 동정입니다。
+PRINTL [1]딱지는 뗐습니다。
+PRINTL [2]경험은 풍부합니다
+PRINTL [3]색마는 칭찬입니다
+CALL INPUTINT,0,1,2,3
+
+SELECTCASE RESULT
+	CASE 0
+		EXP:MASTER:삽입경험 = 0
+		CFLAG:MASTER:동정 = 1
+	CASE 1
+		EXP:MASTER:삽입경험 = RAND:10+2
+	CASE 2
+		EXP:MASTER:삽입경험 = RAND:30+10
+	CASE 3
+		EXP:MASTER:삽입경험 = RAND:100+50
+ENDSELECT
+RETURN RESULT
+
+
+;========================================================================
+;主人のBWH設定
+;========================================================================
+@SET_MASTER_BUST
+TALENT:MASTER:절벽 = 0
+TALENT:MASTER:빈유 = 0
+TALENT:MASTER:거유 = 0
+TALENT:MASTER:폭유 = 0
+TALENT:MASTER:마유 = 0
+IF TALENT:MASTER:남자 && TALENT:MASTER:오토코노코 != 1
+	TALENT:MASTER:절벽 = 1
+	RETURN
+ENDIF
+PRINTL 가슴 크기는 어느 정도？
+IF TALENT:MASTER:오토코노코
+	PRINTL [0]평범한 오토코노코의 가슴입니다
+	PRINTL [1]살짝 부풀어 있어서 자주 놀림 받습니다
+	PRINTL [2]여자아이와 같은 크기로 자라버려서 난처합니다
+	PRINTL [3]얼버무리지 못할 만큼 커져버렸습니다
+	PRINTL [4]브라를 차지 않으면 걸을 수 없을 만큼 부풀었습니다
+	;明示されていないが爆乳も可
+ELSE
+	PRINTL [0]절벽
+	PRINTL [1]빈유
+	PRINTL [2]보통
+	PRINTL [3]거유
+	PRINTL [4]폭유
+ENDIF
+CALL INPUTINT,0,1,2,3,4
+SELECTCASE RESULT
+	CASE 0
+		TALENT:MASTER:절벽 = 1
+	CASE 1
+		TALENT:MASTER:빈유 = 1
+	CASE 3
+		TALENT:MASTER:거유 = 1
+	CASE 4
+		TALENT:MASTER:폭유 = 1
+ENDSELECT
+PRINTL
+RETURN
+
+@SET_MASTER_HIP
+;乳と同様オトコは省略
+TALENT:MASTER:小尻 = 0
+TALENT:MASTER:並尻 = 0
+TALENT:MASTER:巨尻 = 0
+TALENT:MASTER:爆尻 = 0
+TALENT:MASTER:魔尻 = 0
+IF TALENT:MASTER:남자 && TALENT:MASTER:오토코노코 != 1
+	RETURN
+ENDIF
+PRINTL 엉덩이의 크기는 어느 정도？
+	PRINTL [0]작은 엉덩이
+	PRINTL [1]보통 엉덩이
+	PRINTL [2]큰 엉덩이
+	PRINTL [3]폭발적인 엉덩이
+CALL INPUTINT,0,1,2,3
+SELECTCASE RESULT
+	CASE 0
+		TALENT:MASTER:小尻 = 1
+	CASE 1
+		TALENT:MASTER:並尻 = 1
+	CASE 2
+		TALENT:MASTER:巨尻 = 1
+	CASE 3
+		TALENT:MASTER:爆尻 = 1
+ENDSELECT
+PRINTL
+RETURN
+
+@SET_MASTER_WAIST
+TALENT:MASTER:슬렌더 = 0
+TALENT:MASTER:포동포동 = 0
+IF TALENT:MASTER:남자 && TALENT:MASTER:오토코노코 != 1
+	RETURN
+ENDIF
+PRINTL 살찐 정도는 어느 정도？
+	PRINTL [0]마른 편
+	PRINTL [1]보통
+	PRINTL [2]통통한 편
+	PRINTL [3]뚱뚱한 편
+CALL INPUTINT,0,1,2,3
+SELECTCASE RESULT
+	CASE 0
+		TALENT:MASTER:슬렌더 = 1
+	CASE 2
+		TALENT:MASTER:포동포동 = 1
+	CASE 3
+		TALENT:MASTER:포동포동 = 2
+ENDSELECT
+PRINTL
+RETURN
+;========================================================================
+;主人のフェラチオ経験
+;========================================================================
+@SET_MASTER_ORALSEX
+PRINTL 펠라치오 경험은 있습니까？
+PRINTL [0]전혀
+PRINTL [1]몇 번쯤
+PRINTL [2]그럭저럭
+PRINTL [3]사까시하는 걸 정말 좋아합니다
+PRINTFORML [4]오늘의 아침밥은 일등급 정액이었습니다%UNICODE(0x2661)%
+CALL INPUTINT,0,1,2,3,4
+SELECTCASE RESULT
+	CASE 0
+		EXP:MASTER:펠라경험 = 0
+	CASE 1
+		EXP:MASTER:펠라경험 += RAND:6+2
+		EXP:MASTER:정액경험 += EXP:MASTER:펠라경험
+	CASE 2
+		EXP:MASTER:펠라경험 += RAND:30+10
+		EXP:MASTER:정액경험 += EXP:MASTER:펠라경험
+	CASE 3
+		EXP:MASTER:펠라경험 += RAND:160+40
+		EXP:MASTER:정액경험 += EXP:MASTER:펠라경험
+		ABL:MASTER:봉사정신 += 1
+		ABL:MASTER:기교 += 1
+		ABL:MASTER:욕망 += 1
+	CASE 4
+		EXP:MASTER:펠라경험 += RAND:200+100
+		EXP:MASTER:정액경험 += EXP:MASTER:펠라경험
+		ABL:MASTER:봉사정신 += 2
+		ABL:MASTER:정액중독 += 1
+		ABL:MASTER:기교 += 1
+		ABL:MASTER:욕망 += 1
+		ABL:MASTER:마조끼 += 1
+ENDSELECT
+PRINTL
+RETURN
+
+;========================================================================
+;主人のＡ経験
+;========================================================================
+@SET_MASTER_ANALSEX
+PRINTL 엉덩이로 해본 경험은 있습니까？
+PRINTL [0]전혀
+PRINTL [1]손가락으로 건드린 정도라면
+PRINTL [2]애널 섹스 경험이 있습니다
+PRINTFORML [3]엉덩이에 삽입되는 순간이 끝내줍니다%UNICODE(0x2661)%
+PRINTFORML [4]언제나 뭔가를 넣어두지 않으면 외로워서 좀이 쑤셔버립니다
+CALL INPUTINT,0,1,2,3,4
+SELECTCASE RESULT
+	CASE 0
+		EXP:MASTER:Ａ경험 = 0
+	CASE 1
+		EXP:MASTER:Ａ경험 += RAND:6+2
+		EXP:MASTER:정액경험 += EXP:MASTER:Ａ경험/2
+	CASE 2
+		EXP:MASTER:Ａ경험 += RAND:30+10
+		EXP:MASTER:정액경험 += EXP:MASTER:Ａ경험/2
+	CASE 3
+		EXP:MASTER:Ａ경험 += RAND:160+40
+		EXP:MASTER:정액경험 += EXP:MASTER:Ａ경험/2
+		ABL:MASTER:Ａ감각 += 2
+		ABL:MASTER:욕망 += 1
+	CASE 4
+		EXP:MASTER:Ａ경험 += RAND:200+100
+		EXP:MASTER:정액경험 += EXP:MASTER:Ａ경험/2
+		ABL:MASTER:Ａ감각 += 3
+		ABL:MASTER:욕망 += 1
+		ABL:MASTER:마조끼 += 1
+ENDSELECT
+PRINTL
+RETURN
+
+
+;========================================================================
+;主人の調教素質
+;========================================================================
+@SET_MASTER_MORETALENT
+PRINTL 추가 소질을 설정하시겠습니까？
+	PRINTL [0]네
+	PRINTL [1]아니오
+CALL INPUTINT,0,1
+SELECTCASE RESULT
+	CASE 1
+		RETURN
+ENDSELECT
+PRINTL
+
+PRINTL 거북한 사람을 만나면...
+	PRINTL [0]타협한다
+	PRINTL [1]놀잇감으로 삼는다
+	PRINTL [2]먼저 주위를 살핀다
+	PRINTL [3]만난 적 없다
+CALL INPUTINT,0,1,2,3
+SELECTCASE RESULT
+	CASE 0
+		TALENT:MASTER:프라이드높음 = 0
+		TALENT:MASTER:프라이드낮음 = 0
+	CASE 1
+		TALENT:MASTER:프라이드높음 = 1
+		TALENT:MASTER:프라이드낮음 = 0
+	CASE 2
+		TALENT:MASTER:프라이드낮음 = 1
+		TALENT:MASTER:프라이드높음 = 0
+	CASE 3
+		TALENT:MASTER:무관심 = 1
+ENDSELECT
+PRINTL
+
+PRINTL 힘들 때는...
+	PRINTL [0]잠시 쉰다
+	PRINTL [1]힘들어한다
+	PRINTL [2]힘낸다
+CALL INPUTINT,0,1,2
+SELECTCASE RESULT
+	CASE 0
+		TALENT:MASTER:솔직함 = 0
+		TALENT:MASTER:꿋꿋함 = 0
+	CASE 1
+		TALENT:MASTER:솔직함 = 1
+	CASE 2
+		TALENT:MASTER:꿋꿋함 = 1
+ENDSELECT
+PRINTL
+
+
+PRINTL 무서운 건...
+	PRINTL [0]있어요
+	PRINTL [1]없어요
+	PRINTL [2]무서워요
+	PRINTL [3]....？
+CALL INPUTINT,0,1,2,3
+SELECTCASE RESULT
+	CASE 0
+		TALENT:MASTER:건방짐 = 0
+		TALENT:MASTER:겁쟁이 = 0
+		TALENT:MASTER:감정결핍 = 0
+	CASE 1
+		TALENT:MASTER:건방짐 = 1
+	CASE 2
+		TALENT:MASTER:겁쟁이 = 1
+	CASE 3
+		TALENT:MASTER:감정결핍 = 1
+ENDSELECT
+PRINTL
+	
+	
+PRINTL 날씨가 좋은 날은...
+	PRINTL [0]평소처럼
+	PRINTL [1]외출해 본다
+	PRINTL [2]에어컨을 켠다
+CALL INPUTINT,0,1,2
+SELECTCASE RESULT
+	CASE 0
+		TALENT:MASTER:낙관적 = 0
+		TALENT:MASTER:비관적 = 0
+	CASE 1
+		TALENT:MASTER:낙관적 = 1
+		TALENT:MASTER:비관적 = 0
+	CASE 2
+		TALENT:MASTER:비관적 = 1
+		TALENT:MASTER:낙관적 = 0
+ENDSELECT
+PRINTL
+
+
+PRINTL 쭈그려 앉아 있는 아이가 있다면...
+	PRINTL [0]말을 건다
+	PRINTL [1]일으켜 세운다
+	PRINTL [2]증상을 살펴본다
+	PRINTL [3]속셈을 의심한다
+CALL INPUTINT,0,1,2,3
+SELECTCASE RESULT
+	CASE 0
+		TALENT:MASTER:헌신적 = 0
+		TALENT:MASTER:치료 = 0
+		TALENT:MASTER:도착적 = 0
+	CASE 1
+		TALENT:MASTER:헌신적 = 1
+	CASE 2
+		TALENT:MASTER:치료 = 1
+	CASE 3
+		TALENT:MASTER:도착적 = 1
+ENDSELECT
+PRINTL
+	
+PRINTL 남의 시선이라든지...
+	PRINTL [0]신경은 쓰고 있어
+	PRINTL [1]도발한 것도 아닌데
+	PRINTL [2]매력이 있다고
+	PRINTL [3]사랑받는 편일지도 몰라
+	PRINTL [4]화제가 됐었어
+	PRINTL [5]좀 더 치켜세워 줘
+CALL INPUTINT,0,1,2,3,4,5
+SELECTCASE RESULT
+	CASE 0
+		TALENT:MASTER:소악마 = 0
+		TALENT:MASTER:매혹 = 0
+		TALENT:MASTER:매력 = 0
+		TALENT:MASTER:인기 = 0
+		TALENT:MASTER:눈에띄고싶어함 = 0
+	CASE 1
+		TALENT:MASTER:소악마 = 1
+	CASE 2
+		TALENT:MASTER:매혹 = 1
+	CASE 3
+		TALENT:MASTER:매력 = 1
+	CASE 4
+		TALENT:MASTER:인기 = 1
+	CASE 5
+		TALENT:MASTER:눈에띄고싶어함 = 1
+ENDSELECT
+PRINTL
+	
+PRINTL 청소는...
+	PRINTL [0]가끔
+	PRINTL [1]매번
+	PRINTL [2]드물게
+CALL INPUTINT,0,1,2
+SELECTCASE RESULT
+	CASE 0
+		TALENT:MASTER:악취민감 = 0
+		TALENT:MASTER:악취둔감 = 0
+	CASE 1
+		TALENT:MASTER:악취민감 = 1
+		TALENT:MASTER:악취둔감 = 0
+	CASE 2
+		TALENT:MASTER:악취둔감 = 1
+		TALENT:MASTER:악취민감 = 0
+ENDSELECT
+PRINTL
+	
+PRINTL 알몸은...
+	PRINTL [0]목욕 후
+	PRINTL [1]부끄러워
+	PRINTL [2]그래서 뭐
+CALL INPUTINT,0,1,2
+SELECTCASE RESULT
+	CASE 0
+		TALENT:MASTER:부끄럼쟁이 = 0
+		TALENT:MASTER:부끄럼없음 = 0
+	CASE 1
+		TALENT:MASTER:부끄럼쟁이 = 1
+		TALENT:MASTER:부끄럼없음 = 0
+	CASE 2
+		TALENT:MASTER:부끄럼없음 = 1
+		TALENT:MASTER:부끄럼쟁이 = 0
+ENDSELECT
+PRINTL
+	
+PRINTL 어떤 플레이든...
+	PRINTL [0]조교야
+	PRINTL [1]재미있어
+	PRINTL [2]은 싫을까나
+	PRINTL [3]일이야
+CALL INPUTINT,0,1,2,3
+SELECTCASE RESULT
+	CASE 0
+		TALENT:MASTER:호기심 = 0
+		TALENT:MASTER:보수적 = 0
+		TALENT:MASTER:일선을넘지않음 = 0
+	CASE 1
+		TALENT:MASTER:호기심 = 1
+		TALENT:MASTER:보수적 = 0
+	CASE 2
+		TALENT:MASTER:보수적 = 1
+		TALENT:MASTER:호기심 = 0
+	CASE 3
+		TALENT:MASTER:일선을넘지않음 = 1
+ENDSELECT
+PRINTL
+
+PRINTL 성에 관한 이야기는...
+	PRINTL [0]그럭저럭
+	PRINTL [1]솔직하게
+	PRINTL [2]적당히 해
+CALL INPUTINT,0,1,2
+SELECTCASE RESULT
+	CASE 0
+		TALENT:MASTER:해방 = 0
+		TALENT:MASTER:억압 = 0
+	CASE 1
+		TALENT:MASTER:해방 = 1
+		TALENT:MASTER:억압 = 0
+	CASE 2
+		TALENT:MASTER:억압 = 1
+		TALENT:MASTER:해방 = 0
+ENDSELECT
+PRINTL
+
+;我ながら質問文が雑すぎたので自前修正をするぞ
+PRINTL 사랑이라고 하면...
+	PRINTL [0]감정
+	PRINTL [1]운명
+	PRINTL [2]성관계
+CALL INPUTINT,0,1,2
+SELECTCASE RESULT
+	CASE 0
+		TALENT:MASTER:정조관념 = 0
+		TALENT:MASTER:정조관결여 = 0
+	CASE 1
+		TALENT:MASTER:정조관념 = 1
+		TALENT:MASTER:정조관결여 = 0
+	CASE 2
+		TALENT:MASTER:정조관결여 = 1
+		TALENT:MASTER:정조관념 = 0
+ENDSELECT
+PRINTL
+
+;体型体格の欄に置くのも不自然そうだからここに移すぞ
+PRINTL 사실 겉모습보다...
+	PRINTL [0]네？
+	PRINTL [1]오래살았다
+CALL INPUTINT,0,1
+SELECTCASE RESULT
+	CASE 0
+	CASE 1
+		IF TALENT:MASTER:유아체형 == 1
+			TALENT:MASTER:유생고정 = 1
+			TALENT:MASTER:소년／소녀 = 1
+		ENDIF
+		CALL SET_MASTER_ILLEGAL_TALENT
+ENDSELECT
+PRINTL
+RETURN
+
+
+;========================================================================
+;主人の外見が年齢と一致しない理由設定
+;========================================================================
+@SET_MASTER_ILLEGAL_TALENT
+PRINTL 당신이 장수하는 비결을 알려주세요。
+PRINTL
+;ロリショタ限定扱いで性別欄にあるのは不自然な便利機能だったから、小柄かつ長命である場合に従来の仕様を適用するという条件に変えるぞ
+;あと作るのが下手なやつが晒し者にされてたままだと将来的な製作人口やら改行回数やらにリスクがありそうだから、お説教コメントアウトだったりした部分を削除したぞ
+;ついでに従来の場所がおかしかったんで上に関数自体を移すぞ
+	PRINTL [0]열심히 했으니까
+	PRINTL [1]흡혈귀니까
+	PRINTL [2]요호니까
+	PRINTL [3]음마니까
+	PRINTL [4]천사니까
+	PRINTL [5]타천사니까
+	CALL INPUTINT,0,1,2,3,4,5
+	SELECTCASE RESULT
+		CASE 0
+			PRINTW 열심히 했으니까
+		CASE 1
+			PRINTW 흡혈귀니까
+			TALENT:MASTER:흡혈귀 = 1
+			TALENT:MASTER:날개 = 1
+			TALENT:MASTER:발정가능 = 1
+			;たぶんうー☆かそれかなんかギャルゲー乙女ゲーのやつだろうから羽はあるんじゃないか
+			;つうか吸血鬼は発情するだろエロゲ的に考えて「もっと．．．あなたの．．．」って言ってくれるんだよ熱に浮かされた表情でな
+		CASE 2
+			PRINTW 요호니까
+			TALENT:MASTER:요호 = 1
+			TALENT:MASTER:동물귀 = 1
+			TALENT:MASTER:발정가능 = 1
+			TALENT:MASTER:꼬리 = 1
+			;これを選択するユーザー層が浮かべるだろう狐系BBAの一般的イメージっていうと十中八九はチェフェイちゃんとか藍ちゃんとか漫画の方のセンコちゃんとかだろうから毛皮と獣はないんじゃないかと俺としては思（殴
+			;男でも九尾の耽美系とか糸目キャラとかだろうしな
+			;狐と妖狐で被ってるのに動物耳はなかったから、こうしてみるぞ
+		CASE 3
+			PRINTW 음마니까
+			TALENT:MASTER:발정가능 = 1
+			TALENT:MASTER:날개 = 1
+			TALENT:MASTER:꼬리 = 1
+			;ショタだからってサキュバスとは限らんだろ。サキュバスとインキュバスのハーフかもしれんぞ
+		CASE 4
+			PRINTW 천사니까
+			TALENT:MASTER:천사 = 1
+			TALENT:MASTER:날개 = 1
+		CASE 5
+			PRINTW 타천사니까
+			TALENT:MASTER:타천사 = 1
+			TALENT:MASTER:날개 = 1
+			;いくら性格素質だからってこの二つないのはおかしいだろド定番だぞ
+	ENDSELECT
+
+;========================================================================
+;主人の奴隷遍歴
+;========================================================================
+@SET_MASTER_SLAVERY
+PRINTL 팬텀・소사이어티에서의 위치는？
+PRINTL [0]경력이 깨끗한 신참 서머너
+PRINTL [1]성욕 처리 담당이던 시절이 있다
+PRINTL [2]정액 변소로부터 스타트
+CALL INPUTINT,0,1,2
+FLAG:주인출신 = RESULT
+IF RESULT == 0
+	PRINTL
+	RETURN
+ENDIF
+LOCAL = EXP:MASTER:성교경험 - EXP:MASTER:Ｖ경험
+EXP:MASTER:펠라경험 += MIN(100,EXP:MASTER:펠라경험*RESULT*5)
+EXP:MASTER:Ａ경험 += MIN(100,EXP:MASTER:Ａ경험*RESULT*5)
+EXP:MASTER:이상경험 = RESULT*2
+MARK:MASTER:쾌락각인 = 2
+MARK:MASTER:굴복각인 = RESULT+1
+ABL:MASTER:기교 += 1
+ABL:MASTER:욕망 += 1
+ABL:MASTER:마조끼 += MAX(0, RESULT - 1)
+IF TALENT:MASTER:남자 == 0
+	EXP:MASTER:Ｖ경험 += MIN(100,EXP:MASTER:Ｖ경험*RESULT*5)
+	EXP:MASTER:질사경험 += EXP:MASTER:Ｖ경험 * 2
+ENDIF
+EXP:MASTER:성교경험 += EXP:MASTER:Ｖ경험 + EXP:MASTER:Ａ경험 + LOCAL
+EXP:MASTER:정액경험 += EXP:MASTER:질사경험 + (EXP:MASTER:Ａ경험+EXP:MASTER:펠라경험)*2
+TALENT:MASTER:복종 = (RESULT == 2)
+IF TALENT:MASTER:복종
+	TALENT:MASTER:음란 = 0
+	TALENT:MASTER:창부 = 0
+ENDIF
+PRINTL
+RETURN
+
+;==================================================================
+;主人の素質検証
+;==================================================================
+@SET_MASTER_TALENTCHECK
+;明らかに矛盾する素質をCALL一つで検問するための空き地
+;あなたの素質要素を誰かが増やすたびに直で増設されていくと汚くなるだろうから、仮としてここに設ける
+;もっと広くに対応させてからSETMASTERではないところへ移した方がいいかもしれない
+;二重人格みたいなレアケースはイベントとシステムの追加で表現した方がいいはず
+;今のところはプライド高いのみ
+IF TALENT:MASTER:프라이드높음 == 1 && TALENT:MASTER:프라이드낮음 == 1
+	SELECTCASE RAND:2
+		CASE 0
+			TALENT:MASTER:프라이드높음 = 0
+		CASE 1
+			TALENT:MASTER:프라이드낮음 = 0
+	ENDSELECT
+ENDIF	
+RETURN
+
+
+;========================================================================
+;主人の名前設定
+;========================================================================
+@SET_MASTER_NAME
+PRINTFORMW 현재、주인의 명칭은 %NAME:MASTER%、애칭은 %CALLNAME:MASTER%입니다
+PRINTL 이름을 변경하시겠습니까？
+
+PRINTL [0]이대로
+PRINTL [1]변경한다
+;PRINTL [2]選択する
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	RETURN 0
+ELSEIF RESULT == 1
+	$INPUTS_NAME
+	PRINTL 명칭을 입력해주세요
+	INPUTS
+	LOCALS = %RESULTS%
+	PRINTL 애칭을 입력해주세요
+	INPUTS
+	LOCALS:1 = %RESULTS%
+	DRAWLINE
+	PRINTFORML 명칭：%LOCALS%　애칭：%LOCALS:1%
+	PRINTL 이걸로 좋습니까？
+	CALL INPUT_YN,"Yes","No"
+	IF RESULT == 0
+		NAME:MASTER = %LOCALS%
+		CALLNAME:MASTER = %LOCALS:1%
+	ELSEIF RESULT == 1
+		GOTO INPUTS_NAME
+	ENDIF
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+;==================================================================
+;オープニング
+;==================================================================
+@OPENING
+#DIM LCOUNT
+;あなたの番号を4999に統一。周回時を考えてここで処理
+NO:MASTER = [[キャラ:당신]]
+NICKNAME:MASTER '= CSVNICKNAME(NO:MASTER)
+PRINTL 오프닝을 보겠습니까？
+CALL INPUT_YN,"Yes","No"
+CALLFORM OPENING_MESSAGE_{RESULT}
+
+;MONEY:2 = 10000
+PRINTL 
+PRINTL ＞소사이어티로부터 준비금으로 ￥3,000과、분말 같은 아이템、
+PRINTL ＞그리고、「ＣＯＭＰ」가 배급되었다。
+;分岐の複雑化に伴いピクシー加入を分離
+CALL PRESENT_PIXIE
+;ここでしか使わないようなのでここで消す
+CFLAG:MASTER:동정 = 0
+;引っかかる人は居ないと思うけど罠。
+CALL GET_ITEMS, "벼랑끝분말", 1
+FORCEWAIT
+
+IF !IS_USEABLE_SHOPCOM
+	PRINTL 
+		PRINTL ＣＯＭＰ란、휴대형 컴퓨터 단말기의 총칭이다。
+	PRINTFORMW %CALLNAME:MASTER%은(는) 즉시 기동하여、그 내용을 확인한다。
+	PRINTL 
+	FOR LCOUNT, 0, 10
+		PRINTFORM Ready
+		PRINTFORML %"…" * (LCOUNT % 3)%
+		TWAIT 100, 1
+		CLEARLINE 1
+	NEXT
+	PRINTL 
+	PRINTFORMW ＣＯＭＰ에는 악마소환 프로그램이 들어 있었다。
+	PRINTFORML 이것은 「악마」라고 불리는 신화 전승・삼라만상의 화신을 전자화……
+	;フレーバーテキストが一般人だったモノたち用分岐
+	IF GET_MASTER_MAJORING(CFLAG:MASTER:당신의전공분야) == "일반인" || GET_MASTER_MAJORING(CFLAG:MASTER:당신의전공분야) == "악마인"
+		PRINTFORMW 즉 디지털 데빌화하여 다룰 수 있는、특수한 프로그램이다――라고、설명서에 적혀 있었다。
+		PRINTL 
+		PRINTFORMW ――ＣＯＭＰ의 애널라이즈 기능을 얻어、%CALLNAME:MASTER%은(는) 도쿄 곳곳에 악마가 존재한다는 사실을 깨달았다。
+		PRINTFORMW ――최근 뉴스에서 보았던、각종 시설의 봉쇄는、악마들의 소행이 원인이었던 것일까。
+	ELSE
+		PRINTFORMW 즉 디지털 데빌화하여 다룰 수 있는、특수한 프로그램이다。
+		PRINTL 
+		PRINTFORMW ――도쿄에 악마가 날뛰기 시작한 지 얼마간의 시간이 흘렀다。
+		PRINTFORMW ――의문의 「봉쇄」를 당한 시설들이、연일 뉴스로 오르내리고 있다。
+	ENDIF
+	PRINTFORMW ――무너져가는 일상 속에서、팬텀・소사이어티의 구성원이 된 %CALLNAME:MASTER%의 첫날이 시작되려 하고 있었다。
+	PRINTL 
+	;チュートリアルと被っている上に情報量がとても多いのでオミット
+	;PRINTFORMW ＣＯＭＰにはいくつかのターミナルの登録データと依頼データが保存されていた。
+	;PRINTFORMW ターミナルは各地に設置された転送装置であり、%CALLNAME:MASTER%のセーフハウスにも設置されている。
+	;PRINTFORMW 悪魔の討伐依頼や異界化した物件とその付近のターミナルのデータはおそらくこれらを解決しろということだろう。
+	;PRINTFORMW さらにＣＯＭＰには秘匿都市『萬世レルム』と『사교의관』のデータが登録されていた。
+	;PRINTFORMW 『萬世レルム』には悪魔召喚師や裏家業の人間に対して、装備やアイテムを提供する店が存在している。
+	;PRINTFORMW また、一部の店はソサエティと契約し、所属するサマナーの支援を担当してくれているという。
+	;PRINTFORMW まずは【ショップ】に赴き、ソサエティが用意した依頼を解決する支度をせねばならない…。
+	;PRINTFORMW 『사교의관』は悪魔を合体や悪魔を素材にした装備の作成などを行える。
+	;PRINTFORMW こちらも何ができるか一度確認しにいく必要があるだろう。
+ENDIF
+
+;---- EDIT 032 ADD START -------------------------
+
+;大場偽見滝原永住フラグが立っている場合、常に　イベントフラグ:99:5 == 1（何も起きなくなる）
+IF GETBIT(大場ななの記憶:0:9, 4)
+	イベントフラグ:99:5 = 1
+ELSE
+	;暁美よ暁美よあなたのことを思い出せ
+	LOADGLOBAL
+	;---- EDIT 031 ADD START -------------------------
+	;まどマギイベント許可＆エンディング発見済み＆大場なな自動加入ならば、悪魔ほむほむによる回収イベント実施
+	SIF GETS_USEABLE_EXTRA_TITLE("まどかマギカ") && 暁美ほむらの記憶 == 1 && (大場ななの記憶:0:1 > 1)
+		CALL EVENT_99_98
+	IF イベントフラグ:99:5 == 1
+	ELSE
+		;---- EDIT 023 ADD START -------------------------
+		;ここでセーブデータIDを作成／GETTIMEを用い疑似的なIDとする
+		;周回するとIDが変わる
+		GETTIME
+		セーブデータID = RESULT
+		CALL EVENT_93_大場なな_初日判定
+		;---- EDIT 023 ADD END ---------------------------
+	ENDIF
+	;---- EDIT 031 ADD END ---------------------------
+ENDIF
+
+;ITEM:벼랑끝분말 += 1
+
+
+@OPENING_MESSAGE_0
+#DIM LCOUNT
+SELECTCASE GET_MASTER_MAJORING(CFLAG:MASTER:당신의전공분야)
+	CASE "반마인"
+		;半魔人あなた
+		;両親がいない状態(死別or蒸発or孤児)→しばらくして半魔人であることに気づく→人里から離れる→ファントムに見つかり、拾われる
+		PRINTFORMW %CALLNAME:MASTER%에게는 악마의 피가 흐르고 있다……。
+		PRINTL
+		PRINTFORML 어린 시절 생이별한 부모 중 한 명이 악마였는가.
+		PRINTFORML 아니면 둘 다 반마인이었는가……
+		PRINTFORMW 어쨌든, 번듯한 출생은 아닐 것이다.
+		PRINTL
+		IF TALENT:MASTER:날개
+			PRINTFORMW 언제부턴가 돋아난 날개가, 그 증거다.
+		ELSEIF TALENT:MASTER:꼬리
+			PRINTFORMW 언제부턴가 돋아난 꼬리가, 그 증거다.
+		ELSEIF TALENT:MASTER:무기 || TALENT:MASTER:사격무기
+			;悪魔が武器を持っているパターンと体の一部が武器そのものである２パターンが考えられるが、とりあえず持っているパターンで
+			PRINTFORMW 언제부턴가 허공에서 무기를 꺼낼 수 있게 된 것이, 그 증거다.
+		ELSE
+			PRINTFORMW 언제부턴가 이상한 힘을 쓸 수 있게 된 것이, 그 증거다.
+		ENDIF
+		PRINTL
+		PRINTFORML 악마의 피를 자각한 %CALLNAME:MASTER%은(는) 인가에서 벗어나, 숨어 살고 있었지만…
+		PRINTFORMW ……아무래도 오컬트에 심취한 비밀결사에 발각되어 버린 모양이다.
+		PRINTL
+		PRINTFORML %CALLNAME:MASTER%의 앞에 나타난 비밀결사 「팬텀」의 구성원이라는 자의 말에 따르면,
+		PRINTFORMW “반마인이라 할지라도 일할 수 있는, 매우 관대한 직장”이 있다고 한다.
+		PRINTL
+		PRINTFORML 슬슬 인가에서 벗어난 서바이벌 생활에도 한계가 보이기 시작하던 참이다.
+		PRINTFORMW %CALLNAME:MASTER%은(는) 스카우트에 응하기로 했다……
+		PRINTL
+		PRINTFORMW …………
+		PRINTFORML 
+		PRINTFORML 팬텀・소사이어티의 구성원이 된 %CALLNAME:MASTER%에게 세이프 하우스를 겸한 사무실이 마련되었다.
+		PRINTFORMW 오늘부터, 이곳이 %CALLNAME:MASTER%의 거점이 된다.
+		PRINTL
+		PRINTFORMW %CALLNAME:MASTER%의 상사인 마요네는 이렇게 말했다.
+		PRINTL
+		PRINTFORML 마요네：
+		PRINTFORML 「이걸로 당신은 팬텀의 구성원이 된 셈이지만.
+		PRINTFORML 　우선은 돈을 버는 것을 목표로 삼아야겠네요.
+		PRINTFORMW 　이런 가업에서는 이래저래 돈이 드는 법, 밑천이 있어서 손해 볼 일은 없으니까요.
+		PRINTL
+		PRINTFORML 　그건 그렇고, 요전에 내가 붙잡은 노예의 처우가 아직 정해지지 않았답니다.
+		PRINTFORMW 　괜찮다면 당신에게 양도해 드릴까요？」
+		CALL PRESENT_SLAVE,1
+	CASE "악마인"
+		PRINTFORML 딱히 관심도 없는데 와버린 밴드의 라이브.
+		PRINTFORMW 그곳에서 %CALLNAME:MASTER%은(는), 악마 소환 의식에 휘말려 버렸다.
+		PRINTL 
+		PRINTFORMW 인체가 붉은 겔로 변해 흩날려 터지고, 혹은 인체가 팽창하여 인간이 아닌 무언가로 변해간다.
+		PRINTFORMW %CALLNAME:MASTER% 또한 예외는 아니어서, 인간인 부분이 게걸스레 먹어 치워지듯 불타오르며……
+		PRINTFORM 정신을 차려보니
+		IF TALENT:MASTER:기계의처녀
+			PRINTFORMW 좌반신이 차가운 금속으로 바뀌어 있었고, 관절에는 인형 같은 이음매가 생겨 있었다.
+		ELSEIF TALENT:MASTER:날개
+			PRINTFORMW 왼팔과 왼다리가 짐승의 털로 뒤덮이고, 부자연스럽게 융기한 등에서 거대한 날개가 돋아나 있었다.
+		ELSE
+			PRINTFORMW 왼팔과 왼다리가 짐승의 털로 뒤덮이고, 대형 서바이벌 나이프 같은 갈고리 발톱이 손가락을 꿰뚫고 돋아나 있었다.
+		ENDIF
+		PRINTL 
+		PRINTFORMW 그러나, %CALLNAME:MASTER%의 변화는 거기까지였다.
+		PRINTFORMW 멍하니 있자니, 난입해 온 누군가에게 총을 맞고, 얻어맞고, 구속당하여,
+		PRINTFORMW 물 흐르듯 신속하게 독방 같은 방에 처박혔다.
+		PRINTFORML 
+		PRINTFORMW …………
+		PRINTFORML 
+		PRINTFORML 비밀결사 팬텀・소사이어티. 그것이 이 조직의 이름인 모양이다.
+		PRINTFORML 마요네라고 밝힌 지독하게 차려입은 여성은,
+		PRINTFORMW 우리 안의 %CALLNAME:MASTER%을(를) 접은 양산으로 가리키며, 「악마인」이라고 비웃었다.
+		PRINTFORML 
+		PRINTFORML 마요네：
+		PRINTFORML 「후후, 당신, 운이 없네.
+		PRINTFORML 　보통이라면, 제물이 된 인간은 완전히 악마에게 먹혀버리거나,
+		PRINTFORMW 　견뎌내지 못하고 생체 마그네타이트로 분해되거나, 둘 중 하나랍니다.
+		PRINTL 
+		PRINTFORML 　인간이 인간인 채 악마의 힘을 몸에 품은 악마인은 희귀한 사례.
+		PRINTFORML 　그러므로 당신은, 앞으로 조직의 모르모트.
+		PRINTFORMW 　죽는 것조차 허락되지 않은 채, 당신이 당신이 아니게 될 때까지, 온갖 실험이 행해지겠지요.
+		PRINTL 
+		PRINTFORMW 　……보통의 경우라면 말이죠」
+		PRINTL 
+		PRINTFORMW 마요네는 펼친 우산을 어깨에 얹고, 빙글빙글 규칙적으로 돌리기 시작했다.
+		PRINTFORML 
+		PRINTFORML 마요네：
+		PRINTFORML 「내 밑에서, 일하도록 하렴.
+		PRINTFORMW 　그에 상응하는 돈만 있다면, 인생을 다시 사들이는 것도 가능하답니다.
+		PRINTL
+		PRINTFORML 　당신은, 내가 주워온, 비참하고 추하며 유쾌한 장난감.
+		PRINTFORMW 　기왕이면 잔뜩 몸부림치며 괴로워해 보시지요? 후후후……」
+		PRINTL
+		PRINTFORMW 가학적으로 미소 짓는 마요네의 제안을, %CALLNAME:MASTER%은(는) 받아들일 수밖에 없었다.
+		PRINTL
+		PRINTFORMW …………
+		PRINTL
+		PRINTFORML 마요네：
+		PRINTFORML 「이걸로 당신은 팬텀의 구성원이 된 셈이지만,
+		PRINTFORML 　우선 돈부터 벌도록 해。밑천이 필요하기도 하고、거기에……
+		PRINTFORMW 　무명인 당신이 가치를 보일 가장 간단한 방법은、돈을 조직에 상납하는 것이니까。
+		PRINTL
+		PRINTFORML 　그건 그렇고, 요전에 내가 붙잡은 노예의 처우가 아직 정해지지 않았답니다.
+		PRINTFORMW 　작별 선물 겸으로, 괜찮다면 당신에게 넘겨드릴까요？」
+		CALL PRESENT_SLAVE,1
+	CASE "데빌헌터"
+		;DMCシナリオをクリアした経験がある場合、ランダムでこちらになる可能性がある（ELSEが出なくなるのもねぇ……）
+		IF GETBIT(FLAG:발견ED2,35) && !RAND:2
+			IF RAND:2 == 0
+				PRINTFORML 데빌 헌터로서 활동하고 있던 %CALLNAME:MASTER%였지만,
+				;PRINTFORMW ＞とある事件のおり、事務所とその周囲数百mが異界と化す事件に巻き込まれ
+				;PRINTFORMW ＞事務所を含め全ての建造物が崩落・倒壊し、見事な廃墟を作り出す結果となり
+				PRINTFORMW 모종의 사정으로 엄청난 액수의 빚을 떠안게 되고 만다.
+				PRINTL 
+				PRINTFORML 그런 때, 데빌 헌터로서의 실력을 눈여겨본 %CALLNAME:MASTER%에게,
+				PRINTFORML 빚을 전액 대납해 주는 대가로서,
+				PRINTFORMW 팬텀・소사이어티에 고용되는 제안이 들어왔다.
+				PRINTL 
+				PRINTFORMW …………
+				PRINTL 
+				PRINTFORML 팬텀・소사이어티의 고용 구성원이 된 %CALLNAME:MASTER%에게 세이프 하우스를 겸한 사무실이 마련되었다
+				PRINTFORMW 오늘부터, 이곳이 %CALLNAME:MASTER%의 거점이 된다
+				PRINTFORML 
+				PRINTFORMW 고용된 처지라고는 하나 %CALLNAME:MASTER%의 직속 상사가 된 마요네는 이렇게 말했다.
+			ELSE
+				PRINTFORML 그 악마 사냥꾼 단테와도 공투하고,
+				PRINTFORML 부활한 말렛 섬을 다시금 공략해낸 것으로 평가도 높은 데빌 헌터……
+				PRINTFORMW 하지만 그 평판이 화근이 되어, 수많은 트러블을 거치며 거액의 빚을 떠안게 되고 만다.
+				PRINTFORML 
+				PRINTFORMW 팬텀・소사이어티가 빚을 전액 대납해 주는 조건으로, 자유로운 몸에서 일전하여 고용살이로.
+				PRINTFORML 
+				PRINTFORML 지긋지긋한 악연이 된 악마 사냥꾼들과의 인연도 이어져, 앞으로도 질릴 틈 없는 인생이 될 것 같은 예감을 곱씹으며
+				PRINTFORML %CALLNAME:MASTER%은(는) 올리브를 뺀 피자를 한 손에 들고,
+				PRINTFORMW 새로운 사무실에 【Devil May Cry】의 간판을 걸고, 문을 열었다.
+				PRINTFORML 
+				PRINTFORMW …………
+				PRINTFORML 
+				PRINTFORML %CALLNAME:MASTER%의 직속 상사가 된 마요네가 사무실을 찾아왔다
+				PRINTFORMW 인사 겸, 프리랜서로 뛰던 자신에게 조직원으로서의 마음가짐을 가르쳐 주려는 모양이다
+				PRINTFORML 
+				PRINTFORMW 순간, '그 녀석들이 없을 때 와줘서 다행이다'라는 생각이 뇌리를 스쳤다……
+			ENDIF
+			PRINTL
+			PRINTFORML 마요네：
+			PRINTFORML 「이걸로 당신은 팬텀의 구성원이 된 셈이지만,
+			PRINTFORMW 　우선 돈부터 벌도록 하세요.
+			PRINTFORML  
+			PRINTFORMW 　이런 가업에서는 이래저래 돈이 드는 법, 밑천이 있어서 손해 볼 일은 없으니까요.
+			PRINTFORML  
+			PRINTFORML 　…게다가 팬텀이 대신 갚아줬다고는 하나,
+			PRINTFORML 　언제까지고 빚을 떠안은 채라는 건 당신 입장에서도 한심하잖아요?
+			PRINTFORMW 　적어도 악마 사냥꾼으로서의 솜씨에는 자신이 있으시겠죠? 그렇다면, 확실하게 벌어서 조직에 상납하도록 하세요」
+			PRINTFORML  
+			IF ABL:MASTER:요리기능 >= 9
+				PRINTFORML 과연, 이거 기대에 부응해야겠군.
+				PRINTFORMW 그렇게 대답하며, %CALLNAME:MASTER%은(는) "늘 찾아오는 녀석들"이 왔을 때처럼 손수 만든 다과를 그녀 앞에 내밀었다
+				PRINTFORML 
+				PRINTFORML 자신의 요리 솜씨는 미슐랭 3성급 레스토랑에도 뒤지지 않는다,
+				PRINTFORML 는 자부심 아래 만들어진 그것은 분명히 맛이 있었고,
+				PRINTFORMW 요조숙녀 같은 태도를 취하던 마요네조차 한입 대고는, 무심코 감탄을 내비칠 정도였다.
+				PRINTFORML 
+				PRINTFORML 마요네：
+				PRINTFORMW 「그런데, 설마라고는 생각하지만…… 성실하게 벌어서 갚겠다거나 생각하는 건 아니겠죠?」
+				PRINTFORML 
+				PRINTFORML 확실히 이 솜씨를 살린다면, 그것도 가능하리라.
+				PRINTFORML %CALLNAME:MASTER%은(는) 그 선택지도 괜찮겠군, 이라며 그녀의 평가에 만족스러워했지만,
+				PRINTFORMW 칭찬한 본인은 뭐라 형언할 수 없는 표정을 지으며 과자를 입에 넣고, 음료에 입을 댔다.
+				PRINTFORML 
+				PRINTFORML 마요네：
+				PRINTFORML 「아뇨, 물론 그렇게 해도 소사이어티는 전혀 상관없어요. 네, 상관없죠
+				PRINTFORML 　상납금을 버는 수단은 딱히 묻지 않고, 노예가 파티시에가 되는 걸 금지하는 내규도 없으니까요
+				PRINTFORMW 　없긴 합니다만……
+				PRINTFORMW 　당신, 악마 사냥꾼으로서 정말로 그걸로 괜찮은 건가요?」
+			ELSE
+				PRINTFORML 
+				PRINTFORMW 마요네는 잠시 말을 끊고, 가학적으로 미소 지었다.
+				PRINTFORML 
+				PRINTFORML 마요네：
+				PRINTFORMW 「그렇다고는 해도 조직의 운영에 보탬이 될 만한 자금을 모으는 건 악마 사냥꾼이라도 고생깨나 하겠죠.
+				PRINTFORMW 　기한은 정해두지 않았지만, 납부가 지체된다면, 정말로 갈 곳이 없어질 줄 아세요」
+			ENDIF
+			PRINTFORML 
+			PRINTFORML 뭐 그 점은 안심해 줬으면 좋겠군.
+			PRINTFORMW 그렇게 대답하자, 상사인 여성은 어딘가 기가 차다는 표정을 지어 보였다.
+			PRINTFORML 
+			PRINTFORML 마요네：
+			PRINTFORML 「뭐, 상관없지만요……
+			PRINTFORML 　아아, 그리고, 혼자서는 아무래도 일손이 부족하겠죠.
+			PRINTFORMW 　노예를 하나, 융통해 드려도 괜찮답니다？」
+		;DMCシナリオをクリアしたことがない場合は固定でこちら
+		ELSE
+			;ライセンスフリー　作者：ひとしゅらちゃん挺身追跡隊
+			;更新：2014/05/11
+			PRINTFORMW 어느 도시의 뒤얽힌 골목 안쪽에, %CALLNAME:MASTER%의 사무실이 자리 잡고 있다.
+			PRINTFORML 
+			PRINTFORML 신설된 그곳은 이전에 %CALLNAME:MASTER%이(가) 쓰던 사무실과 비교하면 훨씬 좋은 매물이지만,
+			PRINTFORMW 물론 그것은 %CALLNAME:MASTER%을(를) 위해 공짜로 마련된 건물이 아니다.
+			PRINTFORML 
+			PRINTFORML 악마는 썩어 넘치도록 튀어나와 사무실을 난장판으로 만들어 놓는데,
+			PRINTFORML 어딘가의 붉은 누구처럼 일거리와 돈만은 도무지 들어오지 않는다.
+			PRINTFORMW 악마들의 손에 엉망진창이 된 사무실을 재건하기에는 이제 혼자의 힘으로는 역부족이었다.
+			PRINTFORML 
+			PRINTFORMW 그런 까닭에, %CALLNAME:MASTER%은(는) 고용되는 형태로 팬텀・소사이어티에 몸을 담게 되었다.
+			PRINTFORML 
+			PRINTFORMW …………
+			PRINTFORML 
+			PRINTFORML 마요네：
+			PRINTFORMW 「팬텀・소사이어티에 온 걸 환영해, 데빌 버스터」
+			PRINTFORML 
+			PRINTFORMW 직속 상사이자 감시역인 마요네가 새 사무실을 찾아왔다.
+			PRINTFORML 
+			PRINTFORML 마요네：
+			PRINTFORMW 「이걸로 넌 팬텀의 개야.
+			PRINTFORMW 　마음에 안 들어? 그렇다면 최소한 발언권이라도 몸에 익히도록 해.
+			PRINTFORMW 　지금의 넌 돈도 발언권도 없는 일개 말단 데빌 버스터에 불과하니까」
+			PRINTFORMW 
+			PRINTFORMW 과연, 하고 납득하면서 피자 한 조각을 손에 쥐고 %CALLNAME:MASTER%은(는) 입으로 가져간다.
+			PRINTFORMW 
+			PRINTFORML 마요네：
+			PRINTFORML 「조금이라도 평가를 받고 싶다면 돈을 벌어.
+			PRINTFORML 　팬텀・소사이어티에서는 실력이 전부야,
+			PRINTFORML 　돈도, 입지도, 전부 상납금이라는 형태로 증명하면 돼.
+			PRINTFORMW 　힘만 있다면 간부도 될 수 있어. 싫어하진 않잖아? 그런 이야기도」
+			PRINTFORML 
+			PRINTFORMW 총을 쏘는 것과 칼로 베는 것 외엔 재주가 없는 %CALLNAME:MASTER%에게는 단순해서 고마운 이야기다.
+			PRINTFORML 
+			PRINTFORML 마요네：
+			PRINTFORML 「우선은 빚을 갚을 생각을 하고 일하도록 해.
+			PRINTFORML 　기한은 딱히 없지만,
+			PRINTFORML 　너무 밀린다 싶으면 이쪽에도 생각이 있다는 걸 명심해.
+			PRINTFORMW 　……그나저나 네가 먹고 있는 건 뭐지？」
+			PRINTFORML 
+			PRINTFORMW 손안에 든 피자를 보여주며
+			PRINTFORMW 그건 당연히 외상으로 주문한 올리브를 뺀 피자라고 대답한다.
+			PRINTFORMW 그 말을 듣고 어이없다는 기색을 드러내는 마요네의 모습을 가볍게 웃어넘긴다.
+			PRINTFORML 
+			PRINTFORMW 결국 %CALLNAME:MASTER%이(가) 할 일은 지금까지 해온 것과 다를 바가 없다.
+			PRINTFORML 
+			PRINTFORML 소사이어티에서 지급해 준 문칫돌 대용인 ＣＯＭＰ를 빼면,
+			PRINTFORML 모 사건에서 양도받을 수 있었던 바이스 & 슈바르츠 쌍권총과,
+			PRINTFORMW “교단”으로부터의 뒤거래로 입수한 칼리번 정도밖에 재산이 될 만한 물건은 없다.
+			PRINTFORML 
+			PRINTFORML 즉 입장이 바뀌었을 뿐 하는 일 자체는 전혀 변하지 않았다.
+			PRINTFORMW 오히려 조직이 일거리를 알선해 주는 만큼, 전보다 수입은 괜찮을지도 모른다.
+			PRINTFORML 
+			PRINTFORML 마요네：
+			PRINTFORML 「괴짜로구나, 너.
+			PRINTFORMW 　빚 대신으로 성가신 악마 퇴치를 떠맡았는데도 말이야」
+			PRINTFORML 
+			PRINTFORMW 조금 불만스러운 듯, 상사가 된 여성은 눈을 가늘게 뜬다.
+			PRINTFORMW %CALLNAME:MASTER%은(는) 악마조차 "울리는" 데빌 버스터다. 그렇기에 대답은 하나뿐이다.
+			PRINTFORMW "악마들과의 파티를 미치도록 즐길 수 없다면 데빌 버스터를 자처할 수 없지"라고.
+			PRINTFORML 
+			PRINTFORML 마요네：
+			PRINTFORML 「하아…… 이제 됐어.
+			PRINTFORML 　그건 그렇고, 사업 밑천은 필요하려나.
+			PRINTFORMW 　요전에 내가 붙잡은 노예의 처우가 아직 정해지지 않았거든」
+		ENDIF
+		PRINTFORML  
+		CALL PRESENT_SLAVE,1
+	CASE "일반인"
+		PRINTFORML “비밀결사 팬텀・소사이어티”
+		PRINTFORML 사실, 그 조직의 이름을 들어도,
+		PRINTFORMW 일반인인 당신에게는 터무니없는 소리로밖에 들리지 않았을 것이다.
+		PRINTFORML 
+		PRINTFORML 그들의 일을 목격해 버린 당신에게, 조직은 두 가지 선택지를 마련했다.
+		PRINTFORML 하나는 조직의 구성원이 되어, 운명공동체로서 살아가는 것.
+		PRINTFORMW 또 하나는 자유를 빼앗기고 조직의 "비품"으로서 목숨 이외의 모든 것을 빼앗기는 것.
+		PRINTFORML 
+		PRINTFORML 물론, 제안을 거절하고 저항할 수도 있었을 것이다.
+		PRINTFORML 하지만, 당신에게 그것은 불가능에 가까운 일이었다.
+		PRINTFORMW 왜냐하면, 당신의 감시역으로 배정된 상대는, 「악마」라고밖에 부를 수 없는 이형들이었기 때문이다.
+		PRINTFORML  
+		PRINTFORML 여성：
+		PRINTFORMW 「150만 엔. 그것이 당신의 보석금이랍니다」
+		PRINTFORML  
+		PRINTFORML 그런 목소리가 들려 고개를 돌리자, 「악마」의 무리가 자동문처럼 좌우로 물러서고,
+		PRINTFORML 현장의 분위기에는 너무나 어울리지 않는, 매끄러운 원단의 드레스를 걸친 여성이,
+		PRINTFORMW 어깨에 얹은 파라솔을 빙글빙글 돌리며 나타났다.
+		PRINTFORML  
+		PRINTFORML 여성：
+		PRINTFORML 「후후, 한심한 얼굴.
+		PRINTFORMW 　말을 못 알아들은 걸까요」
+		PRINTFORML  
+		PRINTFORML 150만 엔──
+		PRINTFORML 세계적인 정세 불안으로 통화 가치가 과거의 100배로 치솟은 요즈음,
+		PRINTFORMW 150만 엔이라는 큰돈은, 상상조차 할 수 없는 금액이다.
+		PRINTFORML  
+		PRINTFORML 여성：
+		PRINTFORML 「조직에게는 푼돈이랍니다.
+		PRINTFORML 　그렇기에, 당신이 지금까지 모아둔 재산으로 지불하는 것도,
+		PRINTFORMW 　당신의 지인들에게 빚을 지는 것도 용납하지 않아요.
+		PRINTL 
+		PRINTFORML 　후후. 안심하시길. 조직은 구성원의 출신을 묻지 않으니까요.
+		PRINTFORMW 　힘과 충성심만 있다면, 일거리는 얼마든지 있답니다.
+		PRINTL 
+		PRINTFORML 　물론……
+		PRINTFORMW 　당신이, 우리의, "동료"가 되어주신다면, 이야기지만요」
+		PRINTFORML  
+		PRINTFORMW 자세한 내막은 알 수 없으나, 엮이는 순간 당신은 이제 양지의 세계로는 돌아갈 수 없으리라.
+		PRINTFORMW 그러나 거절하면 즉시 파멸뿐이다. 당신은 고개를 끄덕일 수밖에 없었다.
+		PRINTFORMW 여성은 눈과 입술을 면도날처럼 가늘게 좁히더니, 목구멍 깊은 곳에서 큭큭 웃음을 흘렸다.
+		PRINTFORML  
+		PRINTFORML 여성：
+		PRINTFORML 「팬텀・소사이어티에 오신 것을 환영해요.
+		PRINTFORML 　나는 마요네.
+		PRINTFORMW 　지금, 이 순간부터, 당신은 내 부하랍니다」
+		PRINTFORML  
+		PRINTFORMW 마요네가 우산을 빙그르르 돌리자 「악마」들이 안개처럼 사라졌다.
+		PRINTFORML  
+		PRINTFORML 여성：
+		PRINTFORML 「마침 방금 전, 『ＣＯＭＰ』와 악마를 주웠답니다. 쓰던 물건이라 송구스럽지만 당신에게 드리죠.
+		PRINTFORMW 　이능도 없는 평범한 인간이니까요, 유독 비참하게 타락해 보시지요.
+		PRINTFORMW 　만약 시답잖은 짓을 벌였다간…… 그땐 문답무용으로 비품으로 만들어 드릴 테니까요」
+		PRINTFORML  
+		PRINTFORML 그렇게 말하고는, 마요네는 가벼운 발걸음으로 떠나갔다.
+		PRINTFORMW 그녀가 서 있던 자리에는, 어딘가의 사무실 열쇠가, 개 사료처럼 덩그러니 놓여 있었다.
+	CASE "타케시"
+		;どうやら能力１＆全相性500というネタモードの模様。割と書いてて胸が苦しくなるのはきっと気のせいだろう。
+		;とりあえず文章だけ書いて演出とかブン投げる。著作権なんぞ宣言せん。
+		PRINTFORMW 　「타케시에게. 밥 차려두었단다. 엄마 파트타임 나갔다 올게.
+		PRINTFORMW 　　꼭 챙겨 먹으렴. 오늘 저녁은 타케시가 좋아하는 카레란다.」
+		PRINTFORMW 　…………
+		PRINTFORMW 　……
+		PRINTFORMW 　…
+		PRINTFORML 
+		PRINTFORMW 엄마가 차려두고 간 밥을 먹고 어두운 방 안에 틀어박힌다.
+		PRINTFORMW 요즘은 햇빛조차 따갑다.
+		PRINTFORML 
+		PRINTFORML 
+		PRINTFORMW 딸깍딸깍……
+		PRINTFORML 
+		PRINTFORMW 인터넷 게시판에서 어떤 수상한 링크를 발견했다.
+		PRINTFORML 
+		PRINTFORMW ShinEraTensei…? 어디서 끊어 읽어야 하지.
+		PRINTFORMW 『악마를 소환하여 너도 히어로다!』
+		PRINTFORMW 『아슬아슬한 생활을 즐기고 싶은 당신에게 동료마와의 하렘 같은 성생활』
+		PRINTFORMW 『그 히로인과도 이런 일도 저런 일도』
+		PRINTFORML 
+		PRINTFORMW 그런 수상쩍은 글귀들이 적혀 있다.
+		PRINTFORMW 새로운 게임일까. 요즘은 게임을 하는 것조차 귀찮아졌다.
+		PRINTFORMW 이런 장난 같은 것에도 푹 빠져 열을 올리던 시절이 있었지.
+		PRINTFORMW 다운로드 수가 눈에 들어온다.
+		PRINTFORML 
+		PRINTFORMW 제로.
+		PRINTFORML 
+		PRINTFORMW ………
+		PRINTFORML 
+		PRINTFORMW 요즘 세상에 이런 걸 좋다고 다운받는 놈은 흔치 않겠지만
+		PRINTFORMW 아무도 받지 않았다니. 이대로 누구 눈에도 띄지 않고 묻혀버리는 걸까.
+		PRINTFORML 
+		PRINTFORMW 이렇게 되어버린 내 꼴처럼?
+		PRINTFORML 
+		PRINTFORMW ShinEraTensei.7z
+		PRINTFORML 
+		PRINTFORMW 꽤나 특이한 확장자잖아. 조금 마음에 들었다.
+		PRINTFORMW 
+		PRINTFORMW 　　압축 풀기　　　　　[ 0％]
+		PRINTFORMW 　　압축 풀기･･　　　　[20％]
+		PRINTFORMW 　　압축 풀기････　　　[40％]
+		PRINTFORMW 　　압축 풀기･･････　　[60％]
+		PRINTFORMW 　　압축 풀기････････　[60％]
+		PRINTFORMW 　　압축 풀기･･････････[80％]
+		PRINTFORMW 　　압축 풀기･･････････[완료]
+		PRINTFORML 
+		PRINTFORMW 딸깍딸깍, 익숙해진 동작으로 기동한다.
+		PRINTFORML 
+		PRINTFORMW 「당신이 《광대》로군요」
+		PRINTFORMW 요염한 매력을 풍기는 여성이 미소 짓는다.
+		PRINTFORMW 「나는 팬텀・소사이어티의 마요네. 당신의 상사」
+		PRINTFORMW 과연. 그런 콘셉트인가. 공들인 게임이잖아.
+		PRINTFORMW 난데없이 화면 속 여성의 모습이 감쪽같이 사라진다.
+		PRINTFORMW 등 뒤에서 갑자기 튀어나온 팔 두 개가 자신의 가슴 앞에서 교차되고 동시에 머리에 부드러운 두 덩어리가 짓눌려 온다.
+		PRINTFORMW 「선택하렴. 지금 여기서 죽을지, 조직에 충성을 맹세할지」
+		PRINTFORMW 　…………
+		PRINTFORMW 　……
+		PRINTFORMW 　…
+		PRINTFORML 
+		PRINTFORMW 『뚜ー… 뚜ー…』
+		PRINTFORMW 『네, 잘 풀렸어요. 외아들을 지옥 밑바닥에 처넣다니 대단한 「어머니」시네요?』
+		PRINTFORMW 『저런 쓰레기가 대체 뭘 할 수 있다는 건지, 즉사하는 게 고작이지 않겠어요?』
+		PRINTFORMW 『"믿고 있다"? 무엇을요?』
+		PRINTFORMW 『………그래요, 후회는 없으시겠죠?』
+		PRINTFORMW 　…………
+		PRINTFORMW 　……
+		PRINTFORMW 　…
+		PRINTFORML 
+		PRINTFORML 
+		PRINTFORMW Ｊ( 'ー`)し < 타케시에게, 힘들지도 모르겠지만
+		PRINTFORMW 　　　　　　　힘내려무나, 전라로
+	CASE "MASTER의후손"
+		PRINTFORMW 오늘, %CALLNAME:MASTER%은(는) 자신의 부모의 자산을 물려받아, 독립했다.
+		PRINTFORMW 지금 있는 이 세이프 하우스를 겸한 사무실도 부모님이 남겨주신 것이다……
+		PRINTFORMW 그 밖에도 다양한 것들이 남아 있음에 틀림없다.
+		PRINTL 
+		PRINTFORMW 그러나, 그 모든 것이 고마운 것만은 아니다.
+		PRINTFORML 그 달갑지 않은 것 중 하나가 비밀결사 팬텀・소사이어티의 구성원이라는 입장이며,
+		PRINTFORMW 눈앞에 "상사"로서 서 있는 여자, 마요네다.
+		PRINTL 
+		PRINTFORML 마요네：
+		PRINTFORML 「이걸로 당신은 팬텀의 구성원이 된 셈이지만.
+		PRINTFORMW 　당신의 부모가 누구였든 간에, 무명의 신인으로서 다루게 된답니다.
+		PRINTFORML 　조직은 힘 이외에는 인정하지 않아요……,
+		PRINTFORMW 　요컨대 당신이 조직을 상대로 보여준 유용성이, 그대로 당신의 입지를 결정한다는 뜻이랍니다.
+		PRINTL 
+		PRINTFORMW 　우선 돈부터 벌도록 하세요. 밑천이 없으면 시작조차 할 수 없으니까요.
+		PRINTFORMW 　게다가 가장 손쉬운 『유용성』은, 조직을 향한 상납금.
+		PRINTFORMW 　상납을 하지 못하는 자는 출세는커녕 자유조차 없답니다.
+		PRINTL 
+		PRINTFORMW 　어떻게 해야 할지는, 굳이 말하지 않아도 알고 계시겠지요.
+		PRINTFORMW 　당신에게는 훌륭한 부모님이 계셨으니, 분명 간단한 일거리가 될 터예요, 후후후……」
+		PRINTFORML 
+		PRINTFORMW 할 말만 마치자, 마요네는 돌아갔다.
+		PRINTFORMW 귀찮지만, 조직의 일원이 된 이상 공적을 쌓는 수밖에 없을 것이다.
+		PRINTFORMW 우선은 이 세이프 하우스에 무엇이 남아 있는지 확인해 보기로 하자…….
+	CASEELSE
+		SELECTCASE FLAG:주인출신
+			CASE 0
+				PRINTFORMW 팬텀・소사이어티의 구성원이 된 %CALLNAME:MASTER%에게、세이프 하우스를 겸한 사무실이 마련되었다。
+				PRINTFORMW 오늘부터、이곳이 %CALLNAME:MASTER%의 거점이 된다
+				PRINTFORMW %CALLNAME:MASTER%의 상사가 된 마요네는 이렇게 말했다。
+				PRINTL
+				PRINTFORML 마요네：
+				PRINTFORML 「이걸로 당신은 팬텀의 구성원이 된 셈이지만、
+				PRINTFORML 　우선 돈부터 벌도록 해。밑천이 필요하기도 하고、거기에……
+				PRINTFORM 　무명인 당신이 가치를 보일 가장 간단한 방법은、돈을 조직에 상납하는 것이니까
+				IF ABL:MASTER:요리기능 >= 9
+					PRINTFORML 。
+					PRINTL
+					PRINTFORMW 　……설마라고는 생각하지만, 성실하게 벌어서 내겠다거나 생각하는 건 아니겠죠?
+					PRINTFORMW 　아뇨, 물론 그래도 소사이어티는 전혀 상관없어요. 네, 상관없죠……
+					PRINTFORMW 　상납금을 버는 수단은 딱히 묻지 않고, 노예가 파티시에가 되는 걸 금지하는 내규도 없으니까요」
+				ELSE
+					PRINTFORMW 」
+				ENDIF
+			CASE 1
+				PRINTFORML 동료들과 팀을 이루어, 그들의 성욕을 처리하면서 전투를 서포트하던 %CALLNAME:MASTER%에게,
+				PRINTFORMW 어느 날, 한 사람의 구성원으로서 독립해 임무를 맡으라는 발령이 내려졌다
+				PRINTFORMW 거점으로 배정받은 사무실에 도착하자, 이미 상사인 마요네가 기다리고 있었다.
+				PRINTL
+				PRINTFORML 마요네：
+				PRINTFORML 「오늘부터 당신은, 지금까지처럼 누군가를 보조하는 게 아니라, 당신 자신을 위해 일하게 된답니다.
+				PRINTFORML 　물론 그 일에는 동료들의 성욕 처리는 포함되어 있지 않지만요.
+				PRINTFORMW 　후후, 안심했나요? 아니면 아쉬웠으려나?
+				PRINTL
+				PRINTFORML 　우선 돈부터 벌도록 해요。밑천이 필요하기도 하고、거기에……
+				PRINTFORM 　무명인 당신이 가치를 보일 가장 간단한 방법은、돈을 조직에 상납하는 것이니까
+				IF ABL:MASTER:요리기능 >= 9
+					PRINTFORML 。
+					PRINTL
+					PRINTFORMW 　……설마라고는 생각하지만, 성실하게 벌어서 내겠다거나 생각하는 건 아니겠죠?
+					PRINTFORMW 　아뇨, 물론 그래도 소사이어티는 전혀 상관없어요. 네, 상관없죠……
+					PRINTFORMW 　상납금을 버는 수단은 딱히 묻지 않고, 노예가 파티시에가 되는 걸 금지하는 내규도 없으니까요」
+				ELSE
+					PRINTFORMW 」
+				ENDIF
+			CASE 2
+				PRINTFORML 팬텀・소사이어티의 성욕 처리용 변기로 배치되어,
+				PRINTFORML 정력적으로 봉사하며 그 욕망을 받아내던 %CALLNAME:MASTER%은(는), 어느 날 낯선 장소로 불려 나갔다.
+				PRINTFORMW 그곳은 세이프 하우스를 겸한 사무실이었고, 오늘부터 이곳을 거점으로 조직을 위해 임무를 수행하라는 것이었다.
+				PRINTL
+				PRINTFORMW 수완 좋은 서머너인 마요네는 이렇게 말했다.
+				PRINTL
+				PRINTFORML 마요네：
+				PRINTFORML 「구성원들의 정욕을 일신에 받아내려 하는,
+				PRINTFORML 　그런 당신의 순종함이 높이 평가받은 모양이네…… 사실은 거의 상층부의 변덕 같은 거지만.
+				PRINTFORML 　축하해, 오늘부터 당신은 자유의 몸이야.
+				PRINTFORMW 　물론, 우리에게 득이 되는 행동을 계속하는 한에서지만.
+				PRINTL
+				PRINTFORML 　인간으로서 조직을 위해 일할 것인지, 장난감은 장난감답게 남자들의 변기로 돌아갈 것인지도 당신의 자유랍니다.
+				PRINTFORMW 　만약 사람으로서 살아가고 싶다면…… 우선 밑천부터 마련하도록 하렴.
+				PRINTL
+				PRINTFORML 　자신의 가치를 증명하는 손쉬운 방법은 돈을 조직에 상납하는 것.
+				PRINTFORMW 　제 몫을 다하고 있음을 보여준다면, 적어도 노예나 장난감 신세로 전락할 일은 없답니다」
+		ENDSELECT
+		;EASY
+		;ELSEIF TALENT:MASTER:복종 == 1
+		;	PRINTFORMW 「これは貴方にとって最後のチャンス」
+		;	PRINTFORMW 「50日までに150万の資金を集められなかった場合…フフフ、貴方は元通りの性処理玩具に逆戻りよ」
+
+		PRINTL 
+		PRINTFORMW 마요네는 대담하게 웃었다
+		PRINTL 
+		PRINTFORML 마요네：
+		IF ABL:MASTER:요리기능 >= 9
+			PRINTFORMW 「하지만, 알고 있겠죠?
+			PRINTFORMW 　확실히 당신은 성실한 방법으로, 떳떳하지 못한 일은 전혀 하지 않고 지령을 달성할 수도 있어요.
+			PRINTFORMW 　줄을 서는 인기 가게가 되든, 프랜차이즈 경영을 시작하든 대단히 환영이에요.
+			PRINTFORMW 　하지만 그곳은 팬텀・소사이어티의 입김이 닿는 장소이고, 당신은 그 책임자가 된답니다.
+			PRINTFORMW 　당신의 솜씨를 기대하는, 모든 『손님』을 응대하도록 하세요. 설령 그것이 요리 솜씨가 아닐지라도.
+			PRINTFORMW 　이제 와서 싸우라거나 손을 더럽히라고는 하지 않겠어요. 하지만 새삼 결백해지려는 것도 덧없는 짓 아닌가요?
+			PRINTFORMW 　……이전에 진 빚도 있으니, 노예 한 명 정도라면 공짜로 넘겨드리죠」
+		ELSEIF TALENT:MASTER:복종 == 1
+			;現システムを反映　売春してもはした金にしかならない主人公（笑
+			PRINTFORML 「당신처럼 닳고 닳은 더러운 육변기에게 돈을 낼 별난 사람은 없답니다.
+			;PRINTFORMW 「いてもフィネガンぐらいのものよ」
+			PRINTFORMW 　아니면 악마라면 \@TALENT:MASTER:남자 == 0 ? 헐렁헐렁한 # 헐거운 \@ 구멍이라도 기뻐하려나?
+			;PRINTFORMW スサノオ「あぁん？　悪魔舐めてんのか！？」
+			;PRINTFORMW ツクヨミ「ガバガバはいりませんね」
+			PRINTFORMW 　후후. 눈썹 하나 까딱하지 않네──귀엽지 않아.
+			PRINTFORML 　그럼…… 본론으로 넘어가서,
+			PRINTFORMW 　더러운 변기인 당신을 위해, 특별히 내 노예를 빌려주도록 하죠…… 감사히 여기렴」
+		ELSE
+			PRINTFORMW 「소사이어티라는 입장을 이용하면 자금을 벌 수단을 얼마든지 있지、그렇지요？
+			PRINTFORML 　“스폰서”로부터의 의뢰、
+			PRINTFORML 　콜로세움의 파이트 머니、
+			PRINTFORML 　소사이어티에 해를 해를 끼치는 현상범의 토벌……。
+			PRINTFORMW 　그런 정상적인 일도、많이 준비해 줄수는 있지만――
+			PRINTFORMW 　지금、가장 돈이 되는 건、악마나 인간을 조교해 파는 노예 매매랍니다。
+				PRINTL 
+				
+			;ここから経験豊富なピクシー編
+			IF CFLAG:MASTER:동정 == 1
+				PRINTFORML 　……어머、체리보이인 당신에게는 악마의 조교는 아직 이르려나。
+				PRINTFORMW 　경험 풍부한 동료마를 붙여 드릴까요？」
+				PRINTL 
+				PRINTL 어떻게 대답할까？
+				PRINTLC [0]부탁드립니다
+				PRINTLC [1]중고따윈 싫다
+				PRINTL 
+				CALL INPUTINT,0,1
+				SELECTCASE RESULT
+					CASE 0
+						PRINTFORML 마요네：
+						PRINTFORML 「자、이전에 조직에 있던 서머너가 사역하던 악마에요。
+						PRINTFORML 　그 서머너는 어떻게 됐냐고요？
+						PRINTFORMW 　후후……물어볼 필요가 있을까요」
+						CFLAG:MASTER:동정 = 2
+					CASE 1
+						PRINTFORML 마요네：
+						PRINTFORMW 「곤란한 아이네……
+						PRINTFORMW 　체리끼리 사이좋게 애정행각이나 벌이고 있으렴」
+				ENDSELECT
+			;ここまで
+			ELSE
+				PRINTFORML 마요네：
+				PRINTFORMW 　그렇네、나라면 여자아이를 쓰는게 가장 취항이려나。
+				IF TALENT:MASTER:남자 == 0 || TALENT:MASTER:오토코노코
+					IF MARK:MASTER:굴복각인 == 2
+						PRINTFORMW 　물론, 당신 자신이 몸을 파는 선택지도 있어요. 아무래도 불모한 이야기이긴 하지만.
+						PRINTFORMW 　하지만, 좋아하잖아요? 늘 당신이 동료나 접대 상대에게 하던 짓을 손님에게 해 주면 되는 거니까요.
+						PRINTFORMW 　……생각만 해도 참을 수가 없다, 라는 얼굴을 하고 있네요. 후후후」
+					ELSE
+						PRINTFORMW 　물론, 당신 자신이 몸을 파는 선택지도 있어요. 아무래도 불모한 이야기이긴 하지만」
+					ENDIF
+				ENDIF
+			ENDIF
+			PRINTL 
+			PRINTFORMW 마요네는 입꼬리를 올리며 말을 이어갔다。
+			PRINTL 
+			PRINTFORML 마요네：
+			PRINTFORML 「며칠 전 붙잡은 노예의 처우가 결정되지 않았네요。
+			PRINTFORMW 　괜찮다면、선물 대신에 당신에게 넘겨드릴까요？」
+		ENDIF
+		;---- EDIT 006 ADD START -------------------------
+		CALL PRESENT_SLAVE,1
+		;---- EDIT 006 ADD END ---------------------------
+ENDSELECT
+PRINTL
+;PRINTL ＞資金を納めるのに期限は無いが、何かしら組織の役に立つ事をしなければ地位は向上しないだろう
+;PRINTFORMW ＞まずは￥1万を支払うことを目標とした
+;PRINTL
+
+;チェフェイ参加
+CALL JOIN_CHEFEI
+IF TALENT:MASTER:서머너 || TALENT:MASTER:페르소나구사자 || TALENT:MASTER:이능자 == 5 || TALENT:MASTER:식노 || TALENT:MASTER:달인 || TALENT:MASTER:데빌시프터 || CFLAG:MASTER:당신의전공분야  == 8
+	PRINTW 지급받은 악마가 말을 걸어왔다。
+	PRINTL 
+	PRINTL 픽시：
+	PRINTW 「나는、요정 픽시！ 앞으로 잘 부탁해♪
+ELSE
+	PRINTW 지금까지 줄곧 숨어 있던 악마가 말을 걸어왔다.
+	PRINTL 
+	PRINTL 픽시：
+	PRINTL 「살았다ー.
+	PRINTW 　그럼, 다시 한번, 나는 요정 픽시! 앞으로도 잘 부탁해♪
+ENDIF
+IF CFLAG:MASTER:동정 == 2
+	PRINTW 　동ー정ー씨에게는 조ー교보다 먼저 해야할 일이 있겠지만、
+ELSE
+	PRINTW 　돈을 잔뜩 모으는 건、힘들지도 모르겠지만、
+ENDIF
+PRINTW 　언니가 도와줄 테니까、분명 괜찮을 거야。
+PRINTW 　함께 힘내자！」
+PRINTL
+PRINTW 작은 동료마는 싱긋 웃었다。
+PRINTL
+
+; 幹部エンド迎えてるなら幹部候補あつかいOP
+IF GETBIT(FLAG:발견ED,0)
+	PRINTL 그러고 보면 떠나기 직전 마요네가 수상쩍은 종이 뭉치 하나를,
+	PRINTW 손안에 쥐여주고 갔던 것이 떠오른다
+	PRINTL
+	PRINTL 『간부 및 간부 후보에 대한 급여와 복리후생 안내』
+	PRINTL 『급여 입금 계좌 지정에 관하여』
+	PRINTL 『제반 절차 서류의 제출처 및 기한 안내』
+	PRINTL 『시설 이용 시 주의사항』
+	PRINTL 『커스텀 COMP 주문 추천』
+	SELECTCASE RAND:3
+		CASE 0
+			PRINTW 『올해의 COMP는 우산형이 대세！！』(왠지 이것만 손글씨에 귀여운 일러스트가 붙어 있다)
+		CASE 1
+			PRINTW 『센스 있는 요즘 젊은이라면 우산형 COMP가 쿨！！』(왠지 이것만 손글씨에 팬시한 일러스트가 붙어 있다)
+		CASE 2
+			PRINTW 『잘나가는 당신의 COMP는 우산형으로 결정！！』(왠지 이것만 손글씨에 순정만화풍 일러스트가 붙어 있다)
+	ENDSELECT
+	PRINTW ………
+	PRINTL
+	PRINTL 팬텀・소사이어티, 소위 악의 조직치고는 제법 멀쩡하게 회사를 운영하고 있는 모양이다.
+	PRINTL 솔직히 어째서 자신이 간부 후보인지──혹은 단순한 착오인지──는 알 수 없으나
+	PRINTW 받을 수 있는 건 받아 두어도 문제없을 것이다.
+	PRINTL
+	PRINTW ………
+	PRINTL
+ENDIF
+
+
+@OPENING_MESSAGE_1
+;---- EDIT 033 ADD START -------------------------
+;観光客とたけし＠以外は基本、初期奴隷ありのため左記二種類を除外処理;マスターの家系をここに追加
+IF CFLAG:MASTER:당신의전공분야 == 4 || CFLAG:MASTER:당신의전공분야 == 9 || CFLAG:MASTER:당신의전공분야 == 13
+;---- EDIT 033 ADD END ---------------------------
+ELSE
+	;---- EDIT 006 ADD START -------------------------
+	CALL PRESENT_SLAVE,0
+	;---- EDIT 006 ADD END ---------------------------
+	;チェフェイ参加
+	CALL JOIN_CHEFEI
+	;ここから経験豊富なピクシー編
+	IF CFLAG:MASTER:동정
+		PRINTFORMW 동정에게는 경험이 풍부한 악마가 지급됩니다
+		PRINTL 
+		PRINTL 어떻게 답하겠습니까？
+		PRINTLC [0]좋다
+		PRINTLC [1]좋지 않다
+		PRINTL 
+		CALL INPUTINT,0,1
+		SELECTCASE RESULT
+			CASE 0
+				PRINTFORMW 경험이 풍부한 픽시를 골랐습니다.
+				CFLAG:MASTER:동정 = 2
+			CASE 1
+				PRINTFORMW 깨끗한 픽시를 골랐습니다.
+		ENDSELECT
+	;ここまで
+	ENDIF
+ENDIF
+
+;---- EDIT 057 MOD START -------------------------

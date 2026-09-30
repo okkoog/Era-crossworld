@@ -1,0 +1,258 @@
+﻿;-------------------------------------------------
+;조개젖히기
+;愛撫系コマンド、レベル2
+;-------------------------------------------------
+@CHECK_COM_ABLE128
+
+;処女の場合、露出癖3以上ないとダメ
+SIF TALENT:PLAYER:처녀 && ABL:PLAYER:8 < 3
+	RETURN 0
+
+SIF !USE_HAND(PLAYER)
+	RETURN 0
+
+SIF !USE_VAGINA(PLAYER)
+	RETURN 0
+
+;お風呂場プレイ中はプレイマットが無いとダメ
+IF TEQUIP:목욕탕
+	SIF !EXIST_ITEM(20)
+		RETURN 0
+ENDIF
+;触手調教中はダメ
+SIF TEQUIP:촉수
+	RETURN 0
+;下半身下着をつけている、スカート以外の下半身上着を履いている、下の空いてない全身上着を着ているとダメ
+SIF !USE_CLI(PLAYER) && !USE_PENIS(PLAYER)
+	RETURN 0
+RETURN 1
+
+@ACT_COM128
+PRINTL 조개젖히기과시
+TSTR:0 = 조개젖히기과시
+;CALL KOJO_MESSAGE_COM
+;膣内の精液量が2減少する
+TCVAR:PLAYER:101 = MAX(TCVAR:PLAYER:101 - 2, 0)
+;調教対象→調教対象
+TFLAG:28 = 4
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:0 += 5
+DOWNBASE:TARGET:1 += 20
+
+SOURCE:TARGET:노출 = 200
+SOURCE:TARGET:불결 = 100
+SOURCE:TARGET:일탈 = 150
+SOURCE:TARGET:반감 = 150
+;-------------------------------------------------
+;特殊ソース処理
+;他のコマンドと性質がかなり違うのでほとんど特殊で定義する
+;-------------------------------------------------
+
+;PALAM:欲情をみる
+IF PALAM:욕정 < PALAMLV:1
+	SOURCE:욕정 = 25
+ELSEIF PALAM:욕정 < PALAMLV:2
+	SOURCE:욕정 = 50
+ELSEIF PALAM:욕정 < PALAMLV:3
+	SOURCE:욕정 = 100
+ELSEIF PALAM:욕정 < PALAMLV:4
+	SOURCE:욕정 = 200
+ELSE
+	SOURCE:욕정 = 400
+ENDIF
+SELECTCASE ABL:TARGET:노출증
+	CASE 0
+		SOURCE:TARGET:무서움 = 100
+	TIMES SOURCE:욕정 , 0.00
+	CASE 1
+		SOURCE:TARGET:무서움 = 50
+	TIMES SOURCE:욕정 , 0.40
+	CASE 2
+		SOURCE:TARGET:무서움 = 20
+		TIMES SOURCE:욕정 , 0.60
+	CASE 3
+		SOURCE:TARGET:무서움 = 10
+		TIMES SOURCE:욕정 , 0.75
+	CASE 4
+		SOURCE:TARGET:무서움 = 10
+		TIMES SOURCE:욕정 , 0.90
+	CASEELSE
+		SOURCE:TARGET:무서움 = 0
+		SOURCE:욕정 = SOURCE:욕정 * (100 + (ABL:노출증 - 5) * 10) / 100
+ENDSELECT
+;ABL:自慰中毒をみる
+IF ABL:자위중독 == 0
+	SOURCE:성행위 = 25
+	SOURCE:굴종 = 100
+	TIMES SOURCE:불결 , 4.00
+ELSEIF ABL:자위중독 == 1
+	SOURCE:성행위 = 50
+	SOURCE:굴종 = 80
+	TIMES SOURCE:불결 , 2.50
+ELSEIF ABL:자위중독 == 2
+	SOURCE:성행위 = 75
+	SOURCE:굴종 = 70
+	TIMES SOURCE:불결 , 1.50
+ELSEIF ABL:자위중독 == 3
+	SOURCE:성행위 = 100
+	SOURCE:굴종 = 60
+	TIMES SOURCE:불결 , 1.00
+ELSEIF ABL:자위중독 == 4
+	SOURCE:성행위 = 125
+	SOURCE:굴종 = 50
+	TIMES SOURCE:불결 , 0.50
+ELSE
+	SOURCE:성행위 = 90 + (ABL:자위중독 * 12)
+	SOURCE:굴종 = 0
+	TIMES SOURCE:불결 , 0.10
+ENDIF
+
+
+SOURCE:PLAYER:쾌Ｃ = 43
+SOURCE:PLAYER:액체 = 10
+SOURCE:PLAYER:노출 = 300
+
+;ビデオ
+IF TEQUIP:28
+	SOURCE:PLAYER:액체 += 50
+	SOURCE:PLAYER:욕정 += 100
+ENDIF
+
+
+;処女、貞操観念
+IF TALENT:PLAYER:처녀
+	SOURCE:PLAYER:노출 += 300
+	IF TALENT:PLAYER:30
+		TIMES SOURCE:PLAYER:노출 , 2.00
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;調教者のＶ⇔指の汚れが移動
+CALL MOVE_STAIN("바기나", PLAYER, "손", PLAYER)
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+;露出癖Lv3以上で自慰経験加算
+IF ABL:PLAYER:8 >= 3
+	CALL ADDS_EXP("자위경험", 1, PLAYER)
+	;PRINTL 자위경험＋１
+ENDIF
+;公開オナニー時は異常経験付加
+IF TEQUIP:28
+	CALL ADDS_ABNORMAL_EXP("公開自慰", PLAYER)
+;	EXP:50 += 1
+;	PRINTL 이상경험＋１
+ENDIF
+
+A = 1
+IF IS_LESBIAN(TARGET,PLAYER)
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, PLAYER)
+ELSEIF IS_GAY(TARGET,PLAYER)
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+ENDIF
+
+;依存度ベクトル
+TFLAG:33 = 0
+
+
+RETURN 1
+
+@MESSAGE_COM128
+PRINTFORM %PLAYER는% 
+;노출증
+;露出癖LV8以上かつ恥じらい持ちでない＋淫乱or娼婦
+IF (ABL:PLAYER:8 >= 8 && !TALENT:35) && (TALENT:PLAYER:음란 || TALENT:PLAYER:창부)
+	IF TEQUIP:PLAYER:속옷（하） == 620
+		PRINTFORML 라비아피어스\@ TEQUIP:PLAYER:양말 == 805 || TEQUIP:PLAYER:양말 == 807 ? 에서 뻗어 나온 사슬을 # 에 묶은 실\@을 양손으로, 클리 피어스에 묶은 실을 입으로 팽팽히 당겨 질구를 완전히 드러내자
+		PRINTFORML 손을 쓰지 않고 근육의 수축만으로 질구를 벌려 보였다
+	ELSE
+		PRINTFORML 양손의 손가락을 음순에 걸고, 질구째로 %TARGET에게% 과시하듯 크게 벌렸다
+	ENDIF
+	IF TCVAR:PLAYER:101  > 0
+		PRINTFORM 꿈틀거리는 질내에서는, 방금 전 사정한 정액이 걸쭉하게 주르륵 흘러나왔다……
+	ELSE
+		PRINTFORM 부드러워 보이는 질내는 듬뿍 점액으로 젖어, 이쪽을 유혹하듯 옴찔옴찔 꿈틀거리고 있다…
+	ENDIF
+ELSEIF (ABL:PLAYER:8 >= 8 && !TALENT:35) && TALENT:PLAYER:음란 == 0 && TALENT:PLAYER:창부 == 0
+	PRINTFORML 양손의 손가락을 \@ TEQUIP:PLAYER:속옷（하） == 620 ? 피어스 # 음순\@에 걸고, 질구째로 %TARGET에게% 과시하듯 크게 벌렸다
+	IF TCVAR:PLAYER:101 > 0
+		PRINTFORM 크게 벌려진 질구는, 방금 전 사정한 정액을 줄줄 흘리고 있다……
+	ELSE
+		PRINTFORM %PLAYER의% 손이 질 내부까지 벌려 보여주자, 질벽이 뻐끔뻐끔 움직이며 애액을 끝없이 흘러넘치게 하고 있다……
+	ENDIF
+ELSEIF (ABL:PLAYER:8 >= 8 && !TALENT:35)
+	IF TEQUIP:PLAYER:속옷（하） == 620 && (TEQUIP:PLAYER:양말 == 805 || TEQUIP:PLAYER:양말 == 807)
+		PRINTFORML 양다리를 크게 벌리자, \@ TEQUIP:PLAYER:양말 == 805 ? 스타킹 # 망사타이즈\@과 이어진 체인이 피어스를 잡아당겨
+		PRINTL 자연스레 드러난 질구에 손가락을 넣어 스스로 벌려나간다
+	ELSE
+		PRINTFORML 양손의 손가락을 사용해 음순뿐만 아니라 질구도 동시에 벌렸다
+	ENDIF
+	IF TCVAR:PLAYER:101 > 0
+		PRINTFORM %PLAYER의% 손이 질구를 더욱 좌우로 벌리자, 방금 전 사정한 정액을 줄줄 흘리고 있다……
+	ELSE
+		PRINTFORM 질내를 보여지는 것에 느끼고 있는 것인지, %PLAYER의% 뺨은 발그레하게 붉어져 있다
+	ENDIF
+ELSEIF ABL:PLAYER:8 >= 6 || (ABL:PLAYER:8 >= 4 && (TALENT:PLAYER:연모 || TALENT:PLAYER:친애 || TALENT:PLAYER:음란 || TALENT:PLAYER:창부 || TALENT:PLAYER:복종 || TALENT:PLAYER:예속))
+	PRINTFORM 기뻐하는 표정으로 한 손으로는 음순을 벌리고, 빈 손으로 음핵
+	SIF TEQUIP:PLAYER:속옷（하） == 620
+		PRINT  위에서 애액을 머금고 번들번들 빛나는 피어스를
+	PRINTL 만지작거리기 시작했다
+	IF TCVAR:PLAYER:101 > 0
+		PRINTFORM 적나라하게 드러난 질구는, 방금 막 사정한 정액을 음란하게 줄줄 흘리고 있다……
+	ELSE
+		PRINTFORM %PLAYER의% 손이 음핵을 자극할 때마다 질구에서 애액을 뚝뚝 떨어뜨리고 있다……
+	ENDIF
+ELSEIF ABL:PLAYER:8 >= 4
+	IF TEQUIP:PLAYER:속옷（하） == 620
+		PRINT 피어스
+		SIF TEQUIP:PLAYER:양말 == 805 || TEQUIP:PLAYER:양말 == 807
+			PRINTFORM 에서 뻗어 나와 \@ TEQUIP:PLAYER:양말 == 805 ? 스타킹 # 망사타이즈\@을 고정하고 있는 체인
+		PRINT 을 집어당겨, 자신의 비소를 드러내 보였다
+	ELSE
+		PRINTFORML 하복부에 손을 얹고, 검지와 중지로 브이 사인을 만들 듯 %TARGET에게% 자신의 비소를 드러냈다
+	ENDIF
+	IF TCVAR:PLAYER:101 > 0
+		PRINTFORM 적나라하게 드러난 질구에서는, 방금 전 사정한 정액이 꿀렁꿀렁 흘러나온다……
+	ELSE
+		PRINTFORM 벌어진 여음 너머로 이쪽을 엿보는 질구는, 받아들여야 할 물건을 고대하는 듯 애액에 젖어 음란하게 꿈틀거리고 있다……
+	ENDIF
+ELSEIF ABL:PLAYER:8 >= 2
+	PRINTFORM 얼굴을 새빨갛게 붉히면서도, 머뭇머뭇, 
+		SIF TEQUIP:PLAYER:속옷（하） == 620
+			PRINT 라비아 피어스를 집어
+	PRINTFORM 성기를 또렷하게 벌려 보였다
+ELSE
+	PRINTFORM 자신의 
+	;ラビアピアス、小柄体型
+	IF TEQUIP:PLAYER:속옷（하） == 620
+		PRINT 음순에 박힌 피어스에 손가락을 걸고
+	ELSEIF TALENT:PLAYER:유아체형
+		PRINT 어린 갈라진 틈에 손가락을 집어넣고
+	ELSE
+		PRINT 균열에 손가락을 집어넣고
+	ENDIF
+	PRINT  좌우로 벌려 보였다
+ENDIF
+;調教者が恥じらい＋調教経験200以下
+IF TALENT:TARGET:35 && EXP:TARGET:70 < 200
+	PRINTFORML %PLAYER의% 치태를 눈앞에서 본 %TARGET은%
+	PRINTW 수치심을 자극받아, 붉게 물든 얼굴을 살짝 돌려버렸다
+ELSE
+	WAIT
+ENDIF
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_128
+RETURN COMTYPE("助手・レズ系")

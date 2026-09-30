@@ -1,0 +1,140 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_ER_魔眼, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	IF FLAG:행동순1 == ARG
+		RESULTS = 이블 헌팅
+	ELSE
+		RESULTS = ｲｰｳﾞｨﾙ･ﾊﾝﾃｨﾝｸﾞ
+	ENDIF
+ELSE
+	RESULTS = 魔眼
+ENDIF
+
+;　명중
+@SKILL_HITRATE_ER_魔眼, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_ER_魔眼, ARG
+RETURN 120
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ER_魔眼, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ER_魔眼, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ER_魔眼, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ER_魔眼, ARG
+RETURN 10
+
+;　相性
+@SKILL_TYPE_ER_魔眼, ARG
+RETURN GET_TYPE_NUM("비구")
+;비구
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ER_魔眼
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ER_魔眼, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ER_魔眼, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_ER_魔眼, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ER_魔眼, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ER_魔眼, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_ER_魔眼, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ER_魔眼
+RETURN 0
+
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+@SKILL_DAMAGE_EFFECT_ER_魔眼, ARG, ARG:1, ARG:2
+SIF ARG:1 < 0
+	RETURN 0
+SIF ARG:2 < -1
+	RETURN 0
+
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	; ランダムな弱体化
+	LOCAL = RAND:3
+	SELECTCASE LOCAL
+		CASE 0
+			CALL SKILL_SET_カジャンダ, ARG, ARG:1, "공격", -8, "短縮", "", ""
+		CASE 1
+			CALL SKILL_SET_カジャンダ, ARG, ARG:1, "방어", -8, "短縮", "", ""
+		CASE 2
+			CALL SKILL_SET_カジャンダ, ARG, ARG:1, "회피", -8, "短縮", "", ""
+	ENDSELECT
+ELSE
+	; 強化の解除
+	CALL SKILL_能力上昇解除, ARG, ARG:1, "短縮"
+ENDIF
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ER_魔眼, ARG, ARG:1, SKILL_NUM
+#LOCALSIZE 4
+#DIM SKILL_NUM
+
+CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_ER_魔眼, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	PRINTL 
+	PRINTL 장총 에스티카 로우를 사용한 단체 공격.
+	PRINTL 적 단체에 비구 속성 소위력의 물리 공격을 행한다. 공격 후 적의 공격·방어·회피를 무작위로 2단계 낮춘다.
+ELSE
+	PRINTL 
+	PRINTL 마의 힘을 품은 눈으로 쏘아본다.
+	PRINTL 적 단체에 비구 속성 소위력의 물리 공격을 행한다. 공격 후 적의 강화 상태를 해제한다.
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ER_魔眼, ARG
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_ER_魔眼, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	RESULTS:0 = 장총 에스티카 로우를 사용한 단체 공격.
+	RESULTS:1 = 적 단체에 비구 속성 소위력의 물리 공격을 행한다. 공격 후 적의 공격·방어·회피를 무작위로 2단계 낮춘다.
+ELSE
+	RESULTS:0 = 마의 힘을 품은 눈으로 쏘아본다.
+	RESULTS:1 = 적 단체에 비구 속성 소위력의 물리 공격을 행한다. 공격 후 적의 강화 상태를 해제한다.
+ENDIF

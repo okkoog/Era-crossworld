@@ -1,0 +1,531 @@
+﻿;-------------------------------------------------
+;デビチルのオキツネの戦闘口上
+;EVENT_KX1_RPG VER.2.ERBで作成
+;
+;	Modification Data:
+;	Edit	Date			Author					Reason
+;	001		2020/11/17		biribirisuruyatu		新規作成
+;													ざっくり作ってエラー吐いたので上から真っ新なテンプレに移植しながら見直し
+;	002		2020/11/18		biribirisuruyatu		移植終わったので分岐チェックやらCOの整理
+;													取り敢えずの完成　セクシーダンスとかは思いつかなかった
+;													もし気に入ってくれた方が居ましたら追記なり調教方面なり好きにやってください
+;	003		2023/05/20		P						戦闘口上を顔グラ対応に変更
+;	◆ライセンスについて
+;	+----+----+-------------------------------+
+;	|番号|許可|ライセンス内容                 |
+;	+----+----+-------------------------------+
+;	|   1| ○ | 処理上のバグ修正              |
+;	+----+----+-------------------------------+
+;	|   2| ○ | 口上の誤字・脱字の修正        |
+;	+----+----+-------------------------------+
+;	|   3| ○ | 口上まとめへの収録            |
+;	+----+----+-------------------------------+
+;	|   4| ○ | 口上の新規追加                |
+;	+----+----+-------------------------------+
+;	|   5| ○ | 既存口上の改変                |
+;	+----+----+-------------------------------+
+;	|   6| ○ | 改変した口上の自由な再配布    |
+;	+----+----+-------------------------------+
+;	|   7| ○ | 口上内容の転載・流用          |
+;-------------------------------------------------
+;816_オキツネ　メモ
+;ガツンと行くよ！　イケっ！てんちゅうさつ！　ねえ、ケイヤクしようよ！　タクシャカ
+;二匹で一匹　漢字だけはひらがなに　ひらがなばっかで読みにくい時だけカタカナや句読点を　一文字だけ漢字はそのままでいいかも　気分気分
+;出来るなら「「イケっ！【技名】」」でざっくりと　一部だけ専用セリフで　たぶん元から汎用なので捏造大事
+;건방짐　소악마　프라이드높음　교활　정조관념　부끄럼쟁이　호기심
+;
+;参考にした口上
+;古代、シアノ、芳澤の口上を参考に　
+;
+;素質のある回復支援破魔はそれなりに
+;デビチルやって無いから回復とかの台詞どうだったのかわかんない　分かる人修正なり追記なりお願いします
+;エレジーとか刹那、未来でなんかしたいけどアニチルの記憶もあやふやなので誰か頼んだ　つかアニチルに居無さそう
+;
+;816はちゃんとキャラ番号に置換　　台詞出来るだけ変えて分岐動いてるか確認
+;%LOCALS%で技名っぽい？　「「イケっ！%LOCALS%」」
+;(CFLAG:ARG:입력행동,801, 899)括弧内のここからここまで　IFで増やすとその中から更にココやここからここまでが出来る？　　||がor　%%が＆
+;弱体のトコだと　　　　(ここから, ここまで)か || 　　　　　　　　　 ココか || 　　　　　　　　　　 ココ のいずれか　　　　これもたぶん色々違う　すべての式に日本語訳くれ
+;	ELSEIF RANGE(CFLAG:ARG:입력행동,506, 509) || CFLAG:ARG:입력행동 == 541 || CFLAG:ARG:입력행동 == 556
+;-------------------------------------------------
+;■台詞の行数を増やしたいときは
+;			BTL_KOJO_RESULTS:0 = 一行目
+;			BTL_KOJO_RESULTS:1 = 二行目
+;			BTL_KOJO_RESULTS:2 = 三行目
+;			BTL_KOJO_RESULTS:3 = 四行目
+;			BTL_KOJO_RESULTS:4 = 五行目
+;と増やしていく
+;-------------------------------------------------
+
+;-------------------------------------------------
+@KOJO_BATTLE_EVENT_K[[キャラ:오키츠네]], ARG, ARG:1, ARG:2
+;-------------------------------------------------
+SIF ARG < 0 && NO:ARG != 816
+	RETURN 0
+;VARSET LOCALS
+
+SELECTCASE TFLAG:전투이벤트
+	;COOP発動 ARGは発動者
+	CASE 1
+			BTL_KOJO_RESULTS:0 = 「ここがよわいの？」
+			BTL_KOJO_RESULTS:1 = 　　　　　　　　「スキをついたよ！」
+	;COOP参加
+	CASE 2
+		;主人がCOOP発動
+		IF FLAG:행동순1 != -1 && FLAG:행동순1 == MASTER
+			BTL_KOJO_RESULTS:0 = 「みんなでやるのね！」
+			BTL_KOJO_RESULTS:1 = 　　　　　　　「おもいっきりやるよ！」
+		;それ以外
+		ELSE
+			BTL_KOJO_RESULTS:0 = 「「みんなでオシオキね！」」
+		ENDIF
+	;被召喚時
+	CASE 3
+			BTL_KOJO_RESULTS:0 = 「ケーヤクの元」
+			BTL_KOJO_RESULTS:1 = 　　　　　　　「オキツネここにあり！」
+	;공격　ARGが攻撃をする仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 11
+		;相手が死んだ　　　なんかの口上に同じのあった気がする
+		IF BASE:(ARG:1):ＨＰ <= 0
+			BTL_KOJO_RESULTS:0 = 「てんばつてきめーん！」
+			BTL_KOJO_RESULTS:1 = 　　　　　　　　　「ちゅーをくだした！」
+		;弱点をついた。つまりCOOP　　　　弱点を突いたが防御されている？芳澤口上はそんな台詞だった
+		ELSEIF GET_CREC_ACT(ARG, ARG:1, "WEAK")
+			IF CFLAG:(ARG:1):방어플래그
+				BTL_KOJO_RESULTS:0 = 「ふせぐなんてなまいきー」
+				BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　「まもってばかりでかてるの―？」
+			ELSE
+				;こっちはCOOP発動に回すためにカット
+				RETURN 0
+			ENDIF
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 50
+			BTL_KOJO_RESULTS:0 = 「いたいでしょ？」
+			BTL_KOJO_RESULTS:1 = 　　　　　　「オシオキだからとーぜんね！」
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 25
+			BTL_KOJO_RESULTS:0 = 「まだまだいくよっ」
+			BTL_KOJO_RESULTS:1 = 　　　　　　　「どんどんいくよっ」
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 0
+			IF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 「あたったよ！」
+				BTL_KOJO_RESULTS:1 = 　　　　　　「とーぜんだよ！」
+			ELSE
+				BTL_KOJO_RESULTS:0 = 「いたくないの？」
+				BTL_KOJO_RESULTS:1 = 　　　　　　　「へんたいさん？」
+			ENDIF
+		;無効された
+		ELSEIF ダメージ割合(ARG:1, ARG:2) <= 0
+			BTL_KOJO_RESULTS:0 = 「あれ？きかないの？」
+			BTL_KOJO_RESULTS:1 = 　　　　　　　　　　「ずるーい！」
+		ENDIF
+	;ENDIF
+	;被ダメージ
+	;ARGが攻撃を受ける仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 12
+		;死んだ
+		IF BASE:ARG:ＨＰ <= 0
+			BTL_KOJO_RESULTS:0 = 「たたってやるー……」
+			BTL_KOJO_RESULTS:1 = 　　　　　　　　　　「%CSTR:ARG:이인칭%をたたってやるー……」
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 50 || 現HP割合(ARG) < 25
+			BTL_KOJO_RESULTS:0 = 「「いったーい！」」
+			BTL_KOJO_RESULTS:1 = 「「ゆるさないんだから！！」」
+		;無効
+		ELSEIF ARG:2 == 0
+			BTL_KOJO_RESULTS:0 = 「「そんなのきかないよ？」」
+		;吸収
+		ELSEIF ARG:2 < 0
+			BTL_KOJO_RESULTS:0 = 「ごほうびくれるの？」
+			BTL_KOJO_RESULTS:1 = 　　　　　　　　「ありがとー！」
+		ENDIF
+	;反射された
+	CASE 15
+			BTL_KOJO_RESULTS:0 = 「「きゃあっ」」
+	;反射した
+	CASE 16
+			BTL_KOJO_RESULTS:0 = 「てんばつね！」
+			BTL_KOJO_RESULTS:1 = 　　　　　　「いんがおーほーなんだから！」
+	;回避された
+	CASE 17
+			BTL_KOJO_RESULTS:0 = 「「よけちゃだめー」」
+	;回避した
+	CASE 18
+			BTL_KOJO_RESULTS:0 = 「あたらないよ」
+			BTL_KOJO_RESULTS:1 = 　　　　　　　「よゆうだね」
+	;反撃を発動した
+	CASE 20
+		SELECTCASE TFLAG:발동연동스킬
+		;닷지카운터
+		CASE 2484
+			BTL_KOJO_RESULTS:0 = 
+		;その他
+		CASEELSE
+			BTL_KOJO_RESULTS:0 = 
+		ENDSELECT
+	;トリガースキルを発動した
+	CASE 21
+		SELECTCASE TFLAG:발동연동스킬
+		;○○
+		;CASE 
+		;	BTL_KOJO_RESULTS:0 = 
+		;その他
+		CASEELSE
+			BTL_KOJO_RESULTS:0 = 
+		ENDSELECT
+	;バトルに勝利した
+	CASE 90
+			BTL_KOJO_RESULTS:0 = 
+	;レベルアップした
+	CASE 91
+			BTL_KOJO_RESULTS:0 = 「つよくなったよ！」
+			BTL_KOJO_RESULTS:1 = 　　　　　　　　　「もっとイタズラできるね！」
+	;逃走に成功した
+	CASE 92
+			BTL_KOJO_RESULTS:0 = 「またこんどね！」
+			BTL_KOJO_RESULTS:1 = 　　　　　　　　「バイバイ！」
+	;逃走に失敗した
+	CASE 93
+			BTL_KOJO_RESULTS:0 = 「しつこいと嫌われるよ？」
+			BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　　「そんなことしてると嫌われるよ？」
+	;戦闘開始時
+	CASE 94
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			BTL_KOJO_RESULTS:0 = 「つかれたー……」
+			BTL_KOJO_RESULTS:1 = 　　　　　「だからって負けないけどさ―……」
+		ELSE
+			BTL_KOJO_RESULTS:0 = 「「わるいコだったらオシオキよ！」」
+		ENDIF
+	;バックアタックを受けた　後衛が前衛になるやつ
+	CASE 95
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			BTL_KOJO_RESULTS:0 = 「やられたら　たたってやるー！」
+			BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　　　　「%CSTR:ARG:이인칭%を　たたってやるー！」
+		ELSE
+			BTL_KOJO_RESULTS:0 = 「きゃっ!?」
+			BTL_KOJO_RESULTS:1 = 　　　　「ふいうちなんてヒキョーだー！」
+		ENDIF
+	;敵の先制攻撃を受けた　置くとこは大抵後衛だと思うので　狡猾が仕事してるように見えればいいなって
+	CASE 96
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			BTL_KOJO_RESULTS:0 = 「ウェー……」
+			BTL_KOJO_RESULTS:1 = 　　　　　「%CSTR:ARG:이인칭%ゆだんしすぎ―……」
+		ELSE
+			BTL_KOJO_RESULTS:0 = 「「かえりうちにしてあげる！」」
+		ENDIF
+	;先制攻撃に成功
+	CASE 97
+			BTL_KOJO_RESULTS:0 = 「こっちに気付いてないよ！」
+			BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　　　「ひごろの行いがいいからね！」
+ENDSELECT
+;SIF !(BTL_KOJO_RESULTS:0 == "")
+;	CALL MESSAGE_B2(CALLNAME:ARG,0, BTL_KOJO_RESULTS:0, BTL_KOJO_RESULTS:1, BTL_KOJO_RESULTS:2, BTL_KOJO_RESULTS:3, BTL_KOJO_RESULTS:4)
+
+;-------------------------------------------------
+@KOJO_BATTLE_MESSAGE_K[[キャラ:오키츠네]],ARG,ARG:1 = 0
+;-------------------------------------------------
+;VARSET LOCALS
+;使用したスキルの名前をLOCALSに代入
+CALL GET_SKILL_PROP, "SKILL_NAME", CFLAG:ARG:입력행동, ARG
+LOCALS = %RESULTS%
+;FLAG:ARG:타겟
+
+;崩壊してる場合は口上表示しないようにもできる
+;SIF TALENT:ARG:9
+;	RETURN 0
+
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+;コメントアウトしやすいように　　　ここでIFに対しENDがって言われるときは何がいけないんでしょうね　上でどっか抜けてるんですかね
+IF 1 == 0
+;-------------------------------------------------
+;状態異常時
+;-------------------------------------------------
+;魅了時
+ELSEIF CFLAG:ARG:상태이상 == GET_STATE_NUM("CHARM")
+	;行動不能（ムラムラしている）
+	IF CFLAG:ARG:입력행동 == 2314
+		BTL_KOJO_RESULTS:0 = 「……っん、んぅ……」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　　　「うーー……！」
+		BTL_KOJO_RESULTS:2 = オキツネはしきりに太股を擦り合わせている
+	ELSE
+		BTL_KOJO_RESULTS:0 = 「「ダイスキー！ダイスキだから　あぶらあげチョーダイ！」」
+	ENDIF
+;混乱時
+ELSEIF CFLAG:ARG:상태이상 == GET_STATE_NUM("PANIC")
+	;금전뿌리기
+	IF CFLAG:ARG:입력행동 == 2315
+		BTL_KOJO_RESULTS:0 = 「「あぶらあげー！！」」
+		BTL_KOJO_RESULTS:1 = 幻覚を追いかけるオキツネの懐から金が零れていく
+	;行動不能（ぼんやりしている）
+	ELSEIF CFLAG:ARG:입력행동 == 2314
+		BTL_KOJO_RESULTS:0 = 「さーー……」
+		BTL_KOJO_RESULTS:1 = 　　　　　　「ぐーー……」
+		BTL_KOJO_RESULTS:2 = オキツネはじっと天を仰いでいる
+	ELSE
+		BTL_KOJO_RESULTS:0 = 「そこかー！」
+		BTL_KOJO_RESULTS:1 = 　　　　　「ここかー！」
+	ENDIF
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;これは通常攻撃
+ELSEIF CFLAG:ARG:입력행동 == 0
+	IF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 「「とりゃっ」」
+	ELSE
+		BTL_KOJO_RESULTS:0 = 「「オシオキだよ　えい！」」
+	ENDIF
+;ELSEIF CFLAG:ARG:입력행동 == (スキル番号)
+;	BTL_KOJO_RESULTS:0 = 
+;섹시댄스
+ELSEIF CFLAG:ARG:입력행동 == 1212
+	BTL_KOJO_RESULTS:0 = 
+;캔디보이스
+ELSEIF CFLAG:ARG:입력행동 == 1213
+	BTL_KOJO_RESULTS:0 = 
+;파이널누드
+ELSEIF CFLAG:ARG:입력행동 == 1214
+	BTL_KOJO_RESULTS:0 = 
+;下のほうに持って行った方が見やすかったかもしれない
+;烙印付くやつ
+ELSEIF RANGE(CFLAG:ARG:입력행동,1305, 1306) || CFLAG:ARG:입력행동 == 1313 || CFLAG:ARG:입력행동 == 1330 || CFLAG:ARG:입력행동 == 1338
+	BTL_KOJO_RESULTS:0 = 「オシオキのしるしね！」
+	BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　「わるいコだって判るようにしてあげる！」
+	BTL_KOJO_RESULTS:2 = 「「%LOCALS%」」
+	;빛의벽
+ELSEIF CFLAG:ARG:입력행동 == 1307
+	BTL_KOJO_RESULTS:0 = 「まもってあげる！」
+	BTL_KOJO_RESULTS:1 = 　　　　　　　　　「あくりょーたいさん！」
+	BTL_KOJO_RESULTS:2 = 「「%LOCALS%！」」
+;キルとブレイク
+ELSEIF RANGE(CFLAG:ARG:입력행동,1331, 1332)
+		BTL_KOJO_RESULTS:0 = 「……わるいコにはもったいないね！」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　　「……はんせーするまで許さないからね！」
+		BTL_KOJO_RESULTS:2 = 「「オマエタチにカミのヒゴはあらじ」」
+;フレアライトと天中殺　GB版で見た表記に「」
+ELSEIF CFLAG:ARG:입력행동 == 1318
+	BTL_KOJO_RESULTS:0 = 「「イケっ！플레어라이트！」」
+ELSEIF CFLAG:ARG:입력행동 ==  1319
+	BTL_KOJO_RESULTS:0 = 「「イケっ！てんちゅうさつ！」」
+;回転説法1320
+ELSEIF CFLAG:ARG:입력행동 == 1320
+	BTL_KOJO_RESULTS:0 = 「おせっきょーのジカンだよ！」
+	BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　　　「はんせーしなきゃしんじゃうんだから！」
+	BTL_KOJO_RESULTS:2 = 「「%LOCALS%！」」
+;ネタ　PT内にアリスが居たらで台詞追加とかしたかったね　出来る人いたらオナシャス
+ELSEIF CFLAG:ARG:입력행동 == 1408
+	BTL_KOJO_RESULTS:0 = 「オマエタチなんてだいっきらい！」
+;BTL_KOJO_RESULTS:1 == 　　「死体は私が貰ってお友達にしてもいい？」
+	BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　「うん　ハンセーしたってゆるさない！」
+	BTL_KOJO_RESULTS:2 = 「「だから　죽어줄래？」」
+;BTL_KOJO_RESULTS:3 == 「「「それじゃあ」」」
+;BTL_KOJO_RESULTS:4 == 「「「死　ん　で　く　れ　る　？」」」
+;せんせいあのねのノリであのねーもやりたかった　ネタが無い
+
+;-------------------------------------------------
+;銃攻撃（特殊弾丸含む）
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,2101, 2200)
+	;GUN
+	IF CFLAG:ARG:입력행동 == 2101
+		BTL_KOJO_RESULTS:0 = 
+	;その他（特殊弾丸）
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;-------------------------------------------------
+;基本行動
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,2301, 2400)
+	;ＣＨＡＮＧＥ
+	IF CFLAG:ARG:입력행동 == 2301
+		BTL_KOJO_RESULTS:0 = 「交代するよ」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　「わたしがこっちだね」
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;-------------------------------------------------
+;アイテム
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,3001, 3500)
+	BTL_KOJO_RESULTS:0 = 
+;-------------------------------------------------
+;リンケージ
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,4000, 5000)
+	;메시아라이저
+	IF CFLAG:ARG:입력행동 == 4160
+		BTL_KOJO_RESULTS:0 = 「愛の力だね！」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　「%CSTR:일인칭%と%CSTR:이인칭%の力だね！」
+		BTL_KOJO_RESULTS:2 = 「「【メシアライザ―】！」」
+	;Lヒートライザ　微妙だなってなったのでCO
+	ELSEIF CFLAG:ARG:입력행동 == 4200
+		BTL_KOJO_RESULTS:0 = 「なんだか体があついよ%CSTR:이인칭%…」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　　　　　「ドンドン力があふれてくるよ…」
+;		BTL_KOJO_RESULTS:2 = 「「【Lヒートライザ】」」
+	;사망유희
+	ELSEIF CFLAG:ARG:입력행동 == 4800
+		BTL_KOJO_RESULTS:0 = 「めーれーだからやっちゃうよ」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　　　「ちゃんとできたらごほーびください」
+		BTL_KOJO_RESULTS:2 = 「「【사망유희】！」」
+	ELSE
+		BTL_KOJO_RESULTS:0 = 「「せーのでいくよ！」」
+	ENDIF
+;-------------------------------------------------
+;汎用スキル
+;-------------------------------------------------
+;검격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1, 99)
+	BTL_KOJO_RESULTS:0 = 
+;비구
+ELSEIF RANGE(CFLAG:ARG:입력행동,101, 199)
+	BTL_KOJO_RESULTS:0 = 
+;타격
+ELSEIF RANGE(CFLAG:ARG:입력행동,201, 299)
+	BTL_KOJO_RESULTS:0 = 
+;전술
+ELSEIF RANGE(CFLAG:ARG:입력행동,301, 400)
+	;噛み付き系
+	IF RANGE(CFLAG:ARG:입력행동,321, 326)
+		BTL_KOJO_RESULTS:0 = 「ガブリといくよ！」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　　「おもいっきりいくよ！」
+	;その他
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;회복
+;あなたに対して特定陥落でチャムディとか自分だけの時の回復とか分岐したかった
+ELSEIF RANGE(CFLAG:ARG:입력행동,401, 499)
+	;全体回復
+	IF CFLAG:ARG:타겟 > 6
+		BTL_KOJO_RESULTS:0 = 「ダイジョウブ？治してあげる」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　　　　「そういうのトクイだよ」
+		BTL_KOJO_RESULTS:2 = 「「【%LOCALS%】」」
+	ELSE
+		BTL_KOJO_RESULTS:0 = 「「ケガを治すね！【%LOCALS%】」」
+	ENDIF
+;지원
+ELSEIF RANGE(CFLAG:ARG:입력행동,501, 599)
+	;強化系
+	IF RANGE(CFLAG:ARG:입력행동,501, 505) || CFLAG:ARG:입력행동 == 558
+		BTL_KOJO_RESULTS:0 = 「つよくなれ！」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　「てかげんしないよ！」
+		BTL_KOJO_RESULTS:2 = 「「【%LOCALS%】！」」
+	;弱体系
+	ELSEIF RANGE(CFLAG:ARG:입력행동,506, 509) || CFLAG:ARG:입력행동 == 541 || CFLAG:ARG:입력행동 == 556
+		BTL_KOJO_RESULTS:0 = 「のろってやる！」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　　「もっとよわっちゃえ！」
+		BTL_KOJO_RESULTS:2 = 「「【%LOCALS%】」」
+	;気合、コンセントレイト
+	ELSEIF RANGE(CFLAG:ARG:입력행동,511, 512)
+		BTL_KOJO_RESULTS:0 = 「キアイをいれるよ！」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　　　　「シュウチュウするよ！」
+		BTL_KOJO_RESULTS:2 = 「「つぎでやっつけちゃうんだから！」」
+	;도발　　　ざぁこPH ざ～こPHと迷った
+	ELSEIF CFLAG:ARG:입력행동 == 515
+		BTL_KOJO_RESULTS:0 = 「そのていど？」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　「たったそれだけ？」
+		BTL_KOJO_RESULTS:2 = 「「アハハ！よわ～い！」」
+	;その他
+	ELSE
+		BTL_KOJO_RESULTS:0 = 「ユダンなんてしないよ！」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　　「カクジツにやっつけちゃうんだから！」
+		BTL_KOJO_RESULTS:2 = 「「【%LOCALS%】！」」
+	ENDIF
+;방어
+ELSEIF RANGE(CFLAG:ARG:입력행동,601, 699)
+		BTL_KOJO_RESULTS:0 = 「守ってあげる！」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　「護りのチカラ！」
+		BTL_KOJO_RESULTS:2 = 「「【%LOCALS%】」」
+;화염
+ELSEIF RANGE(CFLAG:ARG:입력행동,701, 799)
+	BTL_KOJO_RESULTS:0 = 
+;빙결
+ELSEIF RANGE(CFLAG:ARG:입력행동,801, 899)
+	BTL_KOJO_RESULTS:0 = 
+;전격
+ELSEIF RANGE(CFLAG:ARG:입력행동,901, 999)
+	BTL_KOJO_RESULTS:0 = 
+;충격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1001, 1099)
+	BTL_KOJO_RESULTS:0 = 
+;신경
+ELSEIF RANGE(CFLAG:ARG:입력행동,1101, 1199)
+	BTL_KOJO_RESULTS:0 = 
+;정신
+ELSEIF RANGE(CFLAG:ARG:입력행동,1201, 1299)
+	BTL_KOJO_RESULTS:0 = 
+;파마　
+ELSEIF RANGE(CFLAG:ARG:입력행동,1301, 1399)
+	;即死系　回転説法とゴッドアロー以外　なんか()||()したら,でエラー出続けたので後ろ三つ分割　長い
+	IF RANGE(CFLAG:ARG:입력행동,1301, 1304) || CFLAG:ARG:입력행동 == 1308 || CFLAG:ARG:입력행동 == 1309 || CFLAG:ARG:입력행동 == 1310
+		BTL_KOJO_RESULTS:0 = 「わるいコにはオシオシね！」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　　「セイなるチカラおもいしれ！」
+		BTL_KOJO_RESULTS:2 = 「「%LOCALS%」」
+	ELSE
+		BTL_KOJO_RESULTS:0 = 「イケっ！【%LOCALS%】！」」
+	ENDIF
+;주살
+;神様なので祟ると怖いぞみたいなあれ　素質も無いので完全にネタ
+;キャラ的にはちゃんと反省すれば許してくれる類の神様だとは思うけど、お稲荷様だとどうなんだろミシャグジ様的なあれで
+ELSEIF RANGE(CFLAG:ARG:입력행동,1401, 1499)
+		BTL_KOJO_RESULTS:0 = 「……オマエタチにハンセーのジカンはあたえぬ」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　　　　　　　　　　　「……苦しんでシぬがいい」
+		BTL_KOJO_RESULTS:2 = 「「%LOCALS%」」
+;지변
+ELSEIF RANGE(CFLAG:ARG:입력행동,1501, 1599)
+	BTL_KOJO_RESULTS:0 = 
+;수격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1601, 1699)
+	BTL_KOJO_RESULTS:0 = 
+;질풍
+ELSEIF RANGE(CFLAG:ARG:입력행동,1701, 1799)
+	BTL_KOJO_RESULTS:0 = 
+;중력
+ELSEIF RANGE(CFLAG:ARG:입력행동,1801, 1899)
+	BTL_KOJO_RESULTS:0 = 
+;핵열
+ELSEIF RANGE(CFLAG:ARG:입력행동,1901, 1999)
+	BTL_KOJO_RESULTS:0 = 
+;만능
+ELSEIF RANGE(CFLAG:ARG:입력행동,2001, 2099)
+	;自爆系
+	IF RANGE(CFLAG:ARG:입력행동,2005, 2007)
+	BTL_KOJO_RESULTS:0 = 「他に方法あるんじゃない？」
+	BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　　　「しょーがないからやったげるけど」
+	BTL_KOJO_RESULTS:2 = 「「負けたらオシオキね！%LOCALS%！」」
+	ELSE
+	BTL_KOJO_RESULTS:0 = 「ふせぐなんてできないよ！」
+	BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　　　「びょうどーなんだよ！」
+	BTL_KOJO_RESULTS:2 = 「「%LOCALS%！」」
+	ENDIF
+;魔法少女系
+ELSEIF RANGE(CFLAG:ARG:입력행동,2989, 2999)
+	BTL_KOJO_RESULTS:0 = 
+;-------------------------------------------------
+;その他
+;-------------------------------------------------
+ELSE
+	IF RAND:4 == 0
+		BTL_KOJO_RESULTS:0 = 「「ガツンと行くよ！」」
+	ELSEIF RAND:3 == 0
+		BTL_KOJO_RESULTS:0 = 「わるいコだからオシオキね！」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　　「はんせーするまでオシオキね！」
+	ELSEIF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 「イタズラじゃないんだから！」
+		BTL_KOJO_RESULTS:1 = 　　　　　　　　　　　「オシオキなんだから！」
+	ELSE
+		BTL_KOJO_RESULTS:0 = 「「イケっ！【%LOCALS%】！」」
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;真・その他
+;-------------------------------------------------
+IF BTL_KOJO_RESULTS:0 == ""
+	;必ず何か喋る
+	BTL_KOJO_RESULTS:0 = 
+ENDIF
+
+;SIF !(BTL_KOJO_RESULTS:0 == "")
+;	CALL MESSAGE_B2(CALLNAME:ARG,1, BTL_KOJO_RESULTS:0, BTL_KOJO_RESULTS:1, BTL_KOJO_RESULTS:2, BTL_KOJO_RESULTS:3, BTL_KOJO_RESULTS:4)

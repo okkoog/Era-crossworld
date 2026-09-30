@@ -1,0 +1,250 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;	
+;	Test Module		:MAGATSUHI_SKILL_SYSTEM.ERB
+;	Facility		:マガツヒスキル関連の処理群
+;
+;	Licence			:ライセンスフリー。
+;
+;	Edit	Date			Author					Reason
+;	001		2024/05/13		P(bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;===============================================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name							Explanation
+;
+;	・ INCREASE_MAGATSUHI_GAGE_FRIEND		マガツヒゲージの増加処理
+;===============================================================================
+;===============================================================================
+;マガツヒゲージの増加処理
+;===============================================================================
+@INCREASE_MAGATSUHI_GAGE_FRIEND, L_AMOUNT
+#DIM DYNAMIC L_AMOUNT
+SIF IS_USEABLE_MAGATSUHI_SKILL() == 0
+	RETURN 0
+MAGATSUHI_GAGE_FRIEND = LIMIT(MAGATSUHI_GAGE_FRIEND + L_AMOUNT, 0, LIMIT_MAGATSUHI_GAGE)
+
+;===============================================================================
+;メイン行動のACTENDタイミングでのゲージ追加
+;ゲージは10000で一本なので100が1.00%となる
+;===============================================================================
+@CHARGE_MAGATSUHI_GAGE_AT_MAIN_ACTEND, L_ACTOR, L_SKILL
+#DIM DYNAMIC L_ACTOR
+#DIM DYNAMIC L_SKILL
+SIF IS_USEABLE_MAGATSUHI_SKILL() == 0
+	RETURN 0
+;マガツヒスキルの使用にはよっては増加しない
+SIF L_SKILL == [[스킬:마가츠히스킬]]
+	RETURN 0
+IF IS_FRIEND(MASTER, L_ACTOR)
+	;攻撃のヒットは無条件で0.5%
+	IF GET_CREC_ACT_SUM(L_ACTOR, "적", "HIT")
+		CALL INCREASE_MAGATSUHI_GAGE_FRIEND, 50
+		SIF IS_EQUIPED_KAMUI_BY_PARTY("一気呵成・弱点") && GET_CREC_ACT_SUM(L_ACTOR, "적", "WEAK")
+			CALL INCREASE_MAGATSUHI_GAGE_FRIEND, 50
+		SIF IS_EQUIPED_KAMUI_BY_PARTY("一気呵成・致命") && GET_CREC_ACT_SUM(L_ACTOR, "적", "CRIT")
+			CALL INCREASE_MAGATSUHI_GAGE_FRIEND, 50
+	ENDIF
+ELSE
+	;攻撃の被弾は無条件で0.5%
+	IF GET_CREC_ACT_SUM(L_ACTOR, "적", "HIT/無効/吸収/反射")
+		CALL INCREASE_MAGATSUHI_GAGE_FRIEND, 100
+		SIF IS_EQUIPED_KAMUI_BY_PARTY("反攻準備・無効") && GET_CREC_ACT_SUM(L_ACTOR, "적", "무효")
+			CALL INCREASE_MAGATSUHI_GAGE_FRIEND, 100
+		SIF IS_EQUIPED_KAMUI_BY_PARTY("反攻準備・吸収") && GET_CREC_ACT_SUM(L_ACTOR, "적", "흡수")
+			CALL INCREASE_MAGATSUHI_GAGE_FRIEND, 100
+		SIF IS_EQUIPED_KAMUI_BY_PARTY("反攻準備・反射") && GET_CREC_ACT_SUM(L_ACTOR, "적", "반사")
+			CALL INCREASE_MAGATSUHI_GAGE_FRIEND, 50
+	ELSE
+		SIF IS_EQUIPED_KAMUI_BY_PARTY("反攻準備・回避") && GET_CREC_ACT_SUM(L_ACTOR, "적", "WEAK")
+			CALL INCREASE_MAGATSUHI_GAGE_FRIEND, 100
+	ENDIF
+ENDIF
+
+;===============================================================================
+;マガツヒスキルの入力・実行処理
+;===============================================================================
+@INPUT_COM_MAGATSUHI_SKILL, L_ACTOR
+#DIM DYNAMIC LCOUNT, 3
+#DIM DYNAMIC L_ACTOR
+#DIMS DYNAMIC L_USE_SKILL
+#DIMS DYNAMIC L_SKILL_LIST, 10
+#DIM DYNAMIC L_USEABLE_SKILL, 10
+#DIM DYNAMIC L_START_LINE
+
+;-------------------------------------------------------------------------------
+;使用可能スキルのリスト作成
+;-------------------------------------------------------------------------------
+VARS TEMP_RESULTS
+FOR LCOUNT, 1, MAGASTUHI_SKILLNUM
+	TRYCCALLFORM SKILL_NAME_MAGATSUHI_{LCOUNT}
+		TEMP_RESULTS '= RESULTS
+		RESULT = 0
+		TRYCCALLFORM SKILL_COND_MAGATSUHI_%TEMP_RESULTS%, L_ACTOR
+			SIF RESULT
+				L_SKILL_LIST:FINDELEMENT(L_SKILL_LIST, "", 1, , 1) '= TEMP_RESULTS
+		CATCH
+		ENDCATCH
+	CATCH
+	ENDCATCH
+NEXT
+
+FOR LCOUNT, 1, EX_MAGASTUHI_SKILLNUM
+	TRYCCALLFORM SKILL_NAME_MAGATSUHI_EX_{LCOUNT}
+		TEMP_RESULTS '= RESULTS
+		RESULT = 0
+		TRYCCALLFORM SKILL_COND_MAGATSUHI_%TEMP_RESULTS%, L_ACTOR
+			SIF RESULT
+				L_SKILL_LIST:FINDELEMENT(L_SKILL_LIST, "", 1, , 1) '= TEMP_RESULTS
+		CATCH
+		ENDCATCH
+	CATCH
+	ENDCATCH
+NEXT
+
+L_START_LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - L_START_LINE
+
+
+;-------------------------------------------------------------------------------
+;上部画面表示
+;-------------------------------------------------------------------------------
+;画面表示
+CALL SHOW_NOW_FORMATION_E,0,2, -1
+DRAWLINE
+CALL SHOW_NOW_FORMATION_P,0,2, 7, "戦闘中_メイン"
+
+VARI TEMP_LINE = LINECOUNT
+VARS SHOW_LINE
+VARS TEMP_TEXT
+VARS L_SKILLNAME
+VARI CNT_PRINTNUM = 0
+FOR LCOUNT, 1, VARSIZE("L_SKILL_LIST")
+	L_SKILLNAME '= L_SKILL_LIST:LCOUNT
+	SIF L_SKILLNAME == ""
+		BREAK
+	TEMP_TEXT = [{LCOUNT, 2}] %L_SKILLNAME, SKILLNAMELENS:OPT_SHOW_SKILLLENS, LEFT%　　
+	
+	;使用条件の確認
+	RESULT = 0
+	TRYCCALLFORM SKILL_ACTIONABLE_BATTLE_MAGATSUHI_%L_SKILLNAME%, L_ACTOR
+	CATCH
+		RESULT = 0
+	ENDCATCH
+	IF RESULT
+		L_USEABLE_SKILL:LCOUNT = 1
+		RESULTS = 
+		;ツールチップの取得
+		CHARA_SETED_MAGATSUHI_SKILL:L_ACTOR:0 '= L_SKILLNAME
+		CALL GET_SKILL_EXPLAIN_TOOLTIP, [[스킬:마가츠히스킬]], L_ACTOR
+		CHARA_SETED_MAGATSUHI_SKILL:L_ACTOR:0 '=  ""
+	ELSE
+		TEMP_TEXT '= SET_COLOR_TAG(TEMP_TEXT, "gray")
+	ENDIF
+	TEMP_TEXT '= SET_BUTTON_TAG(TEMP_TEXT, TOSTR(LCOUNT), RESULTS)
+	SHOW_LINE += TEMP_TEXT
+	HTML_PRINT SHOW_LINE
+	VARSET SHOW_LINE
+NEXT
+WHILE LINECOUNT < TEMP_LINE + 8
+	PRINTL 
+WEND
+PRINTL [0] ＣＡＮＣＥＬ
+VARI INPUT_LINE = LINECOUNT
+WHILE 1
+	INPUT
+	CLEARLINE LINECOUNT - INPUT_LINE
+	IF RESULT == 0
+		RETURN 0
+	ELSE
+		IF INRANGE(RESULT, 0, VARSIZE("L_USEABLE_SKILL") - 1) && L_USEABLE_SKILL:RESULT > 0
+			L_USE_SKILL '= L_SKILL_LIST:RESULT
+			BREAK
+		ENDIF
+	ENDIF
+WEND
+
+;-------------------------------------------------------------------------------
+;ターゲット決定
+;-------------------------------------------------------------------------------
+DRAWLINE
+CHARA_SETED_MAGATSUHI_SKILL:L_ACTOR:0 '= L_USE_SKILL
+CALL SKILL_EXPLAIN_PERFORMANCE, [[스킬:마가츠히스킬]], L_ACTOR
+CALL GET_SKILL_PROP, "SKILL_EXPLAIN", [[스킬:마가츠히스킬]], L_ACTOR
+
+CALL SELECT_SKILL_TARGET, [[스킬:마가츠히스킬]], L_ACTOR
+CHARA_SETED_MAGATSUHI_SKILL:L_ACTOR:0 '=  ""
+SIF RESULT == -1
+	GOTO START
+VARI L_TARGET = RESULT
+
+;-------------------------------------------------------------------------------
+;決定
+;-------------------------------------------------------------------------------
+;攻撃スキルの場合、情報を持ち越す必要があるのでキャラに持たせる
+CHARA_SETED_MAGATSUHI_SKILL:L_ACTOR:0 '= L_USE_SKILL
+RESULT = 0
+TRYCCALLFORM SKILL_QUICK_ACTION_MAGATSUHI_%L_USE_SKILL%
+CATCH
+	RESULT = 0
+ENDCATCH
+;即使用可能スキル = サポート系のスキル
+IF RESULT
+	VARI STOCK_ACT = CFLAG:L_ACTOR:입력행동
+	VARI STOCK_ターゲット = CFLAG:L_ACTOR:타겟
+	CFLAG:L_ACTOR:입력행동 = [[스킬:마가츠히스킬]]
+	CFLAG:L_ACTOR:타겟 = L_TARGET
+	FLAG:행동순1 = L_ACTOR
+	;アクションの実行
+	CALL GET_SKILL_PROP, "SKILL_NAME", CFLAG:(FLAG:행동순1):입력행동, FLAG:행동순1
+	CALL PRINT_ACT_MESSAGE, FLAG:행동순1, CFLAG:(FLAG:행동순1):입력행동
+	CALL BATTLE_ACTSTART, L_ACTOR
+	CALL BATTLE_SKILLEND, L_ACTOR
+	CALL BATTLE_ACTEND, L_ACTOR
+	FLAG:행동순1 = -1
+	CHARA_SETED_MAGATSUHI_SKILL:L_ACTOR:0 '= ""
+	CFLAG:L_ACTOR:입력행동 = STOCK_ACT
+	CFLAG:L_ACTOR:타겟 = STOCK_ターゲット
+ELSE
+	CFLAG:L_ACTOR:입력행동 = [[스킬:마가츠히스킬]]
+	CFLAG:L_ACTOR:타겟 = L_TARGET
+	CFLAG:L_ACTOR:방어플래그 = 0
+ENDIF
+
+;-------------------------------------------------------------------------------
+;マガツヒスキルがセットされていた場合、剥がす
+;-------------------------------------------------------------------------------
+FOR LCOUNT, 1, 7
+	SIF POS(LCOUNT) < 0
+		CONTINUE
+	SIF POS(LCOUNT) == L_ACTOR
+		CONTINUE
+	SIF CFLAG:L_ACTOR:입력행동 != [[스킬:마가츠히스킬]]
+		CONTINUE
+	CALL COMMAND_REPEAT, POS(LCOUNT)
+	CHARA_SETED_MAGATSUHI_SKILL:POS(LCOUNT):0 '= ""
+NEXT
+RETURN 1
+
+;-------------------------------------------------------------------------------
+;グループ指定マガツヒスキルが使えるかどうかの確認
+;戦闘に参加できるキャラ(スタメンあるいは控えに指定したNOがそろっているかどうかを見る)
+;-------------------------------------------------------------------------------
+@FIND_MAGATSUHI_GROUP_MEMBER, L_NO:0 = -1, L_NO:1 = -1, L_NO:2 = -1, L_NO:3 = -1, L_NO:4 = -1, L_NO:5 = -1
+#FUNCTION
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO, 6
+#DIM DYNAMIC IS_EXIST, 6
+FOR L_CHARA, 0, CHARANUM
+	SIF !IS_JOINABLE_BATTLE(L_CHARA)
+		CONTINUE
+	SIF !MATCH(L_NO, NO:L_CHARA)
+		CONTINUE
+	SIF !ACTIONABLE_CHARA_F(L_CHARA)
+		CONTINUE
+	IS_EXIST:FINDELEMENT(L_NO, NO:L_CHARA) = 1
+NEXT
+;全員がそろってなくても許容される場合も考えてマッチ数も返しておく
+RESULT_F = VARSIZE("IS_EXIST") - MATCH(IS_EXIST, 0)
+RETURNF MATCH(L_NO, -1) == MATCH(IS_EXIST, 0)

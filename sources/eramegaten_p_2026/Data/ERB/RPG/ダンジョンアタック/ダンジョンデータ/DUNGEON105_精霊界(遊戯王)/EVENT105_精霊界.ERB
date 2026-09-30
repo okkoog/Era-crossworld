@@ -1,0 +1,1285 @@
+﻿;=======================================================================
+;精霊界
+;	Modification Data:
+;	ライセンスフリー
+;	Edit	Date			Author					Reason
+;	001		2025/09/18		epizo					作成開始
+;	002		2026/05/23		epizo					閃刀姫レイが中層でも出現する不具合の対応に浅層でしか出現しないように階層指定追加
+;=======================================================================
+;=======================================================================
+;[5]調べる　実行時のイベント
+;=======================================================================
+@EVENT_CHECK_DUNGEON_105
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 10
+;==========
+;出口の処理
+;==========
+	CASE 8
+		CALL DUNGEON_EXIT
+		RETURN 1
+;==========
+;扉の処理
+;==========
+	CASE 2
+		CALL DUNGEON_DOOR
+		RETURN 1
+;========
+;宝の処理
+;========
+	CASE 3
+		CALL TREASURE_105
+		RETURN RESULT
+;=======
+;階段
+;=======
+	CASE 6
+	CALL UPSTAIRS_105
+	RETURN RESULT
+
+	CASE 7
+	CALL DOWNSTAIRS_105
+	RETURN RESULT
+;========
+;이벤트
+;========
+	CASE 4
+		SELECTCASE FLAG:현M
+			;精霊界イベント
+			CASE 0
+				;入口デスガイド
+				IF FLAG:현X == 9 && FLAG:현Y == 7
+					CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "손님, 무슨 볼일이신가요 데스?/질문이 있으신가요?"
+					$GUIDE_LOOP
+					CALL INPUT_SELECT_M,"[0]안내받는다/[1]정령……？/[2]업무 연락//[3]대화를 마친다"
+					IF RESULT == 0
+						$GUIDE1_LOOP
+						CALL INPUT_SELECT_M,"[0]동쪽에 대해/[1]북쪽에 대해/[2]서쪽에 대해/[3]저기 있는 계단//[4]대화를 마친다"
+						IF RESULT == 0
+							CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "동쪽으로 나아가면 충혹마의 숲이에요 데스! 충혹마라는 귀여운 미끼로 먹이를 유인해 덮치는 정령들의 거처랍니다 데스!/어째서인지 들어가는 정령들이 끊이질 않네요 데스~."
+							GOTO GUIDE1_LOOP
+						ELSEIF RESULT == 1
+							CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "북쪽으로 나아가면 백은의 미궁성이에요 데스! 악마 공주님이 사는 커다란 성이랍니다 데스!/공주님이 만든 온갖 함정들이 깔려 있어요./함정 대책은 챙겨가시는 게 좋을 거예요 데스?"
+							GOTO GUIDE1_LOOP
+						ELSEIF RESULT == 2
+							CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "서쪽으로 나아가면 마법족의 마을이에요 데스! 다양한 마법사들이 만든 마을이랍니다 데스!/드디어 완성되어서인지 마을은 축제 분위기예요 데스~./습격당하지 않도록 조심해 주세요 데스?"
+							GOTO GUIDE1_LOOP
+						ELSEIF RESULT == 3
+							CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "저기 계단을 내려가면 언더그라운드예요 데스!/딱히 아무것도 없는 곳이지만 정령들에겐 끌리는 무언가가 있는지/다양한 정령들이 체류하고 있어요 데스요~!/여기에만 있는 정령도 있다던가……"
+							GOTO GUIDE1_LOOP
+						ELSEIF RESULT == 4
+							CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "바쁘신 모양이군요 데스. 그럼 정령계를 마음껏 즐겨주세요 데스~."
+							ダンジョンフラグ:(FLAG:현던전):10 = 1
+						ENDIF
+					ELSEIF  RESULT == 1
+						CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "통상의 정령과는 다른 분류예요 데스. 저희는 카드의 정령이랍니다 데스~."
+						CALL MESSAGE_WINDOW_D, "", "＞카드?"
+						CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "이른바 트레이딩 카드 게임./이런 카드에 깃든 정령이랍니다 데스./카드에서 태어난 건지, 카드가 저희를 모티브로 한 건지는 모르겠지만요."
+						CALL MESSAGE_WINDOW_D, "", "＞『마계발 현세행 데스가이드』라는 명칭과 여러 정보가 적힌 카드를 보여주었다./눈앞의 여자의 그림이 그려져 있다."
+						CALL MESSAGE_WINDOW_D, "", "＞묘한 이야기지만, 기존의 정령과 다르다는 것만은 확실한 듯하다."
+						GOTO GUIDE_LOOP
+					ELSEIF RESULT == 2
+						CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "업무 연락~ 업무 연락~./정령계는 현재 안정되지 않았습니다. 난장판이에요 데스!"
+						CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "그 때문에 다른 지역에 들어가면 일시적으로 그 외의 장소는 봉쇄하도록 하겠습니다 데스!/죄송해요 데스."
+						CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "봉쇄에는 여러 정령분들의 협력을 받고 있습니다 데스!/이상! 잘 부탁드립니다 데스!"
+						GOTO GUIDE_LOOP
+					ELSE
+						CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "바쁘신 모양이군요 데스. 그럼 정령계를 마음껏 즐겨주세요 데스~."
+						ダンジョンフラグ:(FLAG:현던전):10 = 1
+					ENDIF
+				;蟲惑魔の森近くのモブ３人衆
+				ELSEIF FLAG:현X == 12 && FLAG:현Y == 7
+					CALL MESSAGE_WINDOW_D_ICON, , "낙오 기사", , "낙오 기사", "오? 당신, 충혹마의 숲에 들어가는 건가?/그렇다면 조언 하나 하지. 숲에 들어갈 거라면 불꽃이나 바람을 일으킬 수단을 챙겨두는 게 좋아./충혹마는 화염이나 질풍에 약하니까 말이야."
+				;蟲惑魔の森近くのモブ３人衆
+				ELSEIF FLAG:현X == 13 && FLAG:현Y == 7
+					CALL MESSAGE_WINDOW_D_ICON, , "고블린", , "고블린", "숲에는 귀여운 여자아이의 모습으로 먹이를 꾀어내는 충혹마들이 득실거려./물론 방심하면 덮쳐지지. 하지만 그만큼 온갖 물건들이 떨어져 있다는 모양이야."
+				;蟲惑魔の森近くのモブ３人衆
+				ELSEIF FLAG:현X == 14 && FLAG:현Y == 7
+					CALL MESSAGE_WINDOW_D_ICON, , "아저씨", , "아저씨", "오늘은 마그네타이트를 잔뜩 벌어왔지./어떤 짓을 당할지 기대되는걸……/무슨 소리냐고? 충혹마 녀석들은 마그네타이트를 빨아먹으려고 덮쳐온다고, 성적으로 말이지!"
+					CALL MESSAGE_WINDOW_D_ICON, , "아저씨", , "아저씨", "물론 위험하지. 너무 빨리면 목숨이 위험해./하지만 그럼에도 야한 기분에는 비할 바가 아니란 말이지……!"
+				;魔法族の里前のナイトエンドソーサラー
+				ELSEIF FLAG:현X == 2 && FLAG:현Y == 7
+					CALL MESSAGE_WINDOW_D_ICON, , "ナイトエンド", , "나이트엔드 소서러", "어라? 이 앞쪽으로 가시나요?/이 너머는 마법족의 마을이에요."
+					CALL MESSAGE_WINDOW_D_ICON, , "ナイトエンド", , "나이트엔드 소서러", "저는 마법이 난무해서 위험하길래 피난 나온 참이랍니다./마을이 완성돼서 다들 들떠있으니 조심하시는 게 좋을 거예요."
+				ELSEIF FLAG:현X == 9 && FLAG:현Y == 2
+					CALL MESSAGE_WINDOW_D, "간판", "이곳은 백은의 미궁성//지금 함정 대증량 중!/방문자 환영"
+				ENDIF
+			;蟲惑魔の森浅層イベント
+			CASE 1
+				IF FLAG:현X == 3 && FLAG:현Y == 14
+					CALL MESSAGE_WINDOW_D, "", "＞덩굴에 전신이 구속된 소녀가 있다……"
+					CALL MESSAGE_WINDOW_D_ICON, , "うらら", , "소녀", @"응…읏! 아아앗%ハート()% 앗…%ハート()% 시러, 시러어…읏 이제 싫어……읏!!!/%ハート()% 싫어어어앗%ハート()%%ハート()% 가, 가앗%ハート()% 가버려, 어어엇%ハート()% 시러엇 가…앗%ハート(2)%"
+					CALL MESSAGE_WINDOW_D, "", "＞덩굴에 농락당하며 마그네타이트를 흡수당하고 있는 듯하다."
+					CALL MESSAGE_WINDOW_D_ICON, , "カズーラ", , "충혹마", "좋아~ 좀 더, 좀~ 더 기분 좋아져 버리자~"
+					CALL MESSAGE_WINDOW_D, "", "＞소녀를 몰아붙이는 충혹마의 목소리를 뒤로하고 앞으로 나아가기로 했다."
+				ELSEIF FLAG:현X == 5 && FLAG:현Y == 7
+					CALL MESSAGE_WINDOW_D, "", "＞거미줄로 전신이 구속된 낙오 기사가 있다……"
+					CALL MESSAGE_WINDOW_D_ICON, , "騎士くずれ_犯され", , "낙오 기사", @"응호오오오옷!%ハート()%, 어, 어흑, 가버렷"
+					CALL MESSAGE_WINDOW_D, "", "＞미끼 소녀에게 범해지며 마그네타이트를 흡수당하고 있는 듯하다. 꼴불견이다."
+					CALL MESSAGE_WINDOW_D_ICON, , "アトラ", , "충혹마", @"허~접%ハート()% 허~접%ハート()% 더 뿜어버려%ハート()% 텅텅 비어버리자~"
+					CALL MESSAGE_WINDOW_D, "", "＞낙오 기사를 몰아붙이는 충혹마의 목소리를 뒤로하고 발걸음을 재촉하기로 했다."
+				ELSEIF FLAG:현X == 3 && FLAG:현Y == 1
+					CALL MESSAGE_WINDOW_D, "", "＞미끼 소녀에게서 뻗어 나온 머리카락에 전신이 구속된 소녀가 있다……"
+					CALL MESSAGE_WINDOW_D_ICON, , "うさぎ", , "소녀", @"응아아…%ハート()% 아아, 응, 하아아…앗%ハート()% 시, 응응, 녹아버려어…%ハート()% 아앙, 이거, 으윽%ハート()%%ハート()%"
+					CALL MESSAGE_WINDOW_D, "", "＞미끼 소녀에게 범해지며 마그네타이트를 흡수당하고 있는 듯하다."
+					CALL MESSAGE_WINDOW_D_ICON, , "リセ", , "충혹마", @"아핫%ハート()% 그렇게 파르르 떨다니 귀여워~%ハート()%/이렇게 젖어버리다니 부끄럽지도 않아?/후후, 더 보여줘, 나한테만%ハート()% 얍, 얍%ハート()%"
+					CALL MESSAGE_WINDOW_D, "", "＞소녀를 몰아붙이는 충혹마의 목소리를 뒤로하고 앞으로 나아가기로 했다."
+				ENDIF
+			;蟲惑魔の森中層イベント
+			CASE 2
+				IF FLAG:현X == 5 && FLAG:현Y == 16
+					CALL MESSAGE_WINDOW_D, "", "＞거미줄로 전신이 구속된 소녀가 있다……"
+					CALL MESSAGE_WINDOW_D_ICON, , "しぐれ", , "소녀", @"시, 싫어, 안 돼!%ハート()% 으응! 멈춰어!%ハート()% /아, 싫어, 안 되는데에!%ハート()% 으응! 가, 가버려엇%ハート()%%ハート()%"
+					CALL MESSAGE_WINDOW_D, "", "＞미끼 소녀에게 범해지며 마그네타이트를 흡수당하고 있는 듯하다."
+					CALL MESSAGE_WINDOW_D_ICON, , "シトリス", , "충혹마", @"와아~%ハート()% 그렇게 벌벌 떨다니 귀여워~%ハート()% /부끄러워? 그래도 안 멈추지? 후훗, 더 괴롭혀버릴까나%ハート()%"
+					CALL MESSAGE_WINDOW_D, "", "＞소녀를 몰아붙이는 충혹마의 목소리를 뒤로하고 앞으로 나아가기로 했다."
+				ELSEIF FLAG:현X == 12 && FLAG:현Y == 14
+					CALL MESSAGE_WINDOW_D, "", "＞덩굴에 전신이 구속된 고블린이 있다……"
+					CALL MESSAGE_WINDOW_D_ICON, , "ゴブリン_犯され", , "고블린", "응그…읏! 어흑……!?/츄르릅 츕 콜록……!"
+					CALL MESSAGE_WINDOW_D, "", "＞덩굴이 입안으로 쑤셔박혀 마그네타이트를 흡수당하고 있는 듯하다. 꼴불견이다."
+					CALL MESSAGE_WINDOW_D_ICON, , "プティカ", , "충혹마", @"우와~%ハート()% 아저씨 약해빠졌어~%ハート()% 이런 꼴 당해서 안 부끄러워~?%ハート()%"
+					CALL MESSAGE_WINDOW_D, "", "＞고블린을 몰아붙이는 충혹마의 목소리를 뒤로하고 발걸음을 재촉하기로 했다."
+				ELSEIF FLAG:현X == 18 && FLAG:현Y == 16
+					CALL MESSAGE_WINDOW_D, "", "＞점액으로 전신이 구속된 소녀가 있다……"
+					CALL MESSAGE_WINDOW_D_ICON, , "みずき", , "소녀", @"시, 싫어, 안 돼!%ハート()% 으응! 멈춰어!%ハート()% /아, 싫어, 안 되는데에!%ハート()% 으응! 가, 가버려엇%ハート()%%ハート()%"
+					CALL MESSAGE_WINDOW_D, "", "＞미끼 소녀에게 범해지며 마그네타이트를 흡수당하고 있는 듯하다."
+					CALL MESSAGE_WINDOW_D_ICON, , "セラ", , "충혹마", @"후후%ハート()% 여기가 좋아? 아니면 이쪽이 더 나을까나~?/자, 골라보렴%ハート()% 둘 다 기분 좋지?/에헤헤, 그럼 둘 다 가버려~%ハート()% 가버려, 가버려%ハート()%"
+					CALL MESSAGE_WINDOW_D, "", "＞소녀를 몰아붙이는 충혹마의 목소리를 뒤로하고 앞으로 나아가기로 했다."
+				ENDIF
+			;蟲惑魔の森深層イベント
+			CASE 3
+				IF FLAG:현X == 4 && FLAG:현Y == 16
+					CALL MESSAGE_WINDOW_D, "", "＞거대한 잎사귀 사이에 끼여 구속된 소녀가 있다……"
+					CALL MESSAGE_WINDOW_D_ICON, , "わらし", , "소녀", @"오옷%ハート()% 아, 안 멈춰%ハート()% 아%ハート()% 가, 가버리니까 멈춰,%ハート()%%ハート()% 아앗%ハート()% 오옷%ハート()% 아, 으응%ハート()% 으응"
+					CALL MESSAGE_WINDOW_D, "", "＞미약일까? 점액을 뒤집어쓰고 미끼 소녀에게 농락당하며 마그네타이트를 흡수당하고 있는 듯하다."
+					CALL MESSAGE_WINDOW_D_ICON, , "ティオ", , "충혹마", @"쪽%ハート()% 츄릅 츕%ハート()%, 쪽~/응핫%ハート()% 기분 좋지? 더 주렴."
+					CALL MESSAGE_WINDOW_D, "", "＞소녀를 몰아붙이는 충혹마의 목소리를 뒤로하고 앞으로 나아가기로 했다."
+				ELSEIF FLAG:현X == 3 && FLAG:현Y == 9
+					CALL MESSAGE_WINDOW_D, "", "＞거대한 벌레의 턱에 구속된 남자가 있다……"
+					CALL MESSAGE_WINDOW_D_ICON, , "おっさん_犯され", , "아저씨", @"어, 어흣, 더, 더는 안 나와, 살려, 응호오오오옥%ハート()%"
+					CALL MESSAGE_WINDOW_D, "", "＞미끼 소녀에게 범해지며 마그네타이트를 흡수당하고 있는 듯하다. 꼴불견이다."
+					CALL MESSAGE_WINDOW_D_ICON, , "トリオン", , "충혹마", @"기분 좋아? 그럼 더 내보내 버리자, 얍%ハート()% 얍%ハート()%"
+					CALL MESSAGE_WINDOW_D, "", "＞남자를 몰아붙이는 충혹마의 목소리를 뒤로하고 발걸음을 재촉하기로 했다."
+				ELSEIF FLAG:현X == 1 && FLAG:현Y == 2
+					CALL MESSAGE_WINDOW_D, "", "＞거미줄로 전신이 구속된 소녀가 있다……"
+					CALL MESSAGE_WINDOW_D_ICON, , "さくら", , "소녀", @"시, 싫어, 안 돼!%ハート()% 으응! 멈춰어!%ハート()%/아, 싫어, 안 되는데에!%ハート()% 으응! 가, 가버려엇%ハート()%%ハート()%"
+					CALL MESSAGE_WINDOW_D, "", "＞미끼 소녀에게 범해지며 마그네타이트를 흡수당하고 있는 듯하다."
+					CALL MESSAGE_WINDOW_D_ICON, , "アティプス", , "충혹마", @"후후%ハート()% 여기? 아니면 이쪽? 자…… 가버려……"
+					CALL MESSAGE_WINDOW_D, "", "＞소녀를 몰아붙이는 충혹마의 목소리를 뒤로하고 앞으로 나아가기로 했다."
+				ENDIF
+			;魔法族の里　浅層　회화
+			CASE 4
+				IF FLAG:현X == 7 && FLAG:현Y == 18
+					CALL MESSAGE_WINDOW_D_ICON, , "홀리 엘프", , "홀리 엘프", "다들 마을이 생겨서 무척 즐거워 보여요……/다만 장소를 가리지 않고 마법을 난사하는 건 좀 그렇다고 생각해요……"
+				ELSEIF FLAG:현X == 3 && FLAG:현Y == 18
+					CALL MESSAGE_WINDOW_D_ICON, , "フロッグ", , "마제스펙터 프로그", "다들 너무 기운이 넘쳐어. 당분간 밖에는 못 나가려나아."
+				ELSEIF FLAG:현X == 6 && FLAG:현Y == 6
+					CALL MESSAGE_WINDOW_D_ICON, , "カグヤ", , "페어리테일-카구야", "어머, 관광인가요?/들떠있는 아이들을 얌전하게 만들고 싶다면 전기(전투기술)를 이용한 공격이 최고예요./마법사들은 그런 공격에 약하거든요."
+				ELSEIF FLAG:현X == 11 && FLAG:현Y == 6
+					CALL MESSAGE_WINDOW_D_ICON, , "天魔の", , "바르모니카 셀레트리체", "히에에…… 무서워어……/앗, 저기 계신 분, 여긴 지금 위험해요……!/나아가실 거라면 조심하세요……"
+				ENDIF
+			;魔法族の里　中層　회화
+			CASE 5
+				IF FLAG:현X == 3 && FLAG:현Y == 12
+					CALL MESSAGE_WINDOW_D_ICON, , "シンデレラ", , "페어리테일-신데렐라", "인간분인가요? 드물어라./정령계를 즐겨주세요!"
+				ELSEIF FLAG:현X == 1 && FLAG:현Y == 5
+					CALL MESSAGE_WINDOW_D, "", "＞콧노래를 부르며 요리를 하고 있는 정령이 있다……"
+					CALL MESSAGE_WINDOW_D_ICON, , "シラユキ", , "페어리테일-백설", "~~~~./빙글빙글~."
+					CALL MESSAGE_WINDOW_D, "", "＞바빠 보인다. 말을 걸지 않고 자리를 뜨기로 했다……"
+				ELSEIF FLAG:현X == 1 && FLAG:현Y == 1
+					CALL MESSAGE_WINDOW_D, "", "＞무언가 의식을 치르려는 듯한 정령이 있다……"
+					CALL MESSAGE_WINDOW_D_ICON, , "水遣い", , "성전의 수견사", "이건 이쪽에, 이건 저쪽에……/남은 건 준비를 갖춰서 용사님을……"
+					CALL MESSAGE_WINDOW_D, "", "＞바빠 보인다. 말을 걸지 않고 자리를 뜨기로 했다……"
+				ELSEIF FLAG:현X == 7 && FLAG:현Y == 3
+					CALL MESSAGE_WINDOW_D, "", "＞춤추고 있는 정령들이 있다……"
+					CALL MESSAGE_WINDOW_D_ICON, , "幻想の見習い", , "환상의 견습 마도사", "예~이! 다들 신나게 달리고 있어~!?/점점 더 가보자구~!"
+					CALL MESSAGE_WINDOW_D, "", "＞갈 길을 서두르기로 했다……"
+				ENDIF
+			;魔法族の里　深層　회화
+			CASE 6
+				IF FLAG:현X == 2 && FLAG:현Y == 16
+					IF !GETBIT(ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 6) 
+						CALL MESSAGE_WINDOW_D_ICON, , "幻惑の見習い", , "환혹의 견습 마술사", "이 앞쪽 광장에서 행사를 열고 있다는 모양이에요./여긴 뒷문이라 열려있지 않지만……/돌아가야만 한다는 건 귀찮은 일이죠."
+					ELSE
+						CALL MESSAGE_WINDOW_D_ICON, , "幻惑の見習い", , "환혹의 견습 마술사", "앗, 문을 여셨군요./이걸로 편하게 광장으로 갈 수 있겠네요."
+					ENDIF
+				ELSEIF FLAG:현X == 8 && FLAG:현Y == 11
+					CALL MESSAGE_WINDOW_D_ICON, , "ラチカ", , "페어리테일-라치카", "여긴 어디야~!?/광장으로 가는 길을 모르겠어~!"
+				ELSEIF FLAG:현X == 12 && FLAG:현Y == 6
+				CALL MESSAGE_WINDOW_D_ICON, , "가가가 시스터", , "가가가 시스터", "블랙 매지션 걸 씨가 광장에서 뭘 한대~./기대된다~."
+				ELSEIF FLAG:현X == 4 && FLAG:현Y == 7
+					CALL MESSAGE_WINDOW_D_ICON, , "궤적의 마술사", , "궤적의 마술사", "광장까지는 이제 얼마 안 남았다구./저기 문을 지나서 조금만 나아가면 도착해."
+				ENDIF
+			;白銀の迷宮城　１階　회화
+			CASE 7
+				IF FLAG:현X == 9 && FLAG:현Y == 18
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리아스]], "CSV" , ,"백은의 성의 집사 아리아스", "공주님께서는 3층에서 기다리고 계십니다./나아가 주십시오."
+				ELSEIF FLAG:현X == 11 && FLAG:현Y == 10
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:트리온의충혹마]], "CSV" , ,"트리온의 충혹마", "놀러 왔는데 여긴 함정이 많네~./문에는 함정이 걸려있는 것 같아./나는 문제없지만 말이야~."
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:트리온의충혹마]], "CSV" , ,"트리온의 충혹마", "무슨 힌트가 있다고 들었어./차이점이 있거나 하려나?"
+				ELSEIF FLAG:현X == 9 && FLAG:현Y == 3
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:윈]], "CSV" , ,"풍령사 윈", "겨우 빠져나왔다아……/계단은 어디 있을까……/당신도 탐험 중? 힘내."
+				ENDIF
+			;白銀の迷宮城　２階　회화
+			CASE 8
+				IF FLAG:현X == 3 && FLAG:현Y == 5
+					CALL MESSAGE_WINDOW_D, "간판", "지름길!/즐거운 코스!/대환영!"
+				ELSEIF FLAG:현X == 11 && FLAG:현Y == 3
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리안느]], "CSV" , ,"백은의 성의 하인 아리안느", "바쁘다 바빠./아, 거기 청소할 거니까 비켜 비켜!"
+				ELSEIF FLAG:현X == 17 && FLAG:현Y == 3
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리안나]], "CSV" , ,"백은의 성의 하인 아리안나", "휴식 중입니다./이 앞쪽으로 나아가시면 좋아요."
+				ENDIF
+			;白銀の迷宮城　３階　회화
+			CASE 9
+				IF FLAG:현X == 5 && FLAG:현Y == 19
+					CALL MESSAGE_WINDOW_D, "간판", "지름길!/재미있다!/멋지다!/최고!/추천!"
+				ELSEIF FLAG:현X == 15 && FLAG:현Y == 6
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:Ｉ：Ｐ마스카레나]], "CSV" , ,"I:P 마스카레나", "재미있는 건 없어 보이네요……/저는 돌아가겠지만, 공주님은 조금 더 앞쪽에 계신 것 같아요."
+				ENDIF
+			;アンダーグラウンド　浅層　회화
+			CASE 10
+		ENDSELECT
+ENDSELECT
+;=======================================================================
+;タイル進入時のイベント
+;=======================================================================
+@EVENT_ENTER_DUNGEON_105,ARG
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 10
+;==========
+;出口の処理
+;==========
+	CASE 8
+		CALL DUNGEON_EXIT
+		RETURN 1
+;========
+;宝の処理
+;========
+	CASE 3
+		CALL TREASURE_105
+		RETURN RESULT
+
+;==========
+;扉の処理
+;==========
+	CASE 2
+		CALL DUNGEON_DOOR,ARG
+		RETURN 1
+;========
+;罠の処理
+;========
+	CASE 5
+		CALL TRAP_105
+		RETURN RESULT
+;=======
+;階段
+;=======
+	CASE 6
+	CALL UPSTAIRS_105
+	RETURN RESULT
+
+	CASE 7
+	CALL DOWNSTAIRS_105
+	RETURN RESULT
+;========
+;이벤트
+;========
+	CASE 4
+		SELECTCASE FLAG:현M
+			CASE 0
+				;デスガイドイベント
+				IF FLAG:현X == 9 && FLAG:현Y == 7
+					IF ダンジョンフラグ:(FLAG:현던전):10 == 0
+						CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "새로운 손님이시군요 데스? 여긴 정령계랍니다 데스~/그렇지만 막 생겨난 참이라 이래저래 불안정하지만요……"
+						CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "다들 제멋대로 만들고 있어서 머지않아 완성될 거라 생각해요 데스./아, 저는 『마계발 현세행 데스가이드』랍니다 데스~. 정령계의 가이드를 맡고 있어요 데스!"
+						CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "업무 연락 데스!/정령계는 현재 안정되지 않았습니다. 난장판이에요 데스!"
+						CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "그 때문에 다른 지역에 들어가면 일시적으로 그 외의 장소는 봉쇄하도록 하겠습니다 데스!/죄송해요 데스."
+						CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "봉쇄에는 여러 정령분들의 협력을 받고 있습니다 데스!/이상! 잘 부탁드립니다 데스!"
+						CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "그럼…… 어떤 용건이신가요 데스?/안내해 드릴게요 데스?"
+						$GUIDE2_LOOP
+						CALL INPUT_SELECT_M,"[0]안내받는다/[1]정령……？/[2]업무 연락//[3]대화를 마친다"
+						IF RESULT == 0
+							$GUIDE3_LOOP
+							CALL INPUT_SELECT_M,"[0]동쪽에 대해/[1]북쪽에 대해/[2]서쪽에 대해/[3]저기 있는 계단//[4]대화를 마친다"
+							IF RESULT == 0
+								CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "동쪽으로 나아가면 충혹마의 숲이에요 데스! 충혹마라는 귀여운 미끼로 먹이를 유인해 덮치는 정령들의 거처랍니다 데스!/어째서인지 들어가는 정령들이 끊이질 않네요 데스~."
+								GOTO GUIDE3_LOOP
+							ELSEIF RESULT == 1
+								CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "북쪽으로 나아가면 백은의 미궁성이에요 데스! 악마 공주님이 사는 커다란 성이랍니다 데스!/공주님이 만든 온갖 함정들이 깔려 있어요./함정 대책은 챙겨가시는 게 좋을 거예요 데스?"
+								GOTO GUIDE3_LOOP
+							ELSEIF RESULT == 2
+								CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "서쪽으로 나아가면 마법족의 마을이에요 데스! 다양한 마법사들이 만든 마을이랍니다 데스!/드디어 완성되어서인지 마을은 축제 분위기예요 데스~./습격당하지 않도록 조심해 주세요 데스?"
+								GOTO GUIDE3_LOOP
+							ELSEIF RESULT == 3
+								CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "저기 계단을 내려가면 언더그라운드예요 데스!/딱히 아무것도 없는 곳이지만 정령들에겐 끌리는 무언가가 있는지/다양한 정령들이 체류하고 있어요 데스요~!/여기에만 있는 정령도 있다던가……"
+								GOTO GUIDE3_LOOP
+							ELSEIF RESULT == 4
+								CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "바쁘신 모양이군요 데스. 그럼 정령계를 마음껏 즐겨주세요 데스~."
+								ダンジョンフラグ:(FLAG:현던전):10 = 1
+							ENDIF
+						ELSEIF  RESULT == 1
+							CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "통상의 정령과는 다른 분류예요 데스. 저희는 카드의 정령이랍니다 데스~."
+							CALL MESSAGE_WINDOW_D, "", "＞카드?"
+							CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "이른바 트레이딩 카드 게임./이런 카드에 깃든 정령이랍니다 데스./카드에서 태어난 건지, 카드가 저희를 모티브로 한 건지는 모르겠지만요."
+							CALL MESSAGE_WINDOW_D, "", "＞『마계발 현세행 데스가이드』라는 명칭과 여러 정보가 적힌 카드를 보여주었다./눈앞의 여자의 그림이 그려져 있다."
+							CALL MESSAGE_WINDOW_D, "", "＞묘한 이야기지만, 기존의 정령과 다르다는 것만은 확실한 듯하다."
+							GOTO GUIDE2_LOOP
+						ELSEIF RESULT == 2
+							CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "업무 연락~ 업무 연락~./정령계는 현재 안정되지 않았습니다. 난장판이에요 데스!"
+							CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "그 때문에 다른 지역에 들어가면 일시적으로 그 외의 장소는 봉쇄하도록 하겠습니다 데스!/죄송해요 데스."
+							CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "봉쇄에는 여러 정령분들의 협력을 받고 있습니다 데스!/이상! 잘 부탁드립니다 데스!"
+							GOTO GUIDE2_LOOP
+						ELSE
+							CALL MESSAGE_WINDOW_D_ICON, , "デスガイド", , "마계발 현세행 데스가이드", "바쁘신 모양이군요 데스. 그럼 정령계를 마음껏 즐겨주세요 데스~."
+							ダンジョンフラグ:(FLAG:현던전):10 = 1
+						ENDIF
+					ENDIF
+				ENDIF
+			CASE 7
+				IF FLAG:현X == 9 && FLAG:현Y == 18
+					IF ダンジョンフラグ:(FLAG:현던전):4 == 0
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리아스]], "CSV" , ,"백은의 성의 집사 아리아스", "잘 오셨습니다, 손님./저는 이 성의 집사 아리아스라고 합니다."
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리아스]], "CSV" , ,"백은의 성의 집사 아리아스", "공주님께서는 3층에서 기다리고 계시니, 부디 들러주시길 바랍니다."
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리아스]], "CSV" , ,"백은의 성의 집사 아리아스", "그럼, 이 성을 즐겨주시길 바랍니다."
+						ダンジョンフラグ:(FLAG:현던전):4 = 1
+					ENDIF
+				ENDIF
+			CASE 10
+				IF FLAG:현X == 10 && FLAG:현Y == 11
+					;ボス誰か倒す前
+					IF ダンジョンフラグ:(FLAG:현던전):20 == 0
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:화이트래빗]], "CSV" , ,"M∀LICE＜P＞White Rabbit", "여기는 지금 확장 공사 중이에요./다음 계층이 완성되는 건 조금 더 나중이겠네요~."
+					;ボス誰か倒したら中層開放する。
+					ELSEIF	ダンジョンフラグ:(FLAG:현던전):20 == 1
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:화이트래빗]], "CSV" , ,"M∀LICE＜P＞White Rabbit", "다음 계층이 완성되었어요./더 깊은 곳은 아직 시간이 걸릴 것 같네요~."
+					;ボス2体目倒したら深層解放する。
+					ELSEIF	ダンジョンフラグ:(FLAG:현던전):20 == 2
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:화이트래빗]], "CSV" , ,"M∀LICE＜P＞White Rabbit", "마지막 계층이 완성되었어요./더 이상은 무리겠네요."
+					ENDIF
+				ENDIF
+		ENDSELECT
+	CASE 9
+		SELECTCASE FLAG:현M
+			;精霊界
+			CASE 0
+				IF FLAG:현X == 15 && FLAG:현Y == 8
+					;魔法族の里か白銀の迷宮城をクリア済みで、初めて蟲惑魔の森に入る場合段階を１上げる
+					IF ダンジョンフラグ:(FLAG:현던전):22 == 0 && (ダンジョンフラグ:(FLAG:현던전):23 == 2 || ダンジョンフラグ:(FLAG:현던전):24 == 2)
+						ダンジョンフラグ:(FLAG:현던전):20 += 1
+						ダンジョンフラグ:(FLAG:현던전):25 = ダンジョンフラグ:(FLAG:현던전):20
+						CALL MESSAGE_WINDOW_D, "", "＞공기 중의 MAG가 짙어지고 있다……/더욱 강력한 정령이 나타날지도 모른다./주의해야 할 것이다……"
+					ENDIF
+					;蟲惑魔の森攻略中フラグ
+					SIF ダンジョンフラグ:(FLAG:현던전):22 == 0
+						ダンジョンフラグ:(FLAG:현던전):22 = 1
+					;蟲惑魔の森浅層(階層1)のX座標1、Y座標18にワープ
+					CALL DUNGEON_WORP,1,1,18
+				ELSEIF FLAG:현X == 1 && FLAG:현Y == 8
+					;蟲惑魔の森か白銀の迷宮城をクリア済みで、初めて魔法族の里に入る場合段階を１上げる
+					IF ダンジョンフラグ:(FLAG:현던전):23 == 0 && (ダンジョンフラグ:(FLAG:현던전):22 == 2 || ダンジョンフラグ:(FLAG:현던전):24 == 2)
+						ダンジョンフラグ:(FLAG:현던전):20 += 1
+						ダンジョンフラグ:(FLAG:현던전):26 = ダンジョンフラグ:(FLAG:현던전):20
+						CALL MESSAGE_WINDOW_D, "", "＞공기 중의 MAG가 짙어지고 있다……/더욱 강력한 정령이 나타날지도 모른다./주의해야 할 것이다……"
+					ENDIF
+					;魔法族の里攻略中フラグ
+					SIF ダンジョンフラグ:(FLAG:현던전):23 == 0
+						ダンジョンフラグ:(FLAG:현던전):23 = 1
+					;魔法族の里浅層(階層4)のX座標18、Y座標18にワープ
+					CALL DUNGEON_WORP,4,18,18
+				ELSEIF FLAG:현X == 8 && FLAG:현Y == 1
+					;蟲惑魔の森か魔法族の里をクリア済みで、初めて白銀の迷宮城に入る場合段階を１上げる
+					IF ダンジョンフラグ:(FLAG:현던전):24 == 0 && (ダンジョンフラグ:(FLAG:현던전):22 == 2 || ダンジョンフラグ:(FLAG:현던전):23 == 2)
+						ダンジョンフラグ:(FLAG:현던전):20 += 1
+						ダンジョンフラグ:(FLAG:현던전):27 = ダンジョンフラグ:(FLAG:현던전):20
+						CALL MESSAGE_WINDOW_D, "", "＞공기 중의 MAG가 짙어지고 있다……/더욱 강력한 정령이 나타날지도 모른다./주의해야 할 것이다……"
+					ENDIF
+					;白銀の迷宮城攻略中フラグ
+					SIF ダンジョンフラグ:(FLAG:현던전):24 == 0
+						ダンジョンフラグ:(FLAG:현던전):24 = 1
+					;白銀の迷宮城(階層7)のX座標10、Y座標19にワープ
+					CALL DUNGEON_WORP,7,10,19
+				ENDIF
+		;蟲惑魔の森浅層
+		CASE 1
+			SIF FLAG:현X == 0 && FLAG:현Y == 18
+				;精霊界入口(階層0)のX座標14、Y座標8にワープ
+				CALL DUNGEON_WORP,0,14,8
+						;蟲惑魔の森中層へワープ
+			SIF FLAG:현X == 1 && FLAG:현Y == 0
+				;蟲惑魔の森中層(階層2)のX座標1、Y座標18にワープ
+				CALL DUNGEON_WORP,2,1,18
+			IF FLAG:현X == 1 && FLAG:현Y == 18 && FLAG:현M == 1
+				;閃刀姫レイイベント
+				IF ダンジョンフラグ:(FLAG:현던전):11 == 0
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"소녀","저기요! 잠깐 괜찮으신가요?"
+					CALL INPUT_SELECT_M,"[0]이야기를 듣는다///[1]무시한다"
+					IF RESULT == 0
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" ,, "섬도희 레이", "감사합니다……! 저는 『섬도희 레이』라고 해요./이 숲의 조사를 호위하기 위해 친구와 함께 왔었어요."
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" ,, "섬도희 레이", "하지만 호위 중에 친구가 충혹마에게 붙잡혀버려서……/호위 대상이었던 분은 무사히 도망치게 해드렸지만……/저기, 친구를 구하고 싶어요! 협력해 주실 수 있나요?"
+						CALL INPUT_SELECT_M,"[0]협력한다///[1]거절한다"
+						IF RESULT == 0
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" ,, "섬도희 레이", "감사합니다……! 어서 가죠."
+							CALL MESSAGE_WINDOW_D, "", "＞『섬도희 레이』가 동행하게 되었다."
+							ダンジョンフラグ:(FLAG:현던전):11 = 1
+							DA:(FLAG:현X):(FLAG:현Y) = 1001
+						;押しミス考慮して最終確認
+						ELSE
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "안…… 될까요……?"
+							CALL INPUT_SELECT_M,"[0]어쩔 수 없으니 협력한다//[1]단호하게 거절한다"
+							IF RESULT == 0
+								CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" ,, "섬도희 레이", "감사합니다……! 어서 가죠."
+								CALL MESSAGE_WINDOW_D, "", "＞『섬도희 레이』가 동행하게 되었다."
+								ダンジョンフラグ:(FLAG:현던전):11 = 1
+								DA:(FLAG:현X):(FLAG:현Y) = 1001
+							;2回目も断ったのでイベント打ち切り
+							ELSE
+								CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "알겠습니다…… 이야기를 들어주셔서 감사했습니다……"
+								CALL MESSAGE_WINDOW_D, "", "＞『섬도희 레이』는 떠나갔다."
+								ダンジョンフラグ:(FLAG:현던전):11 = 2
+								DA:(FLAG:현X):(FLAG:현Y) = 1001
+							ENDIF
+						ENDIF
+					ELSE
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "앗, 아아…… 서두르지 않으면 안 되는데……"
+						CALL MESSAGE_WINDOW_D, "", "＞한탄하는 소녀를 무시하고 떠나갔다."
+					ENDIF
+				ENDIF
+			;ホールティアの蟲惑魔イベント
+			ELSEIF FLAG:현X == 10 && FLAG:현Y == 18
+				;何度でも発生するように。
+				;IF ダンジョンフラグ:(FLAG:현던전):12 == 0
+					CALL MESSAGE_WINDOW_D, "", "＞커다란 잎사귀 아래에 무언가가 있다……"
+					CALL INPUT_SELECT_M,"[0]들여다본다///[1]신경 쓰지 않고 앞으로 나아간다"
+					IF RESULT == 0
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:홀티아의충혹마]], "CSV" ,, "충혹마", "아아우우! 갸악!"
+						SIF ダンジョンフラグ:(FLAG:현던전):11 == 1
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "위험해!"
+						CALL MESSAGE_WINDOW_D, "", "＞충혹마가 뛰쳐나왔다!"
+
+						;ホールティアの蟲惑魔と戦闘
+						FLAG:도주불가플래그 = 1
+						FLAG:회화불능플래그 = 1
+						FLAG:선제기습취소 = 1
+						CALL SET_BOSS_ENEMY_DUNGEON_105, "홀티아의 충혹마"
+						;戦闘開始
+						CALL BATTLE_START
+						;戦闘が終わるとここに戻ってくる。
+						;各種イベント戦闘用のフラグを消し、メッセージを表示
+						FLAG:도주불가플래그 = 0
+						FLAG:회화불능플래그 = 0
+						FLAG:선제기습취소 = 0
+						CALL SHOW_PICTURE, "D"
+
+						CALL MESSAGE_WINDOW_D, "", "＞얌전해진 것 같지만, 어디 어떻게 할까……/＞아무래도 충혹마는 겁을 먹은 모양이다."
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:홀티아의충혹마]], "CSV" ,, "충혹마", "아우우……"
+						CALL INPUT_SELECT_M,"[0]포획한다/[1]범한 뒤 포획한다/[2]따먹고 버린다/[3]내버려둔다/[4]범한 뒤 처치한다/[5]처치한다"
+						IF RESULT == 0
+							CALL MESSAGE_WINDOW_D, "", "＞어딘가에 쓸모가 있을지도 모른다, 포획하자."
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:홀티아의충혹마]], "CSV" ,, "충혹마", "아아…… 우?"
+							CALL MESSAGE_WINDOW_D, "", "＞멍하니 있는 충혹마를 포획하고 갈 길을 서두르기로 했다."
+							;加入処理、キャラERB側に飛ぶ、500は忠誠度、0はイベントフラグ(エロ通ったかどうか)
+							CALL ADD_NEW_COMPANION,[[キャラ:홀티아의충혹마]],500,0
+						ELSEIF RESULT == 1
+							CALL MESSAGE_WINDOW_D, "", "＞어딘가에 쓸모가 있을지도 모른다, 포획하자."
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:홀티아의충혹마]], "CSV" ,, "충혹마", "아아…… 우?"
+							CALL MESSAGE_WINDOW_D, "", "＞충혹마는 멍청한 표정을 짓고 있다./＞……한 판 하고 갈까."
+							IF ダンジョンフラグ:(FLAG:현던전):11 == 1
+								CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV/FACE_1" , ,"섬도희 레이", "엣!? 저, 저는 주위를 경계하고 있을게요!?"
+								CALL MESSAGE_WINDOW_D, "", "＞얼굴이 빨개진 레이는 빠른 걸음으로 자리를 떴다./＞그럼…… 해볼까."
+							ENDIF
+							CALL MESSAGE_WINDOW_D, "", @"＞%CALLNAME:MASTER%는 홀티아의 충혹마를 성적으로 희롱했다."
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:홀티아의충혹마]], "CSV/FACE_EX_1" ,, "홀티아의 충혹마", @"아아……? 으우…… 후뉴%ハート()%"
+							CALL MESSAGE_WINDOW_D, "", "＞……"
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:홀티아의충혹마]], "CSV/FACE_EX_1" ,, "홀티아의 충혹마", @"아흣%ハート()%, 아힉%ハート()%, 구우……%ハート(2)%"
+							;あなたチンポあるか？
+							IF HAVE_PENIS(MASTER) == 1
+								CALL MESSAGE_WINDOW_D, "", "＞온갖 구멍에서 정액을 흘려대는 홀티아의 충혹마를 포획했다."
+								EXP:MASTER:사정경험 += 20
+								EXP:MASTER:삽입경험 += 20
+							ELSE
+								CALL MESSAGE_WINDOW_D, "", "＞벌렁 드러누워 뻗어버린 홀티아의 충혹마를 포획했다."
+							ENDIF
+							EXP:MASTER:성교경험 += 20
+							;加入処理：エロイベ通ったので色々経験を追加する(キャラERBに記述)のでイベントフラグは1たてる
+							CALL ADD_NEW_COMPANION,[[キャラ:홀티아의충혹마]],500,1
+						ELSEIF RESULT == 2
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:홀티아의충혹마]], "CSV" ,, "충혹마", "아아…… 우?"
+							CALL MESSAGE_WINDOW_D, "", "＞충혹마는 멍청한 표정을 짓고 있다./＞……한 판 하고 갈까."
+							IF ダンジョンフラグ:(FLAG:현던전):11 == 1
+								CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV/FACE_1" , ,"섬도희 레이", "엣!? 저, 저는 주위를 경계하고 있을게요!?"
+								CALL MESSAGE_WINDOW_D, "", "＞얼굴이 빨개진 레이는 빠른 걸음으로 자리를 떴다./＞그럼…… 해볼까."
+							ENDIF
+							CALL MESSAGE_WINDOW_D, "", @"＞%CALLNAME:MASTER%는 홀티아의 충혹마를 성적으로 희롱했다."
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:홀티아의충혹마]], "CSV/FACE_EX_1" ,, "홀티아의 충혹마", @"아아……? 으우…… 후뉴%ハート()%"
+							CALL MESSAGE_WINDOW_D, "", "＞……"
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:홀티아의충혹마]], "CSV/FACE_EX_1" ,, "홀티아의 충혹마", @"아흣%ハート()%, 아힉%ハート()%, 구우……%ハート(2)%"
+							;あなたチンポあるか？
+							IF HAVE_PENIS(MASTER) == 1
+								CALL MESSAGE_WINDOW_D, "", "＞온갖 구멍에서 정액을 흘려대는 홀티아의 충혹마를 방치하고 앞으로 나아가기로 했다."
+								EXP:MASTER:사정경험 += 20
+								EXP:MASTER:삽입경험 += 20
+							ELSE
+								CALL MESSAGE_WINDOW_D, "", "＞벌렁 드러누워 뻗어버린 홀티아의 충혹마를 방치하고 앞으로 나아가기로 했다."
+							ENDIF
+							EXP:MASTER:성교경험 += 20
+						ELSEIF RESULT == 3
+							CALL MESSAGE_WINDOW_D, "", "＞이쪽을 덮쳐오는 일은 이제 없겠지, 신경 쓰지 말고 앞으로 나아가자."
+							SIF ダンジョンフラグ:(FLAG:현던전):11 == 1
+								CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "알겠습니다, 가볼까요."
+							CALL MESSAGE_WINDOW_D, "", "＞충혹마를 방치하고 길을 서두르기로 했다."
+						ELSEIF RESULT == 4
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:홀티아의충혹마]], "CSV" ,, "충혹마", "아아…… 우?"
+							CALL MESSAGE_WINDOW_D, "", "＞충혹마는 멍청한 표정을 짓고 있다./＞……한 판 하고 갈까."
+							IF ダンジョンフラグ:(FLAG:현던전):11 == 1
+								CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV/FACE_1" , ,"섬도희 레이", "엣!? 저, 저는 주위를 경계하고 있을게요!?"
+								CALL MESSAGE_WINDOW_D, "", "＞얼굴이 빨개진 레이는 빠른 걸음으로 자리를 떴다./＞그럼…… 해볼까."
+							ENDIF
+							CALL MESSAGE_WINDOW_D, "", @"＞%CALLNAME:MASTER%는 홀티아의 충혹마를 성적으로 희롱했다."
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:홀티아의충혹마]], "CSV/FACE_EX_1" ,, @"홀티아의 충혹마", @"아아……? 으우…… 후뉴%ハート()%"
+							CALL MESSAGE_WINDOW_D, "", "＞……"
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:홀티아의충혹마]], "CSV/FACE_EX_1" ,, @"홀티아의 충혹마", @"아흣%ハート()%, 아힉%ハート()%, 구우……%ハート(2)%"
+							IF HAVE_PENIS(MASTER) == 1
+								CALL MESSAGE_WINDOW_D, "", "＞홀티아의 충혹마는 온갖 구멍에서 정액을 흘려대고 있다."
+								EXP:MASTER:사정경험 += 20
+								EXP:MASTER:삽입경험 += 20
+							ELSE
+								CALL MESSAGE_WINDOW_D, "", "＞홀티아의 충혹마는 벌렁 드러누워 뻗어있다."
+							ENDIF
+							CALL MESSAGE_WINDOW_D, "", "＞자…… 이유야 어찌 됐든 덮쳐왔으니 그 대가는 치러줘야겠지."
+							CALL MESSAGE_WINDOW_D, "", "＞홀티아의 충혹마를 처치하고 길을 서두르기로 했다."
+							EXP:MASTER:성교경험 += 20
+						ELSEIF RESULT == 5
+							CALL MESSAGE_WINDOW_D, "", "＞이유야 어찌 됐든 덮쳐왔으니 그 대가는 치러줘야겠지."
+							SIF ダンジョンフラグ:(FLAG:현던전):11 == 1
+								CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "어쩔 수 없네요……"
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:홀티아의충혹마]], "CSV" ,, "충혹마", "아우…… 아아……"
+							CALL MESSAGE_WINDOW_D, "", "＞충혹마를 처치하고 길을 서두르기로 했다."
+
+						ENDIF
+					ELSE
+					ENDIF
+			ENDIF
+		;蟲惑魔の森中層
+		CASE 2
+			;蟲惑魔の森浅層へ移動
+			SIF FLAG:현X == 1 && FLAG:현Y == 19
+				;蟲惑魔の森浅層(階層1)のX座標1、Y座標1にワープ
+				CALL DUNGEON_WORP,1,1,1
+			;蟲惑魔の森深層へ移動
+			SIF FLAG:현X == 19 && FLAG:현Y == 18
+				;蟲惑魔の森深層(階層3)のX座標1、Y座標18にワープ
+				CALL DUNGEON_WORP,3,1,18
+		;蟲惑魔の森深層
+		CASE 3
+			SIF FLAG:현X == 0 && FLAG:현Y == 18
+				;蟲惑魔の森中層(階層2)のX座標18、Y座標18にワープ
+				CALL DUNGEON_WORP,2,18,18
+			;ボス：巨大フレシア戦、閃刀姫レイがいない場合色々分岐。
+			IF FLAG:현X == 8 && FLAG:현Y == 18 && ダンジョンフラグ:(FLAG:현던전):14 == 0
+				;閃刀姫レイを同行させている場合
+				IF ダンジョンフラグ:(FLAG:현던전):11 == 1
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "찾았다! 로제!"
+					CALL MESSAGE_WINDOW_D, "", "＞어떻게든 친구라는 녀석이 있는 곳에 도착한 듯하다./＞그건 그렇고, 저건 뭐지……?"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "巨大フレシア登場/10", "", "＞엄! 청! 크다!"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "巨大フレシア登場/10", "", "＞엄청난 크기의 라플레시아 같은 꽃 위에, 마찬가지로 거대한 여자가 타고 있다……"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "巨大フレシア登場/10", "", "＞플레시아의 충혹마로 생각되지만…… 그에 더해 크다./＞물리적으로도 크고 신체 각 부위도 크다."
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "巨大フレシア登場/10", "", "＞레이가 로제라 부른 소녀는 라플레시아 위에 있는 듯하다./＞의식이 없어 보인다."
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , "巨大フレシア登場/10","섬도희 레이", "로제를 돌려줘!"
+					CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아","巨大フレシア登場/10" , "거대 플레시아", "어머? 이 아이의 친구? 큰 소리를 내면 안 된단다아./이 아이가 깨어나 버리잖니."
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" ,"巨大フレシア登場/10" ,"섬도희 레이", "로제한테 무슨 짓을 한 거야……!?"
+					CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", "巨大フレシア登場/10", "거대 플레시아", "우후후, 글쎄 뭘까? 당신들도 이 아이처럼 여기서 계속 살도록 하자꾸나~."
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "巨大フレシア登場/10", "", "＞꽤나 성가신 상대인 듯하다."
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" ,"巨大フレシア登場/10" ,"섬도희 레이", "로제를 돌려받겠어!"
+					CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", "巨大フレシア登場/10", "거대 플레시아", "으~음, 당신 상대는 다른 아이들에게 시키겠어."
+					CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아","巨大フレシア登場/10" , "거대 플레시아", @"그쪽의 당신은 나랑 놀자꾸나? 상냥하게 해·줄·게%ハート()%"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "巨大フレシア登場/10", "", "＞카드 정령 거대 플레시아와 충혹마 4체가 나타났다!"
+					;イベント戦闘用に各種フラグを追加
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					IF ダンジョンフラグ:(FLAG:현던전):20 == 0
+						CALL SET_BOSS_ENEMY_DUNGEON_105, "巨大フレシア１"	
+					ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 1
+						CALL SET_BOSS_ENEMY_DUNGEON_105, "巨大フレシア２"	
+					ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 2
+						CALL SET_BOSS_ENEMY_DUNGEON_105, "巨大フレシア３"	
+					ENDIF
+					;戦闘開始
+					CALL BATTLE_START
+					;戦闘が終わるとここに戻ってくる。
+					;各種イベント戦闘用のフラグを消し、メッセージを表示
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					DA:(FLAG:현X):(FLAG:현Y) = 3001
+					CALL SHOW_PICTURE, "D"
+					CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", "아파~아! 너무해라……"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", , "", "＞너무 거대해서 치명상에는 이르지 않은 듯하다."
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "로제를 돌려받겠어……!"
+					CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", "으~음…… 기분 좋게 자고 있었는데……/어쩔 수 없네에……/일어나렴~, 마중 나왔단다."
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희로제]], "CSV" , ,"섬도희 로제", "……후냐, 아침이야……?"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "로제!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희로제]], "CSV" , ,"섬도희 로제", "레이……? 안녕……"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "어라……? 로제…… 아무렇지도 않아?"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희로제]], "CSV" , ,"섬도희 로제", "무슨 소리야?"
+					CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", "아무 짓도 안 했단다아./이 아이, 여기에 오자마자 바로 잠들어 버렸는걸."
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "에? 그럼 아까 그건……?"
+					CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", "시끄럽게 굴면 자고 있던 이 아이가 깨어나 버리잖니?/기껏 기분 좋게 자고 있었는데 말이야."
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "에, 에에…… 그럼 우리가 고생한 의미는……?"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희로제]], "CSV" , ,"섬도희 로제", "무슨 이야기야? 저쪽 사람은?"
+					CALL MESSAGE_WINDOW_D, "", "＞레이의 부탁을 받고 따라온 것이라 이야기했다."
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희로제]], "CSV" , ,"섬도희 로제", "고마워?"					
+					CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", "하지만 계속 여기에 머물러줬으면 했던 건 진심이란다아?/져버렸으니 이제 안 그러겠지만……"
+					CALL MESSAGE_WINDOW_D, "", "＞흠…… 지금이라면 저항하지 않겠지, 야한 짓을 해도 좋을지도 모른다./＞하지만 물리적인 체격 차이가 있기 때문에/＞기술이 없다면 역으로 범해져 버릴지도 모른다."
+					CALL INPUT_SELECT_M,"[0]벌로서 범한다///[1]돌아간다"
+					IF RESULT == 0
+						CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", "엣? 야한 짓? 난 상관없단다~"
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV/FACE_1" , ,"섬도희 레이", "아와왓, 저, 저는 주위를 경계하고 올게요!?"
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희로제]], "CSV/FACE_1" , ,"섬도희 로제", "앗, 나도 갈래!"
+						CALL MESSAGE_WINDOW_D, "", "＞두 사람은 자리를 떴다./＞그럼, 해볼까……"
+						CALL MESSAGE_WINDOW_D, "", "＞…………"
+						;技巧3以上無いと負けて犯される
+						IF ABL:MASTER:기교 >= 3
+							CALL MESSAGE_WINDOW_D_ICON, , "巨大フレシア_犯され", , "거대 플레시아", @"응오옷%ハート()% 아아앗!%ハート()% 시, 안 돼, 망가져버려어%ハート()%/아앙!%ハート()% 가, 가버려엇!%ハート()% 오오옷%ハート(2)%"
+							CALL MESSAGE_WINDOW_D, "", "＞체격 차이 탓에 꽤 애를 먹었지만 약점은 파악했다."
+							CALL MESSAGE_WINDOW_D, "", "＞전신의 혈자리를 찌르듯 애무를 베풀고 질에 팔을 쑤셔 넣는다./＞몇 배나 거대한 상대다. 이 정도가 딱 좋을 것이다."
+							;チンポ突っ込んでも意味なさそうだし腕ファック。
+							CALL MESSAGE_WINDOW_D_ICON, , "巨大フレシア_犯され", , "거대 플레시아", @"응아앗%ハート()% 휘젓지%ハート()% 말아줘어%ハート()%/안은 안 돼앳%ハート()%%ハート()% 오옷"
+							CALL MESSAGE_WINDOW_D, "", "＞질 안에서 팔을 휘젓는다. 한층 더 어깨까지 쑤셔 넣고 질벽을 긁어내듯 들락날락거린다./＞온몸이 플레시아의 애액으로 끈적끈적하다./＞나중에 깨끗이 씻어야 할 것이다."
+							CALL MESSAGE_WINDOW_D_ICON, , "巨大フレシア_犯され", , "거대 플레시아", @"하아앗%ハート()% 으응, 아, 안 돼애!%ハート()% 앗, 안 멈춰엇%ハート()% 가버려, 으으읏%ハート()% 응아아앗%ハート(2)%"
+							CALL MESSAGE_WINDOW_D, "", "＞이것은 벌이다./＞자 앞으로 몇 번이나 계속할까……/＞쾌락에 찬 비명을 지르는 플레시아를 무시하고 벌을 이어나갔다……"
+							CALL MESSAGE_WINDOW_D, "", "＞…………"
+							CALL MESSAGE_WINDOW_D_ICON, , "巨大フレシア_事後", , "거대 플레시아", @"하아……%ハート()% 하아……%ハート()%%ハート()% 아힉%ハート()%"
+							CALL MESSAGE_WINDOW_D, "", "＞이 정도면 됐겠지. 레이, 로제와 합류하여 돌아가기로 했다."
+						;技巧３未満だと負けて甘やかしプレイ
+						ELSE
+							CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"우후후, 착하지%ハート()% 착하지%ハート()%/더 기분 좋아져도 괜찮단다~%ハート()%"
+							CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"엄마 가슴 더 빨렴%ハート()%, 참 잘했어요~%ハート()%"
+							CALL MESSAGE_WINDOW_D, "", "＞눈 깜짝할 사이에 구속당해 버렸다……/＞거대한 가슴에서 모유를 먹여져 움직일 수가 없다."
+							IF HAVE_PENIS(MASTER) == 1
+								CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"네에~%ハート()% 흔들흔들 문질러줄게에%ハート()% 슥~삭%ハート()% 슥~삭%ハート()%"
+								CALL MESSAGE_WINDOW_D, "", "＞거대한 손가락으로 자지를 문질러진다……!"
+								CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"참는 건 몸에 안 좋단다아%ハート()%/잔뜩 내보내고 기분 좋아져도 된단다%ハート()%%ハート()%"
+								CALL MESSAGE_WINDOW_D, "", "＞견디지 못하고 사정해 버린다……/＞이 고문은 언제까지 계속되는 걸까……"
+								CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"참 잘했어요%ハート()%%ハート()%/엄마도 더 힘낼게에~%ハート()%"
+								CALL MESSAGE_WINDOW_D, "", "＞…………"
+								CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"수고했어~%ハート()% 잘 다녀오렴~%ハート()%"
+								CALL MESSAGE_WINDOW_D, "", "＞결국 계속 농락당하고 말았다……"
+								EXP:MASTER:사정경험 += 20
+							ELSE
+								CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"배를 이렇게~%ハート()% 마사지해 줄게에%ハート()%/기분 좋아지렴%ハート()%"
+								CALL MESSAGE_WINDOW_D, "", "＞거대한 손가락이 배 위에서 자궁을 눌러온다……/＞절묘한 힘 조절로 자극이……"
+								CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"참는 건 몸에 안 좋단다아%ハート()%/엄마한테 전부 맡기렴? 넌 기분 좋아지기만 하면 된단다%ハート()%"
+								CALL MESSAGE_WINDOW_D, "", "＞견디지 못하고 절정해 버린다……/＞이 고문은 언제까지 계속되는 걸까……"
+								CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"참 잘했어요%ハート(3)%/엄마도 더 힘낼게에~%ハート()%"
+								CALL MESSAGE_WINDOW_D, "", "＞…………"
+								CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"수고했어~%ハート()% 잘 다녀오렴~%ハート()%"
+								CALL MESSAGE_WINDOW_D, "", "＞결국 계속 농락당하고 말았다……"
+								EXP:MASTER:절정경험 += 20
+							ENDIF
+							EXP:MASTER:성교경험 += 20
+							CALL MESSAGE_WINDOW_D, "", "＞레이, 로제와 합류하여 돌아가기로 했다……"
+						ENDIF
+					ELSE
+						CALL MESSAGE_WINDOW_D, "", "＞돌아가기로 했다."
+					ENDIF
+						CALL MESSAGE_WINDOW_D, "", "＞두 사람과 대화한다."
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "아하하…… 감사했습니다……/저 혼자서는 이기지 못했을 거라 생각해서……"
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희로제]], "CSV" , ,"섬도희 로제", "잘은 모르겠지만, 나를 구하러 와준 것 같으니까 고마워."
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "이건 보답이에요."
+								IF ダンジョンフラグ:(FLAG:현던전):20 == 0
+									CALL MESSAGE_WINDOW_D, "", "＞800 마화를 받았다."
+									MONEY:1 += 800
+								ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 1
+									CALL MESSAGE_WINDOW_D, "", "＞1400 마화를 받았다."
+									MONEY:1 += 1400
+								ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 2
+									CALL MESSAGE_WINDOW_D, "", "＞2000 마화를 받았다."
+									MONEY:1 += 2000
+								ENDIF
+						CALL MESSAGE_WINDOW_D, "", "＞자, 이제부터 어쩔까?"
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "저희는 다시 여행을 계속할까 생각 중이에요."
+						CALL INPUT_SELECT_M,"[0]동료마로 권유한다///[1]두 사람을 배웅한다"
+						;二人を仲魔に。
+						IF RESULT == 0
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "엣, 동료마로? 전 좋지만……"
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희로제]], "CSV" , ,"섬도희 로제", "레이가 좋다면 나도 상관없어."
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "그럼…… 흠흠, 『섬도희 레이』, 앞으로 잘 부탁해."
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희로제]], "CSV" , ,"섬도희 로제", "『섬도희 로제』, 앞으로도 잘 부탁해."							
+							;閃刀姫レイか閃刀姫ロゼが既にいる場合は加入処理を行わない
+							IF FINDCHARA_B([[キャラ:섬도희레이]])  > -1 || FINDCHARA_B([[キャラ:섬도희로제]])  > -1
+							ELSE
+								CALL MESSAGE_WINDOW_D, "", "＞『섬도희 레이』, 『섬도희 로제』가 동료마가 되었다."
+								CALL ADD_NEW_COMPANION,[[キャラ:섬도희레이]] , 1000
+								CALL ADD_NEW_COMPANION,[[キャラ:섬도희로제]] , 1000
+							ENDIF
+						;見送る、特に得るものは無い。
+						ELSE
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희레이]], "CSV" , ,"섬도희 레이", "감사했습니다! 또 어딘가에서 만나요!"
+							CALL MESSAGE_WINDOW_D_ICON, [[キャラ:섬도희로제]], "CSV" , ,"섬도희 로제", "고마워, 레이가 신세 많이 졌어."
+							CALL MESSAGE_WINDOW_D, "", "＞두 사람을 배웅했다."
+						ENDIF
+				;閃刀姫レイを同行させていない場合
+				ELSE
+					CALL MESSAGE_WINDOW_D, "", "＞최심부에 도착했다./하지만 저건 뭐지……?"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "巨大フレシア登場/10", "", "＞엄! 청! 크다!"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "巨大フレシア登場/10", "", "＞엄청난 크기의 라플레시아 같은 꽃 위에, 마찬가지로 거대한 여자가 타고 있다……"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "巨大フレシア登場/10", "", "＞플레시아의 충혹마로 생각되지만…… 그에 더해 크다./＞물리적으로도 크고 신체 각 부위도 크다."
+					CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아","巨大フレシア登場/10" , "거대 플레시아", "어머? 당신도 꽃향기에 이끌려 온 거니?/여기서 함께 쉬도록 하자꾸나?"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "巨大フレシア登場/10", "", "＞라플레시아 꽃 위에 다른 충혹마들이 편히 쉬고 있는 것이 보인다./＞충혹마들은 심상치 않은 분위기를 풍기며 이쪽을 바라보고 있다……"
+					CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아","巨大フレシア登場/10" , "거대 플레시아", @"미안하구나. 이 아이들이 놀고 싶어 하는 모양이야. 잠깐 어울려주렴?"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "巨大フレシア登場/10", "", "＞카드 정령 거대 플레시아와 충혹마 4체가 나타났다!"
+					;イベント戦闘用に各種フラグを追加
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					IF ダンジョンフラグ:(FLAG:현던전):20 == 0
+						CALL SET_BOSS_ENEMY_DUNGEON_105, "巨大フレシア１"	
+					ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 1
+						CALL SET_BOSS_ENEMY_DUNGEON_105, "巨大フレシア２"	
+					ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 2
+						CALL SET_BOSS_ENEMY_DUNGEON_105, "巨大フレシア３"	
+					ENDIF
+					;戦闘開始
+					CALL BATTLE_START
+					;戦闘が終わるとここに戻ってくる。
+					;各種イベント戦闘用のフラグを消し、メッセージを表示
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					DA:(FLAG:현X):(FLAG:현Y) = 3001
+					CALL SHOW_PICTURE, "D"
+					CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", "아파~아!"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", , "", "＞너무 거대해서 치명상에는 이르지 않은 듯하다."
+					CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", "다들 도망쳐버렸네에……"
+					CALL MESSAGE_WINDOW_D, "", "＞자 어떻게 해줄까. 벌을 주는 것도 괜찮을지 모른다./＞하지만…… 물리적인 체격 차이가 있기 때문에/＞기술이 없다면 역으로 범해져 버릴지도 모른다."
+					CALL INPUT_SELECT_M,"[0]벌로서 범한다///[1]돌아간다"
+					IF RESULT == 0
+						CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", "엣? 야한 짓? 난 상관없단다~"
+						CALL MESSAGE_WINDOW_D, "", "＞그럼…… 해볼까……"
+						CALL MESSAGE_WINDOW_D, "", "＞…………"
+						;技巧3以上無いと負けて犯される
+						IF ABL:MASTER:기교 >= 3
+							CALL MESSAGE_WINDOW_D_ICON, , "巨大フレシア_犯され", , "거대 플레시아", @"응오옷%ハート()% 아아앗!%ハート()% 시, 안 돼, 망가져버려어%ハート()%/아앙!%ハート()% 가, 가버려엇!%ハート()% 오오옷%ハート(2)%"
+							CALL MESSAGE_WINDOW_D, "", "＞체격 차이 탓에 꽤 애를 먹었지만 약점은 파악했다."
+							CALL MESSAGE_WINDOW_D, "", "＞전신의 혈자리를 찌르듯 애무를 베풀고 질에 팔을 쑤셔 넣는다./＞몇 배나 거대한 상대다. 이 정도가 딱 좋을 것이다."
+							;チンポ突っ込んでも意味なさそうだし腕ファック。
+							CALL MESSAGE_WINDOW_D_ICON, , "巨大フレシア_犯され", , "거대 플레시아", @"응아앗%ハート()% 휘젓지%ハート()% 말아줘어%ハート()%/안은 안 돼앳%ハート()%%ハート()% 오옷"
+							CALL MESSAGE_WINDOW_D, "", "＞질 안에서 팔을 휘젓는다. 한층 더 어깨까지 쑤셔 넣고 질벽을 긁어내듯 들락날락거린다./＞온몸이 플레시아의 애액으로 끈적끈적하다./＞나중에 깨끗이 씻어야 할 것이다."
+							CALL MESSAGE_WINDOW_D_ICON, , "巨大フレシア_犯され", , "거대 플레시아", @"하아앗%ハート()% 으응, 아, 안 돼애!%ハート()% 앗, 안 멈춰엇%ハート()% 가버려, 으으읏%ハート()% 응아아앗%ハート(2)%"
+							CALL MESSAGE_WINDOW_D, "", "＞이것은 벌이다./＞자 앞으로 몇 번이나 계속할까……/＞쾌락에 찬 비명을 지르는 플레시아를 무시하고 벌을 이어나갔다……"
+							CALL MESSAGE_WINDOW_D, "", "＞…………"
+							CALL MESSAGE_WINDOW_D_ICON, , "巨大フレシア_事後", , "거대 플레시아", @"하아……%ハート()% 하아……%ハート()%%ハート()% 아힉%ハート()%"
+							CALL MESSAGE_WINDOW_D, "", "＞이 정도면 됐겠지./덤으로 거대 플레시아가 가지고 있던 마화를 강탈한 뒤 돌아가기로 했다."
+							IF ダンジョンフラグ:(FLAG:현던전):20 == 0
+								CALL MESSAGE_WINDOW_D, "", "＞800 마화를 강탈했다."
+								MONEY:1 += 800
+							ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 1
+								CALL MESSAGE_WINDOW_D, "", "＞1400 마화를 강탈했다."
+								MONEY:1 += 1400
+							ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 2
+								CALL MESSAGE_WINDOW_D, "", "＞2000 마화를 강탈했다."
+								MONEY:1 += 2000
+							ENDIF
+						;技巧３未満だと負けて甘やかしプレイ
+						ELSE
+							CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"우후후, 착하지%ハート()% 착하지%ハート()%/더 기분 좋아져도 괜찮단다~%ハート()%"
+							CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"엄마 가슴 더 빨렴%ハート()%, 참 잘했어요~%ハート()%"
+							CALL MESSAGE_WINDOW_D, "", "＞눈 깜짝할 사이에 구속당해 버렸다……/＞거대한 가슴에서 모유를 먹여져 움직일 수가 없다."
+							IF HAVE_PENIS(MASTER) == 1
+								CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"네에~%ハート()% 흔들흔들 문질러줄게에%ハート()% 슥~삭%ハート()% 슥~삭%ハート()%"
+								CALL MESSAGE_WINDOW_D, "", "＞거대한 손가락으로 자지를 문질러진다……!"
+								CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"참는 건 몸에 안 좋단다아%ハート()%/잔뜩 내보내고 기분 좋아져도 된단다%ハート()%%ハート()%"
+								CALL MESSAGE_WINDOW_D, "", "＞견디지 못하고 사정해 버린다……/＞이 고문은 언제까지 계속되는 걸까……"
+								CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"참 잘했어요%ハート()%%ハート()%/엄마도 더 힘낼게에~%ハート()%"
+								CALL MESSAGE_WINDOW_D, "", "＞…………"
+								CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"수고했어~%ハート()% 잘 다녀오렴~%ハート()%"
+								CALL MESSAGE_WINDOW_D, "", "＞결국 계속 농락당하고 말았다……"
+								EXP:MASTER:사정경험 += 20
+							ELSE
+								CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"배를 이렇게~%ハート()% 마사지해 줄게에%ハート()%/기분 좋아지렴%ハート()%"
+								CALL MESSAGE_WINDOW_D, "", "＞거대한 손가락이 배 위에서 자궁을 눌러온다……/＞절묘한 힘 조절로 자극이……"
+								CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"참는 건 몸에 안 좋단다아%ハート()%/엄마한테 전부 맡기렴? 넌 기분 좋아지기만 하면 된단다%ハート()%"
+								CALL MESSAGE_WINDOW_D, "", "＞견디지 못하고 절정해 버린다……/＞이 고문은 언제까지 계속되는 걸까……"
+								CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"참 잘했어요%ハート(3)%/엄마도 더 힘낼게에~%ハート()%"
+								CALL MESSAGE_WINDOW_D, "", "＞…………"
+								CALL MESSAGE_WINDOW_D_ICON, , "거대 플레시아", , "거대 플레시아", @"수고했어~%ハート()% 이건 용돈이란다~/잘 다녀오렴~%ハート()%"
+								IF ダンジョンフラグ:(FLAG:현던전):20 == 0
+									CALL MESSAGE_WINDOW_D, "", "＞800 마화를 건네받았다."
+									MONEY:1 += 800
+								ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 1
+									CALL MESSAGE_WINDOW_D, "", "＞1400 마화를 건네받았다."
+									MONEY:1 += 1400
+								ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 2
+									CALL MESSAGE_WINDOW_D, "", "＞2000 마화를 건네받았다."
+									MONEY:1 += 2000
+								ENDIF
+								CALL MESSAGE_WINDOW_D, "", "＞결국 계속 농락당하고 말았다……"
+								EXP:MASTER:절정경험 += 20
+							ENDIF
+							EXP:MASTER:성교경험 += 20
+							CALL MESSAGE_WINDOW_D, "", "＞돌아가기로 했다……"
+						ENDIF
+					ELSE
+						CALL MESSAGE_WINDOW_D, "", "＞돌아가기로 했다."
+					ENDIF
+				ENDIF
+				;巨大フレシア倒した
+				ダンジョンフラグ:(FLAG:현던전):14 = 1
+				;蟲惑魔の森クリアした
+				ダンジョンフラグ:(FLAG:현던전):22 = 2
+				CALL INPUT_SELECT_M,"[0]탐색을 계속한다///[1]던전에서 탈출한다"
+				IF RESULT == 0
+				ELSE
+					FLAG:탈출 = 1
+				ENDIF
+			ENDIF
+		;魔法族の里　浅層
+		CASE 4
+			SIF FLAG:현X == 18 && FLAG:현Y == 0
+				;魔法族の里中層(階層5)のX座標1、Y座標18にワープ
+				CALL DUNGEON_WORP,5,1,18
+			SIF FLAG:현X == 19 && FLAG:현Y == 18
+				;精霊界入口(階層0)のX座標2、Y座標8にワープ
+				CALL DUNGEON_WORP,0,2,8
+		;魔法族の里　中層
+		CASE 5
+			SIF FLAG:현X == 19 && FLAG:현Y == 18
+				;魔法族の里深層(階層6)のX座標1、Y座標18にワープ
+				CALL DUNGEON_WORP,6,1,18
+			SIF FLAG:현X == 1 && FLAG:현Y == 19
+				;魔法族の里浅層(階層4)のX座標18、Y座標1にワープ
+				CALL DUNGEON_WORP,4,18,1
+		;魔法族の里　深層
+		CASE 6
+			;魔法族の里　中層へ戻る
+			SIF FLAG:현X == 0 && FLAG:현Y == 18
+				;魔法族の里中層(階層5)のX座標18、Y座標18にワープ
+				CALL DUNGEON_WORP,5,18,18
+			IF FLAG:현X == 2 && FLAG:현Y == 13 && ダンジョンフラグ:(FLAG:현던전):15 == 0
+				CALL MESSAGE_WINDOW_D, "", "＞광장 중심에서 무언가가 일어날 것 같은 예감이 든다……"
+				CALL INPUT_SELECT_M,"[0]앞으로 나아간다///[1]일단 물러난다"
+				IF RESULT == 0
+					CALL MESSAGE_WINDOW_D, "", "＞무언가 행사를 열고 있다는 광장에 도착했다./온갖 정령들이 모여있는 듯하다./저건……"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:블랙매지션걸]], "CSV" , "BMG登場/10","블랙 매지션 걸", "모두들~! 분위기 달아올랐어~!?"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "BMG登場/10", "", "＞상당히 노출이 심한 정령이 광장 중앙에서 외치고 있다./그 밖에도 영사 등이 있는 듯하다./콘서트 같은 걸까……?"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:블랙매지션걸]], "CSV" , "BMG登場/10","블랙 매지션 걸", "분위기도 한창 무르익었으니 마지막으로 쇼를 하자!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:블랙매지션걸]], "CSV" , "BMG登場/10","블랙 매지션 걸", "거기 인간분!/이쪽으로 와줘!"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "BMG登場/10", "", "＞인간은 자신밖에 없는 것 같다……/어디 무슨 용건일까."
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:블랙매지션걸]], "CSV" , "BMG登場/10","블랙 매지션 걸", "와줘서 고마워!/그럼 듀얼하자!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:블랙매지션걸]], "CSV" , "BMG登場/10","블랙 매지션 걸", "듀얼이라 해도 우리랑 싸울 뿐이지만 말이야?"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "BMG登場/10", "", "＞어째서 싸워야 하는 거지……?"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:블랙매지션걸]], "CSV" , "BMG登場/10","블랙 매지션 걸", "제일 흥겨우니까!!"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "BMG登場/10", "", "＞私達……？"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:블랙매지션걸]], "CSV" , "BMG登場/10","블랙 매지션 걸", "백댄서 친구들도 물론 함께할 거야~!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:히타]], "CSV" , "BMG登場/10","화령사 히타", "잘 부탁해!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:에리아]], "CSV" , "BMG登場/10","수령사 에리아", "잘 부탁해!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:윈]], "CSV" , "BMG登場/10","풍령사 윈", "잘 부탁해~!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아우스]], "CSV" , "BMG登場/10","지령사 아우스", "잘 부탁드려요!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:블랙매지션걸]], "CSV" , "BMG登場/10","블랙 매지션 걸", "그럼, 간다아~!"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "BMG登場/10", "", "＞카드 정령 블랙 매지션 걸과 영사들이 나타났다!"
+					;イベント戦闘用に各種フラグを追加
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					IF ダンジョンフラグ:(FLAG:현던전):20 == 0
+						CALL SET_BOSS_ENEMY_DUNGEON_105, "BMG１"	
+					ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 1
+						CALL SET_BOSS_ENEMY_DUNGEON_105, "BMG２"	
+					ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 2
+						CALL SET_BOSS_ENEMY_DUNGEON_105, "BMG３"	
+					ENDIF
+					;戦闘開始
+					CALL BATTLE_START
+					;戦闘が終わるとここに戻ってくる。
+					;各種イベント戦闘用のフラグを消し、メッセージを表示
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					DA:(FLAG:현X):(FLAG:현Y) = 6001
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:블랙매지션걸]], "CSV" , "BMG登場/10","블랙 매지션 걸","졌다~!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:블랙매지션걸]], "CSV" , "BMG登場/10","블랙 매지션 걸","에헤헤, 당신 강하네!/다들 신나게 즐긴 것 같아!"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "BMG登場/10", "", "＞저걸로 분위기가 달아오르는 건가……"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:블랙매지션걸]], "CSV" , "BMG登場/10","블랙 매지션 걸","그럼 이걸로 끝이지만, 인간분은 앞으로도 정령계를 즐겨줘!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:블랙매지션걸]], "CSV" , "BMG登場/10","블랙 매지션 걸","아! 이건 쇼에 어울려준 보답이야!"
+					IF ダンジョンフラグ:(FLAG:현던전):20 == 0
+						CALL MESSAGE_WINDOW_D, "", "＞800 마화를 건네받았다."
+						MONEY:1 += 800
+					ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 1
+						CALL MESSAGE_WINDOW_D, "", "＞1400 마화를 건네받았다."
+						MONEY:1 += 1400
+					ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 2
+						CALL MESSAGE_WINDOW_D, "", "＞2000 마화를 건네받았다."
+						MONEY:1 += 2000
+					ENDIF
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:블랙매지션걸]], "CSV" , "BMG登場/10","블랙 매지션 걸","바이바~이!"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "BMG登場/10", "", "＞일단 돌아가기로 했다."
+					;ボスBMG倒した
+					ダンジョンフラグ:(FLAG:현던전):15 = 1
+					;魔法族の里クリアした
+					ダンジョンフラグ:(FLAG:현던전):23 = 2
+					CALL INPUT_SELECT_M,"[0]탐색을 계속한다///[1]던전에서 탈출한다"
+					IF RESULT == 0
+					ELSE
+						FLAG:탈출 = 1
+					ENDIF
+				ELSE
+				ENDIF
+			ENDIF
+		;白銀の迷宮城　１階
+		CASE 7
+			SIF FLAG:현X == 10 && FLAG:현Y == 20
+				;精霊界入口(階層0)のX座標8、Y座標2にワープ
+				CALL DUNGEON_WORP,0,8,2
+		;白銀の迷宮城　２階
+		CASE 8
+		;白銀の迷宮城　３階
+		CASE 9
+			IF FLAG:현X == 6 && FLAG:현Y == 9 && ダンジョンフラグ:(FLAG:현던전):16 == 0
+				CALL MESSAGE_WINDOW_D, "", "＞알현실에서 무언가가 일어날 것 같은 예감이 든다……"
+				CALL INPUT_SELECT_M,"[0]앞으로 나아간다///[1]일단 물러난다"
+				IF RESULT == 0
+					CALL MESSAGE_WINDOW_D, "", "＞최심부로 보이는 곳에 도착했다./여기는 알현실인 듯하다……/저건……"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:라뷰린스]], "CSV/FACE_3" , "ラビュリンス登場/10","백은의 성의 라뷰린스", "오~호호홋!!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:라뷰린스]], "CSV/FACE_3" , "ラビュリンス登場/10","백은의 성의 라뷰린스", "자~알도 오셨군요!/기다리고 있었습니다~!!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리안느]], "CSV" , "ラビュリンス登場/10","백은의 성의 하인 아리안느", "와아 와아."
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리안나]], "CSV" , "ラビュリンス登場/10","백은의 성의 하인 아리안나", "둥둥 빰빠밤~."
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "ラビュリンス登場/10", "", "＞옆에 있는 두 소녀가 꽃가루를 뿌리고 있다./대체 뭐야 이건……"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:라뷰린스]], "CSV/FACE_3" , "ラビュリンス登場/10","백은의 성의 라뷰린스", "자, 여기까지 오셨으니 이 몸이 직접 상대해 드리죠!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리아스]], "CSV" , "ラビュリンス登場/10","백은의 성의 집사 아리아스", "송구하오나 어울려주시면 감사하겠습니다."
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "ラビュリンス登場/10", "", "＞뭔지는 잘 모르겠지만 싸우라는 모양이다……"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:라뷰린스]], "CSV/FACE_3" , "ラビュリンス登場/10","백은의 성의 라뷰린스", "오~호호홋!!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리안느]], "CSV" , "ラビュリンス登場/10","백은의 성의 하인 아리안느", "가자~!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리안나]], "CSV" , "ラビュリンス登場/10","백은의 성의 하인 아리안나", "가자~."
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "ラビュリンス登場/10", "", "＞카드 정령 백은의 성의 라뷰린스와 하인들이 나타났다!"
+					;イベント戦闘用に各種フラグを追加
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					IF ダンジョンフラグ:(FLAG:현던전):20 == 0
+						CALL SET_BOSS_ENEMY_DUNGEON_105, "ラビュリンス１"	
+					ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 1
+						CALL SET_BOSS_ENEMY_DUNGEON_105, "ラビュリンス２"	
+					ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 2
+						CALL SET_BOSS_ENEMY_DUNGEON_105, "ラビュリンス３"
+					ENDIF
+					;戦闘開始
+					CALL BATTLE_START
+					;戦闘が終わるとここに戻ってくる。
+					;各種イベント戦闘用のフラグを消し、メッセージを表示
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					DA:(FLAG:현X):(FLAG:현Y) = 9001
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:라뷰린스]], "CSV/FACE_EX_3" , "","백은의 성의 라뷰린스", "꾸우우~~."
+					CALL MESSAGE_WINDOW_D, "", "＞라뷰린스는 기절한 듯하다……"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리아스]], "CSV" , "","백은의 성의 집사 아리아스", "강하시군요…… 손님./공주님의 놀이에 어울려주셔서 대단히 감사드립니다."
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리안느]], "CSV" , "","백은의 성의 하인 아리안느", "습니다~!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리안나]], "CSV" , "","백은의 성의 하인 아리안나", "습니다~."
+					CALL MESSAGE_WINDOW_D, "", "＞아무래도 만족한 모양이다."
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리아스]], "CSV" , "","백은의 성의 집사 아리아스", "성을 짓고 함정을 설치한 것까진 좋았으나, 여기까지 오는 자가 없어/공주님의 스트레스가 쌓여있던 참이라……"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리아스]], "CSV" , "","백은의 성의 집사 아리아스", "이걸로 만족하셨으리라 생각합니다./보답이라 하기엔 뭐하지만/이 성에 놓여있는 보물은 자유롭게 가져가셔도 상관없습니다./그리고 이것도……"
+					IF ダンジョンフラグ:(FLAG:현던전):20 == 0
+						CALL MESSAGE_WINDOW_D, "", "＞800 마화를 건네받았다."
+						MONEY:1 += 800
+					ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 1
+						CALL MESSAGE_WINDOW_D, "", "＞1400 마화를 건네받았다."
+						MONEY:1 += 1400
+					ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 2
+						CALL MESSAGE_WINDOW_D, "", "＞2000 마화를 건네받았다."
+						MONEY:1 += 2000
+					ENDIF
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리아스]], "CSV" , "","백은의 성의 집사 아리아스", "거듭 감사드립니다."
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리안느]], "CSV" , "","백은의 성의 하인 아리안느", "습니다~!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:아리안나]], "CSV" , "","백은의 성의 하인 아리안나", "습니다~."
+					CALL MESSAGE_WINDOW_D, "", "＞이걸로 끝인 듯하다."
+					;ボスラビュリンス倒した
+					ダンジョンフラグ:(FLAG:현던전):16 = 1
+					;白銀の迷宮城クリアした
+					ダンジョンフラグ:(FLAG:현던전):24 = 2
+					CALL INPUT_SELECT_M,"[0]탐색을 계속한다///[1]던전에서 탈출한다"
+					IF RESULT == 0
+					ELSE
+						FLAG:탈출 = 1
+					ENDIF
+				ELSE
+				ENDIF
+			ENDIF
+		CASE 13
+			;アーゼウス倒してない
+			IF FLAG:현X == 10 && FLAG:현Y == 3 && ダンジョンフラグ:(FLAG:현던전):17 == 0
+				;アーゼウス接触1回目
+				IF ダンジョンフラグ:(FLAG:현던전):18 == 0
+					CALL MESSAGE_WINDOW_D, "", "＞무언가가 있다……"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "アーゼウス登場/10", "", "＞거대한 로봇……일까?/이것도 카드 정령인 건가."
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:마치헤어]], "CSV" , "アーゼウス登場/10","마치 헤어", "저게 신경 쓰이는 거야?/난 마치 헤어라고 해, 잘 부탁해!/언더그라운드를 이래저래 돌아다니고 있지!"
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "アーゼウス登場/10", "", "＞저것에 대해 알고 있나?"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:마치헤어]], "CSV" , "アーゼウス登場/10","마치 헤어", "저건 네가로기어 아제우스!/신마저도 죽이는 최종병기라든가 여러모로 불리는 존재야!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:마치헤어]], "CSV" , "アーゼウス登場/10","마치 헤어", "지금은 잠들어 있어서 얌전하지만 건드리면 깨어나서 덮쳐올걸!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:마치헤어]], "CSV" , "アーゼウス登場/10","마치 헤어", "다만…… 저건 자길 다룰 수 있는 인물을 찾고 있어./쓰러뜨릴 수 있다면 널 따라줄 거라 생각해!"
+					CALL MESSAGE_WINDOW_D_ICON, [[キャラ:마치헤어]], "CSV" , "アーゼウス登場/10","마치 헤어", "어떻게 할지는 네 자유야."
+					CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "アーゼウス登場/10", "", "＞……그렇군."
+					;初回は終わったのでフラグ立てる、離れてまた来たら即ここに
+					ダンジョンフラグ:(FLAG:현던전):18 = 1
+					$AAZEUS_EVENT
+					CALL INPUT_SELECT_M,"[0]아제우스와 싸운다///[1]일단 물러난다"
+					IF RESULT == 0
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:천정호아제우스]], "CSV" , "アーゼウス登場/10","네가로기어 아제우스", "………………！"
+						CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "アーゼウス登場/10", "", "＞네가로기어 아제우스가 1체 나타났다!"
+						;イベント戦闘用に各種フラグを追加
+						FLAG:도주불가플래그 = 1
+						FLAG:회화불능플래그 = 1
+						FLAG:선제기습취소 = 1
+						CALL SET_BOSS_ENEMY_DUNGEON_105, "アーゼウス"
+						CALL BATTLE_START
+						;戦闘が終わるとここに戻ってくる。
+						;各種イベント戦闘用のフラグを消し、メッセージを表示
+						FLAG:도주불가플래그 = 0
+						FLAG:회화불능플래그 = 0
+						FLAG:선제기습취소 = 0
+						DA:(FLAG:현X):(FLAG:현Y) = 13001
+						CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "", "", "＞아무래도 정지한 모양이다……"
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:천정호아제우스]], "CSV" , "","네가로기어 아제우스", "………………"
+						CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "", "", "＞네가로기어 아제우스가 무릎을 꿇고 손을 내밀어 온다./계약의 의사를 나타내고 있는 듯하다."
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:마치헤어]], "CSV" , "","마치 헤어", "오~! 해냈구나!/축하해! 이걸로 네가로기어 아제우스는 네 것이 되었어."
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:마치헤어]], "CSV" , "","마치 헤어", "그럼 난 이만 실례할게~!/바이바~이!"
+						CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "", "", "＞마치 헤어는 떠나갔다……"
+						CALL MESSAGE_WINDOW_D_ICON, [[キャラ:천정호아제우스]], "CSV" , "","네가로기어 아제우스", "………………"
+						CALL MESSAGE_WINDOW_D_ICON, , "NOIMG", "", "", "＞계약을 맺었다. 귀환하자."
+						CALL ADD_NEW_COMPANION,[[キャラ:천정호아제우스]],1000
+						ダンジョンフラグ:(FLAG:현던전):17 = 1
+						CALL INPUT_SELECT_M,"[0]탐색을 계속한다///[1]던전에서 탈출한다"
+						IF RESULT == 0
+						ELSE
+							FLAG:탈출 = 1
+						ENDIF
+					ELSE
+						
+					ENDIF
+				ELSEIF ダンジョンフラグ:(FLAG:현던전):18 == 1
+					GOTO AAZEUS_EVENT
+				ENDIF
+			ELSE
+			ENDIF
+	ENDSELECT
+	CALL MAKE_FLOOR, FLAG:현던전
+	CALL AUTOMAP
+RETURN 0
+ENDSELECT
+
+;=======================================================================
+;階段置き場
+;アンダーグラウンドは精霊界入口から降り階段で入って
+;入口(0)から浅層(10)、中層(11)、深層(12)、最深層(13)と数値は上がるが降りる形式なので別途指定。
+;白銀の迷宮城は普通に上がっていくのでCASEELSEのとこで問題無し
+;=======================================================================
+;上り階段処理
+@UPSTAIRS_105
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) /10
+	;アンダーグラウンド浅層(10)から精霊界入口(0階層)の降り階段に戻る
+	CASE 1000
+		CALL DUNGEON_UPSTAIRS_ID, 0 , 7
+	;アンダーグラウンドの最深層→深層→中層→浅層と登って戻るので現Mをマイナスする
+	CASE 1100 , 1200 , 1300
+		CALL DUNGEON_UPSTAIRS_ID, FLAG:현M - 1 , (FLAG:현M - 1) * 1000 + 7
+	;他、白銀の迷宮城用で次の階層の降り階段に登る
+	CASEELSE
+		CALL DUNGEON_UPSTAIRS_ID, FLAG:현M+1 , (FLAG:현M + 1) * 1000 + 7
+ENDSELECT
+RETURN 1
+
+;降り階段処理
+@DOWNSTAIRS_105
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) /10
+	;精霊界入口(0)からアンダーグラウンド浅層(10)の登り階段に降りる
+	CASE 0
+		CALL DUNGEON_DOWNSTAIRS_ID, 10 , 10006
+	;アンダーグラウンドの浅層→中層→深層→最深層と降りて進むので現Mをプラスする
+	CASE 1000 , 1100 , 1200 , 1300
+		CALL DUNGEON_DOWNSTAIRS_ID, FLAG:현M + 1 , (FLAG:현M + 1) * 1000 + 6
+	;他、白銀の迷宮城用で次の階層の登り階段に降りる
+	CASEELSE
+		CALL DUNGEON_DOWNSTAIRS_ID, FLAG:현M-1 , (FLAG:현M - 1) * 1000 + 6
+ENDSELECT
+RETURN 1
+
+
+;=======================================================================
+;罠置き場
+;ランダムにHPとMPダメージと各種状態異常が出る。
+;HPとMPは10%ダメージにランダムで15%まで追加する。
+;HPとMPは確率増やすために複数用意。
+;状態異常は1、2ターンで消えたり特殊なものは無し。
+;SHOCK(2)、FREEZE(5)、FLY(13)、ORGY(16)、HEAT(17)、SLIP(19)
+;=======================================================================
+@TRAP_105
+SELECTCASE FLAG:현M
+	CASE 7 TO 9
+		LOCAL = RAND(20)
+		SELECTCASE LOCAL
+			CASE 0
+				;HPダメージ10％+ランダム15%まで
+				CALL DUNGEON_TRAP_HP,10 + RAND:15
+			CASE 1
+				;MPダメージ10％+ランダム15%まで
+				CALL DUNGEON_TRAP_MP,10 + RAND:15
+			CASE 2
+				;幸福(HAPPY)、付与25%
+				CALL DUNGEON_TRAP_BADSTATE,1,25
+			CASE 3
+				;混乱(PANIC)、付与25%
+				CALL DUNGEON_TRAP_BADSTATE,3,25
+			CASE 4
+				;睡眠(SLEEP)、付与25%
+				CALL DUNGEON_TRAP_BADSTATE,4,25
+			CASE 5
+				;金縛り(BIND)、付与25%
+				CALL DUNGEON_TRAP_BADSTATE,6,25
+			CASE 6
+				;沈黙(CLOSE)、付与25%
+				CALL DUNGEON_TRAP_BADSTATE,7,25
+			CASE 7
+				;猛毒(POIZON)、付与25%
+				CALL DUNGEON_TRAP_POISON,25
+			CASE 8
+				;爆弾(BOMB)、付与25%
+				CALL DUNGEON_TRAP_BADSTATE,9,25
+			CASE 9
+				;魅了(CHARM)、付与25%
+				CALL DUNGEON_TRAP_BADSTATE,10,25
+			CASE 10
+				;麻痺(PALYZE)、付与25%
+				CALL DUNGEON_TRAP_BADSTATE,11,25
+			CASE 11
+				;呪い(CURSE)、付与25%
+				CALL DUNGEON_TRAP_BADSTATE,12,25
+			CASE 12
+				;石化(STONE)、付与25%
+				CALL DUNGEON_TRAP_BADSTATE,14,25
+			CASE 13
+				;死亡(DYING)、付与25%
+				CALL DUNGEON_TRAP_BADSTATE,15,25
+			CASE 14
+				;炎上(FLAME)、付与25%
+				CALL DUNGEON_TRAP_BADSTATE,18,25
+			CASE 15
+				;낙인(BRAND)、付与25%
+				CALL DUNGEON_TRAP_BADSTATE,20,25
+			CASE 16
+				;HPダメージ10％+ランダム15%まで
+				CALL DUNGEON_TRAP_HP,10 + RAND:15
+			CASE 17
+				;MPダメージ10％+ランダム15%まで
+				CALL DUNGEON_TRAP_MP,10 + RAND:15
+			CASE 18
+				;HPダメージ10％+ランダム15%まで
+				CALL DUNGEON_TRAP_HP,10 + RAND:15
+			CASE 19
+				;MPダメージ10％+ランダム15%まで
+				CALL DUNGEON_TRAP_MP,10 + RAND:15
+		ENDSELECT
+ENDSELECT
+RETURN 0
+;=======================================================================
+;画像置き場
+;=======================================================================
+@PICTURENAME_TABLE_DUNGEON_105, ARG
+#FUNCTIONS
+SELECTCASE ARG
+	CASE 0
+		RESULTS_F '= "精霊界_タイトル"
+	CASE 1
+		RESULTS_F '= "デスガイド"
+	CASE 2
+		RESULTS_F '= "낙오 기사"
+	CASE 3
+		RESULTS_F '= "ゴブリン"
+	CASE 4
+		RESULTS_F '= "아저씨"
+	CASE 5
+		RESULTS_F '= "うらら"
+	CASE 6
+		RESULTS_F '= "カズーラ"
+	CASE 7
+		RESULTS_F '= "騎士くずれ_犯され"
+	CASE 8
+		RESULTS_F '= "アトラ"
+	CASE 9
+		RESULTS_F '= "うさぎ"
+	CASE 10
+		RESULTS_F '= "リセ"
+	CASE 11
+		RESULTS_F '= "しぐれ"
+	CASE 12
+		RESULTS_F '= "シトリス"
+	CASE 13
+		RESULTS_F '= "ゴブリン_犯され"
+	CASE 14
+		RESULTS_F '= "プティカ"
+	CASE 15
+		RESULTS_F '= "みずき"
+	CASE 16
+		RESULTS_F '= "セラ"
+	CASE 17
+		RESULTS_F '= "わらし"
+	CASE 18
+		RESULTS_F '= "ティオ"
+	CASE 19
+		RESULTS_F '= "おっさん_犯され"
+	CASE 20
+		RESULTS_F '= "トリオン"
+	CASE 21
+		RESULTS_F '= "さくら"
+	CASE 22
+		RESULTS_F '= "アティプス"
+	CASE 23
+		RESULTS_F '= "巨大フレシア登場"
+	CASE 24
+		RESULTS_F '= "蟲惑魔の森浅層"
+	CASE 25
+		RESULTS_F '= "魔法族の里"
+	CASE 26
+		RESULTS_F '= "蟲惑魔の森深層"
+	CASE 27
+		RESULTS_F '= "거대 플레시아"
+	CASE 28
+		RESULTS_F '= "巨大フレシア_犯され"
+	CASE 29
+		RESULTS_F '= "巨大フレシア_事後"
+	CASE 30
+		RESULTS_F '= "ナイトエンド"
+	CASE 31
+		RESULTS_F '= "天魔の"
+	CASE 32
+		RESULTS_F '= "ラチカ"
+	CASE 33
+		RESULTS_F '= "シンデレラ"
+	CASE 34
+		RESULTS_F '= "シラユキ"
+	CASE 35
+		RESULTS_F '= "カグヤ"
+	CASE 36
+		RESULTS_F '= "水遣い"
+	CASE 37
+		RESULTS_F '= "홀리 엘프"
+	CASE 38
+		RESULTS_F '= "幻惑の見習い"
+	CASE 39
+		RESULTS_F '= "フロッグ"
+	CASE 40
+		RESULTS_F '= "궤적의 마술사"
+	CASE 41
+		RESULTS_F '= "幻想の見習い"
+	CASE 42
+		RESULTS_F '= "白銀の迷宮城"
+	CASE 43
+		RESULTS_F '= "アンダーグラウンド"
+	CASE 44
+		RESULTS_F '= "BMG登場"
+	CASE 45
+		RESULTS_F '= "ラビュリンス登場"
+	CASE 46
+		RESULTS_F '= "가가가 시스터"
+	CASE 47
+		RESULTS_F '= "アーゼウス登場"
+	CASE 48
+		RESULTS_F '= "アーゼウスチャージ"
+ENDSELECT

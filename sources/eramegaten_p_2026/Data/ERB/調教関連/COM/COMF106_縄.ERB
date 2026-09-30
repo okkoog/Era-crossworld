@@ -1,0 +1,189 @@
+﻿;-------------------------------------------------
+;밧줄
+;SM系コマンド、レベル3
+;-------------------------------------------------
+@COMNAME106
+RESULTS = 밧줄
+SIF TEQUIP:19
+	RESULTS = 밧줄을 푼다
+@ACT_COM106
+IF TEQUIP:25
+	PRINTL 촉수긴박
+	TSTR:0 = 촉수긴박
+	SELECTCOM = 166
+ELSE
+	PRINTL 밧줄
+	TSTR:0 = 밧줄
+ENDIF
+
+;縄で縛る
+IF TEQUIP:19 == 0 && TEQUIP:25 == 0
+	IF FLAG:44 & 1
+		PRINTL 묶는 법을 정해 주십시오
+		DRAWLINE
+		PRINTL [0]-보통으로 묶는다
+		PRINTL [1]-사지구속
+		;調教者の技巧Lv3以上
+		SIF ABL:PLAYER:기교 >= 3
+			PRINTL [2]-귀갑묶기
+		;調教者の技巧Lv4以上&& (調教者がサド || (助手がいる && (助手が崩壊 || 助手が盲信 || 助手が狂気)))
+		SIF ABL:PLAYER:기교 >= 4 && (TALENT:PLAYER:83 ||( ASSI > 0 && (TALENT:ASSI:9 || TALENT:ASSI:86 || TALENT:ASSI:141)))
+			PRINTL [3]-매달기
+		$INPUT_LOOP
+		INPUT
+		IF RESULT == 0
+			PRINTL 밧줄
+			TSTR:0 = 밧줄
+			TEQUIP:37 |= 1
+		ELSEIF RESULT == 1
+			PRINTL 사지구속
+			TSTR:0 = 사지구속
+			TEQUIP:37 |= 2
+		ELSEIF RESULT == 2 && ABL:PLAYER:기교 >= 3
+			PRINTL 귀갑묶기
+			TSTR:0 = 귀갑묶기
+			TEQUIP:37 |= 4
+		ELSEIF RESULT == 3 && ABL:PLAYER:기교 >= 4 && (TALENT:PLAYER:83 ||( ASSI > 0 && (TALENT:ASSI:9 || TALENT:ASSI:86 || TALENT:ASSI:141)))
+			PRINTL 매달기
+			TSTR:0 = 매달기
+			TEQUIP:37 |= 8
+		ELSE
+			GOTO INPUT_LOOP
+		ENDIF
+	ENDIF
+;촉수긴박
+ELSEIF TEQUIP:19 == 0
+		CALL SET_STAIN("손", "粘液", TARGET)
+		CALL SET_STAIN("가슴", "粘液", TARGET)
+;해제
+ELSE
+	TEQUIP:37 = 0
+ENDIF
+
+;CALL KOJO_MESSAGE_COM
+
+INVERTBIT TEQUIP:19 , 0
+
+;調教者→調教対象
+TFLAG:28 = 2
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 30
+DOWNBASE:TARGET:기력 += 120
+
+SOURCE:TARGET:아픔 = 300
+SOURCE:TARGET:무서움 = 900
+SOURCE:TARGET:노출 = 200
+SOURCE:TARGET:굴종 = 250
+SOURCE:TARGET:일탈 = 300
+SOURCE:TARGET:반감 = 700
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;緊縛経験が高いと消費減少
+IF EXP:51 < EXPLV:3
+	TIMES DOWNBASE:TARGET:체력 , 1.00
+	TIMES DOWNBASE:TARGET:기력 , 1.00
+ELSEIF EXP:51 < EXPLV:4
+	TIMES DOWNBASE:TARGET:체력 , 0.90
+	TIMES DOWNBASE:TARGET:기력 , 0.90
+ELSE
+	TIMES DOWNBASE:TARGET:체력 , 0.70
+	TIMES DOWNBASE:TARGET:기력 , 0.70
+ENDIF
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+CALL ADDS_EXP("긴박경험", 5, TARGET)
+;PRINTL 긴박경험＋５
+
+A = 1
+IF IS_LESBIAN(TARGET,PLAYER)
+	PRINTFORML %EXPNAME:40%+{A}
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+ELSEIF IS_GAY(TARGET,PLAYER)
+	PRINTFORML %EXPNAME:41%+{A}
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+ENDIF
+
+;触手召喚時、触手経験のリセットをする
+;SIF TEQUIP:25 == 1
+;	T = 0
+
+;依存度ベクトル
+TFLAG:33 = 3
+
+;依存度補正値(服従で1、隷属で2）
+IF TALENT:복종 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:예속 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+
+
+;-------------------------------------------------
+;装着継続の処理
+;-------------------------------------------------
+@EQUIP_COM106
+IF TEQUIP:25
+	PRINTL ＜촉수 긴박 중＞
+ELSE
+	PRINTL ＜긴박 중＞
+ENDIF
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 15
+
+SOURCE:TARGET:아픔 += 150
+SOURCE:TARGET:무서움 += 450
+SOURCE:TARGET:노출 += 100
+SOURCE:TARGET:굴종 += 125
+SOURCE:TARGET:일탈 += 150
+SOURCE:TARGET:반감 += 350
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;緊縛経験が高いと消費減少
+A = 60
+IF EXP:51 < EXPLV:3
+	TIMES A , 1.00
+ELSEIF EXP:51 < EXPLV:4
+	TIMES A , 0.90
+ELSE
+	TIMES A , 0.70
+ENDIF
+DOWNBASE:TARGET:기력 += A
+
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+CALL ADDS_EXP("긴박경험", 1, TARGET)
+;PRINTL 긴박경험＋１
+
+;触手経験加算
+SIF TEQUIP:25 == 1
+	CALL ADDS_EXP("촉수경험", 1, TARGET)
+;	T += 1
+
+
+RETURN 1
+
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_106
+RETURN COMTYPE("ＳＭ系")
+
+

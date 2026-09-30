@@ -1,0 +1,202 @@
+;EVENT_S.ERB、EVENT_SUB、追加処理及びサブイベント
+;-------------------------------------------------
+;日付が変わった時のイベント
+;-------------------------------------------------
+@EVENT_NEXTDAY
+$INPUT_LOOP
+;不思議の根持ちで精液経験が300以上で生える
+IF TARGET >= 0 
+	IF TALENT:TARGET:138 == 1 && EXP:TARGET:20 >= 300 && TALENT:139 == 0 && !IS_MALE(TARGET)
+		DRAWLINE
+		PRINTFORML ……どうやら[不思議な根]の効果が現れそうだ
+		PRINTFORMW %CALLNAME:TARGET%を[ふたなり]にしますか？
+		PRINTL [0] - する
+		PRINTL [1] - しない
+		INPUT
+		IF RESULT == 0
+			PRINTFORML %NAME:TARGET%の[不思議な根]は[ふたなり]となった
+			TALENT:139 = 1
+		ELSEIF RESULT == 1
+			PRINTFORML %NAME:TARGET%は[不思議な根]を失った
+		ELSE
+			GOTO INPUT_LOOP
+		ENDIF
+		DRAWLINE
+		WAIT
+		TALENT:TARGET:138 = 0
+	ENDIF
+ENDIF
+
+$INPUT_LOOP_2
+;具現持ちでレズ経験2500以上で生える
+IF TARGET >= 0 
+	IF TALENT:TARGET:146 == 1 && EXP:TARGET:40 >= 2500 && TALENT:139 == 0 && !IS_MALE(TARGET)
+		DRAWLINE
+		PRINTFORML ……どうやら[具現]の効果が現れそうだ
+		PRINTFORML %CALLNAME:TARGET%を[ふたなり]にしますか？
+		PRINTL [0] - する
+		PRINTL [1] - しない
+		INPUT
+		IF RESULT == 0
+			PRINTFORML %NAME:TARGET%は[具現]によって[ふたなり]となった
+			TALENT:139 = 1
+		ELSEIF RESULT == 1
+			PRINTFORML %NAME:TARGET%は[具現]を失った
+		ELSE
+			GOTO INPUT_LOOP_2
+		ENDIF
+		DRAWLINE
+		WAIT
+		TALENT:TARGET:146 = 0
+	ENDIF
+ENDIF
+
+;放尿経験３０以上でおもらし癖がつく
+IF TARGET >= 0 
+	IF TALENT:57 == 0
+		IF (TALENT:TARGET:151 && EXP:TARGET:31 >= 10) || (TALENT:TARGET:151 == 0 && EXP:TARGET:31 >= 30)
+			PRINTFORMW （む･･･なんだこれ？）
+			PRINTFORM %CALLNAME:TARGET%は
+			SIF TALENT:TARGET:151 && EXP:TARGET:31 >= 10
+			PRINTFORM おねしょを
+			SIF TALENT:TARGET:151 == 0 && EXP:TARGET:31 >= 30 
+			PRINTFORM 粗相を
+			PRINTFORMW してしまったようだ……
+			PRINTFORMW %CALLNAME:TARGET%は[おもらし癖]がついた
+			TALENT:TARGET:57 = 1
+		ENDIF
+	ENDIF
+ENDIF
+
+IF TARGET >= 0 
+	;反発刻印３があり、かつ幼稚である時に
+	IF TALENT:TARGET:151 && MARK:3 == 3
+		;欲望が5かつ従順が5かつマゾっ気が5かつ異常経験が７以上になる
+		SIF ABL:TARGET:1 >= 5 && ABL:TARGET:0 >= 5 && ABL:TARGET:9 >= 5 && EXP:TARGET:50 >= 7
+			CALL EVENT_YOUJI
+	;反発刻印３があり、かつ幼稚がない時
+	ELSEIF TALENT:TARGET:151 == 0 && MARK:3 == 3
+		;欲望が5かつ従順が5かつマゾっ気が5かつ異常経験が９以上に加え露出５とおもらし癖がある
+		SIF ABL:TARGET:1 >= 5 && ABL:TARGET:0 >= 5 && ABL:TARGET:9 >= 5 && ABL:TARGET:8 >= 5 && EXP:TARGET:50 >= 9 && TALENT:57 == 1
+			CALL EVENT_YOUJI
+	ENDIF
+ENDIF
+
+SIF FLAG:未調教時陥落
+	CALL ENAMORED_CHECK
+
+;生活費消費
+;PRINTL
+;LOCAL:1 = 0
+;IF FLAG:調教難易度 != 1 && DAY > 10
+;	FOR LOCAL,0,CHARANUM
+;		IF ABL:LOCAL:種族 == 0 && LOCAL != MASTER && CFLAG:LOCAL:売却可能 > 0 && TALENT:LOCAL:崩壊 == 0
+;			LOCAL:2 = POWER(BASE:LOCAL:LV/(陥落(LOCAL)+1),2)*10
+;			;忠誠度で軽減
+;			LOCAL:2 *= (100-MIN(10000,BASE:LOCAL:忠誠度)*95/10000)
+;			LOCAL:2 /= 100
+;			
+;			LOCAL:1 += LOCAL:2
+;		ENDIF
+;	NEXT
+;ENDIF
+;IF LOCAL:1 > 0
+;	PRINTFORMW 生活費として￥{LOCAL:1}を支払った
+;	MONEY -= LOCAL:1
+;ENDIF
+
+@EVENT_YOUJI
+;幼児退行
+PRINTFORMW %CALLNAME:TARGET%の様子がおかしい……
+PRINTFORMW %CALLNAME:TARGET%は過酷な調教に耐え切れず、【幼児退行】してしまったようだ……
+SIF TALENT:151
+	TALENT:151 = 0
+TALENT:150 = 1
+MARK:3 = 0
+
+
+;-------------------------------------------------
+;朝になった時のイベント
+;-------------------------------------------------
+@EVENT_NEWDAY
+;屋台の借金返済イベント
+;SIF FLAG:23 == 1 && MONEY >= 100000
+;	CALL RETURN_LOAN
+
+;奴隷レンタルの期日が来た場合の奴隷返却処理
+;REPEAT CHARANUM
+;	IF CFLAG:COUNT:12 == 1 && CFLAG:COUNT:13 == DAY
+;		A = COUNT
+;		CALL RETURN_SLAVE
+;	ENDIF
+;REND
+
+;娼館バイトが終わった場合の終了処理
+;REPEAT CHARANUM
+;	IF CFLAG:COUNT:12 == 2
+;		A = COUNT
+;		CALL END_PROSTITUTION
+;	ENDIF
+;REND
+
+
+;全体の妊娠判定の処理
+;関数内に妊娠機能OFF時のフラグリセットも持たせたのでここで行う
+;CALL IN_VAGINA
+	
+SIF FLAG:妊娠機能
+	;全体の妊娠発覚時のイベント
+	CALL GET_CHILD
+
+;排卵誘発剤と子宮内避妊結界の効果終了処理
+REPEAT CHARANUM
+	IF CFLAG:COUNT:108
+		PRINTFORMW %CALLNAME:COUNT%の子宮内避妊結界の効果が切れたようだ
+		CFLAG:COUNT:108 = 0
+	ELSEIF CFLAG:COUNT:109
+		PRINTFORMW %CALLNAME:COUNT%の排卵誘発剤の効果が切れたようだ
+		CFLAG:COUNT:109 = 0
+	ENDIF
+	IF CFLAG:COUNT:117
+		PRINTFORMW %CALLNAME:COUNT%の浮気草の露の効果が切れたようだ
+		CFLAG:COUNT:117 = 0
+	ENDIF
+REND
+
+;仕送りイベント
+CALL REMITTANCE
+
+;出産･育児室関連
+IF FLAG:出産機能ONOFF
+	FOR LOCAL:6, 0, CHARANUM
+		IF TALENT:(LOCAL:6):153
+			;出産2日前からは臨月突入で調教不可に
+			IF (CFLAG:(LOCAL:6):110 - 2) == DAY
+				DRAWLINE
+				C = LOCAL:6
+				CALL REACH_FULL_TERM
+			;出産予定日なら出産
+			ELSEIF CFLAG:(LOCAL:6):110 <= DAY
+				DRAWLINE
+				C = LOCAL:6
+				CALL CHILD_BIRTH
+			ENDIF
+		ELSEIF TALENT:(LOCAL:6):154
+			;出産後翌日には育児室への訪問を問うイベント発生
+			;親離れで調教可能に
+			IF (CFLAG:(LOCAL:6):110 + 1) <= DAY && TFLAG:701 != DAY
+				DRAWLINE
+				PRINTFORML %CALLNAME:(LOCAL:6)%の出産から一日経ちました
+				C = LOCAL:6
+				CALL DEPEARENT
+			ENDIF
+		ENDIF
+		
+	NEXT
+ENDIF
+
+REPEAT CHARANUM
+	;娘成長イベント
+	SIF MARK:COUNT:6 >= 1 && DAY >= (CFLAG:COUNT:娘の誕生日 + 5) && CFLAG:COUNT:娘の誕生日 != 0
+		CALL CHILD_GROWTH
+REND

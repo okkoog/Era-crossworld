@@ -1,0 +1,165 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_15.ERB
+;	Facility	:어령출현
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		XXXX					作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+@GET_EVENT_NAME_15
+#FUNCTIONS
+RESULTS_F '= "어령출현"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_15
+SIF イベントフラグ:33:1 < 4
+	RETURN 0
+SIF イベントフラグ:15:0 > 5
+	イベントフラグ:15:0 = 5
+IF イベントフラグ:15:1 == DAY && MONEY - イベントフラグ:15:3 > 9999
+	イベントフラグ:15:3 = MONEY
+	IF !RAND:20
+		PRINTW 어령을 봤다는 정보가 들어왔다！
+		イベントフラグ:15:0 ++
+	ENDIF
+ENDIF
+IF イベントフラグ:15:1 != DAY || イベントフラグ:15:2 != TIME
+	イベントフラグ:15:1 = DAY
+	イベントフラグ:15:2 = TIME
+	イベントフラグ:15:3 = MONEY
+	IF !RAND:20
+		PRINTW 어령을 봤다는 정보가 들어왔다！
+		イベントフラグ:15:0 ++
+	ENDIF
+ENDIF
+IF イベントフラグ:15:0 > 0
+	RESULTS = 어령출현！
+	RETURN 1
+ENDIF
+RETURN 0
+	
+	
+
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_15
+PRINTW 어령을 발견했다는 장소에 왔다
+PRINTW 눈앞에 어령이 나타났다
+
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+LOCAL:1 = MIN(5,BASE:MASTER:LV / 20 + 1)
+LOCAL:2 = MIN(50,BASE:MASTER:LV)
+LOCAL:3 = 0
+FOR LOCAL,7,17
+	SIF LOCAL:3 < LOCAL:1 || RAND:100 < LOCAL:2
+		CALL ENEMY_MITAMA_SET, LOCAL, BASE:MASTER:LV
+		;CALL SET_ENEMY,LOCAL,1301 + RAND:4,BASE:MASTER:LV
+	LOCAL:3 ++
+NEXT
+CALL BATTLE_START
+
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+イベントフラグ:15:0 --
+
+;====================
+;内容
+;====================
+@ENEMY_MITAMA_SET, L_POS, L_LV ,L_MITAMA = -1, IS_USEABLE_ESTOMA
+#DIM DYNAMIC L_POS
+#DIM DYNAMIC L_LV
+#DIM DYNAMIC L_NO
+#DIM DYNAMIC L_COUNT
+#DIM DYNAMIC L_MITAMA
+#DIM DYNAMIC IS_USEABLE_ESTOMA
+#DIMS CONST L_KAJA = "타루・카쟈", "마카・카쟈", "스쿠・카쟈", "라쿠・카쟈", "사마・카쟈"
+#DIM CONST MITAMA_TABLE = [[キャラ:아라미타마]], [[キャラ:니기미타마]], [[キャラ:쿠시미타마]], [[キャラ:사키미타마]]
+
+SIF !INRANGE( L_POS, 7, 16)
+	RETURN 0
+L_MITAMA = L_MITAMA < 0 ? RAND:4 # (L_MITAMA % 4)
+L_NO = MITAMA_TABLE:L_MITAMA
+
+CALL SET_ENEMY,L_POS ,L_NO, L_LV, 0, 0, IS_USEABLE_ESTOMA
+SIF !RESULT
+	RETURN 0
+CFLAG:(CHARANUM-1):BS무효플래그 = 1
+FOR L_COUNT ,GETNUM(BASE, "검격") ,GETNUM(BASE, "만능") + 1
+	BASE:(CHARANUM-1):L_COUNT = 20
+NEXT
+ABL:(CHARANUM-1):회화타입 = 331
+
+ABL:(CHARANUM-1):아이템1 = [[アイテム:미타마의조각]]
+ABL:(CHARANUM-1):입수확률1 = 100
+
+CALL CLEAR_ALL_SKILL, CHARANUM - 1
+CALL SET_SKILL, CHARANUM - 1, "코칭"
+CALL SET_SKILL, CHARANUM - 1, "도주"
+FOR L_COUNT ,0 ,5
+	SIF L_COUNT >= 1 && L_LV < 20
+		BREAK
+	SIF L_COUNT >= 2 && L_LV < 40
+		BREAK
+	SIF L_COUNT >= 3 && L_LV < 60
+		BREAK
+	SIF L_COUNT >= 4 && L_LV < 75
+		BREAK
+	CALL SET_SKILL, CHARANUM - 1, L_KAJA:((L_COUNT + L_MITAMA) % 5)
+NEXT
+SIF L_LV >= 90
+	CALL SET_SKILL, CHARANUM - 1, "라스타캔디"
+
+SELECTCASE L_NO
+CASE [[キャラ:아라미타마]]
+	BASE:(CHARANUM-1):빙결 = 50
+	BASE:(CHARANUM-1):수격 = 50
+	ABL:(CHARANUM-1):아이템2 = [[アイテム:어령즙・황]]
+	ABL:(CHARANUM-1):입수확률2 = 70
+	ABL:(CHARANUM-1):아이템3 = [[アイテム:정화즙・황]]
+	ABL:(CHARANUM-1):입수확률3 = 50
+CASE [[キャラ:니기미타마]]
+	BASE:(CHARANUM-1):화염 = 50
+	BASE:(CHARANUM-1):핵열 = 50
+	ABL:(CHARANUM-1):아이템2 = [[アイテム:어령즙・화]]
+	ABL:(CHARANUM-1):입수확률2 = 70
+	ABL:(CHARANUM-1):아이템3 = [[アイテム:정화즙・화]]
+	ABL:(CHARANUM-1):입수확률3 = 50
+CASE [[キャラ:쿠시미타마]]
+	BASE:(CHARANUM-1):전격 = 50
+	BASE:(CHARANUM-1):지변 = 50
+	ABL:(CHARANUM-1):아이템2 = [[アイテム:어령즙・기]]
+	ABL:(CHARANUM-1):입수확률2 = 70
+	ABL:(CHARANUM-1):아이템3 = [[アイテム:정화즙・기]]
+	ABL:(CHARANUM-1):입수확률3 = 50
+CASE [[キャラ:사키미타마]]
+	BASE:(CHARANUM-1):충격 = 50
+	BASE:(CHARANUM-1):질풍 = 50
+	ABL:(CHARANUM-1):아이템2 = [[アイテム:어령즙・행]]
+	ABL:(CHARANUM-1):입수확률2 = 70
+	ABL:(CHARANUM-1):아이템3 = [[アイテム:정화즙・행]]
+	ABL:(CHARANUM-1):입수확률3 = 50
+ENDSELECT
+
+
+
+
+
+
+
+
+
+
+
+
+
+

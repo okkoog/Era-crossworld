@@ -1,0 +1,185 @@
+﻿;スキル名
+@SKILL_NAME_声なき嘲笑,ARG
+RESULTS = ▶소리 없는 조소
+
+;　명중
+@SKILL_HITRATE_声なき嘲笑,ARG
+RETURN 85
+
+;　威力
+@SKILL_POWER_声なき嘲笑,ARG
+SIF ARG == -1
+	RETURN 255
+SIF (CFLAG:ARG:집중플래그 > 0 || CFLAG:ARG:회심의패기플래그 > 0)
+	RETURN 270
+RETURN 255
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_声なき嘲笑,ARG
+RETURN 10
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_声なき嘲笑,ARG
+RETURN 2
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_声なき嘲笑,ARG
+RETURN 2
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_声なき嘲笑, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_声なき嘲笑,ARG
+IF PU_SKILLGAGE_F_GET(ARG,"声なき嘲笑") > 0
+	RESULTS = {PU_SKILLGAGE_F_GET(ARG,"声なき嘲笑")}T
+ELSE
+	RESULTS = ◯
+ENDIF
+RETURN 0
+;コストタイプが1だとRESULTSにコストの表示を指定できる。
+
+;　相性
+@SKILL_TYPE_声なき嘲笑,ARG
+RETURN GET_TYPE_NUM("전술")
+;전술
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_声なき嘲笑
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_声なき嘲笑, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_声なき嘲笑,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+;敵
+
+;　사거리
+@SKILL_RANGE_声なき嘲笑,ARG
+RETURN 1
+;近距離のみ
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_声なき嘲笑,ARG
+RETURN GET_SPHERE_NUM("단체")
+;敵単体
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_声なき嘲笑,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_声なき嘲笑
+RETURN GET_SUCCESSION_NUM("전술")
+;전술
+
+@継承不能_声なき嘲笑
+RETURN 2
+;不可、造魔や子供にも継承せず
+
+;속도보정
+@SKILL_SPEED_声なき嘲笑, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_声なき嘲笑
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_声なき嘲笑, ARG = -1
+RETURN 5
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_声なき嘲笑,ARG
+RETURN GET_STATE_NUM("PALYZE")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_声なき嘲笑,ARG
+RETURN GET_TYPE_NUM("신경")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_声なき嘲笑,ARG
+RETURN 5
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_声なき嘲笑,ARG
+RETURN 10
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_声なき嘲笑,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM
+	CALL PU_SKILLGAGE_F_SET, ARG, "純粋なる力",3
+	CALL PU_SKILLGAGE_F_SET, ARG, "声なき嘲笑",3
+	PRINTFORML 　
+	PRINTFORML ▶재사용까지 2턴!
+
+;====================================================
+;ターン終了時に行う処理
+;====================================================
+@SKILL_TURNEND_声なき嘲笑,ARG
+;CT1ターン減
+SIF PU_SKILLGAGE_F_GET(ARG,"声なき嘲笑") > 0
+  CALL PU_SKILLGAGE_F_ADD, ARG, "声なき嘲笑",-1
+
+;====================================================
+;戦闘終了時に行う処理
+;====================================================
+@SKILL_BATTLE_END_声なき嘲笑,ARG
+;CT1ターン減
+SIF PU_SKILLGAGE_F_GET(ARG,"声なき嘲笑") > 0
+  CALL PU_SKILLGAGE_F_ADD, ARG, "声なき嘲笑",-1
+
+;====================================================
+;実行内容ここまで
+;====================================================
+@SKILL_EX_DISPLAY_声なき嘲笑, ARG, ARGS
+RESULTS '= ""
+IF PU_SKILLGAGE_F_GET(ARG,"声なき嘲笑") == 0
+	IF INPUTABLE_CHARA_F(ARG)
+		RESULTS '= SET_BUTTON_TAG(SET_COLOR_TAG(@"%"▶声なき嘲笑", SKILL_EX_DISPLAY_LENS - 10, LEFT%", "パ緑"), ARGS)
+		IF IS_PU_SKILL_入力行動(ARG, "声なき嘲笑") && !CFLAG:ARG:방어플래그
+			RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG(@"[ Set ]", "パ緑"), @"INPUT/SKILL/{ARG}/{PU_SKILLNUM_GET(ARG, "声なき嘲笑")}", @"声なき嘲笑を使用予定")
+		ELSE
+			RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG(@"[Ready]", "パ緑"), @"INPUT/SKILL/{ARG}/{PU_SKILLNUM_GET(ARG, "声なき嘲笑")}", @"声なき嘲笑を使用")
+		ENDIF
+	ELSE
+		RESULTS '= SET_BUTTON_TAG(SET_COLOR_TAG(@"%"▶声なき嘲笑", SKILL_EX_DISPLAY_LENS - 10, LEFT%", "gray"), ARGS)
+		RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG(@"[Ready]", "gray"), , @"행동불능")
+	ENDIF
+ELSE
+	RESULTS += @"%"▶声なき嘲笑", SKILL_EX_DISPLAY_LENS - 9, LEFT%%HTML_ESCAPE(@"<CT:0{PU_SKILLGAGE_F_GET(ARG,"声なき嘲笑")}>")%"
+ENDIF
+RESULTS:1 = ▶소리 없는 조소
+RETURN 1
+
+;　 説明文の表示
+@SKILL_EXPLAIN_声なき嘲笑,ARG
+PRINTL 적 1체에 2회 전기 속성 데미지를 주고, 매우 낮은 확률로 PALYZE 상태로 만든다
+PRINTL 명중률이 낮고, 크리티컬이 발생하기 쉽다
+PRINTL 「과거의 주석」 다음에 사용하면 위력이 올라간다
+PRINTL 사용하면 “▶” 아이콘 스킬에 2턴의 쿨타임이 발생한다
+PRINTL 
+PRINTL 데겐블레허의 제2 스킬
+PRINTL 적에게 맞히기 어렵지만 높은 데미지를 기대할 수 있다
+
+
+@SKILL_DEL_UNABLE_声なき嘲笑,ARG
+RETURN 1
+;削除不可
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_声なき嘲笑,ARG
+SIF PU_SKILLGAGE_F_GET(ARG,"声なき嘲笑") > 0
+	RETURN 0
+RETURN 1
+

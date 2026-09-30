@@ -1,0 +1,165 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_419,ARG
+RESULTS = 리캄드라
+
+
+;　명중
+@SKILL_HITRATE_419, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_419, ARG
+RETURN 1000
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_419,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_419,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_419, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_419,ARG
+RETURN 30
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_419
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_419, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_419, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_419,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_419,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_419, ARG
+RETURN GET_SKILL_EFFECT_NUM("상태회복")
+
+@SKILL_HEAL_TYPE_419, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("割合")
+
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_419
+RETURN GET_SUCCESSION_NUM("회복")
+
+;속도보정
+@SKILL_SPEED_419, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_419
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_419, ARG = -1
+RETURN 11
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_419, ARG, ARG:1, ARG:2
+#DIM DYNAMIC L_POS
+#DIM DYNAMIC L_CHARA
+FOR L_POS, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1) + 1
+	L_CHARA = POS(L_POS)
+	;使用者は除外
+	SIF L_CHARA == ARG
+		CONTINUE
+	SIF L_CHARA < 0
+		CONTINUE
+	IF CFLAG:(L_CHARA):상태이상 == GET_STATE_NUM("DYING")
+		CFLAG:(L_CHARA):상태이상 = 0
+		CFLAG:(L_CHARA):상태이상경과턴수 = 0
+		CALL VAR_HP,(L_CHARA),MAXBASE:(L_CHARA):ＨＰ
+		PRINTFORML %조사처리(CALLNAME:(L_CHARA),"는")% 되살아났다
+	ELSE
+		CALL HEAL_SINGLE, ARG, L_CHARA, 419, 1
+	ENDIF
+NEXT
+CALL DEAD_CHARA,ARG,ARG
+WAIT
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+@ACTION_FIELD_419,ARG,ARG:1,ARG:2
+CALL ACTION_419, ARG, ARG:1
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_419, ARG
+PRINTL 사용자를 희생해、아군 전체의 ＨＰ와 모든 배드스테이터스를 전부 회복한다。
+
+@SKILL_EXPLAIN_TOOLTIP_419, ARG
+RESULTS = 사용자를 희생해、아군 전체의 ＨＰ와 모든 배드스테이터스를 전부 회복한다。
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_419,ARG
+RETURN 1
+;とくにない
+
+;ターゲット条件
+@SKILL_IS_VALID_TARGET_419,ARG, ARG:1
+IF CFLAG:(ARG:1):PT플래그
+	;魅了されているときは使わない
+	IF IS_BADSTATE(ARG:1, "CHARM")
+		RETURN 0
+	ELSE
+		;味方のときは基本的に有効度不問
+		RETURN 1
+	ENDIF
+ELSE
+	SIF POS(ARG) < 0
+		RETURN 0
+	CALL SKILL_CURE_STATE_419,(CFLAG:POS(ARG):상태이상)
+	RETURN RESULT
+ENDIF
+
+;控えに使えるか
+@SKILL_T_RESERVE_419, ARG
+RETURN 0
+
+;何のバッドステータスを治せるか
+@SKILL_CURE_STATE_419,ARG
+SELECTCASE GET_STATE(ARG)
+	CASE "FLY","GOOD","ORGY","HEAT"
+		RETURN 0
+	CASEELSE
+		RETURN 1
+ENDSELECT
+

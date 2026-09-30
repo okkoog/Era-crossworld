@@ -1,0 +1,168 @@
+﻿
+;スキル名
+@SKILL_NAME_AW_4110,ARG
+RESULTS = 황천의 강림
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_AW_4110, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_AW_4110,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_AW_4110,ARG
+RETURN GET_TYPE_NUM("신경")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_AW_4110
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_AW_4110, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　1物理 2魔法 3銃 4アイテム 5割合
+@SKILL_ATTACKTYPE_AW_4110, ARG
+RETURN GET_攻撃タイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_AW_4110, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_AW_4110,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_AW_4110,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_AW_4110, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+
+;속도보정
+@SKILL_SPEED_AW_4110, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_AW_4110
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_AW_4110, ARG = -1
+RETURN 23
+;変化不能
+
+@敵専用_AW_4110, ARG
+RETURN 1
+
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_AW_4110,ARG
+RETURN GET_STATE_NUM("POISON")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_AW_4110,ARG
+RETURN GET_TYPE_NUM("신경")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_AW_4110,ARG
+RETURN 40
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_AW_4110,ARG
+RETURN 95
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_AW_4110,ARG,ARG:1,ARG:2
+CALL FIELD_BADSTATE, ARG, ARG:1, ARG:2
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_AW_4110,ARG,ARG:1
+SIF ARG != ARG:1
+	RETURN 0
+SIF ARG != FLAG:행동순1
+	RETURN 0
+CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", CFLAG:ARG:입력행동, ARG
+SIF GET_SUCCESSION(RESULT) != "충격"
+	RETURN 0
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+SIF GET_SKILL_EFFECT(RESULT) != "공격"
+	RETURN 0
+RETURN 1, CFLAG:ARG:PT플래그 ? 22 # 19
+
+@SKILL_PASSIVE_PENETRATION_RANK_AW_4110, L_P, L_T, L_スキル, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM DYNAMIC L_P;このスキルの所持者
+#DIM DYNAMIC L_T;攻撃対象
+#DIMS DYNAMIC L_スキル;スキルの所持者が敵に対して使用しているスキルの関数名称
+#DIM DYNAMIC L_ダメージタイプ
+#DIM DYNAMIC L_攻撃タイプ
+#DIM DYNAMIC L_相性
+#DIM DYNAMIC GIVE_EFFECT_CHARA;リーダースキル等他人からつけられている場合の提供者
+SIF GET_TYPE(L_相性) == "충격"
+	RETURN 0, 4
+RETURN 0
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_AW_4110, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			SIF !IS_BADSTATE(L_TARGET, "GOOD")
+				RETURN 20
+	ENDSELECT
+;自分が防御側
+ELSE
+ENDIF
+RETURN 0
+
+;계승타입,制限なし
+@SKILL_SUCCESSION_TYPE_AW_4110, ARG
+RETURN GET_SUCCESSION_NUM("자동효과")
+@SKILL_ACTIONABLE_BATTLE_AW_4110, ARG
+RETURN 0
+
+;　 説明文の表示
+@SKILL_EXPLAIN_AW_4110, ARG
+PRINTL 마인 페일라이더의 각성 스킬
+PRINTL 자동: 공격 대상이 상태이상일 때 주는 데미지가 증가한다.
+PRINTL 　　　충격 상성 공격이 적의 내성을 50%까지 무시하고 관통하는 효과를 얻는다.
+PRINTL 　　　자신이 충격 계통 공격 스킬을 발동했을 때 이하의 연동 효과가 발동한다.
+PRINTL 　　　「적 전체에 확률로 POISON을 부여한다.」
+
+@SKILL_EXPLAIN_TOOLTIP_AW_4110, ARG
+RESULTS:0 = 자동: 공격 대상이 상태이상일 때 주는 데미지가 증가한다.
+RESULTS:1 = 　　　충격 상성 공격이 적의 내성을 50%까지 무시하고 관통하는 효과를 얻는다.
+RESULTS:2 = 　　　자신이 충격 계통 공격 스킬을 발동했을 때 이하의 연동 효과가 발동한다.
+RESULTS:3 = 　　　「적 전체에 확률로 POISON을 부여한다.」
+

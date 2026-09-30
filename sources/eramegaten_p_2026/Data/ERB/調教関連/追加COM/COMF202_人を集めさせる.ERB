@@ -1,0 +1,119 @@
+﻿;-------------------------------------------------
+;사람을모으게한다
+;-------------------------------------------------
+@CHECK_COM_ABLE202
+
+;野外プレイ中かつ野外プレイ拡張機能ありじゃないとダメ
+SIF TEQUIP:29  == 0 || FLAG:46 == 0
+	RETURN 0
+;人にみつかってないとダメ
+SIF TEQUIP:46 == 0
+	RETURN 0
+SIF MONEY < 1000
+	RETURN 0
+RETURN 1
+
+@ACT_COM202
+;사람을모으게한다
+
+PRINTL 사람을모으게한다
+TSTR:0 = 사람을모으게한다
+
+;CALL KOJO_MESSAGE_COM
+;-------------------------------------------------
+;ソースの計算
+;-------------------------------------------------
+;消費体力、気力
+LOSEBASE:체력 += 10
+LOSEBASE:기력 += 100
+
+SOURCE:TARGET:무서움 = 500
+SOURCE:TARGET:노출 = 400
+SOURCE:TARGET:일탈 = 600
+SOURCE:TARGET:반감 = 200
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;抑圧、抵抗持ちには、抑鬱ソース追加
+SIF TALENT:억압 || TALENT:저항
+	SOURCE:TARGET:울굴 += 20
+
+;苦痛を伴わないマゾっ気及びマゾの伴う処理は先にしておく
+;マゾっ気を見る
+IF ABL:9 == 0
+	TIMES SOURCE:TARGET:노출 , 0.80
+	SOURCE:TARGET:10 += 0
+	SOURCE:TARGET:11 += 0
+ELSEIF ABL:9 == 1
+	TIMES SOURCE:TARGET:노출 , 1.00
+	SOURCE:TARGET:10 += 20
+	SOURCE:TARGET:11 += 30
+ELSEIF ABL:9 == 2
+	TIMES SOURCE:TARGET:노출 , 1.20
+	SOURCE:TARGET:10 += 40
+	SOURCE:TARGET:11 += 70
+ELSEIF ABL:9 == 3
+	TIMES SOURCE:TARGET:노출 , 1.40
+	SOURCE:TARGET:10 += 70
+	SOURCE:TARGET:11 += 120
+ELSEIF ABL:9 == 4
+	TIMES SOURCE:TARGET:노출 , 1.50
+	SOURCE:TARGET:10 += 110
+	SOURCE:TARGET:11 += 180
+ELSEIF ABL:9 == 5
+	TIMES SOURCE:TARGET:노출 , 1.70
+	SOURCE:TARGET:10 += 150
+	SOURCE:TARGET:11 += 250
+ELSEIF ABL:9 == 6
+	TIMES SOURCE:TARGET:노출 , 1.90
+	SOURCE:TARGET:10 += 200
+	SOURCE:TARGET:11 += 300
+ELSEIF ABL:9 == 7
+	TIMES SOURCE:TARGET:노출 , 2.10
+	SOURCE:TARGET:10 += 250
+	SOURCE:TARGET:11 += 350
+ELSEIF ABL:9 == 8
+	TIMES SOURCE:TARGET:노출 , 2.30
+	SOURCE:TARGET:10 += 300
+	SOURCE:TARGET:11 += 400
+ELSEIF ABL:9 == 9
+	TIMES SOURCE:TARGET:노출 , 2.50
+	SOURCE:TARGET:10 += 350
+	SOURCE:TARGET:11 += 450
+ELSEIF ABL:9 >= 10
+	TIMES SOURCE:TARGET:노출 , 3.00
+	SOURCE:TARGET:10 += 500
+	SOURCE:TARGET:11 += 500
+ENDIF
+
+;マゾを見る
+IF TALENT:마조 == 1
+	TIMES SOURCE:TARGET:노출 , 2.50
+	TIMES SOURCE:TARGET:10 , 1.20
+	TIMES SOURCE:TARGET:11 , 1.20
+ENDIF
+
+
+
+TEQUIP:46 += 5 + RAND:11
+MONEY -= 1000
+;依存度ベクトル
+TFLAG:33 = 5
+
+RETURN 1
+
+@MESSAGE_COM202
+
+PRINTFORML %CALLNAME:PLAYER%은(는) 주변 구경꾼들에게 돈을 쥐여주며 사람을 모으게 했다
+PRINTFORMW 여러 사람이 %CALLNAME:TARGET%의 주위로 모여들었다
+
+
+
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_202
+RETURN COMTYPE("特殊コマンド系")
+
+

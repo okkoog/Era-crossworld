@@ -1,0 +1,218 @@
+﻿
+;スキル名
+@SKILL_NAME_【一刃】,ARG
+IF ARG < 0 || !TFLAG:전투중 || !HAVE_PU_SKILL(ARG,"【一刃】")
+	RESULTS = 【一刃】
+ELSE
+	RESULTS '= GET_SKILL_サンストーン_構え(ARG)
+	SELECTCASE PU_SKILLGAGE_D_GET(ARG,"【一刃】")
+		CASE 0
+			RESULTS += "【一刃】"
+		CASE 1
+			RESULTS += "【二襲】"
+		CASE 2
+			RESULTS += "【三破】"
+		CASE 3
+			RESULTS += "【四撃】"
+	ENDSELECT
+ENDIF
+
+;　명중
+@SKILL_HITRATE_【一刃】, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_【一刃】, ARG
+IF ARG == -1 || !HAVE_PU_SKILL(ARG,"【一刃】")
+	RETURN 200
+ELSE
+	IF HAVE_PU_SKILL(ARG, "真実の手【右手】")
+		IF GET_SKILL_サンストーン_構え(ARG) == "落日"
+			SELECTCASE PU_SKILLGAGE_D_GET(ARG,"【一刃】")
+				CASE 0
+					RETURN 450
+				CASE 1
+					RETURN 490
+				CASE 2
+					RETURN 530
+				CASE 3
+					RETURN 570
+			ENDSELECT
+		ELSE
+			SELECTCASE PU_SKILLGAGE_D_GET(ARG,"【一刃】")
+				CASE 0
+					RETURN 420
+				CASE 1
+					RETURN 460
+				CASE 2
+					RETURN 500
+				CASE 3
+					RETURN 540
+			ENDSELECT
+		ENDIF
+	ELSE
+		IF GET_SKILL_サンストーン_構え(ARG) == "落日"
+			SELECTCASE PU_SKILLGAGE_D_GET(ARG,"【一刃】")
+				CASE 0
+					RETURN 150
+				CASE 1
+					RETURN 180
+				CASE 2
+					RETURN 210
+				CASE 3
+					RETURN 240
+			ENDSELECT
+		ELSE
+			SELECTCASE PU_SKILLGAGE_D_GET(ARG,"【一刃】")
+				CASE 0
+					RETURN 130
+				CASE 1
+					RETURN 160
+				CASE 2
+					RETURN 190
+				CASE 3
+					RETURN 220
+			ENDSELECT
+		ENDIF
+	ENDIF
+ENDIF
+@SKILL_CRITICAL_RATE_【一刃】, ARG
+RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_【一刃】,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_【一刃】,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_【一刃】, ARG
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_【一刃】,ARG
+IF ARG == -1 || !HAVE_PU_SKILL(ARG,"【一刃】")
+	RETURN 9
+ELSE
+	IF HAVE_PU_SKILL(ARG, "真実の手【右手】")
+		RETURN 30
+	ELSE
+		RETURN 12
+	ENDIF
+ENDIF
+
+;　相性
+@SKILL_TYPE_【一刃】,ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_【一刃】
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_【一刃】,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_【一刃】,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_【一刃】,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_【一刃】,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_【一刃】,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+@SKILL_SUCCESSION_TYPE_【一刃】,ARG
+RETURN GET_SUCCESSION_NUM("검격")
+
+@SKILL_RANK_【一刃】, ARG = -1
+SIF ARG >= 0 && HAVE_PU_SKILL(ARG, "真実の手【右手】")
+	RETURN 12
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_【一刃】, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_【一刃】
+RETURN 0
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_【一刃】, ARG = -1, ARG:1 = -1
+RETURN 0
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+@SKILL_DAMAGE_EFFECT_【一刃】,ARG,ARG:1,ARG:2
+SIF ARG:1 < 0
+	RETURN 0
+SIF ARG:2 < -1
+	RETURN 0
+IF GET_SKILL_サンストーン_構え(ARG) == "白夜"
+	SELECTCASE PU_SKILLGAGE_D_GET(ARG,"【一刃】")
+		CASE 0
+			CALL SKILL_SET_カジャンダ, ARG, ARG:1, "마법효과", -4, "短縮"
+		CASE 1
+			CALL SKILL_SET_カジャンダ, ARG, ARG:1, "회피", -4, "短縮"
+		CASE 2
+			CALL SKILL_SET_カジャンダ, ARG, ARG:1, "BS부착률", 4, "短縮"
+		CASE 3
+			CALL SKILL_SET_カジャンダ, ARG, ARG:1, "방어", -4, "短縮"
+	ENDSELECT
+ENDIF
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_【一刃】,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM
+CALL SKILLGAGE_D_ADD, ARG, SKILL_NUM ,2
+SIF SKILLGAGE_D_GET(ARG,SKILL_NUM) == 5
+	CALL SKILLGAGE_D_SET, ARG, SKILL_NUM ,0
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_【一刃】,ARG
+PRINTL 적 단체에 검격 속성의 데미지를 준다. 사용할 때마다 위력과 소비량이 상승한다.
+PRINTL 【4격】 사용 후에는 【1인】으로 돌아간다.
+PRINTL 발동 시의 자세에 따라 추가 효과가 발생한다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_【一刃】, ARG
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_【一刃】, ARG
+RESULTS:0 = 적 단체에 검격 속성의 데미지를 준다. 사용할 때마다 위력과 소비량이 상승한다.
+RESULTS:1 = 발동 시의 자세에 따라 추가 효과가 발생한다.
+
+@GET_SKILL_サンストーン_構え, ARG
+#FUNCTIONS
+SIF HAVE_PU_SKILL(ARG,"暁光の構え") && PU_SKILLGAGE_H_GET(ARG,"暁光の構え") > 0
+	RETURNF "暁光"
+SIF HAVE_PU_SKILL(ARG,"白夜の構え") && PU_SKILLGAGE_H_GET(ARG,"白夜の構え") > 0
+	RETURNF "白夜"
+SIF HAVE_PU_SKILL(ARG,"落日の構え") && PU_SKILLGAGE_H_GET(ARG,"落日の構え") > 0
+	RETURNF "落日"
+RETURNF ""

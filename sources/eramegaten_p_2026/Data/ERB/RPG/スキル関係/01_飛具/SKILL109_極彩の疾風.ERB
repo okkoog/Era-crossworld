@@ -1,0 +1,136 @@
+﻿;20210813	NEO		八千穂明日香＠九龍妖魔學園紀（※飛具専門達人）が使用すると、速度補正+6で飛具を最大３回防ぐ壁に変化するように
+
+;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_109,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:야치호]])
+	RESULTS = 리턴
+ELSE
+	RESULTS = 극채의질풍
+ENDIF
+
+;　명중
+@SKILL_HITRATE_109, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_109, ARG
+RETURN 18
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_109,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_109,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_109, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_109,ARG
+RETURN 24
+
+;　相性
+@SKILL_TYPE_109,ARG
+RETURN GET_TYPE_NUM("비구")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_109
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_109, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_109,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_109,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_109, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_109
+RETURN GET_SUCCESSION_NUM("비구")
+
+;속도보정
+@SKILL_SPEED_109, ARG = -1
+IF SKILL_CHANGE(ARG, [[キャラ:야치호]])
+	RETURN 6
+ELSE
+	RETURN 0
+ENDIF
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_109
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_109, ARG = -1
+RETURN 6
+
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_109, ARG, ARG:1, ARG:2
+;コスト支払い
+;CALL PAY_COST,ARG,109
+
+;実行
+IF SKILL_CHANGE(ARG, [[キャラ:야치호]])
+	IF ARG < 0
+		CALL SKILL_WALL , ARG , "비구" , CFLAG:ARG:타겟 , 1
+	ELSEIF 陥落(ARG) == 0
+		CALL SKILL_WALL , ARG , "비구" , CFLAG:ARG:타겟 , 1
+	ELSEIF 陥落(ARG) == 1
+		CALL SKILL_WALL , ARG , "비구" , CFLAG:ARG:타겟 , 2
+	ELSE
+		CALL SKILL_WALL , ARG , "비구" , CFLAG:ARG:타겟 , 3
+	ENDIF
+ELSE
+	CALL SKILL_WALL , ARG , "비구" , CFLAG:ARG:타겟 , 1
+ENDIF
+
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_109, ARG
+IF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:야치호]]
+	PRINTL 그 손의 라켓으로 정확하게 리턴을 돌려준다
+	PRINTL 그 정확성은 무려 비구 상성의 공격을 막는 벽을 아군 전체에（※최대）３회분 치는 것에 해당한다
+ELSE
+	PRINTL 아군 전체에의 비구 상성의 공격을 각각 １회씩 막는 벽을 친다
+ENDIF
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_109,ARG
+RETURN 1
+;とくにない
+

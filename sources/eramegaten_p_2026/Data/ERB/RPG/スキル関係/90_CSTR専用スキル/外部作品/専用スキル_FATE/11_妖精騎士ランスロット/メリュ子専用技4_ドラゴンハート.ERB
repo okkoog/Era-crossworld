@@ -1,0 +1,196 @@
+﻿;スキル名
+@SKILL_NAME_ドラゴンハート,ARG
+RESULTS = 드래곤 하트
+
+;　명중
+@SKILL_HITRATE_ドラゴンハート, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_ドラゴンハート, ARG
+RETURN 100
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ドラゴンハート,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ドラゴンハート,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ドラゴンハート, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ドラゴンハート,ARG
+RETURN 20
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ドラゴンハート
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ドラゴンハート,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ドラゴンハート,ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_ドラゴンハート,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ドラゴンハート,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_ドラゴンハート,ARG
+RETURN GET_SKILL_EFFECT_NUM("상태변화")
+
+;속도보정
+@SKILL_SPEED_ドラゴンハート, ARG = -1
+RETURN 5
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ドラゴンハート
+RETURN 0
+
+
+;ターン終了時に行う処理
+@SKILL_TURNEND_ドラゴンハート,ARG
+#DIM SKILL_NUM
+#DIM L_F_GAGE
+#DIM L_WAIT
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"ドラゴンハート")
+L_F_GAGE = SKILLGAGE_F_GET(ARG,SKILL_NUM)
+SIF L_F_GAGE == 0
+	RETURN 0
+L_WAIT = 0
+L_F_GAGE += L_F_GAGE > 0 ? -1 # 1
+IF L_F_GAGE == 0 && SKILLGAGE_F_GET(ARG,SKILL_NUM) > 0
+	PRINTFORML %CALLNAME:ARG%의 드래곤 하트 추가 효과가 종료되었다….
+	L_F_GAGE = -3
+	L_WAIT = 1
+ENDIF
+CALL SKILLGAGE_F_SET(ARG,SKILL_NUM,L_F_GAGE)
+IF L_F_GAGE == -3
+	CALL SYNC_STATUS,ARG
+	CALL VAR_HP(ARG,0,"회복")
+	SIF CSTR:ARG:HP배리어명 != "『ドラゴンハート』"
+		RETURN 0
+	CFLAG:ARG:HP배리어 = MIN(CFLAG:ARG:HP배리어,0)
+	PRINTFORML 드래곤 하트의 피데미지 컷 효과가 해제되었다….
+	L_WAIT = 1
+ENDIF
+SIF L_WAIT
+	WAIT
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ドラゴンハート,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIMS L_STR
+
+L_STR = \@ GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 0 ? 기합 # 集中 \@
+CFLAG:ARG:@"%L_STR%フラグ" = 1
+PRINTFORML %CALLNAME:ARG%(은)는 다음 공격에 대비해 \@ L_STR == "기합" ? 힘을 모았다 # 집중하고 있다 \@!
+
+IF SKILLGAGE_F_GET(ARG,SKILL_NUM) == 0
+	PRINTFORML 또한 4턴 동안 주는 데미지 상승, 피데미지 컷, 최대 HP 증가!
+	PRINTFORML %CALLNAME:ARG%의 NP 게이지가 30% 충전되었다!
+	CALL SKILLGAGE_F_ADD,ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム"),30
+	CALL SKILLGAGE_F_SET,ARG,SKILL_NUM,4
+	CALL SYNC_STATUS,ARG,"HPMP割合保持"
+ENDIF
+WAIT
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_ドラゴンハート,ARG
+IF PU_SKILLGAGE_F_GET(ARG, "ドラゴンハート") != 0
+	IF PU_SKILLGAGE_F_GET(ARG, "ドラゴンハート") > 0
+		RESULTS = 드래곤 하트:효과 종료
+	ELSE
+		RESULTS = 드래곤 하트:CT{ABS(PU_SKILLGAGE_F_GET(ARG,"ドラゴンハート"))}
+	ENDIF
+	RETURN 3
+ELSE
+	RETURN 0
+ENDIF
+;　説明文の表示
+@SKILL_EXPLAIN_ドラゴンハート,ARG
+PRINTL 용의 노심. 혹은 용의 보옥. 생체 에너지의 과잉 발로 상태인 마술회로.
+PRINTL
+PRINTFORML 통상: 다음에 실행할 \@ARG > -1 && GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") > 0 ? 마법 # 물리 \@ 공격의 위력이 150% 증가한다.
+PRINTL 추가: 3턴 동안 주는 데미지 40% 증가, 자신의 최대 HP 증가, 피데미지 컷, NP 30% 충전 효과를 얻는다.
+PRINTL 추가 효과는 발동 후 수 턴 동안 다시 발동하지 않는다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ドラゴンハート,ARG
+RETURN 1
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_ドラゴンハート, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;スキルゲージが未起動の場合、補正は発生しない
+SIF SKILLGAGE_F_GET(L_P,SKILL_NUM) < 1
+	RETURN 0
+IF L_P == L_ACTOR
+	SIF ARGS == "ダメージ補正加算"
+		RETURN 40
+ELSE
+	;被弾時 and HPバリアが自身の最大HP10％ or 125ダメージ分のいずれか高い方の値未満の場合、即座に最大HP10％ or ダメージ125分のいずれか高い方のバリアを貼る
+	SIF ARGS == "ダメージ倍率" && CFLAG:L_P:HP배리어 < MAX(MAXBASE:L_P:ＨＰ / 10,125) && !SKILLGAGE_D_GET(L_P,PU_SKILLNUM_GET(L_P,"竜炎励起"))
+		CALL SKILL_SET_HPバリア,L_P,MAX(MAXBASE:L_P:ＨＰ / 10,125),"『ドラゴンハート』","非表示"
+ENDIF
+RETURN 0
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_ドラゴンハート, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) < 1
+	RETURN 0
+SELECTCASE ARGS
+	;基本の最大HPの30%の値が250を超えてるなら30%乗算、未満なら250加算
+	CASE "HP補正"
+		RESULTS = \@ MAXBASE:ARG:ＨＰ * 30 / 100 > 250 ? 乗算 # 加算 \@
+		RETURN RESULTS == "乗算" ? 30 # 250
+ENDSELECT
+RETURN 0

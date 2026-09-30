@@ -1,0 +1,479 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_82_英霊召喚(妖精騎士ランスロット).ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author		Reason
+;	000		20XX/XX/XX		----		テンプレ
+;	001		2021/07/09		しゃけ		作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;====================
+;召喚イベント条件
+;====================
+@FGO_SUMMON_CHECK_11
+#DIM L_CHARA
+#DIM 生贄
+#DIMS 対象結果,3 = "未所持"
+
+;■召喚可否条件をここに記載することで読み込んでくれます■
+;※召喚はイベントフラグ:82:1が必ず4以上から。
+
+L_CHARA = GETCHARA([[キャラ:ＦＫ・랜슬롯]])
+IF イベントフラグ:82:1 > 3
+	RESULTS = 가련하고도 최강인 용의 요정(요정기사 란슬롯)
+	RESULTS:1 = 필요 촉매：ERROR! 『촉매에 적합한 악마를 특정할 수 없습니다』
+	;未所持なら素通し
+	SIF L_CHARA == -1
+		RETURN 1
+	RESULTS:1 = %RESULTS:1 + "보구 재림 실행 가능"%
+	;宝具再臨が4未満なら通過可能
+	SIF GET_RPG_CFLAG_TAKEOVER(L_CHARA,"宝具再臨（ランサー）") < 4
+		RETURN 1
+	;宝具再臨が4だと通過不可
+	RESULTS:1 '= "보구 최종재림 도달 완료"
+	RETURN 0
+ELSE
+	;そもこれが出ることはないはずだけど、確認用に一応記載
+	RESULTS = 최초 소환 이벤트 미소화
+	RETURN 0
+ENDIF
+
+;※RETURN 1　で鯖リストのBITがオンになるようにしているため、必ずRETURNを記入してください
+
+;通常召喚ではなく独自形式の召喚処理を行う場合に用意される関数
+;普通のとは別の処理をやりたい場合は関数を用意して1を返す
+@FGO_UNIQUE_SUMMON_11
+RETURN 1
+
+;----------------------------------------
+;生贄にする条件に適した悪魔を複数選択する関数
+;使用する場合、CASTING_FGO_SUMMON_SACRIFICE_{使用しているイベントビットの桁}関数を作る必要がある
+;----------------------------------------
+;ARG		召喚する鯖のイベントビット桁（メリュジーヌは11桁目のビットを使用しているので11）
+;L_CHARA	生贄として選択された悪魔の登録番号を入れるところ
+@FGO_SUMMON_SACRIFICE,ARG
+#DIM L_CHARA,3
+#DIM LCOUNT
+VARSET L_CHARA,-1
+VARSET LCOUNT
+CALL FGO_SUMMON_SACRIFICE_STOCK,"RESETALL"
+$LIST_LOOP
+;メモ：もし余裕があったら生贄にする悪魔の数や、悪魔の代わりに指定したアイテムを生贄として選択する処理を追加しておく
+;キャラ一覧から条件が合うキャラが表示されるリストの中から生贄にする悪魔を選ぶ
+;CALL INPUT_CHARA_LIST(@"%TOFULL(TOSTR(LCOUNT + 1))%つ目に生贄にする悪魔を選んでください",@"CASTING_FGO_SUMMON_SACRIFICE_{ARG}")
+{
+CALL INPUT_CHARA_LIST
+	, "FUNC_PROPSET_LIST"
+	, @"%TOFULL(TOSTR(LCOUNT + 1))%번째로 제물로 바칠 악마를 선택해 주십시오"
+	, @"CASTING_FGO_SUMMON_SACRIFICE_{ARG}"
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+;キャンセル選択 and １つ目の悪魔選択時、イベントキャンセルの値を返す
+IF RESULT == 1000 && LCOUNT == 0
+	CALL FGO_SUMMON_SACRIFICE_STOCK,"RESETALL"
+	RETURN -1
+ENDIF
+;キャンセル選択なら-1を、それ以外ならキャラ番号を登録、RESULTに入れなおして返す
+L_CHARA:LCOUNT = RESULT
+CALL FGO_SUMMON_SACRIFICE_STOCK,\@ RESULT == 1000 ? RESET # RECORD \@,RESULT == 1000 ? LIMIT(LCOUNT -1,0,2) # LCOUNT,L_CHARA:LCOUNT
+;キャンセル選択なら-1を、それ以外なら1をLCOUNTに加算
+LCOUNT += RESULT == -1 ? -1 # 1
+;三つ目の悪魔の選択でなければ次の悪魔を選ぶ
+SIF LCOUNT < 3
+	GOTO LIST_LOOP
+;選択した悪魔の登録番号がRESULT:0,RESULT:1,RESULT:2に入って返ってくる
+RETURN L_CHARA:0,L_CHARA:1,L_CHARA:2
+
+;----------------------------------------
+;生贄候補の悪魔を仮登録する関数
+;----------------------------------------
+;ARG		使用する配列の要素数
+;ARG:1		キャラ登録番号
+;ARGS		옵션。RESETALLで全消し、RESETで対応した特定の部分消し、MATCHで登録済みかどうか確認する、RECORDなら登録
+@FGO_SUMMON_SACRIFICE_STOCK,ARGS = "",ARG,ARG:1 = -1
+#DIM L_CSVID,3
+;たぶんERHでグローバル変数用意した方が手間がかからないと思う
+SELECTCASE ARGS
+	CASE "RECORD"
+		L_CSVID:ARG = NO:(ARG:1)
+		RETURN ARG:1
+	CASE "RESETALL"
+		VARSET L_CSVID,-1
+	CASE "RESET"
+		L_CSVID:ARG = -1
+		RETURN -1
+	CASE "MATCH"
+		SIF (ARG > -1 && L_CSVID:ARG == NO:(ARG:1)) || MATCH(L_CSVID,NO:(ARG:1))
+			RETURN 1
+ENDSELECT
+RETURN 0
+
+;----------------------------------------
+;召喚確率まとめて計算して返してくれる関数
+;使用する場合、FGO_SUMMON_SACRIFICE_SCORE_{使用しているイベントビットの桁}関数を作る必要がある
+;----------------------------------------
+;ARG		召喚する鯖のイベントビット桁（メリュジーヌは11桁目のビットを使用しているので11）
+;ARGS		選択した悪魔の登録番号を文字列に変換したやつ。SPLIT用に/で区切る(例：101/102/103)
+@FGO_SUMMON_SACRIFICE_SCORE,ARG,ARGS
+#DIM LCOUNT,2
+#DIM SUMMON_SCORE
+#DIM L_COLOR
+#DIMS L_STR,10
+VARSET SUMMON_SCORE
+SPLIT ARGS,"/",L_STR
+LCOUNT:1 = RESULT
+SIF !RESULT
+	THROW SPLITでRESULTに代入された値が0です。（ARGSに代入する文字列を / で区切ってください）
+SIF VARSIZE("L_STR") < LCOUNT:1
+	THROW 分割された文字列の数が配列の要素数を越えています。
+FOR LCOUNT:0,0,LCOUNT:1 + 1
+	;最後のループになると-1を返す。対応するサーヴァントを検索するときの分岐用
+	CALLFORM FGO_SUMMON_SACRIFICE_SCORE_{ARG},LCOUNT:0 == LCOUNT:1 ? -1 # TOINT(L_STR:(LCOUNT:0))
+	SUMMON_SCORE += RESULT
+NEXT
+SELECTCASE SUMMON_SCORE
+	CASE IS >= 4000
+		L_COLOR = 0x008000
+	CASE 3000 TO 3999
+		L_COLOR = 0xffff00
+	CASE 2000 TO 2999
+		L_COLOR = 0xffa500
+	CASE IS <= 1999
+		L_COLOR = 0xff0000
+ENDSELECT
+RETURN MAX(SUMMON_SCORE + RAND:100,1),L_COLOR
+
+;生贄候補の悪魔の適合率
+@FGO_SUMMON_SACRIFICE_SCORE_11,ARG
+#DIM L_SCORE
+VARSET L_SCORE
+IF ARG > -1
+	SELECTCASE ABL:ARG:종족
+		CASE 6,44
+			L_SCORE += 100
+		CASE 8
+			L_SCORE += 200
+		CASE 9
+			L_SCORE += 50
+	ENDSELECT
+	SIF GET_ALI1(ABL:ARG:속성LD) == "Dark"
+		L_SCORE += 100
+	SIF GET_ALI2(ABL:ARG:속성LC) == "Neutral"
+		L_SCORE += 100
+	SIF !IS_MALE(ARG)
+		L_SCORE += 100
+	SELECTCASE NO:ARG
+		CASE [[キャラ:비비안]],[[キャラ:아서]]
+			L_SCORE += 100
+		CASE [[キャラ:펜드래곤]],[[キャラ:모르간]],[[キャラ:멜뤼지느]]
+			L_SCORE += 200
+	ENDSELECT
+	L_SCORE += (300 * 陥落(ARG))
+ELSE
+	SIF GETCHARA([[キャラ:ＦＫ・랜슬롯]]) > -1
+		L_SCORE += 1000
+ENDIF
+RETURN L_SCORE
+
+;====================
+;妖精騎士ランスロット召喚
+;====================
+@FGO_SUMMON_11
+#DIM 対象,3
+#DIM LCOUNT
+#DIM 召喚確率
+#DIM L_CHARA
+#DIMS 呼び名
+
+
+呼び名 = \@ TALENT:MASTER:서머너 > 0 ? 서머너 # 전사 \@ %CALLNAME:MASTER%
+
+;■イベント本文を記載■
+;バトルイベント識別のためにイベントフラグを特定値に設定
+イベントフラグ:82:5 = 110
+PRINTL  …………
+PRINTL  ………
+PRINTL  ……
+PRINTL
+PRINTFORML  「흠. 이 소환은 특수한 부류라네, %呼び名%여.
+PRINTL  　복수의 제물을 바탕으로 인류사에는 존재하지 않으나, 어쩌면 존재했을지도 모를 영령을 불러내는 소환 의식이지.
+PRINTL  　이 소환은 통상적인 영령 소환처럼 확실히 영령을 불러낼 수 있는 것은 아니라네. 불러내지 못했다고 해서 제물이 되돌아오는 것도 아니고.
+PRINTW  　말하자면 도박에 가까운 행위지. 무턱대고 행했다간 자산만 헛되이 소모하고 끝날 걸세.」
+PRINTL  　
+PRINTL  「제물로 바칠 악마의 함락까지는 필요 없으나, 그대로 행하는 소환의 성공률은 꽤나 낮다네.
+PRINTL  　성공률을 높이고 싶다면 역시 함락된 악마를 써야겠지. 깊이 함락된 악마일수록 성공률이 올라가네.
+PRINTW  　계약을 맺은 악마라면 성공률이 비약적으로 상승하지만…… 거기까지 할지 어떨지는 그대에게 달렸지.」
+PRINTL  　
+PRINTW  「자, 여기까지 말하고 나서 뭐하지만…… 실은 이 영령을 소환하는 데 적합한 악마가 누구인지 우리로서는 현재 파악하지 못했네」
+PRINTL
+PRINTW  「마음은 쓰리지만…… 어느 악마를 제물로 바칠지는 그대가 선택해 주게나」
+PRINTL
+$EVENT_LOOP
+CALL FGO_SUMMON_SACRIFICE,11
+IF RESULT == -1
+	PRINTW  「그런가. 미지의 존재의 소환을 함께하지 못하는 것은 아쉽지만, 싸우는 자로서는 현명한 판단이라 할 수 있겠지」
+	RETURN 0
+ENDIF
+対象 = RESULT:0,RESULT:1,RESULT:2
+PRINTL
+CALL FGO_SUMMON_SACRIFICE_SCORE,11,STRJOIN(RESULT,"/",0,3)
+PRINTL
+召喚確率 = RESULT
+;TOSTRで良い感じの書式見つかんなかったから力押しのやり方で表現する
+RESULTS = <font color = '%TOSTR_HTML(RESULT:1)%'>%TOSTR(召喚確率 / 100) + "." + TOSTR(召喚確率 % 100)%</font>
+HTML_PRINT " 「흠…… 이 조합으로 소환이 성공할 확률은 『" + RESULTS + "%』 정도겠군…」"
+;PRINTFORMW  「ふむ……この組み合わせで召喚が成功する確率は『%TOSTR(召喚確率 / 100,"0.00")%％』程度だな…」
+PRINTL
+SELECTCASE 召喚確率
+	CASE IS >= 4000
+		PRINTW  「현시점에서 최상이라 할 수 있는 확률이로군. 더 이상 우리가 할 수 있는 건 없네, 남은 건 맞기를 기도하는 것뿐일세」
+	CASE 3000 TO 3999
+		PRINTW  「나쁘지 않은 확률이군. 조금 더 손을 대고 싶기는 하지만, 그건 그대의 판단에 맡기도록 하지」
+	CASE 2000 TO 2999
+		PRINTW  「신뢰성이 다소 낮은 확률이로군. 필요한 조건을 채우도록 조정하는 편이 더 좋은 결과로 이어질 거라 생각하네만……」
+	CASE 100 TO 1999
+		PRINTW  「상당히 낮은 확률이네. 많이 시도하면 맞을지도 모르지만, 이 몸으로서는 그리 권장할 수 없겠어」
+	CASEELSE
+		PRINTW  「그야말로 허공에 총질하기 딱 좋은 수준이로군. 이참에 복권이라도 한 장 사보는 게 어떤가?」
+ENDSELECT
+PRINTL
+PRINTFORMW  「자, 다시 확인하겠네만…… 이 제물들로 특수 소환을 실행하겠나, %呼び名%.」
+PRINTL
+CALL INPUT_YN("상관없다","다시 생각한다")
+SIF RESULT == 1
+	GOTO EVENT_LOOP
+PRINTW  「그런가. 그렇다면 곧바로 소환 의식에 착수하도록 하지」
+PRINTW  「지금 중에 제물이 될 동료마와 작별 인사를 나누고 오게나, 시간은 그리 길지 않다네?」
+PRINTL  　
+PRINTL  「그들은 새로운 악마로서 다시 태어나는 것이 아니라, 말 그대로 『제물』이 되어 소멸해 버리는 몸이라네.
+PRINTW  　그렇기에 그들에게 다음이란 건 없어. 동료마의 주인으로서 그들의 최후를 똑똑히 지켜보도록 하게」
+PRINTW  　
+PRINTW  …………빅토르의 말대로, 제물이 될 악마들과 마지막 인사를 나누기로 했다.
+PRINTL
+PRINTL  …………
+PRINTL  ………
+PRINTL  ……
+PRINTL
+;-------------------------------------------------
+PRINTL  「자, 소환술은 다음 단계로!
+PRINTW  　――우리들의 연구 성과를 보여주도록 하지」
+PRINTL  
+PRINTFORM  「자, 마음 단단히 먹게나 %呼び名%.
+PRINTW  　이것이 새로운 소환 기술, 그 발전이다――――읏읏읏」
+;キャラ削除関数でキャラリストがソートされる都合上、削除済みの登録番号を参照してエラー吐く可能性があるので登録番号が大きい順から消しておく
+ARRAYSORT 対象,BACK,0,3
+;対象のキャラを消す
+FOR LCOUNT,0,3
+	CALL キャラ削除(対象:LCOUNT)
+NEXT
+CALL 疑似的画面クリア
+TWAIT 500,1
+PRINTL  
+PRINTL  
+;■以下、召喚イベント本文をどうぞ■
+PRINTL  ＞ 순간, 소환진에서 마력이 빛의 격류가 되어 휘몰아치다 사라져 간다
+PRINTL
+PRINTL
+PRINTL  …………
+PRINTL  ………
+PRINTL  ……
+PRINTL
+PRINTL
+SELECTCASE RAND:10000 + 1
+	CASE IS > 召喚確率
+		TWAIT 500,1
+		PRINTW  ………아무 일도 일어나지 않는다……
+		PRINTL
+		PRINTW  「흠. 아무래도 소환 의식은 실패해 버린 모양이로군」
+		PRINTL  
+		PRINTW  「유감이지만…… 이번에는 물러나 다시 준비할 수밖에 없겠어」
+		PRINTL  
+		PRINTFORML  「하지만 염려할 것은 없다네! %呼び名%여!
+		PRINTL  　그대가 소환을 포기하지 않는 한 언제나 가능성은 존재하는 법! 그대에게 그 의지가 있다면!
+		PRINTW  　이 실패를 양분 삼아, 다시 제물을 모으기 위해 달려 나가는 걸세!」
+		;ﾊｼﾘｰﾀﾞｽｰ
+		PRINTL
+		PRINTW  「뭘, 그대가 포기하지 않는 한 이 몸도 전력으로 지원하겠네. 함께 미지의 존재와의 해후를 이루어내지 않겠나!」
+		PRINTL  
+		PRINTL
+		PRINTFORMW  빅토르의 격려를 받으며 %CALLNAME:MASTER%는 소환실에서 물러났다……
+		IF RAND:10000 > (召喚確率 / 10)
+			イベントフラグ:82:5 = 0
+			RETURN 0
+		ENDIF
+		PRINTL
+		PRINTL  …………
+		PRINTL  ………
+		PRINTL  ……
+		PRINTL
+		PRINTL
+		PRINTW  「응앗!? 이, 이것은……!?」
+		PRINTL  　
+		PRINTW  ……어째 빅토르의 상태가 황급하다. 퇴실한 직후의 소환실에서 무언가 일어난 모양이다
+		PRINTL  　
+		PRINTFORMW  「%呼び名%여, 아직 소환 의식은 끝나지 않았네!
+		PRINTW  　이것은 혹시…… 소환 의식에 대한 응답이 지연되었던 것이란 말인가!?」
+		PRINTL
+		PRINTFORMW  「서두르게, %呼び名%여! 미지의 존재가 지금 이곳에 강림하려 하고 있다네!」
+		PRINTL
+		PRINTW  빅토르의 재촉을 받으며 소환실로 되돌아가기로 했다.
+		CALL 疑似的画面クリア
+		TWAIT 500,1
+		PRINTL  
+		PRINTL  
+		PRINTL  ＞ 순간, 소환진에서 마력이 빛의 격류가 되어 휘몰아치다 사라져 간다
+ENDSELECT
+L_CHARA = GETCHARA([[キャラ:ＦＫ・랜슬롯]])
+IF L_CHARA == -1
+	TWAIT 500,1
+	PRINTW  ＞ 모두가 눈을 보호하기 위해 빛을 가렸고, 다음 순간에는 한 소녀가 소환진 위에 우두커니 서 있었다
+	PRINTL  
+	PRINTL  
+	PRINTW  「서번트, 랜서. 요정기사 란슬롯, 소환에 응하여 강림했다.
+	PRINTW  　………어라, 여긴……」
+	PRINTL  
+	PRINTL  
+	PRINTW  ＞ 그곳에 있던 것은 작은 체구이면서도 늠름한 분위기를 풍기는 갑주를 두른 불가사의한 소녀였다
+	PRINTW  　 양팔에는 거꾸로 뒤집힌 검집, 그리고 자신의 얼굴을 가린 가면
+	PRINTW  　 문외한의 눈으로 보면 특촬물 흉내를 내며 놀고 있는 아이처럼 보일지도 모른다
+	PRINTL  
+	PRINTW  　 물론 그녀의 갑옷에 떠오르는 마법회로와 그녀 자신이 발하는 강자의 풍모를 본다면 인식을 고쳐먹게 되겠지만
+	PRINTL  
+	PRINTL  
+	PRINTFORMW  ＞ %CALLNAME:MASTER%는 소녀 앞으로 걸어가 자신이 영령──요정기사 란슬롯──의 마스터임을 알렸다
+	PRINTL  
+	PRINTL  
+	PRINTW  「마스터? 네가?」
+	PRINTL
+	PRINTW  「그렇구나…… 으~음…… 그렇구나…… 인리 군도 융통성이 없단 말이지…」
+	PRINTL  
+	PRINTL  
+	PRINTW  ＞ 어쩐지 풀이 죽어 의기소침해진 모양이다
+	PRINTFORMW  　 아무래도 소환자인 %CALLNAME:MASTER%가 마스터라는 점에 무언가 걸리는 구석이 있는 듯한데……?
+	PRINTL  
+	PRINTL  
+	PRINTW  「아아, 아니야. 개인적인 사정이 있어서 그런 거니 소환자인 네게 잘못은 없어」
+	PRINTL  
+	PRINTW  「머나먼 동류의 목소리를 듣고 넙죽 대답해 버린 내 쪽이 잘못한 거고.
+	PRINTW  　애초에 서번트가 된 이상 이런 인연도 있는 법이지.
+	PRINTW  　스스로를 기사로 규정한 이상, 나의 주체인 네 명령은 가급적 따를 생각이야.
+	PRINTW  　……약간 후회되는 구석도 있지만 말이지」
+	PRINTL  
+	PRINTL  
+	PRINTW  ＞ 마지막 말이 다소 불안하지만 이상하게 적대 관계가 되는 것보다는 낫다고 생각하기로 했다
+	PRINTL  
+	PRINTL  
+	PRINTW  「어찌 되었든 다시 자기소개를 할게─────나는 랜서, 요정기사 란슬롯.
+	PRINTW  　너를 가로막는 적을 꿰뚫는 창이 될 것을 여기에 맹세할게」
+	PRINTL 
+	PRINTL
+	PRINTW  ＞ 영령 요정기사 란슬롯이 동료마가 되었다!
+	PRINTL
+	PRINTL
+	;バトルイベント識別に使ったイベントフラグを片付け
+	イベントフラグ:82:5 = 0
+	PRINTL
+	PRINTL  …………
+	PRINTL  ………
+	PRINTL  ……
+	PRINTL
+	PRINTL
+	PRINTFORMW  「%呼び名%여, 우선은 소환 성공을 축하한다, 고 말해두지」
+	PRINTL  　
+	PRINTL  　
+	PRINTFORMW  　소환 의식을 무사히 마친 뒤 빅토르가 %CALLNAME:MASTER%에게 말을 걸어왔다
+	PRINTW  　소환을 마친 뒤에 일부러 말을 걸었다는 것은 무슨 일이라도 있는 것일까?
+	PRINTL  　
+	PRINTL  　
+	PRINTW  「음, 눈치가 빨라 고맙군. 그 요정기사에 대해서네만……
+	PRINTW  　이쪽에서 다시 관측해 본 결과, 그녀의 영령 보구가 본래의 잠재력을 발휘하지 못하고 있는 상태라는 점을 알아냈다네」
+	PRINTL  　
+	PRINTL  　
+	PRINTW  　그것은 중대사다. 확률 낮은 소환을 성공시켜 놓고 정작 영령의 핵심인 보구가 약해서는 말이 되지 않는다
+	PRINTL  　
+	PRINTL  　
+	PRINTFORMW  「염려할 것은 없다네, %呼び名%.
+	PRINTW  　실은 이 몸, 이 문제에 대해 획기적인 해결책을 떠올렸다네!」
+	PRINTL  　
+	PRINTL  　
+	PRINTW  　빅토르가 말하는 획기적이라는 시점에서 어쩐지 불길한 예감밖에 들지 않지만……
+	PRINTL
+	PRINTL
+	PRINTW  「그 방법은 바로 『보구 재림』! 그 요정기사를 동일한 소환 방식으로 다시 소환하여,
+	PRINTW  　영기를 융합시킴으로써 보구의 위력을 조금씩 보강하자는 방법이지!」
+	PRINTL  　
+	PRINTL  　
+	PRINTW  　요컨대 다시 제물을 소비하여 소환, 요정기사 란슬롯의 영기를 겹침으로써 요정기사 란슬롯을 강화한다는 기법인 듯하다
+	PRINTW  　상당히 효율이 나쁜 방식으로 보이지만 다른 방법은 없었던 것일까
+	PRINTL  　
+	PRINTL  　
+	PRINTW  「없지는 않네. 없지는 않지만…… 다른 방법은 그 이상으로 효율이 나쁘다네」
+	PRINTL  　
+	PRINTL  　
+	PRINTW  　소환에 정통한 빅토르가 그렇게 말한다면 다른 방법은 없는 것이리라
+	PRINTL  　
+	PRINTL  「고생스러워 보이겠지만, 요정기사 란슬롯과 인연을 맺은 지금 소환 성공률에 얼마간 영향을 미치고 있을 터일세.
+	PRINTFORMW  　길고 험난한 여정이 되겠으나, %呼び名%라면 해낼 수 있으리라 믿고 있네」
+	PRINTL  　
+	PRINTL  　
+	PRINTW  　실제로 할지 어떨지는 제쳐두고서라도 확실히 고생길인 것은 사실이다
+	PRINTW  　만약 요정기사 란슬롯의 보구 재림을 노린다면 수중의 전력이나 시간과 상담하여 진행하는 편이 좋을 것이다
+	PRINTL  　
+	PRINTL  　
+	PRINTFORMW  　빅토르의 말을 들은 %CALLNAME:MASTER%는 그대로 업마전을 뒤로했다……
+	CALL ADD_NEW_COMPANION, [[キャラ:ＦＫ・랜슬롯]], 100
+ELSE
+	PRINTW  ＞ 모두가 눈을 보호하기 위해 빛을 가렸고, 다음 순간에는 소녀 형태를 한 의지 없는 그림자가 마법진 위에 부유하고 있었다
+	PRINTL  　
+	PRINTL  　
+	PRINTL  「음. 요정기사 란슬롯에게 적합한 마력의 그릇을 형성해낸 모양이로군
+	PRINTW  　이로써 보구의 위력이 한층 더 높아질 걸세!」
+	PRINTL  　
+	PRINTL  　
+	CALL SET_RPG_CFLAG_TAKEOVER(L_CHARA,"宝具再臨（ランサー）",1,"+=")
+	PRINTFORMW  %CALLNAME:L_CHARA%의 보구 위력이 상승했다!
+ENDIF
+
+@CASTING_FGO_SUMMON_SACRIFICE_11,ARG
+CALL FGO_SUMMON_SACRIFICE_STOCK,"MATCH",-1,ARG
+SIF RESULT == 1
+	RETURN 0
+SIF ABL:ARG:종족 == 0 || ABL:ARG:종족 > 44
+	RETURN 0
+SIF !FGO_SUMMON_SACRIFIE_COMMON(ARG)
+	RETURN 0
+SIF EQUIP:ARG:검 != 0
+	RETURN 0
+SIF EQUIP:ARG:총 != 0
+	RETURN 0
+SIF EQUIP:ARG:머리 != 0
+	RETURN 0
+SIF EQUIP:ARG:몸통 != 0
+	RETURN 0
+SIF EQUIP:ARG:팔 != 0
+	RETURN 0
+SIF EQUIP:ARG:발 != 0
+	RETURN 0
+SIF CFLAG:ARG:EXTRA출전 > 0
+	RETURN 0
+SELECTCASE NO:ARG
+	{
+		CASE 
+		[[キャラ:파랑세이버]],[[キャラ:빨강세이버]],[[キャラ:캐스여우]],[[キャラ:빨강랜서]],[[キャラ:쟌느・얼터]],[[キャラ:멜트릴리스]],[[キャラ:캐스터]],
+		[[キャラ:어새신_하산]],[[キャラ:버서커]],[[キャラ:메두사_Fate]],[[キャラ:아처]],[[キャラ:패션립]],[[キャラ:어새신_만화]],
+		[[キャラ:앙리마유]],[[キャラ:만드리카르도]],[[キャラ:엘레나]],[[キャラ:카밀라]],[[キャラ:메데이아릴리]],[[キャラ:ＦＫ・랜슬롯]]
+	}
+	RETURN 0
+ENDSELECT
+RETURN 1

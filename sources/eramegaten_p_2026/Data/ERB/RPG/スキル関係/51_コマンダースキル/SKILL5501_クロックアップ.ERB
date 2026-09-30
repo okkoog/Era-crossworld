@@ -1,0 +1,132 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_5501,ARG
+RESULTS = 클락업
+
+;　명중
+@SKILL_HITRATE_5501, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_5501, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_5501,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_5501,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+;　4:ターン経過が必要なパターン
+@SKILL_COSTTYPE_5501, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("TURN")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_5501,ARG
+RETURN 3
+
+
+;　1EXTRAか 2MAGICか 3コマンダースキル
+@SKILL_DECIDE_TYPE_5501
+RETURN GET_SKILL_DECIDE_TYPE_NUM("CS")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_5501, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_5501,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_5501,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_5501, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_5501
+RETURN GET_SUCCESSION_NUM("지원")
+
+;속도보정
+@SKILL_SPEED_5501, ARG = -1
+RETURN 99999
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_5501
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_5501, ARG = -1
+RETURN 8
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_5501, ARG, ARG:1, ARG:2
+CALL PRINT_HIT_MESSAGE, POS(ARG:1), "연속행동！", "w"
+CFLAG:POS(ARG:1):연속행동발생률 += 100
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_5501, ARG
+PRINTFORML 아군 １체를 연속행동시킨다
+
+@SKILL_BATTLE_MAIN_TOOLTIP_5501, ARG, ARG:1
+CALL GET_CAST_SKILL_EMULATOR, ARG:1, ARG
+RESULTS = □클락업
+IF RESULT <= 0
+	RESULTS:1 = 　READY
+ELSE
+	RESULTS:1 =　필요턴수:{RESULT}
+ENDIF
+
+@SKILL_EXPLAIN_TOOLTIP_5501, ARG = -1
+CALL GET_CAST_SKILL_EMULATOR, 5501, ARG
+IF ARG < 0
+	RESULTS = 커맨드스킬:필요턴수%TOFULL(TOSTR(RESULT))%
+ELSE
+	IF RESULT <= 0
+		RESULTS = 커맨드스킬:ＲＥＡＤＹ
+	ELSE
+		RESULTS = 커맨드스킬:필요턴수%TOFULL(TOSTR(RESULT))%
+	ENDIF
+ENDIF
+RESULTS:1 = 아군 １체를 연속행동시킨다。
+
+@SKILL_EX_DISPLAY_5501, ARG, ARGS
+CALL COMMANDER_SKILL_EX_DISPLAY, ARG, ARGS, 5501, "Clock UP"
+RETURN RESULT
+
+
+
+@ロール専用_5501
+RESULTS = Aion식 서머너
+RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_5501,ARG
+RETURN 1
+;とくにない
+

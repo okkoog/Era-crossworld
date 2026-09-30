@@ -1,0 +1,173 @@
+﻿
+@CHECK_COM_ABLE98
+
+;모유먹이기
+;母乳体質じゃなきゃダメ
+SIF TALENT:PLAYER:149 == 0
+	RETURN 0
+;元の母乳飲みにならって一応陥落した相手限定。別にそうする必要はないかもしれない
+SIF TALENT:연모 == 0 && TALENT:음란 == 0 && TALENT:복종 == 0 && TALENT:친애 == 0 && TALENT:창부 == 0 && TALENT:예속 == 0
+	RETURN 0
+
+;男の場合は、上半身上着か全身上着をつけているとダメ
+SIF (TEQUIP:PLAYER:5 || TEQUIP:PLAYER:6) && IS_MALE(PLAYER)
+	RETURN 0
+
+SIF !USE_MOUTH(TARGET)
+	RETURN 0
+
+SIF !USE_NIPLE(PLAYER)
+	RETURN 0
+
+
+;縄使用中は不可
+SIF TEQUIP:밧줄
+	RETURN 0
+
+;触手調教中はダメ
+SIF TEQUIP:촉수
+	RETURN 0
+RETURN 1
+
+
+@ACT_COM98
+;모유먹이기
+
+
+PRINTL 모유먹이기
+TSTR:0 = 모유먹이기
+
+;調教者→調教対象
+TFLAG:28 = 2
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 25
+DOWNBASE:TARGET:기력 += 90
+
+SOURCE:TARGET:정애 = 500
+SOURCE:TARGET:달성 = 500
+SOURCE:TARGET:복종 = 1000
+SOURCE:TARGET:굴종 = 900
+SOURCE:TARGET:일탈 = 50
+SOURCE:TARGET:반감 = 50
+
+;調教対象の技巧が高ければ調教者に快Ｂ
+SIF ABL:기교 >= 3
+SOURCE:PLAYER:3 = 150
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;奴隷の口⇔調教者のＢの汚れが移動
+CALL MOVE_STAIN("입", TARGET, "가슴", PLAYER)
+;-------------------------------------------------
+;吸精処理
+;-------------------------------------------------
+IF CFLAG:PLAYER:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:5+1) * BASE:LV
+	CALL DRAIN_MAG,PLAYER,LOCAL,TARGET
+ELSEIF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:5+1) * BASE:LV
+	CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+ENDIF
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+A = 3
+IF IS_LESBIAN(TARGET,PLAYER)
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, PLAYER)
+ELSEIF IS_GAY(TARGET,PLAYER)
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+ENDIF
+;애정경험
+IF (TALENT:연모 == 1 || TALENT:친애 == 1) && ASSIPLAY == 0
+	CALL ADDS_EXP("애정경험", 1, TARGET)
+	CALL ADDS_EXP("애정경험", 1, MASTER)
+ENDIF
+CALL ADDS_EXP("봉사쾌락경험", 1, PLAYER)
+
+;依存度ベクトル
+TFLAG:33 = 4
+
+;依存度補正値(主人かつ恋慕で1、親愛で2）
+IF TALENT:연모 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ELSEIF TALENT:친애 && ASSIPLAY == 0
+	TFLAG:30 += 4
+ENDIF
+
+RETURN 1
+
+
+@MESSAGE_COM98
+IF TEQUIP:주도권
+	PRINTFORM %TARGET은% %PLAYER의% 
+	IF TEQUIP:PLAYER:옷 > 0
+			CALL CLOTHES_NAME,1,PLAYER
+			PRINT 의 벌어진 가슴팍에서 흘러넘친, 
+		ELSEIF TEQUIP:PLAYER:전신복 > 0
+			CALL CLOTHES_NAME,3,PLAYER
+			PRINT 의 벌어진 가슴팍에서 흘러넘친, 
+			ELSEIF TEQUIP:PLAYER:겉옷 > 0
+				CALL CLOTHES_NAME,10,PLAYER
+				PRINT 의 벌어진 가슴팍에서 흘러넘친, 
+			ENDIF
+		;유아체형＋貧乳、絶壁
+		IF (TALENT:PLAYER:유아체형 && TALENT:PLAYER:빈유) || TALENT:PLAYER:절벽
+			PRINT 희미하게 부풀어 오른 정도의 
+		;빈유
+		ELSEIF TALENT:PLAYER:빈유
+			PRINT 자그마한 
+		;거유
+		ELSEIF TALENT:PLAYER:111
+			PRINT 손에서 넘쳐흐를 정도의 
+		;폭유
+		ELSEIF TALENT:PLAYER:112 || TALENT:PLAYER:마유
+			PRINT 감당하기 힘들 만큼 커다란 
+		ENDIF
+		;恋慕か親愛で助手調教系ではない
+		IF (TALENT:연모 || TALENT:친애) && ASSIPLAY == 0
+			PRINTW 가슴 끝을 빨아 올리며, 음미하듯 모유를 마시고 있다…
+		ELSE
+			PRINTW 가슴 끝을 빨아 올려 모유를 마셨다……
+		ENDIF
+;それ以外
+ELSE
+		PRINTFORM %PLAYER는% 
+		IF TEQUIP:PLAYER:옷 > 0
+			CALL CLOTHES_NAME,1,PLAYER
+			PRINT 의 벌어진 가슴팍에서 흘러넘친, 
+		ELSEIF TEQUIP:PLAYER:전신복 > 0
+			CALL CLOTHES_NAME,3,PLAYER
+			PRINT 의 벌어진 가슴팍에서 흘러넘친, 
+			ELSEIF TEQUIP:PLAYER:겉옷 > 0
+				CALL CLOTHES_NAME,10,PLAYER
+				PRINT 의 벌어진 가슴팍에서 흘러넘친, 
+			ENDIF
+		;유아체형＋貧乳、絶壁
+		IF (TALENT:PLAYER:유아체형 && TALENT:PLAYER:빈유) || TALENT:PLAYER:절벽
+			PRINT 희미하게 부풀어 오른 정도의 
+		;빈유
+		ELSEIF TALENT:PLAYER:빈유
+			PRINT 자그마한 
+		;거유
+		ELSEIF TALENT:PLAYER:111
+			PRINT 손에서 넘쳐흐를 정도의 
+		;폭유
+		ELSEIF TALENT:PLAYER:112 || TALENT:PLAYER:마유
+			PRINT 감당하기 힘들 만큼 커다란 
+		ENDIF
+		PRINTFORMW 가슴 끝을 %TARGET에게% 내밀어, 모유를 먹였다……
+ENDIF
+
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_98
+RETURN COMTYPE("調教者奉仕系")
+
+

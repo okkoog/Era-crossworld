@@ -1,0 +1,316 @@
+﻿;更新履歴
+;001	2020/08/17		kamedakeisuke(ﾟдﾟ)			新規作成
+;002	2022/02/12		kamedakeisuke(ﾟдﾟ)			非CR時の基礎威力上昇
+;003	2022/06/05		kamedakeisuke(ﾟдﾟ)			非CR時の基礎威力上昇、エラー避けのおまじない追加
+
+;石動双葉（長靴をはいた猫）専用スキル
+
+;---
+;CAスキルは意図的に強力にする
+;使用条件がイベント後半まで進行＆星のティアラをアクセサリー欄に装備＆キラめきチャージ完了時に１発だけ、なので。
+;入手の際の代償もあるし、それに見合った性能に。
+
+;通常スキルに使用条件は無し
+;だけどこちらも使えるようになるタイミングは同じなので多少は盛る
+;---
+
+
+;Renameは『분기의합주』のほうで
+
+;スキル名
+@SKILL_NAME_3593,ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RESULTS = 고양이의 보은
+;それ以外
+ELSE
+	RESULTS = 분기의합주
+ENDIF
+
+;　명중
+@SKILL_HITRATE_3593, ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN 125
+;通常時
+ELSE
+	RETURN 80
+ENDIF
+
+;@SKILL_CRITICAL_RATE_3593, ARG
+;RETURN 20
+
+;　威力
+@SKILL_POWER_3593, ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	;3回攻撃
+	RETURN 215
+ELSE
+	RETURN 360
+ENDIF
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3593,ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	;3回攻撃
+	RETURN 3
+;通常時
+ELSE
+	RETURN 1
+ENDIF
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3593,ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	;3回攻撃
+	RETURN 3
+;通常時
+ELSE
+	RETURN 1
+ENDIF
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3593, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3593,ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	;消費無し（代わりにゲージをゼロに）
+	RETURN 0
+;通常時
+ELSE
+	RETURN 20
+ENDIF
+
+;　複合相性
+@SKILL_TYPE_3593,ARG
+;戦技・剣撃・打撃のうち、最も効果のある相性で攻撃
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN GET_TYPE_NUM("전술"), GET_TYPE_NUM("검격"), GET_TYPE_NUM("지변")
+ELSE
+	RETURN GET_TYPE_NUM("전술")
+ENDIF
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3593
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3593, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3593, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_3593,ARG
+RETURN 2
+
+;　範囲　1単体　2列　3全体　4　敵味方全体
+@SKILL_SPHERE_3593,ARG
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN 1
+;通常時
+ELSE
+	RETURN 2
+ENDIF
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3593, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3593
+RETURN GET_SUCCESSION_NUM("전술")
+
+;속도보정
+@SKILL_SPEED_3593, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3593
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3593, ARG = -1
+RETURN 16
+
+@継承不能_3593
+RETURN 2
+
+@リンク不能_3593
+RETURN 1
+
+;====================================================
+;ダメージ発動時
+;ARG:0	行動者のキャラ番号
+;ARG:1	対象のキャラ番号
+;ARG:2	1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;
+;備考:標準の追加効果付与はblock・吸収の場合は発動しない。
+;====================================================
+@SKILL_DAMAGE_EFFECT_3593, ARG, ARG:1, ARG:2
+SIF ARG:1 < 0
+	RETURN 0
+;無効以下では発動しない
+SIF ARG:2 <= -2
+	RETURN 0
+SIF !GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	RETURN 0
+CALL SKILL_SET_カジャンダ, ARG, ARG:1, "攻撃_防御", -8, "短縮"
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3593, ARG, ARG:1, ARG:2
+;CR展開時
+IF ARG >= 0 && GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+	ALIGNMENT CENTER
+	SETCOLOR 0x815ca1
+	PRINTL 【ＣＬＩＭＡＸ　ＡＣＴ】
+	RESETCOLOR
+	ALIGNMENT LEFT
+
+	;パワーアップイベント中かつボスが最終形態時のみ、ボスの不死フラグを剥がして攻撃
+	IF GETBIT(イベントフラグ:93:15, 5) && (イベントフラグ:93:0 == 12 || イベントフラグ:93:0 == 13) && (イベントフラグ:93:10 == [[キャラ:후타바_무대소녀]])
+		CFLAG:(CHARANUM-1):불사신플래그 = 0
+	ENDIF
+	
+	IF ARG:1 > 16
+		CALL RANDOM_TARGET,ARG,3593
+		ARG:1 = CFLAG:ARG:타겟
+	ENDIF
+	
+	;ターゲットロックオン
+	LOCAL = POS(ARG:1)
+	
+	;敵の能力を下げる（原作より使い勝手を盛る）
+	;CFLAG:LOCAL:공격강화 = MAX(-16, CFLAG:LOCAL:공격강화 - 8)
+	;CFLAG:LOCAL:방어강화 = MAX(-16, CFLAG:LOCAL:방어강화 - 8)
+	
+	;ぶん殴る
+	CALL ATTACK_SINGLE,ARG,LOCAL,3593
+	
+	;パワーアップイベント中かつボスが最終形態時のみ、撃破時に敵が喋る
+	IF GETBIT(イベントフラグ:93:15, 5) && (イベントフラグ:93:0 == 12 || イベントフラグ:93:0 == 13) && (イベントフラグ:93:10 == [[キャラ:후타바_무대소녀]])
+
+		;ボスのHPがぴったり1の場合、『すでに削り切ったけど、攻撃をミスってとどめを刺せていない』状況と見る
+		IF BASE:(CHARANUM-1):ＨＰ == 1
+			PRINTL
+			SETCOLOR COLOR("FRIEND")
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"어이쿠 손이 미끄러졌네",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			PRINTL
+			ALIGNMENT CENTER
+			PRINTFORML ┏━━━━━━━━━━┓
+			PRINTFORML ┃　　 　1more！　　　┃
+			PRINTFORMW ┗━━━━━━━━━━┛
+			RESETCOLOR
+			ALIGNMENT LEFT
+			
+			;テイクツー
+			CFLAG:(CHARANUM-1):불사신플래그 = 0
+			TFLAG:필중 = 1
+			;CFLAG:ARG:회심의패기플래그 = 1
+			
+			CALL ATTACK_SINGLE,ARG,LOCAL,3593
+			
+		ENDIF
+		
+		;ボス撃破
+		IF BASE:(CHARANUM-1):ＨＰ < 1
+			ALIGNMENT CENTER
+			PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　　　　　　　　┃
+			PRINTL ┃　　　　　　　　　기억해 뒀다, 그 이름!　　　　　　　　　┃
+			PRINTL ┃　　　　　　　　잊지 않겠다, 장화 신은 페로!　　　　　　　　┃
+			PRINTL ┃　　　　　　언젠가 다시 만날 날까지――작별이다!　　　　　┃
+			PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　　　　　　　　┃
+			PRINTW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			PRINTL 
+			ALIGNMENT LEFT
+		ENDIF
+	ELSE
+		;クライマックスレヴュー終了。ゲージ取得をとめるために-1で送ってむこうで0にする
+		CALL SET_ROLE_CFLAG_DUNGEON, ARG,  "클라이맥스레뷰지속시간" , -1
+	ENDIF
+
+	ALIGNMENT CENTER
+	SETCOLOR 0x815ca1
+	PRINTW 【ＣＬＩＭＡＸ　ＲＥＶＵＥ／ＦＩＮＩＳＨ】
+	PRINTL
+	RESETCOLOR
+	ALIGNMENT LEFT
+	;クライマックスレヴュー終了
+	;CALL SET_ROLE_CFLAG_DUNGEON, ARG,  "클라이맥스레뷰지속시간" , 0
+
+;それ以外
+ELSE
+	;相手をぶん殴る処理
+	CALL ATTACK_FIELD,ARG,ARG:1,3593
+	CALL SKILL_SET_カジャンダ, ARG, ARG, "공격", 4, "단체", "NOMES"
+	;自分の攻撃力を上げる処理
+	;CFLAG:ARG:공격강화 = MIN(32, CFLAG:ARG:공격강화 + 4)
+ENDIF
+
+
+
+
+
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3593, ARG
+#LOCALSIZE 1
+IF CFLAG:(CHARANUM-1):PT플래그 || ARG < 0 || ARG >= CHARANUM
+	PRINTL 【通常時】
+	PRINTL 적 일렬에 전기 상성의 대 데미지 + 자신의 공격력을 1단계 올린다
+	PRINTL 
+	PRINTL 【클라이맥스 레뷰 발동 시】
+	PRINTL 적 1체의 공격·방어를 대폭 저하 + 『전기·검격·지변』 초특대 데미지
+ELSE
+	;CR展開時
+	IF GET_ROLE_CFLAG_DUNGEON(ARG, "클라이맥스레뷰지속시간")
+		SETCOLOR 0x8ac4ec
+		PRINTL 【ＣＬＩＭＡＸ　ＡＣＴ】
+		RESETCOLOR
+		PRINTL 날카로운 발톱으로 찢어발긴 뒤 대지째로 적을 분쇄하는 장화 신은 고양이의 필살기
+		PRINTL 적 1체의 공격·방어를 대폭 저하 + 『전기·검격·지변』 3히트 초특대 데미지
+		;双葉パワーアップイベント中かつボスが最終形態時のみ、撃ち放題
+		IF GETBIT(イベントフラグ:93:15, 5) && (イベントフラグ:93:0 == 12 || イベントフラグ:93:0 == 13) && (イベントフラグ:93:10 == [[キャラ:후타바_무대소녀]])
+			SETCOLOR 0x8ac4ec
+			PRINTL 혼신의 일격으로 이 레뷰에 결착을!
+			RESETCOLOR
+		;通常
+		ELSE
+			PRINTL 사용하면 클라이맥스 레뷰는 종료된다
+		ENDIF
+	ELSE
+		PRINTL 적 일렬에 전기 상성의 대 데미지 + 자신의 공격력을 1단계 올린다
+		PRINTL 클라이맥스 레뷰 발동 중에는 성능이 변화한다.
+	ENDIF
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3593,ARG
+RETURN 1
+;とくにない
+

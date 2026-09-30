@@ -1,0 +1,753 @@
+﻿;-------------------------------------------------
+;マルフーシャ戦闘口上
+;基本的にはローテンション気味
+;本質的には普通の女の子
+;未恋慕時は周囲の人間をそこまで意識していない
+;恋慕がつくと周囲が見えるようになる
+;-------------------------------------------------
+
+;-------------------------------------------------
+;eraMegaten専用口上テンプレート
+;X1とX2をキャラ番号に置換し、Y1を助手のキャラ番号に置換してください
+;ただし、キャラ番号が一桁のキャラの場合、5371,Y1は1、X2は01のように変えてください
+;そしてコマンド内の適当な条件の下のPRINTFORMWの後ろに半角スペースを置いてセリフを追加してください
+;口上を追加しないコマンドは無記入でも構いませんが、CFLAG:XXXの頭に『;』をつけてコメントアウトすると尚良いでしょう
+;エキストラ構文など、コメントアウトされている構文を使う際には、『;』を外してコメントアウトを解除する必要があります
+;最後にread meにも目を通しておくことをお勧めします
+;-------------------------------------------------
+
+;-------------------------------------------------
+;汎用口上の作成に使用する場合は、5371→キャラ番号ではなく、
+;K[[キャラ:마르푸샤]]→PUB会話タイプ番号　へと変換してご使用ください
+;-------------------------------------------------
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_K[[キャラ:마르푸샤]]_ASSI.ERB
+;	Facility	:会話タイプ：助手時口上
+;
+;	Modification Data:
+;	Edit	Date			Author					Reason
+;	001		2021/09/08		レン					戦闘部分完成
+;	002		2021/09/27		レン					消費アイテム口上の分岐細分化及び一部加筆修正
+;	003		2021/11/21		レン					パイルショット及びスパイクの口上を追加
+;	004		2021/11/24		レン					一部文章の加筆修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;ライセンスについて
+;	・基本項目(許可する項目を"○"に、許可しない項目を"×"に変更してください。)
+;	+----+----+-------------------------------+
+;	|番号|許可|ライセンス内容                 |
+;	+----+----+-------------------------------+
+;	|   1| ○ | 処理上のバグ修正              |
+;	+----+----+-------------------------------+
+;	|   2| ○ | 口上の誤字・脱字の修正        |
+;	+----+----+-------------------------------+
+;	|   3| ○ | 口上まとめへの収録            |
+;	+----+----+-------------------------------+
+;	|   4| ○ | 口上の新規追加                |
+;	+----+----+-------------------------------+
+;	|   5| ○ | 既存口上の改変                |
+;	+----+----+-------------------------------+
+;	|   6| ○ | 改変した口上の自由な再配布    |
+;	+----+----+-------------------------------+
+;	|   7| ○ | 口上内容の転載                |
+;	+----+----+-------------------------------+
+@ENEMY_BATTLE_EVENT_K[[キャラ:마르푸샤]], ARG, ARG:1, ARG:2
+IF TFLAG:전투이벤트 == 1
+;敵でのデビルＣＯ－ＯＰ発動時の台詞
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%"",72,LEFT%┃
+;			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ENDIF
+IF TFLAG:전투이벤트 == 2
+;敵でのデビルＣＯ－ＯＰ参加時の台詞
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%"",72,LEFT%┃
+;			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ENDIF
+
+@KOJO_BATTLE_EVENT_K[[キャラ:마르푸샤]], ARG, ARG:1, ARG:2
+;■台詞の行数を増やしたいときは
+;			LOCALS:10 = 一行目
+;			LOCALS:11 = 二行目
+;			LOCALS:12 = 三行目
+;			LOCALS:13 = 四行目
+;			LOCALS:14 = 五行目
+;と増やしていく
+SIF ARG < 0 && NO:ARG != 5371
+	RETURN 0
+VARSET LOCALS
+
+SELECTCASE TFLAG:전투이벤트
+	;COOP発動 ARGは発動者
+	CASE 1
+	;恋慕、親愛
+		IF TALENT:3 || TALENT:6
+			IF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 내가 돌아갈 곳、부숴버릴 생각이라면 용서 못 해！
+			ELSE
+				BTL_KOJO_RESULTS:0 = 제압사격으로 움직임을 멈출테니、그 사이에 끝장을 내！
+			ENDIF
+		ELSE
+	;恋慕、親愛以外
+			IF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 틈이 생겼어… 단숨에 끝낸다！
+			ELSE
+				BTL_KOJO_RESULTS:0 = 제압사격으로 움직임을 멈출테니、그 사이에 끝장을 내！
+			ENDIF
+		ENDIF
+	;COOP参加
+	CASE 2
+		;主人がCOOP発動
+		IF FLAG:행동순1 != -1 && FLAG:행동순1 == MASTER
+		;恋慕、親愛
+			IF TALENT:3 || TALENT:6
+				IF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = %CSTR:일인칭%도、%CSTR:이인칭%에게 도움이 되고 싶으니까！
+				ELSE
+					BTL_KOJO_RESULTS:0 = %이인칭이% 만든 찬스、절대 놓치지 않겠어！
+				ENDIF
+			ELSE
+		;恋慕、親愛以外
+				IF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = %CSTR:일인칭%도、%NAME:MASTER% 씨에게 맞춰서 엄호사격을！
+				ELSE
+					BTL_KOJO_RESULTS:0 = %CSTR:일인칭%도 %NAME:MASTER% 씨의 뒤를 따릅니다！
+				ENDIF
+			ENDIF
+		ELSE
+		;それ以外
+			IF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = %CSTR:일인칭%도、모두에게 맞춰서 엄호사격을！
+			ELSE
+				BTL_KOJO_RESULTS:0 = 움직임이 끊겼어… 놓치지 않아！
+			ENDIF
+		ENDIF
+	;被召喚時
+	CASE 3
+			BTL_KOJO_RESULTS:0 = 
+	;공격　ARGが攻撃をする仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 11
+		;相手が死んだ
+		IF BASE:(ARG:1):ＨＰ <= 0
+		;恋慕、親愛
+			IF TALENT:3 || TALENT:6
+				;パーティに＠がいるかどうか
+				IF FINDCHARA_B([[キャラ:당신]]) == 2 || FINDCHARA_B([[キャラ:당신]]) == 12
+					IF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = 죄송합니다。하지만、지키고 싶은 게 있으니까
+					ELSE
+						BTL_KOJO_RESULTS:0 = 소중한 것이 있으니까、이젠 주저하지 않아
+					ENDIF
+				ELSE
+					IF RAND:3 == 0
+						BTL_KOJO_RESULTS:0 = 내일을 위해、지금은 손을 더럽힐 수밖에…
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = 미안해。하지만、이것도 살기 위해서니까
+					ELSE
+						BTL_KOJO_RESULTS:0 = 죽는 것도 죽이는 것도、사실은 싫지만
+					ENDIF
+				ENDIF
+			ELSE
+		;恋慕、親愛以外
+				IF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 내일을 위해、지금은 손을 더럽힐 수밖에…
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = 미안해。하지만、이것도 살기 위해서니까
+				ELSE
+					BTL_KOJO_RESULTS:0 = 죽는 것도 죽이는 것도、사실은 싫지만
+				ENDIF
+			ENDIF
+		;弱点をついた。つまりCOOP
+		ELSEIF GET_CREC_ACT(ARG, ARG:1, "WEAK")
+			IF CFLAG:(ARG:1):방어플래그
+				BTL_KOJO_RESULTS:0 = 狙いが甘かった…修正しないと
+			ELSE
+				;こっちはCOOP発動に回すためにカット
+				RETURN 0
+			ENDIF
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 50
+			BTL_KOJO_RESULTS:0 = 반응이 좋아、계속해서 같은 공격을
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 25
+			BTL_KOJO_RESULTS:0 = 좋아、명중 확인
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 0
+			BTL_KOJO_RESULTS:0 = 명중 확인、효과는 약한 모양이야
+		;無効された
+		ELSEIF ダメージ割合(ARG:1, ARG:2) <= 0
+			BTL_KOJO_RESULTS:0 = 이 공격은 소용이 없어… 다른 수를 생각해야 해
+		ENDIF
+	;被ダメージ
+	;ARGが攻撃を受ける仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 12
+		;死んだ
+		IF BASE:ARG:ＨＰ <= 0
+			;恋慕、親愛
+			IF TALENT:3 || TALENT:6
+				;パーティに＠がいるかどうか
+				IF FINDCHARA_B([[キャラ:당신]]) == 2 || FINDCHARA_B([[キャラ:당신]]) == 12
+					IF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = 죄송… 합니다… %NAME:MASTER%…
+					ELSE
+						BTL_KOJO_RESULTS:0 = 또다시 함께… 다같이… 빵을…
+					ENDIF
+				ELSE
+					BTL_KOJO_RESULTS:0 = 스네、진카… 미안… 해…
+				ENDIF
+			ELSE
+			;恋慕、親愛以外
+				IF FINDCHARA_B([[キャラ:당신]]) == 2 || FINDCHARA_B([[キャラ:당신]]) == 12
+					IF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = 다음에는… 좀 더… 다른…
+					ELSE
+						BTL_KOJO_RESULTS:0 = 어째서、이런… 그냥… 그 아이와…
+					ENDIF
+				ELSE
+					BTL_KOJO_RESULTS:0 = 스네、진카… 미안… 해…
+				ENDIF
+			ENDIF
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 50 || 現HP割合(ARG) < 25
+			IF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 부상은 아프지만、아직 할 수 있어…
+			ELSE
+				BTL_KOJO_RESULTS:0 = 정신을 잃으면… 안돼…
+			ENDIF
+		;無効
+		ELSEIF ARG:2 == 0
+			BTL_KOJO_RESULTS:0 = 미안하지만、그 공격은 효과가 없으니까
+		;吸収
+		ELSEIF ARG:2 < 0
+			BTL_KOJO_RESULTS:0 = 흡수 성공、그 공격에는 대책을 마련해뒀어
+		ENDIF
+	;反射された
+	CASE 15
+			BTL_KOJO_RESULTS:0 = 그럴수갓…！
+	;反射した
+	CASE 16
+			BTL_KOJO_RESULTS:0 = 반사 성공、기가 꺾인 틈을 몰아세우겠어
+	;回避された
+	CASE 17
+			;パーティに＠がいるかどうか
+			IF FINDCHARA_B([[キャラ:당신]]) == 2 || FINDCHARA_B([[キャラ:당신]]) == 12
+				IF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = 조준 수정、다음으로 맞춘다
+				ELSE
+					BTL_KOJO_RESULTS:0 = 괜찮아、다음번에는 빗맞추지 않아
+				ENDIF
+			ELSE
+				IF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = 접근이 빨라… 다음에는 빗맞추지 않겠어
+				ELSE
+					BTL_KOJO_RESULTS:0 = 조준 수정、다음으로 쓰러뜨린다
+				ENDIF
+			ENDIF
+	;回避した
+	CASE 18
+			IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = 저번과 똑같은 공격 패턴、이런 거라면 맞지 않아
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 응、제대로 보고 있어
+			ELSE
+				BTL_KOJO_RESULTS:0 = 이 정도 쯤의 공격、침착하게만 하면…
+			ENDIF
+	;反撃スキル発動した
+	CASE 20
+			BTL_KOJO_RESULTS:0 = 
+	;バトルに勝利した
+	CASE 90
+	;恋慕、親愛
+		IF TALENT:3 || TALENT:6
+			;パーティに＠がいるかどうか
+			IF FINDCHARA_B([[キャラ:당신]]) == 2 || FINDCHARA_B([[キャラ:당신]]) == 12
+				IF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 오늘도 다시、모두 다 같이 살아서 돌아갈 수 있어…
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = 지쳤으니까 영양보충을 위한 빵을… 어、먹고 싶으신 건가요？
+					BTL_KOJO_RESULTS:1 = …어쩔 수 없네요、반 나눠요
+				ELSE
+					BTL_KOJO_RESULTS:0 = 오늘은 출발하기 전에 빵을 구워뒀어요
+					BTL_KOJO_RESULTS:1 = 돌아가면 다 같이 먹어요
+				ENDIF
+			ELSE
+				IF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = 전투 종료、빨리 샤워 하고 싶네…
+				ELSE
+					BTL_KOJO_RESULTS:0 = 후우… 오늘도 어떻게든 살아서 돌아갈 수 있을 것 같아…
+				ENDIF
+			ENDIF
+		ELSE
+	;恋慕、親愛以外
+			IF FINDCHARA_B([[キャラ:당신]]) == 2 || FINDCHARA_B([[キャラ:당신]]) == 12
+				IF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 전투 종료、앞으로 나아가죠
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = 후우… 오늘도 어떻게든 살아서 돌아갈 수 있을 것 같아…
+				ELSE
+					BTL_KOJO_RESULTS:0 = 지쳤으니까 영양보충을 위한 빵을… 어、먹고 싶으신 건가요？
+					BTL_KOJO_RESULTS:1 = …어쩔 수 없네요、한 입 뿐이에요
+				ENDIF
+			ELSE
+				IF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = 전투 종료、빨리 샤워 하고 싶네…
+				ELSE
+					BTL_KOJO_RESULTS:0 = 후우… 오늘도 어떻게든 살아서 돌아갈 수 있을 것 같아…
+				ENDIF
+			ENDIF
+		ENDIF
+	;レベルアップした
+	CASE 91
+		;恋慕、親愛
+		IF TALENT:3 || TALENT:6
+			;パーティに＠がいるかどうか
+			IF FINDCHARA_B([[キャラ:당신]]) == 2 || FINDCHARA_B([[キャラ:당신]]) == 12
+				BTL_KOJO_RESULTS:0 = 소중한 사람들을 지키기 위해선、좀 더 강해져야 해
+			ELSE
+				BTL_KOJO_RESULTS:0 = 살아남기 위해서는、좀 더 강해져야 해
+			ENDIF
+		ELSE
+		;未陥落
+			BTL_KOJO_RESULTS:0 = 살아남기 위해서는、좀 더 강해져야 해
+		ENDIF
+	;逃走に成功した
+	CASE 92
+			BTL_KOJO_RESULTS:0 = 따돌린 건 좋지만、조금 지쳤어…
+	;逃走に失敗した
+	CASE 93
+			BTL_KOJO_RESULTS:0 = 도망칠 수 없다면、싸울 수밖에는…
+	;戦闘開始時
+	CASE 94
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			BTL_KOJO_RESULTS:0 = 유리한 건 이쪽이에요。반격할 틈을 주지 말고 쓰러뜨리죠
+		ELSE
+		;恋慕、親愛
+			IF TALENT:3 || TALENT:6
+				;パーティに＠がいるかどうか
+				IF FINDCHARA_B([[キャラ:당신]]) == 2 || FINDCHARA_B([[キャラ:당신]]) == 12
+					IF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = 지키기 위한 싸움이니까、절대로 질 수 없어
+					ELSE
+						BTL_KOJO_RESULTS:0 = 장비 체크 문제 없음、전투 개시
+					ENDIF
+				ELSE
+					IF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = 죽기 싫으니까 열심히 하겠습니다
+					ELSE
+						BTL_KOJO_RESULTS:0 = 장비 체크 문제 없음、전투 개시
+					ENDIF
+				ENDIF
+			ELSE
+		;恋慕、親愛以外
+				IF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = 죽고 싶지 않으니까 열심히 하겠습니다
+				ELSE
+					BTL_KOJO_RESULTS:0 = 장비 체크 문제 없음、전투 개시
+				ENDIF
+			ENDIF
+		ENDIF
+	;バックアタックを受けた
+	CASE 95
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			BTL_KOJO_RESULTS:0 = 이럴 때에… 이런…！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 뒤에서 기습… 알아차리지 못했어！
+		ENDIF
+	;敵の先制攻撃を受けた
+	CASE 96
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			BTL_KOJO_RESULTS:0 = 쓸 수 있는 건 전부 써서、어떻게든…！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 적의 공격… 일단 바리케이트를！
+		ENDIF
+	;先制攻撃に成功
+	CASE 97
+			BTL_KOJO_RESULTS:0 = 아직 눈치채지 못했어… 기습으로 단숨에 해치우죠
+ENDSELECT
+;SIF !(LOCALS:10 == "")
+;	CALL MESSAGE_B2(CALLNAME:ARG,0, LOCALS:10, LOCALS:11, LOCALS:12, LOCALS:13, LOCALS:14)
+
+
+@KOJO_BATTLE_MESSAGE_K[[キャラ:마르푸샤]],ARG,ARG:1 = 0
+;■台詞の行数を増やしたいときは
+;			LOCALS:10 = 一行目
+;			LOCALS:11 = 二行目
+;			LOCALS:12 = 三行目
+;			LOCALS:13 = 四行目
+;			LOCALS:14 = 五行目
+;と増やしていく
+VARSET LOCALS
+;使用したスキルの名前をLOCALSに代入
+CALL GET_SKILL_PROP, "SKILL_NAME", CFLAG:ARG:입력행동, ARG
+LOCALS = %RESULTS%
+;FLAG:ARG:타겟
+
+;崩壊してる場合は口上表示しないようにもできる
+;SIF TALENT:ARG:9
+;	RETURN 0
+
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+;コメントアウトしやすいように
+IF 1 == 0
+;-------------------------------------------------
+;状態異常時
+;-------------------------------------------------
+;魅了時
+ELSEIF CFLAG:ARG:상태이상 == GET_STATE_NUM("CHARM")
+	;行動不能（ムラムラしている）
+	IF CFLAG:ARG:입력행동 == 2314
+		BTL_KOJO_RESULTS:0 = 이런 감각… 몰라…
+	ELSE
+		BTL_KOJO_RESULTS:0 = 안돼… 억제할 수가 없어…！
+	ENDIF
+;混乱時
+ELSEIF CFLAG:ARG:상태이상 == GET_STATE_NUM("PANIC")
+	;금전뿌리기
+	IF CFLAG:ARG:입력행동 == 2315
+		BTL_KOJO_RESULTS:0 = 주민세… 요양보험… %CSTR:일인칭%의 급료가…
+	;行動不能（ぼんやりしている）
+	ELSEIF CFLAG:ARG:입력행동 == 2314
+		BTL_KOJO_RESULTS:0 = 동료… 가족… 뭐야、이 기억은…！
+	ELSE
+		BTL_KOJO_RESULTS:0 = 머리가、아팟…！
+	ENDIF
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;これは通常攻撃
+ELSEIF CFLAG:ARG:입력행동 == 0
+	IF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 힘으로는 이길 수 없어… 상대 움직임의 빈틈을 찌를 수밖에는…
+	ELSE
+		BTL_KOJO_RESULTS:0 = 정면이라면 불리해도、의외의 일격이라면
+	ENDIF
+;ELSEIF CFLAG:ARG:입력행동 == (スキル番号)
+;	BTL_KOJO_RESULTS:0 = 
+;섹시댄스
+ELSEIF CFLAG:ARG:입력행동 == 1212
+	BTL_KOJO_RESULTS:0 = 
+;캔디보이스
+ELSEIF CFLAG:ARG:입력행동 == 1213
+	BTL_KOJO_RESULTS:0 = 
+;파이널누드
+ELSEIF CFLAG:ARG:입력행동 == 1214
+	BTL_KOJO_RESULTS:0 = 
+;-------------------------------------------------
+;銃攻撃（特殊弾丸含む）
+;-------------------------------------------------
+;GUN
+ELSEIF CFLAG:ARG:입력행동 == 2101
+	IF RAND:3 == 0
+		BTL_KOJO_RESULTS:0 = 서두르지 말고、확실하게 맞추자
+	ELSEIF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 사격에는、조금 자신이 있으니까
+	ELSE
+		BTL_KOJO_RESULTS:0 = 적영 확인、사격 준비
+	ENDIF
+ELSEIF RANGE(CFLAG:ARG:입력행동,2102, 2123)
+	IF RAND:3 == 0
+		BTL_KOJO_RESULTS:0 = %LOCALS%을 장전、절대로 빗맞추지 않아
+	ELSEIF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = %LOCALS%을 장전、급소를 꿰뚫겠어
+;파워샷
+	ELSEIF CFLAG:ARG:입력행동 == 2102
+		BTL_KOJO_RESULTS:0 = 반동이 대단하다고 들었으니까、제대로 대비를 하고서…
+;성스러운탄환
+	ELSEIF CFLAG:ARG:입력행동 == 2105
+		BTL_KOJO_RESULTS:0 = 이 탄이 있으면、무서운 유령도…
+;저주의탄환
+	ELSEIF CFLAG:ARG:입력행동 == 2106
+		BTL_KOJO_RESULTS:0 = 이 탄환、가지고 있는 것만으로도 저주받을 것 같아…
+;베놈샷
+	ELSEIF CFLAG:ARG:입력행동 == 2107
+		BTL_KOJO_RESULTS:0 = 독이 든 탄환… 싸우는 이상、어쩔 수 없다는 건 알지만…
+;신경탄
+	ELSEIF CFLAG:ARG:입력행동 == 2109
+		BTL_KOJO_RESULTS:0 = 잠든다면、적어도 아프지 않게…
+;그레이트풀원
+	ELSEIF CFLAG:ARG:입력행동 == 2111
+		BTL_KOJO_RESULTS:0 = 이 탄、만에 하나라도 폭발해버리면 어떻게 될까…
+;록불릿
+	ELSEIF CFLAG:ARG:입력행동 == 2112
+		BTL_KOJO_RESULTS:0 = 상대를 돌로 만든다니… 아무리 그래도 너무 악취미야
+;코로나샷
+	ELSEIF CFLAG:ARG:입력행동 == 2113
+		BTL_KOJO_RESULTS:0 = 전격이 내뿜어지니까、말려들지 않게 조심해
+;Freischutz
+	ELSEIF CFLAG:ARG:입력행동 == 2114
+		BTL_KOJO_RESULTS:0 = 이 탄환… 엄청난 힘이 느껴져…
+;랜턴샷
+	ELSEIF CFLAG:ARG:입력행동 == 2115
+		BTL_KOJO_RESULTS:0 = 상대가、불타서… 조금、기분이…
+;프로스트샷
+	ELSEIF CFLAG:ARG:입력행동 == 2116
+		BTL_KOJO_RESULTS:0 = 일순에 얼어버리니까、가까이에 있는 사람들은 조심해
+;노이즈샷
+	ELSEIF CFLAG:ARG:입력행동 == 2117
+		BTL_KOJO_RESULTS:0 = 시끄러우니까、귀를 막아！
+;살라만더탄
+	ELSEIF CFLAG:ARG:입력행동 == 2119
+		BTL_KOJO_RESULTS:0 = 랜턴탄과는 달리、순식간에 불타버리지만… 역시 기분이…
+;운디네탄
+	ELSEIF CFLAG:ARG:입력행동 == 2120
+		BTL_KOJO_RESULTS:0 = 이 탄、화약이 습기를 먹지는 않으려나…
+	ELSE
+;個別指定無しで、抽選から外れた弾丸
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = %LOCALS%를 장전、절대로 빗맞추지 않아
+		ELSE
+			BTL_KOJO_RESULTS:0 = %LOCALS%를 장전、급소를 꿰뚫겠어
+		ENDIF
+	ENDIF
+;-------------------------------------------------
+;基本行動
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,2301, 2400)
+	;ＣＨＡＮＧＥ
+	IF CFLAG:ARG:입력행동 == 2301
+		BTL_KOJO_RESULTS:0 = 수신 양호、위치를 바꾸겠습니다
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;-------------------------------------------------
+;アイテム
+;-------------------------------------------------
+;回復アイテム
+ELSEIF RANGE(CFLAG:ARG:입력행동,3001, 3007) || RANGE(CFLAG:ARG:입력행동,3017, 3037)
+	BTL_KOJO_RESULTS:0 = %LOCALS%을 쓸테니까、움직이지 마
+;道返玉、反魂香、崖っぷち粉末
+ELSEIF RANGE(CFLAG:ARG:입력행동,3008, 3009) || CFLAG:ARG:입력행동 == 3016
+	BTL_KOJO_RESULTS:0 = 이제、눈 앞에서 죽어가는 걸 보고 싶지는 않으니까…
+;攻撃アイテム（範囲）
+ELSEIF CFLAG:ARG:입력행동 == 3102 || RANGE(CFLAG:ARG:입력행동,3104, 3108) || RANGE(CFLAG:ARG:입력행동,3110, 3112) || CFLAG:ARG:입력행동 == 3114 || CFLAG:ARG:입력행동 == 3117 || CFLAG:ARG:입력행동 == 3119 || CFLAG:ARG:입력행동 == 3122 || CFLAG:ARG:입력행동 == 3124 || CFLAG:ARG:입력행동 == 3126 || CFLAG:ARG:입력행동 == 3128 || CFLAG:ARG:입력행동 == 3130 || CFLAG:ARG:입력행동 == 3132
+	;パーティに＠がいるかどうか
+	IF FINDCHARA_B([[キャラ:당신]]) == 2 || FINDCHARA_B([[キャラ:당신]]) == 12
+		BTL_KOJO_RESULTS:0 = %LOCALS%를 쓸테니까、모두 떨어져 있어！
+	ELSE
+		BTL_KOJO_RESULTS:0 = 수가 많아… %LOCALS%로 한꺼번에…！
+	ENDIF
+;攻撃アイテム（単体）
+ELSEIF CFLAG:ARG:입력행동 == 3101 || RANGE(CFLAG:ARG:입력행동,3103, 3104) || CFLAG:ARG:입력행동 == 3106 || CFLAG:ARG:입력행동 == 3109 || CFLAG:ARG:입력행동 == 3113 || RANGE(CFLAG:ARG:입력행동,3115, 3116) || CFLAG:ARG:입력행동 == 3118 || CFLAG:ARG:입력행동 == 3121 || CFLAG:ARG:입력행동 == 3123 || CFLAG:ARG:입력행동 == 3125 || CFLAG:ARG:입력행동 == 3127 || CFLAG:ARG:입력행동 == 3129 || CFLAG:ARG:입력행동 == 3127 || CFLAG:ARG:입력행동 == 3131
+	BTL_KOJO_RESULTS:0 = 빗나가지 않도록、확실히 노려서…
+;-------------------------------------------------
+;リンケージ
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,4000, 5000)
+	;메시아라이저
+	IF CFLAG:ARG:입력행동 == 4160
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 나는… 우리들은 혼자가 아니야！　서로 믿을 수 있는 동료가 있어！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 내가 지금까지 살아올 수 있었던 건、혼자의 힘이 아냐… 모두가 있었으니까！
+		ENDIF
+	;Lヒートライザ
+	ELSEIF CFLAG:ARG:입력행동 == 4200
+		BTL_KOJO_RESULTS:0 = 나의 미래、누구에게도 뺏기지는 않을거야… 이젠、어떤 것에도 얽매이지 않아！
+	;사망유희
+	ELSEIF CFLAG:ARG:입력행동 == 4800
+		BTL_KOJO_RESULTS:0 = %이인칭을% 위해 목숨을… 알겠습니다、각오는 되어있어요…
+	ELSE
+		BTL_KOJO_RESULTS:0 = 신호를 준다면、거기에 맞출게
+	ENDIF
+;-------------------------------------------------
+;汎用スキル
+;-------------------------------------------------
+;검격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1, 99)
+	BTL_KOJO_RESULTS:0 = 
+;비구
+;主にダブルタップ
+ELSEIF RANGE(CFLAG:ARG:입력행동,101, 199)
+	IF RAND:3 == 0
+		BTL_KOJO_RESULTS:0 = 焦らずに、確実に…
+	ELSEIF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 射撃には、少しだけ自信があるから
+	ELSE
+		BTL_KOJO_RESULTS:0 = 敵影確認、射撃用意
+	ENDIF
+;타격
+ELSEIF RANGE(CFLAG:ARG:입력행동,201, 299)
+	BTL_KOJO_RESULTS:0 = 
+;전술
+ELSEIF RANGE(CFLAG:ARG:입력행동,301, 400)
+	;噛み付き系
+	IF RANGE(CFLAG:ARG:입력행동,321, 326)
+		BTL_KOJO_RESULTS:0 = 
+	;その他
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;회복
+ELSEIF RANGE(CFLAG:ARG:입력행동,401, 499)
+	;全体回復
+	IF CFLAG:ARG:타겟 > 6
+		BTL_KOJO_RESULTS:0 = 
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;지원
+ELSEIF RANGE(CFLAG:ARG:입력행동,501, 599)
+	;強化系
+	IF RANGE(CFLAG:ARG:입력행동,501, 505) || CFLAG:ARG:입력행동 == 558
+		BTL_KOJO_RESULTS:0 = 
+	;弱体系
+	ELSEIF RANGE(CFLAG:ARG:입력행동,506, 509) || CFLAG:ARG:입력행동 == 541 || CFLAG:ARG:입력행동 == 556
+		BTL_KOJO_RESULTS:0 = 
+	;도발
+	ELSEIF CFLAG:ARG:입력행동 == 515
+		BTL_KOJO_RESULTS:0 = 
+	;その他
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;방어
+ELSEIF RANGE(CFLAG:ARG:입력행동,601, 699)
+	BTL_KOJO_RESULTS:0 = 
+;화염
+ELSEIF RANGE(CFLAG:ARG:입력행동,701, 799)
+	BTL_KOJO_RESULTS:0 = 
+;빙결
+ELSEIF RANGE(CFLAG:ARG:입력행동,801, 899)
+	BTL_KOJO_RESULTS:0 = 
+;전격
+ELSEIF RANGE(CFLAG:ARG:입력행동,901, 999)
+	BTL_KOJO_RESULTS:0 = 
+;충격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1001, 1099)
+	BTL_KOJO_RESULTS:0 = 
+;신경
+ELSEIF RANGE(CFLAG:ARG:입력행동,1101, 1199)
+	BTL_KOJO_RESULTS:0 = 
+;정신
+ELSEIF RANGE(CFLAG:ARG:입력행동,1201, 1299)
+	BTL_KOJO_RESULTS:0 = 
+;파마
+ELSEIF RANGE(CFLAG:ARG:입력행동,1301, 1399)
+	BTL_KOJO_RESULTS:0 = 
+;주살
+ELSEIF RANGE(CFLAG:ARG:입력행동,1401, 1499)
+	BTL_KOJO_RESULTS:0 = 
+;지변
+ELSEIF RANGE(CFLAG:ARG:입력행동,1501, 1599)
+	BTL_KOJO_RESULTS:0 = 
+;수격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1601, 1699)
+	BTL_KOJO_RESULTS:0 = 
+;질풍
+ELSEIF RANGE(CFLAG:ARG:입력행동,1701, 1799)
+	BTL_KOJO_RESULTS:0 = 
+;중력
+ELSEIF RANGE(CFLAG:ARG:입력행동,1801, 1899)
+	BTL_KOJO_RESULTS:0 = 
+;핵열
+ELSEIF RANGE(CFLAG:ARG:입력행동,1901, 1999)
+	BTL_KOJO_RESULTS:0 = 
+;만능
+ELSEIF RANGE(CFLAG:ARG:입력행동,2001, 2099)
+	;自爆系
+	IF RANGE(CFLAG:ARG:입력행동,2005, 2007)
+		BTL_KOJO_RESULTS:0 = 
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;魔法少女系
+ELSEIF RANGE(CFLAG:ARG:입력행동,2989, 2999)
+	BTL_KOJO_RESULTS:0 = 
+;-------------------------------------------------
+;その他
+;-------------------------------------------------
+ELSE
+	;カードスキルA
+	IF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG,"カードスキルA")
+		;ワイドショット
+		IF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 1
+			IF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 포위할 생각이라면、와이드 샷으로 한꺼번에 쏘아주겠어！
+			ELSE
+				BTL_KOJO_RESULTS:0 = 아무리 수가 많더라도！
+			ENDIF
+		;バズソーショット
+		ELSEIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 2
+			BTL_KOJO_RESULTS:0 = 적지의 중심을 향해서… 슛！
+		;シザーズショット
+		ELSEIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 3
+			BTL_KOJO_RESULTS:0 = 좁은 곳으로 유인해서… 늘어선 걸 단숨에！
+		;クレジットショット
+		ELSEIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 4
+			IF FINDCHARA_B([[キャラ:당신]]) == 2 || FINDCHARA_B([[キャラ:당신]]) == 12
+				IF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = 탄약값의 청구서는 %NAME:MASTER%씨、한테…
+					BTL_KOJO_RESULTS:1 = 어、그런 말 하는 녀석에게는 급료에서 공제하겠다…？
+				ELSE
+					BTL_KOJO_RESULTS:0 = 소지금으로 성능이 달라진다니… 어떻게 되어먹은 구조인걸까…
+				ENDIF
+			ELSE
+				BTL_KOJO_RESULTS:0 = 이런 곳에서는、벌어도 쓸 곳 같은 건 없으니까… 전탄소사！
+			ENDIF
+		;リペアショット
+		ELSEIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 5
+			IF FINDCHARA_B([[キャラ:당신]]) == 2 || FINDCHARA_B([[キャラ:당신]]) == 12
+				BTL_KOJO_RESULTS:0 = 금방 끝나니까、잠깐만 참고 있어
+			ELSE
+				BTL_KOJO_RESULTS:0 = 윽…！　응급처치를 해야 해…
+			ENDIF
+		;電熱砲
+		ELSEIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 6
+			BTL_KOJO_RESULTS:0 = 전열포、차지 완료
+			BTL_KOJO_RESULTS:1 = 3… 2… 1… 발사！
+		;パイルショット
+		ELSEIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルA")) == 7
+			BTL_KOJO_RESULTS:0 = 총으로는 다 막을 수 없어… 이 거리라면 파일샷으로！
+		ENDIF
+	;カードスキルB
+	ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG,"カードスキルB")
+		;バリケード
+		IF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルB")) == 1
+			BTL_KOJO_RESULTS:0 = 일단은、임시방편을！
+		;バリケードLV2
+		ELSEIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルB")) == 2
+			BTL_KOJO_RESULTS:0 = 후우… 이걸로 일단은 괜찮、으려나
+		;バリケードLV3
+		ELSEIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルB")) == 3
+			BTL_KOJO_RESULTS:0 = 이 바리케이트라면、간단히 돌파당하지는 않을 거예요
+		;地雷
+		ELSEIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルB")) == 4
+			IF FINDCHARA_B([[キャラ:당신]]) == 2 || FINDCHARA_B([[キャラ:당신]]) == 12
+				BTL_KOJO_RESULTS:0 = 지뢰를 설치、밟지 않도록 조심해！
+			ELSE
+				BTL_KOJO_RESULTS:0 = 지뢰를 설치、밟지 않도록 조심해야지
+			ENDIF
+		;空爆
+		ELSEIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルB")) == 5
+			IF FINDCHARA_B([[キャラ:당신]]) == 2 || FINDCHARA_B([[キャラ:당신]]) == 12
+				BTL_KOJO_RESULTS:0 = 화력지원을 요청！
+				BTL_KOJO_RESULTS:1 = 위험하니까、모두 물러나있어！
+			ELSE
+				BTL_KOJO_RESULTS:0 = 당소 마르푸샤！
+				BTL_KOJO_RESULTS:1 = 화력지원을 요청합니다！
+			ENDIF
+		;対地タレット
+		ELSEIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルB")) == 6
+			BTL_KOJO_RESULTS:0 = 상대가 수로 밀어붙인다면、나도 수로 대항하겠어
+		;対空タレット
+		ELSEIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルB")) == 7
+			BTL_KOJO_RESULTS:0 = 대공 터렛을 설치、날아다니는 적은 맡길테니까
+		;스파이크
+		ELSEIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"カードスキルB")) == 8
+			BTL_KOJO_RESULTS:0 = 아무리 빠른 상대라도、발만 멈추면 그 뒤는 쏴버릴 뿐이야
+		ENDIF
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;真・その他
+;-------------------------------------------------
+IF BTL_KOJO_RESULTS:0 == ""
+	;必ず何か喋る
+	BTL_KOJO_RESULTS:0 = 
+ENDIF
+
+;SIF !(LOCALS:10 == "")
+;	CALL MESSAGE_B2(CALLNAME:ARG,1, LOCALS:10, LOCALS:11, LOCALS:12, LOCALS:13, LOCALS:14)

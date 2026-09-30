@@ -1,0 +1,144 @@
+﻿;-------------------------------------------------
+;数量入力用関数　@INPUT_MANY
+;INPUT_MINNUMで最小値、INPUT_MAXNUMで最大値を指定
+;電卓風のコンソールから数値を入力させる
+;
+;INPUT_MINNUM・INPUT_MAXNUM　最低値あるいは最大値　順序は逆でもよい
+;L_OPT　옵션。とりあえずいまはログを残すのみ
+;ADD_INPUTABLE_TABLE　例外の数値設定。範囲外でも通る数値を設定する
+;		 記述方法は0/20/30/-1といったように、文字列で"/"を区切り文字とする
+;-------------------------------------------------
+@INPUT_MANY, INPUT_MINNUM, INPUT_MAXNUM, L_OPT = "ログを残す", ADD_INPUTABLE_TABLE, FUNC_SIDEBUTTON, FUNC_UP_TEXT, L_PRICE, L_YPOS = 0
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_YPOS
+#DIM INPUT_NUM
+#DIM DYNAMIC INPUT_MINNUM
+#DIM DYNAMIC INPUT_MAXNUM
+#DIMS DYNAMIC SHOW_LINE
+#DIMS DYNAMIC L_OPT
+#DIMS DYNAMIC ADD_INPUTABLE_TABLE
+#DIMS DYNAMIC FUNC_SIDEBUTTON
+#DIMS DYNAMIC FUNC_UP_TEXT
+#DIM DYNAMIC L_PRICE
+#DIM DYNAMIC CALC_VECTOR
+#DIM DYNAMIC LINE, 1
+SIF INPUT_MINNUM > INPUT_MAXNUM
+	SWAP INPUT_MINNUM, INPUT_MAXNUM
+;座標指定なしの場合は自動的に設定して背景までつくる
+IF L_YPOS == 0
+	L_YPOS = -1600
+	FOR LCOUNT, 0, 16
+		PRINTL 
+	NEXT
+ENDIF
+;最初は0
+INPUT_NUM = 0
+CALC_VECTOR = 1
+VARSET LOCALS
+SPLIT ADD_INPUTABLE_TABLE, "/", LOCALS
+LINE = LINECOUNT
+$START
+REDRAW 0
+CLEARLINE LINECOUNT - LINE
+SHOW_LINE '= DRAWLINESTR + "<br>" + @"【{INPUT_NUM}】　《【{INPUT_MINNUM}】 - 【{INPUT_MAXNUM}】》　"
+RESULTS '= ""
+TRYCALLFORM %FUNC_UP_TEXT%, INPUT_NUM, L_PRICE
+SHOW_LINE += RESULTS
+SHOW_LINE += "<br>" + DRAWLINESTR
+
+SHOW_LINE '= @"<div xpos = '0' ypos = '{L_YPOS + 0}'>" + SHOW_LINE + "</div>"
+VARS BUTTON_TABLE, 16
+BUTTON_TABLE:0 '= "7", "8", "9", "AC"
+BUTTON_TABLE:4 '= "4", "5", "6", "MAX"
+BUTTON_TABLE:8 '= "1", "2", "3", "MIN"
+BUTTON_TABLE:12 '= "0", "+", "", "ENTER"
+
+VARI L_ROW
+VARI L_COLUMN
+VARI L_BUTTONUM
+VARS L_BUTTON
+SIF CALC_VECTOR > 0
+	BUTTON_TABLE:13 '= "-"
+FOR L_COLUMN, 0, 4
+	FOR L_ROW, 0, 4
+		L_BUTTONUM = L_COLUMN * 4 + L_ROW
+		SIF BUTTON_TABLE:L_BUTTONUM == ""
+			CONTINUE
+		{
+		L_BUTTON '= @"<div xpos = '{L_ROW * 300}' ypos = '{L_YPOS + L_COLUMN * 300 + 300}'
+					 width = '{L_BUTTONUM % 4 == 3 ? 650 # 250}' height = '250'
+					 border_width = '2px'>" + 
+					 "　" * (L_BUTTONUM % 4 == 3 ? 7 # 3) + "<br>" + 
+					 "　" * (L_BUTTONUM % 4 == 3 ? 7 # 3) + "<br>" + 
+					 "　" * (L_BUTTONUM % 4 == 3 ? 7 # 3) + 
+					 "</div>"
+		}
+		{
+		L_BUTTON += @"<div xpos = '{L_ROW * 300 + 75}' ypos = '{L_YPOS + L_COLUMN * 300 + 300 + 25}' + 
+					 width = '{L_BUTTONUM % 4 == 3 ? 600 # 200}' height = '225'>" +
+					 "<font size = '200'>" + BUTTON_TABLE:L_BUTTONUM + "</font>" + 
+					 "</div>"
+		}
+		IF ISNUMERIC(BUTTON_TABLE:L_BUTTONUM)
+			L_BUTTON '= SET_BUTTON_TAG(L_BUTTON, TOFULL(BUTTON_TABLE:L_BUTTONUM))
+		ELSE
+			L_BUTTON '= SET_BUTTON_TAG(L_BUTTON, BUTTON_TABLE:L_BUTTONUM)
+		ENDIF
+		SHOW_LINE += L_BUTTON
+	NEXT
+NEXT
+RESULTS '= ""
+TRYCCALLFORM %FUNC_SIDEBUTTON%
+	SHOW_LINE += @"<div xpos = '1600' ypos = '{L_YPOS + 300}'>" + RESULTS + "</div>"
+CATCH
+ENDCATCH
+SHOW_LINE += @"<div xpos = '0' ypos = '{L_YPOS + 1450}'>" + DRAWLINESTR + "<br>" + "※키보드로、직접 수치를 입력할 수도 있습니다" + "</div>"
+HTML_PRINT SHOW_LINE
+INPUTS
+CLEARLINE 1
+SELECTCASE RESULTS
+	CASE "AC"
+		INPUT_NUM = 0
+		GOTO START
+	CASE "+"
+		INPUT_NUM *= -1
+		CALC_VECTOR = 1
+	CASE "-"
+		INPUT_NUM *= -1
+		CALC_VECTOR = -1
+	CASE "MIN"
+		INPUT_NUM = INPUT_MINNUM
+	CASE "MAX"
+		INPUT_NUM = INPUT_MAXNUM
+	CASE "０", "１", "２", "３", "４", "５", "６", "７", "８", "９"
+		IF INPUT_NUM == 0
+			INPUT_NUM = ABS(INPUT_NUM) + TOINT(TOHALF(RESULTS)) * CALC_VECTOR
+		ELSE
+			;桁数を取る
+			IF STRLENS(TOSTR(INPUT_NUM)) > 17
+				CALL MESSAGE_POPUP, "桁数が多すぎます！"
+				GOTO START
+			ENDIF
+			INPUT_NUM = INPUT_NUM * 10 + TOINT(TOHALF(RESULTS))
+		ENDIF
+	CASEELSE
+		IF RESULTS != "ENTER"
+ 			FOR LCOUNT, 0, STRLENS(RESULTS)
+ 				SIF GROUPMATCH(SUBSTRING(RESULTS, LCOUNT, 1), "0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+ 					CONTINUE
+				CALL MESSAGE_POPUP, "入力が異常です。入力しなおしてください"
+				GOTO START
+ 			NEXT
+			INPUT_NUM = TOINT(RESULTS)
+		ENDIF
+		IF INRANGE(INPUT_NUM, INPUT_MINNUM, INPUT_MAXNUM) || MATCH(LOCALS, TOSTR(INPUT_NUM))
+			SIF !STRCOUNT(L_OPT, "ログを残す")
+				CLEARLINE LINE - LINECOUNT
+			REDRAW 1
+			RETURN INPUT_NUM
+		ELSE
+			CALL MESSAGE_POPUP, "数値が範囲外です。入力しなおしてください"
+			GOTO START
+		ENDIF
+ENDSELECT
+GOTO START

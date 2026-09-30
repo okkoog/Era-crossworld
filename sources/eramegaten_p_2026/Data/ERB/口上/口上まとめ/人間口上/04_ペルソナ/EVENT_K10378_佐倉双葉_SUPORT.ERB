@@ -1,0 +1,379 @@
+﻿;=========================================
+;ナビ口上の存在確認
+;この関数が設定されていないと口上が存在しない扱いになる
+;=========================================
+@IS_EXIST_KOJO_BATTLE_NAVI_K[[キャラ:후타바]], ARG
+RETURN 1
+
+;=========================================
+;以下ナビ口上、京都じゃない方の双葉はんから拝借した古代ちゃん口上から拝借、本当に申し訳ない
+;
+;TSTR:네비_시추에이션_메인		主に呼び出しタイミングを定義(戦闘開始/メイン画面/戦闘終了)
+;TSTR:네비_시추에이션_서버1		状況を定義
+;TSTR:네비_시추에이션_서버2		状況の補足オプション
+;=========================================
+@KOJO_BATTLE_NAVI_K[[キャラ:후타바]], ARG
+;右のような指定も可能→SETCOLOR 0xA0A0A0
+;色見本に#ABCDEFというような書き方がされていた場合は、こちらの書き方(SETCOLOR 0xABCDEF)を使うと良い
+;水色
+;SETCOLOR 0x33ffcc
+;LOCALS = {ARG:1}
+SELECTCASE TSTR:네비_시추에이션_메인
+	CASE "戦闘開始"
+		SELECTCASE TSTR:네비_시추에이션_서버1
+			CASE "통상"
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "格下"
+						IF TFLAG:적초기배치수 == 4
+							BTL_KOJO_RESULTS:0 = 敵は4体！弱いけど数には注意しろ！
+						ELSEIF TFLAG:적초기배치수 == 3
+							BTL_KOJO_RESULTS:0 = 敵は3体！ザコだけど気を抜くなよ？
+						ELSEIF TFLAG:적초기배치수 == 2
+							BTL_KOJO_RESULTS:0 = 敵は2体！大丈夫、ザコだから！
+						ELSEIF TFLAG:적초기배치수 == 1
+							BTL_KOJO_RESULTS:0 = ザコ一匹かよ！相手にならないな！
+						ELSE
+							BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体！ザコだけど油断はダメ！
+						ENDIF
+					CASE "同格"
+						IF TFLAG:적초기배치수 == 2
+							BTL_KOJO_RESULTS:0 = 敵は2体だ！しっかりやれよ！
+						ELSEIF TFLAG:적초기배치수 == 1
+							BTL_KOJO_RESULTS:0 = 敵1体！みんながんばれ～！
+						ELSE
+							BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体だ！がんばれー！
+						ENDIF
+					CASE "格上"
+						IF TFLAG:적초기배치수 == 1
+							BTL_KOJO_RESULTS:0 = 強敵だけど、一匹だけ！油断は禁物だからな！
+						ELSE
+							BTL_KOJO_RESULTS:0 = 強敵だぞ！相手するなら、気をつけろ！
+						ENDIF
+				ENDSELECT
+			CASE "先制攻撃"
+				IF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 不意打ち成功！これで負けたら承知しないからな！
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = こっちが有利だ！焦るなよ！
+				ELSE
+					BTL_KOJO_RESULTS:0 = チャンスだ！とっちめろ！
+				ENDIF
+			CASE "バックアタック"
+				BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体！みんな、あぶない！
+			CASE "バックアタック阻止"
+				BTL_KOJO_RESULTS:0 = みんな危ない！！『百太郎』！
+			CASE "不意打ち"
+				BTL_KOJO_RESULTS:0 = 囲まれてる！敵、{TFLAG:적초기배치수}体！
+			CASE "不意打ち阻止"
+				BTL_KOJO_RESULTS:0 = やらせないから！『百太郎』！
+		ENDSELECT
+	CASE "メイン画面"
+		SELECTCASE TSTR:네비_시추에이션_서버1
+			CASE "重度の危機"
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "死亡者多数"
+						BTL_KOJO_RESULTS:0 = 負傷者たくさん！このままじゃマズい！
+					CASE "マスター瀕死"
+						IF RAND:2 == 0
+							BTL_KOJO_RESULTS:0 = %CALLNAME:MASTER%、大丈夫か？体力に注意しとけよ！
+						ELSE
+							BTL_KOJO_RESULTS:0 = %CALLNAME:MASTER%、体力低下中！気をつけて！
+						ENDIF
+					CASE "マスター死亡"
+						IF RAND:2 == 0
+							BTL_KOJO_RESULTS:0 = %CALLNAME:MASTER%がやられた！誰か助けたげて！
+						ELSE
+							BTL_KOJO_RESULTS:0 = %CALLNAME:MASTER%戦闘不能！誰かフォローを頼む！
+						ENDIF
+					CASE "PTHP危機"
+						IF RAND:2 == 0
+							BTL_KOJO_RESULTS:0 = みんな大丈夫か！？回復優先だぞ！！
+						ELSE
+							BTL_KOJO_RESULTS:0 = みんな体力ヤバいぞ！誰か回復できないか！
+						ENDIF
+					CASE "그외"
+						BTL_KOJO_RESULTS:0 = このままじゃマズい！
+				ENDSELECT
+			CASE "中度の危機"
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "異常者複数"
+						IF RAND:2 == 0
+							BTL_KOJO_RESULTS:0 = みんな大丈夫か！？状態の治療優先だぞ！！
+						ELSE
+							BTL_KOJO_RESULTS:0 = みんなヤバいぞ！誰か治療できないか！
+						ENDIF
+					CASE "핀치캐릭터"
+						SELECTCASE TSTR:핀치캐릭터위기내용
+							CASE "DYING"
+								SELECTCASE NO:(TFLAG:핀치캐릭터)
+									CASE [[キャラ:류지]]
+										BTL_KOJO_RESULTS:0 = スカルがやられた！誰か助けたげて！
+									CASE [[キャラ:안]]
+										BTL_KOJO_RESULTS:0 = パンサーが倒れた！手当てをしてやれ！
+									CASE [[キャラ:마코토_P5]]
+										BTL_KOJO_RESULTS:0 = クイーンの体力ゼロ！カバーしないとマズイぞ！
+									CASE [[キャラ:유스케]]
+										BTL_KOJO_RESULTS:0 = フォックス沈黙！誰か手当てを！
+									CASE [[キャラ:하루_P5]]
+										BTL_KOJO_RESULTS:0 = ノワールがやられた！手当てを頼む！
+									CASE [[キャラ:모르가나]]
+										BTL_KOJO_RESULTS:0 = モナがやられたぞ！誰かフォローを！
+									CASE [[キャラ:P5주인공]]
+										BTL_KOJO_RESULTS:0 = ジョーカー、なんで！？ウソでしょ…
+									CASE [[キャラ:고로]]
+										BTL_KOJO_RESULTS:0 = クロウが戦闘不能！誰かフォローを頼む！
+									CASEELSE
+										IF RAND:2 == 0
+											BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%がやられた！誰か助けたげて！
+										ELSE
+											BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%戦闘不能！誰かフォローを頼む！
+										ENDIF
+								ENDSELECT
+							CASE "瀕死"
+								SELECTCASE NO:(TFLAG:핀치캐릭터)
+									CASE [[キャラ:류지]]
+										BTL_KOJO_RESULTS:0 = スカル、大丈夫か？体力に注意しとけよ！
+									CASE [[キャラ:안]]
+										BTL_KOJO_RESULTS:0 = パンサーがピンチ！注意しろ！
+									CASE [[キャラ:마코토_P5]]
+										BTL_KOJO_RESULTS:0 = クイーン、ピンチ！こりゃヤバイぞ！
+									CASE [[キャラ:유스케]]
+										BTL_KOJO_RESULTS:0 = フォックス、体力低下中！気をつけて！
+									CASE [[キャラ:하루_P5]]
+										BTL_KOJO_RESULTS:0 = ノワールの体力が！助けが必要だぞ！
+									CASE [[キャラ:모르가나]]
+										BTL_KOJO_RESULTS:0 = モナが危険！体力減ってる！
+									CASE [[キャラ:P5주인공]]
+										BTL_KOJO_RESULTS:0 = ジョーカーがピンチだ！早く回復を！
+									CASE [[キャラ:고로]]
+										BTL_KOJO_RESULTS:0 = クロウの体力残りわずか！回復してやって！
+									CASEELSE
+										BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%がピンチだ！早く回復を！
+								ENDSELECT
+							CASE "重傷"
+								SELECTCASE NO:(TFLAG:핀치캐릭터)
+									CASE [[キャラ:류지]]
+										BTL_KOJO_RESULTS:0 = スカルがヤバそうだ！
+									CASE [[キャラ:안]]
+										BTL_KOJO_RESULTS:0 = パンサーの体力注意しろ！
+									CASE [[キャラ:마코토_P5]]
+										BTL_KOJO_RESULTS:0 = クイーンがピンチ！
+									CASE [[キャラ:유스케]]
+										BTL_KOJO_RESULTS:0 = フォックスがヘロヘロだぞ！
+									CASE [[キャラ:하루_P5]]
+										BTL_KOJO_RESULTS:0 = ノワール、体力少ない！
+									CASE [[キャラ:모르가나]]
+										BTL_KOJO_RESULTS:0 = モナの体力ヤバいから！
+									CASE [[キャラ:P5주인공]]
+										BTL_KOJO_RESULTS:0 = ジョーカーが危ない！根性だけで立ってる…！
+									CASE [[キャラ:고로]]
+										BTL_KOJO_RESULTS:0 = クロウの体力、危険な予感！
+									CASEELSE
+										BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%の体力注意しろ！
+								ENDSELECT
+							CASE "HAPPY"
+								SELECTCASE NO:(TFLAG:핀치캐릭터)
+									CASE [[キャラ:류지]]
+										BTL_KOJO_RESULTS:0 = スカルが放心中！無防備で危険だぞ！
+									CASE [[キャラ:안]]
+										BTL_KOJO_RESULTS:0 = パンサーが放心状態！攻撃受けると痛いよ！
+									CASE [[キャラ:마코토_P5]]
+										BTL_KOJO_RESULTS:0 = クイーンがボーっとしちゃってる…！無防備状態！ピンチだぞ！
+									CASE [[キャラ:유스케]]
+										BTL_KOJO_RESULTS:0 = フォックスが放心中！無防備キケン！起きて！
+									CASE [[キャラ:하루_P5]]
+										BTL_KOJO_RESULTS:0 = ノワールが放心状態！このまま攻撃受けたらやばいよ！
+									CASE [[キャラ:모르가나]]
+										BTL_KOJO_RESULTS:0 = モナ、ボーっとしてる？危ないぞ！コラ！起きろ！
+									CASE [[キャラ:P5주인공]]
+										BTL_KOJO_RESULTS:0 = ジョーカーが放心中！無防備状態でヤバイよ！
+									CASE [[キャラ:고로]]
+										BTL_KOJO_RESULTS:0 = クロウが放心状態！危険だよ！！
+									CASEELSE
+										BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%が放心状態！攻撃受けると痛いよ！
+								ENDSELECT
+							CASE "PANIC"
+								SELECTCASE NO:(TFLAG:핀치캐릭터)
+									CASE [[キャラ:류지]]
+										BTL_KOJO_RESULTS:0 = スカルが睡眠中！無防備で危険だぞ！
+									CASE [[キャラ:안]]
+										BTL_KOJO_RESULTS:0 = パンサーが混乱中！お、落ち着けー！
+									CASE [[キャラ:마코토_P5]]
+										BTL_KOJO_RESULTS:0 = クイーン、混乱中！？勝手に動くなー！
+									CASE [[キャラ:유스케]]
+										BTL_KOJO_RESULTS:0 = フォックスが混乱してる！言うこと聞いてくれないよ！
+									CASE [[キャラ:하루_P5]]
+										BTL_KOJO_RESULTS:0 = ノワールが混乱！！話せば分かる！落ち着け！
+									CASE [[キャラ:모르가나]]
+										BTL_KOJO_RESULTS:0 = モナが混乱中！コラ！勝手に動くなー！
+									CASE [[キャラ:P5주인공]]
+										BTL_KOJO_RESULTS:0 = ジョーカーが混乱中！勝手に行動しちゃってる！
+									CASE [[キャラ:고로]]
+										BTL_KOJO_RESULTS:0 = クロウが混乱中！勝手に動いちゃダメだってば！
+									CASEELSE
+										BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%が混乱中！勝手に行動しちゃってる！
+								ENDSELECT
+							CASE "SLEEP"
+								SELECTCASE NO:(TFLAG:핀치캐릭터)
+									CASE [[キャラ:류지]]
+										BTL_KOJO_RESULTS:0 = スカルが睡眠中！無防備で危険だぞ！
+									CASE [[キャラ:안]]
+										BTL_KOJO_RESULTS:0 = パンサーが睡眠状態！攻撃受けると痛いよ！
+									CASE [[キャラ:마코토_P5]]
+										BTL_KOJO_RESULTS:0 = クイーンが寝ちゃってる…！無防備状態！ピンチだぞ！
+									CASE [[キャラ:유스케]]
+										BTL_KOJO_RESULTS:0 = フォックスが睡眠中！無防備キケン！起きて！
+									CASE [[キャラ:하루_P5]]
+										BTL_KOJO_RESULTS:0 = ノワールが睡眠状態！このまま攻撃受けたらやばいよ！
+									CASE [[キャラ:모르가나]]
+										BTL_KOJO_RESULTS:0 = モナ、寝ちゃってる？危ないぞ！コラ！起きろ！
+									CASE [[キャラ:P5주인공]]
+										BTL_KOJO_RESULTS:0 = ジョーカーが睡眠中！無防備状態でヤバイよ！
+									CASE [[キャラ:고로]]
+										BTL_KOJO_RESULTS:0 = クロウが睡眠状態！危険だよ！！
+									CASEELSE
+										BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%が睡眠状態！攻撃受けると痛いよ！
+								ENDSELECT
+							CASE "POISON"
+								SELECTCASE NO:(TFLAG:핀치캐릭터)
+									CASE [[キャラ:류지]]
+										BTL_KOJO_RESULTS:0 = スカル！下手に動くと体力が！
+									CASE [[キャラ:안]]
+										BTL_KOJO_RESULTS:0 = パンサー！動くと体力が減っちゃうぞ！
+									CASE [[キャラ:마코토_P5]]
+										BTL_KOJO_RESULTS:0 = クイーンが毒になってるー！は、早く治さないと！！
+									CASE [[キャラ:유스케]]
+										BTL_KOJO_RESULTS:0 = フォックス！体力が削られちゃう！
+									CASE [[キャラ:하루_P5]]
+										BTL_KOJO_RESULTS:0 = ノワール！このままじゃ体力が持たないぞ！
+									CASE [[キャラ:모르가나]]
+										BTL_KOJO_RESULTS:0 = モナ、毒になってる！体力減っちゃうよ！急いで治して！
+									CASE [[キャラ:P5주인공]]
+										BTL_KOJO_RESULTS:0 = ジョーカー！このままだと体力が減っちゃう！
+									CASE [[キャラ:고로]]
+										BTL_KOJO_RESULTS:0 = クロウ！このままじゃ体力減っちゃう！
+									CASEELSE
+										BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%このままじゃ体力減っちゃう！
+								ENDSELECT
+							CASE "CHARM"
+								SELECTCASE NO:(TFLAG:핀치캐릭터)
+									CASE [[キャラ:류지]]
+										BTL_KOJO_RESULTS:0 = スカルが魅了状態！？味方を敵だと思っちゃってるよ！
+									CASE [[キャラ:안]]
+										BTL_KOJO_RESULTS:0 = パンサーが魅了状態！？敵と味方の区別がついてない？
+									CASE [[キャラ:마코토_P5]]
+										BTL_KOJO_RESULTS:0 = クイーンが魅了！こっちは味方だよ！わかって！
+									CASE [[キャラ:유스케]]
+										BTL_KOJO_RESULTS:0 = フォックスが魅了されてる！違う！あっちは敵だって！
+									CASE [[キャラ:하루_P5]]
+										BTL_KOJO_RESULTS:0 = ノワールが魅了されてる！敵味方の区別が出来てない！
+									CASE [[キャラ:모르가나]]
+										BTL_KOJO_RESULTS:0 = モナが魅了されてる！こっちは味方だよー！
+									CASE [[キャラ:P5주인공]]
+										BTL_KOJO_RESULTS:0 = ジョーカーが魅了されてる！敵と味方の区別がついてないよ！
+									CASE [[キャラ:고로]]
+										BTL_KOJO_RESULTS:0 = クロウが魅了されてる！敵と味方がごっちゃになってる！
+									CASEELSE
+										BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%が魅了されてる！敵味方の区別が出来てない！
+								ENDSELECT
+							CASE "PALYZE"
+								SELECTCASE NO:(TFLAG:핀치캐릭터)
+									CASE [[キャラ:류지]]
+										BTL_KOJO_RESULTS:0 = スカル感電中！痺れて上手く動けないよ！
+									CASE [[キャラ:안]]
+										BTL_KOJO_RESULTS:0 = パンサー感電中！痺れて上手く動けないよ！
+									CASE [[キャラ:마코토_P5]]
+										BTL_KOJO_RESULTS:0 = クイーンが感電中！痺れて動きが悪くなってる！
+									CASE [[キャラ:유스케]]
+										BTL_KOJO_RESULTS:0 = フォックス感電中！今は耐えて！！
+									CASE [[キャラ:하루_P5]]
+										BTL_KOJO_RESULTS:0 = 感電状態で動けない！誰かノワールのサポートを！
+									CASE [[キャラ:모르가나]]
+										BTL_KOJO_RESULTS:0 = モナ感電中！動きが悪くなってるよ！
+									CASE [[キャラ:P5주인공]]
+										BTL_KOJO_RESULTS:0 = ジョーカー感電中！痺れて上手く動けないよ！
+									CASE [[キャラ:고로]]
+										BTL_KOJO_RESULTS:0 = クロウが感電中で動けないよ！！なんとか耐え切って！
+									CASEELSE
+										BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%感電中！今は耐えて！！
+								ENDSELECT
+							CASE "STONE"
+								SELECTCASE NO:(TFLAG:핀치캐릭터)
+									CASE [[キャラ:류지]]
+										BTL_KOJO_RESULTS:0 = スカルが石化状態！放っておくと大変なことになるぞ！
+									CASE [[キャラ:안]]
+										BTL_KOJO_RESULTS:0 = パンサーが石化状態！早く立て直さないと危険だぞ！
+									CASE [[キャラ:마코토_P5]]
+										BTL_KOJO_RESULTS:0 = クイーンが石化状態！な、なんとかしないと…
+									CASE [[キャラ:유스케]]
+										BTL_KOJO_RESULTS:0 = フォックスが石化してる！このままだと危ないよ！
+									CASE [[キャラ:하루_P5]]
+										BTL_KOJO_RESULTS:0 = ノワールが石化してる！早く助けてあげないと！	
+									CASE [[キャラ:모르가나]]
+										BTL_KOJO_RESULTS:0 = モナが石化しちゃってる！
+									CASE [[キャラ:P5주인공]]
+										BTL_KOJO_RESULTS:0 = ジョーカーが石化してる！放っておくと危険だ！
+									CASE [[キャラ:고로]]
+										BTL_KOJO_RESULTS:0 = クロウが石化状態！放置すると危険だぞ！
+									CASEELSE
+										BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%が石化状態！な、なんとかしないと…
+								ENDSELECT
+							CASEELSE
+								BTL_KOJO_RESULTS:0 = 状態の治療優先だぞ！！
+						ENDSELECT
+					CASE "그외"
+						BTL_KOJO_RESULTS:0 = 不利な状況だぞ！気をつけろ！！
+				ENDSELECT
+			CASE "平常"
+				;戦闘中・危険な状態の味方はいない・戦闘開始時よりも敵の数が少ない
+				SELECTCASE TSTR:네비_시추에이션_서버2
+					CASE "一部撃破済み"
+						BTL_KOJO_RESULTS:0 = ここが踏ん張りどころ！大丈夫、まだ行ける！
+					CASE "그외"
+						IF RAND:2 && FLAG:경과턴수 > 3
+							BTL_KOJO_RESULTS:0 = ここが踏ん張りどころ！大丈夫、まだ行ける！
+						ELSE
+							BTL_KOJO_RESULTS:0 = よーし、やっちゃえ！
+						ENDIF
+				ENDSELECT
+		ENDSELECT
+	CASE "戦闘終了"
+		SELECTCASE TSTR:네비_시추에이션_서버1
+			CASE "勝利"
+				IF ナビ_シチュエーション存在取得("格下")
+					IF RAND:3 == 0
+						BTL_KOJO_RESULTS:0 = 余裕過ぎて相手にならないな。
+						BTL_KOJO_RESULTS:0 = ヒマだ、もっと強いの見つけろ。
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = あれ？終わったのか？
+						BTL_KOJO_RESULTS:0 = あっけないな…
+					ELSE
+						BTL_KOJO_RESULTS:0 = 余裕だな。
+						BTL_KOJO_RESULTS:0 = 顔に書いてあるぞ。
+					ENDIF
+				ELSEIF ナビ_シチュエーション存在取得("格上")
+					IF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = 邪魔ものはいなくなった。
+						BTL_KOJO_RESULTS:0 = これで先に進めるぞ。
+					ELSE
+						BTL_KOJO_RESULTS:0 = 片付いたか？
+						BTL_KOJO_RESULTS:0 = じゃあ行こうか。
+					ENDIF
+				ELSE
+					IF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = いい調子。
+						BTL_KOJO_RESULTS:0 = 今のところ、順調だな。
+					ELSE
+						BTL_KOJO_RESULTS:0 = ごくろうさんだ。
+						BTL_KOJO_RESULTS:0 = その調子でゴー！
+					ENDIF
+				ENDIF
+			CASE "도주"
+			CASE "敗北"
+				IF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = いや、起きてよ！みんなーーーっ！
+				ELSE
+					BTL_KOJO_RESULTS:0 = みんな！ウソ…返事をして！
+				ENDIF
+		ENDSELECT
+ENDSELECT

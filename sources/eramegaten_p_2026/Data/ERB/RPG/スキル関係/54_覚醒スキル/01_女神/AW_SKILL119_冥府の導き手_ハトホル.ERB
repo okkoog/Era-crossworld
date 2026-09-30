@@ -1,0 +1,87 @@
+﻿;スキル名
+@SKILL_NAME_AW_119,ARG
+RESULTS = 명부의 인도자
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_AW_119, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+
+;　コストの量
+@SKILL_COST_AW_119,ARG
+RETURN 0
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_AW_119
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_AW_119, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_AW_119, ARG
+RETURN GET_SUCCESSION_NUM("신경")
+
+;効果を発揮するリーダースキル
+@SKILL_GET_LEADER_SKILL_NAME_AW_119, ARG
+RESULTS = 명부의 인도자
+
+@SKILL_TURNEND_AW_119, ARG
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC IS_SHOWED
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+	RETURN 0
+;入力可能な状態じゃないとだめ
+SIF !ACTIONABLE_CHARA_F(ARG)
+	RETURN 0
+FOR LCOUNT, 1, 17
+	L_CHARA = POS(LCOUNT)
+	SIF !IS_TARGET_ABLE(L_CHARA)
+		CONTINUE
+	SIF IS_FRIEND(ARG, L_CHARA)
+		CONTINUE
+	CALL SKILL_CURE_STATE_2756, CFLAG:L_CHARA:상태이상
+	SIF !RESULT
+		CONTINUE
+	SIF !IS_SHOWED
+		CALL PRINT_ACT_MESSAGE, ARG,  SKILL_NUM_F("각성스킬"), , , , "NOWAIT"
+	CALL SKILL_SET_カジャンダ, ARG, L_CHARA, "공격", -4, "단체", "NOWAIT"
+	IS_SHOWED = 1
+NEXT
+SIF IS_SHOWED
+	WAIT
+
+;　 説明文の表示
+@SKILL_EXPLAIN_AW_119, ARG
+PRINTL 여신 하토르의 각성 스킬
+PRINTL 자동: 최대 HP가 30% 상승한다. 이 효과는 활천 계열 스킬 효과로 취급된다.
+PRINTL 　　　이 스킬 소지자가 액티브 상태일 때, 아군은 CLOSE에 강한 내성을 얻는다.
+PRINTL 　　　턴 종료 시 CLOSE가 부여되어 있는 적이 있을 때, 이하의 연동 효과가 발동한다.
+PRINTL 　　　「CLOSE가 부여되어 있는 적의 공격력을 저하시킨다.」
+
+@SKILL_ACTIONABLE_BATTLE_AW_119, ARG
+RETURN 0
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_AW_119, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	CASE "HP補正"
+		RESULTS = 活泉
+		RETURN 30
+ENDSELECT
+
+RETURN 0

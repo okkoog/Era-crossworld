@@ -1,0 +1,151 @@
+﻿;221013		NEO		説明文などを変更、名称変化と演出を追加
+;					物理ロゴス＋デカジャはどう考えてもクッソ強いのだが、上手い性能が思いつかぬ
+
+;スキル名
+@SKILL_NAME_2973,ARG
+	;ARGがいない、戦闘中でない、行動時に表示するタイミングでない、なら通常のスキル名を返す
+	;あくまで「使用する瞬間に」この名前になる
+	IF ARG == -1 || TFLAG:전투중 == 0 || FLAG:행동순1 != ARG
+		RESULTS = 공상구현화
+	;ブラッドヒート状態ならタイプルミナのラストアーク名称に変更
+	ELSEIF 現HP割合(ARG) < 33
+		RESULTS = 空想具現化・事象収納
+	ELSE
+		RESULTS = 공상구현화
+	ENDIF
+
+;　명중
+@SKILL_HITRATE_2973, ARG
+RETURN 150
+
+;　威力
+@SKILL_POWER_2973, ARG
+	IF ARG == -1
+		RETURN 500
+	ENDIF
+
+	IF 現HP割合(ARG) < 33
+		RETURN 800
+	ELSE
+		RETURN 500
+	ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2973,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2973,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2973, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2973,ARG
+RETURN 70
+
+;　相性
+@SKILL_TYPE_2973,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2973
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2973, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2973, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2973,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2973,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2973, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2973
+RETURN GET_SUCCESSION_NUM("만능")
+;不可
+
+@継承不能_2973
+RETURN 1
+;만능
+
+;속도보정
+@SKILL_SPEED_2973, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2973
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2973, ARG = -1
+RETURN 15
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2973, ARG, ARG:1, ARG:2
+
+	;メッセージ表示
+	;HP条件をチェックし、強化状態であったら「BLOOD HEAT!!」を表示する
+	CALL MELTY_BLOOD_IS_BLOOD_HEAT_HP_CONDITIONS(ARG)
+
+	CALL ATTACK_FIELD,ARG,ARG:1,2973
+
+	IF ARG:1 == 19
+		LOCAL:2 = 1
+		LOCAL:3 = 7
+	ELSE
+		LOCAL:2 = 7
+		LOCAL:3 = 17
+	ENDIF
+
+	FOR LOCAL,LOCAL:2,LOCAL:3
+		SIF POS(LOCAL) < 0
+			CONTINUE
+		FOR LOCAL:1,0,6
+			CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LOCAL:1) + "강화") = MIN(0, CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LOCAL:1) + "강화"))
+		NEXT
+	NEXT
+	PRINTFORMW \@ CFLAG:ARG:PT플래그 ? 적 # 아군 \@의 강화된 능력이 되돌아왔다!
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2973, ARG
+PRINTL 적 전체에 만능 상성으로 초특대 위력의 물리 공격을 행한다.
+PRINTL 追加効果：強化解除
+PRINTL 사용자의 HP가 얼마 남지 않았을 경우 위력이 상승한다.
+PRINTL 　
+PRINTL 공상구현화＜마블 판타즘＞。
+PRINTL 정령종(별의 촉각)으로서의 권능, 주변 환경의 개편 능력을 사용하여 공격을 행한다.
+PRINTL 진조 알퀘이드의 필살기
+
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2973,ARG
+RETURN 1
+

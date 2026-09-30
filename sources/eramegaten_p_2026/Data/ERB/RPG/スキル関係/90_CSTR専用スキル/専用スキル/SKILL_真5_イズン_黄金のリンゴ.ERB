@@ -1,0 +1,188 @@
+﻿;専用スキル用のテンプレート
+;「黄金のリンゴ」を別の名前に置き換えてください
+
+;スキル名
+@SKILL_NAME_黄金のリンゴ,ARG
+RESULTS = 황금 사과
+
+;　명중
+@SKILL_HITRATE_黄金のリンゴ, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_黄金のリンゴ, ARG
+SIF ARG == -1
+	RETURN 160
+IF (ABL:ARG:가창기능 + ABL:ARG:요리기능) > 19
+	RETURN 480
+ELSEIF (ABL:ARG:가창기능 + ABL:ARG:요리기능) > 13
+	RETURN 360
+ELSEIF (ABL:ARG:가창기능 + ABL:ARG:요리기능) > 7
+	RETURN 240
+ELSE
+	RETURN 160
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_黄金のリンゴ,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_黄金のリンゴ,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_黄金のリンゴ, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_黄金のリンゴ,ARG
+RETURN 50
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_黄金のリンゴ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_黄金のリンゴ,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+@SKILL_HEAL_TYPE_黄金のリンゴ, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("통상")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_黄金のリンゴ,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_黄金のリンゴ,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_黄金のリンゴ,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_黄金のリンゴ,ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_黄金のリンゴ
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_黄金のリンゴ, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_黄金のリンゴ
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_黄金のリンゴ,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#LOCALSIZE 4
+#DIM リンゴ在庫
+リンゴ在庫 = PU_SKILLNUM_GET(ARG,"黄金のリンゴ")
+
+;回復処理
+CALL HEAL_FIELD,ARG,ARG:1,SKILL_NUM		;範囲回復(列、全体)
+
+IF CFLAG:(ARG):PT플래그 == 0
+	LOCAL:2 = 7
+	LOCAL:3 = 17
+ELSE
+	LOCAL:2 = 1
+	LOCAL:3 = 7
+ENDIF
+
+FOR LOCAL,LOCAL:2,LOCAL:3
+	SIF POS(LOCAL) < 0
+		CONTINUE
+	FOR LOCAL:1,0,6
+		CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LOCAL:1) + "강화") = MIN(32, CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LOCAL:1) + "강화") + 4)
+	NEXT
+NEXT
+PRINTFORMW \@ CFLAG:ARG:PT플래그 == 0 ? 적 # 아군 \@의 전 능력이 상승!
+
+CALL SKILLGAGE_H_ADD,ARG,リンゴ在庫,1
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_黄金のリンゴ,ARG
+#DIM リンゴ在庫
+リンゴ在庫 = PU_SKILLNUM_GET(ARG,"黄金のリンゴ")
+IF CFLAG:ARG:900 == 1
+	IF SKILLGAGE_H_GET(ARG,リンゴ在庫) == 0
+		RESULTS = 사과: ★★★★★
+	ELSEIF SKILLGAGE_H_GET(ARG,リンゴ在庫) == 1
+		RESULTS = 사과: ★★★★☆
+	ELSEIF SKILLGAGE_H_GET(ARG,リンゴ在庫) == 2
+		RESULTS = 사과: ★★★☆☆
+	ELSEIF SKILLGAGE_H_GET(ARG,リンゴ在庫) == 3
+		RESULTS = 사과: ★★☆☆☆
+	ELSEIF SKILLGAGE_H_GET(ARG,リンゴ在庫) == 4
+		RESULTS = 사과: ★☆☆☆☆
+	ELSEIF SKILLGAGE_H_GET(ARG,リンゴ在庫) == 5
+		RESULTS = 사과: 텅 빔!
+	ENDIF
+ELSE
+	IF SKILLGAGE_H_GET(ARG,リンゴ在庫) == 0
+		RESULTS = 사과: ★★★
+	ELSEIF SKILLGAGE_H_GET(ARG,リンゴ在庫) == 1
+		RESULTS = 사과: ★★☆
+	ELSEIF SKILLGAGE_H_GET(ARG,リンゴ在庫) == 2
+		RESULTS = 사과: ★☆☆
+	ELSEIF SKILLGAGE_H_GET(ARG,リンゴ在庫) == 3
+		RESULTS = 사과: 텅 빔!
+	ENDIF
+ENDIF
+RETURN 3
+
+@SKILL_EX_DISPLAY_黄金のリンゴ, ARG, ARGS
+#DIM L_VALUE
+#DIM L_MAX_VALUE
+RESULTS = %SET_COLOR_TAG(UNICODE(0xA5C3), "YELLOW")%
+L_MAX_VALUE = CFLAG:ARG:900 == 1 ? 5 # 3
+L_VALUE = L_MAX_VALUE - PU_SKILLGAGE_H_GET(ARG, "黄金のリンゴ")
+RESULTS += " " + HTML_RECT_SPLIT_BAR(L_VALUE, L_MAX_VALUE, SKILL_EX_DISPLAY_LENS - 2, BARCOLORSET("緑"), RESULT:1)
+RESULTS:1 = 황금 사과
+RETURN 1
+
+;　説明文の表示
+@SKILL_EXPLAIN_黄金のリンゴ,ARG
+PRINTL 아군 전체의 HP를 중위력으로 회복하고, 전 능력을 1단계 상승시킨다.
+PRINT 추가 효과: 가창·요리 기능의 합계에 따라 회복량 상승.
+SETCOLOR 0xff0000
+	IF CFLAG:ARG:900 == 1
+		PRINTL 사용 제한: 1전투당 5회까지.
+	ELSE
+		PRINTL 사용 제한: 1전투당 3회까지.
+	ENDIF
+RESETCOLOR
+PRINTL 
+PRINTL 신들의 영원한 젊음을 유지하고 현대 의학마저 능가하는 신비의 과실을 사용하여 동료의 회복과 강화를 동시에 행한다.
+PRINTL 단 재고에는 한계가 있고 요리나 아이돌로서의 레슨이 부족하면 회복력은 미덥지 못하다.
+PRINTL 여신 이둔의 스킬 (CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_黄金のリンゴ,ARG
+#DIM リンゴ在庫
+リンゴ在庫 = PU_SKILLNUM_GET(ARG,"黄金のリンゴ")
+IF CFLAG:ARG:900 == 1
+	SIF SKILLGAGE_H_GET(ARG,リンゴ在庫) > 4
+		RETURN 0
+ELSE
+	SIF SKILLGAGE_H_GET(ARG,リンゴ在庫) > 2
+		RETURN 0
+ENDIF
+RETURN 1

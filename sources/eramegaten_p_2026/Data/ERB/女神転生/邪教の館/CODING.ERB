@@ -1,0 +1,135 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:コーディング処理
+;					  とくにコーディングによるデメリットがないので無条件で全抽出するようにしてあります
+;
+;	Edit	Date			Author					Reason
+;	001		2011/05/19		Ｐ						新規作成
+;	002		2019/09/16		名無し					追加した状態異常プラグインが種族別に手に入るように
+;	003		2023/05/31		Ｐ						記述をリファクタリング
+;													ポップアップ用の説明文作成関数を追加
+;													コーディングの内容を拡張し、解析度をあげることで取得できるプラグインソフトを確認できるように変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@CODING
+#DIM LCOUNT
+#DIM L_CHARA
+#DIM CODENUM
+#DIM EXIST_CODE
+EXIST_CODE = 0
+DRAWLINE
+PRINTL 해석이 완전히 완료된 악마의 데이터에서 플러그인소프트를 코딩합니다
+DRAWLINE
+FOR LCOUNT, 0, 10
+	PRINTFORM CODEING
+	PRINTFORML %"…" * (LCOUNT % 3)%
+	TWAIT 100, 1
+	CLEARLINE 1
+NEXT
+FOR L_CHARA, 0, CSVCHARANUM
+	SIF !EXISTCSV(L_CHARA)
+		CONTINUE
+	SIF !IS_CHARA_COMPANIONED:L_CHARA
+		CONTINUE
+	CODENUM = GET_HAVE_CODING_NUM(L_CHARA)
+	SIF !CODENUM
+		CONTINUE
+	SIF ITEM:(CODENUM)
+		CONTINUE
+	CALL GET_TITLE_FOR_PLUGUIN, CODENUM
+	HTML_PRINT @"<nonbutton title = '%RESULTS%'>" + "┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓" + "</nonbutton>"
+	HTML_PRINT @"<nonbutton title = '%RESULTS%'>" + "┃" + @"%CSVCALLNAME(L_CHARA) + "에게서【" +  PLUGINNAME(CODENUM) + "】" + 조사만처리(PLUGINNAME(CODENUM), "를") + " 추출했습니다", 72, LEFT%" + "┃" + "</nonbutton>"
+	HTML_PRINT @"<nonbutton title = '%RESULTS%'>" + "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛" + "</nonbutton>"
+	ITEM:(CODENUM) = 1
+	EXIST_CODE = 1
+NEXT
+WAIT
+
+;コーディング可能かどうかを確認
+;戻り値は2が実行可能、1がソフトを抽出していないが解析値が足りない対象がいる場合
+@IS_CODING_ABLE
+#FUNCTION
+#DIM L_CHARA
+#DIM CODENUM
+FOR L_CHARA, 0, CSVCHARANUM
+	SIF !EXISTCSV(L_CHARA)
+		CONTINUE
+	SIF !IS_CHARA_COMPANIONED:L_CHARA
+		CONTINUE
+	CODENUM = GET_HAVE_CODING_NUM(L_CHARA)
+	SIF !CODENUM
+		CONTINUE
+	SIF ITEM:(CODENUM)
+		CONTINUE
+	RETURNF 1
+NEXT
+RETURNF 0
+
+@GET_HAVE_CODING_NUM, ARG
+#FUNCTION
+SIF CSVABL(ARG, GETNUM(ABL, "코딩"),0)
+	RETURNF CSVABL(ARG, GETNUM(ABL, "코딩"),0)
+SELECTCASE GET_RACE(CSVABL(ARG, GETNUM(ABL, "종족")))
+	CASE "지모신"
+		RETURNF GETNUM(ITEM, "플러그인／성하수")
+	CASE "여신"
+ 		RETURNF GETNUM(ITEM, "플러그인／매혹의 C케이크")
+ 	CASE "마왕"
+ 		RETURNF GETNUM(ITEM, "플러그인／탄핵의우상")
+ 	CASE "천사"
+ 		RETURNF GETNUM(ITEM, "플러그인／영광의손")
+ 	CASE "요마"
+ 		RETURNF GETNUM(ITEM, "플러그인／Ｄｒ．Ｎ슈즈")
+ 	CASE "요정"
+		IF CSVTALENT(ARG, GETNUM(TALENT, "남자"))
+	 		RETURNF GETNUM(ITEM, "플러그인／청두건")
+		ELSE
+ 			RETURNF GETNUM(ITEM, "플러그인／향나무가지")
+		ENDIF
+ 	CASE "요귀"
+ 		RETURNF GETNUM(ITEM, "플러그인／베타팔")
+ 	CASE "용왕"
+		IF CSVTALENT(ARG, GETNUM(TALENT, "남자"))
+ 			RETURNF GETNUM(ITEM, "플러그인／류큐의알")
+		ELSE
+	 		RETURNF GETNUM(ITEM, "플러그인／용수의립스틱")
+		ENDIF
+ 	CASE "마수"
+ 		RETURNF GETNUM(ITEM, "플러그인／무지미망의마음")
+ 	CASE "요조"
+ 		RETURNF GETNUM(ITEM, "플러그인／부들")
+ 	CASE "외도"
+		IF CSVTALENT(ARG, GETNUM(TALENT, "남자"))
+ 			RETURNF GETNUM(ITEM, "플러그인／어둠의정령")
+		ELSE
+	 		RETURNF GETNUM(ITEM, "플러그인／곤혹의B케이크")
+		ENDIF
+ 	CASE "귀신"
+ 		RETURNF GETNUM(ITEM, "플러그인／우의화")
+ 	CASE "사신"
+ 		RETURNF GETNUM(ITEM, "플러그인／기적의샘물")
+ 	CASE "타천사"
+ 		RETURNF GETNUM(ITEM, "플러그인／이시이씨의백의")
+	CASEELSE
+		RETURNF 0
+ENDSELECT
+
+@GET_TITLE_FOR_PLUGUIN, ARG
+#DIM LCOUNT
+#DIMS L_RESULTS
+#DIM L_LINE
+#DIMS TEMPS
+#DIM L_FORNUM
+#DIM SHOW_LINE_NUM
+#DIMS SHOW_LINE, 20
+L_LINE = LINECOUNT
+L_RESULTS = □%PLUGINNAME(ARG)%
+CALL EQ_装備解説, ARG
+
+L_FORNUM = LINECOUNT - L_LINE
+FOR LCOUNT, 0, L_FORNUM
+	SHOW_LINE_NUM = L_FORNUM - LCOUNT - 1
+	TEMPS = %HTML_TOPLAINTEXT(HTML_GETPRINTEDSTR(SHOW_LINE_NUM))%
+	L_RESULTS = %ADD_SPLIT(L_RESULTS, UNICODE(0x00D), "　" + TEMPS)%
+NEXT
+CLEARLINE LINECOUNT - L_LINE
+RESULTS = %L_RESULTS%

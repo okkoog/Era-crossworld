@@ -1,0 +1,69 @@
+﻿;スキル名
+@SKILL_NAME_有効戦術,ARG
+RESULTS = 有効戦術
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_有効戦術,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;　説明文の表示
+@SKILL_EXPLAIN_有効戦術,ARG
+PRINTL 자동효과: 자신의 공격이 성공했을 때 30% 확률로 이하의 연동 효과가 발동한다.
+PRINTL 　　　　 「공격받은 대상 전체의 방어력을 저하시킨다.」
+@SKILL_EXPLAIN_TOOLTIP_有効戦術, ARG
+RESULTS:0 = 자동효과: 자신의 공격이 성공했을 때 30% 확률로 이하의 연동 효과가 발동한다.
+RESULTS:1 = 　　　　 「공격받은 대상 전체의 방어력을 저하시킨다.」
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_有効戦術,ARG
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_有効戦術, ARG = -1
+RETURN 10
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_有効戦術
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_有効戦術, ARG, ARG:1, ARG:2
+#DIM DYNAMIC LCOUNT
+FOR LCOUNT, CFLAG:ARG:PT플래그 > 0 ? 7 # 1, CFLAG:ARG:PT플래그 > 0 ? 17 # 7
+	SIF !IS_TARGET_ABLE(POS(LCOUNT))
+		CONTINUE
+	SIF !GETBIT(PU_SKILLGAGE_H_GET(ARG, "有効戦術"), LCOUNT)
+		CONTINUE
+	CALL SKILL_SET_カジャンダ, ARG, POS(LCOUNT), "방어", -4, "단체", "NOWAIT"
+NEXT
+CALL PU_SKILLGAGE_H_SET, ARG, "有効戦術", 0
+WAIT
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_有効戦術,ARG,ARG:1
+;自分の行動のみ
+SIF ARG != FLAG:행동순1
+	RETURN 0
+SIF TFLAG:스킬트리거용1 == 0
+	TFLAG:스킬트리거용1 = RAND:100 < 30 ? 1 # -1
+SIF TFLAG:스킬트리거용1 == -1
+	RETURN 0
+;攻撃対象が敵でないとダメ
+SIF IS_FRIEND(ARG, ARG:1)
+	RETURN 0
+SIF !GET_CREC_ACT(FLAG:행동순1, ARG:1, "HIT")
+	RETURN 0
+SIF CPOS(ARG:1) == 0
+	RETURN 0
+CALL PU_SKILLGAGE_H_ADD, ARG, "有効戦術", POWER(2, CPOS(ARG:1))
+;判定は1度通ったらあとはACTION側で条件を見る
+SIF TFLAG:스킬트리거용1 == 2
+	RETURN 0
+TFLAG:스킬트리거용1 = 2
+RETURN 1, CPOS(ARG)

@@ -1,0 +1,368 @@
+﻿;=================================================================================================================
+;사고패턴
+;=================================================================================================================
+;アマネクローンの思考パターン
+@SET_ACTION_3334,ARG
+;後衛に居るなら前衛に出る
+IF CPOS(ARG) > 11
+	CFLAG:ARG:입력행동 = 2301
+	CFLAG:ARG:입력행동 = CPOS(ARG)-5
+ENDIF
+
+;========================================================================================================================
+;アマネの思考パターン
+;========================================================================================================================
+@SET_ACTION_4513,ARG
+;포지션8.9.10.が死んでたらリカーム
+;それ以外に死んでるキャラが居たらリカーム
+IF TFLAG:435 == 1 && CFLAG:ARG:행동한횟수 == 0
+	CFLAG:ARG:입력행동 = [[스킬:마카라칸]]
+	CFLAG:ARG:타겟 = 22
+	RETURN 1
+;---- EDIT 003 ADD END ---------------------------
+ELSEIF CFLAG:POS(8):상태이상 == GET_STATE_NUM("DYING")
+	CALL CHECK_ACTIONABLE,ARG,418
+	SIF RESULT == 0
+		GOTO DECIDE_ACTION
+	CFLAG:ARG:입력행동 = 418
+	CFLAG:ARG:타겟 = POS(8)
+	RETURN 1
+ELSEIF CFLAG:POS(9):상태이상 == GET_STATE_NUM("DYING")
+	CALL CHECK_ACTIONABLE,ARG,418
+	SIF RESULT == 0
+		GOTO DECIDE_ACTION
+	CFLAG:ARG:입력행동 = 418
+	CFLAG:ARG:타겟 = POS(9)
+	RETURN 1
+ELSEIF CFLAG:POS(10):상태이상 == GET_STATE_NUM("DYING")
+	CALL CHECK_ACTIONABLE,ARG,418
+	SIF RESULT == 0
+		GOTO DECIDE_ACTION
+	CFLAG:ARG:입력행동 = 418
+	CFLAG:ARG:타겟 = POS(10)
+	RETURN 1
+;前衛に居るならスウェイバック
+ELSEIF CPOS(ARG) == 9
+	CFLAG:ARG:입력행동 = 2301
+	CFLAG:ARG:타겟 = 14
+	RETURN 1
+ELSE
+	GOTO DECIDE_ACTION
+	$DECIDE_ACTION
+	CALL ランダム行動, ARG
+ENDIF
+
+
+;========================================================================================================================
+;イザ・ベルの思考パターン
+;========================================================================================================================
+@SET_ACTION_イザベル, ARG
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+;アマネとの連携用
+TFLAG:435 = CFLAG:ARG:집중플래그 ? 1 # 0
+TFLAG:436 = 1
+IF CFLAG:ARG:행동한횟수 == 0
+	SIF CFLAG:ARG:집중플래그
+		CFLAG:ARG:입력행동 = [[스킬:작열의꽃]]
+ELSEIF CFLAG:ARG:１more플래그 == 0
+	SELECTCASE RAND:100
+		CASE IS < 20
+			CFLAG:ARG:입력행동 = [[스킬:컨센트레이트]]
+			TFLAG:435 = 1
+		CASE IS < 40
+			CFLAG:ARG:입력행동 = [[스킬:프레이라]]
+		CASE IS < 60
+			CFLAG:ARG:입력행동 = [[스킬:마하・라기온]]
+		CASE IS < 70
+			CFLAG:ARG:입력행동 = 現HP割合(ARG) < 25 ? [[스킬:만마의난무]] # [[스킬:메기도]]
+	ENDSELECT
+ENDIF
+
+IF CFLAG:ARG:입력행동 == -1
+	SELECTCASE RAND:100
+		CASE IS < 15
+			CFLAG:ARG:입력행동 = [[스킬:마카・카쟈]]
+		CASE IS < 45
+			CFLAG:ARG:입력행동 = [[스킬:방전]]
+		CASE IS < 75
+			CFLAG:ARG:입력행동 = [[스킬:마하무드온]]
+		CASEELSE
+			CFLAG:ARG:입력행동 = 0
+	ENDSELECT
+ENDIF
+;アクション実行不能
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+;========================================================================================================================
+;ターン終了時動作
+;========================================================================================================================
+@EVENT_BATTLE_ACTEND_DUNGEON4
+IF FINDCHARA_ENEMY([[キャラ:레미엘]])
+	LOCAL = RESULT:1
+	IF CFLAG:LOCAL:입력행동 == [[스킬:아이스브레이크]]
+		LOCAL:1 = [[キャラ:하우르바타트]]
+		LOCAL:2 = [[스킬:부흐다인]]
+	ELSEIF CFLAG:LOCAL:입력행동 == [[스킬:그래비티브레이크]]
+		LOCAL:1 = [[キャラ:아무르타트]]
+		LOCAL:2 = [[스킬:그라다인]]
+	ELSEIF CFLAG:LOCAL:입력행동 == [[스킬:소닉브레이크]]
+		LOCAL:1 = [[キャラ:라이라]]
+		LOCAL:2 = [[스킬:잔다인]]
+	ELSE
+		RETURN 0
+	ENDIF
+	IF TFLAG:410 >= CHARANUM
+		CFLAG:LOCAL:입력행동 = 0
+		RETURN 0
+	ENDIF
+	CALL ACTIONABLE_CHARA, TFLAG:410
+	IF RESULT == 0
+		CFLAG:LOCAL:입력행동 = 0
+		RETURN 0
+	ENDIF
+	IF NO:(TFLAG:410) != LOCAL:1
+		CFLAG:LOCAL:입력행동 = 0
+		RETURN 0
+	ENDIF
+	CALL CHECK_ACTIONABLE, TFLAG:410, LOCAL:2
+	IF RESULT == 0
+		CFLAG:LOCAL:입력행동 = 0
+		RETURN 0
+	ENDIF
+	IF TFLAG:411 >= CHARANUM
+		CFLAG:LOCAL:입력행동 = 0
+		RETURN 0
+	ENDIF
+	IF NO:(TFLAG:411) != LOCAL:1
+		CFLAG:LOCAL:입력행동 = 0
+		RETURN 0
+	ENDIF
+	CALL ACTIONABLE_CHARA, TFLAG:411
+	IF RESULT == 0
+		CFLAG:LOCAL:입력행동 = 0
+		RETURN 0
+	ENDIF
+	CALL CHECK_ACTIONABLE, TFLAG:411, LOCAL:2
+	IF RESULT == 0
+		CFLAG:LOCAL:입력행동 = 0
+		RETURN 0
+	ENDIF
+ENDIF
+SIF !TFLAG:436
+	RETURN 0
+IF FINDCHARA_ENEMY([[キャラ:이자・벨]]) && CFLAG:(RESULT:1):마법반사플래그 && CFLAG:(RESULT:1):집중플래그
+	TFLAG:400 = 1
+	CFLAG:(RESULT:1):마법반사플래그 = 0
+ENDIF
+IF TFLAG:400 && FINDCHARA_ENEMY([[キャラ:이자・벨]]) && !CFLAG:(RESULT:1):집중플래그
+	TFLAG:400 = 0
+	CFLAG:(RESULT:1):마법반사플래그 = 1
+ENDIF
+
+;===========================================================================================================================
+;精神世界レミエル増援パターン
+;============================================================================================================================
+
+
+@増援パターン_レミエル, ARG, ARG:1, ARG:2
+IF RAND:3 == 0
+	CALL SET_ENEMY, ARG:1, [[キャラ:하우르바타트]], ダンジョンフラグ:(FLAG:현던전):6 - 5
+ELSEIF RAND:2
+	CALL SET_ENEMY, ARG:1, [[キャラ:아무르타트]], ダンジョンフラグ:(FLAG:현던전):6 - 5
+ELSE
+	CALL SET_ENEMY, ARG:1, [[キャラ:라이라]], ダンジョンフラグ:(FLAG:현던전):6 - 5
+ENDIF
+CALL SET_ENEMY_D4_ST, CHARANUM - 1
+SIF ARG:2 < 2
+	RETURN 0
+RETURN 1
+
+
+@SET_ENEMY_D4_ST, ARG
+SELECTCASE NO:ARG
+	CASE [[キャラ:하우르바타트]]
+		CSTR:ARG:사고패턴 = レミエル取り巻き
+		ABL:ARG:스킬1 = [[스킬:라쿠・카쟈]] 
+		ABL:ARG:스킬2 = [[스킬:부흐다인]]
+		ABL:ARG:스킬3 = [[스킬:빛의심판]]
+		ABL:ARG:스킬4 = [[스킬:엔젤애로]]
+		CFLAG:ARG:ＨＰ보정 = 250
+		CFLAG:ARG:ＭＰ보정 = 250
+	CASE [[キャラ:아무르타트]]
+		CSTR:ARG:사고패턴 = レミエル取り巻き
+		ABL:ARG:스킬1 = [[스킬:마카・카쟈]] 
+		ABL:ARG:스킬2 = [[스킬:그라다인]]
+		ABL:ARG:스킬3 = [[스킬:빛의심판]]
+		ABL:ARG:스킬4 = [[스킬:엔젤애로]]
+		CFLAG:ARG:ＨＰ보정 = 250
+		CFLAG:ARG:ＭＰ보정 = 250
+	CASE [[キャラ:라이라]]
+		CSTR:ARG:사고패턴 = レミエル取り巻き
+		ABL:ARG:스킬1 = [[스킬:스쿠・카쟈]] 
+		ABL:ARG:스킬2 = [[스킬:잔다인]]
+		ABL:ARG:스킬3 = [[스킬:빛의심판]]
+		ABL:ARG:스킬4 = [[스킬:엔젤애로]]
+		CFLAG:ARG:ＨＰ보정 = 250
+		CFLAG:ARG:ＭＰ보정 = 250
+ENDSELECT
+BASE:ARG:전술 = 100
+BASE:ARG:비구 = 100
+MAXBASE:ARG:전술 = 100
+MAXBASE:ARG:비구 = 100
+CALL SYNC_STATUS, ARG
+CALL HEALTH_CHARA, ARG
+@SET_ACTION_レミエル, ARG
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+IF CFLAG:ARG:행동한횟수 == 0 && CFLAG:ARG:１more플래그 == 0
+	FOR LOCAL:1, 7, 17
+		LOCAL = POS(LOCAL:1)
+		SIF LOCAL == -1
+			CONTINUE
+		IF NO:LOCAL == [[キャラ:하우르바타트]]
+			CALL CHECK_ACTIONABLE, LOCAL, [[스킬:부흐다인]]
+			IF RESULT == 1
+				IF !TFLAG:401
+					TFLAG:401 = LOCAL
+				ELSE
+					TFLAG:402 = LOCAL
+				ENDIF
+			ENDIF
+		ENDIF
+		IF NO:LOCAL == [[キャラ:아무르타트]]
+			CALL CHECK_ACTIONABLE, LOCAL, [[스킬:그라다인]]
+			IF RESULT == 1
+				IF !TFLAG:404
+					TFLAG:404 = LOCAL
+				ELSE
+					TFLAG:405 = LOCAL
+				ENDIF
+			ENDIF
+		ENDIF
+		IF NO:LOCAL == [[キャラ:라이라]]
+			CALL CHECK_ACTIONABLE, LOCAL, [[스킬:잔다인]]
+			IF RESULT == 1
+				IF !TFLAG:407
+					TFLAG:407 = LOCAL
+				ELSE
+					TFLAG:408 = LOCAL
+				ENDIF
+			ENDIF
+		ENDIF
+	NEXT
+	LOCAL = 1
+	LOCAL:1 = 0
+	LOCAL:2 = 0
+	LOCAL:3 = 0
+	IF TFLAG:401 && TFLAG:402
+		LOCAL:LOCAL = 1
+		LOCAL++
+	ENDIF
+	IF TFLAG:404 && TFLAG:405
+		LOCAL:LOCAL = 2
+		LOCAL++
+	ENDIF
+	IF TFLAG:407 && TFLAG:408
+		LOCAL:LOCAL = 3
+	ENDIF
+	IF LOCAL:(RAND:LOCAL+1) == 1
+		CFLAG:ARG:입력행동 = [[스킬:아이스브레이크]]
+		TFLAG:410 = TFLAG:401
+		TFLAG:411 = TFLAG:402
+	ELSEIF LOCAL:(RAND:LOCAL) == 2
+		CFLAG:ARG:입력행동 = [[스킬:그래비티브레이크]]
+		TFLAG:410 = TFLAG:404
+		TFLAG:411 = TFLAG:405
+	ELSEIF LOCAL:(RAND:LOCAL) == 3
+		CFLAG:ARG:입력행동 = [[스킬:소닉브레이크]]
+		TFLAG:410 = TFLAG:407
+		TFLAG:411 = TFLAG:408
+	ELSE
+		CFLAG:ARG:입력행동 = [[스킬:소환]]
+	ENDIF
+ELSE
+	SELECTCASE RAND:100
+		CASE IS < 25
+			CFLAG:ARG:입력행동 = [[스킬:지오다인]]
+		CASE IS < 50
+			CFLAG:ARG:입력행동 = [[스킬:마하・지오다인]]
+		CASE IS < 75
+			CFLAG:ARG:입력행동 = [[스킬:마한마온]]
+		CASEELSE
+			CFLAG:ARG:입력행동 = 0
+	ENDSELECT
+ENDIF
+;========================================================================================================================
+;アクション実行不能
+;========================================================================================================================
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = -1
+	CFLAG:ARG:방어플래그 = 1
+	RETURN 0
+ENDIF
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+
+@SET_ACTION_レミエル取り巻き, ARG
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+SIF TFLAG:410 == ARG || TFLAG:411 == ARG
+	RETURN 0
+SELECTCASE RAND:100
+	CASE IS < 25
+		CFLAG:ARG:입력행동 = ABL:ARG:스킬1
+	CASE IS < 50
+		CFLAG:ARG:입력행동 = ABL:ARG:스킬2
+	CASE IS < 75
+		CFLAG:ARG:입력행동 = ABL:ARG:스킬3
+	CASEELSE
+		CFLAG:ARG:입력행동 = ABL:ARG:스킬4
+ENDSELECT
+;アクション実行不能
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = -1
+	CFLAG:ARG:방어플래그 = 1
+	RETURN 0
+ENDIF
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+@SET_ACTION_レミエルアマネ, ARG
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+SELECTCASE RAND:100
+	CASE IS < 25
+		CFLAG:ARG:입력행동 = [[스킬:중력의벽]]
+	CASE IS < 50
+		CFLAG:ARG:입력행동 = [[스킬:테트라쟈]]
+	CASE IS < 75
+		CFLAG:ARG:입력행동 = [[스킬:메・디아라마]]
+	CASEELSE
+		CFLAG:ARG:입력행동 = [[스킬:메기도]]
+ENDSELECT
+;アクション実行不能
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = -1
+	CFLAG:ARG:방어플래그 = 1
+ENDIF
+;ここまでターゲットが決まってなかったら、ランダムターゲットをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+

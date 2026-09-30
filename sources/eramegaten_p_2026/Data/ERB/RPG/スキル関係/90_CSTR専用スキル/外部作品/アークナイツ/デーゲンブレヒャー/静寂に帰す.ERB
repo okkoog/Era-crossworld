@@ -1,0 +1,186 @@
+﻿;スキル名
+@SKILL_NAME_静寂に帰す,ARG
+RESULTS = ∇적막으로의 회귀
+
+;　명중
+@SKILL_HITRATE_静寂に帰す,ARG
+RETURN 150
+
+;　威力
+@SKILL_POWER_静寂に帰す,ARG
+SIF ARG == -1
+	RETURN 150
+SIF (CFLAG:ARG:집중플래그 > 0 || CFLAG:ARG:회심의패기플래그 > 0)
+	RETURN 160
+RETURN 150
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_静寂に帰す,ARG
+RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_静寂に帰す,ARG
+RETURN 3
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_静寂に帰す,ARG
+RETURN 3
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_静寂に帰す, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_静寂に帰す,ARG
+IF PU_SKILLGAGE_F_GET(ARG,"静寂に帰す") > 0
+	RESULTS = {PU_SKILLGAGE_F_GET(ARG,"静寂に帰す")}T
+ELSE
+	RESULTS = ◯
+ENDIF
+RETURN 0
+;コストタイプが1だとRESULTSにコストの表示を指定できる。
+
+;　相性
+@SKILL_TYPE_静寂に帰す,ARG
+RETURN GET_TYPE_NUM("타격")
+;타격
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_静寂に帰す
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_静寂に帰す, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_静寂に帰す,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+;敵
+
+;　사거리
+@SKILL_RANGE_静寂に帰す,ARG
+RETURN 4
+;S+
+;味方前列から敵後列まで
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_静寂に帰す,ARG
+RETURN GET_SPHERE_NUM("전체")
+;敵全体
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_静寂に帰す,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_静寂に帰す
+RETURN GET_SUCCESSION_NUM("타격")
+;鐧による連続攻撃
+
+
+@継承不能_静寂に帰す
+RETURN 2
+;不可、造魔や子供にも継承せず
+
+;속도보정
+@SKILL_SPEED_静寂に帰す, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_静寂に帰す
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_静寂に帰す, ARG = -1
+RETURN 5
+
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_静寂に帰す, ARG = -1, ARG:1 = -1
+;会心の覇気状態の時、貫通になる。
+SIF (CFLAG:ARG:집중플래그 > 0 || CFLAG:ARG:회심의패기플래그 > 0)
+	RETURN 4
+	;確実にダメージを通す
+RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_静寂に帰す,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM
+
+CFLAG:ARG:피타겟비율변동지속턴수 = 3
+CFLAG:ARG:변동피타겟율 = 300
+PRINTFORML 3턴 동안 적에게 표적이 되기 쉬워졌다!
+	CALL PU_SKILLGAGE_F_SET, ARG, "静寂に帰す",4
+	PRINTFORML 재사용까지 3턴!
+
+;====================================================
+;ターン終了時に行う処理
+;====================================================
+@SKILL_TURNEND_静寂に帰す,ARG
+;CT1ターン減
+SIF PU_SKILLGAGE_F_GET(ARG,"静寂に帰す") > 0
+  CALL PU_SKILLGAGE_F_ADD, ARG, "静寂に帰す",-1
+
+;====================================================
+;戦闘終了時に行う処理
+;====================================================
+@SKILL_BATTLE_END_静寂に帰す,ARG
+;CT1ターン減
+SIF PU_SKILLGAGE_F_GET(ARG,"静寂に帰す") > 0
+  CALL PU_SKILLGAGE_F_ADD, ARG, "静寂に帰す",-1
+
+;====================================================
+;実行内容ここまで
+;====================================================
+@SKILL_EX_DISPLAY_静寂に帰す, ARG, ARGS
+RESULTS '= ""
+IF PU_SKILLGAGE_F_GET(ARG,"静寂に帰す") == 0
+	IF INPUTABLE_CHARA_F(ARG)
+		RESULTS '= SET_BUTTON_TAG(SET_COLOR_TAG(@"%"∇静寂に帰す", SKILL_EX_DISPLAY_LENS - 10, LEFT%", "パ緑"), ARGS)
+		IF IS_PU_SKILL_入力行動(ARG, "静寂に帰す") && !CFLAG:ARG:방어플래그
+			RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG(@"[ Set ]", "パ緑"), @"INPUT/SKILL/{ARG}/{PU_SKILLNUM_GET(ARG, "静寂に帰す")}", @"静寂に帰すを使用予定")
+		ELSE
+			RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG(@"[Ready]", "パ緑"), @"INPUT/SKILL/{ARG}/{PU_SKILLNUM_GET(ARG, "静寂に帰す")}", @"静寂に帰すを使用")
+		ENDIF
+	ELSE
+		RESULTS '= SET_BUTTON_TAG(SET_COLOR_TAG(@"%"∇静寂に帰す", SKILL_EX_DISPLAY_LENS - 10, LEFT%", "gray"), ARGS)
+		RESULTS += SET_BUTTON_TAG(SET_COLOR_TAG(@"[Ready]", "gray"), , @"행동불능")
+	ENDIF
+ELSE
+	RESULTS += @"%"∇静寂に帰す", SKILL_EX_DISPLAY_LENS - 9, LEFT%%HTML_ESCAPE(@"<CT:0{PU_SKILLGAGE_F_GET(ARG,"静寂に帰す")}>")%"
+ENDIF
+RESULTS:1 = ∇적막으로의 회귀
+RETURN 1
+
+;　 説明文の表示
+@SKILL_EXPLAIN_静寂に帰す,ARG
+PRINTL 적 전체에 타격 데미지를 3회 준다
+PRINTL 명중률이 높고, 사용 후 2턴 동안 적에게 표적이 되기 쉬워진다
+PRINTL 「과거의 주석」 다음에 사용하면 내성을 무시하고 반드시 데미지를 관통시킨다
+PRINTL 사용하면 “∇” 아이콘 스킬에 3턴의 쿨타임이 발생한다
+PRINTL 
+PRINTL 데겐블레허의 제3 스킬이자 필살기
+PRINTL 허리춤의 자루 두 자루로 적 전체를 쓸어버리는 강력한 스킬이지만 쿨타임이 가장 길다
+
+@SKILL_DEL_UNABLE_静寂に帰す,ARG
+RETURN 1
+;削除不可
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_静寂に帰す,ARG
+SIF PU_SKILLGAGE_F_GET(ARG,"静寂に帰す") > 0
+	RETURN 0
+RETURN 1
+

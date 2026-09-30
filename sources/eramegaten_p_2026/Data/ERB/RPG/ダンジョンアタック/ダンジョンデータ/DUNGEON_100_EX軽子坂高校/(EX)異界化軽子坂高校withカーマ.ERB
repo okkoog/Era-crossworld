@@ -1,0 +1,1046 @@
+﻿
+;=======================================================================
+;EX軽子坂高校
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		?????					?????
+;=======================================================================
+
+;=======================================================================
+;攻略条件
+;=======================================================================
+@PREREQUISITE_DUNGEON_100
+;未実装配置
+SIF !IS_DEBUG
+	RETURN 0
+RETURN 1
+
+;=======================================================================
+;ダンジョン名
+;=======================================================================
+@GET_DUNGEON_NAME_100
+#FUNCTIONS
+RESULTS_F = 軽子坂高校_EX
+
+
+;=======================================================================
+;フロア名表示
+;=======================================================================
+@FLOORNAME_100
+PRINT 카루코자카고교
+SELECTCASE FLAG:현M
+	CASE 0
+		PRINTL １Ｆ
+	CASE 1
+		PRINTL ２Ｆ
+	CASE 2
+		PRINTL ３Ｆ
+	CASEELSE
+		PRINTL
+ENDSELECT
+
+;=======================================================================
+;スタート地点入力
+;=======================================================================
+@START_DUNGEON_100,ARG
+FLAG:현M = 0
+FLAG:현X = 2
+FLAG:현Y = 10
+
+;=======================================================================
+;フロアデータ
+;=======================================================================
+@MAKE_FLOOR_100
+SELECTCASE FLAG:현M
+	CASE 0
+		FLAG:최대X = 17
+		FLAG:최대Y = 16
+		;1F						           1111111
+		;						 01234567890123456
+		CALL MAKE_FLOOR_LINE, 0,"                 "
+		CALL MAKE_FLOOR_LINE, 1,"                 "
+		CALL MAKE_FLOOR_LINE, 2,"   11111111111   "
+		CALL MAKE_FLOOR_LINE, 3,"    1 2   2 1    "
+		CALL MAKE_FLOOR_LINE, 4,"11x11 11 11 116  "
+		CALL MAKE_FLOOR_LINE, 5,"    1 13 m1 1    "
+		CALL MAKE_FLOOR_LINE, 6,"    1       1    "
+		CALL MAKE_FLOOR_LINE, 7," m121    1121    "
+		CALL MAKE_FLOOR_LINE, 8," 11 121m 13 1211 "
+		CALL MAKE_FLOOR_LINE, 9,"    1 11    1 1m "
+		CALL MAKE_FLOOR_LINE,10," 8114       1    "
+		CALL MAKE_FLOOR_LINE,11,"    1    4121    "
+		CALL MAKE_FLOOR_LINE,12,"    1    31 1    "
+		CALL MAKE_FLOOR_LINE,13,"    1       1211 "
+		CALL MAKE_FLOOR_LINE,14,"    x         11 "
+		CALL MAKE_FLOOR_LINE,15,"    1            "
+	CASE 1
+		FLAG:최대X = 17
+		FLAG:최대Y = 16
+		;2F						           1111111
+		;						 01234567890123456
+		CALL MAKE_FLOOR_LINE, 0,"                 "
+		CALL MAKE_FLOOR_LINE, 1,"                 "
+		CALL MAKE_FLOOR_LINE, 2,"   11119111111   "
+		CALL MAKE_FLOOR_LINE, 3,"    1 2   2 1    "
+		CALL MAKE_FLOOR_LINE, 4,"  641 11141 147  "
+		CALL MAKE_FLOOR_LINE, 5,"  911 11 31 119  "
+		CALL MAKE_FLOOR_LINE, 6,"    1       1    "
+		CALL MAKE_FLOOR_LINE, 7,"    1211 1121    "
+		CALL MAKE_FLOOR_LINE, 8,"    1 14 11 1    "
+		CALL MAKE_FLOOR_LINE, 9,"    1       1    "
+		CALL MAKE_FLOOR_LINE,10,"    1       1    "
+		CALL MAKE_FLOOR_LINE,11,"    1       1    "
+		CALL MAKE_FLOOR_LINE,12,"    1       1    "
+		CALL MAKE_FLOOR_LINE,13,"    1       3    "
+		CALL MAKE_FLOOR_LINE,14,"                 "
+		CALL MAKE_FLOOR_LINE,15,"                 "
+	CASE 2
+		FLAG:최대X = 17
+		FLAG:최대Y = 16
+		;3F						           1111111
+		;						 01234567890123456
+		CALL MAKE_FLOOR_LINE, 0,"                 "
+		CALL MAKE_FLOOR_LINE, 1,"   m         9   "
+		CALL MAKE_FLOOR_LINE, 2,"   11111111141   "
+		CALL MAKE_FLOOR_LINE, 3,"    9 2   2 1    "
+		CALL MAKE_FLOOR_LINE, 4,"  711 11 41 119  "
+		CALL MAKE_FLOOR_LINE, 5,"  911 41 13 119  "
+		CALL MAKE_FLOOR_LINE, 6,"    1  1    1    "
+		CALL MAKE_FLOOR_LINE, 7,"    1241    1    "
+		CALL MAKE_FLOOR_LINE, 8,"    1 13    12R  "
+		CALL MAKE_FLOOR_LINE, 9,"    1       1    "
+		CALL MAKE_FLOOR_LINE,10,"    1       121  "
+		CALL MAKE_FLOOR_LINE,11,"    1   111   1  "
+		CALL MAKE_FLOOR_LINE,12,"    1   414G111  "
+		CALL MAKE_FLOOR_LINE,13,"    1   111      "
+		CALL MAKE_FLOOR_LINE,14,"                 "
+		CALL MAKE_FLOOR_LINE,15,"                 "
+ENDSELECT
+
+;=======================================================================
+;タイル定義
+;=======================================================================
+@DEFINE_TILES_100, ARGS, ARG, ARG:1
+SELECTCASE ARGS
+	CASE "x"
+		RETURN 9
+	CASE "G"
+		RETURN 12
+	CASE "m"
+		RETURN 14
+ENDSELECT
+;=======================================================================
+;タイル調整
+;=======================================================================
+;何個目のARGタイプのマスなのか、は左上の(0,0)から右まで探し、その後一つ下の段に移って同様に探す、というのを右下まで繰り返して数えます。
+@MAKE_FLOOR_LINE_COMMON_100, ARG, ARG:1, ARG:2
+#LOCALSIZE 20
+;指定された座標が(0,0)である場合、つまり新しいマップを読み込んだ時はLOCALを消去します
+SIF ARG:1 == 0 && ARG:2 == 0
+	VARSET LOCAL
+SELECTCASE ARG
+	CASE 0, 1
+	CASE 3
+		;宝箱は多くの場合、開けたフラグが立っていると床を代入します
+		;そのマップでどの宝箱を開けたかは、そのマップの宝箱管理用変数の何番目のビットが立っているかで判断します
+		IF GETBIT(ダンジョンフラグ:(FLAG:현던전):(FLAG:현M+70), LOCAL:3)
+			DA:(ARG:1):(ARG:2) = 1
+		ELSE
+			DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:3 * 10 + 3
+		ENDIF
+		LOCAL:3++
+	CASE 4, 14
+		DA:(ARG:1):(ARG:2) = FLAG:현M *10000 + LOCAL:ARG * 100 + ARG
+		LOCAL:ARG++
+	CASE 5, 6, 7, 8
+		DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:ARG * 10 + ARG
+		LOCAL:ARG++
+	CASE 9
+ENDSELECT
+
+;タイル破棄
+IF DA:(ARG:1):(ARG:2) % 100 == 4
+	VARI EVENT_ID = DA:(ARG:1):(ARG:2) / 100 % 100
+	SELECTCASE FLAG:현M
+		CASE 0
+			SELECTCASE EVENT_ID
+				CASE 0
+					SIF FLAG_D100_玄関イベント済み
+						CALL CLEAR_TILE, ARG:1, ARG:2
+			ENDSELECT
+		CASE 1
+			SELECTCASE EVENT_ID
+				CASE 0
+					SIF FLAG_D100_3F階段前会話
+						CALL CLEAR_TILE, ARG:1, ARG:2
+				CASE 1
+					SIF FLAG_D100_崩れた壁
+						CALL CLEAR_TILE, ARG:1, ARG:2
+				CASE 2
+					SIF FLAG_D100_風紀委員
+						CALL CLEAR_TILE, ARG:1, ARG:2
+				CASE 3
+					SIF FLAG_D100_2F教室会話
+						CALL CLEAR_TILE, ARG:1, ARG:2
+			ENDSELECT
+		CASE 2
+			SELECTCASE EVENT_ID
+				CASE 0
+					SIF FLAG_D100_3F廊下会話
+						CALL CLEAR_TILE, ARG:1, ARG:2
+				CASE 3
+					SIF !FLAG_D100_ボス部屋
+						CALL CLEAR_TILE, ARG:1, ARG:2
+				CASE 4
+					SIF FLAG_D100_ボス部屋
+						CALL CLEAR_TILE, ARG:1, ARG:2
+			ENDSELECT
+	ENDSELECT
+ENDIF
+SIF DA:(ARG:1):(ARG:2) % 100 == 12 && FLAG_D100_ボス部屋
+	CALL CLEAR_TILE, ARG:1, ARG:2
+
+;=======================================================================
+;特殊タイル表示
+;TILE_MARK_COMMON_{FLAG:현던전}_X
+;=======================================================================
+;ARG:1、ARG:2がX座標とY座標
+;ARGはそこに代入されている値
+;RESULTSに代入した文字がマップに表示されますが、必ず全角1文字分になるようにしてください。そうでないと表示が崩れます。
+
+;イベントタイル特殊表示
+;末尾の_4はイベントであることを示す4
+@TILE_MARK_COMMON_100_4, ARG , ARG:1 , ARG:2
+IF ARG % 100 == 14
+	;メッセンジャーを緑色で"ｍ"と表示
+	SETCOLOR 0x00ff00
+	RESULTS = ｍ
+ELSE
+	RETURN 1
+ENDIF
+
+;特殊タイルの表示
+;末尾の_9は特殊タイルであることを示す9
+@TILE_MARK_COMMON_100_9, ARG , ARG:1 , ARG:2
+SELECTCASE ARG / 10
+	;崩れた壁
+	CASE 0
+		SETCOLOR COLOR("gray")
+		RESULTS = 礙
+	CASEELSE
+		;特に設定しない場合、"■"が表示されます
+		RETURN 1
+ENDSELECT
+
+
+;=======================================================================
+;인카운트율
+;=======================================================================
+@ENCOUNT_RATE_100
+FLAG:인카운트율 = FLAG:미조우걸음수 * 3
+SIF FLAG:미조우걸음수 < 8
+	FLAG:인카운트율 = 0
+
+;=======================================================================
+;必要レベル目安
+;推奨LV 雑魚最低LV 雑魚最高LV ボスLV 
+;=======================================================================
+@GET_DUNGEON_LV_100
+RETURN 8, 8, 12, 15
+
+;=======================================================================
+;エンカウント処理（共通）
+;=======================================================================
+@CHECK_ENCOUNT_100
+;1Fは敵が出ない
+IF FLAG:현M == 0
+	FLAG:MAG소비율 = 0
+	RETURN 0
+ELSE
+	IF RAND:100 < FLAG:인카운트율
+		RETURN 1
+	ELSE
+		FLAG:미조우걸음수 += 1
+		RETURN 0
+	ENDIF
+ENDIF
+
+;=======================================================================
+;敵の種族の種類数
+;=======================================================================
+@CLASS_NUM_100
+RETURN CLASS_NUM_COMMON("初級")
+
+;=======================================================================
+;敵の総数
+;ARGは出現する敵の種類です
+;RAND(X, Y)はX～Y-1のうちのどれかになるRANDです
+;なお、ここで帰った数字は下限を種族数、上限を10として自動的に調整されます
+;
+;軽子坂高校も初期のダンジョンなので数は抑え目
+;=======================================================================
+@ENEMY_NUM_100, ARG
+RETURN ENEMY_NUM_COMMON("初級", ARG)
+
+;=======================================================================
+;敵の種類
+;=======================================================================
+@ENEMY_100, ARG
+;===========
+;카루코자카고교
+;===========
+;雑魚悪魔
+;1階　出現せず
+;2階　LV5～9程度
+;	ナハトコボルト、オンモラキ、ゾンビくん、ゾンビちゃん、ガキ
+;3階　LV8〜12程度
+;	プシュケ、インプ、リリム、キキーモラ、ポルターガイスト、ジャックリパー
+
+SELECTCASE FLAG:현M
+	CASE 1
+		SELECTCASE RAND:100
+			CASE IS < 25
+				RETURN [[キャラ:좀비쨩]], RAND(8, 10)
+			CASE IS < 50
+				RETURN [[キャラ:좀비군]], RAND(8, 10)
+			CASE IS < 65
+				RETURN [[キャラ:아귀]], RAND(8, 10)
+			CASE IS < 80
+				RETURN [[キャラ:나하트코볼트]], RAND(8, 10)
+			CASEELSE
+				RETURN [[キャラ:온모라키]], RAND(8, 10)
+		ENDSELECT
+	CASE 2
+	;上層での遭遇
+		SELECTCASE RAND:100
+			CASE IS < 10
+				RETURN [[キャラ:좀비쨩]], RAND(8, 12)
+			CASE IS < 20
+				RETURN [[キャラ:좀비군]], RAND(8, 12)
+			CASE IS < 35
+				RETURN [[キャラ:프시케]], RAND(10, 12)
+			CASE IS < 50
+				RETURN [[キャラ:임프]], RAND(10, 12)
+			CASE IS < 65
+				RETURN [[キャラ:리림]], RAND(10, 12)
+			CASE IS < 80
+				RETURN [[キャラ:키키모라]], RAND(10, 12)
+			CASE IS < 90
+				RETURN [[キャラ:폴터가이스트]], 12
+			CASEELSE
+				RETURN [[キャラ:잭・더・리퍼]], 12
+		ENDSELECT
+ENDSELECT
+
+
+;=======================================================================
+;攻略開始時のイベント
+;=======================================================================
+@EVENT_DUNGEON_START_100
+#DIM DYNAMIC L_KAMA
+#DIM DYNAMIC L_REIKO
+IF FLAG_D100_初回突入済み == 0
+	CALL MESSAGE_WINDOW_D_ICON, GETCHARA([[キャラ:카마마라]]), "キャラ番号", "", "카마", "마신황 하자마는 이 고교를 이계화시켰습니다。/분명 이 건물이나、여기서 이어지는 마계에 하자마가 있을 터입니다"
+	CALL INPUT_SELECT_D, "[0] 애초에 마신황이 뭔데？"
+	CALL MESSAGE_WINDOW_D_ICON, GETCHARA([[キャラ:카마마라]]), "キャラ番号", "", "카마", "마계를 지배한 하자마가 자칭하고 있는 직함이지요。/마신으로도 충분하다고 생각합니다만……/역시 전임자와 겹치는 게 싫다거나 주변을 향한 청개구리 심리 아니겠어요？"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞마신황 하자마……/정체가 뭔진 몰라도、요주의 인물로 기억해 두자。"
+	FLAG_D100_初回突入済み = 1
+ELSE
+	IF FLAG_D100_クリアフラグ == 0 && FLAG_D100_玄関イベント済み
+		IF FINDCHARA_B([[キャラ:레이코]]) == 1
+			L_REIKO = RESULT:1
+			CFLAG:L_REIKO:이자리에없는플래그 = 0
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞레이코와 합류했다"
+			CALL JOIN_REIKO_D100
+		ENDIF
+	ENDIF
+ENDIF
+;=======================================================================
+;脱出時のイベント
+;=======================================================================
+@EVENT_DUNGEON_END_100
+#DIM DYNAMIC L_REIKO
+IF FLAG_D100_クリアフラグ == 0 && FLAG_D100_玄関イベント済み
+	L_REIKO = GETCHARA([[キャラ:레이코]]) 
+	IF CFLAG:L_REIKO:인계횟수 == 0
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞레이코와 헤어졌다"
+		CALL DEACTIVATE_FRIEND_CHARA, L_REIKO
+	ENDIF
+ENDIF
+;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@CAN_ENTER_100,ARG,ARG:1
+CALL CAN_ENTER,ARG,ARG:1
+RETURN RESULT
+
+;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@JUDGE_CAN_ENTER_100, L_X, L_Y, L_DIRECTION, L_ROUTENUM = -1, DUNGEON_TILE_SEARCH_TASK
+#DIM DYNAMIC L_X
+#DIM DYNAMIC L_Y
+#DIM DYNAMIC L_TILE
+#DIM DYNAMIC L_DIRECTION
+#DIM DYNAMIC L_ROUTENUM
+#DIM REF DUNGEON_TILE_SEARCH_TASK
+SELECTCASE　DA:L_X:L_Y
+	CASE 9
+		IF IS_AUTORUN_SEARCHING
+			RETURN 0
+		ELSE
+			RETURN 1
+		ENDIF
+	CASE 12
+		IF IS_AUTORUN_SEARCHING 
+			RETURN GET_FLOOR_ANALYZE_T(L_X, L_Y) < 2
+		ELSE
+			RETURN 1
+		ENDIF
+	CASEELSE
+		CALL CAN_ENTER,L_X,L_Y
+		RETURN RESULT
+ENDSELECT
+
+@DUNGEON_BEFORE_ENTER_EVENT_100,L_X,L_Y,L_DIRECTION
+#DIM DYNAMIC L_X
+#DIM DYNAMIC L_Y
+#DIM DYNAMIC L_DIRECTION
+SELECTCASE DA:L_X:L_Y
+	CASE 9
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞잔해가 길을 가로막고 있다……"
+		RETURN 0
+	CASE 12
+		CALL MESSAGE_WINDOW_D_ICON, GETCHARA([[キャラ:카마마라]]), "キャラ番号", "", "카마", "이 방에서 강한 마력이 느껴져요。/각오는 되셨나요？"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "돌입하겠습니까？"
+		CALL INPUT_YN_D
+		RETURN RESULT == 0
+ENDSELECT
+RETURN 1
+;=======================================================================
+;[5]調べる　実行時のイベント
+;=======================================================================
+@EVENT_CHECK_DUNGEON_100, IS_ENTER
+#DIM DYNAMIC IS_ENTER;侵入時イベントから飛んできた場合
+#DIM DYNAMIC L_KAMA
+#DIM DYNAMIC L_REIKO
+CALLF FINDCHARA_B, [[キャラ:카마마라]]
+L_KAMA = RESULT:1
+CALLF FINDCHARA_B, [[キャラ:레이코]]
+L_REIKO = RESULT:1
+
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 10
+	CASE 3
+		VARI TRESURE_ID = DA:(FLAG:현X):(FLAG:현Y) % 1000 / 10
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y)
+			CASE 3
+				CALL GETS_TREASURE, "외상약", 3, FLAG:현던전, FLAG:현M+70, TRESURE_ID
+			CASE 13
+				CALL GETS_TREASURE, "나프가드", 1, FLAG:현던전, FLAG:현M+70, TRESURE_ID
+			CASE 23
+				CALL GETS_TREASURE, "약장탄", 20, FLAG:현던전, FLAG:현M+70, TRESURE_ID
+			CASE 1003
+				CALL GETS_TREASURE, "마석", 2, FLAG:현던전, FLAG:현M+70, TRESURE_ID
+			CASE 1013
+				CALL GETS_TREASURE, "재밍암", 1, FLAG:현던전, FLAG:현M+70, TRESURE_ID
+			CASE 2003
+				CALL GETS_TREASURE, "카이저아머", 1, FLAG:현던전, FLAG:현M+70, TRESURE_ID
+			CASE 2013
+				CALL GETS_TREASURE, "은의마니샤", 1, FLAG:현던전, FLAG:현M+70, TRESURE_ID
+			CASE 2023
+				CALL GETS_TREASURE, "야마타노드링크", 1, FLAG:현던전, FLAG:현M+70, TRESURE_ID
+		ENDSELECT
+	CASE 4
+		IF DA:(FLAG:현X):(FLAG:현Y) % 100 == 14
+			VARI MESSENGER_ID = (DA:(FLAG:현X):(FLAG:현Y) / 100) % 100
+			SELECTCASE FLAG:현M
+				CASE 0
+					SELECTCASE MESSENGER_ID
+						;CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "発話者", ""
+						CASE 0
+							SELECTCASE FLAG_D100_保険医会話
+								CASE 0
+									CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "양호교사", "설마 이런 이상사태에 휘말리게 될 줄이야。/배도 안 고프고 시간 감각도 이상해서、미쳐버릴 것만 같아"
+									CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "양호교사", "하지만 가능한 한 학생들은 지켜낼 거야。/양호교사로서 말이지"
+									FLAG_D100_保険医会話 = 1
+									RETURN 1
+								CASE 1
+									IF !IS_ENTER
+										CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "양호교사", "너희들、악마와 싸우는 거지。/이거、얼마 안 되지만 가져가렴"
+										CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞상처약 2개와 마석을 받았다"
+										CALL GET_ITEMS, "외상약", 2
+										CALL GET_ITEMS, "마석"
+										FLAG_D100_保険医会話 = 2
+										RETURN 1
+									ENDIF
+								CASE 2
+									IF RAND:2
+										CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "양호교사", "수위 아저씨는 나갔니？/그래……다행이긴 하지만、난 못 나가고 있으니 속마음이 복잡하네"
+									ELSE
+										CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "양호교사", "어머、다시 얼굴을 비춰줘서 기쁘네。/너무 무리는 하지 말렴"
+									ENDIF
+									CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "양호교사", "그건 그렇고、몸 상태가 안 좋은 곳이 있다면 치료해 줄 수 있단다/쉬었다 갈래？"
+									CALL INPUT_YN_D, "예", "아니오"
+									IF RESULT == 0
+										CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "………"
+										IF HAVE_PENIS(MASTER) && FLAG_D100_保険医会話 < 3
+											CALL INCREASE_LC, -4
+											CALL INCREASE_LD, -4
+											FLAG_D100_保険医会話 = 3
+											CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞양호실 침대에서 쉬고 있으려니、누군가가 기어들어오는 것이 느껴진다。/＞옆에는 곤히 잠든 레이코가 보이고、양호교사는 책상에서 쪽잠을 자고 있었다。"
+											CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞즉 이불 속에서 움직이는 부피나 체중으로 미루어 보아……카마다。"
+											CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "네ー에、안녕하세요。사랑스러운 카마 쨩입니다。/출장 헬스 서비스 배달 왔어요♡"
+											CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞주문한 기억은 없지만……어째서인지 기이하게도 욕정이 끓어오른다。"
+											CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", @"알고 있답니다？/%CALLNAME:MASTER% 씨는 그런 생각 안 하려 하는데도、/이런 이상사태 한복판이라 몸은 생존본능이 풀가동된 거죠？"
+											CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "거기서 자고 있는 협력자한테 그런 변태라는 걸 들키면 어떻게 되려나요。/마음을 닫아버리고 도망쳐 버릴지도"
+											CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "……후후、좀 개운하게 풀고 가지 않으실래요？"
+											CALL INPUT_YN_D, "예", "아니오"
+											IF RESULT == 0
+												CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "아하핫、솔직한 사람은 좋아해요♡/하지만 너무 과하게 해서 폐인으로 만들 수도 없고、/소리도 낼 수 없으니 조금만"
+												CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "다음은……글쎄요/여기서 나가게 되면 생각해 봐도 좋으려나ー"
+												CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", @"＞카마는 그렇게 말하더니 누워 있는/＞%CALLNAME:MASTER%의 하의와 속옷을 능숙하게 벗겨내고、/＞성기를 노출시켰다。"
+												CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞차갑고 조그마한 손가락이 허벅지를 부드럽게 쓰다듬자、/＞무심코 등골이 떨린다。"
+												CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "기대해서 바짝 발기했잖아요♡/태도도 이 정도로 솔직하면 좋을 텐데 말이죠"
+												CALL INPUT_SELECT_D, "[0] 시끄러워/[1] 얼른 해줘/[2] 만져줬으면 좋겠어"
+												CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "네 네、그럼 리퀘스트에 응해서……"
+												CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞그렇게 말하며 카마는 슥 치마와 속옷을 영체화시켜 지우더니、/＞그녀의……흠뻑 젖은 음순을 노창한 기둥에 덧댄다。/＞그리고 소리 없이 허리를 미끄러뜨리며、스마타를 시작했다。"
+												CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞천천히 느긋하게、하지만 떨어지지 않도록 밀착하여。/＞어린 보지의 탄력과 부드러움에 감싸여、/＞음경소대가 부드럽게 마사지당하는 듯한 쾌감。"
+												CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞점막이 맞닿으며、열기가 뒤섞여 간다。/＞정사의 냄새가 희미하게 콧속을 간질여、거칠어지는 숨을 필사적으로 억눌렀다。/＞카마는 조그마한 몸을 당신에게 빈틈없이 밀착시키고、서로의 고동이 얽혀든다。"
+												CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞이제 슬슬 사정해 버릴 것 같다"
+												CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "어머나、거친 숨소리 내는 걸 참느라……/풋、웃긴 얼굴이 되어 있다구요？"
+												CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞반론하려 하자 카마의 얼굴이 코앞으로 다가와、입술을 막아버렸다。"
+												CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "자아、가버리세요♡/싸♡ 싸라♡/더러운 끈적끈적 정액 전부 쏟아내 버려♡"
+												CALL INPUT_SELECT_D, "[0] 윽！！"
+												CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞걸쭉하게 생체 MAG가 뿜어져 나왔다。/＞서로 살결을 맞댄 아랫배의、0.1mm도 채 안 되는 틈새를 백탁액이 가득 채워나간다。"
+												CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "아ー아、사정해 버렸네요。/이런 어린 몸에 발정해 버린 건가요？ 응"
+												CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞카마는 뺨을 붉히면서도 얄미운 표정으로 미소 짓는다。/＞그리고……정액이 카마의 몸으로 흡수되어 갔다。/＞MAG로서 흡수한 것이다。"
+												CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", @"네、잘 먹었습니다♡/%CALLNAME:MASTER% 씨의 구린내 나는 로리 임신즙、다음에 또 배 터지게 주세요？/뭐 이렇게 먹어치우니까 평생 임신시킬 순 없겠지만요♡"
+												CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞대꾸하려 했으나、갑작스레 수마가 덮쳐왔다。/＞스스로 생각했던 것보다 지쳐 있었던 것일지도 모른다。"
+												CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "……안녕히 주무세요。/악마가 몸을 빼앗으러 오지 못하게、똑똑히 망보고 있을 테니까요。/뭐、망만 볼 뿐이지 지켜준다고 보장하진 않지만요"
+												CALL DRAIN_MAG, MASTER, 1000, L_KAMA
+												IF RESULT > 0
+													CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", @"＞카마에게 {RESULT}의 MAG를 흡수당했다……"
+												ENDIF
+												CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", @"＞카마의 충성도가 200 증가했다。"
+												CALL CONTROL_LOYALTY, L_KAMA, 200
+												EXP:L_KAMA:봉사쾌락경험 += 8
+												EXP:L_KAMA:정액경험 += 1
+												EXP:MASTER:사정경험 += 1
+											ELSE
+												CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "아쉽네요……/뭐 너무 힘 빼는 짓을 했다가 싸움에서 져버리면 큰일이니까요。/안녕히 주무세요"
+											ENDIF
+											VARI L_CHARA
+											FOR L_CHARA, 0, CHARANUM
+												CALL HEALTH_CHARA, L_CHARA
+											NEXT
+											CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "………"
+										ENDIF
+										CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", @"＞%CALLNAME:MASTER% 일행은 건강해졌다"
+										CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "자、가볼까요"
+									ELSE
+										CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "양호교사", "그래…/무리하지 말렴？"
+									ENDIF
+							ENDSELECT
+						CASE 1
+							SELECTCASE FLAG_D100_教室会話
+								CASE 0
+									CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "학생", "다른 학생들은 악마한테 끌려가거나、좀비가 되어버렸어。/남아있는 건 여기 있는 애들과 학생회랑……윗층에도 살아남은 학생이 있으려나？"
+									CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "학생", "하ー아、어쩌다 이런 꼴이 된 걸까"
+									IF L_REIKO >= 0
+										CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "……"
+									ENDIF
+									FLAG_D100_教室会話 = 1
+									RETURN 1
+								CASE 1
+									IF !IS_ENTER
+										CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "학생", "악마들？ 윗층으로 갔어"
+										CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "학생", "우리들……돌아갈 수 있을까……"
+										RETURN 1
+									ENDIF
+							ENDSELECT
+						CASE 2
+							SELECTCASE FLAG_D100_校長会話
+								CASE 0
+									CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "교장", "자네、설마 외부 사람인가？/날 어떻게든 밖으로 데리고 나가줄 수 없겠나。/사례로 맛있는 밥을 얼마든지 대접해 줌세"
+									IF L_KAMA >= 0
+										CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "설마 안 믿으시죠？/이런 부류는、목구멍 넘어가면 뜨거운 줄 모르고 딱 잡아뗄 게 뻔하다구요"
+									ENDIF
+									FLAG_D100_校長会話 = 1
+									RETURN 1
+								CASE 1
+									IF !IS_ENTER
+										CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "교장", "하아。신기하게도 배가 안 고프니 망정이지、/이런 사태를 어찌해야 좋을지……/교육위원회에 뭐라고 보고해야 하나……"
+										RETURN 1
+									ENDIF
+							ENDSELECT
+					ENDSELECT
+				CASE 1
+
+
+				CASE 2
+					SELECTCASE　MESSENGER_ID
+						CASE 0
+							SELECTCASE FLAG_D100_ヒーホー君会話
+						 		CASE 0
+						 			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:잭프로스트]], "CSV", "히호 군", "히ー호ー！/차렷！ 경례！/안녕하시무니까 호！"
+						 			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "＞히호 군이다！"
+						 			CALL INPUT_SELECT_D, "[0] 안녕하세요！"
+						 			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:잭프로스트]], "CSV", "히호 군", "좋은 인사다 호！ 참잘했어요 도장 찍어주는 호！"
+						 			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "＞여기서 무엇을 하고 있는 걸까？"
+						 			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:잭프로스트]], "CSV", "히호 군", "이 몸은 여기서 공부하고 있는 호！ 지금은 차트식 수학을 공략 중인 호！ 근면성실 전교 1등을 노리는 거다 호ー！"
+						 			CALL INPUT_SELECT_D, "[0] 힘내！"
+						 			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:잭프로스트]], "CSV", "히호 군", "응원 고맙다 호ー！ 기쁘니까 이거 주는 호！"
+						 			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "＞액화질소 봄베를 3개 받았다！"
+									CALL GET_ITEMS, "액화질소봄베", 3
+									FLAG_D100_ヒーホー君会話 = 1
+						 		CASE 1
+						 			CALL MESSAGE_WINDOW_D_ICON, [[キャラ:잭프로스트]], "CSV", "히호 군", "으음、으음、모르겠는 호……/어째서 여기 실수해가 2개가 되는 거 호？/1개여야 하는 호"
+						 			IF BASE:MASTER:지혜 < 10
+										CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", @"＞히호 군이 답안지를 앞에 두고 끙끙 앓고 있다。/＞%CALLNAME:MASTER%는 답안지를 들여다보았다……/＞전혀 모르겠다！"
+									ELSE
+										CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", @"＞히호 군이 답안지를 앞에 두고 끙끙 앓고 있다。/＞%CALLNAME:MASTER%는 답안지를 들여다보았다……/＞이거라면 풀 수 있을 것 같다！"
+						 				CALL INPUT_YN_D, "판별식의 단순 계산 실수를 알려준다", "내버려둔다"
+										IF RESULT == 0
+							 				CALL MESSAGE_WINDOW_D_ICON, [[キャラ:잭프로스트]], "CSV", "히호 군", "히ー호ー！ 몰랐던 호！/이걸로 답을 알겠는 호！ 고맙다 호ー！/답례로 이거 주는 호！"
+											CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "＞극한의 곡옥을 받았다！"
+											CALL GET_ITEMS, "극한의곡옥", 1
+										ELSE
+											CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "＞내버려두자"
+										ENDIF
+									ENDIF
+									FLAG_D100_ヒーホー君会話 = 2
+						 		CASE 2
+									 CALL MESSAGE_WINDOW_D_ICON, [[キャラ:잭프로스트]], "CSV", "히호 군", "이 도형의 면적을 구하려면……/이 식이다 호……그리고……히호……/전개하면……히ー호ー……"
+									CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "＞히호 군은 바빠 보인다"
+							ENDSELECT
+					ENDSELECT		
+			ENDSELECT
+		ELSE
+			VARI EVENT_ID = (DA:(FLAG:현X):(FLAG:현Y) / 100) % 100
+			SELECTCASE FLAG:현M
+				CASE 0
+					SELECTCASE EVENT_ID
+						CASE 0
+							;引き継ぎでの顔グラ変更を一応考慮してキャラ生成を先に行う
+							CALL ADD_NEW_COMPANION, [[キャラ:레이코]], 500, 2
+							SIF RESULT
+								L_REIKO = RESULT:1
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "앗"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "현관 로비에서、안경을 쓴 여고생이 눈앞에 나타났다。/세일러복은 옷자락과 소매가 찢겨 있고、손에는 피 묻은 나이프가 들려 있다。/날카로운 눈빛은、마치 귀녀와도 같다。"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "누구신가요 당신？/아직 살아있는 학생이 있었군요"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "여학생", "당신들은 누구죠？"
+							CALL INPUT_SELECT_D, "[0] 문제를 해결하러 온 자다"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "네。/우리들은 마신황 하자마에게 대적하는、마왕의───"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "여학생", "저도 데려가 주세요"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "하아？/잠깐、갑자기 무슨 소리예요"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞여고생은 절박한 표정으로、이쪽으로 바짝 다가왔다。"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "여학생", "그를……하자마를 어떻게 해서든 만나고 싶어요。/부탁드립니다。/절대로 발목 잡지 않을 테니까요"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "저기 말이죠ー、악마와 싸우는 거라고요。/당신처럼 약해 빠져서 금방 죽어버릴 인간을 데려갈 리가 없잖아요"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "솔직히 전력으로서 기대할 수 없는 건 카마도 별반 다를 바 없다고 생각하지만……"
+							CALL INPUT_SELECT_D, "[0] 어째서지？"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "여학생", "그를 막고 싶어요"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞눈동자에 깃든 의지는 진짜인 듯하다。/＞게다가……자세히 보니 외모도 평균 이상이다。"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞전투에서 도움이 되지 않더라도 노예로서 충분히 가치가 있을 것이다。/＞여기서 신용을 얻어두면 붙잡는 데 고생하진 않겠지。"
+							CALL INPUT_SELECT_D, "[0] 마음대로 해라"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "하아！？/잠깐！/저 때랑 태도가 너무 다르지 않나요？"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "여학생", "감사합니다。/아카네자와 레이코라고 합니다。/레이코라고 불러주세요"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", @"뭐 딱히 상관없지만요。/그쪽한테 미리 말해두겠는데、/귀축 %CALLNAME:MASTER% 씨는 쓸모없어진 인간은 금방 내다 버리니까요"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞누가 귀축이냐。"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "당신은……악마인가요？"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "네！/나야말로 마왕의 분령이자、다음 마계의 왕이 될 카마마라……"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞자기소개를 나누며 안쪽으로 나아가자。"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", @"%CALLNAME:MASTER% 씨、잘 부탁드립니다。/2층 위로는 악마로 가득 차 있어요。/조심해 주세요。/1층은 어떻게든 무사하지만、언제 어떻게 될지……"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "그러고 보니 이전에 3층에 갔을 때、/가장 안쪽 복도에서 불빛이 새어 나오는 게 언뜻 보였어요。/무언가 관계가 있는 걸까요"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞3층인가……가볼 가치는 있어 보인다。"
+							CALL CLEAR_TILE
+							FLAG_D100_玄関イベント済み = 1
+							CALL JOIN_REIKO_D100
+					ENDSELECT
+				CASE 1
+					SELECTCASE EVENT_ID
+						CASE 0
+							;CASE104　3階に行く階段前でイベント
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "대단해요。/저 혼자서는 2층을 탐색하는 것만으로도 벅찼는데"
+							CALL INPUT_SELECT_D, "[0] 이 정도라면 얼마든지 해결할 수 있다"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "너무 우쭐대다간、/깜빡 삼도천을 건너버릴지도 몰라요。/히죽거리지 마세요"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞딱히 그럴 생각은 없다만、/＞이곳에 들어온 뒤로 카마는 묘하게 공격적이다。"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "너、어쩐지 계속 기분이 안 좋아 보이는데……/왜 그래？ 어디 안 좋아？"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "네 네、어차피 음침하고 소극적인 여자 악마니까요/컨디션 난조로 오해받는다구요ー 메롱。"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", @"미리 말해두겠는데、/저도 어엿한 악마니까 어린애 취급하지 마세요。/부디 마음껏 %CALLNAME:MASTER% 씨와 노닥거리시면 된답니다"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "저기、혹시 저 아이……질투하는 건가요？ 당신 인기 많으시네요"
+							CALL INPUT_SELECT_D, "[0] 오해다/[1] 데지 마라/[2] 내버려둬라"
+							IF RESULT == 0
+								CALL INCREASE_LD, +4
+							ELSEIF RESULT == 1
+								CALL INCREASE_LD, -4
+							ENDIF
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "뭘 소곤소곤거리는 건지……/이 위층부터는 지금까지보다 훨씬 강한 마계의 기척이 느껴져요。/들떠있다간 진짜 다치니까요"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "걱정해 주는 거구나。/상냥하네"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "그 어린애 대하는 듯한 말투는 그만둬 주세요！/그리고……아니거든요？"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "나 말고 딴 사람이 쓰러지면 내 부담이 늘어나잖아요。/죽기 살기로 일하는 것 따윈 질색이니까요"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "흐응……악마란 그런 걸까나"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞카마의 말대로、여기서부터는 마물이 버거워질지도 모른다。/조심해서 가자。"
+							FLAG_D100_3F階段前会話 = 1
+							CALL CLEAR_TILE
+						CASE 1					;
+							;CASE114　教室の崩れた壁
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞교실 벽에 커다란 구멍이 뚫려 있었다。/＞덕분에 옆 교실과 이어져 버렸다。"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞부서진 벽에는 혈흔과 인체의 일부로 보이는 피부와 조직이 묻어 있다。"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "……이거、분명 누군가가 부순、거겠죠"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "누군가라기보단 무언가랄까、아마도 강력한 악마가 있는 거겠죠。/발치부터 천장 언저리까지 뻥 뚫려버렸잖아요"
+							;＞
+							FLAG_D100_崩れた壁 = 1
+							CALL CLEAR_TILE
+						CASE 2
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "풍기위원", "멈춰 서게。이곳은 우리 풍기위원들이 악마를 감시하고 있다네。/2층에서 내려오지 못하도록……/이런、아카네자와 양 아닌가。또 악마를 쓰러뜨리러 가는 건가？"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "……네……"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "풍기위원", "그런가……부디 무리는 하지 말게。/옆에 있는 사람은？"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "협력해 주시겠다고 해요。/길을 헤매다 들어오신 것 같아서"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "풍기위원", "헤매다……？……당신에게선 심상치 않은 분위기가 느껴지는군요。/빈틈이 전혀 느껴지지 않는 듯한……음。이 사람과 함께라면 분명 괜찮겠지요。자、부디 조심하시길"
+							FLAG_D100_風紀委員 = 1
+							CALL CLEAR_TILE
+						CASE 3
+							 CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "＞교실에는 처참한 모습이 된 카루코자카 고교생들의 시체가 널려 있었다。"
+							 CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "＞……어느 시체나 훼손이 극심하다。/＞사지나 머리가 뜯겨 나간 것、몸통째 찢겨진 것、상반신과 하반신이 동강 난 것――――"
+							 CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "어째서 이런 끔찍한 짓을……"
+							 CALL INPUT_SELECT_D, "[0] 괴로우면 밖에서 기다려/[1] 너무 똑바로 보지 마/[2] 카마、등 좀 토닥여줘"
+							 SELECTCASE RESULT
+							 	CASE 0
+									CALL INCREASE_LD, 4
+								 	CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "큭、으……죄、죄송해요……/무、문 앞에서、망을 보고 있을게요"
+								CASE 1
+								 	CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "그렇、네요……/하아、하아……보면 안 돼、보면 안 돼……"
+								CASE 2
+									CALL INCREASE_LD, 4
+								 	CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "아、아뇨！ 버텨、볼게요……/윽……"
+							ENDSELECT
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "＞레이코에게 이곳의 탐색은 무리인 듯하다。/＞카마와 함께 쓸모 있는 물건이 없는지 찾아보자。"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "으음、좀 너무 갈기갈기 찢어놓지 않았나요？/그에 비해 묘하게 깔끔한 것도 마음에 걸리네요"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "＞다시금 시체를 관찰한다。"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "＞……듣고 보니、/시체는 어깨나 고관절 같은 관절부 너머가 없는 것이 많다……는 느낌이 든다。"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "＞반대로 머리는 멀쩡한 것이 몇 구 보인다。/어떤 강한 충격으로 이렇게 되었다기보단 마치……"
+							CALL INPUT_SELECT_D, "[0] 시체 부품을 모으고 있다？"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "마신황이 저지른 건지、무언가 이계화 의식에 쓰이고 있는 건지、/아니면 악마들이 멋대로 벌인 짓인진 모르겠지만……/가능성으로선 충분하네요"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "그 외엔 시체를 모아서/고위 악마를 수육시키고 있는 케이스도 생각해 볼 수 있겠네요"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "＞만약 그렇다면 곤란한 일이 벌어진다/＞조금 탐색 페이스를 올리는 편이 좋을지도 모른다。"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "다만 이걸로 수육했을 경우에는、/좀비처럼 화염이나 파마 따위가 잘 먹히는 악마가 될지도 몰라요"
+							CALL INPUT_SELECT_D, "[0] 시체의 약점이 그대로 계승된다？"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "어디까지나 가능성 이야기예요。/확실한 증거가 있는 건 아니고요"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "＞머릿속 한구석에 기억해 두자。/시체로 만들어진 악마는 『화염』이나 『파마』에 약할지도 모른다。"
+							CALL INPUT_SELECT_D, "[0] 빗나가면 카마가 책임지고 싸워라"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "에ー？ 무슨 소린가요ー？/카마는 몰라요ー/……어라、이건 뭐죠？"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "＞은의 마니샤를 주웠다"
+							CALL GET_ITEMS, "은의마니샤", 1
+							FLAG_D100_2F教室会話 = 1	
+							CALL CLEAR_TILE
+					ENDSELECT
+				CASE 2
+					SELECTCASE EVENT_ID
+						CASE 0
+							;3階
+							;廊下の角イベント
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "하아、하아……"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "잠깐、3층에 온 뒤로 소모가 너무 심하잖아요。/발목 잡고 있는 거 아니에요"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "죄송해요……"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞레이코는 식은땀을 뻘뻘 흘리며 바닥에 주저앉아 버렸다。/＞원래부터 현지의 일반인에게 대단한 기대를 하진 않았다。"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞다만 신경 쓰이는 부분이 있다。/＞그녀는 마법을 다룰 수 있는 모양인데、어째서일까。"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "마법？……잘 모르겠어요。/학교가 이상해진 뒤로、정신을 차려보니 쓸 수 있게 되어서……"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞위기 상황의 초인적 힘일까？/혹은 이계 안에서만 쓸 수 있는 것일까？/＞적어도 선천적인 것은 아닌 듯하다。"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "당신ー、말이 나와서 하는 말인데 저도 연전으로 지쳤어요。/낮잠이라도 좀 자고 가지 않을래요？"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞땡땡이치고 싶다는 소리로밖에 안 들린다。/＞점점 카마의 게으름이 드러나기 시작했다。"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞하지만 확실히 악마가 다소 버거워진 것은 느껴진다。/＞이 층 어딘가가 마계와 이어져 있는 것일까？"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "……앗！？"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞레이코가 큰 소리를 지르자、/＞복도 중앙에 소년의 모습이 떠올랐다。/＞안개에 투영된 것처럼 흐릿하여、실체가 이곳에 없다는 것을 알 수 있다。"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞하얀색 가쿠란 교복에、반듯한 이목구비가 특징적인 소년이다。"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "아스트랄체", "방해꾼 제군들……용케 이 층까지 왔구나。/내 이름은……마신황 하자마！"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞그가、마신황 하자마！"
+							CALL INPUT_SELECT_D, "[0] 네놈이 학교를 이계로 만든 거냐"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "아스트랄체", "그렇다。이것은……인간 사회에 대한 보복이다。/현대의 인간들……아니、우민 놈들은 비대해지는 자아를 억누르지 못하고 있어。/남을 깎아내리는 것에 취한 우민들은、재능 있는 자를 학대하고！ 비난하며！ 오점을 덧씌웠다！ 이것은 결단코 용서받을 수 없는 일이다！"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "재능 있는 자라니、어쩐지 두루뭉술한 표현이네요。"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "아스트랄체", "따라서 나는、마계를 지배한 마신황으로서、인간 사회를 침략하겠다！/이제부터 나의 마계의 단편이 도쿄 각지에 출현할 것이다。/그리고 문명을 침식하고、파괴하며、이를 완전히 뜯어고칠 것이다！ 그 너머에 있는 것이야말로……"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "이데오……"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞응？/＞마신황의 이름을 함부로 부르다니 겁 없는 여자인가………？"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "…………/…………………아、아니야！/그런 남자는 이제 없어！！"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "아스트랄체", "……후、후후。말을 너무 많이 한 모양이군。/이 학교는 어디까지나 장난。서장에 불과하다。/방해꾼 제군들、부디 침식당하는 도쿄에서 처참한 최후를 맞이하도록 해라。핫하하하하하하하！"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞소년의 모습이 사라졌다。"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "……마신황이 꽤나 동요하는 기색이었는데、/대체 어떻게 된 일인가요？"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞그러고 보니 레이코에게 그를 막으려는 이유를 듣지 못했다。"
+							CALL INPUT_SELECT_D, "[0] 그와 아는 사이인가？"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "……이 고교의 이계화가 풀린다면、그때 다시 말씀드릴게요。"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "뭐예요 뜸 들이기는。/그런 사망 플래그를 세웠다간、죽어버려도 난 몰라요。"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "…………"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞당장 캐묻기는 어려워 보인다。/조금 시간을 두자。"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", @"%CALLNAME:MASTER% 씨、이 건물엔 마신황은 없는 것 같으니、/얼른 해결하지 않을래요？"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞거기까지 말한다면 카마에게 제대로 일하게 만들자。/＞말실수를 한 카마를 데리고、당신들은 그 자리를 떠났다。"
+							FLAG_D100_3F廊下会話 = 1
+							CALL CLEAR_TILE
+						CASE 3
+							;部屋の壁際イベント
+							;TODO 謙虚のリング未定義
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞방을 수색하자、반지가 제단 같은 것의 중앙에 놓여 있다。/＞이 삼엄한 분위기의 반지가 이계화의 원인인 것일까？"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞……겸허의 링을 손에 넣었다"
+								;アイテム　謙虚のリング
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "해냈군요！ 이걸로 이계화가……/어라……？"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", " ＞주위에는 아무런 변화도 없다。"
+							CALL INPUT_SELECT_D, "[0] 어쩌지"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "어、어떻게 좀 안 해주는 건가요？！/반지를 끼고 얍 하고 염원을 담는다거나、기합을 넣어서 이렇게……"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "아、아무튼 『이계화를 원래대로 되돌려야』―――"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", " ＞……！/카마가 요란한 제스처를 이것저것 해대자、마계로 통하는 문이 점점 작아져 간다……！"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", " ＞이윽고 벽은 교사의 일부로 되돌아왔고、주변의 기척이 원래대로 돌아왔다。/창문으로 저녁노을이 비쳐 들고 있다……"
+
+
+
+
+
+
+							
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞………카루코자카 고교의 이계화가 풀렸다！"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "대、대단해요！ 대체 어떻게……？"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞카마의 움직임이나 말에 반응한 것처럼 보였지만、헛본 것일까？/카마 본인도 자기가 뭘 한 건지 몰라 신기해하는 표정이다。"
+							;WAIT
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞당신들은 이계화되었던 고교를 뒤로했다。"
+
+
+
+
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "감사했습니다。/저 혼자였다면 그대로 길바닥에 쓰러져 죽었을 거예요。"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", @"해냈군요、%CALLNAME:MASTER% 씨！/……하지만 저로선 마신황이 했던 말이 신경 쓰이네요"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞분명 마신황은、「앞으로 도쿄 각지에 마계의 단편이 출현한다」고 말했었다。/＞카루코자카 고교와 같은 사건이 계속되는 것일까？"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "저！ 앞으로도 따라가도 괜찮을까요？/두 분께 협력하고 싶어요。"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "……라는데요？/전 솔직히 반대예요。레이코는 툭하면 울고、/분명 가는 길에 불쌍한 꼴을 당해 게임 오버될 게 뻔하다구요。"
+							CALL INPUT_SELECT_D, "[0] 마음대로 하라고 말했다"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "고……고맙습니다！"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", @"물러터졌네요……하지만 %CALLNAME:MASTER% 씨가 어떤 성격인지、점점 알 것 같네요。/앞으로는 키잡이에 신경을 써야겠어요……"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞언제 키를 잡는 입장이 되었는지 모르겠다。/＞되었다 한들 땡땡이 귀신인 카마가 할 수 있을진 의심스럽지만……"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞어찌 되었든、마신황의 향후 동향에 주의를 기울일 수밖에 없을 것이다。"
+							FLAG_D100_クリアフラグ = 1
+							FLAG:탈출 = 1
+						CASE 4
+							;ボス部屋
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞방에 들어서자……벽에는 커다란 소용돌이 같은 것이 맴돌며、이 세상의 것이 아닌 기척이 느껴진다。"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞아무래도 여기가 마계로 통하는 문이 되어 있는 듯하다。"
+
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞방 중앙에는 대량의 시체가 겹겹이 쌓여 있었다。/＞눈을 가늘게 뜨고 보니 시체 살점 사이로 하얗고 끈적끈적한 것이 보인다。"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞……아무래도 이 방의 피해자는 대부분이 여성인 모양이다。/＞그것도 겁탈당한 끝에 살해당했음을 알 수 있다。"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "너、너무해……다들……윽！"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "하ー아、역시 안 데려오는 편이 낫지 않았나요오？"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "……윽、이、일어설 수、있어요……일어설게요……"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞……！？"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞덜컹덜컹 방이 흔들리더니、마계의 문에서 무언가가 나타났다！"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "무언가", "갸하하하하하하 샤샤샤샤！/여자！ 여자！ 여자다아！/이년이고 저년이고 허벌보지뿐이라 질려버렸다고오！ 또 적당히 팔다리나 뽑아내며 놀아볼까아？"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "저건……！"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞인간형의 거대한 육괴가、시체 산을 걷어차며 노닥거리고 있다！"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞피해자들의 것이었을 팔다리와 몸통이 있을 수 없는 형태로 이어져、/＞집합체를 이루고 있는 모습이 극도로 그로테스크하다。"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "육괴 뒤에 있는 악령……저것이 억지로 시체를 조종하고 있는 것 같네요。/취향 참 더러워ー라。"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "이 녀석이、모두를……！"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "악마", "오오！ 혈기왕성해 보이는 것들이 왔잖아！/로리보지에……그쪽 촌티 나는 년은、처녀냐아？/둘 다 맛이 끝내주겠는걸、게히히히！ 박히고 싶은 건 이 팔이냐？ 다리냐아？ 아니면 두개골이냐앗？"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "악마", "박히고 싶은 건 이 팔이냐？ 다리냐아？ 아니면 두개골이냐앗？/아헤아헤 교성을 지르게 해 주마아！"
+
+
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞문을 부수는 데 방해된다。게다가……"
+							CALL INPUT_SELECT_D, "[0] 사자를 모독하지 마라/[1] 어서 성불이나 해라/[2] 무간지옥에나 떨어져라"
+							IF RESULT == 0
+								CALL INCREASE_LC, +2
+							ELSEIF RESULT == 2
+								CALL INCREASE_LC, -2
+							ENDIF
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "악마", "얼굴이 시뻘게져선 한판 붙어보겠다는 거냐？/할 수 있다면 해봐라、이 엔티티 님을 이길 수 있다면 말이다아！！"
+							FLAG:도주불가플래그 = 1
+							FLAG:회화불능플래그 = 1
+							FLAG:선제기습취소 = 1
+							CALL BATTLE_START
+							FLAG:도주불가플래그 = 0
+							FLAG:회화불능플래그 = 0
+							FLAG:선제기습취소 = 0
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "엔티티", "제、기랄……마신황 님이시여어………"
+							CALL MESSAGE_WINDOW_D_ICON, L_REIKO, "キャラ番号", "", "레이코", "미안해、모두들……"
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", "＞레이코는 육괴가 되었던 학생들에게 묵념을 올리고 있다───"
+							CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", @"하아……/그녀는 내버려 두고、먼저 이계화를 어떻게든 해결하자구요。"
+							CALL INPUT_YN_D, "[0] 묵념한다","[1] 사건 해결의 실마리를 찾는다"
+							IF RESULT == 0
+								CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", "……좋지만요ー、저 혼자서 이거 부수는 법 찾아둘 테니까요。/악마한테 그런 감상적인 행위、어울리지도 않고요。"
+								CALL INCREASE_LD, +2
+								CALL INCREASE_LC, +2
+							ELSE
+								CALL MESSAGE_WINDOW_D_ICON, L_KAMA, "キャラ番号", "", "카마", @"맞아요 맞아、기도가 필요한 타이밍은 지금이 아니에요。자 %CALLNAME:MASTER% 씨、얼른 이계화를 원상복구하자구요"
+							ENDIF
+							FLAG_D100_ボス部屋 = 1
+							CALL MAKE_FLOOR, FLAG:현던전
+						CASEELSE
+							CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "＞카루코자카 고교생과 교사들의 시체가 흩어져 있다。"
+					ENDSELECT
+			ENDSELECT
+		ENDIF
+	CASE 5
+	CASE 6
+		CALL DUNGEON_UPSTAIRS_ID, FLAG:현M+1 , (FLAG:현M + 1) * 1000 + 7
+		RETURN 1
+	CASE 7
+		;上り階段同様に、エコービルは下り階段も1行で記述できます
+		CALL DUNGEON_DOWNSTAIRS_ID, FLAG:현M-1 , (FLAG:현M - 1) * 1000 + 6
+		RETURN 1
+	CASE 8
+		CALL DUNGEON_EXIT
+		RETURN 1
+	CASEELSE
+ENDSELECT
+RETURN RESULT
+
+@JOIN_REIKO_D100
+#DIM DYNAMIC L_REIKO
+#DIM DYNAMIC L_POS
+SIF FINDCHARA_B([[キャラ:레이코]]) == 2
+	RETURN 0
+L_REIKO = RESULT:1
+;空きポジションを確認
+FOR L_POS, 1, 7
+	SIF POS(L_POS) >= 0
+		CONTINUE
+	CALL INSERT_POSITION, L_POS, L_REIKO
+	RETURN 1
+NEXT
+;送還できる仲間を探す
+FOR L_POS, 1, 7
+	SIF POS(L_POS) == MASTER
+		CONTINUE
+	SIF !GET_ROLE_PROP("CAN_PUT_IN_COMP", POS(L_POS))
+		CONTINUE
+	SIF CFLAG:POS(L_POS):소속ＣＯＭＰ != 0
+		CONTINUE
+	CALL INSERT_POSITION, L_POS, L_REIKO
+	RETURN 1
+NEXT
+DRAWLINE
+PRINTL 레이코 대신 귀환시킬 동료마를 선택해 주십시오
+DRAWLINE
+VARI L_LINE = LINECOUNT
+WHILE CFLAG:L_REIKO:PT플래그 < 2
+	CLEARLINE LINECOUNT - L_LINE
+	CALL SHOW_NOW_FORMATION_P,0,2,0
+	CALL INPUTINT, 1, 2, 3, 4, 5, 6
+	IF POS(RESULT) == MASTER || NO:POS(RESULT) == [[キャラ:카마마라]]
+		FLAG:윈도우메시지스킵 = 0
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", "", "", @"＞%CALLNAME:POS(RESULT)%은(는) 파티에서 제외할 수 없다。"
+	ELSE
+		CALL INSERT_POSITION, RESULT, L_REIKO
+	ENDIF
+WEND
+
+;=======================================================================
+;タイル進入時のイベント
+;=======================================================================
+@EVENT_ENTER_DUNGEON_100,ARG
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 10
+	CASE 4
+		CALL EVENT_CHECK_DUNGEON_100, 1
+	CASEELSE
+		CALL EVENT_CHECK_DUNGEON_100, 1
+ENDSELECT
+RETURN RESULT
+
+@SET_ENEMY_DUNGEON_100, L_PATTERN
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_ENEMY
+#DIMS DYNAMIC L_PATTERN
+SELECTCASE L_PATTERN
+	CASE "エンティティー"
+		CALL SET_ENEMY, 9, [[キャラ:엔티티]], 17, 0, 1
+		L_ENEMY = CHARANUM - 1
+		
+		CSTR:L_ENEMY:특수적보정패턴 = D100_エンティティ－
+		CSTR:L_ENEMY:사고패턴 = D100_エンティティ－
+		CSTR:L_ENEMY:랜덤선택금지스킬 = [[스킬:마하무드]]
+		TSTR:전투이벤트패턴 = D100_エンティティ－
+
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "마구날뛰기"
+		CALL SET_SKILL, L_ENEMY, "소닉펀치"
+		CALL SET_SKILL, L_ENEMY, "마비물어뜯기"
+		CALL SET_SKILL, L_ENEMY, "마하무드"
+		CALL SET_SKILL, L_ENEMY, "激怒"
+
+		CFLAG:L_ENEMY:행동횟수 = 2
+		FOR LCOUNT, 0, TYPENUM
+			SELECTCASE GET_TYPE(LCOUNT)
+				CASE "비구"
+					BASE:L_ENEMY:GET_TYPE(LCOUNT) = 0
+				CASE "수격"
+					BASE:L_ENEMY:GET_TYPE(LCOUNT) = 0
+				CASE "검격", "타격", "전술", "질풍"
+					BASE:L_ENEMY:GET_TYPE(LCOUNT) = 75
+				CASE "화염", "중력", "핵열"
+					BASE:L_ENEMY:GET_TYPE(LCOUNT) = 150
+				CASE "빙결"
+					BASE:L_ENEMY:GET_TYPE(LCOUNT) = 200
+				CASEELSE
+					BASE:L_ENEMY:GET_TYPE(LCOUNT) = 100
+			ENDSELECT
+		NEXT
+		CALL SYNC_STATUS, L_ENEMY
+		CALL HEALTH_CHARA, L_ENEMY
+ENDSELECT
+
+@SET_ACTION_D100_エンティティ－, ARG
+IF D100_マハムド予告
+	D100_マハムド予告 = 0
+	CFLAG:ARG:입력행동 = [[스킬:마하무드]]
+ELSE
+	SELECTCASE RAND:100
+		CASE IS < 15
+			IF 	CFLAG:ARG:행동한횟수 == CFLAG:ARG:행동횟수 - 1
+				CSTR:ARG:행동예고 = 暗黒呪文詠唱
+				CSTR:ARG:행동예고메시지 = %CALLNAME:ARG%は怪しげな呪文を詠唱しはじめた…
+				CFLAG:ARG:입력행동 = [[스킬:행동예고]]
+				D100_マハムド予告 = 1
+			ELSE
+				CFLAG:ARG:입력행동 = 0
+			ENDIF
+		CASE IS < 40
+			CFLAG:ARG:입력행동 = [[스킬:마구날뛰기]]
+		CASE IS < 60
+			CFLAG:ARG:입력행동 = [[스킬:소닉펀치]]
+		CASE IS < 80
+			CFLAG:ARG:입력행동 = [[스킬:마비물어뜯기]]
+		CASEELSE
+			CFLAG:ARG:입력행동 = 0
+	ENDSELECT
+ENDIF
+CALL RANDOM_TARGET,ARG,CFLAG:ARG:입력행동
+SIF !RESULT
+	CALL ランダム行動 , ARG
+RETURN 1
+
+@EVENT_BATTLE_NAVI_D100_エンティティ－, ARGS
+#DIMS DYNAMIC KAMA_ICON
+#DIMS DYNAMIC REIKO_ICON
+#DIM IS_KAMA_ACTIVE
+#DIM IS_REIKO_ACTIVE
+IS_KAMA_ACTIVE = FINDCHARA_B([[キャラ:카마마라]]) == 2
+SIF IS_KAMA_ACTIVE > 0
+	KAMA_ICON = GET_FACE_BY_CSV_AS_HTML(RESULT:1)
+
+IS_REIKO_ACTIVE = FINDCHARA_B([[キャラ:레이코]]) == 2
+SIF IS_REIKO_ACTIVE > 0
+	REIKO_ICON = GET_FACE_BY_CSV_AS_HTML(RESULT:1)
+
+SELECTCASE ARGS
+	CASE "メイン画面"
+		IF FLAG:경과턴수 == 0 && IS_REIKO_ACTIVE
+			TSTR:전투구상캐릭터화상어드레스 '= REIKO_ICON
+			BTL_KOJO_RESULTS:0 = みんなの仇うつからね……
+			BTL_KOJO_RESULTS:1 = 
+			CALL PRINT_KOJO_RPG_MESSAGE, "ナビ_メイン画面"
+		ELSEIF D100_マハムド予告 && IS_KAMA_ACTIVE
+			TSTR:전투구상캐릭터화상어드레스 '= KAMA_ICON
+			BTL_KOJO_RESULTS:0 = なんだかぶつぶついってキモいですね…
+			BTL_KOJO_RESULTS:1 = たぶん呪殺かなんかしてくると思うんでひっかかっちゃだめですよ？
+			CALL PRINT_KOJO_RPG_MESSAGE, "ナビ_メイン画面"
+		ELSEIF IS_KAMA_ACTIVE
+			TSTR:전투구상캐릭터화상어드레스 '= KAMA_ICON
+			BTL_KOJO_RESULTS:0 = なんか台詞
+			BTL_KOJO_RESULTS:1 = 
+			CALL PRINT_KOJO_RPG_MESSAGE, "ナビ_メイン画面"
+		ENDIF
+		RETURN 1
+ENDSELECT

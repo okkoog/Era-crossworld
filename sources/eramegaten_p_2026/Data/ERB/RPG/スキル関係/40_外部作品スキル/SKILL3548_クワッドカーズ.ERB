@@ -1,0 +1,129 @@
+﻿
+;スキル名
+@SKILL_NAME_3548,ARG
+RESULTS = 쿼드커즈
+
+;　명중
+@SKILL_HITRATE_3548, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_3548, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3548,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3548,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3548, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3548,ARG
+RETURN 50
+
+;　相性
+@SKILL_TYPE_3548,ARG
+RETURN GET_TYPE_NUM("주살")
+;주살
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3548
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3548, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_3548,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3548,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3548, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3548
+RETURN GET_SUCCESSION_NUM("주살")
+;주살
+
+;속도보정
+@SKILL_SPEED_3548, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3548
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3548, ARG = -1
+RETURN 16
+
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3548, ARG, ARG:1, ARG:2
+CALL SKILL_GUARD_KILL, ARG, "신경", ARG:1, 2, "NOWAIT"
+CALL SKILL_GUARD_KILL, ARG, "정신", ARG:1, 2, "NOWAIT"
+CALL SKILL_GUARD_KILL, ARG, "파마", ARG:1, 2, "NOWAIT"
+CALL SKILL_GUARD_KILL, ARG, "주살", ARG:1, 2, "NOWAIT"
+
+;時間で減少するDゲージに4をセット。
+CALL SKILLGAGE_D_ADD,ARG,3548,4
+PRINTFORMW 리캐스트 4턴!
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3548, ARG
+PRINTL 가드킬: 2턴 동안, 적 1체의 신경·정신·파마·주살 내성을 파괴.
+PRINTL 추가 효과: 대상 속성의 무효화 횟수를 전부 무효화한다.
+PRINT 사용 제한: 한 번 발동하면
+SETCOLOR 0xff0000
+PRINT 4턴 경과하거나 전투 종료까지 발동할 수 없다
+RESETCOLOR
+PRINTL 。
+PRINTL 
+;Quad Damage＋エリナへのDefence drop効果
+PRINTL 『Quad curse』. 저주와 부정적인 감정을 부딪쳐 특히 주저 관련 방어력을 대폭 저하시킨다.
+PRINTL 집중력을 요하는 기술이라 쉽사리 연발할 수는 없는 듯하다. 마인 미루의 마법의 힘 (전용)
+
+
+
+@継承不能_3548
+RETURN 2
+;禁止。つけ忘れてたやっばいやっばい
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3548,ARG
+RESULTS = 쿨타임:%TOFULL(TOSTR(SKILLGAGE_D_GET(ARG,3548)))%턴
+SIF SKILLGAGE_D_GET(ARG,3548)
+	RETURN 0
+RETURN 1
+;リキャストゲージが残っていると不可
+
+
+

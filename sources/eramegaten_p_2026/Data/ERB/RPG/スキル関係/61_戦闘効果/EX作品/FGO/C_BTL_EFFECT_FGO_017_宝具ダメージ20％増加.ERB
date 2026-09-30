@@ -1,0 +1,66 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@C_BTL_EFFECT_CONTROL_NO_FGO_17,ARG
+RESULTS = 보구 데미지 20% 증가
+
+;スキル名
+@SKILL_NAME_C_BTL_EFFECT_宝具ダメージ20％増加,ARG
+RESULTS = 보구 데미지 20％ 증가
+
+;重複可能な数
+@C_BTL_EFFECT_COUNT_LIMIT_宝具ダメージ20％増加
+RETURN 10
+
+;効果時間　最大10ターンまで、0を指定した場合は戦闘中永続
+@C_BTL_EFFECT_CONTINUE_TIME_宝具ダメージ20％増加
+RETURN 3
+
+;排他となる効果
+;戻り値
+; RESULTS = 効果名
+; RESULT
+; 0 = 排他
+;-1 = 上書き不能
+; 1 = 上書き(対象も1なら相互上書き)
+@C_BTL_EFFECT_EXCLUSIVE_宝具ダメージ20％増加
+RESULTS = 
+RETURN 0
+
+;個別の対象条件
+;ARG 	効果を受けるキャラの登録番号
+;ARG:1	効果を与えるキャラの登録番号
+@C_BTL_EFFECT_SPECIAL_TARGET_宝具ダメージ20％増加, ARG, ARG:1
+;対象がDYING or ノウブル・ファンタズム持ってない場合は無効
+SIF IS_BADSTATE(ARG, "DYING") || !HAVE_PU_SKILL(ARG,"ノウブル・ファンタズム")
+	RETURN 0
+RETURN 1
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_C_BTL_EFFECT_宝具ダメージ20％増加, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+#DIM LCOUNT
+
+;対象が攻撃側じゃない or 発生中の処理がダメージ以外だと0を返す
+SIF L_P != L_ACTOR || ARGS != "ダメージ補正加算"
+	RETURN 0
+CALL CHECK_SKILL_TAG(L_P,CFLAG:L_P:입력행동,"宝具")
+SIF RESULT != 1
+	RETURN 0
+;付与されたキャラの行動のタグに宝具が付いていた場合、ダメージが10%上昇する
+RETURN 20

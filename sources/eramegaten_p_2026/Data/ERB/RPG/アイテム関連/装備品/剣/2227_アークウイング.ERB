@@ -1,0 +1,139 @@
+﻿
+;======================================================
+;装備品のデータ
+;아크윙
+;======================================================
+
+@基本能力修正_2227,ARG,ARG:1 = -1
+
+;1.힘　2.지혜　3.마력　4.내구　5.속도　6.운
+SELECTCASE ARG
+ENDSELECT
+RETURN 0
+
+@戦闘能力修正_2227,ARG,ARG:1 = -1
+SIF ARG:1 < 0 || EQUIP:(ARG:1):발 == 0
+	RETURN 0
+LOCAL = EQUIP:(ARG:1):발
+TRYCCALLFORM 戦闘能力修正_{LOCAL},2,ARG:1
+	LOCAL:1 = RESULT
+	CALLFORM 戦闘能力修正_{LOCAL},3,ARG:1
+	LOCAL:2 = RESULT
+	CALLFORM 戦闘能力修正_{LOCAL},5,ARG:1
+	LOCAL:3 = RESULT
+	TRYCCALLFORM 必要レベル_{LOCAL}
+		LOCAL:4 = RESULT
+	CATCH
+		LOCAL:4 = 1
+	ENDCATCH
+CATCH
+	RETURN 0
+ENDCATCH
+
+SELECTCASE ARG
+	;공격
+	CASE 0
+		RETURN LOCAL:1 * 4 + LOCAL:4
+	;명중
+	CASE 1
+		RETURN LOCAL:2 * 3
+	;마법위력
+	CASE 4
+		RETURN LOCAL:3 * 3 + LOCAL:4
+	;마법효과
+	CASE 5
+		RETURN LOCAL:2 + LOCAL:3
+ENDSELECT
+RETURN 0
+
+@防御相性_2227,ARG,ARG:1 = -1
+;0,검격
+;1,비구
+;2,타격
+;3,전술
+;4,화염
+;5,빙결
+;6,전격
+;7,충격
+;8,신경
+;9,정신
+;10,파마
+;11,주살
+;一応
+;12,지변
+;13,수격
+;14,질풍
+;15,중력
+;16,핵열
+;17,만능
+;18,사이코
+RETURN 100
+
+@攻撃相性_2227, ARG = -1
+
+RETURN 2
+
+@最低攻撃回数_2227, ARG = -1
+
+RETURN 1
+
+@最大攻撃回数_2227, ARG = -1
+
+RETURN 1
+
+@射程_2227, ARG = -1
+
+RETURN 1
+
+@攻撃範囲_2227, ARG = -1
+
+RETURN 1
+
+@装備箇所_2227
+
+RETURN GET_EQUIPNUM("검")
+
+;-----------------------------
+;- ショップ
+;-----------------------------
+@購入条件_2227
+RETURN 0
+
+@必要レベル_2227
+RETURN 1
+
+@必要素質_2227
+RESULTS = 마샬아츠
+RESULTS:1 = OR
+RETURN 1
+
+@装備条件_2227,ARG
+;SIF TALENT:ARG:마샬아츠 == 0
+;	RETURN 0
+RETURN 1
+
+@装備解説_2227
+PRINTFORML 날개 형태의 부적. 장비하면 발걸음이 가벼워져 발차기 기술을 쓰기 쉬워진다
+PRINTFORML 무술을 극에 달한 자만이 장비 가능하며, 발 장비에 따라 성능이 변화한다
+SETCOLOR 0x87ceeb
+PRINTL 《足防具》
+RESETCOLOR
+
+@装備条件説明_2227
+;PRINTL 装備条件：マーシャルアーツのみ
+
+@引継ぎ可不可_2227
+RETURN 1
+
+@剣タイプ_2227
+;1 = 刀　2 =레이피어　3 = 弓　　　　4 = 검　5 = 槍　　　6 = 斧、鈍器
+;7 = 채찍　8 =投具　　　9 = 杖、祭具　10= 棍　11= 拳闘具
+RETURN 11
+
+;魔貨交換可能か
+@EQUIP_EXCHANGE_2227
+RETURN 1
+
+@WIKI備考欄_2227
+;WIKIの備考欄に記載するもの
+PRINT 발 장비에 따라 성능 변화

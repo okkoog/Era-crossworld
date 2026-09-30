@@ -1,0 +1,132 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5633_遊戯王_閃刀姫ロゼ.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/07/57		epizo				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;====================================================
+;行動によるスキルゲージ操作
+;各キャラクターの通常の行動後に全キャラで呼び出される
+;ARG:		このスキルの持ち主のキャラ番号
+;ARG:1		行動したキャラクターのキャラ番号
+;
+;RESULT 		獲得したゲージの量を返すことで獲得量を表示させる。つまり、他人の行動に反応させることなども可能。
+;RESULT:1		獲得表示のときの文字色を指定できる。ゲージが溜まったときの表示わけなどに
+;RESULTS		ゲージの名称 「<<XXXX>>」という形で表示される
+;RESULTS:1		ゲージの単位。半角の%を使いたい場合は「\%」と言うかたちで退避記号を使うと良い
+;RESULTS;2		色指定以外の要素を使わずに文字列を返す。ゲージ式の獲得量で表現したい場合などに
+;====================================================
+@SKILLGAGE_CHARGE_CHARA_[[キャラ:섬도희로제]], L_CHARA, ARG:1
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_GP
+IF L_CHARA == ARG:1
+	CALL CHECK_SKILL_TAG, L_CHARA, CFLAG:L_CHARA:입력행동, "ロゼ専用スキル"
+	IF RESULT
+		CALL SET_RPG_CFLAG_BTL, L_CHARA, "閃刀カウンター", -3, "+="
+		RESULTS '= "閃刀カウンター"
+		RETURN -3
+	ENDIF
+ENDIF
+
+@SKILL_EX_DISPLAY_CHARA_[[キャラ:섬도희로제]], ARG, ARGS
+RESULTS += "閃：" + SET_COLOR_TAG(GET_RPG_CFLAG_BTL(ARG, "閃刀カウンター") * "★", "YELLOW")
+RESULTS:1 '= "閃刀カウンター"
+RETURN 1
+;--------------------------------------------------
+;キャラクター独自変数名称定義関数
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:섬도희로제]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS '= "閃刀カウンター"
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS
+
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:섬도희로제]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("閃刀姫ロゼ_FACE_0")
+			RETURNF ""
+		SIF !SPRITECREATED("閃刀姫ロゼ_FACE_1")
+			RETURNF ""
+		SIF !SPRITECREATED("閃刀姫ロゼ_FACE_EX_0")
+			RETURNF ""
+		SIF !SPRITECREATED("閃刀姫ロゼ_FACE_EX_1")
+			RETURNF ""
+		SIF !SPRITECREATED("閃刀姫ロゼ_FACE_EX_2")
+			RETURNF ""
+		SIF !SPRITECREATED("閃刀姫ロゼ_FACE_EX_3")
+			RETURNF ""
+		RESULTS_F = デフォルト
+		RESULTS_F:1 = 閃刀姫ロゼ_FACE_0
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:섬도희로제]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "デフォルト"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+				RESULTS_F = 閃刀姫ロゼ_FACE_1
+			CASEELSE
+				SELECTCASE L_SITUATION:1
+					;戦闘不能になった時
+					CASE "DYING"
+						RESULTS_F = 閃刀姫ロゼ_FACE_EX_0
+					;CHARMになった時
+					CASE "CHARM"
+						RESULTS_F = 閃刀姫ロゼ_FACE_EX_1
+					;SLEEPになった時
+					CASE "SLEEP"
+						RESULTS_F = 閃刀姫ロゼ_FACE_EX_2
+					;上記以外の状態異常の時
+					CASE "STONE", "FLY", "PALYZE", "BRAND", "CURSE", "FLAME", "BOMB", "POISON", "CLOSE", "BIND", "SLIP", "FREEZE", "PANIC", "SHOCK", "HAPPY"
+						RESULTS_F = 閃刀姫ロゼ_FACE_EX_3
+					;通常時
+					CASEELSE
+						RESULTS_F = 閃刀姫ロゼ_FACE_0
+				ENDSELECT
+				;HPが25%未満だとDYINGまでこれに固定する
+				IF 現HP割合(L_CHARA) < 25
+					RESULTS_F = 閃刀姫ロゼ_FACE_EX_0
+				ENDIF
+		ENDSELECT
+	CASEELSE
+ENDSELECT

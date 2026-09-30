@@ -1,0 +1,45 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;	
+;	test Module	:IS_USEABLE_MAGATSUHI_SKILL
+;	Facility	:PT内に合一神がいるかどうかの判定
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/05/10		P(bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;====================================================
+;帰り値
+;1 = 生存している合一神がいる
+;0 = いない
+;-1 = 動けない合一神しかいない
+;-2 = 死んだ合一神しかいない
+;====================================================
+@IS_USEABLE_MAGATSUHI_SKILL
+#FUNCTION
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC EXIST_DYING
+#DIM DYNAMIC EXIST_CAN_NOT_ACTION
+FOR LCOUNT, 1, 7
+	SIF POS(LCOUNT) < 0
+		CONTINUE
+	SIF !GET_ROLE_PROP("CAN_USE_MAGATSUHI_SKILL", POS(LCOUNT))
+		CONTINUE
+	IF IS_BADSTATE(POS(LCOUNT), "DYING")
+		EXIST_DYING = 1
+		CONTINUE
+	ELSE
+		IF !ACTIONABLE_CHARA_F(POS(LCOUNT))
+			EXIST_CAN_NOT_ACTION = 1
+			CONTINUE
+		ENDIF
+	ENDIF
+	RETURNF 1
+NEXT
+SIF EXIST_CAN_NOT_ACTION
+	RETURNF -1
+SIF EXIST_DYING
+	RETURNF -2
+RETURNF 0

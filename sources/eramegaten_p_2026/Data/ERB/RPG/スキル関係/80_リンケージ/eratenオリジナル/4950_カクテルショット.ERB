@@ -1,0 +1,224 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:4950_カクテルショット.ERB
+;	Facility	:밀크건＆ペニスガンのリンケージ技
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2021/07/02		Collared				新規作成
+;	002		2021/10/18		Collared				新装備追加に伴い条件追加。あとリンケージらしい性能に強化
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;ミルクガンシリーズのリンケージ技。 eratenオリジナルカテゴリ作ってでもエロ要素増やしたかったんだ。
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+
+;スキル名
+@SKILL_NAME_4950,ARG
+RESULTS = 칵테일샷
+
+;　명중
+@SKILL_HITRATE_4950, ARG = -1
+;ガンスリンガーは命中にボーナス
+SIF ARG == -1
+	RETURN 110
+SIF GET_BTL_TALENT_LV("건슬링거",  ARG)
+	RETURN 120
+RETURN 80
+
+;　威力
+@SKILL_POWER_4950,ARG
+;初期化
+LOCAL = 0
+LOCAL:1 = MIN((EXP:(ARG):사정경험 * 2) , 80)
+SIF HAVE_PENIS(ARG) == 0
+		LOCAL:1 = 0
+IF FLAG:확산플래그
+	LOCAL = (20 + LOCAL:1 + MIN((EXP:(CFLAG:ARG:링케이지참가자1):분유경험 / 20) + (ABL:(CFLAG:ARG:링케이지참가자1):분유중독 * 20) , 500) ) * 1/2
+	RETURN LOCAL
+ELSE
+ENDIF
+
+LOCAL = 20 + LOCAL:1 + MIN((EXP:(CFLAG:ARG:링케이지참가자1):분유경험 / 20) + (ABL:(CFLAG:ARG:링케이지참가자1):분유중독 * 20) , 500)
+RETURN LOCAL
+
+@SKILL_CALC_BATTTLE_STATUS_4950, ARGS, ARG, ARG:1
+SIF ARG < 0
+	RETURN 0
+SELECTCASE ARGS
+	CASE "ATK"
+		;召喚予定キャラの攻と魔威のうち高いほう
+		RETURN (MAXBASE:ARG:공격 + MAXBASE:ARG:마법위력 + MAXBASE:ARG:총공격) / 3 * 2
+	CASE "DEF"
+		RETURN 0
+	CASE "HIT"
+		RETURN 0
+	CASE "AVOID"
+		RETURN 0
+ENDSELECT
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_4950,ARG
+	RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_4950,ARG
+	RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_4950, ARG, ARG:1
+RETURN GET_SKILL_COST_TYPE_NUM("HP")
+
+;　コストの量
+@SKILL_COST_4950, ARG
+RETURN 5
+
+;　相性
+@SKILL_TYPE_4950, ARG
+RETURN GET_TYPE_NUM("수격")
+
+;　1EXTRAか2MAGICか
+
+@SKILL_DECIDE_TYPE_4950
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_4950, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_4950, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_4950,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_4950,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_4950, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_4950
+RETURN GET_SUCCESSION_NUM("파마")
+
+;속도보정
+@SKILL_SPEED_4950, ARG = -1
+RETURN 20
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_4950
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_4950, ARG = -1
+RETURN 0
+
+
+
+;拡散攻撃用追加処理
+@SKILL_SPREAD_4950,ARG
+RETURN 1
+;拡散距離:1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_4950, ARG, ARG:1, ARG:2
+IF CFLAG:ARG:PT플래그 > 0
+	IF GET_CHARA_STOCK_MAG((ARG)) > MAX(GET_CHARA_MAXMAG(ARG)/20,1)
+		IF GET_CHARA_STOCK_MAG(CFLAG:ARG) > MAX(GET_CHARA_MAXMAG(CFLAG:ARG:링케이지참가자1)/20,1)
+			CALL ATTACK_SPREAD,ARG,ARG:1,4950
+		ELSE
+			PRINTL MAG가 부족해 실패했다！
+		ENDIF
+	ELSE
+		PRINTL MAG가 부족해 실패했다！
+	ENDIF
+ELSE
+	CALL ATTACK_SPREAD,ARG,ARG:1,4950
+ENDIF
+
+IF CFLAG:ARG:PT플래그 > 0
+	IF GET_CHARA_STOCK_MAG((ARG)) < MAX(GET_CHARA_MAXMAG(ARG)/20,1)
+		PRINTFORML %조사처리(CALLNAME:(ARG),"는")% ＭＡＧ가 부족해 맥이 풀렸다！
+		CFLAG:ARG:상태이상 = GET_STATE_NUM("SLIP")
+	ELSE
+		PRINTFORML %CALLNAME:ARG% >>>>> {MAX(GET_CHARA_MAXMAG(ARG)/20,1)} 소비 (나머지{GET_CHARA_STOCK_MAG(ARG)})
+	ENDIF
+	CALL CONTROL_MAG, ARG, -GET_CHARA_STOCK_MAG(ARG)
+	
+	IF GET_CHARA_STOCK_MAG(CFLAG:ARG:링케이지참가자1) < MAX(GET_CHARA_MAXMAG(CFLAG:ARG:링케이지참가자1)/20,1)
+		PRINTFORML %조사처리(CALLNAME:(CFLAG:ARG:링케이지참가자1),"는")% ＭＡＧ가 부족해 맥이 풀렸다！
+		CFLAG:(CFLAG:ARG:링케이지참가자1):상태이상 = GET_STATE_NUM("SLIP")
+	ELSE
+		PRINTFORML %CALLNAME:(CFLAG:ARG:링케이지참가자1)% >>>>> {MAX(GET_CHARA_MAXMAG(CFLAG:ARG:링케이지참가자1)/20,1)} 소비 (남은 양 {BASE:(CFLAG:ARG:링케이지참가자1)})
+	ENDIF
+	CALL CONTROL_MAG, , -MAX(GET_CHARA_MAXMAG(CFLAG:ARG:링케이지참가자1)/20,1)
+ELSE
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_4950, ARG
+PRINTL 페니스건과 밀크건의 동시공격에 의해、대상과 그 주위에 수격 상성의 마법데미지。
+PRINTL 페니스건 장비자의 공격력과 마법위력、밀크건 장비자의 분유경험과 분유중독으로 성능이 향상된다。
+PRINTL 사용시에 MAG를 최대 5% 소비하고、MAG 부족시에는 힘이 빠져 SLIP 상태가 된다。
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_4950,ARG
+CALL CHECK_COST,ARG,4950
+SIF RESULT == 0
+	RETURN 0
+RETURN 1
+;とくにない
+
+
+;=====================================================
+;リンケージ設定
+;=====================================================
+@LINKAGE_4950
+RETURN 1
+
+@参加人数_4950
+RETURN 1
+
+@参加条件表示_4950, ARG
+SELECTCASE ARG
+	CASE 1
+		PRINTFORM 밀크건 계 무기 장비자
+	CASE 2
+		PRINTFORM 페니스건 장비자
+ENDSELECT
+
+@発動者条件_4950 , ARG
+SIF EQUIP:ARG:총 == GETNUM(ITEM, "페니스건")
+	RETURN 1
+RETURN 0
+
+@参加者条件_4950, ARG , ARG:1
+SIF EQUIP:ARG:총 == GETNUM(ITEM, "밀크건")||EQUIP:ARG:총 == GETNUM(ITEM, "밀크건II")||EQUIP:ARG:총 == GETNUM(ITEM, "밀크슈터")||EQUIP:ARG:악세서리 == GETNUM(ITEM, "플러그인／밀크터렛")
+	RETURN 1
+RETURN 0
+
+@リンケージコストタイプ_4950, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 2
+ENDSELECT
+
+@リンケージコスト_4950, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 5
+ENDSELECT

@@ -1,0 +1,275 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_82_英霊召喚(雑賀孫一).ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author		Reason
+;	000		2023/12/13		しゃけ		新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;イベントフラグ:82:5の50番台を使用しています
+
+;====================
+;召喚イベント条件
+;====================
+@FGO_SUMMON_CHECK_12
+#DIM LCOUNT
+#DIM 達成度
+#DIM L_CHARA
+#DIM 召喚確率
+#DIMS L_RESULTS,2
+
+;■召喚可否条件をここに記載することで読み込んでくれます■
+;※召喚はイベントフラグ:82:1が必ず4以上から。
+
+VARSET L_RESULTS
+VARSET 達成度
+
+L_CHARA = GETCHARA([[キャラ:호타루]])
+IF イベントフラグ:82:1 > 3
+	RESULTS = 심부름센터 M51(사이카 마고이치)
+	RESULTS:1 '= "필요 촉매：LV50 이상의 남자가 아닌 조마(함락 필요) + 국우의총"
+	;造魔と国友の銃を持っていないとダメ
+	IF GETCHARA([[キャラ:조마]]) == -1 || ITEM:국우의총 < 1
+		RESULTS:1 = %RESULTS:1 + "　미소지"%
+		RETURN 0
+	;持っていた場合、条件を満たしているかチェックする
+	ELSE
+		;陥落関数がRESULTS:1を上書きするのでこちらで確保
+		L_RESULTS '= RESULTS:0,RESULTS:1
+		FOR LCOUNT,0,CHARANUM
+			;造魔ではない or オトコである or レベルが50未満 or 未陥落だとNG
+			SIF NO:LCOUNT != [[キャラ:조마]] || IS_MALE(LCOUNT) || BASE:LCOUNT:LV < 50 || !陥落(LCOUNT)
+				CONTINUE
+			;上記条件達成していたら達成度に+1
+			達成度 = 1
+			BREAK
+		NEXT
+		;確保してた文字列をRESULTSに戻す
+		RESULTS '= L_RESULTS:0,L_RESULTS:1
+	ENDIF
+	;達成度が足りてないとNG
+	IF 達成度 < 1
+		RESULTS:1 = %RESULTS:1 + "　조건 미달성"%
+		RETURN 0
+	;達成度が足りてた場合、鯖が召喚済み尚且つ宝具再臨が上限まで到達しているとNG
+	ELSEIF L_CHARA > -1 && GET_RPG_CFLAG_TAKEOVER(L_CHARA,"宝具再臨") >= 4
+		RESULTS:1 '= "보구 최종재림 도달 완료"
+		RETURN 0
+	ENDIF
+	;ここまでくれば召喚可能
+	;雑賀孫一が加入してるか否かで表示メッセージを変更
+	IF L_CHARA == -1
+		RESULTS:1 = %L_RESULTS:1 + "　사이카 마고이치 미가입"%
+	ELSE
+		召喚確率 = AUTO_SPLIT_INT("40_30_25_20","_",GET_RPG_CFLAG_TAKEOVER(L_CHARA,"宝具再臨"))
+		RESULTS:1 = %"보구 재림 실행 가능　" + "성공률：" + TOSTR(召喚確率) + "％"%
+	ENDIF
+	RETURN 1
+ELSE
+	;そもこれが出ることはないはずだけど、確認用に一応記載
+	RESULTS = 최초 소환 이벤트 미소화
+	RETURN 0
+ENDIF
+
+;※RETURN 1　で鯖リストのBITがオンになるようにしているため、必ずRETURNを記入してください
+
+;====================
+;生贄可否の条件確認
+;====================
+@FGO_SUMMON_SACRIFICE_12(ARG:0)
+;造魔以外は不可
+SIF NO:ARG != [[キャラ:조마]]
+	RETURN 0
+;オトコ素質所持者は対象外
+SIF IS_MALE(ARG)
+	RETURN 0
+;LV50未満は対象外
+SIF BASE:ARG:LV < 50
+	RETURN 0
+;未陥落は対象外
+SIF !陥落(ARG)
+	RETURN 0
+SIF !FGO_SUMMON_SACRIFIE_COMMON(ARG)
+	RETURN 0
+RETURN 1
+
+
+;====================
+;蛍ちゃん召喚
+;====================
+@FGO_SUMMON_12
+#DIM LCOUNT
+#DIM L_CHARA
+#DIM 召喚確率
+#DIMS 呼び名
+
+呼び名 = \@ TALENT:MASTER:서머너 > 0 ? 서머너 # 전사 \@ %CALLNAME:MASTER%
+
+L_CHARA = GETCHARA([[キャラ:호타루]])
+
+;■イベント本文を記載■
+
+PRINTFORML  「자, 소환술은 다음 단계로!
+PRINTFORMW  　――우리들의 연구 성과를 보여주도록 하지」
+PRINTFORML  
+PRINTFORM  「자, 마음 단단히 먹게나 %呼び名%.
+PRINTFORMW  　이것이 새로운 소환 기술, 그 발전이다――――읏읏읏」
+;ITEMの消費はイベント固有のためここに処理を残します
+ITEM:국우의총 -= 1
+CALL 疑似的画面クリア
+TWAIT 500,1
+PRINTL  
+PRINTL  
+;■以下、召喚イベント本文をどうぞ■
+PRINTL  ＞ 순간, 소환진에서 마력이 빛의 격류가 되어 휘몰아치다 사라져 간다
+PRINTL
+PRINTL
+PRINTL  …………
+PRINTL  ………
+PRINTL  ……
+PRINTL
+PRINTL
+IF L_CHARA == -1
+	TWAIT 500,1
+	PRINTW  ＞ 모두가 눈을 보호하기 위해 빛을 가렸고, 다음 순간에는 한 소녀가 소환진 위에 우두커니 서 있었다
+	PRINTL  
+	PRINTL  
+	PRINTW  「서번트, 아처. 소환에 응하여 강림했다.
+	PRINTW  　………어라, 어째서 내가…?」
+	PRINTL  
+	PRINTL  
+	PRINTW  ＞ 그곳에 있던 것은 외투를 걸치고 당혹스러운 표정을 짓고 있는 몸집이 작은 소녀였다
+	PRINTW  　 일본에서는 낯선 긴 은발에 어딘가 순박한 인상
+	PRINTW  　 전국 시대에 활약했다 전해지는 『사이카슈』의 두령, 『사이카 마고이치』의 이미지와는 다소…
+	PRINTW  　 …아니, 상당히 다르다고 할 수 있다.
+	PRINTL  
+	PRINTW  　 어찌 되었든 소환한 마당에 『생각했던 것과 다르다!』는 이유로 내칠 수는 없다.
+	PRINTL  
+	PRINTL  
+	PRINTFORMW  ＞ %CALLNAME:MASTER%는 소녀 앞으로 걸어가 자신이 영령──사이카 마고이치──의 마스터임을 알렸다
+	PRINTL  
+	PRINTL  
+	PRINTW  「마스터? 당신이?」
+	PRINTL  
+	PRINTL  
+	PRINTW  ＞ 그렇게 묻는 서번트 소녀는 의아하다는 듯 이쪽을 바라보고 있다.
+	PRINTW  　 아무래도 경계심이 강한 모양이다. 소환 직후의 모습을 보건대 저쪽에게도 예상 밖의 상황인 듯한데…
+	PRINTL  
+	PRINTL  
+	PRINTW  「…『사이카 마고이치』를 소환한다면 내가 아니라 초대 마고이치 쪽이 먼저 소환되어야 할 터.
+	PRINTW  　순번을 건너뛰고 소환되는 건 상정 밖이야. …당신, 대체 무슨 짓을 한 거야?」
+	PRINTL  
+	PRINTL  
+	PRINTL  ＞ …갑자기 이야기가 복잡해지기 시작했다.
+	PRINTW  　 빅토르, 설명해라.
+	PRINTL  
+	PRINTL  
+	PRINTW  「흠, 『사이카슈』의 두령은 그 직위와 함께 『사이카 마고이치』라는 이름을 후계자가 계승하는 습명제를 채택했다는 설이 있지
+	PRINTW  　만약 그것이 사실이라면 초대 『사이카 마고이치』가 소환되는 것이 기본이며,
+	PRINTW  　거기 있는 그녀는 소환 우선순위가 뒤로 밀리거나, 혹은 본래 소환되지 않아야 할 『사이카 마고이치』의 후계자라는 뜻이 되겠지」
+	PRINTL  
+	PRINTL  
+	PRINTW  ＞ 과연 그렇군.
+	PRINTW  　 …그 소녀, 『사이카 마고이치』의 후계자는 묵묵히 듣고 있다. 부정하지 않는 걸 보니 일단 사실인 듯하다.
+	PRINTW  　 선대 마고이치를 언급한 발언의 의도는 대략 이해했다.
+	PRINTW  　 그렇다면 그 후계자가 선대 마고이치를 제치고 소환된 이유는 무엇일까?
+	PRINTL  
+	PRINTL  
+	PRINTW  「그 부분은 이 몸도 모른다네. 본래의 영령 소환과는 다른 상황에서 소환을 치른 것이 주된 원인이겠으나, 확증은 없지」
+	PRINTL 
+	PRINTL
+	PRINTW  ＞ 그 빅토르조차 거기까지는 파악하지 못한 모양이다.
+	PRINTW  　 어찌 되었든 서로에게 예상 밖의 소환이었다고 결론지어도 무방하리라.
+	PRINTW  　 남은 것은 마고이치 쪽이 납득할 수 있느냐인데…
+	PRINTL
+	PRINTL
+	PRINTW  「…알았어. 일단은 납득해 둘게. 하지만 완전히 신용하진 않아.
+	PRINTW  　사이카는 타인의 지배를 받아들이지 않아. 그러니까 나와 당신은 당분간 가계약 관계야.
+	PRINTW  　이른바 비즈니스라이크한 관계. 그걸로 괜찮다면, 나는 당신을 마스터로 인정할게」
+	PRINTL
+	PRINTL
+	PRINTW  ＞ 아무래도 완전히 신뢰받지는 못한 모양이다. 그렇다 해도 명확히 적대하지 않는 것만으로도 다행이라 할 수 있다.
+	PRINTW  　 어찌 되었든 평소처럼 어떤 형태로든 『신뢰』를 쌓아가면 어떻게든 될 것이다.
+	PRINTL
+	PRINTL
+	PRINTW  「그럼 계약 체결. 다시 자기소개할게.
+	PRINTW  　나는 사이카 마고이치, 이름은 호타루. 앞으로도 잘 부탁해(CONGOTO MO YOROSHIKU).」
+	PRINTL
+	PRINTW  ＞ 영령 사이카 마고이치가 동료마가 되었다!
+	PRINTL
+	PRINTL
+	CALL ADD_NEW_COMPANION, [[キャラ:호타루]], 100
+	PRINTL
+	;------------------------------------------------
+	PRINTL
+	PRINTL  …………
+	PRINTL  ………
+	PRINTL  ……
+	PRINTL
+	PRINTL
+	PRINTW  ＞ 아무래도 사이카 마고이치의 보구 위력이 다소 결손되어 있는 모양이다.
+	PRINTW  　 보강하기 위해서는 다시 사이카 마고이치를 소환하여 『보구 재림』을 거칠 필요가 있다.
+	PRINTW  　 다행히 소환에 적합한 촉매는 확정되어 있다. 실패할 가능성도 있으나 성공률도 그리 나쁘지는 않다.
+	PRINTW  　 전력 증강의 선택지 중 하나로 기억해 두어도 손해는 없을 것이다….
+ELSE
+	召喚確率 = AUTO_SPLIT_INT("40_30_25_20","_",GET_RPG_CFLAG_TAKEOVER(L_CHARA,"宝具再臨"))
+	IF RAND:100 > 召喚確率
+		TWAIT 500,1
+		PRINTW  ………아무 일도 일어나지 않는다……
+		PRINTL
+		PRINTW  「흠. 아무래도 소환 의식은 실패해 버린 모양이로군」
+		PRINTL  
+		PRINTW  「유감이지만…… 이번에는 물러나 다시 준비할 수밖에 없겠어」
+		PRINTL  
+		PRINTFORML  「하지만 염려할 것은 없다네! %呼び名%여!
+		PRINTL  　그대가 소환을 포기하지 않는 한 언제나 가능성은 존재하는 법! 그대에게 그 의지가 있다면!
+		PRINTW  　이 실패를 양분 삼아, 다시 제물을 모으기 위해 달려 나가는 걸세!」
+		;ﾊｼﾘｰﾀﾞｽｰ
+		PRINTL
+		PRINTW  「뭘, 그대가 포기하지 않는 한 이 몸도 전력으로 지원하겠네. 함께 미지의 존재와의 해후를 이루어내지 않겠나!」
+		PRINTL  
+		PRINTL
+		PRINTFORMW  빅토르의 격려를 받으며 %CALLNAME:MASTER%는 소환실에서 물러났다……
+		IF RAND:100 > 召喚確率 / 5
+			イベントフラグ:82:5 = 0
+			RETURN 0
+		ENDIF
+		PRINTL
+		PRINTL  …………
+		PRINTL  ………
+		PRINTL  ……
+		PRINTL
+		PRINTL
+		PRINTW  「응앗!? 이, 이것은……!?」
+		PRINTL  　
+		PRINTW  ……어째 빅토르의 상태가 황급하다. 퇴실한 직후의 소환실에서 무언가 일어난 모양이다
+		PRINTL  　
+		PRINTFORMW  「%呼び名%여, 아직 소환 의식은 끝나지 않았네!
+		PRINTW  　이것은 혹시…… 소환 의식에 대한 응답이 지연되었던 것이란 말인가!?」
+		PRINTL
+		PRINTFORMW  「서두르게, %呼び名%여! 미지의 존재가 지금 이곳에 강림하려 하고 있다네!」
+		PRINTL
+		PRINTW  빅토르의 재촉을 받으며 소환실로 되돌아가기로 했다.
+		CALL 疑似的画面クリア
+		TWAIT 500,1
+		PRINTL  
+		PRINTL  
+		PRINTL  ＞ 소환진에서 마력이 빛의 격류가 되어 휘몰아치다 사라져 간다
+		GOTO SUCCESS_LABEL
+	ELSE
+		$SUCCESS_LABEL
+		PRINTW  ＞ 모두가 눈을 보호하기 위해 빛을 가렸고, 다음 순간에는 소녀 형태를 한 의지 없는 그림자가 마법진 위에 부유하고 있었다
+		PRINTL  　
+		PRINTL  　
+		PRINTL  「음. 사이카 마고이치에게 적합한 마력의 그릇을 형성해낸 모양이로군
+		PRINTW  　이로써 보구의 위력이 한층 더 높아질 걸세!」
+		PRINTL  　
+		PRINTL  　
+		CALL SET_RPG_CFLAG_TAKEOVER(L_CHARA,"宝具再臨",1,"+=")
+		PRINTFORMW  %CALLNAME:L_CHARA%의 보구 위력이 상승했다!
+	ENDIF
+ENDIF

@@ -1,0 +1,497 @@
+﻿@SET_BOSS_ENEMY_EVENT_202, L_ENEMY_NAME, L_NO = -1, L_OPT
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_NO
+#DIM DYNAMIC L_ENEMY
+#DIMS DYNAMIC L_ENEMY_NAME
+#DIMS DYNAMIC L_OPT
+#DIMS DYNAMIC L_ENEMY_TABLE, 20
+
+L_ENEMY_TABLE:0 '= "ブレイド", "アキュラ&GV", "デイサイト", "ヴェスパ", "オートクロム", "ブリガド", "ヘイル", "スラグ", "イプシロン", "マザー", "創造主"
+IF L_NO >= 0
+	SIF !INRANGE(L_NO, 0, VARSIZE("L_ENEMY_TABLE") - 1)
+		RETURN 0
+	L_ENEMY_NAME '= L_ENEMY_TABLE:L_NO
+ENDIF
+IF L_OPT == "名称取得"
+	SIF L_ENEMY_TABLE:L_NO == ""
+		RETURN 0
+	RESULTS '= L_ENEMY_NAME
+	RETURN 1
+ENDIF
+
+SELECTCASE L_ENEMY_NAME
+	CASE "ブレイド"
+		;ここからはガチで殺す気で行く
+		;ギアを一つ上げていくぞッ
+		CALL SET_ENEMY, 9, [[キャラ:블레이드_X]], 90, 1, 5
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ブレイド"
+		CFLAG:L_ENEMY:강제악마화 = 1
+		CALL SET_ENEMY_BASE_STAT, L_ENEMY, 90, 56, 9, 11, 39, 51, 9
+		NAME:L_ENEMY = 블레이드
+		CALLNAME:L_ENEMY = 블레이드
+		CFLAG:L_ENEMY:ＨＰ보정 += 15000
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 3
+		CFLAG:L_ENEMY:COOP피데미지보정 = -50
+
+		TSTR:전투이벤트패턴 = ライトニングベルセルクＸ
+		CSTR:L_ENEMY:특수적보정패턴 = ライトニングベルセルクＸ
+		CSTR:L_ENEMY:사고패턴 = ライトニングベルセルクＸ
+		CSTR:L_ENEMY:基本アイコンファイルネーム = ブレイド_X_FACE_EX_1
+
+		;既に洗脳されてるので精神系は受けない
+		BASE:L_ENEMY:HAPPY = -100
+		BASE:L_ENEMY:PANIC = -100
+		BASE:L_ENEMY:CHARM = -100
+
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "コレダーデュランダル"
+		CALL SET_SKILL, L_ENEMY, "블리츠레인"
+		CALL SET_SKILL, L_ENEMY, "퀵버스터"
+		CALL SET_SKILL, L_ENEMY, "브레이브재퍼"
+		CALL SET_SKILL, L_ENEMY, "대나무베기"
+		CALL SET_SKILL, L_ENEMY, "번개찌르기"
+		CALL SET_SKILL, L_ENEMY, "부월쇄파"
+		CALL SET_SKILL, L_ENEMY, "토르해머"
+		CALL SET_SKILL, L_ENEMY, "썬더볼트"
+		CALL SET_SKILL, L_ENEMY, "헬라이트닝"
+		CALL SET_SKILL, L_ENEMY, "산산조각베기"
+		CALL SET_SKILL, L_ENEMY, "기합"
+		CALL SET_SKILL, L_ENEMY, "결단"
+
+		FOR LCOUNT, 0, TYPENUM
+			SELECTCASE GET_TYPE(LCOUNT)
+				CASE "수격", "핵열"
+					BASE:L_ENEMY:GET_TYPE(LCOUNT) = 150
+				CASE "신경"
+					BASE:L_ENEMY:GET_TYPE(LCOUNT) = 50
+				CASE "파마", "전격"
+					BASE:L_ENEMY:GET_TYPE(LCOUNT) = 0
+				CASEELSE
+					BASE:L_ENEMY:GET_TYPE(LCOUNT) = 100
+			ENDSELECT
+		NEXT
+	CASE "アキュラ&GV"
+		TSTR:전투이벤트패턴 = 藍の運命
+		;今回は二人掛かりだッ
+		CALL SET_ENEMY, 8, [[キャラ:아큐라_X]], 100, 1, 5
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "アキュラ"
+		CFLAG:L_ENEMY:강제악마화 = 1
+		CALL SET_ENEMY_BASE_STAT, L_ENEMY, 100, 46, 12, 5, 30, 62, 25
+		IF FLAG:전투난이도 == 6
+			CFLAG:L_ENEMY:ＨＰ보정 += 15000
+		ELSE
+			CFLAG:L_ENEMY:ＨＰ보정 += 5000
+		ENDIF
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		CFLAG:L_ENEMY:COOP피데미지보정 = -50
+		CSTR:L_ENEMY:사고패턴 = 藍の運命_COPEN
+		CSTR:L_ENEMY:특수적보정패턴 = 藍の運命_COPEN
+		CSTR:L_ENEMY:적구상명칭 = 藍の運命_COPEN
+		;精神系異常は通じない。電子の謡精の加護ゆえ
+		BASE:L_ENEMY:HAPPY = -100
+		BASE:L_ENEMY:PANIC = -100
+		BASE:L_ENEMY:CHARM = -100
+		
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		;ブリッツダッシュは没収だ没収
+		CALL SET_SKILL, L_ENEMY, "SONG OF DIVA"
+		CALL SET_SKILL, L_ENEMY, "X-ROSS DISASTER"
+		CALL SET_SKILL, L_ENEMY, "ブレイジングバリスタ"
+		CALL SET_SKILL, L_ENEMY, "グリードスナッチャー"
+		CALL SET_SKILL, L_ENEMY, "ミリオンイーター"
+		CALL SET_SKILL, L_ENEMY, "アロガントファング"
+		CALL SET_SKILL, L_ENEMY, "レイジーレーザー"
+		CALL SET_SKILL, L_ENEMY, "ジェラシックゴルゴン"
+		CALL SET_SKILL, L_ENEMY, "ラストドップラー"
+		CALL SET_SKILL, L_ENEMY, "銀虎の絶爪"
+		CALL SET_SKILL, L_ENEMY, "짐승의안광"
+		CALL SET_SKILL, L_ENEMY, "BS엑스트라"
+		;悪夢だとワンモアのたび命中回避上昇
+		IF FLAG:전투난이도 == 6
+			CALL SET_SKILL, L_ENEMY, "악셀"
+			EQUIP:L_ENEMY:총 = GETNUM(ITEM, "만마의총")
+		ELSE
+			EQUIP:L_ENEMY:총 = GETNUM(ITEM, "황금총")
+		ENDIF
+		FOR LCOUNT, 0, TYPENUM
+			SELECTCASE GET_TYPE(LCOUNT)
+				CASE "파마"
+					BASE:L_ENEMY:GET_TYPE(LCOUNT) = 0
+				CASEELSE
+					BASE:L_ENEMY:GET_TYPE(LCOUNT) = 100
+			ENDSELECT
+		NEXT
+		CALL SET_ENEMY, 10, [[キャラ:GV]], 100, 1, 5
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "GV"
+		CFLAG:L_ENEMY:강제악마화 = 1
+		CALL SET_ENEMY_BASE_STAT, L_ENEMY, 100, 15,42, 51, 26, 43, 3
+		IF FLAG:전투난이도 == 6
+			CFLAG:L_ENEMY:ＨＰ보정 += 15000
+		ELSE
+			CFLAG:L_ENEMY:ＨＰ보정 += 5000
+		ENDIF
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		CFLAG:L_ENEMY:COOP피데미지보정 = -50
+		CSTR:L_ENEMY:사고패턴 = 藍の運命_GV
+		;精神系異常は通じない。電子の謡精の加護ゆえ　ついでにSHOCKも
+		BASE:L_ENEMY:HAPPY = -100
+		BASE:L_ENEMY:PANIC = -100
+		BASE:L_ENEMY:CHARM = -100
+		BASE:L_ENEMY:SHOCK = -100
+
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		;ガン使わないヴォルト！
+		CALL SET_SKILL, L_ENEMY, "SONG OF DIVA"
+		CALL SET_SKILL, L_ENEMY, "ライトニングスフィア"
+		CALL SET_SKILL, L_ENEMY, "スパークカリバー"
+		CALL SET_SKILL, L_ENEMY, "ヴォルティックチェーン"
+		CALL SET_SKILL, L_ENEMY, "팔색뇌공"
+		CALL SET_SKILL, L_ENEMY, "蒼龍の顎門"
+		CALL SET_SKILL, L_ENEMY, "꿰뚫는투기"
+		;悪夢だとブースタ搭載
+		SIF FLAG:전투난이도 == 6
+			CALL SET_SKILL, L_ENEMY, "전격부스터"
+
+		EQUIP:L_ENEMY:총 = GETNUM(ITEM, "Ｃａｌ’Ｍａｒｉａ")
+		CALL SYNC_STATUS, L_ENEMY
+		CALL HEALTH_CHARA, L_ENEMY
+		;SYNC_STATUSの前に書くと装備の耐性になるのでこっちに移動
+		FOR LCOUNT, 0, TYPENUM
+			SELECTCASE GET_TYPE(LCOUNT)
+				CASE "수격"
+					BASE:L_ENEMY:GET_TYPE(LCOUNT) = 150
+				CASE "검격", "전격", 
+					BASE:L_ENEMY:GET_TYPE(LCOUNT) = 50
+				CASE "파마"
+					BASE:L_ENEMY:GET_TYPE(LCOUNT) = 0
+				CASEELSE
+					BASE:L_ENEMY:GET_TYPE(LCOUNT) = 100
+			ENDSELECT
+		NEXT
+	CASE "デイサイト"
+		TSTR:전투이벤트패턴 '= "アルマゲドンレイ3"
+		CALL SET_ENEMY, 9, [[キャラ:데이사이트_X2]], 75, 1, 2
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "デイサイト"
+		CFLAG:L_ENEMY:ＨＰ보정 += 3000
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		BASE:L_ENEMY:SHOCK = -30
+		CSTR:L_ENEMY:사고패턴 = アルマゲドンレイ3
+		CSTR:L_ENEMY:基本アイコンファイルネーム '= "デイサイト_X2_FACE_2"
+
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "ＳＰスキル"
+		CALL SET_SKILL, L_ENEMY, "インフェルノドロップ"
+		CALL SET_SKILL, L_ENEMY, "헬파이어"
+		CALL SET_SKILL, L_ENEMY, "뇌진왕모의발차기"
+		CALL SET_SKILL, L_ENEMY, "예광구리가라축"
+		CALL SET_SKILL, L_ENEMY, "분노의철권"
+		CALL SET_SKILL, L_ENEMY, "방어부수기"
+		CALL SET_SKILL, L_ENEMY, "천열찌르기"
+		CALL SET_SKILL, L_ENEMY, "여덟머리의염구"
+		CALL SET_SKILL, L_ENEMY, "소작권"
+		CALL SET_SKILL, L_ENEMY, "포효"
+		CALL SET_SKILL, L_ENEMY, "워크라이"
+		CALL SET_SKILL, L_ENEMY, "타격가드브레이크"
+		CALL SET_SKILL, L_ENEMY, "회심의패기"
+
+		CSTR:L_ENEMY:랜덤선택금지스킬 '= "ＳＰスキル"
+	CASE "ヴェスパ"
+		TSTR:전투이벤트패턴 '= "スティンガートーレント2"
+		CALL SET_ENEMY, 9, [[キャラ:베스파_X2]], 75, 1, 2
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ヴェスパ"
+		CFLAG:L_ENEMY:ＨＰ보정 += 3000
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		BASE:L_ENEMY:SHOCK = -30
+		CSTR:L_ENEMY:사고패턴 = スティンガートーレント2
+
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "ＳＰスキル"
+		CALL SET_SKILL, L_ENEMY, "オラージュリーゼ"
+		CALL SET_SKILL, L_ENEMY, "갈바리온"
+		CALL SET_SKILL, L_ENEMY, "마하・갈다인"
+		CALL SET_SKILL, L_ENEMY, "땅의열풍"
+		CALL SET_SKILL, L_ENEMY, "크로스포츈"
+		CALL SET_SKILL, L_ENEMY, "원샷킬"
+		CALL SET_SKILL, L_ENEMY, "찰나장대비쏘기"
+		CALL SET_SKILL, L_ENEMY, "고천열풍탄"
+		CALL SET_SKILL, L_ENEMY, "컨센트레이트"
+		CALL SET_SKILL, L_ENEMY, "회심의패기"
+		CALL SET_SKILL, L_ENEMY, "용분의춤"
+		CALL SET_SKILL, L_ENEMY, "데・쿤다"
+		CALL SET_SKILL, L_ENEMY, "회심의패기"
+		
+		CSTR:L_ENEMY:랜덤선택금지스킬 '= "ＳＰスキル"
+	CASE "オートクロム"
+		TSTR:전투이벤트패턴 '= "オブリタレーションブラスト2"
+		CALL SET_ENEMY, 9, [[キャラ:오토크롬_X2]], 75, 1, 2
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "オートクロム"
+		CFLAG:L_ENEMY:ＨＰ보정 += 3000
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		BASE:L_ENEMY:SHOCK = -30
+		CSTR:L_ENEMY:사고패턴 = オブリタレーションブラスト2
+
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "ＳＰスキル"
+		CALL SET_SKILL, L_ENEMY, "エイミングレイ"
+		CALL SET_SKILL, L_ENEMY, "オプティックラウンド"
+		CALL SET_SKILL, L_ENEMY, "그랜드턱"
+		CALL SET_SKILL, L_ENEMY, "찰나장대비쏘기"
+		CALL SET_SKILL, L_ENEMY, "저스티스샷"
+		CALL SET_SKILL, L_ENEMY, "플래시봄"
+		CALL SET_SKILL, L_ENEMY, "뉴클리어미사일"
+		CALL SET_SKILL, L_ENEMY, "비구가드브레이크"
+		CALL SET_SKILL, L_ENEMY, "기합"
+		CALL SET_SKILL, L_ENEMY, "회심의패기"
+		CALL SET_SKILL, L_ENEMY, "데・카쟈"
+		CALL SET_SKILL, L_ENEMY, "파워브레스"
+
+		CSTR:L_ENEMY:랜덤선택금지스킬 '= "ＳＰスキル"
+	CASE "ブリガド"
+		TSTR:전투이벤트패턴 '= "ファイナルオペレーション2"
+		CALL SET_ENEMY, 9, [[キャラ:헤비바잘트]], 75, 1, 2
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ヘヴィバザルト"
+		CFLAG:L_ENEMY:ＨＰ보정 += 3000
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		BASE:L_ENEMY:SHOCK = -30
+		CSTR:L_ENEMY:사고패턴 = ヘヴィバザルト
+		CFLAG:L_ENEMY:ＥＸＰ보정 = 0
+		CFLAG:L_ENEMY:ＭＡＧ보정 = 0
+
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "ジャッジメントブレード"
+		CALL SET_SKILL, L_ENEMY, "ガトリングスコール"
+		CALL SET_SKILL, L_ENEMY, "기합"
+		CALL SET_SKILL, L_ENEMY, "회심의패기"
+		CALL SET_SKILL, L_ENEMY, "워크라이"
+		CALL SET_SKILL, L_ENEMY, "테트라칸"
+		CALL SET_SKILL, L_ENEMY, "마카라칸"
+		CALL SET_SKILL, L_ENEMY, "파워브레스"
+		CALL SET_SKILL, L_ENEMY, "도발"
+		CALL SET_SKILL, L_ENEMY, "앉은비차동굴곰"
+		CALL SET_SKILL, L_ENEMY, "천경지폭단"
+		CALL SET_SKILL, L_ENEMY, "뉴클리어미사일"
+		CALL SET_SKILL, L_ENEMY, "원샷킬"
+		CALL SET_SKILL, L_ENEMY, "슈퍼노바"
+
+		CFLAG:L_ENEMY:물리피데미지보정 = -30
+		CFLAG:L_ENEMY:마법피데미지보정 = -30
+		
+		CALL SET_ENEMY, , [[キャラ:브리게이드_X2]], 75, 1, 2
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ブリガド"
+		CSTR:L_ENEMY:적구상명칭 = EVENT_201_2_6_ブリガド
+		CSTR:L_ENEMY:사고패턴 = ターミナルデトーション
+		
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "アクセラレート"
+		CALL SET_SKILL, L_ENEMY, "브레이브스텝"
+		CALL SET_SKILL, L_ENEMY, "포그브레스"
+		CALL SET_SKILL, L_ENEMY, "무거운공기"
+		CALL SET_SKILL, L_ENEMY, "포이즌블레이드"
+		CALL SET_SKILL, L_ENEMY, "자벨린레인"
+		CALL SET_SKILL, L_ENEMY, "부월쇄파"
+		CALL SET_SKILL, L_ENEMY, "암야검"
+		CALL SET_SKILL, L_ENEMY, "브레이브재퍼"
+		CALL SET_SKILL, L_ENEMY, "멸살수전"
+		CALL SET_SKILL, L_ENEMY, "천우의춤"
+		CALL SET_SKILL, L_ENEMY, "암파쌍비조"
+		CALL SET_SKILL, L_ENEMY, "지고의마탄"
+		CALL SET_SKILL, L_ENEMY, "꿰뚫는투기"
+
+	CASE "ヘイル"
+		TSTR:전투이벤트패턴 '= "フリジッドステイシス2"
+		CALL SET_ENEMY, 9, [[キャラ:헤일_X2]], 75, 1, 2
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ヘイル"
+		CFLAG:L_ENEMY:ＨＰ보정 += 3000
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		BASE:L_ENEMY:SHOCK = -30
+		CSTR:L_ENEMY:사고패턴 = フリジッドステイシス2
+		
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "부흐다인"
+		CALL SET_SKILL, L_ENEMY, "마하・부흐다인"
+		CALL SET_SKILL, L_ENEMY, "얼음의난무"
+		CALL SET_SKILL, L_ENEMY, "무거운공기"
+		CALL SET_SKILL, L_ENEMY, "천상의춤"
+		CALL SET_SKILL, L_ENEMY, "컨센트레이트"
+		CALL SET_SKILL, L_ENEMY, "빙결가드킬"
+		CALL SET_SKILL, L_ENEMY, "ＳＰスキル"
+		CALL SET_SKILL, L_ENEMY, "절대영도"
+		CALL SET_SKILL, L_ENEMY, "사마카쟈오토"
+		CALL SET_SKILL, L_ENEMY, "아이스・크래시"
+
+		CSTR:L_ENEMY:랜덤선택금지스킬 '= "ＳＰスキル"
+	CASE "スラグ"
+		TSTR:전투이벤트패턴 '= "ツインミーティアバースト2"
+		CALL SET_ENEMY, 9, [[キャラ:슬러그_X2]], 75, 1, 2
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "スラグ"
+		CFLAG:L_ENEMY:ＨＰ보정 += 3000
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		BASE:L_ENEMY:SHOCK = -30
+		CSTR:L_ENEMY:사고패턴 = ツインミーティアバースト2
+		
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "어둠속의기습"
+		CALL SET_SKILL, L_ENEMY, "포그브레스"
+		CALL SET_SKILL, L_ENEMY, "밤벚꽃의춤"
+		CALL SET_SKILL, L_ENEMY, "결단"
+		CALL SET_SKILL, L_ENEMY, "악셀"
+		CALL SET_SKILL, L_ENEMY, "닷지카운터"
+		CALL SET_SKILL, L_ENEMY, "φシュート"
+		CALL SET_SKILL, L_ENEMY, "ＳＰスキル"
+		CALL SET_SKILL, L_ENEMY, "어드바이스"
+
+		CSTR:L_ENEMY:랜덤선택금지스킬 '= "ＳＰスキル"
+	CASE "イプシロン"
+		TSTR:전투이벤트패턴 '= "セラフィックルインX"
+		CALL SET_ENEMY, 9, [[キャラ:입실론_X2]], 75, 1, 2
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "イプシロン"
+		CFLAG:L_ENEMY:ＨＰ보정 += 4500
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		BASE:L_ENEMY:SHOCK = -100
+		CSTR:L_ENEMY:사고패턴 = セラフィックルインX
+
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "シールドストライク"
+		CALL SET_SKILL, L_ENEMY, "インフェルノドロップ"
+		CALL SET_SKILL, L_ENEMY, "オラージュリーゼ"
+		CALL SET_SKILL, L_ENEMY, "エイミングレイ"
+		CALL SET_SKILL, L_ENEMY, "タイムフリーザー"
+		CALL SET_SKILL, L_ENEMY, "ジャッジメントブレード"
+		CALL SET_SKILL, L_ENEMY, "φシュート"
+		CALL SET_SKILL, L_ENEMY, "セラフィックデス"
+		CALL SET_SKILL, L_ENEMY, "외법의유혹"
+		CALL SET_SKILL, L_ENEMY, "히트라이저"
+		CALL SET_SKILL, L_ENEMY, "랜더마이저"
+		CALL SET_SKILL, L_ENEMY, "이니셜라이즈"
+		CALL SET_SKILL, L_ENEMY, "기합"
+		CALL SET_SKILL, L_ENEMY, "백발백중"
+		CALL SET_SKILL, L_ENEMY, "결단"
+
+		CSTR:L_ENEMY:랜덤선택금지스킬 '= "セラフィックデス"
+	CASE "マザー"
+		TSTR:전투이벤트패턴 '= "ロストルミナス"
+		CALL SET_ENEMY, 14, [[キャラ:마더_X2]], 90, 1, 3
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "マザー本体"
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 1
+		CFLAG:L_ENEMY:공격대상제외 = 1
+		;抵抗するけど貧弱貧相　支援が本領みたいな
+		CFLAG:L_ENEMY:물리여데미지보정 = -40
+		CFLAG:L_ENEMY:마법여데미지보정 = -40
+		CSTR:L_ENEMY:사고패턴 = ロストルミナス
+
+		FOR LCOUNT, 0, TYPENUM
+			SIF GET_TYPE(LCOUNT) == "만능"
+				CONTINUE
+			BASE:L_ENEMY:GET_TYPE(LCOUNT) = 90
+		NEXT
+
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "만마의난무"
+		CALL SET_SKILL, L_ENEMY, "데・카쟈"
+		CALL SET_SKILL, L_ENEMY, "히트라이저"
+		CALL SET_SKILL, L_ENEMY, "랜더마이저"
+		CALL SET_SKILL, L_ENEMY, "마의도눔"
+		CALL SET_SKILL, L_ENEMY, "코칭"
+
+		;テストとして与えてみる
+		CFLAG:L_ENEMY:BS무효플래그 = 1
+
+		CALL SET_ENEMY, 9, [[キャラ:마더_X2]], 90, 0, 2
+		L_ENEMY = CHARANUM - 1
+
+		NAME:L_ENEMY = 마더 환영
+		CALLNAME:L_ENEMY = 마더 환영
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "マザー幻影"
+
+		CFLAG:L_ENEMY:ＭＰ보정 += 900000
+		BASE:L_ENEMY:검격 = 90
+		BASE:L_ENEMY:비구 = 90
+		BASE:L_ENEMY:타격 = 90
+		BASE:L_ENEMY:전술 = 90
+		;巨体だから避けにくい
+		CFLAG:L_ENEMY:회피보정 = -50
+		CFLAG:L_ENEMY:속도보정 = 15
+		CFLAG:L_ENEMY:행동횟수 = 2
+		;滅ぼしの歌唱用・とりあえず様子見で
+		ABL:L_ENEMY:가창기능 = 7
+		CSTR:L_ENEMY:사고패턴 = インスティクトコードDP
+		
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "분노의만물"
+		CALL SET_SKILL, L_ENEMY, "천손강림"
+		CALL SET_SKILL, L_ENEMY, "칠색연옥파"
+		CALL SET_SKILL, L_ENEMY, "시간의수레바퀴"
+		CALL SET_SKILL, L_ENEMY, "만마조복"
+		CALL SET_SKILL, L_ENEMY, "멸망의가창"
+		CALL SET_SKILL, L_ENEMY, "메기도라온"
+		;やけっぱちなので枠埋め兼お荷物スキルを持つ
+		CALL SET_SKILL, L_ENEMY, "ＳＰスキル"
+		CALL SET_SKILL, L_ENEMY, "자만심"
+		CALL SET_SKILL, L_ENEMY, "조잡"
+
+
+		TALENT:L_ENEMY:화염 = 1
+		TALENT:L_ENEMY:빙결 = 1
+		TALENT:L_ENEMY:전격 = 1
+		TALENT:L_ENEMY:충격 = 1
+		TALENT:L_ENEMY:지변 = 1
+		TALENT:L_ENEMY:수격 = 1
+		TALENT:L_ENEMY:질풍 = 1
+		TALENT:L_ENEMY:중력 = 1
+		TALENT:L_ENEMY:핵열 = 1
+		;テストとして与えてみる
+		CFLAG:L_ENEMY:BS무효플래그 = 1
+	CASE "創造主"
+		TSTR:전투이벤트패턴 '= "エクストリームビヨンド"
+		CALL SET_ENEMY, 9, [[キャラ:창조주_X2]], 85, 1, 3
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "アキュラ？"
+		CFLAG:L_ENEMY:ＨＰ보정 += 5000
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		CSTR:L_ENEMY:사고패턴 = エクストリームビヨンド
+		
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "シールドストライク"
+		CALL SET_SKILL, L_ENEMY, "インフェルノドロップ"
+		CALL SET_SKILL, L_ENEMY, "オラージュリーゼ"
+		CALL SET_SKILL, L_ENEMY, "エイミングレイ"
+		CALL SET_SKILL, L_ENEMY, "タイムフリーザー"
+		CALL SET_SKILL, L_ENEMY, "ジャッジメントブレード"
+		CALL SET_SKILL, L_ENEMY, "φシュート"
+		CALL SET_SKILL, L_ENEMY, "セラフィックデス"
+		CALL SET_SKILL, L_ENEMY, "랜더마이저"
+		CALL SET_SKILL, L_ENEMY, "일기당천의눈빛"
+		CALL SET_SKILL, L_ENEMY, "XTREME_BEYOND"
+		CALL SET_SKILL, L_ENEMY, "백발백중"
+		CALL SET_SKILL, L_ENEMY, "결단"
+		CALL SET_SKILL, L_ENEMY, "어드바이스"
+		BASE:L_ENEMY:HAPPY = -50
+		BASE:L_ENEMY:PANIC = -50
+		BASE:L_ENEMY:CHARM = -50
+ENDSELECT
+;ステータス同期と回復
+CALL SET_UP_ENEMY

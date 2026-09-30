@@ -1,0 +1,140 @@
+﻿;専用スキル用のテンプレート
+;「専用技名」を別の名前に置き換えてください
+
+;アクティブスキルに必須なものはそのままにしており
+;なくてもいいものはコメントアウトしております
+;必要だと思ったらコメントアウトを外して設定してください
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_クリスタルソード,ARG
+RESULTS = 크리스탈 소드
+
+;　명중
+@SKILL_HITRATE_クリスタルソード, ARG
+RETURN 150
+
+;　威力
+@SKILL_POWER_クリスタルソード, ARG
+RETURN 150
+
+;特殊な攻撃参照値
+@SKILL_CALC_BATTTLE_STATUS_クリスタルソード, ARGS, ARG, ARG:1
+SIF ARG < 0
+	RETURN 0
+SELECTCASE ARGS
+	CASE "ATK"
+		RETURN MAXBASE:ARG:공격 + MAXBASE:ARG:마법위력
+ENDSELECT
+;クリティカル率
+@SKILL_CRITICAL_RATE_クリスタルソード, ARG
+RETURN 10
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_クリスタルソード,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_クリスタルソード,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_クリスタルソード, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_クリスタルソード,ARG
+RETURN 24
+
+;　相性
+;複合相性
+@SKILL_TYPE_クリスタルソード,ARG
+RETURN GET_TYPE_NUM("빙결"), GET_TYPE_NUM("비구")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_クリスタルソード
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_クリスタルソード,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_クリスタルソード,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_クリスタルソード,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_クリスタルソード,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_クリスタルソード,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_クリスタルソード
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_クリスタルソード, ARG = -1
+RETURN 10
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_クリスタルソード
+RETURN 0
+
+;没
+;@SKILL_RANK_クリスタルソード, ARG = -1
+
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_クリスタルソード,ARG
+;RETURN 0
+
+;====================================================
+;独自のカジャ処理
+;ARG		攻撃側のキャラ登録番号
+;ARG:1		防御側のキャラ登録番号
+;RESULT 	= 強化値
+;RESULT:1	= 基準値	(基準値 + x) / 基準値 あるいは　(基準値 * 2 - x) /基準値 * 2倍になる
+;			　デフォは基準値32で、最大で(32 + 32) / 32 or (64 - 32) / 64倍になる
+;====================================================
+@SKILL_CALC_BUFF_クリスタルソード, ARGS, ARG, ARG:1
+SELECTCASE ARGS
+	CASE "ATK"
+		RETURN LIMIT(CFLAG:ARG:공격강화 + CFLAG:ARG:마법위력강화, -48, 64), 32
+ENDSELECT
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_クリスタルソード,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+;MAXBASE:ARG:공격 += MAXBASE:ARG:마법위력
+;CFLAG:ARG:공격강화 += CFLAG:ARG:마법위력강화
+
+CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM
+
+;MAXBASE:ARG:공격 -= MAXBASE:ARG:마법위력
+;CFLAG:ARG:공격강화 -= CFLAG:ARG:마법위력강화
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_クリスタルソード,ARG
+PRINTL 거대한 크리스탈 소드로 상대를 꿰뚫는다
+PRINTL 적 단체에게 빙결·비구 복합 속성의 물리 공격을 가한다
+PRINTL 공격력은 마법위력＋공격으로 산출되며, 마카카자의 효과도 받는다
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_クリスタルソード,ARG
+RETURN 1

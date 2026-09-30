@@ -1,0 +1,83 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILL_TIMING.ERB
+;	Facility	:スキルERB側で特定のタイミングで発生する処理を管理する関数
+;
+;	Licence		:。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/03/20		しゃけ					新規作成
+;	002		2022/05/25		しゃけ					エラー修正、別スキル番号の同じ専用技は発動しないように変更、もう使わないであろうコメント部分削除
+;	003		2023/03/29		P(bazzile)				スキルでないものも呼び出すように修正。さらに処理をリファクタリング
+;													ASSIの参照をオミットし、条件付きで控えも見るように変更
+;	004		2024/07/15		P(bazzile)				覚醒スキルが控え発動を見れなかった不具合を修正
+;	005		2025/02/25		P(bazzile)				ACTENDを追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@SKILL_TIMING,ARGS = "BATTLE_START"
+#DIM DYNAMIC L_P
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC TEMP_SKILL
+#DIM DYNAMIC L_TRYSKILL_VAR
+#DIMS DYNAMIC L_TRYSKILL_STR
+#DIM DYNAMIC SKILLCOUNT
+#DIMS DYNAMIC STOCK_SKILL, 2
+#DIMS DYNAMIC C_STOCK_SKILL
+;想定されていない文字列なら終了
+SIF !GROUPMATCH(ARGS,"BATTLE_START","BATTLE_END", "BATTLE_ENTER", "TURNTOP", "TURNSTART","TURNEND","INITIALIZE", "SKILLEND", "ACTEND")
+	RETURN 0
+VARSET STOCK_SKILL
+FOR LCOUNT, 0, ARGS == "INITIALIZE" ? 7 # BCHARANUM
+	;INITIALIZEはショップ画面到達時の処理で、ポジションについているキャラのみみる
+	IF ARGS == "INITIALIZE"
+		SIF !LCOUNT
+			CONTINUE
+		L_P = POS(LCOUNT)
+		SIF L_P < 0
+			CONTINUE
+	ELSE
+		L_P = BCHARA:LCOUNT
+	ENDIF
+	C_STOCK_SKILL = 
+	FOR SKILLCOUNT, 0, TRYSKILLNUM(L_P)
+		RESULT = 0
+		;---- EDIT 004 MOD START -------------------------
+		TEMP_SKILL = %GET_TRYSKILL(L_P, SKILLCOUNT)%
+		;---- EDIT 004 MOD END ---------------------------
+		L_TRYSKILL_VAR = TRYSKILL_VAR
+		L_TRYSKILL_STR = %TRYSKILL_STR%
+		;同一スキルを複数持っている場合、発動させない
+		SIF COUNT_SPLIT(C_STOCK_SKILL, "/", TEMP_SKILL)
+			CONTINUE
+		C_STOCK_SKILL = %ADD_SPLIT(C_STOCK_SKILL, "/", TEMP_SKILL)%
+		;控えキャラが指定された場合は控えで使えるスキルかどうかを確認する
+		IF !CPOS(L_P)
+			TRYCCALLFORM SKILL_%ARGS%_USEABLE_RESERVE_%TEMP_SKILL%, L_P
+				SIF !RESULT
+					CONTINUE
+			CATCH
+				CONTINUE
+			ENDCATCH
+		ENDIF
+		;PT内で一度しか発動できないものを確認する(カジャオート等)
+		TRYCCALLFORM SKILL_%ARGS%_ONCE_%TEMP_SKILL%
+			IF RESULT
+				SIF COUNT_SPLIT(STOCK_SKILL:(CFLAG:L_P:PT플래그 == 0), "/", TEMP_SKILL)
+					CONTINUE
+				STOCK_SKILL:(CFLAG:L_P:PT플래그 == 0) = %ADD_SPLIT(STOCK_SKILL:(CFLAG:L_P:PT플래그 == 0), "/", TEMP_SKILL)%
+			ENDIF
+		CATCH
+		ENDCATCH
+		;---- EDIT 004 MOD START -------------------------
+		SELECTCASE L_TRYSKILL_STR
+			CASE "SKILL","EQUIP"
+				TRYCALLFORM SKILL_%ARGS%_%TEMP_SKILL%, L_P
+			;非所持スキルは引数として効果発動者をかえさせる。
+			CASEELSE
+				TRYCALLFORM SKILL_%ARGS%_%GET_TRYSKILL(L_P, SKILLCOUNT)%, L_P, L_TRYSKILL_VAR
+		ENDSELECT
+		;---- EDIT 004 MOD END ---------------------------
+	NEXT
+NEXT
+

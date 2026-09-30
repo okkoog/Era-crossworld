@@ -1,0 +1,135 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:NOUKIN.ERB
+;	Facility	:納金関係の処理
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/xx/xx								金額を指定できるように、貢献度の上昇を上納した金額と等しく
+;	003		2011/07/02		Ｎ鳥					ショップの品揃え告知、幹部END示唆
+;	004		2019/05/29		名無し					ジャンクポイント関連追加(MONEY:4)
+;	005		2019/07/05		名無し					納金必要金額が常時更新されるように表示をSNOP.ERBに移動
+;	006		2022/06/07		Collared				UI整理プロジェクトにより配置変更
+;	007		2022/08/25		P(bazzile)				納金の必要金額の表示が正しくなかった不具合を修正。ついでに0のとき空欄にならないように
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+@SHOPCOMABLE_107
+SIF !IS_USEABLE_SHOPCOM
+	RETURN 0
+RESULT:1 = 1
+RESULTS = 납금
+RETURN 1
+
+
+@SHOP_COM_107, ARG
+$NOUKIN_LOOP
+;初期化
+LOCAL = -1
+;メッセージ
+DRAWLINE
+;---- EDIT 007 MOD START -------------------------
+PRINTFORML 조직에 납금할 금액을 지정해 주세요 （현재 조직에 대한 공헌도：%TOSTR(FLAG:조직공헌도, "###,0")%）
+PRINTFORML 목표금액：￥%TOSTR(GET_PAYMENT_FOR_NEXT_RANK(), "#,##0")%　소지금：￥%TOSTR(MONEY, "###,0")%
+;---- EDIT 007 MOD END ---------------------------
+CALL INPUT_MANY, 0, MONEY, , , "PAYMENT_INPUT_SIDE"
+LOCAL = RESULT
+SIF RESULT == 0
+	RETURN 0
+;納金する前に確認(押し間違い対策)
+DRAWLINE
+PRINTFORML 이 금액으로 괜찮으신가요？[￥%TOSTR(RESULT, "#,###")%]
+CALL INPUT_YN,"납부한다","역시 그만둔다"
+SIF RESULT != 0
+	GOTO NOUKIN_LOOP
+PRINTFORML ￥%TOSTR(LOCAL, "#,###")%을 납부했습니다 （조직공헌도+%TOSTR(LOCAL, "#,###")%）
+PRINTFORMW JP%TOSTR(LOCAL/2, "#,###")%을(를) 얻었다
+PRINTL
+MONEY -= LOCAL
+MONEY:4 += LOCAL/2
+FLAG:조직공헌도 += LOCAL
+
+@PAYMENT_INPUT_SIDE, INPUT_NUM, L_PRICE
+#DIM DYNAMIC INPUT_NUM
+#DIM DYNAMIC L_PRICE
+SIF GET_PAYMENT_FOR_NEXT_RANK() > 0
+	RESULTS += SET_BUTTON_TAG(@"[다음 랭크:￥%TOSTR(GET_PAYMENT_FOR_NEXT_RANK(), "#,###")%]", TOSTR(GET_PAYMENT_FOR_NEXT_RANK()))
+
+;最大レベル
+@PAYMENT_MAXRANK
+#FUNCTION
+RETURNF 16
+
+;必要貢献度のテーブル
+@PAYMENT_TABLE, ARG
+#FUNCTION
+SELECTCASE ARG
+	CASE 0
+		RETURNF 0
+	CASE 1
+		RETURNF 10000
+	CASE 2
+		RETURNF 35000
+	CASE 3
+		RETURNF 70000
+	CASE 4
+		RETURNF 140000
+	CASE 5
+		RETURNF 250000
+	CASE 6
+		RETURNF 410000
+	CASE 7
+		RETURNF 630000
+	CASE 8
+		RETURNF 920000
+	CASE 9
+		RETURNF 1300000
+	CASE 10
+		RETURNF 1750000
+	CASE 11
+		RETURNF 2310000
+	CASE 12
+		RETURNF 2970000
+	CASE 13
+		RETURNF 3760000
+	CASE 14
+		RETURNF 4660000
+	CASE 15
+		RETURNF 5710000
+	CASE 16
+		RETURNF 6890000
+ENDSELECT
+
+;ランク毎の必要テーブル
+@GET_PAYMENT_TABLE_FOR_NEXT_RANK, ARG = -1
+#FUNCTION
+SIF ARG == -1
+	ARG = FLAG:조직공헌LV
+SIF ARG >= PAYMENT_MAXRANK()
+	RETURNF 0
+RETURNF PAYMENT_TABLE(ARG + 1) - PAYMENT_TABLE(ARG)
+
+;現在のランク算出
+@GET_PAYMENT_RANK
+#FUNCTION
+#DIM LCOUNT
+#DIM L_RANK
+#DIM L_PAYMENT_POINT
+L_RANK = 0
+L_PAYMENT_POINT = FLAG:조직공헌도 + FLAG:명성 * 100
+FOR LCOUNT, 1, 1 + PAYMENT_MAXRANK()
+	SIF L_PAYMENT_POINT < PAYMENT_TABLE(LCOUNT)
+		RETURNF L_RANK
+	L_RANK++
+NEXT
+RETURNF L_RANK
+
+;昇格に必要な貢献度の算出
+@GET_PAYMENT_FOR_NEXT_RANK
+#FUNCTION
+SIF FLAG:조직공헌LV >= PAYMENT_MAXRANK()
+	RETURNF 0
+RETURNF PAYMENT_TABLE(FLAG:조직공헌LV + 1) - (FLAG:조직공헌도 + FLAG:명성 * 100)

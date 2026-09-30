@@ -1,0 +1,380 @@
+﻿@SET_BOSS_ENEMY_EVENT_201_光芒, L_ENEMY_NAME
+#DIMS DYNAMIC L_ENEMY_NAME
+#DIM DYNAMIC L_ENEMY
+#DIM DYNAMIC ADD_LV
+ADD_LV = GROUPMATCH(1, FLAG_白き鋼鉄のX2_光芒クリア, FLAG_白き鋼鉄のX2_鋼獣クリア, FLAG_白き鋼鉄のX2_極寒クリア, FLAG_白き鋼鉄のX2_飛刀クリア) * 3
+SELECTCASE L_ENEMY_NAME
+	CASE "光芒1"
+		TSTR:전투이벤트패턴 = EVENT_201_2_5_光芒
+		CALL SET_ENEMY, 7, [[キャラ:실드캐논]], 40 + ADD_LV
+		CALL SET_ENEMY, 10, [[キャラ:카브라칸]], 42 + ADD_LV
+		CALL SET_ENEMY, 11, [[キャラ:카브라칸]], 42 + ADD_LV
+		CALL SET_ENEMY, 12, [[キャラ:경비드론]], 39 + ADD_LV
+		ABL:(CHARANUM-1):스킬1  = [[스킬:타슬람샷]]
+		CALL SET_ENEMY, 15, [[キャラ:레이저포대]], 40 + ADD_LV
+		CALL SET_ENEMY, 16, [[キャラ:네메시스]], 41 + ADD_LV
+	CASE "光芒2"
+		TSTR:전투이벤트패턴 = EVENT_201_2_5_光芒
+		CALL SET_ENEMY, 7, [[キャラ:버스터룸]], 40 + ADD_LV, 1, 1
+		CALL SET_ENEMY, 9, [[キャラ:버스터룸]], 40 + ADD_LV, 1, 1
+		CALL SET_ENEMY, 11, [[キャラ:버스터룸]], 40 + ADD_LV, 1, 1
+		CALL SET_ENEMY, 12, [[キャラ:버스터룸]], 40 + ADD_LV, 1, 1
+		CALL SET_ENEMY, 14, [[キャラ:버스터룸]], 40 + ADD_LV, 1, 1
+		CALL SET_ENEMY, 16, [[キャラ:버스터룸]], 40 + ADD_LV, 1, 1
+	CASE "光芒3"
+		TSTR:전투이벤트패턴 = EVENT_201_2_5_光芒
+		CALL SET_ENEMY, 8, [[キャラ:히노카구츠치]], 42 + ADD_LV
+		CALL SET_ENEMY, 9, [[キャラ:네메시스]], 41 + ADD_LV
+		CALL SET_ENEMY, 10, [[キャラ:히노카구츠치]], 42 + ADD_LV
+		CALL SET_ENEMY, 13, [[キャラ:레이저포대]], 40 + ADD_LV
+		CALL SET_ENEMY, 14, [[キャラ:레이저포대]], 40 + ADD_LV
+		CALL SET_ENEMY, 15, [[キャラ:레이저포대]], 40 + ADD_LV
+	CASE "オートクロム"
+		TSTR:전투이벤트패턴 = EVENT_201_2_5_オートクロム
+
+		CALL SET_ENEMY, 9, [[キャラ:오토크롬_X2]], 45 + ADD_LV, 1, 1
+		L_ENEMY = CHARANUM - 1
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "オートクロム"
+		CFLAG:L_ENEMY:ＨＰ보정 += 3000
+		CFLAG:L_ENEMY:ＭＰ보정 += 50000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		BASE:L_ENEMY:SHOCK = -25
+		CSTR:L_ENEMY:사고패턴 = オブリタレーションブラスト
+		
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "ＳＰスキル"
+		CALL SET_SKILL, L_ENEMY, "エイミングレイ"
+		CALL SET_SKILL, L_ENEMY, "オプティックラウンド"
+		CALL SET_SKILL, L_ENEMY, "플래시봄"
+		CALL SET_SKILL, L_ENEMY, "해피트리거"
+		CALL SET_SKILL, L_ENEMY, "트리플다운"
+		CALL SET_SKILL, L_ENEMY, "삼단쏘기"
+		CALL SET_SKILL, L_ENEMY, "데・카쟈"
+		CALL SET_SKILL, L_ENEMY, "파워브레스"
+		CALL SET_SKILL, L_ENEMY, "스쿠・카쟈"
+		CALL SET_SKILL, L_ENEMY, "결단"
+		CALL SET_SKILL, L_ENEMY, "백발백중"
+
+		CSTR:L_ENEMY:랜덤선택금지스킬 '= "ＳＰスキル"
+ENDSELECT
+
+;=============================================
+;EVENT_201_2_5_オートクロム
+;=============================================
+@SET_ACTION_オブリタレーションブラスト, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:데・카쟈]]
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	;ガンヴォルトあるある：HPが1/3切ったらSPスキル使う　5Tに1回打ってくるぞ
+	IF CFLAG:ARG:800 == 3 && PU_SKILLGAGE_D_GET(ARG, "ＳＰスキル") == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+	ELSE
+		IF FLAG:경과턴수 % 6 == 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:파워브레스]]
+		ELSEIF FLAG:경과턴수 % 6 == 1
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "エイミングレイ")
+		ELSEIF FLAG:경과턴수 % 6 == 2
+			CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "オプティックラウンド")
+		ELSEIF FLAG:경과턴수 % 6 == 3
+			CALL SET_ACTION_SKILL, ARG, [[스킬:파워브레스]]
+		ELSEIF FLAG:경과턴수 % 6 == 4
+			CALL SET_ACTION_SKILL, ARG, [[스킬:해피트리거]]
+		ELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:플래시봄]]
+		ENDIF
+	ENDIF
+ELSE
+	IF FLAG:경과턴수 % 6 == 0
+		CALL SET_ACTION_SKILL, ARG, [[스킬:플래시봄]]
+	ELSEIF FLAG:경과턴수 % 6 == 1
+		CALL SET_ACTION_SKILL, ARG, [[스킬:그랜드턱]]
+	ELSEIF FLAG:경과턴수 % 6 == 2
+		CALL SET_ACTION_SKILL, ARG, [[스킬:트리플다운]]
+	ELSEIF FLAG:경과턴수 % 6 == 3
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "エイミングレイ")
+	ELSEIF FLAG:경과턴수 % 6 == 4
+		CALL SET_ACTION_SKILL, ARG, [[스킬:스쿠・카쟈]]
+	ELSE
+		CALL SET_ACTION_SKILL, ARG, [[스킬:삼단쏘기]]
+	ENDIF
+ENDIF
+
+@CHANGE_ACTION_オブリタレーションブラスト, ARG
+IF CFLAG:ARG:800 == 2 
+	CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+	CFLAG:ARG:800 = 3
+ENDIF
+
+@EVENT_BATTLE_DYING_EVENT_201_2_5_オートクロム, L_T, L_P, L_SKIP
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_SKIP
+IF L_T == GET_ENEMY("オートクロム") && CFLAG:L_T:800 == 0
+	TSTR:스킬메시지추가 = %CALLNAME:L_T%은(는) 일어섰다!!
+	
+	CFLAG:L_T:상태이상 = GET_STATE_NUM("GOOD")
+	BASE:L_T:ＨＰ = MAXBASE:L_T:ＨＰ / 3
+	CFLAG:L_T:800 = 1
+	CFLAG:L_T:공격대상제외_ACT = 1
+ENDIF
+
+@EVENT_BATTLE_ACTEND_EVENT_201_2_5_オートクロム
+IF CFLAG:GET_ENEMY("オートクロム"):800 == 1
+	BTL_KOJO_RESULTS:0 = 난 지지 않는다ッ!
+	SETCOLOR COLOR("ENEMY")
+	CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("オートクロム")
+	CFLAG:GET_ENEMY("オートクロム"):800 = 2
+ENDIF
+
+@EVENT_BATTLE_TURNEND_EVENT_201_2_5_光芒
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_DAMAGE
+#DIM DYNAMIC L_TYPE_VALUE
+IF FLAG:경과턴수 % 2 == 0
+	CALL PRINT_ACT_MESSAGE, , , COLOR("ENEMY"), "방위장치", "레이저", "NOWAIT"
+	FOR LCOUNT, 1, 17
+		SIF !IS_TARGET_ABLE(POS(LCOUNT))
+			CONTINUE
+		TSTR:스킬메시지결과 '= ""
+		TSTR:스킬메시지추가 '= ""
+		L_DAMAGE = RAND(25, 35)
+		CALL BTL_CALC_AISYOU, -1, POS(LCOUNT), -1, GET_TYPE_NUM("핵열")
+		L_TYPE_VALUE = RESULT
+		IF L_TYPE_VALUE == 999
+			L_TYPE_VALUE = 0
+			L_DAMAGE = 0
+		ELSE
+			L_DAMAGE = L_DAMAGE * RESULT / 100
+		ENDIF
+		TSTR:스킬메시지대상 = 　　TARGET:[{CPOS(POS(LCOUNT)),2}] %CALLNAME:(POS(LCOUNT)),20,LEFT%
+		TSTR:스킬메시지화살표 = 　>>>>>>　
+		CALL BTL_CALC_DAMAGE_EXE, -1, POS(LCOUNT), L_DAMAGE, GET_TYPE_NUM("핵열"), L_TYPE_VALUE
+		CALL PRINT_SKILL_MESSAGE
+		PRINTL 
+	NEXT
+	WAIT
+ELSE
+	CALL PRINT_ACT_MESSAGE, , , COLOR("ENEMY"), "방위장치", "에너지 충전", "NOWAIT"
+	PRINTW 방위장치는 에너지를 충전하고 있다
+ENDIF
+
+@EVENT_BATTLE_TURNEND_EVENT_201_2_5_オートクロム
+CALL EVENT_BATTLE_TURNEND_EVENT_201_2_5_光芒
+
+;オートクロム戦専用ライブノベル
+@EVENT_BATTLE_TURNSTART_EVENT_201_2_5_オートクロム
+#DIM 進行度
+#DIM DYNAMIC COPEN
+SIF 進行度 == 30
+	RETURN 0
+SIF FINDCHARA_B([[キャラ:아큐라_X]])  != 2
+	RETURN 0
+COPEN = RESULT:1
+SELECTCASE 進行度
+CASE 0
+	IF FINDCHARA_B([[キャラ:아큐라_X]])  == 2
+		COPEN = RESULT:1
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 제트 엔진에 광학 병기
+		BTL_KOJO_RESULTS:1 = 그런가, 베스파의 콤플렉스란……
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 그래, 짐작한 그대로다. 내가 원인이지
+		BTL_KOJO_RESULTS:1 = 개발 콘셉트의 차이라고 몇 번을 설득해도 들으려 하질 않았지만 말이야……
+		LOCAL = 0
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("オートクロム")
+		
+		CALL SET_RORO_KOJO_FLAG, COPEN
+		BTL_KOJO_RESULTS:0 = 아아 응, 왠지 모르게 예상은 될 것 같네……
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		進行度 = 10
+		RESETCOLOR
+	ENDIF
+CASE 10
+	IF FINDCHARA_B([[キャラ:아큐라_X]])  == 2
+		COPEN = RESULT:1
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 하긴 여동생은 언동이 조금 별나긴 해도 실력만큼은 진짜다
+		BTL_KOJO_RESULTS:1 = 그걸 쳐부순 너희들의 존재는 이미 우리에게 커다란 위협
+		LOCAL = 0
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("オートクロム")
+		
+		BTL_KOJO_RESULTS:0 = 더 이상의 진격만은 반드시 저지해야만 한다
+		LOCAL = 0
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("オートクロム")
+		
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 우리는 반드시 필러 꼭대기로 향하겠다
+		BTL_KOJO_RESULTS:1 = 그걸 가로막겠다면…… 용서는 없다
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		進行度 = 20
+		RESETCOLOR
+	ENDIF
+CASE 20
+	IF FINDCHARA_B([[キャラ:아큐라_X]])  == 2
+		COPEN = RESULT:1
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 그렇게 두진 않는다. 그러기 위해 내가 여기에 있는 것이다!
+		BTL_KOJO_RESULTS:1 = 다행히도 사용 화기의 제한은 해제되어 있다
+		LOCAL = 0
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("オートクロム")
+		
+		BTL_KOJO_RESULTS:0 = 이곳을 너의 묘비로 삼아 주마…… 각오해라, 침입자!
+		LOCAL = 0
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("オートクロム")
+		
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 좋다…… 전력으로 상대해주지
+		TSTR:전투구상캐릭터화상어드레스 '= "アキュラ_X_" + CONVERT_FACE_ADDRESS_アキュラ("ブリッツシフト")
+		CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+		
+		進行度 = 30
+		RESETCOLOR
+	ENDIF
+ENDSELECT
+;オートクロム・敵対時の口上
+@KOJO_ENEMY_BATTLE_MESSAGE_K[[キャラ:오토크롬_X2]], ARG, ARG:1 = 0
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;これは通常攻撃
+SELECTCASE CFLAG:ARG:입력행동
+	CASE 0
+		IF CFLAG:ARG:800 == 99 && RAND:2 == 0
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 테이얏!
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 에에잇!
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 거기서 꼼짝 마세요!
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 하앗!
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 맞아라앗!
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 느리군!
+			ENDSELECT
+		ENDIF
+;-------------------------------------------------
+;汎用スキル
+;-------------------------------------------------
+	CASE [[스킬:데・카쟈]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 기세를 꺾어놓겠다!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 해제하도록 하겠다!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 눈감아줄 줄 알았나!
+		ENDSELECT
+	CASE [[스킬:해피트리거]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 일단 맞추지 않으면 안 되겠지
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 많이 쏘다 보면 맞는다, 라는 생각은 아니지만
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 도망칠 곳을 없애겠다!
+		ENDSELECT
+	CASE [[스킬:파워브레스]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 성능 강화를 시도한다!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 능력 강화 확인…… 간다!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 강화 완료. 다음 행동으로 이행한다
+		ENDSELECT
+	CASE [[스킬:플래시봄]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 섬광탄《플래시봄》, 투하!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 이걸로 발을 묶어주마!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 단순한 눈속임이 아니다!
+		ENDSELECT
+	CASE [[스킬:삼단쏘기]], [[스킬:트리플다운]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 적을 포착했다! 소사 개시!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 한꺼번에 쓸어버리겠다면…… 이것이다!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 적 세력 확인, 발사한다!
+		ENDSELECT
+	CASE [[스킬:스쿠・카쟈]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 가속을 시도한다!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 이 속도, 너희들이 간파해낼 수 있겠나!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 속도로 우위를 점한다면!
+		ENDSELECT
+	CASE [[스킬:이니셜라이즈]]
+		IF CFLAG:ARG:800 == 99 && RAND:2 == 0
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 그 수법은 안 통해요!
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 마음대로 하게 내버려 둘 리 없잖아요!
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 보고만 있을 줄 알고?
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 기세를 꺾어놓겠다!
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 해제하도록 하겠다!
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 눈감아줄 줄 알았나!
+			ENDSELECT
+		ENDIF
+	CASE PU_SKILLNUM_GET(ARG, "エイミングレイ")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 타깃, 록온!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 타깃 사이트 전개, 포착!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 놓치지 않는다! 에이밍 레이!
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "オプティックラウンド")
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 간다ッ! 날아가라!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 옵틱 라운드…… 조사!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 전방위 사격, 개시!
+		ENDSELECT
+	CASE PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+		BTL_KOJO_RESULTS:0 = 뼈저리게 맛보아라!
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		ALIGNMENT RIGHT
+		RESETCOLOR
+		PRINTFORML 　　　　A shimmering pillar of light　　　　　　　　　　 
+		PRINTFORML 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+		PRINTFORML
+		PRINTFORML 　　They pour down from the sky　　　　　　　　　　　　　
+		SETCOLOR 0xe8307c
+		PRINTFORML 　　　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　
+		RESETCOLOR
+		PRINTFORML
+		PRINTFORML 　　　　And destroy evil intruder　　　　　　　　　　　　
+		PRINTFORMW 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+		ALIGNMENT LEFT
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 둠스데이 블래스트!
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		TFLAG:전투구상직접출력 = 1
+ENDSELECT

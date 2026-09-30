@@ -1,0 +1,128 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_721,ARG
+RESULTS = 로마・카롤
+
+;　명중
+@SKILL_HITRATE_721, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_721, ARG
+#LOCALSIZE 2
+SIF ARG < 0
+	RETURN 1
+IF スキル属性表示中
+	LOCAL:1 = FLAG:확산플래그
+	FLAG:확산플래그 = 現HP割合(ARG)
+ENDIF
+SELECTCASE FLAG:확산플래그
+	CASE IS > 75
+		LOCAL:0 = 1 + 225 * (100 - FLAG:확산플래그) / 100
+	CASE IS > 50
+		LOCAL:0 = 1 + 350 * (100 - FLAG:확산플래그) / 100
+	CASE IS > 5
+		LOCAL:0 = 1 + 500 * (100 - FLAG:확산플래그) / 100
+	CASEELSE
+		LOCAL:0 = 1 + 650 * (100 - FLAG:확산플래그) / 100
+ENDSELECT
+SIF スキル属性表示中
+	FLAG:확산플래그 = LOCAL:1
+RETURN LOCAL:0
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_721,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_721,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_721, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_721,ARG
+RETURN 12
+
+;　相性
+@SKILL_TYPE_721,ARG
+RETURN GET_TYPE_NUM("화염")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_721
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_721, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_721, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_721,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_721,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_721, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_721
+RETURN GET_SUCCESSION_NUM("화염")
+@継承不能_721
+RETURN 1
+;不可
+
+;속도보정
+@SKILL_SPEED_721, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_721
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_721, ARG = -1
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_721, ARG, ARG:1, ARG:2
+FLAG:확산플래그 = BASE:ARG:ＨＰ * 100 / MAXBASE:ARG:ＨＰ
+CALL ATTACK_FIELD,ARG,ARG:1,721
+FLAG:확산플래그 = 0
+
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_721, ARG
+PRINTL 적 전체를 분노의 불꽃으로 공격하는、네밋사의 필살기
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_721,ARG
+RETURN 1
+;とくにない
+

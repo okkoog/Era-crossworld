@@ -1,0 +1,92 @@
+﻿;スキル名
+@SKILL_NAME_永遠の魂,ARG
+RESULTS = 영원의 혼
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_永遠の魂
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_永遠の魂,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_永遠の魂,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_永遠の魂,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_永遠の魂,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;　説明文の表示
+@SKILL_EXPLAIN_永遠の魂,ARG
+PRINTL 자동효과:턴 종료 시 전투에 참가 중이며 「DYING」 상태일 경우 이하의 연동효과가 발동한다
+PRINTL 　　　　「생존한 아군 1명을 선택해 사망시키는 것을 선택해도 좋다.
+PRINTL 　　　　 이 효과로 아군이 사망했을 경우 자신의 체력을 완전 회복하고 소생하며,
+PRINTL 　　　　 추가로 대상 아군이 지니고 있던 강화 효과를 자신에게 복사한다.」
+
+@SKILL_EXPLAIN_TOOLTIP_永遠の魂, ARG
+RESULTS:0 = 자동효과:턴 종료 시 전투에 참가 중이며 「DYING」 상태일 경우 이하의 연동효과가 발동한다
+RESULTS:1 = 　　　　「생존한 아군 1명을 선택해 사망시키는 것을 선택해도 좋다.
+RESULTS:2 = 　　　　 この効果により、味方が死亡した場合、自身の体力を全回復して蘇生し、
+RESULTS:3 = 　　　　 さらに対象の味方が持っていた強化効果を自身にコピーする。」
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_永遠の魂,ARG
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_永遠の魂, ARG = -1
+RETURN 6
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_永遠の魂
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+@SKILL_TURNEND_永遠の魂, ARG
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC IS_DONE
+SIF !CFLAG:ARG:PT플래그
+	RETURN 0
+;場にでていないとダメ
+SIF !CPOS(ARG)
+	RETURN 0
+;死亡していないとダメ
+SIF !IS_BADSTATE(ARG, "DYING")
+	RETURN 0
+CALL PRINT_ACT_MESSAGE, ARG, , , , "永遠の魂"
+CUSTOMDRAWLINE =
+PRINTFORML 파괴할 아군을 선택해 주십시오.
+CALL SELECT_SKILL_TARGET, PU_SKILLNUM_GET(ARG, "永遠の魂"), ARG
+SIF RESULT < 0
+	RETURN 0
+L_CHARA = POS(RESULT)
+
+CFLAG:ARG:상태이상 = 0
+CFLAG:ARG:상태이상경과턴수 = 0
+CALL VAR_HP,ARG,MAXBASE:ARG:ＨＰ
+
+FOR LCOUNT, 0, VARSIZE("KAJA_TABLE")
+	IF KAJA_TABLE:LCOUNT == "BS부착률"
+		SIF CFLAG:L_CHARA:(KAJA_TABLE:LCOUNT + "강화") >= 0
+			CONTINUE
+		CALL SKILL_SET_カジャンダ, L_CHARA, ARG, KAJA_TABLE:LCOUNT, -CFLAG:L_CHARA:(KAJA_TABLE:LCOUNT + "강화"), "단체", "NOMES"
+	ELSE
+		SIF CFLAG:L_CHARA:(KAJA_TABLE:LCOUNT + "강화") <= 0
+			CONTINUE
+		CALL SKILL_SET_カジャンダ, L_CHARA, ARG, KAJA_TABLE:LCOUNT, CFLAG:L_CHARA:(KAJA_TABLE:LCOUNT + "강화"), "단체", "NOMES"
+	ENDIF
+	IS_DONE = 1
+NEXT
+
+CALL DEAD_CHARA, L_CHARA, ARG, 1
+
+CALL PRINT_HIT_MESSAGE, L_CHARA, @"破壊！", "L"
+CALL PRINT_HIT_MESSAGE, ARG, @"墓地から特殊召喚", "L"
+SIF IS_DONE
+	CALL PRINT_HIT_MESSAGE, ARG, @"能力強化！", "L"
+WAIT

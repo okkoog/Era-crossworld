@@ -1,0 +1,59 @@
+﻿@PLAYABLE_OUKOKUYA_REQ_61
+RESULTS = 조수 모집
+;ある程度調教師名声が必要
+SIF FLAG:조교사명성 < 100
+	RETURN 0
+SIF !GETBIT(依頼フラグ:[[依頼:왕국점]]:0, 60)
+	RETURN 0
+RETURN !GETBIT(依頼フラグ:[[依頼:왕국점]]:0, 61)
+RETURN 1
+@EXPLAIN_OUKOKUYA_REQ_61
+RESULTS = 
+RESULTS += "/탐구(의뢰인: 후루이치안)/"
+RESULTS += "난이도:☆☆☆/"
+RESULTS += "보수:조건을 만족한 악마의 가치에 상응하는 마카/"
+RESULTS += "　　 宝石[터키석]/"
+RESULTS += "/조건/"
+RESULTS += "큰 체형 혹은 거체의 여악마일 것/"
+RESULTS += "순종과 욕망의 합계 LV가 6 이상/"
+RESULTS += "순종과 욕망과 기교와 레즈끼의 합계 LV가 12 이상/"
+RESULTS += "보너스 조건　소질[처녀]/"
+RESULTS += "/비고/"
+RESULTS += "지난번엔 감사했습니다/"
+RESULTS += "조금 좋은 생각이 떠올랐습니다만, 조수가 없어서 곤란해하고 있습니다/"
+RESULTS += "다시 부탁드릴 수 있을까요?/"
+
+@CHARASELLABLE_OUKOKUYA_REQ_61(ARG:0)
+SIF !(HAVE_VAGINA(ARG:0) && (TALENT:(ARG:0):큰체형 || TALENT:(ARG:0):거체))
+	RETURN 0
+SIF ABL:(ARG:0):순종 + ABL:(ARG:0):욕망 < 6
+	RETURN 0
+SIF ABL:(ARG:0):순종 + ABL:(ARG:0):욕망 + ABL:(ARG:0):기교 + ABL:(ARG:0):레즈끼 < 12
+	RETURN 0
+RETURN 1
+
+;--------------------------------------------------------
+;報酬処理
+;ただし、売却人数・属性変動などは共通で処理済み
+;調教師名声の処理はされてないので適宜処理してください
+;
+;ARGはキャラクター
+;--------------------------------------------------------
+@TAKE_REWARD_OUKOKUYA_REQ_61, ARG
+CALL CHARA_SELL, ARG, 1
+LOCAL = RESULT
+;悪魔が処女ならボーナスがある
+IF TALENT:ARG:처녀
+	CALL MESSAGE_WINDOW, "후루이치안", @"감사합니다!　이것은 추가 보수입니다", , , , , 4
+	CALL MESSAGE_WINDOW, "", @"＞의뢰를 달성하여/＞{LOCAL}마카/＞보석[터키석]/＞보석[다이아몬드]를 손에 넣었습니다", , , , , 4
+	CALL GET_ITEMS, "다이아몬드", 1
+	FLAG:조교사명성 += 75
+ELSE
+	CALL MESSAGE_WINDOW, "", @"＞의뢰를 달성하여/＞{LOCAL}마카/＞보석[터키석]을 손에 넣었습니다", , , , , 4
+	FLAG:조교사명성 += 50
+ENDIF
+MONEY:1 += LOCAL
+CALL GET_ITEMS, "터키석", 1
+
+;帳簿閲覧用処理
+CALL 帳簿閲覧, ARG, LOCAL

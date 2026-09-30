@@ -1,0 +1,207 @@
+﻿;-----------------------------------------
+;라그의가게
+
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2022/06/07		Collared				UI整理プロジェクトにより配置変更
+;-----------------------------------------
+@SHOPCOMABLE_115
+RETURN 0
+
+@SHOP_USEABLE_115
+RETURN IS_USEABLE_RAGSHOP
+
+@SHOP_COM_115, ARG
+#DIM DYNAMIC SALE_LIST, 300
+#DIM DYNAMIC ARRAY_KEY, 10
+;サブスク用のテーブルをつくる
+IF RAG_VISITED_TURN != DAY + 1
+	GETTIME
+	CALL MAKE_SALELIST_RAG_DOREI, SALE_LIST, "INV"
+
+	RANDOMIZE GETTIME() / 1000 / 100 / 100 / 100 - FINDELEMENT(SALE_LIST, 0)
+	CALL SHUFFLE_ARRAY_INT, SALE_LIST, 0, FINDELEMENT(SALE_LIST, 0) -1
+	RANDOMIZE GETTIME()
+	RAG_VISITED_TURN = DAY + 1
+	ARRAYCOPY "SALE_LIST", "RAG_SUBSCRIPTION_TABLE"
+	;配列の最後は0にする
+	RAG_SUBSCRIPTION_TABLE:(VARSIZE("RAG_SUBSCRIPTION_TABLE") - 1) = 0
+ENDIF
+
+RESULT = 0
+CUSTOMDRAWLINE =
+PRINTL 래그:
+PRINTFORML 「잘 왔어
+PRINTFORML 　여기가　GINZA 주와이오 쿠튀르・래그야」
+DRAWLINE
+PRINTL
+PRINTL
+PRINTL
+PRINTL
+PRINTL
+DRAWLINE
+;ALIGNMENT CENTER
+PRINTL [CLICK]
+;ALIGNMENT LEFT
+TWAIT 2000,0
+CLEARLINE 12
+$SHOP_START
+VARSET ARRAY_KEY
+VARSET SELECT_NEED_JUEL
+PRINTL 래그:
+PRINTFORML 「용건은 뭘까나?」
+DRAWLINE
+ARRAY_KEY:0 = 1, 1, 1, 1
+PRINTL [1] 캐릭터와 교환
+PRINTL [2] 아이템과 교환
+PRINTL [3] 스킬 카드와 교환
+IF GETS_USEABLE_EXTRA_TITLE("")
+	IF ITEM:라그티켓【Inv】
+		PRINTL [4] 래그 티켓【Inv】를 사용한다
+		ARRAY_KEY:4 = 1
+	ENDIF
+	IF ITEM:라그티켓【Ev】
+		PRINTL [4] 래그 티켓【Ev】를 사용한다
+		ARRAY_KEY:4 = 1
+	ENDIF
+	IF IS_USEABLE_RAG_SUBSCRIPTION > 0
+		IF USE_DAY_RAG_SUBSCRIPTION != DAY
+			PRINTL [5] 정기구독 서비스를 이용한다
+			ARRAY_KEY:5 = 1
+		ELSE
+			CALL PRINT_COLOR, "[5] 서브스크립션 서비스를 이용한다", COLOR("gray"), "L"
+		ENDIF
+	ELSE
+		IF GET_FLAG_SHOP_EV_TAKEOVER("이벤트 티켓 배포", "티켓 수령일") || GET_FLAG_SHOP_EV_TAKEOVER("イベントチケット配布", "チケット受取日")
+			PRINTL [5] 정기구독 계약
+			ARRAY_KEY:5 = 1
+		ENDIF
+	ENDIF
+ENDIF
+IF FLAG:아이템합성해금 || イベントフラグ:33:1 == 4
+	PRINTL [6] 소재와 교환
+	ARRAY_KEY:6 = 1
+ENDIF
+PRINTL [9] 보석은 어떻게 손에 넣는 거야?
+ARRAY_KEY:9 = 1
+DRAWLINE
+PRINTL [0] 가게를 나간다
+;入力
+CALL INPUT_ARRAY, ARRAY_KEY
+SELECTCASE RESULT
+	CASE 0
+		CLEARLINE 12
+		PRINTL 래그:
+		PRINTL 「보석을 가져오면 언제든 대환영이지」
+		DRAWLINE
+		PRINTL
+		PRINTL
+		PRINTL
+		PRINTL
+		PRINTL
+		DRAWLINE
+		PRINTL
+		TWAIT 2000,0
+		RETURN 0
+	CASE 1
+		CALL RAG_DOREI
+	CASE 2
+		CALL RAG_ITEM
+	CASE 3
+		CALL RAG_SKILL_CARD
+	CASE 4
+		SIF ITEM:라그티켓【Inv】
+			CALL RAG_SPECIAL_TICKET_INV
+		SIF ITEM:라그티켓【Ev】
+			CALL RAG_SPECIAL_TICKET_EV
+	CASE 5
+		IF IS_USEABLE_RAG_SUBSCRIPTION == 0
+			PRINTL 래그:
+			PRINTW 「요즘 유행하는 서비스를 시작해 봤어」
+			PRINTW 「계약해 준다면 하루(지구 시간)에 한 번, 노예를 한 명 줄게」
+			PRINTW 「요금은 각 보석 1개씩」
+			PRINTL 
+			DRAWLINE
+			PRINTL 所持宝石
+			VARI LCOUNT
+			VARS SHOWLINE
+			VARI DISABLE_BUY = 0
+			SHOWLINE '= ""
+			FOR LCOUNT, 0, VARSIZE("RAGJUEL_TABLE")
+				IF GETS_HAVE_ITEM_NUM(RAGJUEL_TABLE:LCOUNT)
+					SHOWLINE += TOALIGNMENT(RAGJUEL_TABLE:LCOUNT, 18, "LEFT") + @"({GETS_HAVE_ITEM_NUM(RAGJUEL_TABLE:LCOUNT), 3})"
+				ELSE
+					SHOWLINE += SET_COLOR_TAG(TOALIGNMENT(RAGJUEL_TABLE:LCOUNT, 18, "LEFT") + @"({GETS_HAVE_ITEM_NUM(RAGJUEL_TABLE:LCOUNT), 3})", "gray")
+					DISABLE_BUY = 1
+				ENDIF
+				SHOWLINE += " " * 6
+				IF LCOUNT % 4 == 3
+					HTML_PRINT SHOWLINE
+					SHOWLINE '= ""
+				ENDIF
+			NEXT
+			SIF SHOWLINE != ""
+				HTML_PRINT SHOWLINE
+			DRAWLINE
+			IF DISABLE_BUY
+				PRINTL 래그:
+				PRINTW 「보석이 부족하네」
+				PRINTW 「모이면 잘 부탁해」
+			ELSE
+				PRINTL 래그:
+				PRINTW 「어쩔래? 계약할래?」
+				CALL INPUT_YN
+				IF RESULT == 0
+					PRINTL 래그:
+					PRINTW 「오케이. 이제부터 하루에 한 번 교환할 수 있으니 잘 부탁해」
+					FOR LCOUNT, 0, VARSIZE("RAGJUEL_TABLE")
+						ITEM:(RAGJUEL_TABLE:LCOUNT) -= 1
+					NEXT
+					IS_USEABLE_RAG_SUBSCRIPTION = 1
+				ELSE
+					PRINTL 래그:
+					PRINTW 「그래? 마음 내키면 부탁할게」
+				ENDIF
+			ENDIF
+			GOTO SHOP_START
+		ELSE
+			CALL RAG_SUBSCRIPTION
+		ENDIF
+	CASE 6
+		CALL RAG_SOZAI
+	CASE 9
+		PRINTL 래그:			
+		PRINTW 「보석을 손에 넣는 법은 여러 가지가 있어」
+		PRINTW 「하나는 투기장의 보석 쟁탈전이야」
+		PRINTW 「참가비는 들지만, 도전하는 레벨이 높을수록 좋은 보석을 받을 수 있지」
+		PRINTW 「그 대회에 어떻게 참가하냐고?」
+		PRINTW 「난 대회가 있다는 이야기만 들었을 뿐 장소는 자세히 모르거든」
+		PRINTW 「당신이 일을 열심히 하다 보면, 알려주는 사람이 있겠지」
+		PRINTL 
+		PRINTW 「또 다른 하나는 던전이야」
+		PRINTW 「보물상자에서 줍거나, 악마가 떨어뜨리기도 해」
+		PRINTW 「보물상자 위치나 떨어뜨리는 악마는 모르겠지만 말야」
+		PRINTW 「인스톨 소프트인 【아르센】을 알고 있니?」
+		PRINTW 「이 소프트는 보석을 떨어뜨리지 않는 악마도 보석을 떨어뜨리게 해 주지」
+		PRINTW 「떨어뜨리는 보석은 종족에 따라 다른 모양이야」
+		PRINTW 「다만, 이걸 다루려면 서머너 지식이 있는 인간이 없으면 안 된다는 것 같아」
+		PRINTW 「풋내기 서머너라도 안 되는 모양이야, 어느 정도 본직이어야 하는 것 같네」
+		PRINTW 「이건 마카 교환으로 바꿀 수 있어」
+
+		IF FLAG:드워프대장장이해금
+			PRINTL 
+			PRINTW 「또 하나는 노역인 탄광이야」
+			PRINTW 「하지만 그냥 탄광이어선 안 돼」
+			PRINTW 「드워프가 권하는 탄광이 좋다는 것 같아」
+			PRINTW 「덤으로 마정석이라는 것도 손에 넣을 수 있는 모양이지만」
+			PRINTW 「미안하지만, 드워프의 탄광 위치도 난 몰라」
+			PRINTW 「자네가 드워프와 친해지면 알려주지 않을까?」
+			PRINTW 「예를 들면 부탁을 들어준다든가 말야」
+		ENDIF	
+		CUSTOMDRAWLINE =
+		GOTO SHOP_START
+ENDSELECT
+IF RESULT == -1
+	CUSTOMDRAWLINE =
+	GOTO SHOP_START
+ENDIF

@@ -1,0 +1,52 @@
+﻿;スキル名
+@SKILL_NAME_痛いのは慣れてる,ARG
+RESULTS = 아픈 건 익숙해
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_痛いのは慣れてる,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_痛いのは慣れてる,ARG
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;　説明文の表示
+@SKILL_EXPLAIN_痛いのは慣れてる,ARG
+PRINTL 자동효과: HP가 30% 이하일 때 회피율이 초대폭 상승한다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_痛いのは慣れてる,ARG
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_痛いのは慣れてる, ARG = -1
+RETURN 4
+
+;====================================================
+;ダメージ計算時の追加補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_痛いのは慣れてる, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;ステート名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+;自分が防御側
+ELSE
+	SELECTCASE ARGS
+		CASE "追加回避強化"
+			; 自分がＨＰ30％以下の場合は回避率に補正
+			SIF BASE:L_P:ＨＰ <= MAXBASE:L_P:ＨＰ * 30 / 100
+				RETURN 16
+	ENDSELECT
+ENDIF
+RETURN 0

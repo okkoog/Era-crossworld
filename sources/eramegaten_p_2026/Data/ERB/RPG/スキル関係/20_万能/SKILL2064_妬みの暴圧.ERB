@@ -1,0 +1,148 @@
+﻿;질투의폭압
+;セト用万能ロマっぽいもの
+;最大威力1000ですが、通常のンダとは別に弱体がはいるので500まで落ちます
+;まぁそれでも強いはずですが
+;
+;とりあえず、味方版の調整もおいておきますが
+;基本的には敵専用です
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2064,ARG
+RESULTS = 질투의폭압
+
+;　명중
+@SKILL_HITRATE_2064, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2064, ARG
+#LOCALSIZE 2
+SIF ARG < 0
+	RETURN 1
+IF スキル属性表示中
+	LOCAL:1 = FLAG:확산플래그
+	FLAG:확산플래그 = 現HP割合(ARG)
+ENDIF
+IF CFLAG:ARG:보스플래그
+	SELECTCASE FLAG:확산플래그	;基礎威力200
+		CASE IS > 60	;HP60%以上　200 - 360
+			LOCAL:0 = 200 + 400 * (100 - FLAG:확산플래그) / 100
+		CASE IS > 20	;HP20%以上　440 - 680
+			LOCAL:0 = 200 + 600 * (100 - FLAG:확산플래그) / 100
+		CASEELSE		;HP20%以下　640 - 1000
+			LOCAL:0 = 200 + 800 * (100 - FLAG:확산플래그) / 100
+	ENDSELECT
+	SIF CFLAG:ARG:마법위력강화 < 0
+		LOCAL:0 = LOCAL:0 * MAX(32, 64 + CFLAG:ARG:마법위력강화) / 64	;ダメージ計算時とは別にンダの影響を受ける
+ELSE
+	SELECTCASE FLAG:확산플래그
+		CASE IS > 75
+			LOCAL:0 = 1 + 350 * (100 - FLAG:확산플래그) / 100
+		CASE IS > 50
+			LOCAL:0 = 1 + 450 * (100 - FLAG:확산플래그) / 100
+		CASE IS > 5
+			LOCAL:0 = 1 + 600 * (100 - FLAG:확산플래그) / 100
+		CASEELSE
+			LOCAL:0 = 1 + 750 * (100 - FLAG:확산플래그) / 100
+	ENDSELECT
+ENDIF
+SIF スキル属性表示中
+	FLAG:확산플래그 = LOCAL:1
+RETURN LOCAL:0
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2064,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2064,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2064, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2064,ARG
+RETURN 80
+
+;　相性
+@SKILL_TYPE_2064,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2064
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2064, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2064, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2064,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2064,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2064, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2064
+RETURN GET_SUCCESSION_NUM("만능")
+@継承不能_2064
+RETURN 1
+;不可
+
+;속도보정
+@SKILL_SPEED_2064, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2064
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2064, ARG = -1
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2064, ARG, ARG:1, ARG:2
+FLAG:확산플래그 = BASE:ARG:ＨＰ * 100 / MAXBASE:ARG:ＨＰ
+CALL ATTACK_FIELD,ARG,ARG:1,2064
+FLAG:확산플래그 = 0
+
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2064, ARG
+PRINTL 적 전체를 만능 속성으로 공격하는、세트의 필살기
+PRINTL 남은 ＨＰ가 적으면 적을수록 위력이 오른다
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2064,ARG
+RETURN 1
+;とくにない
+

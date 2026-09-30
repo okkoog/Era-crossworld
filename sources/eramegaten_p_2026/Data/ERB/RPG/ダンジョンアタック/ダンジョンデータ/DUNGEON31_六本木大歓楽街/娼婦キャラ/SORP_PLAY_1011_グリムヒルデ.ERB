@@ -1,0 +1,106 @@
+﻿;グリムヒルデ(마녀)
+;白雪姫の魔女(追加用サンプルキャラ)
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		っとっとき				新規作成
+;	002		20XX/XX/XX		XXX						AI製顔グラ対応
+;	003		2024/04/16		っとっとき				ビデオタイトル対応
+;	004		2025/12/11		kamedakeisuke			元ネタが白雪姫なのでユーザー投稿フィルター内に移動
+
+@SORP_PLAY_1011, ARGS
+#DIM CHARA, 1
+#DIM CONST CSV_NO = [[キャラ:크림힐트]]
+#DIMS DYNAMIC ICON_ADDRESS
+ICON_ADDRESS '= D31_FACE("グリムヒルデ")
+SELECTCASE ARGS
+	CASE "娼婦番号"
+		RESULTS = [1011]
+	CASE "キャラ名"
+	RESULTS = 그림힐데
+	CASE "指名名"
+	RESULTS = 그림힐데(마녀)
+	CASE "所属"
+		;表なら1、裏なら2
+		RETURN 1
+	CASE "判定"
+		;指名可能なら0、不可なら1
+		
+		;元ネタが白雪姫なのでユーザー投稿フィルター内に移動
+		SIF !GETS_USEABLE_EXTRA_TITLE("ユーザー投稿")
+			RETURN 0
+		SIF GETCHARA(CSV_NO) >= 0
+			RETURN 1
+		SIF 六本木娼婦フラグ:11 >= 3
+			RETURN 1
+		RETURN 0
+	CASE "キャラ名"
+	RESULTS = 그림힐데
+	CASE "価格"
+		RETURN 200
+	CASE "紹介文"
+		IF 六本木娼婦フラグ:11 == 0
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"과연, 그림힐데 양을 희망하십니까/그녀는 일단 창부 취급으로 명부에 올라와 있습니다만/실제로 몸을 파는 아가씨는 아니오라,"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"잠시 동안 술이나 춤, 노래를 즐기실 수 있는/말하자면 요시와라의 게이샤 걸 스타일의 아가씨가 되겠습니다/"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"품에 안으실 수는 없습니다만, 뭐 풍류를 즐기는 것도 멋이라는 것 아니겠습니까//"
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"과연, 그림힐데 양입니까/손님, 풍류를 아시는군요…/"
+		ENDIF
+	CASE "確認"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그럼, 그림힐데 양입니다만…/하룻밤에 ２００마카가 되겠습니다/"
+	CASE "プレイ口上"
+		CALL DUNGEON_WORP,1,13,3
+		;条件によって分岐の追加も可
+		IF 六本木娼婦フラグ:11 == 0
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"그림힐데", @"흐음, 이 몸을 지명한 게 그대인가//"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞게이샤가 나올 줄 알았더니, 왠지 검은 드레스 차림의 귀부인이 나타났다//"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"그림힐데", @"그 표정은… 헛다리 짚었다고 생각하는 게로구나/뭐 어쩔 수 없지, 애초에 착각하게끔 말해두었으니 말이야/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"그림힐데", @"실상은 그저 인생 상담과, 그걸 점치는 흑마술 의식이라네/뭐야, 그리 지루한 게 아니란다/의식에는 노래와 춤이 필요한 법이지"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"그림힐데", @"자, 그럼 뭔가 고민하고 있는 거라도 있는가？//"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+			CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"/＞즐겁게 놀았습니다…/"
+			;経験フラグを設定
+			六本木娼婦フラグ:11 = 1
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"그림힐데", @"어라, 또 왔는가//"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"그림힐데", @"이 몸을 신원 인수하고 싶다고？/…제법 호기로운 녀석이로구만/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"그림힐데", @"그렇구만…/슬슬 당장의 생활 자금도 모였으니/여길 빠져나가기 위해 따라가 주는 것도 나쁘진 않겠지만 말이지…"
+			;レベル40以上で身受け可フラグを立てる
+			IF  BASE:MASTER:LV >= 40
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"그림힐데", @"흐음, /마녀의 힘을 빌리지 않고는 못 배기는 암우는 아닌 것 같고/뭐, 좋다"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"그림힐데", @"그럼, 몸값을 지불할 돈이 모이거든 데리러 오도록 하게나//"
+				六本木娼婦フラグ:11 = 2
+			ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞그림힐데가 온몸을 쓱 훑어보더니, 한숨을 내쉬었다//"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"그림힐데", @"그대의 실력으로는, 따라가 봤자 불안하기 짝이 없겠구만/더 힘을 기르고 오면 생각해 주마/"
+			ENDIF
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+			CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"/＞즐겁게 놀았습니다…/"
+		ENDIF
+		;プレイ経験(任意の経験を追加可)
+		;EXP:MASTER:삽입경험 += ABL:MASTER:기교 * 2 + 1
+		;EXP:MASTER:절정경험 += ABL:MASTER:기교
+		;CALL INCREASE_LC,5  意図が不明かつ変動量が強烈で、ユーザー側から認識できない場所での変動なので除外します。必要性があって再実装する場合は右記の点に注意して再実装してください。
+	CASE "身受け価格"
+		RETURN 4000
+	CASE "身受け確認"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그림힐데 양을 신원 인수하시겠습니까？//"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그러시다면, ４０００마카를 받게 됩니다/괜찮으시겠습니까？/"
+	CASE "身受け口上"
+		;口上
+		CALL SHOW_PICTURE, "D"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"그림힐데", @"어라, 진심이었던 겐가/뭐, 이미 돈은 지불해 준 모양이고/이 마녀의 힘이 필요하다면야, 힘을 빌려주도록 하지"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"그림힐데", @"그럼//앞으로도 잘 부탁하네"
+		六本木娼婦フラグ:11 = 3
+		RESULTS '= "グリムヒルデ" + "_" + D31_FACE("グリムヒルデ", 1)
+		RETURN CSV_NO, 3000, 0
+	CASE "リスト"
+		IF 六本木娼婦フラグ:11 == 0
+			RESULTS = 55_SECRET
+		RESULTS:1 = 저와 함께… 술과 춤, 노래를 즐겨보아요
+		ELSE
+			CALLF 顔グラ追加_F, CSV_NO
+			RESULTS '= "グリムヒルデ" + "_" + D31_FACE("グリムヒルデ", 1)
+		RESULTS:1 = 저와 함께… 술과 춤, 노래를 즐겨보아요
+		ENDIF
+ENDSELECT

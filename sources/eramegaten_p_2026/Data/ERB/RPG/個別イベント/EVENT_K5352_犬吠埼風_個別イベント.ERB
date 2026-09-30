@@ -1,0 +1,375 @@
+﻿;-------------------------------------------------
+;이누보자키 후우 개인 이벤트
+;-------------------------------------------------
+@INDIVIDUAL_EVENT_K5352, ARG, ARG:1 = 0, ARG:2 = -1
+#LOCALSIZE 2
+#LOCALSSIZE 1
+#DIM 導入フラグ
+;ARG:0　キャラ番号
+;ARG:1　関数種類　1,開放条件　2,타이틀　3,이벤트
+;ARG:2　イベント番号（0～63まで）
+
+;リストにキャラを表示する条件
+IF ARG:1 == 0
+	;イベント2で全部終了
+	SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 2)
+		RETURN 0
+	RETURN 1
+ENDIF
+
+SELECTCASE ARG:2
+	CASE 0
+		;解放条件
+		IF ARG:1 == 1
+			SIF GET_VALUE_TALENT_JOINABLE(ARG) == 0
+				RETURN 0
+			SIF BASE:ARG:LV < 40 
+				RETURN 0
+			RETURN 1
+		ELSEIF ARG:1 == 2
+			;타이틀
+			IF GETBIT(CFLAG:ARG:개별이벤트개방, ARG:2)
+				;타이틀
+				RESULTS = 이누보자키 후우　그 1：단 하나의 연애 이야기
+			ELSE
+				;未開放時のタイトル（解放条件を入れておく）
+				RESULTS = (%CALLNAME:ARG%의 LV40 이상으로 해방)
+			ENDIF
+		;이벤트
+		ELSEIF ARG:1 == 3
+			$INDIVIDUAL_EVENT_K5352_GOTO1
+			CUSTOMDRAWLINE =
+			PRINTL
+			PRINTL
+			PRINTFORMW  　「나는 말야… 날이 갈수록 여자력이 높아지는 게 느껴진단 말이지」
+			PRINTL
+			PRINTL
+			PRINTFORMW  　용사부의 반응은 시큰둥하다.
+			PRINTFORMW  　뭐랄까, 익숙함이 묻어난다.
+			PRINTL
+			PRINTL
+			PRINTFORMW  「인기가 너무 넘쳐나면 어쩌지-!」
+			PRINTL
+			PRINTW  　그건 그렇고 동생 아가씨. 언니의 경험은 실제론 어느 정도야?
+			PRINTFORMW  　「없어요」
+			PRINTL
+			PRINTL
+			PRINTW  「아니 있었잖아, 고백이라든가 러브레터라든가!」
+			PRINTW  「그건 똑같은 남학생 이야기잖아요………」
+			PRINTL
+			PRINTL
+			PRINTW  「그-렇긴 하지만 말야」
+			PRINTW  「그 뒤론, 별다른 썸 이야기 같은 건 없는 모양이라……」
+			PRINTW  「언니는, 주변이 유치하게 느껴지는 전형적인 중학생 여자아이니까, 동급생은 어려울 거라고 봐요」
+			PRINTL
+			PRINTL  
+			PRINTW  「너한테 어린애 취급받는 남학생들이 불쌍하네-」
+			PRINTW  「뭐라고-!?」
+			PRINTL
+			PRINTW  「───저희 반에서는, 미인으로 통하고 있다고요. 정말로」
+			PRINTL
+			PRINTFORMW    　후우와 카린이 투닥거리는 사이에, 이츠키가 귓속말을 해주었다.
+			PRINTW  　쓴웃음을 짓고 있는 걸 보니, 자매끼리 비교당하며 이런저런 일이 있었을지도 모르겠다.
+			PRINTL　　그것을 괴롭게 여기고 있는 것은 아닌 듯하지만.
+			PRINTL 　　어쨌든, 인기가 있는 것은 확실한 모양이다
+			PRINTL  
+			PRINTL  
+			PRINTW  「이래 봬도-, 에스코트라든가, 백마 탄 왕자님이라든가 대접받고 싶은 소망은 있거든?」
+			PRINTL
+			PRINTL
+			PRINTFORMW   　이쪽 보지 마라. 뭐 %CALLNAME:ARG%의 처지에서, 어른을 싫어하지 않는 것만으로도 다행이라 치자
+			PRINTL
+			PRINTL
+			PRINTW  「……언니는 애인 만들고 싶으면 야식부터 줄이자-」
+			PRINTL
+			PRINTL
+			PRINTL 「……그만해, 체중 폭로는 제발 그만해……」
+			PRINTL
+			PRINTL
+			PRINTL
+			PRINTW  이 자매는, 둘 중 한쪽에 애인이 생기면 금방 들통나겠구나
+			PRINTFORMW  　
+			PRINTL  …………
+			PRINTL  ………
+			PRINTL  ……
+			PRINTL
+			PRINTL
+			IF GET_RPG_CFLAG_TAKEOVER(ARG, "個人イベント強化度") < 1
+				CALL SET_RPG_CFLAG_TAKEOVER, ARG, "個人イベント強化度", 1
+				;LOCAL:0 = GETCHARA([[キャラ:후우]])
+				;BASE:(LOCAL:0):내구 += 2
+				;PRINTFORMW ＞%CALLNAME:ARG%の耐力が2上がった　
+			ENDIF
+			RETURN 1
+		ENDIF
+	CASE 1
+		;解放条件
+		IF ARG:1 == 1
+			SIF 陥落(ARG) == 0
+				RETURN 0
+			SIF BASE:ARG:LV < 50
+	                        RETURN 0
+			SIF !GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+				RETURN 0
+			RETURN 1
+		ELSEIF ARG:1 == 2
+			;타이틀
+			IF GETBIT(CFLAG:ARG:개별이벤트개방, ARG:2)
+				;타이틀
+				RESULTS = 이누보자키 후우　그 2：나의 이유
+			ELSE
+				IF GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+					;未開放時のタイトル（解放条件を入れておく）
+					RESULTS = (%CALLNAME:ARG%의 함락과, LV50 이상으로 해방)
+				ELSE
+					RESULTS = ？？？？？？？？？？？？
+				ENDIF
+			ENDIF
+		;이벤트
+		ELSEIF ARG:1 == 3
+			$INDIVIDUAL_EVENT_K5352_GOTO2
+			CUSTOMDRAWLINE =
+			PRINTL
+			PRINTL
+			PRINTFORMW  　%CALLNAME:ARG%와 진지한 대화
+			PRINTW  「………내가 용사가 된 이유? 그-야 뭐, 정의의 사자 노릇을 할 수 있다면 다들 하잖아?」
+			PRINTL
+			PRINTL
+			PRINTW  거 참 대단하네. 그건 그렇고, 부모님은 좋아하나?
+			PRINTL
+			PRINTL
+			PRINTW  「……당연하잖아」
+			PRINTL
+			PRINTL
+			PRINTW  이누보자키 자매의 부모님은, 버텍스에게 살해당했다.
+			PRINTFORMW 　그런 사건을 계기로 %CALLNAME:ARG%는 대사로부터 사명을 부여받는 입장이 되었기에, 기록도 손쉽게 열람할 수 있었다
+			PRINTFORMW
+			PRINTL　
+			PRINTL　
+			PRINTFORMW  「……뭔가 눈치챘을지도 모르겠지만 말야. 애들한테는 비밀로 해줘」
+			PRINTW  　
+			PRINTL
+			PRINTW  　물론이지. 악마 업계는 계약 제일, 비밀 엄수로 일하고 있거든
+			PRINTL
+			PRINTL
+			PRINTW  「이런 음침하고 끈적한 건, 나 하나로 족해」
+			PRINTL
+			PRINTL
+			PRINTW  　언니다웁지도, 부장다웁지도 않은 건가.
+			PRINTL
+			PRINTL
+			PRINTW  「일이라서도 아니고, 사명이라서도 아냐. 이런 거, 누구한테도 말 못 하잖아」
+			PRINTL
+			PRINTW 　어느 쪽이든 어울려주마. 놀이에도, 복수에도.
+			PRINTL
+			PRINTW   「……고마워. 하지만 말이지-?」
+			PRINTL
+			PRINTFORMW  「그런 험악한 소리, 입에 담는 거 아냐-」
+			
+			PRINTL　평소의 화사함은 없지만. 꾸밈없는 표정도 대단히 매력적이란 말이지
+			PRINTL
+			PRINTL  …………
+			PRINTL  ………
+			PRINTL  ……
+			PRINTL
+			IF GET_RPG_CFLAG_TAKEOVER(ARG, "個人イベント強化度") < 2
+				CALL SET_RPG_CFLAG_TAKEOVER, ARG, "個人イベント強化度", 2
+				;LOCAL:0 = GETCHARA([[キャラ:후우]])
+				;BASE:(LOCAL:0):힘 += 2
+				;PRINTFORMW ＞%CALLNAME:ARG%の力が2上がった　
+			ENDIF
+			RETURN 1
+		ENDIF
+	CASE 2
+		IF ARG:1 == 1
+			SIF GET_VALUE_TALENT_JOINABLE(ARG) == 0
+				RETURN 0
+			SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 1) == 0
+				RETURN 0
+			SIF BASE:ARG:LV < 70
+				RETURN 0
+			SIF (TOINT(CSTR:ARG:102) == 2 && GET_CHARA_LOYALTY(ARG) < 5000)
+				RETURN 0
+			SIF 陥落(ARG) == 0
+				RETURN 0
+			SIF CFLAG:ARG:PT플래그 != 2
+				RETURN 0
+			RETURN 1
+		ELSEIF ARG:1 == 2
+			;타이틀
+			IF GETBIT(CFLAG:ARG:개별이벤트개방, ARG:2)
+				;타이틀
+				RESULTS = 에피소드 S의 유령：이누보자키 후우　그 3
+			ELSE
+				IF GETBIT(CFLAG:ARG:개별이벤트읽음, 1)
+					;未開放時のタイトル（解放条件を入れておく）
+					RESULTS = (%CALLNAME:ARG%의 LV70 이상, 충성도 5000 이상, 함락 완료 시 해방)
+				ELSE
+					RESULTS = ？？？？？？？？？？？？
+				ENDIF
+			ENDIF
+		;이벤트
+		ELSEIF ARG:1 == 3
+			PRINTFORMW  　이 전투에서는 %CALLNAME:ARG% 한 명만 참가하는 전투가 발생합니다
+			PRINTW  　진행해도 괜찮습니까?
+			CALL INPUT_YN
+			IF RESULT == 1
+				PRINTW  　이벤트를 일시 중단합니다
+				RETURN 0
+			ELSEIF RESULT == 0
+				PRINTL
+				PRINTL
+			ENDIF
+			CUSTOMDRAWLINE =
+			PRINTL
+			PRINTL
+			PRINTW  　문화제 프로그램에 대해 상담이 있었던 모양으로.
+			PRINTFORMW  　귀신의 집에 초대받는 흐름이 되었다.
+			PRINTL
+			PRINTL
+			PRINTW  「………정령이 있었다면, 백귀야행도 할 수 있었을 텐데요」
+			PRINTL
+			PRINTW  「모두의 신체 기능이 돌아온 이후로, 사라져 버리고 말았으니까요………」
+			PRINTW
+			PRINTL  　신령님의 리소스에도 한계가 있으니까요.
+			PRINTW  　
+			PRINTW  「신령님……… 인가요」
+			PRINTL
+			PRINTW  「오늘의 목적은 우리 애들이 아니라, 남의 집 애들이니까, 분위기 처지지 않도록 하자!」
+			PRINTL
+			PRINTW  「이런저런 사정과는 별개로, 후우가 계속 덜덜 떨고 있는데, 괜찮은 거야?」
+			PRINTL
+			PRINTL
+			PRINTW  　잘 보살펴줄 테니, 괜찮아. 카린 일행은 먼저 즐기고 있어.
+			PRINTL
+			PRINTW  「흐-응………? 뭐, 부탁할게」
+			PRINTL  ………
+			PRINTL
+			PRINTW  「어째서 전원 참가인 건데………? 한 명쯤 빠져도 안 들키겠지……?」
+			PRINTL
+			PRINTL  난 그래도 상관없지만, 그 정도로 싫은 거야?
+			PRINTL  
+			PRINTW  「싫어요……!」
+			PRINTL
+			PRINTL　　고집쟁이에, 악바리라니까
+			PRINTL  
+			PRINTW  「……용사부 부장이, 도망칠 리가 없잖아」
+			PRINTL  ……
+			PRINTFORMW  　「놀라기 전에, 먼저 놀라게 해준다!」
+			PRINTL
+			PRINTW  　귀신이 덮쳐왔다!
+
+			;포지션1-6に存在する味方をすべてポイする
+			FOR LOCAL, 1, 7
+				; LOCALSにポジションにいるキャラを取得
+				LOCALS = 포지션{LOCAL}
+				LOCAL:1 = FLAG:LOCALS
+				
+				; 誰もいない、もしくは犬吠埼風だったらCONTINUE
+				SIF LOCAL:1 < 0 || LOCAL:1 == ARG
+					CONTINUE
+				
+				; ポジションを外す（リターン同等処理）
+				CALL REMOVE_POSITION, CFLAG:(LOCAL:1):포지션
+				; メッセージの表示
+				;PRINTFORMW %CALLNAME:(LOCAL:1)%　がパーティから外れた
+			NEXT
+			;強くはない
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			CALL SET_ENEMY,13,[[キャラ:한냐]],45,0,1
+
+			CFLAG:(CHARANUM-1):행동횟수 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:잔다인]]
+
+			ABL:(CHARANUM-1):스킬2 = [[스킬:뇌진왕모의발차기]]
+			CALL SYNC_STATUS, (CHARANUM-1)
+			CALL HEALTH_CHARA, (CHARANUM-1)
+			CALL SET_ENEMY,14,[[キャラ:오시치]],45,0,1
+
+			CFLAG:(CHARANUM-1):행동횟수 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:축시의참배]]
+			ABL:(CHARANUM-1):스킬2 = [[스킬:텐타라후]]
+			ABL:(CHARANUM-1):스킬4 = [[스킬:마하・라기온]]
+			CALL SYNC_STATUS, (CHARANUM-1)
+			CALL HEALTH_CHARA, (CHARANUM-1)
+			CALL SET_ENEMY,15,[[キャラ:미야스도코로]],45,0,1
+			CFLAG:(CHARANUM-1):행동횟수 = 1
+			ABL:(CHARANUM-1):스킬1 = [[스킬:천년의저주]]
+			CALL SYNC_STATUS, (CHARANUM-1)
+			CALL HEALTH_CHARA, (CHARANUM-1)
+			CALL BATTLE_START
+			CUSTOMDRAWLINE =
+			PRINTL 「왠지 미끌미끌해……!」
+			PRINTW 후우는 옴짝달싹할 수 없다……
+			CUSTOMDRAWLINE =
+			WAIT
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+
+			PRINTL
+			PRINTL
+			PRINTW  　그것은 속일본기에 기술이 전해지는, 일본에서도 친숙한 동백기름.
+			PRINTW  　주요 용도는 식용과 화장품이지만, 제로센의 연료로도 쓰였다.
+			PRINTW  　………라고, 먼저 지나간 토고가 말했었다.
+			PRINTL  
+			PRINTW  「……한가한 소리 할 때야!? 빨리 구해줘!? 왠지 꿈틀거리기 시작했다고!?」
+			PRINTL
+			PRINTW  　미안 미안. 이 혀 같은 거, 미끄러워서 잡히질 않네.
+			PRINTL
+			PRINTL
+			PRINTW  「그런 정보는 필요 없거든!? ……혀로 꼼지락거려지는 거 싫어-!?」
+			PRINTL
+			PRINTW  　혀가 후우의 옷 속으로 파고들어, 민감한 곳을 간질이고 있다…
+			PRINTL　　아, 속옷 보이겠네.
+			PRINTL  ……
+			PRINTL  ……
+			PRINTW  「……시러어」
+			PRINTL  ……
+			PRINTL  ……
+			PRINTFORMW  　「다리에 힘이 풀려서, 못 걷겠어. 혼자 두고 가지 마……」
+			PRINTL
+			PRINTW  어찌어찌 빠져나온 후우를, 짊어지고 돌아갔다
+			PRINTL
+			PRINTW  장치를 다소 부수고 말았지만, 나중에 사과하는 수밖에 없겠지
+			PRINTL
+			PRINTW  「으, 흑……」
+			PRINTL
+			PRINTL
+			PRINTW  여전히 울먹이고 있지만, 호흡은 이제 슬슬 가라앉았으려나. 이제 괜찮아?
+			PRINTL
+			PRINTW  「유령은, 벨 수가 없으니까 안 되는 거란 말야……」
+			PRINTL
+			PRINTL
+			PRINTFORMW  거기 놓인 대걸레로 때려 부쉈잖아
+			PRINTL
+			PRINTL
+			PRINTW  「……그러고 보니 그랬네. 왠지 해볼 수 있을 것 같아!」
+			PRINTL
+			PRINTL
+			PRINTL  …………
+			PRINTL  ………
+			PRINTL  ……
+			PRINTL
+			PRINTL
+			IF GET_RPG_CFLAG_TAKEOVER(ARG, "個人イベント強化度") < 3
+				CALL SET_RPG_CFLAG_TAKEOVER, ARG, "個人イベント強化度", 3
+				CALL SET_RPG_CFLAG_TAKEOVER, ARG, "潰滅！独眼竜乙女斬り取得", 1
+				PRINTFORMW  　공포와 맞선 경험이, %CALLNAME:ARG%의 검기를 더욱 강하게 만들었다……!
+				PRINTFORMW  　%CALLNAME:ARG%의 『외눈용처녀베기』가 강화되었다!
+				;CSTR:ARG:전용기3 = 『潰滅！独眼竜乙女斬り』
+			ENDIF
+			;イベント前のPTに復元する
+			CALL CHANGE_LAST_BATTLE_MEMBERSET
+			;あなたを初期位置にセットする
+			;SIF CFLAG:ARG:포지션 == 2
+			;	CALL REMOVE_POSITION, CFLAG:ARG:포지션
+			;CFLAG:MASTER:포지션 = 2
+			;FLAG:포지션2 = 0
+			;CFLAG:MASTER:PT플래그 = 2
+			CALL SYNC_STATUS, MASTER
+			RETURN 1
+		ENDIF
+ENDSELECT

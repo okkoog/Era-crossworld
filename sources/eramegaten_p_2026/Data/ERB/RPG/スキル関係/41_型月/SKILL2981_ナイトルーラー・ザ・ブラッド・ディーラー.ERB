@@ -1,0 +1,128 @@
+﻿;221013		NEO		説明文などを変更、演出を追加
+;					BHでシンプルに威力向上なのウ～ンという感じ、なんか面白いことしたい
+;					まあ面白いことしたい、で無理にひねり出すのも変な話か……
+
+;スキル名
+@SKILL_NAME_2981,ARG
+	RESULTS = 나이트룰러・더・블러드・딜러
+	SIF  GETBIT (FLAG:커스텀게임화면,1)
+		RESULTS = 나이트 루러 더 블러드 딜러
+
+;　명중
+@SKILL_HITRATE_2981, ARG
+RETURN 90
+
+;　威力
+@SKILL_POWER_2981, ARG
+	IF ARG == -1
+		RETURN 200
+	ENDIF
+	;ブラッドヒート状態だと威力向上（２回攻撃なので合計６００だね）
+	IF 現HP割合(ARG) < 33
+		RETURN 300
+	ELSE
+		RETURN 200
+	ENDIF
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2981,ARG
+RETURN 2
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2981,ARG
+RETURN 2
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2981, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2981,ARG
+RETURN 40
+
+;　相性
+@SKILL_TYPE_2981,ARG
+	SIF FLAG:공격횟수 == 1
+		RETURN GET_TYPE_NUM("질풍")
+	RETURN GET_TYPE_NUM("타격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2981
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2981, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2981, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2981,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2981,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2981, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2981
+RETURN GET_SUCCESSION_NUM("타격")
+;질풍
+
+@継承不能_2981
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_2981, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2981
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2981, ARG = -1
+RETURN 15
+
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2981, ARG, ARG:1, ARG:2
+
+	;メッセージ表示
+	;HP条件をチェックし、強化状態であったら「BLOOD HEAT!!」を表示する
+	CALL MELTY_BLOOD_IS_BLOOD_HEAT_HP_CONDITIONS(ARG)
+
+	CALL ATTACK_FIELD,ARG,ARG:1,2981
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2981, ARG
+PRINTL 적 전체에 타격 상성과 질풍 상성으로 중위력의 마법 공격을 2회 행한다.
+PRINTL 사용자의 HP가 얼마 남지 않았을 경우 위력이 향상된다.
+PRINTL 　
+PRINTL 어둠빛 소용돌이가 되어 전장을 날아다니며 적을 몰살한다.
+PRINTL 사도 왈라키아의 밤의 필살기
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2981,ARG
+RETURN 1
+;とくにない
+

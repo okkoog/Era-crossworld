@@ -1,0 +1,283 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara4626_ショウジ.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/07/19		P(bazzile)				新規作成
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;イベントフラグ
+;--------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:쇼우지]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+CALL SET_RPG_CFLAG_TAKEOVER, ARG, "救出時ボス撃破", ダンジョンフラグ:82:10
+CALL SET_BASE_[[キャラ:쇼우지]], ARG, ARG:2
+
+;Data\ERB\RPG\ダンジョンアタック\ダンジョンデータ\DUNGEON82_異界化ビル\DUNGEON82_異界化ビル_ショウジイベント.ERB
+;ARG:1はイベントフラグ
+@SET_BASE_[[キャラ:쇼우지]], ARG, ARG:1
+#DIM DYNAMIC LCOUNT
+SELECTCASE ARG:1
+	CASE 1
+		EXP:ARG:Ｖ경험 += 5
+		
+		EXP:ARG:정액경험 += 1
+		EXP:ARG:질사경험 += 1
+		EXP:ARG:성교경험 += 5
+		;ボス倒した
+		IF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 1
+			
+		;ボス倒してない
+		ELSEIF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 0
+			EXP:ARG:Ｖ확장경험 += 1
+			;拡張初体験
+			CALL ADDS_ABNORMAL_EXP, "拡張初体験", ARG
+		ENDIF
+	CASE 2
+		EXP:ARG:Ｖ경험 += 5
+		EXP:ARG:Ａ경험 += 5
+		
+		EXP:ARG:정액경험 += 2
+		EXP:ARG:질사경험 += 1
+		EXP:ARG:성교경험 += 10
+		;ボス倒した
+		IF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 1
+			EXP:ARG:수간경험 += 1
+			
+			;獣姦
+			CALL ADDS_ABNORMAL_EXP, "獣姦" , ARG
+		;ボス倒してない
+		ELSEIF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 0
+			
+			EXP:ARG:Ｖ확장경험 += 1
+			EXP:ARG:Ａ확장경험 += 1
+			;拡張初体験
+			CALL ADDS_ABNORMAL_EXP, "拡張初体験", ARG
+		ENDIF
+	CASE 3
+		;５回目
+		EXP:ARG:Ｖ경험 += 5
+		EXP:ARG:Ａ경험 += 5
+		EXP:ARG:펠라경험 += 5
+		
+		EXP:ARG:정액경험 += 3
+		EXP:ARG:질사경험 += 1
+		EXP:ARG:성교경험 += 10
+		
+		;ボス倒した
+		IF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 1
+			EXP:ARG:수간경험 += 1
+			
+			;獣姦
+			CALL ADDS_ABNORMAL_EXP, "獣姦" , ARG
+		;ボス倒してない
+		ELSEIF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 0
+			
+			EXP:ARG:Ｖ확장경험 += 1
+			EXP:ARG:Ａ확장경험 += 1
+			;拡張初体験
+			CALL ADDS_ABNORMAL_EXP, "拡張初体験", ARG
+		ENDIF
+		;６回目以降
+	CASE 4
+		EXP:ARG:Ｖ경험 += 20
+		EXP:ARG:Ａ경험 += 20
+		EXP:ARG:펠라경험 += 20
+		EXP:ARG:윤간경험 += 15
+		
+		EXP:ARG:정액경험 += 39
+		EXP:ARG:질사경험 += 16
+		EXP:ARG:성교경험 += 25
+		EXP:ARG:수간경험 += 5
+		;ボス倒した
+		IF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 1
+			EXP:ARG:수간경험 += 1
+			
+			;獣姦
+			CALL ADDS_ABNORMAL_EXP, "獣姦" , ARG
+		;ボス倒してない
+		ELSEIF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 0
+			
+			EXP:ARG:Ｖ확장경험 += 1
+			EXP:ARG:Ａ확장경험 += 1
+			;拡張初体験、獣姦
+			CALL ADDS_ABNORMAL_EXP, "拡張初体験", ARG
+			CALL ADDS_ABNORMAL_EXP, "獣姦" , ARG
+		ENDIF
+	;５日目、輪姦中１
+	CASE 5
+		EXP:ARG:Ｖ경험 += 50
+		EXP:ARG:Ａ경험 += 50
+		EXP:ARG:펠라경험 += 50
+		EXP:ARG:윤간경험 += 45
+		
+		EXP:ARG:정액경험 += 79
+		EXP:ARG:질사경험 += 46
+		EXP:ARG:성교경험 += 55
+		EXP:ARG:수간경험 += 25
+		;ボス倒した
+		IF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 1
+			EXP:ARG:수간경험 += 1
+			
+			;獣姦
+			CALL ADDS_ABNORMAL_EXP, "獣姦" , ARG
+		;ボス倒してない
+		ELSEIF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 0
+			
+			EXP:ARG:Ｖ확장경험 += 1
+			EXP:ARG:Ａ확장경험 += 1
+			;拡張初体験、獣姦
+			CALL ADDS_ABNORMAL_EXP, "拡張初体験", ARG
+			CALL ADDS_ABNORMAL_EXP, "獣姦" , ARG
+		ENDIF
+	;６日目、輪姦中２
+	CASE 6
+		EXP:ARG:Ｖ경험 += 100
+		EXP:ARG:Ａ경험 += 100
+		EXP:ARG:펠라경험 += 100
+		EXP:ARG:윤간경험 += 95
+		
+		EXP:ARG:정액경험 += 149
+		EXP:ARG:질사경험 += 96
+		EXP:ARG:성교경험 += 105
+		EXP:ARG:수간경험 += 50
+		;ボス倒した
+		IF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 1
+			EXP:ARG:수간경험 += 1
+			
+			;獣姦
+			CALL ADDS_ABNORMAL_EXP, "獣姦" , ARG
+		;ボス倒してない
+		ELSEIF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 0
+			
+			EXP:ARG:Ｖ확장경험 += 1
+			EXP:ARG:Ａ확장경험 += 1
+			;拡張初体験、獣姦
+			CALL ADDS_ABNORMAL_EXP, "拡張初体験", ARG
+			CALL ADDS_ABNORMAL_EXP, "獣姦" , ARG
+		ENDIF
+	;７、８日目、崩壊輪姦
+	CASE 7
+		;１回目
+		;マグロ化イベント
+		TALENT:ARG:붕괴 = 1
+		
+		EXP:ARG:Ｖ경험 += 200
+		EXP:ARG:Ａ경험 += 200
+		EXP:ARG:펠라경험 += 200
+		EXP:ARG:윤간경험 += 195
+		
+		EXP:ARG:정액경험 += 259
+		EXP:ARG:질사경험 += 196
+		EXP:ARG:성교경험 += 205
+		EXP:ARG:수간경험 += 100
+		;ボス倒した
+		IF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 1
+			EXP:ARG:수간경험 += 1
+			
+			;獣姦
+			CALL ADDS_ABNORMAL_EXP, "獣姦" , ARG
+		;ボス倒してない
+		ELSEIF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 0
+			
+			EXP:ARG:Ｖ확장경험 += 1
+			EXP:ARG:Ａ확장경험 += 1
+			;拡張初体験、獣姦
+			CALL ADDS_ABNORMAL_EXP, "拡張初体験", ARG
+			CALL ADDS_ABNORMAL_EXP, "獣姦" , ARG
+		ENDIF
+	;２回目以降
+	CASE 8
+		TALENT:ARG:붕괴 = 1
+		
+		EXP:ARG:Ｖ경험 += 200
+		EXP:ARG:Ａ경험 += 200
+		EXP:ARG:펠라경험 += 200
+		EXP:ARG:윤간경험 += 195
+		
+		EXP:ARG:정액경험 += 259
+		EXP:ARG:질사경험 += 196
+		EXP:ARG:성교경험 += 205
+		EXP:ARG:수간경험 += 100
+		;ボス倒した
+		IF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 1
+			EXP:ARG:수간경험 += 1
+			
+			;獣姦
+			CALL ADDS_ABNORMAL_EXP, "獣姦" , ARG
+		;ボス倒してない
+		ELSEIF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 0
+			
+			EXP:ARG:Ｖ확장경험 += 1
+			EXP:ARG:Ａ확장경험 += 1
+			;拡張初体験、獣姦
+			CALL ADDS_ABNORMAL_EXP, "拡張初体験", ARG
+			CALL ADDS_ABNORMAL_EXP, "獣姦" , ARG
+		ENDIF
+	;９日目～、便器化
+	CASE 9
+		TALENT:ARG:붕괴 = 1
+		ABL:ARG:Ｃ감각 += 1
+		ABL:ARG:Ｖ감각 += 1
+		ABL:ARG:Ｂ감각 += 1
+		ABL:ARG:Ａ감각 += 1
+		
+		EXP:ARG:Ｖ경험 += 300
+		EXP:ARG:Ａ경험 += 300
+		EXP:ARG:펠라경험 += 300
+		EXP:ARG:윤간경험 += 295
+		
+		EXP:ARG:정액경험 += 369
+		EXP:ARG:질사경험 += 296
+		EXP:ARG:성교경험 += 305
+		EXP:ARG:수간경험 += 150
+		
+		EXP:ARG:변기경험 += 100
+		;ボス倒した
+		IF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 1
+			EXP:ARG:수간경험 += 1
+			
+			;獣姦
+			CALL ADDS_ABNORMAL_EXP, "獣姦" , ARG
+		;ボス倒してない
+		ELSEIF GET_RPG_CFLAG_TAKEOVER(ARG, "救出時ボス撃破") == 0
+			
+			EXP:ARG:Ｖ확장경험 += 1
+			EXP:ARG:Ａ확장경험 += 1
+			;拡張初体験、獣姦
+			CALL ADDS_ABNORMAL_EXP, "拡張初体験", ARG
+			CALL ADDS_ABNORMAL_EXP, "獣姦" , ARG
+		ENDIF
+ENDSELECT
+
+;--------------------------------------------------
+;キャラクター独自変数名称定義関数
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:쇼우지]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 救出時ボス撃破
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS

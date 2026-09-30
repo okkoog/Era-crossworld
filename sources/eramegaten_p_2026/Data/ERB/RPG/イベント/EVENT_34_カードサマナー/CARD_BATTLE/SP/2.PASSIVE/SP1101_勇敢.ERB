@@ -1,0 +1,89 @@
+﻿
+;特技名
+@CGSP_NAME_1101, ARGS, ARG
+#DIMS L_MESSAGE, 2
+VARSET L_MESSAGE
+
+SPLIT ARGS , "/" , L_MESSAGE
+IF RESULT > 1 && ISNUMERIC(L_MESSAGE:1) && TOINT(L_MESSAGE:1) != 0
+	LOCALS:1 = %L_MESSAGE:1%
+ELSE
+	LOCALS:1 = 0
+ENDIF
+IF ISNUMERIC(L_MESSAGE) && TOINT(L_MESSAGE) != 0
+	LOCALS:0 = %L_MESSAGE:0%
+ELSE
+	LOCALS:0 = 0
+ENDIF
+RESULTS = 勇敢%LOCALS:0%/%LOCALS:1%
+
+;　コストの量
+@CGSP_COST_1101, ARGS, ARG
+RETURN 0
+;自動発動なので0
+
+;　타겟(選択するかしないか)
+@CGSP_TARGET_1101, ARGS, ARG
+RETURN 0
+;0-無し　　　1-味方1体　2-味方1体(自身含む)　3-敵1体　4-敵1体(サマナー含む)
+;5-敵味方1体　6-サマナーどちらか
+;自動発動なので0
+
+;　発動タイミング
+@CGSP_TIMING_1101, ARGS, ARG
+RETURN 1
+;0-アクティブ　1-味方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　2-相手ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　3-両方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ
+
+;====================================================
+;特技発動
+;====================================================
+@CGSP_ACTION_1101, ARGS, ARG, ARG:1
+#DIMS L_MESSAGE, 2
+VARSET L_MESSAGE
+
+SPLIT ARGS , "/" , L_MESSAGE
+IF RESULT > 1 && ISNUMERIC(L_MESSAGE:1) && TOINT(L_MESSAGE:1) >= 0
+	LOCAL:1 = (TOINT(L_MESSAGE:1))
+ELSE
+	LOCAL:1 = 0
+ENDIF
+IF ISNUMERIC(L_MESSAGE) && TOINT(L_MESSAGE) >= 0
+	LOCAL:0 = (TOINT(L_MESSAGE))
+ELSE
+	LOCAL:0 = 0
+ENDIF
+
+
+CALL CB_STATE_ADD, ARG, 2004, 1, 0, STATE_PUNUM_GET(LOCAL:1, LOCAL:0)
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;発動後どうなるか
+@CGSP_ACTION_AFTER_1101, ARGS, ARG, ARG:1
+RETURN 0
+;0-何もなし　1-フリーズ状態　2-山札に戻る　3-即死する
+
+;　 説明文の表示
+@CGSP_EXPLAIN_1101, ARGS, ARG
+#DIMS L_MESSAGE, 2
+VARSET L_MESSAGE
+
+SPLIT ARGS , "/" , L_MESSAGE
+IF RESULT > 1 && ISNUMERIC(L_MESSAGE:1) && TOINT(L_MESSAGE:1) != 0
+	LOCALS:1 = %L_MESSAGE:1%
+ELSE
+	LOCALS:1 = 0
+ENDIF
+IF ISNUMERIC(L_MESSAGE) && TOINT(L_MESSAGE) != 0
+	LOCALS:0 = %L_MESSAGE:0%
+ELSE
+	LOCALS:0 = 0
+ENDIF
+
+RESULTS = 自分のプリペアーフェイズで自動的に発動する。自身を「勇敢%LOCALS:0%/%LOCALS:1%」にし、戦闘時に相手より基礎AP/HPの合計が低い場合、数値分能力が変化する。『バトルの時に相手が強いと強化するSP』
+
+
+

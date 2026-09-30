@@ -1,0 +1,128 @@
+﻿;221019	NEO		ARGついてなかったの修正、攻撃相性返すのを新式書式に変更、あと文言微修正、継承不能追加
+;				いっくら専用スキルとはいえこれで40はさすがに安ゥい！！！となるので60にコスト増量、ただし「攻撃前に自己強化（+9までイく）」に変更
+
+
+;スキル名
+@SKILL_NAME_2961, ARG
+RESULTS = 산맥을뒤흔드는샛별의장작
+
+;　명중
+@SKILL_HITRATE_2961, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2961, ARG
+RETURN 500
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2961,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2961,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2961, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2961,ARG
+RETURN 60
+
+;　相性 衝撃、電撃、破魔、飛具複合
+@SKILL_TYPE_2961,ARG
+RETURN GET_TYPE_NUM("충격"), GET_TYPE_NUM("전격"), GET_TYPE_NUM("파마"), GET_TYPE_NUM("비구")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2961
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2961, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2961, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2961,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2961,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2961, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2961
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+@継承不能_2961
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_2961, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2961
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2961, ARG = -1
+RETURN 0
+
+;　クリティカル率
+@SKILL_CRITICAL_RATE_2961,ARG
+	;魔法攻撃なので意味がない、魔法CTフラグがあったら役に立つかもなのでそのままにする
+	RETURN 30
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2961, ARG, ARG:1, ARG:2
+	;1段階プラスするがこの際の強化は32で止まらない（といっても36、+9が限度のハズだが）
+	CFLAG:(ARG):마법위력강화 = CFLAG:(ARG):마법위력강화 + 4
+	CFLAG:(ARG):마법효과강화 = CFLAG:(ARG):마법효과강화 + 4
+
+	PRINTFORMW 자신의 마법 위력, 효과를 올렸다!
+	CALL ATTACK_FIELD,ARG,ARG:1,2961
+
+	;最大でも+8に補正
+	CFLAG:(ARG):마법위력강화 = MIN(32, CFLAG:(ARG):마법위력강화)
+	CFLAG:(ARG):마법효과강화 = MIN(32, CFLAG:(ARG):마법효과강화)
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2961, ARG
+PRINTL 적 전체에 충격, 전격, 파마, 비구 복합 상성으로 초특대 위력의 마법 공격을 행한다.
+PRINTL 공격 전에 마법 위력, 마법 효과가 상승하며, 이때의 강화는 +8을 초과한다.
+PRINTL (+9 이상이 되었을 경우, 공격 후 +8로 보정된다)
+PRINTL 　
+PRINTL 산맥을뒤흔드는샛별의장작＜안 갈 타·키 갈 슈＞。
+PRINTL 다른 이름은 제벨 함린 브레이커. (제벨 함린이란, 에비프 산을 말한다)
+PRINTL 수메르 신화에서 이슈타르가 행했다고 전해지는, 영봉 에비프 산을 유린하고 사멸시킨 일화를 보구로 삼은 것.
+PRINTL 보구 사용 시에는 금성으로 워프, 관리자 권한으로 금성의 개념을 손에 넣어 개념 행성으로서 마안나의 탄창에 장전해 쏜다는, 신조차 두려워할 행위를 태연히 해낸다.
+
+
+;とくにない
+
+@SKILL_ACTIONABLE_BATTLE_2961, ARG
+RETURN 0
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2961,ARG
+RETURN 1
+;とくにない
+

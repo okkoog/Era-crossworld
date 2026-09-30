@@ -1,0 +1,1058 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2024/05/26		P(bazzile)				@PRINT_KOJO_RPG_MESSAGEで表示が成功した場合に変数の中身を空にする処理を追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@GET_BATTLE_EVENT_NUM, ARGS
+#FUNCTION
+#DIM LCOUNT
+#DIMS NAME_TABLE, 101
+IF NAME_TABLE == ""
+	FOR LCOUNT, 0, 101
+		NAME_TABLE:LCOUNT = %GET_BATTLE_EVENT(LCOUNT)%
+	NEXT
+ENDIF
+SIF FINDELEMENT(NAME_TABLE, ARGS, , , 1) == -1
+	THROW 名称指定ミス【%ARGS%】
+RETURNF FINDELEMENT(NAME_TABLE, ARGS, , , 1)
+
+@GET_BATTLE_EVENT, ARG
+#FUNCTIONS
+;TFLAG:戦闘イベントに以下の値を代入して、@EVENT_BATTLE_Kを呼び出す
+;範囲は封印。吸収反射回避も単体でしかでない
+SELECTCASE ARG
+	CASE 0
+		RETURNF "未指定"
+	CASE 1
+		RETURNF "COOP発動"
+	CASE 2
+		RETURNF "COOP参加"
+	CASE 3
+		RETURNF "被召喚"
+	CASE 11
+		RETURNF "与ダメージ_単体"
+	CASE 12
+		RETURNF "被ダメージ_単体"
+	CASE 13
+		RETURNF "与ダメージ_範囲_ランダム"
+	CASE 14
+		RETURNF "与ダメージ_範囲_ランダム_撃破あり"
+	CASE 15
+		RETURNF "反射された"
+	CASE 16
+		RETURNF "反射した"
+	CASE 17
+		RETURNF "回避された"
+	CASE 18
+		RETURNF "回避した"
+	CASE 19
+		RETURNF "敵味方全体攻撃"
+	CASE 20
+		RETURNF "反撃発動"
+	CASE 21
+		RETURNF "追撃発動"
+	CASE 22
+		RETURNF "被バステ付着"
+	CASE 23
+		RETURNF "이악물기발동"
+	CASE 24
+		RETURNF "被回復"
+	CASE 25
+		RETURNF "被バステ治癒"
+	CASE 26
+		RETURNF "無効化した"
+	CASE 31
+		RETURNF "味方_与ダメージ_単体"
+	CASE 32
+		RETURNF "味方_被ダメージ_単体"
+	CASE 33
+		RETURNF "味方_与ダメージ_範囲_ランダム"
+	CASE 34
+		RETURNF "味方_被ダメージ_範囲_ランダム"
+	CASE 35
+		RETURNF "味方_反射された"
+	CASE 36
+		RETURNF "味方_反射した"
+	CASE 37
+		RETURNF "味方_回避された"
+	CASE 38
+		RETURNF "味方_回避した"
+	CASE 47
+		RETURNF "戦闘中イって行動不能にならず耐えた"
+	CASE 48
+		RETURNF "行動中イって行動不能になった"
+	CASE 50
+		RETURNF "バステ自然回復"
+	CASE 51
+		RETURNF "ターン終了時口上"
+	CASE 52
+		RETURNF "HEAT移行"
+	CASE 53
+		RETURNF "ターン終了時エクスリンケージ装備時のイベント口上"
+	CASE 54
+		RETURNF "ターン終了時エクスリンケージ装備時のイベント口上2"
+	CASE 90
+		RETURNF "戦闘勝利"
+	CASE 91
+		RETURNF "レベルアップ"
+	CASE 92
+		RETURNF "逃走成功"
+	CASE 93
+		RETURNF "逃走失敗"
+	CASE 94
+		RETURNF "戦闘開始時"
+	CASE 95
+		RETURNF "バックアタック"
+	CASE 96
+		RETURNF "不意打ち"
+	CASE 97
+		RETURNF "先制攻撃"
+	CASE 98
+		RETURNF "バックアタック阻止"
+	CASE 99
+		RETURNF "不意打ち阻止"
+	CASE 100
+		RETURNF "링케이지참가"
+ENDSELECT
+
+@BATTLE_EVENT_ATTACK, ARG = -1 , ARG:1 = -1, ARG:2, ARG:3
+#DIM LCOUNT
+#DIM TEMP
+#DIM L_ACTOR
+#DIM L_REACTOR
+#DIM COUNT_REACTOR
+#DIM 個別戦闘イベント,16
+#DIM 個別キャラ番号,16
+#DIM 個別与ダメージ,16
+#DIM CHARA
+#DIM STOCK_TARGET
+#DIM STOCK_COLOR
+#DIM COUNT_KILL
+#DIM COUNT_BLOCK
+#DIM L_LINE
+#DIM L_DAMAGE
+#DIM DAMAGE_OR_KILLCOUNT
+#DIM L_POS, 17
+;TFLAG:戦闘イベントに以下の値を代入して、@EVENT_BATTLE_Kを呼び出す
+;範囲系は封印。吸収反射回避も単体でしかでない
+;11.与ダメージ(単体)
+;12.被ダメージ(単体)
+;13.与ダメージ(範囲・ランダム)
+;14.与ダメージ(範囲・ランダム 撃破あり)                                          14.被ダメージ(範囲・ランダム)
+;15.反射された
+;16.反射した
+;17.回避された
+;18.回避した
+;19,敵味方全体攻撃
+;20,反撃を発動した
+;21,トリガーを発動した                                          21.味方に対して与ダメージ(単体)
+;22,バッドステータスになった                                    22.味方に対して被ダメージ(単体)
+;23,食いしばり等で耐えた                                        23.味方に対して与ダメージ(範囲・ランダム)
+;24,回復してもらった                                          24.味方に対して被ダメージ(範囲・ランダム)
+;25,状態異常を直してもらった                                          25.味方に対して反射された
+;                                          26.味方に対して反射した
+;                                          27.味方に対して回避された
+;                                          28.味方に対して回避した
+
+;ARG 攻撃者
+;ARG:1 被攻撃者
+;ARG:2 ダメージ量
+;ARG:3 1の時、受け渡し用にLOCALを立てる,2の時はミスしたというフラグになる。-1は反射発生、
+;　　　4の時バステを受けたとき、5食いしばりで耐えたとき、6HP回復してもらったとき
+;　　　7の時バステを治して貰った時
+SIF FLAG:RPG구상
+	RETURN 0
+TFLAG:전투이벤트 = 0
+
+;とりあえず、範囲は仕様で悩むので封印しておく
+;特殊なスキルで変わったたーげっとが投げ込まれた場合に対処
+IF ARG:3
+	THROW 旧処理が残ってしまっています！
+	;IF CFLAG:ARG:타겟 > 16
+	;	LOCAL = 0
+	;	LOCAL:1 = 0
+	;	LOCAL:2 = 0
+	;	LOCAL:3 = 0
+	;	RETURN 0
+	;ELSE
+;	IF 1
+	;ARG != ARG:1
+;		CHARA = FINDELEMENT(個別キャラ番号 , ARG:1)
+;		IF CHARA < 0
+;			CHARA = FINDELEMENT(個別キャラ番号 , -1)
+;			SIF ARG != ARG:1
+;				LOCAL:4 ++
+;		ENDIF
+		;リンケージ参加の場合はフラグ更新しない
+;		SIF CFLAG:ARG:링케이지참가 || CHARA < 0
+;			RETURN 0
+;		LOCAL = ARG
+;		LOCAL:1 = ARG:1
+;		LOCAL:2 = ARG:2
+;		個別キャラ番号:CHARA = ARG:1
+;		個別与ダメージ:CHARA += ARG:2
+;		;反射はSKILL_TEMP時点で-1をいれて、それからDAMAGE関数で3をいれる
+;		IF 個別戦闘イベント:CHARA == -1
+;			LOCAL:3 = 3
+;			個別戦闘イベント:CHARA = 3
+;		ELSE
+;			LOCAL:3 = ARG:3
+;			SIF 個別戦闘イベント:CHARA != 5 || ARG:3 != 1
+;				個別戦闘イベント:CHARA = ARG:3
+;			SIF 個別戦闘イベント:CHARA == 7
+;				個別与ダメージ:CHARA = ARG:2
+;		ENDIF
+;		
+;	ENDIF
+;	RETURN 0
+ENDIF
+;異常な数値が来てしまうのを回避
+;IF LOCAL >= CHARANUM || LOCAL:1 >= CHARANUM || LOCAL == -1
+;	LOCAL = -1
+;	LOCAL:1 = 0
+;	LOCAL:2 = 0
+;	LOCAL:3 = 0
+;	LOCAL:4 = 0
+;	RETURN 0
+;ENDIF
+
+;=====================================================
+;攻撃側のメッセージ処理
+;=====================================================
+;スキルの使用者の確定
+IF ARG == -1
+	L_ACTOR = FLAG:행동순1
+ELSE
+	L_ACTOR = ARG
+ENDIF
+;-----------------------------------------------------
+;攻撃側のイベント番号を作成
+;-----------------------------------------------------
+;敵味方全体攻撃
+IF L_ACTOR >= 0
+	IF CFLAG:L_ACTOR:타겟 == 23
+		TFLAG:전투이벤트 = 19
+	ELSE
+		COUNT_REACTOR = 0
+		DAMAGE_OR_KILLCOUNT = 0
+		;全員に攻撃をあてたかどうかをチェック
+		FOR LCOUNT, 1, 17
+			CHARA = POS_REC:LCOUNT
+			SIF CHARA < 0
+				CONTINUE
+			SIF L_ACTOR == CHARA
+				CONTINUE
+			;攻撃対象が一人だった場合に備えてフラグを設定する
+			IF GET_CREC_ACT(L_ACTOR, CHARA, "HIT/BLOCK/DRAIN")
+				TFLAG:전투이벤트 = GET_BATTLE_EVENT_NUM("与ダメージ_単体")
+				DAMAGE_OR_KILLCOUNT += CFLAG:CHARA:현데미지
+			ELSEIF GET_CREC_ACT(L_ACTOR, CHARA, "AVOID")
+				TFLAG:전투이벤트 = GET_BATTLE_EVENT_NUM("回避された")
+			ELSEIF GET_CREC_ACT(L_ACTOR, CHARA, "REFLECT")
+				TFLAG:전투이벤트 = GET_BATTLE_EVENT_NUM("反射された")
+			ELSE
+				CONTINUE
+			ENDIF
+			COUNT_REACTOR++
+			L_REACTOR = CHARA
+			;味方に攻撃した場合は30番台にずらす
+			SIF IS_FRIEND(L_ACTOR, L_REACTOR)
+				TFLAG:전투이벤트 += 20
+		NEXT
+		;複数の敵に攻撃を実行しているか、確認し、しているなら上書き
+		IF COUNT_REACTOR > 1
+			;敵を殺しているかどうか確認
+			TEMP = GET_CREC_ACT_SUM(L_ACTOR, "적아군전체", "KILL")
+			IF TEMP > 0
+				TFLAG:전투이벤트 = GET_BATTLE_EVENT_NUM("与ダメージ_範囲_ランダム_撃破あり")
+				DAMAGE_OR_KILLCOUNT = TEMP
+			ELSE
+				TFLAG:전투이벤트 = GET_BATTLE_EVENT_NUM("与ダメージ_範囲_ランダム")
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+;-----------------------------------------------------
+;攻撃側の口上の呼び出し処理
+;-----------------------------------------------------
+STOCK_TARGET = TARGET
+TARGET = L_ACTOR
+STOCK_COLOR = GETCOLOR()
+L_LINE = LINECOUNT
+CALL VARSET_KOJO_RPG_FLAG
+IF CFLAG:입력행동 > -1
+	IF CFLAG:PT플래그 == 0
+		SETCOLOR COLOR("ENEMY")
+		CALL 口上呼び出し , "ENEMY_BATTLE_EVENT" , L_ACTOR, L_ACTOR, L_REACTOR , DAMAGE_OR_KILLCOUNT
+	ELSE
+		SETCOLOR COLOR("FRIEND")
+		CALL 口上呼び出し , "BATTLE_EVENT" , L_ACTOR, L_ACTOR, L_REACTOR , DAMAGE_OR_KILLCOUNT
+	ENDIF
+	IF RESULT == 2
+		SIF L_LINE != LINECOUNT && BTL_KOJO_RESULTS:0 == ""
+			CALL KOJO_RPG_CONVERT_LINE, LINECOUNT - L_LINE
+		CALL PRINT_KOJO_RPG_MESSAGE, "BATTLE_EVENT_ACTOR"
+	ENDIF
+ENDIF
+
+;=====================================================
+;防御側の口上呼び出し
+;=====================================================
+;抽選順をシャッフルし、最初に口上がでた時点で終る
+FOR LCOUNT, 1, 17
+	L_POS:LCOUNT = POS_REC:LCOUNT
+NEXT
+FOR LCOUNT, 1, 17
+	SWAP L_POS:RAND(1, 17), L_POS:RAND(1, 17)
+NEXT
+FOR LCOUNT, 1, 17
+	CHARA = L_POS:LCOUNT
+	SIF CHARA < 0
+		CONTINUE
+	SIF L_ACTOR == CHARA
+		CONTINUE
+	L_DAMAGE = CFLAG:CHARA:현데미지
+	;バステを受けた
+	IF GET_CREC_ACT(L_ACTOR, CHARA, "BADSTATE")
+		TFLAG:전투이벤트 = GET_BATTLE_EVENT_NUM("被バステ付着")
+	ELSEIF CFLAG:CHARA:이악물기발동 && !IS_BADSTATE(TARGET, "DYING")
+		TFLAG:전투이벤트 = GET_BATTLE_EVENT_NUM("이악물기발동")
+	ELSEIF CFLAG:CHARA:바스테치료
+		TFLAG:전투이벤트 = GET_BATTLE_EVENT_NUM("被バステ治癒")
+		L_DAMAGE = CFLAG:CHARA:바스테치료
+	ELSEIF CFLAG:CHARA:HP회복_ACT
+		TFLAG:전투이벤트 = GET_BATTLE_EVENT_NUM("被回復")
+		L_DAMAGE = -CFLAG:CHARA:HP회복_ACT
+	ELSEIF GET_CREC_ACT(L_ACTOR, CHARA, "BLOCK/DRAIN")
+		TFLAG:전투이벤트 = GET_BATTLE_EVENT_NUM("無効化した")
+	ELSEIF GET_CREC_ACT(L_ACTOR, CHARA, "HIT/AVOID/REFLECT")
+		IF GET_CREC_ACT(L_ACTOR, CHARA, "HIT")
+			TFLAG:전투이벤트 = GET_BATTLE_EVENT_NUM("被ダメージ_単体")
+		ELSEIF GET_CREC_ACT(L_ACTOR, CHARA, "AVOID")
+			TFLAG:전투이벤트 = GET_BATTLE_EVENT_NUM("回避した")
+		ELSEIF GET_CREC_ACT(L_ACTOR, CHARA, "REFLECT")
+			TFLAG:전투이벤트 = GET_BATTLE_EVENT_NUM("反射した")
+		ENDIF
+		;味方に攻撃した場合は30番台にずらす
+		SIF IS_FRIEND(L_ACTOR, CHARA)
+			TFLAG:전투이벤트 += 20
+	ELSE
+		TFLAG:전투이벤트 = 0
+	ENDIF
+	;防御側
+	TARGET = CHARA
+	L_LINE = LINECOUNT
+	CALL VARSET_KOJO_RPG_FLAG
+	IF CFLAG:TARGET:PT플래그 == 0
+		SETCOLOR COLOR("ENEMY")
+		;CALL 口上呼び出し , "ENEMY_BATTLE_EVENT" , LOCAL:1 , LOCAL:1 , LOCAL , LOCAL:2
+		CALL 口上呼び出し , "ENEMY_BATTLE_EVENT" , TARGET , TARGET , L_ACTOR, L_DAMAGE
+	ELSE
+		SETCOLOR COLOR("FRIEND")
+		;CALL 口上呼び出し , "BATTLE_EVENT" , LOCAL:1 , LOCAL:1 , LOCAL , LOCAL:2
+		CALL 口上呼び出し , "BATTLE_EVENT" , TARGET , TARGET , L_ACTOR,L_DAMAGE
+	ENDIF
+	IF RESULT == 2
+		SIF L_LINE != LINECOUNT && BTL_KOJO_RESULTS:0 == ""
+			CALL KOJO_RPG_CONVERT_LINE, LINECOUNT - L_LINE
+		CALL PRINT_KOJO_RPG_MESSAGE, "BATTLE_EVENT_REACTOR"
+	ENDIF
+	RESETCOLOR
+	;この時点で表示があったなら代表者一人の口上が出せたのでBREAK
+	SIF L_LINE != LINECOUNT
+		BREAK
+NEXT
+TFLAG:전투이벤트 = 0
+TARGET = STOCK_TARGET
+SETCOLOR STOCK_COLOR
+
+@BATTLE_EVENT_ACT, ARG, L_SKILL = -1, ARGS = "BATTLE_MESSAGE"
+#DIM DYNAMIC STOCK_TARGET
+#DIM DYNAMIC STOCK_SKILL
+#DIM DYNAMIC L_SKILL
+#DIM DYNAMIC L_LINE
+#DIM DYNAMIC L_RESULT
+#DIM DYNAMIC LCOUNT
+#DIM STOCK_COLOR
+STOCK_TARGET = TARGET
+STOCK_SKILL = CFLAG:ARG:입력행동
+SIF L_SKILL >= 0
+	CFLAG:ARG:입력행동 = L_SKILL
+STOCK_COLOR = GETCOLOR()
+SETCOLOR COLOR("BATTLE", ARG)
+TARGET = ARG
+L_LINE = LINECOUNT
+CALL VARSET_KOJO_RPG_FLAG
+
+CALL GET_SKILL_PROP, "SKILL_NAME", CFLAG:TARGET:입력행동, TARGET
+TSTR:사용스킬명 '= RESULTS
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:TARGET:입력행동, TARGET
+TSTR:사용스킬효과 '= GET_SKILL_EFFECT(RESULT)
+CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", CFLAG:TARGET:입력행동, TARGET
+TSTR:사용스킬계통 '= GET_SUCCESSION(RESULT)
+
+IF CFLAG:ARG:PT플래그 > 0
+	CALL 口上呼び出し , ARGS , TARGET , TARGET
+ELSE
+	CALL 口上呼び出し , "ENEMY_" + ARGS , TARGET , TARGET
+ENDIF
+L_RESULT = RESULT
+IF L_RESULT == 2
+	;行数が多すぎるときはコンバートしない
+	IF (L_LINE + 4 + 2) < LINECOUNT
+		WAIT
+	ELSE
+		SIF L_LINE != LINECOUNT && BTL_KOJO_RESULTS:0 == ""
+			CALL KOJO_RPG_CONVERT_LINE, LINECOUNT - L_LINE
+		IF INRANGE(CFLAG:입력행동, MIN_LINKAGENUM, MAX_LINKAGENUM - 1)
+			VARI L_LINE = LINECOUNT
+			CALL PRINT_KOJO_RPG_MESSAGE, "NOWAIT"
+			;=====================================================
+			;リンケージ参加口上呼び出し
+			;=====================================================
+			FOR LCOUNT, GETNUM(CFLAG, "링케이지참가자1"), GETNUM(CFLAG, "링케이지참가자5") + 1
+				SIF CFLAG:LCOUNT < 0
+					CONTINUE
+				CALL BATTLE_EVENT, "링케이지참가", CFLAG:LCOUNT, ARG:2, CFLAG:입력행동
+			NEXT
+			SIF L_LINE != LINECOUNT
+				WAIT
+		ELSE
+			CALL PRINT_KOJO_RPG_MESSAGE, "BATTLE_EVENT_ACTOR"
+		ENDIF
+	ENDIF
+ENDIF
+TARGET = STOCK_TARGET
+CFLAG:ARG:입력행동 = STOCK_SKILL
+SETCOLOR STOCK_COLOR
+RETURN L_RESULT
+
+@BATTLE_EVENT, ARGS, ARG = -99, ARG:1, ARG:2
+#DIM STOCK_TARGET
+#DIM STOCK_COLOR
+#DIM KOJO_TABLE, 6
+#DIM L_CHARA
+#DIM LCOUNT
+#DIM L_LINE
+#DIM IS_NOWAIT
+#DIMS TEMPS
+;TARGETを保存し、口上内でTARGETを使えるように
+TFLAG:전투이벤트 = GET_BATTLE_EVENT_NUM(ARGS)
+STOCK_TARGET = TARGET
+STOCK_COLOR = GETCOLOR()
+;-99で指定されてきた場合はPTの内のうちランダムで一人
+IF ARG == -99
+	;配列にキャラクターを取得したのち、ランダムにシャッフル。その後順番に判定する
+	FOR LCOUNT, 0, 6
+		KOJO_TABLE:LCOUNT = POS(LCOUNT+1)
+	NEXT
+	FOR LCOUNT, 0, 6
+		SWAP KOJO_TABLE:(RAND:6), KOJO_TABLE:(RAND:6)
+	NEXT
+	TARGET = -1
+	FOR LCOUNT, 0, 6
+		L_CHARA = KOJO_TABLE:LCOUNT
+		SIF L_CHARA < 0
+			CONTINUE
+		SIF !INPUTABLEF_CHARA(L_CHARA)
+			CONTINUE
+		TARGET = L_CHARA
+		BREAK
+	NEXT
+ELSE
+	TARGET = ARG
+ENDIF
+
+;この時点でTARGETが負の数値ならキャラがいなかったということになるのでTARGETを戻して終わる
+IF TARGET < 0
+	TARGET = STOCK_TARGET
+	RETURN 0
+ENDIF
+SELECTCASE ARGS
+	CASE "COOP発動"
+		IS_NOWAIT = 1
+	CASE "COOP参加"
+		IS_NOWAIT = 1
+	CASE "링케이지참가"
+		IS_NOWAIT = 1
+	CASEELSE
+		IS_NOWAIT = 0
+ENDSELECT
+L_LINE = LINECOUNT
+CALL VARSET_KOJO_RPG_FLAG
+
+CALL GET_SKILL_PROP, "SKILL_NAME", CFLAG:TARGET:입력행동, TARGET
+TSTR:사용스킬명 '= RESULTS
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:TARGET:입력행동, TARGET
+TSTR:사용스킬효과 '= GET_SKILL_EFFECT(RESULT)
+CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", CFLAG:TARGET:입력행동, TARGET
+TSTR:사용스킬계통 '= GET_SUCCESSION(RESULT)
+
+IF CFLAG:TARGET:PT플래그
+	;味方の場合
+	CALL 口上呼び出し , "BATTLE_EVENT" , TARGET , TARGET, ARG:1
+ELSE
+	;敵の場合
+	CALL 口上呼び出し , "ENEMY_BATTLE_EVENT" , TARGET , TARGET, ARG:1
+ENDIF
+IF RESULT == 2
+	;行数が多すぎるときはコンバートしない
+	IF (L_LINE + 4 + 2) < LINECOUNT
+		WAIT
+	ELSE
+		SIF L_LINE != LINECOUNT && BTL_KOJO_RESULTS:0 == ""
+			CALL KOJO_RPG_CONVERT_LINE, LINECOUNT - L_LINE
+		IF IS_NOWAIT
+			CALL PRINT_KOJO_RPG_MESSAGE, "NOWAIT"
+		ELSE
+			CALL PRINT_KOJO_RPG_MESSAGE, "BATTLE_EVENT"
+		ENDIF
+	ENDIF
+ENDIF
+;TARGETを戻す
+TARGET = STOCK_TARGET
+SETCOLOR STOCK_COLOR
+TFLAG:전투이벤트 = 0
+
+;============================================
+;コマンド入力時口上
+;============================================
+@KOJO_BATTLE_INPUT_COMMAND, L_CHARA
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC STOCK_TARGET
+;表示がコロコロ変わらないように乱数を固定する
+RANDOMIZE TFLAG:네비용난수시트
+
+CALL SET_NAVI_DATA_FOR_MAIN
+IF !IS_BADSTATE(L_CHARA, "GOOD")
+	TSTR:입력시구상_시추에이션_메인 '= GET_STATE(CFLAG:L_CHARA:상태이상)
+ELSEIF 現HP割合(L_CHARA) < 25
+	TSTR:입력시구상_시추에이션_메인 '= "瀕死"
+ELSEIF 現HP割合(L_CHARA) < 50
+	TSTR:입력시구상_시추에이션_메인 '= "重傷"
+ELSEIF 現HP割合(L_CHARA) < 100
+	TSTR:입력시구상_시추에이션_메인 '= "軽傷"
+ELSEIF 現HP割合(L_CHARA) == 100
+	TSTR:입력시구상_시추에이션_메인 '= "無傷"
+ENDIF
+
+IF IS_BADSTATE(MASTER, "DYING")
+	TSTR:입력시구상_시추에이션_서버 '= "MASTER死亡"
+ELSEIF L_CHARA != MASTER && !IS_BADSTATE(MASTER, "GOOD")
+	TSTR:입력시구상_시추에이션_서버 '= "MASTERバステ"
+ELSEIF 現HP割合(L_CHARA) < 25
+	TSTR:입력시구상_시추에이션_서버 '= "MASTER瀕死"
+ELSEIF TFLAG:아군사망자수 > 2
+	TSTR:입력시구상_시추에이션_서버 '= "死亡者多数"
+ELSEIF TFLAG:아군HP잔존율 < 50
+	TSTR:입력시구상_시추에이션_서버 '= "PTHP危機"
+ELSEIF TFLAG:아군사망자수 > 0
+	TSTR:입력시구상_시추에이션_서버 '= "死亡者有り"
+ELSEIF TFLAG:아군BS수 >= 2
+	TSTR:입력시구상_시추에이션_서버 '= "異常者複数"
+ELSEIF TFLAG:아군BS수 > 0
+	TSTR:입력시구상_시추에이션_서버 '= "異常者有り"
+ELSE
+	TSTR:입력시구상_시추에이션_서버 '= "平常"
+ENDIF
+STOCK_TARGET = TARGET
+TARGET = L_CHARA
+CALL 口上呼び出し, "KOJO_BATTLE_INPUT_COMMAND" , L_CHARA , L_CHARA
+TARGET = STOCK_TARGET
+;乱数を不定化
+RANDOMIZE GETMILLISECOND()
+SIF BTL_KOJO_RESULTS:0 == ""
+	RETURN 0
+;表示行数の制限のために2行までに減らす
+BTL_KOJO_RESULTS:2 '= "", ""
+TFLAG:대화형캐릭터 = -1
+CALL PRINT_KOJO_RPG_MESSAGE, "個別入力", L_CHARA
+CALL VARSET_KOJO_RPG_FLAG
+
+RETURN 1
+
+;============================================
+;ナビ口上
+;============================================
+@KOJO_BATTLE_NAVI, ARGS
+#DIM LCOUNT
+#DIM CHARA
+#DIM STOCK_TARGET
+#DIMS CASE_TABLE
+#DIMS L_CASE
+#DIMS L_TABLE
+#DIM LINENUM
+#DIM STOCK_ピンチキャラ
+#DIMS STOCK_ピンチ内容
+#DIM STOCK_COLOR
+;--------------------------------------------
+;使用可否の確認
+;--------------------------------------------
+SIF !CAN_USE_NAVIGATOR
+	RETURN 0
+SIF NAVIGATOR <= 0
+	RETURN 0
+SIF IS_BADSTATE(NAVIGATOR, "DYING")
+	RETURN 0
+SIF IS_BADSTATE(NAVIGATOR, "STONE")
+	RETURN 0
+SIF !NAVIGATOR_ABLE(NAVIGATOR)
+	RETURN 0
+STOCK_COLOR = GETCOLOR()
+;関数呼び出し前に処理する形に変更
+;TSTR:네비_시추에이션_메인 = 
+;TSTR:네비_시추에이션_서버1 = 
+;TSTR:네비_시추에이션_서버2 = 
+;
+;TFLAG:대화형캐릭터 = -1
+;TSTR:전투구상캐릭터화상어드레스 = 
+;TSTR:대화형캐릭터화상어드레스 = 
+
+;表示がコロコロ変わらないように乱数を固定する
+RANDOMIZE TFLAG:네비용난수시트
+;--------------------------------------------
+;シチュエーションの作成
+;必要なフラグ自体は別関数で作っておく
+;--------------------------------------------
+TSTR:네비_시추에이션테이블 =
+SELECTCASE ARGS
+	CASE "戦闘開始"
+		TSTR:네비_시추에이션_메인 = 戦闘開始
+		;通常 / 先制攻撃 / バックアタック / 不意打ち / バックアタック阻止 /　不意打ち阻止
+		TSTR:네비_시추에이션_서버1 = %TSTR:전투개시상황%
+		SELECTCASE TFLAG:적아군레벨차
+			CASE IS >= 10
+				TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "格下")%
+			CASE IS <= -10
+				TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "格上")%
+			CASEELSE
+				TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "同格")%
+		ENDSELECT
+	CASE "メイン画面"
+		;------------------------------------------------
+		;重度の危機
+		;------------------------------------------------
+		TSTR:네비_시추에이션_메인 = メイン画面
+		;初期配置の半数以上が死亡
+		SIF TFLAG:아군배치수 * 100 / TFLAG:아군초기배치수 < 50
+			TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "半壊")%
+		SIF TFLAG:아군사망자수 > 1
+			TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "死亡者多数")%
+		;バステが非常に多い
+		SIF TFLAG:아군BS수 * 100 / TFLAG:아군초기배치수 >= 66
+			TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "異常半壊")%
+		;初期配置のバステと死亡者合わせて半数以上
+		SIF TSTR:네비_시추에이션테이블 == "" && ((TFLAG:아군BS수 + (TFLAG:아군초기배치수 - TFLAG:아군배치수)) * 100 / TFLAG:아군초기배치수  >= 50)
+			TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "機能不全")%
+		;全体的にHPが減っている
+		SIF TFLAG:아군HP잔존율 < 50
+			TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "PTHP危機")%
+		SIF 現HP割合(MASTER) < 25 && !IS_BADSTATE(MASTER, "DYING")
+			TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "マスター瀕死")%
+		SIF IS_BADSTATE(MASTER, "DYING")
+			TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "マスター死亡")%
+		IF TSTR:네비_시추에이션테이블 != ""
+			TSTR:네비_시추에이션_서버1 = 重度の危機
+			;TSTR:네비_시추에이션_서버2 = %RAND_SPLIT(TSTR:네비_시추에이션테이블, "/")%
+			GOTO MAKE_CASE_END
+		ENDIF
+		
+		;------------------------------------------------
+		;中度の危機(問題がある状態)
+		;------------------------------------------------
+		;初期配置より数が減っている
+		IF TFLAG:아군초기배치수 > TFLAG:아군배치수
+			;死亡者がいる
+			IF TFLAG:아군사망자수 > 0
+				TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "핀치캐릭터")%
+			;ポジションに空きができている
+			ELSE
+				TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "戦力低下")%
+			ENDIF
+		ELSE
+			IF TFLAG:아군BS수 >= 2
+				TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "異常者複数")%
+			ELSE
+				SIF TFLAG:핀치캐릭터 >= 0
+					TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "핀치캐릭터")%
+			ENDIF
+		ENDIF
+		;それなりにHPが減っている
+		SIF TFLAG:아군HP잔존율 < 75
+			TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "PTHP減少")%
+		
+		IF TSTR:네비_시추에이션테이블 != ""
+			TSTR:네비_시추에이션_서버1 = 中度の危機
+			TSTR:네비_시추에이션_서버2 = %RAND_SPLIT(TSTR:네비_시추에이션테이블, "/")%
+			GOTO MAKE_CASE_END
+		ENDIF
+		
+		;------------------------------------------------
+		;問題がない状態
+		;------------------------------------------------
+		TSTR:네비_시추에이션_서버1 = 平常
+		SELECTCASE TFLAG:적HP잔존율
+			CASE IS < 10
+				TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "殲滅率90")%
+			CASE IS < 25
+				TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "殲滅率75")%
+			CASE IS < 50
+				TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "殲滅率50")%
+			CASE IS < 75
+				TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "殲滅率25")%
+			CASE IS < 100
+				TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "殲滅率1")%
+			CASEELSE
+				TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "殲滅率0")%
+		ENDSELECT
+		;少しHPが減っている
+		SIF TFLAG:아군HP잔존율 < 90
+			TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "PTHP微減")%
+		IF TFLAG:적초기배치수 > TFLAG:적배치수
+			TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "一部撃破済み")%
+		ELSE
+			TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "敵健在")%
+		ENDIF
+		;レベル差判定からの送り
+		SELECTCASE TFLAG:적아군레벨차
+			CASE IS >= 10
+				TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "格下")%
+			CASE IS <= -10
+				TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "格上")%
+			CASEELSE
+				TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "同格")%
+		ENDSELECT
+		;TSTR:네비_시추에이션_서버2 = %RAND_SPLIT(TSTR:네비_시추에이션테이블, "/")%
+
+		;RESULT: 1 なかま2 ものもらい3 襲われる4 おこらせる5 単に会話終了　6立ち去る　7逃げられる　8契約までいったがCOMP容量かレベルで失敗
+		;1 / 8は戦闘が終わるのでここでは扱わない
+		SELECTCASE TFLAG:교섭결과
+			CASE 2
+				TSTR:네비_시추에이션_서버2 = トーク_ものもらい
+			CASE 4
+				TSTR:네비_시추에이션_서버2 = トーク_おこらせる
+			CASE 5
+				TSTR:네비_시추에이션_서버2 = トーク_会話終了
+			CASE 6
+				TSTR:네비_시추에이션_서버2 = トーク_立ち去る
+			CASE 7
+				TSTR:네비_시추에이션_서버2 = トーク_逃げられる
+		ENDSELECT
+	CASE "戦闘終了"
+		TSTR:네비_시추에이션_메인 = 戦闘終了
+		IF FLAG:승리플래그
+			TSTR:네비_시추에이션_서버1 = 勝利
+		ELSEIF FLAG:패배플래그
+			TSTR:네비_시추에이션_서버1 = 敗北
+		ELSEIF FLAG:도주플래그
+			TSTR:네비_시추에이션_서버1 = 도주
+		ENDIF
+		IF TFLAG:교섭결과 == 1
+			TSTR:네비_시추에이션_서버2 = 계약
+		ELSEIF TFLAG:교섭결과 == 8
+			TSTR:네비_시추에이션_서버2 = 契約失敗
+		ELSE
+			SELECTCASE FLAG:경과턴수
+				CASE 0
+					TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "1ターンキル")%
+				CASE IS < 3
+					TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "早期決着")%
+				CASE IS > 6
+					TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "長期戦")%
+			ENDSELECT
+			;レベル差
+			SELECTCASE TFLAG:적아군레벨차
+				CASE IS >= 10
+					TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "格下")%
+				CASE IS <= -10
+					TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "格上")%
+				CASEELSE
+					TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "同格")%
+			ENDSELECT
+			;被害率
+			SELECTCASE TFLAG:아군HP잔존율
+				CASE IS < 25
+					TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "壊滅的")%
+				CASE IS < 50
+					TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "被害甚大")%
+				CASE IS < 75
+					TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "被害大")%
+				CASE IS < 90
+					TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "被害軽微")%
+				CASEELSE
+					TSTR:네비_시추에이션테이블 = %ADD_SPLIT(TSTR:네비_시추에이션테이블, "/", "被害皆無")%
+			ENDSELECT
+			;TSTR:네비_시추에이션_서버2 = %RAND_SPLIT(, "/")%
+		ENDIF
+ENDSELECT
+$MAKE_CASE_END
+L_TABLE = %TSTR:네비_시추에이션테이블%
+;口上内でTARGETで指定できるように
+STOCK_TARGET = TARGET
+TARGET = NAVIGATOR
+STOCK_ピンチキャラ = TFLAG:핀치캐릭터
+STOCK_ピンチ内容 = %TSTR:핀치캐릭터위기내용%
+
+;サブシチュエーション2は同時に条件を満たしたもののうちからランダムでひとつ表示させる
+;実装としてはテーブルに入れられたものをランダムな順番で判定して最初に中身が取得できたものを表示させる
+;また、すべての条件で口上を得られなかった場合はその他を持たせて送る
+FOR LCOUNT, 0, STRCOUNT(L_TABLE, "/") + 1 + 1
+	;マスターの優先差し替えがあるので毎回元の変数に戻す
+	TFLAG:핀치캐릭터 = STOCK_ピンチキャラ
+	TSTR:핀치캐릭터위기내용 = %STOCK_ピンチ内容%
+	IF L_TABLE == ""
+		TSTR:네비_시추에이션_서버2 = 그외
+	ELSE
+		;ランダムでひとつ抜く
+		TSTR:네비_시추에이션_서버2 = %RAND_SPLIT(L_TABLE, "/")%
+		;抜いたシチュエーションは削除する
+		L_TABLE = %DEL_SPLIT(L_TABLE, "/", TSTR:네비_시추에이션_서버2)%
+	ENDIF
+	;マスターの危機は優先度が他より優先度高い
+	SELECTCASE TSTR:네비_시추에이션_서버2
+		CASE "マスター瀕死"
+			TFLAG:핀치캐릭터 = MASTER
+			TSTR:핀치캐릭터위기내용 = 瀕死
+		CASE "マスター死亡"
+			TFLAG:핀치캐릭터 = MASTER
+			TSTR:핀치캐릭터위기내용 = 死亡
+	ENDSELECT
+	IF TFLAG:핀치캐릭터 >= 0
+		IF TFLAG:핀치캐릭터 == MASTER
+			TSTR:핀치캐릭터명 = \@CSTR:NAVIGATOR:이인칭 == "" ? %CALLNAME:MASTER% # %CSTR:NAVIGATOR:이인칭%\@
+		ELSE
+			TSTR:핀치캐릭터명 = %CALLNAME:(TFLAG:핀치캐릭터)%
+		ENDIF
+	ENDIF
+	CALL VARSET_KOJO_RPG_FLAG
+	SELECTCASE ARGS
+		CASE "メイン画面"
+			SETCOLOR COLOR("NAVI_MAIN")
+		CASEELSE
+			SETCOLOR COLOR("NAVI")
+	ENDSELECT
+	CALL 口上呼び出し, "KOJO_BATTLE_NAVI" , TARGET , TARGET
+	SIF BTL_KOJO_RESULTS:0 == ""
+		CONTINUE
+	CALL PRINT_KOJO_RPG_MESSAGE, "ナビ_" + ARGS
+	SETCOLOR STOCK_COLOR
+	BREAK
+NEXT
+;変数の後始末
+TARGET = STOCK_TARGET
+;乱数を不定化
+RANDOMIZE GETMILLISECOND()
+SETCOLOR STOCK_COLOR
+RETURN 1
+
+;============================================
+;戦闘口上の表示関数
+;メッセージ内容をRESULTS配列にいれた状態でこの関数を呼ぶ
+;BTL_KOJO_RESULTS　TARGETの顔画像と名前を使う
+;BTL_KOJO_REACT_RESULTS　TFLAG:掛け合いキャラの顔画像と名前を使う
+;
+;ARGS 	呼び出し関数
+;ARG ターゲットの直接指定
+;============================================
+@PRINT_KOJO_RPG_MESSAGE, ARGS, ARG = -1
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC CHARA
+#DIMS DYNAMIC SHOW_LINE, 8
+#DIM DYNAMIC KOJOLENS
+#DIM DYNAMIC IMG_SIZE
+#DIM DYNAMIC IS_REPLY;掛け合いかどうか
+#DIMS DYNAMIC CHARA_NAME
+#DIMS DYNAMIC L_TEXT, VARSIZE("BTL_KOJO_RESULTS")
+;この関数を使わない宣言
+SIF TFLAG:전투구상직접출력
+	RETURN 0
+;BTL_KOJO_RESULTS配列が空の場合は戻す
+SIF MATCH(BTL_KOJO_RESULTS, "") == VARSIZE("BTL_KOJO_RESULTS")
+	RETURN 0
+;画像サイズの確定
+IMG_SIZE = 0
+IF BTL_KOJO_RESULTS:2 != "" || BTL_KOJO_RESULTS:3 != ""
+	IMG_SIZE = 1
+ELSE
+	IMG_SIZE = 0
+ENDIF
+IF !TFLAG:대화형틀없음
+	IF BTL_KOJO_REACT_RESULTS:2 != "" || BTL_KOJO_REACT_RESULTS:3 != "" 
+		IMG_SIZE = MAX(1, IMG_SIZE)
+	ELSE
+		IMG_SIZE = MAX(0, IMG_SIZE)
+	ENDIF
+ENDIF
+;口上の長さを確認して幅を決めておく
+KOJOLENS = 72
+KOJOLENS -= IMG_SIZE ? 12 # 8
+IF !TFLAG:전투구상틀없음
+	FOR LCOUNT, 0, VARSIZE("BTL_KOJO_RESULTS")
+		KOJOLENS = MAX(KOJOLENS, KOJOLENS, STRLENS(HTML_TOPLAINTEXT(BTL_KOJO_RESULTS:LCOUNT)))
+	NEXT
+ENDIF
+IF !TFLAG:대화형틀없음
+	FOR LCOUNT, 0, VARSIZE("BTL_KOJO_REACT_RESULTS")
+		KOJOLENS = MAX(KOJOLENS, KOJOLENS, STRLENS(HTML_TOPLAINTEXT(BTL_KOJO_REACT_RESULTS:LCOUNT)))
+	NEXT
+ENDIF
+;偶数化処理
+KOJOLENS = (KOJOLENS / 2 + KOJOLENS % 2) * 2
+
+FOR IS_REPLY, TFLAG:대화형순서역전 ? 1 # 0 , TFLAG:대화형순서역전 ? -1 # 2, TFLAG:대화형순서역전 ? -1 # 1
+	VARSET SHOW_LINE
+	IF IS_REPLY
+		CHARA = TFLAG:대화형캐릭터
+		SIF CHARA < 0 && !TFLAG:대화형틀없음
+			CONTINUE
+	ELSE
+		IF ARG >= 0
+			CHARA = ARG
+		ELSE
+			CHARA = TARGET
+		ENDIF
+		SIF CHARA < 0 && !TFLAG:전투구상틀없음
+			CONTINUE
+	ENDIF
+	VARI L_XPOS
+	;ナビメイン画面表示は左に余白を儲ける
+	IF ARGS == "ナビ_メイン画面"
+		IF !((!IS_REPLY && TFLAG:전투구상틀없음) || (IS_REPLY && TFLAG:대화형틀없음))
+			SIF !IMG_SIZE && LCOUNT == 4
+				BREAK
+		ENDIF
+		L_XPOS += 850
+	ENDIF
+	;------------------------------------------------
+	;スチル表示
+	;------------------------------------------------
+	VARS TEMPS, 5
+	SPLIT BTL_KOJO_PICTURE_RESULTS:(TFLAG:대화형순서역전 ? !IS_REPLY # IS_REPLY), ",", TEMPS
+	SIF TEMPS:1 == ""
+		TEMPS:1 '= "-1"
+	SIF TEMPS:2 == ""
+		TEMPS:2 '= "LEFT"
+	SIF TEMPS:3 == ""
+		TEMPS:3 '= "0"
+	SIF TEMPS:4 == ""
+		TEMPS:4 '= "0"
+	SIF TEMPS != ""
+		CALL PRINT_EVENT_PICTURE, TEMPS:0, TOINT(TEMPS:1), TEMPS:2, TOINT(TEMPS:3), TOINT(TEMPS:4)
+	;-----------------------------------------------
+	;画像
+	;-----------------------------------------------
+	;キャラが指定されてない場合(枠線なし利用など)
+	RESULTS '= ""
+	IF TSTR:전투구상캐릭터화상어드레스 != "" && !IS_REPLY
+		RESULTS '= @"<img src = '%TSTR:전투구상캐릭터화상어드레스%' height = '\@IMG_SIZE == 1 ? 600 # 400\@'>"
+	ELSEIF TSTR:대화형캐릭터화상어드레스 != "" && IS_REPLY
+		RESULTS '= @"<img src = '%TSTR:대화형캐릭터화상어드레스%' height = '\@IMG_SIZE == 1 ? 600 # 400\@'>"
+	ELSEIF CHARA >= 0
+		IF IS_REPLY
+			RESULTS '= GET_FACE_BY_CHARA_AS_HTML(CHARA, IMG_SIZE == 1 ? 600 # 400, "戦闘口上", TSTR:대화형구상시추에이션)
+		ELSE
+			RESULTS '= GET_FACE_BY_CHARA_AS_HTML(CHARA, IMG_SIZE == 1 ? 600 # 400, "戦闘口上", TSTR:전투구상시추에이션)
+		ENDIF
+	ENDIF
+	SIF RESULTS != ""
+		SHOW_LINE += @"<div xpos = '{L_XPOS}'>" + RESULTS + "</div>"
+	L_XPOS += IMG_SIZE == 1 ? 650 # 450
+	;------------------------------------------------
+	;テキスト部分
+	;------------------------------------------------
+	IF IS_REPLY
+		ARRAYCOPY "BTL_KOJO_REACT_RESULTS", "L_TEXT"
+	ELSE
+		ARRAYCOPY "BTL_KOJO_RESULTS", "L_TEXT"
+	ENDIF
+	IF IS_REPLY
+		CHARA_NAME = %TSTR:대화형캐릭터명칭%
+	ELSE
+		CHARA_NAME = %TSTR:전투구상캐릭터명칭%
+	ENDIF
+	VARS TEMP_TEXT
+	VARI TEXT_LINENUM
+	IF (!IS_REPLY && TFLAG:전투구상틀없음) || (IS_REPLY && TFLAG:대화형틀없음)
+		TEXT_LINENUM = (IMG_SIZE ? 6 # 4)
+	ELSE 
+		TEXT_LINENUM = (IMG_SIZE ? 6 # 4) - 2
+	ENDIF
+	FOR LCOUNT, 0, TEXT_LINENUM
+		SIF LCOUNT
+			TEMP_TEXT += "<br>"
+		TEMP_TEXT += L_TEXT:LCOUNT
+	NEXT
+	;色タグ
+	;カラータグが入ってたらエラー回避で色つけしない。
+	SIF !STRCOUNT(TEMP_TEXT, "<font")
+		TEMP_TEXT '= SET_COLOR_TAG(TEMP_TEXT, TOSTR_HTML(GETCOLOR()))
+	IF (!IS_REPLY && TFLAG:전투구상틀없음) ||(IS_REPLY && TFLAG:대화형틀없음)
+		TEMP_TEXT '= @"<div xpos = '{L_XPOS}'>" + TEMP_TEXT + "</div>"
+	ELSE
+		SHOW_LINE += @"<div xpos = '{L_XPOS}' ypos = '50' height = '{(IMG_SIZE ? 6 # 4) * 100 - 100}'  width = '{KOJOLENS * 50 + 100 - 2}' border_width = '2px' border_color = '%TOSTR_HTML(GETCOLOR())%'>" + "" + "</div>"
+		SIF CHARA_NAME != ""
+			SHOW_LINE += @"<div xpos = '{L_XPOS + 50}' ypos = '-25' background_color = %TOSTR_HTML(GETBGCOLOR())%>" + " " + SET_COLOR_TAG(CHARA_NAME, TOSTR_HTML(GETCOLOR())) + " " + "</div>"
+
+		TEMP_TEXT '= @"<div xpos = '{L_XPOS + 50}' ypos = '100'>" + TEMP_TEXT + "</div>"
+	ENDIF
+	SHOW_LINE += TEMP_TEXT
+	HTML_PRINT SHOW_LINE
+	FOR LCOUNT, 0, (IMG_SIZE ? 6 # 4) - 1
+		PRINTL 
+	NEXT
+NEXT
+;WAIT処理
+SELECTCASE ARGS
+	CASE "ナビ_メイン画面"
+		CUSTOMDRAWLINE =
+	CASE "NOWAIT", "個別入力"
+	CASEELSE
+		WAIT
+ENDSELECT
+;---- EDIT 002 ADD START -------------------------
+CALL VARSET_KOJO_RPG_FLAG
+;---- EDIT 002 ADD END ---------------------------
+RETURN 1
+
+;-----------------------------
+;出力された口上を変数化する
+;-----------------------------
+@KOJO_RPG_CONVERT_LINE, ARG
+#DIM LCOUNT
+#DIMS TEMPS
+;この関数を使わない宣言
+SIF TFLAG:전투구상직접출력
+	RETURN 0
+FOR LCOUNT, 1, ARG + 1
+	TEMPS = %HTML_TOPLAINTEXT(HTML_GETPRINTEDSTR(ARG - LCOUNT))%
+	TEMPS = %HTML_ESCAPE(TEMPS)%
+	;外枠を外す
+	SIF STRCOUNT(TEMPS, "┏") && STRCOUNT(TEMPS, "┓")
+		CONTINUE
+	SIF STRCOUNT(TEMPS, "┗") && STRCOUNT(TEMPS, "┛")
+		CONTINUE
+	;左右の罫線をきる
+	TEMPS = %REPLACE(TEMPS, "┃", "")%
+	;画像なしでスペース計算をされているとあわなくなるので半角スペースがある程度続いてるのを補足分とみなしてきる
+	TEMPS = %REPLACE(TEMPS, " " * 4, "")%
+	BTL_KOJO_RESULTS:FINDELEMENT(BTL_KOJO_RESULTS, "", , , 1) = %TEMPS%
+NEXT
+CLEARLINE ARG
+
+@VARSET_KOJO_RPG_FLAG
+VARSET BTL_KOJO_RESULTS
+VARSET BTL_KOJO_REACT_RESULTS
+VARSET BTL_KOJO_PICTURE_RESULTS
+TFLAG:대화형캐릭터 = -1
+TSTR:전투구상캐릭터명칭 = 
+TSTR:대화형캐릭터명칭 = 
+TSTR:전투구상캐릭터화상어드레스 = 
+TSTR:대화형캐릭터화상어드레스 = 
+TSTR:전투구상시추에이션 = 
+TSTR:대화형구상시추에이션 = 
+TFLAG:전투구상틀없음 = 0
+TFLAG:대화형틀없음 = 0
+TFLAG:전투구상직접출력 = 0

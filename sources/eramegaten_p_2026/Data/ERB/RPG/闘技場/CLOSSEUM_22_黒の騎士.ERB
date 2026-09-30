@@ -1,0 +1,181 @@
+﻿
+;====================
+;条件
+;====================
+@GET_COLOSSEUM_NAME_22
+#FUNCTIONS
+RESULTS_F '= "黒の騎士"
+RETURNF RESULTS_F
+
+@PLAYABLE_COLOSSEUM_22
+
+IF FLAG:투기장랭크 >= 3 && FLAG:투기장명성 >= 1100 && 闘技場フラグ:22:0 < 1 && ダンジョンフラグ:68:40 > 1
+	RESULTS = 시합 랭크Ｂ　ＶＳ 흑의기사
+	RETURN 1
+ENDIF
+RETURN 0
+
+
+;====================
+;内容
+;====================
+@COLOSSEUM_22
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+CUSTOMDRAWLINE =
+
+PRINTFORML 　사회자
+PRINTFORML 「레이디이이이스！ 앤！ 젠틀맨！
+PRINTFORMW 　오래 기다리셨습니다！ 오늘 주목할 카드는 이쪽！」
+PRINTFORML 
+PRINTFORMW ＞스크린에、%CALLNAME:MASTER% 일행과 상태 팀이 비춰졌다…"
+PRINTFORML 
+PRINTFORMW ＞・・・
+PRINTFORMW ＞・・・메노라의 불길이 일렁이고 있다
+PRINTFORML 
+PRINTFORML 
+PRINTFORML 
+
+PRINTFORMW 「・・・・・・・・・」
+PRINTFORMW 「・・・우리는・・・ 그저 메노라를 지키는 존재・・・」
+PRINTFORML 「그대가・・・ 메노라를 바라는 한・・・
+PRINTFORMW 　우리는 그대를 쓰러트려야만 하느니・・・」
+PRINTFORML 「4기사가・・・ 블랙 라이더가・・・
+PRINTFORMW 　그대의 심판을・・・ 거행하겠다・・・」
+PRINTFORMW 「자, 죄인이여・・・ 오너라・・・」
+
+CUSTOMDRAWLINE =
+WAIT
+
+CALL SET_BOSS_ENEMY_COLOSSEUM_22, "ブラックライダー"
+CALL BATTLE_START
+CUSTOMDRAWLINE =
+
+PRINTW 마인 블랙 라이더를 쓰러트렸다
+PRINTL 
+
+CUSTOMDRAWLINE =
+WAIT
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+PRINTW ￥50000을 상금으로 받았다
+PRINTFORMW %MASTER는% 100의 명성을 얻었다
+MONEY += 50000
+FLAG:명성 += 100
+FLAG:투기장명성 += 100
+闘技場フラグ:22:0 = 1
+
+;合体解禁しておく
+CALL LIFTING_A_BAN([[キャラ:블랙라이더]])
+
+@SET_BOSS_ENEMY_COLOSSEUM_22, L_ENEMY_NAME, L_NO = -1, L_OPT
+#DIM DYNAMIC L_NO
+#DIM DYNAMIC L_ENEMY
+#DIMS DYNAMIC L_ENEMY_NAME
+#DIMS DYNAMIC L_OPT
+#DIMS DYNAMIC L_ENEMY_TABLE, 10
+
+L_ENEMY_TABLE:0 '= "ブラックライダー"
+
+IF L_NO >= 0
+	SIF !INRANGE(L_NO, 0, VARSIZE("L_ENEMY_TABLE") - 1)
+		RETURN 0
+	L_ENEMY_NAME '= L_ENEMY_TABLE:L_NO
+ENDIF
+IF L_OPT == "名称取得"
+	SIF L_ENEMY_TABLE:L_NO == ""
+		RETURN 0
+	RESULTS '= L_ENEMY_NAME
+	RETURN 1
+ENDIF
+
+CALL SET_ENEMY,9,[[キャラ:블랙라이더]],65,0,1
+L_ENEMY = CHARANUM - 1
+CFLAG:L_ENEMY:ＨＰ보정 += 3000
+CFLAG:L_ENEMY:ＭＰ보정 += 5000
+CFLAG:L_ENEMY:행동횟수 = 2
+CSTR:L_ENEMY:증원패턴 = ブラックライダーの
+CSTR:L_ENEMY:사고패턴 = 闘技場ブラックライダー
+ABL:L_ENEMY:아이템1 = GETNUM(ITEM, "지혜의메노라")
+ABL:L_ENEMY:입수확률1 = 100
+ABL:L_ENEMY:아이템2 = GETNUM(ITEM, "스킬카드【혼의밸런스】")
+ABL:L_ENEMY:입수확률2 = 100
+
+CALL CLEAR_ALL_SKILL, L_ENEMY
+CALL SET_SKILL, L_ENEMY, "혼의밸런스"
+CALL SET_SKILL, L_ENEMY, "대냉계"
+CALL SET_SKILL, L_ENEMY, "데・카쟈"
+CALL SET_SKILL, L_ENEMY, "마하무드온"
+CALL SET_SKILL, L_ENEMY, "메기도라"
+CALL SET_SKILL, L_ENEMY, "용의안광"
+
+CALL SET_ENEMY,8,[[キャラ:레기온]],57,0,0
+L_ENEMY = CHARANUM - 1
+CFLAG:L_ENEMY:ＨＰ보정 += 1000
+CFLAG:L_ENEMY:ＭＰ보정 += 500
+ABL:L_ENEMY:스킬1 = [[스킬:다크브레스]]
+
+CALL SET_ENEMY,10,[[キャラ:레기온]],57,0,0
+L_ENEMY = CHARANUM - 1
+CFLAG:L_ENEMY:ＨＰ보정 += 1000
+CFLAG:L_ENEMY:ＭＰ보정 += 500
+ABL:L_ENEMY:스킬1 = [[스킬:다크브레스]]
+
+;=======================================================================
+;ブラックライダー行動パターン
+;=======================================================================
+@SET_ACTION_闘技場ブラックライダー,ARG
+#DIM DYNAMIC LCOUNT
+CFLAG:ARG:입력행동 = 0
+CFLAG:ARG:타겟 = 0
+;HPが半分以下の場合は眼光の判定を行う
+SIF RAND:2 == 0 && 現HP割合(ARG) < 50 && CFLAG:ARG:추가행동횟수 == 0
+	CFLAG:ARG:입력행동 = [[스킬:용의안광]]
+SIF FLAG:경과턴수 == 0 && CFLAG:ARG:행동한횟수 == 0
+	CFLAG:ARG:입력행동 = [[스킬:혼의밸런스]]
+IF CFLAG:ARG:입력행동 == 0
+	SELECTCASE RAND:100
+		CASE IS < 10
+			CFLAG:ARG:입력행동 = 0
+		CASE IS < 30
+			CFLAG:ARG:입력행동 = [[스킬:혼의밸런스]]
+		CASE IS < 40
+			CFLAG:ARG:입력행동 = [[스킬:대냉계]]
+		CASE IS < 50
+			CFLAG:ARG:입력행동 = [[스킬:마하무드온]]
+		CASE IS < 70
+			CFLAG:ARG:입력행동 = [[스킬:메기도라]]
+		CASEELSE
+			FOR LCOUNT, 7, 17
+				SIF POS(LCOUNT) >= 0
+					CONTINUE
+				BREAK
+			NEXT
+			IF LCOUNT == 17
+				CFLAG:ARG:입력행동 = 0
+			ELSE
+				CFLAG:ARG:입력행동 = [[스킬:소환]]
+			ENDIF
+	ENDSELECT
+ENDIF
+
+CALL CHECK_ACTIONABLE,ARG,CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+SIF CFLAG:ARG:타겟 == 0
+	CALL RANDOM_TARGET,ARG,CFLAG:ARG:입력행동
+RETURN 0
+
+@増援パターン_ブラックライダーの, ARG, ARG:1, ARG:2
+CALL SET_ENEMY, ARG:1, [[キャラ:레기온]],52,0,0
+ABL:(CHARANUM-1):스킬1 = [[스킬:다크브레스]]
+CFLAG:(CHARANUM-1):ＨＰ보정 = 200
+	ABL:(CHARANUM-1):아이템1 = GETNUM(ITEM, "마석")
+	ABL:(CHARANUM-1):입수확률1 = 0
+CALL HEALTH_CHARA,(CHARANUM-1)
+CALL SYNC_STATUS,(CHARANUM-1)
+SIF ARG:2 == 1
+	RETURN 1
+RETURN 0

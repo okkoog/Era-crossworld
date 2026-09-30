@@ -1,0 +1,113 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:RANDAM_CHARA_FUNCTION.ERB
+;	Facility	:ランダムキャラ生成処理用の関数群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/05/01		P(Bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;-------------------------------------------------
+;ランダムキャラ用の汎用髪型設定関数
+;-------------------------------------------------
+@RANDOMCHARA_COMMON_HAIRSTYILE, L_CHARA
+#FUNCTIONS
+#DIM DYNAMIC HAIR_NO
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_SEX
+IF L_CHARA >= 0
+	IF IS_LOOKSLIKE_MALE(L_CHARA)
+		L_SEX '= "男"
+	ELSE
+		L_SEX '= "女"
+	ENDIF
+ENDIF
+IF L_SEX == "男"
+	SELECTCASE RAND:7
+		CASE 0
+			RETURNF "スキンヘッド"
+		CASE 1
+			RETURNF "スポーツ刈り"
+		CASE 2
+			RETURNF "短髪"
+		CASE 3
+			RETURNF "モヒカン"
+		CASE 4
+			RETURNF "ちょんまげ"
+		CASE 5
+			RETURNF "七三"
+		CASE 6
+			RETURNF "ロン毛"
+	ENDSELECT
+ELSE
+	SELECTCASE RAND:12
+		CASE 0
+			RETURNF "ショートヘア"
+		CASE 1
+			RETURNF "ショートボブ"
+		CASE 2
+			RETURNF "セミロング"
+		CASE 3
+			RETURNF "ポニーテール"
+		CASE 4
+			RETURNF "ツインテール"
+		CASE 5
+			RETURNF "ストレートロング"
+		CASE 6
+			RETURNF "アップ"
+		CASE 7
+			RETURNF "ゆるふわパーマ"
+		CASE 8
+			RETURNF "ロングウェーブ"
+		CASE 9
+			RETURNF "三つ編み"
+		CASE 10
+			RETURNF "ツーサイドアップ"
+		CASE 11
+			RETURNF "お団子"
+	ENDSELECT
+ENDIF
+
+;-------------------------------------------------
+;アイコンのセット関数
+;-------------------------------------------------
+@SET_RANDOM_CHARA_FACE, CHARA, L_ROLE_TYPE
+#DIM DYNAMIC CHARA
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC L_ROLE_TYPE
+IF CSTR:CHARA:체형 == ""
+	RESULTS '= ""
+	TRYCALLFORM RANDOMCHARA_{NO:CHARA}, "체형", CHARA, , L_ROLE_TYPE
+	CSTR:CHARA:체형 '= RESULTS
+ENDIF
+RESULTS '= ""
+TRYCALLFORM RANDOMCHARA_{NO:CHARA}, "アイコン区分", CHARA, , L_ROLE_TYPE
+IF RESULTS != ""
+	VARS TEMP_ICON, 100
+	VARSET TEMP_ICON
+	VARS L_BASE_SPRITE_NAME
+	VARS L_SPRITE_NAME
+	L_BASE_SPRITE_NAME '= RESULTS
+	IF IS_LOOKSLIKE_MALE(CHARA)
+		L_BASE_SPRITE_NAME += "_男"
+	ELSE
+		L_BASE_SPRITE_NAME += "_女"
+	ENDIF
+	SIF CSTR:CHARA:체형 != ""
+		L_BASE_SPRITE_NAME += "_" + CSTR:CHARA:체형
+	L_BASE_SPRITE_NAME += "_FACE_"
+	FOR LCOUNT, 0, VARSIZE("TEMP_ICON")
+		L_SPRITE_NAME '=L_BASE_SPRITE_NAME + TOSTR(LCOUNT)
+		SIF !ランダムキャラ_顔グラ追加_F(L_SPRITE_NAME)
+			CONTINUE	
+		DEBUGPRINTFORML L_SPRITE_NAME = %L_SPRITE_NAME%
+		CALL PUSH_ARRAY_STR, TEMP_ICON, L_SPRITE_NAME
+	NEXT
+	SIF TEMP_ICON:0 == ""
+		RETURN 0
+	CSTR:CHARA:랜덤캐릭터아이콘파일명 '= TEMP_ICON:(RAND:FINDELEMENT(TEMP_ICON, "", , , 1))
+	CALLF SET_ALL_FACE_NEW, CHARA, CSTR:CHARA:랜덤캐릭터아이콘파일명, "通常形態"
+ENDIF

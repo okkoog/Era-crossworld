@@ -1,0 +1,120 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:マン分かアサシン専用3_公式かつ機密.ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	000		20XX/XX/XX		----					テンプレ
+;	001		2021/12/28		軽木					作成
+;	002		2024/07/05		P(bazzile)				解析度の仕様の変更にあわせて効果を変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;1と2はNPとクラススキルなのでないです。
+;スキル名
+@SKILL_NAME_公式かつ機密,ARG
+RESULTS = 공식이자 기밀
+
+;　명중
+@SKILL_HITRATE_公式かつ機密, ARG
+RETURN 200
+
+
+;　威力
+@SKILL_POWER_公式かつ機密, ARG
+RETURN 0
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_公式かつ機密, ARG
+RETURN 0
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_公式かつ機密,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_公式かつ機密,ARG
+RETURN 1
+
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_公式かつ機密, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_公式かつ機密,ARG
+RETURN 100
+
+;　相性
+@SKILL_TYPE_公式かつ機密,ARG
+RETURN GET_TYPE_NUM("만능")
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_公式かつ機密
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_公式かつ機密,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_公式かつ機密,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_公式かつ機密,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_公式かつ機密,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_公式かつ機密,ARG
+RETURN GET_SKILL_EFFECT_NUM("상태변화")
+
+;속도보정
+@SKILL_SPEED_公式かつ機密, ARG = -1
+RETURN 999
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_公式かつ機密
+RETURN 0
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_公式かつ機密,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+IF FLAG:악마해석률상승불가플래그 || SOFT_ON("마인드시커")
+	CALL PRINT_HIT_MESSAGE, POS(ARG:1), "효과가 없었다！", "w"
+ELSEIF ANALYSIS_RATE:(NO:(ARG:1)) >= ANALYSIS_COMPLETED
+	CALL SKILL_SET_カジャンダ, ARG, POS(ARG:1), "공격/방어/마법위력/마법효과/명중/회피", -8, "단체"
+ELSE
+	CALL SKILL_SET_カジャンダ, ARG, POS(ARG:1), "공격/방어/마법위력/마법효과/명중/회피", -4, "단체"
+ENDIF
+;強制モード転落
+CALL SKILLGAGE_D_SET,ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム"),0
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_公式かつ機密,ARG
+PRINTL 적 단체를 그 해석도에 비례해 약체화시킨다.
+PRINTL 
+PRINTL 방대한 기밀 정보가 정리된 파일철로, 방심하거나 저항 판정에 실패한 상대의 약점이나 비밀이 기록되어 있다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_公式かつ機密,ARG
+SIF SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム")) > 0
+	RETURN 1
+RETURN 0
+

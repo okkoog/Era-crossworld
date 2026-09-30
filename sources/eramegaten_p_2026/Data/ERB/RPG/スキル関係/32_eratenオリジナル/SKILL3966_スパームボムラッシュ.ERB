@@ -1,0 +1,159 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_3966,ARG
+RESULTS = 스펌봄러시
+
+;　명중
+@SKILL_HITRATE_3966, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_3966, ARG
+RETURN 500
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3966,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3966,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3966, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3966,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_3966,ARG
+RETURN GET_TYPE_NUM("수격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3966
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　攻撃タイプ
+@SKILL_ATTACKTYPE_3966,ARG
+RETURN GET_攻撃タイプ_NUM("총")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3966, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3966, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_3966,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3966,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3966,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3966
+RETURN GET_SUCCESSION_NUM("수격")
+;수격
+
+;속도보정
+@SKILL_SPEED_3966, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3966
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3966, ARG = -1
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3966, ARG, ARG:1, ARG:2
+
+;LOCAL:1 = MAXBASE:ARG:공격
+;LOCAL:2 = MAXBASE:ARG:명중
+;LOCAL:3 = MAXBASE:ARG:마법위력
+;LOCAL:4 = MAXBASE:ARG:마법효과
+;MAXBASE:ARG:공격 = MAXBASE:ARG:총공격
+;MAXBASE:ARG:명중 = MAXBASE:ARG:총명중
+;MAXBASE:ARG:마법위력 = MAXBASE:ARG:총공격
+;MAXBASE:ARG:마법효과 = MAXBASE:ARG:총명중
+
+IF CFLAG:ARG:PT플래그 > 0
+	IF GET_CHARA_STOCK_MAG((ARG)) < MAX(GET_CHARA_MAXMAG(ARG)/5,1)
+		PRINTFORML %CALLNAME:(ARG)%에게는 봄을 생성할 만큼의 ＭＡＧ가 부족하다！
+	ELSE
+		CALL CONTROL_MAG, ARG, -MAX(GET_CHARA_MAXMAG(ARG)/5,1)
+		PRINTFORML %CALLNAME:ARG% >>>>> {MAX(GET_CHARA_MAXMAG(ARG)/5,1)} 소비 (나머지{GET_CHARA_STOCK_MAG(ARG)})
+		CALL ATTACK_FIELD,ARG,ARG:1,3966
+		IF ABL:ARG:정액중독 >= 10
+			PRINTFORM 　　TARGET:[{CFLAG:ARG:포지션,2}] %CALLNAME:(ARG),20,LEFT%　>>>>>>　{MAX((MAXBASE:ARG:ＨＰ) / 4 ,1)}회복
+			PRINTL
+			CALL VAR_HP,ARG,MAX((MAXBASE:ARG:ＨＰ) / 4 ,1)
+		ELSEIF ABL:ARG:정액중독 >= 3
+			IF ABL:ARG:정액중독 >= 5
+				PRINTFORM 　　TARGET:[{CFLAG:ARG:포지션,2}] %CALLNAME:(ARG),20,LEFT%　>>>>>>　{MAX((MAXBASE:ARG:ＨＰ) / 5,1)}회복
+				PRINTL
+				CALL VAR_HP,ARG,MAX((MAXBASE:ARG:ＨＰ) / 5,1)
+			ELSEIF ABL:ARG:정액중독 >= 4
+				PRINTFORM 　　TARGET:[{CFLAG:ARG:포지션,2}] %CALLNAME:(ARG),20,LEFT%　>>>>>>　{MAX((MAXBASE:ARG:ＨＰ) / 10,1)}회복
+				PRINTL
+				CALL VAR_HP,ARG,MAX((MAXBASE:ARG:ＨＰ) / 10,1)
+			ELSE
+				PRINTFORM 　　TARGET:[{CFLAG:ARG:포지션,2}] %CALLNAME:(ARG),20,LEFT%　>>>>>>　0데미지
+				PRINTL
+			ENDIF
+		ELSE
+			IF ABL:ARG:정액중독 >= 2
+				PRINTFORM 　　TARGET:[{CFLAG:ARG:포지션,2}] %CALLNAME:(ARG),20,LEFT%　>>>>>>　{MAX((MAXBASE:ARG:ＨＰ) / 10,1)}데미지
+				PRINTL
+				CALL VAR_HP,ARG,MAX((MAXBASE:ARG:ＨＰ) / 10,1)
+			ELSEIF ABL:ARG:정액중독 >= 1
+				PRINTFORM 　　TARGET:[{CFLAG:ARG:포지션,2}] %CALLNAME:(ARG),20,LEFT%　>>>>>>　{MAX((MAXBASE:ARG:ＨＰ) / 5,1)}데미지
+				PRINTL
+				CALL VAR_HP,ARG,MAX((MAXBASE:ARG:ＨＰ) / 5,1)
+			ELSE
+				CALL ATTACK_SINGLE,ARG,ARG,3966
+			ENDIF
+		ENDIF
+	ENDIF
+ELSE
+	CALL ATTACK_FIELD,ARG,ARG:1,3966
+ENDIF
+
+;MAXBASE:ARG:공격 = LOCAL:1
+;MAXBASE:ARG:명중 = LOCAL:2
+;MAXBASE:ARG:마법위력 = LOCAL:3
+;MAXBASE:ARG:마법효과 = LOCAL:4
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3966, ARG
+PRINTL 정액이 가득 찬 사용이 끝난 콘돔을 대량으로 던져、적 전체에 총공격 의존으로 수격 상성의 마법데미지。
+PRINTL 이 스킬은 자신도 휘말리지만、정액중독이 높으면 높을수록 자신이 받는 데미지가 감소하며、MP 대신 MAG를 소비한다。
+SIF ARG >= 0
+	PRINTFORML %CALLNAME:ARG% 의 남은 MAG {GET_CHARA_STOCK_MAG(ARG)} 예상소비 {MAX(GET_CHARA_MAXMAG(ARG)/5,1)} 사용후 MAG {GET_CHARA_STOCK_MAG(ARG) - MAX(GET_CHARA_MAXMAG(ARG)/5,1)}
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3966,ARG
+RETURN 1
+;とくにない

@@ -1,0 +1,336 @@
+﻿;スキル名
+@SKILL_NAME_レイ・ホライゾン,ARG
+RESULTS = レイ・ホライゾン
+
+;　명중
+@SKILL_HITRATE_レイ・ホライゾン, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_レイ・ホライゾン, ARG
+RETURN 100
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_レイ・ホライゾン,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_レイ・ホライゾン,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_レイ・ホライゾン, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_レイ・ホライゾン,ARG
+RETURN TFLAG:전투중 ? 30 # 0
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_レイ・ホライゾン
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_レイ・ホライゾン,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_レイ・ホライゾン,ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_レイ・ホライゾン,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_レイ・ホライゾン,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_レイ・ホライゾン,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;속도보정
+@SKILL_SPEED_レイ・ホライゾン, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_レイ・ホライゾン
+RETURN 1
+
+
+;ターン終了時に行う処理
+@SKILL_TURNEND_レイ・ホライゾン,ARG
+#DIM SKILL_NUM
+#DIM L_F_GAGE
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"レイ・ホライゾン")
+L_F_GAGE = SKILLGAGE_F_GET(ARG,SKILL_NUM)
+SIF L_F_GAGE == 0
+	RETURN 0
+L_F_GAGE -= 1
+CALL SKILLGAGE_F_SET(ARG,SKILL_NUM,L_F_GAGE)
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_レイ・ホライゾン,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"レイ・ホライゾン")
+
+IF SKILLGAGE_F_GET(ARG,SKILL_NUM) == 0
+	CALL SKILLGAGE_F_SET(ARG,SKILL_NUM,6)
+	;現在の形態に応じて効果と表示メッセージが変更される
+	SELECTCASE GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ")
+		CASE 0
+			CALL SKILLGAGE_F_ADD,ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム"),100
+			PRINTFORML 　　%CALLNAME:ARG%의 NP 게이지가 100% 충전되었다!
+			;PRINTFORML %CALLNAME:ARG%は竜骸形態へと換装した！
+			;;形態換装の処理は戦闘中以外での実行処理に入ってるのでそっちを呼ぶ
+		CASE 1
+			CALL SET_C_BTL_EFFECT_SINGLE, ARG, ARG, "宝具ダメージ30％増加",3,"３ターンの間、宝具の与えるダメージが上昇！"
+	ENDSELECT
+ENDIF
+
+CALL SKILL_INVALID_WALL, ARG, ARG, "수호의방패", "단체"
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+@ACTION_FIELD_レイ・ホライゾン,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM FORM_FLAG
+
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"レイ・ホライゾン")
+
+FORM_FLAG = GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ")
+
+CALL SET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ",FORM_FLAG == 0 ? 1 # 0)
+CALL FORM_CONVERSION_レイ・ホライゾン,ARG,"그외"
+PRINTFORML \@ TFLAG:전투중 ? %"　"*2% #\@%CALLNAME:ARG%(은)는 \@ FORM_FLAG == 0 ? 용해 형태 # 기사 형태 \@(으)로 환장했다!
+CALL SYNC_STATUS,ARG,"HPMP割合保持"
+SIF !TFLAG:전투중
+	WAIT
+;入力行動をATTACK→GUN→GUARDの順に試行していく
+CALL CHECK_ACTIONABLE,ARG,0
+IF RESULT == 1
+	CFLAG:(ARG):입력행동 = 0
+	CALL RANDOM_TARGET,ARG,0
+	CFLAG:(ARG):방어플래그 = 0
+ELSE
+	IF EQUIP:(ARG):총
+		CALL CHECK_ACTIONABLE,ARG,2101
+		IF RESULT == 1
+			CFLAG:(ARG):입력행동 = 2101
+			CFLAG:(ARG):방어플래그 = 0
+			CALL RANDOM_TARGET,ARG,2101
+		ELSE
+			CFLAG:(ARG):입력행동 = -1
+			CFLAG:(ARG):방어플래그 = 1
+		ENDIF
+	ELSE
+		CFLAG:(ARG):입력행동 = -1
+		CFLAG:(ARG):방어플래그 = 1
+	ENDIF
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+@INPUT_COM_NAME_レイ・ホライゾン,ARG
+RESULTS = 레이 호라이즌
+RESULTS:1 = 宝具換装
+RETURN 2
+
+@INPUT_COM_ABLE_レイ・ホライゾン,ARG
+RESULTS = 効果発動中
+SIF PU_SKILLGAGE_D_GET(ARG,"レイ・ホライゾン")
+	RETURN -1
+RESULTS = 재사용 가능까지 잔여 {ABS(PU_SKILLGAGE_F_GET(ARG,"レイ・ホライゾン"))}턴
+SIF PU_SKILLGAGE_F_GET(ARG,"レイ・ホライゾン") != 0
+	RETURN -1
+CALL CHECK_COST, ARG, PU_SKILLNUM_GET(ARG, "レイ・ホライゾン")
+SIF !RESULT
+	RETURN -1
+RETURN 1
+
+;====================================================
+;コマンド実行
+;====================================================
+@INPUT_COM_レイ・ホライゾン,ARG
+#LOCALSIZE 1
+#DIM SKILL_NUM
+#DIM 変身前ＨＰ
+#DIM 変身前ＭＰ
+
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"レイ・ホライゾン")
+
+RESULT = 0
+IF CFLAG:ARG:PT플래그 > 0
+	CALL GET_SKILL_COST,SKILL_NUM,ARG
+	PRINTFORML 보구 환장을 실행하겠습니까? (소비 MP {RESULT})
+	CALL INPUT_YN
+ENDIF
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG,"レイ・ホライゾン")
+	CALL PRINT_ACT_MESSAGE,ARG,SKILL_NUM,-1,,"宝具換装"
+
+	CALL ACTION_レイ・ホライゾン,ARG,-1,SKILL_NUM
+	CALL ACTION_FIELD, SKILL_NUM,ARG, -1
+	;クールタイムカウンターになっているFゲージの値を6から5に変更
+	CALL SKILLGAGE_F_SET,ARG,SKILL_NUM,5
+
+	SETCOLOR CFLAG:ARG:PT플래그 == 0 ? 0xff0033 # 0x33ffcc
+	CALL BATTLE_EVENT_ACT, ARG
+	CALL SKILLGAGE_H_ADD,ARG,SKILL_NUM,-10
+	RESETCOLOR
+	WAIT
+	;スキル変更後にコストを支払う
+	CALL PAY_COST, ARG, CFLAG:ARG:입력행동
+ENDIF
+RETURN -1
+;-1 再びコマンド選択へ
+; 1 キャラ選択へ
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_レイ・ホライゾン,ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"レイ・ホライゾン")
+SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) == 0
+	RETURN
+RESULTS = 레이 호라이즌:CT{ABS(SKILLGAGE_F_GET(ARG,SKILL_NUM))}
+
+;　説明文の表示
+@SKILL_EXPLAIN_レイ・ホライゾン,ARG
+PRINTL 잉글랜드에 전해지는, 이계로 통하는 문으로 여겨지는 「지평선」「경계」
+PRINTL
+PRINTL 통상: 자신을 향한 만능 이외의 공격을 1회만 무효화한다.
+PRINTL 추가 1: 기사 형태 시에는 NP를 100% 충전. 용해 형태 시에는 자신에게 3턴 동안 『보구 데미지 증가』 효과를 부여.
+PRINTFORML 추가 2: 커맨드 『보구 환장』 발동 가능. 턴을 소모하지 않고 스킬을 발동하며, 추가로 『\@GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") ? 기사 형태 # 용해 형태 \@』(으)로 환장.
+PRINTL 추가 효과는 발동 후 수 턴 동안 다시 발동하지 않는다. 전투 외에서 사용하면 형태 환장만 실행한다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_レイ・ホライゾン,ARG
+RETURN 1
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_レイ・ホライゾン, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+#DIM LNUM
+#DIM LCOUNT
+#DIM LSUM_OF_BASE
+
+;騎士形態中は補正が発生しない
+SIF GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 0
+	RETURN 0
+
+SELECTCASE ARGS
+	CASE "基本ステータス"
+		;選択項目がLVだと補正は発生しない
+		SIF ARGS:1 == "LV"
+			RETURN 0
+		;やってることは悪魔変身によるステータス振り分けと同じ
+		LSUM_OF_BASE = 0
+		FOR LCOUNT,1,FLAG:기본능력수
+			LSUM_OF_BASE += BASE:ARG:(GET_BASESTATUS(LCOUNT))
+		NEXT
+		;初期能力値は合わせて55
+		;힘,지혜,마력,내구,速度,運の順にステータス補正の振り分けを行う
+		;LNUM = (LSUM_OF_BASE * AUTO_SPLIT_INT("8_22_29_10_22_6","_",GET_BASESTATUS_NUM(ARGS:1) - 1)) / (18 + 50 * 3 / 2)
+		LNUM = (LSUM_OF_BASE * AUTO_SPLIT_INT("8_22_29_10_22_6","_",GET_BASESTATUS_NUM(ARGS:1) - 1)) / (93)
+		RETURN LNUM - ARG:1
+	CASE "相性"
+		;剣撃_50_飛具_150_打撃_75_戦技_25_火炎_100_氷結_100_電撃_100_衝撃_25_神経_150_精神_150_破魔_0_呪殺_50_地変_50_水撃_100_疾風_25_重力_25_核熱_-100_万能_100
+		RETURN 1,AUTO_SPLIT_INT("50_150_75_25_100_100_100_25_150_150_0_50_50_100_25_25_-100_100","_",GET_TYPE_NUM(ARGS:1))
+ENDSELECT
+
+RETURN 0
+
+;ARG	使用キャラ
+;ARGS	オプション用文字列
+;====================================================
+;宝具換装時、諸々の変化を行う処理
+;====================================================
+@FORM_CONVERSION_レイ・ホライゾン,ARG,ARGS
+#LOCALSIZE 8
+#DIM LCOUNT,2
+#DIM TEMP_SKILL,21
+#DIMS SWAP_HOLD
+#DIMS L_FORMS,2
+#DIMS L_STR,20
+SELECTCASE ARGS
+	CASE "그외"
+		;タイミングは形態換装フラグの変動後という点に注意
+		;素質変化
+		FOR LCOUNT,GETNUM(TALENT,"머리"),GETNUM(TALENT,"사이코") + 1
+			SIF !GROUPMATCH(TALENTNAME:LCOUNT,"갈퀴","날개","꼬리","화염","핵열")
+				CONTINUE
+			TALENT:ARG:LCOUNT = GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 1 ? 1 # 0
+		NEXT
+		;名前変化
+		SPLIT GET_RPG_CSTR_TAKEOVER(ARG,"各形態時の名前"),"/",L_STR
+		;分割された数を保存
+		LCOUNT = RESULT
+		;換装先の番号とは反対の数値を入れる
+		LCOUNT:1 = GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 1 ? 0 # 1
+		L_STR:(LCOUNT:1) '= @"%NAME:ARG%_%CALLNAME:ARG%"
+		NAME:ARG = \@L_STR:GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") != "" ? %AUTO_SPLIT(L_STR:GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ"),"_",0)% # メリュジーヌ\@
+		CALLNAME:ARG = \@L_STR:GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") != "" ? %AUTO_SPLIT(L_STR:GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ"),"_",1)% # メリュジーヌ\@
+		CALL SET_RPG_CSTR_TAKEOVER(ARG,"各形態時の名前",STRJOIN(L_STR,"/",0,LCOUNT))
+		;スキル変化
+		;スキル一覧の内、L_FORMS:0は抜き出す方を、L_FORMS:1は格納される方を選択
+		L_FORMS:0 = \@ GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 1 ? 竜骸形態 # 騎士形態\@
+		L_FORMS:1 = \@ GET_RPG_CFLAG_TAKEOVER(ARG,"形態換装フラグ") == 1 ? 騎士形態 # 竜骸形態\@
+		SPLIT GET_RPG_CSTR_TAKEOVER(ARG,@"スキル（%L_FORMS:0%）"),"/",L_STR
+		VARSET LCOUNT
+		VARSET SWAP_HOLD
+		VARSET TEMP_SKILL
+		FOR LCOUNT:0, 1, 1 + CHARA_SKILLCOUNT(ARG)
+			;専用技は保存しない
+			SIF IS_PU_SKILLNUM(ABL:ARG:@"스킬{LCOUNT:0}")
+				CONTINUE
+			;SWAP_HOLDに現在所持しているスキルを保存
+			SWAP_HOLD = %SWAP_HOLD%\@SWAP_HOLD != "" ? / #\@%TOSTR(ABL:ARG:@"스킬{LCOUNT:0}")%
+			;保存された場合、スキルは所持欄から削除しておく
+			CALL DEL_FRIEND_HAVE_SKILL, ARG, , , LCOUNT:0
+			TEMP_SKILL:(LCOUNT:0) = TOINT(L_STR:(LCOUNT:1))
+			LCOUNT:1 += 1
+		NEXT
+		;格納先に変身元のスキルを代入して保存する
+		CALL SET_RPG_CSTR_TAKEOVER(ARG,@"スキル（%L_FORMS:1%）",SWAP_HOLD)
+		VARSET LCOUNT
+		;空き番号を詰める
+		FOR LCOUNT:0, CHARA_SKILLCOUNT(ARG), 0, -1
+			SIF TEMP_SKILL:(LCOUNT:0) == 0 || IS_PU_SKILLNUM(TEMP_SKILL:(LCOUNT:0))
+				ARRAYREMOVE TEMP_SKILL, LCOUNT:0, 1
+		NEXT
+		LCOUNT:1 = 1
+		FOR LCOUNT:0, 1, 1 + CHARA_SKILLCOUNT(ARG)
+			;専用技は置き換え対象外
+			SIF IS_PU_SKILLNUM(ABL:ARG:@"스킬{LCOUNT:0}")
+				CONTINUE
+			;TEMP_SKILLに入れたスキルと所持しているスキルを交換する
+			CALL SET_FRIEND_HAVE_SKILL(ARG,TEMP_SKILL:(LCOUNT:1),,LCOUNT:0)
+			LCOUNT:1 += 1
+		NEXT
+		;雑なやり方だけどCHARA.ERBにあるSET_LEARN_SKILL関数で習得スキルを対応する形態用に入れ替える
+		CALL SET_LEARN_SKILL_5098(ARG)
+ENDSELECT

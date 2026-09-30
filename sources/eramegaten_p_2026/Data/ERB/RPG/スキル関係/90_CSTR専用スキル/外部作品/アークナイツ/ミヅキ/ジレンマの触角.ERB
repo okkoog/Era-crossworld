@@ -1,0 +1,161 @@
+﻿;スキル名
+@SKILL_NAME_ジレンマの触角,ARG
+IF ARG == -1
+	RESULTS = 딜레마의 촉각
+ELSEIF HAVE_PU_SKILL(ARG, "紺碧の種") 
+	RESULTS = 딜레마의 촉각★
+ELSE
+	RESULTS = 딜레마의 촉각
+ENDIF
+
+;　명중
+@SKILL_HITRATE_ジレンマの触角,ARG
+SIF ARG == -1
+	RETURN 80
+SIF HAVE_PU_SKILL(ARG, "紺碧の種") 
+	RETURN 100
+RETURN 80
+
+;　威力
+@SKILL_POWER_ジレンマの触角,ARG
+SIF ARG == -1
+	RETURN 150
+SIF HAVE_PU_SKILL(ARG, "紺碧の種") 
+	RETURN 190
+RETURN 150
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_ジレンマの触角,ARG
+SIF ARG == -1
+	RETURN 8
+SIF HAVE_PU_SKILL(ARG, "紺碧の種") 
+	RETURN 10
+RETURN 8
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ジレンマの触角,ARG
+RETURN 2
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ジレンマの触角,ARG
+RETURN 2
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ジレンマの触角, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;ＭＰ
+
+;　コストの量
+@SKILL_COST_ジレンマの触角,ARG
+SIF ARG == -1
+	RETURN 28
+SIF HAVE_PU_SKILL(ARG, "紺碧の種") 
+	RETURN 38
+RETURN 28
+
+;　相性
+@SKILL_TYPE_ジレンマの触角,ARG
+RETURN GET_TYPE_NUM("수격")
+;수격
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ジレンマの触角
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ジレンマの触角, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ジレンマの触角,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+;敵
+
+;　사거리　1S　2M　3L　4S+
+@SKILL_RANGE_ジレンマの触角,ARG
+RETURN 2
+;後列でも敵前列に当たる
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ジレンマの触角,ARG
+RETURN GET_SPHERE_NUM("단체")
+;敵単体
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ジレンマの触角,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_ジレンマの触角,ARG
+RETURN GET_SUCCESSION_NUM("수격")
+;수격
+
+
+@継承不能_ジレンマの触角
+RETURN 2
+;不可、造魔や子供にも継承せず
+
+;속도보정
+@SKILL_SPEED_ジレンマの触角, ARG = -1
+RETURN 20
+;早めに発生
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ジレンマの触角
+RETURN 0
+;戦闘中のみ
+
+;スキル変化？用ランク
+@SKILL_RANK_ジレンマの触角, ARG = -1
+RETURN 13
+
+
+;拡散攻撃用追加処理
+@SKILL_SPREAD_ジレンマの触角,ARG
+RETURN 1
+;拡散距離:1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ジレンマの触角,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL ATTACK_SKILL,ARG,ARG:1,SKILL_NUM
+
+;====================================================
+;ターン終了時に行う処理
+;====================================================
+@SKILL_TURNEND_ジレンマの触角,ARG
+
+
+;====================================================
+;戦闘終了時に行う処理
+;====================================================
+@SKILL_BATTLE_END_ジレンマの触角,ARG
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_ジレンマの触角,ARG
+IF HAVE_PU_SKILL(ARG, "紺碧の種") 
+	PRINTL 촉수를 전개하여 적 단체와 그 주위를 옭아맨다.
+	PRINTL 수격 상성의 물리 속성 대데미지를 2회 준다.
+	PRINTL 【감벽의 씨앗】으로 강화되어, 크리티컬률이 높다
+	PRINTL 後列使用可。
+	PRINTL 
+ELSE
+	PRINTL 촉수를 전개하여 적 단체와 그 주위를 옭아맨다.
+	PRINTL 수격 상성의 대데미지를 2회 준다.
+	PRINTL 크리티컬률이 약간 높다. 후열 사용 가능.
+	PRINTL 
+ENDIF
+
+@SKILL_DEL_UNABLE_ジレンマの触角,ARG
+RETURN 0
+;削除可
+

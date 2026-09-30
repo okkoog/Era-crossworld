@@ -1,0 +1,68 @@
+﻿;スキル名
+@SKILL_NAME_対策委員会の委員長,ARG
+RESULTS = 대책위원회의 위원장
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_対策委員会の委員長,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;　説明文の表示
+@SKILL_EXPLAIN_対策委員会の委員長,ARG
+PRINTL 자동효과: 적에게 표적이 될 확률이 상승한다.
+PRINTL 　　　　 전투 참가 시에 이하의 연동 효과가 발동한다.
+PRINTL 　　　　 「자신의 방어력을 상승시킨다」
+
+@SKILL_EXPLAIN_TOOLTIP_対策委員会の委員長, ARG
+RESULTS:0 = 자동효과: 적에게 표적이 될 확률이 상승한다.
+RESULTS:1 = 　　　　 전투 참가 시에 이하의 연동 효과가 발동한다.
+RESULTS:2 = 　　　　 「自身の防御力を上昇させる」
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_対策委員会の委員長,ARG
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_対策委員会の委員長, ARG = -1
+RETURN 4
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_対策委員会の委員長
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;入場時に行う効果
+@SKILL_BATTLE_ENTER_対策委員会の委員長, ARG
+#DIM LCOUNT
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+	RETURN 0
+;入力可能な状態じゃないとだめ
+SIF !ACTIONABLE_CHARA_F(ARG)
+	RETURN 0
+;入場一回目のみ発動
+SIF CFLAG:ARG:입장플래그 != 1
+	RETURN 0
+;自身の入場のみで発動
+SIF TFLAG:입장캐릭터 >= 0 && TFLAG:입장캐릭터 != ARG
+	RETURN 0
+CALL PRINT_ACT_MESSAGE, ARG, , , , "対策委員会の委員長"
+CALL SKILL_SET_カジャンダ, ARG, ARG, "방어", 4, "단체"
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_対策委員会の委員長, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	CASE "被ターゲット率"
+		RETURN 200
+ENDSELECT
+RETURN 0

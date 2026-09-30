@@ -1,0 +1,219 @@
+﻿
+
+
+
+;スキル名
+@SKILL_NAME_4942,ARG
+RESULTS = 대합창「영차콘체르토그로소」
+;　명중
+@SKILL_HITRATE_4942, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_4942, ARG
+#LOCALSIZE 2
+SIF ARG == -1 || CFLAG:ARG:단독링케이지
+	RETURN 550
+IF ARG != -1
+	LOCAL   =  MIN(ABL:ARG:가창기능 , ABL:(CFLAG:ARG:링케이지참가자1):가창기능 , ABL:(CFLAG:ARG:링케이지참가자2):가창기능)
+	LOCAL:1 = 10 * (MAXBASE:ARG:마법위력 * 2 + MAXBASE:(CFLAG:ARG:링케이지참가자1):마법위력 + MAXBASE:(CFLAG:ARG:링케이지참가자2):마법위력) / (MAXBASE:ARG:마법위력 * 4)
+ENDIF
+IF      0== LOCAL
+	RETURN  5  * LOCAL:1
+ELSEIF  1 == LOCAL
+	RETURN 55  * LOCAL:1
+ELSEIF  2 == LOCAL
+	RETURN 65  * LOCAL:1
+ELSEIF  3 == LOCAL
+	RETURN 85  * LOCAL:1
+ELSEIF  4 == LOCAL
+	RETURN 95  * LOCAL:1
+ELSEIF  5 == LOCAL
+	RETURN 105 * LOCAL:1
+ELSEIF  6 == LOCAL
+	RETURN 120 * LOCAL:1
+ELSEIF  7 == LOCAL
+	RETURN 150 * LOCAL:1
+ELSEIF  8 == LOCAL
+	RETURN 175 * LOCAL:1
+ELSEIF  9 == LOCAL
+	RETURN 200 * LOCAL:1
+ELSEIF 10 == LOCAL
+	RETURN 250 * LOCAL:1
+ENDIF
+RETURN 500
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_4942,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_4942,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_4942, ARG, ARG:1
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_4942, ARG
+SIF ARG >= 0
+	LOCAL = ABL:ARG:가창기능
+SIF ARG == -1
+	RETURN 12
+IF LOCAL ==0
+	RETURN 12
+ELSEIF LOCAL == 1
+	RETURN 17
+ELSEIF LOCAL == 2
+	RETURN 21
+ELSEIF LOCAL == 3
+	RETURN 24
+ELSEIF LOCAL == 4
+	RETURN 34
+ELSEIF LOCAL == 5
+	RETURN 39
+ELSEIF LOCAL == 6
+	RETURN 43
+ELSEIF LOCAL == 7
+	RETURN 48
+ELSEIF LOCAL == 8
+	RETURN 58
+ELSEIF LOCAL == 9
+	RETURN 60
+ELSE
+	RETURN 62
+ENDIF
+RETURN 11
+;　相性
+@SKILL_TYPE_4942,ARG
+RETURN GET_TYPE_NUM("충격")
+;　1EXTRAか2MAGICか
+
+@SKILL_DECIDE_TYPE_4942
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_4942, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_4942, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_4942,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_4942,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_4942, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_4942
+RETURN GET_SUCCESSION_NUM("계통없음")
+
+;속도보정
+@SKILL_SPEED_4942, ARG = -1
+RETURN 20
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_4942
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_4942, ARG = -1
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_4942, ARG, ARG:1, ARG:2
+CALL ATTACK_FIELD, ARG, ARG:1, 4942
+
+CALL PAY_COST, (CFLAG:ARG:링케이지참가자1) , 4942
+CALL PAY_COST, (CFLAG:ARG:링케이지참가자2) , 4942
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_4942, ARG
+PRINTL 적 전체에 충격 상성으로 가창 기능에 따라 다른 위력의 공격을 1회 행한다.
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_4942,ARG
+CALL CHECK_COST,ARG,4942
+SIF RESULT == 0
+	RETURN 0
+RETURN 1
+;とくにない
+
+
+;=====================================================
+;リンケージ設定
+;=====================================================
+@LINKAGE_4942
+RETURN 1
+
+@参加人数_4942
+RETURN 2
+
+@参加条件表示_4942,ARG
+SELECTCASE ARG
+	CASE 1
+		PRINTFORM 메를랑
+	CASE 2
+		PRINTFORM 리리카
+	CASE 3
+		PRINTFORM 루나사
+ENDSELECT
+
+@発動者条件_4942 , ARG
+;
+SIF NO:ARG == [[キャラ:루나사]]
+	RETURN 1
+RETURN 0
+
+
+@参加者条件_4942, ARG , ARG:1
+SIF CPOS(ARG) < 1 || CPOS(ARG) > 6
+	RETURN 0
+CALL CHECK_COST , ARG , 4942
+SIF RESULT == 0
+	RETURN 0
+SELECTCASE ARG:1
+	CASE 1
+		;
+		SIF NO:ARG == [[キャラ:메를랑]]
+			RETURN 1
+		RETURN 0
+	CASE 2
+		;
+		SIF NO:ARG == [[キャラ:리리카]]
+			RETURN 1
+		RETURN 0
+ENDSELECT
+
+@リンケージコストタイプ_4942, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 3
+	CASE 2
+		RETURN 3
+ENDSELECT
+@リンケージコスト_4942, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 0
+	CASE 2
+		RETURN 0
+ENDSELECT

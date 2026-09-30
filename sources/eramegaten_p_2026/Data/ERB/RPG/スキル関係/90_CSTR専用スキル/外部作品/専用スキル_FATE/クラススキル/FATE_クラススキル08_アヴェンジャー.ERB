@@ -1,0 +1,77 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:FATE_鯖共通9_アヴェンジャー.ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	000		20XX/XX/XX		----					テンプレ
+;	001		2021/06/26		SUIHOU					作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_アヴェンジャー,ARG
+RESULTS = 어벤저
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_アヴェンジャー
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_アヴェンジャー,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_アヴェンジャー
+RETURN GET_SUCCESSION_NUM("계통없음")
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_アヴェンジャー,ARG
+PRINTL 서번트로서 소환된 자의 증표
+PRINTL 클래스에 맞춘 보정을 받고 있다
+PRINTL 
+PRINTL 공격에 플러스 보정
+PRINTL 
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_アヴェンジャー,ARG
+RETURN 0
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;
+;Rev145　スキル説明文に記述がないが、ダメージ＋10%を所持していたのでこちらに移動
+;正しい実装がわからないので要確認
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_アヴェンジャー, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			RETURN 10
+	ENDSELECT
+ENDIF
+;自分が防御側
+;PU_SKILLNUM_GET(ARG,"アヴェンジャー")

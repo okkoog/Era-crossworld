@@ -1,0 +1,195 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2045,ARG
+RESULTS = 지하드
+
+;　명중
+@SKILL_HITRATE_2045, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2045, ARG
+RETURN 495
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2045,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2045,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2045, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量	メギドラオン（命90威420）60＋（タル・ンダ24＋ラク・ンダ16＋スク・ンダ12）/3 = 60 + 17 = 77より多く、メギドラオンより命10威70増えてる事も加味
+@SKILL_COST_2045,ARG
+RETURN 80
+
+;　相性
+@SKILL_TYPE_2045,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2045
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2045, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2045, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2045,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2045,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2045, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2045
+RETURN GET_SUCCESSION_NUM("만능")
+
+;속도보정
+@SKILL_SPEED_2045, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2045
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2045, ARG = -1
+RETURN 17
+
+;@敵専用_2045
+;RETURN 1
+
+@継承不能_2045
+RETURN 1
+
+
+
+;====================================================
+;ダメージ発動時
+;ARG:0	行動者のキャラ番号
+;ARG:1	対象のキャラ番号
+;ARG:2	1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;
+;備考:標準の追加効果付与はblock・吸収の場合は発動しない。
+;====================================================
+@SKILL_DAMAGE_EFFECT_2045, ARG, ARG:1, ARG:2
+#DIMS TEMPS, 2
+SIF ARG:1 < 0
+	RETURN 0
+;無効以下では発動しない
+SIF ARG:2 <= -2
+	RETURN 0
+IF CFLAG:ARG:PT플래그
+	TEMPS = %RAND_SPLIT("공격_방어_마법효과_마법위력_명중_회피", "_")%
+	DO
+		TEMPS:1 = %RAND_SPLIT("공격_방어_마법효과_마법위력_명중_회피", "_")%
+	LOOP TEMPS == TEMPS:1
+	CALL SKILL_SET_カジャンダ, ARG, ARG:1, TEMPS + "_" + TEMPS:1, -4, "短縮"
+ELSE
+	CALL SKILL_SET_カジャンダ, ARG, ARG:1, "공격_방어_마법효과_마법위력_명중_회피", -4, "短縮"
+ENDIF
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2045, ARG, ARG:1, ARG:2
+#LOCALSIZE 2
+CALL ATTACK_FIELD,ARG,ARG:1,2045
+
+;IF CFLAG:(ARG):PT플래그 == 0
+;	FOR LOCAL,1,7
+;		LOCALS = 포지션{LOCAL}
+;		SIF FLAG:LOCALS < 0
+;			CONTINUE
+;		CFLAG:(FLAG:LOCALS):공격강화 -= 4
+;		SIF CFLAG:(FLAG:LOCALS):공격강화 < -16
+;			CFLAG:(FLAG:LOCALS):공격강화 = -16
+;		CFLAG:(FLAG:LOCALS):마법위력강화 -= 4
+;		SIF CFLAG:(FLAG:LOCALS):마법위력강화 < -16
+;			CFLAG:(FLAG:LOCALS):마법위력강화 = -16
+;		CFLAG:(FLAG:LOCALS):마법효과강화 -= 4
+;		SIF CFLAG:(FLAG:LOCALS):마법효과강화 < -16
+;			CFLAG:(FLAG:LOCALS):마법효과강화 = -16
+;		CFLAG:(FLAG:LOCALS):명중강화 -= 4
+;		SIF CFLAG:(FLAG:LOCALS):명중강화 < -16
+;			CFLAG:(FLAG:LOCALS):명중강화 = -16
+;		CFLAG:(FLAG:LOCALS):회피강화 -= 4
+;		SIF CFLAG:(FLAG:LOCALS):회피강화 < -16
+;			CFLAG:(FLAG:LOCALS):회피강화 = -16
+;		CFLAG:(FLAG:LOCALS):방어강화 -= 4
+;		SIF CFLAG:(FLAG:LOCALS):방어강화 < -16
+;			CFLAG:(FLAG:LOCALS):방어강화 = -16
+;	NEXT
+;	PRINTW 味方の全能力を下げた！
+;ELSE
+;	FOR LOCAL,7,17
+;		LOCALS = 포지션{LOCAL}
+;		SIF FLAG:LOCALS < 0
+;			CONTINUE
+;		LOCAL:1 = RAND:5
+;		SELECTCASE LOCAL:1
+;			CASE 0
+;				CFLAG:(FLAG:LOCALS):공격강화 -= 4
+;				SIF CFLAG:(FLAG:LOCALS):공격강화 < -16
+;					CFLAG:(FLAG:LOCALS):공격강화 = -16
+;				PRINTW 敵の攻撃を下げた！
+;			CASE 1
+;				CFLAG:(FLAG:LOCALS):마법위력강화 -= 4
+;				SIF CFLAG:(FLAG:LOCALS):마법위력강화 < -16
+;					CFLAG:(FLAG:LOCALS):마법위력강화 = -16
+;				PRINTW 敵の魔法威力を下げた！
+;			CASE 2
+;				CFLAG:(FLAG:LOCALS):명중강화 -= 4
+;				SIF CFLAG:(FLAG:LOCALS):명중강화 < -16
+;					CFLAG:(FLAG:LOCALS):명중강화 = -16
+;				CFLAG:(FLAG:LOCALS):회피강화 -= 4
+;				SIF CFLAG:(FLAG:LOCALS):회피강화 < -16
+;					CFLAG:(FLAG:LOCALS):회피강화 = -16
+;				PRINTW 敵の命中・回避を下げた！
+;			CASE 3
+;				CFLAG:(FLAG:LOCALS):마법효과강화 -= 4
+;				SIF CFLAG:(FLAG:LOCALS):마법효과강화 < -16
+;					CFLAG:(FLAG:LOCALS):마법효과강화 = -16
+;				PRINTW 敵の魔法効果を下げた！
+;			CASEELSE
+;				CFLAG:(FLAG:LOCALS):방어강화 -= 4
+;				SIF CFLAG:(FLAG:LOCALS):방어강화 < -16
+;					CFLAG:(FLAG:LOCALS):방어강화 = -16
+;				PRINTW 敵の防御を下げた！
+;		ENDSELECT
+;	NEXT
+;ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2045, ARG
+PRINTL 적 전체에 대위력의 공격을 행한다。적의 능력을 낮춘다。
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2045,ARG
+RETURN 1
+;とくにない
+

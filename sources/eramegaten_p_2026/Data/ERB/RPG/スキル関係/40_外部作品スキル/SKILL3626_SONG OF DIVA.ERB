@@ -1,0 +1,239 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILL3626_SONG OF DIVA.ERB
+;	Facility	:SKILL:3626 (SONG OF DIVA)。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2021/03/15		木綿豆腐				新規作成
+;	002		2021/03/21		木綿豆腐				ゲージ周りの処理を変更。
+;	003		2021/03/30		木綿豆腐				GVの処理に対応
+;	004		2021/08/24		木綿豆腐				念のため継承できないようにした
+;	005		2022/07/25		木綿豆腐				アキュラくんがX2ルートに入ったら文言をちょっと変えるようにした
+;	006		2023/10/22		木綿豆腐				CSTRでルート判定していた時の処理が残っていたので修正
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_3626, ARG
+RESULTS = SONG OF DIVA
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3626
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3626, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3626
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+
+@継承不能_3626
+RETURN 1
+;不可
+
+;スキル変化？用ランク
+@SKILL_RANK_3626, ARG = -1
+RETURN 23
+;変化不可
+
+
+@SKILL_SKILLEND_3626, ARG
+;食いしばり発動時に動作
+SIF !CFLAG:ARG:이악물기발동
+	RETURN 0
+;いちおう生存確認
+SIF IS_BADSTATE(ARG, "DYING")
+	RETURN 0
+CALL ACTION_3626, ARG
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3626, ARG, ARG:1, ARG:2
+#LOCALSIZE 1
+#DIMS SKILL_USER
+IF SKILL_CHANGE(ARG, [[キャラ:아큐라_X]])
+	SKILL_USER = ＲｏＲｏ
+	IF SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+		SETCOLOR 0xffffff
+	ELSEIF SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+		SETCOLOR 0xff961e
+	ELSE
+		SETCOLOR 0x33ffcc
+	ENDIF
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:GV]])
+	SKILL_USER = シアン
+	;IF SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+		;シアンに近い色ってことで
+		SETCOLOR 0x1d9eff
+	;ELSEIF SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+	;	SETCOLOR 0x3f60a9
+	;ELSE
+	;	SETCOLOR 0x33ffcc
+	;ENDIF
+ENDIF
+LOCAL = CFLAG:ARG:입력행동
+CFLAG:ARG:입력행동 = 3626
+CALL PRINT_ACT_MESSAGE, ARG, 3626
+CALL BATTLE_EVENT_ACT, ARG
+CFLAG:ARG:입력행동 = LOCAL
+IF SKILL_CHANGE(ARG, [[キャラ:아큐라_X]])
+	IF SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+		PRINTFORMW ＞요정의 노랫소리가 %CALLNAME:ARG%을(를) 재기시킨다! RoRo가 모드 어웨이크닝으로 각성했다!
+		;クードス没収
+		CALL SKILLGAGE_F_SET, ARG, [[스킬:블리츠대쉬]], 0
+		;仮にモード・ディーヴァ中でも一回リセットします
+		CALL SKILLGAGE_F_SET, ARG, [[스킬:SONG OF DIVA]], 0
+		;念のためこっちでもモード・ダークネスをリセット
+		IF SKILLGAGE_H_GET(ARG, [[스킬:DARKNESS TRIGGER]]) == 1
+			;ダークネストリガー終了（もう使えない）
+			CALL SKILLGAGE_H_SET, ARG, [[스킬:DARKNESS TRIGGER]], 2
+			PRINTL ＞모드 다크니스 강제 종료!
+		ENDIF
+	ELSEIF SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+		PRINTW ＞쿠도스가 1000을 넘었다! RoRo가 모드 디바로 변신을 이룬다!
+	ENDIF
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:GV]])
+	IF SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+		PRINTFORMW ＞요정의 노랫소리가 %CALLNAME:ARG%을(를) 재기시킨다! 시안과 %CALLNAME:ARG%이(가) 완전히 싱크로했다!
+		;クードス没収
+		SIF HAVE_SKILL(ARG, [[스킬:뇌격린]])
+			CALL SKILLGAGE_F_SET, ARG, [[스킬:뇌격린]], 0
+		;仮にモード・ディーヴァ中でも一回リセットします
+		CALL SKILLGAGE_F_SET, ARG, [[스킬:SONG OF DIVA]], 0
+	ELSEIF SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+		PRINTFORMW ＞쿠도스가 1000을 넘었다! 시안의 노랫소리가 %CALLNAME:ARG%에게 날개《힘》를 부여한다!
+	ENDIF
+ENDIF
+
+@SKILL_BATTLE_MAIN_TOOLTIP_3626, ARG, ARG:1
+IF SKILL_CHANGE(ARG, [[キャラ:아큐라_X]])
+	IF SKILLGAGE_H_GET(ARG, 3626) == 1 || SKILLGAGE_F_GET(ARG, 3626) == 1
+		IF SKILLGAGE_H_GET(ARG, 3626) == 1
+			RESULTS:0 = □모드 어웨이크닝
+		ELSE
+			RESULTS:0 = □모드 디바
+		ENDIF
+		RESULTS:1 = 　턴 종료 시 HP 5% 자동 회복
+		RESULTS:2 = 　与ダメージ上昇中　被ダメージ減少
+		IF GET_RPG_CSTR_TAKEOVER(ARG, "モード") == "X2"
+			RESULTS:3 = 　SPスキル:XRoSS STROMの威力上昇
+		ELSE
+			RESULTS:3 = 　SPスキル:X-ROSS DISASTERの威力上昇
+		ENDIF
+		RESULTS:4 = 　回避率上昇
+	ENDIF
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:GV]])
+	;SONG OF DIVA/輪廻
+	IF SKILLGAGE_H_GET(ARG, 3626) == 1 || SKILLGAGE_F_GET(ARG, 3626) == 1
+		IF SKILLGAGE_H_GET(ARG, 3626) == 1
+			RESULTS:0 = □ＳＯＮＧ ＯＦ ＤＩＶＡ／輪廻
+		ELSE
+			RESULTS:0 = □ＳＯＮＧ ＯＦ ＤＩＶＡ／청의 운명
+		ENDIF
+		RESULTS:1 = 　턴 종료 시 HP 5% 자동 회복
+		RESULTS:2 = 　与ダメージ上昇　被ダメージ減少
+		RESULTS:3 = 　固有スキルの性能変化
+		RESULTS:4 = 　回避率上昇
+	ENDIF
+ENDIF
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_3626, ARG
+#DIM DIVA_H
+#DIM DIVA_F
+DIVA_H = SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]])
+DIVA_F = SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]])
+IF SKILL_CHANGE(ARG, [[キャラ:아큐라_X]])
+	;モード・アウェイクニング
+	IF DIVA_H == 1
+		RESULTS '= SET_COLOR_TAG("モード・アウェイクニング発動中", "#ffffff")
+		RETURN 3
+	;モード・ディーヴァ
+	ELSEIF DIVA_F == 1
+		;モード・ダークネス中はダメだよ
+		IF SKILLGAGE_H_GET(ARG, [[스킬:DARKNESS TRIGGER]]) == 1
+		ELSE
+			RESULTS '= SET_COLOR_TAG("モード・ディーヴァ発動中", "#ff961e")
+			RETURN 3
+		ENDIF
+	ENDIF
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:GV]])
+	;SONG OF DIVA/輪廻
+	IF DIVA_H == 1
+		RESULTS '= SET_COLOR_TAG("ＳＯＮＧ ＯＦ ＤＩＶＡ／輪廻発動中", "#1d9eff")
+		RETURN 3
+	;SONG OF DIVA/藍の運命
+	ELSEIF DIVA_F == 1
+		RESULTS '= SET_COLOR_TAG("ＳＯＮＧ ＯＦ ＤＩＶＡ／藍の運命発動中", "#3f60a9")
+		RETURN 3
+	ENDIF
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3626, ARG
+IF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:아큐라_X]]
+	PRINTL 과거에 해석했던 셉티마·전자의 요정(사이버 디바)의 힘을 해방한다.
+	PRINTL 자동효과(1): 모드 디바
+	PRINTL 쿠도스가 1000을 넘으면 자동으로 발동하며 이하의 효과가 적용된다.
+	PRINTL · 턴 종료 시, HP 5% 자동 회복
+	PRINTL · 적에게 주는 데미지가 상승하고, 적에게서 받는 데미지가 감소
+	IF GET_RPG_CSTR_TAKEOVER(ARG, "モード") == "X2"
+		PRINTL · XRoSS STROM의 위력이 상승한다
+	ELSE
+		PRINTL · X-ROSS DISASTER의 위력이 상승한다
+	ENDIF
+	PRINTL · 물리, 마법 회피율이 상승한다
+	PRINTL ※전투 종료 후에도 지속된다.
+	PRINTL ※쿠도스는 1회 전투에서 3회 피탄당하면 리셋되며 모드 디바도 동시에 종료된다.
+	PRINTL 　
+	PRINTL 자동효과(2): 모드 어웨이크닝
+	PRINTL 전투 중 1회에 한해 HP가 0이 되어도 HP 완전 회복 상태로 부활한다.
+	PRINTL 몇 번을 피탄당해도 해제되지 않지만, 전투 종료와 동시에 종료된다.
+	PRINTL 적용되는 효과 자체는 모드 디바와 동일.
+ELSEIF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:GV]]
+	PRINTL 시안의 제7파동·전자의 요정(사이버 디바)의 힘을 해방한다.
+	PRINTL 자동효과(1): SONG OF DIVA / 청의 운명
+	PRINTL 쿠도스가 1000을 넘으면 자동으로 발동하며 이하의 효과가 적용된다.
+	PRINTL · 턴 종료 시, HP 5% 자동 회복
+	PRINTL · 적에게 주는 데미지가 상승하고, 적에게서 받는 데미지가 감소
+	PRINTL · 일부 스킬의 성능이 변화한다
+	PRINTL · 물리, 마법 회피율이 상승한다
+	PRINTL ※전투 종료 후에도 지속된다.
+	PRINTL ※쿠도스는 1회 전투에서 3회 피탄당하면 리셋되며 청의 운명도 동시에 종료된다.
+	PRINTL 　
+	PRINTL 자동효과(2)：ＳＯＮＧ ＯＦ ＤＩＶＡ／輪廻
+	PRINTL 전투 중 1회에 한해 HP가 0이 되어도 HP 완전 회복 상태로 부활한다.
+	PRINTL 몇 번을 피탄당해도 해제되지 않지만, 전투 종료와 동시에 종료된다.
+	PRINTL 적용되는 효과 자체는 청의 운명과 동일.
+ELSE
+	PRINTL 전자의 요정(사이버 디바)의 힘을 해방한다.
+	PRINTL 자동효과(1): 쿠도스가 1000을 넘으면 자동으로 발동한다.
+	PRINTL 　
+	PRINTL 자동효과(2): 전투 중 1회에 한해 HP가 0이 되어도 HP 완전 회복 상태로 부활한다.
+ENDIF
+
+@SKILL_ACTIONABLE_BATTLE_3626, ARG
+RETURN 0
+
+;継承に必要な部位
+
+
+;RESULT:0 = HP回復量
+;RESULT:1 = MP回復量
+;RESULT:2 = MAG消費量
+@SKILL_REGEN_AT_TURNEND_3626,ARG
+IF HAVE_SKILL(ARG, [[스킬:SONG OF DIVA]]) && (SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]]) || SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]])) && CFLAG:ARG:800 < 10
+	RETURN MAXBASE:ARG:ＨＰ * 5 / 100, 0, 0
+ENDIF

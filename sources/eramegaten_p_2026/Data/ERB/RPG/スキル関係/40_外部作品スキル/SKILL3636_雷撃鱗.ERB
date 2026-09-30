@@ -1,0 +1,538 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILL3636_雷撃鱗.ERB
+;	Facility	:SKILL:3636 (뇌격린)。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2021/03/30		木綿豆腐				新規作成
+;	002		2021/04/27		木綿豆腐				無謀の証・無気力のお守り装備時のクードス表示を修正
+;													EXTRAからMAGICに変更・敵撃破時にクードス加算処理を追加
+;	003		2021/06/10		木綿豆腐				3ロック時の威力をジオダイン相当に変更
+;	004		2021/08/24		木綿豆腐				念のため継承できないようにした
+;	005		2021/10/04		木綿豆腐				クードスがリセットされたメッセージに名前も出すようにした
+;													ついでにSPのアイコンを自作したので出力するようにした
+;	006		2022/02/06		木綿豆腐				↑がPRINTLだったのでPRINTFORMLにした
+;													あと被弾判定にミスがあったので直した
+;	007		2022/02/26		木綿豆腐				↑の被弾判定が更にミスってたので直した
+;	008		2022/05/12		木綿豆腐				ターゲット処理をより賢くした
+;	009		2022/10/27		P(bazzile)				受けフラグの改定にあわせて一部記述を変更。獲得クードスが表示されるように対応
+;	010		2023/10/22		木綿豆腐				SKILL_EX_DISPLAYなるものが出来たので対応
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_3636, ARG
+RESULTS = 뇌격린
+
+;　명중
+@SKILL_HITRATE_3636, ARG
+RETURN 250
+
+;　威力
+@SKILL_POWER_3636, ARG
+SIF FLAG:확산플래그 == 2
+	RETURN 240
+SIF FLAG:확산플래그 == 3
+	RETURN 320
+RETURN 160
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3636, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3636, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3636, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3636, ARG
+RETURN 10
+
+;　相性
+@SKILL_TYPE_3636, ARG
+RETURN GET_TYPE_NUM("전격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3636
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3636, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3636, ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_3636, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3636, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3636, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3636
+RETURN GET_SUCCESSION_NUM("전격")
+
+;속도보정
+@SKILL_SPEED_3636, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3636
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3636, ARG = -1
+RETURN 23
+
+@継承不能_3636
+RETURN 1
+
+
+;====================================================
+;行動によるスキルゲージ操作
+;各キャラクターの通常の行動後に全キャラで呼び出される
+;ARG:		このスキルの持ち主のキャラ番号
+;ARG:1		行動したキャラクターのキャラ番号
+;
+;RESULT 		獲得したゲージの量を返すことで獲得量を表示させる。つまり、他人の行動に反応させることなども可能。
+;RESULT:1		獲得表示のときの文字色を指定できる。ゲージが溜まったときの表示わけなどに
+;RESULTS		ゲージの名称 「<<XXXX>>」という形で表示される
+;RESULTS:1		ゲージの単位。半角の%を使いたい場合は「\%」と言うかたちで退避記号を使うと良い
+;RESULTS;2		色指定以外の要素を使わずに文字列を返す。ゲージ式の獲得量で表現したい場合などに
+;====================================================
+@SKILLGAGE_CHARGE_3636, ARG, ARG:1
+#LOCALSIZE 1
+#DIM 加算クードス
+#DIM 元クードス
+元クードス = SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]])
+SIF HAVE_SKILL(ARG, [[스킬:피뢰침]])
+	CALL TARGET_CHECK_3637, ARG
+;死んだら
+IF BASE:ARG:ＨＰ < 1
+	;クードス没収
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:뇌격린]], 0
+	;被弾回数リセット
+	CALL SKILLGAGE_H_SET, ARG, [[스킬:뇌격린]], 0
+	;どっちのSONG OF DIVAも終わり
+	CALL SKILLGAGE_H_SET, ARG, [[스킬:SONG OF DIVA]], 0
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:SONG OF DIVA]], 0
+ENDIF
+;SONG OF DIVA/輪廻中はクードス加算しない
+SIF SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+	RETURN 0
+
+加算クードス = 0
+;自分の行動の場合
+IF ARG == ARG:1
+	;SPスキルを使ったらゲージは溜めない
+	IF RANGE(CFLAG:ARG:입력행동, 3904, 3908)
+		RETURN 0
+	ENDIF
+	;ダメージを受けた敵の数に応じてスキルゲージアップ
+	FOR LOCAL, 0, CHARANUM
+		SIF CFLAG:LOCAL:PT플래그 == CFLAG:ARG:PT플래그
+			CONTINUE
+		IF CFLAG:LOCAL:현데미지 > 0
+			;20未満を割った時って0だよね多分
+			加算クードス += MAX(1, CFLAG:LOCAL:현데미지 / 20)
+		ELSE
+			CONTINUE
+		ENDIF
+	NEXT
+ENDIF
+;攻撃を回避したらゲージが増える
+;本来はそんな有情な機能はないが慈悲を与える
+;SIF (GETBIT(CFLAG:ARG:受けフラグ,18) || GETBIT(CFLAG:ARG:受けフラグ,19)) && !CFLAG:ARG:회피실패
+SIF GET_CREC_ACT(-1, ARG, "AVOID")
+	加算クードス += 10
+IF EQUIP:ARG:악세서리 == GETNUM(ITEM, "무기력의부적")
+ELSE
+	;3回ダメージを受けた又はカウンター、トリガー以外の攻撃を受けたらクードス全没収！0ダメージでもダメです
+	;これはアパシーではなくティミッドだ！！
+	;IF (CFLAG:ARG:현데미지 >= 0 || GETBIT(CFLAG:ARG:受けフラグ,18) || GETBIT(CFLAG:ARG:受けフラグ,19)) && CFLAG:ARG:회피실패
+	IF GET_CREC_ACT(-1, ARG, "HIT")
+		;クードス1以上なら被弾判定
+		IF SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]]) > 0
+			;ゲージHを使わないスキルなので被弾回数として用いる
+			CALL SKILLGAGE_H_ADD, ARG, [[스킬:뇌격린]], 1
+			IF EQUIP:ARG:악세서리 == GETNUM(ITEM, "무모함의증거")
+				IF SKILLGAGE_H_GET(ARG, [[스킬:뇌격린]]) > 0
+					PRINTFORML ＞%CALLNAME:ARG%의 쿠도스가 리셋되었다!
+					;クードス没収
+					CALL SKILLGAGE_F_SET, ARG, [[스킬:뇌격린]], 0
+					;被弾回数リセット
+					CALL SKILLGAGE_H_SET, ARG, [[스킬:뇌격린]], 0
+				ENDIF
+			ELSE
+				IF SKILLGAGE_H_GET(ARG, [[스킬:뇌격린]]) > 2
+					PRINTFORML ＞%CALLNAME:ARG%의 쿠도스가 리셋되었다!
+					;クードス没収
+					CALL SKILLGAGE_F_SET, ARG, [[스킬:뇌격린]], 0
+					;被弾回数リセット
+					CALL SKILLGAGE_H_SET, ARG, [[스킬:뇌격린]], 0
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+
+IF EQUIP:ARG:악세서리 == GETNUM(ITEM, "무모함의증거")
+	TIMES 加算クードス, 1.25
+ELSEIF EQUIP:ARG:악세서리 == GETNUM(ITEM, "무기력의부적")
+	TIMES 加算クードス, 0.5
+ENDIF
+
+;最後に加算クードス分を足す
+CALL SKILLGAGE_F_ADD, ARG, [[스킬:뇌격린]], 加算クードス
+
+IF EQUIP:ARG:악세서리 == GETNUM(ITEM, "무기력의부적")
+	;アパシーマンの上限は1200
+	SIF SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]]) > 1200
+		CALL SKILLGAGE_F_SET, ARG, [[스킬:뇌격린]], 1200
+ELSE
+	;上限は99999
+	SIF SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]]) > 99999
+		CALL SKILLGAGE_F_SET, ARG, [[스킬:뇌격린]], 99999
+ENDIF
+
+;不屈式SONG OF DIVA発動中(SONG OF DIVA/輪廻)　特に処理なし
+IF SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]]) > 0
+;クードス式SONG OF DIVA発動中(SONG OF DIVA/藍の運命)
+ELSEIF SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]]) > 0
+	;クードス値が1000を下回ったら（まあ没収されて0になったらだよね）SONG OF DIVA終了
+	IF SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]]) < 1000
+		CALL SKILLGAGE_F_SET, ARG, [[스킬:SONG OF DIVA]], 0
+	ENDIF
+;SONG OF DIVA未発
+ELSE
+	;クードス値が1000を超えたら
+	IF SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]]) > 999 && HAVE_SKILL(ARG, [[스킬:SONG OF DIVA]])
+		CALL SKILLGAGE_F_SET, ARG, [[스킬:SONG OF DIVA]], 1
+		CALL ACTION_3626, ARG, ARG:1
+	ENDIF
+ENDIF
+RESULTS = Kudos
+RESULTS:1 = %" "%
+RETURN MAX(SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]]) - 元クードス, 0)
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3636, ARG, ARG:1, ARG:2
+#LOCALSIZE 3
+#DIM DART_D
+#DIM DART_H
+#DIM TEMP
+#DIM ループ用
+#DIM ループ用1
+#DIM ループ用2
+#DIM 攻撃前敵カウント
+#DIM 攻撃後敵カウント
+#DIM 差分
+#DIM 加算クードス
+#DIM ターゲット番号
+#DIM ターゲットリスト, 4
+
+攻撃前敵カウント = 0
+攻撃後敵カウント = 0
+TEMP = 0
+IF CFLAG:ARG:PT플래그 > 0
+	FOR ループ用, 7, 17
+		LOCALS = 포지션{ループ用}
+		SIF FLAG:LOCALS == -1
+			CONTINUE
+		SIF GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) == "DYING"
+			CONTINUE
+		攻撃前敵カウント += 1
+	NEXT
+ENDIF
+
+FLAG:확산플래그 = 0
+TEMP = 0
+VARSET ターゲットリスト,0
+CALL TARGET_CHECK_3637, ARG
+DART_H = SKILLGAGE_H_GET(ARG, [[스킬:피뢰침]])
+SIF DART_H == 0
+	RETURN
+DART_H += 1
+FOR ループ用1, 1, DART_H
+	ターゲット番号 = CFLAG:ARG:("고유게이지H"+TOSTR(ループ用1))
+	FLAG:확산플래그 += 1
+	FOR ループ用2, 1, DART_H
+		SIF CFLAG:ARG:("고유게이지H"+TOSTR(ループ用1)) == CFLAG:ARG:("고유게이지H"+TOSTR(ループ用2)) && ループ用1 != ループ用2
+			FLAG:확산플래그 += 1
+	NEXT
+	IF MATCH(ターゲットリスト, ターゲット番号) == 0
+		CALL ATTACK_SINGLE, ARG, ターゲット番号, 3636
+		TEMP = FLAG:확산플래그
+		FLAG:확산플래그 = 0
+		ターゲットリスト:ループ用1 = ターゲット番号
+	ENDIF
+NEXT
+
+IF CFLAG:ARG:PT플래그 > 0
+	FOR ループ用, 7, 17
+		LOCALS = 포지션{ループ用}
+		SIF FLAG:LOCALS == -1
+			CONTINUE
+		SIF GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) == "DYING"
+			CONTINUE
+		攻撃後敵カウント += 1
+	NEXT
+ENDIF
+
+差分 = 攻撃前敵カウント - 攻撃後敵カウント
+
+SELECTCASE 差分
+CASE 1
+	;原作だと+10だけど慈悲を与える
+	IF TEMP == 3
+		加算クードス = 30
+		IF EQUIP:ARG:악세서리 == GETNUM(ITEM, "무모함의증거")
+			TIMES 加算クードス, 1.25
+		ELSEIF EQUIP:ARG:악세서리 == GETNUM(ITEM, "무기력의부적")
+			TIMES 加算クードス, 0.5
+		ENDIF
+		PRINTFORMW FULL-STRIKE　Kudos + {加算クードス}
+		CALL SKILLGAGE_F_ADD, ARG, [[스킬:뇌격린]], 加算クードス
+	ENDIF
+CASE 2
+	加算クードス = 100
+	IF EQUIP:ARG:악세서리 == GETNUM(ITEM, "무모함의증거")
+		TIMES 加算クードス, 1.25
+	ELSEIF EQUIP:ARG:악세서리 == GETNUM(ITEM, "무기력의부적")
+		TIMES 加算クードス, 0.5
+	ENDIF
+	PRINTFORMW DOUBLE　Kudos + {加算クードス}
+	CALL SKILLGAGE_F_ADD, ARG, [[스킬:뇌격린]], 加算クードス
+CASE 3
+	加算クードス = 250
+	IF EQUIP:ARG:악세서리 == GETNUM(ITEM, "무모함의증거")
+		TIMES 加算クードス, 1.25
+	ELSEIF EQUIP:ARG:악세서리 == GETNUM(ITEM, "무기력의부적")
+		TIMES 加算クードス, 0.5
+	ENDIF
+	PRINTFORMW TRIPLE　Kudos + {加算クードス}
+	CALL SKILLGAGE_F_ADD, ARG, [[스킬:뇌격린]], 加算クードス
+ENDSELECT
+IF EQUIP:ARG:악세서리 == GETNUM(ITEM, "무기력의부적")
+	;アパシーマンの上限は1200
+	SIF SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]]) > 1200
+		CALL SKILLGAGE_F_SET, ARG, [[스킬:뇌격린]], 1200
+ELSE
+	;上限は99999
+	SIF SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]]) > 99999
+		CALL SKILLGAGE_F_SET, ARG, [[스킬:뇌격린]], 99999
+ENDIF
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_3636, ARG
+#DIM RGRN_H
+#DIM RGRN_F
+#DIM RGRN_D
+RGRN_H = SKILLGAGE_H_GET(ARG, [[스킬:뇌격린]])
+RGRN_F = SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]])
+RGRN_D = SKILLGAGE_D_GET(ARG, [[스킬:뇌격린]])
+IF RGRN_F > 0
+	IF  EQUIP:ARG:악세서리 == GETNUM(ITEM, "무모함의증거") || EQUIP:ARG:악세서리 == GETNUM(ITEM, "무기력의부적")
+		RESULTS = Kudos {RGRN_F}
+	ELSE
+		RESULTS = Kudos {RGRN_F} 
+		;被弾回数表示
+		SELECTCASE RGRN_H
+			CASE 0
+				RESULTS += "|||"
+			CASE 1
+				RESULTS += "||"
+				RESULTS += SET_COLOR_TAG("|", "0x666666")
+			CASE 2
+				RESULTS += SET_COLOR_TAG("|", "0xff0033")
+				RESULTS += SET_COLOR_TAG("||", "0x666666")
+		ENDSELECT
+	ENDIF
+ELSE
+	RESULTS = Kudos {RGRN_F}
+ENDIF
+RESULTS += "<br>"
+;ゲージD4あたり1ポイント分とし、スキル側で12以上にならないようチェックする
+SELECTCASE RGRN_D
+	CASE 0
+		RESULTS += GET_SP_SKILL_ICON(ARG, 4) * 3
+		RESULTS += "ＳＰ：３"
+	CASE 1, 2, 3, 4
+		RESULTS += GET_SP_SKILL_ICON(ARG, 4) * 2
+		SELECTCASE RGRN_D
+			CASE 1
+				RESULTS += GET_SP_SKILL_ICON(ARG, 3)
+			CASE 2
+				RESULTS += GET_SP_SKILL_ICON(ARG, 2)
+			CASE 3
+				RESULTS += GET_SP_SKILL_ICON(ARG, 1)
+			CASE 4
+				RESULTS += GET_SP_SKILL_ICON(ARG, 0)
+		ENDSELECT
+		RESULTS += "ＳＰ：２(回復まで"
+		RESULTS += SET_COLOR_TAG(TOSTR(RGRN_D % 4), "0xc3530b")
+		RESULTS += "ターン)"
+	CASE 5, 6, 7, 8
+		RESULTS += GET_SP_SKILL_ICON(ARG, 4)
+		SELECTCASE RGRN_D
+			CASE 5
+				RESULTS += GET_SP_SKILL_ICON(ARG, 3)
+			CASE 6
+				RESULTS += GET_SP_SKILL_ICON(ARG, 2)
+			CASE 7
+				RESULTS += GET_SP_SKILL_ICON(ARG, 1)
+			CASE 8
+				RESULTS += GET_SP_SKILL_ICON(ARG, 0)
+		ENDSELECT
+		RESULTS += GET_SP_SKILL_ICON(ARG, 0)
+		RESULTS += "ＳＰ：１(回復まで"
+		RESULTS += SET_COLOR_TAG(TOSTR(RGRN_D % 4), "0xc3530b")
+		RESULTS += "ターン)"
+	CASE 9, 10, 11, 12
+		SELECTCASE RGRN_D
+			CASE 9
+				RESULTS += GET_SP_SKILL_ICON(ARG, 3)
+			CASE 10
+				RESULTS += GET_SP_SKILL_ICON(ARG, 2)
+			CASE 11
+				RESULTS += GET_SP_SKILL_ICON(ARG, 1)
+			CASE 12
+				RESULTS += GET_SP_SKILL_ICON(ARG, 0)
+		ENDSELECT
+		RESULTS += GET_SP_SKILL_ICON(ARG, 0) * 2
+		RESULTS += "ＳＰ：０(回復まで"
+		RESULTS += SET_COLOR_TAG(TOSTR(RGRN_D % 4), "0xc3530b")
+		RESULTS += "ターン)"
+ENDSELECT
+RETURN 3
+
+@SKILL_EX_DISPLAY_3636, ARG, ARGS
+#DIM BAR_LENS, 2
+#DIM BAR_COLOR, 2
+#DIMS L_RESULTS, 2
+#DIM EFFECT_TURN
+VARSET L_RESULTS
+BAR_LENS = SKILL_EX_DISPLAY_LENS / 2 + SKILL_EX_DISPLAY_LENS % 2, SKILL_EX_DISPLAY_LENS / 2
+IF SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+	L_RESULTS '= SET_COLOR_TAG("♪", TOSTR(0x1d9eff))
+ELSEIF SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+	L_RESULTS '= SET_COLOR_TAG("♪", TOSTR(0x3f60a9))
+ELSE
+	L_RESULTS '= SET_COLOR_TAG("♪", "灰色")
+ENDIF
+;L_RESULTS += SET_COLOR_TAG(UNICODE(0x2694), "yellow")
+L_RESULTS += ":"
+L_RESULTS += @"%@"{SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]])}", 5, RIGHT%"
+L_RESULTS '= SET_BUTTON_TAG(L_RESULTS, ARGS, "Kudos")
+
+L_RESULTS:1 += " SP:"
+SELECTCASE SKILLGAGE_D_GET(ARG, [[스킬:뇌격린]])
+CASE 0
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 4)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 4)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 4)
+CASE 1
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 4)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 4)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 3)
+CASE 2
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 4)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 4)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 2)
+CASE 3
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 4)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 4)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 1)
+CASE 4
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 4)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 4)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 0)
+CASE 5
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 4)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 3)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 0)
+CASE 6
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 4)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 2)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 0)
+CASE 7
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 4)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 1)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 0)
+CASE 8
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 4)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 0)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 0)
+CASE 9
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 3)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 0)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 0)
+CASE 10
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 2)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 0)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 0)
+CASE 11
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 1)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 0)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 0)
+CASE 12
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 0)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 0)
+	L_RESULTS:1 += GET_SP_SKILL_ICON(ARG, 0)
+ENDSELECT
+RESULTS '= L_RESULTS:0 + L_RESULTS:1
+RETURN 1
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3636, ARG
+#DIM DKTG_F
+;ステータス画面からはこっち表示
+IF CFLAG:(CHARANUM-1):PT플래그 || ARG < 0 || ARG >= CHARANUM
+	PRINTL 피뢰침을 맞힌 적에 대해, "푸른 뇌정"에 의한 뇌격을 흘려보낸다.
+	PRINTL 
+	PRINTL 피뢰침에 의한 록온 중인 적에 대해 전격 상성으로 데미지
+	PRINTL 데미지는 록 심도에 따라 변화한다
+	PRINTL ※1체도 록하지 않은 경우는 사용할 수 없다.
+;戦闘中はこっち表示
+ELSE
+	PRINTL 피뢰침에 의한 록온 중인 적에 대해 전격 상성으로 데미지를 준다.
+	PRINTL 데미지는 록 심도에 따라 변화한다.
+ENDIF
+PRINTL ※이 스킬로 록 심도 3이 된 적을 쓰러뜨렸을 경우 쿠도스가 30 가산된다
+PRINTL ※이 스킬로 적을 2체 동시에 쓰러뜨렸을 경우 쿠도스가 100 가산된다
+PRINTL ※이 스킬로 적을 3체 동시에 쓰러뜨렸을 경우 쿠도스가 250 가산된다
+
+;継承に必要な部位
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3636, ARG
+#DIM DART_H
+
+CALL TARGET_CHECK_3637, ARG
+DART_H = SKILLGAGE_H_GET(ARG, [[스킬:피뢰침]])
+IF DART_H > 0
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF

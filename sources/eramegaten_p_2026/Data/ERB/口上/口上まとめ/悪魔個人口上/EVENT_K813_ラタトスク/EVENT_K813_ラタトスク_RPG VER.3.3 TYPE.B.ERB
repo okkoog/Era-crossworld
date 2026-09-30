@@ -1,0 +1,2278 @@
+﻿;-------------------------------------------------
+;ラタトスク戦闘口上
+;
+;-------------------------------------------------
+;-------------------------------------------------
+;汎用口上の作成に使用する場合は、813→キャラ番号ではなく、
+;K[[キャラ:라타토스크]]_11→PUB会話タイプ番号　へと変換してご使用ください
+;-------------------------------------------------
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_K[[キャラ:라타토스크]]_11_ASSI.ERB
+;	Facility	:会話タイプ：助手時口上
+;
+;	Modification Data:
+;	Edit	Date			Author					Reason
+;	001		2024/05/14		バウム					新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;ライセンスについて
+;	・基本項目(許可する項目を"○"に、許可しない項目を"×"に変更してください。)
+;	+----+----+-------------------------------+
+;	|番号|許可|ライセンス内容                 |
+;	+----+----+-------------------------------+
+;	|   1| ○ | 処理上のバグ修正              |
+;	+----+----+-------------------------------+
+;	|   2| ○ | 口上の誤字・脱字の修正        |
+;	+----+----+-------------------------------+
+;	|   3| ○ | 口上まとめへの収録            |
+;	+----+----+-------------------------------+
+;	|   4| ○ | 口上の新規追加                |
+;	+----+----+-------------------------------+
+;	|   5| ○ | 既存口上の改変                |
+;	+----+----+-------------------------------+
+;	|   6| ○ | 改変した口上の自由な再配布    |
+;	+----+----+-------------------------------+
+;	|   7| ○ | 口上内容の転載                |
+;	+----+----+-------------------------------+
+
+;=============================================================
+;戦闘メッセージ
+;=============================================================
+;--------------------------------------------------
+;リアクション
+;--------------------------------------------------
+@KOJO_BATTLE_EVENT_K[[キャラ:라타토스크]]_11, ARG, ARG:1, ARG:2
+SIF ARG < 0 && NO:ARG != 813
+	RETURN 0
+VARSET LOCALS
+SELECTCASE TFLAG:전투이벤트
+	;COOP発動 ARGは発動者
+	CASE 1
+		IF FLAG:무후후전개 == 1 && (TEQUIP:86 == [[衣装:바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ａ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ｗ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:꼬리플러그]])
+			SELECTCASE RAND:2
+				CASE 0
+					LOCALS:10 = んっ%ハート()%　チャ、ンス、だけどぉっ%ハート()%　ダメっ%UNICODE(0x2661)% イっくぅ！%ハート()%
+				CASE 1
+					LOCALS:10 = あっ%ハート()%　チャンスっ%ハート()% きたっ%ハート()% きたきたきたきたっ%ハート()% ～～～っ！%ハート()%%ハート()%
+			ENDSELECT
+		ELSEIF TALENT:복종 || TALENT:예속
+			SELECTCASE RAND:2
+				CASE 0
+					LOCALS:10 = い、今です、%CSTR:이인칭%っ！
+				CASE 1
+					LOCALS:10 = %CSTR:일인칭%、やりましたっ
+			ENDSELECT
+		ELSEIF 現HP割合(ARG) < 25
+			SELECTCASE RAND:3
+				CASE 0
+					LOCALS:10 = 今っ……だあああ！！
+				CASE 1
+					LOCALS:10 = いっけぇぇーーっ！！
+				CASE 2
+					IF 陥落()
+						LOCALS:10 = %CSTR:이인칭%と……勝ちたい！
+					ELSE
+						LOCALS:10 = うわああああ！！
+					ENDIF
+			ENDSELECT
+		ELSE
+			IF 陥落()
+				SELECTCASE RAND:4
+					CASE 0
+						LOCALS:10 = ！ %CSTR:이인칭%！ 今ならいけるかも！
+					CASE 1
+						LOCALS:10 = %CSTR:이인칭%、今だよーっ！
+					CASE 2
+						LOCALS:10 = みんな、いっくよーっ！
+					CASE 3
+						LOCALS:10 = いっしょに行こっ、%CSTR:이인칭%！
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:2
+					CASE 0
+						LOCALS:10 = 今だよーっ！
+					CASE 1
+						LOCALS:10 = いっしょに行こっ！
+				ENDSELECT
+			ENDIF
+		ENDIF
+	;COOP参加
+	CASE 2
+		IF FLAG:행동순1 != -1
+			IF FLAG:무후후전개 == 1 && (TEQUIP:86 == [[衣装:바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ａ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ｗ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:꼬리플러그]])
+				SELECTCASE RAND:3
+					CASE 0
+						LOCALS:10 = キモチいいっ%ハート()%　キモチいいよぉっ%ハート()%
+					CASE 1
+						LOCALS:10 = %CSTR:일인칭%もっ%ハート()%　イくっ%ハート()%　イくぅっ！%ハート()%
+					CASE 2
+						LOCALS:10 =  あんっ%ハート()%　イ、イかなきゃっ%ハート()% イくっ！%ハート()%
+				ENDSELECT
+			ELSEIF FLAG:행동순1 == MASTER
+				;主人がCOOP発動
+				IF 現HP割合(ARG) < 25
+					SELECTCASE RAND:4
+						CASE 0
+							LOCALS:10 = %CSTR:이인칭%！ %CSTR:일인칭%、まだ動けるよ……！
+						CASE 1
+							LOCALS:10 = %CSTR:이인칭%も、がんばってるもん……！
+						CASE 2
+							LOCALS:10 = %CSTR:일인칭%も、いくよ……！
+						CASE 3
+							LOCALS:10 = からだ……動いてええ！！
+					ENDSELECT
+				ELSE
+					SELECTCASE RAND:4
+						CASE 0
+							LOCALS:10 = %CSTR:이인칭%、すごーい！
+						CASE 1
+							LOCALS:10 = %CSTR:이인칭%かっこいー！
+						CASE 2
+							LOCALS:10 = %CSTR:일인칭%もやるぞー！
+						CASE 4
+							LOCALS:10 = %CSTR:이인칭%！ %CSTR:일인칭%もいっしょに！
+					ENDSELECT
+				ENDIF
+			ELSE
+				;それ以外
+				IF 現HP割合(ARG) < 25
+					SELECTCASE RAND:2
+						CASE 0
+							LOCALS:10 = %CSTR:일인칭%も、いくよ……！
+						CASE 1
+							LOCALS:10 = からだ……動いてええ！！
+					ENDSELECT
+				ELSE
+					SELECTCASE RAND:4
+						CASE 0
+							LOCALS:10 = よーし、やるぞー！
+						CASE 1
+							LOCALS:10 = いっくよー！
+						CASE 2
+							LOCALS:10 = %CSTR:일인칭%もガンバるね！
+						CASE 3
+							LOCALS:10 = まだまだー！
+					ENDSELECT
+				ENDIF
+			ENDIF
+		ENDIF
+	;공격　ARGが攻撃をする仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 11
+		;相手が死んだ
+		IF BASE:(ARG:1):ＨＰ <= 0
+			IF FLAG:무후후전개 == 1 && (TEQUIP:86 == [[衣装:바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ａ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ｗ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:꼬리플러그]])
+				SELECTCASE RAND:3
+					CASE 0
+						LOCALS:10 = あっ%ハート()% はぁんっ%ハート()% た、たおした？%ハート()%
+					CASE 1
+						LOCALS:10 = んぅっ%ハート()% %CSTR:이인칭%、や、やっつけたよっ%ハート()% あんっ%ハート()%
+					CASE 2
+						LOCALS:10 = ううっ%ハート()% たおせた、けどぉっ%ハート()% ぶるぶるしてるぅっ%ハート()%
+				ENDSELECT
+			ELSEIF 現HP割合(ARG) < 25
+				SELECTCASE RAND:3
+					CASE 0
+						LOCALS:10 = たおせた……？
+					CASE 1
+						LOCALS:10 = か、かった……！
+					CASE 2
+						LOCALS:10 = %CSTR:이인칭%、やったよ……！
+				ENDSELECT
+			ELSEIF TALENT:복종 || TALENT:예속
+				SELECTCASE RAND:2
+					CASE 0
+						LOCALS:10 = やった……！ やっつけました、%CSTR:이인칭%！
+					CASE 1
+						LOCALS:10 = %CSTR:일인칭%、やりました……！
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:4
+					CASE 0
+						LOCALS:10 = %CSTR:이인칭%、やっつけたよ！
+					CASE 1
+						LOCALS:10 = %CSTR:일인칭%、やったよー！
+					CASE 2
+						LOCALS:10 = よーし！ どんどんいくよー！
+					CASE 3
+						LOCALS:10 = やったやったぁ！
+				ENDSELECT
+			ENDIF
+		;弱点をついた。つまりCOOP
+		ELSEIF GET_CREC_ACT(ARG, ARG:1, "WEAK")
+			IF CFLAG:(ARG:1):방어플래그
+				LOCALS:10 = …あ、あれれ？ じゃくてん、だよね？
+			ELSE
+				;こっちはCOOP発動に回すためにカット
+				RETURN 0
+			ENDIF
+		;ムフフ時
+		ELSEIF FLAG:무후후전개 == 1 && (TEQUIP:86 == [[衣装:바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ａ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ｗ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:꼬리플러그]]) && ダメージ割合(ARG:1, ARG:2) > 0
+			SELECTCASE RAND:3
+				CASE 0
+					LOCALS:10 = とおっ%ハート()% ゆ、ゆれちゃうよぉっ%ハート()%
+				CASE 1
+					LOCALS:10 = んぅっ%ハート()% おくっ%ハート()% ぐりぐりしてっ%ハート()% あんっ%ハート()%
+				CASE 2
+					LOCALS:10 = え、エッチなおとっ%ハート()% しちゃってるよぉ%ハート()%
+			ENDSELECT
+		;ピンチ時
+		ELSEIF 現HP割合(ARG) < 25
+			SELECTCASE RAND:3
+				CASE 0
+					LOCALS:10 = うあああっ！
+				CASE 1
+					LOCALS:10 = まっ……だまだー！
+				CASE 2
+					LOCALS:10 = 当たった……！
+			ENDSELECT
+		ELSEIF TALENT:복종 || TALENT:예속
+			SELECTCASE RAND:2
+				CASE 0
+					LOCALS:10 = このままたおし……ます！
+				CASE 1
+					LOCALS:10 = %CSTR:일인칭%にまかせてください……！
+			ENDSELECT
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 0
+			SELECTCASE RAND:4
+				CASE 0
+					LOCALS:10 = わっ！ 当たった！
+				CASE 1
+					LOCALS:10 = とうっ！
+				CASE 2
+					LOCALS:10 = この調子ならいけるかも！
+				CASE 3
+					LOCALS:10 = %CSTR:일인칭%にまっかせてー！
+			ENDSELECT
+		;無効された
+		ELSEIF ダメージ割合(ARG:1, ARG:2) <= 0
+			IF TALENT:복종 || TALENT:예속
+				SELECTCASE RAND:2
+					CASE 0
+						LOCALS:10 = ひっ……！ お、おこられちゃう……！
+					CASE 1
+						LOCALS:10 = し、しっぱい……しちゃった……
+				ENDSELECT
+			ELSEIF 現HP割合(ARG) < 25
+				SELECTCASE RAND:3
+					CASE 0
+						LOCALS:10 = こ、これじゃ、ダメ……！
+					CASE 1
+						LOCALS:10 = このままじゃ、まけちゃう……？
+					CASE 2
+						LOCALS:10 = こうげき、きいてない……
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:3
+					CASE 0
+						LOCALS:10 = えーっ！？ な、なんでー！？
+					CASE 1
+						LOCALS:10 = きいてないよーっ！
+					CASE 2
+						LOCALS:10 = %CSTR:이인칭%！ あの子、へ、へいきそうだよ！？
+				ENDSELECT
+			ENDIF
+		ENDIF
+	;被ダメージ
+	;ARGが攻撃を受ける仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 12
+		;死んだ
+		IF BASE:ARG:ＨＰ <= 0
+			;ムフフで死亡
+			IF FLAG:무후후전개 == 1 && (TEQUIP:86 == [[衣装:바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ａ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ｗ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:꼬리플러그]])
+				SELECTCASE RAND:2
+					CASE 0
+						LOCALS:10 = あっ%ハート()% ダメぇっ%ハート()% イっちゃ、ダメ、なのにぃ……%ハート()%
+					CASE 1
+						LOCALS:10 = これじゃ、たたかえないよぉ……
+				ENDSELECT
+			ELSEIF TALENT:복종 || TALENT:예속
+				SELECTCASE RAND:2
+					CASE 0
+						LOCALS:10 = ごめん、なさい……
+					CASE 1
+						LOCALS:10 = やめて……おこらないで……
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:4
+					CASE 0
+						LOCALS:10 = つよい、ね……やられ……
+					CASE 1
+						LOCALS:10 = あきら……め……
+					CASE 2
+						LOCALS:10 = あ、あれっ？ 力がぬけて……
+					CASE 3
+						LOCALS:10 = ごめんね、%CSTR:이인칭%……
+				ENDSELECT
+			ENDIF
+		;服従ルート専用
+		ELSEIF TALENT:복종 || TALENT:예속
+			SELECTCASE RAND:4
+				CASE 0
+					LOCALS:10 = こんなの、いたくないもん……！
+				CASE 1
+					LOCALS:10 = だ、大丈夫です！ %CSTR:일인칭%、ちゃんとやれます……！
+				CASE 2
+					LOCALS:10 = じゃ、じゃましないでよ……！
+				CASE 3
+					LOCALS:10 = もたもたしてるって、思われちゃう……！
+			ENDSELECT
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 50 || 現HP割合(ARG) < 25
+			SELECTCASE RAND:4
+				CASE 0
+					LOCALS:10 = はぁ、はぁ……あ、諦めない、もん……
+				CASE 1
+					LOCALS:10 = %CSTR:이인칭%、ピンチだよー……
+				CASE 2
+					LOCALS:10 = ぜぇっ、ぜぇっ、ぜぇっ……
+				CASE 3
+					LOCALS:10 = ま、まだまだだよ……
+			ENDSELECT
+		;中ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 50 || 現HP割合(ARG) < 50
+			SELECTCASE RAND:3
+				CASE 0
+					LOCALS:10 = くぅっ！ つ、強いね！
+				CASE 1
+					LOCALS:10 = うわあーっ！？
+				CASE 2
+					LOCALS:10 = うぅっ！ ま、負けないもん！
+			ENDSELECT
+		;小ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 50 || 現HP割合(ARG) < 75
+			SELECTCASE RAND:3
+				CASE 0
+					LOCALS:10 = ありゃりゃっ！？
+				CASE 1
+					LOCALS:10 = いったーい！
+				CASE 2
+					LOCALS:10 = やったなー！ つぎは%CSTR:일인칭%の番だー！
+			ENDSELECT
+		;微ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 50 || 現HP割合(ARG) < 100
+			SELECTCASE RAND:3
+				CASE 0
+					LOCALS:10 = 大丈夫、へーきへーき！
+				CASE 1
+					LOCALS:10 = これぐらい、へっちゃらだよ！
+				CASE 2
+					LOCALS:10 = %CSTR:일인칭%は強いのだー！ えっへん！
+			ENDSELECT
+		;無効
+		ELSEIF ARG:2 == 0
+			IF 現HP割合(ARG) < 25
+				SELECTCASE RAND:3
+					CASE 0
+						LOCALS:10 = それはきかないよ……！
+					CASE 1
+						LOCALS:10 = っ！ これなら、へいき……！
+					CASE 2
+						LOCALS:10 = まだ、やられないよ……！
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:3
+					CASE 0
+						LOCALS:10 = きかないよー！
+					CASE 1
+						LOCALS:10 = じゃじゃーん！ むこう？ だよ！
+					CASE 2
+						LOCALS:10 = ぜんぜん、へっちゃらだもんね！
+				ENDSELECT
+			ENDIF
+		;吸収
+		ELSEIF ARG:2 < 0
+			IF 現HP割合(ARG) < 25
+				SELECTCASE RAND:3
+					CASE 0
+						LOCALS:10 = それはきかないよ……！
+					CASE 1
+						LOCALS:10 = っ！ これなら、へいき……！
+					CASE 2
+						LOCALS:10 = まだ、やられないよ……！
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:3
+					CASE 0
+						LOCALS:10 = きかないよー！
+					CASE 1
+						LOCALS:10 = じゃじゃーん！ きゅーしゅー？ だよ！
+					CASE 2
+						LOCALS:10 = えへへ、かいふくできたよ！
+				ENDSELECT
+			ENDIF
+		ENDIF
+	;範囲攻撃
+	;ARGが攻撃をする仲魔、ARG:1が攻撃された敵数、ARG:2が無効数(回避も含む)
+	CASE 13
+		;全弾命中した
+		IF ARG:2 == 0
+			IF TALENT:복종 == 0 || TALENT:예속 == 0
+				IF 現HP割合(ARG) < 25
+					LOCALS:10 = ぜんぶ、当たった……！
+				ELSE
+					SELECTCASE RAND:4
+						CASE 0
+							LOCALS:10 = 見て見てー！ 当たった当たったー！
+						CASE 1
+							LOCALS:10 = えへへ、やったー！
+						CASE 2
+							LOCALS:10 = 今日の%CSTR:일인칭%、すっごいかも！
+						CASE 3
+							LOCALS:10 = これが練習のせいかだよ！
+					ENDSELECT
+				ENDIF
+			ENDIF
+		;普通
+		ELSEIF ARG:2 < ARG:1
+			IF TALENT:복종 == 0 || TALENT:예속 == 0
+				IF 現HP割合(ARG) < 25
+					LOCALS:10 = 当たった……！
+				ELSE
+					SELECTCASE RAND:4
+						CASE 0
+							LOCALS:10 = あっ、ずれちゃった！？
+						CASE 1
+							LOCALS:10 = わっ、ちょっとよけられてる！
+						CASE 2
+							LOCALS:10 = まあまあ当たったね！
+						CASE 3
+							LOCALS:10 = よーし、つぎはぜんぶ当てるぞー！
+					ENDSELECT
+				ENDIF
+			ENDIF
+		;全弾回避された
+		ELSEIF ARG:2 == ARG:1
+			IF TALENT:복종 == 0 || TALENT:예속 == 0
+				IF 現HP割合(ARG) < 25
+					LOCALS:10 = 外しちゃった……！？
+				ELSE
+					SELECTCASE RAND:4
+						CASE 0
+							LOCALS:10 = ガーン！ ぜんぶ外しちゃった！？
+						CASE 1
+							LOCALS:10 = えーっ！？ 当たらないの！？
+						CASE 2
+							LOCALS:10 = みんなはやいね！？
+						CASE 3
+							LOCALS:10 = むむむ、つぎは当てるもん！
+					ENDSELECT
+				ENDIF
+			ENDIF
+		ENDIF
+	;範囲攻撃で敵を撃破した
+	;ARGが攻撃をする仲魔、ARG:1が攻撃された敵数、ARG:2が撃破数
+	CASE 14
+		;全員撃破
+		IF GET_CREC_ACT_SUM(ARG, "敵", "ATTACK") == ARG:2
+			SELECTCASE RAND:4
+				CASE 0
+					LOCALS:10 = %CSTR:일인칭%、こんなにやっつけたよ！
+				CASE 1
+					LOCALS:10 = やっ……やったやったやったぁ！！
+				CASE 2
+					LOCALS:10 = %CSTR:이인칭%！ 今の見た！？ 今の見たぁ！？
+				CASE 3
+					LOCALS:10 = えっへん！ だれにも%CSTR:일인칭%は止められなーい！
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					LOCALS:10 = あうぅ、たおせなかった……
+				CASE 1
+					LOCALS:10 = あれー？ いっぱいこーげきしたのに？
+				CASE 2
+					LOCALS:10 = わっ！ とってもがんじょーだよ、%CSTR:이인칭%！
+				CASE 3
+					LOCALS:10 = トドメはおねがい！
+			ENDSELECT
+		ENDIF
+	;反射された
+	CASE 15
+		IF TALENT:복종 || TALENT:예속
+			SELECTCASE RAND:2
+				CASE 0
+					LOCALS:10 = ひっ……！ お、おこられちゃう……！
+				CASE 1
+					LOCALS:10 = し、しっぱい……しちゃった……
+			ENDSELECT
+		ELSEIF 現HP割合(ARG) < 25
+			SELECTCASE RAND:3
+				CASE 0
+					LOCALS:10 = こ、これじゃ、ダメ……！
+				CASE 1
+					LOCALS:10 = このままじゃ、まけちゃう……？
+				CASE 2
+					LOCALS:10 = こうげき、きいてない……
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					LOCALS:10 = うわあっ！？ あぶなーい！
+				CASE 1
+					LOCALS:10 = はねかえっちゃった！？
+				CASE 2
+					LOCALS:10 = あわわわわっ！？
+			ENDSELECT
+		ENDIF
+	;反射した
+	CASE 16
+		IF TALENT:복종 || TALENT:예속
+			SELECTCASE RAND:2
+				CASE 0
+					LOCALS:10 = こんなの、いたくないもん……！
+				CASE 1
+					LOCALS:10 = じゃ、じゃましないでよ……！
+			ENDSELECT
+		ELSEIF 現HP割合(ARG) < 25
+			SELECTCASE RAND:3
+				CASE 0
+					LOCALS:10 = それはきかないよ……！
+				CASE 1
+					LOCALS:10 = っ！ これなら、へいき……！
+				CASE 2
+					LOCALS:10 = まだ、やられないよ……！
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					LOCALS:10 = きかないよー！
+				CASE 1
+					LOCALS:10 = じゃじゃーん！ はんしゃ？ だよ！
+				CASE 2
+					LOCALS:10 = かきーん！ はね返すよー！
+			ENDSELECT
+		ENDIF
+	;回避された
+	CASE 17
+		IF FLAG:무후후전개 == 1 && (TEQUIP:86 == [[衣装:바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ａ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ｗ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:꼬리플러그]])
+			SELECTCASE RAND:2
+				CASE 0
+					LOCALS:10 = ひぃんっ%ハート()%　これじゃ、あてられないよぉっ%ハート()%　
+				CASE 1
+					LOCALS:10 = あぁんっ%ハート()%　こすれてっ%ハート()% キモチよくなっちゃうっ%ハート()%
+			ENDSELECT
+		ELSEIF TALENT:복종 || TALENT:예속
+			SELECTCASE RAND:2
+				CASE 0
+					LOCALS:10 = ひっ……！ お、おこられちゃう……！
+				CASE 1
+					LOCALS:10 = し、しっぱい……しちゃった……
+			ENDSELECT
+		ELSEIF 現HP割合(ARG) < 25
+			SELECTCASE RAND:3
+				CASE 0
+					LOCALS:10 = く、うう……！
+				CASE 1
+					LOCALS:10 = はぁ、はぁ、はぁ……
+				CASE 2
+					LOCALS:10 = だ、だめ……！？
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					LOCALS:10 = あー！？ はずれちゃった！？
+				CASE 1
+					LOCALS:10 = あわわ、当たらないよーっ！？
+				CASE 2
+					LOCALS:10 = とうっ！ ……あれっ？
+			ENDSELECT
+		ENDIF
+	;回避した
+	CASE 18
+		IF FLAG:무후후전개 == 1 && (TEQUIP:86 == [[衣装:바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ａ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ｗ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:꼬리플러그]])
+			SELECTCASE RAND:2
+				CASE 0
+					LOCALS:10 = あたらないっ、けどっ%ハート()% おくっ、あたるよぉっ%ハート()%
+				CASE 1
+					LOCALS:10 = あぁんっ！%ハート()%　ナカ、おもいっきりぐりってぇっ%ハート()%
+			ENDSELECT
+		ELSEIF TALENT:복종 || TALENT:예속
+			SELECTCASE RAND:2
+				CASE 0
+					LOCALS:10 = じゃ、じゃましないでよ……！
+				CASE 1
+					LOCALS:10 = もたもたしてるって、思われちゃう……！
+			ENDSELECT
+		ELSEIF 現HP割合(ARG) < 25
+			SELECTCASE RAND:4
+				CASE 0
+					LOCALS:10 = っ！ よ、よけられた……
+				CASE 1
+					LOCALS:10 = くぅっ！ はぁ、はぁ……
+				CASE 2
+					LOCALS:10 = はずれた……！
+				CASE 3
+					LOCALS:10 = まだ、やられないよ……！
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					LOCALS:10 = よっとっ！
+				CASE 1
+					LOCALS:10 = ころころー！
+				CASE 2
+					LOCALS:10 = はやく動くのはとくいだよっ！
+				CASE 3
+					LOCALS:10 = びよ～んっ！
+			ENDSELECT
+		ENDIF
+	;反撃スキル発動した
+	CASE 20
+		LOCALS:10 = ここだぁー！
+	CASE 22
+		SELECTCASE GET_STATE(CFLAG:ARG:상태이상)
+			CASE "HAPPY"
+				LOCALS:10 = えへへへ、楽しいね%CSTR:이인칭%！ えへへへへへ！
+			CASE "SHOCK"
+				LOCALS:10 = しびびびびっ！？
+			CASE "FREEZE"
+				LOCALS:10 = ぶるぶるぶる……う、動けないよぉー……
+			CASE "BIND"
+				LOCALS:10 = うーっ！ はなしてー！
+			CASE "PALYZE"
+				LOCALS:10 = うっ……なんか、カラダ、パリパリして、力、入んない……
+			CASE "PANIC"
+				LOCALS:10 = え？ ええと、ええと、どうすればいいんだっけ？
+			CASE "SLEEP"
+				LOCALS:10 = ふぁぁ……ね、ねむ――ぐぅ……
+			CASE "CLOSE"
+				LOCALS:10 = あ、あれ！？ まりょくが上手くつかえないよー！？
+			CASE "POISON"
+				LOCALS:10 = ケホッ！ ケホッ！ な、なにこれ……！？
+			CASE "BOMB"
+				LOCALS:10 = うえっ！ なんかけむったいよ！
+			CASE "CHARM"
+				LOCALS:10 = あ、あれ？　あの人、カッコいいかも……%ハート()%
+			CASE "CURSE"
+				LOCALS:10 = うう……ゾワゾワして、きもちわるい……
+			CASE "FLY"
+				LOCALS:10 = うわぁー！？ %CSTR:이인칭%ー！？
+			CASE "STONE"
+				LOCALS:10 = …………
+			CASE "FLAME"
+				LOCALS:10 = あちちちちっ！？ あついよっ！！
+			CASE "SLIP"
+				LOCALS:10 = いたーい！ ころんじゃった……
+			CASE "BRAND"
+				LOCALS:10 = へんなマークついちゃった！？ %CSTR:이인칭%、どうしよう！？
+			;その他の状態異常
+			;CASEELSE
+		ENDSELECT
+	;이악물기발동
+	CASE 23
+		;이악물기
+		IF BASE:ARG:ＨＰ == 1
+			IF FLAG:무후후전개 == 1 && (TEQUIP:86 == [[衣装:바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ａ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ｗ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:꼬리플러그]])
+				SELECTCASE RAND:2
+					CASE 0
+						LOCALS:10 = イっくっ%ハート()%　イっ～～っ！%ハート()%%ハート()%
+					CASE 1
+						LOCALS:10 = がまん！%ハート()%　がまんんん！！%ハート()%
+				ENDSELECT
+			ELSEIF TALENT:복종 || TALENT:예속
+				SELECTCASE RAND:2
+					CASE 0
+						LOCALS:10 = がんばら、ないと……がんばらないと……！
+					CASE 1
+						LOCALS:10 = もう、おこられるのは、イヤ……！
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:2
+					CASE 0
+						LOCALS:10 = %CSTR:이인칭%、%CSTR:일인칭%なら、まだ、がんばれる、から……！
+					CASE 1
+						LOCALS:10 = まだ、だよ……！ %CSTR:일인칭%、まだ負けないもん……！
+				ENDSELECT
+			ENDIF
+		ELSE
+			IF FLAG:무후후전개 == 1 && (TEQUIP:86 == [[衣装:바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ａ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ｗ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:꼬리플러그]])
+				SELECTCASE RAND:2
+					CASE 0
+						LOCALS:10 = イっ、くぅうううっっ！！%ハート()%%ハート()%　……ぶるぶる、宝玉ぅっ%ハート()% すごいぃ……%ハート()%
+					CASE 1
+						LOCALS:10 = ナカの、宝玉っ%ハート()% なくなっちゃったぁ……%ハート()%
+				ENDSELECT
+			ELSEIF TALENT:복종 || TALENT:예속
+				SELECTCASE RAND:2
+					CASE 0
+						LOCALS:10 = がんばら、ないと……がんばらないと……！
+					CASE 1
+						LOCALS:10 = もう、おこられるのは、イヤ……！
+				ENDSELECT
+			ELSE
+				SELECTCASE RAND:2
+					CASE 0
+						LOCALS:10 = お守りの宝玉だよっ！ ちゅっ%ハート()%　えへへ……%ハート()%
+					CASE 1
+						LOCALS:10 = %CSTR:이인칭%の愛で、%CSTR:일인칭%ふっかーつ！
+						LOCALS:11 = ……えへへ、ちょっとはずかしいね%ハート()%
+				ENDSELECT
+			ENDIF
+		ENDIF
+	;回復してもらった
+	CASE 24
+		;ARG:2　回復量
+		LOCAL = ARG:2 * 100 / BASE:ARG:ＨＰ
+		;LOCAL　回復量割合
+		IF 0
+		;キャラ分岐
+		ELSEIF ARG:1 == MASTER
+			LOCALS:10 = %CSTR:ARG:이인칭%、ありがとう！
+		;50%以上 & HPほぼ満タン
+		ELSEIF LOCAL > 50 && 現HP割合(ARG) > 90
+			LOCALS:10 = すっごーい！ 元気いっぱいだよ！！
+		;50%以上
+		ELSEIF LOCAL > 50
+			LOCALS:10 = わーい！ ありがとう！
+		;その他
+		ELSE
+			LOCALS:10 = ありがとう！
+		ENDIF
+	;状態異常を直してもらった
+	CASE 25
+		SELECTCASE GET_STATE(ARG:2)
+			CASE "SLEEP"
+				LOCALS:10 = ふぁぁ……おはよぉー……
+			;その他の状態異常
+			CASEELSE
+				LOCALS:10 = ありがとう！
+		ENDSELECT
+	;バトル中にイッたけど耐えた（ムフフ展開ON時のみ）
+	CASE 47
+		SELECTCASE RAND:4
+			CASE 0
+				LOCALS:10 = あっ！%ハート()%　イっくぅっ！%ハート()%%ハート()%
+			CASE 1
+				LOCALS:10 = はぁぁぁんっ！！%ハート()%%ハート()%
+			CASE 2
+				LOCALS:10 = くるっ%ハート()% キモチいいのっ%ハート()% きちゃうぅっ！%ハート()%%ハート()%
+			CASE 3
+				LOCALS:10 = たたかってるのにっ%ハート()% ダメぇっ！！%ハート()%%ハート()%
+		ENDSELECT
+	;ターン終了時状態異常が自然回復した
+	CASE 50
+		SELECTCASE GET_STATE(CFLAG:ARG:상태이상)
+			CASE "SLEEP"
+				LOCALS:10 = ……むにゃっ！？
+			;その他の状態異常
+			CASEELSE
+				LOCALS:10 = %CSTR:이인칭%、なおったよ！
+		ENDSELECT
+	;バトルに勝利した
+	CASE 90
+		IF 現HP割合(ARG) < 25
+			SELECTCASE RAND:4
+				CASE 0
+					LOCALS:10 = みんな、おつかれ～……
+				CASE 1
+					LOCALS:10 = か、勝った～……
+				CASE 2
+					LOCALS:10 = %CSTR:일인칭%、ちょっと休みたい……
+				CASE 3
+					LOCALS:10 = ぜぇ～っ、ぜぇ～っ……強いてきだったね……
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					LOCALS:10 = みんながんばったもんね！
+				CASE 1
+					LOCALS:10 = 勝った勝った～！
+				CASE 2
+					LOCALS:10 = えっへん！ まだまだいけるよ！
+				CASE 3
+					LOCALS:10 = ほめてほめてー！ クルミちょーだーい！
+			ENDSELECT
+		ENDIF
+	;レベルアップした
+	CASE 91
+		SELECTCASE RAND:4
+			CASE 0
+				LOCALS:10 = じゃじゃーん！ レベル、アーップ！
+			CASE 1
+				LOCALS:10 = やったー！ レベルアップだよ！
+			CASE 2
+				LOCALS:10 = もっともーっと強くなるよ！
+			CASE 3
+				LOCALS:10 = 強くなれたー！ ありがとう%CSTR:이인칭%！
+		ENDSELECT
+	;逃走に成功した
+	CASE 92
+		IF 現HP割合(ARG) < 25
+			SELECTCASE RAND:4
+				CASE 0
+					LOCALS:10 = はぁっ、はぁっ、はぁっ……！
+				CASE 1
+					LOCALS:10 = な、なんとか、にげきれたね……
+				CASE 2
+					LOCALS:10 = あぅ、ごめんね……もうちょっと強かったら……
+				CASE 3
+					LOCALS:10 = %CSTR:이인칭%は、大丈夫……？
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					LOCALS:10 = にっげろー！
+				CASE 1
+					LOCALS:10 = ドロン！ ときえちゃうよー！
+				CASE 2
+					LOCALS:10 = ダーッシュ！
+				CASE 3
+					LOCALS:10 = えへん！ %CSTR:일인칭%の足、はやいでしょ！
+			ENDSELECT
+		ENDIF
+	;逃走に失敗した
+	CASE 93
+		IF 現HP割合(ARG) < 25
+			SELECTCASE RAND:3
+				CASE 0
+					LOCALS:10 = だ、だめ……！ おいつかれちゃう……！
+				CASE 1
+					LOCALS:10 = %CSTR:이인칭%は、まもらないと……！
+				CASE 2
+					LOCALS:10 = ピ、ピンチだよー！？
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					LOCALS:10 = えー！？ おいつかれちゃった！？
+				CASE 1
+					LOCALS:10 = わわっ！ 道がふさがってるよ！
+				CASE 2
+					LOCALS:10 = む、むむむむ……！
+				CASE 3
+					LOCALS:10 = ガーン！ 足のはやさがじまんだったのにー！！
+			ENDSELECT
+		ENDIF
+	;戦闘開始時
+	CASE 94
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			SELECTCASE RAND:3
+				CASE 0
+					LOCALS:10 = ま、また……！？
+				CASE 1
+					LOCALS:10 = %CSTR:이인칭%、そろそろやばいかも！？
+				CASE 2
+					LOCALS:10 = が、がんばる、ぞ～……
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					LOCALS:10 = みんなー！ いっしょにがんばろうね！
+				CASE 1
+					LOCALS:10 = いっくよー！
+				CASE 2
+					LOCALS:10 = せんとうだぁー！
+				CASE 3
+					LOCALS:10 = %CALLNAME:ARG%、ゴーゴー！
+			ENDSELECT
+		ENDIF
+	;バックアタックを受けた
+	CASE 95
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			SELECTCASE RAND:4
+				CASE 0
+					LOCALS:10 = ……！ %CSTR:이인칭%、あぶない！
+				CASE 1
+					LOCALS:10 = う、うしろ……！？
+				CASE 2
+					LOCALS:10 = わぁぁっ！？
+				CASE 3
+					LOCALS:10 = も、もうダメかも……
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					LOCALS:10 = えっ！？ な、なに！？
+				CASE 1
+					LOCALS:10 = あれ！？ どこにいたの！？
+				CASE 2
+					LOCALS:10 = わぁぁっ！？
+				CASE 3
+					LOCALS:10 = %CSTR:이인칭%、うしろー！
+			ENDSELECT
+		ENDIF
+	;敵の先制攻撃を受けた
+	CASE 96
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			SELECTCASE RAND:4
+				CASE 0
+					LOCALS:10 = ダ、ダメ、まにあわない……！
+				CASE 1
+					LOCALS:10 = あれ？ ちから、はいらな――
+				CASE 2
+					LOCALS:10 = ……！ %CSTR:이인칭%、あぶない！
+				CASE 3
+					LOCALS:10 = わぁぁっ！？
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					LOCALS:10 = ふんふ～ん――あれっ！？
+				CASE 1
+					LOCALS:10 = えっ！？ な、なに！？
+				CASE 2
+					LOCALS:10 = あわわわわっ！？
+				CASE 3
+					LOCALS:10 = わぁぁっ！？
+			ENDSELECT
+		ENDIF
+	;先制攻撃に成功
+	CASE 97
+		SELECTCASE RAND:3
+			CASE 0
+				LOCALS:10 = ばばーん！ やっつけちゃうよ！
+			CASE 1
+				LOCALS:10 = %CSTR:일인칭%たちのばんだー！
+			CASE 2
+				LOCALS:10 = せんてひっしょー！
+		ENDSELECT
+	;リンケージに参加した
+	CASE 100
+		IF FLAG:행동순1 == MASTER
+			SELECTCASE RAND:3
+				CASE 0
+					LOCALS:10 = いっしょにやろっ！ %CSTR:이인칭%！
+				CASE 1
+					LOCALS:10 = こんびねーしょん、あたーっく！
+				CASE 2
+					LOCALS:10 = %CSTR:이인칭%と%CSTR:일인칭%たちでいくよー！
+			ENDSELECT
+		ENDIF
+ENDSELECT
+SIF !(LOCALS:10 == "")
+	CALL MESSAGE_B2(CALLNAME:ARG,0, LOCALS:10, LOCALS:11, LOCALS:12, LOCALS:13, LOCALS:14)
+
+
+@KOJO_BATTLE_MESSAGE_K[[キャラ:라타토스크]]_11,ARG,ARG:1 = 0
+;#DIM SKILL_NUM
+;#DIM L_RAND = -1
+;■台詞の行数を増やしたいときは
+;			LOCALS:10 = 一行目
+;			LOCALS:11 = 二行目
+;			LOCALS:12 = 三行目
+;			LOCALS:13 = 四行目
+;			LOCALS:14 = 五行目
+;と増やしていく
+VARSET LOCALS
+CALL 口上変数初期化
+;使用したスキルの名前をLOCALSに代入
+;CALLFORM SKILL_NAME_{CFLAG:ARG:입력행동},ARG
+CALL GET_SKILL_PROP, "SKILL_NAME", CFLAG:ARG:입력행동, ARG
+LOCALS = %RESULTS%
+;FLAG:ARG:타겟
+
+;崩壊してる場合は口上表示しないようにもできる
+;SIF TALENT:ARG:9
+;	RETURN 0
+
+;CALLFORM SKILL_EFECT_{CFLAG:ARG:입력행동}
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+;コメントアウトしやすいように
+IF 1 == 0
+;-------------------------------------------------
+;状態異常時
+;-------------------------------------------------
+;魅了時
+ELSEIF CFLAG:ARG:상태이상 == GET_STATE_NUM("CHARM")
+	;行動不能（ムラムラしている）
+	IF CFLAG:ARG:입력행동 == 2314
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うぅっ、しゅーちゅー、しないとぉ……%ハート()%
+			CASE 1
+				BTL_KOJO_RESULTS:0 = %CSTR:이인칭%っ%ハート()% %CSTR:이인칭%っ%ハート()%
+			CASE 2
+				BTL_KOJO_RESULTS:0 = これっ%ハート()% ヘンなのっ%ハート()% わかってるのにぃっ%ハート()%
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = %CSTR:이인칭%のてきはやっつけちゃうよ！
+				BTL_KOJO_RESULTS:1 = ……あれ、どっちが%CSTR:이인칭%だっけ？
+			CASE 1
+				BTL_KOJO_RESULTS:0 = えーい！ ……あれ、これであってたっけ？
+		ENDSELECT
+	ENDIF
+;混乱時
+ELSEIF CFLAG:ARG:상태이상 == GET_STATE_NUM("PANIC")
+	;금전뿌리기
+	IF CFLAG:ARG:입력행동 == 2315
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = チャリンチャリーン！ あはははは！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = おかねたくさんひ～らひら～！！
+		ENDSELECT
+	;行動不能（ぼんやりしている）
+	ELSEIF CFLAG:ARG:입력행동 == 2314
+		SELECTCASE RAND:4
+			CASE 0
+				BTL_KOJO_RESULTS:0 = ぽけ～……
+			CASE 1
+				BTL_KOJO_RESULTS:0 = え～っと、なにするんだっけ……？
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ……？
+			CASE 3
+				BTL_KOJO_RESULTS:0 = ……あ、ちょうちょ
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:4
+			CASE 0
+				BTL_KOJO_RESULTS:0 = え、えーと、えーと、こ、こうかな！？
+			CASE 1
+				BTL_KOJO_RESULTS:0 = た、たぶんこう！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = なんとかなってー！？
+			CASE 3
+				BTL_KOJO_RESULTS:0 = と、とりあえずなにかしなきゃ！！
+		ENDSELECT
+	ENDIF
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;服従・隷属時、極端に分岐が減る
+ELSEIF TALENT:복종 || TALENT:예속
+	SELECTCASE RAND:4
+		CASE 0
+			BTL_KOJO_RESULTS:0 = 早くしないと……！
+		CASE 1
+			BTL_KOJO_RESULTS:0 = やくに、立ちますから！
+		CASE 2
+			BTL_KOJO_RESULTS:0 = がんばらなきゃ、がんばらなきゃ……！
+		CASE 3
+			BTL_KOJO_RESULTS:0 = %CSTR:일인칭%、ちゃんとやれます……！
+	ENDSELECT
+;これは通常攻撃
+ELSEIF CFLAG:ARG:입력행동 == 0
+	IF FLAG:무후후전개 == 1 && (TEQUIP:86 == [[衣装:바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ａ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:Ｗ바이브달린쇼츠]] || TEQUIP:86 == [[衣装:꼬리플러그]])
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = キモチ、いいのぉ%ハート()% ぶるぶる、してるぅ%ハート()%
+			CASE 1
+				BTL_KOJO_RESULTS:0 = う、うごいたらっ%ハート()% ぐりぐりっ%ハート()% あたってぇ%ハート()%
+			CASE 2
+				BTL_KOJO_RESULTS:0 = はぁ、はぁ……イっく……%ハート()%
+		ENDSELECT
+	ELSE
+		IF 現HP割合(ARG) < 25
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = 当たって……！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = うあああ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = まだだよ、まだ……！
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					BTL_KOJO_RESULTS:0 = それっ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = どーん！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = あったれー！！
+				CASE 3
+					BTL_KOJO_RESULTS:0 = よーい、しょっ！
+			ENDSELECT
+		ENDIF
+	ENDIF
+;ピンチでも喋る必殺技など
+;검격 낙양삼단격
+;비구 암파쌍비조
+;타격 뇌진왕모의발차기
+;전술 이노센트턱
+ELSEIF  CFLAG:ARG:입력행동 == [[스킬:이노센트턱]]
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = %CSTR:일인칭%のぜんぶ！ ぶつけるよ！
+		CASE 1
+			BTL_KOJO_RESULTS:0 = %CSTR:일인칭%は、ぜったいに勝つんだ！
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 이노센트턱！！
+	ENDSELECT
+	BTL_KOJO_RESULTS:1 = つらぬけぇぇーっ！！
+;회복 메・디아라한
+;지원 勇奮の舞・天上の舞
+;방어 フリフリウォール
+;화염 화쇄열풍파
+;빙결 아이시클
+;전격 전격
+;충격 풍신격
+;신경 아라크노와이어
+;정신 메가스트라이크
+;파마 코우가온
+;주살 에이가온
+;지변 마그바리온
+ELSEIF  CFLAG:ARG:입력행동 == [[스킬:마그바리온]]
+	SELECTCASE RAND:3
+		CASE 0
+			BTL_KOJO_RESULTS:0 = %CSTR:일인칭%のぜんぶ！ ぶつけるよ！
+		CASE 1
+			BTL_KOJO_RESULTS:0 = ここの大地のみんな！ 力をかして！
+		CASE 2
+			BTL_KOJO_RESULTS:0 = 마그바리온！！
+	ENDSELECT
+	BTL_KOJO_RESULTS:1 = やあああああああああああっ！！
+;수격 물살가르기
+;질풍 참철파
+;중력 그라비티마인
+;핵열 뉴클리어미사일
+;만능 메기도라온
+;乱舞系すべて（グミ撃ちしてるイメージ）
+ELSEIF  CFLAG:ARG:입력행동 == [[스킬:불꽃의난무]] || CFLAG:ARG:입력행동 == [[스킬:얼음의난무]] || CFLAG:ARG:입력행동 == [[스킬:번개의난무]] || CFLAG:ARG:입력행동 == [[스킬:태풍의난무]] || CFLAG:ARG:입력행동 == [[스킬:장기의난무]] || CFLAG:ARG:입력행동 == [[스킬:염파의난무]] || CFLAG:ARG:입력행동 == [[스킬:음마의난무]] || CFLAG:ARG:입력행동 == [[스킬:열광의난무]] || CFLAG:ARG:입력행동 == [[스킬:암흑의난무]] || CFLAG:ARG:입력행동 == [[스킬:대지의난무]] || CFLAG:ARG:입력행동 == [[스킬:격류의난무]] || CFLAG:ARG:입력행동 == [[스킬:바람의춤]] || CFLAG:ARG:입력행동 == [[스킬:중력의난무]] || CFLAG:ARG:입력행동 == [[스킬:열핵의난무]] || CFLAG:ARG:입력행동 == [[스킬:만마의난무]]
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = まだ、まだーっ！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = やられる前にっ、ぜんぶ……っ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = うぁぁぁぁーーーっ！！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:5
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うりゃりゃりゃりゃ～！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = わー！ とりゃー！ うらららー！！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = あたたたたー！！
+			CASE 3
+				BTL_KOJO_RESULTS:0 = えいえいえいえーい！
+			CASE 4
+				BTL_KOJO_RESULTS:0 = うてるだけうっちゃうよーっ！
+			CASE 4
+				BTL_KOJO_RESULTS:0 = やぁぁぁぁーーーっ！！
+		ENDSELECT
+	ENDIF
+;壁・耐性破壊系
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:검격가드킬]] || CFLAG:ARG:입력행동 == [[스킬:검격가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:타격가드킬]] || CFLAG:ARG:입력행동 == [[스킬:타격가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:전술가드킬]] || CFLAG:ARG:입력행동 == [[스킬:전술가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:비구가드킬]] || CFLAG:ARG:입력행동 == [[스킬:비구가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:화염가드킬]] || CFLAG:ARG:입력행동 == [[스킬:화염가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:빙결가드킬]] || CFLAG:ARG:입력행동 == [[스킬:빙결가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:전격가드킬]] || CFLAG:ARG:입력행동 == [[스킬:전격가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:충격가드킬]] || CFLAG:ARG:입력행동 == [[스킬:충격가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:신경가드킬]] || CFLAG:ARG:입력행동 == [[스킬:신경가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:정신가드킬]] || CFLAG:ARG:입력행동 == [[스킬:정신가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:파마가드킬]] || CFLAG:ARG:입력행동 == [[스킬:파마가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:주살가드킬]] || CFLAG:ARG:입력행동 == [[스킬:주살가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:지변가드킬]] || CFLAG:ARG:입력행동 == [[스킬:지변가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:수격가드킬]] || CFLAG:ARG:입력행동 == [[스킬:수격가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:질풍가드킬]] || CFLAG:ARG:입력행동 == [[스킬:질풍가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:중력가드킬]] || CFLAG:ARG:입력행동 == [[스킬:중력가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:핵열가드킬]] || CFLAG:ARG:입력행동 == [[스킬:핵열가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:테트라코와스]] || CFLAG:ARG:입력행동 == [[스킬:테트라브레이크]] || CFLAG:ARG:입력행동 == [[스킬:마카라코와스]] || CFLAG:ARG:입력행동 == [[스킬:마카라브레이크]] || CFLAG:ARG:입력행동 == [[스킬:실드코와스]] || CFLAG:ARG:입력행동 == [[스킬:실드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:배리어코와스]] || CFLAG:ARG:입력행동 == [[스킬:배리어브레이크]]
+		IF 現HP割合(ARG) < 25
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = これだけでも、こわすんだ……！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = 今、だよっ、%CSTR:이인칭%……！
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = これでこうげきできるよ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = がっしゃーん！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 今だよ、%CSTR:이인칭%！
+			ENDSELECT
+		ENDIF
+;壁系
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:다다미반환]] || CFLAG:ARG:입력행동 == [[스킬:극채의질풍]] || CFLAG:ARG:입력행동 == [[스킬:강철의벽]] || CFLAG:ARG:입력행동 == [[스킬:만력의벽]] || CFLAG:ARG:입력행동 == [[스킬:불의벽]] || CFLAG:ARG:입력행동 == [[스킬:얼음의벽]] || CFLAG:ARG:입력행동 == [[스킬:번개의벽]] || CFLAG:ARG:입력행동 == [[스킬:충격의벽]] || CFLAG:ARG:입력행동 == [[스킬:빛의벽]] || CFLAG:ARG:입력행동 == [[스킬:어둠의벽]] || CFLAG:ARG:입력행동 == [[스킬:대지의벽]] || CFLAG:ARG:입력행동 == [[스킬:물의벽]] || CFLAG:ARG:입력행동 == [[스킬:대기의벽]] || CFLAG:ARG:입력행동 == [[스킬:중력의벽]]
+		IF 現HP割合(ARG) < 25
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = これで、まもるんだ……！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = せめて、このかべを……！
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = %CSTR:일인칭%が守るよ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = じゃーん！ かべを作ったよー！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = みんなー！ これを使ってー！
+			ENDSELECT
+		ENDIF
+;ムフフ系な技はここから
+;마린카린
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:마린카린]]
+	IF FLAG:무후후전개 == 1 && (TALENT:음란 || TALENT:창부)
+		BTL_KOJO_RESULTS:0 = ほーら、%CSTR:일인칭%のカラダ、すきにしていいんだよ？%ハート()%
+		BTL_KOJO_RESULTS:1 = さわって、キモチよくしてほしいな……%ハート()%
+	ELSEIF TALENT:음란 || TALENT:창부
+		BTL_KOJO_RESULTS:0 = どう？　%CSTR:일인칭%のカラダ……%ハート()%
+		BTL_KOJO_RESULTS:1 = さわっても、いいんだよ？%ハート()%
+	ELSE
+		BTL_KOJO_RESULTS:0 = う、うっふーん？
+	ENDIF
+;섹시댄스
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:섹시댄스]]
+	IF FLAG:무후후전개 == 1 && (TALENT:음란 || TALENT:창부)
+		BTL_KOJO_RESULTS:0 = ほらっ%ハート()% おっぱいがゆれてっ%ハート()% いやらしいでしょっ？%ハート()%
+		BTL_KOJO_RESULTS:1 = おまんこ汁も、あふれてっ%ハート()% 見られるのキモチいい……%ハート()%
+	ELSEIF TALENT:음란 || TALENT:창부
+		BTL_KOJO_RESULTS:0 = どう？　%CSTR:일인칭%のカラダ……%ハート()%
+		BTL_KOJO_RESULTS:1 = さわっても、いいんだよ？%ハート()%
+	ELSE
+		BTL_KOJO_RESULTS:0 = う、うっふーん？
+	ENDIF
+;캔디보이스
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:캔디보이스]]
+	IF FLAG:무후후전개 == 1 && (TALENT:음란 || TALENT:창부)
+		BTL_KOJO_RESULTS:0 = あぁんっ！%ハート()%　%CSTR:일인칭%のオナニー、見られてるっ%ハート()%
+		BTL_KOJO_RESULTS:1 = キモチよくなってるの、見られちゃうぅっ！%ハート()%
+	ELSEIF TALENT:음란 || TALENT:창부
+		BTL_KOJO_RESULTS:0 = あっ%ハート()% あぁんっ！%ハート()%　えへへっ、エッチな声出ちゃった%ハート()%
+		BTL_KOJO_RESULTS:1 = あなたに、もう一回出させてほしいな……？%ハート()%
+	ELSE
+		BTL_KOJO_RESULTS:0 = あ、あんあーんっ！
+	ENDIF
+;ファイナルヌード・絶世の肉体
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:파이널누드]] || CFLAG:ARG:입력행동 == [[스킬:절세의육체]]
+	IF FLAG:무후후전개 == 1 && (TALENT:음란 || TALENT:창부)
+		BTL_KOJO_RESULTS:0 = 見てっ%ハート()%　%CSTR:일인칭%のカラダっ%ハート()%　おしりふってっ%ハート()%　いやらしいおまんこ見てっ%ハート()%
+		BTL_KOJO_RESULTS:1 = あっ%ハート()%　キモチいいっ%ハート()%　見られるだけでっ%ハート()%　イっちゃいそうっ%ハート()%
+	ELSEIF TALENT:음란 || TALENT:창부
+		BTL_KOJO_RESULTS:0 = どう？　%CSTR:일인칭%のカラダ……%ハート()%
+		BTL_KOJO_RESULTS:1 = さわっても、いいんだよ？%ハート()%
+	ELSE
+		BTL_KOJO_RESULTS:0 = うぅー、は、はだかなんてはずかしいよ……
+		BTL_KOJO_RESULTS:1 = あ、あんまり見ないでぇ……
+	ENDIF
+;-------------------------------------------------
+;銃攻撃（特殊弾丸含む）
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,2101, 2200)
+	;GUN
+	;後付けで装備知識つけれないはずだけど一応
+	IF CFLAG:ARG:입력행동 == 2101
+		SELECTCASE RAND:4
+			CASE 0
+				BTL_KOJO_RESULTS:0 = あったれー！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = ばきゅーん！ といくよー！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = いっくよー！
+			CASE 3
+				BTL_KOJO_RESULTS:0 = ばんばーん！
+		ENDSELECT
+	;その他（特殊弾丸）
+	;ELSE
+	;	;悪魔なので使いません
+	;	SELECTCASE CFLAG:ARG:입력행동
+	;		CASE 2102
+	;			BTL_KOJO_RESULTS:0 = 핫로드탄
+	;		CASE 2103
+	;			BTL_KOJO_RESULTS:0 = 약장탄
+	;		CASE 2104
+	;			BTL_KOJO_RESULTS:0 = 케이스리스탄
+	;		CASE 2105
+	;			BTL_KOJO_RESULTS:0 = 성스러운탄환
+	;		CASE 2106
+	;			BTL_KOJO_RESULTS:0 = 저주의탄환
+	;		CASE 2107
+	;			BTL_KOJO_RESULTS:0 = 독침탄
+	;		CASE 2108
+	;			BTL_KOJO_RESULTS:0 = 랜디샷
+	;		CASE 2109
+	;			BTL_KOJO_RESULTS:0 = 신경탄
+	;		CASE 2110
+	;			BTL_KOJO_RESULTS:0 = 디스펠샷
+	;		CASE 2111
+	;			BTL_KOJO_RESULTS:0 = 플루토늄탄
+	;		CASE 2112
+	;			BTL_KOJO_RESULTS:0 = 메두사의탄환
+	;		CASE 2113
+	;			BTL_KOJO_RESULTS:0 = 코로나샷
+	;		CASE 2114
+	;			BTL_KOJO_RESULTS:0 = 만능탄
+	;		CASE 2115
+	;			BTL_KOJO_RESULTS:0 = 랜턴탄
+	;		CASE 2116
+	;			BTL_KOJO_RESULTS:0 = 프로스트탄
+	;	ENDSELECT
+	ENDIF
+;-------------------------------------------------
+;基本行動
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,2301, 2400)
+	;ＣＨＡＮＧＥ
+	IF CFLAG:ARG:입력행동 == 2301
+		IF 現HP割合(ARG) < 25
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = いどう、しなくちゃ……！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = そっち、行くね……
+				CASE 2
+					BTL_KOJO_RESULTS:0 = はぁ……はぁ……！
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					BTL_KOJO_RESULTS:0 = ポジション、チェーンジ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = ちょっとそっち行くね！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = よいしょ、よいしょ！
+				CASE 3
+					BTL_KOJO_RESULTS:0 = いどうするよー！
+			ENDSELECT
+		ENDIF
+	ENDIF
+;-------------------------------------------------
+;アイテム
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,3001, 3500)
+	IF 現HP割合(ARG) < 25
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = これなら……！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = これで、なんとか……！
+			ENDSELECT
+	ELSE
+		SELECTCASE CFLAG:ARG:입력행동
+			CASE 3001
+				BTL_KOJO_RESULTS:0 = おくすりぬってあげるね！
+			CASE 3002
+				BTL_KOJO_RESULTS:0 = 魔石で元気だして！
+			CASE 3003
+				BTL_KOJO_RESULTS:0 = えーと、この石をすりつぶして……のむ？ かける？
+			CASE 3004
+				BTL_KOJO_RESULTS:0 = 宝玉だよ！ これで元気いっぱいになれるね！
+			CASE 3005
+				BTL_KOJO_RESULTS:0 = えいっ！ えいっ！ ……ケホっ！ のどに入っちゃった……！
+			CASE 3006
+				BTL_KOJO_RESULTS:0 = ファイトー！ いっぱーつ！
+			CASE 3007
+				BTL_KOJO_RESULTS:0 = 宝玉をー……たくさんだぁー！
+			CASE 3008
+				BTL_KOJO_RESULTS:0 = しんじゃダメ！ 目をあけて！
+			CASE 3009
+				BTL_KOJO_RESULTS:0 = しんじゃダメ！ 目をあけて！
+			CASE 3016
+				BTL_KOJO_RESULTS:0 = ……みんな、あと、おねがい！
+			CASE 3017
+				BTL_KOJO_RESULTS:0 = わわわ、大丈夫！？ はいっ！ どくけしっ！
+			CASE 3018
+				BTL_KOJO_RESULTS:0 = わわわ、大丈夫！？ はいっ！ まひけしっ！
+			CASE 3019
+				BTL_KOJO_RESULTS:0 = ちょっとー！ てきはあっちだよー！
+			CASE 3020
+				BTL_KOJO_RESULTS:0 = まってて！ カチカチなおすから！
+			CASE 3021
+				BTL_KOJO_RESULTS:0 = これでまほう、つかえるよっ！
+			CASE 3022
+				BTL_KOJO_RESULTS:0 = このお水でおきよめ？ できるんだって！
+			CASE 3023
+				BTL_KOJO_RESULTS:0 = これ飲めばだいたいなおるよ！
+			CASE 3024
+				BTL_KOJO_RESULTS:0 = わわっ！ 開けたらすっごいふき出てくる！！
+			CASE 3025
+				BTL_KOJO_RESULTS:0 = はいっ、あめちゃん！
+			CASE 3026
+				BTL_KOJO_RESULTS:0 = お水飲んで！ チャクラっていうのが入ってるんだって！
+			CASE 3027
+				BTL_KOJO_RESULTS:0 = これでバンバンたたかえるね！
+			CASE 3028
+				BTL_KOJO_RESULTS:0 = ぴちょん！ ……すごい！ ちょっとですごいなおってる！
+			CASE 3029
+				BTL_KOJO_RESULTS:0 = これ、すっごいおさけなんだって！ ……ゴクリ
+			CASE 3030
+				BTL_KOJO_RESULTS:0 = これでしんじゃわないね！
+			CASE 3031
+				BTL_KOJO_RESULTS:0 = 火はダメー！ ぜったいダメ！
+			CASE 3032
+				BTL_KOJO_RESULTS:0 = わっ、ちょっとあったかいかも！
+			CASE 3033
+				BTL_KOJO_RESULTS:0 = ついでにカミナリのゴロゴロもけしてー！
+			CASE 3034
+				BTL_KOJO_RESULTS:0 = これでもうころばないぞー！
+			CASE 3035
+				BTL_KOJO_RESULTS:0 = じゃじゃーん！ かがみのはんしゃ？ だよ！
+			CASE 3036
+				BTL_KOJO_RESULTS:0 = じゃじゃーん！ かがみのはんしゃ？ だよ！
+			CASE 3037
+				BTL_KOJO_RESULTS:0 = これでシャッキリするよ！
+			CASE 3038
+				BTL_KOJO_RESULTS:0 = へにゃへにゃになっちゃえー！
+			CASE 3039
+				BTL_KOJO_RESULTS:0 = なんかものすっごいたま！ つかうよー！
+			CASE 3040
+				BTL_KOJO_RESULTS:0 = にんぽー、けむりだま！ どろん！
+			CASE 3048
+				BTL_KOJO_RESULTS:0 = のろいをとくよー！
+			CASE 3070
+				BTL_KOJO_RESULTS:0 = こーきゅーなおくすりだよ！ よくわかんないけど！
+			CASE 3071
+				BTL_KOJO_RESULTS:0 = これでケガなおすよ！ つかいかたは、えっと……
+			CASE 3075
+				BTL_KOJO_RESULTS:0 = わーい！ おすしだー！ おいしー！
+			CASE 3076
+				BTL_KOJO_RESULTS:0 = これ、おいしくないの？ そっかぁ……
+			CASE 3077
+				BTL_KOJO_RESULTS:0 = ちょっとまってね！ おゆ、そそいだばっかりだから！
+			CASE 3078
+				BTL_KOJO_RESULTS:0 = まっくろなおほしさま……？ なんだろ？
+			CASE 3100
+				BTL_KOJO_RESULTS:0 = なにかいけるかな？
+			CASE 3101 TO 3104
+				SELECTCASE RAND:3
+					CASE 0
+						BTL_KOJO_RESULTS:0 = やけちゃえー！ ぽいっ！
+					CASE 1
+						BTL_KOJO_RESULTS:0 = こわーい火だよ！ えいっ！
+					CASE 2
+						BTL_KOJO_RESULTS:0 = %CSTR:일인칭%も、やけどしないように……
+				ENDSELECT
+			CASE 3105,3106
+				BTL_KOJO_RESULTS:0 = これはさむいよ！ とおっ！
+			CASE 3107,3108
+				BTL_KOJO_RESULTS:0 = ひゃっ！ ぱ、ぱちぱちいってる……えいっ！
+			CASE 3109
+				BTL_KOJO_RESULTS:0 = どっかーん！ ばくはつだー！
+			CASE 3110,3111
+				BTL_KOJO_RESULTS:0 = めぎどー！ ……わぁっ、まぶしい！
+			CASE 3112
+				BTL_KOJO_RESULTS:0 = 『かく』をつかうよ！ ポチっ！
+			CASE 3113
+				BTL_KOJO_RESULTS:0 = えーっと、弓はないし……なげちゃえ！
+			CASE 3114
+				BTL_KOJO_RESULTS:0 = おやすみ！
+			CASE 3115
+				BTL_KOJO_RESULTS:0 = あくりょーたいさーん！
+			CASE 3116
+				BTL_KOJO_RESULTS:0 = えっと、フリスビーみたいになげればいいのかな？
+			CASE 3117
+				BTL_KOJO_RESULTS:0 = えーっと、弓はないし……なげちゃえ！
+			CASE 3118
+				BTL_KOJO_RESULTS:0 = プスっ！ どうだー！
+			CASE 3119
+				BTL_KOJO_RESULTS:0 = みんな！ 目と耳ふさいで！
+			CASE 3120
+				BTL_KOJO_RESULTS:0 = わあっ！ お人形さん、動いてる！？
+			CASE 3121
+				BTL_KOJO_RESULTS:0 = ずしーんっ！！ おもくなっちゃうよ！
+			CASE 3122
+				BTL_KOJO_RESULTS:0 = これで、つぶれちゃうよーっ！！
+			CASE 3123
+				BTL_KOJO_RESULTS:0 = びゅおーん！ すっごい風だよ！
+			CASE 3124
+				BTL_KOJO_RESULTS:0 = うわあっ！？ こっちにもすごい風だー！
+			CASE 3125
+				BTL_KOJO_RESULTS:0 = アイテムもすごいね！ %CSTR:일인칭%も負けられないや！
+			CASE 3126
+				BTL_KOJO_RESULTS:0 = あわわわ、ゆれるー！？
+			CASE 3127
+				BTL_KOJO_RESULTS:0 = ばっしゃーん！ ずぶぬれだー！
+			CASE 3128
+				BTL_KOJO_RESULTS:0 = おおお！ すごい量の水だね！
+			CASE 3129
+				BTL_KOJO_RESULTS:0 = ばっしーん！ ……ちょっとあたまキーンってするー……
+			CASE 3130
+				BTL_KOJO_RESULTS:0 = わああっ！ %CSTR:일인칭%もころびそうだよー！？
+			CASE 3131
+				BTL_KOJO_RESULTS:0 = 火じゃないけど、あついのだよ！
+			CASE 3132
+				BTL_KOJO_RESULTS:0 = これ、火じゃないのになんであついんだろ！ 電子レンジ？
+			CASE 3198
+				BTL_KOJO_RESULTS:0 = あ、これ！ ここでつかうんだ！
+		ENDSELECT
+	ENDIF
+;-------------------------------------------------
+;リンケージ
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,4000, 5000)
+	;메시아라이저
+	IF CFLAG:ARG:입력행동 == 4160
+		BTL_KOJO_RESULTS:0 = %CSTR:ARG:이인칭%といっしょなら！ なんでもきっとできるよ！
+	;Lヒートライザ
+	ELSEIF CFLAG:ARG:입력행동 == 4200
+		BTL_KOJO_RESULTS:0 = き、キモチいいの、どんどんくるよぉ……%ハート()%
+	;사망유희
+	ELSEIF CFLAG:ARG:입력행동 == 4800
+		BTL_KOJO_RESULTS:0 = %CSTR:ARG:이인칭%のためにも、ぜったいたおすもん……！
+	;더블어택
+	ELSEIF CFLAG:ARG:입력행동 == 4004
+		BTL_KOJO_RESULTS:0 = %CSTR:ARG:일인칭%と%CSTR:ARG:이인칭%のっ！ がったいこうげきだー！
+	ENDIF
+;-------------------------------------------------
+;汎用スキル
+;-------------------------------------------------
+;검격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1, 99)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSE
+		IF CFLAG:ARG:입력행동 == [[스킬:충의의참격]]
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = %CSTR:이인칭%のためなら、きるよ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = わが剣を！ えーと、%CSTR:이인칭%に、ささぐ……？
+					BTL_KOJO_RESULTS:1 = ……とにかくすごい剣だー！
+			ENDSELECT
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:사랑의채찍]]
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = おーほっほっほ！ %CSTR:일인칭%が女王さまだー！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = おしおきだよーっ！
+			ENDSELECT
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:어둠속의기습]]
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = こそこそ……えいっ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = そーっと、そーっと……とりゃー！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = わわわっ、しっぽはみ出ちゃう……！
+			ENDSELECT
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:퀵스피어]] || CFLAG:ARG:입력행동 == [[스킬:퀵버스터]]
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = しゅばばばー！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = ぜんそくりょくだー！
+			ENDSELECT
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:밤벚꽃의춤]] || CFLAG:ARG:입력행동 == [[스킬:블레이드댄스]]
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = ひ～らひら～！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = らん♪　らん♪　ら～ん♪
+				CASE 2
+					BTL_KOJO_RESULTS:0 = ホップ、ステップ、ジャーンプっ！
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					BTL_KOJO_RESULTS:0 = ずっばーん！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = ずばばばーん！！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = きっちゃうよー！
+				CASE 3
+					BTL_KOJO_RESULTS:0 = シャッキーン！
+			ENDSELECT
+		ENDIF
+	ENDIF
+;비구
+ELSEIF RANGE(CFLAG:ARG:입력행동,101, 199)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSE
+		IF CFLAG:ARG:입력행동 == [[스킬:충의의총격]]
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = %CSTR:이인칭%のためなら、うつよ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = この一発に、%CSTR:이인칭%への想いを込めるよ！
+					BTL_KOJO_RESULTS:1 = つらぬけーっ！
+			ENDSELECT
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:백발침]] || CFLAG:ARG:입력행동 == [[스킬:독침]] || CFLAG:ARG:입력행동 == [[스킬:몽견침]] || CFLAG:ARG:입력행동 == [[스킬:마비침]] || CFLAG:ARG:입력행동 == [[스킬:석화침]]
+			SELECTCASE RAND:4
+				CASE 0
+					BTL_KOJO_RESULTS:0 = しっぽバリだー！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = しっぽ毛バリ！　ささると痛いよ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = いっけぇー！
+				CASE 3
+					BTL_KOJO_RESULTS:0 = ハリセンボンだーっ！
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					BTL_KOJO_RESULTS:0 = ばっきゅーん！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = ばんばーん！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = うっちゃうよー！
+				CASE 3
+					BTL_KOJO_RESULTS:0 = ずきゅん！　どきゅーん！
+			ENDSELECT
+		ENDIF
+	ENDIF
+;타격
+ELSEIF RANGE(CFLAG:ARG:입력행동,201, 299)
+	IF 現HP割合(ARG) < 25
+		IF CFLAG:ARG:입력행동 == [[스킬:분노의철권]] || CFLAG:ARG:입력행동 == [[스킬:빈사의일격]] || CFLAG:ARG:입력행동 == [[스킬:최후의일격]]
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = こっ――こだあああっ！！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = いっけえええええ！！
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = うわあああっ！！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = あたってえええ！！
+			ENDSELECT
+		ENDIF
+	ELSE
+		IF CFLAG:ARG:입력행동 == [[스킬:충의의권]]
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = %CSTR:일인칭%のこぶしは！ %CSTR:이인칭%への思いものってるんだから！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = %CSTR:이인칭%のためにも！ ぜったい勝つよ！
+			ENDSELECT
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:달밤의떡찧기]]
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = もちつき、ぺったーん！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = うさぎみたいに、ぴょーん！
+			ENDSELECT
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:소닉펀치]]
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = ばびゅーん！　っと行くよ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = ぜんそくりょくだー！
+			ENDSELECT
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:철권제재]]
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = てっけん、せいさーい！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = %CSTR:일인칭%のいかりのこぶしをくらえー！
+			ENDSELECT
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:배틀러쉬]]
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = パンチ！ キック！ ぜーんぶくらえー！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = %CSTR:일인칭%の本気、見せてあげる！
+			ENDSELECT
+		;拳系
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:숏잽]] || CFLAG:ARG:입력행동 == [[스킬:기간피스트]] || CFLAG:ARG:입력행동 == [[스킬:약자필멸권]] || CFLAG:ARG:입력행동 == [[스킬:아카샤아츠]] || CFLAG:ARG:입력행동 == [[스킬:모탈지하드]] || CFLAG:ARG:입력행동 == [[스킬:절묘타]] || CFLAG:ARG:입력행동 == [[스킬:코크스크류]] || CFLAG:ARG:입력행동 == [[스킬:성불권]] || CFLAG:ARG:입력행동 == [[스킬:썬더피스트]] || CFLAG:ARG:입력행동 == [[스킬:철사권]] || CFLAG:ARG:입력행동 == [[스킬:럭키펀치]]
+			SELECTCASE RAND:4
+				CASE 0
+					BTL_KOJO_RESULTS:0 = %CALLNAME%パーンチ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = ワンツー！ ワンツー！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = こんしんの～……ストレートだー！
+				CASE 3
+					BTL_KOJO_RESULTS:0 = ひっさつ！ クルミ割りパーンチ！
+			ENDSELECT
+		;蹴り系
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:돌려차기]] || CFLAG:ARG:입력행동 == [[스킬:섬머솔트]] || CFLAG:ARG:입력행동 == [[스킬:뇌진왕모의발차기]] || CFLAG:ARG:입력행동 == [[스킬:뇌정축]] || CFLAG:ARG:입력행동 == [[스킬:예광구리가라축]] || CFLAG:ARG:입력행동 == [[스킬:트위스터킥]]
+			SELECTCASE RAND:4
+				CASE 0
+					BTL_KOJO_RESULTS:0 = %CALLNAME%キーック！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = %CSTR:일인칭%の足、はやいだけじゃないんだから！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = 足にはじしん、あるんだよ！
+				CASE 3
+					BTL_KOJO_RESULTS:0 = ひっさつ！ クルミ割りキーック！
+			ENDSELECT
+		;体当たり系
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:돌격]] || CFLAG:ARG:입력행동 == [[스킬:메가톤프레스]] || CFLAG:ARG:입력행동 == [[스킬:몸통박치기]] || CFLAG:ARG:입력행동 == [[스킬:눌러으깨기]] || CFLAG:ARG:입력행동 == [[스킬:맹돌진]] || CFLAG:ARG:입력행동 == [[스킬:육탄]]
+			SELECTCASE RAND:4
+				CASE 0
+					BTL_KOJO_RESULTS:0 = どーん！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = どっかーん！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = わああーっ！
+				CASE 3
+					BTL_KOJO_RESULTS:0 = 体当たりだー！
+			ENDSELECT
+		;連撃系
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:마구날뛰기]] || CFLAG:ARG:입력행동 == [[스킬:메테오피스트]] || CFLAG:ARG:입력행동 == [[스킬:육체의악마]] || CFLAG:ARG:입력행동 == [[스킬:백열찌르기]] || CFLAG:ARG:입력행동 == [[스킬:천열찌르기]] || CFLAG:ARG:입력행동 == [[스킬:아수라연격]] || CFLAG:ARG:입력행동 == [[스킬:발칸킥]] || CFLAG:ARG:입력행동 == [[스킬:자연난타]] || CFLAG:ARG:입력행동 == [[스킬:아그네야스트라]] || CFLAG:ARG:입력행동 == [[스킬:마구날뛰기]]
+			SELECTCASE RAND:4
+				CASE 0
+					BTL_KOJO_RESULTS:0 = うりゃりゃりゃりゃ～！！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = わー！ とりゃー！ うらららー！！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = あたたたたー！！
+				CASE 3
+					BTL_KOJO_RESULTS:0 = えいえいえいえーい！
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					BTL_KOJO_RESULTS:0 = おりゃー！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = とりゃー！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = ぼっこぼこだー！
+				CASE 3
+					BTL_KOJO_RESULTS:0 = %CSTR:일인칭%のけんぽー？ 見せてあげる！
+			ENDSELECT
+		ENDIF
+	ENDIF
+;전술
+ELSEIF RANGE(CFLAG:ARG:입력행동,301, 400)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSE
+		IF CFLAG:ARG:입력행동 == [[스킬:테일]]
+			SELECTCASE RAND:4
+				CASE 0
+					BTL_KOJO_RESULTS:0 = えーい！ ＊もふっ＊
+				CASE 1
+					BTL_KOJO_RESULTS:0 = おっきなしっぽで、とうっ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = しっぽアターック！
+				CASE 3
+					BTL_KOJO_RESULTS:0 = %CSTR:일인칭%のしっぽ、おっきいから痛いよ！
+			ENDSELECT
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:니들테일]]
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = このしっぽは痛いよ！ かたくて、ついでにどくにしちゃうんだから！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = きたえたトゲトゲしっぽをくらえーっ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = もっとおっきなしっぽをくらえーっ！
+			ENDSELECT
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:휘감기]]
+			SELECTCASE RAND:3
+				CASE 0
+					BTL_KOJO_RESULTS:0 = ふんぬぬ！ しっぽでまくのってたいへんだぁ……！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = しっぽでまきまきー！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = しっぽアターック！
+			ENDSELECT
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:마음의외침]]
+			SELECTCASE RAND:4
+				CASE 0
+					BTL_KOJO_RESULTS:0 = わぁぁーー！！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = クルミパンたべたーいっ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = がおーっ！ あおーん！
+				CASE 3
+					IF TALENT:연모 || TALENT:친애
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%とちゅーしたーい！
+					ELSEIF TALENT:음란 || TALENT:창부
+						BTL_KOJO_RESULTS:0 = もっとエッチしたーい！
+					ELSE
+						BTL_KOJO_RESULTS:0 = もっと遊びたーいっ！
+					ENDIF
+			ENDSELECT
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:전력공격]]
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = これが%CSTR:일인칭%のぉー、ゼンリョクだあああ！！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = ゼンリョクでっ……いっけえええええ！！
+			ENDSELECT
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:충의의업]]
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = %CSTR:이인칭%のために、がんばるよっ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = %CSTR:이인칭%のためにも！ ぜったい勝つよ！
+			ENDSELECT
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:전광석화]]
+			SELECTCASE RAND:2
+				CASE 0
+					BTL_KOJO_RESULTS:0 = しゅばばばー！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = %CALLNAME%、ダーッシュ！
+			ENDSELECT
+		;爪系
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:할퀴기]] || CFLAG:ARG:입력행동 == [[스킬:독할퀴기]] || CFLAG:ARG:입력행동 == [[스킬:마비할퀴기]] || CFLAG:ARG:입력행동 == [[스킬:메가클로]] || CFLAG:ARG:입력행동 == [[스킬:아이언클로]] || CFLAG:ARG:입력행동 == [[스킬:악셀클로]] || CFLAG:ARG:입력행동 == [[스킬:데스클로]] || CFLAG:ARG:입력행동 == [[스킬:허공조격]] || CFLAG:ARG:입력행동 == [[스킬:광란의강조]] || CFLAG:ARG:입력행동 == [[스킬:스파이크클로]]
+			SELECTCASE RAND:4
+				CASE 0
+					BTL_KOJO_RESULTS:0 = ひっかいちゃうよ！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = これ、とくいわざなんだー！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = ちゃんと爪、みがいてるもんね！
+				CASE 3
+					BTL_KOJO_RESULTS:0 = えいえーい！ これならとくいだよ！
+			ENDSELECT
+		;かみつき系
+		ELSEIF CFLAG:ARG:입력행동 == [[스킬:물어뜯기]] || CFLAG:ARG:입력행동 == [[스킬:독물어뜯기]] || CFLAG:ARG:입력행동 == [[스킬:마비물어뜯기]] || CFLAG:ARG:입력행동 == [[스킬:매혹물어뜯기]] || CFLAG:ARG:입력행동 == [[스킬:석화물어뜯기]] || CFLAG:ARG:입력행동 == [[스킬:베어먹기]] || CFLAG:ARG:입력행동 == [[스킬:더블바이스]] || CFLAG:ARG:입력행동 == [[스킬:트리플바이스]]
+			SELECTCASE RAND:4
+				CASE 0
+					BTL_KOJO_RESULTS:0 = あぐあぐ……
+				CASE 1
+					BTL_KOJO_RESULTS:0 = がぶっ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = んぐぐぐぐ！
+				CASE 3
+					BTL_KOJO_RESULTS:0 = もごもごもご！
+			ENDSELECT
+		ELSE
+			SELECTCASE RAND:4
+				CASE 0
+					BTL_KOJO_RESULTS:0 = とりゃー！
+				CASE 1
+					BTL_KOJO_RESULTS:0 = ひっさーつ！
+				CASE 2
+					BTL_KOJO_RESULTS:0 = これできめるよ！
+				CASE 3
+					BTL_KOJO_RESULTS:0 = よーい、しょっ！
+			ENDSELECT
+		ENDIF
+	ENDIF
+;회복
+ELSEIF RANGE(CFLAG:ARG:입력행동,401, 499)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = まだ、これくらいなら……！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = これで、かいふくを……！
+		ENDSELECT
+	;全体回復
+	ELSEIF CFLAG:ARG:타겟 > 6
+		SELECTCASE RAND:4
+			CASE 0
+				BTL_KOJO_RESULTS:0 = みんなー！ 大丈夫ー！？
+			CASE 1
+				BTL_KOJO_RESULTS:0 = これでみんな元気いっぱいだー！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = みんなのケガ、なおすよ！
+			CASE 3
+				BTL_KOJO_RESULTS:0 = 元気をいっぱいとどけるよ！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:4
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 大丈夫？　いまなおすからね！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = いたいのいたいの、とんでけー！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = これでどう？ 苦しくない？
+			CASE 3
+				BTL_KOJO_RESULTS:0 = いっしょにがんばろうね！
+		ENDSELECT
+	ENDIF
+;지원
+ELSEIF RANGE(CFLAG:ARG:입력행동,501, 599)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = まだ、これくらいなら……！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = これで、助けるよ……！
+		ENDSELECT
+	;도발
+	ELSEIF CFLAG:ARG:입력행동 == [[스킬:도발]] || CFLAG:ARG:입력행동 == [[스킬:끝없는도발]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = こっちだよー！ おしりぺんぺーん！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = しっぽふりふり～！　ここまでおーいでっ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = あっかんべー！
+		ENDSELECT
+	;위협
+	ELSEIF CFLAG:ARG:입력행동 == [[스킬:도발]] || CFLAG:ARG:입력행동 == [[스킬:끝없는도발]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = たべちゃうぞーっ！　まるかじりだぞーっ！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あおーん！　%CSTR:일인칭%はこわーいあくまだぞーっ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = がおー！ がおぉーっ！
+		ENDSELECT
+	;트라프리
+	ELSEIF CFLAG:ARG:입력행동 == [[스킬:트라프리]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = こっち！ 今のうちににげよっ！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = ドロン！　さらば～！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = にげるよ！ %CSTR:일인칭%についてきて！
+		ENDSELECT
+	;チャージ系
+	ELSEIF CFLAG:ARG:입력행동 == [[스킬:기합]] || CFLAG:ARG:입력행동 == [[스킬:컨센트레이트]] || CFLAG:ARG:입력행동 == [[스킬:회심의패기]]
+		SELECTCASE RAND:4
+			CASE 0
+				BTL_KOJO_RESULTS:0 = やるぞやるぞー！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 気合だ気合だー！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = よーし、いっくぞー！
+			CASE 3
+				BTL_KOJO_RESULTS:0 = がんばるぞー！
+		ENDSELECT
+	;스마일차지
+	ELSEIF CFLAG:ARG:입력행동 == [[스킬:스마일차지]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = にっこり笑顔っ！　みんながんばれー！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = ファイトファイトー！　みんな応援してるよー！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = えへへへっ、みんな大好き！
+		ENDSELECT
+	;吐息・ブレス系
+	ELSEIF CFLAG:ARG:입력행동 == [[스킬:무거운한숨]] || CFLAG:ARG:입력행동 == [[스킬:무거운공기]] || CFLAG:ARG:입력행동 == [[스킬:포그브레스]] || CFLAG:ARG:입력행동 == [[스킬:파워브레스]] || CFLAG:ARG:입력행동 == [[스킬:용해브레스]] || CFLAG:ARG:입력행동 == [[스킬:다크브레스]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = すぅぅ……ふぅぅーーっ！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = もはぁーーっ！　……けほっ！　けほっ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ふーふーっ！ ふぅーっ！
+		ENDSELECT
+	;強化系
+	ELSEIF RANGE(CFLAG:ARG:입력행동,501, 505) || CFLAG:ARG:입력행동 == 558
+		SELECTCASE RAND:4
+			CASE 0
+				BTL_KOJO_RESULTS:0 = いっしょにがんばろうね！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = がんばっていこー！　おー！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = フレー！　フレー！
+			CASE 3
+				BTL_KOJO_RESULTS:0 = みんなー！ がんばれー！
+		ENDSELECT
+	;弱体系
+	ELSEIF RANGE(CFLAG:ARG:입력행동,506, 509) || CFLAG:ARG:입력행동 == 541 || CFLAG:ARG:입력행동 == 556
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = へにゃへにゃになっちゃえー！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = じゃましちゃうよー！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = これでどうだー！
+		ENDSELECT
+	;その他
+	ELSE
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = これでどうだー！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = いっしょにがんばろうね！
+		ENDSELECT
+	ENDIF
+;방어
+ELSEIF RANGE(CFLAG:ARG:입력행동,601, 699)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = これで、まもるんだ……！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = せめて、このかべを……！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = %CSTR:일인칭%が守るよ！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = じゃーん！ かべを作ったよー！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = みんなー！ これを使ってー！
+		ENDSELECT
+	ENDIF
+;화염
+ELSEIF RANGE(CFLAG:ARG:입력행동,701, 799)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = %CSTR:일인칭%ももえちゃわないよね……？
+			CASE 1
+				BTL_KOJO_RESULTS:0 = や、やっぱり火はこわいよー……ぶるぶる
+			CASE 2
+				BTL_KOJO_RESULTS:0 = こ、こわくない、こわくない……やー！
+		ENDSELECT
+	ENDIF
+;빙결
+ELSEIF RANGE(CFLAG:ARG:입력행동,801, 899)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = こおっちゃえー！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = つめたいの行くよー！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = カッキーン！
+		ENDSELECT
+	ENDIF
+;전격
+ELSEIF RANGE(CFLAG:ARG:입력행동,901, 999)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = ひゃあっ！？ や、やっぱりパチパチこわい……！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = ビ、ビリビリしちゃえーっ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = %CSTR:일인칭%もビリビリしませんように……えいっ！
+		ENDSELECT
+	ENDIF
+;충격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1001, 1099)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = ころんじゃえー！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = わわわっ！？ こ、ころんじゃうかと思った……
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ばっしーん！
+		ENDSELECT
+	ENDIF
+;신경
+ELSEIF RANGE(CFLAG:ARG:입력행동,1101,1199)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = どくどくだー！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = これは、ちょっとかわいそうかも……
+			CASE 2
+				BTL_KOJO_RESULTS:0 = これが、からめて？　ってやつらしいよ！
+		ENDSELECT
+	ENDIF
+;정신
+ELSEIF RANGE(CFLAG:ARG:입력행동,1201, 1299)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSEIF CFLAG:ARG:입력행동 == [[스킬:해피루마]] || CFLAG:ARG:입력행동 == [[스킬:해피스텝]] || CFLAG:ARG:입력행동 == [[스킬:바리언트댄스]] || CFLAG:ARG:입력행동 == [[스킬:델타・푸푸라]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = えへへっ、いっしょに遊ぼーっ！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = いっしょに遊ぼっ！　きっと楽しいよ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = %CSTR:일인칭%といっしょに遊ぼっ！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = おかしくなっちゃえー！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = まいんど、アターック！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ぽわわわーん！
+		ENDSELECT
+	ENDIF
+;파마
+ELSEIF RANGE(CFLAG:ARG:입력행동,1301, 1399)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = じょーか？ しちゃうよー！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = どーまん！ せーまん！ ……あれ？ ちがう？
+			CASE 2
+				BTL_KOJO_RESULTS:0 = きらきらー！
+		ENDSELECT
+	ENDIF
+;주살
+ELSEIF RANGE(CFLAG:ARG:입력행동,1401, 1499)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = のろっちゃうよー！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = うらめしや～……！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ひゅーどろどろ……
+		ENDSELECT
+	ENDIF
+;지변
+ELSEIF RANGE(CFLAG:ARG:입력행동,1501, 1599)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = これはとくいなの！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = %CSTR:일인칭%のすごいところ、見せてあげる！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = どっごーん！
+		ENDSELECT
+	ENDIF
+;수격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1601, 1699)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = ずぶぬれだー！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = ぬれたら、カゼひいちゃうよー！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ざっぱーん！
+		ENDSELECT
+	ENDIF
+;질풍
+ELSEIF RANGE(CFLAG:ARG:입력행동,1701, 1799)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = ふっとんじゃえー！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = せんぷうきより、ずっとすごいぞー！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = びゅおーん！
+		ENDSELECT
+	ENDIF
+;중력
+ELSEIF RANGE(CFLAG:ARG:입력행동,1801, 1899)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = おもくなっちゃえ！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = これで体重計にのれないぞー！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ズシーン！
+		ENDSELECT
+	ENDIF
+;핵열
+ELSEIF RANGE(CFLAG:ARG:입력행동,1901, 1999)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = あついのに火じゃないんだ？　ふしぎー！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = たぶん日やけじゃすまないぞー！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ぴっかーん！
+		ENDSELECT
+	ENDIF
+;만능
+ELSEIF RANGE(CFLAG:ARG:입력행동,2001, 2099)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = なんかすごいパワーだー！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = これでぜーんぶやっつけちゃうよ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = ズドドドーン！
+		ENDSELECT
+	ENDIF
+;魔法少女系
+ELSEIF RANGE(CFLAG:ARG:입력행동,2989, 2999)
+	IF 現HP割合(ARG) < 25
+		SELECTCASE RAND:2
+			CASE 0
+				BTL_KOJO_RESULTS:0 = うわあああっ！！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = あたってえええ！！
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = まほうのちから、見せてあげる！
+			CASE 1
+				BTL_KOJO_RESULTS:0 = きらきらしてて、キレイなまほうだよ！
+			CASE 2
+				BTL_KOJO_RESULTS:0 = まほう少女%CALLNAME%、さんじょー！
+		ENDSELECT
+	ENDIF
+ENDIF

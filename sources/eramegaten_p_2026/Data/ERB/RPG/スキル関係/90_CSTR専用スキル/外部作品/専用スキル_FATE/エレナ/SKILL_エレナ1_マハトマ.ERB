@@ -1,0 +1,235 @@
+﻿;スキル名
+@SKILL_NAME_マハトマ,ARG
+RESULTS = 마하트마
+
+;　명중
+@SKILL_HITRATE_マハトマ, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_マハトマ, ARG
+RETURN 100
+
+;;クリティカル率
+;@SKILL_CRITICAL_RATE_マハトマ, ARG
+;RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_マハトマ, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_マハトマ,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_マハトマ,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_マハトマ,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_マハトマ,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_マハトマ, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_マハトマ,ARG
+RETURN 16
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_マハトマ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_マハトマ,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_マハトマ,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_マハトマ,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_マハトマ,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_マハトマ,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_マハトマ
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_マハトマ, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_マハトマ
+RETURN 0
+
+;没
+;@SKILL_RANK_マハトマ, ARG = -1
+
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_マハトマ,ARG
+;RETURN 0
+
+;ターン開始時に行う処理
+@SKILL_TURNSTART_マハトマ,ARG
+#DIM SKILL_NUM
+
+;戦闘に参加していない or 死んでいるなら発動しない
+SIF CFLAG:ARG:포지션 < 1 || GET_STATE(CFLAG:ARG:상태이상) == "DYING"
+	RETURN 0
+
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"マハトマ")
+
+;未発動 or 発動から5ターン経過済みだと終了
+SIF SKILLGAGE_D_GET(ARG,SKILL_NUM) == 0 || SKILLGAGE_D_GET(ARG,SKILL_NUM) < (GETBIT(GET_RPG_CFLAG_TAKEOVER(ARG,"鯖強化フラグ"),1) ? 2 # 4)
+	RETURN 0
+
+SETCOLOR COLOR("YELLOW")
+PRINTFORMW 마하트마의 힘이 \@ CFLAG:ARG:PT플래그 == 0 ? 적 # 아군 \@(을)를 인도한다…!
+RESETCOLOR
+CALL SKILL_SET_カジャンダ,ARG,CFLAG:ARG:PT플래그 == 0 ? 22 # 19,"크리티컬",4,"範囲"
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_マハトマ,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM,2
+SKILL_NUM:0 = PU_SKILLNUM_GET(ARG,"マハトマ")
+SKILL_NUM:1 = PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム")
+
+CALL SKILL_SET_カジャンダ,ARG,ARG:1,"크리티컬",4,"範囲","NOWAIT"
+SIF SKILLGAGE_D_GET(ARG,SKILL_NUM:0) > 0
+	GOTO SKIP_LABEL
+;このタイミングで確率強化フラグをリセットしておく
+CALL SKILLGAGE_H_SET(ARG,SKILL_NUM,0)
+CALL SKILLGAGE_D_SET(ARG,SKILL_NUM:0,GETBIT(GET_RPG_CFLAG_TAKEOVER(ARG,"鯖強化フラグ"),1) ? 4 # 6)
+PRINTL
+PRINTL 매 턴, 아군의 크리티컬률이 조금 상승!
+IF GETBIT(GET_RPG_CFLAG_TAKEOVER(ARG,"鯖強化フラグ"),1)
+	PRINTFORML %CALLNAME:ARG%의 NP 게이지가 충전되었다!
+	SIF SKILLGAGE_F_GET(ARG,SKILL_NUM:1) < 100
+		CALL SKILLGAGE_F_ADD(ARG,SKILL_NUM:1,30)
+ENDIF
+SIF RAND:100 + 1 > 40 + MAXBASE:ARG:운 / 3
+	GOTO SKIP_LABEL
+CALL SKILLGAGE_H_SET(ARG,SKILL_NUM:0,1)
+PRINTFORML 다음 턴에 한해 %CALLNAME:ARG%의 마법 공격 위력이 상승!
+$SKIP_LABEL
+WAIT
+
+;CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+;CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+;CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM;		拡散攻撃
+;CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM;			ランダム攻撃
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_マハトマ,ARG
+#DIM SKILL_NUM
+#DIM LCOUNT
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"マハトマ")
+LCOUNT = GETBIT(GET_RPG_CFLAG_TAKEOVER(ARG,"鯖強化フラグ"),1) ? 1 # 3
+IF SKILLGAGE_D_GET(ARG,SKILL_NUM) > 0
+	IF SKILLGAGE_D_GET(ARG,SKILL_NUM) > LCOUNT
+		RESULTS = 마하트마:효과 종료
+	ELSE
+		RESULTS = 마하트마:CT{SKILLGAGE_D_GET(ARG,SKILL_NUM) - (SKILLGAGE_D_GET(ARG,SKILL_NUM) > LCOUNT ? LCOUNT # 0 )}
+	ENDIF
+	RETURN 3
+ENDIF
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_マハトマ, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;一応大丈夫だとは思うけど、念のために番号を再取得
+SKILL_NUM = PU_SKILLNUM_GET(L_P,"マハトマ")
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		CASE "ダメージ補正加算"
+			;確率強化のフラグが立っている && 効果発動から次のターンになっている場合（指定されるターンは鯖強化フラグに応じて変動する）
+			IF SKILLGAGE_H_GET(L_P,SKILL_NUM) == 1 && SKILLGAGE_D_GET(L_P,SKILL_NUM) == (GETBIT(GET_RPG_CFLAG_TAKEOVER(L_P,"鯖強化フラグ"),1) ? 3 # 5)
+				SIF L_ダメージタイプ == "魔法"
+					RETURN 150
+			ENDIF
+	ENDSELECT
+ENDIF
+RETURN 0
+
+;　説明文の表示
+@SKILL_EXPLAIN_マハトマ,ARG
+#DIM LCOUNT
+PRINTL 아군 전체의 크리티컬 부여율을 상승시킨다  시간 경과로 효과가 옅어진다
+FOR LCOUNT,1,4
+	SETCOLOR ARG > -1 && SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"マハトマ")) > 0 ? COLOR("GRAY") # COLOR("YELLOW")
+	IF LCOUNT == 3 && (ARG < 0 || !GETBIT(GET_RPG_CFLAG_TAKEOVER(ARG,"鯖強化フラグ"),1))
+		RESETCOLOR
+		BREAK
+	ENDIF
+	PRINTFORM 追加{LCOUNT}
+	RESETCOLOR
+	SELECTCASE LCOUNT
+		CASE 1
+			PRINTL : 5턴 동안 턴 개시 시 아군 전체의 크리티컬률을 상승시키는 상태가 된다
+		CASE 2
+			PRINTL : 확률로 다음 턴에 한해 자신의 마법 공격 위력이 상승한다  운이 높을수록 성공하기 쉬우며, 효과는 집중과 합산된다
+		CASE 3
+			PRINTL : 추가 효과 3: 자신의 NP 게이지를 30% 충전한다
+	ENDSELECT
+NEXT
+PRINTL
+PRINTL 추가 효과를 발동했을 때 전투 종료 또는 규정 수의 턴이 경과할 때까지 추가 효과는 발동하지 않는다
+PRINTL
+PRINTL 고차원의 존재인 「마하트마」들의 힘을 빌려, 강대한 마력을 다루는 스킬
+PRINTL 행운과 우연의 도움이 필요하지만, 성공하기만 하면 수많은 상이한 마술 기반의 병렬 조작조차 가능하다고 한다
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_マハトマ,ARG
+RETURN 1

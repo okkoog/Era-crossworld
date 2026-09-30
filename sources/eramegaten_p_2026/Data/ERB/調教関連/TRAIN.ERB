@@ -1,0 +1,339 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;	Module		:TRAIN.ERB
+;	Facility	:調教システムのフローを制御する関数。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		----/--/--							    新規作成
+;	002		2024/07/05		一ノ瀬					調教メニュー連続実行の1番目が実行されていなかった不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+@SHOPCOMABLE_201
+SIF !IS_USEABLE_SHOPCOM
+	RETURN 0
+RESULT:1 = 2
+RESULTS = 조교
+SIF GET_TRAINABLE_NUM() <= 0
+	RETURN 0
+;調教対象がいるなら
+IF TARGET > 0
+	RETURN 1
+ENDIF
+RETURN 0
+
+@SHOP_COM_201, ARG, L_OPT
+#LOCALSIZE 2
+#DIMS L_OPT
+LOCAL:1 = FLAG:SHOP커맨드
+FLAG:SHOP커맨드 = [[ショップ:조교한다]]
+SIF !STRCOUNT(L_OPT, "調教手番消費なし")
+	FLAG:조교실행완료횟수 += 1
+;表示を弄る
+IF 調教画面旧表示 == 0
+	FOR LOCAL , 0 , 50
+		PRINTL
+	NEXT
+ENDIF
+;BEGIN TRAIN
+CALL TRAIN_FLOW
+;〆はTURNEND
+FLAG:SHOP커맨드 = LOCAL:1
+BEGIN TURNEND
+RETURN 1
+
+@GET_TRAINABLE_NUM
+#FUNCTION
+#DIM L_COUNT
+L_COUNT = 4
+SIF ADD_TRAINABLE_1
+	L_COUNT++
+SIF ADD_TRAINABLE_2
+	L_COUNT++
+L_COUNT -= FLAG:조교실행완료횟수
+RETURNF L_COUNT
+
+
+
+;---------------------------------------------
+;	@TRAIN_FLOW
+;	BEGIN TRAINを廃し、関数による調教フローの制御をおこなうための関数。メインフロー。
+;	基本的にはEmueraのBEGIN TRAINのフロー図を参考にして処理する
+;	
+;---------------------------------------------
+@TRAIN_FLOW
+#DIM CASCADE_COM
+#DIM L_LINE , 2
+
+;調教開始時の諸々の処理呼び出し。開始時口上もここ。
+CALL EVENTTRAIN_GENERAL
+
+$REFRESH_DISPLAY
+;---- FONT LEAK GUARD START -------------------------
+SETFONT
+;---- FONT LEAK GUARD END ---------------------------
+L_LINE:0 = LINECOUNT
+;調教画面描画
+;調教対象・調教者の状態等表示
+CALL SHOW_STATUS
+;通常のフローでは@COMABLE群のチェックが入るが、@COMABLE群は全て殺しているので無視
+;コマンドリスト表示
+CALL SHOW_USERCOM
+;CUP,CDOWN,LOXEBASEについて初期化
+VARI CHARA , 3
+CHARA = MASTER , TARGET , ASSI
+FOR LOCAL , 0 , 3
+	SIF CHARA:LOCAL == -1
+		CONTINUE
+	VARSET CUP:CHARA:0 , 0
+	VARSET CDOWN:CHARA:0 , 0
+	VARSET DOWNBASE:CHARA:0 , 0
+	VARSET NOWEX:CHARA:0 , 0
+NEXT
+;コマンド連続実行中のフラグを折る
+CASCADE_COM = 0
+
+;入力
+L_LINE:1 = LINECOUNT
+$INPUTS_LOOP
+INPUTS
+;入力結果に対する反応の細かい処理はUSERCOMに投げる。調教コマンドの実行は後でやる。
+CALL USERCOM_TRAIN , RESULTS
+;調教コマンドが入力されていたのなら、調教コマンドの実行処理へ。変動値はここ＝調教コマンド入力時でリセットする。
+IF SELECTCOM > -1 || SELECTCOM:1 > -1
+	CLEARLINE LINECOUNT - L_LINE
+	SIF SELECTCOM:1 > -1
+		;CASCADE_COM = 1
+		GOTO CASCADE
+	GOTO EXETRAIN_LOOP
+;RUTURNしてきた値で処理を替える
+ELSEIF RESULT == 0
+	;0が返ってきたら入力処理に戻る
+	CLEARLINE LINECOUNT - L_LINE:1
+	GOTO INPUTS_LOOP
+ELSEIF RESULT == 1
+	CLEARLINE LINECOUNT - L_LINE
+	;1が返ってきたら出力画面に戻る
+	GOTO REFRESH_DISPLAY
+ELSEIF RESULT == 999
+	;調教終了
+	;調教終了時処理を呼び出して終了
+	$FORCE_END
+	CALL END_TRAIN
+	RETURN 1
+ENDIF
+;抜けて来た場合は調教コマンドであるため、それを実行
+$EXETRAIN_LOOP
+CALL EXE_TRAINCOM , SELECTCOM:0 , CASCADE_COM
+;判定値などで実行失敗してた場合は、SELECTCOMを全て破棄して画面リフレッシュ
+IF RESULT == -1
+	VARSET SELECTCOM , -1
+	GOTO REFRESH_DISPLAY
+ENDIF
+
+;BASEや絶頂等の変動記録値の取得。（新表示形式のゲージ用）
+CALL RECORD_VALUE
+
+;COM終了後の処理
+CALL EVENT_COMEND
+;強制終了するのであればここでRETURN
+SIF RESULT == -1
+	GOTO FORCE_END
+
+$CASCADE
+;実行が終わったSELECTCOMをずらす
+ARRAYREMOVE SELECTCOM, 0, 1
+SELECTCOM:99 = -1
+;SELECTCOMが空になっていない場合、コマンド連続実行判定に投げる
+IF SELECTCOM:0 > -1
+	CALL CHECK_CASCADE_COM
+	;RESULTが1ならコマンドを連続実行
+	IF RESULT == 1
+		CASCADE_COM = 1
+		GOTO EXETRAIN_LOOP
+	ELSE
+	ENDIF
+ENDIF
+;ここまで来たら調教画面を更新しに戻る
+GOTO REFRESH_DISPLAY
+
+
+;---------------------------------------------
+;	@EVENTTRAIN_GENERAL
+;	BEGINを排したTRAIN実行時に、調教開始時の処理として実行する関数
+;	@EVENTTRAIN相当
+;	
+;---------------------------------------------
+@EVENTTRAIN_GENERAL
+;諸々の数字を初期化。その後、口上セレクト機能→開始時口上呼び出し
+CALL EVENTTRAIN_INIT
+
+;---------------------------------------------
+;	@EXE_TRAIN
+;	指定された調教COMを実行するための関数
+;	DOTRAIN命令相当
+;	ARG  ：指定されたCOM番号
+;	ARG:1：連続コマンド実行中か
+;	
+;---------------------------------------------
+@EXE_TRAINCOM , ARG , ARG:1 = 0
+
+DRAWLINE
+;まずEVENTCOMに相当する関数群を呼び出し。呼び出し先→EVENT_COM.ERB
+CALL EVENTCOM_F
+
+;判定値をチェック。失敗していたら描画画面からやり直すように返す。調教コマンドメニューによる予約も破棄。
+CALL COM_ORDER, ARG , 0
+SIF RESULT == 0
+	RETURN -1
+
+;COMの実行前に、連続コマンド実行処理中でないのなら、表示用変動記録を初期化
+IF ARG:1 == 0
+	VARSET BASE変動値:0:0 , 0
+	VARSET PALAM変動値:0:0 , 0
+	VARSET PLV上昇済み:0:0 , 0
+	VARSET 絶頂変動値:0:0 , 0
+ENDIF
+;コマンドを実行し終えたので、口上読み込み前にINDICATE_COMをリセット
+VARSET INDICATE_COM , -1
+;次にCOMを実行。SOURCEやEXPなどを取得する。
+CALL COM_COMMON , ARG
+;コマンドが存在していないorコマンドの中で0が返されたら画面描画からやり直し
+SIF RESULT == 0
+	RETURN -1
+DRAWLINE
+;最後にソースチェック。
+;内部ではソースからのUP・DOWN・LOSE・EXP等計算を行い、次にコマンド口上を呼び出し、
+;それから絶頂や射精の処理、絶頂や射精に関する口上の呼び出し、刻印の獲得処理や口上呼び出しなどを行う。
+CALL SOURCE_CHECK
+WAIT 
+;全キャラのソースをリセット
+VARSET SOURCE:TARGET:0 , 0
+VARSET SOURCE:MASTER:0 , 0
+SIF ASSI > -1
+	VARSET SOURCE:ASSI:0 , 0
+
+
+;---------------------------------------------
+;	@RECORD_VALUE
+;	調教コマンド実行後にBASE・PALAM・EXの増減値を取得し、記録しておく関数
+;	ARG ：COM番号
+;	
+;---------------------------------------------
+@RECORD_VALUE
+VARI L_CHARA , 3
+L_CHARA:0 = TARGET , MASTER , ASSI
+FOR LOCAL , 0 , 3
+	;空のキャラを参照してたらスキップ
+	SIF L_CHARA:LOCAL==-1
+		CONTINUE
+	;BASE増加量取得処理
+	FOR LOCAL:1 , 0 , 6
+		;LOCALSにBASE名を入れていく。
+		LOCALS '= SUBSTRINGU("체력기력ＭＡ사정모유뇨의" , LOCAL:1*2 , 2 ) 
+		;ＭＡＧはＭＡしか取得できないのでＧを足す
+		SIF LOCALS == "ＭＡ" 
+			LOCALS += "Ｇ"
+		BASE変動値:(LOCAL):(LOCAL:1) -= DOWNBASE:(L_CHARA:LOCAL):LOCALS
+	NEXT
+	;PALAM増加量取得処理
+	FOR LOCAL:1 , 0 , 15
+		;LOCALSにPALAM名を入れていく。
+		LOCALS '= SUBSTRINGU("쾌Ｃ쾌Ｖ쾌Ａ쾌Ｂ윤활복종욕정굴복습득치정고통공포반감불쾌억울" , LOCAL:1*2 , 2 ) 
+		PALAM変動値:(LOCAL):(LOCAL:1) += CUP:(L_CHARA:LOCAL):LOCALS - CDOWN:(L_CHARA:LOCAL):LOCALS
+		;PLVを跨いだ形跡があったらレベルアップを記録
+		;加算前の値が現在の値のレベルよりも低いならレベルアップしてるということ
+		SIF GETPALAMLV(PALAM:(L_CHARA:LOCAL):LOCALS - CUP:(L_CHARA:LOCAL):LOCALS + CDOWN:(L_CHARA:LOCAL):LOCALS , 17) < GETPALAMLV(PALAM:(L_CHARA:LOCAL):LOCALS , 17)
+			PLV上昇済み:LOCAL:(LOCAL:1) += 1
+	NEXT
+	;絶頂変動値取得処理
+	FOR LOCAL:1 , 0 , 7
+		;LOCALSに絶頂名を入れていく。
+		LOCALS '= SUBSTRINGU("Ｃ절Ｖ절Ａ절Ｂ절사정분유촉수" , LOCAL:1*2 , 2 ) 
+		SIF LOCAL:1 < 4
+			LOCALS += "정"
+		SIF LOCALS == "촉수"
+			LOCALS += "사정"
+		絶頂変動値:(LOCAL):(LOCAL:1) += NOWEX:(L_CHARA:LOCAL):LOCALS
+	NEXT
+NEXT
+
+;---------------------------------------------
+;	@ECOMEND
+;	指定された調教COMを実行後に処理する関数
+;	@EVENTCOMEND相当
+;	ARG ：COM番号
+;	
+;---------------------------------------------
+@EVENT_COMEND , ARG
+
+CALL EVENT_COMEND_構った
+CALL EVENT_COMEND_貞操
+;体力が限界なら此処で調教終了
+CALL EVENT_COMEND_気絶チェック
+SIF RESULT == -1
+	RETURN -1
+;EVENTCOMEND相当の関数群を順番に呼び出し
+
+
+;---------------------------------------------
+;	@CHECK_CASCADE_COM
+;	コマンド実行後、SELECTCOMに0以上の値が入っていたのなら、コマンドを連続実行するか否かを判定するための関数
+;	
+;---------------------------------------------
+@CHECK_CASCADE_COM
+
+;-------------------------------------------------
+;この時点でSELECTCOMは前詰めされていることに注意
+;-------------------------------------------------
+SKIPDISP 0
+PRINTL 
+PRINTL 
+DRAWLINE
+LOCAL = ASSIPLAY
+IF SELECTCOM >= 20000
+	PLAYER = ASSI
+	ASSIPLAY = 1
+ELSEIF SELECTCOM >= 10000
+	PLAYER = MASTER
+	ASSIPLAY = 0
+ENDIF
+SELECTCOM %= 10000
+;ASSIPLAY不可能なのにASSIPLAYしようとした場合
+IF !ASSIPLAY || ASSI >= 0
+	;COMABLEをチェック
+	CALL COM_ABLE_COMMON_D, SELECTCOM
+	IF RESULT == 1
+		;派生コマンドになるかどうかをチェック
+		RESULT = -1
+		TRYCALLFORM JUMP_COM{SELECTCOM}
+		SELECTCOM = RESULT >= 0 ? RESULT # SELECTCOM
+		;実行確定
+		RETURN 1
+	ENDIF
+ENDIF
+ASSIPLAY = LOCAL
+PLAYER = ASSIPLAY ? ASSI # MASTER
+TWAIT 1, 1
+PRINTFORML %조사처리(TRAINNAME:(SELECTCOM), "는")% 실행할 수 없습니다
+PRINTW 커맨드의 실행을 중단합니다
+CLEARLINE 3
+VARSET SELECTCOM, -1
+RETURN 0
+
+;---------------------------------------------
+;	@END_TRAIN
+;	BEGINを排したTRAIN実行時に、調教終了時の処理として実行する関数
+;	@EVENTEND相当
+;	
+;---------------------------------------------
+@END_TRAIN
+;EVENTEND群を順番に処理
+CALL EVENTEND_PERSONA
+CALL EVENTEND_KOJO
+CALL EVENTEND_TRAIN
+;調教能力の上昇画面を呼び出し
+CALL ABL_MANUAL_MAIN , 0
+CALL EVENTCHECK_ABL

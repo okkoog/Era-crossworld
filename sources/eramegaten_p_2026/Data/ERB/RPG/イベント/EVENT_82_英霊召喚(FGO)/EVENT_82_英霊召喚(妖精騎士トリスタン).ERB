@@ -1,0 +1,377 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_82_英霊召喚(妖精騎士トリスタン).ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author		Reason
+;	000		20XX/XX/XX		----		テンプレ
+;	001		2022/07/13		観る観る		作成
+;	002		2022/08/25		SUIHOU		FGO_SUMMON_SACRIFICE_6を追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;有志が当テンプレを埋める+鯖CSVを用意すればイベントを作れるように準備
+;3についてはイベントファイル内にある召喚実験リスト.ERH内の
+;「鯖リスト」と「EXリスト」を参照願います
+;(また、後の人のために使用した番号とキャラ名を追記してくだされば助かります)
+;
+;EVENT_82_英霊召喚(FGO).ERBについては基本追記せず、テンプレ内で処理願います
+;
+;Fate用とその他作品用で関数を分けておりますので、適宣使い分けてください
+;
+;イベントフラグ:82:5の60番台を妖精騎士トリスタン関係で使用しています
+
+;====================
+;召喚イベント条件
+;====================
+@FGO_SUMMON_CHECK_6
+#DIM 生贄
+
+;■召喚可否条件をここに記載することで読み込んでくれます■
+;※召喚はイベントフラグ:82:1が必ず4以上から。
+
+IF イベントフラグ:82:1 > 3
+	IF GETCHARA([[キャラ:바반시]]) > 0
+		RESULTS = 저주의 재해(요정기사 트리스탄)
+		RESULTS:1 = 필요 촉매：사신 케르눈노스(함락)　요정기사 트리스탄 가입완료
+		RETURN 0
+	ELSEIF GETCHARA([[キャラ:케르눈노스]]) > 0
+		IF !陥落(GETCHARA([[キャラ:케르눈노스]]))
+			RESULTS = 저주의 재해(요정기사 트리스탄)
+			RESULTS:1 = 필요 촉매：사신 케르눈노스(함락)　미함락
+			RETURN 0
+		ELSE
+			RESULTS = 저주의 재해(요정기사 트리스탄)
+			RESULTS:1 = 필요 촉매：사신 케르눈노스(함락)　요정기사 트리스탄 미가입
+			RETURN 1
+		ENDIF
+	ELSE
+		RESULTS = 저주의 재해(요정기사 트리스탄)
+		RESULTS:1 = 필요 촉매：사신 케르눈노스(함락)　미소지
+		RETURN 0
+	ENDIF
+ELSE
+	;そもこれが出ることはないはずだけど、確認用に一応記載
+	RESULTS = 최초 소환 이벤트 미소화
+	RETURN 0
+ENDIF
+
+;※RETURN 1　で鯖リストのBITがオンになるようにしているため、必ずRETURNを記入してください
+
+
+;---- EDIT 002 ADD START ---------------------------
+;====================
+;生贄可否の条件確認
+;====================
+@FGO_SUMMON_SACRIFICE_6(ARG:0)
+	;死神ケルヌンノス以外は不可
+	SIF NO:ARG != [[キャラ:케르눈노스]]
+		RETURN 0
+	;未陥落は対象外
+	SIF !陥落(ARG)
+		RETURN 0
+	SIF !FGO_SUMMON_SACRIFIE_COMMON(ARG)
+		RETURN 0
+	RETURN 1
+;---- EDIT 002 ADD END -----------------------------
+
+
+;====================
+;妖精騎士トリスタン召喚
+;====================
+@FGO_SUMMON_6
+#DIM 対象
+#DIM L_COUNT
+;■イベント本文を記載■
+
+	対象 = [[キャラ:바반시]]
+	;バトルイベント識別のためにイベントフラグを特定値に設定
+	イベントフラグ:82:5 = 60
+	PRINTFORML  「자, 소환술은 다음 스테이지로
+	PRINTFORMW  　――우리들의 연구 성과를 보여주도록 하지」
+	PRINTFORML  
+	PRINT  「자, 준비하게
+	PRINTFORM \@ TALENT:MASTER:서머너 > 0 ? 서머너 # 전사 \@ %CALLNAME:MASTER%。
+	PRINTFORMW  　이것이 새로운 소환 기술, 그 발전이다――――」
+;---- EDIT 002 ADD START ---------------------------
+	;イベント本文を呼び出す前に削除処理をするように変更
+	;キャラリストの下から順にキャラ検索
+	;該当するキャラを発見した場合、それを削除する
+	;FOR L_COUNT,CHARANUM,-1,-1
+	;	IF L_COUNT == GETCHARA([[キャラ:케르눈노스]])
+	;		SIF !陥落(L_COUNT)
+	;			CONTINUE
+	;		CALL キャラ削除, L_COUNT
+	;		BREAK
+	;	ENDIF
+	;NEXT
+;---- EDIT 002 ADD END -----------------------------
+	CALL 疑似的画面クリア
+	TWAIT 500,1
+	PRINTFORML  
+	PRINTFORML  
+	;■以下、召喚イベント本文をどうぞ■
+	PRINTFORML  ＞마법진이 빛을 발하고 녹색 드레스를 입은 요정의 모습이 나타났다
+	PRINTFORML  　우아한 춤을 마치고 난 것처럼 빨간 발굽을 갖추고 예의 바르게 인사하고 있다
+	PRINTFORML 　 고개를 든 소녀는 굉장히 사악하게 웃어 보였다
+	PRINTFORML 
+	PRINTFORML  「서번트, 아쳐. 요정기사 트리스탄, 소환에 응해 찾아왔어요　
+	PRINTFORMW  　...정의의 아군인 기사님으로서.  ...나도 참, 꺄하하하하하！」
+	PRINTFORML 
+	PRINTFORML  ＞소녀는 자신의 말이 너무 우스워서 조소를 참지 못하는 것 같다
+	PRINTFORML  　기사로서 행세하기에는 너무 예쁜 드레스를 답답하다는 듯 일그러뜨린다　
+	PRINTFORML  　인류종에 대한 증오가 감춰지지 않았지만 그 이상의 비굴함이 역력하다
+	PRINTFORML 
+	PRINTFORML  「있잖아 당신 요정기사라고 알아? 어머님이 주신 착명으로...조금은 흥미있는 척이라고 하라고
+	PRINTFORMW  　약한 나를, 숨겨주고 있는 소중한 선물이었는데말야？　계약이란 건 짜증나네. 어차피 들켜버리잖아」
+	PRINTFORML 
+	PRINTFORML  ＞확실히 요정 기사 트리스탄을 자처한 소녀에게서는 다른 이름이 보인다. 그것이 바반 시
+	PRINTFORML  　서번트로 분류되는 자의, 진명이란 말인가
+	PRINTFORML  　스코틀랜드에 전해지는 여성 요정. 소녀의 마테리얼에 눈을 돌리는 당신을 꺼림칙한 눈이 나무랐다
+	PRINTFORML 
+	PRINTFORML  「나한테 있어선, 어느쪽이든 상관없어 그런거
+	PRINTFORML  　나는 위대한 어머님의 딸, 요정 나라의 후계자! 그로테스크한 공주님! 그거면 되잖아
+	PRINTFORMW  　...하느님같은 걸 대가로 치르면, 나름대로 괜찮은 걸 갖고 싶단거지. 근처의 요정으로 만족하라고. 바아보. 어이없어」
+	PRINTFORML 
+	PRINTFORML  ＞어이없다는 듯 자학적 미소를 지으며 이쪽을 비판하고 있다. 촉매로 사신을 이용한 것이 마음에 들지 않는가
+	PRINTFORML  　밴시. 대략적인 이름의 요정을 준비해두는 편이 소환 시스템도, 소녀도 무난한 결말을 얻을 수 있었을까？
+	PRINTFORMW  　이미 버그의 발자국은 다가오고 있다.마법진이 재부팅하면서 더 거대한 그림자가 다가오고 있다
+	PRINTFORML 
+	PRINTFORML 「아아...목이 아파. 마치 목 밑이, 없어져버린 것 같아... 나 떠올라 버렸어。
+	PRINTFORML  　아아...아아아아...아아아아아! 당신 때문에, 당신 덕분에, 전부전부 떠올랐어！
+	PRINTFORMW  　죽여버릴 거야, 죽여버릴 거야! 시시한 요정도, 약해빠진 인간도, 모두모두 죽여버릴 거야! 보고 계세요, 어머님..。」
+	PRINTFORML 
+	PRINTFORML  ＞자신이 부른 것은, 버서커나 어벤저가 아니었을 터인데
+	PRINTFORML  　빅토르를 보니, 연쇄 소환이라든가, 제물로 뛰어났는지도 모른다고 재빨리 말하고 있다
+	PRINTFORMW  　그런 것보다, 이 자리를 어떻게 수습하느냐다
+	PRINTFORML  
+	PRINTFORML  「서번트에게는 생전의 행적과 전설에 따라 강점은 물론 약점도 부여된다
+	PRINTFORMW  　그녀에게도 그것은 예외가 아니다. 자신을 썩게 하는 마술이었나. 그것을 사용하도록 해줄까」
+	PRINTFORML 
+	PRINTFORML  ＞정확히는 자신의 영혼을 썩이는 것 같다. 그 근처에서 주운 악마라면 모를까
+	PRINTFORMW  　나름의 의식을 통해 얻은 악마다. 쓰다 버리기에는 수지가 맞지 않는다
+	PRINTFORML  
+	PRINTFORML  「나는 자유롭고, 우아하며, 냉혹하고, 브리튼의 인기인
+	PRINTFORMW  　그대로 행동할 테니까」
+	PRINTFORML 
+	PRINTFORML  ＞대화를 나누다 보니 소녀의 악몽은 시작되고 있다. 제멋대로에,잔혹하고,귀엽고,노리개。
+	PRINTFORML  　악역으로 행세했을 운명에서도 약탈은 소녀에게 닥쳤다. 용서해 주세요. 도와주세요
+	PRINTFORMW  　자신을 짓밟아 온 동족에게 간청한다. 자신의 업을 알고 있었다고 해도 허용할 수 없는 것이 있었다
+	PRINTFORML 
+	PRINTFORML  「그만해,그만해...그만해애! 어머님을 괴롭히지마, 죽이지마
+	PRINTFORMW  　하아아...아아아...아아아...！」
+	PRINTFORML 
+	PRINTFORML  ＞제목은 겨울의 기억. 소녀가 기사가 되기까지 빼앗긴 것, 기사가 되고 나서 빼앗긴 것
+	PRINTFORMW  　몸부림조차 칠 수 없게 된 소녀가 나락으로 떨어진다. 방영이 계속되고 있다
+	PRINTFORML 　피투성이의 어리석은 소녀와 그 어머니가 찢겨져 아무렇게나 내던져졌다
+	PRINTFORML  
+	PRINTFORML  「...현현한 이것도, 케르눈노스인가
+	PRINTFORMW  　다시 묻겠네만, 어떻게 하겠나？」
+	PRINTFORML  
+	$INPUT_LOOP1
+	PRINTFORML [0] 싸워 거둔다
+	PRINTFORML [1] 자괴하는 것을 기다린다
+	INPUT
+	SELECTCASE RESULT
+		CASE 0
+			PRINTFORMW  ＞긴팔원숭이처럼 가늘고 사나운 손이 당신을 위압한다
+			PRINTFORML 
+			PRINTFORMW  한 손만으로도 저주의 질은 월등하다. 이건 아직, 일부인데도
+			PRINTFORML 
+			PRINTFORML 
+			PRINTFORMW  ＞영령	저주의재해	가 전투태세에 들어갔다！
+			PRINTFORML 
+
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+	
+			CALL SET_ENEMY,9,[[キャラ:바반시]],50,1,3
+			CFLAG:(CHARANUM-1):행동횟수 = 1
+			CFLAG:(CHARANUM-1):ＨＰ보정 = (MAXBASE:(CHARANUM-1):ＨＰ / 2)
+			CFLAG:(CHARANUM-1):ＭＰ보정 += 99999
+	
+			BASE:(CHARANUM-1):힘 += 3
+			BASE:(CHARANUM-1):내구 += 2
+			BASE:(CHARANUM-1):속도 += 5
+	
+			ABL:(CHARANUM-1):스킬6 = 524
+			ABL:(CHARANUM-1):스킬9 = [[스킬:명계의문]]
+			ABL:(CHARANUM-1):스킬10 = 3909
+			CSTR:(CHARANUM-1):전용기6 = グレイマルキン
+			
+	
+			CSTR:(CHARANUM-1):사고패턴 = 呪いの厄災
+	
+	
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL BATTLE_START
+
+			PRINTFORML  
+			PRINTFORML 『이거 필요해? 필요없지 필요없어 필요없어 버려버리자』
+			PRINTFORML  
+			PRINTFORML 　＞전투가 끝나자 요정 기사 트리스탄이 썩은 고기 속에서 뿜어져 나왔다
+			PRINTFORML  　아직 숨이 붙어 있다. 모인 저주는 오히려, 그녀를 지킨 것 같다
+			PRINTFORMW  　요정의 천진난만한 악의라는 것으로부터
+			PRINTFORML 
+			PRINTFORML  「죽여주었으면 좋았을 텐데, 부숴주었으면 좋았을 텐데. 감사 따위는 해주지 않을거야
+			PRINTFORMW  　하지만, 인정해줄게. 빨간 발굽의 바반 시. 당신의 서번트야」
+			PRINTFORML 
+			PRINTFORML 
+			PRINTFORMW  ＞ 영령	요정기사트리스탄	이 동료가 되었다！
+			PRINTFORML  
+			CALL ADD_NEW_COMPANION, [[キャラ:바반시]], 1000
+			;バトルイベント識別に使ったイベントフラグを片付け
+			イベントフラグ:82:5 = 0
+		CASE 1
+			PRINTFORML  
+			PRINTFORML  「마스터...? 마스,터...? 아아, 당신이
+			PRINTFORMW  　나의 마스터구나...！」
+			PRINTFORML 
+			PRINTFORML  ＞너덜너덜해진 하얀 드레스 속에서 요정 기사 트리스탄은 깨어났다. 애매한 기억을 받아들이고
+			PRINTFORMW  　악몽에 녹아든 공허한 눈동자가 당신을 내다본다. 예측할 수 있었던 붕괴라면 구명 조치 하나 정도 있었던 것 같다
+			PRINTFORML 
+			PRINTFORMW  「나...누군가의 서번트가 될 수 있었구나...！」
+			PRINTFORML  
+			PRINTFORMW  ＞ 영령	요정기사트리스탄	이 동료가 되었다！
+			PRINTFORML  
+			CALL ADD_NEW_COMPANION, [[キャラ:바반시]], 1000
+			;バトルイベント識別に使ったイベントフラグを片付け
+			イベントフラグ:82:5 = 0
+		CASEELSE
+			GOTO INPUT_LOOP1
+	ENDSELECT
+	PRINTFORML  
+
+
+
+
+	
+;--------------------
+;バトル設定
+;--------------------
+;戦闘開始時のイベント発生
+;サンプル：初手ノウブル・ファンタズムゲージMAX、気合フラグオン
+@EVENT_BATTLE_START_EVENT82_6
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+
+IF イベントフラグ:82:5 == 60
+	PRINTFORML  
+	CUSTOMDRAWLINE =
+	PRINTFORML  
+	SETCOLOR COLOR("YELLOW")
+	PRINTFORMW  ＞  역할을 끝냈을 마법진에서 마그네타이트가 쏟아져 나와 영령에게 공급된다！
+	RESETCOLOR
+	PRINTFORML  
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃　재해는, 증오가 아니었다　　　　　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃분노와 탄식에 의한 책무였다　　　　　　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃죽은 후에도 제신은 요정을 계속 지켜본다　　　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	;魔力放出状態に強制移行
+	CALL SKILLGAGE_F_SET,(CHARANUM-1),SKILL_NUM,100
+	CALL PRINT_ACT_MESSAGE, CHARANUM-1, SKILL_NUM
+	CALL ACTION_ノウブル・ファンタズム,(CHARANUM-1)
+	CFLAG:(CHARANUM-1):気合フラグ = 1
+	イベントフラグ:82:5 = 61
+ENDIF
+
+;---------------------------------------------------
+@EVENT_BATTLE_TURNEND_EVENT82_6
+;---------------------------------------------------
+#DIM SKILL_NUM
+
+SKILL_NUM = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+
+IF イベントフラグ:82:5 == 62 && 現HP割合(CHARANUM-1) < 50
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃두 번째로 썩어가는 흉흉한 손이 나타났다　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃두 손이 마법진에게, 혹은 거대한 구멍에 힘을 주면,　　　　　┃
+	PRINTL ┃구멍 밑바닥에서 몸통이 떠오른다　　　
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃뻥 뚫린 뱃속에는 소녀의 모습이 엿보였다　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃썩은 고기는 계속 흐르고 핵인 소녀도 보이지 않게 된다　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	
+	PRINTW ＞ 영령 요정기사 트리스탄  의 무대도 클라이맥스！
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃　요정기사 트리스탄은, 춤추고 있다　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	ABL:(CHARANUM-1):스킬3 = 3906
+	CSTR:(CHARANUM-1):전용기3 = 痛幻の哭奏
+	CALL VAR_HP,(CHARANUM-1),MAX(MAXBASE:(CHARANUM-1):ＨＰ,1),"회복"
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	CALL SKILLGAGE_D_SET,(CHARANUM-1),SKILL_NUM,5
+	イベントフラグ:82:5 = 63
+ELSEIF イベントフラグ:82:5 == 61 && 現HP割合(CHARANUM-1) < 80
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃　가지말아줘　　　　　　　　　　　　　　　　　　　　　　　┃　　
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	CFLAG:(CHARANUM-1):행동횟수 = 2
+	イベントフラグ:82:5 = 62
+ELSE
+ENDIF
+
+;--------------------
+;思考パターン設定
+;--------------------
+@SET_ACTION_呪いの厄災, ARG
+#DIM SKILL_NUM,2
+
+SKILL_NUM:0 = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+SKILL_NUM:1 = PU_SKILLNUM_GET((CHARANUM-1),"痛幻の哭奏")
+
+SELECTCASE イベントフラグ:82:5
+	CASE 63
+		IF CFLAG:(CHARANUM-1):행동한횟수 == 0
+			CALL SET_ACTION_SKILL, (CHARANUM-1), (SKILL_NUM:1)
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					CALL SET_ACTION_SKILL, (CHARANUM-1), 3907
+				CASE 1
+					CALL SET_ACTION_SKILL, (CHARANUM-1), 3908
+				CASE 2
+					CALL SET_ACTION_SKILL, (CHARANUM-1), 524
+			ENDSELECT
+		ENDIF
+	CASEELSE
+		SELECTCASE RAND:3
+			CASE 0
+				CALL SET_ACTION_SKILL, (CHARANUM-1), 3907
+			CASE 1
+				CALL SET_ACTION_SKILL, (CHARANUM-1), 3908
+			CASE 2
+				CALL SET_ACTION_SKILL, (CHARANUM-1), 524
+		ENDSELECT
+ENDSELECT
+
+
+

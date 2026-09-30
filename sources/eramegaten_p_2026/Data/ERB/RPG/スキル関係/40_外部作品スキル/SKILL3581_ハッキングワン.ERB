@@ -1,0 +1,173 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_3581,ARG
+RESULTS = 해킹원
+
+
+;　명중
+@SKILL_HITRATE_3581, ARG = -1
+SIF ARG >= 0 && SKILLGAGE_D_GET(ARG,[[스킬:해킹리액트]]) > 0
+	RETURN 999
+RETURN 150
+
+;　威力
+@SKILL_POWER_3581, ARG
+RETURN -1
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3581,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3581,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3581, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3581,ARG
+RETURN 5
+
+;　相性
+@SKILL_TYPE_3581,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3581
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3581, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3581, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_3581,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3581,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3581, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3581
+RETURN GET_SUCCESSION_NUM("지원")
+
+;속도보정
+@SKILL_SPEED_3581, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3581
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3581, ARG = -1
+RETURN 15
+
+@継承不能_3581
+RETURN 1
+
+
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_3581,ARG,ARG:1
+;自分の行動のときのみ判定
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+;判定は一回
+SIF ARG != ARG:1
+	RETURN 0
+;ハッキングワン起動中
+SIF !SKILLGAGE_D_GET(ARG, 3581)
+	RETURN 0
+;入力行動がハッキング系
+SIF !GROUPMATCH(SKILL_NAME_F(CFLAG:ARG:입력행동), "배드인밸리드", "슬리프올", "매드스트라이프", "커스올", "아이스：TROY")
+	RETURN 0
+;対象のポジション確認
+SIF	!CPOS(SKILLGAGE_H_GET(ARG, 3581))
+	RETURN 0
+CALL SKILLGAGE_F_SET, ARG, 3581, CFLAG:ARG:입력행동
+RETURN 1, CPOS(SKILLGAGE_H_GET(ARG, 3581))
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3581, ARG, ARG:1, ARG:2
+#LOCALSSIZE 1
+#LOCALSIZE 2
+#DIM HACKING_R
+IF FLAG:총공격중
+	CALL SKILL_ACTION, SKILLGAGE_F_GET(ARG,3581), ARG, ARG:1
+ELSE
+	CALL ATTACK_SKILL, ARG, ARG:1, 3581
+ENDIF
+
+@SKILL_DAMAGE_EFFECT_3581, ARG, ARG:1, ARG:2
+#DIMS CONST EFFECT_TABLE = "공격", "방어", "命中・回避", "마법위력", "마법효과", 
+#DIM DYNAMIC TEMP
+SIF ARG:1 < 0
+	RETURN 0
+;無効以下では発動しない
+SIF ARG:2 <= -2
+	RETURN 0
+TEMP = RAND:5
+CALL SKILL_SET_カジャンダ, ARG, ARG:1, EFFECT_TABLE:TEMP, -4, "단체", "NOWAIT", @"ハッキング成功 & %EFFECT_TABLE:TEMP%低下"
+CALL SKILLGAGE_H_SET,ARG,3581,ARG:1
+CALL SKILLGAGE_D_SET,ARG,3581,6
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_3581,ARG
+SIF SKILLGAGE_D_GET(ARG,3581) <= 0
+	RETURN 0
+SIF SKILLGAGE_H_GET(ARG,3581) <= 0
+	RETURN 0
+SIF !IS_TARGET_ABLE(SKILLGAGE_H_GET(ARG,3581))
+	RETURN 0
+RESULTS = Hack >>> [POS.{CPOS(SKILLGAGE_H_GET(ARG,3581))}]
+RETURN 3
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3581, ARG
+PRINTL 적 1체를 6턴 동안 해킹 상태로 만들고 상대의 능력을 무작위로 하나 낮춘다
+PRINTL 실패할 수도 있으며 자신의 마법 명중과 상대의 마법 회피에 따라 성공률이 결정된다
+PRINTL 1체까지만 해킹할 수 있다
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3581,ARG
+RETURN 1
+;とくにない
+

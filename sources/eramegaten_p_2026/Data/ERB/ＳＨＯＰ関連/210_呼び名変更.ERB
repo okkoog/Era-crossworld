@@ -1,0 +1,3426 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20xx/xx/xx		----					新規作成
+;	002		2019/09/04		空気					명칭/呼び名変更からも顔グラ選択できるように
+;	003		2020/11/20		SUIHOU					エンディングNo.99を設定
+;	004		2021/03/01		JK好き					称号を細分化された表向きの職業に対応
+;	005		2021/04/24		JK好き					スリーサイズ決定時に子宮最大容量が0の時の処理を追加
+;	006		2022/05/29		だま					명칭/呼び名変更以外の現在値も表示
+;													명칭/呼び名変更に肌の色追加
+;													身長の最大最小値を特徴により増減
+;													スリーサイズ設定時、オートセット選択可に変更
+;	007		2022/06/07		Collared				UI整理プロジェクトにより配置変更
+;	008		2022/06/24		JK好き					@NAME_CHANGE_肌の色 未設定を選んでもボタンが反応しなかった問題を修正
+;	009		2022/07/20		NEO						称号を整理、増補、グローバル保存化、とか。
+;	010		2022/08/29		NEO						「グローバルに保存したはずなんだが？」って思ってたバグの修正
+;	011		2022/08/31		JK好き					@GLOBAL_NICKNAME_CHECK 挿入経験追加による一部称号取得条件を修正
+;	012		2022/09/23		★						名称系を直接入力で空白時再入力させるように、髪の色などに選択肢追加
+;	013		2022/10/19		JK好き					@NAME_CHANGE_名称 ～名称と愛称 関数呼び出しスタックが積み上がるかもしれなかった問題を修正、一部処理が間違っていた問題を修正
+;	014		2022/10/26		JK好き					@NAME_CHANGE_名称 NAMEとCALLNAMEが逆になっている部分を修正
+;	015		2022/10/31		Ｊ.О.ランタン			称号【仕事中毒】追加
+;	016		2022/12/25		NEO						称号部分の表示を若干変更（現在の異名を表示するように変更）
+;													取得称号の条件の修正：異名「美少女」、変更：異名「仕事中毒」
+;													新規称号「代打」の追加
+;	017		2023/06/01		NEO						コドクノマレビト関連称号の追加
+;	018		2023/09/15		P(bazzile)				仕事中毒と自立したの解説文が正常に出力されない不具合を修正
+;	019		2023/09/18		NEO						称号の表示バグの修正、強制表示フラグの設定
+;	020		2023/12/18		NEO						デビチル漫画版ルート用称号の追加
+;	021		2024/02/19		P(bazzile)				プロフィール設定時にリセットボタンを追加
+;	022		2024/04/25		P(bazzile)				名称変更時のリストから二人称が消えていた不具合を修正
+;	023		2024/06/15		P(bazzile)				スピードスターの取得条件と取得判定を変更
+;	024		2025/04/15		D5991					一部称号解放時のメッセージを変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+@SHOPCOMABLE_210
+SIF !IS_USEABLE_SHOPCOM
+	RETURN 0
+RESULT:1 = 2
+RESULTS = 명칭/호칭변경
+RETURN 1
+
+@SHOP_COM_210, ARG
+PRINTL
+CUSTOMDRAWLINE =
+;キャラリストを表示
+;CALL INPUT_CHARA_LIST("名前や一人称などを変更したいキャラを選択してください","CASTING_NAMECHANGE")
+{
+CALL INPUT_CHARA_LIST
+	, "PROPSET_NAMECHANGE"
+	, "이름이나 1인칭 등을 변경하고 싶은 캐릭터를 선택해주세요"
+	, "CASTING_NAMECHANGE" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+SIF RESULT == 1000
+	RETURN 0
+CALL NAME_CHANGE,RESULT
+RESTART
+
+@CASTING_NAMECHANGE(ARG)
+SIF CFLAG:ARG:필터링플래그
+	RETURN 0
+RETURN 1
+
+@PROPSET_NAMECHANGE
+RESULTS '= "NO_NAMECHANGE_LV_ALI_SEX_POS_FALLTALENT_KOJO"
+
+;--------------------------------------------------------------------------------
+;NAMECHANGE
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_NAMECHANGE_HEADER
+INFO_HEADER += TOALIGNMENT("이름", 34, "CENTER") + " " + TOALIGNMENT("애칭", 18, "CENTER") + " " + TOALIGNMENT("일인칭", 18, "CENTER") + " " + TOALIGNMENT("이인칭", 12, "CENTER")
+
+@GET_VAR_INFO_DATA_NAMECHANGE, ARG
+#DIMS DYNAMIC L_RESULTS
+L_RESULTS += TOALIGNMENT(S_NAME(ARG, 34, 1), 34, "LEFT")
+L_RESULTS += " "
+L_RESULTS += TOALIGNMENT(S_NAME(ARG, 18, 2), 18, "LEFT")
+L_RESULTS += " "
+IF STRLENS(CSTR:ARG:일인칭) <= 18
+	L_RESULTS += TOALIGNMENT(CSTR:ARG:일인칭, 18, "LEFT")
+ELSE
+	SUBSTRING CSTR:ARG:일인칭, 0, 16
+	RESULTS = \@ STRLENS(RESULTS) == 16 ? %RESULTS% # %SUBSTRING(CSTR:ARG:일인칭, 0, 15)%. \@..
+	L_RESULTS += RESULTS
+ENDIF
+;---- EDIT 025 ADD START -------------------------
+L_RESULTS += " "
+IF ARG != MASTER
+	IF STRLENS(CSTR:ARG:이인칭) <= 12
+		L_RESULTS += TOALIGNMENT(CSTR:ARG:이인칭, 12, "LEFT")
+	ELSE
+		SUBSTRING CSTR:ARG:이인칭, 0, 10
+		RESULTS = \@ STRLENS(RESULTS) == 10 ? %RESULTS% # %SUBSTRING(CSTR:ARG:이인칭, 0, 9)%. \@..
+		L_RESULTS += RESULTS
+	ENDIF
+ELSE
+	L_RESULTS += " " * 12
+ENDIF
+;---- EDIT 025 ADD END ---------------------------
+RESULTS '= L_RESULTS
+
+@NAME_CHANGE,ARG
+LOCAL = 0
+CUSTOMDRAWLINE = 
+PRINTFORML 명칭　:%NAME:ARG%
+PRINTFORML 애칭　:%CALLNAME:ARG%
+PRINTFORML 일인칭:%CSTR:ARG:일인칭%
+IF ARG == MASTER
+ 	PRINTFORML 칭호　:%CSTR:MASTER:종족명%
+ELSE
+	PRINTFORML 이인칭:%CSTR:ARG:이인칭%
+ENDIF
+
+IF SETTING_IS_3SIZE()
+	DRAWLINE
+	CALL SHOW_APPEARANCE, ARG
+	DRAWLINE
+	PRINTFORM 신장　：
+	IF BASE:ARG:신장 == 0
+		PRINTFORML 미설정
+	ELSE
+		PRINTFORML {BASE:ARG:신장}cm
+	ENDIF
+	PRINTFORM Ｂ　　：
+	IF BASE:ARG:바스트 == 0 
+		PRINTFORML 불명
+	ELSE
+		PRINTFORML {BASE:ARG:바스트}cm
+	ENDIF
+	PRINTFORM Ｗ　　：
+	IF BASE:ARG:웨스트 == 0 
+		PRINTFORML 불명
+	ELSE
+		PRINTFORML {BASE:ARG:웨스트}cm
+	ENDIF
+	PRINTFORM Ｈ　　：
+	IF BASE:ARG:힙사이즈 == 0 
+		PRINTFORML 불명
+	ELSE
+		PRINTFORML {BASE:ARG:힙사이즈}cm
+	ENDIF
+ENDIF
+DRAWLINE
+
+LOCALS = 명칭_애칭_명칭과애칭_일인칭
+SIF ARG != MASTER
+	LOCALS += "_" + "이인칭"
+SIF ARG == MASTER || NO:ARG == [[キャラ:당신의딸]] || NO:ARG == [[キャラ:노예의딸]] || (NO:ARG > 4900 && NO:ARG < 4921)
+	LOCALS += "_" + "프로필"
+SIF ARG == MASTER
+	LOCALS += "_" + "칭호"
+
+;外見・スリーサイズ設定が有効
+IF SETTING_IS_3SIZE()
+	;髪と瞳は対象がないと設定できない
+	SIF TALENT:ARG:머리
+		LOCALS += "_" + "머리색_체형"
+	SIF TALENT:ARG:눈
+		LOCALS += "_" + "눈동자색"
+	LOCALS += "_" + "피부색"
+	;スリーサイズは条件厳しめ　人型でサイズ的に逸脱していないこと　[큰체형][거체]は今後対処を検討
+	SIF TALENT:ARG:머리 && TALENT:ARG:팔 && TALENT:ARG:발 && !TALENT:ARG:유아／유아퇴행 && !TALENT:ARG:갈퀴 && !TALENT:ARG:갈퀴발 && !TALENT:ARG:모피 && !TALENT:ARG:촉수 && !TALENT:ARG:부리 && !TALENT:ARG:짐승 && !TALENT:ARG:새 && !TALENT:ARG:파충류 && !TALENT:ARG:부정형 && !TALENT:ARG:물고기 && !TALENT:ARG:이형 && !TALENT:ARG:소인체형 && !TALENT:ARG:큰체형 && !TALENT:ARG:거체
+		LOCALS += "_" + "신장_스리사이즈"
+ENDIF
+
+LOCALS += "_" + "얼굴그래픽"
+
+CALL INPUT_SPLIT("무엇을 변경하시겠습니까？",LOCALS,"_","돌아간다")
+SIF RESULT == 0
+	RETURN
+LOCALS = %RESULTS%
+IF LOCALS == "얼굴그래픽"
+	CALL 顔グラ変更,ARG
+ELSE
+	CALLFORM NAME_CHANGE_%LOCALS%,ARG
+	IF RESULTS == "설정 안 함"
+		PRINTFORMW %LOCALS%을(를) 설정하지 않았습니다
+	ELSEIF LOCALS == "신장" || LOCALS == "스리사이즈"
+		CALL SHOW_INFO_BODYSIZE(ARG)
+		PRINTW 이상으로 설정했습니다.
+	ELSE
+		PRINTFORMW %LOCALS%을(를) %RESULTS%(으)로 변경했습니다.
+	ENDIF
+ENDIF
+;---- EDIT 002 MOD END ---------------------------
+RESTART
+
+;====================================================
+;명칭
+;====================================================
+@NAME_CHANGE_명칭,ARG
+PRINTFORML %NAME:ARG%의 새로운 명칭을 입력해 주십시오
+CALL CREATE_RANDOM_NAME_IF,"",-1,-1,-1,NAME:ARG
+IF RESULTS == ""
+	PRINTL 명칭이 입력되지 않았습니다
+;	CALL NAME_CHANGE_名称,ARG
+	RESTART
+ENDIF
+IF TALENT:ARG:아이
+	IF CFLAG:ARG:딸의부친고유번호딸 == MASTER || CFLAG:ARG:딸의친부모고유번호딸 == MASTER
+		IF TALENT:ARG:남자 == 0
+			NAME:ARG = %RESULTS%(딸)
+		ELSE
+			NAME:ARG = %RESULTS%(아들)
+		ENDIF
+	ELSE
+		NAME:ARG = %RESULTS%(아이)
+	ENDIF
+ELSE
+	NAME:ARG = %RESULTS%
+ENDIF
+
+;====================================================
+;愛称
+;====================================================
+@NAME_CHANGE_애칭,ARG
+PRINTL [0] 새로운 애칭을 붙인다
+PRINTFORML [1] 애칭을 명칭과 같게 한다（명칭：%NAME:ARG%）
+PRINTFORML [9] 변경 없음（현재：%CALLNAME:ARG%）
+INPUT
+IF RESULT == 0
+	PRINTFORML %CALLNAME:ARG%의 새로운 애칭을 입력해 주십시오
+	INPUTS
+	IF RESULTS == ""
+		PRINTL 애칭이 입력되지 않았습니다
+;		CALL NAME_CHANGE_愛称,ARG
+		RESTART
+	ENDIF
+	CALLNAME:ARG = %RESULTS%
+ELSEIF RESULT == 1
+	CALLNAME:ARG = %NAME:ARG%
+	RESULTS = %NAME:ARG%
+ELSE
+	CALLNAME:ARG = %CALLNAME:ARG%
+	RESULTS = %CALLNAME:ARG%
+ENDIF
+
+;====================================================
+;名称と愛称
+;====================================================
+@NAME_CHANGE_명칭과애칭,ARG
+;PRINTFORML %CALLNAME:ARG%の新しい名称と愛称を入力してください(同じ文字列に変更されます)
+;CALL CREATE_RANDOM_NAME_IF,"",-1,-1,-1,CALLNAME:ARG
+;IF RESULTS == ""
+;	PRINTL 명칭이 입력되지 않았습니다
+;	CALL NAME_CHANGE_名称と愛称,ARG
+;	RESTART
+;ENDIF
+;IF TALENT:ARG:아이
+;	IF CFLAG:ARG:딸의부친고유번호딸 == MASTER || CFLAG:ARG:딸의친부모고유번호딸 == MASTER
+;		IF TALENT:ARG:남자 == 0
+;			NAME:ARG = %RESULTS%(딸)
+;		ELSE
+;			NAME:ARG = %RESULTS%(아들)
+;		ENDIF
+;	ELSE
+;		NAME:ARG = %RESULTS%(아이)
+;	ENDIF
+;ELSE
+;	NAME:ARG = %RESULTS%
+;ENDIF
+CALL NAME_CHANGE_명칭,ARG
+CALL NAME_CHANGE_애칭,ARG
+RESULTS = %NAME:ARG%와 %CALLNAME:ARG%
+;====================================================
+;일인칭
+;====================================================
+@NAME_CHANGE_일인칭,ARG
+RESULTS = %CSTR:ARG:일인칭%_あたし_アタシ_わたし_ワタシ_私_あたくし_アタクシ_わたくし_ワタクシ_あたい_アタイ_うち_ウチ_あちき_わっち_わらわ_妾_あだす_あて_あっし_あちし_ボク_僕_オレ_俺_ミー_オレサマ_俺様_ワレ_我_ワシ_儂_吾輩_ワガハイ_己_自分_やつがれ_某_拙者_身ども_小生_余_朕_麿_わっし_あっし_わて_わい_わだす_おいら_おら_おい_おいどん_うら_わー_おれっち_手前_本官_나_저_이몸_소생_본인_소녀_짐_과인_보쿠_오레_와타시_아타시_와라와_%CALLNAME:ARG%_%CALLNAME:ARG% 씨_%CALLNAME:ARG% 쨩_%CALLNAME:ARG% 님_직접 입력한다_초기치로 되돌린다_변경하지 않는다
+CALL INPUT_SPLIT(CALLNAME:ARG+"의 새로운 1인칭 호칭을 입력해 주십시오", RESULTS , "_" , , 4)
+IF RESULTS == "직접 입력한다"
+	PRINTL 
+	INPUTS
+	IF RESULTS == ""
+		PRINTL 1인칭이 입력되지 않았습니다
+;		CALL NAME_CHANGE_一人称,ARG
+		RESTART
+	ENDIF
+ELSEIF RESULTS == "초기치로 되돌린다"
+	CSVCSTR NO:ARG, 11
+	IF RESULTS == ""
+		PRINTL CSV에 기술이 없습니다
+;		CALL NAME_CHANGE_一人称,ARG
+		RESTART
+	ENDIF
+ELSEIF RESULTS == "변경하지 않는다"
+	RESULTS = %CSTR:ARG:일인칭%
+	IF RESULTS == ""
+		PRINTL 1인칭이 미설정 상태입니다
+;		CALL NAME_CHANGE_一人称,ARG
+		RESTART
+	ENDIF
+ENDIF
+CSTR:ARG:일인칭 = %RESULTS%
+
+;====================================================
+;이인칭
+;====================================================
+@NAME_CHANGE_이인칭,ARG
+RESULTS = %CSTR:ARG:이인칭%_あなた_アナタ_貴方_ご主人様_御主人様_ごしゅじんさま_さまなー_서머너_召喚師様_召喚士殿_わぬし様_お前さま_主_主さま_あるじさま_ゴシュジン_御主人_お館さま_旦那_ダンナ_旦那さま_お頭_親分_マスター_我が君_上官殿_パパ_お父さん_おとうさん_お父様_父上_親父_ママ_お母さん_おかあさん_母上_お母様_お兄さん_お兄ちゃん_お兄様_兄上_兄さん_兄ちゃん_兄様_アニキ_お姉さん_お姉ちゃん_お姉様_姉上_姉さ_姉ちゃん_姉様_おじさん_おじちゃん_おじ様_おばさん_おばちゃん_おば様_당신_주인님_주인_마스터_두목_형_오빠_누나_언니_아버지_어머니_아저씨_아주머니_%CALLNAME:MASTER%_%CALLNAME:MASTER% 씨_%CALLNAME:MASTER% 님_직접 입력한다_초기치로 되돌린다_변경하지 않는다
+CALL INPUT_SPLIT(CALLNAME:ARG+"의 새로운 "+CALLNAME:MASTER+" 호칭을 입력해 주십시오", RESULTS , "_" , , 4)
+IF RESULTS == "직접 입력한다"
+	PRINTL 
+	INPUTS
+	IF RESULTS == ""
+		PRINTL 2인칭이 입력되지 않았습니다
+;		CALL NAME_CHANGE_二人称,ARG
+		RESTART
+	ENDIF
+ELSEIF RESULTS == "초기치로 되돌린다"
+	CSVCSTR NO:ARG, 12
+	IF RESULTS == ""
+		PRINTL CSV에 기술이 없습니다
+;		CALL NAME_CHANGE_二人称,ARG
+		RESTART
+	ENDIF
+ELSEIF RESULTS == "변경하지 않는다"
+	RESULTS = %CSTR:ARG:이인칭%
+	IF RESULTS == ""
+		PRINTL 2인칭이 미설정 상태입니다
+;		CALL NAME_CHANGE_二人称,ARG
+		RESTART
+	ENDIF
+ENDIF
+CSTR:ARG:이인칭 = %RESULTS%
+
+;====================================================
+;プロフィール
+;====================================================
+@NAME_CHANGE_프로필, ARG
+#LOCALSIZE 5
+LOCAL:1 = LOCAL:4 ? LOCAL:1 # LINECOUNT
+LOCAL:2 = LOCAL:4 ? LOCAL:2 # CURRENTREDRAW()
+LOCAL:3 = LOCAL:4 ? LOCAL:3 # RESULT
+LOCAL:4 = 1
+REDRAW 2
+CLEARLINE LINECOUNT - LOCAL:1
+CUSTOMDRAWLINE =
+PRINTL 변경하고 싶은 행을 선택해 주십시오
+DRAWLINE
+FOR LOCAL, 1, 21
+	PRINTFORML [{LOCAL, 2}] %CSTR:ARG:(29 + LOCAL)%
+NEXT
+PRINTL
+DRAWLINE
+PRINTL [ 0] 유저 정의 파일 불러오기
+PRINTL [99] 리셋(3~20행까지 초기화합니다)
+PRINTL [100] 돌아간다
+DO
+	INPUT
+	LOCAL = INRANGE(RESULT, 0, 20) !| GROUPMATCH(RESULT, 99, 100)
+	SIF LOCAL
+		CLEARLINE 1
+LOOP LOCAL
+IF RESULT != 100
+	IF RESULT == 99
+		VARSET CSTR:ARG:0, "", GETNUM(CSTR, "해설3"), GETNUM(CSTR, "해설20") + 1
+	ELSEIF RESULT
+		PRINTFORML {RESULT}행에 삽입할 문자열을 입력해 주십시오.
+		INPUTS
+		CSTR:ARG:(29 + RESULT) '= RESULTS
+	ELSE
+		SWAP ARG, TARGET
+		TRYCCALLFORM USER_PROFILE_%CALLNAME%
+			PRINTFORMW %CALLNAME%의 프로필을 불러왔습니다.
+		CATCH
+			PRINTFORMW %CALLNAME%의 프로필을 정의한 함수를 찾지 못했습니다.
+		ENDCATCH
+		SWAP ARG, TARGET
+	ENDIF
+	RESTART
+ENDIF
+CLEARLINE LINECOUNT - LOCAL:1
+REDRAW LOCAL:2
+LOCAL:4 = 0
+RESULTS = 지정한 대로
+RETURN LOCAL:3
+
+;====================================================
+;称号関連
+;====================================================
+@NAME_CHANGE_칭호,ARG
+#DIM PAGENUM
+#DIM NAMENUM_START
+#DIM NAMENUM_END
+
+	;ちょっと行を分ける
+	CUSTOMDRAWLINE =
+
+	;称号の初期値は「????」
+	VARSET RESULTS,"????"
+
+	;称号のチェック
+	;RESULTSに突っ込む＆お知らせ表示モード
+	CALL GLOBAL_NICKNAME_CHECK, 1, 1
+
+	;デフォでは称号１のリストを表示な
+	PAGENUM = 0
+
+	$PAGE_CHANGE
+
+	;現在の称号を表示
+	CUSTOMDRAWLINE =
+	PRINTFORML 현재 칭호：[%종족명(ARG)%]
+	CUSTOMDRAWLINE =
+
+	;リスト表示
+	NAMENUM_START = PAGENUM * 64
+	NAMENUM_END   = 64 + PAGENUM * 64
+
+	FOR LOCAL, NAMENUM_START, NAMENUM_END
+		PRINTFORMLC [{LOCAL,2}]%RESULTS:LOCAL%
+;		SIF LOCAL%3 == 2
+;			PRINTL
+	NEXT
+	PRINTL
+	DRAWLINE
+
+	;ページの表示切替用
+	PRINTFORMLC [1007] 이전페이지
+	PRINTFORMLC [1008] 변경하지 않고 돌아간다
+	PRINTFORMLC [1009] 다음페이지
+
+	;いんぷっと
+	INPUT
+
+	IF 0
+	;ページ送り
+	ELSEIF RESULT == 1007
+		PAGENUM -= 1
+		;称号管理番号を増やしたらここのPAGENUM=Xを増やす
+		SIF PAGENUM < 0
+			PAGENUM = 3
+		GOTO PAGE_CHANGE
+	ELSEIF RESULT == 1009
+		PAGENUM += 1
+		;称号管理番号を増やしたらここのSIF PAGENUM > Xを増やす
+		SIF PAGENUM > 3
+			PAGENUM = 0
+		GOTO PAGE_CHANGE
+	;変更せず戻る
+	;RESULTが1008の時
+	ELSEIF RESULT == 1008
+		CSTR:ARG:종족명 = %종족명(ARG)%
+	;ページ送り以外の範囲外を選んだら再表示
+	;称号管理番号を増やしたらここの「RESULT > XXX」を増やす
+	ELSEIF RESULT < 0 || RESULT > 255
+		GOTO PAGE_CHANGE
+	;称号が「????」だった場合弾いていた……けど、まあいいかあ
+;	ELSEIF EQUALCHECK_STR(RESULTS:RESULT,"????")
+;		PRINTFORML 称号が「????」だけどだいじょうぶ？的なアレ
+	;その他の場合
+	;종족명＝選択した異名
+	ELSE
+		CSTR:ARG:종족명 = %RESULTS:RESULT%
+	ENDIF
+
+	VARSET RESULTS
+	RESULTS = %CSTR:ARG:종족명%
+
+
+
+;====================================================
+;称号の保存とロード
+;====================================================
+;・条件を満たした称号をグローバルセーブに保存（グローバルセーブのはずなのに他セーブと共有されないのなんで？あれー？）
+;・条件を満たした称号をRESULTS配列に入れる
+;・実質的な実績システムとしても使用可能にする（ARG＝0の場合、RESULTSに文字列を入れないようにする）
+;・「異名XXXX이(가) 해금되었습니다」というメッセージを表示するかを選べるように（ARG:1＝0の場合、解放メッセージを表示しない）
+;　「GLOBAL_NICKNAME_CHECK」を一日の終わりとかに呼び出すと色々便利な気はするが、実装パッチではひとまずやめとく
+@GLOBAL_NICKNAME_CHECK, ARG = 0, ARG:1 = 0, ARG:2 = 0
+#DIM IS_INTO_RESULTS
+#DIM IS_NOTICE
+#DIM IS_RE_DISPLAY
+#DIM LCOUNT
+
+	;==============
+	;念のため
+	;==============
+	;ARGは念のため真っ先に保存しておく
+	;ARGがゼロで入ってきたら、RESULTSに文字列を入れない（単なる実績システムとして使用できる）
+	IS_INTO_RESULTS = ARG
+	;ARG:1がゼロで入ってきたら、お知らせを表示しない（こっそり解放もできる）
+	IS_NOTICE = ARG:1
+	;ARG:2が１で入ってきたら、既に取得した称号の「～～の称号を取得しました」を強制的に再表示
+	IS_RE_DISPLAY = ARG:2
+
+	;==============
+	;グローバル変数のロード
+	;==============
+	LOADGLOBAL
+	;==============
+	;称号獲得・保存・表示・代入部分
+	;==============
+
+	;称号0：????
+	;条件：条件なし
+	;謎の人物的な異名。
+	IF 1 || GETBIT(GLOBAL:称号記録1, 0)
+		SIF !GETBIT(GLOBAL:称号記録1, 0) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 0))
+			PRINTFORMW 게임을 시작함에 따라, 칭호 [????]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:0 = ????
+		SETBIT GLOBAL:称号記録1, 0
+	ENDIF
+	;称号1：人間
+	;条件：条件なし
+	;人間ではない場合もあるかもしれない。ちなみにあなたの異名枠は「종족」枠、「요마」とか「귀신」とかあの辺の枠を再利用しているもの。
+	IF 1 || GETBIT(GLOBAL:称号記録1, 1)
+		SIF !GETBIT(GLOBAL:称号記録1, 1) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 1))
+			PRINTFORMW 게임을 시작함에 따라, 칭호 [인간]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:1 = 인간
+		SETBIT GLOBAL:称号記録1, 1
+	ENDIF
+	;称号2：プレイヤー
+	;条件：条件なし
+	;ちょっとメタい異名。「祈る者」という意味を持たせていたりする作品もある。
+	;（女）遊び人、という意味でも通る気はする。
+	IF 1 || GETBIT(GLOBAL:称号記録1, 2)
+		SIF !GETBIT(GLOBAL:称号記録1, 2) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 2))
+			PRINTFORMW 게임을 시작함에 따라, 칭호 [플레이어]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:2 = 플레이어
+		SETBIT GLOBAL:称号記録1, 2
+	ENDIF
+	;称号3：秘匿者
+	;条件：表向きの職業：ないしょ
+	;クリプター。……あなた……何者なんだ……いやマジで……
+	IF CFLAG:MASTER:당신의표면적인직업 == 0 || GETBIT(GLOBAL:称号記録1, 3)
+		SIF !GETBIT(GLOBAL:称号記録1, 3) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 3))
+			PRINTFORMW 겉보기 직업으로 「비밀」을 골랐기 때문에, 칭호 [은닉자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:3 = 은닉자
+		SETBIT GLOBAL:称号記録1, 3
+	ENDIF
+	;称号4：デビルサマナー
+	;条件：表向きの職業：生粋のデビルサマナー
+	;あなたは基本的にこれ。
+	IF CFLAG:MASTER:당신의표면적인직업 == 1 || GETBIT(GLOBAL:称号記録1, 4)
+		SIF !GETBIT(GLOBAL:称号記録1, 4) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 4))
+			PRINTFORMW 겉보기 직업으로 「데빌서머너」를 골랐기 때문에, 칭호 [데빌서머너]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:4 = 데빌서머너
+		SETBIT GLOBAL:称号記録1, 4
+	ENDIF
+	;称号5：小学生
+	;条件：表向きの職業：小学生
+	;ロリババア、ショタジジイの類かもしれない。
+	IF CFLAG:MASTER:당신의표면적인직업 == 2 || GETBIT(GLOBAL:称号記録1, 5)
+		SIF !GETBIT(GLOBAL:称号記録1, 5) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 5))
+			PRINTFORMW 겉보기 직업으로 「초등학생」을 골랐기 때문에, 칭호 [초등학생]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:5 = 초등학생
+		SETBIT GLOBAL:称号記録1, 5
+	ENDIF
+	;称号6：中学生
+	;条件：表向きの職業：中学生
+	IF CFLAG:MASTER:당신의표면적인직업 == 20 || GETBIT(GLOBAL:称号記録1, 6)
+		SIF !GETBIT(GLOBAL:称号記録1, 6) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 6))
+			PRINTFORMW 겉보기 직업으로 「중학생」을 골랐기 때문에, 칭호 [중학생]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:6 = 중학생
+		SETBIT GLOBAL:称号記録1, 6
+	ENDIF
+	;称号7：高校生
+	;条件：表向きの職業：高校生
+	IF CFLAG:MASTER:당신의표면적인직업 == 21 || GETBIT(GLOBAL:称号記録1, 7)
+		SIF !GETBIT(GLOBAL:称号記録1, 7) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 7))
+			PRINTFORMW 겉보기 직업으로 「고등학생」을 골랐기 때문에, 칭호 [고등학생]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:7 = 고등학생
+		SETBIT GLOBAL:称号記録1, 7
+	ENDIF
+	;称号8：軽高生
+	;条件：表向きの職業：軽高生
+	IF CFLAG:MASTER:당신의표면적인직업 == 22 || GETBIT(GLOBAL:称号記録1, 8)
+		SIF !GETBIT(GLOBAL:称号記録1, 8) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 8))
+			PRINTFORMW 겉보기 직업으로 「케이코생」을 골랐기 때문에, 칭호 [카이고생]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:8 = 카이고생
+		SETBIT GLOBAL:称号記録1, 8
+	ENDIF
+	;称号9：エルミン生
+	;条件：表向きの職業：エルミン生
+	;実はちょっとだけ文面に影響があったはず。
+	IF CFLAG:MASTER:당신의표면적인직업 == 23 || GETBIT(GLOBAL:称号記録1, 9)
+		SIF !GETBIT(GLOBAL:称号記録1, 9) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 9))
+			PRINTFORMW 겉보기 직업으로 「엘민생」을 골랐기 때문에, 칭호 [엘민생]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:9 = 엘민생
+		SETBIT GLOBAL:称号記録1, 9
+	ENDIF
+	;称号10：大学生
+	;条件：表向きの職業：大学生
+	IF CFLAG:MASTER:당신의표면적인직업 == 3 || GETBIT(GLOBAL:称号記録1, 10)
+		SIF !GETBIT(GLOBAL:称号記録1, 10) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 10))
+			PRINTFORMW 겉보기 직업으로 「대학생」을 골랐기 때문에, 칭호 [대학생]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:10 = 대학생
+		SETBIT GLOBAL:称号記録1, 10
+	ENDIF
+	;称号11：学生
+	;条件：表向きの職業：学生系
+	;メガテンシリーズは結構学生主人公が多い。学校どころじゃないのも多いが。
+	;学生の番号がピョイピョイしてるのはあとから追加されたものであるため。
+	IF CFLAG:MASTER:당신의표면적인직업 == 2 ||  CFLAG:MASTER:당신의표면적인직업 == 20 || CFLAG:MASTER:당신의표면적인직업 == 21 ||  CFLAG:MASTER:당신의표면적인직업 == 22 ||  CFLAG:MASTER:당신의표면적인직업 == 23 ||  CFLAG:MASTER:당신의표면적인직업 == 3 || GETBIT(GLOBAL:称号記録1, 11)
+		SIF !GETBIT(GLOBAL:称号記録1, 11) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 11))
+			PRINTFORMW 겉보기 직업으로 학생 계열 커버를 골랐기 때문에, 칭호 [학생]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:11 = 학생
+		SETBIT GLOBAL:称号記録1, 11
+	ENDIF
+	;称号12：フリーター
+	;条件：表向きの職業：フリーター
+	;とんだバイトもあったもんである。
+	IF CFLAG:MASTER:당신의표면적인직업 == 30 || GETBIT(GLOBAL:称号記録1, 12)
+		SIF !GETBIT(GLOBAL:称号記録1, 12) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 12))
+			PRINTFORMW 겉보기 직업으로 「프리터」를 골랐기 때문에, 칭호 [프리터]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:12 = 프리터
+		SETBIT GLOBAL:称号記録1, 12
+	ENDIF
+	;称号13：社会人
+	;条件：表向きの職業：社会人
+	;（裏）社会人。
+	IF CFLAG:MASTER:당신의표면적인직업 == 4 || GETBIT(GLOBAL:称号記録1, 13)
+		SIF !GETBIT(GLOBAL:称号記録1, 13) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 13))
+			PRINTFORMW 겉보기 직업으로 「사회인」을 골랐기 때문에, 칭호 [사회인]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:13 = 사회인
+		SETBIT GLOBAL:称号記録1, 13
+	ENDIF
+	;称号14：深窓の令嬢
+	;条件：表向きの職業：深窓の令嬢
+	;ご令嬢（男）もあるあたり、ShinEraTenseiは懐が深いことであるなぁ。
+	IF CFLAG:MASTER:당신의표면적인직업 == 5 || GETBIT(GLOBAL:称号記録1, 14)
+		SIF !GETBIT(GLOBAL:称号記録1, 14) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 14))
+			PRINTFORMW 겉보기 직업으로 「규중의 아가씨」를 골랐기 때문에, 칭호 [규중의 아가씨]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:14 = 규중의 아가씨
+		SETBIT GLOBAL:称号記録1, 14
+	ENDIF
+	;称号15：御曹司
+	;条件：表向きの職業：深窓の令嬢
+	;深窓の令嬢は、「オトコの娘である」または「オトコでない」場合にのみ選択可能な表向きの職業。なのでこれはTSしないと達成できない。
+	IF (CFLAG:MASTER:당신의표면적인직업 == 5 && IS_MALE(MASTER)) || GETBIT(GLOBAL:称号記録1, 15)
+		SIF !GETBIT(GLOBAL:称号記録1, 15) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 15))
+			PRINTFORMW 겉보기 직업으로 「규중의 아가씨」를 고르고, %CALLNAME:MASTER%이(가) [남자]이므로, 칭호 [도련님]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:15 = 도련님
+		SETBIT GLOBAL:称号記録1, 15
+	ENDIF
+	;称号16：深窓の令嬢？
+	;条件：表向きの職業：深窓の令嬢
+	IF (CFLAG:MASTER:당신의표면적인직업 == 5 && TALENT:MASTER:오토코노코) || GETBIT(GLOBAL:称号記録1, 16)
+		SIF !GETBIT(GLOBAL:称号記録1, 16) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 16))
+			PRINTFORMW 겉보기 직업으로 「규중의 아가씨」를 고르고, %CALLNAME:MASTER%이(가) [오토코노코]이므로, 칭호 [규중의 아가씨？]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:16 = 규중의 아가씨？
+		SETBIT GLOBAL:称号記録1, 16
+	ENDIF
+	;称号17：公衆便所
+	;条件：表向きの職業：公衆便所
+	IF CFLAG:MASTER:당신의표면적인직업 == 6 || GETBIT(GLOBAL:称号記録1, 17)
+		SIF !GETBIT(GLOBAL:称号記録1, 17) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 17))
+			PRINTFORMW 겉보기 직업으로 「공중변소」를 골랐기 때문에, 칭호 [공중변소]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:17 = 공중변소
+		SETBIT GLOBAL:称号記録1, 17
+	ENDIF
+	;称号18：女王様
+	;条件：表向きの職業：女王様
+	IF CFLAG:MASTER:당신의표면적인직업 == 7 || GETBIT(GLOBAL:称号記録1, 18)
+		SIF !GETBIT(GLOBAL:称号記録1, 18) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 18))
+			PRINTFORMW 겉보기 직업으로 「여왕님」을 골랐기 때문에, 칭호 [여왕님]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:18 = 여왕님
+		SETBIT GLOBAL:称号記録1, 18
+	ENDIF
+	;称号19：渡世人
+	;条件：表向きの職業：渡世人
+	;おひけぇなすって、という口上には流派があり、名乗り上げるだけである程度の身分証明になったとか。
+	IF CFLAG:MASTER:당신의표면적인직업 == 8 || GETBIT(GLOBAL:称号記録1, 19)
+		SIF !GETBIT(GLOBAL:称号記録1, 19) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 19))
+			PRINTFORMW 겉보기 직업으로 「건달」을 골랐기 때문에, 칭호 [건달]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:19 = 건달
+		SETBIT GLOBAL:称号記録1, 19
+	ENDIF
+	;称号20：メイド
+	;条件：表向きの職業：メイド
+	;メイドさんが日本で広く知られるようになった時期とメガテンが発売された時期は案外近い。
+	IF CFLAG:MASTER:당신의표면적인직업 == 9 || GETBIT(GLOBAL:称号記録1, 20)
+		SIF !GETBIT(GLOBAL:称号記録1, 20) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 20))
+			PRINTFORMW 겉보기 직업으로 「메이드」를 골랐기 때문에, 칭호 [메이드]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:20 = 메이드
+		SETBIT GLOBAL:称号記録1, 20
+	ENDIF
+	;称号21：執事
+	;条件：表向きの職業：執事
+	IF CFLAG:MASTER:당신의표면적인직업 == 10 || GETBIT(GLOBAL:称号記録1, 21)
+		SIF !GETBIT(GLOBAL:称号記録1, 21) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 21))
+			PRINTFORMW 겉보기 직업으로 「집사」를 골랐기 때문에, 칭호 [집사]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:21 = 집사
+		SETBIT GLOBAL:称号記録1, 21
+	ENDIF
+	;称号22：仏僧
+	;条件：表向きの職業：仏僧
+	;僧侶や巫女だからと言って必ずしもハマを覚えたりはしない。表向きの職業である。
+	IF CFLAG:MASTER:당신의표면적인직업 == 11 || GETBIT(GLOBAL:称号記録1, 22)
+		SIF !GETBIT(GLOBAL:称号記録1, 22) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 22))
+			PRINTFORMW 겉보기 직업으로 「스님」을 골랐기 때문에, 칭호 [스님]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:22 = 스님
+		SETBIT GLOBAL:称号記録1, 22
+	ENDIF
+	;称号23：僧侶
+	;条件：表向きの職業：仏僧
+	;わたしは　そうりょリフ
+	;たたかいはできませんが
+	;ちりょうのつえがつかえます
+	;よろしければごいっしょさせてください
+	IF CFLAG:MASTER:당신의표면적인직업 == 11 || GETBIT(GLOBAL:称号記録1, 23)
+		SIF !GETBIT(GLOBAL:称号記録1, 23) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 23))
+			PRINTFORMW 겉보기 직업으로 「스님」을 골랐기 때문에, 칭호 [승려]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:23 = 승려
+		SETBIT GLOBAL:称号記録1, 23
+	ENDIF
+	;称号24：破戒僧
+	;条件：表向きの職業：僧侶・属性D
+	;バトルボンズ。
+	IF (CFLAG:MASTER:당신의표면적인직업 == 11 && ABL:MASTER:속성LD == 3) || GETBIT(GLOBAL:称号記録1, 24)
+		SIF !GETBIT(GLOBAL:称号記録1, 24) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 24))
+			PRINTFORMW 겉보기 직업으로 「스님」을 고르고, Dark 속성이므로, 칭호 [파계승]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:24 = 파계승
+		SETBIT GLOBAL:称号記録1, 24
+	ENDIF
+	;称号25：シスター
+	;条件：表向きの職業：シスター
+	;男性では基本的に選択できない。
+	IF CFLAG:MASTER:당신의표면적인직업 == 12 || GETBIT(GLOBAL:称号記録1, 25)
+		SIF !GETBIT(GLOBAL:称号記録1, 25) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 25))
+			PRINTFORMW 겉보기 직업으로 「수녀」를 골랐기 때문에, 칭호 [수녀]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:25 = 수녀
+		SETBIT GLOBAL:称号記録1, 25
+	ENDIF
+	;称号26：巫女
+	;条件：表向きの職業：巫女
+	IF CFLAG:MASTER:당신의표면적인직업 == 13 || GETBIT(GLOBAL:称号記録1, 26)
+		SIF !GETBIT(GLOBAL:称号記録1, 26) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 26))
+			PRINTFORMW 겉보기 직업으로 「무녀」를 골랐기 때문에, 칭호 [무녀]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:26 = 무녀
+		SETBIT GLOBAL:称号記録1, 26
+	ENDIF
+	;称号27：医師
+	;条件：表向きの職業：医者（男性）
+	IF (CFLAG:MASTER:당신의표면적인직업 == 14 && IS_MALE(MASTER)) || GETBIT(GLOBAL:称号記録1, 27)
+		SIF !GETBIT(GLOBAL:称号記録1, 27) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 27))
+			PRINTFORMW 겉보기 직업으로 「의사(여의사)」를 고르고, %CALLNAME:MASTER%이(가) [남자]이므로, 칭호 [의사]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:27 = 의사
+		SETBIT GLOBAL:称号記録1, 27
+	ENDIF
+	;称号28：女医
+	;条件：表向きの職業：医者（女性）
+	;女教師、など、「女」が付くとだいたいえっち。
+	IF (CFLAG:MASTER:당신의표면적인직업 == 14 && !IS_MALE(MASTER)) || GETBIT(GLOBAL:称号記録1, 28)
+		SIF !GETBIT(GLOBAL:称号記録1, 28) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 28))
+			PRINTFORMW 겉보기 직업으로 「여의사(의사)」를 고르고, %CALLNAME:MASTER%이(가) [여자]이므로, 칭호 [여의사]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:28 = 여의사
+		SETBIT GLOBAL:称号記録1, 28
+	ENDIF
+	;称号29：悪魔使い
+	;条件：あなたの専攻：サマナー
+	IF CFLAG:MASTER:당신의전공분야 == 1 || GETBIT(GLOBAL:称号記録1, 29)
+		SIF !GETBIT(GLOBAL:称号記録1, 29) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 29))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「서머너」이므로, 칭호 [악마 사용자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:29 = 악마 사용자
+		SETBIT GLOBAL:称号記録1, 29
+	ENDIF
+	;称号30：サマナー
+	;条件：あなたの専攻：サマナー
+	IF CFLAG:MASTER:당신의전공분야 == 1 || GETBIT(GLOBAL:称号記録1, 30)
+		SIF !GETBIT(GLOBAL:称号記録1, 30) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 30))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「서머너」이므로, 칭호 [서머너]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:30 = 서머너
+		SETBIT GLOBAL:称号記録1, 30
+	ENDIF
+	;称号31：ペルソナ使い
+	;条件：あなたの専攻：ペルソナ使い
+	IF CFLAG:MASTER:당신의전공분야 == 2 || GETBIT(GLOBAL:称号記録1, 31)
+		SIF !GETBIT(GLOBAL:称号記録1, 31) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 31))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「페르소나구사자」이므로, 칭호 [페르소나구사자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:31 = 페르소나구사자
+		SETBIT GLOBAL:称号記録1, 31
+	ENDIF
+	;称号32：異能者
+	;条件：あなたの専攻：異能者
+	;ポコポコ入手できてるけど、本来は結構レアな存在のハズ。
+	IF CFLAG:MASTER:당신의전공분야 == 3 || GETBIT(GLOBAL:称号記録1, 32)
+		SIF !GETBIT(GLOBAL:称号記録1, 32) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 32))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「이능자」이므로, 칭호 [이능자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:32 = 이능자
+		SETBIT GLOBAL:称号記録1, 32
+	ENDIF
+	;称号33：一般人
+	;条件：あなたの専攻：一般人
+	;またの名を観光客。NEWGAMEで選ぶときの選択肢は一般人。
+	;伝統的な最弱職……と思いきや、まだ下がいる場合も。eratenもそう。
+	IF CFLAG:MASTER:당신의전공분야 == 4 || GETBIT(GLOBAL:称号記録1, 33)
+		SIF !GETBIT(GLOBAL:称号記録1, 33) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 33))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「관광객」이므로, 칭호 [일반인]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:33 = 일반인
+		SETBIT GLOBAL:称号記録1, 33
+	ENDIF
+	;称号34：喰奴
+	;条件：あなたの専攻：喰奴
+	IF CFLAG:MASTER:당신의전공분야 == 5 || GETBIT(GLOBAL:称号記録1, 34)
+		SIF !GETBIT(GLOBAL:称号記録1, 34) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 34))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「식노」이므로, 칭호 [식노]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:34 = 식노
+		SETBIT GLOBAL:称号記録1, 34
+	ENDIF
+	;称号35：達人
+	;条件：あなたの専攻：達人
+	IF CFLAG:MASTER:당신의전공분야 == 6 || GETBIT(GLOBAL:称号記録1, 35)
+		SIF !GETBIT(GLOBAL:称号記録1, 35) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 35))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「달인」이므로, 칭호 [달인]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:35 = 달인
+		SETBIT GLOBAL:称号記録1, 35
+	ENDIF
+	;称号36：デビルハンター
+	;条件：あなたの専攻：デビルハンター
+	;今新たに実装するなら達人の一分野になりそうな気もする。
+	IF CFLAG:MASTER:당신의전공분야 == 7 || GETBIT(GLOBAL:称号記録1, 36)
+		SIF !GETBIT(GLOBAL:称号記録1, 36) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 36))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「데빌헌터」이므로, 칭호 [데빌헌터]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:36 = 데빌헌터
+		SETBIT GLOBAL:称号記録1, 36
+	ENDIF
+	;称号37：悪魔人
+	;条件：あなたの専攻：悪魔人
+	;悪魔の力を身につけて。
+	IF CFLAG:MASTER:당신의전공분야 == 8 || GETBIT(GLOBAL:称号記録1, 37)
+		SIF !GETBIT(GLOBAL:称号記録1, 37) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 37))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「악마인」이므로, 칭호 [악마인]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:37 = 악마인
+		SETBIT GLOBAL:称号記録1, 37
+	ENDIF
+	;称号38：たけし
+	;条件：あなたの専攻：たけし
+	;異名：たけしで、名前：たけしにできる。たけしは種族。まあたけしだからギャグ異名もいいでしょ……
+	IF CFLAG:MASTER:당신의전공분야 == 9 || GETBIT(GLOBAL:称号記録1, 38)
+		SIF !GETBIT(GLOBAL:称号記録1, 38) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 38))
+			PRINTFORMW %CALLNAME:MASTER%이(가) 「타케시」이므로, 칭호 [타케시]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:38 = 타케시
+		SETBIT GLOBAL:称号記録1, 38
+	ENDIF
+	;称号39：デビルシフター
+	;条件：あなたの専攻：デビルシフター
+	;交換できる衣装に仮面があるので、お面ライダーになれる。
+	IF CFLAG:MASTER:당신의전공분야 == 10 || GETBIT(GLOBAL:称号記録1, 39)
+		SIF !GETBIT(GLOBAL:称号記録1, 39) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 39))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「데빌시프터」이므로, 칭호 [데빌시프터]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:39 = 데빌시프터
+		SETBIT GLOBAL:称号記録1, 39
+	ENDIF
+	;称号40：デビルバスター
+	;条件：あなたの属性LD=L
+	IF (CFLAG:MASTER:당신의전공분야 == 1 && ABL:MASTER:속성LD == 1) || GETBIT(GLOBAL:称号記録1, 40)
+		SIF !GETBIT(GLOBAL:称号記録1, 40) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 40))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「서머너」이고 Light 속성이므로, 칭호 [데빌 버스터]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:40 = 데빌 버스터
+		SETBIT GLOBAL:称号記録1, 40
+	ENDIF
+	;称号41：デビルユーザー
+	;条件：あなたの属性LD=N
+	;悪魔を使い倒すことがクリアへの近道だZOY。
+	IF (CFLAG:MASTER:당신의전공분야 == 1 && ABL:MASTER:속성LD == 2) || GETBIT(GLOBAL:称号記録1, 41)
+		SIF !GETBIT(GLOBAL:称号記録1, 41) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 41))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「서머너」이고 Neutral 속성이므로, 칭호 [데빌 유저]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:41 = 데빌 유저
+		SETBIT GLOBAL:称号記録1, 41
+	ENDIF
+	;称号42：ダークサマナー
+	;条件：あなたの属性LD=D
+	;あなたはこれに分類される。わりと悪の組織であるファントム所属なので。
+	;あとナオヤはもう少し様子を見てほしい。
+	IF (CFLAG:MASTER:당신의전공분야 == 1 && ABL:MASTER:속성LD == 3) || GETBIT(GLOBAL:称号記録1, 42)
+		SIF !GETBIT(GLOBAL:称号記録1, 42) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 42))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「서머너」이고 Dark 속성이므로, 칭호 [다크 서머너]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:42 = 다크 서머너
+		SETBIT GLOBAL:称号記録1, 42
+	ENDIF
+	;称号43：ガンスリンガー
+	;条件：あなたが[건슬링거]
+	IF TALENT:MASTER:건슬링거 || GETBIT(GLOBAL:称号記録1, 43)
+		SIF !GETBIT(GLOBAL:称号記録1, 43) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 43))
+			PRINTFORMW %CALLNAME:MASTER%이(가) [건슬링거]이므로, 칭호 [건슬링거]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:43 = 건슬링거
+		SETBIT GLOBAL:称号記録1, 43
+	ENDIF
+	;称号44：魔銃使い
+	;条件：あなたが[건슬링거]
+	IF TALENT:MASTER:건슬링거 || GETBIT(GLOBAL:称号記録1, 44)
+		SIF !GETBIT(GLOBAL:称号記録1, 44) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 44))
+			PRINTFORMW %CALLNAME:MASTER%이(가) [건슬링거]이므로, 칭호 [마총 사용자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:44 = 마총 사용자
+		SETBIT GLOBAL:称号記録1, 44
+	ENDIF
+	;称号45：ガンナー
+	;条件：あなたが[건슬링거]
+	IF TALENT:MASTER:건슬링거 || GETBIT(GLOBAL:称号記録1, 45)
+		SIF !GETBIT(GLOBAL:称号記録1, 45) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 45))
+			PRINTFORMW %CALLNAME:MASTER%이(가) [건슬링거]이므로, 칭호 [거너]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:45 = 거너
+		SETBIT GLOBAL:称号記録1, 45
+	ENDIF
+	;称号46：サクセサー
+	;条件：あなたが[석세서]
+	IF TALENT:MASTER:석세서 || GETBIT(GLOBAL:称号記録1, 46)
+		SIF !GETBIT(GLOBAL:称号記録1, 46) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 46))
+			PRINTFORMW %CALLNAME:MASTER%이(가) [석세서]이므로, 칭호 [석세서]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:46 = 석세서
+		SETBIT GLOBAL:称号記録1, 46
+	ENDIF
+	;称号47：魔剣使い
+	;条件：あなたが[석세서]
+	IF TALENT:MASTER:석세서 || GETBIT(GLOBAL:称号記録1, 47)
+		SIF !GETBIT(GLOBAL:称号記録1, 47) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 47))
+			PRINTFORMW %CALLNAME:MASTER%이(가) [석세서]이므로, 칭호 [마검 사용자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:47 = 마검 사용자
+		SETBIT GLOBAL:称号記録1, 47
+	ENDIF
+	;称号48：剣士
+	;条件：あなたが[석세서]
+	IF TALENT:MASTER:석세서 || GETBIT(GLOBAL:称号記録1, 48)
+		SIF !GETBIT(GLOBAL:称号記録1, 48) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 48))
+			PRINTFORMW %CALLNAME:MASTER%이(가) [석세서]이므로, 칭호 [검사]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:48 = 검사
+		SETBIT GLOBAL:称号記録1, 48
+	ENDIF
+	;称号49：悪魔召喚師
+	;条件：あなたがサバトマを習得している
+	IF HAVE_SKILL(MASTER,[[스킬:사바트마]]) || GETBIT(GLOBAL:称号記録1, 49)
+		SIF !GETBIT(GLOBAL:称号記録1, 49) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 49))
+			PRINTFORMW %CALLNAME:MASTER%이(가) 「사바트마」를 습득했기 때문에, 칭호 [악마소환사]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:49 = 악마소환사
+		SETBIT GLOBAL:称号記録1, 49
+	ENDIF
+	;称号50：ファントムの狗
+	;条件：あなたのLVが20以上
+	IF BASE:MASTER:LV >= 20 || GETBIT(GLOBAL:称号記録1, 50)
+		SIF !GETBIT(GLOBAL:称号記録1, 50) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 50))
+			PRINTFORMW %CALLNAME:MASTER%의 LV이 20 이상이므로, 칭호 [팬텀의 사냥개]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:50 = 팬텀의 사냥개
+		SETBIT GLOBAL:称号記録1, 50
+	ENDIF
+	;称号51：ファントムの先兵
+	;条件：あなたのLVが50以上
+	;人間極めれば最強の先兵を作業できる。本当に人間か？
+	IF BASE:MASTER:LV >= 50 || GETBIT(GLOBAL:称号記録1, 51)
+		SIF !GETBIT(GLOBAL:称号記録1, 51) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 51))
+			PRINTFORMW %CALLNAME:MASTER%의 LV이 50 이상이므로, 칭호 [팬텀의 선병]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:51 = 팬텀의 선병
+		SETBIT GLOBAL:称号記録1, 51
+	ENDIF
+	;称号52：ファントムの断頭台
+	;条件：あなたのLVが80以上
+	;地獄の断頭台の格好良さはガチ。
+	IF BASE:MASTER:LV >= 80 || GETBIT(GLOBAL:称号記録1, 52)
+		SIF !GETBIT(GLOBAL:称号記録1, 52) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 52))
+			PRINTFORMW %CALLNAME:MASTER%의 LV이 80 이상이므로, 칭호 [팬텀의 단두대]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:52 = 팬텀의 단두대
+		SETBIT GLOBAL:称号記録1, 52
+	ENDIF
+	;称号53：英雄
+	;条件：あなたのLVが60以上＆属性LCがL
+	;英雄に祭り上げられたら末路は大体悲惨である。
+	IF (BASE:MASTER:LV >= 60 && ABL:MASTER:속성LC == 1) || GETBIT(GLOBAL:称号記録1, 53)
+		SIF !GETBIT(GLOBAL:称号記録1, 53) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 53))
+			PRINTFORMW %CALLNAME:MASTER%의 LV이 60 이상이고 Law 속성이므로, 칭호 [영웅]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:53 = 영웅
+		SETBIT GLOBAL:称号記録1, 53
+	ENDIF
+	;称号54：超人
+	;条件：あなたのLVが60以上＆属性LCがN
+	;元から超人的な精力を持っている。
+	IF (BASE:MASTER:LV >= 60 && ABL:MASTER:속성LC == 2) || GETBIT(GLOBAL:称号記録1, 54)
+		SIF !GETBIT(GLOBAL:称号記録1, 54) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 54))
+			PRINTFORMW %CALLNAME:MASTER%의 LV이 60 이상이고 Neutral 속성이므로, 칭호 [초인]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:54 = 초인
+		SETBIT GLOBAL:称号記録1, 54
+	ENDIF
+	;称号55：魔人
+	;条件：あなたのLVが60以上＆属性LCがD
+	;オラッ　ストラディバリ落とせッ
+	IF (BASE:MASTER:LV >= 60 && ABL:MASTER:속성LC == 3) || GETBIT(GLOBAL:称号記録1, 55)
+		SIF !GETBIT(GLOBAL:称号記録1, 55) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 55))
+			PRINTFORMW %CALLNAME:MASTER%의 LV이 60 이상이고 Chaos 속성이므로, 칭호 [마인]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:55 = 마인
+		SETBIT GLOBAL:称号記録1, 55
+	ENDIF
+	;称号56：コック
+	;条件：あなたの料理技能が5以上
+	IF ABL:MASTER:요리기능 >= 5 || GETBIT(GLOBAL:称号記録1, 56)
+		SIF !GETBIT(GLOBAL:称号記録1, 56) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 56))
+			PRINTFORMW %CALLNAME:MASTER%의 요리 기능 LV이 5 이상이므로, 칭호 [요리사]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:56 = 요리사
+		SETBIT GLOBAL:称号記録1, 56
+	ENDIF
+	;称号57：カメラマン
+	;条件：あなたの撮影技能が5以上
+	IF ABL:MASTER:촬영기능 >= 5 || GETBIT(GLOBAL:称号記録1, 57)
+		SIF !GETBIT(GLOBAL:称号記録1, 57) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 57))
+			PRINTFORMW %CALLNAME:MASTER%의 촬영 기능 LV이 5 이상이므로, 칭호 [카메라맨]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:57 = 카메라맨
+		SETBIT GLOBAL:称号記録1, 57
+	ENDIF
+	;称号58：歌い手
+	;条件：あなたの歌唱技能が5以上
+	IF ABL:MASTER:가창기능 >= 5 || GETBIT(GLOBAL:称号記録1, 58)
+		SIF !GETBIT(GLOBAL:称号記録1, 58) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 58))
+			PRINTFORMW %CALLNAME:MASTER%의 가창 기능 LV이 5 이상이므로, 칭호 [가수]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:58 = 가수
+		SETBIT GLOBAL:称号記録1, 58
+	ENDIF
+	;称号59：三ツ星シェフ
+	;条件：あなたの料理技能が10以上
+	IF ABL:MASTER:요리기능 >= 10 || GETBIT(GLOBAL:称号記録1, 59)
+		SIF !GETBIT(GLOBAL:称号記録1, 59) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 59))
+			PRINTFORMW %CALLNAME:MASTER%의 요리 기능 LV이 10 이상이므로, 칭호 [3스타 셰프]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:59 = 3스타 셰프
+		SETBIT GLOBAL:称号記録1, 59
+	ENDIF
+	;称号60：大監督
+	;条件：あなたの撮影技能が10以上
+	IF ABL:MASTER:촬영기능 >= 10 || GETBIT(GLOBAL:称号記録1, 60)
+		SIF !GETBIT(GLOBAL:称号記録1, 60) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 60))
+			PRINTFORMW %CALLNAME:MASTER%의 촬영 기능 LV이 10 이상이므로, 칭호 [대감독]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:60 = 대감독
+		SETBIT GLOBAL:称号記録1, 60
+	ENDIF
+	;称号61：シンガー
+	;条件：あなたの歌唱技能が10以上
+	IF ABL:MASTER:가창기능 >= 10 || GETBIT(GLOBAL:称号記録1, 61)
+		SIF !GETBIT(GLOBAL:称号記録1, 61) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 61))
+			PRINTFORMW %CALLNAME:MASTER%의 가창 기능 LV이 10 이상이므로, 칭호 [싱어]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:61 = 싱어
+		SETBIT GLOBAL:称号記録1, 61
+	ENDIF
+	;称号62：童貞
+	;条件：あなたの挿入経験がゼロの状態でクリア・かつ男性
+	;処女ではないかもしれない。
+	IF (EXP:MASTER:삽입경험 == 0 && FLAG:게임모드 == 9 && IS_MALE(MASTER)) || GETBIT(GLOBAL:称号記録1, 62)
+		SIF !GETBIT(GLOBAL:称号記録1, 62) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 62))
+			PRINTFORMW %CALLNAME:MASTER%의 삽입 경험이 0이고, [남자]이며 엔들리스 모드에 돌입했기 때문에, 칭호 [동정]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:62 = 동정
+		SETBIT GLOBAL:称号記録1, 62
+	ENDIF
+	;称号63：乙女
+	;条件：あなたの性交経験がゼロの状態でクリア・かつ女性
+	;でもちんちんがついているかもしれない。
+	IF (EXP:MASTER:성교경험 == 0 && FLAG:게임모드 == 9 && !IS_MALE(MASTER)) || GETBIT(GLOBAL:称号記録1, 63)
+		SIF !GETBIT(GLOBAL:称号記録1, 63) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録1, 63))
+			PRINTFORMW %CALLNAME:MASTER%의 성교 경험이 0이고, [여자]이며 엔들리스 모드에 돌입했기 때문에, 칭호 [소녀]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:63 = 소녀
+		SETBIT GLOBAL:称号記録1, 63
+	ENDIF
+	;称号64：少年
+	;条件：あなたが[소년／소녀]かつ男性
+	IF (TALENT:MASTER:소년／소녀 && IS_MALE(MASTER)) || GETBIT(GLOBAL:称号記録2, 0)
+		SIF !GETBIT(GLOBAL:称号記録2, 0) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 0))
+			PRINTFORMW %CALLNAME:MASTER%이(가) [소년／소녀]이자 [남자]이므로, 칭호 [소년]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:64 = 소년
+		SETBIT GLOBAL:称号記録2, 0
+	ENDIF
+	;称号65：美少年
+	;条件：あなたが[소년／소녀]かつ男性、かつクリア済み（エンドレスモード突入）
+	;希少。
+	IF (TALENT:MASTER:소년／소녀 && IS_MALE(MASTER) && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 1)
+		SIF !GETBIT(GLOBAL:称号記録2, 1) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 1))
+			PRINTFORMW %CALLNAME:MASTER%이(가) [소년／소녀]이자 [남자]이며 엔들리스 모드에 돌입했기 때문에, 칭호 [미소년]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:65 = 미소년
+		SETBIT GLOBAL:称号記録2, 1
+	ENDIF
+	;称号66：短小
+	;条件：ちんちんが短小
+	;ちんちんサイズだけが正義ではないぞ。ほんとだぞ。それこそ道具とかあるしね。
+	IF (TALENT:MASTER:페니스사이즈 != 0 && TALENT:MASTER:페니스사이즈 <= 2) || GETBIT(GLOBAL:称号記録2, 2)
+		SIF !GETBIT(GLOBAL:称号記録2, 2) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 2))
+			PRINTFORMW %CALLNAME:MASTER%의 거시기가 초라하기 때문에, 칭호 [단소]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:66 = 단소
+		SETBIT GLOBAL:称号記録2, 2
+	ENDIF
+	;称号67：巨根
+	;条件：ちんちんが巨根
+	;でっかいちんちんが好きなの、むしろ男の方。
+	IF (TALENT:MASTER:페니스사이즈 != 0 && TALENT:MASTER:페니스사이즈 >= 4) || GETBIT(GLOBAL:称号記録2, 3)
+		SIF !GETBIT(GLOBAL:称号記録2, 3) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 3))
+			PRINTFORMW %CALLNAME:MASTER%의 거시기가 거근이므로, 칭호 [대물]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:67 = 대물
+		SETBIT GLOBAL:称号記録2, 3
+	ENDIF
+	;称号68：マーラの化身
+	;条件：ちんちんサイズ特大
+	;普通の女性に突っ込んでも痛いだけだと思う……というか、たぶん入らない。エロファンタジア。
+	IF (TALENT:MASTER:페니스사이즈 != 0 && TALENT:MASTER:페니스사이즈 == 5) || GETBIT(GLOBAL:称号記録2, 4)
+		SIF !GETBIT(GLOBAL:称号記録2, 4) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 4))
+			PRINTFORMW %CALLNAME:MASTER%의 거시기가 마라 님이므로, 칭호 [마라의 화신]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:68 = 마라의 화신
+		SETBIT GLOBAL:称号記録2, 4
+	ENDIF
+	;称号69：光って唸る
+	;条件：ちんちんが光る
+	;あなたのちんちんが光って唸れば大抵の女の子は堕ちる。男も堕ちる。
+	IF TALENT:MASTER:페니스발광도 >= 1 || GETBIT(GLOBAL:称号記録2, 5)
+		SIF !GETBIT(GLOBAL:称号記録2, 5) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 5))
+			PRINTFORMW %CALLNAME:MASTER%의 거시기가 왠지 빛나기 때문에, 칭호 [빛나며 울부짖는]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:69 = 빛나며 울부짖는
+		SETBIT GLOBAL:称号記録2, 5
+	ENDIF
+	;称号70：少女
+	;条件：あなたが[소년／소녀]かつ男性でない
+	IF (TALENT:MASTER:소년／소녀 && !IS_MALE(MASTER)) || GETBIT(GLOBAL:称号記録2, 6)
+		SIF !GETBIT(GLOBAL:称号記録2, 6) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 6))
+			PRINTFORMW %CALLNAME:MASTER%이(가) [소년／소녀]이자 [여자]이므로, 칭호 [소녀]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:70 = 소녀
+		SETBIT GLOBAL:称号記録2, 6
+	ENDIF
+	;称号71：美少女
+	;条件：あなたが[소년／소녀]かつ男性でない、かつクリア済み（エンドレスモード突入）
+	;希少。
+	IF (TALENT:MASTER:소년／소녀 && !IS_MALE(MASTER) && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 7)
+		SIF !GETBIT(GLOBAL:称号記録2, 7) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 7))
+			PRINTFORMW %CALLNAME:MASTER%이(가) [소년／소녀]이자 [여자]이며 엔들리스 모드에 돌입했기 때문에, 칭호 [미소녀]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:71 = 미소녀
+		SETBIT GLOBAL:称号記録2, 7
+	ENDIF
+	;称号72：聖乳
+	;条件：魔乳＆LD＝L
+	;んほおおおおハマ弱点になゆううう！
+	IF (!IS_MALE(MASTER) && TALENT:MASTER:마유 == 1 && ABL:MASTER:속성LD == 1) || GETBIT(GLOBAL:称号記録2, 8)
+		SIF !GETBIT(GLOBAL:称号記録2, 8) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 8))
+			PRINTFORMW %CALLNAME:MASTER%의 가슴이 매우 크고 신성함마저 갖추었기 때문에, 칭호 [성유]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:72 = 성유
+		SETBIT GLOBAL:称号記録2, 8
+	ENDIF
+	;称号73：超乳
+	;条件：魔乳＆LD＝N
+	;たぱァん！って音立てて欲しい。
+	IF (!IS_MALE(MASTER) && TALENT:MASTER:마유 == 1 && ABL:MASTER:속성LD == 2) || GETBIT(GLOBAL:称号記録2, 9)
+		SIF !GETBIT(GLOBAL:称号記録2, 9) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 9))
+			PRINTFORMW %CALLNAME:MASTER%의 가슴이 철렁! 하고 소리를 낼 사이즈이므로, 칭호 [초유]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:73 = 초유
+		SETBIT GLOBAL:称号記録2, 9
+	ENDIF
+	;称号74：魔乳
+	;条件：魔乳＆LD＝D
+	;おパイが小さくても魔性はいるが、男はやっぱりおっきいオッパイには逆らえねぇんですよ。
+	IF (!IS_MALE(MASTER) && TALENT:MASTER:마유 == 1 && ABL:MASTER:속성LD == 3) || GETBIT(GLOBAL:称号記録2, 10)
+		SIF !GETBIT(GLOBAL:称号記録2, 10) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 10))
+			PRINTFORMW %CALLNAME:MASTER%의 가슴이 마성의 그것이므로, 칭호 [마유]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:74 = 마유
+		SETBIT GLOBAL:称号記録2, 10
+	ENDIF
+	;称号75：聖尻
+	;条件：魔尻＆LD＝L
+	;最近のソシャゲはおパイが長くてとてもいいが、尻もデカいのが多くてちんちんに悪い。
+	IF (!IS_MALE(MASTER) && TALENT:MASTER:魔尻 == 1 && ABL:MASTER:속성LD == 1) || GETBIT(GLOBAL:称号記録2, 11)
+		SIF !GETBIT(GLOBAL:称号記録2, 11) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 11))
+			PRINTFORMW %CALLNAME:MASTER%의 엉덩이가 매우 크고 참으로 신성하기 때문에, 칭호 [성스러운 엉덩이]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:75 = 성스러운 엉덩이
+		SETBIT GLOBAL:称号記録2, 11
+	ENDIF
+	;称号76：超尻
+	;条件：魔尻＆LD＝N
+	IF (!IS_MALE(MASTER) && TALENT:MASTER:魔尻 == 1 && ABL:MASTER:속성LD == 2) || GETBIT(GLOBAL:称号記録2, 12)
+		SIF !GETBIT(GLOBAL:称号記録2, 12) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 12))
+			PRINTFORMW %CALLNAME:MASTER%의 엉덩이가 엄청나게 크기 때문에, 칭호 [엄청난 엉덩이]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:76 = 엄청난 엉덩이
+		SETBIT GLOBAL:称号記録2, 12
+	ENDIF
+	;称号77：魔尻
+	;条件：魔尻＆LD＝D
+	IF (!IS_MALE(MASTER) && TALENT:MASTER:魔尻 == 1 && ABL:MASTER:속성LD == 3) || GETBIT(GLOBAL:称号記録2, 13)
+		SIF !GETBIT(GLOBAL:称号記録2, 13) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 13))
+			PRINTFORMW %CALLNAME:MASTER%의 엉덩이가 위험한 물건이므로, 칭호 [마성의 엉덩이]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:77 = 마성의 엉덩이
+		SETBIT GLOBAL:称号記録2, 13
+	ENDIF
+	;称号78：魔性
+	;条件：謎の魅力を得た
+	;魅力的過ぎて「同性でもいいか」……ってなるのはどうなのかとたまに思う。
+	IF TALENT:MASTER:수수께끼의매력 || GETBIT(GLOBAL:称号記録2, 14)
+		SIF !GETBIT(GLOBAL:称号記録2, 14) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 14))
+			PRINTFORMW %CALLNAME:MASTER%이(가) [수수께끼의매력]을 지녔기 때문에, 칭호 [마성]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:78 = 마성
+		SETBIT GLOBAL:称号記録2, 14
+	ENDIF
+	;称号79：デバッガー
+	;条件：デバッグモード
+	;いつもお疲れ様です。
+	IF FLAG:DEBUG || GETBIT(GLOBAL:称号記録2, 15)
+		SIF !GETBIT(GLOBAL:称号記録2, 15) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 15))
+			PRINTFORMW 언제나 수고 많으십니다. 디버그 모드이므로, 칭호 [디버거]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:79 = 디버거
+		SETBIT GLOBAL:称号記録2, 15
+	ENDIF
+	;称号80：人間？
+	;条件：Lv100以上かつクリア済み（エンドレスモード突入）
+	;鍛えれば主神級を素手で撲殺できる世界。英訳版で「Human?」ではなく「Mortal?」って訳されてるの好き。
+	IF (BASE:MASTER:LV >= 100 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 16)
+		SIF !GETBIT(GLOBAL:称号記録2, 16) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 16))
+			PRINTFORMW %CALLNAME:MASTER%의 LV이 100 이상이고 엔들리스 모드에 돌입했기 때문에, 칭호 [인간？]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:80 = 인간？
+		SETBIT GLOBAL:称号記録2, 16
+	ENDIF
+	;称号81：たけし？
+	;条件：Lv5以下かつクリア済み（エンドレスモード突入）
+	;たけし？　たけしたけし。たけし？
+	IF (BASE:MASTER:LV <= 5 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 17)
+		SIF !GETBIT(GLOBAL:称号記録2, 17) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 17))
+			PRINTFORMW %CALLNAME:MASTER%이(가) 타케시 수준의 약함 그대로 엔들리스 모드에 돌입했기 때문에, 칭호 [타케시？]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:81 = 타케시？
+		SETBIT GLOBAL:称号記録2, 17
+	ENDIF
+	;称号82：神速
+	;条件：１日目かつクリア済み（エンドレスモード突入）
+	;eraten、現在では基本がエンドレスモードみたいなものである。
+	IF (DAY < 2 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 18)
+		SIF !GETBIT(GLOBAL:称号記録2, 18) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 18))
+			PRINTFORMW 1턴 만에 이미 엔들리스 모드에 돌입했기 때문에, 칭호 [신속]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:82 = 신속
+		SETBIT GLOBAL:称号記録2, 18
+	ENDIF
+	;称号83：サモナー
+	;条件：あなたの専攻：サマナーでクリア
+	;サマナーが基本であるだけに異名の差別化も難しい。いい案募集な。
+	IF (CFLAG:MASTER:당신의전공분야 == 1 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 19)
+		SIF !GETBIT(GLOBAL:称号記録2, 19) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 19))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「서머너」(으)로 엔들리스 모드에 돌입했기 때문에, 칭호 [서머너]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:83 = 서머너
+		SETBIT GLOBAL:称号記録2, 19
+	ENDIF
+	;称号84：ワイルド
+	;条件：あなたの専攻：ペルソナ使いでクリア
+	;わりと自由にペルソナ変更できるので、eraten世界ではみんなワイルドなのかもしれない。
+	IF (CFLAG:MASTER:당신의전공분야 == 2 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 20)
+		SIF !GETBIT(GLOBAL:称号記録2, 20) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 20))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「페르소나구사자」(으)로 엔들리스 모드에 돌입했기 때문에, 칭호 [와일드]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:84 = 와일드
+		SETBIT GLOBAL:称号記録2, 20
+	ENDIF
+	;称号85：覚醒者
+	;条件：あなたの専攻：異能者でクリア
+	;これの英訳版が「Awakened」ってなってるのかっこいい。
+	IF (CFLAG:MASTER:당신의전공분야 == 3 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 21)
+		SIF !GETBIT(GLOBAL:称号記録2, 21) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 21))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「이능자」(으)로 엔들리스 모드에 돌입했기 때문에, 칭호 [각성자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:85 = 각성자
+		SETBIT GLOBAL:称号記録2, 21
+	ENDIF
+	;称号86：逸般人
+	;条件：あなたの専攻：一般人でクリア
+	;般を逸した者。
+	IF (CFLAG:MASTER:당신의전공분야 == 4 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 22)
+		SIF !GETBIT(GLOBAL:称号記録2, 22) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 22))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「관광객」(으)로 엔들리스 모드에 돌입했기 때문에, 칭호 [일탈인]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:86 = 일탈인
+		SETBIT GLOBAL:称号記録2, 22
+	ENDIF
+	;称号87：チューナー
+	;条件：あなたの専攻：喰奴でクリア
+	IF (CFLAG:MASTER:당신의전공분야 == 5 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 23)
+		SIF !GETBIT(GLOBAL:称号記録2, 23) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 23))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「식노」(으)로 엔들리스 모드에 돌입했기 때문에, 칭호 [튜너]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:87 = 튜너
+		SETBIT GLOBAL:称号記録2, 23
+	ENDIF
+	;称号88：妙手
+	;条件：あなたの専攻：達人でクリア
+	IF (CFLAG:MASTER:당신의전공분야 == 6 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 24)
+		SIF !GETBIT(GLOBAL:称号記録2, 24) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 24))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「달인」(으)로 엔들리스 모드에 돌입했기 때문에, 칭호 [묘수]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:88 = 묘수
+		SETBIT GLOBAL:称号記録2, 24
+	ENDIF
+	;称号89：悪魔狩人
+	;条件：あなたの専攻：悪魔狩人でクリア
+	;デビルハンターよりこちらのほうが格好いいと思う。英訳するとデビルハンターになると思われるため、英訳するひとにはここでごめんなさいしておきますね。
+	IF (CFLAG:MASTER:당신의전공분야 == 7 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 25)
+		SIF !GETBIT(GLOBAL:称号記録2, 25) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 25))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「데빌헌터」(으)로 엔들리스 모드에 돌입했기 때문에, 칭호 [악마사냥꾼]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:89 = 악마사냥꾼
+		SETBIT GLOBAL:称号記録2, 25
+	ENDIF
+	;称号90：人でなし
+	;条件：あなたの専攻：悪魔人でクリア
+	;デビルマンなので人間ではないかもしれない。
+	IF (CFLAG:MASTER:당신의전공분야 == 8 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 26)
+		SIF !GETBIT(GLOBAL:称号記録2, 26) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 26))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「악마인」(으)로 엔들리스 모드에 돌입했기 때문에, 칭호 [인간실격]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:90 = 인간실격
+		SETBIT GLOBAL:称号記録2, 26
+	ENDIF
+	;称号91：自立した
+	;条件：あなたの専攻：たけしでクリア
+	;『自立した』たけし、という感じで、名前を含む異名。
+	IF (CFLAG:MASTER:당신의전공분야 == 9 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 27)
+		;SIF !GETBIT(GLOBAL:称号記録2, 27) && IS_NOTICE
+		;---- EDIT 018 MOD START -------------------------
+		IF !GETBIT(GLOBAL:称号記録2, 27) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 27))
+			PRINTFORMW %CALLNAME:MASTER%은(는) 자립했습니다
+			PRINTFORMW 칭호 [자립한]이(가) 해금되었습니다
+		ENDIF
+		;---- EDIT 018 MOD END ---------------------------
+		SIF IS_INTO_RESULTS
+			RESULTS:91 = 자립한
+		SETBIT GLOBAL:称号記録2, 27
+	ENDIF
+	;称号92：愚者
+	;条件：あなたの専攻：たけしでクリア
+	;英訳版だとたけしは『FOOL』らしい。で、この称号は「Takeshi」という称号になっている。
+	IF (CFLAG:MASTER:당신의전공분야 == 9 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 28)
+		SIF !GETBIT(GLOBAL:称号記録2, 28) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 28))
+			PRINTFORMW %CALLNAME:MASTER%은(는) 아주 살짝 각성하여, 칭호 [광대]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:92 = 광대
+		SETBIT GLOBAL:称号記録2, 28
+	ENDIF
+	;称号93：ヲタク
+	;条件：あなたの専攻：たけしでクリア
+	IF (CFLAG:MASTER:당신의전공분야 == 9 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 29)
+		SIF !GETBIT(GLOBAL:称号記録2, 29) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 29))
+			PRINTFORMW 타케시는 역시 타케시이므로, 칭호 [오타쿠]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:93 = 오타쿠
+		SETBIT GLOBAL:称号記録2, 29
+	ENDIF
+	;称号94：“그”
+	;条件：あなたの専攻：たけしでクリア
+	;あの、アレ。そう称されても仕方ない存在だとは思う。
+	IF (CFLAG:MASTER:당신의전공분야 == 9 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 30)
+		SIF !GETBIT(GLOBAL:称号記録2, 30) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 30))
+			PRINTFORMW %CALLNAME:MASTER%은(는) 주변에서 "그 녀석"이라 불리게 되었기 때문에, 칭호 [“그”]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:94 = “그”
+		SETBIT GLOBAL:称号記録2, 30
+	ENDIF
+	;称号95：世紀末覇王
+	;条件：あなたの専攻：たけしでクリア
+	;世紀末リーダー伝説。
+	IF (CFLAG:MASTER:당신의전공분야 == 9 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 31)
+		SIF !GETBIT(GLOBAL:称号記録2, 31) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 31))
+			PRINTFORMW %CALLNAME:MASTER%의 리더십이 세기말에 도달했기 때문에, 칭호 [세기말 패왕]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:95 = 세기말 패왕
+		SETBIT GLOBAL:称号記録2, 31
+	ENDIF
+	;称号96：ザ・
+	;条件：あなたの専攻：たけしでクリア
+	;“그”と同系統。あやつマン。
+	IF (CFLAG:MASTER:당신의전공분야 == 10 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 32)
+		SIF !GETBIT(GLOBAL:称号記録2, 32) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 32))
+			PRINTFORMW %CALLNAME:MASTER%은(는) 주변에서 "더 맨" 등으로 불리게 되었기 때문에, 칭호 [더・]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:96 = 더・
+		SETBIT GLOBAL:称号記録2, 32
+	ENDIF
+	;称号97：変異種
+	;条件：あなたの専攻：デビルシフターでクリア
+	;往年の最強クリーチャーこと『変異種/Morphling』より。
+	IF (CFLAG:MASTER:당신의전공분야 == 10 && FLAG:게임모드 == 9) || GETBIT(GLOBAL:称号記録2, 33)
+		SIF !GETBIT(GLOBAL:称号記録2, 33) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 33))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「데빌시프터」(으)로 엔들리스 모드에 돌입했기 때문에, 칭호 [변이종]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:97 = 변이종
+		SETBIT GLOBAL:称号記録2, 33
+	ENDIF
+	;称号98：★★★
+	;条件：2周目以降
+	;クリア後、セーブデータに★が付くゲームもままある。ShinEraTenseiでも、セーブデータメモで★をつけられる。
+	IF FLAG:경험ED수 > 0 || GETBIT(GLOBAL:称号記録2, 34)
+		SIF !GETBIT(GLOBAL:称号記録2, 34) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 34))
+			PRINTFORMW 엔딩을 1개 이상 맞이했기 때문에, 칭호 [★★★]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:98 = ★★★
+		SETBIT GLOBAL:称号記録2, 34
+	ENDIF
+	;称号99：転生者
+	;条件：2周目以降
+	IF FLAG:경험ED수 > 0 || GETBIT(GLOBAL:称号記録2, 35)
+		SIF !GETBIT(GLOBAL:称号記録2, 35) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 35))
+			PRINTFORMW 엔딩을 1개 이상 맞이했기 때문에, 칭호 [전생자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:99 = 전생자
+		SETBIT GLOBAL:称号記録2, 35
+	ENDIF
+	;称号100：人生二週目
+	;条件：2周目以降
+	;たまにそうだとしか思えない人もいる。
+	IF FLAG:경험ED수 > 0 || GETBIT(GLOBAL:称号記録2, 36)
+		SIF !GETBIT(GLOBAL:称号記録2, 36) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 36))
+			PRINTFORMW 엔딩을 1개 이상 맞이했기 때문에, 칭호 [인생 2회차]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:100 = 인생 2회차
+		SETBIT GLOBAL:称号記録2, 36
+	ENDIF
+	;称号101：ワールドデストロイヤー
+	;条件：レベルが1000以上
+	;経験値引継ぎ、やりすぎると変なところでバグる可能性がある。
+	IF BASE:MASTER:LV >= 1000 || GETBIT(GLOBAL:称号記録2, 37)
+		SIF !GETBIT(GLOBAL:称号記録2, 37) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 37))
+			PRINTFORMW %CALLNAME:MASTER%의 LV이 세계를 부술 수 있을 법한 영역에 달했기 때문에, 칭호 [월드 디스트로이어]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:101 = 월드 디스트로이어
+		SETBIT GLOBAL:称号記録2, 37
+	ENDIF
+	;称号102：無宿人
+	;条件：資金とマッカの合計が10未満
+	;実際財布が分厚くても銃弾からは守ってくれないのである。でもこれはちょっとやりすぎ。
+	IF (MONEY + MONEY:1 < 10) || GETBIT(GLOBAL:称号記録2, 38)
+		SIF !GETBIT(GLOBAL:称号記録2, 38) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 38))
+			PRINTFORMW %CALLNAME:MASTER%의 지갑이 텅텅 비었기 때문에, 칭호 [무숙인]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:102 = 무숙인
+		SETBIT GLOBAL:称号記録2, 38
+	ENDIF
+	;称号103：到達者
+	;条件：100万円をためる
+	;これでクリアじゃないんだよなぁ……
+	IF MONEY > 1000000 || GETBIT(GLOBAL:称号記録2, 39)
+		SIF !GETBIT(GLOBAL:称号記録2, 39) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 39))
+			PRINTFORMW 소지 ￥이 100만을 넘었기 때문에, 칭호 [도달자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:103 = 도달자
+		SETBIT GLOBAL:称号記録2, 39
+	ENDIF
+	;称号104：富豪
+	;条件：1000万円をためる
+	IF MONEY > 10000000 || GETBIT(GLOBAL:称号記録2, 40)
+		SIF !GETBIT(GLOBAL:称号記録2, 40) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 40))
+			PRINTFORMW 소지 ￥이 1000만을 넘었기 때문에, 칭호 [부호]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:104 = 부호
+		SETBIT GLOBAL:称号記録2, 40
+	ENDIF
+	;称号105：大富豪
+	;条件：1億円をためる
+	;短期間で稼いでるとはいえ、命の値段として妥当かっていうと微妙な気もする。
+	IF MONEY > 100000000 || GETBIT(GLOBAL:称号記録2, 41)
+		SIF !GETBIT(GLOBAL:称号記録2, 41) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 41))
+			PRINTFORMW 소지 ￥이 1억을 넘었기 때문에, 칭호 [대부호]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:105 = 대부호
+		SETBIT GLOBAL:称号記録2, 41
+	ENDIF
+	;称号106：好事家
+	;条件：マッカが10万以上
+	IF MONEY:1 > 100000 || GETBIT(GLOBAL:称号記録2, 42)
+		SIF !GETBIT(GLOBAL:称号記録2, 42) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 42))
+			PRINTFORMW 소지 마카가 10만을 넘었기 때문에, 칭호 [호사가]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:106 = 호사가
+		SETBIT GLOBAL:称号記録2, 42
+	ENDIF
+	;称号107：倹約家
+	;条件：マッカが100万以上
+	IF MONEY:1 > 1000000 || GETBIT(GLOBAL:称号記録2, 43)
+		SIF !GETBIT(GLOBAL:称号記録2, 43) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 43))
+			PRINTFORMW 소지 마카가 100만을 넘었기 때문에, 칭호 [검약가]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:107 = 검약가
+		SETBIT GLOBAL:称号記録2, 43
+	ENDIF
+	;称号108：魔界銀行員
+	;条件：マッカが1000万以上
+	;某歓楽街の某ブレーカーで遊ぶのはやめろよ！　絶対にやめろよ！　使ってからにしろ！
+	IF MONEY:1 > 10000000 || GETBIT(GLOBAL:称号記録2, 44)
+		SIF !GETBIT(GLOBAL:称号記録2, 44) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 44))
+			PRINTFORMW 소지 마카가 1000만을 넘었기 때문에, 칭호 [마계 은행원]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:108 = 마계 은행원
+		SETBIT GLOBAL:称号記録2, 44
+	ENDIF
+	;称号109：債務者
+	;条件：納金第一段階
+	;裏の人間なので大事。クスリがないだけマシ……かと思ったが、ストレートに、媚薬がありましたね。
+	IF FLAG:조직공헌LV >= 1 || GETBIT(GLOBAL:称号記録2, 45)
+		SIF !GETBIT(GLOBAL:称号記録2, 45) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 45))
+			PRINTFORMW 첫 납금을 마쳤기 때문에, 칭호 [채무자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:109 = 채무자
+		SETBIT GLOBAL:称号記録2, 45
+	ENDIF
+	;称号110：上納者
+	;条件：幹部エンド達成可能まで納金
+	;ちなみにというか、もったいないことに、この組織貢献LVは納金段階の管理でしか使ってない。
+	IF FLAG:조직공헌LV >= 10 || GETBIT(GLOBAL:称号記録2, 46)
+		SIF !GETBIT(GLOBAL:称号記録2, 46) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 46))
+			PRINTFORMW 납금을 일정 단계까지 마쳤기 때문에, 칭호 [상납자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:110 = 상납자
+		SETBIT GLOBAL:称号記録2, 46
+	ENDIF
+	;称号111：権利者
+	;条件：納金コンプ
+	;貢いだ金がどこに行くかは知らんが、NTR上司の懐以外ならわりとどこでもいい。
+	IF FLAG:조직공헌LV >= 13 || GETBIT(GLOBAL:称号記録2, 47)
+		SIF !GETBIT(GLOBAL:称号記録2, 47) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 47))
+			PRINTFORMW 마지막까지 납금을 마쳤기 때문에, 칭호 [권리자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:111 = 권리자
+		SETBIT GLOBAL:称号記録2, 47
+	ENDIF
+	;称号112：仲魔だよりの
+	;条件：MASTERより10以上高いレベルの仲魔がいる
+	;まあサマナーなんてそんなもんだ。
+	;英訳だと直球で「デッドウェイト」って書いてあって草。
+	IF (BASE:MASTER:LV + 10) <= MAXCARRAY(BASE:LV) || GETBIT(GLOBAL:称号記録2, 48)
+		SIF !GETBIT(GLOBAL:称号記録2, 48) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 48))
+			PRINTFORMW %CALLNAME:MASTER%보다 LV이 10 이상 높은 동료마가 있기 때문에, 칭호 [동료마에 의지하는]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:112 = 동료마에 의지하는
+		SETBIT GLOBAL:称号記録2, 48
+	ENDIF
+	;称号113：大地主
+	;条件：仲魔200体以上
+	;アジト広すぎません？
+	IF CHARANUM >= 200 || GETBIT(GLOBAL:称号記録2, 49)
+		SIF !GETBIT(GLOBAL:称号記録2, 49) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 49))
+			PRINTFORMW 동료마가 200명 이상이 되었기 때문에, 칭호 [대지주]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:113 = 대지주
+		SETBIT GLOBAL:称号記録2, 49
+	ENDIF
+	;称号114：魅力的な
+	;条件：恋慕陥落１人以上
+	IF FLAG:연모인수 >= 1 || GETBIT(GLOBAL:称号記録2, 50)
+		SIF !GETBIT(GLOBAL:称号記録2, 50) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 50))
+			PRINTFORMW 연모계 함락시킨 캐릭터 수가 1 이상이 되었기 때문에, 칭호 [매력적인]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:114 = 매력적인
+		SETBIT GLOBAL:称号記録2, 50
+	ENDIF
+	;称号115：蠱惑者
+	;条件：恋慕陥落10人以上
+	IF FLAG:연모인수 >= 10 || GETBIT(GLOBAL:称号記録2, 51)
+		SIF !GETBIT(GLOBAL:称号記録2, 51) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 51))
+			PRINTFORMW 연모계 함락시킨 캐릭터 수가 10 이상이 되었기 때문에, 칭호 [고혹자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:115 = 고혹자
+		SETBIT GLOBAL:称号記録2, 51
+	ENDIF
+	;称号116：屋根ゴミ
+	;条件：恋慕陥落100人以上
+	;屋根裏に住んでる最大十股のゴミ野郎、の意。P5より。
+	IF FLAG:연모인수 >= 100 || GETBIT(GLOBAL:称号記録2, 52)
+		SIF !GETBIT(GLOBAL:称号記録2, 52) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 52))
+			PRINTFORMW 연모계 함락시킨 캐릭터 수가 100 이상이 되었기 때문에, 칭호 [지붕 쓰레기]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:116 = 지붕 쓰레기
+		SETBIT GLOBAL:称号記録2, 52
+	ENDIF
+	;称号117：淫猥
+	;条件：淫乱陥落１人以上
+	;フフフ……セックス！
+	IF FLAG:음란인수 >= 1 || GETBIT(GLOBAL:称号記録2, 53)
+		SIF !GETBIT(GLOBAL:称号記録2, 53) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 53))
+			PRINTFORMW 음란계 함락시킨 캐릭터 수가 1 이상이 되었기 때문에, 칭호 [음외]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:117 = 음외
+		SETBIT GLOBAL:称号記録2, 53
+	ENDIF
+	;称号118：淫蕩
+	;条件：淫乱陥落10人以上
+	IF FLAG:음란인수 >= 10 || GETBIT(GLOBAL:称号記録2, 54)
+		SIF !GETBIT(GLOBAL:称号記録2, 54) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 54))
+			PRINTFORMW 음란계 함락시킨 캐릭터 수가 10 이상이 되었기 때문에, 칭호 [음탕]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:118 = 음탕
+		SETBIT GLOBAL:称号記録2, 54
+	ENDIF
+	;称号119：猥褻物
+	;条件：淫乱陥落100人以上
+	;歩く猥褻物。
+	IF FLAG:음란인수 >= 100 || GETBIT(GLOBAL:称号記録2, 55)
+		SIF !GETBIT(GLOBAL:称号記録2, 55) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 55))
+			PRINTFORMW 음란계 함락시킨 캐릭터 수가 100 이상이 되었기 때문에, 칭호 [외설물]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:119 = 외설물
+		SETBIT GLOBAL:称号記録2, 55
+	ENDIF
+	;称号120：主人
+	;条件：服従陥落１人以上
+	;痛いことばっかしなきゃいけないので、服従するほうにも素養がいる。体力とか。
+	IF FLAG:복종인수 >= 1 || GETBIT(GLOBAL:称号記録2, 56)
+		SIF !GETBIT(GLOBAL:称号記録2, 56) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 56))
+			PRINTFORMW 복종계 함락시킨 캐릭터 수가 1 이상이 되었기 때문에, 칭호 [주인]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:120 = 주인
+		SETBIT GLOBAL:称号記録2, 56
+	ENDIF
+	;称号121：奴隷商
+	;条件：服従陥落10人以上
+	IF FLAG:복종인수 >= 10 || GETBIT(GLOBAL:称号記録2, 57)
+		SIF !GETBIT(GLOBAL:称号記録2, 57) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 57))
+			PRINTFORMW 복종계 함락시킨 캐릭터 수가 10 이상이 되었기 때문에, 칭호 [노예상]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:121 = 노예상
+		SETBIT GLOBAL:称号記録2, 57
+	ENDIF
+	;称号122：傅かれし者
+	;条件：服従陥落100人以上
+	;何が問題かって、服従口上がイマイチ少ないことだと思う。
+	IF FLAG:복종인수 >= 100 || GETBIT(GLOBAL:称号記録2, 58)
+		SIF !GETBIT(GLOBAL:称号記録2, 58) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 58))
+			PRINTFORMW 복종계 함락시킨 캐릭터 수가 100 이상이 되었기 때문에, 칭호 [섬김받는 자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:122 = 섬김받는 자
+		SETBIT GLOBAL:称号記録2, 58
+	ENDIF
+	;称号123：友人
+	;条件：信頼陥落１人以上
+	IF FLAG:신뢰인수 >= 1 || GETBIT(GLOBAL:称号記録2, 59)
+		SIF !GETBIT(GLOBAL:称号記録2, 59) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 59))
+			PRINTFORMW 신뢰계 함락시킨 캐릭터 수가 1 이상이 되었기 때문에, 칭호 [친구]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:123 = 친구
+		SETBIT GLOBAL:称号記録2, 59
+	ENDIF
+	;称号124：心友
+	;条件：信頼陥落10人以上
+	;おお！心の友よ！
+	IF FLAG:신뢰인수 >= 10 || GETBIT(GLOBAL:称号記録2, 60)
+		SIF !GETBIT(GLOBAL:称号記録2, 60) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 60))
+			PRINTFORMW 신뢰계 함락시킨 캐릭터 수가 10 이상이 되었기 때문에, 칭호 [마음의 벗]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:124 = 마음의 벗
+		SETBIT GLOBAL:称号記録2, 60
+	ENDIF
+	;称号125：友神
+	;条件：信頼陥落100人以上
+	;友人マリオを覚えている者は幸いである。
+	IF FLAG:신뢰인수 >= 100 || GETBIT(GLOBAL:称号記録2, 61)
+		SIF !GETBIT(GLOBAL:称号記録2, 61) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 61))
+			PRINTFORMW 신뢰계 함락시킨 캐릭터 수가 100 이상이 되었기 때문에, 칭호 [우신]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:125 = 우신
+		SETBIT GLOBAL:称号記録2, 61
+	ENDIF
+	;称号126：観光客
+	;条件：観光客
+	;おなじみ、最弱の職業。
+	IF CFLAG:MASTER:당신의전공분야 == 4 || GETBIT(GLOBAL:称号記録2, 62)
+		SIF !GETBIT(GLOBAL:称号記録2, 62) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 62))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「관광객」이므로, 칭호 [관광객]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:126 = 관광객
+		SETBIT GLOBAL:称号記録2, 62
+	ENDIF
+	;称号127：かたつむり
+	;条件：観光客Lv50
+	;塩を投げつけられたら即死する都合上、マトモに町を歩けない。
+	IF (CFLAG:MASTER:당신의전공분야 == 4 && BASE:MASTER:LV >= 50) || GETBIT(GLOBAL:称号記録2, 63)
+		SIF !GETBIT(GLOBAL:称号記録2, 63) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録2, 63))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「관광객」이고 LV이 50 이상이므로, 칭호 [달팽이]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:127 = 달팽이
+		SETBIT GLOBAL:称号記録2, 63
+	ENDIF
+	;称号128：**勝利者**
+	;条件：観光客Lv99
+	;鍛え上げれば結構＊＊＊勝利＊＊＊できる。どうしても運が絡むが。
+	IF (CFLAG:MASTER:당신의전공분야 == 4 && BASE:MASTER:LV >= 99) || GETBIT(GLOBAL:称号記録3, 0)
+		SIF !GETBIT(GLOBAL:称号記録3, 0) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 0))
+			PRINTFORMW %CALLNAME:MASTER%의 전공이 「관광객」이고 LV이 99 이상이므로, 칭호 [**승리자**]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:128 = **승리자**
+		SETBIT GLOBAL:称号記録3, 0
+	ENDIF
+	;称号129：女衒
+	;条件：売却１以上
+	;女を売ったとは限らないが、女のほうが多い。
+	IF ((FLAG:누계인간판매수 + FLAG:누계악마판매수) >= 1) || GETBIT(GLOBAL:称号記録3, 1)
+		SIF !GETBIT(GLOBAL:称号記録3, 1) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 1))
+			PRINTFORMW 캐릭터를 처음으로 매각했기 때문에, 칭호 [뚜쟁이]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:129 = 뚜쟁이
+		SETBIT GLOBAL:称号記録3, 1
+	ENDIF
+	;称号130：人攫い
+	;条件：人間売却10
+	;攫っているかはプレイ次第ではある……が、善意の協力者を手籠めにして売り払ったりするのはやべー奴だと思う。
+	IF FLAG:누계인간판매수 >= 10 || GETBIT(GLOBAL:称号記録3, 2)
+		SIF !GETBIT(GLOBAL:称号記録3, 2) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 2))
+			PRINTFORMW 인간을 누계 10명 이상 매각했기 때문에, 칭호 [유괴범]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:130 = 유괴범
+		SETBIT GLOBAL:称号記録3, 2
+	ENDIF
+	;称号131：マンハンター
+	;条件：人間売却30
+	;二足羊バイヤー。
+	IF FLAG:누계인간판매수 >= 30 || GETBIT(GLOBAL:称号記録3, 3)
+		SIF !GETBIT(GLOBAL:称号記録3, 3) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 3))
+			PRINTFORMW 인간을 누계 30명 이상 매각했기 때문에, 칭호 [맨헌터]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:131 = 맨헌터
+		SETBIT GLOBAL:称号記録3, 3
+	ENDIF
+	;称号132：ヒューマンケージ
+	;条件：人間売却50
+	;動物園にたまにあるよね。……懺悔するとこの異名は東方ネタだった。
+	IF FLAG:누계인간판매수 >= 50 || GETBIT(GLOBAL:称号記録3, 4)
+		SIF !GETBIT(GLOBAL:称号記録3, 4) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 4))
+			PRINTFORMW 인간을 누계 50명 이상 매각했기 때문에, 칭호 [휴먼 케이지]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:132 = 휴먼 케이지
+		SETBIT GLOBAL:称号記録3, 4
+	ENDIF
+	;称号133：悪魔調教師
+	;条件：悪魔売却10
+	;アクマを　売却して　ヘイキなの？
+	IF FLAG:누계악마판매수 >= 10 || GETBIT(GLOBAL:称号記録3, 5)
+		SIF !GETBIT(GLOBAL:称号記録3, 5) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 5))
+			PRINTFORMW 악마를 누계 10체 이상 매각했기 때문에, 칭호 [악마 조교사]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:133 = 악마 조교사
+		SETBIT GLOBAL:称号記録3, 5
+	ENDIF
+	;称号134：悪魔支配師
+	;条件：悪魔売却30
+	;契約してるからってやっていいことと悪いことはあると思うが、これはeraなのだなぁ。
+	IF FLAG:누계악마판매수 >= 30 || GETBIT(GLOBAL:称号記録3, 6)
+		SIF !GETBIT(GLOBAL:称号記録3, 6) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 6))
+			PRINTFORMW 악마를 누계 30체 이상 매각했기 때문에, 칭호 [악마 지배사]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:134 = 악마 지배사
+		SETBIT GLOBAL:称号記録3, 6
+	ENDIF
+	;称号135：悪鬼
+	;条件：悪魔売却50
+	;鬼！　悪魔！　ちっひ！
+	IF FLAG:누계악마판매수 >= 50 || GETBIT(GLOBAL:称号記録3, 7)
+		SIF !GETBIT(GLOBAL:称号記録3, 7) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 7))
+			PRINTFORMW 악마를 누계 50체 이상 매각했기 때문에, 칭호 [악귀]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:135 = 악귀
+		SETBIT GLOBAL:称号記録3, 7
+	ENDIF
+	;称号136：バイトの
+	;条件：労役経験１以上
+	IF EXP:MASTER:외식노역경험 > 0 || GETBIT(GLOBAL:称号記録3, 8)
+		SIF !GETBIT(GLOBAL:称号記録3, 8) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 8))
+			PRINTFORMW %CALLNAME:MASTER%의 외식 노역 경험이 1 이상이므로, 칭호 [알바]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:136 = 알바
+		SETBIT GLOBAL:称号記録3, 8
+	ENDIF
+	;称号137：脳筋
+	;条件：力40以上
+	;スナッピーを物理で殴り殺したりする。
+	IF BASE:MASTER:힘 >= 40 || GETBIT(GLOBAL:称号記録3, 9)
+		SIF !GETBIT(GLOBAL:称号記録3, 9) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 9))
+			PRINTFORMW %CALLNAME:MASTER%의 힘이 40 이상이므로, 칭호 [뇌근]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:137 = 뇌근
+		SETBIT GLOBAL:称号記録3, 9
+	ENDIF
+	;称号138：腕力家
+	;条件：力80以上
+	;地上最強の生物がこう評されてましたね。ちなみに「The Scrapper」という映画があり、邦題が「腕力家」。
+	IF BASE:MASTER:힘 >= 80 || GETBIT(GLOBAL:称号記録3, 10)
+		SIF !GETBIT(GLOBAL:称号記録3, 10) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 10))
+			PRINTFORMW %CALLNAME:MASTER%의 힘이야말로 파워이므로, 칭호 [완력가]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:138 = 완력가
+		SETBIT GLOBAL:称号記録3, 10
+	ENDIF
+	;称号139：解明する者
+	;条件：知40以上
+	IF BASE:MASTER:지혜 >= 40 || GETBIT(GLOBAL:称号記録3, 11)
+		SIF !GETBIT(GLOBAL:称号記録3, 11) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 11))
+			PRINTFORMW %CALLNAME:MASTER%의 지혜가 40 이상이므로, 칭호 [해명하는 자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:139 = 해명하는 자
+		SETBIT GLOBAL:称号記録3, 11
+	ENDIF
+	;称号140：賢者
+	;条件：知80以上
+	;状態異常付与とかアイテム投げとかばかりの賢者。
+	IF BASE:MASTER:지혜 >= 80 || GETBIT(GLOBAL:称号記録3, 12)
+		SIF !GETBIT(GLOBAL:称号記録3, 12) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 12))
+			PRINTFORMW %CALLNAME:MASTER%은(는) 자신이 어리석음을 깨달았기 때문에, 칭호 [현자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:140 = 현자
+		SETBIT GLOBAL:称号記録3, 12
+	ENDIF
+	;称号141：魔道士
+	;条件：魔40以上
+	IF BASE:MASTER:마력 >= 40 || GETBIT(GLOBAL:称号記録3, 13)
+		SIF !GETBIT(GLOBAL:称号記録3, 13) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 13))
+			PRINTFORMW %CALLNAME:MASTER%의 마력이 40 이상이므로, 칭호 [마도사]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:141 = 마도사
+		SETBIT GLOBAL:称号記録3, 13
+	ENDIF
+	;称号142：大魔術士
+	;条件：魔80以上
+	;俺のことを呼ぶなら、そう――
+	IF BASE:MASTER:마력 >= 80 || GETBIT(GLOBAL:称号記録3, 14)
+		SIF !GETBIT(GLOBAL:称号記録3, 14) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 14))
+			PRINTFORMW %CALLNAME:MASTER%을(를) 부른다면, 그래요――[대마술사]라고 불러야 하겠지요
+		SIF IS_INTO_RESULTS
+			RESULTS:142 = 대마술사
+		SETBIT GLOBAL:称号記録3, 14
+	ENDIF
+	;称号143：サイボーグ
+	;条件：耐40以上
+	;機械の乙女は必要ないです。
+	IF BASE:MASTER:내구 >= 40 || GETBIT(GLOBAL:称号記録3, 15)
+		SIF !GETBIT(GLOBAL:称号記録3, 15) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 15))
+			PRINTFORMW %CALLNAME:MASTER%의 인내력이 40 이상이므로, 칭호 [사이보그]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:143 = 사이보그
+		SETBIT GLOBAL:称号記録3, 15
+	ENDIF
+	;称号144：ターミネーター
+	;条件：耐80以上
+	;デデンデンデデン
+	IF BASE:MASTER:내구 >= 80 || GETBIT(GLOBAL:称号記録3, 16)
+		SIF !GETBIT(GLOBAL:称号記録3, 16) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 16))
+			PRINTFORMW %CALLNAME:MASTER%의 육체는 이미 터미네이터를 방불케 하므로, 칭호 [터미네이터]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:144 = 터미네이터
+		SETBIT GLOBAL:称号記録3, 16
+	ENDIF
+	;称号145：スプリンター
+	;条件：速40以上
+	IF BASE:MASTER:속도 >= 40 || GETBIT(GLOBAL:称号記録3, 17)
+		SIF !GETBIT(GLOBAL:称号記録3, 17) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 17))
+			PRINTFORMW %CALLNAME:MASTER%의 속도가 40 이상이므로, 칭호 [스프린터]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:145 = 스프린터
+		SETBIT GLOBAL:称号記録3, 17
+	ENDIF
+	;称号146：ストライダー
+	;条件：速80以上
+	;飛竜、の方ではなく、指輪物語の方。
+	IF BASE:MASTER:속도 >= 80 || GETBIT(GLOBAL:称号記録3, 18)
+		SIF !GETBIT(GLOBAL:称号記録3, 18) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 18))
+			PRINTFORMW %CALLNAME:MASTER%은(는) 언제나 큰 걸음으로 걷기 때문에, 칭호 [스트라이더]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:146 = 스트라이더
+		SETBIT GLOBAL:称号記録3, 18
+	ENDIF
+	;称号147：爆運体質
+	;条件：運40以上
+	IF BASE:MASTER:운 >= 40 || GETBIT(GLOBAL:称号記録3, 19)
+		SIF !GETBIT(GLOBAL:称号記録3, 19) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 19))
+			PRINTFORMW %CALLNAME:MASTER%의 운이 40 이상이므로, 칭호 [초행운 체질]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:147 = 초행운 체질
+		SETBIT GLOBAL:称号記録3, 19
+	ENDIF
+	;称号148：豪運
+	;条件：運80以上
+	;たぶん国士無双13面待ちがデフォ。
+	IF BASE:MASTER:운 >= 80 || GETBIT(GLOBAL:称号記録3, 20)
+		SIF !GETBIT(GLOBAL:称号記録3, 20) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 20))
+			PRINTFORMW %CALLNAME:MASTER%이(가) 마작을 치면 역만 이샹텐 정도로 시작하기 때문에, 칭호 [호운]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:148 = 호운
+		SETBIT GLOBAL:称号記録3, 20
+	ENDIF
+	;称号149：グリゴリ
+	;条件：Ending No.000 (ファントム幹部エンド)
+	IF GETBIT(FLAG:발견ED,0) || GETBIT(GLOBAL:称号記録3, 21)
+		SIF !GETBIT(GLOBAL:称号記録3, 21) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 21))
+			PRINTFORMW 「Ending No.000 (팬텀 간부 END)」에 도달했기 때문에, 칭호 [그리고리]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:149 = 그리고리
+		SETBIT GLOBAL:称号記録3, 21
+	ENDIF
+	;称号150：幹部
+	;条件：Ending No.000 (ファントム幹部エンド)
+	;色々とボーナスがある。マヨーネが傘型COMP推してきたりとか。かわいい。
+	IF GETBIT(FLAG:발견ED,0) || GETBIT(GLOBAL:称号記録3, 22)
+		SIF !GETBIT(GLOBAL:称号記録3, 22) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 22))
+			PRINTFORMW 「Ending No.000 (팬텀 간부 END)」에 도달했기 때문에, 칭호 [간부]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:150 = 간부
+		SETBIT GLOBAL:称号記録3, 22
+	ENDIF
+	;称号151：戦鬼
+	;条件：Ending No.001 (武断派ハーレムエンド)
+	;中堅ではあると思われるマヨーネのレベルを考えると、ファントム最強と言っても過言ではないかもしれない。
+	IF GETBIT(FLAG:발견ED,1) || GETBIT(GLOBAL:称号記録3, 23)
+		SIF !GETBIT(GLOBAL:称号記録3, 23) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 23))
+			PRINTFORMW 「Ending No.001 (무투파 하렘 END)」에 도달했기 때문에, 칭호 [전귀]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:151 = 전귀
+		SETBIT GLOBAL:称号記録3, 23
+	ENDIF
+	;称号152：調教師
+	;条件：Ending No.002 (調教師エンド)
+	;eraいこっちゃ。
+	IF GETBIT(FLAG:발견ED,2) || GETBIT(GLOBAL:称号記録3, 24)
+		SIF !GETBIT(GLOBAL:称号記録3, 24) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 24))
+			PRINTFORMW 「Ending No.002 (조교사 END)」에 도달했기 때문에, 칭호 [조교사]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:152 = 조교사
+		SETBIT GLOBAL:称号記録3, 24
+	ENDIF
+	;称号153：淫売
+	;条件：Ending No.003 (調教師エンド"Master of slave")
+	;eraとしてまっとうなエンドなのにあまり達成した覚えがない人多そう。
+	IF GETBIT(FLAG:발견ED,3) || GETBIT(GLOBAL:称号記録3, 25)
+		SIF !GETBIT(GLOBAL:称号記録3, 25) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 25))
+			PRINTFORMW 「Ending No.003 (조교사 END"Master of slave")」에 도달했기 때문에, 칭호 [창녀]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:153 = 창녀
+		SETBIT GLOBAL:称号記録3, 25
+	ENDIF
+	;称号154：一途な
+	;条件：Ending No.004 (キャラ単体エンドor特殊ハーレムエンド)
+	;『一途な』たけし、というふうな異名になる。尻に敷かれてるみたいな評判立ってそう。
+	IF GETBIT(FLAG:발견ED,4) || GETBIT(GLOBAL:称号記録3, 26)
+		SIF !GETBIT(GLOBAL:称号記録3, 26) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 26))
+			PRINTFORMW 「Ending No.004 (캐릭터 단체 END or 특수 하렘 END)」에 도달했기 때문에, 칭호 [일편단심]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:154 = 일편단심
+		SETBIT GLOBAL:称号記録3, 26
+	ENDIF
+	;称号155：インセスター
+	;条件：Ending No.005 (娘ハーレムエンド　-Little Empire-)
+	;インセストタブーは結構いろんな動物にある。
+	IF GETBIT(FLAG:발견ED,5) || GETBIT(GLOBAL:称号記録3, 27)
+		SIF !GETBIT(GLOBAL:称号記録3, 27) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 27))
+			PRINTFORMW 「Ending No.005 (딸 하렘 END　-Little Empire-)」에 도달했기 때문에, 칭호 [근친자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:155 = 근친자
+		SETBIT GLOBAL:称号記録3, 27
+	ENDIF
+	;称号156：ロリコン
+	;条件：Ending No.006 (ロリハーレムエンド)
+	;ストレートな罵倒が異名になってるのヤベーやつだと思うよ。
+	IF GETBIT(FLAG:발견ED,6) || GETBIT(GLOBAL:称号記録3, 28)
+		SIF !GETBIT(GLOBAL:称号記録3, 28) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 28))
+			PRINTFORMW 「Ending No.006 (로리 하렘 END)」에 도달했기 때문에, 칭호 [로리콘]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:156 = 로리콘
+		SETBIT GLOBAL:称号記録3, 28
+	ENDIF
+	;称号157：メシ屋
+	;条件：Ending No.010 (食堂運営エンド"Neutral restaurant")
+	;あなたはファントムに所属するデビルサマナーだ。ほんとだよ。
+	;メシ屋はメシアとよく間違われる。イリヤとイリアじゃねーんだから。
+	IF GETBIT(FLAG:발견ED,10) || GETBIT(GLOBAL:称号記録3, 29)
+		SIF !GETBIT(GLOBAL:称号記録3, 29) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 29))
+			PRINTFORMW 「Ending No.010 (식당 운영 END"Neutral restaurant")」에 도달했기 때문에, 칭호 [밥집]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:157 = 밥집
+		SETBIT GLOBAL:称号記録3, 29
+	ENDIF
+	;称号158：クッキングサマナー
+	;条件：Ending No.011 (셰프 END)
+	;今のところコメントアウトされており、達成できない。
+	IF GETBIT(FLAG:발견ED,11) || GETBIT(GLOBAL:称号記録3, 30)
+		SIF !GETBIT(GLOBAL:称号記録3, 30) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 30))
+			PRINTFORMW 「Ending No.011 (셰프 END)」에 도달했기 때문에, 칭호 [쿠킹 서머너]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:158 = 쿠킹 서머너
+		SETBIT GLOBAL:称号記録3, 30
+	ENDIF
+	;称号159：オーナー
+	;条件：Ending No.012 (娼館経営エンド)
+	IF GETBIT(FLAG:발견ED,12) || GETBIT(GLOBAL:称号記録3, 31)
+		SIF !GETBIT(GLOBAL:称号記録3, 31) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 31))
+			PRINTFORMW 「Ending No.012 (창관 경영 END)」에 도달했기 때문에, 칭호 [오너]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:159 = 오너
+		SETBIT GLOBAL:称号記録3, 31
+	ENDIF
+	;称号160：夜の王
+	;条件：Ending No.013 (밤의 제왕 엔드)
+	;（性）交渉で勝っちゃったりするのがロールプレイの妨げになる人もいる。
+	IF (GETBIT(FLAG:발견ED,13) && IS_MALE(MASTER)) || GETBIT(GLOBAL:称号記録3, 32)
+		SIF !GETBIT(GLOBAL:称号記録3, 32) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 32))
+			PRINTFORMW 「Ending No.013 (밤의 제왕 엔드)」에 도달하고, %CALLNAME:MASTER%이(가) 남성이므로, 칭호 [밤의 제왕]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:160 = 밤의 제왕
+		SETBIT GLOBAL:称号記録3, 32
+	ENDIF
+	;称号161：夜の女王
+	;条件：Ending No.013 (夜の女王エンド)
+	IF (GETBIT(FLAG:발견ED,13) && !IS_MALE(MASTER)) || GETBIT(GLOBAL:称号記録3, 33)
+		SIF !GETBIT(GLOBAL:称号記録3, 33) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 33))
+			PRINTFORMW 「Ending No.013 (밤의 제왕 엔드)」에 도달하고, %CALLNAME:MASTER%이(가) 여성이므로, 칭호 [밤의여왕]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:161 = 밤의여왕
+		SETBIT GLOBAL:称号記録3, 33
+	ENDIF
+	;称号162：道端の穴
+	;条件：Ending No.014 (유랑의 창녀 END)
+	;今のところコメントアウトされており、達成できない。
+	IF GETBIT(FLAG:발견ED,14) || GETBIT(GLOBAL:称号記録3, 34)
+		SIF !GETBIT(GLOBAL:称号記録3, 34) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 34))
+			PRINTFORMW 「Ending No.014 (유랑의 창녀 END)」에 도달했기 때문에, 칭호 [길가의 구멍]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:162 = 길가의 구멍
+		SETBIT GLOBAL:称号記録3, 34
+	ENDIF
+	;称号163：堕落者
+	;条件：Ending No.015 (堕落エンド)
+	;2周目以後、最速でエンドを迎える方法。淫売でも子供を気にしてくれるならいい親だと思うよ。
+	IF GETBIT(FLAG:발견ED,15) || GETBIT(GLOBAL:称号記録3, 35)
+		SIF !GETBIT(GLOBAL:称号記録3, 35) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 35))
+			PRINTFORMW 「Ending No.015 (타락 END)」에 도달했기 때문에, 칭호 [타락자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:163 = 타락자
+		SETBIT GLOBAL:称号記録3, 35
+	ENDIF
+	;称号164：スーパースター
+	;条件：Ending No.019 (アイドルエンド)
+	;自然とアイドルに好かれることになるが前世でどんな徳をお積みで？
+	;もとは「アイドル」だったが、ちょっとかぶってる部分あるので改称。
+	IF GETBIT(FLAG:발견ED,19) || GETBIT(GLOBAL:称号記録3, 36)
+		SIF !GETBIT(GLOBAL:称号記録3, 36) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 36))
+			PRINTFORMW 「Ending No.019 (아이돌 END)」에 도달했기 때문에, 칭호 [슈퍼스타]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:164 = 슈퍼스타
+		SETBIT GLOBAL:称号記録3, 36
+	ENDIF
+	;称号165：ファントム
+	;条件：Ending No.020 (팬텀 탈취)
+	;今のところコメントアウトされ、達成できませんぞ。
+	IF GETBIT(FLAG:발견ED,20) || GETBIT(GLOBAL:称号記録3, 37)
+		SIF !GETBIT(GLOBAL:称号記録3, 37) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 37))
+			PRINTFORMW 「Ending No.020 (팬텀 탈취)」에 도달했기 때문에, 칭호 [팬텀]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:165 = 팬텀
+		SETBIT GLOBAL:称号記録3, 37
+	ENDIF
+	;称号166：ロード
+	;条件：Ending No.023 (진ㆍ여신전생　데빌 서머너 엔딩"The Devil Summoner")
+	;領主。エンドでシドの領地を得たので。
+	IF GETBIT(FLAG:발견ED,23) || GETBIT(GLOBAL:称号記録3, 38)
+		SIF !GETBIT(GLOBAL:称号記録3, 38) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 38))
+			PRINTFORMW 「Ending No.023 (진ㆍ여신전생　데빌 서머너 엔딩"The Devil Summoner")」에 도달했기 때문에, 칭호 [로드]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:166 = 로드
+		SETBIT GLOBAL:称号記録3, 38
+	ENDIF
+;	;称号167：――
+;	;条件：Ending No.025 ライドウ・超力兵団枠
+;	IF GETBIT(FLAG:발견ED,25) || GETBIT(GLOBAL:称号記録3, 39)
+;		SIF !GETBIT(GLOBAL:称号記録3, 39) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 39))
+;			PRINTFORMW 「Ending No.025 ライドウ・超力兵団枠」에 도달했기 때문에, 칭호 [――]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:167 = ――
+;		SETBIT GLOBAL:称号記録3, 39
+;	ENDIF
+;	;称号168：――
+;	;条件：Ending No.026 ライドウ・アバドン王枠
+;	IF GETBIT(FLAG:발견ED,26) || GETBIT(GLOBAL:称号記録3, 40)
+;		SIF !GETBIT(GLOBAL:称号記録3, 40) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 40))
+;			PRINTFORMW 「Ending No.026 ライドウ・アバドン王枠」에 도달했기 때문에, 칭호 [――]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:168 = ――
+;		SETBIT GLOBAL:称号記録3, 40
+;	ENDIF
+	;称号169：客人
+	;条件：Ending No.027 (데빌서머너 쿠즈노하 라이도우 대 고독의 마레비토 엔드 "vs. KODOKUNO MAREBITO")
+	;マレビト、と読む。
+	IF GETBIT(FLAG:발견ED,27) || GETBIT(GLOBAL:称号記録3, 41)
+		SIF !GETBIT(GLOBAL:称号記録3, 41) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 41))
+			PRINTFORMW 「Ending No.027 (데빌서머너 쿠즈노하 라이도우 대 고독의 마레비토 엔드 "vs. KODOKUNO MAREBITO")」에 도달했기 때문에, 칭호 [손님]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:169 = 손님
+		SETBIT GLOBAL:称号記録3, 41
+	ENDIF
+	;称号170：孤独の
+	;条件：Ending No.027 (데빌서머너 쿠즈노하 라이도우 대 고독의 마레비토 엔드 "vs. KODOKUNO MAREBITO")
+	;……グルメ、とつけてはいけない。
+	IF GETBIT(FLAG:발견ED,27) || GETBIT(GLOBAL:称号記録3, 42)
+		SIF !GETBIT(GLOBAL:称号記録3, 42) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 42))
+			PRINTFORMW 「Ending No.027 (데빌서머너 쿠즈노하 라이도우 대 고독의 마레비토 엔드 "vs. KODOKUNO MAREBITO")」에 도달했기 때문에, 칭호 [고독한]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:170 = 고독한
+		SETBIT GLOBAL:称号記録3, 42
+	ENDIF
+	;称号171：アヴァターラ
+	;条件：Ending No.028 (女神異聞録ペルソナ　セベク編エンド　　"be your true mind")
+	;アバター、という英語、インドの言葉からきているそうな。
+	IF GETBIT(FLAG:발견ED,28) || GETBIT(GLOBAL:称号記録3, 43)
+		SIF !GETBIT(GLOBAL:称号記録3, 43) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 43))
+			PRINTFORMW 「Ending No.028 (여신이문록 페르소나　세베크편 END　　"be your true mind")」에 도달했기 때문에, 칭호 [아바타라]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:171 = 아바타라
+		SETBIT GLOBAL:称号記録3, 43
+	ENDIF
+	;称号172：阿修羅
+	;条件：Ending No.029 (女神異聞録ペルソナ　雪の女王編エンド　"be your another mind")
+	;アーシュラ、という西洋のお名前、阿修羅からきているそうな。
+	IF GETBIT(FLAG:발견ED,29) || GETBIT(GLOBAL:称号記録3, 44)
+		SIF !GETBIT(GLOBAL:称号記録3, 44) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 44))
+			PRINTFORMW 「Ending No.029 (여신이문록 페르소나 눈의 여왕편 END "be your another mind")」에 도달했기 때문에, 칭호 [아수라]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:172 = 아수라
+		SETBIT GLOBAL:称号記録3, 44
+	ENDIF
+	;称号173：原罪を背負う者
+	;条件：Ending No.030 (ペルソナ２罪エンド"Innocent Sin")
+	IF GETBIT(FLAG:발견ED,30) || GETBIT(GLOBAL:称号記録3, 45)
+		SIF !GETBIT(GLOBAL:称号記録3, 45) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 45))
+			PRINTFORMW 「Ending No.030 (페르소나２죄 END"Innocent Sin")」에 도달했기 때문에, 칭호 [원죄를 짊어진 자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:173 = 원죄를 짊어진 자
+		SETBIT GLOBAL:称号記録3, 45
+	ENDIF
+	;称号174：聖槍騎士団長
+	;条件：Ending No.031 (ペルソナ２罪　聖槍騎士団ハーレムエンド"Ehemann von Longinus")
+	;最低でも４週必要な、かなり面倒なエンドである。
+	IF GETBIT(FLAG:발견ED,31) || GETBIT(GLOBAL:称号記録3, 46)
+		SIF !GETBIT(GLOBAL:称号記録3, 46) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 46))
+			PRINTFORMW 「Ending No.031 (페르소나２죄　성창기사단 하렘 END"Ehemann von Longinus")」에 도달했기 때문에, 칭호 [성창기사단장]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:174 = 성창기사단장
+		SETBIT GLOBAL:称号記録3, 46
+	ENDIF
+	;称号175：ザ・ヒーロー
+	;条件：Ending No.032 (진・여신전생 NEUTRAL-END)
+	;クリアボーナスだし名乗ってもいいんじゃないか説。
+	IF GETBIT(FLAG:발견ED,32) || GETBIT(GLOBAL:称号記録3, 47)
+		SIF !GETBIT(GLOBAL:称号記録3, 47) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 47))
+			PRINTFORMW 「Ending No.032 (진・여신전생 NEUTRAL-END)」에 도달했기 때문에, 칭호 [더 히어로]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:175 = 더 히어로
+		SETBIT GLOBAL:称号記録3, 47
+	ENDIF
+	;称号176：ロウヒーロー
+	;条件：Ending No.033 (진・여신전생 LAW-END)
+	IF GETBIT(FLAG:발견ED,33) || GETBIT(GLOBAL:称号記録3, 48)
+		SIF !GETBIT(GLOBAL:称号記録3, 48) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 48))
+			PRINTFORMW 「Ending No.033 (진・여신전생 LAW-END)」에 도달했기 때문에, 칭호 [로우 히어로]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:176 = 로우 히어로
+		SETBIT GLOBAL:称号記録3, 48
+	ENDIF
+	;称号177：カオスヒーロー
+	;条件：Ending No.034 (진・여신전생 CHAOS-END)
+	IF GETBIT(FLAG:발견ED,34) || GETBIT(GLOBAL:称号記録3, 49)
+		SIF !GETBIT(GLOBAL:称号記録3, 49) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 49))
+			PRINTFORMW 「Ending No.034 (진・여신전생 CHAOS-END)」에 도달했기 때문에, 칭호 [카오스 히어로]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:177 = 카오스 히어로
+		SETBIT GLOBAL:称号記録3, 49
+	ENDIF
+	;称号178：秩序の導き手
+	;条件：Ending No.035 (진·여신전생20XX　로우엔드　"Patentibus portis regnum Dei semper")
+	IF GETBIT(FLAG:발견ED,35) || GETBIT(GLOBAL:称号記録3, 50)
+		SIF !GETBIT(GLOBAL:称号記録3, 50) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 50))
+			PRINTFORMW 「Ending No.035 (진·여신전생20XX　로우엔드　"Patentibus portis regnum Dei semper")」에 도달했기 때문에, 칭호 [질서의 인도자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:178 = 질서의 인도자
+		SETBIT GLOBAL:称号記録3, 50
+	ENDIF
+	;称号179：中道を行く者
+	;条件：Ending No.036 (진·여신전생20XX　뉴트럴엔드　"Meipsum iudico")
+	IF GETBIT(FLAG:발견ED,36) || GETBIT(GLOBAL:称号記録3, 51)
+		SIF !GETBIT(GLOBAL:称号記録3, 51) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 51))
+			PRINTFORMW 「Ending No.036 (진·여신전생20XX　뉴트럴엔드　"Meipsum iudico")」에 도달했기 때문에, 칭호 [중도를 걷는 자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:179 = 중도를 걷는 자
+		SETBIT GLOBAL:称号記録3, 51
+	ENDIF
+	;称号180：混沌の体現者
+	;条件：Ending No.037 (진·여신전생20XX　카오스엔드　"Iuro potentis diabolus Lucifer")
+	IF GETBIT(FLAG:발견ED,37) || GETBIT(GLOBAL:称号記録3, 52)
+		SIF !GETBIT(GLOBAL:称号記録3, 52) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 52))
+			PRINTFORMW 「Ending No.037 (진·여신전생20XX　카오스엔드　"Iuro potentis diabolus Lucifer")」에 도달했기 때문에, 칭호 [혼돈의 체현자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:180 = 혼돈의 체현자
+		SETBIT GLOBAL:称号記録3, 52
+	ENDIF
+	;称号181：聖王
+	;条件：Ending No.038 (위전・여신전생　"신・성왕전설")
+	;あなたが嫁になるとは恐れ入った。
+	IF GETBIT(FLAG:발견ED,38) || GETBIT(GLOBAL:称号記録3, 53)
+		SIF !GETBIT(GLOBAL:称号記録3, 53) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 53))
+			PRINTFORMW 「Ending No.038 (위전・여신전생　"신・성왕전설")」에 도달했기 때문에, 칭호 [성왕]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:181 = 성왕
+		SETBIT GLOBAL:称号記録3, 53
+	ENDIF
+	;称号182：チャンピオン
+	;条件：Ending No.040 (진・여신전생 데빌 콜로세움 20XX True end "The night before Armageddon")
+	;その名も高きチャンピオン。
+	IF GETBIT(FLAG:발견ED,40) || GETBIT(GLOBAL:称号記録3, 54)
+		SIF !GETBIT(GLOBAL:称号記録3, 54) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 54))
+			PRINTFORMW 「Ending No.040 (진・여신전생 데빌 콜로세움 20XX True end "The night before Armageddon")」에 도달했기 때문에, 칭호 [챔피언]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:182 = 챔피언
+		SETBIT GLOBAL:称号記録3, 54
+	ENDIF
+	;称号183：神の敵対者
+	;条件：Ending No.040 (진・여신전생 데빌 콜로세움 20XX True end "The night before Armageddon")
+	;そのランダマイザはさすがにやめていただきたい！！！
+	IF GETBIT(FLAG:발견ED,40) || GETBIT(GLOBAL:称号記録3, 55)
+		SIF !GETBIT(GLOBAL:称号記録3, 55) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 55))
+			PRINTFORMW 「Ending No.040 (진・여신전생 데빌 콜로세움 20XX True end "The night before Armageddon")」에 도달했기 때문에, 칭호 [신의 적대자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:183 = 신의 적대자
+		SETBIT GLOBAL:称号記録3, 55
+	ENDIF
+	;称号184：生存者
+	;条件：デビサバ系エンドの達成
+	;サバイバー。スーパーサバイバー。
+	IF GETBIT(FLAG:발견ED,41) || GETBIT(FLAG:발견ED,42) || GETBIT(FLAG:발견ED,43) || GETBIT(FLAG:발견ED,44) || GETBIT(GLOBAL:称号記録3, 56)
+		SIF !GETBIT(GLOBAL:称号記録3, 56) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 56))
+			PRINTFORMW 「데빌 서바이버 2」 계열 엔딩 중 하나에 도달했기 때문에, 칭호 [생존자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:184 = 생존자
+		SETBIT GLOBAL:称号記録3, 56
+	ENDIF
+	;称号185：人の到達点
+	;条件：Ending No.041 (데빌 서바이버 2　"Strength.")
+	IF GETBIT(FLAG:발견ED,41) || GETBIT(GLOBAL:称号記録3, 57)
+		SIF !GETBIT(GLOBAL:称号記録3, 57) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 57))
+			PRINTFORMW 「Ending No.041 (데빌 서바이버 2　"Strength.")」에 도달했기 때문에, 칭호 [인간의 도달점]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:185 = 인간의 도달점
+		SETBIT GLOBAL:称号記録3, 57
+	ENDIF
+	;称号186：情熱万歳
+	;条件：Ending No.042 (데빌 서바이버 2　"All for one. One for all.")
+	IF GETBIT(FLAG:발견ED,42) || GETBIT(GLOBAL:称号記録3, 58)
+		SIF !GETBIT(GLOBAL:称号記録3, 58) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 58))
+			PRINTFORMW 「Ending No.042 (데빌 서바이버 2　"All for one. One for all.")」에 도달했기 때문에, 칭호 [열정 만세]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:186 = 열정 만세
+		SETBIT GLOBAL:称号記録3, 58
+	ENDIF
+	;称号187：乗り越えし者
+	;条件：Ending No.043 (데빌 서바이버 2　"Second Stage.")
+	IF GETBIT(FLAG:발견ED,43) || GETBIT(GLOBAL:称号記録3, 59)
+		SIF !GETBIT(GLOBAL:称号記録3, 59) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 59))
+			PRINTFORMW 「Ending No.043 (데빌 서바이버 2　"Second Stage.")」에 도달했기 때문에, 칭호 [극복한 자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:187 = 극복한 자
+		SETBIT GLOBAL:称号記録3, 59
+	ENDIF
+	;称号188：夜明けの
+	;条件：Ending No.044 (데빌 서바이버 2　"Anguisheid One END")
+	;俺は今日から、夜明けの――
+	IF GETBIT(FLAG:발견ED,44) || GETBIT(GLOBAL:称号記録3, 60)
+		SIF !GETBIT(GLOBAL:称号記録3, 60) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 60))
+			PRINTFORMW 「Ending No.044 (데빌 서바이버 2　"Anguisheid One END")」에 도달했기 때문에, 칭호 [새벽녘의]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:188 = 새벽녘의
+		SETBIT GLOBAL:称号記録3, 60
+	ENDIF
+	;称号189：寂天
+	;条件：Ending No.045 (DIGITAL DEVIL SAGA 아바탈 튜너２　"shan-ti shan-ti..")
+	;シャンティ、とは、インドの言葉で「平和」「平穏」を意味し、寂、とも表現される。
+	IF GETBIT(FLAG:발견ED,45) || GETBIT(GLOBAL:称号記録3, 61)
+		SIF !GETBIT(GLOBAL:称号記録3, 61) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 61))
+			PRINTFORMW 「Ending No.045 (DIGITAL DEVIL SAGA 아바탈 튜너２　"shan-ti shan-ti..")」에 도달했기 때문에, 칭호 [적천]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:189 = 적천
+		SETBIT GLOBAL:称号記録3, 61
+	ENDIF
+	;称号190：デビル
+	;条件：Ending No.046 (데빌칠드런 세쿤두스 조즈마 엔드)
+	;悪魔みたいな所業してるとは思う。
+	IF GETBIT(FLAG:발견ED,46) || GETBIT(GLOBAL:称号記録3, 62)
+		SIF !GETBIT(GLOBAL:称号記録3, 62) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 62))
+			PRINTFORMW 「Ending No.046 (데빌칠드런 세쿤두스 조즈마 엔드)」에 도달했기 때문에, 칭호 [데빌]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:190 = 데빌
+		SETBIT GLOBAL:称号記録3, 62
+	ENDIF
+	;称号191：深淵
+	;条件：Ending No.047 (데빌칠드런 세계의 새벽 엔드)
+	;性癖の深淵、深い。
+	IF GETBIT(FLAG:발견ED,47) || GETBIT(GLOBAL:称号記録3, 63)
+		SIF !GETBIT(GLOBAL:称号記録3, 63) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録3, 63))
+			PRINTFORMW 「Ending No.047 (데빌칠드런 세계의 새벽 엔드)」에 도달했기 때문에, 칭호 [심연]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:191 = 심연
+		SETBIT GLOBAL:称号記録3, 63
+	ENDIF
+	;称号192：探偵さん
+	;条件：Ending No.050 (나이트・테일 진노 코시로　TRUE-END　“La Maternite.”)
+	;実はいい人だなんて反吐が出るぜ！……とか言いながら、探偵さんをやり切ったのかもしれない。
+	IF GETBIT(FLAG:발견ED,50) || GETBIT(GLOBAL:称号記録4, 0)
+		SIF !GETBIT(GLOBAL:称号記録4, 0) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 0))
+			PRINTFORMW 「Ending No.050 (나이트・테일 진노 코시로　TRUE-END　“La Maternite.”)」에 도달했기 때문에, 칭호 [탐정님]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:192 = 탐정님
+		SETBIT GLOBAL:称号記録4, 0
+	ENDIF
+	;称号193：to be The  HERO
+	;条件：Ending No.051 (나이트・테일 진노 코다이 엔드 “to the HERO.”)
+	;ザ・ヒーローだったのだが、それは↑に移動したので、また考え直しになって苦労しましたね。
+	IF GETBIT(FLAG:발견ED,51) || GETBIT(GLOBAL:称号記録4, 1)
+		SIF !GETBIT(GLOBAL:称号記録4, 1) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 1))
+			PRINTFORMW 「Ending No.051 (나이트・테일 진노 코다이 엔드 “to the HERO.”)」에 도달했기 때문에, 칭호 [to be The  HERO]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:193 = to be The  HERO
+		SETBIT GLOBAL:称号記録4, 1
+	ENDIF
+	;称号194：黄金の獣
+	;条件：Ending No.052 (나이트・테일 진노 코시로　666-END　 “R A G N A R O K .”)
+	IF GETBIT(FLAG:발견ED,52) || GETBIT(GLOBAL:称号記録4, 2)
+		SIF !GETBIT(GLOBAL:称号記録4, 2) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 2))
+			PRINTFORMW 「Ending No.052 (나이트・테일 진노 코시로　666-END　 “R A G N A R O K .”)」에 도달했기 때문에, 칭호 [황금의 짐승]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:194 = 황금의 짐승
+		SETBIT GLOBAL:称号記録4, 2
+	ENDIF
+	;称号195：アンストッパブル
+	;条件：Ending No.053 (유폐의 탑편　엔드"Life goes on")
+	;命の営みは続けていかなければならない。
+	IF GETBIT(FLAG:발견ED,53) || GETBIT(GLOBAL:称号記録4, 3)
+		SIF !GETBIT(GLOBAL:称号記録4, 3) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 3))
+			PRINTFORMW 「Ending No.053 (유폐의 탑편　엔드"Life goes on")」에 도달했기 때문에, 칭호 [언스토퍼블]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:195 = 언스토퍼블
+		SETBIT GLOBAL:称号記録4, 3
+	ENDIF
+	;称号196：魔神皇
+	;条件：Ending No.054 (진・여신전생 if...END)
+	;これも「ザ・ヒーロー」と同じでクリアボーナス枠。
+	IF GETBIT(FLAG:발견ED,54) || GETBIT(GLOBAL:称号記録4, 4)
+		SIF !GETBIT(GLOBAL:称号記録4, 4) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 4))
+			PRINTFORMW 「Ending No.054 (진・여신전생 if...END)」에 도달했기 때문에, 칭호 [마신황]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:196 = 마신황
+		SETBIT GLOBAL:称号記録4, 4
+	ENDIF
+	;称号197：混沌王
+	;条件：Ending No.055 (진・여신전생 III Nocturne Maniacs Dark-END “혼돈왕”)
+	;二度と上着を着れると思うな
+	;なお、ひとしゅらちゃんは、デフォでは上着を着ている。奪うのはあなただ。
+	IF GETBIT(FLAG:발견ED,55) || GETBIT(GLOBAL:称号記録4, 5)
+		SIF !GETBIT(GLOBAL:称号記録4, 5) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 5))
+			PRINTFORMW 「Ending No.055 (진・여신전생 III Nocturne Maniacs Dark-END “혼돈왕”)」에 도달했기 때문에, 칭호 [혼돈왕]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:197 = 혼돈왕
+		SETBIT GLOBAL:称号記録4, 5
+	ENDIF
+;	;称号198：人の光
+;	;条件：Ending No.056 (真III、Mハゲ枠）
+;	;これもコメントアウトされており、達成できないはず。
+;	IF GETBIT(FLAG:발견ED,56) || GETBIT(GLOBAL:称号記録4, 6)
+;		SIF !GETBIT(GLOBAL:称号記録4, 6) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 6))
+;			PRINTFORMW 「Ending No.056 (真III、Mハゲ枠）」에 도달했기 때문에, 칭호 [인간의 빛]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:198 = 인간의 빛
+;		SETBIT GLOBAL:称号記録4, 6
+;	ENDIF
+	;称号199：狂信者
+	;条件：Ending No.057 (메시아・프로젝트 TRUE-END “구세주여, 영원하라”)
+	;ウオオオ！めしあちゃーん！！！！！！
+	IF GETBIT(FLAG:발견ED,57) || GETBIT(GLOBAL:称号記録4, 7)
+		SIF !GETBIT(GLOBAL:称号記録4, 7) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 7))
+			PRINTFORMW 「Ending No.057 (메시아・프로젝트 TRUE-END “구세주여, 영원하라”)」에 도달했기 때문에, 칭호 [광신자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:199 = 광신자
+		SETBIT GLOBAL:称号記録4, 7
+	ENDIF
+	;称号200：おっかけ
+	;条件：Ending No.057 (메시아・프로젝트 TRUE-END “구세주여, 영원하라”)
+	;この異名を取得して許されるの、めしあちゃんシナリオだけだと思う。
+	IF GETBIT(FLAG:발견ED,57) || GETBIT(GLOBAL:称号記録4, 8)
+		SIF !GETBIT(GLOBAL:称号記録4, 8) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 8))
+			PRINTFORMW 「Ending No.057 (메시아・프로젝트 TRUE-END “구세주여, 영원하라”)」에 도달했기 때문에, 칭호 [열혈팬]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:200 = 열혈팬
+		SETBIT GLOBAL:称号記録4, 8
+	ENDIF
+	;称号201：乳牛
+	;条件：Ending No.058 (히메미야 키쿠에 END “Moo Moo Moo”)
+	;ウシチチ、かは定かではない。
+	IF (GETBIT(FLAG:발견ED,58) && !IS_MALE(MASTER)) || GETBIT(GLOBAL:称号記録4, 9)
+		SIF !GETBIT(GLOBAL:称号記録4, 9) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 9))
+			PRINTFORMW 「Ending No.058 (히메미야 키쿠에 END “Moo Moo Moo”)」에 도달하고, %CALLNAME:MASTER%이(가) 여성이므로, 칭호 [젖소]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:201 = 젖소
+		SETBIT GLOBAL:称号記録4, 9
+	ENDIF
+	;称号202：赤ちゃん工場
+	;条件：Ending No.058 (히메미야 키쿠에 END “Moo Moo Moo”)
+	;赤ちゃん錬金釜使いたい。
+	IF (GETBIT(FLAG:발견ED,58) && !IS_MALE(MASTER)) || GETBIT(GLOBAL:称号記録4, 10)
+		SIF !GETBIT(GLOBAL:称号記録4, 10) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 10))
+			PRINTFORMW 「Ending No.058 (히메미야 키쿠에 END “Moo Moo Moo”)」에 도달하고, %CALLNAME:MASTER%이(가) 여성이므로, 칭호 [아기 공장]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:202 = 아기 공장
+		SETBIT GLOBAL:称号記録4, 10
+	ENDIF
+	;称号203：種付けおじさん
+	;条件：Ending No.058 (히메미야 키쿠에 END “Moo Moo Moo”)
+	;MOOMOOMOOは菊枝さんがメインなので女性の方を上に。
+	;おじさんでない可能性結構高いが、まあこれもネタ称号のひとつである。
+	;しかし菊枝さん変な愛され方してるよな……
+	IF (GETBIT(FLAG:발견ED,58) && IS_MALE(MASTER)) || GETBIT(GLOBAL:称号記録4, 11)
+		SIF !GETBIT(GLOBAL:称号記録4, 11) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 11))
+			PRINTFORMW 「Ending No.058 (히메미야 키쿠에 END “Moo Moo Moo”)」에 도달하고, %CALLNAME:MASTER%이(가) 남성이므로, 칭호 [교배 아저씨]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:203 = 교배 아저씨
+		SETBIT GLOBAL:称号記録4, 11
+	ENDIF
+	;称号204：創星主
+	;条件：Ending No.060 (데빌칠드런　신세계END)
+	IF GETBIT(FLAG:발견ED,60) || GETBIT(GLOBAL:称号記録4, 12)
+		SIF !GETBIT(GLOBAL:称号記録4, 12) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 12))
+			PRINTFORMW 「Ending No.060 (데빌칠드런　신세계END)」에 도달했기 때문에, 칭호 [창성주]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:204 = 창성주
+		SETBIT GLOBAL:称号記録4, 12
+	ENDIF
+	;称号205：ホシガミ
+	;条件：Ending No.061 (데빌칠드런　호시가미END)
+	;神話とは地球上に根付いた概念なので、星の作り手はすなわち世界の作り手である。
+	IF GETBIT(FLAG:발견ED,61) || GETBIT(GLOBAL:称号記録4, 13)
+		SIF !GETBIT(GLOBAL:称号記録4, 13) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 13))
+			PRINTFORMW 「Ending No.061 (데빌칠드런　호시가미END)」에 도달했기 때문에, 칭호 [호시가미]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:205 = 호시가미
+		SETBIT GLOBAL:称号記録4, 13
+	ENDIF
+	;称号206：来訪者
+	;条件：Ending No.064 (멜티블러드　END　“Melty　Blood”)
+	;血が煮えそうなほどの宴よ。
+	IF GETBIT(FLAG:발견ED2,0) || GETBIT(GLOBAL:称号記録4, 14)
+		SIF !GETBIT(GLOBAL:称号記録4, 14) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 14))
+			PRINTFORMW 「Ending No.064 (멜티블러드　END　“Melty　Blood”)」에 도달했기 때문에, 칭호 [내방자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:206 = 내방자
+		SETBIT GLOBAL:称号記録4, 14
+	ENDIF
+	;称号207：狩る者
+	;条件：Ending No.065 (세븐스 드래곤 2020　END　"SeventH-HeaveN")
+	IF GETBIT(FLAG:발견ED2,1) || GETBIT(GLOBAL:称号記録4, 15)
+		SIF !GETBIT(GLOBAL:称号記録4, 15) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 15))
+			PRINTFORMW 「Ending No.065 (세븐스 드래곤 2020　END　"SeventH-HeaveN")」에 도달했기 때문에, 칭호 [사냥꾼]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:207 = 사냥꾼
+		SETBIT GLOBAL:称号記録4, 15
+	ENDIF
+	;称号208：人類の極北
+	;条件：Ending No.066 (세븐스 드래곤 2020-Ⅱ　END　"HeavenZ-ArmZ")
+	;３で「進化の極北」というワードが出てきたそうな。
+	IF GETBIT(FLAG:발견ED2,2) || GETBIT(GLOBAL:称号記録4, 16)
+		SIF !GETBIT(GLOBAL:称号記録4, 16) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 16))
+			PRINTFORMW 「Ending No.066 (세븐스 드래곤 2020-Ⅱ　END　"HeavenZ-ArmZ")」에 도달했기 때문에, 칭호 [인류의 극북]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:208 = 인류의 극북
+		SETBIT GLOBAL:称号記録4, 16
+	ENDIF
+	;称号209：Idolm@ster
+	;条件：Ending No.067 (아이돌마스터　END“신데렐라 걸즈”)
+	;現在は実質的に杏エンドになっているはず。
+	IF GETBIT(FLAG:발견ED2,3) || GETBIT(GLOBAL:称号記録4, 17)
+		SIF !GETBIT(GLOBAL:称号記録4, 17) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 17))
+			PRINTFORMW 「Ending No.067 (아이돌마스터　END“신데렐라 걸즈”)」에 도달했기 때문에, 칭호 [Idolm@ster]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:209 = Idolm@ster
+		SETBIT GLOBAL:称号記録4, 17
+	ENDIF
+	;称号210：兎と妖精と
+	;条件：Ending No.068 (Rabi-Ribi Normal A/B END)
+	IF GETBIT(FLAG:발견ED2,4) || GETBIT(GLOBAL:称号記録4, 18)
+		SIF !GETBIT(GLOBAL:称号記録4, 18) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 18))
+			PRINTFORMW 「Ending No.068 (Rabi-Ribi Normal A/B END)」에 도달했기 때문에, 칭호 [토끼와 요정과]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:210 = 토끼와 요정과
+		SETBIT GLOBAL:称号記録4, 18
+	ENDIF
+	;称号211：兎愛好家
+	;条件：Ending No.068 (Rabi-Ribi Normal A/B END)
+	IF GETBIT(FLAG:발견ED2,4) || GETBIT(GLOBAL:称号記録4, 19)
+		SIF !GETBIT(GLOBAL:称号記録4, 19) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 19))
+			PRINTFORMW 「Ending No.068 (Rabi-Ribi Normal A/B END)」에 도달했기 때문에, 칭호 [토끼 애호가]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:211 = 토끼 애호가
+		SETBIT GLOBAL:称号記録4, 19
+	ENDIF
+	;称号212：真・兎愛好家
+	;条件：Ending No.069 (Rabi-Ribi Secret "Welcome to Rabi-Rabi TOWN！！")
+	IF GETBIT(FLAG:발견ED2,5) || GETBIT(GLOBAL:称号記録4, 20)
+		SIF !GETBIT(GLOBAL:称号記録4, 20) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 20))
+			PRINTFORMW 「Ending No.069 (Rabi-Ribi Secret "Welcome to Rabi-Rabi TOWN！！")」에 도달했기 때문에, 칭호 [진・토끼 애호가]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:212 = 진・토끼 애호가
+		SETBIT GLOBAL:称号記録4, 20
+	ENDIF
+	;称号213：インシュレータ
+	;条件：Ending No.070 (白き鋼鉄のＸ　END　"Babylonian Insulator")
+	;絶縁体、の意。
+	IF GETBIT(FLAG:발견ED2,6) || GETBIT(GLOBAL:称号記録4, 21)
+		SIF !GETBIT(GLOBAL:称号記録4, 21) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 21))
+			PRINTFORMW 「Ending No.070 (하얀 강철의 Ｘ　END　"Babylonian Insulator")」에 도달했기 때문에, 칭호 [인슐레이터]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:213 = 인슐레이터
+		SETBIT GLOBAL:称号記録4, 21
+	ENDIF
+	;称号214：溶鉄の主
+	;条件：Ending No.071 (용철의 마르푸샤 END "Marufusha The Metal melter")
+	IF GETBIT(FLAG:발견ED2,7) || GETBIT(GLOBAL:称号記録4, 22)
+		SIF !GETBIT(GLOBAL:称号記録4, 22) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 22))
+			PRINTFORMW 「Ending No.071 (용철의 마르푸샤 END "Marufusha The Metal melter")」에 도달했기 때문에, 칭호 [용철의 군주]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:214 = 용철의 군주
+		SETBIT GLOBAL:称号記録4, 22
+	ENDIF
+	;称号215：魔法少女
+	;条件：Ending No.072 (반역의 이야기　"Puella Magi ex Defectionis END")
+	IF (GETBIT(FLAG:발견ED2,8) && !IS_MALE(MASTER)) || GETBIT(GLOBAL:称号記録4, 23)
+		SIF !GETBIT(GLOBAL:称号記録4, 23) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 23))
+			PRINTFORMW 「Ending No.072 (반역의 이야기　"Puella Magi ex Defectionis END")」에 도달했기 때문에, 칭호 [마법소녀]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:215 = 마법소녀
+		SETBIT GLOBAL:称号記録4, 23
+	ENDIF
+	;称号216：魔法少女？
+	;条件：Ending No.072 (반역의 이야기　"Puella Magi ex Defectionis END")
+	;マジか、ルガール。
+	IF (GETBIT(FLAG:발견ED2,8) && IS_MALE(MASTER)) || GETBIT(GLOBAL:称号記録4, 24)
+		SIF !GETBIT(GLOBAL:称号記録4, 24) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 24))
+			PRINTFORMW 「Ending No.072 (반역의 이야기　"Puella Magi ex Defectionis END")」에 도달했기 때문에, 칭호 [마법소녀？]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:216 = 마법소녀？
+		SETBIT GLOBAL:称号記録4, 24
+	ENDIF
+	;称号217：インキュベーター
+	;条件：Ending No.073 (식어가는 우주의 이야기 "Puella Magi Madoka☆Magica END")
+	;インキュベーターとは、保育器のこと。
+	IF GETBIT(FLAG:발견ED2,9) || GETBIT(GLOBAL:称号記録4, 25)
+		SIF !GETBIT(GLOBAL:称号記録4, 25) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 25))
+			PRINTFORMW 「Ending No.073 (식어가는 우주의 이야기 "Puella Magi Madoka☆Magica END")」에 도달했기 때문에, 칭호 [인큐베이터]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:217 = 인큐베이터
+		SETBIT GLOBAL:称号記録4, 25
+	ENDIF
+	;称号218：宿星を束ねし者
+	;条件：Ending No.074 (東京魔人學園　END　"鬼道衆外法編")
+	IF GETBIT(FLAG:발견ED2,10) || GETBIT(GLOBAL:称号記録4, 26)
+		SIF !GETBIT(GLOBAL:称号記録4, 26) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 26))
+			PRINTFORMW 「Ending No.074 (도쿄마인학원 END "귀도중 외법편")」에 도달했기 때문에, 칭호 [숙성을 묶는 자]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:218 = 숙성을 묶는 자
+		SETBIT GLOBAL:称号記録4, 26
+	ENDIF
+	;称号219：學生
+	;条件：Ending No.074 (東京魔人學園　END　"鬼道衆外法編")
+	IF GETBIT(FLAG:발견ED2,10) || GETBIT(GLOBAL:称号記録4, 27)
+		SIF !GETBIT(GLOBAL:称号記録4, 27) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 27))
+			PRINTFORMW 「Ending No.074 (도쿄마인학원 END "귀도중 외법편")」에 도달했기 때문에, 칭호 [학생]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:219 = 학생
+		SETBIT GLOBAL:称号記録4, 27
+	ENDIF
+	;称号220：悪魔も恐れる
+	;条件：Ending No.099 (Devil May Cry　END　"마제사냥")
+	;悪魔も啼いて堕落する！
+	IF GETBIT(FLAG:발견ED2,35) || GETBIT(GLOBAL:称号記録4, 28)
+		SIF !GETBIT(GLOBAL:称号記録4, 28) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 28))
+			PRINTFORMW 「Ending No.099 (Devil May Cry　END　"마제사냥")」에 도달했기 때문에, 칭호 [악마도 두려워하는]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:220 = 악마도 두려워하는
+		SETBIT GLOBAL:称号記録4, 28
+	ENDIF
+	;称号221：処女食い
+	;条件：処女を1人以上食う
+	IF FLAG:처녀탈취인수 >= 1 || GETBIT(GLOBAL:称号記録4, 29)
+		SIF !GETBIT(GLOBAL:称号記録4, 29) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 29))
+			PRINTFORMW 처녀의 순결을 취했기 때문에, 칭호 [처녀 킬러]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:221 = 처녀 킬러
+		SETBIT GLOBAL:称号記録4, 29
+	ENDIF
+	;称号222：乙女狩り
+	;条件：処女を10人以上食う
+	;おまえも毛刈り隊にならないか（役立たずの狛犬感）
+	IF FLAG:처녀탈취인수 >= 10 || GETBIT(GLOBAL:称号記録4, 30)
+		SIF !GETBIT(GLOBAL:称号記録4, 30) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 30))
+			PRINTFORMW 처녀막을 10장 찢었기 때문에, 칭호 [소녀 사냥꾼]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:222 = 소녀 사냥꾼
+		SETBIT GLOBAL:称号記録4, 30
+	ENDIF
+	;称号223：処女厨
+	;条件：処女を100人以上食う
+	;調教をそこそこやってると100人程度は普通に食ってる。
+	IF FLAG:처녀탈취인수 >= 100 || GETBIT(GLOBAL:称号記録4, 31)
+		SIF !GETBIT(GLOBAL:称号記録4, 31) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 31))
+			PRINTFORMW %CALLNAME:MASTER%이(가) 처녀충이므로, 칭호 [처녀충]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:223 = 처녀충
+		SETBIT GLOBAL:称号記録4, 31
+	ENDIF
+	;称号224：フロントライナー
+	;条件：エリザベスとマーガレットを撃破している（仲間にいなくてもいい）（ただしこの周で撃破していること）
+	;力の先に立つ者、としていたが、今見るとダサい……な……ということで変更
+	;英訳から引っ張ってきたが「最前線にいる者」「最先端にいる者」くらいの意味だろうか。
+	IF (ダンジョンフラグ:70:96 == 4 && (イベントフラグ:16:0 ==2 || イベントフラグ:16:0 == 3)) || GETBIT(GLOBAL:称号記録4, 32)
+		SIF !GETBIT(GLOBAL:称号記録4, 32) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 32))
+			PRINTFORMW 사상 최흉의 엘리베이터 걸과 훈남을 키우는 초S 비서를 격파했기 때문에, 칭호 [프론트 라이너]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:224 = 프론트 라이너
+		SETBIT GLOBAL:称号記録4, 32
+	ENDIF
+	;---- EDIT 023 MOD START -------------------------
+	;称号225：スピードスター
+	;条件：プレイ時間2時間以内にクリア
+	;調教メインだと、2時間少々でイケたらしい。ランダム要素がない部分ならマクロでいいっちゃいいから準備しておけばなんとかなる気はする。
+	;IF (FLAG:게임모드 == 9 && (((FLAG:플레이시간 / 1000 / 60) % 60) < 2)) || GETBIT(GLOBAL:称号記録4, 33)
+	IF G_称号取得予約:225 || GETBIT(GLOBAL:称号記録4, 33)
+		G_称号取得予約:225 = 0
+		SIF !GETBIT(GLOBAL:称号記録4, 33) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 33))
+			PRINTFORMW 뉴 게임부터 2시간 이내에 엔딩에 도달했기 때문에, 칭호 [스피드 스타]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:225 = 스피드 스타
+		SETBIT GLOBAL:称号記録4, 33
+	ENDIF
+	;---- EDIT 023 MOD END ---------------------------
+	;称号226：グレイヴレイダー
+	;条件：Ending No.075 (白き鋼鉄のＸ２　END　"Xtreme Breakers")
+	;本来「墓暴き」はトゥームレイダーと訳すところだが、X2の舞台は「グレイヴ」ピラーなのでアレンジ。
+	IF GETBIT(FLAG:발견ED2,11) || GETBIT(GLOBAL:称号記録4, 34)
+		SIF !GETBIT(GLOBAL:称号記録4, 34) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 34))
+			PRINTFORMW 「Ending No.075 (하얀 강철의 Ｘ２　END　"Xtreme Breakers")」에 도달했기 때문에, 칭호 [그레이브 레이더]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:226 = 그레이브 레이더
+		SETBIT GLOBAL:称号記録4, 34
+	ENDIF
+	;称号227：極限突破の
+	;条件：Ending No.075 (白き鋼鉄のＸ２　END　"Xtreme Breakers")
+	;極限突破の＠さん。何の極限を突破《ブレイク》したんでしょうね。テクノブレイク？
+	IF GETBIT(FLAG:발견ED2,11) || GETBIT(GLOBAL:称号記録4, 35)
+		SIF !GETBIT(GLOBAL:称号記録4, 35) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 35))
+			PRINTFORMW 「Ending No.075 (하얀 강철의 Ｘ２　END　"Xtreme Breakers")」에 도달했기 때문에, 칭호 [한계돌파의]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:227 = 한계돌파의
+		SETBIT GLOBAL:称号記録4, 35
+	ENDIF
+	;称号228：仕事中毒
+	;条件：この周回で、非ダンジョン系ランダム依頼を50回以上解決＋ダンジョン系ランダム依頼を10回以上解決している
+	;非ダンジョン系依頼100回！はさすがにキツそうなので半分の50回に。充分キツいと思う
+	IF (依頼フラグ:[[依頼:랜덤의뢰]]:16 >= 50 && 依頼フラグ:[[依頼:랜덤의뢰]]:17 >= 10) || GETBIT(GLOBAL:称号記録4, 36)
+		;---- EDIT 018 MOD START -------------------------
+		;SIF !GETBIT(GLOBAL:称号記録4, 36) && IS_NOTICE
+		IF !GETBIT(GLOBAL:称号記録4, 36) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 36))
+			PRINTFORMW 랜덤 의뢰를 다수 해결했기 때문에, 칭호 [일중독]이(가) 해금되었습니다
+			PRINTFORMW ※일중독이므로, 랜덤 의뢰를 체력과 맞바꿔 더 많이 수주할 수 있습니다※
+		ENDIF
+		;---- EDIT 018 MOD END ---------------------------
+		SIF IS_INTO_RESULTS
+			RESULTS:228 = 일중독
+		SETBIT GLOBAL:称号記録4, 36
+	ENDIF
+	;称号229：代打
+	;条件：この周回で、ランダム依頼を受けた回数が10以上、かつ、少なくとも１回はダンジョン系ランダム依頼を解決している
+	;「仕事中毒」の下位称号。
+	;代打替わりまして俺。
+	IF ((依頼フラグ:[[依頼:랜덤의뢰]]:16 + 依頼フラグ:[[依頼:랜덤의뢰]]:17) >= 10 && 依頼フラグ:[[依頼:랜덤의뢰]]:17 >= 1) || GETBIT(GLOBAL:称号記録4, 37)
+		SIF !GETBIT(GLOBAL:称号記録4, 37) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 37))
+			PRINTFORMW 랜덤 의뢰를 복수 해결했기 때문에, 칭호 [대타]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:229 = 대타
+		SETBIT GLOBAL:称号記録4, 37
+	ENDIF
+	;称号230：ファントムの一枚看板
+	;条件：コドクノマレビト：凪仲間ルートのラストで「称号を欲しい」という
+	;コドクノマレビト関連は「客人」「マレビト」と既にあるがこれはまた別に追加で。
+	;アバドン王のサマナーランク「葛葉の一枚看板」から。
+	IF イベントフラグ:41:13 == 1 || GETBIT(GLOBAL:称号記録4, 38)
+		SIF !GETBIT(GLOBAL:称号記録4, 38) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 38))
+			PRINTFORMW 야타가라스의 사자로부터, 칭호 [팬텀의 간판스타]이(가) 수여되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:230 = 팬텀의 간판스타
+		SETBIT GLOBAL:称号記録4, 38
+	ENDIF
+	;称号231：葛葉殺し
+	;条件：コドクノマレビト：凪敵対ルートのクリア
+	IF イベントフラグ:41:13 == 2 || GETBIT(GLOBAL:称号記録4, 39)
+		SIF !GETBIT(GLOBAL:称号記録4, 39) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 39))
+			PRINTFORMW 18대 쿠즈노하 게이린을 격파함에 따라, 칭호 [쿠즈노하 슬레이어]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:231 = 쿠즈노하 슬레이어
+		SETBIT GLOBAL:称号記録4, 39
+	ENDIF
+	;称号232：クシナダノツルギ
+	;条件：コドクノマレビト：串蛇ルートのクリア
+	IF GETBIT(FLAG:발견ED,39) || GETBIT(GLOBAL:称号記録4, 40)
+		SIF !GETBIT(GLOBAL:称号記録4, 40) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 40))
+			PRINTFORMW 그 검을 얻음으로써, 칭호 [쿠시나다노츠루기]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:232 = 쿠시나다노츠루기
+		SETBIT GLOBAL:称号記録4, 40
+	ENDIF
+	;称号233：用心棒
+	;条件：コドクノマレビト：串蛇ルートのクリア
+	IF GETBIT(FLAG:발견ED,39) || GETBIT(GLOBAL:称号記録4, 41)
+		SIF !GETBIT(GLOBAL:称号記録4, 41) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 41))
+			PRINTFORMW 고독의 마레비토로부터 쿠시나다를 지켜냈기 때문에, 칭호 [보디가드]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:233 = 보디가드
+		SETBIT GLOBAL:称号記録4, 41
+	ENDIF
+;	;称号234：ﾍﾞｲﾝ･ｵﾌﾞ･ｺﾄﾞｸﾉﾏﾚﾋﾞﾄ
+;	;条件：コドクノマレビト：忍殺モードでコドクノマレビトルートのクリア
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 42)
+;		SIF !GETBIT(GLOBAL:称号記録4, 42) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 42))
+;			PRINTFORMW 고독의 마레비토를 최종적으로 전원 살해했기 때문에, 칭호 [베인 오브 고독의 마레비토]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:234 = 베인 오브 고독의 마레비토
+;		SETBIT GLOBAL:称号記録4, 42
+;	ENDIF
+;	;称号235：（枠確保）
+;	;条件：コドクノマレビト：元作者さん寄りルートのクリア
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 43)
+;		SIF !GETBIT(GLOBAL:称号記録4, 43) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 43))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:235 = 
+;		SETBIT GLOBAL:称号記録4, 43
+;	ENDIF
+	;称号236：ベルセルク
+	;条件：漫画版デビチルルート　『花盛りの日々』クリア
+	;少年誌のベルセルクは伊達じゃない。
+	IF GETBIT(FLAG:발견ED,62) || GETBIT(GLOBAL:称号記録4, 44)
+		SIF !GETBIT(GLOBAL:称号記録4, 44) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 44))
+			PRINTFORMW 「Ending No.062 (데빌칠드런 END "꽃이 만발한 나날")」에 도달했기 때문에, 칭호 [광전사]이(가) 해금되었습니다
+		SIF IS_INTO_RESULTS
+			RESULTS:236 = 광전사
+		SETBIT GLOBAL:称号記録4, 44
+	ENDIF
+
+
+
+	;===================
+	;以下追加可能枠
+	;なんかこうバラバラになっても、正直気にする必要はない気がする
+	;===================
+
+;	;称号237：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 45)
+;		SIF !GETBIT(GLOBAL:称号記録4, 45) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 45))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:237 = 
+;		SETBIT GLOBAL:称号記録4, 45
+;	ENDIF
+;	;称号238：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 46)
+;		SIF !GETBIT(GLOBAL:称号記録4, 46) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 46))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:238 = 
+;		SETBIT GLOBAL:称号記録4, 46
+;	ENDIF
+;	;称号239：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 47)
+;		SIF !GETBIT(GLOBAL:称号記録4, 47) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 47))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:239 = 
+;		SETBIT GLOBAL:称号記録4, 47
+;	ENDIF
+;	;称号240：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 48)
+;		SIF !GETBIT(GLOBAL:称号記録4, 48) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 48))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:240 = 
+;		SETBIT GLOBAL:称号記録4, 48
+;	ENDIF
+;	;称号241：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 49)
+;		SIF !GETBIT(GLOBAL:称号記録4, 49) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 49))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:241 = 
+;		SETBIT GLOBAL:称号記録4, 49
+;	ENDIF
+;	;称号242：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 50)
+;		SIF !GETBIT(GLOBAL:称号記録4, 50) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 50))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:242 = 
+;		SETBIT GLOBAL:称号記録4, 50
+;	ENDIF
+;	;称号243：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 51)
+;		SIF !GETBIT(GLOBAL:称号記録4, 51) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 51))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:243 = 
+;		SETBIT GLOBAL:称号記録4, 51
+;	ENDIF
+;	;称号244：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 52)
+;		SIF !GETBIT(GLOBAL:称号記録4, 52) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 52))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:244 = 
+;		SETBIT GLOBAL:称号記録4, 52
+;	ENDIF
+;	;称号245：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 53)
+;		SIF !GETBIT(GLOBAL:称号記録4, 53) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 53))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:245 = 
+;		SETBIT GLOBAL:称号記録4, 53
+;	ENDIF
+;	;称号246：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 54)
+;		SIF !GETBIT(GLOBAL:称号記録4, 54) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 54))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:246 = 
+;		SETBIT GLOBAL:称号記録4, 54
+;	ENDIF
+;	;称号247：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 55)
+;		SIF !GETBIT(GLOBAL:称号記録4, 55) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 55))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:247 = 
+;		SETBIT GLOBAL:称号記録4, 55
+;	ENDIF
+;	;称号248：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 56)
+;		SIF !GETBIT(GLOBAL:称号記録4, 56) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 56))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:248 = 
+;		SETBIT GLOBAL:称号記録4, 56
+;	ENDIF
+;	;称号249：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 57)
+;		SIF !GETBIT(GLOBAL:称号記録4, 57) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 57))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:249 = 
+;		SETBIT GLOBAL:称号記録4, 57
+;	ENDIF
+;	;称号250：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 58)
+;		SIF !GETBIT(GLOBAL:称号記録4, 58) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 58))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:250 = 
+;		SETBIT GLOBAL:称号記録4, 58
+;	ENDIF
+;	;称号251：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 59)
+;		SIF !GETBIT(GLOBAL:称号記録4, 59) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 59))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:251 = 
+;		SETBIT GLOBAL:称号記録4, 59
+;	ENDIF
+;	;称号252：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 60)
+;		SIF !GETBIT(GLOBAL:称号記録4, 60) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 60))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:252 = 
+;		SETBIT GLOBAL:称号記録4, 60
+;	ENDIF
+;	;称号253：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 61)
+;		SIF !GETBIT(GLOBAL:称号記録4, 61) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 61))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:253 = 
+;		SETBIT GLOBAL:称号記録4, 61
+;	ENDIF
+;	;称号254：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 62)
+;		SIF !GETBIT(GLOBAL:称号記録4, 62) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 62))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:254 = 
+;		SETBIT GLOBAL:称号記録4, 62
+;	ENDIF
+;	;称号255：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録4, 63)
+;		SIF !GETBIT(GLOBAL:称号記録4, 63) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録4, 63))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:255 = 
+;		SETBIT GLOBAL:称号記録4, 63
+;	ENDIF
+;
+;これ以後は「称号記録5」の追加が必要
+;
+;	;称号256：
+;	;条件：
+;	IF XXXX || GETBIT(GLOBAL:称号記録5, 0)
+;		SIF !GETBIT(GLOBAL:称号記録5, 0) && IS_NOTICE || (IS_RE_DISPLAY && GETBIT(GLOBAL:称号記録5, 0))
+;			PRINTFORMW 称号[]이(가) 해금되었습니다
+;		SIF IS_INTO_RESULTS
+;			RESULTS:256 = 
+;		SETBIT GLOBAL:称号記録5, 0
+;	ENDIF
+;
+;
+	SAVEGLOBAL
+
+
+
+;以下外見設定　色や髪型には不足があると思われるので、知識のある方追加お願いします
+;====================================================
+;머리색 CFLAG:35に指定
+;====================================================
+@NAME_CHANGE_머리색, ARG
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC INPUT_ABLE, 100
+#DIMS CONST COLOR_TABLE = "미설정", "흑색", "갈색", "금색", "은색", "적색", "청색", "녹색", "핑크", "보라색", "백색", "밤색", "연보라", "자주색", "플래티넘", "애쉬브라운", "오렌지"
+#DIM CSV髪の色
+IF GROUPMATCH(CSTR:ARG:체형, "", "미설정", "스킨헤드")
+	PRINTW 먼저 헤어스타일을 변경해 주십시오
+	RESULTS = 미설정
+ELSE
+	IF CSTR:ARG:머리색 == ""
+		PRINTFORM %NAME:ARG%의 머리색은 미설정 상태입니다
+	ELSE
+		PRINTFORM %NAME:ARG%의 머리색은 「%CSTR:ARG:머리색%」(으)로 설정되어 있습니다
+	ENDIF
+	PRINTFORML 새로운 머리색을 정해 주십시오
+	FOR LCOUNT, 0, VARSIZE("COLOR_TABLE")
+		SIF COLOR_TABLE:LCOUNT == ""
+			CONTINUE
+		PRINTFORML [{LCOUNT, 2}] %COLOR_TABLE:LCOUNT%
+		INPUT_ABLE:LCOUNT = 1
+	NEXT
+	IF CSVCSTR(NO:ARG, GETNUM(CSTR, "머리색")) != ""
+		INPUT_ABLE:80 = 1
+		PRINTFORML [80] %CSVCSTR(NO:ARG, GETNUM(CSTR, "머리색"))%(초기 머리색)
+	ENDIF
+	INPUT_ABLE:90 = 1
+	PRINTFORML [90] 원하는 머리색을 입력한다
+	INPUT_ABLE:99 = 1
+	PRINTFORML [99] 변경하지 않는다
+	CALL INPUT_ARRAY, INPUT_ABLE
+	SELECTCASE RESULT
+		CASE 0
+			CSTR:ARG:머리색 '= ""
+			RESULTS = 미설정
+		CASE IS < 20
+			CSTR:ARG:머리색 '= COLOR_TABLE:RESULT
+			RESULTS '= COLOR_TABLE:RESULT
+		CASE 80
+			RESULTS '= CSVCSTR(NO:ARG, GETNUM(CSTR, "머리색"))
+			CSTR:ARG:머리색 '= RESULTS
+		CASE 90
+			PRINTFORML 원하는 머리색을 입력해 주십시오
+			INPUTS
+			IF RESULTS == "미설정" || RESULTS == ""
+				CSTR:ARG:머리색 '= ""
+				RESULTS = 미설정
+			ELSE
+				CSTR:ARG:머리색 '= RESULTS
+			ENDIF
+		CASE 99
+			RESULTS '= "설정 안 함"
+	ENDSELECT
+ENDIF
+
+;====================================================
+;체형 CFLAG:36に指定 [남자]　[男の娘or女]で別タイプ
+;====================================================
+@NAME_CHANGE_체형, ARG
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC INPUT_ABLE, 100
+IF CSTR:ARG:체형 == ""
+	PRINTFORML %NAME:ARG%의 헤어스타일은 「미설정」입니다
+ELSE
+	PRINTFORML %NAME:ARG%의 헤어스타일은 「%CSTR:ARG:체형%」(으)로 설정되어 있습니다
+ENDIF
+PRINTFORML 새로운 헤어스타일을 정해 주십시오
+FOR LCOUNT, 0, 20
+	SIF GET_HAIRSTYLE_NAME(LCOUNT, ARG) == ""
+		CONTINUE
+	INPUT_ABLE:LCOUNT = 1
+	PRINTFORML [{LCOUNT,2}] %GET_HAIRSTYLE_NAME(LCOUNT)%
+NEXT
+IF CSVCSTR(NO:ARG, GETNUM(CSTR, "체형")) != ""
+	INPUT_ABLE:80 = 1
+	PRINTFORML [80] %CSVCSTR(NO:ARG, GETNUM(CSTR, "체형"))%(초기 헤어스타일)
+ENDIF
+INPUT_ABLE:90 = 1
+PRINTFORML [90] 원하는 헤어스타일을 입력한다
+INPUT_ABLE:99 = 1
+PRINTFORML [99] 변경하지 않는다
+CALL INPUT_ARRAY, INPUT_ABLE
+SELECTCASE RESULT
+	CASE 0
+		CSTR:ARG:체형 '= ""
+		RESULTS = 미설정
+	CASE IS < 20
+		CSTR:ARG:체형 '= GET_HAIRSTYLE_NAME(RESULT)
+		RESULTS '= GET_HAIRSTYLE_NAME(RESULT)
+	CASE 80
+		RESULTS '= CSVCSTR(NO:ARG, GETNUM(CSTR, "체형"))
+		CSTR:ARG:체형 '= RESULTS
+	CASE 90
+		PRINTFORML 원하는 헤어스타일을 입력해 주십시오
+		INPUTS
+		IF RESULTS == "미설정" || RESULTS == ""
+			CSTR:ARG:체형 '= ""
+			RESULTS = 미설정
+		ELSE
+			CSTR:ARG:체형 '= RESULTS
+		ENDIF
+	CASE 99
+		RESULTS '= "설정 안 함"
+ENDSELECT
+;====================================================
+;눈동자색 CFLAG:37に指定
+;====================================================
+@NAME_CHANGE_눈동자색, ARG
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC INPUT_ABLE, 100
+#DIMS CONST COLOR_TABLE = "미설정", "흑색", "갈색", "금색", "은색", "적색", "청색", "녹색", "보라색", "회색", "하늘색"
+IF CSTR:ARG:눈동자색 == ""
+	PRINTFORM %NAME:ARG%의 눈동자 색은 미설정 상태입니다
+ELSE
+	PRINTFORM %NAME:ARG%의 눈동자 색은 「%CSTR:ARG:눈동자색%」(으)로 설정되어 있습니다
+ENDIF
+PRINTFORML 새로운 눈동자 색을 정해 주십시오
+FOR LCOUNT, 0, VARSIZE("COLOR_TABLE")
+	SIF COLOR_TABLE:LCOUNT == ""
+		CONTINUE
+	PRINTFORML [{LCOUNT, 2}] %COLOR_TABLE:LCOUNT%
+	INPUT_ABLE:LCOUNT = 1
+NEXT
+IF CSVCSTR(NO:ARG, GETNUM(CSTR, "눈동자색")) != ""
+	INPUT_ABLE:80 = 1
+	PRINTFORML [80] %CSVCSTR(NO:ARG, GETNUM(CSTR, "눈동자색"))%(초기 눈동자 색)
+ENDIF
+INPUT_ABLE:90 = 1
+PRINTFORML [90] 원하는 눈동자 색을 입력한다
+INPUT_ABLE:99 = 1
+PRINTFORML [99] 변경하지 않는다
+CALL INPUT_ARRAY, INPUT_ABLE
+SELECTCASE RESULT
+	CASE 0
+		CSTR:ARG:눈동자색 '= ""
+		RESULTS = 미설정
+	CASE IS < 20
+		CSTR:ARG:눈동자색 '= COLOR_TABLE:RESULT
+		RESULTS '= COLOR_TABLE:RESULT
+	CASE 80
+		RESULTS '= CSVCSTR(NO:ARG, GETNUM(CSTR, "눈동자색"))
+		CSTR:ARG:눈동자색 '= RESULTS
+	CASE 90
+		PRINTFORML 원하는 눈동자 색을 입력해 주십시오
+		INPUTS
+		IF RESULTS == "미설정" || RESULTS == ""
+			CSTR:ARG:눈동자색 '= ""
+			RESULTS = 미설정
+		ELSE
+			CSTR:ARG:눈동자색 '= RESULTS
+		ENDIF
+	CASE 99
+		RESULTS '= "설정 안 함"
+ENDSELECT
+
+;====================================================
+;피부색 CFLAG:38に指定
+;====================================================
+@NAME_CHANGE_피부색, ARG
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC INPUT_ABLE, 100
+#DIMS CONST COLOR_TABLE = "미설정", "살구색", "백색", "갈색", "적색", "청색", "녹색"
+
+IF CSTR:ARG:피부색 == ""
+	PRINTFORM %NAME:ARG%의 피부색은 미설정 상태입니다
+ELSE
+	PRINTFORM %NAME:ARG%의 피부색은 「%CSTR:ARG:피부색%」(으)로 설정되어 있습니다
+ENDIF
+PRINTFORML 새로운 피부색을 정해 주십시오
+FOR LCOUNT, 0, VARSIZE("COLOR_TABLE")
+	SIF COLOR_TABLE:LCOUNT == ""
+		CONTINUE
+	PRINTFORML [{LCOUNT, 2}] %COLOR_TABLE:LCOUNT%
+	INPUT_ABLE:LCOUNT = 1
+NEXT
+IF CSVCSTR(NO:ARG, GETNUM(CSTR, "피부색")) != ""
+	INPUT_ABLE:80 = 1
+	PRINTFORML [80] %CSVCSTR(NO:ARG, GETNUM(CSTR, "피부색"))%(초기 피부색)
+ENDIF
+INPUT_ABLE:90 = 1
+PRINTFORML [90] 원하는 피부색을 입력한다
+INPUT_ABLE:99 = 1
+PRINTFORML [99] 변경하지 않는다
+CALL INPUT_ARRAY, INPUT_ABLE
+SELECTCASE RESULT
+	CASE 0
+		CSTR:ARG:피부색 '= ""
+		RESULTS = 미설정
+	CASE IS < 20
+		CSTR:ARG:피부색 '= COLOR_TABLE:RESULT
+		RESULTS '= COLOR_TABLE:RESULT
+	CASE 80
+		RESULTS '= CSVCSTR(NO:ARG, GETNUM(CSTR, "피부색"))
+		CSTR:ARG:피부색 '= RESULTS
+	CASE 90
+		PRINTFORML 원하는 피부색을 입력해 주십시오
+		INPUTS
+		IF RESULTS == "미설정" || RESULTS == ""
+			CSTR:ARG:피부색 '= ""
+			RESULTS = 미설정
+		ELSE
+			CSTR:ARG:피부색 '= RESULTS
+		ENDIF
+	CASE 99
+		RESULTS '= "설정 안 함"
+ENDSELECT
+
+;====================================================
+;신장 BASE:24に設定
+;====================================================
+@NAME_CHANGE_신장, ARG
+#DIM MAX身長
+#DIM MIN身長
+#DIM CSV身長
+MAX身長 = 175
+MIN身長 = 150
+CSVBASE NO:ARG, 24
+CSV身長 = RESULT
+
+IF BASE:ARG:신장 > 0
+	PRINTFORML %NAME:ARG%의 신장은 {BASE:ARG:신장}cm로 설정되어 있습니다
+ELSE
+	PRINTFORML %NAME:ARG%의 신장을 설정합니다
+ENDIF
+$INPUT_TALL
+IF TALENT:ARG:남자
+	MAX身長 = 185
+ENDIF
+IF TALENT:ARG:소인체형
+	MAX身長 = 20
+	MIN身長 = 1
+ELSEIF TALENT:ARG:큰체형
+	MAX身長 = 220
+	MIN身長 = 170
+ELSEIF TALENT:ARG:거체
+	MAX身長 = 500
+	MIN身長 = 200
+ELSE
+	IF TALENT:ARG:유아체형
+		MAX身長 -= 26
+		MIN身長 -= 35
+	ENDIF
+ENDIF
+
+;IF TALENT:ARG:남자 && TALENT:ARG:유아체형 && !TALENT:ARG:오토코노코
+;	PRINTL いくつにしますか(120-164)
+;	INPUT
+;	IF RESULT < 120 || RESULT > 164
+;		PRINTL 부적절한 값입니다
+;		GOTO INPUT_TALL
+;	ELSE
+;		BASE:ARG:신장 = RESULT
+;	ENDIF
+;ELSEIF TALENT:ARG:남자 && !TALENT:ARG:오토코노코
+;	PRINTL いくつにしますか(165-180)
+;	INPUT
+;	IF RESULT < 165 || RESULT > 180
+;		PRINTL 부적절한 값입니다
+;		GOTO INPUT_TALL
+;	ELSE
+;		BASE:ARG:신장 = RESULT
+;	ENDIF
+;ELSEIF TALENT:ARG:유아체형
+;	PRINTL いくつにしますか(115-149)
+;	INPUT
+;	IF RESULT < 115 || RESULT > 149
+;		PRINTL 부적절한 값입니다
+;		GOTO INPUT_TALL
+;	ELSE
+;		BASE:ARG:신장 = RESULT
+;	ENDIF
+;ELSE
+;	PRINTL いくつにしますか(150-175)
+;	INPUT
+;	IF RESULT < 150 || RESULT > 175
+;		PRINTL 부적절한 값입니다
+;		GOTO INPUT_TALL
+;	ELSE
+;		BASE:ARG:신장 = RESULT
+;	ENDIF
+;ENDIF
+
+PRINTFORML 얼마로 하겠습니까({MIN신장}-{MAX신장})
+PRINTFORML 
+SIF BASE:ARG:신장 > 0
+	PRINTFORML [0] 미설정으로 한다
+SIF CSV身長 > 0
+	PRINTFORML [{CSV身長}] 초기치로 되돌린다({CSV身長} cm)
+PRINTFORML [{BASE:ARG:신장}] 변경하지 않는다({BASE:ARG:신장} cm)
+
+INPUT
+IF BASE:ARG:신장 > 0 && BASE:ARG:신장 == RESULT
+	;변경하지 않는다
+ELSEIF RESULT == 0
+	;未設定に戻す
+	BASE:ARG:신장 = RESULT
+ELSEIF RESULT < MIN身長 || RESULT > MAX身長
+	PRINTL 부적절한 값입니다
+	GOTO INPUT_TALL
+ELSE
+	BASE:ARG:신장 = RESULT
+ENDIF
+;====================================================
+;スリーサイズ BASE:25～27に設定
+;160センチで以下の範囲
+;B:71-120
+;W:48-93
+;H:72-100
+;====================================================
+@NAME_CHANGE_스리사이즈, ARG
+#DIM CSVバスト
+#DIM CSVウエスト
+#DIM CSVヒップ
+CSVBASE NO:ARG, 25
+CSVバスト = RESULT
+CSVBASE NO:ARG, 26
+CSVウエスト = RESULT
+CSVBASE NO:ARG, 27
+CSVヒップ = RESULT
+
+IF TALENT:ARG:남자 && !TALENT:ARG:오토코노코
+	PRINTL ？？「…가자, 곧 여기도 부해에 가라앉는다」
+	RESULTS = 설정 안 함
+ELSEIF BASE:ARG:신장 == 0
+	PRINTW 먼저 신장을 정해 주십시오
+	RESULTS = 설정 안 함
+ELSE
+	PRINTFORML [0] 전부 직접 입력한다
+	PRINTFORML [1] 전부 자동 설정한다
+	PRINTFORML [9] 돌아간다
+	INPUT
+	IF RESULT == 9
+		;
+	ELSEIF RESULT == 1
+		CALL SET_INFO_BODYSIZE, ARG, ""
+	ELSE
+		IF BASE:ARG:바스트 == 0 || BASE:ARG:웨스트 == 0 || BASE:ARG:힙사이즈 == 0
+			PRINTFORML %NAME:ARG%의 쓰리사이즈를 설정합니다
+		ELSE
+			PRINTFORML %NAME:ARG%의 현재 쓰리사이즈는 다음과 같습니다
+			CALL SHOW_INFO_BODYSIZE(ARG)
+		ENDIF
+		$INPUT_B
+		PRINTFORML 바스트 값을 설정해 주십시오({BASE:ARG:신장 * 4 / 9}-{BASE:ARG:신장 * 3 / 4})
+		PRINTFORML 
+		SIF BASE:ARG:바스트 > 0
+			PRINTFORML [0] 미설정으로 한다
+		SIF CSVバスト > 0
+			PRINTFORML [{CSVバスト}] 초기치로 되돌린다({CSVバスト} cm)
+		PRINTFORML [{BASE:ARG:바스트}] 변경하지 않는다({BASE:ARG:바스트} cm)
+		INPUT
+		IF BASE:ARG:바스트 > 0 && BASE:ARG:바스트 == RESULT
+			;변경하지 않는다
+		ELSEIF RESULT == 0
+			;未設定に戻す
+			BASE:ARG:바스트 = RESULT
+		ELSEIF RESULT < BASE:ARG:신장 * 4 / 9 || RESULT > BASE:ARG:신장 * 3 / 4
+			PRINTL 부적절한 값입니다
+			GOTO INPUT_B
+		ELSE
+			BASE:ARG:바스트 = RESULT
+		ENDIF
+		$INPUT_W
+		PRINTFORML 웨이스트 값을 설정해 주십시오({BASE:ARG:신장 * 3 / 10}-{BASE:ARG:신장 / 2})
+		PRINTFORML 
+		SIF BASE:ARG:웨스트 > 0
+			PRINTFORML [0] 미설정으로 한다
+		SIF CSVウエスト > 0
+			PRINTFORML [{CSVウエスト}] 초기치로 되돌린다({CSVウエスト} cm)
+		PRINTFORML [{BASE:ARG:웨스트}] 변경하지 않는다({BASE:ARG:웨스트} cm)
+		INPUT
+		IF BASE:ARG:웨스트 > 0 && BASE:ARG:웨스트 == RESULT
+			;변경하지 않는다
+		ELSEIF RESULT == 0
+			;未設定に戻す
+			BASE:ARG:웨스트 = RESULT
+		ELSEIF RESULT < BASE:ARG:신장 * 3 / 10 || RESULT > BASE:ARG:신장 * 7 / 12
+			PRINTL 부적절한 값입니다
+			GOTO INPUT_W
+		ELSE
+			BASE:ARG:웨스트 = RESULT
+		ENDIF
+		$INPUT_H
+		PRINTFORML 힙 값을 설정해 주십시오({BASE:ARG:신장 * 9 / 20}-{BASE:ARG:신장 * 3 / 5})
+		PRINTFORML 
+		SIF BASE:ARG:힙사이즈 > 0
+			PRINTFORML [0] 미설정으로 한다
+		SIF CSVウエスト > 0
+			PRINTFORML [{CSVヒップ}] 초기치로 되돌린다({CSVヒップ} cm)
+		PRINTFORML [{BASE:ARG:힙사이즈}] 변경하지 않는다({BASE:ARG:힙사이즈} cm)
+		INPUT
+		IF BASE:ARG:힙사이즈 > 0 && BASE:ARG:힙사이즈 == RESULT
+			;변경하지 않는다
+		ELSEIF RESULT == 0
+			;未設定に戻す
+			BASE:ARG:힙사이즈 = RESULT
+		ELSEIF RESULT < BASE:ARG:신장 * 9 / 20 || RESULT > BASE:ARG:신장 * 5 / 8
+			PRINTL 부적절한 값입니다
+			GOTO INPUT_H
+		ELSE
+			BASE:ARG:힙사이즈 = RESULT
+		ENDIF
+	ENDIF
+ENDIF

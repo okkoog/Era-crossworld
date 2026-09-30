@@ -1,0 +1,391 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_竜石変化,ARG
+RESULTS = 竜石変化
+
+;　명중
+@SKILL_HITRATE_竜石変化,ARG
+RETURN 0
+
+;　威力
+@SKILL_POWER_竜石変化,ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_竜石変化,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_竜石変化,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_竜石変化,ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_竜石変化,ARG
+RETURN 50
+
+;　相性
+@SKILL_TYPE_竜石変化,ARG
+RETURN 1
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_竜石変化
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_竜石変化,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_竜石変化,ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_竜石変化,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_竜石変化,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_竜石変化,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_竜石変化
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;속도보정
+@SKILL_SPEED_竜石変化, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_竜石変化
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_竜石変化, ARG = -1
+RETURN 0
+
+
+
+;====================================================
+;トリガー発動条件
+;====================================================
+;@SKILL_TRIGGER_ACTIONABLE_竜石変化,ARG,ARG:1
+;;自分じゃなければNG
+;SIF ARG != ARG:1
+;	RETURN 0
+;SIF SKILLGAGE_D_GET(ARG,竜石変化ゲージ用スキル番号) < 1
+;	RETURN 0
+;CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+;SIF RESULT != 1 || CFLAG:ARG:타겟 < 1
+;	RETURN 0
+;IF CFLAG:ARG:타겟 < 17
+;	SIF POS(CFLAG:ARG:타겟) < 0 || GET_STATE(CFLAG:POS(CFLAG:ARG:타겟):상태이상) == "DYING"
+;		RETURN 0
+;	RESULT:1 = CFLAG:ARG:타겟
+;ELSE
+;	RESULT:1 = CFLAG:ARG:타겟
+;ENDIF
+;RETURN 1
+;
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_竜石変化,ARG,ARG:1,ARG:2
+#DIM 竜石変化ゲージ用スキル番号
+#LOCALSIZE 4
+竜石変化ゲージ用スキル番号 = PU_SKILLNUM_GET(ARG,"竜石変化")
+IF SKILLGAGE_D_GET(ARG,竜石変化ゲージ用スキル番号) == 0
+	IF SKILLGAGE_H_GET(ARG,竜石変化ゲージ用スキル番号) == 1
+			PRINTFORMW チキは赤い火竜に変身した！
+			CALL SKILLGAGE_D_SET,ARG,竜石変化ゲージ用スキル番号,(SKILLGAGE_F_GET(ARG,竜石変化ゲージ用スキル番号) / 20)
+			CALL SKILLGAGE_F_SET,ARG,竜石変化ゲージ用スキル番号,0
+	ELSEIF SKILLGAGE_H_GET(ARG,竜石変化ゲージ用スキル番号) == 2
+			PRINTFORMW チキは蒼い氷竜に変身した！
+			CALL SKILLGAGE_D_SET,ARG,竜石変化ゲージ用スキル番号,(SKILLGAGE_F_GET(ARG,竜石変化ゲージ用スキル番号) / 20)
+			CALL SKILLGAGE_F_SET,ARG,竜石変化ゲージ用スキル番号,0
+	ELSEIF SKILLGAGE_H_GET(ARG,竜石変化ゲージ用スキル番号) == 3
+			PRINTFORMW チキは黒い魔竜に変身した！
+			CALL SKILLGAGE_D_SET,ARG,竜石変化ゲージ用スキル番号,(SKILLGAGE_F_GET(ARG,竜石変化ゲージ用スキル番号) / 15)
+			CALL SKILLGAGE_F_SET,ARG,竜石変化ゲージ用スキル番号,0
+	ELSEIF SKILLGAGE_H_GET(ARG,竜石変化ゲージ用スキル番号) == 4
+			PRINTFORMW チキは金の神竜に変身した！
+			CALL SKILLGAGE_D_SET,ARG,竜石変化ゲージ用スキル番号,(SKILLGAGE_F_GET(ARG,竜石変化ゲージ用スキル番号) / 25)
+			CALL SKILLGAGE_F_SET,ARG,竜石変化ゲージ用スキル番号,0
+	ENDIF
+ENDIF
+;CALL SKILLGAGE_H_SET,ARG,竜石変化ゲージ用スキル番号,0
+
+
+;====================================================
+;追加コマンド(一番下)
+;====================================================
+@INPUT_COM_NAME_竜石変化,ARG
+RESULTS = 竜石変化
+RESULTS:1 = 『竜石変化』
+RETURN 2
+
+@INPUT_COM_ABLE_竜石変化,ARG
+RESULTS = 制御不能(要：竜石の首飾り)
+SIF ITEMNAME:(EQUIP:ARG:악세서리) != "용석의목걸이"
+	RETURN -1
+RESULTS = 変身中
+SIF PU_SKILLGAGE_D_GET(ARG,"竜石変化") > 0
+	RETURN -1
+SIF PU_SKILLGAGE_F_GET(ARG,"竜石変化") < 40
+	RETURN -1
+RESULTS = 竜覚醒ゲージ不足
+RESULTS = 変身中
+RETURN 1
+
+;====================================================
+;コマンド実行
+;====================================================
+@INPUT_COM_竜石変化,ARG
+#DIM 竜石変化ゲージ用スキル番号
+#LOCALSIZE 5
+竜石変化ゲージ用スキル番号 = PU_SKILLNUM_GET(ARG,"竜石変化")
+
+SIF ITEMNAME:(EQUIP:ARG:악세서리) != "용석의목걸이"
+	RETURN 0
+SIF SKILLGAGE_F_GET(ARG,竜石変化ゲージ用スキル番号) < 40
+	RETURN 0
+SIF SKILLGAGE_D_GET(ARG,竜石変化ゲージ用スキル番号)
+	RETURN 0
+
+CALL GET_SKILL_COST,竜石変化ゲージ用スキル番号,ARG
+VARSET LOCAL
+	PRINTFORML [1] 火竜石　※持続時間{SKILLGAGE_F_GET(ARG,竜石変化ゲージ用スキル番号) / 20}ターン（火炎属性　追加：炎上）
+LOCAL:1 = 1
+IF BASE:ARG:LV >= 19
+	PRINTFORML [2] 氷竜石　※持続時間{SKILLGAGE_F_GET(ARG,竜石変化ゲージ用スキル番号) / 20}ターン（氷結属性　追加：凍結）
+	LOCAL:2 = 1
+ENDIF
+IF BASE:ARG:LV >= 29 && SKILLGAGE_F_GET(ARG,竜石変化ゲージ用スキル番号) > 25
+	PRINTFORML [3] 魔竜石　※持続時間{SKILLGAGE_F_GET(ARG,竜石変化ゲージ用スキル番号) / 12}ターン（飛具属性　追加：魔封　長時間）
+	LOCAL:3 = 1
+ENDIF
+IF BASE:ARG:LV >= 49 && SKILLGAGE_F_GET(ARG,竜石変化ゲージ用スキル番号) > 49
+	PRINTFORML [4] 神竜石　※持続時間{SKILLGAGE_F_GET(ARG,竜石変化ゲージ用スキル番号) / 25}ターン（万能属性　高威力　短時間）
+	LOCAL:4 = 1
+ENDIF
+DRAWLINE
+PRINTL [0] ＣＡＮＣＥＬ
+CALL INPUTINT(0,1,2,3,4)
+IF RESULT > 0 && LOCAL:RESULT > 0
+	CALL SKILLGAGE_H_SET,ARG,竜石変化ゲージ用スキル番号,RESULT
+	CALL PRINT_ACT_MESSAGE, ARG, 竜石変化ゲージ用スキル番号
+	CALL ACTION_竜石変化,ARG
+	CALL BATTLE_EVENT_ACT, ARG, 竜石変化ゲージ用スキル番号
+	CALL PAY_COST, ARG,竜石変化ゲージ用スキル番号
+ENDIF
+RETURN -1
+
+;　 説明文の表示
+@SKILL_EXPLAIN_竜石変化,ARG
+PRINTL パッシブ：ウタロイド・TIKiの竜変身能力制御用スキル。竜覚醒ゲージを追加する。
+PRINTL 
+PRINTL 40％以上でコマンドから変身が可能になり、ブレス攻撃が使用可能になる。
+PRINTL 効果ターンは発動時ゲージ量の20:1。魔竜石は軽く（12:1）、神竜石は重い（25:1）。解除不能。
+PRINTL ゲージは平時の行動でダメージ量に応じた量、気合・雄叫び・挑発・コンセントレイトで30%上昇する。
+PRINT ただし、
+SETCOLOR 0x33ffcc
+PRINTL 発動には『용석의목걸이』の装備と50MPが必要。
+RESETCOLOR
+PRINTL 『オリジナルであったチキ』は神竜族である。彼女達のようなマムクートは竜としての力を石に封印することで
+PRINTL 永く生きる代償にもたらされる狂気から逃れることが出来た。
+PRINTL 一度変身すれば、並の防御を容易く貫く竜の力を実感できるだろう。（チキ専用）
+
+@SKILL_BATTLE_MAIN_TOOLTIP_竜石変化, ARG, ARG:1
+IF SKILLGAGE_D_GET(ARG,ARG:1)
+	RESULTS = □%AUTO_SPLIT("/火竜/氷竜/魔竜/神竜", "/", SKILLGAGE_H_GET(ARG,ARG:1))%変化
+	RESULTS:1 = 　残り:{SKILLGAGE_D_GET(ARG,ARG:1)}ターン
+ELSE
+	RESULTS = □竜覚醒ゲージ
+	RESULTS:1 = 　{SKILLGAGE_F_GET(ARG,ARG:1)}％
+ENDIF
+@SKILL_BATTLE_MAIN_FACE_TOOLTIP_竜石変化, ARG, ARG:1
+IF SKILLGAGE_D_GET(ARG,ARG:1)
+	RESULTS = □%AUTO_SPLIT("/火竜/氷竜/魔竜/神竜", "/", SKILLGAGE_H_GET(ARG,ARG:1))%変化
+	RESULTS:1 = 　ブレススキルを使用可能。
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_竜石変化,ARG
+;竜石制御用アクセ装備時のみ使用可能
+;SIF EQUIP:ARG:악세서리 == 5409
+;	RETURN 1
+RETURN 0
+
+@DISPLAY_COMMAND_P_竜石変化,ARG
+IF PU_SKILLGAGE_D_GET(ARG,"竜石変化") > 0
+	SELECTCASE PU_SKILLGAGE_H_GET(ARG,"竜石変化")
+		CASE 1
+			RESULTS = 火竜変化！　残り{PU_SKILLGAGE_D_GET(ARG,"竜石変化")}Ｔ
+		CASE 2
+			RESULTS = 氷竜変化！　残り{PU_SKILLGAGE_D_GET(ARG,"竜石変化")}Ｔ
+		CASE 3
+			RESULTS = 魔竜変化！　残り{PU_SKILLGAGE_D_GET(ARG,"竜石変化")}Ｔ
+		CASE 4
+			RESULTS = 神竜変化！　残り{PU_SKILLGAGE_D_GET(ARG,"竜石変化")}Ｔ
+	ENDSELECT
+ELSE
+	RESULTS = 竜覚醒:{PU_SKILLGAGE_F_GET(ARG,"竜石変化"),3}％
+ENDIF
+RETURN 3
+
+@SKILL_EX_DISPLAY_竜石変化, ARG, ARGS
+#DIM MAX_EFFECT_CONTINUE
+#DIM BAR_COLOR, 2
+#DIM BARLENS
+BARLENS = SKILL_EX_DISPLAY_LENS - 2
+SELECTCASE PU_SKILLGAGE_H_GET(ARG, "竜石変化")
+	CASE 0
+		BAR_COLOR:0 = BARCOLORSET("青緑")
+		BAR_COLOR:1 = RESULT:1
+	CASE 1
+		BAR_COLOR:0 = BARCOLORSET("赤")
+		BAR_COLOR:1 = RESULT:1
+		MAX_EFFECT_CONTINUE = 100 / 20
+	CASE 2
+		BAR_COLOR:0 = BARCOLORSET("青")
+		BAR_COLOR:1 = RESULT:1
+		MAX_EFFECT_CONTINUE = 100 / 20
+	CASE 3
+		BAR_COLOR:0 = BARCOLORSET("紫")
+		BAR_COLOR:1 = RESULT:1
+		MAX_EFFECT_CONTINUE = 100 / 12
+	CASE 4
+		BAR_COLOR:0 = BARCOLORSET("黄")
+		BAR_COLOR:1 = RESULT:1
+		MAX_EFFECT_CONTINUE = 100 / 25
+ENDSELECT
+IF PU_SKILLGAGE_D_GET(ARG, "竜石変化")
+	RESULTS = %SET_COLOR_TAG(UNICODE(0x265E), TOSTR(BAR_COLOR:0))%
+	RESULTS += HTML_RECT_SPLIT_BAR(PU_SKILLGAGE_D_GET(ARG, "竜石変化"), MAX_EFFECT_CONTINUE, BARLENS, BAR_COLOR, BAR_COLOR:1)
+ELSE
+	RESULTS = %SET_COLOR_TAG(UNICODE(0x272A), \@ PU_SKILLGAGE_F_GET(ARG, "竜石変化") >= 40 ? yellow # デフォルト\@)%
+	RESULTS += HTML_RECT_BAR(PU_SKILLGAGE_F_GET(ARG, "竜石変化"), 100, BARLENS, BAR_COLOR, BAR_COLOR:1)
+ENDIF
+RESULTS:1 = 竜覚醒ゲージ
+RETURN 1
+;====================================================
+;行動によるスキルゲージ操作
+;各キャラクターの通常の行動後に全キャラで呼び出される
+;ARG:		このスキルの持ち主のキャラ番号
+;ARG:1		行動したキャラクターのキャラ番号
+;
+;RESULT 		獲得したゲージの量を返すことで獲得量を表示させる。つまり、他人の行動に反応させることなども可能。
+;RESULT:1		獲得表示のときの文字色を指定できる。ゲージが溜まったときの表示わけなどに
+;RESULTS		ゲージの名称 「<<XXXX>>」という形で表示される
+;RESULTS:1		ゲージの単位。半角の%を使いたい場合は「\%」と言うかたちで退避記号を使うと良い
+;RESULTS;2		色指定以外の要素を使わずに文字列を返す。ゲージ式の獲得量で表現したい場合などに
+;====================================================
+@SKILLGAGE_CHARGE_竜石変化,ARG,ARG:1
+#LOCALSIZE 2
+#DIM 竜石変化ゲージ用スキル番号
+#DIM L_T
+#DIM L_GP
+竜石変化ゲージ用スキル番号 = PU_SKILLNUM_GET(ARG,"竜石変化")
+;必要な装備をつけていない場合はゲージを獲得しない
+SIF ITEMNAME:(EQUIP:ARG:악세서리) != "용석의목걸이"
+	RETURN 0
+;スキルゲージDがある＝発動中の場合離脱
+SIF SKILLGAGE_D_GET(ARG,竜石変化ゲージ用スキル番号) > 0
+	RETURN 0
+SIF SKILLGAGE_F_GET(ARG,竜石変化ゲージ用スキル番号) == 100
+	RETURN 0
+L_GP = 0
+;自分の行動の場合
+IF ARG == ARG:1
+	;行動するたびに10獲得
+	L_GP += 10
+	FOR LOCAL, 0, BCHARANUM
+		L_T = BCHARA:LOCAL
+		;味方への攻撃では増えないL
+		SIF IS_FRIEND(ARG, L_T)
+			CONTINUE
+		;ダメージを与える毎に+5、さらにクリティカル・弱点は追加で+5
+		SIF GET_CREC_ACT(ARG, L_T, "HIT")
+			L_GP += 5
+		SIF GET_CREC_ACT(ARG, L_T, "CRT")
+			L_GP += 5
+		SIF GET_CREC_ACT(ARG, L_T, "WEAK")
+			L_GP += 5
+	NEXT
+	;ダメージを受けた敵の数に応じてスキルゲージアップ
+	;FOR LOCAL,0,CHARANUM
+	;	SIF CFLAG:LOCAL:PT플래그 == CFLAG:ARG:PT플래그
+	;		CONTINUE
+	;	IF CFLAG:LOCAL:현데미지 > 0
+	;		CALL SKILLGAGE_F_ADD,ARG,竜石変化ゲージ用スキル番号,5
+	;	ELSE
+	;		CONTINUE
+	;	ENDIF
+	;	;会心、弱点を出すとさらにアップ
+	;	SIF GETBIT(CFLAG:LOCAL:受けフラグ,21)
+	;		CALL SKILLGAGE_F_ADD,ARG,竜石変化ゲージ用スキル番号,5
+	;	SIF GETBIT(CFLAG:LOCAL:受けフラグ,22)
+	;		CALL SKILLGAGE_F_ADD,ARG,竜石変化ゲージ用スキル番号,5
+	;NEXT
+	;気合を入れても上がる
+	SIF CFLAG:ARG:입력행동 == [[스킬:기합]]
+		L_GP += 30
+	;集中しても上がる
+	SIF CFLAG:ARG:입력행동 == [[스킬:컨센트레이트]]
+		L_GP += 30
+	;雄叫びしても上がる
+	SIF CFLAG:ARG:입력행동 == [[스킬:포효]]
+		L_GP += 30
+	;挑発しても上がる
+	SIF CFLAG:ARG:입력행동 == [[스킬:도발]]
+		CALL SKILLGAGE_F_ADD,ARG,竜石変化ゲージ用スキル番号,30
+	;気合を入れても上がる
+	;SIF CFLAG:ARG:입력행동 == 511
+	;	CALL SKILLGAGE_F_ADD,ARG,竜石変化ゲージ用スキル番号,30
+	;集中しても上がる
+	;SIF CFLAG:ARG:입력행동 == 512
+	;	CALL SKILLGAGE_F_ADD,ARG,竜石変化ゲージ用スキル番号,30
+	;雄叫びしても上がる
+	;SIF CFLAG:ARG:입력행동 == 514
+	;	CALL SKILLGAGE_F_ADD,ARG,竜石変化ゲージ用スキル番号,30
+	;挑発しても上がる
+	;SIF CFLAG:ARG:입력행동 == 515
+	;	CALL SKILLGAGE_F_ADD,ARG,竜石変化ゲージ用スキル番号,30
+ENDIF
+;ダメージを受けた又はカウンター、トリガー以外の攻撃を受けたら
+;ゲージが増える。増加量は最大体力に対するダメージ割合の２倍
+SIF GET_CREC_ACT(ARG:1, ARG, "HIT")
+	L_GP += MAX(200 * CFLAG:ARG:현데미지 / MAXBASE:ARG:ＨＰ, 2)
+;IF CFLAG:ARG:현데미지 > 0 || GETBIT(CFLAG:ARG:受けフラグ,18) || GETBIT(CFLAG:ARG:受けフラグ,19)
+;	LOCAL = 200 * CFLAG:ARG:현데미지 / MAXBASE:ARG:ＨＰ
+;	LOCAL = LOCAL < 2 ? 2 # LOCAL
+;	CALL SKILLGAGE_F_ADD,ARG,竜石変化ゲージ用スキル番号,LOCAL
+;ENDIF
+;スキルゲージが100以上だと100にする
+CALL SKILLGAGE_F_SET,ARG,竜石変化ゲージ用スキル番号,MIN(100, L_GP + SKILLGAGE_F_GET(ARG,竜石変化ゲージ用スキル番号))
+;SIF SKILLGAGE_F_GET(ARG,竜石変化ゲージ用スキル番号) > 100
+;	CALL SKILLGAGE_F_SET,ARG,竜石変化ゲージ用スキル番号,100
+;RETURN 0
+IF SKILLGAGE_F_GET(ARG,竜石変化ゲージ用スキル番号) >= 40
+	RESULTS = ＡＷＡＫＥＮＩＮＧ　ＲＥＡＤＹ！
+	RESULT:1 = COLOR("YELLOW")
+ELSE
+	RESULTS = 竜覚醒
+ENDIF
+RESULTS:1 = \%
+RETURN L_GP
+@継承不能_竜石変化
+RETURN 1
+

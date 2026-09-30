@@ -1,0 +1,139 @@
+﻿
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;	※未完成ファイルです。
+;	Module		:DIV_MESSAGE_LOG.ERB
+;	Facility	:DIV_MESSAGE.ERBにて作成したメッセージウィンドウのログの保存・操作・閲覧を行うファイル。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/07/09		一ノ瀬				    新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------------------------------------
+
+;=====================================================
+;	@DIV_MESSAGE_LOG
+;	ログを閲覧する関数。未作成
+;=====================================================
+@DIV_MESSAGE_LOG
+#DIM DYNAMIC L_Y
+#DIM DYNAMIC TEMP_Y
+#DIM DYNAMIC TEMP_X
+#DIM DYNAMIC TEMP_WIDTH
+#DIMS DYNAMIC TEMP_LOG
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_HEIGHT
+#DIM DYNAMIC L_WIDTH
+#DIMS DYNAMIC L_LOG
+
+;PRINTW 未実装です
+;CLEARLINE 1
+
+;画面幅一杯に
+L_WIDTH = LINELENS * 50 - 100 * 2
+
+;初期化
+L_LOG = 
+;作成
+FOR LCOUNT , 0 , divメッセージログ保存数
+	SIF M_保存ログ:LCOUNT == ""
+		BREAK
+	;仮の高さ取得
+	L_HEIGHT = STRCOUNT(M_メッセージ内容ログ:LCOUNT , "<br>") + 100 * 2
+	;顔グラウィンドウ作成
+	;DIV_MESSAGE_ICON_WINDOW 
+	CALL DIV_MESSAGE_ICON_WINDOW , M_発言者ログ:LCOUNT , M_顔グラログ:LCOUNT , L_HEIGHT
+	IF RESULT == 1
+		;顔グラウィンドウを生成していたなら各種変数を更新
+		TEMP_LOG '= RESULTS
+		TEMP_X = RESULT:1
+		TEMP_WIDTH = L_WIDTH - RESULT:1
+		L_HEIGHT = RESULT:2
+	ELSE
+		TEMP_LOG =
+		TEMP_X = 0
+		TEMP_WIDTH = L_WIDTH
+	ENDIF
+	;メッセージウィンドウを作成
+	TEMP_LOG += @"<div xpos='{TEMP_X}'>%HTML_DIV_WINDOW( TEMP_WIDTH , L_HEIGHT , M_メッセージ内容ログ:LCOUNT , , , 10)%</div>"
+	;位置を縦幅分上昇
+	TEMP_Y -= L_HEIGHT + 50
+	;全体のログに追加
+	L_LOG += @"<div xpos='100' ypos='{TEMP_Y}'>%TEMP_LOG%</div>"
+NEXT
+L_LOG '= @"<div ypos='{TEMP_Y-4500}' width='{L_width+200}' height='{-TEMP_Y+4800}' background_color='%TOSTR_HTML(GETBGCOLOR())%'></div>" + L_LOG
+;表示
+$PRINT_LOOP
+{
+HTML_PRINT_ISLAND 
+@"<div ypos='{L_Y-100}' display='absolute-leftbottom'>%L_LOG%</div>" 
++ @"<div width='{L_width+200}' background_color='%TOSTR_HTML(COLOR("DARK-GRAY"))%' display='absolute-leftbottom'><div xpos ='1000'>[MOUSE WHEEL][8/2/4/6] スクロール       [HOME] 最古 [End] 最新     [それ以外] ログ閲覧モード終了</div></div>"
++ @"<div width='{L_width+200}' height='300' background_color='%TOSTR_HTML(GETBGCOLOR())%' display='absolute-lefttop'><div xpos='150' ypos='125'>%HTML_HEADING("バックログ" , "下" , COLOR("パ青") , , 150)%</div></div>"
+}
+;操作
+VARI L_VALUE
+INPUTMOUSEKEY 0
+IF RESULT == 2
+	;マウスホイールでログの上下
+	;スクロール量を保存
+	L_VALUE = RESULT:1
+ELSEIF RESULT == 3 
+	SELECTCASE CONVERT_KEYCORD_TO_STR(RESULT:1)
+		CASE "↑" , "8"
+			L_VALUE = 100
+		CASE "↓" , "2"
+			L_VALUE = -100
+		CASE "PAGEUP" , "4"
+			L_VALUE = 3000
+		CASE "PAGEDOWN" , "6"
+			L_VALUE = -3000
+		CASE "HOME"
+			L_VALUE = -TEMP_Y
+		CASE "END"
+			L_VALUE = TEMP_Y
+	ENDSELECT
+ELSE 
+	;それ以外で返る
+	HTML_PRINT_ISLAND_CLEAR
+	RETURN 0
+ENDIF
+L_Y += L_VALUE
+L_Y = LIMIT(L_Y , 0 , -TEMP_Y)
+HTML_PRINT_ISLAND_CLEAR
+GOTO PRINT_LOOP
+
+
+;=====================================================
+;	@SAVE_DIV_MESSAGE_LOG
+;	ログを保存する関数。
+;=====================================================
+@SAVE_DIV_MESSAGE_LOG , L_発言者 , L_顔グラ , L_発言内容 , L_CONTENT
+#LOCALSSIZE 1
+#DIMS L_発言者
+#DIMS L_発言内容
+#DIMS L_顔グラ
+#DIMS L_CONTENT
+
+;発言内容が空なら保存しない
+SIF L_発言内容==""
+	RETURN 0
+
+LOCALS '= M_発言者ログ:(VARSIZE("M_発言者ログ")-1)
+;発言者名が流れそうな場合、その名前のログが他に残っていないなら、その名札を解放すること
+IF LOCALS != "" && !MATCH(M_発言者ログ , LOCALS , 0 , VARSIZE(M_発言者ログ)-1)
+	CALL 名札消去 , "名札_" + M_発言者ログ:(VARSIZE(M_発言者ログ)-1)
+ENDIF
+
+;ログを全て一個後ろにずらす
+ARRAYSHIFT M_保存ログ , 1 , ""
+ARRAYSHIFT M_発言者ログ , 1 , ""
+ARRAYSHIFT M_メッセージ内容ログ , 1 , ""
+ARRAYSHIFT M_顔グラログ , 1 , ""
+M_保存ログ '= L_CONTENT
+M_発言者ログ '= L_発言者
+M_メッセージ内容ログ '= L_発言内容
+M_顔グラログ '= L_顔グラ
+RETURN 1

@@ -1,0 +1,62 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@LEADER_SKILL_CONTROL_NO_7,ARG
+RESULTS = 백그라운드 강화
+;スキル名
+@SKILL_NAME_LEADER_バックグラウンド強化,ARG
+RESULTS = 백그라운드 강화
+
+;　 説明文の設定
+@SET_VAR_LEADER_SKILL_EXPLAIN_バックグラウンド強化, L_TEXT
+#DIMS REF L_TEXT
+L_TEXT = 턴 마다 ＣＯＭＰ 내의 동료의 능력을 강화시킨다。
+
+
+;重複可能な数
+@LEADER_SKILL_COUNT_LIMIT_バックグラウンド強化
+RETURN 99
+
+;戦闘開始時に行う処理
+@SKILL_TURNEND_LEADER_バックグラウンド強化,ARG,ARG:1
+#DIM LCOUNT, 2
+#DIM L_CHARA
+#DIM L_SKILL_NUM
+#DIMS CONST L_SKILL_NAME = "ＢＧ타루・카쟈", "ＢＧ스쿠・카쟈", "ＢＧ마카・카쟈", "ＢＧ라쿠・카쟈", "ＢＧ사마・카쟈"
+#DIMS CONST L_EFFECT = "공격력", "명중률・회피율", "마법위력", "방어력", "마법효과"
+#DIM L_CNT_SKILL
+#DIM SHOWED_MES
+SHOWED_MES = 0
+FOR LCOUNT, 0, VARSIZE("L_SKILL_NAME")
+	L_CNT_SKILL = 0
+	L_SKILL_NUM = SKILL_NUM_F(L_SKILL_NAME:LCOUNT)
+	;対応する自動効果スキルをすべて確認する
+	FOR LCOUNT:1, 1, 7
+		L_CHARA = POS(LCOUNT:1)
+		SIF !IS_TARGET_ABLE(L_CHARA)
+			CONTINUE
+		SIF HAVE_SKILL(L_CHARA, L_SKILL_NUM)
+			L_CNT_SKILL++
+		SIF FLAG:경과턴수 % 3 == 2 && HAVE_SKILL(L_CHARA, [[스킬:ＢＧ라스타캔디]])
+			L_CNT_SKILL++
+	NEXT
+	SIF !L_CNT_SKILL
+		CONTINUE
+	CALL SKILL_SET_カジャンダ, ARG, , L_EFFECT:LCOUNT, L_CNT_SKILL * 4, "COMP内", "NOMES"
+	IF !SHOWED_MES
+		SETCOLOR COLOR("FRIEND")
+		PRINTFORML ┏━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃　ＢＡＣＫＧＲＯＵＮＤ ＰＲＯＣＥＳＳＩＮＧ　 ┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━┛
+		;PRINTFORM ┃ background processing ┃
+		SHOWED_MES = 1
+		RESETCOLOR
+	ENDIF
+	PRINTFORML 　ＣＯＭＰ 내의 동료마의 %조사처리(L_EFFECT:LCOUNT,"가")% 올랐다！
+NEXT
+SIF SHOWED_MES
+	WAIT
+;同種のスキルが複数あっても一回しか発動しない
+@SKILL_TURNEND_ONCE_LEADER_バックグラウンド強化
+RETURN 1
+

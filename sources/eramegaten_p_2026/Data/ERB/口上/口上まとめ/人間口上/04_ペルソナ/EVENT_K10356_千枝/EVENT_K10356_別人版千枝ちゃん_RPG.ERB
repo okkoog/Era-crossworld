@@ -1,0 +1,721 @@
+﻿
+;書いてる時に「戦いの最中に無駄口を叩くのは素人だ！」っていう台詞が頭の中をぐるぐると・・・
+@ENEMY_BATTLE_EVENT_K[[キャラ:치에]], ARG, ARG:1, ARG:2
+IF TFLAG:전투이벤트 == 1
+;敵でのデビルＣＯ－ＯＰ発動時の台詞
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%"",72,LEFT%┃
+;			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ENDIF
+IF TFLAG:전투이벤트 == 2
+;敵でのデビルＣＯ－ＯＰ参加時の台詞
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%"",72,LEFT%┃
+;			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ENDIF
+
+;TFLAG:전투이벤트
+;範囲系は封印。吸収反射回避も単体でしかでない
+;11.与ダメージ(単体)
+;12.被ダメージ(単体)
+;13.与ダメージ(範囲・ランダム)
+;14.被ダメージ(範囲・ランダム)
+;15.反射された
+;16.反射した
+;17.回避された
+;18.回避した
+;19,敵味方全体攻撃
+;21.味方に対して与ダメージ(単体)
+;22.味方に対して被ダメージ(単体)
+;23.味方に対して与ダメージ(範囲・ランダム)
+;24.味方に対して被ダメージ(範囲・ランダム)
+;25.味方に対して反射された
+;26.味方に対して反射した
+;27.味方に対して回避された
+;28.味方に対して回避した
+
+@KOJO_BATTLE_EVENT_K[[キャラ:치에]], ARG, ARG:1, ARG:2
+CALL KOJO_COLOR_CHIECHAN_02
+IF TFLAG:전투이벤트 == 1
+;味方パーティでのデビルＣＯ－ＯＰ発動
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	IF RAND:6 == 0
+		PRINTFORML ┃%"좋ー아！ 힘내서 가보자ー！",72,LEFT%┃
+	ELSEIF RAND:5 == 0
+		PRINTFORML ┃%"이걸로､  끝이다ー앗！",72,LEFT%┃
+	ELSEIF RAND:4 == 0
+		PRINTFORML ┃%"한번에  처리하자！",72,LEFT%┃
+	ELSEIF RAND:3 == 0
+		PRINTFORML ┃%"찬스찬스！  그럼  간다ー！",72,LEFT%┃
+	ELSEIF RAND:2 == 0
+		PRINTFORML ┃%"좋아､ 일제히 공격하자！",72,LEFT%┃
+	ELSE
+		PRINTFORML ┃%"포기해라ー！",72,LEFT%┃
+	ENDIF
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		
+ELSEIF TFLAG:전투이벤트 == 2
+;味方パーティでのデビルＣＯ－ＯＰ参加時
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	;ゲイルが発動（掛け合いイベント後）
+	IF FLAG:행동순1 != -1 && NO:(FLAG:행동순1) == [[キャラ:게일]] && GETBIT(イベントフラグ:10:0,3)
+		PRINTFORML ┃%"스승！계속갑니다！",72,LEFT%┃
+	ELSEIF RAND:6 == 0
+		PRINTFORML ┃%"한방 더！",72,LEFT%┃
+	ELSEIF RAND:5 == 0
+		PRINTFORML ┃%"빈틈 발견！",72,LEFT%┃
+	ELSEIF RAND:4 == 0
+		PRINTFORML ┃%"여기서 단숨에 들어가자！",72,LEFT%┃
+	ELSEIF RAND:3 == 0
+		PRINTFORML ┃%"가드가 열렸다！",72,LEFT%┃
+	ELSEIF RAND:2 == 0
+		PRINTFORML ┃%"니녀석도 먹어랏！",72,LEFT%┃
+	ELSE
+		PRINTFORML ┃%"지금이야！",72,LEFT%┃
+	ENDIF
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		
+;공격　ARGが攻撃をする仲魔、ARG:1が敵、ARG:2がダメージ量
+ELSEIF TFLAG:전투이벤트 == 11
+	;潜在反撃対策
+	IF CFLAG:ARG:입력행동 == -1
+		RETURN
+	ENDIF
+		CALL FIGHT_IT_OUT
+		IF FLAG:승리플래그 == 1
+				PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			IF RAND:4 == 0
+				PRINTFORML ┃%"생각하지마､느끼는거야…랄까나",72,LEFT%┃
+			ELSEIF RAND:3 == 0
+				PRINTFORML ┃%"이ー런 식일까ー？",72,LEFT%┃
+			ELSEIF RAND:2 == 0
+				PRINTFORML ┃%"읏헤헤…이ー런 식일까나",72,LEFT%┃
+			ELSE
+				PRINTFORML ┃%"낙승낙승！",72,LEFT%┃
+			ENDIF
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		;相手が死んだ
+		ELSEIF BASE:(ARG:1):ＨＰ <= 0
+				PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			IF RAND:4 == 0
+				PRINTFORML ┃%"자､ 또 신발자국 나고싶은 사람은 누구？",72,LEFT%┃
+			ELSEIF RAND:3 == 0
+				PRINTFORML ┃%"이ー런 식일까ー？",72,LEFT%┃
+			ELSEIF RAND:2 == 0
+				PRINTFORML ┃%"좋아、다음！",72,LEFT%┃
+			ELSE
+				PRINTFORML ┃%"이ー런 식이지！",72,LEFT%┃
+			ENDIF
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			;千枝が相手を倒した時、雪子がパーティにいる
+			;健在な戦闘参加メンバー(2)  健在でない戦闘参加メンバー(12)
+			IF FINDCHARA_B([[キャラ:유키코]]) == 2 && !RAND:4
+				SETCOLOR 238, 85, 166
+				PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+				IF RAND:3 == 0
+					PRINTFORML ┃%"역시 치에야！",72,LEFT%┃
+				ELSEIF RAND:2 == 0
+					PRINTFORML ┃%"굉장해ー치에！",72,LEFT%┃
+				ELSE
+					PRINTFORML ┃%"치에、멋지다ー！",72,LEFT%┃
+				ENDIF
+				PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			ENDIF
+			IF FINDCHARA_B([[キャラ:게일]]) == 2 && GETBIT(イベントフラグ:10:0,3) && !RAND:4
+				SETCOLOR 0x66cc99
+				PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+				IF RAND:3 == 0
+					PRINTFORML ┃%"꽤나 컨디션이 좋은걸、치에",72,LEFT%┃
+				ELSEIF RAND:2 == 0
+					PRINTFORML ┃%"좋아、그 상태야、치에！",72,LEFT%┃
+				ELSE
+					PRINTFORML ┃%"치에、좋은 느낌이야",72,LEFT%┃
+				ENDIF
+				PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			ENDIF
+			SETCOLOR CFLAG:808
+		;70パーセント以上
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 70
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			IF RAND:3 == 0
+				PRINTFORML ┃%"앞으로 조금만이었는데……",72,LEFT%┃
+			ELSEIF RAND:2 == 0
+			;北斗
+				PRINTFORML ┃%"너와 나는 격이 너무 달라……랄ー까나",72,LEFT%┃
+			ELSE
+				PRINTFORML ┃%"다음이 당신의 최후다！",72,LEFT%┃
+			ENDIF
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		;ダメージ、50パーセント以上
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 50
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			IF RAND:4 == 0
+				PRINTFORML ┃%"이녀석、단단해！！",72,LEFT%┃	
+			ELSEIF RAND:3 == 0
+				PRINTFORML ┃%"누구 좀 이녀석을 부탁해！",72,LEFT%┃
+			ELSEIF RAND:2 == 0
+				PRINTFORML ┃%"큭、쓰러지지않나아…",72,LEFT%┃
+			ELSE
+				PRINTFORML ┃%"안돼、끈질겨…",72,LEFT%┃
+			ENDIF
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		;小ダメージ、10％以下なら効いてないってことでいいよね！ボスとか知らないよね！
+		ELSEIF ダメージ割合(ARG:1, ARG:2) < 10
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			IF RAND:3 == 0
+				PRINTFORML ┃%"이녀석、효과가 없어！？",72,LEFT%┃
+			ELSEIF RAND:2 == 0
+				PRINTFORML ┃%"거짓말、효과없어！？",72,LEFT%┃
+			ELSE
+				PRINTFORML ┃%"지、진짜？ 효과없는거야？",72,LEFT%┃
+			ENDIF
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		;吸収された
+		ELSEIF ARG:2 < 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"위험해ー、회복시켜버렸어！？",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ENDIF
+
+;被ダメージ　ARGが仲魔、ARG:1が敵、ARG:2がダメージ量
+ELSEIF TFLAG:전투이벤트 == 12
+	;死亡
+	IF BASE:ARG:ＨＰ <= 0
+				PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			IF RAND:3 == 0
+				PRINTFORML ┃%"이、이런 곳에서……",72,LEFT%┃
+			ELSEIF RAND:2 == 0
+				PRINTFORML ┃%"유키…코…",72,LEFT%┃
+			ELSE
+				PRINTFORML ┃%"지켜주지 못해서、미안……",72,LEFT%┃
+			ENDIF
+				PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	;体力30％以下
+	ELSEIF 現HP割合(ARG) < 30
+				PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			IF RAND:7 == 0
+				PRINTFORML ┃%"체력 위험해！ 회복 좀 시켜줄래？",72,LEFT%┃
+			ELSEIF RAND:6 == 0
+				PRINTFORML ┃%"아직 역전할 기회는 있어……！",72,LEFT%┃
+			ELSEIF RAND:5 == 0
+				PRINTFORML ┃%" 이、이건 위험할지도……",72,LEFT%┃
+			ELSEIF RAND:4 == 0
+				PRINTFORML ┃%"큭……아、아직 움직일 수 있어…！",72,LEFT%┃
+			ELSEIF RAND:3 == 0
+				PRINTFORML ┃%"여기서 쓰러질 수는 없어……！",72,LEFT%┃
+			ELSEIF RAND:2 == 0
+				PRINTFORML ┃%"기력체력 다 없어！ 진짜 위험해…",72,LEFT%┃
+			ELSE
+				PRINTFORML ┃%"정말､ 매정해！ 더는 무리！",72,LEFT%┃
+			ENDIF
+				PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	;大ダメージ、HPの3割以上
+	ELSEIF ダメージ割合(ARG, ARG:2) > 30
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		IF RAND:8 == 0
+			PRINTFORML ┃%"이、이렇게 강하다니…",72,LEFT%┃
+		ELSEIF RAND:7 == 0
+			PRINTFORML ┃%"해줬구나……！",72,LEFT%┃
+		ELSEIF RAND:6 == 0
+			PRINTFORML ┃%"이렇게 끌낼 수는 없어……！",72,LEFT%┃
+			;ジャッキー
+		ELSEIF RAND:5 == 0
+			PRINTFORML ┃%"운명은 3할、노력은 7할。노력하는 자가 마지막에 이긴다！…랄까나！",72,LEFT%┃
+		ELSEIF RAND:4 == 0
+			;ジャッキー
+			PRINTFORML ┃%"포기하지만 않으면 방법은 찾을 수 있을 터…랄까나！",72,LEFT%┃
+		ELSEIF RAND:3 == 0
+			PRINTFORML ┃%"포기하진 않아！",72,LEFT%┃
+		ELSEIF RAND:2 == 0
+			PRINTFORML ┃%"아직、진짜 싸움은 이제부터닷！",72,LEFT%┃
+		ELSE
+			PRINTFORML ┃%"크으…！　아、아직 움직일 수 있어…！",72,LEFT%┃
+		ENDIF
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	;ダメージ1割以下で現体力7割以上
+	ELSEIF ダメージ割合(ARG, ARG:2) < 10 && 現HP割合(ARG) > 70
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		IF RAND:6 == 0
+			PRINTFORML ┃%"흥、이대로 끝인거야？",72,LEFT%┃
+		ELSEIF RAND:5 == 0
+			PRINTFORML ┃%"잠깐！ 어딜 만지는 거야！",72,LEFT%┃
+		ELSEIF RAND:4 == 0
+			PRINTFORML ┃%"이 정도는、아무것도 아냐！",72,LEFT%┃
+		ELSEIF RAND:3 == 0
+			PRINTFORML ┃%"이 정도쯤！",72,LEFT%┃
+		ELSEIF RAND:2 == 0
+			PRINTFORML ┃%"자、잠깐 방심한 것 뿐이야！",72,LEFT%┃
+		ELSE
+			PRINTFORML ┃%"스친 것 뿐이야！",72,LEFT%┃
+		ENDIF
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	;無効（動いてないらしい）
+	ELSEIF ARG:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"효과 없어！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	;吸収
+	ELSEIF ARG:2 < 0
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		IF RAND:10 == 0
+			PRINTFORML ┃나와 %GET_PERSONA_NAME(ARG) + "에게는 그런 공격、효과 없다구！",64,LEFT%┃
+		ELSEIF RAND:9 == 0
+			PRINTFORML ┃%"헛수고야！",72,LEFT%┃
+		ELSEIF RAND:8 == 0
+			PRINTFORML ┃%"그런 거、통하지 않아！",72,LEFT%┃
+		ELSEIF RAND:7 == 0
+			PRINTFORML ┃고마워、%GET_PERSONA_NAME(ARG) + "！",60,LEFT%┃
+		ELSEIF RAND:6 == 0
+			PRINTFORML ┃%"유감이네！",72,LEFT%┃
+		ELSEIF RAND:5 == 0
+			PRINTFORML ┃%"달아！",72,LEFT%┃
+		ELSEIF RAND:4 == 0
+			PRINTFORML ┃%"좋아、예상했던 공격이야！",72,LEFT%┃
+		ELSEIF RAND:3 == 0
+			PRINTFORML ┃%"그런 공격따위！",72,LEFT%┃
+		ELSEIF RAND:2 == 0
+			PRINTFORML ┃%"하앗！！ ",72,LEFT%┃
+		ELSE
+			PRINTFORML ┃%"그런 공격！",72,LEFT%┃
+		ENDIF
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;反射された
+ELSEIF TFLAG:전투이벤트 == 15
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		IF RAND:10 == 0
+			PRINTFORML ┃%"되받아쳤어！？",72,LEFT%┃
+		ELSEIF RAND:9 == 0
+			PRINTFORML ┃%"이건 통하지 않나……",72,LEFT%┃
+		ELSEIF RAND:8 == 0
+			PRINTFORML ┃%"이、이거 뭐야！？",72,LEFT%┃
+		ELSEIF RAND:7 == 0
+			PRINTFORML ┃%"위험해、반사당했어！",72,LEFT%┃
+		ELSEIF RAND:6 == 0
+			PRINTFORML ┃%"내가 한 공격이……！",72,LEFT%┃
+		ELSEIF RAND:5 == 0
+			PRINTFORML ┃%"위험해！",72,LEFT%┃
+		ELSEIF RAND:4 == 0
+			PRINTFORML ┃%"자、잠깐！무슨 구조야！",72,LEFT%┃
+		ELSEIF RAND:3 == 0
+			PRINTFORML ┃%"으읏……！지금 건 내 실수야……",72,LEFT%┃
+		ELSEIF RAND:2 == 0
+			PRINTFORML ┃%"치ー사ー해ー！ ",72,LEFT%┃
+		ELSE
+			PRINTFORML ┃%"제기랄、어째서……！？",72,LEFT%┃
+		ENDIF
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;反射した
+ELSEIF TFLAG:전투이벤트 == 16
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		IF RAND:10 == 0
+			PRINTFORML ┃나와 %GET_PERSONA_NAME(ARG) + "에게는 그런 공격、효과 없다구！",64,LEFT%┃
+		ELSEIF RAND:9 == 0
+			PRINTFORML ┃%"헛수고야！",72,LEFT%┃
+		ELSEIF RAND:8 == 0
+			PRINTFORML ┃%"그런 거、통하지 않아！",72,LEFT%┃
+		ELSEIF RAND:7 == 0
+			PRINTFORML ┃고마워、%GET_PERSONA_NAME(ARG) + "！",60,LEFT%┃
+		ELSEIF RAND:6 == 0
+			PRINTFORML ┃%"유감이네！",72,LEFT%┃
+		ELSEIF RAND:5 == 0
+			PRINTFORML ┃%"달아！",72,LEFT%┃
+		ELSEIF RAND:4 == 0
+			PRINTFORML ┃%"좋아、예상했던 공격이야！",72,LEFT%┃
+		ELSEIF RAND:3 == 0
+			PRINTFORML ┃%"그런 공격따위！",72,LEFT%┃
+		ELSEIF RAND:2 == 0
+			PRINTFORML ┃%"하앗！！ ",72,LEFT%┃
+		ELSE
+			PRINTFORML ┃%"그런 공격！",72,LEFT%┃
+		ENDIF
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;回避された
+ELSEIF TFLAG:전투이벤트 == 17
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		IF RAND:5 == 0
+			PRINTFORML ┃%"빠、빨라…",72,LEFT%┃
+		ELSEIF RAND:4 == 0
+			PRINTFORML ┃%"빗나갔어！？　다음에야말로…！",72,LEFT%┃
+		ELSEIF RAND:3 == 0
+			PRINTFORML ┃%"잠깐！　피하지마！",72,LEFT%┃
+		ELSEIF RAND:2 == 0
+			PRINTFORML ┃%"자、잠깐 방심했을 뿐이야！",72,LEFT%┃
+		ELSE
+			PRINTFORML ┃%"큭、재빠르네에…",72,LEFT%┃
+		ENDIF
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;回避した
+ELSEIF TFLAG:전투이벤트 == 18
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		IF RAND:16 == 0
+			PRINTFORML ┃%"보였다！",72,LEFT%┃
+		ELSEIF RAND:15 == 0
+			PRINTFORML ┃%"배움이 부족해！",72,LEFT%┃
+		ELSEIF RAND:14 == 0
+			PRINTFORML ┃%"흘렸다！",72,LEFT%┃
+		ELSEIF RAND:13 == 0
+			PRINTFORML ┃%"맞을 수는 없다구！",72,LEFT%┃
+		ELSEIF RAND:12 == 0
+			PRINTFORML ┃%"빗나갔어！！",72,LEFT%┃
+		ELSEIF RAND:11 == 0
+			PRINTFORML ┃%"읏、쌰！",72,LEFT%┃
+		ELSEIF RAND:10 == 0
+			PRINTFORML ┃%"이봐、정신 차리라구！ ",72,LEFT%┃
+		ELSEIF RAND:9 == 0
+			PRINTFORML ┃%"이 정도의 움직임！",72,LEFT%┃
+		ELSEIF RAND:8 == 0
+			PRINTFORML ┃%"위험했！",72,LEFT%┃
+		ELSEIF RAND:7 == 0
+			PRINTFORML ┃%"그걸로 끝？",72,LEFT%┃
+		ELSEIF RAND:6 == 0
+			PRINTFORML ┃%"그런 조잡한 공격！",72,LEFT%┃
+		ELSEIF RAND:5 == 0
+			PRINTFORML ┃%"파고드는게 허술해！　…이거、한번 말해보고 싶었던 거야ー♪",72,LEFT%┃
+		ELSEIF RAND:4 == 0
+			PRINTFORML ┃%"어디에서든 와라！",72,LEFT%┃
+		ELSEIF RAND:3 == 0
+			PRINTFORML ┃%"뭐야、고작 이 정도？　이대로라면 낙승이네！",72,LEFT%┃
+		ELSEIF RAND:2 == 0
+			PRINTFORML ┃%"이 정도는、눈 감고도 피할 수 있다고ー！",72,LEFT%┃
+		ELSE
+			PRINTFORML ┃%"느렷！！",72,LEFT%┃
+		ENDIF
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;食いしばり等で耐えた
+ELSEIF TFLAG:전투이벤트 == 23
+	;이악물기
+	IF BASE:ARG:ＨＰ == 1
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		;ジャッキー
+		PRINTFORML ┃%"한계같은 건 없어、그것을 넘어가는거야……！！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	;その他
+	ELSE
+	ENDIF
+ENDIF
+SETCOLOR CFLAG:808
+
+@KOJO_BATTLE_MESSAGE_K[[キャラ:치에]],ARG,ARG:1 = 0
+CALL KOJO_COLOR_CHIECHAN_02
+CFLAG:850 = 0
+CFLAG:851 = 0
+CFLAG:852 = 0
+;　範囲　1単体　21列　3全体　4　敵味方全体
+CALL GET_SKILL_PROP, "SKILL_SPHERE", CFLAG:ARG:입력행동, ARG
+CFLAG:850 = RESULT
+;　対象が1敵か2味方か3場全体か4特殊か
+CALL GET_SKILL_PROP, "SKILL_TARGET", CFLAG:ARG:입력행동, ARG
+CFLAG:851 = RESULT
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+CFLAG:852 = RESULT
+
+;Pチェンジ
+IF CFLAG:ARG:입력행동 == 2304
+	IF RAND:3 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"페르소나 체인지！！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSEIF RAND:2 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"페르소나ーー！！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ELSE
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃돌아와！%GET_PERSONA_NAME(ARG) + "！",64,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	ENDIF
+;ＳＷＯＲＤ
+ELSEIF CFLAG:ARG:입력행동 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		CALL CHIECHAN_02_RPG
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;총
+ELSEIF CFLAG:ARG:입력행동 == 2101
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		IF RAND:10 == 0
+			PRINTFORML ┃%"받아랏！",72,LEFT%┃
+		ELSEIF RAND:9 == 0
+			PRINTFORML ┃%"놓치지 않아……！",72,LEFT%┃
+		ELSEIF RAND:8 == 0
+			PRINTFORML ┃%"잡았다！",72,LEFT%┃
+		ELSEIF RAND:7 == 0
+			PRINTFORML ┃%"먹어랏！",72,LEFT%┃
+		ELSEIF RAND:6 == 0
+			PRINTFORML ┃%"목표는 놓치지 않아！",72,LEFT%┃
+		ELSEIF RAND:5 == 0
+			PRINTFORML ┃%"맞아줘！",72,LEFT%┃
+		ELSEIF RAND:4 == 0
+			PRINTFORML ┃%"거깃！",72,LEFT%┃
+		ELSEIF RAND:3 == 0
+			PRINTFORML ┃%"이렇게 겨눈다면！",72,LEFT%┃
+		ELSEIF RAND:2 == 0
+			PRINTFORML ┃%"느려！ ",72,LEFT%┃
+		ELSE
+			PRINTFORML ┃%"그 정도는 충분히 닿는다고……！",72,LEFT%┃
+		ENDIF
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:할퀴기]] || CFLAG:ARG:입력행동 == [[스킬:메가클로]] || CFLAG:ARG:입력행동 == [[스킬:악셀클로]]|| CFLAG:ARG:입력행동 == [[스킬:스파이크클로]] && RAND:10 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		;ジャッキー
+		PRINTFORML ┃%"고양이 발톱이다앗！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:돌격]] && RAND:10 == 0
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃%"으랴ー、돌격ー！！",72,LEFT%┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:기합]]
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		IF RAND:2 == 0
+			PRINTFORML ┃%"집중해서……",72,LEFT%┃
+		ELSE
+			PRINTFORML ┃%"기합이다ー！！",72,LEFT%┃
+		ENDIF
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:마구날뛰기]]
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		IF RAND:5 == 0
+			PRINTFORML ┃날뛰어라앗！%GET_PERSONA_NAME(ARG) + "！",60,LEFT%┃
+		ELSE
+		CALL CHIECHAN_02_RPG
+		ENDIF
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:산산조각베기]]
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		IF RAND:10 == 0
+			;ファントムブレイブ
+			PRINTFORML ┃%"마음을 비웠을 때、검은 무한의 칼날이 된다！",72,LEFT%┃
+		ELSE
+		CALL CHIECHAN_02_RPG
+		ENDIF
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:뇌진왕모의발차기]]
+		PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		IF RAND:100 == 0
+			;スパロボ
+			PRINTFORML ┃%"받아봐라！　이 필살의 발차기를！！",72,LEFT%┃
+			PRINTFORML ┃%"궁극！　뇌진왕모！　키이이이익！！",72,LEFT%┃
+		ELSEIF RAND:10 == 0
+			PRINTFORML ┃%"최종오의！！　먹어랏！！",72,LEFT%┃
+		ELSE
+		CALL CHIECHAN_02_RPG
+		ENDIF
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;Lヒートライザ
+ELSEIF CFLAG:ARG:입력행동 == 4200
+		IF RAND:4 == 0
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"이게 내 삶의 방식이야！",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ELSEIF RAND:3 == 0
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"Don't think. Feel !!",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ELSEIF RAND:2 == 0
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"생각하지마、느끼는 거야",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ELSE
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"불타라、드래곤！",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ENDIF
+;　範囲　1単体　21列　3全体　4　敵味方全体
+;　対象が1敵か2味方か3場全体か4特殊か
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+
+;単体　敵　공격
+ELSEIF CFLAG:850 == 1 && CFLAG:851 == 1 && CFLAG:852 == 1
+
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		;ジャッキー
+		IF RAND:100 == 0
+			PRINTFORML ┃%"기술이란 변화하는 것",72,LEFT%┃
+			PRINTFORML ┃%"스승님의 가르침을 토대로 한、이것이 나의 취팔선이다！",72,LEFT%┃
+		ELSEIF RAND:24 == 0
+			PRINTFORML ┃%"페르소낫！",72,LEFT%┃
+		ELSEIF RAND:23 == 0
+			PRINTFORML ┃%"페르소나ーー！！",72,LEFT%┃
+		ELSEIF RAND:22 == 0
+			PRINTFORML ┃날려버려！%GET_PERSONA_NAME(ARG) + "！",58,LEFT%┃
+		ELSEIF RAND:21 == 0
+			PRINTFORML ┃놓치지 않아！%GET_PERSONA_NAME(ARG) + "！",60,LEFT%┃
+		ELSEIF RAND:20 == 0
+			PRINTFORML ┃가라아！%GET_PERSONA_NAME(ARG) + "！",64,LEFT%┃
+		ELSEIF RAND:19 == 0
+			PRINTFORML ┃%"가라아！ 필살！",72,LEFT%┃
+		ELSEIF RAND:18 == 0
+			PRINTFORML ┃%"하아아！ 아뵤ー！",72,LEFT%┃
+		ELSE
+			CALL CHIECHAN_02_RPG
+		ENDIF
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;列か全体　敵　공격
+ELSEIF (CFLAG:850 == 21 || 3) && CFLAG:851 == 1 && CFLAG:852 == 1
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+		IF RAND:18 == 0
+			PRINTFORML ┃%"너희들、전부 쓰러뜨린다！",72,LEFT%┃
+		ELSEIF RAND:17 == 0
+			PRINTFORML ┃%"한꺼번에 덤벼！",72,LEFT%┃
+		ELSEIF RAND:16 == 0
+			PRINTFORML ┃%"너희들、각오는 됐어！？",72,LEFT%┃
+		ELSEIF RAND:15 == 0
+			PRINTFORML ┃%"약한 놈일수록 잘 무리지어 다니는……거네！",72,LEFT%┃
+		ELSEIF RAND:14 == 0
+			PRINTFORML ┃%"한번에 간다！",72,LEFT%┃
+		ELSEIF RAND:13 == 0
+			PRINTFORML ┃%"몸이 굼떠！찬스！",72,LEFT%┃
+		ELSEIF RAND:12 == 0
+			PRINTFORML ┃%"적이 많아도！",72,LEFT%┃
+		ELSE
+			CALL CHIECHAN_02_RPG
+		ENDIF
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+;味方　회복 状態回復
+ELSEIF CFLAG:851 == 2 && (CFLAG:852 == 2 || 5)
+		IF RAND:3 == 0
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"아직 할 수 있지！",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ELSEIF RAND:2 == 0
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"저기、괜찮아！？",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ELSE
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"정신차려！",72,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ENDIF
+;それ以外
+ELSE
+		IF RAND:1 == 0
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃부탁해…%GET_PERSONA_NAME(ARG) + "！",64,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ELSEIF RAND:2 == 0
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃와줘！%GET_PERSONA_NAME(ARG) + "！",66,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ELSE
+			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃지켜줘…%GET_PERSONA_NAME(ARG) + "！",64,LEFT%┃
+			PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		ENDIF
+ENDIF
+SETCOLOR CFLAG:808
+
+
+@EVOLUTE_PERSONA_K[[キャラ:치에]], ARG
+IF CFLAG:ARG:페르소나강화플래그 == 1 
+	PRINTFORMW 「사토나카 치에、그녀의 당신에게 힘이 되고 싶다는 마음에」
+	PRINTFORMW 「항상 그녀의 곁에서 동행해왔던 페르소나가 응답하려 하는 것 같습니다」
+	PRINTFORMW 「제가 조력하여、페르소나의 새로운 힘을 꺼내보이지요」
+	PRINTL
+	PRINTW
+	PRINTW 페르소나「토모에」가 탄생했다
+ELSE
+	PRINTFORMW 「사토나카 치에、이전에 그녀의 마음에 응답했던 페르소나 말씀입니다만」
+	PRINTFORMW 「그녀의 새로운 성장과 마음에、다시 페르소나도 새로운 힘을 얻으려고 하는 것 같습니다」
+	PRINTFORMW 「지금 다시 제가 조력하여、페르소나의 더 강한 힘을 꺼내보이지요」
+	PRINTL
+	PRINTW
+	IF CFLAG:ARG:페르소나강화플래그 == 2
+	PRINTW 페르소나「스즈카고젠」이 탄생했다
+	ELSE
+		PRINTW 페르소나「하라에도노오오카미」가 탄생했다
+	ENDIF
+ENDIF
+
+@CHIECHAN_02_RPG
+IF RAND:43 == 0
+	PRINTFORML ┃%"단념해라ー！",72,LEFT%┃
+ELSEIF RAND:42 == 0
+	PRINTFORML ┃%"끈질겨……！",72,LEFT%┃
+ELSEIF RAND:41 == 0
+	PRINTFORML ┃%"한 방에 끝낸다！",72,LEFT%┃
+ELSEIF RAND:40 == 0
+	PRINTFORML ┃%"으ー럇！！",72,LEFT%┃
+ELSEIF RAND:39 == 0
+	PRINTFORML ┃%"단숨에 끝내주마！",72,LEFT%┃
+ELSEIF RAND:38 == 0
+	PRINTFORML ┃%"놓치지 않아！",72,LEFT%┃
+ELSEIF RAND:37 == 0
+	PRINTFORML ┃%"이걸로 끝낼게！",72,LEFT%┃
+ELSEIF RAND:36 == 0
+	PRINTFORML ┃%"내가 상대다！",72,LEFT%┃
+ELSEIF RAND:35 == 0
+	PRINTFORML ┃%"이걸로！",72,LEFT%┃
+ELSEIF RAND:34 == 0
+	PRINTFORML ┃%"이대로 단번에！",72,LEFT%┃
+ELSEIF RAND:33 == 0
+	PRINTFORML ┃%"선수필승！",72,LEFT%┃
+ELSEIF RAND:32 == 0
+	PRINTFORML ┃%"공격은 최대의 방어……라구！",72,LEFT%┃
+ELSEIF RAND:31 == 0
+	PRINTFORML ┃%"나는 지지 않아！",72,LEFT%┃
+ELSEIF RAND:30 == 0
+	PRINTFORML ┃%"느리다구！",72,LEFT%┃
+ELSEIF RAND:29 == 0
+	PRINTFORML ┃%"보여줄게！",72,LEFT%┃
+ELSEIF RAND:28 == 0
+	PRINTFORML ┃%"비켜！",72,LEFT%┃
+ELSEIF RAND:27 == 0
+	PRINTFORML ┃%"잘 먹을게！",72,LEFT%┃
+ELSEIF RAND:26 == 0
+	PRINTFORML ┃%"찬스！",72,LEFT%┃
+ELSEIF RAND:25 == 0
+	PRINTFORML ┃%"잡았다ー아！！",72,LEFT%┃
+ELSEIF RAND:24 == 0
+	PRINTFORML ┃%"방해하지마ー아！",72,LEFT%┃
+ELSEIF RAND:23 == 0
+	PRINTFORML ┃%"보여줄게！",72,LEFT%┃
+ELSEIF RAND:22 == 0
+	PRINTFORML ┃%"지금이다！",72,LEFT%┃
+ELSEIF RAND:21 == 0
+	PRINTFORML ┃%"거기！",72,LEFT%┃
+ELSEIF RAND:20 == 0
+	PRINTFORML ┃%"질까보냐！",72,LEFT%┃
+ELSEIF RAND:19 == 0
+	PRINTFORML ┃%"각오는 됐어！？",72,LEFT%┃
+ELSEIF RAND:18 == 0
+	PRINTFORML ┃%"방해、하지마！！",72,LEFT%┃
+ELSEIF RAND:17 == 0
+	PRINTFORML ┃%"거기、움직이지마ー！",72,LEFT%┃
+ELSEIF RAND:16 == 0
+	PRINTFORML ┃%"각오해랏！",72,LEFT%┃
+ELSEIF RAND:15 == 0
+	PRINTFORML ┃%"방해다앗！！",72,LEFT%┃
+ELSEIF RAND:14 == 0
+	PRINTFORML ┃%"봐주지 않을거야！",72,LEFT%┃
+ELSEIF RAND:13 == 0
+	PRINTFORML ┃%"보였다！",72,LEFT%┃
+ELSEIF RAND:12 == 0
+	PRINTFORML ┃%"내 공격、받아봐라！",72,LEFT%┃
+ELSEIF RAND:11 == 0
+	PRINTFORML ┃%"빈틈이다ー！",72,LEFT%┃
+ELSEIF RAND:10 == 0
+	PRINTFORML ┃%"승부다！ ",72,LEFT%┃
+ELSEIF RAND:9 == 0
+	PRINTFORML ┃%"아도도도도！！",72,LEFT%┃
+ELSEIF RAND:8 == 0
+	PRINTFORML ┃%"여자라고、얕보지 마앗！",72,LEFT%┃
+ELSEIF RAND:7 == 0
+	PRINTFORML ┃%"갈께ー！",72,LEFT%┃
+ELSEIF RAND:6 == 0
+	PRINTFORML ┃%"날아가버렷ー！",72,LEFT%┃
+ELSEIF RAND:5 == 0
+	PRINTFORML ┃%"아뵤ー옷！！",72,LEFT%┃
+ELSEIF RAND:4 == 0
+	PRINTFORML ┃%"이걸로！",72,LEFT%┃
+	;日本一ちゃん！
+ELSEIF RAND:3 == 0
+	PRINTFORML ┃%"고기껌ー！",72,LEFT%┃
+ELSEIF RAND:2 == 0
+	PRINTFORML ┃%"비프스테이크ー！",72,LEFT%┃
+ELSE
+	PRINTFORML ┃%"슛！",72,LEFT%┃
+ENDIF
+

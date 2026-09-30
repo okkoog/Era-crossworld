@@ -1,0 +1,126 @@
+﻿;----------------------------------------------------
+;メッセージアニメ用コンフィグ設定関数
+;メッセージアニメ自体から呼べるので注意してください
+;
+;GLOBAL:メッセージ速度			一回の描画における追加字数
+;GLOBAL:オート時ウェイト		オートモード時に、全ての文字表示後にウェイトをかける時間
+;GLOBAL:右クリック時ウェイト	右クリック時に文字表示後にウェイトをかける時間
+;----------------------------------------------------
+@MESSAGE_WINDOW_CONFIG
+#DIM LINE, 2
+#DIM LCOUNT, 2
+#DIM L_LENS_SUM
+#DIM L_LENS
+#DIMS L_MESSAGE, 4
+LINE = LINECOUNT
+$START
+REDRAW 0
+FOR LOCAL, 0, 50
+	PRINTL 
+NEXT
+CALL INPUT_SELECT_M(@"%"[0] 메시지 속도",48,LEFT%속도:{GLOBAL:メッセージ速度,19,RIGHT}/%"[1] 오토시 웨이트",48,LEFT%{GLOBAL:オート時ウェイト,22}ms/%"[2] 우클릭시 웨이트",48,LEFT%{GLOBAL:右クリック時ウェイト,22}ms/%"[3]메시지 애니메이션 사용" , 48 , LEFT%\@GLOBAL:メッセージアニメ利用 ? %"한다" , 24% # %"안한다",24%\@/[9] 설정종료", "/", "ログを残さない/ボタンを利用しない")
+SELECTCASE RESULT
+	CASE 0
+		LCOUNT = GLOBAL:メッセージ速度 == 0 ? 1000 # 0
+		LINE:1 = LINECOUNT
+		WHILE 1
+			L_MESSAGE:0 = タイプ方式のメッセージ速度を設定します(現在の速度:{GLOBAL:メッセージ速度})
+			L_MESSAGE:1 = 1 - 20までの20段階の速度でデフォルト速度は5です。
+			L_MESSAGE:2 = また 0 を指定することで、タイプ方式のアニメを停止させます
+			L_MESSAGE:3 = 「+」で速度増加、「-」で速度低下、Enterで設定終了となります
+			PRINTFORML ┌%"─"*36%┐
+			L_LENS_SUM = 0
+			FOR LCOUNT:1, 0, 4
+				PRINT │
+				L_LENS = STRLENSU(L_MESSAGE:(LCOUNT:1))
+				PRINTFORM %SUBSTRINGU(L_MESSAGE:(LCOUNT:1), 0, MAX(L_LENS - L_LENS_SUM + LCOUNT, 0)), 72, LEFT%
+				L_LENS_SUM += L_LENS
+				PRINTL │
+			NEXT
+			LCOUNT++
+			PRINTFORML └%"─"*36%┘
+			INPUTMOUSEKEY 100 - (GLOBAL:メッセージ速度 - 1) * 5
+			IF RESULT == 1
+				IF RESULT:1 == 0x200000
+					SAVEGLOBAL
+					RETURN 0
+				ELSE
+					LCOUNT = 1000
+				ENDIF
+			;ホイール
+			ELSEIF RESULT == 2
+				IF RESULT:1 > 0
+					SIF GLOBAL:メッセージ速度 < 20
+						GLOBAL:メッセージ速度++
+					LCOUNT = 0
+				ELSE
+					SIF GLOBAL:メッセージ速度 > 0
+						GLOBAL:メッセージ速度--
+					LCOUNT = GLOBAL:メッセージ速度 == 0 ? 1000 # 0
+				ENDIF
+			ELSEIF RESULT == 3
+				SELECTCASE RESULT:1
+					CASE 187, 107
+						SIF GLOBAL:メッセージ速度 < 20
+							GLOBAL:メッセージ速度++
+						LCOUNT = 0
+					CASE 189, 109
+						SIF GLOBAL:メッセージ速度 > 0
+							GLOBAL:メッセージ速度--
+						LCOUNT = GLOBAL:メッセージ速度 == 0 ? 1000 # 0
+					CASE 48 TO 57
+						GLOBAL:メッセージ速度 = RESULT:1 - 48
+						LCOUNT = GLOBAL:メッセージ速度 == 0 ? 1000 # 0
+					CASE 13
+						SAVEGLOBAL
+						RETURN 0
+				ENDSELECT
+			ENDIF
+			CLEARLINE LINECOUNT - LINE:1
+		WEND
+		;PRINTFORML ┌%"─"*36%┐
+		;PRINTFORML │%"タイプ方式のメッセージ速度を設定します", 72, LEFT%│
+		;PRINTFORML │%"0.1秒ごとに入力した数値の字数づつ表示されていきます", 72, LEFT%│
+		;PRINTFORML │%"また0を指定した場合、タイプ方式のアニメを停止させます", 72, LEFT%│
+		;PRINTFORML │%"0-9の間の数値を入力してください", 72, LEFT%│
+		;PRINTFORML └%"─"*36%┘
+		;CALL INPUT_MANY(0, 9)
+		;GLOBAL:メッセージ速度 = RESULT
+	CASE 1
+		PRINTFORML ┌%"─"*36%┐
+		PRINTFORML │%"AUTO設定時のウェイト時間を設定します", 72, LEFT%│
+		PRINTFORML │%"AUTO機能がONの時文字がすべて表示されてから", 72, LEFT%│
+		PRINTFORML │%"設定時間が経過すると自動的に次に進みます", 72, LEFT%│
+		PRINTFORML │%"単位は1msごとですが100未満を設定した場合はノーウェイトモードとなります", 72, LEFT%│
+		PRINTFORML └%"─"*36%┘
+		CALL INPUT_MANY(0, 10000)
+		SIF RESULT < 100
+			RESULT = 0
+		GLOBAL:オート時ウェイト = RESULT
+	CASE 2
+		PRINTFORML ┌%"─"*36%┐
+		PRINTFORML │%"右クリック設定時のウェイト時間を設定します", 72, LEFT%│
+		PRINTFORML │%"右クリック時に設定時間の間だけ", 72, LEFT%│
+		PRINTFORML │%"メッセージを表示するためにウェイトをかけます", 72, LEFT%│
+		PRINTFORML │%"単位は1msごとですが100未満を設定した場合はノーウェイトモードとなります", 72, LEFT%│
+		PRINTFORML └%"─"*36%┘
+		CALL INPUT_MANY(0, 10000)
+		SIF RESULT < 100
+			RESULT = 0
+		GLOBAL:右クリック時ウェイト = RESULT
+	CASE 3
+		PRINTFORML ┌%"─"*36%┐
+		PRINTFORML │%"メッセージのアニメーションを行うかどうか設定します", 72, LEFT%│
+		PRINTFORML │%"ここで利用しないと指定した場合", 72, LEFT%│
+		PRINTFORML │%"フェードイン・タイプ両方式のアニメーションを停止させます", 72, LEFT%│
+		PRINTFORML └%"─"*36%┘
+		CALL INPUT_YN, "利用しない" , "利用する"
+		GLOBAL:メッセージアニメ利用 = RESULT
+	CASE 9
+		CLEARLINE LINECOUNT - LINE
+		REDRAW 1
+		RETURN 1
+ENDSELECT
+SAVEGLOBAL
+CLEARLINE LINECOUNT - LINE
+GOTO START

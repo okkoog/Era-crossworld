@@ -1,0 +1,231 @@
+﻿;-------------------------------------------------
+;구슬킥
+;SM系コマンド、レベル3
+;ちんこアリ限定かつ、気力がものっそい減るが、針並みの苦痛。また、若干快Cもある
+;ふたたまパッチが出たらまた別だけど、オトコ専用コマンドとか正直ヤなのでふたなりでも可能
+;-------------------------------------------------
+;ふたなりのたまのあるなしに配慮してふたなりの場合股間を蹴る文章にしてぼかす
+
+;実行判定
+;ちんこ＆玉がなければならない、服を着ていても別に問題なく蹴れる（でも流石に抵抗するので……）
+@CHECK_COM_ABLE155
+
+;オトコかふたなりじゃないとダメ
+SIF HAVE_CLITORIS(TARGET)
+	RETURN 0
+SIF !USE_PENIS(TARGET,3)
+	RETURN 0
+SIF !USE_HAND(PLAYER)
+	RETURN 0
+
+
+;従順が３以下かマゾッ気が３以下の場合、縛られているか、アイマスクを付けていなければならない
+IF ABL:순종 <= 3 || ABL:9 <= 3
+	SIF TEQUIP:밧줄 == 0 && TEQUIP:18 == 0
+		RETURN 0
+ENDIF
+
+;オナホール使用中はダメ
+SIF TEQUIP:12
+	RETURN 0
+;触手調教中はダメ
+SIF TEQUIP:촉수
+	RETURN 0
+;三角木馬騎乗中はダメ
+SIF TEQUIP:삼각목마
+	RETURN 0
+;オトコのASSIの場合、従順4以上かサドじゃないとできない。女は普通に可能
+IF ASSIPLAY && TALENT:ASSI:140 == 1
+	SIF ABL:ASSI:0 < 4 && TALENT:ASSI:83 == 0
+		RETURN 0
+ENDIF
+RETURN 1
+
+;-------------------------------------------------
+@ACT_COM155
+IF TALENT:TARGET:140 == 1
+	PRINTL 구슬킥
+	TSTR:0 = 구슬킥
+ELSE
+	PRINTL 고간 차기
+	TSTR:0 = 股間蹴り
+ENDIF
+;CALL KOJO_MESSAGE_COM
+
+;着脱の処理、浣腸中だと漏らす。地の文との兼ね合いで実際に外すのは地の文の後。
+SIF TEQUIP:21 == 1
+	CALL ADDS_ABNORMAL_EXP("浣腸排泄", TARGET)
+
+;調教者→調教対象
+TFLAG:28 = 2
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 200
+DOWNBASE:TARGET:기력 += 500
+
+;強力な痛み・恐怖・屈従・逸脱・反感ソース、若干の快C
+SOURCE:TARGET:아픔 = 4500
+SOURCE:TARGET:무서움 = 3000
+SOURCE:TARGET:굴종 = 1300
+SOURCE:TARGET:일탈 = 1200
+SOURCE:TARGET:반감 = 1200
+SOURCE:TARGET:쾌Ｃ = 10
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;苦痛のパラメータによる苦痛のソース増加は先に処理しておく
+IF PALAM:10 < PALAMLV:1
+	TIMES SOURCE:TARGET:아픔 , 1.00
+ELSEIF PALAM:10 < PALAMLV:2
+	TIMES SOURCE:TARGET:아픔 , 1.50
+ELSEIF PALAM:10 < PALAMLV:3
+	TIMES SOURCE:TARGET:아픔 , 2.00
+ELSEIF PALAM:10 < PALAMLV:4
+	TIMES SOURCE:TARGET:아픔 , 2.50
+ELSEIF PALAM:10 >= PALAMLV:4
+	TIMES SOURCE:TARGET:아픔 , 3.00
+ENDIF
+
+;マゾッ気が強いと快Ｃ・屈服が増加
+IF ABL:9 == 0
+	TIMES SOURCE:TARGET:쾌Ｃ , 1.00
+	TIMES SOURCE:TARGET:굴종 , 1.00
+ELSEIF ABL:9 < 3
+	TIMES SOURCE:TARGET:쾌Ｃ , 1.50
+	TIMES SOURCE:TARGET:굴종 , 1.10
+ELSEIF ABL:9 < 6
+	TIMES SOURCE:TARGET:쾌Ｃ , 2.50
+	TIMES SOURCE:TARGET:굴종 , 1.30
+ELSEIF ABL:9 < 10
+	TIMES SOURCE:TARGET:쾌Ｃ , 3.50
+	TIMES SOURCE:TARGET:굴종 , 1.50
+ELSE
+	TIMES SOURCE:TARGET:쾌Ｃ , 5.00
+	TIMES SOURCE:TARGET:굴종 , 1.70
+ENDIF
+
+;-------------------------------------------------
+;吸精処理
+;-------------------------------------------------
+IF CFLAG:PLAYER:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:6+1) * BASE:LV
+	CALL DRAIN_MAG,PLAYER,LOCAL,TARGET
+ELSEIF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:6+1) * BASE:LV
+	CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+ENDIF
+
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+;레즈경험
+A = 1
+IF IS_LESBIAN(TARGET,PLAYER)
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, PLAYER)
+ELSEIF IS_GAY(TARGET,PLAYER)
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+ENDIF
+
+;依存度ベクトル
+TFLAG:33 = 5
+
+;依存度補正値(服従で1、隷属で2）
+IF TALENT:복종 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:예속 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+
+
+;===================================================
+;地の文
+;===================================================
+@MESSAGE_COM155
+PRINTFORM %PLAYER는% 
+;縄などで緊縛中
+IF TEQUIP:밧줄
+	PRINTFORM %TARGET의% 결박 방식을 바꾸어, 
+;아이마스크
+ELSEIF TEQUIP:18
+	PRINTFORM 아무것도 보이지 않는 %TARGET에게% 명령하여, 
+ELSE
+	PRINTFORM %TARGET에게% 명령하여, 
+ENDIF
+PRINTL 다리를 벌리게 했다
+
+;対象がオトコか否か
+IF TALENT:TARGET:140 == 1
+	PRINT 불안하게 흔들리는 고환
+ELSE
+	PRINT 아무것도 모른 채 노출된 고간
+ENDIF
+PRINT 에 조준을 맞추고, 
+
+;調教者がサド
+IF TALENT:PLAYER:새드
+	PRINTL 다리를 힘껏 치켜들어, 전력으로 걷어찼다
+ELSE
+	PRINTL 걷어찼다
+ENDIF
+
+PRINTFORM %TARGET은% 
+;縄などで緊縛中
+SIF TEQUIP:밧줄
+	PRINT 꽁꽁 묶인 채이면서도, 
+IF TALENT:마조
+	PRINTW 몸을 비틀며 기절초풍하지만, 그 얼굴은 어딘가 황홀해하고 있다……
+ELSE
+	PRINTW 몸을 비틀며 기절초풍하고 있다……
+ENDIF
+
+;浣腸器＋プラグ装着時
+IF TEQUIP:21
+	IF IS_MALE(TARGET)
+	PRINTFORM 고환
+	ELSE
+	PRINTFORM 가랑이
+	ENDIF
+	PRINTFORML 에 가해진 충격이 너무 큰 나머지, %TARGET에게서% 항문마개가 세차게 빠져나오며 장내의 오물을 항문에서 흩뿌렸다.
+	;마조끼
+	IF ABL:9 == 0
+		PRINTFORMW %TARGET은% 고통과 치욕 어린 표정을 짓고 있다.
+	ELSEIF ABL:9 == 1
+		PRINTFORMW %TARGET은% 식은땀을 흘리며, 아직 아랫배에 남은 배설감을 견뎌내고 있다.
+	ELSEIF ABL:9 == 2
+		PRINTFORMW %TARGET은% 부끄러워하면서도, 해방감에 안도하는 표정을 짓고 있다.
+	ELSEIF ABL:9 == 3
+		PRINTFORMW %TARGET은% 항문을 스쳐 지나가는 배설물의 감각에 이따금 요염한 헐떡임을 흘리고 있다.
+	ELSEIF ABL:9 == 4
+		PRINTFORMW %TARGET은% 넋이 나간 표정을 짓고, 배설감을 즐기고 있다.
+	ELSEIF ABL:9 >= 5
+		PRINTFORML %TARGET은% 배설감과 치욕을 마음껏 음미하고 있다.
+		PRINTFORML %TARGET의% 표정은 쾌감에 맥없이 풀려, 항문에서 오물을 쏟아내는 것과 동시에,
+		;オトコかどうかで分岐
+		IF IS_MALE(TARGET)
+			PRINTW 페니스에서도 쿠퍼액을 줄줄 흘리고 있다.
+		ELSE
+			PRINTW 질구에서도 애액을 뚝뚝 떨어뜨리고 있다.
+		ENDIF
+	ENDIF
+;ここで浣腸器を外す
+TEQUIP:21 = 0
+ENDIF
+
+
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_155
+RETURN COMTYPE("ハード系")
+
+

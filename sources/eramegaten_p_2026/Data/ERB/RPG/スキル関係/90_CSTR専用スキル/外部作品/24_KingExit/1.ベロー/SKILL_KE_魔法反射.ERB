@@ -1,0 +1,100 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_KE_魔法反射, ARG
+RESULTS = 魔法反射
+
+;　명중
+@SKILL_HITRATE_KE_魔法反射, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_KE_魔法反射, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_KE_魔法反射, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_KE_魔法反射, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_KE_魔法反射, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_KE_魔法反射, ARG
+SIF ARG >= 0 && GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 25
+	RESULTS = 25ＴＰ
+RETURN 40
+
+;　相性
+@SKILL_TYPE_KE_魔法反射, ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_KE_魔法反射
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_KE_魔法反射, ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_KE_魔法反射, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_KE_魔法反射, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_KE_魔法反射, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;속도보정
+@SKILL_SPEED_KE_魔法反射, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_KE_魔法反射
+RETURN 0
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+@ACTION_KE_魔法反射,ARG,ARG:1,ARG:2
+CALL PRINT_HIT_MESSAGE, ARG, "魔法反射", "w"
+CFLAG:ARG:마법반사플래그 = 1
+CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", 25, "-="
+
+;即時発動
+@SKILL_QUICK_ACTION_KE_魔法反射, ARG
+RETURN 1
+
+;　 説明文の表示
+@SKILL_EXPLAIN_KE_魔法反射, ARG
+PRINTL 
+PRINTL 자신에게 적의 마법 공격을 되받아치는 결계를 친다.
+PRINTL 이 스킬은 턴을 소모하지 않고 즉시 발동한다.
+PRINTL 이 스킬은 추가로 TP를 25 소비한다.
+PRINTL 
+PRINTL 유격마도사 베로의 스킬(CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_KE_魔法反射, ARG
+;ゲージが25以上のときのみ
+RESULTS = TP不足
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 25
+	RETURN 0
+;反射フラグが立っていないときのみ
+RESULTS = 魔法反射中
+SIF CFLAG:ARG:마법반사플래그 > 0
+	RETURN 0
+RETURN 1
+

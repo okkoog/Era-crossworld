@@ -1,0 +1,58 @@
+﻿@CS_BATTLE_MESSAGE_WINDOW, ARGS, ARGS:1, 区切り文字 = "/" , 옵션 = "デフォルト" , 位置 = "CENTER" , 字幅 = 72, 行数 = 7 , 表示タイプ = "TYPE" , フェード間隔 = 10 , 終色 = -1 , 文字列体裁 = "LEFT", 指定番号, 指定方式, イベント画像
+#LOCALSIZE 1
+#DIMS 옵션
+#DIMS 区切り文字
+#DIMS 位置
+#DIM 字幅
+#DIM 行数
+#DIMS 表示タイプ
+#DIM フェード間隔
+#DIM 終色
+#DIMS 文字列体裁
+#DIM 指定番号
+#DIMS 指定方式
+#DIMS イベント画像
+#DIM L_LINE, 2
+
+行数 = MAX(行数 , STRCOUNT(ARGS:1, 区切り文字) + 1)
+REDRAW 0
+;SIF L_LINE:1 == LINECOUNT
+;	CLEARLINE LINECOUNT - L_LINE:0
+;L_LINE:0 = LINECOUNT
+
+;スキップ中は描画しない
+IF !MESSKIP() && !FLAG:윈도우메시지스킵
+	;ダンジョンを描画
+	
+	CALL SET_PICTURE, , , "消去"
+
+	CALL BF_PHASE_WINDOW , 0 , 0 , 92
+	CALL BF_SUMMONER_WINDOW , 1 , 0 , 0
+	CALL BF_DEMON_WINDOW , 1 , 3 , 12
+	CALL SET_PICTURE , @"%"=" * 132%" , 19 , , 0
+	CALL SET_PICTURE , " " , 20 , , 0
+	CALL SET_PICTURE , @"%"=" * 132%" , 21 , , 0
+	CALL BF_DEMON_WINDOW , 0 , 22 , 12
+	CALL BF_SUMMONER_WINDOW , 0 , 23 , 0
+	CALL BF_DECK_WINDOW , 99 , 38 , 32
+	CALL SET_PICTURE, , 0, "HTML表示", 50
+	;CALL BF_INFORMATION_WINDOW , CBF_SELECT , 41 , 0
+	;FLAG:커맨드표시행수 = LINECOUNT
+	;CLEARLINE LINECOUNT - FLAG:커맨드표시행수
+ENDIF
+SIF 옵션 == "デフォルト"
+	옵션 = ログを残さない/ボタンを利用する/再利用しない
+IF 指定方式 == ""
+	CALL MESSAGE_WINDOW, ARGS, ARGS:1, 区切り文字 , 옵션 , 位置 , 字幅, 行数 , 表示タイプ, フェード間隔 , 終色 , 文字列体裁
+ELSE
+	CALL MESSAGE_WINDOW_ICON, 指定番号, 指定方式, イベント画像, ARGS, ARGS:1, 区切り文字 , 옵션 , 位置 , 字幅, 行数 , 表示タイプ, フェード間隔 , 終色 , 文字列体裁
+ENDIF
+REDRAW 0
+;スキップした場合はログを残す
+IF !MESSKIP() && !FLAG:윈도우메시지스킵
+	CLEARLINE LINECOUNT - FLAG:커맨드표시행수
+	;ちらつき防止で終了時にメッセージウィンドウ分を補う
+	;CALL SHOW_DUNGEON_COMMAND
+ENDIF
+REDRAW 1
+;L_LINE:1 = LINECOUNT

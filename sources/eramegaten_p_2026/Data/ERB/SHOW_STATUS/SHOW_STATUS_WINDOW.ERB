@@ -1,0 +1,1303 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:STATUS_WINDOW_MAIN.ERB
+;	Facility	:各種能力値等をステータスウィンドウ風に表示する関数
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		Ｎ烏					新規作成
+;	002		2021/01/29		Rsp暇人					도구명중/道具威力を表示できるように
+;	003		2021/02/07		Rsp暇人					文字数が多くてレイアウトが崩れる場合に短縮形を使うように
+;	004		2022/09/17		kamedakeisuke			Aion式召喚術まわりの仕様を追加
+;	005		2023/01/26		qqqqq					能力値グラフで装備品による強化を別の色で表示するように
+;													能力値グラフ表示形式変更処理、変更ボタンを追加
+;	006		2022/12/19		P(bazzile)				ロールシステムにあわせて各種判定を変更
+;													ガンスリンガーに銃を装備可能にする効果を追加
+;	007		2023/06/22		P(bazzile)				レベルアップ時インターフェース設定にランダムを含まない自動設定を追加_
+;	008		2023/06/28		P(bazzile)				剣装備の枠拡張に対応
+;	009		2023/07/04		P(bazzile)				魔晶武器を装備しようとすると落ちる不具合を修正
+;	010		2023/09/20		Jガン					SET_PICTUREで画像を表示できるようになったのでそれを使い基本情報でキャラの画像を出す用に
+;	011		2024/05/06		一ノ瀬					PICTUREのバグを修正すると@STATUS_WINDOW_MAINの表示が崩れていたので修正
+;_/_/_/_/_/_/_/_/_/_/_/_//_/_/_/_/_/_/_/_/_/_/_/#
+;ShinEraTenseiP
+;	001		2024/05/23		P(bazzile)				合一神用の表示を追加
+;	002		2024/05/26		P(bazzile)				神意の表示を追加
+;	003		2024/07/05		P(bazzile)				解析度の表示をカット
+;	004		2025/02/26		一ノ瀬					習得スキル一覧表示機能を追加
+;_/_/_/_/_/_/_/_/_/_/_/_//_/_/_/_/_/_/_/_/_/_/_/#
+
+;=======================================
+;基本情報ウィンドウ
+;=======================================
+@STATUS_WINDOW_MAIN , ARG , ARG:1 , ARG:2
+#DIM 横幅
+横幅 = 42
+;---- EDIT 010 MOD START -------------------------
+CALL SET_PICTURE , @"┏RACE%"━" * 8%┳NAME━━━━━━━━┓" , ARG:1 , , ARG:2
+CALL SET_PICTURE , @"┃%종족명(ARG) , 20 , LEFT%┃%S_NAME(ARG, 20, 2) , 20 , LEFT%┃" , ARG:1 + 1 , , ARG:2
+CALL SET_PICTURE , @"┣%"━" * 10%╋━━━━━━━━━━┫" , ARG:1 + 2 , , ARG:2
+CALL SET_PICTURE , @"┃ＬＶ　 {BASE:ARG:LV, 5}_" , ARG:1 + 3 , , ARG:2
+
+LOCALS = \@ BASE:ARG:ＨＰ >= 1000000 && !CFLAG:ARG:PT플래그 ? ？？？ # %ADD_KMGT(BASE:ARG:ＨＰ , 6)% \@/\@ MAXBASE:ARG:ＨＰ >= 1000000 && !CFLAG:ARG:PT플래그 ? ？？？ # %ADD_KMGT(MAXBASE:ARG:ＨＰ , 6)% \@
+CALL SET_PICTURE , @"┃ＨＰ　%LOCALS%_" , ARG:1 + 4 , , ARG:2
+IF MAXBASE:ARG:ＭＰ == 0
+	LOCALS = ------/------
+ELSE
+;	LOCALS = \@ BASE:ARG:ＭＰ >= 1000000 ? ？？？ # {BASE:ARG:ＭＰ , 6} \@/\@ MAXBASE:ARG:ＭＰ >= 1000000 ? ？？？ # {MAXBASE:ARG:ＭＰ , 6} \@
+	LOCALS = \@ BASE:ARG:ＭＰ >= 1000000 && !CFLAG:ARG:PT플래그 ? ？？？ # %ADD_KMGT(BASE:ARG:ＭＰ , 6)% \@/\@ MAXBASE:ARG:ＭＰ >= 1000000 && !CFLAG:ARG:PT플래그 ? ？？？ # %ADD_KMGT(MAXBASE:ARG:ＭＰ , 6)% \@
+ENDIF
+CALL SET_PICTURE , @"┃ＭＰ　%LOCALS%_" , ARG:1 + 5 , , ARG:2
+CALL SET_PICTURE , @"┃ＣＰ　 {MAXBASE:ARG:CP, 5}_" , ARG:1 + 6 , , ARG:2
+CALL SET_PICTURE , @"┃　_%GET_ALI1(ABL:ARG:속성LD),7%,{ALICOLOR(ABL:ARG:속성LD)}_/_%GET_ALI2(ABL:ARG:속성LC),7%,{ALICOLOR(ABL:ARG:속성LC)}_" , ARG:1 + 7 , , ARG:2
+IF ARG == MASTER
+	CALL SET_PICTURE , @"┃　COMP　 %ARRANGE_STRLENS(@"{NUM_NAKAMA()}/{GET_STOCKSIZE()}" , 9),9%　┃" , ARG:1 + 3 , , ARG:2 + 22
+ELSE
+	CALL SET_PICTURE , @"┃충성도　 %ARRANGE_STRLENS(@"{GET_CHARA_LOYALTY(ARG), 9}" , 9),9%　┃" , ARG:1 + 3 , , ARG:2 + 22
+ENDIF
+CALL SET_PICTURE , @"┃ 　MAG　 %ADD_KMGT(GET_CHARA_STOCK_MAG(ARG), 9)%　┃" , ARG:1 + 4 , , ARG:2 + 22
+CALL SET_PICTURE , @"┃ 　　　 /%ADD_KMGT(GET_CHARA_MAXMAG(ARG), 9)%　┃" , ARG:1 + 5 , , ARG:2 + 22
+CALL SET_PICTURE , @"┃ 　EXP　 %ADD_KMGT(BASE:ARG:ＥＸＰ, 9)%　┃" , ARG:1 + 6 , , ARG:2 + 22
+CALL SET_PICTURE , @"┃  NEXT　 %ADD_KMGT(MAXBASE:ARG:ＥＸＰ-BASE:ARG:ＥＸＰ, 9)%　┃" , ARG:1 + 7 , , ARG:2 + 22
+;---- EDIT 003 MOD END -------------------------
+CALL SET_PICTURE , @"┗%"━" * 10%┻%"━" * 10%┛" , ARG:1 + 8 , , ARG:2
+
+;---- EDIT 003 DEL START -------------------------
+;IF ABL:ARG:종족 > 0 && ABL:ARG:종족 < 45
+;	CALL SET_PICTURE , @"┏%"━" * (横幅 / 2)%┓" , ARG:1+9 , , ARG:2
+;	CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+10 , , ARG:2
+;	CALL SET_PICTURE , @"┗%"━" * (横幅 / 2)%┛" , ARG:1 + 11 , , ARG:2
+;	CALL SET_PICTURE , @"ANALYZE" , ARG:1+9 , , ARG:2+2
+;	CALL SET_PICTURE , @"_\@FLAG:(20000+NO:ARG) >= 1000 ? COMPLETE! # {FLAG:(20000+NO:ARG)/10}％\@,,,50_" , ARG:1+10 , , ARG:2+2
+;ENDIF
+;---- EDIT 003 DEL END ---------------------------
+
+;=======================================
+;@STATUS_WINDOW_EQUIPDEVIL
+;ペルソナ・変身悪魔ウィンドウ表示処理
+; ■引数
+;　　ARG   = 対象キャラ固定No
+;　　ARG:1 = 横の位置
+;　　ARG:2 = 
+; ■戻り値
+;　　なし
+; ■ローカル変数
+;　　LOCAL = 縦の位置
+;　　横幅  = 表示枠横幅(固定値)
+;=======================================
+@STATUS_WINDOW_EQUIPDEVIL , ARG , ARG:1 , ARG:2
+#DIM 横幅
+#DIM DYNAMIC LCOUNT
+#DIM TEMPS
+LOCAL = ARG:1
+横幅 = 42
+
+;---- EDIT 006 ADD START -------------------------
+IF GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+	CALL SET_PICTURE , @"┏LINKED-DEVIL%"━" * (横幅 / 2 - 6)%┓" , LOCAL , , ARG:2
+	CALL SET_PICTURE , @"┃%" " * (横幅)%┃" , LOCAL+1 , , ARG:2
+	IF GET_ROLE_PROP("CAN_USE_LINK", ARG)
+		IF CFLAG:ARG:링크캐릭터실제가입시간0 > 0
+			CALL SET_PICTURE , @"[変更] %CALLNAME:FINDCHARA_LINK(ARG),20,LEFT% \@CFLAG:ARG:악마변신 ?変身中#リンク中\@,,,悪魔変更" , LOCAL+1 , , ARG:2 + 2
+		ELSE
+			CALL SET_PICTURE , @"[変更] %CSVCALLNAME(CFLAG:ARG:초기링크악마, 0),20,LEFT% \@CFLAG:ARG:악마변신 ?変身中#リンク中\@,,,悪魔変更" , LOCAL+1 , , ARG:2 + 2
+		ENDIF
+	ELSE
+		IF GET_ROLE_PROP("CAN_USE_MANTRA", ARG) && FLAG:만트라개방도 && (SOFT_ON("삼히타") || FLAG:SHOP커맨드 == [[ショップ:셋업]] || FLAG:SHOP커맨드 == [[ショップ:능력확인]])
+			CALL SET_PICTURE , @"[取得] %CSVCALLNAME(CFLAG:ARG:초기링크악마, 0),20,LEFT% \@CFLAG:ARG:악마변신 ?変身中#変身可\@,,,マントラ取得" , LOCAL+1 , , ARG:2 + 2
+		ELSE
+			CALL SET_PICTURE , @"[固定] %CSVCALLNAME(CFLAG:ARG:초기링크악마, 0),20,LEFT% \@CFLAG:ARG:악마변신 ?変身中#リンク中\@" , LOCAL+1 , , ARG:2 + 2
+		ENDIF
+	ENDIF
+	CALL SET_PICTURE , @"┗%"━" * (横幅 / 2)%┛" , LOCAL+2 , , ARG:2
+ENDIF
+;---- EDIT 006 ADD END ---------------------------
+IF TALENT:ARG:Aion식소환술
+	CALL SET_PICTURE , @"┏EQUIPPED-DEVIL%"━" * (横幅 / 2 - 7)%┓" , LOCAL , , ARG:2
+	CALL SET_PICTURE , @"┃%" " * (横幅)%┃" , LOCAL+1 , , ARG:2
+	IF CFLAG:ARG:링크캐릭터실제가입시간0 > 0
+		CALL SET_PICTURE , @"[変更] %CALLNAME:FINDCHARA_LINK(ARG),20,LEFT% セット中,,,悪魔変更" , LOCAL+1 , , ARG:2 + 2
+	ELSEIF TALENT:ARG:Aion식소환술
+		CALL SET_PICTURE , @"[変更] 仲魔をセットしていません,,,悪魔変更" , LOCAL+1 , , ARG:2 + 2
+	ENDIF
+	CALL SET_PICTURE , @"┗%"━" * (横幅 / 2)%┛" , LOCAL+2 , , ARG:2;EDIT 006 ADD
+ENDIF
+IF TALENT:ARG:페르소나구사자
+	;IF TALENT:ARG:데빌시프터 || TALENT:ARG:식노 || TALENT:ARG:악마빙의자
+	IF GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+		LOCAL += 2
+		CALL SET_PICTURE , @"┣PERSONA %"━" * (横幅 / 2 - 4)%┫" , LOCAL , , ARG:2
+	ELSE
+		CALL SET_PICTURE , @"┏PERSONA %"━" * (横幅 / 2 - 4)%┓" , LOCAL , , ARG:2
+	ENDIF
+	CALL SET_PICTURE , @"┃%" " * (横幅)%┃" , LOCAL+1 , , ARG:2
+	IF EQUIP:ARG:장비페르소나
+		CALL SET_PICTURE , @"[変更] %CSVCALLNAME((DITEMTYPE:(EQUIP:ARG:장비페르소나):페르소나("NO")),0), 20, LEFT% 相性:%MARK_P_FITNESS(ARG)%,,,ペルソナ変更" , LOCAL+1 , , ARG:2 + 2
+	ELSEIF !EQUIP:ARG:장비페르소나 && ABL:ARG:초기페르소나
+		CALL SET_PICTURE , @"[変更] %CSVCALLNAME(ABL:ARG:초기페르소나,0), 20 , LEFT% 相性:%MARK_P_FITNESS(ARG)%,,,ペルソナ変更" , LOCAL+1 , , ARG:2 + 2
+	ELSE
+		CALL SET_PICTURE , @"[変更],,,ペルソナ変更" , LOCAL+1 , , ARG:2 + 2
+	ENDIF
+	CALL SET_PICTURE , @"┗%"━" * (横幅 / 2)%┛" , LOCAL+2 , , ARG:2;EDIT 006 ADD
+ENDIF
+;---- EDIT P 001 ADD START -------------------------
+IF GET_ROLE_PROP("CAN_USE_PORTRAIT", ARG)
+	CALL SET_PICTURE , @"┏PORTRAIT%"━" * (横幅 / 2 - 4)%┓" , LOCAL , , ARG:2
+	CALL SET_PICTURE , @"┃%" " * (横幅)%┃" , LOCAL+1 , , ARG:2
+	IF EQUIP:ARG:허물
+		CALL SET_PICTURE , @"%CSVCALLNAME(EQUIP:ARG:허물),20,LEFT% セット中,,," , LOCAL+1 , , ARG:2 + 2
+	ELSE
+		CALL SET_PICTURE , @"------,,," , LOCAL+1 , , ARG:2 + 2
+	ENDIF
+	;---- EDIT P 002 ADD START -------------------------
+	CALL SET_PICTURE , @"┗%"━" * (横幅 / 2)%┛" , LOCAL+2 , , ARG:2;EDIT 006 ADD
+	CALL SET_PICTURE , @"┏KAMUI %"━" * (横幅 / 2 - 3)%┓" , LOCAL + 3, , ARG:2
+	FOR LCOUNT, 0, 3
+		CALL SET_PICTURE , @"┃%" " * (横幅)%┃" , LOCAL + 4 + LCOUNT, , ARG:2
+		IF C_EQUIPED_KAMUI:ARG:LCOUNT != ""
+			CALL SET_PICTURE , @"[{60 + LCOUNT}] %C_EQUIPED_KAMUI:ARG:LCOUNT,20,LEFT% ,,,{60 + LCOUNT}" , LOCAL + 4 + LCOUNT , , ARG:2 + 2
+		ELSE
+			CALL SET_PICTURE , @"------,,," , LOCAL + 4 + LCOUNT , , ARG:2 + 2
+		ENDIF
+	NEXT
+	CALL SET_PICTURE , @"┗%"━" * (横幅 / 2)%┛" , LOCAL + 7 , , ARG:2;EDIT 006 ADD
+	;---- EDIT P 002 ADD END ---------------------------
+ENDIF
+;---- EDIT P 001 ADD END ---------------------------
+
+;=======================================
+;戦闘能力値ウィンドウ
+;=======================================
+@STATUS_WINDOW_BATTLE_STATUS , ARG , ARG:1 , ARG:2 , ARG:3
+#DIM 공격횟수 , 2
+#DIMS 공격범위 , 2
+#DIM 横幅
+;横幅 = 48
+横幅 = 50
+SIF FLAG:커스텀게임화면
+	横幅 = 54
+;---- EDIT 001 ADD START -------------------------
+SIF BATTLE_SETTING_IS_ITEM_DAMAGE()
+	横幅 += 12 - 4*!FLAG:커스텀게임화면
+;---- EDIT 001 ADD END -------------------------
+
+CALL SET_PICTURE , @"┏%"━" * (横幅 / 2)%┓" , ARG:1 , , ARG:2
+CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+1 , , ARG:2
+CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+2 , , ARG:2
+;CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+3 , , ARG:2
+;剣と銃の攻撃力と命中と射程と攻撃回数と攻撃範囲
+FOR LOCAL , 0 , 2
+	IF LOCAL == 0
+		LOCALS = 검
+		LOCALS:1 = \@ EQUIP:ARG:LOCALS > 0 && CFLAG:ARG:악마변신 == 0 ? 검： # 통상공격： \@
+		LOCAL:1 = 0
+		LOCALS:2 =
+	ELSE
+		LOCALS = 총
+		LOCALS:1 = 총：
+		LOCAL:1 = [[스킬:ＧＵＮ]]
+		LOCALS:2 = 총
+		ARG:1 += 2
+		CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+1 , , ARG:2
+		CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+2 , , ARG:2
+		SIF EQUIP:ARG:총 == 0
+			BREAK
+	ENDIF
+	CALL GET_SKILL_PROP, "SKILL_MINATTACKNUMBER", LOCAL:1, ARG
+	공격횟수 = RESULT
+	CALL GET_SKILL_PROP, "SKILL_MAXATTACKNUMBER", LOCAL:1, ARG
+	공격횟수:1 = RESULT
+	IF FLAG:커스텀게임화면
+		IF ARG:3 == 1 && 装備変更時ステータス変化値(GET_BATTLESTATUS_NUM(LOCALS:2 + "공격")) > 0
+			CALL SET_PICTURE , @"%LOCALS:1 , 10%　공격력 {MAXBASE:ARG:(LOCALS:2 + "공격"),5} (_↑{装備変更時ステータス変化値(GET_BATTLESTATUS_NUM(LOCALS:2 + "공격"))},{COLOR("aqua")}_)" , ARG:1+1 , , ARG:2 + 2
+		ELSEIF ARG:3 == 1 && 装備変更時ステータス変化値(GET_BATTLESTATUS_NUM(LOCALS:2 + "공격")) < 0
+			CALL SET_PICTURE , @"%LOCALS:1 , 10%　공격력 {MAXBASE:ARG:(LOCALS:2 + "공격"),5} (_↓{装備変更時ステータス変化値(GET_BATTLESTATUS_NUM(LOCALS:2 + "공격"))},{COLOR("red")}_)" , ARG:1+1 , , ARG:2 + 2
+		ELSE
+			CALL SET_PICTURE , @"%LOCALS:1 , 10%　공격력 {MAXBASE:ARG:(LOCALS:2 + "공격"),5}　공격횟수：{공격횟수}-{공격횟수:1}" , ARG:1+1 , , ARG:2 + 2
+			IF LOCALS == "검"
+				CALL SET_PICTURE , @"상성：%GET_TYPE(ABL:ARG:공격상성),4,LEFT%" , ARG:1+1 , , ARG:2 + 2 + 43
+			ELSEIF LOCALS == "총"
+				;銃なら特殊弾倉を表示
+				CALLFORM EQUIP_PROPERTY , EQUIP:ARG:총 , "특수탄창" , , ARG
+				CALL SET_PICTURE , @" 특수탄창：{RESULT}" , ARG:1+1 , , ARG:2 + 43
+			ENDIF
+		ENDIF
+		CALL GET_SKILL_PROP, "SKILL_RANGE", LOCAL:1, ARG
+		공격범위 = %GET_RANGE(RESULT) , 4 , LEFT%
+		CALL GET_SKILL_PROP, "SKILL_SPHERE", LOCAL:1, ARG
+		공격범위:1 = %GET_SPHERE(RESULT),4,LEFT%
+		;IF ARG:3 == 1 && 変更予定装備:GET_EQUIPNUM(LOCALS) != -1
+		;	ARG:1 += 3
+		;	
+		;	CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+1 , , ARG:2
+		;	CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+2 , , ARG:2
+		;	CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+3 , , ARG:2
+		;	
+		;	CALL SET_PICTURE , 
+		;	
+		;ENDIF
+		IF ARG:3 == 1 && 装備変更時ステータス変化値(GET_BATTLESTATUS_NUM(LOCALS:2 + "명중")) > 0
+			CALL SET_PICTURE , @"　　　　　　　명중 {MAXBASE:ARG:(LOCALS:2 + "명중"),5} (_↑{装備変更時ステータス変化値(GET_BATTLESTATUS_NUM(LOCALS:2 + "명중"))},{COLOR("aqua")}_)" , ARG:1+2 , , ARG:2 + 2
+		ELSEIF ARG:3 == 1 && 装備変更時ステータス変化値(GET_BATTLESTATUS_NUM(LOCALS:2 + "명중")) < 0
+			CALL SET_PICTURE , @"　　　　　　　명중 {MAXBASE:ARG:(LOCALS:2 + "명중"),5} (_↓{装備変更時ステータス変化値(GET_BATTLESTATUS_NUM(LOCALS:2 + "명중"))},{COLOR("red")}_)" , ARG:1+2 , , ARG:2 + 2
+		ELSE
+			CALL SET_PICTURE , @"　　　　　　　명중 {MAXBASE:ARG:(LOCALS:2 + "명중"),5}  사정：%공격범위%　　　 대상：%공격범위:1%" , ARG:1+2 , , ARG:2 + 2
+		ENDIF
+	ELSE
+		IF ARG:3 == 1 && 装備変更時ステータス変化値(GET_BATTLESTATUS_NUM(LOCALS:2 + "공격")) > 0
+			CALL SET_PICTURE , @"%LOCALS:1 , 10%　공격력 {MAXBASE:ARG:(LOCALS:2 + "공격"),3}(_↑{装備変更時ステータス変化値(GET_BATTLESTATUS_NUM(LOCALS:2 + "공격"))},{COLOR("aqua")}_)" , ARG:1+1 , , ARG:2 + 2
+		ELSEIF ARG:3 == 1 && 装備変更時ステータス変化値(GET_BATTLESTATUS_NUM(LOCALS:2 + "공격")) < 0
+			CALL SET_PICTURE , @"%LOCALS:1 , 10%　공격력 {MAXBASE:ARG:(LOCALS:2 + "공격"),3}(_↓{装備変更時ステータス変化値(GET_BATTLESTATUS_NUM(LOCALS:2 + "공격"))},{COLOR("red")}_)" , ARG:1+1 , , ARG:2 + 2
+		ELSE
+			CALL SET_PICTURE , @"%LOCALS:1 , 10%　공격력 {MAXBASE:ARG:(LOCALS:2 + "공격"),3}　횟수：{공격횟수}-{공격횟수:1}" , ARG:1+1 , , ARG:2 + 2
+			IF LOCALS == "검"
+				CALL SET_PICTURE , @"상성：%GET_TYPE(ABL:ARG:공격상성),4,LEFT%" , ARG:1+1 , , ARG:2 + 2 + 37
+			ELSEIF LOCALS == "총"
+				;銃なら特殊弾倉を表示
+				CALLFORM EQUIP_PROPERTY , EQUIP:ARG:총 , "특수탄창" , , ARG
+				CALL SET_PICTURE , @" 특수탄창：{RESULT}" , ARG:1+1 , , ARG:2 + 37
+			ENDIF
+		ENDIF
+		CALL GET_SKILL_PROP, "SKILL_RANGE", LOCAL:1, ARG
+		공격범위 = %GET_RANGE(RESULT) , 4 , LEFT%
+		CALL GET_SKILL_PROP, "SKILL_SPHERE", LOCAL:1, ARG
+		공격범위:1 = %GET_SPHERE(RESULT),4,LEFT%
+		;IF ARG:3 == 1 && 変更予定装備:GET_EQUIPNUM(LOCALS) != -1
+		;	ARG:1 += 3
+		;	
+		;	CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+1 , , ARG:2
+		;	CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+2 , , ARG:2
+		;	CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+3 , , ARG:2
+		;	
+		;	CALL SET_PICTURE , 
+		;	
+		;ENDIF
+		IF ARG:3 == 1 && 装備変更時ステータス変化値(GET_BATTLESTATUS_NUM(LOCALS:2 + "명중")) > 0
+			CALL SET_PICTURE , @"　　　　　　　명중 {MAXBASE:ARG:(LOCALS:2 + "명중"),3}(_↑{装備変更時ステータス変化値(GET_BATTLESTATUS_NUM(LOCALS:2 + "명중"))},{COLOR("aqua")}_)" , ARG:1+2 , , ARG:2 + 2
+		ELSEIF ARG:3 == 1 && 装備変更時ステータス変化値(GET_BATTLESTATUS_NUM(LOCALS:2 + "명중")) < 0
+			CALL SET_PICTURE , @"　　　　　　　명중 {MAXBASE:ARG:(LOCALS:2 + "명중"),3}(_↓{装備変更時ステータス変化値(GET_BATTLESTATUS_NUM(LOCALS:2 + "명중"))},{COLOR("red")}_)" , ARG:1+2 , , ARG:2 + 2
+		ELSE
+			CALL SET_PICTURE , @"　　　　　　　명중 {MAXBASE:ARG:(LOCALS:2 + "명중"),3}  사정：%공격범위% 　대상：%공격범위:1%" , ARG:1+2 , , ARG:2 + 2
+		ENDIF
+	ENDIF
+	
+	
+	;IF ABL:ARG:추가효과 > 0 && LOCALS == "검"
+	;	CALL SET_PICTURE , @"　　　　　追加効果：%GET_STATE(ABL:ARG:추가효과),6,LEFT%　 　　追加相性：%GET_TYPE(ABL:ARG:추가효과상성)%" , ARG:1+3 , , ARG:2 + 2
+	;ELSEIF LOCALS == "총"
+	;	ARG:1 -= 1
+	;ENDIF
+NEXT
+CALL SET_PICTURE , @"┣%"━" * (横幅 / 2)%┫" , ARG:1+3 , , ARG:2
+CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+4 , , ARG:2
+CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+5 , , ARG:2
+CALL SET_PICTURE , @"┗%"━" * (横幅 / 2)%┛" , ARG:1+6 , , ARG:2
+IF FLAG:커스텀게임화면
+	FOR LOCAL , 2 , 6
+		CALL SET_PICTURE , @"%GET_BATTLESTATUS(LOCAL),8%{MAXBASE:ARG:(GET_BATTLESTATUS(LOCAL)),6} " , ARG:1 + 4 + (LOCAL - 2) % 2 , , ARG:2 + 2 + ((LOCAL-2) / 2) * 24 + 2
+		SIF 装備変更時ステータス変化値(LOCAL) > 0
+			CALL SET_PICTURE , @"(_↑{装備変更時ステータス変化値(LOCAL)},{COLOR("aqua")}_)" , ARG:1 + 4 + (LOCAL - 2) % 2 , , ARG:2 + 2 + ((LOCAL-2) / 2) * 24 + 17
+		SIF 装備変更時ステータス変化値(LOCAL) < 0
+			CALL SET_PICTURE , @"(_↓{装備変更時ステータス変化値(LOCAL)},{COLOR("red")}_)" , ARG:1 + 4 + (LOCAL - 2) % 2 , , ARG:2 + 2 + ((LOCAL-2) / 2) * 24 + 17
+			
+	NEXT
+;---- EDIT 001 ADD START -------------------------
+	IF BATTLE_SETTING_IS_ITEM_DAMAGE()
+		CALL SET_PICTURE , @"도구위력{MAXBASE:ARG:도구위력,6}" , ARG:1 + 4 , , ARG:2 + 2 + 2 * 24 + 2
+		CALL SET_PICTURE , @"도구명중\@BATTLE_SETTING_IS_ITEM_HITRATE() ? {MAXBASE:ARG:도구명중,6} # 　----\@" , ARG:1 + 5 , , ARG:2 + 2 + 2 * 24 + 2
+	ENDIF
+;---- EDIT 001 ADD END -------------------------
+ELSE
+	FOR LOCAL , 2 , 6
+		CALL SET_PICTURE , @"%GET_BATTLESTATUS(LOCAL),8,LEFT%{MAXBASE:ARG:(GET_BATTLESTATUS(LOCAL)),5} " , ARG:1 + 4 + (LOCAL - 2) % 2 , , ARG:2 + 2 + ((LOCAL-2) / 2) * 21
+		SIF 装備変更時ステータス変化値(LOCAL) > 0
+			CALL SET_PICTURE , @"(_↑{装備変更時ステータス変化値(LOCAL)},{COLOR("aqua")}_)" , ARG:1 + 4 + (LOCAL - 2) % 2 , , ARG:2 + 2 + ((LOCAL-2) / 2) * 21 + 13
+		SIF 装備変更時ステータス変化値(LOCAL) < 0
+			CALL SET_PICTURE , @"(_↓{装備変更時ステータス変化値(LOCAL)},{COLOR("red")}_)" , ARG:1 + 4 + (LOCAL - 2) % 2 , , ARG:2 + 2 + ((LOCAL-2) / 2) * 21 + 13
+			
+	NEXT
+;---- EDIT 001 ADD START -------------------------
+	IF BATTLE_SETTING_IS_ITEM_DAMAGE()
+		CALL SET_PICTURE , @"도구위력{MAXBASE:ARG:도구위력,6}" , ARG:1 + 4 , , ARG:2 + 2 + 2 * 21
+		CALL SET_PICTURE , @"도구명중\@BATTLE_SETTING_IS_ITEM_HITRATE() ? {MAXBASE:ARG:도구명중,6} # 　----\@" , ARG:1 + 5 , , ARG:2 + 2 + 2 * 21
+	ENDIF
+;---- EDIT 001 ADD END -------------------------
+ENDIF
+
+;=======================================
+;基本能力値ウィンドウ
+;=======================================
+@STATUS_WINDOW_BASE_STATUS , ARG , ARG:1 , ARG:2 , ARG:3
+#DIM 横幅
+#DIM 最大能力値
+#LOCALSIZE 4
+横幅 = 46
+
+CALL SET_PICTURE , @"┏%"━" * (横幅 / 2)%┓" , ARG:1 , , ARG:2
+CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+1 , , ARG:2
+CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+2 , , ARG:2
+CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+3 , , ARG:2
+CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+4 , , ARG:2
+CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+5 , , ARG:2
+CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+6 , , ARG:2
+CALL SET_PICTURE , @"┗%"━" * (横幅 / 2)%┛" , ARG:1+7 , , ARG:2
+;---- EDIT 007 ADD START -------------------------
+IF CFLAG:ARG:PT플래그 > 0 && GROUPMATCH(FLAG:레벨업시인터페이스설정, 3, 4) && !(FLAG:이신합체표시 || FLAG:SHOP커맨드 == [[ショップ:사교의관]])
+	CALL SET_PICTURE , "_[능력상승률변경],,,能力上昇率変更_" , ARG:1+7 , , ARG:2 + 2
+	CALL SET_PICTURE , @"_[%AUTO_SPLIT("신축_고정_신축_고축", "_", FLAG:능력치그래프설정 & 3)%],,,能力値グラフ変更_" , ARG:1+7 , , ARG:2 + 横幅 - 4
+ENDIF
+;---- EDIT 007 ADD END ---------------------------
+IF GETBIT(FLAG:능력치그래프설정, 0)
+	;表示タイプ固定
+	最大能力値 = GETBIT(FLAG:능력치그래프설정, 1) ? 100 # 50
+ELSE
+	;表示タイプ伸縮
+	最大能力値 = MAX(MAXARRAY(MAXBASE:ARG:0 , GETNUM(BASE , "힘") , GETNUM(BASE , "운") + 1) , 28)
+ENDIF
+IF FLAG:커스텀게임화면
+	LOCAL:1 = 4
+	LOCAL:2 = 26
+	LOCAL:3 = 16
+ELSE
+	LOCAL:1 = 3
+	LOCAL:2 = 28
+	LOCAL:3 = 14
+ENDIF
+CALL 能力値グラフカラーチェック
+FOR LOCAL , 1 , 7
+	CALL SET_PICTURE , @"_%GET_BASESTATUS(LOCAL),4,LEFT%,{SETCOLOR_AUTOIF2_F改(ARG,LOCAL)}_ {MAXBASE:ARG:(GET_BASESTATUS(LOCAL)),LOCAL:1}({BASE:ARG:(GET_BASESTATUS(LOCAL)),LOCAL:1}) " , ARG:1 + LOCAL, , ARG:2 + 2
+	CALL CALC_BASESTASUS_BAR_PROP, ARG, LOCAL, 最大能力値, LOCAL:2
+	{
+	CALL SET_PICTURE
+		, @"%UNICODE(0x258B)*RESULT:0%,{FLAG:능력치그래프컬러1}_"
+		+ @"%UNICODE(0x258B)*RESULT:1%,{FLAG:능력치그래프컬러2}_"
+		+ @"%UNICODE(0x258B)*RESULT:2%,{FLAG:능력치그래프컬러3}_"
+		+ @"%UNICODE(0x258B)*RESULT:3%,{FLAG:능력치그래프컬러4}"
+		, ARG:1 + LOCAL, , ARG:2 + 2 + LOCAL:3
+	}
+NEXT
+
+;能力値グラフカラーのデフォルト設定チェック
+@能力値グラフカラーチェック
+#LOCALSIZE 1
+#DIM CONST DEFCOL = 0xe0e0e0, 0xF0E070, 0x9090E8, 0x777777
+FOR LOCAL, 0, 4
+	SIF !FLAG:@"능력치그래프컬러{LOCAL+1}"
+		FLAG:@"능력치그래프컬러{LOCAL+1}" = DEFCOL:LOCAL
+NEXT
+
+;ブロック配置数を求める
+@CALC_BASESTASUS_BAR_PROP, CHARA, STAT, MAXW, WNDSIZE, 
+#DIM CHARA
+#DIM STAT
+#DIM MAXW
+#DIM WNDSIZE
+#DIMS STATS
+#DIM VAL, 4
+STATS '= GET_BASESTATUS(STAT)
+VAL:0 = MIN(MIN(MAXBASE:CHARA:(STATS) , BASE:CHARA:(STATS)) * WNDSIZE / MAXW, WNDSIZE) ;WHITEブロック
+CALL EQUIP_MODIFY_VALUE, CHARA, STAT
+VAL:1 = MIN(MAX(RESULT, 0) * WNDSIZE / MAXW, WNDSIZE - VAL:0) ;YELLOWブロック
+VAL:2 = MIN(MAX(MAXBASE:CHARA:(STATS) - (BASE:CHARA:(STATS) + VAL:1) , 0) * WNDSIZE / MAXW, WNDSIZE - (VAL:0 + VAL:1)) ;AQUAブロック
+VAL:3 = MIN(MAX(BASE:CHARA:(STATS) - MAXBASE:CHARA:(STATS) , 0) * WNDSIZE / MAXW, WNDSIZE - (VAL:0 + VAL:1)) ;GRAYブロック
+RETURN VAL:0, VAL:1, VAL:2, VAL:3
+
+@EQUIP_MODIFY_VALUE, CHARA, BASENUM
+#DIM CHARA
+#DIM BASENUM
+#DIM LCOUNT
+#DIM ITEMNO
+#DIM VAL
+VAL = 0
+FOR LCOUNT, 0, 7
+	ITEMNO = EQUIP:CHARA:GET_EQUIP(LCOUNT)
+	IF ITEMNO > 0
+		IF 魔晶装備(ITEMNO)
+			CALL 基本能力修正_魔晶装備, BASENUM, CHARA
+		ELSE
+			CALLFORM 基本能力修正_{ITEMNO}, BASENUM, CHARA
+		ENDIF
+		VAL += RESULT
+	ENDIF
+NEXT
+RETURN VAL
+
+
+;=======================================
+;防御相性ウィンドウ
+;=======================================
+@STATUS_WINDOW_DEFTYPE , ARG , ARG:1 , ARG:2 , ARG:3
+#DIM 横幅
+横幅 = 42
+SIF ARG:3
+	横幅 = 72
+;4*5にしておこう
+CALL SET_PICTURE , @"┏%"━" * (横幅 / 2)%┓" , ARG:1 , , ARG:2
+CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+1 , , ARG:2
+CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+2 , , ARG:2
+CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+3 , , ARG:2
+CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+4 , , ARG:2
+CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+5 , , ARG:2
+CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+6 , , ARG:2
+CALL SET_PICTURE , @"┗%"━" * (横幅 / 2)%┛" , ARG:1+7 , , ARG:2
+SIF CFLAG:ARG:PT플래그 > 0 && !(FLAG:이신합체표시 || FLAG:SHOP커맨드 == [[ショップ:사교의관]])
+	CALL SET_PICTURE , "_[≪],,,≪_표시변경_[≫],,,≫_" , ARG:1+7 , , ARG:2 + 2 + 横幅 - 16
+IF FLAG:윈도우내성표시설정 == 0 || CFLAG:ARG:PT플래그 < 1
+	FOR LOCAL , 0 , TYPENUM
+		;CALL SET_PICTURE , @"%GET_TYPE(LOCAL),4% _\@(MAXBASE:ARG:GET_TYPE(LOCAL) < 0) ? 흡 # 　\@\@ ((MAXBASE:ARG:GET_TYPE(LOCAL) != 999)) ? {ABS(MAXBASE:ARG:GET_TYPE(LOCAL)),3}% # %" " *2%反射 \@,%相性カラー(MAXBASE:ARG:GET_TYPE(LOCAL))%_" , ARG:1 + 1 + LOCAL/3 , , ARG:2 + 2 + LOCAL % 3 * 14
+		CALL SET_PICTURE , @"%GET_TYPE(LOCAL),4% _\@(MAXBASE:ARG:GET_TYPE(LOCAL) < 0) ? 흡 # 　\@\@ ((MAXBASE:ARG:GET_TYPE(LOCAL) != 999)) ? {ABS(MAXBASE:ARG:GET_TYPE(LOCAL)),3}％ # %" "%반사 \@,%相性カラー(MAXBASE:ARG:GET_TYPE(LOCAL))%_" , ARG:1 + 1 + LOCAL/3 , , ARG:2 + 2 + LOCAL % 3 * (横幅/3)
+		SIF ARG:3 == 1 &&  装備変更時相性(LOCAL) != MAXBASE:ARG:GET_TYPE(LOCAL)
+			CALL SET_PICTURE , @" → _\@(装備変更時相性(LOCAL) < 0) ? 흡 # 　\@\@ ((装備変更時相性(LOCAL) != 999)) ? {ABS(装備変更時相性(LOCAL)),3}％ # %" "%반사 \@,%相性カラー(装備変更時相性(LOCAL))%_" , ARG:1 + 1 + LOCAL/3 , , ARG:2 + 14 + (LOCAL % 3) * (横幅/3)
+		;IF ARG:3 == 1 && 装備変更時相性(LOCAL) != MAXBASE:ARG:GET_TYPE(LOCAL)
+		;	CALL SET_PICTURE , @" → \@(MAXBASE:ARG:(GET_TYPE(LOCAL)) < 0) ? 흡 # 　\@\@ ((MAXBASE:ARG:(GET_TYPE(LOCAL)) != 999)) ? {ABS(MAXBASE:ARG:(GET_TYPE(LOCAL))),4}％ # %" " *2%反射 \@" , ARG:1 + 1 + LOCAL/3 , , ARG:2 + 2 + 11 + LOCAL % 3 * 21
+		;
+		;ENDIF
+	NEXT
+ELSEIF FLAG:윈도우내성표시설정 == 1
+	LOCAL:1 = 0
+	FOR LOCAL , 0 , BADSTATENUM
+		SIF LOCAL == 0 || LOCAL == 13 || LOCAL == 16 || LOCAL == 17
+			CONTINUE
+		;CALL SET_PICTURE , @"%GET_TYPE(LOCAL),4% _\@(MAXBASE:ARG:GET_TYPE(LOCAL) < 0) ? 흡 # 　\@\@ ((MAXBASE:ARG:GET_TYPE(LOCAL) != 999)) ? {ABS(MAXBASE:ARG:GET_TYPE(LOCAL)),3}% # %" " *2%反射 \@,%相性カラー(MAXBASE:ARG:GET_TYPE(LOCAL))%_" , ARG:1 + 1 + LOCAL/3 , , ARG:2 + 2 + LOCAL % 3 * 14
+		CALL SET_PICTURE , @"%GET_STATE(LOCAL),6,LEFT% ,{COLOR("パ青緑")}_{MAX(MAXBASE:ARG:GET_STATE(LOCAL) + 100,0),3}％,%相性カラー(MAX(MAXBASE:ARG:GET_STATE(LOCAL) + 100,0))%_" , ARG:1 + 1 + LOCAL:1/3 , , ARG:2 + 2 + LOCAL:1 % 3 * (横幅/3)
+		SIF ARG:3 == 1 &&  装備変更時バステ耐性(LOCAL) != MAXBASE:ARG:GET_STATE(LOCAL)
+			CALL SET_PICTURE , @" → 　_{MAX(装備変更時バステ耐性(LOCAL) + 100,0),3}％,%相性カラー(MAX(装備変更時バステ耐性(LOCAL) + 100,0))%_" , ARG:1 + 1 + LOCAL:1/3 , , ARG:2 + 14 + (LOCAL:1 % 3) * (横幅/3)
+		;IF ARG:3 == 1 && 装備変更時相性(LOCAL) != MAXBASE:ARG:GET_TYPE(LOCAL)
+		;	CALL SET_PICTURE , @" → \@(MAXBASE:ARG:(GET_TYPE(LOCAL)) < 0) ? 흡 # 　\@\@ ((MAXBASE:ARG:(GET_TYPE(LOCAL)) != 999)) ? {ABS(MAXBASE:ARG:(GET_TYPE(LOCAL))),4}％ # %" " *2%反射 \@" , ARG:1 + 1 + LOCAL/3 , , ARG:2 + 2 + 11 + LOCAL % 3 * 21
+		;
+		;ENDIF
+		LOCAL:1 ++
+	NEXT
+ELSEIF FLAG:윈도우내성표시설정 == 2
+	FOR LOCAL , 0 , TYPENUM
+		SUBSTRING GET_TYPE(LOCAL),0,2
+		CALL SET_PICTURE , @"%RESULTS% _%耐性一文字(MAXBASE:ARG:GET_TYPE(LOCAL))%,%相性カラー(MAXBASE:ARG:GET_TYPE(LOCAL))%_" , ARG:1 + 1 + LOCAL/6 , , ARG:2 + 2 + LOCAL % 6 * (横幅/6)
+		SIF ARG:3 == 1 &&  耐性一文字(装備変更時相性(LOCAL)) != 耐性一文字(MAXBASE:ARG:GET_TYPE(LOCAL))
+			CALL SET_PICTURE , @"→_%耐性一文字(装備変更時相性(LOCAL))%,%相性カラー(装備変更時相性(LOCAL))%_" , ARG:1 + 1 + LOCAL/6 , , ARG:2 + 8 + (LOCAL % 6) * (横幅/6)
+	NEXT
+	LOCAL:1 = 0
+	FOR LOCAL , 0 , BADSTATENUM
+		SIF LOCAL == 0 || LOCAL == 13 || LOCAL == 16 || LOCAL == 17
+			CONTINUE
+		CALL SET_PICTURE , @"%GET_STATE_KANJI(LOCAL,1)% ,{COLOR("パ青緑")}_%耐性一文字(MAX(MAXBASE:ARG:GET_STATE(LOCAL) + 100,0))%,%相性カラー(MAX(MAXBASE:ARG:GET_STATE(LOCAL) + 100,0))%_" , ARG:1 + 4 + LOCAL:1/6 , , ARG:2 + 2 + LOCAL:1 % 6 * (横幅/6)
+		SIF ARG:3 == 1 &&  耐性一文字(MAX(装備変更時バステ耐性(LOCAL) + 100,0)) != 耐性一文字(MAX(MAXBASE:ARG:GET_STATE(LOCAL) + 100,0))
+			CALL SET_PICTURE , @"→_%耐性一文字(MAX(装備変更時バステ耐性(LOCAL) + 100,0))%,%相性カラー(MAX(装備変更時バステ耐性(LOCAL) + 100,0))%_" , ARG:1 + 4 + LOCAL:1/6 , , ARG:2 + 8 + (LOCAL:1 % 6) * (横幅/6)
+		;IF ARG:3 == 1 && 装備変更時相性(LOCAL) != MAXBASE:ARG:GET_TYPE(LOCAL)
+		;	CALL SET_PICTURE , @" → \@(MAXBASE:ARG:(GET_TYPE(LOCAL)) < 0) ? 흡 # 　\@\@ ((MAXBASE:ARG:(GET_TYPE(LOCAL)) != 999)) ? {ABS(MAXBASE:ARG:(GET_TYPE(LOCAL))),4}％ # %" " *2%反射 \@" , ARG:1 + 1 + LOCAL/3 , , ARG:2 + 2 + 11 + LOCAL % 3 * 21
+		;
+		;ENDIF
+		LOCAL:1 ++
+	NEXT
+ENDIF
+
+;=======================================
+;スキルウィンドウ
+;=======================================
+@STATUS_WINDOW_SKILL , ARG , ARG:1 , ARG:2
+#DIM LCOUNT
+#DIM L_SKILL
+#DIM L_LEARN
+#DIM L_LEARN_LV
+#DIM L_MUTATION_LV
+#DIMS L_SKILLS
+#DIM 横幅
+#DIM 基準位置 , 2
+#DIM CONST SHOW_SKILLLINENUM = 6
+横幅 = 50
+SIF GETBIT (FLAG:커스텀게임화면,1)
+	横幅 = 82
+;SHOW_SKILLLINENUM = CHARA_SKILLCOUNT(ARG) / 2 +  CHARA_SKILLCOUNT(ARG) % 2
+
+CALL SET_PICTURE , @"┏SKILL %"━" * (横幅 / 2 -3)%┓" , ARG:1 , , ARG:2
+FOR LCOUNT, 1, SHOW_SKILLLINENUM + 1
+	CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1 + LCOUNT , , ARG:2
+NEXT
+CALL SET_PICTURE , @"_┗%"━" * (横幅 / 2)%┛_" , ARG:1 + LCOUNT , , ARG:2
+
+基準位置:0 = ARG:1 + 1
+基準位置:1 = ARG:2 + 2
+FOR LCOUNT, 1, SHOW_SKILLLINENUM * 2 + 1
+	L_SKILL = ABL:ARG:@"스킬{LCOUNT}"
+	;所持スキル数までを表示
+	IF LCOUNT <= CHARA_SKILLCOUNT(ARG)
+		IF L_SKILL
+			;敵専用/システム・基本行動・銃攻撃/使用アイテム/リンケージはグレーで表示(전투중＆全書閲覧用)
+			RESULT = 0
+			CALL GET_SKILL_PROP, "敵専用", L_SKILL, ARG
+			RESULT |= INRANGE(L_SKILL, 1, 2099) !| INRANGE(L_SKILL, 2400, 2999)
+			CALL GET_SKILL_PROP, "SKILL_NAME", ABL:ARG:@"스킬{LCOUNT}", ARG
+			SIF STRLENS(RESULTS) > SKILLNAMELENS:GETBIT(FLAG:커스텀게임화면,1) - 4
+				RESULTS '= TOHALF(RESULTS)
+			SIF STRLENS(RESULTS) > SKILLNAMELENS:GETBIT(FLAG:커스텀게임화면,1) - 4
+				RESULTS '= SUBSTRING(RESULTS, 0, SKILLNAMELENS:GETBIT(FLAG:커스텀게임화면,1) - 6) + ".."
+			CALL SET_PICTURE, @"_[{LCOUNT,2}]%RESULTS,20-LCOUNT/10,LEFT%,\@ RESULT ? 0x666666 # \@,,{LCOUNT}_", 基準位置:0 + (LCOUNT-1) / 2, , 基準位置:1 + (LCOUNT-1) % 2 * 横幅 /2
+		ELSE
+			;スキルが無い場合、通常の操作可能な枠ならEMPTYを出す
+			SIF LCOUNT <= GET_ROLE_PROP("CHANGEABLE_SKILLCOUNT", ARG)
+				CALL SET_PICTURE, @"_[{LCOUNT,2}]%"EMPTY",20-LCOUNT/10,LEFT%,\@ RESULT ? 0x666666 # \@,,{LCOUNT}_", 基準位置:0 + (LCOUNT-1) / 2, , 基準位置:1 + (LCOUNT-1) % 2 * 横幅 /2
+		ENDIF
+	ENDIF
+NEXT
+IF CFLAG:ARG:PT플래그 > 0
+	L_SKILLS = \@CFLAG:ARG:악마변신 ? 초기변신악마 # \@
+	L_LEARN = 0
+	FOR LCOUNT,1, 21
+		SIF !ABL:ARG:@"%L_SKILLS%습득스킬{LCOUNT}"
+			CONTINUE
+		SIF !ABL:ARG:@"%L_SKILLS%습득LV{LCOUNT}"
+			CONTINUE
+		IF L_LEARN == 0
+			L_LEARN = ABL:ARG:@"%L_SKILLS%습득스킬{LCOUNT}"
+			L_LEARN_LV = ABL:ARG:@"%L_SKILLS%습득LV{LCOUNT}"
+		ELSE
+			IF L_LEARN_LV > ABL:ARG:@"%L_SKILLS%습득LV{LCOUNT}"
+				L_LEARN = ABL:ARG:@"%L_SKILLS%습득스킬{LCOUNT}"
+				L_LEARN_LV = ABL:ARG:@"%L_SKILLS%습득LV{LCOUNT}"
+			ENDIF
+		ENDIF
+	NEXT
+	
+	;---- EDIT P 004 ADD START -------------------------
+	;習得スキルが残ってたら習得スキル開示ボタンを表示
+	CALL 習得予定スキルウィンドウ , ARG , RESULTS, "参照確認"
+	SIF RESULT
+		CALL SET_PICTURE , "[19]◆습득예정스킬 목록표시◆,,,19_" , ARG:1 , , ARG:2 + 24
+	;---- EDIT P 004 ADD END -------------------------
+	;習得スキルの表示
+	IF L_LEARN > 0
+		CALL GET_SKILL_PROP, "SKILL_NAME", L_LEARN, ARG
+		LOCALS:2 = \@ L_LEARN_LV > (BASE:ARG:LV)+5 ? 　　？？？？？？　　 # %RESULTS% \@ 
+		CALL SET_PICTURE , @"　　NEXT[%LOCALS:2,20,LEFT%]　습득LV {L_LEARN_LV},0x666666" , 基準位置:0 + SHOW_SKILLLINENUM , , 基準位置:1
+	ELSE
+		;変異表示
+		IF ABL:ARG:변이 > 0
+			L_MUTATION_LV = 0
+			L_MUTATION_LV = ABL:ARG:변이레벨
+			IF BASE:ARG:LV >= ABL:ARG:변이레벨 && BASE:MASTER:LV < GET_NEED_TRANSFORM_MASTER_LV(ARG)
+				CALL SET_PICTURE , @"　　NEXT[%"변이",20,LEFT%] 필요MLv {GET_NEED_TRANSFORM_MASTER_LV(ARG)},0xFFFF00" , 基準位置:0 + SHOW_SKILLLINENUM , , 基準位置:1
+			ELSE
+				CALL SET_PICTURE , @"　　NEXT[%"변이",20,LEFT%]　변이LV {ABL:ARG:변이레벨},0xFFFF00" , 基準位置:0 + SHOW_SKILLLINENUM , , 基準位置:1
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+
+;ENDIF
+SIF FLAG:이신합체표시 || FLAG:SHOP커맨드 == [[ショップ:사교의관]]
+	RETURN 0
+;装備スキル表示
+基準位置:0 = 基準位置:0 + SHOW_SKILLLINENUM + 2
+基準位置:1 = ARG:2 + 2
+
+CALL SET_PICTURE , @"┏EQUIPMENT SKILL %"━" * (横幅 / 2 - 8)%┓" , ARG:1+8 , , ARG:2
+FOR LOCAL , 0 , 6
+	CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+9 + LOCAL , , ARG:2
+NEXT
+CALL SET_PICTURE , @"┗%"━" * (横幅 / 2)%┛" , ARG:1+14 , , ARG:2
+	
+FOR LCOUNT, 1 + 装備スキルページ * 10, MIN(11 + 装備スキルページ * 10, 22)
+	L_SKILL = ABL:ARG:@"장비스킬{LCOUNT}"
+	IF L_SKILL
+		CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, ARG
+		SIF STRLENS(RESULTS) > SKILLNAMELENS:GETBIT(FLAG:커스텀게임화면,1) - 4
+			RESULTS '= TOHALF(RESULTS)
+		SIF STRLENS(RESULTS) > SKILLNAMELENS:GETBIT(FLAG:커스텀게임화면,1) - 4
+			RESULTS '= SUBSTRING(RESULTS, 0, SKILLNAMELENS:GETBIT(FLAG:커스텀게임화면,1) - 6) + ".."
+		CALL SET_PICTURE, @"_[{LCOUNT+20}]%RESULTS,19,LEFT%,,,{LCOUNT+20}_", 基準位置:0 + (LCOUNT-1 - 装備スキルページ * 10) / 2, , 基準位置:1 + (LCOUNT-1) % 2 * 横幅 / 2
+	ENDIF
+NEXT
+SIF ABL:ARG:장비스킬11
+	CALL SET_PICTURE, @"[<],,,<_P.{装備スキルページ + 1,2}_[>],,,>", 基準位置:0 + 5, , 基準位置:1 + 30
+
+
+;=======================================
+;装備品ウィンドウ
+;=======================================
+@STATUS_WINDOW_EQUIP , L_CHARA , 行 , 表示行数 , IS_EQUIP_CHANGE
+#DIM DYNAMIC 横幅
+#DIM DYNAMIC 色
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_LINE
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC 行
+#DIM DYNAMIC 表示行数
+#DIM DYNAMIC IS_EQUIP_CHANGE
+横幅 = 42
+TRYCCALLFORM STATUS_WINDOW_EQUIP_ROLE_%CSTR:L_CHARA:롤% , L_CHARA , 行, 表示行数, 横幅, IS_EQUIP_CHANGE
+CATCH
+	IF IS_EQUIP_CHANGE
+		CALL SET_PICTURE , @"┏RACE%"━" * 8%┳NAME%"━" * 8%┓" , 行 , , 表示行数
+		CALL SET_PICTURE , @"┃%종족명(L_CHARA) , 20 , LEFT%┃%CALLNAME:L_CHARA , 20 , LEFT%┃" , 行 + 1 , , 表示行数
+		CALL SET_PICTURE , @"┣%"━" * ((横幅-2)/4 )%┻%"━" * ((横幅-2)/4 )%┫" , 行 + 2 , , 表示行数
+		行 += 2
+	ELSE
+		SIF GET_ROLE_PROP("CAN_USE_EQUIP", L_CHARA) || GET_ROLE_PROP("CAN_USE_PLUGIN", L_CHARA) || GET_ROLE_PROP("CAN_EQUIP_GUN", L_CHARA)
+			CALL SET_PICTURE , @"┏%"━" * (横幅 / 2)%┓" , 行, , 表示行数
+	ENDIF
+	IF GET_ROLE_PROP("CAN_USE_EQUIP", L_CHARA)
+		CALL SET_PICTURE , @"EQUIP " , 行 , , 表示行数 + 2
+		FOR LOCAL , 1 , 9
+			CALL SET_PICTURE , @"┃%" " * 横幅%┃" , 行+LOCAL , , 表示行数
+		NEXT
+		CALL SET_PICTURE , @"┗%"━" * (横幅 / 2)%┛" , 行+9 , , 表示行数
+		FOR LOCAL , 0 , 7
+			CALL SET_PICTURE , GET_STATUS_WINDOW_EQUIP_NAME(L_CHARA, LOCAL, IS_EQUIP_CHANGE), 行 + 1 + LOCAL , , 表示行数+2
+		NEXT
+		CALL SET_PICTURE , GET_STATUS_WINDOW_EQUIP_NAME(L_CHARA, GET_EQUIPNUM("탄환"), IS_EQUIP_CHANGE), 行 + 1 + LOCAL , , 表示行数+2
+	ELSE
+		L_LINE = 行
+		;プラグインを使用可能
+		IF GET_ROLE_PROP("CAN_USE_PLUGIN", L_CHARA)
+			CALL SET_PICTURE , @"PLUGIN" , L_LINE, , 表示行数 + 2
+			CALL SET_PICTURE , @"┃%" " * 横幅%┃" , L_LINE+1 , , 表示行数
+			CALL SET_PICTURE , @"┗%"━" * (横幅 / 2)%┛" , L_LINE+2 , , 表示行数
+
+			IF IS_EQUIP_CHANGE && 変更予定装備:6 > -1
+				CALL SET_PICTURE , @"_[56][%PLUGINNAME(変更予定装備:6)%],{COLOR("パ緑")},,56_" , L_LINE+1 , , 表示行数 + 2
+			ELSEIF EQUIP:L_CHARA:악세서리
+				CALL SET_PICTURE , @"_[56][%PLUGINNAME(EQUIP:L_CHARA:악세서리)%],,,56_" , L_LINE+1 , , 表示行数 + 2
+			ELSE
+				CALL SET_PICTURE , @"_[56][----------],,,56" , L_LINE+1 , , 表示行数 + 2
+			ENDIF
+			L_LINE += 3
+		ENDIF
+		IF GET_ROLE_PROP("CAN_EQUIP_GUN", L_CHARA)
+			CALL SET_PICTURE , @"┏%"━" * (横幅 / 2)%┓" , L_LINE , , 表示行数
+			CALL SET_PICTURE , @"EQUIP " , L_LINE , , 表示行数 + 2
+			CALL SET_PICTURE , @"┃%" " * 横幅%┃" , L_LINE + 1 , , 表示行数
+			CALL SET_PICTURE , @"┃%" " * 横幅%┃" , L_LINE + 2 , , 表示行数
+			CALL SET_PICTURE , @"┗%"━" * (横幅 / 2)%┛" , L_LINE+3 , , 表示行数
+
+			CALL SET_PICTURE , GET_STATUS_WINDOW_EQUIP_NAME(L_CHARA, GET_EQUIPNUM("총"), IS_EQUIP_CHANGE), L_LINE + 1 , , 表示行数+2
+			CALL SET_PICTURE , GET_STATUS_WINDOW_EQUIP_NAME(L_CHARA, GET_EQUIPNUM("탄환"), IS_EQUIP_CHANGE), L_LINE + 2 , , 表示行数+2
+
+			L_LINE += 4
+		ENDIF
+		FOR LOCAL, L_LINE, 24
+			CALL SET_PICTURE , @"%"　" * (横幅 / 2 + 2)%" , LOCAL , , 表示行数
+		NEXT
+	ENDIF
+ENDCATCH
+
+;ARG	キャラ登録番号
+;ARG:1	装備部位
+;ARG:2	装備変更中
+@GET_STATUS_WINDOW_EQUIP_NAME, ARG, ARG:1 = -1, ARG:2
+#FUNCTIONS
+#DIMS L_RESULTS
+IF GET_EQUIP(ARG:1) == "탄환"
+	IF GET_BTL_TALENT_LV("건슬링거",  ARG)
+		L_RESULTS = [57][특수탄변경],,,57_
+	ELSE
+		L_RESULTS = [--][----------],,,
+	ENDIF
+ELSE
+	IF ARG:2 && 変更装備箇所 == ARG:1
+		L_RESULTS = [{50+ARG:1}]%"[" + GET_EQUIP(ARG:1) + "]",14,LEFT%,{COLOR("パ緑")},,{50+ARG:1}_
+	ELSE
+		L_RESULTS = [{50+ARG:1}]%"[" + GET_EQUIP(ARG:1) + "]",14,LEFT%,,,{50+ARG:1}_
+	ENDIF
+			
+	IF ARG:2 && 変更予定装備:(ARG:1) > -1
+		L_RESULTS += 装備の名称(変更予定装備:(ARG:1),ARG) + @",{COLOR("パ緑")}"
+	ELSEIF EQUIP:ARG:GET_EQUIP(ARG:1) == 0
+		L_RESULTS += "ＥＭＰＴＹ,0x404040"
+	ELSE
+		L_RESULTS += 装備の名称(EQUIP:ARG:GET_EQUIP(ARG:1),ARG) + ","
+	ENDIF
+ENDIF
+L_RESULTS += @",,{50+ARG:1}_"
+RETURNF L_RESULTS
+
+;=======================================
+;装備品データウィンドウ
+;ARG:3が装備品の番号
+;=======================================
+@STATUS_WINDOW_EQUIP_DATA , ARG , ARG:1 , ARG:2 , ARG:3 , ARGS
+#DIM 横幅
+#DIM 表示情報
+#DIM 공격횟수 , 2
+#DIMS 공격범위 , 2
+#DIM 装備箇所
+IF ARGS == "表示切替+"
+	表示情報++
+	SIF 表示情報 > 2
+		表示情報 = 0
+	RETURN 0
+ELSEIF ARGS == "表示切替-"
+	表示情報--
+	SIF 表示情報 < 0
+		表示情報 = 2
+	RETURN 0
+ENDIF
+横幅 = 42
+CALL SET_PICTURE , @"┏%"━" * (横幅 / 2)%┓" , ARG:1 , , ARG:2
+CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+1 , , ARG:2
+IF ARG:3 == 0
+	CALL SET_PICTURE , @"ＥＭＰＴＹ,{COLOR("gray")}" , ARG:1+1 , , ARG:2 + 2
+;ELSEIF 改造装備(ARG:3)
+;	CALL SET_PICTURE , @"%改造装備名称(改造装備番号(ARG:3))%" , ARG:1+1 , , ARG:2 + 2
+;ELSEIF 魔晶装備(ARG:3)
+;	CALL SET_PICTURE , @"%EQ_GETNAME_魔晶装備_ITEM(ARG:3)%" , ARG:1+1 , , ARG:2 + 2
+ELSE
+	;CALL SET_PICTURE , @"%ITEMNAME:(ARG:3)%" , ARG:1+1 , , ARG:2 + 2
+	CALL SET_PICTURE , 装備の名称(ARG:3,ARG) , ARG:1+1 , , ARG:2 + 2
+ENDIF
+CALL SET_PICTURE , @"┣%"━" * (横幅 / 2)%┫" , ARG:1+2 , , ARG:2
+
+FOR LOCAL , 3 , 9
+	CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+LOCAL , , ARG:2
+NEXT
+CALL SET_PICTURE , @"┗%"━" * (横幅 / 2)%┛" , ARG:1+9 , , ARG:2
+IF 表示情報 == 0
+	;基本性能
+	FOR LOCAL , 0 , 6
+		CALLFORM EQUIP_PROPERTY , ARG:3 , "戦闘能力修正" , LOCAL , ARG
+		;SIF RESULT
+		CALL SET_PICTURE , @"%GET_BATTLESTATUS(LOCAL),8%_ {RESULT,3},{COLOR(AUTO_SPLIT("RED_GRAY_DEF" , "_" , (RESULT > 0) + (RESULT >= 0)))}" , ARG:1+3+(LOCAL%2) , , ARG:2 + 2 + (LOCAL/2) *13
+	NEXT
+	;能力値ボーナス
+	FOR LOCAL , 0 , 6
+		CALLFORM EQUIP_PROPERTY , ARG:3 , "基本能力修正" , LOCAL + 1 , ARG
+		;IF RESULT > 0
+		CALL SET_PICTURE , @"%GET_BASESTATUS(LOCAL + 1),8%_ {RESULT,3},{COLOR(AUTO_SPLIT("RED_GRAY_DEF" , "_" , (RESULT > 0) + (RESULT >= 0)))}" , ARG:1+5+(LOCAL/3) , , ARG:2 + 2 + (LOCAL%3) *13
+		
+	NEXT
+	
+	;---- EDIT 008 MOD START -------------------------
+	;剣か銃なら攻撃回数・相性・射程・攻撃範囲表示
+	IF ARG:3 > 0
+		;---- EDIT 009 MOD START -------------------------
+		CALL EQUIP_PROPERTY, ARG:3, "装備箇所"
+		;CALLFORM 装備箇所_{ARG:3}
+		;---- EDIT 009 MOD END ---------------------------
+		装備箇所 = RESULT
+	ELSE
+		装備箇所 = -1
+	ENDIF
+	;IF RANGE(ARG:3 , 2000 , 2999)
+	IF GROUPMATCH(GET_EQUIP(装備箇所), "검", "총")
+		;IF RANGE(ARG:3 , 2500 , 2999)
+		IF GET_EQUIP(装備箇所) == "총"
+			CALLFORM EQUIP_PROPERTY , ARG:3 , "총공격" , , ARG
+			CALL SET_PICTURE , @"공격:{RESULT,3}" , ARG:1+7 , , ARG:2 + 6
+			CALLFORM EQUIP_PROPERTY , ARG:3 , "총명중" , , ARG
+			CALL SET_PICTURE , @"명중:{RESULT,3}" , ARG:1+8 , , ARG:2 + 6
+		ENDIF
+		CALLFORM EQUIP_PROPERTY , ARG:3 , "최저공격횟수" , , ARG
+		공격횟수 = RESULT
+		CALLFORM EQUIP_PROPERTY , ARG:3 , "최대공격횟수" , , ARG
+		공격횟수:1 = RESULT
+		CALL SET_PICTURE , @"공격횟수：{공격횟수}-{공격횟수:1}" , ARG:1+7 , , ARG:2 + 16
+		;IF RANGE(ARG:3 , 2000 , 2499)
+		IF GET_EQUIP(装備箇所) == "검"
+			;剣なら攻撃相性を表示
+			CALLFORM EQUIP_PROPERTY , ARG:3 , "공격상성" , , ARG
+			CALL SET_PICTURE , @" 상성：%GET_TYPE(RESULT),4,LEFT%" , ARG:1+7 , , ARG:2 + 30
+		ELSE
+		;ELSEIF RANGE(ARG:3 , 2500 , 2999)
+			;銃なら特殊弾倉を表示
+			CALLFORM EQUIP_PROPERTY , ARG:3 , "특수탄창" , , ARG
+			CALL SET_PICTURE , @" 특수탄창：{RESULT}" , ARG:1+7 , , ARG:2 + 30
+		ENDIF
+		CALLFORM EQUIP_PROPERTY , ARG:3 , "사거리" , , ARG
+		공격범위 = %GET_RANGE(RESULT) , 4 , LEFT%
+		CALLFORM EQUIP_PROPERTY , ARG:3 , "공격범위" , , ARG
+		공격범위:1 = %GET_SPHERE(RESULT),4,LEFT%
+		CALL SET_PICTURE , @"사정：%공격범위% 　　대상：%공격범위:1%" , ARG:1+8 , , ARG:2 + 16
+	ENDIF
+	;---- EDIT 008 MOD END ---------------------------
+ELSEIF 表示情報 == 1
+	;CALL SET_PICTURE , @"防御相性" , ARG:1 + 3 , , ARG:2 + 2
+	FOR LOCAL,0,TYPENUM
+		CALLFORM EQUIP_PROPERTY , ARG:3 , "防御相性" , LOCAL , ARG
+		CALL SET_AISYOU_COLOR, RESULT
+		IF RESULT == 999
+			LOCALS = 　반사　
+		ELSE
+			LOCALS = %\@(RESULT < 0) ? 흡 # 　\@%{ABS(RESULT),3}％ 
+		ENDIF
+		SIF RESULT == 100
+			LOCALS =
+		CALL SET_PICTURE , @" %GET_TYPE(LOCAL),4,LEFT%,{GETDEFCOLOR()}_ _%LOCALS%,{GETCOLOR()}" , ARG:1 + 3 + (LOCAL/3) , , ARG:2 + 2 + (LOCAL%3) * 14
+		RESETCOLOR
+	NEXT
+ELSEIF 表示情報 == 2
+	;武器の追加効果
+	CALLFORM EQUIP_PROPERTY , ARG:3 , "추가효과" , , ARG
+	IF RESULT > 0
+		CALL SET_PICTURE , @"추가효과：%GET_STATE(RESULT),6,LEFT%" , ARG:1 + 3 , , ARG:2 + 2
+		CALLFORM EQUIP_PROPERTY , ARG:3 , "추가효과상성" , , ARG
+		CALL SET_PICTURE , @"추가효과상성：%GET_TYPE(RESULT),6,LEFT%" , ARG:1 + 3 , , ARG:2 + 20
+		ARG:1 ++
+	ENDIF
+	LOCAL:1 = 0
+	CALL SET_PICTURE , @"◇상태이상내성" , ARG:1 + 3 , , ARG:2 + 2
+	FOR LOCAL , 0 , BADSTATENUM
+		CALLFORM EQUIP_PROPERTY , ARG:3 , "バステ耐性" , LOCAL , ARG
+		IF RESULT
+			CALL SET_PICTURE , @"%GET_STATE(LOCAL),8,LEFT% {100+RESULT,3}％" , ARG:1 + 4 + LOCAL:1 / 3 , , ARG:2 + 2 + (LOCAL:1 % 3) * 14
+			LOCAL:1 ++
+		ENDIF
+	NEXT
+ENDIF
+
+;=======================================
+;ペルソナウィンドウ
+;=======================================
+
+@STATUS_WINDOW_PERSONA
+
+;---- EDIT 008 MOD START -------------------------
+;=======================================
+;装備可能品リストウィンドウ
+;=======================================
+@STATUS_WINDOW_EQUIP_ITEM_LIST , ARG = -1 , ARG:1 , ARG:2 , ARG:3 , ARGS
+#DIM LCOUNT
+#DIM 横幅
+#DIM 色
+#DIM EQUIPNUM_START
+#DIM EQUIPNUM_END
+#DIM L_EQUIPNAME
+IF ARGS == "リスト作成"
+	VARSET アイテムリスト , -1
+	アイテムリストページ = 0
+	SELECTCASE GET_EQUIP(ARG:3)
+		CASE "악세서리"
+			IF GET_ROLE_PROP("CAN_USE_PLUGIN", ARG)
+				EQUIPNUM_START = 8000
+				EQUIPNUM_END = EQUIPNUM_START + 500
+			ELSE
+				EQUIPNUM_START = 2000 + ARG:3 * 500
+				EQUIPNUM_END = EQUIPNUM_START + 500
+			ENDIF
+		CASE "검"
+			EQUIPNUM_START = MIN_EQUIPNUM
+			EQUIPNUM_END = EQUIPNUM_START + 1000
+		CASEELSE
+			EQUIPNUM_START = 2000 + ARG:3 * 500
+			EQUIPNUM_END = EQUIPNUM_START + 500
+	ENDSELECT
+	;頭はEMPTY
+	;装備箇所が剣で生得武器を所持している場合、先頭を生得武器に、それ以外は0(外す)に
+	アイテムリスト:0 = ( ARG:3 == 0 && 生得武器所持(ARG) ? GETNUM(ITEM, "생득무기") # 0 )
+	;アイテムを装備していてそれが生得武器でない場合リストの先頭に現在の装備品を追加
+	SIF EQUIP:ARG:GET_EQUIP(ARG:3) > 0 && EQUIP:ARG:GET_EQUIP(ARG:3) != GETNUM(ITEM, "생득무기")
+		アイテムリスト:1 = EQUIP:ARG:GET_EQUIP(ARG:3)
+	FOR LCOUNT, EQUIPNUM_START, EQUIPNUM_END
+		SIF ITEMNAME:LCOUNT == ""
+			CONTINUE
+		SIF ITEM:LCOUNT == 0
+			CONTINUE
+		SIF FINDELEMENT(アイテムリスト , LCOUNT) != -1
+			CONTINUE
+		CALL EQ_装備可能確認, ARG, LCOUNT, ARG:3
+		SIF RESULT == 1
+			アイテムリスト:FINDELEMENT(アイテムリスト , -1) = LCOUNT
+		;IF 魔晶装備(LCOUNT)
+		;	CALLFORM 装備条件_魔晶装備,ARG ,LCOUNT - 2450 - ARG:3*450
+		;	SIF RESULT == 1
+		;		アイテムリスト:FINDELEMENT(アイテムリスト , -1) = LCOUNT
+		;ELSE
+		;	CALLFORM 装備条件_{LCOUNT},ARG
+		;	SIF RESULT == 1
+		;		アイテムリスト:FINDELEMENT(アイテムリスト , -1) = LCOUNT
+		;ENDIF
+	NEXT
+;---- EDIT 008 MOD END ---------------------------
+	;---- EDIT 006 MOD START -------------------------
+	;装備知識持ちは強制的に人間装備表示
+	;IF SKILL_EQUIPTHEORY_IS_HAVE_SKILL(ARG)
+	;装備可能
+	;IF GET_ROLE_PROP("CAN_USE_EQUIP", ARG)
+	;	FOR LOCAL, 2000+ARG:3*500 , 2000+(ARG:3+1)*500
+	;		SIF ITEMNAME:LOCAL == ""
+	;			CONTINUE
+	;		SIF ITEM:LOCAL == 0
+	;			CONTINUE
+	;		SIF FINDELEMENT(アイテムリスト , LOCAL) != -1
+	;			CONTINUE
+	;		IF 魔晶装備(LOCAL)
+	;			CALLFORM 装備条件_魔晶装備,ARG ,LOCAL - 2450 - ARG:3*450
+	;			SIF RESULT == 1
+	;				アイテムリスト:FINDELEMENT(アイテムリスト , -1) = LOCAL
+	;		ELSE
+	;			CALLFORM 装備条件_{LOCAL},ARG
+	;			SIF RESULT == 1
+	;				アイテムリスト:FINDELEMENT(アイテムリスト , -1) = LOCAL
+	;		ENDIF
+	;	NEXT
+	;装備不能
+	;ELSE
+		;プラグイン可能
+	;	IF GET_ROLE_PROP("CAN_USE_PLUGIN", ARG)
+	;		FOR LOCAL, 8000, 8500
+	;			SIF ITEMNAME:LOCAL == ""
+	;				CONTINUE
+	;			SIF ITEM:LOCAL == 0
+	;				CONTINUE
+	;			SIF FINDELEMENT(アイテムリスト , LOCAL) != -1
+	;				CONTINUE
+	;			CALLFORM 装備条件_{LOCAL},ARG
+	;			SIF RESULT == 1
+	;				アイテムリスト:FINDELEMENT(アイテムリスト , -1) = LOCAL
+	;		NEXT
+	;	ENDIF
+		;FOR LOCAL, (GET_DEVIL(ARG) ? 8000 # 2000+ARG:3*500) , (GET_DEVIL(ARG) ? 8500 # 2000+(ARG:3+1)*500)
+		;	SIF ITEMNAME:LOCAL == ""
+		;		CONTINUE
+		;	SIF ITEM:LOCAL == 0
+		;		CONTINUE
+		;	SIF FINDELEMENT(アイテムリスト , LOCAL) != -1
+		;		CONTINUE
+		;	IF 魔晶装備(LOCAL)
+		;		CALLFORM 装備条件_魔晶装備,ARG ,LOCAL - 2450 - ARG:3*450
+		;		SIF RESULT == 1
+		;			アイテムリスト:FINDELEMENT(アイテムリスト , -1) = LOCAL
+		;	ELSE
+		;		CALLFORM 装備条件_{LOCAL},ARG
+		;		SIF RESULT == 1
+		;			アイテムリスト:FINDELEMENT(アイテムリスト , -1) = LOCAL
+		;	ENDIF
+		;NEXT
+	;ENDIF
+	;---- EDIT 006 MOD END ---------------------------
+	;ここにソート作業でも入れよう
+	;0番目は外すor生得武器で固定
+	;1番目は現在の装備品があるなら固定
+	CALL EQUIP_SORT , ARG , 1 + (EQUIP:ARG:GET_EQUIP(ARG:3) > 0)
+	RETURN 0
+ENDIF
+;横幅 = 56
+横幅 = 66
+CALL SET_PICTURE , @"┏LIST%"━" * (横幅 / 2 - 2)%┓" , ARG:1 , , ARG:2
+FOR LOCAL , 1 , 12
+	CALL SET_PICTURE , @"┃%" " * 横幅%┃" , ARG:1+LOCAL , , ARG:2
+NEXT
+CALL SET_PICTURE , @"[정렬 조건 변경],,,정렬 조건 변경" , ARG:1+11 , , ARG:2 + 2
+IF 変更装備箇所 >= 0
+	CALL SET_PICTURE , @"[장비상세선택],,,장비상세선택" , ARG:1+11 , , ARG:2 + 19
+ENDIF
+CALL SET_PICTURE , @"[<],,,<_P.{アイテムリストページ + 1,2}_[>],,,>" , ARG:1+11 , , ARG:2 + 横幅 - 14
+CALL SET_PICTURE , @"┗%"━" * ((横幅) / 2)%┛" , ARG:1+12 , , ARG:2
+
+;リストに登録された装備品の一覧を表示
+
+FOR LOCAL , アイテムリストページ * 20 , (アイテムリストページ+1)*20
+	SIF アイテムリスト:LOCAL == -1
+		BREAK
+	CALL GET_ITEMMAX, アイテムリスト:LOCAL
+	RESULT = 0
+	SIF RESULT > 0 && ITEM:(アイテムリスト:LOCAL) > RESULT
+		ITEM:(アイテムリスト:LOCAL) = RESULT
+	色 = GETDEFCOLOR()
+	SIF 変更装備箇所 > -1 && 変更予定装備:変更装備箇所 == アイテムリスト:LOCAL
+		色 = COLOR("パ緑")
+	IF アイテムリスト:LOCAL == 0
+		;CALL SET_PICTURE , @"[%UNICODE(97 +(LOCAL%20))%]%"外す",20,LEFT%,{色},,%UNICODE(97 +(LOCAL%20))%" , ARG:1+1+(LOCAL%20 / 2) , , ARG:2 + 2 + (LOCAL%2) * 28
+		CALL SET_PICTURE , @"[%UNICODE(97 +(LOCAL%20))%]%"벗긴다",20,LEFT%,{色},,%UNICODE(97 +(LOCAL%20))%" , ARG:1+1+(LOCAL%20 / 2) , , ARG:2 + 2 + (LOCAL%2) * 33
+	;ELSEIF 改造装備(アイテムリスト:LOCAL)
+	;	CALL SET_PICTURE , @"[%UNICODE(97 +(LOCAL%20))%]%改造装備名称(改造装備番号(アイテムリスト:LOCAL)),24,LEFT%,{色},,%UNICODE(97 +(LOCAL%20))%_×{ITEM:(アイテムリスト:LOCAL),2}" , ARG:1+1+(LOCAL%20 / 2) , , ARG:2 + 2 + (LOCAL%2) * 33
+	;ELSEIF 魔晶装備(アイテムリスト:LOCAL)
+	;	;CALL SET_PICTURE , @"[{アイテムリスト:LOCAL}]%EQ_GETNAME_魔晶装備_ITEM(アイテムリスト:LOCAL),20,LEFT%,{色},,{アイテムリスト:LOCAL}_×{ITEM:(アイテムリスト:LOCAL),2}" , ARG:1+1+(LOCAL%20 / 2) , , ARG:2 + 2 + (LOCAL%2) * 30
+	;	;CALL SET_PICTURE , @"[%UNICODE(97 +(LOCAL%20))%]%EQ_GETNAME_魔晶装備_ITEM(アイテムリスト:LOCAL),20,LEFT%,{色},,%UNICODE(97 +(LOCAL%20))%_×{ITEM:(アイテムリスト:LOCAL),2}" , ARG:1+1+(LOCAL%20 / 2) , , ARG:2 + 2 + (LOCAL%2) * 28
+	;	CALL SET_PICTURE , @"[%UNICODE(97 +(LOCAL%20))%]%EQ_GETNAME_魔晶装備_ITEM(アイテムリスト:LOCAL),24,LEFT%,{色},,%UNICODE(97 +(LOCAL%20))%_×{ITEM:(アイテムリスト:LOCAL),2}" , ARG:1+1+(LOCAL%20 / 2) , , ARG:2 + 2 + (LOCAL%2) * 33
+	ELSE
+		;CALL SET_PICTURE , @"[{アイテムリスト:LOCAL}]%ITEMNAME:(アイテムリスト:LOCAL),20,LEFT%,{色},,{アイテムリスト:LOCAL}_×{ITEM:(アイテムリスト:LOCAL),2}" , ARG:1+1+(LOCAL%20 / 2) , , ARG:2 + 2 + (LOCAL%2) * 30
+		;CALL SET_PICTURE , @"[%UNICODE(97 +(LOCAL%20))%]%ITEMNAME:(アイテムリスト:LOCAL),20,LEFT%,{色},,%UNICODE(97 +(LOCAL%20))%_×{ITEM:(アイテムリスト:LOCAL),2}" , ARG:1+1+(LOCAL%20 / 2) , , ARG:2 + 2 + (LOCAL%2) * 28
+		;CALL SET_PICTURE , @"[%UNICODE(97 +(LOCAL%20))%]%ITEMNAME:(アイテムリスト:LOCAL),24,LEFT%,{色},,%UNICODE(97 +(LOCAL%20))%_×{ITEM:(アイテムリスト:LOCAL),2}" , ARG:1+1+(LOCAL%20 / 2) , , ARG:2 + 2 + (LOCAL%2) * 33
+		CALL SET_PICTURE , @"[%UNICODE(97 +(LOCAL%20))%]%装備の名称(アイテムリスト:LOCAL,ARG),24,LEFT%,{色},,%UNICODE(97 +(LOCAL%20))%_×{ITEM:(アイテムリスト:LOCAL),2}" , ARG:1+1+(LOCAL%20 / 2) , , ARG:2 + 2 + (LOCAL%2) * 33
+	ENDIF
+NEXT
+
+@装備変更時カラー , ARG
+#FUNCTION
+SIF 装備変更時ステータス変化値(ARG) > 0
+	RETURNF COLOR("aqua")
+SIF 装備変更時ステータス変化値(ARG) < 0
+	RETURNF COLOR("red")
+RETURNF GETDEFCOLOR()
+
+@相性カラー, ARG
+#FUNCTIONS
+SELECTCASE ARG
+	CASE 999
+		;反射
+		LOCAL = GETNUM(FLAG, "반사컬러")
+	CASE IS > 100
+		;弱点
+		LOCAL = GETNUM(FLAG, "약점컬러")
+	CASE 100
+		;普通
+		LOCAL = GETNUM(FLAG, "통상컬러")
+	CASE IS > 0
+		;耐性
+		LOCAL = GETNUM(FLAG, "내성컬러")
+	CASE 0
+		;無効
+		LOCAL = GETNUM(FLAG, "무효컬러")
+	CASEELSE
+		;吸収
+		LOCAL = GETNUM(FLAG, "흡수컬러")
+ENDSELECT
+LOCAL:1 = FLAG:LOCAL / 1000000 , FLAG:LOCAL /1000 % 1000 , FLAG:LOCAL % 1000
+LOCAL:1 *= 256 * 256
+LOCAL:2 *= 256
+;PRINTFORML %CONVERT(LOCAL:1+LOCAL:2+LOCAL:3 , 16)% {LOCAL:1} {LOCAL:2} {LOCAL:3}
+RETURNF "0x" + CONVERT(LOCAL:1+LOCAL:2+LOCAL:3 , 16)
+;RETURNF CONVERT(FLAG:LOCAL , 16)
+;CALL GETCOLOR_9(FLAG:LOCAL)
+;RETURNF FLAG:LOCAL
+
+;ARGSの長さがARGを超えている場合、最後の3文字を...にして返す
+@ARRANGE_STRLENS(ARGS , ARG)
+#FUNCTIONS
+IF STRLENS(ARGS) > ARG
+	ARGS = %SUBSTRING(ARGS , 0 , ARG - 3)%...
+ENDIF
+RETURNF ARGS
+
+
+@ALICOLOR(ARG)
+#FUNCTION
+RETURNF TOINT(AUTO_SPLIT(@"{COLOR("AQUA")}_{COLOR("WHITE")}_{COLOR("RED")}" , "_" , ARG-1))
+
+
+
+
+
+
+;---- EDIT P 004 ADD START -------------------------
+
+;=======================================
+;習得予定スキル一覧機能表示(div前提)
+;=======================================
+@習得スキル一覧表示 , L_CHARA
+#DIM DYNAMIC L_CHARA ;指定キャラ
+#DIMS DYNAMIC L_LIST , 40
+#DIMS DYNAMIC L_SKILLHEADER
+#DIMS DYNAMIC L_SKILL
+#DIMS DYNAMIC L_EXPLAIN
+CLEARLINE 1
+;まずクソでっけえ薄い黒画像を作って下敷きにする。
+LOCALS = <div xpos='0' ypos='{-10000}' display='absolute-leftbottom'>%SET_BUTTON_TAG( 不可フィルタ( LINELENS *100 , 10000) , "-1")%</div>
+;操作帯も作る
+VARS 操作ガイド
+;操作ガイド '= @"<div ypos='-100' width='{LINELENS*50}' background_color='%TOSTR_HTML(COLOR("DARK-GRAY"))%' display='absolute-leftbottom'><div xpos ='{LINELENS*50/2-(27*50/2)}'>[枠外クリック]or[Enter]戻る</div></div>"
+VARS ウィンドウ
+CALL 習得予定スキルウィンドウ , L_CHARA , L_LIST
+;この時点でL_LISTには習得予定スキル1～20のレベル順ソートリストが入ってる
+ウィンドウ '= RESULTS
+ウィンドウ = <div xpos='{500}' ypos='-3350'  display='absolute-leftbottom'>%ウィンドウ%</div>
+$INPUT_LOOP
+HTML_PRINT_ISLAND LOCALS + 操作ガイド , 1
+HTML_PRINT_ISLAND ウィンドウ , 2
+INPUTS
+IF ISNUMERIC(RESULTS) && INRANGE(TOINT(RESULTS) , 0 , VARSIZE("L_LIST") - 1) && L_LIST:TOINT(RESULTS) != ""
+	CLEARLINE 1
+	IF L_LIST:TOINT(RESULTS) == "변이"
+		CALL 変異説明ウィンドウ, L_CHARA
+	ELSE
+		L_SKILLHEADER = \@CFLAG:L_CHARA:악마변신 ? 초기변신악마 # \@
+		L_SKILL '= L_LIST:TOINT(RESULTS)
+		;スキルの説明文を取得
+		CALL スキル性能説明ウィンドウ , L_SKILL, L_CHARA
+	ENDIF
+	L_EXPLAIN '= RESULTS
+	HTML_PRINT_ISLAND LOCALS + @"<div xpos='{(LINELENS*50/2-RESULT/2)}' ypos='{-1000-(RESULT:1 > 5 ? RESULT:1 - 5 # 0)*100}' display='absolute-leftbottom'>%L_EXPLAIN%</div>" , 3
+	WAIT
+	HTML_PRINT_ISLAND_CLEAR
+	;CLEARLINE 2
+	GOTO INPUT_LOOP
+ELSE
+	HTML_PRINT_ISLAND_CLEAR
+	RETURN 1
+ENDIF
+GOTO INPUT_LOOP
+
+
+;=======================================
+;スキル性能説明ウィンドウ(div前提)
+;=======================================
+@スキル性能説明ウィンドウ , L_SKILL , L_CHARA , L_WIDTH = -1 , L_HEIGHT = -1
+#DIMS L_SKILL
+#DIM L_CHARA
+#DIMS L_EXPLAIN
+#DIM L_WIDTH
+#DIM L_HEIGHT
+
+
+CALL GET_SKILL_EXPLAIN_TEXT ,  , L_CHARA, L_SKILL
+;RESULTSに
+DEBUGPRINTFORM %RESULTS%
+SIF L_WIDTH == -1
+	L_WIDTH = (RESULT * 50 +100 > 6000 ? RESULT * 50 +100 # 6000 )
+SIF L_HEIGHT == -1
+	L_HEIGHT = ( RESULT:1+2 )*100
+L_EXPLAIN '= HTML_DIV_WINDOW(L_WIDTH , L_HEIGHT , RESULTS)
+;HTML_PRINT @"<div xpos=''{(LINELENS*50/2-5300/2)}' ypos='-800'>%L_EXPLAIN%</div>" , 1
+CALL GETS_SKILL_PROP, "SKILL_NAME", L_SKILL, L_CHARA
+L_EXPLAIN += @"<div xpos='-0' ypos='-200'>%HTML_DIV_WINDOW(MAX(1200, STRLENS(RESULTS) * 50 + 50) , 200 , RESULTS , )%</div>" 
+
+RESULTS '= L_EXPLAIN
+RETURN L_WIDTH , L_HEIGHT / 100 - 2
+
+;=======================================
+;スキル性能説明ウィンドウ(div前提)
+;=======================================
+@変異説明ウィンドウ , L_CHARA , L_WIDTH = -1 , L_HEIGHT = -1
+#DIM L_CHARA
+#DIMS L_EXPLAIN
+#DIM L_WIDTH
+#DIM L_HEIGHT
+
+
+RESULTS = Lv:{CSVBASE(ABL:L_CHARA:변이, GETNUM(BASE,"LV"))}
+RESULTS += "<br>" + @"%조사처리(CALLNAME:L_CHARA,"이")% Lv{ABL:L_CHARA:변이레벨} 이상이면서 마스터가 Lv{GET_NEED_TRANSFORM_MASTER_LV(L_CHARA)} 이상일 시、변이가능。"
+;RESULTSに
+DEBUGPRINTFORM %RESULTS%
+SIF L_WIDTH == -1
+	L_WIDTH = (3 * 50 +100 > 6000 ? 3 * 50 +100 # 6000 )
+SIF L_HEIGHT == -1
+	L_HEIGHT = 3 * 100
+L_EXPLAIN '= HTML_DIV_WINDOW(L_WIDTH , L_HEIGHT , RESULTS)
+;HTML_PRINT @"<div xpos=''{(LINELENS*50/2-5300/2)}' ypos='-800'>%L_EXPLAIN%</div>" , 1
+RESULTS '= CSVCALLNAME(ABL:L_CHARA:변이)
+L_EXPLAIN += @"<div xpos='-0' ypos='-200'>%HTML_DIV_WINDOW(MAX(1200, STRLENS(RESULTS) * 50 + 50) , 200 , RESULTS , )%</div>" 
+
+RESULTS '= L_EXPLAIN
+RETURN L_WIDTH , L_HEIGHT / 100 - 2
+;=======================================
+;習得予定スキルウィンドウ(div前提)
+;=======================================
+@習得予定スキルウィンドウ , L_CHARA , L_LIST, L_OPT
+#DIM DYNAMIC L_CHARA ;指定キャラ
+#DIMS DYNAMIC L_OPT
+#DIMS DYNAMIC CONTENT_WINDOW = ""
+#DIMS DYNAMIC L_SKILLNAME,40
+#DIMS DYNAMIC L_ADDSTR, 40
+#DIMS DYNAMIC L_TOOLTIP, 40
+#DIMS REF L_LIST , 0 ;リスト内ののスキル名称を返すための変数
+#DIM DYNAMIC L_LEARN_LV, 40
+#DIM DYNAMIC L_SORT_KEY, 40
+#DIM DYNAMIC L_MAXNAMELENS = 19
+#DIMS DYNAMIC L_SKILLS
+#DIM DYNAMIC L_COUNT
+#DIM DYNAMIC L_TEMP
+#DIM DYNAMIC IS_HAVE_AW_SKILL
+#DIM DYNAMIC L_BUTTONNUM
+;変身キャラの場合、悪魔変身していたら接頭辞に初期変身悪魔を追加。
+
+L_SKILLS = \@CFLAG:L_CHARA:악마변신 ? 초기변신악마 # \@
+VARSET L_SORT_KEY, 1000
+;まず、指定されたキャラの習得スキルをレベル順に並べる
+FOR L_COUNT , 1 , 21
+	;習得レベルが設定されてないならスルー
+	SIF !ABL:L_CHARA:@"%L_SKILLS%습득LV{L_COUNT}"
+		CONTINUE
+	SIF !ABL:L_CHARA:@"%L_SKILLS%습득스킬{L_COUNT}"
+		CONTINUE
+	SIF L_OPT == "参照確認"
+		RETURN 1
+	L_BUTTONNUM = FINDELEMENT(L_LIST, "", , , 1)
+	L_LIST:(L_BUTTONNUM) '= CONVERT_SKILLNUM_TO_STR(L_CHARA, ABL:L_CHARA:@"%L_SKILLS%습득스킬{L_COUNT}")
+	L_LEARN_LV:(L_BUTTONNUM) = ABL:L_CHARA:@"%L_SKILLS%습득LV{L_COUNT}"
+NEXT
+ARRAYMSORT L_LEARN_LV, L_LIST
+;ここまででソートは出来たので、これを使ってウィンドウのコンテンツを作成
+
+FOR L_COUNT,0, 20
+	SIF L_LIST:L_COUNT == ""
+		BREAK
+	;スキル名を呼び出し
+	CALL GETS_SKILL_PROP, "SKILL_NAME", L_LIST:L_COUNT, L_CHARA
+	L_SKILLNAME:L_COUNT '= RESULTS
+	L_ADDSTR:L_COUNT '= @" LV{L_LEARN_LV:L_COUNT,3}"
+	L_MAXNAMELENS = MAX(L_MAXNAMELENS, STRLENS(L_SKILLNAME:L_COUNT))
+	;スキル説明を呼び出して保存
+	CALL GET_SKILL_EXPLAIN_TOOLTIP , , L_CHARA, L_LIST:L_COUNT
+	L_TOOLTIP:L_COUNT '= RESULTS
+
+NEXT
+
+;MAG習得リストのチェック
+CALL FIX_SPECIAL_LEARN_SKILL, L_CHARA
+IF RESULT
+	SIF L_OPT == "参照確認"
+		RETURN 1
+	VARS TEMP_SKILLS, 100
+	SPLIT CSTR:L_CHARA:@"%L_SKILLS%MAG습득스킬리스트", "/", TEMP_SKILLS
+	FOR L_COUNT, 0, RESULT
+		L_BUTTONNUM = FINDELEMENT(L_LIST, "", , , 1)
+		;スキル名を呼び出し
+		CALL GETS_SKILL_PROP, "SKILL_NAME", TEMP_SKILLS:L_COUNT, L_CHARA
+		L_SKILLNAME:L_BUTTONNUM '= RESULTS
+		L_ADDSTR:L_BUTTONNUM '= "【MAG】"
+		L_MAXNAMELENS = MAX(L_MAXNAMELENS, STRLENS(L_SKILLNAME:L_BUTTONNUM))
+		;スキル説明を呼び出して保存
+		CALL GET_SKILL_EXPLAIN_TOOLTIP , , L_CHARA, TEMP_SKILLS:L_COUNT
+		L_TOOLTIP:L_BUTTONNUM '= RESULTS
+		;スキル名と番号を記述
+		L_LIST:L_BUTTONNUM '= TEMP_SKILLS:L_COUNT
+	NEXT
+ENDIF
+
+;覚醒スキルを正式に所持しているかを見る
+FOR L_COUNT, 1, 21
+	SIF ABL:L_CHARA:@"%L_SKILLS%스킬{L_COUNT}" != [[스킬:각성스킬]]
+		CONTINUE
+	IS_HAVE_AW_SKILL = 1
+	SIF L_OPT == "参照確認"
+		RETURN 1
+	BREAK
+NEXT
+IF !IS_HAVE_AW_SKILL
+	CALL GET_AW_SKILLNUM_BY_CSV, L_CHARA
+	VARI L_AW_SKILL = RESULT
+	IF L_AW_SKILL > 0
+		L_BUTTONNUM = FINDELEMENT(L_LIST, "", , , 1)
+		L_LIST:L_BUTTONNUM '= "AW_" + TOSTR(L_AW_SKILL)
+		CALLFORM SKILL_NAME_AW_{L_AW_SKILL}, L_CHARA
+		L_SKILLNAME:L_BUTTONNUM '= RESULTS
+		L_ADDSTR:L_BUTTONNUM '= "【각성】"
+		L_MAXNAMELENS = MAX(L_MAXNAMELENS, STRLENS(L_SKILLNAME:L_BUTTONNUM))
+		;スキル説明を呼び出して保存
+		CALL GET_SKILL_EXPLAIN_TOOLTIP ,  , L_CHARA, "AW_" + TOSTR(L_AW_SKILL)
+		L_TOOLTIP:L_BUTTONNUM '= RESULTS
+	ENDIF
+ENDIF
+
+IF ABL:L_CHARA:변이 > 0 && ABL:L_CHARA:변이레벨 > 0
+	SIF L_OPT == "参照確認"
+		RETURN 1
+	L_BUTTONNUM = FINDELEMENT(L_LIST, "", , , 1)
+	L_LIST:L_BUTTONNUM '= "변이"
+	L_SKILLNAME:L_BUTTONNUM '= CSVCALLNAME(ABL:L_CHARA:변이)
+	L_ADDSTR:L_BUTTONNUM '= "【변이】"
+	L_MAXNAMELENS = MAX(L_MAXNAMELENS, STRLENS(L_SKILLNAME:L_BUTTONNUM))
+	;スキル説明を呼び出して保存
+	L_TOOLTIP:L_BUTTONNUM '= @"변이Lv　　　　:{ABL:L_CHARA:변이레벨}" + UNICODE(0x000D) + @"필요만트라Lv:{GET_NEED_TRANSFORM_MASTER_LV(L_CHARA)}"
+ENDIF
+
+FOR L_COUNT,0, VARSIZE("L_LIST")
+	SIF L_LIST:L_COUNT == ""
+		BREAK
+	LOCALS = [{L_COUNT,2}] %L_SKILLNAME:L_COUNT , L_MAXNAMELENS , LEFT% %L_ADDSTR:L_COUNT%
+	;L_COUNT番目のボタンを生成し、ツールチップとして保存したスキルツールチップを記入
+	LOCALS '= @"<div xpos='{ 36 * (L_COUNT%1) * 50 }' ypos='{(L_COUNT/1) * 100}'> %SET_BUTTON_TAG( LOCALS  , TOSTR(L_COUNT)  , L_TOOLTIP:L_COUNT)%</div>"
+	;CONTENTに加える
+	CONTENT_WINDOW += LOCALS
+NEXT
+
+;最後にDIVのウィンドウで囲んで完成
+CONTENT_WINDOW += @"<div xpos='-40' ypos='-275'>%HTML_DIV_WINDOW(800 , 200 , "습득예정스킬" , )%</div>"
+CONTENT_WINDOW '= HTML_DIV_WINDOW((L_MAXNAMELENS * 100 + 1700)/2 , MAX(1100*2, (FINDELEMENT(L_LIST, "", , , 1) + 1) * 100) , CONTENT_WINDOW , )
+
+
+;RESULTSに作ったウィンドウを丸ごと返す
+RESULTS '= CONTENT_WINDOW
+
+
+;---- EDIT P 004 ADD END -------------------------

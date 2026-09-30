@@ -1,0 +1,236 @@
+﻿;専用スキル用のテンプレート
+;「ハジケ」を別の名前に置き換えてください
+
+;アクティブスキルに必須なものはそのままにしており
+;なくてもいいものはコメントアウトしております
+;必要だと思ったらコメントアウトを外して設定してください
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_ハジケ,ARG
+RESULTS = 엽기
+
+;　명중
+@SKILL_HITRATE_ハジケ, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_ハジケ, ARG
+RETURN 200
+
+;;クリティカル率
+;@SKILL_CRITICAL_RATE_ハジケ, ARG
+;RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_ハジケ, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ハジケ,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ハジケ,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_ハジケ,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_ハジケ,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ハジケ, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ハジケ,ARG
+RETURN 30
+
+;　相性
+@SKILL_TYPE_ハジケ,ARG
+RETURN GET_TYPE_NUM("정신")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ハジケ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ハジケ,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ハジケ,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_ハジケ,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ハジケ,ARG
+RETURN GET_SPHERE_NUM("일렬")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_ハジケ,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_ハジケ
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_ハジケ, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ハジケ
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_ハジケ, ARG = -1
+RETURN 10
+;没
+;@SKILL_RANK_ハジケ, ARG = -1
+
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_ハジケ,ARG
+;RETURN 0
+
+
+;====================================================
+;トリガー発動条件
+;====================================================
+;@SKILL_TRIGGER_ACTIONABLE_ハジケ,ARG,ARG:1
+;RETURN 0
+
+;====================================================
+;カウンター発動条件
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_ハジケ,ARG,ARG:1
+;RETURN RESULT
+
+;====================================================
+;ダメージ発動時
+;====================================================
+;@SKILL_DAMAGE_EFFECT_ハジケ,ARG,ARG:1
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_ハジケ,ARG,ARG:1
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ハジケ,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+;CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+;CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM;		拡散攻撃
+;CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM;			ランダム攻撃
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_ハジケ,ARG
+PRINTL 적 전열에 물리형 정신 상성의 중데미지(위력 200)를 주지만 데미지 편차가 크다
+PRINTL 상태이상인 적에게는 상성이나 스킬에 관계없이 데미지를 준다. 크리티컬 시에는 데미지가 증가한다.
+
+@SKILL_PASSIVE_PENETRATION_RANK_ハジケ, L_P, L_T, L_スキル, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM DYNAMIC L_P;このスキルの所持者
+#DIM DYNAMIC L_T;攻撃対象
+#DIMS DYNAMIC L_スキル;スキルの所持者が敵に対して使用しているスキルの関数名称
+#DIM DYNAMIC L_ダメージタイプ
+#DIM DYNAMIC L_攻撃タイプ
+#DIM DYNAMIC L_相性
+#DIM DYNAMIC GIVE_EFFECT_CHARA;リーダースキル等他人からつけられている場合の提供者
+
+SIF CFLAG:L_P:입력행동 == PU_SKILLNUM_GET(L_P,"ハジケ") && CFLAG:L_T:상태이상 > GET_STATE_NUM("GOOD")
+	RETURN 4
+RETURN 0
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_ハジケ, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+#DIM TOTAL_DMG_B
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+            LOCAL = 0
+			IF CFLAG:L_P:입력행동 == PU_SKILLNUM_GET(L_P,"ハジケ")
+                LOCAL += RAND:100 - 50
+                SIF L_CRT
+                    LOCAL += 75
+				SIF GETBIT(SKILLGAGE_H_GET(L_P,PU_SKILLNUM_GET(L_P,"ハジケ")),0)
+					LOCAL = 125
+				CALL SKILLGAGE_H_SET, L_P, PU_SKILLNUM_GET(L_P,"ハジケ"), 0
+            ENDIF
+			RETURN LOCAL
+	ENDSELECT
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ハジケ,ARG
+RETURN 1
+
+;ターゲット条件
+;↓のSKILL_T_RESERVEがRETURN 1 の時に使用する
+;@SKILL_SPECIAL_TARGET_ハジケ,USE_CHARA,ARG
+;#DIM USE_CHARA
+;RETURN 0
+
+;控えに使えるか
+;@SKILL_T_RESERVE_ハジケ,ARG
+;RETURN 0
+
+
+
+;この技を複数持てるか
+;@重複習得数_ハジケ,ARG
+;RETURN 1
+
+;スキル重複で役に立つ関数
+;HAVE_SKILL_OVERLAP(ARG,PU_SKILLNUM_GET(ARG,"ハジケ"))
+
+;スキルゲージで役に立つ関数
+;SKILLGAGE_H_GET(ARG,PU_SKILLNUM_GET(ARG,"ハジケ"))
+;CALL SKILLGAGE_H_SET,ARG,PU_SKILLNUM_GET(ARG,"ハジケ"),0
+

@@ -1,0 +1,338 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT36_シーアーク関連.ERB
+;	Facility	:ダンジョンナンバー94　シーアーク用のイベント群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX								新規作成
+;	002		2022/11/06		P						シーアークの仕様変更にあわせてイベント条件を変更
+;													判定などを大幅変更
+;													装備品の支給を見直し
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;シーアーク関連
+;====================
+;条件
+;施設利用許可は主人のレベルがその階の敵最低レベルを超えていることとその階層で出せる敵が10種類以上
+;装備品の支給は配給される物品の必要レベルを満たしていること
+;
+;フラグはダンジョンのものを使うのでそちらをあわせて見られたし
+;====================
+;ダンジョンフラグ:94:1 利用許可フラグ
+;ダンジョンフラグ:94:4 アイテム支給フラグ
+@GET_EVENT_NAME_36
+#FUNCTIONS
+RESULTS_F '= "시 아크"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_36
+#LOCALSIZE 2
+#DIM LCOUNT,2
+#DIM L_RANK
+#DIM M_RANK
+#DIM L_MLV
+;両方のイベントを終えてたら判定を抜ける
+SIF GET_SEA_ARCH_FLAG("探索許可ランク") >= 17 && GET_SEA_ARCH_FLAG("支給品ランク") >= 7
+	RETURN 0
+;貢献度が低すぎる場合は離脱
+SIF FLAG:조직공헌도 < 10000
+	RETURN 0
+;確認は1日1回
+IF GET_SEA_ARCH_FLAG("イベント確認日") == DAY
+	GOTO END
+ELSE
+	CALL SET_SEA_ARCH_FLAG, "イベント確認日", DAY
+ENDIF
+;処理を軽減するためにすでに許可が確定しているランクまでの処理も飛ばす
+L_RANK = MAX(GET_SEA_ARCH_FLAG("探索許可ランク"), GET_SEA_ARCH_FLAG("探索許可イベントランク"))
+;初回判定用(初期状態で実質条件を満たすので貢献度だけ見る形に)
+IF GET_SEA_ARCH_FLAG("探索許可ランク") == 0
+	L_RANK = 1
+;最上階の開放判定
+ELSEIF GET_SEA_ARCH_FLAG("探索許可ランク") >= 9 &&  GET_SEA_ARCH_FLAG("探索許可イベントランク") != 17
+	;80レベルから開けられる(72以上の敵の数の問題で広範囲のレベルの敵をまとめなきゃいけないということで
+	;このランク帯の敵はレベルを変更して凄まじいレベルムラを吸収するので、実際にあけられるレベルをずらす
+	IF BASE:MASTER:LV >= 80
+		FOR LCOUNT, 1, CSVCHARANUM
+			SIF !CAN_ENCOUNT_SEA_ARCH(LCOUNT, 17)
+				CONTINUE
+			LOCAL++
+			;10匹拾えた時点で終わる
+			SIF LOCAL >= 10
+				BREAK
+		NEXT
+		;10体の敵がでるならランク更新
+		SIF LOCAL >= 10
+			L_RANK = 17
+	ENDIF	
+ELSE
+	;ランク9の許可は8の後でないといけない
+	FOR LCOUNT, L_RANK+1, 9 + (GET_SEA_ARCH_FLAG("探索許可ランク") >= 8)
+		;主人のレベルがレベル帯にあわない場合は離脱
+		SIF GET_SEA_ARCH_ENEMYRANK(, MASTER) < LCOUNT
+			BREAK
+		;ランク帯における出現可能な敵の数を確認する
+		LOCAL = 0
+		FOR LCOUNT:1, 1, CSVCHARANUM
+			SIF !CAN_ENCOUNT_SEA_ARCH(LCOUNT:1, LCOUNT)
+				CONTINUE
+			LOCAL++
+			;10匹拾えた時点で終わる
+			SIF LOCAL >= 10
+				BREAK
+		NEXT
+		;10体の敵がでないなら離脱
+		SIF LOCAL < 10
+			BREAK
+		L_RANK++
+	NEXT
+ENDIF
+;ランクが更新できてるか確認
+CALL SET_SEA_ARCH_FLAG, "探索許可イベントランク", L_RANK > GET_SEA_ARCH_FLAG("探索許可ランク") ? L_RANK # 0
+
+L_RANK = MAX(GET_SEA_ARCH_FLAG("支給品ランク"), GET_SEA_ARCH_FLAG("支給品イベントランク"))
+;装備品支給
+;レベルの変動があったときのみ判定する
+IF L_MLV != BASE:MASTER:LV
+	L_MLV = BASE:MASTER:LV
+	FOR LCOUNT, L_RANK+1, 8
+		LOCALS = %EVENT_36_ITEMTABLE(LCOUNT)%
+		LOCAL = 0
+		LOCAL:1 = 0
+		LCOUNT:1 = 0
+		WHILE AUTO_SPLIT(LOCALS, "/", LCOUNT:1) != ""
+			;判定した数と判定が通った数を記録する
+			LOCAL:1++
+			CALLFORM 必要レベル_{GETNUM(ITEM, AUTO_SPLIT(LOCALS, "/", LCOUNT:1))}
+			SIF RESULT > BASE:MASTER:LV
+				BREAK
+			LOCAL++
+			LCOUNT:1++
+		WEND
+		;判定漏れがあった場合は終わる
+		SIF LOCAL < LOCAL:1
+			BREAK
+		L_RANK++
+	NEXT
+ENDIF
+;ランクが更新できてるか確認
+CALL SET_SEA_ARCH_FLAG, "支給品イベントランク", L_RANK > GET_SEA_ARCH_FLAG("支給品ランク") ? L_RANK # 0
+$END
+;どちらかの条件を満たしていれば良い
+IF GET_SEA_ARCH_FLAG("探索許可イベントランク")
+	RESULTS = 시설이용허가
+	SIF GET_SEA_ARCH_FLAG("探索許可イベントランク") == 9
+		RESULTS = 호텔ㆍ시아크에 대한 추가 정보
+	RETURN 1
+ENDIF
+IF GET_SEA_ARCH_FLAG("支給品イベントランク")
+	RESULTS = 장비품 배급
+	RETURN 1
+ENDIF
+RETURN 0
+;主人レベル１０以上＆組織貢献度１００００以上
+;IF BASE:MASTER:LV >= 10 && FLAG:조직공헌도 >= 10000 && ダンジョンフラグ:94:1 == 0 
+;	RESULTS = 시설이용허가
+;	RETURN 1
+;主人レベル６４以上
+;ELSEIF BASE:MASTER:LV >= 64 && FLAG:조직공헌도 >= 10000 && ダンジョンフラグ:94:1 < 9
+;	RESULTS = 시설이용허가９
+;	RETURN 1
+;主人レベル５７以上
+;ELSEIF BASE:MASTER:LV >= 57 && FLAG:조직공헌도 >= 10000 && ダンジョンフラグ:94:1 < 8
+;	RESULTS = 시설이용허가８
+;	RETURN 1
+;主人レベル５０以上
+;ELSEIF BASE:MASTER:LV >= 50 && FLAG:조직공헌도 >= 10000 && ダンジョンフラグ:94:1 < 7
+;	RESULTS = 시설이용허가７
+;	RETURN 1
+;主人レベル４３以上
+;ELSEIF BASE:MASTER:LV >= 43 && FLAG:조직공헌도 >= 10000 && ダンジョンフラグ:94:1 < 6
+;	RESULTS = 시설이용허가６
+;	RETURN 1
+;主人レベル３６以上
+;ELSEIF BASE:MASTER:LV >= 36 && FLAG:조직공헌도 >= 10000 && ダンジョンフラグ:94:1 < 5
+;	RESULTS = 시설이용허가５
+;	RETURN 1
+;主人レベル２９以上
+;ELSEIF BASE:MASTER:LV >= 29 && FLAG:조직공헌도 >= 10000 && ダンジョンフラグ:94:1 < 4
+;	RESULTS = 시설이용허가４
+;	RETURN 1
+;主人レベル２２以上
+;ELSEIF BASE:MASTER:LV >= 22 && FLAG:조직공헌도 >= 10000 && ダンジョンフラグ:94:1 < 3
+;	RESULTS = 시설이용허가３
+;	RETURN 1
+;主人レベル１６以上
+;ELSEIF BASE:MASTER:LV >= 16 && FLAG:조직공헌도 >= 10000 && ダンジョンフラグ:94:1 < 2
+;	RESULTS = 시설이용허가２
+;	RETURN 1
+;ENDIF
+;RETURN 0
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_36
+#LOCALSSIZE 6
+#DIMS 配給品, 10
+#DIM 配給数, 1
+#DIM LCOUNT, 2
+;EDIT MOD
+;仕様変更にあわせてテキストを変えたほか、ほぼ貢献度を見ていない仕様にあわせてテキストも改定
+IF GET_SEA_ARCH_FLAG("探索許可イベントランク")
+	IF GET_SEA_ARCH_FLAG("探索許可イベントランク") == 17
+		LOCALS = 전 계층
+	ELSE
+		LOCALS = %TOFULL(TOSTR(GET_SEA_ARCH_FLAG("探索許可イベントランク")+1))%F까지
+	ENDIF
+	CALL MESSAGE_WINDOW, "", "＞팬텀 소사이어티로부터 메일이 왔다", , , , , 4
+	SELECTCASE GET_SEA_ARCH_FLAG("探索許可イベントランク")
+		CASE 17
+			CALL MESSAGE_WINDOW, "", @"＞당신의 실력을 칭찬하는 말이 적혀있다…/＞호텔ㆍ시아크 전 계층의 이용 허가가 내려졌습니다", , , , , 4
+		CASE 9
+			CALL MESSAGE_WINDOW, "", @"＞시아크의 추가 이용 방법에 대해 적혀있다/＞１Ｆ 로비에 있는 남자에게 부탁하는 것으로 더욱 고위의 악마를 만날 수 있다고 한다…", , , , , 4
+		CASE 1
+			CALL MESSAGE_WINDOW, "", @"＞조직에 대한 공헌을 인정받아/＞호텔ㆍ시아크 %LOCALS%의 이용 허가가 내려졌습니다", , , , , 4
+		CASEELSE
+			CALL MESSAGE_WINDOW, "", @"＞당신의 실력을 인정받아/＞호텔ㆍ시아크 %LOCALS%의 이용 허가가 내려졌습니다", , , , , 4
+	ENDSELECT
+	CALL SET_SEA_ARCH_FLAG, "探索許可ランク", GET_SEA_ARCH_FLAG("探索許可イベントランク")
+ENDIF
+;;施設利用許可
+;IF BASE:MASTER:LV >= 10 && FLAG:조직공헌도 >= 10000 && ダンジョンフラグ:94:1 == 0 
+;	CALL MESSAGE_WINDOW, "", "＞팬텀 소사이어티로부터 메일이 왔다", , , , , 4
+;	CALL MESSAGE_WINDOW, "", "＞組織への貢献を評価され/＞ホテル・シーアークの２Ｆまでの利用許可が下りました", , , , , 4
+;	ダンジョンフラグ:94:1 = 1
+;施設利用許可９
+;ELSEIF BASE:MASTER:LV >= 64 && ダンジョンフラグ:94:1 < 9
+;	CALL MESSAGE_WINDOW, "", "＞팬텀 소사이어티로부터 메일이 왔다", , , , , 4
+;	CALL MESSAGE_WINDOW, "", "＞組織への貢献を評価され/＞ホテル・シーアーク全階層の利用許可が下りました", , , , , 4
+;	ダンジョンフラグ:94:1 = 9
+;施設利用許可８
+;ELSEIF BASE:MASTER:LV >= 57 && ダンジョンフラグ:94:1 < 8
+;	CALL MESSAGE_WINDOW, "", "＞팬텀 소사이어티로부터 메일이 왔다", , , , , 4
+;	CALL MESSAGE_WINDOW, "", "＞組織への貢献を評価され/＞ホテル・シーアーク９Ｆまでの利用許可が下りました", , , , , 4
+;	ダンジョンフラグ:94:1 = 8
+;施設利用許可７
+;ELSEIF BASE:MASTER:LV >= 50 && ダンジョンフラグ:94:1 < 7
+;	CALL MESSAGE_WINDOW, "", "＞팬텀 소사이어티로부터 메일이 왔다", , , , , 4
+;	CALL MESSAGE_WINDOW, "", "＞組織への貢献を評価され/＞ホテル・シーアーク８Ｆまでの利用許可が下りました", , , , , 4
+;	ダンジョンフラグ:94:1 = 7
+;施設利用許可６
+;ELSEIF BASE:MASTER:LV >= 43 && ダンジョンフラグ:94:1 < 6
+;	CALL MESSAGE_WINDOW, "", "＞팬텀 소사이어티로부터 메일이 왔다", , , , , 4
+;	CALL MESSAGE_WINDOW, "", "＞組織への貢献を評価され/＞ホテル・シーアーク７Ｆまでの利用許可が下りました", , , , , 4
+;	ダンジョンフラグ:94:1 = 6
+;施設利用許可５
+;ELSEIF BASE:MASTER:LV >= 36 && ダンジョンフラグ:94:1 < 5
+;	CALL MESSAGE_WINDOW, "", "＞팬텀 소사이어티로부터 메일이 왔다", , , , , 4
+;	CALL MESSAGE_WINDOW, "", "＞組織への貢献を評価され/＞ホテル・シーアーク６Ｆまでの利用許可が下りました", , , , , 4
+;	ダンジョンフラグ:94:1 = 5
+;施設利用許可４
+;ELSEIF BASE:MASTER:LV >= 29 && ダンジョンフラグ:94:1 < 4
+;	CALL MESSAGE_WINDOW, "", "＞팬텀 소사이어티로부터 메일이 왔다", , , , , 4
+;	CALL MESSAGE_WINDOW, "", "＞組織への貢献を評価され/＞ホテル・シーアーク５Ｆまでの利用許可が下りました", , , , , 4
+;	ダンジョンフラグ:94:1 = 4
+;施設利用許可３
+;ELSEIF BASE:MASTER:LV >= 22 && ダンジョンフラグ:94:1 < 3
+;	CALL MESSAGE_WINDOW, "", "＞팬텀 소사이어티로부터 메일이 왔다", , , , , 4
+;	CALL MESSAGE_WINDOW, "", "＞組織への貢献を評価され/＞ホテル・シーアーク４Ｆまでの利用許可が下りました", , , , , 4
+;	ダンジョンフラグ:94:1 = 3
+;施設利用許可２
+;ELSEIF BASE:MASTER:LV >= 16 && ダンジョンフラグ:94:1 < 2
+;	CALL MESSAGE_WINDOW, "", "＞팬텀 소사이어티로부터 메일이 왔다", , , , , 4
+;	CALL MESSAGE_WINDOW, "", "＞組織への貢献を評価され/＞ホテル・シーアーク３Ｆまでの利用許可が下りました", , , , , 4
+;	ダンジョンフラグ:94:1 = 2
+;ENDIF
+IF GET_SEA_ARCH_FLAG("支給品イベントランク") > 0
+	IF GET_SEA_ARCH_FLAG("探索許可イベントランク")
+		CALL MESSAGE_WINDOW, "", "＞그리고, 장비품이 지급되었습니다", , , , , 4
+	ELSE
+		CALL MESSAGE_WINDOW, "", "＞팬텀 소사이어티로부터 메일이 왔다", , , , , 4
+		CALL MESSAGE_WINDOW, "", @"＞당신의 실력을 인정받아, 장비품이 지급되었습니다", , , , , 4
+	ENDIF
+	;アイテム配給
+	FOR LCOUNT, GET_SEA_ARCH_FLAG("支給品ランク")+1, GET_SEA_ARCH_FLAG("支給品イベントランク")+1
+		LOCALS = %EVENT_36_ITEMTABLE(LCOUNT)%
+		LCOUNT:1 = 0
+		VARSET 配給品
+		配給数 = 0
+		WHILE AUTO_SPLIT(LOCALS, "/", LCOUNT:1) != ""
+			CALL EQ_性別制限取得, MASTER, GETNUM(ITEM, AUTO_SPLIT(LOCALS, "/", LCOUNT:1))
+			IF !RESULT || (RESULT:1 && IS_LOOKSLIKE_MALE(MASTER)) || (RESULT:2 && !IS_LOOKSLIKE_MALE(MASTER))
+				配給品:配給数 = %AUTO_SPLIT(LOCALS, "/", LCOUNT:1)%
+				ITEM:(配給品:配給数) += 1
+				配給数++
+			ENDIF
+			LCOUNT:1++
+		WEND
+		VARSET LOCALS
+		IF 配給数 == 6
+			LOCALS = ＞%配給品:0%, %配給品:1%
+			LOCALS:1 = ＞%配給品:2%, %配給品:3%
+			LOCALS:2 = ＞%配給品:4%、%配給品:5%을(를) 손에 넣었다
+		ELSEIF 配給数 == 5
+			LOCALS = ＞%配給品:0%, %配給品:1%
+			LOCALS:1 = ＞%配給品:2%, %配給品:3%
+			LOCALS:2 = ＞%配給品:4%을(를) 손에 넣었다
+		ELSEIF 配給数 == 4
+			LOCALS = ＞%配給品:0%, %配給品:1%
+			LOCALS:1 = ＞%配給品:2%
+			LOCALS:2 = ＞%配給品:3%을(를) 손에 넣었다
+		ELSE
+			LOCALS = ＞%配給品:0%
+			LOCALS:1 = ＞%配給品:1%
+			LOCALS:2 = ＞%配給品:2%
+			LOCALS:配給数 += "을(를) 손에 넣었다"
+		ENDIF
+		CALL MESSAGE_WINDOW, "", LOCALS + "/" + LOCALS:1 + "/" +LOCALS:2, , , , , 4
+	NEXT
+	CALL SET_SEA_ARCH_FLAG, "支給品ランク", GET_SEA_ARCH_FLAG("支給品イベントランク")
+ENDIF
+SIF GET_SEA_ARCH_FLAG("探索許可ランク") == 1
+	CALL MESSAGE_WINDOW, "", "＞앞으로, 당신의 능력에 따라/＞추가 탐색 허가와 장비품 지급이 실시될 모양이다", , , , , 4
+
+;複数回呼び出しのために呼び出し履歴を消す
+SIF GET_SEA_ARCH_FLAG("探索許可ランク") < 17
+	CALL RESET_ANNOUNCE_FLAG
+CALL SET_SEA_ARCH_FLAG, "探索許可イベントランク", 0
+CALL SET_SEA_ARCH_FLAG, "支給品イベントランク", 0
+RETURN 0
+
+;----------------------------------------------------
+;支給される装備品のリスト
+;MASTERの男女による区分けは自動的に行う
+;
+;Lv10/15/20/25/30/40/50
+;前提としてショップで買えるもの
+;검:武器タイプ剣
+;총:ガンスリンガーが絡まないハンドガン
+;その他防具:レベル毎に適正なのをできるだけ
+;
+;元の配給品の装備レベルが結構無茶苦茶(装備できないレベルのものを配られたり、装備レベルが前後する)ようになってしまっていたので整理
+;装備品購入のためのJP/MONEYに余裕が出来た関係で、フォローの意義はかなり薄れている感じではありますが
+;主に初周のプレイで納金が遅れた場合のMASTERの最低限の保証として残す形に
+;
+;元々の仕様では60・65の装備もいちぶ配給されてましたがショップ武器が45レベルで途切れるのでそこで打ち切る形に
+;その代わり各レベル帯での部位の埋まり具合を充実させています
+;----------------------------------------------------
+@EVENT_36_ITEMTABLE, ARG
+#FUNCTIONS
+SELECTCASE ARG
+	CASE 1
+		RETURNF "기사도블레이드/Beretta 93R/카이저아머/재밍암/암브릿지/티타늄부츠"	
+	CASE 2
+		RETURNF "스마트플뢰레/도미네이터/체인베레/하드텐갤런/일륜의갑옷/다마스커스글러브"
+	CASE 3
+		RETURNF "브라우닝HP/가라시지의법의/질풍의토시/초승달의구족"
+	CASE 4
+		RETURNF "실버사벨/돌핀헬름/후미의갑옷/스피릿로브/쥬시쥰"
+	CASE 5
+		RETURNF "마즈버스터/테트라재머/복수의토시/엔지니어부츠/풀메탈힐"
+	CASE 6
+		RETURNF "카슈・키요미츠/발터ac41/새벽의투구/퍼레이드헬름/새벽의갑옷/퍼레이드아머/새벽의토시/퍼레이드글러브/새벽의구족/퍼레이드부츠"
+	CASE 7
+		RETURNF "로즈플람베르크/이글50AE/붉은투구/드래곤헬름/붉은갑옷/드래곤메일/붉은토시/드래곤클로/붉은구족/드래곤부츠"
+ENDSELECT

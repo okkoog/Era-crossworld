@@ -1,0 +1,157 @@
+﻿;スキル名
+@SKILL_NAME_弁財天五弦琵琶,ARG
+IF FLAG:총공격중
+	RESULTS = 멜트 바이러스
+ELSE
+	RESULTS = 弁財天五弦琵琶
+ENDIF
+;　명중
+@SKILL_HITRATE_弁財天五弦琵琶, ARG
+RETURN 90
+
+;　威力
+@SKILL_POWER_弁財天五弦琵琶, ARG
+SIF ARG >= 0 && HAVE_PU_SKILL(ARG, "輝くばかりの")
+	RETURN 450
+RETURN 350
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_弁財天五弦琵琶,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_弁財天五弦琵琶,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_弁財天五弦琵琶, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_弁財天五弦琵琶, ARG
+IF ARG >= 0 && HAVE_PU_SKILL(ARG, "弁財天五弦琵琶") && PU_SKILLGAGE_D_GET(ARG, "弁財天五弦琵琶")
+	RESULTS '= TOSTR(PU_SKILLGAGE_D_GET(ARG, "弁財天五弦琵琶")) + "ＣＴ"
+	RETURN 0
+ENDIF
+SIF ARG >= 0 && HAVE_PU_SKILL(ARG, "輝くばかりの")
+	RETURN 50
+RETURN 35
+
+;　相性
+@SKILL_TYPE_弁財天五弦琵琶,ARG
+RETURN GET_TYPE_NUM("수격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_弁財天五弦琵琶
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_弁財天五弦琵琶, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_弁財天五弦琵琶,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_弁財天五弦琵琶,ARG
+RETURN 2
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_弁財天五弦琵琶,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_弁財天五弦琵琶,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_弁財天五弦琵琶,ARG
+RETURN GET_SUCCESSION_NUM("수격")
+
+;속도보정
+@SKILL_SPEED_弁財天五弦琵琶, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_弁財天五弦琵琶
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_弁財天五弦琵琶, ARG = -1
+RETURN 15
+
+;====================================================
+;トリガー発動条件
+;
+;弁財天五弦琵琶がヒットした相手が強化を持っていた場合
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_弁財天五弦琵琶,ARG,ARG:1
+SIF ARG != FLAG:행동순1
+	RETURN 0
+;自身は対象外
+SIF ARG == ARG:1
+	RETURN 0
+SIF !IS_PU_SKILL_入力行動(ARG, "弁財天五弦琵琶")
+	RETURN 0
+SIF !GET_CREC_ACT(ARG, ARG:1, "HIT")
+	RETURN 0
+SIF GET_カジャンダ_MAX(ARG:1) <= 0
+	RETURN 0
+RETURN 1, CPOS(ARG:1)
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_弁財天五弦琵琶,ARG,ARG:1,ARG:2
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC TEMP_VALUE
+#DIM DYNAMIC MAX_TEMP_VALUE
+#DIMS DYNAMIC L_MES
+IF !FLAG:총공격중
+	CALL ATTACK_SKILL,ARG,ARG:1,ARG:2
+	CALL PU_SKILLGAGE_D_SET, ARG, "弁財天五弦琵琶", 4
+ELSE
+	FOR LCOUNT, 0, VARSIZE("BASE_KAJA_TABLE")
+		TEMP_VALUE = CFLAG:POS(ARG:1):(BASE_KAJA_TABLE:LCOUNT + "강화")
+		SIF TEMP_VALUE <= 0
+			CONTINUE
+		MAX_TEMP_VALUE = MAX(MAX_TEMP_VALUE, TEMP_VALUE)
+		SIF L_MES != ""
+			L_MES += "・"
+		L_MES += BASE_KAJA_TABLE:LCOUNT
+		CALL SKILL_SET_カジャンダ, ARG, POS(ARG:1), BASE_KAJA_TABLE:LCOUNT, -TEMP_VALUE, "단체", "NOMES"
+		CALL SKILL_SET_カジャンダ, ARG, ARG, BASE_KAJA_TABLE:LCOUNT, TEMP_VALUE, "단체", "NOMES"
+	NEXT
+	IF MAX_TEMP_VALUE > 0
+		CALL PRINT_HIT_MESSAGE, POS(ARG:1), "能力上昇解除", "L"
+		CALL PRINT_HIT_MESSAGE, ARG, L_MES + "강화", "w"
+	ELSE
+		CALL PRINT_HIT_MESSAGE, POS(ARG:1), "効果なし", "w"
+	ENDIF
+ENDIF
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_弁財天五弦琵琶,ARG
+PRINTL 【멜트릴리스 전용】
+PRINTL 적 단체에 수격 속성의 물리 특대 데미지를 가한다.
+PRINTL 공격 성공 시 이하의 연동효과가 발동한다.
+PRINTL 「공격 대상이 지닌 능력 강화를 모두 흡수한다.」
+PRINTL 이 스킬은 사용 후 3턴 동안 재사용할 수 없다.
+
+@SKILL_EXPLAIN_TOOLTIP_弁財天五弦琵琶,ARG
+RESULTS:0 = 적 단체에 수격 속성의 물리 특대 데미지를 가한다.
+RESULTS:1 = 공격 성공 시 이하의 연동효과가 발동한다.
+RESULTS:2 = 「攻撃対象の持つ能力強化を全て吸収する。」
+RESULTS:3 = このスキルは使用後、３ターンの間再使用ができない。
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_弁財天五弦琵琶,ARG
+RESULTS = 쿨타임:%TOFULL(TOSTR(PU_SKILLGAGE_D_GET(ARG, "弁財天五弦琵琶")))%턴
+SIF !FLAG:총공격중 && PU_SKILLGAGE_D_GET(ARG, "弁財天五弦琵琶")
+	RETURN 0
+RETURN 1
+;とくにない
+

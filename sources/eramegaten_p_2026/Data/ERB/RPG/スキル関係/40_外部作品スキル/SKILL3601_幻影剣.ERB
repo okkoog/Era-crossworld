@@ -1,0 +1,246 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_3601,ARG
+RESULTS = 환영검
+IF ARG > -1
+	IF FLAG:카운터중
+		RESULTS = 円陣幻影剣
+	ELSE
+		SIF SKILLGAGE_H_GET(ARG,3601) == 2
+			RESULTS = 強襲幻影剣
+		SIF SKILLGAGE_H_GET(ARG,3601) == 3
+			RESULTS = 五月雨幻影剣
+	ENDIF
+ENDIF
+;　명중
+@SKILL_HITRATE_3601, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_3601, ARG
+RETURN 80
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3601,ARG
+IF ARG > -1
+	IF FLAG:카운터중
+		RETURN 2
+	ELSE
+		SIF SKILLGAGE_H_GET(ARG,3601) == 2
+			RETURN 2
+		SIF SKILLGAGE_H_GET(ARG,3601) == 3
+			RETURN 1
+	ENDIF
+ENDIF
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3601,ARG
+IF ARG > -1
+	IF FLAG:카운터중
+		RETURN 3
+	ELSE
+		SIF SKILLGAGE_H_GET(ARG,3601) == 2
+			RETURN 4
+		SIF SKILLGAGE_H_GET(ARG,3601) == 3
+			RETURN 3
+	ENDIF
+ENDIF
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3601, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3601,ARG
+RETURN 45
+
+;　相性
+@SKILL_TYPE_3601,ARG
+RETURN GET_TYPE_NUM("만능"), GET_TYPE_NUM("비구")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3601
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3601, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3601, ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_3601,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3601,ARG
+IF ARG > -1
+	IF FLAG:카운터중
+		RETURN 1
+	ELSE
+		SIF SKILLGAGE_H_GET(ARG,3601) == 2
+			RETURN 1
+		SIF SKILLGAGE_H_GET(ARG,3601) == 3
+			RETURN 3
+	ENDIF
+ENDIF
+RETURN 1
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3601, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3601
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+;속도보정
+@SKILL_SPEED_3601, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3601
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3601, ARG = -1
+RETURN 0
+
+
+;====================================================
+;カウンター発動条件
+;ARG			このスキルの持ち主
+;ARG:1			攻撃者のキャラ番号
+
+;RESULT			1 = 反撃成立。ただし実行までの間に行動者が行動不能になった場合は不発する
+;RESULT:1		反撃対象のPOS(ACTION_XXXのARG:1に送られる)。システム側で敵の生存・存在判定による不発判定をおこなうが、RESULT:1が0の場合は相手の状態に関わらず判定を通す
+;RESULT:2		-1 = デフォルトのスキル名表示を省く
+;====================================================
+@SKILL_COUNTER_ACTIONABLE_3601,ARG,ARG:1
+SIF SKILLGAGE_D_GET(ARG,3601) < 1
+	RETURN 0
+SIF !GET_CREC_ACT(ARG:1, ARG, "物理")
+	RETURN 0
+RETURN 1, CPOS(ARG:1)
+;RETURN 1
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_3601,ARG,ARG:1
+;自分じゃなければNG
+SIF ARG != ARG:1
+	RETURN 0
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+SIF SKILLGAGE_D_GET(ARG,3601) < 1
+	RETURN 0
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+SIF RESULT != 1 || CFLAG:ARG:타겟 < 1
+	RETURN 0
+IF CFLAG:ARG:타겟 < 17
+	;SIF POS(CFLAG:ARG:타겟) < 0 || GET_STATE(CFLAG:POS(CFLAG:ARG:타겟):상태이상) == "DYING"
+	;	RETURN 0
+	CALL SKILLGAGE_H_SET,ARG,3601,2
+	RETURN 1, CFLAG:ARG:타겟
+	;RESULT:1 = CFLAG:ARG:타겟
+ELSEIF CFLAG:ARG:타겟 < 20
+	CALL SKILLGAGE_H_SET,ARG,3601,3
+	RETURN 1, 19
+ELSE
+	CALL SKILLGAGE_H_SET,ARG,3601,3
+	RETURN 1, 22
+ENDIF
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+
+@ACTION_3601, ARG, ARG:1, ARG:2
+#LOCALSIZE 4
+IF SKILLGAGE_D_GET(ARG,3601) == 0
+	CALL SKILLGAGE_D_SET,ARG,3601,3
+	PRINTFORML 3턴 동안 환영검에 의한 반격과 추격이 발동하게 되었다
+ELSEIF FLAG:카운터중
+	CALL ATTACK_SINGLE,ARG,POS(ARG:1),3601,1
+ELSEIF SKILLGAGE_H_GET(ARG,3601) == 2
+	CALL ATTACK_SINGLE,ARG,POS(ARG:1),3601,1
+ELSEIF SKILLGAGE_H_GET(ARG,3601) == 3
+	CALL ATTACK_FIELD, ARG, ARG:1, 3601
+ENDIF
+WAIT
+
+
+CALL SKILLGAGE_H_SET,ARG,3601,0
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;====================================================
+;追加コマンド(一番下)
+;====================================================
+@INPUT_COM_NAME_3601,ARG
+RESULTS = 幻影剣
+RESULTS:1 = 환영검
+RETURN 2
+
+@INPUT_COM_ABLE_幻影剣,ARG
+RESULTS = 効果発動中
+SIF SKILLGAGE_D_GET(ARG,3601)
+	RETURN -1
+CALL CHECK_COST,ARG,3601
+SIF !RESULT
+	RETURN -1
+RETURN 1
+
+;====================================================
+;コマンド実行
+;====================================================
+@INPUT_COM_幻影剣,ARG
+#LOCALSIZE 1
+CALL GET_SKILL_COST,3601,ARG
+PRINTFORML 환영검을 사용하시겠습니까? (소비 MP {RESULT})
+CALL INPUT_YN
+IF RESULT == 0
+	LOCAL = CFLAG:ARG:입력행동
+	CFLAG:ARG:입력행동 = 3601
+	CALL PAY_COST, ARG, 3601
+	CALL PRINT_ACT_MESSAGE, ARG, 3
+	CALL ACTION_3601,ARG
+	CALL BATTLE_EVENT_ACT, ARG
+	CFLAG:ARG:입력행동 = LOCAL
+ENDIF
+RETURN -1
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3601, ARG
+PRINTL 커맨드로 사용할 수 있으며, 발동하면 3턴 동안 만능+비구 복합상성으로 반격, 추격이 발동한다
+PRINTL 반격: 상대의 물리 공격에 대해 환영검으로 반격을 행한다
+PRINTL 추격: 자신의 행동으로 공격 스킬을 발동하면 환영검으로 추격하며 범위에 따라 범위와 횟수가 변화한다
+
+
+;とくにない
+
+@SKILL_ACTIONABLE_BATTLE_3601, ARG
+RETURN 0
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3601,ARG
+RETURN 0
+;とくにない
+

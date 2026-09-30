@@ -1,0 +1,163 @@
+﻿
+;スキル名
+@SKILL_NAME_戦術スキル_シルヴィア,ARG
+IF ARG >= 0 && FLAG:행동순1 == ARG
+	SELECTCASE PU_SKILLGAGE_H_GET(ARG, "戦術スキル_シルヴィア")
+		CASE IS < 200
+			RESULTS = 바루나 아디나
+		CASE IS < 400
+			RESULTS = 지라 솔레
+		CASEELSE
+			RESULTS = 셀레스티아
+	ENDSELECT
+ELSE
+	RESULTS = 전술 스킬
+ENDIF
+;　명중
+@SKILL_HITRATE_戦術スキル_シルヴィア, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_戦術スキル_シルヴィア, ARG
+SIF ARG < 0
+	RETURN 0
+RETURN 10 + PU_SKILLGAGE_H_GET(ARG, "戦術スキル_シルヴィア")
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_戦術スキル_シルヴィア,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_戦術スキル_シルヴィア,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_戦術スキル_シルヴィア, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_戦術スキル_シルヴィア,ARG
+RETURN 60
+
+@SKILL_HEAL_TYPE_戦術スキル_シルヴィア, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("割合")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_戦術スキル_シルヴィア
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_戦術スキル_シルヴィア,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_戦術スキル_シルヴィア,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_戦術スキル_シルヴィア,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_戦術スキル_シルヴィア,ARG
+RETURN GET_SKILL_EFFECT_NUM("상태회복")
+
+;속도보정
+@SKILL_SPEED_戦術スキル_シルヴィア, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_戦術スキル_シルヴィア
+RETURN 0
+
+@SKILL_RANK_戦術スキル_シルヴィア, ARG
+RETURN 15
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_戦術スキル_シルヴィア,ARG, ARG:1, ARG:2
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+FOR LCOUNT, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1) + 1
+	L_CHARA = POS(LCOUNT)
+	SIF L_CHARA < 0
+		CONTINUE
+	CALL SKILL_CURE_STATE_戦術スキル_シルヴィア, CFLAG:L_CHARA:상태이상
+	IF RESULT == 1
+		CFLAG:L_CHARA:상태이상 = 0
+		CFLAG:L_CHARA:상태이상경과턴수 = 0
+		CALL HEAL_SINGLE, ARG, L_CHARA, ARG:2, 1, , "蘇生"
+	ELSE
+		CALL HEAL_SINGLE, ARG, L_CHARA, ARG:2, 1
+	ENDIF
+NEXT
+WAIT
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_戦術スキル_シルヴィア,ARG
+PRINTL 아군 전체의 소생과 회복을 행한다.
+PRINTL 회복량은 소지하고 있는 포스의 양에 의존한다.
+PRINTL 스킬 사용 후 소지하고 있는 포스를 전부 잃는다.
+
+@SKILL_EXPLAIN_TOOLTIP_戦術スキル_シルヴィア, ARG
+RESULTS:0 = 아군 전체의 소생과 회복을 행한다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_戦術スキル_シルヴィア,ARG
+RETURN 1
+;リキャストゲージが残っていると不可
+
+;何のバッドステータスを治せるか
+@SKILL_CURE_STATE_戦術スキル_シルヴィア,ARG
+SELECTCASE GET_STATE(ARG)
+	CASE "DYING"
+		RETURN 1
+	CASEELSE
+		RETURN 0
+ENDSELECT
+
+;====================================================
+;行動によるスキルゲージ操作
+;各キャラクターの通常の行動後に全キャラで呼び出される
+;ARG:		このスキルの持ち主のキャラ番号
+;ARG:1		行動したキャラクターのキャラ番号
+;
+;RESULT 		獲得したゲージの量を返すことで獲得量を表示させる。つまり、他人の行動に反応させることなども可能。
+;RESULT:1		獲得表示のときの文字色を指定できる。ゲージが溜まったときの表示わけなどに
+;RESULTS		ゲージの名称 「<<XXXX>>」という形で表示される
+;RESULTS:1		ゲージの単位。半角の%を使いたい場合は「\%」と言うかたちで退避記号を使うと良い
+;RESULTS;2		色指定以外の要素を使わずに文字列を返す。ゲージ式の獲得量で表現したい場合などに
+;====================================================
+@SKILLGAGE_CHARGE_戦術スキル_シルヴィア, L_CHARA, ARG:1
+#DIM L_CHARA
+#DIM L_GP
+;自身の行動のみ
+SIF L_CHARA != ARG:1
+	RETURN 0
+L_GP = 25
+IF IS_PU_SKILL_入力行動(L_CHARA, "戦術スキル_シルヴィア")
+	CALL PU_SKILLGAGE_H_SET, L_CHARA, "戦術スキル_シルヴィア", 0
+ELSE
+	SIF GET_CREC_ACT(L_CHARA, , "HIT")
+		L_GP += 25
+	SIF GET_CREC_ACT(L_CHARA, , "CRT/WEAK")
+		L_GP += 50
+	SIF L_GP + PU_SKILLGAGE_H_GET(L_CHARA, "戦術スキル_シルヴィア") > 500
+		L_GP = MAX(500 - PU_SKILLGAGE_H_GET(L_CHARA, "戦術スキル_シルヴィア"), 0)
+	SIF L_GP == 0
+		RETURN 0
+	CALL PU_SKILLGAGE_H_ADD, L_CHARA, "戦術スキル_シルヴィア", L_GP
+	RESULTS = 포스
+	RETURN L_GP
+ENDIF
+
+@SKILL_EX_DISPLAY_戦術スキル_シルヴィア, ARG, ARGS
+RESULTS += @"フォース：{PU_SKILLGAGE_H_GET(ARG, "戦術スキル_シルヴィア"),3}"
+RESULTS:1 '= "戦術スキル_シルヴィア"
+RETURN 1

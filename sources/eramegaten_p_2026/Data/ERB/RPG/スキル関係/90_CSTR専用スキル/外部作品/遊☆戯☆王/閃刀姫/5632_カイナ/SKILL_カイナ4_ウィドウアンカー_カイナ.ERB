@@ -1,0 +1,161 @@
+﻿
+;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_ウィドウアンカー_カイナ,ARG
+RESULTS = 위도우앵커
+
+;　명중
+@SKILL_HITRATE_ウィドウアンカー_カイナ, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_ウィドウアンカー_カイナ, ARG
+RETURN 200
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ウィドウアンカー_カイナ,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ウィドウアンカー_カイナ,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ウィドウアンカー_カイナ, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+
+;　コストの量
+@SKILL_COST_ウィドウアンカー_カイナ,ARG
+RETURN 15
+
+;　相性
+@SKILL_TYPE_ウィドウアンカー_カイナ,ARG
+RETURN GET_TYPE_NUM("지변")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ウィドウアンカー_カイナ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ウィドウアンカー_カイナ, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ウィドウアンカー_カイナ, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_ウィドウアンカー_カイナ,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ウィドウアンカー_カイナ,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ウィドウアンカー_カイナ, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_ウィドウアンカー_カイナ
+RETURN GET_SUCCESSION_NUM("지변")
+
+;속도보정
+@SKILL_SPEED_ウィドウアンカー_カイナ, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ウィドウアンカー_カイナ
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_ウィドウアンカー_カイナ, ARG = -1
+RETURN 7
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ウィドウアンカー_カイナ, ARG, ARG:1, ARG:2
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC TEMP_VALUE
+#DIM DYNAMIC MAX_TEMP_VALUE
+#DIMS DYNAMIC L_MES
+IF !FLAG:총공격중
+	CALL ATTACK_SKILL,ARG,ARG:1,ARG:2
+	CALL PUSH_CEMETERY_閃刀魔法, ARG, "ウィドウアンカー"
+	SIF GET_COUNT_閃刀カウンター(ARG) >= 3
+		CALL PU_SKILLGAGE_D_SET, ARG, "ウィドウアンカー_カイナ", 1
+ELSE
+	IF PU_SKILLGAGE_D_GET(ARG, "ウィドウアンカー_カイナ") > 0
+		FOR LCOUNT, 0, VARSIZE("BASE_KAJA_TABLE")
+			TEMP_VALUE = CFLAG:POS(ARG:1):(BASE_KAJA_TABLE:LCOUNT + "강화")
+			SIF TEMP_VALUE <= 0
+				CONTINUE
+			MAX_TEMP_VALUE = MAX(MAX_TEMP_VALUE, TEMP_VALUE)
+			SIF L_MES != ""
+				L_MES += "・"
+			L_MES += BASE_KAJA_TABLE:LCOUNT
+			CALL SKILL_SET_カジャンダ, ARG, POS(ARG:1), BASE_KAJA_TABLE:LCOUNT, -TEMP_VALUE, "단체", "NOMES"
+			CALL SKILL_SET_カジャンダ, ARG, ARG, BASE_KAJA_TABLE:LCOUNT, TEMP_VALUE, "단체", "NOMES"
+		NEXT
+		IF MAX_TEMP_VALUE > 0
+			CALL PRINT_HIT_MESSAGE, POS(ARG:1), "能力上昇解除", "L"
+			CALL PRINT_HIT_MESSAGE, ARG, L_MES + "강화", "w"
+		ELSE
+			CALL PRINT_HIT_MESSAGE, POS(ARG:1), "効果なし", "w"
+		ENDIF
+	ELSE
+		CALL SKILL_能力上昇解除, ARG, POS(ARG:1), "단체"
+	ENDIF
+ENDIF
+
+;====================================================
+;トリガー発動条件
+;
+;弁財天五弦琵琶がヒットした相手が強化を持っていた場合
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_ウィドウアンカー_カイナ,ARG,ARG:1
+SIF ARG != FLAG:행동순1
+	RETURN 0
+;自身は対象外
+SIF ARG == ARG:1
+	RETURN 0
+SIF !IS_PU_SKILL_入力行動(ARG, "ウィドウアンカー_カイナ")
+	RETURN 0
+SIF !GET_CREC_ACT(ARG, ARG:1, "HIT")
+	RETURN 0
+SIF GET_カジャンダ_MAX(ARG:1) <= 0
+	RETURN 0
+RETURN 1, CPOS(ARG:1)
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_ウィドウアンカー_カイナ, ARG
+PRINTL 【閃刀魔法】
+PRINTL 적 1체에 지변 속성의 물리 중 데미지를 가한다. 후열 사용 가능.
+PRINTL 공격 성공 시 적의 능력 강화를 해제한다.
+PRINTL 스킬 발동 후 섬도 카운터를 1개 얻는다.
+PRINTL 
+PRINTL 〈강화 효과〉 섬도 카운터가 3개 이상 있을 경우,
+PRINTL 해제한 능력 강화를 자신에게 부여한다.
+PRINTL 강화 효과 발동 후 섬도 카운터를 얻는 대신 3개 제거한다.
+PRINTL 
+PRINTL 이 스킬은 전투 중 1회만 사용 가능.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ウィドウアンカー_カイナ,ARG
+RESULTS = 스킬 사용 완료
+SIF !IS_USEABLE_閃刀魔法(ARG, "ウィドウアンカー")
+	RETURN 0
+RETURN 1
+
+@リンク不能_ウィドウアンカー_カイナ
+RETURN 1
+
+@SKILL_TAG_ウィドウアンカー_カイナ
+RESULTS = 閃刀魔法

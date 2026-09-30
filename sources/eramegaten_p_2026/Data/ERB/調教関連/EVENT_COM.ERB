@@ -1,0 +1,108 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_COM.ERB
+;	Facility	:調教コマンド実行前後のイベント
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/06/19		一ノ瀬					新規作成。
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;--------------------------------------------
+;調教コマンド実行直前の処理
+;--------------------------------------------
+@EVENTCOM_F
+#DIM CHARA , 1
+#DIM LCOUNT
+FOR LCOUNT, 0, 35
+	TFLAG:LCOUNT = 0
+NEXT
+;加算と同時に初期化をしているのでいらないはず
+;FOR LCOUNT, 0, 101
+;	SIF MASTER > -1
+;		TCVAR:MASTER:LCOUNT = 0
+;	SIF TARGET > -1
+;		TCVAR:TARGET:LCOUNT = 0
+;	SIF ASSI > -1
+;		TCVAR:ASSI:LCOUNT = 0
+;NEXT
+FOR LOCAL:1 , 0 , 3
+	SELECTCASE LOCAL:1
+		CASE 0
+			CHARA = MASTER
+		CASE 1
+			CHARA = TARGET
+		CASE 2
+			SIF ASSI == -1
+				BREAK
+			CHARA = ASSI
+	ENDSELECT
+	FOR LOCAL,0,5
+		LOCALS = %AUTO_SPLIT("Ｃ/Ｖ/Ａ/유두/유방" , "/" , LOCAL)%
+		IF TEQUIP:CHARA:("피복애무" + LOCALS) && TEQUIP:CHARA:("옷내부애무" + LOCALS)
+			TEQUIP:CHARA:("의상내장애무패턴" + LOCALS) = 1 + RAND:2
+		ELSEIF TEQUIP:CHARA:("피복애무" + LOCALS)
+			TEQUIP:CHARA:("의상내장애무패턴" + LOCALS) = 1
+		ELSEIF TEQUIP:CHARA:("옷내부애무" + LOCALS)
+			TEQUIP:CHARA:("의상내장애무패턴" + LOCALS) = 2
+		ELSE
+			TEQUIP:CHARA:("의상내장애무패턴" + LOCALS) = 0
+		ENDIF
+	NEXT
+	IF !TFLAG:삽입속행
+		TEQUIP:CHARA:입삽입자 = -1
+		TEQUIP:CHARA:Ｖ삽입자 = -1
+		TEQUIP:CHARA:Ａ삽입자 = -1
+	ENDIF
+	;膣内の汚れが初期値の場合、膣内の精液量を0にする
+	SIF GET_STAIN("질내", TOSTR(CHARA) ) == 1
+		TCVAR:CHARA:101 = 0
+
+	;射精箇所と射精相手を初期化
+	TCVAR:CHARA:페니스사용대상 = -1
+	TCVAR:CHARA:사정부위 = 14
+NEXT
+TFLAG:삽입속행 = 0
+TFLAG:메시지패턴 = 0
+TFLAG:100 = 0
+TFLAG:조교자절정강도 = 0
+
+;コマンド実行前にいくつかの変数を初期化する
+VARI L_CHARA
+VARI L_SET , 3 
+L_SET = TARGET , MASTER , ASSI
+VARI LCOUNT
+FOR LCOUNT , 0 , 2+(ASSI > -1)
+	L_CHARA = L_SET:LCOUNT
+	VARSET CUP:L_CHARA:0 , 0
+	VARSET CDOWN:L_CHARA:0 , 0
+	VARSET DOWNBASE:L_CHARA:0 , 0
+	VARSET NOWEX:L_CHARA:0 , 0
+NEXT
+
+@EVENT_COMEND_気絶チェック
+CALL 気絶処理,TARGET
+IF RESULT != 0
+	PRINTW （체력이 한계에 다다랐습니다　조교를 종료합니다）
+	RETURN -1
+	;BEGIN AFTERTRAIN
+ENDIF
+
+@EVENT_COMEND_貞操
+IF EXP:Ｖ경험 == 0 && EXP:Ａ경험 > 0 && TALENT:정조관념 && CFLAG:정조를지킬수있다면…… == 0
+	CFLAG:정조를지킬수있다면…… = 1
+	PRINTW 정조를 지킬 수 있다면、조금은 뒤를 공격당해도 괜찮다고 생각하는 듯하다…
+ENDIF
+;一時的にPLAYERを差し替えていた場合はここで自動的に戻す
+IF TFLAG:PLAYER일시보존 >= 0
+	PLAYER = TFLAG:PLAYER일시보존
+	ASSIPLAY = PLAYER == ASSI ? 1 # 0
+ENDIF
+TFLAG:PLAYER일시보존 = -1
+
+@EVENT_COMEND_構った
+SIF PLAYER == MASTER
+	CFLAG:TARGET:신경썼다플래그 = 1

@@ -1,0 +1,2450 @@
+
+;=======================================================================
+;六本木
+;ボス・黒おじさん
+;ダンジョンナンバー45　ＭＡＰ0~6
+;=======================================================================
+;ダンジョンフラグ:45:0 = 1.ネビロス初回撃破　2.撃破後に六本木に来た　3.赤おじさん、黒おじさんの居た場所へ
+;ダンジョンフラグ:45:1 = 1.OP表示
+;ダンジョンフラグ:45:2 = 1.アリス出現　2.アリス消滅
+;ダンジョンフラグ:45:10 = 1.アリスに会った　2.赤＆黒おじさんと話した　3.アリスと奴隷ごっこorチャクラPOTあげた　4.赤おじさん初戦壷がない　 5.赤おじさん壷入り　6.ネビロス初回撃破　7.黒おじさんが仲間になった
+;ダンジョンフラグ:45:11 = 1.女の子を成仏させた
+;ダンジョンフラグ:45:12 = 1.よしこの霊魂を成仏させた
+;ダンジョンフラグ:45:13 = 1.アリスに会い、赤おじさんと話した
+;ダンジョンフラグ:45:14 = 1.アリスに会い、黒おじさんと話した
+;ダンジョンフラグ:45:15 = 1.壷を入手
+;ダンジョンフラグ:45:16 = 1.よしこを導いた何か
+;ダンジョンフラグ:45:17 = 1.肉便器一号
+;ダンジョンフラグ:45:18 = 1.肉便器二号
+;ダンジョンフラグ:45:19 = 1.死体置き場
+;ダンジョンフラグ:45:20-29 = 1.宝箱、トラップ
+;ダンジョンフラグ:45:30 = 1.アリスと奴隷ごっこした
+;ダンジョンフラグ:45:31 = 1~街の噂追加式
+;ダンジョンフラグ:45:40 = 1.赤おじさんに見初められた　2.赤おじさんとフュージョンした
+;ダンジョンフラグ:45:41 = 1.赤おじさんとフュージョンして妊娠したよ　2.赤おじさんが仲魔になった
+
+;=======================================================================
+;攻略条件
+;=======================================================================
+@PREREQUISITE_DUNGEON_45
+[IF_DEBUG]
+	RETURN 1
+[ENDIF]
+IF ダンジョンフラグ:18:22 == 1
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+;=======================================================================
+;ダンジョン名
+;=======================================================================
+@GET_DUNGEON_NAME_45
+RESULTS = 六本木
+
+
+;=======================================================================
+;フロア名表示
+;=======================================================================
+@FLOORNAME_45
+PRINT 六本木
+SELECTCASE FLAG:現M
+	CASE 0
+		PRINTL 連絡通路
+	CASE 1
+		PRINTL １Ｆ西
+	CASE 2
+		PRINTL １Ｆ東
+	CASE 3
+		PRINTL ＢＡＲ
+	CASE 4
+		PRINTL ２Ｆ
+	CASE 5
+		PRINTL ３Ｆ
+	CASE 6
+		PRINTL Ｂ１Ｆ
+	CASEELSE
+ENDSELECT
+
+
+;=======================================================================
+;特殊タイル表示
+;=======================================================================
+;エレベーター表示
+@TILE_MARK_45_1_10_1
+RESULTS = Ｅ
+@TILE_MARK_45_4_3_1
+RESULTS = Ｅ
+@TILE_MARK_45_5_3_1
+RESULTS = Ｅ
+@TILE_MARK_45_6_3_1
+RESULTS = Ｅ
+
+@TILE_MARK_45_2_10_13
+RESULTS = Ｔ
+
+@TILE_MARK_45_1_19_1
+RESULTS = →
+@TILE_MARK_45_1_19_12
+RESULTS = →
+@TILE_MARK_45_1_19_15
+RESULTS = →
+@TILE_MARK_45_1_17_10
+RESULTS = ↑
+
+@TILE_MARK_45_2_0_1
+RESULTS = ←
+@TILE_MARK_45_2_0_12
+RESULTS = ←
+@TILE_MARK_45_2_0_15
+RESULTS = ←
+
+@TILE_MARK_45_3_5_7
+RESULTS = ↓
+
+@TILE_MARK_45_4_3_9
+IF ダンジョンフラグ:45:2 == 1
+	RESULTS = ！
+ELSE
+	RESULTS = □
+ENDIF
+
+@TILE_MARK_45_5_14_11
+IF ダンジョンフラグ:45:2 == 1
+	RESULTS = ！
+ELSE
+	RESULTS = □
+ENDIF
+;=======================================================================
+;スタート地点入力
+;=======================================================================
+@START_DUNGEON_45,ARG
+;階数
+FLAG:現M = 0
+FLAG:現X = 5
+FLAG:現Y = 5
+;CALL AUTOMAP
+
+;=======================================================================
+;スタート時イベント
+;=======================================================================
+@EVENT_DUNGEON_START_45
+IF ダンジョンフラグ:45:1 == 0 
+	PRINTFORML 六本木
+	PRINTFORML メシア教、ガイア教どちらにも属さぬ結界に包まれた謎の中立地帯
+	PRINTFORML ファントム・ソサエティの上層部の指令により
+	PRINTFORMW %CALLNAME:MASTER%は潜入捜査を命じられ、かの地を訪れた
+	ダンジョンフラグ:45:1 = 1
+ENDIF
+
+IF ダンジョンフラグ:45:2 == 2
+	ダンジョンフラグ:45:2 = 1
+ENDIF
+
+IF ダンジョンフラグ:45:0 == 1
+	ダンジョンフラグ:45:0 = 2
+ENDIF
+;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@CAN_ENTER_45,ARG,ARG:1
+IF FLAG:現M == 4 && ARG == 7 && ARG:1 == 9
+	IF ダンジョンフラグ:45:0 == 0
+		PRINTW 扉は閉ざされている
+		RETURN 0
+	ELSEIF ダンジョンフラグ:45:0 >= 1 
+		RETURN 1
+	ENDIF
+ENDIF
+
+IF FLAG:現M == 6 && ARG == 5 && ARG:1 == 11
+	IF ダンジョンフラグ:45:10 == 0
+		PRINTW 扉は閉ざされている
+		RETURN 0
+	ELSE
+		RETURN 1
+	ENDIF
+ENDIF
+
+CALL CAN_ENTER,ARG,ARG:1
+RETURN RESULT
+;=======================================================================
+;フロアデータ
+;=======================================================================
+@MAKE_FLOOR_45
+SELECTCASE FLAG:現M
+	CASE 0
+	;地下１階
+		FLAG:最大X = 7 
+		FLAG:最大Y = 7 
+;							    ;01234567
+		CALL MAKE_FLOOR_LINE, 0,"       "
+		CALL MAKE_FLOOR_LINE, 1," 11111 "
+		CALL MAKE_FLOOR_LINE, 2," 1   1 "
+		CALL MAKE_FLOOR_LINE, 3," 1   1 "
+		CALL MAKE_FLOOR_LINE, 4," 2   2 "
+		CALL MAKE_FLOOR_LINE, 5," 6   8 "
+		CALL MAKE_FLOOR_LINE, 6,"       "
+
+	CASE 1
+	;１階西
+		FLAG:最大X = 20 
+		FLAG:最大Y = 17 
+
+								;01234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"                    "
+		CALL MAKE_FLOOR_LINE, 1," 1111111  9 11111119"
+		CALL MAKE_FLOOR_LINE, 2," 1   1 1  2         "
+		CALL MAKE_FLOOR_LINE, 3," 1 1   111111111111 "
+		CALL MAKE_FLOOR_LINE, 4," 1 11111  1       1 "
+		CALL MAKE_FLOOR_LINE, 5," 1 1      1     121 "
+		CALL MAKE_FLOOR_LINE, 6," 1 1 1111 1         "
+		CALL MAKE_FLOOR_LINE, 7," 1   1    1         "
+		CALL MAKE_FLOOR_LINE, 8," 1  11  121         "
+		CALL MAKE_FLOOR_LINE, 9," 1   1    1         "
+		CALL MAKE_FLOOR_LINE,10," 1   111111      9  "
+		CALL MAKE_FLOOR_LINE,11," 111  2   1      2  "
+		CALL MAKE_FLOOR_LINE,12," 1 2  7   1111111119"
+		CALL MAKE_FLOOR_LINE,13," 1 1                "
+		CALL MAKE_FLOOR_LINE,14," 1                  "
+		CALL MAKE_FLOOR_LINE,15," 1111111111111111119"
+		CALL MAKE_FLOOR_LINE,16,"                    "
+
+		;Ａ
+		CALL SET_TILE,4,8,ダンジョンフラグ:45:10,0,4
+		CALL SET_TILE,4,8,ダンジョンフラグ:45:10,1,4
+		CALL SET_TILE,4,8,ダンジョンフラグ:45:10,2,4
+		CALL SET_TILE,4,8,ダンジョンフラグ:45:10,3,4
+		CALL SET_TILE,4,8,ダンジョンフラグ:45:10,4,4
+
+		;宝箱の設置
+		;
+		CALL SET_TILE,3,13,ダンジョンフラグ:45:20,0,3
+
+	CASE 2
+	;１階東
+		FLAG:最大X = 16 
+		FLAG:最大Y = 17 
+
+								;0123456789012345
+		CALL MAKE_FLOOR_LINE, 0,"                "
+		CALL MAKE_FLOOR_LINE, 1,"9111111 1 1 1 1 "
+		CALL MAKE_FLOOR_LINE, 2,"      1 2 2 2 1 "
+		CALL MAKE_FLOOR_LINE, 3,"      1 1111111 "
+		CALL MAKE_FLOOR_LINE, 4,"      1       1 "
+		CALL MAKE_FLOOR_LINE, 5,"     1111111111 "
+		CALL MAKE_FLOOR_LINE, 6,"     1          "
+		CALL MAKE_FLOOR_LINE, 7,"    11  1111127 "
+		CALL MAKE_FLOOR_LINE, 8,"    1       1   "
+		CALL MAKE_FLOOR_LINE, 9,"  121 1   1 1 1 "
+		CALL MAKE_FLOOR_LINE,10,"    1 2 1 2 1 2 "
+		CALL MAKE_FLOOR_LINE,11,"  1111111111111 "
+		CALL MAKE_FLOOR_LINE,12,"911         1 2 "
+		CALL MAKE_FLOOR_LINE,13,"      6 1 9 1 1 "
+		CALL MAKE_FLOOR_LINE,14,"      2 1 2 1 1 "
+		CALL MAKE_FLOOR_LINE,15,"911111111 111 1 "
+		CALL MAKE_FLOOR_LINE,16,"                "
+
+		;宝箱の設置
+		;
+		CALL SET_TILE,8,1,ダンジョンフラグ:45:27,0,3
+		;
+		CALL SET_TILE,10,1,ダンジョンフラグ:45:28,0,3
+		;
+		CALL SET_TILE,12,1,ダンジョンフラグ:45:29,0,3
+		
+	CASE 3
+		;ＢＡＲ
+		FLAG:最大X = 10
+		FLAG:最大Y = 8 
+;								 0123456789
+		CALL MAKE_FLOOR_LINE, 0,"          "
+		CALL MAKE_FLOOR_LINE, 1," 121  1   "
+		CALL MAKE_FLOOR_LINE, 2," 1    2   "
+		CALL MAKE_FLOOR_LINE, 3," 2  11111 "
+		CALL MAKE_FLOOR_LINE, 4," 11111111 "
+		CALL MAKE_FLOOR_LINE, 5," 2  1111  "
+		CALL MAKE_FLOOR_LINE, 6," 1   2    "
+		CALL MAKE_FLOOR_LINE, 7,"     9    "
+
+		;死
+		CALL SET_TILE,3,1,ダンジョンフラグ:45:11,0,4
+		CALL SET_TILE,6,1,ダンジョンフラグ:45:0,0,4
+		CALL SET_TILE,8,3,ダンジョンフラグ:45:0,0,4
+		CALL SET_TILE,4,5,ダンジョンフラグ:45:0,0,4
+
+	CASE 4
+		;二階
+		FLAG:最大X = 18 
+		FLAG:最大Y = 18 
+;								 012345678901234567
+		CALL MAKE_FLOOR_LINE, 0,"                  "
+		CALL MAKE_FLOOR_LINE, 1," 1 9 1111111  111 "
+		CALL MAKE_FLOOR_LINE, 2," 1 2 1 2   1  1   "
+		CALL MAKE_FLOOR_LINE, 3," 11111 1 1 1  1 6 "
+		CALL MAKE_FLOOR_LINE, 4," 1       2 1  1 2 "
+		CALL MAKE_FLOOR_LINE, 5," 1 121111111  1 1 "
+		CALL MAKE_FLOOR_LINE, 6," 1   1     1  1 1 "
+		CALL MAKE_FLOOR_LINE, 7," 11111 111 1  1 1 "
+		CALL MAKE_FLOOR_LINE, 8," 1   1 111 1  1 1 "
+		CALL MAKE_FLOOR_LINE, 9," 1 1 1 2   2  1 1 "
+		CALL MAKE_FLOOR_LINE,10," 1 2 1 1   1  121 "
+		CALL MAKE_FLOOR_LINE,11," 111 1 2 111121 1 "
+		CALL MAKE_FLOOR_LINE,12," 1   1 1 2    1 1 "
+		CALL MAKE_FLOOR_LINE,13," 1 11111 1    1 7 "
+		CALL MAKE_FLOOR_LINE,14," 1     1      1   "
+		CALL MAKE_FLOOR_LINE,15," 1     1111111111 "
+		CALL MAKE_FLOOR_LINE,16," 1121             "
+		CALL MAKE_FLOOR_LINE,17,"                  "
+		
+		CALL SET_TILE,3,13,ダンジョンフラグ:45:0,0,4
+
+		CALL SET_TILE,3,9,ダンジョンフラグ:45:2,1,4
+
+		;Ｌ
+		CALL SET_TILE,8,7,ダンジョンフラグ:45:16,0,4
+		CALL SET_TILE,9,7,ダンジョンフラグ:45:12,0,4
+		
+		;宝箱の設置
+		;
+		CALL SET_TILE,9,13,ダンジョンフラグ:45:21,0,3
+
+	CASE 5
+		;三階
+		FLAG:最大X = 18
+		FLAG:最大Y = 15
+;								 012345678901234567
+		CALL MAKE_FLOOR_LINE, 0,"                  "
+		CALL MAKE_FLOOR_LINE, 1," 1 9 111111111111 "
+		CALL MAKE_FLOOR_LINE, 2," 1 2 1        1 2 "
+		CALL MAKE_FLOOR_LINE, 3," 11111 121 1121 7 "
+		CALL MAKE_FLOOR_LINE, 4,"         1 1      "
+		CALL MAKE_FLOOR_LINE, 5," 1 1 1 1 1 111111 "
+		CALL MAKE_FLOOR_LINE, 6," 2 2 2 2 1 1  2 1 "
+		CALL MAKE_FLOOR_LINE, 7," 1111111 1    1 1 "
+		CALL MAKE_FLOOR_LINE, 8," 1111111 11   1   "
+		CALL MAKE_FLOOR_LINE, 9," 1111111 1  11111 "
+		CALL MAKE_FLOOR_LINE,10,"     1   1  1   1 "
+		CALL MAKE_FLOOR_LINE,11," 121 2 111  1 1 1 "
+		CALL MAKE_FLOOR_LINE,12," 1   1   2  1 2 1 "
+		CALL MAKE_FLOOR_LINE,13," 1111111111111111 "
+		CALL MAKE_FLOOR_LINE,14,"                  "
+
+		CALL SET_TILE,14,11,ダンジョンフラグ:45:2,1,4
+
+		;死
+		CALL SET_TILE,5,10,ダンジョンフラグ:45:0,0,4
+		CALL SET_TILE,1,5,ダンジョンフラグ:45:17,0,4
+		CALL SET_TILE,5,5,ダンジョンフラグ:45:18,0,4
+
+		;赤
+		CALL SET_TILE,3,5,ダンジョンフラグ:45:10,1,4
+		CALL SET_TILE,3,5,ダンジョンフラグ:45:40,1,4
+		CALL SET_TILE,3,5,ダンジョンフラグ:45:0,2,4
+
+		;宝箱の設置
+		;
+		CALL SET_TILE,7,3,ダンジョンフラグ:45:22,0,3
+		;
+		CALL SET_TILE,7,5,ダンジョンフラグ:45:23,0,3
+		;
+		CALL SET_TILE,3,11,ダンジョンフラグ:45:24,0,3
+
+
+
+	CASE 6
+		;地下1階
+		FLAG:最大X = 18
+		FLAG:最大Y = 17
+;								 012345678901234567
+		CALL MAKE_FLOOR_LINE, 0,"                  "
+		CALL MAKE_FLOOR_LINE, 1," 1 9 1111111 11 1 "
+		CALL MAKE_FLOOR_LINE, 2," 1 2 1     1  1 2 "
+		CALL MAKE_FLOOR_LINE, 3," 11111 12111121 1 "
+		CALL MAKE_FLOOR_LINE, 4," 1   1        121 "
+		CALL MAKE_FLOOR_LINE, 5," 1 1   1 1 1  1   "
+		CALL MAKE_FLOOR_LINE, 6," 1 1   1 2 1  111 "
+		CALL MAKE_FLOOR_LINE, 7," 12111 11111    1 "
+		CALL MAKE_FLOOR_LINE, 8,"   1 2 11111111 1 "
+		CALL MAKE_FLOOR_LINE, 9," 111 151      1 1 "
+		CALL MAKE_FLOOR_LINE,10,"   1          1 1 "
+		CALL MAKE_FLOOR_LINE,11," 1211252525   1 1 "
+		CALL MAKE_FLOOR_LINE,12,"   1      2   1 1 "
+		CALL MAKE_FLOOR_LINE,13," 6 1  12525 1 1 1 "
+		CALL MAKE_FLOOR_LINE,14," 2 1        2 2 1 "
+		CALL MAKE_FLOOR_LINE,15," 1111111111111111 "
+		CALL MAKE_FLOOR_LINE,16,"                  "
+		
+		;死
+		CALL SET_TILE,12,13,ダンジョンフラグ:45:19,0,4
+
+		;黒
+		CALL SET_TILE,9,5,ダンジョンフラグ:45:10,1,4
+		CALL SET_TILE,9,5,ダンジョンフラグ:45:10,5,4
+		CALL SET_TILE,9,5,ダンジョンフラグ:45:0,2,4
+
+		;脇見の壷
+		CALL SET_TILE,6,13,ダンジョンフラグ:45:15,0,4
+
+		;宝箱の設置
+		;ダメージトラップ
+		CALL SET_TILE,16,1,ダンジョンフラグ:45:25,0,3
+		;ダメージトラップ
+		CALL SET_TILE,7,3,ダンジョンフラグ:45:26,0,3
+
+
+	CASEELSE
+
+
+ENDSELECT
+
+
+;=======================================================================
+;[5]調べる　実行時のイベント
+;=======================================================================
+@EVENT_CHECK_DUNGEON_45
+
+;==========
+;出口の処理
+;==========
+IF DA:(FLAG:現X):(FLAG:現Y) == 8
+	CALL DUNGEON_EXIT
+	RETURN 1
+;========
+;宝の処理
+;========
+
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 3
+	SELECTCASE FLAG:現M
+		CASE 1
+			;反魂香
+			SIF FLAG:現X == 3 && FLAG:現Y == 13
+				CALL GET_TREASURE,1009,1,FLAG:現ダンジョン,20
+		CASE 2
+			;ディスポイズン
+			IF FLAG:現X == 8 && FLAG:現Y == 1
+				CALL GET_TREASURE,1017,2,FLAG:現ダンジョン,27
+			;チャクラポット
+			ELSEIF FLAG:現X == 10 && FLAG:現Y == 1
+				CALL GET_TREASURE,1026,1,FLAG:現ダンジョン,28
+			ELSEIF FLAG:現X == 12 && FLAG:現Y == 1
+				CALL GET_HP100,10,FLAG:現ダンジョン,29
+			ENDIF
+		CASE 4
+			;速さの香
+			SIF FLAG:現X == 9 && FLAG:現Y == 13
+				CALL GET_TREASURE,1014,1,FLAG:現ダンジョン,21
+		CASE 5
+			;力の香
+			IF FLAG:現X == 7 && FLAG:現Y == 3
+				CALL GET_TREASURE,1010,1,FLAG:現ダンジョン,22
+			;トラップ
+			ELSEIF FLAG:現X == 7 && FLAG:現Y == 5
+				CALL GET_HP100,10,FLAG:現ダンジョン,23
+			ENDIF
+			;金
+			IF FLAG:現X == 3 && FLAG:現Y == 11
+				IF ダンジョンフラグ:45:1 == 1
+					CALL GET_TREASURE_MONEY,0,10000,FLAG:現ダンジョン,24
+				ELSE
+					CALL GET_HP100,10,FLAG:現ダンジョン,24
+				ENDIF
+			ENDIF
+		CASE 6
+			;トラップ
+			IF FLAG:現X == 16 && FLAG:現Y == 1
+				CALL GET_HP100,10,FLAG:現ダンジョン,25
+			;トラップ
+			ELSEIF FLAG:現X == 7 && FLAG:現Y == 3
+				CALL GET_HP100,10,FLAG:現ダンジョン,26
+			ENDIF
+	ENDSELECT
+	RETURN 1
+
+;=======
+;階段
+;=======
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 6
+	SELECTCASE FLAG:現M
+		;地下一階昇り階段
+		CASE 0
+			SIF FLAG:現X == 1 && FLAG:現Y == 5
+				CALL DUNGEON_UPSTAIRS,2,14,7
+		;二階昇り階段
+		CASE 2
+			;ニ階　MAP6の座標を指定
+			SIF FLAG:現X == 6 && FLAG:現Y == 13
+				CALL DUNGEON_UPSTAIRS,4,16,13
+		;三階昇り階段
+		CASE 4
+			SIF FLAG:現X == 16 && FLAG:現Y == 3
+				CALL DUNGEON_UPSTAIRS,5,16,3
+		;地下一階昇り階段
+		CASE 6
+			SIF FLAG:現X == 1 && FLAG:現Y == 13
+				CALL DUNGEON_UPSTAIRS,1,6,12
+
+	ENDSELECT
+	RETURN 1
+	
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 7
+	SELECTCASE FLAG:現M
+		;一階西下り階段
+		CASE 1
+			;一階西　MAP7の座標を指定
+			SIF FLAG:現X == 6 && FLAG:現Y == 12
+				CALL DUNGEON_DOWNSTAIRS,6,1,13
+		;一階東下り階段
+		CASE 2
+			;一階東　MAP7の座標を指定
+			SIF FLAG:現X == 14 && FLAG:現Y == 7
+				;地下一階　MAP6の座標を指定
+				CALL DUNGEON_DOWNSTAIRS,0,1,5
+		CASE 4
+			;二階　MAP7の座標を指定
+			SIF FLAG:現X == 16 && FLAG:現Y == 13
+				CALL DUNGEON_DOWNSTAIRS,2,6,14
+		CASE 5
+			;三階　MAP7の座標を指定
+			SIF FLAG:現X == 16 && FLAG:現Y == 3
+				CALL DUNGEON_DOWNSTAIRS,4,16,3
+	ENDSELECT
+	RETURN 1
+	
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 9
+	SELECTCASE FLAG:現M
+		
+		CASE 1
+			;一階西エレベーター
+			SIF FLAG:現X == 10 && FLAG:現Y == 1
+				CALL E_ROPPONGI
+			SIF FLAG:現X == 19 && FLAG:現Y == 1
+				CALL DUNGEON_WORP,2,1,1
+			SIF FLAG:現X == 19 && FLAG:現Y == 12
+				CALL DUNGEON_WORP,2,1,13
+			SIF FLAG:現X == 19 && FLAG:現Y == 15
+				CALL DUNGEON_WORP,2,1,16
+
+			SIF FLAG:現X == 17 && FLAG:現Y == 10
+				CALL DUNGEON_WORP,3,5,5
+
+		CASE 2
+			SIF FLAG:現X == 0 && FLAG:現Y == 1
+				CALL DUNGEON_WORP,1,18,1
+			SIF FLAG:現X == 0 && FLAG:現Y == 13
+				CALL DUNGEON_WORP,1,18,12
+			SIF FLAG:現X == 0 && FLAG:現Y == 16
+				CALL DUNGEON_WORP,1,18,15
+			SIF FLAG:現X == 10 && FLAG:現Y == 13
+				CALL DUNGEON_TERMINAL
+
+		CASE 3
+			SIF FLAG:現X == 5 && FLAG:現Y == 7
+				CALL DUNGEON_WORP,1,17,12
+
+		CASE 4
+			;二階エレベーター
+			SIF FLAG:現X == 3 && FLAG:現Y == 1
+				CALL E_ROPPONGI
+		CASE 5
+			;三階エレベーター
+			SIF FLAG:現X == 3 && FLAG:現Y == 1
+				CALL E_ROPPONGI
+		CASE 6
+			SIF FLAG:現X == 3 && FLAG:現Y == 1
+				CALL E_ROPPONGI
+		CASEELSE
+	ENDSELECT
+	RETURN 1
+
+
+ELSE
+	PRINTW 何も無いようだ
+	RETURN 0
+ENDIF
+
+;=======================================================================
+;タイル進入時のイベント
+;=======================================================================
+@EVENT_ENTER_DUNGEON_45,ARG
+;ARG = 進入時の向き　0の場合ワープなど
+;==========
+;出口の処理
+;==========
+IF DA:(FLAG:現X):(FLAG:現Y) == 8
+	CALL DUNGEON_EXIT
+	RETURN 1
+;========
+;宝の処理
+;========
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 3
+	SELECTCASE FLAG:現M
+		CASE 1
+			;反魂香
+			SIF FLAG:現X == 3 && FLAG:現Y == 13
+				CALL GET_TREASURE,1009,1,FLAG:現ダンジョン,20
+		CASE 2
+			;ディスポイズン
+			IF FLAG:現X == 8 && FLAG:現Y == 1
+				CALL GET_TREASURE,1017,2,FLAG:現ダンジョン,27
+			;チャクラポット
+			ELSEIF FLAG:現X == 10 && FLAG:現Y == 1
+				CALL GET_TREASURE,1026,1,FLAG:現ダンジョン,28
+			ELSEIF FLAG:現X == 12 && FLAG:現Y == 1
+				CALL GET_HP100,10,FLAG:現ダンジョン,29
+			ENDIF
+		CASE 4
+			;速さの香
+			SIF FLAG:現X == 9 && FLAG:現Y == 13
+				CALL GET_TREASURE,1014,1,FLAG:現ダンジョン,21
+		CASE 5
+			;力の香
+			IF FLAG:現X == 7 && FLAG:現Y == 3
+				CALL GET_TREASURE,1010,1,FLAG:現ダンジョン,22
+			;トラップ
+			ELSEIF FLAG:現X == 7 && FLAG:現Y == 5
+				CALL GET_HP100,10,FLAG:現ダンジョン,23
+			ENDIF
+			;金
+			IF FLAG:現X == 3 && FLAG:現Y == 11
+				IF ダンジョンフラグ:45:1 == 1
+					CALL GET_TREASURE_MONEY,0,10000,FLAG:現ダンジョン,24
+				ELSE
+					CALL GET_HP100,10,FLAG:現ダンジョン,24
+				ENDIF
+			ENDIF
+		CASE 6
+			;トラップ
+			IF FLAG:現X == 16 && FLAG:現Y == 1
+				CALL GET_HP100,10,FLAG:現ダンジョン,25
+			;トラップ
+			ELSEIF FLAG:現X == 7 && FLAG:現Y == 3
+				CALL GET_HP100,10,FLAG:現ダンジョン,26
+			ENDIF
+	ENDSELECT
+	RETURN 1
+
+
+;=======
+;階段
+;=======
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 6
+	SELECTCASE FLAG:現M
+		;地下一階昇り階段
+		CASE 0
+			SIF FLAG:現X == 1 && FLAG:現Y == 5
+				CALL DUNGEON_UPSTAIRS,2,14,7
+		;二階昇り階段
+		CASE 2
+			;ニ階　MAP6の座標を指定
+			SIF FLAG:現X == 6 && FLAG:現Y == 13
+				CALL DUNGEON_UPSTAIRS,4,16,13
+		;三階昇り階段
+		CASE 4
+			SIF FLAG:現X == 16 && FLAG:現Y == 3
+				CALL DUNGEON_UPSTAIRS,5,16,3
+		;地下一階昇り階段
+		CASE 6
+			SIF FLAG:現X == 1 && FLAG:現Y == 13
+				CALL DUNGEON_UPSTAIRS,1,6,12
+
+	ENDSELECT
+	RETURN 1
+	
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 7
+	SELECTCASE FLAG:現M
+		;一階西下り階段
+		CASE 1
+			;一階西　MAP7の座標を指定
+			SIF FLAG:現X == 6 && FLAG:現Y == 12
+				CALL DUNGEON_DOWNSTAIRS,6,1,13
+		;一階東下り階段
+		CASE 2
+			;一階東　MAP7の座標を指定
+			SIF FLAG:現X == 14 && FLAG:現Y == 7
+				;地下一階　MAP6の座標を指定
+				CALL DUNGEON_DOWNSTAIRS,0,1,5
+		CASE 4
+			;二階　MAP7の座標を指定
+			SIF FLAG:現X == 16 && FLAG:現Y == 13
+				CALL DUNGEON_DOWNSTAIRS,2,6,13
+		CASE 5
+			;三階　MAP7の座標を指定
+			SIF FLAG:現X == 16 && FLAG:現Y == 3
+				CALL DUNGEON_DOWNSTAIRS,4,16,3
+	ENDSELECT
+	RETURN 1
+
+;=======
+;ワープ
+;=======
+
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 9
+	SELECTCASE FLAG:現M
+		
+		CASE 1
+			;一階西エレベーター
+			SIF FLAG:現X == 10 && FLAG:現Y == 1
+				CALL E_ROPPONGI
+			SIF FLAG:現X == 19 && FLAG:現Y == 1
+				CALL DUNGEON_WORP,2,1,1
+			SIF FLAG:現X == 19 && FLAG:現Y == 12
+				CALL DUNGEON_WORP,2,1,12
+			SIF FLAG:現X == 19 && FLAG:現Y == 15
+				CALL DUNGEON_WORP,2,1,15
+
+			SIF FLAG:現X == 17 && FLAG:現Y == 10
+				CALL DUNGEON_WORP,3,5,5
+
+		CASE 2
+			SIF FLAG:現X == 0 && FLAG:現Y == 1
+				CALL DUNGEON_WORP,1,18,1
+			SIF FLAG:現X == 0 && FLAG:現Y == 12
+				CALL DUNGEON_WORP,1,18,12
+			SIF FLAG:現X == 0 && FLAG:現Y == 15
+				CALL DUNGEON_WORP,1,18,15
+			SIF FLAG:現X == 10 && FLAG:現Y == 13
+				CALL DUNGEON_TERMINAL
+
+		CASE 3
+			SIF FLAG:現X == 5 && FLAG:現Y == 7
+				CALL DUNGEON_WORP,1,17,12
+
+		CASE 4
+			;二階エレベーター
+			SIF FLAG:現X == 3 && FLAG:現Y == 1
+				CALL E_ROPPONGI
+		CASE 5
+			;三階エレベーター
+			SIF FLAG:現X == 3 && FLAG:現Y == 1
+				CALL E_ROPPONGI
+		CASE 6
+			SIF FLAG:現X == 3 && FLAG:現Y == 1
+				CALL E_ROPPONGI
+		CASEELSE
+	ENDSELECT
+	RETURN 1
+
+
+;========
+;罠の処理
+;========
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 5
+	CALL TRAP_45
+	RETURN RESULT
+
+;==========
+;扉の処理
+;==========
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 2
+	CALL DUNGEON_DOOR,ARG
+	RETURN 1
+
+;========================
+;イベント
+;========================
+ELSEIF DA:(FLAG:現X):(FLAG:現Y) == 4
+
+	;一階西　ALICE
+	IF FLAG:現M == 1 && FLAG:現X == 4 && FLAG:現Y == 8 && ダンジョンフラグ:45:10 == 0  
+		PRINTFORML ＞人形を抱いた可愛らしい女の子がいる
+		PRINTFORM 「ねえねえ
+		IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+			PRINTFORML お兄ちゃん達」
+		ELSE
+			PRINTFORML お姉ちゃん達」
+		ENDIF
+		PRINTFORML 「どこから来たの？」
+		PRINTL 
+		IF FLAG:DEBUG
+			PRINTL [0] 他の街
+			PRINTL [1] おちんちんランド
+			PRINTL [2] 幻想郷
+			PRINTL [3] どうでもいい
+		ELSE
+			PRINTL [0] 他の街
+			PRINTL [1] ファントム・ソサエティ
+			PRINTL [2] 魔界
+			PRINTL [3] 無視する
+		ENDIF
+		$INPUT_LOOP_1A
+		INPUT
+		IF RESULT == 0
+			PRINTFORML 
+			PRINTFORML 「他の街から来たの？」
+			PRINTFORML 「あたしはこの街から出ちゃダメなの…」
+			PRINTFORMW 「おじさん達に怒られちゃうから…」
+		ELSEIF RESULT == 1
+			IF FLAG:DEBUG
+				PRINTFORML 
+				PRINTFORML 「おちんちんランドから来たの？」
+				PRINTFORML 「ふ～ん……」
+				PRINTFORMW 
+				PRINTFORML 「あのね、あたしが子供だからって馬鹿にしないで」
+				PRINTFORMW 「おちんちんぐらい知ってるわよ」
+				IF TALENT:MASTER:140 == 1
+					PRINTFORMW 「そんなに去勢して欲しいわけ？」
+				ELSE
+					PRINTFORMW 「お姉ちゃんみたいな人をビッチって言うんだね」
+				ENDIF
+			ELSE
+				PRINTFORML 
+				PRINTFORML 「ファントム・ソサエティ？」
+				PRINTFORML 「変わった名前の所から来たんだね」
+			ENDIF
+		ELSEIF RESULT == 2
+			IF FLAG:DEBUG
+				PRINTFORML 「幻想郷？」
+				PRINTFORML 「聞いた事ないけど…」
+				PRINTFORMW 「何処にあるの？」
+			ELSE
+				PRINTFORML 「へー魔界から来たんだ？」
+				IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+					PRINTFORM 「お兄ちゃんは
+				ELSE
+					PRINTFORM 「お姉ちゃんは
+				ENDIF
+				PRINTFORMW どうして人間の格好をしてるの？」
+			ENDIF
+		ELSEIF RESULT == 3
+			IF FLAG:DEBUG
+				PRINTFORML 「どうでもいいんだ？」
+				PRINTFORML 「無関心なんだね」
+				PRINTFORMW 「自分と向き合う勇気を持たない人は本当に生きてるって言えるのかな？」
+			ELSE
+				PRINTFORML 「どうしたの？」
+				IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+					PRINTFORM 「お兄ちゃんも
+				ELSE
+					PRINTFORM 「お姉ちゃんも
+				ENDIF
+				PRINTFORMW 何処から来たのか解らないの？」
+			ENDIF
+		ELSE
+			GOTO INPUT_LOOP_1A
+		ENDIF
+		$INPUT_LOOP_ALICE
+		PRINTFORML 
+		PRINTFORMW 「あたしの名前はアリス」
+		PRINTFORM 「あのね…
+		IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+			PRINTFORM お兄ちゃん
+		ELSE
+			PRINTFORM お姉ちゃん
+		ENDIF
+		PRINTFORMW にお願いがあるの」
+		IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+			PRINTFORM 「お兄ちゃん
+		ELSE
+			PRINTFORM 「お姉ちゃん
+		ENDIF
+		PRINTFORMW 、友達になってくれる？」
+		PRINTL 
+		PRINTL [0] はい
+		PRINTL [1] いいえ
+		$INPUT_LOOP_1B
+		INPUT
+		IF RESULT == 0
+			PRINTFORML 「ありがとう」
+			PRINTFORM 「あのね、
+			IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+				PRINTFORM お兄ちゃん
+			ELSE
+				PRINTFORM お姉ちゃん
+			ENDIF
+			PRINTFORML を赤おじさんと黒おじさんに紹介したいの」
+			ダンジョンフラグ:45:10 = 1
+		ELSEIF RESULT == 1
+			IF RAND:2 == 0
+				PRINTFORML 「あたしの事嫌いなの？」
+			ELSE
+				PRINTFORML 「本当は友達になりたいよね？」
+			ENDIF
+			GOTO INPUT_LOOP_ALICE
+		ELSE
+			GOTO INPUT_LOOP_1B
+		ENDIF
+	ENDIF
+	
+	IF FLAG:現M == 1 && FLAG:現X == 4 && FLAG:現Y == 8 && ダンジョンフラグ:45:10 == 1 
+		PRINTFORML 「黒おじさんは地下でお仕事してるの」
+		PRINTFORMW 「赤おじさんは三階にいるはずだから行ってみてほしいな」
+	ENDIF
+	
+	;一階西　ALICE
+	IF FLAG:現M == 1 && FLAG:現X == 4 && FLAG:現Y == 8 && ダンジョンフラグ:45:10 == 2
+		PRINTFORML ＞人形を抱いた可愛らしい女の子アリスがいる
+		PRINTFORM 「ねぇねぇ、
+		IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+			PRINTFORML お兄ちゃん」
+		ELSE
+			PRINTFORML お姉ちゃん」
+		ENDIF
+		IF RAND:2 == 0
+			PRINTFORMW 「あたしとエッチな遊びしよう？」
+			IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+				PRINTFORM 「お兄ちゃん
+			ELSE
+				PRINTFORM 「お姉ちゃん
+			ENDIF
+			PRINTFORMW は奴隷の役ね♪」
+			PRINTL [0] はい
+			PRINTL [1] いいえ
+			$INPUT_LOOP_1C
+			INPUT
+			IF RESULT == 0
+				PRINTFORML 「うふふ♪」
+				PRINTFORM 「じゃあ……
+				SELECTCASE RAND:100
+					CASE IS < 60
+						PRINTFORML あたしの靴を舐めて」
+						PRINTFORMW 「私はご主人様の犬ですって言って欲しいな」
+						PRINTFORML 
+						PRINTFORML ＞%CALLNAME:MASTER%は靴を舐め、
+						PRINTFORMW ＞言われた通りに口上を述べた
+						PRINTFORML 
+						PRINTFORMW 「ふふ…」
+						IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+							PRINTFORM 「お兄ちゃん
+						ELSE
+							PRINTFORM 「お姉ちゃん
+						ENDIF
+						PRINTFORMW は変態だね」
+					CASE IS < 90
+						IF ITEM:4 >= 1 && TALENT:MASTER:140 == 0 && (TALENT:MASTER:0 == 0 || TALENT:MASTER:1 == 0)
+							PRINTFORML コレを入れてあげる」
+							PRINTFORML 「あたしが見ててあげるから、自分でして見せてね？」
+							PRINTFORMW 少女はバイブを手にして微笑んだ
+							PRINTFORML 
+							PRINTFORML ＞%CALLNAME:MASTER%は命じられるがままに
+							PRINTFORMW ＞バイブで自慰をしてみせた
+							PRINTFORML 
+							PRINTFORMW 「うふふっ」
+							PRINTFORMW 「お姉ちゃんはどうしようもない淫乱なんだね」
+							PRINTFORMW 「赤おじさんと黒おじさんにも見せてあげてね」
+							EXP:MASTER:0 += 2
+							PRINTL Ｖ経験＋２
+							EXP:MASTER:10 += 1
+							PRINTL 自慰経験＋１
+							EXP:MASTER:11 += 1
+							PRINTL 調教自慰経験＋１
+						ELSEIF ITEM:5 >= 1 && TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 1 && EXP:MASTER:1 >= 1
+							PRINTFORML コレを入れてあげる」
+							PRINTFORML 「あたしが見ててあげるから、自分でして見せてね？」
+							PRINTFORMW 少女はアナルバイブを%CALLNAME:MASTER%のアナルに差し入れた
+							PRINTFORML 
+							PRINTFORML ＞%CALLNAME:MASTER%は命じられるがままに
+							PRINTFORMW ＞アナルバイブで自慰をしてみせた
+							PRINTFORML 
+							PRINTFORMW 「ふ～ん」
+							PRINTFORMW 「お兄ちゃんは男の子なのにお尻が好きなんだ？」
+							PRINTFORMW 「赤おじさんと黒おじさんにも見せてあげたいな」
+							EXP:MASTER:1 += 2
+							PRINTL Ａ経験＋２
+							EXP:MASTER:10 += 1
+							PRINTL 自慰経験＋１
+							EXP:MASTER:11 += 1
+							PRINTL 調教自慰経験＋１
+						ELSEIF ITEM:13 >= 1
+							PRINTFORML これで叩いてあげるね」
+							PRINTFORMW 少女は鞭を手にして微笑んだ
+							PRINTFORML 
+							PRINTFORMW ＞%CALLNAME:MASTER%を少女は鞭で打った
+							PRINTFORML 
+							PRINTFORM 「どうしたの？　
+							IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+								PRINTFORMW お兄ちゃん」
+							ELSE
+								PRINTFORMW お姉ちゃん」
+							ENDIF
+							PRINTFORMW 「もっと苦しんでくれないとつまらないよ？」
+							PRINTFORMW 「赤おじさんと黒おじさんにもいじめてもらおうかな」
+						ELSE
+							PRINTFORML あたしの靴を舐めて」
+							PRINTFORMW 「私はご主人様の犬ですって言って欲しいな」
+							PRINTFORML 
+							PRINTFORML ＞%CALLNAME:MASTER%は靴を舐め、
+							PRINTFORMW ＞言われた通りに口上を述べた
+							PRINTFORML 
+							PRINTFORMW 「ふふ…」
+							IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+								PRINTFORM 「お兄ちゃん
+							ELSE
+								PRINTFORM 「お姉ちゃん
+							ENDIF
+							PRINTFORMW は変態だね」
+						ENDIF
+					CASE IS < 100
+						IF ITEM:17 >= 1 && ITEM:22 == 1 && ABL:MASTER:9 >= 1
+							IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+								PRINTFORM お兄ちゃん
+							ELSE
+								PRINTFORM お姉ちゃん
+							ENDIF
+							PRINTFORMW は今日からあたしの奴隷ね」
+							PRINTFORMW 「口枷は勝手に外しちゃダメだからね？」
+							PRINTFORMW 「反抗しなくなったら外してあげる♪」
+							PRINTFORMW 「まずはお散歩しに行こうね」
+							PRINTFORML 
+							PRINTFORML ＞%CALLNAME:MASTER%はボールギャグをはめられ、
+							PRINTFORMW ＞首輪をつけられて六本木の街を四つん這いで歩かされた
+							PRINTFORML 
+							PRINTFORMW 「うふふ…」
+							IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+								PRINTFORM 「お兄ちゃん
+							ELSE
+								PRINTFORM 「お姉ちゃん
+							ENDIF
+							PRINTFORMW はどうしようもない変態マゾなんだね」
+							PRINTFORMW 「赤おじさんと黒おじさんに
+							IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+								PRINTFORM お兄ちゃん
+							ELSE
+								PRINTFORM お姉ちゃん
+							ENDIF
+							PRINTFORMW を飼ってもいいって聞いてあげるね」
+							EXP:MASTER:50 += 1
+							PRINTL 異常経験＋１
+						ELSE
+							PRINTFORML あたしの靴を舐めて」
+							PRINTFORMW 「私はご主人様の犬ですって言って欲しいな」
+							PRINTFORML 
+							PRINTFORML ＞%CALLNAME:MASTER%は靴を舐め、
+							PRINTFORMW ＞言われた通りに口上を述べた
+							PRINTFORML 
+							PRINTFORMW 「ふふ…」
+							IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+								PRINTFORM 「お兄ちゃん
+							ELSE
+								PRINTFORM 「お姉ちゃん
+							ENDIF
+							PRINTFORMW は変態だね」
+						ENDIF
+				ENDSELECT
+				ダンジョンフラグ:45:10 = 3
+				ダンジョンフラグ:45:30 = 1
+			ELSEIF RESULT == 1
+				PRINTFORMW 「…………」
+			ELSE
+				GOTO INPUT_LOOP_1C
+			ENDIF
+		ELSE
+			PRINTFORML 「チャクラポットが欲しいの」
+			PRINTFORMW 「ちょうだい」
+			IF ITEM:1026 >= 1 
+				PRINTL [0] はい
+				PRINTL [1] いいえ
+				$INPUT_LOOP_1D
+				INPUT
+				IF RESULT == 0
+					PRINTFORML 「ありがとう」
+					PRINTFORM 「優しい
+					IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+						PRINTFORMW お兄ちゃん」
+					ELSE
+						PRINTFORMW お姉ちゃん」
+					ENDIF
+					ITEM:1026 -= 1 
+					ダンジョンフラグ:45:10 = 3
+				ELSEIF RESULT == 1
+					IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+						PRINTFORM 「お兄ちゃん
+					ELSE
+						PRINTFORM 「お姉ちゃん
+					ENDIF
+					PRINTFORMW 、ケチなんだね」
+				ELSE
+					GOTO INPUT_LOOP_1D
+				ENDIF
+			ELSE
+				PRINTFORML 「持ってないの？」
+				PRINTFORMW 「あたしの為に取ってきて欲しいな」
+			ENDIF
+		ENDIF
+	ENDIF
+
+	;一階西　ALICE
+	IF FLAG:現M == 1 && FLAG:現X == 4 && FLAG:現Y == 8 && ダンジョンフラグ:45:10 == 3 && ダンジョンフラグ:45:31 >= 4
+		SIF ダンジョンフラグ:45:30 == 1
+			PRINTFORMW 「ああ…楽しかった♪」
+		PRINTFORM 「ねぇ、
+		IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+			PRINTFORM お兄ちゃん
+		ELSE
+			PRINTFORM お姉ちゃん
+		ENDIF
+		IF ダンジョンフラグ:45:30 == 1
+			PRINTFORM はどうして奴隷なのに生きてるの？」
+		ELSE
+			PRINTFORM はどうして生きてるの？」
+		ENDIF
+		IF ダンジョンフラグ:45:30 == 1
+			PRINTL 
+			PRINTL [0] 奴隷にも生きる権利はある
+			PRINTL [1] お許しください、ご主人様
+			PRINTL [2] 奴隷ではない
+			PRINTL [3] どうでもいい
+		ELSE
+			PRINTL 
+			PRINTL [0] 苦しんでいる人を一人でも多く救う為
+			PRINTL [1] 絶対の力を手に入れる為
+			PRINTL [2] その理由を探す為に生きている
+			PRINTL [3] どうでもいい
+		ENDIF
+		$INPUT_LOOP_1E
+		INPUT
+		IF RESULT == 0
+			CALL INCREASE_LC,10
+		IF ダンジョンフラグ:45:30 == 1
+			PRINTFORMW 「うふふ…奴隷なのに？」
+		ELSE
+			PRINTFORMW 「ふ～ん」
+		ENDIF
+		ELSEIF RESULT == 1
+			CALL INCREASE_LC, -10
+		ELSEIF RESULT == 2
+			CALL INCREASE_LD,10
+			IF ダンジョンフラグ:45:30 == 1
+				PRINTFORMW 「奴隷だよ？」
+			ELSE
+				PRINTFORMW 「よくわかんない…」
+			ENDIF
+		ELSEIF RESULT == 3
+			CALL INCREASE_LD, -10
+		ELSE
+			GOTO INPUT_LOOP_1E
+		ENDIF
+		PRINTFORM 「じゃあ…
+		IF ダンジョンフラグ:45:30 == 1
+			PRINTFORM 奴隷の
+		ENDIF
+		IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+			PRINTFORM お兄ちゃん
+		ELSE
+			PRINTFORM お姉ちゃん
+		ENDIF
+		PRINTFORML にお願いがあるの」
+		PRINTFORMW 「死んでくれる？」
+		PRINTL [0] はい
+		PRINTL [1] いいえ
+		$INPUT_LOOP_1F
+		INPUT
+		IF RESULT == 0
+			CALL SHINDEAGERU
+		ELSEIF RESULT == 1
+			PRINTFORML 「どうして？」
+			PRINTFORMW 「友達なのに…どうして、死んでくれないの？」
+			PRINTFORML 
+			PRINTFORML アリスは不思議そうに首を傾げながら手にした人形の首をありえない方向まで捻る
+			PRINTFORM 「死んでくれないなら…
+			IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+				PRINTFORM お兄ちゃん
+			ELSE
+				PRINTFORM お姉ちゃん
+			ENDIF
+			PRINTFORMW を殺してあげるね」
+			CUSTOMDRAWLINE =
+			PRINTFORMW 『おやおや、アリスを困らせるとはいけないお友達だ』
+			PRINTFORMW ＞赤おじさんが現われた
+			IF ダンジョンフラグ:45:41 == 1
+				PRINTFORMW 『貴方にはお仕置きが足りないようですね』
+			ELSEIF イベントフラグ:6:0 == 1
+				PRINTFORMW 『くっくっくっ、何時ぞやは不覚をとったがあれはほんの戯れに過ぎん！！』
+				PRINTFORMW 『我が結界の中では我は無敵、魔王の真の力見せてやろう！！』
+			ELSE
+				PRINTFORMW 『アリスに代わってこの赤おじさんが悪いお友達を懲らしめてあげよう』
+			ENDIF
+			IF ダンジョンフラグ:45:15 == 1
+				PRINTFORML 
+				PRINTFORML 突如として%CALLNAME:MASTER%の持っていた脇見の壷が光を放った
+				PRINTFORML 『それは脇見の壷！！』
+				PRINTFORML 『ば、馬鹿なっ　ネビロスめ、封印したのではないのかっ！？』
+				PRINTFORML 『何故、貴様がそれを持っている！？』
+				PRINTFORML 『ぐわぁあああああっ』
+				PRINTFORMW ベリアルは脇見の壷に吸い込まれていった
+				CUSTOMDRAWLINE =
+				PRINTFORMW 戦いが終わるとそこにはアリスの姿はなかった
+				ダンジョンフラグ:45:10 = 5
+			ELSE
+				FLAG:会話不能フラグ = 1
+				FLAG:先制不意打ちキャンセル = 1
+				PRINTW 魔王　ベリアルが一体出た！
+				CUSTOMDRAWLINE =
+				WAIT
+				CALL SET_ENEMY,9,[[キャラ:ベリアル]],50,0,1
+				ABL:(CHARANUM-1):スキル5 = 0
+				ABL:(CHARANUM-1):スキル6 = 0
+				CFLAG:(CHARANUM-1):行動回数 = 1
+				CFLAG:(CHARANUM-1):ＨＰ補正 += 5000
+				CFLAG:(CHARANUM-1):ＭＰ補正 += 5000
+				BASE:(CHARANUM-1):剣撃 = 0
+				BASE:(CHARANUM-1):飛具 = 0
+				BASE:(CHARANUM-1):打撃 = 0
+				BASE:(CHARANUM-1):戦技 = 0
+				BASE:(CHARANUM-1):火炎 = 0
+				BASE:(CHARANUM-1):氷結 = 0
+				BASE:(CHARANUM-1):電撃 = 0
+				BASE:(CHARANUM-1):衝撃 = 0
+				BASE:(CHARANUM-1):神経 = 0
+				BASE:(CHARANUM-1):精神 = 0
+				BASE:(CHARANUM-1):破魔 = 0
+				BASE:(CHARANUM-1):呪殺 = 0
+				BASE:(CHARANUM-1):地変 = 0
+				BASE:(CHARANUM-1):水撃 = 0
+				BASE:(CHARANUM-1):疾風 = 0
+				BASE:(CHARANUM-1):重力 = 0
+				BASE:(CHARANUM-1):核熱 = 0
+				BASE:(CHARANUM-1):万能 = 0
+				BASE:(CHARANUM-1):サイコ = 0
+				MAXBASE:(CHARANUM-1):剣撃 = 0
+				MAXBASE:(CHARANUM-1):飛具 = 0
+				MAXBASE:(CHARANUM-1):打撃 = 0
+				MAXBASE:(CHARANUM-1):戦技 = 0
+				MAXBASE:(CHARANUM-1):火炎 = 0
+				MAXBASE:(CHARANUM-1):氷結 = 0
+				MAXBASE:(CHARANUM-1):電撃 = 0
+				MAXBASE:(CHARANUM-1):衝撃 = 0
+				MAXBASE:(CHARANUM-1):神経 = 0
+				MAXBASE:(CHARANUM-1):精神 = 0
+				MAXBASE:(CHARANUM-1):破魔 = 0
+				MAXBASE:(CHARANUM-1):呪殺 = 0
+				MAXBASE:(CHARANUM-1):地変 = 0
+				MAXBASE:(CHARANUM-1):水撃 = 0
+				MAXBASE:(CHARANUM-1):疾風 = 0
+				MAXBASE:(CHARANUM-1):重力 = 0
+				MAXBASE:(CHARANUM-1):核熱 = 0
+				MAXBASE:(CHARANUM-1):万能 = 0
+				MAXBASE:(CHARANUM-1):サイコ = 0
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+				CALL BATTLE_START
+				FLAG:会話不能フラグ = 0
+				FLAG:先制不意打ちキャンセル = 0
+				FLAG:現X += 1
+			ENDIF
+		ELSE
+			GOTO INPUT_LOOP_1F
+		ENDIF
+		IF ダンジョンフラグ:45:10 < 5
+			ダンジョンフラグ:45:10 = 4
+		ENDIF
+	ENDIF
+
+	;一階西　ALICE
+	IF FLAG:現M == 1 && FLAG:現X == 4 && FLAG:現Y == 8 && ダンジョンフラグ:45:10 == 4
+		CUSTOMDRAWLINE =
+		IF ダンジョンフラグ:45:41 == 1
+			PRINTFORMW 『何度でも痛い目をみさせてあげましょう』
+		ELSE
+			PRINTFORMW 『懲りずに来るとは愚か者めっ！！』
+		ENDIF
+		IF ダンジョンフラグ:45:15 == 1
+			PRINTFORML 
+			PRINTFORML 突如として%CALLNAME:MASTER%の持っていた脇見の壷が光を放った
+			PRINTFORML 『それは脇見の壷！！』
+			PRINTFORML 『ば、馬鹿なっ　ネビロスめ、封印したのではないのかっ！？』
+			PRINTFORML 『何故、貴様がそれを持っている！？』
+			PRINTFORML 『ぐわぁあああああっ』
+			PRINTFORMW ベリアルは脇見の壷に吸い込まれていった
+			CUSTOMDRAWLINE =
+			PRINTFORMW 戦いが終わるとそこにはアリスの姿はなかった
+			ダンジョンフラグ:45:10 = 5
+		ELSE
+			FLAG:会話不能フラグ = 1
+			FLAG:先制不意打ちキャンセル = 1
+			PRINTW 魔王　ベリアルが一体出た！
+			CUSTOMDRAWLINE =
+			WAIT
+			CALL SET_ENEMY,9,[[キャラ:ベリアル]],50,0,1
+			ABL:(CHARANUM-1):スキル5 = 0
+			ABL:(CHARANUM-1):スキル6 = 0
+			CFLAG:(CHARANUM-1):行動回数 = 1
+			CFLAG:(CHARANUM-1):ＨＰ補正 += 5000
+			CFLAG:(CHARANUM-1):ＭＰ補正 += 5000
+			BASE:(CHARANUM-1):剣撃 = 0
+			BASE:(CHARANUM-1):飛具 = 0
+			BASE:(CHARANUM-1):打撃 = 0
+			BASE:(CHARANUM-1):戦技 = 0
+			BASE:(CHARANUM-1):火炎 = 0
+			BASE:(CHARANUM-1):氷結 = 0
+			BASE:(CHARANUM-1):電撃 = 0
+			BASE:(CHARANUM-1):衝撃 = 0
+			BASE:(CHARANUM-1):神経 = 0
+			BASE:(CHARANUM-1):精神 = 0
+			BASE:(CHARANUM-1):破魔 = 0
+			BASE:(CHARANUM-1):呪殺 = 0
+			BASE:(CHARANUM-1):地変 = 0
+			BASE:(CHARANUM-1):水撃 = 0
+			BASE:(CHARANUM-1):疾風 = 0
+			BASE:(CHARANUM-1):重力 = 0
+			BASE:(CHARANUM-1):核熱 = 0
+			BASE:(CHARANUM-1):万能 = 0
+			BASE:(CHARANUM-1):サイコ = 0
+			MAXBASE:(CHARANUM-1):剣撃 = 0
+			MAXBASE:(CHARANUM-1):飛具 = 0
+			MAXBASE:(CHARANUM-1):打撃 = 0
+			MAXBASE:(CHARANUM-1):戦技 = 0
+			MAXBASE:(CHARANUM-1):火炎 = 0
+			MAXBASE:(CHARANUM-1):氷結 = 0
+			MAXBASE:(CHARANUM-1):電撃 = 0
+			MAXBASE:(CHARANUM-1):衝撃 = 0
+			MAXBASE:(CHARANUM-1):神経 = 0
+			MAXBASE:(CHARANUM-1):精神 = 0
+			MAXBASE:(CHARANUM-1):破魔 = 0
+			MAXBASE:(CHARANUM-1):呪殺 = 0
+			MAXBASE:(CHARANUM-1):地変 = 0
+			MAXBASE:(CHARANUM-1):水撃 = 0
+			MAXBASE:(CHARANUM-1):疾風 = 0
+			MAXBASE:(CHARANUM-1):重力 = 0
+			MAXBASE:(CHARANUM-1):核熱 = 0
+			MAXBASE:(CHARANUM-1):万能 = 0
+			MAXBASE:(CHARANUM-1):サイコ = 0
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL BATTLE_START
+			FLAG:会話不能フラグ = 0
+			FLAG:先制不意打ちキャンセル = 0
+			FLAG:現X += 1
+		ENDIF
+	ENDIF
+
+	;BAR
+	IF FLAG:現M == 3 && FLAG:現X == 6 && FLAG:現Y == 1 && ダンジョンフラグ:45:0 == 0 
+		PRINTFORML ＞バーテンダーがいる
+		PRINTFORMW 「お客さん、悪い事は言わないから」
+		PRINTFORMW 「この街をはやく出た方がいいよ」
+		SIF ダンジョンフラグ:45:32 == 0
+			ダンジョンフラグ:45:31 += 1
+		ダンジョンフラグ:45:32 = 1
+	ENDIF
+	
+	;BAR
+	IF FLAG:現M == 3 && FLAG:現X == 8 && FLAG:現Y == 3 && ダンジョンフラグ:45:0 == 0 
+		PRINTFORML ＞若者がいる
+		PRINTFORMW 「何だか寒気がするんだ」
+		PRINTFORMW 「風邪でもひいたのかな」
+		SIF ダンジョンフラグ:45:33 == 0
+			ダンジョンフラグ:45:31 += 1
+		ダンジョンフラグ:45:33 = 1
+	ENDIF
+
+	;BAR
+	IF FLAG:現M == 3 && FLAG:現X == 4 && FLAG:現Y == 5 && ダンジョンフラグ:45:0 == 0 
+		PRINTFORML ＞ギャルがいる
+		PRINTFORMW 「最近肌の調子がよくないのよね」
+		PRINTFORMW 「どうしちゃったのかしら」
+		SIF ダンジョンフラグ:45:34 == 0
+			ダンジョンフラグ:45:31 += 1
+		ダンジョンフラグ:45:34 = 1
+	ENDIF
+
+	;BAR
+	IF FLAG:現M == 3 && FLAG:現X == 3 && FLAG:現Y == 1 && ダンジョンフラグ:45:11 == 0 && ダンジョンフラグ:45:0 == 0 
+		PRINTFORMW ＞部屋の隅に少女がうずくまっている
+		PRINTFORML 「寒いの…助けて……」
+		PRINTFORMW 「この街の人は皆、死んでるの」
+		PRINTFORMW 「お母さんも、お父さんもいないの……」
+		IF ITEM:1009 >= 1
+			PRINTFORM 「なんだか…
+			IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+				PRINTFORM お兄ちゃん
+			ELSE
+				PRINTFORM お姉ちゃん
+			ENDIF
+			PRINTFORML からいい匂いがする…」
+			PRINTFORML 「それ、ちょうだい……」
+			PRINTFORMW 少女は反魂香を指差した
+			;ベス
+			IF FINDCHARA_B(4501,0) == 2 || FINDCHARA_B(4501,1) == 2
+				ITEM:1009 -= 1
+				CALL INCREASE_LC,10
+				CALL INCREASE_LD,10
+				PRINTFORML 有無を言わせずベスは反魂香を差し出した
+				PRINTFORML 「ありがとう…お姉ちゃん……」
+				PRINTFORMW 少女の身体が崩れ落ち、やがて灰になって消えていった
+			ELSE
+				PRINTL 
+				PRINTL [0] はい
+				PRINTL [1] いいえ
+				$INPUT_LOOP_2A
+				INPUT
+				IF RESULT == 0
+					ITEM:1009 -= 1
+					CALL INCREASE_LC,10
+					CALL INCREASE_LD,10
+					PRINTFORML 「ありがとう……」
+					PRINTFORMW 少女の身体が崩れ落ち、やがて灰になって消えていった
+				ELSEIF RESULT == 1
+					PRINTFORML 「もういいの…」
+					PRINTFORMW 「私の事は放っておいて」
+				ELSE
+					GOTO INPUT_LOOP_2A
+				ENDIF
+			ENDIF
+			ダンジョンフラグ:45:11 = 1
+			ダンジョンフラグ:45:31 += 1
+		ENDIF
+	ENDIF
+
+	IF FLAG:現M == 4 && FLAG:現X == 3 && FLAG:現Y == 9 && ダンジョンフラグ:45:2 == 1
+		PRINTW 強大な悪魔の気配がする…。
+		PRINTL 
+		PRINTL ………
+		PRINTL ……
+		PRINTW …
+		IF RAND:100 < 10
+			FLAG:逃走不可フラグ = 1
+			FLAG:会話不能フラグ = 1
+			FLAG:先制不意打ちキャンセル = 1
+			IF FINDCHARA_B(4104,0) == 2 || FINDCHARA_B(4104,1) == 2
+				PRINTL 
+				PRINTW …どうやら気のせいだったようだ…。
+			ELSE
+				PRINTL 
+				PRINTW 魔人アリスが１体出た！
+				CUSTOMDRAWLINE =
+				WAIT
+				;魔人アリスLv39　ランク4
+				CALL SET_ENEMY,9,[[キャラ:アリス]],51,0,1
+				CFLAG:(CHARANUM-1):ＨＰ補正 = 3000
+				CFLAG:(CHARANUM-1):ＭＰ補正 = 9000
+				CFLAG:(CHARANUM-1):行動回数 = 2
+				CFLAG:(CHARANUM-1):速度補正 = 15
+				ABL:(CHARANUM-1):スキル1 = 1408
+				ABL:(CHARANUM-1):スキル2 = 108
+				ABL:(CHARANUM-1):スキル3 = 1403
+				ABL:(CHARANUM-1):スキル4 = 2416
+				ABL:(CHARANUM-1):スキル5 = 1213
+				ABL:(CHARANUM-1):スキル6 = 2003
+				BASE:(CHARANUM-1):火炎 = 150
+				BASE:(CHARANUM-1):氷結 = 100
+				BASE:(CHARANUM-1):神経 = 0
+				BASE:(CHARANUM-1):精神 = 0
+				BASE:(CHARANUM-1):破魔 = 0
+				BASE:(CHARANUM-1):呪殺 = 0
+				BASE:(CHARANUM-1):地変 = 100
+				BASE:(CHARANUM-1):重力 = 100
+				BASE:(CHARANUM-1):核熱 = 150
+				MAXBASE:(CHARANUM-1):火炎 = 150
+				MAXBASE:(CHARANUM-1):氷結 = 100
+				MAXBASE:(CHARANUM-1):神経 = 0
+				MAXBASE:(CHARANUM-1):精神 = 0
+				MAXBASE:(CHARANUM-1):破魔 = 0
+				MAXBASE:(CHARANUM-1):呪殺 = 0
+				MAXBASE:(CHARANUM-1):地変 = 100
+				MAXBASE:(CHARANUM-1):重力 = 100
+				MAXBASE:(CHARANUM-1):核熱 = 150
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+				CALL BATTLE_START
+				CUSTOMDRAWLINE =
+				WAIT
+				IF FINDCHARA_B(252,1) == 2 || FINDCHARA_B(1710,1) == 2
+					PRINTFORMW 『アリスよ、目を覚ましなさい』
+					PRINTFORM 『この
+					IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+						PRINTFORM お兄ちゃん
+					ELSE
+						PRINTFORM お姉ちゃん
+					ENDIF
+					PRINTFORMW は敵ではない』
+					IF FINDCHARA_B(252,1) == 2
+							PRINTFORM 「赤…
+ 					ELSEIF FINDCHARA_B(1710,1) == 2
+						PRINTFORM 「黒…
+					ENDIF
+					PRINTFORMW おじさん？」
+					PRINTFORMW 「私を迎えに来てくれたの？」
+					PRINTFORMW 『ああ、そうだよ』
+					PRINTFORM 『今はこの
+					IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+						PRINTFORM お兄ちゃん
+					ELSE
+						PRINTFORM お姉ちゃん
+					ENDIF
+					PRINTFORMW に力を貸している』
+					PRINTFORMW 『アリスの力も貸してくれないかい？』
+					PRINTFORM 「うん……
+					IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+						PRINTFORM お兄ちゃん
+					ELSE
+						PRINTFORM お姉ちゃん
+					ENDIF
+					PRINTFORMW はあたしの友達だもの」
+					IF FLAG:ＣＯＭＰ容量 > NUM_NAKAMA() + ソフト容量()
+						PRINTFORMW 「一緒に遊んであげるね♪」
+						PRINTFORMW ＞魔人アリスが仲魔になった
+						CALL ADD_NEW_COMPANION,4104,200,1
+						SIF FLAG:24104 < 100
+							FLAG:24104 = 100
+						FLAG:逃走不可フラグ = 0
+						FLAG:会話不能フラグ = 0
+						FLAG:先制不意打ちキャンセル = 0
+						ダンジョンフラグ:45:2 = 3
+						RETURN
+					ELSE
+						PRINTFORML 「ごめんね、一緒に行けないの…」
+						PRINTFORM 「また遊んでね
+						IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+							PRINTFORML お兄ちゃん」
+						ELSE
+							PRINTFORML お姉ちゃん」
+						ENDIF
+						PRINTFORMW ＞魔人アリスは去っていった
+					ENDIF
+				ENDIF
+			ENDIF
+			FLAG:逃走不可フラグ = 0
+			FLAG:会話不能フラグ = 0
+			FLAG:先制不意打ちキャンセル = 0
+			PRINTL
+			PRINTW …悪魔の気配は消えた…。
+		ELSE
+			PRINTL 
+			PRINTW …どうやら気のせいだったようだ…。
+		ENDIF
+		ダンジョンフラグ:45:2 = 2
+	ENDIF
+
+	IF FLAG:現M == 5 && FLAG:現X == 14 && FLAG:現Y == 11 && ダンジョンフラグ:45:2 == 1
+		PRINTW 強大な悪魔の気配がする…。
+		PRINTL 
+		PRINTL ………
+		PRINTL ……
+		PRINTW …
+		IF RAND:100 < 10
+			FLAG:逃走不可フラグ = 1
+			FLAG:会話不能フラグ = 1
+			FLAG:先制不意打ちキャンセル = 1
+			IF FINDCHARA_B(4104,0) == 2 || FINDCHARA_B(4104,1) == 2
+				PRINTL 
+				PRINTW …どうやら気のせいだったようだ…。
+			ELSE
+				PRINTL 
+				PRINTW 魔人アリスが１体出た！
+				CUSTOMDRAWLINE =
+				WAIT
+				CALL SET_ENEMY,9,[[キャラ:アリス]],51,0,1
+				CFLAG:(CHARANUM-1):ＨＰ補正 = 3000
+				CFLAG:(CHARANUM-1):ＭＰ補正 = 9000
+				CFLAG:(CHARANUM-1):行動回数 = 2
+				CFLAG:(CHARANUM-1):速度補正 = 15
+				ABL:(CHARANUM-1):スキル1 = 1408
+				ABL:(CHARANUM-1):スキル2 = 108
+				ABL:(CHARANUM-1):スキル3 = 1403
+				ABL:(CHARANUM-1):スキル4 = 2416
+				ABL:(CHARANUM-1):スキル5 = 1213
+				ABL:(CHARANUM-1):スキル6 = 2003
+				BASE:(CHARANUM-1):火炎 = 150
+				BASE:(CHARANUM-1):氷結 = 100
+				BASE:(CHARANUM-1):神経 = 0
+				BASE:(CHARANUM-1):精神 = 0
+				BASE:(CHARANUM-1):破魔 = 0
+				BASE:(CHARANUM-1):呪殺 = 0
+				BASE:(CHARANUM-1):地変 = 100
+				BASE:(CHARANUM-1):重力 = 100
+				BASE:(CHARANUM-1):核熱 = 150
+				MAXBASE:(CHARANUM-1):火炎 = 150
+				MAXBASE:(CHARANUM-1):氷結 = 100
+				MAXBASE:(CHARANUM-1):神経 = 0
+				MAXBASE:(CHARANUM-1):精神 = 0
+				MAXBASE:(CHARANUM-1):破魔 = 0
+				MAXBASE:(CHARANUM-1):呪殺 = 0
+				MAXBASE:(CHARANUM-1):地変 = 100
+				MAXBASE:(CHARANUM-1):重力 = 100
+				MAXBASE:(CHARANUM-1):核熱 = 150
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+				CALL BATTLE_START
+				CUSTOMDRAWLINE =
+				WAIT
+				IF FINDCHARA_B(252,1) == 2 || FINDCHARA_B(1710,1) == 2
+					PRINTFORMW 『アリスよ、目を覚ましなさい』
+					PRINTFORM 『この
+					IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+						PRINTFORM お兄ちゃん
+					ELSE
+						PRINTFORM お姉ちゃん
+					ENDIF
+					PRINTFORMW は敵ではない』
+					IF FINDCHARA_B(252,1) == 2
+							PRINTFORM 「赤…
+ 					ELSEIF FINDCHARA_B(1710,1) == 2
+						PRINTFORM 「黒…
+					ENDIF
+					PRINTFORMW おじさん？」
+					PRINTFORMW 「私を迎えに来てくれたの？」
+					PRINTFORMW 『ああ、そうだよ』
+					PRINTFORM 『今はこの
+					IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+						PRINTFORM お兄ちゃん
+					ELSE
+						PRINTFORM お姉ちゃん
+					ENDIF
+					PRINTFORMW に力を貸している』
+					PRINTFORMW 『アリスの力も貸してくれないかい？』
+					PRINTFORM 「うん……
+					IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+						PRINTFORM お兄ちゃん
+					ELSE
+						PRINTFORM お姉ちゃん
+					ENDIF
+					PRINTFORMW はあたしの友達だもの」
+					IF FLAG:ＣＯＭＰ容量 > NUM_NAKAMA() + ソフト容量()
+						PRINTFORMW 「一緒に遊んであげるね♪」
+						PRINTFORMW ＞魔人アリスが仲魔になった
+						CALL ADD_NEW_COMPANION,4104,200,1
+						SIF FLAG:24104 < 100
+							FLAG:24104 = 100
+						FLAG:逃走不可フラグ = 0
+						FLAG:会話不能フラグ = 0
+						FLAG:先制不意打ちキャンセル = 0
+						ダンジョンフラグ:45:2 = 3
+						RETURN
+					ELSE
+						PRINTFORML 「ごめんね、一緒に行けないの…」
+						PRINTFORM 「また遊んでね
+						IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+							PRINTFORML お兄ちゃん」
+						ELSE
+							PRINTFORML お姉ちゃん」
+						ENDIF
+						PRINTFORMW ＞魔人アリスは去っていった
+					ENDIF
+				ENDIF
+			ENDIF
+			FLAG:逃走不可フラグ = 0
+			FLAG:会話不能フラグ = 0
+			FLAG:先制不意打ちキャンセル = 0
+			PRINTL
+			PRINTW …悪魔の気配は消えた…。
+		ELSE
+			PRINTL 
+			PRINTW …どうやら気のせいだったようだ…。
+		ENDIF
+		ダンジョンフラグ:45:2 = 2
+	ENDIF
+
+	;
+	IF FLAG:現M == 4 && FLAG:現X == 3 && FLAG:現Y == 13 && ダンジョンフラグ:45:0 == 0
+		PRINTFORML ＞小柄な少女がいる
+		PRINTFORMW 「ここの地下にはどんな悪魔も封じてしまう不思議な壷があるんだって」
+		PRINTFORMW 「ところで…悪魔って何？」
+		
+	ENDIF
+	;よしお
+	IF FLAG:現M == 4 && FLAG:現X == 8 && FLAG:現Y == 7 && ダンジョンフラグ:45:16 == 0
+		PRINTFORMW ＞新宿で出会ったのと同じ様なローブをまとった性別不詳の人物がいた
+		PRINTFORML 「この地に囚われていた魂は神の国に送られるだろう」
+		PRINTFORMW 「これからも正しき道を行くがいい、人の子よ」
+		ダンジョンフラグ:45:16 = 1
+	ENDIF
+	
+	;よしお
+	IF FLAG:現M == 4 && FLAG:現X == 9 && FLAG:現Y == 7 && ダンジョンフラグ:45:12 == 0
+		PRINTFORML 「ありがとう…
+		IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+			PRINTFORM お兄ちゃん」
+		ELSE
+			PRINTFORM お姉ちゃん」
+		ENDIF
+		PRINTFORMW この部屋に閉じ込められていた少女達の身体が灰になり、消え去っていった
+		ダンジョンフラグ:45:12 = 1
+	ENDIF
+
+	;ロリコン赤の部屋
+	IF FLAG:現M == 5 && FLAG:現X == 5 && FLAG:現Y == 10 && ダンジョンフラグ:45:0 == 0
+		PRINTFORML ＞小柄な少女がいる
+		PRINTFORML 「赤おじさんは皆に優しくしてくれます」
+		PRINTFORMW 少女の瞳は何処か虚ろだ…
+	ENDIF
+
+	;ロリコン赤の部屋
+	IF FLAG:現M == 5 && FLAG:現X == 1 && FLAG:現Y == 5 && ダンジョンフラグ:45:17 == 0
+		PRINTFORML ＞部屋の中には小柄な少女がいた
+		PRINTFORML ＞目隠しとボールギャグを施され
+		PRINTFORML ＞拘束具で幼い秘所を晒すように
+		PRINTFORML ＞両脚をＭ字に固定され拘束されている
+		;ベス
+		IF FINDCHARA_B(4501,0) == 2 || FINDCHARA_B(4501,1) == 2
+			CALL INCREASE_LC,10
+			CALL INCREASE_LD,10
+			PRINTFORML ベスは少女を解放した
+			PRINTFORML 「私は……」
+			PRINTFORML 「肉便器としてここに置いていただいてるんです」
+			PRINTFORMW 解放された少女は虚ろな目をし、頑なに共に来る事を拒んだ
+		ELSE
+			PRINTL 
+			PRINTL どうする？
+			PRINTL 
+			PRINTL [0] 助けてあげる
+			PRINTL [1] 無視する
+			IF (TALENT:MASTER:140 == 1 || TALENT:MASTER:139 == 1)
+				PRINTL [2] 使用する
+			ENDIF
+			$INPUT_LOOP_G1
+			INPUT
+			IF RESULT == 0
+				CALL INCREASE_LC,3
+				CALL INCREASE_LD,3
+				PRINTL 
+				PRINTFORMW %CALLNAME:MASTER%は少女を解放してあげた。
+				PRINTFORML 「私は……」
+				PRINTFORML 「肉便器としてここに置いていただいてるんです」
+				PRINTFORMW 解放された少女は虚ろな目をし、頑なに共に来る事を拒んだ
+			ELSEIF RESULT == 1
+				CALL INCREASE_LC,-3
+				CALL INCREASE_LD,-3
+				PRINTL 
+				PRINTFORMW %CALLNAME:MASTER%は少女を見捨ててその場を後にした。
+			ELSEIF RESULT == 2 && (TALENT:MASTER:140 == 1 || TALENT:MASTER:139 == 1)
+				CALL INCREASE_LC,-10
+				CALL INCREASE_LD,-10
+				PRINTL
+				PRINTFORML %CALLNAME:MASTER%が公衆便所を使用すると
+				PRINTFORMW 公衆便所は切なげに喘いだ
+			ELSE
+				GOTO INPUT_LOOP_G1
+			ENDIF
+		ENDIF
+		ダンジョンフラグ:45:17 = 1
+	ENDIF
+
+
+	;ロリコン赤の部屋
+	IF FLAG:現M == 5 && FLAG:現X == 5 && FLAG:現Y == 5 && ダンジョンフラグ:45:18 == 0
+		PRINTFORML ＞部屋の中には小柄な少女がいた
+		PRINTFORML ＞色素の薄い青白い肌
+		PRINTFORML ＞目隠しをつけられ、両手は後ろ手に縄で縛られている。
+		;ベス
+		IF FINDCHARA_B(4501,0) == 2 || FINDCHARA_B(4501,1) == 2
+			CALL INCREASE_LC,10
+			CALL INCREASE_LD,10
+			PRINTFORML ベスは少女を解放した
+			PRINTFORML 「お姉ちゃん……」
+			PRINTFORML 「私は…お姉ちゃんと一緒には行けないの」
+			PRINTFORMW 解放された少女は俯いたまま、%CALLNAME:MASTER%と共に来る事を拒んだ
+		ELSE
+			PRINTL 
+			PRINTL どうする？
+			PRINTL 
+			PRINTL [0] 助けてあげる
+			PRINTL [1] 無視する
+			IF (TALENT:MASTER:140 == 1 || TALENT:MASTER:139 == 1)
+				PRINTL [2] 使用する
+			ENDIF
+			$INPUT_LOOP_G2
+			INPUT
+			IF RESULT == 0
+				CALL INCREASE_LC,3
+				CALL INCREASE_LD,3
+				PRINTL 
+				PRINTFORMW %CALLNAME:MASTER%は少女を解放してあげた。
+				IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+					PRINTFORM 「お兄ちゃん…
+				ELSE
+					PRINTFORM 「お姉ちゃん…
+				ENDIF
+				PRINTFORML 私は肉便器だから…」
+				PRINTFORML 「一緒には行けないの」
+				PRINTFORMW 解放された少女は悲しげに共に来る事を拒んだ
+			ELSEIF RESULT == 1
+				CALL INCREASE_LC,-3
+				CALL INCREASE_LD,-3
+				PRINTL 
+				PRINTFORMW %CALLNAME:MASTER%は少女を見捨ててその場を後にした。
+			ELSEIF RESULT == 2 && (TALENT:MASTER:140 == 1 || TALENT:MASTER:139 == 1)
+				CALL INCREASE_LC,-10
+				CALL INCREASE_LD,-10
+				PRINTL
+				PRINTFORML %CALLNAME:MASTER%は公衆便所を使用した
+				PRINTFORMW 公衆便所はなすがままにされながら細い声で悲鳴をあげる 
+			ELSE
+				GOTO INPUT_LOOP_G2
+			ENDIF
+		ENDIF
+		ダンジョンフラグ:45:18 = 1
+	ENDIF
+
+	;ロリコン赤
+	IF FLAG:現M == 5 && FLAG:現X == 3 && FLAG:現Y == 5 && ダンジョンフラグ:45:10 == 1
+		PRINTFORML ＞赤いスーツに身を包んだ小太りの紳士がいる
+		PRINTFORML 「君がアリスの新しいお友達か」
+		PRINTFORMW 「彼女は寂しがりだからね、仲良くしてやってくれ」
+		;
+		IF (TALENT:MASTER:100 == 1 || TALENT:MASTER:142 == 1) && (TALENT:MASTER:140 == 0 || TALENT:MASTER:157 == 1)
+			PRINTFORMW 男の視線がネットリと%CALLNAME:MASTER%に絡みつくのを感じた…
+			ダンジョンフラグ:45:40 = 1
+		ENDIF
+		ダンジョンフラグ:45:13 = 1
+		IF ダンジョンフラグ:45:14 == 1
+			ダンジョンフラグ:45:10 = 2
+		ENDIF
+		RETURN
+	ENDIF
+
+	;ロリコン赤
+	IF FLAG:現M == 5 && FLAG:現X == 3 && FLAG:現Y == 5 && ダンジョンフラグ:45:10 == 2 && ダンジョンフラグ:45:40 == 1 
+		PRINTFORML ＞赤いスーツに身を包んだ小太りの紳士がいる
+		PRINTFORML 「おやおや、迷子にでもなったのかね？」
+		PRINTFORMW 肉厚の手の平が不躾に%CALLNAME:MASTER%の腰を触ってきた
+		PRINTFORML 
+		PRINTL [0] おねだりする
+		PRINTL [1] 手を振り払う
+		$INPUT_LOOP_3A
+		INPUT
+		CUSTOMDRAWLINE =
+		IF RESULT == 0
+			PRINTFORMW %CALLNAME:MASTER%は甘い声で赤おじさんにおねだりした
+			PRINTFORMW 「いけない子だね、そんな子にはお仕置きをしなくてはいけない」
+			PRINTFORMW 紳士は服を脱ぎ捨て、硬い鱗に覆われた本来の巨大な悪魔の姿に戻った
+			PRINTFORM 丸太の様に太い腕が
+			IF TALENT:MASTER:100
+				PRINTFORM 小柄な
+			ELSEIF TALENT:MASTER:142
+				PRINTFORM 小人ほどのサイズしかない
+			ENDIF
+			PRINTFORMW %CALLNAME:MASTER%の身体を捕らえ、巨体に相応しい赤黒い男根が%CALLNAME:MASTER%の口腔を無理やりに犯しはじめた
+			PRINTW ………
+			PRINTW ……
+			PRINTW …
+			PRINTW ＞あなたは本性を現した赤おじさんに弄ばれた
+			;処女
+			IF TALENT:MASTER:再生処女 || TALENT:MASTER:処女
+				PRINTL 処女喪失
+				IF TALENT:MASTER:処女
+					PRINTL 異常経験 + 1
+					EXP:MASTER:異常経験 += 1
+				ENDIF
+				TALENT:MASTER:処女 = 0
+				TALENT:MASTER:再生処女 = 0
+			ENDIF
+			IF TALENT:MASTER:140 == 0
+				PRINTL Ｖ経験 + 40
+				EXP:MASTER:Ｖ経験 += 40
+			ENDIF
+			PRINTL Ａ経験 + 10
+			EXP:MASTER:Ａ経験 += 10
+			PRINTL 絶頂経験 + 70
+			EXP:MASTER:絶頂経験 += 70
+			PRINTL 性交経験 + 50
+			EXP:MASTER:性交経験 += 50
+			IF TALENT:MASTER:140 == 0 && CFLAG:MASTER:108 == 0
+				PRINTL 膣射経験 + 50
+				EXP:MASTER:膣射経験 += 50
+			ENDIF
+			PRINTL 精液経験 + 55
+			EXP:MASTER:精液経験 += 55
+			PRINTL 奉仕快楽経験 + 15
+			EXP:MASTER:奉仕快楽経験 += 15
+			PRINTL フェラ経験 + 15
+			EXP:MASTER:フェラ経験 += 15
+			PRINTL 苦痛快楽経験 + 10
+			EXP:MASTER:苦痛快楽経験 += 10
+			IF EXP:MASTER:Ｖ拡張経験 == 0 || EXP:MASTER:Ａ拡張経験 == 0
+				PRINTL 異常経験 + 1
+				EXP:MASTER:異常経験 += 1
+			ENDIF
+			IF  TALENT:MASTER:140 == 0
+				PRINTL Ｖ拡張経験 + 30
+				EXP:MASTER:Ｖ拡張経験 += 30
+			ENDIF
+			PRINTL Ａ拡張経験 + 15
+			EXP:MASTER:Ａ拡張経験 += 15
+			PRINTL
+			WAIT
+			IF ABL:MASTER:Ｖ感覚 < 10 && ABL:MASTER:Ａ感覚 < 10 && TALENT:MASTER:140 == 0
+				PRINTFORMW %CALLNAME:MASTER%のＶ感覚とＡ感覚がそれぞれ{ABL:MASTER:Ｖ感覚 + 1}と{ABL:MASTER:Ａ感覚 + 1}に上昇した
+			ELSEIF ABL:MASTER:Ｖ感覚 < 10 && TALENT:MASTER:140 == 0
+				PRINTFORMW %CALLNAME:MASTER%のＶ感覚が{ABL:MASTER:Ｖ感覚 + 1}に上昇した
+			ELSEIF ABL:MASTER:Ａ感覚 < 10
+				PRINTFORMW %CALLNAME:MASTER%のＡ感覚が{ABL:MASTER:Ａ感覚 + 1}に上昇した
+			ENDIF
+			SIF ABL:MASTER:Ｖ感覚 < 10 && TALENT:MASTER:140 == 0
+				ABL:MASTER:Ｖ感覚 += 1
+			SIF ABL:MASTER:Ａ感覚 < 10
+				ABL:MASTER:Ａ感覚 += 1
+			PRINTL
+			CUSTOMDRAWLINE =
+			PRINTFORMW 床の上に転がされた%CALLNAME:MASTER%の下腹部はぽっこりと膨らんでいる
+			PRINTFORMW 「気を失ってしまったようだな」
+			IF PREGNANCY_ABLE(MASTER)
+				PRINTFORMW %CALLNAME:MASTER%はベリアルに【妊娠】させられた
+				CALL PREGNANCY_CHECK, MASTER, 4
+				CALL SET_FATHERINFO, MASTER, 252, -1, "ベリアル"
+				TALENT:MASTER:妊娠 = 1
+				CALL CHANGE_N_STATUS, MASTER
+			ENDIF
+			ダンジョンフラグ:45:41 = 1
+			FLAG:脱出 = 1
+		ELSEIF RESULT == 1
+			PRINTFORMW 「これは失礼」
+			PRINTFORMW 「困った事があれば何時でも力になりますよ」
+		ELSE
+			GOTO INPUT_LOOP_3A
+		ENDIF
+		ダンジョンフラグ:45:40 = 2
+	ENDIF
+
+	;ロリコン赤
+	IF FLAG:現M == 5 && FLAG:現X == 3 && FLAG:現Y == 5 && ダンジョンフラグ:45:0 == 2
+		PRINTFORML ＞祭壇がある
+		IF ダンジョンフラグ:45:41 == 1 && FLAG:ＣＯＭＰ容量 > NUM_NAKAMA() + ソフト容量() && BASE:MASTER:LV >= 50 && イベントフラグ:6:0 == 0 && (ダンジョンフラグ:26:0 < 4 || ダンジョンフラグ:26:1 < 4)
+			PRINTFORML 『アリスを助けたいならば…この壷を祭壇に捧げ私を解放しろ…』
+			PRINTFORML %CALLNAME:MASTER%の手にする脇見の壷からベリアルの声が響く
+			PRINTL 
+			PRINTL [0] 声に従う
+			PRINTL [1] 無視する
+			$INPUT_LOOP_3B
+			INPUT
+			IF RESULT == 0
+				PRINTFORML 『くっくっくっ…愚かな人間め』
+				PRINTFORML 『よくも私を封じてくれたな』
+				PRINTFORMW 『思い知らせてくれるわっ！！』
+				PRINTW 魔王　ベリアルが一体出た！
+				CUSTOMDRAWLINE =
+				WAIT
+				FLAG:逃走不可フラグ = 1
+				FLAG:会話不能フラグ = 1
+				FLAG:先制不意打ちキャンセル = 1
+				;戦闘後の経験値処理をスキップする
+				FLAG:RESULTスキップ = 1
+				WAIT
+				;魔王ベリアルLv50　ランク2
+				CALL SET_ENEMY,9,[[キャラ:ベリアル]],56,0,1
+				CFLAG:(CHARANUM-1):行動回数 = 3
+				CFLAG:(CHARANUM-1):ＨＰ補正 += 2000
+				CFLAG:(CHARANUM-1):ＭＰ補正 += 5000
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+				CALL BATTLE_START
+				FLAG:逃走不可フラグ = 0
+				FLAG:会話不能フラグ = 0
+				FLAG:先制不意打ちキャンセル = 0
+				;戦闘後の経験値処理をスキップする
+				FLAG:RESULTスキップ = 0
+				PRINTFORMW 『大した奴だ…』
+				PRINTFORMW 『この魔王ベリアル、貴様に力を貸そう』
+				PRINTFORMW 魔王 ベリアルが仲魔になった
+				CUSTOMDRAWLINE =
+				CALL ADD_NEW_COMPANION,252,500,1
+				SIF RESULT == 1
+					ABL:(RESULT:1):従順 = 1
+				ダンジョンフラグ:45:41 = 2
+				FLAG:10252 = 1
+				FLAG:14104 = 1
+				SIF FLAG:20252 < 100
+					FLAG:20252 = 100
+			ELSEIF RESULT == 1
+				PRINTFORMW 『くっくっくっ…賢明な判断だ』
+			ELSE
+				GOTO INPUT_LOOP_3B
+			ENDIF
+			ダンジョンフラグ:45:0 = 3
+			ダンジョンフラグ:45:2 = 1
+		ENDIF
+	ENDIF
+
+	;ロリコン黒
+	IF FLAG:現M == 6 && FLAG:現X == 9 && FLAG:現Y == 5 && ダンジョンフラグ:45:10 == 1
+		PRINTFORML ＞黒いスーツに身を包んだ痩身の紳士がいた
+		PRINTFORML 「ほう…アリスから聞いてはいたが珍しい来客だ」
+		PRINTFORML 「彼女と仲良くしてやってくれたまえ」
+		PRINTFORMW 「それでは私は仕事が忙しいのでね、失礼させてもらう」
+		ダンジョンフラグ:45:14 = 1
+		IF ダンジョンフラグ:45:13 == 1
+			ダンジョンフラグ:45:10 = 2
+		ENDIF
+	ENDIF
+
+	;ロリコン黒
+	IF FLAG:現M == 6 && FLAG:現X == 9 && FLAG:現Y == 5 && ダンジョンフラグ:45:10 == 5 && ダンジョンフラグ:45:0 == 0
+		CUSTOMDRAWLINE =
+		PRINTFORML ＞黒いローブに身を包んだ妖しげな人影の傍にアリスがいた
+		IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+			PRINTFORM 「あのお兄ちゃん
+		ELSE
+			PRINTFORM 「あのお姉ちゃん
+		ENDIF
+		PRINTFORML がね…死んでくれないの」
+		PRINTFORM 『案ずる事はありませんよ、すぐに彼等を死体にして
+		IF FLAG:DEBUG
+			PRINTFORML 並べて揃えて晒してさしあげましょう』
+		ELSE
+			PRINTFORML あげましょう』
+		ENDIF
+		IF ダンジョンフラグ:45:41 == 1
+			PRINTFORML 『ネビロスゥ…貴様、謀ッタナァァアアア』
+			PRINTFORML %CALLNAME:MASTER%の手にする壷からベリアルの怨嗟の声が響く
+			PRINTFORML 『くっくっくっ…』
+			PRINTFORML 『間抜けめ、お前さえいなければアリスは私だけのものだ』
+			PRINTFORMW ベリアルを嘲笑いニタリとネビロスは笑った。
+			PRINTFORMW 『オノレェエエエエ』
+		ENDIF
+		PRINTW 堕天使 ネビロスが一体出た！
+		CUSTOMDRAWLINE =
+		WAIT
+		FLAG:逃走不可フラグ = 1
+		FLAG:会話不能フラグ = 1
+		FLAG:先制不意打ちキャンセル = 1
+		;堕天使ネビロスLv40　ランク
+		CALL SET_ENEMY,9,[[キャラ:ネビロス]],52,0,1
+		CFLAG:(CHARANUM-1):ＨＰ補正 += 1000
+		CFLAG:(CHARANUM-1):ＭＰ補正 += 4000
+		CFLAG:(CHARANUM-1):速度補正 = 15
+		CFLAG:(CHARANUM-1):行動回数 = 2
+		ABL:(CHARANUM-1):スキル1 = 1003
+		ABL:(CHARANUM-1):スキル2 = 1006
+		ABL:(CHARANUM-1):スキル3 = 1403
+		ABL:(CHARANUM-1):スキル4 = 2416
+		ABL:(CHARANUM-1):スキル5 = 603
+		ABL:(CHARANUM-1):スキル6 = 2002
+		BASE:(CHARANUM-1):火炎 = 50
+		BASE:(CHARANUM-1):氷結 = 50
+		BASE:(CHARANUM-1):電撃 = 50
+		BASE:(CHARANUM-1):衝撃 = 50
+		BASE:(CHARANUM-1):神経 = 0
+		BASE:(CHARANUM-1):精神 = 0
+		BASE:(CHARANUM-1):破魔 = 0
+		BASE:(CHARANUM-1):呪殺 = 0
+		BASE:(CHARANUM-1):地変 = 50
+		BASE:(CHARANUM-1):水撃 = 50
+		BASE:(CHARANUM-1):疾風 = 50
+		BASE:(CHARANUM-1):重力 = 50
+		BASE:(CHARANUM-1):核熱 = 50
+		MAXBASE:(CHARANUM-1):火炎 = 50
+		MAXBASE:(CHARANUM-1):氷結 = 50
+		MAXBASE:(CHARANUM-1):電撃 = 50
+		MAXBASE:(CHARANUM-1):衝撃 = 50
+		MAXBASE:(CHARANUM-1):神経 = 0
+		MAXBASE:(CHARANUM-1):精神 = 0
+		MAXBASE:(CHARANUM-1):破魔 = 0
+		MAXBASE:(CHARANUM-1):呪殺 = 0
+		MAXBASE:(CHARANUM-1):地変 = 50
+		MAXBASE:(CHARANUM-1):水撃 = 50
+		MAXBASE:(CHARANUM-1):疾風 = 50
+		MAXBASE:(CHARANUM-1):重力 = 50
+		MAXBASE:(CHARANUM-1):核熱 = 50
+		CALL SYNC_STATUS,(CHARANUM-1)
+		CALL HEALTH_CHARA,(CHARANUM-1)
+		CALL BATTLE_START
+		FLAG:逃走不可フラグ = 0
+		FLAG:会話不能フラグ = 0
+		FLAG:先制不意打ちキャンセル = 0
+		PRINTFORML 『私が死ねば…』
+		PRINTFORMW 『アリスは……』
+		PRINTW 堕天使 ネビロスは力尽きた…
+		CUSTOMDRAWLINE =
+		PRINTFORMW 戦いが終わるとそこにはアリスの姿はなかった……
+		ダンジョンフラグ:45:0 = 1
+		ダンジョンフラグ:45:10 = 6
+		PRINTL 
+		PRINTL ネビロスの黒衣からピラーが転がり出てきた。
+		PRINTW 金星のピラーを手に入れた！
+		PRINTFORMW 金星の力が%CALLNAME:MASTER%に力を与える…。
+		PRINTL 
+;		PRINTFORMW %CALLNAME:MASTER%の全能力が上昇した！
+;			BASE:MASTER:力 += 1
+;			BASE:MASTER:知恵 += 1
+;			BASE:MASTER:魔力 += 1
+;			BASE:MASTER:耐力 += 1
+;			BASE:MASTER:速さ += 1
+;			BASE:MASTER:運 += 1
+		PRINTL 
+		PRINTW 六本木の調査に成功し結界を解いたことによりソサエティから報酬が支払われた。
+		PRINTFORMW %CALLNAME:MASTER%は1000魔貨を得た。
+		MONEY:1 += 1000
+		FLAG:脱出 = 1
+	ENDIF
+
+	;ロリコン黒
+	IF FLAG:現M == 6 && FLAG:現X == 9 && FLAG:現Y == 5 && ダンジョンフラグ:45:0 == 2 
+		PRINTFORML ＞祭壇がある
+		IF FLAG:ＣＯＭＰ容量 > NUM_NAKAMA() + ソフト容量() && BASE:MASTER:LV >= 50 && イベントフラグ:6:0 == 0 && (ダンジョンフラグ:26:0 < 4 || ダンジョンフラグ:26:1 < 4)
+			PRINTFORML 『人間よ、輪廻の輪を外れ彷徨うアリスの魂を助けたいのだろう？』
+			PRINTFORML 『望むならば…その壷を祭壇に捧げよ…』
+			PRINTFORML ＞堕天使ネビロスの残留思念がイヤらしい笑みを浮かべてこちらを見ている
+			PRINTFORML %CALLNAME:MASTER%の手にする脇見の壷からベリアルの唸り声が響いてきた…
+			PRINTL 
+			PRINTL [0] ネビロスに従う
+			PRINTL [1] 無視する
+			$INPUT_LOOP_4A
+			INPUT
+			IF RESULT == 0
+				PRINTFORML 『欲深い人間よ…感謝する』
+				PRINTFORMW 『その血肉を捧げ我が一部となるがいい！！』
+				PRINTW 堕天使　ネビロスが一体出た！
+				CUSTOMDRAWLINE =
+				WAIT
+				FLAG:逃走不可フラグ = 1
+				FLAG:会話不能フラグ = 1
+				FLAG:先制不意打ちキャンセル = 1
+				;戦闘後の経験値処理をスキップする
+				FLAG:RESULTスキップ = 1
+				;ネビロス
+				;堕天使ネビロスLv40　ランク5
+				CALL SET_ENEMY,9,[[キャラ:ネビロス]],55,0,1
+				CFLAG:(CHARANUM-1):ＨＰ補正 += 2500
+				CFLAG:(CHARANUM-1):ＭＰ補正 += 5000
+				CFLAG:(CHARANUM-1):速度補正 = 15
+				CFLAG:(CHARANUM-1):行動回数 = 2
+				BASE:(CHARANUM-1):LV += 10
+				BASE:(CHARANUM-1):知恵 += 10
+				BASE:(CHARANUM-1):魔力 += 10
+				BASE:(CHARANUM-1):耐力 += 10
+				BASE:(CHARANUM-1):速さ += 5
+				BASE:(CHARANUM-1):運 += 9
+				ABL:(CHARANUM-1):スキル1 = 1003
+				ABL:(CHARANUM-1):スキル2 = 1006
+				ABL:(CHARANUM-1):スキル3 = 1403
+				ABL:(CHARANUM-1):スキル4 = 2416
+				ABL:(CHARANUM-1):スキル5 = 603
+				ABL:(CHARANUM-1):スキル6 = 2003
+				BASE:(CHARANUM-1):飛具 = 50
+				BASE:(CHARANUM-1):火炎 = 50
+				BASE:(CHARANUM-1):氷結 = 50
+				BASE:(CHARANUM-1):電撃 = 50
+				BASE:(CHARANUM-1):衝撃 = 50
+				BASE:(CHARANUM-1):神経 = 0
+				BASE:(CHARANUM-1):精神 = 0
+				BASE:(CHARANUM-1):破魔 = 0
+				BASE:(CHARANUM-1):呪殺 = 0
+				BASE:(CHARANUM-1):地変 = 50
+				BASE:(CHARANUM-1):水撃 = 50
+				BASE:(CHARANUM-1):疾風 = 50
+				BASE:(CHARANUM-1):重力 = 50
+				BASE:(CHARANUM-1):核熱 = 50
+				MAXBASE:(CHARANUM-1):飛具 = 50
+				MAXBASE:(CHARANUM-1):火炎 = 50
+				MAXBASE:(CHARANUM-1):氷結 = 50
+				MAXBASE:(CHARANUM-1):電撃 = 50
+				MAXBASE:(CHARANUM-1):衝撃 = 50
+				MAXBASE:(CHARANUM-1):神経 = 0
+				MAXBASE:(CHARANUM-1):精神 = 0
+				MAXBASE:(CHARANUM-1):破魔 = 0
+				MAXBASE:(CHARANUM-1):呪殺 = 0
+				MAXBASE:(CHARANUM-1):地変 = 50
+				MAXBASE:(CHARANUM-1):水撃 = 50
+				MAXBASE:(CHARANUM-1):疾風 = 50
+				MAXBASE:(CHARANUM-1):重力 = 50
+				MAXBASE:(CHARANUM-1):核熱 = 50
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+				CALL BATTLE_START
+				FLAG:逃走不可フラグ = 0
+				FLAG:会話不能フラグ = 0
+				FLAG:先制不意打ちキャンセル = 0
+				;戦闘後の経験値処理をスキップする
+				FLAG:RESULTスキップ = 0
+				PRINTFORML 『待て…』
+				PRINTFORML 『この堕天使ネビロスの力が無ければ、彼女を救う事は出来ぬぞ』
+				PRINTFORMW 『アリスを想うならば私を連れていくがいい』
+				PRINTFORMW 堕天使 ネビロスが仲魔になった
+				CUSTOMDRAWLINE =
+				CALL ADD_NEW_COMPANION,1710,500,1
+				SIF RESULT == 1
+					ABL:(RESULT:1):従順 = 1
+				ダンジョンフラグ:45:10 = 7
+				FLAG:11710 = 1
+				FLAG:14104 = 1
+				SIF FLAG:21710 < 100
+					FLAG:21710 = 100
+			ELSEIF RESULT == 1
+				PRINTFORMW 『愚か者め……』
+			ELSE
+				GOTO INPUT_LOOP_4A
+			ENDIF
+			ダンジョンフラグ:45:0 = 3
+			ダンジョンフラグ:45:2 = 1
+		ENDIF
+	ENDIF
+
+	;脇見
+	IF FLAG:現M == 6 && FLAG:現X == 6 && FLAG:現Y == 13 && ダンジョンフラグ:45:10 >= 1 && ダンジョンフラグ:45:15 == 0
+		PRINTFORMW 結界に守られた部屋の中央
+		PRINTFORMW そこには小さな壷が置かれていた
+		PRINTFORMW ＞脇見の壷を手に入れた
+		ダンジョンフラグ:45:15 = 1
+	ENDIF
+
+	;死
+	IF FLAG:現M == 6 && FLAG:現X == 12 && FLAG:現Y == 13 && ダンジョンフラグ:45:10 >= 4 && ダンジョンフラグ:45:19 == 0
+		PRINTFORML 部屋の中は死臭に満ちていた
+		PRINTFORMW 積み重なるようにして無造作に死体が放置されている…
+		ダンジョンフラグ:45:19 = 1
+	ENDIF
+ENDIF
+RETURN 0
+;=======================================================================
+;必要レベル目安
+;推奨LV 雑魚最低LV 雑魚最高LV ボスLV 
+;=======================================================================
+@GET_DUNGEON_LV_45
+RETURN 45, 42, 47, 50
+;=======================================================================
+;エンカウント率
+;=======================================================================
+@ENCOUNT_RATE_45
+SELECTCASE FLAG:現M
+	CASE 0
+		FLAG:エンカウント率 = FLAG:未遭遇歩数*5
+	CASEELSE
+		IF ダンジョンフラグ:45:10 >= 4
+			FLAG:エンカウント率 = FLAG:未遭遇歩数*5
+		ELSE
+			FLAG:エンカウント率 = 0
+		ENDIF
+ENDSELECT
+SIF FLAG:未遭遇歩数 < 5
+	FLAG:エンカウント率 = 0
+;=======================================================================
+;エンカウント処理
+;=======================================================================
+@CHECK_ENCOUNT_45
+IF RAND:100 < FLAG:エンカウント率
+	CALL ENEMY_TABLE
+	RETURN 1
+ELSE
+	FLAG:未遭遇歩数 += 1
+	RETURN 0
+ENDIF
+;=======================================================================
+;敵の種族の種類数
+;=======================================================================
+@CLASS_NUM_45
+RETURN CLASS_NUM_COMMON("上級")
+;=======================================================================
+;敵の総数
+;ARGは出現する敵の種類です
+;=======================================================================
+@ENEMY_NUM_45, ARG
+RETURN ENEMY_NUM_COMMON("上級", ARG)
+;=======================================================================
+;敵の種類
+;=======================================================================
+@ENEMY_45, ARG
+SELECTCASE FLAG:現M
+	CASE 0
+	;B1Fでの遭遇　特別枠/幼女監獄
+		SELECTCASE RAND:100
+			CASE IS < 25
+				;25%でサキュバス　Lv44
+				RETURN [[キャラ:サキュバス]], 44
+			CASE IS < 35
+				;10%でゾンビちゃん　Lv4　ランク12
+				RETURN [[キャラ:ゾンビちゃん]], 40
+			CASE IS < 45
+				;10%でゾンビナース　Lv8　ランク11
+				RETURN [[キャラ:ゾンビナース]], 41
+			CASE IS < 55
+				;10%でゾンビーサムライ　Lv30　ランク4
+				RETURN [[キャラ:ゾンビーサムライ]], 42
+			CASE IS < 65
+				;10%でゾンビーケンペイ　Lv30　ランク4
+				RETURN [[キャラ:ゾンビーケンペイ]], 42
+			CASE IS < 75
+				;10%でゾンビくん　Lv7　ランク11
+				RETURN [[キャラ:ゾンビくん]], 40
+			CASE IS < 85
+				;10%でゾンビコップ　Lv9　ランク11
+				RETURN [[キャラ:ゾンビコップ]], 42
+			CASE IS < 95
+				;10%で　コープス Lv32　ランク4
+				RETURN [[キャラ:コープス]], 44
+			CASE IS < 100
+				;10%でレギオン　Lv40　ランク1
+				RETURN [[キャラ:レギオン]], 43
+		ENDSELECT
+	CASEELSE
+		SELECTCASE RAND:100
+			CASE IS < 10
+				;10%でゾンビちゃん　Lv4　ランク13
+				RETURN [[キャラ:ゾンビちゃん]], 43
+			CASE IS < 20
+				;10%でゾンビナース　Lv8　ランク12
+				RETURN [[キャラ:ゾンビナース]], 44
+			CASE IS < 30
+				;10%でゾンビーサムライ　Lv30　ランク5
+				RETURN [[キャラ:ゾンビーサムライ]], 45
+			CASE IS < 40
+				;10%でゾンビーケンペイ　Lv30　ランク5
+				RETURN [[キャラ:ゾンビーケンペイ]], 45
+			CASE IS < 50
+				;10%でゾンビくん　Lv7　ランク12
+				RETURN [[キャラ:ゾンビくん]], 43
+			CASE IS < 60
+				;10%でゾンビコップ　Lv9　ランク12
+				RETURN [[キャラ:ゾンビコップ]], 45
+			CASE IS < 70
+				;10%で　コープス Lv32　ランク5
+				RETURN [[キャラ:コープス]], 47
+			CASE IS < 80
+				;10%でレギオン　Lv40　ランク2
+				RETURN [[キャラ:レギオン]], 46
+			CASE IS < 90
+				;10%でマンイーター　Lv27　ランク6
+				RETURN [[キャラ:マンイーター]], 45
+			CASE IS < 100
+				;10%でシャドウ　Lv49
+				RETURN [[キャラ:シャドウ]], 49
+		ENDSELECT
+ENDSELECT
+
+;=======================================================================
+;特殊調整
+;=======================================================================
+@SET_ENEMY_STATUS_45, ARG
+SELECTCASE NO:ARG
+	CASE [[キャラ:ゾンビくん]], 43
+		ABL:(CHARANUM-1):スキル1 = 302
+		ABL:(CHARANUM-1):スキル2 = 322
+		ABL:(CHARANUM-1):スキル3 = 1202
+	CASE [[キャラ:ゾンビナース]], 44
+		ABL:(CHARANUM-1):スキル1 = 101
+		ABL:(CHARANUM-1):スキル2 = 1212
+		ABL:(CHARANUM-1):スキル3 = 102
+		ABL:(CHARANUM-1):スキル4 = 303
+	CASE [[キャラ:ゾンビちゃん]], 43
+		ABL:(CHARANUM-1):スキル1 = 302
+		ABL:(CHARANUM-1):スキル2 = 322
+		ABL:(CHARANUM-1):スキル3 = 1212
+	CASE [[キャラ:ゾンビコップ]]
+		ABL:(CHARANUM-1):スキル4 = 302
+		ABL:(CHARANUM-1):スキル5 = 112
+ENDSELECT
+;========
+;罠置き場
+;========
+@TRAP_45
+SELECTCASE FLAG:現M
+	CASE 6
+		IF FLAG:現X == 6 && FLAG:現Y == 9
+			CALL DUNGEON_TRAP_HP,10
+		ELSEIF FLAG:現X == 8 && FLAG:現Y == 11
+			CALL DUNGEON_TRAP_MP,10
+		ELSEIF FLAG:現X == 8 && FLAG:現Y == 13
+			CALL DUNGEON_TRAP_MP,10
+		ELSEIF FLAG:現X == 10 && FLAG:現Y == 13
+			CALL DUNGEON_TRAP_HP,10
+		ELSE
+			CALL DUNGEON_TRAP_POISON,40
+		ENDIF
+ENDSELECT
+RETURN 0
+
+
+
+@E_ROPPONGI
+PRINTL ここはエレベーターだ。
+PRINTW -行きたい階のボタンを押して下さい-
+PRINTL [0]Ｂ１Ｆ
+PRINTL [1]１Ｆ
+PRINTL [2]２Ｆ
+PRINTL [3]３Ｆ
+$INPUT_LOOP_ROPPONGI
+INPUT
+IF RESULT == 0
+	IF FLAG:現M == 6
+		RETURN 1
+	ELSE
+		FLAG:現M = 6
+		FLAG:現X = 3
+		FLAG:現Y = 3
+	ENDIF
+ELSEIF RESULT == 1
+	IF FLAG:現M == 1
+		RETURN 1
+	ELSE
+		FLAG:現M = 1
+		FLAG:現X = 10
+		FLAG:現Y = 3
+	ENDIF
+ELSEIF RESULT == 2
+	IF FLAG:現M == 4
+		RETURN 1
+	ELSE
+		FLAG:現M = 4
+		FLAG:現X = 3
+		FLAG:現Y = 3
+	ENDIF
+ELSEIF RESULT == 3
+	IF FLAG:現M == 5
+		RETURN 1
+	ELSE
+		FLAG:現M = 5
+		FLAG:現X = 3
+		FLAG:現Y = 3
+	ENDIF
+ELSE
+	GOTO INPUT_LOOP_ROPPONGI
+ENDIF
+CALL MAKE_FLOOR, FLAG:現ダンジョン
+;CALL AUTOMAP
+
+
+@SHINDEAGERU
+PRINTFORMW %CALLNAME:MASTER%の心臓が鈍い痛みと共に停止した
+PRINTFORMW ゆっくりと体温が下がり死の気配が近づいてくるのを%CALLNAME:MASTER%は感じながら意識を失った…
+PRINTFORMW ………………
+PRINTFORMW …………
+PRINTFORMW ……
+PRINTFORMW 数日後
+PRINTFORML 
+PRINTFORMW %CALLNAME:MASTER%はアリスのお気に入りの玩具として弄ばれていた。
+PRINTFORMW 檻の中に囚われているもの
+PRINTFORMW 拘束具で吊るされているもの
+PRINTFORMW 十字架に逆さに磔にされているもの
+PRINTFORMW 彼女の為に用意された部屋には%CALLNAME:MASTER%の他に%CALLNAME:MASTER%の仲魔であった者や
+PRINTFORMW 年端のいかない少女らしき者達
+PRINTFORMW アリスの友達として連れて来られた者達は生ける屍となり、残酷な責め苦を受けていた
+PRINTFORMW 「うふふ…今日は何をして遊ぼうかしら」
+PRINTFORMW ある者の両穴にバイブを無造作にねじ込み
+PRINTFORMW ある者の肌に針を突き立て
+PRINTFORMW ある者の口腔に轡をはめ
+PRINTFORMW 少女は思いつきのままに責め苦を与え苦痛を与えていく
+PRINTFORMW ここにいる者は皆、少女の玩具であり奴隷であった
+PRINTFORMW どれほどの責めを受けようと、既に死した身は朽ち果てる事はない
+PRINTFORMW 主たる少女が飽きる日まで続く地獄の日々がそこには待っていた……
+CALL GAME_OVER
+
+
+@GET_HP100,ARG,ARG:1,ARG:2
+PRINT 箱が置いてある。 
+PRINTBUTTON "[0]開ける",0
+PRINT  
+PRINTBUTTON "[1]開けない",1
+PRINTL
+$INPUT_LOOP_HP100
+INPUT
+IF RESULT == 0
+	FOR LOCAL,1,7
+		SIF POS(LOCAL) > -1 && GET_STATE(CFLAG:(POS(LOCAL)):ステート) != "DYING"
+			CALL VAR_HP,POS(LOCAL),-MAXBASE:(POS(LOCAL)):ＨＰ*ARG/100
+	NEXT
+	PRINTFORMW %CALLNAME:MASTER%達はダメージを受けた
+	DA:(FLAG:現X):(FLAG:現Y) = 1
+	ダンジョンフラグ:(ARG:1):(ARG:2) = 1
+	RETURN 1
+ELSEIF RESULT == 1
+	RETURN 0
+ELSE
+	GOTO INPUT_LOOP_HP100
+ENDIF
+
+;=======================================================================
+;輪姦参加悪魔
+;=======================================================================
+@DUNGEON_RAPE_DEVIL_45
+;ランダムにどの悪魔が出るか決定
+;RETURN CSV番号 , 人数 , レベル
+SELECTCASE RAND:4
+	CASE 0
+		RETURN [[キャラ:ゾンビコップ]] , 3 + RAND:10 , CSVBASE([[キャラ:ゾンビコップ]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 1
+		RETURN [[キャラ:ゾンビーサムライ]] , 3 + RAND:10 , CSVBASE([[キャラ:ゾンビーサムライ]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 2
+		RETURN [[キャラ:ゾンビーケンペイ]] , 3 + RAND:10 , CSVBASE([[キャラ:ゾンビーケンペイ]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 3
+		RETURN [[キャラ:ゾンビくん]] , 3 + RAND:10 , CSVBASE([[キャラ:ゾンビくん]] , GETNUM(BASE , "LV") , 0) + RAND:3
+ENDSELECT
+
+

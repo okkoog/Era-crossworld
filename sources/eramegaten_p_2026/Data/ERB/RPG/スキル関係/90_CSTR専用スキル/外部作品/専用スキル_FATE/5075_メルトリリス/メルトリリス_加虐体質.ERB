@@ -1,0 +1,99 @@
+﻿;スキル名
+@SKILL_NAME_加虐体質,ARG
+RESULTS = 加虐体質
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_加虐体質,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;スキル変化？用ランク
+@SKILL_RANK_加虐体質, ARG = -1
+RETURN 1
+;変化不可
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_加虐体質
+RETURN GET_SUCCESSION_NUM("자동효과")
+;====================================================
+;行動によるスキルゲージ操作
+;各キャラクターの通常の行動後に全キャラで呼び出される
+;ARG:		このスキルの持ち主のキャラ番号
+;ARG:1		行動したキャラクターのキャラ番号
+;
+;RESULT 		獲得したゲージの量を返すことで獲得量を表示させる。つまり、他人の行動に反応させることなども可能。
+;RESULT:1		獲得表示のときの文字色を指定できる。ゲージが溜まったときの表示わけなどに
+;RESULTS		ゲージの名称 「<<XXXX>>」という形で表示される
+;RESULTS:1		ゲージの単位。半角の%を使いたい場合は「\%」と言うかたちで退避記号を使うと良い
+;RESULTS;2		色指定以外の要素を使わずに文字列を返す。ゲージ式の獲得量で表現したい場合などに
+;====================================================
+@SKILLGAGE_CHARGE_加虐体質,ARG,ARG:1
+SIF PU_SKILLGAGE_H_GET(ARG, "加虐体質") == 10
+	RETURN 0
+SIF ARG != ARG:1
+	RETURN 0
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+SIF GET_SKILL_EFFECT(RESULT) != "공격"
+	RETURN 0
+CALL PU_SKILLGAGE_H_ADD, ARG, "加虐体質", 1
+RESULTS:2 = 加虐体質発動！≪与ダメージ・被ダメージ・クリティカル率増加　命中率・回避率減少≫
+RETURN 1
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　説明文の表示
+@SKILL_EXPLAIN_加虐体質,ARG
+#DIM SKILL_NUM
+PRINTL 자동효과:공격 스킬을 발동할 때마다 주는 데미지와 받는 데미지 및 크리티컬률이 증가하고, 명중률과 회피율이 감소한다.
+
+@SKILL_BATTLE_MAIN_TOOLTIP_加虐体質, ARG, ARG:1
+IF SKILLGAGE_H_GET(ARG,ARG:1) > 0
+	RESULTS = □加虐体質
+	RESULTS:1 '= "　与ダメージ＋" + TOFULL(TOSTR(SKILLGAGE_H_GET(ARG,ARG:1) * 5)) + "％"
+	RESULTS:2 '= "　被ダメージ＋" + TOFULL(TOSTR(SKILLGAGE_H_GET(ARG,ARG:1) * 5)) + "％"
+	RESULTS:3 '= "　クリティカル率増加・命中率減少・回避率減少"
+ENDIF
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_加虐体質,ARG
+RETURN 0
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_加虐体質, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			RETURN 5 * SKILLGAGE_H_GET(L_P, SKILL_NUM)
+		;クライムバレエと合わせて-4段階まで低下
+		CASE "追加命中強化"
+			RETURN -24 * SKILLGAGE_H_GET(L_P, SKILL_NUM) / 10
+		CASE "クリティカル補正A"
+			RETURN 5 * SKILLGAGE_H_GET(L_P, SKILL_NUM)
+	ENDSELECT
+;自分が防御側
+ELSE
+	SELECTCASE ARGS
+		CASE "ダメージ倍率"
+			RETURN 5 * SKILLGAGE_H_GET(L_P, SKILL_NUM)
+		CASE "追加回避強化"
+			RETURN -24 * SKILLGAGE_H_GET(L_P, SKILL_NUM) / 10
+	ENDSELECT
+ENDIF
+RETURN 0

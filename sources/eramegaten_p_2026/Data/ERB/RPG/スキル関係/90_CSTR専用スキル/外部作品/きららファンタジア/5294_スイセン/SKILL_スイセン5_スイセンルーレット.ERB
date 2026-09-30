@@ -1,0 +1,135 @@
+﻿
+;スキル名
+@SKILL_NAME_スイセンルーレット,ARG
+RESULTS = 수선화 룰렛
+
+;　威力
+@SKILL_POWER_スイセンルーレット, ARG
+RETURN 100
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_スイセンルーレット, ARG
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_スイセンルーレット,ARG
+RETURN 40
+
+;　相性
+@SKILL_TYPE_スイセンルーレット,ARG
+RETURN GET_TYPE_NUM("없음")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_スイセンルーレット
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_スイセンルーレット,ARG
+RETURN 0
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_スイセンルーレット,ARG
+RETURN 2
+
+;　사거리
+@SKILL_RANGE_スイセンルーレット,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_スイセンルーレット,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_スイセンルーレット,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+@SKILL_SUCCESSION_TYPE_スイセンルーレット,ARG
+RETURN GET_SUCCESSION_NUM("만능")
+
+@SKILL_RANK_スイセンルーレット, ARG = -1
+RETURN 6
+
+;속도보정
+@SKILL_SPEED_スイセンルーレット, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_スイセンルーレット
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_スイセンルーレット,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM LCOUNT
+#DIM TEMP
+;Positive effects occur at 50+, negative effects otherwise
+IF (RAND:100 + MAXBASE:ARG:운 / 3) >= 50
+	SELECTCASE RAND:8
+		CASE  0
+			CFLAG:ARG:気合フラグ = 1
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "공격", 8, "단체", "NOWAIT"
+			CALL PRINT_HIT_MESSAGE, ARG, "次の物理攻撃の威力が大幅上昇！"
+		CASE 1
+			CFLAG:ARG:집중플래그 = 1
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "마법위력", 8, "단체", "NOWAIT"
+			CALL PRINT_HIT_MESSAGE, ARG, "次の魔法攻撃の威力が大幅上昇！"
+		CASE  2
+			CALL SET_RPG_CFLAG_BTL, ARG, "KFチャージスキル", 10
+			CALL PRINT_HIT_MESSAGE, ARG, "チャージ数が10に設定された！"
+		CASE  3
+			CALL SKILL_INVALID_WALL, ARG, ARG, "護りの盾_聖なる加護_テトラジャ", "단체"
+		CASE  4
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "공격/방어/마법위력/마법효과/명중/회피", 8, "단체"
+		CASE  5
+			CFLAG:ARG:회심의패기플래그 = 1
+			CALL PRINT_HIT_MESSAGE, ARG, "次の物理攻撃の命中率とクリティカル率が大幅上昇！"
+		CASE  6
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "크리티컬", 8, "단체"
+		CASEELSE
+			CALL SKILL_SET_カジャンダ, ARG, 22, "공격/방어/마법위력/마법효과/명중/회피", -4, "範囲"
+	ENDSELECT
+ELSE
+	SELECTCASE RAND:7
+		CASE IS == 0
+			IF GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") >= 0
+				CALL SET_RPG_CFLAG_BTL, ARG, "KFチャージスキル", 5, "-="
+			ELSE
+				CALL SET_RPG_CFLAG_BTL, ARG, "KFチャージスキル", 0
+			ENDIF
+			CALL PRINT_HIT_MESSAGE, ARG, "チャージ数が5減少した！"
+		CASE IS == 1
+			CALL SET_RPG_CFLAG_BTL, ARG, "KFチャージスキル", 0
+			CALL PRINT_HIT_MESSAGE, ARG, "チャージ数が0にリセットされた！"
+		CASE IS == 2
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "공격/방어/마법위력/마법효과/명중/회피", -4, "단체"
+		CASE IS == 3
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "공격/방어/마법위력/마법효과/명중/회피", -8, "단체"
+		CASE IS == 4
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "BS부착률", 4, "단체"
+		CASE IS == 5
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "BS부착률", 8, "단체"
+		CASEELSE
+			CALL SKILL_SET_カジャンダ, ARG, 22, "공격/방어/마법위력/마법효과/명중/회피", 4, "範囲"
+	ENDSELECT
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_スイセンルーレット,ARG
+PRINTL 무작위로 유리하거나 불리한 효과를 발생시킨다.
+PRINTL 유리한 효과가 발생할 확률은 사용자의 운에 따라 상승한다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_スイセンルーレット, ARG
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_スイセンルーレット, ARG
+RESULTS:0 = 무작위로 유리하거나 불리한 효과를 발생시킨다.
+RESULTS:1 = 유리한 효과가 발생할 확률은 사용자의 운에 따라 상승한다.

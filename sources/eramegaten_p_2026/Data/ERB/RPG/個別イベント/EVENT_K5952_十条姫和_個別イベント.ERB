@@ -1,0 +1,84 @@
+﻿;-------------------------------------------------
+;
+;-------------------------------------------------
+@INDIVIDUAL_EVENT_K5952, ARG, ARG:1 = 0, ARG:2 = -1
+;ARG:0　キャラ番号
+;ARG:1　関数種類　1,開放条件　2,타이틀　3,이벤트
+;ARG:2　イベント番号（0～63まで）
+
+;リストにキャラを表示する条件
+IF ARG:1 == 0
+	;イベント0で全部終了
+	SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+		RETURN 0
+	RETURN 1
+ENDIF
+
+SELECTCASE ARG:2
+CASE 0
+	;解放条件
+	IF ARG:1 == 1
+		;Lv50以上でないと起こらない
+		SIF MAXBASE:ARG:LV < 50
+		;SIF MAXBASE:ARG:LV < 5
+			RETURN 0
+		;姫和の保有MAGが100万以上でないと起こらない
+		SIF GET_CHARA_STOCK_MAG(ARG:0) < 1000000
+    			RETURN 0
+		;姫和が隷属か親愛か淫乱でないと起こらない
+		;「陥落()」は、陥落していなければゼロ、恋慕淫乱服従で１、親愛娼婦隷属で２、妻夫淫魔玩具で３、を返すので、「陥落(ARG:0)>=2」となる
+		;……ので、2未満はダメ、で……陥落していないか、恋慕淫乱服従である場合はダメ、となる
+		SIF 陥落(ARG:0) < 2
+			RETURN 0
+		;信頼系統の陥落はダメ
+		SIF RESULTS == "신뢰"
+			RETURN 0
+		RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			RESULTS = 하나의 태도
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			RESULTS = (LV50 이상、친애나 예속、히요리의 보유 MAG 100만 이상)
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		;これで習得できる？
+		CALL LEARN_PU_SKILL(ARG,"ひとつの太刀")
+		PRINTFORMW ＞%CALLNAME:ARG%은(는) 하나의 태도를 습득했다！
+		;姫和のMAGを-100000する
+		CALL CONTROL_MAG , ARG, - 1000000
+		RETURN 1
+	ENDIF
+CASE 1
+	;解放条件
+	IF ARG:1 == 1
+		;前イベントの　シアノとクレーンゲーム　既読後
+		;SIF GETBIT(CFLAG:CAST:개별이벤트읽음,0)
+		;	RETURN 1
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			RESULTS = 
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			;RESULTS = (%CALLNAME:ARG%とクレーンゲームを見ている)
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		
+		
+		
+		
+		;好感度以外は後に上昇値が表示される
+		;CFLAG:ARG:(MASTER + 2100) += (好感度)
+		;TCVAR:ARG:획득의존도 += 
+		;TCVAR:ARG:획득충성도 += 
+		;CALL ADDS_EXP("○○経験", 1, ARG)
+		RETURN 1
+	ENDIF
+ENDSELECT
+RETURN 0

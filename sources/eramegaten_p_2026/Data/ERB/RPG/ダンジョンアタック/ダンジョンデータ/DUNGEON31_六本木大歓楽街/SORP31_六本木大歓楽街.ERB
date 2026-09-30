@@ -1,0 +1,785 @@
+﻿;롯폰기대환락가
+;娼館関連
+
+;ファイルが肥大化してきていると思われたため、分割
+;また、共通化できそうな部分を一本化
+;全員身受けしちゃうとちょっと寂しくなるため、明日以降は代理キャラが働くように対応
+;裏娼館にランダムキャラ捕獲の窓口を追加
+;20/05/08　身受けキャラの能力を底上げ。即娼館に突っ込んで即戦力として使えるレベルに
+;21/03/07　娼婦キャラの追加サンプルを作成。及びキャラ追加の手順等を記載
+;21/06/24　魔乳に対応
+;21/10/29　娼婦追加をもっとお手軽にできるようにソース改修。娼婦をキャラ別にファイル分割。ダンジョンフラグではなくERHのフラグに移設
+;22/06/04　客引きを拡張
+;22/08/16　遊ぶときも身請けの時もこっちでマイナスするように（娼婦ファイル側でマッカのやり取りは基本しないように）
+;22/12/10　AI製顔グラを追加しました、娼婦を選ぶ際にもリストに顔グラが表示されるよう修正
+;フラグ管理メモ
+;59　ランダムキャラ捕獲窓口用　0:利用してない　1:利用経験あり　2:今日利用した
+
+;(21/10/29　ERH化して使用しなくなるフラグ)(参考用に残すけど、削除してもおｋ)
+;10　창관(女)利用経験フラグ　0:利用してない　1:利用した　2:クーポンあり
+;10番台　창관(女)用フラグ　0:その子を指名したことない　1:指名したことある　2:指名経験あり、あなたの技術が十分で身請け可能に　3:あなたに身請けされた　4:代理キャラ出勤　5:代理キャラ指名経験あり
+;50　裏路地娼館利用フラグ　0:利用してない　1:利用した　2:クーポンあり
+;50番台　창관(女)用フラグ　0:その子を指名したことない　1:指名したことある　2:指名経験あり、あなたの技術が十分で身請け可能に　3:あなたに身請けされた
+;80番台　娼館用フラグ2　
+
+;=======================================================================
+;娼婦キャラの追加の手順(新版)
+;=======================================================================
+;1,SORP_PLAY_XXX_(テンプレート用、顔グラ表示用に修正済).ERB をコピーして、新規キャラ用のファイルを用意
+;2,SORP31.ERHなどから、使用していない娼婦フラグの番号を採番し、1.のファイルのXXを娼婦フラグ番号で置換
+;(出来たら、使用する娼婦フラグ番号と名前をERHに追記しておくと、後の人が作りやすいかも？)
+;3,ファイルのコメントアウト等を削除し、各項目を埋めて娼婦キャラを作成
+;4,完成した3のファイルを娼婦フォルダに移動
+;5,キャラ追加完了！(顔グラは無しでも可ですが、できたら好みの顔グラと画像CSVを作成しましょう)
+;
+;(娼婦キャラ作成メモ)
+;ベースとなる悪魔にユニークなカスタマイズを施してキャラを水増しするシステムです。上手い事使ってください
+;娼館用なので、基本的に非処女系のキャラと考えておく
+;また、出現条件や身受け条件は各自でよく考えること。最低限、初日で身受けできない程度は必須！
+;プレイ金額は200～2000ぐらい、身受け金額は2000～5000ぐらい、のフィーリングで
+;体力気力や能力は、自宅の娼館や便器にそのまま投入できる程度には盛って良い(と個人的には思っている)
+;でも5以上の値はなるべく自重すること
+
+;=======================================================================
+;창관(基本部分は一本化)
+;=======================================================================
+@SORP_BASE_31, ARG
+#DIMS TEMPS
+;CALL SHOW_PICTURE, "D"
+六本木娼館ナンバー = 0
+IF ARG == 10
+	六本木娼館ナンバー = 1
+	受付アイコンアドレス = 16_受付の男表
+ELSE
+	六本木娼館ナンバー = 2
+	受付アイコンアドレス = 15_受付の男裏
+ENDIF
+CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"어서 오십시오//"
+IF (六本木娼館表フラグ:0 == 0 && 六本木娼館ナンバー == 1) || (六本木娼館裏フラグ:0 == 0 && 六本木娼館ナンバー == 2)
+	$SORP_INFO
+	IF (六本木娼館表フラグ:0 == 0 && 六本木娼館ナンバー == 1) || (六本木娼館裏フラグ:0 == 0 && 六本木娼館ナンバー == 2)
+		;初回時
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"어라, 손님께선 저희 가게 이용이 처음이시군요/그렇다면 저희 가게의 규칙을 설명해 드리겠습니다/"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"손님께선 다행히 악마에 대해 알고 계신 듯하니/숨김없이 말씀드리도록 하겠습니다/"
+	ELSE
+		;説明時
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"알겠습니다, 그럼 설명해 드리겠습니다//"
+	ENDIF
+	CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"저희 가게는 악마 아가씨들과 하룻밤의 꿈을 꾸기 위한 가게입니다/그리고 모두 인간으로서는 얻기 힘든 많은 경험을 쌓아두었습니다/그렇기에 손님께서도 귀중한 경험을 얻으실 수 있겠지요"
+	IF 六本木娼館ナンバー == 2
+		;창관(裏)の場合
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"또한 저희 가게 아가씨들은 모두 극히 특수합니다/그 점을 부디 양해해 주시기 바랍니다/"
+	ENDIF
+	CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"물론 이를 위해서는 마카가 필요합니다/일본 엔화로의 지불은 받지 않고 있으니/부디 양해 부탁드립니다"
+	CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"또한 저희 가게에서는 일부 아가씨들에 대해 「낙적(신원 인수)」도 허가하고 있습니다/이 경우 그 아가씨는 귀하의 소유가 됩니다/두말할 나위도 없겠지만 그 아가씨와는 더 이상 저희 가게에서 놀 수 없게 되니 주의해 주십시오"
+	;Ｎｏ.１なら現状が一番でしょ…という技術力的問題の隠蔽
+	IF 六本木娼館ナンバー == 2
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"또한 본 서비스는 손님과 아가씨가 동의한 경우에만 유효합니다/따라서 신원 인수를 거부하고 있는 아가씨는 낙적할 수 없습니다/저희 가게에선 현재 No.1인 피아가 낙적되는 것을 거부하고 있습니다"
+	ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"또한 본 서비스는 손님과 아가씨가 동의한 경우에만 유효합니다/따라서 신원 인수를 거부하고 있는 아가씨는 낙적할 수 없습니다/저희 가게에선 현재 No.1인 조세핀이 낙적되는 것을 거부하고 있습니다"
+	ENDIF
+	CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"그럼 마지막으로 저희 가게의 규칙을 정리해 드리겠습니다//"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", ,"", @"1：여기서는 마카를 지불하여 당신의 구슬과 경험을 얻을 수 있다/2：아가씨에 따라 얻을 수 있는 구슬과 경험이 다르다/3：거액의 마카를 지불하여 낙적할 수도 있다/4：당연히 낙적한 아가씨와는 여기서 더 이상 놀 수 없다"
+	CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"이상입니다//"
+	SIF 六本木娼館表フラグ:0 == 0 && 六本木娼館ナンバー == 1
+		六本木娼館表フラグ:0 = 1
+	SIF 六本木娼館裏フラグ:0 == 0 && 六本木娼館ナンバー == 2
+		六本木娼館裏フラグ:0 = 1
+ENDIF
+
+$BRO_LOOP_W
+CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"그럼 오늘은 어떻게 하시겠습니까？//"
+VARS L_SELECT
+L_SELECT '= "[1] 아가씨와 논다"
+L_SELECT += "/[2] 아가씨를 낙적한다"
+L_SELECT += "/[3] 설명을 듣는다"
+SIF 六本木娼館ナンバー == 2 && イベントフラグ:88:0 > 2
+	L_SELECT += "/[4] 암호를 말한다"
+L_SELECT += "/[0] 그만둔다"
+CALL INPUT_SELECT_D, L_SELECT , , , 2, 4
+
+IF RESULT == 3
+	;説明を聞く
+	GOTO SORP_INFO
+ELSEIF RESULT == 1
+	;プレイ
+	CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"그럼 이쪽 아가씨들 중에서 골라주십시오…"
+	$BRO_LOOP_W_1
+	;商品のリスト選択
+	CALL DU31_SELECT_SORP_GOODS, 1
+	IF RESULT == 0
+		CALL SHOW_PICTURE, "D"
+		;やめる
+		GOTO BRO_LOOP_W
+	ENDIF
+	LOCAL = RESULT
+
+	CALLFORM SORP_PLAY_{LOCAL}, "紹介文"
+	CALLFORM SORP_PLAY_{LOCAL}, "確認"
+	IF 六本木娼館ナンバー == 1 && 六本木娼館表フラグ:0 == 2 && LOCAL != 1001
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"어라, 손님. 쿠폰권을 가지고 계셨군요/그렇다면 200마카로 노실 수 있습니다/"
+		RESULT = 200
+	ELSEIF 六本木娼館ナンバー == 2 && 六本木娼館裏フラグ:0 == 2 && LOCAL != 1008
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"어라, 손님. 쿠폰권을 가지고 계셨군요/그렇다면 200마카로 노실 수 있습니다/"
+		RESULT = 200
+	ELSE
+		CALLFORM SORP_PLAY_{LOCAL}, "価格"
+	ENDIF
+	IF MONEY:1 < RESULT
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"…손님, 아무래도 마카가 부족하신 모양이군요/그래서야 어찌할 도리가 없습니다/다른 아가씨를 골라주십시오…"
+		GOTO BRO_LOOP_W_1
+	ENDIF
+	CALLFORM SORP_PLAY_{LOCAL}, "キャラ名"
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"%RESULTS%와(과) 노시겠습니까？//"
+	CALL INPUT_YN_D , "논다" , "다른 아가씨로 한다"
+	IF RESULT == 0
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"그럼 저쪽 개인실에서 잠시만 기다려주십시오…//"
+		CALL SHOW_PICTURE, "D"
+		IF 六本木娼館ナンバー == 1 && 六本木娼館表フラグ:0 == 2 && LOCAL != 3111
+			RESULT = 200
+			六本木娼館表フラグ:0 = 1
+		ELSEIF 六本木娼館ナンバー == 2 && 六本木娼館裏フラグ:0 == 2 && LOCAL != 3151
+			RESULT = 200
+			六本木娼館裏フラグ:0 = 1
+		ELSE
+			CALLFORM SORP_PLAY_{LOCAL}, "価格"
+		ENDIF
+		;料金徴収
+		MONEY:1 -= RESULT
+		CALLFORM SORP_PLAY_{LOCAL}, "プレイ口上"
+		IF 六本木娼館ナンバー == 1
+			CALL DUNGEON_WORP,1,15,6
+		ELSE
+			CALL DUNGEON_WORP,2,6,14
+		ENDIF
+	ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"그렇습니까/그럼 다른 아가씨를 골라주십시오/물론 다른 아가씨 이야기를 들은 뒤 %RESULTS% 양을 고르셔도 상관없습니다"
+		GOTO BRO_LOOP_W_1
+	ENDIF
+ELSEIF RESULT == 2
+	;身受け
+	IF CHARANUM >= MAX_PLAYER_CHARA - 5
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", "낙적한 창녀를 보유해 둘 여유가 없다…/동료마의 수를 줄일 필요가 있다…"
+	ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"호오, 아가씨를 낙적하시려는 건가요/손님, 아가씨들에게 반하셨나 보군요/"
+		CALLFORM SORP_CAN_BUY_COUNT_NEW, 六本木娼館ナンバー
+		LOCAL = RESULT
+		IF LOCAL == 0
+			CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"하지만 지금 현재는 손님께 낙적되어도 좋다는 아가씨가 없습니다/저희 가게에서 당분간 친분을 더 쌓으시는 편이 좋을 듯합니다/"
+			GOTO BRO_LOOP_W
+		ENDIF
+		$BRO_LOOP_W_2
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"현재 손님께 낙적되어도 좋다고 하는 아가씨는 이쪽이 됩니다/부디 납득이 갈 때까지 골라주십시오/"
+		;商品のリスト選択
+		CALL DU31_SELECT_SORP_GOODS, 2
+		IF RESULT == 0
+			CALL SHOW_PICTURE, "D"
+			;やめる
+			GOTO BRO_LOOP_W
+		ENDIF
+		LOCAL = RESULT
+		CALLFORM SORP_PLAY_{LOCAL}, "身受け確認"
+		CALLFORM SORP_PLAY_{LOCAL}, "身受け価格"
+		IF MONEY:1 < RESULT
+			CALLFORM SORP_PLAY_{LOCAL}, "キャラ名"
+			CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"…손님, 마카가 부족합니다/그래서야 %RESULTS% 양을 낙적하실 수 없습니다"
+			GOTO BRO_LOOP_W_2
+		ENDIF
+		CALL INPUT_YN_D , "낙적한다" , "다른 아가씨로 한다"
+		IF RESULT == 0
+			;このタイミングで身請け価格をいただきます
+			CALLFORM SORP_PLAY_{LOCAL}, "身受け価格"
+			MONEY:1 -= RESULT
+			CALLFORM SORP_PLAY_{LOCAL}, "キャラ名"
+			CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"알겠습니다/그럼 잠시만 기다려주십시오/%RESULTS% 양 본인을 불러 이야기를 전해야 하므로…"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+			VARSET RESULT
+			CALLFORM SORP_PLAY_{LOCAL}, "身受け口上"
+			VARS L_FACE
+			L_FACE '= RESULTS
+			CALL ADD_NEW_COMPANION, RESULT, RESULT:1, RESULT:2, , , MIN(BASE:MASTER:LV, CSVBASE(RESULT, GETNUM(BASE, "LV")))
+			;共通処理
+			VARI L_CHARA = RESULT:1
+			CFLAG:L_CHARA:초기LV = 1
+			CFLAG:L_CHARA:피조교횟수 = 1
+			CFLAG:L_CHARA:매각가능 = 2
+			CFLAG:L_CHARA:의존도 = 1000
+			IF IS_LESBIAN(MASTER, L_CHARA)
+				EXP:L_CHARA:레즈경험 += 100
+				ABL:L_CHARA:레즈끼 += 1
+			ENDIF
+			CALLF SET_ALL_FACE_NEW, L_CHARA, L_FACE
+
+			CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"그럼…/이후의 일은 저희는 일절 관여하지 않습니다/부디 행복하시길…"
+			IF 六本木娼館ナンバー == 1
+				CALL DUNGEON_WORP,1,15,6
+			ELSE
+				CALL DUNGEON_WORP,2,6,14
+			ENDIF
+		ELSE
+			GOTO BRO_LOOP_W_2
+		ENDIF
+	ENDIF
+ELSEIF RESULT == 4 && 六本木娼館ナンバー == 2
+	IF ダンジョンフラグ:31:59 == 0
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"…손님, 어디서 그걸？//"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"아닙니다, 캐묻는 건 그만두지요/이 업계는 입이 무거워야 오래 살아남는 법이니까요/"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"이쪽으로 오십시오…//"
+	ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"알겠습니다. 이쪽으로 오십시오…//"
+	ENDIF
+	CALL SHOW_PICTURE, "EMPTY"
+	CALLFORM PRISON_BASE_31
+	CALL SHOW_PICTURE, "EMPTY"
+	CALL DUNGEON_WORP,2,6,14
+ELSE
+	CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, , "접수원 남자", @"그럼 다음 이용을 기다리고 있겠습니다//"
+	IF 六本木娼館ナンバー == 1
+		CALL DUNGEON_WORP,1,15,6
+	ELSE
+		CALL DUNGEON_WORP,2,6,14
+	ENDIF
+ENDIF
+
+;=======================================================================
+;地下留置所の処理
+;=======================================================================
+@PRISON_BASE_31
+#DIM CHARA, 1
+
+IF ダンジョンフラグ:31:59 == 0
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞창관은 지하 유치장과 연결되어 있던 모양이다！//"
+	CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"어서 와라, 동업자/가능하면 안 만나고 싶었다만…/"
+	CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"하지만 규칙은 규칙이지. 이곳에 대해 설명해주마//"
+	$RANCHAR_INFO
+	;説明も兼ねる
+	SIF ダンジョンフラグ:31:59 == 1
+		CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"오케이/다시 한번 설명해주마/"
+	CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"여기는 빚을 못 갚은 놈이나 권력자의 분노를 사는 바람에/양지에 나설 수 없게 된 쓰레기들의 집합소다/"
+	CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"하지만 쓰레기 중에서도 가끔 쓸만한 놈이 나오지/그러니 우리끼리 유효활용하자고！/하는 노예조합이란 말씀이지…"
+	CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"입장료만 내면 게스트는 하루에 1명까지 쓰레기를 데리고 나갈 수 있다/어이, 허튼짓은 하지 마라/그랬다간 네놈이 다음 쓰레기가 될 뿐이니까"
+	CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"입장료는 1만 마카다/참고로 일정 기간 팔리지 않고 남은 놈이나 가망 없는 놈은/…뭐 동업자니 알고 있겠지？"
+	SIF ダンジョンフラグ:31:59 == 0 
+		ダンジョンフラグ:31:59 = 1
+ELSE
+	CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞창관에서 지하 유치장으로 왔다//"
+	CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"어서 와라, 동업자//"
+ENDIF
+IF ダンジョンフラグ:31:59 == 2
+	CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"입장할 수 있는 건 하루에 1번까지다/얌전히 돌아가라！/"
+	RETURN
+ENDIF
+
+$RANCHAR_LOOP_W
+CALL INPUT_SELECT_D, "[1]입장료를 낸다/[2]설명을 듣는다/[3]잡담한다////[0]그만둔다" , , , 3
+IF RESULT == 2
+	;説明を聞く
+	GOTO RANCHAR_INFO
+ELSEIF RESULT == 3
+	;雑談
+	SELECTCASE RAND:3
+		CASE 0
+			CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"오 뇌물 상담인가？/…뭐야 아닌 건가/"
+			CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"참고로 여긴 게스트 전문 입장구라서/여기선 매입은 안 한다고/가끔 있단 말이지, 쓰레기를 가져와선 돈 낸 셈 치고 지나가려는 놈들이"
+		CASE 1
+			CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"큰길에 쁘띠데몬 숍이라고 있지？/이 거리 계집들 사이에선 거기서 악마 놀이 하는 게 유행이라는 모양이더군/"
+			CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"실은 우리 조직에도 거기랑 똑같은 장치가 있어서 말야/그거 인간의 악마화에도 쓸 수 있다고？ 알고 있었냐？/"
+			IF BASE:MASTER:LV >= 60
+				CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"얼마 전에 처분할 쓰레기한테 여러 데빌 소스를 쑤셔 넣고 놀았는데 말이지/그거 제법 유쾌하더라고？/동업자도 신경 쓰이면 점주한테 상담해 보는 게 어때？"
+			ENDIF
+		CASE 2
+			CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"이런 곳에 혼자 있으면 힘들지 않냐고？/평소엔 안쪽 대기실에서 뒹굴거리고 있으니 딱히 그렇지도 않아/"
+			CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"여기에 누가 올 땐 밖에서 연락이 오니까/그때만 나간다는 계산이지/참고로 난 야간 담당이고 다른 인원도 있으니까"
+	ENDSELECT
+	GOTO RANCHAR_LOOP_W
+ELSEIF RESULT == 1
+	IF MONEY:1 < 10000
+		CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"…돈이 없다면 여긴 못 지나가지/가난뱅이는 돌아가라！/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞강제로 쫓겨났다//"
+		RETURN
+	ENDIF
+	CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"헤헷！ 매번 고맙군/그리고 되도록 안 팔린 쓰레기 같은 놈으로 데려가 줘/처분하는 수고를 덜어서 편해지니까"
+	CALLFORM SELECT_RANDOM_CHARA
+	CALL SHOW_PICTURE, "D"
+	CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"그 쓰레기를 데려가는 건가/말해두겠는데 반품은 일절 안 받으니 그리 알아둬라/"
+	MONEY:1 -= 10000
+	ダンジョンフラグ:31:59 = 2
+	RETURN
+ELSE
+	CALL MESSAGE_WINDOW_D_ICON, , "41_看守の男", , "간수 남자", @"그런가/다시 오지 마라 동업자/"
+	RETURN
+ENDIF
+
+@DU31_SELECT_SORP_GOODS, ARG
+#DIM STOCK_REDRAW
+#DIMS TEMPS
+STOCK_REDRAW = CURRENTREDRAW()
+六本木娼館選択内容 = ARG
+
+$START
+REDRAW 0
+CALL SHOW_FLOOR, "TRYCALL/SORP_LIST_NEW"
+;現パーティ描画
+CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+FLAG:커맨드표시행수 = LINECOUNT
+TEMPS = [0] 돌아간다
+IF 六本木娼館選択ページ > 0
+	TEMPS += "/" + "[1] 이전페이지"
+ELSE
+	TEMPS += "/"
+ENDIF
+IF 六本木娼館リスト表示数 * (六本木娼館選択ページ + 1) < MAX_DUNGEON_31_FLAGS && 六本木娼館商品リスト:((六本木娼館選択ページ + 1) * 六本木娼館リスト表示数) > 0
+	TEMPS += "/" + "[2] 다음페이지"
+ELSE
+	TEMPS += "/"
+ENDIF
+CALL INPUT_SELECT_D , TEMPS , , , 2, , , , "DU31_SORP_LIST_INPUTABLE"
+;CALLFORM SORP_LIST_NEW
+
+IF RESULT == 1
+	六本木娼館選択ページ--
+ELSEIF RESULT == 2
+	六本木娼館選択ページ++
+ELSE
+	REDRAW STOCK_REDRAW
+	RETURN RESULT
+ENDIF
+GOTO START
+
+@DU31_SORP_LIST_INPUTABLE, ARGS
+#DIM L_NO
+L_NO = TOINT(ARGS)
+SIF !INRANGE(L_NO, 1000, 1000 + MAX_DUNGEON_31_FLAGS -1)
+	RETURN 0
+CALL DU31_SORP_SELECTABLE, L_NO
+SIF !RESULT
+	RETURN 0
+CALLFORM SORP_PLAY_{L_NO}, "指名名"
+RESULTS:1 = [{L_NO}] %RESULTS%
+RESULTS = %ARGS%
+RETURN 1
+
+@DU31_SORP_SELECTABLE, ARG
+;所属している娼館
+RESULT = 0
+TRYCALLFORM SORP_PLAY_{ARG}, "所属"
+SIF RESULT != 六本木娼館ナンバー
+	RETURN 0
+RESULT = 0
+;指名できるか
+TRYCALLFORM SORP_PLAY_{ARG}, "判定"
+SIF RESULT == 1
+	RETURN 0
+;身受けの場合、身請け可能フラグがあるもののみ
+SIF 六本木娼館選択内容 == 2 && 六本木娼婦フラグ:(ARG-1000) != 2
+	RETURN 0
+RETURN 1
+
+;=======================================================================
+;娼館の処理
+;=======================================================================
+;娼婦リスト
+@SORP_LIST_NEW, ARG:0 = 1, ARG:1 = 1
+#DIM LCOUNT, 2
+#DIM TEMP
+#DIM ADD_LENS
+#DIMS VALUES
+#DIMS L_ICON
+#DIMS L_TEXT, 4
+VARSET 六本木娼館商品リスト
+;リストを作成
+FOR LCOUNT,1001, (1000 + MAX_DUNGEON_31_FLAGS)
+	CALL DU31_SORP_SELECTABLE, LCOUNT
+	SIF !RESULT
+		CONTINUE
+	TEMP = FINDELEMENT(六本木娼館商品リスト, 0)
+	六本木娼館商品リスト:TEMP = LCOUNT
+NEXT
+FOR LCOUNT, 六本木娼館選択ページ * 六本木娼館リスト表示数, (六本木娼館選択ページ + 1) * 六本木娼館リスト表示数
+	VARSET L_TEXT
+	TEMP = 六本木娼館商品リスト:LCOUNT
+	IF TEMP
+		VARS L_FACE
+		CALLFORM SORP_PLAY_{TEMP}, "指名名"
+		L_TEXT:0 = [{TEMP, 4}] %RESULTS%
+		RESULTS '= ""
+		RESULT_F = 0
+		CALLFORM SORP_PLAY_{TEMP}, "リスト"
+		IF SPRITECREATED(RESULTS)
+			L_ICON '= @"<img src = '%RESULTS%' height = '400'>"
+		ELSE
+			L_ICON '= " " * 8
+		ENDIF
+		L_TEXT:2 = 　　　…　%RESULTS:1%　…
+		FOR LCOUNT:1, 0, 4
+			ADD_LENS = 0
+			;TAGのぶんの字数を調整する
+			SIF STRCOUNT(L_TEXT:(LCOUNT:1), "<i>")
+				ADD_LENS += 7
+			L_TEXT:(LCOUNT:1) = %SET_BUTTON_TAG(@"%L_TEXT:(LCOUNT:1), 90 + ADD_LENS, LEFT%", TOSTR(TEMP))%
+		NEXT
+		{
+		HTML_PRINT 	"<p align = 'CENTER'>"
+					+ L_ICON + L_TEXT:0
+					+ "<br>" + " " * 8 + L_TEXT:1
+					+ "<br>" + " " * 8 + L_TEXT:2
+					+ "<br>" + " " * 8 + L_TEXT:3
+					+ "</p>"
+		}
+	ELSE
+		PRINTL 
+		PRINTL 
+		PRINTL 
+		PRINTL 
+	ENDIF
+NEXT
+RETURN 0
+
+;身受け可能数
+@SORP_CAN_BUY_COUNT_NEW, ARG
+#DIM LCOUNT
+LCOUNT = 0
+LOCAL = 0
+FOR LOCAL,1001, (1000 + MAX_DUNGEON_31_FLAGS)
+	;所属している娼館
+	TRYCALLFORM SORP_PLAY_{LOCAL}, "所属"
+	SIF RESULT != ARG
+		CONTINUE
+	;指名できるか
+	TRYCALLFORM SORP_PLAY_{LOCAL}, "判定"
+	SIF RESULT == 1
+		CONTINUE
+	;身受けの場合、身請け可能フラグがあるもののみ
+	SIF 六本木娼婦フラグ:(LOCAL-1000) != 2
+		CONTINUE
+	LCOUNT++
+NEXT
+RETURN LCOUNT
+
+;=======================================================================
+;娼館の客引き
+;=======================================================================
+@SORP_BARKER_31
+#LOCALSSIZE 1
+#DIM 客引きテーブル, 5
+#DIM 客引き, 1
+#DIM LCOUNT
+LOCAL   = 0
+VARSET 客引きテーブル
+;PRINTFORMW 　　　　　　　…　表通り娼館　…
+
+;ナヴィ身請け済み状態なら終了、
+IF 六本木娼婦フラグ:3 == 3
+	CALL MESSAGE_WINDOW_D_ICON, , "04_表通り娼館", , "", @"＞남자가 호객 행위를 하고 있다/＞나비를 낙적했기에 호객 요원이 없는 모양이다…/"
+	RETURN
+ENDIF
+
+;ナヴィ客引き
+;チンコないと若干冷たい(ＭＡＧ貰い辛いから)
+IF 六本木娼婦フラグ:3 < 3
+	;名前を知ってるかどうか(指名経験で判定)
+	IF 六本木娼婦フラグ:3 == 0
+		LOCALS = アルラウネ
+	ELSE
+		LOCALS = ナヴィ
+	ENDIF
+
+	;ナヴィ指名経験なし、客引き経験なし
+	IF 六本木娼婦フラグ:3 == 0 && ダンジョンフラグ:31:4 != 2
+		;初見時
+		IF ダンジョンフラグ:31:4 == 0
+			CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", "", @"＞가시나무를 두른 여자…/＞아니, 알라우네다！/＞알라우네가 호객 행위를 하고 있다"
+			IF TALENT:MASTER:남자 && TALENT:MASTER:오토코노코
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"어머…/이렇게 귀여운 오토코노코는 처음 봐… 잡아먹고 싶을 정도야%ハート()%/저기, 누나들이랑 놀다 가지 않을래？"
+			ELSEIF TALENT:MASTER:남자
+				IF EXP:MASTER:사정경험 >= 100
+					CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"저기, 거기 경험 풍부한 오빠%ハート()%/우리랑 놀다 가지 않을래？/분명 당신이라도 만족시켜 보일 테니까…"
+				ELSEIF EXP:MASTER:사정경험 == 0
+					CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"저기, 거기 순진한 오빠%ハート()%/우리랑 첫 경·험, 안 해볼래？/"
+				ELSE
+					CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"저기, 거기 오빠%ハート()%/우리랑 놀다 가지 않을래？/당신에게 밤을 알려줄게…/"
+				ENDIF
+			ELSEIF TALENT:MASTER:후타나리
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"어머, 너 혹시…/후후후, 인간계에도 꽤 별난 애가 있네/나, 제법 흥분되기 시작했어%ハート()%"
+				IF EXP:MASTER:사정경험 >= 100
+					CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"그건 그렇고, 귀여운 얼굴과 몸을 하고선 꽤나 흉악하네%ハート()%/저기, 우리랑 놀다 가주지 않을래？/"
+				ELSEIF EXP:MASTER:사정경험 == 0
+					CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"그 모양새를 보아하니 꽤나 주체하기 힘들었겠지？/당신이 주체 못 하는 그것의 사용법, 듬뿍 알려줄게/물론 우리를 써서 말야%ハート()%"
+				ELSE
+					CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"제법 익숙하게 다루는 모양이네/그렇다면 우리랑 함께 놀아주지 않을래？/"
+				ENDIF
+			ELSE
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"어머…/여자가 이런 데 오는 거 아니야/아니면, 혹시 우리랑 놀러 온 거야？"
+			ENDIF
+		;初見で断った
+		ELSE
+			IF TALENT:MASTER:남자 && TALENT:MASTER:오토코노코
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"어머…/전에도 와줬었지%ハート()%/저기 꼬마야, 오늘 밤에야말로 누나들이랑 놀다 가지 않을래？"
+			ELSEIF TALENT:MASTER:남자
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"어머…/전에도 왔었지%ハート()%/저기 오빠, 오늘 밤에야말로 우리랑 놀다 가지 않을래？"
+			ELSEIF TALENT:MASTER:후타나리
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"어머, 그때 그 별난 아이네/저기 너, 오늘은 어떠려나？/우리랑 놀아볼 마음이 생겼어？"
+			ELSE
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"어머…/너, 또 왔네/길을 잃은 걸까？ 아니면 우리가 목적？"
+			ENDIF
+		ENDIF
+	;2回目以降で身請け可でない
+	ELSEIF 六本木娼婦フラグ:3 != 2
+		IF TALENT:MASTER:남자 && TALENT:MASTER:오토코노코
+			CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"어머 꼬마야, 또 와준 거야？/그렇게 우리가 잊히지 않았구나…%ハート()%/저기, 오늘 밤도 누나들이랑 놀다 갈 거니？"
+		ELSEIF TALENT:MASTER:남자
+			CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"어머…/전에도 와줬었지%ハート()%/저기 오빠, 오늘 밤도 우리랑 놀다 가지 않을래？"
+		ELSEIF TALENT:MASTER:후타나리
+			CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"어머, 그때 그 별난 아이네/저기 너, 오늘은 어떠려나？/또 우리랑 놀다 가줄래？"
+		ELSE
+			CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"어머…/너, 또 왔네/또 우리랑 놀아보고 싶은 걸까？"
+		ENDIF
+	;ナヴィ身請け可
+	ELSE
+		CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", "", @"＞오늘도 나비가 호객 행위를 하고 있다/＞다른 아가씨들은 호객을 안 하는 걸까…/"
+		IF TALENT:MASTER:남자 && TALENT:MASTER:오토코노코
+			CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"어머, 오늘도 내게 와준 거네…%ハート()%/저기 달링, 오늘 밤도 놀다 가줄 거지？/"
+		ELSEIF TALENT:MASTER:남자
+			CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"어머, 오늘도 내게 와준 거네…%ハート()%/저기 여보오, 오늘 밤도 놀다 가줄 거지？/"
+		ELSEIF TALENT:MASTER:후타나리
+			CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"어머, 언니%ハート()%/오늘도 또 가랑이의 그것으로 나를 귀여워해 줄 거지？/"
+		ELSE
+			CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"어머, 언니%ハート()%/오늘도 또 나를 귀여워해 줄 거지？/"
+		ENDIF
+	ENDIF
+
+	;遊ぶか選択
+	;通常選択(男、男の娘、ふたなりの場合、または身請け条件達成済みの場合)
+	IF TALENT:MASTER:남자 || TALENT:MASTER:오토코노코 || TALENT:MASTER:후타나리 || 六本木娼婦フラグ:3 == 2
+		CALL INPUT_YN_D , "놀다 간다" , "그만둔다"
+	;女性の場合、指名なしで初回と2回目、指名した場合でそれぞれ違う選択
+	ELSEIF 六本木娼婦フラグ:3 == 0 && ダンジョンフラグ:31:4 == 0
+		CALL INPUT_YN_D , "물론이다" , "그렇지 않다"
+	ELSEIF 六本木娼婦フラグ:3 == 0 && ダンジョンフラグ:31:4 == 1
+		CALL INPUT_YN_D , "당신들이 목적" , "길을 잃었다"
+	ELSE
+		CALL INPUT_YN_D , "꼭 놀고 싶다" , "길을 잃었다"
+	ENDIF
+
+	;YES
+	IF RESULT == 0
+		IF 六本木娼婦フラグ:3 == 0 && (ダンジョンフラグ:31:4 == 0 || ダンジョンフラグ:31:4 == 1)
+			;初めて
+			IF TALENT:MASTER:남자 && TALENT:MASTER:오토코노코
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"으~음, 귀여워도 사내아이네%ハート()%/그럼, 누나를 따라오렴？/"
+			ELSEIF TALENT:MASTER:남자 || TALENT:MASTER:후타나리
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"그럼, 최고의 밤으로 만들어줄게…%ハート()%/날 따라와 줄래？/"
+			ELSE
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"헤에, 특이한 사람도 다 있네…/뭐 좋아, 그렇다면 따라오렴/"
+			ENDIF
+		ELSEIF 六本木娼婦フラグ:3 != 2
+			;2回目以降で身請け可でない
+			IF TALENT:MASTER:남자 && TALENT:MASTER:오토코노코
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"으~음, 얼굴은 귀여워도 완전 짐승이네%ハート()%/그럼, 또 누나를 따라오렴？/"
+			ELSEIF TALENT:MASTER:남자 
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"그럼, 최고의 밤으로 만들어줄게…%ハート()%/그럼, 또 날 따라와 줄래？/"
+			ELSEIF TALENT:MASTER:후타나리
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"그럼, 최고의 밤으로 만들어줄게…%ハート()%/꼭 날 따라와 줄래？/"
+			ELSE
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"너, 여자로 태어나서 손해 보고 있을지도 모르겠네…/그럼, 알고 있겠지만 이쪽이야/"
+			ENDIF
+		ELSE
+			;身請け可
+			IF TALENT:MASTER:남자 && TALENT:MASTER:오토코노코
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"그럼, 오늘도 날 골라줘%ハート()%/바람피우면 싫어, 달링？/"
+			ELSEIF TALENT:MASTER:남자
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"그럼, 오늘도 날 골라줘%ハート()%/바람피우면 싫어, 여·보？/"
+			ELSE
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"그럼, 꼭 날 골라줘%ハート()%/다른 애 상대하면 싫어？/"
+			ENDIF
+		ENDIF
+		;誘いに乗ったフラグを立てる
+		SIF ダンジョンフラグ:31:4 != 2
+			ダンジョンフラグ:31:4 = 2
+		CALL DUNGEON_WORP,1,12,4
+	;NO
+	ELSE
+		;通常時
+		IF 六本木娼婦フラグ:3 != 2
+			IF TALENT:MASTER:남자 || TALENT:MASTER:오토코노코 || TALENT:MASTER:후타나리
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"그래… 아쉽네/마음이 바뀌면 언제든 와도 돼？/"
+			ELSE
+				;女性で断った場合、初回と2回目でアドバイス付き
+				IF 六本木娼婦フラグ:3 == 0 && ダンジョンフラグ:31:4 == 0
+					CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"뭐, 그렇겠지…/만약 당신이 이 거리에서 놀고 싶다면 동쪽 가게를 추천할게/거기라면 멋진 남자가 널려 있거든"
+				ELSEIF 六本木娼婦フラグ:3 == 0 && ダンジョンフラグ:31:4 == 1
+					CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"뭐, 그렇겠지…/만약 동쪽 가게에 간다면 뒷골목으로 잘못 들어가지 않도록 조심하렴/꽤나 위험한 꼴을 당하는 경우도 많으니까, 거긴"
+				ELSE
+					CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"그래, 그럼 어쩔 수 없네/다음에 또 봐/"
+				ENDIF
+			ENDIF
+			;初見の場合、断ったフラグを立てる
+			SIF ダンジョンフラグ:31:4 == 0
+				ダンジョンフラグ:31:4 = 1
+		;身請け可
+		ELSE
+			IF TALENT:MASTER:남자 && TALENT:MASTER:오토코노코
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"으~음, 짓궂어라/하지만 그렇게 부끄러워하는 것도 귀엽단 말이지/침대 위와는 딴판 같아%ハート()%"
+			ELSE
+				CALL MESSAGE_WINDOW_D_ICON, GET_識別番号("ナヴィ"),D31_FACE("ナヴィ"), "04_表通り娼館", @"%LOCALS%", @"어머… 오늘은 어디 볼일이라도 있으려나/그럼 그거 끝나면 내게로 와줄래？/"
+			ENDIF
+		ENDIF
+	ENDIF
+;ナヴィ身請け済みの場合、代理の客引き
+ELSEIF 六本木娼婦フラグ:3 > 3
+	IF 六本木娼婦フラグ:2 > 3 || 六本木娼婦フラグ:4 > 3  || 六本木娼婦フラグ:5 > 3 || 六本木娼婦フラグ:6 > 3 
+		;ナヴィ以外も身請け済みの場合、複数で客引き
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞낙적한 나비를 대신해 새 얼굴의 아가씨들이 호객을 하고 있다//"
+		
+		;ここで相手を抽選
+		FOR LCOUNT, 12, 17
+			;前任が身請け済みでない場合は除外
+			SIF 六本木娼婦フラグ:(LCOUNT-10) <= 3
+				CONTINUE
+			客引きテーブル:LOCAL = LCOUNT
+			LOCAL ++
+		NEXT
+		客引き = 客引きテーブル:(RAND:LOCAL)
+	ELSE
+		;それ以外はシリー単体で客引き
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞낙적한 나비를 대신해 드리아드가 호객을 하고 있다//"
+		客引き = 13
+	ENDIF
+
+	IF 客引き == 12
+		;セシリア客引き
+		;指名した事ない
+		IF 六本木娼婦フラグ:12 == 0 
+			LOCALS = 엘프
+			CALL MESSAGE_WINDOW_D_ICON, , "67_セシリア", , LOCALS, @"미안하네. 시간 좀 괜찮겠나…？/저기 창관 사람인데, 일손이 부족해서 돌아가며 호객을 하고 있어서 말이지…/"
+			CALL MESSAGE_WINDOW_D_ICON, , "67_セシリア", , LOCALS, @"혹시 시간과 지갑 사정에 여유가 있다면/돕는 셈 치고 놀다 가줄 수는 없겠나？/"
+		;指名した事あり
+		ELSE
+			LOCALS = 세실리아
+			CALL MESSAGE_WINDOW_D_ICON, , "67_セシリア", , LOCALS, @"…오오！ 또 만났군！/이런 일은 익숙지 않아서 아는 얼굴을 만나니 안심이 되는군/"
+			CALL MESSAGE_WINDOW_D_ICON, , "67_セシリア", , LOCALS, @"손님을 안내하면 당분간은 매장 안으로 돌아갈 수 있으니,/날 돕는 셈 치고 같이 가주지 않겠나？/"
+		ENDIF
+	ELSEIF 客引き == 13
+		;シリー客引き
+		;指名した事ない
+		IF 六本木娼婦フラグ:13 == 0 
+			LOCALS = 드리야드
+			CALL MESSAGE_WINDOW_D_ICON, , "68_シリー", , LOCALS, @"아！ 거기 맛있어 보이는 당신/우리랑 잠깐 안 놀래요☆/"
+		;指名した事あり
+		ELSE
+			LOCALS = 실리
+			CALL MESSAGE_WINDOW_D_ICON, , "68_シリー", , LOCALS, @"아아~！ 저번의 맛있는 사람이다아/또 우리랑 놀다 가지 않을래요☆/"
+		ENDIF
+	ELSEIF 客引き == 14
+		;コートニー客引き
+		;指名した事ない
+		IF 六本木娼婦フラグ:14 == 0 
+			LOCALS = 네코마타
+			CALL MESSAGE_WINDOW_D_ICON, , "69_コートニー", , LOCALS, @"거기 지나가는 손님 잠깐만！/애니멀 테라피 안 받고 가실래요~？ 지금이라면 마음껏 냥냥거릴 수 있어요~/"
+		;指名した事あり
+		ELSE
+			LOCALS = 코트니
+			CALL MESSAGE_WINDOW_D_ICON, , "69_コートニー", , LOCALS, @"거기 지나가는 손님 잠깐만！/나랑 플라이 어웨이 로망 비행 떠나보지 않을래요~/"
+		ENDIF
+	ELSEIF 客引き == 15
+		;カスミン客引き
+		;指名した事ない
+		IF 六本木娼婦フラグ:15 == 0 
+			LOCALS = 마유 가이아교도
+			CALL MESSAGE_WINDOW_D_ICON, , "70_カスミン", , LOCALS, @"아아악！！ 이놈이고 저놈이고 위기감이 부족해！/난 인솔 교사가 아니란 말이다！/"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞아무래도 성가신 손님을 쫓아내고 있던 모양이다/옆에 있는 다른 아가씨가 걱정스럽게 쳐다보고 있다/"
+			CALL MESSAGE_WINDOW_D_ICON, , "70_カスミン", , LOCALS, @"이젠 귀찮으니까 대충 가게로 데려가！/거기 그놈으로 됐어. 이 녀석 안내해둬/"
+		;指名した事あり
+		ELSE
+			LOCALS = 카스민
+			CALL MESSAGE_WINDOW_D_ICON, , "70_カスミン", , LOCALS, @"적재적소라는 말도 모르냐！ 나한테 홍보를 시키지 말라고！！/……응？ 쳇！ 또 만났군…/"
+			CALL MESSAGE_WINDOW_D_ICON, , "70_カスミン", , LOCALS, @"이제 당신으로 됐어. 일단 가게로 데려가면 둘러댈 수 있겠지！//"
+		ENDIF
+	ELSEIF 客引き == 16
+		;エイプリル客引き
+		;指名した事ない
+		IF 六本木娼婦フラグ:16 == 0 
+			LOCALS = 알프
+			CALL MESSAGE_WINDOW_D_ICON, , "71_エイプリル", , LOCALS, @"오늘 밤 파티 예정은 어떠신가요~？/밤의 꽃과 나비가 춤추는 무도회, 지금이라면 초대장도 얹어드릴게요~/"
+		;指名した事あり
+		ELSE
+			LOCALS = 에이프릴
+			CALL MESSAGE_WINDOW_D_ICON, , "71_エイプリル", , LOCALS, @"안녕하세요. 오늘 밤도 무도회 권유하러 왔답니다~/너와 함께라면 또 즐거운 스텝을 밟을 수 있을 것 같아！/"
+		ENDIF
+	ENDIF
+	
+	;遊ぶか選択
+	;シリー客引きで指名した事ある場合、オマケ選択あり
+	IF 客引き == 13 && 六本木娼婦フラグ:13 != 0 
+		CALL INPUT_SELECT_D, "[0] 놀다 간다/[9] 거기 뒷골목에서…/[1] 그만둔다/",,, 2
+	ELSE
+		CALL INPUT_YN_D , "놀다 간다" , "그만둔다"
+	ENDIF
+	;YES
+	IF RESULT == 0
+		IF 客引き == 12
+			;セシリア客引き
+			CALL MESSAGE_WINDOW_D_ICON, , "67_セシリア", , LOCALS, @"그, 그런가！！ 정말 살았네！/……그, 그런데 자네 여기사는 좋아하나？ 지금이라면 엘프 기사를 지명할 수 있다고/"
+		ELSEIF 客引き == 13
+			;シリー客引き
+			CALL MESSAGE_WINDOW_D_ICON, , "68_シリー", , LOCALS, @"네~에☆ 손님 한 분 안내요~！/괜찮다면 절 골라주세요？/"
+		ELSEIF 客引き == 14
+			;コートニー客引き
+			CALL MESSAGE_WINDOW_D_ICON, , "69_コートニー", , LOCALS, @"네 기꺼이요~! 아, 선술집이 아니었지 미안해！/사죄의 뜻으로 날 골라주면 서비스해 줄게！/"
+		ELSEIF 客引き == 15
+			;カスミン客引き
+			CALL MESSAGE_WINDOW_D_ICON, , "70_カスミン", , LOCALS, @"오냐, 그거면 됐어/그럼 거기 녀석한테 안내시킬 테니 가게 따라가라？/"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞함께 와 있던 다른 아가씨의 안내로 가게에 들어가게 되었다//"
+		ELSEIF 客引き == 16
+			;エイプリル客引き
+			CALL MESSAGE_WINDOW_D_ICON, , "71_エイプリル", , LOCALS, @"그럼 꿈속(댄스 플로어)으로 안~내！/파트너 고르기 망설여지면 날 골라줘？ 제대로 리드해 줄 테니까/"
+		ENDIF
+		CALL DUNGEON_WORP,1,12,4
+	ELSEIF RESULT == 9 && 六本木娼婦フラグ:13 != 0
+		;路地裏で一発
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞안타깝지만 가게에 들를 만큼 시간에 여유는 없다/하지만 잠깐이라면 상대해 줄 수 있는데, 어때？/라고 역으로 유혹해 보았다…"
+		CALL MESSAGE_WINDOW_D_ICON, , "68_シリー", , LOCALS, @"후후, 몰래 훔쳐먹기네요☆ 저도 좋아해요 그런 거//"
+		CALL SHOW_PICTURE, "EMPTY"
+		CALL DUNGEON_WORP,1,22,4
+		CALL MESSAGE_WINDOW_D_ICON, , "68_シリー", , LOCALS, @"여기라면 밖에서 보이지도 않고, 당장 하죠☆//"
+		CALL MESSAGE_WINDOW_D_ICON, , "68_シリー", , LOCALS, @"몰래 독차지하는 죄악의 맛☆ 잘 먹겠습니~다//"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+		CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, , "68_シリー", , LOCALS, @"…응으☆ 이 맛 역시…… 위험하네요！/버릇되어버릴 것 같아요…/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞즐겁게 놀았습니다…//"
+		
+		EXP:MASTER:성교경험 += 1
+		EXP:MASTER:절정경험 += 2
+		JUEL:MASTER:쾌Ｃ += 500
+		JUEL:MASTER:쾌Ｂ += 300
+		IF !TALENT:MASTER:남자
+			EXP:MASTER:레즈경험 += 1
+			JUEL:MASTER:쾌Ｖ += 200
+		ENDIF
+		IF TALENT:MASTER:남자 || TALENT:MASTER:후타나리
+			EXP:MASTER:질사경험 += 2
+			EXP:MASTER:사정경험 += 5
+		ENDIF
+		CALL CONTROL_MAG, MASTER, -1000
+		CALL DUNGEON_WORP,1,20,6
+	;NO
+	ELSE
+		IF 客引き == 12
+			;セシリア客引き
+			CALL MESSAGE_WINDOW_D_ICON, , "67_セシリア", , LOCALS, @"……역시 안 되나. 다른 데 알아봐야겠군/혹시 마음이 바뀌면 언제든 찾아와주게/"
+		ELSEIF 客引き == 13
+			;シリー客引き
+			CALL MESSAGE_WINDOW_D_ICON, , "68_シリー", , LOCALS, @"아쉬워~라. 다음에 또 와주세요☆//"
+		ELSEIF 客引き == 14
+			;コートニー客引き
+			CALL MESSAGE_WINDOW_D_ICON, , "69_コートニー", , LOCALS, @"뭐~ 그럴 때도 있는 거지~. 내키면 또 와줘~！//"
+		ELSEIF 客引き == 15
+			;カスミン客引き
+			CALL MESSAGE_WINDOW_D_ICON, , "70_カスミン", , LOCALS, @"앙？ 귀찮아 죽겠네…/볼일 없으면 썩 꺼져！/"
+		ELSEIF 客引き == 16
+			;エイプリル客引き
+			CALL MESSAGE_WINDOW_D_ICON, , "71_エイプリル", , LOCALS, @"어라라… 선약이 있었구나/다음 시즌에 또 만나자~！/"
+		ENDIF
+	ENDIF
+ENDIF
+

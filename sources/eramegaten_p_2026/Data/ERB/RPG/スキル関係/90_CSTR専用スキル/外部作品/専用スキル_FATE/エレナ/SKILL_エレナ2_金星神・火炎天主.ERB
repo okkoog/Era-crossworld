@@ -1,0 +1,201 @@
+﻿;スキル名
+@SKILL_NAME_金星神・火炎天主,ARG
+RESULTS = 金星神・火炎天主
+
+;　명중
+@SKILL_HITRATE_金星神・火炎天主,ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_金星神・火炎天主,ARG
+#DIM SKILL_NUM
+#DIM L_DMG = 375
+SIF ARG < 0
+	RETURN L_DMG
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"金星神・火炎天主")
+;総威力は225,340,375、強化イベント経由時は300,420,450
+SELECTCASE SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム"))
+	CASE IS > 3
+		L_DMG = GETBIT(GET_RPG_CFLAG_TAKEOVER(ARG,"鯖強化フラグ"),0) ? 450 # 375
+	CASE IS > 1
+		L_DMG = GETBIT(GET_RPG_CFLAG_TAKEOVER(ARG,"鯖強化フラグ"),0) ? 420 # 340
+	CASEELSE
+		L_DMG = GETBIT(GET_RPG_CFLAG_TAKEOVER(ARG,"鯖強化フラグ"),0) ? 300 # 225
+ENDSELECT
+
+;何ヒット目かに応じて補正を掛ける（ヒット数を管理するHゲージが想定外の値だった場合、100を返す）
+L_DMG = INRANGE(SKILLGAGE_H_GET(ARG,SKILL_NUM),0,3) ? L_DMG * AUTO_SPLIT_INT("100_20_30_50","_",SKILLGAGE_H_GET(ARG,SKILL_NUM)) / 100 # L_DMG
+
+RETURN L_DMG
+
+;;クリティカル率
+;@SKILL_CRITICAL_RATE_金星神・火炎天主, ARG
+;RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_金星神・火炎天主,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_金星神・火炎天主,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_金星神・火炎天主,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_金星神・火炎天主,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_金星神・火炎天主, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_金星神・火炎天主,ARG
+RETURN 40
+
+;　相性
+@SKILL_TYPE_金星神・火炎天主,ARG
+RETURN GET_TYPE_NUM("화염"),GET_TYPE_NUM("파마"),GET_TYPE_NUM("핵열")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_金星神・火炎天主
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_金星神・火炎天主,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_金星神・火炎天主,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_金星神・火炎天主,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_金星神・火炎天主,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_金星神・火炎天主,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_金星神・火炎天主
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_金星神・火炎天主, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_金星神・火炎天主
+RETURN 0
+
+;没
+;@SKILL_RANK_金星神・火炎天主, ARG = -1
+
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_金星神・火炎天主,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;====================================================
+;@SKILL_TRIGGER_ACTIONABLE_金星神・火炎天主,ARG,ARG:1
+;RETURN 0
+
+;====================================================
+;カウンター発動条件
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_金星神・火炎天主,ARG,ARG:1
+;RETURN RESULT
+
+;====================================================
+;ダメージ発動時
+;====================================================
+;@SKILL_DAMAGE_EFFECT_金星神・火炎天主,ARG,ARG:1
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_金星神・火炎天主,ARG,ARG:1
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_金星神・火炎天主,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM NP_TIME
+#DIM RAKU_HOLD,16
+#DIM LCOUNT,3
+#DIMS L_STR
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"金星神・火炎天主")
+NP_TIME = SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム"))
+VARSET RAKU_HOLD,0
+VARSET LCOUNT,0
+
+FOR LCOUNT:2,0,2
+	;強化フラグ立ってたらラク・カジャ効果を一時的に入れ替えたりする処理を挟む
+	IF GETBIT(GET_RPG_CFLAG_TAKEOVER(ARG,"鯖強化フラグ"),0)
+		FOR LCOUNT,CFLAG:ARG:PT플래그 == 0 ? 1 # 7,CFLAG:ARG:PT플래그 == 0 ? 7 # 17
+			SIF (LCOUNT:2 == 0 ? CFLAG:POS(LCOUNT):방어강화 # RAKU_HOLD:LCOUNT) > 0
+				SWAP CFLAG:POS(LCOUNT):방어강화,RAKU_HOLD:LCOUNT
+		NEXT
+	ENDIF
+	SIF LCOUNT:2 == 1
+		BREAK
+	FOR LCOUNT:1,1,4
+		CALL SKILLGAGE_H_ADD(ARG,SKILL_NUM,1)
+		CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM
+	NEXT
+NEXT
+PRINTL
+;攻撃後のデバフ付与部分。ノウブル・ファンタズム終了までのターン数が多いほど効果が強化される
+;SKILL_SET_カジャンダは種別に応じて効果値を変更できるような処理はないので三つに分けて呼ぶ
+FOR LCOUNT,0,3
+	L_STR = %AUTO_SPLIT("4,4,8,8,12,12/-1,-1,-2,-2,-4,-4/2,2,3,3,4,4","/",LCOUNT)%
+	CALL SKILL_SET_カジャンダ,ARG,ARG:1,AUTO_SPLIT("防御_魔法効果/BS付着率/クリティカル","/",LCOUNT),-AUTO_SPLIT_INT(L_STR,",",NP_TIME),"範囲",\@LCOUNT != 2 ? NOWAIT # \@
+	PRINTL
+NEXT
+CALL SKILLGAGE_H_SET(ARG,SKILL_NUM,0)
+CALL SKILLGAGE_D_SET,ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム"),0
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_金星神・火炎天主,ARG
+;メモ：強化時にラク・カジャを無視する効果の説明を追記する
+PRINTFORML 적 전체에 화염, 파마, 핵열 복합 속성의 3연타 소 데미지\@ GETBIT(GET_RPG_CFLAG_TAKEOVER(ARG,"鯖強化フラグ"),0) ? 、이 공격은 라쿠・카자를 일시적으로 무시한다 #\@
+PRINTL 공격 후 적 전체의 방어, 마법 효과, 크리티컬률이 저하, BS 부여율이 상승
+PRINTL 
+PRINTL 빛을 두른 비행물체를 현현시켜, 주위를 불꽃으로 불태워버리는 보구
+PRINTL 「금성에서 날아온 신성 『사나트 쿠마라』의 힘을 일시적으로 ”재현”한 오의!」라는 것은 본인의 주장이지만, 실제 진위는 불명이다
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_金星神・火炎天主,ARG
+SIF SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム")) > 0
+	RETURN 1
+RETURN 0
+
+;スキルのタグ、他の処理でこのスキルがどういう物か調べる時に使う
+@SKILL_TAG_金星神・火炎天主
+RESULTS = 宝具

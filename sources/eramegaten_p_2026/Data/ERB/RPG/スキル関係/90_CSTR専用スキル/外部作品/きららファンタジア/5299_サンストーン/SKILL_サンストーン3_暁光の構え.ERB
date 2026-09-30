@@ -1,0 +1,182 @@
+﻿
+;スキル名
+@SKILL_NAME_暁光の構え,ARG
+RESULTS = 효광의 자세
+
+;　명중
+@SKILL_HITRATE_暁光の構え, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_暁光の構え, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_暁光の構え,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_暁光の構え,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_暁光の構え, ARG
+RETURN 1
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_暁光の構え,ARG
+IF ARG >= 0 && GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 3
+	RESULTS = %"ＣＨ:3"%
+	RETURN 0
+ENDIF
+RETURN 0
+
+;　相性
+@SKILL_TYPE_暁光の構え,ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_暁光の構え
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_暁光の構え,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_暁光の構え,ARG
+RETURN 4
+
+;　사거리
+@SKILL_RANGE_暁光の構え,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_暁光の構え,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_暁光の構え,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+@SKILL_SUCCESSION_TYPE_暁光の構え,ARG
+RETURN GET_SUCCESSION_NUM("검격")
+
+@SKILL_RANK_暁光の構え, ARG = -1
+RETURN 6
+
+;속도보정
+@SKILL_SPEED_暁光の構え, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_暁光の構え
+RETURN 0
+
+@SKILL_QUICK_ACTION_暁光の構え, ARG
+RETURN 1
+;====================================================
+;トリガー発動条件
+;
+;詳しい仕様については資料フォルダの解説を参照してください
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_暁光の構え,ARG,ARG:1
+#DIM LCOUNT
+;自分自身の行動でないと誘発しない
+SIF ARG != FLAG:행동순1
+	RETURN 0
+SIF ARG != ARG:1
+	RETURN 0
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+	RETURN 0
+SIF !PU_SKILLGAGE_H_GET(ARG,"暁光の構え")
+	RETURN 0
+;入力可能な状態じゃないとだめ
+SIF !ACTIONABLE_CHARA_F(ARG)
+	RETURN 0
+SIF !IS_PU_SKILL_入力行動(ARG, "【一刃】")
+	RETURN 0
+RETURN 1, CPOS(ARG)
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_暁光の構え,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+IF FLAG:총공격중
+	SELECTCASE PU_SKILLGAGE_D_GET(ARG,"【一刃】")
+		CASE 2
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "크리티컬", 4, "단체"
+		CASE 3
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "명중", 4, "단체"
+		CASE 4
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "공격", 4, "단체"
+		CASE 0
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "공격", 4, "단체"
+	ENDSELECT
+ELSE
+	CALL SET_RPG_CFLAG_BTL, ARG, "KFチャージスキル", 3, "-="
+	CALL SKILLGAGE_H_SET, ARG, SKILL_NUM ,1
+	PRINTFORML %CALLNAME:ARG%의 자세가 효광으로 바뀌었다.
+	SIF HAVE_PU_SKILL(ARG,"白夜の構え") && PU_SKILLGAGE_H_GET(ARG,"白夜の構え") > 0
+		CALL PU_SKILLGAGE_H_SET, ARG, "白夜の構え", 0
+	SIF HAVE_PU_SKILL(ARG,"落日の構え") && PU_SKILLGAGE_H_GET(ARG,"落日の構え") > 0
+		CALL PU_SKILLGAGE_H_SET, ARG, "落日の構え", 0
+ENDIF
+;====================================================
+;実行内容ここまで
+;====================================================
+
+@SKILLGAGE_DISPLAY_暁光の構え,ARG
+IF PU_SKILLGAGE_H_GET(ARG, "暁光の構え")
+	SETCOLOR COLOR("red")
+	PRINTFORML 자세: 효광
+	RESETCOLOR
+ENDIF
+
+;　説明文の表示
+@SKILL_EXPLAIN_暁光の構え,ARG
+PRINTL 발동 시, 자신의 크리티컬 데미지를 30% 상승시킨다.
+PRINTL 효과는 전투 종료까지 지속되거나, 다른 자세로 덮어씌워질 때까지 계속된다.
+PRINTL 차지 3을 소비하여 발동하지만, 행동 턴은 소비하지 않는다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_暁光の構え, ARG
+IF PU_SKILLGAGE_H_GET(ARG,"暁光の構え") > 0
+	RESULTS = 発動中
+	RETURN 0
+ELSEIF GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 3
+	RESULTS = 차지 부족
+	RETURN 0
+ENDIF
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_暁光の構え, ARG
+RESULTS:0 = 발동 시, 자신의 크리티컬 데미지를 30% 상승시킨다.
+RESULTS:1 = 효과는 전투 종료까지 지속되거나, 다른 자세로 덮어씌워질 때까지 계속된다.
+RESULTS:2 = チャージを3消費して発動するが、行動ターンは消費しない。
+
+@SKILL_PASSIVE_BTL_EFFECT_暁光の構え, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+#DIM TOTAL_DMG_B
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			SIF L_CRT && PU_SKILLGAGE_H_GET(L_P, "暁光の構え")
+				RETURN 30
+	ENDSELECT
+ENDIF

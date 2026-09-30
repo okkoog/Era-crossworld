@@ -1,0 +1,191 @@
+﻿
+
+;スキル名
+@SKILL_NAME_4961,ARG
+RESULTS = 사하스라라
+
+;　명중
+@SKILL_HITRATE_4961, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_4961, ARG
+;発動者と参加者の攻撃により、威力に補正がかかる
+RETURN 215 * (MAXBASE:ARG:공격 * 2 + MAXBASE:(CFLAG:ARG:링케이지참가자1):공격 + MAXBASE:(CFLAG:ARG:링케이지참가자2):공격) / (MAXBASE:ARG:공격 * 4)
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_4961,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_4961,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_4961, ARG, ARG:1
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_4961, ARG
+RETURN 20
+
+;　相性
+@SKILL_TYPE_4961,ARG
+RETURN GET_TYPE_NUM("타격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_4961
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_4961, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_4961, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_4961,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_4961,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_4961, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_4961
+RETURN GET_SUCCESSION_NUM("타격")
+
+;속도보정
+@SKILL_SPEED_4961, ARG = -1
+RETURN 20
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_4961
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_4961, ARG = -1
+RETURN 0
+
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_4961,ARG
+RETURN GET_STATE_NUM("BIND")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_4961,ARG
+RETURN 8
+;신경
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_4961,ARG
+RETURN 50
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_4961,ARG
+RETURN 95
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_4961, ARG, ARG:1, ARG:2
+			PRINTFORML ┏┓醍醐 ┏━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"간다!",72,LEFT%
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			PRINTFORML ┏┓京一 ┏━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"좋았어!",72,LEFT%
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			PRINTFORML ┏┓全員 ┏━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"포효하라! 왕관의 차크라!!",72,LEFT%
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			PRINTFORML ┏┓全員 ┏━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"파아아아아아아아앗!!!",72,LEFT%
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+CALL ATTACK_FIELD, ARG, ARG:1, 4961
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_4961, ARG
+PRINTL 마가미 학원 사나이 삼인방이 연마한 기를 부딪쳐 적 전체에 타격 물리 데미지
+PRINTL 확률에 따라 BIND 상태로 만든다
+PRINTL 
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_4961,ARG
+CALL CHECK_COST,ARG,4961
+SIF RESULT == 0
+	RETURN 0
+RETURN 1
+;とくにない
+
+
+;=====================================================
+;リンケージ設定
+;=====================================================
+@LINKAGE_4961
+RETURN 1
+
+@参加人数_4961
+RETURN 2
+
+@参加条件表示_4961,ARG
+SELECTCASE ARG
+	CASE 1
+		PRINTFORM 【醍醐　雄矢】
+	CASE 2
+		PRINTFORM 【蓬莱寺　京一】
+	CASE 3
+		PRINTFORM 【緋勇　龍麻】
+ENDSELECT
+
+@発動者条件_4961 , ARG
+SIF NO:ARG == [[キャラ:다이고]]
+	RETURN 1
+RETURN 0
+
+@参加者条件_4961, ARG , ARG:1
+SIF CPOS(ARG) < 1 || CPOS(ARG) > 6
+	RETURN 0
+CALL CHECK_COST_LINCAGE, ARG, 4961, ARG:1
+SIF RESULT == 0
+	RETURN 0
+SELECTCASE ARG:1
+	CASE 1
+		SIF NO:ARG == [[キャラ:쿄이치]]
+			RETURN 1
+		RETURN 0
+	CASE 2
+		SIF NO:ARG == [[キャラ:타츠마]]
+			RETURN 1
+		RETURN 0
+ENDSELECT
+@リンケージ能力参照者_4961, ARG
+	SIF FLAG:공격횟수 == 1
+		RETURN 1
+	RETURN 0
+
+@リンケージコストタイプ_4961, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 3
+	CASE 2
+		RETURN 3
+ENDSELECT
+@リンケージコスト_4961, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 20
+	CASE 2
+		RETURN 20
+ENDSELECT

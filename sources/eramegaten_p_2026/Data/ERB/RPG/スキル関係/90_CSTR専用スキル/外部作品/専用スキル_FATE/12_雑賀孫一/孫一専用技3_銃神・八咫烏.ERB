@@ -1,0 +1,140 @@
+﻿;スキル名
+@SKILL_NAME_銃神・八咫烏,ARG
+RESULTS = 銃神・八咫烏
+
+;　명중
+@SKILL_HITRATE_銃神・八咫烏, ARG
+;初段以降は初段の判定結果に従う
+SIF TFLAG:스킬용1 > 1
+	RETURN !GET_CREC_ACT(ARG, -1, "AVOID") ? 999 # 0
+RETURN 125
+
+;　威力
+@SKILL_POWER_銃神・八咫烏, ARG
+#DIM L_DMG
+#DIM L_MOD
+#DIMS L_DMGS,5
+#DIMS L_MODS,11
+SPLIT "360_480_540_576_600","_",L_DMGS
+SPLIT "100_1_3_5_7_9_10_12_14_16_23","_",L_MODS
+L_DMG = TOINT(L_DMGS:LIMIT(GET_RPG_CFLAG_TAKEOVER(ARG,"宝具再臨"),0,4))
+L_MOD = TOINT(L_MODS:LIMIT(TFLAG:스킬용1,0,10))
+RETURN L_DMG * L_MOD / 100
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_銃神・八咫烏, ARG
+;初段以降は初段の判定結果に従う
+SIF TFLAG:스킬용1 > 1
+	RETURN TFLAG:크리티컬발생_ACT ? 999 # 0
+RETURN 30
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_銃神・八咫烏,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_銃神・八咫烏,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_銃神・八咫烏, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_銃神・八咫烏,ARG
+RETURN 40
+
+;　相性
+@SKILL_TYPE_銃神・八咫烏,ARG
+RETURN GET_TYPE_NUM("비구"),GET_TYPE_NUM("전술")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_銃神・八咫烏
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_銃神・八咫烏,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;====================================================
+;攻撃手段
+;1.物理攻撃 2.魔法攻撃 3.총공격 4.アイテム攻撃(ダメージ計算時の依存ステータスに関わる)
+;関数がない場合はダメージタイプとおなじになる
+;====================================================
+@SKILL_ATTACKTYPE_銃神・八咫烏, ARG
+RETURN GET_攻撃タイプ_NUM("총")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_銃神・八咫烏,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_銃神・八咫烏,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_銃神・八咫烏,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_銃神・八咫烏,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_銃神・八咫烏, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_銃神・八咫烏
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_銃神・八咫烏,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM TEMP_IMMO_FLAG
+#DIM CHARGE_LV
+
+CHARGE_LV = LIMIT(PU_SKILLGAGE_D_GET(ARG,"ノウブル・ファンタズム"),1,5)
+
+CALL SET_C_BTL_EFFECT_SINGLE,ARG,ARG,@"銃神・八咫烏α_Lv{CHARGE_LV}",2,"銃攻撃による与ダメージ増加！"
+CALL SET_C_BTL_EFFECT_SINGLE,ARG,ARG,@"銃神・八咫烏β_Lv{CHARGE_LV}",2,"攻撃の威力が大以上時に与ダメージ増加！"
+
+;対象が不死身ではない場合、不死身フラグと不死身リセットフラグを立てる
+TEMP_IMMO_FLAG = CFLAG:POS(ARG:1):불사신플래그 < 1 ? 1 # 0
+SIF TEMP_IMMO_FLAG == 1
+	CFLAG:POS(ARG:1):불사신플래그 = 1
+FOR TFLAG:스킬용1,1,11
+	SIF TFLAG:스킬용1 == 10 && TEMP_IMMO_FLAG == 1
+		CFLAG:POS(ARG:1):불사신플래그 = 0
+	CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM
+NEXT
+CALL SET_C_BTL_EFFECT_SINGLE,ARG,POS(ARG:1),"銃神・八咫烏γ",3,"クリティカル率低下！"
+TEMP_IMMO_FLAG = 0
+TFLAG:스킬용1 = 0
+CALL PU_SKILLGAGE_D_SET(ARG,"ノウブル・ファンタズム",0)
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　説明文の表示
+@SKILL_EXPLAIN_銃神・八咫烏,ARG
+PRINTL 공격 전 자신에게 1턴 동안 『총 공격으로 주는 데미지 증가』 『위력이 대 이상인 공격 시 주는 데미지 증가』 효과를 부여한다.
+PRINTL 단체 고명중, 고크리티컬, 비구/전기 복합 속성의 10연타 소 데미지. 총 공격의 영향을 받는다.
+PRINTL 공격 후 대상에게 『회심률 저하』 효과를 부여한다.
+PRINTL 
+
+@SKILL_EXPLAIN_TOOLTIP_銃神・八咫烏, ARG
+RESULTS:0 = 사용 조건: 노블 판타즘의 『마력 방출』 기동
+RESULTS:1 = 공격 전 자신에게 1턴 동안 『총 공격으로 주는 데미지 증가』 『위력이 대 이상인 공격 시 주는 데미지 증가』 효과를 부여한다.
+RESULTS:2 = 単体高命中、高クリティカル、飛具戦技複合相性の10連小ダメージ。銃攻撃による影響を受ける。
+RESULTS:3 = 攻撃後、対象に『会心率低下』の効果を付与する。
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_銃神・八咫烏,ARG
+RETURN PU_SKILLGAGE_D_GET(ARG,"ノウブル・ファンタズム") > 0 ? 1 # 0
+
+;スキルのタグ、他の処理でこのスキルがどういう物か調べる時に使う
+@SKILL_TAG_銃神・八咫烏
+RESULTS = 宝具

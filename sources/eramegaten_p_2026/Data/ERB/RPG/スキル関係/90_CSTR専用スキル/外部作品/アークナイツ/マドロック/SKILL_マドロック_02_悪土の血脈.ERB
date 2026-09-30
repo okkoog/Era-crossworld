@@ -1,0 +1,105 @@
+﻿;スキル名
+@SKILL_NAME_悪土の血脈,ARG
+RESULTS = 악토의 혈맥
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_悪土の血脈, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_悪土の血脈,ARG
+RETURN 35
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_悪土の血脈
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_悪土の血脈,ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_悪土の血脈,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_悪土の血脈,ARG
+RETURN GET_SKILL_EFFECT_NUM("상태변화")
+
+;속도보정
+@SKILL_SPEED_悪土の血脈, ARG = -1
+RETURN 99999
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_悪土の血脈
+RETURN 0
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_悪土の血脈,ARG
+;RETURN GET_STATE_NUM("SLIP")
+RETURN 0
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_悪土の血脈,ARG
+;RETURN GET_TYPE_NUM("검격")
+RETURN 0
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_悪土の血脈,ARG
+RETURN 0
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_悪土の血脈,ARG
+RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_悪土の血脈,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL PRINT_HIT_MESSAGE, ARG, "防御相性強化！"
+CALL SKILL_SET_カジャンダ, ARG, ARG, "攻撃_防御", 8, "단체"
+CALL PU_SKILLGAGE_D_SET, ARG, "悪土の血脈", 1
+CALL SYNC_STATUS_TYPE, ARG
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_悪土の血脈, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	;RESULT   = 変化があるかどうか(基準値が100だがこの項目が指定されていないと0で返してしまうので真偽判定の処理を追加している)
+	;RESULT:1 = 耐性値。基準値が100なのに注意
+	CASE "相性"
+		SIF !PU_SKILLGAGE_D_GET(ARG, "悪土の血脈")
+			RETURN 0
+		SIF ARGS:1 == "만능"
+			RETURN 0
+		RETURN 1, 0
+ENDSELECT
+
+;　説明文の表示
+@SKILL_EXPLAIN_悪土の血脈,ARG
+PRINTL 자신의 공격력과 방어력을 크게 상승시킨다.
+PRINTL 또한 사용한 턴 동안 만능을 제외한 방어 상성이 강화된다.
+
+@SKILL_EXPLAIN_TOOLTIP_悪土の血脈, ARG
+RESULTS:0 = 자신의 공격력과 방어력을 크게 상승시킨다.
+RESULTS:1 = 또한 사용한 턴 동안 만능을 제외한 방어 상성이 강화된다.
+
+@SKILL_BATTLE_TURNEN, ARG
+CALL SYNC_STATUS_TYPE, ARG
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_悪土の血脈,ARG
+RETURN 1

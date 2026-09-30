@@ -1,0 +1,186 @@
+﻿;-------------------------------------------------
+;
+;-------------------------------------------------
+@INDIVIDUAL_EVENT_K5423, ARG, ARG:1 = 0, ARG:2 = -1
+#DIMS L_現剣質
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC L_SHOWLINE, 3
+;ARG:0　キャラ番号
+;ARG:1　関数種類　1,開放条件　2,타이틀　3,이벤트
+;ARG:2　イベント番号（0～63まで）
+
+;リストにキャラを表示する条件
+IF ARG:1 == 0
+	;イベント0で全部終了
+	SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+		RETURN 0
+	RETURN 1
+ENDIF
+
+SELECTCASE ARG:2
+	CASE 0
+		;解放条件
+		IF ARG:1 == 1
+			RETURN 1
+		ELSEIF ARG:1 == 2
+			;타이틀
+			RESULTS = 쿠비키리 바사라 검질 변경
+		;이벤트
+		ELSEIF ARG:1 == 3
+			VARI STOCK_REDRAW = CURRENTREDRAW()
+			VARI START_LINE = LINECOUNT
+			REDRAW 0
+			$START
+			CLEARLINE LINECOUNT - START_LINE
+			DRAWLINE
+			L_現剣質 = \@IS_LEARNED_SKILL(ARG, "首斬り破沙羅修羅奥義") ? 修羅 # 羅刹 \@
+			IF L_現剣質 == "修羅"
+				PRINTL 검질 선택<현재:수라>
+			ELSE
+				PRINTL 검질 선택<현재:나찰>
+			ENDIF
+			DRAWLINE
+			L_SHOWLINE:1 '= @"<div xpos = '0' ypos = '0' width = '3200' height = '3000' border_width = '2px' background_color = '%BGCOLOR_HTML("赤")%'>" + "<div>"
+			{
+			L_SHOWLINE:1 += "<div xpos = '50' ypos = '50'>" + @"<font color = '%BGCOLOR_HTML("赤", 1)%'>"
+						+ "□수라" + "<br>"
+						+ "　배드 스테이터스를 부여하는 범위 공격을 활용하여 싸운다" + "<br>"
+						+ "<br>"
+						+ "【통상기 1】카게와즈라이(그림자 앓이)" + "<br>"
+						+ "　　　　　 적 1열에 검격과 주살의 복합 상성으로 대 데미지를 준다" + "<br>"
+						+ "　　　　　 추가로 공격 성공 시 PANIC을 부여한다." + "<br>"
+						+ "　　　　　 " + "<br>"
+						+ "【통상기 2】누에타마(까마귀 깃털구슬)" + "<br>"
+						+ "　　　　　 적 1체와 그 주변의 적에게 주살과 만능의 복합 상성으로" + "<br>"
+						+ "　　　　　 데미지를 준다. 명중률이 높다." + "<br>"
+						+ "　　　　　 추가로 공격 성공 시 대상의 BS 부착률을 상승시킨다." + "<br>"
+						+ "【통상기 3】카게누이(그림자 묶기)" + "<br>"
+						+ "　　　　　 적 1열에 비구와 주살의 복합 상성으로 대 데미지를 준다." + "<br>"
+						+ "　　　　　 추가로 공격 성공 시 BIND를 부여한다." + "<br>"
+						+ "　　　　　 " + "<br>"
+						+ "【오의　 】카게마이・슈(그림자 춤・보답)" + "<br>"
+						+ "　　　　　 적 전체에 비구와 정신과 주살의 복합 상성으로 데미지를 주고," + "<br>"
+						+ "　　　　　 CHARM을 부여한다." + "<br>"
+						+ "　　　　　 추가로 대상의 크리티컬률을 저하시킨다." + "<br>"
+						+ "【비오의 】카게마이・신탄(그림자 춤・깊은 늪)" + "<br>"
+						+ "　　　　　 적 전체에 신경과 주살과 만능의 초특대 데미지를 주고" + "<br>"
+						+ "　　　　　 PALYZE를 부여하며," + "<br>"
+						+ "　　　　　 방어・마법효과를 저하시키고, BS 부착률을 상승시킨다." + "<br>"
+						+ "<font>" + "</div>"
+			}
+			L_SHOWLINE:2 += @"<div xpos = '3300' ypos = '0' width = '3200' height = '3000' border_width = '2px' background_color = '%BGCOLOR_HTML("青")%'>" + "<div>"
+			{
+			L_SHOWLINE:2 += "<div xpos = '50' ypos = '50'>" + @"<font color = '%BGCOLOR_HTML("青", 1)%'>"
+						+ "□나찰" + "<br>"
+						+ "　크리티컬률이 높은 단체 공격을 구사한다" + "<br>"
+						+ "<br>"
+						+ "【통상기 1】카게데(그림자 돋음)" + "<br>"
+						+ "　　　　　 적 1체에 검격과 비구의 복합 상성으로 대 데미지를 준다." + "<br>"
+						+ "　　　　　 명중률과 크리티컬률이 높다." + "<br>"
+						+ "　　　　　 " + "<br>"
+						+ "【통상기 2】카게바오리(그림자 깃옷)" + "<br>"
+						+ "　　　　　 적 1체와 그 주변의 적에게 비구와 주살의 복합 상성으로" + "<br>"
+						+ "　　　　　 대 데미지를 준다" + "<br>"
+						+ "　　　　　 " + "<br>"
+						+ "【통상기 3】토모비키(친구 끌기)" + "<br>"
+						+ "　　　　　 적 1체에 검격과 만능의 복합 상성으로 대 데미지를 준다." + "<br>"
+						+ "　　　　　 추가로 공격 성공 시 DYING을 부여한다." + "<br>"
+						+ "　　　　　 " + "<br>"
+						+ "【오의　 】카게마이・유메비키(그림자 춤・꿈 탄환)" + "<br>"
+						+ "　　　　　 적 1체에 검격과 주살의 복합 속성으로 6회 데미지를 준다." + "<br>"
+						+ "　　　　　 추가로 공격 성공 시 CURSE를 부여한다." + "<br>"
+						+ "　　　　　 크리티컬률이 높다." + "<br>"
+						+ "【비오의 】고쿠몬(옥문)" + "<br>"
+						+ "　　　　　 적 1체에 검격과 만능의 복합 속성으로 10회 데미지를 준다." + "<br>"
+						+ "　　　　　 추가로 공격 성공 시 만능 상성으로 DYING을 부여한다." + "<br>"
+						+ "　　　　　 크리티컬률이 높다." + "<br>"
+						+ "<font>" + "</div>"
+			}
+			L_SHOWLINE '= "<div xpos = '100' ypos = '0'>" + L_SHOWLINE:1 + L_SHOWLINE:2 + "</div>"
+			HTML_PRINT L_SHOWLINE
+			FOR LCOUNT, 0, 30
+				PRINTL 
+			NEXT
+			DRAWLINE
+			;TODO Divにたいしてボタンがうまくつくれないので本体が更新されたら直す
+			HTML_PRINT SET_COLOR_TAG(SET_BUTTON_TAG("[1] 수라", "1"), \@L_現剣質 == "修羅" ? gray # デフォルト\@)
+			HTML_PRINT SET_COLOR_TAG(SET_BUTTON_TAG("[2] 나찰", "2"), \@L_現剣質 == "羅刹" ? gray # デフォルト\@)
+			PRINTL [0] 돌아간다
+			;L_現剣質 = %CSTR:ARG:전용기5 == "影煩い" ? "修羅" # "羅刹"%
+			;PRINTFORML 現在の剣質は「%L_現剣質%」です。
+			;PRINTFORML 剣質を変更すると、以下のスキルが変化します。
+			;PRINTFORML %CSTR:ARG:전용기5%　%CSTR:ARG:전용기6%　%CSTR:ARG:전용기7%
+			;PRINTFORML
+			;PRINTFORML [1]修羅　状態異常効果のあるの範囲攻撃を行います
+			;PRINTFORML 　　　　	使用スキル：影縫　影舞・酬　影舞・深潭　等
+			;PRINTFORML
+			;PRINTFORML [2]羅刹　CT率の高い単体攻撃なります
+			;PRINTFORML 　　　　	使用スキル：友引　影舞・夢彈　獄門　等
+			;PRINTFORML
+			;PRINTFORML [0]変更しない
+			ONEINPUT
+			SELECTCASE RESULT
+				CASE 0
+					REDRAW STOCK_REDRAW
+					RETURN 0
+				CASE 1
+					FOR LCOUNT, 1, 13
+						SIF CSTR:ARG:@"전용기{LCOUNT}" == "影出"
+							CSTR:ARG:@"전용기{LCOUNT}" '= "影煩い"
+						SIF CSTR:ARG:@"전용기{LCOUNT}" == "影羽織"
+							CSTR:ARG:@"전용기{LCOUNT}" '= "鵺玉_固有"
+						SIF CSTR:ARG:@"전용기{LCOUNT}" == "首斬り破沙羅羅刹奥義"
+							CSTR:ARG:@"전용기{LCOUNT}" '= "首斬り破沙羅修羅奥義"
+					NEXT
+					C_LEARNED_SKILLS:ARG:0 '= REPLACE(C_LEARNED_SKILLS:ARG:0, "影出", "影煩い")
+					C_LEARNED_SKILLS:ARG:0 '= REPLACE(C_LEARNED_SKILLS:ARG:0, "影羽織", "鵺玉_固有")
+					C_LEARNED_SKILLS:ARG:0 '= REPLACE(C_LEARNED_SKILLS:ARG:0, "首斬り破沙羅羅刹奥義", "首斬り破沙羅修羅奥義")
+				CASE 2
+					FOR LCOUNT, 1, 13
+						SIF CSTR:ARG:@"전용기{LCOUNT}" == "影煩い"
+							CSTR:ARG:@"전용기{LCOUNT}" '= "影出"
+						SIF CSTR:ARG:@"전용기{LCOUNT}" == "鵺玉_固有"
+							CSTR:ARG:@"전용기{LCOUNT}" '= "影羽織"
+						SIF CSTR:ARG:@"전용기{LCOUNT}" == "首斬り破沙羅修羅奥義"
+							CSTR:ARG:@"전용기{LCOUNT}" '= "首斬り破沙羅羅刹奥義"
+					NEXT
+					C_LEARNED_SKILLS:ARG:0 '= REPLACE(C_LEARNED_SKILLS:ARG:0, "影煩い", "影出")
+					C_LEARNED_SKILLS:ARG:0 '= REPLACE(C_LEARNED_SKILLS:ARG:0, "鵺玉_固有", "影羽織")
+					C_LEARNED_SKILLS:ARG:0 '= REPLACE(C_LEARNED_SKILLS:ARG:0, "首斬り破沙羅修羅奥義", "首斬り破沙羅羅刹奥義")
+			ENDSELECT
+			GOTO START
+			;IF (RESULT == 1 && L_現剣質 == "羅刹") || (RESULT == 2 && L_現剣質 == "修羅")
+			;	L_現剣質 = %RESULT == 1 ? "修羅" # "羅刹"%
+			;	PRINTFORML 「%L_現剣質%」に変更しました。
+			;	SWAP CSTR:ARG:전용기5, CSTR:ARG:전용기9
+			;	SWAP CSTR:ARG:전용기6, CSTR:ARG:전용기10
+			;	SWAP CSTR:ARG:전용기7, CSTR:ARG:전용기11
+			;	SWAP CSTR:ARG:전용기8, CSTR:ARG:전용기12
+			;ENDIF
+		ENDIF
+	CASE 1
+		;解放条件
+		IF ARG:1 == 1
+			;前イベントの　シアノとクレーンゲーム　既読後
+			;SIF GETBIT(CFLAG:CAST:개별이벤트읽음,0)
+			;	RETURN 1
+		ELSEIF ARG:1 == 2
+		;타이틀
+			IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+				;타이틀
+				RESULTS = 
+			ELSE
+				;未開放時のタイトル（解放条件を入れておく）
+				;RESULTS = (%CALLNAME:ARG%とクレーンゲームを見ている)
+			ENDIF
+		;이벤트
+		ELSEIF ARG:1 == 3
+			;好感度以外は後に上昇値が表示される
+			;CFLAG:ARG:(MASTER + 2100) += (好感度)
+			;TCVAR:ARG:획득의존도 += 
+			;TCVAR:ARG:획득충성도 += 
+			;CALL ADDS_EXP("○○経験", 1, ARG)
+			RETURN 1
+		ENDIF
+ENDSELECT
+RETURN 0

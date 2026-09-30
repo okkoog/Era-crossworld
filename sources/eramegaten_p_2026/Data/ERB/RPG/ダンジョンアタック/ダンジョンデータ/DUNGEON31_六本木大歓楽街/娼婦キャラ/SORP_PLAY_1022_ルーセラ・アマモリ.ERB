@@ -1,0 +1,550 @@
+﻿;=====================================================
+;ルーセラ・アマモリ
+;=====================================================
+;日米ハーフのアマゾネスさん、ただしガチモンのアマゾネスなのでまっとうな人間ではない
+;漢字表記は「亜馬森ルーセラ」（亜馬森は南米アマゾンのことをさす）
+;日本にはつよつよ男性を探しに来た（そのため、あなたが男性限定、レベル条件アリ）
+;タッパも乳も尻も太もももデカい
+;実は表の娼館で働いたらマズい年齢だが、自信満々でやってきたので通っちゃったという裏設定
+;あと実家がメチャクチャ太い。娼婦やってるのは男漁りのため。特に給料とかもらってない
+;レベル条件で（次回から）ガンガン安くなる
+;「ルーセラ」は映画『アマゾネス』に登場するキャラから
+;まあ『アマゾネス』、レズビアンな感じなのでアレだが。もう50年は前の映画ですね。
+;=====================================================
+;六本木娼婦フラグ予備1　「前回あなたが何レベルだった？
+;　0 ：初回
+;　1 ：Lv30台だったデース　雑魚の中ではマシな方デース
+;　2 ：Lv40台だったデース　ワタシとまあまあ同じくらいデース
+;　3 ：Lv50台だったデース　ベイビー産むならこのくらい欲しいデース
+;　4 ：Lv60台だったデース　ベイビー産みたいデース……（ハート）
+;　5 ：Lv70台だったデース　ベイビー産ませてほしいのでDOGEZAから入るデース（ハート）
+;　99：身請けされちゃったデース（ハート）　ガンガンブリブリベイビーひりだすデース！！！
+;=====================================================
+;230627	NEO		出現条件ミスを修正
+;				AI画像のイメージが＊まったく＊違うのでアイコン画像出ないようにした
+;231020			六本木娼婦フラグ予備1の誤りを発見したので修正
+;=====================================================
+
+@SORP_PLAY_1022, ARGS
+#DIM CHARA, 1
+#DIM CONST CSV_NO = [[キャラ:루세라]]
+#DIMS DYNAMIC ICON_ADDRESS
+ICON_ADDRESS '= D31_FACE("ルーセラ")
+SELECTCASE ARGS
+	CASE "娼婦番号"
+		RESULTS = [1022]
+	CASE "キャラ名"
+	RESULTS = 루세라
+	CASE "指名名"
+	RESULTS = 루세라·아마모리(반마인)
+	CASE "所属"
+		;表なら1、裏なら2、援助なら3
+		RETURN 1
+	CASE "判定"
+		;指名可能なら0、不可なら1
+		SIF GETCHARA(CSV_NO) >= 0
+			RETURN 1
+		;身請けしてたらダメ
+		SIF 六本木娼婦フラグ予備1:22 == 99
+			RETURN 1
+		SIF 六本木娼婦フラグ:22 == 3
+			RETURN 1
+		;あなたが男性でレベルが30以上でないと出ない（彼女がギリッギリ許せる程度に最低限強くないとダメ）
+		;男性でないならアウト
+		SIF !IS_MALE(MASTER)
+			RETURN 1
+		;Lv30未満だとアウト
+		SIF BASE:MASTER:LV < 30
+			RETURN 1
+		RETURN 0
+	CASE "価格"
+		;初めては固定
+		IF 六本木娼婦フラグ:22 == 0
+			RETURN 600
+		;前回レベル75以上
+		;強い雄にはすげー安くなる　さっさと身請けしてくれって感じ
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 5
+			RETURN 3
+		;前回レベル60以上
+		;60を超えると明確に安い
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 4
+			RETURN 150
+		;前回レベル50以上
+		;彼女より１段強い状態
+		;安めのお値段
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 3
+			RETURN 250
+		;前回レベル40以上
+		;標準のお値段
+		;アマゾーンのレベルは43、まあ同格くらいのならいいかな～っていう彼女のお値段
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 2
+			RETURN 500
+		;前回レベル30以上
+		;800と高め
+		ELSE
+			RETURN 1000
+		ENDIF
+	CASE "紹介文"
+		;初めては固定
+		IF 六本木娼婦フラグ:22 == 0
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"과연, 루세라 양을 희망하십니까/그녀는, 강인한 남성분에게만 소개해 드리고 있습니다/"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그녀는 일본계 미국인 혼혈로, 남미의 모 부족 출신……이라고 합니다/탄력 넘치는 육체로, 춤추듯, 밝고 즐겁고 활기차게……/그리고, 대단히 격렬한 섹스를 치른다고 호평이지요"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"……하지만 다소 기운이 지나치게 넘치는 탓에, /어느 정도 튼튼하고 강한 분에게만 소개해 드리고 있습니다/"
+		;前回レベル75以上
+		;強い雄にはすげー安くなる　さっさと身請けしてくれって感じ
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 5
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"과연, 루세라 양입니까/루세라 양으로부터는 『빨리 데려가 주세YO-！！！』라는 전언을 받았습니다/몸값도, 그녀 자신이 직접 지불해 둔 상태지요"
+		;前回レベル60以上
+		;60を超えると明確に安い
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 4
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"과연, 루세라 양입니까/루세라 양으로부터는 『150마카면 됩니DA-！』라는 전언을 받았습니다/"
+		;前回レベル50以上
+		;彼女より１段強い状態
+		;安めのお値段
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 3
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"과연, 루세라 양입니까/루세라 양으로부터는 『250마카면 됩니DA-！』라는 전언을 받았습니다/"
+		;前回レベル40以上
+		;標準のお値段
+		;アマゾーンのレベルは43、まあ同格くらいのならいいかな～っていう彼女のお値段
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 2
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"과연, 루세라 양입니까/루세라 양으로부터는 『500마카면 됩니DA-！』라는 전언을 받았습니다/"
+		;前回レベル30以上
+		;1000と高め
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"과연, 루세라 양입니까/루세라 양으로부터는 『강한 수컷을 소개해 주면 싸게 해드릴게YO-！』/……라는 전언을 받았습니다"
+		ENDIF
+	CASE "確認"
+		;初めては固定
+		IF 六本木娼婦フラグ:22 == 0
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그럼, 루세라 양입니다만…/하룻밤에 600마카가 되겠습니다/"
+		;前回レベル75以上
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 5
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그럼, 루세라 양입니다만…/……하룻밤에 ３마카가 되겠습니다/공짜로……라는 건, 저희 가게로서도 곤란하기에……/청소비 명목으로, 양해해 주시면 감사하겠습니다"
+		;前回レベル60以上
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 4
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그럼, 루세라 양입니다만…/하룻밤에 150마카가 되겠습니다/"
+		;前回レベル50以上
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 3
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그럼, 루세라 양입니다만…/하룻밤에 250마카가 되겠습니다/"
+		;前回レベル40以上
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 2
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그럼, 루세라 양입니다만…/하룻밤에 500마카가 되겠습니다/"
+		;前回レベル30以上
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그럼, 루세라 양입니다만…/하룻밤에 1000마카가 되겠습니다/"
+		ENDIF
+	CASE "プレイ口上"
+		;初めては固定
+		IF 六本木娼婦フラグ:22 == 0
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"헬로-！ 루세라·아마모리, 입니DA-！//"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞문을 쾅！！！ 열어젖히며, 그녀가 나타났다/＞갈색 피부의, 키가 크고, 다소 근육질인……/＞하지만 젖가슴과 엉덩이, 허벅지가 엄청나게 큰, 밝은 금발의 여성이었다"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞……이런 곳에 있는 시점에서 당연하겠지만, 아마도 인간은 아닐 것이다……/＞하지만, 인간에게도 꽤나 가까운 것 같다/남미 출신이라고 하니, 아마조네스나 뭐 그런 부류일까？"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞그녀는 외설적인 손짓을 쑥 내밀며 말했다//"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"불알은 부글부글 끓고 있습니KKAY？ 충전은 만땅입니KKAY？/좀처럼 소개해 주는 수컷이 없어서, /보지가 바짝 메마를 뻔했습니DA-！"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"오늘은 터질듯한 엉덩이살을 퍽퍽 내리치면서%ハート()% /왕가슴을 출렁출렁 흔들면서%ハート()% /푸우우욱%ハート()% 정액 즙을 통째로 뽑아내 줄 테니, 각오하세YO-%ハート(3)%"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+			CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞30분 후//"
+			;まだフラグが分岐してないのでここで判断
+			IF 0
+			ELSEIF BASE:MASTER:LV >= 75
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"오호옷%ハート(3)% 오오옷%ハート(3)%/죽는DA-%ハート()% 이거 복상사당해앳――으으으오오오옷%ハート(3)%/아흣, 히이이잇%ハート(3)% 쩔어버립니DA-읏%ハート(3)%/이 자지 대박%ハート(3)% 응, 오오오오오오오오옷%ハート(3)%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 기승위로, " + CALLNAME:MASTER + "의 남근을 게걸스럽게 탐하고 있다/＞죽는다 죽는다 외치고 있지만, 여전히 분수를 뿜고 있으며, /＞질의 조임은 힘차고, 무엇보다 비명을 지를 기운이 넘쳐난다"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞……애초에, 자지를 뽑지 않고 물고 늘어지는 건 루세라 쪽이다/＞자궁구가 활짝 내려와 있는 것을 귀두로 느끼며, /＞" + CALLNAME:MASTER + "는 질내사정을 한다"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"큭, 히갸앗…… 이거어읏…… 사정……/……아앗, 오오아아아아아아아아아아앗――――읏읏읏%ハート(3)%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞자랑하던 가슴과 엉덩이가 흔들리는 모습과, 염치도 체면도 다 내던진 얼굴과 목소리를, /＞" + CALLNAME:MASTER + "는 주어진 시간 가득, 원 없이 즐겼다……"
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+				CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"……당신의 베이비…… 나, 낳게 해줬으면 좋겠습니DA-……%ハート()% /언제까지나 기다릴게YO-……%ハート()% /몸값은, 제가 내겠습니DA-……%ハート()%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 풀려버린 허리를 끌듯이 " + CALLNAME:MASTER + "에게 매달리며 말했다/＞그리고는, 마지막으로 열렬하고도 농후한 키스를 퍼부어왔다……/"
+			ELSEIF BASE:MASTER:LV >= 60
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"응오옷%ハート()% 오오오%ハート()% /이, 자지%ハート()% 대단합니DA-읏%ハート()% /최강 수컷님, 발견, 입니DA-읏%ハート(3)%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 기승위로, " + CALLNAME:MASTER + "의 남근을 게걸스럽게 탐하고 있다/＞겨드랑이를 과시하듯 뒤통수에 팔을 깍지 끼고, /＞출렁, 풍만하게 가슴과 엉덩이를 흔들며, /＞정액을 짜내는 허리짓을 반복하고 있다"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"당신, 이라면읏%ハート()% 노콘 질내, 임신 정액 즙%ハート()% /제 안에 듬뿍듬뿍 싸질러도 오케이입니DA- %ハート()% /생기면 낳겠습니DA-%ハート(3)%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞립서비스일까？/＞뭐, 어느 쪽이든 좋다…… 당사자가 괜찮다고 하니, 사양 없이 질내사정해 주기로 하자/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"응읏오앗%ハート()% 엄청, 난%ハート()% 기세, 입니DA-%ハート()% /아기방이읏%ハート()% 꿀렁꿀렁, 요동칩니DA-읏%ハート()% /임신 정액, 듬뿍, 잘 먹었습니DA-……%ハート(3)%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞잘 먹었습니다, 라고 말하면서도, 그녀는 " + CALLNAME:MASTER + "의 위에서 내려올 생각을 하지 않는다/＞……오히려, 이제부터가 본방이라는 눈치다……/"
+				CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+				CALL SHOW_PICTURE, "EMPTY"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"…………？/립서비스？ 펠라가 부족했습니KKAY？/……아！ 말을 안 했었네YO-！/빨아줄 보람이 있는 자지라서 너무 맛있었습니DA-！"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 어리둥절한 얼굴로 고개를 갸우뚱거리더니, /＞그리고는 (또다시) 가슴을 활짝 까뒤집어놓고 외쳤다/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞이대로 있다간 영영 나가지 못할 것임을 직감한 " + CALLNAME:MASTER + "는, 루세라에게 작별을 고했다//"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"또 와주셨으면 좋겠습니DA-！/임신 가능한 날을 알려드릴게YO-！！！/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 사타구니에서 정액을 질질 흘리면서, 붕붕 손을 흔들며 " + CALLNAME:MASTER + "를 배웅했다……//"
+			ELSEIF BASE:MASTER:LV >= 50
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"응~~~~읏%ハート()% 당신, 좋은 자지를 가졌습니DA-%ハート()% /허약한 수컷에게선 건강한 베이비가 안 나온답니DA-%ハート()%/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞쩌억, 찌걱, 퍽, 하고 격렬한 마찰음이 울린다/＞루세라는 " + CALLNAME:MASTER + "의 위에서 허리를 흔들어대고 있다/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"이 정도, 라면읏%ハート()% 생기면, 낳아도 오케이입니DA-%ハート()% /다음번엔읏%ハート()% 싸게 해드릴게YO-%ハート(3)%/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞어리광을 부리는 듯한 목소리였지만, 허리놀림은 게걸스럽기 짝이 없다/＞" + CALLNAME:MASTER + "는, 루세라의 서비스를 듬뿍 받았다……/"
+			ELSEIF BASE:MASTER:LV >= 40
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"응읏……%ハート()% 당신, 제법 괜찮은 자지입니DA-%ハート()% /팍팍 쥐어짜 낼 테니%ハート()% 각오하세YO-%ハート(3)%/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞쩌억, 찌걱, 퍽, 하고 격렬한 마찰음이 울린다/＞루세라는 " + CALLNAME:MASTER + "의 위에서 허리를 흔들어대고 있다/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"기대감을, 담아서읏%ハート()% /다음엔, 조금, 싸게 해두라고읏%ハート()% /말해둘게, YO-%ハート(3)%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞가슴과 엉덩이 살이 탄력 있게 튄다/＞허리놀림은 게걸스럽기 짝이 없다/＞" + CALLNAME:MASTER + "는, 루세라에게 남김없이 쥐어짜였다……"
+			ELSEIF BASE:MASTER:LV >= 30
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"응읏…… 들어왔습니DA-……%ハート()% /저, 자지만 봐도 수컷의 강함을 알 수 있습니DA-/당신은…… 최강 수컷의 소질이 있습니DA-%ハート()%"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"하지만, 오늘은 아직 제가 더 강합니DA-%ハート()% /팍팍 쥐어짜 낼 테니%ハート()% /각오하세YO-%ハート(3)%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞" + CALLNAME:MASTER + "는 루세라에게 꽉 붙들려 꼼짝도 할 수 없다……/＞그녀는 그대로 퍽퍽, 찰싹 소리가 날 만큼 격렬하게 허리를 흔들었다/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞가슴과 엉덩이 살이 탄력 있게 튄다/＞허리놀림은 게걸스럽기 짝이 없다/＞" + CALLNAME:MASTER + "는, 루세라에게 남김없이 쥐어짜였다……"
+			ENDIF
+			
+
+		;2回目以後
+		ELSE
+			;前段。ご挨拶
+			IF 0
+			;前回レベル75以上
+			ELSEIF 六本木娼婦フラグ予備1:22 >= 5
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"……앗%ハート(3)% /와주셨군YO-%ハート(3)% /엄청 기다렸습니DA-%ハート(3)%"
+				IF RAND:2 == 0
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 " + CALLNAME:MASTER + "에게 달려와 손을 잡더니, 풍만한 가슴에 내리눌렀다//"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"엄, 엄청, 두근두근거립니, DA-%ハート(3)% /오늘도 자지로 앙앙 울게 해줬으면 좋겠습니, DA-……%ハート(3)%/"
+				ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 단숨에 전라가 되더니, 바닥에 엎드려 머리를 조아렸다/＞……도게자다/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"부, 부디, 절, 임신, 시켜주셨으면 좋겠습니DA-%ハート(3)% /개쩌는 자지님 쑤셔박고, 자지가 기분 좋았다면, /포상으로 정액 즙 뷰뷰 싸질러 주셨으면 좋겠습니DA-……%ハート(3)%"
+				ENDIF
+			;前回レベル60以上
+			ELSEIF 六本木娼婦フラグ予備1:22 >= 4
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"……와우%ハート()% 또 와주셨군YO-%ハート()% /오늘도 듬뿍 노콘 질내사정해 주세YO-%ハート()%/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 힘차게 " + CALLNAME:MASTER + "에게 와락 안기며, 유방을 내리눌러왔다……//"
+			;前回レベル50以上
+			ELSEIF 六本木娼婦フラグ予備1:22 >= 3
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"또 와주셨군YO-%ハート()% 그때 이후로 더 강해지셨습니KKAY？/……논논！ 자지만 보면 다 압니DA-%ハート()% /그러니 일단 자지부터입니DA-, 자지%ハート()%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 긴 손가락으로, " + CALLNAME:MASTER + "의 사타구니를 더듬었다……//"
+			;前回レベル40以上
+			ELSEIF 六本木娼婦フラグ予備1:22 >= 2
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"어라, 또 와주셨군YO-%ハート()% 그때 이후로 더 강해지셨습니KKAY？/……논논！ 자지만 보면 다 압니DA-%ハート()% /그러니 일단 자지부터입니DA-, 자지%ハート()%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 긴 손가락으로, " + CALLNAME:MASTER + "의 사타구니를 더듬었다……//"
+			;前回レベル30以上
+			;覚えてくれてない
+			ELSE
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"헬로-！ 루세라·아마모리, 입니DA-！/불알은 부글부글 끓고 있습니KKAY？ 충전은 충분…………/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"……죄송합니DA-. 이거, 첫인사 기본 대사 세트입니DA-/일부러 그런 게 아닙니DA-……/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"……오케이 오케이！/새것 자지라 치고 자지 감정 들어가겠습니DA-%ハート()%/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 긴 손가락으로, " + CALLNAME:MASTER + "의 사타구니를 더듬었다……//"
+			ENDIF
+
+			;ややあって
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+			CALL SHOW_PICTURE, "EMPTY"
+
+			;後段。
+			;あなたのレベルに応じてルーセラがアヘオホする
+			IF 0
+			ELSEIF BASE:MASTER:LV >= 75
+				IF 0
+				ELSEIF RAND:3 == 0
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"응오오오옷%ハート(3)% 오, 오오옷%ハート(3)% /자, 지, 꼬추읏, 꼬추우우우%ハート(3)%/"
+				ELSEIF RAND:2 == 0
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"흐기익%ハート(3)% 응윽, 가버려읏%ハート(3)% /벌써읏%ハート(3)% 또다시이잇%ハート(3)% /이, 자지한테읏%ハート(3)% 못 이겨읏, 저 못 이깁니DA-아앗%ハート(3)%"
+				ELSE
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"대박%ハート(3)% 당신의읏%ハート(3)% 자지%ハート(3)% 개쩔어YO-오오%ハート(3)%//"
+				ENDIF
+				IF 0
+				ELSEIF RAND:2 == 0
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 천박한 표정과 교성, 음란한 허리짓으로 " + CALLNAME:MASTER + "의 남근을 게걸스럽게 탐하고 있다/＞숨이 턱 끝까지 차올랐음에도 허리는 멈추지 않는다/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞풍만한 엉덩이 살을 내리칠 때마다 물결치며 암컷 즙을 사방에 흩뿌리고/＞필사적으로 " + CALLNAME:MASTER + "에게 사정을 간청하고 있다/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞" + CALLNAME:MASTER + "는 상을 주마, 하고 귀두로 루세라의 자궁구를 어루만졌다/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"흐갸아아아앙%ハート(3)% 아아아아앙%ハート(3)% /열려버립니DA-앗%ハート(3)% /입구가, 열려버려YO-%ハート(3)%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞뻐끔 하고 자궁구가 귀두를 덥석 물어 덮는다/＞가차 없이 질내에 정액을 사방으로 흩뿌려주자, /＞그녀는 긴 팔다리를 마구 허우적거리며 쾌락에 미쳐 날뛰었다……"
+				ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라의 거대한 엉덩이를 꽉 부여잡고 허리를 내리친다/＞그녀는 숨이 턱에 닿을 지경임에도, 엉덩이만큼은 바닥에 떨어뜨리지 않으려 필사적이다/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞반쯤 풀려버린 허리는 도망치고 싶어 하지만, /＞임신하고 싶다는 강렬한 의지가 그것을 짓누르고 있는 듯하다/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"알읏%ハート(3)% 제 알을읏%ハート(3)% 써서, 당신만의 것으로 만들어줘YO-%ハート(3)% /앗, 아아앗%ハート(3)% /아아아아아아아아아아아――읏읏읏%ハート(3)%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 시트를 꽉 그러쥔 채, /＞사지를 팽팽하게 뻗으며 격렬한 절정을 맞이했다……/"
+				ENDIF
+			ELSEIF BASE:MASTER:LV >= 60
+				IF 0
+				ELSEIF RAND:2 == 0
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"앗하앗%ハート()% 자지가읏%ハート()% 계속 강한 채입니DA-%ハート()% /아기방이 큥큥거려서읏%ハート()% 멈추질 않습니DA-읏%ハート()%/"
+				ELSE
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"응오옷%ハート()% 오오오~~읏%ハート()% /너무 강해%ハート(3)% 져버립니DA-읏%ハート(3)%/"
+				ENDIF
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 기승위로 " + CALLNAME:MASTER + "의 남근을 게걸스럽게 탐하고 있다/＞겨드랑이를 과시하듯 뒤통수에 팔을 깍지 끼고, /＞출렁출렁 가슴과 엉덩이를 흔들며 정액을 짜내는 허리짓을 반복하고 있다"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"노콘으로%ハート(3)% 싸질러줘읏%ハート(3)% /엄마로 만들어주세YO-읏%ハート(3)%/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라의 질내가 꿈틀거린다/＞" + CALLNAME:MASTER + "의 사정과 동시에, 루세라는 격렬한 절정을 맞이한다/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞격렬한 섹스에 숨이 턱 끝까지 찬다……/＞루세라는 뺨에 땀방울을 빛내며, " + CALLNAME:MASTER + "에게 말했다……/"
+				IF RAND:2 == 0
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"다, 음엔…… 뒤치기로, 퍽퍽, 부탁드립니DA-……%ハート(3)%//"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞뜨거운 질내에서 남근이 뽑혀 나온다/＞루세라는 젖은 시트에 엎드려 엉덩이를 높이 치켜들었다/＞흔들리는 커다란 엉덩이가 " + CALLNAME:MASTER + "를 도발한다……"
+				ELSE
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"응읏, 후…… 아직 팔팔합니DA-……%ハート(3)%//"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라가 다시금 허리를 움직이기 시작한다/＞절정 직후라 민감하긴 하지만, 그건 루세라도 마찬가지다/＞항복을 받아내 주마, 하고 " + CALLNAME:MASTER + "도 허리를 꿈틀거렸다……"
+				ENDIF
+			ELSEIF BASE:MASTER:LV >= 50
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"응후우읏%ハート()% /역시, 당신, 좋은 자지를 가졌습니DA-읏%ハート()%/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞쩌억, 찌걱, 퍽, 하고 격렬한 마찰음이 울린다/＞루세라는 " + CALLNAME:MASTER + "의 위에서 허리를 흔들고 있다/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"몇 번이고, 찾아와, 주세YO-%ハート()% /정액 즙과 알이 철썩 결합하면%ハート()% /낳아드려도 좋습니DA-%ハート()%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞탐욕스러운 허리짓은 주어진 시간 내내 멈추지 않는다/＞" + CALLNAME:MASTER + "는, 루세라의 서비스를 원 없이 받았다……/"
+			ELSEIF BASE:MASTER:LV >= 40
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"응읏……%ハート()% 당신, 역시, 당신, 좋은 자지입니DA-%ハート()% /오늘도 팍팍 쥐어짜 낼 테니%ハート()% 각오하세YO-%ハート(3)%/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞쩌억, 찌걱, 퍽, 하고 격렬한 마찰음이 울린다/＞루세라는 " + CALLNAME:MASTER + "의 위에서 허리를 흔들고 있다/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"만약%ハート()% 제 알을%ハート()% /맞혀내신다, 면읏%ハート()% /한 명 정도는, 낳아드려도, 좋습니DA-%ハート(3)%/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞가슴과 엉덩이 살이 탄력 있게 튄다/＞허리놀림은 게걸스럽기 짝이 없다/＞" + CALLNAME:MASTER + "는, 루세라에게 남김없이 쥐어짜였다……"
+			ELSEIF BASE:MASTER:LV >= 30
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"응읏…… 들어왔습니DA-……%ハート()%//"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"…………전이랑 자지가 변함없습니DA-！！！/당신！ 강한！ 자지의！ 소질이！ 있는！ 데도！！！/단련！ 단련！！ 단련！！！"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞" + CALLNAME:MASTER + "는 루세라에게 단단히 억눌렸다/＞그렇게 단련이라 외쳐대는 루세라에게 옴팡지게 쥐어짜였다……/"
+			ENDIF
+
+			;ややあって
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+			CALL SHOW_PICTURE, "EMPTY"
+
+			;終わりのご挨拶。
+			;前回からパワーアップしてるとほめてくれる
+			IF 0
+			;現在Lv75以上
+			ELSEIF BASE:MASTER:LV >= 75
+				IF 0
+				;前回レベル75以上
+				;もうパワーアップパターンないのでRAND仕込んでおく
+				ELSEIF 六本木娼婦フラグ予備1:22 >= 5
+					IF RAND:2 == 0
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"……저기…… 당신의 베이비를 낳고 싶다는 거…… 진심입니DA-……/정말로, 진짜, 입니DA-……/언제까지나, 기다릴게YO-……%ハート()%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 풀려버린 허리를 끌듯이 " + CALLNAME:MASTER + "에게 매달리며 말했다/＞그리고는, 마지막으로 열렬하고도 농후한 키스를 퍼부어왔다……/"
+					ELSE
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"……아…… 오오옷……"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 가랑이에서 정액을 뿜어내며 바르르 경련하고 있다……/＞……완전히 실신한 모양이다/＞농후한 서비스에 만족한 " + CALLNAME:MASTER + "는, 기분 좋게 귀로에 올랐다……"
+					ENDIF
+				;前回からパワーアップ！
+				;前回Lv60以上
+				ELSEIF 六本木娼婦フラグ予備1:22 >= 4
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"……대…… 대단……했습니, DA-……%ハート(3)% /아아…… 당신, 대물 왕자님, 입니DA-……%ハート(3)%/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞이미 시간이 다 되었는데도, 루세라는 " + CALLNAME:MASTER + "의 남근을 빨아대려 한다……/＞이제 놓아줄 생각은 없다, 는 듯한 얼굴이다/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞그것을 제지하자, 루세라는 필사적으로 몸을 일으키며 말했다/＞그 움직임에, 사타구니에서 정액이 뿜어져 나온다……/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"앗, 저, 저기……！ ……당신의 베이비…… 나, 낳게 해주세YO-……%ハート()% /언제까지나 기다릴게YO-……%ハート()% /몸값은, 제가 내겠습니DA-……%ハート()%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞……진심일까 싶긴 했지만……/＞……뒤이은 입맞춤의 뜨거움은 진심임을 느끼기에 충분할 만큼 농후했다……/"
+				;前回Lv50以下だった
+				;チンポ舐めてたの謝罪してくれる　いやフェラではなく
+				ELSE
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"……대…… 대단……했습니, DA-……%ハート(3)% /아아…… 당신, 의, 자지…… 조금, 얕봤었습니DA-……/죄송합니DA-…… 져버렸습니DA-……%ハート(3)%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞이미 시간이 다 되었는데도, 루세라는 " + CALLNAME:MASTER + "의 남근을 빨아대려 한다……/＞이제 놓아줄 생각은 없다, 는 듯한 얼굴이다/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞그것을 제지하자, 루세라는 필사적으로 몸을 일으키며 말했다/＞그 움직임에, 사타구니에서 정액이 뿜어져 나온다……/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"앗, 저, 저기……！ ……당신의 베이비…… 나, 낳게 해주세YO-……%ハート()% /언제까지나 기다릴게YO-……%ハート()% /몸값은, 제가 내겠습니DA-……%ハート()%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞……진심일까 싶긴 했지만……/＞……뒤이은 입맞춤의 뜨거움은 진심임을 느끼기에 충분할 만큼 농후했다……/"
+				ENDIF
+			;現在Lv60以上
+			ELSEIF BASE:MASTER:LV >= 60
+				IF 0
+				;前回レベル60以上
+				ELSEIF 六本木娼婦フラグ予備1:22 >= 4
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"응응~읏%ハート()% /기이분 최고였습니DA-%ハート()%/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 쭈욱 기지개를 켜며 말했다/＞출렁 하고 유방이 흔들린다/＞……무심코 사타구니가 반응해 버렸다……"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"오옷토%ハート()% 연장하시겠습니KKAY？/자지가 살짝 빳빳해졌습니DA-%ハート()% /……하지만 끈적끈적 엉망진창이니, 다음은 목욕탕에서 하세YO-%ハート()%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라와, 시간 가득 장난을 쳤다……//"
+				;前回からパワーアップ！
+				ELSE
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"응응~읏%ハート()% 기이분 최고였습니DA-%ハート()% /강한 자지님으로 레벨업입니DA-%ハート()% /다음번엔 엄청 싸게 해주라고 말해두겠습니DA-%ハート()%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 쭈욱 기지개를 켜며 말했다/＞출렁 하고 유방이 흔들린다/＞……무심코 사타구니가 반응해 버렸다……"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"오옷토%ハート()% 연장하시겠습니KKAY？/자지가 살짝 빳빳해졌습니DA-%ハート()% /……하지만 끈적끈적 엉망진창이니, 다음은 목욕탕에서 하세YO-%ハート()%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라와, 시간 가득 장난을 쳤다……//"
+				ENDIF
+			;現在レベル50以上
+			ELSEIF BASE:MASTER:LV >= 50
+				IF 0
+				;前回レベル50以上
+				ELSEIF 六本木娼婦フラグ予備1:22 >= 3
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"응후~%ハート()% 제법 괜찮은 자지였습니DA-%ハート()% /잘 먹었습니DA-%ハート()%/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 넓은 욕조에 몸을 담그고 팔다리를 쭉 뻗으며 말했다/＞그녀는 응석 부리듯 " + CALLNAME:MASTER + "에게 등을 기대고 있다/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"……어라. 또 가슴으로 파이즈리 원하세YO-？/아니면 파후파후？/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞물에 뜬 루세라의 가슴살을 찰방거리며 주무르자, 루세라는 가볍게 몸을 뒤챘다/＞……조금 연장해 버렸지만, 루세라가 서비스해 주었다……/"
+
+				;前回からパワーアップ！
+				ELSE
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"응후~%ハート()% 제법 괜찮은 자지였습니DA-%ハート()% /잘 먹었습니DA-%ハート()% /다음부터 싸게 안내해 드리도록 말해두겠습니DA-%ハート()%/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 넓은 욕조에 몸을 담그고 팔다리를 쭉 뻗으며 말했다/＞그녀는 응석 부리듯 " + CALLNAME:MASTER + "에게 등을 기대고 있다/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"……어라. 가슴이 좋으신가YO-？/방금 끼워준 거, 마음에 드셨습니KKAY？/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞물에 뜬 루세라의 가슴살을 찰방거리며 주무르자, 루세라는 가볍게 몸을 뒤챘다/＞……조금 연장해 버렸지만, 루세라가 서비스해 주었다……/"
+				ENDIF
+			;現在レベル40以上
+			ELSEIF BASE:MASTER:LV >= 40
+				IF 0
+				;前回レベル40以上
+				ELSEIF 六本木娼婦フラグ予備1:22 >= 2
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"탈탈 털어 쥐어짰습니DA-！ 예이！！！ /빅토리！！！/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞참으로 터프한 여자다……/＞……섹스에 승패가 있다면/＞그것은, 기분 좋아질 수 있었는가 아닌가다"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"그렇다면 저는 빅토리입니DA-！/당신도 빅토리라면 기쁘겠습니DA-！！！/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞일체의 악의 없이, 루세라는 말한다/＞독기가 빠진다는 것은 이를 두고 하는 말이리라……/"
+				;前回からパワーアップ！
+				ELSE
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"탈탈 털어 쥐어짰습니DA-！ 예이！！！/하지만 힘내주셨으니, 다음부터 싸게 안내해 드리도록 말해둘게YO-%ハート()%/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞참으로 터프한 여자다……/＞장신의 그녀는, 어려 보일 만큼 기뻐하고 있다……/＞…………그건 그렇고 몇 살인 걸까？"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"에？ /저 말입니KKAY？/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞루세라는 딱히 주저하지도 않고, 나이인 듯한 숫자를 답했다/＞……아무리 그래도 농담이겠지？ 그 박력 넘치는 몸매로……？/"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞" + CALLNAME:MASTER + "는 루세라에게, 나이는 다음부터 『18세 이상입니다』라고 둘러대도록 타일렀다……//"
+				ENDIF
+			;現在レベル30以上……最低値のまま、しかない
+			ELSE
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"그럼, 다음엔 제게 자지의 형태를 기억하게 해주세YO-%ハート()% /자지 파이트%ハート()% /강한 자지는 강한 수컷에게 깃듭니DA-%ハート()%"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞제대로 쥐어짜여, " + CALLNAME:MASTER + "는 비틀비틀 귀로에 올랐다……//"
+			ENDIF
+		ENDIF
+
+		;身請けは即座に可能（いちおう）
+		六本木娼婦フラグ:22 = 2
+
+		;あなたのレベル帯を保存
+		IF 0
+		ELSEIF BASE:MASTER:LV >= 75
+			;やっべぇデース　絶対このひとのベイビー産まないとダメデース　10人くらい産みマース
+			六本木娼婦フラグ予備1:22 = 5
+		ELSEIF BASE:MASTER:LV >= 60
+			;ベリーグッドデース！！！　ぜひともパパになってほしいデース！！！
+			六本木娼婦フラグ予備1:22 = 4
+		ELSEIF BASE:MASTER:LV >= 50
+			;グッドデース！　やっぱりベイビーのパパはこのくらいの種欲しいデース！
+			六本木娼婦フラグ予備1:22 = 3
+		ELSEIF BASE:MASTER:LV >= 40
+			;なかなかデース　このくらいで妥協も……ウーン……ナシ……いや……アリとしておきマース　1年経っても見つからなかったらコイツでベイビー産みマース
+			六本木娼婦フラグ予備1:22 = 2
+		ELSEIF BASE:MASTER:LV >= 30
+			;雑魚デース　チンポは良かったけどベイビー産んであげる気はないデース
+			六本木娼婦フラグ予備1:22 = 1
+		ENDIF
+
+
+		;プレイ経験
+		;ひたすらセッ！！！！！！　ということで
+		;あなたのレベル依存なのが珍しいところのやつ
+		;あなたが男性限定なので条件分岐はナシ
+
+		;セックスしたら絶対膣出し！！！ということでここは同じ
+		EXP:MASTER:삽입경험 += MIN(150, (BASE:MASTER:LV * 25 / 100) + 1)
+		EXP:MASTER:질사경험 += MIN(150, (BASE:MASTER:LV * 25 / 100) + 1)
+
+		;射精以外でイかせる気はないタイプなので絶頂経験と同じにする
+		EXP:MASTER:절정경험 += MIN(150, (BASE:MASTER:LV * 30 / 100) + 1)
+		EXP:MASTER:사정경험 += MIN(150, (BASE:MASTER:LV * 30 / 100) + 1)
+
+		;珠もLv依存　一応30000が上限だがここに引っかかることはまあ通常プレイではあるまい
+		JUEL:MASTER:쾌Ｃ += MIN(30000, (BASE:MASTER:LV * 50) + 1000)
+		JUEL:MASTER:욕정 += MIN(30000, (BASE:MASTER:LV * 40) + 1000)
+		JUEL:MASTER:습득 += MIN(30000, (BASE:MASTER:LV * 40) + 1000)
+
+		;MAGをマジでごっそり持っていかれる
+		;Lv60で30万くらいもってく……のを、カンストにする
+		CALL CONTROL_MAG, MASTER, -(MIN(300000, BASE:MASTER:LV * 5000 + 1000))
+
+		;CALL INCREASE_LC,5  意図が不明かつ変動量が強烈で、ユーザー側から認識できない場所での変動なので除外します。必要性があって再実装する場合は右記の点に注意して再実装してください。
+	CASE "身受け価格"
+		;あなたのレベルで（正確には、前回ルーセラとお楽しみしたときのレベルで）分岐
+		;前段。ご挨拶
+		IF 0
+		;前回レベル75以上
+		;店側の手間賃分の５マッカ
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 5
+			RETURN 5
+		;前回レベル60以上
+		;ぜひとも。という値段
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 4
+			RETURN 1000
+		;前回レベル50以上
+		;んまぁ～、いいデース！という値段（実家が太いせいで金銭感覚が……というわけではなく、自分の価値をこれくらいと見積もっているタイプ）
+		;メタ的なこと言うと、素質がかなりいい感じなので、せめて50以上になってから手に入れてくれ、という値段設定
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 3
+			RETURN 5000
+		;前回レベル40以上
+		;こんだけの値段付けてんだから分かれ。という値段
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 2
+			RETURN 500000
+		;前回レベル30以上
+		;ぜったいヤだ！！！！！！という値段
+		ELSE
+			RETURN 99999999
+		ENDIF
+	CASE "身受け確認"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"루세라 양을 신원 인수하시겠습니까？//"
+		;あなたのレベルで（正確には、前回ルーセラとお楽しみしたときのレベルで）分岐
+		IF 0
+		;前回レベル75以上
+		;店側の手間賃分の５マッカ
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 5
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그러시다면, ５마카를 받게 됩니다/인수에 관해선, 루세라 양 본인으로부터의 지불이 있어서……/……이쪽은 수수료 몫입니다/괜찮으시겠습니까？"
+		;前回レベル60以上
+		;ぜひとも。という値段
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 4
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그러시다면, １０００마카를 받게 됩니다/괜찮으시겠습니까？/"
+		;前回レベル50以上
+		;んまぁ～、いいデース！という値段（実家が太いせいで金銭感覚が……というわけではなく、自分の価値をこれくらいと見積もっているタイプ。自信家）
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 3
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그러시다면, ５０００마카를 받게 됩니다/괜찮으시겠습니까？/"
+		;前回レベル40以上
+		;こんだけの値段付けてんだから分かれ。という値段
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 2
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그러시다면…… ５０만 마카를 받게 됩니다/괜찮으시겠습니까？/"
+		;前回レベル30以上
+		;ぜったいヤだ！！！！！！という値段
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그러시다면…… 루세라 양으로부터는, １억 마카를 가져오라, 고 들었습니다만/괜찮으시겠습니까？/"
+		ENDIF
+
+	CASE "身受け口上"
+		;口上
+		CALL SHOW_PICTURE, "D"
+		IF 0
+		;前回レベル75以上
+		;店側の手間賃分の５マッカ
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 5
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"해냈DA-입니DA-%ハート(3)% /팍팍 낳게 해주세YO-%ハート(3)% /저, 당신의 자지 너무 좋습니DA-%ハート(3)%"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"――앗, 아앗, 저, 저기……/당신도…… 너무 좋아하니까…… 오해하진 말아주셨으면 해YO-……/저, 자지만 보고 남자를 고르진 않습니DA-…… 아마도……"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"앞으로도 잘 부탁드립니DA-……/너무 좋아하는 당신의 베이비……/잔뜩 낳을 수 있게 해주신다면, 기쁘겠습니DA-……%ハート(3)%"
+		;前回レベル60以上
+		;ぜひとも。という値段
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 4
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"와우%ハート()% 거둬져 버렸습니DA-%ハート()% /앞으로도 잘 부탁드려YO-, 강한 자지님%ハート()%/"
+		;前回レベル50以上
+		;んまぁ～、いいデース！という値段（実家が太いせいで金銭感覚が……というわけではなく、自分の価値をこれくらいと見積もっているタイプ）
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 3
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"와우%ハート()% 거둬져 버렸습니DA-%ハート()% /앞으로도 잘 부탁드립니DA-%ハート()%/"
+		;前回レベル40以上
+		;こんだけの値段付けてんだから分かれ。という値段
+		ELSEIF 六本木娼婦フラグ予備1:22 >= 2
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"…………。/말문이 막힙니DA-……/엣, 벌써 내버리셨습니KKAY……？/……응, 오케이！ 저도 여자입니DA-！！！"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"그 정도의 돈을 지불하셨다면, 답하지 않을 수가 없습니DA-！/앞으로도 잘 부탁드립니DA-！！！/"
+		;前回レベル30以上
+		;ぜったいヤだ！！！！！！という値段
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"…………。/말문이 막힙니DA-……/엣, 벌써 내버리셨습니KKAY……？/……응, 오케이！ 저도 여자입니DA-！！！"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"루세라", @"그 정도의 돈을 지불하셨다면, 답하지 않을 수가 없습니DA-！/앞으로도 잘 부탁드립니DA-！！！/"
+		ENDIF
+
+		;フラグを「身請け済み」にセット
+		六本木娼婦フラグ予備1:22 = 99
+		六本木娼婦フラグ:22 = 3
+		RESULTS '= "ルーセラ" + "_" + D31_FACE("ルーセラ", 1)
+		RETURN CSV_NO, 2000, 0
+	CASE "宣伝"
+		;身請けしてたらダメ
+		IF 六本木娼婦フラグ予備1:22 == 99 || 六本木娼婦フラグ:22 == 3
+		ELSE
+			PRINTL
+		PRINTL 루세라
+			IF 0
+			ELSEIF 六本木娼婦フラグ予備1:22 >= 5
+				SETCOLOR COLOR("ハートピンク")
+		PRINTFORML (손글씨로, 익숙지 않은 솜씨의 글씨가 적혀 있다……)
+		PRINTFORML 『%ハート(3)%당신에게: 신원 인수비 셀프로 지불해뒀습니DA-%ハート(3)%』
+				RESETCOLOR
+			ELSEIF 六本木娼婦フラグ予備1:22 >= 4
+				SETCOLOR COLOR("ハートピンク")
+		PRINTFORML (손글씨로, 익숙지 않은 솜씨의 글씨가 적혀 있다……)
+		PRINTFORML 『베이비 임신시키러 와주셨으면 해YO-%ハート()%』
+				RESETCOLOR
+			ELSE
+				SETCOLOR COLOR("ハートピンク")
+		PRINTFORML 『극강 자지님 대환영입니DA-%ハート()%』
+				RESETCOLOR
+			ENDIF
+		PRINTL 이용자: 완전 탈탈 털려 쥐어짜였습니다…… 갈색 피부에 반짝이는 땀방울이 참 아름답더군요……
+		PRINTL 　　　　강한 남성일수록 그녀도 의욕이 넘치는 모양입니다…… 제 위에서 섹스 댄스를 춰댔습니다……
+		PRINTW 　　　　바짝 메마를 지경이었어요…… 임신 환영이라니 참 대단하지 않습니까……
+		ENDIF
+	CASE "リスト"
+		CALLF 顔グラ追加_F, CSV_NO
+		RESULTS '= "ルーセラ" + "_" + D31_FACE("ルーセラ", 1)
+
+		;AI画像が追加されていたが、＊まったく＊違うのでSECRETに変更な
+		RESULTS:1 = 극강 남자님 대환영입니DA-%ハート()%
+ENDSELECT
+

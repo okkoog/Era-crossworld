@@ -1,0 +1,71 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5254_社畜サキュバス_咲姫.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/11/27		bazzile					新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;イベントフラグ
+;1 = オープニング加入
+;2 = 六本木大歓楽街加入
+;--------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:사키히메]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+IF ARG:2 == 1
+	CALL SET_BASE_[[キャラ:사키히메]], ARG, ARG:2
+	;スキル初期化
+	CALL CLEAR_ALL_SKILL, ARG
+	CALL CLEAR_ALL_LEARN_SKILL, ARG
+	CALL CLEAR_LEARNED_SKILL_ALL, ARG
+	CALL SET_LEARN_SKILL_[[キャラ:사키히메]], ARG, ARG:2
+ENDIF
+
+@SET_BASE_[[キャラ:사키히메]], ARG, ARG:1
+IF ARG:1 == 1
+	BASE:ARG:힘 = 4
+	BASE:ARG:지혜 = 5
+	BASE:ARG:마력 = 3
+	BASE:ARG:내구 = 5
+	BASE:ARG:속도 = 5
+	BASE:ARG:운 = 3
+	
+	TALENT:ARG:타격 = 1;打撃素質
+	TALENT:ARG:전술 = 1;戦技素質
+	TALENT:ARG:전격 = 0;電撃素質OFF
+	TALENT:ARG:정신 = 0;精神素質OFF
+ENDIF
+@SET_LEARN_SKILL_[[キャラ:사키히메]], ARG, ARG:1
+SELECTCASE ARG:1
+	CASE 1
+		;バステブースタを生かすため異常付きスキル中心、防御的な自動スキルを積む
+		;サキュバス要素として雷霆蹴など電撃相性SHOCK付きを複数、桜花閃乱（魅了）を搭載
+		;技候補：紫煙乱打、バトルラッシュ、マインドスラッシュ、バッドビート、黒点撃、心の叫び、ねじ切り、（黙示録）
+
+		CALL SET_LEARN_SKILL, ARG, "뇌정축", 1
+		CALL SET_LEARN_SKILL, ARG, "지옥찌르기", 1
+		CALL SET_LEARN_SKILL, ARG, "코칭", 1
+		CALL SET_LEARN_SKILL, ARG, "결단", 8
+		CALL SET_LEARN_SKILL, ARG, "돌려차기", 10 
+		CALL SET_LEARN_SKILL, ARG, "브레인쉐이크", 14
+		CALL SET_LEARN_SKILL, ARG, "치유촉진(소)", 18
+		CALL SET_LEARN_SKILL, ARG, "전광석화", 23
+		CALL SET_LEARN_SKILL, ARG, "맹돌진", 27
+		CALL SET_LEARN_SKILL, ARG, "앵화섬란", 33
+		CALL SET_LEARN_SKILL, ARG, "기공(소)",38
+		CALL SET_LEARN_SKILL, ARG, "썬더피스트", 45
+		CALL SET_LEARN_SKILL, ARG, "흡수공격", 52
+ENDSELECT

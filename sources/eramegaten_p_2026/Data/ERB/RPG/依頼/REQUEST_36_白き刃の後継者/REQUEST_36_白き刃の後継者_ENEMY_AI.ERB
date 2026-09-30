@@ -1,0 +1,554 @@
+﻿;=======================================================================
+;
+;하얀칼날의후계자
+;
+;=======================================================================
+;ターン冒頭で一閃以外の5人に行動パターン番号を渡しておくことで攻撃の頻度を調整する。
+;0 = 範囲攻撃
+;1, 3 = 補助1
+;2, 4 = 単体攻撃
+;4 = 単体攻撃
+@EVENT_BATTLE_TURNTOP_白き刃の後継者
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC L_ENEMY_TABLE = "綾女", "ヘルマン", "御夜子", "夢子", "瑞岐"
+CALL SHUFFLE_ARRAY_STR, L_ENEMY_TABLE
+FOR LCOUNT, 0, 5
+	SIF !IS_TARGET_ABLE(GET_ENEMY(L_ENEMY_TABLE:LCOUNT))
+		CONTINUE
+	CFLAG:GET_ENEMY(L_ENEMY_TABLE:LCOUNT):800 = LCOUNT
+NEXT
+;=======================================================================
+;気合・会心の覇気と攻撃の交互
+;ただしどちらでも通常攻撃が挟まる可能性がある。
+;=======================================================================
+@SET_ACTION_一閃_白き刃の後継者, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CFLAG:ARG:입력행동 = [[스킬:일문자베기]]
+ELSE
+	IF !CFLAG:ARG:気合フラグ && !CFLAG:ARG:회심의패기플래그
+		SELECTCASE RAND:3
+			CASE 0
+				CFLAG:ARG:입력행동 = 0
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:기합]]
+			CASE 2
+				CFLAG:ARG:입력행동 = [[스킬:회심의패기]]
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				CFLAG:ARG:입력행동 = 0
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:일문자베기]]
+			CASE 2
+				CFLAG:ARG:입력행동 = [[스킬:안개베기]]
+		ENDSELECT
+	ENDIF
+ENDIF
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+
+@SET_ACTION_綾女_白き刃の後継者, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CFLAG:ARG:입력행동 = [[스킬:에이하]]
+ELSE
+	SELECTCASE CFLAG:ARG:800
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:아이온의비]]
+		CASE 1, 3
+			CFLAG:ARG:입력행동 = [[스킬:마카쟈마]]
+		CASE 2, 4
+			IF RAND:2
+				CFLAG:ARG:입력행동 = [[스킬:부흐라]]
+			ELSE
+				CFLAG:ARG:입력행동 = [[스킬:에이하]]
+			ENDIF
+	ENDSELECT
+ENDIF
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+
+@SET_ACTION_ヘルマン_白き刃の後継者, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CFLAG:ARG:입력행동 = [[스킬:마카쟈마]]
+ELSE
+	SELECTCASE CFLAG:ARG:800
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:마하・잔]]
+		CASE 1, 3
+			IF RAND:3 == 0
+				CFLAG:ARG:입력행동 = [[스킬:타루・카쟈]]
+			ELSE
+				CFLAG:ARG:입력행동 = [[스킬:마카쟈마]]
+			ENDIF
+		CASE 2, 4
+			IF RAND:2
+				CFLAG:ARG:입력행동 = [[스킬:잔마]]
+			ELSE
+				CFLAG:ARG:입력행동 = 0
+			ENDIF
+	ENDSELECT
+ENDIF
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+
+@SET_ACTION_御夜子_白き刃の後継者, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CFLAG:ARG:입력행동 = [[스킬:코우하]]
+ELSE
+	SELECTCASE CFLAG:ARG:800
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:마하코우하]]
+		CASE 1, 3
+			IF RAND:2
+				CFLAG:ARG:입력행동 = [[스킬:디아라마]]
+			ELSE
+				CFLAG:ARG:입력행동 = [[스킬:디아]]
+			ENDIF
+		CASE 2, 4
+			IF RAND:2
+				CFLAG:ARG:입력행동 = [[스킬:코우하]]
+			ELSE
+				CFLAG:ARG:입력행동 = [[스킬:디아]]
+			ENDIF
+	ENDSELECT
+ENDIF
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+;ディアラマは一閃につかう
+IF CFLAG:ARG:입력행동 == [[스킬:디아라마]] && IS_TARGET_ABLE(GET_ENEMY("一閃"))
+	CFLAG:ARG:타겟 = CPOS(GET_ENEMY("一閃"))
+ELSE
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+@SET_ACTION_夢子_白き刃の後継者, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CFLAG:ARG:입력행동 = [[스킬:라쿤・다]]
+ELSE
+	SELECTCASE CFLAG:ARG:800
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:마하・부흐]]
+		CASE 1, 3
+			IF RAND:3 == 0
+				CFLAG:ARG:입력행동 = [[스킬:라쿤・다]]
+			ELSE
+				CFLAG:ARG:입력행동 = [[스킬:도루미나]]
+			ENDIF
+		CASE 2, 4
+			CFLAG:ARG:입력행동 = [[스킬:부흐]]
+	ENDSELECT
+ENDIF
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+
+@SET_ACTION_瑞岐_白き刃の後継者, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CFLAG:ARG:입력행동 = [[스킬:메・디아]]
+ELSE
+	SELECTCASE CFLAG:ARG:800
+		CASE 0
+			IF RAND:2
+				CFLAG:ARG:입력행동 = [[스킬:마구날뛰기]]
+			ELSE
+				CFLAG:ARG:입력행동 = [[스킬:파이어브레스]]
+			ENDIF
+		CASE 1, 3
+			IF RAND:2
+				CFLAG:ARG:입력행동 = [[스킬:메・디아]]
+			ELSE
+				CFLAG:ARG:입력행동 = [[스킬:타루・카쟈]]
+			ENDIF
+		CASE 2, 4
+			IF RAND:2
+				CFLAG:ARG:입력행동 = [[스킬:물어-뜯기]]
+			ELSE
+				CFLAG:ARG:입력행동 = 0
+			ENDIF
+	ENDSELECT
+ENDIF
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+;=======================================================================
+;
+;無垢なる揺り籠
+;
+;=======================================================================
+;ターン冒頭で一閃以外の5人に行動パターン番号を渡しておくことで攻撃の頻度を調整する。
+;0 = 範囲攻撃
+;1, 3 = 補助1
+;2, 4 = 単体攻撃
+;4 = 単体攻撃
+@EVENT_BATTLE_TURNTOP_無垢なる揺り籠
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC L_ENEMY_TABLE = "生胤", "聖", "クラック", "カペラ", "ビットボール"
+CALL SHUFFLE_ARRAY_STR, L_ENEMY_TABLE
+FOR LCOUNT, 0, 5
+	SIF !IS_TARGET_ABLE(GET_ENEMY(L_ENEMY_TABLE:LCOUNT))
+		CONTINUE
+	CFLAG:GET_ENEMY(L_ENEMY_TABLE:LCOUNT):800 = LCOUNT
+NEXT
+;=======================================================================
+;気合・会心の覇気と攻撃の交互
+;ただしどちらでも通常攻撃が挟まる可能性がある。
+;
+;二戦目では剣撃破魔複合化したツインスラッシュとヒートウェイブを使う
+;=======================================================================
+@SET_ACTION_一閃_無垢なる揺り籠, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "一閃_ツインスラッシュ")
+ELSE
+	IF !CFLAG:ARG:気合フラグ && !CFLAG:ARG:회심의패기플래그
+		SELECTCASE RAND:3
+			CASE 0
+				CFLAG:ARG:입력행동 = 0
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:기합]]
+			CASE 2
+				CFLAG:ARG:입력행동 = [[스킬:회심의패기]]
+		ENDSELECT
+	ELSE
+		SELECTCASE RAND:3
+			CASE 0
+				CFLAG:ARG:입력행동 = 0
+			CASE 1
+				CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "一閃_ツインスラッシュ")
+			CASE 2
+				CFLAG:ARG:입력행동 = PU_SKILLNUM_GET(ARG, "一閃_ヒートウェイブ")
+		ENDSELECT
+	ENDIF
+ENDIF
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+
+@SET_ACTION_生胤_無垢なる揺り籠, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CFLAG:ARG:입력행동 = [[스킬:잔마]]
+ELSE
+	SELECTCASE CFLAG:ARG:800
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:마하・잔마]]
+		CASE 1, 3
+			IF RAND:2
+				CFLAG:ARG:입력행동 = [[스킬:바인드보이스]]
+			ELSE
+				CFLAG:ARG:입력행동 = [[스킬:패닉보이스]]
+			ENDIF
+		CASE 2, 4
+			CFLAG:ARG:입력행동 = [[스킬:잔마]]
+	ENDSELECT
+ENDIF
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+
+@SET_ACTION_聖_無垢なる揺り籠, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CFLAG:ARG:입력행동 = [[스킬:부흐라]]
+ELSE
+	SELECTCASE CFLAG:ARG:800
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:포그브레스]]
+		CASE 1, 3
+			IF RAND:2
+				CFLAG:ARG:입력행동 = [[스킬:타룬・다]]
+			ELSE
+				CFLAG:ARG:입력행동 = [[스킬:라쿠・카쟈]]
+			ENDIF
+		CASE 2, 4
+			CFLAG:ARG:입력행동 = [[스킬:부흐라]]
+	ENDSELECT
+ENDIF
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+
+@SET_ACTION_カペラ_無垢なる揺り籠, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CFLAG:ARG:입력행동 = [[스킬:독가스브레스]]
+ELSE
+	SELECTCASE CFLAG:ARG:800
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:석화침]]
+		CASE 1, 3
+			IF RAND:2
+				CFLAG:ARG:입력행동 = [[스킬:스쿠・카쟈]]
+			ELSE
+				CFLAG:ARG:입력행동 = [[스킬:라쿠・카쟈]]
+			ENDIF
+		CASE 2, 4
+			CFLAG:ARG:입력행동 = [[스킬:독가스브레스]]
+	ENDSELECT
+ENDIF
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+
+@SET_ACTION_クラック_無垢なる揺り籠, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CFLAG:ARG:입력행동 = [[스킬:기간피스트]]
+ELSE
+	SELECTCASE CFLAG:ARG:800
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:섬머솔트]]
+		CASE 1, 3
+			IF RAND:2
+				CFLAG:ARG:입력행동 = [[스킬:레볼루션]]
+			ELSE
+				IF CFLAG:ARG:회심의패기플래그
+					CFLAG:ARG:입력행동 = [[스킬:기간피스트]]
+				ELSE
+					CFLAG:ARG:입력행동 = [[스킬:회심의패기]]
+				ENDIF
+			ENDIF
+		CASE 2, 4
+			CFLAG:ARG:입력행동 = [[스킬:기간피스트]]
+	ENDSELECT
+ENDIF
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+
+@SET_ACTION_ビットボール_無垢なる揺り籠, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CFLAG:ARG:입력행동 = [[스킬:산탄사격]]
+ELSE
+	SELECTCASE CFLAG:ARG:800
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:산탄사격]]
+		CASE 1, 3
+			CFLAG:ARG:입력행동 = -1
+			CFLAG:ARG:방어플래그 = 1
+			RETURN 1
+		CASE 2, 4
+			CFLAG:ARG:입력행동 = [[스킬:스탠샷]]
+	ENDSELECT
+ENDIF
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+;=======================================================================
+;
+;聖域の策謀
+;
+;=======================================================================
+;アーシェラが生きている限り、ターンエンドごとに2体のマシンが追加される。
+@EVENT_BATTLE_TURNEND_聖域の策謀
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_ENEMY
+#DIM DYNAMIC L_ENEMYNO
+#DIM DYNAMIC IS_PUSHED, 2
+#DIM CONST POS_TABLE = 9, 14, 8, 13, 10, 15, 7, 12, 11, 16
+SIF IS_BADSTATE(GET_ENEMY("アーシェラ"), "DYING")
+	RETURN 0
+FOR LCOUNT:1, 0, 2
+	IS_PUSHED = 0
+	FOR LCOUNT, 0, VARSIZE("POS_TABLE")
+		SIF POS(POS_TABLE:LCOUNT) >= 0
+			CONTINUE
+		FOR L_ENEMYNO, 0, 4
+			IF LCOUNT:1
+				L_ENEMY = GET_ENEMY(@"T95メデューサ_{L_ENEMYNO}")
+			ELSE
+				L_ENEMY = GET_ENEMY(@"T95ゴーレム_{L_ENEMYNO}")
+			ENDIF
+			SIF CPOS(L_ENEMY) > 0
+				CONTINUE
+			CFLAG:L_ENEMY:800 = 0
+			CALL REFRESH_BATTLE_CHARA_FLAG, L_ENEMY
+			CALL HEALTH_CHARA, L_ENEMY
+			CALL INSERT_POSITION, POS_TABLE:LCOUNT, L_ENEMY
+			IS_PUSHED:(LCOUNT:1) = 1
+			BREAK
+		NEXT
+		SIF IS_PUSHED:(LCOUNT:1)
+			BREAK
+	NEXT
+NEXT
+IF IS_PUSHED:0 || IS_PUSHED:1
+	SETCOLOR COLOR("ENEMY")
+	CALL MESSAGE_B2, , , "증원이 나타났다!"
+	RESETCOLOR
+ENDIF
+
+@SET_ACTION_アーシェラ_聖域の策謀, ARG
+IF CFLAG:ARG:１more플래그 > 0
+	CFLAG:ARG:입력행동 = [[스킬:만마의일격]]
+ELSE
+	IF CFLAG:ARG:행동한횟수 == 0
+		;エイダか自分の能力が一定以上下がってるなら
+		IF GET_カジャンダ_MIN(ARG) < -16 || GET_カジャンダ_MIN(GET_ENEMY("エイダ")) < -16
+			CFLAG:ARG:입력행동 = [[스킬:침묵의기도]]
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					CFLAG:ARG:입력행동 = [[스킬:파워브레스]]
+				CASE 1
+					CFLAG:ARG:입력행동 = [[스킬:타룬・다]]
+				CASE 2
+					CFLAG:ARG:입력행동 = [[스킬:메・디아]]
+			ENDSELECT
+		ENDIF
+	ELSE
+		IF RAND:2
+			IF CFLAG:ARG:꿰뚫는투기
+				IF RAND:2
+					CFLAG:ARG:입력행동 = [[스킬:브레이브재퍼]]
+				ELSE
+					CFLAG:ARG:입력행동 = [[스킬:델타포스]]
+				ENDIF
+			ELSE
+				IF RAND:2
+					CFLAG:ARG:입력행동 = [[스킬:꿰뚫는투기]]
+				ELSE
+					CFLAG:ARG:입력행동 = 0
+				ENDIF
+			ENDIF
+		ELSE
+			IF RAND:2
+				CFLAG:ARG:입력행동 = [[스킬:만마의일격]]
+			ELSE
+				CFLAG:ARG:입력행동 = 0
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+
+@SET_ACTION_エイダ_聖域の策謀, ARG
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+CFLAG:ARG:입력행동 = 0
+CFLAG:ARG:타겟 = -1
+IF CFLAG:ARG:１more플래그 > 0
+	CFLAG:ARG:입력행동 = 0
+ELSE
+	;アーシェラが異常になっていたらアムリタ
+	IF !IS_BADSTATE(GET_ENEMY("アーシェラ"), "GOOD") && !IS_BADSTATE(GET_ENEMY("アーシェラ"), "DYING")
+		CFLAG:ARG:입력행동 = [[스킬:암리타]]
+	ELSE
+		;カジャの効果をランダムで2回チェックしてデカジャ判定を行う
+		FOR LCOUNT, 0, 2
+			L_CHARA = POS(RAND(1, 7))
+			SIF !IS_TARGET_ABLE(L_CHARA)
+				CONTINUE
+			SIF GET_カジャンダ_MAX(ARG) < 16
+				CONTINUE
+			CFLAG:ARG:입력행동 = [[스킬:데・카쟈]]
+			BREAK
+		NEXT
+		IF CFLAG:ARG:입력행동 == 0
+			;ランダムな敵一体の壁をチェック(空きポジションが増えると使ってくる可能性が減る)
+			L_CHARA = POS(RAND(7, 17))
+			IF IS_TARGET_ABLE(L_CHARA)
+				IF CFLAG:L_CHARA:전격무효화횟수 == 0
+					CFLAG:ARG:입력행동 = [[스킬:대지의벽]]
+					BREAK
+				ELSEIF CFLAG:L_CHARA:수호의방패 == 0
+					CFLAG:ARG:입력행동 = [[스킬:수호의방패]]
+					BREAK
+				ENDIF
+			ENDIF
+			;ここまでに決まってなかったらアーシェラ支援
+			IF CFLAG:ARG:입력행동 == 0
+				CFLAG:ARG:타겟 = CPOS(GET_ENEMY("アーシェラ"))
+				IF RAND:2 && 現HP割合(GET_ENEMY("アーシェラ")) < 100
+					CFLAG:ARG:입력행동 = [[스킬:디아라마]]
+				ELSE
+					CFLAG:ARG:입력행동 = [[스킬:히트라이저]]
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+SIF CFLAG:ARG:타겟 == -1 || CFLAG:ARG:입력행동 == 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+
+;マシン2種は一発うったら気合からの自爆の固定パターン
+@SET_ACTION_T95メデューサ_聖域の策謀, ARG
+IF CFLAG:ARG:800++ == 0
+	CFLAG:ARG:입력행동 = [[스킬:산탄사격]]
+ELSE
+	IF CFLAG:ARG:気合フラグ == 0
+		CFLAG:ARG:입력행동 = [[스킬:기합]]
+	ELSE
+		CFLAG:ARG:입력행동 = [[스킬:자폭]]
+	ENDIF
+ENDIF
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+
+@SET_ACTION_T95ゴーレム_聖域の策謀, ARG
+IF CFLAG:ARG:800++ == 0
+	CFLAG:ARG:입력행동 = [[스킬:싱글샷]]
+ELSE
+	IF CFLAG:ARG:気合フラグ == 0
+		CFLAG:ARG:입력행동 = [[스킬:기합]]
+	ELSE
+		CFLAG:ARG:입력행동 = [[스킬:자폭]]
+	ENDIF
+ENDIF
+
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+SIF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_REQ36_MACHINE, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+	ENDSELECT
+;自分が防御側
+ELSE
+	SELECTCASE ARGS
+		;場に残ってるターン数に応じて被ダメを増やして破壊しやすくする
+		;100~175%
+		CASE "ダメージ倍率"
+			RETURN (CFLAG:L_P:800 - 1) * 25
+	ENDSELECT
+ENDIF
+RETURN 0

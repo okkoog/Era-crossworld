@@ -1,0 +1,301 @@
+﻿;スキル名
+@SKILL_NAME_影霄・絶影,ARG
+RESULTS = 影霄・絶影
+
+;　명중
+@SKILL_HITRATE_影霄・絶影, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_影霄・絶影, ARG
+#DIM L_DMG
+#DIM SKILL_NUM
+SIF ARG < 0
+	RETURN 100
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"影霄・絶影")
+L_DMG = TOINT(AUTO_SPLIT("60_70_80_110","_",TOINT(CSTR:ARG:106)-1))
+SIF INRANGE(SKILLGAGE_F_GET(ARG,SKILL_NUM),-999,-1) && SKILLGAGE_H_GET(ARG,SKILL_NUM) >= 10000
+	L_DMG *= 2
+RETURN L_DMG
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_影霄・絶影, ARG
+RETURN 10
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_影霄・絶影, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_影霄・絶影,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_影霄・絶影,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_影霄・絶影,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_影霄・絶影,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_影霄・絶影, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_影霄・絶影,ARG
+RETURN 40
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_影霄・絶影
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_影霄・絶影,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_影霄・絶影,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_影霄・絶影,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_影霄・絶影,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_影霄・絶影,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_影霄・絶影
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_影霄・絶影, ARG = -1
+RETURN 10
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_影霄・絶影
+RETURN 0
+
+;没
+;@SKILL_RANK_影霄・絶影, ARG = -1
+
+
+;ターン終了時に行う処理
+@SKILL_TURNEND_影霄・絶影,ARG
+#DIM SKILL_NUM
+#DIM L_GAGE
+#DIM L_MAX_F
+SIF ARG < 0 || CSTR:ARG:106 == ""
+	RETURN 0
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"影霄・絶影")
+L_GAGE = SKILLGAGE_F_GET(ARG,SKILL_NUM)
+IF GET_STATE(CFLAG:ARG:상태이상) == "DYING" || L_GAGE == -1000
+	;死んだ場合はゲージを使用不可の値に設定し、既に使用不可の値ならばその時点で終了
+	IF L_GAGE != -1000
+		PRINTFORMW %CALLNAME:ARG%의 영소·절영 효과가 종료되었다….
+		CALL SKILLGAGE_F_SET,ARG,SKILL_NUM,-1000
+		CALL SKILLGAGE_H_SET,ARG,SKILL_NUM,-1
+	ENDIF
+	RETURN 0
+ENDIF
+;Fゲージが0or正の値（起動していない状態）か、負の値（効果発動中）で処理を変更
+L_GAGE = L_GAGE > -1 ? MIN(L_GAGE + 5,20) # MIN(L_GAGE + 5 ,0)
+IF L_GAGE == 0 && SKILLGAGE_F_GET(ARG,SKILL_NUM) < 0
+	;効果時間が終了した際の処理
+	PRINTFORMW %CALLNAME:ARG%의 영소·절영 효과가 종료되었다….
+	CALL SKILLGAGE_F_SET(ARG,SKILL_NUM,-1000)
+	CALL SKILLGAGE_H_SET(ARG,SKILL_NUM,-1)
+	RETURN 0
+ENDIF
+CALL SKILLGAGE_F_SET(ARG,SKILL_NUM,L_GAGE)
+RETURN 0
+
+;SHOP画面を開いた時に行う処理
+;@SKILL_INITIALIZE_影霄・絶影,ARG
+;RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+;影霄・絶影使用時の相性と無効化スキルの貫通処理がまだできていないので、次触る時はちゃんと手を加える。
+@ACTION_影霄・絶影,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM LCOUNT,4
+#DIM LTARGET
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"影霄・絶影")
+LCOUNT:1 = CFLAG:ARG:PT플래그 == 0 ? 1 # 7
+LCOUNT:2 = CFLAG:ARG:PT플래그 == 0 ? 7 # 17
+CALL SKILLGAGE_F_SET,ARG,SKILL_NUM,-TOINT(AUTO_SPLIT("25_28_31_35","_",TOINT(CSTR:ARG:106)-1))
+CALL SKILLGAGE_H_SET,ARG,SKILL_NUM,0
+FOR LCOUNT,0,10
+	LTARGET = -1
+	;HPが一番低い敵をサーチする
+	FOR LCOUNT:3,LCOUNT:1,LCOUNT:2
+		SIF POS(LCOUNT:3) < 0 || GET_STATE(CFLAG:POS(LCOUNT:3):상태이상) == "DYING"
+			CONTINUE
+		SIF LTARGET == -1 || BASE:LTARGET:ＨＰ < BASE:POS(LCOUNT:3):ＨＰ
+			LTARGET = POS(LCOUNT:3)
+	NEXT
+	;敵を見つけられなかったらその時点で終了
+	SIF LTARGET == -1
+		BREAK
+	;공격횟수 * 1000をHゲージに加算
+	CALL SKILLGAGE_H_ADD,ARG,SKILL_NUM,1000
+	CALL ATTACK_SINGLE,ARG,LTARGET,SKILL_NUM
+	;選択中の敵が攻撃後に消えた or DYINGになり、Hゲージが0 or 1000で割った際の余りが3未満なら1加算
+	SIF (CPOS(LTARGET) < 1 || GET_STATE(CFLAG:LTARGET:상태이상) == "DYING") && (SKILLGAGE_H_GET(ARG,SKILL_NUM) == 0 || (SKILLGAGE_H_GET(ARG,SKILL_NUM) % 1000) < 3)
+		CALL SKILLGAGE_H_ADD,ARG,SKILL_NUM,1
+NEXT
+CALL SKILLGAGE_H_SET,ARG,SKILL_NUM,10000
+
+;CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+;CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+;CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM;		拡散攻撃
+;CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM;			ランダム攻撃
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@SKILLGAGE_DISPLAY_影霄・絶影,ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"影霄・絶影")
+IF SKILLGAGE_F_GET(ARG,SKILL_NUM) >= 20 || SKILLGAGE_F_GET(ARG,SKILL_NUM) == -1000
+	SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) == -1000
+		RETURN 0
+	PRINTL 『影霄・絶影』ＲＥＡＤＹ！
+ENDIF 
+PRINT ＥＸ―ＳＫＩＬＬ|
+CALL PRINT_COLORBAR, ABS(SKILLGAGE_F_GET(ARG,SKILL_NUM)), SKILLGAGE_F_GET(ARG,SKILL_NUM) > -1 ? 20 # TOINT(AUTO_SPLIT("25_28_31_35","_",TOINT(CSTR:ARG:106)-1)), 25, UNICODE(0x2585), UNICODE(0x2585), SKILLGAGE_F_GET(ARG,SKILL_NUM) > -1 ? 0x9acd32 # 0xff8c00, 0x696969
+PRINTL
+;SKILL_NUM = PU_SKILLNUM_GET(ARG,"影霄・絶影")
+;SKILLGAGE_D_GET(ARG,SKILL_NUM)
+
+
+@SKILL_PASSIVE_PENETRATION_RANK_影霄・絶影, L_P, L_T, L_スキル, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM DYNAMIC L_P;このスキルの所持者
+#DIM DYNAMIC L_T;攻撃対象
+#DIMS DYNAMIC L_スキル;スキルの所持者が敵に対して使用しているスキルの関数名称
+#DIM DYNAMIC L_ダメージタイプ
+#DIM DYNAMIC L_攻撃タイプ
+#DIM DYNAMIC L_相性
+#DIM DYNAMIC GIVE_EFFECT_CHARA;リーダースキル等他人からつけられている場合の提供者
+SIF GET_ダメージタイプ(L_ダメージタイプ) == "物理" && PU_SKILLGAGE_F_GET(L_P, "影霄・絶影") < 0
+	RETURN 2
+RETURN 0
+
+;　説明文の表示
+@SKILL_EXPLAIN_影霄・絶影,ARG
+PRINTL 스킬 게이지 추가. 턴 경과에 따라 게이지가 차오른다. 게이지 완충 시 통상 스킬과 마찬가지로 사용 가능
+PRINTL 적 전체 중 사망자를 제외하고 HP가 가장 낮은 캐릭터를 대상으로 10회 공격을 가한다
+PRINTL 이 공격의 마지막 일격은 위력이 배가 되며, 「데미지 타입 없음」이 된다
+PRINTL 이 공격으로 적을 격파했을 때, 사용자의 가하는 데미지가 상승하고 마법 피데미지가 경감된다. 부여되는 횟수는 최대 3회까지
+PRINTL
+PRINTL 공격 후 일정 턴 동안, 사용자가 사용하는 물리 공격은 상대의 상성과 무효화 스킬을 관통하며, 「데미지 타입 없음」이 된다
+PRINTL 스킬 랭크가 높을수록 상승률이 높아지고, 스킬이 발동하기 쉬워지며, 효과 유지 시간이 늘어난다
+SETCOLOR COLOR("RED")
+PRINTL 이 효과는 던전 탐색 중 한 번만 사용할 수 있다
+RESETCOLOR
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_影霄・絶影,ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"影霄・絶影")
+SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) < 20
+	RETURN 0
+RETURN 1
+
+@リンク不能_影霄・絶影
+RETURN 1
+;====================================================
+;独自処理
+;====================================================
+;（予定）と付けられている方は仮置きの物。実際に採用されるかどうかはわからない。
+@AUTO_PU_SKILL_影霄・絶影,ARG,ARGS,ARG:1,ARG:2
+#DIM SKILL_RANK
+#DIM SKILL_NUM
+#DIM L_USER
+#DIM LAMMOUNT
+;ARG = 攻撃者
+;ARGS （ダメージ↑、被ダメージ↑、命中↑、回避↑、魔威↑、魔効↑、etc…）といった感じの奴
+;ARG:1 = 防御者
+;ARG:2 = etc枠。 今回ではL_ダメージタイプが引数になっている
+;文字列を参考にする都合上、どの文字列を使うか事前に定めておいた方がいいかも
+;CSTR:ARG:100 = EXTRA勢出典作品、『アークナイツ』とでも書き込む（予定）
+;CSTR:ARG:101 = EXTRA勢出典作品でどのキャラなのか、とりあえず『アーミヤ（前衛）』とでも書き込む（予定）
+;CSTR:ARG:106 = 専用スキルその2のスキルランク変数として使用、この場合は『影霄・絶影』が対象（予定）
+L_USER = -1
+SIF ARGS == "ダメージ↑" && CSTR:ARG:101 == "アーミヤ（前衛）"
+	L_USER = ARG
+SIF ARGS == "魔法被ダメージ↓" && CSTR:(ARG:1):101 == "アーミヤ（前衛）"
+	L_USER = ARG:1
+;SIF ARGS == "Hゲージ最大値" || ARGS == "Hゲージ初期値" || ARGS == "Dゲージ最大値"
+;	L_USER = ARG
+SIF L_USER == -1
+	RETURN 0
+SKILL_RANK = TOINT(CSTR:L_USER:106)
+SKILL_NUM = PU_SKILLNUM_GET(L_USER,"影霄・絶影")
+LAMMOUNT = 0
+;IF ARGS == "Hゲージ最大値"
+;	;スキルHゲージの最大値を決める処理
+;	RETURN 20
+;ELSEIF ARGS == "Hゲージ初期値"
+;	;スキルHゲージの初期値を決める処理
+;	RETURN 0
+;ELSEIF ARGS == "Dゲージ最大値"
+;	;スキルDゲージの最大値を決める処理
+;	SELECTCASE SKILL_RANK
+;		CASE 1
+;			RETURN 5
+;		CASE 2
+;			RETURN 6
+;		CASE 3 TO 4
+;			RETURN 7
+;	ENDSELECT
+;ENDIF
+IF SKILLGAGE_F_GET(L_USER,SKILL_NUM) < 0
+	SELECTCASE ARGS
+		CASE "ダメージ↑"
+			;与ダメージとかに挟む場合の処理
+			SELECTCASE SKILL_RANK
+				CASE IS < 3
+					LAMMOUNT = 10
+				CASE 3
+					LAMMOUNT = 13
+				CASE 4
+					LAMMOUNT = 20
+			ENDSELECT
+			LAMMOUNT *= (SKILLGAGE_H_GET(L_USER,SKILL_NUM) % 1000)
+			RETURN LAMMOUNT
+		CASE "魔法被ダメージ↓"
+			SIF ARG:2 != 2
+				RETURN 0
+			LAMMOUNT = 100 - (15 * (SKILLGAGE_H_GET(L_USER,SKILL_NUM) % 1000))
+			RETURN LAMMOUNT
+	ENDSELECT
+ENDIF
+RETURN 0

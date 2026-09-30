@@ -1,0 +1,121 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_閃刀空域『エリアゼロ』,ARG
+RESULTS = 섬도공역『에리어 제로』
+
+;　명중
+@SKILL_HITRATE_閃刀空域『エリアゼロ』, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_閃刀空域『エリアゼロ』, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_閃刀空域『エリアゼロ』,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_閃刀空域『エリアゼロ』,ARG
+RETURN 1
+
+@SKILL_COSTTYPE_閃刀空域『エリアゼロ』, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+
+;　コストの量
+@SKILL_COST_閃刀空域『エリアゼロ』,ARG
+RETURN 20
+
+;　1EXTRAか 2MAGICか 3コマンダースキル
+@SKILL_DECIDE_TYPE_閃刀空域『エリアゼロ』
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_閃刀空域『エリアゼロ』, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_閃刀空域『エリアゼロ』,ARG
+RETURN 2
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_閃刀空域『エリアゼロ』,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_閃刀空域『エリアゼロ』, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_閃刀空域『エリアゼロ』
+RETURN GET_SUCCESSION_NUM("지원")
+
+;속도보정
+@SKILL_SPEED_閃刀空域『エリアゼロ』, ARG = -1
+RETURN 99999
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_閃刀空域『エリアゼロ』
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_閃刀空域『エリアゼロ』, ARG = -1
+RETURN 6
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_閃刀空域『エリアゼロ』, ARG, ARG:1, ARG:2
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC IS_EFFECT
+FOR LCOUNT, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1) + 1
+	SIF !IS_TARGET_ABLE(POS(LCOUNT))
+		CONTINUE
+	SIF !IS_SENTOUKI_REI(POS(LCOUNT))
+		CONTINUE
+	CALL PRINT_HIT_MESSAGE, POS(LCOUNT), "連続行動！", "L"
+	CFLAG:POS(LCOUNT):연속행동발생률 += 100
+	IF CFLAG:POS(LCOUNT):피링크캐릭터실제가입시간 > 0
+		CALL SET_RPG_CFLAG_BTL, FINDCHARA_TIMEID(CFLAG:POS(LCOUNT):피링크캐릭터실제가입시간), "エリアゼロ", FLAG:경과턴수 + 1
+	ELSE
+		CALL SET_RPG_CFLAG_BTL, POS(LCOUNT), "エリアゼロ", FLAG:경과턴수 + 1
+	ENDIF
+	IS_EFFECT = 1
+NEXT
+SIF !IS_EFFECT
+	PRINTFORML 효과가 없었다。
+WAIT
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_閃刀空域『エリアゼロ』, ARG
+PRINTFORML 【로제 전용 스킬】
+PRINTFORML 아군 섬도희-레이 및 레이의 링크체를 연속 행동시킨다.
+PRINTFORML 
+PRINTFORML 이 스킬은 섬도 카운터가 3개 이상 없으면 발동할 수 없으며,
+PRINTFORML 효과 발동 후 자신이 가진 섬도 카운터를 제거한다.
+
+@SKILL_EXPLAIN_TOOLTIP_閃刀空域『エリアゼロ』, ARG = -1
+RESULTS:0 = 【로제 전용 스킬】
+RESULTS:1 = 아군 섬도희-레이 및 레이의 링크체를 연속 행동시킨다.
+RESULTS:2 = 
+RESULTS:3 = このスキルは閃刀カウンターが3つ以上なければ発動できず、
+RESULTS:4 = 効果発動後、自身の持つ閃刀カウンターを取り除く。
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_閃刀空域『エリアゼロ』,ARG
+RESULTS = "필요:섬도 카운터 3"
+SIF GET_RPG_CFLAG_BTL(ARG, "閃刀カウンター") < 3
+	RETURN 0
+RETURN 1
+
+@リンク不能_閃刀空域『エリアゼロ』
+RETURN 1
+
+@SKILL_TAG_閃刀空域『エリアゼロ』
+RESULTS = 로제 전용 스킬
+

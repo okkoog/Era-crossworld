@@ -1,0 +1,1808 @@
+﻿;=======================================================================
+;인카운트율
+;1歩で2％上がる、アンダーグラウンドは仲魔稼ぎ用フロアなので一歩で5%上げる。
+;5歩まではエンカウント率が上がらないように
+;13はアンダーグラウンド最深層、敵は出さない(階層時点だと実装雑魚敵無し)ので入口と同じ扱いに。
+;=======================================================================
+@ENCOUNT_RATE_105
+SELECTCASE FLAG:현M
+	;入口、アンダーグラウンド最深層
+	CASE 0 , 13
+		FLAG:미조우걸음수 = 0
+		FLAG:인카운트율 = 0
+		FLAG:MAG소비율 = 0
+	;蟲惑魔の森、魔法族の里、白銀の迷宮城
+	CASE 1 TO 9
+		FLAG:MAG소비율 = 100
+		FLAG:인카운트율 = MAX(FLAG:미조우걸음수-5,0)*2
+	;アンダーグラウンド浅層から深層
+	CASE 10 TO 12
+		FLAG:MAG소비율 = 100
+		FLAG:인카운트율 = FLAG:미조우걸음수*5
+	CASEELSE
+ENDSELECT
+
+;=======================================================================
+;必要レベル目安
+;推奨LV 雑魚最低LV 雑魚最高LV ボスLV 
+;=======================================================================
+@GET_DUNGEON_LV_105
+IF ダンジョンフラグ:(FLAG:현던전):20 == 0
+	RETURN 15, 15, 25, 35
+ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 1
+	RETURN 30, 30, 40, 50
+ELSEIF ダンジョンフラグ:(FLAG:현던전):20 == 2
+	RETURN 45, 45, 55, 65
+ENDIF
+;=======================================================================
+;エンカウント処理
+;=======================================================================
+@CHECK_ENCOUNT_105
+IF RAND:100 < FLAG:인카운트율
+	RETURN 1
+ELSE
+	FLAG:미조우걸음수 += 1
+	RETURN 0
+ENDIF
+
+;=======================================================================
+;敵の種族の種類数
+;RETURN X でXが種類の数になります
+;蟲惑魔の森、魔法族の里、白銀の迷宮城の
+;浅層、中層と1階、2階は中級で(40%で1種類、50%で2種類、10%で3種類)
+;深層と3階は最上級で(30%で1種類、60%で2種類、10%で3種類)
+;敵が強いので減量。
+;アンダーグラウンドは3種類固定で
+;=======================================================================
+@CLASS_NUM_105
+SELECTCASE FLAG:현M
+	CASE 1,2 ,4, 5 ,7, 8
+		RETURN CLASS_NUM_COMMON("中級")
+	CASE 3 , 6 , 9
+		RETURN CLASS_NUM_COMMON("最上級")
+	CASE 10 TO 12
+		RETURN 3
+ENDSELECT
+
+;=======================================================================
+;敵の総数
+;浅層と1階は3体から6体出る。
+;中層と2階は3体から8体出る。この時1種類だと最大6、2種類だと7、3種類だと8まで出る。
+;深層と3階は3体から10体出る。この時1種類だと最大6、2種類だと8、3種類だと10まで出る。
+;アンダーグラウンドは6～10体出す。
+;=======================================================================
+@ENEMY_NUM_105, ARG
+SELECTCASE FLAG:현M
+	CASE 1 , 4 , 7
+		RETURN RAND(3,7)
+	CASE 2 , 5 , 8
+		RETURN RAND(3, ARG+6)
+	CASE 3 , 6 , 9
+		RETURN RAND(3, ARG*2+5)
+	CASE 10 TO 12
+		RETURN RAND(6, 11)
+ENDSELECT
+;=======================================================================
+;敵の種類
+;やってること：まず15～25の雑魚出す。
+;次に各ダンジョンに入ってボス倒して、次のダンジョンに入る時にフラグ20を1上げて段階を上げる。
+;段階上がったら30～40の雑魚に入れ替えて、残り2マップのどっちかボス倒したらまたフラグ1上げて
+;45～55の雑魚に入れ替える。
+;アンダーグラウンドは他３マップの雑魚全てとM∀LICEが出現するだけのマップ。
+;1階層ごとに15、30、45の3段階それぞれの雑魚が出る。
+;=======================================================================
+@ENEMY_105, ARG
+SELECTCASE ダンジョンフラグ:(FLAG:현던전):20
+	;1段階目
+	CASE 0
+		SELECTCASE FLAG:현M
+			;蟲惑魔の森　浅層
+			CASE 1
+				SELECTCASE RAND(8)
+					CASE 0
+						RETURN [[キャラ:티오의충혹마]]
+					CASE 1
+						RETURN [[キャラ:리세의충혹마]]
+					CASE 2
+						RETURN [[キャラ:카즈라의충혹마]]
+					CASE 3
+						RETURN [[キャラ:트리온의충혹마]]
+					CASE 4
+						RETURN [[キャラ:아트라의충혹마]]
+					CASE 5
+						RETURN [[キャラ:사요시구레]]
+					CASE 6
+						RETURN [[キャラ:하나미즈키]]
+					CASE 7
+						RETURN [[キャラ:부유벚꽃]]
+				ENDSELECT
+			;蟲惑魔の森　中層
+			CASE 2
+				SELECTCASE RAND(8)
+					CASE 0
+						RETURN [[キャラ:티오의충혹마]],20
+					CASE 1
+						RETURN [[キャラ:리세의충혹마]],20
+					CASE 2
+						RETURN [[キャラ:카즈라의충혹마]],20
+					CASE 3
+						RETURN [[キャラ:트리온의충혹마]],20
+					CASE 4
+						RETURN [[キャラ:아트라의충혹마]],20
+					CASE 5
+						RETURN [[キャラ:사요시구레]],20
+					CASE 6
+						RETURN [[キャラ:하나미즈키]],20
+					CASE 7
+						RETURN [[キャラ:부유벚꽃]],20
+				ENDSELECT
+			;蟲惑魔の森　深層
+			CASE 3
+				SELECTCASE RAND(8)
+					CASE 0
+						RETURN [[キャラ:티오의충혹마]],25
+					CASE 1
+						RETURN [[キャラ:리세의충혹마]],25
+					CASE 2
+						RETURN [[キャラ:카즈라의충혹마]],25
+					CASE 3
+						RETURN [[キャラ:트리온의충혹마]],25
+					CASE 4
+						RETURN [[キャラ:아트라의충혹마]],25
+					CASE 5
+						RETURN [[キャラ:사요시구레]],25
+					CASE 6
+						RETURN [[キャラ:하나미즈키]],25
+					CASE 7
+						RETURN [[キャラ:부유벚꽃]],25
+				ENDSELECT
+			;魔法族の里　浅層
+			CASE 4
+				SELECTCASE RAND(7)
+					CASE 0
+						RETURN [[キャラ:히타]]
+					CASE 1
+						RETURN [[キャラ:윈]]
+					CASE 2
+						RETURN [[キャラ:에리아]]
+					CASE 3
+						RETURN [[キャラ:아우스]]
+					CASE 4
+						RETURN [[キャラ:사요시구레]]
+					CASE 5
+						RETURN [[キャラ:하나미즈키]]
+					CASE 6
+						RETURN [[キャラ:부유벚꽃]]
+				ENDSELECT
+			;魔法族の里　中層
+			CASE 5
+				SELECTCASE RAND(7)
+					CASE 0
+						RETURN [[キャラ:히타]],20
+					CASE 1
+						RETURN [[キャラ:윈]],20
+					CASE 2
+						RETURN [[キャラ:에리아]],20
+					CASE 3
+						RETURN [[キャラ:아우스]],20
+					CASE 4
+						RETURN [[キャラ:사요시구레]],20
+					CASE 5
+						RETURN [[キャラ:하나미즈키]],20
+					CASE 6
+						RETURN [[キャラ:부유벚꽃]],20
+				ENDSELECT
+			;魔法族の里　深層
+			CASE 6
+				SELECTCASE RAND(7)
+					CASE 0
+						RETURN [[キャラ:히타]],25
+					CASE 1
+						RETURN [[キャラ:윈]],25
+					CASE 2
+						RETURN [[キャラ:에리아]],25
+					CASE 3
+						RETURN [[キャラ:아우스]],25
+					CASE 4
+						RETURN [[キャラ:사요시구레]],25
+					CASE 5
+						RETURN [[キャラ:하나미즈키]],25
+					CASE 6
+						RETURN [[キャラ:부유벚꽃]],25
+				ENDSELECT
+			;白銀の迷宮城　１階
+			CASE 7
+				SELECTCASE RAND(6)
+					CASE 0
+						RETURN [[キャラ:백은성의광시계]]
+					CASE 1
+						RETURN [[キャラ:백은성의화취로]]
+					CASE 2
+						RETURN [[キャラ:백은성의샹드라]]
+					CASE 3
+						RETURN [[キャラ:사요시구레]]
+					CASE 4
+						RETURN [[キャラ:하나미즈키]]
+					CASE 5
+						RETURN [[キャラ:부유벚꽃]]
+				ENDSELECT
+			;白銀の迷宮城　２階
+			CASE 8
+				SELECTCASE RAND(6)
+					CASE 0
+						RETURN [[キャラ:백은성의광시계]],20
+					CASE 1
+						RETURN [[キャラ:백은성의화취로]],20
+					CASE 2
+						RETURN [[キャラ:백은성의샹드라]],20
+					CASE 3
+						RETURN [[キャラ:사요시구레]],20
+					CASE 4
+						RETURN [[キャラ:하나미즈키]],20
+					CASE 5
+						RETURN [[キャラ:부유벚꽃]],20
+				ENDSELECT
+			;白銀の迷宮城　３階
+			CASE 9
+				SELECTCASE RAND(6)
+					CASE 0
+						RETURN [[キャラ:백은성의광시계]],25
+					CASE 1
+						RETURN [[キャラ:백은성의화취로]],25
+					CASE 2
+						RETURN [[キャラ:백은성의샹드라]],25
+					CASE 3
+						RETURN [[キャラ:사요시구레]],25
+					CASE 4
+						RETURN [[キャラ:하나미즈키]],25
+					CASE 5
+						RETURN [[キャラ:부유벚꽃]],25
+				ENDSELECT
+		ENDSELECT
+	;2段階目
+	CASE 1
+		SELECTCASE FLAG:현M
+			;蟲惑魔の森　浅層
+			CASE 1
+				SELECTCASE RAND(9)
+					CASE 0
+						RETURN [[キャラ:세라의충혹마]]
+					CASE 1
+						RETURN [[キャラ:키노의충혹마]]
+					CASE 2
+						RETURN [[キャラ:란카의충혹마]]
+					CASE 3
+						RETURN [[キャラ:지나의충혹마]]
+					CASE 4
+						RETURN [[キャラ:푸티카의충혹마]]
+					CASE 5
+						RETURN [[キャラ:유령토끼]]
+					CASE 6
+						RETURN [[キャラ:저택와라시]]
+					CASE 7
+						RETURN [[キャラ:Ｅ・베일러]]
+					CASE 8
+						RETURN [[キャラ:Ｉ：Ｐ마스카레나]]
+				ENDSELECT
+			;蟲惑魔の森　中層
+			CASE 2
+				SELECTCASE RAND(9)
+					CASE 0
+						RETURN [[キャラ:세라의충혹마]],35
+					CASE 1
+						RETURN [[キャラ:키노의충혹마]],35
+					CASE 2
+						RETURN [[キャラ:란카의충혹마]],35
+					CASE 3
+						RETURN [[キャラ:지나의충혹마]],35
+					CASE 4
+						RETURN [[キャラ:푸티카의충혹마]],35
+					CASE 5
+						RETURN [[キャラ:유령토끼]],35
+					CASE 6
+						RETURN [[キャラ:저택와라시]],35
+					CASE 7
+						RETURN [[キャラ:Ｅ・베일러]],35
+					CASE 8
+						RETURN [[キャラ:Ｉ：Ｐ마스카레나]],35
+				ENDSELECT
+			;蟲惑魔の森　深層
+			CASE 3
+				SELECTCASE RAND(9)
+					CASE 0
+						RETURN [[キャラ:세라의충혹마]],40
+					CASE 1
+						RETURN [[キャラ:키노의충혹마]],40
+					CASE 2
+						RETURN [[キャラ:란카의충혹마]],40
+					CASE 3
+						RETURN [[キャラ:지나의충혹마]],40
+					CASE 4
+						RETURN [[キャラ:푸티카의충혹마]],40
+					CASE 5
+						RETURN [[キャラ:유령토끼]],40
+					CASE 6
+						RETURN [[キャラ:저택와라시]],40
+					CASE 7
+						RETURN [[キャラ:Ｅ・베일러]],40
+					CASE 8
+						RETURN [[キャラ:Ｉ：Ｐ마스카레나]],40
+				ENDSELECT
+			;魔法族の里　浅層
+			CASE 4
+				SELECTCASE RAND(7)
+					CASE 0
+						RETURN [[キャラ:블랙매지션걸]]
+					CASE 1
+						RETURN [[キャラ:라이너]]
+					CASE 2
+						RETURN [[キャラ:달크]]
+					CASE 3
+						RETURN [[キャラ:유령토끼]]
+					CASE 4
+						RETURN [[キャラ:저택와라시]]
+					CASE 5
+						RETURN [[キャラ:Ｅ・베일러]]
+					CASE 6
+						RETURN [[キャラ:Ｉ：Ｐ마스카레나]]
+				ENDSELECT
+			;魔法族の里　中層
+			CASE 5
+				SELECTCASE RAND(7)
+					CASE 0
+						RETURN [[キャラ:블랙매지션걸]],35
+					CASE 1
+						RETURN [[キャラ:라이너]],35
+					CASE 2
+						RETURN [[キャラ:달크]],35
+					CASE 3
+						RETURN [[キャラ:유령토끼]],35
+					CASE 4
+						RETURN [[キャラ:저택와라시]],35
+					CASE 5
+						RETURN [[キャラ:Ｅ・베일러]],35
+					CASE 6
+						RETURN [[キャラ:Ｉ：Ｐ마스카레나]],35
+				ENDSELECT
+			;魔法族の里　深層
+			CASE 6
+				SELECTCASE RAND(7)
+					CASE 0
+						RETURN [[キャラ:블랙매지션걸]],40
+					CASE 1
+						RETURN [[キャラ:라이너]],40
+					CASE 2
+						RETURN [[キャラ:달크]],40
+					CASE 3
+						RETURN [[キャラ:유령토끼]],40
+					CASE 4
+						RETURN [[キャラ:저택와라시]],40
+					CASE 5
+						RETURN [[キャラ:Ｅ・베일러]],40
+					CASE 6
+						RETURN [[キャラ:Ｉ：Ｐ마스카레나]],40
+				ENDSELECT
+			;白銀の迷宮城　１階
+			CASE 7
+				SELECTCASE RAND(7)
+					CASE 0
+						RETURN [[キャラ:아리안나]]
+					CASE 1
+						RETURN [[キャラ:아리안느]]
+					CASE 2
+						RETURN [[キャラ:아리아스]]
+					CASE 3
+						RETURN [[キャラ:유령토끼]]
+					CASE 4
+						RETURN [[キャラ:저택와라시]]
+					CASE 5
+						RETURN [[キャラ:Ｅ・베일러]]
+					CASE 6
+						RETURN [[キャラ:Ｉ：Ｐ마스카레나]]
+				ENDSELECT
+			;白銀の迷宮城　２階
+			CASE 8
+				SELECTCASE RAND(7)
+					CASE 0
+						RETURN [[キャラ:아리안나]],35
+					CASE 1
+						RETURN [[キャラ:아리안느]],35
+					CASE 2
+						RETURN [[キャラ:아리아스]],35
+					CASE 3
+						RETURN [[キャラ:유령토끼]],35
+					CASE 4
+						RETURN [[キャラ:저택와라시]],35
+					CASE 5
+						RETURN [[キャラ:Ｅ・베일러]],35
+					CASE 6
+						RETURN [[キャラ:Ｉ：Ｐ마스카레나]],35
+				ENDSELECT
+			;白銀の迷宮城　３階
+			CASE 9
+				SELECTCASE RAND(7)
+					CASE 0
+						RETURN [[キャラ:아리안나]],40
+					CASE 1
+						RETURN [[キャラ:아리안느]],40
+					CASE 2
+						RETURN [[キャラ:아리아스]],40
+					CASE 3
+						RETURN [[キャラ:유령토끼]],40
+					CASE 4
+						RETURN [[キャラ:저택와라시]],40
+					CASE 5
+						RETURN [[キャラ:Ｅ・베일러]],40
+					CASE 6
+						RETURN [[キャラ:Ｉ：Ｐ마스카레나]],40
+				ENDSELECT
+		ENDSELECT
+	;3段階目
+	CASE 2
+		SELECTCASE FLAG:현M
+			;蟲惑魔の森　浅層
+			CASE 1
+				SELECTCASE RAND(9)
+					CASE 0
+						RETURN [[キャラ:알로메루스의충혹마]]
+					CASE 1
+						RETURN [[キャラ:플레시아의충혹마]]
+					CASE 2
+						RETURN [[キャラ:아티푸스의충혹마]]
+					CASE 3
+						RETURN [[キャラ:시트리스의충혹마]]
+					CASE 4
+						RETURN [[キャラ:클라리아의충혹마]]
+					CASE 5
+						RETURN [[キャラ:하루우라라]]
+					CASE 6
+						RETURN [[キャラ:아폴로우사]]
+					CASE 7
+						RETURN [[キャラ:쿠리카라천동]]
+					CASE 8
+						RETURN [[キャラ:Ｓ：Ｐ리틀나이트]]
+				ENDSELECT
+			;蟲惑魔の森　中層
+			CASE 2
+				SELECTCASE RAND(9)
+					CASE 0
+						RETURN [[キャラ:알로메루스의충혹마]],50
+					CASE 1
+						RETURN [[キャラ:플레시아의충혹마]],50
+					CASE 2
+						RETURN [[キャラ:아티푸스의충혹마]],50
+					CASE 3
+						RETURN [[キャラ:시트리스의충혹마]],50
+					CASE 4
+						RETURN [[キャラ:클라리아의충혹마]],50
+					CASE 5
+						RETURN [[キャラ:하루우라라]],50
+					CASE 6
+						RETURN [[キャラ:아폴로우사]],50
+					CASE 7
+						RETURN [[キャラ:쿠리카라천동]],50
+					CASE 8
+						RETURN [[キャラ:Ｓ：Ｐ리틀나이트]],50
+				ENDSELECT
+			;蟲惑魔の森　深層
+			CASE 3
+				SELECTCASE RAND(9)
+					CASE 0
+						RETURN [[キャラ:알로메루스의충혹마]],55
+					CASE 1
+						RETURN [[キャラ:플레시아의충혹마]],55
+					CASE 2
+						RETURN [[キャラ:아티푸스의충혹마]],55
+					CASE 3
+						RETURN [[キャラ:시트리스의충혹마]],55
+					CASE 4
+						RETURN [[キャラ:클라리아의충혹마]],55
+					CASE 5
+						RETURN [[キャラ:하루우라라]],55
+					CASE 6
+						RETURN [[キャラ:아폴로우사]],55
+					CASE 7
+						RETURN [[キャラ:쿠리카라천동]],55
+					CASE 8
+						RETURN [[キャラ:Ｓ：Ｐ리틀나이트]],55
+				ENDSELECT
+			;魔法族の里　浅層
+			CASE 4
+				SELECTCASE RAND(8)
+					CASE 0
+						RETURN [[キャラ:블랙매지션]]
+					CASE 1
+						RETURN [[キャラ:사일런트매지션]]
+					CASE 2
+						RETURN [[キャラ:산드리용_유희왕]]
+					CASE 3
+						RETURN [[キャラ:눈동자의마녀모르가나]]
+					CASE 4
+						RETURN [[キャラ:하루우라라]]
+					CASE 5
+						RETURN [[キャラ:아폴로우사]]
+					CASE 6
+						RETURN [[キャラ:쿠리카라천동]]
+					CASE 7
+						RETURN [[キャラ:Ｓ：Ｐ리틀나이트]]
+				ENDSELECT
+			;魔法族の里　中層
+			CASE 5
+				SELECTCASE RAND(8)
+					CASE 0
+						RETURN [[キャラ:블랙매지션]],50
+					CASE 1
+						RETURN [[キャラ:사일런트매지션]],50
+					CASE 2
+						RETURN [[キャラ:산드리용_유희왕]],50
+					CASE 3
+						RETURN [[キャラ:눈동자의마녀모르가나]],50
+					CASE 4
+						RETURN [[キャラ:하루우라라]],50
+					CASE 5
+						RETURN [[キャラ:아폴로우사]],50
+					CASE 6
+						RETURN [[キャラ:쿠리카라천동]],50
+					CASE 7
+						RETURN [[キャラ:Ｓ：Ｐ리틀나이트]],50
+				ENDSELECT
+			;魔法族の里　深層
+			CASE 6
+				SELECTCASE RAND(8)
+					CASE 0
+						RETURN [[キャラ:블랙매지션]],55
+					CASE 1
+						RETURN [[キャラ:사일런트매지션]],55
+					CASE 2
+						RETURN [[キャラ:산드리용_유희왕]],55
+					CASE 3
+						RETURN [[キャラ:눈동자의마녀모르가나]],55
+					CASE 4
+						RETURN [[キャラ:하루우라라]],55
+					CASE 5
+						RETURN [[キャラ:아폴로우사]],55
+					CASE 6
+						RETURN [[キャラ:쿠리카라천동]],55
+					CASE 7
+						RETURN [[キャラ:Ｓ：Ｐ리틀나이트]],55
+				ENDSELECT
+			;白銀の迷宮城　１階
+			CASE 7
+				SELECTCASE RAND(7)
+					CASE 0
+						RETURN [[キャラ:라뷰린스]]
+					CASE 1
+						RETURN [[キャラ:백은성의마신상]]
+					CASE 2
+						RETURN [[キャラ:미궁성의백은희]]
+					CASE 3
+						RETURN [[キャラ:하루우라라]]
+					CASE 4
+						RETURN [[キャラ:아폴로우사]]
+					CASE 5
+						RETURN [[キャラ:쿠리카라천동]]
+					CASE 6
+						RETURN [[キャラ:Ｓ：Ｐ리틀나이트]]
+				ENDSELECT
+			;白銀の迷宮城　２階
+			CASE 8
+				SELECTCASE RAND(7)
+					CASE 0
+						RETURN [[キャラ:라뷰린스]],50
+					CASE 1
+						RETURN [[キャラ:백은성의마신상]],50
+					CASE 2
+						RETURN [[キャラ:미궁성의백은희]],50
+					CASE 3
+						RETURN [[キャラ:하루우라라]],50
+					CASE 4
+						RETURN [[キャラ:아폴로우사]],50
+					CASE 5
+						RETURN [[キャラ:쿠리카라천동]],50
+					CASE 6
+						RETURN [[キャラ:Ｓ：Ｐ리틀나이트]],50
+				ENDSELECT
+			;白銀の迷宮城　３階
+			CASE 9
+				SELECTCASE RAND(7)
+					CASE 0
+						RETURN [[キャラ:라뷰린스]],55
+					CASE 1
+						RETURN [[キャラ:백은성의마신상]],55
+					CASE 2
+						RETURN [[キャラ:미궁성의백은희]],55
+					CASE 3
+						RETURN [[キャラ:하루우라라]],55
+					CASE 4
+						RETURN [[キャラ:아폴로우사]],55
+					CASE 5
+						RETURN [[キャラ:쿠리카라천동]],55
+					CASE 6
+						RETURN [[キャラ:Ｓ：Ｐ리틀나이트]],55
+				ENDSELECT
+		ENDSELECT
+ENDSELECT
+
+SELECTCASE FLAG:현M
+	;アンダーグラウンド　浅層
+	CASE 10
+		SELECTCASE RAND(17)
+			CASE 0
+				RETURN [[キャラ:티오의충혹마]]
+			CASE 1
+				RETURN [[キャラ:리세의충혹마]]
+			CASE 2
+				RETURN [[キャラ:카즈라의충혹마]]
+			CASE 3
+				RETURN [[キャラ:트리온의충혹마]]
+			CASE 4
+				RETURN [[キャラ:아트라의충혹마]]
+			CASE 5
+				RETURN [[キャラ:사요시구레]]
+			CASE 6
+				RETURN [[キャラ:하나미즈키]]
+			CASE 7
+				RETURN [[キャラ:부유벚꽃]]
+			CASE 8
+				RETURN [[キャラ:히타]]
+			CASE 9
+				RETURN [[キャラ:윈]]
+			CASE 10
+				RETURN [[キャラ:에리아]]
+			CASE 11
+				RETURN [[キャラ:아우스]]
+			CASE 12
+				RETURN [[キャラ:백은성의광시계]]
+			CASE 13
+				RETURN [[キャラ:백은성의화취로]]
+			CASE 14
+				RETURN [[キャラ:백은성의샹드라]]
+			CASE 15
+				RETURN [[キャラ:화이트래빗]]
+			CASE 16
+				RETURN [[キャラ:도마우스]]
+		ENDSELECT
+	;アンダーグラウンド　中層
+	CASE 11
+		SELECTCASE RAND(17)
+			CASE 0
+				RETURN [[キャラ:아리아스]]
+			CASE 1
+				RETURN [[キャラ:아리안나]]
+			CASE 2
+				RETURN [[キャラ:아리안느]]
+			CASE 3
+				RETURN [[キャラ:라이너]]
+			CASE 4
+				RETURN [[キャラ:달크]]
+			CASE 5
+				RETURN [[キャラ:블랙매지션걸]]
+			CASE 6
+				RETURN [[キャラ:세라의충혹마]]
+			CASE 7
+				RETURN [[キャラ:키노의충혹마]]
+			CASE 8
+				RETURN [[キャラ:란카의충혹마]]
+			CASE 9
+				RETURN [[キャラ:지나의충혹마]]
+			CASE 10
+				RETURN [[キャラ:푸티카의충혹마]]
+			CASE 11
+				RETURN [[キャラ:유령토끼]]
+			CASE 12
+				RETURN [[キャラ:저택와라시]]
+			CASE 13
+				RETURN [[キャラ:Ｅ・베일러]]
+			CASE 14
+				RETURN [[キャラ:Ｉ：Ｐ마스카레나]]
+			CASE 15
+				RETURN [[キャラ:체셔캣]]
+			CASE 16
+				RETURN [[キャラ:마치헤어]]
+		ENDSELECT
+	;アンダーグラウンド　深層
+	CASE 12
+		SELECTCASE RAND(19)
+			CASE 0
+				RETURN [[キャラ:라뷰린스]]
+			CASE 1
+				RETURN [[キャラ:미궁성의백은희]]
+			CASE 2
+				RETURN [[キャラ:백은성의마신상]]
+			CASE 3
+				RETURN [[キャラ:알로메루스의충혹마]]
+			CASE 4
+				RETURN [[キャラ:플레시아의충혹마]]
+			CASE 5
+				RETURN [[キャラ:아티푸스의충혹마]]
+			CASE 6
+				RETURN [[キャラ:시트리스의충혹마]]
+			CASE 7
+				RETURN [[キャラ:클라리아의충혹마]]
+			CASE 8
+				RETURN [[キャラ:블랙매지션]]
+			CASE 9
+				RETURN [[キャラ:사일런트매지션]]
+			CASE 10
+				RETURN [[キャラ:산드리용_유희왕]]
+			CASE 11
+				RETURN [[キャラ:눈동자의마녀모르가나]]
+			CASE 12
+				RETURN [[キャラ:하루우라라]]
+			CASE 13
+				RETURN [[キャラ:아폴로우사]]
+			CASE 14
+				RETURN [[キャラ:쿠리카라천동]]
+			CASE 15
+				RETURN [[キャラ:Ｓ：Ｐ리틀나이트]]
+			CASE 16
+				RETURN [[キャラ:HO크립터]]
+			CASE 17
+				RETURN [[キャラ:레드랜섬]]
+			CASE 18
+				RETURN [[キャラ:화이트바인더]]
+		ENDSELECT
+ENDSELECT
+;=======================================================================
+;ボス配置
+;=======================================================================
+@SET_BOSS_ENEMY_DUNGEON_105, L_ENEMY_NAME, L_NO = -1, L_OPT
+#DIM DYNAMIC L_NO
+#DIM DYNAMIC L_ENEMY
+#DIMS DYNAMIC L_ENEMY_NAME
+#DIMS DYNAMIC L_OPT
+#DIMS DYNAMIC L_ENEMY_TABLE, 11
+
+L_ENEMY_TABLE:0 '= "ホールティアの蟲惑魔"
+L_ENEMY_TABLE:1 '= "巨大フレシア１"
+L_ENEMY_TABLE:2 '= "巨大フレシア２"
+L_ENEMY_TABLE:3 '= "巨大フレシア３"
+L_ENEMY_TABLE:4 '= "BMG１"
+L_ENEMY_TABLE:5 '= "BMG２"
+L_ENEMY_TABLE:6 '= "BMG３"
+L_ENEMY_TABLE:7 '= "ラビュリンス１"
+L_ENEMY_TABLE:8 '= "ラビュリンス２"
+L_ENEMY_TABLE:9 '= "ラビュリンス３"
+L_ENEMY_TABLE:10 '= "アーゼウス"
+
+IF L_NO >= 0
+	SIF !INRANGE(L_NO, 0, VARSIZE("L_ENEMY_TABLE") - 1)
+		RETURN 0
+	L_ENEMY_NAME '= L_ENEMY_TABLE:L_NO
+ENDIF
+IF L_OPT == "名称取得"
+	SIF L_ENEMY_TABLE:L_NO == ""
+		RETURN 0
+	RESULTS '= L_ENEMY_NAME
+	RETURN 1
+ENDIF
+
+SELECTCASE L_ENEMY_NAME
+	CASE "ホールティアの蟲惑魔"
+		CALL SET_ENEMY,9,[[キャラ:홀티아의충혹마]],15,0,1
+		L_ENEMY = CHARANUM - 1
+		;ボスフラグを立てたホールティアの蟲惑魔を配置
+		;既にボスフラグによって強化されているが、更に個別に調整する。
+		CFLAG:L_ENEMY:행동횟수 = 2
+		CFLAG:L_ENEMY:ＨＰ보정 += 500
+		CFLAG:L_ENEMY:ＭＰ보정 += 9999
+		;戦闘中に登録番号をとるためにセットする。
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ホールティアの蟲惑魔"
+	CASE "巨大フレシア１"
+		CALL SET_ENEMY,9,[[キャラ:거대프레시아１]],35,0,1
+		L_ENEMY = CHARANUM - 1
+		;ボスフラグを立てた巨大フレシアを配置
+		;既にボスフラグによって強化されているが、更に個別に調整する。
+		CFLAG:L_ENEMY:행동횟수 = 2
+		CFLAG:L_ENEMY:ＨＰ보정 += 500
+		CFLAG:L_ENEMY:ＭＰ보정 += 9999
+		CSTR:L_ENEMY:사고패턴 = 巨大フレシア１
+		;戦闘中に登録番号をとるためにセットする。
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "巨大フレシア１"
+		;お供を配置
+		CALL SET_ENEMY, 8, [[キャラ:티오의충혹마]], 25, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "뇌쇄슬래시"
+		CALL SET_SKILL, CHARANUM-1, "이검난무"
+		CALL SET_SKILL, CHARANUM-1, "타루・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "무거운한숨"
+		CALL SET_SKILL, CHARANUM-1, "蟲惑の誘い"
+		CALL SET_ENEMY,10, [[キャラ:카즈라의충혹마]], 25, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "용해액"
+		CALL SET_SKILL, CHARANUM-1, "더블샷"
+		CALL SET_SKILL, CHARANUM-1, "스쿠・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "반격"
+		CALL SET_SKILL, CHARANUM-1, "蟲惑の誘い"
+		CALL SET_ENEMY,13, [[キャラ:트리온의충혹마]], 25, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "마하・마그나"
+		CALL SET_SKILL, CHARANUM-1, "마그나스"
+		CALL SET_SKILL, CHARANUM-1, "스쿠・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "타룬・다"
+		CALL SET_SKILL, CHARANUM-1, "蟲惑の園"
+		CALL SET_ENEMY,15, [[キャラ:아트라의충혹마]], 25, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "아라크노와이어"
+		CALL SET_SKILL, CHARANUM-1, "독가스브레스"
+		CALL SET_SKILL, CHARANUM-1, "라쿠・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "무거운한숨"
+		CALL SET_SKILL, CHARANUM-1, "蟲惑の園"
+	CASE "巨大フレシア２"
+		CALL SET_ENEMY,9,[[キャラ:거대프레시아２]],50,0,1
+		L_ENEMY = CHARANUM - 1
+		;ボスフラグを立てた巨大フレシアを配置
+		;既にボスフラグによって強化されているが、更に個別に調整する。
+		CFLAG:L_ENEMY:행동횟수 = 2
+		CFLAG:L_ENEMY:ＨＰ보정 += 1000
+		CFLAG:L_ENEMY:ＭＰ보정 += 9999
+		CSTR:L_ENEMY:사고패턴 = 巨大フレシア２
+		;戦闘中に登録番号をとるためにセットする。
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "巨大フレシア２"
+		;お供を配置
+		CALL SET_ENEMY, 8, [[キャラ:세라의충혹마]], 40, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "스파이크클로"
+		CALL SET_SKILL, CHARANUM-1, "마인드슬라이스"
+		CALL SET_SKILL, CHARANUM-1, "蟲惑の誘い"
+		CALL SET_ENEMY,10, [[キャラ:지나의충혹마]], 40, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "회전베기"
+		CALL SET_SKILL, CHARANUM-1, "타룬・다"
+		CALL SET_SKILL, CHARANUM-1, "맹반격"
+		CALL SET_SKILL, CHARANUM-1, "이악물기"
+		CALL SET_SKILL, CHARANUM-1, "蟲惑の誘い"
+		CALL SET_ENEMY,13, [[キャラ:키노의충혹마]], 40, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "바리언트댄스"
+		CALL SET_SKILL, CHARANUM-1, "사마・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "도발"
+		CALL SET_SKILL, CHARANUM-1, "사만・다"
+		CALL SET_SKILL, CHARANUM-1, "蟲惑の園"
+		CALL SET_ENEMY,15, [[キャラ:란카의충혹마]], 40, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "마하・잔마"
+		CALL SET_SKILL, CHARANUM-1, "디아라마"
+		CALL SET_SKILL, CHARANUM-1, "스쿤・다"
+		CALL SET_SKILL, CHARANUM-1, "잔다인"
+		CALL SET_SKILL, CHARANUM-1, "蟲惑の園"
+	CASE "巨大フレシア３"
+		CALL SET_ENEMY,9,[[キャラ:거대프레시아３]],65,0,1
+		L_ENEMY = CHARANUM - 1
+		;ボスフラグを立てた巨大フレシアを配置
+		;既にボスフラグによって強化されているが、更に個別に調整する。
+		CFLAG:L_ENEMY:행동횟수 = 3
+		CFLAG:L_ENEMY:ＨＰ보정 += 1000
+		CFLAG:L_ENEMY:ＭＰ보정 += 9999
+		CSTR:L_ENEMY:사고패턴 = 巨大フレシア３
+		;戦闘中に登録番号をとるためにセットする。
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "巨大フレシア３"
+		;お供を配置
+		CALL SET_ENEMY, 8, [[キャラ:클라리아의충혹마]], 55, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "천열찌르기"
+		CALL SET_SKILL, CHARANUM-1, "圧壊の落とし穴"
+		CALL SET_SKILL, CHARANUM-1, "蟲惑の誘い"
+		CALL SET_ENEMY,10, [[キャラ:시트리스의충혹마]], 55, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "앵화섬란"
+		CALL SET_SKILL, CHARANUM-1, "溶解の落とし穴"
+		CALL SET_SKILL, CHARANUM-1, "蟲惑の誘い"
+		CALL SET_ENEMY,13, [[キャラ:알로메루스의충혹마]], 55, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "마하・지오다인"
+		CALL SET_SKILL, CHARANUM-1, "電光の落とし穴"
+		CALL SET_SKILL, CHARANUM-1, "라쿠카쟈오토"
+		CALL SET_SKILL, CHARANUM-1, "라쿤다오토"
+		CALL SET_SKILL, CHARANUM-1, "蟲惑の園"
+		CALL SET_ENEMY,15, [[キャラ:아티푸스의충혹마]], 55, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "마하・부흐다인"
+		CALL SET_SKILL, CHARANUM-1, "용분의춤"
+		CALL SET_SKILL, CHARANUM-1, "氷雪の落とし穴"
+		CALL SET_SKILL, CHARANUM-1, "蟲惑の園"
+	CASE "BMG１"
+		CALL SET_ENEMY,9,[[キャラ:보스_BMG１]],35,0,1
+		L_ENEMY = CHARANUM - 1
+		;ボスフラグを立てたBMGを配置
+		;既にボスフラグによって強化されているが、更に個別に調整する。
+		CFLAG:L_ENEMY:행동횟수 = 2
+		CFLAG:L_ENEMY:ＨＰ보정 += 500
+		CFLAG:L_ENEMY:ＭＰ보정 += 99999
+		CSTR:L_ENEMY:사고패턴 = BMG１
+		;戦闘中に登録番号をとるためにセットする。
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ボス_BMG１"
+		;お供を配置
+		CALL SET_ENEMY, 8, [[キャラ:히타]], 25, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "마하・라기"
+		CALL SET_SKILL, CHARANUM-1, "아기라오"
+		CALL SET_SKILL, CHARANUM-1, "메・디아"
+		CALL SET_SKILL, CHARANUM-1, "타루・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "타룬・다"
+		CALL SET_SKILL, CHARANUM-1, "火霊使い"
+		CALL SET_ENEMY,10, [[キャラ:아우스]], 25, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "마하・마그나"
+		CALL SET_SKILL, CHARANUM-1, "마그나스"
+		CALL SET_SKILL, CHARANUM-1, "메・디아"
+		CALL SET_SKILL, CHARANUM-1, "라쿠・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "라쿤・다"
+		CALL SET_SKILL, CHARANUM-1, "地霊使い"
+		CALL SET_ENEMY,13, [[キャラ:에리아]], 25, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "마하・아쿠아"
+		CALL SET_SKILL, CHARANUM-1, "아쿠에스"
+		CALL SET_SKILL, CHARANUM-1, "메・디아"
+		CALL SET_SKILL, CHARANUM-1, "마카・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "마칸・다"
+		CALL SET_SKILL, CHARANUM-1, "水霊使い"
+		CALL SET_ENEMY,15, [[キャラ:윈]], 25, 0, 0
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CALL SET_SKILL, CHARANUM-1, "마하・갈"
+		CALL SET_SKILL, CHARANUM-1, "갈라"
+		CALL SET_SKILL, CHARANUM-1, "메・디아"
+		CALL SET_SKILL, CHARANUM-1, "스쿠・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "스쿤・다"
+		CALL SET_SKILL, CHARANUM-1, "風霊使い"
+	CASE "BMG２"
+		CALL SET_ENEMY,9,[[キャラ:보스_BMG２]],50,0,1
+		L_ENEMY = CHARANUM - 1
+		;ボスフラグを立てたBMGを配置
+		;既にボスフラグによって強化されているが、更に個別に調整する。
+		CFLAG:L_ENEMY:행동횟수 = 2
+		CFLAG:L_ENEMY:ＨＰ보정 += 1000
+		CFLAG:L_ENEMY:ＭＰ보정 += 9999
+		CSTR:L_ENEMY:사고패턴 = BMG２
+		;戦闘中に登録番号をとるためにセットする。
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ボス_BMG２"
+		;お供を配置
+		CALL SET_ENEMY, 8, [[キャラ:히타]], 40, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "마하・라기온"
+		CALL SET_SKILL, CHARANUM-1, "아기다인"
+		CALL SET_SKILL, CHARANUM-1, "메・디아라마"
+		CALL SET_SKILL, CHARANUM-1, "타루・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "타룬・다"
+		CALL SET_SKILL, CHARANUM-1, "火霊使い"
+		CALL SET_ENEMY,10, [[キャラ:아우스]], 40, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "마하・마그나스"
+		CALL SET_SKILL, CHARANUM-1, "마그다인"
+		CALL SET_SKILL, CHARANUM-1, "메・디아라마"
+		CALL SET_SKILL, CHARANUM-1, "라쿠・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "라쿤・다"
+		CALL SET_SKILL, CHARANUM-1, "地霊使い"
+		CALL SET_ENEMY,13, [[キャラ:에리아]], 40, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "마하・아쿠에스"
+		CALL SET_SKILL, CHARANUM-1, "아쿠아다인"
+		CALL SET_SKILL, CHARANUM-1, "메・디아라마"
+		CALL SET_SKILL, CHARANUM-1, "마카・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "마칸・다"
+		CALL SET_SKILL, CHARANUM-1, "水霊使い"
+		CALL SET_ENEMY,15, [[キャラ:윈]], 40, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "마하・갈라"
+		CALL SET_SKILL, CHARANUM-1, "갈다인"
+		CALL SET_SKILL, CHARANUM-1, "메・디아라마"
+		CALL SET_SKILL, CHARANUM-1, "스쿠・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "스쿤・다"
+		CALL SET_SKILL, CHARANUM-1, "風霊使い"
+	CASE "BMG３"
+		CALL SET_ENEMY,9,[[キャラ:보스_BMG３]],65,0,1
+		L_ENEMY = CHARANUM - 1
+		;ボスフラグを立てたBMGを配置
+		;既にボスフラグによって強化されているが、更に個別に調整する。
+		CFLAG:L_ENEMY:행동횟수 = 3
+		CFLAG:L_ENEMY:ＨＰ보정 += 1000
+		CFLAG:L_ENEMY:ＭＰ보정 += 9999
+		CSTR:L_ENEMY:사고패턴 = BMG３
+		;戦闘中に登録番号をとるためにセットする。
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ボス_BMG３"
+		;お供を配置
+		CALL SET_ENEMY, 8, [[キャラ:히타]], 55, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "마하・라기다인"
+		CALL SET_SKILL, CHARANUM-1, "아기바리온"
+		CALL SET_SKILL, CHARANUM-1, "메・디아라마"
+		CALL SET_SKILL, CHARANUM-1, "타루・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "타룬・다"
+		CALL SET_SKILL, CHARANUM-1, "火霊使い"
+		CALL SET_ENEMY,10, [[キャラ:아우스]], 55, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "마하・마그다인"
+		CALL SET_SKILL, CHARANUM-1, "마그바리온"
+		CALL SET_SKILL, CHARANUM-1, "메・디아라마"
+		CALL SET_SKILL, CHARANUM-1, "라쿠・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "라쿤・다"
+		CALL SET_SKILL, CHARANUM-1, "地霊使い"
+		CALL SET_ENEMY,13, [[キャラ:에리아]], 55, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "마하・아쿠다인"
+		CALL SET_SKILL, CHARANUM-1, "아쿠바리온"
+		CALL SET_SKILL, CHARANUM-1, "메・디아라마"
+		CALL SET_SKILL, CHARANUM-1, "마카・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "마칸・다"
+		CALL SET_SKILL, CHARANUM-1, "水霊使い"
+		CALL SET_ENEMY,15, [[キャラ:윈]], 55, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "마하・갈다인"
+		CALL SET_SKILL, CHARANUM-1, "갈바리온"
+		CALL SET_SKILL, CHARANUM-1, "메・디아라마"
+		CALL SET_SKILL, CHARANUM-1, "스쿠・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "스쿤・다"
+		CALL SET_SKILL, CHARANUM-1, "風霊使い"
+	CASE "ラビュリンス１"
+		CALL SET_ENEMY,9,[[キャラ:보스_라뷰린스１]],35,0,1
+		L_ENEMY = CHARANUM - 1
+		;ボスフラグを立てたBMGを配置
+		;既にボスフラグによって強化されているが、更に個別に調整する。
+		CFLAG:L_ENEMY:행동횟수 = 2
+		CFLAG:L_ENEMY:ＨＰ보정 += 500
+		CFLAG:L_ENEMY:ＭＰ보정 += 9999
+		CSTR:L_ENEMY:사고패턴 = ラビュリンス１
+		;戦闘中に登録番号をとるためにセットする。
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ボス_ラビュリンス１"
+		;お供を配置
+		CALL SET_ENEMY, 8, [[キャラ:아리안느]], 25, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "염군의춤"
+		CALL SET_SKILL, CHARANUM-1, "이검난무"
+		CALL SET_SKILL, CHARANUM-1, "메・디아"
+		CALL SET_SKILL, CHARANUM-1, "타루・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "타룬・다"
+		CALL SET_ENEMY,10, [[キャラ:아리아스]], 25, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "네거티브파일"
+		CALL SET_SKILL, CHARANUM-1, "이악물기"
+		CALL SET_SKILL, CHARANUM-1, "결단"
+		CALL SET_ENEMY,14, [[キャラ:아리안나]], 25, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "더블샷"
+		CALL SET_SKILL, CHARANUM-1, "스쿤・다"
+		CALL SET_SKILL, CHARANUM-1, "스쿠・카쟈"
+	CASE "ラビュリンス２"
+		CALL SET_ENEMY,9,[[キャラ:보스_라뷰린스２]],50,0,1
+		L_ENEMY = CHARANUM - 1
+		;ボスフラグを立てたBMGを配置
+		;既にボスフラグによって強化されているが、更に個別に調整する。
+		CFLAG:L_ENEMY:행동횟수 = 2
+		CFLAG:L_ENEMY:ＨＰ보정 += 1000
+		CFLAG:L_ENEMY:ＭＰ보정 += 9999
+		CSTR:L_ENEMY:사고패턴 = ラビュリンス２
+		;戦闘中に登録番号をとるためにセットする。
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ボス_ラビュリンス２"
+		;お供を配置
+		CALL SET_ENEMY, 8, [[キャラ:아리안느]], 40, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "화쇄열풍파"
+		CALL SET_SKILL, CHARANUM-1, "회전베기"
+		CALL SET_SKILL, CHARANUM-1, "메・디아라마"
+		CALL SET_SKILL, CHARANUM-1, "타루・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "타룬・다"
+		CALL SET_ENEMY,10, [[キャラ:아리아스]], 40, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "백열찌르기"
+		CALL SET_SKILL, CHARANUM-1, "이악물기"
+		CALL SET_SKILL, CHARANUM-1, "결단"
+		CALL SET_ENEMY,14, [[キャラ:아리안나]], 40, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "팔백만침"
+		CALL SET_SKILL, CHARANUM-1, "스쿤・다"
+		CALL SET_SKILL, CHARANUM-1, "스쿠・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "스쿠카쟈오토"
+	CASE "ラビュリンス３"
+		CALL SET_ENEMY,9,[[キャラ:보스_라뷰린스３]],65,0,1
+		L_ENEMY = CHARANUM - 1
+		;ボスフラグを立てたラビュリンスを配置
+		;既にボスフラグによって強化されているが、更に個別に調整する。
+		CFLAG:L_ENEMY:행동횟수 = 3
+		CFLAG:L_ENEMY:ＨＰ보정 += 1000
+		CFLAG:L_ENEMY:ＭＰ보정 += 9999
+		CSTR:L_ENEMY:사고패턴 = ラビュリンス３
+		;戦闘中に登録番号をとるためにセットする。
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "ボス_ラビュリンス３"
+		;お供を配置
+		CALL SET_ENEMY, 8, [[キャラ:아리안느]], 55, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "소작권"
+		CALL SET_SKILL, CHARANUM-1, "산산조각베기"
+		CALL SET_SKILL, CHARANUM-1, "메・디아라마"
+		CALL SET_SKILL, CHARANUM-1, "파워브레스"
+		CALL SET_SKILL, CHARANUM-1, "타룬・다"
+		CALL SET_ENEMY,10, [[キャラ:아리아스]], 55, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "천열찌르기"
+		CALL SET_SKILL, CHARANUM-1, "팔상발파"
+		CALL SET_SKILL, CHARANUM-1, "이악물기"
+		CALL SET_SKILL, CHARANUM-1, "촌분의결단"
+		CALL SET_ENEMY,14, [[キャラ:아리안나]], 55, 0, 0
+		CALL CLEAR_ALL_SKILL, CHARANUM -1
+		CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+		CFLAG:(CHARANUM-1):ＭＰ보정 += 9999
+		CALL SET_SKILL, CHARANUM-1, "그랜드턱"
+		CALL SET_SKILL, CHARANUM-1, "암파쌍비조"
+		CALL SET_SKILL, CHARANUM-1, "스쿤・다"
+		CALL SET_SKILL, CHARANUM-1, "스쿠・카쟈"
+		CALL SET_SKILL, CHARANUM-1, "스쿠카쟈오토"
+		CALL SET_SKILL, CHARANUM-1, "스쿤다오토"
+	CASE "アーゼウス"
+		CALL SET_ENEMY,9,[[キャラ:보스_아제우스]],75,0,2
+		L_ENEMY = CHARANUM - 1
+		;ボスフラグを立てたアーゼウスを配置
+		;既にボスフラグによって強化されているが、更に個別に調整する。
+		CFLAG:L_ENEMY:행동횟수 = 3
+		CFLAG:L_ENEMY:ＨＰ보정 += 3000
+		CFLAG:L_ENEMY:ＭＰ보정 += 9999
+		TSTR:전투이벤트패턴 = アーゼウス
+		CSTR:L_ENEMY:사고패턴 = アーゼウス
+		;戦闘中に登録番号をとるためにセットする。
+		CALL SET_ENEMY_TIMEID, L_ENEMY, "アーゼウス"
+ENDSELECT
+;ステータス同期と回復
+CALL SET_UP_ENEMY
+;=======================================================================
+;巨大フレシア一段階目行動パターン
+;=======================================================================
+@SET_ACTION_巨大フレシア１, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+;ワンモア（クリティカルか、弱点を突いた場合の行動）
+IF CFLAG:ARG:１more플래그 > 0
+	;1more時は紫煙乱打かマインドスライスを撃つ、無理ならランダム行動
+	CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:마인드슬라이스]] # [[스킬:자연난타]] )
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 =  [[스킬:성불권]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:비틀어꺾기]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:마인드슬라이스]] # [[스킬:자연난타]] )
+	ENDSELECT
+ELSEIF CFLAG:ARG:행동한횟수 == 1
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:섹시댄스]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:바인드보이스]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:바인드보이스]] # [[스킬:섹시댄스]] )
+	ENDSELECT
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;行動未決定時のおまじない
+SIF CFLAG:ARG:입력행동 == -1
+	CALL ランダム行動 , ARG
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+;=======================================================================
+;巨大フレシア二段階目行動パターン
+;=======================================================================
+@SET_ACTION_巨大フレシア２, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+;ワンモア（クリティカルか、弱点を突いた場合の行動）
+IF CFLAG:ARG:１more플래그 > 0
+	;1more時はアカシャアーツか魅惑の落とし穴を撃つ、無理ならランダム行動
+	CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:아카샤아츠]] # [[스킬:전용기2]] )
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 =  [[스킬:데스클로]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:트위스터킥]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:아카샤아츠]] # [[스킬:앵화섬란]] )
+	ENDSELECT
+ELSEIF CFLAG:ARG:행동한횟수 == 1
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:전용기2]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:최면파]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:전용기2]] # [[스킬:최면파]] )
+	ENDSELECT
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;行動未決定時のおまじない
+SIF CFLAG:ARG:입력행동 == -1
+	CALL ランダム行動 , ARG
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+
+
+;=======================================================================
+;巨大フレシア三段階目行動パターン
+;=======================================================================
+@SET_ACTION_巨大フレシア３, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+;ワンモア（クリティカルか、弱点を突いた場合の行動）
+IF CFLAG:ARG:１more플래그 > 0
+	;1more時はメテオフィストかフレシアの芳香を撃つ、無理ならランダム行動
+	CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:메테오피스트]] # [[스킬:전용기3]] )
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 =  [[스킬:모탈지하드]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:아이언클로]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:모탈지하드]] # [[스킬:아이언클로]] )
+	ENDSELECT
+ELSEIF CFLAG:ARG:행동한횟수 == 1
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:메테오피스트]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:묵시록]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:메테오피스트]] # [[스킬:묵시록]] )
+	ENDSELECT
+ELSEIF CFLAG:ARG:행동한횟수 == 2
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:전용기2]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:전용기3]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:전용기2]] # [[스킬:전용기3]] )
+	ENDSELECT
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;行動未決定時のおまじない
+SIF CFLAG:ARG:입력행동 == -1
+	CALL ランダム行動 , ARG
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+;=======================================================================
+;ボス_BMG一段階目行動パターン
+;=======================================================================
+@SET_ACTION_BMG１, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+;ワンモア（クリティカルか、弱点を突いた場合の行動）
+IF CFLAG:ARG:１more플래그 > 0
+	;1more時はマハギガオンかギガリオンを撃つ、無理ならランダム行動
+	CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:마하기가온]] # [[스킬:기가리온]] )
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 =  [[스킬:기가리온]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:마카・카쟈]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:기가리온]] # [[스킬:마카・카쟈]] )
+	ENDSELECT
+ELSEIF CFLAG:ARG:행동한횟수 == 1
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:마하기가온]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:기가리온]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:마하기가온]] # [[스킬:기가리온]] )
+	ENDSELECT
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;行動未決定時のおまじない
+SIF CFLAG:ARG:입력행동 == -1
+	CALL ランダム行動 , ARG
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+;=======================================================================
+;ボス_BMG二段階目行動パターン
+;=======================================================================
+@SET_ACTION_BMG２, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+;ワンモア（クリティカルか、弱点を突いた場合の行動）
+IF CFLAG:ARG:１more플래그 > 0
+	;1more時はフレイダインかギガバリオンを撃つ、無理ならランダム行動
+	CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:프레이다인]] # [[스킬:기가바리온]] )
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 =  [[스킬:기가바리온]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:다크브레스]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:기가바리온]] # [[스킬:다크브레스]] )
+	ENDSELECT
+ELSEIF CFLAG:ARG:행동한횟수 == 1
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:테트라칸]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:마카라칸]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:테트라칸]] # [[스킬:마카라칸]] )
+	ENDSELECT
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;行動未決定時のおまじない
+SIF CFLAG:ARG:입력행동 == -1
+	CALL ランダム行動 , ARG
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+;=======================================================================
+;ボス_BMG三段階目行動パターン
+;=======================================================================
+@SET_ACTION_BMG３, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+;ワンモア（クリティカルか、弱点を突いた場合の行動）
+IF CFLAG:ARG:１more플래그 > 0
+	;1more時は専用技1かアトミックフレアを撃つ、無理ならランダム行動
+	CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:전용기1]] # [[스킬:아토믹플레어]] )
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 =  [[스킬:아토믹플레어]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:용분의춤]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:아토믹플레어]] # [[스킬:용분의춤]] )
+	ENDSELECT
+ELSEIF CFLAG:ARG:행동한횟수 == 1
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:테트라칸]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:마카라칸]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:테트라칸]] # [[스킬:마카라칸]] )
+	ENDSELECT
+ELSEIF CFLAG:ARG:행동한횟수 == 2
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:전용기1]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:메・디아라마]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:전용기1]] # [[스킬:메・디아라마]] )
+	ENDSELECT
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;行動未決定時のおまじない
+SIF CFLAG:ARG:입력행동 == -1
+	CALL ランダム行動 , ARG
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+;=======================================================================
+;ボス_ラビュリンス一段階目行動パターン
+;=======================================================================
+@SET_ACTION_ラビュリンス１, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+;ワンモア（クリティカルか、弱点を突いた場合の行動）
+IF CFLAG:ARG:１more플래그 > 0
+	;1more時はねじ切りかヒートウェイブを撃つ、無理ならランダム行動
+	CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:비틀어꺾기]] # [[스킬:히트웨이브]] )
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 =  [[스킬:혈제]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:비틀어꺾기]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:혈제]] # [[스킬:비틀어꺾기]] )
+	ENDSELECT
+ELSEIF CFLAG:ARG:행동한횟수 == 1
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:포이즌블레이드]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:히트웨이브]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:포이즌블레이드]] # [[스킬:히트웨이브]] )
+	ENDSELECT
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;行動未決定時のおまじない
+SIF CFLAG:ARG:입력행동 == -1
+	CALL ランダム行動 , ARG
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+;=======================================================================
+;ボス_ラビュリンス二段階目行動パターン
+;=======================================================================
+@SET_ACTION_ラビュリンス２, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+;ワンモア（クリティカルか、弱点を突いた場合の行動）
+IF CFLAG:ARG:１more플래그 > 0
+	;1more時は会心波かデスバウンドを撃つ、無理ならランダム行動
+	CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:회심파]] # [[스킬:데스바운드]] )
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 =  [[스킬:회심파]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:데스클로]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:회심파]] # [[스킬:데스클로]] )
+	ENDSELECT
+ELSEIF CFLAG:ARG:행동한횟수 == 1
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:데스바운드]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:즌바라린]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:데스바운드]] # [[스킬:즌바라린]] )
+	ENDSELECT
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;行動未決定時のおまじない
+SIF CFLAG:ARG:입력행동 == -1
+	CALL ランダム行動 , ARG
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+;=======================================================================
+;ボス_ラビュリンス三段階目行動パターン
+;=======================================================================
+@SET_ACTION_ラビュリンス３, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+;ワンモア（クリティカルか、弱点を突いた場合の行動）
+IF CFLAG:ARG:１more플래그 > 0
+	;1more時は冥界の門か専用技1を撃つ、無理ならランダム行動
+	CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:명계의문]] # [[스킬:전용기1]] )
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 =  [[스킬:명계의문]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:이노센트턱]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:명계의문]] # [[스킬:이노센트턱]] )
+	ENDSELECT
+ELSEIF CFLAG:ARG:행동한횟수 == 1
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:천경지폭단]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:공간살법]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:천경지폭단]] # [[스킬:공간살법]] )
+	ENDSELECT
+ELSEIF CFLAG:ARG:행동한횟수 == 2
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:전용기1]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:이노센트턱]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, ( RAND:2 == 0 ? [[스킬:전용기1]] # [[스킬:이노센트턱]] )
+	ENDSELECT
+ENDIF
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;行動未決定時のおまじない
+SIF CFLAG:ARG:입력행동 == -1
+	CALL ランダム行動 , ARG
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+;=======================================================================
+;ボス_アーゼウス行動パターン
+;=======================================================================
+@SET_ACTION_アーゼウス, ARG
+;入力行動を-1とターゲットを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+CFLAG:ARG:행동횟수 = 現HP割合(ARG) < 50 ? 4 # 3
+
+;ワンモア（クリティカルか、弱点を突いた場合の行動）
+IF CFLAG:ARG:１more플래그 > 0
+	;1more時は終わる世界を撃つ、無理ならランダム行動
+	CALL SET_ACTION_SKILL, ARG, [[스킬:랜더마이저]]
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:끝나는세계]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:끝나는세계]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CFLAG:ARG:입력행동 = [[스킬:기합]]
+	ENDSELECT
+	;カジャンダの許容は3回まで
+	FOR LOCAL, 1, 7
+		IF POS(LOCAL) > 0 && CFLAG:POS(LOCAL):AUTO_SPLIT("명중강화/회피강화/마법위력강화/공격강화/방어강화", "/", LOCAL:1) > 12
+			CFLAG:ARG:입력행동 = [[스킬:데・카쟈]]
+			CFLAG:ARG:타겟 = -1
+		ENDIF
+	NEXT
+	IF GET_カジャンダ_MIN(ARG) < -12
+		CFLAG:ARG:입력행동 = [[스킬:데・쿤다]]
+	ENDIF
+ELSEIF CFLAG:ARG:행동한횟수 == 1
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:메기도크로스]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:메기도크로스]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CFLAG:ARG:입력행동 =  [[스킬:전용기1]]
+	ENDSELECT
+ELSEIF CFLAG:ARG:행동한횟수 == 2
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:히트라이저]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:히트라이저]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CFLAG:ARG:입력행동 = [[스킬:히트라이저]]
+	ENDSELECT
+	;カジャンダの許容は2回まで
+	FOR LOCAL, 1, 7
+		IF POS(LOCAL) > 0 && CFLAG:POS(LOCAL):AUTO_SPLIT("명중강화/회피강화/마법위력강화/공격강화/방어강화", "/", LOCAL:1) > 12
+			CFLAG:ARG:입력행동 = [[스킬:데・카쟈]]
+			CFLAG:ARG:타겟 = -1
+		ENDIF
+	NEXT
+	IF GET_カジャンダ_MIN(ARG) < -12
+		CFLAG:ARG:입력행동 = [[스킬:데・쿤다]]
+	ENDIF
+ELSEIF CFLAG:ARG:행동한횟수 == 3
+	SELECTCASE FLAG:경과턴수 % 3
+		;１ターン目,４ターン目,７ターン目...
+		CASE 0
+			CFLAG:ARG:입력행동 = [[스킬:랜더마이저]]
+		;２ターン目,５ターン目,８ターン目...
+		CASE 1
+			CFLAG:ARG:입력행동 = [[스킬:랜더마이저]]
+		;３ターン目,６ターン目,９ターン目...
+		CASEELSE
+			CFLAG:ARG:입력행동 = [[스킬:랜더마이저]]
+	ENDSELECT
+ENDIF
+
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;行動未決定時のおまじない
+SIF CFLAG:ARG:입력행동 == -1
+	CALL ランダム行動 , ARG
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1
+;========================================
+
+;ターン終了時の処理
+
+;========================================
+@EVENT_BATTLE_TURNEND_アーゼウス
+;一番最後のキャラがボス_アーゼウスであればアーゼウスとのボス戦
+
+IF FLAG:경과턴수 % 3 == 2
+	;n*2ターンの終了時、次に神滅の雷火を使うと予兆を出す
+	;(FLAG:経過ターン数はこの関数を呼び出す前に加算されている。1ターン目は0、1ターン目終了時に1になる。)
+	SETCOLOR 0xff0033
+	PRINTL
+	PRINTL
+	DRAWLINE
+	CALL PRINT_EVENT_PICTURE, "アーゼウスチャージ", 15, "LEFT"
+	PRINTL
+	CALL MESSAGE_B2( ,  , "네가로기어 아제우스의 주위에, 비정상적인 양의 에너지가 집중되어 간다……")
+	BTL_KOJO_RESULTS:0 = ………………！
+	CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("アーゼウス")
+	DRAWLINE
+	RESETCOLOR
+ENDIF
+
+@ADD_ICON_BATTLE_EFFECT_アーゼウス, L_CHARA
+#DIM DYNAMIC L_CHARA
+IF FLAG:경과턴수 > 0 && FLAG:경과턴수 % 3 == 2
+	IF ACTIONABLE_CHARA_F(GET_ENEMY("アーゼウス")) && !IS_BADSTATE(L_CHARA, "DYING")
+		CALL CREATE_SPRITE_ICON_EFFECT, "WARNING1"
+		CALL MAKE_ANIME_BLINKING, "WARNING1_点滅アニメ", "WARNING1", , , 4
+		RESULTS '= "WARNING1_点滅アニメ"
+		RETURN 1
+	ENDIF
+ENDIF

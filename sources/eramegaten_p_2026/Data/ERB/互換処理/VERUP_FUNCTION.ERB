@@ -1,0 +1,4453 @@
+﻿;キャラNO・ARGをARG:1変更する
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:VERUP_FUNCTION.ERB
+;	Facility	:互換処理に用いる関数群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Edit	Date			Author					Reason
+;	001		2024/10/08		P(bazzile)				VERUP.ERBから分離させる形で新規作成
+;	002		2025/12/03		epizo					Fウィッチ、Fマダム、FクイーンがPhantomではなくFantomuになっている不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;===============================================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name						Explanation
+;	・ GET_GAME_VERSION_P				GET_GAME_VERSION_P
+;	・ CONVERT_CHARA_NO					キャラ番号の変換関数
+;	・ CONVERT_CHARA_NO_FOR_CHARA		キャラ番号の変換関数
+;	・ CONVERT_SKILL_NUMBER				スキル番号の入れ替え措置
+;	・ CONVERT_SKILL_NUMBER_FOR_CHARA	キャラ個別のスキル番号の入れ替え関数
+;	・ CONVERT_PU_SKILL_FOR_CHARA		専用スキルのスキル名称の入れ替え措置
+;	・ SET_NEW_LEARNSKILL_VERUP			習得スキルの追加関数
+;	・ CHECK_EXIST_CSV					存在しなくなったCSV情報の削除関数
+;	・ CHECK_EXIST_CSV_FOR_CHARA		存在しなくなったCSV情報の削除関数
+;	・ CHECK_EXIST_SKILL				存在しなくなったスキルの削除関数
+;	・ SET_CHARA_EXPLAIN_BY_CSV			解説の再セット関数
+;	・ RESET_SKILL_FOR_CHARA			スキルをリセットして所持・習得スキルともにCSV状態にあわせる関数
+;	・ RESET_CHARA_PROFILE				キャラ解説文をCSVにあわせて変更する
+;===============================================================================
+
+;========================================================================================
+;このバリアント用のバージョン切り取り関数
+;========================================================================================
+@GET_GAME_VERSION_P, ARG
+#FUNCTION
+RETURNF ARG / 1000 / 1000
+
+;======================================
+;キャラ番号の変換関数
+;======================================
+@CONVERT_CHARA_NO,OLD_NO,NEW_NO
+#DIM DYNAMIC NEW_NO
+#DIM DYNAMIC OLD_NO
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC LCOUNT
+FOR L_CHARA,0,CHARANUM
+	CALL CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, OLD_NO, NEW_NO
+	;妊娠情報
+	IF FETUS_PALENT_NO:L_CHARA:0 == OLD_NO || FETUS_PALENT_NO:L_CHARA:1 == NEW_NO
+		CALL CLEAR_PREGNANCY_FLAG, L_CHARA
+		TALENT:L_CHARA:임신 = 0
+		PRINTFORMW 캐릭터 번호 이동에 따라 %CALLNAME:L_CHARA%의 임신 정보를 폐기했습니다
+	ENDIF
+NEXT
+
+;合体解禁
+REMOVED_FUSION_LIMIT:NEW_NO = REMOVED_FUSION_LIMIT:OLD_NO
+REMOVED_FUSION_LIMIT:OLD_NO = 0
+;売却回数
+COUNT_SOLD_CHARA:NEW_NO = COUNT_SOLD_CHARA:OLD_NO
+COUNT_SOLD_CHARA:OLD_NO = 0
+
+;陥落履歴
+FALLEN_RECORD:NEW_NO = FALLEN_RECORD:OLD_NO
+FALLEN_RECORD:OLD_NO = 0
+
+;解析度
+ANALYSIS_RATE:NEW_NO = ANALYSIS_RATE:OLD_NO
+ANALYSIS_RATE:OLD_NO = 0
+IS_CHARA_COMPANIONED:NEW_NO = IS_CHARA_COMPANIONED:OLD_NO
+IS_CHARA_COMPANIONED:OLD_NO = 0
+
+;페르소나
+FOR LOCAL, 0, 100
+	SIF DITEMTYPE:LOCAL:페르소나("NO") == OLD_NO
+		DITEMTYPE:LOCAL:페르소나("NO") = NEW_NO
+NEXT
+;======================================
+;キャラ番号の変換関数
+;======================================
+@CONVERT_CHARA_NO_FOR_CHARA, L_CHARA, OLD_NO, NEW_NO
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC NEW_NO
+#DIM DYNAMIC OLD_NO
+#DIM DYNAMIC LCOUNT
+;NO
+IF NO:L_CHARA == OLD_NO
+	NO:L_CHARA = NEW_NO
+	NICKNAME:L_CHARA '= CSVNICKNAME(NEW_NO)
+ENDIF
+;妊娠中の子の父親
+SIF CFLAG:L_CHARA:임신확정후의부친판정 == OLD_NO
+	CFLAG:L_CHARA:임신확정후의부친판정 = NEW_NO
+SIF ABL:L_CHARA:변이 == OLD_NO
+	ABL:L_CHARA:변이 = NEW_NO
+SIF CFLAG:L_CHARA:초기링크악마 == OLD_NO
+	CFLAG:L_CHARA:초기링크악마 = NEW_NO
+SIF ABL:L_CHARA:초기페르소나 == OLD_NO
+	ABL:L_CHARA:초기페르소나 = NEW_NO
+SIF ABL:L_CHARA:초기페르소나2 == OLD_NO
+	ABL:L_CHARA:초기페르소나2 = NEW_NO
+SIF ABL:L_CHARA:초기페르소나3 == OLD_NO
+	ABL:L_CHARA:초기페르소나3 = NEW_NO
+SIF ABL:L_CHARA:각성스킬 == OLD_NO
+	ABL:L_CHARA:각성스킬 = NEW_NO
+
+;--------------------------------------------------
+;スキル番号の入れ替え措置
+;--------------------------------------------------
+@CONVERT_SKILL_NUMBER, OLD_NO, NEW_NO
+#DIM LCOUNT, 2
+#DIM L_CHARA
+#DIM DYNAMIC OLD_NO
+#DIM DYNAMIC NEW_NO
+FOR L_CHARA, 0, CHARANUM
+	CALL CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, OLD_NO, NEW_NO
+NEXT
+
+FOR LCOUNT:1, 1, 11
+	FOR LCOUNT, 1, 9
+		SIF DITEMTYPE:(LCOUNT:1):페르소나(@"스킬{LCOUNT}") == OLD_NO
+			DITEMTYPE:(LCOUNT:1):페르소나(@"스킬{LCOUNT}") = NEW_NO
+	NEXT
+	FOR LCOUNT, 1, 21
+		SIF DITEMTYPE:(LCOUNT:1):페르소나(@"습득스킬{LCOUNT}") == OLD_NO
+			DITEMTYPE:(LCOUNT:1):페르소나(@"습득스킬{LCOUNT}") = NEW_NO
+	NEXT
+NEXT
+;スキルカード
+IF NEW_NO != 0
+	ITEM:(10000+NEW_NO) = ITEM:(10000+OLD_NO)
+	TAKEN_SKILLCARD:NEW_NO = TAKEN_SKILLCARD:OLD_NO
+ENDIF
+ITEM:(10000+OLD_NO) = 0
+TAKEN_SKILLCARD:OLD_NO = 0
+
+IF ABLE_MAKESKILLCARD(OLD_NO)
+	SIF NEW_NO != 0
+		CALLF ABLE_MAKESKILLCARD(NEW_NO, 1)
+ELSE
+	CALLF ABLE_MAKESKILLCARD(NEW_NO, -1)
+ENDIF
+CALLF ABLE_MAKESKILLCARD(OLD_NO, -1)
+;--------------------------------------------------
+;キャラ個別のスキル番号の入れ替え関数
+;--------------------------------------------------
+@CONVERT_SKILL_NUMBER_FOR_CHARA, L_CHARA, OLD_NO, NEW_NO
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC NEW_NO
+#DIM DYNAMIC OLD_NO
+FOR LCOUNT, 1, 21
+	SIF ABL:L_CHARA:@"스킬{LCOUNT}" == OLD_NO
+		ABL:L_CHARA:@"스킬{LCOUNT}" = NEW_NO
+	SIF ABL:L_CHARA:@"습득스킬{LCOUNT}" == OLD_NO
+		ABL:L_CHARA:@"습득스킬{LCOUNT}" = NEW_NO
+	SIF ABL:L_CHARA:@"인간시스킬{LCOUNT}" == OLD_NO
+		ABL:L_CHARA:@"인간시스킬{LCOUNT}" = NEW_NO
+	SIF ABL:L_CHARA:@"초기변신악마스킬{LCOUNT}" == OLD_NO
+		ABL:L_CHARA:@"초기변신악마스킬{LCOUNT}" = NEW_NO
+	SIF ABL:L_CHARA:@"초기변신악마습득스킬{LCOUNT}" == OLD_NO
+		ABL:L_CHARA:@"초기변신악마습득스킬{LCOUNT}" = NEW_NO
+NEXT
+IF TALENT:L_CHARA:페르소나구사자
+	FOR LCOUNT, 1, 9
+		SIF DITEMTYPE:(CFLAG:L_CHARA:초기페르소나넘버):페르소나(@"스킬{LCOUNT}") == OLD_NO
+			DITEMTYPE:(CFLAG:L_CHARA:초기페르소나넘버):페르소나(@"스킬{LCOUNT}") = NEW_NO
+	NEXT
+	FOR LCOUNT, 1, 21
+		SIF DITEMTYPE:(CFLAG:L_CHARA:초기페르소나넘버):페르소나(@"습득스킬{LCOUNT}") == OLD_NO
+			DITEMTYPE:(CFLAG:L_CHARA:초기페르소나넘버):페르소나(@"습득스킬{LCOUNT}") = NEW_NO
+	NEXT
+ENDIF
+IF TALENT:L_CHARA:식노
+	CDFLAG:L_CHARA:식노습득스킬:(0) = CDFLAG:L_CHARA:식노습득스킬:OLD_NO
+	CDFLAG:L_CHARA:식노습득스킬:OLD_NO = NEW_NO
+ENDIF
+FOR LCOUNT:1, 0, 2
+	IF NEW_NO > 0
+		C_LEARNED_SKILLS:L_CHARA:(LCOUNT:1) = %REPLACE("/" + C_LEARNED_SKILLS:L_CHARA:(LCOUNT:1) + "/", "/" + TOSTR(OLD_NO) + "/", "/" + TOSTR(NEW_NO) + "/")%
+	ELSE
+		C_LEARNED_SKILLS:L_CHARA:(LCOUNT:1) = %REPLACE("/" + C_LEARNED_SKILLS:L_CHARA:(LCOUNT:1) + "/", "/" + TOSTR(OLD_NO) + "/", "/")%
+	ENDIF
+	C_LEARNED_SKILLS:L_CHARA:(LCOUNT:1) = %SUBSTRING(C_LEARNED_SKILLS:L_CHARA:(LCOUNT:1), 1, STRLENS(C_LEARNED_SKILLS:L_CHARA:(LCOUNT:1)) - 2)%
+NEXT
+FOR LCOUNT:1, 1, 11
+	FOR LCOUNT, 1, 9
+		SIF DITEMTYPE:(LCOUNT:1):페르소나(@"스킬{LCOUNT}") == OLD_NO
+			DITEMTYPE:(LCOUNT:1):페르소나(@"스킬{LCOUNT}") = NEW_NO
+	NEXT
+	FOR LCOUNT, 1, 21
+		SIF DITEMTYPE:(LCOUNT:1):페르소나(@"습득스킬{LCOUNT}") == OLD_NO
+			DITEMTYPE:(LCOUNT:1):페르소나(@"습득스킬{LCOUNT}") = NEW_NO
+	NEXT
+NEXT
+
+;--------------------------------------------------
+;専用スキルのスキル名称の入れ替え措置
+;--------------------------------------------------
+@CONVERT_PU_SKILL_FOR_CHARA, L_CHARA, OLD_NAME, NEW_NAME
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC OLD_NAME
+#DIMS DYNAMIC NEW_NAME
+FOR L_CHARA, 0, CHARANUM
+	FOR LCOUNT, 1, PU_NUM() + 1
+		SIF CSTR:L_CHARA:@"전용기{LCOUNT}" == OLD_NAME
+			CSTR:L_CHARA:@"전용기{LCOUNT}" '= NEW_NAME
+	NEXT
+	FOR LCOUNT:1, 0, 2
+		C_LEARNED_SKILLS:L_CHARA:(LCOUNT:1) = %REPLACE("/" + C_LEARNED_SKILLS:L_CHARA:(LCOUNT:1) + "/", "/" + OLD_NAME + "/", "/" + NEW_NAME + "/")%
+		C_LEARNED_SKILLS:L_CHARA:(LCOUNT:1) = %SUBSTRING(C_LEARNED_SKILLS:L_CHARA:(LCOUNT:1), 1, STRLENS(C_LEARNED_SKILLS:L_CHARA:(LCOUNT:1)) - 2)%
+	NEXT
+NEXT
+
+;--------------------------------------------------
+;指定したスキルを習得するキャラが習得スキルとして該当スキルを持っていなかった場合、持たせる
+;ARGS	スキル名
+;--------------------------------------------------
+@SET_NEW_LEARNSKILL_VERUP, ARGS
+#DIM L_CHARA
+#DIM L_LEARN_NO
+#DIM L_HAVE_SKILLNUM
+#DIM L_SKILL
+L_SKILL = SKILL_NUM_F(ARGS)
+FOR L_CHARA, 0, CHARANUM
+	FOR L_LEARN_NO, 1, 21
+		SIF HAVE_SKILL(L_CHARA, L_SKILL)
+			CONTINUE
+		SIF CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{L_LEARN_NO}")) != L_SKILL
+			CONTINUE
+		PRINTFORMW %CALLNAME:L_CHARA%의 습득 예정 스킬에 %ARGS%(을)를 추가합니다
+		ABL:L_CHARA:@"습득스킬{L_LEARN_NO}" = L_SKILL
+		ABL:L_CHARA:@"습득LV{L_LEARN_NO}" = CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{L_LEARN_NO}"))
+	NEXT
+	FOR L_HAVE_SKILLNUM, 1, 21
+		SIF HAVE_SKILL(L_CHARA, L_SKILL)
+			BREAK
+		SIF CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{L_HAVE_SKILLNUM}")) != L_SKILL
+			CONTINUE
+		CALL SET_LEARN_SKILL, L_CHARA, ARGS, 1, , "メッセージ表示"
+		BREAK
+	NEXT
+NEXT
+
+;--------------------------------------------------
+;CSVが存在しなくなっているキャラを確認し、振り替えさせる関数
+;--------------------------------------------------
+@CHECK_EXIST_CSV
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+FOR L_CHARA, 0, CHARANUM
+	CALL CHECK_EXIST_CSV_FOR_CHARA, L_CHARA
+NEXT
+;페르소나
+FOR LCOUNT, 0, 100
+	SIF EXISTCSV(DITEMTYPE:LCOUNT:페르소나("NO")) == 0
+		CALL DEL_PERSONA2, LCOUNT
+NEXT
+FOR LCOUNT, 0, CSVCHARANUM
+	SIF EXISTCSV(LCOUNT)
+		CONTINUE
+	;合体解禁
+	REMOVED_FUSION_LIMIT:LCOUNT = 0
+	;売却回数
+	COUNT_SOLD_CHARA:LCOUNT = 0
+	;陥落履歴
+	FALLEN_RECORD:LCOUNT = 0
+	;解析度
+	ANALYSIS_RATE:LCOUNT = 0
+	IS_CHARA_COMPANIONED:LCOUNT = 0
+NEXT
+SAVEGLOBAL
+@CHECK_EXIST_CSV_FOR_CHARA, L_CHARA
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+SIF CFLAG:L_CHARA:임신확정후의부친판정 >= 0 && EXISTCSV(CFLAG:L_CHARA:임신확정후의부친판정,0) == 0
+	CFLAG:L_CHARA:임신확정후의부친판정 = -1
+SIF EXISTCSV(CFLAG:L_CHARA:초기링크악마) == 0
+	CFLAG:L_CHARA:초기링크악마 = CSVCFLAG(NO:L_CHARA, GETNUM(CFLAG, "초기링크악마"))
+SIF EXISTCSV(ABL:L_CHARA:초기페르소나) == 0
+	ABL:L_CHARA:초기페르소나 = CSVABL(NO:L_CHARA, GETNUM(ABL, "초기페르소나"))
+SIF EXISTCSV(ABL:L_CHARA:초기페르소나2) == 0
+	ABL:L_CHARA:초기페르소나2 = CSVABL(NO:L_CHARA, GETNUM(ABL, "초기페르소나2"))
+SIF EXISTCSV(ABL:L_CHARA:초기페르소나3) == 0
+	ABL:L_CHARA:초기페르소나3 = CSVABL(NO:L_CHARA, GETNUM(ABL, "초기페르소나3"))
+SIF EXISTCSV(ABL:L_CHARA:변이) == 0
+	ABL:L_CHARA:변이 = CSVABL(NO:L_CHARA, GETNUM(ABL, "변이"))
+SIF EXISTCSV(ABL:L_CHARA:각성스킬) == 0
+	ABL:L_CHARA:각성스킬 = 0
+IF EXISTCSV(FETUS_PALENT_NO:L_CHARA:0) == 0 || EXISTCSV(FETUS_PALENT_NO:L_CHARA:1) == 0
+	CALL CLEAR_PREGNANCY_FLAG, L_CHARA
+	TALENT:L_CHARA:임신 = 0
+	PRINTFORMW キャラ番号の移動に伴って%CALLNAME:L_CHARA%の妊娠情報を廃棄しました
+ENDIF
+
+IF EXISTCSV(NO:L_CHARA,0) == 0
+	PRINTFORML %CALLNAME:L_CHARA%のＣＳＶ番号が不正です
+	PRINTFORML ＣＳＶフォルダを参照し、正しい番号を入力してください
+	$INPUT_LOOP
+	INPUT
+	IF EXISTCSV(RESULT,0) == 0
+		PRINTFORML 不正な番号です。もう一度入力し直して下さい
+		GOTO INPUT_LOOP
+	ENDIF
+	NO:L_CHARA = RESULT
+	NICKNAME:L_CHARA '= CSVNICKNAME(NO:L_CHARA)
+ENDIF
+
+;NICKNAMEから番号移動に追従
+IF GET_GAME_VERSION_P(LASTLOAD_VERSION) >= 000309
+	IF NICKNAME:L_CHARA != "" && NICKNAME:L_CHARA != CSVNICKNAME(NO:L_CHARA)
+		IF EXISTCSV(NO:L_CHARA,0) == 0
+			NO:L_CHARA = GET_識別番号(NICKNAME:L_CHARA)
+		ELSE
+			DRAWLINE
+			PRINTFORML %CALLNAME:L_CHARA%のNO(キャラクター番号)と識別名にずれがあります。
+			PRINTFORML 以下の選択肢のうち、正しいキャラクター番号になるほうを指定してください。
+			PRINTFORML [0] %NICKNAME:L_CHARA%
+			PRINTFORML [1] %CSVNICKNAME(NO:L_CHARA)%
+			DRAWLINE
+			CALL INPUTINT, 0, 1
+			IF RESULT == 0
+				NO:L_CHARA = GET_識別番号(NICKNAME:L_CHARA)
+			ELSE
+				NICKNAME:L_CHARA '= CSVNICKNAME(NO:L_CHARA)
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+@CONVERT_CSVNO_OLD, L_CHARA
+#DIM DYNAMIC L_CHARA
+SELECTCASE NO:L_CHARA
+	CASE 0
+		NO:L_CHARA = [[キャラ:당신]]
+	CASE 1
+		NO:L_CHARA = [[キャラ:키쿠리히메]]
+	CASE 2
+		NO:L_CHARA = [[キャラ:프레이아]]
+	CASE 3
+		NO:L_CHARA = [[キャラ:데메테르]]
+	CASE 4
+		NO:L_CHARA = [[キャラ:이슈타르]]
+	CASE 5
+		NO:L_CHARA = [[キャラ:서왕모]]
+	CASE 6
+		NO:L_CHARA = [[キャラ:두르가]]
+	CASE 7
+		NO:L_CHARA = [[キャラ:이자나미]]
+	CASE 8
+		NO:L_CHARA = [[キャラ:파르바티]]
+	CASE 9
+		NO:L_CHARA = [[キャラ:칼리]]
+	CASE 10
+		NO:L_CHARA = [[キャラ:베스타]]
+	CASE 11
+		NO:L_CHARA = [[キャラ:마이아]]
+	CASE 12
+		NO:L_CHARA = [[キャラ:젤라론즈]]
+	CASE 13
+		NO:L_CHARA = [[キャラ:페레]]
+	CASE 14
+		NO:L_CHARA = [[キャラ:세크메트]]
+	CASE 15
+		NO:L_CHARA = [[キャラ:세드나]]
+	CASE 16
+		NO:L_CHARA = [[キャラ:다이아나]]
+	CASE 17
+		NO:L_CHARA = [[キャラ:쿠시나다히메]]
+	CASE 18
+		NO:L_CHARA = [[キャラ:퀴벨레]]
+	CASE 19
+		NO:L_CHARA = [[キャラ:스카디]]
+	CASE 20
+		NO:L_CHARA = [[キャラ:이시스]]
+	CASE 21
+		NO:L_CHARA = [[キャラ:블랙마리아]]
+	CASE 22
+		NO:L_CHARA = [[キャラ:마리지천]]
+	CASE 23
+		NO:L_CHARA = [[キャラ:아셰라트]]
+	CASE 24
+		NO:L_CHARA = [[キャラ:가이아]]
+	CASE 25
+		NO:L_CHARA = [[キャラ:주르반]]
+	CASE 26
+		NO:L_CHARA = [[キャラ:헤케트]]
+	CASE 27
+		NO:L_CHARA = [[キャラ:칼리아흐베라]]
+	CASE 28
+		NO:L_CHARA = [[キャラ:타와레트]]
+	CASE 29
+		NO:L_CHARA = [[キャラ:이난나]]
+	CASE 30
+		NO:L_CHARA = [[キャラ:닌후르삭]]
+	CASE 101
+		NO:L_CHARA = [[キャラ:아메노우즈메]]
+	CASE 102
+		NO:L_CHARA = [[キャラ:아리안로드]]
+	CASE 103
+		NO:L_CHARA = [[キャラ:팔라스아테나]]
+	CASE 104
+		NO:L_CHARA = [[キャラ:이리스]]
+	CASE 105
+		NO:L_CHARA = [[キャラ:포르투나]]
+	CASE 106
+		NO:L_CHARA = [[キャラ:사라스바티]]
+	CASE 107
+		NO:L_CHARA = [[キャラ:아마테라스]]
+	CASE 108
+		NO:L_CHARA = [[キャラ:코노하나사쿠야]]
+	CASE 111
+		NO:L_CHARA = [[キャラ:스카아하]]
+	CASE 112
+		NO:L_CHARA = [[キャラ:노른]]
+	CASE 113
+		NO:L_CHARA = [[キャラ:나키사와메]]
+	CASE 114
+		NO:L_CHARA = [[キャラ:아르테미스]]
+	CASE 115
+		NO:L_CHARA = [[キャラ:락슈미]]
+	CASE 116
+		NO:L_CHARA = [[キャラ:브리이트]]
+	CASE 117
+		NO:L_CHARA = [[キャラ:아낫]]
+	CASE 118
+		NO:L_CHARA = [[キャラ:틀라솔테오틀]]
+	CASE 119
+		NO:L_CHARA = [[キャラ:하트호르]]
+	CASE 120
+		NO:L_CHARA = [[キャラ:베르단디]]
+	CASE 121
+		NO:L_CHARA = [[キャラ:우르드]]
+	CASE 122
+		NO:L_CHARA = [[キャラ:스쿨드]]
+	CASE 123
+		NO:L_CHARA = [[キャラ:클로토]]
+	CASE 124
+		NO:L_CHARA = [[キャラ:아트로포스]]
+	CASE 125
+		NO:L_CHARA = [[キャラ:라케시스]]
+	CASE 126
+		NO:L_CHARA = [[キャラ:너구리의날것]]
+	CASE 127
+		NO:L_CHARA = [[キャラ:킨마몬]]
+	CASE 128
+		NO:L_CHARA = [[キャラ:사티]]
+	CASE 129
+		NO:L_CHARA = [[キャラ:에뉴오]]
+	CASE 130
+		NO:L_CHARA = [[キャラ:우샤스]]
+	CASE 131
+		NO:L_CHARA = [[キャラ:스세리비메]]
+	CASE 132
+		NO:L_CHARA = [[キャラ:천선낭랑]]
+	CASE 133
+		NO:L_CHARA = [[キャラ:호시가미]]
+	CASE 134
+		NO:L_CHARA = [[キャラ:아나히타]]
+	CASE 135
+		NO:L_CHARA = [[キャラ:프시케]]
+	CASE 136
+		NO:L_CHARA = [[キャラ:이둔]]
+	CASE 137
+		NO:L_CHARA = [[キャラ:아르테미스_Ⅴ]]
+	CASE 138
+		NO:L_CHARA = [[キャラ:브리이드]]
+	CASE 139
+		NO:L_CHARA = [[キャラ:데메테르_여신]]
+	CASE 140
+		NO:L_CHARA = [[キャラ:헤라]]
+	CASE 201
+		NO:L_CHARA = [[キャラ:헤카테]]
+	CASE 204
+		NO:L_CHARA = [[キャラ:파이몬]]
+	CASE 205
+		NO:L_CHARA = [[キャラ:뉵스]]
+	CASE 206
+		NO:L_CHARA = [[キャラ:란다]]
+	CASE 207
+		NO:L_CHARA = [[キャラ:이자・벨]]
+	CASE 208
+		NO:L_CHARA = [[キャラ:메두사]]
+	CASE 209
+		NO:L_CHARA = [[キャラ:발람]]
+	CASE 210
+		NO:L_CHARA = [[キャラ:아에슈마]]
+	CASE 211
+		NO:L_CHARA = [[キャラ:아라미사키]]
+	CASE 213
+		NO:L_CHARA = [[キャラ:야릴로]]
+	CASE 214
+		NO:L_CHARA = [[キャラ:치치미틀]]
+	CASE 215
+		NO:L_CHARA = [[キャラ:알릴라트]]
+	CASE 216
+		NO:L_CHARA = [[キャラ:미트라스]]
+	CASE 217
+		NO:L_CHARA = [[キャラ:고모리]]
+	CASE 219
+		NO:L_CHARA = [[キャラ:벨제붑]]
+	CASE 220
+		NO:L_CHARA = [[キャラ:판도라]]
+	CASE 222
+		NO:L_CHARA = [[キャラ:아수라여왕]]
+	CASE 223
+		NO:L_CHARA = [[キャラ:벨페고르]]
+	CASE 225
+		NO:L_CHARA = [[キャラ:두르지]]
+	CASE 226
+		NO:L_CHARA = [[キャラ:앙그르보다]]
+	CASE 227
+		NO:L_CHARA = [[キャラ:이나루나]]
+	CASE 230
+		NO:L_CHARA = [[キャラ:루시퍼프로스트]]
+	CASE 232
+		NO:L_CHARA = [[キャラ:아카・마나흐]]
+	CASE 233
+		NO:L_CHARA = [[キャラ:몰록]]
+	CASE 234
+		NO:L_CHARA = [[キャラ:솀하자]]
+	CASE 235
+		NO:L_CHARA = [[キャラ:아자젤]]
+	CASE 236
+		NO:L_CHARA = [[キャラ:사타나엘]]
+	CASE 242
+		NO:L_CHARA = [[キャラ:앙리・만유]]
+	CASE 243
+		NO:L_CHARA = [[キャラ:슈우]]
+	CASE 244
+		NO:L_CHARA = [[キャラ:루키프구스]]
+	CASE 250
+		NO:L_CHARA = [[キャラ:아스모데우스]]
+	CASE 251
+		NO:L_CHARA = [[キャラ:벨・이얼]]
+	CASE 252
+		NO:L_CHARA = [[キャラ:베리얼]]
+	CASE 254
+		NO:L_CHARA = [[キャラ:네르갈]]
+	CASE 259
+		NO:L_CHARA = [[キャラ:슬라임마라님]]
+	CASE 260
+		NO:L_CHARA = [[キャラ:오르커스]]
+	CASE 261
+		NO:L_CHARA = [[キャラ:로키]]
+	CASE 262
+		NO:L_CHARA = [[キャラ:라바나]]
+	CASE 263
+		NO:L_CHARA = [[キャラ:아수라]]
+	CASE 264
+		NO:L_CHARA = [[キャラ:라후]]
+	CASE 265
+		NO:L_CHARA = [[キャラ:킹프로스트]]
+	CASE 266
+		NO:L_CHARA = [[キャラ:수르트]]
+	CASE 267
+		NO:L_CHARA = [[キャラ:아스타로트]]
+	CASE 268
+		NO:L_CHARA = [[キャラ:아리오크]]
+	CASE 270
+		NO:L_CHARA = [[キャラ:바엘]]
+	CASE 274
+		NO:L_CHARA = [[キャラ:아바돈]]
+	CASE 275
+		NO:L_CHARA = [[キャラ:아바돈_데빌칠드런]]
+	CASE 278
+		NO:L_CHARA = [[キャラ:제불]]
+	CASE 279
+		NO:L_CHARA = [[キャラ:발로르]]
+	CASE 280
+		NO:L_CHARA = [[キャラ:아젤]]
+	CASE 290
+		NO:L_CHARA = [[キャラ:벨・데르]]
+	CASE 292
+		NO:L_CHARA = [[キャラ:마라]]
+	CASE 293
+		NO:L_CHARA = [[キャラ:마왕아몬]]
+	CASE 301
+		NO:L_CHARA = [[キャラ:엔젤]]
+	CASE 302
+		NO:L_CHARA = [[キャラ:니케]]
+	CASE 303
+		NO:L_CHARA = [[キャラ:가브리엘]]
+	CASE 304
+		NO:L_CHARA = [[キャラ:하우르바타트]]
+	CASE 305
+		NO:L_CHARA = [[キャラ:아무르타트]]
+	CASE 306
+		NO:L_CHARA = [[キャラ:알마티]]
+	CASE 307
+		NO:L_CHARA = [[キャラ:레미엘]]
+	CASE 308
+		NO:L_CHARA = [[キャラ:버쳐]]
+	CASE 309
+		NO:L_CHARA = [[キャラ:하니엘]]
+	CASE 310
+		NO:L_CHARA = [[キャラ:라이라]]
+	CASE 311
+		NO:L_CHARA = [[キャラ:스로네]]
+	CASE 312
+		NO:L_CHARA = [[キャラ:사리엘]]
+	CASE 313
+		NO:L_CHARA = [[キャラ:하루트]]
+	CASE 314
+		NO:L_CHARA = [[キャラ:마루트]]
+	CASE 315
+		NO:L_CHARA = [[キャラ:스라오샤]]
+	CASE 316
+		NO:L_CHARA = [[キャラ:이스라펠]]
+	CASE 320
+		NO:L_CHARA = [[キャラ:케룹]]
+	CASE 321
+		NO:L_CHARA = [[キャラ:바키엘]]
+	CASE 322
+		NO:L_CHARA = [[キャラ:감비엘]]
+	CASE 323
+		NO:L_CHARA = [[キャラ:하말리엘]]
+	CASE 330
+		NO:L_CHARA = [[キャラ:사탄]]
+	CASE 340
+		NO:L_CHARA = [[キャラ:세라프]]
+	CASE 348
+		NO:L_CHARA = [[キャラ:라파엘라]]
+	CASE 349
+		NO:L_CHARA = [[キャラ:파누엘]]
+	CASE 355
+		NO:L_CHARA = [[キャラ:프린시펄리티]]
+	CASE 356
+		NO:L_CHARA = [[キャラ:도미니온]]
+	CASE 357
+		NO:L_CHARA = [[キャラ:듀나미스]]
+	CASE 358
+		NO:L_CHARA = [[キャラ:아브디엘]]
+	CASE 359
+		NO:L_CHARA = [[キャラ:아크엔젤]]
+	CASE 360
+		NO:L_CHARA = [[キャラ:파워]]
+	CASE 361
+		NO:L_CHARA = [[キャラ:라구엘]]
+	CASE 362
+		NO:L_CHARA = [[キャラ:큐피도]]
+	CASE 363
+		NO:L_CHARA = [[キャラ:멜키세덱]]
+	CASE 364
+		NO:L_CHARA = [[キャラ:홀리고스트]]
+	CASE 365
+		NO:L_CHARA = [[キャラ:미카엘]]
+	CASE 366
+		NO:L_CHARA = [[キャラ:라파엘]]
+	CASE 367
+		NO:L_CHARA = [[キャラ:우리엘]]
+	CASE 368
+		NO:L_CHARA = [[キャラ:아즈라엘]]
+	CASE 369
+		NO:L_CHARA = [[キャラ:메타트론]]
+	CASE 370
+		NO:L_CHARA = [[キャラ:카마엘]]
+	CASE 371
+		NO:L_CHARA = [[キャラ:메르카바]]
+	CASE 372
+		NO:L_CHARA = [[キャラ:산달폰]]
+	CASE 373
+		NO:L_CHARA = [[キャラ:만세마트]]
+	CASE 374
+		NO:L_CHARA = [[キャラ:자프키엘]]
+	CASE 375
+		NO:L_CHARA = [[キャラ:보후・마나흐]]
+	CASE 376
+		NO:L_CHARA = [[キャラ:카즈펠]]
+	CASE 377
+		NO:L_CHARA = [[キャラ:큐리오테스]]
+	CASE 401
+		NO:L_CHARA = [[キャラ:아프사라스]]
+	CASE 402
+		NO:L_CHARA = [[キャラ:리림]]
+	CASE 403
+		NO:L_CHARA = [[キャラ:랴난시]]
+	CASE 404
+		NO:L_CHARA = [[キャラ:세이렌]]
+	CASE 405
+		NO:L_CHARA = [[キャラ:알라우네]]
+	CASE 406
+		NO:L_CHARA = [[キャラ:디스]]
+	CASE 407
+		NO:L_CHARA = [[キャラ:서큐버스]]
+	CASE 408
+		NO:L_CHARA = [[キャラ:발키리]]
+	CASE 409
+		NO:L_CHARA = [[キャラ:발드르]]
+	CASE 410
+		NO:L_CHARA = [[キャラ:후리]]
+	CASE 411
+		NO:L_CHARA = [[キャラ:파리카]]
+	CASE 412
+		NO:L_CHARA = [[キャラ:네레이드]]
+	CASE 413
+		NO:L_CHARA = [[キャラ:푸르키시]]
+	CASE 414
+		NO:L_CHARA = [[キャラ:에로스]]
+	CASE 415
+		NO:L_CHARA = [[キャラ:쵸우케신]]
+	CASE 416
+		NO:L_CHARA = [[キャラ:듀라한]]
+	CASE 417
+		NO:L_CHARA = [[キャラ:뱀파이어]]
+	CASE 418
+		NO:L_CHARA = [[キャラ:엠푸사]]
+	CASE 419
+		NO:L_CHARA = [[キャラ:머메이드]]
+	CASE 420
+		NO:L_CHARA = [[キャラ:소악마리림]]
+	CASE 421
+		NO:L_CHARA = [[キャラ:나이트메어]]
+	CASE 422
+		NO:L_CHARA = [[キャラ:페리]]
+	CASE 423
+		NO:L_CHARA = [[キャラ:히노엔마]]
+	CASE 426
+		NO:L_CHARA = [[キャラ:진니야]]
+	CASE 427
+		NO:L_CHARA = [[キャラ:레토]]
+	CASE 428
+		NO:L_CHARA = [[キャラ:아스테리아]]
+	CASE 429
+		NO:L_CHARA = [[キャラ:카구야]]
+	CASE 430
+		NO:L_CHARA = [[キャラ:퀸메이브]]
+	CASE 431
+		NO:L_CHARA = [[キャラ:스코그스라]]
+	CASE 432
+		NO:L_CHARA = [[キャラ:알프]]
+	CASE 433
+		NO:L_CHARA = [[キャラ:디어드리]]
+	CASE 434
+		NO:L_CHARA = [[キャラ:시완나]]
+	CASE 435
+		NO:L_CHARA = [[キャラ:맨드레이크]]
+	CASE 436
+		NO:L_CHARA = [[キャラ:브륀힐드]]
+	CASE 437
+		NO:L_CHARA = [[キャラ:티롯타마]]
+	CASE 438
+		NO:L_CHARA = [[キャラ:칸바리]]
+	CASE 439
+		NO:L_CHARA = [[キャラ:케우케겐]]
+	CASE 450
+		NO:L_CHARA = [[キャラ:익티니케]]
+	CASE 451
+		NO:L_CHARA = [[キャラ:코파텐구]]
+	CASE 452
+		NO:L_CHARA = [[キャラ:카라스텐구]]
+	CASE 453
+		NO:L_CHARA = [[キャラ:모코이]]
+	CASE 454
+		NO:L_CHARA = [[キャラ:잠바반]]
+	CASE 455
+		NO:L_CHARA = [[キャラ:쿠라마텐구]]
+	CASE 456
+		NO:L_CHARA = [[キャラ:하누만]]
+	CASE 457
+		NO:L_CHARA = [[キャラ:헤임달]]
+	CASE 458
+		NO:L_CHARA = [[キャラ:가네샤]]
+	CASE 459
+		NO:L_CHARA = [[キャラ:임프]]
+	CASE 460
+		NO:L_CHARA = [[キャラ:휴프노스]]
+	CASE 461
+		NO:L_CHARA = [[キャラ:이소라]]
+	CASE 462
+		NO:L_CHARA = [[キャラ:인큐버스]]
+	CASE 463
+		NO:L_CHARA = [[キャラ:틀랄록]]
+	CASE 464
+		NO:L_CHARA = [[キャラ:루게이에]]
+	CASE 465
+		NO:L_CHARA = [[キャラ:옹코트]]
+	CASE 466
+		NO:L_CHARA = [[キャラ:고양이의날것]]
+	CASE 467
+		NO:L_CHARA = [[キャラ:나하트코볼트]]
+	CASE 468
+		NO:L_CHARA = [[キャラ:크르스니크]]
+	CASE 469
+		NO:L_CHARA = [[キャラ:야누스]]
+	CASE 470
+		NO:L_CHARA = [[キャラ:탐・린]]
+	CASE 471
+		NO:L_CHARA = [[キャラ:나타태자]]
+	CASE 472
+		NO:L_CHARA = [[キャラ:포모르]]
+	CASE 473
+		NO:L_CHARA = [[キャラ:마스터테리온]]
+	CASE 474
+		NO:L_CHARA = [[キャラ:프로스트에이스]]
+	CASE 475
+		NO:L_CHARA = [[キャラ:와일드헌트]]
+	CASE 476
+		NO:L_CHARA = [[キャラ:에스]]
+	CASE 477
+		NO:L_CHARA = [[キャラ:키지무나]]
+	CASE 478
+		NO:L_CHARA = [[キャラ:잔트만]]
+	CASE 479
+		NO:L_CHARA = [[キャラ:메르쿠리우스]]
+	CASE 480
+		NO:L_CHARA = [[キャラ:마야_야마]]
+	CASE 481
+		NO:L_CHARA = [[キャラ:메피스토]]
+	CASE 482
+		NO:L_CHARA = [[キャラ:진]]
+	CASE 483
+		NO:L_CHARA = [[キャラ:이프리트]]
+	CASE 484
+		NO:L_CHARA = [[キャラ:로아]]
+	CASE 499
+		NO:L_CHARA = [[キャラ:악마금붕어]]
+	CASE 501
+		NO:L_CHARA = [[キャラ:픽시]]
+	CASE 502
+		NO:L_CHARA = [[キャラ:드라이어드]]
+	CASE 503
+		NO:L_CHARA = [[キャラ:루살카]]
+	CASE 504
+		NO:L_CHARA = [[キャラ:엘프]]
+	CASE 505
+		NO:L_CHARA = [[キャラ:실키]]
+	CASE 506
+		NO:L_CHARA = [[キャラ:밴시]]
+	CASE 507
+		NO:L_CHARA = [[キャラ:후지무스메]]
+	CASE 508
+		NO:L_CHARA = [[キャラ:나쟈]]
+	CASE 509
+		NO:L_CHARA = [[キャラ:비비안]]
+	CASE 510
+		NO:L_CHARA = [[キャラ:티타니아]]
+	CASE 511
+		NO:L_CHARA = [[キャラ:다크엘프]]
+	CASE 512
+		NO:L_CHARA = [[キャラ:잭프로스트]]
+	CASE 513
+		NO:L_CHARA = [[キャラ:잭랜턴]]
+	CASE 514
+		NO:L_CHARA = [[キャラ:하이픽시]]
+	CASE 515
+		NO:L_CHARA = [[キャラ:다프네]]
+	CASE 516
+		NO:L_CHARA = [[キャラ:틀랄테쿠흐틀리]]
+	CASE 517
+		NO:L_CHARA = [[キャラ:쁘띠프로스트]]
+	CASE 518
+		NO:L_CHARA = [[キャラ:블루벨]]
+	CASE 519
+		NO:L_CHARA = [[キャラ:마야웰]]
+	CASE 520
+		NO:L_CHARA = [[キャラ:에딘]]
+	CASE 521
+		NO:L_CHARA = [[キャラ:딸기프로스트]]
+	CASE 522
+		NO:L_CHARA = [[キャラ:코로봇쿠루]]
+	CASE 523
+		NO:L_CHARA = [[キャラ:모르간]]
+	CASE 524
+		NO:L_CHARA = [[キャラ:스미조메]]
+	CASE 525
+		NO:L_CHARA = [[キャラ:무스펠]]
+	CASE 526
+		NO:L_CHARA = [[キャラ:팅・컷]]
+	CASE 527
+		NO:L_CHARA = [[キャラ:다이다라봇치]]
+	CASE 551
+		NO:L_CHARA = [[キャラ:노커]]
+	CASE 552
+		NO:L_CHARA = [[キャラ:고블린]]
+	CASE 553
+		NO:L_CHARA = [[キャラ:브라우니]]
+	CASE 554
+		NO:L_CHARA = [[キャラ:드베르가]]
+	CASE 555
+		NO:L_CHARA = [[キャラ:로렐라이]]
+	CASE 556
+		NO:L_CHARA = [[キャラ:버그스]]
+	CASE 557
+		NO:L_CHARA = [[キャラ:우벨루리]]
+	CASE 558
+		NO:L_CHARA = [[キャラ:티탄]]
+	CASE 559
+		NO:L_CHARA = [[キャラ:코다마]]
+	CASE 560
+		NO:L_CHARA = [[キャラ:오오미츠누]]
+	CASE 561
+		NO:L_CHARA = [[キャラ:오베론]]
+	CASE 562
+		NO:L_CHARA = [[キャラ:고그마고그]]
+	CASE 563
+		NO:L_CHARA = [[キャラ:스프리건]]
+	CASE 564
+		NO:L_CHARA = [[キャラ:트롤]]
+	CASE 565
+		NO:L_CHARA = [[キャラ:카완챠]]
+	CASE 566
+		NO:L_CHARA = [[キャラ:쿠쿠노치]]
+	CASE 567
+		NO:L_CHARA = [[キャラ:하오마]]
+	CASE 568
+		NO:L_CHARA = [[キャラ:이그드라실]]
+	CASE 569
+		NO:L_CHARA = [[キャラ:자시키와라시]]
+	CASE 570
+		NO:L_CHARA = [[キャラ:데모니호]]
+	CASE 571
+		NO:L_CHARA = [[キャラ:아틀라스]]
+	CASE 601
+		NO:L_CHARA = [[キャラ:화백]]
+	CASE 602
+		NO:L_CHARA = [[キャラ:요모츠시코메]]
+	CASE 603
+		NO:L_CHARA = [[キャラ:유키죠로]]
+	CASE 604
+		NO:L_CHARA = [[キャラ:한냐]]
+	CASE 605
+		NO:L_CHARA = [[キャラ:사라시나히메]]
+	CASE 606
+		NO:L_CHARA = [[キャラ:야크시니]]
+	CASE 607
+		NO:L_CHARA = [[キャラ:다키니]]
+	CASE 608
+		NO:L_CHARA = [[キャラ:아체리]]
+	CASE 609
+		NO:L_CHARA = [[キャラ:아마존]]
+	CASE 610
+		NO:L_CHARA = [[キャラ:다츠에바]]
+	CASE 611
+		NO:L_CHARA = [[キャラ:후구루마]]
+	CASE 612
+		NO:L_CHARA = [[キャラ:이바라키도지]]
+	CASE 613
+		NO:L_CHARA = [[キャラ:토도메키]]
+	CASE 614
+		NO:L_CHARA = [[キャラ:유킨코]]
+	CASE 615
+		NO:L_CHARA = [[キャラ:살로메]]
+	CASE 616
+		NO:L_CHARA = [[キャラ:하리티]]
+	CASE 617
+		NO:L_CHARA = [[キャラ:쟈히]]
+	CASE 618
+		NO:L_CHARA = [[キャラ:죠로구모]]
+	CASE 619
+		NO:L_CHARA = [[キャラ:브샨스타]]
+	CASE 620
+		NO:L_CHARA = [[キャラ:네메시스]]
+	CASE 621
+		NO:L_CHARA = [[キャラ:키키모라]]
+	CASE 622
+		NO:L_CHARA = [[キャラ:라・료로나]]
+	CASE 623
+		NO:L_CHARA = [[キャラ:라마슈투]]
+	CASE 624
+		NO:L_CHARA = [[キャラ:해그]]
+	CASE 651
+		NO:L_CHARA = [[キャラ:코볼트]]
+	CASE 652
+		NO:L_CHARA = [[キャラ:락샤사]]
+	CASE 653
+		NO:L_CHARA = [[キャラ:오크]]
+	CASE 654
+		NO:L_CHARA = [[キャラ:오니]]
+	CASE 655
+		NO:L_CHARA = [[キャラ:슈텐도지]]
+	CASE 656
+		NO:L_CHARA = [[キャラ:베르세르크]]
+	CASE 657
+		NO:L_CHARA = [[キャラ:모무노후]]
+	CASE 658
+		NO:L_CHARA = [[キャラ:츠치구모]]
+	CASE 659
+		NO:L_CHARA = [[キャラ:테나가]]
+	CASE 660
+		NO:L_CHARA = [[キャラ:아시나가]]
+	CASE 661
+		NO:L_CHARA = [[キャラ:시키오우지]]
+	CASE 662
+		NO:L_CHARA = [[キャラ:누리카베]]
+	CASE 663
+		NO:L_CHARA = [[キャラ:아즈미]]
+	CASE 664
+		NO:L_CHARA = [[キャラ:잇폰다타라]]
+	CASE 666
+		NO:L_CHARA = [[キャラ:웬디고]]
+	CASE 668
+		NO:L_CHARA = [[キャラ:스트리게스]]
+	CASE 669
+		NO:L_CHARA = [[キャラ:킨키]]
+	CASE 670
+		NO:L_CHARA = [[キャラ:후우키]]
+	CASE 671
+		NO:L_CHARA = [[キャラ:스이키]]
+	CASE 672
+		NO:L_CHARA = [[キャラ:온교우키]]
+	CASE 673
+		NO:L_CHARA = [[キャラ:빌뷔스]]
+	CASE 674
+		NO:L_CHARA = [[キャラ:사이클롭스]]
+	CASE 675
+		NO:L_CHARA = [[キャラ:헤카톤케일]]
+	CASE 676
+		NO:L_CHARA = [[キャラ:고즈키]]
+	CASE 677
+		NO:L_CHARA = [[キャラ:메즈키]]
+	CASE 678
+		NO:L_CHARA = [[キャラ:가샤도쿠로]]
+	CASE 679
+		NO:L_CHARA = [[キャラ:그렌델]]
+	CASE 680
+		NO:L_CHARA = [[キャラ:탈로스]]
+	CASE 681
+		NO:L_CHARA = [[キャラ:브리트라_데빌칠드런]]
+	CASE 682
+		NO:L_CHARA = [[キャラ:캇파]]
+	CASE 683
+		NO:L_CHARA = [[キャラ:사오정]]
+	CASE 684
+		NO:L_CHARA = [[キャラ:저팔계]]
+	CASE 685
+		NO:L_CHARA = [[キャラ:예티]]
+	CASE 686
+		NO:L_CHARA = [[キャラ:사악프로스트]]
+	CASE 687
+		NO:L_CHARA = [[キャラ:야크샤]]
+	CASE 688
+		NO:L_CHARA = [[キャラ:오거]]
+	CASE 689
+		NO:L_CHARA = [[キャラ:람데르그]]
+	CASE 701
+		NO:L_CHARA = [[キャラ:뷔브르]]
+	CASE 702
+		NO:L_CHARA = [[キャラ:라미아]]
+	CASE 703
+		NO:L_CHARA = [[キャラ:키요히메]]
+	CASE 704
+		NO:L_CHARA = [[キャラ:고르곤]]
+	CASE 705
+		NO:L_CHARA = [[キャラ:백낭자]]
+	CASE 706
+		NO:L_CHARA = [[キャラ:오토히메]]
+	CASE 707
+		NO:L_CHARA = [[キャラ:에키드나]]
+	CASE 708
+		NO:L_CHARA = [[キャラ:티아마트]]
+	CASE 709
+		NO:L_CHARA = [[キャラ:코아틀리쿠에]]
+	CASE 710
+		NO:L_CHARA = [[キャラ:마야_용신]]
+	CASE 711
+		NO:L_CHARA = [[キャラ:우로보로스]]
+	CASE 712
+		NO:L_CHARA = [[キャラ:나기니]]
+	CASE 713
+		NO:L_CHARA = [[キャラ:나가・칸냐]]
+	CASE 714
+		NO:L_CHARA = [[キャラ:카야노히메]]
+	CASE 715
+		NO:L_CHARA = [[キャラ:강가]]
+	CASE 716
+		NO:L_CHARA = [[キャラ:바루나]]
+	CASE 717
+		NO:L_CHARA = [[キャラ:호야우카무이]]
+	CASE 718
+		NO:L_CHARA = [[キャラ:레비아탄]]
+	CASE 719
+		NO:L_CHARA = [[キャラ:여와]]
+	CASE 720
+		NO:L_CHARA = [[キャラ:무찰린다]]
+	CASE 721
+		NO:L_CHARA = [[キャラ:얌]]
+	CASE 722
+		NO:L_CHARA = [[キャラ:카뤼브디스]]
+	CASE 723
+		NO:L_CHARA = [[キャラ:와이번]]
+	CASE 751
+		NO:L_CHARA = [[キャラ:웜]]
+	CASE 752
+		NO:L_CHARA = [[キャラ:라돈]]
+	CASE 753
+		NO:L_CHARA = [[キャラ:노즈치]]
+	CASE 754
+		NO:L_CHARA = [[キャラ:나가]]
+	CASE 755
+		NO:L_CHARA = [[キャラ:나가・라쟈]]
+	CASE 756
+		NO:L_CHARA = [[キャラ:타라스크]]
+	CASE 757
+		NO:L_CHARA = [[キャラ:청룡]]
+	CASE 758
+		NO:L_CHARA = [[キャラ:케찰코아틀]]
+	CASE 759
+		NO:L_CHARA = [[キャラ:브리트라]]
+	CASE 760
+		NO:L_CHARA = [[キャラ:니드호그]]
+	CASE 761
+		NO:L_CHARA = [[キャラ:아난타]]
+	CASE 762
+		NO:L_CHARA = [[キャラ:토뵤]]
+	CASE 763
+		NO:L_CHARA = [[キャラ:바질리스크]]
+	CASE 764
+		NO:L_CHARA = [[キャラ:무슈후슈]]
+	CASE 765
+		NO:L_CHARA = [[キャラ:야마타노오로치]]
+	CASE 766
+		NO:L_CHARA = [[キャラ:파프니르]]
+	CASE 767
+		NO:L_CHARA = [[キャラ:바수키]]
+	CASE 768
+		NO:L_CHARA = [[キャラ:야토노카미]]
+	CASE 769
+		NO:L_CHARA = [[キャラ:미즈치]]
+	CASE 770
+		NO:L_CHARA = [[キャラ:이참・나]]
+	CASE 771
+		NO:L_CHARA = [[キャラ:펜드래곤]]
+	CASE 772
+		NO:L_CHARA = [[キャラ:퓌톤]]
+	CASE 773
+		NO:L_CHARA = [[キャラ:쿠엘레브레]]
+	CASE 775
+		NO:L_CHARA = [[キャラ:크로우크루아흐]]
+	CASE 776
+		NO:L_CHARA = [[キャラ:아지・다하카]]
+	CASE 777
+		NO:L_CHARA = [[キャラ:요르문간드]]
+	CASE 778
+		NO:L_CHARA = [[キャラ:촉음]]
+	CASE 779
+		NO:L_CHARA = [[キャラ:이루루얀카슈]]
+	CASE 780
+		NO:L_CHARA = [[キャラ:코우가사부로]]
+	CASE 781
+		NO:L_CHARA = [[キャラ:황룡]]
+	CASE 782
+		NO:L_CHARA = [[キャラ:라합]]
+	CASE 783
+		NO:L_CHARA = [[キャラ:마카라]]
+	CASE 784
+		NO:L_CHARA = [[キャラ:헤이룽]]
+	CASE 785
+		NO:L_CHARA = [[キャラ:암피테르]]
+	CASE 786
+		NO:L_CHARA = [[キャラ:저돈사]]
+	CASE 801
+		NO:L_CHARA = [[キャラ:네코마타]]
+	CASE 802
+		NO:L_CHARA = [[キャラ:멜뤼지느]]
+	CASE 803
+		NO:L_CHARA = [[キャラ:폰]]
+	CASE 804
+		NO:L_CHARA = [[キャラ:블랙위도우]]
+	CASE 805
+		NO:L_CHARA = [[キャラ:알케니]]
+	CASE 806
+		NO:L_CHARA = [[キャラ:선리]]
+	CASE 807
+		NO:L_CHARA = [[キャラ:타마모]]
+	CASE 808
+		NO:L_CHARA = [[キャラ:스퀼라]]
+	CASE 809
+		NO:L_CHARA = [[キャラ:바스테트]]
+	CASE 810
+		NO:L_CHARA = [[キャラ:체페이_꼬리두개]]
+	CASE 811
+		NO:L_CHARA = [[キャラ:달기]]
+	CASE 812
+		NO:L_CHARA = [[キャラ:키메라]]
+	CASE 813
+		NO:L_CHARA = [[キャラ:라타토스크]]
+	CASE 814
+		NO:L_CHARA = [[キャラ:스핑크스]]
+	CASE 815
+		NO:L_CHARA = [[キャラ:오키쿠무시]]
+	CASE 816
+		NO:L_CHARA = [[キャラ:오키츠네]]
+	CASE 817
+		NO:L_CHARA = [[キャラ:도어마스]]
+	CASE 818
+		NO:L_CHARA = [[キャラ:우카노미타마]]
+	CASE 820
+		NO:L_CHARA = [[キャラ:기린]]
+	CASE 821
+		NO:L_CHARA = [[キャラ:페가수스]]
+	CASE 822
+		NO:L_CHARA = [[キャラ:해치]]
+	CASE 823
+		NO:L_CHARA = [[キャラ:아이라바타]]
+	CASE 824
+		NO:L_CHARA = [[キャラ:세르케트]]
+	CASE 825
+		NO:L_CHARA = [[キャラ:부라크]]
+	CASE 826
+		NO:L_CHARA = [[キャラ:쿠단]]
+	CASE 827
+		NO:L_CHARA = [[キャラ:돈]]
+	CASE 828
+		NO:L_CHARA = [[キャラ:오사키여우]]
+	CASE 829
+		NO:L_CHARA = [[キャラ:쿠즈노하]]
+	CASE 830
+		NO:L_CHARA = [[キャラ:흰여우]]
+	CASE 831
+		NO:L_CHARA = [[キャラ:웨어캣]]
+	CASE 832
+		NO:L_CHARA = [[キャラ:센코]]
+	CASE 833
+		NO:L_CHARA = [[キャラ:카마이타치]]
+	CASE 844
+		NO:L_CHARA = [[キャラ:혼돈]]
+	CASE 845
+		NO:L_CHARA = [[キャラ:유니콘]]
+	CASE 846
+		NO:L_CHARA = [[キャラ:궁기]]
+	CASE 847
+		NO:L_CHARA = [[キャラ:카브라칸]]
+	CASE 848
+		NO:L_CHARA = [[キャラ:카타키라우와]]
+	CASE 849
+		NO:L_CHARA = [[キャラ:도올]]
+	CASE 850
+		NO:L_CHARA = [[キャラ:바이콘]]
+	CASE 851
+		NO:L_CHARA = [[キャラ:오르트로스]]
+	CASE 852
+		NO:L_CHARA = [[キャラ:케르베로스]]
+	CASE 853
+		NO:L_CHARA = [[キャラ:이누가미]]
+	CASE 854
+		NO:L_CHARA = [[キャラ:카시]]
+	CASE 855
+		NO:L_CHARA = [[キャラ:누에]]
+	CASE 856
+		NO:L_CHARA = [[キャラ:야츠후사]]
+	CASE 857
+		NO:L_CHARA = [[キャラ:청우괴]]
+	CASE 858
+		NO:L_CHARA = [[キャラ:아누비스]]
+	CASE 859
+		NO:L_CHARA = [[キャラ:나라심하]]
+	CASE 860
+		NO:L_CHARA = [[キャラ:바롱]]
+	CASE 861
+		NO:L_CHARA = [[キャラ:쿨]]
+	CASE 865
+		NO:L_CHARA = [[キャラ:벨]]
+	CASE 869
+		NO:L_CHARA = [[キャラ:미노타우로스]]
+	CASE 870
+		NO:L_CHARA = [[キャラ:모라]]
+	CASE 871
+		NO:L_CHARA = [[キャラ:펜리르]]
+	CASE 872
+		NO:L_CHARA = [[キャラ:현무]]
+	CASE 873
+		NO:L_CHARA = [[キャラ:백호]]
+	CASE 874
+		NO:L_CHARA = [[キャラ:데스케르베로스]]
+	CASE 875
+		NO:L_CHARA = [[キャラ:헬케르베로스]]
+	CASE 876
+		NO:L_CHARA = [[キャラ:데스그리폰]]
+	CASE 877
+		NO:L_CHARA = [[キャラ:헬그리폰]]
+	CASE 878
+		NO:L_CHARA = [[キャラ:이나바흰토끼]]
+	CASE 879
+		NO:L_CHARA = [[キャラ:카부소]]
+	CASE 880
+		NO:L_CHARA = [[キャラ:세베크]]
+	CASE 881
+		NO:L_CHARA = [[キャラ:곳기]]
+	CASE 882
+		NO:L_CHARA = [[キャラ:솔레온]]
+	CASE 883
+		NO:L_CHARA = [[キャラ:케트시]]
+	CASE 884
+		NO:L_CHARA = [[キャラ:성성이]]
+	CASE 885
+		NO:L_CHARA = [[キャラ:아만]]
+	CASE 886
+		NO:L_CHARA = [[キャラ:가름]]
+	CASE 887
+		NO:L_CHARA = [[キャラ:슬레이프니르]]
+	CASE 888
+		NO:L_CHARA = [[キャラ:베히모스]]
+	CASE 889
+		NO:L_CHARA = [[キャラ:카토블레파스]]
+	CASE 890
+		NO:L_CHARA = [[キャラ:난디]]
+	CASE 891
+		NO:L_CHARA = [[キャラ:하쿠타쿠]]
+	CASE 892
+		NO:L_CHARA = [[キャラ:아피스]]
+	CASE 893
+		NO:L_CHARA = [[キャラ:아오파샤]]
+	CASE 894
+		NO:L_CHARA = [[キャラ:마카미]]
+	CASE 895
+		NO:L_CHARA = [[キャラ:아펩]]
+	CASE 900
+		NO:L_CHARA = [[キャラ:스내피]]
+	CASE 901
+		NO:L_CHARA = [[キャラ:하피]]
+	CASE 902
+		NO:L_CHARA = [[キャラ:모・쇼보]]
+	CASE 903
+		NO:L_CHARA = [[キャラ:오퀴페테]]
+	CASE 904
+		NO:L_CHARA = [[キャラ:켈라이노]]
+	CASE 905
+		NO:L_CHARA = [[キャラ:아에로]]
+	CASE 906
+		NO:L_CHARA = [[キャラ:네반]]
+	CASE 907
+		NO:L_CHARA = [[キャラ:마하]]
+	CASE 908
+		NO:L_CHARA = [[キャラ:모리안]]
+	CASE 909
+		NO:L_CHARA = [[キャラ:고획조]]
+	CASE 910
+		NO:L_CHARA = [[キャラ:메가이라]]
+	CASE 911
+		NO:L_CHARA = [[キャラ:티시포네]]
+	CASE 912
+		NO:L_CHARA = [[キャラ:알렉토]]
+	CASE 913
+		NO:L_CHARA = [[キャラ:흐레스벨그]]
+	CASE 914
+		NO:L_CHARA = [[キャラ:화조]]
+	CASE 915
+		NO:L_CHARA = [[キャラ:바이브・카흐]]
+	CASE 916
+		NO:L_CHARA = [[キャラ:봉황]]
+	CASE 917
+		NO:L_CHARA = [[キャラ:짐]]
+	CASE 918
+		NO:L_CHARA = [[キャラ:칼라드리우스]]
+	CASE 919
+		NO:L_CHARA = [[キャラ:한사]]
+	CASE 951
+		NO:L_CHARA = [[キャラ:춍춍]]
+	CASE 952
+		NO:L_CHARA = [[キャラ:모스맨]]
+	CASE 953
+		NO:L_CHARA = [[キャラ:그르르]]
+	CASE 954
+		NO:L_CHARA = [[キャラ:스튐팔리데스]]
+	CASE 955
+		NO:L_CHARA = [[キャラ:필방]]
+	CASE 957
+		NO:L_CHARA = [[キャラ:주작]]
+	CASE 958
+		NO:L_CHARA = [[キャラ:피닉스]]
+	CASE 959
+		NO:L_CHARA = [[キャラ:카마조츠]]
+	CASE 960
+		NO:L_CHARA = [[キャラ:가루다]]
+	CASE 961
+		NO:L_CHARA = [[キャラ:위칠로포치틀리]]
+	CASE 962
+		NO:L_CHARA = [[キャラ:쟈타유]]
+	CASE 963
+		NO:L_CHARA = [[キャラ:야마치치]]
+	CASE 964
+		NO:L_CHARA = [[キャラ:아메노토리후네]]
+	CASE 965
+		NO:L_CHARA = [[キャラ:탁비]]
+	CASE 966
+		NO:L_CHARA = [[キャラ:온모라키]]
+	CASE 967
+		NO:L_CHARA = [[キャラ:이츠마데]]
+	CASE 968
+		NO:L_CHARA = [[キャラ:안주]]
+	CASE 969
+		NO:L_CHARA = [[キャラ:썬더버드]]
+	CASE 970
+		NO:L_CHARA = [[キャラ:루흐]]
+	CASE 971
+		NO:L_CHARA = [[キャラ:야타가라스]]
+	CASE 972
+		NO:L_CHARA = [[キャラ:포다르게]]
+	CASE 973
+		NO:L_CHARA = [[キャラ:니코토에]]
+	CASE 974
+		NO:L_CHARA = [[キャラ:우피오르]]
+	CASE 975
+		NO:L_CHARA = [[キャラ:금시조]]
+	CASE 1001
+		NO:L_CHARA = [[キャラ:좀비쨩]]
+	CASE 1002
+		NO:L_CHARA = [[キャラ:좀비너스]]
+	CASE 1003
+		NO:L_CHARA = [[キャラ:하나코]]
+	CASE 1004
+		NO:L_CHARA = [[キャラ:카시마레이코]]
+	CASE 1005
+		NO:L_CHARA = [[キャラ:굴라]]
+	CASE 1006
+		NO:L_CHARA = [[キャラ:도플갱어]]
+	CASE 1007
+		NO:L_CHARA = [[キャラ:맨이터]]
+	CASE 1008
+		NO:L_CHARA = [[キャラ:오시치]]
+	CASE 1009
+		NO:L_CHARA = [[キャラ:쿠치사케]]
+	CASE 1010
+		NO:L_CHARA = [[キャラ:섀도우]]
+	CASE 1011
+		NO:L_CHARA = [[キャラ:사카하기]]
+	CASE 1012
+		NO:L_CHARA = [[キャラ:에리카]]
+	CASE 1013
+		NO:L_CHARA = [[キャラ:색정인연령]]
+	CASE 1014
+		NO:L_CHARA = [[キャラ:크리스틴]]
+	CASE 1015
+		NO:L_CHARA = [[キャラ:엔티티]]
+	CASE 1016
+		NO:L_CHARA = [[キャラ:잭・더・리퍼]]
+	CASE 1017
+		NO:L_CHARA = [[キャラ:비파법사]]
+	CASE 1018
+		NO:L_CHARA = [[キャラ:좀비마우스]]
+	CASE 1019
+		NO:L_CHARA = [[キャラ:데몬덕]]
+	CASE 1026
+		NO:L_CHARA = [[キャラ:목없는라이더]]
+	CASE 1027
+		NO:L_CHARA = [[キャラ:스피드데몬]]
+	CASE 1028
+		NO:L_CHARA = [[キャラ:슬라임]]
+	CASE 1029
+		NO:L_CHARA = [[キャラ:보디코니언]]
+	CASE 1030
+		NO:L_CHARA = [[キャラ:마카브르]]
+	CASE 1031
+		NO:L_CHARA = [[キャラ:그레이맨]]
+	CASE 1032
+		NO:L_CHARA = [[キャラ:베탈라]]
+	CASE 1033
+		NO:L_CHARA = [[キャラ:피샤차]]
+	CASE 1034
+		NO:L_CHARA = [[キャラ:리치]]
+	CASE 1035
+		NO:L_CHARA = [[キャラ:추렐]]
+	CASE 1036
+		NO:L_CHARA = [[キャラ:드래그퀸]]
+	CASE 1037
+		NO:L_CHARA = [[キャラ:매드가서]]
+	CASE 1038
+		NO:L_CHARA = [[キャラ:백베어드]]
+	CASE 1039
+		NO:L_CHARA = [[キャラ:쿠반다]]
+	CASE 1040
+		NO:L_CHARA = [[キャラ:스트리고이]]
+	CASE 1041
+		NO:L_CHARA = [[キャラ:오바리욘]]
+	CASE 1042
+		NO:L_CHARA = [[キャラ:야카]]
+	CASE 1043
+		NO:L_CHARA = [[キャラ:다크니스]]
+	CASE 1044
+		NO:L_CHARA = [[キャラ:보라색거울]]
+	CASE 1045
+		NO:L_CHARA = [[キャラ:미야스도코로]]
+	CASE 1046
+		NO:L_CHARA = [[キャラ:퀵실버]]
+	CASE 1047
+		NO:L_CHARA = [[キャラ:오바타리온]]
+	CASE 1048
+		NO:L_CHARA = [[キャラ:나아스]]
+	CASE 1049
+		NO:L_CHARA = [[キャラ:왁스워크]]
+	CASE 1050
+		NO:L_CHARA = [[キャラ:올드원]]
+	CASE 1051
+		NO:L_CHARA = [[キャラ:그리미즈]]
+	CASE 1052
+		NO:L_CHARA = [[キャラ:코스모좀비]]
+	CASE 1053
+		NO:L_CHARA = [[キャラ:비야키]]
+	CASE 1055
+		NO:L_CHARA = [[キャラ:위커맨]]
+	CASE 1056
+		NO:L_CHARA = [[キャラ:어반테러]]
+	CASE 1057
+		NO:L_CHARA = [[キャラ:폴터가이스트]]
+	CASE 1058
+		NO:L_CHARA = [[キャラ:패트리어트]]
+	CASE 1059
+		NO:L_CHARA = [[キャラ:사다코]]
+	CASE 1060
+		NO:L_CHARA = [[キャラ:팔척님]]
+	CASE 1070
+		NO:L_CHARA = [[キャラ:킬러초퍼]]
+	CASE 1071
+		NO:L_CHARA = [[キャラ:타투맨]]
+	CASE 1081
+		NO:L_CHARA = [[キャラ:프랑켄]]
+	CASE 1082
+		NO:L_CHARA = [[キャラ:메리씨]]
+	CASE 1083
+		NO:L_CHARA = [[キャラ:좀비독]]
+	CASE 1084
+		NO:L_CHARA = [[キャラ:기리메칼라]]
+	CASE 1085
+		NO:L_CHARA = [[キャラ:쿠드락]]
+	CASE 1086
+		NO:L_CHARA = [[キャラ:워커홀릭]]
+	CASE 1087
+		NO:L_CHARA = [[キャラ:뎁스]]
+	CASE 1088
+		NO:L_CHARA = [[キャラ:부대병]]
+	CASE 1089
+		NO:L_CHARA = [[キャラ:이누이]]
+	CASE 1090
+		NO:L_CHARA = [[キャラ:야코우]]
+	CASE 1091
+		NO:L_CHARA = [[キャラ:좀비사무라이]]
+	CASE 1092
+		NO:L_CHARA = [[キャラ:좀비헌병]]
+	CASE 1093
+		NO:L_CHARA = [[キャラ:아귀]]
+	CASE 1094
+		NO:L_CHARA = [[キャラ:좀비군]]
+	CASE 1095
+		NO:L_CHARA = [[キャラ:좀비캅]]
+	CASE 1096
+		NO:L_CHARA = [[キャラ:좀비아미]]
+	CASE 1097
+		NO:L_CHARA = [[キャラ:야쿠자]]
+	CASE 1098
+		NO:L_CHARA = [[キャラ:콥스]]
+	CASE 1099
+		NO:L_CHARA = [[キャラ:레기온]]
+	CASE 1101
+		NO:L_CHARA = [[キャラ:불의체크맨]]
+	CASE 1102
+		NO:L_CHARA = [[キャラ:얼음의체크맨]]
+	CASE 1103
+		NO:L_CHARA = [[キャラ:천둥의체크맨]]
+	CASE 1104
+		NO:L_CHARA = [[キャラ:바람의체크맨]]
+	CASE 1105
+		NO:L_CHARA = [[キャラ:어둠의체크맨]]
+	CASE 1106
+		NO:L_CHARA = [[キャラ:빛의체크맨]]
+	CASE 1107
+		NO:L_CHARA = [[キャラ:비트볼]]
+	CASE 1108
+		NO:L_CHARA = [[キャラ:라비]]
+	CASE 1109
+		NO:L_CHARA = [[キャラ:슬레이브]]
+	CASE 1110
+		NO:L_CHARA = [[キャラ:데미난디]]
+	CASE 1111
+		NO:L_CHARA = [[キャラ:윈페]]
+	CASE 1112
+		NO:L_CHARA = [[キャラ:무위스_캐롤Ｊ]]
+	CASE 1113
+		NO:L_CHARA = [[キャラ:T95골렘]]
+	CASE 1114
+		NO:L_CHARA = [[キャラ:T95메두사]]
+	CASE 1115
+		NO:L_CHARA = [[キャラ:무위스_머신]]
+	CASE 1116
+		NO:L_CHARA = [[キャラ:나하트]]
+	CASE 1117
+		NO:L_CHARA = [[キャラ:아벤트]]
+	CASE 1118
+		NO:L_CHARA = [[キャラ:팬텀]]
+	CASE 1120
+		NO:L_CHARA = [[キャラ:Ｐ아미]]
+	CASE 1121
+		NO:L_CHARA = [[キャラ:광무]]
+	CASE 1122
+		NO:L_CHARA = [[キャラ:Ｚ８０]]
+	CASE 1123
+		NO:L_CHARA = [[キャラ:ＭＳＸ]]
+	CASE 1124
+		NO:L_CHARA = [[キャラ:Ｘ６８]]
+	CASE 1201
+		NO:L_CHARA = [[キャラ:실프]]
+	CASE 1202
+		NO:L_CHARA = [[キャラ:운디네]]
+	CASE 1203
+		NO:L_CHARA = [[キャラ:놈]]
+	CASE 1204
+		NO:L_CHARA = [[キャラ:살라만더]]
+	CASE 1205
+		NO:L_CHARA = [[キャラ:뷔디네]]
+	CASE 1301
+		NO:L_CHARA = [[キャラ:아라미타마]]
+	CASE 1302
+		NO:L_CHARA = [[キャラ:니기미타마]]
+	CASE 1303
+		NO:L_CHARA = [[キャラ:쿠시미타마]]
+	CASE 1304
+		NO:L_CHARA = [[キャラ:사키미타마]]
+	CASE 1401
+		NO:L_CHARA = [[キャラ:증장천]]
+	CASE 1402
+		NO:L_CHARA = [[キャラ:광목천]]
+	CASE 1403
+		NO:L_CHARA = [[キャラ:지국천]]
+	CASE 1404
+		NO:L_CHARA = [[キャラ:비사문천]]
+	CASE 1405
+		NO:L_CHARA = [[キャラ:스사노오]]
+	CASE 1406
+		NO:L_CHARA = [[キャラ:토르]]
+	CASE 1407
+		NO:L_CHARA = [[キャラ:타케미나카타]]
+	CASE 1408
+		NO:L_CHARA = [[キャラ:아라하바키]]
+	CASE 1409
+		NO:L_CHARA = [[キャラ:후토미미]]
+	CASE 1410
+		NO:L_CHARA = [[キャラ:스쿠나히코나]]
+	CASE 1411
+		NO:L_CHARA = [[キャラ:아레스]]
+	CASE 1412
+		NO:L_CHARA = [[キャラ:토나티우]]
+	CASE 1413
+		NO:L_CHARA = [[キャラ:하리・하라]]
+	CASE 1414
+		NO:L_CHARA = [[キャラ:시바]]
+	CASE 1415
+		NO:L_CHARA = [[キャラ:인드라지트]]
+	CASE 1416
+		NO:L_CHARA = [[キャラ:제천대성]]
+	CASE 1417
+		NO:L_CHARA = [[キャラ:트리글라프]]
+	CASE 1419
+		NO:L_CHARA = [[キャラ:카르티케야]]
+	CASE 1420
+		NO:L_CHARA = [[キャラ:후츠누시]]
+	CASE 1421
+		NO:L_CHARA = [[キャラ:오오야마츠미]]
+	CASE 1422
+		NO:L_CHARA = [[キャラ:오오쿠니누시]]
+	CASE 1423
+		NO:L_CHARA = [[キャラ:마하칼라]]
+	CASE 1424
+		NO:L_CHARA = [[キャラ:부동명왕]]
+	CASE 1425
+		NO:L_CHARA = [[キャラ:자오곤겐]]
+	CASE 1426
+		NO:L_CHARA = [[キャラ:북두성군]]
+	CASE 1427
+		NO:L_CHARA = [[キャラ:염라대왕]]
+	CASE 1428
+		NO:L_CHARA = [[キャラ:타케미카즈치]]
+	CASE 1429
+		NO:L_CHARA = [[キャラ:히노카구츠치]]
+	CASE 1430
+		NO:L_CHARA = [[キャラ:오모이카네]]
+	CASE 1431
+		NO:L_CHARA = [[キャラ:다지카라오]]
+	CASE 1432
+		NO:L_CHARA = [[キャラ:사루타히코]]
+	CASE 1433
+		NO:L_CHARA = [[キャラ:고토시로누시]]
+	CASE 1434
+		NO:L_CHARA = [[キャラ:히토코토누시]]
+	CASE 1435
+		NO:L_CHARA = [[キャラ:나가스네히코]]
+	CASE 1436
+		NO:L_CHARA = [[キャラ:아마츠미카보시]]
+	CASE 1437
+		NO:L_CHARA = [[キャラ:아수라왕]]
+	CASE 1438
+		NO:L_CHARA = [[キャラ:미트라보살]]
+	CASE 1439
+		NO:L_CHARA = [[キャラ:디오니소스]]
+	CASE 1501
+		NO:L_CHARA = [[キャラ:츠쿠요미]]
+	CASE 1502
+		NO:L_CHARA = [[キャラ:아케트라브]]
+	CASE 1503
+		NO:L_CHARA = [[キャラ:세탄타]]
+	CASE 1504
+		NO:L_CHARA = [[キャラ:불카누스]]
+	CASE 1505
+		NO:L_CHARA = [[キャラ:인드라]]
+	CASE 1506
+		NO:L_CHARA = [[キャラ:프로메테우스]]
+	CASE 1507
+		NO:L_CHARA = [[キャラ:오딘]]
+	CASE 1508
+		NO:L_CHARA = [[キャラ:아메노후토타마]]
+	CASE 1510
+		NO:L_CHARA = [[キャラ:미륵보살]]
+	CASE 1512
+		NO:L_CHARA = [[キャラ:비슈누]]
+	CASE 1513
+		NO:L_CHARA = [[キャラ:브라흐마]]
+	CASE 1514
+		NO:L_CHARA = [[キャラ:아르다]]
+	CASE 1515
+		NO:L_CHARA = [[キャラ:오메테오틀]]
+	CASE 1516
+		NO:L_CHARA = [[キャラ:프레이]]
+	CASE 1517
+		NO:L_CHARA = [[キャラ:토트]]
+	CASE 1518
+		NO:L_CHARA = [[キャラ:비로샤나]]
+	CASE 1519
+		NO:L_CHARA = [[キャラ:호루스]]
+	CASE 1520
+		NO:L_CHARA = [[キャラ:오시리스]]
+	CASE 1521
+		NO:L_CHARA = [[キャラ:제우스]]
+	CASE 1522
+		NO:L_CHARA = [[キャラ:루그]]
+	CASE 1523
+		NO:L_CHARA = [[キャラ:비비사나]]
+	CASE 1525
+		NO:L_CHARA = [[キャラ:아타파구]]
+	CASE 1526
+		NO:L_CHARA = [[キャラ:미트라]]
+	CASE 1527
+		NO:L_CHARA = [[キャラ:아조트]]
+	CASE 1528
+		NO:L_CHARA = [[キャラ:남두성군]]
+	CASE 1529
+		NO:L_CHARA = [[キャラ:벨로보그]]
+	CASE 1530
+		NO:L_CHARA = [[キャラ:아후라마즈다]]
+	CASE 1531
+		NO:L_CHARA = [[キャラ:바알]]
+	CASE 1532
+		NO:L_CHARA = [[キャラ:마르두크]]
+	CASE 1533
+		NO:L_CHARA = [[キャラ:칼키]]
+	CASE 1534
+		NO:L_CHARA = [[キャラ:크리슈나]]
+	CASE 1535
+		NO:L_CHARA = [[キャラ:인티]]
+	CASE 1536
+		NO:L_CHARA = [[キャラ:다그자]]
+	CASE 1537
+		NO:L_CHARA = [[キャラ:베레트라그나]]
+	CASE 1538
+		NO:L_CHARA = [[キャラ:아문・라]]
+	CASE 1550
+		NO:L_CHARA = [[キャラ:카마]]
+	CASE 1560
+		NO:L_CHARA = [[キャラ:하치만]]
+	CASE 1561
+		NO:L_CHARA = [[キャラ:아푸스]]
+	CASE 1562
+		NO:L_CHARA = [[キャラ:라]]
+	CASE 1563
+		NO:L_CHARA = [[キャラ:네코쇼군]]
+	CASE 1601
+		NO:L_CHARA = [[キャラ:페르세포네]]
+	CASE 1602
+		NO:L_CHARA = [[キャラ:익스타브]]
+	CASE 1603
+		NO:L_CHARA = [[キャラ:슈브＝니그라스]]
+	CASE 1604
+		NO:L_CHARA = [[キャラ:이타콰]]
+	CASE 1605
+		NO:L_CHARA = [[キャラ:크투가]]
+	CASE 1606
+		NO:L_CHARA = [[キャラ:하스터]]
+	CASE 1607
+		NO:L_CHARA = [[キャラ:맘몬]]
+	CASE 1608
+		NO:L_CHARA = [[キャラ:모트]]
+	CASE 1609
+		NO:L_CHARA = [[キャラ:알시엘]]
+	CASE 1610
+		NO:L_CHARA = [[キャラ:사투르누스]]
+	CASE 1611
+		NO:L_CHARA = [[キャラ:카나로아]]
+	CASE 1612
+		NO:L_CHARA = [[キャラ:팔레스]]
+	CASE 1613
+		NO:L_CHARA = [[キャラ:게데]]
+	CASE 1614
+		NO:L_CHARA = [[キャラ:오르쿠스]]
+	CASE 1615
+		NO:L_CHARA = [[キャラ:헬]]
+	CASE 1616
+		NO:L_CHARA = [[キャラ:케르눈노스]]
+	CASE 1617
+		NO:L_CHARA = [[キャラ:파주주]]
+	CASE 1618
+		NO:L_CHARA = [[キャラ:바포멧트]]
+	CASE 1619
+		NO:L_CHARA = [[キャラ:테스카틀리포카]]
+	CASE 1620
+		NO:L_CHARA = [[キャラ:크툴루]]
+	CASE 1621
+		NO:L_CHARA = [[キャラ:다곤]]
+	CASE 1622
+		NO:L_CHARA = [[キャラ:다곤_데빌칠드런]]
+	CASE 1623
+		NO:L_CHARA = [[キャラ:빠챠카마쿠]]
+	CASE 1624
+		NO:L_CHARA = [[キャラ:마다]]
+	CASE 1625
+		NO:L_CHARA = [[キャラ:도철]]
+	CASE 1626
+		NO:L_CHARA = [[キャラ:데미우르고스]]
+	CASE 1627
+		NO:L_CHARA = [[キャラ:체르노보그]]
+	CASE 1628
+		NO:L_CHARA = [[キャラ:미샤구지님]]
+	CASE 1629
+		NO:L_CHARA = [[キャラ:세트]]
+	CASE 1630
+		NO:L_CHARA = [[キャラ:앙쿠]]
+	CASE 1631
+		NO:L_CHARA = [[キャラ:타나토스]]
+	CASE 1632
+		NO:L_CHARA = [[キャラ:에레쉬키갈]]
+	CASE 1633
+		NO:L_CHARA = [[キャラ:니알라토텝]]
+	CASE 1634
+		NO:L_CHARA = [[キャラ:쟈신]]
+	CASE 1635
+		NO:L_CHARA = [[キャラ:테쿠시스테카틀]]
+	CASE 1636
+		NO:L_CHARA = [[キャラ:라흐무]]
+	CASE 1701
+		NO:L_CHARA = [[キャラ:안드라스]]
+	CASE 1702
+		NO:L_CHARA = [[キャラ:가기손]]
+	CASE 1703
+		NO:L_CHARA = [[キャラ:엘리고르]]
+	CASE 1704
+		NO:L_CHARA = [[キャラ:오세]]
+	CASE 1705
+		NO:L_CHARA = [[キャラ:데카라비아]]
+	CASE 1706
+		NO:L_CHARA = [[キャラ:아가레스]]
+	CASE 1707
+		NO:L_CHARA = [[キャラ:무르무르]]
+	CASE 1708
+		NO:L_CHARA = [[キャラ:단탈리온]]
+	CASE 1709
+		NO:L_CHARA = [[キャラ:포르네우스]]
+	CASE 1710
+		NO:L_CHARA = [[キャラ:네비로스]]
+	CASE 1711
+		NO:L_CHARA = [[キャラ:세에레]]
+	CASE 1712
+		NO:L_CHARA = [[キャラ:시트리]]
+	CASE 1713
+		NO:L_CHARA = [[キャラ:레오나르도]]
+	CASE 1714
+		NO:L_CHARA = [[キャラ:플라로우스]]
+	CASE 1715
+		NO:L_CHARA = [[キャラ:보티스]]
+	CASE 1716
+		NO:L_CHARA = [[キャラ:오로바스]]
+	CASE 1717
+		NO:L_CHARA = [[キャラ:바르바토스]]
+	CASE 1718
+		NO:L_CHARA = [[キャラ:데모고르곤]]
+	CASE 1719
+		NO:L_CHARA = [[キャラ:오리아스]]
+	CASE 1720
+		NO:L_CHARA = [[キャラ:멜콤]]
+	CASE 1721
+		NO:L_CHARA = [[キャラ:단탈리안]]
+	CASE 1722
+		NO:L_CHARA = [[キャラ:비프론스]]
+	CASE 1723
+		NO:L_CHARA = [[キャラ:크자판]]
+	CASE 1724
+		NO:L_CHARA = [[キャラ:하겐티]]
+	CASE 1725
+		NO:L_CHARA = [[キャラ:로노웨]]
+	CASE 1726
+		NO:L_CHARA = [[キャラ:니스록]]
+	CASE 1727
+		NO:L_CHARA = [[キャラ:암두시아스]]
+	CASE 1728
+		NO:L_CHARA = [[キャラ:가프]]
+	CASE 1729
+		NO:L_CHARA = [[キャラ:카임]]
+	CASE 1730
+		NO:L_CHARA = [[キャラ:아드라멜렉]]
+	CASE 1731
+		NO:L_CHARA = [[キャラ:가미긴]]
+	CASE 1732
+		NO:L_CHARA = [[キャラ:발로그]]
+	CASE 1750
+		NO:L_CHARA = [[キャラ:말파스]]
+	CASE 1751
+		NO:L_CHARA = [[キャラ:할파스]]
+	CASE 1752
+		NO:L_CHARA = [[キャラ:마르코시아스]]
+	CASE 1753
+		NO:L_CHARA = [[キャラ:제파르]]
+	CASE 1754
+		NO:L_CHARA = [[キャラ:베파르]]
+	CASE 1755
+		NO:L_CHARA = [[キャラ:부네]]
+	CASE 1756
+		NO:L_CHARA = [[キャラ:벨레트]]
+	CASE 1757
+		NO:L_CHARA = [[キャラ:볼락]]
+	CASE 1758
+		NO:L_CHARA = [[キャラ:키마리스]]
+	CASE 1759
+		NO:L_CHARA = [[キャラ:사마엘]]
+	CASE 1760
+		NO:L_CHARA = [[キャラ:레라지에]]
+	CASE 1761
+		NO:L_CHARA = [[キャラ:아임]]
+	CASE 1762
+		NO:L_CHARA = [[キャラ:이포스]]
+	CASE 1799
+		NO:L_CHARA = [[キャラ:루시퍼]]
+	CASE 3001
+		NO:L_CHARA = [[キャラ:두베]]
+	CASE 3002
+		NO:L_CHARA = [[キャラ:메라크]]
+	CASE 3003
+		NO:L_CHARA = [[キャラ:페크다]]
+	CASE 3004
+		NO:L_CHARA = [[キャラ:메그레즈]]
+	CASE 3005
+		NO:L_CHARA = [[キャラ:알리오트]]
+	CASE 3006
+		NO:L_CHARA = [[キャラ:미자르]]
+	CASE 3007
+		NO:L_CHARA = [[キャラ:베네트나쉬]]
+	CASE 3008
+		NO:L_CHARA = [[キャラ:알코르]]
+	CASE 3011
+		NO:L_CHARA = [[キャラ:미자르분체]]
+	CASE 3012
+		NO:L_CHARA = [[キャラ:데네볼라]]
+	CASE 3013
+		NO:L_CHARA = [[キャラ:스피카]]
+	CASE 3101
+		NO:L_CHARA = [[キャラ:펑크스]]
+	CASE 3102
+		NO:L_CHARA = [[キャラ:킹즈헤드]]
+	CASE 3103
+		NO:L_CHARA = [[キャラ:메탈]]
+	CASE 3104
+		NO:L_CHARA = [[キャラ:하이웨이스타]]
+	CASE 3105
+		NO:L_CHARA = [[キャラ:프라이데이]]
+	CASE 3106
+		NO:L_CHARA = [[キャラ:파계승]]
+	CASE 3107
+		NO:L_CHARA = [[キャラ:뮤턴트]]
+	CASE 3108
+		NO:L_CHARA = [[キャラ:어새신]]
+	CASE 3109
+		NO:L_CHARA = [[キャラ:광신자]]
+	CASE 3110
+		NO:L_CHARA = [[キャラ:템플나이트]]
+	CASE 3111
+		NO:L_CHARA = [[キャラ:오니죠로]]
+	CASE 3113
+		NO:L_CHARA = [[キャラ:정키]]
+	CASE 3114
+		NO:L_CHARA = [[キャラ:가면성]]
+	CASE 3115
+		NO:L_CHARA = [[キャラ:특공대]]
+	CASE 3116
+		NO:L_CHARA = [[キャラ:부쳐]]
+	CASE 3117
+		NO:L_CHARA = [[キャラ:바알병]]
+	CASE 3118
+		NO:L_CHARA = [[キャラ:다크서머너]]
+	CASE 3119
+		NO:L_CHARA = [[キャラ:지라이야]]
+	CASE 3120
+		NO:L_CHARA = [[キャラ:괴뢰자]]
+	CASE 3121
+		NO:L_CHARA = [[キャラ:암법사]]
+	CASE 3122
+		NO:L_CHARA = [[キャラ:네오파이트]]
+	CASE 3123
+		NO:L_CHARA = [[キャラ:메이거스]]
+	CASE 3124
+		NO:L_CHARA = [[キャラ:스캐너]]
+	CASE 3125
+		NO:L_CHARA = [[キャラ:터미네이터]]
+	CASE 3126
+		NO:L_CHARA = [[キャラ:어뎁트]]
+	CASE 3127
+		NO:L_CHARA = [[キャラ:떠돌이무녀]]
+	CASE 3128
+		NO:L_CHARA = [[キャラ:템플나이트_여성]]
+	CASE 3130
+		NO:L_CHARA = [[キャラ:루테넌트]]
+	CASE 3131
+		NO:L_CHARA = [[キャラ:서전트]]
+	CASE 3132
+		NO:L_CHARA = [[キャラ:레지스탕스]]
+	CASE 3201
+		NO:L_CHARA = [[キャラ:거둬들이는자]]
+	CASE 3202
+		NO:L_CHARA = [[キャラ:겁쟁이마야]]
+	CASE 3203
+		NO:L_CHARA = [[キャラ:속삭이는티아라]]
+	CASE 3204
+		NO:L_CHARA = [[キャラ:광애의큐피드]]
+	CASE 3205
+		NO:L_CHARA = [[キャラ:F윗치]]
+	CASE 3206
+		NO:L_CHARA = [[キャラ:V이글]]
+	CASE 3207
+		NO:L_CHARA = [[キャラ:T트윈즈]]
+	CASE 3208
+		NO:L_CHARA = [[キャラ:소울댄서]]
+	CASE 3209
+		NO:L_CHARA = [[キャラ:광기의성전]]
+	CASE 3213
+		NO:L_CHARA = [[キャラ:B다이스]]
+	CASE 3214
+		NO:L_CHARA = [[キャラ:우는테이블]]
+	CASE 3215
+		NO:L_CHARA = [[キャラ:F마담]]
+	CASE 3216
+		NO:L_CHARA = [[キャラ:정욕의뱀]]
+	CASE 3217
+		NO:L_CHARA = [[キャラ:생성의조각상]]
+	CASE 3218
+		NO:L_CHARA = [[キャラ:정신의다이스]]
+	CASE 3222
+		NO:L_CHARA = [[キャラ:D트윈즈]]
+	CASE 3223
+		NO:L_CHARA = [[キャラ:해방의마리아]]
+	CASE 3224
+		NO:L_CHARA = [[キャラ:박애의큐피드]]
+	CASE 3225
+		NO:L_CHARA = [[キャラ:탐욕의마야]]
+	CASE 3226
+		NO:L_CHARA = [[キャラ:영구의모래시계]]
+	CASE 3227
+		NO:L_CHARA = [[キャラ:백랑의여무사]]
+	CASE 3228
+		NO:L_CHARA = [[キャラ:인텔리마구스]]
+	CASE 3229
+		NO:L_CHARA = [[キャラ:희생의마야]]
+	CASE 3231
+		NO:L_CHARA = [[キャラ:그랜드마구스]]
+	CASE 3232
+		NO:L_CHARA = [[キャラ:광란의마리아]]
+	CASE 3233
+		NO:L_CHARA = [[キャラ:디바인마더]]
+	CASE 3234
+		NO:L_CHARA = [[キャラ:흰색시지르]]
+	CASE 3235
+		NO:L_CHARA = [[キャラ:음욕의뱀]]
+	CASE 3236
+		NO:L_CHARA = [[キャラ:천신의여무사]]
+	CASE 3237
+		NO:L_CHARA = [[キャラ:F퀸]]
+	CASE 3238
+		NO:L_CHARA = [[キャラ:영원의모래시계]]
+	CASE 3239
+		NO:L_CHARA = [[キャラ:무의거인]]
+	CASE 3240
+		NO:L_CHARA = [[キャラ:드라이테키]]
+	CASE 3241
+		NO:L_CHARA = [[キャラ:천계의페세]]
+	CASE 3242
+		NO:L_CHARA = [[キャラ:비가쏟아지는성]]
+	CASE 3243
+		NO:L_CHARA = [[キャラ:쿠니노사기리]]
+	CASE 3244
+		NO:L_CHARA = [[キャラ:피스티루마자]]
+	CASE 3245
+		NO:L_CHARA = [[キャラ:애욕의뱀]]
+	CASE 3251
+		NO:L_CHARA = [[キャラ:사갑충]]
+	CASE 3252
+		NO:L_CHARA = [[キャラ:H애니멀]]
+	CASE 3253
+		NO:L_CHARA = [[キャラ:강철의기가스]]
+	CASE 3254
+		NO:L_CHARA = [[キャラ:R포트]]
+	CASE 3257
+		NO:L_CHARA = [[キャラ:풍뢰의밸런서]]
+	CASE 3258
+		NO:L_CHARA = [[キャラ:교조의탑]]
+	CASE 3259
+		NO:L_CHARA = [[キャラ:황금충]]
+	CASE 3260
+		NO:L_CHARA = [[キャラ:정의의검]]
+	CASE 3264
+		NO:L_CHARA = [[キャラ:미노타4호]]
+	CASE 3265
+		NO:L_CHARA = [[キャラ:마탄의포좌]]
+	CASE 3269
+		NO:L_CHARA = [[キャラ:투혼의기가스]]
+	CASE 3273
+		NO:L_CHARA = [[キャラ:선망의거인]]
+	CASE 3275
+		NO:L_CHARA = [[キャラ:아메노사기리]]
+	CASE 3276
+		NO:L_CHARA = [[キャラ:전능밸런서]]
+	CASE 3278
+		NO:L_CHARA = [[キャラ:심판의검]]
+	CASE 3279
+		NO:L_CHARA = [[キャラ:진홍의포좌]]
+	CASE 3280
+		NO:L_CHARA = [[キャラ:개선의기사]]
+	CASE 3281
+		NO:L_CHARA = [[キャラ:도화의뇨고]]
+	CASE 3282
+		NO:L_CHARA = [[キャラ:비동풍의여무사]]
+	CASE 3283
+		NO:L_CHARA = [[キャラ:피의헤카톤케일]]
+	CASE 3284
+		NO:L_CHARA = [[キャラ:킹캐슬]]
+	CASE 3285
+		NO:L_CHARA = [[キャラ:세례의포좌]]
+	CASE 3286
+		NO:L_CHARA = [[キャラ:아스테리오스]]
+	CASE 3298
+		NO:L_CHARA = [[キャラ:에레보스]]
+	CASE 3299
+		NO:L_CHARA = [[キャラ:뉵스아바타]]
+	CASE 3301
+		NO:L_CHARA = [[キャラ:가짜ＹＨＶＨ]]
+	CASE 3303
+		NO:L_CHARA = [[キャラ:유리아_원령]]
+	CASE 3304
+		NO:L_CHARA = [[キャラ:스피디]]
+	CASE 3305
+		NO:L_CHARA = [[キャラ:미키야]]
+	CASE 3306
+		NO:L_CHARA = [[キャラ:오르곤고스트]]
+	CASE 3308
+		NO:L_CHARA = [[キャラ:샤다이]]
+	CASE 3309
+		NO:L_CHARA = [[キャラ:엘로힘]]
+	CASE 3310
+		NO:L_CHARA = [[キャラ:체바오트]]
+	CASE 3311
+		NO:L_CHARA = [[キャラ:폴라리스]]
+	CASE 3312
+		NO:L_CHARA = [[キャラ:야소마가츠히]]
+	CASE 3313
+		NO:L_CHARA = [[キャラ:오오마가츠히]]
+	CASE 3314
+		NO:L_CHARA = [[キャラ:하리・하라_보스용]]
+	CASE 3315
+		NO:L_CHARA = [[キャラ:돌연변이데미난디]]
+	CASE 3316
+		NO:L_CHARA = [[キャラ:옵신]]
+	CASE 3317
+		NO:L_CHARA = [[キャラ:그리드]]
+	CASE 3318
+		NO:L_CHARA = [[キャラ:질러시]]
+	CASE 3319
+		NO:L_CHARA = [[キャラ:벨리커시티]]
+	CASE 3320
+		NO:L_CHARA = [[キャラ:레이지니스]]
+	CASE 3321
+		NO:L_CHARA = [[キャラ:앨러건스]]
+	CASE 3322
+		NO:L_CHARA = [[キャラ:프리스티스]]
+	CASE 3323
+		NO:L_CHARA = [[キャラ:엠프레스]]
+	CASE 3324
+		NO:L_CHARA = [[キャラ:엠퍼러]]
+	CASE 3325
+		NO:L_CHARA = [[キャラ:하이에로펀트]]
+	CASE 3326
+		NO:L_CHARA = [[キャラ:러버즈]]
+	CASE 3327
+		NO:L_CHARA = [[キャラ:체리엇]]
+	CASE 3328
+		NO:L_CHARA = [[キャラ:저스티스]]
+	CASE 3329
+		NO:L_CHARA = [[キャラ:허밋]]
+	CASE 3330
+		NO:L_CHARA = [[キャラ:포츈]]
+	CASE 3331
+		NO:L_CHARA = [[キャラ:스트렝스]]
+	CASE 3332
+		NO:L_CHARA = [[キャラ:행드맨]]
+	CASE 3333
+		NO:L_CHARA = [[キャラ:석상]]
+	CASE 3334
+		NO:L_CHARA = [[キャラ:마인드아마네]]
+	CASE 3335
+		NO:L_CHARA = [[キャラ:섀도우리세]]
+	CASE 3336
+		NO:L_CHARA = [[キャラ:칸지의그림자]]
+	CASE 3337
+		NO:L_CHARA = [[キャラ:나이스가이]]
+	CASE 3338
+		NO:L_CHARA = [[キャラ:터프가이]]
+	CASE 3339
+		NO:L_CHARA = [[キャラ:치에의그림자]]
+	CASE 3340
+		NO:L_CHARA = [[キャラ:유키코의그림자]]
+	CASE 3341
+		NO:L_CHARA = [[キャラ:백마탄왕자님]]
+	CASE 3342
+		NO:L_CHARA = [[キャラ:그림자에가려진남자]]
+	CASE 3350
+		NO:L_CHARA = [[キャラ:셰키나]]
+	CASE 3351
+		NO:L_CHARA = [[キャラ:플루토]]
+	CASE 3352
+		NO:L_CHARA = [[キャラ:에인션트데이]]
+	CASE 3384
+		NO:L_CHARA = [[キャラ:악마호무라]]
+	CASE 3385
+		NO:L_CHARA = [[キャラ:LILIA]]
+	CASE 3386
+		NO:L_CHARA = [[キャラ:LUISELOTTE]]
+	CASE 3387
+		NO:L_CHARA = [[キャラ:LOTTE]]
+	CASE 3388
+		NO:L_CHARA = [[キャラ:분홍-씨]]
+	CASE 3389
+		NO:L_CHARA = [[キャラ:빨강-씨]]
+	CASE 3390
+		NO:L_CHARA = [[キャラ:Holger]]
+	CASE 3391
+		NO:L_CHARA = [[キャラ:Klarissa]]
+	CASE 3392
+		NO:L_CHARA = [[キャラ:Homulilly]]
+	CASE 3393
+		NO:L_CHARA = [[キャラ:Ophelia]]
+	CASE 3394
+		NO:L_CHARA = [[キャラ:Candeloro]]
+	CASE 3395
+		NO:L_CHARA = [[キャラ:Gertrud]]
+	CASE 3396
+		NO:L_CHARA = [[キャラ:발푸르기스의밤]]
+	CASE 3397
+		NO:L_CHARA = [[キャラ:Kriemhild]]
+	CASE 3398
+		NO:L_CHARA = [[キャラ:Charlotte]]
+	CASE 3399
+		NO:L_CHARA = [[キャラ:Oktavia]]
+	CASE 3401
+		NO:L_CHARA = [[キャラ:홀리마미]]
+	CASE 3402
+		NO:L_CHARA = [[キャラ:쿠로_익명희망]]
+	CASE 3403
+		NO:L_CHARA = [[キャラ:Matasaburo]]
+	CASE 3501
+		NO:L_CHARA = [[キャラ:당신의딸]]
+	CASE 3502
+		NO:L_CHARA = [[キャラ:노예의딸]]
+	CASE 3503
+		NO:L_CHARA = [[キャラ:단테]]
+	CASE 3504
+		NO:L_CHARA = [[キャラ:버질]]
+	CASE 3505
+		NO:L_CHARA = [[キャラ:트리쉬_DMC]]
+	CASE 3506
+		NO:L_CHARA = [[キャラ:스미레]]
+	CASE 3701
+		NO:L_CHARA = [[キャラ:체페이_꼬리세개]]
+	CASE 3702
+		NO:L_CHARA = [[キャラ:체페이_꼬리네개]]
+	CASE 3703
+		NO:L_CHARA = [[キャラ:체페이_꼬리다섯개]]
+	CASE 3704
+		NO:L_CHARA = [[キャラ:체페이_꼬리여섯개]]
+	CASE 3705
+		NO:L_CHARA = [[キャラ:체페이_꼬리일곱개]]
+	CASE 3706
+		NO:L_CHARA = [[キャラ:체페이_꼬리여덣개]]
+	CASE 3707
+		NO:L_CHARA = [[キャラ:체페이_꼬리아홉개]]
+	CASE 3711
+		NO:L_CHARA = [[キャラ:엔젤_대천사]]
+	CASE 3712
+		NO:L_CHARA = [[キャラ:엔젤_권천사]]
+	CASE 3713
+		NO:L_CHARA = [[キャラ:엔젤_능천사]]
+	CASE 3714
+		NO:L_CHARA = [[キャラ:엔젤_역천사]]
+	CASE 3715
+		NO:L_CHARA = [[キャラ:엔젤_주천사]]
+	CASE 3716
+		NO:L_CHARA = [[キャラ:엔젤_좌천사]]
+	CASE 3717
+		NO:L_CHARA = [[キャラ:엔젤_지천사]]
+	CASE 3718
+		NO:L_CHARA = [[キャラ:엔젤_치천사]]
+	CASE 3719
+		NO:L_CHARA = [[キャラ:쿨2_데스케르베로스]]
+	CASE 3720
+		NO:L_CHARA = [[キャラ:쿨3_헬케르베로스]]
+	CASE 3721
+		NO:L_CHARA = [[キャラ:쿨4_킹케르베로스]]
+	CASE 3722
+		NO:L_CHARA = [[キャラ:벨2_데스그리폰]]
+	CASE 3723
+		NO:L_CHARA = [[キャラ:벨3_헬그리폰]]
+	CASE 3724
+		NO:L_CHARA = [[キャラ:벨4_킹그리폰]]
+;	CASE 3801
+;		NO:L_CHARA = [[キャラ:ハヤグリーヴァ]]
+;	CASE 3802
+;		NO:L_CHARA = [[キャラ:우샤스]]
+;	CASE 3803
+;		NO:L_CHARA = [[キャラ:바루나]]
+;	CASE 3804
+;		NO:L_CHARA = [[キャラ:プリティヴィー]]
+;	CASE 3805
+;		NO:L_CHARA = [[キャラ:アグニ]]
+;	CASE 3806
+;		NO:L_CHARA = [[キャラ:ヴァーユ]]
+;	CASE 3807
+;		NO:L_CHARA = [[キャラ:ディアウス]]
+;	CASE 3808
+;		NO:L_CHARA = [[キャラ:바알]]
+;	CASE 3809
+;		NO:L_CHARA = [[キャラ:스라오샤]]
+;	CASE 3810
+;		NO:L_CHARA = [[キャラ:마라]]
+;	CASE 3811
+;		NO:L_CHARA = [[キャラ:이슈타르]]
+;	CASE 3812
+;		NO:L_CHARA = [[キャラ:발키리]]
+;	CASE 3813
+;		NO:L_CHARA = [[キャラ:마라]]
+;	CASE 3814
+;		NO:L_CHARA = [[キャラ:이참・나]]
+;	CASE 3815
+;		NO:L_CHARA = [[キャラ:最も新しき神]]
+;	CASE 3816
+;		NO:L_CHARA = [[キャラ:사라스바티]]
+;	CASE 3817
+;		NO:L_CHARA = [[キャラ:인드라]]
+;	CASE 3818
+;		NO:L_CHARA = [[キャラ:ヴァルナーニ]]
+;	CASE 3819
+;		NO:L_CHARA = [[キャラ:アモン]]
+;	CASE 3820
+;		NO:L_CHARA = [[キャラ:세이렌]]
+;	CASE 3821
+;		NO:L_CHARA = [[キャラ:하리・하라]]
+;	CASE 3822
+;		NO:L_CHARA = [[キャラ:토르_진노코시로]]
+;	CASE 3823
+;		NO:L_CHARA = [[キャラ:루그＝ラウファーダ]]
+;	CASE 3824
+;		NO:L_CHARA = [[キャラ:요시츠네_나기]]
+;	CASE 3825
+;		NO:L_CHARA = [[キャラ:아몬_if…]]
+;	CASE 3851
+;		NO:L_CHARA = [[キャラ:에키드나]]
+;	CASE 3852
+;		NO:L_CHARA = [[キャラ:クレイモア]]
+;	CASE 3853
+;		NO:L_CHARA = [[キャラ:ショーテル]]
+;	CASE 3861
+;		NO:L_CHARA = [[キャラ:서큐버스]]
+;	CASE 3862
+;		NO:L_CHARA = [[キャラ:速き者オキュペテ]]
+;	CASE 3863
+;		NO:L_CHARA = [[キャラ:簒奪者オセ]]
+;	CASE 3864
+;		NO:L_CHARA = [[キャラ:皇帝アズラエル]]
+;	CASE 3870
+;		NO:L_CHARA = [[キャラ:白虎]]
+;	CASE 3901
+;		NO:L_CHARA = [[キャラ:베르단디]]
+;	CASE 3902
+;		NO:L_CHARA = [[キャラ:가브리엘]]
+;	CASE 3903
+;		NO:L_CHARA = [[キャラ:프레이아]]
+;	CASE 3904
+;		NO:L_CHARA = [[キャラ:비슈누]]
+;	CASE 3905
+;		NO:L_CHARA = [[キャラ:マソ]]
+;	CASE 3906
+;		NO:L_CHARA = [[キャラ:두르가]]
+;	CASE 3907
+;		NO:L_CHARA = [[キャラ:네반]]
+;	CASE 3908
+;		NO:L_CHARA = [[キャラ:ティール]]
+;	CASE 3909
+;		NO:L_CHARA = [[キャラ:サンドリヨン]]
+;	CASE 3910
+;		NO:L_CHARA = [[キャラ:아낫]]
+;	CASE 3911
+;		NO:L_CHARA = [[キャラ:ヨハンナ]]
+;	CASE 3912
+;		NO:L_CHARA = [[キャラ:헤카테]]
+;	CASE 3913
+;		NO:L_CHARA = [[キャラ:カルメン]]
+;	CASE 3914
+;		NO:L_CHARA = [[キャラ:セイテンタイセイ]]
+;	CASE 3915
+;		NO:L_CHARA = [[キャラ:キャプテン・キッド]]
+;	CASE 3916
+;		NO:L_CHARA = [[キャラ:カムスサノヲ]]
+;	CASE 3917
+;		NO:L_CHARA = [[キャラ:ゴエモン]]
+;	CASE 3918
+;		NO:L_CHARA = [[キャラ:アスタルテ]]
+;	CASE 3919
+;		NO:L_CHARA = [[キャラ:ミラディ]]
+;	CASE 3920
+;		NO:L_CHARA = [[キャラ:ネクロノミコン]]
+;	CASE 3921
+;		NO:L_CHARA = [[キャラ:프로메테우스]]
+;	CASE 3922
+;		NO:L_CHARA = [[キャラ:ゾロ]]
+;	CASE 3923
+;		NO:L_CHARA = [[キャラ:メリクリウス]]
+;	CASE 3924
+;		NO:L_CHARA = [[キャラ:아르센]]
+;	CASE 3925
+;		NO:L_CHARA = [[キャラ:マイア・改]]
+;	CASE 3926
+;		NO:L_CHARA = [[キャラ:아르테미스]]
+;	CASE 3927
+;		NO:L_CHARA = [[キャラ:エロス・改]]
+;	CASE 3928
+;		NO:L_CHARA = [[キャラ:ヴィーナス]]
+;	CASE 3929
+;		NO:L_CHARA = [[キャラ:아에슈마]]
+;	CASE 3930
+;		NO:L_CHARA = [[キャラ:아에슈마]]
+;	CASE 3931
+;		NO:L_CHARA = [[キャラ:파리카]]
+;	CASE 3932
+;		NO:L_CHARA = [[キャラ:이슈킥]]
+;	CASE 3933
+;		NO:L_CHARA = [[キャラ:カリスト]]
+;	CASE 3934
+;		NO:L_CHARA = [[キャラ:아스테리아]]
+;	CASE 3935
+;		NO:L_CHARA = [[キャラ:ヴォルカヌス・改]]
+;	CASE 3936
+;		NO:L_CHARA = [[キャラ:アポロ]]
+;	CASE 3937
+;		NO:L_CHARA = [[キャラ:ラダマンティス]]
+;	CASE 3938
+;		NO:L_CHARA = [[キャラ:ハーデス]]
+;	CASE 3939
+;		NO:L_CHARA = [[キャラ:ヘルメス]]
+;	CASE 3940
+;		NO:L_CHARA = [[キャラ:クロノス]]
+;	CASE 3941
+;		NO:L_CHARA = [[キャラ:ヘリオス]]
+;	CASE 3942
+;		NO:L_CHARA = [[キャラ:ヒューペリオン]]
+;	CASE 3943
+;		NO:L_CHARA = [[キャラ:オデュッセウス]]
+;	CASE 3944
+;		NO:L_CHARA = [[キャラ:프로메테우스]]
+;	CASE 3945
+;		NO:L_CHARA = [[キャラ:ヴァナディース]]
+;	CASE 3946
+;		NO:L_CHARA = [[キャラ:니알라토텝_P2]]
+;	CASE 3947
+;		NO:L_CHARA = [[キャラ:エラ]]
+;	CASE 3948
+;		NO:L_CHARA = [[キャラ:セイメンコンゴウ]]
+;	CASE 3949
+;		NO:L_CHARA = [[キャラ:아문・라]]
+;	CASE 3950
+;		NO:L_CHARA = [[キャラ:이오]]
+;	CASE 3951
+;		NO:L_CHARA = [[キャラ:이시스_P3]]
+;	CASE 3952
+;		NO:L_CHARA = [[キャラ:ペンテシレア]]
+;	CASE 3953
+;		NO:L_CHARA = [[キャラ:アルテミシア]]
+;	CASE 3954
+;		NO:L_CHARA = [[キャラ:パラディオン]]
+;	CASE 3955
+;		NO:L_CHARA = [[キャラ:アテナ]]
+;	CASE 3956
+;		NO:L_CHARA = [[キャラ:オルフェウス]]
+;	CASE 3957
+;		NO:L_CHARA = [[キャラ:타나토스]]
+;	CASE 3958
+;		NO:L_CHARA = [[キャラ:メサイア]]
+;	CASE 3959
+;		NO:L_CHARA = [[キャラ:ルキア]]
+;	CASE 3960
+;		NO:L_CHARA = [[キャラ:ユノ]]
+;	CASE 3961
+;		NO:L_CHARA = [[キャラ:ヘルメス]]
+;	CASE 3962
+;		NO:L_CHARA = [[キャラ:トリスメギストス]]
+;	CASE 3963
+;		NO:L_CHARA = [[キャラ:ポリデュークス]]
+;	CASE 3964
+;		NO:L_CHARA = [[キャラ:カエサル]]
+;	CASE 3965
+;		NO:L_CHARA = [[キャラ:네메시스]]
+;	CASE 3966
+;		NO:L_CHARA = [[キャラ:カーラ・ネミ]]
+;	CASE 3967
+;		NO:L_CHARA = [[キャラ:케르베로스]]
+;	CASE 3968
+;		NO:L_CHARA = [[キャラ:カストール]]
+;	CASE 3969
+;		NO:L_CHARA = [[キャラ:メーディア]]
+;	CASE 3970
+;		NO:L_CHARA = [[キャラ:イザナギノオオカミ]]
+;	CASE 3971
+;		NO:L_CHARA = [[キャラ:사타나엘]]
+;	CASE 3972
+;		NO:L_CHARA = [[キャラ:プシュケイ]]
+;	CASE 3973
+;		NO:L_CHARA = [[キャラ:カムイモシリ]]
+;	CASE 3974
+;		NO:L_CHARA = [[キャラ:オルフェウス・改]]
+;	CASE 3975
+;		NO:L_CHARA = [[キャラ:伊邪那岐大神]]
+;	CASE 3976
+;		NO:L_CHARA = [[キャラ:アリアドネ]]
+;	CASE 3977
+;		NO:L_CHARA = [[キャラ:요시츠네]]
+;	CASE 3978
+;		NO:L_CHARA = [[キャラ:マガツイザナギ]]
+;	CASE 3979
+;		NO:L_CHARA = [[キャラ:ハラエドノオオカミ]]
+;	CASE 3980
+;		NO:L_CHARA = [[キャラ:야마토타케루]]
+;	CASE 3981
+;		NO:L_CHARA = [[キャラ:スメオオミカミ]]
+;	CASE 3982
+;		NO:L_CHARA = [[キャラ:タケハヤスサノオ]]
+;	CASE 3983
+;		NO:L_CHARA = [[キャラ:コウゼオン]]
+;	CASE 3984
+;		NO:L_CHARA = [[キャラ:タケジザイテン]]
+;	CASE 3985
+;		NO:L_CHARA = [[キャラ:ロビンフッド]]
+;	CASE 3986
+;		NO:L_CHARA = [[キャラ:イザナギ]]
+;	CASE 3987
+;		NO:L_CHARA = [[キャラ:ヤマトスメラミコト]]
+;	CASE 3988
+;		NO:L_CHARA = [[キャラ:キントキドウジ]]
+;	CASE 3989
+;		NO:L_CHARA = [[キャラ:カムイ]]
+;	CASE 3990
+;		NO:L_CHARA = [[キャラ:ヒミコ]]
+;	CASE 3991
+;		NO:L_CHARA = [[キャラ:カンゼオン]]
+;	CASE 3992
+;		NO:L_CHARA = [[キャラ:トモエ]]
+;	CASE 3993
+;		NO:L_CHARA = [[キャラ:スズカゴンゲン]]
+;	CASE 3994
+;		NO:L_CHARA = [[キャラ:코노하나사쿠야]]
+;	CASE 3995
+;		NO:L_CHARA = [[キャラ:아마테라스]]
+;	CASE 3996
+;		NO:L_CHARA = [[キャラ:지라이야]]
+;	CASE 3997
+;		NO:L_CHARA = [[キャラ:스사노오]]
+;	CASE 3998
+;		NO:L_CHARA = [[キャラ:타케미카즈치]]
+;	CASE 3999
+;		NO:L_CHARA = [[キャラ:ロクテンマオウ]]
+	CASE 4001
+		NO:L_CHARA = [[キャラ:황소가면]]
+	CASE 4002
+		NO:L_CHARA = [[キャラ:사자가면]]
+	CASE 4003
+		NO:L_CHARA = [[キャラ:전갈가면]]
+	CASE 4004
+		NO:L_CHARA = [[キャラ:물병가면]]
+	CASE 4005
+		NO:L_CHARA = [[キャラ:레이디]]
+	CASE 4006
+		NO:L_CHARA = [[キャラ:이슈킥]]
+	CASE 4007
+		NO:L_CHARA = [[キャラ:스오우 타츠야]]
+	CASE 4008
+		NO:L_CHARA = [[キャラ:토러스]]
+	CASE 4009
+		NO:L_CHARA = [[キャラ:린다]]
+	CASE 4010
+		NO:L_CHARA = [[キャラ:킹・레오]]
+	CASE 4011
+		NO:L_CHARA = [[キャラ:부키미쨩]]
+	CASE 4012
+		NO:L_CHARA = [[キャラ:한냐교장]]
+	CASE 4013
+		NO:L_CHARA = [[キャラ:ＪＯＫＥＲ노리코]]
+	CASE 4014
+		NO:L_CHARA = [[キャラ:미시나 에이키치]]
+	CASE 4015
+		NO:L_CHARA = [[キャラ:황소가면Ｒ]]
+	CASE 4016
+		NO:L_CHARA = [[キャラ:사자가면Ｒ]]
+	CASE 4017
+		NO:L_CHARA = [[キャラ:전갈가면Ｒ]]
+	CASE 4018
+		NO:L_CHARA = [[キャラ:물병가면Ｒ]]
+	CASE 4019
+		NO:L_CHARA = [[キャラ:Ｓ졸다트]]
+	CASE 4020
+		NO:L_CHARA = [[キャラ:Ｍ졸다트]]
+	CASE 4021
+		NO:L_CHARA = [[キャラ:Ｓ슛체]]
+	CASE 4022
+		NO:L_CHARA = [[キャラ:Ｖ크래프트]]
+	CASE 4023
+		NO:L_CHARA = [[キャラ:코만단트]]
+	CASE 4024
+		NO:L_CHARA = [[キャラ:롱기누스１３]]
+	CASE 4025
+		NO:L_CHARA = [[キャラ:롱기누스１２]]
+	CASE 4026
+		NO:L_CHARA = [[キャラ:롱기누스１１]]
+	CASE 4027
+		NO:L_CHARA = [[キャラ:롱기누스１０]]
+	CASE 4028
+		NO:L_CHARA = [[キャラ:롱기누스９]]
+	CASE 4029
+		NO:L_CHARA = [[キャラ:롱기누스８]]
+	CASE 4030
+		NO:L_CHARA = [[キャラ:롱기누스７]]
+	CASE 4031
+		NO:L_CHARA = [[キャラ:롱기누스６]]
+	CASE 4032
+		NO:L_CHARA = [[キャラ:롱기누스５]]
+	CASE 4033
+		NO:L_CHARA = [[キャラ:롱기누스４]]
+	CASE 4034
+		NO:L_CHARA = [[キャラ:롱기누스３]]
+	CASE 4035
+		NO:L_CHARA = [[キャラ:롱기누스２]]
+	CASE 4036
+		NO:L_CHARA = [[キャラ:롱기누스１]]
+	CASE 4037
+		NO:L_CHARA = [[キャラ:조커]]
+	CASE 4038
+		NO:L_CHARA = [[キャラ:엔젤조커]]
+	CASE 4039
+		NO:L_CHARA = [[キャラ:메탈・맘]]
+	CASE 4040
+		NO:L_CHARA = [[キャラ:판렌]]
+	CASE 4041
+		NO:L_CHARA = [[キャラ:류우만]]
+	CASE 4042
+		NO:L_CHARA = [[キャラ:쇼고스]]
+	CASE 4043
+		NO:L_CHARA = [[キャラ:스도타츠야]]
+	CASE 4044
+		NO:L_CHARA = [[キャラ:ＪＯＫＥＲ우라라]]
+	CASE 4045
+		NO:L_CHARA = [[キャラ:헬제엔]]
+	CASE 4046
+		NO:L_CHARA = [[キャラ:Ｍ첸타오아]]
+	CASE 4047
+		NO:L_CHARA = [[キャラ:친위대]]
+	CASE 4048
+		NO:L_CHARA = [[キャラ:메탈・드랏헤]]
+	CASE 4049
+		NO:L_CHARA = [[キャラ:포론틱１]]
+	CASE 4050
+		NO:L_CHARA = [[キャラ:포론틱２]]
+	CASE 4051
+		NO:L_CHARA = [[キャラ:포론틱３]]
+	CASE 4052
+		NO:L_CHARA = [[キャラ:포론틱４]]
+	CASE 4053
+		NO:L_CHARA = [[キャラ:포론틱５]]
+	CASE 4054
+		NO:L_CHARA = [[キャラ:퓌러]]
+	CASE 4055
+		NO:L_CHARA = [[キャラ:시마즈관리관]]
+	CASE 4056
+		NO:L_CHARA = [[キャラ:SAT]]
+	CASE 4101
+		NO:L_CHARA = [[キャラ:마타도르]]
+	CASE 4102
+		NO:L_CHARA = [[キャラ:헬즈엔젤]]
+	CASE 4103
+		NO:L_CHARA = [[キャラ:대승정]]
+	CASE 4104
+		NO:L_CHARA = [[キャラ:앨리스]]
+	CASE 4105
+		NO:L_CHARA = [[キャラ:사악프로스트_마인]]
+	CASE 4106
+		NO:L_CHARA = [[キャラ:마더해롯]]
+	CASE 4107
+		NO:L_CHARA = [[キャラ:화이트라이더]]
+	CASE 4108
+		NO:L_CHARA = [[キャラ:레드라이더]]
+	CASE 4109
+		NO:L_CHARA = [[キャラ:블랙라이더]]
+	CASE 4110
+		NO:L_CHARA = [[キャラ:페일라이더]]
+	CASE 4111
+		NO:L_CHARA = [[キャラ:하세베]]
+	CASE 4112
+		NO:L_CHARA = [[キャラ:트럼페터]]
+	CASE 4113
+		NO:L_CHARA = [[キャラ:아도니스]]
+	CASE 4114
+		NO:L_CHARA = [[キャラ:모자합체악마인]]
+	CASE 4125
+		NO:L_CHARA = [[キャラ:고스트Ｑ]]
+	CASE 4197
+		NO:L_CHARA = [[キャラ:치아키]]
+	CASE 4198
+		NO:L_CHARA = [[キャラ:인수라F]]
+	CASE 4199
+		NO:L_CHARA = [[キャラ:인수라M]]
+	CASE 4201
+		NO:L_CHARA = [[キャラ:도우만]]
+	CASE 4202
+		NO:L_CHARA = [[キャラ:마신황하자마]]
+	CASE 4203
+		NO:L_CHARA = [[キャラ:SSS]]
+	CASE 4204
+		NO:L_CHARA = [[キャラ:칸도리]]
+	CASE 4205
+		NO:L_CHARA = [[キャラ:갓칸도리]]
+	CASE 4206
+		NO:L_CHARA = [[キャラ:혼다의망령]]
+	CASE 4208
+		NO:L_CHARA = [[キャラ:고토우]]
+	CASE 4209
+		NO:L_CHARA = [[キャラ:레드・베어]]
+	CASE 4210
+		NO:L_CHARA = [[キャラ:오오츠키]]
+	CASE 4212
+		NO:L_CHARA = [[キャラ:블랙맨]]
+	CASE 4213
+		NO:L_CHARA = [[キャラ:다레스]]
+	CASE 4214
+		NO:L_CHARA = [[キャラ:닌자]]
+	CASE 4216
+		NO:L_CHARA = [[キャラ:우라베]]
+	CASE 4217
+		NO:L_CHARA = [[キャラ:집스국원]]
+	CASE 4218
+		NO:L_CHARA = [[キャラ:적로나우도]]
+	CASE 4219
+		NO:L_CHARA = [[キャラ:로우히어로]]
+	CASE 4220
+		NO:L_CHARA = [[キャラ:카오스히어로]]
+	CASE 4221
+		NO:L_CHARA = [[キャラ:텐도우]]
+	CASE 4222
+		NO:L_CHARA = [[キャラ:아이작]]
+	CASE 4223
+		NO:L_CHARA = [[キャラ:피네건]]
+	CASE 4224
+		NO:L_CHARA = [[キャラ:시드]]
+	CASE 4225
+		NO:L_CHARA = [[キャラ:오우한_보스]]
+	CASE 4301
+		NO:L_CHARA = [[キャラ:쿠・훌린]]
+	CASE 4302
+		NO:L_CHARA = [[キャラ:쟌느]]
+	CASE 4303
+		NO:L_CHARA = [[キャラ:라마]]
+	CASE 4304
+		NO:L_CHARA = [[キャラ:길가메시]]
+	CASE 4305
+		NO:L_CHARA = [[キャラ:킨타로]]
+	CASE 4306
+		NO:L_CHARA = [[キャラ:사카타노킨토키]]
+	CASE 4307
+		NO:L_CHARA = [[キャラ:지크프리트]]
+	CASE 4308
+		NO:L_CHARA = [[キャラ:관성제군]]
+	CASE 4309
+		NO:L_CHARA = [[キャラ:현장]]
+	CASE 4310
+		NO:L_CHARA = [[キャラ:야마토타케루]]
+	CASE 4311
+		NO:L_CHARA = [[キャラ:마사카도]]
+	CASE 4312
+		NO:L_CHARA = [[キャラ:황제]]
+	CASE 4313
+		NO:L_CHARA = [[キャラ:호그니]]
+	CASE 4314
+		NO:L_CHARA = [[キャラ:요시츠네]]
+	CASE 4315
+		NO:L_CHARA = [[キャラ:프로스트파이브]]
+	CASE 4316
+		NO:L_CHARA = [[キャラ:아서]]
+	CASE 4317
+		NO:L_CHARA = [[キャラ:토키사다]]
+	CASE 4318
+		NO:L_CHARA = [[キャラ:디어르머드]]
+	CASE 4319
+		NO:L_CHARA = [[キャラ:브륀힐드_영웅]]
+	CASE 4320
+		NO:L_CHARA = [[キャラ:갤러해드]]
+	CASE 4349
+		NO:L_CHARA = [[キャラ:이삭]]
+	CASE 4350
+		NO:L_CHARA = [[キャラ:제육천마왕]]
+	CASE 4351
+		NO:L_CHARA = [[キャラ:프랑켄_데빌칠드런]]
+	CASE 4389
+		NO:L_CHARA = [[キャラ:나기사]]
+	CASE 4390
+		NO:L_CHARA = [[キャラ:호무라_U-U]]
+	CASE 4391
+		NO:L_CHARA = [[キャラ:원환의이치]]
+	CASE 4392
+		NO:L_CHARA = [[キャラ:키리카]]
+	CASE 4393
+		NO:L_CHARA = [[キャラ:오리코]]
+	CASE 4394
+		NO:L_CHARA = [[キャラ:유마]]
+	CASE 4395
+		NO:L_CHARA = [[キャラ:쿄코]]
+	CASE 4396
+		NO:L_CHARA = [[キャラ:사야카]]
+	CASE 4397
+		NO:L_CHARA = [[キャラ:마미]]
+	CASE 4398
+		NO:L_CHARA = [[キャラ:호무라]]
+	CASE 4399
+		NO:L_CHARA = [[キャラ:마도카]]
+	CASE 4402
+		NO:L_CHARA = [[キャラ:조마]]
+	CASE 4403
+		NO:L_CHARA = [[キャラ:Ｐ・가르강튀아]]
+	CASE 4404
+		NO:L_CHARA = [[キャラ:나나_소울해커즈]]
+	CASE 4405
+		NO:L_CHARA = [[キャラ:제논]]
+	CASE 4501
+		NO:L_CHARA = [[キャラ:베스]]
+	CASE 4502
+		NO:L_CHARA = [[キャラ:유미]]
+	CASE 4503
+		NO:L_CHARA = [[キャラ:타마키]]
+	CASE 4504
+		NO:L_CHARA = [[キャラ:미라이]]
+	CASE 4505
+		NO:L_CHARA = [[キャラ:도리]]
+	CASE 4506
+		NO:L_CHARA = [[キャラ:마리]]
+	CASE 4507
+		NO:L_CHARA = [[キャラ:유즈]]
+	CASE 4508
+		NO:L_CHARA = [[キャラ:레이코]]
+	CASE 4509
+		NO:L_CHARA = [[キャラ:메어리]]
+	CASE 4510
+		NO:L_CHARA = [[キャラ:네밋사_밝음]]
+	CASE 4511
+		NO:L_CHARA = [[キャラ:네밋사_쿨]]
+	CASE 4512
+		NO:L_CHARA = [[キャラ:네밋사_섹시]]
+	CASE 4513
+		NO:L_CHARA = [[キャラ:아마네]]
+	CASE 4514
+		NO:L_CHARA = [[キャラ:에리]]
+	CASE 4515
+		NO:L_CHARA = [[キャラ:아야세]]
+	CASE 4516
+		NO:L_CHARA = [[キャラ:마요네]]
+	CASE 4517
+		NO:L_CHARA = [[キャラ:안나]]
+	CASE 4518
+		NO:L_CHARA = [[キャラ:아카리]]
+	CASE 4519
+		NO:L_CHARA = [[キャラ:마키]]
+	CASE 4520
+		NO:L_CHARA = [[キャラ:이즈나]]
+	CASE 4521
+		NO:L_CHARA = [[キャラ:하루]]
+	CASE 4522
+		NO:L_CHARA = [[キャラ:아이기스]]
+	CASE 4523
+		NO:L_CHARA = [[キャラ:치카링]]
+	CASE 4524
+		NO:L_CHARA = [[キャラ:타츠야]]
+	CASE 4525
+		NO:L_CHARA = [[キャラ:리사]]
+	CASE 4526
+		NO:L_CHARA = [[キャラ:미호]]
+	CASE 4527
+		NO:L_CHARA = [[キャラ:아사미]]
+	CASE 4528
+		NO:L_CHARA = [[キャラ:마야_P2]]
+	CASE 4529
+		NO:L_CHARA = [[キャラ:세츠나]]
+	CASE 4530
+		NO:L_CHARA = [[キャラ:니알라토텝_P2]]
+	CASE 4531
+		NO:L_CHARA = [[キャラ:리세]]
+	CASE 4532
+		NO:L_CHARA = [[キャラ:P3남주인공]]
+	CASE 4533
+		NO:L_CHARA = [[キャラ:P3여주인공]]
+	CASE 4534
+		NO:L_CHARA = [[キャラ:에이키치]]
+	CASE 4535
+		NO:L_CHARA = [[キャラ:유키노씨]]
+	CASE 4536
+		NO:L_CHARA = [[キャラ:미야비]]
+	CASE 4537
+		NO:L_CHARA = [[キャラ:우라라]]
+	CASE 4538
+		NO:L_CHARA = [[キャラ:카츠야]]
+	CASE 4539
+		NO:L_CHARA = [[キャラ:파오푸]]
+	CASE 4540
+		NO:L_CHARA = [[キャラ:토모코]]
+	CASE 4541
+		NO:L_CHARA = [[キャラ:나오토]]
+	CASE 4542
+		NO:L_CHARA = [[キャラ:라이도우]]
+	CASE 4543
+		NO:L_CHARA = [[キャラ:세이메이]]
+	CASE 4544
+		NO:L_CHARA = [[キャラ:노리코]]
+	CASE 4545
+		NO:L_CHARA = [[キャラ:쥰]]
+	CASE 4546
+		NO:L_CHARA = [[キャラ:치즈루]]
+	CASE 4547
+		NO:L_CHARA = [[キャラ:준페이]]
+	CASE 4548
+		NO:L_CHARA = [[キャラ:사나다]]
+	CASE 4549
+		NO:L_CHARA = [[キャラ:미츠루]]
+	CASE 4550
+		NO:L_CHARA = [[キャラ:후카]]
+	CASE 4551
+		NO:L_CHARA = [[キャラ:아마다]]
+	CASE 4552
+		NO:L_CHARA = [[キャラ:코로마루]]
+	CASE 4553
+		NO:L_CHARA = [[キャラ:아라가키]]
+	CASE 4554
+		NO:L_CHARA = [[キャラ:치도리]]
+	CASE 4555
+		NO:L_CHARA = [[キャラ:엘리자베스]]
+	CASE 4556
+		NO:L_CHARA = [[キャラ:메티스]]
+	CASE 4557
+		NO:L_CHARA = [[キャラ:유카리]]
+	CASE 4558
+		NO:L_CHARA = [[キャラ:트리슈]]
+	CASE 4559
+		NO:L_CHARA = [[キャラ:코시로]]
+	CASE 4560
+		NO:L_CHARA = [[キャラ:치에]]
+	CASE 4561
+		NO:L_CHARA = [[キャラ:유키코]]
+	CASE 4562
+		NO:L_CHARA = [[キャラ:아케미]]
+	CASE 4563
+		NO:L_CHARA = [[キャラ:유미코]]
+	CASE 4564
+		NO:L_CHARA = [[キャラ:요스케]]
+	CASE 4565
+		NO:L_CHARA = [[キャラ:칸지]]
+	CASE 4566
+		NO:L_CHARA = [[キャラ:아츠로우]]
+	CASE 4567
+		NO:L_CHARA = [[キャラ:곰]]
+	CASE 4568
+		NO:L_CHARA = [[キャラ:트리슈]]
+	CASE 4569
+		NO:L_CHARA = [[キャラ:해리Ｑ]]
+	CASE 4570
+		NO:L_CHARA = [[キャラ:유리아]]
+	CASE 4571
+		NO:L_CHARA = [[キャラ:지나나]]
+	CASE 4572
+		NO:L_CHARA = [[キャラ:데빌서바주인공]]
+	CASE 4573
+		NO:L_CHARA = [[キャラ:P4주인공]]
+	CASE 4574
+		NO:L_CHARA = [[キャラ:마가렛]]
+	CASE 4575
+		NO:L_CHARA = [[キャラ:치히로]]
+	CASE 4576
+		NO:L_CHARA = [[キャラ:아야네]]
+	CASE 4577
+		NO:L_CHARA = [[キャラ:아이]]
+	CASE 4578
+		NO:L_CHARA = [[キャラ:사요코]]
+	CASE 4579
+		NO:L_CHARA = [[キャラ:에리_P4]]
+	CASE 4580
+		NO:L_CHARA = [[キャラ:마리카]]
+	CASE 4581
+		NO:L_CHARA = [[キャラ:히토미]]
+	CASE 4582
+		NO:L_CHARA = [[キャラ:시이나]]
+	CASE 4583
+		NO:L_CHARA = [[キャラ:나나코]]
+	CASE 4584
+		NO:L_CHARA = [[キャラ:유우코]]
+	CASE 4585
+		NO:L_CHARA = [[キャラ:리오]]
+	CASE 4586
+		NO:L_CHARA = [[キャラ:토리우미]]
+	CASE 4587
+		NO:L_CHARA = [[キャラ:나츠키]]
+	CASE 4588
+		NO:L_CHARA = [[キャラ:마이코]]
+	CASE 4589
+		NO:L_CHARA = [[キャラ:쿄우코]]
+	CASE 4590
+		NO:L_CHARA = [[キャラ:사키]]
+	CASE 4591
+		NO:L_CHARA = [[キャラ:STF대원]]
+	CASE 4592
+		NO:L_CHARA = [[キャラ:마이]]
+	CASE 4593
+		NO:L_CHARA = [[キャラ:아키]]
+	CASE 4594
+		NO:L_CHARA = [[キャラ:식스]]
+	CASE 4595
+		NO:L_CHARA = [[キャラ:아이카]]
+	CASE 4596
+		NO:L_CHARA = [[キャラ:사오리]]
+	CASE 4597
+		NO:L_CHARA = [[キャラ:하자마]]
+	CASE 4598
+		NO:L_CHARA = [[キャラ:데빌콜로주인공]]
+	CASE 4599
+		NO:L_CHARA = [[キャラ:쿠미코]]
+	CASE 4600
+		NO:L_CHARA = [[キャラ:재수생]]
+	CASE 4601
+		NO:L_CHARA = [[キャラ:데빌서바２주인공]]
+	CASE 4602
+		NO:L_CHARA = [[キャラ:다이치]]
+	CASE 4603
+		NO:L_CHARA = [[キャラ:이오]]
+	CASE 4604
+		NO:L_CHARA = [[キャラ:마코토]]
+	CASE 4605
+		NO:L_CHARA = [[キャラ:히나코]]
+	CASE 4606
+		NO:L_CHARA = [[キャラ:아이리]]
+	CASE 4607
+		NO:L_CHARA = [[キャラ:후미]]
+	CASE 4608
+		NO:L_CHARA = [[キャラ:오토메]]
+	CASE 4609
+		NO:L_CHARA = [[キャラ:티코]]
+	CASE 4610
+		NO:L_CHARA = [[キャラ:이치고]]
+	CASE 4611
+		NO:L_CHARA = [[キャラ:찰리]]
+	CASE 4612
+		NO:L_CHARA = [[キャラ:린]]
+	CASE 4613
+		NO:L_CHARA = [[キャラ:애니]]
+	CASE 4614
+		NO:L_CHARA = [[キャラ:유리]]
+	CASE 4615
+		NO:L_CHARA = [[キャラ:서프]]
+	CASE 4616
+		NO:L_CHARA = [[キャラ:알지라]]
+	CASE 4617
+		NO:L_CHARA = [[キャラ:히트]]
+	CASE 4618
+		NO:L_CHARA = [[キャラ:게일]]
+	CASE 4619
+		NO:L_CHARA = [[キャラ:시에로]]
+	CASE 4620
+		NO:L_CHARA = [[キャラ:세라]]
+	CASE 4621
+		NO:L_CHARA = [[キャラ:로알드]]
+	CASE 4622
+		NO:L_CHARA = [[キャラ:제나]]
+	CASE 4623
+		NO:L_CHARA = [[キャラ:기멜]]
+	CASE 4624
+		NO:L_CHARA = [[キャラ:키쿠에]]
+	CASE 4625
+		NO:L_CHARA = [[キャラ:토오루]]
+	CASE 4626
+		NO:L_CHARA = [[キャラ:쇼우지]]
+	CASE 4627
+		NO:L_CHARA = [[キャラ:레이]]
+	CASE 4628
+		NO:L_CHARA = [[キャラ:마야_NT]]
+	CASE 4629
+		NO:L_CHARA = [[キャラ:카야]]
+	CASE 4630
+		NO:L_CHARA = [[キャラ:쇼고]]
+	CASE 4631
+		NO:L_CHARA = [[キャラ:코우린]]
+	CASE 4632
+		NO:L_CHARA = [[キャラ:유우키]]
+	CASE 4633
+		NO:L_CHARA = [[キャラ:리에코]]
+	CASE 4634
+		NO:L_CHARA = [[キャラ:미즈키]]
+	CASE 4635
+		NO:L_CHARA = [[キャラ:캐롤Ｊ]]
+	CASE 4636
+		NO:L_CHARA = [[キャラ:유다]]
+	CASE 4637
+		NO:L_CHARA = [[キャラ:레이_NT]]
+	CASE 4638
+		NO:L_CHARA = [[キャラ:나오미]]
+	CASE 4639
+		NO:L_CHARA = [[キャラ:다누]]
+	CASE 4640
+		NO:L_CHARA = [[キャラ:나나미]]
+	CASE 4641
+		NO:L_CHARA = [[キャラ:카즈토]]
+	CASE 4642
+		NO:L_CHARA = [[キャラ:아야메]]
+	CASE 4643
+		NO:L_CHARA = [[キャラ:헤르만]]
+	CASE 4644
+		NO:L_CHARA = [[キャラ:이쿠네]]
+	CASE 4645
+		NO:L_CHARA = [[キャラ:히지리]]
+	CASE 4646
+		NO:L_CHARA = [[キャラ:크랙]]
+	CASE 4647
+		NO:L_CHARA = [[キャラ:에이다]]
+	CASE 4648
+		NO:L_CHARA = [[キャラ:아셰라]]
+	CASE 4649
+		NO:L_CHARA = [[キャラ:마리아]]
+	CASE 4650
+		NO:L_CHARA = [[キャラ:에레지]]
+	CASE 4651
+		NO:L_CHARA = [[キャラ:제트]]
+	CASE 4652
+		NO:L_CHARA = [[キャラ:나가히사]]
+	CASE 4654
+		NO:L_CHARA = [[キャラ:P1주인공]]
+	CASE 4655
+		NO:L_CHARA = [[キャラ:브라운]]
+	CASE 4656
+		NO:L_CHARA = [[キャラ:챠린코Ｃ]]
+	CASE 4657
+		NO:L_CHARA = [[キャラ:류지]]
+	CASE 4658
+		NO:L_CHARA = [[キャラ:안]]
+	CASE 4659
+		NO:L_CHARA = [[キャラ:마코토_P5]]
+	CASE 4660
+		NO:L_CHARA = [[キャラ:유스케]]
+	CASE 4661
+		NO:L_CHARA = [[キャラ:하루_P5]]
+	CASE 4662
+		NO:L_CHARA = [[キャラ:후타바]]
+	CASE 4663
+		NO:L_CHARA = [[キャラ:모르가나]]
+	CASE 4664
+		NO:L_CHARA = [[キャラ:카스미]]
+	CASE 4665
+		NO:L_CHARA = [[キャラ:P5주인공]]
+	CASE 4666
+		NO:L_CHARA = [[キャラ:타에_P5]]
+	CASE 4667
+		NO:L_CHARA = [[キャラ:히후미]]
+	CASE 4668
+		NO:L_CHARA = [[キャラ:사다요]]
+	CASE 4669
+		NO:L_CHARA = [[キャラ:치하야]]
+	CASE 4670
+		NO:L_CHARA = [[キャラ:야마토]]
+	CASE 4671
+		NO:L_CHARA = [[キャラ:케이타]]
+	CASE 4672
+		NO:L_CHARA = [[キャラ:준고]]
+	CASE 4673
+		NO:L_CHARA = [[キャラ:죠]]
+	CASE 4674
+		NO:L_CHARA = [[キャラ:로나우도]]
+	CASE 4675
+		NO:L_CHARA = [[キャラ:사다크]]
+	CASE 4676
+		NO:L_CHARA = [[キャラ:코하루]]
+	CASE 4677
+		NO:L_CHARA = [[キャラ:미야코]]
+	CASE 4678
+		NO:L_CHARA = [[キャラ:도쿄타워의마녀]]
+	CASE 4679
+		NO:L_CHARA = [[キャラ:쿄우지]]
+	CASE 4680
+		NO:L_CHARA = [[キャラ:링고_소울해커즈2]]
+	CASE 4681
+		NO:L_CHARA = [[キャラ:피그]]
+	CASE 4682
+		NO:L_CHARA = [[キャラ:미도리]]
+	CASE 4683
+		NO:L_CHARA = [[キャラ:아키_TCG]]
+	CASE 4684
+		NO:L_CHARA = [[キャラ:미호_카드서머너]]
+	CASE 4685
+		NO:L_CHARA = [[キャラ:리카_카드서머너]]
+	CASE 4686
+		NO:L_CHARA = [[キャラ:시즈카]]
+	CASE 4687
+		NO:L_CHARA = [[キャラ:사쿠라_카드서머너]]
+	CASE 4688
+		NO:L_CHARA = [[キャラ:레이카]]
+	CASE 4689
+		NO:L_CHARA = [[キャラ:유리코]]
+	CASE 4690
+		NO:L_CHARA = [[キャラ:리리스_진]]
+	CASE 4696
+		NO:L_CHARA = [[キャラ:이자보]]
+	CASE 4697
+		NO:L_CHARA = [[キャラ:요나탄]]
+	CASE 4698
+		NO:L_CHARA = [[キャラ:월터]]
+	CASE 4699
+		NO:L_CHARA = [[キャラ:카가]]
+	CASE 4700
+		NO:L_CHARA = [[キャラ:라비리스]]
+	CASE 4761
+		NO:L_CHARA = [[キャラ:아야토]]
+	CASE 4762
+		NO:L_CHARA = [[キャラ:에미]]
+	CASE 4763
+		NO:L_CHARA = [[キャラ:유우카]]
+	CASE 4764
+		NO:L_CHARA = [[キャラ:루이]]
+	CASE 4765
+		NO:L_CHARA = [[キャラ:라메드]]
+	CASE 4766
+		NO:L_CHARA = [[キャラ:아인]]
+	CASE 4767
+		NO:L_CHARA = [[キャラ:하야사카]]
+	CASE 4768
+		NO:L_CHARA = [[キャラ:나기]]
+	CASE 4769
+		NO:L_CHARA = [[キャラ:고로]]
+	CASE 4770
+		NO:L_CHARA = [[キャラ:아사히]]
+	CASE 4771
+		NO:L_CHARA = [[キャラ:토키]]
+	CASE 4772
+		NO:L_CHARA = [[キャラ:유지]]
+	CASE 4773
+		NO:L_CHARA = [[キャラ:히미카]]
+	CASE 4774
+		NO:L_CHARA = [[キャラ:바기트]]
+	CASE 4775
+		NO:L_CHARA = [[キャラ:나나시]]
+	CASE 4776
+		NO:L_CHARA = [[キャラ:리카_D2]]
+	CASE 4777
+		NO:L_CHARA = [[キャラ:손샨]]
+	CASE 4778
+		NO:L_CHARA = [[キャラ:리린]]
+	CASE 4779
+		NO:L_CHARA = [[キャラ:차이준윤]]
+	CASE 4780
+		NO:L_CHARA = [[キャラ:가쿠토]]
+	CASE 4781
+		NO:L_CHARA = [[キャラ:메가킨]]
+	CASE 4782
+		NO:L_CHARA = [[キャラ:시오냥]]
+	CASE 4783
+		NO:L_CHARA = [[キャラ:교도카즈펠]]
+	CASE 4784
+		NO:L_CHARA = [[キャラ:아키토]]
+	CASE 4785
+		NO:L_CHARA = [[キャラ:요시코]]
+	CASE 4786
+		NO:L_CHARA = [[キャラ:산시로]]
+	CASE 4787
+		NO:L_CHARA = [[キャラ:사사즈카치요_네코마타]]
+	CASE 4788
+		NO:L_CHARA = [[キャラ:사사즈카치요_바스테드]]
+	CASE 4790
+		NO:L_CHARA = [[キャラ:아키라]]
+	CASE 4791
+		NO:L_CHARA = [[キャラ:알렉스]]
+	CASE 4792
+		NO:L_CHARA = [[キャラ:살안의아야메]]
+	CASE 4793
+		NO:L_CHARA = [[キャラ:쿠시나다]]
+	CASE 4794
+		NO:L_CHARA = [[キャラ:오우한]]
+	CASE 4795
+		NO:L_CHARA = [[キャラ:『미라이』]]
+	CASE 4800
+		NO:L_CHARA = [[キャラ:레이무]]
+	CASE 4801
+		NO:L_CHARA = [[キャラ:마리사]]
+	CASE 4802
+		NO:L_CHARA = [[キャラ:루미아]]
+	CASE 4803
+		NO:L_CHARA = [[キャラ:대요정]]
+	CASE 4804
+		NO:L_CHARA = [[キャラ:치르노]]
+	CASE 4805
+		NO:L_CHARA = [[キャラ:메이링]]
+	CASE 4806
+		NO:L_CHARA = [[キャラ:소악마]]
+	CASE 4807
+		NO:L_CHARA = [[キャラ:파츄리]]
+	CASE 4808
+		NO:L_CHARA = [[キャラ:사쿠야]]
+	CASE 4809
+		NO:L_CHARA = [[キャラ:레밀리아]]
+	CASE 4810
+		NO:L_CHARA = [[キャラ:플랑]]
+	CASE 4811
+		NO:L_CHARA = [[キャラ:레티]]
+	CASE 4812
+		NO:L_CHARA = [[キャラ:첸]]
+	CASE 4813
+		NO:L_CHARA = [[キャラ:앨리스・Ｍ]]
+	CASE 4814
+		NO:L_CHARA = [[キャラ:릴리화이트]]
+	CASE 4815
+		NO:L_CHARA = [[キャラ:리리카]]
+	CASE 4816
+		NO:L_CHARA = [[キャラ:메를랑]]
+	CASE 4817
+		NO:L_CHARA = [[キャラ:루나사]]
+	CASE 4818
+		NO:L_CHARA = [[キャラ:요우무]]
+	CASE 4819
+		NO:L_CHARA = [[キャラ:유유코]]
+	CASE 4820
+		NO:L_CHARA = [[キャラ:란]]
+	CASE 4821
+		NO:L_CHARA = [[キャラ:유카리_동방]]
+	CASE 4822
+		NO:L_CHARA = [[キャラ:스이카]]
+	CASE 4823
+		NO:L_CHARA = [[キャラ:리글]]
+	CASE 4824
+		NO:L_CHARA = [[キャラ:미스티아]]
+	CASE 4825
+		NO:L_CHARA = [[キャラ:케이네]]
+	CASE 4826
+		NO:L_CHARA = [[キャラ:테위]]
+	CASE 4827
+		NO:L_CHARA = [[キャラ:레이센]]
+	CASE 4828
+		NO:L_CHARA = [[キャラ:에이린]]
+	CASE 4829
+		NO:L_CHARA = [[キャラ:카구야_동방]]
+	CASE 4830
+		NO:L_CHARA = [[キャラ:모코우]]
+	CASE 4831
+		NO:L_CHARA = [[キャラ:아야]]
+	CASE 4832
+		NO:L_CHARA = [[キャラ:메디슨]]
+	CASE 4833
+		NO:L_CHARA = [[キャラ:유카]]
+	CASE 4834
+		NO:L_CHARA = [[キャラ:코마치]]
+	CASE 4835
+		NO:L_CHARA = [[キャラ:에이키]]
+	CASE 4836
+		NO:L_CHARA = [[キャラ:시즈하]]
+	CASE 4837
+		NO:L_CHARA = [[キャラ:미노리코]]
+	CASE 4838
+		NO:L_CHARA = [[キャラ:히나]]
+	CASE 4839
+		NO:L_CHARA = [[キャラ:니토리]]
+	CASE 4840
+		NO:L_CHARA = [[キャラ:모미지_동방]]
+	CASE 4841
+		NO:L_CHARA = [[キャラ:사나에]]
+	CASE 4842
+		NO:L_CHARA = [[キャラ:카나코]]
+	CASE 4843
+		NO:L_CHARA = [[キャラ:스와코]]
+	CASE 4844
+		NO:L_CHARA = [[キャラ:서니]]
+	CASE 4845
+		NO:L_CHARA = [[キャラ:루나]]
+	CASE 4846
+		NO:L_CHARA = [[キャラ:스타]]
+	CASE 4850
+		NO:L_CHARA = [[キャラ:이쿠]]
+	CASE 4851
+		NO:L_CHARA = [[キャラ:텐시]]
+	CASE 4852
+		NO:L_CHARA = [[キャラ:토요히메]]
+	CASE 4853
+		NO:L_CHARA = [[キャラ:요리히메]]
+	CASE 4855
+		NO:L_CHARA = [[キャラ:릴리블랙]]
+	CASE 4856
+		NO:L_CHARA = [[キャラ:키스메]]
+	CASE 4857
+		NO:L_CHARA = [[キャラ:야마메]]
+	CASE 4858
+		NO:L_CHARA = [[キャラ:파르시]]
+	CASE 4859
+		NO:L_CHARA = [[キャラ:유우기]]
+	CASE 4860
+		NO:L_CHARA = [[キャラ:사토리]]
+	CASE 4861
+		NO:L_CHARA = [[キャラ:오린]]
+	CASE 4862
+		NO:L_CHARA = [[キャラ:우츠호]]
+	CASE 4863
+		NO:L_CHARA = [[キャラ:코이시]]
+	CASE 4864
+		NO:L_CHARA = [[キャラ:토키코]]
+	CASE 4867
+		NO:L_CHARA = [[キャラ:나즈린]]
+	CASE 4868
+		NO:L_CHARA = [[キャラ:코가사]]
+	CASE 4869
+		NO:L_CHARA = [[キャラ:이치린]]
+	CASE 4871
+		NO:L_CHARA = [[キャラ:무라사]]
+	CASE 4872
+		NO:L_CHARA = [[キャラ:쇼]]
+	CASE 4873
+		NO:L_CHARA = [[キャラ:바쿠렌]]
+	CASE 4874
+		NO:L_CHARA = [[キャラ:누에_동방]]
+	CASE 4875
+		NO:L_CHARA = [[キャラ:하타테]]
+	CASE 4876
+		NO:L_CHARA = [[キャラ:카센]]
+	CASE 4877
+		NO:L_CHARA = [[キャラ:쿄코_동방]]
+	CASE 4878
+		NO:L_CHARA = [[キャラ:요시카]]
+	CASE 4879
+		NO:L_CHARA = [[キャラ:청아]]
+	CASE 4880
+		NO:L_CHARA = [[キャラ:토지코]]
+	CASE 4881
+		NO:L_CHARA = [[キャラ:후토]]
+	CASE 4882
+		NO:L_CHARA = [[キャラ:미코]]
+	CASE 4883
+		NO:L_CHARA = [[キャラ:마미조우]]
+	CASE 4884
+		NO:L_CHARA = [[キャラ:케이네_백택]]
+	CASE 4887
+		NO:L_CHARA = [[キャラ:미토리]]
+	CASE 4893
+		NO:L_CHARA = [[キャラ:Ａ・치르노]]
+	CASE 4901
+		NO:L_CHARA = [[キャラ:P・S구성원]]
+	CASE 4902
+		NO:L_CHARA = [[キャラ:흔한고교생]]
+	CASE 4903
+		NO:L_CHARA = [[キャラ:무명의초등학생]]
+	CASE 4904
+		NO:L_CHARA = [[キャラ:메시아교도]]
+	CASE 4905
+		NO:L_CHARA = [[キャラ:가이아교도]]
+	CASE 4906
+		NO:L_CHARA = [[キャラ:무명의중학생]]
+	CASE 4907
+		NO:L_CHARA = [[キャラ:무명의고등학생]]
+	CASE 4908
+		NO:L_CHARA = [[キャラ:무명의대학생]]
+	CASE 4909
+		NO:L_CHARA = [[キャラ:무명의프리터]]
+	CASE 4910
+		NO:L_CHARA = [[キャラ:무명의사회인]]
+	CASE 4911
+		NO:L_CHARA = [[キャラ:악마인]]
+	CASE 4912
+		NO:L_CHARA = [[キャラ:마계인]]
+	CASE 4968
+		NO:L_CHARA = [[キャラ:아미]]
+	CASE 4969
+		NO:L_CHARA = [[キャラ:레나]]
+	CASE 4970
+		NO:L_CHARA = [[キャラ:데모니카오퍼레이터]]
+	CASE 4971
+		NO:L_CHARA = [[キャラ:마초]]
+	CASE 4972
+		NO:L_CHARA = [[キャラ:마일드]]
+	CASE 4973
+		NO:L_CHARA = [[キャラ:이능쨩]]
+	CASE 4974
+		NO:L_CHARA = [[キャラ:카즈사]]
+	CASE 4975
+		NO:L_CHARA = [[キャラ:시즈나]]
+	CASE 4976
+		NO:L_CHARA = [[キャラ:앨리스_신약LB]]
+	CASE 4977
+		NO:L_CHARA = [[キャラ:리젤]]
+	CASE 4978
+		NO:L_CHARA = [[キャラ:레온]]
+	CASE 4979
+		NO:L_CHARA = [[キャラ:루나]]
+	CASE 4981
+		NO:L_CHARA = [[キャラ:사쿠라]]
+	CASE 4982
+		NO:L_CHARA = [[キャラ:카렌]]
+	CASE 4983
+		NO:L_CHARA = [[キャラ:바제트]]
+	CASE 4984
+		NO:L_CHARA = [[キャラ:이리야]]
+	CASE 4985
+		NO:L_CHARA = [[キャラ:라니]]
+	CASE 4986
+		NO:L_CHARA = [[キャラ:신지]]
+	CASE 4987
+		NO:L_CHARA = [[キャラ:린Fate]]
+	CASE 4988
+		NO:L_CHARA = [[キャラ:호무라_NPM]]
+	CASE 4989
+		NO:L_CHARA = [[キャラ:마도카_NPM]]
+	CASE 4990
+		NO:L_CHARA = [[キャラ:T씨]]
+	CASE 4997
+		NO:L_CHARA = [[キャラ:다레스]]
+	CASE 4998
+		NO:L_CHARA = [[キャラ:다크서머너_구당신]]
+	CASE 4999
+		NO:L_CHARA = [[キャラ:당신]]
+	CASE 5001
+		NO:L_CHARA = [[キャラ:우마]]
+	CASE 5002
+		NO:L_CHARA = [[キャラ:모히니]]
+	CASE 5003
+		NO:L_CHARA = [[キャラ:브리타니아]]
+	CASE 5004
+		NO:L_CHARA = [[キャラ:다유]]
+	CASE 5005
+		NO:L_CHARA = [[キャラ:프레신]]
+	CASE 5006
+		NO:L_CHARA = [[キャラ:미즈하노메]]
+	CASE 5007
+		NO:L_CHARA = [[キャラ:신모라]]
+	CASE 5008
+		NO:L_CHARA = [[キャラ:소피아]]
+	CASE 5009
+		NO:L_CHARA = [[キャラ:에리스]]
+	CASE 5010
+		NO:L_CHARA = [[キャラ:칼리카]]
+	CASE 5011
+		NO:L_CHARA = [[キャラ:시귄]]
+	CASE 5012
+		NO:L_CHARA = [[キャラ:샤나]]
+	CASE 5013
+		NO:L_CHARA = [[キャラ:카샤]]
+	CASE 5014
+		NO:L_CHARA = [[キャラ:폴리아후]]
+	CASE 5015
+		NO:L_CHARA = [[キャラ:라이카]]
+	CASE 5016
+		NO:L_CHARA = [[キャラ:나아마]]
+	CASE 5017
+		NO:L_CHARA = [[キャラ:흐노스]]
+	CASE 5018
+		NO:L_CHARA = [[キャラ:지브릴]]
+	CASE 5019
+		NO:L_CHARA = [[キャラ:마하마유리]]
+	CASE 5020
+		NO:L_CHARA = [[キャラ:모미지]]
+	CASE 5021
+		NO:L_CHARA = [[キャラ:바실리스크]]
+	CASE 5050
+		NO:L_CHARA = [[キャラ:시온]]
+	CASE 5051
+		NO:L_CHARA = [[キャラ:사츠키]]
+	CASE 5052
+		NO:L_CHARA = [[キャラ:아키하]]
+	CASE 5053
+		NO:L_CHARA = [[キャラ:알퀘이드]]
+	CASE 5054
+		NO:L_CHARA = [[キャラ:시엘]]
+	CASE 5055
+		NO:L_CHARA = [[キャラ:시키]]
+	CASE 5056
+		NO:L_CHARA = [[キャラ:히스이]]
+	CASE 5057
+		NO:L_CHARA = [[キャラ:코하쿠]]
+	CASE 5058
+		NO:L_CHARA = [[キャラ:렌]]
+	CASE 5059
+		NO:L_CHARA = [[キャラ:하얀렌]]
+	CASE 5060
+		NO:L_CHARA = [[キャラ:네로・카오스]]
+	CASE 5061
+		NO:L_CHARA = [[キャラ:리즈]]
+	CASE 5062
+		NO:L_CHARA = [[キャラ:왈라키아의밤]]
+	CASE 5063
+		NO:L_CHARA = [[キャラ:아오코]]
+	CASE 5064
+		NO:L_CHARA = [[キャラ:나나야]]
+	CASE 5065
+		NO:L_CHARA = [[キャラ:오시리스]]
+	CASE 5066
+		NO:L_CHARA = [[キャラ:코우마]]
+	CASE 5070
+		NO:L_CHARA = [[キャラ:파랑세이버]]
+	CASE 5071
+		NO:L_CHARA = [[キャラ:빨강세이버]]
+	CASE 5072
+		NO:L_CHARA = [[キャラ:빨강랜서]]
+	CASE 5073
+		NO:L_CHARA = [[キャラ:캐스여우]]
+	CASE 5074
+		NO:L_CHARA = [[キャラ:쟌느・얼터]]
+	CASE 5075
+		NO:L_CHARA = [[キャラ:멜트릴리스]]
+	CASE 5076
+		NO:L_CHARA = [[キャラ:캐스터]]
+	CASE 5077
+		NO:L_CHARA = [[キャラ:어새신_하산]]
+	CASE 5078
+		NO:L_CHARA = [[キャラ:버서커]]
+	CASE 5079
+		NO:L_CHARA = [[キャラ:메두사_Fate]]
+	CASE 5080
+		NO:L_CHARA = [[キャラ:아처]]
+	CASE 5081
+		NO:L_CHARA = [[キャラ:패션립]]
+	CASE 5082
+		NO:L_CHARA = [[キャラ:쿠훌린_창]]
+	CASE 5083
+		NO:L_CHARA = [[キャラ:수수께끼의히로인X]]
+	CASE 5084
+		NO:L_CHARA = [[キャラ:수수께끼의히로인X얼터]]
+	CASE 5085
+		NO:L_CHARA = [[キャラ:어새신_만화]]
+	CASE 5086
+		NO:L_CHARA = [[キャラ:앙리마유]]
+	CASE 5087
+		NO:L_CHARA = [[キャラ:만드리카르도]]
+	CASE 5088
+		NO:L_CHARA = [[キャラ:오키타소지]]
+	CASE 5089
+		NO:L_CHARA = [[キャラ:바반시]]
+	CASE 5090
+		NO:L_CHARA = [[キャラ:엘레나]]
+	CASE 5092
+		NO:L_CHARA = [[キャラ:카밀라]]
+	CASE 5093
+		NO:L_CHARA = [[キャラ:메데이아릴리]]
+	CASE 5094
+		NO:L_CHARA = [[キャラ:버니언]]
+	CASE 5095
+		NO:L_CHARA = [[キャラ:아스톨포]]
+	CASE 5098
+		NO:L_CHARA = [[キャラ:ＦＫ・랜슬롯]]
+	CASE 5099
+		NO:L_CHARA = [[キャラ:호타루]]
+	CASE 5100
+		NO:L_CHARA = [[キャラ:마야]]
+	CASE 5101
+		NO:L_CHARA = [[キャラ:유이치]]
+	CASE 5102
+		NO:L_CHARA = [[キャラ:코니시]]
+	CASE 5103
+		NO:L_CHARA = [[キャラ:키츠네]]
+	CASE 5104
+		NO:L_CHARA = [[キャラ:타에]]
+	CASE 5105
+		NO:L_CHARA = [[キャラ:시오리_P2]]
+	CASE 5106
+		NO:L_CHARA = [[キャラ:노조미]]
+	CASE 5107
+		NO:L_CHARA = [[キャラ:하나코_P4]]
+	CASE 5108
+		NO:L_CHARA = [[キャラ:하루나]]
+	CASE 5200
+		NO:L_CHARA = [[キャラ:마나카]]
+	CASE 5201
+		NO:L_CHARA = [[キャラ:린코]]
+	CASE 5202
+		NO:L_CHARA = [[キャラ:네네]]
+	CASE 5203
+		NO:L_CHARA = [[キャラ:아키라_무대소녀]]
+	CASE 5204
+		NO:L_CHARA = [[キャラ:미즈키_마작]]
+	CASE 5205
+		NO:L_CHARA = [[キャラ:아야_SRM]]
+	CASE 5206
+		NO:L_CHARA = [[キャラ:레비]]
+	CASE 5207
+		NO:L_CHARA = [[キャラ:슈텔]]
+	CASE 5208
+		NO:L_CHARA = [[キャラ:디아체]]
+	CASE 5209
+		NO:L_CHARA = [[キャラ:유리_나노하]]
+	CASE 5210
+		NO:L_CHARA = [[キャラ:리스]]
+	CASE 5211
+		NO:L_CHARA = [[キャラ:안젤라]]
+	CASE 5212
+		NO:L_CHARA = [[キャラ:샤를로트]]
+	CASE 5213
+		NO:L_CHARA = [[キャラ:티파]]
+	CASE 5214
+		NO:L_CHARA = [[キャラ:우이]]
+	CASE 5301
+		NO:L_CHARA = [[キャラ:사쿠라코]]
+	CASE 5302
+		NO:L_CHARA = [[キャラ:히마와리]]
+	CASE 5303
+		NO:L_CHARA = [[キャラ:야마토_데몬패러사이트]]
+	CASE 5311
+		NO:L_CHARA = [[キャラ:시아노]]
+	CASE 5312
+		NO:L_CHARA = [[キャラ:루이제트]]
+	CASE 5313
+		NO:L_CHARA = [[キャラ:카렌_무대소녀]]
+	CASE 5314
+		NO:L_CHARA = [[キャラ:히카리]]
+	CASE 5315
+		NO:L_CHARA = [[キャラ:마히루]]
+	CASE 5316
+		NO:L_CHARA = [[キャラ:쥰나]]
+	CASE 5317
+		NO:L_CHARA = [[キャラ:나나]]
+	CASE 5318
+		NO:L_CHARA = [[キャラ:후타바_무대소녀]]
+	CASE 5319
+		NO:L_CHARA = [[キャラ:카오루코]]
+	CASE 5320
+		NO:L_CHARA = [[キャラ:마야_무대소녀]]
+	CASE 5321
+		NO:L_CHARA = [[キャラ:클로딘]]
+	CASE 5322
+		NO:L_CHARA = [[キャラ:카타나코]]
+	CASE 5323
+		NO:L_CHARA = [[キャラ:아오이]]
+	CASE 5324
+		NO:L_CHARA = [[キャラ:미이나]]
+	CASE 5325
+		NO:L_CHARA = [[キャラ:첼시]]
+	CASE 5326
+		NO:L_CHARA = [[キャラ:나코루루]]
+	CASE 5327
+		NO:L_CHARA = [[キャラ:요시토라]]
+	CASE 5328
+		NO:L_CHARA = [[キャラ:에리나_라비리비]]
+	CASE 5329
+		NO:L_CHARA = [[キャラ:노아_라비리비]]
+	CASE 5330
+		NO:L_CHARA = [[キャラ:미나카미]]
+	CASE 5331
+		NO:L_CHARA = [[キャラ:야치호]]
+	CASE 5333
+		NO:L_CHARA = [[キャラ:리본_라비리비]]
+	CASE 5334
+		NO:L_CHARA = [[キャラ:이리스_라비리비]]
+	CASE 5335
+		NO:L_CHARA = [[キャラ:미루_라비리비]]
+	CASE 5336
+		NO:L_CHARA = [[キャラ:코코아_라비리비]]
+	CASE 5337
+		NO:L_CHARA = [[キャラ:초텐짱]]
+	CASE 5338
+		NO:L_CHARA = [[キャラ:윳쿠리초텐짱]]
+	CASE 5339
+		NO:L_CHARA = [[キャラ:기묘한포칼로스]]
+	CASE 5340
+		NO:L_CHARA = [[キャラ:카구야_무한의프론티어]]
+	CASE 5341
+		NO:L_CHARA = [[キャラ:팻]]
+	CASE 5349
+		NO:L_CHARA = [[キャラ:소노코]]
+	CASE 5350
+		NO:L_CHARA = [[キャラ:유우나]]
+	CASE 5351
+		NO:L_CHARA = [[キャラ:토고]]
+	CASE 5352
+		NO:L_CHARA = [[キャラ:후우]]
+	CASE 5353
+		NO:L_CHARA = [[キャラ:이츠키]]
+	CASE 5354
+		NO:L_CHARA = [[キャラ:카린]]
+	CASE 5355
+		NO:L_CHARA = [[キャラ:아큐라_X]]
+	CASE 5356
+		NO:L_CHARA = [[キャラ:블레이드_X]]
+	CASE 5357
+		NO:L_CHARA = [[キャラ:GV]]
+	CASE 5358
+		NO:L_CHARA = [[キャラ:리무루루]]
+	CASE 5359
+		NO:L_CHARA = [[キャラ:카즈키]]
+	CASE 5360
+		NO:L_CHARA = [[キャラ:프린스]]
+	CASE 5361
+		NO:L_CHARA = [[キャラ:워리어]]
+	CASE 5362
+		NO:L_CHARA = [[キャラ:팔랑크스]]
+	CASE 5363
+		NO:L_CHARA = [[キャラ:파이레츠]]
+	CASE 5364
+		NO:L_CHARA = [[キャラ:시노비]]
+	CASE 5365
+		NO:L_CHARA = [[キャラ:몽크]]
+	CASE 5366
+		NO:L_CHARA = [[キャラ:조디악]]
+	CASE 5367
+		NO:L_CHARA = [[キャラ:비스트킹]]
+	CASE 5368
+		NO:L_CHARA = [[キャラ:발리스타]]
+	CASE 5369
+		NO:L_CHARA = [[キャラ:파머]]
+	CASE 5370
+		NO:L_CHARA = [[キャラ:제네]]
+	CASE 5371
+		NO:L_CHARA = [[キャラ:마르푸샤]]
+	CASE 5372
+		NO:L_CHARA = [[キャラ:라이카_Marufusha]]
+	CASE 5373
+		NO:L_CHARA = [[キャラ:벨카_Marufusha]]
+	CASE 5374
+		NO:L_CHARA = [[キャラ:스트렐카_Marufusha]]
+	CASE 5375
+		NO:L_CHARA = [[キャラ:펠리세트]]
+	CASE 5376
+		NO:L_CHARA = [[キャラ:알리비나]]
+	CASE 5377
+		NO:L_CHARA = [[キャラ:비온]]
+	CASE 5378
+		NO:L_CHARA = [[キャラ:에노스]]
+	CASE 5379
+		NO:L_CHARA = [[キャラ:스네진카]]
+	CASE 5380
+		NO:L_CHARA = [[キャラ:국경문]]
+	CASE 5381
+		NO:L_CHARA = [[キャラ:기묘한바르바토스]]
+	CASE 5382
+		NO:L_CHARA = [[キャラ:기묘한모라쿠스]]
+	CASE 5383
+		NO:L_CHARA = [[キャラ:기묘한바알]]
+	CASE 5384
+		NO:L_CHARA = [[キャラ:질_LT]]
+	CASE 5385
+		NO:L_CHARA = [[キャラ:루나리에]]
+	CASE 5386
+		NO:L_CHARA = [[キャラ:클레스]]
+	CASE 5387
+		NO:L_CHARA = [[キャラ:아이리_LT]]
+	CASE 5388
+		NO:L_CHARA = [[キャラ:시오리]]
+	CASE 5389
+		NO:L_CHARA = [[キャラ:메이팡]]
+	CASE 5390
+		NO:L_CHARA = [[キャラ:아키라_무대소녀]]
+	CASE 5391
+		NO:L_CHARA = [[キャラ:미치루]]
+	CASE 5392
+		NO:L_CHARA = [[キャラ:야치요]]
+	CASE 5393
+		NO:L_CHARA = [[キャラ:코하쿠_X]]
+	CASE 5394
+		NO:L_CHARA = [[キャラ:널_X2]]
+	CASE 5395
+		NO:L_CHARA = [[キャラ:비묘한부에르]]
+	CASE 5396
+		NO:L_CHARA = [[キャラ:마를로네]]
+	CASE 5397
+		NO:L_CHARA = [[キャラ:제레]]
+	CASE 5398
+		NO:L_CHARA = [[キャラ:은랑]]
+	CASE 5399
+		NO:L_CHARA = [[キャラ:카프카]]
+	CASE 5411
+		NO:L_CHARA = [[キャラ:히드라]]
+	CASE 5421
+		NO:L_CHARA = [[キャラ:듀]]
+	CASE 5422
+		NO:L_CHARA = [[キャラ:에르제베트]]
+	CASE 5423
+		NO:L_CHARA = [[キャラ:쿠비키리바사라]]
+	CASE 5424
+		NO:L_CHARA = [[キャラ:워크라이]]
+	CASE 5425
+		NO:L_CHARA = [[キャラ:지고와트]]
+	CASE 5426
+		NO:L_CHARA = [[キャラ:로아＝아＝루아]]
+	CASE 5427
+		NO:L_CHARA = [[キャラ:트리니트로]]
+	CASE 5428
+		NO:L_CHARA = [[キャラ:슬리피할로우]]
+	CASE 5429
+		NO:L_CHARA = [[キャラ:더・스카버・꼬리]]
+	CASE 5430
+		NO:L_CHARA = [[キャラ:더・스카버・몸통]]
+	CASE 5431
+		NO:L_CHARA = [[キャラ:더・스카버・머리]]
+	CASE 5432
+		NO:L_CHARA = [[キャラ:제로＝블루]]
+	CASE 5433
+		NO:L_CHARA = [[キャラ:미즈치_SD]]
+	CASE 5434
+		NO:L_CHARA = [[キャラ:니알라]]
+	CASE 5435
+		NO:L_CHARA = [[キャラ:티아마트_나나도라]]
+	CASE 5436
+		NO:L_CHARA = [[キャラ:오케아노스]]
+	CASE 5437
+		NO:L_CHARA = [[キャラ:재버워크]]
+	CASE 5438
+		NO:L_CHARA = [[キャラ:인섬니아]]
+	CASE 5439
+		NO:L_CHARA = [[キャラ:포말하우트]]
+	CASE 5440
+		NO:L_CHARA = [[キャラ:모데우스]]
+	CASE 5441
+		NO:L_CHARA = [[キャラ:별빛의아마테라스]]
+	CASE 5442
+		NO:L_CHARA = [[キャラ:에메랄드･프린세스]]
+	CASE 5443
+		NO:L_CHARA = [[キャラ:영웅로빈후드]]
+	CASE 5444
+		NO:L_CHARA = [[キャラ:장화의페로]]
+	CASE 5445
+		NO:L_CHARA = [[キャラ:마리아・안토니아]]
+	CASE 5447
+		NO:L_CHARA = [[キャラ:『무대소녀』나나]]
+	CASE 5448
+		NO:L_CHARA = [[キャラ:대신제우스]]
+	CASE 5449
+		NO:L_CHARA = [[キャラ:영웅헤라클레스]]
+	CASE 5450
+		NO:L_CHARA = [[キャラ:킹・아서]]
+	CASE 5451
+		NO:L_CHARA = [[キャラ:잠자는공주]]
+	CASE 5461
+		NO:L_CHARA = [[キャラ:데머즐]]
+	CASE 5462
+		NO:L_CHARA = [[キャラ:엘리제1_GV]]
+	CASE 5463
+		NO:L_CHARA = [[キャラ:엘리제2_GV]]
+	CASE 5464
+		NO:L_CHARA = [[キャラ:엘리제3_GV]]
+	CASE 5465
+		NO:L_CHARA = [[キャラ:입실론_X2]]
+	CASE 5466
+		NO:L_CHARA = [[キャラ:데이사이트_X2]]
+	CASE 5467
+		NO:L_CHARA = [[キャラ:베스파_X2]]
+	CASE 5468
+		NO:L_CHARA = [[キャラ:오토크롬_X2]]
+	CASE 5469
+		NO:L_CHARA = [[キャラ:브리게이드_X2]]
+	CASE 5470
+		NO:L_CHARA = [[キャラ:헤일_X2]]
+	CASE 5471
+		NO:L_CHARA = [[キャラ:사이버스터]]
+	CASE 5472
+		NO:L_CHARA = [[キャラ:슬러그_X2]]
+	CASE 5473
+		NO:L_CHARA = [[キャラ:창조주_X2]]
+	CASE 5474
+		NO:L_CHARA = [[キャラ:마더_X2]]
+	CASE 5481
+		NO:L_CHARA = [[キャラ:뇌광전차]]
+	CASE 5482
+		NO:L_CHARA = [[キャラ:E졸다트]]
+	CASE 5483
+		NO:L_CHARA = [[キャラ:적의그림자]]
+	CASE 5485
+		NO:L_CHARA = [[キャラ:가라다쨩]]
+	CASE 5486
+		NO:L_CHARA = [[キャラ:더블라스쨩]]
+	CASE 5490
+		NO:L_CHARA = [[キャラ:이누가미_마인학원]]
+	CASE 5491
+		NO:L_CHARA = [[キャラ:호존전차병형]]
+	CASE 5492
+		NO:L_CHARA = [[キャラ:호존저격사양]]
+	CASE 5493
+		NO:L_CHARA = [[キャラ:구원전차병형]]
+	CASE 5494
+		NO:L_CHARA = [[キャラ:구원공병형]]
+	CASE 5495
+		NO:L_CHARA = [[キャラ:가련통상형]]
+	CASE 5496
+		NO:L_CHARA = [[キャラ:무존]]
+;	CASE 5501
+;		NO:L_CHARA = [[キャラ:하우르바타트_페르소나]]
+;	CASE 5502
+;		NO:L_CHARA = [[キャラ:티슈트리아_페르소나]]
+;	CASE 5503
+;		NO:L_CHARA = [[キャラ:누아자_페르소나]]
+;	CASE 5504
+;		NO:L_CHARA = [[キャラ:일다나_페르소나]]
+;	CASE 5505
+;		NO:L_CHARA = [[キャラ:우샤스_페르소나]]
+;	CASE 5506
+;		NO:L_CHARA = [[キャラ:마리지천_페르소나]]
+;	CASE 5507
+;		NO:L_CHARA = [[キャラ:마나난_페르소나]]
+;	CASE 5508
+;		NO:L_CHARA = [[キャラ:노덴스_페르소나]]
+;	CASE 5509
+;		NO:L_CHARA = [[キャラ:간장_페르소나]]
+;	CASE 5510
+;		NO:L_CHARA = [[キャラ:カンショウ改_ペルソナ]]
+;	CASE 5511
+;		NO:L_CHARA = [[キャラ:우두_페르소나]]
+;	CASE 5512
+;		NO:L_CHARA = [[キャラ:우두천왕_페르소나]]
+;	CASE 5513
+;		NO:L_CHARA = [[キャラ:나가라쟈_페르소나]]
+;	CASE 5514
+;		NO:L_CHARA = [[キャラ:탁샤카_페르소나]]
+;	CASE 5515
+;		NO:L_CHARA = [[キャラ:볼보_페르소나]]
+;	CASE 5516
+;		NO:L_CHARA = [[キャラ:헤카테_페르소나]]
+;	CASE 5517
+;		NO:L_CHARA = [[キャラ:젤리・맨_페르소나]]
+;	CASE 5518
+;		NO:L_CHARA = [[キャラ:마라_페르소나]]
+;	CASE 5519
+;		NO:L_CHARA = [[キャラ:메사이어・피카로_페르소나]]
+;	CASE 5520
+;		NO:L_CHARA = [[キャラ:스쿠나히코나_페르소나]]
+;	CASE 5521
+;		NO:L_CHARA = [[キャラ:케르베로스2_페르소나]]
+;	CASE 5522
+;		NO:L_CHARA = [[キャラ:카스토르2_페르소나]]
+;	CASE 5523
+;		NO:L_CHARA = [[キャラ:메데이아2_페르소나]]
+;	CASE 5524
+;		NO:L_CHARA = [[キャラ:프쉬케2_페르소나]]
+;	CASE 5525
+;		NO:L_CHARA = [[キャラ:아리아드네2_페르소나]]
+;	CASE 5526
+;		NO:L_CHARA = [[キャラ:로키_페르소나]]
+;	CASE 5527
+;		NO:L_CHARA = [[キャラ:헤리워드_페르소나]]
+;	CASE 5528
+;		NO:L_CHARA = [[キャラ:니케_페르소나]]
+;	CASE 5529
+;		NO:L_CHARA = [[キャラ:후리_페르소나]]
+;	CASE 5530
+;		NO:L_CHARA = [[キャラ:아에슈마_페르소나]]
+;	CASE 5531
+;		NO:L_CHARA = [[キャラ:파리카_페르소나]]
+;	CASE 5532
+;		NO:L_CHARA = [[キャラ:불카누스_페르소나]]
+;	CASE 5533
+;		NO:L_CHARA = [[キャラ:에로스_페르소나]]
+;	CASE 5534
+;		NO:L_CHARA = [[キャラ:마이아_페르소나]]
+;	CASE 5535
+;		NO:L_CHARA = [[キャラ:베스타_페르소나]]
+;	CASE 5536
+;		NO:L_CHARA = [[キャラ:진비슈누_페르소나]]
+;	CASE 5537
+;		NO:L_CHARA = [[キャラ:ムラサキノウエ]]
+;	CASE 5538
+;		NO:L_CHARA = [[キャラ:キビツヒコノミコト]]
+;	CASE 5539
+;		NO:L_CHARA = [[キャラ:オオカムヅミ]]
+	CASE 5600
+		NO:L_CHARA = [[キャラ:카에데]]
+	CASE 5601
+		NO:L_CHARA = [[キャラ:마유]]
+	CASE 5602
+		NO:L_CHARA = [[キャラ:란코]]
+	CASE 5603
+		NO:L_CHARA = [[キャラ:섀도우란코]]
+	CASE 5604
+		NO:L_CHARA = [[キャラ:우즈키]]
+	CASE 5605
+		NO:L_CHARA = [[キャラ:유카_아이마스]]
+	CASE 5606
+		NO:L_CHARA = [[キャラ:미즈모토 유카리]]
+	CASE 5607
+		NO:L_CHARA = [[キャラ:노리코_아이마스]]
+	CASE 5608
+		NO:L_CHARA = [[キャラ:후타바 안즈]]
+	CASE 5609
+		NO:L_CHARA = [[キャラ:카에데_GBF]]
+	CASE 5611
+		NO:L_CHARA = [[キャラ:코우메]]
+	CASE 5700
+		NO:L_CHARA = [[キャラ:타츠마]]
+	CASE 5701
+		NO:L_CHARA = [[キャラ:아오이_마인학원]]
+	CASE 5702
+		NO:L_CHARA = [[キャラ:쿄이치]]
+	CASE 5703
+		NO:L_CHARA = [[キャラ:다이고]]
+	CASE 5704
+		NO:L_CHARA = [[キャラ:코마키]]
+	CASE 5705
+		NO:L_CHARA = [[キャラ:타케시]]
+	CASE 5706
+		NO:L_CHARA = [[キャラ:하야토]]
+	CASE 5707
+		NO:L_CHARA = [[キャラ:모모카]]
+	CASE 5708
+		NO:L_CHARA = [[キャラ:키사라기]]
+	CASE 5709
+		NO:L_CHARA = [[キャラ:아란]]
+	CASE 5710
+		NO:L_CHARA = [[キャラ:마리_마인학원]]
+	CASE 5711
+		NO:L_CHARA = [[キャラ:텐도]]
+	CASE 5751
+		NO:L_CHARA = [[キャラ:쿠도라_단도라]]
+	CASE 5754
+		NO:L_CHARA = [[キャラ:이로하]]
+	CASE 5755
+		NO:L_CHARA = [[キャラ:이부키]]
+	CASE 5760
+		NO:L_CHARA = [[キャラ:사쿠라_사쿠라대전]]
+	CASE 5761
+		NO:L_CHARA = [[キャラ:스미레_사쿠라대전]]
+	CASE 5762
+		NO:L_CHARA = [[キャラ:마리아_사쿠라대전]]
+	CASE 5763
+		NO:L_CHARA = [[キャラ:아이리스_사쿠라대전]]
+	CASE 5764
+		NO:L_CHARA = [[キャラ:홍란_사쿠라대전]]
+	CASE 5765
+		NO:L_CHARA = [[キャラ:칸나_사쿠라대전]]
+	CASE 5770
+		NO:L_CHARA = [[キャラ:엘라_무기미도]]
+	CASE 5780
+		NO:L_CHARA = [[キャラ:아츠시]]
+	CASE 5781
+		NO:L_CHARA = [[キャラ:요헤이]]
+	CASE 5782
+		NO:L_CHARA = [[キャラ:마이_건퍼레이드]]
+	CASE 5783
+		NO:L_CHARA = [[キャラ:미오]]
+	CASE 5784
+		NO:L_CHARA = [[キャラ:야스미츠]]
+	CASE 5785
+		NO:L_CHARA = [[キャラ:긴가]]
+	CASE 5791
+		NO:L_CHARA = [[キャラ:귀네_DR]]
+	CASE 5792
+		NO:L_CHARA = [[キャラ:잔재메비우스_DR]]
+	CASE 5793
+		NO:L_CHARA = [[キャラ:릴리킬러_DR]]
+	CASE 5794
+		NO:L_CHARA = [[キャラ:나제지타_DR]]
+	CASE 5795
+		NO:L_CHARA = [[キャラ:다이아나_DR]]
+	CASE 5796
+		NO:L_CHARA = [[キャラ:사라사_DR]]
+	CASE 5797
+		NO:L_CHARA = [[キャラ:칼린카_DR]]
+	CASE 5798
+		NO:L_CHARA = [[キャラ:앙쥬_DR]]
+	CASE 5799
+		NO:L_CHARA = [[キャラ:데스포르카_DR]]
+	CASE 5800
+		NO:L_CHARA = [[キャラ:치키_＃FE]]
+	CASE 5801
+		NO:L_CHARA = [[キャラ:와카사기히메]]
+	CASE 5802
+		NO:L_CHARA = [[キャラ:반키]]
+	CASE 5803
+		NO:L_CHARA = [[キャラ:카게로]]
+	CASE 5804
+		NO:L_CHARA = [[キャラ:벤벤]]
+	CASE 5805
+		NO:L_CHARA = [[キャラ:야츠하시]]
+	CASE 5806
+		NO:L_CHARA = [[キャラ:세이자]]
+	CASE 5807
+		NO:L_CHARA = [[キャラ:신묘마루]]
+	CASE 5808
+		NO:L_CHARA = [[キャラ:라이코]]
+	CASE 5809
+		NO:L_CHARA = [[キャラ:코코로]]
+	CASE 5810
+		NO:L_CHARA = [[キャラ:스미레코]]
+	CASE 5811
+		NO:L_CHARA = [[キャラ:세이란]]
+	CASE 5812
+		NO:L_CHARA = [[キャラ:링고_동방]]
+	CASE 5813
+		NO:L_CHARA = [[キャラ:도레미]]
+	CASE 5814
+		NO:L_CHARA = [[キャラ:사구메]]
+	CASE 5815
+		NO:L_CHARA = [[キャラ:클라운피스]]
+	CASE 5816
+		NO:L_CHARA = [[キャラ:순호]]
+	CASE 5817
+		NO:L_CHARA = [[キャラ:헤카티아]]
+	CASE 5818
+		NO:L_CHARA = [[キャラ:라바]]
+	CASE 5819
+		NO:L_CHARA = [[キャラ:네무노]]
+	CASE 5820
+		NO:L_CHARA = [[キャラ:아운]]
+	CASE 5821
+		NO:L_CHARA = [[キャラ:나루미]]
+	CASE 5822
+		NO:L_CHARA = [[キャラ:사토노]]
+	CASE 5823
+		NO:L_CHARA = [[キャラ:마이_동방]]
+	CASE 5824
+		NO:L_CHARA = [[キャラ:오키나]]
+	CASE 5825
+		NO:L_CHARA = [[キャラ:햇빛에그을린치르노]]
+	CASE 5826
+		NO:L_CHARA = [[キャラ:조온]]
+	CASE 5827
+		NO:L_CHARA = [[キャラ:시온_동방]]
+	CASE 5828
+		NO:L_CHARA = [[キャラ:에이카]]
+	CASE 5829
+		NO:L_CHARA = [[キャラ:우루미]]
+	CASE 5830
+		NO:L_CHARA = [[キャラ:쿠타카]]
+	CASE 5831
+		NO:L_CHARA = [[キャラ:야치에]]
+	CASE 5832
+		NO:L_CHARA = [[キャラ:마유미]]
+	CASE 5833
+		NO:L_CHARA = [[キャラ:케이키]]
+	CASE 5834
+		NO:L_CHARA = [[キャラ:사키_동방]]
+	CASE 5835
+		NO:L_CHARA = [[キャラ:미케_동방]]
+	CASE 5836
+		NO:L_CHARA = [[キャラ:타카네]]
+	CASE 5837
+		NO:L_CHARA = [[キャラ:산뇨]]
+	CASE 5838
+		NO:L_CHARA = [[キャラ:미스마루]]
+	CASE 5839
+		NO:L_CHARA = [[キャラ:메구무_동방]]
+	CASE 5840
+		NO:L_CHARA = [[キャラ:츠카사_동방]]
+	CASE 5841
+		NO:L_CHARA = [[キャラ:치마타]]
+	CASE 5842
+		NO:L_CHARA = [[キャラ:모모요]]
+	CASE 5843
+		NO:L_CHARA = [[キャラ:유마_동방]]
+	CASE 5951
+		NO:L_CHARA = [[キャラ:카나미]]
+	CASE 5952
+		NO:L_CHARA = [[キャラ:히요리]]
+	CASE 6801
+		NO:L_CHARA = [[キャラ:SinGyoku♀]]
+	CASE 6802
+		NO:L_CHARA = [[キャラ:SinGyoku♂]]
+	CASE 6803
+		NO:L_CHARA = [[キャラ:YuugenMagan]]
+	CASE 6804
+		NO:L_CHARA = [[キャラ:Elis]]
+	CASE 6805
+		NO:L_CHARA = [[キャラ:Sariel]]
+	CASE 6806
+		NO:L_CHARA = [[キャラ:미마]]
+	CASE 6807
+		NO:L_CHARA = [[キャラ:Kikuri]]
+	CASE 6808
+		NO:L_CHARA = [[キャラ:Konngara]]
+	CASE 6809
+		NO:L_CHARA = [[キャラ:리카_동방]]
+	CASE 6810
+		NO:L_CHARA = [[キャラ:메이라]]
+	CASE 6811
+		NO:L_CHARA = [[キャラ:카나]]
+	CASE 6812
+		NO:L_CHARA = [[キャラ:코토히메]]
+	CASE 6813
+		NO:L_CHARA = [[キャラ:엘렌]]
+	CASE 6814
+		NO:L_CHARA = [[キャラ:리카코]]
+	CASE 6815
+		NO:L_CHARA = [[キャラ:치유리]]
+	CASE 6816
+		NO:L_CHARA = [[キャラ:유메미]]
+	CASE 6817
+		NO:L_CHARA = [[キャラ:루코토]]
+	CASE 6818
+		NO:L_CHARA = [[キャラ:오렌지]]
+	CASE 6819
+		NO:L_CHARA = [[キャラ:쿠루미]]
+	CASE 6820
+		NO:L_CHARA = [[キャラ:에리_동방]]
+	CASE 6821
+		NO:L_CHARA = [[キャラ:무게츠]]
+	CASE 6822
+		NO:L_CHARA = [[キャラ:겐게츠]]
+	CASE 6823
+		NO:L_CHARA = [[キャラ:사라]]
+	CASE 6824
+		NO:L_CHARA = [[キャラ:루이즈]]
+	CASE 6825
+		NO:L_CHARA = [[キャラ:유키]]
+	CASE 6826
+		NO:L_CHARA = [[キャラ:마이_동방구작]]
+	CASE 6827
+		NO:L_CHARA = [[キャラ:유메코]]
+	CASE 6828
+		NO:L_CHARA = [[キャラ:신키]]
+	CASE 6829
+		NO:L_CHARA = [[キャラ:바케바케]]
+	CASE 7000
+		NO:L_CHARA = [[キャラ:덴게키코]]
+	CASE 9000
+		NO:L_CHARA = [[キャラ:아키야마린코]]
+	CASE 9001
+		NO:L_CHARA = [[キャラ:유키카제]]
+	CASE 9002
+		NO:L_CHARA = [[キャラ:스우]]
+	CASEELSE
+		RETURN 0
+ENDSELECT
+NICKNAME:L_CHARA '= CSVNICKNAME(NO:L_CHARA)
+;--------------------------------------------------
+;存在しなくなったスキルの削除関数
+;--------------------------------------------------
+@CHECK_EXIST_SKILL
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC CHARA
+#DIM DYNAMIC SKILL
+#DIM DYNAMIC LSKILL_COUNT
+#DIMS DYNAMIC L_SKILLS
+#DIM DYNAMIC L_PERSONA
+FOR CHARA,0,CHARANUM
+	FOR LCOUNT, 0, 2
+		FOR SKILL, 1, 21
+			IF LCOUNT == 0
+				L_SKILLS = 스킬{SKILL}
+			ELSE
+				L_SKILLS = 습득스킬{SKILL}
+			ENDIF
+			IF IS_PU_SKILLNUM(ABL:CHARA:L_SKILLS)
+				CALL GET_SKILL_PROP, "SKILL_NAME", ABL:CHARA:L_SKILLS, CHARA
+				SIF RESULTS != ""
+					CONTINUE
+				SIF !LSKILL_COUNT
+					PRINTW スキルチェック中に不正なCSTR専用スキルを発見しました
+				PRINTFORML キャラ番号{CHARA}(%CALLNAME:CHARA%)のスキル{SKILL-59}(%CSTR:CHARA:@"전용기{ABL:CHARA:L_SKILLS - [[스킬:전용기1]] + 1}"%)
+				CSTR:CHARA:@"전용기{ABL:CHARA:L_SKILLS - [[스킬:전용기1]] + 1}" '= ""
+			ELSE
+				CALL GET_SKILL_PROP, "SKILL_NAME", ABL:CHARA:L_SKILLS, CHARA
+				SIF RESULTS != ""
+					CONTINUE
+				SIF !LSKILL_COUNT
+					PRINTW スキルチェック中に不正なスキル番号を発見しました
+				PRINTFORML キャラ番号{CHARA}(%CALLNAME:CHARA%)の%L_SKILLS%({ABL:CHARA:L_SKILLS})
+			ENDIF
+			ABL:CHARA:L_SKILLS = 0
+			CALL CLEAR_LEARNED_SKILL, CHARA, TOSTR(ABL:CHARA:L_SKILLS)
+			SIF LCOUNT == 1
+				ABL:CHARA:@"습득LV{SKILL}" = 0
+			LSKILL_COUNT++
+		NEXT	
+	NEXT
+NEXT
+FOR L_PERSONA, 0, 100
+	FOR LCOUNT, 1, 9
+		CALL GET_SKILL_PROP, "SKILL_NAME", DITEMTYPE:L_PERSONA:페르소나(@"스킬{LCOUNT}"), -1
+		SIF RESULTS != ""
+			CONTINUE
+		SIF !LSKILL_COUNT
+			PRINTW スキルチェック中に不正なスキル番号を発見しました
+		PRINTFORML ペルソナ番号{L_PERSONA}(%CSVCALLNAME(DITEMTYPE:L_PERSONA:페르소나("NO"))%)の%@"스킬{LCOUNT}"%({DITEMTYPE:L_PERSONA:페르소나(@"스킬{LCOUNT}")})
+		DITEMTYPE:L_PERSONA:페르소나(@"스킬{LCOUNT}") = 0
+		LSKILL_COUNT = 1
+	NEXT
+	FOR LCOUNT, 1, 21
+		CALL GET_SKILL_PROP, "SKILL_NAME", DITEMTYPE:L_PERSONA:페르소나(@"습득스킬{LCOUNT}"), -1
+		SIF RESULTS != ""
+			CONTINUE
+		SIF !LSKILL_COUNT
+			PRINTW スキルチェック中に不正なスキル番号を発見しました
+		PRINTFORML ペルソナ番号{L_PERSONA}(%CSVCALLNAME(DITEMTYPE:L_PERSONA:페르소나("NO"))%)の%@"습득스킬{LCOUNT}"%({DITEMTYPE:L_PERSONA:페르소나(@"습득스킬{LCOUNT}")})
+		DITEMTYPE:L_PERSONA:페르소나(@"습득스킬{LCOUNT}") = 0
+		DITEMTYPE:L_PERSONA:페르소나(@"습득LV{LCOUNT}") = 0
+		LSKILL_COUNT = 1
+	NEXT
+NEXT
+SIF LSKILL_COUNT
+	PRINTW 該当スキルを削除します。
+
+@SET_CHARA_EXPLAIN_BY_CSV, L_CHARA
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+FOR LCOUNT, GETNUM(CSTR, "해설1"), GETNUM(CSTR, "해설20") + 1
+	CSTR:L_CHARA:LCOUNT '= CSVCSTR(NO:L_CHARA, LCOUNT)
+NEXT
+
+@RESET_SKILL_FOR_CHARA, L_CHARA, L_TRANCE = "両形態", L_OPT
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_TRANCE
+#DIMS DYNAMIC L_OPT
+#DIM DYNAMIC LCOUNT
+
+SIF !STRCOUNT(L_OPT, "習得スキルのみ")
+	CALL CLEAR_ALL_SKILL, L_CHARA
+CALL CLEAR_ALL_LEARN_SKILL, L_CHARA
+CALL CLEAR_LEARNED_SKILL_ALL, L_CHARA
+FOR LCOUNT, 1, 12
+	CSTR:L_CHARA:@"전용기{LCOUNT}" '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, @"전용기{LCOUNT}"))
+NEXT
+IF GROUPMATCH(L_TRANCE, "通常形態", "両形態")
+	FOR LCOUNT, 1, 21
+		SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))
+			CONTINUE
+		CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"스킬{LCOUNT}"))), 1, , "入れ替え確認"
+	NEXT
+	FOR LCOUNT, 1, 21
+		SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))
+			CONTINUE
+		CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득LV{LCOUNT}")), , "入れ替え確認"
+	NEXT
+	CSTR:L_CHARA:MAG습득스킬리스트 '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "MAG습득스킬리스트"))
+ENDIF
+IF GROUPMATCH(L_TRANCE, "変身形態", "両形態")
+	FOR LCOUNT, 1, 21
+		SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"초기변신악마스킬{LCOUNT}"))
+			CONTINUE
+		CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"초기변신악마스킬{LCOUNT}"))), 1, , "入れ替え確認"
+	NEXT
+	FOR LCOUNT, 1, 21
+		SIF !CSVABL(NO:L_CHARA, GETNUM(ABL, @"초기변신악마습득스킬{LCOUNT}"))
+			CONTINUE
+		CALL SET_LEARN_SKILL, L_CHARA, TOSTR(CSVABL(NO:L_CHARA, GETNUM(ABL, @"습득스킬{LCOUNT}"))), CSVABL(NO:L_CHARA, GETNUM(ABL, @"초기변신악마습득LV{LCOUNT}")), , "入れ替え確認"
+	NEXT
+	CSTR:L_CHARA:초기변신악마MAG스킬습득리스트 '= CSVCSTR(NO:L_CHARA, GETNUM(CSTR, "초기변신악마MAG스킬습득리스트"))
+ENDIF
+
+@RESET_CHARA_PROFILE, L_CHARA
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+FOR LCOUNT, GETNUM(CSTR, "해설1"), GETNUM(CSTR, "해설20") + 1
+	CSTR:L_CHARA:LCOUNT '= CSVCSTR(NO:L_CHARA, LCOUNT)
+NEXT

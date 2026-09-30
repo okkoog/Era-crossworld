@@ -1,0 +1,304 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5320_天堂真矢.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/02/05		P(bazzile)				新規作成
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@SET_BASE_[[キャラ:마야_무대소녀]], ARG, ARG:1
+IF ARG:1 == 1
+	CFLAG:ARG:이벤트가입 = 1
+	CFLAG:ARG:초기링크악마 = [[キャラ:대신제우스]]
+	ABL:ARG:초기링크악마공격상성 = CSVABL(CFLAG:ARG:초기링크악마, GETNUM(ABL, "공격상성"))
+
+	CSTR:ARG:롤설명2 = 톱스타/고독한 오데트는 사랑의 힘으로 꽃피운다。똑똑히 보아라、정복되지 않는 금강석을。/설령、「당신」을、남김없이 불태워버린다 할지라도。
+ENDIF
+
+@SET_BTL_TALENT_[[キャラ:마야_무대소녀]], ARG, ARG:1
+SELECTCASE ARG:1
+	CASE 1
+		CALL CHANGE_ROLE, ARG, "무대소녀_1/달인_1/톱스타_1", "공격의심득_3/마술의소양_3/석세서_1"
+ENDSELECT
+
+@SET_LEARN_SKILL_[[キャラ:마야_무대소녀]], ARG, ARG:1
+IF ARG:1 == 1
+	CALL SET_LEARN_SKILL, ARG, "추토의참격", 1, "変身形態", "メッセージ表示"
+	CALL SET_LEARN_SKILL, ARG, "CSTR専用スキル/クレタスマイル", 1, "変身形態", "メッセージ表示"
+	CALL SET_LEARN_SKILL, ARG, "꼬치꿰기", 1, "変身形態", "メッセージ表示"
+	CALL SET_LEARN_SKILL, ARG, "파마의뇌광", 1, "変身形態", "メッセージ表示"
+	CALL SET_LEARN_SKILL, ARG, "썬더볼트", 1, "変身形態", "メッセージ表示"
+	CALL SET_LEARN_SKILL, ARG, "갓핸드", 1, "変身形態", "メッセージ表示"
+	CALL SET_LEARN_SKILL, ARG, "토르해머", 1, "変身形態", "メッセージ表示"
+	CALL SET_LEARN_SKILL, ARG, "뉴클리어미사일", 1, "変身形態", "メッセージ表示"
+ENDIF
+
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:마야_무대소녀]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("真矢_FACE_0")
+			RETURNF ""
+		SIF !SPRITECREATED("真矢_FACE_EX_0")
+			RETURNF ""
+		RESULTS_F = デフォルト
+		CALLF DISPOSE_SPRITE_FORCE_F, TEMP_GID_START, "魔矢_デフォルト"
+		;アイコン設定時の表示に使うアイコン
+		IF L_CHARA >= 0 && CSTR:L_CHARA:롤 == "舞台少女_トップスタァ_EX"
+			GCREATE TEMP_GID_START, 360, 360
+			GDRAWSPRITE TEMP_GID_START, "真矢_FACE_1", 0, 0, 180, 180
+			GDRAWSPRITE TEMP_GID_START, "真矢_FACE_2", 180, 0, 180, 180
+			GDRAWSPRITE TEMP_GID_START, "真矢_FACE_0", 0, 180, 180, 180
+			GDRAWSPRITE TEMP_GID_START, "真矢_FACE_EX_0", 180, 180, 180, 180
+			SPRITECREATE "真矢_デフォルト", TEMP_GID_START
+		ELSE
+			GCREATE TEMP_GID_START, 360, 360
+			GDRAWSPRITE TEMP_GID_START, "真矢_FACE_1", 0, 0, 180, 180
+			GDRAWSPRITE TEMP_GID_START, "真矢_FACE_2", 180, 0, 180, 180
+			GDRAWSPRITE TEMP_GID_START, "真矢_FACE_0", 0, 180, 180, 180
+			SPRITECREATE "真矢_デフォルト", TEMP_GID_START
+		ENDIF
+		RESULTS_F:1 = 真矢_デフォルト
+		RESULTS_F:2 = 真矢_FACE_1
+	CASEELSE
+		RETURNF ""
+ENDSELECT
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:마야_무대소녀]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "デフォルト"
+		SELECTCASE L_SITUATION
+			CASE "戦闘口上"
+				RESULTS_F = 真矢_FACE_1
+			CASE "調教"
+				RESULTS_F = 真矢_FACE_2
+			CASEELSE
+				IF STRCOUNT(CSTR:L_CHARA:롤, "舞台少女") && GET_ROLE_CFLAG_DUNGEON(L_CHARA, "클라이맥스레뷰지속시간")
+					IF CFLAG:L_CHARA:악마변신
+						RESULTS_F = 真矢_FACE_EX_2
+					ELSE
+						RESULTS_F = 真矢_FACE_EX_1
+					ENDIF
+				ELSE
+					IF CFLAG:L_CHARA:악마변신
+						RESULTS_F = 真矢_FACE_EX_0
+					ELSE
+						RESULTS_F = 真矢_FACE_0
+					ENDIF
+				ENDIF
+		ENDSELECT
+	CASEELSE
+ENDSELECT
+;-------------------------------------------------
+;調教関係の素質を得た際のイベント
+;服従のみ独自イベントが発生、結果次第で
+;-------------------------------------------------
+@EVENT_CHANGE_TRAIN_TALENT_[[キャラ:마야_무대소녀]], ARG, ARGS, ARGS:1 = "GET"
+IF ARGS == "복종" && ARGS:1 == "GET"
+	;実質の服従口上とする
+	CFLAG:ARG:201 = 5
+
+	PRINTFORMW 「――당신은 저를 옭아매는 것을 참 좋아하시는군요」
+	PRINTL
+	PRINTFORMW 텐도 마야는 엷은 미소를 띠고 있다。
+	PRINTL
+	PRINTFORMW 「좋습니다、당신이 순종적인 노예를 원하신다면、저 또한 그렇게 행동해 드리지요。
+	PRINTFORMW 　하지만、표현자에게서 자주성을 빼앗는다는 것은、
+	PRINTFORMW 　즉、상대의 재능을 일절 인정하지 않는다는 뜻이기도 합니다。
+	PRINTFORMW 　……확인하겠습니다만、당신은、제게、절대적인 복종을 원하십니까？」
+	PRINTL
+	PRINTFORML [0] 복종해라
+	PRINTFORML [1] ……복종은 안 해도 되니、음란해져라
+	;CALL 口上変数表示,,1
+	;CALL 口上変数初期化
+	CALL INPUTINT, 0 , 1
+	PRINTL
+	IF RESULT == 0
+		PRINTFORMW 「그렇다면、저 또한 검을 내려놓지요。
+		PRINTFORMW 　적어도、당신의 눈앞에서、이 날카로움을 휘두르는 일은 이제 없을 것입니다。
+		PRINTFORMW 　――왜냐면 저、마조 고깃덩어리인걸요%UNICODE(0x2661)%」
+		;CALL 口上変数初期化
+		CALL EVENT_CHANGE_TRAIN_TALENT_舞台少女, ARG, ARGS, ARGS:1
+		RETURN 0
+	ELSE
+		PRINTFORMW 「후、재미있는 말씀을 하시는군요。음란이란、되라고 해서 될 수 있는 것일까요？」
+		PRINTL
+		PRINTFORMW 텐도 마야는 눈을 가늘게 떴다。
+		PRINTFORMW 그리고、숨을 들이쉬고는、잠시 생각에 잠기는 시늉을 하더니、
+		PRINTFORMW ――서서히 뺨을 붉혔다。
+		PRINTL
+		;여기서부터 음란 복붙 존
+		IF TALENT:MASTER:남자
+			PRINTFORMW 「아아、서방님！　또 저를 사랑해 주시는 것이군요！？」
+			CSTR:ARG:이인칭 = 서방님
+		ELSE
+			PRINTFORMW 「아아、언니 분！　또 저를 사랑해 주시는 것이군요！？」
+			CSTR:ARG:이인칭 = 언니 분
+		ENDIF
+		PRINTL
+		PRINTFORMW 꽃으로 비유하자면 가시가 뽑힌 장미――
+		PRINTFORMW 마야는 가느다란 손가락을 가볍게 엮고、살며시 뺨을 물들이며、당신의 곁으로 달려온다。
+		PRINTFORMW 그 미소는、나쁜 장난을 배운 순진무구한 영애 그 자체였다。
+		PRINTFORMW 적어도、그렇게밖에、생각되지 않았다。
+		PRINTL
+		PRINTFORMW 「저、당신 덕분에、수많은 것을 알게 되었답니다！
+		IF HAVE_PENIS(ARG)
+			PRINTFORMW 　자지、정액、애널에、보지……
+		ELSE
+			PRINTFORMW 　클리토리스、애액、애널에、보지……
+		ENDIF
+		PRINTFORMW 　그리고、절정을 갈구하는、육체의 음란함！
+		PRINTFORMW 　모두 제가 몰랐던 것들뿐입니다。이 짧은 시간 동안、참으로 자극적인 시간을 선물받았군요……
+		PRINTFORMW 　다시금 감사 말씀 올리겠습니다%UNICODE(0x2661)%」
+		PRINTL
+		PRINTFORMW 자신의 가랑이를 어루만지며 말하는 그녀의 몸짓은、너무나도 완벽한 『타락한 음란 노예』여서、
+		PRINTFORMW ――당신이 끼어들 틈을 주지 않는다。
+		PRINTL
+		PRINTFORMW 「이번에는 어떤 절정을 가르쳐 주실 건가요？
+		PRINTFORMW 　저、지금부터 너무나 기대가 되어 참을 수 없어요――
+		PRINTFORMW 　자、만져주시겠어요？」
+		PRINTL
+		PRINTFORMW 가느다란 몸이 착 밀착된다。――좋은 향기。
+		PRINTFORMW 이끌린 당신의 손이、뜨겁고 축축하게 젖은、그녀의 은밀한 곳에 눌려진다。――기분 좋은 감촉。
+		PRINTL
+		PRINTFORMW 「분명、알아버린 것이지요、
+		PRINTFORMW 　본능에 기반한…… 육체의 욕망이라고、하는 것을」
+		PRINTL
+		PRINTFORMW 귓가에 속삭이는 그녀는 몹시도 음란한 눈빛을 띠고 있었다。
+		PRINTFORMW 입맛을 다시는 소리가 나더니、당신의 귓불이、뜨거운 살덩이에 빨려 들어갔다。
+		PRINTFORMW ――삼켜진다。
+		PRINTFORMW 당신은 그녀의 손을 뿌리치고 침에 젖은 귓불을 닦아냈다。
+		PRINTL
+		PRINTFORMW 「코치님%UNICODE(0x2661)%　%CSTR:ARG:이인칭%%UNICODE(0x2661)%
+		PRINTFORMW 　저에게 더욱 기분 좋은 것을 가르쳐 주세요%UNICODE(0x2661)%
+		PRINTFORMW 　아아…… 참을 수가 없어요、자위로는 이제 참을 수 없단 말입니다!%UNICODE(0x2661)%　더욱 황홀한 것을――」
+		PRINTL
+		PRINTFORMW 아름다운 사지를 활짝 벌려 당신을 유혹하는 마야의 모습이、
+		PRINTL
+		PRINTFORMW 「가르쳐 주실 거지요、%CSTR:ARG:이인칭%？」
+		PRINTL
+		PRINTFORMW 어째서인지、입을 벌린 식충식물 같은 무언가로 보였다――
+		PRINTL
+		PRINTL
+		PRINTL
+		PRINTFORML ＞마야는　【복종】을 잃었다
+		PRINTFORMW ＞마야는　【음란】을 얻었다
+		;CALL 口上変数表示
+		
+		TALENT:ARG:복종 = 0
+		TALENT:ARG:음란 = 1
+		RETURN 1
+	ENDIF
+ELSE
+	CALL EVENT_CHANGE_TRAIN_TALENT_舞台少女, ARG, ARGS, ARGS:1
+ENDIF
+
+;--------------------------------------------------
+;キャラクター独自変数名称定義関数
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:마야_무대소녀]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_EV
+	;周回時にリセットされる数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_EV
+	;周回時にリセットされる文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる数値型変数です
+	;スキルゲージHとほぼ互換です。基本的にはゲージHが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる文字列型変数です
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる数値型変数
+	;スキルゲージFとほぼ互換です。基本的にはゲージFが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる文字列型変数
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS

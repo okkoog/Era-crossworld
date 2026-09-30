@@ -1,0 +1,787 @@
+﻿;-------------------------------------------------
+;バージルRPG口上（キャラクターの名前を入れる、下にコンセプトなど一言あれば入れる）
+;公式セリフの翻訳を持ってきたり、自己翻訳してセリフに入れた。雰囲気出てれば良し！
+;
+;デビルトリガーは内部的にはFゲージ管理で、使用後にDゲージで残ターン計算する
+;Dゲージがゼロではない=DT発動中
+;DT発動中にセリフ変更　原作エフェクト表現で『』使用
+;
+;
+;口上参考
+;UMVC3
+;ttps://w.atwiki.jp/umvsc3/pages/116.html
+;
+;DMC3SE
+;ttps://w.atwiki.jp/dmc3/pages/57.html
+;
+;DMC4SE
+;ttps://www.nicovideo.jp/watch/sm27707088
+;
+;DMC5
+;ttps://alastornopedestal.fc2.net/blog-entry-61.html
+;
+;-------------------------------------------------
+
+;-------------------------------------------------
+;汎用口上の作成に使用する場合は、X1→キャラ番号ではなく、
+;KX1→PUB会話タイプ番号　へと変換してご使用ください
+;-------------------------------------------------
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_KX1_ASSI.ERB
+;	Facility	:会話タイプ：助手時口上
+;
+;	Modification Data:
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		Jガン					新規作成
+;	002		2022/08/16		名無し					RPG口上作成
+;	003		2022/09/19		初版作成者				セリフ変更、デビルトリガー中のセリフを追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;ライセンスについて
+;	・基本項目(許可する項目を"○"に、許可しない項目を"×"に変更してください。)
+;	+----+----+-------------------------------+
+;	|番号|許可|ライセンス内容                 |
+;	+----+----+-------------------------------+
+;	|   1| ○ | 処理上のバグ修正              |
+;	+----+----+-------------------------------+
+;	|   2| ○ | 口上の誤字・脱字の修正        |
+;	+----+----+-------------------------------+
+;	|   3| ○ | 口上まとめへの収録            |
+;	+----+----+-------------------------------+
+;	|   4| ○ | 口上の新規追加                |
+;	+----+----+-------------------------------+
+;	|   5| ○ | 既存口上の改変                |
+;	+----+----+-------------------------------+
+;	|   6| ○ | 改変した口上の自由な再配布    |
+;	+----+----+-------------------------------+
+;	|   7| ○ | 口上内容の転載                |
+;	+----+----+-------------------------------+
+
+@ENEMY_BATTLE_EVENT_K[[キャラ:버질]], ARG, ARG:1, ARG:2
+IF TFLAG:전투이벤트 == 1
+;敵でのデビルＣＯ－ＯＰ発動時の台詞
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%"",72,LEFT%┃
+;			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ENDIF
+IF TFLAG:전투이벤트 == 2
+;敵でのデビルＣＯ－ＯＰ参加時の台詞
+;			PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+;			PRINTFORML ┃%"",72,LEFT%┃
+;			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ENDIF
+
+@KOJO_BATTLE_EVENT_K[[キャラ:버질]], ARG, ARG:1, ARG:2
+;■台詞の行数を増やしたいときは
+;			LOCALS:10 = 一行目
+;			LOCALS:11 = 二行目
+;			LOCALS:12 = 三行目
+;			LOCALS:13 = 四行目
+;			LOCALS:14 = 五行目
+;と増やしていく
+SIF ARG < 0 && NO:ARG != 3504
+	RETURN 0
+VARSET LOCALS
+
+;小梅口上の取り方を元に
+;デビルトリガー使用中か見る 0以外は使用中
+LOCAL = SKILLGAGE_D_GET(ARG,3600)
+
+SELECTCASE TFLAG:전투이벤트
+	;COOP発動 ARGは発動者
+	CASE 1
+		;DT中か確認/DT中
+		IF LOCAL != 0
+			IF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 『来い！』
+			ELSE
+				BTL_KOJO_RESULTS:0 = 『力を貸せ！』
+			ENDIF
+		;通常時
+		ELSE
+			IF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 来い！
+			ELSE
+				BTL_KOJO_RESULTS:0 = 力を貸せ！
+			ENDIF
+		ENDIF
+
+	;COOP参加
+	CASE 2
+		;主人がCOOP発動
+		IF FLAG:행동순1 != -1 && FLAG:행동순1 == MASTER
+		
+			;DT中か確認/DT中
+			IF LOCAL != 0
+				IF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 『……貴様は死ね』
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = 『これで終わりだ』
+				ELSE
+					BTL_KOJO_RESULTS:0 = 『死ぬ覚悟はできたか？』
+				ENDIF
+			;通常時
+			ELSE
+				IF RAND:3 == 0 
+					BTL_KOJO_RESULTS:0 = ……貴様は死ね
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = これで終わりだ
+				ELSE
+					BTL_KOJO_RESULTS:0 = 死ぬ覚悟はできたか？
+				ENDIF
+			ENDIF
+		;ダンテが発動&10％でセリフ変更
+		ELSEIF FLAG:행동순1 != -1 && NO:(FLAG:행동순1) == [[キャラ:단테]] && RAND:10 == 0
+		
+			;DT中か確認/DT中
+			IF LOCAL != 0
+				BTL_KOJO_RESULTS:0 = 『たまには、お前の遊びに付き合ってやろう』
+			;通常時
+			ELSE
+				BTL_KOJO_RESULTS:0 = たまには、お前の遊びに付き合ってやろう
+			ENDIF
+
+		;それ以外
+		ELSE
+
+			;DT中か確認/DT中
+			IF LOCAL != 0
+				IF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 『……貴様は死ね』
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = 『これで終わりだ』
+				ELSE
+					BTL_KOJO_RESULTS:0 = 『死ぬ覚悟はできたか？』
+				ENDIF
+
+			;通常時
+			ELSE
+				IF RAND:3 == 0 
+					BTL_KOJO_RESULTS:0 = ……貴様は死ね
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = これで終わりだ
+				ELSE
+					BTL_KOJO_RESULTS:0 = 死ぬ覚悟はできたか？
+				ENDIF
+			ENDIF
+			
+			;5%でセリフ変更
+			IF RAND:20 == 0
+				;DT中か確認/DT中
+				IF LOCAL != 0
+					BTL_KOJO_RESULTS:0 = 『さよならだ』
+				ELSE
+					BTL_KOJO_RESULTS:0 = さよならだ
+				ENDIF
+			ENDIF
+			
+		ENDIF
+	;被召喚時
+	CASE 3
+			BTL_KOJO_RESULTS:0 = 
+	;공격　ARGが攻撃をする仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 11
+		;相手が死んだ
+		IF BASE:(ARG:1):ＨＰ <= 0
+			BTL_KOJO_RESULTS:0 =  
+		;弱点をついた。つまりCOOP
+		ELSEIF GET_CREC_ACT(ARG, ARG:1, "WEAK")
+			IF CFLAG:(ARG:1):방어플래그
+				BTL_KOJO_RESULTS:0 = 
+			ELSE
+				;こっちはCOOP発動に回すためにカット
+				RETURN 0
+			ENDIF
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 50
+			BTL_KOJO_RESULTS:0 = 
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 25
+			BTL_KOJO_RESULTS:0 = 
+		ELSEIF ダメージ割合(ARG:1, ARG:2) > 0
+			BTL_KOJO_RESULTS:0 = 
+		;無効された
+		ELSEIF ダメージ割合(ARG:1, ARG:2) <= 0
+			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;被ダメージ
+	;ARGが攻撃を受ける仲魔、ARG:1が敵、ARG:2がダメージ量
+	CASE 12
+		;死んだ(10%で話す)
+		IF BASE:ARG:ＨＰ <= 0 && RAND:10 == 0
+			BTL_KOJO_RESULTS:0 = 負けるのか……俺が…
+		;大ダメージ
+		ELSEIF ダメージ割合(ARG, ARG:2) > 50 || 現HP割合(ARG) < 25
+			BTL_KOJO_RESULTS:0 = 
+		;無効
+		ELSEIF ARG:2 == 0
+
+			;DT中か確認/DT中
+			IF LOCAL != 0
+				BTL_KOJO_RESULTS:0 = 『無駄だ』
+			;通常時
+			ELSE
+				BTL_KOJO_RESULTS:0 = 無駄だ
+			ENDIF
+
+		;吸収
+		ELSEIF ARG:2 < 0
+			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;反射された
+	CASE 15
+			BTL_KOJO_RESULTS:0 = 
+	;反射した
+	CASE 16
+			BTL_KOJO_RESULTS:0 = 
+	;回避された
+	CASE 17
+			BTL_KOJO_RESULTS:0 = 
+	;回避した
+	CASE 18	
+
+		;DT中か確認/DT中
+		IF LOCAL != 0
+			IF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 『遅い！』
+			ELSE
+				BTL_KOJO_RESULTS:0 = 『……この程度か？』
+			ENDIF
+		;通常時
+		ELSE
+			IF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 遅い！
+			ELSE
+				BTL_KOJO_RESULTS:0 = ……この程度か？
+			ENDIF
+		ENDIF
+
+	;反撃スキル発動した
+	CASE 20
+			BTL_KOJO_RESULTS:0 = 
+	;バトルに勝利した
+	CASE 90
+		;芳澤さんの口上を元に
+		;次元斬・絶使用かつ自分の行動時に勝利し、かつバージルが話す場合
+		IF CFLAG:ARG:입력행동 == 3600 && FLAG:행동순1 == ARG
+		
+			IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = 『This is the power of Sparda...』
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 『Rest in peace...』
+			ELSE
+				BTL_KOJO_RESULTS:0 = 『Good night...』
+			ENDIF
+		
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = これで終わりだ
+		ELSE
+			BTL_KOJO_RESULTS:0 = 安らかに眠るがいい…
+		ENDIF
+	;レベルアップした
+	CASE 91
+	
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = I need more power...!
+		ELSE
+			BTL_KOJO_RESULTS:0 = もっとだ、もっと力を……！
+		ENDIF
+		
+	;逃走に成功した
+	CASE 92
+			BTL_KOJO_RESULTS:0 = 
+	;逃走に失敗した
+	CASE 93
+			BTL_KOJO_RESULTS:0 = 
+	;戦闘開始時
+	CASE 94
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			BTL_KOJO_RESULTS:0 = ……失せろ
+		ELSE
+			IF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 =  ……邪魔だ
+			ELSE
+				BTL_KOJO_RESULTS:0 = ……俺の相手はどこだ？
+			ENDIF
+		ENDIF
+	;バックアタックを受けた
+	CASE 95
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			BTL_KOJO_RESULTS:0 = 
+		ELSE
+			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;敵の先制攻撃を受けた
+	CASE 96
+		IF 現HP割合(ARG) < 25
+			;瀕死
+			BTL_KOJO_RESULTS:0 = 
+		ELSE
+			BTL_KOJO_RESULTS:0 = 
+		ENDIF
+	;先制攻撃に成功
+	CASE 97
+			BTL_KOJO_RESULTS:0 = 
+ENDSELECT
+;SIF !(LOCALS:10 == "")
+;	CALL MESSAGE_B2(CALLNAME:ARG,0, LOCALS:10, LOCALS:11, LOCALS:12, LOCALS:13, LOCALS:14)
+
+
+@KOJO_BATTLE_MESSAGE_K[[キャラ:버질]],ARG,ARG:1 = 0
+;■台詞の行数を増やしたいときは
+;			LOCALS:10 = 一行目
+;			LOCALS:11 = 二行目
+;			LOCALS:12 = 三行目
+;			LOCALS:13 = 四行目
+;			LOCALS:14 = 五行目
+;と増やしていく
+VARSET LOCALS
+
+;小梅口上の取り方を元に
+;デビルトリガー使用中か見る 0以外は使用中
+LOCAL = SKILLGAGE_D_GET(ARG,3600)
+
+;使用したスキルの名前をLOCALSに代入
+CALL GET_SKILL_PROP, "SKILL_NAME", CFLAG:ARG:입력행동, ARG
+LOCALS = %RESULTS%
+;FLAG:ARG:타겟
+
+;崩壊してる場合は口上表示しないようにもできる
+;SIF TALENT:ARG:9
+;	RETURN 0
+
+CALL GET_SKILL_PROP, "SKILL_EFECT", CFLAG:ARG:입력행동, ARG
+;コメントアウトしやすいように
+IF 1 == 0
+;-------------------------------------------------
+;状態異常時
+;-------------------------------------------------
+;魅了時
+ELSEIF CFLAG:ARG:상태이상 == GET_STATE_NUM("CHARM")
+	;行動不能（ムラムラしている）
+	IF CFLAG:ARG:입력행동 == 2314
+		BTL_KOJO_RESULTS:0 = 
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;混乱時
+ELSEIF CFLAG:ARG:상태이상 == GET_STATE_NUM("PANIC")
+	;금전뿌리기
+	IF CFLAG:ARG:입력행동 == 2315
+		BTL_KOJO_RESULTS:0 = 
+	;行動不能（ぼんやりしている）
+	ELSEIF CFLAG:ARG:입력행동 == 2314
+		BTL_KOJO_RESULTS:0 = 
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;-------------------------------------------------
+;特定スキル
+;-------------------------------------------------
+;これは通常攻撃
+ELSEIF CFLAG:ARG:입력행동 == 0 && RAND:2 == 0
+
+	;DT中か確認/DT中
+	IF LOCAL != 0
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 『はっ！』
+		ELSE
+			BTL_KOJO_RESULTS:0 = 『フン！』
+		ENDIF
+	ELSE
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = はっ！
+		ELSE
+			BTL_KOJO_RESULTS:0 = フン！
+		ENDIF
+	ENDIF
+	
+;ELSEIF CFLAG:ARG:입력행동 == (スキル番号)
+;	BTL_KOJO_RESULTS:0 = 
+;섹시댄스
+ELSEIF CFLAG:ARG:입력행동 == 1212
+	BTL_KOJO_RESULTS:0 = 
+;캔디보이스
+ELSEIF CFLAG:ARG:입력행동 == 1213
+	BTL_KOJO_RESULTS:0 = 
+;파이널누드
+ELSEIF CFLAG:ARG:입력행동 == 1214
+	BTL_KOJO_RESULTS:0 = 
+;-------------------------------------------------
+;銃攻撃（特殊弾丸含む）
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,2101, 2200)
+
+	;GUN
+	IF CFLAG:ARG:입력행동 == 2101
+
+	;DT中か確認/DT中
+	IF LOCAL != 0
+		BTL_KOJO_RESULTS:0 = 『行け！』
+	;通常時
+	ELSE
+		BTL_KOJO_RESULTS:0 = 行け！
+	ENDIF
+	
+	;その他（特殊弾丸）
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;-------------------------------------------------
+;基本行動
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,2301, 2400)
+	;ＣＨＡＮＧＥ
+	IF CFLAG:ARG:입력행동 == 2301
+		BTL_KOJO_RESULTS:0 = 
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;-------------------------------------------------
+;アイテム
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,3001, 3500)
+	BTL_KOJO_RESULTS:0 = 
+;-------------------------------------------------
+;リンケージ
+;-------------------------------------------------
+ELSEIF RANGE(CFLAG:ARG:입력행동,4000, 5000)
+	;메시아라이저
+	IF CFLAG:ARG:입력행동 == 4160
+		BTL_KOJO_RESULTS:0 = 
+	;Lヒートライザ
+	ELSEIF CFLAG:ARG:입력행동 == 4200
+		BTL_KOJO_RESULTS:0 = 
+	;사망유희
+	ELSEIF CFLAG:ARG:입력행동 == 4800
+		BTL_KOJO_RESULTS:0 = 
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;-------------------------------------------------
+;汎用スキル
+;-------------------------------------------------
+;검격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1, 99)
+	BTL_KOJO_RESULTS:0 = 
+;비구
+ELSEIF RANGE(CFLAG:ARG:입력행동,101, 199)
+	BTL_KOJO_RESULTS:0 = 
+;타격
+ELSEIF RANGE(CFLAG:ARG:입력행동,201, 299)
+	BTL_KOJO_RESULTS:0 = 
+;전술
+ELSEIF RANGE(CFLAG:ARG:입력행동,301, 400)
+	;噛み付き系
+	IF RANGE(CFLAG:ARG:입력행동,321, 326)
+		BTL_KOJO_RESULTS:0 = 
+	;その他
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;회복
+ELSEIF RANGE(CFLAG:ARG:입력행동,401, 499)
+	;全体回復
+	IF CFLAG:ARG:타겟 > 6
+		BTL_KOJO_RESULTS:0 = 
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;지원
+ELSEIF RANGE(CFLAG:ARG:입력행동,501, 599)
+	;強化系
+	IF RANGE(CFLAG:ARG:입력행동,501, 505) || CFLAG:ARG:입력행동 == 558
+		BTL_KOJO_RESULTS:0 = 
+	;弱体系
+	ELSEIF RANGE(CFLAG:ARG:입력행동,506, 509) || CFLAG:ARG:입력행동 == 541 || CFLAG:ARG:입력행동 == 556
+		BTL_KOJO_RESULTS:0 = 
+	;도발
+	ELSEIF CFLAG:ARG:입력행동 == 515
+
+		;DT中か確認/DT中
+		IF LOCAL != 0
+			IF RAND:6 == 0
+				BTL_KOJO_RESULTS:0 = 『死ぬ覚悟はできたか？』
+			ELSEIF RAND:5 == 0
+				BTL_KOJO_RESULTS:0 = 『……つまらんな』
+			ELSEIF RAND:4 == 0
+				BTL_KOJO_RESULTS:0 = 『少し遊んでやろう』
+			ELSEIF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = 『それがおまえの本気か？』
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 『勝ち目があるとでも？』
+			ELSE
+				BTL_KOJO_RESULTS:0 = 『時間の無駄だな……』
+			ENDIF
+			
+		;通常時
+		ELSE
+			IF RAND:6 == 0
+				BTL_KOJO_RESULTS:0 = 死ぬ覚悟はできたか？
+			ELSEIF RAND:5 == 0
+				BTL_KOJO_RESULTS:0 = ……つまらんな
+			ELSEIF RAND:4 == 0
+				BTL_KOJO_RESULTS:0 = 少し遊んでやろう
+			ELSEIF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = それがおまえの本気か？
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 勝ち目があるとでも？
+			ELSE
+				BTL_KOJO_RESULTS:0 = 時間の無駄だな……
+			ENDIF
+		ENDIF
+	;その他
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;방어
+ELSEIF RANGE(CFLAG:ARG:입력행동,601, 699)
+	BTL_KOJO_RESULTS:0 = 
+;화염
+ELSEIF RANGE(CFLAG:ARG:입력행동,701, 799)
+
+	;DT中か確認/DT中
+	IF LOCAL != 0
+		BTL_KOJO_RESULTS:0 = 『燃えろ！』
+	;通常時
+	ELSE
+		BTL_KOJO_RESULTS:0 = 燃えろ！
+	ENDIF
+
+;빙결
+ELSEIF RANGE(CFLAG:ARG:입력행동,801, 899)
+
+	;DT中か確認/DT中
+	IF LOCAL != 0
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 『凍れ！』
+		ELSE
+			BTL_KOJO_RESULTS:0 = 『砕けろ！』
+		ENDIF
+	;通常時
+	ELSE
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 凍れ！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 砕けろ！
+		ENDIF
+	ENDIF
+
+;전격
+ELSEIF RANGE(CFLAG:ARG:입력행동,901, 999)
+	BTL_KOJO_RESULTS:0 = 
+;충격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1001, 1099)
+	BTL_KOJO_RESULTS:0 = 
+;신경
+ELSEIF RANGE(CFLAG:ARG:입력행동,1101, 1199)
+	BTL_KOJO_RESULTS:0 = 
+;정신
+ELSEIF RANGE(CFLAG:ARG:입력행동,1201, 1299)
+	BTL_KOJO_RESULTS:0 = 
+;파마
+ELSEIF RANGE(CFLAG:ARG:입력행동,1301, 1399)
+	BTL_KOJO_RESULTS:0 = 
+;주살
+ELSEIF RANGE(CFLAG:ARG:입력행동,1401, 1499)
+	BTL_KOJO_RESULTS:0 = 
+;지변
+ELSEIF RANGE(CFLAG:ARG:입력행동,1501, 1599)
+	BTL_KOJO_RESULTS:0 = 
+;수격
+ELSEIF RANGE(CFLAG:ARG:입력행동,1601, 1699)
+	BTL_KOJO_RESULTS:0 = 
+;질풍
+ELSEIF RANGE(CFLAG:ARG:입력행동,1701, 1799)
+	BTL_KOJO_RESULTS:0 = 
+;중력
+ELSEIF RANGE(CFLAG:ARG:입력행동,1801, 1899)
+
+	;DT中か確認/DT中
+	IF LOCAL != 0
+		BTL_KOJO_RESULTS:0 = 『潰れろ！』
+	;通常時
+	ELSE
+		BTL_KOJO_RESULTS:0 = 潰れろ！
+	ENDIF
+
+;핵열
+ELSEIF RANGE(CFLAG:ARG:입력행동,1901, 1999)
+	BTL_KOJO_RESULTS:0 = 
+;만능
+ELSEIF RANGE(CFLAG:ARG:입력행동,2001, 2099)
+	;自爆系
+	IF RANGE(CFLAG:ARG:입력행동,2005, 2007)
+		BTL_KOJO_RESULTS:0 = 
+	ELSE
+		BTL_KOJO_RESULTS:0 = 
+	ENDIF
+;魔法少女系
+ELSEIF RANGE(CFLAG:ARG:입력행동,2989, 2999)
+	BTL_KOJO_RESULTS:0 = 
+	
+;전용기
+
+;コマンド側のデビルトリガー取得方法分からん
+;;데빌트리거
+;ELSEIF CFLAG:ARG:입력행동 == 13600
+;
+;	IF RAND:2 ==0
+;		BTL_KOJO_RESULTS:0 = 少し、本気を出すとしよう
+;	ELSE
+;		BTL_KOJO_RESULTS:0 = 楽しめそうだな
+;	ENDIF
+
+;데빌트리거(次元斬・絶)
+ELSEIF CFLAG:ARG:입력행동 == 3600
+	
+;	IF RAND:3 == 0
+;		BTL_KOJO_RESULTS:0 = You are going down！
+;	ELSEIF RAND:2 == 0
+;		BTL_KOJO_RESULTS:0 = Down you go！
+;	ELSE
+;		BTL_KOJO_RESULTS:0 = Kneel before me！
+;	ENDIF
+
+	IF RAND:3 == 0
+		BTL_KOJO_RESULTS:0 = 『散るがいい！』
+	ELSEIF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 『平伏せ！』
+	ELSE
+		BTL_KOJO_RESULTS:0 = 『跪け…！』
+	ENDIF
+
+	;1%の確率でセリフ変更
+	IF RAND:100 == 0
+		BTL_KOJO_RESULTS:0 = 『Huh...JACK POT』
+	ENDIF
+
+;환영검
+ELSEIF CFLAG:ARG:입력행동 == 3601
+	BTL_KOJO_RESULTS:0 = 
+
+;열풍환영검
+ELSEIF CFLAG:ARG:입력행동 == 3602
+
+	;DT中か確認/DT中
+	IF LOCAL != 0
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 『終わりだ！』
+		ELSE
+			BTL_KOJO_RESULTS:0 = 『行け！』
+		ENDIF
+	;通常時
+	ELSE
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 終わりだ！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 行け！
+		ENDIF
+	ENDIF
+
+;차원참
+ELSEIF CFLAG:ARG:입력행동 == 3603
+
+	;DT中か確認/DT中
+	IF LOCAL != 0
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 『消し飛べ！』
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 『失せろ！』
+		ELSE
+			BTL_KOJO_RESULTS:0 = 『動くな！』
+		ENDIF
+	;通常時
+	ELSE
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 消し飛べ！
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 失せろ！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 動くな！
+		ENDIF
+	ENDIF
+
+;疾走居合
+ELSEIF CFLAG:ARG:입력행동 == 3604
+
+	;DT中か確認/DT中
+	IF LOCAL != 0
+		IF RAND:4 == 0
+			BTL_KOJO_RESULTS:0 = 『死ね！』
+		ELSEIF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 『遅い！』
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 『クズが！』
+		ELSE
+			BTL_KOJO_RESULTS:0 = 『斬る！』
+		ENDIF
+	;通常時
+	ELSE
+		IF RAND:4 == 0
+			BTL_KOJO_RESULTS:0 = 死ね！
+		ELSEIF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 遅い！
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = クズが！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 斬る！
+		ENDIF
+	ENDIF
+
+;에어트릭
+ELSEIF CFLAG:ARG:입력행동 == 3605
+	BTL_KOJO_RESULTS:0 =
+
+;염마도연참
+ELSEIF CFLAG:ARG:입력행동 == 3606
+
+	;DT中か確認/DT中
+	IF LOCAL != 0
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 『遅い！』
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 『下らん！』
+		ELSE
+			BTL_KOJO_RESULTS:0 = 『断ち斬る！』
+		ENDIF
+	;通常時
+	ELSE
+		IF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 下らん！
+		ELSE
+			BTL_KOJO_RESULTS:0 = 断ち斬る！
+		ENDIF
+	ENDIF
+
+
+;네버기브업
+ELSEIF CFLAG:ARG:입력행동 == 2958
+
+	;DT中か確認/DT中
+	IF LOCAL != 0
+		BTL_KOJO_RESULTS:0 = 『まだだ！』
+	;通常時
+	ELSE
+		BTL_KOJO_RESULTS:0 = まだだ！
+	ENDIF
+
+
+
+;-------------------------------------------------
+;その他
+;-------------------------------------------------
+ELSE
+	BTL_KOJO_RESULTS:0 = 
+ENDIF
+;-------------------------------------------------
+;真・その他
+;-------------------------------------------------
+IF BTL_KOJO_RESULTS:0 == ""
+	;必ず何か喋る
+	BTL_KOJO_RESULTS:0 = 
+ENDIF
+
+;SIF !(LOCALS:10 == "")
+;	CALL MESSAGE_B2(CALLNAME:ARG,1, LOCALS:10, LOCALS:11, LOCALS:12, LOCALS:13, LOCALS:14)

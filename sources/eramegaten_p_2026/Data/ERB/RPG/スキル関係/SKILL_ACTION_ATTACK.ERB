@@ -1,0 +1,986 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILL_ACTION_ATTACK.ERB
+;	Facility	:攻撃スキルの実行関数群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/05/02		P(bazziel)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;@ATTACK_TARGET						攻撃の実行処理関数
+;@ATTACK_SKILL						攻撃スキルの実行関数。以下の個別の処理に振り分ける
+;@ATTACK_SINGLE						単体攻撃関数
+;@ATTACK_LINE						縦列攻撃関数
+;@ATTACK_FIELD						範囲攻撃関数
+;@ATTACK_RAND						ランダム攻撃関数
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;==========================================
+;攻撃実行関数
+;ARG	使用者
+;ARG:1	対象のキャラクター番号
+;L_スキル	使用スキル
+;IS_BAD_STATE	状態異常スキルが送られてきた場合
+;IS_WAIT	1 ダメージが出たときにWAITしない
+;対象に攻撃する際の一連の処理関数(命中判定→相性判定→攻撃判定(バステ判定)→(追加効果判定))
+;上流のATTACK関数で範囲と攻撃回数を取得し、必要な数だけこの関数を繰り返す。
+;
+;備考:@ATTACK_HITを元に作成。変更点はATTACK関数群の共通の処理をここでまとめて流れを一本化したこと
+;==========================================
+@ATTACK_TARGET, L_P, L_T, L_スキル, IS_BAD_STATE, IS_WAIT
+#DIM DYNAMIC IS_BAD_STATE
+#DIM DYNAMIC IS_WAIT
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC TEMP_SKILL
+#DIM DYNAMIC L_P
+#DIMS DYNAMIC L_PNAME
+#DIM DYNAMIC L_T, 2
+#DIMS DYNAMIC L_攻撃種別
+#DIM DYNAMIC L_威力
+#DIM DYNAMIC L_相性, 2
+#DIM DYNAMIC L_相性倍率
+#DIM DYNAMIC L_ダメージタイプ
+#DIM DYNAMIC L_攻撃タイプ
+#DIM DYNAMIC L_状態異常
+#DIM DYNAMIC L_状態異常_相性
+#DIM DYNAMIC L_状態異常_相性倍率
+#DIM DYNAMIC L_状態異常_確率
+#DIM DYNAMIC L_状態異常_最大確率
+#DIM DYNAMIC L_吸収率
+#DIM DYNAMIC L_クリティカル率
+#DIM DYNAMIC L_スキル
+#DIM DYNAMIC L_スキル命中率
+#DIM DYNAMIC L_割合計算
+#DIM DYNAMIC L_割合上限
+#DIM DYNAMIC L_潜在防御
+#DIM DYNAMIC L_COLOR
+#DIM DYNAMIC STOCK_GUARD
+#DIM DYNAMIC COVER_CHARA, 2
+#DIM DYNAMIC IS_MISSED
+#DIM DYNAMIC IS_NOT_EXIST_TARGET
+#DIM DYNAMIC IS_BADSTATE_MISSED
+;対象が攻撃不能な存在なら終わる
+SIF !IS_TARGET_ABLE(L_T)
+	RETURN 0
+;一時的に攻撃対象から除外されている場合は終わる
+SIF CFLAG:L_T:공격대상제외_ACT
+	RETURN 0
+SIF CFLAG:L_T:공격대상제외
+	RETURN 0
+IF IS_BAD_STATE
+	L_攻撃種別 = BAD_STATE
+ELSE
+	L_攻撃種別 = ATTACK
+ENDIF
+
+;反射後にダメージを受けないように工作している場合は行動者名の偽装を続行させる。
+IF TSTR:스킬메시지행동자 != "" && TFLAG:반사후0데미지화
+	L_PNAME '= AUTO_SPLIT(TSTR:스킬메시지행동자, "/", 0)
+ELSE
+	L_PNAME '= CALLNAME:L_P
+ENDIF
+IF AUTO_SPLIT(TSTR:스킬메시지행동자, "/", 1) != ""
+	L_PNAME = [%AUTO_SPLIT(TSTR:스킬메시지행동자, "/", 1), 2%] %L_PNAME, 20, LEFT%
+ELSE
+	L_PNAME = [{CPOS(L_P),2}] %L_PNAME, 20, LEFT%
+ENDIF
+$SET_PROP_START
+TSTR:스킬메시지데미지변동요인 = 
+;---------------------------------------------------------
+;スキル性能の取得
+;以降は式では基本的にここで取った情報を引数で降ろしていく
+;範囲と攻撃回数は上流で取得しており、その回数分だけこの関数を繰り返す。
+;---------------------------------------------------------
+CALL GET_SKILL_PROP, "SKILL_HITRATE", L_スキル, L_P
+L_スキル命中率 = RESULT
+;LOCAL:2 スキル命中率
+
+CALL GET_SKILL_PROP, "SKILL_POWER", L_スキル, L_P
+L_威力 = RESULT
+
+IF GET_BTL_TALENT_LV("데빌암즈", L_P) && EQUIP:L_P:검
+	;デビルアームズで取得したスキルは威力に補正がかかる
+	SIF MATCH(C_DEVIL_ARMS_SKILL:L_P:0, L_スキル)
+		L_威力 += MIN(L_威力 / 10, 30);EDIT 009 ADD
+	;デビルアームズは通常攻撃に補正をかける(主にサクセサーと併用した場合の恩恵を想定)
+	SIF L_スキル == 0
+		L_威力 += 25
+ENDIF
+
+;与えるダメージの物理/魔法
+CALL GET_SKILL_PROP, "SKILL_DAMAGETYPE", L_スキル, L_P
+L_ダメージタイプ = RESULT
+;攻撃手段のタイプ(物理/魔法/총/道具/割合)、基礎ダメージの算出の際の攻撃ステータスの選定などにかかわる
+CALL GET_SKILL_PROP, "SKILL_ATTACKTYPE", L_スキル, L_P
+L_攻撃タイプ = RESULT
+
+;アイテム攻撃はオプションで許可されてるときのみ
+SIF L_攻撃タイプ == 4 && !BATTLE_SETTING_IS_ITEM_DAMAGE()
+	L_攻撃タイプ = L_ダメージタイプ
+;追加効果を参照
+L_状態異常 = 0
+CALL GET_SKILL_PROP, "SKILL_ADDTIONAL_STATE", L_スキル, L_P
+IF RESULT
+	L_状態異常 = RESULT
+	CALL GET_SKILL_PROP, "SKILL_ADDTIONAL_TYPE", L_スキル, L_P
+	L_状態異常_相性 = RESULT
+	CALL GET_SKILL_PROP, "SKILL_ADDTIONAL_BASE_RATE", L_スキル, L_P
+	L_状態異常_確率 = RESULT
+	;基本命中率がマイナスの場合、ここでスキップして表示から飛ばす
+	SIF RESULT < 0
+		RETURN 0
+	CALL GET_SKILL_PROP, "SKILL_ADDTIONAL_MAX_RATE", L_スキル, L_P
+	L_状態異常_最大確率 = RESULT
+ENDIF
+
+;スキルの吸収率
+CALL GET_SKILL_PROP, "SKILL_HP_ABSORBER", L_スキル, L_P
+L_吸収率 = RESULT
+SIF CFLAG:L_P:상태이상 == GET_STATE_NUM("CURSE")
+	L_吸収率 -= 50
+;クリティカル率補正
+CALL GET_SKILL_PROP, "SKILL_CRITICAL_RATE", L_スキル, L_P
+L_クリティカル率 = RESULT
+
+CALL GET_SKILL_PROP, "SKILL_RATE_DAMAGETYPE", L_スキル, L_P
+L_割合計算 = RESULT
+
+CALL GET_SKILL_PROP, "SKILL_RATE_LIMIT", L_スキル, L_P
+L_割合上限 = RESULT
+
+;-------------------------------------------------
+;攻撃HIT単位で処理すべきフラグの処理
+;-------------------------------------------------
+TFLAG:크리티컬발생_HIT = 0
+
+;---------------------------------------------------------
+;反射・無効などの判定をするためにスキルの相性と相性による倍率を取得する
+;異常は追加効果で合流するまでは攻撃と同じ耐性処理が続くので、攻撃部分と異常部分の両方に変数をいれておく
+;---------------------------------------------------------
+SIF FLAG:공격횟수 == 0
+	CALL SET_FLAG_HYPER_COUNTER, L_P, L_T
+
+IF L_攻撃種別 == "ATTACK"
+	CALL BTL_CALC_AISYOU, L_P, L_T, L_スキル, , 1
+	L_相性 = RESULT:1
+	;相性倍率(999は反射)
+	L_相性倍率 = RESULT
+	TSTR:상성변동요인 = %RESULTS%
+	TSTR:이상내성변동요인 = 
+ELSE
+	CALL CALC_BADSTATE_MULTI, L_P, L_T, L_スキル
+	L_相性 = RESULT:1
+	L_状態異常_相性 = RESULT:1
+	;相性倍率(999は反射)
+	L_相性倍率 = RESULT
+	L_状態異常_相性倍率 = RESULT
+	TSTR:상성변동요인 = %RESULTS%
+	TSTR:이상내성변동요인 = %RESULTS%
+ENDIF
+
+;結果の如何に問わず、攻撃をしたかどうかの記録
+CALL SET_C_RECORDS,  L_P, L_T, "ATTACK", GET_TYPE(L_相性)
+CALL SET_C_RECORDS,  L_P, L_T, "ATTACK", GET_ダメージタイプ(L_ダメージタイプ)
+
+TSTR:상성분석 = %GET_TYPE(L_相性)%_{L_相性倍率}/{MAXBASE:L_T:GET_TYPE(L_相性)}/%TSTR:상성변동요인%
+TSTR:스킬메시지대상 = 　　TARGET:[{CPOS(L_T),2}] %CALLNAME:(L_T),20,LEFT%
+TSTR:스킬메시지화살표 = 　>>>>>>　
+
+TSTR:스킬메시지서문 = 
+TSTR:스킬메시지결과 = 
+TSTR:스킬메시지추가 = 
+TSTR:스킬메시지추가효과 = 
+TFLAG:스킬메시지컬러 = -1
+TSTR:바로우즈메시지 = 
+;---------------------------------------------------------
+;命中判定　異常の判定は反射・無効を確認後に行う
+;---------------------------------------------------------
+IS_MISSED = 0
+IS_NOT_EXIST_TARGET = 0
+IF L_攻撃種別 == "ATTACK"
+	CALLFORM BTL_JUDG_HIT, L_P, L_T, L_スキル命中率, L_相性, L_相性倍率, L_ダメージタイプ, L_攻撃タイプ, L_スキル
+	SELECTCASE RESULT:1
+		CASE 999
+			TSTR:바로우즈메시지 = %ADD_SPLIT(TSTR:바로우즈메시지, UNICODE(0x000D), @"HITRATE:　필중")%
+		CASE -999
+			TSTR:바로우즈메시지 = %ADD_SPLIT(TSTR:바로우즈메시지, UNICODE(0x000D), @"HITRATE:　0")%
+		CASEELSE
+			TSTR:바로우즈메시지 = %ADD_SPLIT(TSTR:바로우즈메시지, UNICODE(0x000D), @"HITRATE:　{RESULT:1,3}\%")%
+	ENDSELECT
+	;ミス、外した場合はここで-1を入れて戻る
+	IF RESULT == 0
+		;外した
+		;レコード作成
+		CALL SET_C_RECORDS,  L_P, L_T, "MISS", GET_TYPE(L_相性)
+		TSTR:스킬메시지결과 = MISS
+		SIF TSTR:명중판정확정요인 != ""
+			TSTR:스킬메시지결과 += "《" + TSTR:명중판정확정요인 + "》"
+		CALL PRINT_SKILL_MESSAGE
+		IF !LINEISEMPTY()
+			IF SOFT_ON("바로우즈")
+				HTML_PRINT SET_BUTTON_TAG(DEL_BUTTON_TAG(HTML_POPPRINTINGSTR()), , TSTR:바로우즈메시지)
+			ELSE
+				PRINTL 
+			ENDIF
+		ENDIF
+		;ミスは1MOREポイント-1
+		CALL ONE_MORE_POINT_ADD, L_P, -1
+		SIF !IS_WAIT
+			WAIT
+		IS_MISSED = 1
+		GOTO END
+	ENDIF
+	;ダメージ関数を通過しない場合があるので、ここで使用判定を取る。
+	SIF L_攻撃タイプ == GET_攻撃タイプ_NUM("物理") || TFLAG:기합적용
+		TFLAG:기합사용 = 1
+	SIF L_攻撃タイプ == GET_攻撃タイプ_NUM("魔法") || TFLAG:집중적용
+		TFLAG:집중사용 = 1
+	TFLAG:공격실행 = 1
+ELSEIF L_攻撃種別 == "BAD_STATE"
+	TFLAG:BS스킬실행 = 1
+ENDIF
+;---------------------------------------------------------
+;反射(相性 999)の処理
+;対象(L_T)に攻撃者(L_P)を代入して本流に合流する
+;なお、属性は再判定しないで、上流でとった相性を引き継いで使う
+;---------------------------------------------------------
+TFLAG:반사중 = 0
+L_T:1 = L_T
+IF CHECK_WEAKNESS(L_相性倍率) == -4
+	;反射する対象が複数いる場合、死んでしまって不正な対象になる場合があるので対処
+	IF !IS_TARGET_ABLE(FLAG:소환공격중 && CFLAG:L_P:피소환플래그 ? FINDCHARA_ID(CFLAG:L_P:소환자ID) # L_P)
+		L_相性倍率 = 0
+		IS_NOT_EXIST_TARGET = 1
+	ELSE
+		TFLAG:반사중 = 1
+		TFLAG:스킬메시지컬러 = COLOR("BATTLE", L_T)
+		LOCALS '= "이런 반사당했다"
+		;PRINT しまったはねかえされた
+		SIF TSTR:상성변동요인 != ""
+			LOCALS += @"　<<%TSTR:상성변동요인%>>"
+		CALL PRINT_COLOR, LOCALS, TFLAG:스킬메시지컬러
+		PRINTL 
+		;召喚攻撃の場合、反射は召喚者にいく
+		IF FLAG:소환공격중 && CFLAG:L_P:피소환플래그
+			TSTR:스킬메시지대상 = 　　TARGET:[{CPOS(L_P),2}] %CALLNAME:(FINDCHARA_ID(CFLAG:L_P:소환자ID)), 20, LEFT%
+		ELSE
+			TSTR:스킬메시지대상 = 　　TARGET:%L_PNAME%
+		ENDIF
+		;PRINTFORM 　　TARGET:[{CPOS(L_P),2}] %CALLNAME:L_P,20,LEFT%　>>>>>>　
+		;対象を入れ替える
+		L_T:1 = L_T
+		L_T = FLAG:소환공격중 && CFLAG:L_P:피소환플래그 ? FINDCHARA_ID(CFLAG:L_P:소환자ID) # L_P
+		;相性を再計算
+		IF L_攻撃種別 == "ATTACK"
+			CALL BTL_CALC_AISYOU, L_P, L_T, L_スキル, L_相性, 1
+		ELSE
+			CALL CALC_BADSTATE_MULTI, L_P, L_T, L_スキル, L_相性, L_状態異常
+			L_状態異常_相性倍率 = RESULT
+			TSTR:이상내성변동요인 = %RESULTS%
+		ENDIF
+		L_相性倍率 = RESULT
+		TSTR:상성변동요인 = %RESULTS%
+		TSTR:상성분석 += @"反射後:%GET_TYPE(L_相性)%_{L_相性倍率}/{MAXBASE:L_T:GET_TYPE(L_相性)}/%TSTR:상성변동요인%"
+	ENDIF
+ENDIF
+;---------------------------------------------------------
+;無効(相性 0)の処理
+;---------------------------------------------------------
+IF CHECK_WEAKNESS(L_相性倍率) == -2
+	TSTR:스킬메시지결과 = %GET_TYPE(L_相性)%:%"BLOCK", 6%
+	IF L_攻撃種別 == "BAD_STATE"
+		CALL JUDG_BADSTATE, L_P, L_T, L_状態異常, L_状態異常_相性, 100, L_状態異常_確率, L_状態異常_最大確率, L_スキル
+		TSTR:바로우즈메시지 = %ADD_SPLIT(TSTR:바로우즈메시지, UNICODE(0x000D), @"%GET_STATE(L_状態異常), 7, LEFT%:　{RESULT:1,3}\%")%
+		TSTR:바로우즈메시지 = %ADD_SPLIT(TSTR:바로우즈메시지, UNICODE(0x000D), @"%"BSTYPE  ", 7, LEFT%:　%GET_TYPE(L_状態異常_相性)%(BLOCK)")%
+	ENDIF
+ELSE
+	;---------------------------------------------------------
+	;相性1以上、つまりダメージが出る場合の処理
+	;---------------------------------------------------------
+	IF L_攻撃種別 == "ATTACK"
+		;判定に乱数が絡むのでここで取っておく
+		L_潜在防御 = GET_SENZAI_BOUGYO(L_T)
+		;潜在防御は無効となる
+		IF L_潜在防御 == 1 && L_威力
+			CFLAG:L_T:잠재능력발동횟수++
+			L_相性倍率 = 0
+			TSTR:상성변동요인 = 潜在防御
+			CALL BATTLE_EVENT_ATTACK, L_P , L_T, 0, 1
+			TSTR:스킬메시지결과 = %GET_TYPE(L_相性)%:　　BLOCK
+		ELSE
+			;潜在反射　割合ダメージは威力がバグるので使わない
+			IF L_潜在防御 == 2 && L_ダメージタイプ != 5 && L_威力
+				;反射する対象が複数いる場合、死んでしまって不正な対象になる場合があるので対処
+				IF !IS_TARGET_ABLE(L_P)
+					PRINTW 이런 반사당했다　<<잠재방어>>
+					IS_NOT_EXIST_TARGET = 1
+					GOTO END
+				ENDIF
+				CFLAG:L_T:잠재능력발동횟수++
+				L_T = L_P
+				TFLAG:반사중 = 1
+				PRINTL 이런 반사당했다　<<잠재방어>>
+				TSTR:스킬메시지대상 = 　　TARGET:%L_PNAME%
+				;PRINTFORM 　　TARGET:[{CPOS(L_T),2}] %CALLNAME:L_T,20,LEFT%　>>>>>>　
+				;万能相性・クリティカル5・吸収0の技として返す
+				L_相性 = GET_TYPE_NUM("만능")
+				L_クリティカル率 = 5
+				L_吸収率 = 0
+				CALL BTL_CALC_AISYOU, L_P, L_T, , L_相性, 1
+				L_相性倍率 = RESULT
+				;異常のフラグは折っておく
+				L_状態異常 = 0
+				;CALL BTL_CALC_DAMAGE, L_P, L_T, L_スキル, L_威力, L_相性, L_相性倍率, 5, 0, L_ダメージタイプ, L_ダメージタイプ, L_割合計算, L_割合上限
+			ENDIF
+			;--------------------------------------
+			;ダメージ計算
+			;威力がマイナスの場合は処理を飛ばす
+			;ターゲットが変わっているケースを考慮して差し替える
+			;--------------------------------------
+			CFLAG:L_P:타겟 = CPOS(L_T)
+			IF L_威力 >= 0
+				;かばう　の判定
+				IF !(TFLAG:반사중 || FLAG:총공격중 || FLAG:카운터중 || TFLAG:커버링)
+					FOR LCOUNT, 0, TRYSKILLNUM(L_T)
+						RESULT = 0
+						TRYCCALLFORM SKILL_COVERING_%GET_TRYSKILL(L_T, LCOUNT)%, L_T, L_P, TRYSKILL_VAR
+							IF RESULT >= 0
+								;自分自身はかばえない
+								SIF L_T == RESULT
+									CONTINUE
+								;行動不能の場合はかばえない
+								SIF !ACTIONABLE_CHARA_F(RESULT)
+									CONTINUE
+								COVER_CHARA = RESULT, L_T
+								L_T = RESULT
+								PRINTFORML 　　COVER :[{CPOS(COVER_CHARA:1),2}] %CALLNAME:(COVER_CHARA:1),20,LEFT%　>>>>>>　[{CPOS(L_T),2}] %CALLNAME:(L_T),20,LEFT%
+								SWAP CFLAG:L_T:포지션, CFLAG:(COVER_CHARA:1):포지션
+								;かばう場合は防御フラグを使えない
+								STOCK_GUARD = CFLAG:L_T:방어플래그
+								CFLAG:L_T:방어플래그 = 0
+								TFLAG:커버링 = 1
+								;PRINTFORML 　　%CALLNAME:L_T%が%CALLNAME:(L_T:1)%を攻撃からかばった！
+								TSTR:스킬메시지대상 = 　　TARGET:[{CPOS(L_T),2}] %CALLNAME:(L_T),20,LEFT%
+								GOTO SET_PROP_START
+								;相性の再計算
+								;CALL BTL_CALC_AISYOU, L_P, L_T, L_スキル, L_相性, 1
+								;L_相性倍率 = RESULT
+								;BREAK
+							ENDIF
+						CATCH
+						ENDCATCH
+					NEXT
+				ENDIF
+				CALL BTL_CALC_DAMAGE, L_P, L_T, L_スキル, L_威力, L_相性, L_相性倍率, L_クリティカル率, L_吸収率, L_ダメージタイプ, L_攻撃タイプ, L_割合計算, L_割合上限
+				;HPバリアでダメージを防ぎきった場合は無効扱いになる
+				SIF RESULT == 0 && CFLAG:L_T:HP배리어
+					L_相性倍率 = 0
+			ENDIF
+			;---------------------------------------------------------
+			;추가효과(状態異常)があった場合、異常の相性倍率を取る。
+			;---------------------------------------------------------
+			IF CHECK_WEAKNESS(L_相性倍率) >= -1 && L_状態異常 > 0 && L_T > -1 && CFLAG:(L_T):상태이상 != GET_STATE_NUM("DYING")
+				TSTR:스킬메시지결과 += @" & "
+				;PRINT  & 
+				;相性の取得
+				CALL CALC_BADSTATE_MULTI, L_P, L_T, L_スキル, , , 1
+				L_状態異常_相性倍率 = RESULT
+				L_状態異常_相性 = RESULT:1
+				TSTR:이상내성변동요인 = %RESULTS%
+				TSTR:상성분석 += @"追加攻撃:%GET_TYPE(L_状態異常_相性)%_{L_状態異常_相性倍率}/{MAXBASE:L_T:GET_TYPE(L_相性:1)}/%TSTR:상성변동요인%"
+			ELSE
+				;ここで無効以下だった場合は追加効果のフラグを消す
+				L_状態異常 = 0
+			ENDIF
+		ENDIF
+	ENDIF
+	;-------------------------------------------------------------------------------
+	;状態異常の処理
+	;-------------------------------------------------------------------------------
+	LOCALS = 
+	IS_BADSTATE_MISSED = 0
+	IF L_状態異常 > 0
+		;このタイミングでの無効化以下は無効扱いとなる
+		IF CHECK_WEAKNESS(L_状態異常_相性倍率) < -1
+			LOCALS = BLOCK
+			IS_BADSTATE_MISSED = 1
+			CALL JUDG_BADSTATE, L_P, L_T, L_状態異常, L_状態異常_相性, 100, L_状態異常_確率, L_状態異常_最大確率, L_スキル
+			TSTR:바로우즈메시지 = %ADD_SPLIT(TSTR:바로우즈메시지, UNICODE(0x000D), @"%GET_STATE(L_状態異常), 7, LEFT%:　{RESULT:1,3}\%")%
+			TSTR:바로우즈메시지 = %ADD_SPLIT(TSTR:바로우즈메시지, UNICODE(0x000D), @"%"BSTYPE  ", 7, LEFT%:　%GET_TYPE(L_状態異常_相性)%(BLOCK)")%
+			;PRINT BLOCK
+		ELSE
+			CALL JUDG_BADSTATE, L_P, L_T, L_状態異常, L_状態異常_相性, L_状態異常_相性倍率, L_状態異常_確率, L_状態異常_最大確率, L_スキル
+			SELECTCASE RESULT:1
+				CASE 999
+					TSTR:바로우즈메시지 = %ADD_SPLIT(TSTR:바로우즈메시지, UNICODE(0x000D), @"%GET_STATE(L_状態異常), 7, LEFT%:　필중")%
+				CASE -999
+					TSTR:바로우즈메시지 = %ADD_SPLIT(TSTR:바로우즈메시지, UNICODE(0x000D), @"%GET_STATE(L_状態異常), 7, LEFT%:　  0")%
+				CASEELSE
+					TSTR:바로우즈메시지 = %ADD_SPLIT(TSTR:바로우즈메시지, UNICODE(0x000D), @"%GET_STATE(L_状態異常), 7, LEFT%:　{RESULT:1,3}\%")%
+			ENDSELECT
+			TSTR:바로우즈메시지 = %ADD_SPLIT(TSTR:바로우즈메시지, UNICODE(0x000D), @"%"BSTYPE  ", 7, LEFT%:　%GET_TYPE(L_状態異常_相性)%({L_状態異常_相性倍率}\%)")%
+			;ここでも変換チェック
+			IF RESULT
+				;ヒット確定後の無効化処理
+				CALL INTERCEPT_SET_BADSTATE, L_P, L_T, L_状態異常, L_状態異常_相性, L_相性倍率
+				IF RESULT
+					LOCALS = BLOCK
+					TSTR:이상내성변동요인 = %RESULTS%
+					CALL SET_C_RECORDS,  L_P, L_T, "BSAVOID", GET_STATE(L_状態異常)
+					IS_BADSTATE_MISSED = 1
+				ELSE
+					CALL SET_BAD_STATE, L_P, L_T, L_状態異常, , 1
+					LOCALS = %GET_STATE(L_状態異常)%
+					CALL SET_C_RECORDS,  L_P, L_T, "BAD_STATE", GET_STATE(L_状態異常)
+				ENDIF
+			ELSE
+				LOCALS = MISS
+				CALL SET_C_RECORDS,  L_P, L_T, "BSAVOID", GET_STATE(L_状態異常)
+				IS_BADSTATE_MISSED = 1
+				;PRINT MISS
+			ENDIF
+		ENDIF
+		IF L_攻撃種別 == "ATTACK"
+			TSTR:스킬메시지결과 += LOCALS
+		ELSE
+			TSTR:스킬메시지결과 = %GET_TYPE(L_状態異常_相性)%:%LOCALS,6%
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------------------------------------
+;被弾処理
+;1moreポイントは反射・吸収が-2,無効・ミスが-1(ミスは上流で処理済み)
+;各種防壁はここでフラグを立ててACTION終了後に減少処理→複数回攻撃も1枚で受けられる。
+;-------------------------------------------------------------------------------
+IF TFLAG:반사중
+	;反射は1MOREポイント-2
+	CALL ONE_MORE_POINT_ADD, L_P,-2
+ELSE
+	SELECTCASE CHECK_WEAKNESS(L_相性倍率)
+		CASE -2
+			CALL ONE_MORE_POINT_ADD, L_P, -1
+		CASE -3
+			CALL ONE_MORE_POINT_ADD, L_P, -2
+	ENDSELECT
+ENDIF
+;属性無効化が発生していた場合は後で処理するために被弾フラグを立てておく
+SIF TSTR:상성변동요인 == GET_TYPE(L_相性) + "防壁"
+	CFLAG:L_T:(GET_TYPE(L_相性) + "피탄") = 1
+SIF TSTR:상성변동요인 == "ダメージ防壁"
+	CFLAG:L_T:수호의방패발동 = 1
+SIF TSTR:이상내성변동요인 == "状態異常防壁"
+	CFLAG:L_T:성스러운가호발동 = 1
+SIF TSTR:이상내성변동요인 == GET_TYPE(L_状態異常_相性) + "防壁"
+	CFLAG:L_T:(GET_TYPE(L_状態異常_相性) + "피탄") = 1
+SIF TSTR:상성변동요인 == "即死防壁"
+	CFLAG:L_T:테트라쟈발동 = 1
+
+;威力が負の場合はデフォのメッセージを出さない
+IF L_威力 >= 0
+	CALL PRINT_SKILL_MESSAGE, "前置/メイン"
+	;メッセージ関数そのものにはいらないが、スキル個別の表示だと必要になる場合があるので色をかえておく
+	SIF TFLAG:스킬메시지컬러 > 0
+		SETCOLOR TFLAG:스킬메시지컬러
+ENDIF
+;-------------------------------------------------------------------------------
+;スキルのダメージ後発動関数の呼び出し
+;主な呼び出し対象はあたった敵の能力低下などで表示も直接行われるのに注意
+;-------------------------------------------------------------------------------
+SIF L_T > -1 && CFLAG:(L_T):상태이상 != GET_STATE_NUM("DYING")
+	TRYCALLFORM SKILL_DAMAGE_EFFECT_%CONVERT_SKILLNUM_TO_STR(L_P, L_スキル)%, L_P, L_T, CHECK_WEAKNESS(L_相性倍率)
+; & XXのような追加メッセージがスキル側で指定されていたらこのタイミングで表示
+PRINTFORM %TSTR:스킬메시지추가효과%
+;-------------------------------------------------------------------------------
+;メッセージ周りの処理
+;-------------------------------------------------------------------------------
+LOCALS = 
+IF TFLAG:크리티컬발생_HIT && CHECK_WEAKNESS(L_相性倍率) > 0
+	SIF LOCALS == ""
+		LOCALS += "　"
+	LOCALS += "《CRIT & WEAK》"
+ELSE
+	IF TFLAG:크리티컬발생_HIT
+		SIF LOCALS == ""
+			LOCALS += "　"
+		LOCALS += "《CRITICAL》"
+	ENDIF
+	;攻撃種別が攻撃じゃない場合で異常がミスっている場合はWEAKNESS表記を出さない
+	IF CHECK_WEAKNESS(L_相性倍率) > 0 && !(L_攻撃種別 != "ATTACK" && IS_BADSTATE_MISSED)
+		SIF LOCALS == ""
+			LOCALS += "　"
+		LOCALS += "《WEAKNESS》"
+	ENDIF
+ENDIF
+IF TSTR:스킬메시지데미지변동요인 != ""
+	FOR LCOUNT, 0, STRCOUNT(TSTR:스킬메시지데미지변동요인, "/") + 1
+		SIF LOCALS == ""
+			LOCALS += "　"
+		LOCALS += "《" + AUTO_SPLIT(TSTR:스킬메시지데미지변동요인, "/", LCOUNT) + "》"
+	NEXT
+ENDIF
+
+IF TSTR:명중판정확정요인 != ""
+	SIF LOCALS == ""
+		LOCALS += "　"
+	LOCALS += "《" + TSTR:명중판정확정요인 + "》"
+ENDIF
+IF TSTR:상성변동요인 != ""
+	SIF LOCALS == ""
+		LOCALS += "　"
+	LOCALS += @"《%TSTR:상성변동요인%》"
+ENDIF
+IF (TSTR:상성변동요인 != TSTR:이상내성변동요인) && TSTR:이상내성변동요인 != ""
+	SIF LOCALS == ""
+		LOCALS += "　"
+	LOCALS += @"《%TSTR:이상내성변동요인%》"
+ENDIF
+SIF LOCALS != "" && L_威力 >= 0
+	PRINTS LOCALS
+;バロウズがONの場合はメッセージを埋め込む
+IF !LINEISEMPTY()
+	IF SOFT_ON("바로우즈")
+		HTML_PRINT SET_BUTTON_TAG(DEL_BUTTON_TAG(HTML_POPPRINTINGSTR()), , TSTR:바로우즈메시지)
+	ELSE
+		PRINTL 
+	ENDIF
+ENDIF
+;死亡時のメッセージなどダメージ表示のあとに追加されるべきメッセージを表示する
+CALL PRINT_SKILL_MESSAGE, "追加"
+RESETCOLOR
+SIF !LINEISEMPTY()
+	PRINTL 
+FOR LCOUNT, 1, 17
+	IF LINKED_DAMAGE_TO_POS:LCOUNT < 0
+		CALL PRINT_HIT_MESSAGE, POS(LCOUNT), @"連動:{-LINKED_DAMAGE_TO_POS:LCOUNT,6}데미지"
+		IF IS_BADSTATE(POS(LCOUNT), "DYING")
+			IF CFLAG:POS(LCOUNT):PT플래그 == 0
+				PRINTFORML %조사처리(CALLNAME:POS(LCOUNT),"을")% 쓰러트렸다
+			ELSE
+				PRINTFORML %조사처리(CALLNAME:POS(LCOUNT),"은")% 힘이 다했다
+			ENDIF
+		ENDIF
+	ELSEIF LINKED_DAMAGE_TO_POS:LCOUNT > 0
+		CALL PRINT_HIT_MESSAGE, POS(LCOUNT), @"連動:{LINKED_DAMAGE_TO_POS:LCOUNT,6}회복"
+	ENDIF
+NEXT
+SIF !IS_WAIT
+	WAIT
+;---------------------------------------------------------
+;レコード登録
+;---------------------------------------------------------
+SIF TFLAG:반사중
+	CALL SET_C_RECORDS,  L_P, L_T:1, "REFLECT", GET_TYPE(L_相性)
+SIF TFLAG:크리티컬발생_HIT
+	CALL SET_C_RECORDS,  L_P, L_T, "CRT", GET_TYPE(L_相性)
+SELECTCASE CHECK_WEAKNESS(L_相性倍率)
+	CASE 1
+		CALL SET_C_RECORDS,  L_P, L_T, "WEAK", GET_TYPE(L_相性)
+		SIF CFLAG:L_T:현데미지 > 0
+			CALL SET_C_RECORDS,  L_P, L_T, "HIT", GET_TYPE(L_相性)
+		CALL SET_C_RECORDS,  L_P, L_T, GET_ダメージタイプ(L_ダメージタイプ), GET_TYPE(L_相性)
+		CFLAG:L_T:회피실패 = 1
+	CASE -2
+		CALL SET_C_RECORDS,  L_P, L_T, "BLOCK", GET_TYPE(L_相性)
+	CASE -3
+		CALL SET_C_RECORDS,  L_P, L_T, "DRAIN", GET_TYPE(L_相性)
+	CASEELSE
+		SIF CFLAG:L_T:현데미지 > 0
+			CALL SET_C_RECORDS,  L_P, L_T, "HIT", GET_TYPE(L_相性)
+		CALL SET_C_RECORDS,  L_P, L_T, GET_ダメージタイプ(L_ダメージタイプ), GET_TYPE(L_相性)
+		CFLAG:L_T:회피실패 = 1
+ENDSELECT
+$END
+IF TFLAG:커버링
+	CFLAG:COVER_CHARA:방어플래그 = STOCK_GUARD
+	SWAP CFLAG:COVER_CHARA:포지션, CFLAG:(COVER_CHARA:1):포지션
+	TFLAG:커버링 = 0
+ENDIF
+IF TFLAG:반사중
+	TFLAG:반사중 = 0
+	RETURN -4
+ELSEIF IS_MISSED
+	RETURN -1
+ELSEIF IS_NOT_EXIST_TARGET
+	RETURN 0
+ELSE
+	RETURN 1
+ENDIF
+
+
+;=========================================
+;攻撃スキル
+;範囲の性質にあわせて単体・範囲・ランダム・拡散・縦一列の4種類
+;=========================================
+@ATTACK_SKILL, ARG, ARG:1, ARG:2, ARG:3, ARGS = "自動"
+#DIMS L_SPHERE_TYPE
+#DIM L_SPHERE
+IF ARGS == "自動"
+	CALL GET_SKILL_PROP, "SKILL_SPHERE", ARG:2, ARG
+	L_SPHERE = RESULT
+	IF L_SPHERE == 1
+		RESULT = 0
+		CALL GET_SKILL_PROP, "SKILL_SPREAD", ARG:2, ARG
+		IF RESULT
+			L_SPHERE_TYPE = SPREAD
+		ELSE
+			L_SPHERE_TYPE = SINGLE
+		ENDIF
+	ELSEIF L_SPHERE == 5
+		L_SPHERE_TYPE = LINE
+	ELSE
+		RESULT = 0
+		CALL GET_SKILL_PROP, "SKILL_RAND_TARGET", ARG:2, ARG
+		IF RESULT
+			L_SPHERE_TYPE = RAND
+		ELSE
+			L_SPHERE_TYPE = FIELD
+		ENDIF
+	ENDIF
+ELSE
+	L_SPHERE_TYPE = %ARGS%
+ENDIF
+IF L_SPHERE_TYPE == "SINGLE"
+	CALL ATTACK_SINGLE, ARG, POS(ARG:1), ARG:2, ARG:3
+ELSE
+	CALLFORM ATTACK_%L_SPHERE_TYPE%, ARG, ARG:1, ARG:2, ARG:3
+ENDIF
+
+;-----------------------------------------
+;単体攻撃スキル
+;ARG:0		行動者(キャラ番号)
+;ARG:1		攻撃対象(キャラ番号)
+;ARG:2		使用スキル
+;ARG:3		文字送りの制御(真 = ダメージ表示時のWAITを飛ばす)
+;
+;備考:SINGLE系統だけ攻撃対象がキャラ番号で送られてくるので注意
+;-----------------------------------------
+@ATTACK_SINGLE, ARG, ARG:1, ARG:2, ARG:3
+#LOCALSIZE 13
+#DIM STOCK
+#DIM num
+#DIM LCOUNT
+#DIM L_P
+#DIM L_T
+#DIM L_スキル
+#DIM L_攻撃回数
+L_P = ARG
+L_T = ARG:1
+L_スキル = ARG:2
+VARSET num,0
+
+;타겟(キャラ番号)をポジションに変換しつつ、保存しておく
+STOCK = CPOS(L_T)
+SWAP STOCK, CFLAG:L_P:타겟
+
+;攻撃回数算出
+CALL CALC_ATTACK_SKILL_HIT_NUMBER, L_P, L_スキル
+L_攻撃回数 = RESULT
+FOR LCOUNT, 0, L_攻撃回数
+	FLAG:공격횟수 = LCOUNT
+	CALL ATTACK_TARGET, L_P, L_T, L_スキル, 0, ARG:3
+	SIF GET_STATE(CFLAG:L_T:상태이상) == "DYING"
+		BREAK
+NEXT
+FLAG:공격횟수 = 0
+;ターゲットを戻す
+SWAP STOCK, CFLAG:L_P:타겟
+RETURN 0
+;-----------------------------------------
+;縦列攻撃スキル基本
+;ARG:0		行動者
+;ARG:1		攻撃対象
+;ARG:2		使用スキル
+;ARG:3		文字送りの制御(真 = ダメージ表示時のWAITを飛ばす)
+;
+;備考:SINGLE系統だけ攻撃対象がキャラ番号で送られてくるので注意
+;-----------------------------------------
+@ATTACK_LINE, L_P, L_T, L_スキル, IS_WAIT
+#DIM DYNAMIC STOCK
+#DIM DYNAMIC L_攻撃回数
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_ENEMY, 2
+#DIM DYNAMIC L_スキル
+#DIM DYNAMIC IS_WAIT
+;ターゲットの確定
+IF L_T >= 7
+	IF L_T < 12
+		L_ENEMY = POS(L_T), POS(L_T + 5)
+	ELSE
+		L_ENEMY = POS(L_T - 5), POS(L_T)
+	ENDIF
+ELSE
+	IF L_T < 4
+		L_ENEMY = POS(L_T), POS(L_T + 3)
+	ELSE
+		L_ENEMY = POS(L_T - 3), POS(L_T)
+	ENDIF
+ENDIF
+
+CALL CALC_ATTACK_SKILL_HIT_NUMBER, L_P, L_スキル
+L_攻撃回数 = RESULT
+;타겟(キャラ番号)をポジションに変換しつつ、保存しておく
+STOCK = CFLAG:L_P:타겟
+FOR LCOUNT:1, 0, 2
+	SIF !IS_TARGET_ABLE(L_ENEMY:(LCOUNT:1))
+		CONTINUE
+	;ターゲット条件を確認
+	CALL GET_SKILL_PROP, "SKILL_TARGETABLE", L_スキル, L_P, L_ENEMY:(LCOUNT:1)
+	SIF !RESULT
+		CONTINUE
+	CFLAG:L_P:타겟 = CPOS(L_ENEMY:(LCOUNT:1))
+	FOR LCOUNT, 0, L_攻撃回数
+		FLAG:공격횟수 = LCOUNT
+		CALL ATTACK_TARGET, L_P, L_ENEMY:(LCOUNT:1), L_スキル, 0, IS_WAIT
+		SIF !IS_TARGET_ABLE(L_ENEMY:(LCOUNT:1))
+			BREAK
+	NEXT
+	FLAG:공격횟수 = 0
+NEXT
+CFLAG:L_P:타겟 = STOCK
+RETURN 0
+
+;-----------------------------------------
+;範囲攻撃スキル基本
+;ARG:0		行動者(キャラ番号)
+;ARG:1		攻撃対象(포지션)
+;ARG:2		使用スキル
+;ARG:3		文字送りの制御(真 = ダメージ表示時のWAITを飛ばす)
+;-----------------------------------------
+@ATTACK_FIELD, L_P, L_T, L_スキル, IS_WAIT
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_スキル
+#DIM DYNAMIC L_ENEMY
+#DIM DYNAMIC IS_WAIT
+#DIM DYNAMIC L_攻撃回数
+;攻撃回数算出
+CALL CALC_ATTACK_SKILL_HIT_NUMBER, L_P, L_スキル
+L_攻撃回数 = RESULT
+;範囲内の敵すべてに単体攻撃をしていくという形で進んでいく
+FOR LCOUNT:1, GET_POS_MIN(L_T), GET_POS_MAX(L_T) + 1
+	;個別のターゲットを代入
+	L_ENEMY = POS(LCOUNT:1)
+	CALL GET_SKILL_PROP, "SKILL_TARGETABLE", L_スキル, L_P, L_ENEMY
+	SIF !RESULT
+		CONTINUE
+	;一時的にターゲットを個別のものに差し替える
+	CFLAG:L_P:타겟 = LCOUNT:1
+	FOR LCOUNT, 0, L_攻撃回数
+		SIF !IS_TARGET_ABLE(L_ENEMY)
+			BREAK
+		FLAG:공격횟수 = LCOUNT
+		CALL ATTACK_TARGET, L_P, L_ENEMY, L_スキル, 0, IS_WAIT
+	NEXT
+	FLAG:공격횟수 = 0
+NEXT
+;ターゲットを戻す
+CFLAG:L_P:타겟 = L_T
+
+;=========================================
+;ランダム攻撃スキル基本
+;ARG:0 使用者
+;ARG:1 対象(포지션)
+;ARG:2 使用スキル
+;ARG:3 真の場合最後にWAITで待たない
+;=========================================
+@ATTACK_RAND, L_P, L_ターゲット, L_スキル, IS_NOWAIT
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_ターゲット
+#DIM DYNAMIC L_スキル
+#DIM DYNAMIC IS_NOWAIT
+#DIM DYNAMIC L_TARGET_LIST, 32000
+#DIM DYNAMIC L_HIT_LIMIT, 17
+#DIM DYNAMIC COUNT_HIT, 17
+#DIM DYNAMIC HIT_NUMBER
+#DIM DYNAMIC MAX_HIT_NUMBER
+#DIM DYNAMIC MIN_HIT_NUMBER
+#DIM DYNAMIC MAXATK_PER
+#DIM DYNAMIC MINATK_PER
+;---------------------------------------------------------
+;回数を取得
+;---------------------------------------------------------
+RESULT = 1
+CALL GET_SKILL_PROP, "SKILL_MAXATTACKNUMBER", L_スキル, L_P
+MAX_HIT_NUMBER = RESULT
+
+CALL GET_SKILL_PROP, "SKILL_MINATTACKNUMBER", L_スキル, L_P
+MIN_HIT_NUMBER = RESULT
+
+CALL CALC_ATTACK_SKILL_HIT_NUMBER, L_P, L_スキル
+
+;総ヒット回数
+HIT_NUMBER = RESULT
+RESULT = 0
+CALL GET_SKILL_PROP, "SKILL_MAXATK_PER", L_スキル, L_P
+MAXATK_PER = RESULT
+CALL GET_SKILL_PROP, "SKILL_MINATK_PER", L_スキル, L_P
+MINATK_PER = RESULT
+
+SIF HAVE_AW_SKILL(L_P, "狂嵐の宴")
+	MAXATK_PER += (MAXATK_PER - MINATK_PER) * 40 / 100 + (((MAXATK_PER - MINATK_PER) * 40 % 100) > RAND:100)
+SIF COUNT_ACTIVE_LEADER_SKILL("マドンナリリー", L_P)
+	MAXATK_PER += (MAXATK_PER - MINATK_PER) * 25 / 100 + (((MAXATK_PER - MINATK_PER) * 25 % 100) > RAND:100)
+
+IF CFLAG:L_P:다단공격횟수상한고정
+	RESULT = 0
+	CALL GET_SKILL_PROP, "SKILL_ATTACKTYPE", L_スキル, L_P
+	;TODO:スキルに限定する…のはまぁマシンガンが怖いから。銃に調整が入る場合は再調整すべし
+	SIF (RESULT == 0 || GROUPMATCH(GET_攻撃タイプ(RESULT), "物理", "魔法")) && L_スキル != [[스킬:ＡＴＴＡＣＫ]]
+		MINATK_PER = MAXATK_PER
+ENDIF
+;---------------------------------------------------------
+;攻撃対象を配列にいれていく
+;---------------------------------------------------------
+;各対象に攻撃回数を配布
+VARI COUNT_HITLIST_TARGET
+VARI COUNT_HITLISTNUM = 0
+VARI L_TAUNT_STRENGTH
+VARI COUNT_FRIEND
+VARI COUNT_ENEMY
+VARI IS_HITABLE,17
+FOR LCOUNT, GET_POS_MIN(L_ターゲット), GET_POS_MAX(L_ターゲット) + 1
+	SIF !IS_TARGET_ABLE(POS(LCOUNT))
+		CONTINUE
+	;ターゲット条件を確認
+	CALL GET_SKILL_PROP, "SKILL_TARGETABLE", L_スキル, L_P, POS(LCOUNT)
+	SIF !RESULT
+		CONTINUE
+	IF CFLAG:POS(LCOUNT):PT플래그
+		COUNT_FRIEND++
+	ELSE
+		COUNT_ENEMY++
+	ENDIF
+	IS_HITABLE:LCOUNT = 1
+NEXT
+FOR LCOUNT, GET_POS_MIN(L_ターゲット), GET_POS_MAX(L_ターゲット) + 1
+	SIF !IS_HITABLE:LCOUNT
+		CONTINUE
+	;個別回数の確定
+	L_HIT_LIMIT:LCOUNT = RAND(MINATK_PER, MAXATK_PER + 1)
+	;ヒットリストに入れる基礎数
+	COUNT_HITLIST_TARGET = 20
+	;挑発強度
+	L_TAUNT_STRENGTH = CFLAG:POS(LCOUNT):기본피타겟율
+	SIF CFLAG:POS(LCOUNT):피타겟비율변동지속턴수 > 0
+		L_TAUNT_STRENGTH =  L_TAUNT_STRENGTH * CFLAG:POS(LCOUNT):변동피타겟율 / 100
+	COUNT_HITLIST_TARGET = COUNT_HITLIST_TARGET * (L_TAUNT_STRENGTH / 10)
+	SIF L_TAUNT_STRENGTH % 10 > RAND:10
+		COUNT_HITLIST_TARGET += 1
+	COUNT_HITLIST_TARGET = LIMIT(COUNT_HITLIST_TARGET, 1, 2000)
+	;敵味方全体攻撃の場合は比率調整を行う
+	IF L_ターゲット == 23 && MAXARRAY(FLAG, GETNUM(FLAG, "포지션1"), GETNUM(FLAG, "포지션6") + 1) > 0 && COUNT_FRIEND && COUNT_ENEMY
+		IF CFLAG:POS(LCOUNT):PT플래그 > 0
+			COUNT_HITLIST_TARGET *= COUNT_ENEMY
+		ELSE
+			COUNT_HITLIST_TARGET *= COUNT_FRIEND
+		ENDIF
+		COUNT_HITLIST_TARGET /= (COUNT_FRIEND + COUNT_ENEMY)
+	ENDIF
+	FOR LCOUNT:1, 0, COUNT_HITLIST_TARGET
+		L_TARGET_LIST:COUNT_HITLISTNUM = LCOUNT
+		COUNT_HITLISTNUM++
+	NEXT
+NEXT
+;攻撃回数を配布できなかったので終わる
+SIF !MAXARRAY(L_TARGET_LIST)
+	RETURN 0
+
+DEBUGPRINTFORML 総ヒット数：{HIT_NUMBER}回　個別ヒット回数：{MINATK_PER} ~ {MAXATK_PER}回
+;FOR LCOUNT, 0, FINDELEMENT(L_TARGET_LIST, 0)
+;	DEBUGPRINTFORML <{LCOUNT}>:[{L_TARGET_LIST:LCOUNT,2}] %CALLNAME:POS(L_TARGET_LIST:LCOUNT)%
+;NEXT
+
+CALL SHUFFLE_ARRAY_INT, L_TARGET_LIST, 0, FINDELEMENT(L_TARGET_LIST, 0)
+
+;---------------------------------------------------------
+;공격실행
+;---------------------------------------------------------
+FLAG:공격횟수 = 0
+FOR LCOUNT, 0, FINDELEMENT(L_TARGET_LIST, 0)
+	SIF !IS_TARGET_ABLE(POS(L_TARGET_LIST:LCOUNT))
+		CONTINUE
+	;個別のヒット数上限
+	SIF COUNT_HIT:(L_TARGET_LIST:LCOUNT) >= L_HIT_LIMIT:(L_TARGET_LIST:LCOUNT)
+		CONTINUE
+	CFLAG:L_P:타겟 = L_TARGET_LIST:LCOUNT
+	CALL ATTACK_TARGET, L_P, POS(L_TARGET_LIST:LCOUNT), L_スキル, 0, IS_NOWAIT
+	FLAG:공격횟수++
+	COUNT_HIT:(L_TARGET_LIST:LCOUNT)++
+	;総ヒット回数を消費しつくしたら終わり
+	SIF HIT_NUMBER <= FLAG:공격횟수
+		BREAK
+NEXT
+FLAG:공격횟수 = 0
+CFLAG:L_P:타겟 = L_ターゲット
+RETURN 1
+
+;=========================================
+;拡散攻撃スキル基本
+;ARG:0 使用者
+;ARG:1 対象(포지션)
+;ARG:2 使用スキル
+;ARG:3 真の場合最後にWAITで待たない
+;=========================================
+@ATTACK_SPREAD, L_P, L_T, L_スキル, IS_WAIT
+#DIM DYNAMIC LCOUNT, 3
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_ENEMY
+#DIM DYNAMIC L_スキル
+#DIM DYNAMIC IS_WAIT
+#DIM DYNAMIC L_相性
+#DIM DYNAMIC L_相性倍率
+#DIM DYNAMIC L_攻撃回数
+#DIM DYNAMIC TPOS_MIN
+#DIM DYNAMIC TPOS_MAX
+#DIM DYNAMIC L_拡散距離
+;攻撃する範囲を参照
+IF L_T < 7
+	TPOS_MIN = 1
+	TPOS_MAX = 7
+ELSE
+	TPOS_MIN = 7
+	TPOS_MAX = 17
+ENDIF
+
+;攻撃回数算出
+CALL CALC_ATTACK_SKILL_HIT_NUMBER, L_P, L_スキル
+L_攻撃回数 = RESULT
+
+L_拡散距離 = 0
+CALL GET_SKILL_PROP, "SKILL_SPREAD", L_スキル, L_P
+L_拡散距離 = RESULT+1
+
+FOR LCOUNT:2, 0, L_拡散距離
+	FLAG:확산플래그 = LCOUNT:2
+	FOR LCOUNT:1, TPOS_MIN, TPOS_MAX
+		SIF FLAG:확산플래그 != MEASURE(L_T, LCOUNT:1)
+			CONTINUE
+		FOR LCOUNT, 0, L_攻撃回数
+			;個別のターゲットを代入
+			L_ENEMY = POS(LCOUNT:1)
+			CALL GET_SKILL_PROP, "SKILL_TARGETABLE", L_スキル, L_P, L_ENEMY
+			SIF !RESULT
+				CONTINUE
+			;一時的にターゲットを個別のものに差し替える
+			CFLAG:L_P:타겟 = LCOUNT:1
+			FLAG:공격횟수 = LCOUNT
+			SIF L_ENEMY < 0
+				CONTINUE
+			SIF GET_STATE(CFLAG:L_ENEMY:상태이상) == "DYING"
+				CONTINUE
+			CALL ATTACK_TARGET, L_P, L_ENEMY, L_スキル, 0, IS_WAIT
+			SIF GET_STATE(CFLAG:L_ENEMY:상태이상) == "DYING"
+				BREAK
+		NEXT
+		FLAG:공격횟수 = 0
+	NEXT
+NEXT
+CFLAG:L_P:타겟 = L_T
+FLAG:확산플래그 = 0

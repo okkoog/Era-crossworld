@@ -1,0 +1,132 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2856,ARG
+RESULTS = 식휘「프린세스하늘여우」
+SIF  GETBIT (FLAG:커스텀게임화면,1)
+	RESULTS = 식휘「프린세스 천호」
+
+;　명중
+@SKILL_HITRATE_2856, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2856, ARG
+RETURN 18
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2856,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2856,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2856, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2856,ARG
+RETURN 40
+
+;　相性
+@SKILL_TYPE_2856,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2856
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2856, ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_2856,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2856,ARG
+RETURN GET_SPHERE_NUM("적아군전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2856, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2856
+RETURN GET_SUCCESSION_NUM("방어")
+@継承不能_2856
+RETURN 1
+;不可
+
+;속도보정
+@SKILL_SPEED_2856, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2856
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2856, ARG = -1
+RETURN 0
+
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2856, ARG, ARG:1, ARG:2
+#LOCALSIZE 3
+;コスト支払い
+;CALL PAY_COST,ARG,2856
+LOCAL = 0
+LOCAL:1 = 0
+LOCAL:2 = GET_TYPE_NUM("만능")
+
+;味方であり、紫が自パーティにいるか
+SIF CFLAG:ARG:PT플래그 != 0 && FINDCHARA_B([[キャラ:유카리_동방]]) == 2
+	LOCAL:1 = 1
+;実行
+
+
+FOR LOCAL , 0 , TYPENUM
+	;万能は防げない
+	SIF LOCAL == LOCAL:2
+		CONTINUE
+	SIF CFLAG:ARG:@"%GET_TYPE(LOCAL)%무효화횟수" < 1
+		CFLAG:ARG:@"%GET_TYPE(LOCAL)%무효화횟수" = 1
+	SIF CFLAG:ARG:@"%GET_TYPE(LOCAL)%무효화횟수" < 2 && LOCAL:1
+		CFLAG:ARG:@"%GET_TYPE(LOCAL)%무효화횟수" = 2
+NEXT
+
+
+PRINTFORMW  　　TARGET:[{ARG,2}] %CALLNAME:ARG,20,LEFT%　>>>>>>　모든 공격을 \@ LOCAL:1 ? 2회 # 1회 \@ 무효화!
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2856, ARG
+PRINTL 강력무비한 결계를 자신에게 쳐서 모든 공격을 1회 막아낸다 (만능 제외)
+PRINTL 자신 파티 내에 요괴 야쿠모 유카리가 존재할 경우 모든 공격을 2회 막아낸다 (만능 제외)
+PRINTL 神獣　야쿠모 란의 스펠카드 (계승 불가)
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2856,ARG
+RETURN 1
+;とくにない
+

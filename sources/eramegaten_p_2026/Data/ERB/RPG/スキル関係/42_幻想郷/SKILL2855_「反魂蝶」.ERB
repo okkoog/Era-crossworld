@@ -1,0 +1,423 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+;スキルゲージを導入して大幅に性能変更。八分咲で改変前と同性能になるようにした
+
+;スキル名
+@SKILL_NAME_2855,ARG
+IF ARG < 0
+	RESULTS = 「반혼접」
+;突然のラストワードが敵を襲う！
+ELSEIF SKILLGAGE_H_GET(ARG, 2855) == 100
+	RESULTS = 「西行寺無余涅槃」
+;80以上で脅威(Lunatic)級
+ELSEIF SKILLGAGE_H_GET(ARG, 2855) > 79
+	RESULTS = 「反魂蝶 -八分咲-」
+;50以上で難関(Hard)級
+ELSEIF SKILLGAGE_H_GET(ARG, 2855) > 49
+	RESULTS = 「反魂蝶 -伍分咲-」
+;30以上で普通(Normal)級
+ELSEIF SKILLGAGE_H_GET(ARG, 2855) > 29
+	RESULTS = 「反魂蝶 -参分咲-」
+;10以上で入門(Easy)級
+ELSEIF SKILLGAGE_H_GET(ARG, 2855) > 9
+	RESULTS = 「反魂蝶 -一分咲-」
+;それ以外なら使用不可
+ELSE
+	RESULTS = 「반혼접」
+ENDIF
+
+;　명중
+@SKILL_HITRATE_2855, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2855, ARG
+IF ARG < 0
+	RETURN 370
+;八分咲=370を80%として計算して多少丸めた
+;だいたいブラフマーストラと同じくらい
+ELSEIF SKILLGAGE_H_GET(ARG, 2855) == 100
+	RETURN 460
+;オリジナルの威力
+;ダイン系よりはちょっと上
+ELSEIF SKILLGAGE_H_GET(ARG, 2855) > 79
+	RETURN 370
+;八分咲=370を80%として以下略
+;アギラオとかと同じくらい
+ELSEIF SKILLGAGE_H_GET(ARG, 2855) > 49
+	RETURN 230
+;八分咲=370を以下略
+;アギとかと同値
+ELSEIF SKILLGAGE_H_GET(ARG, 2855) > 29
+	RETURN 140
+;以下略
+;ポイズマより弱い　クソザコ
+ELSE
+	RETURN 50
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2855,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2855,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2855, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2855,ARG
+;RETURN 35
+;どの威力でもコスト40。威力460+破魔呪殺で即死判定で40は安いかもしれんけど戦闘の度リセットされるゲージ溜めなきゃだし
+RETURN 40
+
+;　相性
+@SKILL_TYPE_2855,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2855
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2855, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2855, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2855,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2855,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2855, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2855
+RETURN GET_SUCCESSION_NUM("주살")
+;継承不可
+
+;속도보정
+@SKILL_SPEED_2855, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2855
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2855, ARG = -1
+RETURN 15
+
+@継承不能_2855
+RETURN 1
+;不可
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2855, ARG, ARG:1, ARG:2
+;コストを支払う
+;CALL VAR_MP,ARG,-20
+LOCAL = POS(ARG:1)
+LOCALS = 포지션{ARG:1}
+
+;すでに倒しているなら飛ばす
+SIF LOCAL < 0
+	RETURN 0
+SIF GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) == "DYING"
+	RETURN 0
+
+;ラストのアレ表示　どうせ使えるの幽々子と造魔だけだし問題ないじゃろ……
+PRINTFORML 
+ALIGNMENT CENTER
+SETCOLOR 0xff8ccd
+PRINTFORML 이 몸의 괴로움을 모르고 끝났을 것을　　　　 
+SETCOLOR 0x918cff
+PRINTFORML 　　　 저버리는 관습이 없는 세상이라면　　　
+RESETCOLOR
+ALIGNMENT LEFT
+PRINTFORML 
+
+;満開なら耐性とか見ないで即死判定
+IF SKILLGAGE_H_GET(ARG, 2855) == 100
+	;対象がボスか防御してない限り、強制DYING
+	IF CFLAG:LOCAL:보스플래그 == 0 && CFLAG:LOCAL:방어플래그 == 0
+		PRINTFORM 　　TARGET:[{LOCAL,2}] %CALLNAME:LOCAL,20,LEFT%　>>>>>>　
+		;直前でCFLAG:LOCAL:방어플래그 == 0と聞いているんだからこの分岐は要らない気がするが一応残す
+		IF CFLAG:LOCAL:방어플래그
+			PRINTW GUARD
+		ELSE
+			PRINTFORML DYING
+			CALL DEAD_CHARA, LOCAL
+		ENDIF
+	ELSE
+		;対象がボスか防御中なら、攻撃
+		CALL ATTACK_SINGLE, ARG, LOCAL, 2855
+	ENDIF
+;満開以外なら破魔と呪殺で即死判定(改変前と同じ)
+ELSE
+	;対象が破魔か呪殺に完全耐性がない限り、強制DYING
+	IF MAXBASE:(FLAG:LOCALS):파마 > 0 && MAXBASE:(FLAG:LOCALS):파마 < 999 && CFLAG:LOCAL:보스플래그 == 0 && CFLAG:LOCAL:방어플래그 == 0
+		PRINTFORM 　　TARGET:[{LOCAL,2}] %CALLNAME:LOCAL,20,LEFT%　>>>>>>　
+		IF CFLAG:LOCAL:방어플래그
+			PRINTW GUARD
+		ELSE
+			PRINTFORML DYING
+			CALL DEAD_CHARA, LOCAL, ARG
+		ENDIF
+	ELSEIF MAXBASE:(FLAG:LOCALS):주살 > 0 && MAXBASE:(FLAG:LOCALS):주살 < 999 && CFLAG:LOCAL:보스플래그 == 0 && CFLAG:LOCAL:방어플래그 == 0
+		PRINTFORM 　　TARGET:[{LOCAL,2}] %CALLNAME:LOCAL,20,LEFT%　>>>>>>　
+		IF CFLAG:LOCAL:방어플래그
+			PRINTW GUARD
+		ELSE
+			PRINTFORML DYING
+			CALL DEAD_CHARA, LOCAL, ARG
+		ENDIF
+	ELSE
+		;破魔と呪殺に完全耐性があれば、攻撃
+		CALL ATTACK_SINGLE, ARG, LOCAL, 2855
+	ENDIF
+ENDIF
+
+;一発咲いたら枯れる。また春を貯め直してきてください
+CALL SKILLGAGE_H_SET, ARG, 2855, 0
+
+;====================================================
+;行動によるスキルゲージ操作
+;各キャラクターの通常の行動後に全キャラで呼び出される
+;ARG:		このスキルの持ち主のキャラ番号
+;ARG:1		行動したキャラクターのキャラ番号
+;
+;RESULT 		獲得したゲージの量を返すことで獲得量を表示させる。つまり、他人の行動に反応させることなども可能。
+;RESULT:1		獲得表示のときの文字色を指定できる。ゲージが溜まったときの表示わけなどに
+;RESULTS		ゲージの名称 「<<XXXX>>」という形で表示される
+;RESULTS:1		ゲージの単位。半角の%を使いたい場合は「\%」と言うかたちで退避記号を使うと良い
+;RESULTS;2		色指定以外の要素を使わずに文字列を返す。ゲージ式の獲得量で表現したい場合などに
+;====================================================
+@SKILLGAGE_CHARGE_2855, ARG, ARG:1
+#LOCALSIZE 2
+#DIM L_T
+#DIM L_GP
+L_GP = 0
+SIF SKILLGAGE_H_GET(ARG, 2855) == 100
+	RETURN 0
+;自分の行動の場合
+IF ARG == ARG:1
+	;反魂蝶を使ったらゲージは溜めない
+	IF CFLAG:ARG:입력행동 == 2855
+		RETURN 0
+	ENDIF
+	;ダメージを受けた敵の数に応じてスキルゲージアップ
+	;ただし幽々子が覚えるダメージを与えるスキルは【마계의조사】のみである
+	FOR LOCAL, 0, BCHARANUM
+		L_T = BCHARA:LOCAL
+		SIF CFLAG:L_T:PT플래그 == CFLAG:ARG:PT플래그
+			CONTINUE
+		IF CFLAG:L_T:현데미지 > 0
+			L_GP += 5
+		ELSE
+			CONTINUE
+		ENDIF
+		;会心、弱点を出すとさらにアップ
+		SIF GET_CREC_ACT(ARG, ARG:1, "CRT")
+			L_GP += 5
+		SIF GET_CREC_ACT(ARG, ARG:1, "WEAK")
+			L_GP += 5
+	NEXT
+	;集中しても上がる（ただし幽々子は覚えない）
+	SIF CFLAG:ARG:입력행동 == 512
+		L_GP += 30
+	;拡散弾幕射出で上がる（ただし幽々子は以下略
+	SIF CFLAG:ARG:입력행동 == 2601
+		L_GP += 25
+	;集中弾幕射出で上がる（ただし以下略
+	SIF CFLAG:ARG:입력행동 == 2602
+		L_GP += 25
+ENDIF
+;ダメージを受けた又はカウンター、トリガー以外の攻撃を受けたらゲージが増える
+;避ける方がお得にしたいのでクライマックスレヴューとかデビルトリガーから上昇値を半分に
+;IF CFLAG:ARG:현데미지 > 0 || GETBIT(CFLAG:ARG:受けフラグ,18) || GETBIT(CFLAG:ARG:受けフラグ,19)
+IF GET_CREC_ACT(ARG:1, ARG, "HIT")
+	LOCAL = 30 * CFLAG:ARG:현데미지 / MAXBASE:ARG:ＨＰ
+	LOCAL = LOCAL < 2 ? 2 # LOCAL
+	L_GP += LOCAL
+ENDIF
+;攻撃を回避したらゲージが増える（グレイズ的なアレ）
+;元は弾幕STGなので当てるより避ける方がお得にしたいのだ
+;IF (GETBIT(CFLAG:ARG:受けフラグ,18) || GETBIT(CFLAG:ARG:受けフラグ,19)) && !CFLAG:ARG:회피실패
+SIF GET_CREC_ACT(ARG:1, ARG, "AVOID")
+	L_GP += 15
+;スキルゲージが100以上だと100にする
+CALL SKILLGAGE_H_SET, ARG, 2855, MIN(L_GP + SKILLGAGE_H_GET(ARG, 2855), 100)
+;SIF SKILLGAGE_H_GET(ARG, 2855) > 100
+;	CALL SKILLGAGE_H_SET, ARG, 2855, 100
+SELECTCASE SKILLGAGE_H_GET(ARG, 2855)
+	CASE 100
+		RESULTS = 満開
+		RESULT:1 = 0xff8ccd
+	CASE IS > 79
+		RESULTS = 八分咲
+	CASE IS > 49
+		RESULTS = 五分咲
+	CASE IS > 29
+		RESULTS = 三分咲
+	CASE IS > 9
+		RESULTS = 一分咲
+	CASEELSE
+		RESULTS = SPELL POWER
+ENDSELECT
+RESULTS:1 = \%
+RETURN L_GP
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@SKILLGAGE_DISPLAY_2855, ARG
+#LOCALSIZE 2
+#DIM ループ用
+IF SKILLGAGE_H_GET(ARG, 2855) == 100
+	SETCOLOR 0xff8ccd
+	PRINTL Last Word 　>>>　[||||||||||]　発動可(POWER:MAX)
+	RESETCOLOR
+ELSE
+	LOCAL = SKILLGAGE_H_GET(ARG, 2855) / 10
+	LOCAL:1 = 10 - LOCAL
+	PRINT Spell Card　>>>　[
+	SETCOLOR 0xff8ccd
+	FOR ループ用, 0, LOCAL
+		PRINT |
+	NEXT
+	SETCOLOR 0x918cff
+	FOR ループ用, 0, LOCAL:1
+		PRINT .
+	NEXT
+	RESETCOLOR
+	PRINT ]　
+	IF SKILLGAGE_H_GET(ARG, 2855) > 9
+		PRINT 発動可(POWER:
+		SETCOLOR 0xff8ccd
+		IF SKILLGAGE_H_GET(ARG, 2855) > 79
+			PRINT 80%
+		ELSEIF SKILLGAGE_H_GET(ARG, 2855) > 49
+			PRINT 50%
+		ELSEIF SKILLGAGE_H_GET(ARG, 2855) > 29
+			PRINT 30%
+		ELSE
+			PRINT 10%
+		ENDIF
+		RESETCOLOR
+		PRINTL )
+	ELSE
+		SETCOLOR 0x666666
+		PRINTL 発動不可
+		RESETCOLOR
+	ENDIF
+ENDIF
+
+@SKILL_EX_DISPLAY_2855, ARG, ARGS
+#DIM L_POWER
+SELECTCASE SKILLGAGE_H_GET(ARG, 2855)
+	CASE IS < 10
+		L_POWER = 0
+	CASE IS < 30
+		L_POWER = 1
+	CASE IS < 50
+		L_POWER = 2
+	CASE IS < 80
+		L_POWER = 3
+	CASE IS < 100
+		L_POWER = 4
+	CASEELSE
+		L_POWER = 5
+ENDSELECT
+IF L_POWER
+	RESULTS += SET_COLOR_TAG(UNICODE(0x273F), "pink")
+ELSE
+	RESULTS += SET_COLOR_TAG(UNICODE(0x273F), "gray")
+ENDIF
+RESULTS += HTML_RECT_SPLIT_BAR(L_POWER, 5, SKILL_EX_DISPLAY_LENS - 2, BARCOLORSET("赤"), RESULT:1)
+RESULTS:1 = SPELL POWER
+RETURN 1
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2855, ARG
+;ステータス画面からはこっち表示
+IF CFLAG:(CHARANUM-1):PT플래그 || ARG < 0 || ARG >= CHARANUM
+	PRINTL 「주로 죽음으로 이끄는 정도의 능력」 그 힘의 발현.
+	PRINTL 스펠카드 게이지가 붙는다.
+	PRINTL ・준 데미지, 입은 데미지, 회피 성공으로 상승
+	PRINTL ・컨센트레이트, 탄막 사출계 스킬로 대폭 상승
+	PRINTL 게이지 상승에 따라 사이교우아야카가 힘을 되찾아 위력이 증가한다.
+	PRINTL 威霊　사이교우지 유유코의 스펠카드
+;戦闘中はこっち表示
+ELSE
+	;満開
+	IF SKILLGAGE_H_GET(ARG, 2855) == 100
+		PRINTL 「주로 죽음으로 이끄는 정도의 능력」 그 힘의 발현.
+		PRINTL 사이교우아야카는 만개의 때를 맞이했다.
+		PRINTL 대상이 가드하고 있지 않다면 즉사시키고,
+		PRINTL 가드하고 있는 대상에게는 만능 상성의 특대 데미지.
+		PRINTL 威霊　사이교우지 유유코의 라스트 워드
+	;八分咲
+	ELSEIF SKILLGAGE_H_GET(ARG, 2855) > 79
+		PRINTL 「주로 죽음으로 이끄는 정도의 능력」 그 힘의 발현.
+		PRINTL 사이교우아야카는 만개까지 초읽기 단계에 들어섰다.
+		PRINTL 대상이 파마·주살 양쪽에 완전한 내성을 지니지 않았다면 즉사시키고,
+		PRINTL 완전한 내성을 지닌 대상, 가드하고 있는 대상에게는 만능 상성의 대데미지.
+		PRINTL 威霊　사이교우지 유유코의 스펠카드
+	;伍分咲
+	ELSEIF SKILLGAGE_H_GET(ARG, 2855) > 49
+		PRINTL 「주로 죽음으로 이끄는 정도의 능력」 그 힘의 발현.
+		PRINTL 사이교우아야카는 이미 절반 이상 꽃을 피웠다.
+		PRINTL 대상이 파마·주살 양쪽에 완전한 내성을 지니지 않았다면 즉사시키고,
+		PRINTL 완전한 내성을 지닌 대상, 가드하고 있는 대상에게는 만능 상성의 대데미지.
+		PRINTL 威霊　사이교우지 유유코의 스펠카드
+	;参分咲
+	ELSEIF SKILLGAGE_H_GET(ARG, 2855) > 29
+		PRINTL 「주로 죽음으로 이끄는 정도의 능력」 그 힘의 발현.
+		PRINTL 사이교우아야카는 착실히 힘을 되찾아가고 있다.
+		PRINTL 대상이 파마·주살 양쪽에 완전한 내성을 지니지 않았다면 즉사시키고,
+		PRINTL 완전한 내성을 지닌 대상, 가드하고 있는 대상에게는 만능 상성의 대데미지.
+		PRINTL 威霊　사이교우지 유유코의 스펠카드
+	;一分咲
+	ELSEIF SKILLGAGE_H_GET(ARG, 2855) > 9
+		PRINTL 「주로 죽음으로 이끄는 정도의 능력」 그 힘의 발현.
+		PRINTL 사이교우아야카는 온전히 힘을 발휘할 수 없는 상태이나, 죽음으로 이끌기엔 충분하다.
+		PRINTL 대상이 파마·주살 양쪽에 완전한 내성을 지니지 않았다면 즉사시키고,
+		PRINTL 완전한 내성을 지닌 대상, 가드하고 있는 대상에게는 만능 상성의 대데미지.
+		PRINTL 威霊　사이교우지 유유코의 스펠카드
+	;使えないから書く意味はない
+	ELSE
+		PRINTL 「주로 죽음으로 이끄는 정도의 능력」 그 힘의 발현.
+		PRINTL 사이교우아야카는 꽃이 필 조짐조차 보이지 않는다. 발동 불가.
+		PRINTL 威霊　사이교우지 유유코의 스펠카드
+	ENDIF
+ENDIF
+;コスパを悪く調整
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2855,ARG
+SIF SKILLGAGE_H_GET(ARG, 2855) > 9
+	RETURN 1
+RETURN 0
+;ゲージを10まで溜めてから。
+

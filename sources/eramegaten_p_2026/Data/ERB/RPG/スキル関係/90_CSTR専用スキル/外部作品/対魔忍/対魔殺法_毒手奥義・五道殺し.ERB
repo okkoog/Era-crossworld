@@ -1,0 +1,142 @@
+﻿;スキル名
+@SKILL_NAME_対魔殺法_毒手奥義・五道殺し,ARG
+RESULTS = 독수오의·오도살
+
+;　명중
+@SKILL_HITRATE_対魔殺法_毒手奥義・五道殺し, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_対魔殺法_毒手奥義・五道殺し, ARG
+RETURN 200
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_対魔殺法_毒手奥義・五道殺し,ARG
+RETURN 2
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_対魔殺法_毒手奥義・五道殺し,ARG
+RETURN 2
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_対魔殺法_毒手奥義・五道殺し, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_対魔殺法_毒手奥義・五道殺し,ARG
+RETURN 45
+
+;　相性
+@SKILL_TYPE_対魔殺法_毒手奥義・五道殺し,ARG
+RETURN GET_TYPE_NUM("타격")
+;타격
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_対魔殺法_毒手奥義・五道殺し
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_対魔殺法_毒手奥義・五道殺し, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_対魔殺法_毒手奥義・五道殺し, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_対魔殺法_毒手奥義・五道殺し,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_対魔殺法_毒手奥義・五道殺し,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_対魔殺法_毒手奥義・五道殺し, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_対魔殺法_毒手奥義・五道殺し, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_対魔殺法_毒手奥義・五道殺し
+RETURN 0
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_対魔殺法_毒手奥義・五道殺し,ARG
+RETURN GET_SUCCESSION_NUM("타격")
+
+@SKILL_RANK_対魔殺法_毒手奥義・五道殺し, ARG = -1
+RETURN 15
+
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_対魔殺法_毒手奥義・五道殺し, ARG = -1, ARG:1 = -1
+RETURN 0, 4
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_対魔殺法_毒手奥義・五道殺し,ARG,ARG:1, SKILL_NUM
+#LOCALSIZE 4
+#DIM SKILL_NUM
+
+LOCAL = POS(ARG:1)
+CALL ATTACK_SINGLE, ARG, POS(ARG:1), SKILL_NUM
+
+;====================================================
+;ダメージ計算時の追加補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_対魔殺法_毒手奥義・五道殺し, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+;ターゲットが毒状態であるときに起動する自動効果
+IF IS_PU_SKILL_入力行動(L_P, "対魔殺法_毒手奥義・五道殺し")
+	;自分が攻撃側
+	IF L_P == L_ACTOR && CFLAG:L_TARGET:상태이상 == GET_STATE_NUM("POISON")
+		SELECTCASE ARGS
+			;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+			CASE "ダメージ補正加算"
+				IF L_ダメージタイプ == "物理"
+					RESULTS = 毒特効
+					RETURN 50
+				ENDIF
+		;100% ± Xの補正を与える。同種(粗雑・慢心)などとは加算。補正量が素直
+		;この補正を999以上で指定した場合は確定クリティカル、-999以下で指定した場合はクリティカル不能となる
+		CASE "クリティカル補正A"
+			RETURN 50
+		ENDSELECT
+	ENDIF
+ENDIF
+RETURN 0
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_対魔殺法_毒手奥義・五道殺し,ARG
+PRINTL 적 단체에 독수를 통한 고위력의 독 특효 연속 공격을 행한다.
+PRINTL 공격 대상에게 독이 부여되어 있는 경우 데미지 배율과 크리티컬률이 상승한다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_対魔殺法_毒手奥義・五道殺し,ARG
+RETURN 1
+;とくにない
+

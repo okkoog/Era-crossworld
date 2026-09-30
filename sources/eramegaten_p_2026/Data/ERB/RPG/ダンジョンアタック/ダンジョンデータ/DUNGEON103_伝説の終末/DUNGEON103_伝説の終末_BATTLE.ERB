@@ -1,0 +1,429 @@
+﻿;====================
+;バトルスタート時
+;====================
+@EVENT_BATTLE_START_DUNGEON103
+;デスソース使用フラグクリア
+ダンジョンフラグ:(FLAG:현던전):11 = 0
+
+;====================
+;ターン開始時
+;LOCAL: 援護を行うキャラ番号
+;LOCAL:1～8: LOCAL:0のキャラがこの戦闘中に援護を行ったかどうか
+;LOCAL:9: 援護を行うキャラ設定時に使うランダム数
+;LOCAL:10～12: 援護完了したキャラを判定し、援護フラグをクリアする際に使う
+;====================
+@EVENT_BATTLE_TURNTOP_DUNGEON103
+#LOCALSIZE 13
+SIF FLAG:경과턴수 == 0
+	RETURN 0
+;魔王戦でパーティにデスポリュカが居る場合、3ターン目以降2ターンに1回、デスポリュカの奮闘で余裕のできた、控えにいるKEメンバーの援護が入る
+IF NO:(CHARANUM-1) == [[キャラ:마왕_KingExit]] && CFLAG:(CHARANUM-1):상태이상 != GET_STATE_NUM("DYING") && FINDCHARA_B([[キャラ:데스포르카_DR]]) == 2 && FLAG:경과턴수 > 2 && FLAG:경과턴수 % 2
+	DO
+		LOCAL:9 = RAND:8
+		LOCAL = [[キャラ:아벤트_KE]] + LOCAL:9
+		;キャラが生きていて戦闘に参加していない、かつ援護を行っていなければ援護に来る
+		IF FINDCHARA_B(LOCAL) == 1 && LOCAL:(LOCAL:9 + 1) == 0
+			BREAK
+		ENDIF
+	LOOP 1
+
+	;援護済みフラグ立て
+	LOCAL:(LOCAL:9 + 1) = 1
+
+	SETCOLOR COLOR("FRIEND")
+	PRINTFORML
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃%"데스포르카의 분투로 별동대에 여유가 생겼다!",60,LEFT%┃
+	PRINTFORML ┃%CALLNAME:GETCHARA(LOCAL) + "의 원호 공격!",60,LEFT%┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORML
+	PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓
+	PRINTFORM ┃[EX] %CALLNAME:GETCHARA(LOCAL),21,LEFT%┃　┃
+
+	;各キャラの技を発動
+	SELECTCASE LOCAL
+		CASE [[キャラ:아벤트_KE]]
+			PRINTFORML %"절・낭아",40,LEFT%┃
+		CASE [[キャラ:빌로우_KE]]
+			PRINTFORML %"제네시스",40,LEFT%┃
+		CASE [[キャラ:브루_KE]]
+			PRINTFORML %"리・리・리레이즈",40,LEFT%┃
+		CASE [[キャラ:레스터_KE]]
+			PRINTFORML %"西方山",40,LEFT%┃
+		CASE [[キャラ:사미다레_KE]]
+			PRINTFORML %"天覇上下",40,LEFT%┃
+		CASE [[キャラ:스티아라_KE]]
+			PRINTFORML %"비비셔스 아이즈",40,LEFT%┃
+		CASE [[キャラ:귀네_KE]]
+			PRINTFORML %"프레이어 에지",40,LEFT%┃
+		CASE [[キャラ:게오루이스_KE]]
+			PRINTFORML %"프레이어 글레이브",40,LEFT%┃
+	ENDSELECT
+	PRINTFORMW ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+
+	CALL EVENT_DAMAGE_DUNGEON103, LOCAL
+
+	;全員援護済フラグ
+	LOCAL:10 = 1
+	;全キャラが援護完了しているかどうか判定
+	FOR LOCAL:11, 0, 8
+		LOCAL:12 = [[キャラ:아벤트_KE]] + LOCAL:11
+		;援護済のキャラを判定する
+		SELECTCASE FINDCHARA_B(LOCAL:12)
+			;健在な控えメンバー
+			CASE 1
+				;援護していないなら、全員援護済フラグをクリアして終了
+				IF LOCAL:(LOCAL:11 + 1) == 0
+					LOCAL:10 = 0
+					BREAK
+				ENDIF
+			;戦闘参加中、もしくは死んでる控えメンバー
+			CASEELSE
+		ENDSELECT
+	NEXT
+	;全員援護済フラグが立ったままなら、各援護済フラグをクリア
+	IF LOCAL:10 == 1
+		FOR LOCAL:11, 0, 8
+			LOCAL:(LOCAL:11 + 1) = 0
+		NEXT
+	ENDIF
+ENDIF
+
+;====================
+;ターン開始時のイベントで発生するダメージ処理
+;ARG: 援護に来たキャラ
+;====================
+@EVENT_DAMAGE_DUNGEON103, ARG
+#LOCALSIZE 2
+#DIM ダメージ量
+;実際のダメージ処理など
+SELECTCASE ARG
+	CASE [[キャラ:아벤트_KE]]
+		ダメージ量 = MIN(1000 + RAND:150, BASE:(CHARANUM-1):ＨＰ - 1)
+		PRINTFORMW 　　TARGET:[ 9] %CALLNAME:(CHARANUM-1)%　>>>>>>　{ダメージ量}데미지
+		CALL VAR_HP, (CHARANUM-1), -ダメージ量
+		CALL SKILL_SET_カジャンダ, ARG, 22, "공격", -4, "範囲", "", "", -4
+	CASE [[キャラ:빌로우_KE]]
+		ダメージ量 = MIN(1000 + RAND:150, BASE:(CHARANUM-1):ＨＰ - 1)
+		PRINTFORMW 　　TARGET:[ 9] %CALLNAME:(CHARANUM-1)%　>>>>>>　{ダメージ量}데미지
+		CALL VAR_HP, (CHARANUM-1), -ダメージ量
+		CALL SKILL_SET_カジャンダ, ARG, 22, "마법위력", -4, "範囲", "", "", -4
+	CASE [[キャラ:브루_KE]]
+		ダメージ量 = MIN(1000 + RAND:150, BASE:(CHARANUM-1):ＨＰ - 1)
+		PRINTFORMW 　　TARGET:[ 9] %CALLNAME:(CHARANUM-1)%　>>>>>>　{ダメージ量}데미지
+		CALL VAR_HP, (CHARANUM-1), -ダメージ量
+		CALL SKILL_SET_カジャンダ, ARG, 22, "방어", -4, "範囲", "", "", -4
+	CASE [[キャラ:레스터_KE]]
+		;ここで表示を合わせるための文字量取得
+		LOCAL:1 = 0
+		FOR LOCAL, 1, 7
+			SIF POS(LOCAL) < 0 || IS_BADSTATE(POS(LOCAL), "DYING")
+				CONTINUE
+			LOCAL:1 = MAX(LOCAL:1, STRLENS(CALLNAME:POS(LOCAL)))
+		NEXT
+
+		FOR LOCAL, 1, 7
+			;ポジションが空きだったら次へ
+			SIF POS(LOCAL) < 0
+				CONTINUE
+			;各ポジションに対してKEキャラかどうか判定
+			SELECTCASE NO:POS(LOCAL)
+				CASE [[キャラ:아벤트_KE]], [[キャラ:빌로우_KE]], [[キャラ:브루_KE]], [[キャラ:레스터_KE]]
+				CASE [[キャラ:사미다레_KE]], [[キャラ:스티아라_KE]], [[キャラ:귀네_KE]], [[キャラ:게오루이스_KE]]
+				CASEELSE
+					CONTINUE
+			ENDSELECT
+			;既にTPゲージが100だったら次へ
+			SIF GET_RPG_CFLAG_DUNGEON(POS(LOCAL), "KE_TPゲージ") == 100
+				CONTINUE
+			;TP加算
+			CALL SET_RPG_CFLAG_DUNGEON, POS(LOCAL), "KE_TPゲージ", MIN(15 + GET_RPG_CFLAG_DUNGEON(POS(LOCAL),　"KE_TPゲージ"), 100)
+			SIF GET_RPG_CFLAG_DUNGEON(POS(LOCAL), "KE_TPゲージ") == 100
+				SETCOLOR 0xffef00
+			PRINTFORM 　　[{LOCAL,2}] %CALLNAME:POS(LOCAL), LOCAL:1, LEFT%    :  +15
+			IF GET_RPG_CFLAG_DUNGEON(POS(LOCAL), "KE_TPゲージ") == 100
+				PRINTFORML <<ＴＰ　ＦＵＬＬＹ　ＣＨＡＲＧＥＤ！>>
+			ELSE
+				PRINTFORML <<ＴＰ：{GET_RPG_CFLAG_DUNGEON(POS(LOCAL), "KE_TPゲージ")}>>
+			ENDIF
+			RESETCOLOR
+		NEXT
+	CASE [[キャラ:사미다레_KE]]
+		ダメージ量 = MIN(2000 + RAND:150, BASE:(CHARANUM-1):ＨＰ - 1)
+		PRINTFORMW 　　TARGET:[ 9] %CALLNAME:(CHARANUM-1)%　>>>>>>　{ダメージ量}데미지
+		CALL VAR_HP, (CHARANUM-1), -ダメージ量
+	CASE [[キャラ:스티아라_KE]]
+		;全能力ダウン構文
+		CALL SKILL_SET_カジャンダ, ARG, 22, "攻撃_防御_魔法威力_魔法効果_命中_回避", -4, "範囲"
+
+	CASE [[キャラ:귀네_KE]]
+		ダメージ量 = MIN(1500 + RAND:150, BASE:(CHARANUM-1):ＨＰ - 1)
+		PRINTFORMW 　　TARGET:[ 9] %CALLNAME:(CHARANUM-1)%　>>>>>>　{ダメージ量}데미지
+		CALL VAR_HP, (CHARANUM-1), -ダメージ量
+	CASE [[キャラ:게오루이스_KE]]
+		ダメージ量 = MIN(1500 + RAND:150, BASE:(CHARANUM-1):ＨＰ - 1)
+		PRINTFORMW 　　TARGET:[ 9] %CALLNAME:(CHARANUM-1)%　>>>>>>　{ダメージ量}데미지
+		CALL VAR_HP, (CHARANUM-1), -ダメージ量
+ENDSELECT
+PRINTFORML 
+
+;====================
+;ターン終了時
+;====================
+@EVENT_BATTLE_TURNEND_DUNGEON103
+;魔王様の体力が１の場合、不死身フラグを解除してから止めのダメージを入れて終了
+IF NO:(CHARANUM-1) == [[キャラ:마왕_KingExit]] && BASE:(CHARANUM-1):ＨＰ == 1
+	CFLAG:(CHARANUM-1):불사신플래그 = 0
+	CALL EVENT_DEFEATED_THE_DEMON_KING
+	RETURN
+ENDIF
+
+;押し寄せる怨念と魔王様のみ使用する専用回復技「デスソース」
+;本イベントでは単体で出てくる敵しか使ってこないが、KingExit本編では他にも使ってくる敵がおり、実際は全体回復技である
+;デスソース連打は普通にきついので、押し寄せる怨念は1回のみ、魔王様は各形態ごとに1回ずつ使用するようにする
+IF (NO:(CHARANUM-1) == [[キャラ:밀려오는원한]] || NO:(CHARANUM-1) == [[キャラ:마왕_KingExit]]) && ダンジョンフラグ:(FLAG:현던전):11 == 0 && 現HP割合(CHARANUM-1) <= 90
+
+	SETCOLOR COLOR("ENEMY")
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃마왕의 무시무시한 원념이 주위에 가득 차며,　　　　　┃
+	PRINTFORML ┃그 파동이 마족의 상처를 치유해 간다…！　　　　　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORML 
+	PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓
+	PRINTFORM ┃[ 9] %CALLNAME:(CHARANUM-1),21,LEFT%┃　┃
+	PRINTFORML %"데스 소스",40,LEFT%┃
+	PRINTFORMW ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+	;ＨＰ回復（10％）
+	IF GET_STATE(CFLAG:(CHARANUM-1):상태이상) != "DYING"
+		PRINTFORMW 　　[ 9] %CALLNAME:(CHARANUM-1)%　>>>>>>　ＨＰ{MAXBASE:(CHARANUM-1):ＨＰ / 10}회복
+		CALL VAR_HP, (CHARANUM-1), +MAXBASE:(CHARANUM-1):ＨＰ / 10
+	ENDIF
+	;デスソース使用済
+	ダンジョンフラグ:(FLAG:현던전):11 = 1
+ENDIF
+
+;====================
+;行動終了時
+;====================
+@EVENT_BATTLE_ACTEND_DUNGEON103
+;何らかの手段で１段階目、デスソースすら使わせずに一撃でぶち殺した場合
+IF NO:(CHARANUM-1) == [[キャラ:마왕_KingExit]] && ダンジョンフラグ:(FLAG:현던전):11 == 0 && ダンジョンフラグ:(FLAG:현던전):12 == 0 && BASE:(CHARANUM-1):ＨＰ == 1
+	CFLAG:(CHARANUM-1):불사신플래그 = 0
+	CALL EVENT_INSTANT_DEATH_THE_DEMON_KING
+ELSE
+	;魔王2段階へ　スキル夢幻泡影追加
+	IF NO:(CHARANUM-1) == [[キャラ:마왕_KingExit]] && ダンジョンフラグ:(FLAG:현던전):12 == 0 && 現HP割合(CHARANUM-1) < 75
+		SETCOLOR COLOR("ENEMY")
+		PRINTFORML
+		PRINTFORMW 빠각, 하고 소리를 내며 마왕의 사지 봉인 중 하나가 산산조각났다!
+		PRINTFORML
+		PRINTFORML ┏>마왕 ━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃엎드려라… 노예 놈들…!！！　　　　　　　　　┃
+		PRINTFORML ┃사라져라… 낡고 나약한 나의 구적…!！！　　　┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━┛
+		PRINTFORMW
+		RESETCOLOR
+
+		;デスソース使用フラグクリア
+		ダンジョンフラグ:(FLAG:현던전):11 = 0
+		ダンジョンフラグ:(FLAG:현던전):12 = 1
+	ENDIF
+
+	;魔王3段階へ　スキル系譜鳴動追加　スキル千年の呪怨追加（なんてぴったりな名前のスキルなんだ…！）
+	IF NO:(CHARANUM-1) == [[キャラ:마왕_KingExit]] && ダンジョンフラグ:(FLAG:현던전):12 == 1 && 現HP割合(CHARANUM-1) < 50
+		SETCOLOR COLOR("ENEMY")
+		PRINTFORML
+		PRINTFORMW 빠각, 하고 소리를 내며 마왕의 사지 봉인 중 하나가 산산조각났다!
+		PRINTFORML
+		PRINTFORML ┏>마왕 ━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃엎드려라… 무릎 꿇어라… 노예의 자손…!！！　　　　　┃
+		PRINTFORML ┃사라져라… 죽어서 사죄해라… 옛 마족의 잔재…!！！　　┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		PRINTFORMW
+		RESETCOLOR
+
+		;デスソース使用フラグクリア
+		ダンジョンフラグ:(FLAG:현던전):11 = 0
+		ダンジョンフラグ:(FLAG:현던전):12 = 2
+	ENDIF
+
+	;魔王4段階へ　スキル螻蟻潰堤追加
+	IF NO:(CHARANUM-1) == [[キャラ:마왕_KingExit]] && ダンジョンフラグ:(FLAG:현던전):12 == 2 && 現HP割合(CHARANUM-1) < 25
+		SETCOLOR COLOR("ENEMY")
+		PRINTFORML
+		PRINTFORMW 빠각, 하고 소리를 내며 마왕의 사지 봉인 중 하나가 산산조각났다!
+		PRINTFORML
+		PRINTFORML ┏>마왕 ━━━━━━━━━━━━━━━━━━━━━━━┓
+		PRINTFORML ┃크오오오옷！　　　　　　　　　　　　　　　　　　　　┃
+		PRINTFORML ┃엎드려라… 엎드려엇！　　　　　　　　　　　　　　　┃
+		PRINTFORML ┃죽어서, 엎드려라아아아앗！！！　　　　　　　　　　┃
+		PRINTFORML ┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+		PRINTFORMW
+		RESETCOLOR
+
+		;デスソース使用フラグクリア
+		ダンジョンフラグ:(FLAG:현던전):11 = 0
+		ダンジョンフラグ:(FLAG:현던전):12 = 3
+	ENDIF
+ENDIF
+
+;====================
+;守竜思考パターン
+;====================
+@SET_ACTION_7507, ARG
+#DIM CHARA
+
+;入力行動を-1とターゲ!トを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+
+SELECTCASE RAND:100
+	CASE IS < 20
+		;20%で人間砕き
+		CFLAG:ARG:입력행동 = [[스킬:전용기1]]
+	CASE IS < 40
+		;20％で死滅光線
+		CFLAG:ARG:입력행동 = [[스킬:전용기2]]
+	CASE IS < 60
+		;20％で連続切裂き
+		CFLAG:ARG:입력행동 = [[스킬:전용기3]]
+	CASE IS < 80
+		;20％でバインドボイス
+		CFLAG:ARG:입력행동 = [[스킬:바인드보이스]]
+	CASEELSE
+		;20％でメガクロー
+		CFLAG:ARG:입력행동 = [[스킬:메가클로]]
+ENDSELECT
+
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;ここまでターゲ!トが決まってなかったら、ランダムターゲ!トをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+
+;50%の確率で2回行動
+IF RAND:2
+	CFLAG:ARG:행동횟수 = 2
+ELSE
+	CFLAG:ARG:행동횟수 = 1
+ENDIF
+RETURN 1
+
+
+;====================
+;魔王思考パターン
+;====================
+@SET_ACTION_7508, ARG
+#DIM CHARA
+
+;入力行動を-1とターゲ!トを-1にしておく
+CFLAG:ARG:입력행동 = -1
+CFLAG:ARG:타겟 = -1
+
+SELECTCASE ダンジョンフラグ:(FLAG:현던전):12
+;4段階目
+CASE 3
+	SELECTCASE RAND:100
+		CASE IS < 5
+			;5%で魔軍爪
+			CFLAG:ARG:입력행동 = [[스킬:전용기1]]
+		CASE IS < 15
+			;10％で魔族の国歌
+			CFLAG:ARG:입력행동 = [[스킬:전용기2]]
+		CASE IS < 25
+			;10％で電撃
+			CFLAG:ARG:입력행동 = [[스킬:전용기3]]
+		CASE IS < 40
+			;15％でダークネス
+			CFLAG:ARG:입력행동 = [[스킬:전용기4]]
+		CASE IS < 55
+			;15％で夢幻泡影
+			CFLAG:ARG:입력행동 = [[스킬:전용기5]]
+		CASE IS < 70
+			;15％で系譜鳴動
+			CFLAG:ARG:입력행동 = [[스킬:전용기6]]
+		CASE IS < 85
+			;15％で螻蟻潰堤
+			CFLAG:ARG:입력행동 = [[스킬:전용기7]]
+		CASEELSE
+			;15%で千年の呪怨
+			CFLAG:ARG:입력행동 = [[스킬:천년의저주]]
+	ENDSELECT
+;3段階目
+CASE 2
+	SELECTCASE RAND:100
+		CASE IS < 15
+			;15%で魔軍爪
+			CFLAG:ARG:입력행동 = [[스킬:전용기1]]
+		CASE IS < 30
+			;15％で魔族の国歌
+			CFLAG:ARG:입력행동 = [[스킬:전용기2]]
+		CASE IS < 45
+			;15％で電撃
+			CFLAG:ARG:입력행동 = [[스킬:전용기3]]
+		CASE IS < 60
+			;15％でダークネス
+			CFLAG:ARG:입력행동 = [[스킬:전용기4]]
+		CASE IS < 75
+			;15％で夢幻泡影
+			CFLAG:ARG:입력행동 = [[스킬:전용기5]]
+		CASE IS < 90
+			;15％で系譜鳴動
+			CFLAG:ARG:입력행동 = [[스킬:전용기6]]
+		CASEELSE
+			;10%で千年の呪怨
+			CFLAG:ARG:입력행동 = [[스킬:천년의저주]]
+	ENDSELECT
+;2段階目
+CASE 1
+	SELECTCASE RAND:100
+		CASE IS < 20
+			;20%で魔軍爪
+			CFLAG:ARG:입력행동 = [[스킬:전용기1]]
+		CASE IS < 40
+			;20％で魔族の国歌
+			CFLAG:ARG:입력행동 = [[스킬:전용기2]]
+		CASE IS < 60
+			;20％で電撃
+			CFLAG:ARG:입력행동 = [[스킬:전용기3]]
+		CASE IS < 80
+			;20％でダークネス
+			CFLAG:ARG:입력행동 = [[스킬:전용기4]]
+		CASEELSE
+			;20%で夢幻泡影
+			CFLAG:ARG:입력행동 = [[스킬:전용기5]]
+	ENDSELECT
+;1段階目
+CASEELSE
+	SELECTCASE RAND:100
+		CASE IS < 25
+			;25%で魔軍爪
+			CFLAG:ARG:입력행동 = [[스킬:전용기1]]
+		CASE IS < 50
+			;25％で魔族の国歌
+			CFLAG:ARG:입력행동 = [[스킬:전용기2]]
+		CASE IS < 75
+			;25％で電撃
+			CFLAG:ARG:입력행동 = [[스킬:전용기3]]
+		CASEELSE
+			;25％でダークネス
+			CFLAG:ARG:입력행동 = [[스킬:전용기4]]
+	ENDSELECT
+ENDSELECT
+
+;アクション実行不能なら自動的に通常攻撃にする
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:입력행동
+IF RESULT == 0
+	CFLAG:ARG:입력행동 = 0
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+ENDIF
+;ここまでターゲ!トが決まってなかったら、ランダムターゲ!トをよんで決定
+SIF CFLAG:ARG:타겟 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:입력행동
+RETURN 1

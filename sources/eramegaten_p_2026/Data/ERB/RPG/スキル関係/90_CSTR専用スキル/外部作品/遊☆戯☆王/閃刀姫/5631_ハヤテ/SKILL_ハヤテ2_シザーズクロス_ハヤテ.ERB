@@ -1,0 +1,171 @@
+﻿
+;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_シザーズクロス_ハヤテ,ARG
+RESULTS = 시저스크로스
+
+;　명중
+@SKILL_HITRATE_シザーズクロス_ハヤテ, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_シザーズクロス_ハヤテ, ARG
+SIF ARG >= 0 && TFLAG:스킬용1 > 0
+	RETURN 1000
+RETURN 235
+
+@SKILL_HEAL_TYPE_シザーズクロス_ハヤテ, ARG = -1
+RETURN GET_SKILL_HEAL_TYPE_NUM("割合")
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_シザーズクロス_ハヤテ,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_シザーズクロス_ハヤテ,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_シザーズクロス_ハヤテ, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+
+;　コストの量
+@SKILL_COST_シザーズクロス_ハヤテ,ARG
+RETURN 8
+
+;　相性
+@SKILL_TYPE_シザーズクロス_ハヤテ,ARG
+RETURN GET_TYPE_NUM("질풍")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_シザーズクロス_ハヤテ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_シザーズクロス_ハヤテ, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_シザーズクロス_ハヤテ, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_シザーズクロス_ハヤテ,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_シザーズクロス_ハヤテ,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_シザーズクロス_ハヤテ, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_シザーズクロス_ハヤテ
+RETURN GET_SUCCESSION_NUM("질풍")
+
+;속도보정
+@SKILL_SPEED_シザーズクロス_ハヤテ, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_シザーズクロス_ハヤテ
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_シザーズクロス_ハヤテ, ARG = -1
+RETURN 4
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_シザーズクロス_ハヤテ, ARG, ARG:1, ARG:2
+CALL ATTACK_SKILL, ARG, ARG:1, ARG:2
+CALL PUSH_CEMETERY_閃刀魔法, ARG, "シザーズクロス"
+SIF GET_COUNT_閃刀カウンター(ARG) >= 3
+	CALL PU_SKILLGAGE_D_SET, ARG, "シザーズクロス_ハヤテ", 1
+
+@SKILL_ACTEND_シザーズクロス_ハヤテ, ARG
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC L_FUNC_PROPSET_LIST
+#DIMS DYNAMIC L_EXPLAIN
+#DIM L_LINE
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+SIF !ACTIONABLE_CHARA_F(ARG)
+	RETURN 0
+SIF !IS_PU_SKILL_入力行動(ARG, "シザーズクロス_ハヤテ")
+	RETURN 0
+CALL PRINT_ACT_MESSAGE, ARG, , , , "リンク召喚", "WAIT"
+
+L_LINE = LINECOUNT
+WHILE 1
+	TFLAG:스킬용1 = PU_SKILLGAGE_D_GET(ARG, "シザーズクロス_ハヤテ") > 0
+	CLEARLINE LINECOUNT - L_LINE
+	L_FUNC_PROPSET_LIST = 戦闘/育成情報/調教/基本ステータス/防御相性1/防御相性2
+	L_EXPLAIN = 누구를 불러낼까？
+	{
+	CALL INPUT_CHARA_LIST
+		, L_FUNC_PROPSET_LIST
+		, L_EXPLAIN
+		, "CASTING_CHOOSE_シザーズクロス" 
+		, "SHOW_ADD_UP_FUNCTION"
+		, "SHOW_ADD_DOWN_FUNCTION"
+		, "ADD_SELECT_FUNCTION"
+		, "やめる"
+		, "FUNC_CUSTOM_TITLE"
+		, "FUNC_CUSTOM_COLOR"
+		, -1
+	}
+	IF RESULT == 1000
+		RETURN 0
+	ELSE
+		VARI L_CHANGE = RESULT
+		CALL INPUT_COM_リンク召喚_レイ, ARG, L_CHANGE
+		IF TFLAG:스킬용1 > 0
+			IF CFLAG:L_CHANGE:상태이상 == GET_STATE_NUM("DYING")
+				CFLAG:L_CHANGE:상태이상 = 0
+				CFLAG:L_CHANGE:상태이상경과턴수 = 0
+				CALL HEAL_SINGLE, ARG, L_CHANGE, PU_SKILLNUM_GET(ARG, "シザーズクロス_ハヤテ"), , , "蘇生"
+			ELSE
+				CALL HEAL_SINGLE, ARG, L_CHANGE, PU_SKILLNUM_GET(ARG, "シザーズクロス_ハヤテ")
+			ENDIF
+		ENDIF
+		RETURN 1
+	ENDIF
+WEND
+RETURN 1
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_シザーズクロス_ハヤテ, ARG
+PRINTL 【閃刀魔法】
+PRINTL 적 1체에 질풍 속성의 물리 데미지를 가한다. 후열 사용 가능.
+PRINTL 이 스킬 사용 후 링크 소환을 실행할 수 있다.
+PRINTL 스킬 발동 후 섬도 카운터를 1개 얻는다.
+PRINTL 
+PRINTL 〈강화 효과〉 섬도 카운터가 3개 이상 있을 경우,
+PRINTL 교대한 동료마의 HP를 완전 회복한다.
+PRINTL 추가로 대상이 빈사 상태일 경우 소생한다.
+PRINTL 강화 효과 발동 후 섬도 카운터를 얻는 대신 3개 제거한다.
+PRINTL 
+PRINTL 이 스킬은 전투 중 1회만 사용 가능.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_シザーズクロス_ハヤテ,ARG
+RESULTS = 스킬 사용 완료
+SIF !IS_USEABLE_閃刀魔法(ARG, "シザーズクロス")
+	RETURN 0
+RETURN 1
+
+@リンク不能_シザーズクロス_ハヤテ
+RETURN 1
+
+@SKILL_TAG_シザーズクロス_ハヤテ
+RESULTS = 閃刀魔法

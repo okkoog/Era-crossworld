@@ -1,0 +1,53 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara4704_黒須純子.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/07/13		P(bazzile)				新規作成
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;--------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:준코]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+CALL SET_BASE_[[キャラ:준코]], ARG, ARG:2
+CALL SET_BTL_TALENT_[[キャラ:준코]], ARG, ARG:2
+
+@SET_BASE_[[キャラ:준코]], ARG, ARG:1
+#DIM LCOUNT
+IF ARG:1 == 1
+	BASE:ARG:LV = 1
+	BASE:ARG:힘 = 1
+	BASE:ARG:지혜 = 1
+	BASE:ARG:마력 = 1
+	BASE:ARG:내구 = 1
+	BASE:ARG:속도 = 1
+	BASE:ARG:운 = 1
+	
+	BASE:ARG:ＥＸＰ = 0
+	FOR LCOUNT, 0, SUCCESSIONNUM
+		TALENT:ARG:GET_SUCCESSION(LCOUNT) = 0
+	NEXT
+	ABL:ARG:초기페르소나 = 0
+	ABL:ARG:수태아이템 = 0
+ENDIF
+
+@SET_BTL_TALENT_[[キャラ:준코]], ARG, ARG:1
+IF ARG:1 == 1
+	CALL CLEAR_ALL_SKILL, ARG
+    CALL CHANGE_ROLE, ARG, "비전투원_1"
+    ABL:ARG:초기페르소나 = 0
+ENDIF

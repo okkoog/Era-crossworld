@@ -1,0 +1,852 @@
+﻿;
+;装備変更をマウスUIに対応させたバージョン
+;
+
+
+;@SHOPCOMABLE_412
+;RESULTS = 装備変更テスト
+;RETURN 1
+
+;@SHOP_COM_412, ARG
+;CALL EQUIPMENT_MouseUI
+
+@EQUIPMENT_MouseUI
+#DIM lInitialized
+#DIM DYNAMIC lDisplays, 9, 1000
+#DIMS DYNAMIC lItemTypes = "검", "총", "머리", "몸통", "팔", "발", "악세서리", "탄환"
+
+;FOR LOCAL, 0, VARSIZE(lItemTypes)
+;	ASSERT GET_EQUIPNUM(lItemTypes:LOCAL) == LOCAL
+;NEXT
+
+CALL MouseUIStore_Exsits_Items()
+CALL EQUIPMENT_MouseUIStore_Exsits_CustomItem()
+CALL EQUIPMENT_Displays(lDisplays, lItemTypes)
+CALL EQUIPMENT_MouseUI_Main(lDisplays, lItemTypes)
+RETURN RESULT
+
+@EQUIPMENT_MouseUIStore_Exsits_CustomItem()
+#LOCALSIZE 1
+FOR LOCAL, MIN_EQUIPNUM, MAX_EQUIPNUM
+	IF 魔晶装備(LOCAL)
+		MouseUIStore_ItemExsits:LOCAL = ITEMPRICE:LOCAL
+		MouseUIStore_RPGEquipParts:LOCAL = EQ_装備箇所_魔晶装備(LOCAL)
+	ENDIF
+	IF 改造装備(LOCAL)
+		CALLFORM 装備箇所_{LOCAL}
+		MouseUIStore_RPGEquipParts:LOCAL = RESULT
+		MouseUIStore_ItemExsits:LOCAL = ITEMPRICE:LOCAL
+	ENDIF
+NEXT
+
+@EQUIPMENT_Displays(rDisplays, rEnables)
+#DIM REF rDisplays, 0, 0
+#DIMS REF rEnables, 0
+#DIM DYNAMIC ItemNo
+#DIM DYNAMIC TypeNo
+#DIM DYNAMIC lPoint
+VARSET rDisplays
+FOR TypeNo, 0, VARSIZE("rEnables")
+	VARSET lPoint
+	FOR ItemNo, MIN_EQUIPNUM, MAX_EQUIPNUM
+		SIF (ITEM:ItemNo <= 0 && FINDCHARA(EQUIP:(rEnables:TypeNo), ItemNo) == -1) || MouseUIStore_ItemType(MouseUIStore_RPGEquipParts:ItemNo) != rEnables:TypeNo
+			CONTINUE
+		rDisplays:TypeNo:(lPoint) = ItemNo
+		lPoint++
+	NEXT
+NEXT
+
+
+@EQUIPMENT_MouseUI_Main(rDisplays, rItemTypes)
+#DIM REF rDisplays, 0, 0
+#DIMS REF rItemTypes, 0
+;使ってなくて無駄だけどSortの書き換えが面倒なのでそのまま
+#DIM DYNAMIC lCart, 10, 1000
+#DIM lPerPage = 20
+#DIM lUserNo
+#DIM lCurType
+#DIM lCurPage
+#DIM lCurItem
+#DIMS lTypeColor = "TYPE"
+#DIMS lInputedS
+#DIM lInputed
+#DIM lCurPresetMode
+#DIM lCurBulletSlot
+#DIM lCurEquip
+#DIM lPrevEquip
+#DIM lSaveLine
+#DIM DYNAMIC lCondSortDir, 8
+#DIMS DYNAMIC lSortedS, 10
+#DIM DYNAMIC lSorted, 10
+#DIM DYNAMIC ChangeList, 6, 8
+#DIM DYNAMIC ChangeListBullet, 6, 8
+;装備変更前の装備品を控えておく変数
+;ChangeList:UserPos:ItemType = ItemNo
+;ItemNoが0なら無装備、-1なら変更なし
+;UserPosは FLAG:포지션1～포지션6 に相当する位置（値は0～5なのでPOS()やCPOS()で使う場合は1増減する必要がある）
+;ChangeList:UserPos:BulletSlot = ItemNo
+;ChangeListBulletも同様、ただしItemTypeの代わりに特殊弾スロット(0～7)を指定
+#LOCALSIZE 1
+
+lSaveLine = LINECOUNT
+lUserNo = -1
+lCurType = 0
+lCurPage = 0
+lCurItem = 0
+lSortedS '= ""
+lCurBulletSlot = 0
+lCurPresetMode = 0
+VARSET lCondSortDir
+VARSET ChangeList, -1
+VARSET ChangeListBullet, -1
+DO
+	REDRAW 0
+	CLEARLINE LINECOUNT - lSaveLine
+	lCurType = MouseUIStore_Select_ItemType(rDisplays, lCurType)
+	HTML_PRINT "<br>" * 3
+	CALL MouseUIStore_Shows_ItemDetail(rItemTypes:lCurType, rDisplays:lCurType:lCurItem, lUserNo)
+
+	SIF VARSIZE("rItemTypes") > 1
+		CALL MouseUIStore_Shows_CategoryTab(rItemTypes, rDisplays, lCurType)
+
+	CALL MouseUIStore_Shows_UserBar(lUserNo, "TRADE")
+	CALL EQUIPMENT_Shows_UserBattleStatus(lUserNo, ChangeList)
+	CALL EQUIPMENT_MouseUIStore_Shows_UserStatus(lUserNo, rItemTypes:lCurType, rDisplays:lCurType:lCurItem, lTypeColor, ChangeList)
+	SIF rItemTypes:lCurType == "탄환"
+		CALL EQUIPMENT_Shows_UserSPBullets(ChangeListBullet, lUserNo, lCurBulletSlot)
+	IF 0 <= lUserNo
+		lCurEquip = EQUIP:lUserNo:GET_EQUIP(lCurType)
+		lPrevEquip = ChangeList:(CPOS(lUserNo)-1):lCurType
+	ELSE
+		lCurEquip = 0
+		lPrevEquip = -1
+	ENDIF
+	CALL EQUIPMENT_MouseUIStore_Shows_ItemList(rDisplays, lCart, lPerPage, rItemTypes:lCurType, lCurType, lCurPage, lCurItem, lUserNo, "EQUIP", lTypeColor, lCurEquip, lPrevEquip)
+	CALL EQUIPMENT_MouseUI_OKExitBar(lUserNo, ChangeList, ChangeListBullet, lCurPresetMode)
+	HTML_PRINT GETLINESTR("━") + "<br>"
+	INPUTS
+	REDRAW 0
+	lInputedS '= SUBSTRING(RESULTS, 0, 3)
+	lInputed = TOINT(SUBSTRING(RESULTS, 4))
+	;整列
+	IF MouseUIStore_Sorts_CondSymbol(lInputedS)
+		IF lInputedS == lSortedS:lCurType && lInputed == lSorted:lCurType
+			CALL MouseUIStore_Sorts_Reverse(rDisplays, lCart, lCurType)
+		ELSE
+			lSortedS:lCurType '= lInputedS
+			lSorted:lCurType = lInputed
+			CALL MouseUIStore_Sorts(rDisplays, lCart, lCurType, lUserNo, RESULTS, lInputed)
+			;種別と名称以外の項目は降順をデフォルトにする
+			SIF !GROUPMATCH(lInputedS, "INo", "STy", "GTy")
+				CALL MouseUIStore_Sorts_Reverse(rDisplays, lCart, lCurType)
+		ENDIF
+	ENDIF
+	SELECTCASE lInputedS
+		CASE "ext"
+			CALL EQUIPMENT_RevertEquip(ChangeList, ChangeListBullet)
+			RETURN lInputed
+		CASE "rev"
+			;装備変更取り消し
+			CALL EQUIPMENT_RevertEquip(ChangeList, ChangeListBullet)
+			VARSET ChangeList, -1
+			VARSET ChangeListBullet, -1
+		CASE "eqs"
+			;装備変更決定
+			VARSET ChangeList, -1
+			VARSET ChangeListBullet, -1
+		CASE "tab"
+			;表示アイテムカテゴリを変更
+			IF rDisplays:lInputed:0
+				lCurType = lInputed
+				lCurPage = 0
+				lCurItem = 0
+				lCurBulletSlot = 0
+			ENDIF
+		CASE "use"
+			;選択キャラを変更
+			lUserNo = lInputed
+			;選択キャラを変更すると確定していない装備変更もキャンセル
+			CALL EQUIPMENT_RevertEquip(ChangeList, ChangeListBullet)
+			VARSET ChangeList, -1
+			VARSET ChangeListBullet, -1
+			VARSET lCondSortDir
+		CASE "bul"
+			;対象の特殊弾スロット変更
+			;SIF rItemTypes:lCurType == "탄환" && TALENT:lUserNo:건슬링거
+			SIF rItemTypes:lCurType == "탄환" && GET_BTL_TALENT_LV("건슬링거",  lUserNo)
+				lCurBulletSlot = lInputed
+		CASE "Cnd"
+			;装備可能条件でアイテムをソート
+			SIF lUserNo < 0
+				CONTINUE
+			CALL EQUIPMENT_Sort_EquipCond(rDisplays, lCurType, lUserNo, lCondSortDir:lCurType)
+			lCondSortDir:lCurType = !lCondSortDir:lCurType
+		CASE "und"
+			;このカテゴリのアイテムだけ戻す
+			IF rItemTypes:lCurType == "탄환"
+				SIF ChangeListBullet:(CPOS(lUserNo)-1):lCurBulletSlot != -1
+					CALL EQUIPMENT_UpdateEquipmentBullet(ChangeListBullet, lUserNo, ChangeListBullet:(CPOS(lUserNo)-1):lCurBulletSlot, lCurBulletSlot)
+			ELSE
+				SIF ChangeList:(CPOS(lUserNo)-1):lCurType != -1
+					CALL EQUIPMENT_UpdateEquipment(ChangeList, lUserNo, lCurType, ChangeList:(CPOS(lUserNo)-1):lCurType)
+			ENDIF
+		CASE "ueq"
+			;アイテムを外す
+			IF rItemTypes:lCurType == "탄환"
+				;SIF TALENT:lUserNo:건슬링거
+				SIF GET_BTL_TALENT_LV("건슬링거",  lUserNo)
+					CALL EQUIPMENT_UpdateEquipmentBullet(ChangeListBullet, lUserNo, 0, lCurBulletSlot)
+			ELSE
+				CALL EQUIPMENT_UpdateEquipment(ChangeList, lUserNo, lCurType, 0)
+			ENDIF
+		CASE "clk"
+			;アイテムを選択・装着
+			IF lCurItem != lInputed
+				lCurItem = lInputed
+				CONTINUE
+			ENDIF
+			SIF lUserNo < 0
+				CONTINUE
+			CALL EQ_装備可能確認, lUserNo, rDisplays:lCurType:lCurItem, lCurType
+			SIF !RESULT
+				CONTINUE
+			IF ITEM:(rDisplays:lCurType:lCurItem) <= 0
+				LOCAL = FINDCHARA(EQUIP:(rItemTypes:lCurType), rDisplays:lCurType:lCurItem)
+				SIF GROUPMATCH(LOCAL, -1, lUserNo)
+					CONTINUE
+				PRINTFORML 「%装備の名称(rDisplays:lCurType:lCurItem, LOCAL)%」은(는) %CALLNAME:LOCAL%이(가) 장비 중입니다. 해제하고 다시 장비하겠습니까?
+				PRINTL ※일단 다른 캐릭터로부터 장비를 해제하면, 「되돌리기」로 시착을 취소해도 다시 장비되지 않고 해제된 채로 남습니다.
+				CALL INPUT_YN(,,2)
+				SIF RESULT == 1
+					CONTINUE
+				CALL 装備変更, LOCAL, lCurType, 0
+			ENDIF
+			;変更確定前の試着
+			;内部的には普通に装備してしまう
+			IF rItemTypes:lCurType == "탄환"
+				;IF TALENT:lUserNo:건슬링거
+				IF GET_BTL_TALENT_LV("건슬링거",  lUserNo)
+					CALL EQUIPMENT_UpdateEquipmentBullet(ChangeListBullet, lUserNo, rDisplays:lCurType:lCurItem, lCurBulletSlot)
+				ENDIF
+			ELSE
+				CALL EQUIPMENT_UpdateEquipment(ChangeList, lUserNo, MouseUIStore_RPGEquipParts:(rDisplays:lCurType:lCurItem), rDisplays:lCurType:lCurItem)
+			ENDIF
+		CASE "scr"
+			IF !lInputed
+				lCurPage = MAX(0, lCurPage-1)
+			ELSE
+				VARSIZE rDisplays
+				;-2は戻す/外すコマンド分
+				SIF (lCurPage*lPerPage + lPerPage - 2) < RESULT:1 && rDisplays:lCurType:(lCurPage*lPerPage + lPerPage - 2)
+					lCurPage ++
+			ENDIF
+		CASE "psw"
+			;登録装備モードの切り替え
+			lCurPresetMode = !lCurPresetMode
+		CASE "prs"
+			;登録装備読み込み・登録
+			SIF lUserNo < 0
+				CONTINUE
+			IF lCurPresetMode == 0
+				CALL EQUIPMENT_LoadPreset(lUserNo, lInputed, ChangeList)
+				PRINTFORMW 등록장비{lInputed+1}을(를) 적용했습니다.
+			ELSE
+				;まだ装備変更を確定していなくてもその装備が登録される
+				;note: 問題ない？
+				CALL EQUIPMENT_SavePreset(lUserNo, lInputed, ChangeList)
+				PRINTFORMW 현재 장비를 등록장비{lInputed+1}에 등록했습니다.
+			ENDIF
+		CASE "TyC"
+			IF lTypeColor == "TYPE"
+				lTypeColor '= "EFFECT"
+			ELSE
+				lTypeColor '= "TYPE"
+			ENDIF
+		CASE "det"
+			IF !lInputed
+				MouseUIStore_ItemDetail_LineNum = MAX(MouseUIStore_ItemDetail_LineNum - 1, 1)
+			ELSE
+				MouseUIStore_ItemDetail_LineNum = MIN(MouseUIStore_ItemDetail_LineNum + 1, 30)
+			ENDIF
+			SAVEGLOBAL
+		CASEELSE
+	ENDSELECT
+LOOP 1
+
+
+@EQUIPMENT_Sort_EquipCond(r2dDisplays, aTypeNo, aUserNo, Reverse)
+#DIM REF r2dDisplays, 0, 0
+#DIM REF r2DCart, 0, 0
+#DIM aTypeNo
+#DIM aUserNo
+#DIM Reverse
+#DIM DYNAMIC CondList, 2000
+#DIM DYNAMIC TempList, 2000
+#DIM LC2
+#DIM ListNum
+#DIM IDX
+#DIM BLOCKHEAD
+#DIM BLOCKEND
+#DIM OFFSET
+FOR IDX, 0, 2000
+	SIF !r2dDisplays:aTypeNo:IDX
+		BREAK
+	CALLFORM 装備条件_{r2dDisplays:aTypeNo:IDX}, aUserNo
+	CondList:IDX = (RESULT != 0) != Reverse
+NEXT
+ListNum = IDX
+IDX = 0
+;	FOR LOCAL, 0, ListNum
+;		PRINTFORM {CondList:LOCAL}
+;	NEXT
+;	PRINTL
+WHILE IDX != ListNum
+	IDX = FINDELEMENT(CondList, 0, IDX, ListNum)
+	SIF IDX == -1
+		BREAK
+	BLOCKHEAD = FINDELEMENT(CondList, 1, IDX, ListNum)
+	SIF BLOCKHEAD == -1
+		BREAK
+	BLOCKEND = FINDELEMENT(CondList, 0, BLOCKHEAD, ListNum)
+	SIF BLOCKEND == -1
+		BLOCKEND = ListNum
+	;要素が[oxxoox] であればIDX = 1, BLOCKHEAD = 3, BLOCKEND = 5 になる
+	;後は要素を移動して[oooxxx]とするだけ
+;		FOR LOCAL, 0, ListNum
+;			PRINTFORM {CondList:LOCAL}
+;		NEXT
+;		PRINTL
+;		PRINTFORMW IDX={IDX}, BLOCKHEAD={BLOCKHEAD}, BLOCKEND={BLOCKEND}
+;		CLEARLINE 2
+	FOR LC2, IDX, BLOCKHEAD
+		TempList:(LC2 - IDX) = r2dDisplays:aTypeNo:LC2
+	NEXT
+	OFFSET = IDX - BLOCKHEAD
+	FOR LC2, BLOCKHEAD, BLOCKEND
+		r2dDisplays:aTypeNo:(LC2 + OFFSET) = r2dDisplays:aTypeNo:LC2
+		CondList:(LC2 + OFFSET) = 1
+	NEXT
+	OFFSET = IDX + (BLOCKEND - BLOCKHEAD)
+	FOR LC2, OFFSET, BLOCKEND
+		r2dDisplays:aTypeNo:LC2 = TempList:(LC2 - OFFSET)
+		CondList:LC2 = 0
+	NEXT
+	;1の末尾+1
+	IDX = OFFSET
+WEND
+;	FOR IDX, 0, ListNum
+;		PRINTFORM {CondList:IDX}
+;	NEXT
+;	PRINTW
+
+
+
+
+;特定の個所に装備品を装備し、変更前の装備を記録する
+@EQUIPMENT_UpdateEquipment(ChangeList, aUserNo, ItemType, NewItem)
+#DIM REF ChangeList, 0, 0
+#DIM aUserNo
+#DIM ItemType
+#DIM NewItem
+;変更前装備の保存
+SIF ChangeList:(CPOS(aUserNo)-1):ItemType == -1
+	ChangeList:(CPOS(aUserNo)-1):ItemType = EQUIP:aUserNo:GET_EQUIP(ItemType)
+;これから装着する装備と変更前装備が同じだったら取り消ししたのと同じ
+SIF ChangeList:(CPOS(aUserNo)-1):ItemType == NewItem
+	ChangeList:(CPOS(aUserNo)-1):ItemType = -1
+CALL 装備変更, aUserNo, ItemType, NewItem
+
+@EQUIPMENT_UpdateEquipmentBullet(ChangeListBullet, aUserNo, NewItem, BulletSlot)
+#DIM REF ChangeListBullet, 0, 0
+#DIM aUserNo
+#DIM NewItem
+#DIM BulletSlot
+SIF ChangeListBullet:(CPOS(aUserNo)-1):BulletSlot == -1
+	ChangeListBullet:(CPOS(aUserNo)-1):BulletSlot = EQUIP:aUserNo:@"특수탄{BulletSlot+1}"
+SIF ChangeListBullet:(CPOS(aUserNo)-1):BulletSlot == NewItem
+	ChangeListBullet:(CPOS(aUserNo)-1):BulletSlot = -1
+;特殊弾の装備は所持数の増減などをしない（装備するというよりは共用資産から使用する弾種の指示と解釈できる）
+EQUIP:aUserNo:@"특수탄{BulletSlot+1}" = NewItem
+
+
+@EQUIPMENT_LoadPreset(aUserNo, aPresetNum, ChangeList)
+#DIM aUserNo
+#DIM aPresetNum
+#DIM REF ChangeList, 0, 0
+#DIM PresetItem
+#DIM CFOrigin
+#DIM ItemType
+CFOrigin = GETNUM(CFLAG, @"등록장비검1") + aPresetNum * 7
+FOR ItemType, 0, 7
+	PresetItem = CFLAG:aUserNo:(CFOrigin + ItemType)
+	CALL EQ_装備可能確認, aUserNo, PresetItem, ItemType
+	SIF RESULT && 0 < ITEM:PresetItem
+		CALL EQUIPMENT_UpdateEquipment(ChangeList, aUserNo, ItemType, PresetItem)
+	;登録装備には特殊弾は登録されない
+NEXT
+
+
+@EQUIPMENT_SavePreset(aUserNo, aPresetNum, ChangeList)
+#DIM aUserNo
+#DIM aPresetNum
+#DIM REF ChangeList, 0, 0
+#DIM CFOrigin
+#DIM ItemType
+CFOrigin = GETNUM(CFLAG, @"등록장비검1") + aPresetNum * 7
+FOR ItemType, 0, 7
+	CFLAG:aUserNo:(CFOrigin + ItemType) = EQUIP:aUserNo:GET_EQUIP(ItemType)
+	;登録装備には特殊弾は登録されない
+NEXT
+
+
+@EQUIPMENT_RevertEquip(ChangeList, ChangeListBullet)
+#DIM REF ChangeList, 0, 0
+#DIM REF ChangeListBullet, 0, 0
+#DIM CharaPos
+#DIM EquipPart
+#DIM Chara
+FOR CharaPos, 0, 6
+	Chara = POS(CharaPos+1)
+	SIF Chara < 0
+		CONTINUE
+	CALL CASTING_EQUIPMENT(Chara)
+	SIF !RESULT
+		CONTINUE
+	FOR EquipPart, 0, 8
+		SIF ChangeList:CharaPos:EquipPart != -1
+			;生得武器の対処、ITEMの増減、EQUIPの設定、SYNC_STATUSを行う
+			;ARG = キャラNum
+			;ARG:1 = 装備箇所(0:검～6:악세서리)
+			;ARG:2 = 装備アイテムNo(0で外す)
+			;@装備変更,ARG,ARG:1,ARG:2
+			CALL 装備変更, Chara, EquipPart, ChangeList:CharaPos:EquipPart
+	NEXT
+	FOR EquipPart, 0, 8
+		SIF ChangeListBullet:CharaPos:EquipPart != -1
+			EQUIP:Chara:GET_EQUIP(EquipPart) = ChangeListBullet:CharaPos:EquipPart
+	NEXT
+NEXT
+
+
+@EQUIPMENT_Shows_UserBattleStatus(aUserNo, ChangeList)
+#LOCALSIZE 1
+#LOCALSSIZE 5
+#DIM REF ChangeList, 0, 0
+#DIM aUserNo
+#DIM CharaPos
+#DIM Part
+#DIM Diff
+#DIMS TempS
+#DIM VLen
+#DIMS DYNAMIC StatS, 8
+#DIM DYNAMIC NewStat, 8
+IF aUserNo < 0
+	RETURN 0
+ENDIF
+LOCALS:0 '= GETLINESTR("─") + "<br>"
+CharaPos = CPOS(aUserNo)-1
+FOR LOCAL, 0, 8
+	NewStat:LOCAL = MAXBASE:aUserNo:GET_BATTLESTATUS(LOCAL)
+NEXT
+FOR Part, 0, 7
+	SIF ChangeList:CharaPos:Part != -1
+		SWAP EQUIP:aUserNo:GET_EQUIP(Part) , ChangeList:CharaPos:Part
+	変更予定装備:Part = ChangeList:CharaPos:Part
+NEXT
+CALL SYNC_STATUS, aUserNo
+CALL 装備変更時ステータス更新, aUserNo
+FOR LOCAL, 0, 8
+	Diff = 装備変更時ステータス変化値(LOCAL)
+	StatS:LOCAL = {NewStat:LOCAL}
+	VLen = STRLENS(StatS:LOCAL)
+	IF 0 < Diff
+		TempS = (↑+{Diff})
+		VLen += STRLENS(TempS)
+		StatS:LOCAL += MouseUIStore_HtmlColor(TempS, COLOR("AQUA"))
+	ELSEIF Diff < 0
+		TempS = (↓{Diff})
+		VLen += STRLENS(TempS)
+		StatS:LOCAL += MouseUIStore_HtmlColor(TempS, COLOR("RED"))
+	ENDIF
+	StatS:LOCAL += " " * MAX(12 - VLen, 1)
+NEXT
+CALL 装備変更時ステータス更新, aUserNo, "消去"
+FOR Part, 0, 7
+	SIF ChangeList:CharaPos:Part != -1
+		SWAP EQUIP:aUserNo:GET_EQUIP(Part) , ChangeList:CharaPos:Part
+NEXT
+CALL SYNC_STATUS, aUserNo
+LOCALS:1 = 검　攻撃力 %StatS:0% 명중 %StatS:1%　　
+LOCALS:3 = 총　攻撃力 %StatS:6% 명중 %StatS:7%　　
+LOCALS:2 = 방어 %StatS:2% 마법위력 %StatS:4%<br>
+LOCALS:4 = 회피 %StatS:3% 마법효과 %StatS:5%<br>
+HTML_PRINT LOCALS:0 + MouseUIStore_Space() + LOCALS:1 + LOCALS:2 + MouseUIStore_Space() + LOCALS:3 + LOCALS:4
+VARSET LOCALS
+
+
+@EQUIPMENT_Shows_UserSPBullets(ChangeListBullet, aUserNo, aCurBulletSlot)
+#LOCALSSIZE 1
+#DIM REF ChangeListBullet, 0, 0
+#DIM aUserNo
+#DIM aCurBulletSlot
+#DIM Slot
+#DIMS BulName
+SIF aUserNo < 0
+	RETURN
+LOCALS '= GETLINESTR("─") + "<br>" + MouseUIStore_Space() + "ＢＵＬＬＥＴＳ："
+IF EQUIP:aUserNo:총 != 0
+	CALLFORM 特殊弾倉_{EQUIP:aUserNo:총}, aUserNo
+	FOR Slot, 0, RESULT
+		SIF Slot != 0
+			LOCALS += MouseUIStore_Space()
+		IF EQUIP:aUserNo:@"특수탄{Slot+1}" == 0
+			BulName = ＥＭＰＴＹ
+		ELSE
+			BulName '= ITEMNAME:(EQUIP:aUserNo:@"특수탄{Slot+1}")
+		ENDIF
+		SIF Slot != 0 && Slot % 4 == 0
+			LOCALS += "<br>" + " "*18
+		;IF !TALENT:aUserNo:건슬링거
+		IF !GET_BTL_TALENT_LV("건슬링거",  aUserNo)
+			LOCALS += MouseUIStore_HtmlColorS(@"[%BulName%]", "NONACTIVE")
+		ELSEIF aCurBulletSlot == Slot
+			LOCALS += MouseUIStore_HtmlColorS(@"[%BulName%]", "SELECTED")
+		ELSE
+			;装備変更（確定前）の装備は色を変える
+			IF ChangeListBullet:(CPOS(aUserNo)-1):Slot != -1
+				LOCALS += MouseUIStore_HtmlBtn(MouseUIStore_HtmlColorS(@"[%BulName%]", "SEEING"), @"bul_{Slot}")
+			ELSE
+				LOCALS += MouseUIStore_ActiveColorBtn(@"[%BulName%]", @"bul_{Slot}")
+			ENDIF
+		ENDIF
+	NEXT
+;ELSE
+;	FOR Slot, 0, 8
+;		IF EQUIP:aUserNo:@"특수탄{Slot+1}" != 0
+;			EQUIP:aUserNo:@"특수탄{Slot+1}" = 0
+;		ENDIF
+;	NEXT
+ENDIF
+HTML_PRINT LOCALS
+
+
+@EQUIPMENT_MouseUI_OKExitBar(lUserNo, ChangeList, ChangeListBullet, lCurPresetMode)
+#LOCALSSIZE 1
+#DIM lUserNo
+#DIM REF ChangeList, 0, 0
+#DIM REF ChangeListBullet, 0, 0
+#DIM lCurPresetMode
+#DIM Pos
+#DIM Part
+#DIM Changed
+Changed = 0
+IF 0 <= lUserNo
+	Pos = CPOS(lUserNo)-1
+	FOR Part, 0, 8
+		IF ChangeList:Pos:Part != -1 || ChangeListBullet:Pos:Part != -1
+			Changed = 1
+			GOTO ENDLOOP
+		ENDIF
+	NEXT
+ENDIF
+$ENDLOOP
+LOCALS '= GETLINESTR("─") + "<br>" + MouseUIStore_Space()
+IF Changed
+	LOCALS += MouseUIStore_ActiveColorBtn("[ＯＫ]", "eqs_0")
+	LOCALS += MouseUIStore_Space() + MouseUIStore_ActiveColorBtn("[ＲＥＶＥＲＴ]", "rev_0")
+ELSE
+	LOCALS += MouseUIStore_HtmlColorS("[ＯＫ]", "NONACTIVE")
+	LOCALS += MouseUIStore_Space() + MouseUIStore_HtmlColorS("[ＲＥＶＥＲＴ]", "NONACTIVE")
+ENDIF
+LOCALS += MouseUIStore_Space()*4 + MouseUIStore_ActiveColorBtn("[ＥＸＩＴ]", "ext_0")
+LOCALS += MouseUIStore_ActiveColorBtn("[ＡＬＬ ＥＸＩＴ]", "ext_1")
+LOCALS += MouseUIStore_Space()*4 + MouseUIStore_ActiveColorBtn(@"[등록장비:\@lCurPresetMode == 0 ? LOAD # SAVE \@]", "psw_0")
+IF lCurPresetMode == 0
+	LOCALS += " «"
+ELSE
+	LOCALS += " »"
+ENDIF
+FOR LOCAL, 0, 6
+	;todo: スロット選択方式にする？
+;	SIF LOCAL == lCurPresetSlot
+;		LOCALS += "»"
+;	ELSE
+;		LOCALS += " "
+;	ENDIF
+	LOCALS += MouseUIStore_ActiveColorBtn(@" [{LOCAL+1}]", @"prs_{LOCAL}")
+NEXT
+HTML_PRINT LOCALS
+
+
+;以下既存コードの書き換え
+
+;-------------------------------------------------
+;使用者の装備による変化
+;-------------------------------------------------
+@EQUIPMENT_MouseUIStore_Shows_UserStatus(aUserNo, aItemType, aItemNo, aTypeColor, ChangeList)
+#LOCALSIZE 2
+#LOCALSSIZE 7
+#DIM REF ChangeList, 0, 0
+#DIM aUserNo
+#DIMS aItemType
+#DIM aItemNo
+#DIMS aTypeColor
+#DIM DYNAMIC lEData, 31
+#DIMS DYNAMIC lEDataS, 31
+#DIM DYNAMIC lIData, 31
+#DIMS DYNAMIC lIDataS, 31
+#DIM lEquipNo
+#DIM lEquipTypeNo
+#DIM Diff
+#DIMS DiffS
+#DIM Color
+IF aUserNo < 0
+	RETURN 0
+ENDIF
+LOCALS:0 '= GETLINESTR("─") + "<br>"
+SELECTCASE aItemType
+	CASE "탄환"
+		IF 0 <= aUserNo && EQUIP:aUserNo:총 != 0
+			CALLFORM 特殊弾倉_{EQUIP:aUserNo:총}, aUserNo
+			HTML_PRINT GETLINESTR("─") + "<br>" * (6 - (RESULT - 1) / 4)
+		ELSE
+			HTML_PRINT GETLINESTR("─") + "<br><br><br><br><br><br>"
+		ENDIF
+		RETURN 0
+	CASE "アイテム", "調教アイテム"
+		HTML_PRINT GETLINESTR("─") + "<br><br><br><br><br><br><br><br>"
+		RETURN 0
+	CASE "검", "총"
+		LOCALS:0 += " "*8 + MouseUIStore_Shows_ItemList_HEAD_Detail(aItemType) + "<br>" + GETLINESTR("─") + "<br>"
+		lEquipNo = EQUIP:aUserNo:aItemType
+		CALLFORM MouseUIStore_ITEMDATA_%aItemType%(lEData, lEDataS, lEquipNo, aUserNo)
+		CALLFORM MouseUIStore_ITEMDATA_%aItemType%(lIData, lIDataS, aItemNo, aUserNo)
+		;装備変更（確定前）の装備は色を変える
+		IF ChangeList:(CPOS(aUserNo)-1):MouseUIStore_ItemType_ToNo(aItemType) == -1
+			LOCALS:1 '= " "*8 + MouseUIStore_Shows_ItemList_LINE_Detail(lEData, lEDataS, aItemType, "  ") + "<br>"
+		ELSE
+			LOCALS:1 '= MouseUIStore_HtmlColorS(" "*8 + MouseUIStore_Shows_ItemList_LINE_Detail(lEData, lEDataS, aItemType, "  "), "ACTIVE") + "<br>"
+		ENDIF
+		LOCALS:2 '= " "*8 + MouseUIStore_Shows_ItemList_LINE_Detail(lIData, lIDataS, aItemType, "❏") + "<br>"
+		LOCALS:3 '= GETLINESTR("─") + "<br>"
+		LOCALS:3 += " "*8 + " "*45
+		FOR LOCAL, 3, 7
+			Diff = lIData:LOCAL - lEData:LOCAL
+			Color = GETDEFCOLOR()
+			IF Diff < 0
+				Color = COLOR("RED")
+			ELSEIF 0 < Diff
+				Color = COLOR("AQUA")
+			ENDIF
+			DiffS = {Diff}
+			SIF 0 <= Diff
+				DiffS = +%DiffS%
+			LOCALS:3 += MouseUIStore_HtmlColor(TOALIGNMENT(@"%DiffS, 4, RIGHT%", 5, "CENTER"), Color)
+		NEXT
+		HTML_PRINT "<nobr>" + LOCALS:0 + LOCALS:1 + LOCALS:2 + LOCALS:3 + "<br><br>"
+	CASE "머리","몸통", "팔", "발", "악세서리"
+		FOR LOCAL, 0, 5
+			lEquipNo = EQUIP:aUserNo:(GETNUM(EQUIP, "머리") + LOCAL)
+			CALL MouseUIStore_ITEMDATA_防具(lEData, lEDataS, lEquipNo, aUserNo, aTypeColor)
+			;装備変更（確定前）の装備は色を変える
+			IF ChangeList:(CPOS(aUserNo)-1):(LOCAL+2) == -1
+				LOCALS:(LOCAL + 1) '= " "*8 + MouseUIStore_Shows_ItemList_LINE_Detail(lEData, lEDataS, aItemType, "  ") + "<br>"
+			ELSE
+				LOCALS:(LOCAL + 1) '= MouseUIStore_HtmlColorS(" "*8 + MouseUIStore_Shows_ItemList_LINE_Detail(lEData, lEDataS, aItemType, "  "), "ACTIVE") + "<br>"
+			ENDIF
+		NEXT
+		;表示中のカテゴリは最下部に
+		LOCAL = GETNUM(EQUIP, aItemType) - GETNUM(EQUIP, "머리") + 1
+		LOCALS:LOCAL '= ""
+		CALL MouseUIStore_ITEMDATA_防具(lEData, lEDataS, EQUIP:aUserNo:aItemType, aUserNo, aTypeColor)
+		CALL MouseUIStore_ITEMDATA_防具(lIData, lIDataS, aItemNo, aUserNo, aTypeColor)
+		LOCALS:6 '= GETLINESTR("─") + "<br>"
+		LOCALS:6 += MouseUIStore_HtmlColorS(" "*8 + MouseUIStore_Shows_ItemList_LINE_Detail(lEData, lEDataS, aItemType, "  "), "SELECTED") + "<br>"
+		LOCALS:6 += MouseUIStore_HtmlColorS(" "*8 + MouseUIStore_Shows_ItemList_LINE_Detail(lIData, lIDataS, aItemType, "❏"), "SEEING") + "<br>"
+		HTML_PRINT "<nobr>" + LOCALS:0 + LOCALS:1 + LOCALS:2 + LOCALS:3 + LOCALS:4 + LOCALS:5 + LOCALS:6
+ENDSELECT
+
+
+@EQUIPMENT_MouseUIStore_Shows_ItemList(rDisplays, rCart, aPerPage, aCategoryName, aCategory, aPage, aSelectedItem, aUserNo, aMode, aTypeColor, aCurEquip, aPrevEquip)
+#LOCALSIZE 1
+#LOCALSSIZE 3
+#DIM REF rDisplays, 0, 0
+#DIM aPerPage
+#DIM REF rCart, 0, 0
+#DIMS aCategoryName
+#DIM aCategory
+#DIM aPage
+#DIM aSelectedItem
+#DIM aUserNo
+#DIMS aMode
+#DIMS aTypeColor
+#DIM lData, 31
+#DIMS lDataS, 31
+#DIM lPointer
+#DIM aCurEquip
+#DIM aPrevEquip
+;ヘッダ
+{
+	LOCALS:0 '= GETLINESTR("━") + "<br>"
+	 + MouseUIStore_Space() + EQUIPMENT_MouseUIStore_Shows_ItemList_HEAD(aCategoryName, aMode) + "<br>"
+	 + GETLINESTR("─") + "<br>"
+}
+;リスト
+LOCALS:1 '= ""
+FOR lPointer, aPage*aPerPage - 2, aPage*aPerPage + aPerPage - 2
+	;アイテム欄の最初の二つは特別なコマンドにする
+	IF lPointer == -2
+		IF aPrevEquip == -1
+			LOCALS:1 += MouseUIStore_Space()*5 + MouseUIStore_HtmlColorS("【되돌리기】" + " "*91, "NONACTIVE") + "<br>"
+		ELSE
+			LOCALS:1 += MouseUIStore_Space()*5 + MouseUIStore_ActiveColorBtn("【되돌리기】" + " "*91, "und_0") + "<br>"
+		ENDIF
+	ELSEIF lPointer == -1
+		IF aCurEquip == 0
+			LOCALS:1 += MouseUIStore_Space()*5 + MouseUIStore_HtmlColorS("【해제】" + " "*91, "NONACTIVE") + "<br>"
+		ELSE
+			LOCALS:1 += MouseUIStore_Space()*5 + MouseUIStore_ActiveColorBtn("【해제】" + " "*91, "ueq_0") + "<br>"
+		ENDIF
+	ELSEIF rDisplays:aCategory:lPointer
+		SELECTCASE aCategoryName
+			CASE "머리", "몸통", "팔", "발", "악세서리"
+				CALL MouseUIStore_ITEMDATA_防具(lData, lDataS, rDisplays:aCategory:lPointer, aUserNo, aTypeColor)
+			CASEELSE
+				CALLFORM MouseUIStore_ITEMDATA_%aCategoryName%(lData, lDataS, rDisplays:aCategory:lPointer, aUserNo)
+		ENDSELECT
+		SIF 改造装備(rDisplays:aCategory:lPointer)
+			lDataS:0 '= 改造装備名称(改造装備番号(rDisplays:aCategory:lPointer))
+		IF lPointer == aSelectedItem
+			LOCALS:1 += MouseUIStore_Space() + MouseUIStore_Shows_ItemList_LINE(lData, lDataS, aCategoryName, lPointer, rCart:aCategory:lPointer, "SELECTED", aMode) + "<br>"
+		ELSE
+			LOCALS:1 += MouseUIStore_Space() + MouseUIStore_Shows_ItemList_LINE(lData, lDataS, aCategoryName, lPointer, rCart:aCategory:lPointer, "", aMode) + "<br>"
+		ENDIF
+	ELSE
+		LOCALS:1 += "<br>"
+	ENDIF
+NEXT
+;ページめくり
+LOCALS:2 '= MouseUIStore_Space()
+IF aPage > 0
+	LOCALS:2 += MouseUIStore_ActiveColorBtn("▲PREV▲", "scr_0")
+ELSE
+	LOCALS:2 += MouseUIStore_HtmlColorS("▲PREV▲", "NONACTIVE")
+ENDIF
+LOCALS:2 += MouseUIStore_Space()
+VARSIZE rDisplays
+IF (aPage*aPerPage + aPerPage - 2) < RESULT:1 && rDisplays:aCategory:(aPage*aPerPage + aPerPage - 2) > 0
+	LOCALS:2 += MouseUIStore_ActiveColorBtn("▼NEXT▼", "scr_1")
+ELSE
+	LOCALS:2 += MouseUIStore_HtmlColorS("▼NEXT▼", "NONACTIVE")
+ENDIF
+LOCALS:2 += "<br>"
+HTML_PRINT "<nobr>" + LOCALS:0 + LOCALS:1 + LOCALS:2
+
+
+@EQUIPMENT_MouseUIStore_Shows_ItemList_HEAD(aCategoryName, aMode)
+#FUNCTIONS
+#LOCALSSIZE 1
+#DIMS aCategoryName
+#DIMS aMode
+VARSET LOCALS
+IF aMode == "BUY"
+	LOCALS '= TOALIGNMENT("구입", 9, "CENTER")
+ELSEIF aMode == "TRADEIN" || aMode == "SELL"
+	LOCALS '= TOALIGNMENT("매각", 9, "CENTER")
+ELSEIF aMode == "EQUIP"
+	;pass
+ELSE
+	THROW %aMode%은(는) 알 수 없는 매매 형식입니다。
+ENDIF
+;装備変更モードでは購買関係のUIを表示しない
+SIF aMode != "EQUIP"
+	LOCALS += MouseUIStore_ActiveColorBtn(TOALIGNMENT("단가", 12, "CENTER"), "Pri_0")
+LOCALS += MouseUIStore_ActiveColorBtn(TOALIGNMENT("소지", 6, "CENTER"), "Pss_0")
+LOCALS += EQUIPMENT_MouseUIStore_Shows_ItemList_HEAD_Detail(aCategoryName) + TOALIGNMENT("비고", 20, "CENTER")
+RETURNF LOCALS
+
+@EQUIPMENT_MouseUIStore_Shows_ItemList_HEAD_Detail(aCategoryName)
+#FUNCTIONS
+#LOCALSSIZE 1
+#DIMS aCategoryName
+SELECTCASE aCategoryName
+	CASE "검"
+		{
+			LOCALS '= ""
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("종별", 8, "CENTER"), "STy_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("명칭", 27, "CENTER"), "INo_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("조건", 5, "CENTER"), "Cnd_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("Lv", 5, "CENTER"), "ELv_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("공격", 5, "CENTER"), "FAb_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("명중", 5, "CENTER"), "FAb_1")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("마공", 5, "CENTER"), "FAb_4")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("마효", 5, "CENTER"), "FAb_5")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("상성", 6, "CENTER"), "ATy_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("공격횟수", 8, "CENTER"), "Mul_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("사거리", 6, "CENTER"), "Rng_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("범위", 7, "CENTER"), "Sph_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("효과", 8, "CENTER"), "AAd_0")
+		}
+	CASE "총"
+		{
+			LOCALS '= ""
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("종별", 8, "CENTER"), "GTy_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("명칭", 27, "CENTER"), "INo_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("조건", 5, "CENTER"), "Cnd_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("Lv", 5, "CENTER"), "ELv_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("공격", 5, "CENTER"), "GPw_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("명중", 5, "CENTER"), "GHt_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("특수", 5, "CENTER"), "GMg_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("속도", 5, "CENTER"), "GSp_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("상성", 6, "CENTER"), "ATy_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("공격횟수", 8, "CENTER"), "Mul_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("사거리", 6, "CENTER"), "Rng_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("범위", 7, "CENTER"), "Sph_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("효과", 8, "CENTER"), "AAd_0")
+		}
+	CASE "防具", "머리", "몸통", "팔", "발", "악세서리"
+		{
+			LOCALS '= ""
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("명칭", 27, "CENTER"), "INo_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("조건", 5, "CENTER"), "Cnd_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("Lv", 5, "CENTER"), "ELv_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("공격", 5, "CENTER"), "FAb_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("명중", 5, "CENTER"), "FAb_1")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("방어", 5, "CENTER"), "FAb_2")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("회피", 5, "CENTER"), "FAb_3")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("마공", 5, "CENTER"), "FAb_4")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("마효", 5, "CENTER"), "FAb_5")
+			 + MouseUIStore_HtmlBtn(MouseUIStore_TypeMark_All(), "TyC_0")
+		}
+	CASE "탄환"
+		{
+			LOCALS '= ""
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("명칭", 32, "CENTER"), "INo_0")
+			 + TOALIGNMENT("조건", 5, "CENTER")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("위력", 5, "CENTER"), "BPw_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("명중", 5, "CENTER"), "BHt_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("상성", 6, "CENTER"), "BTy_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("효과", 8, "CENTER"), "BAd_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("필요소질", 8, "CENTER"), "BLv_0")
+		}
+	CASE "アイテム", "아이템"
+		{
+			LOCALS '= ""
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("명칭", 32, "CENTER"), "INo_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("범위", 7, "CENTER"), "ISp_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("타입", 10, "CENTER"), "IEf_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("상성", 6, "CENTER"), "ITy_0")
+			 + MouseUIStore_ActiveColorBtn(TOALIGNMENT("효과", 8, "CENTER"), "IAd_0")
+
+		}
+	CASEELSE
+		THROW 
+ENDSELECT
+RETURNF LOCALS
+
+
+
+
+
+
+

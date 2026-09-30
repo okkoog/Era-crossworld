@@ -1,0 +1,142 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5398_銀狼.ERB
+;	Facility	:ガチャ被りに対する救済措置
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2023/9/21		軽木					新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;-------------------------------------------------
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:은랑]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_EV
+	;周回時にリセットされる数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_EV
+	;周回時にリセットされる文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_EV"
+		SELECTCASE ARG
+			CASE 0
+				;
+				RESULTS = 
+			ENDSELECT
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				;周回後も持ち越したいフラグというとまぁこんな感じでしょうか
+				RESULTS = 星魂
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる数値型変数です
+	;スキルゲージHとほぼ互換です。基本的にはゲージHが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる文字列型変数です
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる数値型変数
+	;スキルゲージFとほぼ互換です。基本的にはゲージFが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS =
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる文字列型変数
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS
+
+@ROLE_EXPLAIN_ADD_PAGE_[[キャラ:은랑]], ARG
+RETURN 1
+
+;ARG:1 = 表示ページ
+@ROLE_EXPLAIN_[[キャラ:은랑]], ARG, ARG:1
+#DIM LCOUNT
+IF ARG:1 == 1
+	PRINTFORML 星魂
+	PRINTL 
+	FOR LCOUNT, 1, 7
+		IF GET_RPG_CFLAG_TAKEOVER(ARG, "星魂") >= LCOUNT
+			SELECTCASE LCOUNT
+				CASE 1
+					PRINTFORML 　１　社会工学
+					PRINTFORML 　　　　필살기 사용 후 적에게 걸려 있는 디버프 항목마다 EP를 7 회복한다. 최대 5회.
+				CASE 2
+					PRINTFORML 　2단계　봇넷
+					PRINTFORML 　　　　전투 개시 시 적의 BS 부착률 +8.
+				CASE 3
+					PRINTFORML 　3단계　페이로드
+					PRINTFORML 　　　　『수정을 허가하시겠습니까?』의 위력 1.1배. 전용 스킬에 의한 디버프량 1.5배.
+				CASE 4
+					PRINTFORML 　4단계　바운스 공격
+					PRINTFORML 　　　　필살기 사용 후 적에게 걸려 있는 디버프 항목마다 1회 만능 상성으로 추격을 가한다. 최대 5회.
+				CASE 5
+					PRINTFORML 　5단계　무차별 대입 공격
+					PRINTFORML 　　　　『｜시스템 경고｜』『｜계정이 정지되었습니다｜』의 위력 1.1배.
+				CASE 6
+					PRINTFORML 　6단계　오버레이 네트워크
+					PRINTFORML 　　　　적에게 걸려 있는 디버프 항목마다 그 적에 대한 데미지 +20％. 최대 100％.
+			ENDSELECT
+		ELSE
+			PRINTFORML 　%TOFULL(TOSTR(LCOUNT))%　？？？？
+			PRINTFORML 　　　　？？？？？？？？？？？？？？？？？
+		ENDIF
+	NEXT
+ENDIF
+RETURN 1
+
+@SKILL_BATTLE_START_CHARA_[[キャラ:은랑]],ARG,ARG:1
+SIF GET_RPG_CFLAG_TAKEOVER(ARG, "星魂") > 1
+	CALL SKILL_SET_カジャンダ, ARG, 22, "BS부착률", 8, "範囲"

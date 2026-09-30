@@ -1,0 +1,601 @@
+﻿;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@DUNGEON_BEFORE_ENTER_EVENT_13_SEISIN,L_X,L_Y,IS_ROUTE_SEARCH
+#DIM DYNAMIC L_X
+#DIM DYNAMIC L_Y
+#DIM DYNAMIC IS_ROUTE_SEARCH
+SELECTCASE DA:L_X:L_Y
+	CASE 45102
+		IF IS_ROUTE_SEARCH
+			IF IS_AUTORUN_SEARCHING
+				RETURN GET_FLOOR_ANALYZE_T(L_X, L_Y) < 2
+			ELSE
+				RETURN 1
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "", "안쪽에서 엄청난 기척이 느껴진다 "
+			CALL INPUT_SELECT_D, "[0] 안쪽으로 간다/[1] 가지 않는다 "
+			IF RESULT == 0
+				RETURN 1
+			ELSE
+				RETURN 0
+			ENDIF
+		ENDIF
+ENDSELECT
+RETURN 1
+;=======================================================================
+;精神世界タイル
+;=======================================================================
+;イベントタイル特殊表示4
+@TILE_MARK_COMMON_13_SEISIN_4, ARG, ARG:1, ARG:2
+SELECTCASE ARG / 10
+	CASEELSE
+		RESULTS = ！
+ENDSELECT
+
+;イベントタイル特殊表示9
+@TILE_MARK_COMMON_13_SEISIN_9, ARG , ARG:1 , ARG:2
+SELECTCASE ARG / 10
+	CASE 4505, 4501, 4503, 4506, 4511, 4513, 4515, 4518
+		IF GET_FLOOR_ANALYZE_T(ARG:1, ARG:2) >= 2
+			RESULTS = ◎
+			SETCOLOR 0x00ff00
+		ELSE
+			RESULTS = ！
+		ENDIF
+	CASEELSE
+		RESULTS = ！
+		SIF GET_FLOOR_ANALYZE_T(ARG:1, ARG:2) >= 2
+			SETCOLOR 0x00ff00
+ENDSELECT
+
+;=======================================================================
+;精神世界調べイベント(4)
+;=======================================================================
+@EVENT_CHECK_DUNGEON_13_SEISIN_4
+
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 4000
+		CALL MESSAGE_WINDOW_D, "", "다른 적들은 일단 물러났지만…/곧 되돌아오겠지 "
+		CALL MESSAGE_WINDOW_D, "", "뭐 그때는 또/되돌려보내주자 "
+ENDSELECT
+
+;=======================================================================
+;精神世界侵入イベント(4)
+;=======================================================================
+@EVENT_ENTER_DUNGEON_13_SEISIN_4
+#LOCALSIZE 3
+
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 4400
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M), 29,30
+	CASE 4401
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),19,30
+	CASE 4402
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),29,16
+		IF FLAG_D13_階層踏破度 > 44 || GETBIT(FLAG:발견ED, 45)
+			CALL MESSAGE_WINDOW_D, "", "보스 앞까지 숏컷하시겠습니까? "
+			CALL INPUT_SELECT_D, "[0] 네/[1] 아니오 "
+			SIF RESULT == 0
+				CALL DUNGEON_WORP,45,19,20
+		ENDIF
+	CASE 4403
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M)+1,30,20
+		
+	;CASE 4528
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),11,10
+	;	SIF GETBIT(FLAG:발견ED, 45)
+	;		CALL DUNGEON_WORP,(FLAG:현M),19,16
+;------------------------------------------------------------------------
+	;CASE 4506
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),11,10
+	;CASE 4507
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),17,10
+;---;---------------------------------------------------------------------
+	;CASE 4501
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),11,10
+	;CASE 4502
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),24,13
+;---;---------------------------------------------------------------------
+	;CASE 4504
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),25,16
+	;CASE 4505
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),17,10
+;---;---------------------------------------------------------------------
+	;CASE 4514
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),27,25
+	;CASE 4517
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),24,13
+;---;---------------------------------------------------------------------
+	;CASE 4521
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),17,24
+	;CASE 4524
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),24,13
+;---;---------------------------------------------------------------------
+	;CASE 4520
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),25,16
+	;CASE 4525
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),13,24
+;---;---------------------------------------------------------------------
+	;CASE 4526
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),25,16
+	;CASE 4527
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),12,16
+;------------------------------------------------------------------------
+	;CASE 4513
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),11,26
+	;CASE 4516
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),11,10
+;---;---------------------------------------------------------------------
+	;CASE 4518
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),12,16
+	;CASE 4519
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),28,27
+;---;---------------------------------------------------------------------
+	;CASE 4522
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),13,20
+	;CASE 4523
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),12,16
+;---;---------------------------------------------------------------------
+	;CASE 4509
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),28,21
+	;CASE 4510
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),12,16
+;---;---------------------------------------------------------------------
+	;CASE 4508
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),12,16
+	;CASE 4511
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),14,12
+;---;---------------------------------------------------------------------
+	;CASE 4500
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),12,16
+	;CASE 4503
+	;	CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+	;	CALL DUNGEON_WORP,(FLAG:현M),19,16
+		
+		
+;------------------------------------------------------------------------
+;ボス戦
+	CASE 4500
+				CALL MESSAGE_WINDOW_D, "악마", "흐음… 이 아가씨의 지식을 쓰기 위해서 최면처럼 조종했는데…/설마 이 정신세계에 들어올 줄이야… "
+				CALL MESSAGE_WINDOW_D, "악마", "이 몸은 다신연합의 한 기둥 바엘/나도 신에 의해 권위를 빼앗긴 것이다/그것을 다시 빼앗기 위해 싸우고있다 "
+				CALL MESSAGE_WINDOW_D, "바엘", "그것을 방해한다면/이 자리에서 지워버리지 "
+				
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				
+				CALL SET_BOSS_ENEMY_DUNGEON_13, "バエル"
+				CALL BATTLE_START
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			FLAG:인카운트율 = 0
+			FLAG:미조우걸음수 = 0
+			
+				CALL MESSAGE_WINDOW_D, "악마", "바보같은…이몸의…풍양이… "
+				CALL MESSAGE_WINDOW_D, "", "악마는 사라져 갔다 "
+				CALL MESSAGE_WINDOW_D, "모르가나", "좋아、이것으로 돌아갈 수 있겠어 "
+				CALL MESSAGE_WINDOW_D, "", "모르가나로부터 받은 앱을 사용하여 되돌아왔다 "
+				CALL DUNGEON_WORP,0,14,18
+			FLAG_D13_全体イベント進行度 = 11
+			FLAG_D13_ローカパーライベントクリア日 = DAY
+			CALL MESSAGE_WINDOW_D, "모르가나", "이것으로 후타바는 무사하다구 "
+			CALL MESSAGE_WINDOW_D, "모르가나", "하지만… 상당히 위험한 악마였으니까/정신에 상당한 데미지가 있어 "
+			CALL MESSAGE_WINDOW_D, "모르가나", "그래도 안심해/잠시 자면 건강해질거야 "
+			CALL MESSAGE_WINDOW_D, "모르가나", "…언제 일어날지는 모르겠지만 말야… "
+				CALL MESSAGE_WINDOW_D, "", @"＞명성 250을 얻었다"
+				FLAG:명성 += 250
+	CASE 405
+		IF FLAG_D13_地下街イベント進行度 < 7
+			CALL MESSAGE_WINDOW_D, "프레드", "부탁해！/도와줘… "
+			;この命令でイベントは破壊され、ただの床になる
+			DA:(FLAG:현X):(FLAG:현Y) = 1
+			FLAG_D13_地下街イベント進行度 = 7
+		ENDIF
+ENDSELECT
+;=======================================================================
+;精神世界侵入イベント（9）
+;=======================================================================
+@EVENT_ENTER_DUNGEON_13_SEISIN_9
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 4000
+		CALL DUNGEON_WORP,(FLAG:현M)+2,12,45
+	CASE 4204
+		CALL DUNGEON_WORP,(FLAG:현M)-2,3,1
+	CASE 4200
+		CALL MESSAGE_WINDOW_D, "", "통제실 같은 곳에 도착했다 "
+	CASE 100
+		CALL DUNGEON_WORP,(FLAG:현M),(FLAG:현X),(FLAG:현Y)
+		CALL DUNGEON_WORP,2,3,22
+		
+;------------------------------------------------------------------------
+	CASE 4504
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),11,10
+	CASE 4505
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),17,10
+;------------------------------------------------------------------------
+	CASE 4500
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),11,10
+	CASE 4501
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),24,13
+;------------------------------------------------------------------------
+	CASE 4502
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),11,10
+	CASE 4503
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),24,15
+;------------------------------------------------------------------------
+	CASE 4506
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),10,17
+	CASE 4507
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),11,10
+	CASE 4508
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),11,10
+;------------------------------------------------------------------------
+	CASE 4509
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),10,17
+	CASE 4510
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),10,17
+	CASE 4511
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),11,26
+;------------------------------------------------------------------------
+	CASE 4512
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),10,17
+	CASE 4513
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),17,24
+	CASE 4514
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),10,17
+;------------------------------------------------------------------------
+	CASE 4515
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),24,23
+	CASE 4516
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),10,17
+	CASE 4517
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),10,17
+;------------------------------------------------------------------------
+	CASE 4518
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),19,16
+	CASE 4519
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),10,17
+	CASE 4520
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),10,17
+	CASE 4521
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),10,17
+;------------------------------------------------------------------------
+	CASE 4522
+		CALL MESSAGE_WINDOW_D, "", "워프 존이다！ "
+		CALL DUNGEON_WORP,(FLAG:현M),11,10
+ENDSELECT
+
+;=======================================================================
+;精神世界宝箱
+;=======================================================================
+@SEISIN_takara
+#LOCALSIZE 3
+;宝箱のフラグ管理用変数の番号
+LOCAL = FLAG:현M / 5 + 80
+;そのマップの何番目の宝箱か
+LOCAL:1 = (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+LOCAL:1 += FLAG:현M % 5 * 10
+
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 4200
+		CALL GETS_TREASURE, "암리타샤워" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 4201
+		CALL GETS_TREASURE, "중압의곡옥" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 4202
+		CALL GETS_TREASURE, "마반경" , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 4100
+		CALL GET_TREASURE_MONEY , 0 , 300000 , FLAG:현던전, LOCAL , LOCAL:1
+	CASE 4203
+		CALL GET_TREASURE, 11103 , 1 , FLAG:현던전, LOCAL , LOCAL:1
+	;マップ番号*100+そのマップで何番目の宝箱かを示す数値でどの宝箱かを判別します。
+	;例えば0の場合、0版のマップの0番目の宝箱であることを表しています。
+
+ENDSELECT
+RETURN 1
+;=======================================================================
+;精神世界敵
+;=======================================================================
+@SEISIN_enemy, ARG
+		IF ARG == 0
+			IF FLAG:현M == 44
+				SIF RAND:6 == 0		
+					RETURN [[キャラ:에스]]		
+				SIF RAND:5 == 0		
+					RETURN [[キャラ:모르간]]		
+				SIF RAND:4 == 0		
+					RETURN [[キャラ:베탈라]]		
+				SIF RAND:3 == 0		
+					RETURN [[キャラ:북두성군]]		
+				SIF RAND:2 == 0		
+					RETURN [[キャラ:도플갱어]]		
+							
+					RETURN [[キャラ:도철]]
+			ELSEIF FLAG:현M == 45 && (FLAG:현X < 9 || FLAG:현X > 30) && (FLAG:현Y < 9 || FLAG:현Y > 30)
+				
+				SIF RAND:6 == 0		
+					RETURN [[キャラ:이시스]]		
+				SIF RAND:5 == 0		
+					RETURN [[キャラ:헤임달]]		
+				SIF RAND:4 == 0		
+					RETURN [[キャラ:마야_용신]]		
+				SIF RAND:3 == 0		
+					RETURN [[キャラ:보후・마나흐]]		
+				SIF RAND:2 == 0		
+					RETURN [[キャラ:레토]]		
+							
+					RETURN [[キャラ:카마엘]]
+			ELSEIF FLAG:현M == 45
+				SIF RAND:16 == 0		
+					RETURN [[キャラ:헤임달]]		
+				SIF RAND:15 == 0		
+					RETURN [[キャラ:마야_용신]]		
+				SIF RAND:14 == 0		
+					RETURN [[キャラ:에스]]		
+				SIF RAND:13 == 0		
+					RETURN [[キャラ:베탈라]]		
+				SIF RAND:5 == 0		
+					RETURN [[キャラ:이시스]]		
+				SIF RAND:4 == 0		
+					RETURN [[キャラ:모르간]]		
+				SIF RAND:3 == 0		
+					RETURN [[キャラ:아즈라엘]]		
+				SIF RAND:2 == 0		
+					RETURN [[キャラ:아누비스]]		
+				
+					RETURN [[キャラ:오시리스]]		
+				
+			ENDIF
+				SIF RAND:15 == 0		
+					RETURN [[キャラ:에스]]		
+				SIF RAND:14 == 0		
+					RETURN [[キャラ:모르간]]		
+				SIF RAND:13 == 0		
+					RETURN [[キャラ:베탈라]]		
+				SIF RAND:12 == 0		
+					RETURN [[キャラ:북두성군]]		
+				SIF RAND:11 == 0		
+					RETURN [[キャラ:도플갱어]]		
+				SIF RAND:10 == 0	
+					RETURN [[キャラ:도철]]
+				SIF RAND:9 == 0		
+					RETURN [[キャラ:이시스]]		
+				SIF RAND:8 == 0		
+					RETURN [[キャラ:헤임달]]		
+				SIF RAND:7 == 0		
+					RETURN [[キャラ:마야_용신]]		
+				SIF RAND:6 == 0		
+					RETURN [[キャラ:보후・마나흐]]		
+				SIF RAND:5 == 0		
+					RETURN [[キャラ:레토]]		
+				SIF RAND:4 == 0	
+					RETURN [[キャラ:아즈라엘]]
+				SIF RAND:3 == 0		
+					RETURN [[キャラ:아즈라엘]]		
+				SIF RAND:2 == 0		
+					RETURN [[キャラ:아누비스]]		
+				
+					RETURN [[キャラ:오시리스]]		
+		ELSEIF ARG == 1
+			SIF FLAG:현M == 44
+				RETURN 57 + RAND:4
+				
+				RETURN 60 + RAND:4
+		ENDIF
+;=======================================================================
+;精神世界敵ステータス設定
+;=======================================================================
+@SEISIN_ENEMY_STATUS,ARG
+
+SIF FLAG:현M > 45
+	RETURN 0
+SELECTCASE NO:ARG
+	CASE [[キャラ:오시리스]]
+		ABL:(CHARANUM-1):스킬1 = [[스킬:메기도라]];2002;메기도라
+		ABL:(CHARANUM-1):스킬2 = [[스킬:마카라칸]];603;마카라칸
+		ABL:(CHARANUM-1):스킬3 = [[스킬:마하코우하]];1317;마하코우하
+		ABL:(CHARANUM-1):스킬4 = [[스킬:티없는위광]];1310;티없는위광
+		ABL:(CHARANUM-1):스킬5 = [[스킬:천년의저주]];1414;천년의저주
+		ABL:(CHARANUM-1):스킬6 = [[스킬:에이가온]];1420;에이가온
+	CASE [[キャラ:아누비스]]
+		ABL:(CHARANUM-1):스킬1 = [[스킬:빛의심판]];1304;빛의심판
+		ABL:(CHARANUM-1):스킬2 = [[스킬:어둠의심판]];1406;어둠의심판
+		ABL:(CHARANUM-1):스킬3 = [[스킬:마카카쟈오토]];2416;마카카쟈오토
+		ABL:(CHARANUM-1):스킬4 = [[스킬:마카・카쟈]];503;マカカジャ
+		ABL:(CHARANUM-1):스킬5 = [[스킬:빛의심판]];1304;빛의심판
+		ABL:(CHARANUM-1):스킬6 = [[스킬:어둠의심판]];1406;어둠의심판
+	CASE [[キャラ:아즈라엘]]
+		ABL:(CHARANUM-1):스킬1 = [[스킬:메기도라]];2002;메기도라
+		ABL:(CHARANUM-1):스킬2 = [[스킬:무드온]];1412;무드온
+		ABL:(CHARANUM-1):스킬3 = [[스킬:스쿤・다]];508;스쿤・다
+		ABL:(CHARANUM-1):스킬4 = [[스킬:하마온]];1308;하마온
+		ABL:(CHARANUM-1):스킬5 = [[스킬:헬즈아이]];1405;헬즈아이
+		ABL:(CHARANUM-1):스킬6 = [[스킬:트리스아기온]];718;트리스아기온
+	CASE [[キャラ:레토]]
+		ABL:(CHARANUM-1):스킬1 = [[스킬:빛의심판]];1304;빛의심판
+		ABL:(CHARANUM-1):스킬2 = [[스킬:컨센트레이트]];512;컨센트레이트
+		ABL:(CHARANUM-1):스킬3 = [[스킬:마한마온]];1309;마한마온
+		ABL:(CHARANUM-1):스킬4 = [[스킬:혼의단죄]];1338;혼의단죄
+		ABL:(CHARANUM-1):스킬5 = [[스킬:빛나는낙인]];2038;빛나는낙인
+		ABL:(CHARANUM-1):스킬6 = [[스킬:멸망의빛]];1330;멸망의빛
+	CASE [[キャラ:카마엘]]
+		ABL:(CHARANUM-1):스킬1 = [[스킬:라쿠카쟈오토]];2415;라쿠카쟈오토
+		ABL:(CHARANUM-1):스킬2 = [[스킬:하마온]];1308;하마온
+		ABL:(CHARANUM-1):스킬3 = [[스킬:마한마온]];1309;마한마온
+		ABL:(CHARANUM-1):스킬4 = [[스킬:흑점격]];316;흑점격
+		ABL:(CHARANUM-1):스킬5 = [[스킬:낙인의일격]];261;낙인의일격
+		ABL:(CHARANUM-1):스킬6 = [[스킬:세이크리드애로]];149;세이크리드애로
+		ABL:(CHARANUM-1):스킬7 = [[스킬:파마가드킬]];1331;파마가드킬
+	CASE [[キャラ:보후・마나흐]]
+		ABL:(CHARANUM-1):스킬1 = [[스킬:빛의심판]];1304;빛의심판
+		ABL:(CHARANUM-1):스킬2 = [[스킬:마하코우하]];1317;마하코우하
+		ABL:(CHARANUM-1):스킬3 = [[스킬:마한마온]];1309;마한마온
+		ABL:(CHARANUM-1):스킬4 = [[스킬:메・디아라한]];406;메・디아라한
+		ABL:(CHARANUM-1):스킬5 = [[스킬:빛나는낙인]];2038;빛나는낙인
+		ABL:(CHARANUM-1):스킬6 = [[스킬:댐네이션]];1313;댐네이션
+		ABL:(CHARANUM-1):스킬7 = [[스킬:파마가드킬]];1331;파마가드킬
+	CASE [[キャラ:마야_용신]]
+		ABL:(CHARANUM-1):스킬1 = [[스킬:메가톤프레스]];205;메가톤프레스
+		ABL:(CHARANUM-1):스킬2 = [[스킬:마그네스톰]];1816;마그네스톰
+		ABL:(CHARANUM-1):스킬3 = [[스킬:광란의강조]];312;광란의강조
+		ABL:(CHARANUM-1):스킬4 = [[스킬:메・디아라한]];406;메・디아라한
+		ABL:(CHARANUM-1):스킬5 = [[스킬:빛나는낙인]];2038;빛나는낙인
+		ABL:(CHARANUM-1):스킬6 = [[스킬:댐네이션]];1313;댐네이션
+	CASE [[キャラ:헤임달]]
+		ABL:(CHARANUM-1):스킬1 = [[스킬:선풍진]];1708;선풍진
+		ABL:(CHARANUM-1):스킬2 = [[스킬:아이온의비]];808;아이온의비
+		ABL:(CHARANUM-1):스킬3 = [[스킬:흑점격]];316;흑점격
+		ABL:(CHARANUM-1):스킬4 = [[스킬:마하・부흐다인]];806;마하・부흐다인
+		ABL:(CHARANUM-1):스킬5 = [[스킬:빛나는낙인]];2038;빛나는낙인
+		ABL:(CHARANUM-1):스킬6 = [[스킬:혼의단죄]];1338;혼의단죄
+	CASE [[キャラ:이시스]]
+		ABL:(CHARANUM-1):스킬1 = [[스킬:메기도라]];2002;메기도라
+		ABL:(CHARANUM-1):스킬2 = [[스킬:아이온의비]];808;아이온의비
+		ABL:(CHARANUM-1):스킬3 = [[스킬:사만・다]];541;사만・다
+		ABL:(CHARANUM-1):스킬4 = [[스킬:마하・부흐다인]];806;마하・부흐다인
+		ABL:(CHARANUM-1):스킬5 = [[스킬:헤븐즈도어]];1306;헤븐즈도어
+		ABL:(CHARANUM-1):스킬6 = [[스킬:댐네이션]];1313;댐네이션
+		ABL:(CHARANUM-1):스킬7 = [[스킬:파마가드브레이크]];1232;파마가드브레이크
+	CASE [[キャラ:도철]]
+		ABL:(CHARANUM-1):스킬1 = [[스킬:네거티브파일]];258;네거티브파일
+		ABL:(CHARANUM-1):스킬2 = [[스킬:마하주온]];1422;마하주온
+		ABL:(CHARANUM-1):스킬3 = [[스킬:헬즈아이]];1405;헬즈아이
+		ABL:(CHARANUM-1):스킬4 = [[스킬:베어먹기]];326;베어먹기
+		ABL:(CHARANUM-1):스킬5 = [[스킬:마하무드온]];1413;마하무드온
+	CASE [[キャラ:에스]]
+		ABL:(CHARANUM-1):스킬1 = [[스킬:마하・잔다인]];1006;마하・잔다인
+		ABL:(CHARANUM-1):스킬2 = [[스킬:저주비문]];1423;저주비문
+		ABL:(CHARANUM-1):스킬3 = [[스킬:스펠그룸]];1815;스펠그룸
+		ABL:(CHARANUM-1):스킬4 = [[스킬:메・디아라마]];405;메・디아라마
+		ABL:(CHARANUM-1):스킬5 = [[스킬:도발]];515;도발
+		ABL:(CHARANUM-1):스킬6 = [[스킬:마하주온]];1422;마하주온
+	CASE [[キャラ:모르간]]
+		ABL:(CHARANUM-1):스킬1 = [[스킬:마하・잔마]];1005;마하・잔마
+		ABL:(CHARANUM-1):스킬2 = [[스킬:저주비문]];1423;저주비문
+		ABL:(CHARANUM-1):스킬3 = [[스킬:마하・아쿠에스]];1605;마하・아쿠에스
+		ABL:(CHARANUM-1):스킬4 = [[스킬:메・디아라마]];405;메・디아라마
+		ABL:(CHARANUM-1):스킬5 = [[스킬:도발]];515;도발
+		ABL:(CHARANUM-1):스킬6 = [[스킬:나락의파동]];1425;나락의파동
+		ABL:(CHARANUM-1):스킬7 = [[스킬:주살가드브레이크]];1432;주살가드브레이크
+	CASE [[キャラ:베탈라]]
+		ABL:(CHARANUM-1):스킬1 = [[스킬:철사권]];259;철사권
+		ABL:(CHARANUM-1):스킬2 = [[스킬:데스샤워]];148;데스샤워
+		ABL:(CHARANUM-1):스킬3 = [[스킬:파워브레스]];524;파워브레스
+		ABL:(CHARANUM-1):스킬4 = [[스킬:메・디아라마]];405;메・디아라마
+		ABL:(CHARANUM-1):스킬5 = [[스킬:도발]];515;도발
+		ABL:(CHARANUM-1):스킬6 = [[스킬:배드비트]];315;배드비트
+	CASE [[キャラ:북두성군]]
+		ABL:(CHARANUM-1):스킬1 = [[스킬:철사권]];259;철사권
+		ABL:(CHARANUM-1):스킬2 = [[스킬:저주비문]];1423;저주비문
+		ABL:(CHARANUM-1):스킬3 = [[스킬:나락의파동]];1425;나락의파동
+		ABL:(CHARANUM-1):스킬4 = [[스킬:어둠의심판]];1406;어둠의심판
+		ABL:(CHARANUM-1):스킬5 = [[스킬:축시의참배]];1403;축시의참배
+		ABL:(CHARANUM-1):스킬6 = [[스킬:주살가드킬]];1431;주살가드킬
+	CASE [[キャラ:도플갱어]]
+		ABL:(CHARANUM-1):스킬1 = [[스킬:철사권]];259;철사권
+		ABL:(CHARANUM-1):스킬2 = [[스킬:마하・라기온]];705;마하・라기온
+		ABL:(CHARANUM-1):스킬3 = [[스킬:메・디아라마]];405;메・디아라마
+		ABL:(CHARANUM-1):스킬4 = [[스킬:마하무드]];1402;마하무드
+		ABL:(CHARANUM-1):스킬5 = [[스킬:마하무드온]];1413;마하무드온
+		ABL:(CHARANUM-1):스킬6 = [[스킬:주살가드킬]];1431;주살가드킬
+ENDSELECT
+
+@SET_ACTION_ローカバエル,ARG
+IF CFLAG:ARG:행동한횟수 == 0 && (FLAG:경과턴수 % 4 == 0 || (FLAG:경과턴수 % 2 == 0 && 現HP割合(ARG) <= 33))
+	LOCAL = 0
+	FOR LOCAL:1, 1, 11
+		CALL RANDOM_TARGET,ARG,2511
+		IF CFLAG:POS(CFLAG:ARG:타겟):상태이상 != GET_STATE_NUM("FLY")
+			CFLAG:ARG:입력행동 = [[스킬:파리화의저주]];2511
+			RETURN 1
+		ENDIF
+	NEXT
+		FOR LOCAL, 1, 7
+			SIF POS(LOCAL) < 0
+				CONTINUE
+			SIF GET_STATE(CFLAG:POS(LOCAL):상태이상) == "DYING"
+				CONTINUE
+			IF CFLAG:POS(LOCAL):상태이상 != GET_STATE_NUM("FLY")
+				CFLAG:ARG:타겟 = LOCAL
+				CFLAG:ARG:입력행동 = [[스킬:파리화의저주]];2511
+				RETURN 1
+			ENDIF
+		NEXT
+	GOTO TWO_ACTION
+ELSE
+	$TWO_ACTION
+	LOCAL = 0
+	SIF CFLAG:ARG:공격강화 < 0
+		LOCAL -= CFLAG:ARG:공격강화
+	SIF CFLAG:ARG:방어강화 < 0
+		LOCAL -= CFLAG:ARG:방어강화
+	SIF CFLAG:ARG:마법위력강화 < 0
+		LOCAL -= CFLAG:ARG:마법위력강화
+	SIF CFLAG:ARG:마법효과강화 < 0
+		LOCAL -= CFLAG:ARG:마법효과강화
+	SIF CFLAG:ARG:명중강화 < 0
+		LOCAL -= CFLAG:ARG:명중강화/2
+	SIF CFLAG:ARG:회피강화 < 0
+		LOCAL -= CFLAG:ARG:회피강화/2
+	IF CFLAG:ARG:행동한횟수 == 0 && ((1 + RAND:300 < LOCAL) || (FLAG:경과턴수 % 10 == 9))
+		CFLAG:ARG:입력행동 = [[스킬:퓨어블루]];2512
+		CALL RANDOM_TARGET,ARG,[[스킬:퓨어블루]];2512
+		RETURN 1
+	ENDIF
+	$DECIDE_ACTION
+	CALL ランダム行動, ARG
+ENDIF

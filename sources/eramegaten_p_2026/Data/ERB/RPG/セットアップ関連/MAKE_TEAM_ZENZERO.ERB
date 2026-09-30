@@ -1,0 +1,151 @@
+﻿@MAKE_TEAM_ZENZERO
+#DIM DYNAMIC LCOUNT, 3
+#DIM DYNAMIC L_LEADER
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC SHOWLINE, 2
+;表示させるキャラを抽出（Q:*に表示するキャラの登録番号、LOCAL:2に人数）
+{
+CALL INPUT_CHARA_LIST
+	, "調教/戦闘/育成情報/基本ステータス/防御相性1/防御相性2"
+	, "リーダーを選んでください"
+	, "CASTING_TEAM_LEADER_ZENZERO" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+SIF RESULT == 1000
+	RETURN 0
+L_LEADER = RESULT
+
+VARI STOCK_LINE = LINECOUNT
+WHILE 1
+	CLEARLINE LINECOUNT - STOCK_LINE
+	DRAWLINE
+	PRINTL 팀 편성
+	DRAWLINE
+	FOR LCOUNT:2, 0, 3
+		IF LCOUNT:2 == 0
+			L_CHARA = L_LEADER
+		ELSE
+			L_CHARA = FINDCHARA_LINK(L_LEADER, LCOUNT:2 - 1)
+		ENDIF
+		FOR LCOUNT, 0, 6
+			PRINTL 
+		NEXT
+		IF L_CHARA < 0
+			SHOWLINE '= "<div xpos = '0' ypos = '-600' width = '600' height = '600' border_width = '2' padding = '15'>" + "" + "</div>"
+			SHOWLINE += "<div xpos = '650' ypos = '-600'>" + @"[{LCOUNT:2}] ＥＭＰＴＹ" + "</div>"
+		ELSE
+			SHOWLINE '= "<div xpos = '0' ypos = '-600' width = '600' height = '600' border_width = '2' padding = '15'>" + GET_FACE_BY_CHARA_AS_HTML(L_CHARA, 570) + "</div>"
+			SHOWLINE += "<div xpos = '650' ypos = '-600'>" + @"[{LCOUNT:2}] " + CALLNAME:L_CHARA + "</div>"
+			SHOWLINE += "<div xpos = '650' ypos = '-500'>" + "特性:" + GET_ホロウエージェント_TYPE(TALENT:L_CHARA:할로우에이전트) + "</div>"
+			SHOWLINE += "<div xpos = '1250' ypos = '-500'>" + "素質:" + "</div>"
+			VARS TEMPS
+			FOR LCOUNT, 0, SUCCESSIONNUM
+				IF TALENT:L_CHARA:GET_SUCCESSION(LCOUNT)
+					SIF TEMPS != ""
+						TEMPS += "<br>"
+					TEMPS += GET_SUCCESSION(LCOUNT)
+				ENDIF
+			NEXT
+			SHOWLINE += "<div xpos = '1500' ypos = '-500'>" + TEMPS + "</div>"
+			SHOWLINE += "<div xpos = '1950' ypos = '-500'>" + "防御相性:" + "</div>"
+			FOR LCOUNT:1, 0, 3
+				TEMPS '= ""
+				FOR LCOUNT, 0, 6
+					SIF LCOUNT
+						TEMPS += "<br>"
+					TEMPS += GET_TYPE(LCOUNT:1 * 6 + LCOUNT) + " " + GET_STR_OF_DEFTYPE_FOR_HTML(MAXBASE:L_CHARA:GET_TYPE(LCOUNT:1 * 6 + LCOUNT))
+				NEXT
+				SHOWLINE += @"<div xpos = '{2450 + LCOUNT:1 * 800}' ypos = '-500'>" + TEMPS + "</div>"
+			NEXT
+		ENDIF
+		SHOWLINE '= SET_BUTTON_TAG(SHOWLINE, TOSTR(LCOUNT:2))
+		HTML_PRINT SHOWLINE
+	NEXT
+	DRAWLINE
+	PRINTFORML [10] 팀 해산
+	DRAWLINE
+	PRINTFORML [99] 돌아간다
+	INPUT
+	SELECTCASE RESULT
+		CASE 0
+
+		CASE 1, 2
+			VARI L_RESULT = RESULT
+			;表示させるキャラを抽出（Q:*に表示するキャラの登録番号、LOCAL:2に人数）
+			{
+			CALL INPUT_CHARA_LIST
+				, "調教/戦闘/育成情報/基本ステータス/防御相性1/防御相性2"
+				, "加入させるメンバーを選んでください。"
+				, "CASTING_TEAM_MEMBER_ZENZERO" + "," + TOSTR(L_LEADER)
+				, "SHOW_ADD_UP_FUNCTION"
+				, "SHOW_ADD_DOWN_FUNCTION"
+				, "ADD_SELECT_FUNCTION"
+				, "L_CANCELS"
+				, "FUNC_CUSTOM_TITLE"
+				, "FUNC_CUSTOM_COLOR"
+				, -1
+			}
+			SIF RESULT == 1000
+				CONTINUE
+			L_CHARA = RESULT
+			IF FINDCHARA_TIMEID(CFLAG:L_CHARA:피링크캐릭터실제가입시간) == L_LEADER
+				CALL REMOVE_LINK_DEVIL, L_LEADER, , L_CHARA
+			ELSE
+				CALL REMOVE_LINK_DEVIL, L_LEADER, L_RESULT - 1
+				CFLAG:L_LEADER:@"링크캐릭터실제가입시간{L_RESULT- 1}" = CFLAG:L_CHARA:실제가입시간
+				CFLAG:L_CHARA:@"피링크캐릭터실제가입시간" = CFLAG:L_LEADER:실제가입시간
+			ENDIF
+		CASE 10
+			CALL REMOVE_LINK_DEVIL, L_LEADER, 0
+			CALL REMOVE_LINK_DEVIL, L_LEADER, 1
+			RESTART
+		CASE 99
+			RESTART
+	ENDSELECT
+WEND
+
+@CASTING_TEAM_LEADER_ZENZERO, L_CHARA
+#DIM DYNAMIC L_CHARA
+SIF CSTR:L_CHARA:롤 != "ホロウエージェント"
+	RETURN 0
+;TEAMに組み込まれてるキャラは除く
+SIF CFLAG:L_CHARA:피링크캐릭터실제가입시간
+	RETURN 0
+SIF CFLAG:L_CHARA:PT플래그 == 0
+	RETURN 0
+SIF GET_VALUE_TALENT_JOINABLE(L_CHARA) == 0
+	RETURN 0
+SIF TALENT:L_CHARA:전력상실 > 0
+	RETURN 0
+SIF IS_RENTING(L_CHARA)
+	RETURN 0
+SIF CFLAG:L_CHARA:이자리에없는플래그 == 1
+	RETURN 0
+SIF CFLAG:L_CHARA:전투이외불능
+	RETURN 0
+RETURN 1
+
+@CASTING_TEAM_MEMBER_ZENZERO, L_CHARA, L_LEADER
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_LEADER
+SIF CSTR:L_CHARA:롤 != "ホロウエージェント"
+	RETURN 0
+CALL CASTING_CHOOSE_COMPANION(L_CHARA)
+SIF !RESULT
+	RETURN 0
+SIF L_CHARA == TOINT(L_LEADER)
+	RETURN 0
+;TEAMに組み込まれてるキャラは除く
+SIF CFLAG:L_CHARA:피링크캐릭터실제가입시간
+	RETURN 0
+SIF FINDCHARA_LINK(L_CHARA, 0) >= 0
+	RETURN 0
+SIF FINDCHARA_LINK(L_CHARA, 1) >= 0
+	RETURN 0
+RETURN 1

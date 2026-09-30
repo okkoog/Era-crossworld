@@ -1,0 +1,265 @@
+﻿;=============================================
+;EVENT_200_1_白き鋼鉄
+;アキュラ
+;=============================================
+@SET_ACTION_EVENT_200_1_アキュラ, ARG
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC LCOUNT, 2
+#LOCALSIZE 2
+#DIM 피탄횟수
+#DIM DYNAMIC BLITZ_TARGET
+#DIMS DYNAMIC TYPE_TABLE = "전격", "타격", "검격", "핵열", "정신", "충격", "비구"
+#DIM DYNAMIC TARGET_TABLE = 1, 2, 3, 4, 5, 6
+CALL SHUFFLE_ARRAY_STR, TYPE_TABLE
+CALL SHUFFLE_ARRAY_INT, TARGET_TABLE
+IF BLITZ_TARGET_JUDG(ARG) != 1
+	피탄횟수 = SKILLGAGE_H_GET(ARG, [[스킬:블리츠대쉬]]) % 10
+	CFLAG:ARG:타겟 = -1
+	CSTR:ARG:100 = 만능
+	FOR LCOUNT:1, 0, VARSIZE("TARGET_TABLE")
+		L_CHARA = POS(TARGET_TABLE:(LCOUNT:1))
+		SIF !IS_TARGET_ABLE(L_CHARA)
+			CONTINUE
+		SIF CFLAG:ARG:타겟 == -1
+			CFLAG:ARG:타겟 = TARGET_TABLE:(LCOUNT:1)
+		FOR LCOUNT, 0, VARSIZE("TYPE_TABLE")
+			CALL BTL_CALC_AISYOU, ARG, L_CHARA, , GET_TYPE_NUM(TYPE_TABLE:LCOUNT)
+			SIF CHECK_WEAKNESS(RESULT) <= 0
+				CONTINUE
+			CFLAG:ARG:타겟 = TARGET_TABLE:(LCOUNT:1)
+			CSTR:ARG:100 '= TYPE_TABLE:LCOUNT
+			BREAK
+		NEXT
+		SIF CSTR:ARG:100 != "만능"
+			BREAK
+	NEXT
+	CALL SHOW_NOW_FORMATION_E,0,2, -2
+	DRAWLINE
+	CALL SHOW_NOW_FORMATION_P,0,2
+	DRAWLINE
+	CALL PRINT_ACT_MESSAGE, ARG, , , , "블리츠대쉬"
+	CALL PRINT_HIT_MESSAGE, POS(CFLAG:ARG:타겟), "타깃 록!", "w"
+	CALL SKILLGAGE_H_SET, ARG, [[스킬:블리츠대쉬]], 피탄횟수
+	CALL SKILLGAGE_H_ADD, ARG, [[스킬:블리츠대쉬]], POS(CFLAG:ARG:타겟) * 10
+	CALL SKILLGAGE_D_SET, ARG, [[스킬:블리츠대쉬]], 5
+	CFLAG:ARG:입력행동 = [[스킬:블리츠대쉬]]
+	TRYCALLFORM ENEMY_BATTLE_MESSAGE_K[[キャラ:아큐라_X]], ARG
+ENDIF
+
+IF CFLAG:ARG:１more플래그 > 0
+	CFLAG:ARG:타겟 = 23
+	CFLAG:ARG:입력행동 = [[스킬:블리츠대쉬]]
+;요컨대 한 번 되살아났는가? 라는 뜻
+ELSEIF SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+	ABL:ARG:스킬3 = [[스킬:X-ROSS DISASTER]]
+	CFLAG:ARG:행동횟수 = 3
+	IF CFLAG:ARG:행동한횟수 == 0
+		IF SKILLGAGE_D_GET(ARG, [[스킬:X-ROSS DISASTER]]) == 0
+			CFLAG:ARG:타겟 = 19
+			CFLAG:ARG:입력행동 = [[스킬:X-ROSS DISASTER]]
+		ELSE
+			CFLAG:ARG:타겟 = 23
+			CFLAG:ARG:입력행동 = [[스킬:블리츠대쉬]]
+		ENDIF
+	ELSE
+		CFLAG:ARG:타겟 = 23
+		SELECTCASE CSTR:ARG:100
+			CASE "전격"
+				CFLAG:ARG:입력행동 = [[스킬:스파크스텔라]]
+			CASE "타격"
+				CFLAG:ARG:입력행동 = [[스킬:앵커넥서스]]
+			CASE "검격"
+				CFLAG:ARG:입력행동 = [[스킬:오비탈에지]]
+			CASE "핵열"
+				CFLAG:ARG:입력행동 = [[스킬:루미너리마인]]
+			CASE "정신"
+				CFLAG:ARG:입력행동 = [[스킬:키스오브디바]]
+			CASE "충격"
+				CFLAG:ARG:입력행동 = [[스킬:드래프트스파이럴]]
+			CASE "비구"
+				CFLAG:ARG:입력행동 = [[스킬:클로스랜서]]
+			CASEELSE
+				CFLAG:ARG:입력행동 = [[스킬:블리츠대쉬]]
+		ENDSELECT
+	ENDIF
+ELSE
+	CFLAG:ARG:타겟 = 23
+	IF CFLAG:ARG:행동한횟수 == 0
+		CFLAG:ARG:입력행동 = [[스킬:블리츠대쉬]]
+	ELSE
+		SELECTCASE RAND:7
+			CASE 0
+				CFLAG:ARG:입력행동 = [[스킬:스파크스텔라]]
+			CASE 1
+				CFLAG:ARG:입력행동 = [[스킬:앵커넥서스]]
+			CASE 2
+				CFLAG:ARG:입력행동 = [[스킬:오비탈에지]]
+			CASE 3
+				CFLAG:ARG:입력행동 = [[스킬:루미너리마인]]
+			CASE 4
+				CFLAG:ARG:입력행동 = [[스킬:키스오브디바]]
+			CASE 5
+				CFLAG:ARG:입력행동 = [[스킬:드래프트스파이럴]]
+			CASE 6
+				CFLAG:ARG:입력행동 = [[스킬:클로스랜서]]
+		ENDSELECT
+	ENDIF
+ENDIF
+
+;록 대상을 경고
+@ADD_ICON_BATTLE_EFFECT_EVENT_200_1_白き鋼鉄, L_CHARA
+#DIM DYNAMIC L_CHARA
+IF SKILLGAGE_H_GET(GET_ENEMY("アキュラ"), [[스킬:블리츠대쉬]]) > 0 && SKILLGAGE_H_GET(GET_ENEMY("アキュラ"), [[스킬:블리츠대쉬]]) / 10 == L_CHARA && IS_TARGET_ABLE(L_CHARA)
+	CALL CREATE_SPRITE_ICON_EFFECT, "ターゲットサイト2"
+	CALL MAKE_ANIME_BLINKING, "ターゲットサイト2_点滅アニメ", "ターゲットサイト2", , , 4
+	RESULTS '= "ターゲットサイト2_点滅アニメ"
+	RETURN 1
+ENDIF
+;아큐라・적대 시 구상
+@KOJO_ENEMY_BATTLE_MESSAGE_K[[キャラ:아큐라_X]], ARG, ARG:1 = 0
+SELECTCASE CFLAG:ARG:입력행동
+;-------------------------------------------------
+;특정 스킬
+;-------------------------------------------------
+;이것은 통상 공격
+	CASE 0
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 익숙지 않지만…… 징징댈 수는 없나
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 총이 아니더라도, 이 정도는!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 놓치지 않는다!
+		ENDSELECT
+;-------------------------------------------------
+;총 공격 (특수 탄환 포함)
+;-------------------------------------------------
+	CASE [[스킬:ＧＵＮ]]
+		SELECTCASE RAND:3
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 총에는 자신 있다
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 거기다!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 놓치지 않는다!
+		ENDSELECT
+;-------------------------------------------------
+;범용 스킬
+;-------------------------------------------------
+	CASE [[스킬:블리츠대쉬]]
+		TRYCALLFORM SING_RORO_K5355, ARG
+		SETCOLOR COLOR("ENEMY")
+		SELECTCASE LOCAL
+			CASE 0
+				BTL_KOJO_RESULTS:0 = 흣――!
+			CASE 1
+				BTL_KOJO_RESULTS:0 = 포착했다!
+			CASE 2
+				BTL_KOJO_RESULTS:0 = 하앗! 맞아라!
+		ENDSELECT
+	CASE [[스킬:SONG OF DIVA]]
+		ALIGNMENT RIGHT
+		IF SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+			RESETCOLOR
+			PRINTL ♪ - 대죄청(이그나이터) -　　　　　
+			ALIGNMENT LEFT
+			SETCOLOR 0xffffff
+			PRINTL 　　불과　기와　죽음과　몸과　바탕의 주님은　오셨도다
+			PRINTL 　　　자　우러러보고　짊어진 무거운 짐을――
+			PRINTL 　
+			SETCOLOR COLOR("ENEMY")
+			IF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 지지 마, 아큐라!
+			ELSE
+				BTL_KOJO_RESULTS:0 = 가자! 반격 개시다!
+			ENDIF
+			TSTR:전투구상캐릭터명칭 '= "ＲｏＲｏ"
+			TSTR:전투구상캐릭터화상어드레스 '= "アキュラ_X_" + CONVERT_FACE_ADDRESS_アキュラ("ロロ_アウェイクニング")
+			TFLAG:전투구상직접출력 = 1
+			CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		ELSEIF SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]]) == 1
+			RESETCOLOR
+			PRINTL ♪ - 백은의 약속(프로토콜) -　　　　　
+			ALIGNMENT LEFT
+			SETCOLOR 0xff961e
+			PRINTL 　　소원　이뤄질　언령의 힘《파워 에너지》　내가 너에게 줄 테니까
+			PRINTL 　　　단 한 조각《하나》이라도　과거《어제》를 바꾸어
+			PRINTL 　　　　잃어버린 미래　빛을 붙잡을　약속《프로토콜》!
+			PRINTL 　
+			SETCOLOR COLOR("ENEMY")
+			BTL_KOJO_RESULTS:0 = 변신 완료! 마음껏 노래해 줄게!
+			TSTR:전투구상캐릭터명칭 '= "ＲｏＲｏ"
+			TSTR:전투구상캐릭터화상어드레스 '= "アキュラ_X_" + CONVERT_FACE_ADDRESS_アキュラ("ロロ_ディーヴァ")
+			TFLAG:전투구상직접출력 = 1
+			CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		ENDIF
+	CASE [[스킬:X-ROSS DISASTER]]
+		TRYCALLFORM SING_RORO_K5355, ARG
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 간다, 로로!
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		SETCOLOR 0xffffff
+		BTL_KOJO_RESULTS:0 = OK, 아큐라!
+		TSTR:전투구상캐릭터명칭 '= "ＲｏＲｏ"
+		TSTR:전투구상캐릭터화상어드레스 '= "アキュラ_X_" + CONVERT_FACE_ADDRESS_アキュラ("ロロ_アウェイクニング")
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		ALIGNMENT RIGHT
+		RESETCOLOR
+		PRINTFORML 　　　　Dual blades perform their　　　　　　　　　　　　
+		PRINTFORML 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+		PRINTFORML
+		PRINTFORML 　　Fervorous dance, ready to　　　　　　　　　　　　　　
+		SETCOLOR 0xe8307c
+		PRINTFORML 　　　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　
+		RESETCOLOR
+		PRINTFORML
+		PRINTFORML 　　　　Strike with conviction　　　　　　　　　　　　　 
+		PRINTFORMW 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+		ALIGNMENT LEFT
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 크로스……!
+		TSTR:전투구상캐릭터화상어드레스 '= "アキュラ_X_" + CONVERT_FACE_ADDRESS_アキュラ("SPスキル")
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+		
+		SETCOLOR 0xffffff
+		BTL_KOJO_RESULTS:0 = 디재스터!
+		TSTR:전투구상캐릭터명칭 '= "ＲｏＲｏ"
+		TSTR:전투구상캐릭터화상어드레스 '= "アキュラ_X_" + CONVERT_FACE_ADDRESS_アキュラ("ロロ_アウェイクニング")
+		TFLAG:전투구상직접출력 = 1
+		CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+	CASE [[스킬:스파크스텔라]]
+		TRYCALLFORM SING_RORO_K5355, ARG
+		CALL SET_RORO_KOJO_FLAG, ARG
+		BTL_KOJO_RESULTS:0 = 스파크스텔라!
+		SETCOLOR COLOR("ENEMY")
+	CASE [[스킬:앵커넥서스]]
+		TRYCALLFORM SING_RORO_K5355, ARG
+		CALL SET_RORO_KOJO_FLAG, ARG
+		BTL_KOJO_RESULTS:0 = 앵커넥서스!
+		SETCOLOR COLOR("ENEMY")
+	CASE [[스킬:오비탈에지]]
+		TRYCALLFORM SING_RORO_K5355, ARG
+		CALL SET_RORO_KOJO_FLAG, ARG
+		BTL_KOJO_RESULTS:0 = 오비탈에지!
+		SETCOLOR COLOR("ENEMY")
+	CASE [[스킬:루미너리마인]]
+		TRYCALLFORM SING_RORO_K5355, ARG
+		CALL SET_RORO_KOJO_FLAG, ARG
+		BTL_KOJO_RESULTS:0 = 루미너리마인!
+		SETCOLOR COLOR("ENEMY")
+	CASE [[스킬:키스오브디바]]
+		TRYCALLFORM SING_RORO_K5355, ARG
+		CALL SET_RORO_KOJO_FLAG, ARG
+		BTL_KOJO_RESULTS:0 = 키스오브디바!
+		SETCOLOR COLOR("ENEMY")
+	CASE [[스킬:드래프트스파이럴]]
+		TRYCALLFORM SING_RORO_K5355, ARG
+		CALL SET_RORO_KOJO_FLAG, ARG
+		BTL_KOJO_RESULTS:0 = 드래프트스파이럴!
+		SETCOLOR COLOR("ENEMY")
+	CASE [[스킬:클로스랜서]]
+		TRYCALLFORM SING_RORO_K5355, ARG
+		CALL SET_RORO_KOJO_FLAG, ARG
+		BTL_KOJO_RESULTS:0 = 클로스랜서!
+		SETCOLOR COLOR("ENEMY")
+ENDSELECT

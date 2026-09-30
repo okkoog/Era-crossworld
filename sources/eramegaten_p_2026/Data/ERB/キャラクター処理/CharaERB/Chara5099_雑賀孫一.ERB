@@ -1,0 +1,241 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5099_雑賀孫一.ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/11/23		しゃけ					新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;-------------------------------------------------
+;-------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:호타루]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+[IF_DEBUG]
+	CALL SET_SKILL,	ARG, "전용기5"
+	CALL SET_SKILL,	ARG, "전용기6"
+[ENDIF]
+
+@RPG_CFLAG_NAME_[[キャラ:호타루]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_EV
+	;周回時にリセットされる数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_EV
+	;周回時にリセットされる文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 宝具再臨
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる数値型変数です
+	;スキルゲージHとほぼ互換です。基本的にはゲージHが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = EXスキル選択中
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる文字列型変数です
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる数値型変数
+	;スキルゲージFとほぼ互換です。基本的にはゲージFが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる文字列型変数
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_CHARA_[[キャラ:호타루]], ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+#DIM L_MOD
+
+VARSET L_MOD
+
+;自分が攻撃側ではない or 判定が与ダメージじゃないなら補正なし
+SIF L_P != L_ACTOR || ARGS != "ダメージ補正加算"
+	RETURN 0
+;クリティカル時に+10%増加（単独行動 Ａ）
+SIF L_CRT
+	L_MOD += 10
+;攻撃タイプが銃だった場合、クリティカルで8%、それ以外なら3%増加（道具作成（銃） Ｄ）
+SIF L_攻撃タイプ == "총"
+	L_MOD += L_CRT ? 8 # 3
+RETURN L_MOD
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_CHARA_[[キャラ:호타루]], ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;RESULT = 相性値。基準値は0でマイナスになると改善、プラスになると悪化になる。
+;
+;どちらにしろ、ステート耐性は0のときに通常(100%)のに注意。
+;DYING以外のバステ耐性は87%ぐらいになる（対魔力 Ｄ）
+SIF ARGS == "상태이상" && ARGS:1 != "DYING"
+	RETURN -13
+RETURN 0
+
+;キャラによるNPゲージ獲得量の補正
+@NP_CHARGE_CHARA_[[キャラ:호타루]], ARG, GIVE_EFFECT_CHARA
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自身の攻撃が命中してないなら補正は発生しない
+SIF GET_CREC_ACT(ARG,-1,"AVOID")
+	RETURN 0
+;攻撃タイプが銃でなければNG
+CALL GET_SKILL_PROP, "SKILL_ATTACKTYPE", CFLAG:ARG:입력행동, ARG
+SIF RESULT != 3
+	RETURN 0
+;銃攻撃によるNPゲージ獲得量が5%増加する（道具作成（銃） Ｄ）
+RETURN 5
+
+@SKILL_EX_DISPLAY_CHARA_[[キャラ:호타루]],ARG,ARGS
+#DIM CHARGE_TIME,4
+#DIM BAR_LENS, 2
+#DIM LCOUNT
+#DIMS L_STR
+#DIMS L_RESULTS, 4
+VARSET L_RESULTS
+BAR_LENS = SKILL_EX_DISPLAY_LENS / 2 + SKILL_EX_DISPLAY_LENS % 2, SKILL_EX_DISPLAY_LENS / 2
+;ノウブル・ファンタズムを習得している場合、NPゲージを表示する
+IF HAVE_PU_SKILL(ARG,"ノウブル・ファンタズム")
+	IF PU_SKILLGAGE_D_GET(ARG, "ノウブル・ファンタズム") > 0
+		L_RESULTS:0 += SET_COLOR_TAG("★", TOSTR(0xdc143c))
+		L_RESULTS:0 += HTML_RECT_SPLIT_BAR(PU_SKILLGAGE_D_GET(ARG, "ノウブル・ファンタズム"), 5, BAR_LENS - 2, BARCOLORSET("赤"), RESULT:1)
+	ELSEIF PU_SKILLGAGE_F_GET(ARG,"ノウブル・ファンタズム") == 100
+		L_RESULTS:0 += SET_COLOR_TAG("★", TOSTR(0xdc143c))
+		L_RESULTS:0 +=  " " * (BAR_LENS - 8) + SET_COLOR_TAG("Ready", TOSTR(0xdc143c)) +  " "
+	ELSE
+		L_RESULTS:0 += SET_COLOR_TAG("★", TOSTR(0xdc143c))
+		L_RESULTS:0 += HTML_RECT_BAR(PU_SKILLGAGE_F_GET(ARG, "ノウブル・ファンタズム"), 100, BAR_LENS - 2, BARCOLORSET("黄"), RESULT:1)
+	ENDIF
+ENDIF
+;いずれかの専用スキルを習得している場合、チャージタイムを表示する
+IF HAVE_PU_SKILL(ARG,"八咫烏の目") || HAVE_PU_SKILL(ARG,"雑賀流居合銃術") || HAVE_PU_SKILL(ARG,"蛍火")
+	L_RESULTS:0 += " "
+	FOR LCOUNT,1,4
+		L_STR '= AUTO_SPLIT("_八咫烏の目_雑賀流居合銃術_蛍火","_",LCOUNT)
+		IF HAVE_PU_SKILL(ARG,L_STR)
+			CHARGE_TIME:LCOUNT = PU_SKILLGAGE_D_GET(ARG,L_STR)
+			IF CHARGE_TIME:LCOUNT <= 0
+				IF INPUTABLE_CHARA_F(ARG)
+					L_RESULTS:LCOUNT '= SET_BUTTON_TAG(SET_COLOR_TAG(@"%"S" + TOSTR(LCOUNT)%","パ緑"),,@"□%L_STR%　使用可能")
+				ELSE
+					L_RESULTS:LCOUNT '= SET_BUTTON_TAG(SET_COLOR_TAG(@"%"S" + TOSTR(LCOUNT)%","GRAY"),,"행동불능")
+				ENDIF
+			ELSE
+				L_RESULTS:LCOUNT '= SET_BUTTON_TAG(SET_COLOR_TAG(@"%TOSTR(CHARGE_TIME:LCOUNT,"0#")%","GRAY"),,@"□%L_STR%　必要ターン数:{CHARGE_TIME:LCOUNT}")
+			ENDIF
+		ELSE
+			L_RESULTS:LCOUNT '= SET_COLOR_TAG("--","GRAY")
+		ENDIF
+	NEXT
+	L_RESULTS:1 += "/" + L_RESULTS:2 + "/" + L_RESULTS:3
+ELSE
+	;上記のいずれも所持していない場合、ノウブル・ファンタズム部分のボタンの判定が伸びる
+	L_RESULTS:0 += " " * BAR_LENS:1
+ENDIF
+;ノウブル・ファンタズムを所持していない場合、八咫烏の目等のボタンの判定が伸びる
+IF !HAVE_PU_SKILL(ARG, "ノウブル・ファンタズム")
+	L_RESULTS:1 += " " * BAR_LENS
+ELSE
+	IF PU_SKILLGAGE_D_GET(ARG, "ノウブル・ファンタズム") > 0
+		L_RESULTS:0 '= SET_BUTTON_TAG(L_RESULTS:0, , "魔力開放中")
+	ELSEIF PU_SKILLGAGE_F_GET(ARG,"ノウブル・ファンタズム") == 100
+		L_RESULTS:0 '= SET_BUTTON_TAG(L_RESULTS:0, , "魔力放出")
+	ELSE
+		L_RESULTS:0 '= SET_BUTTON_TAG(L_RESULTS:0, , "NPゲージ")
+	ENDIF
+ENDIF
+RESULTS '= L_RESULTS:0 + L_RESULTS:1
+RETURN 1

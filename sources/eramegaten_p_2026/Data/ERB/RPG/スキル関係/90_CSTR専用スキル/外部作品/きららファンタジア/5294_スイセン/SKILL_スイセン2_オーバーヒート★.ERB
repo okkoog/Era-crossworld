@@ -1,0 +1,127 @@
+﻿
+;スキル名
+@SKILL_NAME_オーバーヒート★,ARG
+RESULTS = 오버히트★
+
+;　명중
+@SKILL_HITRATE_オーバーヒート★, ARG
+RETURN 120
+
+;　威力
+@SKILL_POWER_オーバーヒート★, ARG
+RETURN 420
+
+@SKILL_CRITICAL_RATE_オーバーヒート★, ARG
+RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_オーバーヒート★,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_オーバーヒート★,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_オーバーヒート★, ARG
+SIF GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 6
+	RETURN 1
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_オーバーヒート★,ARG
+IF ARG >= 0 && GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 6
+	RESULTS = %"ＣＨ:6"%
+	RETURN 0
+ENDIF
+RETURN 40
+
+;　相性
+@SKILL_TYPE_オーバーヒート★,ARG
+RETURN GET_TYPE_NUM("비구")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_オーバーヒート★
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_オーバーヒート★,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_オーバーヒート★,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_オーバーヒート★,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_オーバーヒート★,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_オーバーヒート★,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+@SKILL_SUCCESSION_TYPE_オーバーヒート★,ARG
+RETURN GET_SUCCESSION_NUM("비구")
+
+@SKILL_RANK_オーバーヒート★, ARG = -1
+RETURN 15
+
+;속도보정
+@SKILL_SPEED_オーバーヒート★, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_オーバーヒート★
+RETURN 0
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_オーバーヒート★, ARG = -1, ARG:1 = -1
+RETURN 2
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_オーバーヒート★,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+CALL SET_RPG_CFLAG_BTL, ARG, "KFチャージスキル", 6, "-="
+
+CALL ATTACK_FIELD, ARG, ARG:1, SKILL_NUM
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_オーバーヒート★,ARG
+PRINTL 적 전체에 초강력한 비구 속성의 물리 데미지를 준다. 방어를 「무효」까지 관통한다.
+PRINTL 사용 시 차지 6 소비.
+PRINTL 배럴 히트의 수에 따라 데미지가 추가로 증가한다.
+PRINTL 사용 후, 배럴 히트의 수를 0으로 리셋한다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_オーバーヒート★, ARG
+RESULTS = 차지 부족
+SIF GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 6
+	RETURN 0
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_オーバーヒート★, ARG
+RESULTS:0 = 적 전체에 초강력한 비구 속성의 물리 데미지를 준다. 방어를 「무효」까지 관통한다.
+RESULTS:1 = 사용 시 차지 6 소비.
+RESULTS:2 = バレルヒートの数に応じてダメージが追加で増加する。
+RESULTS:3 = 使用後、バレルヒートの数を0にリセットする。
+
+@SKILL_TAG_オーバーヒート★
+RESULTS = KF 차지 스킬

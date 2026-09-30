@@ -1,0 +1,118 @@
+﻿
+
+;====================
+;条件
+;====================
+@GET_COLOSSEUM_NAME_87
+#FUNCTIONS
+RESULTS_F '= "お前の席ねーから"
+RETURNF RESULTS_F
+
+@PLAYABLE_COLOSSEUM_87
+;IF (闘技場フラグ:4:0 == 1 || 闘技場フラグ:3:0 == 1) && 闘技場フラグ:5:0 == 0
+;	IF GETCHARA([[キャラ:유즈]]) > -1 || FLAG:34507 > 0
+IF 闘技場フラグ:87:0 == 0 && イベントフラグ:98:0 == 5
+			RESULTS = 네자리는없다고
+			RETURN 1
+;	ELSE
+;		RESULTS = 시합 랭크Ｄ　ＶＳ ゲーム機型ＣＯＭＰ使い
+;		RETURN 1
+;	ENDIF
+ENDIF
+RETURN 0
+
+
+;====================
+;内容
+;====================
+@COLOSSEUM_87
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+CUSTOMDRAWLINE =
+PRINTW ＞3체의 악마와 점술사가 상대인 모양이다…위화감이 느껴진다…
+
+CUSTOMDRAWLINE =
+WAIT
+;ラニ
+;人間の強化は武器防具で
+CALL SET_ENEMY, 13, [[キャラ:라니]],55,0,1
+ABL:(CHARANUM-1):스킬1 = 416;암리타
+ABL:(CHARANUM-1):스킬2 = 505;デクンダ  
+ABL:(CHARANUM-1):스킬3 = 503;マカカジャ
+ABL:(CHARANUM-1):스킬4 = 502;スクカジャ
+ABL:(CHARANUM-1):스킬5 = 2418;코칭
+ABL:(CHARANUM-1):스킬6 = 2419;어드바이스
+ABL:(CHARANUM-1):스킬7 = 2417;스쿠카쟈오토
+ABL:(CHARANUM-1):스킬8 = 2416;마카카쟈오토
+EQUIP:(CHARANUM-1):검 = GETNUM(ITEM, "영조의지팡이")
+EQUIP:(CHARANUM-1):머리 = GETNUM(ITEM, "돌핀헬름")
+EQUIP:(CHARANUM-1):몸통 = GETNUM(ITEM, "스피릿로브")
+EQUIP:(CHARANUM-1):팔 = GETNUM(ITEM, "재밍암")
+EQUIP:(CHARANUM-1):발 = GETNUM(ITEM, "바람을가르는꼬리")
+EQUIP:(CHARANUM-1):악세서리 = GETNUM(ITEM, "조정용")
+CALL SYNC_STATUS,(CHARANUM-1)
+CALL HEALTH_CHARA,(CHARANUM-1)
+
+;キャスター
+CALL SET_ENEMY, 15, [[キャラ:캐스터]],55,0,1
+ABL:(CHARANUM-1):스킬1 = 2965;신언마술식・잿빛신부
+ABL:(CHARANUM-1):스킬2 = 512;컨센트레이트
+ABL:(CHARANUM-1):스킬3 = 1705;マハガルーラ
+ABL:(CHARANUM-1):스킬4 = 1805;マハグライバ
+ABL:(CHARANUM-1):스킬5 = 2406;이악물기
+ABL:(CHARANUM-1):스킬6 = 0
+ABL:(CHARANUM-1):스킬7 = 0
+ABL:(CHARANUM-1):스킬8 = 0
+CALL SYNC_STATUS,(CHARANUM-1)
+CALL HEALTH_CHARA,(CHARANUM-1)
+
+;赤セイバー
+CALL SET_ENEMY, 8, [[キャラ:빨강세이버]],55,0,1
+ABL:(CHARANUM-1):스킬1 = 2986;황홀로초대하는황금극장
+ABL:(CHARANUM-1):스킬2 = 49;밤벚꽃의춤
+ABL:(CHARANUM-1):스킬3 = 1903;프레이다인
+ABL:(CHARANUM-1):스킬4 = 1224;패닉보이스
+ABL:(CHARANUM-1):스킬5 = 511;기합
+ABL:(CHARANUM-1):스킬6 = 2407;불굴의투지
+ABL:(CHARANUM-1):스킬7 = 0
+ABL:(CHARANUM-1):스킬8 = 0
+CALL SYNC_STATUS,(CHARANUM-1)
+CALL HEALTH_CHARA,(CHARANUM-1)
+
+;タマモ
+CALL SET_ENEMY, 10, [[キャラ:타마모]],55,0,1
+	BASE:(CHARANUM-1):파마 = 0
+CALL SYNC_STATUS,(CHARANUM-1)
+CALL HEALTH_CHARA,(CHARANUM-1)
+
+CALL BATTLE_START
+CUSTOMDRAWLINE =
+PRINTW 라니 일행에게 승리했다
+
+PRINTL
+PRINTFORMW ＞………
+PRINTFORMW ＞……
+PRINTFORMW ＞…
+PRINTL
+
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+PRINTW ＞라니들은 환상이었던 것처럼 사라져 갔다…
+;CALL ADD_NEW_COMPANION, [[キャラ:라니]],500,1
+;CALL ADD_NEW_COMPANION, [[キャラ:캐스터]],500,1
+PRINTW ￥280000과 명성 10을 얻었다
+MONEY += 280000
+FLAG:명성 += 10
+闘技場フラグ:87:0 = 1
+
+FLAG:투기장명성 += 10
+CALL SELECT_COLOSSEUM_RANDOMBATTLE
+
+FOR LOCAL,0,CHARANUM
+	CALL HEALTH_CHARA,LOCAL
+NEXT
+RETURN 1
+
+

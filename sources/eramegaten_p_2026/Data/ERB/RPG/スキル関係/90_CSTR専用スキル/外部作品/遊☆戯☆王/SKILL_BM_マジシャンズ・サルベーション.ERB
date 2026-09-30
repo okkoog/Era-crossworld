@@ -1,0 +1,143 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_マジシャンズ・サルベーション,ARG
+IF ARG == -1 || FLAG:행동순1 == ARG
+	RESULTS = 매지션즈 셀베이션
+ELSE
+	RESULTS = M・셀베이션
+ENDIF
+;　명중
+@SKILL_HITRATE_マジシャンズ・サルベーション, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_マジシャンズ・サルベーション, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_マジシャンズ・サルベーション,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_マジシャンズ・サルベーション,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_マジシャンズ・サルベーション, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_マジシャンズ・サルベーション,ARG
+RETURN 36
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_マジシャンズ・サルベーション
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_マジシャンズ・サルベーション, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_マジシャンズ・サルベーション,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_マジシャンズ・サルベーション,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_マジシャンズ・サルベーション, ARG
+RETURN GET_SKILL_EFFECT_NUM("상태회복")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_マジシャンズ・サルベーション
+RETURN GET_SUCCESSION_NUM("회복")
+;회복
+
+;속도보정
+@SKILL_SPEED_マジシャンズ・サルベーション, ARG = -1
+RETURN 2
+
+;スキル変化？用ランク
+@SKILL_RANK_マジシャンズ・サルベーション, ARG = -1
+RETURN 11
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_マジシャンズ・サルベーション,ARG,ARG:1,ARG:2
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC IS_DONE
+L_CHARA = ARG:1
+CALL SKILL_CURE_STATE_マジシャンズ・サルベーション,CFLAG:L_CHARA:상태이상
+IF RESULT == 1
+	CALL PRINT_HIT_MESSAGE, L_CHARA, @"ＨＰ회복{MAXBASE:L_CHARA:ＨＰ}", "L"
+	CFLAG:L_CHARA:상태이상 = 0
+	CFLAG:L_CHARA:상태이상경과턴수 = 0
+	CALL VAR_HP,L_CHARA,MAXBASE:L_CHARA:ＨＰ
+	IF GET_RACE(ABL:L_CHARA:종족) == "요마"		
+		FOR LCOUNT, 0, VARSIZE("KAJA_TABLE")
+			IF KAJA_TABLE:LCOUNT == "BS부착률"
+				SIF CFLAG:ARG:(KAJA_TABLE:LCOUNT + "강화") >= 0
+					CONTINUE
+				CALL SKILL_SET_カジャンダ, ARG, L_CHARA, KAJA_TABLE:LCOUNT, -CFLAG:ARG:(KAJA_TABLE:LCOUNT + "강화"), "단체", "NOMES"
+			ELSE
+				SIF CFLAG:ARG:(KAJA_TABLE:LCOUNT + "강화") <= 0
+					CONTINUE
+				CALL SKILL_SET_カジャンダ, ARG, L_CHARA, KAJA_TABLE:LCOUNT, CFLAG:ARG:(KAJA_TABLE:LCOUNT + "강화"), "단체", "NOMES"
+			ENDIF
+			IS_DONE = 1
+		NEXT
+		SIF IS_DONE
+			CALL PRINT_HIT_MESSAGE, L_CHARA, "能力を強化！", "L"
+	ENDIF
+ELSE
+	CALL PRINT_HIT_MESSAGE, POS(ARG:1), @"효과가 없었다", "L"
+ENDIF
+WAIT
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_マジシャンズ・サルベーション,ARG
+PRINTL 사망한 아군 1명의 체력을 완전 회복시키고 소생한다.
+PRINTL 또한 대상이 【요마】일 경우 자신이 지닌 능력 강화를 복사하여 부여한다.
+
+@SKILL_EXPLAIN_TOOLTIP_マジシャンズ・サルベーション, ARG
+RESULTS:0 = 사망한 아군 1명의 체력을 완전 회복시키고 소생한다.
+RESULTS:1 = 또한 대상이 【요마】일 경우 자신이 지닌 능력 강화를 복사하여 부여한다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_マジシャンズ・サルベーション,ARG
+RETURN 1
+;とくにない
+
+;控えに使えるか
+@SKILL_T_RESERVE_マジシャンズ・サルベーション,ARG
+RETURN 1
+
+;ターゲット条件
+@SKILL_TARGETABLE_マジシャンズ・サルベーション,ARG, ARG:1
+CALL SKILL_CURE_STATE_マジシャンズ・サルベーション,(CFLAG:(ARG:1):상태이상)
+RETURN RESULT
+
+;何のバッドステータスを治せるか
+@SKILL_CURE_STATE_マジシャンズ・サルベーション,ARG
+SELECTCASE GET_STATE(ARG)
+	CASE "DYING"
+		RETURN 1
+	CASEELSE
+		RETURN 0
+ENDSELECT
+

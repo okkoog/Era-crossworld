@@ -1,0 +1,224 @@
+﻿;スキル名
+@SKILL_NAME_5505, ARG = -1
+RESULTS = 혼의일격
+
+;　명중
+@SKILL_HITRATE_5505, ARG
+RETURN 140
+
+;　威力
+@SKILL_POWER_5505, ARG
+RETURN 600
+
+;クリティカル
+@SKILL_CRITICAL_RATE_5505, ARG
+RETURN 5
+
+;特殊な攻撃参照値
+@SKILL_CALC_BATTTLE_STATUS_5505, ARGS, ARG, ARG:1
+SIF ARG < 0
+	RETURN 0
+SIF CFLAG:ARG:소환예정캐릭터 < 0
+	RETURN 0
+SELECTCASE ARGS
+	CASE "ATK"
+		;召喚予定キャラの攻と魔威のうち高いほう
+		RETURN MAX(MAXBASE:(CFLAG:ARG:소환예정캐릭터):공격, MAXBASE:(CFLAG:ARG:소환예정캐릭터):마법위력)
+	CASE "DEF"
+		RETURN 0
+	CASE "HIT"
+		RETURN 0
+	CASE "AVOID"
+		RETURN 0
+ENDSELECT
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_5505,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_5505,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+;　4:ターン経過が必要なパターン
+@SKILL_COSTTYPE_5505, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("TURN")
+
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_5505,ARG
+RETURN 3
+
+;　相性
+@SKILL_TYPE_5505,ARG
+#DIM LCOUNT
+SIF ARG == -1 || CFLAG:(ARG):소환예정캐릭터 == -1
+	RETURN GET_TYPE_NUM("만능")
+FOR LCOUNT, 0, TYPENUM
+	SIF C_HAVE_SKILL_ATK_TYPE:(CFLAG:(ARG):소환예정캐릭터):LCOUNT
+		RESULT:FINDELEMENT(RESULT, - 1) = LCOUNT
+NEXT
+RETURN RESULT
+
+;　1EXTRAか 2MAGICか 3コマンダースキル
+@SKILL_DECIDE_TYPE_5505
+RETURN GET_SKILL_DECIDE_TYPE_NUM("CS")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_5505, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_5505, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_5505,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_5505,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;召喚系スキルである
+@SKILL_IS_SUMMON_5505, ARG
+RETURN 1
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_5505, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_5505
+RETURN GET_SUCCESSION_NUM("만능")
+
+;속도보정
+@SKILL_SPEED_5505, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_5505
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_5505, ARG = -1
+RETURN 15
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_5505, ARG, ARG:1, ARG:2
+#DIM SUMMON_DEVIL
+IF CFLAG:ARG:소환예정캐릭터 < 0
+	PRINTFORMW 혼의일격에 실패했다！
+ELSE
+	CALL ATTACK_SKILL, ARG, SKILLGAGE_H_GET(ARG, 5505), 5505
+	SIF CFLAG:(CFLAG:ARG:소환예정캐릭터):상태이상 < GET_STATE_NUM("DYING")
+		CALL VAR_HP,(CFLAG:ARG:소환예정캐릭터),-MAXBASE:(CFLAG:ARG:소환예정캐릭터):ＨＰ,"食いしばり無効ダメージ"
+ENDIF
+CALL SKILLGAGE_H_SET, ARG, 5505, 0
+CFLAG:(CFLAG:ARG:소환예정캐릭터):피소환플래그 = 0
+CFLAG:(CFLAG:ARG:소환예정캐릭터):소환자ID = -1
+CFLAG:(ARG):소환예정캐릭터 = -1
+
+@SKILL_T_RESERVE_5505, ARG
+SIF TFLAG:스킬용1 == 100
+	RETURN 0
+RETURN 1
+
+@SELECT_TARGET_5505, ARG
+#DIM SUMMON_DEVIL
+#DIM L_LINE
+L_LINE = LINECOUNT
+$CHOOSE_COMPANION_LOOP
+IF CFLAG:ARG:소환예정캐릭터 >= 0
+	CFLAG:(CFLAG:(ARG):소환예정캐릭터):피소환플래그 = 0
+	CFLAG:(CFLAG:(ARG):소환예정캐릭터):소환자ID = -1
+	CFLAG:(CFLAG:(ARG):소환예정캐릭터):피소환플래그 = 0
+	CFLAG:ARG:소환예정캐릭터 = -1
+	CALL COMMAND_REPEAT, ARG
+ENDIF
+CLEARLINE LINECOUNT - L_LINE
+CALL CHOOSE_COMPANION, "RPG/召喚攻撃", ARG
+SUMMON_DEVIL = RESULT
+IF RESULT == 1000
+	RETURN -1
+ELSEIF CFLAG:SUMMON_DEVIL:피소환플래그 && CFLAG:ARG:소환예정캐릭터 != SUMMON_DEVIL
+	PRINTW 다른 캐릭터에게 소환되려고 하고 있습니다。
+	GOTO CHOOSE_COMPANION_LOOP
+ELSE
+	CFLAG:ARG:소환예정캐릭터 = SUMMON_DEVIL
+	CFLAG:SUMMON_DEVIL:피소환플래그 = 1
+	CFLAG:SUMMON_DEVIL:소환자ID = CFLAG:ARG:캐릭터고유번호
+	CFLAG:SUMMON_DEVIL:피소환플래그 = 1
+	CALL SYNC_STATUS, SUMMON_DEVIL
+	TFLAG:스킬용1 = 100
+	CALL SELECT_SKILL_TARGET,5505,ARG
+	TFLAG:스킬용1 = 0
+	SIF RESULT == -1
+		GOTO CHOOSE_COMPANION_LOOP
+	
+	CALL SKILLGAGE_H_SET, ARG, 5505, RESULT
+	CFLAG:(ARG):입력행동 = 5505
+
+	RETURN SUMMON_DEVIL
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_5505, ARG
+PRINTL ＣＯＭＰ내의 동료마의 목숨을 소비해 적 １체에 초특대 데미지의 물리데미지를 준다。
+PRINTL 이 스킬의 공격력은 동료마의 공격력 또는 마법위력에 의존하고、능력변화는 소환자의 것을 참조한다。
+PRINTL 또한 상성은 동료마가 소지한 스킬에 따라 결정된다。
+PRINTL 이 스킬은 총을 장비하지 않으면 사용할 수 없다。
+
+@SKILL_EXPLAIN_TOOLTIP_5505, ARG = -1
+CALL GET_CAST_SKILL_EMULATOR, 5505, ARG
+IF ARG < 0
+	RESULTS = 커맨드스킬:필요턴수%TOFULL(TOSTR(RESULT))%
+ELSE
+	IF RESULT <= 0
+		RESULTS = 커맨드스킬:ＲＥＡＤＹ
+	ELSE
+		RESULTS = 커맨드스킬:필요턴수%TOFULL(TOSTR(RESULT))%
+	ENDIF
+ENDIF
+RESULTS:1 = ＣＯＭＰ내의 동료마의 목숨을 소비해 적 １체에 초특대 데미지의 물리데미지를 준다。
+RESULTS:2 = 이 공격의 공격력은 동료마의 공격력 또는 마법위력에 의존하고、능력변화는 소환자의 것을 참조한다。
+RESULTS:3 = 사용하려면 총을 장비할 필요가 있다。
+
+@SKILL_BATTLE_MAIN_TOOLTIP_5505, ARG, ARG:1
+CALL GET_CAST_SKILL_EMULATOR, ARG:1, ARG
+RESULTS = □혼의일격
+IF RESULT <= 0
+	RESULTS:1 = 　READY
+ELSE
+	RESULTS:1 =　필요턴수:{RESULT}
+ENDIF
+
+@SKILL_EX_DISPLAY_5505, ARG, ARGS
+CALL COMMANDER_SKILL_EX_DISPLAY, ARG, ARGS, 5505, "S-Strike"
+RETURN RESULT
+
+;継承に必要な部位
+@継承不能_5505
+RETURN 2
+
+
+
+@SKILL_TARGETABLE_5505, ARG, ARG:1
+RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_5505,ARG
+SIF EQUIP:ARG:총 == 0
+	RETURN 0
+SIF !GET_ROLE_PROP("CAN_USE_GUN", ARG)
+	RETURN 0
+RETURN 1

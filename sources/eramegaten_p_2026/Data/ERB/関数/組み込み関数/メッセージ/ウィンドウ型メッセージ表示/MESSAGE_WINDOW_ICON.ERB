@@ -1,0 +1,43 @@
+﻿@MESSAGE_WINDOW_ICON, 指定番号, 指定方式 = "キャラ番号", 状況 = "셋업", ARGS, ARGS:1, 区切り文字 = "/" , 옵션 = "ログを残さない/ボタンを利用する/再利用しない" , 位置 , 字幅 = 72, 行数 = -1 , 表示タイプ = "TYPE" , フェード間隔 = 10 , 終色 = -1 , 文字列体裁 = "LEFT"
+#LOCALSIZE 1
+#DIM 指定番号
+#DIMS 指定方式
+#DIMS 状況
+#DIMS 옵션
+#DIMS 区切り文字
+#DIMS 位置
+#DIM 字幅
+#DIM 行数
+#DIMS 表示タイプ
+#DIM フェード間隔
+#DIM 終色
+#DIMS 文字列体裁
+#DIMS L_ADDRESS
+#DIMS IMG_SIZE
+#DIMS DYNAMIC SHOW_SITUATION, 5
+#DIM 画像横長
+
+SPLIT 指定方式, "/", SHOW_SITUATION
+SELECTCASE SHOW_SITUATION:0
+	CASE "キャラ番号", "CHARA", "キャラ登録番号"
+		SIF SHOW_SITUATION:1 == ""
+			SHOW_SITUATION:1 '= "基本"
+		;キャラ不在の場合、3番でNO,4番でアイコン名を指定する。
+		IF 指定番号 < 0 && SHOW_SITUATION:3 != ""
+			L_ADDRESS '= GET_FACE_BY_CSV(TOINT(SHOW_SITUATION:3), SHOW_SITUATION:4)
+		ELSE
+			L_ADDRESS '= GET_FACE_BY_CHARA(指定番号, SHOW_SITUATION:1, SHOW_SITUATION:2)
+		ENDIF
+	CASE "NO", "ナンバー", "CSV"
+		L_ADDRESS '= GET_FACE_BY_CSV(指定番号, SHOW_SITUATION:1)
+	CASE "モブ"
+		;引き数の型が大きく違うので注意
+		;X, "モブ", "モブ名称"　でモブ名称_Xの画像を取りに行く
+		L_ADDRESS '= GET_MOB_FACE(状況, 指定番号)
+	CASE "NOIMG"
+		L_ADDRESS = 
+		画像横長 = 0
+	CASEELSE
+		L_ADDRESS = %指定方式%
+ENDSELECT
+CALL MESSAGE_WINDOW, ARGS, ARGS:1, 区切り文字 , 옵션 , 位置 , 字幅, 行数 , 表示タイプ, フェード間隔 , 終色 , 文字列体裁, L_ADDRESS, 画像横長

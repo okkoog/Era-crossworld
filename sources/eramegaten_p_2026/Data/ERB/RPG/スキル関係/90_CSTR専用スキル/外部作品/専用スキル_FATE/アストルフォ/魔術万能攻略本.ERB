@@ -1,0 +1,163 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_魔術万能攻略本,ARG
+IF FLAG:월령 == 0
+	RESULTS = 破却宣言
+ELSE
+	RESULTS = 魔術万能攻略本
+ENDIF
+
+;　명중
+@SKILL_HITRATE_魔術万能攻略本, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_魔術万能攻略本, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_魔術万能攻略本,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_魔術万能攻略本,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_魔術万能攻略本, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_魔術万能攻略本,ARG
+RETURN 32
+
+;속도보정
+@SKILL_SPEED_魔術万能攻略本, ARG = -1
+RETURN 0
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_魔術万能攻略本
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_魔術万能攻略本,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_魔術万能攻略本,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_魔術万能攻略本,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_魔術万能攻略本,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_魔術万能攻略本
+RETURN GET_SUCCESSION_NUM("지원")
+
+@継承不能_魔術万能攻略本
+RETURN 2
+;不可、造魔や子供にも継承せず
+
+;スキル変化？用ランク
+@SKILL_RANK_魔術万能攻略本, ARG = -1
+RETURN 8
+;変化不可
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_魔術万能攻略本
+RETURN 0
+
+;　 説明文の表示
+@SKILL_EXPLAIN_魔術万能攻略本,ARG
+IF FLAG:월령 == 0
+	PRINTL 자동: 전투 개시 시 자신의 방어와 마법 효과를 1단계 상승시킨다.
+	PRINTL 수동: 아군 전체의 방어와 마법 효과를 1단계 상승시킨다.
+	PRINTL
+	PRINTL 아스톨포의 보구 중 하나인 신비한 마도서.
+	PRINTL 그믐달(신월) 동안에만 진짜 이름을 떠올릴 수 있다.
+ELSE
+	PRINTL 자동: 전투 개시 시 자신의 방어와 마법 효과가 오르락내리락한다.
+	PRINTL 수동: 아군 전체의 방어와 마법 효과를 1단계 상승시킨다.
+	PRINTL
+	PRINTL 아스톨포의 보구 중 하나인 신비한 마도서.
+	PRINTL 그믐달(신월) 동안에만 진짜 이름을 떠올릴 수 있다.
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_魔術万能攻略本,ARG
+RETURN 1
+;とくにない
+
+
+;CALL SKILL_SET_カジャンダ, ARG:1, "攻撃_命中_防御_回避_魔法威力_魔法効果_クリティカル_BS付着率", 4, "단체"
+;=========================================
+;カジャンダ(戦闘能力強化セット)스킬
+;ARG:0		使用者
+;ARG:1		対象(単体・短縮指定の場合はキャラ番号・範囲の場合はポジション指定)
+;ARGS 		効果; 文字列で指定。右の項目のうち、必要なものだけ入れて使う("攻撃_命中_防御_回避_魔法威力_魔法効果_クリティカル_BS付着率")
+;ARG:2 		効果量。増減対応。1ランクが±4、2ランクが±8
+;ARGS:1		範囲・メッセージ方式指定(単体・範囲はそのまま、短縮は攻撃スキルの追加効果用でダメージ & ↓공격　のようにでる)
+;ARGS:2		NOWAIT:WAITで止まらない(短縮では無関係) NOMES:メッセージ表示なし
+;ARGS:3		代替メッセージ
+;ARG:3		上限
+;AEG:4		下限
+;凡例
+;CALL SKILL_SET_カジャンダ, ARG, ARG:1, "攻撃_命中", -4, "短縮";ARG:1のキャラ番号の敵に攻撃と命中を1ランクさげる(-4)
+;=========================================
+;入場時に行う効果
+@SKILL_BATTLE_ENTER_魔術万能攻略本, ARG
+#DIM LCOUNT
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+	RETURN 0
+;入力可能な状態じゃないとだめ
+SIF !ACTIONABLE_CHARA_F(ARG)
+	RETURN 0
+;入場一回目のみ発動
+SIF CFLAG:ARG:입장플래그 != 1
+	RETURN 0
+;自身の入場のみで発動
+SIF TFLAG:입장캐릭터 >= 0 && TFLAG:입장캐릭터 != ARG
+	RETURN 0
+IF FLAG:월령 == 0
+	CALL PRINT_ACT_MESSAGE, ARG, , , , "破却宣言"
+	CALL SKILL_SET_カジャンダ, ARG, ARG, "크리티컬", 4, "단체"
+ELSE
+	VARI TEMP, 2
+	TEMP = RAND:100, RAND:100
+	;アストルフォだけ防御が二段階上昇
+	CALL PRINT_ACT_MESSAGE, ARG, , , , "魔術万能攻略本"
+	IF TEMP < 40 && TEMP:1 < 40
+		CALL PRINT_HIT_MESSAGE, ARG, "なにもおきなかった…"
+	ELSE
+		IF TEMP < 40
+		ELSEIF TEMP < 90
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "방어", 4, "단체", "NOWAIT", "防御が上がった！"
+		ELSE
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "방어", -4, "단체", "NOWAIT", "防御が下がってしまった！？"
+		ENDIF
+		IF TEMP:1 < 40
+		ELSEIF TEMP:1 < 90
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "마법효과", 4, "단체", "NOWAIT", "魔法効果が上がった！"
+		ELSE
+			CALL SKILL_SET_カジャンダ, ARG, ARG, "마법효과", -4, "단체", "NOWAIT", "魔法効果が下がってしまった！？"
+		ENDIF
+	ENDIF
+ENDIF
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_魔術万能攻略本,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL SKILL_SET_カジャンダ, ARG, ARG:1, "방어/마법효과", 4, "範囲"

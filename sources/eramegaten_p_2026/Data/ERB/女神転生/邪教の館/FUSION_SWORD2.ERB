@@ -1,0 +1,773 @@
+﻿;================================================================
+;魔晶装備２　別仕様の魔晶装備。魔晶による強化が可能
+;================================================================
+@MAKE_MASHO2
+#DIM LCOUNT
+FLAG:합체소재악마1 = -1
+;LOCAL ループ用
+;LOCAL:1 素材の登録番号
+LOCAL:1 = -1
+;LOCAL:2 悪魔の表示用変数
+;LOCAL:3 合体結果の剣枠
+;LOCAL:4 作成する魔晶装備の種類
+;G 合体剣のフラグを管理する変数 20-25:バッドステータス村正用
+
+$START_MAKE
+LOCAL:6 = 0
+
+;キャラリストを表示・選択
+;CALL INPUT_CHARA_LIST("素体にする悪魔を選んでください","CASTING_MASHO2")
+{
+CALL INPUT_CHARA_LIST
+	, "PROPSET_FUSION"
+	, "素体にする悪魔を選んでください"
+	, "CASTING_MASHO2" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+SIF RESULT == 1000
+	JUMP SELECT_MASHO2
+LOCAL:1 = RESULT
+
+
+LOCAL:3 = -1
+;空いている合体剣枠を参照
+FOR LOCAL,0,50
+	IF DC:LOCAL:49 == 0
+		LOCAL:3 = LOCAL
+		BREAK
+	ENDIF
+NEXT
+IF LOCAL:3 == -1
+	PRINTW 더 이상 합체검을 소지할 수 없습니다
+	RETURN 0
+ENDIF
+
+;合体剣の種類を決める
+;習得スキルによってGを設定
+VARSET G,-1
+G:0 = 1
+FOR LOCAL,1,FLAG:스킬수+1
+	LOCALS = 스킬{LOCAL}
+	IF ABL:(LOCAL:1):LOCALS > 0
+		RESULT = 0
+		;相性による条件
+		CALL GET_SKILL_PROP, "SKILL_TYPE", ABL:(LOCAL:1):LOCALS,LOCAL:1
+		SIF RESULT < 0
+			CONTINUE
+		G:RESULT = 1
+	ENDIF
+NEXT
+;剣撃以外の物理は無し
+G:1 = -1
+G:2 = -1
+G:3 = -1
+
+
+;神経・精神は特殊
+G:8 = -1
+G:9 = -1
+FOR LOCAL,1,FLAG:스킬수+1
+	LOCALS = 스킬{LOCAL}
+	IF ABL:(LOCAL:1):LOCALS > 0
+		RESULT = 0
+		;相性による条件
+		CALL GET_SKILL_PROP, "SKILL_ADDTIONAL_STATE", ABL:(LOCAL:1):LOCALS,LOCAL:1
+		SELECTCASE GET_STATE(RESULT)
+			CASE "POISON"
+				G:20 = 1
+			CASE "SLEEP"
+				G:21 = 1
+			CASE "PANIC"
+				G:22 = 1
+			CASE "HAPPY"
+				G:23 = 1
+			CASE "BIND"
+				G:24 = 1
+			CASE "CHARM"
+				G:25 = 1
+		ENDSELECT
+	ENDIF
+NEXT
+
+;剣のタイプを選択
+$PRINT_TYPE
+DRAWLINE
+PRINTL 검의 공격상성을 선택해주세요
+FOR LOCAL,0,TYPENUM
+	SIF G:LOCAL > 0
+		PRINTFORM [{LOCAL}] 【%GET_TYPE(LOCAL)%】
+	SIF G:LOCAL > 0 && LOCAL == 5
+		PRINT & FREEZE ２０％
+	SIF G:LOCAL > 0 && LOCAL == 6
+		PRINT & SHOCK ２０％
+	SIF G:LOCAL > 0
+		PRINTL
+NEXT
+SIF G:20 > 0
+	PRINTL [20] 【검격】& POISON ２０％
+SIF G:21 > 0
+	PRINTL [21] 【검격】& SLEEP ２５％
+SIF G:22 > 0
+	PRINTL [22] 【검격】& PANIC ２５％
+SIF G:23 > 0
+	PRINTL [23] 【검격】& HAPPY ３５％
+SIF G:24 > 0
+	PRINTL [24] 【검격】& BIND ２５％
+SIF G:25 > 0
+	PRINTL [25] 【검격】& CHARM ２０％
+DRAWLINE
+PRINTL [100] 취소
+
+$INPUT_TYPE
+INPUT
+
+IF RESULT == 100
+	RESTART
+ELSEIF G:RESULT > 0
+	;DCにデータを入力
+	;まずは名称と相性、追加効果を決めておく
+	SELECTCASE RESULT
+		CASE 0
+			DC:(LOCAL:3):40 = RESULT
+			DC:(LOCAL:3):49 = 1
+		CASE 4,16
+			DC:(LOCAL:3):40 = RESULT
+			DC:(LOCAL:3):49 = 2
+		CASE 5
+			DC:(LOCAL:3):40 = RESULT
+			DC:(LOCAL:3):49 = 3
+			DC:(LOCAL:3):45 = GET_STATE_NUM("FREEZE")
+			DC:(LOCAL:3):46 = 5
+			DC:(LOCAL:3):47 = 20
+			DC:(LOCAL:3):48 = 95
+		CASE 6
+			DC:(LOCAL:3):40 = RESULT
+			DC:(LOCAL:3):49 = 4
+			DC:(LOCAL:3):45 = GET_STATE_NUM("SHOCK")
+			DC:(LOCAL:3):46 = 6
+			DC:(LOCAL:3):47 = 20
+			DC:(LOCAL:3):48 = 95
+		CASE 7
+			DC:(LOCAL:3):40 = RESULT
+			DC:(LOCAL:3):49 = 5
+		CASE 10,11
+			DC:(LOCAL:3):40 = RESULT
+			DC:(LOCAL:3):49 = RESULT
+		CASE 12 TO 15
+			DC:(LOCAL:3):40 = RESULT
+			DC:(LOCAL:3):49 = RESULT - 6
+		CASE 20
+			DC:(LOCAL:3):40 = 0
+			DC:(LOCAL:3):49 = 12
+			DC:(LOCAL:3):45 = GET_STATE_NUM("POISON")
+			DC:(LOCAL:3):46 = 8
+			DC:(LOCAL:3):47 = 20
+			DC:(LOCAL:3):48 = 95
+		CASE 21
+			DC:(LOCAL:3):40 = 0
+			DC:(LOCAL:3):49 = 13
+			DC:(LOCAL:3):45 = GET_STATE_NUM("SLEEP")
+			DC:(LOCAL:3):46 = 9
+			DC:(LOCAL:3):47 = 25
+			DC:(LOCAL:3):48 = 95
+		CASE 22
+			DC:(LOCAL:3):40 = 0
+			DC:(LOCAL:3):49 = 14
+			DC:(LOCAL:3):45 = GET_STATE_NUM("PANIC")
+			DC:(LOCAL:3):46 = 9
+			DC:(LOCAL:3):47 = 25
+			DC:(LOCAL:3):48 = 95
+		CASE 23
+			DC:(LOCAL:3):40 = 0
+			DC:(LOCAL:3):49 = 15
+			DC:(LOCAL:3):45 = GET_STATE_NUM("HAPPY")
+			DC:(LOCAL:3):46 = 9
+			DC:(LOCAL:3):47 = 35
+			DC:(LOCAL:3):48 = 95
+		CASE 24
+			DC:(LOCAL:3):40 = 0
+			DC:(LOCAL:3):49 = 16
+			DC:(LOCAL:3):45 = GET_STATE_NUM("BIND")
+			DC:(LOCAL:3):46 = 8
+			DC:(LOCAL:3):47 = 25
+			DC:(LOCAL:3):48 = 95
+		CASE 25
+			DC:(LOCAL:3):40 = 0
+			DC:(LOCAL:3):49 = 17
+			DC:(LOCAL:3):45 = GET_STATE_NUM("CHARM")
+			DC:(LOCAL:3):46 = 9
+			DC:(LOCAL:3):47 = 20
+			DC:(LOCAL:3):48 = 95
+		CASE 17
+			DC:(LOCAL:3):40 = RESULT
+			DC:(LOCAL:3):49 = 18
+	ENDSELECT
+
+	;仕様タイプを１に。引き継ぎ可能
+	DC:(LOCAL:3):90 = 1
+
+	;装備可能レベルを設定、陥落資質で緩和
+	DC:(LOCAL:3):50 = BASE:(LOCAL:1):LV
+
+	SIF 陥落(LOCAL:1) == 1
+		DC:(LOCAL:3):50 -= 20
+	SIF 陥落(LOCAL:1) == 2
+		DC:(LOCAL:3):50 -= 30
+	SIF 陥落(LOCAL:1) == 3
+		DC:(LOCAL:3):50 = MIN(DC:(LOCAL:3):50/2, DC:(LOCAL:3):50 - 30)
+
+	;かなりの長期間、連れ添っていると装備可能レベルが完全に免除される
+	SIF 陥落(LOCAL:1) == 3 && GET_CHARA_LOYALTY((LOCAL:1)) >= 50000
+		DC:(LOCAL:3):50 = 1
+
+	DC:(LOCAL:3):50 = MAX(DC:(LOCAL:3):50, 1)
+
+	;基本能力値修正、戦闘能力値修正を決定
+	;基本
+	DC:(LOCAL:3):0 += (MIN(ABL:(LOCAL:1):순종 , 10) + MIN(ABL:(LOCAL:1):욕망 , 10) + MIN(ABL:(LOCAL:1):기교 , 10) +3)/6
+	DC:(LOCAL:3):1 += (MIN(ABL:(LOCAL:1):욕망 , 10)+1)/5
+	DC:(LOCAL:3):3 += (MIN(ABL:(LOCAL:1):욕망 , 10)+1)/5
+	DC:(LOCAL:3):6 += (MIN(ABL:(LOCAL:1):순종 , 10)+1)/5
+	DC:(LOCAL:3):4 += (MIN(ABL:(LOCAL:1):순종 , 10)+1)/5
+	DC:(LOCAL:3):2 += (MIN(ABL:(LOCAL:1):기교 , 10)+1)/5
+	DC:(LOCAL:3):5 += (MIN(ABL:(LOCAL:1):기교 , 10)+1)/5
+
+	DC:(LOCAL:3):1 += MAX(BASE:(LOCAL:1):힘/20 - 2, 0)
+	DC:(LOCAL:3):3 += MAX(BASE:(LOCAL:1):마력/20 - 2, 0)
+	DC:(LOCAL:3):6 += MAX(BASE:(LOCAL:1):운/20 - 2, 0)
+	DC:(LOCAL:3):4 += MAX(BASE:(LOCAL:1):내구/20 - 2, 0)
+	DC:(LOCAL:3):2 += MAX(BASE:(LOCAL:1):지혜/20 - 2, 0)
+	DC:(LOCAL:3):5 += MAX(BASE:(LOCAL:1):속도/20 - 2, 0)
+
+	;戦闘
+	DC:(LOCAL:3):10 = (MIN(BASE:(LOCAL:1):LV,255)+5+DC:(LOCAL:3):0*2)*3/2 + BASE:(LOCAL:1):힘*3/2 + BASE:(LOCAL:1):내구 / 2
+	DC:(LOCAL:3):11 = (MIN(BASE:(LOCAL:1):LV,255)+5+DC:(LOCAL:3):0*2)*6/5 + BASE:(LOCAL:1):속도*3/2 + BASE:(LOCAL:1):운/2
+	DC:(LOCAL:3):14 = (MIN(BASE:(LOCAL:1):LV,255)+5+DC:(LOCAL:3):0*2)*3/2 + BASE:(LOCAL:1):마력*3/2 + BASE:(LOCAL:1):지혜 / 2
+	DC:(LOCAL:3):15 = (MIN(BASE:(LOCAL:1):LV,255)+5+DC:(LOCAL:3):0*2)*6/5 + BASE:(LOCAL:1):지혜 + BASE:(LOCAL:1):운/2 + BASE:(LOCAL:1):마력/2
+
+	;攻撃形態は素材のものをコピー
+;	DC:(LOCAL:3):41 = ABL:(LOCAL:1):최저공격횟수
+	DC:(LOCAL:3):41 = 1
+;	DC:(LOCAL:3):42 = ABL:(LOCAL:1):최대공격횟수
+	DC:(LOCAL:3):42 = 1
+	DC:(LOCAL:3):43 = ABL:(LOCAL:1):사거리
+	DC:(LOCAL:3):44 = ABL:(LOCAL:1):공격범위
+
+	; 運特化で最大２回攻撃
+	SIF BASE:(LOCAL:1):운 >= 100
+		DC:(LOCAL:3):42 = 2
+
+	; 耐力特化で防除を上昇（運に比べて弱いのは仕方なし）
+	SIF BASE:(LOCAL:1):내구 >= 100
+		DC:(LOCAL:3):12 = BASE:(LOCAL:1):내구*2/3+1
+
+	; 力一定以上で、ダメージディーラー用の武器と見做す
+	SIF DC:(LOCAL:3):44 == 1 && BASE:(LOCAL:1):힘 >= 50
+		DC:(LOCAL:3):10 += BASE:(LOCAL:1):힘
+	SIF DC:(LOCAL:3):44 == 2 && BASE:(LOCAL:1):힘 >= 50
+		DC:(LOCAL:3):10 += BASE:(LOCAL:1):힘/2
+
+	; 速さは申し訳程度の強化で
+	SIF BASE:(LOCAL:1):속도 >= 100
+		DC:(LOCAL:3):11 += 20
+
+	;単体は命中を強化
+	SIF DC:(LOCAL:3):44 == 1
+		TIMES DC:(LOCAL:3):11 , 1.10
+
+	; 全体は火力弱体化
+	SIF DC:(LOCAL:3):44 == 3
+		TIMES DC:(LOCAL:3):10 , 0.80
+
+	; 命中での調整案も置いておく。無条件での割合減少は拙いので、MINで上限掛けるとか
+	;SIF DC:(LOCAL:3):44 == 3
+	;	DC:(LOCAL:3):11 -= MIN(DC:(LOCAL:3):10/8, 30)
+
+	;剣仕様に変更 独自仕様として、性能を半減
+	TIMES DC:(LOCAL:3):10 , 0.50
+	TIMES DC:(LOCAL:3):11 , 0.50
+	DC:(LOCAL:3):11 += 5
+	TIMES DC:(LOCAL:3):14 , 0.40
+	TIMES DC:(LOCAL:3):15 , 0.20
+
+	;;射程・攻撃範囲によって命中と攻撃に修正が入る
+	;SELECTCASE DC:(LOCAL:3):43
+	;	CASE 2
+	;		TIMES DC:(LOCAL:3):11 , 0.8
+	;	CASE 3
+	;		TIMES DC:(LOCAL:3):11 , 0.6
+	;ENDSELECT
+	;SELECTCASE DC:(LOCAL:3):44
+	;	CASE 2
+	;		TIMES DC:(LOCAL:3):10 , 0.7
+	;		TIMES DC:(LOCAL:3):11 , 0.8
+	;	CASE 3
+	;		TIMES DC:(LOCAL:3):10 , 0.4
+	;		TIMES DC:(LOCAL:3):11 , 0.5
+	;ENDSELECT
+	
+	DC:(LOCAL:3):39 = GET_EQUIPNUM("검")
+
+	;追加効果付きの剣は修正を加える
+	SELECTCASE DC:(LOCAL:3):49
+		CASE 3,4
+			TIMES DC:(LOCAL:3):10 , 0.85
+			TIMES DC:(LOCAL:3):11 , 0.85
+		CASE 12 TO 18
+			TIMES DC:(LOCAL:3):10 , 0.80
+			TIMES DC:(LOCAL:3):11 , 0.80
+	ENDSELECT
+	;防御相性
+	FOR LOCAL,0,TYPENUM
+		DC:(LOCAL:3):(20+LOCAL) = 100
+	NEXT
+
+	;おそらくは万能をさらに弱体化させるための記述
+	;ミスで魅了が下がっていたが、ここでは削除
+	;SIF DC:(LOCAL:3):40 == 18
+	;	TIMES DC:(LOCAL:3):10 , 0.75
+	
+ELSE
+	CLEARLINE 1
+	GOTO INPUT_TYPE
+ENDIF
+
+;名称設定
+CALL NAME_MASHO2,LOCAL:1,LOCAL:3
+
+;合体結果の剣を表示
+CALL 装備説明,(2450+LOCAL:3+450*DC:(LOCAL:3):39)
+CALL 装備条件説明_魔晶装備,LOCAL:3
+PRINTL 
+
+;合体するかどうか　→　合体実行（実際には既に終わっている）
+PRINT 이 검을 제작하시겠습니까?
+
+CALL INPUT_YN,"Yes","No",2
+
+SELECTCASE RESULT
+	CASE 0
+		ITEM:(2450+LOCAL:3+450*DC:(LOCAL:3):39) = 1
+	CASE 1
+		FOR LCOUNT, 0, 99
+			DC:(LOCAL:3):LCOUNT = 0
+		NEXT
+		RESTART
+ENDSELECT
+
+
+PRINTFORMW %EQ_GETNAME_魔晶装備(LOCAL:3)%을(를) 손에 넣었다
+
+CALL FUSION_LETTER,LOCAL:1,1
+
+;合体素材の悪魔を消去
+CALL キャラ削除, LOCAL:1
+
+ITEM:무명의도 -= 1
+
+RETURN 0
+
+GOTO START_MAKE
+
+
+@SELECT_MASHO2
+IF DAY > 50
+	PRINTL 인스톨 소프트 『마장의 공방』의 사용 기간 50일이 경과했습니다.
+	PRINTL 현재 이 기능을 사용할 수 없습니다.
+	PRINTL 통상의 마정무기 제작을 진행할 경우 소프트를 OFF해 주십시오. 확장 모드를 종료합니다……
+	PRINTL 
+	RETURN 0
+ENDIF
+
+PRINTL 인스톨 소프트 『마장의 공방』을 확인. 사용 기간 내임을 확인.
+PRINTL 확장 모드를 기동합니다.
+PRINTL
+PRINTL [ 1] 마정검 제작
+;PRINTL [ 2]魔晶杖作成（未実装）
+;PRINTL [ 5]合体剣作成（未実装）
+PRINTL [10] 마정검 강화
+;PRINTL []魔晶装備の命名
+PRINTL [99]해설
+PRINTL [ 0] 돌아간다
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 1
+	IF ITEM:무명의도 >= 1
+		CALL MAKE_MASHO2
+	ELSE
+		PRINTW 제작에는 무명의 도가 필요합니다.
+		PRINTL 
+		RETURN 0
+	ENDIF
+ELSEIF RESULT == 10
+	CALL PLUS_MASHO2
+ELSEIF RESULT == 99
+	CALL KAISETU_MASHO2
+ELSEIF RESULT == 0
+	RETURN 0
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+
+@PLUS_MASHO2
+;[10]魔晶剣強化
+;LOCAL:3 魔晶武器用のデータ
+;LOCAL:4 消費される仲魔
+;LOCAL:5 消費魔貨
+
+;生贄
+;CALL INPUT_CHARA_LIST("素材にする悪魔を選んでください","CASTING_MASHO2_2")
+{
+CALL INPUT_CHARA_LIST
+	, "PROPSET_FUSION"
+	, "素体にする悪魔を選んでください"
+	, "CASTING_MASHO2_2" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+
+; デバッグ用の抜け道を作っておく
+SIF FLAG:DEBUG == 0 && RESULT == 1000
+	JUMP SELECT_MASHO2
+SIF FLAG:DEBUG == 1 && RESULT == 1000
+	RESULT = 0
+
+LOCAL:4 = RESULT
+
+PRINTFORML 어느 장비를 강화하시겠습니까?　＜page.{P + 1}＞
+DRAWLINE
+;持っているアイテムを表示
+VARSET G,-1
+FOR LOCAL,2000,VARSIZE("ITEM")
+	IF 魔晶装備(LOCAL)
+		IF (ITEM:LOCAL > 0) && (DC:(LOCAL-2450-450*((LOCAL-2000)/500)):90 == 1)
+			PRINTFORMLC [{LOCAL}]%EQ_GETNAME_魔晶装備(LOCAL-2450-450*((LOCAL-2000)/500))%
+
+			G:LOCAL = 1
+		ENDIF
+	ELSE
+	ENDIF
+NEXT
+
+$PRINT_LIST
+DRAWLINE
+PRINTL [1000] 돌아간다
+$INPUT_LOOP_1
+INPUT
+IF RESULT == 1000
+		JUMP SELECT_MASHO2
+ELSEIF RESULT < 0 || RESULT >= VARSIZE("G")
+	GOTO INPUT_LOOP_1
+ELSEIF G:RESULT != 1
+	GOTO INPUT_LOOP_1
+ENDIF
+LOCAL:2 = RESULT
+LOCAL:3 = (LOCAL:2-2450-450*((LOCAL:2-2000)/500))
+CALL 装備説明,LOCAL:2
+CALL 装備条件説明_魔晶装備,LOCAL:3
+PRINTL 
+
+;価格決定
+LOCAL:5 = 1000 + (DC:(LOCAL:3):52)*(DC:(LOCAL:3):52-2)*200
+SIF LOCAL:5 < 1000
+	LOCAL:5 = 1000
+SIF DC:(LOCAL:3):10 < 100 && DC:(LOCAL:3):11 < 100 && DC:(LOCAL:3):14 < 100 && DC:(LOCAL:3):15 < 100
+	LOCAL:5 = LOCAL:5/10
+
+
+PRINTFORML 이 장비를 강화하시겠습니까?　[강화 횟수:{DC:(LOCAL:3):52}]　[마카 {LOCAL:5} + 동료마 소비]
+PRINTL [0]Yes [1]No
+$INPUT_LOOP2
+INPUT
+IF RESULT == 1
+	RESTART
+ELSEIF RESULT != 0
+	GOTO INPUT_LOOP2
+ENDIF
+
+IF MONEY:1 < LOCAL:5
+	PRINTW 마카가 부족합니다.
+	PRINTL 
+
+	RESTART
+ENDIF
+
+	;基本能力値修正、戦闘能力値修正を決定
+	;基本
+	TIMES DC:(LOCAL:3):1 , 1.15
+	TIMES DC:(LOCAL:3):3 , 1.15
+	TIMES DC:(LOCAL:3):6 , 1.15
+	TIMES DC:(LOCAL:3):4 , 1.15
+	TIMES DC:(LOCAL:3):2 , 1.15
+	TIMES DC:(LOCAL:3):5 , 1.15
+
+	IF DC:(LOCAL:3):52 % 10 == 9
+		FOR LOCAL, 1, 7
+			SIF DC:(LOCAL:3):LOCAL >= 1
+			DC:(LOCAL:3):LOCAL += 1
+		NEXT
+	ENDIF
+
+	;戦闘
+	IF  DC:(LOCAL:3):52 <= 9
+		TIMES DC:(LOCAL:3):10 , 1.15
+		TIMES DC:(LOCAL:3):11 , 1.15
+		TIMES DC:(LOCAL:3):14 , 1.15
+		TIMES DC:(LOCAL:3):15 , 1.15
+	ELSE
+		TIMES DC:(LOCAL:3):10 , 1.03
+		TIMES DC:(LOCAL:3):11 , 1.03
+		TIMES DC:(LOCAL:3):14 , 1.03
+		TIMES DC:(LOCAL:3):15 , 1.03
+	ENDIF
+
+;生贄の種族による変化
+
+	SELECTCASE ABL:(LOCAL:4):80
+		;지모신
+		CASE 1
+			DC:(LOCAL:3):10 -= 5
+			DC:(LOCAL:3):11 += 5
+		;여신
+		CASE 2
+			SIF DC:(LOCAL:3):52 % 10 == 4 || DC:(LOCAL:3):52 % 10 == 9
+				DC:(LOCAL:3):2 += 1
+		;마왕
+		CASE 3
+			SIF DC:(LOCAL:3):52 % 10 == 4 || DC:(LOCAL:3):52 % 10 == 9
+				DC:(LOCAL:3):3 += 1
+		;천사
+		CASE 4
+			SIF DC:(LOCAL:3):52 % 10 == 4 || DC:(LOCAL:3):52 % 10 == 9
+				DC:(LOCAL:3):4 += 1
+
+			SIF DC:(LOCAL:3):40 == 10
+				DC:(LOCAL:3):10 += 10
+		;요마
+		CASE 5
+			DC:(LOCAL:3):15 += 5
+			DC:(LOCAL:3):14 -= 5
+
+			SIF DC:(LOCAL:3):52 % 10 == 4 || DC:(LOCAL:3):52 % 10 == 9
+				DC:(LOCAL:3):6 += 1
+		;요정
+		CASE 6
+			SIF DC:(LOCAL:3):52 % 10 == 4 || DC:(LOCAL:3):52 % 10 == 9
+				DC:(LOCAL:3):2 += 1
+		;요귀
+		CASE 7
+			DC:(LOCAL:3):10 += 5
+			DC:(LOCAL:3):11 -= 5
+
+			SIF DC:(LOCAL:3):52 % 10 == 4 || DC:(LOCAL:3):52 % 10 == 9
+				DC:(LOCAL:3):1 += 1
+		;용왕
+		CASE 8
+			SIF DC:(LOCAL:3):52 % 10 == 4 || DC:(LOCAL:3):52 % 10 == 9
+				DC:(LOCAL:3):1 += 2
+			SIF DC:(LOCAL:3):52 % 10 == 4 || DC:(LOCAL:3):52 % 10 == 9
+				DC:(LOCAL:3):6 -= 1
+		;마수
+		CASE 9
+			SIF DC:(LOCAL:3):52 % 10 == 4 || DC:(LOCAL:3):52 % 10 == 9
+				DC:(LOCAL:3):4 += 1
+		;요조
+		CASE 10
+			DC:(LOCAL:3):15 -= 5
+			DC:(LOCAL:3):11 += 5
+		;외도
+		CASE 11
+			SIF DC:(LOCAL:3):40 == 11
+				DC:(LOCAL:3):10 += 10
+		;머신
+		CASE 12
+			;特になし
+		;정령
+		CASE 13
+			DC:(LOCAL:3):11 += 1
+			DC:(LOCAL:3):15 += 1
+		;어령
+		CASE 14
+			;特になし
+		;귀신
+		CASE 15
+			DC:(LOCAL:3):10 += 2
+
+			IF DC:(LOCAL:3):52 % 10 == 4 || DC:(LOCAL:3):52 % 10 == 9
+				DC:(LOCAL:3):1 += 2
+				DC:(LOCAL:3):4 += 2
+				DC:(LOCAL:3):2 -= 1
+				DC:(LOCAL:3):3 -= 1
+			ENDIF
+		;마신
+		CASE 16
+			SIF DC:(LOCAL:3):52 % 10 == 4 || DC:(LOCAL:3):52 % 10 == 9
+				DC:(LOCAL:3):3 += 1
+		;타천사
+		CASE 18
+			SIF DC:(LOCAL:3):52 % 10 == 4 || DC:(LOCAL:3):52 % 10 == 9
+				DC:(LOCAL:3):6 += 1
+
+		;마인
+		CASE 42
+			DC:(LOCAL:3):10 += 1
+			DC:(LOCAL:3):14 += 1
+			IF DC:(LOCAL:3):52 % 10 == 4 || DC:(LOCAL:3):52 % 10 == 9
+				DC:(LOCAL:3):1 += 1
+				DC:(LOCAL:3):2 += 1
+				DC:(LOCAL:3):3 += 1
+				DC:(LOCAL:3):4 += 1
+				DC:(LOCAL:3):5 += 1
+				DC:(LOCAL:3):6 += 1
+			ENDIF
+
+	ENDSELECT
+
+;月齢による変化
+IF FLAG:월령 == 8
+	DC:(LOCAL:3):10 += 5
+	DC:(LOCAL:3):11 -= 5
+	DC:(LOCAL:3):14 += 5
+	DC:(LOCAL:3):15 -= 5
+ELSEIF FLAG:월령 == 0
+	DC:(LOCAL:3):10 -= 5
+	DC:(LOCAL:3):11 += 5
+	DC:(LOCAL:3):14 -= 5
+	DC:(LOCAL:3):15 += 5
+ENDIF
+
+CALL 装備説明,LOCAL:2
+PRINTW 지정된 마정무기가 강화되었습니다!
+PRINTL 
+
+MONEY:1 -= LOCAL:5
+SIF LOCAL:4 != 0
+	CALL キャラ削除, LOCAL:4
+;強化回数増加
+DC:(LOCAL:3):52 += 1
+
+@KAISETU_MASHO2
+PRINTL 마정무기 제작 확장 모드 해설
+PRINTL 
+PRINTL ・무명의 도와 악마를 합체시켜 마정무기를 만들어낼 수 있습니다.
+PRINTL ・마정무기는 마정을 사용함으로써 한층 더 강화할 수 있습니다.
+PRINTL ・마정은 악마를 보석이나 특수 금속에 봉인함으로써 생성됩니다.
+PRINTL ・이 소프트상에서는 보석이나 금속을 마카로 대용합니다.
+PRINTL 
+PRINTL ● 제작되는 마정무기의 특징
+PRINTL ・제작 시의 성능이 대폭 감소
+PRINTL ・소재의 레벨에 기반하여 장비 가능 레벨이 설정됨
+PRINTL ・인계 가능
+PRINTL ・마카와 동료마를 소비하여 단계적 강화 가능
+PRINTL ・소비 가능한 동료마는 함락 혹은 충성도가 일정 이상인 자뿐임
+PRINTL 
+PRINTL ● 주의사항
+PRINTL 이 소프트에는 사용 기간이 존재하며, 50일 이후에는 정지합니다.
+PRINTW
+
+;================================================================
+;魔晶武器の名称設定
+;================================================================
+@NAME_MASHO2,ARG,ARG:1
+PRINTL 마정무기의 명칭을 지정해주세요
+PRINTL 
+PRINTFORML [0]%STR:(DC:(ARG:1):49+100)%
+PRINTFORML [1] 마정검: %NAME:(ARG)%
+PRINTFORML [2] 직접 지정한다
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+
+ELSEIF RESULT == 1
+	SAVESTR:(550+ARG:1) = 魔晶剣：%NAME:(ARG)%
+	DC:(ARG:1):49 = 19
+ELSEIF RESULT == 2
+	PRINTL 마정무기의 명칭을 입력해주세요.
+	$INPUT_LOOP2
+
+	INPUTS
+	IF RESULTS == ""
+		GOTO INPUT_LOOP2
+	ELSE
+		SAVESTR:(550+ARG:1) = %RESULTS%
+		DC:(ARG:1):49 = 19
+	ENDIF
+
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+PRINTL 
+
+;================================================================
+;材料にできる悪魔の条件
+;================================================================
+; 作成用、拡張モードでは契約していても可
+@CASTING_MASHO2(ARG)
+;SIF ABL:ARG:종족 == 0 || ABL:ARG:종족 > 44
+;	RETURN 0
+SIF ARG == MASTER
+	RETURN 0
+SIF !GET_ROLE_PROP("CAN_FUSION",ARG)
+	RETURN 0
+SIF IS_RENTING(ARG)
+	RETURN 0
+SIF CFLAG:ARG:이자리에없는플래그 == 1
+	RETURN 0
+SIF CFLAG:ARG:합체소재사용금지
+	RETURN 0
+SIF EQUIP:ARG:검 != 0
+	RETURN 0
+SIF EQUIP:ARG:총 != 0
+	RETURN 0
+SIF EQUIP:ARG:머리 != 0
+	RETURN 0
+SIF EQUIP:ARG:몸통 != 0
+	RETURN 0
+SIF EQUIP:ARG:팔 != 0
+	RETURN 0
+SIF EQUIP:ARG:발 != 0
+	RETURN 0
+RETURN 1
+
+;こちらは強化用、陥落しているか忠誠度が必要
+@CASTING_MASHO2_2(ARG)
+SIF 계약(ARG) > 0
+	RETURN 0
+SIF 陥落(ARG) <= 0 && GET_CHARA_LOYALTY(ARG) <= 14999
+	RETURN 0
+SIF ABL:ARG:종족 == 0 || ABL:ARG:종족 > 44
+	RETURN 0
+SIF IS_RENTING(ARG)
+	RETURN 0
+SIF CFLAG:ARG:이자리에없는플래그 == 1
+	RETURN 0
+SIF !GET_ROLE_PROP("CAN_FUSION", ARG)
+	RETURN 0
+SIF CFLAG:ARG:합체소재사용금지
+	RETURN 0
+SIF EQUIP:ARG:검 != 0
+	RETURN 0
+SIF EQUIP:ARG:총 != 0
+	RETURN 0
+SIF EQUIP:ARG:머리 != 0
+	RETURN 0
+SIF EQUIP:ARG:몸통 != 0
+	RETURN 0
+SIF EQUIP:ARG:팔 != 0
+	RETURN 0
+SIF EQUIP:ARG:발 != 0
+	RETURN 0
+RETURN 1

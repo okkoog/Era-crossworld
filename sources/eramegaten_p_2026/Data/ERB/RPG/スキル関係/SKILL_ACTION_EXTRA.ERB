@@ -1,0 +1,688 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILL_ACTION_EXTRA.ERB
+;	Facility	:その他スキルの実行関数群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/05/02		P(bazziel)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;@SKILL_WALL				壁スキル
+;@SKILL_INVALID_WALL		無効化防壁
+;@SKILL_GUARD_KILL			가드킬
+;@SKILL_SET_カジャンダ		能力上昇と低下
+;@SKILL_能力低下解除		能力低下解除(데・쿤다)
+;@SKILL_能力上昇解除		能力低下解除(데・카쟈)
+;@SKILL_SET_HPバリア		個別のHPバリアセット関数
+;@SKILL_SET_全体HPバリア	全体のHPバリアセット関数
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=========================================
+;壁スキル基本
+;L_ACTOR 使用者
+;L_TYPE 効果相性
+;L_TARGET 対象
+;L_CNT 回数
+;L_OPT 表示 = メッセージを表示する
+;
+;戻り値:1 = 壁の付与に成功 / 0 = 失敗
+;=========================================
+@SKILL_WALL , L_ACTOR, L_TYPE, L_TARGET, L_CNT, L_OPT = "表示"
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_ACTOR
+#DIMS DYNAMIC L_TYPE
+#DIM DYNAMIC L_TARGET
+#DIM DYNAMIC L_CNT
+#DIMS DYNAMIC L_OPT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_RESULT
+FOR LCOUNT, GET_POS_MIN(L_TARGET), GET_POS_MAX(L_TARGET) + 1
+	L_CHARA = POS(LCOUNT)
+	SIF !IS_TARGET_ABLE(L_CHARA)
+		CONTINUE
+	IF CFLAG:L_CHARA:@"%L_TYPE%무효화횟수" < L_CNT
+		L_RESULT = 1
+		CFLAG:L_CHARA:@"%L_TYPE%무효화횟수" = L_CNT
+		SIF L_OPT == "表示"
+			PRINTFORML 　　TARGET:[{LCOUNT,2}] %CALLNAME:L_CHARA,20,LEFT%　>>>>>>　%조사처리(L_TYPE,"을")% 무효화！
+	ELSE
+		L_RESULT = 0
+		SIF L_OPT == "表示"
+			PRINTFORML 　　TARGET:[{LCOUNT,2}] %CALLNAME:L_CHARA,20,LEFT%　>>>>>>　효과가 없었다…
+	ENDIF
+NEXT
+SIF L_OPT == "表示" 
+	WAIT
+RETURN 
+
+;=========================================
+;無効化防壁付与
+;ARG:0		使用者
+;ARG:1		対象(単体・短縮指定の場合はキャラ番号・範囲の場合はポジション指定)
+;ARGS 		効果; 文字列で指定。右の項目のうち、必要なものだけ入れて使う("攻撃_命中_防御_回避_魔法威力_魔法効果_クリティカル_BS付着率")
+;ARGS:1		範囲・メッセージ方式指定(単体・範囲はそのまま、短縮は攻撃スキルの追加効果用でダメージ & ↓공격　のようにでる)
+;ARGS:2		NOWAIT:WAITで止まらない(短縮では無関係) NOMES:メッセージ表示なし
+;ARGS:3		代替メッセージ
+;凡例
+;=========================================
+@SKILL_INVALID_WALL, ARG, ARG:1, ARGS, ARGS:1, ARGS:2, ARGS:3
+#DIM DYNAMIC L_T
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC POSMIN
+#DIM DYNAMIC POSMAX
+#DIM DYNAMIC IS_キャラ指定
+SELECTCASE ARGS:1
+	CASE "단체", "SINGLE", "短縮"
+		L_T = ARG:1
+		SIF L_T < 0
+			RETURN 0
+		L_MES = %CALLNAME:L_T%
+		POSMIN = 0
+		POSMAX = 1
+		IS_キャラ指定 = 1
+	CASE "範囲", "FIELD"
+		SELECTCASE ARG:1
+			CASE IS < 17
+				POSMIN = CPOS(ARG:1)
+				POSMAX = CPOS(ARG:1) + 1
+			CASE 17
+				POSMIN = 1
+				POSMAX = 4
+			CASE 18
+				POSMIN = 4
+				POSMAX = 7
+			CASE 19
+				POSMIN = 1
+				POSMAX = 7
+			CASE 20
+				POSMIN = 7
+				POSMAX = 12
+			CASE 21
+				POSMIN = 12
+				POSMAX = 17
+			CASE 22
+				POSMIN = 7
+				POSMAX = 17
+			CASE 23
+				POSMIN = 1
+				POSMAX = 17
+		ENDSELECT
+		IS_キャラ指定 = 0
+ENDSELECT
+
+;-----------------------------
+;強化・弱化の対象になれるかを取得
+;-----------------------------
+VARI L_対象人数
+FOR LCOUNT, POSMIN, POSMAX
+	IF !IS_キャラ指定
+		L_T = POS(LCOUNT)
+		SIF !IS_TARGET_ABLE(L_T)
+			CONTINUE
+	ENDIF
+	L_対象人数++
+NEXT
+
+VARS WALL_TABLE, 3
+WALL_TABLE '= "수호의방패", "성스러운가호", "테트라쟈"
+VARS L_MES
+FOR LCOUNT:1, 0, 3
+	SIF STRFIND(ARGS, WALL_TABLE:(LCOUNT:1)) < 0
+		CONTINUE
+	SIF L_MES != ""
+		L_MES += " & "
+	SELECTCASE WALL_TABLE:(LCOUNT:1)
+		CASE "수호의방패"
+			L_MES += "ダメージ防壁"
+		CASE "성스러운가호"
+			L_MES += "状態異常防壁"
+		CASE "테트라쟈"
+			L_MES += "即死防壁"
+	ENDSELECT
+	FOR LCOUNT, POSMIN, POSMAX
+		SIF !IS_キャラ指定
+			L_T = POS(LCOUNT)
+		SIF !IS_TARGET_ABLE(L_T)
+			CONTINUE
+		CFLAG:L_T:(WALL_TABLE:(LCOUNT:1)) = 1
+	NEXT
+NEXT
+SIF ARGS:3 != ""
+	L_MES '= ARGS:3
+;---------------------------------------------------
+;メッセージの処理
+;---------------------------------------------------
+SIF ARGS:2 == "NOMES" || ARGS:2 == "NOPRINT"
+	RETURN !L_対象人数
+IF ARGS:1 == "短縮"
+	TSTR:스킬메시지추가효과 += L_MES
+ELSE
+	IF !L_対象人数
+		PRINT 대상이 없었다!
+	ELSE
+		FOR LCOUNT, POSMIN, POSMAX
+			SIF !IS_キャラ指定
+				L_T = POS(LCOUNT)
+			SIF !IS_TARGET_ABLE(L_T)
+				CONTINUE
+			CALL PRINT_HIT_MESSAGE, L_T, L_MES, "L"
+		NEXT
+	ENDIF
+	SIF !STRCOUNT(ARGS:2, "NOWAIT")
+		WAIT
+ENDIF
+RETURN !L_対象人数
+
+;=========================================
+;ガードキル基本
+;L_ACTOR 使用者
+;L_TYPE 効果相性
+;L_TARGET 対象
+;L_CNT 回数
+;L_OPT 非表示 = メッセージを表示しない / 短縮 = 短縮メッセージを変数に追加する
+;
+;戻り値:1 = 壁の付与に成功 / 0 = 失敗
+;=========================================
+@SKILL_GUARD_KILL , L_ACTOR, L_TYPE, L_TARGET, L_CNT, L_OPT = "表示"
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_ACTOR
+#DIMS DYNAMIC L_TYPE
+#DIM DYNAMIC L_TARGET
+#DIM DYNAMIC L_CNT
+#DIMS DYNAMIC L_OPT
+#DIM DYNAMIC L_RESULT
+FOR LCOUNT, GET_POS_MIN(L_TARGET), GET_POS_MAX(L_TARGET) + 1
+	L_CHARA = POS(LCOUNT)
+	SIF !IS_TARGET_ABLE(L_CHARA)
+		CONTINUE
+	IF L_CNT > CFLAG:L_CHARA:@"%L_TYPE%가드킬" && CHECK_WEAKNESS(MAXBASE:L_CHARA:L_TYPE) < 0
+		L_RESULT = 1
+		CFLAG:L_CHARA:@"%L_TYPE%가드킬" = L_CNT
+		IF L_OPT == "短縮"
+			TSTR:스킬메시지추가효과 += " & " + L_TYPE + "킬<<" + TOSTR(L_CNT) + "Ｔ>>" 
+		ELSEIF L_OPT != "非表示"
+			CALL PRINT_HIT_MESSAGE, L_CHARA, @"{L_CNT}턴、%L_TYPE%에의 내성이 무효화！"
+		ENDIF
+	ELSE
+		L_RESULT = 0
+		SIF L_OPT != "短縮" && L_OPT != "非表示"
+			CALL PRINT_HIT_MESSAGE, L_CHARA, "효과가 없었다。"
+	ENDIF
+NEXT
+SIF L_OPT != "短縮" && L_OPT != "非表示" && L_OPT != "NOWAIT"
+	WAIT
+RETURN L_RESULT
+
+;=========================================
+;指定したガードキルが有効かどうか
+;=========================================
+@IS_VALID_GUARD_KILL , L_CHARA, L_TYPE
+#FUNCTION
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_TYPE
+RETURNF CFLAG:L_CHARA:(L_TYPE + "가드킬") > 0 && CHECK_WEAKNESS(MAXBASE:L_CHARA:L_TYPE) < 0
+
+;=========================================
+;カジャンダ(戦闘能力強化セット)스킬
+;ARG:0		使用者
+;ARG:1		対象(単体・短縮指定の場合はキャラ番号・範囲の場合はポジション指定)
+;ARGS 		効果; 文字列で指定。右の項目のうち、必要なものだけ入れて使う("攻撃_命中_防御_回避_魔法威力_魔法効果_クリティカル_BS付着率")
+;ARG:2 		効果量。増減対応。1ランクが±4、2ランクが±8
+;ARGS:1		範囲・メッセージ方式指定(単体・範囲はそのまま、短縮は攻撃スキルの追加効果用でダメージ & ↓공격　のようにでる)
+;ARGS:2		NOWAIT:WAITで止まらない(短縮では無関係) NOMES:メッセージ表示なし
+;ARGS:3		代替メッセージ
+;ARG:3		上限
+;AEG:4		下限
+;凡例
+;CALL SKILL_SET_カジャンダ, ARG, ARG:1, "攻撃_命中", -4, "短縮";ARG:1のキャラ番号の敵に攻撃と命中を1ランクさげる(-4)
+;=========================================
+@SKILL_SET_カジャンダ, ARG, ARG:1, ARGS, ARG:2, ARGS:1, ARGS:2, ARGS:3, ARG:3 = 32, ARG:4 = -32
+#DIM POSMIN
+#DIM POSMAX
+#DIMS POSNAMES
+#DIM LCOUNT, 2
+#DIM L_P
+#DIM L_T
+#DIM L_ステ変化量
+#DIMS L_STNAME, 8
+#DIM L_ST, 8
+#DIMS L_MES
+#DIM L_対象人数
+#DIMS L_対象
+#DIM IS_ENHANCE_ABLE, MAX_PLAYER_CHARA
+#DIM IS_キャラ指定
+
+; -KR- 임시 호환처리
+ARGS '= SKILL_SET_カジャンダ_KR(ARGS)
+
+;-------------------------------------------
+;変数の初期登録
+;-------------------------------------------
+L_P = ARG
+L_対象 '= ARGS:1
+L_ステ変化量 = ARG:2
+SELECTCASE L_対象
+	CASE "単体", "SINGLE", "短縮", "단체"
+		L_T = ARG:1
+		SIF !IS_TARGET_ABLE(L_T)
+			RETURN 0
+		L_MES = %CALLNAME:L_T%
+		POSMIN = 0
+		POSMAX = 1
+		IS_キャラ指定 = 1
+	CASE "範囲", "FIELD", "범위"
+		SELECTCASE ARG:1
+			CASE IS < 17
+				POSMIN = CPOS(ARG:1)
+				POSMAX = CPOS(ARG:1) + 1
+			CASE 17
+				POSMIN = 1
+				POSMAX = 4
+				;L_MES = 味方前列
+			CASE 18
+				POSMIN = 4
+				POSMAX = 7
+				;L_MES = 味方後列
+			CASE 19
+				POSMIN = 1
+				POSMAX = 7
+				;L_MES = 味方
+			CASE 20
+				POSMIN = 7
+				POSMAX = 12
+				;L_MES = 敵前列
+			CASE 21
+				POSMIN = 12
+				POSMAX = 17
+				;L_MES = 敵後列
+			CASE 22
+				POSMIN = 7
+				POSMAX = 17
+				;L_MES = 敵全体
+			CASE 23
+				POSMIN = 1
+				POSMAX = 17
+				;L_MES = 敵味方全体
+		ENDSELECT
+		IS_キャラ指定 = 0
+	CASE "COMP内", "全味方"
+		POSMIN = 0
+		POSMAX = CHARANUM
+		IS_キャラ指定 = 1
+ENDSELECT
+VARSET L_ST
+IF L_STNAME == ""
+	FOR LCOUNT, 0, 8
+		L_STNAME:LCOUNT '= AUTO_SPLIT("공격_명중_방어_회피_마법위력_마법효과_크리티컬_BS부착률", "_", LCOUNT) 
+	NEXT
+ENDIF
+
+;-----------------------------
+;強化・弱化の対象になれるかを取得
+;-----------------------------
+VARI TEMP_CHARA
+VARSET IS_ENHANCE_ABLE
+L_対象人数 = 0
+FOR LCOUNT, POSMIN, POSMAX
+	SELECTCASE L_対象
+		CASE "COMP内"
+			TEMP_CHARA = LCOUNT
+			SIF CPOS(TEMP_CHARA)
+				CONTINUE
+			SIF !IS_COMP内効果有効(TEMP_CHARA)
+				CONTINUE
+			SIF IS_BADSTATE(TEMP_CHARA, "DYING")
+				CONTINUE
+		CASE "全味方"
+			TEMP_CHARA = LCOUNT
+			SIF CFLAG:TEMP_CHARA:PT플래그 == 0
+				CONTINUE
+			SIF IS_BADSTATE(TEMP_CHARA, "DYING")
+				CONTINUE
+		CASEELSE
+			IF !IS_キャラ指定
+				TEMP_CHARA = POS(LCOUNT)
+				SIF !IS_TARGET_ABLE(TEMP_CHARA)
+					CONTINUE
+			ENDIF
+	ENDSELECT
+	IS_ENHANCE_ABLE:LCOUNT = 1
+	L_対象人数++
+NEXT
+;---------------------------------------------------
+;能力強化の増減処理
+;---------------------------------------------------
+FOR LCOUNT, 0, 8
+	;指定に含まれてるかチェック
+	SIF STRFIND(ARGS, L_STNAME:LCOUNT) == -1
+		CONTINUE
+	;使われたか記憶
+	L_ST:LCOUNT = 1
+	FOR LCOUNT:1, POSMIN, POSMAX
+		IF GROUPMATCH(L_対象, "COMP内", "全味方")
+			L_T = LCOUNT:1
+		ELSEIF !IS_キャラ指定
+			L_T = POS(LCOUNT:1)
+		ENDIF
+		SIF !IS_ENHANCE_ABLE:(LCOUNT:1)
+			CONTINUE
+		;---- EDIT 022 MOD START -------------------------
+		;上限が指定されている場合のチェック(元々オーバーしている場合は変動なし)
+		IF L_ステ変化量 > 0
+			SIF CFLAG:L_T:(L_STNAME:LCOUNT+"강화") <= ARG:3
+				CFLAG:L_T:(L_STNAME:LCOUNT+"강화") = MIN(CFLAG:L_T:(L_STNAME:LCOUNT+"강화") + L_ステ変化量, ARG:3)
+		ELSE
+			;下限が指定されている場合のチェック
+			SIF CFLAG:L_T:(L_STNAME:LCOUNT+"강화") >= ARG:4
+				CFLAG:L_T:(L_STNAME:LCOUNT+"강화") = MAX(CFLAG:L_T:(L_STNAME:LCOUNT+"강화") + L_ステ変化量, ARG:4)
+		ENDIF
+		;最終的な値域チェック
+		SELECTCASE L_STNAME:LCOUNT
+			CASE "크리티컬"
+				CFLAG:L_T:(L_STNAME:LCOUNT+"강화") = LIMIT(CFLAG:L_T:(L_STNAME:LCOUNT+"강화"), -8, 8)
+			CASE "BS부착률"
+				CFLAG:L_T:(L_STNAME:LCOUNT+"강화") = LIMIT(CFLAG:L_T:(L_STNAME:LCOUNT+"강화"), -4, 4)
+			CASEELSE
+				CFLAG:L_T:(L_STNAME:LCOUNT+"강화") = LIMIT(CFLAG:L_T:(L_STNAME:LCOUNT+"강화"), -32, 32)
+		ENDSELECT
+	NEXT
+NEXT
+;---------------------------------------------------
+;メッセージの処理
+;---------------------------------------------------
+SIF ARGS:2 == "NOMES" || ARGS:2 == "NOPRINT"
+	RETURN 0
+IF !L_対象人数
+	L_MES = 対象がいなかった！
+ELSE
+	SELECTCASE L_対象
+		CASE "短縮"
+			L_MES = %" & "%
+			IF CFLAG:ARG:PT플래그 > 0
+				IF L_ステ変化量 > 0
+				;	SETCOLOR COLOR("FRIEND")
+				ELSE
+				;	SETCOLOR COLOR("ENEMY")
+				ENDIF
+			ELSE
+				IF L_ステ変化量 > 0
+				;	SETCOLOR COLOR("ENEMY")
+				ELSE
+				;	SETCOLOR COLOR("FRIEND")
+				ENDIF
+			ENDIF
+			LOCAL = 0
+			SELECTCASE L_ステ変化量
+				CASE IS <= -32
+					L_MES += "↓↓↓↓ "
+				CASE IS <= -16
+					L_MES += "↓↓↓ "
+				CASE IS <= -8
+					L_MES += "↓↓ "
+				CASE IS <= -4
+					L_MES += "↓ "
+				CASE IS >= 32
+					L_MES += "↑↑↑↑ "
+				CASE IS >= 16
+					L_MES += "↑↑↑ "
+				CASE IS >= 8
+					L_MES += "↑↑ "
+				CASE IS >= 4
+					L_MES += "↑ "
+			ENDSELECT
+			FOR LCOUNT, 0, 8
+				IF L_ST:LCOUNT
+					SIF LOCAL
+						L_MES += "・"
+					IF MATCH(L_ST, 1, 0, 6) == 6
+						L_MES += "전능력"
+						VARSET L_ST, 0, 0, 6
+					ELSE
+						L_MES += L_STNAME:LCOUNT
+					ENDIF
+					LOCAL++
+				ENDIF
+			NEXT
+			SIF ARGS:3 != ""
+				L_MES '= ARGS:3
+			TSTR:스킬메시지추가효과 += L_MES
+			RETURN 1
+		CASEELSE
+			;L_MES += "の"
+			L_MES = 
+			LOCAL = 0
+			FOR LCOUNT, 0, 8
+				IF L_ST:LCOUNT
+					SIF LOCAL
+						L_MES += "과"
+					SELECTCASE L_STNAME:LCOUNT
+						CASE "공격"
+							IF MATCH(L_ST, 1, 0, 6) == 6
+								L_MES += "전능력"
+								VARSET L_ST, 0, 0, 6
+							ELSE
+								L_MES += "공격력"
+							ENDIF
+						CASE "명중"
+							;回避もあがる場合はまとめる
+							IF L_ST:3
+								L_MES += "명중률・회피율"
+								L_ST:3 = 0
+							ELSE
+								L_MES += "명중률"
+							ENDIF
+						CASE "방어"
+							L_MES += "방어력"
+						CASE "회피"
+							L_MES += "회피율"
+						CASE "크리티컬"
+							L_MES += "크리티컬률"
+						CASEELSE
+							L_MES += L_STNAME:LCOUNT
+					ENDSELECT
+					LOCAL++
+				ENDIF
+			NEXT
+			IF L_ステ変化量 > 0
+				L_MES += "이"
+			ELSE
+				L_MES += "을"
+			ENDIF
+			SELECTCASE ABS(L_ステ変化量)
+				CASE IS >= 32
+					L_MES += " 초초대폭으로"
+				CASE IS >= 16
+					L_MES += " 초대폭으로"
+				CASE IS >= 8
+					L_MES += " 대폭으로"
+			ENDSELECT
+			IF L_ステ変化量 > 0
+				L_MES += " 올랐다！"
+			ELSE
+				L_MES += " 내렸다！"
+			ENDIF
+			SIF ARGS:3 != ""
+				L_MES '= ARGS:3
+			FOR LCOUNT, POSMIN, POSMAX
+				SIF !IS_キャラ指定
+					L_T = POS(LCOUNT)
+				SIF !IS_ENHANCE_ABLE:LCOUNT
+					CONTINUE
+				CALL PRINT_HIT_MESSAGE, L_T, L_MES, "L"
+			NEXT
+			SIF !STRCOUNT(ARGS:2, "NOWAIT")
+				WAIT
+			RETURN 1
+	ENDSELECT
+ENDIF
+PRINTFORML %L_MES%
+SIF !STRCOUNT(ARGS:2, "NOWAIT")
+	WAIT
+
+;=========================================
+;能力低下解除関数
+;=========================================
+@SKILL_能力低下解除, ARG, ARG:1, ARGS = "範囲", ARGS:1 = "PRINT/WAIT"
+#DIM LCOUNT, 2
+#DIM L_P
+#DIM L_T
+#DIM POSMIN
+#DIM POSMAX
+#DIM IS_キャラ指定
+#DIM IS_SET_EFFECT, 17
+L_P = ARG
+IF GROUPMATCH(ARGS, "단체", "短縮")
+	L_T = ARG:1
+	POSMIN = 0
+	POSMAX = 1
+	IS_キャラ指定 = 1
+ELSE
+	POSMIN = GET_POS_MIN(ARG:1)
+	POSMAX = GET_POS_MAX(ARG:1) + 1
+	IS_キャラ指定 = 0
+ENDIF
+VARSET IS_SET_EFFECT
+;効果発動
+FOR LCOUNT, POSMIN, POSMAX
+	SIF !IS_キャラ指定
+		L_T = POS(LCOUNT)
+	SIF !IS_TARGET_ABLE(L_T)
+		CONTINUE
+	FOR LCOUNT:1, 0, 6
+		SIF CFLAG:L_T:(AUTO_SPLIT("공격/방어/마법위력/마법효과/명중/회피", "/", LCOUNT:1) + "강화") >= 0
+			CONTINUE
+		CFLAG:L_T:(AUTO_SPLIT("공격/방어/마법위력/마법효과/명중/회피", "/", LCOUNT:1)+ "강화") = 0
+		IS_SET_EFFECT:LCOUNT = 1
+	NEXT
+NEXT
+
+SIF STRCOUNT(ARGS:1, "NOPRINT") ||  STRCOUNT(ARGS:1, "NOMES")
+	RETURN MAXARRAY(IS_SET_EFFECT)
+;効果発動
+FOR LCOUNT, POSMIN, POSMAX
+	SIF !IS_キャラ指定
+		L_T = POS(LCOUNT)
+	SIF !IS_TARGET_ABLE(L_T)
+		CONTINUE
+	IF IS_SET_EFFECT:LCOUNT
+		IF ARGS == "短縮"
+			TSTR:스킬메시지추가효과 += " & 능력저하해제"
+		ELSE
+			CALL PRINT_HIT_MESSAGE, L_T, "저하된 능력이 돌아왔다！", "L"
+		ENDIF
+	ELSE
+		SIF ARGS != "短縮"
+			CALL PRINT_HIT_MESSAGE, L_T, "효과없음", "L"
+	ENDIF
+NEXT
+SIF !STRCOUNT(ARGS:1, "NOWAIT") && ARGS != "短縮"
+	WAIT
+RETURN MAXARRAY(IS_SET_EFFECT)
+
+;=========================================
+;能力上昇解除関数
+;=========================================
+@SKILL_能力上昇解除, ARG, ARG:1, ARGS = "範囲", ARGS:1 = "PRINT/WAIT"
+#DIM LCOUNT, 2
+#DIM L_P
+#DIM L_T
+#DIM POSMIN
+#DIM POSMAX
+#DIM IS_キャラ指定
+#DIM IS_SET_EFFECT, 17
+L_P = ARG
+IF GROUPMATCH(ARGS, "단체", "短縮")
+	L_T = ARG:1
+	POSMIN = 0
+	POSMAX = 1
+	IS_キャラ指定 = 1
+ELSE
+	POSMIN = GET_POS_MIN(ARG:1)
+	POSMAX = GET_POS_MAX(ARG:1) + 1
+	IS_キャラ指定 = 0
+ENDIF
+VARSET IS_SET_EFFECT
+;効果発動
+FOR LCOUNT, POSMIN, POSMAX
+	SIF !IS_キャラ指定
+		L_T = POS(LCOUNT)
+	SIF !IS_TARGET_ABLE(L_T)
+		CONTINUE
+	FOR LCOUNT:1, 0, 6
+		SIF CFLAG:L_T:(AUTO_SPLIT("공격/방어/마법위력/마법효과/명중/회피", "/", LCOUNT:1) + "강화") <= 0
+			CONTINUE
+		CFLAG:L_T:(AUTO_SPLIT("공격/방어/마법위력/마법효과/명중/회피", "/", LCOUNT:1)+ "강화") = 0
+		IS_SET_EFFECT:LCOUNT = 1
+	NEXT
+NEXT
+
+SIF STRCOUNT(ARGS:1, "NOPRINT") ||  STRCOUNT(ARGS:1, "NOMES")
+	RETURN MAXARRAY(IS_SET_EFFECT)
+;効果発動
+FOR LCOUNT, POSMIN, POSMAX
+	SIF !IS_キャラ指定
+		L_T = POS(LCOUNT)
+	SIF !IS_TARGET_ABLE(L_T)
+		CONTINUE
+	IF IS_SET_EFFECT:LCOUNT
+		IF ARGS == "短縮"
+			TSTR:스킬메시지추가효과 += " & 능력상승해제"
+		ELSE
+			CALL PRINT_HIT_MESSAGE, L_T, "강화된 능력이 돌아왔다！", "L"
+		ENDIF
+	ELSE
+		SIF ARGS != "短縮"
+			CALL PRINT_HIT_MESSAGE, L_T, "효과없음", "L"
+	ENDIF
+NEXT
+SIF !STRCOUNT(ARGS:1, "NOWAIT") && ARGS != "短縮"
+	WAIT
+RETURN MAXARRAY(IS_SET_EFFECT)
+
+;---------------------------------------------------
+;HPバリアのセット関数
+;ダメージを数値分だけ肩代わりするバリア
+;バリアで防ぎきった場合はBLOCK扱い。そのため追加効果・1MORE・COOPも自動的に弾く。
+;
+;ARG	セットする対象のキャラ番号
+;ARG:1	セットするバリアの強度
+;ARGS:0 バリアの名称
+;ARGS:1 セリフオプション(非表示)
+;---------------------------------------------------
+@SKILL_SET_HPバリア, ARG, ARG:1, ARGS:0, ARGS:1
+;異常なキャラNo.の指定
+SIF CHARANUM_CHECK(ARG) < 1
+	RETURN 0
+CFLAG:ARG:HP배리어 = MAX(CFLAG:ARG:HP배리어, ARG:1)
+CSTR:ARG:HP배리어명 = %ARGS:0%
+SIF ARGS:1 == "非表示"
+    RETURN 0
+CALL PRINT_HIT_MESSAGE, ARG, @"%조사처리(CSTR:ARG:HP배리어명,"을")% 세트했다!"
+
+;---------------------------------------------------
+;HPバリアのセット関数
+;ダメージを数値分だけ肩代わりするバリア
+;バリアで防ぎきった場合はBLOCK扱い。そのため追加効果・1MORE・COOPも自動的に弾く。
+;
+;ARG	セットするキャラ番号
+;ARG:1	セットするバリアの強度
+;ARGS:0 バリアの名称
+;ARGS:1 セリフオプション(非表示)
+;---------------------------------------------------
+@SKILL_SET_全体HPバリア, ARG, ARG:1, ARGS:0, ARGS:1
+;異常なキャラNo.の指定
+SIF CHARANUM_CHECK(ARG) < 1
+	RETURN 0
+IF CFLAG:ARG:PT플래그
+	TFLAG:아군전체HP배리어 = ARG:1
+	TSTR:아군전체HP배리어명 '= ARGS
+ELSE
+	TFLAG:적전체HP배리어 = ARG:1
+	TSTR:적전체HP배리어명 '= ARGS
+ENDIF
+SIF ARGS:1 == "非表示"
+    RETURN 0
+PRINTFORMW %조사처리(ARGS:0,"를")% 세트했다!

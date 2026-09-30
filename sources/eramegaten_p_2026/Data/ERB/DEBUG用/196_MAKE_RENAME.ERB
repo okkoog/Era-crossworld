@@ -1,0 +1,435 @@
+﻿
+@SHOPCOMABLE_196
+[IF_DEBUG]
+	RESULTS = Rename작성
+	RETURN 1
+[ENDIF]
+IF FLAG:DEBUG
+	RESULTS = Rename작성
+	RETURN 1
+ENDIF
+RETURN -1
+
+@SHOP_COM_196, ARG
+#DIM DYNAMIC DO_MAKE_SKILL_NUM_F
+#DIM DYNAMIC L_BLANKNUM
+#DIM DYNAMIC L_MODE
+#DIM DYNAMIC LCOUNT
+
+;スキル関数をチェックする
+FOR LCOUNT, 0, SKILLNUM
+	TRYCCALLFORM SKILL_NAME_{LCOUNT}, -1
+		SIF SKILL_NUM_F(RESULTS) == LCOUNT
+			CONTINUE
+		PRINTFORML @SKILL_NUM_Fが最新の状態となっていません。
+		PRINTFORMW 最新の状態のコードを出力するので更新してください！
+		DO_MAKE_SKILL_NUM_F = 1
+		BREAK
+	CATCH
+	ENDCATCH
+NEXT
+
+IF DO_MAKE_SKILL_NUM_F
+	CLEARLINE 6000
+	PRINTFORML ;==================================================================
+	PRINTFORML ;スキル名称からスキル番号を取得。Rename作成の時に出力される内容から作る
+	PRINTFORML ;==================================================================
+	PRINTFORML @SKILL_NUM_F, ARGS
+	PRINTFORML #FUNCTION
+	PRINTFORML SELECTCASE ARGS
+	FOR LCOUNT, 0, SKILLNUM
+		TRYCCALLFORM SKILL_NAME_{LCOUNT}, -1
+			PRINTFORML タブ変換CASE \"%RESULTS%\"
+			PRINTFORML タブ変換タブ変換RETURNF {LCOUNT}
+		CATCH
+		ENDCATCH
+	NEXT
+	PRINTFORML タブ変換CASEELSE
+	PRINTFORML タブ変換タブ変換RETURNF -1
+	PRINTFORML ENDSELECT
+	PRINTFORML 
+	PRINTFORML ;==================================================================
+	PRINTFORML ;スキル番号からスキル名称を取得。Rename作成の時に出力される内容から作る
+	PRINTFORML ;==================================================================
+	PRINTFORML @SKILL_NAME_F, ARG
+	PRINTFORML #FUNCTIONS
+	PRINTFORML SELECTCASE ARG
+	FOR LCOUNT, 0, SKILLNUM
+		TRYCCALLFORM SKILL_NAME_{LCOUNT}, -1
+			PRINTFORML タブ変換CASE {LCOUNT}
+			PRINTFORML タブ変換タブ変換RETURNF \"%RESULTS%\"
+		CATCH
+		ENDCATCH
+	NEXT
+	PRINTFORML タブ変換CASEELSE
+	PRINTFORML タブ変換タブ変換RETURNF "スキル未定義"
+	PRINTFORML ENDSELECT
+	PRINTFORML 
+	WAIT
+ENDIF
+
+PRINTL [0]最後まで作る [1]ダンジョンまで作る [2]スキルのみ [3]スキル空き番号数 
+CALL INPUTINT,0,1,2,3
+L_MODE = RESULT
+CLEARLINE 6000
+IF L_MODE == 3
+	CALL GET_BLANK_TYPE
+	WAIT
+	RETURN 0
+ENDIF
+SIF L_MODE == 2
+	GOTO SKILL_START
+PRINTFORML ;-------------------------------
+VARI TEMP_GAMEBASE_VERSION = GAMEBASE_VERSION
+TEMP_GAMEBASE_VERSION = TEMP_GAMEBASE_VERSION  / 1000 / 1000
+PRINTFORML ;%GAMEBASE_TITLE% %TOSTR(TEMP_GAMEBASE_VERSION / 100 / 100, "0")%.%TOSTR(TEMP_GAMEBASE_VERSION / 100 % 100, "0")%.%TOSTR(TEMP_GAMEBASE_VERSION % 100 % 100, "0")%
+GETTIME
+PRINTFORML ;%RESULTS%
+PRINTFORML ;-------------------------------
+PRINTFORML ;-------------------------------
+PRINTFORML ;_Rename_csvは資料フォルダ内にある
+PRINTFORML ;MAKE_RENAME.ERBを利用して作成されています
+PRINTFORML ;何か追加する際はコピペするのではなく、
+PRINTFORML ;MAKE_RENAME.ERBを利用して出力してください
+PRINTFORML ;また、新しい分類を作る場合はERBの記述も変更してください
+PRINTFORML ;-------------------------------
+PRINTFORML ;-------------------------------
+PRINTFORML ;店舗経営系
+PRINTFORML ;-------------------------------
+
+PRINTFORML DE:0 , 店舗:종류
+PRINTFORML DE:1 , 店舗:교복
+PRINTFORML DE:2 , 店舗:상품
+PRINTFORML DE:3 , 店舗:인기
+PRINTFORML DE:4 , 店舗:선전효과
+PRINTFORML DE:5 , 店舗:요리완성도
+PRINTFORML DE:6 , 店舗:요리인기
+PRINTFORML DE:7 , 店舗:규모
+PRINTFORML DE:8 , 店舗:접객고용
+PRINTFORML DE:10 , 店舗:키친고용
+PRINTFORML DE:12 , 店舗:성적서비스
+PRINTFORML DE:13 , 店舗:만지기가격
+PRINTFORML DE:14 , 店舗:애무가격
+PRINTFORML DE:15 , 店舗:펠라가격
+PRINTFORML DE:16 , 店舗:본방가격
+PRINTFORML DE:17 , 店舗:애널가격
+PRINTFORML DE:18 , 店舗:질내사정가격
+PRINTFORML DE:19 , 店舗:처녀가격
+PRINTFORML DE:22 , 店舗:요리가격
+PRINTFORML DE:23 , 店舗:술가격
+PRINTFORML DE:24 , 店舗:음료가격
+PRINTFORML DE:25 , 店舗:유지비
+PRINTFORML DE:26 , 店舗:명칭
+PRINTFORML DE:27 , 店舗:요리기대도
+PRINTFORML DE:28 , 店舗:술기대도
+PRINTFORML DE:29 , 店舗:음료기대도
+PRINTFORML DE:30 , 店舗:성적기대도
+PRINTFORML DE:31 , 店舗:교복스커트
+PRINTFORML DE:32 , 店舗:교복속옷
+PRINTFORML DE:33 , 店舗:교복가슴
+PRINTFORML DE:34 , 店舗:교복음구
+PRINTFORML DE:35 , 店舗:난교플래그
+PRINTFORML DE:47 , 店舗:선전플래그
+PRINTFORML ;-------------------------------
+PRINTFORML ;キャラクター番号
+PRINTFORML ;-------------------------------
+L_BLANKNUM = 0
+FOR LOCAL, 0, CSVCHARANUM
+	IF EXISTCSV(LOCAL, 0)
+		LOCALS = %CSVNICKNAME(LOCAL)%
+		SIF LOCALS == ""
+			THROW [%CSVCALLNAME(LOCAL)%({LOCAL})]のNICKNAMEが定義されていません。
+		SIF GETCSVNOBYNICKNAME(LOCALS) != LOCAL
+			THROW 同一のNICKNAME[%LOCALS%]が複数回定義されています。
+		IF L_BLANKNUM > 0
+			IF L_BLANKNUM == 1
+				PRINTFORML ;{LOCAL-1}, 空き番号
+			ELSE
+				PRINTFORML ;{LOCAL - L_BLANKNUM}~{LOCAL-1}, 空き番号
+			ENDIF
+			L_BLANKNUM = 0
+		ENDIF
+	ELSE
+		L_BLANKNUM++
+		CONTINUE
+	ENDIF
+	IF LOCAL % 100 == 1 && GET_RACE(LOCAL / 100) != "" && LOCAL < 4600
+		IF LOCAL == 4501
+			PRINTFORML ;-------------------------------
+			PRINTFORML ;인간
+			PRINTFORML ;-------------------------------
+		ELSE
+			PRINTFORML ;-------------------------------
+			PRINTFORML ;%GET_RACE(LOCAL/100+1)%
+			PRINTFORML ;-------------------------------
+		ENDIF
+	ENDIF
+	PRINTFORML {LOCAL} , キャラ:%LOCALS%
+NEXT
+PRINTFORML ;-------------------------------
+PRINTFORML ;ダンジョン番号
+PRINTFORML ;-------------------------------
+FOR LOCAL, 0, DUNGEONNUM
+	SIF GET_DUNGEON_NAME(LOCAL, 1) == "名称未定義"
+		CONTINUE
+	PRINTFORML {LOCAL} , ダンジョン:%GET_DUNGEON_NAME(LOCAL, 1)%
+NEXT
+IF L_MODE == 1
+	WAIT
+	RETURN 0
+ENDIF
+$SKILL_START
+;カスタムで変わるので固定する
+FLAG:커스텀게임화면 = 0
+;FLAG:행동순 == ARGでスキル名の分岐をやっている場合があるので
+FLAG:행동순1 = -999
+PRINTFORML ;-------------------------------
+PRINTFORML ;スキル番号
+PRINTFORML ;-------------------------------
+PRINTFORML 0 , 스킬:ＳＷＯＲＤ
+PRINTFORML 0 , 스킬:ＡＴＴＡＣＫ
+L_BLANKNUM = 0
+FOR LOCAL, 1, SKILLNUM
+	;オリジナルスキル除外
+	SIF LOCAL >= 3900 && LOCAL <= 3903
+		CONTINUE
+	CALL GET_SKILL_PROP, "SKILL_NAME", LOCAL, -1
+	IF RESULTS != ""
+		IF L_BLANKNUM > 0
+			IF L_BLANKNUM == 1
+				PRINTFORML ;{LOCAL-1} , 空き番号
+			ELSE
+				PRINTFORML ;{LOCAL-L_BLANKNUM}～{LOCAL-1} , 空き番号
+			ENDIF
+			L_BLANKNUM = 0
+		ENDIF
+		SELECTCASE LOCAL
+			CASE 2305
+				RESULTS = ＤＵＭＭＹ
+		ENDSELECT
+	ELSE
+		RESULTS = 
+		L_BLANKNUM++
+	ENDIF
+	LOCALS = 
+	LOCAL:1 = 0
+	SELECTCASE LOCAL
+		CASE IS < 2100
+			SIF LOCAL % 100 == 1
+				LOCALS = %GET_SUCCESSION(LOCAL/100)%
+		CASE 2101
+			LOCALS = ＧＵＮ
+		CASE 2301
+			LOCALS = 基本行動
+		CASE 2401
+			LOCALS = 자동효과
+		CASE 2501
+			LOCALS = 敵専用
+		CASE 2601
+			LOCALS = 幻想郷
+		CASE 2701
+			LOCALS = 専用スキル
+		CASE 2801
+			LOCALS = 幻想郷2
+		CASE 2951
+			LOCALS = 악마사냥꾼
+		CASE 2959
+			LOCALS = 型月
+		CASE 2988
+			LOCALS = 魔法少女
+		CASE 3001
+			LOCALS = 使用アイテム
+		CASE 3501
+			LOCALS = 外部作品スキル
+		CASE 3901
+			LOCALS = 전용기
+		CASE 3920
+			LOCALS = 自動効果2
+		CASE 4000 TO 4839
+			SIF LOCAL == 4000
+				LOCALS = リンケージ
+			IF (LOCAL+1) % 40 == 0
+				LOCALS = %GET_SUCCESSION((LOCAL-4000 + 1)/40)%
+				LOCAL:1 = 1
+			ENDIF
+		CASE 4840
+			LOCALS = ＧＵＮ
+			LOCAL:1 = 1
+		CASE 4940
+			LOCALS = 外部作品
+			LOCAL:1 = 1
+	ENDSELECT
+	IF LOCALS != ""
+		SIF !LOCAL:1
+			PRINTFORML ;-------------------------------
+		PRINTFORML ;%LOCALS%
+		SIF !LOCAL:1
+			PRINTFORML ;-------------------------------
+	ENDIF
+	SIF RESULTS != ""
+		PRINTFORML {LOCAL} , 스킬:%RESULTS%
+NEXT
+IF L_MODE == 2
+	WAIT
+	RETURN 0
+ENDIF
+
+PRINTFORML ;-------------------------------
+PRINTFORML ;アイテム番号
+PRINTFORML ;-------------------------------
+FOR LOCAL, 0 , 20000
+	SIF STRLENS(ITEMNAME:LOCAL) == 0
+		CONTINUE
+	PRINTFORML {LOCAL} , アイテム:%ITEMNAME:LOCAL%
+NEXT
+
+PRINTFORML ;-------------------------------
+PRINTFORML ;衣装番号
+PRINTFORML ;-------------------------------
+FOR LOCAL, 6001 , 7200
+	SIF STRLENS(ITEMNAME:LOCAL) == 0
+		CONTINUE
+	PRINTFORML {LOCAL-6000} , 衣装:%ITEMNAME:LOCAL%
+NEXT
+
+PRINTFORML ;-------------------------------
+PRINTFORML ;イベント番号
+PRINTFORML ;-------------------------------
+FOR LCOUNT, 0, EVENTNUM
+	SIF GET_EVENT_NAME(LCOUNT) == "名称未定義"
+		CONTINUE
+	PRINTFORML {LCOUNT} , 이벤트:%GET_EVENT_NAME(LCOUNT)%
+NEXT
+PRINTFORML ;-------------------------------
+PRINTFORML ;依頼番号
+PRINTFORML ;-------------------------------
+FOR LCOUNT, 0, REQUESTNUM
+	SIF GET_REQUEST_NAME(LCOUNT) == "名称未定義"
+		CONTINUE
+	PRINTFORML {LCOUNT} , 依頼:%GET_REQUEST_NAME(LCOUNT)%
+NEXT
+PRINTFORML ;-------------------------------
+PRINTFORML ;闘技場番号
+PRINTFORML ;-------------------------------
+FOR LCOUNT, 0, COLOSSEUMNUM
+	SIF GET_COLOSSEUM_NAME(LCOUNT) == "名称未定義"
+		CONTINUE
+	PRINTFORML {LCOUNT} , 闘技場:%GET_COLOSSEUM_NAME(LCOUNT)%
+NEXT
+
+PRINTFORML ;-------------------------------
+PRINTFORML ショップ番号
+PRINTFORML ;-------------------------------
+PRINTFORML 100 , ショップ:턴엔드
+PRINTFORML 101 , ショップ:탐색
+PRINTFORML 102 , ショップ:콜로세움참가
+PRINTFORML 103 , ショップ:휴식
+PRINTFORML 104 , ショップ:의뢰청부
+PRINTFORML 105 , ショップ:이벤트
+PRINTFORML 106 , ショップ:개별이벤트
+PRINTFORML 107 , ショップ:납금
+PRINTFORML 108 , ショップ:사교의관
+PRINTFORML 109 , ショップ:벨벳룸
+PRINTFORML 110 , ショップ:셋업
+PRINTFORML 111 , ショップ:동료마강화
+PRINTFORML 112 , ショップ:소지품확인
+PRINTFORML 113 , ショップ:정크숍
+PRINTFORML 114 , ショップ:마카교환
+PRINTFORML 115 , ショップ:라그의가게
+PRINTFORML 116 , ショップ:아이템합성
+PRINTFORML 120 , ショップ:상점
+PRINTFORML 121 , ショップ:COMPSMITH
+PRINTFORML 122 , ショップ:요요조
+PRINTFORML 123 , ショップ:로사・칸디타지점
+PRINTFORML 201 , ショップ:조교한다
+PRINTFORML 202 , ショップ:파트너변경
+PRINTFORML 203 , ショップ:조수변경
+PRINTFORML 204 , ショップ:조교아이템구입
+PRINTFORML 205 , ショップ:능력의상승
+PRINTFORML 206 , ショップ:노역/매각/경영
+PRINTFORML 207 , ショップ:계약
+PRINTFORML 208 , ショップ:의상방
+PRINTFORML 209 , ショップ:육아실에간다
+PRINTFORML 210 , ショップ:명칭/호칭변경
+PRINTFORML 212 , ショップ:요바이필터
+PRINTFORML 213 , ショップ:집회시킨다
+PRINTFORML 214 , ショップ:교류한다
+PRINTFORML 301 , ショップ:능력확인
+PRINTFORML 302 , ショップ:캐릭터필터
+PRINTFORML 303 , ショップ:캐릭터정렬
+PRINTFORML 402 , ショップ:가챠！
+PRINTFORML 403 , ショップ:촉수연구
+PRINTFORML 185 , ショップ:예비변경
+PRINTFORML 200 , ショップ:세이브
+PRINTFORML 300 , ショップ:로드
+PRINTFORML 400 , ショップ:옵션
+PRINTFORML 777 , ショップ:환생리스타트
+PRINTFORML 888 , ショップ:일기장ex
+PRINTFORML 998 , ショップ:악마조교전
+WAIT
+
+@GET_BLANK_TYPE
+#DIM L_BLANKNUM
+LOCALS = 검격
+LOCALS:1 = 검격
+LOCAL:1 = 1
+PRINTFORML -------------------------------
+PRINTFORML 空き番号数
+PRINTFORML -------------------------------
+FOR LOCAL, 0, 8000
+	CALL GET_SKILL_PROP, "SKILL_NAME", LOCAL, -1
+	SIF RESULTS == ""
+		L_BLANKNUM++
+	SELECTCASE LOCAL
+		CASE IS < 2100
+			SIF LOCAL % 100 == 1
+				LOCALS = %GET_SUCCESSION(LOCAL/100)%
+		CASE 2101
+			LOCALS = ＧＵＮ
+		CASE 2301
+			LOCALS = 基本行動
+		CASE 2401
+			LOCALS = 자동효과
+		CASE 2501
+			LOCALS = 敵専用
+		CASE 2601
+			LOCALS = 幻想郷
+		CASE 2701
+			LOCALS = 専用スキル
+		CASE 2801
+			LOCALS = 幻想郷2
+		CASE 2951
+			LOCALS = 악마사냥꾼
+		CASE 2959
+			LOCALS = 型月
+		CASE 2988
+			LOCALS = 魔法少女
+		CASE 3001
+			LOCALS = アイテム
+		CASE 3501
+			LOCALS = 外部作品
+		CASE 3901
+			LOCALS = 전용기
+		CASE 3920
+			LOCALS = 自動2
+		CASE 4000 TO 4839
+			IF LOCAL == 4000
+				PRINTFORML -------------------------------
+				PRINTFORML リンケージ
+				PRINTFORML -------------------------------
+			ENDIF
+			IF (LOCAL+1) % 40 == 1
+				LOCALS = %GET_SUCCESSION((LOCAL-4000 + 1)/40)%
+			ENDIF
+		CASE 4840
+			LOCALS = ＧＵＮ
+		CASE 4940
+			LOCALS = 外部作品
+	ENDSELECT
+	IF LOCALS != LOCALS:1
+		PRINTFORML [{LOCAL:1, 4} ~ {LOCAL-1, 4}] %LOCALS:1, 8,LEFT%:{L_BLANKNUM}
+		LOCAL:1 = LOCAL
+		LOCALS:1 = %LOCALS%
+		L_BLANKNUM = 0
+	ENDIF
+NEXT

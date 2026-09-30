@@ -1,0 +1,173 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:再現
+;	Facility	:ゼーレ専用スキル
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2023/9/17		軽木        			新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_再現,ARG
+RESULTS = 再現
+
+;　명중
+@SKILL_HITRATE_再現, ARG
+RETURN 0
+
+;　威力
+@SKILL_POWER_再現, ARG
+RETURN 0
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_再現, ARG
+RETURN 0
+
+;　吸収率
+@SKILL_HP_ABSORBER_再現, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_再現,ARG
+RETURN 0
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_再現,ARG
+RETURN 0
+;一体辺りの最大ＨＩＴ数
+;※ランダム攻撃系に使う
+@SKILL_MAXATK_PER_再現,ARG
+RETURN 0
+
+;一体辺りの最低ＨＩＴ数
+;※ランダム攻撃系に使う
+@SKILL_MINATK_PER_再現,ARG
+RETURN 0
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_再現, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+
+;　コストの量
+@SKILL_COST_再現,ARG
+RETURN 0
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_再現
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;スキルを所持ししていることによるパッシブ効果
+@SKILL_PASSIVE_ADD_PENETRATION_RANK_再現, L_P, L_T, SKILL_NUM, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM L_P
+#DIM L_T
+#DIM SKILL_NUM
+#DIM L_ダメージタイプ
+#DIM L_攻撃タイプ
+#DIM L_相性
+#DIM GIVE_EFFECT_CHARA
+RETURN 0
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_再現,ARG
+CALL GET_SKILL_PROP, "SKILL_TARGET", CFLAG:ARG:입력행동, ARG
+RETURN 0
+
+;　사거리
+@SKILL_RANGE_再現,ARG
+CALL GET_SKILL_PROP, "SKILL_RANGE", CFLAG:ARG:입력행동, ARG
+RETURN 0
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_再現,ARG
+RETURN 0
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_再現,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+;계승타입
+;@SKILL_SUCCESSION_TYPE_再現
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_再現, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_再現
+RETURN 0
+
+;没
+;@SKILL_RANK_再現, ARG = -1
+
+
+;拡散スキルの拡散距離定義関数(このような感じで数値を増やすことで増えていく)
+;1 　　　　　2 　　　　
+;□□◆□□　□◆◆◆□
+;□◆★◆□　◆◆★◆◆
+;@SKILL_SPREAD_再現,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;
+;詳しい仕様については資料フォルダの解説を参照してください
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_再現,ARG,ARG:1
+;直前の行動が再現だと発動しない
+SIF PU_SKILLNUM_GET(ARG,"再現") == CFLAG:ARG:입력행동
+	RETURN 0
+;自分の行動でなければ発動しない
+SIF ARG != ARG:1
+	RETURN 0
+;殺していないと発動しない
+SIF !GET_CREC_ACT_SUM(ARG, "적", "KILL")
+	RETURN 0
+RETURN 1,CPOS(ARG)
+
+;====================================================
+;カウンター発動条件
+;ARG 		このスキルの持ち主
+;ARG;1 		攻撃してきている相手
+;RESULT 	カウンターが成立したかどうか
+;RESULT:1	カウンターする相手のターゲット番号(ポジションなのでCPOSで返すか、あるいは範囲なら19などで返す)
+;RESULT;1は指定なしなら敵の生存判定・存在判定を行わずにACTIONを実行する
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_再現,ARG,ARG:1
+;RETURN RESULT
+
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+;@SKILL_DAMAGE_EFFECT_再現,ARG,ARG:1,ARG:2
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_再現,ARG,ARG:1
+;RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_再現,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CFLAG:ARG:気合フラグ = 1
+PRINTFORMW %CALLNAME:ARG%は次の物理攻撃力の威力が大幅にあがった！
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　説明文の表示
+@SKILL_EXPLAIN_再現,ARG
+PRINTL 敵を倒した場合に発動する。
+PRINTL 次に行う物理攻撃の威力を１５０％増加させる。
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_再現,ARG
+RETURN 0

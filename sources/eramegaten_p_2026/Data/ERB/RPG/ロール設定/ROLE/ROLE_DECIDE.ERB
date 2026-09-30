@@ -1,0 +1,128 @@
+﻿;--------------------------------------------
+;ロールの決定関数
+;ARG = ロールを設定するキャラの登録番号
+;
+;2023/02時点では人間のみデモノイドになりうる
+;スタァライトのようにイベント中に指定したロールになれないと進行不能になる作りがありうるので
+;原則的には事前にイベントが発生しないような作りにするべきだが、対応漏れを考慮してとりあえず意図しないデモノイド担っている場合、
+;その措置を無視して処理する形にしておく(= 素質による判定のほうの優先度を高くしておく)
+;--------------------------------------------
+@ROLE_DECIDE, ARG
+;キャラ固有
+TRYCCALLFORM ROLE_DECIDE_{NO:ARG}, ARG
+	SIF RESULT
+		RETURN 0
+CATCH
+ENDCATCH
+;人間のボスを悪魔として扱う場合
+IF CFLAG:ARG:강제악마화
+	CSTR:ARG:롤 = 悪魔
+	RETURN 1
+ENDIF
+SELECTCASE 1
+	;-----------------------------------------------
+	;素質参照タイプ
+	;-----------------------------------------------
+	CASE TALENT:ARG:비전투원
+		CSTR:ARG:롤 = 非戦闘員
+	CASE TALENT:ARG:키보토스학생
+		CSTR:ARG:롤 = キヴォトス生徒
+	CASE TALENT:ARG:할로우에이전트 > 0
+		CSTR:ARG:롤 = ホロウエージェント
+	CASE TALENT:ARG:무대소녀
+		IF TALENT:ARG:톱스타
+			IF TALENT:ARG:달인
+				CSTR:ARG:롤 = 舞台少女_トップスタァ_EX
+			ELSE
+				CSTR:ARG:롤 = 舞台少女_トップスタァ
+			ENDIF
+		ELSE
+			IF TALENT:ARG:달인
+				CSTR:ARG:롤 = 舞台少女_EX
+			ELSE
+				CSTR:ARG:롤 = 舞台少女
+			ENDIF
+		ENDIF
+	CASE TALENT:ARG:EX소환 > 0
+		CSTR:ARG:롤 = エクストラモンスター
+	CASE TALENT:ARG:서머너 == 5
+		IF TALENT:ARG:달인
+			CSTR:ARG:롤 = 達人
+		ELSE
+			CSTR:ARG:롤 = デビルサマナー
+		ENDIF
+	CASE TALENT:ARG:이능자 == 5
+		IF TALENT:ARG:전심
+			CSTR:ARG:롤 = 異能者_SP
+		ELSE
+			CSTR:ARG:롤 = 異能者
+		ENDIF
+	CASE TALENT:ARG:페르소나구사자 > 0
+		CSTR:ARG:롤 = ペルソナ使い
+	CASE TALENT:ARG:데빌시프터
+		CSTR:ARG:롤 = デビルシフター
+	CASE TALENT:ARG:아웃사이더
+		CSTR:ARG:롤 = アウトサイダー
+	CASE TALENT:ARG:식노
+		CSTR:ARG:롤 = 喰奴
+	CASE TALENT:ARG:인수라
+		CSTR:ARG:롤 = 人修羅
+	CASE TALENT:ARG:Aion식소환술
+		CSTR:ARG:롤 = Aion式サマナー
+	CASE TALENT:ARG:데모노이드
+		CSTR:ARG:롤 = デモノイド
+	CASE TALENT:ARG:합일신
+		CSTR:ARG:롤 = 合一神
+	CASEELSE
+		$RACE_DECIDE
+		;-----------------------------------------------
+		;種族参照タイプ
+		;-----------------------------------------------
+		SELECTCASE GET_RACE(ABL:ARG:종족)
+			CASE "인간"
+				IF TALENT:ARG:달인
+					CSTR:ARG:롤 = 達人
+				ELSE
+					CSTR:ARG:롤 = 候補者
+				ENDIF
+			CASE "반마인"
+				IF TALENT:ARG:달인
+					CSTR:ARG:롤 = 半魔人_EX
+				ELSEIF TALENT:ARG:전심
+					CSTR:ARG:롤 = 半魔人_SP
+				ELSEIF TALENT:ARG:악마사냥꾼
+					CSTR:ARG:롤 = 悪魔狩人
+				ELSE
+					CSTR:ARG:롤 = 半魔人
+				ENDIF
+			CASE "조마"
+				CSTR:ARG:롤 = 造魔
+			CASE "악마인"
+				IF TALENT:ARG:달인
+					CSTR:ARG:롤 = 悪魔人_EX
+				ELSEIF TALENT:ARG:전심
+					CSTR:ARG:롤 = 悪魔人_SP
+				ELSE
+					CSTR:ARG:롤 = 悪魔人
+				ENDIF
+			CASE "머신"
+				IF TALENT:ARG:달인
+					CSTR:ARG:롤 = 悪魔人_EX
+				ELSE
+					CSTR:ARG:롤 = マシン
+				ENDIF
+			;-----------------------------------------------
+			;悪魔
+			;-----------------------------------------------
+			CASEELSE
+				IF GET_MASTER_MAJORING(CFLAG:ARG:당신의전공분야) == "타케시"
+					CSTR:ARG:롤 = たけし
+				ELSEIF TALENT:ARG:달인
+					CSTR:ARG:롤 = 悪魔_EX
+				ELSEIF TALENT:ARG:전심
+					CSTR:ARG:롤 = 悪魔_SP
+				ELSE
+					CSTR:ARG:롤 = 悪魔
+				ENDIF
+		ENDSELECT
+ENDSELECT

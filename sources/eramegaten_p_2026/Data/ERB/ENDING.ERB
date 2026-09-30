@@ -1,0 +1,1988 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:ENDING.ERB
+;	Facility	:ゲームの終了条件達成等の処理群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/01/11		Ｎ鳥					日数制限を撤廃し、ＲＰＧ寄りにする
+;	003		2011/01/20								夜の王ENDと堕落ENDを追加
+;	004		2012/09/12		豚の娘の豚				キャラ個別ノーマルENDを追加
+;	005		2013/01/07		TR						一部EDに条件追加
+;	006		2013/11/24		ひみつ					リスト表示数設定
+;	007		2017/06/23		kuni					キャラ表示でINPUT_CHARA_LISTを使用するように変更
+;	008		2017/11/27		JK好き					キャラ別ノーマルエンディング後にTARGETが狂う問題修正
+;	009		2018/06/04		JK好き					聖槍騎士団ハーレムエンド条件をFINDCHARA_BではなくFINDCHARA_IDで検索するように変更ついでにIS_LOVERを使うように変更
+;	010		2020/04/30		NEO						ロリハーレムエンド追加。ロリキャラ判定はテキトーなので誰か加筆してほしい。「○○がいないぞ！」とかね。
+;	011		2020/09/06		白黒わんこ				武断派エンドの記述に違和感感じた為勝手ながら変更
+;	012		2020/09/22		JK好き					各種エンディング時の連れ添うパートナー選択時にあなたが選択肢に入ってしまう問題を修正
+;	013		2020/10/29		JK好き					古墳迷宮クリア後に何度も幹部ＥＮＤ条件を満たしてしまう問題を修正
+;	014		2021/02/17		NEO						古墳迷宮クリア後、デビルサマナーENDを突っ込む。あとロリハーレム修正
+;	015		2021/02/25		NEO						デビルサマナーエンドを（このファイルからは）削除。クリア報酬キャラを調教する暇がなかったため、イベントで任意に迎えられるように。
+;	016		2021/09/25		JK好き					@ロンギヌス_END_CHECKを新設し、聖槍騎士団ハーレムエンド条件を整理　ロンギヌスが誰も居なくても聖槍騎士団ハーレムエンドを達成出来てしまう不具合を修正
+;	017		2021/10/03		JK好き					@ロンギヌス_END_CHECK再修正
+;	018		2022/04/21		???						エンド番号をずらした
+;	019		2022/07/20		NEO						↑……のを書き込んだのと、ずらされきってなかった部分を色々修正
+;	020		2023/07/05		NEO＆テツ				ロリハーレムエンドについて条件修正、本文追記
+;	021		2023/09/15		P(bazzile)				幹部ENDの条件の変更を差し戻した修正がバージョンアップで差し戻されていた不具合を修正
+;	022		2024/06/01		ミミスキー二等兵		口上個別エンドの呼び出しが正しく行われていなかった不具合を修正　TRYCALLFORM ENDING_CHECK_%口上関数末尾文字(TARGET)%の%～%内に"_(구상번호)_1"の文字列が格納され、アンダーバーが重複して正しくCALLFORMできていなかった。
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2023/09/15		P(bazzile)				幹部ENDの条件の変更を差し戻した修正がバージョンアップで差し戻されていた不具合を修正
+;	002		2025/12/09		kamedakeisuke			ロンギヌス（噂）のCSV独立に対応した
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+
+@CHECK_ENDING
+#DIM LENDING_CONDITION
+#DIM LENDING_CONDITION_1
+#DIM LENDING_CONDITION_2
+#DIM LCOUNT
+LOCAL:10 = TARGET
+;ファントムED
+;---- EDIT 021 MOD START -------------------------
+;---- EDIT 005 MOD START --------------------------
+;イベントフラグ:1:1 = マヨーネ様の警告を受けたかのフラグ( -1イベント消去 0未発生 1～2警告イベント発生 )
+IF (FLAG:소속조직 == 0 && FLAG:조직공헌도 >= 3500000 && GETBIT(FLAG:취소된ED,0) == 0 && イベントフラグ:1:1 < 1) || (ダンジョンフラグ:85:0 == 1 && GETBIT(FLAG:취소된ED,0) == 0 )
+;---- EDIT 005 MOD END   --------------------------
+;---- EDIT 021 MOD END ---------------------------
+	SETBIT FLAG:취소된ED,0
+	PRINTFORMW ＞메일이 도착해 있다
+	PRINTFORMW ＞팬텀 소사이어티의 간부로 추천받은 것 같다……
+	PRINTL ＞어떻게 하겠습니까?
+	PRINTL
+	CALL INPUT_YN, "추천을 받는다(팬텀 간부 END)", "사퇴한다"
+	IF RESULT == 0
+		;ＮＴＲ上司オンで分岐
+		IF GETBIT(FLAG:ＮＴＲ기능 , 63)
+			PRINTFORMW ･････････
+			PRINTFORMW ･･････
+			PRINTFORMW ･･･
+			PRINTFORMW 조직 상층부로부터 간부 취임식을 치른다는 말을 들은 %조사처리(CALLNAME:MASTER,"는")% 상층부로부터 취임식 회장으로 통지받은 장소로 향했다
+			PRINTFORMW 목적지에 도착하자 조직의 대간부인 남자가 %조사처리(CALLNAME:MASTER,"를")% 마중 나와 주었다
+			PRINTFORMW 「여어, 잘 왔네. 우선은 간부로의 승진을 축하한다고 해두지」
+			PRINTFORMW 「곧 안쪽 홀에서 자네의 취임식이 거행될 예정이지만, 그 전에 자네에게 일 하나를 부탁하고 싶네」
+			PRINTFORMW 「별거 아니야, 간단한 일이지. 조직의 배신자를 처치하는 간단한 일 말일세…」
+			PRINTFORMW 남자는 그렇게 말하더니 %조사처리(CALLNAME:MASTER,"를")% 일터로 안내하기 시작했다
+			PRINTFORMW 이야기를 자세히 들어보니, 아무래도 조직 간부 중 부하가 조직에 납부한 자금을 착복한 자가 있었던 모양이다
+			PRINTFORMW 게다가, 그 돈의 일부는 적대 조직으로까지 흘러 들어갔고, 사태를 무겁게 본 상층부는 그 간부를 처분하기로 결정했다는 것이다
+			PRINTFORMW 남자의 이야기를 듣는 동안, 어느 방 앞에 도착했다
+			PRINTFORMW 보기에도 튼튼해 보이는 문은 굳게 잠겨 있다… 아무래도 여기가 일터인 모양이다
+			PRINTFORMW 「자, 이 안이다… 어서 끝내고 오게나, 나는 먼저 회장 쪽으로 가 있겠네」
+			PRINTFORMW 「아아, 한 가지 말해둘 게 있군… 이 방은 특별제라서 말이야, 안의 소리나 진동이 밖으로 절대 전해지지 않도록 되어 있지… 마음껏 하게나」
+			PRINTFORMW 남자는 그 말만 남기고 등을 돌려 회장 쪽으로 걸어갔다
+			PRINTFORMW %조사처리(CALLNAME:MASTER,"가")% 방 안으로 들어가자, 안쪽에서 억눌린 신음 소리가 들려왔다
+			PRINTFORMW 소리가 난 쪽을 돌아보니 거기에는 %조사처리(CALLNAME:MASTER,"의")% 상사였던 남자가 재갈이 물린 채 벽에 묶여 있었다
+			PRINTFORMW 건네받은 권총과 묶여 있는 남자의 모습에서 이 일의 참된 의미를 이해한 %조사처리(CALLNAME:MASTER,"는")% 총구를 상사였던 남자에게 겨누었다
+			PRINTFORMW ……간부의 자리는 스스로 만들라는 뜻일 것이다……
+			PRINTFORMW 
+			PRINTFORMW 우선 시작으로 남자의 양다리를 쏴 꿰뚫었다
+			PRINTFORMW 남자는 눈을 부릅뜨고 재갈에 막힌 입으로 소리 없는 비명을 지르고 있다
+			PRINTFORMW 다음으로 양손을 쏴 꿰뚫었다
+			PRINTFORMW 남자는 돼지처럼 콧소리를 내며 고통 어린 신음 소리를 지르고 있다
+			PRINTFORMW 그리고 어깨, 팔꿈치, 무릎 등 치명상이 되지 않을 만한 곳을 노려 차례차례 탄환을 박아 넣었다
+			;それにしてもこの上司、割とタフである
+			PRINTFORMW 그렇게까지 한 뒤 %조사처리(CALLNAME:MASTER,"는")% 남자의 재갈을 풀어주었다
+			PRINTFORMW 남자는 온몸에 총을 맞은 극통으로 인해 숨을 헐떡이며 %조사처리(CALLNAME:MASTER,"에게")% 사죄의 말을 건넸다
+			PRINTFORMW 「기, 기다려 제발 그만둬 지금까지의 일은 사과할게」
+			PRINTFORMW %조사처리(CALLNAME:MASTER,"는")% 사죄의 말을 들으며 남자의 가랑이를 쏴 꿰뚫어 주었다
+			PRINTFORMW 순간, 방 안에 이 세상의 것이라 생각할 수 없는 절규가 울려 퍼졌다
+			PRINTFORMW 남자는 이상할 정도로 식은땀을 흘리며 눈물과 콧물을 줄줄 흘리고 있다
+			PRINTFORMW 꿰뚫린 가랑이에서는 붉고 하얀 체액이 뚝뚝 떨어져, 방 바닥을 더럽혔다
+			PRINTFORMW 「…부, 부탁이야… 뭐든지 할게… 그러니까, 살려, 줘…」
+			PRINTFORMW 간신히 쥐어짠 남자의 탄원을 듣고 %조사처리(CALLNAME:MASTER,"는")% 이렇게 대답했다
+			PRINTFORMW ――그럼, 죽어라――
+			PRINTFORMW 총성이 울린다
+			PRINTFORMW 상사였던 남자는 머리를 관통당해 벽 일면을 붉은 물감으로 더럽히며 절명했다…
+			PRINTFORMW ･････････
+			PRINTFORMW ･･････
+			PRINTFORMW ･･･
+			PRINTFORMW %조사처리(CALLNAME:MASTER,"는")% 방을 나와 취임식이 거행될 회장으로 걸어가기 시작했다
+			PRINTFORMW 머릿속에는 방금 전의 일이 떠오르고 있었다…
+			PRINTFORMW 그 남자는 꼴사나운 최후를 맞이했지만, 결코 그것이 그 남자에게만 국한된 일은 아니다
+			PRINTFORMW 간부로 승진한 %조사처리(CALLNAME:MASTER,"에게")%도 언젠가 일어날 수 있는 일이다
+			PRINTFORMW 방심하고 있다가는 이번엔 해치우는 입장에서 해치워지는 입장이 될 수도 있는 것이다
+			PRINTFORMW 
+			PRINTFORMW 다시 한번 마음을 다잡으며 %조사처리(CALLNAME:MASTER,"는")% 회장의 문을 열었다…
+			PRINTFORMW 　　　　　　　　―― Ending No.000 (팬텀 간부 END)
+		ELSE
+			PRINTFORMW ･････････
+			PRINTFORMW ･･････
+			PRINTFORMW ･･･
+			PRINTFORMW 조직의 서머너로서 두각을 나타내어, 조직 간부의 자리에 오른 %조사처리(CALLNAME:MASTER,"는")% 팬텀 소사이어티의 진정한 목적을 전달받았다
+			PRINTFORMW 그것은 모든 것의 주라 불리는 위대한 존재의 회귀
+			PRINTFORMW 조직은 노예로부터 양질의 생체 MAG를 회수하여, 위대한 존재에게 바치기 위해 %조사처리(CALLNAME:MASTER,"에게")% 조교를 시키고 있었던 것이다
+			PRINTFORML 
+			PRINTFORMW 아마미시에 존재하는 아르곤 정공
+			PRINTFORMW 그곳에서는 오늘도 번식 노예를 통한 생체 MAG 착취가 이루어지고 있었다
+			PRINTFORMW %조사처리(CALLNAME:MASTER,"가")% 손수 애지중지 키워낸 노예들이 가축처럼 늘어서서, 교성을 지르며 끌려온 어리석은 남자들로부터 생체 MAG를 빨아들이고 있다
+			PRINTFORMW 위대한 존재의 회귀
+			PRINTFORMW 조직의 목적을 이루고 자신의 지위를 반석으로 만들기 위해 %조사처리(CALLNAME:MASTER,"는")% 새로운 노예를 공급하여, 더 많은 생체 MAG를 획득해야만 한다
+			PRINTFORMW 
+			PRINTFORMW 향연은 끝나지 않는다……
+			PRINTFORMW 위대한 존재가 지구로 회귀하는 그날까지……
+			PRINTFORMW 
+			PRINTFORMW 　　　　　　　　―― Ending No.000 (팬텀 간부 END)
+		ENDIF
+		;パートナー選択
+		;;表示させるキャラを抽出（Q:*に表示するキャラの登録番号、LOCAL:2に人数）
+		;VARSET Q, -1
+		;A = 0
+		;FOR LCOUNT, 0, CHARANUM
+		;	SIF 계약(LCOUNT) == 0
+		;		CONTINUE
+		;	SIF CFLAG:LCOUNT:이자리에없는플래그 == 1
+		;		CONTINUE
+		;	Q:A = LCOUNT
+		;	A += 1
+		;NEXT
+		;CALL SELECT_PARTNER
+		;TARGET = RESULT
+		;;未完成
+		;PRINTW ＞...........
+		;PRINTW ＞.......
+		;PRINTW ＞...
+		;PRINTFORMW ＞%CALLNAME:MASTER%はファントム・ソサエティにおいて多大な権限を持つ幹部の一人となった
+		;IF TALENT:MASTER:남자 && TALENT:MASTER:오토코노코
+		;	PRINTFORMW 末端の構成員でしかなかった%CALLNAME:MASTER%が幹部へと成り上がったというサクセスストーリーは、
+		;	PRINTFORMW 新米からベテランまで、他の構成員達の野心を燃え上がらせている
+		;	PRINTL
+		;	PRINTFORMW 幹部になったことで権限は強くなったが、
+		;ELSE
+		;	;女or男の娘だと出自次第ですぐヤらせてくれる話の分かる上司
+		;	SELECTCASE FLAG:주인출신
+		;		CASE 0
+		;			;新米サマナー出身だと男と同様か似たようなの
+		;		CASE 1
+		;			;元性欲処理係の話の分かる幹部。新米サマナーの筆卸とか素質のある若者を篭絡してくるとかいいよね！
+		;		CASE 2
+		;			;元便器で便器精神が染み付いちゃってる幹部
+		;		
+		;	ENDSELECT
+		;ENDIF
+		
+		FLAG:5 = 9
+		SETBIT FLAG:발견ED,0
+		GOTO CONTINUE_2
+	ENDIF
+ENDIF
+
+;ファントム乗っ取りEND
+;枠だけ確保しておきます
+;IF GETBIT(FLAG:취소된ED,20) == 0
+;	SETBIT FLAG:취소된ED,20
+;	PRINTFORMW ＞とうとうファントム・ソサエティのトップたるグレゴリの堕天使達の居場所を掴むことに成功した
+;	PRINTFORMW ＞彼らを討つことが出来れば、組織を人間である%CALLNAME:MASTER%達の物にできるだろう
+;	PRINTFORMW ＞どうしますか？
+;	PRINTL
+;	CALL INPUT_YN,"反逆を起こす","堕天使の尖兵で在り続ける"
+;	;グレゴリ連中と戦闘、勝利するとEND;ファントム乗っ取りEND
+;
+;
+;	;あなた異常経験+1
+;	PRINTFORMW ＞%CALLNAME:MASTER%はグレゴリの堕天使を打ち倒した
+;	PRINTFORMW 「愚かな人間め…自らの行動の浅はかさ、その身を持って思い知るがいい」
+;	PRINTFORMW 悪魔は崩れ落ち、支配者を失った青白い光を放つ巨大な渦の柱は暴走し膨張しはじめた
+;	PRINTFORMW 幾何学的な法則性をもった巨大な現象は瞬く間に部屋中を青白い光に染め、%CALLNAME:MASTER%を飲み込んだ
+;	PRINTFORML …
+;	PRINTFORML ……
+;	PRINTFORML ………
+;	PRINTFORMW %CALLNAME:MASTER%の眼前には戦いの歴史が広がっていた
+;	PRINTFORMW それは人類の歴史であり、宇宙の歴史であった
+;	PRINTFORMW 幾多の世界において…人は……人と人、人と悪魔、外なる者、あらゆるものと争い戦い血を流し続けていた
+;	PRINTFORMW ある世界では世界は海中に沈み、別の世界では天使により統率された近未来的な都市における叛乱と神による粛清があった
+;	PRINTFORMW 学園を守る為に戦った生徒達がいた、帝都の平和を守る為に散華する命があった
+;	PRINTFORMW またある世界では日常を守る為に血を流し、理想を信じて戦い続ける者達がいた
+;	PRINTFORMW 混沌に飲み込まれ滅んだ世界があった、淫欲と苦痛の連鎖のみが彩る狂気の世界があった、神による静寂の統治の世界があった
+;	PRINTFORMW 大いなる存在に触れた%CALLNAME:MASTER%はこの世界が宇宙に存在する幾多の平行世界の一つに過ぎないと理解した
+;	PRINTFORML 
+;	;Ｍ禿化するあなた
+;	IF ABL:84 == 1
+;		PRINTFORMW 世界を知り%CALLNAME:MASTER%は覚醒した
+;		PRINTFORMW 人を統治するのは神ではなく、悪魔でもない
+;		PRINTFORMW 人は人によって支配されねばならない
+;		PRINTFORMW ファントム・ソサエティの力を持って地上から悪魔を駆逐し、人類による人類の為の人類による統治を行う
+;		PRINTFORMW 自分はその為に力を与えられたたのだ
+;		PRINTFORMW 大いなる存在に触れ%CALLNAME:MASTER%は自らの使命が何たるかを知った
+;	;閣下「他の世界にもいたんだよなぁ、お前みたいなの。カツオって言ってさ、ファントム倒したから俺は日常に帰るぜーとか、ないだろ。常識的に考えて」
+;	;　　「あの偽キョウジだって、履いてないビッチだって非日常に生きてんだぜ？　どうでもいいなんか人柱だぜ？」
+;	;　　「もっとこうさぁ、ビッと気合入れて生きようや。ちんこついてんだろ？、男なら反逆してみせろな？」
+;	;　　「んじゃあ、次のルートでは一緒に四文字禿ぶっころそうな？、解ったな？　返事は？」
+;	ELSEIF ABL:84 == 2
+;		PRINTFORMW 『グリゴリの堕天使を倒し、ファントムを乗っ取り…そのうえで全てを捨てて日常に帰るか』
+;		PRINTFORMW 『まったく人間と言うのは神よりも悪魔よりも残酷な選択をするものだな』
+;		PRINTFORMW %CALLNAME:MASTER%が背後を振り返ると金髪の少年がいた
+;		PRINTFORMW 『まあいい…それがキミの今回の選択肢であり、私は傍観者に過ぎない』
+;		PRINTFORMW 『行くがいい、人間よ』
+;		PRINTFORMW 少年は全てを見透かす様な視線を%CALLNAME:MASTER%に向けて不敵に笑った
+;	;俺は人間をやめるぞ、バリバリバリ
+;	ELSE
+;		PRINTFORMW %CALLNAME:MASTER%は力こそが、闘争こそが人の本質なのだと理解した
+;		PRINTFORMW 人も、神も悪魔も関係ない
+;		PRINTFORMW ただ強き者だけが絶対なのだ
+;		PRINTFORMW 自らのエゴを通すには力が必要であり、弱きものは強き者に従う他に術はないのだ
+;		PRINTFORMW %CALLNAME:MASTER%は胸のうちから強大な力が湧き上がるのを感じた
+;		PRINTFORMW ファントム・ソサエティが集めていた強大な生体マグネタイトと融合した%CALLNAME:MASTER%の肉体は生まれ変わり
+;		PRINTFORMW 人にして人ならざる者となったのだ…
+;		PRINTFORMW メシア教、ガイア教、天使、悪魔、そして神々
+;		PRINTFORMW この世界には打ち倒すべき宿敵に溢れかえっている
+;		PRINTFORMW %CALLNAME:MASTER%は闘争の始まりを告げる咆哮をあげた
+;	ENDIF
+;
+;	FLAG:5 = 9
+;	SETBIT FLAG:발견ED,20
+;	GOTO CONTINUE_2
+;ENDIF
+
+
+;調教師END
+IF FLAG:조교사명성 >= 400 && GETBIT(FLAG:취소된ED,2) == 0 && イベントフラグ:1:1 < 1
+	SETBIT FLAG:취소된ED,2
+	PRINTFORMW ＞조교사로서 %조사처리(CALLNAME:MASTER,"의")% 이름은 암흑가에 널리 퍼지게 되었다……
+	PRINTFORMW ＞이대로 조교사에 전념하겠습니까?
+	PRINTL
+	CALL INPUT_YN, "YES(악마 조교사 END)", "NO"
+	IF RESULT == 0
+		;パートナー選択
+		;表示させるキャラを抽出（Q:*に表示するキャラの登録番号、LOCAL:2に人数）
+		;VARSET Q, -1
+		;A = 0
+		;FOR LCOUNT, 0, CHARANUM
+		;	SIF LCOUNT == MASTER
+		;		CONTINUE
+		;	SIF 계약(LCOUNT) == 0
+		;		CONTINUE
+		;	SIF CFLAG:LCOUNT:이자리에없는플래그 == 1
+		;		CONTINUE
+		;	Q:A = LCOUNT
+		;	A += 1
+		;NEXT
+		CALL SELECT_PARTNER
+		TARGET = RESULT
+		RESULT = 0
+		TSTR:END종별 = 調教師経営END
+		TRYCALLFORM ENDING_CHECK%口上関数末尾文字(TARGET)%
+		IF RESULT == 0
+			PRINTW ･････････
+			PRINTW ･･････
+			PRINTW ･･･
+			VARI L_SOLD_DEVIL = 0
+			VARI L_SOLD_HUMAN = 0
+			FOR LCOUNT, 0, CSVCHARANUM
+				SIF !COUNT_SOLD_CHARA:LCOUNT
+					CONTINUE
+				SIF !EXISTCSV(LCOUNT)
+					CONTINUE
+				IF CSVABL(LCOUNT, GETNUM(ABL, "종족")) > 0
+					L_SOLD_DEVIL++
+				ELSE
+					L_SOLD_HUMAN++ 
+				ENDIF
+			NEXT
+			IF L_SOLD_DEVIL >= L_SOLD_HUMAN
+				;悪魔を売った回数が多い
+				PRINTW 오늘도 ｢상품｣은 비싸게 팔렸다。
+				PRINTL 
+				PRINTW 인간에게는 없는 특이하고도 매력적인 외모나, 다소 험하게 다루어도 부서지지 않는 튼튼함으로 인해, 성노예로서의 악마에 대한 수요는 높아지고 있다。
+				PRINTW 하지만, 인간보다 훨씬 강대한 힘을 가진 악마들을 보통 사람이 제어하기란 도저히 불가능하여, 악마 조교사라는 존재 자체가 만성적으로 부족하다。
+				PRINTL 
+				PRINTFORMW 그런 상황 속에서, 흉악한 악마들을 순종적이고 음란한 성노예로 조련해내는 %조사처리(CALLNAME:MASTER,"의")% 솜씨는 애호가들로부터의 신뢰도 두텁다。
+				PRINTL
+			ELSE
+				;人間を売った回数が多い
+				PRINTW 오늘도 ｢상품｣은 비싸게 팔렸다。
+				PRINTL 
+				PRINTW 마계인들 사이에서, 인간 노예가 일종의 유행을 일으키고 있다。
+				PRINTW 한 줌의 자들이 자유롭게 오갈 수 있게 되었다 해도, 대다수의 자들에게 다른 세계의 인간은 여전히 진귀한 존재인 것이다。
+				PRINTW 하물며 그 모습이 수려하고, 마계인의 욕망을 채워줄 만큼의 순종과 기술을 갖추고 있다면 더할 나위 없다。
+				PRINTL 
+				PRINTW 이제, 양질의 노예를 공급하는 조교사의 이름은 마계인들 사이에서 일종의 브랜드가 되었고, 그 조교사가 조련한 노예를 소유하는 것이 하나의 지위가 되어가고 있다。
+				PRINTFORMW 그런 가운데, 순종적이고 음란한 성노예를 몇 명이나 공급해온 %조사처리(CALLNAME:MASTER,"의")% 이름 또한 마계인들에게 널리 알려져, 조교해낸 노예들은 다투어 비싼 값에 팔려나간다。
+				PRINTL
+			ENDIF
+			PRINTW 자, 다음에는 누구를 어떤 식으로 조련해볼까?
+			IF TARGET > 0
+				CALL SET_ACHIEVED_CHARA_ENDING, TARGET, TSTR:END종별
+				IF TALENT:친애
+					PRINTFORM %조사처리(CALLNAME,"과의")% 정사를 노예들에게 과시하면서、
+				ELSEIF TALENT:창부
+					PRINTFORM %조사처리(CALLNAME,"과")% 함께 노예들과의 음탕한 연회를 즐기면서、
+				ELSEIF TALENT:예속
+					IF TALENT:MASTER:남자 == 0
+						PRINTFORM 은밀한 입술에서 흘러나오는 꿀을 %조사처리(CALLNAME,"에게")% 핥아내게 하면서、
+					ELSE
+						PRINTFORM 우뚝 솟아오른 육봉을 %조사처리(CALLNAME,"에게")% 가라앉히게 하면서、
+					ENDIF
+				ENDIF
+			ELSE
+				IF TALENT:MASTER:남자 == 0
+					PRINTFORM 기대감으로 부끄럽게 흘러넘치는 애액을 떠내어 핥으면서、
+				ELSE
+					PRINT 육봉이 우뚝 솟아오르는 것을 느끼면서、
+				ENDIF
+			ENDIF
+			PRINTFORMW %조사처리(CALLNAME:MASTER,"는")% 다음 사냥감에 생각을 잠겼다……
+			PRINTW 　　　　　　　　―― Ending No.002 (조교사 END)
+		ELSE
+			CALL 口上呼び出し , "KOJO_MESSAGE_ENDING"
+			
+		ENDIF
+		TSTR:END종별 =
+		FLAG:5 = 9
+		SETBIT FLAG:발견ED,2
+		GOTO CONTINUE_1
+	ENDIF
+ENDIF
+
+IF FLAG:조교사명성 >= 2000 && GETBIT(FLAG:취소된ED,3) == 0 && イベントフラグ:1:1 < 1
+	SETBIT FLAG:취소된ED,3
+	PRINTFORMW ＞이제, 조교사로서 %조사처리(CALLNAME:MASTER,"를")% 능가할 자는 존재하지 않을 것이다……
+	PRINTFORMW ＞이대로 조교사에 전념하겠습니까?
+	PRINTL
+	CALL INPUT_YN, "YES(조교사 END)", "NO"
+	IF RESULT == 0
+		;連れ添うキャラを選択
+		;VARSET Q, -1
+		;A = 0
+		;FOR LCOUNT, 0, CHARANUM
+		;	SIF LCOUNT == MASTER
+		;		CONTINUE
+		;	SIF TALENT:LCOUNT:남편 || TALENT:LCOUNT:아내 || TALENT:LCOUNT:노리개
+		;		CONTINUE
+		;	SIF CFLAG:LCOUNT:이자리에없는플래그 == 1
+		;		CONTINUE
+		;	Q:A = LCOUNT
+		;	A += 1
+		;NEXT
+		CALL SELECT_PARTNER, "CASTING_SELECT_TRAINER_PARTNER"
+		TARGET = RESULT
+		RESULT = 0
+		TSTR:END종별 = 稀代の調教師END
+		TRYCALLFORM ENDING_CHECK%口上関数末尾文字(TARGET)%
+		IF RESULT == 0
+			;本文が入るかもしれないところ
+			PRINTW ･････････
+			PRINTW ･･････
+			PRINTW ･･･
+			PRINTW 악마를… 인간을… 그리고, 신마저도……
+			PRINTW 온갖 존재를 조교하여 굴복시키는 희대의 조교사
+			PRINTFORMW %조사처리(CALLNAME:MASTER,"는")% 암흑가에서 "Master of slave"라는 이명으로 불리게 되었다
+			PRINTFORMW 조교사로서의 명성을 얻은 %조사처리(CALLNAME:MASTER,"에게")% 조직은 직속 조교사가 되어줄 것을 요청했고,
+			PRINTFORMW 애초에 투쟁의 무대에 매력을 느끼지 못했던 %조사처리(CALLNAME:MASTER,"는")% 서머너로서의 활동을 접고 조교에 전념하기로 했다
+			;もし、他にキャラがいるならば
+			;ＹＭＥＤを拝借し改造
+			;夫・妻
+			IF TARGET > 0 && (TALENT:170 == 1 || TALENT:171 == 1)
+				PRINTL 
+				PRINTFORMW %조사처리(CALLNAME:MASTER,"의")% 곁에는 바짝 다가붙어 모시는 %조사처리(CALLNAME:TARGET,"의")% 모습이 있었다
+				PRINTFORM 한때는 노예였던 %조사처리(CALLNAME:TARGET,"는")% 이제는 누구보다도 %조사처리(CALLNAME:MASTER,"가")% 신뢰하고 의지하는 
+				IF TALENT:170
+					PRINT 아내
+				ELSE
+					PRINT 남편
+				ENDIF
+				PRINTFORMW 로서 %조사처리(CALLNAME:MASTER,"의")% 조교를 돕고 있다
+				PRINTW 금슬 좋은 조교사 부부의 이름이 암흑가에 퍼져나가는 것은 아직 먼 훗날의 이야기다……
+			;노리개
+			ELSEIF TARGET > 0 && TALENT:140 == 0 && TALENT:173 == 1
+				PRINTL 
+				PRINTFORMW %조사처리(CALLNAME:MASTER,"의")% 곁에는 %조사처리(CALLNAME:TARGET,"의")% 모습이 있었다
+				PRINTFORMW %조사처리(CALLNAME:TARGET,"는")% %조사처리(CALLNAME:MASTER,"가")% 가장 아끼는 노예였다
+				PRINTW 노예로서 짐승과, 인간 아닌 것들과 얽히게 하며, 밤낮을 가리지 않고 능욕하며 온갖 고통을 안겨주었다
+				PRINTFORMW 피학의 끝을 겪고 육욕의 포로가 된 그녀의 몸에서 %조사처리(CALLNAME:MASTER,"의")% 손길이 닿지 않은 곳은 단 한 군데도 없다
+				PRINTL 
+				PRINTFORMW 전기를 맞이한 %조사처리(CALLNAME:MASTER,"는")% 변덕 삼아 %조사처리(CALLNAME:TARGET,"에게")% 바라는 것이 없느냐고 물었다
+				PRINTW 만약 그녀가 아내가 되기를 바란다면 그렇게 해주었을 테고, 노예라는 처지에서 벗어나길 원한다면 들어주었을 것이다
+				PRINTFORMW %조사처리(CALLNAME:MASTER,"의")% 물음에 %조사처리(CALLNAME:TARGET,"는")% 공손히 무릎 꿇고 머리를 깊이 조아리며…
+				PRINTW 주인의 뜻대로, 질릴 때까지 곁에 두어주시기만 하면 됩니다……
+				PRINTW 자신은 주인님의 장난감으로 남아있고 싶다고 고했다
+				PRINTFORMW 두 사람 사이에 침묵의 장막이 내리고, %조사처리(CALLNAME:TARGET,"는")% 명을 기다릴 것도 없이 스스로 나아가 %조사처리(CALLNAME:MASTER,"의")% 구두를 혀로 핥기 시작한다
+				PRINTFORMW 순종적인 장난감의 태도에 %조사처리(CALLNAME:MASTER,"는")% 만족하면서도…… 더욱 %조사처리(CALLNAME:TARGET,"를")% 타락시킬 방법을 모색한다
+				PRINTW 다음엔… 겉뿐인 남편과 결혼을 시켜볼까, 아니면… 새로운 장난감과 성기를 겨루게 하여 함께 번식 노예로 떨어뜨려 보는 것도 흥미롭겠군
+				PRINTFORMW %조사처리(CALLNAME:MASTER,"는")% 어두운 불꽃을 피워 올리며 엷은 미소를 짓는 것이었다……
+			ELSE
+				PRINTW 다음엔 어떤 악마를, 혹은 인간을… 누구를 어떤 식으로 조련해볼까?
+				PRINTW 새로운 노예는 어떤 목소리로 울부짖어 줄까…
+				PRINTFORMW 자신이 만들어낸 최고의 작품이 된 %조사처리(CALLNAME:TARGET,"를")% 애무하며 %조사처리(CALLNAME:MASTER,"는")% 사색에 잠긴다
+				PRINTW 능욕의 향연은 끝나지 않는다… 물거품 같은 꿈은 계속되어 가는 것이다
+			ENDIF
+			PRINTW 
+			PRINTW 　　　　　　　　―― Ending No.003 (조교사 END "Master of slave")
+		ELSE
+			CALL 口上呼び出し , "KOJO_MESSAGE_ENDING"
+			
+		ENDIF
+		TSTR:END종별 =
+		FLAG:5 = 9
+		SETBIT FLAG:발견ED,3
+		GOTO CONTINUE_1
+	ENDIF
+	
+ENDIF
+;食堂経営END
+IF FLAG:요리인기 >= 1500 && GETBIT(FLAG:취소된ED,10) == 0 && イベントフラグ:1:1 < 1
+	SETBIT FLAG:취소된ED,10
+	PRINTFORMW ＞레스토랑 오너 END의 조건을 만족했습니다。
+	PRINTFORMW ＞레스토랑 오너 END로 진행하시겠습니까?
+	PRINTL
+	CALL INPUT_YN, "YES(레스토랑 오너 END)", "NO"
+	IF RESULT == 0
+		;パートナー選択
+		;表示させるキャラを抽出（Q:*に表示するキャラの登録番号、LOCAL:2に人数）
+		;VARSET Q, -1
+		;A = 0
+		;FOR LCOUNT, 0, CHARANUM
+		;	SIF LCOUNT == MASTER
+		;		CONTINUE
+		;	SIF 계약(LCOUNT) == 0
+		;		CONTINUE
+		;	SIF CFLAG:LCOUNT:이자리에없는플래그 == 1
+		;		CONTINUE
+		;	Q:A = LCOUNT
+		;	A += 1
+		;NEXT
+		CALL SELECT_PARTNER
+		TARGET = RESULT
+		
+		
+		RESULT = 0
+		TSTR:END종별 = 食堂経営END
+		SIF TARGET > 0
+			CALL SET_ACHIEVED_CHARA_ENDING, TARGET, TSTR:END종별
+		TRYCALLFORM ENDING_CHECK%口上関数末尾文字(TARGET)%
+		IF RESULT == 0
+			;本文が入るかもしれないところ
+			
+			PRINTW ･････････
+			PRINTW ･･････
+			PRINTW ･･･
+			PRINTW 처음에는、정기 수입을 위해서였다。
+			PRINTW 어느샌가 요리를 먹어주는 사람들의 미소에 기쁨을 느껴、가게를 차렸다。
+			PRINTFORML 지금은、%조사처리(CALLNAME:MASTER,"의")% 가게는 연예인이나 정치가들도 이용하는 일류 음식점이 되었다。
+			PRINTW 절반은 독립한 가게이지만、연결고리는 끊어지지 않아、조직 간부들이 밀회하는 장소로 이용되고 있었다。
+			PRINTW 그 때문에、다치면 곤란하다며、조직으로부터 가게에 전념하라는 지시가 내려왔다。
+			PRINTFORML 그 말을 들은 %조사처리(CALLNAME:MASTER,"는")%、조건을 제시했다。
+			;もし、他にキャラがいるならば
+			;ＹＭＥＤを拝借し改造
+			;夫・妻
+			IF TARGET > 0 && (TALENT:170 == 1 || TALENT:171 == 1)
+			;テーゲットが人間の場合 
+				IF TARGET >0 && ABL:TARGET:종족 == 0
+					PRINTL 
+					PRINTFORML %조사처리(CALLNAME:MASTER,"가")% 제시한 조건은 두 가지
+					PRINTFORML 하나는、가게를 지탱해주고 있는 사랑스러운 %조사처리(CALLNAME:TARGET,"과의")% 신혼집이다。
+					PRINTL 서머너를 그만두면 세이프하우스를 쓸 수 없게 된다。
+					PRINTW 두 사람의 금슬이 소문나、인연을 맺어주는 가게로 이름이 널리 퍼지고 있다。
+					PRINTFORML 자금을 %조사처리(CALLNAME:MASTER,"가")% 부담하는 조건으로 근처의 집을 양도받기로 했다。
+				ELSE
+					PRINTL 
+					PRINTFORML %조사처리(CALLNAME:MASTER,"가")% 제시한 조건은 두 가지
+					PRINTFORML 하나는、가게를 지탱해주고 있는 사랑스러운 %조사처리(CALLNAME:TARGET,"가")% 모습을 유지하기 위한 마그네타이트다。
+					PRINTW 두 사람의 금슬이 소문나、인연을 맺어주는 가게로 이름이 널리 퍼지고 있다
+					PRINTW 조직은 그것을 받아들여、정기적으로 마그네타이트를 공급하기로 했다。
+				ENDIF
+				PRINTL 
+				PRINTL 또 하나의 조건은 가게를 중립 지대로서 완전히 독립시키는 것이다。
+				PRINTW 적대 조직의 인간이 오는 일도 있어、요리에 있어서만큼은 차별하고 싶지 않다고 했다。
+				PRINTW 조직은 어이없어하면서도、지금과 다름없는 대우를 유지해주는 것으로 그것을 수락했다。
+				PRINTFORMW 이렇게 하여、%조사처리(CALLNAME:MASTER,"의")% 가게는 뒷세계의 조직들 사이에서도 중립 지대로서 알려지게 되었다。
+			ELSEIF TARGET == 0
+				PRINTL 
+				PRINTFORML %조사처리(CALLNAME:MASTER,"가")% 제시한 조건은 한 가지
+				PRINTW 완전히 독립하는 것이다。
+				PRINTW 적대 조직의 인간이 오는 일도 있어、요리에 있어서만큼은 차별하고 싶지 않았던 것이다。
+				PRINTW 조직은 어이없어하면서도、지금과 다름없는 대우를 유지해주는 것으로 그것을 수락했다。
+				PRINTFORML 이렇게 하여、%조사처리(CALLNAME:MASTER,"의")% 가게는 뒷세계의 조직들 사이에서도 중립 지대로서 알려지게 되었다。
+			ELSE
+				IF TARGET >0 && ABL:TARGET:종족 == 0
+					PRINTL 
+					PRINTFORML %조사처리(CALLNAME:MASTER,"가")% 제시한 조건은 두 가지
+					PRINTFORML 하나는、가게를 지탱해주고 있는 사랑스러운 %조사처리(CALLNAME:TARGET,"과의")% 신혼집이다。
+					PRINTL 서머너를 그만두면 세이프하우스를 쓸 수 없게 된다。
+					PRINTW 두 사람의 금슬이 소문나、인연을 맺어주는 가게로 이름이 널리 퍼지고 있다。
+					PRINTFORML 자금을 %조사처리(CALLNAME:MASTER,"가")% 부담하는 조건으로 근처의 집을 양도받기로 했다。
+				ELSEIF TARGET > 0
+					PRINTL 
+					PRINTFORMW %조사처리(CALLNAME:MASTER,"가")% 제시한 조건은 두 가지
+					PRINTFORMW 하나는、가게를 지탱해주고 있는 %조사처리(CALLNAME:TARGET,"가")% 모습을 유지하기 위한 마그네타이트다。
+					PRINTFORML %CALLNAME:MASTER% 혼자서는、이 가게를 유지할 수 없다。
+					PRINTW 조직은 그것을 받아들여、정기적으로 마그네타이트를 공급하기로 했다。
+				ENDIF
+				PRINTL 
+				PRINTW 또 하나의 조건은、가게를 중립 지대로서 독립시키는 것이다。
+				PRINTW 적대 조직의 인간이 오는 일도 있어、요리에 있어서만큼은 차별하고 싶지 않다고 했다。
+				PRINTW 조직은 어이없어하면서도、지금과 다름없는 대우를 유지해주는 것으로 그것을 수락했다。
+				PRINTFORMW 이렇게 하여、%조사처리(CALLNAME:MASTER,"의")% 가게는 뒷세계의 조직들 사이에서도 중립 지대로서 알려지게 되었다
+			ENDIF
+			PRINTW 
+			PRINTW 　　　　　　　　―― Ending No.010 (식당 운영 END"Neutral restaurant")
+		ELSE
+			CALL 口上呼び出し , "KOJO_MESSAGE_ENDING"
+			
+		ENDIF
+		TSTR:END종별 = 
+		FLAG:5 = 9
+		SETBIT FLAG:발견ED,10
+		GOTO CONTINUE_2
+	ENDIF
+ENDIF
+;料理人END
+;IF CFLAG:MASTER:요리인기 >= 5000 && ABL:MASTER:요리기능 >= 10 && GETBIT(FLAG:취소된ED,11) == 0
+;	SETBIT FLAG:취소된ED,11
+;	PRINTFORMW ＞
+;	PRINTL
+;	CALL INPUT_YN,"(シェフEND)",""
+;	IF RESULT == 0
+;		SETBIT FLAG:발견ED,11
+;		GOTO CONTINUE_2
+;	ENDIF
+;ENDIF
+;娼館経営END
+IF FLAG:매춘인기 >= 1500 && GETBIT(FLAG:취소된ED,12) == 0 && イベントフラグ:1:1 < 1
+	SETBIT FLAG:취소된ED,12
+	PRINTFORMW ＞창관 경영 END의 조건을 만족했습니다
+	PRINTL
+	CALL INPUT_YN, "(창관 경영 END)", "No"
+	IF RESULT == 0
+		;パートナー選択
+		;表示させるキャラを抽出（Q:*に表示するキャラの登録番号、LOCAL:2に人数）
+		;VARSET Q, -1
+		;A = 0
+		;FOR LCOUNT, 0, CHARANUM
+		;	SIF LCOUNT == MASTER
+		;		CONTINUE
+		;	SIF 계약(LCOUNT) == 0
+		;		CONTINUE
+		;	SIF CFLAG:LCOUNT:이자리에없는플래그 == 1
+		;		CONTINUE
+		;	Q:A = LCOUNT
+		;	A += 1
+		;NEXT
+		CALL SELECT_PARTNER
+		TARGET = RESULT
+			
+		RESULT = 0
+		TSTR:END종별 = 娼館経営END
+		SIF TARGET > 0
+			CALL SET_ACHIEVED_CHARA_ENDING, TARGET, TSTR:END종별
+		TRYCALLFORM ENDING_CHECK%口上関数末尾文字(TARGET)%
+		IF RESULT == 0
+			;本文が入るかもしれないところ
+		ELSE
+			CALL 口上呼び出し , "KOJO_MESSAGE_ENDING"
+			
+		ENDIF
+		TSTR:END종별 =
+		FLAG:5 = 9
+		SETBIT FLAG:발견ED,12
+		GOTO CONTINUE_2
+	ENDIF
+ENDIF
+
+;夜の王END
+IF CFLAG:MASTER:매춘인기 >= 1000 && EXP:MASTER:매춘경험 >= 2500 && FLAG:매춘인기>= 1000 && GETBIT(FLAG:취소된ED,13) == 0 && イベントフラグ:1:1 < 1
+	SETBIT FLAG:취소된ED,13
+	PRINTFORML ＞%CALLNAME:MASTER%와(과) %조사처리(CALLNAME:MASTER,"가")% 경영하는 창관의 인기는 견줄 자가 없을 정도로 높아져 있다
+	PRINTFORML ＞이대로 매춘과 경영을 생업으로 삼아버릴까……
+	PRINTL
+	IF TALENT:MASTER:남자
+		CALL INPUT_YN, "Yes(밤의 왕 END)", "No"
+	ELSE
+		CALL INPUT_YN, "Yes(밤의 여왕 END)", "No"
+	ENDIF
+	IF RESULT == 0
+		PRINTW ･････････
+		PRINTW ･･････
+		PRINTW ･･･
+		PRINTW 
+		PRINTFORMW ＞%조사처리(CALLNAME:MASTER,"가")% 경영하는 창관이、오늘도 수많은 손님들을 집어삼켜 간다
+		PRINTFORMW ＞끊임없이 몰려드는 손님들의 욕망을
+		PRINTFORMW ＞정성껏 키워낸 창부들이 아낌없이 받아낸다
+		PRINTFORMW ＞숙련된 기술로 천상의 쾌락을 이끌어내며、극상의 육체에 빠져들며
+		PRINTFORMW ＞손님들은 가진 모든 MAG를、마카를 아낌없이 쏟아붓고 간다
+		PRINTFORMW ＞문드러진 열기가 충만한 이 저택은、그야말로 지상에 현현한 쾌락의 낙원이며
+		PRINTFORML ＞그리고 %CALLNAME:MASTER%야말로、낙원에 군림하는 유일한 주인이다
+
+		PRINTFORMW ＞주인으로서 스스로도 손님을 받는 %조사처리(CALLNAME:MASTER,"의")% 곁으로、새로운 손님이 안내되어 왔다
+		PRINTFORM ＞요염하게 옷을 벗어 던진 %조사처리(CALLNAME:MASTER,"의")% 육체에 탐욕스럽게 달라붙는
+		IF TALENT:MASTER:83
+			PRINTFORMW 마조 돼지를 농락하면서
+			;새드
+		ELSE
+			PRINTFORMW 손님에게
+			;奉仕精神高い
+			IF ABL:MASTER:7 >= 6
+				PRINTFORMW 무릎 꿇고 봉사를 시작하면서
+			ELSEIF TALENT:MASTER:84
+				PRINTFORMW 몸을 농락당하면서
+				;마조
+			ELSE
+				PRINTFORM 향해 엉덩이를 내밀고、
+				;男ないし男の娘ないしA感覚が高い
+				IF TALENT:MASTER:140 || TALENT:MASTER:157 || ABL:MASTER:5 >= 8
+					PRINTFORM 애널로의
+				ELSE
+					PRINTFORM 바기나로의
+					;それ以外
+				ENDIF
+				PRINTFORMW 삽입을 조르면서
+			ENDIF
+		ENDIF
+		PRINTFORMW ＞%조사처리(CALLNAME:MASTER,"는")% 남몰래 미소지었다。
+		PRINTFORMW ＞밤은 이제 겨우 시작되었을 뿐
+		PRINTFORMW ＞그리고、그 밤은 모두 %조사처리(CALLNAME:MASTER,"의")% 것이다
+		PRINTFORMW 　　　　　　　　―― Ending No.013 (밤의 \@TALENT:MASTER:남자 ? 왕 # 여왕 \@ END)
+		FLAG:5 = 9
+		SETBIT FLAG:발견ED,13
+		GOTO CONTINUE_2
+	ENDIF
+ENDIF
+
+;;流浪の娼婦END
+;IF CFLAG:MASTER:매춘인기 >= 2500 && CFLAG:MASTER:매춘경험 >= 1000 && ITEM:창관 == 0 && GETBIT(FLAG:취소된ED,14) == 0
+;	SETBIT FLAG:취소된ED,14
+;
+;	PRINTL
+;	IF TALENT:MASTER:남자
+;		CALL INPUT_YN,"(流浪の男娼END)",""
+;	ELSE
+;		CALL INPUT_YN,"(流浪の娼婦END)",""
+;	ENDIF
+;	IF RESULT == 0
+;		SETBIT FLAG:발견ED,14
+;		GOTO CONTINUE_2
+;	ENDIF
+;ENDIF
+
+;堕落END
+IF ABL:MASTER:욕망 >= 10 && EXP:MASTER:매춘경험 + EXP:MASTER:변기경험 >= 2500 && GETBIT(FLAG:취소된ED,15) == 0
+	SETBIT FLAG:취소된ED,15
+	PRINTFORMW ＞몸이 뜨겁다
+	PRINTFORMW ＞문득 절정을 맞이했을 때의 저릿저릿한 감각이 생생하게 되살아난다
+	PRINTFORMW ＞온갖 구멍을 육봉으로 헤집어지고、뿜어져 나온 정액을 온몸으로 받아내며
+	PRINTFORMW ＞밀려오는 쾌락의 파도에 모든 것을 휩쓸려버리던 그 감미로운 체험을 잊을 수가 없다
+	PRINTFORMW ＞스스로를 위로하며 속여보려 해도、솟구쳐 오르는 욕망은 어찌할 도리가 없다……
+	PRINTL
+	CALL INPUT_YN, "열정에 몸을 맡긴다(창녀 END)", "이성을 유지한다"
+	IF RESULT == 0
+		PRINTW ･････････
+		PRINTW ･･････
+		PRINTW ･･･
+		PRINTW 
+		PRINTFORMW ＞이 흥분을 가라앉혀 줄 수 있는 것은、거칠게 내리꽂히는 육봉밖에 없다
+		PRINTFORM ＞음란한 열기에 들뜬 %조사처리(CALLNAME:MASTER,"의")% 발걸음은 자연스레
+		;창관　売春経験の方が高い
+		IF EXP:MASTER:매춘경험 >= EXP:MASTER:변기경험
+			PRINTFORMW 창관으로 향하고 있었다
+			PRINTFORMW ＞가게에서 손님을 몇 명이나 몇 명이나 물고 빨며、그것으로도 성에 차지 않아 가게 밖에서도 손님과 어울린다
+			PRINTFORMW ＞음탕함 그 자체인 행동으로 갈증을 달래며、%조사처리(CALLNAME:MASTER,"는")% 자신이 창부임을 실감하고 있었다	
+		ELSE
+			;便所というか輪姦希望というか
+			PRINTFORMW 스스로 설치한 공중변소로 향하고 있었다
+			PRINTFORMW ＞모여 있는 남자들에게 음란한 미소를 지으며、%조사처리(CALLNAME:MASTER,"는")% 모든 것을 드러내고 유달리 천박한 말들을 늘어놓았다
+			PRINTFORMW ＞참지 못하고 가까이 있던 남자의 바지를 벗겨、페니스를 입에 머금고 흔들어대자
+			PRINTFORMW ＞다른 남자들도 너 나 할 것 없이 몰려들기 시작했다
+			PRINTFORMW ＞이것이다、이것이야말로 바라던 것이다
+			PRINTFORML ＞강직한 물건을 그 몸에 받아들이며、%조사처리(CALLNAME:MASTER,"는")% 자신도 모르게 환희의 교성을 지르고 있었다
+		ENDIF
+		PRINTFORMW 　　　　　　　　―― Ending No.015 (타락 END)
+		FLAG:5 = 9
+		SETBIT FLAG:발견ED,15
+		GOTO CONTINUE_2
+	ENDIF
+ENDIF
+
+
+;No.06ロリハーレムEND
+;エンドをキャンセルしていないこと、納金が300万以上（幹部よりちょっと少ない）、問題行動は起こしていない
+;※イベントフラグ:1:1 = マヨーネ様の警告を受けたかのフラグ( -1イベント消去 0未発生 1～2警告イベント発生 )
+;かつ、以下のポイントが20ポイント以上になったら発生
+;アリス、モーショボー、ナジャ、ユキンコ、……などロリキャラが上位陥落で+3ポイント
+;（ただしひとり以上は必須）（また、例えば『ショボたん100人』でもメイン判定はひとりだけ）
+;「小柄かつ女性」キャラが助手可能で+1、上位陥落ならさらに+1
+;さらに小悪魔であれば+1
+;およそ「メインとなるロリが4名」＋「陥落・助手ロリが4～5名」＝20ポイント越えという感じ
+IF GETBIT(FLAG:취소된ED,6) == 0 && FLAG:조직공헌도 >= 3000000 && イベントフラグ:1:1 < 1
+	;合計ポイントとして使用するためここで初期化
+	LENDING_CONDITION = 0
+	;必須キャラ数として使用するためここで初期化
+	LENDING_CONDITION_1 = 0
+
+	FOR LCOUNT, 0, CHARANUM
+		;あなたは除外
+		SIF LCOUNT == MASTER
+			CONTINUE
+		;男はダメ
+		SIF TALENT:LCOUNT:남자
+			CONTINUE
+		;小柄/小人体型ではない場合はダメ
+		SIF !(TALENT:LCOUNT:유아체형 || TALENT:LCOUNT:소인체형)
+			CONTINUE
+		;調教されていないキャラはダメ
+		SIF CFLAG:LCOUNT:피조교횟수 <= 0
+			CONTINUE
+		;ポイント計算に使用するためここで初期化
+		LENDING_CONDITION_2 = 0
+		;上位陥落している場合
+		IF 陥落(LCOUNT) >= 2
+			;まず必須キャラをチェック、後で3ポイント分として計算する
+			;他にもいたら加筆してほしい
+			IF 0
+			;アリス
+			ELSEIF NO:LCOUNT == [[キャラ:앨리스]]
+				LENDING_CONDITION += 1
+			;ショボたん
+			ELSEIF NO:LCOUNT == [[キャラ:모・쇼보]]
+				LENDING_CONDITION += 1
+			;ナジャ
+			ELSEIF NO:LCOUNT == [[キャラ:나쟈]]
+				LENDING_CONDITION += 1
+			;ユキンコ
+			ELSEIF NO:LCOUNT == [[キャラ:유킨코]]
+				LENDING_CONDITION += 1
+			;未来
+			ELSEIF NO:LCOUNT == [[キャラ:미라이]]
+				LENDING_CONDITION += 1
+			;こだいちゃん
+			ELSEIF NO:LCOUNT == [[キャラ:코시로]]
+				LENDING_CONDITION += 1
+			;ナナコン！！！！
+			ELSEIF NO:LCOUNT == [[キャラ:나나코]]
+				LENDING_CONDITION += 1
+			;エリカ
+			ELSEIF NO:LCOUNT == [[キャラ:에리카]]
+				LENDING_CONDITION += 1
+			;舞子
+			ELSEIF NO:LCOUNT == [[キャラ:마이코]]
+				LENDING_CONDITION += 1
+			;子供（業が深い）
+			ELSEIF TALENT:LCOUNT:아이
+				LENDING_CONDITION += 1
+			;必須キャラ以外の該当キャラの場合
+			ELSE
+				;基本は2ポイント加算
+				LENDING_CONDITION_2 = 2
+			ENDIF
+		;上位陥落はしていないが陥落している、または助手可能である場合
+		ELSEIF 陥落(LCOUNT) == 1 || CFLAG:LCOUNT:매각가능 == 2
+			;基本は1ポイント加算
+			LENDING_CONDITION_2 = 1
+		ENDIF
+		;必須キャラ条件を満たさないキャラのポイント加算処理
+		IF LENDING_CONDITION_2 >= 1
+			;小悪魔なら追加で+1
+			SIF TALENT:LCOUNT:소악마
+				LENDING_CONDITION_2 += 1
+			;幼稚ならさらに+1
+			SIF TALENT:LCOUNT:유치
+				LENDING_CONDITION_2 += 1
+			;最大3ポイントとして加算する
+			LENDING_CONDITION_1 += MIN(3, LENDING_CONDITION_2)
+		ENDIF
+
+	NEXT
+	;必須キャラが存在＋ロリキャラたちが一定以上
+	IF LENDING_CONDITION > 0
+		IF LENDING_CONDITION * 3 + LENDING_CONDITION_1 > 20 
+			SETBIT FLAG:취소된ED,6
+			CALL ENDING_NO06
+			SIF RESULT == 1
+				GOTO CONTINUE_1
+		ENDIF
+	ENDIF
+	
+ENDIF
+
+
+
+;No.01武断派ハーレムEND
+;;親愛が10人以上＋主人のLVが60以上になったため、部隊を率いることができる実力者と認められたということにします。
+IF GETBIT(FLAG:취소된ED,1) == 0 && BASE:MASTER:LV > 60 && イベントフラグ:1:1 < 1
+	;親愛人数10以上
+	LENDING_CONDITION = 0
+	FOR LCOUNT, 0, CHARANUM
+		IF LCOUNT >= 1
+			SIF TALENT:LCOUNT:친애
+				LENDING_CONDITION += 1
+		ENDIF
+	NEXT
+	IF LENDING_CONDITION > 9
+		SETBIT FLAG:취소된ED,1
+		;長かったので別関数に
+		;その内他のEDも。
+		CALL ENDING_NO01
+		
+		SIF RESULT == 1
+			GOTO CONTINUE_1
+	ENDIF
+	
+ENDIF
+
+
+
+;ベルベットルームを開いてる状態で、シバルバーでフューラーを撃破する
+IF GETBIT(FLAG:취소된ED,30) == 0 && ダンジョンフラグ:55:99
+; && DAY < 50
+	SETBIT FLAG:취소된ED,30
+	PRINTFORMW ＞시발바에서의 결전으로 기어오는 혼돈 냐를라토호테프와의 결착은 지어졌다……
+	PRINTFORMW ＞하지만, 냐를라토호테프와 팬텀 소사이어티 사이에 무언가 인연이 있는 듯하다
+	PRINTFORMW ＞그것은 냐를라토호테프의 말과,
+	PRINTFORMW ＞팬텀 소사이어티가 시발바 사건에 집착하던 사실에서 알 수 있다.
+	PRINTFORMW ＞조직은 %조사처리(CALLNAME:MASTER,"의")% 공적을 높이 평가하고 있다.
+	PRINTFORMW ＞지금 묻는다면 팬텀 소사이어티의 비밀을 들을 수 있을지도 모른다……
+	PRINTL ＞어떻게 하겠습니까?
+	PRINTL
+	CALL INPUT_YN, "상층부에 알현을 신청한다(페르소나２ 죄 END)", "쓸데없는 짓은 하지 않는다"
+	IF RESULT == 0
+		PRINTFORMW ･････････
+		PRINTFORMW ･･････
+		PRINTFORMW ･･･
+		PRINTFORMW 조직은 %조사처리(CALLNAME:MASTER,"의")% 의문에 흔쾌히 대답해 주었다
+		PRINTFORMW 팬텀 소사이어티는 인류로부터 생체 MAG를 회수하고 이용하기 위해 만들어진 조직이며,
+		PRINTFORMW 그리고 그 존재 이유 때문에 인류를 멸망시키려는 냐를라토호테프와 오랜 세월에 걸쳐 싸움을 계속해왔던 것이다
+		PRINTFORML 
+		PRINTFORMW 조직은 비밀을 알게 된 %조사처리(CALLNAME:MASTER,"에게")% 간부가 되라고 고했다
+		PRINTFORMW 그리고, 조직을 위해 냐를라토호테프를 쓰러뜨린 힘을 유용하게 쓰고,
+		PRINTFORMW 만약 다시금, 냐를라토호테프가 나타나는 일이 있다면 또다시 쓰러뜨리라고……
+		SELECTCASE GET_ALI1(ABL:MASTER:속성LD)
+			CASE "Light"
+				RESULT = 1
+			CASE "Neutral"
+				CALL INPUT_YN, "조직을 따른다", "조직을 따르지 않는다"
+			CASE "Dark"
+				RESULT = 0
+		ENDSELECT
+		IF RESULT
+			PRINTFORMW %조사처리(CALLNAME:MASTER,"는")% 팬텀 소사이어티를 빠져나와, 탈주자가 되었다
+			PRINTL 
+			PRINTFORMW 팬텀 소사이어티를 따른다면, 신변의 안전은 물론이고,
+			PRINTFORMW 냐를라토호테프뿐만 아니라, 인류를 멸망시키려는 자와 싸우는 데 힘을 빌려줄 것이다……
+			PRINTFORMW 하지만, 그런 식으로 구원받는 것이야말로, 저 기어오는 혼돈이 비웃었던 것이 아니었던가
+			PRINTL 
+			PRINTFORMW 팬텀 소사이어티는 %조사처리(CALLNAME:MASTER,"를")% 벌할 것이다
+			PRINTFORMW 그러나, %조사처리(CALLNAME:MASTER,"는")% 자신의 삶을 팔아넘기는 죄악에서는 벗어났다
+			PRINTL 
+			PRINTFORMW 앞으로 어떻게 될지는 알 수 없다……
+			PRINTFORMW 하지만, 언젠가 모순을 품은 인간의 마음이 완전한 것으로 진화할 가능성을 보여줄 수 있을지도 모른다
+			PRINTFORMW 그리고, 그때야말로 %조사처리(CALLNAME:MASTER,"가")% 진정한 의미에서 저 기어오는 혼돈에 승리하는 것이다……
+		ELSE
+			PRINTFORMW %조사처리(CALLNAME:MASTER,"는")% 팬텀 소사이어티의 간부가 되었다
+			PRINTL 
+			PRINTFORMW 『그 녀석을 억누르려면, 인간 자체가 변해야만 하네』
+			PRINTFORMW 필레몬은 %조사처리(CALLNAME:MASTER,"에게")% 그렇게 고했다
+			PRINTL 
+			PRINTFORMW 그렇다면, %조사처리(CALLNAME:MASTER,"는")% 언젠가 냐를라토호테프를 완전히 멸망시킬 것이다……
+			PRINTFORMW 그래…… %조사처리(CALLNAME:MASTER,"는")% 사람들을 파멸 따위 바라지 않는 얌전한 양으로 조교하여, 죄 없는 낙원으로 이끌 테니까
+		ENDIF
+		PRINTW 　　　　　　　　―― Ending No.030 (페르소나 2 END "Innocent Sin")
+		FLAG:5 = 9
+		SETBIT FLAG:발견ED,30
+		GOTO CONTINUE_2
+	ELSE
+		;ロンギヌスシリーズ１３名を恋慕系で陥落
+		CALL ロンギヌス_END_CHECK
+		IF RESULT == 1
+			PRINTFORMW ＞이제 조직과 기어오는 혼돈의 악연 따위에는 흥미가 없다.
+			PRINTFORML ＞하지만 스마루시에서 다시금 잠든 시발바. 조직은 사건이 정리된 것으로 치부해 버렸지만,
+			PRINTFORMW ＞%조사처리(CALLNAME:MASTER,"의")% 수하에는 13인의 성창기사가, 단 한 명도 빠짐없이 따르고 있다
+			PRINTFORMW ＞어쩌면, 그녀들의 힘을 빌린다면 저 우주모선을 다시 부상시키는 것도 가능하지 않을까?
+			PRINTFORML ＞하지만, 발각된다면 배임 행위로서 %조사처리(CALLNAME:MASTER,"는")% 조직에서 쫓겨나게 될 것이다…
+			PRINTFORMW ＞그녀들과 함께 조직을 빠져나와, 새로운 세력을 일으켜서라도 행동에 나설 가치는 있는 것일까?
+			CALL INPUT_YN, "시발바를 부상시킨다(페르소나２ 죄 성창기사단 하렘 END)", "그만둔다"
+			IF RESULT == 0
+				PRINTFORMW ･････････
+				PRINTFORMW ･･････
+				PRINTFORMW ･･･
+				PRINTFORMW 인류의 고결함을 관찰하기 위해, 인류를 멸망시키려 하는 냐를라토호테프
+				PRINTFORMW 그 혼돈과 대립하며, 시발바의 부상에 의한 인류 전멸을 저지한 팬텀 소사이어티
+				PRINTFORMW 그리고, 인류의 앞날을 방관자로서 관측을 계속하는 필레몬
+				PRINTFORML 몇 번이고 반복되어 끝이 보이지 않는 투쟁에 몸을 던진 %조사처리(CALLNAME:MASTER,"는")%,
+				PRINTFORMW 그러나 그 결말에 큰 관심을 두고 있지는 않았다
+				PRINTFORMW 지금 그에게 필요한 것은, 「그녀들」과의 시간과, 그것을 만들기 위한 계획뿐이다
+				PRINTL 
+				PRINTFORMW 조직으로부터 기어오는 혼돈을 향한 비장의 카드로 주목받은 %조사처리(CALLNAME:MASTER,"는")%,
+				PRINTFORMW 스마루시에 새로운 거점을 쌓고, 조직에 면종복배하는 자세를 유지했다
+				PRINTFORMW 이제 이 거리의 소문이 현실이 되는 일은 없으며, 마이야의 신탁이 현실이 되는 일도 없다
+				PRINTFORMW 하지만, %조사처리(CALLNAME:MASTER,"의")% 곁에는 13인의 성창기사단이, 의심할 여지 없이 여기에 있다
+				PRINTFORML 한때 사람들의 입에 오르내리던 라스트 바탈리온의 소문의 현실화. 온갖 억측과 공상, 소망에서 태어난 그녀들은,
+				PRINTFORMW %조사처리(CALLNAME:MASTER,"와")% 살을 맞대고 사랑을 속삭이며, 이윽고 한 사람의 인간으로서 %조사처리(CALLNAME:MASTER,"에게")% 사랑과 충성을 맹세하자,
+				PRINTFORMW 강요받았던 선민사상이나 과거 총통을 향한 충성심을 내던지고, 그 능력을 자신들의 소망을 이루기 위해 발휘했다
+				PRINTL 
+				PRINTFORML 기어오는 혼돈과의 싸움 이후, %조사처리(CALLNAME:MASTER,"에게")% 주어진 새로운 임무는,
+				PRINTFORMW 스마루시에 남겨져, 우직하게도 증원이라는 「소문」을 믿으며 버티고 있던 라스트 바탈리온의 잔당 사냥이었다
+				PRINTL 
+				PRINTFORML 지도자를 잃고 고립무원이었던 그들과의 교섭은, 성창기사단이 곁에 버티고 서 있었던 덕분에 참으로 수월했다
+				PRINTFORML 또한, 악마에 뒤지지 않는 로봇 병사의 운용을 가능케 한, 나치 경이의 과학력마저 손에 넣어,
+				PRINTFORMW 팬텀 소사이어티나 메시아교, 가이아교… 도쿄를 분할 점령한 다양한 세력과 맞설 만한 전력을 손에 넣었다
+				PRINTFORML 이렇게 최후의 대대라 불리던 병사들은, 13인의 성창기사의 지휘 아래, %조사처리(CALLNAME:MASTER,"의")% 병사로서
+				PRINTFORMW 하켄크로이츠를 떼어낸 새로운 깃발을 내걸고, 혼돈에 휩싸인 도쿄의 세력도에 새로운 색채를 덧칠하기 시작한다…
+				PRINTL 
+				PRINTFORMW 도쿄 상공
+				PRINTL 
+				PRINTFORMW 스마루시・시발바
+				PRINTL 
+				PRINTFORMW 비좁은 도쿄 속에서 일대 세력을 쌓아 올린 %조사처리(CALLNAME:MASTER,"들")%은, 진작부터 본거지로 삼았던 스마루에 틀어박혀,
+				PRINTFORML 다시금 스마루시를 완전히 독점한다
+				PRINTFORMW 라스트 바탈리온이 지닌 경이로운 과학력을 총동원하여, 마침내 잠들어 있던 시발바를 다시 부상시키는 데 성공한다
+				PRINTFORML 과거 우주전쟁에서 살아남은 우주모선으로서 기동한 시발바는, 소문에 걸맞은 난공불락의 요새로서,
+				PRINTFORMW 그리고 지금은 %조사처리(CALLNAME:MASTER,"들")%의 새로운 거점으로서, 왕의 거처처럼 도쿄의 하늘에 군림했다…
+				PRINTFORMW 
+				PRINTFORML 세계에서 가장 안전한 장소에서 사랑하는 기사단과 노예들과의 밀월의 나날을 보내는 %조사처리(CALLNAME:MASTER,"는")%,
+				PRINTFORMW 과거 이곳에서 기어오는 혼돈과 나누었던 대화를 회상한다
+				PRINTFORMW 우리의 성채인 시발바도, 충실한 라스트 바탈리온도, 그리고 그녀들도,
+				PRINTFORMW 인간이 바라는 그대로의 모습을 부여받은 혼돈의 일부에 지나지 않는다고
+				PRINTFORMW 그렇다면, 그녀들과 보내는 이 밀월조차, 그 혼돈이 예기하고 비웃기 위해 마련해 둔 것인가?
+				PRINTFORMW 설령 그것이 사실이라 하더라도, 이제 %조사처리(CALLNAME:MASTER,"에게")% 있어서는 큰 문제가 아니다
+				PRINTFORMW 비웃고 싶다면 비웃으라지, 인류를 멸망시키고 싶다면 멸망시키라지
+				PRINTFORMW 하지만 결코, 이 행복을 빼앗아 가기는 쉽지 않을 것이다
+				PRINTFORMW 그녀들이 %조사처리(CALLNAME:MASTER,"를")% 사랑하고 있는 한, 자신은 성창기사단의 우두머리로 남을 테니까
+				PRINTFORMW 별이 반짝이는 밤하늘 같은 도쿄의 야경을 눈 아래 담으며, %조사처리(CALLNAME:MASTER,"는")% 스스로의 결의를 되새겼다
+				PRINTW 　　　　　　　　―― Ending No.031 (페르소나 2 죄 성창기사단 하렘 END "Ehemann von Longinus")
+				FLAG:5 = 9
+				SETBIT FLAG:발견ED,31
+				GOTO CONTINUE_2
+			ELSE
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+
+
+;No.19アイドルEND
+;主人の歌唱技能10以上+ライブ経験300以上+人気を持っている
+IF ABL:MASTER:가창기능 >= 10 && EXP:MASTER:라이브경험 >= 300 && TALENT:MASTER:인기 == 1 && GETBIT(FLAG:취소된ED,19) == 0
+	SETBIT FLAG:취소된ED,19
+	PRINTL
+	PRINTFORMW ＞%조사처리(CALLNAME:MASTER,"가")% 라이브를 열면 수많은 사람들이 몰려들게 되었다
+	PRINTW ＞이 정도까지 왔다면、본격적으로 아이돌이 되어도 문제는 없을 것 같다……
+	PRINTW ＞이대로 아이돌이 되겠습니까?
+	PRINTL
+	CALL INPUT_YN, "Yes(아이돌 END)", "No"
+	IF RESULT == 0
+		CALL ENDING_NO19
+		GOTO CONTINUE_2
+	ENDIF
+ENDIF
+
+;No.22 娘ハーレムEND
+;;親愛つきの娘が10人以上＋主人のLVが60以上
+IF GETBIT(FLAG:취소된ED,5) == 0 && BASE:MASTER:LV >= 60
+	;親愛の娘人数10以上
+	LENDING_CONDITION = 0
+	FOR LCOUNT, 0, CHARANUM
+		IF LCOUNT >= 1
+			SIF TALENT:LCOUNT:친애 && TALENT:LCOUNT:아이
+				LENDING_CONDITION += 1
+		ENDIF
+	NEXT
+	IF LENDING_CONDITION > 9
+		SETBIT FLAG:취소된ED,5
+		;長かったので別関数に
+		;その内他のEDも。
+		CALL ENDING_NO05
+		
+		SIF RESULT == 1
+			GOTO CONTINUE_1
+	ENDIF
+ENDIF
+
+
+
+
+
+
+;借金返せなかったよEND
+IF MONEY < 0 
+	PRINTFORMW ＞빚으로 앞날이 캄캄하다
+	PRINTFORMW ＞스스로 빚을 갚는 것을 포기해 버릴까……
+	PRINTL
+	CALL INPUT_YN, "포기한다(빚 미변제 END)", "좀 더 버텨본다"
+	IF RESULT == 0
+		IF RAND:2 == 0
+			CALL BADENDING_1
+		ELSE
+			CALL BADENDING_2
+		ENDIF
+		GOTO CONTINUE_2
+	ENDIF
+ENDIF
+
+;マーラ様END
+;IF 0 == 1
+;	PRINTW 徐々に触手が世界を侵食しはじめていた
+;	PRINTW 寄生触手によるバイオハザードは静かにだが、確実に進行し
+;	PRINTFORMW %CALLNAME:MASTER%は百合の花共同募金、翔門会、聖エルミン学園、七姉妹学園、月光館学園を手中に収め
+;	PRINTW メシア教、ガイア教をも支配しつつあった…
+;	PRINTW 
+;	PRINTW 異界化したビル
+;	PRINTW そこには強大な質量を持った暗緑色の男性器の様な悪魔がいた
+;	PRINTW 悪魔の名は魔王マーラ
+;	PRINTFORMW マーラに世界の侵食状況を報告する為に魔王の元を訪れた%CALLNAME:MASTER%は無数の触手に弄ばれていた
+;	PRINTW 四肢には粘液にまみれた無数の触手が絡みつき、
+;	IF TALENT:MASTER:140 == 1
+;		PRINTW 勃起した肉棒をいくつもの柔らかなヒダを備えた触手により犯され、尻穴も魔王の触手により押し広げられる
+;	ELSE
+;		PRINTW 両穴は複数の触手に同時に犯され、広げられ、腹部は妊娠したように異様なほど膨らんでいる
+;	ENDIF
+;	PRINTFORMW 触手による陵辱に触手と同化した%CALLNAME:MASTER%の身体は歓喜にうち震え
+;	PRINTFORMW やがて……辛うじて理性を保ち触手侵略の進捗状況を述べていた%CALLNAME:MASTER%は思考する事を放棄すると
+;	PRINTW 快楽に溺れ嬌声をあげ肉欲の虜になった……
+;	PRINTW 
+;	;PRINTW ルイ・サイファー「そんな侵略計画で大丈夫か？」
+;	PRINTW 
+;	PRINTW 　　　　　　　　―― Ending No.XX2 (マーラ姫エンド)
+;
+;
+;ENDIF
+
+;ADD 004 START----------------------------------
+;(4)キャラ別ノーマルエンド
+;Eraの数値目標百万円を納金＋５０日以内＋いずれかの契約を行った奴隷がいる
+IF FLAG:조직공헌도 >= 1000000 && DAY < 51 && GETBIT(FLAG:취소된ED,4) == 0
+	;いずれかの契約したかつEND口上のある奴隷がいるかどうか
+	;先にリスト化しちゃえ
+	TSTR:END종별 = 個別END
+	;---- EDIT P 001 MOD START -------------------------
+	;ひとりでも条件を満たしていれば進める
+	FOR LCOUNT, 0, CHARANUM
+		CALL CASTING_SELECT_PARTNER, LCOUNT
+		SIF !RESULT
+			CONTINUE
+		BREAK
+	NEXT
+	;---- EDIT P 001 MOD END ---------------------------
+	;VARSET Q, -1
+	;FOR LOCAL , 1 , CHARANUM
+	;	SIF 계약(LOCAL) == 0
+	;		CONTINUE
+	;	SIF CFLAG:LOCAL:이자리에없는플래그 == 1
+	;		CONTINUE
+	;	TARGET = LOCAL
+	;	;END口上があるかどうか判別
+	;	TRYCCALLFORM ENDING_CHECK%口上関数末尾文字(LOCAL)%
+	;		SIF RESULT == 0
+	;			CONTINUE
+	;	CATCH
+	;		CONTINUE
+	;	ENDCATCH
+	;	Q:FINDELEMENT(Q , -1) = LOCAL
+	;NEXT
+	;IF Q:0 > 0
+	IF RESULT
+		PRINTL
+		PRINTFORMW ＞%조사처리(CALLNAME:MASTER,"는")% 서머너로서 대성하여、조직에 충분한 공헌을 다했다。
+		PRINTFORMW ＞그리고、파트너로서 걸맞다고 생각되는 상대도 찾아냈다。
+		PRINTFORMW ＞이 타이밍에 파트너를 얻어、서머너로서 매듭을 지어야 할까…
+		PRINTL
+		CALL INPUT_YN, "매듭을 짓는다(캐릭터 개별 노멀 END)", "아직 이르다"
+		IF RESULT == 0
+			;パートナー選択
+			;表示させるキャラを抽出（Q:*に表示するキャラの登録番号、LOCAL:2に人数）
+			;---- EDIT P 001 MOD START -------------------------
+			CALL SELECT_CHARAEND_PARTNER
+			;---- EDIT P 001 MOD END ---------------------------
+			TARGET = RESULT
+			IF RESULT == 0
+				SETBIT FLAG:취소된ED,4
+				PRINTFORML ＞파트너를 선택하지 않았기 때문에、개별 노멀 엔딩을 취소합니다。
+				PRINTFORMW ＞…매듭을 짓기에는 아직 이르다。　다음 목표에 착수하자。
+			ELSEIF 계약(TARGET) == 0
+				PRINTFORML ＞Error, please try again tomorrow.
+				RETURN 0
+			ELSE
+				CALL SET_ACHIEVED_CHARA_ENDING, TARGET, TSTR:END종별
+				CALLF 陥落(TARGET)
+				SELECTCASE RESULTS
+					CASE "연모"
+						CALL SET_ACHIEVED_CHARA_ENDING, TARGET, "妻・夫END"
+					CASE "음란"
+						CALL SET_ACHIEVED_CHARA_ENDING, TARGET, "淫魔END"
+					CASE "복종"
+						CALL SET_ACHIEVED_CHARA_ENDING, TARGET, "玩具END"
+					CASE "신뢰"
+						CALL SET_ACHIEVED_CHARA_ENDING, TARGET, "盟友END"
+				ENDSELECT
+				SETBIT FLAG:취소된ED,4
+				PRINTFORMW ＞%조사처리(CALLNAME:MASTER,"는")% %조사처리(CALLNAME:TARGET,"를")% 파트너로 삼았다…
+				PRINTL
+				CFLAG:TARGET:21 = 1
+				CALL 口上呼び出し , "KOJO_MESSAGE_ENDING"
+				;---- EDIT P 001 ADD START -------------------------
+				;口上がなかった場合
+				IF RESULT == 0
+					PRINTFORMW ＞이렇게 해서 %조사처리(CALLNAME:MASTER,"의")% 이야기는 하나의 끝을 맞이했다。
+					PRINTFORMW ＞그렇다고는 하나、이 파란만장한 세상、마냥 편안히 있을 수는 없다。
+					PRINTFORMW ＞머지않은 미래에、%조사처리(CALLNAME:TARGET,"와")% 함께 새로운 사건으로 향할 날이 올 것이 틀림없다…
+					PRINTFORMW ＞하지만、그것은 또 다른 이야기다…… 이번에는 이것으로 막을 내리기로 하자。
+				ENDIF
+				;---- EDIT P 001 ADD END ---------------------------
+				TSTR:END종별 = 
+				FLAG:5 = 9
+				SETBIT FLAG:발견ED,4
+				SIF RESULT == 1
+					GOTO CONTINUE_2
+				GOTO CONTINUE_1
+			ENDIF
+		ELSE
+			SETBIT FLAG:취소된ED,4
+			PRINTFORMW ＞…매듭을 짓기에는 아직 이르다。　다음 목표에 착수하자。
+		ENDIF
+	ENDIF
+	TSTR:END종별 = 
+ENDIF
+;ADD 004 END----------------------------------
+
+
+;まどマギＭＯＤ追加分
+;インキュベーターED
+;ラスボスを撃破し、キュウべえルートの時にエンディング
+IF イベントフラグ:99:3 && GETBIT(FLAG:취소된ED2,9) == 0
+	TSTR:END종별 = まどか☆マギカEND
+	SETBIT FLAG:취소된ED2,9
+	PRINTW …………
+	PRINTW ………
+	PRINTW …
+	PRINTFORMW 카나메 마도카와의 결전을 마치고、세이프하우스로 돌아온 %조사처리(CALLNAME:MASTER,"")%。
+	PRINTW 한숨 돌린 바로 그 순간、눈앞에 인큐베이터가 나타났다。
+	PRINTW 「동맹자여。우선은 감사를 표하도록 하지。」
+	PRINTW 「네 덕분에 우리들의 우주는 거의 전부 원래대로 돌아왔어。」
+	PRINTW 「그리고 마지막으로、네 손에는 우주마저 바꿀 수 있는 인과가 남았다。」
+	PRINTW 「…자、들려주겠니。네 손에 있는 것은 신에게서 빼앗아낸 인과와 혼。」
+	PRINTW 「그것을 쓴다면、얼마나 터무니없는 소원이라도 이룰 수 있을 거야。」
+	PRINTW 「그 인과를 대가로、너는 무엇을 바라지?」
+	CALL INPUT_YN, "소원을 말한다(마법소녀 마도카☆마기카 END)", "소원을 빌지 않는다"
+	IF RESULT == 0
+		PRINTW 「―――인가。네 소원은 그것이로군。」
+		PRINTW 「너의 기도는、엔트로피를 능가했다。자、보렴。새로운 세계를!」
+		PRINTL
+		PRINTW …………
+		PRINTW ………
+		PRINTW …
+		PRINTL
+		PRINTW 「안녕。동맹자여。새로운 세계의 신이 된 네 모습을 보러 왔어。」
+		PRINTW 「네 소원은 이루어졌다。인과율을 왜곡하여、너 자신을 신의 좌에 밀어 올리는 형태로 말이지。」
+		PRINTW 「그리고 네 힘은 이 우주 그 자체를 개변하여、신도 악마도 『처음부터 존재하지 않았던』 세계를 만들어냈어。」
+		PRINTL 　　　　　　　　　　　　　생체 마그네타이트
+		PRINTW 「엔트로피를 뒤엎을 수 있는 『감정 에너지』를 네 소원이 독점했다。따라서 그들이 존재할 여지가 없어진 거지。」
+		PRINTL
+		PRINTW 「네가 소속되어 있던 팬텀 소사이어티가 신봉하던 『위대한 존재』도 우주 개변에 의해 소멸했다。」
+		PRINTW 「팬텀 소사이어티는 지금、너와 너의 우주를 위해 에너지를 회수하는 기관으로서 존재하고 있어。」
+		PRINTW 「그리고 그들이 회수하는 것은、우리들이 만들어낸 마법소녀。」
+		PRINTW 「이 우주를 위해 죽어주는 그녀들 덕분에、우리들과 너의 우주는 구원받은 거야。」
+		PRINTW 「그럼 작별이다、동맹자여。너와 너의 우주가 영원토록 함께하기를。」
+		PRINTL
+		PRINTW …………
+		PRINTW ………
+		PRINTW …
+		PRINTL
+		PRINTW 『이 아이、고양이인가? 귀여워ー!』『토모코。난 너에게 부탁이 있어서 왔어』
+		PRINTL 
+		PRINTW ―――그 세계에서는、신과 악마 대신에 마법이 존재했다。
+		PRINTL 
+		PRINTW 『이것이 제 소원이에요。이루어주세요!』『이데오를 구한다。그것이 네 소원이로군?』
+		PRINTL 
+		PRINTW ―――기도로 시작되어、
+		PRINTL 
+		PRINTW 『사랑의 전사、마법소녀☆매지컬 도리!』『마、마법소녀、매지컬☆소데코………』
+		PRINTL 
+		PRINTW ―――희망을 뿌리고、
+		PRINTL 
+		PRINTW 『어… 어떻게 된 거야、타케바!』『바보 같지、나。아빠에게도、키리조 선배에게도…』
+		PRINTL 
+		PRINTW ―――절망으로 끝나며、
+		PRINTL 
+		PRINTL 「유키코! 유키코오! 어째서… 어째서 이런 거야!? 대답해 큐베!!!」
+		PRINTW 「어째서… 어째서 아마기 선배가、괴물로… 마녀가 되어야만 하는 겁니까!?」
+		PRINTL 
+		PRINTW ―――저주만을 남기는、우주를 구하기 위한 마법의 힘。
+		PRINTW 그 세계에는、악마와 신 대신에 마법이 존재하고 있었던 것이었다。
+		PRINTFORMW 그리고 그 세계에는、오직 %CALLNAME:MASTER%만이 『위대한 존재』로서 군림한다。
+		PRINTFORMW 신도 악마도 존재하지 않게 된 세계에 홀로、%조사처리(CALLNAME:MASTER,"는")% 절대자로서 계속 군림한다。
+		PRINTFORMW 마법소녀들을 산 제물로 삼아、%CALLNAME:MASTER%와(과) 그 신위는 우주와 함께 영원히 존재해 나가는 것이다…
+		PRINTW …………
+		PRINTW ………
+		PRINTW …
+		PRINTW 
+		PRINTW 「어떤 희망이든、그것이 도리에 어긋나는 것인 이상、반드시 어떠한 일그러짐을 낳기 마련이야。」
+		PRINTW 「이윽고 그곳에서 재앙이 일어나는 것은 당연한 섭리지。」
+		PRINTW 「엔트로피의 지배로부터는、벗어날 수 없어。」
+		PRINTW 「그런데도 모두가 다、우리들이 배신했다고 비난한단 말이지。」
+		PRINTW 「그런 당연한 결말을 배신이라고 부른다면、애초에 소원 같은 걸 빈 것 자체가 잘못인데 말이야。」
+		PRINTW 「…큐뿌이!」
+		PRINTL
+		PRINTW 　　　　　　　　―― Ending No.073 (식어가는 우주의 이야기 "Puella Magi Madoka☆Magica END")
+		FLAG:5 = 9
+		SETBIT FLAG:발견ED2,9
+		GOTO CONTINUE_2
+	ELSE
+		PRINTW 「…그런가。너는 소원을 이룰 생각이 없구나?」
+		PRINTW 「아쉽지만 어쩔 수 없지。내 입장에서 재촉할 수는 없으니까。」
+		PRINTW 「…아까운 짓을 했네、동맹자여。잘 가。」
+		PRINTW 인큐베이터는 어딘가로 떠나갔다。
+		PRINTW
+		PRINTFORMW %조사처리(CALLNAME:MASTER,"의")% 상사로부터 연락이 왔다。
+		PRINTFORMW %조사처리(CALLNAME:MASTER,"가")% 이용했던 정보집적 빌딩이 거대한 악마의 습격을 받았다는 것이다。
+		PRINTW 악마는 정보집적 빌딩을 파괴한 뒤 소멸했고、정보집적 빌딩에 들어있던 수많은 기밀 정보가 잿더미가 되었다고 한다。
+		PRINTW 마법소녀에 관련된 수많은 기록과 연구 데이터도、모두 함께。
+		PRINTL
+		PRINTW ――『증거인멸을 위해、이 세계로 데려올 수도 있다고 말했을 뿐이야。』――
+		PRINTL
+		PRINTW 아마도 인큐베이터가 『발푸르기스의 밤』이라는 마녀로 증거인멸을 감행한 것이리라。
+		PRINTW 그렇다면 인큐베이터는 이제 모습을 드러내지 않을 것이다。
+		PRINTW 이제는 완전한 블랙박스가 되어버린 인스톨 소프트。
+		PRINTW 단지 그것만을 남긴 채、『미확인 악마의 배제』 미션은 종료된 것이었다。
+		PRINTL
+	ENDIF
+TSTR:END종별 = 
+ENDIF
+;まどマギＭＯＤ追加分ここまで。
+
+TARGET = LOCAL:10
+RETURN 0
+
+$CONTINUE_1
+PRINTFORML [0]끝낸다 [1]계속한다 [2]일부 데이터를 인계하여、새롭게 시작한다
+CALL INPUTINT,0, 1, 2
+GOTO RESULT_SELECT
+
+$CONTINUE_2
+PRINTFORML [0]끝낸다 [2]일부 데이터를 인계하여、새롭게 시작한다
+CALL INPUTINT,0, 2
+
+$RESULT_SELECT
+IF RESULT == 0
+	QUIT
+ELSEIF RESULT == 1
+	TARGET = LOCAL:10
+	RETURN 0
+ELSEIF RESULT == 2
+	CALL START_NEWGAME
+	RETURN 1
+ENDIF
+
+;バッドエンド
+@BADENDING_1
+DRAWLINE
+PRINTFORMW 팬텀 소사이어티는 %조사처리(NAME:MASTER,"를")% 할당량을 지불할 의사가 없다고 판단했다。
+PRINTFORMW 지시받은 임무조차 해내지 못하는 서머너는 도움이 되기는커녕 다른 조직원의 발목을 잡을 뿐이다。
+PRINTFORMW 팬텀 소사이어티 상층부는 %조사처리(NAME:MASTER,"를")% 처분하기로 결정했다。
+PRINTW ...........
+PRINTW .......
+PRINTW ...
+IF TALENT:MASTER:남자 && TALENT:MASTER:오토코노코 == 0
+	PRINTFORMW 그 후、%조사처리(NAME:MASTER,"의")% 행방을 아는 자는 아무도 없었다……
+	PRINTW 
+	PRINTW 　　　　　　　　――  Bad Ending No.030 ( 빚 미변제 END -쓸모없는 자의 말로- )
+	CALL GLOBAL_BADEND_SET(30)
+ELSE
+	PRINTFORMW 그 후、%조사처리(NAME:MASTER,"는")% 팬텀 소사이어티 조직원 전용의 성처리 변기로서 생을 마감하게 되었다……
+	PRINTW 
+	PRINTW 　　　　　　　　――  Bad Ending No.031 ( 빚 미변제 END -육혈의 말로- )
+	CALL GLOBAL_BADEND_SET(31)
+ENDIF
+;CALL GAME_OVER
+
+@BADENDING_2
+DRAWLINE
+PRINTFORMW %조사처리(NAME:MASTER,"는")% 사무소 경영에 실패하여、파산하고 말았다。
+IF TALENT:MASTER:남자 && TALENT:MASTER:오토코노코 == 0
+	PRINTFORMW 스스로 빚조차 갚지 못하는 서머너는 도움이 되기는커녕 다른 조직원의 발목을 잡을 뿐이다。
+	PRINTFORMW 팬텀 소사이어티 상층부는 %조사처리(NAME:MASTER,"를")% 처분하기로 결정했다。
+	PRINTW ...........
+	PRINTW .......
+	PRINTW ...
+	PRINTFORMW 그 후、%조사처리(NAME:MASTER,"의")% 행방을 아는 자는 아무도 없었다……
+	PRINTW 
+	PRINTW 　　　　　　　　――  Bad Ending No.032 ( 빚 미변제 END -얼간이의 말로- )
+	CALL GLOBAL_BADEND_SET(32)
+ELSE
+	PRINTFORMW 게다가 떠안은 빚을 갚을 방도조차 보이지 않는다。
+	PRINTFORMW 팬텀 소사이어티는 %조사처리(NAME:MASTER,"의")% 빚과 동일한 금액으로、%조사처리(CALLNAME:MASTER,"의")% 몸을 사들였다。
+	PRINTW ...........
+	PRINTW .......
+	PRINTW ...
+	
+	SELECTCASE RAND:4
+		CASE 0
+			PRINTFORMW 그 후、%조사처리(NAME:MASTER,"는")% 팬텀 소사이어티 조직원 전용의 성처리 변기로서 생을 마감하게 되었다……
+			PRINTW 
+			PRINTW 　　　　　　　　――  Bad Ending No.033 ( 빚 미변제 END -성처리 변기의 말로- )
+			CALL GLOBAL_BADEND_SET(33)
+		CASE 1
+			PRINTFORMW 그 후、%조사처리(NAME:MASTER,"는")% 팬텀 소사이어티 소유의 창부로서、죽을 때까지 손님을 계속 받게 되었다……
+			PRINTW 
+			PRINTW 　　　　　　　　――  Bad Ending No.034 ( 빚 미변제 END -창부의 말로- )
+			CALL GLOBAL_BADEND_SET(34)
+		CASE 2
+			PRINTFORMW 그 후、%조사처리(NAME:MASTER,"는")% 악마와의 교섭 재료로서 서머너들에게 이용당하며、다리를 벌려 그들을 계속 받아들였다……
+			PRINTW 　　　　　　　　――  Bad Ending No.035 ( 빚 미변제 END -제물의 말로- )
+			CALL GLOBAL_BADEND_SET(35)
+		CASEELSE
+			PRINTFORMW 그 후、%조사처리(NAME:MASTER,"는")% MAG 회수용 공중 육변기로서 생을 마감하게 되었다……
+			PRINTW 　　　　　　　　――  Bad Ending No.036 ( 빚 미변제 END -공중 육변기의 말로- )
+			CALL GLOBAL_BADEND_SET(36)
+	ENDSELECT
+ENDIF
+
+;グッドエンド
+;ノーマルエンド
+@ENDING_1
+DRAWLINE
+SIF TARGET > -1
+	CFLAG:TARGET:21 = 1
+
+CALL 口上呼び出し , "KOJO_MESSAGE_ENDING"
+FLAG:5 = 9
+CALL GAME_CONTINUE
+
+@GAME_CONTINUE
+PRINTL 게임을 계속하시겠습니까?
+
+CALL INPUT_YN, "끝낸다", "계속한다"
+
+SELECTCASE RESULT
+	CASE 0
+		QUIT
+	CASE 1
+		FLAG:5 = 9
+ENDSELECT
+PRINTL  
+
+RETURN 1
+
+
+;エンディングパートナー選択
+@SELECT_PARTNER, ARGS = "CASTING_SELECT_PARTNER"
+;CALL INPUT_CHARA_LIST("連れ添うパートナーを選択してください", "", "", "", "", "選ばない")
+{
+CALL INPUT_CHARA_LIST
+	, "FUNC_PROPSET_LIST"
+	, "함께할 파트너를 선택해 주십시오"
+	, ARGS 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "선택하지 않는다"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+IF RESULT != 1000
+	RETURN RESULT
+ENDIF
+RETURN 0
+
+@CASTING_SELECT_PARTNER, ARG
+SIF ARG == MASTER
+	RETURN 0
+SIF 계약(ARG) == 0
+	RETURN 0
+SIF CFLAG:ARG:이자리에없는플래그 == 1
+	RETURN 0
+SIF CFLAG:ARG:전투이외불능
+	RETURN 0
+RETURN 1
+
+@CASTING_SELECT_TRAINER_PARTNER, ARG
+SIF ARG == MASTER
+	RETURN 0
+SIF CFLAG:ARG:이자리에없는플래그 == 1
+	RETURN 0
+SIF CFLAG:ARG:전투이외불능
+	RETURN 0
+RETURN 1
+
+;---- EDIT P 001 ADD START -------------------------
+;個別ENDのパートナー指定
+@SELECT_CHARAEND_PARTNER
+{
+CALL INPUT_CHARA_LIST
+	, "FUNC_CHARAEND_PARTNER_LIST"
+	, "함께할 파트너를 선택해 주십시오"
+	, "CASTING_SELECT_PARTNER"
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "선택하지 않는다"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CHARAEND_COLOR"
+	, -1
+}
+IF RESULT != 1000
+	RETURN RESULT
+ENDIF
+RETURN 0
+
+@FUNC_CHARAEND_PARTNER_LIST
+RESULTS = NO_NAME_LV_ALI_SEX_POS_体力_気力_LOYALTY_FALLTALENT_KOJOCHARAEND
+
+;--------------------------------------------------------------------------------
+;NO
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_KOJOCHARAEND_HEADER
+INFO_HEADER += "　" + SET_BUTTON_TAG(TOALIGNMENT("ED구상", 6, "CENTER"), "SORT,KOJOCHARAEND")
+
+@GET_VAR_INFO_DATA_KOJOCHARAEND, ARG
+#DIM DYNAMIC STOCK_TARGET
+;END口上があるかどうか判別
+RESULT = 0
+STOCK_TARGET = TARGET
+TARGET = ARG
+TRYCALLFORM ENDING_CHECK%口上関数末尾文字(ARG)%
+TARGET = STOCK_TARGET
+IF RESULT
+	RESULTS =  있음 
+ELSE
+	RESULTS = 
+ENDIF
+
+@GET_INFO_SORT_KEY_KOJOCHARAEND, ARG, ARGS
+#DIM DYNAMIC STOCK_TARGET
+;END口上があるかどうか判別
+RESULT = 0
+STOCK_TARGET = TARGET
+TARGET = ARG
+TRYCALLFORM ENDING_CHECK%口上関数末尾文字(ARG)%
+TARGET = STOCK_TARGET
+RETURN RESULT
+
+@FUNC_CHARAEND_COLOR, ARG
+#DIM DYNAMIC STOCK_TARGET
+STOCK_TARGET = TARGET
+TARGET = ARG
+;END口上があるかどうか判別
+RESULT = 0
+TRYCALLFORM ENDING_CHECK%口上関数末尾文字(ARG)%
+TARGET = STOCK_TARGET
+SIF RESULT == 0
+	RETURN 0
+RETURN COLOR("p-green")
+
+@SELECT_CHARA_END_COLOR, ARG
+#DIM DYNAMIC STOCK_TARGET
+STOCK_TARGET = TARGET
+TARGET = ARG
+;END口上があるかどうか判別
+RESULT = 0
+TRYCALLFORM ENDING_CHECK%口上関数末尾文字(ARG)%
+TARGET = STOCK_TARGET
+SIF RESULT == 0
+	RETURN 0
+;---- EDIT P 001 ADD END ---------------------------
+
+@ENDING_NO06
+#DIM LCOUNT
+#DIM 연모인수
+#DIM 음란인수
+#DIM 복종인수
+;ロリハーレムエンド
+;ロリと一定以上ラブラブになれ
+	FOR LCOUNT, 0, CHARANUM
+		;あなたは除外
+		SIF LCOUNT == MASTER
+			CONTINUE
+		;男はダメ
+		SIF TALENT:LCOUNT:남자
+			CONTINUE
+		;小柄/小人体型ではない場合はダメ
+		SIF !(TALENT:LCOUNT:유아체형 || TALENT:LCOUNT:소인체형)
+			CONTINUE
+		;調教されていないキャラはダメ
+		SIF CFLAG:LCOUNT:피조교횟수 <= 0
+			CONTINUE
+		;陥落しているか助手可能なロリの陥落をカウント
+		IF 陥落(LCOUNT) >= 1
+			SIF RESULTS == "연모"
+				연모인수 += 1
+			SIF RESULTS == "음란"
+				음란인수 += 1
+			SIF RESULTS == "복종"
+				복종인수 += 1
+		ENDIF
+	NEXT
+
+	PRINTFORML ＞%CALLNAME:MASTER%はついにやった――あるいはやらかした。
+	PRINTFORML ＞少女、否、童女たちのハーレムを作り上げたのだ。
+	IF 0
+	;恋慕が一番多い
+	ELSEIF 연모인수 == MAX(연모인수, 음란인수, 복종인수)
+		PRINTFORML ＞お父さん、お兄ちゃん、パパ、マスター……様々な呼び方で彼女たちは%CALLNAME:MASTER%を慕ってくれている。
+		PRINTFORML ＞あるいはこの幸せに浴するのもひとつの終わりだろう……
+	;淫乱が一番多い
+	ELSEIF 음란인수 == MAX(연모인수, 음란인수, 복종인수)
+		IF IS_MALE(MASTER)
+			PRINTFORML ＞彼女らは皆%CALLNAME:MASTER%の――"パパ棒"の与える快楽に溺れ、常に股を濡らしている……
+		ELSE
+			PRINTFORML ＞彼女らは皆%CALLNAME:MASTER%の与える快楽に溺れ、常に股を濡らしている……
+		ENDIF
+		PRINTFORML ＞あるいはこの快楽に浴するのもひとつの終わりだろう……
+	;服従が一番多い
+	ELSEIF 복종인수 == MAX(연모인수, 음란인수, 복종인수)
+		PRINTFORML ＞天真爛漫だった少女たちは皆、%CALLNAME:MASTER%に媚び、服従し、%CALLNAME:MASTER%の望むままに振る舞おうとする……
+		PRINTFORML ＞あるいはこの童女奉仕地獄に浴するのもひとつの終わりだろう……
+	ENDIF
+	PRINTFORMW ＞それでよかっただろうか？
+
+	PRINTL
+CALL INPUT_YN, "YES(ロリハーレムEND)", "NO"
+IF RESULT == 0
+	PRINTFORML ……
+	PRINTFORML …………
+	PRINTFORML ………………
+	PRINTFORML 　
+	IF 0
+	;恋慕が一番多い
+	ELSEIF 연모인수 == MAX(연모인수, 음란인수, 복종인수)
+		PRINTFORML %CALLNAME:MASTER%はとうとう、やりとげてしまった。
+		PRINTFORMW %CALLNAME:MASTER%の周囲には常に少女、童女、幼女が侍る。
+		PRINTFORML 最初は戦闘力や奴隷としての売れ筋を考えていた気もするのだが、今ではすっかり、慈善事業のようになってしまっている。
+		PRINTFORMW そして彼女たちは皆、%CALLNAME:MASTER%のことが大好きなのだ。
+		PRINTFORML %CALLNAME:MASTER%に寄りかかって眠る少女たちの頭を撫でていると、外で遊んでいる少女たちが、きゃあ、と声をあげたのが聞こえた。
+		PRINTFORML 『あーっ！　赤おじさんと黒おじさんだー！』
+		PRINTFORML 『わぁい、おみやげなーにー！？』
+		PRINTFORML ……どうやら客人らしい。
+		PRINTFORMW %CALLNAME:MASTER%は眠る少女たちを起こさぬように、立ち上がる。
+		PRINTFORML あの二人が来たということは、また少女絡みでなにかあったと言うことだろう。
+		PRINTFORMW それに、あのロリコンどもから、愛する少女たちを守護らねばならない。
+		PRINTFORMW %CALLNAME:MASTER%は同好の士を出迎えるため、歩き出した……
+	;淫乱が一番多い
+	ELSEIF 음란인수 == MAX(연모인수, 음란인수, 복종인수)
+		PRINTFORML %CALLNAME:MASTER%はとうとう、やりとげてしまった。
+		PRINTFORMW %CALLNAME:MASTER%の周囲には常に少女、童女、幼女が侍る。
+		PRINTFORML 彼女らは全裸か全裸よりもなお卑猥な衣装を着て、%CALLNAME:MASTER%を誘惑する。
+		PRINTFORML 彼女らは、%CALLNAME:MASTER%の与える快楽によって壊れてしまっている。
+		PRINTFORMW 幼い身体に快楽を教え込まれ、セックスのない人生などありえない哀れな有様になってしまっている。
+		PRINTFORML 『あーっ！　赤おじさんと黒おじさんだー！』
+		PRINTFORML 『わぁい、おみやげなーにー！？』
+		PRINTFORMW ……どうやら客人らしい。
+		PRINTFORML あの二人が来たということは、また少女絡みでなにかあったと言うことだろう。
+		PRINTFORML 彼らはタッチしない派閥であるため%CALLNAME:MASTER%を敵視しているが、しかし同時に、虐げられる少女を救う便利な道具扱いしている節がある。
+		PRINTFORML 地上における最悪のロリコンが%CALLNAME:MASTER%だ。
+		PRINTFORMW %CALLNAME:MASTER%は誘惑してくるロリータを宥め、同じ穴の狢を出迎えるため、歩き出した……
+	;服従が一番多い
+	ELSEIF 복종인수 == MAX(연모인수, 음란인수, 복종인수)
+		PRINTFORML %CALLNAME:MASTER%はとうとう、やりとげてしまった。
+		PRINTFORMW %CALLNAME:MASTER%の周囲には常に少女、童女、幼女が侍る。
+		PRINTFORML 彼女らは、%CALLNAME:MASTER%の望む通りに振る舞う――足置きになった童女を踏みしだきながら、
+		PRINTFORMW 
+		IF IS_MALE(MASTER)
+			PRINTFORML 『お兄様、赤黒おじさまがいらっしゃいました』
+		ELSE
+			PRINTFORML 『お姉様、赤黒おじさまがいらっしゃいました』
+		ENDIF
+		PRINTFORMW 少女が土下座しながら報告してきた。
+		PRINTFORML 奴らは少女の味方、すなわち%CALLNAME:MASTER%の敵だ――今日もまた%CALLNAME:MASTER%を殺しに来たのだろう。
+		PRINTFORML 望むところだ。
+		PRINTFORML 今日も奴隷少女たちと共に追い返してやろう。
+		PRINTFORML %CALLNAME:MASTER%は居並ぶ童女たちの礼に見送られ、同類を出迎えるため、歩き出した……
+	ENDIF
+
+	PRINTFORML 　
+	PRINTFORMW 　　　　　　　　―― Ending No.006 (로리 하렘 END)
+	FLAG:5 = 9
+	SETBIT FLAG:발견ED,6
+	RETURN 1
+ELSE
+	PRINTFORML ＞……いや。
+	PRINTFORML ＞世界にはまだ見ぬ少女、童女、幼女がいる……
+	PRINTFORMW ＞%CALLNAME:MASTER%はしっかりちょっと下を向き、またロリを探すための旅路についた……
+	RETURN 0
+ENDIF
+
+@ENDING_NO01
+
+;武断派ハーレムEND
+;親愛が10人以上＋主人のLVが60以上になったため、部隊を率いることができる実力者と認められたということにします。
+	PRINTFORMW ＞%조사처리(CALLNAME:MASTER,"는")% 이미 일개 에이전트로서는 충분한 실전 경험을 쌓았다고、조직 상층부는 판단한 모양이다。
+	PRINTFORMW ＞조직 상층부는 %조사처리(CALLNAME:MASTER,"에게")% 한 부대를 이끌어보지 않겠느냐며 타진해왔다。
+	PRINTFORMW ＞%조사처리(CALLNAME:MASTER,"가")% 지금 통솔하고 있는 노예들은、그대로 %조사처리(CALLNAME:MASTER,"의")% 부하나 사역마로서 신분이 보장된다고 한다。
+	PRINTFORMW ＞이 제안을 받아들이면、%조사처리(CALLNAME:MASTER,"의")% 현재 생활은 끝을 고하고、엘리트 코스로의 길이 열릴 것이다。
+	PRINTFORMW ＞어떻게 하겠습니까?
+	PRINTL
+CALL INPUT_YN, "YES(무투파 하렘 END)", "NO"
+IF RESULT == 0
+	;一番依存度の高いキャラ登録番号を変数Aに入れる：依存度が同じなときは登録番号が早いほうになるけど、ほぼないはず
+	VARSET LOCAL
+	FOR LOCAL,1, CHARANUM
+		SIF TALENT:LOCAL:친애 == 0
+			CONTINUE
+		FOR LOCAL:1, 10, 20
+			IF LOCAL:(LOCAL:1) == 0
+				LOCAL:(LOCAL:1) = LOCAL
+				BREAK
+			ELSEIF CFLAG:(LOCAL:(LOCAL:1)):의존도 < CFLAG:LOCAL:의존도
+				ARRAYSHIFT LOCAL,1, LOCAL, LOCAL:1, 20-LOCAL:1
+				BREAK
+			ENDIF
+		NEXT
+	NEXT
+	;ここまで来ると、LOCAL:10-19に親愛キャラの内依存度が高い順に10人並ぶはず。
+	PRINTFORMW 
+	PRINTFORMW ＞%조사처리(CALLNAME:MASTER,"는")% 조직 상층부의 권유를 받아들여、엘리트 코스로 발을 내디뎠다。
+	PRINTFORMW 이제 %조사처리(CALLNAME:MASTER,"는")% 조교사로서 푼돈을 벌며、좀스럽게 작은 의뢰나 해치우는 시시한 신분이 아니다。
+	PRINTFORMW 팬텀 소사이어티의 위대한 이념을 실현하기 위한 전쟁을 짊어지는 자가 된 것이다。
+	PRINTFORMW 자、싸우자。
+	PRINTFORMW 조직의 이념에 반하는 자는、메시아교도든 가이아교도든、존재의 파편조차 남기지 않고 몰살해 주리라。
+	PRINTFORMW %CALLNAME:MASTER%와(과) 그 부대야말로、이제부터 팬텀 소사이어티가 거느린 최강의 전쟁귀가 될 것이기에。
+	PRINTFORML …
+	PRINTFORML ……
+	PRINTFORML ………
+	PRINTFORMW 그때로부터 얼마나 많은 날들이 흘렀을까。
+	PRINTFORMW %CALLNAME:MASTER%와(과) 부하들은、수많은 전장을 누비고 다녔다。
+	PRINTFORMW 도시부에서의 전투가 있었다。그때까지 문명을 쌓아 올렸던 도시는 천사와 타천사의 격돌로 붕괴했다。
+	PRINTFORMW %조사처리(CALLNAME:MASTER,"는")% 천사와 타천사、그리고 살아남은 인간들을 죽였다。
+	PRINTFORMW 시골 마을에서의 전투가 있었다。목가적인 농장의 풍경은 파괴되었고、인간은 마을을 덮친 악마 떼에게 남김없이 먹혀 치워졌다。
+	PRINTFORMW %조사처리(CALLNAME:MASTER,"는")% 악마를 죽이고、원래는 인간이었던 MAG를 독점했다。
+	PRINTFORMW 평야에서의 전투가 있었다。용혈을 둘러싼 천사와 토지신의 다툼은 원야를 용암이 뿜어져 나오는 지옥으로 바꾸었다。
+	PRINTFORMW %조사처리(CALLNAME:MASTER,"는")% 천사와 토지신을 죽이고、용혈을 병기로 개조해 다른 도시를 멸망시켰다。
+	PRINTFORMW 셀 수 없이 많은 전쟁에 %조사처리(CALLNAME:MASTER,"들")%은 차출되었고、그 모든 싸움에서 조직이 바라는 승리를 거머쥐었다。
+	PRINTFORMW %조사처리(CALLNAME:MASTER,"의")% 활약으로 조직이 얻은 이익은 헤아릴 수 없을 정도다。
+	PRINTFORMW 팬텀 소사이어티가 세계를 쥐락펴락하는 세력의 일각이 된 것도、%조사처리(CALLNAME:MASTER,"의")% 활약이 있었기 때문이라 할 수 있으리라。
+	PRINTFORMW 그러나、세계에서는 아직 전쟁이 사라지지 않았고。조직의 위대한 이념 또한 실현될 기미를 보이지 않는다……。
+	PRINTFORMW 　
+	PRINTFORML 　
+	PRINTFORMW ……あるビルの一室。%CALLNAME:MASTER%が自分たちの根城として建物丸ごとを所有する一室で、淫らな水音が響く。
+;	とりあえず主人にチンポがあるパターンだけ。奴隷に男が混じっててもいいように、膣内とかの表現は敢えて避けた。
+	IF (TALENT:MASTER:남자 == 1 || TALENT:MASTER:오토코노코 == 1 || TALENT:MASTER:후타나리 == 1)
+		;PRINTFORMW 『んっ……素敵です……ご主人様……』
+		;PRINTFORMW 『ちゅるっ……ん……。あんなに出したのに、まだこんなに大きい……』
+		PRINTFORMW %CALLNAME:(LOCAL:11)%と%CALLNAME:(LOCAL:12)%が椅子に座る%CALLNAME:MASTER%の足元に跪き、二人がかりで長大な逸物に奉仕している。
+		PRINTFORMW %CALLNAME:MASTER%の両手の指はそれぞれ%CALLNAME:(LOCAL:13)%と%CALLNAME:(LOCAL:14)%の秘部に這わされ、くちゃくちゃといやらしい音を響かせていた。
+		PRINTFORMW %CALLNAME:(LOCAL:13)%と%CALLNAME:(LOCAL:14)%は切なそうな顔で互いの手を握り合い、快感で潤んだ瞳で愛する%CALLNAME:MASTER%を見つめている。
+		;PRINTFORMW 『くちゅ……ちゅば……んふっ……』
+		;PRINTFORMW 『美味しいです、ご主人様……♪』
+		PRINTFORMW %CALLNAME:(LOCAL:11)%と%CALLNAME:(LOCAL:12)%の横では%CALLNAME:(LOCAL:15)%と%CALLNAME:(LOCAL:16)%が並び、%CALLNAME:MASTER%の足の指を陶然とした面持ちで舐めしゃぶっていた。
+		PRINTFORMW 部下……いや、奴隷たちの奉仕に身を任せていた%CALLNAME:MASTER%は、ふと最も愛する奴隷の名を呼んだ。
+		PRINTFORMW 自慰に耽っていた%CALLNAME:(LOCAL:10)%のために他の奴隷たちが道を譲り、羨望の眼差しでその姿を仰ぎ見る。
+		PRINTFORMW %CALLNAME:(LOCAL:10)%は%CALLNAME:MASTER%の膝の上にしなだれかかり、キスをしながら雄々しく勃起した肉棒を受け入れた。
+		;PRINTFORMW 『あっ……♪　すごく逞しいです、ご主人様……』
+		;PRINTFORMW 普段は副隊長として凛々しい面持ちを見せている%CALLNAME:(LOCAL:10)%。そんな彼女は愛する人に抱かれ、快楽に蕩けた瞳で口づけを受けながら淫らに腰をくねらせている。
+		PRINTFORMW 普段は副隊長として凛々しい面持ちを見せている%CALLNAME:(LOCAL:10)%。
+		PRINTFORMW 愛する人に抱かれ、快楽に蕩けた瞳で口づけを受けながら淫らに腰をくねらせている。
+		PRINTFORMW そんな隊長と副隊長の結合部に%CALLNAME:(LOCAL:11)%と%CALLNAME:(LOCAL:12)%は舌を這わせ、流れ出る愛液と先走り汁の混じった液体を争うように舐め取ろうとしていた。
+		PRINTFORMW 彼らの痴態を羨ましそうに見ながら、%CALLNAME:(LOCAL:17)%と%CALLNAME:(LOCAL:18)%と%CALLNAME:(LOCAL:19)%は3人でお互いの身体を慰め合っている。
+		PRINTFORMW それは準備。いつ%CALLNAME:MASTER%に呼ばれてもいいように丹念に秘部を濡らし、主人からの寵愛を受けるのを待っているのだ……。
+		PRINTFORMW %CALLNAME:MASTER%の激しい腰使いに%CALLNAME:(LOCAL:10)%が激しい嬌声を上げ、盛大な射精が始まる。
+		PRINTFORMW 既に何度も射精しているにもかかわらず、%CALLNAME:MASTER%は力強い勢いで精液を愛する%CALLNAME:(LOCAL:10)%の体内に注ぎ込んだ。
+		PRINTFORMW 脱力した%CALLNAME:(LOCAL:10)%の身体が%CALLNAME:MASTER%の上からどけられると、ドロリと大量の白濁がその股間から漏れ出す……。
+		PRINTFORMW 自分の股間に手を這わせて痴態を見つめていた%CALLNAME:(LOCAL:15)%と%CALLNAME:(LOCAL:16)%は、そんな%CALLNAME:(LOCAL:10)%の股間から溢れる白濁液を舐め取ろうと舌を這わせる。
+		PRINTFORMW 続いて、%CALLNAME:(LOCAL:11)%と%CALLNAME:(LOCAL:12)%が%CALLNAME:MASTER%の股間に舌を這わせて残った精液を啜り、ぴちゃぴちゃと音を立てる。
+		PRINTFORMW そんな饗宴の淫気に発情した%CALLNAME:(LOCAL:19)%が、次は自分にしてほしいと甘い鳴き声で訴えた。
+		PRINTFORMW それに負けじと%CALLNAME:(LOCAL:17)%と%CALLNAME:(LOCAL:18)%が自分の穴の方が気持ちいいと、それぞれの方法でしきりにアピールし、主人の気を惹こうとする。
+		PRINTFORMW いつしかその場の全員が%CALLNAME:MASTER%の名を呼び始め、%CALLNAME:MASTER%は苦笑を浮かべる。
+		PRINTFORMW 
+	ELSE
+		PRINTFORMW 
+	ENDIF
+	PRINTFORMW 이것은 의식。
+	PRINTFORMW 수많은 전장에 보내지고도 살아남아、계속 싸워나가는 전사들의 유대를 확인하고、마모되어 가는 마음을 엮어내기 위한 연회。
+	PRINTFORMW 사랑하는 부하들이、노예들이 있어준다면、%조사처리(CALLNAME:MASTER,"는")% 아직 싸울 수 있다。
+	PRINTFORMW 마음을 잃지 않고、수라로 타락하지 않고、인간으로 계속 머무를 수 있다。
+	PRINTFORMW 주인의 얼굴을 올려다보던 %조사처리(CALLNAME:(LOCAL:10),"는")%、작은 목소리로 물었다。
+	PRINTFORMW ――후회하지 않으십니까?――
+	PRINTFORMW 　
+	PRINTFORMW %조사처리(CALLNAME:MASTER,"는")% 바보 같은 소리 말라며、부드러운 손길로 %조사처리(CALLNAME:(LOCAL:10),"의")% 머리를 쓰다듬었다。
+	PRINTFORMW 후회는 없다。그것만큼은 자신 있게 말할 수 있다。
+	PRINTFORMW 왜냐하면、자신에게는 이렇게나 사랑해주는 이들이 있으니까……。
+	PRINTFORMW 　
+	PRINTFORMW 　　　　　　　　―― Ending No.001 (무투파 하렘 END)
+	FLAG:5 = 9
+	SETBIT FLAG:발견ED,1
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+
+;アイドルEND
+@ENDING_NO19
+#DIM LCOUNT
+	;;パートナー選択
+	;VARSET Q, -1
+	;A = 0
+	;FOR LCOUNT, 0, CHARANUM
+	;	SIF 계약(LCOUNT) == 0
+	;		CONTINUE
+	;	SIF CFLAG:LCOUNT:이자리에없는플래그 == 1
+	;		CONTINUE
+	;	Q:A = LCOUNT
+	;	A += 1
+	;NEXT
+	CALL SELECT_PARTNER
+	TARGET = RESULT
+	
+	RESULT = 0
+	TSTR:END종별 = アイドルEND
+	TRYCALLFORM ENDING_CHECK%口上関数末尾文字(TARGET)%
+	IF RESULT == 0
+		PRINTW ･････････
+		PRINTW ･･････
+		PRINTW ･･･
+		PRINTW 오늘도 열기에 휩싸인 라이브 하우스에서는 커다란 환호성이 들려온다。
+		PRINTFORMW %조사처리(CALLNAME:MASTER,"는")% 그 누구도 범접할 수 없는 일류 톱 아이돌이 되었다。
+		PRINTFORMW 조교사로서의 경험을 살려 스스로를 갈고닦은 %조사처리(CALLNAME:MASTER,"에게")% 필적할 자는 없을 것이다。
+		PRINTFORMW 조직에서도 상납금 실적을 인정받아、자유롭게 활동하는 것이 허락되어 있다。
+		PRINT 또한、
+		IF TARGET >0 && ABL:가창기능 >= 10 && EXP:라이브경험 >= 300 && TALENT:인기 == 1
+			PRINTFORMW %조사처리(CALLNAME:TARGET,"도")% %조사처리(CALLNAME:MASTER,"의")% 파트너로서 서로를 갈고닦으며 함께 무대에 서고 있다。
+		ELSEIF TARGET > 0
+			PRINTFORMW %조사처리(CALLNAME:TARGET,"도")% 지금은 매니저로서 보이지 않는 곳에서 %조사처리(CALLNAME:MASTER,"를")% 지탱해주고 있다。
+		ELSE
+			PRINTFORMW 자기 자신을 직접 매니지먼트하는 것도 꽤나 흥미로운 일이다。
+		ENDIF
+		PRINTFORMW 공연을 열면 만 명 단위로 사람이 모이기 때문에、몇 명쯤 사라져도 아무도 눈치채지 못한다。
+		PRINTFORMW 그렇기에 본업이었던 노예업도 순조롭게 성공하고 있다고 할 수 있으리라。
+		PRINTFORMW %조사처리(CALLNAME:MASTER,"가")% 무대에 내려서자、공연장은 오늘 최고의 열기로 들끓었다。
+		;エロイベも仕込む
+		IF ABL:MASTER:욕망 >= 6 && EXP:MASTER:매춘경험 + EXP:MASTER:변기경험 >= 250 && TARGET >0
+			PRINTL 
+			PRINTW ＞ライブが終わり、暗くなった会場から男女の艶かしい息遣いが聞こえる。
+			PRINTW
+			IF TALENT:MASTER:남자 == 1
+				PRINTFORMW ファンの女たちは%CALLNAME:MASTER%に傅くように奉仕し、その寵愛を期待している。
+				PRINTFORMW 目に付いた女に逸物を与えると、他の女はそれを見て自分自身を慰め始めた。
+				PRINTFORMW 腰を突き上げながら%CALLNAME:MASTER%がＣＯＭＰから悪魔を呼び出すと、熱っぽいため息が聞こえてきた。
+				PRINTFORMW 今まで『おあずけ』だった女たちは、我先にと召喚された悪魔に群がり、交わり始めた。
+				PRINTFORMW ガキに犯される者、コボルトに奉仕する者、オークと唾液の交換をする者。
+				PRINTFORMW 彼女らは犯される悦びに咽び泣き、全てを受け入れている。
+				PRINTFORMW もし悪魔の子供を孕んだとしても、嬉々として産み落とすだろう。
+				PRINTFORMW また、悪魔たちにとっても、この饗宴は上質な餌場であるらしい。
+				PRINTFORMW 奴隷選定のために始めたことだったが、多量のＭＡＧを生み出す場所でもあった。
+				PRINTFORMW 簡単にＭＡＧを得られるため、噂を聞きつけた悪魔がぞくぞくと尋ねてきたのだ。
+				PRINTFORMW %CALLNAME:MASTER%は胎内に精を解き放つと、%CALLNAME:MASTER%の愛を待ち受ける人々の下へと向かった。
+			ELSE
+				PRINTFORMW %CALLNAME:MASTER%はファンの男たちにその裸体を惜しげもなく晒した。
+				PRINTFORMW 前後に剛直を受け入れ、手と口を使い男たちを慰め、快楽を貪る。
+				IF TARGET > 0 && (TALENT:TARGET:남자 == 1 || TALENT:TARGET:오토코노코 == 0)
+					PRINTFORMW %CALLNAME:TARGET%に膣奥を突かれ、子宮口をぐりぐりと圧迫されると熱い吐息を吐き出した。
+					PRINTFORMW 尻穴と口も使用され、三方向からのピストンに呻き声を上げることすらできない。
+				ELSEIF TARGET > 0
+					PRINTFORMW %CALLNAME:TARGET%も%CALLNAME:MASTER%と同じように、発情した瞳で奉仕をしている。
+					PRINTFORMW 口元には唾液と精液の混ざったものがこびり付き、いやらしく光った。
+				ENDIF
+				PRINTFORMW そんな痴態を見せ付けられ、手持ち無沙汰な男は己の肉棒を自ら擦っている。
+				PRINTFORMW 群がる男たちの相手をさせるため、%CALLNAME:MASTER%はＣＯＭＰから悪魔を呼び出した。
+				PRINTFORMW 今まで『おあずけ』だった男たちは、我先にと召喚された悪魔に群がり、交わり始めた。
+				PRINTFORMW 天使を犯す者、妖精に奉仕させる者、女神と唾液の交換をする者。
+				PRINTFORMW 彼らは背徳の快楽に唸り声を上げ、精を吐き出し、欲望を発散させている。
+				PRINTFORMW また、悪魔たちにとっても、この饗宴は上質な餌場であるらしい。
+				PRINTFORMW 奴隷選定のために始めたことだったが、多量のＭＡＧを生み出す場所でもあった。
+				PRINTFORMW 簡単にＭＡＧを得られるため、噂を聞きつけた悪魔がぞくぞくと尋ねてきたのだ。
+				PRINTFORMW %CALLNAME:MASTER%と\@TALENT:TARGET:남자 ? 悪魔 # %CALLNAME:TARGET% \@たちは身体中に精を受け、女であることの悦びを堪能した。
+			ENDIF
+			PRINTL 
+			PRINTFORMW 悪魔と\@TALENT:MASTER:남자 ? 彼女 # 彼 \@らの饗宴は続いている。
+			PRINTW サバトは始まったばかりだ……。
+		ENDIF
+		PRINTFORMW 　
+		PRINTFORMW 　　　　　　　　―― Ending No.019 (아이돌 END)
+	ELSE
+		CALL 口上呼び出し , "KOJO_MESSAGE_ENDING"
+	ENDIF
+	TSTR:END종별 = 
+	FLAG:5 = 9
+	SETBIT FLAG:발견ED,19
+	RETURN 1
+
+@ENDING_NO05
+	PRINTFORMW ＞%CALLNAME:MASTER%は仲魔たちに子を産ませ、何人もの娘を作ってきた。
+	PRINTFORMW ＞そしてその娘たちをも調教し、%CALLNAME:MASTER%に忠誠を誓う存在として育て上げることに成功した。
+	PRINTFORMW ＞%CALLNAME:MASTER%も数々の修羅場を潜り抜け、かなりの実力をつけてきたと自覚している。
+	PRINTFORMW ＞今ならば、%CALLNAME:MASTER%に忠誠を誓う血族による新勢力を旗揚げすることもできるかもしれない……。
+	PRINTFORMW ＞新勢力を旗揚げしますか？
+	PRINTL
+CALL INPUT_YN,"YES(娘ハーレムEND)","NO"
+IF RESULT == 0
+	;一番依存度の高いキャラ登録番号を変数Aに入れる：依存度が同じなときは登録番号が早いほうになるけど、ほぼないはず
+	VARSET LOCAL
+	FOR LOCAL,1, CHARANUM
+		SIF TALENT:LOCAL:친애 == 0
+			CONTINUE
+		FOR LOCAL:1,10,20
+			IF LOCAL:(LOCAL:1) == 0
+				LOCAL:(LOCAL:1) = LOCAL
+				BREAK
+			ELSEIF CFLAG:(LOCAL:(LOCAL:1)):의존도 < CFLAG:LOCAL:의존도
+				ARRAYSHIFT LOCAL,1,LOCAL,LOCAL:1,19-LOCAL:1
+				BREAK
+			ENDIF
+		NEXT
+	NEXT
+	;ここまで来ると、LOCAL:10-19に親愛キャラの内依存度が高い順に10人並ぶはず。
+	PRINTFORMW 
+	PRINTFORMW ＞%CALLNAME:MASTER%は娘たちを集めると、これから新勢力を結成することを宣言した。
+	PRINTFORMW 娘たちは困惑していたようだが、%CALLNAME:MASTER%が本気だと悟るとその手足となって働くことに同意した。
+	PRINTFORMW ここに%CALLNAME:MASTER%を首領とする結社が誕生したのだ。
+	PRINTFORML …
+	PRINTFORML ……
+	PRINTFORML ………
+	PRINTFORMW あれからどれだけの年月が過ぎ去っただろうか。
+	PRINTFORMW %CALLNAME:MASTER%は既に人間界ではなく、魔界に拠点を移していた。
+	PRINTFORMW 血族の強い絆で結ばれた%CALLNAME:MASTER%と娘たちは、ファントム・ソサエティと袂を分かち、
+	PRINTFORMW 数々の激戦を経て人間界では有数の勢力としてのし上がった。
+	PRINTFORMW しかし、%CALLNAME:MASTER%の野望はそれでは終わらなかった。ただ人間界を制するだけでは物足りない。
+	PRINTFORMW 自分たちの血族がより強大な力を得るためには、魔界に下ってそこに眠る魔力を手にしなければならないと気付いたのだ。
+	PRINTFORMW かくして%CALLNAME:MASTER%の血族は魔界へ移動し、相応の苦戦を強いられながらも一定の領地を得るまでに至った。
+	PRINTFORMW 血族の強固な絆が力となったのか、あるいは%CALLNAME:MASTER%のDNAに特別な力が秘められていたのか。
+	PRINTFORMW %CALLNAME:MASTER%の血族は近親交配によって徐々に数を増やし、子が孫を産み、孫が曾孫を産み、曾孫が玄孫を産んで、
+	PRINTFORMW いつしか%CALLNAME:MASTER%を君主とする一大勢力を築くに至った。もちろん、その子供たち全ての父親は%CALLNAME:MASTER%だ。
+	PRINTFORMW 
+	PRINTFORMW 血族の居城の最深部、%CALLNAME:MASTER%の寝室。
+	PRINTFORMW ダンスパーティーでも開けるのではないかというほど広大な部屋の大半は、巨大なベッドで埋め尽くされている。
+	PRINTFORMW 数十人が一度に寝転がれるほどのベッドは、無論%CALLNAME:MASTER%が寝るためだけにあるのではない。
+	PRINTFORMW %CALLNAME:MASTER%と愛する娘……いや、愛する血族とまぐわい、新たな子を産み出すためにあるのだ。
+	PRINTFORMW %CALLNAME:(LOCAL:11)%、%CALLNAME:(LOCAL:12)%、%CALLNAME:(LOCAL:13)%、%CALLNAME:(LOCAL:14)%、%CALLNAME:(LOCAL:15)%……。
+	PRINTFORMW %CALLNAME:MASTER%の血を受け、愛を交わした娘たちが%CALLNAME:MASTER%を囲んで、恭順に満ちた視線を送っている。
+	PRINTFORMW その視線の中央で%CALLNAME:MASTER%に抱かれているのは、%CALLNAME:MASTER%にとって最もお気に入りの娘である
+	PRINTFORMW %CALLNAME:(LOCAL:10)%とその末の娘だ。言うまでもなく、娘の父親は%CALLNAME:MASTER%である。
+	PRINTFORMW まだ経験が浅い末の娘は、幾度となく娘たちを孕ませてきた%CALLNAME:MASTER%の業物を胎内に受け入れて苦しそうに喘いでいる。
+	PRINTFORMW %CALLNAME:(LOCAL:10)%はそんな愛娘を抱き締めて口づけ、胸を愛撫してその苦しみを少しでも分散させてやっていた。
+	PRINTFORMW 「パパぁ、ママぁ……苦しいよぉ……」
+	PRINTFORMW ―大丈夫よ、もうすぐ気持ちよくなってくるからね―
+	PRINTFORMW ―私も、お姉ちゃんも、%CALLNAME:(LOCAL:11)%も、%CALLNAME:(LOCAL:12)%も、%CALLNAME:(LOCAL:13)%も―
+	PRINTFORMW ―みんなパパのおちんちんで気持ちよくされて、強い子を産んできたのよ―
+	PRINTFORMW その輪の周囲では、血族に連なる娘たちが偉大な父の交合を熱を帯びた視線で見つめながら、互いの身体を慰めあっている。
+	PRINTFORMW くちゃりと音を立てて濡音が部屋を満たし、頭の芯を痺れさせる淫気が空間を支配する。
+	PRINTFORMW これが%CALLNAME:MASTER%の日常。
+	PRINTFORMW 魔界で最も新しく、最も背徳的で、最も偉大なる新たな君主による儀式。
+	PRINTFORMW 産めよ、殖えよ、大地に満ちよ。
+	PRINTFORMW かつてある神が放った言葉の通り、その種は魔界をも呑み込んでいく。
+	PRINTFORMW ――嬌声が上がる。末娘が初めての絶頂に達し、父の胤を腹に受けたのだ。
+	PRINTFORMW 途端に、それまで交合を熱っぽく見つめていた娘たちが%CALLNAME:MASTER%に向けて殺到する。
+	PRINTFORMW 愛する娘たちに囲まれながら、%CALLNAME:MASTER%は確かに幸せだった。
+	PRINTFORMW 
+	PRINTFORMW 　　　　　　　　―― Ending No.005 (딸 하렘 END　-Little Empire-)
+	FLAG:5 = 9
+	SETBIT FLAG:발견ED,5
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+@ロンギヌス_END_CHECK
+IF FINDCHARA_B([[キャラ:롱기누스１３_소문]]) > -1
+	SIF !IS_LOVER(RESULT:1)
+		RETURN 0
+ELSE
+	RETURN 0
+ENDIF
+IF FINDCHARA_B([[キャラ:롱기누스１２_소문]]) > -1
+	SIF !IS_LOVER(RESULT:1)
+		RETURN 0
+ELSE
+	RETURN 0
+ENDIF
+IF FINDCHARA_B([[キャラ:롱기누스１１_소문]]) > -1
+	SIF !IS_LOVER(RESULT:1)
+		RETURN 0
+ELSE
+	RETURN 0
+ENDIF
+IF FINDCHARA_B([[キャラ:롱기누스１０_소문]]) > -1
+	SIF !IS_LOVER(RESULT:1)
+		RETURN 0
+ELSE
+	RETURN 0
+ENDIF
+IF FINDCHARA_B([[キャラ:롱기누스９_소문]]) > -1
+	SIF !IS_LOVER(RESULT:1)
+		RETURN 0
+ELSE
+	RETURN 0
+ENDIF
+IF FINDCHARA_B([[キャラ:롱기누스８_소문]]) > -1
+	SIF !IS_LOVER(RESULT:1)
+		RETURN 0
+ELSE
+	RETURN 0
+ENDIF
+IF FINDCHARA_B([[キャラ:롱기누스７_소문]]) > -1
+	SIF !IS_LOVER(RESULT:1)
+		RETURN 0
+ELSE
+	RETURN 0
+ENDIF
+IF FINDCHARA_B([[キャラ:롱기누스６_소문]]) > -1
+	SIF !IS_LOVER(RESULT:1)
+		RETURN 0
+ELSE
+	RETURN 0
+ENDIF
+IF FINDCHARA_B([[キャラ:롱기누스５_소문]]) > -1
+	SIF !IS_LOVER(RESULT:1)
+		RETURN 0
+ELSE
+	RETURN 0
+ENDIF
+IF FINDCHARA_B([[キャラ:롱기누스４_소문]]) > -1
+	SIF !IS_LOVER(RESULT:1)
+		RETURN 0
+ELSE
+	RETURN 0
+ENDIF
+IF FINDCHARA_B([[キャラ:롱기누스３_소문]]) > -1
+	SIF !IS_LOVER(RESULT:1)
+		RETURN 0
+ELSE
+	RETURN 0
+ENDIF
+IF FINDCHARA_B([[キャラ:롱기누스２_소문]]) > -1
+	SIF !IS_LOVER(RESULT:1)
+		RETURN 0
+ELSE
+	RETURN 0
+ENDIF
+IF FINDCHARA_B([[キャラ:롱기누스１_소문]]) > -1
+	SIF !IS_LOVER(RESULT:1)
+		RETURN 0
+ELSE
+	RETURN 0
+ENDIF
+RETURN 1
+
+@GET_CHARA_ENDING_NAME, ARG
+#FUNCTIONS
+IF CHARA_ENDING_NAME == ""
+	CHARA_ENDING_NAME:0 '= "個別END"
+	CHARA_ENDING_NAME:1 '= "妻・夫END"
+	CHARA_ENDING_NAME:2 '= "淫魔END"
+	CHARA_ENDING_NAME:3 '= "玩具END"
+	CHARA_ENDING_NAME:4 '= "盟友END"
+	CHARA_ENDING_NAME:5 '= "調教師経営END"
+	CHARA_ENDING_NAME:6 '= "食堂経営END"
+	CHARA_ENDING_NAME:7 '= "娼館経営END"
+	CHARA_ENDING_NAME:8 '= ""
+	CHARA_ENDING_NAME:9 '= ""
+	CHARA_ENDING_NAME:10 '= ""
+	CHARA_ENDING_NAME:11 '= ""
+	CHARA_ENDING_NAME:12 '= ""
+	CHARA_ENDING_NAME:13 '= ""
+	CHARA_ENDING_NAME:14 '= ""
+	CHARA_ENDING_NAME:15 '= ""
+	CHARA_ENDING_NAME:16 '= ""
+	CHARA_ENDING_NAME:17 '= ""
+	CHARA_ENDING_NAME:18 '= ""
+	CHARA_ENDING_NAME:19 '= ""
+ENDIF
+RETURNF CHARA_ENDING_NAME:ARG
+
+@GET_CHARA_ENDING_NUM, ARGS
+#FUNCTION
+SIF CHARA_ENDING_NAME == ""
+	CALLF GET_CHARA_ENDING_NAME
+RETURNF FINDELEMENT(CHARA_ENDING_NAME, ARGS, , , 1)
+
+@SET_ACHIEVED_CHARA_ENDING, L_CHARA, L_NAME
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_NAME
+CHARA_ACHIEVED_ENDING:L_CHARA:GET_CHARA_ENDING_NUM(L_NAME) = 1
+
+@確認_達成済み個別END, L_CHARA, L_NAME
+#FUNCTION
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_NAME
+RETURNF CHARA_ACHIEVED_ENDING:L_CHARA:GET_CHARA_ENDING_NUM(L_NAME)

@@ -1,0 +1,106 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:HPバリア付与
+;	Facility	:HPバリアを付与するスキルのモデル
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/10/31		P(bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_HPバリア付与,ARG
+RESULTS = HP 배리어 부여
+
+;　명중
+@SKILL_HITRATE_HPバリア付与, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_HPバリア付与, ARG
+RETURN 100
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_HPバリア付与,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_HPバリア付与,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_HPバリア付与, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_HPバリア付与,ARG
+RETURN 10
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_HPバリア付与
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_HPバリア付与,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;====================================================
+;攻撃手段
+;1.物理攻撃 2.魔法攻撃 3.총공격 4.アイテム攻撃(ダメージ計算時の依存ステータスに関わる)
+;関数がない場合はダメージタイプとおなじになる
+;====================================================
+@SKILL_ATTACKTYPE_HPバリア付与, ARG
+RETURN GET_攻撃タイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_HPバリア付与,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_HPバリア付与,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_HPバリア付与,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_HPバリア付与,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;속도보정
+@SKILL_SPEED_HPバリア付与, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_HPバリア付与
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_HPバリア付与,ARG,ARG:1,SKILL_NUM
+#LOCALSIZE 1
+#DIM SKILL_NUM
+
+;HPバリアのセット関数
+;SKILL_SET_HPバリア, 対象のキャラ番号, バリアの耐久力, バリアの名称, "非表示"の場合メッセージ表示をとばす
+CALL SKILL_SET_HPバリア, POS(ARG:1), MAXBASE:POS(ARG:1):ＨＰ / 2, "HP배리어"
+WAIT
+
+;範囲の場合の構文例（あるいはメッセージを非表示にして味方全体にセットなどといった形で調整を）
+;FOR LOCAL, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1)+1
+;   CALL SKILL_SET_HPバリア, LOCAL, MAXBASE:LOCAL:ＨＰ / 2, "HP배리어"
+;NEXT
+;WAIT
+
+;　説明文の表示
+@SKILL_EXPLAIN_HPバリア付与,ARG
+PRINTL 대상 아군 1명에게 최대 HP의 50% 분량의 데미지를 막는 배리어를 부여한다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_HPバリア付与,ARG
+RETURN 1

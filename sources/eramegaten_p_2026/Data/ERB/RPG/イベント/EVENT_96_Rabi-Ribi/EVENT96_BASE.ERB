@@ -1,0 +1,120 @@
+﻿;デビサバ拝借のまどマギより更に拝借。
+;イベントフラグ:96:0 == 0;　未起動
+;イベントフラグ:96:0 == 1;　エリナ拉致および見送りによる打ち切り
+;イベントフラグ:96:0 == 2;　ワープ・デスティネーション
+;イベントフラグ:96:0 == 3;　真実は決して語られず。
+;イベントフラグ:96:0 == 4;　エクストラChapter。エリナ加入。
+;イベントフラグ:96:0 == 5;　とりあえず、DeliciousFoodリボンちゃんやってみるか
+;イベントフラグ:96:0 == 6;　入須院……。
+;イベントフラグ:96:0 == 7;　ミルちゃんReturnsあるいはRevenge
+;イベントフラグ:96:0 == 8;　FINALE
+
+;イベントフラグ:96:1 == 1;　ノア消滅
+;イベントフラグ:96:1 == 2;　ノア生存
+
+;イベントフラグ:96:2 　　;　ノア＆イリュージョンアリウス戦変数
+;イベントフラグ:96:2 == 1;　戦闘開始
+;イベントフラグ:96:2 == 2;　HP5割以下、アリウスに移行
+;イベントフラグ:96:2 == 3;　アリウス自爆モード
+;イベントフラグ:96:2 == 4;　自爆阻止失敗
+;イベントフラグ:96:2 == 5;　自爆チェック終了
+
+;イベントフラグ:96:3 　　;　イリュージョンアリウス自爆カウント
+
+;ボス戦闘フラグ管理
+;イベントフラグ:96:4 == 0;　ノア100
+;イベントフラグ:96:4 == 1;　ノア75％、イベント
+;イベントフラグ:96:4 == 2;　ノア50％、ノア2
+;イベントフラグ:96:4 == 3;　『？？？』　1順前
+;イベントフラグ:96:4 == 4;　『？？？』　1順後
+;イベントフラグ:96:4 == 5;　Irisu In Wonderland　초기
+;イベントフラグ:96:4 == 6;　Irisu In Wonderland　中期
+;イベントフラグ:96:4 == 7;　Irisu In Wonderland　後期
+
+;イベントフラグ:96:5 == 0;　ボス撃破最新監視フラグ
+;イベントフラグ:96:5 == 1;　ノアリウス	⇒ミル
+;イベントフラグ:96:5 == 2;　ミル			⇒ノア
+;イベントフラグ:96:5 == 3;　ノア			⇒？？？
+;イベントフラグ:96:5 == 4;　？？？		⇒（未構築）
+;イベントフラグ:96:5 == 5;　
+
+;====================
+;条件
+;====================
+@GET_EVENT_NAME_96
+#FUNCTIONS
+RESULTS_F '= "라비리비"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_96
+;メガテン系イベント以外不許可/Rabi-Ribiオフの場合禁止
+SIF !GETS_USEABLE_EXTRA_TITLE("ラビリビ")
+	RETURN 0
+;貢献度５万から解禁
+SELECTCASE イベントフラグ:96:0
+	CASE 0
+		SIF FLAG:조직공헌도 + FLAG:명성 * 100 < 50000
+			RETURN 0
+		RESULTS = （EX:Rabi-Ribi）Bunny meets YOU
+	CASE 2
+;イベント条件検討中
+		SIF FLAG:조직공헌도 + FLAG:명성 * 100 < 100000
+			RETURN 0
+		RESULTS = （EX:Rabi-Ribi）WARP DESTINATION
+	CASE 3
+		SIF FLAG:조직공헌도 + FLAG:명성 * 100 < 200000
+			RETURN 0
+		RESULTS = 【EX:Rabi-Ribi】진실, 말해지지 아니하고
+	CASE 4
+		RESULTS = （EX:Rabi-Ribi）EXTRA Chapter
+	CASE 5
+		SIF FLAG:조직공헌도 + FLAG:명성 * 100 < 350000
+			RETURN 0
+		RESULTS = 【Rabi-Ribi EXTRA】Delicious Food……？
+	CASE 6
+		IF IS_TALKABLE_ERINA()
+			RESULTS = 【Rabi-Ribi EXTRA】In Digital Devil World
+		ELSE
+			RESULTS = （EX:Rabi-Ribi）『Locked』In Digital Devil World
+		ENDIF
+	CASE 7
+		IF IS_TALKABLE_ERINA()
+			RESULTS = 【Rabi-Ribi EXTRA】She's Returns
+		ELSE
+			RESULTS = （EX:Rabi-Ribi）『Locked』She's Returns
+		ENDIF
+	CASE 8
+		RESULTS = 【Rabi-Ribi EXTRA】At Last.
+	CASEELSE
+		RETURN 0
+ENDSELECT
+RETURN 1
+
+
+@SHOPCOM_EVENT_96
+IF イベントフラグ:96:0 == 0
+	CALL EVENT_96_1
+ELSE
+	CALLFORM EVENT_96_{イベントフラグ:96:0}
+ENDIF
+IF RESULT == 0
+	RETURN 0
+ELSE
+	SIF イベントフラグ:96:0 < 8
+		CALL RESET_ANNOUNCE_FLAG
+	RETURN 1
+ENDIF
+;イベント進行ができるかどうかの判定
+@IS_TALKABLE_ERINA
+#FUNCTION
+#DIM DYNAMIC L_ERINA
+L_ERINA = GETCHARA([[キャラ:에리나_라비리비]])
+SIF L_ERINA < 0
+	RETURNF 0
+SIF 服従系陥落(L_ERINA)
+	RETURNF 0
+SIF TALENT:L_ERINA:붕괴
+	RETURNF 0
+SIF TALENT:L_ERINA:비전투원
+	RETURNF 0
+RETURNF 1

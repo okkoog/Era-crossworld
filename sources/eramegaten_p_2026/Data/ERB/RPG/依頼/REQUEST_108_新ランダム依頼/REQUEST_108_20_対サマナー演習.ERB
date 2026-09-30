@@ -1,0 +1,69 @@
+﻿;依頼名===================================================================
+;依頼難易度は敵の最大レベルによって変動
+; 1～10　☆、11～20　☆☆、21～30　☆☆☆、以下略
+;ダンジョン攻略が必要な場合は☆が★になる。
+
+@TITLE_RANDOM_REQUEST_108_20
+RESULTS = 대 서머너 연습（난이도 ☆☆☆☆）
+RETURN 1
+
+;説明===================================================================
+@REQUEST_EXPLAIN_108_20
+	PRINTL 
+	PRINTL 【의뢰주】메시아교
+	PRINTL 
+	PRINTL 　메시아교는 서머너나 이능자를 상대로 실전 훈련을 하고 싶은 모양이다。
+	PRINTL 　그들의 교관이 되어、실력을 똑똑히 깨닫게 해줘라。
+	PRINTL 
+	PRINTL 【작전영역】폐기된 조차장
+	PRINTL 【적의전력】템플나이트（주살 유효）
+	PRINTL 【성공조건】	템플나이트 전원 격파
+	PRINTL 
+
+;内容====================================================================
+@REQUEST_108_20
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", @"얼마 전、우리의 지원자로부터 제공받은 템플나이트를 사용하여/실전 연습을 실시합니다。이에 서머너의 협력을 부탁드립니다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", @"내용은 아주 단순합니다。우리가 준비한 템플나이트 부대와 전투를 치러주십시오。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", @"다만、그쪽에서도 진심으로 싸워주지 않으면 의미가 없습니다。/보수는 우리가 패배했을 경우에만 지급하도록 하겠습니다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", @"서머너와의 실전을 거듭하여、악마나 이능자에게 대항할 수 있게 된다면/가이아교나 정부의 타도도 허황된 꿈이 아닙니다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", @"이번 연습은 그 위대한 이상을 향한 한 걸음입니다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", @"장소는 시나가와 근처의 폐기된 조차장을 사용합니다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", @"이상입니다、잘 부탁드립니다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"――폐기된 조차장――", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞지정된 장소에 도착하자、목표로 보이는 템플나이트 집단이 보였다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞집단의 리더로 보이는 사내가 훈시를 하고 있다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON,2, "モブ", "テンプルナイト", "템플나이트 대장" ,@"「각원에게 고한다、서로 봐주기 없기다、전력으로 간다」", , , , , 4
+CALL MESSAGE_WINDOW_ICON,2, "モブ", "テンプルナイト", "템플나이트 대장" ,@"「이것을 실전이라 생각하라、패배하면 다음은 없다고 생각하라」", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞템플나이트가 이쪽으로 덤벼들었다！", , , , , 4
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+FOR LOCAL, 8, 11
+	CALL SET_ENEMY, LOCAL ,[[キャラ:자프키엘]],35+RAND:5,1,0
+	NAME:(CHARANUM-1) = テンプルナイト
+	CALLNAME:(CHARANUM-1) = テンプルナイト
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+NEXT
+
+FOR LOCAL, 13, 16
+	CALL SET_ENEMY, LOCAL ,[[キャラ:파워]],34+RAND:5,1,0
+	NAME:(CHARANUM-1) = テンプルナイト
+	CALLNAME:(CHARANUM-1) = テンプルナイト
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+NEXT
+
+CALL BATTLE_START
+
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞템플나이트에게 승리했다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "テンプルナイト", "템플나이트 대장" , @"「좋은 연습이었다、협력에 감사한다」", , , , , 4
+
+;報酬
+依頼フラグ:[[依頼:랜덤의뢰]]:5 = 4;難易度
+依頼フラグ:[[依頼:랜덤의뢰]]:7 = 1;メシア教
+CALL PRIZE_REQUEST_108

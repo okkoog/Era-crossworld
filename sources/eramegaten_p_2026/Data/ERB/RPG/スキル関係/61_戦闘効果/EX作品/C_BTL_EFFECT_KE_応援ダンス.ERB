@@ -1,0 +1,73 @@
+﻿;スキルの管理番号
+;実数値としては使わずに(変数として保存しないようにするし、通常の呼出対象にはしない)
+;リスト生成やデータ抽出のみに使う
+@C_BTL_EFFECT_CONTROL_NO_KE_応援ダンス,ARG
+RESULTS = 응원 댄스
+
+;スキル名
+@SKILL_NAME_C_BTL_EFFECT_応援ダンス,ARG
+RESULTS = 응원 댄스
+
+;重複可能な数
+@C_BTL_EFFECT_COUNT_LIMIT_応援ダンス
+RETURN 1
+
+;効果時間　最大10ターンまで、0を指定した場合は戦闘中永続
+@C_BTL_EFFECT_CONTINUE_TIME_応援ダンス
+RETURN 4
+
+;排他となる効果
+;戻り値
+; RESULTS = 効果名
+; RESULT
+; 0 = 排他
+;-1 = 上書き不能
+; 1 = 上書き(対象も1なら相互上書き)
+@C_BTL_EFFECT_EXCLUSIVE_応援ダンス
+RESULTS = 
+RETURN 0
+
+;個別の対象条件
+;ARG 	効果を受けるキャラの登録番号
+;ARG:1	効果を与えるキャラの登録番号
+@C_BTL_EFFECT_SPECIAL_TARGET_応援ダンス, ARG, ARG:1
+SIF IS_BADSTATE(ARG, "DYING")
+	RETURN 0
+RETURN 1
+
+;効果処理
+;ARG 	効果を受けるキャラの登録番号
+;ARG:1	効果を与えるキャラの登録番号
+@SKILL_TURNEND_C_BTL_EFFECT_応援ダンス, ARG, ARG:1
+#DIM 残スキルカウント
+#LOCALSIZE 2
+SELECTCASE NO:ARG
+CASE [[キャラ:아벤트_KE]], [[キャラ:빌로우_KE]], [[キャラ:브루_KE]], [[キャラ:레스터_KE]]
+CASE [[キャラ:사미다레_KE]], [[キャラ:스티아라_KE]], [[キャラ:귀네_KE]], [[キャラ:게오루이스_KE]]
+CASEELSE
+	RETURN 0
+ENDSELECT
+CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", MIN(10 + GET_RPG_CFLAG_DUNGEON(ARG,　"KE_TPゲージ"), 100)
+
+残スキルカウント = 0
+FOR LOCAL, 0, 3
+	IF C_BTL_EFFECT:(ARG):LOCAL != ""
+		残スキルカウント ++
+	ENDIF
+NEXT
+
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") == 100
+	SETCOLOR 0xffef00
+LOCAL:1 = 0
+FOR LOCAL, 1, 7
+	SIF POS(LOCAL) < 0 || IS_BADSTATE(POS(LOCAL), "DYING")
+		CONTINUE
+	LOCAL:1 = MAX(LOCAL:1, STRLENS(CALLNAME:POS(LOCAL)))
+NEXT
+PRINTFORM 　　[{CPOS(ARG),2}] %CALLNAME:ARG, LOCAL:1, LEFT%    :  +10 (응원 댄스 남은 턴：{残スキルカウント - 1})　
+IF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") == 100
+	PRINTFORML <<ＴＰ　ＦＵＬＬＹ　ＣＨＡＲＧＥＤ！>>
+ELSE
+	PRINTFORML <<ＴＰ：{GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ")}>>
+ENDIF
+RESETCOLOR

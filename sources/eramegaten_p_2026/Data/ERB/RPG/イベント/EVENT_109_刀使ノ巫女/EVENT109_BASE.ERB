@@ -1,0 +1,59 @@
+﻿
+;====================
+;条件
+;====================
+@GET_EVENT_NAME_109
+#FUNCTIONS
+RESULTS_F '= "도사의무녀"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_109
+;メガテン系イベント以外不許可の場合
+SIF !GET_USEABLE_EXTRA_TITLE()
+	RETURN 0
+	
+;初期開放
+;原宿クリアで解放。序盤でも解放できるはずだが、初手で刀使を味方にする、とはいかない程度の手間だと思います。
+;原作でも可奈美と姫和は原宿には行ってますしね。……eratenだと、その前に@にとっ捕まってますが。
+;ダンジョンフラグ:61:0 = 5
+
+IF ダンジョンフラグ:61:0 == 5 && イベントフラグ:109:0 == 0
+	RESULTS = （EX:도사의무녀）01화：칼끝이 향하는 곳
+	RETURN 1
+ENDIF
+RETURN 0
+
+
+;RETURN 1 でイベント出現
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_109
+;プロローグ
+;イベントフラグ:109:0 	0でプロローグ開始（実際は原宿クリアが条件だけど）。
+;			1で可奈美食いしばりイベント
+;			2で姫和食いしばりイベント
+;			3でプロローグクリア。口車で終わらせてもこれになる。
+
+IF イベントフラグ:109:0 == 0
+	CALL EVENT_109_0
+	RETURN 0
+ELSE
+ENDIF
+
+
+
+
+
+
+
+@EVENT_BATTLE_START_EVENT109
+CALL EVENT_BATTLE_START_EVENT109_初期戦闘開始
+
+@EVENT_BATTLE_TURNTOP_EVENT109
+CALL EVENT_BATTLE_TURNTOP_EVENT109_八幡力イベント
+
+@EVENT_BATTLE_SKILLEND_EVENT109, ARG
+CALL EVENT_BATTLE_SKILLEND_EVENT109_食いしばりイベント, ARG
+;@EVENT_BATTLE_TURNEND_EVENT109
+;	CALL EVENT_BATTLE_TURNEND_EVENT109_食いしばりイベント

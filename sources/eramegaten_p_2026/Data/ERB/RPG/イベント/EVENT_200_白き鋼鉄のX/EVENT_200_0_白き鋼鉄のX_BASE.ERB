@@ -1,0 +1,45 @@
+﻿;====================
+;이벤트 명칭
+;====================
+@GET_EVENT_NAME_200
+#FUNCTIONS
+RESULTS_F '= "하얀강철의X"
+RETURNF RESULTS_F
+
+;====================
+;조건
+;====================
+@PLAYABLE_EVENT_200
+SIF FLAG_白き鋼鉄のX_進行度 < 0
+	RETURN 0
+SIF !GETS_USEABLE_EXTRA_TITLE("白き鋼鉄のX")
+	RETURN 0
+SIF DAY == FLAG_白き鋼鉄のX_イベントクリア日
+	RETURN 0
+;X2 루트 확정 후
+SIF FLAG_白き鋼鉄のX2_進行度 > 0
+	RETURN 0
+TRYCCALLFORM PLAYABLE_EVENT_200_{FLAG_白き鋼鉄のX_進行度 + 1}
+	IF RESULT > 0
+		;편성의 공통 체크
+		IF FLAG_白き鋼鉄のX_進行度 > 0
+			RESULTS:1 '= "필요:아큐라의 편성"
+			SIF FINDCHARA_B([[キャラ:아큐라_X]]) != 2
+				RETURN -1
+		ENDIF
+		RESULTS '= "(EX:하얀강철의X)" + RESULTS
+	ENDIF
+	RETURN RESULT
+CATCH
+	RETURN 0
+ENDCATCH
+
+;====================
+;내용
+;====================
+@SHOPCOM_EVENT_200
+CALLFORM SHOPCOM_EVENT_200_{FLAG_白き鋼鉄のX_進行度 + 1}
+SIF !RESULT
+	RETURN 0
+FLAG_白き鋼鉄のX_イベントクリア日 = DAY
+CALL RESET_ANNOUNCE_FLAG

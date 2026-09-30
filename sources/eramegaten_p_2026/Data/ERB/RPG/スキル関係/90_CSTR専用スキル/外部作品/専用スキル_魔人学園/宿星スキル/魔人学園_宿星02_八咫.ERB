@@ -1,0 +1,78 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:魔人学園_宿星02_【宿星：八咫】.ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	000		20XX/XX/XX		----					テンプレ
+;	001		2022/03/??		takaya					作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_【宿星：八咫】,ARG
+RESULTS = 【宿星：八咫】
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_【宿星：八咫】
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_【宿星：八咫】,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_【宿星：八咫】
+;RETURN 0
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_【宿星：八咫】,ARG
+PRINTL 삼종신기인 야타를 관장하는 숙성.
+PRINTL 파사의 힘을 지닌다.
+PRINTL 
+PRINTL 자동: 파마 속성에 내성을 지니지 않은 적에게 주는 데미지가 15% 증가한다.
+PRINTL 　　　파마 속성이 약점인 적일 경우 주는 데미지가 추가로 10% 증가한다.
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_【宿星：八咫】,ARG
+RETURN 0
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_【宿星：八咫】, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			CALL BTL_CALC_AISYOU, -1, L_TARGET, -1, GET_TYPE_NUM("파마"), 1
+			RETURN (CHECK_WEAKNESS(RESULT) >= 1) * 10 + (CHECK_WEAKNESS(RESULT) >= 0) * 15
+	ENDSELECT
+;自分が防御側
+ELSE
+ENDIF
+RETURN 0

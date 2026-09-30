@@ -1,0 +1,36 @@
+﻿;-------------------------------------------------------------------------------
+;    ???　このような感じの段階ごとに隙間があいたバーを生成する
+;-------------------------------------------------------------------------------
+;===============================================================================
+@HTML_RECT_SPLIT_BAR, L_VALUE, SPLITNUM, MAXLENS, L_COLOR = -1, L_BGCOLOR = -1, L_HEIGHT = 50, L_YPOS = 25
+#FUNCTIONS
+#DIM LCOUNT
+#DIMS L_BAR					;
+#DIM L_VALUE				;バーの前景色・背景色の割合を決めるための基準値
+#DIM SPLITNUM				;分割数
+#DIM MAXLENS				;バー全体の長さ。単位は半角1フォント単位
+#DIM L_COLOR				;バーの色
+#DIM L_BGCOLOR				;バーの背景色
+#DIM L_HEIGHT				;バーの高さ(縦幅)
+#DIM L_YPOS					;バーのYPOS
+#DIM CONST BLANK_LENS = 15	;区切りの空白の長さ
+#DIM SPLIT_LENS				;バー単体の長さ
+#DIM L_FRACTION				;端数
+;最大の長さをフォント比率単位に修正
+MAXLENS *= 50
+;バーの長さを取得
+SPLIT_LENS = (MAXLENS - BLANK_LENS * (SPLITNUM - 1)) / SPLITNUM
+L_FRACTION = MAXLENS
+L_FRACTION -= BLANK_LENS * (SPLITNUM - 1)
+L_FRACTION -= SPLIT_LENS * SPLITNUM
+L_BAR = 
+FOR LCOUNT, 0, SPLITNUM
+	SIF LCOUNT
+		L_BAR += @"<shape type = 'rect' color = '%TOSTR_HTML(BGCOLOR())%' param = '0, {L_YPOS}, {BLANK_LENS}, {L_HEIGHT}'>"
+	L_BAR += @"<shape type = 'rect' param = '0, {L_YPOS}, {SPLIT_LENS}, {L_HEIGHT}' color = '%TOSTR_HTML(L_VALUE > LCOUNT ? L_COLOR # L_BGCOLOR)%'>"
+NEXT
+;末端に端数を追加する
+SIF L_FRACTION
+	L_BAR += @"<shape type = 'rect' param = '0, {L_YPOS}, {L_FRACTION}, {L_HEIGHT}' color = '%TOSTR_HTML(BGCOLOR())%'>"
+
+RETURNF L_BAR

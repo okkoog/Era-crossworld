@@ -1,0 +1,95 @@
+﻿;------------------------------------------
+;DARKNESS_TRIGERによる追撃の条件判定関数
+;ARG　 行動者のキャラ番号
+;ARGS　判定するSPスキル名
+;------------------------------------------
+@DTRIGGER_ABLE, ARG, ARGS
+#FUNCTION
+;1行動中に1回のみ
+SIF TFLAG:스킬트리거용1
+	RETURNF 0
+;行動者が自分のときのみ
+SIF ARG != FLAG:행동순1
+	RETURNF 0
+SIF !IS_ＳＰスキル(ARG, ARGS)
+	RETURNF 0
+;以下3種のモードチェンジ技の最中は起動しない
+SIF CFLAG:ARG:입력행동 == [[스킬:X-ROSS DISASTER]]
+	RETURNF 0
+SIF CFLAG:ARG:입력행동 == [[스킬:SONG OF DIVA]]
+	RETURNF 0
+SIF CFLAG:ARG:입력행동 == [[스킬:DARKNESS TRIGGER]]
+	RETURNF 0
+;ブリッツダッシュによりロックしている敵が健在でないとだめ
+SIF BLITZ_TARGET_JUDG(ARG) != 1
+	RETURNF 0
+;ダークネストリガーを起動していないとダメ
+SIF SKILLGAGE_H_GET(ARG, [[스킬:DARKNESS TRIGGER]]) != 1
+	RETURNF 0
+TFLAG:스킬트리거용1++
+RETURNF 1
+
+;------------------------------------------
+;DARKNESS_TRIGERに格納されているSPスキルの名称をARGから取得する
+;------------------------------------------
+@GET_ＳＰスキル, ARG
+#FUNCTIONS
+SELECTCASE ARG
+	CASE 0
+		RETURNF "스파크스텔라"
+	CASE 1
+		RETURNF "앵커넥서스"
+	CASE 2
+		RETURNF "오비탈에지"
+	CASE 3
+		RETURNF "루미너리마인"
+	CASE 4
+		RETURNF "키스오브디바"
+	CASE 5
+		RETURNF "드래프트스파이럴"
+	CASE 6
+		RETURNF "클로스랜서"
+	CASE 7
+		RETURNF "スピンチョッパー"
+	CASE 8
+		RETURNF "メギドバースト"
+	CASE 9
+		RETURNF "タイムフリーザー"
+	CASE 10
+		RETURNF "ガトリングスコール"
+	CASE 11
+		RETURNF "ラピッドリッパー"
+	CASE 12
+		RETURNF "オプティックラウンド"
+ENDSELECT
+
+;------------------------------------------
+;ARGのDARKNESS_TRIGERに格納されているSPスキルがARGSなら真を返す
+;------------------------------------------
+@IS_ＳＰスキル, ARG, ARGS
+#FUNCTION
+RETURNF GET_ＳＰスキル(SKILLGAGE_F_GET(ARG, [[스킬:DARKNESS TRIGGER]])) == ARGS
+
+;------------------------------------------
+;ARGにARG:1のクードスを加算させる関数
+;------------------------------------------
+@SET_加算クードス, ARG, ARG:1
+#DIM 加算クードス
+#DIM クードス上限
+加算クードス = ARG:1
+SIF 加算クードス == 0
+	RETURN 0
+;上限値の取得
+IF EQUIP:ARG:악세서리 == GETNUM(ITEM, "무기력의부적")
+	クードス上限 = 1200
+ELSE
+	クードス上限 = 99999
+ENDIF
+;
+IF EQUIP:ARG:악세서리 == GETNUM(ITEM, "무모함의증거")
+	TIMES 加算クードス, 1.25
+ELSEIF EQUIP:ARG:악세서리 == GETNUM(ITEM, "무기력의부적")
+	TIMES 加算クードス, 0.5
+ENDIF
+PRINTFORMW AERIAL EX　쿠도스 + {加算クードス}
+CALL SKILLGAGE_F_SET, ARG, [[스킬:블리츠대쉬]], MIN(SKILLGAGE_F_GET(ARG, [[스킬:블리츠대쉬]])+加算クードス, クードス上限)

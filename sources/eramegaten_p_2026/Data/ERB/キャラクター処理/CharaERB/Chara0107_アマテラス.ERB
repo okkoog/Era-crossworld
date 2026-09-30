@@ -1,0 +1,147 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara0107_アマテラス.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/05/08		epizo					新規作成
+;	002		2025/07/18		P(bazzile)				イベント加入の処理を追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;イベントフラグ
+;Data\ERB\RPG\ダンジョンアタック\ダンジョンデータ\DUNGEON26_都庁\DUNGEON26_都庁.ERB
+;1 = 自分で凌辱
+;2 = スサノオが凌辱
+;3 = ツクヨミが凌辱
+;--------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:아마테라스]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+CALL SET_BASE_[[キャラ:아마테라스]], ARG, ARG:2
+
+@SET_BASE_[[キャラ:아마테라스]], ARG, ARG:1
+SELECTCASE ARG:1
+	CASE 1
+		SIF ABL:ARG:순종 < 3
+			ABL:ARG:순종 = 3
+		SIF ABL:ARG:봉사정신 < 3
+			ABL:ARG:봉사정신 = 3
+		SIF MARK:ARG:굴복각인 < 3
+			MARK:ARG:굴복각인 = 3
+	CASE 2
+		TALENT:ARG:붕괴 = 1
+		TALENT:ARG:음란 = 1
+		TALENT:ARG:처녀 = 0
+		TALENT:ARG:유아／유아퇴행 = 1
+		ABL:ARG:회화타입 = 301
+		EXP:ARG:Ｖ경험 += 40
+		EXP:ARG:Ａ경험 += 10
+		EXP:ARG:절정경험 += 70
+		EXP:ARG:성교경험 += 50
+		EXP:ARG:질사경험 += 50
+		EXP:ARG:정액경험 += 55
+		EXP:ARG:봉사쾌락경험 += 15
+		EXP:ARG:펠라경험 += 15
+		EXP:ARG:고통쾌락경험 += 10
+		EXP:ARG:Ｖ확장경험 += 30
+		EXP:ARG:Ａ확장경험 += 15
+		CALL ADDS_ABNORMAL_EXP("処女喪失（強姦）", ARG)
+		CALL ADDS_ABNORMAL_EXP ("拡張初体験", ARG)
+		CALL SHOW_ABNORMAL_EXP , ARG, 0
+	CASE 3
+		TALENT:ARG:붕괴 = 1
+		TALENT:ARG:음란 = 1
+		TALENT:ARG:처녀 = 0
+		TALENT:ARG:유아／유아퇴행 = 1
+		ABL:ARG:회화타입 = 301
+		EXP:ARG:Ｖ경험 += 20
+		EXP:ARG:Ａ경험 += 10
+		EXP:ARG:절정경험 += 50
+		EXP:ARG:성교경험 += 40
+		EXP:ARG:질사경험 += 30
+		EXP:ARG:정액경험 += 80
+		EXP:ARG:봉사쾌락경험 += 30
+		EXP:ARG:펠라경험 += 4
+		EXP:ARG:촉수경험 += 30
+		CALL ADDS_ABNORMAL_EXP("触手初体験", ARG)
+		CALL ADDS_ABNORMAL_EXP("処女喪失（触手）", ARG)
+		CALL SHOW_ABNORMAL_EXP , ARG, 0
+ENDSELECT
+
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:아마테라스]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("アマテラス_FACE_6")
+			RETURNF ""
+		SIF !SPRITECREATED("アマテラス_FACE_7")
+			RETURNF ""
+		SIF !SPRITECREATED("アマテラス_FACE_EX_0")
+			RETURNF ""
+		SIF !SPRITECREATED("アマテラス_FACE_EX_1")
+			RETURNF ""
+		SIF !SPRITECREATED("アマテラス_FACE_EX_2")
+			RETURNF ""
+		SIF !SPRITECREATED("アマテラス_FACE_EX_3")
+			RETURNF ""
+		RESULTS_F = デフォルト
+		RESULTS_F:1 = アマテラス_FACE_6
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:아마테라스]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "デフォルト"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+				RESULTS_F = アマテラス_FACE_7
+			CASEELSE
+				SELECTCASE L_SITUATION:1
+					;戦闘不能になった時
+					CASE "DYING"
+						RESULTS_F = アマテラス_FACE_EX_0
+					;魅了にされた時
+					CASE "CHARM"
+						RESULTS_F = アマテラス_FACE_EX_1
+					;睡眠にされた時
+					CASE "SLEEP" 
+						RESULTS_F = アマテラス_FACE_EX_2
+					;上記以外の状態異常の時
+					CASE "STONE", "FLY", "PALYZE", "BRAND", "CURSE", "FLAME", "BOMB", "POISON", "CLOSE", "BIND", "SLIP", "FREEZE", "PANIC", "SHOCK", "HAPPY"
+						RESULTS_F = アマテラス_FACE_EX_3
+					;通常時
+					CASEELSE
+						RESULTS_F = アマテラス_FACE_6
+				ENDSELECT
+		ENDSELECT
+	CASEELSE
+ENDSELECT

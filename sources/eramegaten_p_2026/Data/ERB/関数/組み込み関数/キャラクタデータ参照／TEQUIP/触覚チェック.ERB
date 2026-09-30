@@ -1,0 +1,131 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2022/11/19		っとっとき				CLOTHES.ERBから関数化
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;=================================================
+;触覚状況のチェック
+;=================================================
+@触覚チェック,ARG
+#DIM 衣装部位 , 1
+#DIM 調査部位 , 1
+#DIM 触覚 , 14
+#LOCALSIZE 3
+#LOCALSSIZE 2
+
+FOR 調査部位 , 0 , 5
+	VARSET 触覚 , 1
+	SELECTCASE 調査部位
+		CASE 0
+			LOCALS = Ｃ
+			LOCALS:1 = 음순
+			LOCAL = 7
+			LOCAL:1 = 0
+		CASE 1
+			LOCALS = Ｖ
+			LOCALS:1 = 음순
+			LOCAL = 7
+			LOCAL:1 = 1
+		CASE 2
+			LOCALS = Ａ
+			LOCALS:1 = 둔부
+			LOCAL = 8
+			LOCAL:1 = 2
+		CASE 3
+			LOCALS = 유두
+			LOCALS:1 = 유두
+			LOCAL = 5
+			LOCAL:1 = 3
+		CASE 4
+			LOCALS:1 = 유방
+			LOCALS = 유방
+			LOCAL = 4
+			LOCAL:1 = 4
+	ENDSELECT
+	TEQUIP:ARG:(LOCALS + "촉각") = 1
+	TEQUIP:ARG:("피복애무" + LOCALS) = 0
+	TEQUIP:ARG:("옷내부애무" + LOCALS) = 0
+
+	;露出している部位
+	IF (TEQUIP:ARG:(LOCALS:1 + "노출")) == -1
+		CONTINUE
+	ENDIF
+
+	FOR 衣装部位 , 0 , 14
+		RESULT = 0
+		TRYCALLFORM CLOTHES_EXPOSE_{TEQUIP:ARG:GET_CLOTHESNAME(衣装部位)},LOCAL
+		RESULT:1 = RESULT
+		;가슴앞열림
+		IF RESULT != 1 && (LOCAL == 4 || LOCAL == 5) && TEQUIP:ARG:가슴앞열림
+			RESULT = 0
+			TRYCALLFORM CLOTHES_OPENFRONT_{TEQUIP:ARG:GET_CLOTHESNAME(衣装部位)}
+			SIF RESULT
+				RESULT:1 = 1
+		ENDIF
+		
+		;노출
+		IF RESULT:1 == 1
+			触覚:衣装部位 = 1
+		;被覆
+		ELSE
+			TRYCCALLFORM CLOTHES_触覚_{TEQUIP:ARG:GET_CLOTHESNAME(衣装部位)},LOCAL:1
+				IF RESULT == 0
+					TEQUIP:ARG:(LOCALS + "촉각") = 0
+					BREAK
+				ENDIF
+				触覚:衣装部位 = RESULT
+			CATCH
+				TEQUIP:ARG:(LOCALS + "촉각") = 0
+				BREAK
+			ENDCATCH
+		ENDIF
+	NEXT
+	SIF TEQUIP:ARG:(LOCALS + "촉각") == 0
+		CONTINUE
+
+	;上から伝わる
+	LOCAL:2 = 0
+	FOR 衣装部位 , 0 ,14
+		;上から伝わらない服
+		IF 触覚:衣装部位 != 1 && (触覚:衣装部位 & 2 == 0)
+			LOCAL:2 += 2
+			BREAK
+		ENDIF
+		;上から伝わる服
+		SIF 触覚:衣装部位 & 2
+			LOCAL:2 += 1
+	NEXT
+	;着込みすぎ
+	IF LOCAL:2 > 1
+		TEQUIP:ARG:(LOCALS + "촉각") = 0
+		CONTINUE
+	;上から伝わる服を一枚だけ着ている
+	ELSEIF LOCAL:2 == 1
+		TEQUIP:ARG:(LOCALS + "촉각") = 2
+		TEQUIP:ARG:("피복애무" + LOCALS) = 1
+	ENDIF
+
+	;潜り込ませられる
+	LOCAL:2 = 0
+	FOR 衣装部位 , 0 ,14
+		;潜り込ませられない
+		IF 触覚:衣装部位 != 1 && (触覚:衣装部位 & 4 == 0)
+			TEQUIP:ARG:(LOCALS + "촉각") = 0
+			LOCAL:2 = 0
+			BREAK
+		ENDIF
+		;潜り込ませられる
+		SIF 触覚:衣装部位 != 1 && (触覚:衣装部位 & 4)
+			LOCAL:2 += 1
+	NEXT
+	IF LOCAL:2 > 0
+		SIF TEQUIP:ARG:(LOCALS + "촉각") == 1
+			TEQUIP:ARG:(LOCALS + "촉각") = 0
+		TEQUIP:ARG:(LOCALS + "촉각") += 4
+		TEQUIP:ARG:("옷내부애무" + LOCALS) = 1
+	ENDIF
+NEXT

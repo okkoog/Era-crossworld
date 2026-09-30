@@ -1,0 +1,476 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;	
+;	Licence:ライセンスフリー
+;
+;	Edit	Date			Author					Reason
+;	001		2021/02/14		J>s!UL@1				新規作成
+;	002		2021/03/02		J>s!UL@1				射精ゲージチェックで参照先がおかしそうな所を訂正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;-------------------------------------------------
+;삽입전립선고문시킨다
+;調教師奉仕系派生コマンド
+;-------------------------------------------------
+
+;-------------------------------------------------
+;実行判定
+;-------------------------------------------------
+@CHECK_COM_ABLE520
+;オトコ・男の娘じゃないとダメ
+SIF HAVE_VAGINA(PLAYER)
+	RETURN 0
+
+;対象の技巧3未満はダメ
+SIF ABL:TARGET:기교 < 3
+	RETURN 0
+
+SIF !PLAY_ANALSEX(TARGET,PLAYER)
+	RETURN 0
+
+RETURN 1
+
+@ACT_COM520
+PRINTL 삽입전립선고문시킨다
+TSTR:0 = 삽입전립선고문시킨다
+SELECTCOM = 520
+
+;-------------------------------------------------
+;実行決定
+;-------------------------------------------------
+
+;CALL KOJO_MESSAGE_COM
+
+;調教者←→調教対象
+TFLAG:28 = 3
+
+;-------------------------------------------------
+;射精ゲージチェック
+;-------------------------------------------------
+B = 1500
+
+
+;ABL:調教対象の技巧をみる
+IF ABL:TARGET:기교 == 0
+	TIMES B , 1.00
+ELSEIF ABL:TARGET:기교 == 1
+	TIMES B , 1.20
+ELSEIF ABL:TARGET:기교 == 2
+	TIMES B , 1.40
+ELSEIF ABL:TARGET:기교 == 3
+	TIMES B , 1.60
+ELSEIF ABL:TARGET:기교 == 4
+	TIMES B , 1.80
+ELSE
+	TIMES B , 2.00
+ENDIF
+
+;ABL:従順をみる
+IF ABL:순종 == 0
+	TIMES B , 0.80
+ELSEIF ABL:순종 == 1
+	TIMES B , 0.90
+ELSEIF ABL:순종 == 2
+	TIMES B , 1.00
+ELSEIF ABL:순종 == 3
+	TIMES B , 1.10
+ELSEIF ABL:순종 == 4
+	TIMES B , 1.20
+ELSE
+	TIMES B , 1.30
+ENDIF
+
+;ABL:欲望をみる
+IF ABL:욕망 == 0
+	TIMES B , 1.00
+ELSEIF ABL:욕망 == 1
+	TIMES B , 1.10
+ELSEIF ABL:욕망 == 2
+	TIMES B , 1.20
+ELSEIF ABL:욕망 == 3
+	TIMES B , 1.30
+ELSEIF ABL:욕망 == 4
+	TIMES B , 1.40
+ELSE
+	TIMES B , 1.50
+ENDIF
+
+;PALAM:潤滑をみる
+IF PALAM:PLAYER:윤활 < PALAMLV:1
+	TIMES B , 0.60
+ELSEIF PALAM:PLAYER:윤활 < PALAMLV:2
+	TIMES B , 0.80
+ELSEIF PALAM:PLAYER:윤활 < PALAMLV:3
+	TIMES B , 1.00
+ELSEIF PALAM:PLAYER:윤활 < PALAMLV:4
+	TIMES B , 1.20
+ELSEIF PALAM:PLAYER:윤활 >= PALAMLV:4
+	TIMES B , 1.40
+ENDIF
+
+;調教対象のABL:Ｃ感覚をみる
+IF ABL:TARGET:Ｃ감각 == 0
+	TIMES B , 1.00
+ELSEIF ABL:TARGET:Ｃ감각 == 1
+	TIMES B , 1.50
+ELSEIF ABL:TARGET:Ｃ감각 == 2
+	TIMES B , 2.00
+ELSEIF ABL:TARGET:Ｃ감각 == 3
+	TIMES B , 2.50
+ELSEIF ABL:TARGET:Ｃ감각 == 4
+	TIMES B , 3.50
+ELSE
+	TIMES B , 5.00
+ENDIF
+
+;再装填処理中は射精ゲージは20分の1に
+SIF CFLAG:TARGET:9 > 0
+	B /= 20
+
+
+SIF HAVE_PENIS(TARGET)
+	BASE:TARGET:2 += B
+
+;調教対象→調教者
+TFLAG:28 = 1
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 50
+DOWNBASE:TARGET:기력 += 180
+
+SOURCE:TARGET:쾌Ｃ = 600
+SOURCE:TARGET:정애 = 200
+SOURCE:TARGET:성행위 = 400
+SOURCE:TARGET:굴종 = 600
+SOURCE:TARGET:복종 = 500
+SOURCE:TARGET:반감 = 500
+SIF IS_MALE(TARGET) && (TALENT:쾌감을부정 == 0 || ABL:욕망 > 2) && !IS_LOOKSLIKE_MALE(PLAYER)
+	SOURCE:TARGET:반감 /= 10
+SOURCE:TARGET:불결 = 750
+SOURCE:TARGET:일탈 = 1000
+
+;調教者に快A
+SOURCE:PLAYER:쾌Ａ = 700
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;抑圧、抵抗持ちには、抑鬱ソース追加
+SIF TALENT:억압 || TALENT:저항
+	SOURCE:TARGET:울굴 += 500
+
+;-------------------------------------------------
+;射精チェック
+;-------------------------------------------------
+;射精先タイプの設定
+TCVAR:PLAYER:페니스사용대상 = TARGET
+TCVAR:PLAYER:사정부위 = 14
+;射精先選択の可・不可
+TFLAG:사정대상선택가능 = 0
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;射精に関係なく行われる処理はここから
+;調教者のＡ⇔奴隷のＰの汚れが移動
+CALL MOVE_STAIN("애널", PLAYER, "페니스", TARGET)
+
+;-------------------------------------------------
+;吸精処理
+;-------------------------------------------------
+IF CFLAG:PLAYER:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:10+1) * BASE:LV
+	CALL DRAIN_MAG,PLAYER,LOCAL,TARGET
+ELSEIF CFLAG:TARGET:ＭＡＧ비피흡수 == 0
+	LOCAL = (RAND:10+1) * BASE:LV
+	CALL DRAIN_MAG,TARGET,LOCAL,PLAYER
+ENDIF
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+;調教者のＡ経験
+CALL ADDS_EXP("Ａ경험", 1, PLAYER)
+
+CALL ADDS_EXP("봉사쾌락경험", 1, PLAYER)
+CALL ADDS_EXP("성교경험", 1, PLAYER)
+
+;삽입경험
+CALL ADDS_EXP("삽입경험", 1, TARGET)
+
+;수간경험
+IF (TALENT:TARGET:짐승 || TALENT:TARGET:새) && !(TALENT:PLAYER:짐승 || TALENT:PLAYER:새)
+	CALL ADDS_EXP("수간경험", 1, PLAYER)
+ENDIF
+;레즈경험
+A = 4
+IF IS_LESBIAN(TARGET,PLAYER)
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, PLAYER)
+ELSEIF IS_GAY(TARGET,PLAYER)
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+	
+	
+ENDIF
+
+;依存度ベクトル
+TFLAG:33 = 3
+
+;依存度補正値(主人かつ恋慕、淫乱、服従で1。親愛、娼婦、隷属で2）
+IF (TALENT:연모 || TALENT:음란 || TALENT:복종) && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF (TALENT:친애 || TALENT:창부 || TALENT:예속) && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+;奉仕快楽フラグ
+TFLAG:100 = 1
+
+RETURN 1
+
+@MESSAGE_COM520
+;アナル騎乗位させる
+IF PREVCOM == 97
+	PRINTFORML 기승 전립선 공략한다
+	PRINTFORMW 
+	IF TEQUIP:주도권
+		PRINTFORM %TARGET은% 깊숙이 꿰뚫은 채, 
+		;「TARGETが真性のサドか」「サドっ気持ちか」で分岐
+		IF (TALENT:새드 || ABL:새드끼 == 5 || TALENT:영맹) && RAND:3 == 0
+			PRINTFORM %PLAYER의% 상체를 떼어내듯 일으키고, 페니스로 거칠게 전립선을 헤집고는, 
+		ELSEIF TALENT:새드 || (ABL:새드끼 >= 4 && RAND:2 == 0) || TALENT:영맹
+			PRINTFORM 허리를 쥐고 %PLAYER의% 몸을 일으키며, 페니스 끝으로 애태우듯 전립선을 자극하고는, 
+		ELSEIF RAND:2 == 0
+			PRINTFORM 천천히 %PLAYER의% 상체를 일으키고, 페니스 끝으로 전립선을 문지르고는, 
+		ENDIF
+		;恋慕で追加
+		SIF (TALENT:연모 || TALENT:친애) && RAND:3 >= 1
+			PRINTFORM 상기된 얼굴을 사랑스럽다는 듯 바라보더니, 
+		;「TARGETが真性のサドか」「サドっ気持ちか」で分岐
+		IF (TALENT:새드 || ABL:새드끼 == 5 || TALENT:영맹) && RAND:3 == 0
+			PRINTFORMW 가차 없이 %PLAYER에게% 움직이라고 명령했다…
+		ELSEIF TALENT:새드 || (ABL:새드끼 >= 3 && RAND:2 == 0) || TALENT:영맹
+			PRINTFORMW %PLAYER에게% 움직이라고 명령했다…
+		ELSE
+			PRINTFORMW %PLAYER에게% 움직이라고 재촉했다…
+		ENDIF
+		PRINTFORML %PLAYER는% 상체를 젖히고 허리를 띄우며, 자신을 꿰뚫은 페니스로 장벽을 문지르고 있다…
+		IF EXP:PLAYER:Ａ경험 <= 30
+			PRINTFORML %PLAYER는% 당혹스러워하면서도 그 행위를 계속하고 있다…
+			PRINTFORMW
+		ELSEIF EXP:PLAYER:Ａ경험 <= 50
+			PRINTFORML %PLAYER는% 붙잡은 쾌감을 좇아 허리를 구불거리며, 반쯤 발기한 페니스를 흔들고 있다…
+			PRINTFORMW
+		ELSEIF EXP:PLAYER:Ａ경험 <= 80
+			PRINTFORML %PLAYER는% 엉덩이를 조이고, 잘게 허리를 떨며 교성을 내지르고 있다…
+			PRINTFORMW
+		ELSEIF EXP:PLAYER:Ａ경험 <= 120
+			PRINTFORML %PLAYER는% 뒤로 손을 짚고, 허리를 덜덜 떨며 쾌락을 탐하고 있다…
+			PRINTFORML 젖혀진 페니스의 끝부분이, 예각으로 전립선을 후벼 파고 있다…
+			PRINTFORMW
+		ELSE
+			PRINTFORML %PLAYER는% 체내의 급소를, 스스로의 허리 경련으로 마음껏 자극하고 있다…
+			PRINTFORML 결합부의 떨림이 전신에 퍼질 때마다, 콧소리가 섞인 맥없는 신음이 흘러나온다…
+			PRINTFORMW
+	ENDIF
+	ELSE
+		PRINTFORM %PLAYER는% %TARGET과% 이어진 채 상체를 일으키고, 
+		;プレイヤーが淫乱
+		SIF TALENT:PLAYER:음란
+			PRINTFORM 더욱 강한 자극을 얻으려 뒤로 손을 짚고 상체를 젖히더니, 
+		SIF ABL:PLAYER:Ａ감각 > 3
+			PRINT 아쉬운 듯 꿈틀거리는 
+		PRINTFORM 직장으로 옭아맨 페니스로, 전립선을 문지르기 시작했다…
+	ENDIF
+;애널정상위시킨다
+ELSEIF PREVCOM == 95
+	PRINTFORML 삽입전립선고문시킨다
+	PRINTFORMW
+	IF TEQUIP:주도권
+		PRINTFORM %TARGET은% %PLAYER를% 끌어당기듯이 허리를 쳐올리고, 
+		PRINTFORML \@ ABL:PLAYER:Ａ감각 > 2 ? 기대로 떨리는 #\@ 전립선을 페니스로 
+		;「TARGETが真性のサドか」「サドっ気持ちか」で分岐
+		IF (TALENT:새드 || ABL:새드끼 >= 5 || TALENT:영맹) && RAND:3 == 0
+			PRINT 짓이기듯 긁어내며, 유린했다…
+		ELSEIF TALENT:새드 || (ABL:새드끼 >= 4 && RAND:2 == 0)
+			PRINTFORM 격렬하게 비벼 올렸다…
+		ELSE
+			PRINT 조금씩 속도를 올리며, 자극했다…
+			PRINTFORMW
+		ENDIF
+		IF EXP:PLAYER:Ａ경험 <= 30
+			PRINTFORML %PLAYER는% 칭얼거리듯 허리를 흔들고 있다…
+			PRINTFORMW
+		ELSEIF EXP:PLAYER:Ａ경험 <= 50
+			PRINTFORML %PLAYER는% 몸이 흔들리면서도, 입을 앙다물고 생소한 쾌락을 견뎌내고 있다…
+			PRINTFORMW
+		ELSEIF EXP:PLAYER:Ａ경험 <= 80
+			PRINTFORML %PLAYER는% 약점을 공략당해, 너무나 강렬한 쾌감에 눈을 깜빡이고 있다…
+			PRINTFORMW
+		ELSEIF EXP:PLAYER:Ａ경험 <= 120
+			PRINTFORML %TARGET은% 허리에 힘을 주어, 집요하게 비벼대주었다…
+			PRINTFORML %PLAYER는% 허리 깊숙한 곳에서 번져오는 감각에 몸을 뜨겁게 떨며 더운 숨결을 흘리고 있다…
+			PRINTFORMW
+		ELSE
+			PRINTFORML %PLAYER는% 목을 울리며 침을 삼키고, 발가락을 오므린 채 머리를 흔들며 몸부림치고 있다…
+			PRINTFORML 제대로 숨도 쉬지 못하고, 입을 뻐끔거리며 소리조차 되지 않는 헐떡임을 반복한다…
+			PRINTFORMW
+		ENDIF
+	ELSE
+		PRINTFORM %TARGET의% 페니스가 민감한 곳을 문지르도록 %PLAYER는% 허리를 띄우더니 
+		;調教者が淫乱
+		IF ABL:PLAYER:욕망 > 3
+			PRINTFORM 민감한 곳을 알려주며, 
+		ENDIF
+		PRINTFORM 그 단단한 것으로 
+		PRINTFORMW 찔러주길 애원했다…
+	ENDIF
+;애널후배위시킨다	
+ELSEIF PREVCOM == 96
+	PRINTFORML 삽입전립선고문시킨다
+	PRINTFORMW
+	IF TEQUIP:주도권
+		PRINTFORM %TARGET은% 상체를 숙여 %PLAYER의% 
+		;「TARGETが真性のサドか」「サドっ気持ちか」で分岐
+		;恋慕で追加
+		SIF (TALENT:연모 || TALENT:친애) && RAND:3 >= 1
+			PRINTFORM 강한 쾌락에 헐떡이는 목소리를 만족스럽게 들으면서, 
+		IF (TALENT:새드 || ABL:새드끼 >= 5) && RAND:3 == 0
+			PRINT 아누스를 꿰뚫은 페니스를 격렬하게 피스톤질해 전립선을 강하게 후벼 팠다…
+			PRINTFORMW
+		ELSEIF TALENT:새드 || (ABL:새드끼 >= 4 && RAND:2 == 0)
+			PRINT 아누스를 꿰뚫은 페니스로 전립선을 강하게 몰아붙였다…
+			PRINTFORMW
+		ELSE
+			PRINT 아누스를 꿰뚫은 페니스로 전립선을 계속 문질렀다…
+			PRINTFORMW
+		ENDIF
+		IF EXP:PLAYER:Ａ경험 <= 30
+			PRINTFORML %PLAYER는% 칭얼거리듯 허리를 흔들고 있다…
+			PRINTFORMW
+		ELSEIF EXP:PLAYER:Ａ경험 <= 50
+			PRINTFORML %PLAYER는% 몸이 흔들리면서도, 입을 앙다물고 생소한 쾌락을 견뎌내고 있다…
+			PRINTFORMW
+		ELSEIF EXP:PLAYER:Ａ경험 <= 80
+			PRINTFORML %PLAYER는% 약점을 공략당해, 너무나 강렬한 쾌감에 눈을 깜빡이고 있다…
+			PRINTFORMW
+		ELSEIF EXP:PLAYER:Ａ경험 <= 120
+			PRINTFORML %TARGET은% 허리에 힘을 주어, 집요하게 비벼대주었다…
+			PRINTFORML %PLAYER는% 허리 깊숙한 곳에서 번져오는 감각에 몸을 뜨겁게 떨며 더운 숨결을 흘리고 있다…
+			PRINTFORMW
+		ELSE
+			PRINTFORML %PLAYER는% 목을 울리며 침을 삼키고, 발가락을 오므린 채 머리를 흔들며 몸부림치고 있다…
+			PRINTFORML 제대로 숨도 쉬지 못하고, 입을 뻐끔거리며 소리조차 되지 않는 헐떡임을 반복한다…
+			PRINTFORMW
+		ENDIF
+	ELSE
+		PRINTFORM %PLAYER는% 엉덩이를 치켜들고, 
+		SIF TALENT:PLAYER:음란
+			PRINTFORM 멋대로 움직이기 시작한 허리의 움직임으로 
+
+		PRINTFORMW 강한 쾌락을 졸랐다…
+		PRINTFORM %TARGET은% 상체를 숙여 
+		;恋慕で追加
+		SIF TALENT:연모 && RAND:3 >= 1
+			PRINT 등을 부드럽게 쓰다듬더니, 
+		PRINTFORMW %PLAYER의% 전립선을 문지르기 시작했다…
+	ENDIF
+;애널대면좌위시킨다
+ELSEIF PREVCOM == 902
+	PRINTFORML 삽입전립선고문시킨다
+	PRINTFORMW
+	IF TEQUIP:주도권
+		PRINTFORM %TARGET은% 허리를 잡고 %PLAYER의% 상체를 떼어내 기울이며, 그 페니스째로 아랫배를 누르고는, 
+		PRINTFORML \@ ABL:PLAYER:Ａ감각 > 2 ? 기대로 떨리는 #\@ 전립선을 페니스로 
+		;「TARGETが真性のサドか」「サドっ気持ちか」で分岐
+		IF (TALENT:새드 || ABL:새드끼 >= 5 || TALENT:영맹) && RAND:3 == 0
+			PRINT 긁어내듯, 유린했다…
+		ELSEIF TALENT:새드 || (ABL:새드끼 >= 4 && RAND:2 == 0)
+			PRINTFORM 격렬하게 비벼 올렸다…
+		ELSE
+			PRINT 계속 자극했다…
+			PRINTFORMW
+		ENDIF
+		IF EXP:PLAYER:Ａ경험 <= 30
+			PRINTFORML %PLAYER는% 칭얼거리듯 허리를 흔들고 있다…
+			PRINTFORMW
+		ELSEIF EXP:PLAYER:Ａ경험 <= 50
+			PRINTFORML %PLAYER는% 몸이 흔들리면서도, 입을 앙다물고 생소한 쾌락을 견뎌내고 있다…
+			PRINTFORMW
+		ELSEIF EXP:PLAYER:Ａ경험 <= 80
+			PRINTFORML %PLAYER는% 약점을 공략당해, 너무나 강렬한 쾌감에 눈을 깜빡이고 있다…
+			PRINTFORMW
+		ELSEIF EXP:PLAYER:Ａ경험 <= 120
+			PRINTFORML %TARGET은% 허리에 힘을 주어, 집요하게 비벼대주었다…
+			PRINTFORML %PLAYER는% 허리 깊숙한 곳에서 번져오는 감각에 몸을 뜨겁게 떨며 더운 숨결을 흘리고 있다…
+			PRINTFORMW
+		ELSE
+			PRINTFORML %PLAYER는% 목을 울리며 침을 삼키고, 발가락을 오므린 채 머리를 흔들며 몸부림치고 있다…
+			PRINTFORML 제대로 숨도 쉬지 못하고, 입을 뻐끔거리며 소리조차 되지 않는 헐떡임을 반복한다…
+			PRINTFORMW
+		ENDIF
+	ELSE
+		PRINTFORM %PLAYER는% 상체를 떼어내 %TARGET의% 페니스가 민감한 곳을 문지르도록 하더니 
+		;調教者が淫乱
+		IF ABL:PLAYER:욕망 > 3
+			PRINTFORM 자연스레 허리를 흔들면서, 
+		ENDIF
+		PRINTFORM 전립선으로의 자극을 
+		PRINTFORMW 계속해달라고 졸랐다…
+	ENDIF
+;애널배면좌위시킨다
+ELSEIF PREVCOM == 903
+	PRINTFORML 삽입전립선고문시킨다
+	PRINTFORMW
+	IF TEQUIP:주도권
+		PRINTFORM %TARGET은% %PLAYER의% 몸을 들어 올리고, 페니스로 얕은 위치를 
+		;「TARGETが真性のサドか」「サドっ気持ちか」で分岐
+		IF (TALENT:새드 || ABL:새드끼 >= 5 || TALENT:영맹) && RAND:3 == 0
+			PRINT 긁어내듯, 유린했다…
+		ELSEIF TALENT:새드 || (ABL:새드끼 >= 4 && RAND:2 == 0)
+			PRINTFORM 격렬하게 비벼 올렸다…
+		ELSE
+			PRINT 계속 자극했다…
+			PRINTFORMW
+		ENDIF
+		IF EXP:PLAYER:Ａ경험 <= 30
+			PRINTFORML %PLAYER는% 칭얼거리듯 허리를 흔들고 있다…
+			PRINTFORMW
+		ELSEIF EXP:PLAYER:Ａ경험 <= 50
+			PRINTFORML %PLAYER는% 몸이 흔들리면서도, 입을 앙다물고 생소한 쾌락을 견뎌내고 있다…
+			PRINTFORMW
+		ELSEIF EXP:PLAYER:Ａ경험 <= 80
+			PRINTFORML %PLAYER는% 약점을 공략당해, 너무나 강렬한 쾌감에 눈을 깜빡이고 있다…
+			PRINTFORMW
+		ELSEIF EXP:PLAYER:Ａ경험 <= 120
+			PRINTFORML %TARGET은% 허리에 힘을 주어, 집요하게 비벼대주었다…
+			PRINTFORML %PLAYER는% 허리 깊숙한 곳에서 번져오는 감각에 몸을 뜨겁게 떨며 더운 숨결을 흘리고 있다…
+			PRINTFORMW
+		ELSE
+			PRINTFORML %PLAYER는% 목을 울리며 침을 삼키고, 발가락을 오므린 채 머리를 흔들며 몸부림치고 있다…
+			PRINTFORML 제대로 숨도 쉬지 못하고, 입을 뻐끔거리며 소리조차 되지 않는 헐떡임을 반복한다…
+			PRINTFORMW
+		ENDIF
+	ELSE
+		PRINTFORM %PLAYER는% 허리를 띄워 %TARGET의% 페니스가 민감한 곳을 문지르도록 하더니 
+		;調教者が淫乱
+		IF ABL:PLAYER:욕망 > 3
+			PRINTFORM 자연스레 허리를 흔들면서, 
+		ENDIF
+		PRINTFORM 전립선으로의 자극을 
+		PRINTFORMW 계속해달라고 졸랐다…
+	ENDIF
+ENDIF
+	
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_520
+RETURN COMTYPE("派生系")
+
+
+

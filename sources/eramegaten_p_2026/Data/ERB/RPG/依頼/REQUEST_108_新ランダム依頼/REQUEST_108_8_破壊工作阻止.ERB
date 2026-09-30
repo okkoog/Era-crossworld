@@ -1,0 +1,64 @@
+﻿;依頼名===================================================================
+;依頼難易度は敵の最大レベルによって変動
+; 1～10　☆、11～20　☆☆、21～30　☆☆☆、以下略
+;ダンジョン攻略が必要な場合は☆が★になる。
+
+@TITLE_RANDOM_REQUEST_108_8
+RESULTS = 파괴공작 저지（난이도 ☆☆☆☆☆）
+RETURN 1
+
+;説明===================================================================
+@REQUEST_EXPLAIN_108_8
+	PRINTL 
+	PRINTL 【의뢰주】병기제조회사
+	PRINTL 
+	PRINTL 　병기제조공장이 무장집단의 습격을 받고 있다。
+	PRINTL 　침입해 오는 놈들을 배제하라。
+	PRINTL
+	PRINTL 【작전영역】병기공장 내부
+	PRINTL 【적의전력】용병（화염、질풍 유효）
+	PRINTL 【성공조건】적 배제
+
+;内容====================================================================
+@REQUEST_108_8
+CALL MESSAGE_WINDOW, "CEO" , @"우리 병기제조공장이 무장집단의 강습을 받고 있습니다。", , , , , 4
+CALL MESSAGE_WINDOW, "CEO" , @"적의 목적은 공장 제어 시스템의 파괴로 보입니다。/이것이 파괴되면 장기간 조업 정지를 피할 수 없습니다。", , , , , 4
+CALL MESSAGE_WINDOW, "CEO" , @"공장 외부에서도 별동대의 공격을 받고 있어/경비부대 대부분은 그쪽으로 향할 수밖에 없는 상황입니다。", , , , , 4
+CALL MESSAGE_WINDOW, "CEO" , @"현재로서는 적의 침입부대를 제어 시스템 직전 방어선에서 저지하고 있으나/돌파당하는 것은 이제 시간문제입니다。", , , , , 4
+CALL MESSAGE_WINDOW, "CEO" , @"공장 내부로 급히 이동해 제어 시스템을 호위해 주십시오。", , , , , 4
+CALL MESSAGE_WINDOW, "MESSAGE" , @"――공장 내부――", , , , , 4
+CALL MESSAGE_WINDOW, "MESSAGE" , @"＞도착하자마자 경보음과 함께 용병 여러 명이 돌입해왔다。", , , , , 4
+CALL MESSAGE_WINDOW, "용병" , @"가라-！ 제어 시스템을 파괴해라-！", , , , , 4
+CALL MESSAGE_WINDOW, "MESSAGE" , @"＞습격부대가 이쪽으로 덤벼들었다！", , , , , 4
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+FOR LOCAL, 8, 11
+	CALL SET_ENEMY, LOCAL ,[[キャラ:쿠라마텐구]],48+RAND:5,1,0
+	NAME:(CHARANUM-1) = 傭兵
+	CALLNAME:(CHARANUM-1) = 傭兵
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+NEXT
+
+FOR LOCAL, 13, 16
+	CALL SET_ENEMY, LOCAL ,[[キャラ:티탄]],45+RAND:5,1,0
+	NAME:(CHARANUM-1) = 傭兵
+	CALLNAME:(CHARANUM-1) = 傭兵
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+NEXT
+
+CALL BATTLE_START
+
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+CALL MESSAGE_WINDOW, "MESSAGE" , @"＞파괴공작을 온 용병부대를 전멸시켰다。", , , , , 4
+
+;報酬
+依頼フラグ:[[依頼:랜덤의뢰]]:5 = 5;難易度
+依頼フラグ:[[依頼:랜덤의뢰]]:7 = 0;그외
+CALL PRIZE_REQUEST_108

@@ -1,0 +1,44 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2020/05/31		Jガン					ボイコット判定の計算式を変えて口上が出やすいように
+;	003		2021/01/04		Jガン					リンケージ参加者も口上が出せるように
+;	004		2021/09/11		木綿豆腐				リンケージ参加口上が出なくなっていたので修正
+;	005		2022/11/27		P(bazzile)				忠誠度が上がっていない場合も口上がでてしまっていたのを修正
+;	006		2023/04/23		P(bazzile)				忠誠度上昇口上を忠誠度とは無関係に呼ばれるように変更し、処理位置を@BATTLEに移動
+;													さらに重複する処理をまとめて整理
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+@戦闘行動対応忠誠度上昇,ARG
+#DIMS CONST COLOUR = "崩壊","友愛","獰猛","愚鈍","高慢","狡猾","冷静","残虐","賢い","ゾンビ","天使","堕天使","虚心"
+#DIMS CONST COLOUR_KR = "붕괴","우애","영맹","우둔","교만","교활","냉정","잔학","현명","좀비","천사","타천사","허심"
+#DIM LOYALTY,1
+#DIM MOTIVE,1
+;LOYALTY      획득충성도
+;MOTIVE       忠誠度上昇の引き金となったTALENT
+LOYALTY = 0
+MOTIVE = 0
+;基本動機となる素質ごとの判定
+FOR LOCAL,0,VARSIZE("COLOUR")
+	SIF !TALENT:ARG:(COLOUR_KR:LOCAL)
+		CONTINUE
+	CALLFORM COMBAT_HIGH_%COLOUR:LOCAL%,ARG,CFLAG:ARG:입력행동
+	IF RESULT > LOYALTY || (RESULT <= 0 && LOYALTY <= 0)
+		LOYALTY = RESULT
+		MOTIVE = GETNUM(TALENT,COLOUR_KR:LOCAL)
+	ENDIF
+NEXT
+;継承タイプと一致するスキルなら忠誠度+1(造魔を除く)
+IF LOYALTY <= 0 && ABL:ARG:종족 != GET_RACE_NUM("조마")
+	CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", CFLAG:ARG:입력행동, ARG
+	SIF TALENT:ARG:GET_SUCCESSION(RESULT)
+		LOYALTY += 1
+ENDIF
+
+;忠誠度増減
+IF CFLAG:ARG:충성도링크 && FINDCHARA_TIMEID(CFLAG:ARG:피링크캐릭터실제가입시간) >= 0
+	CFLAG:FINDCHARA_TIMEID(CFLAG:ARG:피링크캐릭터실제가입시간):전투중획득충성도 = MAX(0,CFLAG:FINDCHARA_TIMEID(CFLAG:ARG:피링크캐릭터실제가입시간):전투중획득충성도+LOYALTY)
+ELSE
+	CFLAG:ARG:전투중획득충성도 = MAX(0,CFLAG:ARG:전투중획득충성도+LOYALTY)
+ENDIF
+RETURN LOYALTY > 0 ? MOTIVE # 0

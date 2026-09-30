@@ -1,0 +1,97 @@
+﻿@SET_陥落素質, L_CHARA, ARGS, L_CHARA:1 = -999
+#DIM DYNAMIC L_CHARA, 2
+SIF CFLAG:L_CHARA:함락링크
+	RETURN 0
+L_CHARA:1 = -999 ? MASTER # L_CHARA:1
+SELECTCASE ARGS
+	CASE "연모"
+		MARK:L_CHARA:굴복각인 = MAX(MARK:L_CHARA:굴복각인,3)
+		ABL:L_CHARA:순종 = MAX(ABL:L_CHARA:순종,3)
+		CALL 陥落人数加算, L_CHARA, "연모"
+		TALENT:L_CHARA:연모 = 1
+		SIF CFLAG:L_CHARA:피조교횟수 == 0
+			CFLAG:L_CHARA:미조교함락 = 1
+		CALL SET_TALENT_PARTY_JOINABLE, L_CHARA, "参加可能"
+	CASE "친애"
+		MARK:L_CHARA:굴복각인 = MAX(MARK:L_CHARA:굴복각인,3)
+		ABL:L_CHARA:순종 = MAX(ABL:L_CHARA:순종,3)
+		;上位は下位もつける
+		CALL 陥落人数加算, L_CHARA, "연모"
+		CALL SET_陥落履歴, NO:L_CHARA, "연모"
+		TALENT:L_CHARA:친애 = 1
+		TALENT:L_CHARA:연모 = 0
+	CASE "음란"
+		CALL 陥落人数加算, L_CHARA, "음란"
+		TALENT:L_CHARA:음란 = 1
+		TALENT:L_CHARA:ＮＴＲ = 0	
+	CASE "창부"
+		CALL 陥落人数加算, L_CHARA, "음란"
+		;上位は下位もつける
+		CALL SET_陥落履歴, NO:L_CHARA, "음란"
+		TALENT:L_CHARA:창부= 1
+		TALENT:L_CHARA:음란 = 0
+		TALENT:L_CHARA:ＮＴＲ = 0
+	CASE "복종"
+		CALL 陥落人数加算, L_CHARA, "복종"
+		TALENT:L_CHARA:복종 = 1
+		CSTR:L_CHARA:이인칭 = 御主人様
+	CASE "예속"
+		CALL 陥落人数加算, L_CHARA, "복종"
+		;上位は下位もつける
+		CALL SET_陥落履歴, NO:L_CHARA, "복종"
+		TALENT:L_CHARA:예속 = 1
+		TALENT:L_CHARA:복종 = 0
+	CASE "신뢰"
+		CALL 陥落人数加算, L_CHARA, "신뢰"
+		TALENT:L_CHARA:신뢰 = 1
+		CFLAG:L_CHARA:미조교함락 = 1
+	CASE "동료"
+		;上位は下位もつける
+		CALL 陥落人数加算, L_CHARA, "신뢰"
+		CALL SET_陥落履歴, NO:L_CHARA, "신뢰"
+		TALENT:L_CHARA:동료 = 1
+		TALENT:L_CHARA:신뢰 = 0
+ENDSELECT
+;履歴をつける
+CALL SET_陥落履歴, NO:L_CHARA, ARGS
+IF L_CHARA:1 >= 0
+	CFLAG:L_CHARA:함락캐릭터 = CFLAG:(L_CHARA:1):캐릭터고유번호
+	CDFLAG:L_CHARA:캐릭터간함락소질:(CFLAG:(L_CHARA:1):캐릭터고유번호 + 100) = FINDELEMENT(陥落_TABLE, ARGS, , , 1)
+ENDIF
+SIF L_CHARA:1 >= 0
+	CDFLAG:L_CHARA:캐릭터간호감도:(CFLAG:(L_CHARA:1):캐릭터고유번호 + 100) = ABS(CDFLAG:L_CHARA:캐릭터간호감도:(CFLAG:(L_CHARA:1):캐릭터고유번호 + 100))
+SIF L_CHARA:1 == MASTER
+	TALENT:L_CHARA:ＮＴＲ = 0
+SIF TALENT:L_CHARA:ＮＴＲ == 0
+	CFLAG:L_CHARA:현ＮＴＲ진행도 = 0
+CALL LINK_陥落素質, L_CHARA
+CALL SET_TALENT_PARTY_JOINABLE, L_CHARA, "参加可能"
+
+@LINK_陥落素質, L_CHARA
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC LINKED_CHARA
+#DIMS CONST TALENT_TABLE = "연모", "친애", "음란", "창부", "복종", "예속", "신뢰", "동료"
+FOR LCOUNT, 0, LINKCHARANUM
+	LINKED_CHARA = FINDCHARA_LINK(L_CHARA, LCOUNT)
+	SIF LINKED_CHARA < 0
+		CONTINUE
+	SIF !CFLAG:LINKED_CHARA:함락링크
+		CONTINUE
+	FOR LCOUNT:1, 0, VARSIZE("TALENT_TABLE")
+		TALENT:LINKED_CHARA:(TALENT_TABLE:(LCOUNT:1)) = TALENT:L_CHARA:(TALENT_TABLE:(LCOUNT:1))
+		IF TALENT:L_CHARA:(TALENT_TABLE:(LCOUNT:1)) > 0
+			CALL SET_陥落履歴, NO:LINKED_CHARA, TALENT_TABLE:(LCOUNT:1)
+			SELECTCASE TALENT_TABLE:(LCOUNT:1)
+				CASE "친애"
+					CALL SET_陥落履歴, NO:LINKED_CHARA, "연모"
+				CASE "창부"
+					CALL SET_陥落履歴, NO:LINKED_CHARA, "음란"
+				CASE "예속"
+					CALL SET_陥落履歴, NO:LINKED_CHARA, "복종"
+				CASE "동료"
+					CALL SET_陥落履歴, NO:LINKED_CHARA, "신뢰"
+			ENDSELECT
+		ENDIF
+	NEXT
+NEXT

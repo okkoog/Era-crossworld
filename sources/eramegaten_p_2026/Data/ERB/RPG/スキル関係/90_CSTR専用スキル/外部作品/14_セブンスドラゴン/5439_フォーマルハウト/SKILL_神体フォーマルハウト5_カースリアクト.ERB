@@ -1,0 +1,107 @@
+﻿;スキル名
+@SKILL_NAME_カースリアクト,ARG
+RESULTS = 커스 리액트
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_カースリアクト, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_カースリアクト,ARG
+RETURN 60
+
+;　相性
+@SKILL_TYPE_カースリアクト,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_カースリアクト
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_カースリアクト, ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_カースリアクト,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_カースリアクト,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_カースリアクト, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+@SKILL_HEAL_TYPE_カースリアクト, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("통상")
+
+
+;계승타입　주살
+@SKILL_SUCCESSION_TYPE_カースリアクト
+RETURN GET_SUCCESSION_NUM("주살")
+;不可
+
+;속도보정
+@SKILL_SPEED_カースリアクト, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_カースリアクト
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_カースリアクト, ARG = -1
+RETURN 15
+;変化不能
+
+@継承不能_カースリアクト
+RETURN 1
+
+
+;-------------------------------------------------------
+;追撃の発動条件と対象
+;自分の行動で敵を倒した時、自分に
+;範囲で倒した場合は対象の数だけ発動する
+;-------------------------------------------------------
+@SKILL_TRIGGER_ACTIONABLE_カースリアクト,ARG,ARG:1
+#DIM DYNAMIC L_STOCK
+;自分の行動のときのみ追撃
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+;味方相手には発動しない
+SIF IS_FRIEND(ARG, ARG:1)
+	RETURN 0
+;アクティブスキルとして起動状態にしておく必要がある。
+SIF PU_SKILLGAGE_H_GET(ARG,"カースリアクト") < 1
+	RETURN 0
+;この行動で敵を呪いにすることで発動
+SIF !GET_CREC_ACT(ARG, ARG:1, "BAD_STATE", "CURSE")
+	RETURN 0
+RESULTS '= "闇の疾風"
+RETURN 1, CPOS(ARG:1)
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_カースリアクト, ARG, ARG:1, ARG:2
+;効果時間は1ターン
+CALL PU_SKILLGAGE_H_SET, ARG, "カースリアクト", 1
+PRINTFORMW %CALLNAME:ARG%(은)는 대상을 저주 상태로 만들었을 경우 추가 행동을 실행하게 되었다!
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_カースリアクト, ARG
+PRINTL 적을 저주 상태로 만들었을 경우 추가로 행동을 실행한다
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_カースリアクト,ARG
+RETURN 1
+;とくにない
+

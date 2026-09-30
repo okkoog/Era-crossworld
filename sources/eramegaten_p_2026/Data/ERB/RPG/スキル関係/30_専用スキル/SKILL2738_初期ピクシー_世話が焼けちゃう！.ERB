@@ -1,0 +1,131 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2738,ARG
+RESULTS = 손이많이가네！
+
+
+;　명중
+@SKILL_HITRATE_2738, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2738, ARG
+SIF ARG >= 0 && SKILLGAGE_H_GET(ARG, 2738) >= 2
+	RETURN 90
+RETURN 60
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2738,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2738,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2738, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2738,ARG
+RETURN 12
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2738
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+@SKILL_HEAL_TYPE_2738, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("통상")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2738, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_2738,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2738,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2738, ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2738
+RETURN GET_SUCCESSION_NUM("회복")
+
+;속도보정
+@SKILL_SPEED_2738, ARG = -1
+RETURN 2
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2738
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_2738, ARG = -1
+RETURN 5
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2738, ARG, ARG:1, ARG:2
+TFLAG:스킬용1 = SKILLGAGE_H_GET(ARG, 2738) >= 1
+CALL HEAL_FIELD,ARG,ARG:1,2738
+CALL SKILLGAGE_H_ADD, ARG, 2738, 1
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+@ACTION_FIELD_2738,ARG,ARG:1,ARG:2
+CALL HEAL_FIELD,ARG,ARG:1,2738
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2738, ARG
+PRINTL 아군 전체를 회복한다。
+PRINTL 이 스킬을 사용할 때마다 강화단계가 증가한다。
+PRINTL 【강화단계1】FLY,DYING,ORGY,HEAT 이외의 상태이상을 회복하는 추가효과를 얻는다。
+PRINTL 【강화단계2】회복량이 ５０％ 증가
+
+@SKILL_EXPLAIN_TOOLTIP_2738, ARG
+RESULTS:0 = 아군 전체를 회복한다。
+RESULTS:1 = 이 스킬을 사용할 때마다 강화단계가 증가한다。
+RESULTS:2 = 【강화단계1】FLY,DYING,ORGY,HEAT 이외의 상태이상을 회복하는 추가효과를 얻는다。
+RESULTS:3 = 【강화단계2】회복량이 ５０％ 증가
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2738,ARG
+RETURN 1
+;とくにない
+
+;何のバッドステータスを治せるか
+@SKILL_CURE_STATE_2738,ARG
+SIF !TFLAG:스킬용1
+	RETURN 0
+SELECTCASE GET_STATE(ARG)
+	CASE "FLY","GOOD","DYING","ORGY","HEAT"
+		RETURN 0
+	CASEELSE
+		RETURN 1
+ENDSELECT
+
+@継承不能_2738
+RETURN 1
+

@@ -1,0 +1,2365 @@
+﻿
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:INPUT.ERB
+;	Facility	:戦闘におけるコマンド入力などの処理群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/01/14		Ｎ鳥					サバトマを使用する際にREPEATにセットしないように。
+;	003		2011/02/13		黒天					GO(戦闘開始)に対応するキーの追加(SPACEキーでも戦闘開始)
+;	004		2011/03/08		P						SUMMONとCHANGEが空行を発生させていたのを修正
+;	005		2011/03/23		P						P-CHANGEを実行する場合、ガードフラグをおり、対象を敵味方全体に変更するように
+;	006		2011/03/28		P						COMP使用不能の場合、SUMMONを実行できないように変更
+;	007		2011/09/28		Find K					自作パッチ用の個別コマンド(프로텍트모드)追加（537～548行およびその実行結果）
+;	008		2012/02/28		P						DOUBLEINPUTを排除し、マウスとキーボードのモードを統一し、表示を若干変更
+;	009		2012/03/11		P						Enterで空文字を送って、ENCODETOUNIでRESULT:1に-1が入ってしまった場合エラー落ちするのを修正
+;	010		2012/12/13		黒天					P1,P2勢のペルソナチェンジ後、チェンジ前に入力していた行動が可能かをチェックする処理を追加
+;	011		2013/03/08		銃Ｐ					リンケージを選択した際に説明文が出るように加筆
+;	012		2013/11/30		ひみつ					自動効果以外の装備スキルも機能するように変更
+;	013		2013/12/02		ひみつ					自動効果以外の装備スキルも機能するように変更。スキル属性表示にキャラ情報を渡すように
+;	014		2016/12/05		Jガン					属性の素質を持っているとコストを80％に表示するように
+;	015		2015/12/11		JK好き					異能者用のスキル処理を追加
+;	016		2017/10/03		名無					悪魔合体ライト処理追加
+;	017		2018/06/21		JK好き					人修羅スキル枠増加処理
+;	018		2018/08/27		JK好き					召喚者が自召喚予定キャラをキャンセルできるように変更
+;	019		2018/08/27		JK好き					リンケージ参加解除されたキャラが一応防御するように追加
+;	020		2018/11/23		JK好き					前列のみ攻撃可能なスキルで後列を選択できない様に変更
+;	021		2019/02/23		JK好き					単体蘇生スキルのターゲット選択を改善
+;	022		2019/02/28		JK好き					コマンド選択画面でターゲットが状態異常時に正しく表示されないバグを修正&味方の切り落とし気合集中フラグを表示する様に追加
+;	023		2019/03/03		名無					혼의일격(悪魔弾丸アプリ)追加
+;	024		2019/07/21		ypa 					ウェイトスキルの選択中表示修正&選択解除
+;	025		2019/11/16		絹延					スリスティ対象指定時、COMP内に効果対象が存在するとエラーが発生する問題の修正。
+;	026		2019/12/15		Jガン 					キャラの固有コマンド用の関数作成
+;	027		2020/02/04		木綿豆腐				ＴＲＡＮＣＥから悪魔変身実行時、口上を表示させるように
+;	028		2020/06/18		木綿豆腐				SKILL_COST_xxxxで@陥落を使用しているスキルがある場合、スキル名が正しく表示されない不具合を修正
+;	029		2020/07/10		Jガン 					スキルゲージを可視化できる関数を追加、スキル選択時にスキル使用不可だと色が変わるように
+;	030		2020/08/16		マリーちゃんの中の人	FLAG:ペルソナ使い仕様設定 == 3選択時にペルソナ使いのＰチェンジのデメリットを無しに
+;	031		2020/08/20		Jガン 					コンビネーションスキル処理追加
+;	032		2020/08/21		JK好き					オリジナルスキルのターゲットキャンセル時の挙動がおかしかったのを修正
+;	033		2020/09/06		Jガン 					新しいペルソナの型の処理追加
+;	034		2020/10/28		Jガン 					SHOW_SKILL_LISTにスキルが重複して二つスキルが出ないように
+;	035		2021/02/11		Rsp暇人 				リンケージスキル選択時に参加者が自動で選ばれたり候補一覧がでたりするように。参加者は足りているのに何らかの理由で使用できないリンケージスキルは灰色で表示されるように
+;													リンケージスキル一覧で射程・範囲を明記（射程不足で使用できない場合がわかりやすく）
+;													リンケージ発動者を他のリンケージの参加者に選択することで元のリンケージ参加者がWAIT状態のまま行動選択できなくなるバグを修正
+;	036		2020/02/20		Jガン 					スキル参照のフラグなどを追加して、スキルの詳細が正しくなるように
+;	037		2021/04/12		Jガン 					毎ターン自動でウェイト機能と味方全体にウェイトスキルを付与できるように、一時操作不能処理追加
+;													ランダムターゲット時に正しいターゲットにしやすくなりました
+;	038		2021/04/20		JK好き					オリジナルスキルの消費リソース未設定時の表示を追加
+;	039		2021/04/22		Rsp暇人 				キャラクタ選択画面から発動可能なリンケージ一覧を表示し選択可能に。リンケージ参加者から参加リンケージをキャンセルできるように。WAITが誰のリンケージ参加中かわかるように
+;													可読性向上のため変更時期が明記していないか10年近く前のコメントアウト処理を削除
+;	040		2021/04/22		JK好き					オリジナルスキルの射程Sでも発動出来そうに表示されていたのを修正
+;	041		2021/05/24		Jガン 					リンケージの文章崩れ修正、クリック位置が分かるように色分け
+;	042		2021/08/16		Musue 					ＣＨＡＮＧＥ対象フラグと被召喚フラグの修正
+;	043		2021/09/19		JK好き					@INPUT_COM_2,ARG TRYCALLFORM 特殊弾倉に引数が付いてなかった問題を修正
+;	044		2021/10/02		JK好き					@INPUT_COMMAND 選択スキル名が長すぎる際に表示スキル名が省略されるように修正
+;	045		2021/11/23		kamedakeisuke(ﾟдﾟ)		他人気合フラグ・他人集中フラグに対応
+;	046		2021/12/07		JK好き					@HAVE_EXTRA @HAVE_MAGICを新規作成し、@SHOW_COMMAND_LIST及び@INPUT_COM_SKILLにEXTRA/MAGICを持っていない場合に選択出来ないようにする処理を追加
+;	047		2022/06/07		Collared				UI整理プロジェクトにより一部の番号変更
+;	048		2022/09/17		kamedakeisuke(ﾟдﾟ)		Aion式召喚術まわりの仕様を追加
+;	049		2022/10/14		P(bazzile)				敵の弱点表示のために敵PT表示関数への送り値を増やす
+;	050		2022/11/26		P(bazzile)				控えに使用可能なスキルの処理のターゲット変更ショートカットなど抜けていた処理を追加
+;													スキル選択時のスキル名にツールチップの処理を追加
+;													敵全体を指定するときの7~17など、敵の一部を選んでも判定が通るように変更
+;	051		2022/12/08		P(bazzile)				入力行動とターゲットの表示文字列を取る処理を関数化
+;													SUMMON/CHANGEを対象変更ショートカットに対応
+;													戦闘画面トップからキャラクター選択によるショートカット処理を追加
+;													EXTRAとMAGICを統合
+;	052		2022/12/17		P(bazzile)				スキル選択時に所持スキルの最後の枠のスキル（8と12）が表示されなくなってしまっていたのを修正
+;	053		2022/12/19		P(bazzile)				行動対象の文字列取得関数でランダムにターゲットを振り返る必要ができた際にクリティカルエラーが発生していたのを修正
+;													コマンド選択からCOMPを選べなくなっていたのを修正
+;	054		2022/12/25		P(bazzile)				サバトマ・招来の舞踏を控え対象スキルとして処理肉見込む
+;													COMPコマンド選択時にライン消し処理を追加
+;													GUARD時に対象を出さないように
+;	055		2022/02/14		P(bazzile)				INPUT_ABLE_Fを作成
+;	056		2022/02/15		P(bazzile)				戦闘中のターゲット表示で一部行動ががGUAED時でもターゲットが表示されて、さらにターゲット変更の入力ができてしまっていたのを修正
+;	057		2022/02/16		P(bazzile)				ロール整理にあわせてコマンド入力条件を変更
+;													@INPUTABLE_CHARA_Fを作成
+;													リンケージの番号指定を定数化
+;													デビルアームズスキルの表示設定を追加
+;													スキル選択時のオプションを強化し、字幅も調整
+;	058		2022/03/20		P(bazzile)				コマンダースキルとアシストスキルの追加に対応して、入力関係の処理を追加・修正
+;													MA\EX統合で関連関数から必要のなくなった引数を削除
+;													召喚系のスキルにプロパティを付与してそれで判定させるように変更
+;													入力毎にリーダースキルの同期確認をするように処理を追加
+;													アシストスキルの処理を追加
+;													GUARDなど一部の行動でターゲットの表示がでてしまっていたのを修正
+;	059		2023/04/15		P(bazzile)				コマンド入力冒頭で勝敗判定を行うように変更
+;	060		2023/05/01		P(bazzile)				コマンドの対象表示で味方の列表示が正しくなかった不具合を修正
+;	061		2023/04/23		P(bazzile)				悪魔変身の口上呼び出し処理を変更
+;	062		2023/05/05		P(bazzile)				コマンダースキルのチャージ時間を各スキル個別に変更
+;													スキル名の表示がコマンド選択中であることを示すフラグを追加
+;	063		2023/05/25		P(bazzile)				単体蘇生を敵がチェックする時にターゲット振り替えをできるように分岐を追加
+;	064		2023/05/25		P(bazzile)				召喚を予定しているキャラが別のキャラを召喚しようとすると落ちる不具合を修正
+;	065		2023/06/09		P(bazzile)				ターゲット条件の確認をターゲットにできるかどうかと効果が有効かどうかに分割
+;													ランダム行動時の範囲攻撃のターゲット確認で落ちる不具合を修正
+;													ランダムのターゲット選定でターゲットを取れなかったときの戻り値が間違っていた不具合を修正
+;	066		2023/06/12		P(bazzile)				ターゲットを選べないスキルを選んだ際に再抽選せずに防御を選んでしまっていた不具合を修正
+;	067		2023/06/20		P(bazzile)				敵味方でターゲット指定の型がが変わる案件があるのでSKILL_IS_VALID_TARGETの引数に使用者を追加
+;	068		2023/06/23		P(bazzile)				リピートをセットする処理を変更
+;													またリピートのセットを関数を経由するように統合
+;	069		2023/06/26		P(bazzile)				列攻撃の対象の存在判定の不備を修正
+;													リピートのセット処理の変更でターゲット切り替えが死んでいた不具合を修正
+;	070		2024/03/06		P(bazzile)				INPUT_COM_SKILLでUを送っていなかった不具合を修正
+;	071		2024/03/05		P(bazzile)				キャラ専用コマンドの呼び出し関数が使用されなくなっていたので処理を削除し、CHARA.ERBの記述方式にあわせた処理に修正
+;	072		2024/05/08		P(bazzile)				控え判定を修正
+;													サマナー技能なしでSUMMONだけできる処理を追加
+;	073		2024/05/15		P(bazzile)				召喚不能フラグによるSUMMONの使用停止措置を追加
+;	074		2024/05/26		P(bazzile)				リンケージによりスキル優先参照者が異常になるケースがある問題に対処
+;	075		2024/05/30		P(bazzile)				非実体スキルがリピートにセットされないケースがある不具合を修正
+;	076		2024/06/01		P(bazzile)				ガード状態や入力不能状態でも短縮のターゲット変更を通せる場合があり、それによってエラーを引き起こす場合がある不具合を修正
+;	077		2024/06/29		P(bazzile)				味方の蘇生の対象がいるかどうかの判定で敵を弾いていなかった不具合を修正
+;													ターゲット選択時に選べる敵のリストを正しく生成できていなかった不具合を修正
+;--------------------------------------------------------------------------------------------------------------------------------------
+;P
+;	001		2024/05/10		P(bazzile)				マガツヒスキルを追加
+;													被ターゲット変動の処理を追加
+;	002		2024/05/26		P(bazzile)				召喚禁止フラグの挙動が抜けていた不具合を修正
+;	003		2024/08/14		P(bazzile)				SUMMONを即時発動するように修正
+;	004		2024/09/09		P(bazzile)				Hi-Dasがただしくセットされない不具合を修正
+;	005		2024/10/23		P(bazzile)				INPUTABLE_CHARA_F関数に異常での行動不能だけをみるためのオプションを追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;==================================================================
+;プレイヤーによる行動の入力関係と、ＮＰＣの行動の決定などを行います
+;==================================================================
+
+
+;===================================
+;個別コマンド入力
+;===================================
+@INPUT_COMMAND
+#LOCALSIZE 20;MOD 038;300も使ってないんじゃないかな
+#DIMS TARGETS
+#DIMS L_ACTS
+#DIM ACTOR_LENS
+#DIM TARGET_LENS
+;対象変更できるかどうか
+#DIM TARGET_ABLE, 7
+#DIM LINE
+#DIM LCOUNT
+#DIM IS_INPUTABLE
+#DIM IS_T_RESERVE,7;控えが対象かどうか
+
+ACTOR_LENS = 18 + GETBIT(FLAG:커스텀게임화면,1) * 21
+
+;---- EDIT 059 MOD START -------------------------
+;勝敗をチェック
+;非ターン消費系のコマンドを実行後、ここに戻ってくるので
+;その際に戦闘が終了していないかチェックして上に送る必要がある
+CALL FIGHT_IT_OUT
+SIF RESULT
+	RETURN 1
+;---- EDIT 023 ADD START ---------------------------
+;処理する前に、抜ける？
+;SIF FLAG:승리플래그 && !FLAG:RESULT스킵
+;	RETURN 0
+;---- EDIT 023 ADD END ---------------------------
+;---- EDIT 059 MOD END ---------------------------
+;---- EDIT 058 ADD START -------------------------
+;同期処理を行う
+CALL SET_LEADER_SKILL
+;---- EDIT 058 ADD END ---------------------------
+;パーティメンバーの行動内容表示
+CALL SHOW_NOW_FORMATION_E,0,2, -1
+DRAWLINE
+CALL SHOW_NOW_FORMATION_P,0,2, 1
+PRINTL
+CUSTOMDRAWLINE =
+PRINTL 행동을 변경할 캐릭터를 선택해주세요(0으로 전투개시、9로 이전 화면으로 돌아갑니다)
+CUSTOMDRAWLINE =
+VARSET TARGET_ABLE
+;対象
+FOR LOCAL,1,7
+	TARGETS = 
+	LOCALS = 포지션{LOCAL}
+	;単体スキル＆列スキルでボタンを作成するように
+	IF FLAG:LOCALS > -1
+		U = FLAG:LOCALS;ADD 035
+		CALL INPUTABLE_CHARA, FLAG:LOCALS
+		;---- EDIT 050 TOOLTIP追加			ADD START -------------------------
+		IS_INPUTABLE = RESULT
+		SIF IS_INPUTABLE == 0
+			SETCOLOR COLOR("gray")
+		;---- EDIT 050 TOOLTIP追加			ADD END ---------------------------
+		
+		PRINTFORM [{LOCAL}] %CALLNAME:(FLAG:LOCALS),20,LEFT%
+		$YARINAOSI
+		CALL INPUTABLE_CHARA, FLAG:LOCALS
+		;このタイミングでもう元々の入力行動を拾ってしまう
+		LOCAL:(10+LOCAL) = CFLAG:(FLAG:LOCALS):입력행동
+
+		;---- EDIT 052 行動表示関数化		ADD START  -------------------------
+		;入力行動の文字列を作成
+		CALL GETS_INPUT_COMMAND_ACT, FLAG:LOCALS
+		L_ACTS = %SUBSTRING(RESULTS, 0, ACTOR_LENS), ACTOR_LENS, LEFT%
+		;対象部分の文字列作成
+		CALL GETS_INPUT_COMMAND_TARGET, FLAG:LOCALS, L_ACTS
+		;対象不在でさらに対象の振替が出来なかった場合に防御状態にして-1をかえすので行動も変更する
+		IF RESULT == -1
+			L_ACTS = ＧＵＡＲＤ
+			TARGET_ABLE:LOCAL = 0
+		ELSE
+			IF RESULT
+				TARGETS = >>> %RESULTS, TARGET_LENS, LEFT%
+				;全体が入ってる場合はターゲット変更の対象にはならない
+				IF GROUPMATCH(CFLAG:(FLAG:LOCALS):타겟, 19, 22, 23)
+					TARGET_ABLE:LOCAL = 0
+				ELSE
+					TARGET_ABLE:LOCAL = 1
+				ENDIF
+			ELSE
+				TARGETS = 
+				TARGET_ABLE:LOCAL = 0
+			ENDIF
+		ENDIF
+		PRINTBUTTON L_ACTS, LOCAL
+		;---- EDIT 052 行動表示関数化		ADD END   -------------------------
+		;---- EDIT 050 控え用の処理追加		ADD START -------------------------
+		CALL GET_SKILL_PROP, "SKILL_T_RESERVE", CFLAG:(FLAG:LOCALS):입력행동, FLAG:LOCALS
+		IS_T_RESERVE:LOCAL = RESULT
+		;---- EDIT 052 DEL END ---------------------------
+		;自分が行動できるかどうか
+		CALL INPUTABLE_CHARA, POS(LOCAL)
+		IF RESULT
+			IF !TARGET_ABLE:LOCAL
+				PRINTPLAINFORM %TARGETS,26,LEFT%　
+				SETCOLOR COLOR("gray")
+				PRINTFORM [/{LOCAL}]TARGET
+				RESETCOLOR
+			ELSE
+				PRINTBUTTON @"%TARGETS, 26, LEFT%", UNICODE(LOCAL + 1000)
+				PRINT 　
+				PRINTBUTTON "[/" + TOSTR(LOCAL) + "]TARGET", UNICODE(LOCAL + 1000)
+			ENDIF
+		ELSE
+			PRINTFORM %"　",36,LEFT%
+			PRINT 　
+		ENDIF
+		;自分が行動できるかどうか
+		CALL INPUTABLE_CHARA, POS(LOCAL)
+		IF RESULT
+			PRINT 　
+			PRINTBUTTON "[*" + TOSTR(LOCAL) + "]ATTACK", UNICODE(LOCAL + 2000)
+			PRINT 　
+			PRINTBUTTON "[-" + TOSTR(LOCAL) + "]GUARD", UNICODE(LOCAL + 3000)
+			RESETCOLOR
+
+			;---- EDIT 023 ADD START ---------------------------
+			IF FLAG:무후후전개 && SOFT_ON("엑스링케이지")
+				IF CFLAG:POS(LOCAL):던전내발정용욕정치 >= 10000
+					IF BASE:POS(LOCAL):체력 <= 100 || BASE:POS(LOCAL):기력 <= 100
+						SETCOLOR COLOR("red")
+						PRINT 　[+
+						PRINTFORM {LOCAL}]ECSLINK
+					ELSE
+						PRINT 　
+						SETCOLOR COLOR("pink")
+						PRINTBUTTON "[+" + TOSTR(LOCAL) + "]ECSLINK", UNICODE(LOCAL + 4000)
+					ENDIF
+				ELSE
+					SETCOLOR COLOR("gray")
+					PRINT 　[+
+					PRINTFORM {LOCAL}]ECSLINK
+				ENDIF
+			ENDIF
+			;---- EDIT 023 ADD END -----------------------------
+			RESETCOLOR
+
+		ELSE
+			PRINT 　　　　　　
+			PRINT 　　　　　 
+		ENDIF
+		;---- EDIT 045 MOD START ---------------------------
+		IF CFLAG:POS(LOCAL):気合フラグ || CFLAG:POS(LOCAL):타인기합플래그
+			IF CFLAG:POS(LOCAL):気合フラグ
+				SETCOLOR COLOR("PASTEL-GREEN")
+			ELSE
+				SETCOLOR COLOR("gray")
+			ENDIF
+			PRINT  기
+			RESETCOLOR
+		ELSE
+			PRINT  　
+		ENDIF
+		IF CFLAG:POS(LOCAL):집중플래그 || CFLAG:POS(LOCAL):타인집중플래그
+			IF CFLAG:POS(LOCAL):집중플래그
+				SETCOLOR COLOR("PASTEL-GREEN")
+			ELSE
+				SETCOLOR COLOR("gray")
+			ENDIF
+			SETCOLOR COLOR("PASTEL-GREEN")
+			PRINT  집
+			RESETCOLOR
+		ELSE
+			PRINT  　
+		ENDIF
+		IF CFLAG:POS(LOCAL):꿰뚫는투기
+			SETCOLOR COLOR("PASTEL-GREEN")
+			PRINT  관
+			RESETCOLOR
+		ELSE
+			PRINT  　
+		ENDIF
+		;---- EDIT 045 MOD END ---------------------------
+		IF CFLAG:POS(LOCAL):회심의패기플래그
+			SETCOLOR COLOR("PASTEL-GREEN")
+			PRINT  회
+			RESETCOLOR
+		ELSE
+			PRINT  　
+		ENDIF
+	ELSE
+		SETCOLOR COLOR("gray")
+		PRINTFORM [{LOCAL}] ＥＭＰＴＹ
+	ENDIF
+	PRINTL
+	RESETCOLOR
+NEXT
+;---- EDIT 038 MOD START ---------------------------
+PRINTL [7] ＬＩＮＫＡＧＥ
+;---- EDIT 038 MOD END ---------------------------
+PRINTL
+DRAWLINE
+PRINTL
+PRINTL [0] ＧＯ  [9]ＣＡＮＣＥＬ
+LINE = LINECOUNT
+$INPUT_LOOP
+CLEARLINE LINECOUNT - LINE
+ONEINPUTS
+ENCODETOUNI %RESULTS%
+IF RESULTS == "0"
+	FOR LOCAL,1,7
+		LOCALS = 포지션{LOCAL}
+		IF FLAG:LOCALS > -1
+			;ＣＨＡＮＧＥ対象フラグ立ってる人に防御フラグ
+			CALL INPUTABLE_CHARA,FLAG:LOCALS
+			IF RESULT == 1 && CFLAG:(FLAG:LOCALS):ＣＨＡＮＧＥ대상플래그 == 1
+				CFLAG:(FLAG:LOCALS):방어플래그 = 1
+			ENDIF
+			;防御フラグ立ってる人の入力行動を -1 に
+			IF CFLAG:(FLAG:LOCALS):방어플래그
+				CFLAG:(FLAG:LOCALS):입력행동 = -1
+			ENDIF
+			;リンケージ参加者は入力行動が-1に
+			IF CFLAG:(FLAG:LOCALS):링케이지참가
+				CFLAG:(FLAG:LOCALS):입력행동 = -1
+				CFLAG:(FLAG:LOCALS):방어플래그 = 0
+			ENDIF
+		ENDIF
+	NEXT
+	;コマンド入力終了
+	RETURN 1
+ELSEIF RANGE(RESULT:1, 1001, 1006) || RESULTS == "/"
+	IF RESULTS == "/"
+		ONEINPUT
+		SIF !RANGE(RESULT, 1, 6)
+			GOTO INPUT_LOOP
+		LOCAL = RESULT
+	ELSE
+		LOCAL = RESULT:1 - 1000
+	ENDIF
+	;---- EDIT 076 MOD START -------------------------
+	IF POS(LOCAL) > -1 && !CFLAG:POS(LOCAL):방어플래그 && INPUTABLE_CHARA_F(POS(LOCAL))
+	;---- EDIT 076 MOD END ---------------------------
+		U = POS(LOCAL)	;ADD 035
+		;---- EDIT 050 控え用の処理追加		ADD START -------------------------
+		;控えを対象にしている場合
+		IF IS_T_RESERVE:LOCAL
+			GOTO SELECT_TARGET
+		;---- EDIT 050 控え用の処理追加		ADD END ---------------------------
+		ELSEIF CFLAG:POS(LOCAL):타겟 == 20
+			CALL GET_SKILL_PROP, "SKILL_TARGET", CFLAG:POS(LOCAL):입력행동, POS(LOCAL)
+			IF RESULT == 1
+				CALL GET_SKILL_PROP, "SKILL_SPHERE", CFLAG:POS(LOCAL):입력행동, POS(LOCAL)
+				IF RESULT == 2
+					CALL GET_SKILL_PROP, "SKILL_RANGE", CFLAG:POS(LOCAL):입력행동,POS(LOCAL)
+					IF (RESULT == 2 && LOCAL < 4) || RESULT > 2
+						IF CHECK_BACKROW()
+							CFLAG:POS(LOCAL):타겟 = 21
+						ENDIF
+						
+					ENDIF
+				ENDIF
+			ENDIF
+		ELSEIF CFLAG:POS(LOCAL):입력행동 == [[스킬:ＣＨＡＮＧＥ]]
+			CALL INPUT_COM_CHANGE, POS(LOCAL)
+		;---- EDIT 052 ADD END ---------------------------
+		ELSEIF CFLAG:POS(LOCAL):타겟 == 21
+			CFLAG:POS(LOCAL):타겟 = 20
+		ELSEIF INRANGE(CFLAG:POS(LOCAL):타겟, 1, 16)
+			SIF LOCAL:(LOCAL+10) == -1
+				GOTO INPUT_LOOP
+			$SELECT_TARGET
+			CALL SELECT_SKILL_TARGET,LOCAL:(LOCAL+10),POS(LOCAL)
+			SIF RESULT == -1
+				RESTART
+			;対象が死んでて、蘇生スキルでないとき。（蘇生スキルはRESERVEで1が帰ってくるはずなんで、後半の条件から除外
+			VARI L_TARGET = RESULT
+			CALL GET_SKILL_PROP, "SKILL_T_RESERVE", CFLAG:(POS(LOCAL)):입력행동, POS(LOCAL)
+			IF !RESULT
+				SIF GET_STATE(CFLAG:POS(L_TARGET):상태이상) == "DYING"
+					GOTO SELECT_TARGET
+			ENDIF
+			CFLAG:POS(LOCAL):타겟 = L_TARGET
+			CALL SET_REPEAT_CHARA, POS(LOCAL)
+		ELSE
+			GOTO INPUT_LOOP
+		ENDIF
+	ELSE
+		GOTO INPUT_LOOP
+	ENDIF
+	RESTART
+ELSEIF INRANGE(RESULT:1, 2001, 2006) || RESULTS == "*"
+	IF RESULTS == "*"
+		ONEINPUT
+		SIF RESULT < 1 || RESULT > 6
+			GOTO INPUT_LOOP
+		LOCAL = RESULT
+	ELSE
+		LOCAL = RESULT:1 - 2000
+	ENDIF
+	IF POS(LOCAL) >= 0
+		;---- EDIT 038 MOD START ---------------------------
+		IF CFLAG:POS(LOCAL):링케이지참가
+			CALL LINKAGE_CANSELL(POS(LOCAL))
+			SIF !RESULT
+				RESTART
+		ENDIF
+		;---- EDIT 038 MOD END ---------------------------
+		CLEARLINE LINECOUNT - LINE
+		
+		;---- EDIT 042 MOD START ---------------------------
+		LOCAL:1 = CFLAG:POS(LOCAL):입력행동
+		LOCAL:2 = CFLAG:POS(LOCAL):타겟
+		;---- EDIT 042 MOD END ---------------------------
+		
+		CALLFORM INPUT_COM_ATTACK, POS(LOCAL)
+		
+		SIF RESULT == -1 || RESULT == 0
+			RESTART
+		CFLAG:POS(LOCAL):방어플래그 = 0
+		;ＣＨＡＮＧＥ対象フラグと被召喚フラグの修正
+		IF LOCAL:1 == [[스킬:ＣＨＡＮＧＥ]]
+			SIF POS(LOCAL:2) > -1
+				CFLAG:POS(LOCAL:2):ＣＨＡＮＧＥ대상플래그 = 0
+		ENDIF
+		CALL GET_SKILL_PROP, "SKILL_IS_SUMMON", LOCAL:1, POS(LOCAL)
+		IF RESULT
+			CFLAG:(CFLAG:POS(LOCAL):소환예정캐릭터):피소환플래그 = 0
+			CFLAG:(CFLAG:POS(LOCAL):소환예정캐릭터):소환자ID = -1
+			CFLAG:POS(LOCAL):소환예정캐릭터 = -1
+		ENDIF
+		IF CFLAG:POS(LOCAL):링케이지발동 == 1
+			FOR LCOUNT,1,6
+				IF CFLAG:POS(LOCAL):("링케이지참가자" + TOSTR(LCOUNT)) > -1
+					CFLAG:(CFLAG:POS(LOCAL):("링케이지참가자" + TOSTR(LCOUNT))):링케이지참가 = 0
+				ENDIF
+			NEXT
+			CFLAG:POS(LOCAL):링케이지발동 = 0
+		ENDIF
+	ENDIF
+	RESTART
+ELSEIF RANGE(RESULT:1, 3001, 3006) || RESULTS == "-"
+	IF RESULTS == "-"
+		ONEINPUT
+		SIF RESULT < 1 || RESULT > 6
+			GOTO INPUT_LOOP
+		LOCAL = RESULT
+	ELSE
+		LOCAL = RESULT:1 - 3000
+	ENDIF
+	;ＧＵＡＲＤ
+	IF POS(LOCAL) >= 0
+		;---- EDIT 038 MOD START ---------------------------
+		IF CFLAG:POS(LOCAL):링케이지참가
+			CALL LINKAGE_CANSELL(POS(LOCAL))
+			SIF !RESULT
+				RESTART
+		ENDIF
+		;---- EDIT 038 MOD END ---------------------------
+		CFLAG:POS(LOCAL):입력행동 = -1
+		CFLAG:POS(LOCAL):방어플래그 = 1
+		CALL SET_REPEAT_CHARA, POS(LOCAL)
+		;ＣＨＡＮＧＥ対象フラグと被召喚フラグの修正
+		IF LOCAL:1 == [[스킬:ＣＨＡＮＧＥ]]
+			SIF POS(LOCAL:2) > -1
+				CFLAG:POS(LOCAL:2):ＣＨＡＮＧＥ대상플래그 = 0
+		ENDIF
+		CALL GET_SKILL_PROP, "SKILL_IS_SUMMON", LOCAL:1, POS(LOCAL)
+		IF RESULT
+			CFLAG:(CFLAG:POS(LOCAL):소환예정캐릭터):피소환플래그 = 0
+			CFLAG:(CFLAG:POS(LOCAL):소환예정캐릭터):소환자ID = -1
+			CFLAG:POS(LOCAL):소환예정캐릭터 = -1
+		ENDIF
+
+		IF CFLAG:POS(LOCAL):링케이지발동 == 1
+			FOR LCOUNT,1,6
+				IF CFLAG:POS(LOCAL):("링케이지참가자" + TOSTR(LCOUNT)) > -1
+					CFLAG:(CFLAG:POS(LOCAL):("링케이지참가자" + TOSTR(LCOUNT))):링케이지참가 = 0
+				ENDIF
+			NEXT
+			CFLAG:POS(LOCAL):링케이지발동 = 0
+		ENDIF
+	ENDIF
+	RESTART
+;---- EDIT 023 ADD START ---------------------------
+ELSEIF RANGE(RESULT:1, 4001, 4006) || RESULTS == "+"
+	SIF !(FLAG:무후후전개) || !SOFT_ON("엑스링케이지")
+		RESTART
+
+	IF RESULTS == "+"
+		ONEINPUT
+		SIF !RANGE(RESULT, 1, 6)
+			GOTO INPUT_LOOP
+		LOCAL = RESULT
+	ELSE
+		LOCAL = RESULT:1 - 4000
+	ENDIF
+	SIF RESULT:1 < 0
+		RESTART
+
+	IF POS(LOCAL) >= 0
+		SIF CFLAG:POS(LOCAL):던전내발정용욕정치 < 10000 || BASE:POS(LOCAL):체력 <= 100 || BASE:POS(LOCAL):기력 <= 100
+			RESTART
+		CALLFORM INPUT_COM_ECSLINKAGE,POS(LOCAL)
+	ENDIF
+	RESTART
+
+;---- EDIT 023 ADD END ---------------------------
+ELSEIF RESULTS == "9"
+	RETURN 0
+;---- EDIT 038 ADD START ---------------------------
+ELSEIF RESULTS == "7"
+	CALL SHOW_LINKAGE, 2
+	SIF RESULT == -1
+		RESTART
+	;CALL INPUT_COMMAND_P(CPOS(RESULT), 11)
+	RESTART
+;---- EDIT 038 ADD END ---------------------------
+ENDIF
+;不正な入力は送り返す
+;---- EDIT 023 ADD START ---------------------------
+;디버그용
+IF FLAG:DEBUG
+	IF RESULTS == "$"
+		FOR LCOUNT,1,7
+			SIF POS(LCOUNT) > -1
+				CFLAG:POS(LCOUNT):던전내발정용욕정치 = 10001
+		NEXT
+		
+		RESTART
+	ENDIF
+ENDIF
+
+;---- EDIT 023 ADD END ---------------------------
+
+SIF !GROUPMATCH(RESULTS, "1", "2", "3", "4", "5", "6")
+	GOTO INPUT_LOOP
+LOCAL = TOINT(RESULTS)
+;キャラ不在なら返す
+SIF POS(LOCAL) == -1
+	GOTO INPUT_LOOP
+;行動可能かどうかのチェック
+CALL INPUTABLE_CHARA,POS(LOCAL)
+;---- EDIT 038 MOD START ---------------------------
+SIF RESULT == 0
+	GOTO INPUT_LOOP
+IF CFLAG:POS(LOCAL):링케이지참가
+	CALL LINKAGE_CANSELL(POS(LOCAL))
+	SIF !RESULT
+		RESTART
+ENDIF
+
+CALL INPUT_COMMAND_P(LOCAL)
+RESTART
+
+;キャラ別コマンド選択を関数化。ARG=포지션 ARG:1=コマンド直入れ
+@INPUT_COMMAND_P, ARG, ARGS
+#LOCALSIZE 7
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_LINE
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC L_COMMAND
+#DIMS DYNAMIC SELECT_COMMAND
+#DIM DYNAMIC STOCK_入力行動
+#DIM DYNAMIC STOCK_ターゲット
+#DIM DYNAMIC STOCK_召喚予定キャラ
+#DIM DYNAMIC STOCK_防御フラグ
+#DIM DYNAMIC STOCK_REDRAW
+SIF !INRANGE(ARG, 1, 6)
+	RETURN 0
+;キャラ不在なら返す
+SIF POS(ARG) == -1
+	RETURN 0
+;行動可能かどうかのチェック
+CALL INPUTABLE_CHARA,POS(ARG)
+SIF RESULT == 0 || CFLAG:POS(ARG):링케이지참가
+	RETURN 0
+L_CHARA = POS(ARG)
+L_COMMAND '= ARGS
+
+STOCK_REDRAW = CURRENTREDRAW()
+TSTR:입력시구상_시추에이션_직전행동 '= ""
+$START
+REDRAW STOCK_REDRAW
+STOCK_防御フラグ = CFLAG:L_CHARA:방어플래그
+CFLAG:L_CHARA:방어플래그 = 0
+
+STOCK_入力行動 = CFLAG:L_CHARA:입력행동
+STOCK_ターゲット = CFLAG:L_CHARA:타겟
+STOCK_召喚予定キャラ = CFLAG:L_CHARA:소환예정캐릭터
+
+L_LINE = LINECOUNT
+WHILE 1
+	CLEARLINE LINECOUNT - L_LINE
+	CFLAG:L_CHARA:방어플래그 = STOCK_防御フラグ
+	IF L_COMMAND != ""
+		SELECT_COMMAND '= L_COMMAND
+	ELSE
+		;敵味方の表示
+		CALL SHOW_NOW_FORMATION_E,0,2, -1, "BATTLE_MAIN"
+		DRAWLINE
+		CALL SHOW_NOW_FORMATION_P,0,2, 0, "戦闘中_個別入力"
+		CALL KOJO_BATTLE_INPUT_COMMAND, L_CHARA
+		IF RESULT == 0
+			PRINTFORML %조사처리(CALLNAME:L_CHARA, "는")% 어떻게 할까？
+			PRINTL 
+			PRINTL 
+			PRINTL 
+		ENDIF
+		DRAWLINE
+		U = L_CHARA	;ADD 035
+		CALL SHOW_COMMAND_LIST,L_CHARA
+		;コマンドを入力
+		INPUTS
+		CLEARLINE 1
+		IF ISNUMERIC(RESULTS)
+			RESULT = TOINT(RESULTS)
+			SIF RESULT == 0
+				RETURN 1
+			SIF !INRANGE(RESULT, 1, VARSIZE("COMMAND_LIST_P") - 1)
+				CONTINUE
+			SIF UNABLE_COMMAND_LIST_P:RESULT
+				CONTINUE
+			SIF COMMAND_LIST_P:RESULT == ""
+				CONTINUE
+			SELECT_COMMAND '= COMMAND_LIST_P:RESULT
+			TSTR:입력시구상_시추에이션_직전행동 '= SELECT_COMMAND
+		ELSE
+			IF CHARATU(RESULTS, 0) == "." && INRANGE(TOINT(CHARATU(RESULTS, 1)), 1, 6) && CHARATU(RESULTS, 2) == ""
+				RESULT = TOINT(CHARATU(RESULTS, 1))
+				SIF POS(RESULT) < 0
+					CONTINUE
+				SIF !INPUTABLE_CHARA_F(POS(RESULT))
+					CONTINUE
+				REDRAW 0
+				L_CHARA = POS(RESULT)
+				HTML_PRINT_ISLAND  @"<div xpos = '0' ypos = '0' width = '{CLIENTWIDTH()}px' height = '{CLIENTHEIGHT()}px' display = 'absolute-lefttop' background_color = '%TOSTR_HTML(GETBGCOLOR())%'>" + "</div>"
+				TWAIT 200, 1
+				HTML_PRINT_ISLAND_CLEAR
+				GOTO START
+			ELSE
+				CONTINUE
+			ENDIF
+		ENDIF
+	ENDIF
+	
+	CALLFORM INPUT_COM_%SELECT_COMMAND%,L_CHARA
+	SIF RESULT == 1
+		BREAK
+	;交代が発生していた場合の措置
+	IF RESULT == -2
+		VARI CHANGE_CHARA = RESULT:1
+		CALL リンケージ破棄確認, L_CHARA
+		L_CHARA = CHANGE_CHARA
+		GOTO START
+	ENDIF
+WEND
+;SELECT_COMMANDがリンケージでないのにリンケージ発動フラグが立っていたら、リンケージをキャンセル
+IF SELECT_COMMAND != "LINKAGE"
+	IF CFLAG:L_CHARA:링케이지발동 == 1
+		FOR LCOUNT,1,6
+			IF CFLAG:L_CHARA:("링케이지참가자" + TOSTR(LCOUNT)) > -1
+				CFLAG:(CFLAG:L_CHARA:("링케이지참가자" + TOSTR(LCOUNT))):링케이지참가 = 0
+				CALL SET_REPEAT_CHARA, CFLAG:L_CHARA:("링케이지참가자" + TOSTR(LCOUNT)), -1
+				CFLAG:(CFLAG:L_CHARA:("링케이지참가자" + TOSTR(LCOUNT))):방어플래그 = 1
+			ENDIF
+		NEXT
+		CFLAG:L_CHARA:링케이지발동 = 0
+	ENDIF
+ENDIF
+
+;ＣＨＡＮＧＥ対象フラグと被召喚フラグの修正
+IF STOCK_入力行動 == [[스킬:ＣＨＡＮＧＥ]]
+	IF (CFLAG:L_CHARA:입력행동 != [[스킬:ＣＨＡＮＧＥ]] || CFLAG:L_CHARA:방어플래그 == 1) && POS(STOCK_ターゲット) > -1
+		CFLAG:POS(STOCK_ターゲット):ＣＨＡＮＧＥ대상플래그 = 0
+	ELSE
+		IF STOCK_ターゲット != CFLAG:L_CHARA:타겟 && POS(STOCK_ターゲット) > -1
+			CFLAG:POS(STOCK_ターゲット):ＣＨＡＮＧＥ대상플래그 = 0
+		ENDIF
+	ENDIF
+ENDIF
+CALL GET_SKILL_PROP, "SKILL_IS_SUMMON", STOCK_入力行動, L_CHARA
+IF RESULT
+	IF CFLAG:L_CHARA:입력행동 != STOCK_入力行動 || CFLAG:L_CHARA:방어플래그 == 1
+		CFLAG:(STOCK_召喚予定キャラ):피소환플래그 = 0
+		CFLAG:(STOCK_召喚予定キャラ):소환자ID = -1
+		CFLAG:L_CHARA:소환예정캐릭터 = -1
+	ELSE
+		IF STOCK_召喚予定キャラ != CFLAG:L_CHARA:소환예정캐릭터
+			CFLAG:(STOCK_召喚予定キャラ):피소환플래그 = 0
+			CFLAG:(STOCK_召喚予定キャラ):소환자ID = -1
+		ENDIF
+	ENDIF
+ENDIF
+;非所持スキルのフォロー
+IF CFLAG:L_CHARA:입력행동 == [[스킬:비소지스킬]] && CSTR:L_CHARA:비소지스킬 == ""
+	CFLAG:L_CHARA:입력행동 = -1
+	CFLAG:L_CHARA:방어플래그 = 1
+ENDIF
+RETURN 1
+
+;=========================================================
+;個別コマンドリストの表示
+;=========================================================
+@SHOW_COMMAND_LIST,ARG
+#DIM DYNAMIC LCOUNT
+#DIMS SHOW_COMMAND_LIST_P, 6
+VARSET SHOWLINE
+VARSET COMMAND_LIST_P
+VARSET SHOW_COMMAND_LIST_P
+VARSET UNABLE_COMMAND_LIST_P
+FOR LCOUNT, 0, VARSIZE("COMMAND_LIST_P")
+	CALL PUSH_COMMAND_LIST_P, "COM_" + TOSTR(LCOUNT), ARG, SHOW_COMMAND_LIST_P
+NEXT
+
+FOR LCOUNT, 0, TRYSKILLNUM(ARG)
+	SIF GET_TRYSKILL(ARG, LCOUNT) == "0"
+		CONTINUE
+	CALL PUSH_COMMAND_LIST_P, GET_TRYSKILL(ARG, LCOUNT), ARG, SHOW_COMMAND_LIST_P
+NEXT
+
+FOR LCOUNT, 0, TRYSKILLNUM(ARG)
+	SIF GET_TRYSKILL(ARG, LCOUNT) == "0"
+		CONTINUE
+	RESULTS '= ""
+	TRYCCALLFORM DISPLAY_COMMAND_P_%GET_TRYSKILL(ARG, LCOUNT)%, ARG
+		SIF !RESULT
+			CONTINUE
+		SIF SHOW_COMMAND_LIST_P:RESULT != ""
+			SHOW_COMMAND_LIST_P:RESULT += "<br>"
+		SHOW_COMMAND_LIST_P:RESULT += RESULTS
+	CATCH
+	ENDCATCH
+NEXT
+
+VARI L_X = 0
+VARS SHOWLINE = ""
+VARI COUNT_ROW = 7
+FOR LCOUNT, 0, VARSIZE("SHOW_COMMAND_LIST_P")
+	SIF SHOW_COMMAND_LIST_P:LCOUNT == ""
+		CONTINUE
+	SHOWLINE += @"<div xpos = '{L_X}' ypos = '0'>" + SHOW_COMMAND_LIST_P:LCOUNT + "</div>"
+	COUNT_ROW = MAX(COUNT_ROW, STRCOUNT(SHOW_COMMAND_LIST_P:LCOUNT, "<br>"))
+	L_X += 50 * 25
+NEXT
+HTML_PRINT SHOWLINE
+FOR LCOUNT, 0, COUNT_ROW
+	PRINTL 
+NEXT
+
+CALL SKILLGAGE_DISPLAY,ARG
+DRAWLINE
+PRINTL [ 0] ＣＡＮＣＥＬ
+
+@PUSH_COMMAND_LIST_P, ARGS, L_CHARA, SHOW_COMMAND_LIST_P
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC SHOW_COMMAND
+#DIMS DYNAMIC L_COMMAND
+#DIMS DYNAMIC L_COLOR
+#DIM DYNAMIC COUNT_COMMAND = 1
+#DIMS REF SHOW_COMMAND_LIST_P
+;ひとつの関数から複数択を出す場合はCOMMAND_LIST_NAME関数を使う
+VARSET COMMAND_LIST_NAME
+VARSET COMMAND_LIST_SHOWNAME
+VARSET COMMAND_LIST_COLOR
+VARSET COMMAND_LIST_UNABLE
+VARSET COMMAND_LIST_TITLE
+VARSET COMMAND_LIST_CATEGORY
+VARSET RESULTS, "", 0, 3
+TRYCCALLFORM INPUT_COM_NAME_%ARGS%, L_CHARA
+	;単一ならRESULTSでよい
+	IF COMMAND_LIST_NAME:0 == ""
+		COMMAND_LIST_NAME:0 '= RESULTS
+		COMMAND_LIST_SHOWNAME:0 '= RESULTS:1
+		COMMAND_LIST_COLOR:0 '= RESULTS:2
+		COMMAND_LIST_CATEGORY:0 = RESULT
+	ENDIF
+	FOR LCOUNT, 0, VARSIZE("COMMAND_LIST_NAME")
+		SIF COMMAND_LIST_NAME:LCOUNT == ""
+			CONTINUE
+		VARSET RESULTS, "", 1, 3
+		IF LCOUNT > 0
+			TRYCCALLFORM INPUT_COM_NAME_%COMMAND_LIST_NAME:LCOUNT%, L_CHARA
+				COMMAND_LIST_SHOWNAME:LCOUNT '= RESULTS:1
+				COMMAND_LIST_COLOR:LCOUNT '= RESULTS:2
+				COMMAND_LIST_CATEGORY:LCOUNT = RESULT
+			CATCH
+			ENDCATCH
+		ENDIF
+		RESULTS '= ""
+		TRYCCALLFORM INPUT_COM_ABLE_%COMMAND_LIST_NAME:LCOUNT%, L_CHARA
+			SIF RESULT == 0
+				CONTINUE
+			IF RESULT == -1
+				COMMAND_LIST_UNABLE:LCOUNT = 1
+				COMMAND_LIST_TITLE:LCOUNT '= RESULTS
+			ENDIF
+		CATCH
+		ENDCATCH
+		COUNT_COMMAND = FINDELEMENT(COMMAND_LIST_P, "", 1, , 1)
+		COMMAND_LIST_P:COUNT_COMMAND '= COMMAND_LIST_NAME:LCOUNT
+		SIF COMMAND_LIST_UNABLE:LCOUNT
+			UNABLE_COMMAND_LIST_P:COUNT_COMMAND = 1
+		SIF COMMAND_LIST_SHOWNAME:LCOUNT == ""
+			CONTINUE
+		IF STRCOUNT(COMMAND_LIST_SHOWNAME:LCOUNT, "</button>") 
+			SHOW_COMMAND '= COMMAND_LIST_SHOWNAME:LCOUNT
+		ELSE
+			SHOW_COMMAND '= @"[{COUNT_COMMAND, 2}]" + " " + COMMAND_LIST_SHOWNAME:LCOUNT
+			SHOW_COMMAND '= SET_BUTTON_TAG(SHOW_COMMAND, TOSTR(COUNT_COMMAND), COMMAND_LIST_TITLE:LCOUNT)
+		ENDIF
+		IF !STRCOUNT(SHOW_COMMAND, "</font>")
+			IF COMMAND_LIST_UNABLE:LCOUNT
+				SHOW_COMMAND '= SET_COLOR_TAG(SHOW_COMMAND, "DARK-GRAY")
+			ELSEIF COMMAND_LIST_COLOR:LCOUNT != "" 
+				SHOW_COMMAND '= SET_COLOR_TAG(SHOW_COMMAND, COMMAND_LIST_COLOR:LCOUNT)
+			ENDIF
+		ENDIF
+		SIF SHOW_COMMAND_LIST_P:(COMMAND_LIST_CATEGORY:LCOUNT) != ""
+			SHOW_COMMAND_LIST_P:(COMMAND_LIST_CATEGORY:LCOUNT) += "<br>"
+		SHOW_COMMAND_LIST_P:(COMMAND_LIST_CATEGORY:LCOUNT) += SHOW_COMMAND
+	NEXT
+	RETURN 1
+CATCH
+	RETURN 0
+ENDCATCH
+@INPUT_COM_DO_SKILL, ARG, SELECT_SKILL_CATEGORY_LIST = "데빌암즈/EX/MA/CS", IS_UNABLE_FUNC, DIRECT_SELECT_SKILL = -1
+#DIM DIRECT_SELECT_SKILL
+#DIM DYNAMIC L_SKILL
+#DIMS DYNAMIC SELECT_SKILL_CATEGORY_LIST
+#DIMS DYNAMIC IS_UNABLE_FUNC
+;---- EDIT 070 ADD START -------------------------
+U = ARG
+;---- EDIT 070 ADD END ---------------------------
+IF DIRECT_SELECT_SKILL >= 0
+	L_SKILL = DIRECT_SELECT_SKILL
+	GOTO DIRECT_SELECT
+ENDIF
+$INPUT_SKILL_LOOP1
+CALL SHOW_SKILL_LIST, ARG, SELECT_SKILL_CATEGORY_LIST, IS_UNABLE_FUNC
+INPUT
+TOOLTIP_SETDELAY FLAG:디폴트툴팁시간
+IF !RESULT
+	RETURN -1
+;---- EDIT 057 オプション追加 MOD START -------------------------
+ELSEIF GROUPMATCH(RESULT, 96, 97, 98, 99)
+	IF RESULT == 96
+		OPT_SHOW_SKILLLENS = !OPT_SHOW_SKILLLENS
+	ELSEIF RESULT == 97
+		OPT_SHOW_SKILL_NUM--
+	ELSEIF RESULT == 98
+		OPT_SHOW_SKILL_NUM++
+	ELSEIF RESULT == 99
+		OPT_SHOW_SKILL_SELECT = !OPT_SHOW_SKILL_SELECT
+	ENDIF
+	OPT_SHOW_SKILL_NUM = LIMIT(OPT_SHOW_SKILL_NUM, 2, LINELENS() / (SKILLNAMELENS:OPT_SHOW_SKILLLENS + 16))
+	SAVEGLOBAL
+	GOTO INPUT_SKILL_LOOP1
+;---- EDIT 057 オプション追加 MOD END ---------------------------
+;ELSEIF ((TALENT:ARG:이능자 || TALENT:ARG:달인 || TALENT:ARG:인수라 || TALENT:ARG:Aion식소환술) && INRANGE(RESULT, 1, FLAG:이능자스킬수)) ||(TALENT:ARG:이능자 == 0 && TALENT:ARG:달인 == 0 && TALENT:ARG:인수라 == 0 && INRANGE(RESULT, 1, FLAG:스킬수)) || INRANGE(RESULT, 21, 42)
+ELSE
+	L_SKILL = 0
+	SIF INRANGE(RESULT, 1, CHARA_SKILLCOUNT(ARG))
+		L_SKILL = ABL:ARG:@"스킬{RESULT}"
+	SIF INRANGE(RESULT, 21, 21 + HAVEABLE_EQ_SKILLNUM)
+		L_SKILL = ABL:ARG:@"장비스킬{RESULT > 20 ? RESULT - 20 # RESULT}"
+	;有効なスキルが選ばれてなかったのでループへ
+	SIF !L_SKILL
+		GOTO INPUT_SKILL_LOOP1
+	$DIRECT_SELECT
+	CALL IS_ABLE_INPUT_COM_SKILL, ARG, L_SKILL, SELECT_SKILL_CATEGORY_LIST, IS_UNABLE_FUNC
+	IF RESULT <= 0
+		SIF DIRECT_SELECT_SKILL >= 0
+			RETURN 0
+		GOTO INPUT_SKILL_LOOP1
+	ENDIF
+	DRAWLINE
+	SIF FLAG:스킬속성표시설정
+		CALL SKILL_EXPLAIN_PERFORMANCE, L_SKILL, ARG
+	;スキル使用者を一文字関数Uに入れておく
+	U = ARG
+	CALL GET_SKILL_PROP, "SKILL_EXPLAIN", L_SKILL, ARG
+	CALL SELECT_SKILL_TARGET, L_SKILL, ARG
+	IF RESULT == -1
+		SIF DIRECT_SELECT_SKILL >= 0
+			RETURN 0
+		GOTO INPUT_SKILL_LOOP1
+	ENDIF
+	RETURN L_SKILL, RESULT
+ENDIF
+
+;=================================================
+;スキル入力が通るかどうか
+;L_ACTOR 						スキル実行者のキャラ登録番号
+;L_SKILL						スキル番号
+;INPUT_NUMBER					スキル番号が指定されていないときはこの変数を入力変数とみなしてスキル番号を取る
+;SELECT_SKILL_CATEGORY_LIST		参照するスキルタイプ
+;IS_UNABLE_FUNC					追加条件がある場合に呼び出す関数名
+;=================================================
+@IS_ABLE_INPUT_COM_SKILL, L_ACTOR, L_SKILL, SELECT_SKILL_CATEGORY_LIST = "데빌암즈/EX/MA/CS", IS_UNABLE_FUNC
+#DIM L_ACTOR
+#DIM L_SKILL
+#DIMS SELECT_SKILL_CATEGORY_LIST
+#DIMS IS_UNABLE_FUNC
+CALL GET_SKILL_PROP, "SKILL_DECIDE_TYPE", L_SKILL, L_ACTOR
+;表示カテゴリに入ってないなら非表示
+SIF !COUNT_SPLIT(SELECT_SKILL_CATEGORY_LIST, "/", GET_SKILL_DECIDE_TYPE(RESULT))
+	RETURN -1
+;追加条件の指定
+;戻り値が0で使用不能
+;-1でそもそも選択肢の表示もしない
+TRYCCALLFORM %IS_UNABLE_FUNC%, L_SKILL, L_ACTOR
+	SIF RESULT <= 0	
+		RETURN RESULT
+CATCH
+ENDCATCH
+CALL GET_SKILL_PROP, "SKILL_ACTIONABLE_BATTLE", L_SKILL, L_ACTOR
+SIF !RESULT
+	RETURN -1
+;スキルを実行できるかどうか
+CALL CHECK_ACTIONABLE, L_ACTOR, L_SKILL
+IF RESULT
+	CALL GET_SKILL_EXPLAIN_TOOLTIP, L_SKILL, L_ACTOR
+ELSE
+	RETURN 0
+ENDIF
+RETURN 1
+
+;---- EDIT 068 MOD START -------------------------
+;=================================================
+;キャラクターにリピートをセットする
+;ARG		キャラ登録番号
+;ARG:1		スキル番号
+;ARG:2 		타겟
+;=================================================
+@SET_REPEAT_CHARA, L_ACTOR, L_ACT = -99, L_TARGET = -99
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_ACTOR
+#DIM DYNAMIC L_ACT
+#DIM DYNAMIC L_TARGET
+L_ACT = L_ACT == -99 ? CFLAG:L_ACTOR:입력행동 # L_ACT
+L_TARGET = L_TARGET == -99 ? CFLAG:L_ACTOR:타겟 # L_TARGET
+IF L_ACT >= 0
+	CALL GET_SKILL_PROP, "SKILL_DECIDE_TYPE", L_ACT, L_ACTOR
+	;アシストスキルはセットしない
+	SIF GET_SKILL_DECIDE_TYPE(RESULT) == "AS"
+		RETURN 0
+	;---- EDIT P 001 ADD START -------------------------
+	;マガツヒスキルセットしない
+	SIF L_ACT == [[스킬:마가츠히스킬]]
+		RETURN 0
+	;---- EDIT P 001 ADD END ---------------------------
+	;召喚系の行動はセットしない
+	CALL GET_SKILL_PROP, "SKILL_IS_SUMMON", L_ACT, L_ACTOR
+	SIF RESULT
+		RETURN 0
+ENDIF
+ARRAYSHIFT C_REPEAT_SKILL:L_ACTOR:0, 1, L_ACT
+IF L_ACT == [[스킬:비소지스킬]]
+	ARRAYSHIFT C_REPEAT_NOT_HAVE_SKILL:L_ACTOR:0, 1, CSTR:L_ACTOR:비소지스킬
+ELSE
+	ARRAYSHIFT C_REPEAT_NOT_HAVE_SKILL:L_ACTOR:0, 1, ""
+ENDIF
+ARRAYSHIFT C_REPEAT_TARGET:L_ACTOR:0, 1, L_TARGET
+
+;リンケージの処理(手動シフト)
+FOR LCOUNT, VARSIZE("C_REPEAT_SKILL") -1, 0, -1
+	FOR LCOUNT:1, 0, 5
+		C_REPEAT_LINKAGE_MEMBER:L_ACTOR:LCOUNT:(LCOUNT:1) = C_REPEAT_LINKAGE_MEMBER:L_ACTOR:(LCOUNT-1):(LCOUNT:1)
+	NEXT
+NEXT
+FOR LCOUNT, 0, 5
+	C_REPEAT_LINKAGE_MEMBER:L_ACTOR:0:LCOUNT = 0
+NEXT
+IF INRANGE(L_ACT, MIN_LINKAGENUM, MAX_LINKAGENUM)
+	FOR LCOUNT, 0, 5
+		SIF CFLAG:L_ACTOR:@"링케이지참가자{LCOUNT + 1}" > 0
+			C_REPEAT_LINKAGE_MEMBER:L_ACTOR:0:LCOUNT = CFLAG:(CFLAG:L_ACTOR:@"링케이지참가자{LCOUNT + 1}"):실제가입시간
+	NEXT
+ENDIF
+
+RETURN 1
+;---- EDIT 068 MOD END ---------------------------
+;---- EDIT P 001 ADD START -------------------------
+;=================================================
+;入力結果：ＳＵＭＭＯＮ
+;=================================================
+@INPUT_COM_SUMMON, L_SUMMONER
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_SUMMONER
+#DIM DYNAMIC L_LINE
+#DIM DYNAMIC L_SWITCHING_CHARA
+L_LINE = LINECOUNT
+$CHOOSE_COMPANION_LOOP
+CLEARLINE LINECOUNT - L_LINE
+CALL CHOOSE_COMPANION,"RPG/전투중", MASTER
+VARI L_SUMMON_CHARA = RESULT
+SIF RESULT == 1000
+	RETURN 0
+CALL SHOW_NOW_FORMATION_P,0,2, 7
+PRINTL [0] ＣＡＮＣＥＬ
+PRINTL 어디에 불러낼까？
+VARI SUMMON_POSITION_LINE = LINECOUNT
+$INPUT_SUMMON_POSITION_LOOP
+INPUT
+CLEARLINE LINECOUNT - SUMMON_POSITION_LINE
+IF RESULT == 0
+	GOTO CHOOSE_COMPANION_LOOP
+ELSEIF RESULT > 0 && RESULT < 7
+	CALL INSERT_POSITION, RESULT, L_SUMMON_CHARA
+	IF RESULT > -1
+		;交代したキャラを取る
+		L_SWITCHING_CHARA = RESULT:1
+		;サバトマなどで召喚予定がある場合は解除する。
+		IF CFLAG:L_SUMMON_CHARA:피소환플래그
+			PRINTW 소환 예정을 해제합니다.
+			CFLAG:FINDCHARA_ID(CFLAG:L_SUMMON_CHARA:소환자ID):소환예정캐릭터 = -1
+			CFLAG:FINDCHARA_ID(CFLAG:L_SUMMON_CHARA:소환자ID):입력행동 = -1
+			CFLAG:FINDCHARA_ID(CFLAG:L_SUMMON_CHARA:소환자ID):방어플래그 = 1
+			CFLAG:L_SUMMON_CHARA:피소환플래그 = 0
+			CFLAG:L_SUMMON_CHARA:소환자ID = -1
+		ENDIF
+		CALL INPUTABLE_CHARA , L_SUMMON_CHARA
+		IF RESULT > 0
+			;REPEAT入力
+			CALL COMMAND_REPEAT,L_SUMMON_CHARA
+		ENDIF
+		;行動正否チェック
+		CALL CORRECT_ACTION, L_SUMMON_CHARA, 1
+
+		SIF SOFT_ON("너스・콜")
+			PRINTL ENTRY "NURSE CALL"
+		SETCOLOR 0x33ffcc
+		IF GET_SUMMONER_MLV()
+			PRINTFORML ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+			PRINTFORML ┃%"STANDBY " + STR:(ABL:L_SUMMON_CHARA:종족) + NAME:L_SUMMON_CHARA + " SUMMON OK",72,LEFT%┃
+			PRINTFORML ┃%"GO!",72,LEFT%┃
+			PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+			SIF SOFT_ON("너스・콜")
+				CALL VAR_HP,L_SUMMON_CHARA,MAXBASE:L_SUMMON_CHARA:ＨＰ * 6 / 10,"회복"
+		ELSE
+			PRINTFORMW %CALLNAME:L_SUMMON_CHARA%(이)가 소환되었다!
+		ENDIF
+		IF CFLAG:L_SUMMON_CHARA:PT플래그 > 0 && ABL:L_SUMMON_CHARA:종족 != 0
+			CALL CONTROL_MAG, MASTER, -MAXBASE:L_SUMMON_CHARA:￥
+		ENDIF
+		;---- EDIT P MOD END ---------------------------
+		RESETCOLOR
+		SETCOLOR COLOR("FRIEND")
+		CALL BATTLE_EVENT, "被召喚", L_SUMMON_CHARA, L_SUMMON_CHARA
+		RESETCOLOR
+		;交代時効果
+		CALL SKILL_ACTION_AT_SWITCHING, L_SWITCHING_CHARA, L_SUMMON_CHARA
+		;入場時の処理
+		CALL SET_BATTLE_ENTER_FLAG, L_SUMMON_CHARA
+		CALL SKILL_TIMING, "BATTLE_ENTER"
+		CFLAG:L_SUMMON_CHARA:입장플래그 = 0
+		TFLAG:SUMMON실행완료횟수++
+
+		;退場させたキャラがリンケージに絡んでいたらフラグ処理をする。
+		SIF L_SWITCHING_CHARA >= 0
+			CALL リンケージ破棄確認, L_SWITCHING_CHARA
+	ELSE
+		GOTO INPUT_SUMMON_POSITION_LOOP
+	ENDIF
+ELSE
+	GOTO INPUT_SUMMON_POSITION_LOOP
+ENDIF
+
+;=========================================================
+;スキルリストの表示
+;ARG						スキル所持者の登録番号
+;SELECT_SKILL_CATEGORY_LIST	表示内容の指定
+;IS_UNABLE_FUNC				追加の使用不能条件を定義する関数名
+;
+;OPT_SHOW_SKILL_SELECT 0 = EX/MA分離表示  1 = 統合表示
+;=========================================================
+@SHOW_SKILL_LIST, ARG, SELECT_SKILL_CATEGORY_LIST = "데빌암즈/EX/MA/CS", IS_UNABLE_FUNC
+#LOCALSIZE 6
+#LOCALSSIZE 1
+#DIMS CONST SELECT_SKILL_CATEGORY_TABLE = "데빌암즈", "EX", "MA", "CS", "AS"
+#DIMS IS_UNABLE_FUNC
+#DIMS L_OPT
+#DIM LCOUNT, 4
+#DIM CATEGORY_NUM
+#DIMS SELECT_CATEGORY
+#DIMS SELECT_SKILL_CATEGORY_LIST
+#DIMS SKILLNAME
+#DIM L_SKILL, 45
+#DIM SKILL_STOCK,45
+#DIM SELECT_NUM
+#DIM SKILL_NUM
+#DIMS L_TEXT,40
+#DIMS L_TITLES,40
+#DIM L_BUTTON, 40
+#DIM L_COLOR, 40
+#DIMS L_COSTS
+;#DIM IS_CONTINUE
+#DIM CHARA_SKILLNUM
+#DIMS L_COSTTYPE
+#DIM COST
+#DIM SHOWNUM
+CHARA_SKILLNUM = CHARA_SKILLCOUNT(ARG)	;스킬수
+;画面表示
+CALL SHOW_NOW_FORMATION_E,0,2, -1
+DRAWLINE
+CALL SHOW_NOW_FORMATION_P,0,2, 7, "戦闘中_メイン"
+SIF OPT_SHOW_SKILL_SELECT==-1
+	PRINTFORML %ARG는% 어떻게 할까？
+VARSET SKILL_STOCK
+;コマンドの表示
+FOR CATEGORY_NUM, 0, VARSIZE("SELECT_SKILL_CATEGORY_TABLE")
+	SHOWNUM = 0	;表示個数
+	SELECT_CATEGORY = %SELECT_SKILL_CATEGORY_TABLE:CATEGORY_NUM%
+	;統合表示の場合のMAは飛ばす
+	SIF OPT_SHOW_SKILL_SELECT && SELECT_CATEGORY == "MA"
+		CONTINUE
+	;表示許可がないものを弾く
+	SIF !COUNT_SPLIT(SELECT_SKILL_CATEGORY_LIST, "/", SELECT_CATEGORY)
+		CONTINUE
+	VARSET L_TEXT
+	VARSET L_TITLES
+	VARSET L_BUTTON
+	VARSET L_COLOR
+	FOR LCOUNT, 1, 21 + HAVEABLE_EQ_SKILLNUM
+		IF SELECT_CATEGORY == "데빌암즈"
+			SIF (LCOUNT - 1) >= VARSIZE("C_DEVIL_ARMS_SKILL")
+				BREAK
+			SIF !C_DEVIL_ARMS_SKILL:ARG:(LCOUNT-1)
+				CONTINUE
+			SKILL_NUM = C_DEVIL_ARMS_SKILL:ARG:(LCOUNT-1)
+			FOR LCOUNT:3, 1, 21 + HAVEABLE_EQ_SKILLNUM
+				IF LCOUNT:3 < 21
+					SIF LCOUNT > CHARA_SKILLNUM;EDIT 052 MOD
+						CONTINUE
+					SIF SKILL_NUM != ABL:ARG:@"스킬{LCOUNT:3}"
+						CONTINUE
+				ELSE
+					SIF SKILL_NUM != ABL:ARG:@"장비스킬{LCOUNT:3 - 20}"
+						CONTINUE
+				ENDIF
+				SELECT_NUM = LCOUNT:3
+			NEXT
+		ELSE
+			IF LCOUNT < 21
+				SIF LCOUNT > CHARA_SKILLNUM;EDIT 052 MOD
+					CONTINUE
+				SKILL_NUM = ABL:ARG:@"스킬{LCOUNT}"
+			ELSE
+				SKILL_NUM = ABL:ARG:@"장비스킬{LCOUNT - 20}"
+			ENDIF
+			SIF !SKILL_NUM && LCOUNT > CHARA_SKILLNUM	;装備スキルの終端まで行ったら抜ける
+				BREAK
+			SELECT_NUM = LCOUNT
+		ENDIF
+
+		IF !GROUPMATCH(SELECT_CATEGORY, "데빌암즈")
+			CALL GET_SKILL_PROP, "SKILL_DECIDE_TYPE", SKILL_NUM, ARG	;　1EXTRAか2MAGICか
+			IF GROUPMATCH(SELECT_CATEGORY, "EX", "MA")
+				IF OPT_SHOW_SKILL_SELECT
+					SIF !GROUPMATCH(GET_SKILL_DECIDE_TYPE(RESULT), "EX", "MA")
+						CONTINUE
+				ELSE
+					SIF SELECT_CATEGORY != GET_SKILL_DECIDE_TYPE(RESULT)
+						CONTINUE
+				ENDIF
+			ELSE
+				SIF SELECT_CATEGORY != GET_SKILL_DECIDE_TYPE(RESULT)
+					CONTINUE
+			ENDIF
+		ENDIF
+
+		;すでに登録されているスキルは処理を飛ばす
+		SIF MATCH(SKILL_STOCK,SKILL_NUM)
+			CONTINUE
+		RESULTS = 
+		CALL IS_ABLE_INPUT_COM_SKILL, ARG, SKILL_NUM, SELECT_SKILL_CATEGORY_LIST, IS_UNABLE_FUNC
+		;戻り値が-1のときは非表示
+		SIF RESULT == -1
+			CONTINUE
+		;ここまできたら表示スキルに入れる
+		SKILL_STOCK:FINDELEMENT(SKILL_STOCK, 0) = SKILL_NUM
+		;ツールチップ説明文を取得
+		L_TITLES:SHOWNUM = %RESULTS%
+		;スキルを実行出来ない場合は色を変える
+		L_COLOR:SHOWNUM = RESULT ? GETCOLOR() # 0x404040
+
+		;SKILL_STOCK:(SHOWNUM) = SKILL_NUM
+		TFLAG:커맨드표시중 = 1
+		CALL GET_SKILL_PROP, "SKILL_NAME", SKILL_NUM,ARG
+		SKILLNAME = %RESULTS%
+		TFLAG:커맨드표시중 = 0
+		CALL GET_SKILL_COST, SKILL_NUM, ARG
+		L_COSTS = %RESULTS%
+
+		L_TEXT:SHOWNUM = [{SELECT_NUM, 2}] %SKILLNAME, SKILLNAMELENS:OPT_SHOW_SKILLLENS, LEFT%%L_COSTS, 7, LEFT%　　
+
+		L_BUTTON:SHOWNUM = SELECT_NUM
+		SHOWNUM++
+	NEXT
+	TOOLTIP_SETDELAY 100
+	;上限下限の設定
+	OPT_SHOW_SKILL_NUM = LIMIT(OPT_SHOW_SKILL_NUM, 2, LINELENS() / (SKILLNAMELENS:OPT_SHOW_SKILLLENS + 16))
+	FOR LCOUNT:1, 0, 20
+		LOCALS = 
+		FOR LCOUNT, LCOUNT:1 * OPT_SHOW_SKILL_NUM, (LCOUNT:1 +1) * OPT_SHOW_SKILL_NUM
+			SIF L_TEXT:LCOUNT == ""
+				CONTINUE
+			LOCALS += @"<font color = '%"#" + TOSTR(L_COLOR:LCOUNT, "X8")%' ><button value='{L_BUTTON:LCOUNT}' title='%L_TITLES:LCOUNT%' >%L_TEXT:LCOUNT%</button></font>"
+		NEXT
+		SIF LOCALS == ""
+			BREAK
+		;IF !LCOUNT:1 && !OPT_SHOW_SKILL_SELECT
+		IF !LCOUNT:1
+			SIF SELECT_CATEGORY == "데빌암즈"
+				PRINTFORML [ＤＥＶＩＬ-ＡＲＭＳ]
+			SIF OPT_SHOW_SKILL_SELECT
+				DRAWLINE
+			IF !OPT_SHOW_SKILL_SELECT
+				DRAWLINE
+				IF SELECT_CATEGORY == "EX"
+					PRINTFORML [ＥＸＴＲＡ]
+				ELSEIF SELECT_CATEGORY == "MA"
+					PRINTFORML [ＭＡＧＩＣ]
+				ENDIF
+			ENDIF
+			SIF SELECT_CATEGORY == "CS"
+				PRINTFORML [ＣＯＭＭＡＮＤＥＲ]
+			SIF SELECT_CATEGORY == "AS"
+				PRINTFORML [ＡＳＳＩＳＴ]
+		ENDIF
+		HTML_PRINT @"%LOCALS%"
+	NEXT
+	;表示がなかった場合はPRINTLをしない
+	SIF LCOUNT:1 > 1
+		PRINTL 
+NEXT
+;SIF !LINEISEMPTY()
+;	PRINTL 
+DRAWLINE
+PRINTFORM [ 0] ＣＡＮＣＥＬ%" " * 23%
+IF !STRCOUNT(L_OPT, "オプション非表示")
+	PRINTFORM [96] 문자폭\@OPT_SHOW_SKILLLENS?[넓게]#[통상]\@　　
+	CALL PRINT_COLOR, "[97] <－>　", OPT_SHOW_SKILL_NUM == 2 ? COLOR("DARK-GRAY") # GETDEFCOLOR()
+	PRINTFORM [１열의표시수.{OPT_SHOW_SKILL_NUM}]
+	CALL PRINT_COLOR, "　[98] <＋>", OPT_SHOW_SKILL_NUM == LINELENS() / (SKILLNAMELENS:OPT_SHOW_SKILLLENS + 16) ? COLOR("DARK-GRAY") # GETDEFCOLOR()
+	PRINT 　　
+	PRINTFORM [99] 표시형식\@OPT_SHOW_SKILL_SELECT?[통합]#[분리]\@　　
+ENDIF
+;=========================================================
+;行動対象の入力
+;=========================================================
+@SELECT_SKILL_TARGET,ARG,ARG:1
+#LOCALSIZE 2
+#LOCALSSIZE 1
+#DIM L_T
+#DIM L_TARGET_ABLE,24;0 = ターゲットに選択不能　1 = ターゲットに選択可能 2=ターゲットに選択可能かつ特殊な条件を満たしている
+CALL GET_SKILL_PROP, "SKILL_T_RESERVE", ARG
+IF RESULT
+	;サバトマ等、独自の条件テーブルを持つスキルの呼び出しを実行する
+	TRYCCALLFORM SELECT_TARGET_{ARG}, ARG:1
+		RETURN RESULT, RESULT:1
+	CATCH
+		DRAWLINE
+		;総キャラ数の桁数を取得しておく
+		LOCAL:1 = CHARANUM_DIGIT()
+		VARSET Q,-1
+		FOR LOCAL,0,CHARANUM
+			SIF CFLAG:LOCAL:PT플래그 == 0
+				CONTINUE
+			SIF CFLAG:LOCAL:이자리에없는플래그
+				CONTINUE
+			SIF IS_RENTING(LOCAL)
+				CONTINUE
+			SIF TALENT:LOCAL:비전투원
+				CONTINUE
+			CALL GET_SKILL_PROP, "SKILL_TARGETABLE", ARG, ARG:1, LOCAL
+			SIF RESULT == 0
+				CONTINUE
+			Q:LOCAL = 1
+			PRINTFORM [{LOCAL,LOCAL:1}]　
+			CALL ARRANGE_CHARALIST_2,LOCAL
+			CALL ARRANGE_CHARALIFE,LOCAL
+			TRYCALLFORM SKILL_ADDCHARA_IFNO_{ARG},LOCAL
+			PRINTL
+		NEXT
+		DRAWLINE
+		PRINTL [1000] ＣＡＮＣＥＬ
+		$INPUT_LOOP
+		INPUT
+		
+		IF RESULT == 1000
+			RETURN -1
+		ELSEIF RANGE(RESULT , 0 , 999) && Q:RESULT == 1
+			RETURN RESULT
+		ELSE
+			GOTO INPUT_LOOP
+		ENDIF
+	ENDCATCH
+ELSE
+	;---- EDIT 054 ADD END ---------------------------
+	VARSET L_TARGET_ABLE
+	FOR LOCAL, 1, 17
+		L_T = POS(LOCAL)
+		SIF !IS_TARGET_ABLE(L_T)
+			CONTINUE
+		CALL GET_SKILL_PROP, "SKILL_TARGETABLE", ARG, ARG:1, L_T
+		L_TARGET_ABLE:LOCAL = (RESULT > 0)
+	NEXT
+	;---- EDIT 077 MOD START -------------------------
+	FOR LOCAL, 17, 24
+		L_TARGET_ABLE:LOCAL = MAXARRAY(L_TARGET_ABLE, GET_POS_MIN(LOCAL), GET_POS_MAX(LOCAL) + 1)
+	NEXT
+	;---- EDIT 077 MOD END ---------------------------
+	CALL GET_SKILL_PROP, "SKILL_TARGET", ARG, ARG:1
+	SELECTCASE GET_SKILL_TARGET(RESULT)
+		CASE "적"
+			CALL GET_SKILL_PROP, "SKILL_SPHERE", ARG,ARG:1
+			;---- EDIT 069 MOD START -------------------------
+			IF RESULT == 1 || RESULT == 5
+			;---- EDIT 069 MOD END ---------------------------
+				CALL GET_SKILL_PROP, "SKILL_RANGE", ARG, ARG:1
+				IF (RESULT == 1 && CPOS(ARG:1) < 4) || RESULT == 2
+					CALL SHOW_NOW_FORMATION_E, 0, 1, -1, "SELECT_TARGET", ARG:1, ARG;EDIT022 MOD
+					PRINTL [0] ＣＡＮＣＥＬ
+					$INPUT_LOOP1
+					INPUT
+					IF RESULT == 0
+						RETURN -1
+					ELSEIF (RESULT < 12 && RESULT > 6) && L_TARGET_ABLE:RESULT
+						RETURN RESULT
+					ELSE
+						GOTO INPUT_LOOP1
+					ENDIF
+				ELSE
+					CALL SHOW_NOW_FORMATION_E, 0, 2, -1, "SELECT_TARGET", ARG:1, ARG;EDIT022 MOD
+					PRINTL [0] ＣＡＮＣＥＬ
+					$INPUT_LOOP2
+					INPUT
+					IF RESULT == 0
+						RETURN -1
+					ELSEIF (RESULT < 17 && RESULT > 6) && L_TARGET_ABLE:RESULT
+						RETURN RESULT
+					ELSE
+						CLEARLINE 1
+						GOTO INPUT_LOOP2
+					ENDIF
+				ENDIF
+			ELSEIF RESULT == 2
+				CALL GET_SKILL_PROP, "SKILL_RANGE", ARG, ARG:1
+				IF (RESULT == 1 && CPOS(ARG:1) < 4) || RESULT == 2
+					CALL SHOW_NOW_FORMATION_E, 0, 1, -1, "SELECT_TARGET", ARG:1, ARG
+					PRINTL [20] 적전열
+					PRINTL [0] ＣＡＮＣＥＬ
+					CALL INPUTINT,0,7,8,9,10,11,20
+					SIF RESULT == 0
+						RETURN -1
+					RETURN 20
+				ELSE
+					CALL SHOW_NOW_FORMATION_E, 0, 2, -1, "SELECT_TARGET", ARG:1, ARG
+					PRINTL [20] 적전열
+					;後列に敵が居るかチェック
+					IF CHECK_BACKROW()
+						PRINTL [21] 적후열
+					ENDIF
+					PRINTL [0] ＣＡＮＣＥＬ
+					$INPUT_LOOP3
+					INPUT
+					IF RESULT == 0
+						RETURN -1
+					ELSE
+						IF (RESULT >= 7 && RESULT <= 11) || RESULT == 20
+							RETURN 20
+						ELSEIF (RESULT >= 12 && RESULT <= 16) || RESULT == 21
+							IF CHECK_BACKROW()
+								RETURN 21
+							ENDIF
+						ENDIF
+					ENDIF
+				ENDIF
+				CLEARLINE 1
+				GOTO INPUT_LOOP3
+			ELSEIF RESULT == 3
+				CALL SHOW_NOW_FORMATION_E, 0, 2, -1, "SELECT_TARGET", ARG:1, ARG
+				PRINTL [22] 적전체
+				PRINTL [0] ＣＡＮＣＥＬ
+				CALL INPUTINT,0,7,8,9,10,11,12,13,14,15,16,22
+				SIF RESULT == 0
+					RETURN -1
+				RETURN 22
+			ELSE
+				RETURN 23
+			ENDIF
+		CASE "아군"
+			CALL GET_SKILL_PROP, "SKILL_SPHERE", ARG,ARG:1
+			IF RESULT == 1
+				CALL SHOW_NOW_FORMATION_P, 0, 2, 7,"SELECT_TARGET", , ARG:1, ARG
+				PRINTL [0] ＣＡＮＣＥＬ
+				$INPUT_LOOP4
+				INPUT
+				IF RESULT == 0
+					RETURN -1
+				ELSEIF (RESULT < 7 && RESULT > 0) && L_TARGET_ABLE:RESULT
+					RETURN RESULT
+				ELSE
+					CLEARLINE 1
+					GOTO INPUT_LOOP4
+				ENDIF
+			ELSEIF RESULT == 2
+				CALL SHOW_NOW_FORMATION_P, 0, 2, 7,"SELECT_TARGET", , ARG:1, ARG
+				PRINTL [17] 아군전열
+				SIF L_TARGET_ABLE:18
+					PRINTL [18] 아군후열
+				PRINTL [0] ＣＡＮＣＥＬ
+				$INPUT_LOOP5
+				INPUT
+				IF RESULT == 0
+					RETURN -1
+				ELSEIF INRANGE(RESULT, 1, 3) || RESULT == 17
+					RETURN 17
+				ELSEIF INRANGE(RESULT, 4, 6) || RESULT == 18
+					SIF L_TARGET_ABLE:18
+						RETURN 18
+				ENDIF
+				CLEARLINE 1
+				GOTO INPUT_LOOP5
+			ELSEIF RESULT == 3
+				CALL SHOW_NOW_FORMATION_P, 0, 2, 7,"SELECT_TARGET", , ARG:1, ARG
+				PRINTL [19] 아군전체
+				PRINTL [0] ＣＡＮＣＥＬ
+				CALL INPUTINT,0,1,2,3,4,5,6,19
+				SIF RESULT == 0
+					RETURN -1
+				RETURN 19
+			ELSE
+				PRINTL [1] ＯＫ
+				PRINTL [0] ＣＡＮＣＥＬ
+				CALL INPUTINT,0,1
+				SIF RESULT == 0
+					RETURN -1
+				RETURN 23
+			ENDIF
+		CASE "전투전체"
+			CALL GET_SKILL_PROP, "SKILL_SPHERE", ARG, ARG:1
+			IF GET_SPHERE_NUM("적아군전체") == RESULT
+				CALL SHOW_NOW_FORMATION_E, 0, 2, -1, "SELECT_TARGET", ARG:1, ARG
+				DRAWLINE
+				CALL SHOW_NOW_FORMATION_P, 0, 2, 7,"SELECT_TARGET", , ARG:1, ARG
+				PRINTL [1] ＯＫ
+				PRINTL [0] ＣＡＮＣＥＬ
+				VARI STOCK_REDRAW
+				STOCK_REDRAW = CURRENTREDRAW()
+				REDRAW 0
+				VARI STOCK_LINE = LINECOUNT
+				DO
+					INPUT
+					CLEARLINE LINECOUNT - STOCK_LINE
+				LOOP !INRANGE(RESULT, 1, 16) && RESULT != 0 && RESULT != 23
+				REDRAW STOCK_REDRAW
+			ELSE
+				PRINTL [1] ＯＫ
+				PRINTL [0] ＣＡＮＣＥＬ
+				CALL INPUTINT,0,1
+			ENDIF
+			SIF RESULT == 0
+				RETURN -1
+			RETURN 23
+		CASE "특수", "자신"
+			PRINTL [1] ＯＫ
+			PRINTL [0] ＣＡＮＣＥＬ
+			CALL INPUTINT,0,1
+			SIF RESULT == 0
+				RETURN -1
+			RETURN 23
+	ENDSELECT
+ENDIF
+;====================================================
+;行動入力可能かの判定
+;====================================================
+@INPUTABLE_CHARA,ARG
+RETURN INPUTABLE_CHARA_F(ARG)
+
+;====================================================
+;行動入力可能かの判定
+;====================================================
+@INPUTABLE_CHARA_F,ARG
+#FUNCTION
+SIF !ACTIONABLE_CHARA_F(ARG)
+	RETURNF 0
+SIF CFLAG:ARG:일시조작불능 == 1
+	RETURNF 0
+;ＮＰＣだとダメ
+SIF CFLAG:ARG:조작불능플래그 == 1
+	RETURNF 0
+RETURNF 1
+
+;---- EDIT 052 ADD START -------------------------
+;====================================================
+;行動時のコマンド名を取る
+;
+;ARG = キャラ登録番号
+;====================================================
+@GETS_INPUT_COMMAND_ACT, ARG
+#DIM L_P
+#DIM L_T
+#DIM L_SKILL
+#DIM IS_INPUTABLE
+TFLAG:커맨드표시중 = 1
+L_P = ARG
+L_SKILL = CFLAG:L_P:입력행동
+;行動可能かを取得
+CALL INPUTABLE_CHARA, L_P
+IS_INPUTABLE = RESULT
+IF IS_INPUTABLE == 0
+	IF CFLAG:L_P:상태이상 > 0
+		RESULTS = %GET_STATE(CFLAG:L_P:상태이상),18,LEFT%
+	ELSEIF CFLAG:L_P:조작불능플래그 == 1
+		RESULTS = ＧＵＥＳＴ
+	ELSEIF MAXARRAY(CFLAG:L_P:0, GETNUM(CFLAG, "검격웨이트"),  GETNUM(CFLAG, "검격웨이트") + TYPENUM) > 0
+		RESULTS = ＷＡＩＴ
+	ENDIF
+ELSE
+	IF CFLAG:L_P:링케이지참가
+		RESULTS = ＷＡＩＴ
+	ELSEIF CFLAG:L_P:ＣＨＡＮＧＥ대상플래그 == 1 || CFLAG:L_P:방어플래그 == 1
+		RESULTS = ＧＵＡＲＤ
+	ELSEIF CFLAG:L_P:입력행동 > -1
+		CALL GET_SKILL_PROP, "SKILL_NAME", CFLAG:L_P:입력행동, L_P
+		RESULTS '= RESULTS
+	ELSE
+		RESULTS = 
+	ENDIF
+ENDIF
+TFLAG:커맨드표시중 = 0
+
+;====================================================
+;行動時の対象を文字列化して取る
+;
+;ARG = キャラ登録番号
+;ARGS = 行動名(@GETS_INPUT_COMMAND_ACTで先に取得したものを使う)
+;====================================================
+@GETS_INPUT_COMMAND_TARGET, ARG, ARGS
+#DIM L_P
+#DIM L_T
+#DIM L_SKILL
+#DIM ACTOR_LENS
+L_P = ARG
+L_T = CFLAG:L_P:타겟
+L_SKILL = CFLAG:L_P:입력행동
+ACTOR_LENS = 18 + GETBIT(FLAG:커스텀게임화면,1) * 21
+RESULTS = 
+;対象指定なし
+SIF L_T <= 0
+	RETURN 0
+;행동불능
+CALL INPUTABLE_CHARA, L_P
+SIF !RESULT
+	RETURN 0
+SIF L_SKILL < 0
+	RETURN 0
+;---- EDIT 058 MOD START -------------------------
+;対象なし行動がきまっている
+SIF ARGS == @"%"ＷＡＩＴ", ACTOR_LENS, LEFT%"
+	RETURN 0
+SIF ARGS == @"%"ＧＵＥＳＴ", ACTOR_LENS, LEFT%"
+	RETURN 0
+;---- EDIT 054 ADD START -------------------------
+SIF ARGS == @"%"ＧＵＡＲＤ", ACTOR_LENS, LEFT%"
+	RETURN 0
+;---- EDIT 058 MOD END ---------------------------
+;---- EDIT 058 MOD START ---------------------------
+;IF GROUPMATCH(L_SKILL, [[스킬:ＳＵＭＭＯＮ]], [[스킬:사바트마]], [[스킬:초래의무도]])
+CALL GET_SKILL_PROP, "SKILL_IS_SUMMON", L_SKILL, L_P
+IF RESULT
+	L_T = CFLAG:L_P:소환예정캐릭터
+	GOTO RESERVE_SINGLE
+ENDIF
+;---- EDIT 058 MOD END -----------------------------
+;控え対象行動
+CALL GET_SKILL_PROP, "SKILL_T_RESERVE", L_SKILL, L_P
+IF RESULT
+	CALL GET_SKILL_PROP, "SKILL_SPHERE", L_SKILL, L_P
+	IF RESULT > 1
+		RESULTS = [--] 아군 전체
+	ELSE
+		$RESERVE_SINGLE
+		IF CPOS(L_T) > 0
+			RESULTS = [{CPOS(L_T), 2}] %CALLNAME:L_T%
+		ELSE
+			RESULTS = [--] %CALLNAME:L_T%
+		ENDIF
+	ENDIF
+	RETURN 1
+ENDIF
+SELECTCASE L_SKILL
+	CASE [[스킬:ＲＥＴＵＲＮ]]
+		RETURN 0
+	CASE [[스킬:ＣＨＡＮＧＥ]]
+		RESULTS = [{CFLAG:L_P:타겟,2}] \@(POS(L_T) > -1) ? %CALLNAME:POS(L_T)% # ＥＭＰＴＹ \@
+	CASEELSE
+		SELECTCASE L_T
+			CASE 1 TO 16
+				;不正な対象の場合はターゲットの振替えを行う
+				;有効なターゲットを取れない場合は防御に変更
+				IF !IS_TARGET_ABLE(POS(L_T))
+					CALL CHECK_ACTIONABLE, L_P, L_SKILL
+					IF RESULT == 0
+						CFLAG:L_P:입력행동 = -1
+						CFLAG:L_P:방어플래그 = 1
+						RETURN -1
+					ELSE
+						;CALL RANDOM_TARGET, FLAG:LOCALS, CFLAG:(FLAG:LOCALS):입력행동
+						CALL RANDOM_TARGET, L_P, CFLAG:L_P:입력행동;EDIT 054
+						IF !RESULT
+							CFLAG:L_P:입력행동 = -1
+							CFLAG:L_P:방어플래그 = 1
+							RETURN -1
+						ELSE
+							;ランダムターゲットで振替えが出来ていたら変数の中身をさしかえる
+							L_T = CFLAG:L_P:타겟;EDIT 053 ADD
+						ENDIF
+					ENDIF
+				ENDIF
+				RESULTS = [{L_T,2}] %CALLNAME:POS(L_T)%
+			;---- EDIT 060 ADD START -------------------------
+			CASE 17, 18
+				RESULTS =[--] \@L_T == 17 ? 아군 전열 # 아군 후열 \@
+			;---- EDIT 060 ADD END ---------------------------
+			CASE 20, 21
+				RESULTS =[--] \@L_T == 20 ? 적 전열 # 적 후열 \@
+			CASEELSE
+				CALL GET_SKILL_PROP, "SKILL_TARGET", CFLAG:L_P:입력행동, L_P
+				IF RESULT == 1
+					RESULTS = [--] 적 전체
+				ELSEIF RESULT == 2
+					RESULTS = [--] 아군 전체
+				ELSEIF RESULT == 3
+					RESULTS = [--] 전체
+				ELSEIF RESULT == 5
+					RESULTS = [--] 자신
+				ELSE
+					RETURN 0
+				ENDIF
+		ENDSELECT
+ENDSELECT
+RETURN 1
+;---- EDIT 052 ADD END ---------------------------
+
+@INPUTABLEF_CHARA(ARG)
+#FUNCTION
+SELECTCASE GET_STATE(CFLAG:ARG:상태이상)
+	CASE "DYING","STONE","PALYZE","BIND","FREEZE","SHOCK","SLEEP","PANIC","CHARM","ORGY","HEAT","SLIP"
+	;死んでると駄目
+	;石になってると駄目
+	;麻痺してると駄目
+	;金縛りだと駄目
+	;凍ってると駄目
+	;感電してると駄目
+	;眠ってると駄目
+	;オルギア関係で駄目
+	;プロテクトモード関係で駄目
+	;転倒してると駄目
+		RETURNF 0
+ENDSELECT
+;ＣＨＡＮＧＥの対象だと駄目
+;SIF CFLAG:ARG:ＣＨＡＮＧＥ대상플래그 == 1
+;	RETURNF 0
+;037　何らかのコマンドで操作不能になる
+SIF CFLAG:ARG:일시조작불능 == 1
+	RETURNF 0
+SIF CFLAG:ARG:조작불능플래그 == 1
+	RETURNF 0
+RETURNF 1
+
+@CHECK_BACKROW
+#FUNCTION
+#DIM L_COUNT
+;後列に敵が居るかチェック
+FOR L_COUNT, 12, 17
+	LOCALS = 포지션{L_COUNT}
+	IF FLAG:LOCALS > -1 && CFLAG:(FLAG:LOCALS):상태이상 != GET_STATE_NUM("DYING")
+		RETURNF 1
+	ENDIF
+NEXT
+RETURNF 0
+
+;====================================================
+;ターゲットの存在確認
+;指定した範囲内にターゲット可能なキャラクターが存在しているかを取得する
+;
+;ARG		確認するターゲット
+;RESULT		真偽値
+;====================================================
+@IS_EXIST_ターゲット, ARG
+#FUNCTION
+#DIM LCOUNT
+#DIM TPOS_MIN
+#DIM TPOS_MAX
+SELECTCASE ARG
+	CASE 1 TO 16
+		SIF POS(ARG) < 0
+			RETURNF 0
+		SIF CFLAG:POS(ARG):공격대상제외
+			RETURNF 0
+		SIF CFLAG:POS(ARG):공격대상제외_ACT
+			RETURNF 0
+		RETURNF 1
+	CASE 17
+		TPOS_MIN = 1
+		TPOS_MAX = 4
+	CASE 18
+		TPOS_MIN = 4
+		TPOS_MAX = 7
+	CASE 19
+		TPOS_MIN = 1
+		TPOS_MAX = 7
+	CASE 20
+		TPOS_MIN = 7
+		TPOS_MAX = 12
+	CASE 21
+		TPOS_MIN = 12
+		TPOS_MAX = 17
+	CASE 22
+		TPOS_MIN = 7
+		TPOS_MAX = 17
+	CASE 23
+		TPOS_MIN = 1
+		TPOS_MAX = 17
+	CASEELSE
+		LCOUNT = -1
+		STR:LCOUNT = ※ターゲットの値が不正です
+ENDSELECT
+FOR LCOUNT, TPOS_MIN, TPOS_MAX
+	SIF POS(LCOUNT) < 0
+		CONTINUE
+	RETURNF 1
+NEXT
+RETURNF 0
+
+;===============================================
+;行動対象のランダム決定
+;===============================================
+@RANDOM_TARGET,ARG,ARG:1
+#DIM LCOUNT,2
+#DIM ACTOR_POS
+#DIM L_TARGET_TYPE
+#DIM L_RANGE
+#DIM L_SPHERE
+#DIM L_T_RESERVE
+#DIM L_TARGET_TABLE, 1700
+#DIM TEMP
+#DIM STOCK_U
+
+CFLAG:ARG:타겟 = -1
+
+STOCK_U = U
+;LCOUNT = U;037
+U = ARG;037
+
+CALL GET_SKILL_PROP, "SKILL_TARGET", ARG:1, ARG
+L_TARGET_TYPE = RESULT
+IF GROUPMATCH(L_TARGET_TYPE, 1, 2)
+	;混乱している場合、対象判定が確率で入れ替わる
+	SIF IS_BADSTATE(ARG, "PANIC") && !HAVE_PANIC_RESISTANCE(ARG)
+		L_TARGET_TYPE = RAND(1, 3)
+	;魅了されている場合、対象判定が入れ替わる
+	SIF IS_BADSTATE(ARG, "CHARM")
+		L_TARGET_TYPE = L_TARGET_TYPE == 1 ? 2 # 1
+ENDIF
+
+CALL GET_SKILL_PROP, "SKILL_SPHERE", ARG:1,ARG
+L_SPHERE = RESULT
+CALL GET_SKILL_PROP, "SKILL_RANGE", ARG:1, ARG
+L_RANGE = RESULT
+CALL GET_SKILL_PROP, "SKILL_T_RESERVE", ARG:1, ARG
+L_T_RESERVE = RESULT
+
+;単体蘇生
+CALL GET_SKILL_PROP, "SKILL_IS_RESUSCITATION", ARG:1, ARG
+IF RESULT
+	;単体蘇生対象が存在するかチェック
+	CALL CHECK_TARGET_RESUSCITATION, ARG
+	CFLAG:ARG:타겟 = RESULT
+	RETURN RESULT != -1
+ENDIF
+
+;---- EDIT 058 ADD START ---------------------------
+ACTOR_POS = CFLAG:ARG:피소환플래그? CPOS(FINDCHARA_ID(CFLAG:ARG:소환자ID)) # CPOS(ARG)
+;---- EDIT 058 ADD END -----------------------------
+SELECTCASE GET_SKILL_TARGET(L_TARGET_TYPE)
+	;対象が使用者の敵
+	CASE "적"
+		SELECTCASE GET_SPHERE(L_SPHERE)
+			;単体 / 縦列
+			CASE "단체", "세로열"
+				;狙える敵を確認してリストに入れる。
+				VARSET L_TARGET_TABLE
+				FOR LCOUNT, GET_POS_MIN(CFLAG:ARG:PT플래그 ? 22 # 19), GET_POS_MAX(CFLAG:ARG:PT플래그 ? 22 # 19) + 1
+					SIF !IS_TARGET_ABLE(POS(LCOUNT))
+						CONTINUE
+					;後列を狙えない場合は後列をリストに入れない
+					SIF GROUPMATCH(L_RANGE, 1, 2) && !IS_FRONT(POS(LCOUNT))
+						CONTINUE
+					;---- EDIT 065 MOD START -------------------------
+					;ターゲット条件を確認
+					CALL GET_SKILL_PROP, "SKILL_TARGETABLE", ARG:1, ARG, L_T_RESERVE ? POS(LCOUNT) # LCOUNT
+					SIF !RESULT
+						CONTINUE
+					;効果の有無を確認
+					;---- EDIT 067 MOD START -------------------------
+					TRYCCALLFORM SKILL_IS_VALID_TARGET_{ARG:1}, L_T_RESERVE ? POS(LCOUNT) # LCOUNT, ARG
+					;---- EDIT 067 MOD END ---------------------------
+						SIF !RESULT
+							CONTINUE
+					CATCH
+					ENDCATCH
+					;---- EDIT P 001 ADD START -------------------------
+					VARI L_TAUNT_STRENGTH = 100
+					SIF CFLAG:POS(LCOUNT):피타겟비율변동지속턴수 > 0
+						L_TAUNT_STRENGTH = L_TAUNT_STRENGTH * CFLAG:POS(LCOUNT):변동피타겟율 / 100
+					L_TAUNT_STRENGTH = L_TAUNT_STRENGTH * CFLAG:POS(LCOUNT):기본피타겟율 / 100
+					L_TAUNT_STRENGTH = LIMIT(L_TAUNT_STRENGTH / 10 + (L_TAUNT_STRENGTH % 10 > RAND:10), 1, 100)
+					DEBUGPRINTFORML [{LCOUNT}] %CALLNAME:POS(LCOUNT)%, L_TAUNT_STRENGTH = {L_TAUNT_STRENGTH}
+					FOR LCOUNT:1, 0, L_TAUNT_STRENGTH
+						L_TARGET_TABLE:FINDELEMENT(L_TARGET_TABLE, 0) = LCOUNT
+					NEXT
+					;---- EDIT P 001 ADD END ---------------------------
+					;---- EDIT 065 MOD END ---------------------------
+				NEXT
+				SIF MAXARRAY(L_TARGET_TABLE)
+					CFLAG:ARG:타겟 = L_TARGET_TABLE:RAND(FINDELEMENT(L_TARGET_TABLE, 0))
+			;列
+			CASE "일렬"
+				CFLAG:ARG:타겟 = CFLAG:ARG:PT플래그 ? 20 # 17
+				;---- EDIT 069 MOD START -------------------------
+				TEMP = 0
+				;前列をチェック
+				FOR LCOUNT, GET_POS_MIN(CFLAG:ARG:타겟), GET_POS_MAX(CFLAG:ARG:타겟) + 1
+					SIF !IS_TARGET_ABLE(POS(LCOUNT))
+						CONTINUE
+					TEMP = 1
+					BREAK
+				NEXT
+				;後列を狙えるスキルは1/2の確率で後列振替をチェック(前列不在なら確定)
+				IF !GROUPMATCH(L_RANGE, 1, 2)
+					IF RAND:2 || TEMP == 0
+						FOR LCOUNT, GET_POS_MIN(CFLAG:ARG:타겟 + 1), GET_POS_MAX(CFLAG:ARG:타겟 + 1) + 1
+							SIF !IS_TARGET_ABLE(POS(LCOUNT))
+								CONTINUE
+							CFLAG:ARG:타겟 += 1
+							TEMP = 1
+							BREAK
+						NEXT
+					ENDIF
+				ENDIF
+				;ターゲットを取れなかった場合
+				SIF !TEMP
+					CFLAG:ARG:타겟 = -1
+				;---- EDIT 069 MOD END ---------------------------
+			;全体
+			CASE "전체"
+				CFLAG:ARG:타겟 = CFLAG:ARG:PT플래그 ? 22 # 19
+			;敵味方
+			CASE "적아군전체"
+				CFLAG:ARG:타겟 = 23
+		ENDSELECT
+	;対象が使用者の味方
+	CASE "아군"
+		SELECTCASE GET_SPHERE(L_SPHERE)
+			;単体 / 縦列
+			CASE "단체", "세로열"
+				;狙える敵を確認してリストに入れる。
+				VARSET L_TARGET_TABLE
+				FOR LCOUNT, GET_POS_MIN(CFLAG:ARG:PT플래그 ? 19 # 22), GET_POS_MAX(CFLAG:ARG:PT플래그 ? 19 # 22) + 1
+					SIF !IS_TARGET_ABLE(POS(LCOUNT))
+						CONTINUE
+					;ターゲット条件を確認
+					CALL GET_SKILL_PROP, "SKILL_TARGETABLE", ARG:1, ARG, L_T_RESERVE ? POS(LCOUNT) # LCOUNT
+					SIF !RESULT
+						CONTINUE
+					;効果の有無を確認
+					;---- EDIT 067 MOD START -------------------------
+					TRYCCALLFORM SKILL_IS_VALID_TARGET_{ARG:1}, L_T_RESERVE ? POS(LCOUNT) # LCOUNT, ARG
+					;---- EDIT 067 MOD END ---------------------------
+						SIF !RESULT
+							CONTINUE
+					CATCH
+					ENDCATCH
+					L_TARGET_TABLE:FINDELEMENT(L_TARGET_TABLE, 0) = LCOUNT
+				NEXT
+				
+				IF MAXARRAY(L_TARGET_TABLE)
+					CFLAG:ARG:타겟 = L_TARGET_TABLE:RAND(FINDELEMENT(L_TARGET_TABLE, 0))
+					;控え対象行動はキャラ番号を入れる
+					SIF L_T_RESERVE
+						CFLAG:ARG:타겟 = POS(CFLAG:ARG:타겟)
+				ENDIF
+			;列
+			CASE "일렬"
+				;---- EDIT 069 MOD START -------------------------
+				CFLAG:ARG:타겟 = CFLAG:ARG:PT플래그 ? 17 # 20
+				TEMP = 0
+				;前列をチェック
+				FOR LCOUNT, GET_POS_MIN(CFLAG:ARG:타겟), GET_POS_MAX(CFLAG:ARG:타겟) + 1
+					SIF !IS_TARGET_ABLE(POS(LCOUNT))
+						CONTINUE
+					TEMP = 1
+					BREAK
+				NEXT
+				;1/2の確率で後列振替をチェック
+				IF RAND:2 || !TEMP
+					FOR LCOUNT, GET_POS_MIN(CFLAG:ARG:타겟 + 1), GET_POS_MAX(CFLAG:ARG:타겟 + 1) + 1
+						SIF !IS_TARGET_ABLE(POS(LCOUNT))
+							CONTINUE
+						CFLAG:ARG:타겟 += 1
+						TEMP = 1
+						BREAK
+					NEXT
+				ENDIF
+				SIF !TEMP
+					CFLAG:ARG:타겟 = -1
+				;---- EDIT 069 MOD END ---------------------------
+			;全体
+			CASE "전체"
+				CFLAG:ARG:타겟 = CFLAG:ARG:PT플래그 ? 19 # 22
+			;敵味方
+			CASE "적아군전체"
+				CFLAG:ARG:타겟 = 23
+		ENDSELECT
+	;場全体 / 特殊
+	CASE "전투전체", "특수", "자신"
+		CFLAG:ARG:타겟 = 23
+ENDSELECT
+;---- EDIT 065 MOD START -------------------------
+;範囲攻撃はここでターゲット条件を確認する
+IF INRANGE(CFLAG:ARG:타겟, 17, 23) && !(L_T_RESERVE && CFLAG:ARG:PT플래그) 
+	TEMP = 0
+	FOR LCOUNT, GET_POS_MIN(CFLAG:ARG:타겟), GET_POS_MAX(CFLAG:ARG:타겟) + 1
+		;ターゲット条件を確認
+		CALL GET_SKILL_PROP, "SKILL_TARGETABLE", ARG:1, ARG, LCOUNT
+		IF RESULT
+			TEMP = 1
+			BREAK
+		ENDIF
+	NEXT
+	SIF TEMP == 0
+		CFLAG:ARG:타겟 = -1
+ENDIF
+;範囲攻撃はここで効果を確認する
+IF INRANGE(CFLAG:ARG:타겟, 17, 23) && !(L_T_RESERVE && CFLAG:ARG:PT플래그) 
+	TEMP = 0
+	FOR LCOUNT, GET_POS_MIN(CFLAG:ARG:타겟), GET_POS_MAX(CFLAG:ARG:타겟) + 1
+		;ターゲット条件を確認
+		;---- EDIT 067 MOD START -------------------------
+		TRYCCALLFORM SKILL_IS_VALID_TARGET_{ARG:1}, LCOUNT,ARG
+		;---- EDIT 067 MOD END ---------------------------
+			IF RESULT
+				TEMP = 1
+				BREAK
+			ENDIF
+		CATCH
+			TEMP = 1
+			BREAK
+		ENDCATCH
+	NEXT
+	SIF TEMP == 0
+		CFLAG:ARG:타겟 = -1
+ENDIF
+U = STOCK_U
+SIF CFLAG:ARG:타겟 < 0
+	RETURN 0
+RETURN 1
+
+;=========================================================
+;敵の行動決定
+;=========================================================
+@SET_ACTION_ENEMY,ARG
+#DIM LCOUNT
+; LOCAL = 使用可能なスキルの中から何番目のスキルを選んだか
+; LOCAL:1 = S:(10+LOCAL) = 使用可能なスキルのリスト
+; LOCAL:2 = 回復時に参照：敵列orパーティのＨＰ合計
+; LOCAL:3 = 最大ＨＰ合計
+; LOCAL:4 = 合計ＨＰ比率
+
+
+
+;この辺に思考ルーチンを参照するIFを仕込む予定
+IF CSTR:ARG:사고패턴 == "1"
+;少し賢いパターン
+;無駄な回復はせず、ＨＰの低い敵を攻撃し、ＨＰの割合が低い味方を回復する
+;ただしＨＰの低い敵の相性と自分のスキルによっては封殺される。
+	CALL SEARCH_ACT, ARG
+	$DECIDE_ACTION_1
+	IF RESULT == 0
+		CFLAG:ARG:입력행동 = -1
+		CFLAG:ARG:방어플래그 = 1
+		RETURN 0
+	ENDIF
+	LOCAL = RAND:FINDELEMENT(USEABLE_SKILL_LIST_FOR_RANDOM_ACT, -1)
+	LOCAL:1 = USEABLE_SKILL_LIST_FOR_RANDOM_ACT:LOCAL
+	ARRAYSHIFT USEABLE_SKILL_LIST_FOR_RANDOM_ACT, -1, -1, LOCAL, VARSIZE("USEABLE_SKILL_LIST_FOR_RANDOM_ACT")
+;	PRINTFORML [{CFLAG:ARG:5}]のスキル数 {RESULT}
+	;LOCAL = RAND:RESULT
+	;スキル番号決定
+	;LOCAL:1 = S:(10+LOCAL)
+;	PRINTFORML [{CFLAG:ARG:5}]のスキル {LOCAL:1}
+
+	$TARGET_LOOP_1
+	;------------------------------------------------------
+	;攻撃スキルのターゲット決定
+	;------------------------------------------------------
+	IF RESULT == 1
+		CALL GET_SKILL_PROP, "SKILL_SPHERE", LOCAL:1, ARG
+			IF RESULT == 1
+			;----------------------------------------------
+			;単体の場合
+			;----------------------------------------------
+			CALL GET_SKILL_PROP, "SKILL_RANGE", LOCAL:1,ARG
+			IF (RESULT == 1 && CFLAG:ARG:5 < 14) || RESULT == 2
+				;射程1かつ前衛or射程2
+				;前衛の中で一番ＨＰが低いキャラクターを狙う
+				CFLAG:ARG:타겟 = -1
+				FOR LCOUNT, 0, 3
+					IF FLAG:(71+LCOUNT) > -1 && CFLAG:ARG:타겟 == -1
+						CFLAG:ARG:타겟 = LCOUNT + 1
+						CONTINUE
+					ENDIF
+					IF FLAG:(71+LCOUNT) > -1 && BASE:(FLAG:(71+LCOUNT)):5 > BASE:(FLAG:(70+CFLAG:ARG:타겟)):5
+						CFLAG:ARG:타겟 = LCOUNT + 1
+					ENDIF
+				NEXT
+				SIF CFLAG:ARG:타겟 == -1
+					GOTO DECIDE_ACTION_1
+			ELSEIF RESULT == 3 || RESULT == 4
+	;			;射程3
+	;			;全員の中で一番ＨＰが低いキャラクターを狙う
+				CFLAG:ARG:타겟 = -1
+				FOR LCOUNT, 0, 6
+					IF FLAG:(71+LCOUNT) > -1 && CFLAG:ARG:타겟 == -1
+						CFLAG:ARG:타겟 = LCOUNT + 1
+						CONTINUE
+					ENDIF
+					IF FLAG:(71+LCOUNT) > -1 && BASE:(FLAG:(71+LCOUNT)):5 > BASE:(FLAG:(70+CFLAG:ARG:타겟)):5
+						CFLAG:ARG:타겟 = LCOUNT + 1
+					ENDIF
+				NEXT
+				SIF CFLAG:ARG:타겟 == -1
+					GOTO DECIDE_ACTION_1
+			ELSE
+				GOTO DECIDE_ACTION_1
+			ENDIF
+		ELSEIF RESULT == 2
+			CFLAG:ARG:타겟 = -1
+			;----------------------------------------------
+			;1列の場合
+			;----------------------------------------------
+			IF RESULT == (RESULT == 1 && CFLAG:ARG:5 < 14) || RESULT == 2
+	;			;前列しか狙えないので、自動的に前列
+				CFLAG:ARG:타겟 = 17
+			ELSEIF RESULT == 3 || RESULT == 4
+				IF (FLAG:71 > -1 || FLAG:72 > -1 || FLAG:73 > -1) && (FLAG:74 > -1 || FLAG:75 > -1 || FLAG:76 > -1)
+					;面倒なので暫定的にランダムとしておく
+					CFLAG:ARG:타겟 = 17+RAND:2
+				ELSE
+				
+				ENDIF
+			ENDIF
+			SIF CFLAG:ARG:타겟 == -1
+				GOTO DECIDE_ACTION_1
+		ELSEIF RESULT == 3
+			CFLAG:ARG:타겟 = 19
+			
+		
+		ELSE
+			CFLAG:ARG:타겟 = 23
+		ENDIF
+	;------------------------------------------------------
+	;回復・支援スキルのターゲット決定
+	;------------------------------------------------------
+	ELSEIF RESULT == 2
+		CALL GET_SKILL_PROP, "SKILL_SPHERE", LOCAL:1, ARG
+		IF RESULT == 1
+	;		;----------------------------------------------
+	;		;単体の場合
+			;----------------------------------------------
+			;味方の中で一番ＨＰ比率の低いキャラを対象にする。
+			CFLAG:ARG:타겟 = -1
+			FOR LCOUNT, 0, 10
+				IF FLAG:(77+LCOUNT) > -1 && CFLAG:ARG:타겟 == -1
+					SIF (BASE:(FLAG:(77+LCOUNT)):5 - MAXBASE:(FLAG:(77+LCOUNT)):5) == 0
+						CONTINUE
+					SIF CFLAG:(FLAG:(77+LCOUNT)):6 < 12
+						CONTINUE
+					CFLAG:ARG:타겟 = LCOUNT + 7
+					CONTINUE
+				ENDIF
+				IF FLAG:(77+LCOUNT) > -1 && (BASE:(FLAG:(77+LCOUNT)):5*10000 / MAXBASE:(FLAG:(77+LCOUNT)):5) > (BASE:(FLAG:(70+CFLAG:ARG:타겟)):5*10000 / MAXBASE:(FLAG:(70+CFLAG:ARG:타겟)):5)
+					CFLAG:ARG:타겟 = LCOUNT + 7
+				ENDIF
+			NEXT
+			SIF CFLAG:ARG:타겟 == -1
+				GOTO DECIDE_ACTION_1
+			
+		ELSEIF RESULT == 2
+			;----------------------------------------------
+			;列の場合
+			;----------------------------------------------
+			CFLAG:ARG:타겟 = -1
+			LOCAL:2 = 0
+			LOCAL:3 = 0
+			LOCAL:4 = 0
+			FOR LCOUNT, 0, 5
+				IF FLAG:(77+LCOUNT) > -1
+					LOCAL:2 += BASE:(FLAG:(77+LCOUNT)):5
+					LOCAL:3 += MAXBASE:(FLAG:(77+LCOUNT)):5
+				ENDIF
+			NEXT
+			IF LOCAL:2 && LOCAL:3
+				CFLAG:ARG:타겟 = 20
+				LOCAL:4 = LOCAL:2 * 10000 / LOCAL:3
+			ENDIF
+			LOCAL:2 = 0
+			LOCAL:3 = 0
+			FOR LCOUNT, 0, 5
+				IF FLAG:(82+LCOUNT) > -1
+					LOCAL:2 += BASE:(FLAG:(82+LCOUNT)):5
+					LOCAL:3 += MAXBASE:(FLAG:(82+LCOUNT)):5
+				ENDIF
+			NEXT
+			IF LOCAL:2 && LOCAL:3
+				IF LOCAL:4 < LOCAL:2 * 10000 / LOCAL:3
+					CFLAG:ARG:타겟 = 21
+				ENDIF
+			ENDIF
+			
+			SIF CFLAG:ARG:타겟 == -1
+				GOTO DECIDE_ACTION_1
+			
+		ELSEIF RESULT == 3
+			LOCAL:4 = 0
+			FOR LCOUNT, 0, 20
+				SIF BASE:(FLAG:(77+LCOUNT)):5 < MAXBASE:(FLAG:(77+LCOUNT)):5
+					LOCAL:4 = 1
+			NEXT
+			SIF LOCAL:4 
+				CFLAG:ARG:타겟 = 22
+		ELSEIF RESULT == 4
+			LOCAL:4 = 0
+			FOR LCOUNT, 0, 20
+				SIF BASE:(FLAG:(77+LCOUNT)):5 < MAXBASE:(FLAG:(77+LCOUNT)):5
+					LOCAL:4 = 1
+			NEXT
+			SIF LOCAL:4 
+				CFLAG:ARG:타겟 = 23
+		ENDIF
+		
+	ELSEIF RESULT == 3
+				
+	ELSEIF RESULT == 4
+		GOTO DECIDE_ACTION_1
+	ELSE
+		RESULT = 0
+		CALL GET_SKILL_PROP, "SKILL_RANGE", ABL:ARG:(60+LOCAL:2),ARG
+		IF (RESULT == 1 && CFLAG:ARG:5 < 14) || RESULT == 2
+			FOR LOCAL:30,0,3
+				SIF FLAG:(71+LOCAL:30) > -1
+					LOCAL:1 += 1
+			NEXT
+			IF LOCAL:1
+				CFLAG:ARG:120 = 1
+				LOCAL += 1
+			ENDIF
+		ELSEIF RESULT == 3 || RESULT == 4
+			CFLAG:ARG:120 = 1
+			LOCAL += 1
+		ENDIF
+	ENDIF
+ELSE
+	TRYCCALLFORM SET_ACTION_%CSTR:ARG:사고패턴%,ARG
+	;特殊な思考パターンをここで処理
+	;詳細はダンジョン、コロシアム等のＥＲＢに記述して実行させる
+	
+	CATCH
+		CALL ランダム行動 , ARG
+	ENDCATCH
+
+ENDIF
+
+@ランダム行動 , ARG
+CALL SEARCH_ACT,ARG
+$DECIDE_ACTION
+;---- EDIT 066 MOD START -------------------------
+;入力可能なコマンドがなかった場合
+;IF RESULT == 0
+IF FINDELEMENT(USEABLE_SKILL_LIST_FOR_RANDOM_ACT, -1) == 0
+	CFLAG:ARG:입력행동 = -1
+	CFLAG:ARG:방어플래그 = 1
+	RETURN 0
+ENDIF
+;---- EDIT 066 MOD END ---------------------------
+LOCAL = RAND:FINDELEMENT(USEABLE_SKILL_LIST_FOR_RANDOM_ACT, -1)
+LOCAL:1 = USEABLE_SKILL_LIST_FOR_RANDOM_ACT:LOCAL
+;一度施行したスキルはリストから除く
+ARRAYSHIFT USEABLE_SKILL_LIST_FOR_RANDOM_ACT, -1, -1, LOCAL, VARSIZE("USEABLE_SKILL_LIST_FOR_RANDOM_ACT")
+
+;ターゲット選定を行い、通らなかったら再抽選
+CALL RANDOM_TARGET,ARG,LOCAL:1
+;SIF CFLAG:ARG:타겟 == -1;EDIT 066 MOD
+SIF !RESULT
+	GOTO DECIDE_ACTION
+;ここでスキル番号を行動内容に代入
+CFLAG:ARG:입력행동 = LOCAL:1
+
+;-----------------------------------------
+;スキルのセット関数
+;指定したスキルを指定したキャラクターの行動にセットする。
+;スキルをセットできない場合はランダムな行動が自動的にセットされる。
+;-----------------------------------------
+@SET_ACTION_SKILL, L_CHARA, L_SKILL
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_SKILL
+CALL CHECK_ACTIONABLE, L_CHARA, L_SKILL
+IF RESULT == 1
+	CFLAG:L_CHARA:입력행동 = L_SKILL
+	CALL RANDOM_TARGET, L_CHARA, L_SKILL
+	RETURN 1
+ELSE
+	CALL ランダム行動 , L_CHARA
+	RETURN 0
+ENDIF
+
+;-----------------------------------------
+;スキルのセット関数
+;-----------------------------------------
+@SETS_ACTION_SKILL, L_CHARA, L_SKILLS, L_OPT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_SKILL = -1
+#DIMS DYNAMIC L_SKILLS
+#DIMS DYNAMIC L_OPT
+IF L_OPT == "비소지스킬"
+	CSTR:L_CHARA:비소지스킬 '= L_SKILLS
+	L_SKILL = [[스킬:비소지스킬]]
+ELSEIF ISNUMERIC(L_SKILLS)
+	L_SKILL = TOINT(L_SKILLS)
+ELSE
+	L_SKILL = PU_SKILLNUM_GET(L_CHARA, L_SKILLS)
+	SIF L_SKILL == -1
+		L_SKILL = SKILL_NUM_F(L_SKILLS)
+ENDIF
+SIF L_SKILL == -1
+	THROW 不正なスキル[%L_SKILLS%]を[%CALLNAME:L_CHARA%]のコマンドにセットしようとしています。
+CALL SET_ACTION_SKILL, L_CHARA, L_SKILL
+RETURN RESULT
+
+@CHECK_TARGET_RESUSCITATION , ARG
+#DIM LCOUNT
+#DIM L_POS, 17
+#DIM L_CHARA
+;---- EDIT 063 MOD START -------------------------
+;対象が存在しない番号の時外す処理を追加
+;SIF CFLAG:ARG:타겟 < CHARANUM && CFLAG:(CFLAG:ARG:타겟):상태이상 == GET_STATE_NUM("DYING")
+SIF INRANGE(CFLAG:ARG:타겟, 0, CHARANUM -1) && IS_BADSTATE(CFLAG:ARG:타겟, "DYING")
+	RETURN (CFLAG:ARG:타겟)
+IF CFLAG:ARG:PT플래그 > 0
+	;単体蘇生のターゲットを自動選択してくれる
+	;戦闘参加者を優先する
+	FOR LCOUNT, 1, 7
+		L_CHARA = POS(LCOUNT)
+		SIF L_CHARA < -0
+			CONTINUE
+		;使用者はスルー
+		SIF L_CHARA == ARG
+			CONTINUE
+		IF CFLAG:L_CHARA:상태이상 == GET_STATE_NUM("DYING")
+			RETURN L_CHARA
+		ENDIF		
+	NEXT
+	FOR LCOUNT, 0, BCHARANUM
+		L_CHARA = BCHARA:LCOUNT
+		;使用者はスルー
+		SIF L_CHARA == ARG
+			CONTINUE
+		;戦闘に参加可能かどうかを見る
+		SIF !IS_JOINABLE_BATTLE(L_CHARA)
+			CONTINUE
+		SIF !CFLAG:L_CHARA:PT플래그
+			CONTINUE
+		IF CFLAG:L_CHARA:상태이상 == GET_STATE_NUM("DYING")
+			RETURN L_CHARA
+		ENDIF
+	NEXT
+ELSE
+	;敵は敵ポジションからランダムで指定
+	FOR LCOUNT, 7, 17
+		L_POS:LCOUNT = LCOUNT
+	NEXT
+	FOR LCOUNT, 7, 17
+		SWAP L_POS:RAND(7, 17), L_POS:RAND(7, 17)
+	NEXT
+	FOR LCOUNT, 7, 17
+		SIF POS(L_POS:LCOUNT) < 0
+			CONTINUE
+		SIF !IS_BADSTATE(POS(L_POS:LCOUNT), "DYING")
+			CONTINUE
+		RETURN POS(L_POS:LCOUNT)
+	NEXT
+ENDIF
+RETURN -1
+;---- EDIT 063 MOD END ---------------------------
+;---- EDIT 052 ADD START -------------------------
+;処理の都合上LOCALを使用出来ない
+@CAN_USE_SKILL, ARG
+#DIM S番号
+#DIM LCOUNT
+#DIM SKILL_NUM
+#DIMS スキル番
+;ロンギヌス時は使用不能
+IF CFLAG:ARG:롱기누스
+	RESULTS = 異能力封印
+	RETURN 0
+ENDIF
+FOR LCOUNT, 0, CHARA_SKILLCOUNT(ARG) + HAVEABLE_EQ_SKILLNUM
+	IF LCOUNT < CHARA_SKILLCOUNT(ARG)
+		SKILL_NUM = ABL:ARG:@"스킬{LCOUNT+1}"
+	ELSE
+		SKILL_NUM = ABL:ARG:@"장비스킬{LCOUNT - CHARA_SKILLCOUNT(ARG) + 1}"
+	ENDIF
+	SIF SKILL_NUM <= 0
+		CONTINUE
+	IF IS_BADSTATE(ARG, "CLOSE")
+		CALL GET_SKILL_PROP, "SKILL_DECIDE_TYPE", SKILL_NUM, ARG
+		SIF RESULT == 2
+			CONTINUE
+	ENDIF
+	RETURN 1
+NEXT
+RESULTS = 사용 가능 스킬 없음
+RETURN 0

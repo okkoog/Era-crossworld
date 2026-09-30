@@ -1,0 +1,207 @@
+﻿;コンセプト：六回確定乱舞（属性は火炎、疾風、核熱、飛具、氷結、剣撃からランダムな順番で）
+;冷静に考えると普通に使いづらい
+
+;スキル名
+@SKILL_NAME_セラフィックデス, ARG
+RESULTS = SERAPHIC DEATH
+
+;　명중
+@SKILL_HITRATE_セラフィックデス, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_セラフィックデス, ARG
+SELECTCASE TFLAG:스킬용1
+CASE 99
+	;メギド級
+	RETURN 210
+CASE 100
+	;メギドラ級
+	RETURN 290
+CASEELSE
+	;コスト60の複合全体攻撃だとクレセント／エクリプスミラーがある
+	;追撃が発動すると同コストのエクスカリバーを微妙に超える程度に
+	RETURN 320
+ENDSELECT
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_セラフィックデス, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_セラフィックデス, ARG
+RETURN 1
+
+;一体辺りの最大ＨＩＴ数
+@SKILL_MAXATK_PER_セラフィックデス, ARG
+RETURN 1
+
+;一体辺りの最低ＨＩＴ数
+@SKILL_MINATK_PER_セラフィックデス, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_セラフィックデス, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_セラフィックデス, ARG
+RETURN 60
+
+;　相性
+@SKILL_TYPE_セラフィックデス, ARG
+#LOCALSSIZE 7
+#LOCALSIZE 4
+
+;複合相性
+IF TFLAG:스킬용1 < 99
+	SELECTCASE RAND:6
+	CASE 0
+		LOCALS = 화염
+	CASE 1
+		LOCALS = 질풍
+	CASE 2
+		LOCALS = 핵열
+	CASE 3
+		LOCALS = 비구
+	CASE 4
+		LOCALS = 빙결
+	CASE 5
+		LOCALS = 검격
+	ENDSELECT
+	
+	SIF ARG < 0 || スキル属性表示中
+		RETURN GET_TYPE_NUM(LOCALS)
+	SIF CFLAG:ARG:타겟 > 16 || CFLAG:ARG:타겟 < 1
+		RETURN GET_TYPE_NUM(LOCALS)
+	LOCAL = POS(CFLAG:ARG:타겟)
+	SIF LOCAL < 0
+		RETURN GET_TYPE_NUM(LOCALS)
+	RETURN GET_TYPE_NUM("화염"), GET_TYPE_NUM("질풍"), GET_TYPE_NUM("핵열"), GET_TYPE_NUM("비구"), GET_TYPE_NUM("빙결"), GET_TYPE_NUM("검격")
+ELSE
+	RETURN GET_TYPE_NUM("만능")
+ENDIF
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_セラフィックデス
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_セラフィックデス, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_セラフィックデス, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_セラフィックデス, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_セラフィックデス, ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_セラフィックデス, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_セラフィックデス, ARG = -1
+;ドゥームズデイブラストが-10ならこっちは-20ぐらいいくでしょ
+RETURN -20
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_セラフィックデス
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_セラフィックデス, ARG,ARG:1,SKILL_NUM
+#LOCALSIZE 3
+#DIM SKILL_NUM
+#DIM 追撃スイッチ
+
+追撃スイッチ = 0
+SIF 現HP割合(ARG) < 34
+	追撃スイッチ = 1
+
+IF CFLAG:ARG:포지션 < 7
+	LOCAL:1 = 7
+	LOCAL:2 = 17 
+ELSE
+	LOCAL:1 = 1
+	LOCAL:2 = 7
+ENDIF
+
+TFLAG:스킬용1 = 0
+FOR LOCAL, LOCAL:1, LOCAL:2
+	LOCALS = 포지션{LOCAL}
+	SIF FLAG:LOCALS < 0
+		CONTINUE
+	SIF GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) == "DYING"
+		CONTINUE
+	CFLAG:ARG:타겟 = LOCAL
+	CALL ATTACK_SINGLE, ARG, FLAG:LOCALS, SKILL_NUM
+NEXT
+
+IF BASE:ARG:ＨＰ > 0 && GET_STATE(CFLAG:ARG:상태이상) != "DYING" && 追撃スイッチ
+	TFLAG:스킬용1 = 99
+	IF SKILL_CHANGE(ARG, [[キャラ:창조주_X2]])
+		IF CFLAG:ARG:PT플래그 > 0
+			TRYCALLFORM BATTLE_MESSAGE_K5473, ARG
+		ELSE
+			TRYCALLFORM ENEMY_BATTLE_MESSAGE_K[[キャラ:창조주_X2]], ARG
+		ENDIF
+	ELSEIF SKILL_CHANGE(ARG, [[キャラ:입실론_X2]])
+		IF CFLAG:ARG:PT플래그 > 0
+			TRYCALLFORM BATTLE_MESSAGE_K5465, ARG
+		ELSE
+			TRYCALLFORM ENEMY_BATTLE_MESSAGE_K[[キャラ:입실론_X2]], ARG
+		ENDIF
+	ENDIF
+	FOR LOCAL, LOCAL:1, LOCAL:2
+		TFLAG:스킬용1 = 99
+		LOCALS = 포지션{LOCAL}
+		SIF FLAG:LOCALS < 0
+			CONTINUE
+		SIF GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) == "DYING"
+			CONTINUE
+		;中央にいたら
+		SELECTCASE LOCAL
+		CASE 2, 5, 8, 9, 10, 13, 14, 15
+			TFLAG:스킬용1 = 100
+		CASEELSE
+		ENDSELECT
+		CALL ATTACK_SINGLE, ARG, FLAG:LOCALS, SKILL_NUM
+	NEXT
+ENDIF
+
+CALL SKILLGAGE_D_SET, ARG, SKILL_NUM ,5
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_セラフィックデス, ARG
+PRINTFORML 파괴된 묘지기의 힘을 빌려 6색 광선을 쏟아붓는 %CALLNAME:ARG%의 SP 스킬.
+;ギルトコンビネーションのオマージュです
+IF SKILL_CHANGE(ARG, [[キャラ:창조주_X2]])
+	PRINTL 과거 쓰러진 신하의 영혼, 그 유지를 받들어 참된 빛을 가져오리라.
+ELSE
+	PRINTL 과거 쓰러진 동포의 영혼, 그 유지를 받들어 극한을 토벌해 멸하리라.
+ENDIF
+PRINTL 　
+PRINTL 적 전체에 화염·질풍·핵열·비구·빙결·검격의 복합 상성으로 대데미지를 준다. 발동이 느리다.
+PRINTL 추가로 사용자의 HP가 1/3 미만일 경우 적 전체에 만능 속성으로 중~대데미지의 추격을 행한다.
+PRINTL 한 번 사용하면 재사용까지 5턴의 쿨타임이 필요하다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_セラフィックデス, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG, "セラフィックデス")
+SIF SKILLGAGE_D_GET(ARG, SKILL_NUM)
+	RETURN 0
+RETURN 1
+

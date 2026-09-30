@@ -1,0 +1,204 @@
+﻿
+@구상변수초기화
+CALL 口上変数初期化
+
+@구상변수표시,ARG = -1,ARG:1 = 0
+CALL 口上変数表示,ARG,ARG:1
+
+@口上変数初期化
+VARSET KSTR
+VARSET WSTR
+VARSET NSTR
+K = 0
+VARSET K_CALL
+VARSET KCOLOR,-1
+
+;KSTR:(K++) = 
+;WSTR:(K++) = 
+;NSTR:(K++) = 
+
+;K_CALL:K = 
+;KCOLOR:K = 
+
+
+@口上変数表示,ARG = -1,ARG:1 = 0
+SIF !口上有無確認(0,1)
+	RETURN 0
+SIF ARG == -1
+	ARG = TARGET
+FOR LOCAL,0,1000
+	IF !(K_CALL:LOCAL == "")
+		CALLFORM %K_CALL:LOCAL%
+		SIF LOCAL > 0
+			CALL WSTR書き込み,LOCAL - 1
+	ENDIF
+	SIF !口上有無確認(LOCAL,1)
+		BREAK
+	SIF KCOLOR:LOCAL > -1
+		SETCOLOR KCOLOR:LOCAL
+	IF !(WSTR:LOCAL == "")
+		CALL PRINT_STRW(WSTR:LOCAL,ARG)
+	ELSEIF !(KSTR:LOCAL == "")
+		CALL PRINT_STRL(KSTR:LOCAL,ARG)
+	ELSEIF !(NSTR:LOCAL == "")
+		CALL PRINT_STR(NSTR:LOCAL,ARG)
+	ENDIF
+NEXT
+RESETCOLOR
+SIF WSTR:(LOCAL - 2) == "" && ARG:1 == 0
+	WAIT
+RETURN 1
+
+@WSTR書き込み,ARG
+IF !(WSTR:ARG == "")
+ELSEIF !(KSTR:ARG == "")
+	WSTR:ARG = %KSTR:ARG%
+ELSEIF !(NSTR:ARG == "")
+	WSTR:ARG = %NSTR:ARG%
+ENDIF
+
+@口上有無確認,ARG,ARG:1 = 0
+#FUNCTION
+;ARG:1　0だとKを口上のない番号に移動
+IF ARG:1 == 0
+	FOR LOCAL,0,1000
+		SIF !(WSTR:LOCAL == "")
+			CONTINUE
+		SIF !(KSTR:LOCAL == "")
+			CONTINUE
+		SIF !(NSTR:LOCAL == "")
+			CONTINUE
+		K = LOCAL
+		BREAK
+	NEXT
+ENDIF
+SIF !(WSTR:ARG == "")
+	RETURNF 1
+SIF !(KSTR:ARG == "")
+	RETURNF 1
+SIF !(NSTR:ARG == "")
+	RETURNF 1
+RETURNF 0
+
+@KOJO_MESSAGE_ASSIPAIR_COM_1
+CALL KOJO_MESSAGE_ASSIPAIR_COM(1)
+
+@KOJO_MESSAGE_ASSIPAIR_COM_2
+CALL KOJO_MESSAGE_ASSIPAIR_COM(2)
+
+@KOJO_MESSAGE_ASSIPAIR_COM_3
+CALL KOJO_MESSAGE_ASSIPAIR_COM(3)
+
+@KOJO_MESSAGE_ASSIPAIR_COM_4
+CALL KOJO_MESSAGE_ASSIPAIR_COM(4)
+
+@KOJO_MESSAGE_ASSIPAIR_COM_5
+CALL KOJO_MESSAGE_ASSIPAIR_COM(5)
+
+@KOJO_MESSAGE_ASSIPAIR_COM_6
+CALL KOJO_MESSAGE_ASSIPAIR_COM(6)
+
+@KOJO_MESSAGE_ASSIPAIR_COM_7
+CALL KOJO_MESSAGE_ASSIPAIR_COM(7)
+
+
+
+
+
+;-------------------------------------------------
+; 한국어 번역 구상용 호환 래퍼 함수
+;-------------------------------------------------
+@구상유무확인, ARG, ARG:1 = 0
+#FUNCTION
+RETURNF 口上有無確認(ARG, ARG:1)
+
+
+;-------------------------------------------------
+; 한국어 호환 래퍼: @WSTR기입, @WSTR쓰기
+;-------------------------------------------------
+@WSTR기입, ARG
+CALL WSTR書き込み, ARG
+RETURN RESULT
+
+@WSTR쓰기, ARG
+CALL WSTR書き込み, ARG
+RETURN RESULT
+
+
+;-------------------------------------------------
+; 한국어 호환 래퍼: @근친체크
+;-------------------------------------------------
+@근친체크(ARG, ARG:1)
+#FUNCTION
+LOCAL = 近親チェック(ARG, ARG:1)
+IF LOCAL
+	SELECTCASE RESULTS
+		CASE "父"
+			RESULTS = 아버지
+		CASE "母"
+			RESULTS = 어머니
+		CASE "兄弟"
+			RESULTS = 형제
+		CASE "姉妹"
+			RESULTS = 자매
+		CASE "娘"
+			RESULTS = 딸
+		CASE "息子"
+			RESULTS = 아들
+	ENDSELECT
+	SELECTCASE RESULTS:1
+		CASE "父"
+			RESULTS:1 = 아버지
+		CASE "母"
+			RESULTS:1 = 어머니
+		CASE "兄弟"
+			RESULTS:1 = 형제
+		CASE "姉妹"
+			RESULTS:1 = 자매
+		CASE "娘"
+			RESULTS:1 = 딸
+		CASE "息子"
+			RESULTS:1 = 아들
+	ENDSELECT
+ENDIF
+RETURNF LOCAL
+
+
+;-------------------------------------------------
+; 호환 래퍼: Mary_K4509_sexp, Mary_K4509_Mind
+;-------------------------------------------------
+@Mary_K4509_sexp
+TRYCALL Mary_K4509_sexplus
+RETURN RESULT
+
+@Mary_K4509_Mind
+TRYCALL Mary_K4509_Mindset
+RETURN RESULT
+
+
+;-------------------------------------------------
+; 호환 래퍼: @WRITE_IMG (구버전 이미지 호출 함수 안전 처리)
+;-------------------------------------------------
+@WRITE_IMG, ARG, ARG:1 = 0, ARG:2 = 0, ARGS = ""
+#DIM IMG_NO
+#DIM CHARA
+TRYCCALLFORM PRINT_SPECIAL_FACE_CHARA_{ARG}, FINDCHARA(NO, ARG), ARG:1 / 100, ARG:1 % 10, ARG:2 % 10
+	IF RESULT
+		SIF !STRCOUNT(ARGS, "이미지주소취득") && !STRCOUNT(ARGS, "アドレス取得")
+			PRINT_IMG RESULTS
+		RETURN 1
+	ENDIF
+CATCH
+ENDCATCH
+
+LOCALS = {ARG}_{ARG:1}_{ARG:2}
+IF SPRITECREATED(LOCALS)
+	PRINT_IMG LOCALS
+	RETURN 1
+ENDIF
+RETURN 0
+
+;色パターン互換関数
+@COLOR_PATTERN
+CALL COLOR_PATTERN_K4999
+RETURN RESULT

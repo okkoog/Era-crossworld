@@ -1,0 +1,144 @@
+﻿;メガバスター。　普遍的な近接戦闘補助魔法？
+;短期間だけ馬鹿力。
+
+;スキル名
+@SKILL_NAME_KE_メガバスター,ARG
+RESULTS = 메가 버스터
+
+;　명중
+@SKILL_HITRATE_KE_メガバスター, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_KE_メガバスター, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_KE_メガバスター,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_KE_メガバスター,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_KE_メガバスター, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_KE_メガバスター,ARG
+RETURN 100
+
+;　相性
+@SKILL_TYPE_KE_メガバスター,ARG
+;RETURN GET_TYPE_NUM("검격")
+RETURN 0
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_KE_メガバスター
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_KE_メガバスター,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_KE_メガバスター,ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_KE_メガバスター,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_KE_メガバスター,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_KE_メガバスター,ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;속도보정
+@SKILL_SPEED_KE_メガバスター, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_KE_メガバスター
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_KE_メガバスター,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+IF SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"KE_メガバスター")) == 0
+	PRINTFORML %CALLNAME:ARG%의 물리 공격 데미지량이 상승!
+	CALL SKILLGAGE_D_SET,ARG,PU_SKILLNUM_GET(ARG,"KE_メガバスター"),4
+ELSE
+	PRINTFORML 메가 버스터　　＞　　효과가 없었다!
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+@SKILL_PASSIVE_BTL_EFFECT_KE_メガバスター, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+IF SKILLGAGE_D_GET(L_P,PU_SKILLNUM_GET(L_P,"KE_メガバスター")) > 0
+	;自分が攻撃側
+	IF L_P == L_ACTOR
+		SELECTCASE ARGS
+			;気合などと加算の枠。他に加減要素がなければ100%±X%になる
+			CASE "ダメージ補正加算"
+				IF L_ダメージタイプ == "物理"
+					RETURN 30
+				ENDIF
+		ENDSELECT
+	ENDIF
+ENDIF
+RETURN 0
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_KE_メガバスター,ARG
+IF PU_SKILLGAGE_D_GET(ARG,"KE_メガバスター") != 0
+	RESULTS = 메가 버스터:{PU_SKILLGAGE_D_GET(ARG,"KE_メガバスター")}T
+	RETURN 3
+ENDIF
+
+;ターン開始時処理
+@SKILL_TURNSTART_KE_メガバスター,ARG,ARG:1
+
+;　説明文の表示
+@SKILL_EXPLAIN_KE_メガバスター,ARG
+PRINTL 『메가 버스터』
+PRINTL 사용 후 4턴 동안 주는 물리 데미지량을 ＋30% 한다.
+PRINTL 이 효과는 기합 등의 데미지 증가 플래그와 『합산』 관계이다. 효과 발휘 중에는 재사용 불가.
+PRINTL 각 전용 기능은 TP 게이지를 추가로 10 플러스하는 효과를 지닌다.
+PRINTL 
+PRINTL 마력을 크게 소비하여 단기간 공격 능력을 크게 올리는 전투 보조 마법(CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_KE_メガバスター,ARG
+;効果発揮中は使用不可能
+SIF SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"KE_メガバスター")) > 1
+	RETURN 0
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_KE_メガバスター, ARG
+RESULTS:0 = 사용 후 4턴 동안 주는 물리 데미지량을 ＋30% 한다
+RESULTS:1 = 이 효과는 기합 등의 데미지 증가 플래그와 『합산』 관계이다. 효과 발휘 중에는 재사용 불가.

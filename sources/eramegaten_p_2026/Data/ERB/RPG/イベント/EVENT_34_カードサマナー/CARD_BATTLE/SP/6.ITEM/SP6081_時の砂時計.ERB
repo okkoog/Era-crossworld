@@ -1,0 +1,65 @@
+﻿
+;特技名
+@CGSP_NAME_6081, ARGS, ARG
+RESULTS = 時の砂時計
+
+;　コストの量
+@CGSP_COST_6081, ARGS, ARG
+RETURN 0
+;1
+
+;　타겟(選択するかしないか)
+@CGSP_TARGET_6081, ARGS, ARG
+RETURN 0
+;0-無し　　　1-味方1体　2-味方1体(自身含む)　3-敵1体　4-敵1体(サマナー含む)
+;5-敵味方1体　6-サマナーどちらか
+;自動発動なので0
+
+;　発動タイミング
+@CGSP_TIMING_6081, ARGS, ARG
+RETURN 0
+;0-アクティブ　1-味方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　2-相手ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　3-両方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ
+
+;====================================================
+;特技発動
+;====================================================
+@CGSP_ACTION_6081, ARGS, ARG, ARG:1
+#DIM L_HOST
+L_HOST = ARG % 20
+
+LOCAL = SUMMONER_PARAMETER:L_HOST:CSP2_STOCK_MAG / 10
+
+SUMMONER_PARAMETER:L_HOST:CSP2_MAG += LOCAL
+CALL CARDBATTLE_MESSAGE, CS_PIC_NAME(L_HOST + 100) + @"は{LOCAL}PのMAGが増加した。"
+SUMMONER_PARAMETER:L_HOST:CSP2_STOCK_MAG = 0
+
+CALL CS_SUMMONER_DAMAGE, ARG % 20, 2, -1, 99
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;発動後どうなるか
+@CGSP_ACTION_AFTER_6081, ARGS, ARG, ARG:1
+RETURN 0
+;0-何もなし　1-フリーズ状態　2-山札に戻る　3-即死する
+
+;　 説明文の表示
+@CGSP_EXPLAIN_6081, ARGS, ARG
+RESULTS = 自身のストックMAGを通常のMAGに変換し、使えるようにする。ただし、2Pのダメージを受ける。『運命の神ノルンにより時間をゆがめる砂時計』
+
+;　スキルタイプ
+;　主にこのターンパワーアップとアギとかのダメージ系で使用
+;　それ以外は省略
+;　41 MAG獲得
+@CGSP_TYPE_6081, ARGS, ARG
+RETURN 41, SUMMONER_PARAMETER:CBF_P_TURN:CSP2_STOCK_MAG / 10
+
+;使用条件
+;特になければ省略してOK
+;@CGSP_SPECIAL_ACTIONABLE_6081, ARGS, ARG
+;SIF HAND_CARDS(FIELD_DEMON_DATE_V:ARG:CBV_HOST) < 8
+;	RETURN 1
+;RETURN 0
+;とくにない
+

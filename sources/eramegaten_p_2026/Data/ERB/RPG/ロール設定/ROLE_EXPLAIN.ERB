@@ -1,0 +1,274 @@
+﻿;CSTR:U:클래스설명1 = 데빌서바이버/ゲーム機型のCOMPを用いて悪魔を使役するデビルサマナー。/COMPには悪魔召喚プログラムの他に、悪魔の力を利用するためのプログラムが内蔵されており/デビルサバイバー自身も異能の力を用いて戦うことが出来る。
+
+@ROLE_EXPLAIN_BASE, ARG
+#DIM LCOUNT
+CUSTOMDRAWLINE =
+IF CSTR:ARG:@"롤설명{1 + CFLAG:ARG:악마변신}" == ""
+	RESULTS = %CSTR:ARG:롤%
+	TRYCCALLFORM ROLE_EXPLAIN_NAME_%CSTR:ARG:롤%, ARG
+	CATCH
+		RESULTS = %CSTR:ARG:롤%
+	ENDCATCH
+	PRINTFORML ◆%AUTO_SPLIT(RESULTS, "/", CFLAG:ARG:악마변신)%
+	DRAWLINE
+	VARSET RESULTS, "", 0, 3
+	TRYCCALLFORM ROLE_EXPLAIN_%CSTR:ARG:롤%, ARG
+	CATCH
+	ENDCATCH
+	FOR LCOUNT, 0, 3
+		PRINTFORML 　%RESULTS:LCOUNT%
+	NEXT
+ELSE
+	PRINTFORML ◆%AUTO_SPLIT(CSTR:ARG:@"롤설명{1 + CFLAG:ARG:악마변신}", "/", 0)%
+	DRAWLINE
+	FOR LCOUNT, 1, 4
+		PRINTFORML 　%AUTO_SPLIT(CSTR:ARG:@"롤설명{1 + CFLAG:ARG:악마변신}", "/", LCOUNT)%
+	NEXT
+ENDIF
+PRINTL 
+DRAWLINE
+
+;ARG	キャラ番号
+;ARGS:1 ロールの指定
+;ARGS:2 変身状態の指定
+;ARGS:3 表示内容の指定
+@ROLE_EXPLAIN_ABILITY, ARG = -1, ARGS:1, ARGS:2, ARGS:3 = "メイン/サブ"
+#DIM LCOUNT
+#DIM TEMP
+#DIMS TEMPS
+#DIMS TALENTS_FIXED
+#DIM L_PAGE_MAIN
+IF STRCOUNT(ARGS:3, "メイン")
+	TRYCCALLFORM ROLE_EXPLAIN_ADD_PAGE_{NO:ARG}, ARG
+		ROLE_EXPLAIN_ABILITY_PAGE_MAX = RESULT
+		ROLE_EXPLAIN_ABILITY_PAGE = MIN(ROLE_EXPLAIN_ABILITY_PAGE, ROLE_EXPLAIN_ABILITY_PAGE_MAX)
+	CATCH
+		ROLE_EXPLAIN_ABILITY_PAGE_MAX = 0
+		ROLE_EXPLAIN_ABILITY_PAGE = 0
+	ENDCATCH
+	PRINT ◆특성
+	IF ROLE_EXPLAIN_ABILITY_PAGE_MAX > 0
+		PRINT 　　　　　
+		FOR LCOUNT, 0, ROLE_EXPLAIN_ABILITY_PAGE_MAX + 1
+			SETCOLOR LCOUNT == ROLE_EXPLAIN_ABILITY_PAGE ? COLOR("aqua") # GETDEFCOLOR()
+			PRINTBUTTON @"[{2000 + LCOUNT}] Page.{LCOUNT}　　　", 2000 + LCOUNT
+			RESETCOLOR
+		NEXT
+	ENDIF
+	PRINTL 
+	DRAWLINE
+	IF ROLE_EXPLAIN_ABILITY_PAGE == 0
+		IF GET_ROLE_PROP("NEED_MAG", ARG, ARGS:1, ARGS:2)
+			PRINTFORML □ＭＡＧ소비
+			PRINTFORML 　육체를 유지하기 위해 자신이나 계약자가 보유한 생체 마그네타이트를 소비해야 한다。
+		ENDIF
+		IF GET_ROLE_PROP("CAN_PUT_IN_COMP", ARG, ARGS:1, ARGS:2)
+			PRINTFORML □디지털화
+			PRINTFORML 　자신을 디지털화해、계약자의 ＣＯＭＰ내에 존재할 수 있다。
+		ENDIF
+
+		IF GET_MASTER_MAJORING(CFLAG:ARG:당신의전공분야) == "타케시"
+			PRINTFORML □불섭생
+			PRINTFORML 　ＡＴＴＡＣＫ에 ＭＰ를 소비하게 된다。
+		ENDIF
+		TALENTS_FIXED = 
+		RESULTS = 
+		IF CFLAG:ARG:악마변신
+			TRYCALLFORM ROLE_FIXED_BTL_TALENT_TRANS_%CSTR:ARG:롤%
+		ELSE
+			TRYCALLFORM ROLE_FIXED_BTL_TALENT_%CSTR:ARG:롤%
+		ENDIF
+		TALENTS_FIXED '= RESULTS
+		;固定素質
+		IF TALENTS_FIXED != ""
+			FOR LCOUNT, 0, STRCOUNT(TALENTS_FIXED, "/") + 1
+				TRYCCALLFORM SUB_ROLE_EXPLAIN_%AUTO_SPLIT(AUTO_SPLIT(TALENTS_FIXED, "/", LCOUNT), "_", 0)%, ARG
+				CATCH
+				ENDCATCH
+			NEXT
+		ENDIF
+		;変身とリンクは名称と説明文をロール側で定義させる
+		IF GET_ROLE_PROP("CAN_USE_TRANS", ARG, ARGS:1, ARGS:2)
+			TEMPS '= GETS_ROLE_PROP("CAN_USE_TRANS", ARG, ARGS:1, ARGS:2)
+			PRINTFORML □%AUTO_SPLIT(TEMPS, "/", 0)%
+			FOR LCOUNT, 0, STRCOUNT(AUTO_SPLIT(TEMPS, "/", 1), "_") + 1
+				PRINTFORML 　%AUTO_SPLIT(AUTO_SPLIT(TEMPS, "/", 1), "_", LCOUNT)%
+			NEXT
+		ENDIF
+
+		IF GET_ROLE_PROP("CAN_USE_LINK", ARG, ARGS:1, ARGS:2)
+			TEMPS '= GETS_ROLE_PROP("CAN_USE_LINK", ARG, ARGS:1, ARGS:2)
+			PRINTFORML □%AUTO_SPLIT(TEMPS, "/", 0)%
+			FOR LCOUNT, 0, STRCOUNT(AUTO_SPLIT(TEMPS, "/", 1), "_") + 1
+				PRINTFORML 　%AUTO_SPLIT(AUTO_SPLIT(TEMPS, "/", 1), "_", LCOUNT)%
+			NEXT
+		ENDIF
+
+		;異能(スキル利用)はスキルを使えるかどうかと習得可能範囲で判定する
+		IF GET_ROLE_PROP("CAN_USE_SKILL", ARG, ARGS:1, ARGS:2)
+			PRINTFORML □이능
+			PRINTFORML 　다양한 마법과 특기를 {CHARA_SKILLCOUNT(ARG, ARGS:2)}개 까지 ＳＫＩＬＬ로 사용할 수 있다。
+		ELSE
+			PRINTFORML □기술
+			PRINTFORML 　마법이나 특기를 ＳＫＩＬＬ로 사용할 수는 없지만、{CHARA_SKILLCOUNT(ARG, ARGS:2)}개 까지 자동효과를 습득할 수 있다。
+		ENDIF
+		SELECTCASE GET_SKILL_CHANGEABLE_RANK(ARG, ARGS:2) * GET_ROLE_PROP("CAN_USE_SKILLCARD", ARG, ARGS:1, ARGS:2)
+			CASE 3
+				PRINTL 　모든 스킬카드를 사용해 스킬을 습득할 수 있다。
+			CASE 2
+				PRINTL 　계승소질을 가진 스킬카드를 사용해 스킬을 습득할 수 있다。
+			CASE 1
+				PRINTL 　계승소질과 무관한 스킬카드를 사용해 스킬을 습득할 수 있다。
+			CASE 0
+				PRINTL 　스킬카드를 사용할 수 없다。
+		ENDSELECT
+		;---- EDIT P 001 ADD START -------------------------
+		IF GET_ROLE_PROP("CAN_USE_MAGATSUHI_SKILL", ARG)
+			PRINTFORML □마가츠히스킬
+			PRINTFORML 　파티에 마가츠히게이지를 부여한다。
+			PRINTFORML 　이 게이지를 사용하면 각 파티 멤버는 마가츠히스킬을 사용할 수 있다。
+			PRINTFORML 　使사용할 수 있는 마가츠히스킬은 파티 멤버 구성에 따라 달라진다。
+		ENDIF
+		IF GET_ROLE_PROP("CAN_USE_SUMMON", ARG) && !GET_BTL_TALENT_LV("서머너", ARG)
+			PRINTFORML □소환능력
+			PRINTFORML 　전투중에 대기중인 동료마를 소환할 수 있다。
+		ENDIF
+		;---- EDIT P 001 ADD END ---------------------------
+
+		IF GET_ROLE_PROP("CAN_USE_EQUIP", ARG, ARGS:1, ARGS:2)
+			PRINTFORML □장비적성
+			PRINTFORML 　장비를 이용함으로써 능력 강화 등의 혜택을 얻을 수 있다。
+			SIF !GET_ROLE_PROP("CAN_USE_EQUIP_TYPE", ARG, ARGS:1, ARGS:2)
+				PRINTFORML 　단、방어구에 의한 상성 변동은 발생하지 않는다。
+			IF COUNT_SPLIT(GETS_ROLE_PROP("LINK_STATUS", ARG), "/", "通常攻撃")
+				PRINTFORML 　통상공격특성
+				IF COUNT_SPLIT(GETS_ROLE_PROP("TRANS_STATUS", ARG),"/", "通常攻撃")
+					PRINTFORML 　통상공격의 상성이나 범위 같은 특성은 무기의 영향을 받지 않고、링크대상에 따라 변화한다。
+				ELSE
+					PRINTFORML 　통상공격의 상성이나 범위 같은 특성은 무기의 영향을 받지 않고、변신대상에 따라 변화한다。
+				ENDIF
+				IF COUNT_SPLIT(GETS_ROLE_PROP("TRANS_STATUS", ARG),"/", "通常攻撃")
+					PRINTFORML 　통상공격특성
+					PRINTFORML 　통상공격의 상성이나 범위 같은 특성은 무기의 영향을 받지 않고、변신대상에 따라 변화한다。
+				ENDIF
+			ENDIF
+			IF COUNT_SPLIT(GETS_ROLE_PROP("LINK_STATUS", ARG),"/", "通常攻撃相性") || COUNT_SPLIT(GETS_ROLE_PROP("TRANS_STATUS", ARG),"/", "通常攻撃相性")
+				PRINT 　
+				IF !GET_ROLE_PROP("CAN_USE_EQUIP_TYPE", ARG, ARGS:1, ARGS:2)
+					PRINT 또한、
+				ELSE
+					PRINT 단、
+				ENDIF
+				IF COUNT_SPLIT(GETS_ROLE_PROP("LINK_STATUS", ARG),"/", "通常攻撃相性")
+					IF FINDCHARA_LINK(ARG) > 0
+						PRINTFORML 통상공격의 상성은 무기의 상성이 아니라、%GET_TYPE(ABL:FINDCHARA_LINK(ARG):공격상성)%이 된다。
+					ELSE
+						PRINTFORML 통상공격의 상성은 무기뿐만 아니라、링크악마에 의해서도 변화한다。
+					ENDIF
+				ELSE
+					PRINTFORML 통상공격의 상성은 무기의 상성이 아니라、%GET_TYPE(ABL:ARG:초기링크악마공격상성)%이 된다。
+				ENDIF
+			ENDIF
+		ENDIF
+		IF GET_ROLE_PROP("CAN_USE_PLUGIN", ARG, ARGS:1, ARGS:2)
+			PRINTFORML □플러그인소프트 적성
+			PRINTFORML 　플러그인소프트를 장착함으로써 능력 강화 등의 혜택을 얻을 수 있다。
+		ENDIF
+
+		;---- EDIT P 001 ADD START -------------------------
+		IF GET_ROLE_PROP("CAN_USE_PORTRAIT", ARG)
+			PRINTFORML □신격습합
+			PRINTFORML 　분석이 완료된 악마의 방어상성 및 계승소질을 복사할 수 있다。
+			PRINTFORML □허물의 극의
+			PRINTFORML 　분석이 완료된 악마의 스킬을 취득할 수 있다。
+			PRINTFORML □카무이 습득
+			PRINTFORML 　카무이를 습득・교체함으로써 다양한 특성을 얻을 수 있다。
+
+		ENDIF
+		;---- EDIT P 001 ADD END ---------------------------
+
+		PRINTFORML □\@GET_RACE(ABL:ARG:종족) == "인간" ? 동료강화 # 동료마강화\@
+		IF GET_ROLE_PROP("NEXT_EXP", ARG, ARGS:1, ARGS:2) == -1
+			PRINTFORML 　ＭＡＧ를 소비해서 ＬＶ을 상승시킬 수 있다。
+		ENDIF
+		TEMPS '= ""
+		IF ARG == MASTER
+			PRINTFORML 　다른 동료마를 강화함으로써、기본능력을 강화할 수 있다。
+		ELSEIF EXISTFUNCTION(@"MAG_CALC_ENHANCE_BASE_CHARA_{NO:ARG}")
+			VARSET RESULTS_F
+			CALLFORMF MAG_CALC_ENHANCE_BASE_CHARA_{NO:ARG}, ARG, 1, 0
+			FOR LCOUNT, 0, VARSIZE("RESULTS_F")
+				SIF RESULTS_F:LCOUNT == ""
+					CONTINUE
+				PRINTFORML %RESULTS_F:LCOUNT%
+			NEXT
+			VARSET RESULTS_F
+		ELSE
+			SIF GET_ROLE_PROP("MAG_CALC_ENHANCE_BASE_VALUE", ARG, ARGS:1, ARGS:2) > 0
+				TEMPS += "기본능력"
+		ENDIF
+		IF GET_ROLE_PROP("CAN_USE_MAG_ATTACK", ARG, ARGS:1, ARGS:2)
+			SIF TEMPS != ""
+				TEMPS += "・"
+			TEMPS += "통상공격"
+		ENDIF
+		IF GET_ROLE_PROP("CAN_USE_MAG_TYPE", ARG, ARGS:1, ARGS:2)
+			SIF TEMPS != ""
+				TEMPS += "・"
+			TEMPS += "방어상성"
+		ENDIF
+		SIF TEMPS != ""
+			PRINTFORML 　ＭＡＧ를 소비해서 %TEMPS%%조사만처리(TEMPS,"를")% 강화할 수 있다。
+
+		IF GET_ROLE_PROP("HAVE_MP", ARG, ARGS:1, ARGS:2)
+			TEMPS = 
+			SIF GET_ROLE_PROP("CAN_USE_SKILLDELETE", ARG, ARGS:1, ARGS:2)
+				TEMPS += "삭제"
+			IF GET_ROLE_PROP("CAN_USE_SKILLRANKUP", ARG, ARGS:1, ARGS:2)
+				SIF TEMPS != ""
+					TEMPS += "와 "
+				TEMPS += "변이"
+			ENDIF
+			IF GET_ROLE_PROP("CAN_USE_SKILLCARD", ARG, ARGS:1, ARGS:2)
+				SIF TEMPS != ""
+					TEMPS += "와 "
+				TEMPS += "습득"
+			ENDIF
+			SIF TEMPS != ""
+				PRINTFORML 　스킬의 %TEMPS%%조사만처리(TEMPS,"를")% 수행할 수 있다。
+		ENDIF
+	ENDIF
+	;専用の特性表示
+	TRYCALLFORM ROLE_EXPLAIN_{NO:ARG}, ARG, ROLE_EXPLAIN_ABILITY_PAGE
+	TRYCALLFORM ROLE_EXPLAIN_ABLITY_%CSTR:ARG:롤%, ARG, ROLE_EXPLAIN_ABILITY_PAGE
+	PRINTL 
+ENDIF
+
+
+IF STRCOUNT(ARGS:3, "サブ")
+	DRAWLINE
+	PRINTL ◆서브자질
+	DRAWLINE
+	TEMP = LINECOUNT
+
+	FOR LCOUNT, 0, SUB_ROLENUM
+		TEMPS '= GET_SUB_ROLE_NAME(LCOUNT)
+		SIF !GET_BTL_TALENT_LV(TEMPS, ARG)
+			CONTINUE
+		SIF STRCOUNT(TALENTS_FIXED, TEMPS + "_")
+			CONTINUE
+		TRYCCALLFORM SUB_ROLE_EXPLAIN_%TEMPS%, ARG
+		CATCH
+		ENDCATCH
+	NEXT
+
+	IF GET_ROLE_BTL_ST_PENALTY(ARG)
+		PRINTFORML □%RESULTS_F%
+		PRINTFORML 　강력한 소질의 대가로 모든 스테이터스가 {GET_ROLE_BTL_ST_PENALTY(ARG)}\% 감소한다。
+	ENDIF
+ENDIF
+IF STRCOUNT(ARGS:3, "メイン")
+	;サブ資質による表示がなかった場合は行消しを行う
+	SIF TEMP == LINECOUNT
+		CLEARLINE 3
+ENDIF

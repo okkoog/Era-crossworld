@@ -1,0 +1,200 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_ER_血の宿命, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	RESULTS = 魔血狂奔
+ELSE
+	RESULTS = 피의 숙명
+ENDIF
+
+;　명중
+@SKILL_HITRATE_ER_血の宿命, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_ER_血の宿命, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	SIF FLAG:확산플래그
+		RETURN 250
+	RETURN 600
+ELSE
+	RETURN 
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ER_血の宿命, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ER_血の宿命, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ER_血の宿命, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動" && (BASE:ARG:ＨＰ > MAXBASE:ARG:ＨＰ / 2)
+	RETURN 3
+ELSE
+	RETURN 1
+ENDIF
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ER_血の宿命, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動" && (BASE:ARG:ＨＰ <= MAXBASE:ARG:ＨＰ / 2)
+	RESULTS = %" ＨＰ50％"%
+	RETURN 0
+ENDIF
+RETURN 30
+
+;　相性
+@SKILL_TYPE_ER_血の宿命, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	RETURN GET_TYPE_NUM("검격"), GET_TYPE_NUM("비구")
+ELSE
+	RETURN 0
+ENDIF
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ER_血の宿命
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ER_血の宿命, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ER_血の宿命, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_ER_血の宿命, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ER_血の宿命, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ER_血の宿命, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_ER_血の宿命, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ER_血の宿命
+RETURN 0
+
+
+;拡散攻撃用追加処理
+@SKILL_SPREAD_ER_血の宿命,ARG
+RETURN 1
+;拡散距離:1
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_血の宿命, ARG = -1, ARG:1 = -1
+RETURN 2
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ER_血の宿命, ARG, ARG:1, SKILL_NUM
+#LOCALSIZE 4
+#DIM SKILL_NUM
+CALL VAR_HP, ARG, -MAXBASE:ARG:ＨＰ / 2, "ダメージ"
+PRINTFORML 자해 데미지를 대가로 혈창을 대량 생성!
+CALL PRINT_HIT_MESSAGE, ARG, @"{MAXBASE:ARG:ＨＰ / 2}데미지", "L"
+; CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM
+
+CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;ダメージ計算時の追加補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_ER_血の宿命, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;ステート名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+; 自分の攻撃の場合
+SELECTCASE ARGS
+	CASE "ダメージ補正加算"
+		; 自分がＨＰ50％以下の場合は与ダメに補正
+		SIF BASE:L_P:ＨＰ <= MAXBASE:L_P:ＨＰ / 2
+			RETURN 10
+
+		RETURN 0
+ENDSELECT
+RETURN 0
+
+;　 説明文の表示
+@SKILL_EXPLAIN_ER_血の宿命, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	PRINTL 
+	PRINTL 자신의 몸을 찔러 꿰뚫고 혈창을 대량 생성하여 대상 적을 꼬치로 만든다.
+	PRINTL HP를 50% 소비하여 초고위력 확산 공격.
+ELSE
+	PRINTL 
+	PRINTL 음마의 피로 인한 공격성 상승.
+	PRINTL 자동: HP 50% 이하일 경우 상대에게 가하는 데미지가 상승한다.
+ENDIF
+
+
+@SKILL_ACTIONABLE_BATTLE_ER_血の宿命, ARG
+;選択肢に出るかどうか
+IF ARG >= 0 && GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ER_血の宿命, ARG
+; 変身中かつ最大HPの半分より多い場合
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動" && BASE:ARG:ＨＰ > MAXBASE:ARG:ＨＰ / 2
+	RETURN 1
+ENDIF
+RETURN 0
+
+@SKILL_EXPLAIN_TOOLTIP_ER_血の宿命, ARG
+IF GET_RPG_CSTR_BTL(ARG, "エデンズリッター変身状態") == "起動"
+	RESULTS:0 = 자신의 몸을 찔러 꿰뚫고 혈창을 대량 생성하여 대상 적을 꼬치로 만든다.
+	RESULTS:1 = HP를 50% 소비하여 초고위력 확산 공격.
+	SIF BASE:ARG:ＨＰ <= MAXBASE:ARG:ＨＰ / 2
+		RESULTS:2 = (必要ＨＰ不足)
+ELSE
+	RESULTS:0 = 
+	RESULTS:1 = 음마의 피로 인한 공격성 상승.
+	RESULTS:2 = 自動：ＨＰ50％以下の場合、相手に対するダメージが上昇する。
+ENDIF

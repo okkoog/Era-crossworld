@@ -1,0 +1,269 @@
+﻿;====================
+;更新履歴（ナイト・テイルルート全体）
+;2019/01/16			編集者：(ﾟдﾟ)			全体的に行間を増やして読みやすく（いまさら）
+;											達人勢のスキル習得をｶｰﾁｬﾝ環境に合わせる
+;2019/02/06			編集者：(ﾟдﾟ)			伽耶ちゃんズをいろいろ弄った＆マザハちょっと強化
+;2019/02/07			編集者：(ﾟдﾟ)			バラ売りルート追加（つくりかけ）
+;====================
+;関連フラグリスト
+;====================
+;FLAG:나이트・테일진행도
+;	(；´∀｀)途中から変数の仕様が変わってます。見づらくてｽﾏﾝﾇ
+;====================
+;条件
+;・基本的に古代ちゃん必須。出撃可能な状態＝あなたと優良な関係で残存していないと、依頼自体が消滅する。
+;・依頼：幻想の王国１は摩耶の残存も条件（売っちゃったり削除してるとT.D.Lでユーリアを倒すしかなくなる
+;・依頼：幻想の王国２は摩耶・宮下・香鈴・結城の残存も条件（売っちゃったり削除しているとT.D.Lでユーリアを倒すしかなくなる
+;・依頼：幻想の王国１、２はT.D.Lでユーリアと出会っていると強制的にスキップされる
+;・ゲーム開始から51日目になると最後2つの依頼が消滅、クリア不可になる。
+;
+;改変・追記は自由ですが、行った際は編集個所に
+;=====================xxxによる加筆====================================
+;===================xxxによる加筆終了==================================
+;を挟んでください。
+;時間が経つとどこからどこまで自分がやったか分からなくなってしまうので……ｗ
+;
+;====================
+@GET_REQUEST_NAME_50
+#FUNCTIONS
+RESULTS_F '= "ナイト・テイル"
+RETURNF RESULTS_F
+
+@PLAYABLE_REQUEST_50
+
+;EVENT_30_神野の娘で騙してゲットしている場合、バラ売りルート（エンディングなし）
+IF イベントフラグ:30:0 == 3 && FLAG:나이트・테일진행도 == 0
+	RESULTS = 조직의 지령「삼합회 견제」
+	RETURN 1
+ELSE
+	;本来がひづけまたぎで終わる場合は同一ターンでの進行を禁止する
+	SIF 依頼フラグ:[[依頼:나이트・테일]]:4 == DAY
+		RETURN 0
+	;古代ちゃんルートは古代が出撃不能な状態を除く
+	SIF (GETCHARA([[キャラ:코시로]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:코시로]])) > 0) == 0
+		RETURN 0
+	;EVENT_30_神野の娘で協力
+	IF イベントフラグ:30:0 == 1 && FLAG:나이트・테일진행도 == 0
+		RESULTS = 의뢰：야곱의 사다리　“MEN IN BLACK”
+		RETURN 1
+	ELSEIF FLAG:나이트・테일진행도 == 1
+		RESULTS = 의뢰：모리안강습　“Einstein's　 posthumous works”
+		RETURN 1
+	ELSEIF FLAG:나이트・테일진행도 == 2
+		RESULTS = 의뢰：타천사들의 연회　“Blood　Diamond”
+		RETURN 1
+	ELSEIF FLAG:나이트・테일진행도 == 3
+		RESULTS = 의뢰：용신에게서 사랑을 담아　“Caribbean　Blue”
+		RETURN 1
+	;ユーリアと出会ってしまっている場合、幻想の王国がスキップされる
+	ELSEIF (FLAG:나이트・테일진행도 == 4 || FLAG:나이트・테일진행도 == 5) && ダンジョンフラグ:35:8 > 0
+		RESULTS = 의뢰：전설의 귀환　“Return　of　『J』”
+		RETURN 1
+	;ここは摩耶ちゃんも必須＆T.D.Lでユーリアと出会っていない。
+	ELSEIF FLAG:나이트・테일진행도 == 4 && GETCHARA([[キャラ:마야_NT]]) > 0 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:마야_NT]])) > 0 && ダンジョンフラグ:35:8 < 1
+		RESULTS = 의뢰：환상의 왕국　“Reverse　Land”
+		RETURN 1
+	;摩耶・結城・宮下・香鈴必須＆T.D.Lでユーリアと出会っていない。
+	ELSEIF FLAG:나이트・테일진행도 == 5
+		SIF !IS_JOINABLE_BATTLE_BY_CSV([[キャラ:유우키]])
+			RETURN 0
+		SIF !IS_JOINABLE_BATTLE_BY_CSV([[キャラ:마야_NT]])
+			RETURN 0
+		SIF !IS_JOINABLE_BATTLE_BY_CSV([[キャラ:쇼고]])
+			RETURN 0
+		SIF !IS_JOINABLE_BATTLE_BY_CSV([[キャラ:코우린]])
+			RETURN 0
+		SIF ダンジョンフラグ:35:8 > 0
+			RETURN 0
+		RESULTS = 의뢰：환상의 왕국(2)　“Never　Never　Land　Story”
+		RETURN 1
+	;FLAG:나이트・테일진행도 == 6　に相当する部分はEVENT_50
+	ELSEIF FLAG:나이트・테일진행도 == 700 || FLAG:나이트・테일진행도 == 700000
+		RESULTS = 의뢰：전설의 귀환　“Return　of　『J』”
+		RETURN 1
+	;タイムオーバー
+	ELSEIF (FLAG:나이트・테일진행도 == 800 || FLAG:나이트・테일진행도 == 800000) && DAY > 50
+		FLAG:나이트・테일진행도 = 999997
+		RETURN 0
+		
+	;幻想の王国(2)を通過し、トールと対決している場合、L寄りルート
+	;TRUEENDには結城、宮下、香鈴、ユーリア、摩耶の友好的残存が必須
+	ELSEIF FLAG:나이트・테일진행도 == 800000
+		RESULTS = 미래：나는 그런 신이 된다。“La Maternite.”
+		RETURN 1
+		
+	;幻想の王国(2)を通っていない場合or通っていてもファントムの力で突破した場合、D寄りルート
+	ELSEIF FLAG:나이트・테일진행도 == 800
+		RESULTS = 종언：신들의 황혼　“bay-bay　JUPITER.”
+		RETURN 1
+		
+	ENDIF
+ENDIF
+RETURN 0
+
+@EXPLAIN_REQUEST_50
+
+;EVENT_30_神野の娘で騙してゲットしている場合、バラ売りルート（エンディングなし）
+IF イベントフラグ:30:0 == 3 && FLAG:나이트・테일진행도 == 0
+	CALL EXPLAIN_REQUEST_50_10
+ELSE
+	IF FLAG:나이트・테일진행도 == 0
+		CALL EXPLAIN_REQUEST_50_1
+	ELSEIF FLAG:나이트・테일진행도 == 1
+		CALL EXPLAIN_REQUEST_50_2
+	
+	ELSEIF FLAG:나이트・테일진행도 == 2
+		CALL EXPLAIN_REQUEST_50_3
+	ELSEIF FLAG:나이트・테일진행도 == 3
+		CALL EXPLAIN_REQUEST_50_4
+	;ユーリアと出会ってしまっている場合、幻想の王国スキップ
+	ELSEIF (FLAG:나이트・테일진행도 == 4 || FLAG:나이트・테일진행도 == 5) && ダンジョンフラグ:35:8 > 0
+		CALL EXPLAIN_REQUEST_50_7
+	
+	ELSEIF FLAG:나이트・테일진행도 == 4
+		CALL EXPLAIN_REQUEST_50_5
+	ELSEIF FLAG:나이트・테일진행도 == 5
+		CALL EXPLAIN_REQUEST_50_6
+		
+	ELSEIF FLAG:나이트・테일진행도 == 700 || FLAG:나이트・테일진행도 == 700000
+		CALL EXPLAIN_REQUEST_50_7
+		
+	ELSEIF FLAG:나이트・테일진행도 == 800
+		CALL EXPLAIN_REQUEST_50_8_D
+	ELSEIF FLAG:나이트・테일진행도 == 800000
+		CALL EXPLAIN_REQUEST_50_8_L
+	ENDIF
+ENDIF
+
+@REQUEST_50
+;EVENT_30_神野の娘で騙してゲットしている場合、バラ売りルート（エンディングなし）
+IF イベントフラグ:30:0 == 3 && FLAG:나이트・테일진행도 == 0
+	CALL REQUEST_50_10
+ELSE
+	IF FLAG:나이트・테일진행도 == 0
+		CALL REQUEST_50_1
+	ELSEIF FLAG:나이트・테일진행도 == 1
+		CALL REQUEST_50_2
+		
+	ELSEIF FLAG:나이트・테일진행도 == 2
+		CALL REQUEST_50_3
+	ELSEIF FLAG:나이트・테일진행도 == 3
+		CALL REQUEST_50_4
+	
+	;ユーリアと出会ってしまっている場合、幻想の王国スキップ
+	ELSEIF (FLAG:나이트・테일진행도 == 4 || FLAG:나이트・테일진행도 == 5) && ダンジョンフラグ:35:8 > 0
+		CALL REQUEST_50_7
+	
+	ELSEIF FLAG:나이트・테일진행도 == 4
+		CALL REQUEST_50_5
+	ELSEIF FLAG:나이트・테일진행도 == 5
+		CALL REQUEST_50_6
+		
+	ELSEIF FLAG:나이트・테일진행도 == 700 || FLAG:나이트・테일진행도 == 700000
+		CALL REQUEST_50_7
+		
+	ELSEIF FLAG:나이트・테일진행도 == 800
+		CALL REQUEST_50_8_D
+	ELSEIF FLAG:나이트・테일진행도 == 800000
+		CALL REQUEST_50_8_L
+	ENDIF
+ENDIF
+
+;/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
+
+@EVENT_BATTLE_START_REQUEST50
+;黒眼鏡台詞
+IF FLAG:나이트・테일진행도 == 1
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃진노 코시로、마닐라에서는 잘도 죽여주셨군요 ┃
+	PRINTFORML ┃당신에게는 신벌이 내릴 것입니다　　　　     ┃
+	PRINTFORML ┃진실로、그렇게 될 것입니다。Ａ　Ｍ　Ｅ　Ｎ．┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORMW 천사　검은 안경이 나타났다！
+;ハーピー三姉妹台詞
+ELSEIF FLAG:나이트・테일진행도 == 2
+	PRINTFORMW 괴조 하피 세자매가 덤벼들었다！
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃네녀석을 죽여서！　　　　　　　　　　　　 　┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃뇌에서 직접！　　　　　　　　　　　　　　　 ┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃기억을 빼앗아 줄거야ー앗！！！　　　　      ┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+;黒眼鏡（二度目）台詞
+ELSEIF FLAG:나이트・테일진행도 == 12
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORML ┃Ｋｉｌｌ　Ｍｅ　　Ｏｎｃｅ　Ａｇａｉｎ．　　┃
+	PRINTFORML ┃이 나를 다시 한번 죽여보십시옷！！！　　    ┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORMW 천사　검은 안경이 나타났다!
+;堕天使エリゴール台詞
+ELSEIF FLAG:나이트・테일진행도 == 3
+	PRINTFORML ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTFORMW ┃질리지도 않고、또 도둑이 들어왔는가　　　   ┃
+	PRINTFORMW ┃이녀석도 저녀석도、연약하기만 할 뿐　　　 　┃
+	PRINTFORML ┃너희들은、즐겁게 해주겠느냐！？　　         ┃
+	PRINTFORMW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTFORMW 타천사　엘리고르가 나타났다！
+	
+ELSEIF FLAG:나이트・테일진행도 == 4 || FLAG:나이트・테일진행도 == 14 || FLAG:나이트・테일진행도 == 24
+	CALL EVENT_BATTLE_START_REQUEST50_4
+ELSEIF FLAG:나이트・테일진행도 == 5 || FLAG:나이트・테일진행도 == 15 || FLAG:나이트・테일진행도 == 25
+	CALL EVENT_BATTLE_START_REQUEST50_5
+ELSEIF FLAG:나이트・테일진행도 > 599 && FLAG:나이트・테일진행도 < 700
+	CALL EVENT_BATTLE_START_REQUEST50_6
+ELSEIF FLAG:나이트・테일진행도 == 700 || FLAG:나이트・테일진행도 == 700000
+	CALL EVENT_BATTLE_START_REQUEST50_7
+ELSEIF FLAG:나이트・테일진행도 >= 800000
+	CALL EVENT_BATTLE_START_REQUEST50_8_L
+ELSEIF FLAG:나이트・테일진행도 >= 800 && FLAG:나이트・테일진행도 < 800000
+	CALL EVENT_BATTLE_START_REQUEST50_8_D
+	
+ENDIF
+RETURN
+
+@EVENT_BATTLE_TURNTOP50
+RETURN
+
+@EVENT_BATTLE_TURNEND_REQUEST50
+	IF FLAG:나이트・테일진행도 == 4 || FLAG:나이트・테일진행도 == 14 || FLAG:나이트・테일진행도 == 24
+		CALL EVENT_BATTLE_TURNEND_REQUEST50_4
+	ELSEIF FLAG:나이트・테일진행도 >= 800000
+		CALL EVENT_BATTLE_TURNEND_REQUEST50_8_L
+	ELSEIF FLAG:나이트・테일진행도 >= 800 && FLAG:나이트・테일진행도 < 800000
+		CALL EVENT_BATTLE_TURNEND_REQUEST50_8_D
+	ENDIF
+RETURN
+
+@EVENT_BATTLE_ACTEND_REQUEST50
+	IF FLAG:나이트・테일진행도 == 4 || FLAG:나이트・테일진행도 == 14 || FLAG:나이트・테일진행도 == 24
+		CALL EVENT_BATTLE_ACTEND_REQUEST50_4
+	ELSEIF FLAG:나이트・테일진행도 > 599 && FLAG:나이트・테일진행도 < 700
+		CALL EVENT_BATTLE_ACTEND_REQUEST50_6
+	ELSEIF FLAG:나이트・테일진행도 >= 800000
+		CALL EVENT_BATTLE_ACTEND_REQUEST50_8_L
+	ELSEIF FLAG:나이트・테일진행도 >= 800 && FLAG:나이트・테일진행도 < 800000
+		CALL EVENT_BATTLE_ACTEND_REQUEST50_8_D
+	ENDIF
+RETURN
+
+
+
+
+;=================================================
+;   sub REQUEST_50_DAY_END
+;=================================================
+;   依頼:一日の終了
+;-------------------------------------------------
+@REQUEST_50_DAY_END
+依頼フラグ:[[依頼:나이트・테일]]:4 = DAY
+;PRINTFORMW 一日が終了します。
+
+;- 朝になる処理
+;FLAG:휴식플래그 = 3
+;BEGIN TURNEND
+;RETURN
+
+

@@ -1,0 +1,82 @@
+﻿;スキル名
+@SKILL_NAME_アウス_大霊術－「一輪」,ARG
+RESULTS = 大霊術－「一輪」
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_アウス_大霊術－「一輪」
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_アウス_大霊術－「一輪」, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입,制限なし
+@SKILL_SUCCESSION_TYPE_アウス_大霊術－「一輪」
+RETURN GET_SUCCESSION_NUM("자동효과")
+;　 説明文の表示
+@SKILL_EXPLAIN_アウス_大霊術－「一輪」, ARG
+PRINTL 자동: 대기 중인 동료마와 교대했을 때 이하의 연동효과가 발동한다.
+PRINTL 　　　「교대한 동료마에게 1턴 동안 지변 속성 무효화 효과를 부여한다」
+PRINTL 
+PRINTL 　　　대기 중인 동료마와 교대했을 때 교대한 동료마가 대령술－「일륜」을 소지하고 있을 경우 이하의 연동효과가 발동한다.
+PRINTL 　　　「자신이 소지하고 있는 능력 강화를 모두 교대한 동료마에게 이전한다.」
+
+@SKILL_EXPLAIN_TOOLTIP_アウス_大霊術－「一輪」, ARG
+RESULTS:0 = 자동: 대기 중인 동료마와 교대했을 때 이하의 연동효과가 발동한다.
+RESULTS:1 = 　　　「교대한 동료마에게 1턴 동안 지변 속성 무효화 효과를 부여한다」
+RESULTS:2 = 
+RESULTS:3 = 　　　控えの仲魔と交代した際に、交代先の仲魔が大霊術－「一輪」を所持していた場合、以下の連動効果が発動する。
+RESULTS:4 = 　　　「自身が所持している能力強化をすべて交代先の仲魔に移し替える。」
+
+@SKILL_ACTIONABLE_BATTLE_アウス_大霊術－「一輪」, ARG
+RETURN 1
+
+@SKILL_ACTION_AT_SWITCHING_アウス_大霊術－「一輪」, L_P, L_T
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_T
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC IS_DONE
+#DIMS DYNAMIC TEMPS
+SETCOLOR COLOR("FRIEND")
+CALL PRINT_ACT_MESSAGE, L_P, , , , "大霊術－「一輪」", "NOWAIT"
+CALL SET_C_BTL_EFFECT_SINGLE, L_P, L_T, "地変無効化", , , , "NOWAIT"
+CALL SYNC_STATUS_TYPE, L_T
+IF HAVE_大霊術(L_T)
+	FOR LCOUNT, 0, VARSIZE("KAJA_TABLE")
+		IF KAJA_TABLE:LCOUNT == "BS부착률"
+			SIF CFLAG:L_P:(KAJA_TABLE:LCOUNT + "강화") >= 0
+				CONTINUE
+			CALL SKILL_SET_カジャンダ, L_P, L_T, KAJA_TABLE:LCOUNT, -CFLAG:L_P:(KAJA_TABLE:LCOUNT + "강화"), "단체", "NOMES"
+		ELSE
+			SIF CFLAG:L_P:(KAJA_TABLE:LCOUNT + "강화") <= 0
+				CONTINUE
+			CALL SKILL_SET_カジャンダ, L_P, L_T, KAJA_TABLE:LCOUNT, CFLAG:L_P:(KAJA_TABLE:LCOUNT + "강화"), "단체", "NOMES"
+		ENDIF
+		CFLAG:L_P:(KAJA_TABLE:LCOUNT + "강화") = 0
+		IS_DONE = 1
+	NEXT
+ENDIF
+SIF IS_DONE
+	CALL PRINT_HIT_MESSAGE, L_T, "能力強化を譲渡", "L"
+WAIT
+RESETCOLOR
+
+@HAVE_大霊術, L_CHARA
+#FUNCTION
+#DIM DYNAMIC L_CHARA
+SIF HAVE_PU_SKILL(L_CHARA, "ヒータ_大霊術－「一輪」")
+	RETURNF 1
+SIF HAVE_PU_SKILL(L_CHARA, "エリア_大霊術－「一輪」")
+	RETURNF 1
+SIF HAVE_PU_SKILL(L_CHARA, "ウィン_大霊術－「一輪」")
+	RETURNF 1
+SIF HAVE_PU_SKILL(L_CHARA, "アウス_大霊術－「一輪」")
+	RETURNF 1
+SIF HAVE_PU_SKILL(L_CHARA, "ライナ_大霊術－「一輪」")
+	RETURNF 1
+SIF HAVE_PU_SKILL(L_CHARA, "ダルク_大霊術－「一輪」")
+	RETURNF 1
+RETURNF 0
+
+@SKILL_RANK_アウス_大霊術－「一輪」, ARG = -1
+RETURN 8

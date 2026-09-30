@@ -1,0 +1,227 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:黒服の男たち.ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	000		20XX/XX/XX		----					テンプレ
+;	001		2021/12/30		軽木					作成
+;	002		2022/10/22		P(bazzile)				トリガースキルの書式変更に対応+強制COOP効果の効力を変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P 001
+;	001		2024/07/05		P(bazzile)				解析度の仕様の変更にあわせて処理を変更。さらに威力を調整
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_黒服の男たち,ARG
+RESULTS = 검은 옷의 사나이들
+
+;　명중
+@SKILL_HITRATE_黒服の男たち, ARG
+;필중
+RETURN 999
+
+
+;　威力
+@SKILL_POWER_黒服の男たち, ARG
+;ダメージ部分なしで、HIT_EFFECTのみを通す
+RETURN -1
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_黒服の男たち, ARG
+RETURN 0
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_黒服の男たち,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_黒服の男たち,ARG
+RETURN 1
+
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_黒服の男たち, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_黒服の男たち,ARG
+RETURN 100
+
+;　相性
+@SKILL_TYPE_黒服の男たち,ARG
+RETURN GET_TYPE_NUM("만능")
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_黒服の男たち
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_黒服の男たち,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_黒服の男たち,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_黒服の男たち,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_黒服の男たち,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_黒服の男たち,ARG
+RETURN GET_SKILL_EFFECT_NUM("상태변화")
+
+;속도보정
+@SKILL_SPEED_黒服の男たち, ARG = -1
+RETURN 999
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_黒服の男たち
+RETURN 0
+
+
+
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_黒服の男たち,ARG,ARG:1
+;IF ARG:1 != ARG
+;行動者が自分以外
+IF FLAG:행동순1 != ARG
+	;最初の一回だけ相性判定保存領域をリセットする
+	SIF TFLAG:스킬트리거용1++ == 0
+		CALL SKILLGAGE_F_SET, ARG, PU_SKILLNUM_GET(ARG,"黒服の男たち"), 0
+	;起動してないなら死
+	SIF SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム")) < 1
+		RETURN 0
+	;行動者と味方同士でなければ死
+	SIF !IS_FRIEND(FLAG:행동순1, ARG)
+		RETURN 0
+	;対象と敵同士でなければ死
+	SIF IS_FRIEND(ARG, ARG:1)
+		RETURN 0
+	;ダメージ与えてないなら死
+	SIF !GET_CREC_ACT(FLAG:행동순1, ARG:1, "HIT")
+		RETURN 0
+	;スキルの威力を保存する
+	CALL GET_SKILL_PROP, "SKILL_POWER", CFLAG:(FLAG:행동순1):입력행동, FLAG:행동순1
+	CALL SKILLGAGE_H_SET, ARG, PU_SKILLNUM_GET(ARG,"黒服の男たち"), RESULT
+	;弱点攻撃を与えてたかどうかと被弾回数を10進BITでいれていく
+	SIF !GET_CREC_ACT(FLAG:행동순1, ARG:1, "WEAK") && CFLAG:(ARG:1):PT플래그 == 0
+		CALL SKILLGAGE_F_ADD, ARG, PU_SKILLNUM_GET(ARG,"黒服の男たち"), MIN(CFLAG:(ARG:1):피탄횟수, 9) * POWER(10, CPOS(ARG:1) - 7)
+	RETURN 1, CPOS(ARG:1)
+	;ダメージ与えてないなら死
+	;SIF !GETBIT(CFLAG:POS(CFLAG:(ARG:1):타겟):受けフラグ,20)
+	;	RETURN 0
+	;死んでるなら死
+	;SIF GET_STATE(CFLAG:POS(CFLAG:(ARG:1):타겟):상태이상) == "DYING"
+	;	RETURN 0
+	;ここまで来たら攻撃準備
+	;RESULT:1 = POS(CFLAG:(ARG:1):타겟)
+	;スキル起動中、対象が味方の攻撃でダメージ受けてるならCOOP
+	;RETURN 1
+;ELSEIF ARG == ARG:1
+ELSE
+	;起動してたら死
+	SIF SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム"))
+		RETURN 0
+	;通常モード転落直後は死
+	SIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG,"公式かつ機密")
+		RETURN 0
+	;敵は発動しない
+	SIF CFLAG:ARG:PT플래그 == 0
+		RETURN 0
+	;判定対象が自分自身(=判定数を一回のみにする)
+	SIF ARG != ARG:1
+		RETURN 0
+	;NP中でなく、O&C以外の自分の行動直後ならば発動
+	RETURN 1
+	;RETURN 1
+ENDIF
+
+;弱点COOPが発生していない敵に対して弱点COOPを発生させたのと同等のCOOP基礎威力を与える(ただし効果量は解析度%に減少する)
+;COOPフラグは(スキル威力*100%(弱点) + スキル威力*50%(クリティカル)) * ヒット回数
+;ここでは威力と回数を保存しておいて擬似的にCOOP威力を算出
+;条件付きで威力が変動する技までは拾いきれないけどまぁしゃーなし
+@SKILL_DAMAGE_EFFECT_黒服の男たち, ARG, ARG:1, ARG:2
+#DIM L_T
+#DIM L_HIT
+#DIM L_威力
+L_T = ARG:1
+;---- EDIT P 001 MOD START -------------------------
+;固定で50(通常攻撃のクリティカル相当に変更。とりあえず現行式の場合、レベル補正の下駄がはいるのでこれでも火力は十分以上出る)
+;L_HIT = SKILLGAGE_F_GET(ARG, PU_SKILLNUM_GET(ARG,"黒服の男たち"))
+;L_HIT = L_HIT / POWER(10, CPOS(ARG:1)-7)
+;L_HIT = L_HIT % 10
+;L_威力 = SKILLGAGE_H_GET(ARG,PU_SKILLNUM_GET(ARG,"黒服の男たち")) * FLAG:(20000+NO:L_T) / 1000
+;CFLAG:L_T:ＣＯＯＰ플래그 += L_威力 * L_HIT
+IF ANALYSIS_RATE:(NO:L_T) >= ANALYSIS_COMPLETED
+	CFLAG:L_T:ＣＯＯＰ플래그 +=  50
+	PRINTFORM %TSTR:스킬메시지대상%%TSTR:스킬메시지화살표%DEVIL CO-OP 세트!
+ENDIF
+;---- EDIT P 001 MOD END ---------------------------
+;旧仕様。対象のCOOP基礎威力を解析度の2乗/2000(最大500)に上書きする。(CALLのほうはCRTフラグを0ビット目しか立ててないので、1ビット(相性),2ビット(クリティカル)どっちにもひっかかってなかった
+;→追撃元の攻撃でCOOPが出ていた場合、解析度・スキル威力・クリティカル次第でむしろ威力が下がるケースがあったり、元威力が低い技に対して相当高く効果がでてしまうという問題があったので修正
+;CFLAG:L_T:ＣＯＯＰ플래그 = FLAG:(20000+NO:L_T) * FLAG:(20000+NO:L_T) / 2000
+;CALL BTL_CALC_DAMAGE_COOP(ARG, L_T, 1, 18, 1, 1, FLAG:(20000+NO:L_T) * FLAG:(20000+NO:L_T) / 2000)
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_黒服の男たち,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM DYNAMIC LCOUNT
+;---- EDIT 001 MOD START -------------------------
+IF SKILLGAGE_D_GET(ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム"))
+	CALL ATTACK_SINGLE, ARG, POS(ARG:1), SKILL_NUM
+ELSE
+	;味方の解析度上げるの敵にとってなんか意味あるのか…？
+	;IF CFLAG:(ARG):PT플래그 == 0
+	;	LOCAL:1 = 1
+	;	LOCAL:2 = 7
+	;ELSE
+	;	LOCAL:1 = 7
+	;	LOCAL:2 = 17
+	;ENDIF
+	;FOR LOCAL,LOCAL:1,LOCAL:2
+	;	SIF POS(LOCAL) < 0
+	;		CONTINUE
+	;	SIF FLAG:(20000+NO:POS(LOCAL)) > 999
+	;		CALL SKILLGAGE_F_ADD,ARG,PU_SKILLNUM_GET(ARG,"ノウブル・ファンタズム"),10
+	;	FLAG:(20000+NO:POS(LOCAL)) = MIN(1000 , FLAG:(20000+NO:POS(LOCAL))+(1+(HAVE_SKILL(ARG,[[스킬:민속학]])))*10)
+	;NEXT
+	FOR LCOUNT, 7, 17
+		SIF POS(LCOUNT) < 0
+			CONTINUE
+		CALL INCREASE_ANALYZE, (NO:LCOUNT), 10
+	NEXT
+	PRINTFORML 적 전체의 해석도가 상승했다!
+ENDIF
+;---- EDIT 001 MOD END ---------------------------
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_黒服の男たち,ARG
+PRINTL 상시 효과: 턴 종료 시 해석도를 10% 상승시킨다. 대상이 해석 완료된 경우 NP를 증가시킨다.
+PRINTL NP 기동 중: 아군의 행동으로 데미지를 준 대상에게 CO-OP을 실행한다.
+PRINTL 
+PRINTL 검은 수트를 입은 남성들로만 구성된 에이전트들. 감시와 탄압을 임무로 삼고 있다.
+PRINTL 모든 정보를 수집하여 어쌔신에게 전달한다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_黒服の男たち,ARG
+RETURN 0

@@ -1,0 +1,867 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SYSYTEM_BATTLE.ERB
+;	Facility	:BAD_STATEの付与率計算や付与の処理群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/10/12		P						SYSTEM_BATTLEの整理の一環としてバステ関係の処理群を独立させて新設
+;													バステ付与率の上限を最終計算前に移動。基礎成功率を999とすることで必中になる仕様を追加。
+;													デバッグ用に付与率の計算過程を取得する変数を追加
+;	002		2022/10/29		P						@CONVERT_BADSTATE_NAMEを作成
+;													メッセージ関連の処理のためにその場でメッセージを表示せず変数にメッセージを逃がす処理を追加
+;													解析内容の表示を調整
+;	003		2022/11/01		P(bazzile)				食いしばり系のスキルが即死に対して発動するように修正
+;	004		2022/11/16		P(bazzile)				バステ付与率計算関数(JUDG_BADSTATE)にスキル側で定義した補正値を取得する処理を追加
+;													処理の追加に合わせて、記述を一部変更。また解析フラグを新記述にあわせて変更	
+;	005		2022/11/25		P(bazzile)				スキルからの補正処理の記述を変更し、キャラ指定補正の処理を追加
+;													バステの色定義をFORMATION.ERBから移動し、関数化
+;	006		2022/12/10		P(bazzile)				バステの説明文取得関数を追加
+;	007		2022/12/18		P(bazzile)				BOMBの色定義がされていなかったので定義
+;	008		2022/01/10		P(bazzile)				バステブースタと奈落のマスクによる成功率補正の処理を追加;
+;	009		2023/06/14		P(bazzile)				サマカジャの成功率への影響の式を変更
+;													BS付着率のダウン側の処理を修正
+;	010		2023/08/25		P(bazzile)				即死成功時にメッセージが直呼び出しで固定されていた不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;===============================
+;バステ付与率計算関数
+;;==============================
+;ARG:0 使用者
+;ARG:1 対象
+;ARG:2 使用スキル
+;ARG:3 相性を直接指定する場合
+;ARG:4 ステートを直接指定する場合
+;ARG:5 追加効果中に呼び出された場合
+@CALC_BADSTATE_MULTI, ARG, ARG:1, ARG:2, ARG:3 = -1, ARG:4 = -1, ARG:5
+#DIM LCOUNT
+#DIM L_P
+#DIM L_T
+#DIM L_スキル
+#DIM L_ステート
+#DIMS L_ステート名
+#DIM L_相性
+#DIM L_相性値
+#DIM L_追加効果中
+#DIM L_バステ耐性貫通フラグ
+#DIM TEMP_SKILL
+L_P = ARG
+L_T = ARG:1
+L_スキル = ARG:2
+L_追加効果中 = ARG:5
+
+;異常耐性が差し替わった要因を記録しておく
+RESULTS = 
+
+CALL GET_バステ耐性貫通, L_P, L_T, L_ステート
+L_バステ耐性貫通フラグ = RESULT
+CALL GET_SKILL_PROP, "SKILL_ADDTIONAL_STATE", L_スキル, ARG
+L_ステート = RESULT
+L_ステート名 '= GET_STATE(L_ステート)
+
+;相性を取得する
+CALL BTL_CALC_AISYOU, L_P, L_T, L_スキル, ARG:3, 1, 1
+L_相性値 = RESULT
+L_相性 = RESULT:1
+;攻撃中の追加効果の判定中と反射中は反射しない
+SIF CHECK_WEAKNESS(L_相性値) == -4 && !TFLAG:반사중 && !L_追加効果中
+	RETURN 999, L_相性
+
+;防御中はバッドステータスにかからない
+SIF CFLAG:L_T:방어플래그 == 1
+	RETURN 0, L_相性
+
+;相性が無効以下ならブロック
+SIF CHECK_WEAKNESS(L_相性値) < -1
+	RETURN 0, L_相性
+
+;個別のバステ耐性が-100以下かつ貫通してないならブロック
+SIF MAXBASE:L_T:L_ステート名 <= -100 && !L_バステ耐性貫通フラグ
+	RETURN 0, L_相性
+;バステ無効フラグが立っている敵の場合、ブロック
+SIF CFLAG:L_T:PT플래그 < 1 && CFLAG:L_T:BS무효플래그
+	RETURN 0, L_相性
+;ボスフラグが立っている敵の場合、石化と即死をブロック 
+SIF CFLAG:L_T:PT플래그 < 1 && CFLAG:L_T:보스플래그 && (L_ステート名 == "STONE" || L_ステート名 == "DYING")
+	RETURN 0, L_相性
+;敵側は蠅化を無効にする
+SIF CFLAG:L_T:PT플래그 < 1 && L_ステート名 == "FLY"
+	RETURN 0, L_相性
+;相手がベル・デルならブロック
+SIF NO:L_T == [[キャラ:벨・데르]]
+	RETURN 0, L_相性
+IF CFLAG:L_T:성스러운가호 && !GROUPMATCH(L_ステート名, "FLY", "DYING", "ORGY", "HEAT")
+	L_相性値 = 0
+	CFLAG:L_T:테트라쟈발동 = 1
+	CFLAG:L_T:성스러운가호발동 = 1
+	RESULTS = 状態異常防壁
+	RETURN 0, L_相性
+ENDIF
+IF CFLAG:L_T:테트라쟈 && GROUPMATCH(L_ステート名, "DYING")
+	L_相性値 = 0
+	RESULTS = 即死防壁
+	RETURN 0, L_相性
+ENDIF
+
+;所持スキルによる無効化判定
+FOR LCOUNT, 0, TRYSKILLNUM(L_T)
+	TEMP_SKILL = TOINT(GET_TRYSKILL(L_T, LCOUNT))
+	RESULT = 0, 0
+	TRYCCALLFORM SKILL_PASSIVE_BTL_EFFECT_%GET_TRYSKILL(L_T, LCOUNT)%, "バステ無効化", L_T, L_P, L_T, GET_TYPE(L_相性), L_相性値, "ダメージタイプ", "攻撃タイプ", L_ステート名, 0, TEMP_SKILL, TRYSKILL_VAR
+		SIF RESULT
+			RETURN 0, L_相性
+	CATCH
+	ENDCATCH
+NEXT
+RETURN L_相性値, L_相性
+
+;---- EDIT 004 MOD START -------------------------
+;==============================================================
+;バステ付与の成否判定関数
+;==============================================================
+;ARG 攻撃者
+;ARG:1 被攻撃者
+;ARG:2 バッドステータスの種類
+;ARG:3 相性
+;ARG:4 相性による倍率
+;ARG:5 基本付与確率
+;ARG:6 確率上限
+;@ATTACK_BADSTATE,ARG,ARG:1,ARG:2,ARG:3,ARG:4,ARG:5
+@JUDG_BADSTATE, ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5, ARG:6, ARG:7
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC TEMP
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_ステート
+#DIMS DYNAMIC L_ステート名
+#DIM DYNAMIC L_相性
+#DIM DYNAMIC L_継承素質
+#DIM DYNAMIC L_相性値
+#DIM DYNAMIC L_成功率上限
+#DIM DYNAMIC L_スキル
+#DIM DYNAMIC L_成功率
+#DIM DYNAMIC L_成功フラグ
+#DIM DYNAMIC L_バステ耐性貫通フラグ
+#DIM DYNAMIC L_ステータス差補正
+#DIM DYNAMIC L_解析用
+#DIM DYNAMIC L_バステ補正
+#DIM DYNAMIC L_成功率固定
+#DIM DYNAMIC L_SKILLCOUNT, 2
+#DIM DYNAMIC TEMP_SKILL
+;---- EDIT 051 MOD -------------------------
+;CALL RECEIVE_BADSTATE,ARG:1,ARG:2
+;-----------------------------
+;- 初期処理
+;-----------------------------
+L_P = ARG
+L_T = ARG:1
+L_ステート = ARG:2
+L_ステート名 = %GET_STATE(ARG:2)%
+L_相性 = ARG:3
+L_相性値 = ARG:4
+L_成功率 = ARG:5
+L_成功率上限 = ARG:6
+L_スキル = ARG:7
+L_成功フラグ = 0
+
+CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", L_スキル, L_P
+L_継承素質 = RESULT
+
+CALL GET_バステ耐性貫通, L_P, L_T, L_ステート
+L_バステ耐性貫通フラグ = RESULT
+
+L_バステ補正 = 100
+;スキルの所持数を取得
+L_SKILLCOUNT = CHARA_SKILLCOUNT(L_P), CHARA_SKILLCOUNT(L_T)
+
+;-----------------------------
+;確定ミスのチェック 
+;----------------------------
+TSTR:BS분석 = 確定ミス-
+;基本成功率が0で送られてきた場合は確定でミスとなる(-1以下の場合は判定表記ごと飛ばされる)
+SIF L_成功率 == 0
+	RETURN 0
+;優先度判定　よりすでにより優先度が高いバステにかかってる場合はミス
+;状態異常の優先順位処理
+SIF BADSTATE_PRIORITY(CFLAG:L_T:상태이상) > BADSTATE_PRIORITY(L_ステート)
+	RETURN 0
+TSTR:BS분석 = 필중
+;成功率999は必中
+SIF L_成功率 >= 999
+	RETURN 1
+;-----------------------------
+;- 成功判定
+;基本値はスキルからもらったもの
+;-----------------------------
+TSTR:BS분석 = 【基本成功率_{L_成功率}】
+
+RESULT = 0
+TRYCALLFORM IS_SKILL_FIX_ADDTIONAL_RATE_%CONVERT_SKILLNUM_TO_STR(L_P, L_スキル)%
+L_成功率固定 = RESULT
+IF L_成功率固定
+	TSTR:BS분석 += @"【固定成功率\%】"
+ELSE
+	;-----------------------------
+	;- ステータス差
+	;  운+魔法効果の差を100%から加減する。
+	;-----------------------------
+	L_ステータス差補正 = MAX(1, (100 - MAXBASE:L_T:마법효과 - MAXBASE:L_T:운 + MAXBASE:L_P:마법효과+ MAXBASE:L_P:운))
+	L_成功率 *= L_ステータス差補正
+	L_成功率 /= 100
+	TSTR:BS분석 += @"【ステ補正_{L_ステータス差補正}\%】"
+
+	;-----------------------------
+	;カジャ・ンダによる補正
+	;33% ~ 200%
+	;
+	;他と同じように乗除に変更。
+	;増減範囲はBS付着率アップが存在していることを踏まえて+側は緩く、マイナス側は強く設定
+	;※BS付着率アップはBSから身を守るためのフラグとして使われていることがほぼないので防御側の処理だけ存在しないのに近い
+	;-----------------------------
+	;---- EDIT 009 MOD START -------------------------の
+	L_解析用 = L_成功率
+	IF (CFLAG:L_P:마법효과강화 - CFLAG:L_T:마법효과강화) > 0
+		L_成功率 = L_成功率 * (CFLAG:L_P:마법효과강화 - CFLAG:L_T:마법효과강화 + 64) / 64
+	ELSE
+		L_成功率 = L_成功率 * (CFLAG:L_P:마법효과강화 - CFLAG:L_T:마법효과강화 + 96) / 96
+	ENDIF
+	;---- EDIT 009 MOD END ---------------------------
+	;1段毎に4%づつ(素質補正込みで6%)動く。
+	;加減算なのでブフジオのような基礎命中率が低いものに非常に大きな影響を及ぼす。
+	;L_成功率 -= CFLAG:L_T:마법효과강화
+	;L_成功率 += CFLAG:L_P:마법효과강화
+	L_成功率 = MAX(0,L_成功率) ;成功率が負だった場合は0に
+	IF L_解析用 > 0
+		TSTR:BS분석 += @"【カジャンダ_"
+		TSTR:BS분석 += @"{L_成功率 * 100/L_解析用}\%】"
+	ENDIF
+	;-----------------------------
+	;素質枠
+	;
+	;스킬적성		相性一致で+10%~+100%
+	;바스테부스터		Lv*20%
+	;効果が高い方のみ適用される
+	;-----------------------------
+	;使用者がスキル素質持ちなら成功率に補正
+	IF GET_BTL_TALENT_LV("스킬적성", L_P)
+		TEMP = 100 + SUB_ROLE_스킬적성효과("バステ付着率", L_P)
+	ELSE
+		TEMP = 100
+	ENDIF
+	TEMP = MAX(100 + GET_BTL_TALENT_LV("바스테부스터", ARG) * 20, TEMP)
+	L_成功率 *= TEMP
+	L_成功率 /= 100
+	TSTR:BS분석 += @"【素質補正_{TEMP}\%】"
+
+	;-----------------------------
+	;- スキルによる独自補正(攻撃側)
+	;-----------------------------
+	FOR LCOUNT, 0, TRYSKILLNUM(L_P)
+		TEMP_SKILL = TOINT(GET_TRYSKILL(L_P, LCOUNT))
+		RESULT = 0
+		TRYCCALLFORM SKILL_PASSIVE_BTL_EFFECT_%GET_TRYSKILL(L_P, LCOUNT)%, "バステ補正", L_P, L_P, L_T, GET_TYPE(L_相性), L_相性値, "ダメージタイプ", "攻撃タイプ", L_ステート名, 0, TEMP_SKILL, TRYSKILL_VAR
+			L_バステ補正 += RESULT
+			IF RESULT >= 999
+				IF STRCOUNT(SKILL_NAME_F(TEMP_SKILL), "전용기")
+					TSTR:BS분석 = 필중:%CSTR:L_P:@"전용기{TEMP_SKILL - SKILL_NUM_F("전용기1") + 1}"%
+				ELSE
+					TSTR:BS분석 = 필중:%SKILL_NAME_F(TEMP_SKILL)%
+				ENDIF
+				RETURN 1, 999
+			ENDIF
+			IF RESULT <= -999
+				IF STRCOUNT(SKILL_NAME_F(TEMP_SKILL), "전용기")
+					TSTR:BS분석 = 命中率0:%CSTR:L_P:@"전용기{TEMP_SKILL - SKILL_NUM_F("전용기1") + 1}"%
+				ELSE
+					TSTR:BS분석 = 命中率0:%SKILL_NAME_F(TEMP_SKILL)%
+				ENDIF
+				RETURN 0, -999
+			ENDIF
+		CATCH
+		ENDCATCH
+	NEXT
+ENDIF
+
+;-----------------------------
+;- スキルによる独自補正(防御側)
+;-----------------------------
+FOR LCOUNT, 0, TRYSKILLNUM(L_T)
+	TEMP_SKILL = TOINT(GET_TRYSKILL(L_T, LCOUNT))
+	RESULT = 0, 0
+	TRYCCALLFORM SKILL_PASSIVE_BTL_EFFECT_%GET_TRYSKILL(L_T, LCOUNT)%, "バステ補正", L_T, L_P, L_T, GET_TYPE(L_相性), L_相性値, "ダメージタイプ", "攻撃タイプ", L_ステート名, 0, TEMP_SKILL, TRYSKILL_VAR
+		IF RESULT >= 999
+			IF STRCOUNT(SKILL_NAME_F(TEMP_SKILL), "전용기")
+				TSTR:BS분석 = 回避不能:%CSTR:L_T:@"전용기{TEMP_SKILL - SKILL_NUM_F("전용기1") + 1}"%
+			ELSE
+				TSTR:BS분석 = 回避不能:%SKILL_NAME_F(TEMP_SKILL)%
+			ENDIF
+			RETURN 1, 999
+		ENDIF
+		IF RESULT <= -999
+			IF STRCOUNT(SKILL_NAME_F(TEMP_SKILL), "전용기")
+				TSTR:BS분석 = 절대회피:%CSTR:L_T:@"전용기{TEMP_SKILL - SKILL_NUM_F("전용기1") + 1}"%
+			ELSE
+				TSTR:BS분석 = 절대회피:%SKILL_NAME_F(TEMP_SKILL)%
+			ENDIF
+			RETURN 0, -999
+		ENDIF
+		L_バステ補正 += RESULT
+	CATCH
+	ENDCATCH
+NEXT
+
+;-----------------------------
+;- スキルによる補正の下限処理
+;-----------------------------
+L_バステ補正 = MAX(L_バステ補正, 10)
+TSTR:BS분석 += @"【バステ補正_{L_バステ補正}\%】"
+L_成功率 = L_成功率 * L_バステ補正 / 100
+
+
+;呪い、烙印だと即死しやすい 即死耐性貫通
+IF (CFLAG:L_T:상태이상 == GET_STATE_NUM("CURSE") || CFLAG:L_T:상태이상 == GET_STATE_NUM("BRAND")) && L_ステート名 == "DYING"
+	L_成功率 += 50
+	TSTR:BS분석 += @"【烙印_+50】"
+ENDIF
+TSTR:BS분석 += @"【成功率_{L_成功率}】"
+
+;-----------------------------
+;ボスには効きづらい
+;-----------------------------
+IF CFLAG:L_T:보스플래그 && CFLAG:L_T:PT플래그 < 1
+	L_成功率 /= 4
+	TSTR:BS분석 += @"【ボス補正_25\%】"
+ENDIF
+
+;防御相性による補正。無効や反射になる場合はこの関数にたどり着かない
+L_成功率 *= L_相性値
+L_成功率 /= 100
+TSTR:BS분석 += @"【%GET_TYPE(L_相性)%相性_{L_相性値}\%】"
+;バステ耐性による補正
+IF L_バステ耐性貫通フラグ == 0
+	;バステ耐性による補正
+	L_成功率 *= (100+MAXBASE:L_T:L_ステート名)
+	L_成功率 /= 100
+	TSTR:BS분석 += @"【%L_ステート名%耐性_{(100+MAXBASE:L_T:L_ステート名)*100/100}\%】"
+ENDIF
+
+;BS付着率強化による補正(＋1で25%ほど動く。なお、BS付着率はターン経過で0に近づいていく)
+;---- EDIT 009 MOD START -------------------------
+IF CFLAG:L_T:BS부착률강화 > 0
+	L_成功率 *= CFLAG:L_T:BS부착률강화 + 4 + HAVE_PU_SKILL(L_P,"アサシン")
+	L_成功率 /= 4
+ELSE
+	L_成功率 *= MAX(CFLAG:L_T:BS부착률강화 + 8 + HAVE_PU_SKILL(L_P,"アサシン"), 4)
+	L_成功率 /= 8
+ENDIF
+TSTR:BS분석 += @"【BS付着率_{MAX((CFLAG:L_T:BS부착률강화+4) + HAVE_PU_SKILL(L_P,"アサシン"),  2) * 100 / 4}\%】"
+;---- EDIT 009 MOD END ---------------------------
+;---- EDIT 008 ADD START -------------------------
+;奈落のマスクの減少補正　すべての乗算の計算後に固定値で減らす
+;弱点に対して効果が薄く、耐性を持っている場合やステータス差がある場合に強力に働く
+L_成功率 = MAX(L_成功率 - TOINT(AUTO_SPLIT("0/30/50/70/85/100", "/",GET_BTL_TALENT_LV("나락의마스크", L_T))), 0)
+TSTR:BS분석 += @"【나락의마스크_%AUTO_SPLIT("0/30/50/70/85/100", "/",GET_BTL_TALENT_LV("나락의마스크", L_T))%】"
+;---- EDIT 008 ADD END ---------------------------
+
+TSTR:BS분석 +=@"【成功/上限_{L_成功率}/{L_成功率上限}】"
+;確率が上限超えていたら確率上限値に
+L_成功率 = MIN(L_成功率上限, L_成功率)
+TSTR:BS분석 += @"【最終_{L_成功率}】"
+IF RAND:100 < L_成功率
+	RETURN 1, LIMIT(L_成功率, 0, 900)
+ELSE
+	RETURN 0, LIMIT(L_成功率, 0, 900)
+ENDIF
+;---- EDIT 004 MOD END ---------------------------
+
+;========================================
+;バステの判定が通ったあとの無効化処理
+;========================================
+@INTERCEPT_SET_BADSTATE, ARG, ARG:1, ARG:2, ARG:3, ARG:4
+#DIM LCOUNT
+#DIM TEMP
+#DIM L_P
+#DIM L_T
+#DIM L_ステート
+#DIMS L_ステート名
+#DIM L_相性
+#DIM L_相性値
+
+;-----------------------------
+;- 初期処理
+;-----------------------------
+L_P = ARG
+L_T = ARG:1
+L_ステート = ARG:2
+L_ステート名 = %GET_STATE(ARG:2)%
+L_相性 = ARG:3
+L_相性値 = ARG:4
+
+RESULTS = 
+;ヒットしてからの無効化判定
+TEMP = LEADER_SKILL_COUNT_ACTABLE_厄除けの護符(L_T)
+IF (CFLAG:L_T:PT플래그 && (TEMP > TFLAG:액막이호부발동횟수_FRIEND)) || (!CFLAG:L_T:PT플래그 && (TEMP > TFLAG:액막이호부발동횟수_ENEMY))
+	IF L_ステート名 == "DYING"
+		IF CFLAG:L_T:PT플래그
+			TFLAG:액막이호부발동횟수_FRIEND++
+		ELSE
+			TFLAG:액막이호부발동횟수_ENEMY++
+		ENDIF
+		RESULTS = 액막이호부
+		PRINTFORMW 상태이상명 = %L_ステート名%
+		RETURN 1
+	ENDIF
+ENDIF
+TEMP = LEADER_SKILL_COUNT_ACTABLE_息災の御守り(L_T)
+IF (CFLAG:L_T:PT플래그 && (TEMP > TFLAG:식재의부적발동횟수_FRIEND)) || (!CFLAG:L_T:PT플래그 && (TEMP > TFLAG:식재의부적발동횟수_ENEMY))
+	IF L_ステート名 != "DYING"
+		IF CFLAG:L_T:PT플래그
+			TFLAG:식재의부적발동횟수_FRIEND++
+		ELSE
+			TFLAG:식재의부적발동횟수_ENEMY++
+		ENDIF
+		RESULTS = 식재의부적
+		RETURN 1
+	ENDIF
+ENDIF
+RETURN 0
+;========================================
+;ARG バステを付与したCHARAのキャラ番号
+;ARG:1 バステを付与されたCHARAのキャラ番号
+;ARG:2 付与されるバステ
+;ARG:3 口上の呼び出しを飛ばす
+;ARG:4 死亡時のメッセージ表示
+;- 状態異常をキャラクターに付与し、さらにそれに付随して発生する処理を実行する関数
+;
+;  備考
+;  単独で使う場合は優先度や相性等も含めてあらゆる要素を無視して状態異常を付与する
+;  あまり推奨はしないがいちおう
+;========================================
+@SET_BAD_STATE, ARG, ARG:1, ARG:2, ARG:3, ARG:4
+#DIM L_P
+#DIM L_T
+#DIM L_ステート
+#DIMS L_ステート名
+
+L_P = ARG
+L_T = ARG:1
+L_ステート = ARG:2
+L_ステート名 = %GET_STATE(ARG:2)%
+
+;-----------------------------
+;- バッドステータス付与処理
+;-----------------------------
+;---- EDIT 003 MOD START -------------------------
+SIF TFLAG:스탯고정
+	RETURN 0
+;CALL RECEIVE_BADSTATE, ARG:1, ARG:2, 1
+IF CFLAG:L_T:상태이상 == GET_STATE_NUM("FLY")
+	CFLAG:L_T:상태이상 = 0
+	CALL SYNC_STATUS, L_T
+ENDIF
+;PRINTFORM %GET_STATE(L_ステート)%
+;即死は食いしばりの処理があるため、現HPの100%のダメージを与える処理として落とす
+IF L_ステート名 == "DYING"
+	;---- EDIT 010 MOD START -------------------------
+	;生還トリック所持でHPで耐える
+	IF HAVE_SKILL(L_T, [[스킬:생환트릭]])
+		CALL VAR_HP, L_T, 1 - BASE:L_T:ＨＰ, "ダメージ", L_P, ARG:4
+		TSTR:스킬메시지추가 = _L/%CALLNAME:L_T%は生還トリックで持ちこたえた！
+	ELSE
+		CALL VAR_HP, L_T, -BASE:L_T:ＨＰ, "ダメージ", L_P, ARG:4
+	ENDIF
+	;---- EDIT 010 MOD END ---------------------------
+	;生き残ってたら離脱
+	SIF !IS_BADSTATE(L_T, "DYING")
+		RETURN 0
+ELSE
+	;ステートを代入。
+	CFLAG:L_T:상태이상 = L_ステート
+ENDIF
+CFLAG:L_T:상태이상경과턴수 = 0
+;動けない場合は行動を空にする
+CALL ACTIONABLE_CHARA, L_T
+SIF RESULT == 0
+	CFLAG:L_T:입력행동 = -1
+;-----------------------------
+;- DYINGは死亡時処理をする。つまりポジションを開ける場合はがある。
+;-----------------------------
+;SIF GET_STATE(L_ステート) == "DYING"
+;	CALL DEAD_CHARA, L_T, L_P, ARG:4
+;---- EDIT 003 MOD END ---------------------------
+;FLYはステータスが低下するので再計算する
+SIF GET_STATE(L_ステート) == "FLY"
+	CALL SYNC_STATUS,L_T
+;口上スキップ
+SIF ARG:3
+	RETURN 1
+;IF GET_STATE(CFLAG:L_T:상태이상) == "DYING"
+;	CALL BATTLE_EVENT_ATTACK, L_P, L_T, 9999, 1
+;ELSE
+	;CALL BATTLE_EVENT_ATTACK, ARG , ARG:1, 0, 4
+;ENDIF
+RETURN 1
+
+;======================================================================
+;バステ優先度
+;======================================================================
+@BADSTATE_PRIORITY,ARG
+#FUNCTION
+SELECTCASE ARG
+CASE 0
+	RETURNF 0
+;幸福
+CASE 1
+	RETURNF 1
+;感電
+CASE 2
+	RETURNF 2
+;混乱
+CASE 3
+	RETURNF 3
+;睡眠
+CASE 4
+	RETURNF 4
+;凍結
+CASE 5
+	RETURNF 5
+;金縛
+CASE 6
+	RETURNF 7
+;沈黙
+CASE 7
+	RETURNF 8
+;猛毒
+CASE 8
+	RETURNF 9
+;爆弾
+CASE 9
+	RETURNF 10
+;魅了
+CASE 10
+	RETURNF 19
+;麻痺
+CASE 11
+	RETURNF 20
+;呪い
+CASE 12
+	RETURNF 12
+;蠅化
+CASE 13
+	RETURNF 90
+;石化
+CASE 14
+	RETURNF 98
+;死亡
+CASE 15
+	RETURNF 99
+;ORGY
+CASE 16
+	RETURNF 96
+;HEAT
+CASE 17
+	RETURNF 97
+;炎上
+CASE 18
+	RETURNF 11
+;転倒
+CASE 19
+	RETURNF 6
+;낙인
+CASE 20
+	RETURNF 13
+CASEELSE
+	RETURNF 0
+ENDSELECT
+;---- EDIT 005 ADD START -------------------------
+;======================================================================
+;バステ解説
+;ARG = 番号指定の場合
+;ARGS = 名称指定の場合
+;
+;戻り値 = 解説文。改行コードをいれているので改行込みで帰ってくるが、行としては1行で扱われるのに注意
+;
+;PRINTしたい場合は@PRINTFORM_LF関数を使ってください
+;======================================================================
+@BADSTATE_COMMENT, ARG, ARGS = "", ARG:1
+#FUNCTIONS
+#DIMS L_STATE
+#DIMS L_RESULTS;出力文字列
+#DIMS L_BR;改行文字
+L_STATE = \@ARGS != ""  ? %ARGS% # %GET_STATE(ARG)%\@
+;TOOLTIP用は字下げをする
+IF ARG:1
+	L_BR '= UNICODE(0x000D) + "　"
+	L_RESULTS '= "□" + L_STATE + L_BR
+ELSE
+	L_BR '= UNICODE(0x000D)
+	L_RESULTS = 
+ENDIF
+SELECTCASE L_STATE
+	CASE "GOOD"
+		L_RESULTS += "상태이상에 걸리지 않은、건강한 상태。"
+	CASE "HAPPY"
+		L_RESULTS += "행복에 휩싸여 있는 상태。일정 확률로 행동의 실행에 실패한다" + L_BR + "주는 데미지가 감소하고、받는 데미지가 증가한다。"
+		;行動不能は50% ダメージはTIMES 1.25 & TIMES 0.70(ver0309144 2022/12/10 確認)
+	CASE "SHOCK"
+		L_RESULTS += "감전 중인 상태。행동불능이 되고、매우 높은 확률로 크리티컬을 받는다。" + L_BR + "빙결・수격 상성의 공격으로 받는 데미지가 크게 증가한다。"
+		;ダメージはTIMES 2.00(ver0309144 2022/12/10 確認)
+	CASE "PANIC"
+		L_RESULTS += "혼란 중인 상태。랜덤으로 각종 행동을 실행하게 된다。"
+	CASE "SLEEP"
+		L_RESULTS += "수면 중인 상태。행동 불능이 되고、받는 데미지가 크게 증가하며、매우 높은 확률로 크리티컬을 받는다。" + L_BR + "데미지를 받는 것으로 해제된다。"
+		;ダメージはTIMES 1.50(ver0309144 2022/12/10 確認)
+	CASE "FREEZE"
+		L_RESULTS += "동결 중인 상태。행동불능이 되고、매우 높은 확률로 크리티컬을 받는다。" + L_BR + "전격・지변 상성의 공격으로 받는 데미지가 크게 증가한다。"
+		;ダメージはTIMES 2.00(ver0309144 2022/12/10 確認)
+	CASE "BIND"
+		L_RESULTS += "묶여 있는 상태。행동불능이 된다。"
+	CASE "CLOSE"
+		L_RESULTS += "침묵 중인 상태。MAGIC이 사용불능이 되고、마법위력이 대폭으로 감소한다。"
+		;魔法属性の攻撃のダメージが1/5(ver0309144 2022/12/10 確認)
+	CASE "POISON"
+		L_RESULTS += "맹독에 당한 상태。턴 종료시 데미지를 받는다。"+ L_BR + "공격력이 반감한다。"
+		;物理属性の攻撃のダメージが1/2。継続ダメージは最大HPの1/16(ver0309144 2022/12/10 確認)
+	CASE "BOMB"
+		L_RESULTS += "폭탄화된 상태。화염 상성의 데미지를 받는 것으로 폭발한다。"
+	CASE "CHARM"
+		L_RESULTS += "적에게 매료된 상태。아군을 공격하게 된다。"
+		;30%の確率でぼーっとする(ver0309144 2022/12/10 確認)
+	CASE "PALYZE"
+		L_RESULTS += "마비 중인 상태。행동불능이 되고、턴 종료시에 MP에 데미지를 받는다。"
+		;MPダメージは最大MPの1/16(ver0309144 2022/12/10 確認)
+	CASE "CURSE"
+		L_RESULTS += "저주받은 상태。공격을 할 때마다 데미지를 받게 된다。"+ L_BR + "즉사공격에 약해진다。"
+		;受けるダメージは与えたダメージの1/2(ver0309144 2022/12/10 確認)
+		;即死はDYIING耐性を無視するようになり、固定値で+50%
+	CASE "FLY"
+		L_RESULTS += "파리가 된 상태。각종 능력치가 파멸적으로 감소한다。"
+		;素早さ以外が1になり被ダメージ1.5倍など(ver0309144 2022/12/10 確認)
+	CASE "STONE"
+		L_RESULTS += "석화 중인 상태。행동불능이 된다" + L_BR + "이 상태이상은 자연회복하지 않는다。"
+	CASE "DYING"
+		L_RESULTS += "HP가 0이 되어 사망한 상태"
+	CASE "ORGY"
+		L_RESULTS += "오르기아 모드를 발동한 상태" + L_BR + "자동적으로 행동을 선택하게 되고、주는 데미지가 증가한다。"
+		;ダメージはTIMES 1.25される(ver0309144 2022/12/10 確認)
+	CASE "HEAT"
+		L_RESULTS += "오르기아 모드가 종료되어、쿨다운이 필요한 상태。행동불능이 된다。"
+	CASE "FLAME"
+		L_RESULTS += "불타고 있는 상태。턴 종료시 데미지를 받는다。"+ L_BR + "핵열・질풍 상성의 공격으로 받는 데미지가 크게 증가한다。"
+		;継続ダメージは最大HPの1/10 ダメージボーナスはTIMES 2.00(ver0309144 2022/12/10 確認)
+	CASE "SLIP"
+		L_RESULTS += "넘어진 상태。행동불능이 된다" + L_BR + "검격・비구・타격・전술・중력 상성의 공격으로 받는 데미지가 크게 증가한다"
+		;ダメージはTIMES 1.70 重力攻撃で効果が延長される仕様がある(ver0309144 2022/12/10 確認)
+	CASE "BRAND"
+		L_RESULTS += "낙인이 찍힌 상태。HP를 회복할 수 없게 되고、즉사공격에 약해진다。"
+		;即死攻撃弱体化は呪いと共通(ver0309144 2022/12/10 確認)
+	CASEELSE
+		RETURNF @"지정미스 ARG = {ARG} ARGS = %ARGS%"
+ENDSELECT
+RETURNF L_RESULTS
+;---- EDIT 005 ADD END ---------------------------
+
+;======================================================================
+;バステカラー
+;======================================================================
+@BADSTATE_COLOR, ARG, ARGS = ""
+#FUNCTION
+SELECTCASE ARGS != ""  ? ARGS # GET_STATE(ARG)
+	CASE "GOOD"
+		RETURNF GETDEFCOLOR()
+	CASE "HAPPY"
+		;ピンク(薄い桃)
+		RETURNF 0xffcccc
+	CASE "SHOCK"
+		;黄(薄い黄)
+		RETURNF 0xffff99
+	CASE "PANIC"
+		;青(薄い蒼)
+		RETURNF 0x99ccff
+	CASE "SLEEP"
+		;青(暗い青)
+		RETURNF 0x009999
+	CASE "FREEZE"
+		;青(薄い蒼)
+		RETURNF 0x0099cc
+	CASE "BIND"
+		;黄(暗い黄)
+		RETURNF 0xcccc00
+	CASE "CLOSE"
+		;紫(薄い紫)
+		RETURNF 0xcc99ff
+	CASE "POISON"
+		;紫
+		RETURNF 0xcc00cc
+	CASE "BOMB"
+		RETURNF COLOR("深紅")
+	CASE "CHARM"
+		;ピンク
+		RETURNF 0xff00ff
+	CASE "PALYZE"
+		;緑
+		RETURNF 0x66cc99
+	CASE "CURSE"
+		;濃い紫
+		RETURNF 0x6600ff
+	CASE "FLY"
+		;濃い黄
+		RETURNF 0xffff00
+	CASE "STONE"
+		;灰色
+		RETURNF 0x999999
+	CASE "DYING"
+		;赤(暗い赤)
+		RETURNF 0x990000
+	CASE "ORGY"
+		;オレンジ
+		RETURNF 0xffaa11
+	CASE "HEAT"
+		;やや暗い赤
+		RETURNF 0xaa0000
+	CASE "FLAME"
+		;鮮やかな紫みの赤
+		RETURNF 0xff1e86
+	CASE "SLIP"
+		;明るい黄みの橙
+		RETURNF 0xffde86
+	CASE "BRAND"
+		;濃い橙
+		RETURNF 0xff6400
+ENDSELECT
+RETURNF -1
+;---- EDIT 005 ADD END ---------------------------
+;======================================================================
+;バステの名称変換関数
+;======================================================================
+@CONVERT_BADSTATE_NAME,ARGS
+#FUNCTIONS
+SELECTCASE TOUPPER(ARGS)
+CASE "GOOD"
+	RETURNF "GOOD"
+CASE "HAPPY", "幸福"
+	RETURNF "HAPPY"
+CASE "SHOCK", "感電"
+	RETURNF "SHOCK"
+CASE "PANIC", "混乱"
+	RETURNF "PANIC"
+CASE "SLEEP", "睡眠", "眠り"
+	RETURNF "SLEEP"
+CASE "FREEZE", "凍結"
+	RETURNF "FREEZE"
+CASE "BIND", "金縛り", "金縛"
+	RETURNF "BIND"
+CASE "CLOSE", "沈黙"
+	RETURNF "CLOSE"
+CASE "POISON", "毒", "猛毒"
+	RETURNF "POISON"
+CASE "BOMB", "爆弾"
+	RETURNF "BOMB"
+CASE "CHARM", "魅了"
+	RETURNF "CHARM"
+CASE "PALYZE", "麻痺"
+	RETURNF "PALYZE"
+CASE "CURSE", "呪い"
+	RETURNF "CURSE"
+CASE "FLY", "蝿化"
+	RETURNF "FLY"
+CASE "STONE", "石化"
+	RETURNF "STONE"
+CASE "DYING", "即死", "주살", "昇天", "死亡", "瀕死"
+	RETURNF "DYING"
+CASE "ORGY", "オルギア"
+	RETURNF "ORGY"
+CASE "HEAT", "ヒート"
+	RETURNF "HEAT"
+CASE "FLAME", "炎上"
+	RETURNF "FLAME"
+CASE "SLIP", "転倒"
+	RETURNF "SLIP"
+CASE "BRAND", "낙인"
+	RETURNF "BRAND"
+CASEELSE
+	RETURNF ARGS
+ENDSELECT
+
+;======================================================================
+;バステのグループ判定関数
+;======================================================================
+@IS_BADSTATE_GROUP, ARGS, ARGS:1
+#FUNCTION
+SIF ISNUMERIC(ARGS)
+	ARGS = %GET_STATE(TOINT(ARGS))%
+SELECTCASE ARGS:1
+	CASE "신경"
+		SIF ARGS == "BIND"
+			RETURNF 1
+		SIF ARGS == "PALYZE"
+			RETURNF 1
+		SIF ARGS == "POISON"
+			RETURNF 1
+		SIF ARGS == "CLOSE"
+			RETURNF 1
+		SIF ARGS == "BOMB"
+			RETURNF 1
+	CASE "정신"
+		SIF ARGS == "HAPPY"
+			RETURNF 1
+		SIF ARGS == "CHARM"
+			RETURNF 1
+		SIF ARGS == "PANIC"
+			RETURNF 1
+		SIF ARGS == "SLEEP"
+			RETURNF 1
+		RETURNF 0
+	CASE "肉体"
+		SIF ARGS == "SHOCK"
+			RETURNF 1
+		SIF ARGS == "FREEZE"
+			RETURNF 1
+		SIF ARGS == "FLAME"
+			RETURNF 1
+		SIF ARGS == "SLIP"
+			RETURNF 1
+		RETURNF 0
+ENDSELECT
+
+;======================================================================
+;バステのグループ判定関数
+;======================================================================
+@BADSTATE_GROUP_TEXT, ARGS
+#FUNCTIONS
+SELECTCASE ARGS
+	CASE "신경"
+		RETURNF "BIND,CLOSE,POISON,BOMB,PALYZE"
+	CASE "정신"
+		RETURNF "HAPPY,PANIC,SLEEP,CHARM"
+	CASE "物理"
+		RETURNF "SHOCK,FREEZE,FLAME,SLIP"
+ENDSELECT
+;========================================
+;ARG	行動者(キャラ番号)
+;ARG:1	対象
+;ARG:2	バステ
+;-バステ耐性の無効化判定関数
+;
+;貫通するのは個別のバステ耐性(ABL:CHARA:상태이상)
+;========================================
+@GET_バステ耐性貫通, ARG, ARG:1, ARG:2
+#DIM L_P
+#DIM L_T
+#DIM L_ステート
+#DIMS L_ステート名
+L_P = ARG
+L_T = ARG:1
+L_ステート = ARG:2
+L_ステート名 '= GET_STATE(L_ステート)
+SIF L_T < 0
+	RETURN 0
+;烙印時に即死が貫通する
+SIF CFLAG:L_T:상태이상 == GET_STATE_NUM("BRAND") && L_ステート名 == "DYING"
+	RETURN 1
+;呪い時に即死貫通
+SIF CFLAG:L_T:상태이상 == GET_STATE_NUM("CURSE") && L_ステート名 == "DYING"
+	RETURN 1
+RETURN 0

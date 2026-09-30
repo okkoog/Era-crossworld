@@ -1,0 +1,891 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_K[[キャラ:조마]]_造魔_1_06_BATTLE.ERB
+;	Facility	:造魔口上（虚心系造魔口上）
+;	Licence		:ライセンスフリー。ご自由にどうぞ
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;-------------------------------------------------
+;〇メモ
+;-------------------------------------------------
+;戦闘口上
+;更新などについては00_COREを見るべし
+;-------------------------------------------------
+
+;-------------------------------------------------
+;○ナビ口上
+;-------------------------------------------------
+;喋ることに迷って「……」を使う、という設定であるので、喋るべきことがあるナビでは基本的にきびきび喋る
+;-------------------------------------------------
+
+
+;=========================================
+;ナビ口上の存在確認
+;この関数が設定されていないと口上が存在しない扱いになる
+;=========================================
+@IS_EXIST_KOJO_BATTLE_NAVI_K[[キャラ:조마]]_1, ARG
+	;特別なコメントがあればここに記載
+	;なければ「専用口上あり」と表示される
+;	RESULTS = 造魔ちゃん（１）のナビ口上です
+	;１を返すと口上が存在してる扱いになるので通常は１で
+	RETURN 1
+
+;=========================================
+;以下ナビ口上
+;
+;TSTR:네비_시추에이션_메인		主に呼び出しタイミングを定義(戦闘開始/メイン画面/戦闘終了)
+;TSTR:네비_시추에이션_서버1		状況を定義
+;TSTR:네비_시추에이션_서버2		状況の補足オプション
+;=========================================
+@KOJO_BATTLE_NAVI_K[[キャラ:조마]]_1, ARG
+;右のような指定も可能→SETCOLOR 0xA0A0A0
+;色見本に#ABCDEFというような書き方がされていた場合は、こちらの書き方(SETCOLOR 0xABCDEF)を使うと良い
+;水色
+;SETCOLOR 0x33ffcc
+;LOCALS = {ARG:1}
+
+;独自定義
+#DIM 現在敵数
+#DIM 方位
+#DIM 距離
+#DIM TEMPCOUNT
+
+
+		;〇ナビ口上分岐
+		;　├戦闘開始
+		;　｜　├通常
+		;　｜　｜　├格下	（レベルが10以上低い）
+		;　｜　｜　├同格
+		;　｜　｜　└格上	（レベルが10以上高い）
+		;　｜　├先制攻撃
+		;　｜　｜　└格下・同格・格上
+		;　｜　├バックアタック
+		;　｜　｜　└格下・同格・格上
+		;　｜　├不意打ち
+		;　｜　｜　└格下・同格・格上
+		;　｜　├バックアタック阻止
+		;　｜　｜　└格下・同格・格上
+		;　｜　└不意打ち阻止
+		;　｜　　　└格下・同格・格上
+		;　├メイン画面
+		;　｜　├重度の危機　※複数が当てはまる場合、その中からランダム
+		;　｜　｜　├半壊			（初期配置の味方の生存者が50％未満）
+		;　｜　｜　├死亡者多数		（死亡者２以上）
+		;　｜　｜　├異常半壊		（バステが66％以上）
+		;　｜　｜　├機能不全		（バステ数＋死亡数が、初期配置味方数の50％以上）
+		;　｜　｜　├PTHP危機		（味方全体合計のHP残存率が50％未満）
+		;　｜　｜　├マスター瀕死	（＠のHPが25％未満かつ死んでいない）
+		;　｜　｜　└マスター死亡	（＠が死亡）
+		;　｜　├中度の危機
+		;　｜　｜　├핀치캐릭터	（死亡者がいるなど）
+		;　｜　｜　├戦力低下		（ポジションに空きが出ている）
+		;　｜　｜　├異常者複数		（バステ者が２以上）
+		;　｜　｜　└PTHP減少		（味方全体合計のHP残存率が75％未満）
+		;　｜　├平常
+		;　｜　｜　├殲滅率90		（敵HPによって変動）
+		;　｜　｜　├殲滅率75
+		;　｜　｜　├殲滅率50
+		;　｜　｜　├殲滅率25
+		;　｜　｜　├殲滅率1
+		;　｜　｜　├殲滅率0
+		;　｜　｜　├PTHP微減		（PTHPが90％未満）
+		;　｜　｜　├一部撃破済み	（敵の初期配置数
+		;　｜　｜　├敵健在			（その他の場合）
+		;　｜　｜　├格下			（レベルが10以上低い）
+		;　｜　｜　├同格
+		;　｜　｜　└格上			（レベルが10以上高い）
+		;　｜　└交渉終了時
+		;　｜　　　├トーク_ものもらい
+		;　｜　　　├トーク_おこらせる
+		;　｜　　　├トーク_会話終了
+		;　｜　　　├トーク_立ち去る
+		;　｜　　　└トーク_逃げられる
+		;　└戦闘終了
+		;　　　├勝利
+		;　　　｜　├계약			（トーク：契約）
+		;　　　｜　├契約失敗		（トーク：契約……したけど容量が足りないとかのヤツ）
+		;　　　｜　└勝利
+		;　　　｜　　　├1ターンキル		（経過ターン数０）
+		;　　　｜　　　├早期決着		（経過ターン数3未満）
+		;　　　｜　　　├長期戦			（経過ターン数7以上）
+		;　　　｜　　　├格下			（レベルが10以上低い）
+		;　　　｜　　　├同格
+		;　　　｜　　　├格上			（レベルが10以上高い）
+		;　　　｜　　　├壊滅的			（味方全体合計のHP残存率が25％未満）
+		;　　　｜　　　├被害甚大		（味方全体合計のHP残存率が50％未満）
+		;　　　｜　　　├被害大			（味方全体合計のHP残存率が75％未満）
+		;　　　｜　　　├被害軽微		（味方全体合計のHP残存率が90％未満）
+		;　　　｜　　　└被害皆無
+		;　　　├敗北
+		;　　　└도주
+
+		;〇使いそうなフラグ
+		;TFLAG:아군초기배치수
+		;TFLAG:아군배치수
+		;TFLAG:아군HP잔존율
+		;TFLAG:아군사망자수
+		;TFLAG:아군BS수
+		;TFLAG:적아군레벨차
+		;TFLAG:적초기배치수
+		;TFLAG:적배치수
+		;TFLAG:적HP잔존율
+		;FLAG:경과턴수
+		;FLAG:도주불가플래그
+
+
+	IF 0
+	ELSEIF TSTR:네비_시추에이션_메인 == "戦闘開始"
+		;方角確認
+		;全方位がありえる
+		方位 = RAND:11 + 1
+		;距離
+		距離 = RAND:20 + 5
+
+		IF 0
+		ELSEIF TSTR:네비_시추에이션_서버1 == "先制攻撃"
+			IF 0
+			ELSEIF RAND:3 == 0
+				TEMPCOUNT = RAND:20 + 15
+				BTL_KOJO_RESULTS:0 = 기습 양호. 자세를 재정비할 때까지 {TEMPCOUNT}초로 예측……
+			ELSEIF RAND:2 == 0
+				IF TFLAG:적초기배치수 > 2
+					BTL_KOJO_RESULTS:0 = 선제공격을. 적의 수를 줄이는 것을 권장.
+				ELSE
+					BTL_KOJO_RESULTS:0 = 적영 1체, 사일런트 킬을 권장.
+				ENDIF
+			ELSE
+				BTL_KOJO_RESULTS:0 = 기습 성공, 제압을 개시해 주십시오……
+			ENDIF
+		;思わず「マスター！」って言っちゃう造魔ちゃんかわいい
+		ELSEIF TSTR:네비_시추에이션_서버1 == "バックアタック"
+			IF 0
+			ELSEIF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 후방에 적 그림자읏……!
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = %CSTR:이인칭%! 배후에 적 확인됐습니다읏……!?
+			ELSE
+				BTL_KOJO_RESULTS:0 = 백어택입니다, 후열의 여러분, 방어를……!
+			ENDIF
+		ELSEIF TSTR:네비_시추에이션_서버1 == "バックアタック阻止"
+			IF 0
+			ELSEIF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = 적영 탐지. 모모타로 시스템 올 그린.
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 모모타로에 반응 있음. 후방입니다, %CSTR:이인칭%……
+			;たぶんパソコン撫でてると思う
+			ELSE
+				BTL_KOJO_RESULTS:0 = 기습 감지. 모모타로 님, 훌륭한 일처리입니다.
+			ENDIF
+		ELSEIF TSTR:네비_시추에이션_서버1 == "不意打ち"
+			IF 0
+			ELSEIF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = 읏…… 반응 있음, 기습입니다읏……!
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 적측, 공격 준비가 완료되어 있습니다…… 회피를!
+			ELSE
+				BTL_KOJO_RESULTS:0 = 적측, 공격 준비가 완료되어 있습니다…… 방어를!
+			ENDIF
+		ELSEIF TSTR:네비_시추에이션_서버1 == "不意打ち阻止"
+			距離 += RAND:10 + 5
+			IF RAND:3 == 0
+				BTL_KOJO_RESULTS:0 = 적영 탐지. 모모타로 시스템 올 그린.
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 모모타로에 반응 있음. {方位}시 방향, 거리 {距離}. %CSTR:이인칭%……
+			;たぶんパソコン撫でてると思う
+			ELSE
+				BTL_KOJO_RESULTS:0 = 기습 감지. 모모타로 님, 훌륭한 일처리입니다.
+			ENDIF
+		;ELSEIF TSTR:네비_시추에이션_서버1 == "통상"
+		ELSE
+			IF 0
+			ELSEIF TSTR:네비_시추에이션_서버2 == "格下"
+				IF 0
+					;サンプル
+					BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体。
+					BTL_KOJO_RESULTS:1 = 조무래기지만 방심은 금물입니다~
+				;平常時の報告ってことで敵の数に関わらず出る
+				ELSEIF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 敵影確認。
+					BTL_KOJO_RESULTS:1 = 数{TFLAG:적초기배치수}。正面、距離{距離}周辺。
+				ELSEIF TFLAG:적초기배치수 >= 7
+					IF RAND:2
+						BTL_KOJO_RESULTS:0 = 적 발견. 정면, 다수. 조심하시길……
+					ELSE
+						BTL_KOJO_RESULTS:0 = 약한 적 다수. %CSTR:이인칭%, 방심하지 마시기를……
+					ENDIF
+				ELSEIF TFLAG:적초기배치수 >= 7
+					TEMPCOUNT = 方位 + RAND:3 + 1
+					BTL_KOJO_RESULTS:0 = 敵影{TFLAG:적초기배치수}。
+					BTL_KOJO_RESULTS:1 = {TEMPCOUNT}시, {方位}시 방향. 포위에 주의를……
+				ELSEIF TFLAG:적초기배치수 >= 5
+					BTL_KOJO_RESULTS:0 = 적 {TFLAG:적초기배치수}체.
+					BTL_KOJO_RESULTS:1 = {方位}時方向、距離{距離}。
+				ELSEIF TFLAG:적초기배치수 >= 4
+					BTL_KOJO_RESULTS:0 = 敵性体捕捉、{TFLAG:적초기배치수}。
+					BTL_KOJO_RESULTS:1 = %CSTR:이인칭%, 유린을.
+				ELSEIF TFLAG:적초기배치수 >= 3
+					TEMPCOUNT = 方位 + RAND:3 + 1
+					BTL_KOJO_RESULTS:0 = 적 포착, {TEMPCOUNT}…… 아니, {方位}시 방향.
+					BTL_KOJO_RESULTS:1 = 도주 중인 적을 추적합니다.
+				ELSEIF TFLAG:적초기배치수 >= 2
+					BTL_KOJO_RESULTS:0 = 敵影確認。
+					BTL_KOJO_RESULTS:1 = {方位}時方向、距離{距離}。{TFLAG:적초기배치수}。
+				ELSEIF TFLAG:적초기배치수 >= 1
+					BTL_KOJO_RESULTS:0 = 単体捕捉。
+					BTL_KOJO_RESULTS:1 = 정면입니다, %CSTR:이인칭%.
+				ELSE
+					;死に分岐だが一応
+					BTL_KOJO_RESULTS:0 = 적 포착. {方位}시 방향. {TFLAG:적초기배치수}체 확인……
+				ENDIF
+			ELSEIF TSTR:네비_시추에이션_서버2 == "同格"
+				IF 0
+					;サンプル
+					BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体。
+					BTL_KOJO_RESULTS:1 = 조무래기지만 방심은 금물입니다~
+				;平常時の報告ってことで敵の数に関わらず出る
+				ELSEIF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 敵影確認。
+					BTL_KOJO_RESULTS:1 = 数{TFLAG:적초기배치수}。正面、距離{距離}周辺。
+				ELSEIF TFLAG:적초기배치수 >= 7
+					BTL_KOJO_RESULTS:0 = 敵影確認。数{TFLAG:적초기배치수}。
+					BTL_KOJO_RESULTS:1 = 正面、距離{距離}周辺。
+				ELSEIF TFLAG:적초기배치수 >= 6
+					BTL_KOJO_RESULTS:0 = 적성 대상, 거리 {距離}에 확인.
+				ELSEIF TFLAG:적초기배치수 >= 4
+					BTL_KOJO_RESULTS:0 = 敵性対象捕捉、{TFLAG:적초기배치수}。
+					BTL_KOJO_RESULTS:1 = %CSTR:이인칭%, 조심하십시오……
+				ELSEIF TFLAG:적초기배치수 >= 3
+					TEMPCOUNT = TEMPCOUNT + RAND:3 + 1
+					BTL_KOJO_RESULTS:0 = 적 포착, 거리 {距離}…… 아니, {TEMPCOUNT}.
+					BTL_KOJO_RESULTS:1 = 그 외 적영 없음……
+				ELSEIF TFLAG:적초기배치수 >= 2
+					BTL_KOJO_RESULTS:0 = {方位}時方向、敵{TFLAG:적초기배치수}確認。
+					BTL_KOJO_RESULTS:1 = 거리를 좁혀오고 있습니다.
+				ELSEIF TFLAG:적초기배치수 >= 1
+					BTL_KOJO_RESULTS:0 = 적 확인. 정면, 1. 주변 경계를 개시합니다……
+				ELSE
+					;死に分岐だが一応
+					BTL_KOJO_RESULTS:0 = 적 포착. {方位}시 방향. {TFLAG:적배치수}체 확인……
+				ENDIF
+
+			ELSEIF TSTR:네비_시추에이션_서버2 == "格上"
+				IF 0
+					;サンプル
+					BTL_KOJO_RESULTS:0 = 敵{TFLAG:적초기배치수}体。
+					BTL_KOJO_RESULTS:1 = 조무래기지만 방심은 금물입니다~
+				;ちょっと悲鳴
+				ELSEIF TFLAG:적초기배치수 >= 10
+					BTL_KOJO_RESULTS:0 = 강적 10체! %CSTR:이인칭%, 즉시 이탈을 권장……!
+				ELSEIF TFLAG:적초기배치수 >= 7
+					TEMPCOUNT = TFLAG:적초기배치수 - 2
+					BTL_KOJO_RESULTS:0 = 강적 {TEMPCOUNT}…… 아니, {TFLAG:적초기배치수}체읏……!?
+				ELSEIF TFLAG:적초기배치수 >= 6
+					BTL_KOJO_RESULTS:0 = 강적, {TFLAG:적초기배치수}체읏…… 이탈을 권장합니다……!
+				ELSEIF TFLAG:적초기배치수 >= 5
+					BTL_KOJO_RESULTS:0 = 강적 {方位}시 방향, 거리 {距離}읏……
+				ELSEIF TFLAG:적초기배치수 >= 4
+					BTL_KOJO_RESULTS:0 = 敵性対象捕捉、{TFLAG:적초기배치수}。
+					BTL_KOJO_RESULTS:1 = %CSTR:이인칭%, 조심하십시오……
+				ELSEIF TFLAG:적초기배치수 >= 3
+					TEMPCOUNT = TEMPCOUNT + RAND:3 + 1
+					BTL_KOJO_RESULTS:0 = 적 포착, 거리 {距離}…… 아니, {TEMPCOUNT}.
+					BTL_KOJO_RESULTS:1 = 주변 확인을 철저히 하겠습니다……
+				ELSEIF TFLAG:적초기배치수 >= 2
+					BTL_KOJO_RESULTS:0 = 기습 감지…… 들켰습니다.
+					BTL_KOJO_RESULTS:1 = {方位}時方向、敵{TFLAG:적초기배치수}。
+				ELSEIF TFLAG:적초기배치수 >= 1
+					BTL_KOJO_RESULTS:0 = 강적, 포착…… 바로 정면입니다, %CSTR:이인칭%.
+				ELSE
+					;死に分岐だが一応
+					BTL_KOJO_RESULTS:0 = 적 포착. {方位}시 방향. {TFLAG:적배치수}체 확인……
+				ENDIF
+			ENDIF
+		ENDIF
+	ELSEIF TSTR:네비_시추에이션_메인 == "メイン画面"
+		IF 0
+		ELSEIF TSTR:네비_시추에이션_서버1 == "重度の危機"
+			IF 0
+			ELSEIF TSTR:네비_시추에이션_서버2 == "半壊"
+				;逃走不能で半壊
+				IF FLAG:도주불가플래그
+					IF 0
+					ELSEIF RAND:3 == 0 && 陥落() > 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, ……읏……
+						BTL_KOJO_RESULTS:1 = %CSTR:이인칭%, 부디 무사히 귀환하시기를 기도드립니다……!
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 도주 경로를 발견할 수 없습니다!
+						BTL_KOJO_RESULTS:1 = 전투에 집중을……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = 상황, 불리……! %CSTR:이인칭%, 전열을 재정비하십시오……!
+					ENDIF
+				ELSE
+					IF 0
+					;無力感で泣きそうになってる
+					ELSEIF RAND:3 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 방어와 회복,
+						BTL_KOJO_RESULTS:1 = 혹은 후퇴를 권장……!
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 즉시 후퇴를 권장……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = 즉시 이탈을 권장……!
+					ENDIF
+				ENDIF
+			ELSEIF TSTR:네비_시추에이션_서버2 == "死亡者多数"
+				;逃走不能で半壊
+				IF FLAG:도주불가플래그
+					IF 0
+					ELSEIF RAND:3 == 0 && 陥落() > 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, ……읏……
+						BTL_KOJO_RESULTS:1 = %CSTR:이인칭%, 부디 무사히 귀환하시기를 기도드립니다……!
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 도주 경로를 발견할 수 없습니다!
+						BTL_KOJO_RESULTS:1 = 전투에 집중을……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = 상황, 불리……! %CSTR:이인칭%, 전열을 재정비하십시오……!
+					ENDIF
+				ELSE
+					IF 0
+					;無力感で泣きそうになってる
+					ELSEIF RAND:3 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 방어와 회복,
+						BTL_KOJO_RESULTS:1 = 혹은 후퇴를 권장……!
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 즉시 후퇴를 권장……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = 즉시 이탈을 권장……!
+					ENDIF
+				ENDIF
+			ELSEIF TSTR:네비_시추에이션_서버2 == "異常半壊"
+				IF 0
+				ELSEIF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 상태이상 부여, 다수! 회복을……!
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = %CSTR:이인칭%、異常付与多数……！
+				ELSE
+					BTL_KOJO_RESULTS:0 = 여러분, 자연치유력을 높여주십시오……!
+				ENDIF
+			;バステ数＋死亡数が、初期配置味方数の50％以上
+			ELSEIF TSTR:네비_시추에이션_서버2 == "機能不全"
+				;逃走不能で半壊
+				IF FLAG:도주불가플래그
+					IF 0
+					ELSEIF RAND:3 == 0 && 陥落() > 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, ……읏……
+						BTL_KOJO_RESULTS:1 = %CSTR:이인칭%, 부디 무사히 귀환하시기를 기도드립니다……!
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 도주 경로를 발견할 수 없습니다!
+						BTL_KOJO_RESULTS:1 = 전투에 집중을……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = 상황, 불리……! %CSTR:이인칭%, 전열을 재정비하십시오……!
+					ENDIF
+				ELSE
+					IF 0
+					;無力感で泣きそうになってる
+					ELSEIF RAND:3 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 방어와 회복,
+						BTL_KOJO_RESULTS:1 = 혹은 후퇴를 권장……!
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 즉시 후퇴를 권장……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = 즉시 이탈을 권장……!
+					ENDIF
+				ENDIF
+			ELSEIF TSTR:네비_시추에이션_서버2 == "PTHP危機"
+				;逃走不能で半壊
+				IF FLAG:도주불가플래그
+					IF 0
+					ELSEIF RAND:4 == 0 && 陥落() > 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%、……%CSTR:이인칭%！
+						BTL_KOJO_RESULTS:1 = 부디…… 부디 무사히 돌아오시길읏……!
+					ELSEIF RAND:3 == 0 && 陥落() > 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%、……%CSTR:이인칭%！
+						BTL_KOJO_RESULTS:1 = 도, 도주…… 아니, 회복 대상의 한정을 권장!
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 궁지로 판단! 패를 꺼내야 할 때라고 사료됩니다……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 응답을!
+						BTL_KOJO_RESULTS:1 = 승률은 아직 남아있습니다……!
+					ENDIF
+				ELSE
+					IF 0
+					ELSEIF RAND:3 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 후퇴를 제안합니다……!
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 즉시 후퇴를 권장……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = 즉시 이탈을 권장……!
+					ENDIF
+				ENDIF
+			ELSEIF TSTR:네비_시추에이션_서버2 == "マスター瀕死"
+				;逃走不能で半壊
+				IF FLAG:도주불가플래그
+					IF 0
+					ELSEIF RAND:4 == 0 && 陥落() > 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%、……%CSTR:이인칭%！
+						BTL_KOJO_RESULTS:1 = 부디…… 부디 무사히 돌아오시길읏……!
+					ELSEIF RAND:3 == 0 && 陥落() > 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%、……%CSTR:이인칭%！
+						BTL_KOJO_RESULTS:1 = 도, 도주…… 아니, 회복 대상의 한정을 권장!
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 궁지로 판단! 패를 꺼내야 할 때라고 사료됩니다……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 응답을!
+						BTL_KOJO_RESULTS:1 = 승률은 아직 남아있습니다……!
+					ENDIF
+				ELSE
+					IF 0
+					ELSEIF RAND:3 == 0 && 陥落() > 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 무사하십니까……읏
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 즉시 회복을……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 판단을 그르치지 마시기를……!
+					ENDIF
+				ENDIF
+			ELSEIF TSTR:네비_시추에이션_서버2 == "マスター死亡"
+				IF 0
+				;無力感で泣きそうになってる
+				ELSEIF RAND:3 == 0 && 陥落() > 0
+					BTL_KOJO_RESULTS:0 = 아앗…… %CSTR:이인칭%읏!?
+					BTL_KOJO_RESULTS:1 = 누, 누구든, %CSTR:이인칭%의 즉시 회복을읏……!
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = %CSTR:이인칭%읏……
+					BTL_KOJO_RESULTS:1 = ……전력이 감소했습니다! 여러분, 방어와 회복에 전념을……!
+				ELSE
+					;死んでるけど死んでないと言うか、そういう解釈
+					BTL_KOJO_RESULTS:0 = 여러분, 전투불능자의 방호를……!
+				ENDIF
+			ELSE
+				;死に分岐のはずだが、なんか増えた時のためにきちんとしておこうねって
+				IF 0
+				;無力感で泣きそうになってる
+				ELSEIF RAND:3 == 0 && 陥落() > 0
+					BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 부디, 무사히 귀환하시기를읏……
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = %CSTR:이인칭%읏, 위기 대처를 우선해 주십시오……
+				ELSE
+					;死んでるけど死んでないと言うか、そういう解釈
+					BTL_KOJO_RESULTS:0 = 여러분, 대처를……!
+				ENDIF
+			ENDIF
+
+		ELSEIF TSTR:네비_시추에이션_서버1 == "中度の危機"
+			IF 0
+			ELSEIF TSTR:네비_시추에이션_서버2 == "異常者複数"
+				IF 0
+				ELSEIF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 상태이상 부여, 다수. 회복을……
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = %CSTR:이인칭%、異常付与多数……
+				ELSE
+					BTL_KOJO_RESULTS:0 = 여러분, 자연치유력을 높여주십시오……
+				ENDIF
+			ELSEIF TSTR:네비_시추에이션_서버2 == "핀치캐릭터"
+				IF 0
+					;ピンチになったキャラは下記のように書ける
+					;BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%がやられた！誰か助けたげて！
+				ELSEIF TSTR:핀치캐릭터위기내용 == "DYING"
+					IF 0
+					ELSEIF RAND:3 == 0
+						BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%様、戦闘不能……
+						BTL_KOJO_RESULTS:1 = 전선이 무너지지 않도록, 구호를 뒤로 미루는 것도 고려해 주십시오……!
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 전투불능자 1명 발생읏……
+						BTL_KOJO_RESULTS:1 = 방어, 회복을 권장……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명% 님, 전투불능…… 소생을 권장……
+					ENDIF
+				ELSEIF TSTR:핀치캐릭터위기내용 == "瀕死"
+					IF 0
+					ELSEIF RAND:3 == 0
+						BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명%様、生命力減衰……
+						BTL_KOJO_RESULTS:1 = 회복을 권장합니다……
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %TSTR:핀치캐릭터명%의 구호를 권장합니다……
+					ELSE
+						BTL_KOJO_RESULTS:0 = %TSTR:핀치캐릭터명% 님, HP 감소 중입니다……!
+					ENDIF
+				ELSEIF TSTR:핀치캐릭터위기내용 == "重症"
+				ELSEIF TSTR:핀치캐릭터위기내용 == "HAPPY"
+					IF 0
+;					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:○○]]
+;						BTL_KOJO_RESULTS:0 = 
+					;幸せは私の胸の中にある。とか言えるキャラだったら生きやすいと思う
+					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %CSTR:이인칭%의 행복은 거기에 있지 않습니다……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %TSTR:핀치캐릭터명% 님이 다행감 상태입니다, 정신 차리게 하기를 권장……
+					ENDIF
+				ELSEIF TSTR:핀치캐릭터위기내용 == "PANIC"
+					IF 0
+;					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:○○]]
+;						BTL_KOJO_RESULTS:0 = 
+					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 제정신을 차려주십시오……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %TSTR:핀치캐릭터명% 님이 혼란 상태입니다, 정신 차리게 하기를 권장……
+					ENDIF
+				ELSEIF TSTR:핀치캐릭터위기내용 == "SLEEP"
+					IF 0
+;					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:○○]]
+;						BTL_KOJO_RESULTS:0 = 
+					;頑張って声を張り上げる造魔ちゃん
+					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, ……아침입니다! 아, ……아ー침ー입ー니ー다ー!!!
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %TSTR:핀치캐릭터명% 님이 수면 상태입니다, 강제 기상을 권장……
+					ENDIF
+				ELSEIF TSTR:핀치캐릭터위기내용 == "BIND"
+					IF 0
+;					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:○○]]
+;						BTL_KOJO_RESULTS:0 = 
+					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 결박당하는 연습은 나중에……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %TSTR:핀치캐릭터명% 님이 결박 상태입니다, 속박 해제를 권장……
+					ENDIF
+				ELSEIF TSTR:핀치캐릭터위기내용 == "CLOSE"
+					IF 0
+;					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:○○]]
+;						BTL_KOJO_RESULTS:0 = 
+					;勘違いする造魔ちゃん
+					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, ……대답을……!?
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %TSTR:핀치캐릭터명% 님이 침묵 상태입니다, 주박 해제를 권장……
+					ENDIF
+				ELSEIF TSTR:핀치캐릭터위기내용 == "POISON"
+					IF 0
+;					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:○○]]
+;						BTL_KOJO_RESULTS:0 = 
+					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, ……신속한 해독을!
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %TSTR:핀치캐릭터명% 님이 중독 상태입니다, 해독을 권장……
+					ENDIF
+				ELSEIF TSTR:핀치캐릭터위기내용 == "BOMB"
+					IF 0
+;					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:○○]]
+;						BTL_KOJO_RESULTS:0 = 
+					;どう注意しろと
+					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, ……폭탄화되었습니다, 내부 폭파에 주의를……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %TSTR:핀치캐릭터명% 님이 폭탄화 상태입니다, 해제를 권장……
+					ENDIF
+				ELSEIF TSTR:핀치캐릭터위기내용 == "CHARM"
+					IF 0
+;					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:○○]]
+;						BTL_KOJO_RESULTS:0 = 
+					;自分が、とは言えないタイプ
+					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, ……그것보다 매력적인 자가 주위에 잔뜩 있습니다……!!!
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %TSTR:핀치캐릭터명% 님이 매료 상태입니다, 정신 차리게 하기를 권장……
+					ENDIF
+				ELSEIF TSTR:핀치캐릭터위기내용 == "PALYZE"
+					IF 0
+;					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:○○]]
+;						BTL_KOJO_RESULTS:0 = 
+					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, ……즉시 회복을, 누구든……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %TSTR:핀치캐릭터명% 님이 마비 상태입니다, 해제를 권장……
+					ENDIF
+				ELSEIF TSTR:핀치캐릭터위기내용 == "CURSE"
+					IF 0
+;					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:○○]]
+;						BTL_KOJO_RESULTS:0 = 
+					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 즉사 공격에 주의를……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %TSTR:핀치캐릭터명% 님이 주박 상태입니다, 가드를 권장……
+					ENDIF
+				ELSEIF TSTR:핀치캐릭터위기내용 == "FLY"
+					IF 0
+;					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:○○]]
+;						BTL_KOJO_RESULTS:0 = 
+					;基本蠅王のスキルだけのハズよね
+					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 고위 마왕의 권속화…… 아니, 저주! 즉시 해제를……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %TSTR:핀치캐릭터명% 님이 파리화 상태입니다, 피격에 주의를……
+					ENDIF
+				ELSEIF TSTR:핀치캐릭터위기내용 == "STONE"
+					IF 0
+;					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:○○]]
+;						BTL_KOJO_RESULTS:0 = 
+					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 읏…… 여러분, 석화 해제 수단은 있습니까읏……!?
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %TSTR:핀치캐릭터명% 님이 석화 상태입니다, 저주를 풀어야 합니다읏……
+					ENDIF
+				ELSEIF TSTR:핀치캐릭터위기내용 == "FLAME"
+					IF 0
+;					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:○○]]
+;						BTL_KOJO_RESULTS:0 = 
+					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 읏…… 진정하시고 진화를 서둘러 주십시오……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %TSTR:핀치캐릭터명% 님이 염상 중입니다, 불을 꺼야……
+					ENDIF
+				ELSEIF TSTR:핀치캐릭터위기내용 == "SLIP"
+					IF 0
+;					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:○○]]
+;						BTL_KOJO_RESULTS:0 = 
+					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%읏…… 여러분, %CSTR:이인칭%께서 일어나실 때까지 경호를……!
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %TSTR:핀치캐릭터명% 님이 넘어졌습니다…… 일어날 때까지 원호를……
+					ENDIF
+				ELSEIF TSTR:핀치캐릭터위기내용 == "BLAND"
+					IF 0
+;					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:○○]]
+;						BTL_KOJO_RESULTS:0 = 
+					;キレる造魔ちゃん
+					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%께 각인…… 각인이읏…… 즉시 해제를!!!
+					;当然持ち物に刻印されてもキレる
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %TSTR:핀치캐릭터명% 님께 각인이 멋대로 새겨지고 있습니다……! 즉시 해제를!
+					ENDIF
+				;その他の状態異常（ないはず）
+				ELSE
+					IF 0
+;					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:○○]]
+;						BTL_KOJO_RESULTS:0 = 
+					ELSEIF NO:(TFLAG:핀치캐릭터) == [[キャラ:당신]]
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%께 상태이상 확인…… 치료를……
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %TSTR:핀치캐릭터명%에게 상태이상 확인…… 치료를……
+					ENDIF
+				ENDIF
+			ELSEIF TSTR:네비_시추에이션_서버2 == "戦力低下"
+				IF 0
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 전열에 공백 확인…… 전력 확충을 권장합니다……
+				ELSE
+					BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 전열에 공백 확인…… 소환을 권장……
+				ENDIF
+			ELSEIF TSTR:네비_시추에이션_서버2 == "PTHP減少"
+				IF 0
+				ELSEIF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 전투 지속…… HP 경고. HP 50% 이하 존재……
+				ELSEIF RAND:2 == 0
+					BTL_KOJO_RESULTS:0 = 조심하십시오, 피격 피해가 쌓이고 있습니다……
+				ELSE
+					BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 회복은 서둘러서……
+				ENDIF
+			ELSE
+				;死に分岐のはず
+			ENDIF
+		ELSEIF TSTR:네비_시추에이션_서버1 == "平常"
+			IF 0
+			
+			;戦闘中・危険な状態の味方はいない
+			
+			;逃走不能≒ボス戦の時のみ出る
+			ELSEIF !RAND:4 && FLAG:도주불가플래그 
+				TEMPCOUNT = FLAG:경과턴수 + 1
+				IF 0
+				ELSEIF FLAG:경과턴수 >= 10
+					IF 0
+					ELSEIF RAND:3 == 0
+						BTL_KOJO_RESULTS:0 = 현재, {TEMPCOUNT}라운드……
+						BTL_KOJO_RESULTS:1 = 파이널 라운드로 삼도록 하죠……
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = {TEMPCOUNT}턴 경과……
+						BTL_KOJO_RESULTS:1 = 마음을 놓지 마시고…… 집중력을 유지해 주십시오……
+					ELSE
+						BTL_KOJO_RESULTS:0 = {TEMPCOUNT}턴 경과…… %CSTR:이인칭%, 사고에 주의하시길……
+					ENDIF
+				ELSEIF FLAG:경과턴수 >= 3
+					BTL_KOJO_RESULTS:0 = 자원 잔여율 확인…… 불측의 가능성 있음.
+					BTL_KOJO_RESULTS:1 = %CSTR:이인칭%, 자원이 다하기 전에 결판을……
+				ELSE
+					BTL_KOJO_RESULTS:0 = 피격율…… 회복력…… 공격력…… 문제 없음.
+					BTL_KOJO_RESULTS:1 = %CSTR:이인칭%, 자원이 다하기 전에 결판을……
+				ENDIF
+
+			;殲滅率系
+			ELSEIF !RAND:3
+				IF 0
+				;↑敵が健在↑
+				;↓敵が壊滅↓
+				ELSEIF TSTR:네비_시추에이션_서버2 == "殲滅率0"
+					BTL_KOJO_RESULTS:0 = 敵戦力100％……
+					BTL_KOJO_RESULTS:1 = 강화, 약화는 끝나셨습니까, %CSTR:이인칭%……
+				ELSEIF TSTR:네비_시추에이션_서버2 == "殲滅率1"
+					BTL_KOJO_RESULTS:0 = 敵戦力健在……
+					BTL_KOJO_RESULTS:1 = 신중하게 행동을 선택해 주십시오, %CSTR:이인칭%……
+				ELSEIF TSTR:네비_시추에이션_서버2 == "殲滅率25"
+					BTL_KOJO_RESULTS:0 = 敵戦力75％……
+					BTL_KOJO_RESULTS:1 = 전투 속행 중. 조심하십시오, %CSTR:이인칭%……
+				ELSEIF TSTR:네비_시추에이션_서버2 == "殲滅率50"
+					BTL_KOJO_RESULTS:0 = 敵戦力半減……
+					BTL_KOJO_RESULTS:1 = 밀어붙이고 있습니다. 압도하도록 하죠……
+				ELSEIF TSTR:네비_시추에이션_서버2 == "殲滅率75"
+					BTL_KOJO_RESULTS:0 = 敵戦力25％未満……
+					BTL_KOJO_RESULTS:1 = 정중하게 숨통을 끊도록 하죠, %CSTR:이인칭%……
+				ELSEIF TSTR:네비_시추에이션_서버2 == "殲滅率90"
+					BTL_KOJO_RESULTS:0 = 敵戦力10％未満……
+					BTL_KOJO_RESULTS:1 = 몰아넣었다고 방심하지 마시기를, %CSTR:이인칭%……
+				;敵戦力が０％に近い
+				ELSE
+					BTL_KOJO_RESULTS:0 = 적 전력, 앞으로 얼마 안 남음……
+					BTL_KOJO_RESULTS:1 = 결정타를, %CSTR:이인칭%……
+				ENDIF
+			;格下格上
+			ELSEIF !RAND:2
+				IF 0
+				ELSEIF TSTR:네비_시추에이션_서버2 == "格下"
+					BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 적은 격하입니다만……
+					BTL_KOJO_RESULTS:1 = ……방심 따위는 하지 마시기를 부탁드립니다……
+				ELSEIF TSTR:네비_시추에이션_서버2 == "同格"
+					BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 적은 호각입니다……
+					BTL_KOJO_RESULTS:1 = 부디 침착하게 판단을……
+				ELSEIF TSTR:네비_시추에이션_서버2 == "格上"
+					BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 적은 격상입니다……
+					BTL_KOJO_RESULTS:1 = 강화, 약화를 사용해 주십시오……
+				ENDIF
+			ELSE
+				IF 0
+				ELSEIF TSTR:네비_시추에이션_서버2 == "PTHP微減"
+					IF 0
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, HP가 다소 줄어드셨습니다……
+						BTL_KOJO_RESULTS:1 = 광역 회복을 건의드립니다……
+					ENDIF
+				ELSEIF TSTR:네비_시추에이션_서버2 == "一部撃破済み"
+					IF 0
+					ELSEIF RAND:3 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 적의 수가 줄고 있습니다…… 힘으로 밀어붙이기를 권장……
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 적의 수가 줄고 있습니다…… 반격 경계를 건의……
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 적의 수가 줄고 있습니다…… 재차 경계를……
+					ENDIF
+				ELSEIF TSTR:네비_시추에이션_서버2 == "敵健在"
+					IF 0
+					ELSEIF RAND:3 == 0
+						IF FLAG:경과턴수 > 10
+							BTL_KOJO_RESULTS:0 = 팽팽히 맞서는 중…… 강적일까요…… 아니, %CSTR:이인칭%께는읏……
+						ELSE
+							BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 집중 공격을 권장합니다……
+						ENDIF
+					ELSEIF RAND:2 == 0
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 광범위 공격을 권장……
+					ELSE
+						BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 머릿수를, 우선 줄이는 것을 제안합니다……
+					ENDIF
+					
+				ENDIF
+			ENDIF
+;			ELSEIF TSTR:네비_시추에이션_서버2 == "トーク_ものもらい"
+;			ELSEIF TSTR:네비_시추에이션_서버2 == "トーク_おこらせる"
+;			ELSEIF TSTR:네비_시추에이션_서버2 == "トーク_会話終了"
+;			ELSEIF TSTR:네비_시추에이션_서버2 == "トーク_立ち去る"
+;			ELSEIF TSTR:네비_시추에이션_서버2 == "トーク_逃げられる"
+		ENDIF
+	ELSEIF TSTR:네비_시추에이션_메인 == "戦闘終了"
+		IF 0
+		ELSEIF TSTR:네비_시추에이션_서버1 == "勝利"
+			IF 0
+;			ELSEIF TSTR:네비_시추에이션_서버2 == "계약"
+;			ELSEIF TSTR:네비_시추에이션_서버2 == "契約失敗"
+;			;以下、交渉の結果でない勝利
+;			ELSEIF TSTR:네비_시추에이션_서버2 == "1ターンキル"
+;			ELSEIF TSTR:네비_시추에이션_서버2 == "早期決着"
+;			ELSEIF TSTR:네비_시추에이션_서버2 == "長期戦"
+;			ELSEIF TSTR:네비_시추에이션_서버2 == "壊滅的"
+;			ELSEIF TSTR:네비_시추에이션_서버2 == "被害甚大"
+;			ELSEIF TSTR:네비_시추에이션_서버2 == "被害大"
+;			ELSEIF TSTR:네비_시추에이션_서버2 == "被害軽微"
+;			ELSEIF TSTR:네비_시추에이션_서버2 == "被害皆無"
+
+			ELSEIF TSTR:네비_시추에이션_서버2 == "格下"
+				IF 0
+				ELSEIF RAND:5 == 0
+					BTL_KOJO_RESULTS:0 = 전투 완료…… 으응…… 아니, 문제없습니다……
+				ELSEIF RAND:4 == 0
+					BTL_KOJO_RESULTS:0 = 주변에서 적 그림자는 소멸…… 장비 점검을……
+				ELSEIF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 상황 종료…… %CSTR:이인칭%, 주변 경계는 맡겨 주십시오……
+				ELSEIF RAND:2 == 0 && 陥落() > 0
+					;意訳：やだ、血が出てるのカッコいいけどぉ……！
+					BTL_KOJO_RESULTS:0 = 戦闘完了……%CSTR:이인칭%……
+					BTL_KOJO_RESULTS:1 = …………외모 5% 상승 중. 얼굴을 닦아 주십시오.
+				ELSE
+					BTL_KOJO_RESULTS:0 = 전투…… 종료…… %CSTR:이인칭%, 주변 확인을……
+				ENDIF
+			ELSEIF TSTR:네비_시추에이션_서버2 == "同格"
+				IF 0
+				ELSEIF RAND:5 == 0
+					BTL_KOJO_RESULTS:0 = 남은 적 없음…… 수고하셨습니다…… 여러분.
+				ELSEIF RAND:4 == 0
+					BTL_KOJO_RESULTS:0 = 주변에서 적 그림자는 소멸…… 장비 점검을……
+				ELSEIF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 상황 종료…… %CSTR:이인칭%, 주변 경계를……
+				ELSEIF RAND:2 == 0 && 陥落(ASSI) > 0
+					BTL_KOJO_RESULTS:0 = 戦闘完了……%CSTR:이인칭%……
+					BTL_KOJO_RESULTS:1 = …………부상은 없으십니까……?
+				ELSE
+					BTL_KOJO_RESULTS:0 = 전투…… 종료…… %CSTR:이인칭%, 자세를 바로잡아 주십시오……
+				ENDIF
+			ELSEIF TSTR:네비_시추에이션_서버2 == "格上"
+				IF 0
+				ELSEIF RAND:5 == 0
+					BTL_KOJO_RESULTS:0 = 전투 완료…… 증원은 확인되지 않음. 휴식을……
+				ELSEIF RAND:4 == 0
+					BTL_KOJO_RESULTS:0 = 주변에서 적 그림자는 소멸…… 장비 점검을……
+				ELSEIF RAND:3 == 0
+					BTL_KOJO_RESULTS:0 = 상황 종료…… %CSTR:이인칭%, 주변 경계를……
+				ELSEIF RAND:2 == 0 && 陥落(ASSI) > 0
+					BTL_KOJO_RESULTS:0 = 戦闘完了……%CSTR:이인칭%……
+					BTL_KOJO_RESULTS:1 = ……매력 수치 15 상승. 멋지다고 판단합니다.
+				ELSE
+					BTL_KOJO_RESULTS:0 = 전투…… 종료…… %CSTR:이인칭%, 자세를 바로잡아 주십시오……
+				ENDIF
+			ELSE
+			ENDIF
+		;ﾃﾞｯﾃﾞｯﾃﾞﾃﾞｰﾚﾝ♪ﾃﾞｯﾃﾞｯﾃﾞ♪（ｽﾈｪｴｴｴｴｴｸ！）(ﾀﾞｧﾝﾀﾞｧﾝﾀﾞｧﾝ……）
+		ELSEIF TSTR:네비_시추에이션_서버1 == "敗北"
+			IF 0
+			ELSEIF RAND:6 == 0 && 陥落() > 0
+				BTL_KOJO_RESULTS:0 = 아, 아아아…… %CSTR:이인칭%……
+				BTL_KOJO_RESULTS:1 = %CSTR:일인칭%도…… 황천길에 함께하겠습니다……
+			ELSEIF RAND:5 == 0 && 陥落() > 0
+				BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %CSTR:이인칭%……읏,
+				BTL_KOJO_RESULTS:1 = 부디…… %CSTR:일인칭%에게…… %CALLNAME%에게읏……
+				BTL_KOJO_RESULTS:2 = ……대답해 주십시오, %CSTR:이인칭%……!
+			ELSEIF RAND:4 == 0 && 陥落() > 0
+				BTL_KOJO_RESULTS:0 = %CSTR:이인칭%!? 읏, 시, 러요읏, 아아아아아아읏……!
+			ELSEIF RAND:3 == 0 && 陥落() > 0
+				BTL_KOJO_RESULTS:0 = 무언가…… 잘못된 것…… %CSTR:이인칭%, 아아아아아아!!!
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, 응답해 주십시오, %CSTR:이인칭%……읏!
+			ELSE
+				BTL_KOJO_RESULTS:0 = %CSTR:이인칭%, %CSTR:이인칭%……읏!?
+			ENDIF
+		ELSEIF TSTR:네비_시추에이션_서버1 == "도주"
+			IF 0
+			ELSEIF RAND:3 == 0 && 陥落() > 0
+				BTL_KOJO_RESULTS:0 = 도주……O.K.
+				BTL_KOJO_RESULTS:1 = 수고 많으셨습니다, %CSTR:이인칭%……
+			ELSEIF RAND:2 == 0
+				BTL_KOJO_RESULTS:0 = 도주……O.K.
+				BTL_KOJO_RESULTS:1 = %CSTR:이인칭%, 상처는……
+			ELSE
+				BTL_KOJO_RESULTS:0 = 도주……O.K.
+				BTL_KOJO_RESULTS:1 = 추격 경계를 실시하겠습니다……
+			ENDIF
+		ELSE
+			;死に分岐のはず……というかなんも出さない方が良さそう
+		ENDIF
+	;メイン画面とか戦闘開始時とかその辺の大分岐
+	ELSE
+		;……のELSE、死に分岐のはず
+	ENDIF
+
+

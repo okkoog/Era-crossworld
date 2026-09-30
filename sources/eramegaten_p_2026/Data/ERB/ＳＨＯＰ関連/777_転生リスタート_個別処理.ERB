@@ -1,0 +1,304 @@
+﻿;=================================================================
+;指定キャラのステータスを主に引き継ぎ用に初期化する
+;;引き継いだキャラのレベルを人間なら5、悪魔なら1にして能力をＣＳＶから読み込んでからレベルに合わせて増減、習得スキルをＣＳＶから再読み込み。引継ぎフラグに応じて素質や能力変更
+;ARG:0 キャラの登録番号
+;RESULT 真:成功 偽:失敗
+;=================================================================
+;2021/04/10	NEO			受胎アイテム取得状況をリセットできるよう変更
+;2021/04/26 軽木		「周回で喰奴を引き継いだ場合、無条件で習得状況が引き継がれる」ように
+;2021/09/05 JK好き		引き継いだキャラの体力回復・ストレス回復・気絶解除処理を追加
+;2022/01/03 JK好き		引き継いだキャラの専用技の覚えなおし処理を追加
+;2022/05/26 Collared	陥落合体の処理追加
+;2022/03/02 しゃけ		アーミヤの引継ぎ処理を追加、スルトの引継ぎ処理に誤りがあったのを修正
+;2022/09/01 JK好き		引き継いだキャラのヤリチンリセット処理を追加
+;2023/05/26 P			未調教陥落と陥落人数加算済みフラグのリセット処理を追加
+;2024/02/23 P			引継ぎの際にリンク悪魔解除に対する一部の処理が正しく実行されていなかった不具合を修正
+;2024/04/07 P			引き継ぎキャラの装備のセットを関数化	
+;2024/11/04 テツ		引き継ぎ時の能力計算を調整
+;=================================================================
+@SHOP_NEWGAME_INITCHARA, ARG
+#DIM LCOUNT
+#DIM DYNAMIC STATUS_CHECK, 7
+#DIM DYNAMIC STATUS_BASE, 7
+LOCAL = ARG
+;体力回復
+BASE:LOCAL:체력 = MAXBASE:LOCAL:체력
+CFLAG:LOCAL:체력회복정지플래그 = 0
+CFLAG:LOCAL:스트레스치 = 0
+
+IF TALENT:LOCAL:비전투원
+	;非戦闘員はステータスの初期化だけを行う
+	BASE:LOCAL:LV = 1
+	FOR LCOUNT,1,7
+		;非戦闘員の各能力値は0
+		BASE:LOCAL:GET_BASESTATUS(LCOUNT) = 0
+		CFLAG:LOCAL:("향사용횟수_" + GET_BASESTATUS(LCOUNT)) = 0
+	NEXT
+ELSE
+	;LVを先に初期化。人間はLv5、他はLv1
+	IF ABL:LOCAL:종족 == 0
+		BASE:LOCAL:LV = 5
+	ELSE
+		BASE:LOCAL:LV = 1
+	ENDIF
+	;元が非戦闘員またはランダムキャラならキャラのベースステータスを基準値に
+	IF CSVTALENT(NO:LOCAL,GETNUM(TALENT,"비전투원"),0) == 1 || IS_RANDOMCHARA(LOCAL)
+		FOR LCOUNT,0,7
+			STATUS_BASE:LCOUNT = BASE:LOCAL:GET_BASESTATUS(LCOUNT)
+		NEXT
+		;能力値の上昇量を計算、各能力1は最低保証するためその分の6を引く
+		LOCAL:1 = 18 + (BASE:LOCAL:LV * 3 / 2) - 6
+	;元が非戦闘員またはランダムキャラ以外ならCSVのステータスを基準値に
+	ELSE
+		FOR LCOUNT,0,7
+			STATUS_BASE:LCOUNT = CSVBASE(NO:LOCAL,GETNUM(BASE,GET_BASESTATUS(LCOUNT)),0)
+		NEXT
+		;能力値の上昇量を計算、各能力1は最低保証するためその分の6を引く
+		LOCAL:1 = SUMARRAY(STATUS_BASE, 1, 7) - (STATUS_BASE:0 * 3 / 2) + (BASE:LOCAL:LV * 3 / 2) - 6
+	ENDIF
+	FOR LCOUNT,1,7
+		;ステータスを初期化
+		BASE:LOCAL:GET_BASESTATUS(LCOUNT) = 1
+		CFLAG:LOCAL:("향사용횟수_" + GET_BASESTATUS(LCOUNT)) = 0
+		;基準値から優先度を算出
+		STATUS_CHECK:LCOUNT = STATUS_BASE:LCOUNT * 100
+	NEXT
+	FOR LCOUNT, 0, LOCAL:1
+		;最も優先度が高い能力を上昇させる
+		LOCAL:2 = FINDELEMENT(STATUS_CHECK, MAXARRAY(STATUS_CHECK, 1, 7), 1, 7)
+		BASE:LOCAL:GET_BASESTATUS(LOCAL:2) += 1
+		;上昇した能力の優先度を再計算
+		STATUS_CHECK:(LOCAL:2) = STATUS_BASE:(LOCAL:2) * 100 / BASE:LOCAL:GET_BASESTATUS(LOCAL:2)
+	NEXT
+ENDIF
+
+BASE:LOCAL:ＥＸＰ = 5*(BASE:LOCAL:LV-1)*(BASE:LOCAL:LV+1)*(BASE:LOCAL:LV)/3
+BASE:LOCAL:ＭＡＧ = 0
+CFLAG:LOCAL:초기LV = BASE:LOCAL:LV
+;CFLAG:LOCAL:초기LV = 1
+
+	;敵専用スキルを削除
+FOR LOCAL:3,1,FLAG:이능자스킬수+1
+	LOCALS = 스킬{LOCAL:3}
+	CALL GET_SKILL_PROP, "敵専用", ABL:LOCAL:LOCALS, LOCAL
+	SIF RESULT == 1
+		ABL:LOCAL:LOCALS = 0
+NEXT
+
+;MAG強化の効果に制限をいれる
+CFLAG:LOCAL:베어내기플래그 = 1
+CFLAG:LOCAL:강화사용ＭＡＧ = 0
+
+FOR LCOUNT, 0, 8
+	CALL 装備解除, LOCAL, GET_EQUIP(LCOUNT), 1
+NEXT
+CALL 装備強化_CSTR, "全解除：能力のみ", LOCAL
+CALL DO_EQUIP_FOR_NEWGAME, LOCAL
+
+;個別の処理がある場合は呼び出す(主にERB上で定義した習得スキルに対して使う)
+TRYCALLFORM SHOP_NEWGAME_INITCHARA_{NO:LOCAL}, LOCAL
+;ここまで
+
+;人気は引き継がない
+CFLAG:LOCAL:변기인기 = 0
+CFLAG:LOCAL:매춘인기 = 0
+CFLAG:LOCAL:요리인기 = 0
+CFLAG:LOCAL:극장인기 = 0
+CFLAG:LOCAL:아이돌인기 = 0
+
+;EVENT_S関係のCFLAGリセット
+CFLAG:LOCAL:자궁내피임결계 = 0
+CFLAG:LOCAL:배란유발제 = 0
+CFLAG:LOCAL:바람꽃의이슬 = 0
+CFLAG:LOCAL:무한사정약플래그 = 0
+
+;FOR LOCAL:1,1020,1025
+;	CFLAG:LOCAL:(LOCAL:1) = 0
+;NEXT
+FOR LOCAL:1,76,80
+	EXP:LOCAL:(LOCAL:1) = 0
+NEXT
+IF CFLAG:LOCAL:인계플래그 > 1
+	;経験リセット用で参照する番号を設定
+	;経験番号が設定されているならそちらを参照する。
+	LOCAL:2 = NO:LOCAL
+	SIF CFLAG:LOCAL:경험번호 > 0
+		LOCAL:2 = CFLAG:LOCAL:경험번호
+
+		;陥落履歴素質設定
+	SIF TALENT:LOCAL:친애 == 1
+		TALENT:LOCAL:("함락내역(친애)") = 1
+	SIF TALENT:LOCAL:창부 == 1
+		TALENT:LOCAL:("함락내역(창부)") = 1
+	SIF TALENT:LOCAL:예속 == 1
+		TALENT:LOCAL:("함락내역(예속)") = 1
+	SIF TALENT:LOCAL:동료 == 1
+		TALENT:LOCAL:("함락내역(동료)") = 1
+
+		;その他素質リセット
+	TALENT:LOCAL:아내 = 0
+	TALENT:LOCAL:남편 = 0
+	TALENT:LOCAL:음마 = 0
+	TALENT:LOCAL:노리개 = 0
+	TALENT:LOCAL:연모 = 0
+	TALENT:LOCAL:친애 = 0
+	TALENT:LOCAL:음란 = 0
+	TALENT:LOCAL:창부 = 0
+	TALENT:LOCAL:복종 = 0
+	TALENT:LOCAL:예속 = 0
+	TALENT:LOCAL:맹우 = 0
+	TALENT:LOCAL:동료 = 0
+	TALENT:LOCAL:신뢰 = 0
+	TALENT:LOCAL:섹스광 = 0
+	TALENT:LOCAL:자위광 = 0
+	TALENT:LOCAL:애널광 = 0
+	TALENT:LOCAL:음유 = 0
+	TALENT:LOCAL:창놈 = 0
+	CFLAG:LOCAL:의존도 = 0
+	TALENT:LOCAL:ＮＴＲ = 0
+	TALENT:LOCAL:즉각함락 = 0
+	CFLAG:LOCAL:ＮＴＲ요바이 = 0
+	CFLAG:LOCAL:NTR플래그 = 0
+	CFLAG:LOCAL:애ＮＴＲ진행도 = 0
+	CFLAG:LOCAL:음ＮＴＲ진행도 = 0
+	CFLAG:LOCAL:예ＮＴＲ진행도 = 0
+	CFLAG:LOCAL:음란도 = 0
+	CFLAG:LOCAL:신경썼다플래그 = 0
+	CFLAG:LOCAL:현ＮＴＲ진행도 = 0
+	CFLAG:LOCAL:방치일수 = 0
+	CFLAG:LOCAL:AV아이돌 = 0
+	CFLAG:LOCAL:방문판매플래그 = 0
+
+	;---- EDIT 20230526 START -------------------------
+	CFLAG:LOCAL:미조교함락 = 0
+	CFLAG:LOCAL:함락인수가산완료 = 0
+	;---- EDIT 20230526 END ---------------------------
+	;好感度・陥落初期化
+	FOR LOCAL:1,-MAX_NTR_CHARA,MAX_PLAYER_CHARA
+		CDFLAG:LOCAL:캐릭터간호감도:(100+LOCAL:1) = 0
+		CDFLAG:LOCAL:캐릭터간함락소질:(100+LOCAL:1) = 0
+	NEXT
+
+
+	CFLAG:LOCAL:함락캐릭터 = 0
+	CFLAG:LOCAL:몇번째아이까지낳았는가 = 0
+	CFLAG:LOCAL:송금해주는인수부모 = 0
+	MAXBASE:LOCAL:충성도 = MAX(0,GET_CHARA_LOYALTY(LOCAL) - 5000)
+		;口上用のフラグを初期化
+	VARSET CFLAG:LOCAL:0, 0, 200, 501
+	;FOR LOCAL:1,200,501
+	;	CFLAG:LOCAL:(LOCAL:1) = 0
+	;NEXT
+;		CFLAG:LOCAL:캐릭터고유번호 = FLAG:今までのキャラ数
+;		FLAG:今までのキャラ数 += 1
+	IF CFLAG:LOCAL:인계플래그 > 2
+			;元男なら処女に戻す
+		IF EXP:LOCAL:ＴＳ경험 % 2 == 1 && !IS_MALE(LOCAL)
+			TALENT:LOCAL:처녀 = 1
+		ELSE
+			TALENT:LOCAL:처녀 = CSVTALENT(LOCAL:2,0,0)
+		ENDIF
+		
+		CFLAG:LOCAL:자궁최대용량 = 0
+		CALL 子宮最大容量初期設定,LOCAL
+		
+		FOR LOCAL:1,0,85
+			EXP:LOCAL:(LOCAL:1) = CSVEXP(LOCAL:2,LOCAL:1,0)
+		NEXT
+		CFLAG:LOCAL:이상경험기록 = 0
+		CFLAG:LOCAL:피조교횟수 = 0
+		CFLAG:LOCAL:비디오매각수 = 0
+		CFLAG:LOCAL:비디오매각합계금액 = 0
+		IF CFLAG:LOCAL:인계플래그 == 4
+			FOR LOCAL:1,0,30
+				ABL:LOCAL:(LOCAL:1) = CSVABL(LOCAL:2,LOCAL:1,0)
+			NEXT
+			FOR LOCAL:1,0,5
+				MARK:LOCAL:(LOCAL:1) = CSVMARK(LOCAL:2,LOCAL:1,0)
+			NEXT
+			VARSET JUEL:LOCAL:0, 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;キャラ削除で適正化されているはずなのでここで処理せず残すように
+;リンク悪魔を外す
+;CALL REMOVE_LINK_DEVIL, LOCAL
+
+;以下一旦コメントアウト
+;EP等で取捨選択できるように変更希望
+;IF TALENT:LOCAL:식노
+;	FOR LOCAL:1, 1, 116
+;		;マントラの解析度は失う
+;		CDFLAG:LOCAL:만트라:(LOCAL:1) = MIN(CDFLAG:LOCAL:만트라:(LOCAL:1), 1)
+;		;初期マントラ獲得
+;		FOR LOCAL:2, 1, 9
+;			SIF CSVABL(NO:LOCAL, GETNUM(ABL, @"스킬{LOCAL:2}"), 0)
+;			CDFLAG:LOCAL:만트라:CSVABL(NO:LOCAL, GETNUM(ABL, @"스킬{LOCAL:2}"), 0) = 10000
+;		NEXT
+;	NEXT
+;		;マントラ補正リセット
+;	FOR LOCAL:1, 1, 7
+;		CFLAG:LOCAL:(GET_BASESTATUS(LOCAL:1)+"マントラ補正") = 0
+;	NEXT
+;		;現在のスキルは残り、常に自由に付け替えられる
+;	FOR LOCAL:1, 1, 9
+;		SIF ABL:LOCAL:@"초기변신악마스킬{LOCAL:1}" <= 0
+;			CONTINUE
+;		LOCAL:2 = 1
+;			;空いてる習得スキル枠に詰めてく
+;		WHILE LOCAL:2 < 20
+;			IF !ABL:LOCAL:@"초기변신악마습득스킬{LOCAL:2}"
+;				ABL:LOCAL:@"초기변신악마습득스킬{LOCAL:2}" = ABL:LOCAL:@"초기변신악마스킬{LOCAL:1}"
+;				ABL:LOCAL:@"초기변신악마습득LV{LOCAL:2}" = -1
+;				BREAK
+;			ENDIF
+;			LOCAL:2++
+;		WEND
+;	NEXT
+;ENDIF
+
+;人修羅の習得スキルリセットこれでいいのだろうか
+SIF TALENT:LOCAL:인수라
+	VARSET CDFLAG:LOCAL:0:0 ,0
+
+CALL SYNC_STATUS,LOCAL
+CALL HEALTH_CHARA,LOCAL
+CFLAG:LOCAL:이자리에없는플래그 = 0
+CFLAG:LOCAL:인계플래그 = 0
+CFLAG:LOCAL:노역플래그 = 0
+CFLAG:LOCAL:극장출연순서 = 0
+CFLAG:LOCAL:노역점포 = 0
+
+CFLAG:LOCAL:개별이벤트개방 = 0
+CFLAG:LOCAL:개별이벤트읽음 = 0
+FOR LOCAL:1, 1, 6
+	CFLAG:LOCAL:@"개별이벤트플래그{LOCAL:1}" = 0
+NEXT
+	;C = LOCAL
+CALL CLEAR_PREGNANCY_FLAG(LOCAL)
+SIF TALENT:LOCAL:임신
+	CALL REVERSE_B_SIZE(LOCAL)
+
+TALENT:LOCAL:임신 = 0
+CFLAG:LOCAL:발정임신 = 0
+CFLAG:LOCAL:부친실종 = 0
+CFLAG:LOCAL:이번수태인수 = 0
+TALENT:LOCAL:육아중 = 0
+
+;EPボーナスで受胎アイテム取得状態をリセットする場合
+IF GET_BONUS("受胎アイテムリセット")
+	;何らかの理由で受胎アイテムがマイナス１になってしまっている場合
+	SIF ABL:LOCAL:수태아이템 < 1
+		ABL:LOCAL:수태아이템 = CSVABL(NO:LOCAL, GETNUM(ABL, "수태아이템"), 0)
+	CFLAG:LOCAL:수태아이템출산완료플래그 = 0
+ENDIF
+
+TALENT:LOCAL:아내납치 = 0
+TALENT:LOCAL:악덕스카우트 = 0
+
+VARSET RPG_CFLAG_EV:LOCAL:0
+VARSET RPG_CSTR_EV:LOCAL:0
+VARSET ROLE_CFLAG_EV:LOCAL:0
+VARSET ROLE_CSTR_EV:LOCAL:0
+RETURN 1

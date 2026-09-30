@@ -1,0 +1,99 @@
+﻿;直斗
+;ナオヤルートで絶縁状貰った後、入手可能に
+@SORP_PLAY_1019, ARGS
+#DIM CHARA, 1
+#DIM CONST CSV_NO = [[キャラ:나오토]]
+#DIMS DYNAMIC ICON_ADDRESS
+ICON_ADDRESS = D31_FACE("直斗")
+
+SELECTCASE ARGS
+	CASE "娼婦番号"
+		RESULTS = [1019]
+	CASE "キャラ名"
+	RESULTS = 탐정왕자
+	CASE "指名名"
+		IF 六本木娼婦フラグ:19 == 0
+	RESULTS = 특별 게스트
+		ELSE
+	RESULTS = 탐정왕자
+		ENDIF
+	CASE "所属"
+		;表なら1、裏なら2
+		RETURN 2
+	CASE "判定"
+		;指名可能なら0、不可なら1
+		;絶縁状イベント発生後かつ直斗未加入
+		;(絶縁状はナオヤルート進行時のみ発生する認識のため、百合の花とは排他になる認識)
+		IF 六本木娼婦フラグ:19 >= 3
+			RETURN 1
+		SIF GETCHARA(CSV_NO) >= 0
+			RETURN 1
+		;絶縁状イベントの修正でイベントフラグ:6:0が使用されなくなっていたのでFLAG:直哉ルートを参照するよう修正
+		;ELSEIF イベントフラグ:6:0 == 2 && FINDCHARA_B([[キャラ:나오토]]) < 1
+		ELSEIF FLAG:나오야루트 < 0 && FINDCHARA_B([[キャラ:나오토]]) < 1
+			RETURN 0
+		ELSE
+			RETURN 1
+		ENDIF
+	CASE "価格"
+		RETURN 200
+	CASE "紹介文"
+		IF 六本木娼婦フラグ:19 == 0
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"이런, 눈치채셨군요/여기서는 가끔씩 특별 이벤트를 개최하고 있답니다/"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"메시아교를 냄새 맡고 다니던 쥐새끼 한 마리가 얼마 전에 잡혔는데 말이죠/정체를 밝혀보니, 이게 글쎄 항간에 소문이 자자한 탐정 왕자！였던 겁니다/"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"원래대로라면 진작에 처분되었겠지만/이 가십거리를 이용하지 않을 수 없어서 노예로 팔려온 것이고/중개처로서 저희 쪽에 와 있는 겁니다"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"매도인의 희망사항으로는/「어디 돈 많은 부자한테 팔려가서, 평생 인간 대접도 못 받는 개 같은 삶을 살면 좋겠다」/고 합니다만… 어떠십니까 손님？ 사시겠습니까？"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"아 참 깜빡 잊을 뻔했는데, 여기서 안아보실 수는 없습니다/돈을 지불해 주신다면 기꺼이 양도해 드리겠지만/그전까지는 손님 끌기용 간판으로 대우하는 계약이거든요"
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"또 얼굴을 보러 오셨습니까？/슬슬 사지 않으시면 다른 손님 눈에 띌지도 모릅니다？/"
+		ENDIF
+	CASE "確認"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그럼 얼굴을 보는 비용입니다만/２００마카가 되겠습니다/"
+	CASE "プレイ口上"
+		CALL DUNGEON_WORP,2,5,10;裏娼館用
+		;条件によって分岐の追加も可
+		IF 六本木娼婦フラグ:19 == 0
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"소년？", @"앗！ 당신은…읏//"
+		CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"＞언젠가 신주쿠에서 만났던 모자를 쓴 소년 탐정이다/아무래도 그？가 소문의 탐정 왕자 시로가네 나오토였던 모양이다…/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"나오토", @"수치를 무릅쓰고 부탁드립니다…/…부디, 구해주실 수 없을까요？/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"나오토", @"이대로는, 도저히 버틸 수가 없습니다……읏/평생… 아무것도 이루지 못한 채 끝나는 것만은 절대로 싫습니다읏/"
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"나오토", @"할 수 있는 일이라면 무엇이든 하겠습니다…/그러니, 부디… 절 구해주세요！/"
+			;あなた「ん？いま何でもするって言った…？」
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+			CALL SHOW_PICTURE, "EMPTY"
+			;見受け可能フラグを設定
+			六本木娼婦フラグ:19 = 2
+		ELSE
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"나오토", @"부디, 구해주세요…/당신만을 믿고 있습니다/"
+			CALL MESSAGE_WINDOW_D_ICON, , "BLANK", , "", @"………………/…………/……"
+			CALL SHOW_PICTURE, "EMPTY"
+		ENDIF
+		;プレイ経験(任意の経験を追加可)
+		;;CALL INCREASE_LC,5  意図が不明かつ変動量が強烈で、ユーザー側から認識できない場所での変動なので除外します。必要性があって再実装する場合は右記の点に注意して再実装してください。
+	CASE "身受け価格"
+		RETURN 10000
+	CASE "身受け確認"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"이런, 사들일 마음이 드신 겁니까？//"
+		CALL MESSAGE_WINDOW_D_ICON, , 受付アイコンアドレス, ,"접수원 남자", @"그러시다면, １００００마카를 받게 됩니다/괜찮으시겠습니까？/"
+	CASE "身受け口上"
+		;口上
+		CALL MESSAGE_WINDOW_D_ICON, CSV_NO, ICON_ADDRESS, ,"나오토", @"감사합니다…/이 은혜는 일생을 바쳐서라도 반드시 갚겠습니다/"
+		六本木娼婦フラグ:19 = 3
+		RESULTS '= "直斗" + "_" + D31_FACE("直斗", 1)
+		RETURN CSV_NO, 3000, 1
+		;経験
+	CASE "宣伝"
+	CASE "リスト"
+		IF 六本木娼婦フラグ:19 == 0
+			;指名前は顔を非表示に
+			;また、正体を隠す
+			RESULTS = 55_SECRET
+		ELSE
+			RESULTS '= ICON_ADDRESS
+			CALLF 顔グラ追加_F, CSV_NO
+			RESULTS '= "直斗" + "_" + D31_FACE("直斗", 1)
+		ENDIF
+		RESULTS:1 = 구해주세요…
+		;
+ENDSELECT
+

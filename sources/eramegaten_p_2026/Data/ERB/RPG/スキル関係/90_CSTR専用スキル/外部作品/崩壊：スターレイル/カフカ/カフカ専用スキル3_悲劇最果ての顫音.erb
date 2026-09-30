@@ -1,0 +1,281 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:悲劇最果ての顫音
+;	Facility	:カフカ専用スキル
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2023/9/17		軽木        			新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_悲劇最果ての顫音,ARG
+RESULTS = 悲劇最果ての顫音
+
+;　명중
+@SKILL_HITRATE_悲劇最果ての顫音, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_悲劇最果ての顫音, ARG
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"悲劇最果ての顫音")) >= 60
+	RETURN 80 + (GET_RPG_CFLAG_TAKEOVER(ARG, "星魂") > 4) * 8
+RETURN 290 + ((GET_RPG_CFLAG_TAKEOVER(ARG, "星魂") > 5) * 160) + (HAVE_SKILL(ARG, PU_SKILLNUM_GET(ARG,"蜘蛛の巣")) * 60)
+RETURN 0
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_悲劇最果ての顫音, ARG
+RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_悲劇最果ての顫音, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_悲劇最果ての顫音,ARG
+RETURN 1
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_悲劇最果ての顫音,ARG
+RETURN 1
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_悲劇最果ての顫音,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_悲劇最果ての顫音,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_悲劇最果ての顫音, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_悲劇最果ての顫音,ARG
+RETURN 40 
+
+;　相性
+@SKILL_TYPE_悲劇最果ての顫音,ARG
+RETURN GET_TYPE_NUM("비구"), GET_TYPE_NUM("전격"), GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_悲劇最果ての顫音
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_悲劇最果ての顫音,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;====================================================
+;攻撃手段
+;1.物理攻撃 2.魔法攻撃 3.총공격 4.アイテム攻撃(ダメージ計算時の依存ステータスに関わる)
+;関数がない場合はダメージタイプとおなじになる
+;====================================================
+@SKILL_ATTACKTYPE_悲劇最果ての顫音, ARG
+IF MAXBASE:ARG:공격 >= MAXBASE:ARG:총공격
+	RETURN 1
+ELSE 
+	RETURN 3
+ENDIF
+RETURN 1
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_悲劇最果ての顫音, ARG = -1, ARG:1 = -1
+RETURN 0
+
+
+;====================================================
+;耐性変化スキルの貫通強度。こちらは突破したときはもともとの相性値を適用する
+;1 - 耐性(1~99%)を無効にする。対応先も対応元も2022年10月時点ではない
+;2 - 1に加えて、無効に対応する。壁や護符、無効化付与、ブレイク(ウェイトスキル)。
+;3 - 2に加えて、吸収に対応する。ドレイン(ウェイトスキル)
+;4 - 3に加えて、反射に対応する。カーン・ハイパーカウンタ・リフレクト(ウェイトスキル)
+;====================================================
+@SKILL_ADD_PENETRATION_RANK_悲劇最果ての顫音, ARG
+RETURN 0
+
+;スキルを所持ししていることによるパッシブ効果
+@SKILL_PASSIVE_ADD_PENETRATION_RANK_悲劇最果ての顫音, L_P, L_T, SKILL_NUM, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM L_P
+#DIM L_T
+#DIM SKILL_NUM
+#DIM L_ダメージタイプ
+#DIM L_攻撃タイプ
+#DIM L_相性
+#DIM GIVE_EFFECT_CHARA
+RETURN 0
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_悲劇最果ての顫音,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_悲劇最果ての顫音,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_悲劇最果ての顫音,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_悲劇最果ての顫音,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_悲劇最果ての顫音
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_悲劇最果ての顫音, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_悲劇最果ての顫音
+RETURN 0
+
+;没
+;@SKILL_RANK_悲劇最果ての顫音, ARG = -1
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_悲劇最果ての顫音,ARG
+RETURN GET_STATE_NUM("SHOCK")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_悲劇最果ての顫音,ARG
+RETURN GET_TYPE_NUM("전격")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_悲劇最果ての顫音,ARG
+RETURN 20
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_悲劇最果ての顫音,ARG
+RETURN 100
+
+;拡散スキルの拡散距離定義関数(このような感じで数値を増やすことで増えていく)
+;1 　　　　　2 　　　　
+;□□◆□□　□◆◆◆□
+;□◆★◆□　◆◆★◆◆
+;@SKILL_SPREAD_悲劇最果ての顫音,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;
+;詳しい仕様については資料フォルダの解説を参照してください
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_悲劇最果ての顫音,ARG,ARG:1
+SIF ARG != ARG:1
+	RETURN 0
+SIF CFLAG:ARG:입력행동 == -1
+	RETURN 0
+SIF !INPUTABLE_CHARA_F(ARG)
+	RETURN 0
+SIF CFLAG:ARG:방어플래그 == 1
+	RETURN 0
+SIF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"悲劇最果ての顫音")) >= 60
+	RETURN 1, 22
+RETURN 0
+;====================================================
+;カウンター発動条件
+;ARG 		このスキルの持ち主
+;ARG;1 		攻撃してきている相手
+;RESULT 	カウンターが成立したかどうか
+;RESULT:1	カウンターする相手のターゲット番号(ポジションなのでCPOSで返すか、あるいは範囲なら19などで返す)
+;RESULT;1は指定なしなら敵の生存判定・存在判定を行わずにACTIONを実行する
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_悲劇最果ての顫音,ARG,ARG:1
+;RETURN RESULT
+
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+;@SKILL_DAMAGE_EFFECT_悲劇最果ての顫音,ARG,ARG:1,ARG:2
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+@SKILLGAGE_CHARGE_悲劇最果ての顫音,ARG,ARG:1
+#LOCALSIZE 1
+#DIM L_T
+#DIM L_GP
+;自分の行動の場合
+IF ARG == ARG:1
+	;専用技の使用でゲージ上昇
+	SIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG,"止まない夜の喧騒")
+		L_GP += 20
+	SIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG,"月明かりが撫でる連綿")
+		L_GP += 30
+	;バステ付与した場合にゲージ＋バステ付与した敵が倒された場合にゲージ＋
+	FOR LOCAL, 0, BCHARANUM
+		L_T = BCHARA:LOCAL
+		SIF IS_FRIEND(ARG, L_T)
+			CONTINUE
+		SIF GET_CREC_ACT(ARG, L_T, "BADSTATE") && HAVE_SKILL(ARG,PU_SKILLNUM_GET(ARG,"略奪"))
+			L_GP += 10
+		SIF GET_CREC_ACT(ARG, L_T, "KILL") && (GET_RPG_CFLAG_TAKEOVER(ARG, "星魂") > 3) && CFLAG:L_T:상태이상 != GET_STATE_NUM("GOOD")
+			; 処理が未記載なのでCONTINUE仮置き
+			CONTINUE
+	NEXT
+ENDIF
+;ダメージを受けた又はカウンター、トリガー以外の攻撃を受けたら
+;ゲージが増える
+SIF GET_CREC_ACT(ARG:1, ARG, "HIT")
+	L_GP += 15
+CALL SKILLGAGE_F_SET,ARG ,PU_SKILLNUM_GET(ARG,"悲劇最果ての顫音"), MIN(L_GP + SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"悲劇最果ての顫音")), 60)
+IF SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"悲劇最果ての顫音")) >= 60
+	RESULTS = ＵＬＴＩＭＡＴＥ ＲＥＡＤＹ！
+ELSE
+	RESULTS = ＥＰ
+ENDIF
+RESULTS:1 = %" "%
+RETURN L_GP
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_悲劇最果ての顫音,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM LCOUNT
+CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM
+CALL SKILLGAGE_F_SET,ARG ,PU_SKILLNUM_GET(ARG,"悲劇最果ての顫音"), -60
+FOR LCOUNT, CFLAG:ARG:PT플래그 ? 7 # 1, CFLAG:ARG:PT플래그 ? 17 # 7
+	SIF !IS_TARGET_ABLE(POS(LCOUNT))
+		CONTINUE
+	SIF CFLAG:(POS(LCOUNT)):상태이상 == GET_STATE_NUM("GOOD")
+		CONTINUE
+	SIF CFLAG:(ARG:1):상태이상 != GET_STATE_NUM("SHOCK") && !HAVE_SKILL(ARG, PU_SKILLNUM_GET(ARG,"苛み"))
+		CONTINUE
+	CALL ATTACK_SINGLE,ARG,POS(LCOUNT),SKILL_NUM
+NEXT
+;====================================================
+;実行内容ここまで
+;====================================================
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@SKILLGAGE_DISPLAY_悲劇最果ての顫音,ARG
+PRINTFORML {SKILLGAGE_F_GET(ARG,PU_SKILLNUM_GET(ARG,"悲劇最果ての顫音"))+60,3}/120
+
+;　説明文の表示
+@SKILL_EXPLAIN_悲劇最果ての顫音,ARG
+PRINTL ＥＰ最大時、自動的に発動。
+PRINTL 敵全体に飛具＋전격＋万能相性で小威力の攻撃を一回行い、高確率で感電状態にする。
+PRINTL その後、感電状態の敵に対し同相性で大威力の攻撃を行う。
+PRINTL このスキルは攻撃、銃攻撃の高い方のステータスでダメージ計算を行う。
+PRINTL この攻撃ではクリティカルは発生しない。
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_悲劇最果ての顫音,ARG
+RETURN 0

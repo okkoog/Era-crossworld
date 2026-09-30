@@ -1,0 +1,134 @@
+﻿
+;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_シャークキャノン_シズク,ARG
+RESULTS = 샤크캐논
+
+;　명중
+@SKILL_HITRATE_シャークキャノン_シズク, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_シャークキャノン_シズク, ARG
+RETURN 380
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_シャークキャノン_シズク,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_シャークキャノン_シズク,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_シャークキャノン_シズク, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+
+;　コストの量
+@SKILL_COST_シャークキャノン_シズク,ARG
+RETURN 40
+
+;　相性
+@SKILL_TYPE_シャークキャノン_シズク,ARG
+RETURN GET_TYPE_NUM("수격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_シャークキャノン_シズク
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_シャークキャノン_シズク, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_シャークキャノン_シズク, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_シャークキャノン_シズク,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_シャークキャノン_シズク,ARG
+SIF ARG >= 0 && GET_COUNT_閃刀カウンター(ARG) >= 3
+	RETURN GET_SPHERE_NUM("전체")
+RETURN GET_SPHERE_NUM("일렬")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_シャークキャノン_シズク, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_シャークキャノン_シズク
+RETURN GET_SUCCESSION_NUM("수격")
+
+;속도보정
+@SKILL_SPEED_シャークキャノン_シズク, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_シャークキャノン_シズク
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_シャークキャノン_シズク, ARG = -1
+RETURN 12
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_シャークキャノン_シズク,ARG,ARG:1
+#DIM LCOUNT
+;判定は一回
+SIF ARG != ARG:1
+	RETURN 0
+;自分自身の行動でないと誘発しない
+SIF ARG != FLAG:행동순1
+	RETURN 0
+SIF !IS_PU_SKILL_入力行動(ARG, "シャークキャノン_シズク")
+	RETURN 0
+SIF !GET_CREC_ACT(ARG, , "KILL")
+	RETURN 0
+RETURN 1, CFLAG:ARG:타겟
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_シャークキャノン_シズク, ARG, ARG:1, ARG:2
+CALL ATTACK_SKILL, ARG, ARG:1, ARG:2
+SIF !FLAG:총공격중
+	CALL PUSH_CEMETERY_閃刀魔法, ARG, "シャークキャノン"
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_シャークキャノン_シズク, ARG
+PRINTL 【閃刀魔法】
+PRINTL 적 1체에 수격 속성의 물리 대 데미지를 가한다. 후열 사용 가능.
+PRINTL 이 스킬로 적을 격파했을 경우 이하의 연동효과가 발동한다.
+PRINTL 「적 1열에 수격 속성의 물리 대 데미지를 가한다.」
+PRINTL 스킬 발동 후 섬도 카운터를 1개 얻는다.
+PRINTL 
+PRINTL 〈강화 효과〉 섬도 카운터가 3개 이상 있을 경우 공격 범위가 전체로 변화한다.
+PRINTL 강화 효과 발동 후 섬도 카운터를 얻는 대신 3개 제거한다.
+PRINTL 
+PRINTL 이 스킬은 전투 중 1회만 사용 가능.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_シャークキャノン_シズク,ARG
+RESULTS = 스킬 사용 완료
+SIF !IS_USEABLE_閃刀魔法(ARG, "シャークキャノン")
+	RETURN 0
+RETURN 1
+
+@リンク不能_シャークキャノン_シズク
+RETURN 1
+
+@SKILL_TAG_シャークキャノン_シズク
+RESULTS = 閃刀魔法

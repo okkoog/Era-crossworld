@@ -1,0 +1,701 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5337_超てんちゃん.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author				Reason
+;	001		2023/06/03		Schrott				新規作成
+;	
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+@ADD_NEW_COMPANION_[[キャラ:초텐짱]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+CALL SET_BASE_[[キャラ:초텐짱]], ARG, ARG:2
+
+;ARG:1はイベントフラグ
+@SET_BASE_[[キャラ:초텐짱]], ARG, ARG:1
+CSTR:ARG:30 = 名前：%UNICODE(0x0B68)%%UNICODE(0x0B67)%超絶最かわ%UNICODE(0x0B68)%%UNICODE(0x0B67)%てんしちゃん
+CSTR:ARG:31 = 
+CSTR:ARG:32 = ジェルばんわ！
+CSTR:ARG:33 = この混沌とした令和のインターネットを照らす一筋の光……
+CSTR:ARG:34 = 電子の海を漂うオタクに笑顔を！
+CSTR:ARG:35 = 未来の平和をお約束！　躁鬱だけどまかせとけ！
+CSTR:ARG:36 = インターネット・エンジェルただいま降臨！！！
+CSTR:ARG:37 = 
+CSTR:ARG:38 = おい！　ここを見ればわたしのことが分かると思ったそこのオタク！
+CSTR:ARG:39 = こんな短い説明欄で人物を分かった気になってると、底の浅いオトナになっちゃうぞ%UNICODE(0x2661)%
+CSTR:ARG:40 = 全人類に目覚めを促す超てんちゃんの気遣いに永遠に感動しろ%UNICODE(0x2661)%
+CSTR:ARG:41 = 
+CSTR:ARG:42 = あはっ……なんてね%UNICODE(0x2661)%
+CSTR:ARG:43 = 
+CSTR:ARG:44 = わたしはオタクたちに笑顔を届けるインターネットエンジェルだよ。
+CSTR:ARG:45 = わたしを見ていてくれる限り、みんながずっと楽しくなる魔法をかけてあげる。
+CSTR:ARG:46 = だからずっと見ていてね。わたしもあなたのこと、ずっと見つめてあげるからね。
+CSTR:ARG:47 = %UNICODE(0x2020)%昇天%UNICODE(0x2020)%
+CSTR:ARG:48 = 
+CSTR:ARG:49 = 登場作品：ここにいるよ%UNICODE(0x2661)%
+
+@DEFINE_UNABLE_ICON_[[キャラ:초텐짱]], L_CHARA, L_SPRITENAME
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_SPRITENAME
+SELECTCASE L_SPRITENAME
+	CASE "超てんちゃん_FACE_6", "超てんちゃん_FACE_7", "超てんちゃん_FACE_8"
+		RETURN !GET_RPG_CFLAG_TAKEOVER(L_CHARA, "アイコン追加1")
+	CASE "超てんちゃん_FACE_9", "超てんちゃん_FACE_10"
+		RETURN !GET_RPG_CFLAG_TAKEOVER(L_CHARA, "アイコン追加2")
+	CASE "超てんちゃん_FACE_11"
+		RETURN !GET_RPG_CFLAG_TAKEOVER(L_CHARA, "アイコン追加3")
+	;20250711時点で未使用		
+	CASE "超てんちゃん_FACE_3", "超てんちゃん_FACE_4", "超てんちゃん_FACE_5"
+		RETURN 1
+ENDSELECT
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:초텐짱]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("超てんちゃん_FACE_0")
+			RETURNF ""
+		SIF !SPRITECREATED("超てんちゃん_FACE_2")
+			RETURNF ""
+
+		IF !SPRITECREATED("超てんちゃん_デフォルト")
+			;アイコン設定時の表示に使うアイコン
+			VARI GID, 3
+			GID = GET_FREE_TEMP_GID()
+			GCREATE GID, 180, 180
+			GID:1 = GET_FREE_TEMP_GID()
+			GCREATE GID:1, 180, 180
+			GID:2 = GET_FREE_TEMP_GID()
+			GCREATE GID:2, 180, 180
+
+			GDRAWSPRITE GID:1, "超てんちゃん_FACE_2", 0, 0, 180, 180
+			GDRAWSPRITE GID:2, "超てんちゃん_FACE_0", 0, 0, 180, 180
+
+			GDRAWG GID, GID:1,  0, 0, 90, 180,  70, 0, 90, 180
+			GDRAWG GID, GID:2, 90, 0, 180, 180,  0, 0, 180, 180
+			
+			SPRITECREATE "超てんちゃん_デフォルト", GID
+			TEMP_GID_SPRITENAME:FINDELEMENT(TEMP_GID_SPRITENAME, "", , , 1) '= "超てんちゃん_デフォルト"
+		ENDIF
+		RESULTS_F = デフォルト
+		RESULTS_F:1 = 超てんちゃん_デフォルト
+	CASE 1
+		SIF L_CHARA < 0
+			RETURNF ""
+		SIF !GET_RPG_CFLAG_TAKEOVER(L_CHARA, "アイコン追加1")
+			RETURNF ""
+		SIF !SPRITECREATED("超てんちゃん_FACE_2")
+			RETURNF ""
+		SIF !SPRITECREATED("超てんちゃん_FACE_6")
+			RETURNF ""
+		SIF !SPRITECREATED("超てんちゃん_FACE_7")
+			RETURNF ""
+		SIF !SPRITECREATED("超てんちゃん_FACE_8")
+			RETURNF ""
+
+		IF !SPRITECREATED("超てんちゃん_追加パターン1")
+			;アイコン設定時の表示に使うアイコン
+			VARI GID, 3
+			GID = GET_FREE_TEMP_GID()
+			GCREATE GID, 180, 180
+			GID:1 = GET_FREE_TEMP_GID()
+			GCREATE GID:1, 180, 180
+			GID:2 = GET_FREE_TEMP_GID()
+			GCREATE GID:2, 180, 180
+
+			GDRAWSPRITE GID:1, "超てんちゃん_FACE_2", 0, 0, 180, 180
+			CALLF 陥落(L_CHARA)
+			SELECTCASE RESULTS
+				CASE "연모"
+					GDRAWSPRITE GID:2, "超てんちゃん_FACE_6", 0, 0, 180, 180
+				CASE "음란"
+					GDRAWSPRITE GID:2, "超てんちゃん_FACE_7", 0, 0, 180, 180
+				CASE "복종"
+					GDRAWSPRITE GID:2, "超てんちゃん_FACE_8", 0, 0, 180, 180
+				CASEELSE
+					GDRAWSPRITE GID:2, "超てんちゃん_FACE_0", 0, 0, 180, 180
+			ENDSELECT
+			GDRAWG GID, GID:1,  0, 0,  90, 180, 70, 0,  90, 180
+			GDRAWG GID, GID:2, 90, 0, 180, 180,  0, 0, 180, 180
+
+			SPRITECREATE "超てんちゃん_追加パターン1", GID
+			TEMP_GID_SPRITENAME:FINDELEMENT(TEMP_GID_SPRITENAME, "", , , 1) '= "超てんちゃん_追加パターン1"
+		ENDIF
+		RESULTS_F = 追加パターン1
+		RESULTS_F:1 = 超てんちゃん_追加パターン1
+	CASE 2
+		SIF L_CHARA < 0
+			RETURNF ""
+		SIF !GET_RPG_CFLAG_TAKEOVER(L_CHARA, "アイコン追加2")
+			RETURNF ""
+		SIF !SPRITECREATED("超てんちゃん_FACE_2")
+			RETURNF ""
+		SIF !SPRITECREATED("超てんちゃん_FACE_9")
+			RETURNF ""
+		SIF !SPRITECREATED("超てんちゃん_FACE_10")
+			RETURNF ""
+		IF !SPRITECREATED("超てんちゃん_追加パターン2")
+			;アイコン設定時の表示に使うアイコン
+			VARI GID, 3
+			GID = GET_FREE_TEMP_GID()
+			GCREATE GID, 180, 180
+			GID:1 = GET_FREE_TEMP_GID()
+			GCREATE GID:1, 180, 180
+			GID:2 = GET_FREE_TEMP_GID()
+			GCREATE GID:2, 180, 180
+
+			GDRAWSPRITE GID:1, "超てんちゃん_FACE_2", 0, 0, 180, 180
+			GDRAWSPRITE GID:2, "超てんちゃん_FACE_9", 0, 0, 180, 180
+			GDRAWG GID, GID:1,  0, 0,  90, 180,  70, 0,  90, 180
+			GDRAWG GID, GID:2, 90, 0, 180, 180,  50, 0, 180, 180
+			
+			SPRITECREATE "超てんちゃん_追加パターン2", GID
+			TEMP_GID_SPRITENAME:FINDELEMENT(TEMP_GID_SPRITENAME, "", , , 1) '= "超てんちゃん_追加パターン3"
+		ENDIF
+		RESULTS_F = 追加パターン2
+		RESULTS_F:1 = 超てんちゃん_追加パターン2
+	CASE 3
+		SIF L_CHARA < 0
+			RETURNF ""
+		SIF !GET_RPG_CFLAG_TAKEOVER(L_CHARA, "アイコン追加3")
+			RETURNF ""
+		SIF !SPRITECREATED("超てんちゃん_FACE_2")
+			RETURNF ""
+		SIF !SPRITECREATED("超てんちゃん_FACE_11")
+			RETURNF ""
+		IF !SPRITECREATED("超てんちゃん_追加パターン3")
+			;アイコン設定時の表示に使うアイコン
+			VARI GID, 3
+			GID = GET_FREE_TEMP_GID()
+			GCREATE GID, 180, 180
+			GID:1 = GET_FREE_TEMP_GID()
+			GCREATE GID:1, 180, 180
+			GID:2 = GET_FREE_TEMP_GID()
+			GCREATE GID:2, 180, 180
+
+			GDRAWSPRITE GID:1, "超てんちゃん_FACE_2", 0, 0, 180, 180
+			GDRAWSPRITE GID:2, "超てんちゃん_FACE_11", 0, 0, 180, 180
+			GDRAWG GID, GID:1,  0, 0,  90, 180,  70, 0,  90, 180
+			GDRAWG GID, GID:2, 90, 0, 180, 180,  50, 0, 180, 180
+			
+			SPRITECREATE "超てんちゃん_追加パターン3", GID
+			TEMP_GID_SPRITENAME:FINDELEMENT(TEMP_GID_SPRITENAME, "", , , 1) '= "超てんちゃん_追加パターン3"
+		ENDIF
+		RESULTS_F = 追加パターン3
+		RESULTS_F:1 = 超てんちゃん_追加パターン3
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:초텐짱]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "デフォルト"
+		IF TFLAG:전투중
+			RESULTS_F = 超てんちゃん_FACE_2
+		ELSE
+			RESULTS_F = 超てんちゃん_FACE_0
+		ENDIF
+	CASE "追加パターン1"
+		IF TFLAG:전투중
+			RESULTS_F = 超てんちゃん_FACE_2
+		ELSE
+			CALLF 陥落(L_CHARA)
+			SELECTCASE RESULTS
+				CASE "연모"
+					RESULTS_F = 超てんちゃん_FACE_6
+				CASE "음란"
+					RESULTS_F = 超てんちゃん_FACE_7
+				CASE "복종"
+					RESULTS_F = 超てんちゃん_FACE_8
+				CASEELSE
+					RESULTS_F = 超てんちゃん_FACE_0
+			ENDSELECT
+		ENDIF
+	CASE "追加パターン2"
+		IF TFLAG:전투중
+			RESULTS_F = 超てんちゃん_FACE_2
+		ELSE
+			SELECTCASE L_SITUATION
+				CASE "調教"
+					RESULTS_F = 超てんちゃん_FACE_10
+				CASEELSE
+					RESULTS_F = 超てんちゃん_FACE_9
+			ENDSELECT
+		ENDIF
+	CASE "追加パターン3"
+		IF TFLAG:전투중
+			RESULTS_F = 超てんちゃん_FACE_2
+		ELSE
+			RESULTS_F = 超てんちゃん_FACE_11
+		ENDIF
+	CASEELSE
+ENDSELECT
+
+;--------------------------------------------------
+;キャラクター独自変数名称定義関数
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:초텐짱]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_EV
+	;周回時にリセットされる数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_EV
+	;周回時にリセットされる文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = てんちゃんパラダイム回答
+				;パラダムイベントでの回答。
+				;いい服、程々の金額、パジャマ、着こなし、爆買い
+			CASE 1
+				RESULTS = てんちゃんフィグ前回答
+				;フィグ戦前での回答。
+				;好きかも、天使、野球選手
+			CASE 2
+				RESULTS = てんちゃんフィグ後回答
+				;フィグ戦後での回答。
+				;組織、物理、配信
+			CASE 3
+				RESULTS = てんちゃんトゥルー回答１
+				;フィグ戦後・トゥルールートでの回答。
+				;本物、配信者、エンジェル
+			CASE 4
+				RESULTS = てんちゃんトゥルー回答２
+				;PRINTFORML [0]承認欲求こそ自己への愛、あなたを愛するあなたのために飛べ！
+				;PRINTFORML [1]あなたに救われた人があなたを生かす、オタクたちがあなたの羽根になる
+				;PRINTFORML [2]サイコーの歌声、サイコーのトーク、そして泣く子も黙るサイコーの顔面
+				;自己愛、羽根、顔面
+				
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				;イベントクリア後の強化用フラグ
+				RESULTS = てんちゃん強化１
+			CASE 1
+				RESULTS = アイコン追加1
+			CASE 2
+				RESULTS = アイコン追加2
+			CASE 3
+				RESULTS = アイコン追加3
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる数値型変数です
+	;スキルゲージHとほぼ互換です。基本的にはゲージHが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+;				RESULTS = 元素スキル再使用可能ターン
+			CASE 1
+;				RESULTS = 元素爆発再使用可能ターン
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる文字列型変数です
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる数値型変数
+	;スキルゲージFとほぼ互換です。基本的にはゲージFが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 스트레스치
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる文字列型変数
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS
+
+;追加ページで特性を表示したい場合はRETURN で最大ページ数を指定する
+@ROLE_EXPLAIN_ADD_PAGE_[[キャラ:초텐짱]], ARG
+RETURN 1
+
+;ARG:1 = 表示ページ
+@ROLE_EXPLAIN_[[キャラ:초텐짱]], ARG, ARG:1
+#DIM LCOUNT
+IF ARG:1 == 1
+	PRINTL □INTERNET-ANGEL
+	PRINTL 　이 캐릭터는 다음의 효과를 상시 발동한다.
+	PRINTL 　
+	PRINTL 　아군 전체의 입히는 데미지와 주는/받는 CT율에 영향을 준다.
+	IF GET_RPG_CFLAG_TAKEOVER(ARG, "てんちゃん強化１") > 0
+		PRINTL 　효과는 『스트레스 게이지』에 따라 증감한다.
+		PRINTL 　
+		PRINTL 　게이지 25％ 미만: 아군 전원　　　　　　　　입히는 데미지・주는 CT율　　　저하
+		PRINTL 　게이지 25％ 이상: 아군 전원　　　　　　　　입히는 데미지・주는/받는 CT율 상승
+		PRINTL 　
+		PRINTL 　스트레스 게이지는 전투 시 피탄・행동에 따라 상승.
+		PRINTL 　높으면 높을수록, 아군에게 미치는 영향이 커진다.
+		PRINTL 　귀환 시에만 리셋되며, 전투에 따라서는 리셋되지 않는다.
+		PRINTL 　
+		PRINTL 　게이지가 100％를 초과한 순간, 초텐쨩은 폭발한다.
+		PRINTL 　아군 전체에 자신의 최대 HP만큼의 데미지를 준 후, 자신은 즉사한다.
+	ELSE
+		PRINTL 　효과는 함락 상태와 『스트레스 게이지』에 따라 증감한다.
+		PRINTL 　
+		PRINTL 　게이지 25％ 미만: 아군 전원　　　　　　　　입히는 데미지・주는 CT율　　　저하
+		PRINTL 　게이지 25％ 이상: 함락※되어 있는 아군　　입히는 데미지　　　　　　　　저하
+		PRINTL 　　　　　　　　　그 외의 아군　　　　　　입히는 데미지・주는/받는 CT율 상승
+		PRINTL 　
+		PRINTL 　스트레스 게이지는 전투 시 피탄・행동에 따라 상승.
+		PRINTL 　높으면 높을수록, 아군에게 미치는 영향이 커진다.
+		PRINTL 　귀환 시에만 리셋되며, 전투에 따라서는 리셋되지 않는다.
+		PRINTL 　
+		PRINTL 　게이지가 100％를 초과한 순간, 초텐쨩은 폭발한다.
+		PRINTL 　아군 전체에 자신의 최대 HP만큼의 데미지를 준 후, 자신은 즉사한다.
+		PRINTL 　
+		PRINTL 　※자신과 같거나, 자신보다 깊은 함락을 한 동료마가 대상.
+		IF GETBIT(FLAG:ＮＴＲ기능 , 63)
+			PRINTL 　NTR 등으로 인해 효과 소유자와 멤버의 『함락 대상』이 다른 경우는 함락되지 않은 것으로 취급되며,
+			PRINTL 　효과 소유자가 미함락일 경우는 『주인에게 함락되어 있는지』가 체크 대상이 된다.
+		ENDIF
+
+	ENDIF
+ENDIF
+RETURN 1
+
+;専用スキル用のテンプレート
+;「CHARA_[[キャラ:초텐짱]]」を別の名前に置き換えてください
+
+;アクティブスキルに必須なものはそのままにしており
+;なくてもいいものはコメントアウトしております
+;必要だと思ったらコメントアウトを外して設定してください
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_CHARA_[[キャラ:초텐짱]],ARG
+;	SELECTCASE CFLAG:ARG:선악치
+;		CASE IS > 170
+			RESULTS = INTERNET-ANGEL
+;		CASE IS > 84
+;			RESULTS = NEO-NEET-ANGEL
+;		CASEELSE
+;			RESULTS = DARKNESS-ANGEL
+;	ENDSELECT
+
+;　명중
+@SKILL_HITRATE_CHARA_[[キャラ:초텐짱]], ARG
+RETURN 999
+
+;　威力
+@SKILL_POWER_CHARA_[[キャラ:초텐짱]], ARG
+SIF ARG < 0
+	RETURN 0
+;現HPが最大HPを超過しているパターンもあるので考慮する
+RETURN MAXBASE:ARG:ＨＰ
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_CHARA_[[キャラ:초텐짱]], ARG
+RETURN 0
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_CHARA_[[キャラ:초텐짱]], ARG
+;RETURN 10
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_CHARA_[[キャラ:초텐짱]],ARG
+RETURN 1
+
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_CHARA_[[キャラ:초텐짱]],ARG
+RETURN 1
+
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_CHARA_[[キャラ:초텐짱]],ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_CHARA_[[キャラ:초텐짱]],ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_CHARA_[[キャラ:초텐짱]], ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_CHARA_[[キャラ:초텐짱]],ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_CHARA_[[キャラ:초텐짱]],ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_CHARA_[[キャラ:초텐짱]]
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_ATTACKTYPE_CHARA_[[キャラ:초텐짱]], ARG
+RETURN GET_攻撃タイプ_NUM("固定")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_CHARA_[[キャラ:초텐짱]],ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_CHARA_[[キャラ:초텐짱]],ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_CHARA_[[キャラ:초텐짱]],ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_CHARA_[[キャラ:초텐짱]],ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_CHARA_[[キャラ:초텐짱]],ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_CHARA_[[キャラ:초텐짱]],ARG
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_CHARA_[[キャラ:초텐짱]], ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_CHARA_[[キャラ:초텐짱]]
+RETURN 0
+
+;没
+;@SKILL_RANK_CHARA_[[キャラ:초텐짱]], ARG = -1
+
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_CHARA_[[キャラ:초텐짱]],ARG,ARG:1
+;ゲージ10000到達でバスト
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "스트레스치") < 10000
+	RETURN 0
+;テスト用の１００だったやつ
+;SIF GET_RPG_CFLAG_DUNGEON(ARG, "스트레스치") < 100
+;	RETURN 0
+;行動不能でも発動し、通常のメッセージ表示を飛ばす
+RETURN 1, CPOS(ARG) + 2 * 100000, 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_CHARA_[[キャラ:초텐짱]],ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM LCOUNT
+#DIMS L_ANGEL_COMMENT, 3
+#DIMS L_COMMENT, 45
+;ゲージをリセット……しない。ただし追撃化したので死体は爆発しない。蘇生するとそれに追撃して爆発するぞ！
+;CALL SKILLGAGE_F_SET, ARG, PU_SKILLNUM_GET(ARG,"CHARA_[[キャラ:초텐짱]]"), 0
+
+L_ANGEL_COMMENT '= "", @"　　　　　　　　　　　　　　　　　　　　　　%UNICODE(0x2020)%昇天%UNICODE(0x2020)%　　　　　　　　　　　　　　　　　　　　　　", ""
+CALL PRINT_SUPER_ANGEL_HAISIN, "超天使", L_ANGEL_COMMENT, L_COMMENT, -2
+FOR LCOUNT, CFLAG:ARG:PT플래그 ? 1 # 7, CFLAG:ARG:PT플래그 ? 7 # 17
+	SIF !IS_TARGET_ABLE(POS(LCOUNT))
+		CONTINUE
+	;自分自身は死ぬ。(自傷ダメージだけだと最大HP超過状態やバリアでしなないことがあるので確実に殺す)
+	IF POS(LCOUNT)  == ARG
+		CALL PRINT_HIT_MESSAGE, ARG, "DYING", "NON"
+		CALL DEAD_CHARA, ARG, ARG
+	ELSE
+		CALL ATTACK_SINGLE,ARG, POS(LCOUNT),SKILL_NUM
+	ENDIF
+NEXT
+
+;効果を発揮するリーダースキル
+@SKILL_GET_LEADER_SKILL_NAME_CHARA_[[キャラ:초텐짱]], ARG
+RESULTS = 超天使
+
+;====================================================
+;戦闘中スキルゲージの可視化
+;====================================================
+@DISPLAY_COMMAND_P_CHARA_[[キャラ:초텐짱]], ARG
+RESULTS = 스트레스치:{GET_RPG_CFLAG_DUNGEON(ARG, "스트레스치") / 100}.{GET_RPG_CFLAG_DUNGEON(ARG, "스트레스치") % 100 / 10}{GET_RPG_CFLAG_DUNGEON(ARG, "스트레스치") % 10}\%
+RETURN 3
+
+@SKILL_EX_DISPLAY_CHARA_[[キャラ:초텐짱]], ARG, ARGS
+#DIM BARLENS
+BARLENS = SKILL_EX_DISPLAY_LENS - 2
+RESULTS = %SET_COLOR_TAG(UNICODE(0x2622), "red")%
+RESULTS += HTML_RECT_BAR(GET_RPG_CFLAG_DUNGEON(ARG, "스트레스치"), 10000, BARLENS, BARCOLORSET("赤"), RESULT:1)
+RESULTS:1 = 스트레스치
+RETURN 1
+;====================================================
+;行動によるスキルゲージ操作
+;各キャラクターの通常の行動後に全キャラで呼び出される
+;ARG:		このスキルの持ち主のキャラ番号
+;ARG:1		行動したキャラクターのキャラ番号
+;
+;RESULT 		獲得したゲージの量を返すことで獲得量を表示させる。つまり、他人の行動に反応させることなども可能。
+;RESULT:1		獲得表示のときの文字色を指定できる。ゲージが溜まったときの表示わけなどに
+;RESULTS		ゲージの名称 「<<[[キャラ:초텐짱]]>>」という形で表示される
+;RESULTS:1		ゲージの単位。半角の%を使いたい場合は「\%」と言うかたちで退避記号を使うと良い
+;RESULTS;2		色指定以外の要素を使わずに文字列を返す。ゲージ式の獲得量で表現したい場合などに
+;====================================================
+@SKILLGAGE_CHARGE_CHARA_[[キャラ:초텐짱]],ARG,ARG:1
+#DIM SKILL_NUM
+#LOCALSIZE 1
+#DIM L_T
+#DIM L_CHARA
+#DIM L_GP
+#DIM L_GP_LIMIT
+#DIM L_COLOR
+#DIM TEMP_CHARA
+#DIM MULTI_BY_STRESS
+;上限に到達している場合はリターン
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "스트레스치") >= 10000
+	RETURN 0
+L_GP = 0
+;ストレスが２０上がるごとに上昇量が強烈に上がる。POWERは前者の数値を後者で累乗する。
+;0-18 -38 -58  -78  -98
+;   1 / 4 / 9 / 16 / 25
+;ゲーム内ストレスからの独立用仮組みとして２０を代入
+
+MULTI_BY_STRESS = 20
+;POWER(CFLAG:ARG:스트레스치 / 20 + 1, 2)
+
+IF ARG == ARG:1
+	;行動するたびに10
+	L_GP += 10
+ELSE
+	;行動者が陥落している
+	IF 陥落(ARG, ARG:1)
+		RESULT = 0
+		CALL GET_SKILL_PROP, "SKILL_T_RESERVE", CFLAG:(ARG:1):입력행동, ARG:1
+		IF RESULT
+			L_CHARA = CFLAG:(ARG:1):타겟
+			IF L_CHARA == ARG
+				L_GP -= 10
+			ELSE
+				SIF L_CHARA != ARG:1
+					L_GP+= 20
+			ENDIF
+		ELSE
+			IF INRANGE(CFLAG:(ARG:1):타겟, 1, 6)
+				L_CHARA = POS(CFLAG:(ARG:1):타겟)
+				IF L_CHARA == ARG
+					L_GP -= 10
+				ELSE
+					SIF L_CHARA != ARG:1
+						L_GP+= 20
+				ENDIF
+			ELSE
+				SIF INRANGE(CFLAG:(ARG:1):타겟, 17, 19)
+					L_GP += 10
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+
+;専用技１を使うと更に上昇する
+SIF IS_PU_SKILL_入力行動(ARG, "INTERNET_OVERDOSE")
+	L_GP += 10
+;専用技２を使うと消滅する
+SIF IS_PU_SKILL_入力行動(ARG, "おくすりをパキる")
+	L_GP -= 20000
+
+
+;ダメージを受けた又はカウンター、トリガー以外の攻撃を受けたら
+;ゲージが増える。増加量は最大体力に対するダメージ割合％分の数値。
+SIF GET_CREC_ACT(ARG:1, ARG, "HIT")
+	L_GP += MAX(100 * CFLAG:ARG:현데미지 / MAXBASE:ARG:ＨＰ, 2)
+L_GP *= MULTI_BY_STRESS
+CALL SET_RPG_CFLAG_DUNGEON, ARG, "스트레스치", LIMIT(L_GP + GET_RPG_CFLAG_DUNGEON(ARG, "스트레스치"), 0, 10000)
+IF GET_RPG_CFLAG_DUNGEON(ARG, "스트레스치") == 10000
+	RESULTS = ＢＵＲＳＴ！
+	RESULT:1 = L_COLOR
+ELSE
+	RESULTS:2 = +{L_GP / 100}.{L_GP % 100 / 10}{L_GP % 10}\% <<스트레스치>>　現在値：{GET_RPG_CFLAG_DUNGEON(ARG, "스트레스치") / 100}％
+ENDIF
+RESULTS:1 = %" "%
+RETURN L_GP
+
+
+;　説明文の表示……実際には表示されないので名残。
+@SKILL_EXPLAIN_CHARA_[[キャラ:초텐짱]],ARG
+;PRINTL INTERNET-ANGEL
+;PRINTL パッシブ：自分のパーティメンバー全体の与・被ダメージと与・被クリティカル率を増減させる『스트레스치』を追加する。
+;PRINTL 探索中継続、被弾、通常行動によって常時上がる。
+;PRINTL 
+;PRINTL ストレス値25％未満：味方全員　　　　　　　　　　　　与ダメージ及び、与クリティカル率　低下
+;PRINTL ストレス値25～99％：陥落している味方　　　　　　　　与ダメージ　　　　　　　　　　　　低下
+;PRINTL 　　　　　　　　　　それ以外の味方全員　　　　　　　与・被ダメージ・与クリティカル率　上昇
+;PRINTL 『陥落』は、スキル所持者を陥落させている者と同じ相手に陥落しているかどうかを指す。（未陥落時は主人対象）
+;PRINTL 
+;PRINTL また、ストレス値が100％を超えた瞬間バーストし、味方全体に自身の最大HP分のダメージを与え、自身は即死する。
+;PRINTL 一度バーストした場合、死体は際限なく爆発する。
+;PRINTL 
+;PRINTL インターネットエンジェルは、嫉妬深い。周りを振り回し、主人も破滅に導くほどに。
+;PRINTL 電霊　てんちゃんのリーダースキル起動用パッシブスキル（CSTR専用）
+;

@@ -1,0 +1,420 @@
+﻿;更新日時		更新者			説明
+;2025/10/12		kamedakeisuke	パラダイムＸや門倉の説明がいまさらながら気になったので修正。ついでにテキストのフォーマットがばらばらだったので合わせる。１回目のイベントのみ情報整理のためリライト。ほかは微調整のみ行う
+
+;====================
+;条件
+;====================
+@GET_EVENT_NAME_12
+#FUNCTIONS
+RESULTS_F '= "깊은안개속의스튜디오"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_12
+;レベル１０以上
+IF BASE:MASTER:LV >= 10 && イベントフラグ:12:0 == 0 || (ダンジョンフラグ:72:8 > 0 && イベントフラグ:12:0 == 1) || (ダンジョンフラグ:73:8 > 0 && イベントフラグ:12:0 == 2)
+	RESULTS = 깊은 안개의 스튜디오
+	RETURN 1
+;レベル４０以上、大浴場クリア済み
+ELSEIF BASE:MASTER:LV >= 40 && イベントフラグ:12:0 == 3
+	;P4主人公が戦闘参加可能＝調教陥落済み、P4主人公がパーティメンバーにいる
+	IF FINDCHARA_B([[キャラ:P4주인공]]) == 2 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:P4주인공]])) == 2
+		RESULTS = 깊은 안개의 스튜디오：곰으로부터의 메일
+		RETURN 1
+	;P4主人公が協力者ポジション、調教すると戦闘参加不可に、P4主人公がパーティメンバーにいる
+	ELSEIF FINDCHARA_B([[キャラ:P4주인공]]) == 2 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:P4주인공]])) == 1
+		RESULTS = 깊은 안개의 스튜디오：갑작스러운 방문
+		RETURN 1
+	ELSE
+		RESULTS = 깊은 안개의 스튜디오：곰으로부터의 메일
+		RETURN 1
+	ENDIF
+;天上楽土開始済み、かつ天上楽土進行状況突入済みで天上楽土の霧状況霧が出ていない、天上楽土クリアしてない
+ELSEIF イベントフラグ:12:0 == 4 && ダンジョンフラグ:74:5 >= 1 && ダンジョンフラグ:74:3 == 0 &&  ダンジョンフラグ:74:1 == 0
+	RESULTS = 깊은 안개의 스튜디오：야소이나바의 안개
+	RETURN 1
+;レベル５０以上、天上楽土開始、クリア済み、時間帯夜
+;ELSEIF BASE:MASTER:LV >= 50 && イベントフラグ:12:0 == 4 && ダンジョンフラグ:74:1 >= 1 && TIME == 3
+ELSEIF BASE:MASTER:LV >= 50 && イベントフラグ:12:0 == 4 && ダンジョンフラグ:74:1 >= 1
+	RESULTS = 깊은 안개의 스튜디오：심야 TV
+	RETURN 1
+ENDIF
+RETURN 0
+
+
+;====================
+;内容
+;====================
+;最近イカ娘とクマって性別違うだけで同類に思えてきた
+@SHOPCOM_EVENT_12
+#DIM LCOUNT
+	IF イベントフラグ:12:0 == 0
+		PRINTL
+		PRINTL 「패러다임 X」
+		PRINTL 그것은, 아마미 모델 도시 구상의 네트워크 부문을 담당하는 대기업
+		PRINTW 아르곤 소프트사가 개발한 가상 전뇌도시…… 흔히 말하는 메타버스이다。
+		PRINTL
+		PRINTL 하지만, 그 이면에는 일반인에게는 알려지지 않은 데빌 서머너 전용 구획이 존재한다。
+		PRINTL 팬텀 소사이어티의 입김이 닿아 있는 그곳은、
+		PRINTW 현실 세계에 존재하는 중립 지대인 렐름과 유사한 서머너 간의 사교장으로 기능하고 있었다。
+		PRINTL
+		PRINTL 그런 패러다임 X의 순찰은 팬텀 소속 서머너들이 맡고 있다。
+		PRINTL 아무리 거대 조직과 기업이 구축한 전뇌 공간이라 해도 완벽할 수는 없는 법。
+		PRINTW 보안의 허점을 찾아내 악용하려는 자들을 적발하는 일은, 한가한 서머너들의 쏠쏠한 일일 알바로 잘 알려져 있었다。
+		PRINTL
+		PRINTFORML 그렇게 디지털 일일 경비원 일을 하고 있던 %CALLNAME:MASTER%의 눈앞에, 뭉툭하고 커다란 무언가가 불쑥 나타났다。
+		PRINTL 엎드려 쓰러져 있는 그것은, 인형옷…… 인형탈？
+		PRINTL 이 주변에는 컴패니언 NPC가 없을 텐데。
+		PRINTW 이상한 아바타인가 미지의 악마인가―― 경계하고 있던 당신의 눈앞에서, 그것은 갑자기 반 바퀴 구르더니 벌떡 드러누우며 으횩――!! 하고 비명을 질렀다。
+		PRINTL 
+		PRINTL :？？？
+		PRINTL 「섀도 다음엔 인간ー!?
+		PRINTL 　여긴 위험하다곰! “섀도”가 온다곰! 빨리 도망치지 않으면 황천길로 가버린다곰ーーー!!!
+		PRINTW 　아, 근데 먼저 좀 일으켜줘곰! 곰의 깜찍하고 프리티한 팔다리론 바닥에 안 닿는다곰」
+		PRINTL 
+		PRINTL 끙! 끙! 하고 통통한 몸으로 윗몸일으키기 체조 같은 동작을 하며 바둥거리는 수수께끼의 물체를 바라보고 있자니、
+		PRINTL 안쪽의 텍스처가 흐물흐물 녹아내리더니、
+		PRINTL 검게 번진 「무언가」가 스며 나오기 시작했다。
+		PRINTL 
+		PRINTL :？？？
+		PRINTW 「으아아아, 왔다곰ーーー!」
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			CUSTOMDRAWLINE =
+			WAIT
+			CALL SET_ENEMY, 8, [[キャラ:속삭이는티아라]], 6, 0, 0
+			CALL SET_ENEMY, 9, [[キャラ:광애의큐피드]], 9, 0, 0
+			CALL SET_ENEMY, 10, [[キャラ:T트윈즈]], 6, 0, 0
+			CALL BATTLE_START
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			WAIT
+		PRINTL 
+		PRINTL 
+		PRINTL 방금 그 적은 대체 어디서 나타난 걸까?
+		PRINTL 패러다임 X에는 영적・논리적・물리적 방화벽이 겹겹이 쳐져 있다고 들었다。
+		PRINTW 외부로부터 침입을 당했다면, 그 보고는 조직에게 유익한 정보―― 즉 돈이 될 터였다。
+		PRINTL 
+		PRINTL 그런 생각을 하던 당신의 눈앞에서,
+		PRINTW 결국 혼자서 일어나지 못한 수수께끼의 생물이 「오오ー!!」 하고 감탄하며 박수를 쳤다。
+		PRINTL 
+		IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+			PRINTL :？？？
+			PRINTL 「형씨, 엄ー청나게 강하다곰!
+		ELSE
+			PRINTL :？？？
+			PRINTL 「누님, 엄ー청나게 강하다곰!
+		ENDIF
+		PRINTW 　이 정도라면 대신 부탁해도 괜찮을 것 같다곰!」
+		PRINTL 
+		PRINTW 무언가 말하고 싶어 안달 난 눈빛을 보내고 있어 손을 잡아 마지못해 일으켜 주자, 수수께끼의 생물은 싱글벙글 웃으며 입을 열었다。
+		PRINTL 
+		PRINTL :곰
+		PRINTL 「처음 뵙겠다곰, 곰은 “곰”이다곰!
+		PRINTL 　지금, 인간 세상에서 이쪽 세계로 사람을 집어던져 섀도한테 죽게 만드는 녀석이 있다곰!
+		PRINTW 　원래는 이 프리티하고 멋진 곰이 구하러 가야 하지만……
+		PRINTL 　앗!? 방금 의심하는 눈으로 봤다곰!? 곰은 할 땐 하는 곰이라곰!?
+		PRINTW 　아깐 마침, 아주 사알짝, 발이 미끄러졌을 뿐이라서……」
+		PRINTL 
+		PRINTL 피해망상 집어치워라. 그보다 “이쪽”이란 건 또 어딘데.
+		PRINTW 당신이 팔짱을 끼고 눈을 가늘게 뜨자, 곰은 키익- 하고 흥분하며 양팔을 마구 휘둘렀다。
+		PRINTL 
+		PRINTL :곰
+		PRINTL 「어-쨌-든-! 곰은 이쪽에 인간이 던져져서 곤란하다곰!
+		PRINTW 　어떻게 좀 해 줬으면 좋겠다곰!」
+		PRINTL 
+				;この流れならローラ姫にせんでもええかの精神でコメントアウト
+				;$INPUT_LOOP_A1
+		PRINTL ＞맡아주시겠습니까?
+		CALL INPUT_YN
+			IF RESULT == 0
+				PRINTL :곰
+				PRINTW 「고맙다곰! 선생님 2호도 상냥하다곰!」
+			ELSE
+				PRINTL :곰
+				PRINTL 「그런 매정한 소리 하지 말고 도와줘곰!!」
+				;GOTO INPUT_LOOP_A1
+			ENDIF
+		PRINTL 
+		PRINTW 곰은 제멋대로 이야기를 계속 이어갔다。
+		PRINTL 
+		PRINTL :곰
+		PRINTL 「마침 지금, 유키코라는 애가 이쪽 세계에 내던져져서 이상한 성이 생겨 버렸다곰.
+		PRINTL 　그리고 그 유키코라는 애를 구하겠다고 치에라는 애가 성으로 뛰어들어 버려서……
+		PRINTW 　민폐니까 어떻게든 해 줬으면 좋겠다곰! 우선 거기로 가 줬으면 한다곰!」
+		PRINTL 
+		PRINTW ＞유키코 공주의 성에 갈 수 있게 되었다
+		PRINTL 
+		PRINTL :곰
+		PRINTL 「그리고, 해결하고 난 뒤의 일인데……
+		PRINTL 　곰은 원래 인간을 원래 세계로 돌려보내는 힘을 갖고 있다곰.
+		PRINTW 　근데, 뭔가 이쪽의 흐름이 이상해져서 쓸 수가 없다곰.
+		PRINTL 
+		PRINTL 　그러니까, 만약 인간을 발견하면 그쪽에서 이쪽 밖으로 꺼내 줬으면 한다곰!
+		PRINTW 　잘 부탁한다곰ー」
+		PRINTL 
+		イベントフラグ:12:0 = 1
+	ELSEIF イベントフラグ:12:0 == 1
+		PRINTL 당신은 패러다임 X의, 이전에 곰을 만났던 지점으로 왔다。
+		PRINTL 분명 이 근처였을 텐데……
+		PRINTW 
+		PRINTL :곰
+		PRINTL 「여기! 여기다곰ー!」
+		PRINTW 
+		PRINTL 텍스처를 들추고 빼꼼히 얼굴을 내밀고 있는 곰을 발견했다。
+		PRINTL 문득 쥐어박고 싶은 충동이 들었지만, 손짓하는 대로 틈새로 미끄러져 내려갔다。
+		PRINTW 
+		PRINTL :곰
+		PRINTL 「이야ー 저번엔 기세로 바깥에 나갔지만
+		PRINTL 　사람이 엄청 많아서 무서운 곳이었다곰, 곰은 완전 전전긍긍했다곰ー!
+		PRINTW 
+		PRINTL 　아, 유키코라는 애, 어떻게든 해 줘서 고맙다곰! 덕분에 이 근처도 조용해졌다곰.
+		PRINTL 　범인 찾는 것도 부탁하고 싶지만…… 저쪽 선생님이 힘내고 있으니까 문제없다곰.
+		PRINTL 　저쪽 선생님이란 건, 으음, 아무튼 엄청 강하고 든든하다곰!
+		PRINTL 　선생님인 만큼, 선생님한테 맡겨두면 안심이다곰!」
+		PRINTW 
+		PRINTL 잘은 모르겠지만 범인 수사는 맡겨둬도 될 것 같다……
+		PRINTW 
+		PRINTL :？？？
+		PRINTL 「여어! 곰! 잘 지냈냐ー」
+		PRINTW 
+		PRINTL :곰
+		PRINTL 「요, 요스케! 어, 어떻게 여기에!? 못 돌아간다고 말했잖아곰!」
+		PRINTW 
+		PRINTL :요스케
+		PRINTL 「아, 확실히 들었지만 다른 방법으로 나갈 수 있다며?
+		PRINTL 　그럼 둘 중 하나가 상황을 보러 가야 한다는 얘기가 나와서 말이지.
+		PRINTL 　그 녀석은 뭐냐, 히든카드니까 내가 왔다는 거지」
+		PRINTW 
+		PRINTL :곰
+		PRINTL 「뭐, 요스케라면 선봉이 딱 어울린다곰ー」
+		PRINTW 
+		PRINTL :요스케
+		PRINTL 「그건 뭔 소리냐, 진짜.
+		PRINTW 　그것보다 이쪽에 사람, 내던져졌잖아.
+		PRINTL 　심야 TV에 비쳤다고. 어떻게 된 거야?」
+		PRINTW 
+		PRINTL :곰
+		PRINTL 「아앗, 그랬지! 이쪽 선생님이랑 얘기하느라 까맣게 잊고 있었다곰」
+		PRINTW 
+		PRINTL :요스케
+		PRINTW 「그런 중요한 걸 잊어버리면 어쩌냐!
+		IF TALENT:MASTER:140 == 1 && TALENT:MASTER:157 == 0
+			PRINTL 　당신이 이쪽의 “선생님”? 확실히 그 녀석이랑 비슷한 느낌이 드네.
+		ELSE
+			PRINTL 　당신이 이쪽의 “선생님”? 설마 여자일 줄은 생각도 못 했어.
+		ENDIF
+		PRINTW 　난 하나무라 요스케, 여길 나갈 땐 신세 좀 질 테니 잘 부탁해」
+		PRINTL 
+		PRINTW ＞하나무라 요스케가 동료로 들어왔다
+		CALL ADD_NEW_COMPANION, [[キャラ:요스케]], 100
+		SIF RESULT
+			CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+		PRINTL 
+		PRINTL :곰
+		PRINTL 「음!? 저쪽에서 땀내가 난다곰… 웩…」
+		PRINTW 
+		PRINTL ＞열기 띤 대욕장에 갈 수 있게 되었다
+		PRINTW 
+		イベントフラグ:12:0 = 2
+	ELSEIF イベントフラグ:12:0 == 2
+		;大浴場クリア後
+		PRINTL 
+		PRINTW 당신은 곰에게 보고하기 위해 스튜디오를 찾았다
+		PRINTL 
+		PRINTL :곰
+		PRINTL 「아, 선생님 수고했다곰ー
+		PRINTL 　칸지라는 애도 구해낼 수 있었다곰.
+		PRINTW 　응? 어떻게 아냐고? 곰의 코 센서를 얕보면 곤란하다곰!」
+		PRINTL 
+		PRINTL :요스케
+		PRINTW 「너무 거들먹거리다간 또 밑천 드러난다ー」
+		PRINTL 
+		PRINTL :곰
+		PRINTL 「시끄럽다곰! 곰은 언제나 완벽초인! 언제나 인기 만점 나이스 가이라곰!
+		PRINTW 　근데 요스케도 같이 왔냐곰, 웬일이다곰」
+		PRINTL 
+		PRINTL :요스케
+		PRINTW 「아아, 잠깐 약속이 있어서 말이지. 슬슬 올 때가 됐는데… 오, 왔다 왔다」
+		PRINTL 
+		PRINTL :곰
+		PRINTW 「오ー 선생님 오랜만이다곰ー! 근데 어째서?」
+		PRINTL 
+		PRINTL :요스케
+		PRINTW 「이번 사건으로 신용할 수 있겠다고 판단했으니까, 내가 불렀지」
+		PRINTL 
+		PRINTL :곰
+		PRINTL 「오오ー 선생님이 두 명이라면 사건 해결도 금방이겠다곰!
+		PRINTL 　힘차게 가보자곰ー!」
+		PRINTW 
+		CALL ADD_NEW_COMPANION, [[キャラ:P4주인공]], 500
+		SIF RESULT
+			CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+		PRINTFORMW ＞새로운 협력자, %NAME:(RESULT:1)%와 함께 스튜디오를 나섰다
+		イベントフラグ:12:0 = 3
+	;クマからの依頼
+	;大浴場クリア済み、禍津稲羽市・マガツマンダラ突入してない
+	ELSEIF イベントフラグ:12:0 == 3 && ダンジョンフラグ:75:9 == 0
+		;P4主人公がパーティメンバーにいる、P4主人公が戦闘参加可能＝調教陥落済み
+		IF FINDCHARA_B([[キャラ:P4주인공]]) == 2 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:P4주인공]])) == 2
+			PRINTW 『너를 만나고 싶다곰, 곰이 보냄』
+			PRINTL 갑작스럽게 도착한 곰의 메일
+			PRINTFORMW 신경이 쓰인 %CALLNAME:MASTER%는, 그 골목길을 찾아가 보기로 했다。
+			PRINTL 
+			CUSTOMDRAWLINE - 
+			PRINTL 
+			PRINTL :곰
+			PRINTW 「선생님! 보고 싶었다곰ー!」
+			PRINTW 인형옷의 돌진을 사뿐히 피하고는, 불러낸 이유를 물어보았다。
+			PRINTL 
+			PRINTL 
+			PRINTL 「곰 말이지…… 외로워서……
+			PRINTW 　열심히 메일? 이라는 걸 배웠다곰」
+			PRINTW 인형옷의 손가락 끝을 능숙하게 꿈틀거리며 말하는 모습이 묘하게 기분 나쁘다…
+			PRINTL 
+			PRINTL :곰
+			PRINTW 「그래서 말이지… 곰 속의 외톨이 소년이 날뛰어서 메일 보내봤다곰!」
+			PRINTL 
+			PRINTW ………
+			PRINTW ……
+			PRINTW …
+			PRINTL 
+			PRINTL :곰
+			PRINTW 「아! 잠깐! 기다려곰!」
+			PRINTFORMW 겨우 그것뿐인가? 하고 돌아가려는 %CALLNAME:MASTER%의 손을 붙잡고 곰은 본론을 꺼냈다
+			PRINTL 
+			PRINTL :곰
+			PRINTL 「조금 전부터 말이지… 이쪽에서 선생님 같은 냄새가 난다곰
+			PRINTW 　앗! 선생님이라고 해도 당신 선생님 얘기가 아니다곰」
+			PRINTFORMW 아무래도, %CALLNAME:(FINDCHARA(NO, [[キャラ:P4주인공]]))%을(를) 말하는 모양이다
+			PRINTL 
+			PRINTL :곰
+			PRINTL 「그래서, 냄새의 근원을 찾아봤더니, 이상한… 천국 같은 곳을 발견했다곰!
+			PRINTW 　분명히, 또 누군가가 던져진 게 틀림없다곰!」
+			PRINTL 
+			PRINTW ＞천상낙원에 갈 수 있게 되었다
+			PRINTL 
+			PRINTL 
+			PRINTFORMW 사무소로 돌아와 조사한 결과, %CALLNAME:(FINDCHARA(NO, [[キャラ:P4주인공]]))%의 사촌 여동생인 도지마 나나코가 행방불명되었다는 정보가 들어왔다.
+			PRINTW 동시에 그녀의 유괴범으로 나마타메 타로라는 남자가 지명수배된 모양이다……
+			PRINTL 
+			PRINTW ＞저곳에 나나코와 나마타메 두 사람이 있는 것일까……？
+		;P4主人公がパーティメンバーにいる、P4主人公が協力者ポジション、調教すると戦闘参加不可に
+		ELSEIF FINDCHARA_B([[キャラ:P4주인공]]) == 2 && GET_VALUE_TALENT_JOINABLE(GETCHARA([[キャラ:P4주인공]])) == 1
+			PRINTFORMW 어느 날, 안색이 새파랗게 질린 %CALLNAME:(FINDCHARA(NO, [[キャラ:P4주인공]]))%이(가) %CALLNAME:MASTER%에게 찾아왔다
+			PRINTFORMW %CALLNAME:(FINDCHARA(NO, [[キャラ:P4주인공]]))%에 따르면, 사촌 여동생인 도지마 나나코가 심야 TV에 비친 뒤 행방불명되었다고 한다
+			PRINTL 
+			PRINTFORMW 구출을 도와달라는 %CALLNAME:(FINDCHARA(NO, [[キャラ:P4주인공]]))%와(과) 함께 곰이 있는 곳으로 가기로 했다…
+			PRINTL 
+			CUSTOMDRAWLINE - 
+			PRINTL 
+			PRINTW 늘 가던 뒷골목에 도착했다
+			PRINTW 곰의 모습은…
+			PRINTL 
+			PRINTL :곰
+			PRINTW 「선생님! 보고 싶었다곰ー!」
+			PRINTFORMW 곰의 모습을 찾는 %CALLNAME:MASTER% 일행에게, 여느 때처럼 인형옷이 돌진해 왔다
+			PRINTL 
+			PRINTL :곰
+			PRINTL 「둘 다, 무슨 일이다곰?
+			PRINTW 　곰이라면… 언제든 오케이라곰♪」
+			PRINTW 영문 모를 소리를 중얼거리는 곰에게 사정을 설명했다…
+			PRINTL 
+			PRINTL :곰
+			PRINTL 「나나코가!? 그건 큰일이다곰!
+			PRINTW 　열심히 냄새를 찾아보겠다곰!
+			PRINTL 
+			PRINTW 　음!? 저쪽에서 선생님 같은 냄새가 난다곰!」
+			PRINTL 
+			PRINTW 나나코를 알고 있는지, 평소보다 한층 의욕을 내는 곰의 안내로 천상낙원에 갈 수 있게 되었다
+			PRINTL 
+			PRINTW ………
+			PRINTW ……
+			PRINTW …
+			PRINTL 
+			PRINTW 사무소로 돌아와 뒷조사를 한 결과, 나나코를 유괴한 범인으로 지목된 남자, 나마타메 타로 또한 행방불명된 상태임이 판명되었다
+			PRINTL 
+			PRINTW 저곳에 나나코와 나마타메 두 사람이 있는 것일까……？
+		;その他の導入
+		ELSE
+			PRINTW 『너를 만나고 싶다곰, 곰이 보냄』
+			PRINTL 갑작스럽게 도착한 곰의 메일
+			PRINTFORMW 신경이 쓰인 %CALLNAME:MASTER%는, 그 골목길을 찾아가 보기로 했다。
+			PRINTL 
+			CUSTOMDRAWLINE - 
+			PRINTL 
+			PRINTL :곰
+			PRINTW 「선생님! 보고 싶었다곰ー!」
+			PRINTW 인형옷의 돌진을 사뿐히 피하고는, 불러낸 이유를 물어보았다。
+			PRINTL 
+			PRINTL 
+			PRINTL 「곰 말이지…… 외로워서……
+			PRINTW 　열심히 메일? 이라는 걸 배웠다곰」
+			PRINTW 인형옷의 손가락 끝을 능숙하게 꿈틀거리며 말하는 모습이 묘하게 기분 나쁘다…
+			PRINTL 
+			PRINTL :곰
+			PRINTW 「그래서 말이지… 곰 속의 외톨이 소년이 날뛰어서 메일 보내봤다곰!」
+			PRINTL 
+			PRINTW ………
+			PRINTW ……
+			PRINTW …
+			PRINTL 
+			PRINTL :곰
+			PRINTW 「아! 잠깐! 기다려곰!」
+			PRINTFORMW 겨우 그것뿐인가? 하고 돌아가려는 %CALLNAME:MASTER%의 손을 붙잡고 곰은 본론을 꺼냈다
+			PRINTL 
+			PRINTL :곰
+			PRINTL 「조금 전부터 말이지… 이쪽에서 선생님 같은 냄새가 난다곰
+			PRINTW 　앗! 선생님이라고 해도 당신 선생님 얘기가 아니다곰」
+			PRINTFORMW 아무래도, 동료로 들어온 소년을 말하는 모양이다
+			PRINTL 
+			PRINTL :곰
+			PRINTL 「그래서, 냄새의 근원을 찾아봤더니, 이상한… 천국 같은 곳을 발견했다곰!
+			PRINTW 　분명히, 또 누군가가 던져진 게 틀림없다곰!」
+			PRINTL 
+			PRINTW ＞천상낙원에 갈 수 있게 되었다
+			PRINTL 
+			PRINTL 
+			PRINTFORMW 사무소로 돌아와 조사한 결과, 도지마 나나코라는 여자아이가 행방불명되었다는 정보가 들어왔다
+			PRINTW 동시에 그녀의 유괴범으로 나마타메 타로라는 남자가 지명수배된 모양이다…
+			PRINTL 
+			PRINTW 저곳에 나나코와 나마타메 두 사람이 있는 것일까……？
+		ENDIF
+		;天上楽土開始済みへ
+		イベントフラグ:12:0 = 4
+	;天上楽土開始済み、かつ天上楽土進行状況突入済みで天上楽土の霧状況霧が出ていない、天上楽土クリアしてない
+	ELSEIF イベントフラグ:12:0 == 4 && ダンジョンフラグ:74:5 >= 1 && ダンジョンフラグ:74:3 == 0 && ダンジョンフラグ:74:1 == 0
+		PRINTW 일기예보에 따르면 팔십 이나바의 날씨가 변해, 안개가 낄 것 같은 기색이 감돌고 있는 것 같다……
+		PRINTL 
+		PRINTL :곰
+		PRINTW 「저쪽에서 안개가 나오면, 여기 안개가 개여 그림자가 날뛰기 시작한다곰！」
+		PRINTW 어디선가 곰의 말이 뇌리에 떠오른다……
+		PRINTL 
+		PRINTW 아마, 아마 다음에 갔을 때가 마지막 기회일 것이다。
+		PRINTW 그때 구출하지 못하면, 나나코는……
+		
+		;天上楽土の霧状況：霧晴れたへ
+		ダンジョンフラグ:74:3 = 1
+	;レベル５０以上、天上楽土開始、クリア済み、時間帯夜
+	;ELSEIF BASE:MASTER:LV >= 50 && イベントフラグ:12:0 == 4 && ダンジョンフラグ:74:1 >= 1 && TIME == 3
+	ELSEIF BASE:MASTER:LV >= 50 && イベントフラグ:12:0 == 4 && ダンジョンフラグ:74:1 >= 1
+		PRINTW 비가 오고있는 밤…
+		PRINTW 자신의 방에서 느긋하게 쉬고 있을 때, 갑자기, 꺼져 있었을 텔레비젼의 전원이 켜졌다。
+		PRINTL 
+		PRINTW 시간은 다만 자정。
+		PRINTW 이것이, 소문으로 듣던 심야 TV 인가？
+		PRINTW 운명의 사람이 비추어 진다는 이야기도 있지만…그렇게 보고 있자, 흐트러진 화면에 사람이 보이기 시작했다…
+		PRINTL 
+		PRINTW 선명하게 보이지 않지만, 파괴된 도시에 남자가 혼자 잠시 멈춰 서있는 광경으로 보인다。
+		PRINTL 
+		PRINTW 지금까지 심야 TV에 사람이 비춰질 때, 접촉하면 저 쪽 세계로 갈 수 있었다。
+		PRINTL 
+		PRINTW 이번에도 같은 것인가？
+		PRINTW 그 풍경이 있다면, 가 보는 것도 재미있을지 모른다……
+		PRINTL 
+		PRINTW ＞마기츠나이나바시에 갈 수 있게 되었다
+		
+		;禍津稲羽市・マガツマンダラ開始済みへ
+		イベントフラグ:12:0 = 5
+	ENDIF

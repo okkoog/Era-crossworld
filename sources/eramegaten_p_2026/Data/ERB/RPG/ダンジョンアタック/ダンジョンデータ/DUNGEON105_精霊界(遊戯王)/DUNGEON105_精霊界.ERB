@@ -1,0 +1,1239 @@
+﻿
+;=======================================================================
+;精霊界
+;	Modification Data:
+;	ライセンスフリー
+;	Edit	Date			Author					Reason
+;	001		2025/09/18		epizo					作成開始
+;	002		2025/10/31		epizo					一旦完成
+;	003		2025/11/10		epizo					出口各種をSTに変更してターミナル機能とST間ワープ機能を追加、レイかロゼが既にいるなら加入処理しないように(イベントは行う)、幻惑の見習いのセリフを扉開けてたら変えるように。
+;	004		2025/11/27		epizo					ターミナルにワープ機能が追加されたため、STを削除してターミナルに変更
+;	005		2026/06/19		epizo					閃刀姫レイイベントでのフラグミスを修正、アンダーグラウンドのXYの大きさが小さかったので上げる。
+;複数のダンジョンを接続する。
+;コンセプトとしては遊戯王キャラをラグの店から分離する。
+;精霊界から、蟲惑魔の森、魔法族の里、白銀の迷宮城、アンダーグラウンドに移動できるようにする。
+;敵が3段階に分かれていて、15～25(ボス35)/30～40(ボス50)/45～55(ボス65)でそれぞれ出る雑魚が違う。
+;ボスを倒して次マップに入ると敵のラインナップが変わり、クリア済みマップ以外の宝箱の中身がグレードアップする。
+;宝箱は蟲惑魔の森、魔法族の里、白銀の迷宮城に置いてあり、各ダンジョンで内容は共通。
+;1ダンジョン1段階で15個の3段階で全ダンジョンクリアで45個の宝箱入手が可能。
+;各ダンジョンはどこからでも行けるが、1回入るとクリアまで他ダンジョンの入口は閉ざして入れなくする。
+;アンダーグラウンドは特に何も無いが、1階層ごとに各段階の雑魚敵全てとM∀LICEモンスターが出現する仲魔集め用マップ。
+;アンダーグラウンドは最初は1階層しか階段を出さない、段階が上がったら降り階段が現れる、全3階。
+;
+;初心者が作ったのでコードが非常に汚いです。綺麗に修正してくれる人大歓迎。
+;
+;ダンジョンナンバー105　ＭＡＰ0~12
+;フラグ
+;ダンジョンフラグ:(FLAG:현던전):1  クリアフラグ
+;ダンジョンフラグ:(FLAG:현던전):2  初回入場時フラグ
+;ダンジョンフラグ:(FLAG:현던전):3  ボス前扉警告フラグ
+;ダンジョンフラグ:(FLAG:현던전):4  アリアスとの会話フラグ
+;ダンジョンフラグ:(FLAG:현던전):10 デスガイドの会話フラグ
+;ダンジョンフラグ:(FLAG:현던전):11 蟲惑魔の森浅層の閃刀姫レイとの会話フラグ
+;ダンジョンフラグ:(FLAG:현던전):13 ショートカットのドア解放用変数(ビット演算)
+;ダンジョンフラグ:(FLAG:현던전):14 蟲惑魔の森ボス：巨大フレシア戦闘フラグ
+;ダンジョンフラグ:(FLAG:현던전):15 魔法族の里ボス：ブラック・マジシャン・ガール戦闘フラグ
+;ダンジョンフラグ:(FLAG:현던전):16 白銀の迷宮城ボス：ラビュリンス戦闘フラグ
+;ダンジョンフラグ:(FLAG:현던전):17 アンダーグラウンド最深層：アーゼウス戦闘フラグ
+;ダンジョンフラグ:(FLAG:현던전):18 アンダーグラウンド最深層：アーゼウスイベント2回目以降フラグ
+;ダンジョンフラグ:(FLAG:현던전):19 Sターミナル管理フラグ
+;ダンジョンフラグ:(FLAG:현던전):20 ダンジョン段階変更フラグ
+;ダンジョンフラグ:(FLAG:현던전):22 蟲惑魔の森攻略中のフラグ
+;ダンジョンフラグ:(FLAG:현던전):23 魔法族の里攻略中のフラグ
+;ダンジョンフラグ:(FLAG:현던전):24 白銀の迷宮城攻略中のフラグ
+;ダンジョンフラグ:(FLAG:현던전):25 蟲惑魔の森宝箱固定フラグ
+;ダンジョンフラグ:(FLAG:현던전):26 魔法族の里宝箱固定フラグ
+;ダンジョンフラグ:(FLAG:현던전):27 白銀の迷宮城宝箱固定フラグ
+;ダンジョンフラグ:(FLAG:현던전):70 蟲惑魔の森浅層の宝箱管理用変数（ビット演算）
+;ダンジョンフラグ:(FLAG:현던전):71 蟲惑魔の森中層の宝箱管理用変数（ビット演算）
+;ダンジョンフラグ:(FLAG:현던전):72 蟲惑魔の森深層の宝箱管理用変数（ビット演算）
+
+
+;=======================================================================
+;特殊仕様
+;複数のダンジョンが併設されており、ボスを倒すと他のダンジョンの雑魚・ボスレベルや設置アイテムが強化される。
+;
+;=======================================================================
+;=======================================================================
+;攻略条件
+;第二段階の納金が終わったら開放を想定
+;遊戯王ONじゃないと出ない。
+;=======================================================================
+@PREREQUISITE_DUNGEON_105
+SIF !GETS_USEABLE_EXTRA_TITLE("遊戯王")
+	RETURN 0
+SIF FLAG:조직공헌도 < 10000
+	RETURN 0
+RETURN 1
+
+;=======================================================================
+;ダンジョン名
+;精霊界を入口として各ダンジョンへ
+;=======================================================================
+@GET_DUNGEON_NAME_105
+#FUNCTIONS
+RESULTS_F = 精霊界_EX：遊戯王
+
+
+;=======================================================================
+;フロア名表示
+;=======================================================================
+@FLOORNAME_105
+SELECTCASE FLAG:현M
+	CASE 0
+		PRINTL 정령계 입구
+	CASE 1
+		PRINTL 충혹마의 숲　천층
+	CASE 2
+		PRINTL 충혹마의 숲　중층
+	CASE 3
+		PRINTL 충혹마의 숲　심층
+	CASE 4
+		PRINTL 마법족의 마을　천층
+	CASE 5
+		PRINTL 마법족의 마을　중층
+	CASE 6
+		PRINTL 마법족의 마을　심층
+	CASE 7
+		PRINTL 백은의 미궁성　1층
+	CASE 8
+		PRINTL 백은의 미궁성　2층
+	CASE 9
+		PRINTL 백은의 미궁성　3층
+	CASE 10
+		PRINTL 언더그라운드　천층
+	CASE 11
+		PRINTL 언더그라운드　중층
+	CASE 12
+		PRINTL 언더그라운드　심층
+	CASE 13
+		PRINTL 언더그라운드　최심층
+	CASEELSE
+		PRINTL
+ENDSELECT
+
+;=======================================================================
+;スタート地点入力
+;=======================================================================
+@START_DUNGEON_105, ARG
+FLAG:현M = 0
+FLAG:현X = 8
+FLAG:현Y = 8
+
+;=======================================================================
+;ターミナルマップ
+;=======================================================================
+@TERMINAL_MAP_105, IS_START
+#DIM DYNAMIC IS_START
+RESULT:1 = 1
+RESULTS:1 '= "충혹마의 숲　천층"
+RESULT:2 = 1
+RESULTS:2 '= "충혹마의 숲　중층"
+RESULT:3 = 1
+RESULTS:3 '= "충혹마의 숲　심층"
+RESULT:4 = 1
+RESULTS:4 '= "마법족의 마을　천층"
+RESULT:5 = 1
+RESULTS:5 '= "마법족의 마을　중층"
+RESULT:6 = 1
+RESULTS:6 '= "마법족의 마을　심층"
+RESULT:7 = 1
+RESULTS:7 '= "백은의 미궁성　1층"
+RESULT:8 = 1
+RESULTS:8 '= "백은의 미궁성　2층"
+RESULT:9 = 1
+RESULTS:9 '= "백은의 미궁성　3층"
+RESULT:10 = 1
+RESULTS:10 '= "언더그라운드　천층"
+RESULT:11 = 1
+RESULTS:11 '= "언더그라운드　중층"
+RESULT:12 = 1
+RESULTS:12 '= "언더그라운드　심층"
+RESULT:13 = 1
+RESULTS:13 '= "언더그라운드　최심층"
+;=======================================================================
+;攻略開始時のイベント
+;画像と最初だけ一言出す。
+;=======================================================================
+@EVENT_DUNGEON_START_105
+PRINTL
+;タイトル画像表示
+SELECTCASE FLAG:현M
+	CASE 0
+		CALL PRINT_EVENT_PICTURE, "精霊界_タイトル", 10, "CENTER"
+	CASE 1
+		CALL PRINT_EVENT_PICTURE, "蟲惑魔の森浅層", 10, "CENTER"
+	CASE 4
+		CALL PRINT_EVENT_PICTURE, "魔法族の里", 10, "CENTER"
+	CASE 7
+		CALL PRINT_EVENT_PICTURE, "白銀の迷宮城", 10, "CENTER"
+	CASE 10
+		CALL PRINT_EVENT_PICTURE, "アンダーグラウンド", 10, "CENTER"
+ENDSELECT
+WAIT
+IF ダンジョンフラグ:(FLAG:현던전):2 == 0
+	CALL MESSAGE_WINDOW_D, "", "＞기묘한 이계가 생겨났다는 이유로 조사를 명령받았다。"
+	CALL MESSAGE_WINDOW_D, "", "＞겉보기에는 초원 같지만……"
+	ダンジョンフラグ:(FLAG:현던전):2 = 1
+ENDIF
+DRAWLINE
+
+;=======================================================================
+;脱出時のイベント
+;現状は特に無し。
+;=======================================================================
+;@EVENT_DUNGEON_END_1
+
+;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@CAN_ENTER_105,ARG,ARG:1
+;ARG、ARG:1はそれぞれ対象のマスのX、Y座標を表しています。
+;このダンジョンではエレベーターの扉が一度右側から開けておかないと左側からは開けられない、という処理に使用しています。
+;どのマップでも座標(2,7)がエレベータの扉。ダンジョンフラグ:(FLAG:현던전):13 ＝ エレベータフラグ管理用変数の{現在のマップ番号}番目のビットが立っていなければ開けられるかどうかの判定を行う
+SELECTCASE FLAG:현M
+	;精霊界入口用
+	CASE 0
+	;蟲惑魔の森　浅層用
+	CASE 1
+		IF ARG == 1 && ARG:1 == 15 && !GETBIT(ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M)
+			;南からは開けられない
+			IF FLAG:현Y > ARG:1
+				CALL MESSAGE_WINDOW_D, "", "＞나무 벽에 작은 틈이 있다/＞반대편에서 한 번 지나갈 필요가 있는 것 같다"
+				RETURN 0
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞작은 틈을 넓혀 지나갈 수 있게 만들었다"
+				SETBIT ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M
+				RETURN 0
+			ENDIF
+		ENDIF
+	;蟲惑魔の森　中層用
+	CASE 2
+		IF ARG == 4 && ARG:1 == 18 && !GETBIT(ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 2 ) 
+		;西からは開けられない
+			IF FLAG:현X < ARG
+				CALL MESSAGE_WINDOW_D, "", "＞나무 벽에 작은 틈이 있다/＞반대편에서 한 번 지나갈 필요가 있는 것 같다"
+				RETURN 0
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞작은 틈을 넓혀 지나갈 수 있게 만들었다"
+				SETBIT ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 2
+				RETURN 0
+			ENDIF
+		ENDIF
+	;蟲惑魔の森　深層用
+	CASE 3
+		IF ARG == 2 && ARG:1 == 18 && !GETBIT(ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 3) 
+			;西からは開けられない
+			IF FLAG:현X < ARG
+				CALL MESSAGE_WINDOW_D, "", "＞나무 벽에 작은 틈이 있다/＞반대편에서 한 번 지나갈 필요가 있는 것 같다"
+				RETURN 0
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞작은 틈을 넓혀 지나갈 수 있게 만들었다"
+				SETBIT ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 3
+				RETURN 0
+			ENDIF
+		ELSEIF ARG == 7 && ARG:1 == 18 && !GETBIT(ダンジョンフラグ:(FLAG:현던전):3 , FLAG:현M) 
+			CALL MESSAGE_WINDOW_D, "", "나무 벽 너머에서 무시무시한 기척이 느껴진다…"
+			CALL INPUT_SELECT_D, "[0] 연다/[1] 열지 않는다 "
+			SIF RESULT
+				RETURN 0
+			;通った場合はただの扉にする
+			DA:ARG:(ARG:1) = 2
+			SETBIT ダンジョンフラグ:(FLAG:현던전):3 , FLAG:현M
+			RETURN 1
+		ENDIF
+	;魔法族の里　浅層用
+	CASE 4
+		IF ARG == 18 && ARG:1 == 16 && !GETBIT(ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 4)
+			;南からは開けられない
+			IF FLAG:현Y > ARG:1
+				CALL MESSAGE_WINDOW_D, "", "＞문이 닫혀있다/＞반대편에서 한 번 열 필요가 있는 것 같다"
+				RETURN 0
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞닫혀 있던 문을 열었다"
+				SETBIT ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 4
+				RETURN 0
+			ENDIF
+		ENDIF
+	;魔法族の里　中層用
+	CASE 5
+		IF ARG == 3 && ARG:1 == 18 && !GETBIT(ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 5) 
+		;西からは開けられない
+			IF FLAG:현X < ARG
+				CALL MESSAGE_WINDOW_D, "", "＞문이 닫혀있다/＞반대편에서 한 번 열 필요가 있는 것 같다"
+				RETURN 0
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞닫혀 있던 문을 열었다"
+				SETBIT ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 5 
+				RETURN 0
+			ENDIF
+		ENDIF
+	;魔法族の里　深層用
+	CASE 6
+		IF ARG == 1 && ARG:1 == 15 && !GETBIT(ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 6) 
+			;南からは開けられない
+			IF FLAG:현Y > ARG:1
+				CALL MESSAGE_WINDOW_D, "", "＞문이 닫혀있다/＞반대편에서 한 번 열 필요가 있는 것 같다"
+				RETURN 0
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞닫혀 있던 문을 열었다"
+				SETBIT ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 6
+				RETURN 0
+			ENDIF
+		ELSEIF ARG == 4 && ARG:1 == 9 && !GETBIT(ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 7) 
+			;東からは開けられない
+			IF FLAG:현X > ARG
+				CALL MESSAGE_WINDOW_D, "", "＞문이 닫혀있다/＞반대편에서 한 번 열 필요가 있는 것 같다"
+				RETURN 0
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞닫혀 있던 문을 열었다"
+				SETBIT ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 7
+				RETURN 0
+			ENDIF
+		ELSEIF ARG == 4 && ARG:1 == 13 && !GETBIT(ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 8) 
+			;東からは開けられない
+			IF FLAG:현X > ARG
+				CALL MESSAGE_WINDOW_D, "", "＞문이 닫혀있다/＞반대편에서 한 번 열 필요가 있는 것 같다"
+				RETURN 0
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞닫혀 있던 문을 열었다"
+				SETBIT ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 8
+				RETURN 0
+			ENDIF
+		ELSEIF ARG == 5 && ARG:1 == 15 && !GETBIT(ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 9) 
+			;南からは開けられない
+			IF FLAG:현Y > ARG:1
+				CALL MESSAGE_WINDOW_D, "", "＞문이 닫혀있다/＞반대편에서 한 번 열 필요가 있는 것 같다"
+				RETURN 0
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞닫혀 있던 문을 열었다"
+				SETBIT ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 9
+				RETURN 0
+			ENDIF
+		ENDIF
+	;白銀の迷宮城　１階用
+	CASE 7
+		IF ARG == 10 && ARG:1 == 5 && !GETBIT(ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 10) 
+			;南からは開けられない
+			IF FLAG:현Y > ARG:1
+				CALL MESSAGE_WINDOW_D, "", "＞문이 닫혀있다/＞반대편에서 한 번 열 필요가 있는 것 같다"
+				RETURN 0
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞닫혀 있던 문을 열었다"
+				SETBIT ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 10
+				RETURN 0
+			ENDIF
+		ELSEIF ARG == 10 && ARG:1 == 9 && !GETBIT(ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 11) 
+			;南からは開けられない
+			IF FLAG:현Y > ARG:1
+				CALL MESSAGE_WINDOW_D, "", "＞문이 닫혀있다/＞반대편에서 한 번 열 필요가 있는 것 같다"
+				RETURN 0
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞닫혀 있던 문을 열었다"
+				SETBIT ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 11
+				RETURN 0
+			ENDIF
+		ELSEIF ARG == 10 && ARG:1 == 13 && !GETBIT(ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 12) 
+			;南からは開けられない
+			IF FLAG:현Y > ARG:1
+				CALL MESSAGE_WINDOW_D, "", "＞문이 닫혀있다/＞반대편에서 한 번 열 필요가 있는 것 같다"
+				RETURN 0
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞닫혀 있던 문을 열었다"
+				SETBIT ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 12
+				RETURN 0
+			ENDIF
+		ELSEIF ARG == 10 && ARG:1 == 17 && !GETBIT(ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 13) 
+			;南からは開けられない
+			IF FLAG:현Y > ARG:1
+				CALL MESSAGE_WINDOW_D, "", "＞문이 닫혀있다/＞반대편에서 한 번 열 필요가 있는 것 같다"
+				RETURN 0
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞닫혀 있던 문을 열었다"
+				SETBIT ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 13
+				RETURN 0
+			ENDIF
+		ENDIF
+	;白銀の迷宮城　２階用
+	CASE 8
+		IF ARG == 6 && ARG:1 == 4 && !GETBIT(ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 14) 
+			;北からは開けられない
+			IF FLAG:현Y < ARG:1
+				CALL MESSAGE_WINDOW_D, "", "＞문이 닫혀있다/＞반대편에서 한 번 열 필요가 있는 것 같다"
+				RETURN 0
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞닫혀 있던 문을 열었다"
+				SETBIT ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 14
+				RETURN 0
+			ENDIF
+		ENDIF
+	;白銀の迷宮城　３階用
+	CASE 9
+		IF ARG == 6 && ARG:1 == 16 && !GETBIT(ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 15) 
+			;南からは開けられない
+			IF FLAG:현Y > ARG:1
+				CALL MESSAGE_WINDOW_D, "", "＞문이 닫혀있다/＞반대편에서 한 번 열 필요가 있는 것 같다"
+				RETURN 0
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞닫혀 있던 문을 열었다"
+				SETBIT ダンジョンフラグ:(FLAG:현던전):13 , FLAG:현M + 15
+				RETURN 0
+			ENDIF
+		ENDIF
+ENDSELECT
+CALL CAN_ENTER,ARG,ARG:1
+RETURN RESULT
+
+;=======================================================================
+;フロアデータ
+;=======================================================================
+@MAKE_FLOOR_105
+SELECTCASE FLAG:현M
+	CASE 0
+	;精霊界
+		FLAG:최대X = 17
+		FLAG:최대Y = 10
+
+;X座標をこんな形でふっとくと、見やすいかもしれません
+;詳しくはSET_DUNGEON内の@DEFINE_TILESとSYSTEM_DUNGEON内の@DUNGEON_ATTACKをお読みください
+;								           1         2
+;								 012345678901234567890
+		CALL MAKE_FLOOR_LINE,0, "                 "
+		CALL MAKE_FLOOR_LINE,1, "        9        "
+		CALL MAKE_FLOOR_LINE,2, "       114       "
+		CALL MAKE_FLOOR_LINE,3, "      11111      "
+		CALL MAKE_FLOOR_LINE,4, "     1111111     "
+		CALL MAKE_FLOOR_LINE,5, "    111111111    "
+		CALL MAKE_FLOOR_LINE,6, "   11111111111   "
+		CALL MAKE_FLOOR_LINE,7, "  4111711411444  "
+		CALL MAKE_FLOOR_LINE,8, " 911111181111119 "
+		CALL MAKE_FLOOR_LINE,9, "                 "
+;								 012345678901234567890
+	CASE 1
+	;蟲惑魔の森　浅層
+		FLAG:최대X = 20
+		FLAG:최대Y = 20
+;								            1         2
+;								  01234567890123456789
+		CALL MAKE_FLOOR_LINE, 0, " 9                  "
+		CALL MAKE_FLOOR_LINE, 1, " 1 4 111111113  1   "
+		CALL MAKE_FLOOR_LINE, 2, " 1 1 1  1       1   "
+		CALL MAKE_FLOOR_LINE, 3, " 1 1 1  1 111111111 "
+		CALL MAKE_FLOOR_LINE, 4, " 11111111 1     1 1 "
+		CALL MAKE_FLOOR_LINE, 5, "  1     1 1     1 3 "
+		CALL MAKE_FLOOR_LINE, 6, "  1     111     1   "
+		CALL MAKE_FLOOR_LINE, 7, " 11114        111   "
+		CALL MAKE_FLOOR_LINE, 8, " 1           11 1   "
+		CALL MAKE_FLOOR_LINE, 9, " 1 3 1111     1 1   "
+		CALL MAKE_FLOOR_LINE,10, " 1 1 1  1     1 111 "
+		CALL MAKE_FLOOR_LINE,11, " 1 1 1  1   111   1 "
+		CALL MAKE_FLOOR_LINE,12, " 1 1111111111     1 "
+		CALL MAKE_FLOOR_LINE,13, " 1        1   3  11 "
+		CALL MAKE_FLOOR_LINE,14, " 1 41111111   1  1  "
+		CALL MAKE_FLOOR_LINE,15, " 2     1      1  1  "
+		CALL MAKE_FLOOR_LINE,16, " 1111111 1111 1  1  "
+		CALL MAKE_FLOOR_LINE,17, " 1       1  1 1  1  "
+		CALL MAKE_FLOOR_LINE,18, "91111111111 1111113 "
+		CALL MAKE_FLOOR_LINE,19, " T                  "
+;								  01234567890123456789
+		;閃刀姫レイイベント
+		CALL SET_TILE, 1 , 18 , ダンジョンフラグ:(FLAG:현던전):14 , 0 , 1039
+		
+		;X10 Y18でホールティアの蟲惑魔戦闘フラグ
+		CALL SET_TILE, 10 , 18 , ダンジョンフラグ:(FLAG:현던전):12 , 0 , 1049
+	CASE 2
+	;蟲惑魔の森　中層
+		FLAG:최대X = 20
+		FLAG:최대Y = 20
+;								           1         2
+;								  01234567890123456789
+		CALL MAKE_FLOOR_LINE, 0, "                    "
+		CALL MAKE_FLOOR_LINE, 1, "      1111  31111   "
+		CALL MAKE_FLOOR_LINE, 2, " 111111  1      1   "
+		CALL MAKE_FLOOR_LINE, 3, " 1       1111111111 "
+		CALL MAKE_FLOOR_LINE, 4, " 1          1   1   "
+		CALL MAKE_FLOOR_LINE, 5, " 111113 11111   1   "
+		CALL MAKE_FLOOR_LINE, 6, " 1      1  1    1 3 "
+		CALL MAKE_FLOOR_LINE, 7, " 111   11  3    1 1 "
+		CALL MAKE_FLOOR_LINE, 8, "   1   1        1 1 "
+		CALL MAKE_FLOOR_LINE, 9, " 1 1 111    11111 1 "
+		CALL MAKE_FLOOR_LINE,10, " 111 1 1    1     1 "
+		CALL MAKE_FLOOR_LINE,11, " 1   1 1111 1111111 "
+		CALL MAKE_FLOOR_LINE,12, " 1 111 1  1    1  1 "
+		CALL MAKE_FLOOR_LINE,13, " 1 1 1 1  1    1  1 "
+		CALL MAKE_FLOOR_LINE,14, " 1 1 1 1111 4  1111 "
+		CALL MAKE_FLOOR_LINE,15, " 1 1 1 1    1  1    "
+		CALL MAKE_FLOOR_LINE,16, " 1 1 4 1113 1  1114 "
+		CALL MAKE_FLOOR_LINE,17, " 1 1        1111    "
+		CALL MAKE_FLOOR_LINE,18, "T111211111111  11119"
+		CALL MAKE_FLOOR_LINE,19, " 9                  "
+;								  01234567890123456789
+	CASE 3
+	;蟲惑魔の森　深層
+		FLAG:최대X = 20
+		FLAG:최대Y = 20
+;								           1         2
+;								  01234567890123456789
+		CALL MAKE_FLOOR_LINE, 0, "                    "
+		CALL MAKE_FLOOR_LINE, 1, "     11111   111113 "
+		CALL MAKE_FLOOR_LINE, 2, " 4   1   11111 1    "
+		CALL MAKE_FLOOR_LINE, 3, " 1  11     1   1    "
+		CALL MAKE_FLOOR_LINE, 4, " 1111  31  1   1111 "
+		CALL MAKE_FLOOR_LINE, 5, " 1  11  1  1      1 "
+		CALL MAKE_FLOOR_LINE, 6, " 1   1111  1  111 1 "
+		CALL MAKE_FLOOR_LINE, 7, " 1 111     1  1 111 "
+		CALL MAKE_FLOOR_LINE, 8, " 111 1  1111111  1  "
+		CALL MAKE_FLOOR_LINE, 9, " 1 4 1  1        1  "
+		CALL MAKE_FLOOR_LINE,10, " 1   1  3    111 1  "
+		CALL MAKE_FLOOR_LINE,11, " 11111    3  1 111  "
+		CALL MAKE_FLOOR_LINE,12, " 1     3  1  1   11 "
+		CALL MAKE_FLOOR_LINE,13, " 11111 1  1  11   1 "
+		CALL MAKE_FLOOR_LINE,14, " 1   111  1   1   1 "
+		CALL MAKE_FLOOR_LINE,15, " 1        111111  1 "
+		CALL MAKE_FLOOR_LINE,16, " 1114 11111    1111 "
+		CALL MAKE_FLOOR_LINE,17, " 1    1   1    1    "
+		CALL MAKE_FLOOR_LINE,18, "912111121 111111111 "
+		CALL MAKE_FLOOR_LINE,19, " T                  "
+;								  01234567890123456789
+		;X7 Y18でボス前警告用
+		CALL SET_TILE, 7 , 18 , ダンジョンフラグ:(FLAG:현던전):3 , 0 , 3002
+		;X8 Y18でボス戦の巨大フレシアイベント設置
+		CALL SET_TILE, 8 , 18 , ダンジョンフラグ:(FLAG:현던전):11 , 0 , 3109
+	CASE 4
+	;魔法族の里　浅層
+		FLAG:최대X = 20
+		FLAG:최대Y = 20
+;								           1         2
+;								  01234567890123456789
+		CALL MAKE_FLOOR_LINE, 0, "                  9 "
+		CALL MAKE_FLOOR_LINE, 1, " 11211 1111 1111211 "
+		CALL MAKE_FLOOR_LINE, 2, " 11 11 1  1 1    11 "
+		CALL MAKE_FLOOR_LINE, 3, " 11  2 1  1 1 11  2 "
+		CALL MAKE_FLOOR_LINE, 4, " 2  11 1  111 111 1 "
+		CALL MAKE_FLOOR_LINE, 5, " 11 1  1    1 111 1 "
+		CALL MAKE_FLOOR_LINE, 6, " 11 1 4111 41 111 1 "
+		CALL MAKE_FLOOR_LINE, 7, " 2  1    2    2 2 1 "
+		CALL MAKE_FLOOR_LINE, 8, " 1 111211111111 1 1 "
+		CALL MAKE_FLOOR_LINE, 9, " 1      111111  1 1 "
+		CALL MAKE_FLOOR_LINE,10, " 11111         31 1 "
+		CALL MAKE_FLOOR_LINE,11, " 2   111121111    1 "
+		CALL MAKE_FLOOR_LINE,12, " 111      1111121 1 "
+		CALL MAKE_FLOOR_LINE,13, " 111 11 1       3 1 "
+		CALL MAKE_FLOOR_LINE,14, " 11121121111111   1 "
+		CALL MAKE_FLOOR_LINE,15, " 1            123 1 "
+		CALL MAKE_FLOOR_LINE,16, " 111111111121     2 "
+		CALL MAKE_FLOOR_LINE,17, " 2 2 2 2 11   11 11 "
+		CALL MAKE_FLOOR_LINE,18, " 3 4 3 4 11112112119"
+		CALL MAKE_FLOOR_LINE,19, "                  T "
+;								  01234567890123456789
+	CASE 5
+	;魔法族の里　中層
+		FLAG:최대X = 20
+		FLAG:최대Y = 20
+		CALL MAKE_FLOOR_LINE, 0, "                    "
+		CALL MAKE_FLOOR_LINE, 1, " 421211121112112111 "
+		CALL MAKE_FLOOR_LINE, 2, "   1 111 1   11 111 "
+		CALL MAKE_FLOOR_LINE, 3, " 321 114 1 1      2 "
+		CALL MAKE_FLOOR_LINE, 4, "   1 2   1 11111 11 "
+		CALL MAKE_FLOOR_LINE, 5, " 421 11 11 1   1211 "
+		CALL MAKE_FLOOR_LINE, 6, "   1 11 1  2 1      "
+		CALL MAKE_FLOOR_LINE, 7, " 321 1  1 11 111111 "
+		CALL MAKE_FLOOR_LINE, 8, "   2 11 1 11 1    1 "
+		CALL MAKE_FLOOR_LINE, 9, " 11121  2 1121 11 1 "
+		CALL MAKE_FLOOR_LINE,10, " 111 1 11 11   1111 "
+		CALL MAKE_FLOOR_LINE,11, " 1 2 1 11 11 1 1    "
+		CALL MAKE_FLOOR_LINE,12, " 1 4 1 11 11 111111 "
+		CALL MAKE_FLOOR_LINE,13, " 2   1 11211      1 "
+		CALL MAKE_FLOOR_LINE,14, " 11 11 1   121111 1 "
+		CALL MAKE_FLOOR_LINE,15, " 11 2  2 3   1111 1 "
+		CALL MAKE_FLOOR_LINE,16, " 2  3 31 1112111  2 "
+		CALL MAKE_FLOOR_LINE,17, " 11              11 "
+		CALL MAKE_FLOOR_LINE,18, "T1121111111111112119"
+		CALL MAKE_FLOOR_LINE,19, " 9                  "
+	CASE 6
+	;魔法族の里　深層
+		FLAG:최대X = 20
+		FLAG:최대Y = 20
+		CALL MAKE_FLOOR_LINE, 0, "                    "
+		CALL MAKE_FLOOR_LINE, 1, " 321111111 111 1123 "
+		CALL MAKE_FLOOR_LINE, 2, "    2    1 111 1    "
+		CALL MAKE_FLOOR_LINE, 3, " 11 1 11 1211121211 "
+		CALL MAKE_FLOOR_LINE, 4, " 11 1 11 1 111 1 11 "
+		CALL MAKE_FLOOR_LINE, 5, " 1121213 1     1  1 "
+		CALL MAKE_FLOOR_LINE, 6, " 11 1 11 1114 111 1 "
+		CALL MAKE_FLOOR_LINE, 7, " 11 4 11 11   111 1 "
+		CALL MAKE_FLOOR_LINE, 8, "  2      2  12111 1 "
+		CALL MAKE_FLOOR_LINE, 9, " 111211211111 111 1 "
+		CALL MAKE_FLOOR_LINE,10, " 111 31     2     1 "
+		CALL MAKE_FLOOR_LINE,11, "   2    4 11111 121 "
+		CALL MAKE_FLOOR_LINE,12, " 111 11 121111121 1 "
+		CALL MAKE_FLOOR_LINE,13, " 11123121 11111 1 1 "
+		CALL MAKE_FLOOR_LINE,14, " 111 11 1       1 1 "
+		CALL MAKE_FLOOR_LINE,15, " 2   2  111111111 1 "
+		CALL MAKE_FLOOR_LINE,16, " 14 111 111  2  1 1 "
+		CALL MAKE_FLOOR_LINE,17, " 11 111     111   1 "
+		CALL MAKE_FLOOR_LINE,18, "9112111211121112111 "
+		CALL MAKE_FLOOR_LINE,19, " T                  "
+;								  01234567890123456789
+		CALL SET_TILE, 2 , 13 , ダンジョンフラグ:(FLAG:현던전):15 , 0 , 6109
+	CASE 7
+	;白銀の迷宮城１階
+	FLAG:최대X = 21
+	FLAG:최대Y = 21
+;								          1         2
+;								 012345678901234567890
+		CALL MAKE_FLOOR_LINE, 0,"                     "
+		CALL MAKE_FLOOR_LINE, 1," 151 116 151 151 151 "
+		CALL MAKE_FLOOR_LINE, 2,"  2   2   2   2   2  "
+		CALL MAKE_FLOOR_LINE, 3," 1111311141111111111 "
+		CALL MAKE_FLOOR_LINE, 4," 1511151111111111151 "
+		CALL MAKE_FLOOR_LINE, 5,"  2   2   2   2   2  "
+		CALL MAKE_FLOOR_LINE, 6," 151 151 111 311 151 "
+		CALL MAKE_FLOOR_LINE, 7," 1112111211121112111 "
+		CALL MAKE_FLOOR_LINE, 8," 111 151 111 151 151 "
+		CALL MAKE_FLOOR_LINE, 9,"  2   2   2   2   2  "
+		CALL MAKE_FLOOR_LINE,10," 311 151 114 151 151 "
+		CALL MAKE_FLOOR_LINE,11," 1112111211121112111 "
+		CALL MAKE_FLOOR_LINE,12," 151 151 111 151 111 "
+		CALL MAKE_FLOOR_LINE,13,"  2   2   2   2   2  "
+		CALL MAKE_FLOOR_LINE,14," 151 151 111 151 113 "
+		CALL MAKE_FLOOR_LINE,15," 1112111211121112111 "
+		CALL MAKE_FLOOR_LINE,16," 151 111 111 151 151 "
+		CALL MAKE_FLOOR_LINE,17,"  2   2   2   2   2  "
+		CALL MAKE_FLOOR_LINE,18," 1511311141T11511151 "
+		CALL MAKE_FLOOR_LINE,19," 1111111111111111111 "
+		CALL MAKE_FLOOR_LINE,20,"          9          "
+
+	CASE 8
+	;白銀の迷宮城２階
+	FLAG:최대X = 21
+	FLAG:최대Y = 21
+;								          1         2
+;								 012345678901234567890
+		CALL MAKE_FLOOR_LINE, 0,"                     "
+		CALL MAKE_FLOOR_LINE, 1," 111 T17  111  11111 "
+		CALL MAKE_FLOOR_LINE, 2," 1111 2  11111 1   1 "
+		CALL MAKE_FLOOR_LINE, 3," 111121121141121 4 1 "
+		CALL MAKE_FLOOR_LINE, 4," 1111 2  11111   1 1 "
+		CALL MAKE_FLOOR_LINE, 5," 114  1   111  11111 "
+		CALL MAKE_FLOOR_LINE, 6,"  2   1        1   1 "
+		CALL MAKE_FLOOR_LINE, 7,"  115 1  11111111111 "
+		CALL MAKE_FLOOR_LINE, 8,"    1 1  1           "
+		CALL MAKE_FLOOR_LINE, 9," 5115 1  1 1111111   "
+		CALL MAKE_FLOOR_LINE,10," 1    1  1 3 1 1 3   "
+		CALL MAKE_FLOOR_LINE,11," 5115 1  1   1 1     "
+		CALL MAKE_FLOOR_LINE,12,"    1 1  11111 11111 "
+		CALL MAKE_FLOOR_LINE,13," 5115 1      1 1   1 "
+		CALL MAKE_FLOOR_LINE,14," 1    1    3 1 1 3 1 "
+		CALL MAKE_FLOOR_LINE,15," 515  1    1111111 1 "
+		CALL MAKE_FLOOR_LINE,16,"   1  2            1 "
+		CALL MAKE_FLOOR_LINE,17," 515 111   111 111 1 "
+		CALL MAKE_FLOOR_LINE,18," 1   16121 1 1 1 1 1 "
+		CALL MAKE_FLOOR_LINE,19," 5112113 111 111 111 "
+		CALL MAKE_FLOOR_LINE,20,"                     "
+
+	CASE 9
+	;白銀の迷宮城３階
+	FLAG:최대X = 21
+	FLAG:최대Y = 21
+;								          1         2
+;								 012345678901234567890
+		CALL MAKE_FLOOR_LINE, 0,"                     "
+		CALL MAKE_FLOOR_LINE, 1,"     11111111 111113 "
+		CALL MAKE_FLOOR_LINE, 2," 111 1    1 111 1    "
+		CALL MAKE_FLOOR_LINE, 3," 5 5 1 3111 1   1    "
+		CALL MAKE_FLOOR_LINE, 4," 1 1 1      1   1111 "
+		CALL MAKE_FLOOR_LINE, 5," 5 5 11111 11      1 "
+		CALL MAKE_FLOOR_LINE, 6," 1 1     1 1  1411 1 "
+		CALL MAKE_FLOOR_LINE, 7," 5 5     1 1121111 1 "
+		CALL MAKE_FLOOR_LINE, 8," 1 1 111 1  1      1 "
+		CALL MAKE_FLOOR_LINE, 9," 5 5 111 1  1113 111 "
+		CALL MAKE_FLOOR_LINE,10," 1 1 111 1       2   "
+		CALL MAKE_FLOOR_LINE,11," 5 5 111 1 111  111  "
+		CALL MAKE_FLOOR_LINE,12," 1 1 111 1 131  111  "
+		CALL MAKE_FLOOR_LINE,13," 5 51 2  1 111  111  "
+		CALL MAKE_FLOOR_LINE,14," 11 111111  2    2   "
+		CALL MAKE_FLOOR_LINE,15,"  5   1     1    1   "
+		CALL MAKE_FLOOR_LINE,16," 11   2    11211 111 "
+		CALL MAKE_FLOOR_LINE,17," 5   111   1  13   1 "
+		CALL MAKE_FLOOR_LINE,18," 1 1217111 1       1 "
+		CALL MAKE_FLOOR_LINE,19," 151 41T 11111111111 "
+		CALL MAKE_FLOOR_LINE,20,"                     "
+
+		CALL SET_TILE, 6 , 9 , ダンジョンフラグ:(FLAG:현던전):16 , 0 , 9109
+	CASE 10
+	;アンダーグラウンド浅層
+	FLAG:최대X = 20
+	FLAG:최대Y = 20
+;								          1         2
+;								 012345678901234567890
+		CALL MAKE_FLOOR_LINE, 0,"                    "
+		CALL MAKE_FLOOR_LINE, 1,"         1          "
+		CALL MAKE_FLOOR_LINE, 2,"        111         "
+		CALL MAKE_FLOOR_LINE, 3,"       11111        "
+		CALL MAKE_FLOOR_LINE, 4,"      1111111       "
+		CALL MAKE_FLOOR_LINE, 5,"     111111111      "
+		CALL MAKE_FLOOR_LINE, 6,"    11111111111     "
+		CALL MAKE_FLOOR_LINE, 7,"   1111111111111    "
+		CALL MAKE_FLOOR_LINE, 8,"  111111111111111   "
+		CALL MAKE_FLOOR_LINE, 9," 11111111171111111  "
+		CALL MAKE_FLOOR_LINE,10,"  111111161111111   "
+		CALL MAKE_FLOOR_LINE,11,"   11111114T1111    "
+		CALL MAKE_FLOOR_LINE,12,"    11111111111     "
+		CALL MAKE_FLOOR_LINE,13,"     111111111      "
+		CALL MAKE_FLOOR_LINE,14,"      1111111       "
+		CALL MAKE_FLOOR_LINE,15,"       11111        "
+		CALL MAKE_FLOOR_LINE,16,"        111         "
+		CALL MAKE_FLOOR_LINE,17,"         1          "
+		CALL MAKE_FLOOR_LINE,18,"                    "
+		CALL MAKE_FLOOR_LINE,19,"                    "
+
+		CALL SET_TILE, 10 , 9 , ダンジョンフラグ:(FLAG:현던전):20 , 0 , 10001
+
+	CASE 11
+	;アンダーグラウンド中層
+	FLAG:최대X = 20
+	FLAG:최대Y = 20
+;								          1         2
+;								 012345678901234567890
+		CALL MAKE_FLOOR_LINE, 0,"                    "
+		CALL MAKE_FLOOR_LINE, 1,"                    "
+		CALL MAKE_FLOOR_LINE, 2,"                    "
+		CALL MAKE_FLOOR_LINE, 3,"    111     111     "
+		CALL MAKE_FLOOR_LINE, 4,"   11111   11111    "
+		CALL MAKE_FLOOR_LINE, 5,"  1111111 1111111   "
+		CALL MAKE_FLOOR_LINE, 6," 11111111111111111  "
+		CALL MAKE_FLOOR_LINE, 7," 11111111111111111  "
+		CALL MAKE_FLOOR_LINE, 8," 11111111111111111  "
+		CALL MAKE_FLOOR_LINE, 9," 11111111161111111  "
+		CALL MAKE_FLOOR_LINE,10," 11111111711111111  "
+		CALL MAKE_FLOOR_LINE,11,"  111111111T11111   "
+		CALL MAKE_FLOOR_LINE,12,"   1111111111111    "
+		CALL MAKE_FLOOR_LINE,13,"    11111111111     "
+		CALL MAKE_FLOOR_LINE,14,"     111111111      "
+		CALL MAKE_FLOOR_LINE,15,"      1111111       "
+		CALL MAKE_FLOOR_LINE,16,"       11111        "
+		CALL MAKE_FLOOR_LINE,17,"        111         "
+		CALL MAKE_FLOOR_LINE,18,"         1          "
+		CALL MAKE_FLOOR_LINE,19,"                    "
+
+		CALL SET_TILE, 9 , 10 , ダンジョンフラグ:(FLAG:현던전):20 , 1 , 11001
+	CASE 12
+	;アンダーグラウンド深層
+	FLAG:최대X = 20
+	FLAG:최대Y = 20
+;								          1         2
+;								 012345678901234567890
+		CALL MAKE_FLOOR_LINE, 0,"                    "
+		CALL MAKE_FLOOR_LINE, 1,"         11         "
+		CALL MAKE_FLOOR_LINE, 2,"        1111        "
+		CALL MAKE_FLOOR_LINE, 3,"       111111       "
+		CALL MAKE_FLOOR_LINE, 4,"      11111111      "
+		CALL MAKE_FLOOR_LINE, 5,"     1111111111     "
+		CALL MAKE_FLOOR_LINE, 6,"    111111111111    "
+		CALL MAKE_FLOOR_LINE, 7,"   11111111111111   "
+		CALL MAKE_FLOOR_LINE, 8,"  1111111111111111  "
+		CALL MAKE_FLOOR_LINE, 9," 111111111711111111 "
+		CALL MAKE_FLOOR_LINE,10," 111111116111111111 "
+		CALL MAKE_FLOOR_LINE,11," 1111111111T1111111 "
+		CALL MAKE_FLOOR_LINE,12," 111111111111111111 "
+		CALL MAKE_FLOOR_LINE,13," 111111111111111111 "
+		CALL MAKE_FLOOR_LINE,14,"  1111111111111111  "
+		CALL MAKE_FLOOR_LINE,15,"   1111  11  1111   "
+		CALL MAKE_FLOOR_LINE,16,"    11   11   11    "
+		CALL MAKE_FLOOR_LINE,17,"       111111       "
+		CALL MAKE_FLOOR_LINE,18,"     1111111111     "
+		CALL MAKE_FLOOR_LINE,19,"                    "
+
+	CASE 13
+	;アンダーグラウンド最深層
+	FLAG:최대X = 20
+	FLAG:최대Y = 20
+;								          1         2
+;								 012345678901234567890
+		CALL MAKE_FLOOR_LINE, 0,"                    "
+		CALL MAKE_FLOOR_LINE, 1,"        1111        "
+		CALL MAKE_FLOOR_LINE, 2,"       111111       "
+		CALL MAKE_FLOOR_LINE, 3,"      11111111      "
+		CALL MAKE_FLOOR_LINE, 4,"      11111111      "
+		CALL MAKE_FLOOR_LINE, 5,"      11111111      "
+		CALL MAKE_FLOOR_LINE, 6,"   111 111111 111   "
+		CALL MAKE_FLOOR_LINE, 7,"  11111 1111 11111  "
+		CALL MAKE_FLOOR_LINE, 8," 111111111111111111 "
+		CALL MAKE_FLOOR_LINE, 9," 111111111611111111 "
+		CALL MAKE_FLOOR_LINE,10," 111111111111111111 "
+		CALL MAKE_FLOOR_LINE,11," 1111111111T1111111 "
+		CALL MAKE_FLOOR_LINE,12,"  11111  11  11111  "
+		CALL MAKE_FLOOR_LINE,13,"   111   11   111   "
+		CALL MAKE_FLOOR_LINE,14,"        1111        "
+		CALL MAKE_FLOOR_LINE,15,"       111111       "
+		CALL MAKE_FLOOR_LINE,16,"      11111111      "
+		CALL MAKE_FLOOR_LINE,17,"     1111111111     "
+		CALL MAKE_FLOOR_LINE,18,"                    "
+		CALL MAKE_FLOOR_LINE,19,"                    "
+
+		CALL SET_TILE, 10 , 3 , ダンジョンフラグ:(FLAG:현던전):17 , 0 , 13109
+	CASEELSE
+ENDSELECT
+
+;=======================================================================
+;特殊タイル表示
+;エレベータだが出を出すために使用
+;=======================================================================
+@DEFINE_TILES_105, ARGS, ARG, ARG:1
+;出口
+SIF ARGS == "t"
+	RETURN 999
+RETURN 0
+;=======================================================================
+;タイル調整
+;=======================================================================
+;ARG:1、ARG:2はそれぞれX座標とY座標
+;ARGはその座標に現在代入されている番号
+;0：壁　1：床もしくは通路　2：扉　3：宝箱　4：イベント　5：罠　6：上り階段 7：下り階段　8：出口　9：その他特殊処理等
+;これらの内、3～9が代入されているマスに、個別の番号を与える処理を実行します。
+;この処理を行った後、これらのマスには 「マップ番号*1000 + そのマスがそのマップで左上から数えて何個目のARGタイプのマスか*10 + ARG」が代入されます
+;例えば 2003 であった場合、「2番のマップ＝３Ｆで、左上から数えて0個目の3＝宝箱である」という事を意味しています
+;尚、0～2はどのマップにも大量に設置されるので、ここでは基本的に個別の番号を与えません。
+;
+;何個目のARGタイプのマスなのか、は左上の(0,0)から右まで探し、その後一つ下の段に移って同様に探す、というのを右下まで繰り返して数えます。
+@MAKE_FLOOR_LINE_COMMON_105, ARG, ARG:1, ARG:2
+#LOCALSIZE 10
+;LOCAL:0～9 それぞれ何個目のARGなのかを記憶しています
+;LOCAL:3 宝箱→使用フラグはダンジョンフラグ:70~74
+;指定された座標が(0,0)である場合、つまり新しいマップを読み込んだ時はLOCALを消去します
+SIF ARG:1 == 0 && ARG:2 == 0
+	VARSET LOCAL
+SELECTCASE ARG
+	CASE 3
+		;宝箱は多くの場合、開けたフラグが立っていると床を代入します
+		;そのマップでどの宝箱を開けたかは、そのマップの宝箱管理用変数の何番目のビットが立っているかで判断します
+		IF GETBIT(ダンジョンフラグ:(FLAG:현던전):(FLAG:현M+70), LOCAL:3)
+			DA:(ARG:1):(ARG:2) = 1
+		ELSE
+			DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:3 * 10 + 3
+		ENDIF
+		LOCAL:3++
+	CASE 4 TO 9
+		DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:ARG * 10 + ARG
+		LOCAL:ARG++
+	
+ENDSELECT
+;各ダンジョンに入ったら、他ダンジョンの入口を封鎖する。クリア済みは封鎖しない。
+SELECTCASE FLAG:현M
+	CASE 0
+		;蟲惑魔の森攻略中で他未クリア
+		IF ダンジョンフラグ:(FLAG:현던전):22 == 1 && ダンジョンフラグ:(FLAG:현던전):23 == 0 && ダンジョンフラグ:(FLAG:현던전):24 == 0
+			DA:8:1 = 1
+			DA:1:8 = 1
+			DA:15:8 = 29
+		;魔法族の里攻略中で他未クリア
+		ELSEIF ダンジョンフラグ:(FLAG:현던전):22 == 0 && ダンジョンフラグ:(FLAG:현던전):23 == 1 && ダンジョンフラグ:(FLAG:현던전):24 == 0
+			DA:8:1 = 1
+			DA:1:8 = 19
+			DA:15:8 = 1
+		;白銀の迷宮城攻略中で他未クリア
+		ELSEIF ダンジョンフラグ:(FLAG:현던전):22 == 0 && ダンジョンフラグ:(FLAG:현던전):23 == 0 && ダンジョンフラグ:(FLAG:현던전):24 == 1
+			DA:8:1 = 9
+			DA:1:8 = 1
+			DA:15:8 = 1
+		;蟲惑魔の森クリア済みで魔法族の里攻略中
+		ELSEIF ダンジョンフラグ:(FLAG:현던전):22 == 2 && ダンジョンフラグ:(FLAG:현던전):23 == 1 && ダンジョンフラグ:(FLAG:현던전):24 == 0
+			DA:8:1 = 1
+			DA:1:8 = 19
+			DA:15:8 = 29
+		;蟲惑魔の森クリア済みで白銀の迷宮城攻略中
+		ELSEIF ダンジョンフラグ:(FLAG:현던전):22 == 2 && ダンジョンフラグ:(FLAG:현던전):23 == 0 && ダンジョンフラグ:(FLAG:현던전):24 == 1
+			DA:8:1 = 9
+			DA:1:8 = 1
+			DA:15:8 = 29
+		;魔法族の里クリア済みで蟲惑魔の森攻略中
+		ELSEIF ダンジョンフラグ:(FLAG:현던전):22 == 1 && ダンジョンフラグ:(FLAG:현던전):23 == 2 && ダンジョンフラグ:(FLAG:현던전):24 == 0
+			DA:8:1 = 1
+			DA:1:8 = 19
+			DA:15:8 = 29
+		;魔法族の里クリア済みで白銀の迷宮城攻略中
+		ELSEIF ダンジョンフラグ:(FLAG:현던전):22 == 0 && ダンジョンフラグ:(FLAG:현던전):23 == 2 && ダンジョンフラグ:(FLAG:현던전):24 == 1
+			DA:8:1 = 9
+			DA:1:8 = 19
+			DA:15:8 = 1
+		;白銀の迷宮城クリア済みで蟲惑魔の森攻略中
+		ELSEIF ダンジョンフラグ:(FLAG:현던전):22 == 1 && ダンジョンフラグ:(FLAG:현던전):23 == 0 && ダンジョンフラグ:(FLAG:현던전):24 == 2
+			DA:8:1 = 9
+			DA:1:8 = 1
+			DA:15:8 = 29
+		;白銀の迷宮城クリア済みで魔法族の里攻略中
+		ELSEIF ダンジョンフラグ:(FLAG:현던전):22 == 0 && ダンジョンフラグ:(FLAG:현던전):23 == 1 && ダンジョンフラグ:(FLAG:현던전):24 == 2
+			DA:8:1 = 9
+			DA:1:8 = 19
+			DA:15:8 = 1
+		;2つ攻略完了したらもう全部開放でいい
+		ELSE
+			DA:8:1 = 9
+			DA:1:8 = 19
+			DA:15:8 = 29
+		ENDIF
+ENDSELECT
+
+
+;=======================================================================
+;特殊タイル表示
+;TILE_MARK_COMMON_{FLAG:현던전}_X
+;=======================================================================
+;ARG:1、ARG:2がX座標とY座標
+;ARGはそこに代入されている値
+;RESULTSに代入した文字がマップに表示されますが、必ず全角1文字分になるようにしてください。そうでないと表示が崩れます。
+
+;イベントタイル特殊表示
+;末尾の_4はイベントであることを示す4
+@TILE_MARK_COMMON_105_4, ARG , ARG:1 , ARG:2
+SELECTCASE ARG / 10
+	;メッセンジャーを緑色で"ｍ"と表示
+	CASE 0 TO 5 , 100 TO 102 ,  200 TO 202 , 300 TO 302 , 400 TO 403 , 500 TO 503 , 600 TO 603 , 700 TO 702 , 800 TO 802 , 900 TO 901 , 1000
+		SETCOLOR 0x00ff00
+		RESULTS = ｍ
+	CASEELSE
+		;特に設定しない場合、"！"と表示されます
+		RETURN 1
+ENDSELECT
+
+@TILE_MARK_COMMON_105_9, ARG, ARG:1, ARG:2
+SELECTCASE ARG / 10
+	CASE 2 , 200 , 401 , 500
+		RESULTS = →
+	CASE 0 , 100 , 400
+		RESULTS = ↑
+	CASE 1, 101 , 300 , 600
+		RESULTS = ←
+	CASE 201  , 501 , 700
+		RESULTS = ↓
+	CASE  103 , 104 , 310 , 610 , 910 , 1310
+		RESULTS = ！
+ENDSELECT
+
+;=======================================================================
+;宝箱の中身
+;
+;各マップに５個ずつ宝箱を置いて、３ダンジョン同じものが出現するようにする。
+;ダンジョンに入ったら他のダンジョンはロックされる。
+;ボス倒したらロック解除で他ダンジョンの宝箱の中身が入れ替わる。
+;入ったダンジョン宝箱はそのままにする。
+;
+;=======================================================================
+@TREASURE_105
+#LOCALSIZE 3
+;宝箱のフラグ管理用変数の番号
+LOCAL = FLAG:현M + 70
+
+;そのマップの何番目の宝箱か
+LOCAL:1 = (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+;各ダンジョンごとに宝箱段階フラグを見て内容を決める
+;蟲惑魔の森
+SELECTCASE ダンジョンフラグ:(FLAG:현던전):25
+	CASE 0
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			CASE 100
+				CALL GET_TREASURE, GETNUM(ITEM, "검객의투구") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 101
+				CALL GET_TREASURE, GETNUM(ITEM, "사이버암") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 102
+				CALL GET_TREASURE, GETNUM(ITEM, "유리구두") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 103
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【신경이상내성】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 104
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【정신이상내성】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 200
+				CALL GET_TREASURE, GETNUM(ITEM, "명경지수의마음") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 201
+				CALL GET_TREASURE, GETNUM(ITEM, "빛의뿔") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 202
+				CALL GET_TREASURE, GETNUM(ITEM, "화염방사기") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 203
+				CALL GET_TREASURE, GETNUM(ITEM, "돌핀헬름") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 204
+				CALL GET_TREASURE, GETNUM(ITEM, "매지컬실크햇") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 300
+				CALL GET_TREASURE, GETNUM(ITEM, "지혜의향") , 2 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 301
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【마하・갈라】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 302
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【악셀클로】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 303
+				CALL GET_TREASURE, GETNUM(ITEM, "가라시지의법의") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 304
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【열광의난무】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+		ENDSELECT
+	CASE 1
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			CASE 100
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【화쇄열풍파】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 101
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【앵화섬란】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 102
+				CALL GET_TREASURE, GETNUM(ITEM, "헤븐즈파이어") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 103
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【신경이상무효】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 104
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【정신이상무효】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 200
+				CALL GET_TREASURE, GETNUM(ITEM, "귀면의토시") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 201
+				CALL GET_TREASURE, GETNUM(ITEM, "라우린의반지") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 202
+				CALL GET_TREASURE, GETNUM(ITEM, "속도의향") , 2 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 203
+				CALL GET_TREASURE, GETNUM(ITEM, "미라주부츠") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 204
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【암리타】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 300
+				CALL GET_TREASURE, GETNUM(ITEM, "유령의게다") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 301
+				CALL GET_TREASURE, GETNUM(ITEM, "메탈세일러") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 302
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【수정의벽】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 303
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【마하・갈다인】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 304
+				CALL GET_TREASURE, GETNUM(ITEM, "슬라임슈즈") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+		ENDSELECT
+	CASE 2
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			CASE 100
+				CALL GET_TREASURE, GETNUM(ITEM, "드래곤클로") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 101
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【마칸다오토】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 102
+				CALL GET_TREASURE, GETNUM(ITEM, "드래곤메일") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 103
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【라쿤다오토】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 104
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【스쿤다오토】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 200
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【승리의차크라】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 201
+				CALL GET_TREASURE, GETNUM(ITEM, "드래곤헬름") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 202
+				CALL GET_TREASURE, GETNUM(ITEM, "내구의향") , 2 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 203
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【마연의심득・공격】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 204
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【마연의심득・고양】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 300
+				CALL GET_TREASURE, GETNUM(ITEM, "복수의토시") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 301
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【촌분의결단】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 302
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【승리의숨결】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 303
+				CALL GET_TREASURE, GETNUM(ITEM, "드래곤부츠") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 304
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【타룬다오토】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+		ENDSELECT
+ENDSELECT
+
+;魔法族の里
+SELECTCASE ダンジョンフラグ:(FLAG:현던전):26
+	CASE 0
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			CASE 400
+				CALL GET_TREASURE, GETNUM(ITEM, "검객의투구") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 401
+				CALL GET_TREASURE, GETNUM(ITEM, "사이버암") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 402
+				CALL GET_TREASURE, GETNUM(ITEM, "유리구두") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 403
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【신경이상내성】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 404
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【정신이상내성】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 500
+				CALL GET_TREASURE, GETNUM(ITEM, "명경지수의마음") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 501
+				CALL GET_TREASURE, GETNUM(ITEM, "빛의뿔") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 502
+				CALL GET_TREASURE, GETNUM(ITEM, "화염방사기") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 503
+				CALL GET_TREASURE, GETNUM(ITEM, "돌핀헬름") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 504
+				CALL GET_TREASURE, GETNUM(ITEM, "매지컬실크햇") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 600
+				CALL GET_TREASURE, GETNUM(ITEM, "지혜의향") , 2 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 601
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【마하・갈라】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 602
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【악셀클로】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 603
+				CALL GET_TREASURE, GETNUM(ITEM, "가라시지의법의") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 604
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【열광의난무】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+		ENDSELECT
+	CASE 1
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			CASE 400
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【화쇄열풍파】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 401
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【앵화섬란】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 402
+				CALL GET_TREASURE, GETNUM(ITEM, "헤븐즈파이어") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 403
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【신경이상무효】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 404
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【정신이상무효】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 500
+				CALL GET_TREASURE, GETNUM(ITEM, "귀면의토시") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 501
+				CALL GET_TREASURE, GETNUM(ITEM, "라우린의반지") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 502
+				CALL GET_TREASURE, GETNUM(ITEM, "속도의향") , 2 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 503
+				CALL GET_TREASURE, GETNUM(ITEM, "미라주부츠") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 504
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【암리타】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 600
+				CALL GET_TREASURE, GETNUM(ITEM, "유령의게다") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 601
+				CALL GET_TREASURE, GETNUM(ITEM, "메탈세일러") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 602
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【수정의벽】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 603
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【마하・갈다인】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 604
+				CALL GET_TREASURE, GETNUM(ITEM, "슬라임슈즈") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+		ENDSELECT
+	CASE 2
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			CASE 400
+				CALL GET_TREASURE, GETNUM(ITEM, "드래곤클로") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 401
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【마칸다오토】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 402
+				CALL GET_TREASURE, GETNUM(ITEM, "드래곤메일") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 403
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【라쿤다오토】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 404
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【스쿤다오토】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 500
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【승리의차크라】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 501
+				CALL GET_TREASURE, GETNUM(ITEM, "드래곤헬름") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 502
+				CALL GET_TREASURE, GETNUM(ITEM, "내구의향") , 2 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 503
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【마연의심득・공격】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 504
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【마연의심득・고양】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 600
+				CALL GET_TREASURE, GETNUM(ITEM, "복수의토시") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 601
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【촌분의결단】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 602
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【승리의숨결】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 603
+				CALL GET_TREASURE, GETNUM(ITEM, "드래곤부츠") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 604
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【타룬다오토】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+		ENDSELECT
+ENDSELECT
+
+;白銀の迷宮城
+SELECTCASE ダンジョンフラグ:(FLAG:현던전):27
+	CASE 0
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			CASE 700
+				CALL GET_TREASURE, GETNUM(ITEM, "검객의투구") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 701
+				CALL GET_TREASURE, GETNUM(ITEM, "사이버암") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 702
+				CALL GET_TREASURE, GETNUM(ITEM, "유리구두") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 703
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【신경이상내성】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 704
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【정신이상내성】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 800
+				CALL GET_TREASURE, GETNUM(ITEM, "명경지수의마음") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 801
+				CALL GET_TREASURE, GETNUM(ITEM, "빛의뿔") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 802
+				CALL GET_TREASURE, GETNUM(ITEM, "화염방사기") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 803
+				CALL GET_TREASURE, GETNUM(ITEM, "돌핀헬름") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 804
+				CALL GET_TREASURE, GETNUM(ITEM, "매지컬실크햇") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 900
+				CALL GET_TREASURE, GETNUM(ITEM, "지혜의향") , 2 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 901
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【마하・갈라】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 902
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【악셀클로】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 903
+				CALL GET_TREASURE, GETNUM(ITEM, "가라시지의법의") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 904
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【열광의난무】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+		ENDSELECT
+	CASE 1
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			CASE 700
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【화쇄열풍파】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 701
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【앵화섬란】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 702
+				CALL GET_TREASURE, GETNUM(ITEM, "헤븐즈파이어") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 703
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【신경이상무효】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 704
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【정신이상무효】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 800
+				CALL GET_TREASURE, GETNUM(ITEM, "귀면의토시") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 801
+				CALL GET_TREASURE, GETNUM(ITEM, "라우린의반지") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 802
+				CALL GET_TREASURE, GETNUM(ITEM, "속도의향") , 2 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 803
+				CALL GET_TREASURE, GETNUM(ITEM, "미라주부츠") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 804
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【암리타】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 900
+				CALL GET_TREASURE, GETNUM(ITEM, "유령의게다") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 901
+				CALL GET_TREASURE, GETNUM(ITEM, "메탈세일러") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 902
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【수정의벽】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 903
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【마하・갈다인】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 904
+				CALL GET_TREASURE, GETNUM(ITEM, "슬라임슈즈") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+		ENDSELECT
+	CASE 2
+		SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+			CASE 700
+				CALL GET_TREASURE, GETNUM(ITEM, "드래곤클로") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 701
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【마칸다오토】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 702
+				CALL GET_TREASURE, GETNUM(ITEM, "드래곤메일") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 703
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【라쿤다오토】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 704
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【스쿤다오토】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 800
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【승리의차크라】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 801
+				CALL GET_TREASURE, GETNUM(ITEM, "드래곤헬름") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 802
+				CALL GET_TREASURE, GETNUM(ITEM, "내구의향") , 2 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 803
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【마연의심득・공격】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 804
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【마연의심득・고양】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 900
+				CALL GET_TREASURE, GETNUM(ITEM, "복수의토시") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 901
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【촌분의결단】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 902
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【승리의숨결】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 903
+				CALL GET_TREASURE, GETNUM(ITEM, "드래곤부츠") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+			CASE 904
+				CALL GET_TREASURE, GETNUM(ITEM, "스킬카드【타룬다오토】") , 1 , FLAG:현던전, LOCAL , LOCAL:1
+		ENDSELECT
+ENDSELECT
+RETURN 1

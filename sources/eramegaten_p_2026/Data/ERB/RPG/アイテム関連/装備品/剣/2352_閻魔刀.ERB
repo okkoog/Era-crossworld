@@ -1,0 +1,144 @@
+﻿;======================================================
+;装備品のデータ
+;리벨리온
+;ヒノカグツチの剣のパクリ。攻撃と魔威高め
+;性能の計算は魔晶剣とほぼ同じで、バージルのステータスの影響を受ける
+;======================================================
+@基本能力修正_2352,ARG,ARG:1 = -1
+#LOCALSIZE 1
+#LOCALSSIZE 1
+LOCAL = GETCHARA([[キャラ:버질]])
+SIF LOCAL < 0
+	RETURN 0
+SIF ARG:1 < 0
+	RETURN 0
+SIF ARG:1 == GETCHARA([[キャラ:버질]]) || (FAVORITE_1(LOCAL) == ARG:1 && 陥落(LOCAL))
+	RETURN BASE:LOCAL:GET_BASESTATUS(ARG) / 10
+RETURN 0
+@戦闘能力修正_2352,ARG,ARG:1 = -1
+#LOCALSIZE 3
+LOCAL = GETCHARA([[キャラ:버질]])
+LOCAL:1 = 0
+LOCAL:2 = 40
+;剣のレベル設定。バージルが陥落している場合、バージルのレベルの半分が加算される
+SIF ARG:1 >=0 && LOCAL >= 0 && (NO:(ARG:1) == [[キャラ:버질]] || 陥落(LOCAL, ARG:1))
+	LOCAL:2 += MIN(BASE:LOCAL:LV / 2, 40)
+LOCAL:2 += 5
+;レベルによる戦闘能力値
+SELECTCASE GET_BATTLESTATUS(ARG)
+	CASE "공격"
+		LOCAL:1 = LOCAL:2 * 3/2
+	CASE "명중"
+		LOCAL:1 = LOCAL:2
+	CASE "마법위력"
+		LOCAL:1 = LOCAL:2 * 3/2
+	CASE "마법효과"
+		LOCAL:1 = LOCAL:2
+ENDSELECT
+;STATUSによる能力値　バージルありはバージル陥落でステータスによって性能が加算される
+IF ARG:1 >= 0 && (NO:(ARG:1) == [[キャラ:버질]] || (LOCAL >=0 && 陥落(LOCAL, ARG:1)))
+	SELECTCASE GET_BATTLESTATUS(ARG)
+		CASE "공격"
+			LOCAL:1 +=  BASE:(ARG:1):힘*3/2 + BASE:(ARG:1):내구 / 2
+		CASE "명중"
+			LOCAL:1 += BASE:(ARG:1):속도*3/2 + BASE:(ARG:1):운/2
+		CASE "마법위력"
+			LOCAL:1 += BASE:(ARG:1):마력*3/2 + BASE:(ARG:1):지혜 / 2
+		CASE "마법효과"
+			LOCAL:1 += BASE:(ARG:1):지혜 + BASE:(ARG:1):운/2 + BASE:(ARG:1):마력/2
+	ENDSELECT
+ENDIF
+;剣仕様に変更
+SELECTCASE GET_BATTLESTATUS(ARG)
+	CASE "공격"
+		TIMES LOCAL:1, 1.10
+	CASE "명중"
+		LOCAL:1 += 10
+	CASE "마법위력"
+		TIMES LOCAL:1, 1.00
+	CASE "마법효과"
+		TIMES LOCAL:1, 0.30
+ENDSELECT
+;最低でも40レベル剣の性能は保証される
+SELECTCASE GET_BATTLESTATUS(ARG)
+	CASE "공격"
+		RETURN MAX(107, LOCAL:1)
+	CASE "명중"
+		RETURN MAX(94, LOCAL:1)
+	CASE "마법위력"
+		RETURN MAX(95, LOCAL:1)
+	CASE "마법효과"
+		RETURN MAX(23, LOCAL:1)
+ENDSELECT
+@防御相性_2352,ARG,ARG:1 = -1
+SELECTCASE ARG
+ENDSELECT
+RETURN 100
+
+@攻撃相性_2352, ARG = -1
+RETURN GET_TYPE_NUM("검격")
+
+@最低攻撃回数_2352, ARG = -1
+RETURN 1
+
+@最大攻撃回数_2352, ARG = -1
+RETURN 1
+
+@射程_2352, ARG = -1
+RETURN 1
+
+@攻撃範囲_2352, ARG = -1
+RETURN 1
+
+@装備箇所_2352
+RETURN GET_EQUIPNUM("검")
+
+@条件つき装備追加スキル_2352
+RETURN 1
+
+@装備追加スキル_2352,ARG,ARG:1 = -1
+IF ARG:1 > -1 && ARG:1 == GETCHARA([[キャラ:버질]])
+	SELECTCASE ARG
+		CASE 0
+			RETURN [[스킬:데빌트리거]]
+	ENDSELECT
+ENDIF
+RETURN 0
+
+;-----------------------------
+;- ショップ
+;-----------------------------
+@購入条件_2352
+RETURN 0
+
+@必要レベル_2352
+RETURN 40
+
+@最大所持数_2352
+RETURN 1
+
+@装備条件_2352,ARG
+SIF NO:ARG == [[キャラ:버질]]
+	RETURN 1
+SIF TALENT:ARG:석세서 == 0
+	RETURN 0
+;SIF TALENT:ARG:무기 == 0
+;	RETURN 0
+RETURN 1
+
+@装備条件説明_2352
+;PRINTL 装備条件：バージル専用
+PRINTL 장비 조건: [석세서] 또는 버질
+
+@装備解説_2352
+PRINTL 아버지 스파다의 유품인 도. 버질이 애용하고 있다.
+PRINTL 
+PRINTL 추가 스킬:【데빌트리거】　추가 조건:[버질]
+@引継ぎ可不可_2352
+RETURN 1
+
+@剣タイプ_2352
+;1 = 刀　2 =레이피어　3 = 弓　　　　4 = 검　5 = 槍　　　6 = 斧、鈍器
+;7 = 채찍　8 =投具　　　9 = 杖、祭具　10= 棍　11= 拳闘具
+RETURN 1
+

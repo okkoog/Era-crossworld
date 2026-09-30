@@ -1,0 +1,213 @@
+﻿;スキル名
+@SKILL_NAME_支援砲撃,ARG
+IF TOINT(CSTR:ARG:102) > 2
+	RESULTS = 支援砲撃XEX
+ELSE
+	RESULTS = 支援砲撃
+ENDIF
+
+;　명중
+@SKILL_HITRATE_支援砲撃, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_支援砲撃, ARG
+RETURN 200
+
+;;クリティカル率
+;@SKILL_CRITICAL_RATE_支援砲撃, ARG
+;RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_支援砲撃, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_支援砲撃,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_支援砲撃,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_支援砲撃,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_支援砲撃,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_支援砲撃, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_支援砲撃,ARG
+RETURN 20
+
+;　相性
+@SKILL_TYPE_支援砲撃,ARG
+RETURN GET_TYPE_NUM("비구")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_支援砲撃
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_支援砲撃,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_支援砲撃,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_支援砲撃,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_支援砲撃,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_支援砲撃,ARG
+RETURN GET_SKILL_EFFECT_NUM("상태변화")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_支援砲撃
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_支援砲撃, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_支援砲撃
+RETURN 0
+
+;没
+;@SKILL_RANK_支援砲撃, ARG = -1
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_支援砲撃,ARG
+RETURN GET_STATE_NUM("BIND")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_支援砲撃,ARG
+RETURN GET_TYPE_NUM("비구")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_支援砲撃,ARG
+RETURN 60
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_支援砲撃,ARG
+RETURN 95
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_支援砲撃,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;====================================================
+;@SKILL_TRIGGER_ACTIONABLE_支援砲撃,ARG,ARG:1
+;#DIM SKILL_NUM
+;
+;SKILL_NUM = PU_SKILLNUM_GET(ARG,"支援砲撃")
+;
+;SIF FLAG:행동순1 != -1 || SKILLGAGE_D_GET(ARG,SKILL_NUM) < 1
+;	RETURN 0
+;RETURN 1
+
+;====================================================
+;カウンター発動条件
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_支援砲撃,ARG,ARG:1
+;RETURN RESULT
+
+;====================================================
+;ダメージ発動時
+;====================================================
+;@SKILL_DAMAGE_EFFECT_支援砲撃,ARG,ARG:1
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_支援砲撃,ARG,ARG:1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_支援砲撃,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"支援砲撃")
+
+;IF SKILLGAGE_D_GET(ARG,SKILL_NUM) == 0
+CALL SKILLGAGE_D_SET,ARG,SKILL_NUM,2
+PRINTFORML %CALLNAME:ARG%(은)는 둔 스탈리온 II에 지원 포격 요청을 보냈다!
+PRINTFORML 턴 종료 시 \@ CFLAG:ARG:PT플래그 ? 적 # 아군 \@ 전체를 BIND 상태로 만든다!
+IF TOINT(CSTR:ARG:102) > 2
+	;IF CFLAG:(ARG):PT플래그 == 0
+	;	LOCAL:1 = 1
+	;	LOCAL:2 = 7
+	;ELSE
+	;	LOCAL:1 = 7
+	;	LOCAL:2 = 17
+	;ENDIF
+	;FOR LOCAL,LOCAL:1,LOCAL:2
+	;	SIF POS(LOCAL) < 0
+	;		CONTINUE
+	;	CFLAG:POS(LOCAL):방어강화 = MAX(-16, CFLAG:POS(LOCAL):방어강화 - 4)
+	;NEXT
+	CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ? 22 # 19, "방어", -4, "範囲", "NOMES"
+	PRINTFORMW 또한, \@ CFLAG:ARG:PT플래그 ? 적 # 아군 \@의 방어력을 낮췄다!
+ENDIF
+;ELSE
+;	PRINTFORML ドゥ・スタリオンⅡの支援砲撃！
+;	CALL FIELD_BADSTATE,ARG,ARG:1,SKILL_NUM
+;	CALL SKILLGAGE_D_SET,ARG,SKILL_NUM,0
+;ENDIF
+;CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+;CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+;CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM;		拡散攻撃
+;CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM;			ランダム攻撃
+
+@SKILL_TURNEND_支援砲撃,ARG,ARG:1
+IF SKILLGAGE_D_GET(ARG,(PU_SKILLNUM_GET(ARG,"支援砲撃"))) > 0
+	CALL PRINT_ACT_MESSAGE, , , COLOR("BATTLE", ARG), "ドゥ・スタリオンII", "支援砲撃"
+	;PRINTL
+	;PRINTFORML ドゥ・スタリオンⅡの支援砲撃！
+	TFLAG:반사후0데미지화 = 1
+	SIF CFLAG:(ARG):PT플래그 == 0
+		CALL FIELD_BADSTATE,ARG,19,(PU_SKILLNUM_GET(ARG,"支援砲撃"))
+	SIF CFLAG:(ARG):PT플래그 == 2
+		CALL FIELD_BADSTATE,ARG,22,(PU_SKILLNUM_GET(ARG,"支援砲撃"))
+	CALL SKILLGAGE_D_SET,ARG,(PU_SKILLNUM_GET(ARG,"支援砲撃")),0
+	TFLAG:반사후0데미지화 = 0
+ENDIF
+
+;　説明文の表示
+@SKILL_EXPLAIN_支援砲撃,ARG
+PRINTL 독자적인 통신 장치를 이용하여 우주선 둔 스탈리온 II를 통한 엄호 사격을 가한다
+PRINTL 검사 간 1:1 맞대결의 규칙을 깨부수는 어쌔신다운 스킬
+PRINTL 
+IF TOINT(CSTR:ARG:102) > 2
+	PRINTL 사용 시 적 전체의 방어력을 저하시키고,
+ENDIF
+PRINTL 발동 후 턴 종료 시 적 전체를 포박(금박) 상태로 만든다
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_支援砲撃,ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"支援砲撃")
+
+SIF SKILLGAGE_D_GET(ARG,SKILL_NUM) == 0
+	RETURN 1
+RETURN 0
+

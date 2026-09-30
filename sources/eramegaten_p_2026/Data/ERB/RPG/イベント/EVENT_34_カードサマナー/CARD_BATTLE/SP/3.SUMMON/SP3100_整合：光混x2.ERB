@@ -1,0 +1,57 @@
+﻿
+;特技名
+@CGSP_NAME_3100, ARGS, ARG
+RESULTS = 整合：光混x2
+
+;　コストの量
+@CGSP_COST_3100, ARGS, ARG
+RETURN 0
+;自動発動なので0
+
+;　타겟(選択するかしないか)
+@CGSP_TARGET_3100, ARGS, ARG
+RETURN 0
+;0-無し　　　1-味方1体　2-味方1体(自身含む)　3-敵1体　4-敵1体(サマナー含む)
+;5-敵味方1体　6-サマナーどちらか
+;自動発動なので0
+
+;　発動タイミング
+@CGSP_TIMING_3100, ARGS, ARG
+RETURN 4
+;0-アクティブ　1-味方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　2-相手ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　3-両方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ
+;4-召喚時
+
+;====================================================
+;特技発動
+;====================================================
+@CGSP_ACTION_3100, ARGS, ARG, ARG:1
+LOCAL:1 = 0
+FOR LOCAL, 0, VARSIZE("FUSION_CARD_DATE_V", 0)
+	SIF FUSION_CARD_DATE_V:LOCAL:CBV_KINDS == 13
+		LOCAL:1 ++
+NEXT
+IF LOCAL:1 > 1
+		FIELD_DEMON_DATE_V:ARG:CBV_B_AP += 1
+		FIELD_DEMON_DATE_V:ARG:CBV_AP += 1
+		
+		FIELD_DEMON_DATE_V:ARG:CBV_B_HP += 1
+		FIELD_DEMON_DATE_V:ARG:CBV_HP += 1
+		
+		CALL CARDBATTLE_MESSAGE, FIELD_DEMON_DATE_S:ARG:CBS_NAME + @"は基礎AP:+1/HP:+1になった。"
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;発動後どうなるか
+@CGSP_ACTION_AFTER_3100, ARGS, ARG, ARG:1
+RETURN 0
+;0-何もなし　1-フリーズ状態　2-山札に戻る　3-即死する
+
+;　 説明文の表示
+@CGSP_EXPLAIN_3100, ARGS, ARG
+RESULTS = 召喚時に合体素材に属性がライト・カオスの仲魔が２体以上いる場合、基礎AP+1 /HP+1になる。『このパワーアップはターンが終了しても解除されない』
+
+
+

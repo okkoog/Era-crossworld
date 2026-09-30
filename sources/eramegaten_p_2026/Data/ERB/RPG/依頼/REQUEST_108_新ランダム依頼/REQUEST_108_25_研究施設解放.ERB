@@ -1,0 +1,104 @@
+﻿;依頼名===================================================================
+;依頼難易度は敵の最大レベルによって変動
+; 1～10　☆、11～20　☆☆、21～30　☆☆☆、以下略
+;ダンジョン攻略が必要な場合は☆が★になる。
+
+@TITLE_RANDOM_REQUEST_108_25
+RESULTS = 연구시설 해방（난이도 ☆☆☆）
+RETURN 1
+
+;説明===================================================================
+@REQUEST_EXPLAIN_108_25
+	PRINTL 
+	PRINTL 【의뢰주】메시아교
+	PRINTL 
+	PRINTL 　가이아교에 의해 연구시설이 점거당하고、보안도 장악당하고 말았다。
+	PRINTL 　내부로 침입하여、보안을 해제하라。
+	PRINTL 
+	PRINTL 【작전영역】연구시설
+	PRINTL 【적의전력】가이아교도·데빌 서머너
+	PRINTL 【성공조건】보안 해제
+	PRINTL 
+
+;内容====================================================================
+@REQUEST_108_25
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", @"현재、우리의 연구시설이 가이아교 소속 부대에 습격당했습니다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", @"놈들은 시설의 보안 시스템을 조작하여 최심부까지 도달한 모양입니다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", @"시설 내 게이트를 봉쇄하여 행동 범위를 한정하는 데는 성공했습니다만/적 리더로 보이는 데빌 서머너의 저항으로 인해 적 부대 배제에는 이르지 못했습니다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", @"적의 정체는 불명이나、우리의 활동에 대한 방해 공작임은 틀림없습니다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", @"침입 부대 리더로 보이는 서머너를 찾아내 격파해 주십시오。/나머지는 우리 부대가 대응하겠습니다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "モブ", "メシア教徒", "메시아교도", @"이상입니다、잘 부탁드립니다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"――연구시설――", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞목표는 시설 최심부에 있을 것으로 보인다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞거기까지 들키지 않고 도달할 수 있을까……", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞………", , , , , 4
+IF RAND:2 == 0
+	CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞성공했다、들키지 않고 시설 안쪽까지 나아갈 수 있었다。", , , , , 4
+ELSE
+	CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞들키고 말았다。이렇게 된 이상 적을 쓰러뜨리고 안쪽으로 나아갈 수밖에 없다。", , , , , 4
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+	
+	FOR  LOCAL:2, 7, 17
+		CALL SET_ENEMY, LOCAL:2 ,[[キャラ:츠치구모]],15+RAND:5,1,0
+		NAME:(CHARANUM-1) = ガイア教徒
+		CALLNAME:(CHARANUM-1) = ガイア教徒
+		CALL SYNC_STATUS,(CHARANUM-1)
+		CALL HEALTH_CHARA,(CHARANUM-1)
+	NEXT
+
+	CALL BATTLE_START
+
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+ENDIF
+	
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞시설 안쪽에서 적 리더로 보이는 데빌 서머너를 발견했다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON,2, "モブ", "ファントム構成員男", "데빌서머너" , @"여기까지 도달한 놈이 있을 줄이야/좋다、마침 조금 지루하던 참이었다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞데빌 서머너가 덤벼들었다！", , , , , 4
+
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+	
+	CALL SET_ENEMY, 8 ,[[キャラ:츠치구모]],15+RAND:5,0,0
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+
+	CALL SET_ENEMY, 9 ,[[キャラ:포모르]],18+RAND:5,0,0
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+
+	CALL SET_ENEMY, 10 ,[[キャラ:아케트라브]],10+RAND:5,0,0
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+
+	CALL SET_ENEMY, 13 ,[[キャラ:루살카]],18+RAND:5,0,0
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+
+	CALL SET_ENEMY, 14 ,[[キャラ:다크서머너]],18+RAND:5,1,0
+	NAME:(CHARANUM-1) = 서머너
+	CALLNAME:(CHARANUM-1) = 서머너
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+
+	CALL SET_ENEMY, 15 ,[[キャラ:실프]],15+RAND:5,0,0
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+
+CALL BATTLE_START
+
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+CALL MESSAGE_WINDOW_ICON,2, "MOB", "ファントム構成員男","데빌서머너" , @"바、바보 같은……", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞시설의 보안을 해제했다。", , , , , 4
+
+;報酬
+依頼フラグ:[[依頼:랜덤의뢰]]:5 = 2;難易度
+依頼フラグ:[[依頼:랜덤의뢰]]:7 = 1;メシア教
+CALL PRIZE_REQUEST_108

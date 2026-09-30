@@ -1,0 +1,220 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILL3629_アンカーネクサス.ERB
+;	Facility	:SKILL:3629 (앵커넥서스)。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2021/03/15		木綿豆腐				新規作成
+;	002		2021/03/21		木綿豆腐				ゲージ周りの処理を変更。
+;	003		2021/03/30		木綿豆腐				ロックオン周りの処理を変更。
+;	004		2021/04/24		木綿豆腐				敵撃破時にクードス加算処理を追加
+;	005		2021/07/10		木綿豆腐				説明文が戦技だったので直した
+;	006		2021/08/24		木綿豆腐				専用アクセサリ装備時の処理追加
+;													念のため継承できないようにした
+;	007		2022/05/12		木綿豆腐				挙動をなるべく原作に近くした（ロックしたらそいつに強制的に攻撃）
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_3629, ARG
+RESULTS = 앵커넥서스
+IF FLAG:총공격중
+	TSTR:스킬메시지행동자 = RoRo
+	TFLAG:스킬행동자컬러 = 0x9933cd
+ENDIF
+
+;　명중
+@SKILL_HITRATE_3629, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_3629, ARG
+IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "다크니스트리거Ｘ") && FLAG:총공격중
+	;120*3=360で約1.25倍
+	RETURN 120
+ELSE
+	RETURN 280
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3629, ARG
+IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "다크니스트리거Ｘ") && FLAG:총공격중
+	RETURN 3
+ELSE
+	RETURN 1
+ENDIF
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3629, ARG
+IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "다크니스트리거Ｘ") && FLAG:총공격중
+	RETURN 3
+ELSE
+	RETURN 1
+ENDIF
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3629, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3629, ARG
+SIF ARG < 0
+	RETURN 16
+;ダークネストリガー発動中はコスト1/3
+SIF SKILLGAGE_H_GET(ARG, [[스킬:DARKNESS TRIGGER]]) == 1
+	RETURN 5
+RETURN 16
+
+;　相性
+@SKILL_TYPE_3629, ARG
+RETURN GET_TYPE_NUM("타격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3629
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3629, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3629, ARG
+;ロック中の攻撃・ロック対象に強制
+IF ARG >= 0 && NO:ARG == [[キャラ:아큐라_X]] && BLITZ_TARGET_JUDG(ARG) == 1
+	RETURN 4
+;非ロック中の攻撃・敵単体
+ELSE
+	RETURN 1
+ENDIF
+
+;　사거리
+@SKILL_RANGE_3629, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3629, ARG
+;ロック中の攻撃・ロック対象に強制
+IF BLITZ_TARGET_JUDG(ARG) == 1
+	RETURN 4
+;非ロック中の攻撃・敵単体
+ELSE
+	RETURN 1
+ENDIF
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3629, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3629
+RETURN GET_SUCCESSION_NUM("타격")
+
+;속도보정
+@SKILL_SPEED_3629, ARG = -1
+RETURN 5
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3629
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3629, ARG = -1
+RETURN 23
+
+@継承不能_3629
+RETURN 1
+
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_3629, ARG, ARG:1
+#DIM ROCK_H
+
+;ダークネストリガー追撃条件共通
+IF DTRIGGER_ABLE(ARG, "앵커넥서스")
+	ROCK_H = SKILLGAGE_H_GET(ARG, [[스킬:블리츠대쉬]]) / 10
+	CALL SKILLGAGE_D_SET, ARG, [[스킬:앵커넥서스]], 1
+	;200000をつけることで行動不能時にも追撃をするようになる
+	RETURN 1, 200000 + 23
+ENDIF
+RETURN 0
+
+RETURN 0
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+@SKILL_DAMAGE_EFFECT_3629, ARG, ARG:1,ARG:2
+#LOCALSIZE 1
+#DIM 피탄횟수
+;1桁は被弾回数
+IF ARG:2 >= -1
+	피탄횟수 = SKILLGAGE_H_GET(ARG, [[스킬:블리츠대쉬]]) % 10
+	LOCAL = ARG:1 * 10
+	CALL SKILLGAGE_H_SET, ARG, [[스킬:블리츠대쉬]], 피탄횟수
+	CALL SKILLGAGE_H_ADD, ARG, [[스킬:블리츠대쉬]], LOCAL
+	CALL SKILLGAGE_D_SET, ARG, [[스킬:블리츠대쉬]], 5
+	LOCAL /= 10
+	TSTR:스킬메시지추가효과 += " & ロック"
+ENDIF
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3629, ARG, ARG:1, ARG:2
+#DIM ROCK_H
+#DIM 加算クードス
+
+IF ARG:1 == 23 
+	IF BLITZ_TARGET_JUDG(ARG) == 1
+		SIF FLAG:총공격중
+			TFLAG:반사후0데미지화 = 1
+		ROCK_H = SKILLGAGE_H_GET(ARG, [[스킬:블리츠대쉬]]) / 10
+		CALL SKILLGAGE_D_SET, ARG, [[스킬:앵커넥서스]], 1
+		CALL ATTACK_SINGLE, ARG, ROCK_H, 3629
+	ENDIF
+ELSE
+	CALL ATTACK_SINGLE, ARG, POS(ARG:1), 3629
+ENDIF
+
+;撃破数1につき20の基礎クードスを得る。(上限20)
+加算クードス = MIN(GET_CREC_ACT_SUM(ARG, "적", "KILL"), 1) * 20
+CALL SET_加算クードス, ARG, 加算クードス
+
+;EXウェポン1番=앵커넥서스
+SIF HAVE_SKILL(ARG, [[스킬:DARKNESS TRIGGER]])
+	CALL SKILLGAGE_F_SET, ARG, [[스킬:DARKNESS TRIGGER]], 1
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3629, ARG
+PRINTL 실 모양 에너지를 다루는 셉티마·편사 세공(크래프트 울)을 재현한 EX 웨폰.
+PRINTL 공격 명중 시에만 대상에게 록온을 행한다.
+PRINTL HP를 소비하는 커맨드 「블리츠대쉬」에 의해 록이 걸린 적이 있을 경우 강제적으로 그 대상을 공격한다.
+PRINTL 
+PRINTL 공격 대상의 록/비록온 여부에 관계없이 적 단체에 타격 상성으로 중 데미지를 준다.
+PRINTL ※록온 대상은 1체만. 록온 중에 다른 대상을 록하면 타깃이 교체된다.
+IF ARG > 0 && ARG < CHARANUM && IS_CHARA_EQUIPED(ARG, "다크니스트리거Ｘ") && SKILLGAGE_H_GET(ARG, [[스킬:DARKNESS TRIGGER]]) == 1
+	SETCOLOR 0x9933cd
+	PRINTL 다크니스 트리거 X 장비 중　다크니스 트리거에 의한 추격 시 데미지·공격 횟수 변경
+	RESETCOLOR
+ENDIF
+PRINTL ※이 스킬로 적을 쓰러뜨렸을 경우 쿠도스가 20 가산된다
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3629, ARG
+RETURN 1
+;とくにない
+
+;継承に必要な部位
+
+

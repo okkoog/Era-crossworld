@@ -1,0 +1,94 @@
+﻿;====================
+;条件
+;====================
+@GET_EVENT_NAME_242
+#FUNCTIONS
+RESULTS_F '= "성실하고친절한열혈한"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_242
+SIF イベントフラグ:[[이벤트:성실하고친절한열혈한]]:0
+	RETURN 0
+;EXTRAイベントのス―パーロボット大戦シリーズがOFFだと出ない
+SIF !GETS_USEABLE_EXTRA_TITLE("スパロボ")
+	RETURN 0
+;パット所持済み(引き継ぎ済みなど)だと出ない
+SIF GETCHARA([[キャラ:팻]]) > 0
+	RETURN 0
+;LV15未満だと出ない
+SIF BASE:MASTER:LV < 15
+	RETURN 0
+RESULTS '= " (EX:슈퍼로봇) 성실하고 상냥한 열혈한"
+RETURN 1
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_242
+CUSTOMDRAWLINE =
+
+PRINTFORML 팬텀으로부터 임무 통달이 도착해 있다……
+PRINTFORML 미확인의 거대한 악마가 출현했다는 보고다.
+PRINTFORML 가능하면 토벌, 혹은 포획하라는 명령이다.
+PRINTFORML 처분의 최종 판단은, 임무 완료자에게 일임되어 있다.
+PRINTFORML 
+PRINTFORML [0] 즉시 향한다
+PRINTFORML [1] 나중으로 미룬다
+
+CALL INPUTINT, 0, 1
+
+IF RESULT == 0
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+
+	PRINTL ―모처―
+	PRINTW 현장에 도착하자, 확실히 거대한 검은 존재가 확인된다.
+	PRINTW 그러나, 그것은 아무리 보아도 악마가 아니다…… 로봇이다.
+	PRINTW 20미터는 족히 되는 검은 기체가, 말없이 우두커니 서 있다.
+	PRINTW 어째서 이것이 악마로 오인되었는지는 알 수 없지만―― 임무는 임무다. 공격을 시작한다.
+	CUSTOMDRAWLINE =
+	PRINTL  수수께끼의 로봇이 1체 나타났다!
+	CUSTOMDRAWLINE =
+	WAIT
+
+	CALL SET_ENEMY, 9, [[キャラ:팻]], 20, 0, 1
+	NAME:(CHARANUM-1) = 수수께끼의 로봇
+	CALLNAME:(CHARANUM-1) = 수수께끼의 로봇
+	CALL CLEAR_ALL_SKILL, CHARANUM-1
+	CALL SET_SKILL, CHARANUM-1, "소닉펀치"
+	CALL SET_SKILL, CHARANUM-1, "연속사격"
+	CALL SET_SKILL, CHARANUM-1, "안개베기"
+	CALL SET_SKILL, CHARANUM-1, "강절단"
+
+	CALL BATTLE_START
+
+	CUSTOMDRAWLINE =
+	PRINTL 수수께끼의 로봇은 움직임을 멈췄다.
+	CUSTOMDRAWLINE =
+	WAIT
+
+	PRINTW 전투 종료 후, 쓰러진 로봇에게 다가가 보았다.
+	PRINTW 허리 부분의 장갑이 열려 있어, 안을 들여다보니――
+	PRINTW 거기에는 푸른 머리의 소녀가 있었다. 정신을 잃은 모양이다.
+	PRINTW 소녀는 이대로 회수하여, 거점으로 데려가기로 한다.
+	PRINTW 기체 쪽은, 팬텀에 회수를 의뢰해 두자.
+	CUSTOMDRAWLINE =
+	PRINTW 팻을 손에 넣었다.
+	CUSTOMDRAWLINE =
+
+	CALL ADD_NEW_COMPANION, [[キャラ:팻]], 0, 0
+	SIF RESULT == 1
+		CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+
+	FLAG:도주불가플래그 = 0
+	FLAG:회화불능플래그 = 0
+	FLAG:선제기습취소 = 0
+
+	イベントフラグ:[[이벤트:성실하고친절한열혈한]]:0 = 1
+
+	RETURN 1
+
+ELSE
+	PRINTFORMW 지금은 나중으로 미루고, 다른 임무를 우선하자.
+	RETURN 0
+ENDIF

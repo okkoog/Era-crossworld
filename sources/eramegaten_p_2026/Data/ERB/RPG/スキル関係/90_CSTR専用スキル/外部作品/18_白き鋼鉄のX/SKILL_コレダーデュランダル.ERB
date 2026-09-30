@@ -1,0 +1,122 @@
+﻿;スキル名
+@SKILL_NAME_コレダーデュランダル, ARG
+RESULTS = COLLIDER DURANDAL
+
+;　명중
+@SKILL_HITRATE_コレダーデュランダル, ARG
+IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정")
+	RETURN 250
+ELSE
+	RETURN 100
+ENDIF
+
+;　威力
+@SKILL_POWER_コレダーデュランダル, ARG
+RETURN 180
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_コレダーデュランダル, ARG
+RETURN 3
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_コレダーデュランダル, ARG
+RETURN 3
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_コレダーデュランダル, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_コレダーデュランダル, ARG
+IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정")
+	RETURN 80
+ELSE
+	RETURN 60
+ENDIF
+
+;　相性
+@SKILL_TYPE_コレダーデュランダル, ARG
+IF ARG >= 0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정") && 現HP割合(ARG) < 33
+	RETURN GET_TYPE_NUM("전격"), GET_TYPE_NUM("검격"), GET_TYPE_NUM("만능")
+ELSE
+	RETURN GET_TYPE_NUM("전격"), GET_TYPE_NUM("검격")
+ENDIF
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_コレダーデュランダル
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_コレダーデュランダル, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_コレダーデュランダル, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_コレダーデュランダル, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_コレダーデュランダル, ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_コレダーデュランダル, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_コレダーデュランダル, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_コレダーデュランダル
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_コレダーデュランダル, ARG, ARG:1, SKILL_NUM
+#LOCALSIZE 3
+#DIM SKILL_NUM
+
+CALL ATTACK_FIELD, ARG, ARG:1, SKILL_NUM
+
+IF CFLAG:ARG:PT플래그 > 0
+	IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정")
+		CALL SKILLGAGE_D_SET, ARG, SKILL_NUM ,3
+	ELSE
+		CALL SKILLGAGE_D_SET, ARG, SKILL_NUM ,5
+	ENDIF
+ENDIF
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_コレダーデュランダル, ARG
+PRINTFORML 뇌격을 두른 검을 다루는 %CALLNAME:ARG%의 SP 스킬.
+;コレダーデュランダルの詠唱(？)がスパークカリバーの海外版詠唱(？)になぞらえていたことが発覚したので変更
+PRINTL 번뜩이는 번개를 두른 마검. 암뢰의 포학은 온갖 장애물을 꿰뚫는다.
+PRINTL 　
+PRINTL 적 전체에 검격과 전격의 복합 속성으로 3회 데미지를 준다.
+PRINTL 단, 재사용까지 5턴의 쿨타임이 필요하다.
+IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정")
+	SETCOLOR 0x14ffd7
+	IF 現HP割合(ARG) < 33
+		PRINTL 벽색의 뇌정 장비 중 명중 강화/쿨타임 단축/상성 변경: 검격+전격+만능
+	ELSE
+		PRINTL 벽색의 뇌정 장비 중 명중 강화/쿨타임 단축
+	ENDIF
+	RESETCOLOR
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_コレダーデュランダル, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG, "コレダーデュランダル")
+SIF SKILLGAGE_D_GET(ARG, SKILL_NUM)
+	RETURN 0
+RETURN 1
+

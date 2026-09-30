@@ -1,0 +1,813 @@
+﻿
+@GET_INFO_PROPSET, ARGS
+SELECTCASE ARGS
+	CASE "조교", "調教"
+		RESULTS '= "NO_NAME_LV_ALI_SEX_POS_体力_気力_STRESS_LOYALTY_FALLTALENT_WORK_CONDITION_KOJO"
+	CASE "전투", "戦闘"
+		RESULTS '= "NO_NAME_LV_ALI_SEX_POS_HP_MP_SPD_BADSTATE_CP_MAGCOST_FALLTALENT"
+	CASE "육성정보", "育成情報"
+		RESULTS '= "NO_NAME_LV_ALI_SEX_POS_HP_MP_CP_LOYALTY_MAG_RACE"
+	CASE "기본스테이터스", "기본스탯", "基本ステータス"
+		RESULTS '= "NO_NAME_LV_ALI_SEX_POS_HP_MP_CP_BASESTATUS"
+	CASE "방어상성1", "防御相性1"
+		RESULTS '= "NO_NAME_LV_ALI_SEX_POS_HP_MP_CP_DEFTYPE1"
+	CASE "방어상성2", "防御相性2"
+		RESULTS '= "NO_NAME_LV_ALI_SEX_POS_HP_MP_CP_DEFTYPE2"
+	CASEELSE
+		CALLFORM %ARGS%
+ENDSELECT
+
+;--------------------------------------------------------------------------------
+;基礎部分
+;NO				キャラ登録番号
+;NAME			キャラ名称
+;SEX			性別
+;FALLTALENT		陥落情報
+;--------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------
+;NO
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_NO_HEADER
+INFO_HEADER += "　" + SET_BUTTON_TAG(TOALIGNMENT("No", 5, "CENTER"), "SORT,NO")
+
+@GET_VAR_INFO_DATA_NO, ARG
+LOCAL = EQUALCHECK_TURN(1,ARG == TARGET,ARG == ASSI,ISASSI:ARG == 1,CFLAG:ARG:매각가능 == 2)
+RESULTS = %AUTO_SPLIT("　,☆,★,●,○",",",LOCAL)%
+RESULTS += @"[{ARG,3}]"
+IF TFLAG:전투중
+	SIF CFLAG:ARG:PT플래그 == 0
+		INFO_COLOR = 0x990000
+	SIF (CFLAG:ARG:PT플래그 == 0 && CPOS(ARG) < 1) || CFLAG:ARG:피소환플래그
+		INFO_COLOR = 0x404040
+ENDIF
+
+@GET_INFO_SORT_KEY_NO, ARG, ARGS
+RETURN ARG
+;--------------------------------------------------------------------------------
+;NAME
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_NAME_HEADER
+;UNICODEの配列だと漢字が安定しなさすぎるのでデバッグモード用にしておく
+IF IS_DEBUG
+	INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT("NAME", 18, "CENTER"), "SORT,NAME")
+ELSE
+	INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT("NAME", 18, "CENTER"), "SORT,NO")
+ENDIF
+
+@GET_VAR_INFO_DATA_NAME, ARG
+RESULTS = %MAKE_INFO_DATA_NAME(CALLNAME:ARG)%
+IF TFLAG:전투중
+	SIF CFLAG:ARG:PT플래그 == 0
+		INFO_COLOR = 0x990000
+	SIF (CFLAG:ARG:PT플래그 == 0 && CPOS(ARG) < 1) || CFLAG:ARG:피소환플래그
+		INFO_COLOR = 0x404040
+ENDIF
+
+@MAKE_INFO_DATA_NAME, L_NAME, L_ALIGNMENT = "LEFT"
+#FUNCTIONS
+#DIMS DYNAMIC L_NAME
+#DIMS DYNAMIC L_ALIGNMENT
+IF STRLENS(L_NAME) <= 18
+	L_NAME '= TOALIGNMENT(L_NAME, 18, L_ALIGNMENT)
+ELSE
+	L_NAME '= SUBSTRING(L_NAME, 0, 16)
+	SIF STRLENS(L_NAME) != 16
+		L_NAME '= SUBSTRING(L_NAME, 0, 15) + "."
+	L_NAME += ".."
+ENDIF
+RETURNF L_NAME
+
+@GET_INFO_SORT_KEY_NAME, ARG, ARGS
+;ソートのカウントをずらして昇順が先に来るようにする
+SIF !INFO_CNT_SORT
+	INFO_CNT_SORT = 1
+RETURN ENCODETOUNI(CALLNAME:ARG)
+
+;--------------------------------------------------------------------------------
+;SEX
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_SEX_HEADER
+INFO_HEADER += SET_BUTTON_TAG("SEX", "SORT,SEX")
+
+@GET_VAR_INFO_DATA_SEX, ARG
+IF TALENT:ARG:남자
+	INFO_COLOR = 0x008B8B
+ELSEIF TALENT:ARG:처녀 || TALENT:ARG:재생처녀
+	INFO_COLOR = 0xCC0000
+ELSE
+	INFO_COLOR = 0x660022
+ENDIF
+IF TALENT:ARG:임신
+	INFO_COLOR = 0xCC33FF
+	RESULTS '= " 임"
+ELSEIF TALENT:ARG:육아중
+	INFO_COLOR = 0x00ffe0
+	RESULTS '= " 육"
+ELSEIF TALENT:ARG:부정형 || TALENT:ARG:이형 || TALENT:ARG:오토코노코 || TALENT:ARG:후타나리
+	RESULTS '= " ？"
+ELSE
+	IF TALENT:ARG:남자
+		RESULTS '= " ♂"
+	ELSE
+		RESULTS '= " ♀"
+	ENDIF
+ENDIF
+@GET_INFO_SORT_KEY_SEX, ARG, ARGS
+RESULT:1 = 1
+IF TALENT:ARG:부정형 || TALENT:ARG:이형 || TALENT:ARG:오토코노코 || TALENT:ARG:후타나리
+	RETURN INFO_CNT_SORT % 3
+ELSE
+	IF TALENT:ARG:남자
+		RETURN (INFO_CNT_SORT + 1) % 3
+	ELSE
+		RETURN (INFO_CNT_SORT + 2) % 3
+	ENDIF
+ENDIF
+RETURN ENCODETOUNI(CALLNAME:ARG)
+;--------------------------------------------------------------------------------
+;FALLTALENT(陥落情報)
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_FALLTALENT_HEADER
+INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT("함락", 4, "CENTER"), "SORT,FALLTALENT")
+
+@GET_VAR_INFO_DATA_FALLTALENT, ARG
+#DIM DYNAMIC TEMP
+TEMP = EQUALCHECK_TURN(1,TALENT:ARG:ＮＴＲ==1,TALENT:ARG:ＮＴＲ==2,TALENT:ARG:ＮＴＲ==3,TALENT:ARG:연모,TALENT:ARG:음란,TALENT:ARG:복종,TALENT:ARG:친애,TALENT:ARG:창부,TALENT:ARG:예속,TALENT:ARG:신뢰,TALENT:ARG:동료,TALENT:ARG:붕괴)
+RESULTS '= TOALIGNMENT(AUTO_SPLIT("－,Ｎ,Ｎ,Ｎ,연모,음란,복종,친애,창부,예속,신뢰,동료,붕괴,",",",TEMP), 4, "CENTER")
+@GET_INFO_SORT_KEY_FALLTALENT, ARG, ARGS
+#DIM DYNAMIC TEMP,2
+IF TALENT:ARG:ＮＴＲ
+	TEMP = 1
+ELSE
+	IF 陥落(ARG)
+		SELECTCASE RESULTS
+			CASE "연모"
+				TEMP = 5
+			CASE "음란"
+				TEMP = 4
+			CASE "복종"
+				TEMP = 3
+			CASE "신뢰"
+				TEMP = 2
+		ENDSELECT
+	ELSE
+		TEMP = 0
+	ENDIF
+ENDIF
+TEMP = ((TEMP + INFO_CNT_SORT) % 6) * 10 + 陥落(ARG)
+RESULT:1 = 1
+RETURN TEMP
+
+;--------------------------------------------------------------------------------
+;RPG要素
+;LV					キャラクターのレベル
+;POS				포지션
+;STATE				バステ
+;ALI				アライントメント
+;HP
+;MP
+;CP
+;충성도
+;MAG		
+;BASEONLYMAG		現在の所持MAGのみのMAG表示
+;MAGCOST			召喚費用
+;SPD				행동속도
+;BASESTATUS			基本ステータス
+;DEFTYPE1			防御相性前半
+;DEFTYPE2			防御相性後半
+;ANALYZE			解析度
+;RACE				종족
+;BELONG				所属COMP/サーバー
+;--------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------
+;LV
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_LV_HEADER
+#DIMS DYNAMIC TEMPS
+TEMPS '=  TOALIGNMENT("Lv", MAX(2, STRLENS(TOSTR(MAXCARRAY(BASE:0:LV)))), "CENTER")
+INFO_HEADER += SET_BUTTON_TAG(TEMPS, "SORT,LV")
+
+@GET_VAR_INFO_DATA_LV, ARG
+RESULTS = {BASE:ARG:LV,MAX(2,STRLENS(TOSTR(MAXCARRAY(BASE:0:LV))))}
+@GET_INFO_SORT_KEY_LV, ARG, ARGS
+RETURN BASE:ARG:LV
+;--------------------------------------------------------------------------------
+;POS
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_POS_HEADER
+INFO_HEADER += SET_BUTTON_TAG("POS", "SORT,POS")
+
+@GET_VAR_INFO_DATA_POS, ARG
+IF IS_JOINABLE_BATTLE(ARG)
+	IF CFLAG:ARG:포지션
+		RESULTS '= AUTO_SPLIT("   ,① ,② ,③ , ④, ⑤, ⑥,⑦ ,⑧ ,⑨ ,⑩ ,⑪ ,⑫ ,⑬ , ⑭, ⑮, ⑯, ⑰, ⑱, ⑲, ⑳",",",CFLAG:ARG:포지션)
+	ELSE
+		IF CFLAG:ARG:PT플래그
+			RESULTS '= " ◯"
+		ELSE
+			RESULTS '= " " * 3
+		ENDIF
+	ENDIF
+ELSE
+	RESULTS '= " " * 3
+ENDIF
+IF TFLAG:전투중
+	SIF CFLAG:ARG:PT플래그 == 0
+		INFO_COLOR = 0x990000
+	SIF (CFLAG:ARG:PT플래그 == 0 && CPOS(ARG) < 1) || CFLAG:ARG:피소환플래그
+		INFO_COLOR = 0x404040
+ENDIF
+@GET_INFO_SORT_KEY_POS, ARG, ARGS
+RESULT:1 = 1
+SELECTCASE CFLAG:ARG:PT플래그
+	CASE 2
+		RETURN (7 - CPOS(ARG)) * 100
+	CASE 1
+		IF IS_JOINABLE_BATTLE(ARG)
+			RETURN 50
+		ELSE
+			RETURN 2
+		ENDIF
+	CASE 0
+		IF CPOS(ARG) > 0
+			RETURN (50 - CPOS(ARG))
+		ELSE
+			RETURN 1
+		ENDIF
+ENDSELECT
+;--------------------------------------------------------------------------------
+;ALI
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_ALI_HEADER
+INFO_HEADER += SET_BUTTON_TAG("ALI", "SORT,ALI")
+
+@GET_VAR_INFO_DATA_ALI, ARG
+IF INFO_COLOR_ALL
+	RESULTS '= SUBSTRING(GET_ALI1(ABL:ARG:속성LD), 0, 1)
+	RESULTS += "/"
+	RESULTS += SUBSTRING(GET_ALI2(ABL:ARG:속성LC), 0, 1)
+ELSE
+	RESULTS '= SET_COLOR_TAG(SUBSTRING(GET_ALI1(ABL:ARG:속성LD), 0, 1), TOSTR(ALICOLOR(ABL:ARG:속성LD)))
+	RESULTS += "/"
+	RESULTS += SET_COLOR_TAG(SUBSTRING(GET_ALI2(ABL:ARG:속성LC), 0, 1), TOSTR(ALICOLOR(ABL:ARG:속성LC)))
+ENDIF
+@GET_INFO_SORT_KEY_ALI, ARG, ARGS
+IF INFO_CNT_SORT % 4 > 1
+	RETURN ABL:ARG:속성LD + ABL:ARG:속성LC * 10
+ELSE
+	RETURN ABL:ARG:속성LD * 10 + ABL:ARG:속성LC
+ENDIF
+;--------------------------------------------------------------------------------
+;HP
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_HP_HEADER
+#DIM DYNAMIC L_STRLENS
+#DIMS DYNAMIC TEMPS
+L_STRLENS = LIMIT(STRLENS(TOSTR(MAXCARRAY(MAXBASE:0:ＨＰ))), 4, 6)
+TEMPS '=  TOALIGNMENT("HP", L_STRLENS * 2 + 3, "CENTER")
+INFO_HEADER += SET_BUTTON_TAG(TEMPS, "SORT,HP")
+
+@GET_VAR_INFO_DATA_HP, ARG
+#DIM DYNAMIC L_STRLENS
+L_STRLENS = LIMIT(STRLENS(TOSTR(MAXCARRAY(MAXBASE:0:ＨＰ))), 4, 6)
+RESULTS = [%ADD_KMGT(BASE:ARG:ＨＰ,L_STRLENS)%/%ADD_KMGT(MAXBASE:ARG:ＨＰ,L_STRLENS)%] 
+IF CFLAG:ARG:HP배리어
+	INFO_COLOR = COLOR("パ緑")
+ELSE
+	;CHK:数値
+	SELECTCASE 現HP割合(ARG) 
+		;死亡
+		CASE 0
+			;赤(暗い赤)
+			INFO_COLOR = COLOR("RED")
+		;危険
+		CASE IS < 25
+			;赤(朱色?)
+			INFO_COLOR = 0xcc6666
+		;弱っている
+		CASE IS < 50
+			;黄色(オレンジ)
+			INFO_COLOR = 0xffcc66
+	ENDSELECT
+ENDIF
+@GET_INFO_SORT_KEY_HP, ARG, ARGS
+RETURN BASE:ARG:ＨＰ
+
+
+;--------------------------------------------------------------------------------
+;MP
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_MP_HEADER
+#DIM DYNAMIC L_STRLENS
+#DIMS DYNAMIC TEMPS
+L_STRLENS = LIMIT(STRLENS(TOSTR(MAXCARRAY(MAXBASE:0:ＭＰ))), 4, 6)
+TEMPS '=  TOALIGNMENT("MP", L_STRLENS * 2 + 3, "CENTER")
+INFO_HEADER += SET_BUTTON_TAG(TEMPS, "SORT,MP")
+
+@GET_VAR_INFO_DATA_MP, ARG
+#DIM DYNAMIC L_STRLENS
+L_STRLENS = LIMIT(STRLENS(TOSTR(MAXCARRAY(MAXBASE:0:ＭＰ))), 4, 6)
+IF MAXBASE:ARG:ＭＰ
+	RESULTS = [%ADD_KMGT(BASE:ARG:ＭＰ, L_STRLENS)%/%ADD_KMGT(MAXBASE:ARG:ＭＰ, L_STRLENS)%]
+	SELECTCASE 現MP割合(ARG) 
+		;死亡
+		CASE 0
+			;赤(暗い赤)
+			INFO_COLOR = COLOR("RED")
+		;危険
+		CASE IS < 25
+			;赤(朱色?)
+			INFO_COLOR = 0xcc6666
+		;弱っている
+		CASE IS < 50
+			;黄色(オレンジ)
+			INFO_COLOR = 0xffcc66
+	ENDSELECT
+ELSE
+	RESULTS = %TOALIGNMENT("─", L_STRLENS * 2 + 3, "CENTER")%
+ENDIF
+@GET_INFO_SORT_KEY_MP, ARG, ARGS
+RETURN BASE:ARG:ＭＰ
+
+;--------------------------------------------------------------------------------
+;SPD
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_SPD_HEADER
+INFO_HEADER += SET_BUTTON_TAG("SPD", "SORT,SPD")
+
+@GET_VAR_INFO_DATA_SPD, ARG
+RESULTS = {MIN(MAXBASE:ARG:속도,999),3}
+SIF MAXBASE:ARG:속도 > 999
+	INFO_COLOR = COLOR("p-green")
+@GET_INFO_SORT_KEY_SPD, ARG, ARGS
+RETURN MAXBASE:ARG:속도
+
+;--------------------------------------------------------------------------------
+;CP
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_CP_HEADER
+#DIM DYNAMIC L_STRLENS
+#DIMS DYNAMIC TEMPS
+INFO_HEADER += SET_BUTTON_TAG(" CP", "SORT,CP")
+
+@GET_VAR_INFO_DATA_CP, ARG
+#DIM DYNAMIC L_STRLENS
+L_STRLENS = MAX(2,STRLENS(TOSTR(MAXCARRAY(MAXBASE:0:CP))))
+IF MAXBASE:ARG:CP == 0
+	RESULTS '= " ―"
+ELSE
+	RESULTS '= @"{MIN(MAXBASE:ARG:CP, 999), 3}"
+	SIF MAXBASE:ARG:CP > 999
+		INFO_COLOR = COLOR("p-green")
+ENDIF
+
+@GET_INFO_SORT_KEY_CP, ARG, ARGS
+RETURN MAXBASE:ARG:CP
+
+;--------------------------------------------------------------------------------
+;BADSTATE
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_BADSTATE_HEADER
+#DIMS DYNAMIC TEMPS
+TEMPS '=  TOALIGNMENT("STATE", 8, "CENTER")
+INFO_HEADER += SET_BUTTON_TAG(TEMPS, "SORT,BADSTATE")
+
+@GET_VAR_INFO_DATA_BADSTATE, ARG 
+RESULTS = %TOALIGNMENT(GET_STATE(CFLAG:ARG:상태이상), 8, "CENTER")% 
+INFO_COLOR = BADSTATE_COLOR(CFLAG:ARG:상태이상)
+
+@GET_INFO_SORT_KEY_BADSTATE, ARG, ARGS
+RETURN CFLAG:ARG:상태이상
+
+;--------------------------------------------------------------------------------
+;충성도
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_LOYALTY_HEADER
+INFO_HEADER += SET_BUTTON_TAG("충성도", "SORT,LOYALTY")
+
+@GET_VAR_INFO_DATA_LOYALTY, ARG
+IF CFLAG:ARG:PT플래그
+	RESULTS = {MIN(GET_CHARA_LOYALTY(ARG), 999999), 6}
+	SIF GET_CHARA_LOYALTY(ARG) > 999999
+		INFO_COLOR = COLOR("p-green")
+ELSE
+	RESULTS '= TOALIGNMENT("─", 6, "CENTER")
+ENDIF
+
+@GET_INFO_SORT_KEY_LOYALTY, ARG, ARGS
+IF CFLAG:ARG:PT플래그
+	RETURN GET_CHARA_LOYALTY(ARG)
+ELSE
+	RETURN 0
+ENDIF
+
+;--------------------------------------------------------------------------------
+;MAG所持量
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_MAG_HEADER
+
+INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT("MAG", 13, "CENTER"), "SORT,MAG")
+
+@GET_VAR_INFO_DATA_MAG, ARG
+IF CFLAG:ARG:PT플래그
+	RESULTS '= ADD_KMGT(GET_CHARA_STOCK_MAG(ARG), 6)
+	RESULTS += "/"
+	RESULTS += ADD_KMGT(GET_CHARA_MAXMAG(ARG), 6)
+ELSE
+	RESULTS '= TOALIGNMENT("─", 6, "CENTER")
+ENDIF
+
+@GET_INFO_SORT_KEY_MAG, ARG, ARGS
+IF CFLAG:ARG:PT플래그
+	RETURN GET_CHARA_STOCK_MAG(ARG)
+ELSE
+	RETURN 0
+ENDIF
+
+;--------------------------------------------------------------------------------
+;MAG所持量
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_BASEONLYMAG_HEADER
+INFO_HEADER += SET_BUTTON_TAG("ＭＡＧ", "SORT,MAG")
+
+@GET_VAR_INFO_DATA_BASEONLYMAG, ARG
+IF CFLAG:ARG:PT플래그
+	RESULTS '= ADD_KMGT(GET_CHARA_STOCK_MAG(ARG), 6)
+ELSE
+	RESULTS '= TOALIGNMENT("─", 6, "CENTER")
+ENDIF
+
+;--------------------------------------------------------------------------------
+;召喚COST
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_MAGCOST_HEADER
+INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT("COST", 8, "CENTER"), "SORT,MAGCOST")
+
+@GET_VAR_INFO_DATA_MAGCOST, ARG
+IF MAXBASE:ARG:￥ && CFLAG:ARG:PT플래그
+	RESULTS '= ADD_KMGT(MAXBASE:ARG:￥, 5) + "MAG"
+ELSE
+	RESULTS '= TOALIGNMENT("―", 8, "CENTER")
+ENDIF
+
+@GET_INFO_SORT_KEY_MAGCOST, ARG, ARGS
+IF CFLAG:ARG:PT플래그
+	RETURN BASE:ARG:￥
+ELSE
+	RETURN 0
+ENDIF
+
+;--------------------------------------------------------------------------------
+;防御相性
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_BASESTATUS_HEADER
+#DIM DYNAMIC LCOUNT
+#DIM L_STRLENS
+FOR LCOUNT, 1, BASESTATUSNUM
+	INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT(GET_BASESTATUS(LCOUNT), 8, "CENTER"), @"SORT,BASESTATUS_%GET_BASESTATUS(LCOUNT)%")
+	INFO_HEADER += INFO_SPACE
+NEXT
+
+@GET_VAR_INFO_DATA_BASESTATUS, ARG
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC TEMPS
+RESULTS = 
+FOR LCOUNT, 1, BASESTATUSNUM
+	RESULTS += @"{MIN(MAXBASE:ARG:GET_BASESTATUS(LCOUNT), 999), 3}"
+	RESULTS += "(" + @"{MIN(BASE:ARG:GET_BASESTATUS(LCOUNT), 999),3}" + ")"
+	RESULTS += INFO_SPACE
+NEXT
+
+@GET_INFO_SORT_KEY_BASESTATUS, ARG, ARGS
+RETURN MAXBASE:ARG:ARGS
+
+;--------------------------------------------------------------------------------
+;防御相性
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_DEFTYPE1_HEADER
+CALL SET_VAR_INFO_DATA_DEFTYPE_HEADER, 0
+
+@GET_VAR_INFO_DATA_DEFTYPE1, ARG
+CALL GET_VAR_INFO_DATA_DEFTYPE, ARG, 0
+
+@SET_VAR_INFO_DATA_DEFTYPE2_HEADER
+CALL SET_VAR_INFO_DATA_DEFTYPE_HEADER, 1
+
+@GET_VAR_INFO_DATA_DEFTYPE2, ARG
+CALL GET_VAR_INFO_DATA_DEFTYPE, ARG, 1
+
+@SET_VAR_INFO_DATA_DEFTYPE_HEADER, ARG
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_TYPENUM
+#DIM L_STRLENS
+FOR LCOUNT, 0, TYPENUM / 2
+	;SIF LCOUNT
+	;	INFO_HEADER += " "
+	L_TYPENUM = LCOUNT + ARG * TYPENUM / 2
+	INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT(GET_TYPE(L_TYPENUM), 6, "CENTER"), @"SORT,DEFTYPE,%GET_TYPE(L_TYPENUM)%")
+NEXT
+
+@GET_VAR_INFO_DATA_DEFTYPE, ARG, ARG:1
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_TYPENUM
+#DIMS DYNAMIC TEMPS
+RESULTS = 
+FOR LCOUNT, 0, TYPENUM / 2
+	SIF LCOUNT
+		INFO_HEADER += " "
+	L_TYPENUM = LCOUNT + ARG:1 * TYPENUM / 2
+	SELECTCASE MAXBASE:ARG:GET_TYPE(L_TYPENUM)
+		CASE 999
+			TEMPS '= "반사"
+		CASE 0
+			TEMPS '= "무효"
+		CASE IS < 0
+			TEMPS '= TOSTR(MAXBASE:ARG:GET_TYPE(L_TYPENUM)) + "%"
+		CASEELSE
+			TEMPS '= TOSTR(ABS(MAXBASE:ARG:GET_TYPE(L_TYPENUM))) + "%"
+	ENDSELECT
+	TEMPS '= TOALIGNMENT(TEMPS, 6, "CENTER")		
+	SIF !INFO_COLOR_ALL
+		TEMPS '= SET_COLOR_TAG(TEMPS, GET_WEAKNESS(MAXBASE:ARG:(GET_TYPE(L_TYPENUM)))+"컬러")
+	RESULTS += TEMPS
+NEXT
+
+@GET_INFO_SORT_KEY_DEFTYPE, ARG, ARGS
+IF MAXBASE:ARG:ARGS == 999
+	RETURN 1000000
+ELSE
+	RETURN 10000 - MAXBASE:ARG:ARGS
+ENDIF
+
+;--------------------------------------------------------------------------------
+;解析度
+;--------------------------------------------------------------------------------
+;@SET_VAR_INFO_DATA_ANALYZE_HEADER
+;INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT("ANALYZE", 8, "CENTER"), "SORT,ANALYZE")
+
+;@GET_VAR_INFO_DATA_ANALYZE, ARG
+;IF ABL:ARG:종족 > 0 && ABL:ARG:종족 < 45
+;	SIF FLAG:(20000+NO:ARG) <= 0
+;		INFO_COLOR = 0xFFFFFF
+;	SIF FLAG:(20000+NO:ARG) > 999
+;		INFO_COLOR = 0x404040
+;	RESULTS '= TOALIGNMENT(@"{LIMIT(FLAG:(20000+NO:ARG)/10, 0, 100),3}" + "%", 8, "CENTER")
+;ELSE
+;	RESULTS '= TOALIGNMENT("―", 8, "CENTER")
+;ENDIF
+
+;@GET_INFO_SORT_KEY_ANALYZE, ARG, ARGS
+;IF ABL:ARG:종족 > 0 && ABL:ARG:종족 < 45
+;	RETURN FLAG:(20000+NO:ARG) + 1
+;ELSE
+;	;常に後ろに来るように
+;	IF INFO_CNT_SORT % 2
+;		RETURN 10000
+;	ELSE
+;		RETURN 0
+;	ENDIF
+;ENDIF
+
+
+;--------------------------------------------------------------------------------
+;종족
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_RACE_HEADER
+INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT("RACE", 10, "CENTER"), "SORT,RACE")
+
+@GET_VAR_INFO_DATA_RACE, ARG
+IF STRLENS(CSV種族名(NO:ARG,0)) > 10
+	RESULTS '= SUBSTRING(CSV種族名(NO:ARG,0), 0, 8) + ".."
+	RESULTS '= TOALIGNMENT(RESULTS, 8, "CENTER")
+ELSE
+	RESULTS '= TOALIGNMENT(CSV種族名(NO:ARG,0), 10, "CENTER")
+ENDIF
+
+@GET_INFO_SORT_KEY_RACE, ARG, ARGS
+RETURN ABL:ARG:종족
+
+;--------------------------------------------------------------------------------
+;所属COMP
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_BELONG_HEADER
+#DIMS DYNAMIC TEMPS
+INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT("소속", 12, "CENTER"), "SORT,BELONG")
+
+@GET_VAR_INFO_DATA_BELONG, ARG
+IF GET_ROLE_PROP("CAN_PUT_IN_COMP", ARG)
+	IF CFLAG:ARG:소속ＣＯＭＰ == -1
+		RESULTS = [자택서버]
+	ELSE
+		RESULTS = [ ＣＯＭＰ ]
+	ENDIF
+ELSE
+	RESULTS = [　　－　　]
+ENDIF
+
+@GET_INFO_SORT_KEY_BELONG, ARG, ARGS
+IF GET_ROLE_PROP("CAN_PUT_IN_COMP", ARG)
+	IF CFLAG:ARG:소속ＣＯＭＰ == -1
+		RETURN 2
+	ELSE
+		RETURN 1
+	ENDIF
+ELSE
+	IF INFO_CNT_SORT % 2
+		RETURN 10
+	ELSE
+		RETURN 0
+	ENDIF
+ENDIF
+
+;--------------------------------------------------------------------------------
+;調教要素
+;체력				
+;기력			
+;ストレス
+;CONDITION			発情・危険日・妊娠などの情報
+;WORK				労役状況
+;--------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------
+;체력
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_体力_HEADER
+#DIM DYNAMIC L_STRLENS
+#DIMS DYNAMIC TEMPS
+L_STRLENS = MAX(4,STRLENS(TOSTR(MAXCARRAY(MAXBASE:0:체력))))
+TEMPS '=  TOALIGNMENT("체력", L_STRLENS * 2 + 3, "CENTER")
+INFO_HEADER += SET_BUTTON_TAG(TEMPS, "SORT,체력")
+
+@GET_VAR_INFO_DATA_体力, ARG
+#DIM DYNAMIC L_STRLENS
+L_STRLENS = MAX(4,STRLENS(TOSTR(MAXCARRAY(MAXBASE:0:체력))))
+RESULTS = ({BASE:ARG:체력, L_STRLENS}/{MAXBASE:ARG:체력, L_STRLENS}) 
+@GET_INFO_SORT_KEY_体力, ARG, ARGS
+RETURN BASE:ARG:체력
+
+;--------------------------------------------------------------------------------
+;기력
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_気力_HEADER
+#DIM DYNAMIC L_STRLENS
+#DIMS DYNAMIC TEMPS
+L_STRLENS = MAX(4,STRLENS(TOSTR(MAXCARRAY(MAXBASE:0:기력))))
+TEMPS '=  TOALIGNMENT("기력", L_STRLENS * 2 + 3, "CENTER")
+INFO_HEADER += SET_BUTTON_TAG(TEMPS, "SORT,기력")
+
+@GET_VAR_INFO_DATA_気力, ARG
+#DIM DYNAMIC L_STRLENS
+L_STRLENS = MAX(4,STRLENS(TOSTR(MAXCARRAY(MAXBASE:0:기력))))
+RESULTS = ({BASE:ARG:기력, L_STRLENS}/{MAXBASE:ARG:기력, L_STRLENS})
+@GET_INFO_SORT_KEY_気力, ARG, ARGS
+RETURN BASE:ARG:기력
+;--------------------------------------------------------------------------------
+;ストレス
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_STRESS_HEADER
+INFO_HEADER += SET_BUTTON_TAG("스트레스", "SORT,STRESS")
+
+@GET_VAR_INFO_DATA_STRESS, ARG
+RESULTS = ({CFLAG:ARG:스트레스치, 2}/100) 
+@GET_INFO_SORT_KEY_STRESS, ARG, ARGS
+RETURN CFLAG:ARG:스트레스치
+
+;--------------------------------------------------------------------------------
+;CONDITION
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_CONDITION_HEADER
+INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT("상태", 8 , "CENTER"), "SORT,CONDITION")
+
+@GET_VAR_INFO_DATA_CONDITION, ARG
+IF CFLAG:ARG:PT플래그 > 0
+	IF CHECK_CHILD_CARE(ARG) && FLAG:출산기능ONOFF
+		RESULTS '= "육아실"
+	ELSEIF TALENT:ARG:임신
+		RESULTS '= "임신중"
+	ELSE
+		SELECTCASE 위험일(ARG)
+			CASE 0, -1
+				RESULTS '= " " * 6
+			CASE 1
+				RESULTS '= "위험일"
+			CASEELSE
+				RESULTS '= "발정중"
+		ENDSELECT
+	ENDIF
+	IF 위험일(ARG) > 0
+		RESULTS '= ハートＢ() + RESULTS + ハートＢ()
+		INFO_COLOR = 0xCC33FF
+	ELSE
+		RESULTS '= " " + RESULTS + " "
+	ENDIF
+ELSE
+	RESULTS '= " " * 8
+ENDIF
+@GET_INFO_SORT_KEY_CONDITION, ARG, ARGS
+RESULT:1 = 1
+IF INFO_CNT_SORT % 2
+	IF CHECK_CHILD_CARE(ARG) && FLAG:출산기능ONOFF
+		RETURN 20
+	ELSEIF TALENT:ARG:임신
+		RETURN 10
+	ELSE
+		RETURN 위험일(ARG)
+	ENDIF
+ELSE
+	IF CHECK_CHILD_CARE(ARG) && FLAG:출산기능ONOFF
+		RETURN 2
+	ELSEIF TALENT:ARG:임신
+		RETURN 1
+	ELSE
+		RETURN 위험일(ARG) * 10
+	ENDIF
+ENDIF
+
+;--------------------------------------------------------------------------------
+;WORK
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_WORK_HEADER
+INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT("노역", 4, "CENTER"), "SORT,WORK")
+
+@GET_VAR_INFO_DATA_WORK, ARG
+SELECTCASE CFLAG:ARG:노역플래그
+	CASE 1	;食堂で働く
+		INFO_COLOR = COLOR("PASTEL-BLUE")
+	CASE 2	;体を売る
+		INFO_COLOR = COLOR("PASTEL-RED")
+	CASE 3	;奴隷のレンタル
+		INFO_COLOR = COLOR("PASTEL-PURPLE")
+	CASE 4	;音楽活動
+		INFO_COLOR = COLOR("PASTEL-GREEN")
+	CASE 5	;乱交ライブ
+		INFO_COLOR = COLOR("PASTEL-YELLOW")
+	CASE 6	;道場
+		INFO_COLOR = COLOR("WHITE")
+	CASE 7	;退治依頼
+		INFO_COLOR = 0xFF7F50
+	CASE 8	;捜査依頼
+		INFO_COLOR = 0xD2B48C
+	CASE 9	;回収依頼
+		INFO_COLOR = 0xF0E68C
+	CASE 10 TO 19	;経営店舗
+		SELECTCASE [[店舗:종류]]:(CFLAG:ARG:노역플래그-10)
+			CASE 10	;공중변소
+				INFO_COLOR = COLOR("PASTEL-BLUEGREEN")
+			CASE 11	;ストリップ劇場
+				INFO_COLOR = COLOR("PINK")
+			CASE 12	;見せ物小屋
+				INFO_COLOR = COLOR("DARK-PINK")
+			CASE 13	;メシア教会
+				INFO_COLOR = COLOR("AQUA")
+			CASE 14	;ガイア教会
+				INFO_COLOR = COLOR("RED")
+			CASE 15	;教会
+				INFO_COLOR = COLOR("LIGHT-GRAY")
+			CASEELSE
+				INFO_COLOR = COLOR("WHITE")
+		ENDSELECT
+	CASEELSE
+		INFO_COLOR = COLOR("WHITE")
+ENDSELECT
+RESULTS '= GET_JOB_OMIT(CFLAG:ARG:노역플래그 > 9 ? [[店舗:종류]]:(CFLAG:ARG:노역플래그-10) # CFLAG:ARG:노역플래그)
+@GET_INFO_SORT_KEY_WORK, ARG, ARGS
+#DIM DYNAMIC TEMP
+RESULT:1 = 1
+IF CFLAG:ARG:노역플래그
+	IF CFLAG:ARG:노역플래그 > 9
+		TEMP = 9
+	ELSE
+		TEMP = CFLAG:ARG:노역플래그 - 1
+	ENDIF
+	TEMP = (9 - TEMP + INFO_CNT_SORT) % 10
+	TEMP = (TEMP + 1) * 100
+	SIF CFLAG:ARG:노역플래그 > 9
+		TEMP += [[店舗:종류]]:(CFLAG:ARG:노역플래그-10)
+	RETURN TEMP
+ELSE
+	RETURN 0
+ENDIF
+
+;--------------------------------------------------------------------------------
+;KOJO
+;--------------------------------------------------------------------------------
+@SET_VAR_INFO_DATA_KOJO_HEADER
+INFO_HEADER += SET_BUTTON_TAG(TOALIGNMENT("구상", 4, "CENTER"), "SORT,KOJO")
+
+@GET_VAR_INFO_DATA_KOJO, ARG
+CALL 口上存在確認, ARG
+IF RESULT == 1
+	RESULTS '= " 전 "
+ELSEIF RESULT == 2
+	RESULTS '= " 범 "
+ELSE
+	RESULTS '= " ― "
+ENDIF
+@GET_INFO_SORT_KEY_KOJO, ARG, ARGS
+CALL 口上存在確認, ARG
+IF RESULT == 1
+	RETURN 2
+ELSEIF RESULT == 2
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF

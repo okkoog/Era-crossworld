@@ -1,0 +1,45 @@
+﻿@ZENZERO_DISC_NAME_8
+RESULTS '= "フリーダム・ブルース"
+
+@ZENZERO_DISC_EXPLAIN_フリーダム・ブルース
+RESULTS:0 '= "基本効果:状態異常特攻＋１０％"
+RESULTS:1 '= "２セット:状態異常特攻＋２５％"
+RESULTS:2 '= "４セット:状態異常特攻＋５０％"
+
+@SKILL_PASSIVE_BTL_EFFECT_DISC_ADD_フリーダム・ブルース, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_LINK
+#DIM DYNAMIC L_RESULT
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		CASE "ダメージ補正加算"
+			IF !IS_BADSTATE(L_TARGET, "GOOD")
+				SELECTCASE MATCH(C_ZENZERO_DISC_NAME:L_P:0, "フリーダム・ブルース")
+					CASE 4
+						RETURN 50
+					CASE 2, 3
+						RETURN 25
+					CASE 1
+						RETURN 10
+				ENDSELECT
+				RESULTS = 状態異常特攻
+			ENDIF
+	ENDSELECT
+;自分が防御側
+ELSE
+	SELECTCASE ARGS
+	ENDSELECT
+ENDIF
+RETURN 0

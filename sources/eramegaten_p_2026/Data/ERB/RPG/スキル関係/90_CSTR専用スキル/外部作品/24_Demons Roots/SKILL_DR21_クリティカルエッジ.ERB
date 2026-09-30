@@ -1,0 +1,128 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:クリティカルエッジ
+;	Facility	:King exitでは猛威をふるったがDemonsRootsでは死ぬほど弱い。
+;				苦肉の策としてパッシブ化することで採用価値の底上げを図ったもの。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/10/31		P(bazzile)				新規作成
+;	002		2024/05/14		Schrott					ベースに作成。
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_クリティカルエッジ,ARG
+RESULTS = 크리티컬 에지
+
+;　명중
+@SKILL_HITRATE_クリティカルエッジ, ARG
+RETURN 0
+
+;　威力
+@SKILL_POWER_クリティカルエッジ, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_クリティカルエッジ,ARG
+RETURN 0
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_クリティカルエッジ,ARG
+RETURN 0
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_クリティカルエッジ, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_クリティカルエッジ,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_クリティカルエッジ,ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_クリティカルエッジ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　사거리
+@SKILL_RANGE_クリティカルエッジ,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_クリティカルエッジ,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_クリティカルエッジ,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;속도보정
+@SKILL_SPEED_クリティカルエッジ, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_クリティカルエッジ
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_クリティカルエッジ,ARG,ARG:1,ARG:2
+RETURN 0
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_クリティカルエッジ, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;乗除の計算後に加算する。上記2つの乗算系は基礎クリティカル率が低いスキルには効果が薄いが、こちらは基礎が低いスキルに強力に働く
+		;基礎クリティカル率が低い技しか持たないキャラの補正用と考えるのならばこれで補正するのがおすすめ
+		CASE "クリティカル加算"
+			IF L_攻撃タイプ == "物理"
+				;通常攻撃に限り２５
+				SIF CFLAG:L_P:입력행동 == 0
+					RETURN 25
+				;他１０
+				RETURN 10
+			ENDIF
+	ENDSELECT
+;自分が防御側
+ELSE
+ENDIF
+RETURN 0
+;　説明文の表示
+@SKILL_EXPLAIN_クリティカルエッジ,ARG
+PRINTL 『크리티컬 에지』
+PRINTL 패시브: 자신이 실행하는 『총 이외의 물리 공격』의 크리티컬률을 강화한다.
+PRINTL 구체적으로는 크리티컬에 관련된 계산의 최종적인 수치에 10%(통상 공격에 한해 25%)를 가산한다.
+PRINTL 
+PRINTL 행운을 끌어당기는 천성의 재능이지만, 암살자로 전락해 있던 시절에는 그 힘이 사라져 있었다.
+PRINTL 본래는 강운이었던 전 구세주 구이네의 스킬(CSTR 전용)
+
+;使用条件
+;使用不能
+@SKILL_SPECIAL_ACTIONABLE_クリティカルエッジ,ARG
+RETURN 0

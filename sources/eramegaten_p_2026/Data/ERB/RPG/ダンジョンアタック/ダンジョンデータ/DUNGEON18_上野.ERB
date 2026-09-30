@@ -1,0 +1,1241 @@
+﻿;=======================================================================
+;샘플던전
+;ダンジョンのテンプレートみたいなものです
+;ダンジョンナンバー0
+;=======================================================================
+
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX								新規作成
+;	002		2019/04/22								狂人系エネミー追加
+
+
+;=======================================================================
+;攻略条件
+;=======================================================================
+@PREREQUISITE_DUNGEON_18
+;池袋クリア
+IF ダンジョンフラグ:17:13 == 1 && ダンジョンフラグ:18:22 == 0
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+;=======================================================================
+;ダンジョン名
+;=======================================================================
+@GET_DUNGEON_NAME_18
+#FUNCTIONS
+RESULTS_F = 上野・ガイア教本部
+
+;=======================================================================
+;フロア名表示
+;=======================================================================
+@FLOORNAME_18
+PRINT 우에노・가이아교본부
+SELECTCASE FLAG:현M
+	CASE 0
+		PRINTL Ｂ１Ｆ
+	CASE 1
+		PRINTL Ｂ２Ｆ
+	CASE 2
+		PRINTL １Ｆ
+	CASE 3
+		PRINTL ２Ｆ
+	CASE 4
+		PRINTL ３Ｆ
+	CASEELSE
+		PRINTL
+ENDSELECT
+
+;=======================================================================
+;スタート地点入力
+;=======================================================================
+@START_DUNGEON_18,ARG
+FLAG:현M = 2
+FLAG:현X = 9
+FLAG:현Y = 31
+
+;=======================================================================
+;スタート時イベント
+;=======================================================================
+@EVENT_DUNGEON_START_18
+IF ダンジョンフラグ:(FLAG:현던전):10 == 0
+	CALL SHOW_PICTURE, "D"
+	CALL MESSAGE_WINDOW_D, "", "＞이곳 우에노는 가이아교에 있어서 특별한 땅이다/＞도쿄를 지배하는 마왕 바엘이、이 땅을 가이아교의 성지라고 정했기 때문이다"
+	CALL MESSAGE_WINDOW_D, "", "＞원래 절과 신사가 많이 건립되어 있던 지방색 때문인가/＞이 땅이 가이아교의 성지로서、/＞교도들에게 받아들여지는데 그리 시간은 걸리지 않았다"
+	;IF FINDCHARA_B([[キャラ:베스]],1) == 2 && (TALENT:(RESULT:1):연모 || TALENT:(RESULT:1):친애)
+	;	PRINTL 
+	;	PRINTFORML そんな%CALLNAME:MASTER%と対照的に、ベスは何か考え事をしているようだった。
+	;	PRINTL 「ねぇ、前から気になってたんだけど…」
+	;	PRINTFORML 「…どうしてガイア教団は%CALLNAME:MASTER%のことを知らなかったのかな。」
+	;	PRINTL 「…メシア教団はずっと前からファントム・ソサエティとも対立してて」
+	;	PRINTFORML 「ファントムの構成員の%CALLNAME:MASTER%に賞金を掛けていた…」
+	;	PRINTFORML 「バラムを倒してからようやくガイア教団にも%CALLNAME:MASTER%の名前が知れ渡ったみたいだけど」
+	;	PRINTFORML 「逆に言えば、それまでまったく%CALLNAME:MASTER%はガイア教団にマークされてなかったってことになる…」
+	;	PRINTL 「こんなことって…有り得るのかな？」
+	;	PRINTL 「このことがね、ずっと引っかかってるの…」
+	;	PRINTW 「…多分だけどね？…私が思うに…ガイア教団とファントムは…」
+	;	PRINTL 
+	;	PRINTFORML %CALLNAME:MASTER%は慌ててベスの口を塞ぎ、そっと耳打ちした。
+	;	PRINTL …今、ここにもファントムの手の者が監視しているかもしれない。
+	;	PRINTL 余計なことは喋るな、と。
+	;	PRINTFORML ベスは理解したようで、辺りを見回し、そしてゆっくりと%CALLNAME:MASTER%の手を外した。
+	;	PRINTL 「…ごめん。…今言ったことは忘れて…」
+	;	PRINTFORML 「でもね…？私は、%CALLNAME:MASTER%にもし隠された秘密があるなら、それは暴いてみたい」
+	;	PRINTFORML 「私は%CALLNAME:MASTER%が救世主様だと信じてるから…」
+	;	PRINTW 「そのために、ガイア教を叩くことが、私の力が役立つのなら、私は何でもする…！」
+	;	PRINTL 
+	;	PRINTFORML …ベスの推測はもっともなことだと%CALLNAME:MASTER%は感じた。
+	;	PRINTL 思えばはじめから怪しいことばかりだった。
+	;	PRINTW ファントムとガイア教団の関係には何か裏があるのかもしれない…。
+	;	PRINTL 
+	;	PRINTL さて、どうしたものか。
+	;	PRINTL 
+	;	PRINTL [0] ファントムにばれない範囲で追求する
+	;	PRINTL [1] 危ないことはやめておこう
+	;	$INPUT_LOOP_B
+	;	INPUT
+	;	IF RESULT == 0
+	;		CALL INCREASE_LD,10
+	;		PRINTL 
+	;		PRINTL これまでも自分の力だけで思うがままにやってきたのだ。
+	;		PRINTL 何か隠していることがあるなら、それを大っぴらにさせてやるのも一興だろう。
+	;		PRINTW ファントムの飼い犬のまま人生を終わらせるつもりなど毛頭ないのだから…。
+	;	ELSEIF RESULT == 1
+	;		PRINTL 
+	;		PRINTL ファントムに逆らった者がどうなったかはよく知っている。
+	;		PRINTW 情報がある程度揃うまでは逸る気持ちは抑えたほうがいいだろう…。
+	;	ELSE
+	;		GOTO INPUT_LOOP_B
+	;	ENDIF
+	;ENDIF
+	;PRINTL 
+	CALL MESSAGE_WINDOW_D, "", "＞이 땅에도 마찬가지로 별의 힘、필러는 있다고 한다/＞대체 여기에서는 어떠한 싸움이 기다리고 있는 것일까…"
+	ダンジョンフラグ:(FLAG:현던전):10 = 1
+ENDIF
+;魔人ポイントの決定
+ダンジョンフラグ:(FLAG:현던전):11 = RAND(1, 37)
+
+;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@CAN_ENTER_18,ARG,ARG:1
+CALL CAN_ENTER,ARG,ARG:1
+RETURN RESULT
+
+;=======================================================================
+;フロアデータ
+;=======================================================================
+@MAKE_FLOOR_18
+SELECTCASE FLAG:현M
+	CASE 0
+		;B2F
+		FLAG:최대X = 9 
+		FLAG:최대Y = 17 
+		CALL MAKE_FLOOR_LINE, 0,"         "
+		CALL MAKE_FLOOR_LINE, 1," 151 4 1 "
+		CALL MAKE_FLOOR_LINE, 2," 111 2 1 "
+		CALL MAKE_FLOOR_LINE, 3," 1515111 "
+		CALL MAKE_FLOOR_LINE, 4," 1511551 "
+		CALL MAKE_FLOOR_LINE, 5," 1515111 "
+		CALL MAKE_FLOOR_LINE, 6," 15111   "
+		CALL MAKE_FLOOR_LINE, 7," 1515123 "
+		CALL MAKE_FLOOR_LINE, 8," 2       "
+		CALL MAKE_FLOOR_LINE, 9," 111     "
+		CALL MAKE_FLOOR_LINE,10,"   1     "
+		CALL MAKE_FLOOR_LINE,11,"   11111 "
+		CALL MAKE_FLOOR_LINE,12,"       1 "
+		CALL MAKE_FLOOR_LINE,13,"       1 "
+		CALL MAKE_FLOOR_LINE,14,"       1 "
+		CALL MAKE_FLOOR_LINE,15,"   62111 "
+		CALL MAKE_FLOOR_LINE,16,"         "
+	CASE 1
+		;B1F
+		FLAG:최대X = 9 
+		FLAG:최대Y = 17 
+		CALL MAKE_FLOOR_LINE, 0,"         "
+		CALL MAKE_FLOOR_LINE, 1,"       3 "
+		CALL MAKE_FLOOR_LINE, 2,"       2 "
+		CALL MAKE_FLOOR_LINE, 3," 127   1 "
+		CALL MAKE_FLOOR_LINE, 4," 1     1 "
+		CALL MAKE_FLOOR_LINE, 5," 1     5 "
+		CALL MAKE_FLOOR_LINE, 6," 1     1 "
+		CALL MAKE_FLOOR_LINE, 7," 1   1 5 "
+		CALL MAKE_FLOOR_LINE, 8," 1   1 1 "
+		CALL MAKE_FLOOR_LINE, 9," 1   121 "
+		CALL MAKE_FLOOR_LINE,10," 1   1 1 "
+		CALL MAKE_FLOOR_LINE,11," 11111 1 "
+		CALL MAKE_FLOOR_LINE,12," 1   1   "
+		CALL MAKE_FLOOR_LINE,13," 1   1   "
+		CALL MAKE_FLOOR_LINE,14,"     2   "
+		CALL MAKE_FLOOR_LINE,15,"     6   "
+		CALL MAKE_FLOOR_LINE,16,"         "
+	CASE 2
+		;1F北
+		FLAG:최대X = 17 
+		FLAG:최대Y = 33
+		;						 01234567890123456
+		CALL MAKE_FLOOR_LINE, 0,"                 "
+		CALL MAKE_FLOOR_LINE, 1," 1111111 1151521 "
+		CALL MAKE_FLOOR_LINE, 2," 1   2 1 1     1 "
+		CALL MAKE_FLOOR_LINE, 3," 126 1 1 1211121 "
+		CALL MAKE_FLOOR_LINE, 4,"       1 1   1 1 "
+		CALL MAKE_FLOOR_LINE, 5," 1 1 121 1 4 1 1 "
+		CALL MAKE_FLOOR_LINE, 6," 1 2   1 1 2   2 "
+		CALL MAKE_FLOOR_LINE, 7," 1111111 111 7 1 "
+		CALL MAKE_FLOOR_LINE, 8," 1       1   2   "
+		CALL MAKE_FLOOR_LINE, 9," 121111111211111 "
+		CALL MAKE_FLOOR_LINE,10,"         1     1 "
+		CALL MAKE_FLOOR_LINE,11,"81211111 1 321 1 "
+		CALL MAKE_FLOOR_LINE,12,"     1 2 1   1 1 "
+		CALL MAKE_FLOOR_LINE,13," 111 1 4 1 11121 "
+		CALL MAKE_FLOOR_LINE,14," 1   1   1   1 1 "
+		CALL MAKE_FLOOR_LINE,15," 1 11111 1 321 1 "
+		CALL MAKE_FLOOR_LINE,16," 1 1 1 1 1     1 "
+		CALL MAKE_FLOOR_LINE,17," 1 1 1 1 11121 1 "
+		CALL MAKE_FLOOR_LINE,18," 1   1   1     1 "
+		CALL MAKE_FLOOR_LINE,19," 111 11111 1 111 "
+		CALL MAKE_FLOOR_LINE,20,"   1   2   2 1   "
+		CALL MAKE_FLOOR_LINE,21," 421111111111124 "
+		CALL MAKE_FLOOR_LINE,22,"   1         1   "
+		CALL MAKE_FLOOR_LINE,23," 111 1211111 111 "
+		CALL MAKE_FLOOR_LINE,24," 1   1 1 2 1   1 "
+		CALL MAKE_FLOOR_LINE,25," 1 1 F 1 1 123 1 "
+		CALL MAKE_FLOOR_LINE,26," 1 1   2 1     1 "
+		CALL MAKE_FLOOR_LINE,27," 1211111 11111 1 "
+		CALL MAKE_FLOOR_LINE,28," 1 1         2 1 "
+		CALL MAKE_FLOOR_LINE,29," 1 1 1 11111 4 1 "
+		CALL MAKE_FLOOR_LINE,30," 1   2 1 2 1   1 "
+		CALL MAKE_FLOOR_LINE,31," 1111111 1 11111 "
+		CALL MAKE_FLOOR_LINE,32,"         8       "
+	CASE 3
+		;2F
+		FLAG:최대X = 17 
+		FLAG:최대Y = 17 
+		CALL MAKE_FLOOR_LINE, 0,"                 "
+		CALL MAKE_FLOOR_LINE, 1," 115111115111111 "
+		CALL MAKE_FLOOR_LINE, 2," 1   1 2       1 "
+		CALL MAKE_FLOOR_LINE, 3," 1 621 111 123 1 "
+		CALL MAKE_FLOOR_LINE, 4," 1     1 2 1   1 "
+		CALL MAKE_FLOOR_LINE, 5," 121 111 1 123 1 "
+		CALL MAKE_FLOOR_LINE, 6," 1   1   1 1   1 "
+		CALL MAKE_FLOOR_LINE, 7," 1 111 111 123 1 "
+		CALL MAKE_FLOOR_LINE, 8," 1 1 2 1   1   1 "
+		CALL MAKE_FLOOR_LINE, 9," 1 1 4 1 11123 1 "
+		CALL MAKE_FLOOR_LINE,10," 1 1   2 2     1 "
+		CALL MAKE_FLOOR_LINE,11," 1 124 1 1 72111 "
+		CALL MAKE_FLOOR_LINE,12," 1 1     2     1 "
+		CALL MAKE_FLOOR_LINE,13," 1 11111111121 1 "
+		CALL MAKE_FLOOR_LINE,14," 1             1 "
+		CALL MAKE_FLOOR_LINE,15," 111111111111111 "
+		CALL MAKE_FLOOR_LINE,16,"                 "
+	CASE 4
+		;3F
+		FLAG:최대X = 17 
+		FLAG:최대Y = 17 
+		CALL MAKE_FLOOR_LINE, 0,"                 "
+		CALL MAKE_FLOOR_LINE, 1," 111111111111111 "
+		CALL MAKE_FLOOR_LINE, 2," 1   1         1 "
+		CALL MAKE_FLOOR_LINE, 3," 1 4 1 1151111 5 "
+		CALL MAKE_FLOOR_LINE, 4," 1 2 1 1     1 1 "
+		CALL MAKE_FLOOR_LINE, 5," 1 1 1 1 111 1 1 "
+		CALL MAKE_FLOOR_LINE, 6," 1 1 2 1 1 2 1 1 "
+		CALL MAKE_FLOOR_LINE, 7," 5 11111 1 3 1 1 "
+		CALL MAKE_FLOOR_LINE, 8," 1       1   1 1 "
+		CALL MAKE_FLOOR_LINE, 9," 11111111111 1 1 "
+		CALL MAKE_FLOOR_LINE,10," 1     1     1 1 "
+		CALL MAKE_FLOOR_LINE,11," 1 121 1 127 5 1 "
+		CALL MAKE_FLOOR_LINE,12," 1   1 2 1   1 1 "
+		CALL MAKE_FLOOR_LINE,13," 11111 1 11111 1 "
+		CALL MAKE_FLOOR_LINE,14," 2     1       1 "
+		CALL MAKE_FLOOR_LINE,15," 115151111111111 "
+		CALL MAKE_FLOOR_LINE,16,"                 "
+	CASEELSE
+
+ENDSELECT
+
+;=======================================================================
+;タイル調整
+;=======================================================================
+@MAKE_FLOOR_LINE_COMMON_18, ARG, ARG:1, ARG:2
+#LOCALSIZE 30
+;LOCAL:3 宝箱 ダンジョンフラグ:75~99
+;LOCAL:4 이벤트
+;LOCAL:8 メッセンジャー
+;(0/0)でLOCALを消去
+SIF ARG:1 == 0 && ARG:2 == 0
+	VARSET LOCAL
+IF ARG == 3
+	IF GETBIT(ダンジョンフラグ:(FLAG:현던전):(FLAG:현M+75), LOCAL:3)
+		DA:(ARG:1):(ARG:2) = 1
+	ELSE
+		DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:3 * 10 + 3
+	ENDIF
+	LOCAL:3++
+ENDIF
+;イベント扉
+IF ARG == 12
+	DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:2 * 10 + 12
+	LOCAL:2++
+ENDIF
+;이벤트
+IF ARG == 4
+	DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:4 * 10 + 4
+	LOCAL:4++
+	SELECTCASE DA:(ARG:1):(ARG:2) / 10
+		;ラドン
+		CASE 0
+			SIF ダンジョンフラグ:(FLAG:현던전):20 != 1
+				DA:(ARG:1):(ARG:2) = 1
+			SIF ダンジョンフラグ:(FLAG:현던전):22 == 1
+				DA:(ARG:1):(ARG:2) = 1
+		;磔
+		CASE 200, 201, 202, 203, 300, 301
+			SIF STRFLAG_D(@"メシア教徒{DA:(ARG:1):(ARG:2)}")
+				DA:(ARG:1):(ARG:2) = 1
+		;サバト
+		CASE 204
+			SIF ダンジョンフラグ:(FLAG:현던전):20 == 1
+				DA:(ARG:1):(ARG:2) = 1
+		;サバト参加者達
+		CASE 400
+			SIF ダンジョンフラグ:(FLAG:현던전):21 == 1
+				DA:(ARG:1):(ARG:2) = 1
+	ENDSELECT
+ENDIF
+;上り階段
+IF ARG == 6
+	DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:6 * 100 + 6
+	LOCAL:6++
+ENDIF
+;下り階段
+IF ARG == 7
+	DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:7 * 100 + 7
+	LOCAL:7++
+ENDIF
+;メッセンジャー
+IF ARG == 9
+	DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:9 * 10 + 9
+	LOCAL:9++
+ENDIF
+
+;=======================================================================
+;タイル定義
+;=======================================================================
+@DEFINE_TILES_18, ARGS, ARG, ARG:1
+;魔人ポイント
+SIF ARGS == "F"
+	RETURN 11
+
+;=======================================================================
+;[5]調べる　実行時のイベント
+;=======================================================================
+@EVENT_CHECK_DUNGEON_18
+;==========
+;出口の処理
+;==========
+IF DA:(FLAG:현X):(FLAG:현Y) == 8
+	CALL DUNGEON_EXIT
+	RETURN 1
+;========
+;宝の処理
+;========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 3
+	CALL TREASURE_18
+	RETURN RESULT
+;==========
+;イベントの処理
+;==========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 4
+	CALL EVENT_18
+	RETURN RESULT
+;=======
+;ワープゾーン
+;=======
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 6 || DA:(FLAG:현X):(FLAG:현Y) % 10 == 7
+	CALL WORP_18
+	RETURN RESULT
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 9
+	RETURN 0
+ENDIF
+
+;=======================================================================
+;タイル進入時のイベント
+;=======================================================================
+@EVENT_ENTER_DUNGEON_18,ARG
+;ARG = 進入時の向き　0の場合ワープなど
+;==========
+;出口の処理
+;==========
+IF DA:(FLAG:현X):(FLAG:현Y) == 8
+	CALL DUNGEON_EXIT
+	RETURN 1
+;========
+;宝の処理
+;========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 3
+	CALL TREASURE_18
+	RETURN RESULT
+;=======
+;階段
+;=======
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 6 || DA:(FLAG:현X):(FLAG:현Y) % 10 == 7
+	CALL WORP_18
+	RETURN RESULT
+;========
+;イベントの処理
+;========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 4
+	CALL EVENT_18
+	RETURN RESULT
+;========
+;罠の処理
+;========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y) % 10 == 5
+	CALL TRAP_18
+	RETURN RESULT
+;==========
+;扉の処理
+;==========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y)  % 10 == 2
+	CALL DUNGEON_DOOR,ARG
+	RETURN 1
+;==========
+;特殊床
+;==========
+ELSEIF DA:(FLAG:현X):(FLAG:현Y)  % 10 == 1
+	CALL FLOOR_18
+	RETURN RESULT
+ENDIF
+RETURN 0
+
+;-------------------------------------------------
+;床でのイベント
+;-------------------------------------------------
+@FLOOR_18
+IF DA:(FLAG:현X):(FLAG:현Y) == 11 && ダンジョンフラグ:(FLAG:현던전):11
+	CALL SHOW_PICTURE, "D"
+	CALL MESSAGE_WINDOW_D, "", "＞강대한 악마의 기척이 느껴진다…"
+	CALL MESSAGE_WINDOW_D, "", "………………/…………/……"
+	IF ダンジョンフラグ:(FLAG:현던전):11 == 1
+		ダンジョンフラグ:(FLAG:현던전):11 = 0
+		CALL MAJIN_BATTLE_IN_TOKYO
+		CALL MESSAGE_WINDOW_D, "", "＞악마의 기척은 사라졌다…"
+	ELSE
+		CALL MESSAGE_WINDOW_D, "", "＞아무래도 기분 탓이었던 것 같다…"
+	ENDIF
+	ダンジョンフラグ:(FLAG:현던전):11 = 0
+ENDIF
+;------------------------------------------------
+;이벤트
+;------------------------------------------------
+@EVENT_18
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 0
+		CALL SHOW_PICTURE, "D"
+		CALL MESSAGE_WINDOW_D, "", "＞방의 중앙에는 거대한 악마가 소환되고 있었다"
+		CALL MESSAGE_WINDOW_D, "악마", "그오오옷！！/어디냐！/파주주！/숨어도 소용없다！"
+		CALL MESSAGE_WINDOW_D, "악마", "…！/누구냐！/네 녀석들！"
+		CALL MESSAGE_WINDOW_D, "악마", "…파주주의 앞잡이냐！/죽여 주마！"
+		CALL MESSAGE_WINDOW_D, "", "＞사룡 라돈이 １체 나타났다！"
+		FLAG:도주불가플래그 = 1
+		FLAG:회화불능플래그 = 1
+		FLAG:선제기습취소 = 1
+		CALL SET_ENEMY,9,[[キャラ:라돈]],50,0,1
+		CFLAG:(CHARANUM-1):ＨＰ보정 = 2035
+		CFLAG:(CHARANUM-1):ＭＰ보정 = 9000
+		CSTR:(CHARANUM-1):사고패턴 = ラドン
+		CFLAG:(CHARANUM-1):행동횟수 = 2
+		CALL SYNC_STATUS,(CHARANUM-1)
+		CALL HEALTH_CHARA,(CHARANUM-1)
+		CALL BATTLE_START
+		FLAG:도주불가플래그 = 0
+		FLAG:회화불능플래그 = 0
+		FLAG:선제기습취소 = 0
+		CALL SHOW_PICTURE, "D"
+		CALL MESSAGE_WINDOW_D, "사룡 라돈", "그오오오…바엘님…"
+		CALL MESSAGE_WINDOW_D, "", "＞사룡 라돈은 숨이 끊어졌다…"
+		CALL MESSAGE_WINDOW_D, "", "＞라돈의 사체로부터 필라가 드러나 있다"
+		CALL MESSAGE_WINDOW_D, "", "＞목성의 필라를 입수했다！"
+		ダンジョンフラグ:(FLAG:현던전):22 = 1
+		;PRINTL 邪神像から現れた、自らを神の使いと名乗る、パズスという悪魔。
+		;PRINTW 奴は一体何を知っているのだろうか？
+		;IF FINDCHARA_B([[キャラ:베스]],1) == 2 && (TALENT:(RESULT:1):연모 || TALENT:(RESULT:1):친애)
+		;	PRINTL そしてどうやら奴は、ベスですら知らないメシア教団の秘密を知っているらしい。
+		;	PRINTW 一体それはなんなのだろうか？
+		;ENDIF
+		;PRINTL 募る疑問を前にしても、今は何の答えも見出せない。
+		CALL MESSAGE_WINDOW_D, "", @"＞현상금이 걸린 라돈을 쓰러뜨려서 ￥150000이 지불되었다"
+		MONEY += 150000
+		FLAG:탈출 = 1
+
+		ダンジョンフラグ:(FLAG:현던전):13 = 1
+	CASE 200, 201, 202, 203, 300, 301
+		CALL MESSAGE_WINDOW_D, "", "＞메시아 교도가 책형을 받고 있었다…/＞틀림없이 가이아 교도들에 잡혔던 거겠지/＞…아직 희미하지만 숨이 붙어있는 것 같다…"
+		;ベスは問答無用で助けます。
+		IF FINDCHARA_B([[キャラ:베스]],1) == 2 && (TALENT:(RESULT:1):연모 || TALENT:(RESULT:1):친애)
+			CALL MESSAGE_WINDOW_D, "", "＞베스는 메시아 교도의 곁에 달려들어, 풀어주었다"
+			CALL MESSAGE_WINDOW_D, "베스", "괜찮습니까！？"
+			CALL MESSAGE_WINDOW_D, "", "＞베스의 질문에、메시아 교도의 몸이 간신히 반응하자/＞베스는 안도한 것 같았다。"
+			CALL MESSAGE_WINDOW_D, "베스", "아직 숨이 붙어 있어…/＞당장 치료하지 않으면…"
+			CALL INCREASE_LC,3
+			CALL INCREASE_LD,3
+		ELSE
+			CALL INPUT_YN_D, "돕는다", "무시한다"
+			IF RESULT == 0
+				CALL INCREASE_LC,3
+				CALL INCREASE_LD,3
+				CALL MESSAGE_WINDOW_D, "", @"＞%MASTER는% 책형을 받던 메시아 교도를 도와/＞응급 처치를 했다"
+			ELSE
+				CALL INCREASE_LC,-3
+				CALL INCREASE_LD,-3
+				CALL MESSAGE_WINDOW_D, "", @"＞%MASTER는% 상관하지 않고 먼저 가기로 했다"
+			ENDIF
+		ENDIF
+		CALLF STRFLAG_D(@"メシア教徒{DA:(FLAG:현X):(FLAG:현Y)}", 1)
+	CASE 204
+		;満月
+		IF FLAG:월령 == 8
+			CALL MESSAGE_WINDOW_D, "가이아교도", "지금부터 사바트가 거행된다/너희는 사바트의 참가자인 건가？"
+			CALL INPUT_YN_D
+			IF RESULT == 0
+				CALL MESSAGE_WINDOW_D, "가이아교도", "그렇다면 역십자를 보여라！"
+				IF ITEM:역십자
+					CALL MESSAGE_WINDOW_D, "가이아교도", "음！/틀림없이「역십자」를 지니고 있구나/자, 이제 곧 사바트가 시작된다/이쪽에 오세요"
+					CALL SHOW_PICTURE, "EMPTY"
+					CALL SHOW_PICTURE, "D"
+					CALL MESSAGE_WINDOW_D, "가이아교도", "큭큭크……환영한다 가엾은 내방자여"
+					CALL MESSAGE_WINDOW_D, "가이아교도", "너가 사바트의 참가자가 아닌 것쯤은 금방 알았다"
+					CALL MESSAGE_WINDOW_D, "가이아교도", "듬뿍 대접해 주마"
+					CALL MESSAGE_WINDOW_D, "", "＞가이아 교도들이 덤벼들어 왔다！"
+					FLAG:도주불가플래그 = 1
+					FLAG:회화불능플래그 = 1
+					FLAG:선제기습취소 = 1
+					CALL SET_ENEMY,7,[[キャラ:어새신]],38,0,0
+					CALL SET_ENEMY,8,[[キャラ:정키]],38,0,0
+					CALL SET_ENEMY,9,[[キャラ:가면성]],42,0,0
+					CALL SET_ENEMY,10,[[キャラ:정키]],38,0,0
+					CALL SET_ENEMY,11,[[キャラ:어새신]],38,0,0
+					CALL SET_ENEMY,12,[[キャラ:어새신]],38,0,0
+					CALL SET_ENEMY,13,[[キャラ:정키]],38,0,0
+					CALL SET_ENEMY,14,[[キャラ:가면성]],42,0,0
+					CALL SET_ENEMY,15,[[キャラ:정키]],38,0,0
+					CALL SET_ENEMY,16,[[キャラ:어새신]],38,0,0
+					CALL BATTLE_START
+					FLAG:도주불가플래그 = 0
+					FLAG:회화불능플래그 = 0
+					FLAG:선제기습취소 = 0
+					CALL MESSAGE_WINDOW_D, "가이아교도", "이、이노…옴…"
+					CALL MESSAGE_WINDOW_D, "가이아교도", "안 돼…이 녀석들을…사신상 앞에 가게 했다가는"
+					CALL MESSAGE_WINDOW_D, "", @"＞가이아 교도들을 쓰러트렸다…/＞%MASTER는% 사바트 회장을 뒤로 했다……"
+					CALL MESSAGE_WINDOW_D, "", "＞만、바로 그 때、돌연 주변이 빛에 휩싸였다！"
+					CALL MESSAGE_WINDOW_D, "", "………………/…………/……"
+					CALL SHOW_PICTURE, "EMPTY"
+					CALL SHOW_PICTURE, "D"
+					CALL MESSAGE_WINDOW_D, "", "＞눈앞에 1 체의 악마가 진좌하고 있다…"
+					CALL MESSAGE_WINDOW_D, "악마", "나、불꽃과 폭풍의 사이에서 태어난 마왕 파주주…/이제야 봉인에서 풀려나、빛과 함께 여기에 들어왔다…"
+					CALL MESSAGE_WINDOW_D, "파주주", "우리 구세주여。저의 이름은 파주주/신의 명에 의해、중대한 사명을 전하러 왔습니다"
+					CALL MESSAGE_WINDOW_D, "파주주", "인류가 태어나기 전부터 계속된、신과 악마의 싸움/그것은 현대의 도쿄에서、/새로운 스테이지에 들어갔습니다"
+					CALL MESSAGE_WINDOW_D, "파주주", "간이 악마 소환 장치、COMP의 보급에 의해/악마들이 손쉽게 이 세계에 침입하게 되었습니다"
+					CALL MESSAGE_WINDOW_D, "파주주", "제가 신의 사자로서、메시아 교단을 원조하도록、/이 땅에 강림했을 무렵/도쿄를 지배하는 마왕 바엘에 의해/봉인되어 버렸습니다"
+					CALL MESSAGE_WINDOW_D, "파주주", "그것을 당신이 구해준 겁니다/우리 구세주여/실은 저만의 구세주는 아닌 겁니다"
+					CALL MESSAGE_WINDOW_D, "파주주", "당신이야말로 인류를 이 위기에서/구해 내는 신의 자식인 것입니다/나의 임무는 당신을 도우면서/올바른 목적으로 이끄는 것입니다"
+					CALL MESSAGE_WINDOW_D, "파주주", "당신께서는 우선 신주쿠에 와주십시오/그곳의 메시아 교단 지부는 저의 입김이 미치는 장소입니다/반드시 당신의 도움이 되겠지요"
+					;IF FINDCHARA_B([[キャラ:베스]],1) == 2 && (TALENT:(RESULT:1):연모 || TALENT:(RESULT:1):친애)
+					;	PRINTL 
+					;	PRINTL 「嘘よ…」
+					;	PRINTW 今まで黙っていたベスが口を開いた。
+					;	PRINTL 
+					;	PRINTL 「メシア教団は悪魔の力なんて借りない…！」
+					;	PRINTW 「救世主様を騙してどうするつもりなの！？」
+					;	PRINTL 
+					;	PRINTW 「…ほう。ではあなたは…？」
+					;	PRINTL 
+					;	PRINTW 「私はベス！…元テンプルナイトよ！」
+					;	PRINTL 
+					;	PRINTL 「……確かに…服装はそのようですが…」
+					;	PRINTW 「しかし、私が嘘つきというのは心外ですね。何を根拠に？」
+					;	PRINTL 
+					;	PRINTL 「簡単なことよ」
+					;	PRINTL 「私は新宿支部で造り出された」
+					;	PRINTW 「…あの街をパズスという悪魔が支配していたなんて、聞いたことない！」
+					;	PRINTL 
+					;	PRINTL 「…！ちょっと待ってください…造り出された…？」
+					;	PRINTL 「まさか、メシア・プロジェクト！？」
+					;	PRINTW 「まだ続いていたのですか？あの計画が？」
+					;	PRINTL 
+					;	PRINTL 「…？…それはそうよ」
+					;	PRINTL 「私も含めて、まだ失敗作しか生まれていないもの」
+					;	PRINTW 「まだ救世主様を人工的に造り出すことができていないんだから…！」
+					;	PRINTL 
+					;	PRINTL 「失敗…？…ククク…、失敗…ねぇ…」
+					;	PRINTL 「…しかし、随分と長い間、封印されて離れていた間に」
+					;	PRINTL 「教団内で私の知らない動きがあるようですね」
+					;	PRINTW 「…気に入りませんね。リハビリも兼ねて、派手に調べてみましょうか…！」
+					;	PRINTL 
+					;	PRINTW 「何…？何なの…？どういう意味…？」
+					;ENDIF
+					CALL MESSAGE_WINDOW_D, "", "＞돌연、건물의 지하 쪽으로부터 격렬한 굉음과、/＞땅울림과 같은 신음소리가 들려 왔다"
+					CALL MESSAGE_WINDOW_D, "파주주", "…역시 바엘/움직임이 빠르네요/사실은 좀 더 이야기 하고 싶습니다만 여기에 있는 건 위험합니다"
+					CALL MESSAGE_WINDOW_D, "파주주", "바엘놈은 틀림없이 저의 부활을 감지한 거겠지요/우리를 처리하기 위해、/이 건물의 지하에 강력한 악마를 소환했습니다"
+					CALL MESSAGE_WINDOW_D, "파주주", "내버려 둬도 되겠습니다만、/내버려두면 이 건물의 거주자는/그 악마의 먹이가 되어 버리겠지요"
+					CALL MESSAGE_WINDOW_D, "파주주", "저 따위가 토벌 해도 될 것입니다만/그러면 구세주님의 전설이 되지 않으므로/…그래、이것은 구세주님의 이야기인 것입니다/…신주쿠에서 기다리고 있겠어요。구세주님…"
+					CALL MESSAGE_WINDOW_D, "", "＞파주주는 사라졌다…"
+					ダンジョンフラグ:(FLAG:현던전):20 = 1
+				ELSE
+					CALL MESSAGE_WINDOW_D, "가이아교도", "네놈들 메시아교인 건가？/그렇다면 꺼져라！"
+				ENDIF
+			ELSE
+				CALL MESSAGE_WINDOW_D, "가이아교도", "왜 가지고 있지 않은 거냣！/네놈들 메시아교인 건가？/그렇다면 꺼져라！"
+			ENDIF
+		ELSE
+			CALL MESSAGE_WINDOW_D, "가이아교도", "오늘은 형편이 나빠/만월의 밤、또 오길 바란다"
+		ENDIF
+	CASE 400
+		CALL SHOW_PICTURE, "D"
+		CALL MESSAGE_WINDOW_D, "", "＞가이아 교도들이 있다…"
+		CALL MESSAGE_WINDOW_D, "가이아교도", "사바트의 준비는 되어 있는가？"
+		CALL MESSAGE_WINDOW_D, "가이아교도", "응。분명히 역십자도 있군"
+		CALL MESSAGE_WINDOW_D, "가이아교도", "좋아、그러면…/…！？/…누구냐 네 녀석은！"
+		CALL MESSAGE_WINDOW_D, "", "＞가이아 교도들이 덤벼들어 왔다！"
+		FLAG:도주불가플래그 = 1
+		FLAG:회화불능플래그 = 1
+		FLAG:선제기습취소 = 1
+		CALL SET_ENEMY,7,[[キャラ:뮤턴트]],35,0,0
+		CALL SET_ENEMY,8,[[キャラ:어새신]],35,0,0
+		CALL SET_ENEMY,9,[[キャラ:정키]],35,0,0
+		CALL SET_ENEMY,10,[[キャラ:어새신]],35,0,0
+		CALL SET_ENEMY,11,[[キャラ:뮤턴트]],35,0,0
+		CALL SET_ENEMY,12,[[キャラ:뮤턴트]],35,0,0
+		CALL SET_ENEMY,13,[[キャラ:어새신]],35,0,0
+		CALL SET_ENEMY,14,[[キャラ:정키]],35,0,0
+		CALL SET_ENEMY,15,[[キャラ:어새신]],35,0,0
+		CALL SET_ENEMY,16,[[キャラ:뮤턴트]],35,0,0
+		CALL BATTLE_START
+		FLAG:도주불가플래그 = 0
+		FLAG:회화불능플래그 = 0
+		FLAG:선제기습취소 = 0
+		CALL MESSAGE_WINDOW_D, "", "＞가이아교도들을 쓰러뜨렸다…/＞자세히 보니 리더격으로 보이는 남자의 손바닥에 무언가가 있다…/＞역십자가를 손에 넣었다！"
+		ITEM:역십자 = 1
+		ダンジョンフラグ:(FLAG:현던전):21 = 1
+ENDSELECT
+CALL MAKE_FLOOR, FLAG:현던전
+
+;=======================================================================
+;宝箱の中身
+;=======================================================================
+;=======================================================================
+;宝箱の中身
+;=======================================================================
+@TREASURE_18
+#LOCALSIZE 1
+#LOCALSSIZE 3
+LOCAL = 1
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 0
+		LOCALS = 비공침
+	CASE 100
+		LOCALS = 혼돈의돌
+	CASE 200
+		LOCALS = 충독명
+		LOCAL = 3
+	CASE 201
+		LOCALS = 마석
+		LOCAL = 2
+	CASE 202
+		LOCALS = 보옥
+	CASE 300
+		LOCALS = 罠
+		LOCALS:1 = ＨＰ
+		LOCAL = 25
+	CASE 301
+		LOCALS = 罠
+		LOCALS:1 = POISON
+		LOCAL = 30
+		LOCALS:2 = 신경
+	CASE 302
+		LOCALS = 보옥
+	CASE 303
+		LOCALS = 지혜의향
+	CASE 400
+		LOCALS = ￥
+		LOCAL = 21000
+ENDSELECT
+IF LOCALS == "￥"
+	CALL GET_TREASURE_MONEY, 0, LOCAL, FLAG:현던전, FLAG:현M + 75, (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+ELSEIF LOCALS == "魔貨"
+	CALL GET_TREASURE_MONEY, 1, LOCAL, FLAG:현던전, FLAG:현M + 75, (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+ELSEIF LOCALS == "MAG" || LOCALS == "ＭＡＧ"
+	CALL GET_TREASURE_MAG, 0, LOCAL, FLAG:현던전, FLAG:현M + 75, (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+ELSEIF LOCALS == "罠"
+	;LOCALS:1 종류 LOCAL ダメージ量or確率 LOCALS:2 相性
+	CALL GET_TREASURE_TRAP, LOCALS:1, LOCAL, GET_TYPE_NUM(LOCALS:2), FLAG:현던전, FLAG:현M + 75, (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+ELSE
+	IF GETNUM(ITEM, LOCALS) == -1
+		PRINTL ＞아이템명의 지정이 잘못되었습니다
+		PRINTW ＞아이템의 취득 처리를 중단합니다
+	ELSE
+		CALL GET_TREASURE, GETNUM(ITEM, LOCALS), LOCAL , FLAG:현던전, FLAG:현M + 75, (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+	ENDIF
+ENDIF
+RETURN 1
+
+;========
+;罠置き場
+;========
+@TRAP_18
+SELECTCASE FLAG:현M
+	CASE 0
+		CALL MESSAGE_WINDOW_D, "", "＞신기루다！"
+		CALL DUNGEON_WORP,0,1,9
+	CASE 1
+		CALL DUNGEON_TRAP_HP,40
+	CASE 2
+		CALL DUNGEON_TRAP_HP,20
+	CASE 3
+		IF FLAG:현X == 3 && FLAG:현Y == 1
+			CALL MESSAGE_WINDOW_D, "", "＞워프 존이다！"
+			CALL DUNGEON_WORP,3,13,13
+		ELSEIF FLAG:현X == 9 && FLAG:현Y == 1
+			CALL MESSAGE_WINDOW_D, "", "＞워프 존이다！"
+			CALL DUNGEON_WORP,3,3,5
+		ENDIF
+	CASE 4
+		IF FLAG:현X == 13 && FLAG:현Y == 11
+			CALL MESSAGE_WINDOW_D, "", "＞워프 존이다！"
+			CALL DUNGEON_WORP,4,3,11
+		ELSEIF FLAG:현X == 1 && FLAG:현Y == 7
+			CALL MESSAGE_WINDOW_D, "", "＞워프 존이다！"
+			CALL DUNGEON_WORP,4,9,11
+		ELSEIF FLAG:현X == 15 && FLAG:현Y == 3
+			CALL MESSAGE_WINDOW_D, "", "＞워프 존이다！"
+			CALL DUNGEON_WORP,4,13,7
+		ELSEIF FLAG:현X == 9 && FLAG:현Y == 3
+			CALL MESSAGE_WINDOW_D, "", "＞워프 존이다！"
+			CALL DUNGEON_WORP,4,7,1
+		ELSE
+			CALL DUNGEON_TRAP_MP,20
+		ENDIF
+ENDSELECT
+RETURN 0
+
+
+;=======================================================================
+;階段置き場
+;=======================================================================
+@WORP_18
+IF DA:(FLAG:현X):(FLAG:현Y) % 10 == 6
+	CALL DUNGEON_UPSTAIRS_ID, FLAG:현M+1, DA:(FLAG:현X):(FLAG:현Y)+1001
+ELSE
+	CALL DUNGEON_DOWNSTAIRS_ID, FLAG:현M-1, DA:(FLAG:현X):(FLAG:현Y)-1001
+ENDIF
+RETURN 1
+
+
+;=======================================================================
+;인카운트율
+;=======================================================================
+@ENCOUNT_RATE_18
+FLAG:인카운트율 = MAX(FLAG:미조우걸음수 - 5, 0) * 5
+;=======================================================================
+;必要レベル目安
+;推奨LV 雑魚最低LV 雑魚最高LV ボスLV 
+;=======================================================================
+@GET_DUNGEON_LV_18
+RETURN 33, 30, 36, 50
+;=======================================================================
+;エンカウント処理
+;=======================================================================
+@CHECK_ENCOUNT_18
+IF RAND:100 < FLAG:인카운트율
+	RETURN 1
+ELSE
+	FLAG:미조우걸음수 += 1
+	RETURN 0
+ENDIF
+;=======================================================================
+;敵の種族の種類数
+;=======================================================================
+@CLASS_NUM_18
+RETURN CLASS_NUM_COMMON("上級")
+;=======================================================================
+;敵の総数
+;ARGは出現する敵の種類です
+;=======================================================================
+@ENEMY_NUM_18, ARG
+RETURN ENEMY_NUM_COMMON("上級", ARG)
+;=======================================================================
+;敵の種類
+;=======================================================================
+@ENEMY_18, ARG
+SELECTCASE FLAG:현M
+	CASE 0
+		SELECTCASE RAND:100
+			CASE IS < 10
+				;10%でサラシナヒメLv30
+				RETURN [[キャラ:사라시나히메]], 30
+			CASE IS < 20
+				;10%でヘルLv30
+				RETURN [[キャラ:헬]], 30
+			CASE IS < 30
+				;10%でアルラウネLv31
+				RETURN [[キャラ:알라우네]], 31
+			CASE IS < 40
+				;10%でフジムスメLv31
+				RETURN [[キャラ:후지무스메]], 31
+			CASE IS < 50
+				;10%でアエローLv32
+				RETURN [[キャラ:아에로]], 32
+			CASE IS < 60
+				;10%でセンリLv33
+				RETURN [[キャラ:선리]], 33
+			CASE IS < 70
+				;10%でジライヤ
+				RETURN [[キャラ:지라이야]], 30
+			CASE IS < 80
+				;10%　邪龍バジリスクLV25(34)
+				RETURN [[キャラ:바질리스크]], 34
+			CASE IS < 90
+				;10%でクグツシ
+				RETURN [[キャラ:괴뢰자]], 30
+			CASE IS < 100
+				;10%でジャンキーLv35
+				RETURN [[キャラ:정키]], 35
+		ENDSELECT
+	CASE 1
+		SELECTCASE RAND:100
+			CASE IS < 10
+				;10%でサラシナヒメLv30
+				RETURN [[キャラ:사라시나히메]], 30
+			CASE IS < 20
+				;10%でヘルLv30
+				RETURN [[キャラ:헬]], 30
+			CASE IS < 30
+				;10%でアルラウネLv31
+				RETURN [[キャラ:알라우네]], 31
+			CASE IS < 40
+				;10%でフジムスメLv31
+				RETURN [[キャラ:후지무스메]], 31
+			CASE IS < 50
+				;10%でアエローLv32
+				RETURN [[キャラ:아에로]], 32
+			CASE IS < 60
+				;10%でセンリLv33
+				RETURN [[キャラ:선리]], 33
+			CASE IS < 70
+				;10%でジライヤ
+				RETURN [[キャラ:지라이야]], 30
+			CASE IS < 80
+				;10%でクグツシ
+				RETURN [[キャラ:괴뢰자]], 30
+			CASE IS < 90
+				;10%でアルキミコ
+				RETURN [[キャラ:떠돌이무녀]], 32
+			CASE IS < 100
+				;10%でジャンキーLv35
+				RETURN [[キャラ:정키]], 35
+		ENDSELECT
+	CASE 2
+		SELECTCASE RAND:100
+			CASE IS < 10
+				;10%でサラシナヒメLv30
+				RETURN [[キャラ:사라시나히메]], 30
+			CASE IS < 20
+				;10%でヘルLv30
+				RETURN [[キャラ:헬]], 30
+			CASE IS < 30
+				;10%でアルラウネLv31
+				RETURN [[キャラ:알라우네]], 31
+			CASE IS < 40
+				;10%でフジムスメLv31
+				RETURN [[キャラ:후지무스메]], 31
+			CASE IS < 50
+				;10%でアエローLv32
+				RETURN [[キャラ:아에로]], 32
+			CASE IS < 60
+				;10%でセンリLv33
+				RETURN [[キャラ:선리]], 33
+			CASE IS < 70
+				;10%でアサシンLv32
+				RETURN [[キャラ:어새신]], 32
+			CASE IS < 80
+				;10%でジライヤ
+				RETURN [[キャラ:지라이야]], 30
+			CASE IS < 90
+				;10%でアルキミコ
+				RETURN [[キャラ:떠돌이무녀]], 32
+			CASE IS < 100
+				;10%でジャンキーLv35
+				RETURN [[キャラ:정키]], 35
+		ENDSELECT
+	CASE 3
+		SELECTCASE RAND:100
+			CASE IS < 10
+				;10%でサラシナヒメLv30　ランク1
+				RETURN [[キャラ:사라시나히메]], 33
+			CASE IS < 20
+				;10%でヘルLv30　ランク1
+				RETURN [[キャラ:헬]], 33
+			CASE IS < 30
+				;10%でアルラウネLv31　ランク1
+				RETURN [[キャラ:알라우네]], 34
+			CASE IS < 40
+				;10%でフジムスメLv31　ランク1
+				RETURN [[キャラ:후지무스메]], 34
+			CASE IS < 50
+				;10%でアエローLv32　ランク1
+				RETURN [[キャラ:아에로]], 35
+			CASE IS < 60
+				;10%でセンリLv33　ランク1
+				RETURN [[キャラ:선리]], 36
+			CASE IS < 75
+				;15%でアサシンLv32　ランク1
+				RETURN [[キャラ:어새신]], 35
+			CASE IS < 90
+				;15%でアルキミコ
+				RETURN [[キャラ:떠돌이무녀]], 35
+			CASE IS < 100
+				;10%でジャンキーLv35　ランク1
+				RETURN [[キャラ:정키]], 38
+		ENDSELECT
+	CASE 4
+		SELECTCASE RAND:100
+			CASE IS < 15
+				;15%でハクジョウシLv34　ランク1
+				RETURN [[キャラ:백낭자]], 37
+			CASE IS < 25
+				;10%でヤクシニーLv34　ランク1
+				RETURN [[キャラ:야크시니]], 37
+			CASE IS < 40
+				;15%でおしちLv35
+				RETURN [[キャラ:오시치]], 35
+			CASE IS < 50
+				;10%でパイモンLv36
+				RETURN [[キャラ:파이몬]], 36
+			CASE IS < 60
+				;10%でナジャLv36
+				RETURN [[キャラ:나쟈]], 36
+			CASE IS < 70
+				;10%でアルキミコ
+				RETURN [[キャラ:떠돌이무녀]], 35
+			CASE IS < 80
+				;10%でカメンヒジリLv39
+				RETURN [[キャラ:가면성]], 39
+			CASE IS < 90
+				;10%でアサシンLv32　ランク2
+				RETURN [[キャラ:어새신]], 38
+			CASE IS < 100
+				;10%でジャンキーLv35　ランク1
+				RETURN [[キャラ:정키]], 38
+		ENDSELECT
+	CASE 5
+		SELECTCASE RAND:100
+			CASE IS < 15
+				;15%でハクジョウシLv34　ランク1
+				RETURN [[キャラ:백낭자]], 37
+			CASE IS < 25
+				;10%でヤクシニーLv34　ランク1
+				RETURN [[キャラ:야크시니]], 37
+			CASE IS < 40
+				;15%でおしちLv35
+				RETURN [[キャラ:오시치]], 35
+			CASE IS < 50
+				;10%でパイモンLv36
+				RETURN [[キャラ:파이몬]], 36
+			CASE IS < 65
+				;15%でナジャLv36
+				RETURN [[キャラ:나쟈]], 36
+			CASE IS < 75
+				;10%でカメンヒジリLv39
+				RETURN [[キャラ:가면성]], 39
+			CASE IS < 85
+				;10%でアサシンLv32　ランク2
+				RETURN [[キャラ:어새신]], 38
+			CASE IS < 90
+				;5%で狂人オニジョロウLv34
+				RETURN [[キャラ:오니죠로]], 34
+				;RETURN [[キャラ:오니죠로]], 34
+			CASE IS < 100
+				;10%でジャンキーLv35　ランク1
+				RETURN [[キャラ:정키]], 38
+		ENDSELECT
+ENDSELECT
+@SET_ACTION_ラドン,ARG
+IF FLAG:경과턴수 % 3 == 0
+	IF CFLAG:MASTER:명중강화 > -1
+		IF CFLAG:ARG:행동한횟수 == 0
+			CFLAG:(CHARANUM-1):속도보정 = 24
+			CALL CHECK_ACTIONABLE,ARG,520
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 520
+			CALL RANDOM_TARGET,ARG,520
+			RETURN 1
+		ELSEIF CFLAG:ARG:행동한횟수 == 1
+			CFLAG:(CHARANUM-1):속도보정 = 24
+			CALL CHECK_ACTIONABLE,ARG,520
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 520
+			CALL RANDOM_TARGET,ARG,520
+			RETURN 1
+		ENDIF
+	ELSEIF CFLAG:MASTER:명중강화 > -9
+		IF CFLAG:ARG:행동한횟수 == 0
+			CFLAG:(CHARANUM-1):속도보정 = 24
+			CALL CHECK_ACTIONABLE,ARG,520
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 520
+			CALL RANDOM_TARGET,ARG,520
+			RETURN 1
+		ENDIF
+	ENDIF
+ELSEIF CFLAG:ARG:공격강화 < -13 || CFLAG:ARG:방어강화 < -13 || CFLAG:ARG:명중강화 < -13
+		CFLAG:(CHARANUM-1):속도보정 = 24
+		CALL CHECK_ACTIONABLE,ARG,505
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+		CFLAG:ARG:입력행동 = 505
+		CALL RANDOM_TARGET,ARG,505
+		RETURN 1
+ELSEIF CFLAG:MASTER:공격강화 > 13 || CFLAG:MASTER:방어강화 > 13 || CFLAG:MASTER:명중강화 > 13
+		CFLAG:(CHARANUM-1):속도보정 = 24
+		CALL CHECK_ACTIONABLE,ARG,509
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+		CFLAG:ARG:입력행동 = 509
+		CALL RANDOM_TARGET,ARG,509
+		RETURN 1
+ELSEIF CFLAG:MASTER:물리반사플래그 == 1 || CFLAG:MASTER:마법반사플래그 == 1
+		IF CFLAG:ARG:행동한횟수 == 0
+			CFLAG:(CHARANUM-1):속도보정 = 24
+			CALL CHECK_ACTIONABLE,ARG,2002
+			SIF RESULT == 0
+				GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 2002
+			CALL RANDOM_TARGET,ARG,2002
+			RETURN 1
+		ELSEIF CFLAG:ARG:행동한횟수 == 1
+			CFLAG:(CHARANUM-1):속도보정 = 24
+			CALL CHECK_ACTIONABLE,ARG,2002
+				SIF RESULT == 0
+					GOTO DECIDE_ACTION
+			CFLAG:ARG:입력행동 = 2002
+			CALL RANDOM_TARGET,ARG,2002
+			RETURN 1
+		ENDIF
+ELSE
+	$DECIDE_ACTION
+	CALL ランダム行動, ARG
+ENDIF
+
+;=======================================================================
+;輪姦参加悪魔
+;=======================================================================
+@DUNGEON_RAPE_DEVIL_18
+;ランダムにどの悪魔が出るか決定
+;RETURN CSV番号 , 人数 , レベル
+SELECTCASE RAND:3
+	CASE 0
+		RETURN [[キャラ:가면성]] , 3 + RAND:10 , CSVBASE([[キャラ:가면성]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 1
+		RETURN [[キャラ:정키]] , 3 + RAND:10 , CSVBASE([[キャラ:정키]] , GETNUM(BASE , "LV") , 0) + RAND:3
+	CASE 2
+		RETURN [[キャラ:파계승]] , 3 + RAND:10 , CSVBASE([[キャラ:파계승]] , GETNUM(BASE , "LV") , 0) + RAND:3
+ENDSELECT
+
+@MAJIN_BATTLE_IN_TOKYO, L_MAJIN = -1, L_OPT
+#DIM DYNAMIC L_MAJIN
+#DIM DYNAMIC L_ENEMY
+#DIMS DYNAMIC L_OPT
+#DIM CONST MAJIN_TABLE = [[キャラ:마타도르]], [[キャラ:헬즈엔젤]], [[キャラ:대승정]]
+SIF L_MAJIN == -1
+	L_MAJIN = MAJIN_TABLE:RAND(VARSIZE("MAJIN_TABLE"))
+IF L_OPT == "ウィンドウ"
+	CALL MESSAGE_WINDOW_D, "", @"＞마인 %CSVCALLNAME(L_MAJIN)%가 １체 나타났다！"
+ELSE
+	PRINTFORMW ＞마인 %CSVCALLNAME(L_MAJIN)%가 １체 나타났다！
+ENDIF
+CALL SET_ENEMY, 9, L_MAJIN, 80,0,1
+L_ENEMY = CHARANUM - 1
+SELECTCASE L_MAJIN
+	CASE [[キャラ:마타도르]]
+		CSTR:L_ENEMY:특수적보정패턴 = TOKYO_MAJIN_MATADOR
+
+		ABL:L_ENEMY:최저공격횟수 = 3
+		ABL:L_ENEMY:최대공격횟수 = 4
+		BASE:L_ENEMY:속도 += 30
+		BASE:L_ENEMY:운 += 50
+		;回避があがりすぎるので
+		CFLAG:L_ENEMY:회피보정 = -100
+
+		CFLAG:L_ENEMY:ＨＰ보정 = 1575
+		CFLAG:L_ENEMY:ＭＰ보정 = 9000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		BASE:L_ENEMY:검격 = 100
+		BASE:L_ENEMY:비구 = 100
+		BASE:L_ENEMY:타격 = 100
+		BASE:L_ENEMY:전술 = 100
+		BASE:L_ENEMY:화염 = 100
+		BASE:L_ENEMY:빙결 = 50
+		BASE:L_ENEMY:전격 = 50
+		BASE:L_ENEMY:충격 = 100
+		BASE:L_ENEMY:신경 = 0
+		BASE:L_ENEMY:정신 = 0
+		BASE:L_ENEMY:파마 = 0
+		BASE:L_ENEMY:주살 = 0
+		BASE:L_ENEMY:지변 = 100
+		BASE:L_ENEMY:수격 = 50
+		BASE:L_ENEMY:질풍 = 100
+		BASE:L_ENEMY:중력 = 50
+		BASE:L_ENEMY:핵열 = 100
+		BASE:L_ENEMY:만능 = 100
+
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "피의안달루시아"
+		CALL SET_SKILL, L_ENEMY, "적색의카포테"
+		CALL SET_SKILL, L_ENEMY, "각성스킬"
+		ABL:L_ENEMY:각성스킬 = L_MAJIN
+		CALL SET_SKILL, L_ENEMY, "블레이드댄스"
+		CALL SET_SKILL, L_ENEMY, "도발"
+		CALL SET_SKILL, L_ENEMY, "회심의패기"
+		CALL SET_SKILL, L_ENEMY, "데・카쟈"
+
+		ABL:L_ENEMY:아이템2 = RAND:2 ? GETNUM(ITEM, "스킬카드【적색의카포테】") # GETNUM(ITEM, "스킬카드【피의안달루시아】")
+	CASE [[キャラ:헬즈엔젤]]
+		ABL:L_ENEMY:공격상성 = 17
+		ABL:L_ENEMY:최저공격횟수 = 2
+		ABL:L_ENEMY:최대공격횟수 = 2
+		ABL:L_ENEMY:사거리 = 2
+		ABL:L_ENEMY:공격범위 = 2
+
+		BASE:L_ENEMY:속도 += 50
+		BASE:L_ENEMY:운 += 25
+		;回避があがりすぎるので
+		CFLAG:L_ENEMY:회피보정 = -125
+		BASE:L_ENEMY:검격 = 100
+		BASE:L_ENEMY:비구 = 100
+		BASE:L_ENEMY:타격 = 0
+		BASE:L_ENEMY:전술 = 100
+		BASE:L_ENEMY:화염 = 100
+		BASE:L_ENEMY:빙결 = 0
+		BASE:L_ENEMY:전격 = 0
+		BASE:L_ENEMY:충격 = 100
+		BASE:L_ENEMY:신경 = 0
+		BASE:L_ENEMY:정신 = 0
+		BASE:L_ENEMY:파마 = 0
+		BASE:L_ENEMY:주살 = 0
+		BASE:L_ENEMY:지변 = 100
+		BASE:L_ENEMY:수격 = 0
+		BASE:L_ENEMY:질풍 = 100
+		BASE:L_ENEMY:중력 = 0
+		BASE:L_ENEMY:핵열 = 100
+		BASE:L_ENEMY:만능 = 100
+		CFLAG:L_ENEMY:ＨＰ보정 = 1625
+		CFLAG:L_ENEMY:ＭＰ보정 = 9000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		SELECTCASE RAND:3
+			CASE 0
+				ABL:L_ENEMY:아이템2 = GETNUM(ITEM, "스킬카드【헬스핀】")
+			CASE 1
+				ABL:L_ENEMY:아이템2 = GETNUM(ITEM, "스킬카드【헬에기조스트】")
+			CASE 2
+				ABL:L_ENEMY:아이템2 = GETNUM(ITEM, "스킬카드【헬버너】")
+		ENDSELECT
+
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "헬스핀"
+		CALL SET_SKILL, L_ENEMY, "헬에기조스트"
+		CALL SET_SKILL, L_ENEMY, "헬버너"
+		CALL SET_SKILL, L_ENEMY, "각성스킬"
+		ABL:L_ENEMY:각성스킬 = L_MAJIN
+		CALL SET_SKILL, L_ENEMY, "히트라이저"
+		CALL SET_SKILL, L_ENEMY, "아기바리온"
+		CALL SET_SKILL, L_ENEMY, "잔바리온"
+	CASE [[キャラ:대승정]]	
+		CSTR:L_ENEMY:특수적보정패턴 = TOKYO_MAJIN_DAISOUJOU
+		ABL:L_ENEMY:공격상성 = 17
+		ABL:L_ENEMY:최저공격횟수 = 2
+		ABL:L_ENEMY:최대공격횟수 = 2
+		ABL:L_ENEMY:사거리 = 2
+		ABL:L_ENEMY:공격범위 = 2
+
+		BASE:L_ENEMY:운 += 30
+		CFLAG:L_ENEMY:ＨＰ보정 = 3605
+		CFLAG:L_ENEMY:ＭＰ보정 = 9000
+		CFLAG:L_ENEMY:행동횟수 = 2
+		BASE:L_ENEMY:검격 = 100
+		BASE:L_ENEMY:비구 = 999
+		BASE:L_ENEMY:타격 = 50
+		BASE:L_ENEMY:전술 = 999
+		BASE:L_ENEMY:화염 = 25
+		BASE:L_ENEMY:빙결 = 0
+		BASE:L_ENEMY:전격 = 25
+		BASE:L_ENEMY:충격 = 100
+		BASE:L_ENEMY:신경 = 999
+		BASE:L_ENEMY:정신 = 999
+		BASE:L_ENEMY:파마 = 999
+		BASE:L_ENEMY:주살 = 999
+		BASE:L_ENEMY:지변 = 100
+		BASE:L_ENEMY:수격 = 0
+		BASE:L_ENEMY:질풍 = 100
+		BASE:L_ENEMY:중력 = 25
+		BASE:L_ENEMY:핵열 = 25
+		BASE:L_ENEMY:만능 = 100
+
+		CALL CLEAR_ALL_SKILL, L_ENEMY
+		CALL SET_SKILL, L_ENEMY, "회전설법"
+		CALL SET_SKILL, L_ENEMY, "마하무드바리온"
+		CALL SET_SKILL, L_ENEMY, "마하코우바리온"
+		CALL SET_SKILL, L_ENEMY, "마하에이바리온"
+		CALL SET_SKILL, L_ENEMY, "색즉시공"
+		CALL SET_SKILL, L_ENEMY, "자장가"
+		CALL SET_SKILL, L_ENEMY, "메기도라온"
+
+		ABL:L_ENEMY:아이템2 = RAND:2 ? GETNUM(ITEM, "스킬카드【회전설법】") # GETNUM(ITEM, "스킬카드【명상】")
+ENDSELECT
+
+ABL:L_ENEMY:입수확률2 = 100
+ABL:L_ENEMY:아이템3 = RAND:2 ? GETNUM(ITEM, "사초총") # GETNUM(ITEM, "사초권총")
+ABL:L_ENEMY:입수확률3 = 100
+
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+CALL SYNC_STATUS, L_ENEMY
+CALL HEALTH_CHARA, L_ENEMY
+CALL BATTLE_START
+
+CALL LIFTING_A_BAN, L_MAJIN, L_OPT
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+
+@SKILL_PASSIVE_PENETRATION_RANK_TOKYO_MAJIN_MATADOR, L_P, L_T, L_スキル, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM DYNAMIC L_P;このスキルの所持者
+#DIM DYNAMIC L_T;攻撃対象
+#DIMS DYNAMIC L_スキル;スキルの所持者が敵に対して使用しているスキルの関数名称
+#DIM DYNAMIC L_ダメージタイプ
+#DIM DYNAMIC L_攻撃タイプ
+#DIM DYNAMIC L_相性
+#DIM DYNAMIC GIVE_EFFECT_CHARA;リーダースキル等他人からつけられている場合の提供者
+;剣撃準貫通
+SIF GET_TYPE(L_相性) == "검격"
+	RETURN 0, 4
+RETURN 0, 0
+
+;山田とフツヌシに剣撃準貫通をもたせる。
+@SKILL_PASSIVE_PENETRATION_RANK_TOKYO_MAJIN_DAISOUJOU, L_P, L_T, L_スキル, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM DYNAMIC L_P;このスキルの所持者
+#DIM DYNAMIC L_T;攻撃対象
+#DIMS DYNAMIC L_スキル;スキルの所持者が敵に対して使用しているスキルの関数名称
+#DIM DYNAMIC L_ダメージタイプ
+#DIM DYNAMIC L_攻撃タイプ
+#DIM DYNAMIC L_相性
+#DIM DYNAMIC GIVE_EFFECT_CHARA;リーダースキル等他人からつけられている場合の提供者
+;剣撃準貫通
+SIF GET_TYPE(L_相性) == "주살" || GET_TYPE(L_相性) == "파마"
+	RETURN 0, 4
+RETURN 0, 0

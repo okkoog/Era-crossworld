@@ -1,0 +1,187 @@
+﻿;
+
+;スキル名
+@SKILL_NAME_2513,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:브라흐마]]) && CFLAG:ARG:보스플래그 && FLAG:현던전 == 13
+	RESULTS = 이터널 제로
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:로우히어로]]) && CFLAG:ARG:보스플래그
+	RESULTS = 라이트 핸드
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:카오스히어로]]) && CFLAG:ARG:보스플래그
+	RESULTS = 레프트 핸드
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:미카엘]]) && CFLAG:ARG:보스플래그 && FLAG:현던전 == 96
+	RESULTS = 신의 가호
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:카마조츠]]) && CFLAG:ARG:보스플래그 && FLAG:현던전 == 13
+	RESULTS = 마계의 바람
+ELSE
+	RESULTS = 가군라즈
+ENDIF
+
+;　명중
+@SKILL_HITRATE_2513, ARG
+RETURN 1000
+
+;　威力
+@SKILL_POWER_2513, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2513,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2513,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2513, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2513,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_2513,ARG
+RETURN GET_TYPE_NUM("없음")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2513
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2513, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2513,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2513,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2513, ARG
+RETURN GET_SKILL_EFFECT_NUM("상태변화")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2513
+RETURN GET_SUCCESSION_NUM("만능")
+
+;속도보정
+@SKILL_SPEED_2513, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2513
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2513, ARG = -1
+RETURN 23
+
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_2513,ARG
+RETURN 0
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_2513,ARG
+RETURN 0
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_2513,ARG
+RETURN 100
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_2513,ARG
+RETURN 100
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2513, ARG, ARG:1, ARG:2
+#LOCALSIZE 3
+
+IF SKILL_CHANGE(ARG, [[キャラ:브라흐마]]) && CFLAG:ARG:보스플래그 && FLAG:현던전 == 13
+	FOR LOCAL,1,7
+		SIF POS(LOCAL) < 0
+			CONTINUE
+		FOR LOCAL:1,0,6
+			CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LOCAL:1) + "강화") = -16
+		NEXT
+	NEXT
+	FOR LOCAL,0,6
+		CFLAG:ARG:(GET_BATTLESTATUS(LOCAL) + "강화") = 32
+	NEXT
+	PRINTFORML 아군 전체의 전능력을 최대까지 내렸다！
+	PRINTFORMW %CALLNAME:ARG%의 전능력이 최대까지 올랐다！
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:카오스히어로]]) && CFLAG:ARG:보스플래그
+	FOR LOCAL,1,7
+		SIF POS(LOCAL) < 0
+			CONTINUE
+		PRINTFORM 　　TARGET:[{LOCAL,2}] %CALLNAME:POS(LOCAL),20,LEFT%　>>>>>>　
+		LOCAL:1 = BASE:POS(LOCAL):ＨＰ * 20/100
+		PRINTFORML {LOCAL:1}데미지
+		CALL VAR_HP, POS(LOCAL), -LOCAL:1, "食いしばり無効ダメージ", ARG
+		FOR LOCAL:1,0,6
+			CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LOCAL:1) + "강화") = MAX(-16, CFLAG:POS(LOCAL):(GET_BATTLESTATUS(LOCAL:1) + "강화") - 4)
+		NEXT
+	NEXT
+	PRINTFORMW 아군의 전능력을 내렸다！
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:로우히어로]]) && CFLAG:ARG:보스플래그
+	FOR LOCAL,0,6
+		CFLAG:ARG:(GET_BATTLESTATUS(LOCAL) + "강화") = MIN(32, CFLAG:ARG:(GET_BATTLESTATUS(LOCAL) + "강화") + 4)
+	NEXT
+	CALL SKILL_INVALID_WALL, ARG, ARG:1, "ARG", "단체", "NOMES"
+	PRINTFORML %CALLNAME:ARG%의 전능력이 오르고、모든 공격을 무효화하게 되었다！
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:미카엘]]) && CFLAG:ARG:보스플래그 && FLAG:현던전 == 96
+	FOR LOCAL,0,6
+		CFLAG:ARG:(GET_BATTLESTATUS(LOCAL) + "강화") = MIN(32, CFLAG:ARG:(GET_BATTLESTATUS(LOCAL) + "강화") + 4)
+	NEXT
+	FOR LOCAL , 0 , TYPENUM
+		CALL SKILL_WALL , ARG , GET_TYPE(LOCAL) , CPOS(ARG) , 1 , "非表示"
+	NEXT
+	PRINTFORML %CALLNAME:ARG%의 전능력이 오르고、전속성 무효화！
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:카마조츠]]) && CFLAG:ARG:보스플래그 && FLAG:현던전 == 13
+	CALL ACTION_1032,ARG,19
+	CALL ACTION_1732,ARG,19
+ELSE
+	CFLAG:ARG:크리티컬강화 = 8
+	FOR LOCAL, 1, 7
+		SIF !IS_TARGET_ABLE(POS(LOCAL))
+			CONTINUE
+		CFLAG:POS(LOCAL):검격무효화횟수 = 0
+		CFLAG:POS(LOCAL):전격무효화횟수 = 0
+		CFLAG:POS(LOCAL):물리반사플래그 = 0
+		CFLAG:POS(LOCAL):마법반사플래그 = 0
+		CFLAG:POS(LOCAL):수호의방패 = 0
+		;CFLAG:POS(LOCAL):방어강화 = MAX(-16, CFLAG:POS(LOCAL):방어강화 - 4)
+	NEXT
+	CALL SKILL_SET_カジャンダ, ARG, ARG:1, "방어", -4, "範囲"
+	;PRINTFORMW 味方の防御力が下がった！
+ENDIF
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2513, ARG
+PRINTL 궁그닐이 통하기 쉬워진다
+PRINTL 오딘 전용
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2513,ARG
+RETURN 1
+;とくにない
+
+@敵専用_2513
+RETURN 1

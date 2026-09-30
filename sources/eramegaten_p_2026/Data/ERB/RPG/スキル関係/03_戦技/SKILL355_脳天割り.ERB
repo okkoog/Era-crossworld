@@ -1,0 +1,125 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_355,ARG
+RESULTS = 머리깨기
+
+;　명중
+@SKILL_HITRATE_355, ARG
+RETURN 95
+
+;　威力
+@SKILL_POWER_355, ARG
+RETURN 240
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_355,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_355,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_355, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_355,ARG
+RETURN 10
+
+;　相性
+@SKILL_TYPE_355,ARG
+RETURN GET_TYPE_NUM("전술")
+;전술
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_355
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_355, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_355, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_355,ARG
+RETURN 4
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_355,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_355, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_355
+RETURN GET_SUCCESSION_NUM("전술")
+;전술
+
+;속도보정
+@SKILL_SPEED_355, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_355
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_355, ARG = -1
+RETURN 4
+
+
+;====================================================
+;ダメージ発動時
+;ARG:0	行動者のキャラ番号
+;ARG:1	対象のキャラ番号
+;ARG:2	1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;
+;備考:標準の追加効果付与はblock・吸収の場合は発動しない。
+;====================================================
+@SKILL_DAMAGE_EFFECT_355, ARG, ARG:1, ARG:2
+SIF ARG:1 < 0
+	RETURN 0
+;無効以下では発動しない
+SIF ARG:2 <= -2
+	RETURN 0
+CALL SKILL_SET_カジャンダ, ARG, ARG:1, "마법위력", -4, "短縮"
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_355, ARG, ARG:1, ARG:2
+CALL ATTACK_SINGLE, ARG, POS(ARG:1),355
+;#LOCALSIZE 2
+;LOCAL:1 = BASE:POS(ARG:1):ＨＰ
+
+;IF POS(ARG:1) > 0 && LOCAL:1 > BASE:POS(ARG:1):ＨＰ && GET_STATE(CFLAG:POS(ARG:1):상태이상) != "DYING"
+;	CFLAG:POS(ARG:1):마법위력강화 = MAX(-16, CFLAG:POS(ARG:1):마법위력강화 - 4)
+;	PRINTFORML 　　TARGET:[{ARG:1,2}] %CALLNAME:POS(ARG:1),20,LEFT%　>>>>>>　魔法威力が下がった！
+;ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_355, ARG
+PRINTL 적 １체에 공격을 행한다。마법위력을 낮춘다。
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_355,ARG
+RETURN 1
+;とくにない
+

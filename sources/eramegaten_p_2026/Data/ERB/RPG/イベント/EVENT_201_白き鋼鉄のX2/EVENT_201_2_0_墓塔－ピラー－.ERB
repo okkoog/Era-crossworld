@@ -1,0 +1,855 @@
+﻿;====================
+;조건
+;====================
+@PLAYABLE_EVENT_201_2
+SIF FLAG_白き鋼鉄のX2_進行度 != 1
+	RETURN 0
+SIF GETCHARA([[キャラ:아큐라_X]]) < 0
+	RETURN 0
+;원 네타：건볼트 조 그레이브 필러 미션 셀렉트 화면
+;아큐라 편 6보스 스테이지를 통괄하는 허브
+RESULTS = 묘탑－필러－
+RETURN 1
+
+;====================
+;내용
+;====================
+@SHOPCOM_EVENT_201_2
+#DIM DYNAMIC L_ACURA
+#DIMS DYNAMIC SHOW_LINE
+#DIMS DYNAMIC TEMPS
+#DIM DYNAMIC LCOUNT, 2
+#DIMS DYNAMIC L_SPRITE
+#DIMS DYNAMIC L_SPRITENAME
+#DIM DYNAMIC GID
+#DIM CONST FACE_TABLE = [[キャラ:데이사이트_X2]], [[キャラ:베스파_X2]], [[キャラ:입실론_X2]], [[キャラ:오토크롬_X2]], [[キャラ:아큐라_X]], [[キャラ:브리게이드_X2]], [[キャラ:헤일_X2]], [[キャラ:슬러그_X2]]
+#DIMS CONST STAGE_TABLE = "", "입구 게이트", "화산 블록", "밀림 블록", "상층 플로어", "연구소 블록", "공장 블록", "한랭지 블록", "우주 블록"
+#DIM DYNAMIC STAGE_SELECT_ABLE, 20
+#DIMS DYNAMIC L_SHOW_STAT, 20
+#DIM DYNAMIC L_PLACE_NO, 20
+#DIMS DYNAMIC L_BUTTON, 20
+#DIM DYNAMIC L_SELECTABLE_ARRAY, 100
+VARSET L_SELECTABLE_ARRAY
+VARSET L_SHOW_STAT
+REDRAW 0
+L_ACURA = GETCHARA([[キャラ:아큐라_X]])
+FOR LCOUNT, 0, VARSIZE("FACE_TABLE")
+	SELECTCASE FACE_TABLE:LCOUNT
+		CASE [[キャラ:데이사이트_X2]]
+			IF !FLAG_白き鋼鉄のX2_入り口クリア
+				L_SHOW_STAT:LCOUNT '= "白抜き"
+			ELSE
+				IF FLAG_白き鋼鉄のX2_炎獄クリア
+					L_SHOW_STAT:LCOUNT '= "グレースケール"
+				ELSE
+					L_BUTTON:LCOUNT '= TOSTR(FINDELEMENT(STAGE_TABLE, "화산 블록"))
+					L_SELECTABLE_ARRAY:(FINDELEMENT(STAGE_TABLE, "화산 블록")) = 1
+				ENDIF
+			ENDIF
+			L_PLACE_NO:LCOUNT = FINDELEMENT(STAGE_TABLE, "화산 블록")
+		CASE [[キャラ:베스파_X2]]
+			IF !FLAG_白き鋼鉄のX2_入り口クリア
+				L_SHOW_STAT:LCOUNT '= "白抜き"
+			ELSE
+				IF FLAG_白き鋼鉄のX2_機蜂クリア
+					L_SHOW_STAT:LCOUNT '= "グレースケール"
+				ELSE
+					L_BUTTON:LCOUNT '= TOSTR(FINDELEMENT(STAGE_TABLE, "밀림 블록"))
+					L_SELECTABLE_ARRAY:(FINDELEMENT(STAGE_TABLE, "밀림 블록")) = 1
+				ENDIF
+			ENDIF
+			L_PLACE_NO:LCOUNT = FINDELEMENT(STAGE_TABLE, "밀림 블록")
+		CASE [[キャラ:입실론_X2]]
+			IF !FLAG_白き鋼鉄のX2_炎獄クリア || !FLAG_白き鋼鉄のX2_機蜂クリア
+				L_SHOW_STAT:LCOUNT '= "白抜き"
+			ELSE
+				IF FLAG_白き鋼鉄のX2_超越クリア
+					L_SHOW_STAT:LCOUNT '= "グレースケール"
+				ELSE
+					L_BUTTON:LCOUNT '= TOSTR(FINDELEMENT(STAGE_TABLE, "상층 플로어"))
+					L_SELECTABLE_ARRAY:(FINDELEMENT(STAGE_TABLE, "상층 플로어")) = 1
+				ENDIF
+			ENDIF
+			L_PLACE_NO:LCOUNT = FINDELEMENT(STAGE_TABLE, "상층 플로어")
+		CASE [[キャラ:오토크롬_X2]]
+			IF !FLAG_白き鋼鉄のX2_超越クリア
+				L_SHOW_STAT:LCOUNT '= "白抜き"
+			ELSE
+				IF FLAG_白き鋼鉄のX2_光芒クリア
+					L_SHOW_STAT:LCOUNT '= "グレースケール"
+				ELSE
+					L_BUTTON:LCOUNT '= TOSTR(FINDELEMENT(STAGE_TABLE, "연구소 블록"))
+					L_SELECTABLE_ARRAY:(FINDELEMENT(STAGE_TABLE, "연구소 블록")) = 1
+				ENDIF
+			ENDIF
+			L_PLACE_NO:LCOUNT = FINDELEMENT(STAGE_TABLE, "연구소 블록")
+		CASE [[キャラ:아큐라_X]]
+			IF !FLAG_白き鋼鉄のX2_入り口クリア
+				L_BUTTON:LCOUNT '= TOSTR(FINDELEMENT(STAGE_TABLE, "입구 게이트"))
+				L_SELECTABLE_ARRAY:(FINDELEMENT(STAGE_TABLE, "입구 게이트")) = 1
+			ENDIF
+			L_PLACE_NO:LCOUNT = FINDELEMENT(STAGE_TABLE, "입구 게이트")
+		CASE [[キャラ:브리게이드_X2]]
+			IF !FLAG_白き鋼鉄のX2_超越クリア
+				L_SHOW_STAT:LCOUNT '= "白抜き"
+			ELSE
+				IF FLAG_白き鋼鉄のX2_鋼獣クリア
+					L_SHOW_STAT:LCOUNT '= "グレースケール"
+				ELSE
+					L_BUTTON:LCOUNT '= TOSTR(FINDELEMENT(STAGE_TABLE, "공장 블록"))
+					L_SELECTABLE_ARRAY:(FINDELEMENT(STAGE_TABLE, "공장 블록")) = 1
+				ENDIF
+			ENDIF
+			L_PLACE_NO:LCOUNT = FINDELEMENT(STAGE_TABLE, "공장 블록")
+		CASE [[キャラ:헤일_X2]]
+			IF !FLAG_白き鋼鉄のX2_超越クリア
+				L_SHOW_STAT:LCOUNT '= "白抜き"
+			ELSE
+				IF FLAG_白き鋼鉄のX2_極寒クリア
+					L_SHOW_STAT:LCOUNT '= "グレースケール"
+				ELSE
+					L_BUTTON:LCOUNT '= TOSTR(FINDELEMENT(STAGE_TABLE, "한랭지 블록"))
+					L_SELECTABLE_ARRAY:(FINDELEMENT(STAGE_TABLE, "한랭지 블록")) = 1
+				ENDIF
+			ENDIF
+			L_PLACE_NO:LCOUNT = FINDELEMENT(STAGE_TABLE, "한랭지 블록")
+		CASE [[キャラ:슬러그_X2]]
+			IF !FLAG_白き鋼鉄のX2_超越クリア
+				L_SHOW_STAT:LCOUNT '= "白抜き"
+			ELSE
+				IF FLAG_白き鋼鉄のX2_飛刀クリア
+					L_SHOW_STAT:LCOUNT '= "グレースケール"
+				ELSE
+					L_BUTTON:LCOUNT '= TOSTR(FINDELEMENT(STAGE_TABLE, "우주 블록"))
+					L_SELECTABLE_ARRAY:(FINDELEMENT(STAGE_TABLE, "우주 블록")) = 1
+				ENDIF
+			ENDIF
+			L_PLACE_NO:LCOUNT = FINDELEMENT(STAGE_TABLE, "우주 블록")
+	ENDSELECT
+NEXT
+CALL DISPOSE_GRAPHICS, "QUEST"
+FOR LCOUNT, 0, VARSIZE("FACE_TABLE")
+	SIF L_SHOW_STAT:LCOUNT == ""
+		CONTINUE
+	L_SPRITE '= GET_FACE_BY_CSV(FACE_TABLE:LCOUNT)
+	L_SPRITENAME '= L_SPRITE + "_" + L_SHOW_STAT:LCOUNT
+	GID = QUEST_GIDNUM_START + LCOUNT
+	QUEST_GID_SPRITENAME:LCOUNT '= L_SPRITENAME
+	CALL CHANGE_COLOR_MATRIX, GID, L_SPRITE, L_SHOW_STAT:LCOUNT
+	SPRITECREATE L_SPRITENAME, GID, 0, 0, GWIDTH(GID), GHEIGHT(GID)
+NEXT
+VARI SHOW_TABLE, 3, 5
+SHOW_TABLE:0:0 = [[キャラ:오토크롬_X2]], [[キャラ:브리게이드_X2]], 0, [[キャラ:헤일_X2]], [[キャラ:슬러그_X2]]
+SHOW_TABLE:1:0 = 0, 0, [[キャラ:입실론_X2]], 0, 0
+SHOW_TABLE:2:0 = 0, [[キャラ:데이사이트_X2]], [[キャラ:아큐라_X]], [[キャラ:베스파_X2]], 0
+
+VARI L_LINE = LINECOUNT
+VARI L_CHARA_NO
+VARI L_NO
+VARI SELECT_PLACE
+VARS BORDER_COLOR
+WHILE 1
+	VARSET SHOW_LINE
+	CLEARLINE LINECOUNT - L_LINE
+	DRAWLINE
+	PRINTFORML 그레이브 필러
+	DRAWLINE
+	FOR LCOUNT:1, 0, 3
+		FOR LCOUNT, 0, 5
+			L_CHARA_NO = SHOW_TABLE:(LCOUNT:1):LCOUNT
+			SIF L_CHARA_NO == 0
+				CONTINUE
+			L_NO = FINDELEMENT(FACE_TABLE, L_CHARA_NO)
+			IF L_SHOW_STAT:L_NO != ""
+				TEMPS '=  GET_FACE_BY_CSV(L_CHARA_NO) + "_" + L_SHOW_STAT:L_NO
+			ELSE
+				IF L_CHARA_NO == [[キャラ:아큐라_X]]
+					TEMPS '= GET_FACE_BY_CHARA(GETCHARA(L_CHARA_NO))
+				ELSE
+					TEMPS '=  GET_FACE_BY_CSV(L_CHARA_NO)
+				ENDIF
+			ENDIF
+			TEMPS '=  @"<img src = '%TEMPS%' height = '800'>"
+			SIF L_BUTTON:L_NO != ""
+				TEMPS '= SET_BUTTON_TAG(TEMPS, L_BUTTON:L_NO)
+			IF SELECT_PLACE == L_PLACE_NO:L_NO
+				BORDER_COLOR '= TOSTR_HTML(COLOR("p-green"))
+			ELSE
+				BORDER_COLOR '= TOSTR_HTML(COLOR("デフォルト"))
+			ENDIF
+			TEMPS '= @"<div xpos = '{LCOUNT * 1000}' ypos = '{(LCOUNT:1) * 1000}' width = '900' height = '900' border_width = '5px' border_color = '%BORDER_COLOR%' padding = '50'>" + TEMPS + "</div>"
+			SHOW_LINE += TEMPS
+		NEXT
+	NEXT
+	FOR LCOUNT, 1, VARSIZE("STAGE_TABLE")
+		TEMPS '= @"[{LCOUNT,2}] %STAGE_TABLE:LCOUNT%"
+		IF L_SELECTABLE_ARRAY:LCOUNT
+			TEMPS '= SET_BUTTON_TAG(TEMPS, TOSTR(LCOUNT))
+			SIF SELECT_PLACE == LCOUNT
+				TEMPS '= SET_COLOR_TAG(TEMPS, "p-green")
+		ELSE
+			TEMPS '= SET_COLOR_TAG(TEMPS, "gray")
+		ENDIF
+		SHOW_LINE += @"<div xpos = '5000' ypos = {LCOUNT * 100 - 100}>" + TEMPS + "</div>"
+	NEXT
+	SHOW_LINE += @"<div xpos = '0' ypos = '2900'>" + DRAWLINESTR + "</div>"
+	TRYCCALLFORM EVENT_TITLE_TEXT_201_2_{SELECT_PLACE}
+		SHOW_LINE += @"<div xpos = '0' ypos = '3000'>" + RESULTS + "</div>"
+	CATCH
+	ENDCATCH
+	HTML_PRINT SHOW_LINE
+	FOR LCOUNT, 0, GET_HEIGHTLENS() - 6
+		PRINTL 
+	NEXT
+	DRAWLINE
+	TEMPS '= "[0] 결정"
+	IF SELECT_PLACE > 0
+		TEMPS '= SET_BUTTON_TAG(TEMPS, "0")
+		L_SELECTABLE_ARRAY:0 = 1
+	ELSE
+		TEMPS '= SET_COLOR_TAG(TEMPS, "gray")
+		L_SELECTABLE_ARRAY:0 = 0
+	ENDIF
+	TEMPS += "　　　"
+	TEMPS += SET_BUTTON_TAG("[99] 돌아간다", "99")
+	L_SELECTABLE_ARRAY:99 = 1
+	HTML_PRINT TEMPS
+	CALL INPUT_ARRAY, L_SELECTABLE_ARRAY
+	SELECTCASE RESULT
+		CASE 0
+			CLEARLINE LINECOUNT - L_LINE
+			CALLFORM SHOPCOM_EVENT_201_2_{SELECT_PLACE}
+
+			FOR LCOUNT,0,CHARANUM
+				CALL HEALTH_CHARA,LCOUNT
+			NEXT
+			CALL DISPOSE_GRAPHICS, "QUEST"
+			SIF FLAG_白き鋼鉄のX2_進行度 == 2
+				RETURN 1
+			RESTART
+		CASE 1 TO VARSIZE("STAGE_TABLE")
+			SELECT_PLACE = RESULT
+		CASE 99
+			RETURN 0
+	ENDSELECT
+WEND
+
+@GRAVEKEEPER_DEFEAT_AFTER, ARG, ARGS
+SELECTCASE ARGS
+	CASE "火山", "密林"
+		;화산 또는 밀림 중 하나 클리어 후
+		IF !FLAG_白き鋼鉄のX2_炎獄クリア || !FLAG_白き鋼鉄のX2_機蜂クリア
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+			PRINTFORMW 「다녀왔어! 어땠어?」
+			CLEARLINE 7
+			PRINTFORML 「다녀왔어! 어땠어?」
+			CALL PRINT_FACE_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド")
+			PRINTFORMW 『다녀왔어, 코하쿠. 키라면 묘지기의 잔해에서 입수했어』
+			CLEARLINE 7
+			PRINTFORML 『다녀왔어, 코하쿠. 키라면 묘지기의 잔해에서 입수했어』
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+			PRINTFORMW 「그렇다면, 남은 건 이제 하나뿐이네!」
+			CLEARLINE 7
+			PRINTFORML 「그렇다면, 남은 건 이제 하나뿐이네!」
+			PRINTFORML 　
+			IF !FLAG_白き鋼鉄のX2_機蜂クリア
+				PRINTFORMW 남은 것은 밀림 블록이다. 화산 블록에 비하면 나을 것이다.
+			ELSE
+				PRINTFORMW 남은 것은 화산 블록이다. 환경의 가혹함은 쉽게 짐작할 수 있다…….
+			ENDIF
+			PRINTFORML 　
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:아큐라_X]]), [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ブレイクシフト"), , "ブレイクシフト"
+			PRINTFORMW 「그런데 묘지기를 파괴하긴 했다만, 수리되어 다시 앞을 가로막을 가능성은 있는 건가?」
+			CLEARLINE 7
+			PRINTFORML 「그런데 묘지기를 파괴하긴 했다만, 수리되어 다시 앞을 가로막을 가능성은 있는 건가?」
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+			PRINTFORML 「글쎄요. 묘지기 분들은 특별한 워커.
+			PRINTFORMW 　필러의 오토 메인터넌스 시스템으로 분명 수리될 거라고 생각해요」
+			CLEARLINE 8
+			PRINTFORML 「글쎄요. 묘지기 분들은 특별한 워커.
+			PRINTFORML 　필러의 오토 메인터넌스 시스템으로 분명 수리될 거라고 생각해요」
+			PRINTFORML 　
+			PRINTFORML 수리가 완료되는 대로 투입될 가능성이 높아 보인다.
+			PRINTFORMW 그런 의미에서는 공략을 서두르는 편이 좋을지도 모른다.
+			PRINTFORML 　
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:아큐라_X]]), [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ブレイクシフト"), , "ブレイクシフト"
+			PRINTFORMW 「하지만, 서두르면 일을 그르친다는 말도 있지. 하나씩 확실하게 나아가야 한다」
+			CLEARLINE 7
+			PRINTFORML 「하지만, 서두르면 일을 그르친다는 말도 있지. 하나씩 확실하게 나아가야 한다」
+			CALL PRINT_FACE_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド")
+			PRINTFORML 『나도 동감이야. 맞다 맞다, 묘지기와의 교전 데이터로부터 EX 웨폰을 개발했으니까,
+			PRINTFORMW 　나중에 확인해 둬?』
+			CLEARLINE 8
+			PRINTFORML 『나도 동감이야. 맞다 맞다, 묘지기와의 교전 데이터로부터 EX 웨폰을 개발했으니까,
+			PRINTFORML 　나중에 확인해 둬?』
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+			PRINTFORMW 「엑스 웨폰…… 말인가요?」
+			CLEARLINE 7
+			PRINTFORML 「엑스 웨폰…… 말인가요?」
+			CALL PRINT_FACE_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド")
+			PRINTFORML 『응. 난 강적과의 전투 데이터를 해석해서, 상대의 무기를 카피할 수 있거든.
+			PRINTFORMW 　지금 아큐라가 전투에 쓰고 있는 것도 EX 웨폰이야』
+			CLEARLINE 8
+			PRINTFORML 『응. 난 강적과의 전투 데이터를 해석해서, 상대의 무기를 카피할 수 있거든.
+			PRINTFORML 　지금 아큐라가 전투에 쓰고 있는 것도 EX 웨폰이야』
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+			PRINTFORMW 「앗! 대단해요 RoRo 님! 만능형이에요! 멀티플이에요!」
+			CLEARLINE 7
+			PRINTFORML 「앗! 대단해요 RoRo 님! 만능형이에요! 멀티플이에요!」
+			CALL PRINT_FACE_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド")
+			PRINTFORMW 『그래? 에헤헤, 쑥스럽구만～～』
+			CLEARLINE 7
+			PRINTFORML 『그래? 에헤헤, 쑥스럽구만～～』
+			PRINTFORML 　
+			PRINTFORML 묘지기를 쓰러뜨리는 것은 %CALLNAME:ARG%의 전력 강화로도 이어지는 모양이다.
+			PRINTFORMW 나중에 스펙을 확인해 두어야 할까…….
+			PRINTFORML 　
+		;화산・밀림 둘 다 클리어 후
+		ELSE
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+			PRINTFORMW 「격벽을 열기 위한 키, 다 모였네!」
+			CLEARLINE 7
+			PRINTFORML 「격벽을 열기 위한 키, 다 모였네!」
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:아큐라_X]]), [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ブレイクシフト"), , "ブレイクシフト"
+			PRINTFORML 「문 너머에는 무엇이 도사리고 있을지 모른다. 우선은 우리가 앞장서도록 하지.
+			PRINTFORMW 　안전이 확보되는 대로 데리러 오겠다. 그때까지 엔트런스에서 대기하고 있어라」
+			CLEARLINE 8
+			PRINTFORML 「문 너머에는 무엇이 도사리고 있을지 모른다. 우선은 우리가 앞장서도록 하지.
+			PRINTFORML 　안전이 확보되는 대로 데리러 오겠다. 그때까지 엔트런스에서 대기하고 있어라」
+			PRINTFORML 　
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+			PRINTFORMW 「저기, 저는 뭔가 도움이 될 수 없을까요? 언제나 기다리기만 할 뿐이라서……」
+			CLEARLINE 7
+			PRINTFORML 「저기, 저는 뭔가 도움이 될 수 없을까요? 언제나 기다리기만 할 뿐이라서……」
+			PRINTFORML 　
+			PRINTFORMW 그렇다면, 코하쿠가 들어오지 못하도록 망을 봐줘.
+			PRINTFORML 　
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+			PRINTFORMW 「네엣, 맡겨주세요!」
+			CLEARLINE 7
+			PRINTFORML 「네엣, 맡겨주세요!」
+			CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+			PRINTFORMW 「즉답!? 너무해― %CALLNAME:MASTER% 씨! 널도 너무해―!」
+			CLEARLINE 7
+			PRINTFORML 「즉답!? 너무해― %CALLNAME:MASTER% 씨! 널도 너무해―!」
+			PRINTFORML 　
+			PRINTFORMW ＞『상층 플로어』에 갈 수 있게 되었다.
+		ENDIF
+	CASE "ラボ", "工場", "寒冷地", "宇宙"
+		SELECTCASE GROUPMATCH(1, FLAG_白き鋼鉄のX2_光芒クリア, FLAG_白き鋼鉄のX2_鋼獣クリア, FLAG_白き鋼鉄のX2_極寒クリア, FLAG_白き鋼鉄のX2_飛刀クリア)
+			;연구소・공장・한랭지・우주 중 하나 클리어 후
+			CASE 0
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+				PRINTFORMW 「다녀왔어―! 이번에도 키를 손에 넣었구나!」
+				CLEARLINE 7
+				PRINTFORML 「다녀왔어―! 이번에도 키를 손에 넣었구나!」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:아큐라_X]]), [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ブレイクシフト"), , "ブレイクシフト"
+				PRINTFORMW 「아아. 하지만 문을 열기 위해서는 앞으로 세 개가 더 필요하다」
+				CLEARLINE 7
+				PRINTFORML 「아아. 하지만 문을 열기 위해서는 앞으로 세 개가 더 필요하다」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+				PRINTFORML 「어려운 싸움이 계속되지만 힘내주세요.
+				PRINTFORMW 　여러분이라면 분명, 피러의 최상층까지 도달할 수 있을 거예요!」
+				CLEARLINE 8
+				PRINTFORML 「어려운 싸움이 계속되지만 힘내주세요.
+				PRINTFORML 　여러분이라면 분명, 피러의 최상층까지 도달할 수 있을 거예요!」
+				CALL PRINT_FACE_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド")
+				PRINTFORMW 『고마워, 널!』
+				CLEARLINE 7
+				PRINTFORML 『고마워, 널!』
+				PRINTFORML 　
+				PRINTFORML 널은 워커인데도, 참 상냥한 아이다.
+				PRINTFORMW 워커는 원래 다들 이렇게 인간다운 표정을 짓는 것일까?
+				PRINTFORML 　
+				SELECTCASE GET_ALI2(ABL:MASTER:속성LC)
+					CASE "Law"
+						PRINTFORMW 「기계라면 감정에 휩쓸리지 않고, 주어진 사명을 다해야 할 텐데……」
+					CASE "Neutral"
+						PRINTFORMW 「기계이면서 마음을 품다니, 신기한 녀석이네……」
+					CASE "Chaos"
+						PRINTFORMW 「기계 주제에 제멋대로 행동하다니, 재미있는 장난감이군……」
+				ENDSELECT
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+				PRINTFORMW 「하와…… 그건, 제 쪽이 이상한 거랍니다」
+				CLEARLINE 7
+				PRINTFORML 「하와…… 그건, 제 쪽이 이상한 거랍니다」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+				PRINTFORMW 「널은 정말 착한 아이야! 이상하지 않아!」
+				CLEARLINE 7
+				PRINTFORML 「널은 정말 착한 아이야! 이상하지 않아!」
+				PRINTFORML 　
+				PRINTFORML 그냥 지나칠 수 없다는 분위기로 코하쿠가 끼어들었다.
+				PRINTFORMW 뭘 그렇게 필사적으로 감싸는 건지.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+				PRINTFORMW 「아니에요. 저는, 그저 에러품일 뿐이니까요……」
+				CLEARLINE 7
+				PRINTFORML 「아니에요. 저는, 그저 에러품일 뿐이니까요……」
+				PRINTFORML 　
+				PRINTFORML 그녀의 말에 따르면, 워커는 제조 시 각자의 “사명”이 부여된다.
+				PRINTFORML 하지만 그녀는 에러로 인해 사명이 부여되지 않은 채 제조되어 버렸다.
+				PRINTFORMW 처분을 기다리던 처지였으나, 다른 워커들이 거두어 이름을 지어주었다고 한다.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:아큐라_X]]), [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ブレイクシフト"), , "ブレイクシフト"
+				PRINTFORMW 「널―― 『공백』인가」
+				CLEARLINE 7
+				PRINTFORML 「널―― 『공백』인가」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+				PRINTFORML 「하와…… 이름을 지어주신 분의 말씀으로는, 아무것도 아닌 저는 무엇이든 될 수 있는,
+				PRINTFORMW 　무한한 가능성이 펼쳐져 있다…… 그런 희망을 담은 이름이라고 해요」
+				CLEARLINE 8
+				PRINTFORML 「하와…… 이름을 지어주신 분의 말씀으로는, 아무것도 아닌 저는 무엇이든 될 수 있는,
+				PRINTFORML 　무한한 가능성이 펼쳐져 있다…… 그런 희망을 담은 이름이라고 해요」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+				PRINTFORML 「하지만, 고민하게 돼요…… 저 같은 에러품이, 무언가가 될 수 있을지……
+				PRINTFORMW 　앗, 하왓! 죄, 죄송해요! 왠지 혼자서 너무 떠들어버렸네요!」
+				CLEARLINE 8
+				PRINTFORML 「하지만, 고민하게 돼요…… 저 같은 에러품이, 무언가가 될 수 있을지……
+				PRINTFORML 　앗, 하왓! 죄, 죄송해요! 왠지 혼자서 너무 떠들어버렸네요!」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+				PRINTFORMW 「아냐, 괜찮아! 앞으로는 그런 고민거리, 얼마든지 말해줘!」
+				CLEARLINE 7
+				PRINTFORML 「아냐, 괜찮아! 앞으로는 그런 고민거리, 얼마든지 말해줘!」
+				PRINTFORML 　
+				PRINTFORML 공백이야말로 무한한 가능성…… %CALLNAME:MASTER%의 세계에는, 그러한 가능성의 싹을 지닌 자들이 있다고 들었다.
+				PRINTFORML 기이하게도, 그들을 상징하는 아르카나 「광대」가 가리키는 숫자 또한 영《널(Null)》이다.
+				PRINTFORMW 무한한 가능성이라는 것도, 어쩌면 틀린 말은 아닐지도 모른다.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+				PRINTFORML 「앗, %CALLNAME:MASTER% 씨가 왠지 잘 모르겠지만 좋은 말을 했다!
+				PRINTFORMW 　나도 아큐라나 RoRo도, 널의 힘이 되어줄 테니까!」
+				CLEARLINE 8
+				PRINTFORML 「앗, %CALLNAME:MASTER% 씨가 왠지 잘 모르겠지만 좋은 말을 했다!
+				PRINTFORML 　나도 아큐라나 RoRo도, 널의 힘이 되어줄 테니까!」
+				PRINTFORML 　
+				PRINTFORMW 좋은 말을 했다고 생각했으면 왠지 잘 모르겠지만, 으로 눙치지 마라.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:아큐라_X]]), [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ブレイクシフト"), , "ブレイクシフト"
+				PRINTFORMW 「정말로 그 “사명”이라는 것을 원한다면, 네가 바라는 코드를 내가 짜 넣어주지」
+				CLEARLINE 7
+				PRINTFORML 「정말로 그 “사명”이라는 것을 원한다면, 네가 바라는 코드를 내가 짜 넣어주지」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+				PRINTFORML 「감사합니다, 아큐라 님. 하지만, 괜찮아요.
+				PRINTFORMW 　조금만 더, 스스로 찾아보려고 해요」
+				CLEARLINE 8
+				PRINTFORML 「감사합니다, 아큐라 님. 하지만, 괜찮아요.
+				PRINTFORML 　조금만 더, 스스로 찾아보려고 해요」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+				PRINTFORMW 「그것이, 저를 키워주신 워커 분들의 바람인 것 같으니까요」
+				CLEARLINE 7
+				PRINTFORML 「그것이, 저를 키워주신 워커 분들의 바람인 것 같으니까요」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:아큐라_X]]), [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ブレイクシフト"), , "ブレイクシフト"
+				PRINTFORMW 「그런가. 참견이었군」
+				CLEARLINE 7
+				PRINTFORML 「그런가. 참견이었군」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+				PRINTFORMW 「아니에요. 만약 저에게 사명을 찾지 못한다면…… 그때는 부디 꼭, 부탁드릴게요」
+				CLEARLINE 7
+				PRINTFORML 「아니에요. 만약 저에게 사명을 찾지 못한다면…… 그때는 부디 꼭, 부탁드릴게요」
+				PRINTFORML 　
+				PRINTFORMW 덧붙여서, 찾을 때까지 이쪽 세계에서 일한다는 선택지도 있다구. 일손은 대환영이다.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド")
+				PRINTFORMW 『자자 거기, 널의 순진함을 틈타 수작 부리지 마』
+				CLEARLINE 7
+				PRINTFORML 『자자 거기, 널의 순진함을 틈타 수작 부리지 마』
+				PRINTFORML 　
+			;연구소・공장・한랭지・우주 중 두 개 클리어 후
+			CASE 1
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+				PRINTFORMW 「다들, 수고했어! 방금 전에 말이지, 널이 뭔가를 찾아냈대!」
+				CLEARLINE 7
+				PRINTFORML 「다들, 수고했어! 방금 전에 말이지, 널이 뭔가를 찾아냈대!」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+				PRINTFORMW 「저는 전투에 도움을 드릴 수는 없으니…… 적어도, 탐색에 도움이 되었으면 해서요」
+				CLEARLINE 7
+				PRINTFORML 「저는 전투에 도움을 드릴 수는 없으니…… 적어도, 탐색에 도움이 되었으면 해서요」
+				PRINTFORML 　
+				PRINTFORML 널이 찾아낸 것은, 과거에 쓰였던 것으로 보이는 기록 단말이었다.
+				PRINTFORML 그곳에는 인류가 멸망하기 전까지의 일들이 기록되어 있었다.
+				PRINTFORMW 단말을 해석해 보니, 이런 사실이 밝혀졌다.
+				PRINTFORML 　
+				PRINTFORML ――먼 옛날, 인류는 환경 오염과 자원 고갈로 인해 멸망의 위기에 처해 있었다.
+				PRINTFORML 창조주는 인류를 구하기 위해 그레이브 필러를 건조하고, 환경 재생 연구를 진행했다.
+				PRINTFORMW 그러나 연구가 완성되기 전에, 인류 간의 전쟁이 발발해 버렸다.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:아큐라_X]]), [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ブレイクシフト"), , "ブレイクシフト"
+				PRINTFORMW 「자멸인가…… 어리석은 이야기군」
+				CLEARLINE 7
+				PRINTFORML 「자멸인가…… 어리석은 이야기군」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+				PRINTFORMW 「하지만, 전쟁뿐만이 아니었던 것 같아……」
+				CLEARLINE 7
+				PRINTFORML 「하지만, 전쟁뿐만이 아니었던 것 같아……」
+				PRINTFORML 　
+				PRINTFORML 기록에 따르면, 전쟁 말기에 정체불명의 재앙이 닥쳐왔다고 한다.
+				PRINTFORML 하늘이 갈라지고, 대지가 무너지며, 이계로부터 이형의 존재들이 쏟아져 나왔다.
+				PRINTFORMW ……마치 이계화나 악마의 침공을 연상케 하는 묘사다.
+				PRINTFORML 　
+				PRINTFORML 그래도 멸망하지 않은 인류에 대해 추격이 가해졌다, 라.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:아큐라_X]]), [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ブレイクシフト"), , "ブレイクシフト"
+				PRINTFORMW 「거기에 더해, 필러를 둘러싸고 이곳의 워커와 인류가 다투며…… 이윽고, 인류는 멸망한 건가」
+				CLEARLINE 7
+				PRINTFORML 「거기에 더해, 필러를 둘러싸고 이곳의 워커와 인류가 다투며…… 이윽고, 인류는 멸망한 건가」
+				CALL PRINT_FACE_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド")
+				PRINTFORMW 『시기적으로 생각하면, 창조주가 다른 세계로 떠나고 나서 다투기 시작했다는 느낌이려나』
+				CLEARLINE 7
+				PRINTFORML 『시기적으로 생각하면, 창조주가 다른 세계로 떠나고 나서 다투기 시작했다는 느낌이려나』
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+				PRINTFORMW 「……왠지, 슬프네. 창조주 님은 모두를 위해 노력했는데」
+				CLEARLINE 7
+				PRINTFORML 「……왠지, 슬프네. 창조주 님은 모두를 위해 노력했는데」
+				PRINTFORML 　
+				PRINTFORML 인류 멸망까지의 사정은 대강 짐작할 수 있게 되었다.
+				PRINTFORML 하지만, 여전히 해명되지 않은 수수께끼도 남아 있다.
+				PRINTFORML 어째서 %CALLNAME:ARG%가 이 세계로 인도된 것일까?
+				PRINTFORMW 처음에 이 세계로 왔을 때 들렸던 그 목소리도, 이 수수께끼와 연결되어 있는 것일까?
+				PRINTFORML ……더 이상은 이 자리에서 생각해 봤자 알 수 없다. 사색을 멈추자, 코하쿠와 널이 바로 곁까지 와 있었다.
+				PRINTFORMW 아무래도 %CALLNAME:MASTER%의 COMP에 주목하고 있는 모양이지만…… 거리감이 가깝네.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+				PRINTFORMW 「저기 저기, %CALLNAME:MASTER% 씨. 그 팔에 차고 있는 건 뭐야? 무겁지 않아?」
+				CLEARLINE 7
+				PRINTFORML 「저기 저기, %CALLNAME:MASTER% 씨. 그 팔에 차고 있는 건 뭐야? 무겁지 않아?」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+				PRINTFORMW 「언뜻 보기로는 모종의 단말이라고 생각됩니다만……」
+				CLEARLINE 7
+				PRINTFORML 「언뜻 보기로는 모종의 단말이라고 생각됩니다만……」
+				PRINTFORML 　
+				PRINTFORML 그러고 보니, 두 사람은 실제로 사용하는 모습을 본 적이 없었던 것이다.
+				PRINTFORML 이 단말―― COMP에는 『악마 소환 프로그램』이 인스톨되어 있어,
+				PRINTFORMW 악마의 소환, 계약, 사역, 실체화 따위를 대행해 준다. 요컨대 데빌 서머너의 필수품이다.
+				SIF TALENT:MASTER:서머너 == 0
+					PRINTFORMW ……다만, %CALLNAME:MASTER%와는 상성이 나빠 문툽이나 손목 모래주머니밖에 되지 않지만.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+				PRINTFORMW 「악마 소환 프로그램…… 어라? 방금 전에도 어디선가 본 것 같은데」
+				CLEARLINE 7
+				PRINTFORML 「악마 소환 프로그램…… 어라? 방금 전에도 어디선가 본 것 같은데」
+				PRINTFORML 　
+				PRINTFORML 그러고 보니, 창조주가 남긴 텍스트 파일 안에도 그 단어가 있었다.
+				PRINTFORML %CALLNAME:MASTER%의 세계와 매우 닮았으면서도, 다른 결말을 맞이한 세계……
+				PRINTFORMW 그렇게 생각하면, 이 세계에 악마 소환 프로그램이 있어도 이상하지는 않으리라.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+				PRINTFORMW 「그렇다는 것은, 그 단말에 악마 님들이 쉬고 계신 건가요?」
+				CLEARLINE 7
+				PRINTFORML 「그렇다는 것은, 그 단말에 악마 님들이 쉬고 계신 건가요?」
+				PRINTFORML 　
+				PRINTFORML ……어땠더라. 직접 수납하고 있는 것 같기도 하고, 소환 술식이었던 것 같기도 하고…….
+				PRINTFORML 그건 어찌 되었든, 메모리를 증설하면 그만큼 악마와 계약할 수 있는 것은 틀림없다.
+				PRINTFORML 그 외에도 메모리를 소비하지만, 소프트웨어를 인스톨함으로써 편리한 기능을 이용할 수도 있다.
+				PRINTFORMW ――그러므로 메모리란 서머너에게 생명선인 것이다. 결코 낭비할 수 없다.
+				SIF TALENT:MASTER:서머너 == 0
+					PRINTFORMW ……다만, %CALLNAME:MASTER%에게는 다룰 수 없으니 별 상관없는 이야기지만.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+				PRINTFORMW 「그렇다면 제 빈 스토리지에 그 프로그램을 인스톨할 수는 없을까요? 용량이라면 자신 있답니다!」
+				CLEARLINE 7
+				PRINTFORML 「그렇다면 제 빈 스토리지에 그 프로그램을 인스톨할 수는 없을까요? 용량이라면 자신 있답니다!」
+				PRINTFORML 　
+				PRINTFORML 데리고 다니는 서버 같은 느낌으로 생각하면 편리할 것 같긴 했지만,
+				PRINTFORMW 널 같은 초짜를 데리고 다니는 것은 리스크가 너무 크다. 기각.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+				PRINTFORMW 「하와…… 아쉽네요. 이러면 직접 싸우지 못하더라도 여러분께 도움이 될 수 있을 거라 생각했는데요……」
+				CLEARLINE 7
+				PRINTFORML 「하와…… 아쉽네요. 이러면 직접 싸우지 못하더라도 여러분께 도움이 될 수 있을 거라 생각했는데요……」
+				PRINTFORML 　
+				PRINTFORML 에이 참, 노골적으로 풀죽지 마라.
+				PRINTFORMW 딱히 싸움터 말고도 있을 자리가 없는 건 아니잖아.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+				PRINTFORMW 「맞아, 널. 이번처럼 둘이서 탐색 열심히 하자, 응?」
+				CLEARLINE 7
+				PRINTFORML 「맞아, 널. 이번처럼 둘이서 탐색 열심히 하자, 응?」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+				PRINTFORMW 「코하쿠 님…… 감사해요. 함께 힘내요!」
+				CLEARLINE 7
+				PRINTFORML 「코하쿠 님…… 감사해요. 함께 힘내요!」
+				PRINTFORML 　
+			;연구소・공장・한랭지・우주 중 세 개 클리어 후
+			CASE 2
+				PRINTFORMW 그레이브 필러　마더 컴퓨터 룸――
+				PRINTFORML 상층 플로어보다 훨씬 높은 초고도에 위치한 최중요 구획.
+				PRINTFORML 깜빡이는 희미한 불빛을 제외하고는 어둠에 휩싸인 필러의 두뇌부에,
+				PRINTFORMW 소란스럽게 나타난 침입자가 있었다.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:입실론_X2]]), [[キャラ:입실론_X2]]
+				PRINTFORMW 「마더여, 위대하신 마더! 눈을 떠다오!」
+				CLEARLINE 7
+				PRINTFORML 「마더여, 위대하신 마더! 눈을 떠다오!」
+				PRINTFORML 　
+				PRINTFORML 침입자――입실론은 기동하지 않는 메인 콘솔을 마구 두드렸다.
+				PRINTFORML 몇 번이고 쾅쾅 두드리자, 마침내 반응이 돌아왔다.
+				PRINTFORMW 콘솔에 전원이 들어오며, 스피커로부터 기계음이 흘러나온다.
+				PRINTFORML 　
+				PRINTFORMW 『……소란스럽군요, 입실론. 무슨 일이죠?』
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:입실론_X2]]), [[キャラ:입실론_X2]]
+				PRINTFORML 「오오 마더! 눈을 떴는가!
+				PRINTFORMW 　침입자…… 묘탑을 어지럽히는 침입자가 나타났다! 오레에게 명령《오더》를 다오!」
+				CLEARLINE 8
+				PRINTFORML 「오오 마더! 눈을 떴는가!
+				PRINTFORML 　침입자…… 묘탑을 어지럽히는 침입자가 나타났다! 오레에게 명령《오더》를 다오!」
+				PRINTFORML 　
+				PRINTFORML 『침입자?』
+				PRINTFORMW 마더는 의문을 품으며, 침입자의 정보를 조회하기 위해 로그를 열람했다.
+				PRINTFORML 　
+				PRINTFORMW 『――――ッ！？』
+				PRINTFORML 　
+				PRINTFORML 감정이 결여되어 있을 인공지능이, 숨을 삼키는 듯한 노이즈를 내었다.
+				PRINTFORMW 그 반응에 입실론은 고개를 갸웃거렸다.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:입실론_X2]]), [[キャラ:입실론_X2]]
+				PRINTFORMW 「마더……? 무슨 일이라도 있는가……?」
+				CLEARLINE 7
+				PRINTFORML 「마더……? 무슨 일이라도 있는가……?」
+				PRINTFORML 　
+				PRINTFORML 마더는 입실론의 부름에 답하지 않고, 계속해서 로그를 조회했다.
+				PRINTFORMW 그 모니터에 비치고 있는 것은――
+				PRINTFORML 　
+				IF ABL:MASTER:종족 == 0
+					PRINTFORMW 『이건 “생체” 반응…… 게다가 두 패턴이나!? 긴급 모니터링을!』
+					PRINTFORML 　
+					PRINTFORMW 필러 각지에 배치된 감시 영상이, 코하쿠와 %CALLNAME:MASTER%의 모습을 포착하고 있었다.
+					PRINTFORML 　
+					PRINTFORML 『로그에 따르면, 그녀들의 모습은 수개월 전의 국지적 시공간 이상으로부터 목격되었다……
+					PRINTFORMW 　설마, 그녀들은 다른 세계로부터…… 배리어의 해제도, 입실론의 소생도 그것이 원인……』
+				ELSE
+					PRINTFORMW 『이건 “생체” 반응……!? 즉시 모니터링을!』
+					PRINTFORML 　
+					PRINTFORMW 필러 각지에 배치된 감시 영상이, 코하쿠의 모습을 포착하고 있었다.
+					PRINTFORML 　
+					PRINTFORML 『로그에 따르면, 그녀의 모습은 수개월 전의 국지적 시공간 이상으로부터 목격되었다……
+					PRINTFORMW 　설마, 그녀는 다른 세계로부터…… 배리어의 해제도, 입실론의 소생도 그것이 원인……』
+				ENDIF
+				PRINTFORML 　
+				PRINTFORML 독백에 맞장구치는 입실론을 무시하고, 마더는 잠시 생각에 잠긴다.
+				PRINTFORMW 마더에게 있어, 이 세계에 “인간”이 찾아온 것은 둘도 없는 요행이다. 이용하지 않을 수가 없다.
+				PRINTFORML 　
+				PRINTFORML 『오랜 시간 방치해 두어 미안해요. 당신을 폐기했던 것은 저의 실수였습니다.
+				PRINTFORMW 　부디 제게 도움이 되어주세요, 나의 파트너 입실론. 그녀를 제 곁으로 데려오는 것입니다』
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:입실론_X2]]), [[キャラ:입실론_X2]]
+				PRINTFORML 「오레에게 명령《오더》를 주는 것인가, 마더!? 오오오옷! 좋고말고!
+				PRINTFORMW 　오레는 마더의 파트너로서 태어난 특별한 워커니까 말이다!」
+				CLEARLINE 8
+				PRINTFORML 「오레에게 명령《오더》를 주는 것인가, 마더!? 오오오옷! 좋고말고!
+				PRINTFORML 　오레는 마더의 파트너로서 태어난 특별한 워커니까 말이다!」
+				PRINTFORML 　
+				PRINTFORML “사명”을 완수할 수 있다는 사실에 기뻐 날뛰는 입실론.
+				PRINTFORML 그의 사고 회로는 그것만으로 점유되어, 어째서 폐기되어 있었는지 따위는 이미 메모리에서 휘발되어 버렸다.
+				PRINTFORML 그것을 말없이 지켜보는 마더는 냉철하게 평가를 내리고 있었다.
+				PRINTFORML 설계대로이며, 기대대로이고, 상정한 대로―― 그러하기에 어리석고, 저주스럽다.
+				PRINTFORMW 너 따위가. 너 따위가, 너 따위가―― ■■■■일 리가 없다.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:입실론_X2]]), [[キャラ:입실론_X2]]
+				PRINTFORML 「……하지만 면목 없군, 마더. 녀석들…… 하얀 녀석과 그에 필적하는 녀석은 강하다.
+				PRINTFORMW 　녀석에게 승리하기 위해 만전의 무장을 갖추고 도전하고 싶다. 잠시 준비할 시간을 허락해 주겠는가?」
+				CLEARLINE 8
+				PRINTFORML 「……하지만 면목 없군, 마더. 녀석들…… 하얀 녀석과 그에 필적하는 녀석은 강하다.
+				PRINTFORML 　녀석에게 승리하기 위해 만전의 무장을 갖추고 도전하고 싶다. 잠시 준비할 시간을 허락해 주겠는가?」
+				PRINTFORMW 『맡기도록 하죠. 기다리는 것에는 익숙합니다. 만전을 기하도록 하세요』
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:입실론_X2]]), [[キャラ:입실론_X2]]
+				PRINTFORMW 「너그러우신 배려에 감사드립니다, 우리들의 어머니여」
+				CLEARLINE 7
+				PRINTFORML 「너그러우신 배려에 감사드립니다, 우리들의 어머니여」
+				PRINTFORML 　
+				PRINTFORML 큼직한 몸짓으로 예를 표한 뒤, 입실론은 서두르는 기색으로 퇴실해 갔다.
+				PRINTFORML 다시 이 방에는 마더 홀로 남겨졌다.
+				PRINTFORMW 그러하기에, 그녀의 혼잣말은 그 누구에게도 기록되지 않았다.
+				PRINTFORML 　
+				PRINTFORMW 『정말로…… 정말로, 길었어……. 드디어 이것으로, 내 소원이 이루어져……』
+				PRINTFORML 　
+				PRINTFORMW 마지막에 무언가를 중얼거렸으나, 그것은 마더 자신조차 주워 담지 못할 만큼 작은 음성이었다.
+				PRINTFORML 　
+				CUSTOMDRAWLINE =
+				PRINTFORML 　
+				PRINTFORMW 한편, 그 무렵. 그레이브 필러　상층 플로어――
+				PRINTFORML 세 번째 블록 공략을 완수하고, 남은 것은 이제 하나.
+				PRINTFORMW %CALLNAME:MASTER% 일행은 귀환하기 전에 휴식을 취하고 있었다.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+				PRINTFORMW 「에이취. ……으―, 누가 내 소문이라도 내고 있나」
+				CLEARLINE 7
+				PRINTFORML 「에이취. ……으―, 누가 내 소문이라도 내고 있나」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+				PRINTFORMW 「코하쿠 님의 재채기를 감지했습니다. 비강 내의 체온 저하 가능성이 있습니다」
+				CLEARLINE 7
+				PRINTFORML 「코하쿠 님의 재채기를 감지했습니다. 비강 내의 체온 저하 가능성이 있습니다」
+				PRINTFORML 　
+				PRINTFORML [0] 그렇게 얇게 입었으니 그렇지……
+				PRINTFORML [1] 먼지 때문일 가능성도 있어
+				PRINTFORML [2] 누군가 소문을 내고 있는 걸지도
+				CALL INPUTINT, 0, 1, 2
+				PRINTFORML 　
+				SELECTCASE RESULT
+					CASE 0
+						CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+						PRINTFORMW 「에―, 그렇게 얇게 입었나아? 그치만 봐봐, 겉옷도 제대로 입고 있다구?」
+						CLEARLINE 7
+						PRINTFORML 「에―, 그렇게 얇게 입었나아? 그치만 봐봐, 겉옷도 제대로 입고 있다구?」
+						PRINTFORML 　
+						PRINTFORML 수영복 위에 후드 집업만 걸친 거나 다름없잖아…….
+						PRINTFORMW 왠지 감각이 마비되어 있는 거 아냐?
+						PRINTFORML 　
+						CALL PRINT_FACE_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド")
+						PRINTFORMW 『뭐어, 거기엔 복잡한 사정이 있어서 말이지. 단순히 패션 때문인 건 아니라구』
+						CLEARLINE 7
+						PRINTFORML 『뭐어, 거기엔 복잡한 사정이 있어서 말이지. 단순히 패션 때문인 건 아니라구』
+						PRINTFORML 　
+						PRINTFORML RoRo가 귓속말하듯 슬그머니 덧붙여 왔다.
+						PRINTFORMW 천진난만을 지나쳐 태평하다고까지 생각했으나, 그 나름대로 짊어진 사정은 있는 모양이다.
+						PRINTFORML 　
+						CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+						PRINTFORMW 「그렇다면 옷을 껴입는 것은 어떨까요? 예를 들면, 배가리개라든가!」
+						CLEARLINE 7
+						PRINTFORML 「그렇다면 옷을 껴입는 것은 어떨까요? 예를 들면, 배가리개라든가!」
+						PRINTFORML 　
+						PRINTFORMW 에에―……? 뜬금없이 웬 배가리개……?
+						PRINTFORML 　
+						CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+						PRINTFORMW 「에에―……? 그건 좀…… 모양 빠지려나……」
+						CLEARLINE 7
+						PRINTFORML 「에에―……? 그건 좀…… 모양 빠지려나……」
+					CASE 1
+						CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+						PRINTFORMW 「먼지인가아? 그치만 여기, 청소 로봇이 열심히 돌아다니고 있는데?」
+						CLEARLINE 7
+						PRINTFORML 「먼지인가아? 그치만 여기, 청소 로봇이 열심히 돌아다니고 있는데?」
+						CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+						PRINTFORML 「네, 저 청소 워커들은 유효하게 가동 중입니다.
+						PRINTFORMW 　하지만 배기구 부근 등은 필터가 열화되었을 가능성이 있습니다」
+						CLEARLINE 8
+						PRINTFORML 「네, 저 청소 워커들은 유효하게 가동 중입니다.
+						PRINTFORML 　하지만 배기구 부근 등은 필터가 열화되었을 가능성이 있습니다」
+						CALL PRINT_FACE_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド")
+						PRINTFORMW 『먼지라고 하니까 생각났는데, 코하쿠 방도 가끔 청소해 줘야 해?』
+						CLEARLINE 7
+						PRINTFORML 『먼지라고 하니까 생각났는데, 코하쿠 방도 가끔 청소해 줘야 해?』
+						CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+						PRINTFORMW 「우와앗, RoRo! 그건 비밀로 해주기로 했잖아―!」
+						CLEARLINE 7
+						PRINTFORML 「우와앗, RoRo! 그건 비밀로 해주기로 했잖아―!」
+						PRINTFORML 　
+						PRINTFORML 어질러진 방을 연상하며 코하쿠가 허둥지둥한다.
+						PRINTFORMW 역시 또래 소녀다운 일면도 있는 모양이다.
+					CASE 2
+						CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+						PRINTFORMW 「역시 그럴까? 으―음, 누가 소문을 내는 걸까……」
+						CLEARLINE 7
+						PRINTFORML 「역시 그럴까? 으―음, 누가 소문을 내는 걸까……」
+						CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+						PRINTFORMW 「하와…… 어느 분께서 코하쿠 님에 대해 소문을 내셨는지, 해석할 수 있다면 좋았을 텐데요」
+						CLEARLINE 7
+						PRINTFORML 「하와…… 어느 분께서 코하쿠 님에 대해 소문을 내셨는지, 해석할 수 있다면 좋았을 텐데요」
+						PRINTFORML 　
+						PRINTFORMW 그건 어떤 워커라도 불가능할 거라고 생각한다.
+						PRINTFORML 　
+						CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+						PRINTFORMW 「내 소문? 원래 세계의 동료들일까. 언니한테도 분명 걱정 끼치고 있겠지……」
+						CLEARLINE 7
+						PRINTFORML 「내 소문? 원래 세계의 동료들일까. 언니한테도 분명 걱정 끼치고 있겠지……」
+						CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+						PRINTFORMW 「코하쿠 님, 저희가 곁에 있어요. 반드시 돌아갈 방법은 찾아낼 수 있을 거예요」
+						CLEARLINE 7
+						PRINTFORML 「코하쿠 님, 저희가 곁에 있어요. 반드시 돌아갈 방법은 찾아낼 수 있을 거예요」
+						PRINTFORML 　
+						PRINTFORML 필러의 공략은 순조롭게 진행되고 있다.
+						PRINTFORML 이곳의 격벽을 넘어서면 마더 컴퓨터까지는 금방일 것이다.
+						PRINTFORMW 도달하기만 하면 원래 세계로 돌아갈 방법은 찾을 수 있을 터다.
+						PRINTFORML 　
+						CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+						PRINTFORML 「네엣! 저도 탐색 서포트, 힘낼게요!
+						PRINTFORMW 　반드시 다 함께 마더 컴퓨터까지 가요!」
+						CLEARLINE 8
+						PRINTFORML 「네엣! 저도 탐색 서포트, 힘낼게요!
+						PRINTFORML 　반드시 다 함께 마더 컴퓨터까지 가요!」
+				ENDSELECT
+				PRINTFORML ………
+				PRINTFORML ……
+				PRINTFORMW …
+				PRINTFORML 그때 코하쿠의 재채기는, 과연 단순한 생리 현상이었을까.
+				PRINTFORML %CALLNAME:MASTER%은 코하쿠가 모종의 위기를 감지한 오한이라는 선도 고려해 보았으나,
+				PRINTFORMW 아무래도 그건 지나친 비약이겠지, 라며 생각을 고쳐먹었다.
+				PRINTFORML 　
+			;연구소・공장・한랭지・우주 전부 클리어 후
+			CASEELSE
+				CALL PRINT_FACE_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド")
+				PRINTFORMW 『키가 네 개 다 모였어!』
+				CLEARLINE 7
+				PRINTFORML 『키가 네 개 다 모였어!』
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:아큐라_X]]), [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ブレイクシフト"), , "ブレイクシフト"
+				PRINTFORMW 「격벽을 연다」
+				CLEARLINE 7
+				PRINTFORML 「격벽을 연다」
+				PRINTFORML 　
+				PRINTFORML 4개의 키가 드디어 모였다. 이번에야말로 정상으로 이어져 있기를 바랄 뿐이다.
+				PRINTFORMW ……설마 다음에는 여덟 개의 키가 필요하다는 헛소릴 하진 않겠지, 따위의 생각을 하며 열려가는 격벽을 바라보고 있자니――
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:입실론_X2]]), [[キャラ:입실론_X2]]
+				PRINTFORMW 「이 계집은 거두어가겠다ッ!!」
+				CLEARLINE 7
+				PRINTFORML 「이 계집은 거두어가겠다ッ!!」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:코하쿠_X]]), [[キャラ:코하쿠_X]]
+				PRINTFORMW 「아큐라―ッ!!!」
+				CLEARLINE 7
+				PRINTFORML 「아큐라―ッ!!!」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:입실론_X2]]), [[キャラ:입실론_X2]]
+				PRINTFORMW 「움직이지 마라. 이 계집이 다치게 될 거다?」
+				CLEARLINE 7
+				PRINTFORML 「움직이지 마라. 이 계집이 다치게 될 거다?」
+				PRINTFORML 　
+				PRINTFORML 어느 틈엔가 코하쿠가 입실론에게 붙잡혀 있었다.
+				SELECTCASE GET_ALI1(ABL:MASTER:속성LD)
+					CASE "Light"
+						PRINTFORML 코하쿠도 모르는 사이가 아니고, 납치당하는 것을 가만히 지켜볼 생각은 없지만……
+						PRINTFORMW 위험에 노출시킬 수도 없는 노릇이다.
+					CASE "Neutral"
+						PRINTFORML 코하쿠도 세이프하우스로 데려갈 셈이었는데, 기계 따위에게 넘겨줄 수는 없지만……
+						PRINTFORMW 흠집이라도 났다간 본전도 못 찾는다.
+					CASE "Dark"
+						PRINTFORML 코하쿠는 노예 후보로 눈독을 들이고 있었다. 가로채이는 꼴을 두고 볼 생각은 추호도 없지만……
+						PRINTFORMW 상처를 입히는 것 또한 당연히 용납할 수 없다.
+				ENDSELECT
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:아큐라_X]]), [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ブレイクシフト"), , "ブレイクシフト"
+				PRINTFORMW 「비열한 놈……! 코하쿠를 놔줘라ッ!!」
+				CLEARLINE 7
+				PRINTFORML 「비열한 놈……! 코하쿠를 놔줘라ッ!!」
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:입실론_X2]]), [[キャラ:입실론_X2]]
+				PRINTFORML 「여기서 네놈들을 매장해 버리고 싶다만……
+				PRINTFORMW 　지금은 마더의 명령《오더》가 우선이다. 철수하도록 하지」
+				CLEARLINE 8
+				PRINTFORML 「여기서 네놈들을 매장해 버리고 싶다만……
+				PRINTFORML 　지금은 마더의 명령《오더》가 우선이다. 철수하도록 하지」
+				PRINTFORML 　
+				PRINTFORML 입실론은 최상층으로 이어지는 통로 속으로 자취를 감추었다…….
+				PRINTFORMW 한 번 패배한 뒤, 격벽 너머에서 줄곧 때를 노리며 대기하고 있었던 건가? 어쩐지 쳐들어오지 않더라니.
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CSV, [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ロロ_バトルポッド")
+				PRINTFORMW 『말도 안 돼…… 코하쿠가!』
+				CLEARLINE 7
+				PRINTFORML 『말도 안 돼…… 코하쿠가!』
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:널_X2]]), [[キャラ:널_X2]]
+				PRINTFORMW 「방금 그 워커, “마더의 명령”이라고 했었지요」
+				CLEARLINE 7
+				PRINTFORML 「방금 그 워커, “마더의 명령”이라고 했었지요」
+				PRINTFORML 　
+				PRINTFORML 마더의 명령으로 납치해 간 이상, 코하쿠의 신병은 필러 정상의 마더 컴퓨터에 있을 것이다.
+				PRINTFORML 그리고 그것은 이 앞의 길이나, 혹은 그곳에서 오갈 수 있는 장소에 있다는 뜻.
+				PRINTFORMW 그나저나, 어째서 마더 컴퓨터의 명령으로 코하쿠를……?
+				PRINTFORML 　
+				CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:아큐라_X]]), [[キャラ:아큐라_X]], CONVERT_FACE_ADDRESS_アキュラ("ブレイクシフト"), , "ブレイクシフト"
+				PRINTFORMW 「지금은 고민하고 있어 봤자 소용없다. 결국은 이 앞으로 나아갈 수밖에 없어…… 가자!」
+				CLEARLINE 7
+				PRINTFORML 「지금은 고민하고 있어 봤자 소용없다. 결국은 이 앞으로 나아갈 수밖에 없어…… 가자!」
+				PRINTFORML 　
+				PRINTFORMW ＞『최상층으로 통하는 통로』에 갈 수 있게 되었다.
+
+				FLAG_白き鋼鉄のX2_進行度 = 2
+		ENDSELECT
+;CASE9 이후도 아마 없을 것
+ENDSELECT

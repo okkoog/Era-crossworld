@@ -1,0 +1,90 @@
+﻿;スキル名
+@SKILL_NAME_AW_760,ARG
+RESULTS = 나스트론드
+
+;　명중
+@SKILL_HITRATE_AW_760, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_AW_760, ARG
+RETURN 1000
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_AW_760,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_AW_760,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_AW_760, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_AW_760,ARG
+RETURN 0
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_AW_760
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_AW_760, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+@SKILL_HEAL_TYPE_AW_760, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("割合")
+
+;계승타입,制限なし
+@SKILL_SUCCESSION_TYPE_AW_760, ARG
+RETURN GET_SUCCESSION_NUM("자동효과")
+;　 説明文の表示
+@SKILL_EXPLAIN_AW_760, ARG
+PRINTL 사룡 니드호그의 각성 스킬
+PRINTL 자동: 이 스킬의 소지자 이외가 사망했을 때 이하의 연동 효과가 발동한다.
+PRINTL 　　　「자신의 HP를 완전 회복하고, 추가로 즉사 공격을 1회 방어하는 결계를 부여한다.」
+
+@SKILL_EXPLAIN_TOOLTIP_AW_760, ARG
+RESULTS:0 = 자동: 이 스킬의 소지자 이외가 사망했을 때 이하의 연동 효과가 발동한다.
+RESULTS:1 =　　　「자신의 HP를 완전 회복하고, 추가로 즉사 공격을 1회 방어하는 결계를 부여한다.」
+
+@SKILL_ACTIONABLE_BATTLE_AW_760, ARG
+RETURN 0
+
+;継承に必要な部位
+@SKILL_SKILLEND_AW_760,ARG
+#DIM LCOUNT
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+	RETURN 0
+;入力可能な状態じゃないとだめ
+SIF !ACTIONABLE_CHARA_F(ARG)
+	RETURN 0
+;味方の誰かが死んでいる必要がある。
+FOR LCOUNT, 0, BCHARANUM
+	SIF !IS_FRIEND(BCHARA:LCOUNT)
+		CONTINUE
+	SIF !GET_CREC_ACT(, BCHARA:LCOUNT, "KILL")
+		CONTINUE
+	CALL ACTION_AW_760, ARG, , [[스킬:각성스킬]]
+	BREAK
+NEXT
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_AW_760,ARG,ARG:1, ARG:2
+#DIM LCOUNT
+IF CFLAG:ARG:PT플래그 > 0
+	SETCOLOR COLOR("FRIEND")
+ELSE
+	SETCOLOR COLOR("ENEMY")
+ENDIF
+
+CALL PRINT_ACT_MESSAGE, ARG,  SKILL_NUM_F("각성스킬"), , , , "NOWAIT"
+RESETCOLOR
+CALL SKILL_INVALID_WALL, ARG, ARG, "테트라쟈", "短縮"
+CALL HEAL_SINGLE, ARG, ARG, ARG:2, , , TSTR:스킬메시지추가효과

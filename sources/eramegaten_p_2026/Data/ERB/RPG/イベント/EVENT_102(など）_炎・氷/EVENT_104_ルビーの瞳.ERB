@@ -1,0 +1,62 @@
+﻿;=======================================================================
+;更新日時　　更新者　　　内容
+;202202/23　 実績中毒者　ダンジョンナンバーを移動
+;202202/26　 実績中毒者　イベントフラグタイミングがおそらく想定と違うので修正
+;====================
+@GET_EVENT_NAME_104
+#FUNCTIONS
+RESULTS_F '= "루비의눈동자"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_104
+SIF イベントフラグ:104:0
+	RETURN 0
+;ギンヌンガガップで守護神に会う.アミかレナをパーティに入れている
+SIF ダンジョンフラグ:98:0 != 4
+	RETURN 0
+SIF FINDCHARA_B([[キャラ:레나]]) != 2 && FINDCHARA_B([[キャラ:아미]]) != 2
+	RETURN  0
+RESULTS = 루비의눈동자
+RETURN 1
+
+;====================
+@SHOPCOM_EVENT_104
+CUSTOMDRAWLINE =
+PRINTFORML 돌기 시작한 새로운 세계를 창세를 품었던 소녀와 걷다 보니, 힘을 간직한 루비를 줍게 된다
+PRINTFORMW 통상 라그의 상점에서 취급하는 것보다도 등급이 위인 듯하지만…
+PRINTFORMW 「저기, 거기 계신 분」
+PRINTFORMW 한쪽 눈을 감은 용녀가 이쪽을 마력으로 붙잡는다. 그렇다고 해도 시선을 떼지 못하게 하는 정도였지만
+PRINTFORMW 「이 근처에서 오른쪽 눈을 잃어버렸어. 혹시 보게 되면 알려주지 않을래?」
+
+PRINTW 건네주자 비블의 루비가 본래의 모습을 되찾는다…
+PRINTW 「친절한 사람이네. 게다가 어쩌면 운명의…」
+PRINTL 
+PRINTW 「이건 답례라고 생각하고 받아줘…」
+PRINTW 비블의 온기가 이쪽에 겹쳐진다. 하지만 물소리가 울리기 전에 두 사람은 떼어놓아졌다
+IF FINDCHARA_B([[キャラ:레나]]) == 2
+	BASE:(RESULT:1):운 += 2
+	PRINTFORML ＞%CALLNAME:(RESULT:1)%의 운이 2 올랐다
+	
+	PRINTFORMW 「이 사람은, 선생님은, 제 건데요!?」
+	PRINTFORMW 레나는 전신전령으로 비블을 위협하고 있다… 타고난 고집스러움을 되찾아가는 모양이다
+	IF TALENT:(RESULT:1):감정결핍
+		PRINTFORMW ＞%CALLNAME:(RESULT:1)%은(는) 【감정결핍】을 잃었다
+		TALENT:(RESULT:1):감정결핍 = 0
+	ENDIF
+ELSEIF FINDCHARA_B([[キャラ:아미]]) == 2
+	BASE:(RESULT:1):운 += 2
+	PRINTFORML ＞%CALLNAME:(RESULT:1)%의 운이 2 올랐다
+	PRINTFORMW 「그런 거, 좋지 않다고 생각해요.」
+	PRINTFORMW  기분 탓인지 아미의 눈동자가 이쪽을 책망하고 있는 것처럼 보인다…. 감정의 표출은 기뻐해야 할 일이지만
+	IF TALENT:(RESULT:1):감정결핍
+		PRINTFORMW ＞%CALLNAME:(RESULT:1)%은(는) 【감정결핍】을 잃었다
+		TALENT:(RESULT:1):감정결핍 = 0
+	ENDIF
+ENDIF
+
+PRINTW 「어머, 흐뭇해라. 이런 선약이 있다면 색시가 되는 건 그만두도록 할게」
+PRINTW 「하지만 마음에 들었어, 이건 받아줘」
+CALL GET_ITEMS,"운의향",1
+PRINTW ＞운의향을 손에 넣었다
+PRINTW 「당신에게 천하무적의 행운을」
+イベントフラグ:104:0 = 1

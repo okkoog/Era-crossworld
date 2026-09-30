@@ -1,0 +1,168 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILLxxxx_YYYY.csv
+;	Facility	:SKILL:2085 (브류나크)。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001	2014/12/17		セーロGUN					新規作成
+;	002 2019/05/04		魔改造の人					スキル性能変更
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;-------------------------------------------------------------------------------
+; [メモ]
+; とあるキャラ専用魔力依存螺旋の蛇。コスパと引き換えに命中上がった。
+; 追記：
+; ランダムに５体までの敵を一回ずつ攻撃する万能物理スキルに改変。
+; 攻撃できる敵の数が少ないほど威力が上がる。(処理としては敵の数が多いほど威力が下がる)
+; 万魔の一撃や螺旋の蛇と比べると、消費コスト増加と対象を自由に選べなくなった代わりに攻撃性能が上がった感じ。
+;-------------------------------------------------------------------------------
+
+
+
+;スキル名
+@SKILL_NAME_2085,ARG
+RESULTS = 브류나크
+
+;　명중
+@SKILL_HITRATE_2085, ARG
+RETURN 130
+
+;　威力
+@SKILL_POWER_2085, ARG
+#LOCALSSIZE 1
+#LOCALSIZE 5
+SIF ARG < 0 || スキル属性表示中
+	RETURN 400
+IF CFLAG:(ARG):PT플래그 == 0
+	LOCAL:1 = 1
+	LOCAL:2 = 7
+ELSE
+	LOCAL:1 = 7
+	LOCAL:2 = 17
+ENDIF
+
+LOCAL:3 = 0
+FOR LOCAL , LOCAL:1 , LOCAL:2
+	LOCALS = 포지션{LOCAL}
+	SIF FLAG:LOCALS < 0 || GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) == "DYING"
+		CONTINUE
+	LOCAL:3++
+NEXT
+SIF LOCAL:3 > 5
+	LOCAL:3 = 5
+LOCAL:4 = 650 - (LOCAL:3 * 50)
+RETURN LOCAL:4
+
+;高クリティカル
+@SKILL_CRITICAL_RATE_2085, ARG
+RETURN 20
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2085,ARG
+RETURN 5
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2085,ARG
+RETURN 5
+
+;一体辺りの最大ＨＩＴ数
+@SKILL_MAXATK_PER_2085,ARG
+RETURN 1
+
+;一体辺りの最低ＨＩＴ数
+@SKILL_MINATK_PER_2085,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2085, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2085,ARG
+RETURN 60
+
+;　相性
+@SKILL_TYPE_2085,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2085
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2085, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2085, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2085,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2085,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;スキルがランダム範囲かどうか
+@SKILL_RAND_TARGET_2085,ARG
+RETURN 1
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2085, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2085
+RETURN GET_SUCCESSION_NUM("만능")
+
+@継承不能_2085
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_2085, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2085
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2085, ARG = -1
+RETURN 15
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2085, ARG, ARG:1, ARG:2
+CALL ATTACK_RAND,ARG,ARG:1,2085
+
+
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2085, ARG
+PRINTL 상대에게 작열의 창을 날려、죽음에 이르게 한다。사신 루그의 필살기。
+PRINTL 적 전체에서 최대 ５체까지 랜덤으로 만능 상성으로 １회씩 공격한다。물리의존。
+PRINTL 적의 수가 적을수록 위력이 오른다。
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2085,ARG
+RETURN 1
+;とくにない
+

@@ -1,0 +1,169 @@
+﻿;スキル名
+@SKILL_NAME_怖気立つ触腕,ARG
+IF ARG == -1
+	RESULTS = 소름 끼치는 촉완
+ELSEIF HAVE_PU_SKILL(ARG, "紺碧の種") 
+	RESULTS = 소름 끼치는 촉완★
+ELSE
+	RESULTS = 소름 끼치는 촉완
+ENDIF
+
+;　명중
+@SKILL_HITRATE_怖気立つ触腕,ARG
+SIF ARG == -1
+	RETURN 100
+SIF HAVE_PU_SKILL(ARG, "紺碧の種") 
+	RETURN 120
+RETURN 100
+
+;　威力
+@SKILL_POWER_怖気立つ触腕,ARG
+SIF ARG == -1
+	RETURN 110
+SIF HAVE_PU_SKILL(ARG, "紺碧の種") 
+	RETURN 210
+RETURN 110
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_怖気立つ触腕,ARG
+RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_怖気立つ触腕,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_怖気立つ触腕,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_怖気立つ触腕, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;ＭＰ
+
+;　コストの量
+@SKILL_COST_怖気立つ触腕,ARG
+SIF ARG == -1
+	RETURN 10
+SIF HAVE_PU_SKILL(ARG, "紺碧の種") 
+	RETURN 22
+RETURN 10
+
+;　相性
+@SKILL_TYPE_怖気立つ触腕,ARG
+RETURN GET_TYPE_NUM("수격")
+;수격
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_怖気立つ触腕
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_怖気立つ触腕, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_怖気立つ触腕,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+;敵
+
+;　사거리　1S　2M　3L　4S+
+@SKILL_RANGE_怖気立つ触腕,ARG
+SIF ARG == -1
+	RETURN 2
+SIF HAVE_PU_SKILL(ARG, "紺碧の種") 
+	RETURN 3
+RETURN 2
+;後列でも敵前列に当たる
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_怖気立つ触腕,ARG
+RETURN GET_SPHERE_NUM("단체")
+;敵単体
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_怖気立つ触腕,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_怖気立つ触腕,ARG
+RETURN GET_SUCCESSION_NUM("수격")
+;수격
+
+@継承不能_怖気立つ触腕
+RETURN 2
+;不可、造魔や子供にも継承せず
+
+;속도보정
+@SKILL_SPEED_怖気立つ触腕, ARG = -1
+RETURN 20
+;早めに発生
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_怖気立つ触腕
+RETURN 0
+;戦闘中のみ
+
+;スキル変化？用ランク
+@SKILL_RANK_怖気立つ触腕, ARG = -1
+RETURN 4
+
+
+;====================================================
+;ダメージ発動時
+;ARG:0	行動者のキャラ番号
+;ARG:1	対象のキャラ番号
+;ARG:2	1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;
+;備考:標準の追加効果付与はblock・吸収の場合は発動しない。
+;====================================================
+@SKILL_DAMAGE_EFFECT_怖気立つ触腕, ARG, ARG:1, ARG:2
+SIF ARG:1 < 0
+	RETURN 0
+;無効以下では発動しない
+SIF ARG:2 <= -2
+	RETURN 0
+CALL SKILL_SET_カジャンダ, ARG, ARG:1, "명중/회피", -4, "短縮"
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_怖気立つ触腕,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL ATTACK_SKILL,ARG,ARG:1,SKILL_NUM
+
+;====================================================
+;ターン終了時に行う処理
+;====================================================
+@SKILL_TURNEND_怖気立つ触腕,ARG
+
+
+;====================================================
+;戦闘終了時に行う処理
+;====================================================
+@SKILL_BATTLE_END_怖気立つ触腕,ARG
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_怖気立つ触腕,ARG
+IF HAVE_PU_SKILL(ARG, "紺碧の種") 
+	PRINTL 촉수를 휘감아 적 단체에 수격 상성의 물리 중데미지.
+	PRINTL 【감벽의 씨앗】으로 강화되어, 명중률이 높고 적 후열까지 닿는다.
+	PRINTL 적의 명중·회피를 1단계 낮춘다. 후열 사용 가능.
+	PRINTL 
+ELSE
+	PRINTL 촉수를 휘감아 적 단체에 수격 상성의 물리 소데미지.
+	PRINTL 적의 명중·회피를 1단계 낮춘다. 후열 사용 가능.
+	PRINTL 
+ENDIF
+
+@SKILL_DEL_UNABLE_怖気立つ触腕,ARG
+RETURN 0
+;削除可
+

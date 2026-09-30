@@ -1,0 +1,68 @@
+﻿;依頼名===================================================================
+;依頼難易度は敵の最大レベルによって変動
+; 1～10　☆、11～20　☆☆、21～30　☆☆☆、以下略
+;ダンジョン攻略が必要な場合は☆が★になる。
+
+@TITLE_RANDOM_REQUEST_108_16
+RESULTS = 요정 포획작전（난이도 ☆☆）
+RETURN 1
+
+;説明===================================================================
+@REQUEST_EXPLAIN_108_16
+	PRINTL 
+	PRINTL 【의뢰주】고블린
+	PRINTL 
+	PRINTL 　고블린들이 요정을 습격하기 위해、별동대를 원하고 있다。
+	PRINTL 　그들과 협력하여、태평한 요정들을 유린하라。
+	PRINTL
+	PRINTL 【작전영역】	불타오르는 숲
+	PRINTL 【적의전력】	요정(전술 유효)
+	PRINTL 【성공조건】	목표 전원 격파
+	PRINTL 【주의사항】	전투 중 화염 데미지 발생
+	PRINTL 
+
+;内容====================================================================
+@REQUEST_108_16
+CALL MESSAGE_WINDOW, "MESSAGE" , @"――불타오르는 숲――", , , , , 4
+CALL MESSAGE_WINDOW, "고블린" , @"잘 왔다 고브！너는 여기서 도망치는 녀석들을 해치워라 고브！", , , , , 4
+CALL MESSAGE_WINDOW, "고블린" , @"혹시 마음에 드는 녀석이 있으면、슬쩍 데려가도 좋다 고브！부탁한다 고브~！", , , , , 4
+CALL MESSAGE_WINDOW, "MESSAGE" , @"＞그렇게 말하고는 고블린은 신이 나서 숲으로 들어갔다。", , , , , 4
+CALL MESSAGE_WINDOW, "MESSAGE" , @"＞잠시 후、숲 안쪽에서 하이픽시가 나타났다", , , , , 4
+CALL MESSAGE_WINDOW, "하이픽시" , @"빨리 원군을……！앗！거기 좀 비켜줘！", , , , , 4
+CALL MESSAGE_WINDOW, "MESSAGE" , @"＞하이픽시가 덤벼들었다！", , , , , 4
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+	
+FOR  LOCAL:2, 7, 17
+	CALL SET_ENEMY, LOCAL:2 ,[[キャラ:하이픽시]],14+RAND:5,0,0
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+NEXT
+CALL BATTLE_START
+
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+CALL MESSAGE_WINDOW, "MESSAGE" , @"＞목표를 격파했다。", , , , , 4
+
+;報酬
+依頼フラグ:[[依頼:랜덤의뢰]]:5 = 1;難易度
+依頼フラグ:[[依頼:랜덤의뢰]]:7 = 0;그외
+
+CALL PRIZE_REQUEST_108
+
+
+;行動終了時にダメージ=========================================================
+@EVENT_BATTLE_ACTEND_REQUEST_108_16
+#DIM DYNAMIC 行動者
+行動者 = FLAG:행동순1
+;ダメージ処理が発生する
+RESULTS:0 = あり
+;ダメージを与える属性
+RESULTS:1 = 화염
+;ダメージを受ける際に表示するテキスト
+RESULTS:2 = 불타오르는 불길이 %CALLNAME:行動者%를 덮친다！
+;ダメージ量
+RETURN RAND:20 + 50

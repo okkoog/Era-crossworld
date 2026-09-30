@@ -1,0 +1,38 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SET_EXTRA_TITLE_VAR.ERB
+;	Facility	:EX作品のタイトル名を変数にセットする。
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/10/17		bazzile 				新規作成
+;	002		2024/10/18		bazzile 				デビチル・偽典の番号が来た場合EXTRAを見ないように
+;													98(未分類)が指定された場合は個別をみないように
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@GET_USEABLE_EXTRA_TITLE, ARG = 98
+#FUNCTION
+SIF ARG < 0
+	RETURNF 1
+SIF !IS_USEABLE_EXTRA_TITLE
+	RETURNF 0
+IF ARG != 98
+	SIF DISABLE_EACH_EXTRA_TITLE:ARG
+		RETURNF 0
+ENDIF
+RETURNF 1
+
+@GETS_USEABLE_EXTRA_TITLE, ARGS
+#FUNCTION
+IF ARGS != ""
+	SIF FINDELEMENT(EXTRA_TITLE, ARGS, , , 1) < 0
+		THROW 명칭 지정이 잘못되었습니다!
+	SIF !GET_USEABLE_EXTRA_TITLE(FINDELEMENT(EXTRA_TITLE, ARGS, , , 1))
+		RETURNF 0
+ELSE
+	SIF !GET_USEABLE_EXTRA_TITLE()
+		RETURNF 0
+ENDIF
+RETURNF 1

@@ -1,0 +1,136 @@
+﻿;スキル名
+@SKILL_NAME_D・キャロットS,ARG
+RESULTS = D・キャロットS
+
+
+;　명중
+@SKILL_HITRATE_D・キャロットS, ARG
+RETURN 120
+
+;　威力
+@SKILL_POWER_D・キャロットS, ARG
+RETURN 120
+
+;特殊な参照値
+@SKILL_CALC_BATTTLE_STATUS_D・キャロットS, ARGS, ARG, ARG:1
+SIF ARG < 0
+	RETURN 0
+SELECTCASE ARGS
+	;回復は魔法効果(影響大),마법위력(影響小)の2変数を置換する
+	CASE "HEAL"
+		RETURN MAXBASE:ARG:공격, MAXBASE:ARG:방어
+ENDSELECT
+;クリティカル率
+@SKILL_CRITICAL_RATE_D・キャロットS, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_D・キャロットS,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_D・キャロットS,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_D・キャロットS, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+;消費なし＝1
+
+;　コストの量　HPだと％になるんだ。しらそん
+@SKILL_COST_D・キャロットS,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_D・キャロットS,ARG
+RETURN GET_TYPE_NUM("없음")
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_D・キャロットS
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_D・キャロットS,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+@SKILL_HEAL_TYPE_D・キャロットS, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("통상")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_D・キャロットS,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_D・キャロットS,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_D・キャロットS,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_D・キャロットS,ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_D・キャロットS
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_D・キャロットS, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_D・キャロットS
+RETURN 0
+
+;没
+;@SKILL_RANK_D・キャロットS, ARG = -1
+
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_D・キャロットS,ARG
+;RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_D・キャロットS,ARG,ARG:1,SKILL_NUM
+#DIM DYNAMIC SKILL_NUM
+#DIM DYNAMIC LCOUNT
+CALL PU_SKILLGAGE_F_ADD,ARG,"ボムリロード",1
+FOR LCOUNT, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1) + 1
+	CALL SKILL_INVALID_WALL, ARG, POS(LCOUNT), "테트라쟈", "短縮"
+	CALL HEAL_SINGLE,ARG,POS(LCOUNT), SKILL_NUM, 1, , TSTR:스킬메시지추가효과
+	VARSET TSTR:스킬메시지추가효과
+NEXT
+WAIT
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_D・キャロットS,ARG
+PRINTL 味方全体を小威力で回復し、即死防御効果を付与する。　条件：ボムストック１消費。
+PRINTL 回復量は魔法威力・魔法効果でなく攻撃と防御で算出される。
+PRINTL 
+PRINTL ココアが調合し持ち歩いているボムに、リボンの魔法を組み合わせたドローン爆弾。
+PRINTL キャロットシューターを配合すると、回復と即死を防ぐ能力を持つ。
+PRINTL 具体的には、微弱な魔力を放出する事で、MAGの吸収による回復を擬似的に行う爆弾になる。
+PRINTL ただし、使用にはボムリロードスキルの所持が必要。ネコ耳族　ココアの技能（専用）
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_D・キャロットS,ARG
+#DIM ボムストック
+ボムストック = PU_SKILLNUM_GET(ARG,"ボムリロード")
+IF SKILLGAGE_F_GET(ARG,ボムストック) > 3
+	RETURN 0
+ELSEIF HAVE_SKILL(ARG,ボムストック)
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF

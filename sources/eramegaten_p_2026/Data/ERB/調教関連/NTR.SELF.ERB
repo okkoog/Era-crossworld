@@ -1,0 +1,1558 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:NTR_SELF.ERB
+;	Facility	:１日の終了時、ＮＴＲ状態のキャラが勝手に何処かへ行く処理群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2011/04/09		Ｎ鳥					新規作成
+;	002		2011/09/07		黒天					NTR_HOUMONNHANNBAI_SEXの処女/再生処女喪失の処理を関数を呼ぶように修正
+;	003		2020/04/03		ネトリス				今までの経験処理をNTRペナルティへ移動し、キャラのステータスに左右されない処理を通常に追加
+;	004		2020/05/19		がめら					NTR好感度処理をCDFLAGに変更
+;	005		2021/04/27		JK好き					CALL SHOW_ADD_EXPの後に獲得経験を使う計算をしていた部分をCALL SHOW_ADD_EXPの前に移動
+;	006		2022/06/07		NEO						NTR防御/誘発服飾追加の関数対応
+;	007		2022/10/27		JK好き					@NTR_HOUMONNHANNBAI 信頼陥落はNTR対象から外れるように修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+
+;====================================================================
+;ＮＴＲ요바이
+;====================================================================
+
+@EVENT_NTR_SELF
+#LOCALSIZE 1
+#DIM LCOUNT
+CUSTOMDRAWLINE =
+LOCAL = 0
+;キャラ登録数が1以下の時は引き返す
+SIF CHARANUM <= 1
+	RETURN 1
+FOR LCOUNT, 0, CHARANUM
+	;主人ならスキップ
+	SIF LCOUNT == MASTER
+		CONTINUE
+	;対象がその場にいないなら除外
+	SIF CFLAG:LCOUNT:이자리에없는플래그 == 1
+		CONTINUE
+	SIF CFLAG:LCOUNT:전투이외불능
+		RETURN 0
+	;レンタル中は除外
+	SIF IS_RENTING(LCOUNT)
+		CONTINUE
+	;体力が500以下なら除外
+	SIF BASE:LCOUNT:0 <= 500
+		CONTINUE
+	;最も好感度が高いキャラがＮＰＣでなければ除外
+	SIF CFLAG:LCOUNT:함락캐릭터 > -1
+		CONTINUE
+	;トロは別イベント
+	SIF CFLAG:LCOUNT:함락캐릭터 == -16
+		CONTINUE
+	;上司は別イベント
+	SIF CFLAG:LCOUNT:함락캐릭터 == -20
+		CONTINUE
+
+	;ＮＴＲれてないかつ浮気心になってないキャラは除外
+	IF TALENT:LCOUNT:ＮＴＲ == 0
+		;淫乱度が最も高い好感度より高い場合はダメ
+		SIF CFLAG:LCOUNT:음란도 >= ABS(FAVORITE(LCOUNT, (FAVORITE_1(LCOUNT))))
+			CONTINUE
+		;
+		SIF !(FAVORITE_1_ID(LCOUNT) != CFLAG:LCOUNT:함락캐릭터 && ABS(FAVORITE(LCOUNT, (FAVORITE_1(LCOUNT)))) > ABS(FAVORITE_ID(LCOUNT , CFLAG:LCOUNT:함락캐릭터)) + 500)
+			CONTINUE
+	ELSE
+		;淫ＮＴＲ以外は、陥落対象が最も好感度の高いキャラじゃないと行かない
+		SIF TALENT:LCOUNT:ＮＴＲ != 2 && FAVORITE_1_ID(LCOUNT) != CFLAG:LCOUNT:함락캐릭터
+			CONTINUE
+	ENDIF
+	CALL ＮＴＲ夜這い決定,LCOUNT
+	LOCAL = 1
+NEXT
+SIF LOCAL > 0
+	CUSTOMDRAWLINE =
+
+@ＮＴＲ夜這い決定,ARG
+;どの夜這いに進むか決定
+IF TALENT:ARG:ＮＴＲ == 2 && CFLAG:ARG:음란도 >= ABS(FAVORITE(ARG, (FAVORITE_1(ARG))))
+	;淫ＮＴＲ状態
+	IF (EXP:ARG:변기경험 > 50) && RAND:2 == 0
+		;公衆便所へ
+		CFLAG:ARG:ＮＴＲ요바이 = 3
+	ELSEIF (CFLAG:ARG:현ＮＴＲ진행도 >= 10 || CFLAG:ARG:음란도 >= 5000) && RAND:3 == 0
+		;乱交パーティへ
+		CFLAG:ARG:ＮＴＲ요바이 = 1
+	ELSEIF (CFLAG:ARG:현ＮＴＲ진행도 >= 5 || CFLAG:ARG:음란도 >= 4000) && RAND:2 == 0
+		;公園へ
+		CFLAG:ARG:ＮＴＲ요바이 = 2
+	ELSE
+		;夜の街へ
+		CFLAG:ARG:ＮＴＲ요바이 = 4
+	ENDIF
+ELSEIF (FAVORITE_1_ID(ARG) != CFLAG:ARG:함락캐릭터) && ABS(FAVORITE(ARG, (FAVORITE_1(ARG)))) > ABS(FAVORITE_ID(ARG , CFLAG:ARG:함락캐릭터)) + 500
+	;最も好感度の高いキャラが陥落対象で無い場合、ＮＴＲ前逢引へ
+	CFLAG:ARG:ＮＴＲ요바이 = 5
+ELSEIF CFLAG:ARG:현ＮＴＲ진행도 == 1
+	;ＮＴＲ後初の夜這い
+	CFLAG:ARG:ＮＴＲ요바이 = 6
+ELSE
+	$LOOP_RAND
+	LOCAL = RAND:6
+	SELECTCASE LOCAL
+		CASE 0
+		;野外調教(散歩他) 12
+			SIF (TALENT:ARG:ＮＴＲ != 3 && TALENT:ARG:ＮＴＲ != 6) || CFLAG:ARG:현ＮＴＲ진행도 < 6
+				GOTO LOOP_RAND
+			CFLAG:ARG:ＮＴＲ요바이 = 12
+		CASE 1
+		;デート 7
+			CFLAG:ARG:ＮＴＲ요바이 = 7
+
+		CASE 2
+		;本番 8
+			CFLAG:ARG:ＮＴＲ요바이 = 8
+		CASE 3
+		;オナニー見せ合い 9
+			SIF (TALENT:ARG:ＮＴＲ != 3 && TALENT:ARG:ＮＴＲ != 6) && ABL:ARG:노출증 < 3 && ABL:ARG:자위중독 < 1
+				GOTO LOOP_RAND
+			CFLAG:ARG:ＮＴＲ요바이 = 9
+		CASE 4
+		;アナルセックス 10
+			SIF (TALENT:ARG:ＮＴＲ != 3 && TALENT:ARG:ＮＴＲ != 6)
+				GOTO LOOP_RAND
+			CFLAG:ARG:ＮＴＲ요바이 = 10
+		CASE 5
+		;야외플레이 11
+			SIF (TALENT:ARG:ＮＴＲ != 3 && TALENT:ARG:ＮＴＲ != 6) && ABL:ARG:노출증 < 4
+				GOTO LOOP_RAND
+			CFLAG:ARG:ＮＴＲ요바이 = 11
+
+	ENDSELECT
+
+ENDIF
+CALLFORM NTR_SELF_{CFLAG:ARG:ＮＴＲ요바이},ARG
+CALL 気絶処理,ARG
+
+RETURN 1
+
+;淫系
+;乱交パーティ
+@NTR_SELF_1,ARG
+#LOCALSIZE 1
+#DIM 回数
+#DIM 精液量
+#DIM Ｃ回数
+#DIM Ｖ回数
+#DIM Ｂ回数
+#DIM 絶頂回数
+#DIM 精液回数
+#DIM 精飲回数
+#DIM 性交回数
+#DIM 질내사정횟수
+#DIM キス回数
+#DIM 펠라횟수
+#DIM Ａ回数
+#DIM Ａ性交回数
+#DIM 絶頂ポイント
+#DIM 精液残量
+
+;NTRペナルティONの場合
+IF FLAG:ＮＴＲ하드모드
+	;回数・人数の算出
+	;技巧人
+	CFLAG:ARG:유혹인수 = ABL:ARG:기교 + RAND:(ABL:ARG:기교 + 1) + TALENT:ARG:매력 + TALENT:ARG:수수께끼의매력
+	;各回数の算出
+	IF TALENT:ARG:남자 == 0 || ABL:ARG:정액중독 || ABL:ARG:ＢＬ끼
+		CFLAG:ARG:펠라횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:정액중독 + 1)/2 + ABL:ARG:봉사정신 / 3
+	ELSE
+		CFLAG:ARG:펠라횟수 = 0
+	ENDIF
+	IF TALENT:ARG:남자 == 0
+		CFLAG:ARG:본방횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｖ감각 / 3
+		SIF HAVE_PENIS(ARG)
+			CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3
+	ELSE
+		CFLAG:ARG:본방횟수 = 0
+		CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3
+	ENDIF
+	CFLAG:ARG:애널횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ａ감각 / 3
+	SIF TALENT:ARG:Ｖ민감 && TALENT:ARG:남자 == 0
+		CFLAG:ARG:본방횟수 += 1
+	SIF TALENT:ARG:Ａ민감
+		CFLAG:ARG:애널횟수 += 1
+
+	CFLAG:ARG:펠라횟수 *= CFLAG:ARG:유혹인수
+	CFLAG:ARG:본방횟수 *= CFLAG:ARG:유혹인수
+	CFLAG:ARG:애널횟수 *= CFLAG:ARG:유혹인수
+	;口上呼び出し
+	DRAWLINE
+	SWAP TARGET , ARG
+	TFLAG:13 = 51
+	CALL KOJO_MESSAGE_EVENT
+	SWAP TARGET , ARG
+
+	VARSET TCVAR:ARG:0 , 0
+
+	SIF TALENT:ARG:처녀
+		CALL ADDS_ABNORMAL_EXP, "処女喪失（輪姦）", ARG
+	TALENT:ARG:처녀 = 0
+	TCVAR:ARG:획득Ｖ경험 = CFLAG:ARG:본방횟수
+	TCVAR:ARG:획득Ａ경험 = CFLAG:ARG:애널횟수
+	TCVAR:ARG:획득키스경험 = (1+RAND:3)*CFLAG:ARG:유혹인수
+	SIF HAVE_PENIS(ARG)
+		TCVAR:ARG:획득사정경험 = CFLAG:ARG:삽입횟수 * 2 + CFLAG:ARG:애널횟수/2 + CFLAG:ARG:본방횟수/2
+	TCVAR:ARG:획득성교경험 = CFLAG:ARG:삽입횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:본방횟수
+	TCVAR:ARG:획득펠라경험 = CFLAG:ARG:펠라횟수
+	TCVAR:ARG:획득정액경험 = CFLAG:ARG:펠라횟수 * 2 + CFLAG:ARG:애널횟수 * 2 + CFLAG:ARG:본방횟수 * 2
+	TCVAR:ARG:획득절정경험 = CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:삽입횟수
+	TCVAR:ARG:획득질사경험 = CFLAG:ARG:본방횟수 * 2
+	TCVAR:ARG:획득봉사쾌락경험 = (CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:펠라횟수)/3
+	TCVAR:ARG:획득바람경험 = 1
+	;体力の消耗
+	LOCAL = CFLAG:ARG:펠라횟수 * 5 + CFLAG:ARG:애널횟수 * 15 + CFLAG:ARG:본방횟수 * 10
+	PRINTFORML 체력 - {LOCAL}
+	BASE:ARG:체력 -= LOCAL
+	CALL SHOW_ADD_EXP, ARG
+	CFLAG:ARG:현ＮＴＲ진행도 += 1
+	;浮気癖がある場合は淫乱度倍化
+	IF TALENT:ARG:바람기
+		CFLAG:ARG:음란도 += (LOCAL/10)*2
+	ELSE
+		CFLAG:ARG:음란도 += LOCAL/10
+	ENDIF
+
+ELSE
+	;回数・人数の算出
+	;3～5人
+	;回数設定
+	回数 = 3+RAND:3
+	精液残量 = 回数*3
+
+	Ｖ回数 = 回数 + RAND:(回数*3+1)
+	펠라횟수 = 回数 + RAND:(回数*3+1)
+	Ａ回数 = 回数 + RAND:(回数*3+1)
+	;フェラ回数が1以上の場合
+	IF 펠라횟수
+		;必ず精液量を半分は残す
+		精飲回数 = LIMIT(1+RAND:펠라횟수, 0, 精液残量/2)
+		精液残量 -= 精飲回数
+	ENDIF
+
+	性交回数 = Ｖ回数
+	;性交回数が1以上の場合
+	SIF 性交回数
+		질내사정횟수 = LIMIT(1+RAND:性交回数, 0, 精液残量)
+
+	;フェラ回数か性交回数が１以上の場合は精液回数がカウントされる
+	SIF (性交回数+펠라횟수) > 0
+		精液回数 = 精飲回数 + 질내사정횟수
+
+	キス回数 = RAND:(回数*3+1)
+
+	;各回数の算出(1人3回)
+	IF TALENT:ARG:남자 == 0 || ABL:ARG:정액중독 || ABL:ARG:ＢＬ끼
+		CFLAG:ARG:펠라횟수 = 펠라횟수
+	ELSE
+		CFLAG:ARG:펠라횟수 = 0
+	ENDIF
+	IF TALENT:ARG:남자 == 0
+		CFLAG:ARG:본방횟수 = Ｖ回数
+		SIF HAVE_PENIS(ARG)
+			CFLAG:ARG:삽입횟수 = Ｖ回数
+	ELSE
+		CFLAG:ARG:본방횟수 = 0
+		CFLAG:ARG:삽입횟수 = Ｖ回数
+	ENDIF
+	CFLAG:ARG:애널횟수 = Ａ回数
+	;絶頂回数計算
+	絶頂回数 = 0
+	IF Ｖ回数
+		絶頂回数 += RAND:Ｖ回数
+		SIF TALENT:ARG:Ｖ민감
+			絶頂回数 += 回数
+		SIF TALENT:ARG:Ｖ둔감
+			絶頂回数 = LIMIT(絶頂回数-RAND:回数, 0, 絶頂回数)
+	ENDIF
+	IF Ａ回数
+		絶頂回数 += RAND:Ａ回数
+		SIF TALENT:ARG:Ａ민감
+			絶頂回数 += 回数
+		SIF TALENT:ARG:Ａ둔감
+			絶頂回数 = LIMIT(絶頂回数-RAND:回数, 0, 絶頂回数)
+	ENDIF
+
+	;口上呼び出し
+	DRAWLINE
+	SWAP TARGET , ARG
+	TFLAG:13 = 51
+	CALL KOJO_MESSAGE_EVENT
+	SWAP TARGET , ARG
+
+	VARSET TCVAR:ARG:0 , 0
+
+	SIF TALENT:ARG:처녀
+		CALL ADDS_ABNORMAL_EXP, "処女喪失（輪姦）", ARG
+	TALENT:ARG:처녀 = 0
+	TCVAR:ARG:획득Ｖ경험 = CFLAG:ARG:본방횟수
+	TCVAR:ARG:획득Ａ경험 = CFLAG:ARG:애널횟수
+	TCVAR:ARG:획득키스경험 = キス回数
+	SIF HAVE_PENIS(ARG)
+		TCVAR:ARG:획득사정경험 = CFLAG:ARG:삽입횟수 * 2 + CFLAG:ARG:애널횟수/2 + CFLAG:ARG:본방횟수/2
+	TCVAR:ARG:획득성교경험 = CFLAG:ARG:삽입횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:본방횟수
+	TCVAR:ARG:획득펠라경험 = CFLAG:ARG:펠라횟수
+	TCVAR:ARG:획득정액경험 = 精液回数
+	TCVAR:ARG:획득절정경험 = 絶頂回数
+	TCVAR:ARG:획득질사경험 = 질내사정횟수
+	TCVAR:ARG:획득봉사쾌락경험 = (CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:펠라횟수)/3
+	TCVAR:ARG:획득바람경험 = 1
+	;体力の消耗
+	LOCAL = CFLAG:ARG:펠라횟수 * 5 + CFLAG:ARG:애널횟수 * 15 + CFLAG:ARG:본방횟수 * 10
+	PRINTFORML 체력 - {LOCAL}
+	BASE:ARG:체력 -= LOCAL
+	CALL SHOW_ADD_EXP, ARG
+	CFLAG:ARG:현ＮＴＲ진행도 += 1
+	;浮気癖がある場合は淫乱度倍化
+	IF TALENT:ARG:바람기
+		CFLAG:ARG:음란도 += (LOCAL/10)*2
+	ELSE
+		CFLAG:ARG:음란도 += LOCAL/10
+	ENDIF
+
+ENDIF
+
+;公園
+@NTR_SELF_2,ARG
+#DIM 回数
+#DIM 精液量
+#DIM Ｃ回数
+#DIM Ｖ回数
+#DIM Ｂ回数
+#DIM 絶頂回数
+#DIM 精液回数
+#DIM 精飲回数
+#DIM 性交回数
+#DIM 질내사정횟수
+#DIM キス回数
+#DIM 펠라횟수
+#DIM Ａ回数
+#DIM Ａ性交回数
+#DIM 絶頂ポイント
+#DIM 精液残量
+
+;NTRペナルティONの場合
+IF FLAG:ＮＴＲ하드모드
+
+	;回数・人数の算出
+	;技巧人
+	CFLAG:ARG:유혹인수 = ABL:ARG:기교/2 + TALENT:ARG:매력 + TALENT:ARG:수수께끼의매력
+	;各回数の算出
+	IF TALENT:ARG:남자 == 0 || ABL:ARG:정액중독 || ABL:ARG:ＢＬ끼
+		CFLAG:ARG:펠라횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:정액중독 + 1)/2 + ABL:ARG:봉사정신 / 3
+	ELSE
+		CFLAG:ARG:펠라횟수 = 0
+	ENDIF
+	IF TALENT:ARG:남자 == 0
+		CFLAG:ARG:본방횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｖ감각 / 3
+		SIF HAVE_PENIS(ARG)
+			CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3
+	ELSE
+		CFLAG:ARG:본방횟수 = 0
+		CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3
+	ENDIF
+	CFLAG:ARG:애널횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ａ감각 / 3
+	SIF TALENT:ARG:Ｖ민감 && TALENT:ARG:남자 == 0
+		CFLAG:ARG:본방횟수 += 1
+	SIF TALENT:ARG:Ａ민감
+		CFLAG:ARG:애널횟수 += 1
+
+	CFLAG:ARG:펠라횟수 *= CFLAG:ARG:유혹인수
+	CFLAG:ARG:본방횟수 *= CFLAG:ARG:유혹인수
+	CFLAG:ARG:애널횟수 *= CFLAG:ARG:유혹인수
+
+	;口上呼び出し
+	DRAWLINE
+	SWAP TARGET , ARG
+	TFLAG:13 = 52
+	CALL KOJO_MESSAGE_EVENT
+	SWAP TARGET , ARG
+	VARSET TCVAR:ARG:0 , 0
+	SIF TALENT:ARG:처녀
+		CALL ADDS_ABNORMAL_EXP, "処女喪失（輪姦）", ARG
+	TALENT:ARG:처녀 = 0
+	TCVAR:ARG:획득Ｖ경험 = CFLAG:ARG:본방횟수
+	TCVAR:ARG:획득Ａ경험 = CFLAG:ARG:애널횟수
+	TCVAR:ARG:획득키스경험 = (1+RAND:3)*CFLAG:ARG:유혹인수
+	SIF HAVE_PENIS(ARG)
+		TCVAR:ARG:획득사정경험 = CFLAG:ARG:삽입횟수 * 2 + CFLAG:ARG:애널횟수/2 + CFLAG:ARG:본방횟수/2
+	TCVAR:ARG:획득성교경험 = CFLAG:ARG:삽입횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:본방횟수
+	TCVAR:ARG:획득펠라경험 = CFLAG:ARG:펠라횟수
+	TCVAR:ARG:획득정액경험 = CFLAG:ARG:펠라횟수 * 2 + CFLAG:ARG:애널횟수 * 2 + CFLAG:ARG:본방횟수 * 2
+	TCVAR:ARG:획득절정경험 = CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:삽입횟수
+	TCVAR:ARG:획득질사경험 = CFLAG:ARG:본방횟수 * 2
+	TCVAR:ARG:획득봉사쾌락경험 = (CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:펠라횟수)/3
+	TCVAR:ARG:획득바람경험 = 1
+	;体力の消耗
+	LOCAL = CFLAG:ARG:펠라횟수 * 5 + CFLAG:ARG:애널횟수 * 15 + CFLAG:ARG:본방횟수 * 10
+	PRINTFORML 체력 - {LOCAL}
+	BASE:ARG:체력 -= LOCAL
+	CALL SHOW_ADD_EXP, ARG
+	CFLAG:ARG:현ＮＴＲ진행도 += 1
+	;浮気癖がある場合は淫乱度倍化
+	IF TALENT:ARG:바람기
+		CFLAG:ARG:음란도 += (LOCAL/10)*2
+	ELSE
+		CFLAG:ARG:음란도 += LOCAL/10
+	ENDIF
+
+ELSE
+	;回数・人数の算出
+	;4～6人
+	;回数設定
+	回数 = 4+RAND:3
+	精液残量 = 回数*3
+
+	Ｖ回数 = 回数 + RAND:(回数*3+1)
+	펠라횟수 = 回数 + RAND:(回数*3+1)
+	Ａ回数 = 回数 + RAND:(回数*3+1)
+	;フェラ回数が1以上の場合
+	IF 펠라횟수
+		;必ず精液量を半分は残す
+		精飲回数 = LIMIT(1+RAND:펠라횟수, 0, 精液残量/2)
+		精液残量 -= 精飲回数
+	ENDIF
+
+	性交回数 = Ｖ回数
+	;性交回数が1以上の場合
+	SIF 性交回数
+		질내사정횟수 = LIMIT(1+RAND:性交回数, 0, 精液残量)
+
+	;フェラ回数か性交回数が１以上の場合は精液回数がカウントされる
+	SIF (性交回数+펠라횟수) > 0
+		精液回数 = 精飲回数 + 질내사정횟수
+
+	キス回数 = RAND:(回数*3+1)
+
+	;各回数の算出(1人3回)
+	IF TALENT:ARG:남자 == 0 || ABL:ARG:정액중독 || ABL:ARG:ＢＬ끼
+		CFLAG:ARG:펠라횟수 = 펠라횟수
+	ELSE
+		CFLAG:ARG:펠라횟수 = 0
+	ENDIF
+	IF TALENT:ARG:남자 == 0
+		CFLAG:ARG:본방횟수 = Ｖ回数
+		SIF HAVE_PENIS(ARG)
+			CFLAG:ARG:삽입횟수 = Ｖ回数
+	ELSE
+		CFLAG:ARG:본방횟수 = 0
+		CFLAG:ARG:삽입횟수 = Ｖ回数
+	ENDIF
+	CFLAG:ARG:애널횟수 = Ａ回数
+	;絶頂回数計算
+	絶頂回数 = 0
+	IF Ｖ回数
+		絶頂回数 += RAND:Ｖ回数
+		SIF TALENT:ARG:Ｖ민감
+			絶頂回数 += 回数
+		SIF TALENT:ARG:Ｖ둔감
+			絶頂回数 = LIMIT(絶頂回数-RAND:回数, 0, 絶頂回数)
+	ENDIF
+	IF Ａ回数
+		絶頂回数 += RAND:Ａ回数
+		SIF TALENT:ARG:Ａ민감
+			絶頂回数 += 回数
+		SIF TALENT:ARG:Ａ둔감
+			絶頂回数 = LIMIT(絶頂回数-RAND:回数, 0, 絶頂回数)
+	ENDIF
+	;口上呼び出し
+	DRAWLINE
+	SWAP TARGET , ARG
+	TFLAG:13 = 52
+	CALL KOJO_MESSAGE_EVENT
+	SWAP TARGET , ARG
+	VARSET TCVAR:ARG:0 , 0
+	SIF TALENT:ARG:처녀
+		CALL ADDS_ABNORMAL_EXP, "処女喪失（輪姦）", ARG
+	TALENT:ARG:처녀 = 0
+	TCVAR:ARG:획득Ｖ경험 = CFLAG:ARG:본방횟수
+	TCVAR:ARG:획득Ａ경험 = CFLAG:ARG:애널횟수
+	TCVAR:ARG:획득키스경험 = キス回数
+	SIF HAVE_PENIS(ARG)
+		TCVAR:ARG:획득사정경험 = CFLAG:ARG:삽입횟수 * 2 + CFLAG:ARG:애널횟수/2 + CFLAG:ARG:본방횟수/2
+	TCVAR:ARG:획득성교경험 = CFLAG:ARG:삽입횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:본방횟수
+	TCVAR:ARG:획득펠라경험 = CFLAG:ARG:펠라횟수
+	TCVAR:ARG:획득정액경험 = 精液回数
+	TCVAR:ARG:획득절정경험 = 絶頂回数
+	TCVAR:ARG:획득질사경험 = 질내사정횟수
+	TCVAR:ARG:획득봉사쾌락경험 = (CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:펠라횟수)/3
+	TCVAR:ARG:획득바람경험 = 1
+	;体力の消耗
+	LOCAL = CFLAG:ARG:펠라횟수 * 5 + CFLAG:ARG:애널횟수 * 15 + CFLAG:ARG:본방횟수 * 10
+	PRINTFORML 체력 - {LOCAL}
+	BASE:ARG:체력 -= LOCAL
+	CALL SHOW_ADD_EXP, ARG
+	CFLAG:ARG:현ＮＴＲ진행도 += 1
+	;浮気癖がある場合は淫乱度倍化
+	IF TALENT:ARG:바람기
+		CFLAG:ARG:음란도 += (LOCAL/10)*2
+	ELSE
+		CFLAG:ARG:음란도 += LOCAL/10
+	ENDIF
+ENDIF
+
+;공중변소
+@NTR_SELF_3,ARG
+#DIM 回数
+#DIM 精液量
+#DIM Ｃ回数
+#DIM Ｖ回数
+#DIM Ｂ回数
+#DIM 絶頂回数
+#DIM 精液回数
+#DIM 精飲回数
+#DIM 性交回数
+#DIM 질내사정횟수
+#DIM キス回数
+#DIM 펠라횟수
+#DIM Ａ回数
+#DIM Ａ性交回数
+#DIM 絶頂ポイント
+#DIM 精液残量
+
+;NTRペナルティONの場合
+IF FLAG:ＮＴＲ하드모드
+	;回数・人数の算出
+	;技巧人
+	CFLAG:ARG:유혹인수 = ABL:ARG:기교 + RAND:(ABL:ARG:기교 + 1) + RAND:(ABL:ARG:기교 + 1) + TALENT:ARG:매력 + TALENT:ARG:수수께끼의매력
+	;各回数の算出
+	IF TALENT:ARG:남자 == 0 || ABL:ARG:정액중독 || ABL:ARG:ＢＬ끼
+		CFLAG:ARG:펠라횟수 = (ABL:ARG:욕망 + 6)/2 + ABL:ARG:정액중독 + ABL:ARG:봉사정신
+	ELSE
+		CFLAG:ARG:펠라횟수 = 0
+	ENDIF
+	IF TALENT:ARG:남자 == 0
+		CFLAG:ARG:본방횟수 = (ABL:ARG:욕망 + 6)/2 + (ABL:ARG:섹스중독) + ABL:ARG:Ｖ감각
+	ELSE
+		CFLAG:ARG:본방횟수 = 0
+	ENDIF
+	CFLAG:ARG:애널횟수 = (ABL:ARG:욕망 + 6)/2 + (ABL:ARG:섹스중독) + ABL:ARG:Ａ감각
+	SIF TALENT:ARG:Ｖ민감 && TALENT:ARG:남자 == 0
+		CFLAG:ARG:본방횟수 += 1
+	SIF TALENT:ARG:Ａ민감
+		CFLAG:ARG:애널횟수 += 1
+
+	CFLAG:ARG:펠라횟수 *= CFLAG:ARG:유혹인수
+	CFLAG:ARG:본방횟수 *= CFLAG:ARG:유혹인수
+	CFLAG:ARG:애널횟수 *= CFLAG:ARG:유혹인수
+	;口上呼び出し
+	DRAWLINE
+	SWAP TARGET , ARG
+	TFLAG:13 = 53
+	CALL KOJO_MESSAGE_EVENT
+	SWAP TARGET , ARG
+
+	VARSET TCVAR:ARG:0 , 0
+
+	SIF TALENT:ARG:처녀
+		CALL ADDS_ABNORMAL_EXP, "処女喪失（輪姦）", ARG
+	TALENT:ARG:처녀 = 0
+	TCVAR:ARG:획득변기경험 = CFLAG:ARG:유혹인수
+	TCVAR:ARG:획득Ｖ경험 = CFLAG:ARG:본방횟수
+	TCVAR:ARG:획득Ａ경험 = CFLAG:ARG:애널횟수
+	TCVAR:ARG:획득키스경험 = (1+RAND:3)*CFLAG:ARG:유혹인수
+	SIF HAVE_PENIS(ARG)
+		TCVAR:ARG:획득사정경험 = CFLAG:ARG:삽입횟수 * 2 + CFLAG:ARG:애널횟수/2 + CFLAG:ARG:본방횟수/2
+	TCVAR:ARG:획득성교경험 = CFLAG:ARG:삽입횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:본방횟수
+	TCVAR:ARG:획득펠라경험 = CFLAG:ARG:펠라횟수
+	TCVAR:ARG:획득정액경험 = CFLAG:ARG:펠라횟수 * 2 + CFLAG:ARG:애널횟수 * 2 + CFLAG:ARG:본방횟수 * 2
+	TCVAR:ARG:획득절정경험 = CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:삽입횟수
+	TCVAR:ARG:획득질사경험 = CFLAG:ARG:본방횟수 * 2
+	TCVAR:ARG:획득봉사쾌락경험 = (CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:펠라횟수)/3
+	TCVAR:ARG:획득바람경험 = 1
+	;体力の消耗
+	LOCAL = CFLAG:ARG:펠라횟수 * 10 + CFLAG:ARG:애널횟수 * 30 + CFLAG:ARG:본방횟수 * 20
+	PRINTFORML 체력 - {LOCAL}
+	BASE:ARG:체력 -= LOCAL
+	CALL SHOW_ADD_EXP, ARG
+	CFLAG:ARG:현ＮＴＲ진행도 += 2
+	;浮気癖がある場合は淫乱度倍化
+	IF TALENT:ARG:바람기
+		CFLAG:ARG:음란도 += (LOCAL/10)*2
+	ELSE
+		CFLAG:ARG:음란도 += LOCAL/10
+	ENDIF
+
+ELSE
+	;回数・人数の算出
+	;5～10人
+	;回数設定
+	回数 = 5+RAND:6
+	精液残量 = 回数*3
+
+	Ｖ回数 = 回数 + RAND:(回数*3+1)
+	펠라횟수 = 回数 + RAND:(回数*3+1)
+	Ａ回数 = 回数 + RAND:(回数*3+1)
+	;フェラ回数が1以上の場合
+	IF 펠라횟수
+		;必ず精液量を半分は残す
+		精飲回数 = LIMIT(1+RAND:펠라횟수, 0, 精液残量/2)
+		精液残量 -= 精飲回数
+	ENDIF
+
+	性交回数 = Ｖ回数
+	;性交回数が1以上の場合
+	SIF 性交回数
+		질내사정횟수 = LIMIT(回数+RAND:性交回数, 0, 精液残量)
+
+	;フェラ回数か性交回数が１以上の場合は精液回数がカウントされる
+	SIF (性交回数+펠라횟수) > 0
+		精液回数 = 精飲回数 + 질내사정횟수
+
+	キス回数 = RAND:(回数*3+1)
+
+	;各回数の算出(1人3回)
+	IF TALENT:ARG:남자 == 0 || ABL:ARG:정액중독 || ABL:ARG:ＢＬ끼
+		CFLAG:ARG:펠라횟수 = 펠라횟수
+	ELSE
+		CFLAG:ARG:펠라횟수 = 0
+	ENDIF
+	IF TALENT:ARG:남자 == 0
+		CFLAG:ARG:본방횟수 = Ｖ回数
+		SIF HAVE_PENIS(ARG)
+			CFLAG:ARG:삽입횟수 = Ｖ回数
+	ELSE
+		CFLAG:ARG:본방횟수 = 0
+		CFLAG:ARG:삽입횟수 = Ｖ回数
+	ENDIF
+	CFLAG:ARG:애널횟수 = Ａ回数
+	;絶頂回数計算
+	絶頂回数 = 0
+	IF Ｖ回数
+		絶頂回数 += RAND:Ｖ回数
+		SIF TALENT:ARG:Ｖ민감
+			絶頂回数 += 回数
+		SIF TALENT:ARG:Ｖ둔감
+			絶頂回数 = LIMIT(絶頂回数-RAND:回数, 0, 絶頂回数)
+	ENDIF
+	IF Ａ回数
+		絶頂回数 += RAND:Ａ回数
+		SIF TALENT:ARG:Ａ민감
+			絶頂回数 += 回数
+		SIF TALENT:ARG:Ａ둔감
+			絶頂回数 = LIMIT(絶頂回数-RAND:回数, 0, 絶頂回数)
+	ENDIF
+
+	;口上呼び出し
+	DRAWLINE
+	SWAP TARGET , ARG
+	TFLAG:13 = 53
+	CALL KOJO_MESSAGE_EVENT
+	SWAP TARGET , ARG
+
+	VARSET TCVAR:ARG:0 , 0
+
+	SIF TALENT:ARG:처녀
+		CALL ADDS_ABNORMAL_EXP, "処女喪失（輪姦）", ARG
+	TALENT:ARG:처녀 = 0
+	TCVAR:ARG:획득변기경험 = 回数
+	TCVAR:ARG:획득Ｖ경험 = CFLAG:ARG:본방횟수
+	TCVAR:ARG:획득Ａ경험 = CFLAG:ARG:애널횟수
+	TCVAR:ARG:획득키스경험 = キス回数
+	SIF HAVE_PENIS(ARG)
+		TCVAR:ARG:획득사정경험 = CFLAG:ARG:삽입횟수 * 2 + CFLAG:ARG:애널횟수/2 + CFLAG:ARG:본방횟수/2
+	TCVAR:ARG:획득성교경험 = CFLAG:ARG:삽입횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:본방횟수
+	TCVAR:ARG:획득펠라경험 = CFLAG:ARG:펠라횟수
+	TCVAR:ARG:획득정액경험 = 精液回数
+	TCVAR:ARG:획득절정경험 = 絶頂回数
+	TCVAR:ARG:획득질사경험 = 질내사정횟수
+	TCVAR:ARG:획득봉사쾌락경험 = (CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:펠라횟수)/3
+	TCVAR:ARG:획득바람경험 = 1
+	;体力の消耗
+	LOCAL = CFLAG:ARG:펠라횟수 * 5 + CFLAG:ARG:애널횟수 * 15 + CFLAG:ARG:본방횟수 * 10
+	PRINTFORML 체력 - {LOCAL}
+	BASE:ARG:체력 -= LOCAL
+	CALL SHOW_ADD_EXP, ARG
+	CFLAG:ARG:현ＮＴＲ진행도 += 2
+	;浮気癖がある場合は淫乱度倍化
+	IF TALENT:ARG:바람기
+		CFLAG:ARG:음란도 += (LOCAL/10)*2
+	ELSE
+		CFLAG:ARG:음란도 += LOCAL/10
+	ENDIF
+ENDIF
+;夜の街
+@NTR_SELF_4,ARG
+#LOCALSIZE 1
+#DIM 回数
+#DIM 精液量
+#DIM Ｃ回数
+#DIM Ｖ回数
+#DIM Ｂ回数
+#DIM 絶頂回数
+#DIM 精液回数
+#DIM 精飲回数
+#DIM 性交回数
+#DIM 질내사정횟수
+#DIM キス回数
+#DIM 펠라횟수
+#DIM Ａ回数
+#DIM Ａ性交回数
+#DIM 絶頂ポイント
+#DIM 精液残量
+
+;NTRペナルティONの場合
+IF FLAG:ＮＴＲ하드모드
+	;回数・人数の算出
+	;技巧人
+	CFLAG:ARG:유혹인수 = 1 + (RAND:15 + TALENT:ARG:매력 + TALENT:ARG:수수께끼의매력 + ABL:ARG:기교/2 > 10) * (RAND:2 + 1)
+	;各回数の算出
+	IF TALENT:ARG:남자 == 0 || ABL:ARG:정액중독 || ABL:ARG:ＢＬ끼
+		CFLAG:ARG:펠라횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:정액중독 + 1)/2 + ABL:ARG:봉사정신 / 3
+	ELSE
+		CFLAG:ARG:펠라횟수 = 0
+	ENDIF
+	IF TALENT:ARG:남자 == 0
+		CFLAG:ARG:본방횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｖ감각 / 3
+		SIF HAVE_PENIS(ARG)
+			CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3
+	ELSE
+		CFLAG:ARG:본방횟수 = 0
+		CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3
+	ENDIF
+	IF ABL:ARG:Ａ감각 > 1
+		CFLAG:ARG:애널횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ａ감각 / 3
+	ELSE
+		CFLAG:ARG:애널횟수 = 0
+	ENDIF
+	SIF TALENT:ARG:Ｖ민감 && TALENT:ARG:남자 == 0
+		CFLAG:ARG:본방횟수 += 1
+	SIF TALENT:ARG:Ａ민감 && ABL:ARG:Ａ감각
+		CFLAG:ARG:애널횟수 += 1
+
+	CFLAG:ARG:펠라횟수 *= CFLAG:ARG:유혹인수
+	CFLAG:ARG:본방횟수 *= CFLAG:ARG:유혹인수
+	CFLAG:ARG:애널횟수 *= CFLAG:ARG:유혹인수
+	;口上呼び出し
+	DRAWLINE
+	SWAP TARGET , ARG
+	TFLAG:13 = 54
+	CALL KOJO_MESSAGE_EVENT
+	SWAP TARGET , ARG
+
+	VARSET TCVAR:ARG:0 , 0
+
+	SIF TALENT:ARG:처녀
+		PRINTFORML <처녀상실>
+	TALENT:ARG:처녀 = 0
+	TCVAR:ARG:획득Ｖ경험 = CFLAG:ARG:본방횟수
+	TCVAR:ARG:획득Ａ경험 = CFLAG:ARG:애널횟수
+	TCVAR:ARG:획득키스경험 = (1+RAND:3)*CFLAG:ARG:유혹인수
+	SIF HAVE_PENIS(ARG)
+		TCVAR:ARG:획득사정경험 = CFLAG:ARG:삽입횟수 * 2 + CFLAG:ARG:애널횟수/2 + CFLAG:ARG:본방횟수/2
+	TCVAR:ARG:획득성교경험 = CFLAG:ARG:삽입횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:본방횟수
+	TCVAR:ARG:획득펠라경험 = CFLAG:ARG:펠라횟수
+	TCVAR:ARG:획득정액경험 = CFLAG:ARG:펠라횟수 * 2 + CFLAG:ARG:애널횟수 * 2 + CFLAG:ARG:본방횟수 * 2
+	TCVAR:ARG:획득절정경험 = CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:삽입횟수
+	TCVAR:ARG:획득질사경험 = CFLAG:ARG:본방횟수 * 2
+	TCVAR:ARG:획득봉사쾌락경험 = (CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:펠라횟수)/3
+	TCVAR:ARG:획득바람경험 = 1
+	;体力の消耗
+	LOCAL = CFLAG:ARG:펠라횟수 * 5 + CFLAG:ARG:애널횟수 * 15 + CFLAG:ARG:본방횟수 * 10
+	PRINTFORML 체력 - {LOCAL}
+	BASE:ARG:체력 -= LOCAL
+	CALL SHOW_ADD_EXP, ARG
+	CFLAG:ARG:현ＮＴＲ진행도 += 1
+	;浮気癖がある場合は淫乱度倍化
+	IF TALENT:ARG:바람기
+		CFLAG:ARG:음란도 += (LOCAL/10)*2
+	ELSE
+		CFLAG:ARG:음란도 += LOCAL/10
+	ENDIF
+
+ELSE
+	;回数・人数の算出
+	;1人
+	;回数設定
+	回数 = 1
+	精液残量 = 回数*3
+
+	Ｖ回数 = 回数 + RAND:(回数*3+1)
+	펠라횟수 = 回数 + RAND:(回数*3+1)
+	Ａ回数 = 回数 + RAND:(回数*3+1)
+	;フェラ回数が1以上の場合
+	IF 펠라횟수
+		;必ず精液量を半分は残す
+		精飲回数 = LIMIT(1+RAND:펠라횟수, 0, 精液残量/2)
+		精液残量 -= 精飲回数
+	ENDIF
+
+	性交回数 = Ｖ回数
+	;性交回数が1以上の場合
+	SIF 性交回数
+		질내사정횟수 = LIMIT(1+RAND:性交回数, 0, 精液残量)
+
+	;フェラ回数か性交回数が１以上の場合は精液回数がカウントされる
+	SIF (性交回数+펠라횟수) > 0
+		精液回数 = 精飲回数 + 질내사정횟수
+
+	キス回数 = RAND:(回数*3+1)
+
+	;各回数の算出(1人3回)
+	IF TALENT:ARG:남자 == 0 || ABL:ARG:정액중독 || ABL:ARG:ＢＬ끼
+		CFLAG:ARG:펠라횟수 = 펠라횟수
+	ELSE
+		CFLAG:ARG:펠라횟수 = 0
+	ENDIF
+	IF TALENT:ARG:남자 == 0
+		CFLAG:ARG:본방횟수 = Ｖ回数
+		SIF HAVE_PENIS(ARG)
+			CFLAG:ARG:삽입횟수 = Ｖ回数
+	ELSE
+		CFLAG:ARG:본방횟수 = 0
+		CFLAG:ARG:삽입횟수 = Ｖ回数
+	ENDIF
+	CFLAG:ARG:애널횟수 = Ａ回数
+	;絶頂回数計算
+	絶頂回数 = 0
+	IF Ｖ回数
+		絶頂回数 += RAND:Ｖ回数
+		SIF TALENT:ARG:Ｖ민감
+			絶頂回数 += 回数
+		SIF TALENT:ARG:Ｖ둔감
+			絶頂回数 = LIMIT(絶頂回数-RAND:回数, 0, 絶頂回数)
+	ENDIF
+	IF Ａ回数
+		絶頂回数 += RAND:Ａ回数
+		SIF TALENT:ARG:Ａ민감
+			絶頂回数 += 回数
+		SIF TALENT:ARG:Ａ둔감
+			絶頂回数 = LIMIT(絶頂回数-RAND:回数, 0, 絶頂回数)
+	ENDIF
+
+
+	;口上呼び出し
+	DRAWLINE
+	SWAP TARGET , ARG
+	TFLAG:13 = 54
+	CALL KOJO_MESSAGE_EVENT
+	SWAP TARGET , ARG
+
+	VARSET TCVAR:ARG:0 , 0
+
+	SIF TALENT:ARG:처녀
+		PRINTFORML <처녀상실>
+	TALENT:ARG:처녀 = 0
+	TCVAR:ARG:획득Ｖ경험 = CFLAG:ARG:본방횟수
+	TCVAR:ARG:획득Ａ경험 = CFLAG:ARG:애널횟수
+	TCVAR:ARG:획득키스경험 = キス回数
+	SIF HAVE_PENIS(ARG)
+		TCVAR:ARG:획득사정경험 = CFLAG:ARG:삽입횟수 * 2 + CFLAG:ARG:애널횟수/2 + CFLAG:ARG:본방횟수/2
+	TCVAR:ARG:획득성교경험 = CFLAG:ARG:삽입횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:본방횟수
+	TCVAR:ARG:획득펠라경험 = CFLAG:ARG:펠라횟수
+	TCVAR:ARG:획득정액경험 = 精液回数
+	TCVAR:ARG:획득절정경험 = 絶頂回数
+	TCVAR:ARG:획득질사경험 = 질내사정횟수
+	TCVAR:ARG:획득봉사쾌락경험 = (CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:펠라횟수)/3
+	TCVAR:ARG:획득바람경험 = 1
+	;体力の消耗
+	LOCAL = CFLAG:ARG:펠라횟수 * 5 + CFLAG:ARG:애널횟수 * 15 + CFLAG:ARG:본방횟수 * 10
+	PRINTFORML 체력 - {LOCAL}
+	BASE:ARG:체력 -= LOCAL
+	CALL SHOW_ADD_EXP, ARG
+	CFLAG:ARG:현ＮＴＲ진행도 += 1
+	;浮気癖がある場合は淫乱度倍化
+	IF TALENT:ARG:바람기
+		CFLAG:ARG:음란도 += (LOCAL/10)*2
+	ELSE
+		CFLAG:ARG:음란도 += LOCAL/10
+	ENDIF
+ENDIF
+
+;------------
+;ＮＴＲ前逢引
+;------------
+@NTR_SELF_5,ARG
+IF CDFLAG:ARG:캐릭터간호감도:(100 + FAVORITE_1_ID(ARG)) < 0
+	;各回数の算出
+	IF TALENT:ARG:남자 == 0 || ABL:ARG:정액중독 || ABL:ARG:ＢＬ끼
+		CFLAG:ARG:펠라횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:정액중독 + 1)/2 + ABL:ARG:봉사정신 / 3
+	ELSE
+		CFLAG:ARG:펠라횟수 = 0
+	ENDIF
+	IF TALENT:ARG:남자 == 0 || (TALENT:ARG:ＮＴＲ == 3 || TALENT:ARG:ＮＴＲ == 6) || ABL:ARG:Ａ감각 > 2
+		CFLAG:ARG:애널횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ａ감각 / 3
+	ELSE
+		CFLAG:ARG:애널횟수 = 0
+	ENDIF
+	SIF TALENT:ARG:Ａ민감 && CFLAG:ARG:애널횟수
+		CFLAG:ARG:애널횟수 += 1
+ENDIF
+
+;口上呼び出し
+DRAWLINE
+SWAP TARGET , ARG
+TFLAG:13 = 55
+CALL KOJO_MESSAGE_EVENT
+SWAP TARGET , ARG
+TCVAR:ARG:획득Ａ경험 = CFLAG:ARG:애널횟수
+TCVAR:ARG:획득키스경험 = 1+RAND:3
+SIF HAVE_PENIS(ARG)
+	TCVAR:ARG:획득사정경험 = CFLAG:ARG:삽입횟수 * 2 + CFLAG:ARG:애널횟수/2
+TCVAR:ARG:획득성교경험 = CFLAG:ARG:삽입횟수 + CFLAG:ARG:애널횟수
+TCVAR:ARG:획득펠라경험 = CFLAG:ARG:펠라횟수
+TCVAR:ARG:획득정액경험 = CFLAG:ARG:펠라횟수 * 2 + CFLAG:ARG:애널횟수 * 2
+TCVAR:ARG:획득절정경험 = CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:삽입횟수
+TCVAR:ARG:획득봉사쾌락경험 = (CFLAG:ARG:애널횟수 + CFLAG:ARG:펠라횟수)/3
+TCVAR:ARG:획득바람경험 = 1
+CALL SHOW_ADD_EXP, ARG
+;好きな人への好感度ＵＰ
+IF TALENT:ARG:ＮＴＲ == 3 || TALENT:ARG:ＮＴＲ == 6
+	CDFLAG:ARG:캐릭터간호감도:(100+FAVORITE_1_ID(ARG)) -= 25
+ELSE
+	CDFLAG:ARG:캐릭터간호감도:(100+FAVORITE_1_ID(ARG)) += 25
+ENDIF
+
+;------------------
+;ＮＴＲ後初めての夜
+;------------------
+@NTR_SELF_6,ARG
+#LOCALSIZE 4
+
+;各回数の算出
+IF TALENT:ARG:남자 == 0 || ABL:ARG:정액중독 || ABL:ARG:ＢＬ끼
+	CFLAG:ARG:펠라횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:정액중독 + 1)/2 + ABL:ARG:봉사정신 / 3
+ELSE
+	CFLAG:ARG:펠라횟수 = 0
+ENDIF
+IF TALENT:ARG:남자 == 0
+	CFLAG:ARG:본방횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｖ감각 / 3
+	SIF HAVE_PENIS(ARG)
+		CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3
+ELSE
+	CFLAG:ARG:본방횟수 = 0
+	CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3
+ENDIF
+IF TALENT:ARG:남자 == 0 || (TALENT:ARG:ＮＴＲ == 3 || TALENT:ARG:ＮＴＲ == 6) || ABL:ARG:Ａ감각 > 2
+	CFLAG:ARG:애널횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ａ감각 / 3
+ELSE
+	CFLAG:ARG:애널횟수 = 0
+ENDIF
+SIF TALENT:ARG:Ｖ민감 && TALENT:ARG:남자 == 0
+	CFLAG:ARG:본방횟수 += 1
+SIF TALENT:ARG:Ａ민감 && CFLAG:ARG:애널횟수
+	CFLAG:ARG:애널횟수 += 1
+
+;口上呼び出し
+DRAWLINE
+SWAP TARGET , ARG
+TFLAG:13 = 56
+CALL KOJO_MESSAGE_EVENT
+SWAP TARGET , ARG
+
+SIF TALENT:ARG:처녀
+	PRINTFORML <처녀상실>
+TALENT:ARG:처녀 = 0
+TCVAR:ARG:획득Ｖ경험 = CFLAG:ARG:본방횟수
+TCVAR:ARG:획득Ａ경험 = CFLAG:ARG:애널횟수
+TCVAR:ARG:획득키스경험 = 1+RAND:5
+SIF HAVE_PENIS(ARG)
+	TCVAR:ARG:획득사정경험 = CFLAG:ARG:삽입횟수 * 2 + CFLAG:ARG:애널횟수/2 + CFLAG:ARG:본방횟수/2
+TCVAR:ARG:획득성교경험 = CFLAG:ARG:삽입횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:본방횟수
+TCVAR:ARG:획득펠라경험 = CFLAG:ARG:펠라횟수
+TCVAR:ARG:획득정액경험 = CFLAG:ARG:펠라횟수 * 2 + CFLAG:ARG:애널횟수 * 2 + CFLAG:ARG:본방횟수 * 2
+TCVAR:ARG:획득절정경험 = CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:삽입횟수
+TCVAR:ARG:획득질사경험 = CFLAG:ARG:본방횟수 * 2
+TCVAR:ARG:획득봉사쾌락경험 = (CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:펠라횟수)/3
+TCVAR:ARG:획득바람경험 = 1
+;好きな人への好感度ＵＰ
+IF TALENT:ARG:ＮＴＲ == 3 || TALENT:ARG:ＮＴＲ == 6
+	CDFLAG:ARG:캐릭터간호감도:(100+FAVORITE_1_ID(ARG)) -= 25
+ELSE
+	CDFLAG:ARG:캐릭터간호감도:(100+FAVORITE_1_ID(ARG)) += 25
+ENDIF
+LOCAL = CFLAG:ARG:펠라횟수 * 5 + CFLAG:ARG:애널횟수 * 15 + CFLAG:ARG:본방횟수 * 10
+PRINTFORML 체력 - {LOCAL}
+BASE:ARG:체력 -= LOCAL
+CALL SHOW_ADD_EXP, ARG
+CFLAG:ARG:현ＮＴＲ진행도 += 1
+
+;------
+;デート
+;------
+@NTR_SELF_7,ARG
+;口上呼び出し
+DRAWLINE
+SWAP TARGET , ARG
+TFLAG:13 = 57
+CALL KOJO_MESSAGE_EVENT
+SWAP TARGET , ARG
+;好きな人への好感度ＵＰ
+IF TALENT:ARG:ＮＴＲ == 3 || TALENT:ARG:ＮＴＲ == 6
+	CDFLAG:ARG:캐릭터간호감도:(100+FAVORITE_1_ID(ARG)) -= 50
+ELSE
+	CDFLAG:ARG:캐릭터간호감도:(100+FAVORITE_1_ID(ARG)) += 50
+ENDIF
+
+;----
+;本番
+;----
+@NTR_SELF_8,ARG
+;各回数の算出
+IF TALENT:ARG:남자 == 0
+	CFLAG:ARG:본방횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｖ감각 / 3
+	SIF HAVE_PENIS(ARG)
+		CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3
+ELSE
+	CFLAG:ARG:본방횟수 = 0
+	CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3
+ENDIF
+SIF TALENT:ARG:Ｖ민감 && TALENT:ARG:남자 == 0
+	CFLAG:ARG:본방횟수 += 1
+;口上呼び出し
+DRAWLINE
+SWAP TARGET , ARG
+TFLAG:13 = 58
+CALL KOJO_MESSAGE_EVENT
+SWAP TARGET , ARG
+
+SIF TALENT:ARG:처녀
+	PRINTFORML <처녀상실>
+TALENT:ARG:처녀 = 0
+TCVAR:ARG:획득Ｖ경험 = CFLAG:ARG:본방횟수
+TCVAR:ARG:획득키스경험 = 1+RAND:5
+SIF HAVE_PENIS(ARG)
+	TCVAR:ARG:획득사정경험 = CFLAG:ARG:삽입횟수 * 2 + CFLAG:ARG:본방횟수/2
+TCVAR:ARG:획득성교경험 = CFLAG:ARG:삽입횟수 + CFLAG:ARG:본방횟수
+TCVAR:ARG:획득정액경험 = CFLAG:ARG:본방횟수 * 2
+TCVAR:ARG:획득절정경험 = CFLAG:ARG:본방횟수 + CFLAG:ARG:삽입횟수
+TCVAR:ARG:획득질사경험 = CFLAG:ARG:본방횟수 * 2
+TCVAR:ARG:획득봉사쾌락경험 = (CFLAG:ARG:본방횟수)/3
+TCVAR:ARG:획득바람경험 = 1
+;好きな人への好感度ＵＰ
+IF TALENT:ARG:ＮＴＲ == 3 || TALENT:ARG:ＮＴＲ == 6
+	CDFLAG:ARG:캐릭터간호감도:(100+FAVORITE_1_ID(ARG)) -= 25
+ELSE
+	CDFLAG:ARG:캐릭터간호감도:(100+FAVORITE_1_ID(ARG)) += 25
+ENDIF
+LOCAL = CFLAG:ARG:본방횟수 * 10
+PRINTFORML 체력 - {LOCAL}
+BASE:ARG:체력 -= LOCAL
+CALL SHOW_ADD_EXP, ARG
+CFLAG:ARG:현ＮＴＲ진행도 += 1
+
+;----------------
+;オナニー見せ合い
+;----------------
+@NTR_SELF_9,ARG
+;各回数の算出
+CFLAG:ARG:자위과시횟수 = 1 + ABL:ARG:욕망 / 3 + ABL:ARG:노출증 / 3 + ABL:ARG:자위중독
+
+;口上呼び出し
+DRAWLINE
+SWAP TARGET , ARG
+TFLAG:13 = 59
+CALL KOJO_MESSAGE_EVENT
+SWAP TARGET , ARG
+
+SIF HAVE_PENIS(ARG)
+	TCVAR:ARG:획득사정경험 = CFLAG:ARG:자위과시횟수
+TCVAR:ARG:획득자위경험 = CFLAG:ARG:자위과시횟수
+SIF TALENT:ARG:ＮＴＲ == 3 || TALENT:ARG:ＮＴＲ == 6
+	TCVAR:ARG:획득조교자위경험 = CFLAG:ARG:자위과시횟수
+TCVAR:ARG:획득절정경험 = CFLAG:ARG:자위과시횟수
+TCVAR:ARG:획득바람경험 = 1
+;好きな人への好感度ＵＰ
+IF TALENT:ARG:ＮＴＲ == 3 || TALENT:ARG:ＮＴＲ == 6
+	CDFLAG:ARG:캐릭터간호감도:(100+FAVORITE_1_ID(ARG)) -= 25
+ELSE
+	CDFLAG:ARG:캐릭터간호감도:(100+FAVORITE_1_ID(ARG)) += 25
+ENDIF
+LOCAL = CFLAG:ARG:자위과시횟수 * 8
+PRINTFORML 체력 - {LOCAL}
+BASE:ARG:체력 -= LOCAL
+CALL SHOW_ADD_EXP, ARG
+CFLAG:ARG:현ＮＴＲ진행도 += 1
+
+;--------------
+;アナルセックス
+;--------------
+@NTR_SELF_10,ARG
+;各回数の算出
+IF TALENT:ARG:남자 == 0 || (TALENT:ARG:ＮＴＲ == 3 || TALENT:ARG:ＮＴＲ == 6) || ABL:ARG:Ａ감각 > 2
+	CFLAG:ARG:애널횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ａ감각 / 3
+	SIF HAVE_PENIS(ARG)
+		CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3
+ELSE
+	CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3
+ENDIF
+SIF TALENT:ARG:Ａ민감 && CFLAG:ARG:애널횟수
+	CFLAG:ARG:애널횟수 += 1
+
+;口上呼び出し
+DRAWLINE
+SWAP TARGET , ARG
+TFLAG:13 = 60
+CALL KOJO_MESSAGE_EVENT
+SWAP TARGET , ARG
+
+TCVAR:ARG:획득Ａ경험 = CFLAG:ARG:애널횟수
+TCVAR:ARG:획득키스경험 = 1+RAND:5
+SIF HAVE_PENIS(ARG)
+	TCVAR:ARG:획득사정경험 = CFLAG:ARG:삽입횟수 * 2 + CFLAG:ARG:애널횟수/2
+TCVAR:ARG:획득성교경험 = CFLAG:ARG:삽입횟수 + CFLAG:ARG:애널횟수
+TCVAR:ARG:획득정액경험 = CFLAG:ARG:애널횟수 * 2
+TCVAR:ARG:획득절정경험 = CFLAG:ARG:애널횟수 + CFLAG:ARG:삽입횟수
+TCVAR:ARG:획득봉사쾌락경험 = (CFLAG:ARG:애널횟수)/3
+TCVAR:ARG:획득바람경험 = 1
+;好きな人への好感度ＵＰ
+IF TALENT:ARG:ＮＴＲ == 3 || TALENT:ARG:ＮＴＲ == 6
+	CDFLAG:ARG:캐릭터간호감도:(100+FAVORITE_1_ID(ARG)) -= 25
+ELSE
+	CDFLAG:ARG:캐릭터간호감도:(100+FAVORITE_1_ID(ARG)) += 25
+ENDIF
+LOCAL = CFLAG:ARG:애널횟수 * 15 + CFLAG:ARG:삽입횟수 * 5
+PRINTFORML 체력 - {LOCAL}
+BASE:ARG:체력 -= LOCAL
+CALL SHOW_ADD_EXP, ARG
+CFLAG:ARG:현ＮＴＲ진행도 += 1
+
+;----------
+;야외플레이
+;----------
+@NTR_SELF_11,ARG
+;各回数の算出
+IF TALENT:ARG:남자 == 0 || ABL:ARG:정액중독 || ABL:ARG:ＢＬ끼
+	CFLAG:ARG:펠라횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:정액중독 + 1)/2 + ABL:ARG:봉사정신 / 3 + ABL:ARG:노출증
+ELSE
+	CFLAG:ARG:펠라횟수 = 0
+ENDIF
+IF TALENT:ARG:남자 == 0
+	CFLAG:ARG:본방횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｖ감각 / 3 + ABL:ARG:노출증
+	SIF HAVE_PENIS(ARG)
+		CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3 + ABL:ARG:노출증
+ELSE
+	CFLAG:ARG:본방횟수 = 0
+	CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3 + ABL:ARG:노출증
+ENDIF
+IF TALENT:ARG:남자 == 0 || (TALENT:ARG:ＮＴＲ == 3 || TALENT:ARG:ＮＴＲ == 6) || ABL:ARG:Ａ감각 > 2
+	CFLAG:ARG:애널횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ａ감각 / 3 + ABL:ARG:노출증
+ELSE
+	CFLAG:ARG:애널횟수 = 0
+ENDIF
+SIF TALENT:ARG:Ｖ민감 && TALENT:ARG:남자 == 0
+	CFLAG:ARG:본방횟수 += 1
+SIF TALENT:ARG:Ａ민감 && CFLAG:ARG:애널횟수
+	CFLAG:ARG:애널횟수 += 1
+
+;口上呼び出し
+DRAWLINE
+SWAP TARGET , ARG
+TFLAG:13 = 61
+CALL KOJO_MESSAGE_EVENT
+SWAP TARGET , ARG
+
+SIF TALENT:ARG:처녀
+	PRINTFORML <처녀상실>
+TALENT:ARG:처녀 = 0
+TCVAR:ARG:획득Ｖ경험 = CFLAG:ARG:본방횟수
+TCVAR:ARG:획득Ａ경험 = CFLAG:ARG:애널횟수
+TCVAR:ARG:획득키스경험 = 1+RAND:5
+SIF HAVE_PENIS(ARG)
+	TCVAR:ARG:획득사정경험 = CFLAG:ARG:삽입횟수 * 2 + CFLAG:ARG:애널횟수/2 + CFLAG:ARG:본방횟수/2
+TCVAR:ARG:획득성교경험 = CFLAG:ARG:삽입횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:본방횟수
+TCVAR:ARG:획득펠라경험 = CFLAG:ARG:펠라횟수
+TCVAR:ARG:획득정액경험 = CFLAG:ARG:펠라횟수 * 2 + CFLAG:ARG:애널횟수 * 2 + CFLAG:ARG:본방횟수 * 2
+TCVAR:ARG:획득절정경험 = CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:삽입횟수
+TCVAR:ARG:획득질사경험 = CFLAG:ARG:본방횟수 * 2
+TCVAR:ARG:획득봉사쾌락경험 = (CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:펠라횟수)/3
+TCVAR:ARG:획득야외노출경험 = CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:펠라횟수 + CFLAG:ARG:삽입횟수
+TCVAR:ARG:획득바람경험 = 1
+;好きな人への好感度ＵＰ
+IF TALENT:ARG:ＮＴＲ == 3 || TALENT:ARG:ＮＴＲ == 6
+	CDFLAG:ARG:캐릭터간호감도:(100+FAVORITE_1_ID(ARG)) -= 25
+ELSE
+	CDFLAG:ARG:캐릭터간호감도:(100+FAVORITE_1_ID(ARG)) += 25
+ENDIF
+LOCAL = CFLAG:ARG:펠라횟수 * 5 + CFLAG:ARG:애널횟수 * 15 + CFLAG:ARG:본방횟수 * 10
+PRINTFORML 체력 - {LOCAL}
+BASE:ARG:체력 -= LOCAL
+CALL SHOW_ADD_EXP, ARG
+CFLAG:ARG:현ＮＴＲ진행도 += 1
+
+
+;--------
+;野外調教
+;--------
+@NTR_SELF_12,ARG
+CFLAG:ARG:유혹인수 = ABL:ARG:기교 + RAND:(ABL:ARG:기교 + 1) + TALENT:ARG:매력 + TALENT:ARG:수수께끼의매력
+;各回数の算出
+IF TALENT:ARG:남자 == 0 || ABL:ARG:정액중독 || ABL:ARG:ＢＬ끼
+	CFLAG:ARG:펠라횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:정액중독 + 1)/2 + ABL:ARG:봉사정신 / 3 + ABL:ARG:노출증 + ABL:ARG:마조끼/2
+ELSE
+	CFLAG:ARG:펠라횟수 = 0
+ENDIF
+IF TALENT:ARG:남자 == 0
+	CFLAG:ARG:본방횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｖ감각 / 3 + ABL:ARG:노출증 + ABL:ARG:마조끼/2
+	SIF HAVE_PENIS(ARG)
+		CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3 + ABL:ARG:노출증 + ABL:ARG:마조끼/2
+ELSE
+	CFLAG:ARG:본방횟수 = 0
+	CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3 + ABL:ARG:노출증 + ABL:ARG:마조끼/2
+ENDIF
+IF TALENT:ARG:남자 == 0 || (TALENT:ARG:ＮＴＲ == 3 || TALENT:ARG:ＮＴＲ == 6) || ABL:ARG:Ａ감각 > 2
+	CFLAG:ARG:애널횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ａ감각 / 3 + ABL:ARG:노출증 + ABL:ARG:마조끼/2
+ELSE
+	CFLAG:ARG:애널횟수 = 0
+ENDIF
+SIF TALENT:ARG:Ｖ민감 && TALENT:ARG:남자 == 0
+	CFLAG:ARG:본방횟수 += 1
+SIF TALENT:ARG:Ａ민감 && CFLAG:ARG:애널횟수
+	CFLAG:ARG:애널횟수 += 1
+
+CFLAG:ARG:펠라횟수 *= CFLAG:ARG:유혹인수
+CFLAG:ARG:본방횟수 *= CFLAG:ARG:유혹인수
+CFLAG:ARG:애널횟수 *= CFLAG:ARG:유혹인수
+;口上呼び出し
+DRAWLINE
+SWAP TARGET , ARG
+TFLAG:13 = 62
+CALL KOJO_MESSAGE_EVENT
+SWAP TARGET , ARG
+
+SIF TALENT:ARG:처녀
+	PRINTFORML <처녀상실>
+TALENT:ARG:처녀 = 0
+TCVAR:ARG:획득Ｖ경험 = CFLAG:ARG:본방횟수
+TCVAR:ARG:획득Ａ경험 = CFLAG:ARG:애널횟수
+TCVAR:ARG:획득키스경험 = 1+RAND:5
+SIF HAVE_PENIS(ARG)
+	TCVAR:ARG:획득사정경험 = CFLAG:ARG:삽입횟수 * 2 + CFLAG:ARG:애널횟수/2 + CFLAG:ARG:본방횟수/2
+TCVAR:ARG:획득성교경험 = CFLAG:ARG:삽입횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:본방횟수
+TCVAR:ARG:획득펠라경험 = CFLAG:ARG:펠라횟수
+TCVAR:ARG:획득정액경험 = CFLAG:ARG:펠라횟수 * 2 + CFLAG:ARG:애널횟수 * 2 + CFLAG:ARG:본방횟수 * 2
+TCVAR:ARG:획득절정경험 = CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:삽입횟수
+TCVAR:ARG:획득질사경험 = CFLAG:ARG:본방횟수 * 2
+TCVAR:ARG:획득봉사쾌락경험 = (CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:펠라횟수)/3
+TCVAR:ARG:획득고통쾌락경험 = (CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수)/3
+TCVAR:ARG:획득야외노출경험 = CFLAG:ARG:본방횟수 + CFLAG:ARG:애널횟수 + CFLAG:ARG:펠라횟수 + CFLAG:ARG:삽입횟수
+TCVAR:ARG:획득바람경험 = 1
+;好きな人への好感度ＵＰ
+IF TALENT:ARG:ＮＴＲ == 3 || TALENT:ARG:ＮＴＲ == 6
+	CDFLAG:ARG:캐릭터간호감도:(100+FAVORITE_1_ID(ARG)) -= 25
+ELSE
+	CDFLAG:ARG:캐릭터간호감도:(100+FAVORITE_1_ID(ARG)) += 25
+ENDIF
+LOCAL = CFLAG:ARG:펠라횟수 * 5 + CFLAG:ARG:애널횟수 * 15 + CFLAG:ARG:본방횟수 * 10
+PRINTFORML 체력 - {LOCAL}
+BASE:ARG:체력 -= LOCAL
+CALL SHOW_ADD_EXP, ARG
+CFLAG:ARG:현ＮＴＲ진행도 += 2
+
+;
+
+
+
+
+;--------
+;訪問販売
+;--------
+@NTR_HOUMONNHANNBAI
+#LOCALSIZE 5
+#DIM リスト, 500
+VARSET リスト, -1
+LOCAL:1 = 0
+FOR LOCAL,1,CHARANUM
+	SIF !陥落(LOCAL)
+		CONTINUE
+	SIF CFLAG:LOCAL:노역플래그 > 0
+		CONTINUE
+	;専有奴隷の首輪系装備時は弾く
+	SIF IS_ANTI_NTR_CLOTHES(LOCAL) == 1
+		CONTINUE
+	;信頼陥落はダメ
+	SIF TALENT:LOCAL:신뢰 || TALENT:LOCAL:동료
+		CONTINUE
+	SIF TALENT:LOCAL:남자
+		CONTINUE
+	SIF ABL:LOCAL:종족 != 0
+		CONTINUE
+	LOCAL:2 = CFLAG:LOCAL:방치일수
+	SIF TALENT:LOCAL:ＮＴＲ && CFLAG:LOCAL:함락캐릭터 != -16
+		CONTINUE
+	SIF LOCAL:2 > 30
+		LOCAL:2 = 30
+	SIF LOCAL:2 < 5 && CFLAG:LOCAL:함락캐릭터 != -16
+		CONTINUE
+	IF RAND:100 < LOCAL:2 || CFLAG:LOCAL:함락캐릭터 == -16
+		リスト:(LOCAL:1) = LOCAL
+		LOCAL:1 ++
+	ENDIF
+NEXT
+SIF LOCAL:1 == 0
+	RETURN 0
+;トロの餌食決定＞LOCAL
+LOCAL = リスト:(RAND:(LOCAL:1))
+;ありえないと思うけど念のため。LOCALがキャラ登録番号の範囲外の場合なにもしない。
+SIF LOCAL < 1 && LOCAL >= CHARANUM
+	RETURN 0
+LOCAL:1 = 0
+IF CFLAG:LOCAL:신경썼다플래그 == 0
+	SIF 위험일(LOCAL) > 1
+		LOCAL:1 = 20
+ENDIF
+SIF CFLAG:LOCAL:함락캐릭터 == -16
+	LOCAL:1 += 20
+DRAWLINE
+PRINTFORMW %CALLNAME:LOCAL%은(는) 뚱뚱한 방문판매원을 응대하고 있다
+PRINTFORML …
+PRINTFORML ……
+PRINTFORML ………
+IF RAND:10 < LOCAL:2 + LOCAL:1 || IS_ANTI_NTR_CLOTHES(LOCAL) == -1
+	SIF CFLAG:LOCAL:함락캐릭터 == -16
+		GOTO HOUMONNHANNBAI_NTR
+	IF CFLAG:LOCAL:방문판매플래그 == 0
+		IF RAND:100 < CFLAG:LOCAL:방치일수 / 2 + LOCAL:1 || IS_ANTI_NTR_CLOTHES(LOCAL) == -1 || TALENT:LOCAL:음란 || TALENT:LOCAL:창부
+			IF TALENT:LOCAL:연모 || TALENT:LOCAL:친애
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 외로움을 이용한 교묘한 화술에 휩쓸려, 뚱뚱한 방문판매원에게 몸을 맡겨버리고 말았다……
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 뚱뚱한 방문판매원의 거대한 물건에 꿰뚫리면서,
+				PRINTFORMW 가슴속에 솟아오른 죄책감에 『이번 한 번만』 『콘돔을 썼으니까』라며 스스로를 타일렀다……
+				CFLAG:LOCAL:(2084) += CFLAG:LOCAL:방치일수 * 10
+				CALL NTR_HOUMONNHANNBAI_SEX,LOCAL
+				CFLAG:LOCAL:방문판매플래그 = 1
+				PRINTFORML 
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 샤워를 하면서 %CALLNAME:MASTER%에게 할 변명을 중얼거리고 있다……
+			ELSEIF TALENT:LOCAL:음란 || TALENT:LOCAL:창부
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 다과를 내오려고 뒤를 돌아본 순간, 뚱뚱한 방문판매원에게 뒤에서 껴안겼다……
+				PRINTFORMW %CALLNAME:LOCAL%의 엉덩이에 옷 위로도 알 수 있을 만큼 커다란 페니스가 밀착되어 있다……
+				PRINTFORML 한동안 %CALLNAME:MASTER%에게 손길을 받지 못했던 %CALLNAME:LOCAL%에게는
+				PRINTFORMW 속옷을 비집고 침입해 들어오는 거대한 페니스를 거절할 수가 없었다……
+				CFLAG:LOCAL:(2084) += CFLAG:LOCAL:방치일수 * 10
+				CALL NTR_HOUMONNHANNBAI_SEX,LOCAL
+				CFLAG:LOCAL:방문판매플래그 = 1
+				PRINTFORML 
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 방치된 정액이 고인 콘돔을 바라보며, 방금 전의 밀회의 여운에 젖어 있다……
+			ELSEIF TALENT:LOCAL:복종 || TALENT:LOCAL:예속
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 샘플 드링크를 마신 순간, 의식을 잃었다……
+				PRINTFORMW 몸속을 밀어 올리는 듯한 압박감에 눈을 뜨자, 어른 손목만 한 페니스가 %CALLNAME:LOCAL%의 은밀한 곳에 뿌리까지 박혀 있었다……
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 저항할 틈도 없이 뚱뚱한 방문판매원에게 계속 울부짖어야만 했다……
+				CFLAG:LOCAL:(2084) += CFLAG:LOCAL:방치일수 * 10
+				CALL NTR_HOUMONNHANNBAI_SEX,LOCAL
+				CFLAG:LOCAL:방문판매플래그 = 1
+				PRINTFORML 
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 샤워를 하면서 %CALLNAME:MASTER%에 대한 충성의 말을 되뇌고 있다……
+			ENDIF
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 뚱뚱한 방문판매원과 한담을 나누고 있다
+				CFLAG:LOCAL:(2084) += CFLAG:LOCAL:방치일수
+			ELSE
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 뚱뚱한 방문판매원을 방으로 들여, 차를 마시며 담소하고 있다
+				CFLAG:LOCAL:(2084) += CFLAG:LOCAL:방치일수 * 2
+			ENDIF
+		ENDIF
+	ELSEIF CFLAG:LOCAL:방문판매플래그
+		IF RAND:100 < CFLAG:LOCAL:방치일수 + LOCAL:1 || IS_ANTI_NTR_CLOTHES(LOCAL) == -1
+			IF TALENT:LOCAL:연모 || TALENT:LOCAL:친애
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 말뿐인 힘없는 저항을 흘리며, 뚱뚱한 방문판매원에게 밀쳐 쓰러졌다……
+				PRINTFORML 몇 번째인가의 절정 후, %CALLNAME:LOCAL%이(가) 몸을 일으키려 하자,
+				PRINTFORMW 뚱뚱한 방문판매원이 콘돔을 벗고 삽입하려 하는 광경이 눈에 들어왔다……
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 힘이 들어가지 않는 몸으로 필사적으로 저항했지만, 뚱뚱한 방문판매원의 침입을 허용하고 말았다……
+				CFLAG:LOCAL:(2084) += CFLAG:LOCAL:방치일수 * 10
+				CALL NTR_HOUMONNHANNBAI_SEX,LOCAL
+				PRINTFORML 
+				PRINTFORMW 뚱뚱한 방문판매원은 페니스를 질 깊숙이 꽉 밀착시키더니, 그대로 대량의 정액을 %CALLNAME:LOCAL%의 자궁으로 쏟아 넣었다……
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 자궁 안을 채우는 열기를 느끼며, %CALLNAME:MASTER%의 이름을 읊조리며 눈물을 흘렸다……
+			ELSEIF TALENT:LOCAL:음란 || TALENT:LOCAL:창부
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 뚱뚱한 방문판매원이 드러낸 거대한 페니스를 본 순간, 실이 끊어진 인형처럼 바닥으로 무너져 내렸다……
+				PRINTFORML 제대로 몸을 움직이지 못하는 %CALLNAME:LOCAL%에게 뚱뚱한 방문판매원이 덮쳐누르더니,
+				PRINTFORMW 피임구를 끼우지 않은 페니스를 %CALLNAME:LOCAL%의 질내로 단숨에 찔러 넣었다……
+				PRINTFORMW 온몸을 덮치는 쾌락의 소용돌이에 %CALLNAME:LOCAL%은(는) 자신이 강간당하고 있다는 사실조차 잊고, 뚱뚱한 방문판매원의 페니스에 미친 듯이 허덕이고 있다……
+				CALL NTR_HOUMONNHANNBAI_SEX,LOCAL
+				PRINTFORML 
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 뚱뚱한 방문판매원의 페니스가 팽창하여 사정이 가까워졌음을 알자, 무심코 안에 싸달라고 애원하는 말을 내뱉고 말았다……
+				PRINTFORMW 내리꽂는 듯한 기세의 사정에 %CALLNAME:LOCAL%은(는) 온몸을 경련하며 절정에 달했다……
+			ELSEIF TALENT:LOCAL:복종 || TALENT:LOCAL:예속
+				PRINTFORML 뚱뚱한 방문판매원에게 옷을 벗으라는 말을 들은 %CALLNAME:LOCAL%은(는),
+				PRINTFORMW %CALLNAME:MASTER%의 명령이 아니라는 것을 알면서도 옷을 풀어헤치고, 맨살을 드러내고 말았다……
+				PRINTFORMW 뚱뚱한 방문판매원은 %CALLNAME:LOCAL%의 온몸을 샅샅이 애무하고, 완전히 녹아내린 것을 확인하자 키스하며 천천히 페니스를 삽입했다……
+				PRINTFORMW 귓가에 사랑을 속삭이며 천천히 피스톤질을 반복하는 뚱뚱한 방문판매원에게 %CALLNAME:LOCAL%은(는) 매달리며 신음을 흘리고 있다……
+				CFLAG:LOCAL:(2084) += CFLAG:LOCAL:방치일수 * 10
+				CALL NTR_HOUMONNHANNBAI_SEX,LOCAL
+				PRINTFORML 
+				PRINTFORML %CALLNAME:LOCAL%은(는) 갑작스럽게 질 안에서 시작된 사정에 비난의 목소리를 높이려 했지만,
+				PRINTFORMW 뚱뚱한 방문판매원이 귓가에 『사랑해』라고 속삭이자 몸의 힘이 풀려버리고 말았다……
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 자궁 안에 뚱뚱한 방문판매원의 정액이 흘러 들어올 때마다, 자신 안의 무언가가 덧칠되어 덮어쓰이는 듯한 감각에 빠져들었다……
+			ENDIF
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 뚱뚱한 방문판매원에게 손을 잡히자, 말과는 달리 온몸의 힘이 빠져나갔다……
+				PRINTFORMW 당혹스러워하는 %CALLNAME:LOCAL%을(를) 아랑곳하지 않고 뚱뚱한 방문판매원은 입술을 빼앗으며 천천히 밀쳐 쓰러뜨렸다……
+				CALL NTR_HOUMONNHANNBAI_SEX,LOCAL
+				CFLAG:LOCAL:(2084) += CFLAG:LOCAL:방치일수 * 10
+				PRINTFORML 
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 어두운 표정으로 샤워실에서 몸에 밴 뚱뚱한 방문판매원의 냄새를 씻어내고 있다……
+			ELSE
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 뚱뚱한 방문판매원의 바지 아래로도 확연히 알 수 있을 만큼 불룩 솟은 사타구니에서 눈을 떼지 못하고 있다……
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 눈앞에 들이밀어진 거대한 페니스를 홀린 듯이 입에 물고 말았다……
+				CALL NTR_HOUMONNHANNBAI_SEX,LOCAL
+				CFLAG:LOCAL:(2084) += CFLAG:LOCAL:방치일수 * 10
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 입안에 남은 뚱뚱한 방문판매원의 정액 감촉을 씻어내려는 듯 몇 번이고 입을 헹구고 있다……
+			ENDIF
+		ENDIF
+	ELSEIF CFLAG:LOCAL:함락캐릭터 == -16
+		$HOUMONNHANNBAI_NTR
+		IF RAND:100 < CFLAG:LOCAL:방치일수 + LOCAL:1 || IS_ANTI_NTR_CLOTHES(LOCAL) == -1
+			IF TALENT:LOCAL:ＮＴＲ == 1
+				PRINTFORML 소파에 걸터앉은 뚱뚱한 방문판매원의 발치에서, %CALLNAME:LOCAL%이(가) 눈앞에 우뚝 솟은 남근에 사랑스럽다는 듯 혀를 놀리고 있다……
+				PRINTFORML %CALLNAME:LOCAL%은(는) 페니스에서 입을 떼더니, 뚱뚱한 방문판매원에게 매달리며 페니스를 여음에 대고 천천히 허리를 가라앉혔다……
+				PRINTFORMW 어른 팔뚝만 한 페니스를 아무런 저항도 없이 삼켜가는 질구는, 애액을 줄줄 흘리며 움찔움찔 경련하고 있다……
+				PRINTFORML 뚱뚱한 방문판매원은 %CALLNAME:LOCAL%을(를) 상냥하게 끌어안더니, 방심한 틈을 타 격렬하게 허리를 찔러 올렸다……
+				PRINTFORMW 불의의 일격을 당한 %CALLNAME:LOCAL%은(는) 형용할 수 없는 비명을 지르며 등을 활처럼 뒤로 젖혔다……
+				CFLAG:LOCAL:(2084) += CFLAG:LOCAL:방치일수 * 30
+				CALL NTR_HOUMONNHANNBAI_SEX,LOCAL
+				PRINTFORML 
+				PRINTFORMW 뚱뚱한 방문판매원은 끊임없이 이어지는 연속 절정에 몽롱해진 %CALLNAME:LOCAL%의 허리를 힘껏 끌어당겼다……
+				PRINTFORML 그 순간, 자궁구에 밀착된 남근에서 욕망의 덩어리가 대량으로 쏟아져 나왔다……
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 자신이 정복되어 가는 감각에 휩싸인 채, 뚱뚱한 방문판매원에게 입을 맞추었다……
+				PRINTFORML …
+				PRINTFORML ……
+				PRINTFORML ………
+				PRINTFORML 몇 번째인가의 사정을 마치고, 뚱뚱한 방문판매원이 페니스를 뽑아내자 질 안에 고여 있던 정액이 일제히 흘러넘쳤다
+				PRINTFORML 거친 숨을 몰아쉬는 %CALLNAME:LOCAL%의 질구는 뻐끔히 벌어진 채, 만족스러운 듯 움찔거리고 있다……
+			ELSEIF TALENT:LOCAL:ＮＴＲ == 2
+				PRINTFORML 침대에 드러누운 뚱뚱한 방문판매원의 위에서 %CALLNAME:LOCAL%이(가) 허리를 튕기고 있다……
+				PRINTFORML 땀을 흩뿌리며 움직이는 %CALLNAME:LOCAL%의 여음에는 어른 팔뚝만 한 페니스가 빈틈없이 들어차 있다……
+				PRINTFORML 허리를 움직일 때마다 흘러넘치는 정액의 양이, %CALLNAME:LOCAL%이(가) 범해진 횟수를 여실히 말해주고 있었다……
+				PRINTFORML %CALLNAME:LOCAL%의 눈에는 초점이 없고, 오로지 쾌락만을 위해 허리를 계속 흔들고 있다……
+				CFLAG:LOCAL:(2084) += CFLAG:LOCAL:방치일수 * 30
+				CALL NTR_HOUMONNHANNBAI_SEX,LOCAL
+				PRINTFORML 
+				PRINTFORMW 돌연 뚱뚱한 방문판매원이 몇 차례 강렬하게 찔러 올리더니 %CALLNAME:LOCAL%의 허리를 붙잡고 꽉 억눌렀다
+				PRINTFORMW 다음 순간, 엄청난 양의 사정이 시작되었고, %CALLNAME:LOCAL%은(는) 결합부에서 정액을 역류시키며 뚱뚱한 방문판매원의 위로 무너져 내렸다……
+				PRINTFORML …
+				PRINTFORML ……
+				PRINTFORML ………
+				PRINTFORML 뚱뚱한 방문판매원은 의식을 잃은 %CALLNAME:LOCAL%의 여음에 정액이 새어나가지 않도록 페트병으로 마개를 막고는 방을 뒤로했다……
+			ELSEIF TALENT:LOCAL:연모 || TALENT:LOCAL:친애
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 뺨을 붉히며 뚱뚱한 방문판매원에게 살며시 몸을 기대더니, 뜨겁고 격렬한 키스를 나누었다……
+				PRINTFORMW 타액의 실을 흘리며 침대에 눕는 %CALLNAME:LOCAL%의 여음은 이미 『남자』를 받아들일 수 있을 만큼 꿀물에 젖어 있었다……
+				PRINTFORML 뚱뚱한 방문판매원의 극태 페니스가 질내를 억지로 헤집으며 천천히 침입하자,
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 덮쳐오는 쾌감에 시트를 부여잡으며 몸부림치고 있다……
+				PRINTFORML 마치 질 내부를 자신의 페니스 형태에 맞추어 개조하는 듯한 뚱뚱한 방문판매원의 허리놀림에,
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 기쁨에 가득 찬 교성으로 화답하고 있다……
+				CFLAG:LOCAL:(2084) += CFLAG:LOCAL:방치일수 * 30
+				CALL NTR_HOUMONNHANNBAI_SEX,LOCAL
+				PRINTFORML 
+				PRINTFORMW 거대한 페니스가 질 안에서 고동치며 정액을 토해낼 때마다, 방 안에 환희에 찬 비명이 메아리친다……
+				PRINTFORML …
+				PRINTFORML ……
+				PRINTFORML ………
+				PRINTFORML 뚱뚱한 방문판매원은 녹아내린 표정으로 드러누운 %CALLNAME:LOCAL%의 여음에서 자신의 정액이 넘쳐흐르는 모습을 바라보며,
+				PRINTFORMW 능글맞게 입꼬리를 끌어올렸다……
+			ELSEIF TALENT:LOCAL:음란 || TALENT:LOCAL:창부
+				PRINTFORMW %CALLNAME:LOCAL%이(가) 상기된 표정으로 속옷을 내리자, 음란한 즙이 실을 끌며 뚝뚝 카펫을 더럽혔다……
+				PRINTFORMW 그리고 그대로 엎드린 자세로 뚱뚱한 방문판매원에게 비순을 벌려 보여주자, 거대한 물건에 단숨에 질 깊숙한 곳까지 찔러 올려졌다……
+				PRINTFORMW 방 안에 낯뜨거운 신음이 울려 퍼지고, %CALLNAME:LOCAL%은(는) 혀를 내민 채 등을 활처럼 젖히고 있다……
+				PRINTFORMW 뚱뚱한 방문판매원은 %CALLNAME:LOCAL%의 치태를 신경 쓰지 않고, 자궁구를 억지로 비집어 열 듯 쿵쿵 질 깊숙한 곳을 찔러대고 있다……
+				CFLAG:LOCAL:(2084) += CFLAG:LOCAL:방치일수 * 30
+				CALL NTR_HOUMONNHANNBAI_SEX,LOCAL
+				PRINTFORML 
+				PRINTFORMW 거대한 페니스가 팽창한 순간, 뚱뚱한 방문판매원의 정액이 질 안으로 쏟아지듯 뿜어져 나오자,
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 머리를 도리질 치며 짐승 같은 신음을 지르며 절정에 달했다……
+				PRINTFORML …
+				PRINTFORML ……
+				PRINTFORML ………
+				PRINTFORMW 완전히 뚱뚱한 방문판매원의 물건에 길들여진 %CALLNAME:LOCAL%의 여음은 크게 입을 벌린 채, 걸쭉한 정액을 줄줄 흘려보내고 있다……
+			ELSEIF TALENT:LOCAL:복종 || TALENT:LOCAL:예속
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 미소 지으며 뚱뚱한 방문판매원의 앞에서 옷을 벗어 젖히고는 벽에 손을 짚고 엉덩이를 내밀었다……
+				PRINTFORMW 뚱뚱한 방문판매원이 거대한 물건을 찔러 넣자, 이미 뚱뚱한 방문판매원의 것에 길들여진 질벽이 꽈악꽉 조여들었다……
+				PRINTFORMW 뚱뚱한 방문판매원이 도려내듯이 허리를 놀려도, %CALLNAME:LOCAL%은(는) 애액을 흩뿌리며 쾌락에 겨운 소리를 내지르고 있다……
+				PRINTFORMW 기분이 좋아진 뚱뚱한 방문판매원은 %CALLNAME:LOCAL%에게 『포상이다』라고 속삭이며, 자궁에 스며들게 하듯 대량의 정액을 천천히 흘려 넣었다……
+				CFLAG:LOCAL:(2084) += CFLAG:LOCAL:방치일수 * 30
+				CALL NTR_HOUMONNHANNBAI_SEX,LOCAL
+				PRINTFORML 
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 질 안에 정액이 흘러 들어올 때마다, 노예에 불과한 자신이 『사랑받고 있다』고 생각하며 행복한 미소를 띠고 있다……
+				PRINTFORML …
+				PRINTFORML ……
+				PRINTFORML ………
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 몇 번이고 자신을 『사랑해 준』 뚱뚱한 방문판매원의 페니스를 감사의 말을 읊조리며 혀로 깨끗하게 핥고 있다……
+				PRINTFORMW 뚱뚱한 방문판매원은 그 모습을 바라보며 만족스러운 미소를 띠고 있다……
+			ENDIF
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 뚱뚱한 방문판매원에게 안기자, 스스로 입술을 겹치며 혀를 서로 얽었다……
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 그대로 밀쳐 쓰러지자 스스로 다리를 벌리고, 뚱뚱한 방문판매원의 거대한 물건에 질내가 넓혀지는 쾌락에 빠져들었다……
+				CALL NTR_HOUMONNHANNBAI_SEX,LOCAL
+				CFLAG:LOCAL:(2084) += CFLAG:LOCAL:방치일수 * 10
+				PRINTFORML 
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 뚱뚱한 방문판매원과 혀를 얽으면서, 몇 번이고 정액을 주입당하고 있다……
+			ELSE
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 무릎을 꿇고 뚱뚱한 방문판매원의 지퍼를 입으로 내리더니, 드러난 땀내 나는 물건을 주저 없이 입에 물었다……
+				PRINTFORMW 페니스가 충분히 딱딱해진 것을 확인하자 %CALLNAME:LOCAL%은(는) 속옷을 내리고, 뚱뚱한 방문판매원에게 엉덩이를 향하며 조르기 시작했다……
+				CALL NTR_HOUMONNHANNBAI_SEX,LOCAL
+				CFLAG:LOCAL:(2084) += CFLAG:LOCAL:방치일수 * 10
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 뚱뚱한 방문판매원의 페니스에 엉겨 붙은 정액을 혀로 깨끗하게 핥아내고 있다……
+				PRINTFORMW 뻐끔히 입을 벌린 %CALLNAME:LOCAL%의 질구에서는 다 들어가지 못한 정액이 넘쳐흐르고 있다……
+			ENDIF
+		ENDIF
+	ENDIF
+	DRAWLINE
+ELSE
+	PRINTFORMW %CALLNAME:LOCAL%은(는) 완곡하게 거절한 모양이다
+	DRAWLINE
+ENDIF
+
+@NTR_HOUMONNHANNBAI_SEX,ARG
+;各回数の算出
+IF TALENT:ARG:남자 == 0
+	CFLAG:ARG:본방횟수 = 3 + RAND:11
+	SIF HAVE_PENIS(ARG)
+		CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3
+ELSE
+	CFLAG:ARG:본방횟수 = 0
+	CFLAG:ARG:삽입횟수 = (ABL:ARG:욕망 + 6)/4 + (ABL:ARG:섹스중독 + 1)/2 + ABL:ARG:Ｃ감각 / 3
+ENDIF
+IF TALENT:ARG:남자 == 0 || ABL:ARG:정액중독 || ABL:ARG:ＢＬ끼
+	CFLAG:ARG:펠라횟수 = 2 + RAND:5
+ELSE
+	CFLAG:ARG:펠라횟수 = 0
+ENDIF
+SIF TALENT:ARG:Ｖ민감 && TALENT:ARG:남자 == 0
+	CFLAG:ARG:본방횟수 += 1
+
+;처녀/再生処女喪失
+CALL 처녀상실, ARG
+CALL 処女喪失イベント, ARG
+
+IF EXP:ARG:Ｖ확장경험 == 0 && EXP:ARG:Ａ확장경험 == 0
+	CALL ADDS_ABNORMAL_EXP, "拡張初体験", ARG
+	SETCOLOR COLOR("red")
+	PRINTL 이상경험　확장첫경험 + 1
+	RESETCOLOR
+ENDIF
+TCVAR:ARG:획득Ｖ경험 = CFLAG:ARG:본방횟수
+TCVAR:ARG:획득Ｖ확장경험 = CFLAG:ARG:본방횟수
+TCVAR:ARG:획득펠라경험 = CFLAG:ARG:펠라횟수
+TCVAR:ARG:획득키스경험 = 3+RAND:10
+SIF HAVE_PENIS(ARG)
+	TCVAR:ARG:획득사정경험 = CFLAG:ARG:삽입횟수 * 2 + CFLAG:ARG:본방횟수/2
+TCVAR:ARG:획득성교경험 = CFLAG:ARG:삽입횟수 + CFLAG:ARG:본방횟수
+TCVAR:ARG:획득절정경험 = CFLAG:ARG:본방횟수 + CFLAG:ARG:삽입횟수
+IF CFLAG:ARG:애ＮＴＲ진행도 == 2
+	TCVAR:ARG:획득질사경험 = CFLAG:ARG:본방횟수 * 2
+	TCVAR:ARG:획득정액경험 = CFLAG:ARG:펠라횟수 * 2 + CFLAG:ARG:본방횟수 * 2
+	SIF CFLAG:ARG:108 == 0
+		CFLAG:ARG:105 += CFLAG:ARG:본방횟수 * 2
+ENDIF
+TCVAR:ARG:획득봉사쾌락경험 = (CFLAG:ARG:본방횟수)/3
+;浮気癖がある場合は淫乱度倍化
+IF TALENT:ARG:바람기
+	CFLAG:ARG:음란도+= ((TCVAR:ARG:획득절정경험 + TCVAR:ARG:획득질사경험) * 10)*2
+ELSE
+	CFLAG:ARG:음란도+= (TCVAR:ARG:획득절정경험 + TCVAR:ARG:획득질사경험) * 10
+ENDIF
+TCVAR:ARG:획득바람경험 = 1
+CALL SHOW_ADD_EXP, ARG
+
+

@@ -1,0 +1,95 @@
+﻿
+;特技名
+@CGSP_NAME_1300, ARGS, ARG
+#DIMS L_MESSAGE, 2
+VARSET L_MESSAGE
+
+SPLIT ARGS , "/" , L_MESSAGE
+IF RESULT > 1 && ISNUMERIC(L_MESSAGE:1) && TOINT(L_MESSAGE:1) >= 0
+	LOCALS:1 = %L_MESSAGE:1%
+ELSE
+	LOCALS:1 = 0
+ENDIF
+IF ISNUMERIC(L_MESSAGE) && TOINT(L_MESSAGE) >= 0
+	LOCALS:0 = %L_MESSAGE:0%
+ELSE
+	LOCALS:0 = 0
+ENDIF
+RESULTS = 衰弱%LOCALS:0%/%LOCALS:1%
+
+;　コストの量
+@CGSP_COST_1300, ARGS, ARG
+RETURN 0
+;自動発動なので0
+
+;　타겟(選択するかしないか)
+@CGSP_TARGET_1300, ARGS, ARG
+RETURN 0
+;0-無し　　　1-味方1体　2-味方1体(自身含む)　3-敵1体　4-敵1体(サマナー含む)
+;5-敵味方1体　6-サマナーどちらか
+;自動発動なので0
+
+;　発動タイミング
+@CGSP_TIMING_1300, ARGS, ARG
+RETURN 1
+;0-アクティブ　1-味方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　2-相手ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　3-両方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ
+
+;====================================================
+;特技発動
+;====================================================
+@CGSP_ACTION_1300, ARGS, ARG, ARG:1
+#DIMS L_MESSAGE, 2
+VARSET L_MESSAGE
+
+SPLIT ARGS , "/" , L_MESSAGE
+IF RESULT > 1 && ISNUMERIC(L_MESSAGE:1) && TOINT(L_MESSAGE:1) >= 0
+	LOCAL:1 = (TOINT(L_MESSAGE:1))
+ELSE
+	LOCAL:1 = 0
+ENDIF
+IF ISNUMERIC(L_MESSAGE) && TOINT(L_MESSAGE) >= 0
+	LOCAL:0 = (TOINT(L_MESSAGE))
+ELSE
+	LOCAL:0 = 0
+ENDIF
+
+IF LOCAL:1 > 0 || LOCAL:0 > 0
+		FIELD_DEMON_DATE_V:ARG:CBV_B_AP -= LOCAL:0
+		FIELD_DEMON_DATE_V:ARG:CBV_AP -= LOCAL:0
+		
+		FIELD_DEMON_DATE_V:ARG:CBV_B_HP -= LOCAL:1
+		FIELD_DEMON_DATE_V:ARG:CBV_HP -= LOCAL:1
+		
+		CALL CARDBATTLE_MESSAGE, CS_PIC_NAME(ARG) + @"は基礎AP:-{LOCAL:0}/HP:-{LOCAL:1}になった。"
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;発動後どうなるか
+@CGSP_ACTION_AFTER_1300, ARGS, ARG, ARG:1
+RETURN 0
+;0-何もなし　1-フリーズ状態　2-山札に戻る　3-即死する
+
+;　 説明文の表示
+@CGSP_EXPLAIN_1300, ARGS, ARG
+#DIMS L_MESSAGE, 2
+VARSET L_MESSAGE
+
+SPLIT ARGS , "/" , L_MESSAGE
+IF RESULT > 1 && ISNUMERIC(L_MESSAGE:1) && TOINT(L_MESSAGE:1) > 0
+	LOCALS:1 = 「基礎HP-%L_MESSAGE:1%」
+ELSE
+	LOCALS:1 = 
+ENDIF
+IF ISNUMERIC(L_MESSAGE:0) && TOINT(L_MESSAGE:0) > 0
+	LOCALS:0 = 「基礎AP-%L_MESSAGE:0%」
+ELSE
+	LOCALS:0 = 
+ENDIF
+
+RESULTS = 自分のプリペアーフェイズで自動的に発動する。自身を%LOCALS:0%%LOCALS:1%にする。『ターン経過するほど弱くなっていくSP』
+
+
+

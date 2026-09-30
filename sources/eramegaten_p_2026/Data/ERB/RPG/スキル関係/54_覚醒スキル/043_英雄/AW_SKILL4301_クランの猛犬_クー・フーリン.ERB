@@ -1,0 +1,46 @@
+﻿
+;スキル名
+@SKILL_NAME_AW_4301,ARG
+RESULTS = 쿨란의 맹견
+
+;　コストの量
+@SKILL_COST_AW_4301,ARG
+RETURN 0
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_AW_4301
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_AW_4301, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입,制限なし
+@SKILL_SUCCESSION_TYPE_AW_4301, ARG
+RETURN GET_SUCCESSION_NUM("자동효과")
+;　 説明文の表示
+@SKILL_EXPLAIN_AW_4301, ARG
+PRINTL 영웅 쿠 훌린의 각성 스킬
+PRINTL 자동: 턴 종료 시 이 스킬 소지자가 건재할 때, 잔여 HP에 따른 확률로 연동 효과가 발동한다.
+PRINTL 　　　「다음 공격력을 대폭 상승시키는 차지 효과를 얻는다」
+
+@SKILL_ACTIONABLE_BATTLE_AW_4301, ARG
+RETURN 0
+
+@SKILL_TURNEND_AW_4301, ARG
+;場にでて健在じゃないとだめ
+SIF !IS_TARGET_ABLE(ARG)
+	RETURN 0
+;入力可能な状態じゃないとだめ
+SIF !ACTIONABLE_CHARA_F(ARG)
+	RETURN 0
+;すでに気合状態なら発動しない
+SIF CFLAG:ARG:気合フラグ
+	RETURN 0
+;HP減少に応じて5 ~ 50%
+SIF RAND:100 >= LIMIT((100 - 現HP割合(ARG)) / 2, 5, 50)
+	RETURN 0
+CALL PRINT_ACT_MESSAGE, ARG,  SKILL_NUM_F("각성스킬"), , , , "NOWAIT"
+PRINTFORMW %CALLNAME:ARG%는 힘을 모아 다음 공격에 대비했다!
+CFLAG:ARG:気合フラグ = 1
+

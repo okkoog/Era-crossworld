@@ -1,0 +1,458 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_82_英霊召喚(テンプレ).ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author		Reason
+;	000		20XX/XX/XX		----		テンプレ
+;	001		2021/07/09		しゃけ		作成
+;	002		2022/01/04		JK好き		キャラの削除にDELCHARAを使っていたのをCALL キャラ削除を使うように修正
+;	003		2022/08/24		SUIHOU		FGO_SUMMON_SACRIFICE_1を追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;====================
+;召喚イベント条件
+;====================
+@FGO_SUMMON_CHECK_1
+#DIM 生贄
+
+;■召喚可否条件をここに記載することで読み込んでくれます■
+;※召喚はイベントフラグ:82:1が必ず4以上から。
+
+IF イベントフラグ:82:1 > 3
+	IF GETCHARA([[キャラ:수수께끼의히로인X]]) > 0
+		RESULTS = 비검！ 세이버 죽이기(수수께끼의 히로인 X)
+		RESULTS:1 = 필요 촉매：영웅 아서(함락)　수수께끼의 히로인 X 가입완료
+		RETURN 0
+	ELSEIF GETCHARA([[キャラ:아서]]) > 0
+		IF !陥落(GETCHARA([[キャラ:아서]]))
+			RESULTS = 비검！ 세이버 죽이기(수수께끼의 히로인 X)
+			RESULTS:1 = 필요 촉매：영웅 아서(함락)　미함락
+			RETURN 0
+		ELSE
+			RESULTS = 비검！ 세이버 죽이기(수수께끼의 히로인 X)
+			RESULTS:1 = 필요 촉매：영웅 아서(함락)　수수께끼의 히로인 X 미가입
+			RETURN 1
+		ENDIF
+	ELSE
+		RESULTS = 비검！ 세이버 죽이기(수수께끼의 히로인 X)
+		RESULTS:1 = 필요 촉매：영웅 아서(함락)　미소지
+		RETURN 0
+	ENDIF
+ELSE
+	;そもこれが出ることはないはずだけど、確認用に一応記載
+	RESULTS = 최초 소환 이벤트 미소화
+	RETURN 0
+ENDIF
+
+;※RETURN 1　で鯖リストのBITがオンになるようにしているため、必ずRETURNを記入してください
+
+
+;---- EDIT 003 ADD START ---------------------------
+;====================
+;生贄可否の条件確認
+;====================
+@FGO_SUMMON_SACRIFICE_1(ARG:0)
+	;英雄アーサー以外は不可
+	SIF NO:ARG != [[キャラ:아서]]
+		RETURN 0
+	;未陥落は対象外
+	SIF !陥落(ARG)
+		RETURN 0
+	SIF !FGO_SUMMON_SACRIFIE_COMMON(ARG)
+		RETURN 0
+	RETURN 1
+;---- EDIT 003 ADD END -----------------------------
+
+
+;====================
+;謎のヒロインX召喚
+;====================
+@FGO_SUMMON_1
+#DIM 対象
+#DIM 元の月齢
+#DIM L_COUNT
+;■イベント本文を記載■
+
+	対象 = [[キャラ:수수께끼의히로인X]]
+	;バトルイベント識別のためにイベントフラグを特定値に設定
+	イベントフラグ:82:5 = 10
+	PRINTFORML  「자、소환술은 다음 스테이지로
+	PRINTFORMW  　――우리들의 연구 성과를 보시죠」
+	PRINTFORML  
+	PRINT  「자、준비해라
+	PRINTFORM \@ TALENT:MASTER:서머너 > 0 ? 서머너 # 전사 \@ %CALLNAME:MASTER%。
+	PRINTFORMW  　이것이 새로운 소환기술、그 발전이다――――아앗」
+;---- EDIT 003 ADD START ---------------------------
+	;キャラリストの下から順にキャラ検索
+	;イベント本文を呼び出す前に削除処理をするように変更
+	;該当するキャラを発見した場合、それを削除する
+	;FOR L_COUNT,CHARANUM,-1,-1
+	;	IF L_COUNT == GETCHARA([[キャラ:아서]])
+	;		SIF !陥落(L_COUNT)
+	;			CONTINUE
+	;		CALL キャラ削除, L_COUNT
+	;		BREAK
+	;	ENDIF
+	;NEXT
+;---- EDIT 003 ADD END -----------------------------
+	CALL 疑似的画面クリア
+	TWAIT 500,1
+	PRINTFORML  
+	PRINTFORML  
+	;■以下、召喚イベント本文をどうぞ■
+	PRINTL  ＞ 순간、마법진에서 마력이 빛의 줄기가 되어 달려와 사라져간다
+	PRINTW  　 모두가 눈을 보호하기 위해 빛을 차단하고、다음 순간에는 소녀가 홀로 마법진 위에 서있었다
+	PRINTL  
+	PRINTL  
+	PRINTW  「묻겠다。 당신이 나의 마스터인가？」
+	PRINTL  
+	PRINTL  
+	PRINTW  ＞ 그곳에 있던 것은、기사와는 거리가 먼 분위기의 소녀였다
+	PRINTW  　 파란 저지에、그것을 덮는 푸른 목도리
+	PRINTW  　 깊게 쓰고 있는 모자에서 보이는 금빛 머리카락、그 머리 위로 모자를 뚫고 있는 바보털
+	PRINTW  　 아마추어의 눈으로 보면、그냥 학생으로밖에 보이지 않는다
+	PRINTL  
+	PRINTL  　 그러나 그 판단은 경솔했다。그 인상을 뒤집기라도 하듯、막대한 마력을 지니고 있었던것이다
+	PRINTW  　 어딘가 위압감을 느끼게 하는 그 마력은、그녀가 단지 학생이라는 인식을 바로잡기에 충분했다
+	PRINTL  
+	PRINTL  
+	PRINTFORMW  ＞ %CALLNAME:MASTER%는、소녀의 질문에 그렇다고 대답했다
+	PRINTL  
+	PRINTL  
+	PRINTL  「그렇구나……
+	PRINTW  　그렇다면───」
+	PRINTL
+	PRINTW  「───각오오오오오오오오오오오오！！！！！！！！！！！！！！」
+	PRINTL  
+	PRINTL  
+	PRINTFORMW  ＞ 저지의 영령은 어디선가 빛나는 검을 꺼내、순식간에 %CALLNAME:MASTER%에게 달려들었다！！
+	PRINTFORMW  　 갑작스러운 공격을 가까스로 막아내면서、왜 마스터인 %CALLNAME:MASTER%를 공격하는지 물었다
+	PRINTL  
+	PRINTL  
+	PRINTW  「시치미 떼도 소용없어요、네타는 이미 거론되고있으니까요！！」
+	PRINTL  　
+	PRINTL  
+	PRINTW  ＞ 네타란 도대체
+	PRINTL  
+	PRINTL  
+	PRINTFORMW  「자 이제 그만！ 세상에서 악행을 일삼는 \@ TALENT:MASTER:서머너 == 0 ? 전사 # 서머너 \@라고 하면 당신이겠죠！！」
+	PRINTW  「수많은 무고한 사람들을 유괴해서는 저런 일이나 이런 짓을 한 후에 암시장에 팔아넘기고 있다고 하잖아요！！」
+	PRINTL 
+	PRINTL
+	PRINTFORMW  ＞ 세상에나。 아무래도 %CALLNAME:MASTER%의 소행은 영령 측에서도 전해지고 있는 것 같다
+	PRINTW  　 일반적인 정의감을 가지고 있고、또한 싸울 힘이 있다면 누구나 그 악행을 저지른 자를 응징하려고 할 것이다
+	PRINTFORMW  　 거기까지는 괜찮다。 %CALLNAME:MASTER%로서는 이미 익숙해진 부분이다。슬픈일이지만
+	PRINTW  　 그러나 문제는 이 사실이 영령 측에 전해지고 있다는 것이다
+	PRINTFORMW  　 영령에도 다양한 성격을 가진 사람이 있지만、만약 이것이 선량한 영령에게 알려지게 된다면 모두 한꺼번에 %CALLNAME:MASTER%에게 맞서게 될것이다
+	PRINTW  　 역시 다음에 소환할 영웅이 다시 덤벼들 가능성이 있다는 것은 정말 곤란하다
+	PRINTL
+	PRINTL
+	PRINTW  「우오오오오!!!!! 이놈!! 피하지 마라―――!!!」
+	PRINTL
+	PRINTL
+	PRINTW  ＞ 여하튼、우선 집착에 이쪽을 계속 습격하는 이 영령의 처리가 먼저다
+	PRINTW  　 역시 이렇게 계속 날뛰면、소환시설에 피해가 미칠 가능성이 있다
+	PRINTW  　 자칫 시설을 파괴당하면、영령이라는 귀중한 전력을 확보할 길이 없어진다
+	PRINTW  　 빨리 결착을 낼 필요성이 있을것이다
+	PRINTL
+	PRINTL
+	PRINTW  「읏！ 드디어 포기했나！ 자、조용히 죽어라！！」
+	PRINTL
+	PRINTL
+	PRINTFORMW  　 %CALLNAME:MASTER%는 공격해오는 영령을 향해 요격 태세를 취했다！
+	PRINTL 
+	PRINTL 
+	PRINTW  ＞ 영령 수수께끼의 히로인 X 가 나타났다！
+	PRINTL
+	元の月齢 = FLAG:월령
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+	CALL SET_ENEMY,9,[[キャラ:수수께끼의히로인X]],50,1,3
+	CFLAG:(CHARANUM-1):불사신플래그 = 1
+	CFLAG:(CHARANUM-1):행동횟수 = 1
+	CFLAG:(CHARANUM-1):ＨＰ보정 = (MAXBASE:(CHARANUM-1):ＨＰ / 2)
+	CFLAG:(CHARANUM-1):ＭＰ보정 += 99999
+	BASE:(CHARANUM-1):힘 += 3
+	BASE:(CHARANUM-1):내구 += 2
+	BASE:(CHARANUM-1):속도 += 5
+	BASE:(CHARANUM-1):운 += 5
+	ABL:(CHARANUM-1):스킬3 = 0
+	ABL:(CHARANUM-1):스킬9 = [[스킬:마하에이하]]
+	ABL:(CHARANUM-1):스킬10 = [[스킬:어드바이스]]
+	ABL:(CHARANUM-1):스킬11 = 3910
+	CSTR:(CHARANUM-1):전용기7 = 銀河流星剣
+	ABL:(CHARANUM-1):스킬12 = [[스킬:악셀]]
+	CSTR:(CHARANUM-1):사고패턴 = セイバー絶対殺す剣
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	CALL BATTLE_START
+	PRINTL
+	PRINTL  
+	PRINTL  「으그극……이것으로 끝이라고、생각하지 마세요、제가 쓰러져도……！
+	PRINTL  　언젠가 제2、제3의 내가 다시 나타나、당신과 맞설 것입니다……！
+	PRINTW  　그래、세상에 만연한、모든 세이버를 멸망시킬때까지、하……구훗…」
+	PRINTL  
+	PRINTL
+	PRINTW  　다소 과장되게 그렇게 말하면서、저지의 정령은 엎드려 쓰러졌다
+	PRINTW  　어떻게든 결판이 난 것 같다。 하기야、영령쪽은 아직 여유가 있는 것 같지만
+	PRINTL
+	PRINTL
+	PRINTW  「읏、들켰나요。 세이버 인법『데스＝프리』를 알아챌 줄이야…역시 세계의 적은 이름값을 하는것 같네요！」
+	;セイバー忍法に『デス＝フリ』なんて技はない　
+	PRINTL  
+	PRINTL  
+	PRINTW  　그렇게 말하면서、저지의 영령은 약간 휘청거리면서도 일어섰다
+	PRINTW  　그러나、이쪽으로는 덤비지 않는다。 일단、이야기를 들어볼 생각인 모양이다
+	PRINTL
+	PRINTL
+	PRINTL  「세이버로서、소환자의 본질을 파악하는 것이 중요하니까요。
+	PRINTW  　후일을 생각하지 않고 마스터를 죽이는 건 배신자나、광기에 물든 버서커 정도입니다」
+	PRINTL
+	PRINTL
+	PRINTW  　마스터라고 대답하는 순간 돌격해온 녀석이 뭔가를 선전하고 있는데、아무래도 영령의 클래스는 세이버인것 같다
+	PRINTW  　세이버인 주제에 기습전법을 쓴 것 같기도 하지만、세이버란 그런 것일까
+	PRINTL
+	PRINTL
+	PRINTL  「실례입니다！ 세이버는 항상 정정당당하게 싸우는 서번트、기습 같은 비겁한 수법은 쓰지 않습니다！
+	PRINTW  　물론、저도 세이버이기 때문에、기습을 하더라도 정정당당하게 기습을 하겠습니다」
+	PRINTL
+	PRINTL
+	PRINTFORMW  　%CALLNAME:MASTER%는 저지 영령의 말을 듣고 약간 혼란스러워했다
+	PRINTW  　왕도적인 전투를 하는 것이 세이버인데、이 영령은 비겁한 방법을 사용하면서 세이버를 자칭하고 있다
+	PRINTFORMW  　%CALLNAME:MASTER%는 이 모순에 대해 영령에게 변명을 요구했다
+	PRINTL
+	PRINTL
+	PRINTW  「아뇨 저는 그런 전투방식밖에 모르고、애초에 이래봬도 나름 정정당당하게 싸우고 있다니까요？
+	PRINTL  　공격하기전에 제대로 인사했고、세이버 닌법의 일부라던지 기척차단이라던지 봉인하고 싸웠으니까、
+	PRINTW  　누가 뭐래도 정정당당하게 싸웠어요！ 맹세코 비겁한 수법은 사용하지 않았습니다！」
+	PRINTL
+	PRINTL
+	PRINTFORMW  　영령의 확고한 자신감을 가진 설명에 %CALLNAME:MASTER%는 압박감을 느꼈다
+	PRINTW  　아슬아슬하게 납득할 수 있었지만、세이버 닌법이나 기척차단과 같은 무시할 수 없는 부분이 신경 쓰인다
+	PRINTFORMW  　스킬명부터 세이버라기보다 암살자──어새신──이 원래 클래스인거 아닌가？ %CALLNAME:MASTER%는 의아해했다
+	PRINTL
+	PRINTL
+	PRINTW  「하아~?! 아니아니아니, 세이버! 세이버입니다! 저는 핫산 프레임으로 정평이 난 어새신 같은 건 아니라고요!?
+	PRINTW  　대체로、세이버 닌법이나 기척차단을 가지고 있다고 어새신 인정하는것은 이상하다고 생각합니다！
+	PRINTW  　닌법 스킬이라 어새신인가요、닌법 차별인가요！？ 어새신 인정을 한다면 합당한 이유를 요구합니다！！」
+	PRINTL
+	PRINTL
+	PRINTW  　이유고 뭐고、순수하게 기척차단 등의 어새신밖에 가질 수 없는 클래스 스킬을 소지하고 있는 것이 이유이다
+	PRINTL
+	PRINTL
+	PRINTW  「우읏」
+	PRINTL
+	PRINTL
+	PRINTW  　그리고 만일 세이버라 하더라도、세이버라면 본래 보유하고 있는 대마력의 효과가 발현되지 않은 것도 있다
+	PRINTL
+	PRINTL
+	PRINTW  「우구구……」
+	PRINTL
+	PRINTL
+	PRINTW  　그리고 무엇보다도、아까 해석에서 얻은 스테이터스에 클래스가 어새신으로 취급되어 있던 것이 결정적이었다
+	PRINTL
+	PRINTL
+	PRINTW  「크핫！」
+	PRINTL
+	PRINTL
+	PRINTW  　아무래도 영령──진명…진명？은 수수께끼의 히로인 X인것 같다──는 정신적으로 데미지를 입은 것 같다
+	PRINTW  　반응으로 미루어 보아、본인도 어렴풋이 자각하고 있었을지도 모른다
+	PRINTW  　왜 그녀가 그렇게까지 세이버 클래스에 집착하는지가 아직도 수수께끼지만……
+	PRINTL
+	PRINTL
+	PRINTW  「큭……죽여라……！ 아니 이제 죽여주세요！ 더 이상은 제 멘탈을 견딜 수가 없어요……！
+	PRINTW  　이제는 삶의 수치에요、수치！ 영령이라 살아있지는 않지만요！！」
+	PRINTL
+	PRINTL
+	PRINTW  　수수께끼의 히로인 X……길어서、X로 부루기로 한다
+	PRINTW  　모처럼 소환한 영령을 내 손으로 소멸시키는 것은 너무나 아깝다
+	PRINTW  　하물며、조금 전의 싸움으로 전력으로서의 실용성을 증명했으니 유예다
+	PRINTL
+	PRINTL
+	PRINTL  「윽……이대로 저보고 살아서 망신을 당하라는 겁니까、당신은！？ 이 귀신！！ 악마！！ 세계의 적！！
+	PRINTW  　당신같은 경우에는 복상사가 잘 어울려요！！」
+	PRINTL
+	PRINTL
+	PRINTW  　다른 매도는 몰라도 세계의 적이라고 부르는 것만은 그만두었으면 좋겠다、
+	PRINTW  　앞으로 양심을 가진 영령들을 모두 몰려올지도 모른다는 사실만으로도 속이 쓰리다
+	PRINTL
+	PRINTL
+	PRINTW  「앗 네、죄송합니다」
+	PRINTL  
+	PRINTL  
+	PRINTW  　우선 일단 이야기를 되돌리자
+	PRINTFORMW  　%CALLNAME:MASTER%는 영령인 X를 서번트로 계약하고 싶다
+	PRINTL
+	PRINTL
+	PRINTW  「으읏、세계의 적 직속 스카우트인가요……세이버를 멸망시키는 것이 사명인 정의의 세이버로서는 조금…아니、상당히 저항감이 있네요…！」
+	PRINTL
+	PRINTL
+	PRINTW  　너덜너덜하게 당하고도 말하는 걸 보면、여간 악의 악잡이로 취급되는 것이 싫은걸까
+	PRINTW  　그리고 세이버를 멸망시키려는 사람이 정의로운 사람으로 대우받을지는 조금 의문이다
+	PRINTL
+	PRINTL
+	PRINTL  「당연하지 않습니까！ 어차피 위에서부터 악행을 강요해서 저런일이나 이런일을 시키는거죠！ 싫어요、그런거！
+	PRINTW  　그리고 세이버 사냥은 제게는 합법이기 때문에 안전합니다！ 즉 제가 정의의 세이버라는 것에는 흔들림이 없습니다！」
+	PRINTL
+	PRINTL
+	PRINTFORMW  　니가 그런거라면 그런거겠지……%CALLNAME:MASTER%는 츳코미 포기하기로 했다
+	PRINTW  　더 이상 말을 계속하면 귀찮아질 수 있으니、당신은 억지로 계약을 진행하기로 했다
+	PRINTL
+	PRINTL
+	PRINTL  「잠깐！！ 불법계약은 안돼요！！ 이런건 서번트 인권에 반하는거에요！！
+	PRINTW  　앗、얌마！！ 사람말을 들어라、야！！！！」
+	PRINTL  
+	PRINTL  
+	PRINTW  ＞ 영령 수수께끼의 히로인 X 가 동료마가 되었다！（？）
+	PRINTL  
+	;月齢をバトル開始前時点に直す
+	FLAG:월령 = 元の月齢
+	CALL ADD_NEW_COMPANION, 対象, 100
+	;バトルイベント識別に使ったイベントフラグを片付け
+	イベントフラグ:82:5 = 0
+	
+;--------------------
+;バトル設定
+;--------------------
+;戦闘開始時のイベント発生
+;サンプル：初手ノウブル・ファンタズムゲージMAX、気合フラグオン
+@EVENT_BATTLE_START_EVENT82_1
+#DIM SKILL_NUM
+
+SKILL_NUM = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+
+IF イベントフラグ:82:5 == 10
+	PRINTFORML  
+	CUSTOMDRAWLINE =
+	PRINTFORML  
+	SETCOLOR COLOR("YELLOW")
+	PRINTFORMW  ＞ 역할을 다한 마법진에서 마그네타이트가 쏟아져、영령에게 공급되어 간다！
+	RESETCOLOR
+	PRINTFORML  
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃읏、이 정도의 마력……도대체 어디서부터……！？　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃아뇨、지금은 상관없습니다！어쨌든 이 힘으로 당신을 쓰러트릴거예요！　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃이김에 나중에는 이 세상에 만연한 세이버를 없애버려야지！！　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃끝은 컵라면으로 결정입니다！！　　　　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	;魔力放出状態に強制移行
+	CALL SKILLGAGE_F_SET,(CHARANUM-1),SKILL_NUM,100
+	CALL PRINT_ACT_MESSAGE, CHARANUM-1, SKILL_NUM
+	CALL ACTION_ノウブル・ファンタズム,(CHARANUM-1)
+	CFLAG:(CHARANUM-1):気合フラグ = 1
+	イベントフラグ:82:5 = 11
+ENDIF
+
+@EVENT_BATTLE_TURNEND_EVENT82_1
+#DIM SKILL_NUM
+
+SKILL_NUM = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+
+IF イベントフラグ:82:5 == 12 && 現HP割合(CHARANUM-1) < 50
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃――――그렇군요　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTL ┃세계의적、이라는 평은……그리 틀린 말은 아닌 것 같네요　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTL
+	PRINTW ＞ 영령 수수께끼의 히로인 X　는 또 하나의 성검을 어디선가 꺼내여、도신에 마력을 입혔다！
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃좋네요、여기서부터는 시리어스 시간이에요　　　　　　　　┃
+	PRINTL ┃진지한 상태라고 쓰고 진심 모드라고 읽는、그 마음가짐으로 도전합니다！　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃자……별빛의 검이여、달려라─────！！　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	SETCOLOR COLOR("YELLOW")
+	PRINTFORMW ＞성검에서 뿜어져 나오는 마력이, 하늘에 뜬 달에 영향을 미쳤다!
+	CFLAG:(CHARANUM-1):불사신플래그 = 0
+	PRINTFORMW ＞%CALLNAME:(CHARANUM-1)%의 HP가 회복되었다!
+	RESETCOLOR
+	FLAG:월령 = 0
+	ABL:(CHARANUM-1):스킬3 = 3906
+	CSTR:(CHARANUM-1):전용기3 = 無銘勝利剣
+	CALL VAR_HP,(CHARANUM-1),MAX(MAXBASE:(CHARANUM-1):ＨＰ,1),"회복"
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	CALL SKILLGAGE_D_SET,(CHARANUM-1),SKILL_NUM,5
+	イベントフラグ:82:5 = 13
+ELSEIF イベントフラグ:82:5 == 11 && 現HP割合(CHARANUM-1) < 80
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃우왓、해주셨네요！？　　　　　　　　　　　　　　┃
+	PRINTL ┃이렇게 되면 더욱 진심을 드러내지 않을 수 없어요！　　　　　　　　　┃
+	PRINTL ┃간다、악당놈아！！　　　　　　　　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	CFLAG:(CHARANUM-1):행동횟수 = 2
+	イベントフラグ:82:5 = 12
+	SIF 現HP割合(CHARANUM-1) < 80
+		BASE:(CHARANUM-1):ＨＰ = MAXBASE:(CHARANUM-1):ＨＰ /100 * 80
+ELSE
+ENDIF
+
+;敵の体力回復
+SETCOLOR COLOR("YELLOW")
+PRINTW ＞ 영령 수수께끼의 히로인 X　에게 마그네타이트가 모여간다！
+RESETCOLOR
+CALL VAR_HP,(CHARANUM-1),MAX(MAXBASE:(CHARANUM-1):ＨＰ/20,1),"회복"
+CFLAG:(CHARANUM-1):気合フラグ = 1
+IF SKILLGAGE_D_GET((CHARANUM-1),SKILL_NUM) == 0
+	CALL SKILLGAGE_F_SET,(CHARANUM-1),SKILL_NUM,100
+	CALL PRINT_ACT_MESSAGE, CHARANUM-1, SKILL_NUM
+	CALL ACTION_ノウブル・ファンタズム,(CHARANUM-1)
+ENDIF
+
+;--------------------
+;思考パターン設定
+;--------------------
+@SET_ACTION_セイバー絶対殺す剣, ARG
+#DIM SKILL_NUM,2
+
+SKILL_NUM:0 = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+SKILL_NUM:1 = PU_SKILLNUM_GET((CHARANUM-1),"無銘勝利剣")
+
+SELECTCASE イベントフラグ:82:5
+	CASE 13
+		IF CFLAG:(CHARANUM-1):행동한횟수 == 0
+			CALL SET_ACTION_SKILL, (CHARANUM-1), (SKILL_NUM:1)
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					CALL SET_ACTION_SKILL, (CHARANUM-1), [[스킬:어둠속의기습]]
+				CASE 1
+					CALL SET_ACTION_SKILL, (CHARANUM-1), [[스킬:라이트스피어]]
+				CASE 2
+					CALL SET_ACTION_SKILL, (CHARANUM-1), [[스킬:마하에이하]]
+			ENDSELECT
+		ENDIF
+	CASEELSE
+		SELECTCASE RAND:3
+			CASE 0
+				CALL SET_ACTION_SKILL, (CHARANUM-1), [[스킬:어둠속의기습]]
+			CASE 1
+				CALL SET_ACTION_SKILL, (CHARANUM-1), [[스킬:라이트스피어]]
+			CASE 2
+				CALL SET_ACTION_SKILL, (CHARANUM-1), [[스킬:마하에이하]]
+		ENDSELECT
+ENDSELECT

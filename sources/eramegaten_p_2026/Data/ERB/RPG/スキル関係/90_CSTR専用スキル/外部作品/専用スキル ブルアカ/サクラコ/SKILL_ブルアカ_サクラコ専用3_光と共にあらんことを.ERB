@@ -1,0 +1,79 @@
+﻿;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_光と共にあらんことを,ARG
+RESULTS = 빛과 함께하기를
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_光と共にあらんことを
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_光と共にあらんことを, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_光と共にあらんことを
+RETURN GET_SUCCESSION_NUM("자동효과")
+;속도보정
+@SKILL_SPEED_光と共にあらんことを, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_光と共にあらんことを
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_光と共にあらんことを, ARG = -1
+RETURN 9
+
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_光と共にあらんことを,ARG,ARG:1
+;自分じゃなければNG
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+SIF ARG != ARG:1
+	RETURN 0
+;弱点を受けているキャラを探す
+SIF !GET_CREC_ACT(ARG, , "WEAK")
+	RETURN 0
+;50%
+SIF RAND:2
+	RETURN 0
+RETURN 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_光と共にあらんことを, ARG, ARG:1, ARG:2
+CALL SKILL_SET_カジャンダ, ARG, ARG, "공격", 4, "단체"
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_光と共にあらんことを, ARG
+PRINTL 자동: 자신의 행동으로 적에게 약점 공격을 가했을 때 50% 확률로 이하의 연동 효과가 발동한다.
+PRINTL 　　 「자신의 공격력이 상승한다.」
+
+;ツールチップ版の解説文
+@SKILL_EXPLAIN_TOOLTIP_光と共にあらんことを, ARG
+RESULTS:0 = 자동: 자신의 행동으로 적에게 약점 공격을 가했을 때 50% 확률로 이하의 연동 효과가 발동한다.
+RESULTS:1 = 　　 「자신의 공격력이 상승한다.」
+
+;とくにない
+
+@SKILL_ACTIONABLE_BATTLE_光と共にあらんことを, ARG
+RETURN 0
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_光と共にあらんことを,ARG
+RETURN 0
+;とくにない
+

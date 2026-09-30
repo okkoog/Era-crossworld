@@ -1,0 +1,628 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2011/01/27		旅人					キャプス・ロック実装
+;	003		2011/01/28		P						ジェンダーフリー実装
+;	004		2011/02/16		Ｎ鳥					ホワイトアルバム・ＤＤＭ実装
+;	005		2011/02/20		Ｎ鳥					ソフト付け替え画面の修正
+;	006		2011/03/10		P						ソフト付け替え画面の修正・フロイトユングの名前変更・ミューテーションギア追加
+;	007		2012/01/30		豚の娘の豚				まどマギコンバータの追加
+;	008		2013/02/07		ネトリス				リラクゼスプレーを追加
+;	009		2016/07/29		（U´・ω・｀）			ランランダンジョン追加
+;	010		2016/07/29		（U´・ω・｀）			ランランダンジョンの必要容量変更
+;	011		2017/05/16		ネトリス				インストールソフト：セカンドハローの処理を追加
+;	012		2017/09/10		魔晶拡張パッチ			魔匠の工房を追加
+;	013		2017/10/03		名無					悪魔合体ライトを追加
+;	014		2018/08/25		名無					呪いのレッドカーペット追加
+;	015		2019/03/03		名無					혼의일격(悪魔弾丸アプリ)追加
+;	016		2019/03/17		名無					マインドシーカー(常時アンノウン状態アプリ)他追加
+;	017		2019/07/14		ypa 					インストールソフト一括切替機能追加
+;	018		2019/08/28		空気 					デビルチェンバー着脱時は容量の変化を考慮するように変更。また、デビルチェンバー・ＤＤＭの解説文を追記
+;	019		2020/02/21		なんとなくの人			アミティプロテクタを追加
+;	020		2020/03/27		空気 					インストールソフト：カッコーラバーの処理を追加
+;	021		2020/09/25		kamedakeisuke(ﾟдﾟ)		ハーモナイザーの仕様を変更
+;	021		2021/01/02		Schrott					必要サマナーレベルをWikiソースで表示＋消費容量を最初に表示。
+;	023		2021/03/02		亜人いいよね			強化フィルタの適用。
+;	024		2021/03/04		kamedakeisuke(ﾟдﾟ)		ハーモナイザーと魔装術の起動を排他に調整
+;													ついでにハーモナイザーの表示がズレまくってたで修正
+;													ついでにバックアッパーだけ『容量：全体の』という表記だったので『容量：全量の』に変更
+;	025		2021/04/11		Jガン					新ソフトウパニシャッド追加、SOFT_ONの関数の引数を増やし必要サマナーレベルを設定できるように
+;	026		2021/10/24		NEO						経験値関連とゲームオーバー関連ソフトを追加
+;	027		2022/01/01		kamedakeisuke(ﾟдﾟ)		全体的に容量を調整した
+;	028		2021/01/01		JK好き					@SOFT_ON サマナー人数を見るNUM_SUMMONERから最大サマナーレベルを見るGET_SUMMONER_MLVに修正
+;	029		2023/03/02		JK好き					@SETUP_SOFT ソフトセット使用時に文章が表示されるように追加
+;	030		2022/12/22		P(bzzile)				@SOFT_ONをCOMP使用不可能フラグを見るように
+;	031		2023/03/04		P(bzzile)				@SOFT_ONにおけるCOMP使用不可能フラグの参照が逆転していた不具合を修正
+;	032		2023/03/10		P(bzzile)				インストールソフトセット関数と関連関数をリファクタリング
+;													可読性確保のためにコメントアウトによる過去コードを排除。ここまでの変更履歴を参照する場合は資料フォルダのファイルを参照してください
+;	033		2023/04/12		P(bzzile)				インストールソフトの価格を取得する際にエラー落ちする不具合を修正
+;	034		2023/06/16		P(bzzile)				邪教の館で合体ソフトなどを利用する場合、サマナーレベルを不問にするように変更
+;	034		2023/06/16		P(bzzile)				ソフトの詳細説明部分で容量との間に余白がなかったので余白を追加するように調整
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;==========================================================
+;インストールソフト関連が増えてきたので分け。
+;==========================================================
+;===============================
+;ソフトに使用中の容量
+;==============================
+@ソフト容量()
+#FUNCTION
+#DIM LCOUNT
+#DIM L_RESULT
+L_RESULT = 0
+FOR LCOUNT, 0, INSTALLSOFTNUM
+	SIF !EQUIP_INSTALLSOFT:LCOUNT
+		CONTINUE
+	L_RESULT += GET_INSTALLSOFT_SIZE(LCOUNT)
+NEXT
+RETURNF L_RESULT
+
+;==========================================================
+;インストールソフト装備
+;==========================================================
+@SETUP_SOFT,ARG = 500,ARG:1 = 0,ARG:2 = 0
+#DIM LCOUNT, 3
+#DIM L_RESULT
+#DIM STOCK_REDRAW
+#DIM L_LINE, 3
+#DIM L_PAGE, 2
+#DIM L_PAGE_MAX, 2
+#DIM L_EQUIP_LIST, 500
+#DIM STOCK_EQUIP_INSTALLSOFT, 500
+#DIM TEMP_LINE
+#DIMS TEMPS
+#DIM CONST SHOWNUM_1 = 6
+#DIMS SHOW_LINE
+#DIMS EQUIPED_SHOW_LINE, 10, 6
+#DIM SHOWNUM_IN_LINE
+#DIM CONST SHOWNUM_2 = 20
+#DIM LISTNUM
+#DIM L_SOFT
+#DIMS L_NAMES
+#DIMS L_SIZES
+#DIMS L_LVS
+#DIMS L_EXPLAINS
+#DIMS L_TITLE
+#DIMS L_COLOR, 3
+#DIMS SELECT_TYPE
+#DIM SELECT_SOFT
+#DIM SELECT_LIST, 60
+L_LINE = LINECOUNT
+STOCK_REDRAW = CURRENTREDRAW()
+REDRAW 0
+
+ARRAYCOPY "EQUIP_INSTALLSOFT", "STOCK_EQUIP_INSTALLSOFT"
+SELECT_SOFT = -1
+SHOWNUM_IN_LINE = LINELENS() / 24
+SELECT_TYPE = 탐색보조
+$START
+CLEARLINE LINECOUNT - L_LINE
+VARSET SELECT_LIST, -1
+VARSET L_EQUIP_LIST, -1
+DRAWLINE
+PRINTFORML 인스톨소프트 셋업　　　　　　ＣＯＭＰ용량:[{ソフト容量(), 3}/{GET_COMPSIZE(), 3}]사용중　　　　SLv:{GET_SUMMONER_MLV(1)}
+DRAWLINE
+PRINTL □세트 중인 소프트
+TEMP_LINE = LINECOUNT
+SHOW_LINE = 
+LCOUNT:1 = 0
+LCOUNT:2 = 0
+VARSET EQUIPED_SHOW_LINE
+
+;この画面に来る時につけていたソフトを記録して先に並ぶようにする
+FOR LCOUNT, 0, INSTALLSOFTNUM
+	;名称未定義は弾く
+	SIF GET_INSTALLSOFT_NAME(LCOUNT) == ""
+		CONTINUE
+	SIF !STOCK_EQUIP_INSTALLSOFT:LCOUNT
+		CONTINUE
+	L_EQUIP_LIST:FINDELEMENT(L_EQUIP_LIST, -1) = LCOUNT
+NEXT
+FOR LCOUNT, 0, INSTALLSOFTNUM
+	;名称未定義は弾く
+	SIF GET_INSTALLSOFT_NAME(LCOUNT) == ""
+		CONTINUE
+	SIF STOCK_EQUIP_INSTALLSOFT:LCOUNT
+		CONTINUE
+	SIF !EQUIP_INSTALLSOFT:LCOUNT
+		CONTINUE
+	L_EQUIP_LIST:FINDELEMENT(L_EQUIP_LIST, -1) = LCOUNT
+NEXT
+
+FOR LCOUNT, 0, VARSIZE("L_EQUIP_LIST")
+	L_SOFT = L_EQUIP_LIST:LCOUNT
+	SIF L_SOFT < 0
+		BREAK
+	;セット中あるいは初期装着だったかを確認
+	IF STOCK_EQUIP_INSTALLSOFT:L_SOFT
+		L_COLOR = %TOSTR_HTML(EQUIP_INSTALLSOFT:L_SOFT ? GETDEFCOLOR() # COLOR("DARK-GRAY"))%
+	ELSE
+		IF EQUIP_INSTALLSOFT:L_SOFT
+			L_COLOR = %TOSTR_HTML(COLOR("パ緑"))%
+		ELSE
+			CONTINUE
+		ENDIF
+	ENDIF
+
+	;解説文を取得
+	CALL SET_VAR_INSTALLSOFT_EXPLAIN, L_SOFT, L_TITLE
+	;装備しているが、効果を発揮できない場合は赤字にする
+	IF STOCK_EQUIP_INSTALLSOFT:L_SOFT || EQUIP_INSTALLSOFT:L_SOFT
+		IF INSTALLSOFT_SLV:L_SOFT > GET_SUMMONER_MLV(1)
+			L_TITLE = サマナーレベル不足%UNICODE(0x000D)*2%%L_TITLE%
+			L_COLOR = %TOSTR_HTML(COLOR("red"))%
+		ENDIF
+		IF INSTALLSOFT_DISABLE(L_SOFT)
+			L_TITLE = 動作不能%UNICODE(0x000D)%%RESULTS_F%%UNICODE(0x000D)*2%%L_TITLE%
+			L_COLOR = %TOSTR_HTML(COLOR("red"))%
+		ENDIF
+	ENDIF
+	EQUIPED_SHOW_LINE:(LCOUNT:2 / SHOWNUM_1):(LCOUNT:2 % SHOWNUM_1) += @"<button value = '{1000+ L_SOFT}' title = '%L_TITLE%'>"  + @"<font color = '%L_COLOR%'>"
+	EQUIPED_SHOW_LINE:(LCOUNT:2 / SHOWNUM_1):(LCOUNT:2 % SHOWNUM_1) += @"%"[" + GET_INSTALLSOFT_NAME(L_SOFT) + "]", 24, LEFT%"
+	EQUIPED_SHOW_LINE:(LCOUNT:2 / SHOWNUM_1):(LCOUNT:2 % SHOWNUM_1) += "</font>" + "</button>"
+	SIF LCOUNT:1 % SHOWNUM_IN_LINE == SHOWNUM_IN_LINE - 1
+		LCOUNT:2++
+	LCOUNT:1++
+NEXT
+FOR LCOUNT, 0, SHOWNUM_1
+	IF EQUIPED_SHOW_LINE:L_PAGE:LCOUNT == ""
+		PRINTL 
+	ELSE
+		HTML_PRINT EQUIPED_SHOW_LINE:L_PAGE:LCOUNT
+	ENDIF
+NEXT
+L_PAGE_MAX:0 = 0
+IF EQUIPED_SHOW_LINE:1:0 != ""
+	FOR LCOUNT, 0, 10
+		SIF EQUIPED_SHOW_LINE:LCOUNT:0 == ""
+			BREAK
+		CALL PRINT_COLOR, @"[{10 + LCOUNT}] Page.{LCOUNT}　　　" , LCOUNT == L_PAGE:0 ? COLOR("aqua") # GETDEFCOLOR()
+		L_PAGE_MAX:0++
+	NEXT
+ENDIF
+PRINTL 
+DRAWLINE
+L_LINE:1 = LINECOUNT
+VARSET SELECT_LIST, -1
+;---- EDIT 034 MOD START -------------------------
+PRINTFORML %"Name", 22 + 5, LEFT% Set　　SLv　Size　　Explain
+;---- EDIT 034 MOD END ---------------------------
+TEMP_LINE = LINECOUNT
+FOR LCOUNT, 0, INSTALLSOFTNUM
+	;名称未定義は弾く
+	SIF GET_INSTALLSOFT_NAME(LCOUNT) == ""
+		CONTINUE
+	;所持しているかチェック
+	SIF !HAVE_INSTALLSOFT:LCOUNT
+		CONTINUE
+	;タイプチェック
+	TRYCCALLFORM INSTALLSOFT_TYPE_{LCOUNT}
+		SIF RESULTS != SELECT_TYPE
+			CONTINUE
+	CATCH
+		CONTINUE
+	ENDCATCH
+	;表示リストに登録
+	SELECT_LIST:FINDELEMENT(SELECT_LIST, -1) = LCOUNT
+NEXT
+FOR LCOUNT, 0, SHOWNUM_2
+	LISTNUM = LCOUNT + L_PAGE:1 * SHOWNUM_2
+	L_SOFT = SELECT_LIST:LISTNUM
+	SIF L_SOFT < 0
+		CONTINUE
+	L_NAMES = [{LISTNUM + 100}] %GET_INSTALLSOFT_NAME(L_SOFT), 22, LEFT%
+	;カラーセット & ON/OFFのセット
+	IF EQUIP_INSTALLSOFT:L_SOFT
+		L_COLOR = %TOSTR_HTML(COLOR("パ緑"))%
+		L_NAMES += "[ON] "
+	ELSE
+		L_NAMES += "[OFF]"
+		L_COLOR = %TOSTR_HTML(GETDEFCOLOR())%
+	ENDIF
+	SIF L_SOFT == SELECT_SOFT
+		L_COLOR = %TOSTR_HTML(COLOR("aqua"))%
+	;ボタン作成
+	CALL SET_VAR_INSTALLSOFT_EXPLAIN, L_SOFT, L_TITLE
+	L_NAMES = <button value = '{LISTNUM + 100 }' title = '%L_TITLE%'>%L_NAMES%</button>
+
+	L_LVS = %@"　{INSTALLSOFT_SLV:L_SOFT, 3}"%
+	L_SIZES = %@"{GET_INSTALLSOFT_SIZE(L_SOFT),6}"%
+
+
+	;1行テキストの取得
+	RESULTS:10 = 
+	CALLFORM INSTALLSOFT_EXPLAIN_{L_SOFT}
+	;長過ぎる場合の代替テキスト
+	L_EXPLAINS = %RESULTS%
+	SIF RESULTS:10 != ""
+		L_EXPLAINS = %RESULTS:10%
+	IF INSTALLSOFT_DISABLE(L_SOFT)
+		L_EXPLAINS = %RESULTS_F%
+		L_COLOR = %TOSTR_HTML(COLOR("red"))%
+	ENDIF
+
+	L_NAMES = <font color = '%L_COLOR%'>%L_NAMES%</font>
+	;色の最終調整　LVとSIZEの個別色変えをデフォカラー時に限定するために後に送っている
+	IF INSTALLSOFT_SLV:L_SOFT > GET_SUMMONER_MLV(1)
+		L_LVS = <font color = '%TOSTR_HTML(COLOR("red"))%'>%L_LVS%</font>
+	ELSE
+		L_LVS = <font color = '%L_COLOR%'>%L_LVS%</font>
+	ENDIF
+	IF L_COLOR == TOSTR_HTML(GETDEFCOLOR()) && IS_SOFT_CAPACITY_OVER(L_SOFT)
+		L_SIZES = <font color = '%TOSTR_HTML(COLOR("red"))%'>%L_SIZES%</font>
+	ELSE
+		L_SIZES = <font color = '%L_COLOR%'>%L_SIZES%</font>
+	ENDIF
+	L_EXPLAINS = <font color = '%L_COLOR%'>%L_EXPLAINS%</font>
+	;---- EDIT 034 MOD START -------------------------
+	HTML_PRINT L_NAMES + L_LVS + L_SIZES + "　　" + L_EXPLAINS
+	;---- EDIT 034 MOD END ---------------------------
+NEXT
+WHILE LINECOUNT < TEMP_LINE + SHOWNUM_2
+	PRINTFORML 
+WEND
+IF IS_SOFT_CAPACITY_OVER()
+	HTML_PRINT @"<shape type ='rect' param = '0, {12 * 100 - 30}, {LINELENS() * 50}, 165' color = '%TOSTR_HTML(COLOR("red"))%'>"
+ELSE
+	PRINTL 
+ENDIF
+L_PAGE_MAX:1 = 0
+IF SELECT_LIST:SHOWNUM_2 >= 0
+	FOR LCOUNT, 0, 3
+		SIF SELECT_LIST:(LCOUNT * SHOWNUM_2) == -1
+			CONTINUE
+		CALL PRINT_COLOR, @"[{20 + LCOUNT}] Page.{LCOUNT}　　　" , LCOUNT == L_PAGE:1 ? COLOR("aqua") # GETDEFCOLOR()
+		L_PAGE_MAX:1++
+	NEXT
+ENDIF
+PRINTL 
+DRAWLINE
+SHOW_LINE = 
+FOR LCOUNT, 0, VARSIZE("INSTALLSOFTTYPE")
+	L_COLOR = %TOSTR_HTML(SELECT_TYPE == INSTALLSOFTTYPE:LCOUNT ? COLOR("aqua") # GETDEFCOLOR())%
+	SHOW_LINE += @"<font color = '%L_COLOR%'>" + @"<button value = '{50 + LCOUNT}'>"
+	SHOW_LINE += @"[{50 + LCOUNT}] %INSTALLSOFTTYPE:LCOUNT%　　　"
+	SHOW_LINE += "</button>" + "</font>"
+NEXT
+HTML_PRINT SHOW_LINE
+DRAWLINE
+TEMP_LINE = LINECOUNT
+IF SELECT_SOFT >= 0
+	PRINTFORML %GET_INSTALLSOFT_NAME(SELECT_SOFT)%
+	CALL SET_VAR_INSTALLSOFT_EXPLAIN, SELECT_SOFT, L_TITLE
+	CALL PRINTFORM_LF, L_TITLE
+ENDIF
+WHILE LINECOUNT < TEMP_LINE + 6
+	PRINTFORML 
+WEND
+L_LINE:2 = LINECOUNT
+CALL SETUP_SOFT_SHOW_DOWN
+INPUT
+SELECTCASE RESULT
+	CASE 0
+		IF !IS_SOFT_CAPACITY_OVER()
+			REDRAW STOCK_REDRAW
+			RETURN 0
+		ENDIF
+	CASE 1
+		VARSET EQUIP_INSTALLSOFT
+	CASE 2
+		ARRAYCOPY "STOCK_EQUIP_INSTALLSOFT", "EQUIP_INSTALLSOFT"
+	CASE 3
+		SELECT_SOFT = -1
+		RESTART
+	CASE 10 TO 10 + L_PAGE_MAX:0
+		L_PAGE:0 = RESULT - 10
+	CASE 20 TO 20 + L_PAGE_MAX:1
+		L_PAGE:1 = RESULT - 20
+	CASE 31 TO 33
+		L_RESULT = RESULT - 30
+		CLEARLINE LINECOUNT - L_LINE:1
+		IF INSTALLSOFT_SET:L_RESULT == ""
+			PRINTFORML 등록 세트{L_RESULT}은(는) 미등록 상태입니다.
+		ELSE
+			PRINTFORML 등록 세트{L_RESULT}을(를) 불러왔습니다.
+		ENDIF
+		WHILE LINECOUNT < L_LINE:2
+			PRINTL 
+		WEND
+		CALL SETUP_SOFT_SHOW_DOWN
+		WAIT
+		IF INSTALLSOFT_SET:L_RESULT != ""
+			VARSET EQUIP_INSTALLSOFT
+			FOR LCOUNT, 0, STRCOUNT(INSTALLSOFT_SET:L_RESULT, "/") + 1
+				L_SOFT = TOINT(AUTO_SPLIT(INSTALLSOFT_SET:L_RESULT, "/", LCOUNT))
+				SIF INSTALLSOFT_DISABLE(L_SOFT)
+					CONTINUE
+				EQUIP_INSTALLSOFT:L_SOFT = 1
+			NEXT
+		ENDIF
+	CASE 41 TO 43
+		L_RESULT = RESULT - 40
+		CLEARLINE LINECOUNT - L_LINE:1
+		PRINTFORML 현재 소프트 설정을 등록 세트{L_RESULT}(으)로 등록합니다.
+		WHILE LINECOUNT < L_LINE:2
+			PRINTL 
+		WEND
+		CALL SETUP_SOFT_SHOW_DOWN
+		WAIT
+		INSTALLSOFT_SET:L_RESULT = 
+		FOR LCOUNT, 0, INSTALLSOFTNUM
+			SIF !EQUIP_INSTALLSOFT:LCOUNT
+				CONTINUE
+			SIF INSTALLSOFT_SET:L_RESULT != ""
+				INSTALLSOFT_SET:L_RESULT += "/"
+			INSTALLSOFT_SET:L_RESULT += TOSTR(LCOUNT)
+		NEXT
+	CASE 50 TO 50 + VARSIZE("INSTALLSOFTTYPE")
+		RESULT -= 50
+		SELECT_SOFT = -1
+		L_PAGE:1 = 0
+		SELECT_TYPE = %INSTALLSOFTTYPE:RESULT%
+	CASE 100 TO 100 + VARSIZE("SELECT_LIST")
+		L_SOFT = SELECT_LIST:(RESULT - 100)
+		IF L_SOFT >= 0 && HAVE_INSTALLSOFT:L_SOFT
+			SELECT_SOFT = L_SOFT
+			IF EQUIP_INSTALLSOFT:L_SOFT
+				EQUIP_INSTALLSOFT:L_SOFT = 0
+			ELSE
+				SIF !INSTALLSOFT_DISABLE(L_SOFT)
+					EQUIP_INSTALLSOFT:L_SOFT = 1
+			ENDIF
+		ENDIF
+	CASE 1000 TO 1000 + INSTALLSOFTNUM
+		L_RESULT = RESULT - 1000
+		IF EQUIP_INSTALLSOFT:L_RESULT
+			EQUIP_INSTALLSOFT:L_RESULT = 0
+		ELSE
+			IF HAVE_INSTALLSOFT:L_RESULT
+				SIF !INSTALLSOFT_DISABLE(L_RESULT)
+					EQUIP_INSTALLSOFT:L_RESULT = 1
+			ENDIF
+		ENDIF
+ENDSELECT
+GOTO START
+
+@SETUP_SOFT_SHOW_DOWN
+CUSTOMDRAWLINE =
+PRINTFORM ＣＯＭＰ용량:[{ソフト容量(), 3}/{GET_COMPSIZE(), 3}]사용중　　　　SLv:{GET_SUMMONER_MLV(1)}
+IF IS_SOFT_CAPACITY_OVER()
+	PRINTL 　　　　용량 오버！
+ELSE
+	PRINTL 
+ENDIF
+CUSTOMDRAWLINE =
+PRINTL [31] 세트 1 호출　[32] 세트 2 호출　[33] 세트 3 호출　　　　　　　[41] 세트 1 등록　[42] 세트 2 등록　[43] 세트 3 등록　
+CALL PRINT_COLOR, "[ 0] 돌아간다　　 ", IS_SOFT_CAPACITY_OVER() ? COLOR("DARK-GRAY") # GETDEFCOLOR()
+PRINTL [ 1] 전부해제　　 [ 2] 리셋 　　　　　　　　　　[ 3] 세트중 갱신
+
+;==========================================================
+;@SOFT_ON
+;インストールソフトが有効かどうかどうかを返すFUNCTION
+;ARG = 必要レベル
+;==========================================================
+@SOFT_ON(ARGS = "",ARG = -1);022
+#FUNCTION
+#DIM SOFTNUM
+SOFTNUM = GET_INSTALLSOFT_NUM(ARGS)
+SIF SOFTNUM < 0
+	THROW @SOFT_ONの引数ARGS[%ARGS%]が異常です
+SIF ARGS == ""
+	RETURNF 0
+SIF FLAG:COMP사용불능;EDIT 030
+	RETURNF 0
+;悪魔合体中は別の変数を見る
+IF IS_IN_FUSION
+	SIF !COUNT_SPLIT(USE_LIST_FUSION_SOFT, "/", TOSTR(GET_INSTALLSOFT_NUM(ARGS)))
+		RETURNF 0
+ELSE
+	SIF !EQUIP_INSTALLSOFT:SOFTNUM
+		RETURNF 0
+ENDIF
+;---- EDIT 034 ADD START -------------------------
+IF FLAG:SHOP커맨드 != [[ショップ:사교의관]]
+	SIF INSTALLSOFT_SLV:SOFTNUM > GET_SUMMONER_MLV()
+		RETURNF 0
+ENDIF
+;---- EDIT 034 ADD END ---------------------------
+RETURNF 1
+
+;デバッグウィンドウからSOFTを強制的にONにする
+@SET_SOFT_F, ARGS
+#FUNCTION
+EQUIP_INSTALLSOFT:GET_INSTALLSOFT_NUM(ARGS) = 1
+
+;==========================================================
+;@HAVE_INSTALLSOFT
+;名称からインストールソフトの所持状態を返す
+;==========================================================
+@HAVE_INSTALLSOFT, ARGS
+#FUNCTION
+RETURNF HAVE_INSTALLSOFT:GET_INSTALLSOFT_NUM(ARGS)
+
+;==========================================================
+;@GET_INSTALLSOFT
+;番号からインストールソフトの名称を返す
+;==========================================================
+@GET_INSTALLSOFT_NAME, ARG
+#FUNCTIONS
+RETURNF INSTALLSOFTNAME:ARG
+
+;==========================================================
+;@GET_INSTALLSOFT_NUM
+;名称からインストールソフトの番号を返す
+;==========================================================
+@GET_INSTALLSOFT_NUM, ARGS
+#FUNCTION
+#DIM L_RESULT
+L_RESULT = FINDELEMENT(INSTALLSOFTNAME, ARGS)
+SIF L_RESULT >= 0
+	RETURNF L_RESULT
+SELECTCASE ARGS
+	CASE "バ・ベル", "バベル", "바・벨", "바벨"
+		RETURNF FINDELEMENT(INSTALLSOFTNAME, "바・벨")
+ENDSELECT
+RETURNF -1
+
+;==========================================================
+;@GET_INSTALLSOFT_NUM
+;指定した番号のソフトを所持品に追加する
+;==========================================================
+@GET_INSTALLSOFT, ARG
+HAVE_INSTALLSOFT:ARG = 1
+HAVE_RECORD_INSTALLSOFT:ARG = 1
+
+;==========================================================
+;@GET_INSTALLSOFT_NUM
+;指定した名称のソフトを所持品に追加する
+;==========================================================
+@GETS_INSTALLSOFT, ARGS
+LOCAL = GET_INSTALLSOFT_NUM(ARGS)
+SIF LOCAL < 0
+	RETURN 0
+HAVE_INSTALLSOFT:LOCAL = 1
+HAVE_RECORD_INSTALLSOFT:LOCAL = 1
+
+;==========================================================
+;@SET_INSTALLSOFT_VAR
+;#FUNCTION内でTRYをしないように済ますために変数として取得させておくための変数
+;==========================================================
+@SET_INSTALLSOFT_VAR
+#DIM LCOUNT
+FOR LCOUNT, 0, INSTALLSOFTNUM
+	TRYCCALLFORM INSTALLSOFT_NAME_{LCOUNT}
+		INSTALLSOFTNAME:LCOUNT = %RESULTS%
+	CATCH
+		CONTINUE
+	ENDCATCH
+NEXT
+FOR LCOUNT, 0, INSTALLSOFTNUM
+	TRYCCALLFORM INSTALLSOFT_SLV_{LCOUNT}
+		INSTALLSOFT_SLV:LCOUNT = RESULT
+	CATCH
+	ENDCATCH
+	TRYCCALLFORM INSTALLSOFT_SIZE_{LCOUNT}
+		INSTALLSOFT_SIZE:LCOUNT = RESULT
+	CATCH
+	ENDCATCH
+	TRYCCALLFORM INSTALLSOFT_EXIST_DISABLE_COND_{LCOUNT}
+		INSTALLSOFT_EXIST_DISABLE_COND:LCOUNT = RESULT
+	CATCH
+	ENDCATCH
+NEXT
+
+;==========================================================
+;@GET_INSTALLSOFT_SIZE
+;ソフトサイズの取得関数
+;==========================================================
+@GET_INSTALLSOFT_SIZE, ARG
+#FUNCTION
+RETURNF INSTALLSOFT_SIZE:ARG
+
+;==========================================================
+;@CAN_SET_INSTALLSOFT
+;ソフトをセットできるかどうか
+;==========================================================
+@CAN_SET_INSTALLSOFT, ARG
+#FUNCTION
+RESULTS_F = 
+;すでにセットしているならとりあえずセットできるものとする
+SIF EQUIP_INSTALLSOFT:ARG
+	RETURNF 1
+;容量チェック
+SIF GET_INSTALLSOFT_SIZE(ARG) + ソフト容量() > GET_COMPSIZE()
+	RETURNF 0
+;条件チェック
+IF INSTALLSOFT_EXIST_DISABLE_COND:ARG
+	CALLFORMF INSTALLSOFT_DISABLE_{ARG}
+	SIF RESULT_F
+		RETURNF 0
+	RESULTS_F = 
+ENDIF
+RETURNF 1
+
+;==========================================================
+;@INSTALLSOFT_DISABLE
+;ソフトが使用不能かどうかを取得する
+;==========================================================
+@INSTALLSOFT_DISABLE, ARG
+#FUNCTION
+SIF !INSTALLSOFT_EXIST_DISABLE_COND:ARG
+	RETURNF 0
+CALLFORMF INSTALLSOFT_DISABLE_{ARG}
+RETURNF RESULT_F
+
+;==========================================================
+;@L_EXPLAIN変数にARGのソフトの説明文を入れて返す
+;==========================================================
+@SET_VAR_INSTALLSOFT_EXPLAIN, ARG, L_EXPLAIN
+#DIM LCOUNT
+#DIMS REF L_EXPLAIN
+CALLFORM INSTALLSOFT_SLV_{ARG}
+L_EXPLAIN = 필요SLv:{RESULT,2}　
+CALLFORM INSTALLSOFT_SIZE_{ARG}
+L_EXPLAIN += @"용량:{RESULT,3}"
+
+;---- EDIT 034 MOD START -------------------------
+L_EXPLAIN += "　"
+;---- EDIT 034 MOD END ---------------------------
+VARSET RESULTS, "", 0, 10
+CALLFORM INSTALLSOFT_EXPLAIN_{ARG}
+FOR LCOUNT, 0, 10
+	SIF RESULTS:LCOUNT == ""
+		CONTINUE
+	L_EXPLAIN += UNICODE(0X000D) + RESULTS:LCOUNT
+NEXT
+
+;==========================================================
+;@IS_SOFT_CAPACITY_OVER
+;容量がオーバーしているどうかを取得する
+;ARG = ARGのソフトを足して足りるかどうか
+;==========================================================
+@IS_SOFT_CAPACITY_OVER, ARG = -1
+#FUNCTION
+RETURNF ソフト容量() + (ARG == -1 ? 0 #GET_INSTALLSOFT_SIZE(ARG)) > GET_COMPSIZE()
+
+;==========================================================
+;@GET_COMPSIZE
+;インストールソフトの容量の上限を取得する
+;==========================================================
+@GET_COMPSIZE
+#FUNCTION
+RETURNF FLAG:ＣＯＭＰ용량 + FLAG:마카에의한Ｃ용량증가 + MATCH(COMP_SIZEUP_BY_EVENT, 1)
+
+;==========================================================
+;@COMP_SIZEUP_EVENTNUM, ARGS
+;インストールソフトの容量の上限を増加させるイベントの名称から番号を返す
+;==========================================================
+@COMP_SIZEUP_EVENTNUM, ARGS
+#FUNCTION
+SELECTCASE ARGS
+	CASE "D42_新宿_直哉ルート特典"
+		RETURNF 0
+	CASE "D5_大魔宮_中島特典"
+		RETURNF 1
+	CASE "D8_警視庁特典"
+		RETURNF 2
+	CASE "EV35_ナナミルート特典"
+		RETURNF 3
+	CASE "CL26_ダメージコンテスト特典1"
+		RETURNF 4
+	CASE "CL26_ダメージコンテスト特典2"
+		RETURNF 5
+	CASE "RQ1_トーテムメモリー蒐集"
+		RETURNF 6
+ENDSELECT
+
+;==========================================================
+;@SIZEUP_COMP_BY_EVEMT
+;インストールソフトの容量の上限を増加させる際のセット関数
+;履歴をつけることで周回時の追加も兼ねる
+;==========================================================
+@SIZEUP_COMP_BY_EVEMT, ARGS
+COMP_SIZEUP_BY_EVENT:COMP_SIZEUP_EVENTNUM(ARGS) = 1
+COMP_SIZEUP_ACHIEVEMENT:COMP_SIZEUP_EVENTNUM(ARGS) = 1

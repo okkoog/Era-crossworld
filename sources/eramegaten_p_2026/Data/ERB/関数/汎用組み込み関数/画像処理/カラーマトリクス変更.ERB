@@ -1,0 +1,75 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:カラーマトリクス変更.ERH
+;	Facility	:指定したスプライトの色相を変えてgraphicを作る関数
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/03/31		P(bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;--------------------------
+;色相名を指定してカラーマトリクスを変更した画像を作る
+;
+;L_OPTは色になにかしら変更要素を持たせたい場合(現状は透過率で使っている)
+;--------------------------
+@CHANGE_COLOR_MATRIX, GID, L_SPRITE, L_COLOR, L_OPT
+#DIM DYNAMIC GID
+#DIMS DYNAMIC L_SPRITE
+#DIMS DYNAMIC L_COLOR
+#DIM DYNAMIC L_OPT
+SELECTCASE L_COLOR
+	CASE "グレースケール"
+		{
+		CALL _CHANGE_COLOR_MATRIX, GID, L_SPRITE,
+		 2126, 7152, 0722,     ,     ,
+		 2126, 7152, 0722,     ,     ,
+		 2126, 7152, 0722,     ,     ,
+		    0,     ,     ,10000,     ,
+		    0,     ,     , 0000,10000
+		}
+	CASE "透過"
+		;L_OPTは透過率を示す
+		{
+		CALL _CHANGE_COLOR_MATRIX, GID, L_SPRITE,
+		10000,     ,     ,     ,     ,
+		     ,10000,     ,     ,     ,
+		     ,     ,10000,     ,     ,
+		     ,     ,     ,L_OPT,     ,
+		     ,     ,     ,     ,10000
+		}
+	CASE "白抜き"
+		{
+		CALL _CHANGE_COLOR_MATRIX, GID, L_SPRITE,
+		     ,     ,     ,10000,     ,
+		     ,     ,     ,10000,     ,
+		     ,     ,     ,10000,     ,
+		     ,     ,     ,10000,     ,
+		     ,     ,     ,     ,10000
+		}
+ENDSELECT
+
+;--------------------------
+;実際の動作関数
+;基本的にカラーマトリクスを見てもどう変えてるのかわからないと思うので
+;直接これを使うより、名称を規定してそれを経由したほうがいいはず
+;なお、指定は1万分率にしています(本来の指定が*0.xxxxなやつなので)
+;--------------------------
+;10000分率で指定
+@_CHANGE_COLOR_MATRIX, GID, L_SPRITE, L_MATRIX:0:0, L_MATRIX:1:0, L_MATRIX:2:0, L_MATRIX:3:0, L_MATRIX:4:0, L_MATRIX:0:1, L_MATRIX:1:1, L_MATRIX:2:1, L_MATRIX:3:1, L_MATRIX:4:1, L_MATRIX:0:2, L_MATRIX:1:2, L_MATRIX:2:2, L_MATRIX:3:2, L_MATRIX:4:2, L_MATRIX:0:3, L_MATRIX:1:3, L_MATRIX:2:3, L_MATRIX:3:3, L_MATRIX:4:3, L_MATRIX:0:4, L_MATRIX:1:4, L_MATRIX:2:4, L_MATRIX:3:4, L_MATRIX:4:4
+#DIM DYNAMIC GID
+#DIMS DYNAMIC L_SPRITE
+#DIM DYNAMIC L_MATRIX, 5, 5
+#DIM DYNAMIC LCOUNT, 2
+FOR LCOUNT, 0, 5
+	FOR LCOUNT:1, 0, 5
+		L_MATRIX:(LCOUNT):(LCOUNT:1) *= 256
+		L_MATRIX:(LCOUNT):(LCOUNT:1) /= 10000
+	NEXT
+NEXT
+SIF !GCREATED(GID)
+	GCREATE GID, SPRITEWIDTH(L_SPRITE), SPRITEHEIGHT(L_SPRITE)
+GDRAWSPRITE GID, L_SPRITE, 0, 0, SPRITEWIDTH(L_SPRITE), SPRITEHEIGHT(L_SPRITE), L_MATRIX:0:0

@@ -1,0 +1,184 @@
+﻿;スキル名
+@SKILL_NAME_GPM40mm高射機関砲,ARG
+RESULTS = 40mm高射機関砲
+
+;　명중
+@SKILL_HITRATE_GPM40mm高射機関砲, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_GPM40mm高射機関砲, ARG
+IF BASE:ARG:LV <= 120
+	RETURN 360 + BASE:ARG:LV
+ELSE
+	RETURN 480
+ENDIF
+
+;;クリティカル率
+@SKILL_CRITICAL_RATE_GPM40mm高射機関砲, ARG
+RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_GPM40mm高射機関砲, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_GPM40mm高射機関砲, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_GPM40mm高射機関砲, ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_GPM40mm高射機関砲,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_GPM40mm高射機関砲,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_GPM40mm高射機関砲,ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_GPM40mm高射機関砲,ARG
+RETURN 30
+
+;　相性
+@SKILL_TYPE_GPM40mm高射機関砲,ARG
+RETURN GET_TYPE_NUM("비구")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_GPM40mm高射機関砲
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_GPM40mm高射機関砲,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_GPM40mm高射機関砲,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_GPM40mm高射機関砲,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_GPM40mm高射機関砲,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_GPM40mm高射機関砲,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_GPM40mm高射機関砲,ARG
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_GPM40mm高射機関砲, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_GPM40mm高射機関砲
+RETURN 0
+
+;没
+;@SKILL_RANK_GPM40mm高射機関砲, ARG = -1
+
+
+;拡散攻撃用追加処理
+;ブレスなどの拡散攻撃に使う
+@SKILL_SPREAD_GPM40mm高射機関砲,ARG
+RETURN 1
+
+;====================================================
+;トリガー発動条件
+;====================================================
+;@SKILL_TRIGGER_ACTIONABLE_GPM40mm高射機関砲,ARG,ARG:1
+;RETURN 0
+
+;====================================================
+;カウンター発動条件
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_GPM40mm高射機関砲,ARG,ARG:1
+;RETURN RESULT
+
+;====================================================
+;ダメージ発動時
+;====================================================
+;@SKILL_DAMAGE_EFFECT_GPM40mm高射機関砲,ARG,ARG:1
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_GPM40mm高射機関砲,ARG,ARG:1
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_GPM40mm高射機関砲,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"GPM40mm高射機関砲")
+
+;CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM
+CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+;CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+;CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM;		拡散攻撃
+;CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM;			ランダム攻撃
+
+CALL SKILLGAGE_F_ADD,ARG,SKILL_NUM,1
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_GPM40mm高射機関砲,ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"GPM40mm高射機関砲")
+PRINTL 북유럽제 40mm 기관포를 대폭 개조하여 최신 조준기를 탑재한 것.
+PRINTL 적 1체에게 비구 물리 데미지를 준다.
+PRINTL 장전수는 4발.
+PRINTL 
+PRINTFORML 남은 장전수　{4 - SKILLGAGE_F_GET(ARG,SKILL_NUM)}발
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_GPM40mm高射機関砲,ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"GPM40mm高射機関砲")
+SIF SKILLGAGE_F_GET(ARG,SKILL_NUM) > 3
+	RETURN 0
+RETURN 1
+;４発まで
+
+;ターゲット条件
+;↓のSKILL_T_RESERVEがRETURN 1 の時に使用する
+;@SKILL_SPECIAL_TARGET_GPM40mm高射機関砲,USE_CHARA,ARG
+;#DIM USE_CHARA
+;RETURN 0
+
+;控えに使えるか
+;@SKILL_T_RESERVE_GPM40mm高射機関砲,ARG
+;RETURN 0
+
+
+
+;スキルゲージで役に立つ関数
+;SKILLGAGE_H_GET(ARG,PU_SKILLNUM_GET(ARG,"GPM40mm高射機関砲"))
+;CALL SKILLGAGE_H_SET,ARG,PU_SKILLNUM_GET(ARG,"GPM40mm高射機関砲"),0
+

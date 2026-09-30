@@ -1,0 +1,225 @@
+﻿;ゲーム開始直後から発生するように
+;メインイベント＋キャライベントでワンセット。メイン→キャラ→メインの流れで話が進むように
+;メインイベントはコンサートのチュートリアルも兼ねたイベントにしたい。慣れてる人ならサクサク、初心者でも50日ギリギリいけそうかな？
+;とりあえず2周目以降はオマケ的な意味合いでパートナーを引き継いだ上で選択すればいつでも眠り姫に挑めるクロノトリガー方式に。ただエンディングには突入しないしそのまんまだと開始直後から杏単騎で倒せちゃうので貫通付与して難易度を上げておく
+;引き継ぎ次第ではそれでも倒せるけどシナリオボスの最速撃破とか低レベル撃破はゲームの一種の醍醐味ということで。イベント受ける前に引き継ぎパートナーをわざわざ売り飛ばしたりした場合に不具合起きても知らない
+;THE VILLAIN'S NIGHTの2Dリッチやべぇよやべぇマジやべぇこれシナリオ一本作れんじゃね？誰かつくって？
+;2020/11/27 作成者：八つ目兎 双葉杏ルート作成
+;イベントフラグ:95:9 入手アイドル
+;0:開始前 1:杏入手
+;イベントフラグ:95:11 2周目フラグ
+;====================
+;条件
+;====================
+@GET_EVENT_NAME_95
+#FUNCTIONS
+RESULTS_F '= "아이돌마스터"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_95
+#DIM パートナーアイドル
+;メガテン系イベント以外不許可の場合
+SIF !GETS_USEABLE_EXTRA_TITLE("アイマス")
+	RETURN 0
+SIF GET_PAYMENT_RANK() < 1
+	RETURN 0
+;50日経過で消滅
+SIF DAY > 50
+	RETURN 0
+
+;育成アイドル決定イベント
+IF イベントフラグ:95:0 == 0
+	RESULTS = 아이돌마스터
+	RETURN 1
+ENDIF
+
+;双葉杏
+IF イベントフラグ:95:9 == 1
+	パートナーアイドル = GETCHARA([[キャラ:후타바 안즈]])
+;追加キャラ用
+;ELSEIF イベントフラグ:95:9 == ○×
+;	パートナーアイドル = GETCHARA()
+ENDIF
+
+;パートナーアイドルがいないと進行不可
+IF パートナーアイドル > 0
+	IF イベントフラグ:95:0 == 1 && イベントフラグ:95:9 == 1 && GET_CHARA_LOYALTY(パートナーアイドル) >= 1500 && GET_VALUE_TALENT_JOINABLE(パートナーアイドル) == 1
+			RESULTS = 저편의 세계
+			RETURN 1
+	ELSEIF イベントフラグ:95:11 == 0
+		IF イベントフラグ:95:1 >= 1
+			IF イベントフラグ:95:1 == 1 && GET_CHARA_LOYALTY(パートナーアイドル) >= 4000
+				RESULTS = 아이돌을 목표로 하는 이유
+				RETURN 1
+			ELSEIF イベントフラグ:95:1 == 2 && イベントフラグ:95:9 == 1 && GET_CHARA_LOYALTY(パートナーアイドル) >= 5000 && GET_VALUE_TALENT_JOINABLE(パートナーアイドル) == 1
+				RESULTS = 이상한 녀석
+				RETURN 1
+			ELSEIF イベントフラグ:95:1 == 3 && イベントフラグ:95:9 == 1 && GET_CHARA_LOYALTY(パートナーアイドル) >= 10000 && GET_VALUE_TALENT_JOINABLE(パートナーアイドル) == 1
+				RESULTS = 안즈의 연모
+				RETURN 1
+			ENDIF
+		ENDIF
+
+		IF イベントフラグ:95:2 == 1 && (TALENT:パートナーアイドル:연모 == 1 || TALENT:パートナーアイドル:친애 == 1)
+			RESULTS = 마요네님의 아이돌론
+			RETURN 1
+		ENDIF
+	
+		IF イベントフラグ:95:3 >= 1
+			IF イベントフラグ:95:3 == 1 && EXP:パートナーアイドル:라이브경험 >= 1 && CFLAG:パートナーアイドル:아이돌인기 >= 1
+				RESULTS = 경과보고１
+				RETURN 1
+			ELSEIF イベントフラグ:95:3 == 2 && イベントフラグ:95:9 == 1
+				RESULTS = 밀리언 프로젝트
+				RETURN 1
+			ENDIF
+		ENDIF
+	
+		IF イベントフラグ:95:4 >= 1
+			IF イベントフラグ:95:4 == 1 && EXP:パートナーアイドル:라이브경험 >= 20 && CFLAG:パートナーアイドル:아이돌인기 >= 100
+				RESULTS = 경과보고２
+				RETURN 1
+			ELSEIF イベントフラグ:95:4 == 2 && イベントフラグ:95:9 == 1
+				RESULTS = 신데렐라 프로젝트
+				RETURN 1
+			ELSEIF イベントフラグ:95:4 == 3 && イベントフラグ:95:9 == 1
+				RESULTS = 결의의 휴일
+				RETURN 1
+			ENDIF
+		ENDIF
+
+		IF イベントフラグ:95:5 >= 1
+			IF イベントフラグ:95:5 == 1 && EXP:パートナーアイドル:라이브경험 >= 40 && CFLAG:パートナーアイドル:아이돌인기 >= 200
+				RESULTS = 경과보고３
+				RETURN 1
+			ELSEIF イベントフラグ:95:5 == 2 && イベントフラグ:95:9 == 1
+				RESULTS = 각오의 휴일
+				RETURN 1
+			ENDIF
+		ENDIF
+	
+		IF イベントフラグ:95:6 >= 1
+			IF イベントフラグ:95:6 == 1 && EXP:パートナーアイドル:라이브경험 >= 60 && CFLAG:パートナーアイドル:아이돌인기 >= 300
+				RESULTS = 최종보고
+				RETURN 1
+			ELSEIF イベントフラグ:95:6 == 2 && イベントフラグ:95:9 == 1 && BASE:パートナーアイドル:LV >= 58
+				RESULTS = 마법소녀의 탄생
+				RETURN 1
+			ENDIF
+		ENDIF
+	
+		;保留
+		;IF イベントフラグ:95:7 >= 1
+		;		RESULTS = アイドル達の合宿
+		;		RETURN 1
+		;ENDIF
+
+		IF イベントフラグ:95:8 >= 1
+			IF イベントフラグ:95:8 == 1 && EXP:パートナーアイドル:라이브경험 >= 80 && CFLAG:パートナーアイドル:아이돌인기 >= 300
+				RESULTS = 신데렐라들의 무도회
+				RETURN 1
+			ELSEIF イベントフラグ:95:8 == 2 && イベントフラグ:95:9 == 1
+				RESULTS = 잠자는 공주 THE SLEEPING BE@UTY
+				RETURN 1
+			ENDIF
+		ENDIF
+	ELSEIF イベントフラグ:95:11 == 1 && イベントフラグ:95:8 == 2 
+				RESULTS = 잠자는 공주 THE SLEEPING BE@UTY
+				RETURN 1
+	ENDIF
+ENDIF
+RETURN 0
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_95
+CALL RESET_ANNOUNCE_FLAG
+
+IF イベントフラグ:95:0 == 0
+	CALL EVENT_95_1
+	RETURN 0
+ENDIF
+
+
+IF イベントフラグ:95:1 == 1
+	CALL EVENT_95_2
+	RETURN 0
+ENDIF
+IF イベントフラグ:95:2 == 1
+	CALL EVENT_95_3
+	RETURN 0
+ENDIF
+
+IF イベントフラグ:95:3 == 1
+	CALL EVENT_95_4
+	RETURN 0
+ENDIF
+
+IF イベントフラグ:95:4 == 1
+	CALL EVENT_95_5
+	RETURN 0
+ENDIF
+
+IF イベントフラグ:95:5 == 1
+	CALL EVENT_95_6
+	RETURN 0
+ENDIF
+
+IF イベントフラグ:95:6 == 1
+	CALL EVENT_95_7
+	RETURN 0
+ENDIF
+
+IF イベントフラグ:95:7 == 1
+	CALL EVENT_95_8
+	RETURN 0
+ENDIF
+
+IF イベントフラグ:95:8 == 1
+	CALL EVENT_95_9
+	RETURN 0
+ENDIF
+
+IF イベントフラグ:95:9 == 1
+	IF イベントフラグ:95:0 == 1
+		CALL EVENT_95_11
+		RETURN 0
+	ENDIF
+	IF イベントフラグ:95:1 == 2
+		CALL EVENT_95_11
+		RETURN 0
+	ENDIF
+	IF イベントフラグ:95:1 == 3
+		CALL EVENT_95_11
+		RETURN 0
+	ENDIF
+	IF イベントフラグ:95:3 == 2
+		CALL EVENT_95_11
+		RETURN 0
+	ENDIF
+	IF イベントフラグ:95:4 == 2
+		CALL EVENT_95_11
+		RETURN 0
+	ENDIF
+	IF イベントフラグ:95:4 == 3
+		CALL EVENT_95_11
+		RETURN 0
+	ENDIF
+	IF イベントフラグ:95:5 == 2
+		CALL EVENT_95_11
+		RETURN 0
+	ENDIF
+	IF イベントフラグ:95:6 == 2
+		CALL EVENT_95_11
+		RETURN 0
+	ENDIF
+	IF イベントフラグ:95:8 == 2
+		CALL EVENT_95_11
+		RETURN 0
+	ENDIF
+ENDIF
+
+IF イベントフラグ:95:11 == 1 && イベントフラグ:95:9 == 1
+	CALL EVENT_95_11
+	RETURN 0
+ENDIF

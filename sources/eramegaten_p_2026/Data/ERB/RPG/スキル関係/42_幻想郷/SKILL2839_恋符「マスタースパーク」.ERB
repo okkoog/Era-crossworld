@@ -1,0 +1,134 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2839,ARG
+RESULTS = 연부「마스터스파크」
+SIF GETBIT (FLAG:커스텀게임화면,1)
+	RESULTS = 연부「마스터 스파크」
+IF ARG > -1 && BASE:ARG:ＨＰ * 100 / MAXBASE:ARG:ＨＰ <= 5
+	RESULTS = 魔砲「ﾌｧｲﾅﾙﾏｽﾀｰｽﾊﾟｰｸ」
+	SIF GETBIT (FLAG:커스텀게임화면,1)
+		RESULTS = 마포「파이널 마스터 스파크」
+ENDIF
+;　명중
+@SKILL_HITRATE_2839, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2839, ARG
+SIF ARG == -1
+	RETURN 300
+SELECTCASE TFLAG:스킬용1
+	CASE 3
+		RETURN 800
+	CASE 2
+		RETURN 460
+	CASE 1
+		RETURN 360
+	CASEELSE
+		RETURN 300
+ENDSELECT
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2839,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2839,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2839, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2839,ARG
+RETURN 25
+
+;　相性
+@SKILL_TYPE_2839,ARG
+RETURN GET_TYPE_NUM("핵열")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2839
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2839, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2839, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2839,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2839,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2839, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2839
+RETURN GET_SUCCESSION_NUM("핵열")
+
+;속도보정
+@SKILL_SPEED_2839, ARG = -1
+RETURN 0
+
+@継承不能_2839
+RETURN 1
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2839
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2839, ARG = -1
+RETURN 15
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2839, ARG, ARG:1, ARG:2
+SELECTCASE BASE:ARG:ＨＰ * 100 / MAXBASE:ARG:ＨＰ
+	CASE IS <= 5
+		TFLAG:스킬용1 = 3
+	CASE IS < 10
+		TFLAG:스킬용1 = 2
+	CASE IS < 20
+		TFLAG:스킬용1 = 1
+	CASEELSE
+		TFLAG:스킬용1 = 0
+ENDSELECT
+CALL ATTACK_FIELD,ARG,ARG:1,2839
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2839, ARG
+PRINTL 모든 존재를 날려버리는 초고열 마력의 분류.
+PRINTL 적 전체에 핵열 상성의 마법 공격. 위기에 빠지면 마지막 힘을 쥐어짜낸다.
+PRINTL 평범한 마법사 키리사메 마리사의 스펠카드 (계승 불가)
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2839,ARG
+RETURN 1
+;とくにない
+

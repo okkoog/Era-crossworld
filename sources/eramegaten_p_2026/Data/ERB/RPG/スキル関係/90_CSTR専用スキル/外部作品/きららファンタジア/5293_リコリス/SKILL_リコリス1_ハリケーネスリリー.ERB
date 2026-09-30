@@ -1,0 +1,112 @@
+﻿
+;スキル名
+@SKILL_NAME_ハリケーネスリリー,ARG
+RESULTS = 허리케인스 릴리
+
+;　명중
+@SKILL_HITRATE_ハリケーネスリリー, ARG
+RETURN 120
+
+;　威力
+@SKILL_POWER_ハリケーネスリリー, ARG
+RETURN 150
+
+@SKILL_CRITICAL_RATE_ハリケーネスリリー, ARG
+RETURN 15
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ハリケーネスリリー,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ハリケーネスリリー,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ハリケーネスリリー, ARG
+SIF GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 4
+	RETURN 1
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ハリケーネスリリー,ARG
+IF ARG >= 0 && GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 4
+	RESULTS = %"ＣＨ:4"%
+	RETURN 0
+ENDIF
+RETURN 15
+
+;　相性
+@SKILL_TYPE_ハリケーネスリリー,ARG
+RETURN GET_TYPE_NUM("검격"), GET_TYPE_NUM("화염")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ハリケーネスリリー
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ハリケーネスリリー,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ハリケーネスリリー,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_ハリケーネスリリー,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ハリケーネスリリー,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_ハリケーネスリリー,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+@SKILL_SUCCESSION_TYPE_ハリケーネスリリー,ARG
+RETURN GET_SUCCESSION_NUM("검격")
+
+@SKILL_RANK_ハリケーネスリリー, ARG = -1
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_ハリケーネスリリー, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ハリケーネスリリー
+RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ハリケーネスリリー,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+CALL SET_RPG_CFLAG_BTL, ARG, "KFチャージスキル", 4, "-="
+CALL ATTACK_FIELD, ARG, ARG:1, SKILL_NUM
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_ハリケーネスリリー,ARG
+PRINTL 적 전체에 검격+화염 물리 데미지를 준다. 높은 크리티컬률을 지닌다.
+PRINTL 사용 시 차지 4 소비.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ハリケーネスリリー, ARG
+RESULTS = 차지 부족
+SIF GET_RPG_CFLAG_BTL(ARG, "KFチャージスキル") < 4
+	RETURN 0
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_ハリケーネスリリー, ARG
+RESULTS:0 = 적 전체에 검격+화염 물리 데미지를 준다. 높은 크리티컬률을 지닌다.
+RESULTS:1 = 사용 시 차지 4 소비.
+
+@SKILL_TAG_ハリケーネスリリー
+RESULTS = KF 차지 스킬

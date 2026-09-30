@@ -1,0 +1,88 @@
+﻿
+;ARG   = イベント内容
+;( -10:開始時 -11:終了 -12 撮影開始 0～:仲魔のキャラ番号 )
+;ARG:1 = 盛り上がり具合
+@EVENT_MESSAGE_SHOW_TENT(ARG,ARG:1)
+IF ARG == -10
+	PRINTFORMW 《구경거리 천막이 개장했습니다》
+ELSEIF ARG == -11
+	PRINTFORMW 육욕의 향연은 밤늦게까지 이어졌다…
+ELSEIF ARG == -12
+	PRINTDATAL
+		DATA 観客の一人がカメラを回している…
+		DATA 観客のうち何人かがカメラを回している…
+	ENDDATA
+ELSEIF ARG == -13
+	;延長
+	PRINTFORML 손님의 수가 너무 많은 탓에, 개장 시간을 연장하게 된 듯하다…
+ENDIF
+
+@EVENT_MESSAGE_SHOW_TENT_RESULT(ARG)
+
+LOCAL:1 = TCVAR:ARG:획득Ｖ경험 + TCVAR:ARG:획득Ａ경험 + TCVAR:ARG:획득펠라경험
+
+SIF TCVAR:ARG:획득자위경험
+	PRINTFORM 자신의 위로를 손꼽아 기다리던
+
+PRINTFORM %CALLNAME:ARG%은(는)
+IF TCVAR:ARG:획득Ｖ경험 && TCVAR:ARG:획득Ａ경험 && TCVAR:ARG:획득펠라경험
+	SIF TALENT:ARG:처녀 || TALENT:ARG:재생처녀
+		PRINTFORM 파과의 고통에 울부짖는 것조차 허락되지 않은 채
+	IF TALENT:ARG:소인체형 && ( TCVAR:ARG:획득Ｖ확장경험 || TCVAR:ARG:획득Ａ확장경험 )
+		PRINTFORMW 그 작은 몸의 모든 구멍을 꿰뚫려 사정당하고, 그것을 뿜어내면 다시 새로 쏟아붓고 있다……
+	ELSE
+		PRINTFORMW 모든 구멍이 막힌 채 흘러넘칠 만큼의 정액을 쏟아붓고 있었다…
+	ENDIF
+ELSEIF TCVAR:ARG:획득Ｖ경험 && TCVAR:ARG:획득Ａ경험
+	IF TALENT:ARG:처녀 || TALENT:ARG:재생처녀
+		PRINTFORM 방금 전 처녀를 빼앗은 페니스를 이번엔 애널에 찔러넣어져,
+	ELSE
+		PRINTFORM 두 개의 물건을 받아들이며,
+	ENDIF
+	PRINTFORMW 가차 없는 추삽질에\@ !함락(ARG)|| IS_LOVER(ARG) ? 울부짖으며 용서를 빌고 있다… # 말도 안 되는 교성을 내지르고 있다… \@
+ELSEIF TCVAR:ARG:획득Ｖ경험 && TCVAR:ARG:획득펠라경험
+	IF TALENT:ARG:처녀 || TALENT:ARG:재생처녀
+		PRINTFORMW 페니스를 목구멍까지 밀어넣어져, 방금 전 처녀를 빼앗겼는데도 비명을 지르는 것조차 할 수 없는 듯하다
+	ELSE
+		PRINTFORMW 남자 위에 올라타 그 비소로 페니스를 받아들이면서\@ 함락(ARG) ? 또 한 자루를 그 입으로 달래고 있다… # 다른 상대에게 목구멍을 계속 범해지고 있다… \@
+	ENDIF
+ELSEIF TCVAR:ARG:획득Ａ경험 && TCVAR:ARG:획득펠라경험
+	PRINTFORMW 애널을 치받히면서 그 목구멍을 유린당해, 숨도 쉬지 못한 채\@ 함락(ARG) ? 미쳐버린 쾌락에 빠져 있다… # 몸을 고통에 노출시키고 있다… \@
+ELSEIF LOCAL:1 > 2
+	SIF TALENT:ARG:처녀 || TALENT:ARG:재생처녀
+		PRINTFORM 처녀를 빼앗기고,
+	PRINTFORMW 번갈아 가며 몇 번이고 범해진 듯하다…
+ELSEIF !TCVAR:ARG:획득사정경험 && !TCVAR:ARG:획득레즈경험 && !TCVAR:ARG:획득ＢＬ경험
+	PRINTFORMW 관객을 만족시킬 만큼의 역할을 다하지 못한 듯하다…
+ENDIF
+
+IF TCVAR:ARG:획득사정경험
+	SIF LOCAL:1 >= 3
+		PRINTFORM 그뿐만 아니라,
+	PRINTFORMW 그 물건을 혹사하여 구경거리 천막의 분위기 메이커로서도 충분한 역할을 한 듯하다…
+ENDIF 
+
+SIF LOCAL:1 < 3
+
+GOTO RESEND
+
+LOCAL = 0
+SIF TCVAR:ARG:획득Ｖ확장경험 || TCVAR:ARG:획득Ａ확장경험
+	LOCALS:(LOCAL++) = その体躯では到底不可能なサイズのペニスを受け入れ、腹に一物のシルエットを浮かべた
+SIF TCVAR:ARG:획득레즈경험
+	LOCALS:(LOCAL++) = 女同士で睦み合い、お互いの体を嘗め回し舌を絡ませあう
+SIF TCVAR:ARG:획득ＢＬ경험 && TALENT:ARG:오토코노코
+	LOCALS:(LOCAL++) = その華奢な容姿を男たちに蹂躙される
+SIF TCVAR:ARG:획득수간경험
+	LOCALS:(LOCAL++) = \@ !陥落(ARG) || !TALENT:ARG:붕괴 || IS_LOVER(ARG) ? 震えながら # 自ら \@獣に股を開き犯される
+SIF DOWNBASE:ARG:0 >= BASE:ARG:0 && LOCAL:1
+	LOCALS:(LOCAL++) = やがて力尽き、壊れた人形のようになってなお犯される
+SIF TCVAR:ARG:획득촉수경험
+	LOCALS:(LOCAL++) = 醜くおぞましい触手に襲われ、\@ TALENT:ARG:처녀 || TALENT:ARG:재생처녀 ? 破瓜の血を啜られる # 嬲り尽くされる \@
+SIF LOCAL
+	PRINTFORMW 그중에서도 %LOCALS:(RAND:LOCAL)% 모습은 손님들에게 호평이었던 듯하다…
+
+$RESEND
+
+SIF TCVAR:ARG:획득피사경험
+	PRINTFORMW 그 전말은 손님들이 가져온 비디오 카메라에 고스란히 담겨 있다…

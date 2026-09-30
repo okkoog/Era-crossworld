@@ -1,0 +1,183 @@
+﻿;210915	NEO		静葉が同PT内にいる場合、精神系の状態異常を回復する効果が追加されるように
+
+;スキル名
+@SKILL_NAME_2873,ARG
+RESULTS = 풍작「곡물신의약속」
+
+;　명중
+@SKILL_HITRATE_2873, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2873, ARG
+SIF ARG == -1
+	RETURN 90
+IF ABL:ARG:요리기능 == 0
+	RETURN 90
+ELSEIF ABL:ARG:요리기능 == 1
+	RETURN 100
+ELSEIF ABL:ARG:요리기능 == 2
+	RETURN 120
+ELSEIF ABL:ARG:요리기능 == 3
+	RETURN 140
+ELSEIF ABL:ARG:요리기능 == 4
+	RETURN 160
+ELSEIF ABL:ARG:요리기능 == 5
+	RETURN 190
+ELSEIF ABL:ARG:요리기능 == 6
+	RETURN 210
+ELSEIF ABL:ARG:요리기능 == 7
+	RETURN 250
+ELSEIF ABL:ARG:요리기능 == 8
+	RETURN 290
+ELSEIF ABL:ARG:요리기능 == 9
+	RETURN 330
+ELSE
+	RETURN 390
+ENDIF
+RETURN 90
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2873,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2873,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2873, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2873,ARG
+SIF ARG == -1
+	RETURN 9
+IF ABL:ARG:요리기능 == 0
+	RETURN 9
+ELSEIF ABL:ARG:요리기능 == 1
+	RETURN 12
+ELSEIF ABL:ARG:요리기능 == 2
+	RETURN 15
+ELSEIF ABL:ARG:요리기능 == 3
+	RETURN 18
+ELSEIF ABL:ARG:요리기능 == 4
+	RETURN 23
+ELSEIF ABL:ARG:요리기능 == 5
+	RETURN 26
+ELSEIF ABL:ARG:요리기능 == 6
+	RETURN 29
+ELSEIF ABL:ARG:요리기능 == 7
+	RETURN 34
+ELSEIF ABL:ARG:요리기능 == 8
+	RETURN 38
+ELSEIF ABL:ARG:요리기능 == 9
+	RETURN 41
+ELSE
+	RETURN 45
+ENDIF
+RETURN 9
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2873
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2873, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+@SKILL_HEAL_TYPE_2873, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("통상")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2873, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_2873,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2873,ARG
+RETURN GET_SPHERE_NUM("일렬")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2873, ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2873
+RETURN GET_SUCCESSION_NUM("회복")
+
+;속도보정
+@SKILL_SPEED_2873, ARG = -1
+RETURN 2
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2873
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2873, ARG = -1
+RETURN 12
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2873, ARG, ARG:1, ARG:2
+CALL HEAL_FIELD,ARG,ARG:1,2873
+
+;穣子が使用時、かつPTに静葉がいる場合
+;IF SKILL_CHANGE(ARG, [[キャラ:미노리코]]) &&  FINDCHARA_B([[キャラ:시즈하]]) == 2
+;	CALL CURE_STATE_FIELD,ARG,ARG:1,2873
+;	PRINTFORMW 高まる秋力により、さらに\@ CFLAG:ARG:PT플래그 == 0 ? 敵 # 味方 \@の状態異常が回復する！
+;ENDIF
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;====================================================
+;戦闘中以外での実行
+;====================================================
+@ACTION_FIELD_2873,ARG,ARG:1,ARG:2
+CALL HEAL_FIELD,ARG,ARG:1,2873
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2873, ARG
+PRINTL 아군 1열을 풍요의 힘으로 치유한다.
+PRINTL 사용자의 요리 기능에 따라 위력이 증가한다.
+PRINTL 언니인 지모신 아키 시즈하가 파티 내에 존재하면 가을력이 높아진다!
+PRINTL (정신계 상태이상을 치유하는 효과가 추가된다)
+PRINTL 지모신　아키 미노리코의 스펠카드
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2873,ARG
+RETURN 1
+;とくにない
+
+;何のバッドステータスを治せるか
+;「お芋の焼けるいい匂いでハッとして」色々回復、お芋食べたくてCLOSE（沈黙、魔封、口封じ）も回復
+@SKILL_CURE_STATE_2873,ARG
+IF SKILL_CHANGE(ARG, [[キャラ:미노리코]]) &&  FINDCHARA_B([[キャラ:시즈하]]) == 2
+	SELECTCASE GET_STATE(ARG)
+		CASE "HAPPY","PANIC","SLEEP","CLOSE","CHARM"
+			RETURN 1
+		CASEELSE
+			RETURN 0
+	ENDSELECT
+ELSE
+	RETURN 0
+ENDIF
+
+

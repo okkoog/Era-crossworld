@@ -1,0 +1,499 @@
+﻿;========================================================================
+;人間クラス(이능자)
+;========================================================================
+;--------------------------------------------------
+;クラスの定義関数
+;--------------------------------------------------
+@GET_TECHNIC_NAME, ARG
+#FUNCTIONS
+SELECTCASE ARG
+	CASE 1
+		RETURNF "羅漢"
+	CASE 2
+		RETURNF "剣聖"
+	CASE 3
+		RETURNF "ドラグーン"
+	CASE 4
+		RETURNF "アデプト"
+	CASE 5
+		RETURNF "サイマスター"
+	CASE 6
+		RETURNF "使徒"
+	CASE 7
+		RETURNF "陰陽師"
+	CASE 8
+		RETURNF "黄金の髪"
+	CASE 9
+		RETURNF "エンプレス"
+	CASE 10
+		RETURNF "ディーヴァ"
+ENDSELECT
+
+;--------------------------------------------------
+;クラスの名前から番号を返す
+;--------------------------------------------------
+@GET_TECHNIC_NUM, ARGS
+#FUNCTION
+#DIM LCOUNT
+#DIMS L_NAMELIST, 30
+IF L_NAMELIST == ""
+	FOR LCOUNT, 0, 30
+		L_NAMELIST:0 = %GET_TECHNIC_NAME(LCOUNT)%
+	NEXT
+ENDIF
+SIF ARGS == ""
+	RETURNF -1
+RETURNF FINDELEMENT(L_NAMELIST, ARGS)
+
+;--------------------------------------
+;クラスの選択条件
+;0のときは選べない
+;また、選択画面では戻り値の小さい順に並ぶ(いちおう大種族毎に並べる形にしてます)
+;--------------------------------------
+@IS_ABLE_TECHNIC, ARG
+#FUNCTION
+SIF IS_DEBUG && GET_TECHNIC_NAME(ARG) != ""
+	RETURNF 1
+SELECTCASE GET_TECHNIC_NAME(ARG)
+	CASE "羅漢"
+		RETURNF FLAG:경험ED수 > 0
+	CASE "剣聖"
+		RETURNF FLAG:경험ED수 > 1
+	CASE "ドラグーン"
+		RETURNF FLAG:경험ED수 > 2
+	CASE "アデプト"
+		RETURNF FLAG:경험ED수 > 3
+	CASE "サイマスター"
+		RETURNF FLAG:경험ED수 > 4
+	CASE "使徒"
+		RETURNF FLAG:경험ED수 > 5
+	CASE "陰陽師"
+		RETURNF FLAG:경험ED수 > 6
+	CASE "黄金の髪"
+		RETURNF FLAG:경험ED수 > 7
+	CASE "エンプレス"
+		RETURNF FLAG:경험ED수 > 8
+	CASE "ディーヴァ"
+		RETURNF FLAG:경험ED수 > 9
+ENDSELECT
+
+;-----------------------------------------------------------
+;クラスに設定された数値を変数にいれて戻す
+;-----------------------------------------------------------
+@SET_VAR_TECHNIC, ARG, TECHNIC_BASE_STATUS, TECHNIC_ALI, TECHNIC_SKILL, TECHNIC_LEARN, TECHNIC_LEARN_LV, TECHNIC_SUCCESSION, TECHNIC_EXPLAIN, TECHNIC_BTL_TALENT
+#DIM REF TECHNIC_BASE_STATUS
+#DIMS REF TECHNIC_ALI
+#DIM REF TECHNIC_SKILL
+#DIM REF TECHNIC_LEARN
+#DIM REF TECHNIC_LEARN_LV
+#DIM REF TECHNIC_SUCCESSION
+#DIMS REF TECHNIC_BTL_TALENT
+#DIMS REF TECHNIC_EXPLAIN
+
+CALL SET_VAR_TECHNIC_SKILL, ARG, TECHNIC_SKILL, TECHNIC_LEARN, TECHNIC_LEARN_LV
+
+VARSET TECHNIC_SUCCESSION, -1
+VARSET TECHNIC_EXPLAIN
+
+SELECTCASE GET_TECHNIC_NAME(ARG)
+	CASE "羅漢"
+		TECHNIC_SUCCESSION:0 = GET_SUCCESSION_NUM("타격")
+
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("힘") = 4
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("지혜") = 2
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("마력") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("내구") = 3
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("속도") = 4
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("운") = 1
+
+		TECHNIC_EXPLAIN:0 '= "徒手空拳にて至高を目指す「武」の体現者。"
+		TECHNIC_EXPLAIN:1 '= "比類なき格闘能力を誇る。"
+		
+		TECHNIC_BTL_TALENT '= "공격의심득_3/석세서"
+	CASE "剣聖"
+		TECHNIC_SUCCESSION:0 = GET_SUCCESSION_NUM("검격")
+
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("힘") = 4
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("지혜") = 2
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("마력") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("내구") = 3
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("속도") = 3
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("운") = 2
+		TECHNIC_EXPLAIN:0 '= "剣にて全てに打ち克とうとする者。"
+		TECHNIC_EXPLAIN:1 '= "剣禅一如の体現者。"
+		
+		TECHNIC_BTL_TALENT '= "공격의심득_3/석세서"
+	CASE "ドラグーン"
+		TECHNIC_SUCCESSION:0 = GET_SUCCESSION_NUM("비구")
+
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("힘") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("지혜") = 3
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("마력") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("내구") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("속도") = 6
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("운") = 3
+		TECHNIC_EXPLAIN:0 '= "火竜のブレスの如き大火力を操る制圧者。"
+		TECHNIC_EXPLAIN:1 '= "竜騎兵とも呼ばれる。"
+		
+		TECHNIC_BTL_TALENT '= "공격의심득_3/건슬링거_5"
+	CASE "アデプト"
+		TECHNIC_SUCCESSION:0 = GET_SUCCESSION_NUM("화염")
+		TECHNIC_SUCCESSION:1 = GET_SUCCESSION_NUM("수격")
+		TECHNIC_SUCCESSION:1 = GET_SUCCESSION_NUM("빙결")
+		TECHNIC_SUCCESSION:2 = GET_SUCCESSION_NUM("만능")
+
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("힘") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("지혜") = 5
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("마력") = 4
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("내구") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("속도") = 2
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("운") = 2
+		
+		TECHNIC_BTL_TALENT '= "공격의심득_3/도구지식_3"
+		TECHNIC_EXPLAIN:0 '= "魔道の奥義を究めし者。"
+		TECHNIC_EXPLAIN:1 '= "炎の本質を知り四大元素を自在に操る。"
+	CASE "サイマスター"
+		TECHNIC_SUCCESSION:0 = GET_SUCCESSION_NUM("충격")
+		TECHNIC_SUCCESSION:1 = GET_SUCCESSION_NUM("신경")
+		TECHNIC_SUCCESSION:2 = GET_SUCCESSION_NUM("방어")
+
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("힘") = 2
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("지혜") = 3
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("마력") = 5
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("내구") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("속도") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("운") = 3
+		
+		TECHNIC_BTL_TALENT '= "공격의심득_3/도구지식_3"
+		TECHNIC_EXPLAIN:0 '= "PKとESPを併せ持つ異数の使い手。"
+		TECHNIC_EXPLAIN:1 '= "能力の顕現は衝撃波となって敵を襲う。"
+	CASE "使徒"
+		TECHNIC_SUCCESSION:0 = GET_SUCCESSION_NUM("파마")
+		TECHNIC_SUCCESSION:1 = GET_SUCCESSION_NUM("주살")
+
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("힘") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("지혜") = 3
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("마력") = 7
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("내구") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("속도") = 2
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("운") = 1
+		
+		TECHNIC_BTL_TALENT '= "공격의심득_3/도구지식_3"
+		TECHNIC_EXPLAIN:0 '= "神罰の地上代行者にして教義の独占提供者。"
+		TECHNIC_EXPLAIN:1 '= "自らの神のためあらゆる敵を討ち滅ぼす。"
+	CASE "陰陽師"
+		TECHNIC_SUCCESSION:0 = GET_SUCCESSION_NUM("만능")
+		TECHNIC_SUCCESSION:1 = GET_SUCCESSION_NUM("방어")
+
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("힘") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("지혜") = 3
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("마력") = 3
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("내구") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("속도") = 2
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("운") = 5
+		
+		TECHNIC_BTL_TALENT '= "大魔脈_3/바스테부스터_3/조합지식"
+		TECHNIC_EXPLAIN:0 '= "呪術を修めた者。"
+		TECHNIC_EXPLAIN:1 '= "呪殺・弱体系スキルを中心に習得する。"
+	CASE "黄金の髪"
+		TECHNIC_SUCCESSION:0 = GET_SUCCESSION_NUM("회복")
+
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("힘") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("지혜") = 3
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("마력") = 5
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("내구") = 4
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("속도") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("운") = 1
+		
+		TECHNIC_BTL_TALENT '= "공격의심득_3/도구지식_3"
+		TECHNIC_EXPLAIN:0 '= "ケルト系白魔術の権威にして達人。"
+		TECHNIC_EXPLAIN:1 '= "医療神の力を体現する。"
+	CASE "エンプレス"
+		TECHNIC_SUCCESSION:0 = GET_SUCCESSION_NUM("타격")
+		TECHNIC_SUCCESSION:1 = GET_SUCCESSION_NUM("전격")
+		TECHNIC_SUCCESSION:1 = GET_SUCCESSION_NUM("지변")
+
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("힘") = 2
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("지혜") = 4
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("마력") = 2
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("내구") = 2
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("속도") = 3
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("운") = 2
+		
+		TECHNIC_BTL_TALENT '= "공격의심득_3/도구지식_3"
+		TECHNIC_EXPLAIN:0 '= "女帝。地上で最も強き者。"
+		TECHNIC_EXPLAIN:1 '= "比類なき才覚を遺憾なく発揮する。"
+		TECHNIC_SUCCESSION:0 = GET_SUCCESSION_NUM("전술")
+	CASE "ディーヴァ"
+		TECHNIC_SUCCESSION:1 = GET_SUCCESSION_NUM("지원")
+
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("힘") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("지혜") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("마력") = 10
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("내구") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("속도") = 1
+		TECHNIC_BASE_STATUS:GET_BASESTATUS_NUM("운") = 1
+		
+		TECHNIC_BTL_TALENT '= "공격의심득_3/도구지식_3"
+		TECHNIC_EXPLAIN:0 '= "圧倒的な歌唱力であらゆる存在を魅了する歌姫。"
+		TECHNIC_EXPLAIN:1 '= "その歌声には世界を変える力がある。"
+ENDSELECT
+
+;--------------------------------------------------
+;人間クラスのスキル取得関数
+;--------------------------------------------------
+@SET_VAR_TECHNIC_SKILL, ARG, L_SKILL, L_LEARN, L_LEARN_LV, ARGS, L_CHARA
+#DIM LCOUNT
+#DIM L_CHARA
+#DIM IS_LEARN
+#DIM IS_UNABLE_SET_SKILL
+#DIM L_SKILLNUM
+#DIM REF L_SKILL
+#DIM REF L_LEARN
+#DIM REF L_LEARN_LV
+SELECTCASE GET_TECHNIC_NAME(ARG)
+	CASE "羅漢"
+		L_SKILL:0 = [[스킬:무도의마음가짐]]
+		L_SKILL:1 = [[스킬:나한장]]
+
+		L_LEARN:0 = [[스킬:열진각]]
+		L_LEARN_LV:0 = 7
+		L_LEARN:1 = [[스킬:타격가드브레이크]]
+		L_LEARN_LV:1 = 13
+		L_LEARN:2 = [[스킬:천열찌르기]]
+		L_LEARN_LV:2 = 17
+		L_LEARN:3 = [[스킬:관통]]
+		L_LEARN_LV:3 = 23
+		L_LEARN:4 = [[스킬:예광구리가라축]]
+		L_LEARN_LV:4 = 27
+		L_LEARN:5 = [[스킬:기합]]
+		L_LEARN_LV:5 = 30
+		L_LEARN:6 = [[스킬:팔상발파]]
+		L_LEARN_LV:6 = 33
+		L_LEARN:7 = [[스킬:히트라이저]]
+		L_LEARN_LV:7 = 37
+		L_LEARN:8 = [[스킬:싸움의마왕]]
+		L_LEARN_LV:8 = 45
+		L_LEARN:9 = [[스킬:명계의문]]
+		L_LEARN_LV:9 = 60
+	CASE "剣聖"
+		L_SKILL:0 = [[스킬:무도의마음가짐]]
+		L_SKILL:1 = [[스킬:아라이소]]
+
+		L_LEARN:0 = [[스킬:암야검]]
+		L_LEARN_LV:0 = 7
+		L_LEARN:1 = [[스킬:검격가드브레이크]]
+		L_LEARN_LV:1 = 13
+		L_LEARN:2 = [[스킬:무사차]]
+		L_LEARN_LV:2 = 17
+		L_LEARN:3 = [[스킬:관통]]
+		L_LEARN_LV:3 = 23
+		L_LEARN:4 = [[스킬:천경지폭단]]
+		L_LEARN_LV:4 = 27
+		L_LEARN:5 = [[스킬:기합]]
+		L_LEARN_LV:5 = 30
+		L_LEARN:6 = [[스킬:허공참파]]
+		L_LEARN_LV:6 = 33
+		L_LEARN:7 = [[스킬:히트라이저]]
+		L_LEARN_LV:7 = 37
+		L_LEARN:8 = [[스킬:화차베기]]
+		L_LEARN_LV:8 = 45
+		L_LEARN:9 = [[스킬:프라라야]]
+		L_LEARN_LV:9 = 60
+
+;-------------------
+	CASE "ドラグーン"
+		L_SKILL:0 = [[스킬:무도의마음가짐]]
+		L_SKILL:1 = [[스킬:Yippee・ki・yay]]
+
+		L_LEARN:0 = [[스킬:천우의춤]]
+		L_LEARN_LV:0 = 7
+		L_LEARN:1 = [[스킬:비구가드브레이크]]
+		L_LEARN_LV:1 = 13
+		L_LEARN:2 = [[스킬:오절절우]]
+		L_LEARN_LV:2 = 17
+		L_LEARN:3 = [[스킬:관통]]
+		L_LEARN_LV:3 = 23
+		L_LEARN:4 = [[스킬:안타까움난사]]
+		L_LEARN_LV:4 = 27
+		L_LEARN:5 = [[스킬:기합]]
+		L_LEARN_LV:5 = 30
+		L_LEARN:6 = [[스킬:저스티스샷]]
+		L_LEARN_LV:6 = 33
+		L_LEARN:7 = [[스킬:히트라이저]]
+		L_LEARN_LV:7 = 37
+		L_LEARN:8 = [[스킬:고천열풍탄]]
+		L_LEARN_LV:8 = 45
+		L_LEARN:9 = [[스킬:Make・My・Day]]
+		L_LEARN_LV:9 = 60
+	CASE "アデプト"
+		L_SKILL:0 = [[스킬:마술의소양]]
+		L_SKILL:1 = [[스킬:아기랏슈]]
+
+		L_LEARN:0 = [[스킬:파이어스톰]]
+		L_LEARN_LV:0 = 7
+		L_LEARN:1 = [[스킬:화염가드브레이크]]
+		L_LEARN_LV:1 = 13
+		L_LEARN:2 = [[스킬:절대영도]]
+		L_LEARN_LV:2 = 17
+		L_LEARN:3 = [[스킬:히트카이저]]
+		L_LEARN_LV:3 = 23
+		L_LEARN:4 = [[스킬:데들리번]]
+		L_LEARN_LV:4 = 27
+		L_LEARN:5 = [[스킬:컨센트레이트]]
+		L_LEARN_LV:5 = 30
+		L_LEARN:6 = [[스킬:아쿠아리타이드]]
+		L_LEARN_LV:6 = 33
+		L_LEARN:7 = [[스킬:메기도라온]]
+		L_LEARN_LV:7 = 37
+		L_LEARN:8 = [[스킬:트리스아기온]]
+		L_LEARN_LV:8 = 45
+		L_LEARN:9 = [[스킬:4대소환]]
+		L_LEARN_LV:9 = 60
+	CASE "サイマスター"
+		L_SKILL:0 = [[스킬:마술의소양]]
+		L_SKILL:1 = [[스킬:잔・쯔바이파]]
+
+		L_LEARN:0 = [[스킬:소닉붐]]
+		L_LEARN_LV:0 = 7
+		L_LEARN:1 = [[스킬:충격가드브레이크]]
+		L_LEARN_LV:1 = 13
+		L_LEARN:2 = [[스킬:뉴로크런치]]
+		L_LEARN_LV:2 = 17
+		L_LEARN:3 = [[스킬:브레인버스트]]
+		L_LEARN_LV:3 = 23
+		L_LEARN:4 = [[스킬:셔플러]]
+		L_LEARN_LV:4 = 27
+		L_LEARN:5 = [[스킬:컨센트레이트]]
+		L_LEARN_LV:5 = 30
+		L_LEARN:6 = [[스킬:요화열풍]]
+		L_LEARN_LV:6 = 33
+		L_LEARN:7 = [[스킬:이계의바람]]
+		L_LEARN_LV:7 = 37
+		L_LEARN:8 = [[스킬:림도라]]
+		L_LEARN_LV:8 = 45
+		L_LEARN:9 = [[스킬:림도라온]]
+		L_LEARN_LV:9 = 60
+	CASE "使徒"
+		L_SKILL:0 = [[스킬:마술의소양]]
+		L_SKILL:1 = [[스킬:신벌대행]]
+
+		L_LEARN:0 = [[스킬:우뢰의세례]]
+		L_LEARN_LV:0 = 7
+		L_LEARN:1 = [[스킬:파마가드브레이크]]
+		L_LEARN_LV:1 = 13
+		L_LEARN:2 = [[스킬:주살가드브레이크]]
+		L_LEARN_LV:2 = 17
+		L_LEARN:3 = [[스킬:티없는위광]]
+		L_LEARN_LV:3 = 23
+		L_LEARN:4 = [[스킬:천년의저주]]
+		L_LEARN_LV:4 = 27
+		L_LEARN:5 = [[스킬:컨센트레이트]]
+		L_LEARN_LV:5 = 30
+		L_LEARN:6 = [[스킬:니르바나]]
+		L_LEARN_LV:6 = 33
+		L_LEARN:7 = [[스킬:마하무드바리온]]
+		L_LEARN_LV:7 = 37
+		L_LEARN:8 = [[스킬:마한마바리온]]
+		L_LEARN_LV:8 = 45
+		L_LEARN:9 = [[스킬:즉결이단심문회]]
+		L_LEARN_LV:9 = 60
+
+	CASE "陰陽師"
+		L_SKILL:0 = [[스킬:마술의소양]]
+		L_SKILL:1 = [[스킬:구자베기]]
+
+		L_LEARN:0 = [[스킬:쿠리카라의흑룡]]
+		L_LEARN_LV:0 = 7
+		L_LEARN:1 = [[스킬:결계부・치유]]
+		L_LEARN_LV:1 = 13
+		L_LEARN:2 = [[스킬:존승다라니]]
+		L_LEARN_LV:2 = 17
+		L_LEARN:3 = [[스킬:결계부・물리]]
+		L_LEARN_LV:3 = 23
+		L_LEARN:4 = [[스킬:퇴마부・카구츠치]]
+		L_LEARN_LV:4 = 27
+		L_LEARN:5 = [[스킬:컨센트레이트]]
+		L_LEARN_LV:5 = 30
+		L_LEARN:6 = [[스킬:결계부・마법]]
+		L_LEARN_LV:6 = 33
+		L_LEARN:7 = [[스킬:만마조복]]
+		L_LEARN_LV:7 = 37
+		L_LEARN:8 = [[스킬:소마신권현]]
+		L_LEARN_LV:8 = 45
+		L_LEARN:9 = [[스킬:오니야라이]]
+		L_LEARN_LV:9 = 60
+	CASE "黄金の髪"
+		L_SKILL:0 = [[스킬:마술의소양]]
+		L_SKILL:1 = [[스킬:백은의팔]]
+
+		L_LEARN:0 = [[스킬:사마리캄]]
+		L_LEARN_LV:0 = 7
+		L_LEARN:1 = [[스킬:암리타]]
+		L_LEARN_LV:1 = 13
+		L_LEARN:2 = [[스킬:메・디아라한]]
+		L_LEARN_LV:2 = 17
+		L_LEARN:3 = [[스킬:천사의혈배]]
+		L_LEARN_LV:3 = 23
+		L_LEARN:4 = [[스킬:영세의기도]]
+		L_LEARN_LV:4 = 27
+		L_LEARN:5 = [[스킬:컨센트레이트]]
+		L_LEARN_LV:5 = 30
+		L_LEARN:6 = [[스킬:트라이앵글・나이트메어]]
+		L_LEARN_LV:6 = 33
+		L_LEARN:7 = [[스킬:스티티]]
+		L_LEARN_LV:7 = 37
+		L_LEARN:8 = [[스킬:스리스티]]
+		L_LEARN_LV:8 = 45
+		L_LEARN:9 = [[스킬:초래의무도]]
+		L_LEARN_LV:9 = 60
+	CASE "エンプレス"
+		L_SKILL:0 = [[스킬:무도의마음가짐]]
+		L_SKILL:1 = [[스킬:마구패기]]
+
+		L_LEARN:0 = [[스킬:마술의소양]]
+		L_LEARN_LV:0 = 7
+		L_LEARN:1 = [[스킬:극락떨구기]]
+		L_LEARN_LV:1 = 13
+		L_LEARN:2 = [[스킬:전격가드브레이크]]
+		L_LEARN_LV:2 = 17
+		L_LEARN:3 = [[스킬:지변가드브레이크]]
+		L_LEARN_LV:3 = 23
+		L_LEARN:4 = [[스킬:칸타렐라요리]]
+		L_LEARN_LV:4 = 27
+		L_LEARN:5 = [[스킬:컨센트레이트]]
+		L_LEARN_LV:5 = 30
+		L_LEARN:6 = [[스킬:지모의만찬]]
+		L_LEARN_LV:6 = 33
+		L_LEARN:7 = [[스킬:나루카미]]
+		L_LEARN_LV:7 = 37
+		L_LEARN:8 = [[스킬:진리의번개]]
+		L_LEARN_LV:8 = 45
+		L_LEARN:9 = [[스킬:Damnatio・Memoriae]]
+		L_LEARN_LV:9 = 60
+
+	CASE "ディーヴァ"
+		L_SKILL:0 = [[스킬:천사의스마일]]
+		L_SKILL:1 = [[스킬:악마의윙크]]
+
+		L_LEARN:0 = [[스킬:Go-Round]]
+		L_LEARN_LV:0 = 7
+		L_LEARN:1 = [[스킬:Breakin’Through]]
+		L_LEARN_LV:1 = 13
+		L_LEARN:2 = [[스킬:Burn my Dread]]
+		L_LEARN_LV:2 = 17
+		L_LEARN:3 = [[스킬:MAZE OF LIFE]]
+		L_LEARN_LV:3 = 23
+		L_LEARN:4 = [[스킬:Time to Make History]]
+		L_LEARN_LV:4 = 27
+		L_LEARN:5 = [[스킬:컨센트레이트]]
+		L_LEARN_LV:5 = 30
+		L_LEARN:6 = [[스킬:Mass Destruction]]
+		L_LEARN_LV:6 = 33
+		L_LEARN:7 = [[스킬:Laser Beam]]
+		L_LEARN_LV:7 = 37
+		L_LEARN:8 = [[스킬:너의기억]]
+		L_LEARN_LV:8 = 45
+		L_LEARN:9 = [[스킬:Never More]]
+		L_LEARN_LV:9 = 60
+ENDSELECT

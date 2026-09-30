@@ -1,0 +1,62 @@
+﻿;スキル名
+@SKILL_NAME_単独行動,ARG
+RESULTS = 単独行動
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_単独行動,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;スキル変化？用ランク
+@SKILL_RANK_単独行動, ARG = -1
+RETURN 5
+;変化不可
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_単独行動
+RETURN GET_SUCCESSION_NUM("자동효과")
+;====================================================
+;実行内容ここまで
+;====================================================
+;　説明文の表示
+@SKILL_EXPLAIN_単独行動,ARG
+#DIM SKILL_NUM
+PRINTL 자동효과:최대 MP가 30% 증가한다. 이 효과는 마맥계 스킬로 취급된다.
+PRINTL 　　　　턴 종료 시 MP가 5 회복된다.
+PRINTL 
+PRINTL 마스터로부터의 마력 공급이 끊겨도 자립할 수 있는 능력.
+
+@SKILL_EXPLAIN_TOOLTIP_単独行動, ARG
+RESULTS:0 = 최대 MP가 30% 증가한다. 이 효과는 마맥계 스킬로 취급된다.
+RESULTS:1 = 턴 종료 시 MP가 5 회복된다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_単独行動,ARG
+RETURN 0
+
+;====================================================
+;ステータス計算時の追加補正
+;
+;ARGS:0		= 大項目(基本ステータス/相性/ステートなど)
+;ARGS:1		= 小項目(力・速さ/화염/SLEEPなど)
+;ARG		= スキルの持ち主
+;ARG:1		= 特殊な引値
+;
+;@STATUS_SYNCを通過しないと効果が反映されないことに注意。
+;スキルを使っている間だけ変化のような処理をする場合は、変化と同時にCALL SYNC_STATUSを実行させること
+;====================================================
+@SKILL_ADD_STATUS_単独行動, ARGS, ARGS:1, ARG, ARG:1, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+SELECTCASE ARGS
+	CASE "MP補正"
+		RESULTS = 魔脈
+		RETURN 30
+ENDSELECT
+
+RETURN 0
+
+;RESULT:0 = HP回復量
+;RESULT:1 = MP回復量
+;RESULT:2 = MAG消費量
+@SKILL_REGEN_AT_TURNEND_単独行動,ARG
+RETURN 0, 5

@@ -1,0 +1,55 @@
+﻿;依頼名===================================================================
+;依頼難易度は敵の最大レベルによって変動
+; 1～10　☆、11～20　☆☆、21～30　☆☆☆、以下略
+;ダンジョン攻略が必要な場合は☆が★になる。
+
+@TITLE_RANDOM_REQUEST_108_1
+RESULTS = 교회 시설 방위（난이도 ☆☆☆）
+RETURN 1
+
+;説明===================================================================
+@REQUEST_EXPLAIN_108_1
+	PRINTL 
+	PRINTL 【의뢰주】메시아교
+	PRINTL
+	PRINTL 　가이아교의 일파가 교회로 습격을 가해온다고 한다。
+	PRINTL 　그들의 교회 방위에 협력하라。
+	PRINTL
+	PRINTL 【작전영역】메시아교 교회
+	PRINTL 【적의전력】가이아교도(뇌격 유효)
+	PRINTL 【성공조건】습격 부대 배제
+	PRINTL 
+
+;内容====================================================================
+@REQUEST_108_1
+#DIM DYNAMIC LCOUNT
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"―메시아교 교회―", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞의뢰가 들어온 교회에 도착하자、이미 여러 명의 동업자가 교회 앞에 모여 있었다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞집단 앞에 선 템플나이트들은 분주하게 움직이고 있다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, 2, "モブ", "テンプルナイト", "템플나이트", @"제군들、잘 와주었다。머지않아 가이아교의 습격이 있을 거라는 정보가 들어왔다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, 2, "モブ", "テンプルナイト", "템플나이트", @"주를 위해 싸우는 너희들에게、가호가 함께하기를！", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞방위 위치에 도착하여 잠시 기다리자、가이아교로 보이는 집단이 습격해왔다。", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "가이아교도들" ,@"「햐하-！」/「교회는 소독이다~！」", , , , , 4
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞가이아교도들이 덤벼들었다！", , , , , 4
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+FOR LCOUNT, 7, 12
+	CALL SET_ENEMY, LCOUNT,[[キャラ:하이웨이스타]],21+RAND:5,1,0
+	NAME:(CHARANUM-1) = ガイア教徒
+	CALLNAME:(CHARANUM-1) = ガイア教徒
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+NEXT
+CALL BATTLE_START
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+CALL MESSAGE_WINDOW_ICON, , "BLANK", "", "MESSAGE" , @"＞교회 방위에 성공했다。", , , , , 4
+
+;報酬
+依頼フラグ:[[依頼:랜덤의뢰]]:5 = 3;難易度
+依頼フラグ:[[依頼:랜덤의뢰]]:7 = 1;メシア教
+CALL PRIZE_REQUEST_108

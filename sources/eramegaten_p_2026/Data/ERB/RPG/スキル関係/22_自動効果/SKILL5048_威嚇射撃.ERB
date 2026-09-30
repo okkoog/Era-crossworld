@@ -1,0 +1,60 @@
+﻿;スキル名
+@SKILL_NAME_5048,ARG
+RESULTS = 위협사격
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_5048
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_5048, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_5048
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+
+;スキル変化？用ランク
+@SKILL_RANK_5048, ARG = -1
+RETURN 6
+;変化不可
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_5048, ARG
+PRINTL 자동：아군 악마가 약점 공격이나 크리티컬 공격을 받았을 때 연동효과가 발동한다。
+PRINTL 　　　「공격해온 적의 공격력과 마법위력을 다운시킨다。」
+
+@SKILL_ACTIONABLE_BATTLE_5048, ARG
+RETURN 0
+
+@継承不能_5048
+RETURN 2
+
+
+
+@ACTION_5048, ARG, ARG:1, ARG:2
+#DIM L_TABLE
+#DIM LCOUNT
+#DIM L_CNT
+#DIMS L_RESULTS
+#DIMS TEMPS
+CALL SKILL_SET_カジャンダ, ARG, POS(ARG:1), "공격력/마법위력", -4, "단체"
+
+;====================================================
+;반격
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_5048, ARG, ARG:1
+#DIM L_CNT
+SIF !IS_FRIEND(ARG, ARG:1)
+	RETURN 0
+SIF GETS_ROLE_PROP("INSTALLSOFT_EFFECT_TYPE", ARG:1) != "悪魔"
+	RETURN 0
+SIF CFLAG:(ARG:1):방어플래그
+	RETURN 0
+;弱点ORクリティカル
+SIF !GET_CREC_ACT(FLAG:행동순1, ARG:1, "CRIT/WEAK")
+	RETURN 0
+;攻撃してきた相手を対象にする
+RETURN 1, CPOS(FLAG:행동순1)

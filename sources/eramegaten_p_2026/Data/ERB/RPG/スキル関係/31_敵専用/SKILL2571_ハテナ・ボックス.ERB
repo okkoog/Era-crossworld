@@ -1,0 +1,153 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_2571,ARG
+RESULTS = 하테나・박스
+
+;　명중
+@SKILL_HITRATE_2571, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2571, ARG
+RETURN 1
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2571,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2571,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2571, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2571,ARG
+RETURN 0
+
+;　相性
+@SKILL_TYPE_2571,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2571
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2571, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2571, ARG
+RETURN GET_SKILL_TARGET_NUM("특수")
+
+;　사거리
+@SKILL_RANGE_2571,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2571,ARG
+RETURN GET_SPHERE_NUM("적아군전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2571, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2571
+RETURN GET_SUCCESSION_NUM("만능")
+
+@敵専用_2571
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_2571, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2571
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2571, ARG = -1
+RETURN 0
+
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2571, ARG, ARG:1, ARG:2
+
+;実行
+; メッセージの表示
+PRINTFORMW 　　상자에서 무언가가 튀어나왔다!
+
+; LOCAL:2は驚いた人数。誰も驚かなかった時のメッセージ表示用
+LOCAL:2 = 0
+
+; ポジション1から6（味方側全体）だけループ
+; 敵専用スキルなので味方が使う場合は考慮していない
+FOR LOCAL, 1, 7
+	
+	; LOCALSにポジションにいるキャラを取得
+	LOCALS = 포지션{LOCAL}
+	LOCAL:1 = FLAG:LOCALS
+	
+	; 誰もいなかったらCONTINUE
+	SIF LOCAL:1 < 0
+		CONTINUE
+	
+	; いるのが悪魔の場合
+	IF ABL:(LOCAL:1):종족 > 0 && CFLAG:(LOCAL:1):소속ＣＯＭＰ != -1
+		
+		; とりあえず原作設定として冷静な悪魔には効かない
+		; （他にも回避条件つけるかもなので上と条件文わけた）
+		
+		; 冷静でなかった場合
+		IF TALENT:(LOCAL:1):냉정 == 0
+		
+			; 右が確率、今は95%にとりあえず設定
+			; 臆病持ってたら確率上昇とかでもいいかもしれませんね
+			IF RAND:100 < 95
+				
+				; ポジションを外す（リターン同等処理）
+				CALL REMOVE_POSITION, CFLAG:(LOCAL:1):포지션
+				
+				; メッセージの表示
+				PRINTFORMW 　　%CALLNAME:(LOCAL:1)%은(는) 놀라서 COMP로 돌아가 버렸다!
+				
+				LOCAL:2 = LOCAL:2 + 1
+			ENDIF
+		ENDIF
+	ENDIF
+NEXT
+
+; メッセージの表示
+SIF LOCAL:2 == 0
+	PRINTFORMW 　　아무도 놀라지 않았다…
+
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2571, ARG
+PRINTL 「냉정」을 가지고 있지 않은 악마를 일정 확률로 ＣＯＭＰ로 되돌린다。NPC전용。
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2571,ARG
+RETURN 1
+;とくにない
+

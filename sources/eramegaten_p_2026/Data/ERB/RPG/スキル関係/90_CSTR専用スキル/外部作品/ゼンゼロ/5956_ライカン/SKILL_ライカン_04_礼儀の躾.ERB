@@ -1,0 +1,161 @@
+﻿;スキル名
+@SKILL_NAME_礼儀の躾,ARG
+RESULTS = 예의범절 교육
+
+;　명중
+@SKILL_HITRATE_礼儀の躾, ARG
+RETURN 999
+
+;　威力
+@SKILL_POWER_礼儀の躾, ARG
+SIF ARG < 0
+	RETURN 90
+CALL GET_SKILL_POWER_礼儀の躾(GET_ROLE_CFLAG_TAKEOVER(ARG, "通常スキルランク"))
+RETURN RESULT
+
+@GET_SKILL_POWER_礼儀の躾, ARG
+SELECTCASE ARG
+	CASE 15
+		RETURN 360
+	CASE 11 TO 14
+		RETURN 300 + (ARG - 10) * 12
+	CASE 10
+		RETURN 300
+	CASE 2 TO 9
+		RETURN 60 + 30 * ARG
+	CASE 0, 1
+		RETURN 90
+	CASEELSE
+		RETURN 0
+ENDSELECT
+
+
+;;クリティカル率
+@SKILL_CRITICAL_RATE_礼儀の躾, ARG
+RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_礼儀の躾,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_礼儀の躾,ARG
+RETURN 5
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_礼儀の躾, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_礼儀の躾,ARG
+RETURN 0
+
+;　相性
+;複合相性
+@SKILL_TYPE_礼儀の躾,ARG
+IF ARG >= 0 && HAVE_PU_SKILL(ARG, "執事の教養")
+	RETURN GET_TYPE_NUM("빙결"), GET_TYPE_NUM("타격")
+ELSE
+	RETURN GET_TYPE_NUM("빙결")
+ENDIF
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_礼儀の躾
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_礼儀の躾,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_礼儀の躾,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_礼儀の躾,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_礼儀の躾,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_礼儀の躾,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;속도보정
+@SKILL_SPEED_礼儀の躾, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_礼儀の躾, ARG = -1
+RETURN 0
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_礼儀の躾, ARG = -1, ARG:1 = -1
+IF ARG >= 0 && HAVE_PU_SKILL(ARG, "アルファの本性")
+	RETURN 0, 4
+ELSE
+	RETURN 0, 0
+ENDIF
+
+;====================================================
+;カウンター発動条件
+;ARG			このスキルの持ち主
+;ARG:1			攻撃者のキャラ番号
+
+;RESULT			1 = 反撃成立。ただし実行までの間に行動者が行動不能になった場合は不発する
+;RESULT:1		反撃対象のPOS(ACTION_XXXのARG:1に送られる)。システム側で敵の生存・存在判定による不発判定をおこなうが、RESULT:1が0の場合は相手の状態に関わらず判定を通す
+;RESULT:2		-1 = デフォルトのスキル名表示を省く
+;====================================================
+@SKILL_COUNTER_ACTIONABLE_礼儀の躾,ARG,ARG:1
+SIF !GET_ROLE_CFLAG_BTL(ARG, "極限回避発動")
+	RETURN 0
+;攻撃を受けている
+SIF !GET_CREC_ACT(ARG:1, ARG, "ATTACK")
+	RETURN 0
+;反撃の対象は反撃してきたキャラ(ポジションで返す)
+RETURN 1, CPOS(ARG:1)
+;RETURN 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_礼儀の躾,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+TFLAG:반사0데미지화 = 1
+TFLAG:흡수0데미지화 = 1
+CALL ATTACK_SKILL,ARG,ARG:1,SKILL_NUM
+TFLAG:반사0데미지화 = 0
+TFLAG:흡수0데미지화 = 0
+CALL SKILLGAGE_CHARGE_ROLE_ホロウエージェント, ARG, ARG
+CALL SET_ROLE_CFLAG_BTL, ARG, "獲得デシベル値", RESULT
+
+;　説明文の表示
+@SKILL_EXPLAIN_礼儀の躾,ARG
+PRINTL 【회피】【라이칸 전용 스킬】
+PRINTL 극한 회피 발동 시에 이하의 연동 효과가 발동한다.
+PRINTL 『공격해 온 적에 대해 빙결 상성의 물리 소데미지를 준다.』
+
+@ENHANCE_SKILL_EXPLAIN_礼儀の躾,ARG
+RESULTS '= "極限回避発動時に以下の連動効果が発動する。" + "<br>"
+RESULTS += "『攻撃してきた敵に対して氷結相性の物理小ダメージを与える。』"
+
+@SKILL_ACTIONABLE_BATTLE_礼儀の躾, ARG
+RETURN 0
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_礼儀の躾,ARG
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_礼儀の躾, ARG = -1
+RETURN 9
+
+@SKILL_TAG_礼儀の躾
+RESULTS = 젠제로 회피 반격 스킬

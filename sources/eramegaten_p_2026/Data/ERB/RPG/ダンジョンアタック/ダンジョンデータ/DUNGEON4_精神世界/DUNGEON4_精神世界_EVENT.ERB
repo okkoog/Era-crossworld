@@ -1,0 +1,727 @@
+﻿;	Edit	Date			Author					Reason
+;	XXX		xxxx/xx/xx								新規作成
+;	001		2021/04/02								アマネEXイベント追加
+;	002		2021/10/09		kamedakeisuke(ﾟдﾟ)		アマネEXイベントに別なフィルタが使われていたのでこちらで分離しました
+;			2022/05									EXルートの不自然な描写や用語を若干改稿
+;			2022/09									使用されなくなったデータを削除
+;			2022/11									マインドアマネ加入時の素質変更処理を変更し、CSTR周りも変更するよう修正
+;			2023/05/14		JK好き					マインドアマネ加入処理時に個別調教メニュー設定と画像設定を空白で上書きされないように修正
+;	003		2024/01/03		JK好き					ダンジョンに入り直してからのアマネダンジョン内調教時にTARGET選定処理が間違っていた問題を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;==================================
+;精神世界イベント
+;==================================
+@EVENT_4
+SELECTCASE FLAG:현M
+	CASE 0
+		;ボス部屋にワープ
+		CALL DUNGEON_WORP, 4, 11, 1
+		;部屋をアナライズし表示更新
+		CALL FLOOR_ANALYZE
+		CALL SHOW_FLOOR
+		CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+		FLAG:커맨드표시행수 = LINECOUNT
+		IF FLAG:백합의꽃루트
+			CALL MESSAGE_WINDOW_D, "", "＞문 안으로 발을 내딛자 돌연 주위 일대가 꽃밭이 되었다…/＞그리고, 아마네가 혼자 멍하니 서 있는 것을 발견했다…"
+			CALL MESSAGE_WINDOW_D, "목소리", "…누구야？/…사람의 마음에 흙발로 발을 디디는 녀석은…"
+			CALL MESSAGE_WINDOW_D, "", "＞일대의 꽃밭이 돌연 용암이 흐르는 황야로 변모했다/＞그리고 거대한 악마…이자・벨이 모습을 나타냈다"
+			CALL MESSAGE_WINDOW_D, "이자・벨", "무례한 놈들이네 …。그렇지、아마네？/이런건 빨리 죽여 주지 않으면 안되는 거야"
+			CALL MESSAGE_WINDOW_D, "", @"＞%MASTER는% 아마네에게 말을 걸었다"
+			PRINTFORML 
+			;3箇所解放でアマネは敵にならない
+			IF ダンジョンフラグ:(FLAG:현던전):4 == 3
+				CALL MESSAGE_WINDOW_D, "아마네", "…어、어랏！？/나…는…?/이자・벨…?/이것은…도대체…"
+				CALL MESSAGE_WINDOW_D, "아마네", "그런가, 나는 이자・벨에…！/당신이 도와 주셨군요/이제、이제 나를 붙잡아 둘 수는 없어…！/이자・벨…, 당신이 하라는 대로는 되지 않아요…. 이곳은, 나의 마음…！"
+				CALL MESSAGE_WINDOW_D, "", @"＞의식을 되찾은 아마네는, %CALLNAME:MASTER%의 파티에 합류했다"
+				CALL MAKE_BLANK_POSTION_FOR_ADDCHARA, [[キャラ:아마네]]
+				CALL ADD_GUEST_COMPANION, [[キャラ:아마네]], 500, 30
+				IF RESULT	
+					;隠し補正をつけておく
+					CFLAG:(RESULT:1):마법피데미지보정 = -70
+				ENDIF
+				CALL MESSAGE_WINDOW_D, "이자・벨", "어떻게 이런 일이…！/아마네의 자아가 …！/…그래！/그렇다면 한번 더, 너의 마음을 손에 넣어 주마！"
+			ELSE
+				CALL MESSAGE_WINDOW_D, "이자・벨", "어머나… 헛수고, 소용 없었네?/아마네의 마음에는 나의 뿌리가, 제대로 뻗어 있다고…/자아、너희들도 나와서 놈들을 죽여 없애버리자꾸나"
+				CALL MESSAGE_WINDOW_D, "", "＞사악한 미소를 짓는 아마네들이 차례차례로 나타난다…"
+				CALL SET_ENEMY,14,[[キャラ:아마네]],35,1,1
+				ABL:(CHARANUM-1):스킬1 = 1005
+				ABL:(CHARANUM-1):스킬2 = 402
+				ABL:(CHARANUM-1):스킬3 = 418
+				ABL:(CHARANUM-1):스킬4 = 0
+				ABL:(CHARANUM-1):스킬5 = 0
+				ABL:(CHARANUM-1):스킬6 = 0
+				ABL:(CHARANUM-1):스킬7 = 0
+				ABL:(CHARANUM-1):스킬8 = 0
+				ABL:(CHARANUM-1):스킬9 = 0
+				CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+				CFLAG:(CHARANUM-1):ＭＰ보정 += 500
+				CSTR:(CHARANUM-1):사고패턴 = 4513
+				BASE:(CHARANUM-1):속도 = 21
+				CFLAG:LOCAL:COOP피데미지보정 = -50
+				CALL SYNC_STATUS,(CHARANUM-1)
+				CALL HEALTH_CHARA,(CHARANUM-1)
+				CALL SET_ENEMY,8,[[キャラ:마인드아마네]],28,1,1
+				CSTR:(CHARANUM-1):사고패턴 = 3334
+				CALL SET_ENEMY,9,[[キャラ:마인드아마네]],28,1,1
+				CSTR:(CHARANUM-1):사고패턴 = 3334
+				CALL SET_ENEMY,10,[[キャラ:마인드아마네]],28,1,1
+				CSTR:(CHARANUM-1):사고패턴 = 3334
+			ENDIF
+			CALL MESSAGE_WINDOW_D, "", "＞마왕 이자・벨이 나타났다！"
+			CALL SET_ENEMY, 13, [[キャラ:이자・벨]],48 - ダンジョンフラグ:(FLAG:현던전):4 * 5, 1, 1
+			CFLAG:(CHARANUM-1):ＨＰ보정 += 2500
+			CFLAG:(CHARANUM-1):ＭＰ보정 += 1000
+			ABL:(CHARANUM-1):스킬6 = 0
+			CFLAG:(CHARANUM-1):행동횟수 = 2
+			BASE:(CHARANUM-1):속도 = 20
+			BASE:(CHARANUM-1):검격 = 112
+			BASE:(CHARANUM-1):전술 = 100
+			BASE:(CHARANUM-1):타격 = 112
+			BASE:(CHARANUM-1):비구 = 100
+			BASE:(CHARANUM-1):CLOSE = 200
+			BASE:(CHARANUM-1):CHARM = -100
+			BASE:(CHARANUM-1):FREEZE = -100
+			BASE:(CHARANUM-1):SHOCK = -100
+			BASE:(CHARANUM-1):BIND = -100
+			BASE:(CHARANUM-1):PANIC = -100
+			CSTR:(CHARANUM-1):사고패턴 = イザベル
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			CALL BATTLE_START
+			CALL SHOW_FLOOR
+			CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+			FLAG:커맨드표시행수 = LINECOUNT
+			CALL MESSAGE_WINDOW_D, "이자・벨", "어, 어떻게 이런 일이…！/너는 설마 구세주인가…！/너에게 당할 줄이야…！/…꺄아아아아아아아앗！"
+			CALL MESSAGE_WINDOW_D, "", "＞이자・벨은 힘이 다했다…"
+			CALL MESSAGE_WINDOW_D, "아마네", "……감사합니다/당신 덕분에 살아났습니다。/그 상태로 있었으면…나의 마음은 사라져、/완전하게 이자・벨에 빼앗겨 버렸겠지요。"
+			CALL MESSAGE_WINDOW_D, "아마네", "자아…나의 힘을 빌려줄테니/현실의 세계로 돌아가세요…"
+			CALL MESSAGE_WINDOW_D, "", "의식이 멀어져 간다……"
+			CALL MESSAGE_WINDOW_D, "", "………/………/…"
+			;直哉部屋にワープ
+			CALL DUNGEON_WORP_ID, 6, 11, 1
+			CALL SHOW_FLOOR
+			CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+			FLAG:커맨드표시행수 = LINECOUNT
+			CALL MESSAGE_WINDOW_D, "", @"정신이 들자 %MASTER는% 현실세계로 돌아와 있었다…"
+			;---- EDIT 003 ADD START -------------------------
+			LOCAL = GETCHARA([[キャラ:아마네]])
+			;補正を消す
+			SIF LOCAL >= 0
+				CFLAG:LOCAL:마법피데미지보정 = 0
+			;---- EDIT 006 ADD START -------------------------
+			;条件文の中身を入れ替え
+			IF ABL:MASTER:속성LD == 1 && ABL:MASTER:속성LC == 1
+				CALL MESSAGE_WINDOW_D, "", "＞눈 앞에는 아마네와 천사가 있었다"
+				CALL MESSAGE_WINDOW_D, "아마네", "…무사하게 돌아올 수 있었던 것 같네요. 감사합니다"
+				CALL MESSAGE_WINDOW_D, "천사", "잘 해주셨습니다。/이것으로 나쁜 마왕 이자・벨의 위협으로부터 벗어났습니다"
+				CALL INPUT_YN_D("아마네？", "레미엘？")
+				IF RESULT == 0
+					CALL MESSAGE_WINDOW_D, "아마네", "네, 저는 아마네입니다/그리고 그녀는 레미엘입니다"
+					LOCALS = 레미엘
+				ELSE
+					LOCALS =  천사
+				ENDIF
+				CALL MESSAGE_WINDOW_D, LOCALS, "이 모습으로 만나는 것은 처음이군요/당신이 이자・벨을 쓰러뜨린 일로, 저도 임무를 끝마쳐서、/아마네의 안에 있을 필요가 없어졌습니다"
+				CALL MESSAGE_WINDOW_D, LOCALS, "지금부터는 우리들 본래의 역할로 돌아가, 정식으로 인간을 돕겠습니다/그러니 지금부터는 동료마로서 당신에게 도움이 되겠습니다/제 힘을 사용해、세계를 구하는 겁니다"
+				CALL MESSAGE_WINDOW_D, "", "＞대천사 레미엘이 동료마가 되었다"
+				CALL ADD_NEW_COMPANION, [[キャラ:레미엘]], 500, 1, 0, 0, 35
+				IF RESULT
+					CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "신용"
+				ENDIF
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞눈 앞에는 아마네가 있었다"
+				CALL MESSAGE_WINDOW_D, "아마네", "……무사하게 돌아올 수 있었던 것 같네요。/감사합니다"
+				CALL INPUT_YN_D("아마네？", "레미엘？")
+				IF RESULT == 0
+					CALL MESSAGE_WINDOW_D, "아마네", "네、저는 아마네에요"
+				ELSE
+					CALL MESSAGE_WINDOW_D, "아마네", "킥킥…/아시잖아요？/저는 아마네에요。"
+				ENDIF
+				CALL MESSAGE_WINDOW_D, "아마네", "당신이 이자・벨을 쓰러뜨린 덕분에, 그 역할을 끝냈겠지요/레미엘은 이제 제 안에 없답니다/레미엘은 떠날 때 당신에게 힘을 빌려주겠다고 했어요/그에 적합한 수순을 밟으면 호출할 수가 있을 겁니다"
+			ENDIF
+			;---- EDIT 006 ADD  END -------------------------
+			CALL MESSAGE_WINDOW_D, "아마네", "레미엘만이 아닙니다/저도 당신의 일을 돕겠습니다"
+			CALL MESSAGE_WINDOW_D, "아마네", "아시는 대로, 제 안에는 이자・벨이 있었습니다/그것은, 제 아버지, 쿠즈류가 이자・벨을 소환해,/제 안에 심었기 때문입니다/아버지는 이자・벨의 힘이 있으면, 신의 시련을 넘을 수 있다고 생각했습니다"
+			CALL MESSAGE_WINDOW_D, "아마네", "메시아 교회의 목적은 사람이 단결해, 신의 시련을 넘는 일…/그것은 신의 가르침을 지켜, 질서의 세계를 쌓아 올리는 일로도 이룰수 있는 일인 것입니다"
+			CALL MESSAGE_WINDOW_D, "아마네", "저는 자신의 본연의 자세를 두고 헤매고 있었습니다/과연, 신의 시련을 넘기 위해, 악마의 힘을 빌려 、/결과적으로 사람들을 괴롭히는 일이 올바른 것인지를"
+ 			CALL MESSAGE_WINDOW_D, "아마네", "저는, 제 마음에 따르겠습니다./비록 그것이, 아버지와 생각을 달리해 서로 싸우는 결과가 된다 해도/아버지나 메시아교의 폭주를 멈추고 싶습니다"
+ 			CALL MESSAGE_WINDOW_D, "아마네", "당신은 사람들을 이끌고, 단결시켜、/이 시련을 넘는 길을 보여주는……/구세주인 것입니다"
+ 			CALL MESSAGE_WINDOW_D, "아마네", "당신을 돕는 것으로、제 목적도 또한 달성되겠지요/그러니, 제가 당신을 도울 수 있도록 해 주지 않겠습니까？"
+ 			;---- EDIT 003 ADD START -------------------------
+ 			CALL INPUT_YN_D
+ 			IF RESULT == 0
+ 				CALL MESSAGE_WINDOW_D, "아마네", "감사합니다/지금부터 힘을  합쳐, 사람들을 도와 나갑시다"
+ 				CALL MESSAGE_WINDOW_D, "", "＞아마네가 동료에 참가했다"
+				CALL ADD_NEW_COMPANION,[[キャラ:아마네]],500
+				;戦闘参加可能で加入するが、調教で戦闘参加不可能になる
+				CALL SET_TALENT_PARTY_JOINABLE, GETCHARA([[キャラ:아마네]]), "신용"
+				CFLAG:GETCHARA([[キャラ:아마네]]):마법피데미지보정 = 0
+				CFLAG:GETCHARA([[キャラ:아마네]]):게스트가입플래그 = 0
+			ELSE
+				CALL MESSAGE_WINDOW_D, "아마네", "하고자 하는 일을 이루는데 있어, 다른 사람에게 의지해서는 안 된다 라는 것이군요. 알겠습니다…/그럼, 저는 제 나름대로, 사람들을 위해 일하도록 하겠습니다"
+			ENDIF
+			CALL LIFTING_A_BAN, [[キャラ:레미엘]], "ウィンドウ"
+			CALL 全ゲスト削除
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			CALL MESSAGE_WINDOW_D, "", "＞메시아 교회에서 계좌에 사례금 ￥100000을 입금하였다。/＞아마도 레미엘의 의사일 것이다"
+			MONEY += 100000
+			DA:(FLAG:현X):(FLAG:현Y) = 1
+			FLAG:백합의꽃루트 = 6
+			FLAG:탈출 = 1
+		ELSE
+			;---- EDIT 005 ADD START -------------------------
+			;ネストが崩れていたのを修正
+			;---- EDIT 004 ADD START -------------------------
+			;直哉ルート追加
+			;アマネの調教状況
+			IF FINDCHARA_B([[キャラ:아마네]], 1) >= 0 && CFLAG:(RESULT:1):이자리에없는플래그
+				LOCAL:2 = RESULT:1
+				LOCAL:3 = LOCAL:2 >= 0 ? MARK:(LOCAL:2):굴복각인 * 2 - MARK:(LOCAL:2):반발각인 # 0
+				SIF LOCAL:3 < 6
+					CALL キャラ削除, LOCAL:2
+			ELSE
+				LOCAL:3 = 0
+			ENDIF
+			;敵レベル基準値
+			ダンジョンフラグ:(FLAG:현던전):6 = ダンジョンフラグ:(FLAG:현던전):5 ? 52 - LOCAL:3 * 2 # 49 - ダンジョンフラグ:(FLAG:	현던전):4 * 3
+			IF ダンジョンフラグ:(FLAG:현던전):4 == 3 && ダンジョンフラグ:(FLAG:현던전):5 == 0
+				CALL MESSAGE_WINDOW_D, "", "＞방 안으로 발을 내딛자 주위에 시들어버린 꽃밭이 펼쳐져 있다……/＞그리고, 눈 앞에 아마네가 혼자 울고 있는 것을 발견했다……"
+				CALL MESSAGE_WINDOW_D, "목소리", "…당신이군요/아마네의 정신을 망치며 돌아다닌 사람이？/…사람의 마음에 이런 짓을 하다니…"
+				CALL MESSAGE_WINDOW_D, "", "＞대천사 레미엘이 아마네를 지키기 위해서 나타났다…"
+				CALL MESSAGE_WINDOW_D, "레미엘", "지금 여기서 제가 당신을 물리치지 않으면、/아마네의 마음은 완전히 죽어버리겠지요/사람의 아이여。악마에게 힘을 빌려줬을 뿐만 아니라、/그 포악한 행위를 한 것에 대한 심판을 받을지어다！"
+				;イベント内容の分岐　アマネ崩壊
+				ダンジョンフラグ:(FLAG:현던전):7 = 2
+			ELSE
+				CALL MESSAGE_WINDOW_D, "", "＞문 안에 발을 디디자 주위가 갑자기 일대 꽃밭으로 변했다……/＞그리고, 아마네가 혼자 멍하니 서 있는 것을 찾아냈다"
+				CALL MESSAGE_WINDOW_D, "목소리", "…누구십니까？/…사람의 마음에、흙발로 발을 디디다니…"
+				CALL MESSAGE_WINDOW_D, "", "＞아마네의 곁에 대천사 레미엘이 모습을 드러냈다"
+				CALL MESSAGE_WINDOW_D, "레미엘", "자아、마음을 굳건히 하세요/우리들은 어떤 경우에도 그 같이 나쁜 것에/질 수 없습니다"
+				IF LOCAL:3 >= 6 && ダンジョンフラグ:(FLAG:현던전):5
+					;イベント内容の分岐　アマネ裏切り
+					ダンジョンフラグ:(FLAG:현던전):7 = 3
+					CALL MESSAGE_WINDOW_D, "아마네", "……"
+					CALL MESSAGE_WINDOW_D, "레미엘", "……어떻게 된 겁니까？"
+					CALL MESSAGE_WINDOW_D, "아마네", "죄송합니다/그렇지만, 저는 신보다 더 훌륭한 것을 알아 버렸습니다"
+					CALL MESSAGE_WINDOW_D, "", @"＞아마네는 레미엘을 남겨두고、%CALLNAME:MASTER%의 옆으로 왔다…"
+					CALL MESSAGE_WINDOW_D, "아마네", "저는 당신의 것 입니다/무엇이든 명령해 주십시오"
+					CALL MESSAGE_WINDOW_D, "", @"＞아마네가 %CALLNAME:MASTER%의 파티에 참가했다"
+					CFLAG:(LOCAL:2):이자리에없는플래그 = 0
+					CALL SET_TALENT_PARTY_JOINABLE, (LOCAL:2), "参加可能"
+					CFLAG:(LOCAL:2):선악치 = 0
+					CFLAG:(LOCAL:2):질혼치 = 0
+					TALENT:(LOCAL:2):모유체질 = 0
+					TALENT:(LOCAL:2):처녀 = 1
+					;隠し補正をつけておく
+					CFLAG:(LOCAL:2):마법피데미지보정 = -50
+					CALL SYNC_STATUS, LOCAL:2
+					CALL HEALTH_CHARA, LOCAL:2
+					CALL MAKE_BLANK_POSTION_FOR_ADDCHARA, [[キャラ:아마네]]
+					SIF CPOS(GETCHARA([[キャラ:아마네]])) == 0
+						CALL INSERT_POSITION, -1, GETCHARA([[キャラ:아마네]])
+
+					CALL MESSAGE_WINDOW_D, "레미엘", "이럴수가…/그렇다면 나는 무엇 때문에…"
+					CALL MESSAGE_WINDOW_D, "이자・벨", "이런、도망치게 내버려 둘 수는 없지/너는 여기서 인간들에게 살해당하는 거야"
+					CALL MESSAGE_WINDOW_D, "레미엘", "크윽…/이자・벨！"
+					CALL MESSAGE_WINDOW_D, "이자・벨", "어째서、그런 얼굴을 하고 있는거야？/아마네는 행복한 것 같은데/천사답게 축복이라도 해주는게 어떨까"
+					CALL MESSAGE_WINDOW_D, "레미엘", "……신이여/제게 악에게 지지 않을 힘을！"
+				ELSE
+				;イベント内容の分岐　通常
+					ダンジョンフラグ:(FLAG:현던전):7 = 1
+					CALL MESSAGE_WINDOW_D, "아마네", "네…/저는 다시 이자・벨에게 넘어갈 수는 없습니다/부디, 제게 힘을 빌려 주세요"
+					CALL MESSAGE_WINDOW_D, "레미엘", "잘, 말해줬습니다/그럼、갑시다！"
+					CALL SET_ENEMY,13,[[キャラ:아마네]],ダンジョンフラグ:(FLAG:현던전):6-3,1,1
+					ABL:(CHARANUM-1):스킬1 = 1005
+					ABL:(CHARANUM-1):스킬2 = 402
+					ABL:(CHARANUM-1):스킬3 = 418
+					ABL:(CHARANUM-1):스킬4 = 0
+					ABL:(CHARANUM-1):스킬5 = 0
+					ABL:(CHARANUM-1):스킬6 = 0
+					ABL:(CHARANUM-1):스킬7 = 0
+					ABL:(CHARANUM-1):스킬8 = 0
+					ABL:(CHARANUM-1):스킬9 = 0
+					LOCAL:1 = FLAG:전투난이도 - 3 > 0 ? 120 + (FLAG:전투난이도 - 3) * 20 # 100
+					CALL SET_BATTLE_STATUS(CHARANUM-1, 20 * LOCAL:1, "ＨＰ")
+					CALL SET_BATTLE_STATUS(CHARANUM-1, 20 * LOCAL:1, "ＭＰ")
+					CALL SYNC_STATUS,(CHARANUM-1)
+					CALL HEALTH_CHARA,(CHARANUM-1)
+					CSTR:(CHARANUM-1):사고패턴 = レミエルアマネ
+					BASE:(CHARANUM-1):속도 = 25
+				ENDIF
+			ENDIF
+			CALL SET_ENEMY, 14, [[キャラ:레미엘]], ダンジョンフラグ:(FLAG:현던전):6, 1, 1
+			CFLAG:(CHARANUM-1):행동횟수 = 2
+			CFLAG:(CHARANUM-1):단독링케이지 = 1
+			BASE:(CHARANUM-1):속도 = 30
+			BASE:(CHARANUM-1):충격 = 25
+			BASE:(CHARANUM-1):질풍 = 150
+			BASE:(CHARANUM-1):중력= 25
+			BASE:(CHARANUM-1):빙결= 25
+			BASE:(CHARANUM-1):전격= -50
+			MAXBASE:(CHARANUM-1):충격 = 25
+			MAXBASE:(CHARANUM-1):질풍 = 150
+			MAXBASE:(CHARANUM-1):중력= 25
+			MAXBASE:(CHARANUM-1):빙결= 25
+			MAXBASE:(CHARANUM-1):전격= -50
+			CSTR:(CHARANUM-1):사고패턴 = 레미엘
+			CSTR:(CHARANUM-1):증원패턴 = 레미엘
+			LOCAL:1 = FLAG:전투난이도 - 3 > 0 ? 120 + (FLAG:전투난이도 - 3) * 20 # 100
+			CALL SET_BATTLE_STATUS(CHARANUM-1, 50 * LOCAL:1, "ＨＰ")
+			CALL SET_BATTLE_STATUS(CHARANUM-1, 20 * LOCAL:1, "ＭＰ")
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL SET_ENEMY, 8, [[キャラ:하우르바타트]], ダンジョンフラグ:(FLAG:현던전):6-5
+			CALL SET_ENEMY_D4_ST, (CHARANUM-1)
+			CALL SET_ENEMY, 9, [[キャラ:아무르타트]], ダンジョンフラグ:(FLAG:현던전):6-5
+			CALL SET_ENEMY_D4_ST, (CHARANUM-1)
+			CALL SET_ENEMY, 10, [[キャラ:라이라]], ダンジョンフラグ:(FLAG:현던전):6-5
+			CALL SET_ENEMY_D4_ST, (CHARANUM-1)
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+			;---- EDIT 005 ADD START -------------------------
+			;メッセージの位置を戦闘前に修正し、フラグリセット処理を追加
+			CALL MESSAGE_WINDOW_D, "", "＞대천사 레미엘이 나타났다！"
+			CALL BATTLE_START
+			CALL SHOW_FLOOR
+			CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+			FLAG:커맨드표시행수 = LINECOUNT
+			FLAG:도주불가플래그 = 0
+			FLAG:회화불능플래그 = 0
+			FLAG:선제기습취소 = 0
+			;---- EDIT 005 ADD END   -------------------------
+			LOCAL = GETCHARA([[キャラ:아마네]])
+			;補正を消す
+			SIF LOCAL >= 0
+				CFLAG:LOCAL:마법피데미지보정 = 0
+			CALL MESSAGE_WINDOW_D, "레미엘", "어, 어째서입니까…/이 제가 악을 행하는 자에게 패배…할 줄은…/아아…신이여…부디 용서해 주십시오…"
+			CALL MESSAGE_WINDOW_D, "SYSYTEM", "＞레미엘은 힘이 다했다"
+			IF ダンジョンフラグ:(FLAG:현던전):7 == 3
+				CALL MESSAGE_WINDOW_D, "아마네", "……미안해요"
+				CALL MESSAGE_WINDOW_D, "", "＞사라져가는 레미엘을 보면서、아마네가 불쑥 중얼거렸다"
+			ENDIF
+			;ログ残し
+			CALL MESSAGE_WINDOW_D, "", "＞의식이 멀어져 간다…"
+			CALL MESSAGE_WINDOW_D, "", "………/……/…"
+			;直哉部屋にワープ
+			CALL DUNGEON_WORP_ID, 6, 11, 1
+			CALL SHOW_FLOOR
+			CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+			FLAG:커맨드표시행수 = LINECOUNT
+			CALL MESSAGE_WINDOW_D, "", "＞정신이 들자, 그곳은 사이코 다이브 하기 전에 있었던 방이었다…/＞눈 앞에는 사악한 미소를 짓고 있는 아마네와 능글맞게 웃고 있는 나오야가 있다…"
+			CALL MESSAGE_WINDOW_D, "나오야", "그 모습을 보니 잘된 것 같은데？"
+			CALL MESSAGE_WINDOW_D, "아마네", "아, 후련했어/하지만 인간 따위가 정말로 그 레미엘을 쓰러뜨리다니"
+			CALL MESSAGE_WINDOW_D, "나오야", "내가 믿은 인간이라고。그 정도는 당연하지/이것으로 너도 안심하고, 뒤를 맡길 수 있겠지？"
+			CALL MESSAGE_WINDOW_D, "아마네", "아아、그래。벨의 힘을 받아주면 좋겠어"
+			CALL MESSAGE_WINDOW_D, "", @"＞아마네에게서 검은 안개 같은 것이 흘러나와、/＞%CALLNAME:MASTER%의 COMP로 빨려 들어갔다"
+			CALL MESSAGE_WINDOW_D, "", @"＞안개가 사라지자, 아마네가 쓰러졌다…/＞%CALLNAME:MASTER%가 달려가려고 하는데 머릿속에 목소리가 들려왔다"
+			IF ABL:MASTER:속성LD == 3 &&  ABL:MASTER:속성LC == 3
+				CALL MESSAGE_WINDOW_D, "목소리", "그래, 레미엘로부터 많은 힘을 빼앗았기 때문에/실체화해서 싸우는 것도 충분히 가능해/그런고로, 앞으로 너한테 힘을 빌려 줄께/고맙게 생각하라고"
+				CALL MESSAGE_WINDOW_D, "", "＞마왕 이자・벨이 동료마가 되었다"
+				CALL ADD_NEW_COMPANION, [[キャラ:이자・벨]], 500, 1, 0, 0, 35
+			ELSE
+				CALL MESSAGE_WINDOW_D, "목소리", "그래, 앞으로 기본적으로는 여기서 응원해 주는 것이지만/적절한 절차를 밟으면、실체화 해 싸우는 것도/못하는건 아니니까 잘 기억해 둬"
+			ENDIF
+			CALL LIFTING_A_BAN, [[キャラ:이자・벨]], "ウィンドウ"
+			IF ダンジョンフラグ:(FLAG:현던전):7 == 2
+				CALL MESSAGE_WINDOW_D, "나오야", "그런데……그건 그렇고……/이거 안되겠네/망가져 버렸다"
+				CALL MESSAGE_WINDOW_D, "", "＞아마네의 상태를 보고 있던 나오야가 그렇게 말했다"
+				CALL MESSAGE_WINDOW_D, "나오야", "이 녀석 정도의 힘이면、/뭔가 쓸모 있을 것이라고 기대하고 있었는데…/그레. 노예로는 어떨까?/그렇게라도 쓸거야？"
+				CALL INPUT_YN_D("네", "아니요")
+				IF RESULT == 0
+					CALL MESSAGE_WINDOW_D, "나오야", "그런가/그렇다면, 가져가도 좋아"
+					CALL MESSAGE_WINDOW_D, "", "＞쿠즈류 아마네를 손에 넣었다"
+					CALL ADD_NEW_COMPANION, [[キャラ:아마네]], 200, 3
+				ELSE
+					CALL MESSAGE_WINDOW_D, "나오야", "그런가/그렇다면、이쪽에서 적당하게 처분해 줄께"
+				ENDIF
+			ELSE
+				CALL MESSAGE_WINDOW_D, "아마네", "우……/여기는……"
+				CALL MESSAGE_WINDOW_D, "", "＞아마네의 눈이 떠지고、신음하면서 일어섰다"
+				CALL MESSAGE_WINDOW_D, "나오야", "눈을 떴나"
+				CALL MESSAGE_WINDOW_D, "아마네", "저는 레미엘과…"
+				CALL MESSAGE_WINDOW_D, "나오야", "그렇게、레미엘과 함께 패배한 거야/나쁜 말은 하지 않겠다/우리에게 힘을 빌려줘、함께 신을 쓰러뜨리자"
+				IF ダンジョンフラグ:(FLAG:현던전):7 == 3
+					CALL MESSAGE_WINDOW_D, "아마네", "……말할 필요도 없습니다/저는 벌써 신을 버리고 이 분을 선택했습니다"
+					CALL MESSAGE_WINDOW_D, "나오야", "호오, 벌써 함락한 건가/꽤 하잖아/신의 소유물인 무녀를 강탈하다니"
+				ELSE
+					CALL MESSAGE_WINDOW_D, "아마네", "무슨 바보같은 일을！/지금은 저와 레미엘이 패했디지만, 마지막에는 절대로…！"
+					CALL MESSAGE_WINDOW_D, "나오야", "아무튼 좋아/네가 순조롭게 우리편이 된다고는 생각하지 않았으니/다만, 이 녀석은 노예 상인이니까…/어떻게 될지는 너도 대충 상상이 가지 않아？"
+					CALL MESSAGE_WINDOW_D, "아마네", "뭐라고요…！？"
+					CALL MESSAGE_WINDOW_D, "나오야", "신의 무녀가 어떻게 다루어질지, 기다려지는군/크크크"
+					CALL MESSAGE_WINDOW_D, "", "＞쿠즈류 아마네를 손에 넣었다"
+					IF ダンジョンフラグ:(FLAG:현던전):5
+						LOCAL:2 = GETCHARA([[キャラ:아마네]])
+						IF GETCHARA([[キャラ:아마네]]) > -1
+							CFLAG:(LOCAL:2):이자리에없는플래그 = 0
+						ELSE
+							CALL ADD_NEW_COMPANION, [[キャラ:아마네]], 200, 2
+						ENDIF
+					ELSE
+						CALL ADD_NEW_COMPANION, [[キャラ:아마네]], 200, 2
+					ENDIF
+				ENDIF
+			ENDIF
+			CALL MESSAGE_WINDOW_D, "나오야", "그런데, 이번에는 이 정도라지만/그러나 다음 벨신은 한층 더 만만치 않을 거야/또 나타날 때까지 단련을 게을리하지마/일단 이것을 사용해"
+			CALL MESSAGE_WINDOW_D, "", "＞나오야에게서 ￥100000을 건네 받았다"
+			MONEY += 100000
+			FLAG:벨신격파 |= 2
+			FLAG:나오야루트 = 6
+			FLAG:탈출 = 1
+			;---- EDIT 004 ADD END ---------------------------
+			;---- EDIT 005 ADD END ---------------------------
+		ENDIF
+	CASE 1
+		IF FLAG:백합의꽃루트
+			IF !ダンジョンフラグ:(FLAG:현던전):1
+				CALL MESSAGE_WINDOW_D, "악마", "이런 곳에까지 나타나다니, 당신 정말로 인간인가요?/아무튼 좋아요/……당신이 무엇이든, 이 아가씨는 풀어줄 수 없으니/당신도 죽일 수 밖에요"
+				CALL MESSAGE_WINDOW_D, "", "＞마수 알케니가１체 나타났다！"
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				CALL SET_ENEMY,9,[[キャラ:알케니]],32,0,1
+				CFLAG:(CHARANUM-1):행동횟수 = 2
+				CALL BATTLE_START
+				CALL SHOW_FLOOR
+				CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+				FLAG:커맨드표시행수 = LINECOUNT
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+				CALL MESSAGE_WINDOW_D, "", "＞레미엘의 목소리가 들려온다"
+				CALL MESSAGE_WINDOW_D, "레미엘", "잘하셨습니다/지금의 악마는 아마네의 마음을 단단히 묶고 있던 자입니다"
+				CALL INCREASE_LD, 3
+				CALL INCREASE_LC, 3
+				ダンジョンフラグ:(FLAG:현던전):1 = 1
+				ダンジョンフラグ:(FLAG:현던전):4 += 1
+				IF ダンジョンフラグ:(FLAG:현던전):4 == 1
+					CALL MESSAGE_WINDOW_D, "레미엘", "이제, 아마네는 이자・벨의 지배로부터 조금 해방되었습니다/그리고 그 덕분에 저한테도 도움이 되었습니다/당신의 힘이 될만한 것을 여기에 만들어 보겠습니다"
+					CALL MESSAGE_WINDOW_D, "", "＞터미널이 나타났다"
+				ELSEIF ダンジョンフラグ:(FLAG:현던전):4 == 2
+					CALL MESSAGE_WINDOW_D, "레미엘", "이제, 아마네는 이자・벨의 지배로부터 한층 더 해방되었습니다/완전하게 해방할 때까지 나머지 한 걸음입니다/당신에게 힘이 될만한 것을 여기에도 만들어 드릴테니 사용해 주세요"
+					CALL MESSAGE_WINDOW_D, "", "＞터미널이 나타났다"
+				ELSE
+					CALL MESSAGE_WINDOW_D, "레미엘", "이제, 아마네는 이자・벨의 지배로부터 완전히 해방되었습니다/자아, 지금이야말로 정신세계의 가장 깊은 곳으로 나아가, 이자・벨을 토벌합시다"
+				ENDIF
+			ELSE
+				CALL DUNGEON_TERMINAL
+				RETURN 1
+			ENDIF
+		ELSE
+			;---- EDIT 004 ADD START -------------------------
+			;新規作成
+			IF !ダンジョンフラグ:(FLAG:현던전):1
+				CALL MESSAGE_WINDOW_D, "천사", "사람의 아이가, 이러한 곳까지 올 줄은…/그대가 이 딸을 해꼬지하려고 한다면, 나는 그대를 공격하겠다"
+				CALL MESSAGE_WINDOW_D, "", "＞천사 아무르타트가 １체 나타났다！"
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				CALL SET_ENEMY,9,[[キャラ:아무르타트]],36,0,1
+				CALL SET_ENEMY_D4_ST, (CHARANUM-1)
+				CFLAG:(CHARANUM-1):행동횟수 = 2
+				CALL BATTLE_START
+				CALL SHOW_FLOOR
+				CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+				FLAG:커맨드표시행수 = LINECOUNT
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+				CALL MESSAGE_WINDOW_D, "", "＞이자・벨의 목소리가 들려온다"
+				CALL MESSAGE_WINDOW_D, "이자・벨", "잘 해줬어/아마네를 지키는 녀석을 마저 없애버리면…/잠깐만 기다려봐…"
+				CALL MESSAGE_WINDOW_D, "", "＞잠시 후 눈 앞에 아마네가 나타났다…"
+				CALL RAPE, 1
+				SIF FLAG:던전내조교 == 1
+					RETURN 1
+				IF ダンジョンフラグ:(FLAG:현던전):4 == 1
+					CALL MESSAGE_WINDOW_D, "이자・벨", "지금 행동으로 아마네에 대한 지배력이 강해졌어/덕분에, 너를 도울 수 있게 된 거야/자아、이런건 어때？"
+					CALL MESSAGE_WINDOW_D, "", "＞터미널이 나타났다"
+					PRINTW 
+				ELSEIF ダンジョンフラグ:(FLAG:현던전):4 == 2
+					CALL MESSAGE_WINDOW_D, "이자・벨", "아마네를 완전하게 지배할 때까지 나머지 한 걸음/도와줄테니까, 최선을 다해줘"
+					CALL MESSAGE_WINDOW_D, "", "＞터미널이 나타났다"
+				ELSE
+					CALL MESSAGE_WINDOW_D, "이자・벨", "이제、아마네는 거의 완전하게 지배하게 되었어 그럼、정신세계의 가장 깊숙한 곳에 가서、레미엘을 죽여버려"
+				ENDIF
+			ELSEIF ダンジョンフラグ:(FLAG:현던전):1 == -1
+				CALL AMANE_TRAIN
+				RETURN RESULT
+			ELSE
+				CALL DUNGEON_TERMINAL
+				RETURN 1
+			ENDIF
+			;---- EDIT 004 ADD END ---------------------------
+		ENDIF
+	CASE 2
+		IF FLAG:백합의꽃루트
+			IF !ダンジョンフラグ:(FLAG:현던전):2
+				CALL MESSAGE_WINDOW_D, "악마", "뭐야。너는？/나는 이 여자를 타락시키지 않으면 안된단 말이야/방해 한다면, 죽여줄께！"
+				CALL MESSAGE_WINDOW_D, "SYSTTEM", "요마 인큐버스가 １체 나타났다！"
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				CALL SET_ENEMY,9, [[キャラ:인큐버스]],32,0,1
+				CFLAG:(CHARANUM-1):행동횟수 = 2
+				CALL BATTLE_START
+				CALL SHOW_FLOOR
+				CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+				FLAG:커맨드표시행수 = LINECOUNT
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+				CALL MESSAGE_WINDOW_D, "", "＞레미엘의 목소리가 들려온다"
+				CALL MESSAGE_WINDOW_D, "레미엘", "잘하셨습니다/지금의 악마는 아마네의 마음을 타락시키려던 자입니다"
+				CALL INCREASE_LD, 3
+				CALL INCREASE_LC, 3
+				ダンジョンフラグ:(FLAG:현던전):2 = 1
+				ダンジョンフラグ:(FLAG:현던전):4 += 1
+				IF ダンジョンフラグ:(FLAG:현던전):4 == 1
+					CALL MESSAGE_WINDOW_D, "레미엘", "이제, 아마네는 이자・벨의 지배로부터 조금 해방되었습니다/그리고 그 덕분에 저한테도 도움이 되었습니다/당신의 힘이 될만한 것을 여기에 만들어 보겠습니다"
+					CALL MESSAGE_WINDOW_D, "", "＞터미널이 나타났다"
+				ELSEIF ダンジョンフラグ:(FLAG:현던전):4 == 2
+					CALL MESSAGE_WINDOW_D, "레미엘", "이제, 아마네는 이자・벨의 지배로부터 한층 더 해방되었습니다/완전하게 해방할 때까지 나머지 한 걸음입니다/당신에게 힘이 될만한 것을 여기에도 만들어 드릴테니 사용해 주세요"
+					CALL MESSAGE_WINDOW_D, "", "＞터미널이 나타났다"
+				ELSE
+					CALL MESSAGE_WINDOW_D, "레미엘", "이제, 아마네는 이자・벨의 지배로부터 완전히 해방되었습니다/자아, 지금이야말로 정신세계의 가장 깊은 곳으로 나아가, 이자・벨을 토벌합시다"
+				ENDIF
+			ELSE
+				CALL DUNGEON_TERMINAL
+				RETURN 1
+			ENDIF
+		ELSE
+			;---- EDIT 004 ADD START -------------------------
+			;新規作成
+			IF !ダンジョンフラグ:(FLAG:현던전):2
+				CALL MESSAGE_WINDOW_D, "천사", "악한 자여…/정의로운 자에게 해를 끼치지 말지어다！"
+				CALL MESSAGE_WINDOW_D, "", "＞천사 라이라가 １체 나타났다！"
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				CALL SET_ENEMY,9,[[キャラ:라이라]],36,0,1
+				CALL SET_ENEMY_D4_ST, (CHARANUM-1)
+				CFLAG:(CHARANUM-1):행동횟수 = 2
+				CALL BATTLE_START
+				CALL SHOW_FLOOR
+				CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+				FLAG:커맨드표시행수 = LINECOUNT
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+				CALL MESSAGE_WINDOW_D, "", "＞이자・벨의 목소리가 들려온다"
+				CALL MESSAGE_WINDOW_D, "이자・벨", "잘 해줬어/아마네를 지키는 녀석을 마저 없애버리면…/잠시만 기다려봐…"
+				CALL MESSAGE_WINDOW_D, "", "＞잠시후 눈 앞에 아마네가 나타났다…"
+				CALL RAPE, 2
+				SIF FLAG:던전내조교 == 1
+					RETURN 1
+				IF ダンジョンフラグ:(FLAG:현던전):4 == 1
+					CALL MESSAGE_WINDOW_D, "이자・벨", "지금 행동으로 아마네에 대한 지배력이 강해졌어/덕분에, 너를 도울 수 있게 된 거야/자아、이런건 어때？"
+					CALL MESSAGE_WINDOW_D, "", "＞터미널이 나타났다"
+					PRINTW 
+				ELSEIF ダンジョンフラグ:(FLAG:현던전):4 == 2
+					CALL MESSAGE_WINDOW_D, "이자・벨", "아마네를 완전하게 지배할 때까지 나머지 한 걸음/도와줄테니까, 최선을 다해줘"
+					CALL MESSAGE_WINDOW_D, "", "＞터미널이 나타났다"
+				ELSE
+					CALL MESSAGE_WINDOW_D, "이자・벨", "이제、아마네는 거의 완전하게 지배하게 되었어 그럼、정신세계의 가장 깊숙한 곳에 가서、레미엘을 죽여버려"
+				ENDIF
+			ELSEIF ダンジョンフラグ:(FLAG:현던전):2 == -1
+				CALL AMANE_TRAIN
+				RETURN RESULT
+			ELSE
+				CALL DUNGEON_TERMINAL
+				RETURN 1
+			ENDIF
+			;---- EDIT 004 ADD END ---------------------------
+		ENDIF
+	CASE 3
+		IF FLAG:백합의꽃루트
+			IF !ダンジョンフラグ:(FLAG:현던전):3
+				CALL MESSAGE_WINDOW_D, "", "＞아마네가 있는…/그런데 그 표정이 사악해, 도저히 아마네로는 안보인다"
+				CALL MESSAGE_WINDOW_D, "아마네？", "………"
+				CALL MESSAGE_WINDOW_D, "", "마인드아마네가 １체 나타났다！"
+				CALL INCREASE_LD, 3
+				CALL INCREASE_LC, 3
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				CALL SET_ENEMY,9, [[キャラ:마인드아마네]],32,0,1
+				CFLAG:(CHARANUM-1):행동횟수 = 2
+				CALL BATTLE_START
+				CALL SHOW_FLOOR
+				CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+				FLAG:커맨드표시행수 = LINECOUNT
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+				CALL MESSAGE_WINDOW_D, "", "＞레미엘의 목소리가 들려온다"
+				CALL MESSAGE_WINDOW_D, "레미엘", "잘하셨습니다/지금의 것은 이자・벨이 지배하던 아마네의 마음입니다"
+				ダンジョンフラグ:(FLAG:현던전):3 = 1
+				ダンジョンフラグ:(FLAG:현던전):4 += 1
+				IF ダンジョンフラグ:(FLAG:현던전):4 == 1
+					CALL MESSAGE_WINDOW_D, "레미엘", "이제, 아마네는 이자・벨의 지배로부터 조금 해방되었습니다/그리고 그 덕분에 저한테도 도움이 되었습니다/당신의 힘이 될만한 것을 여기에 만들어 보겠습니다"
+					CALL MESSAGE_WINDOW_D, "", "＞터미널이 나타났다"
+				ELSEIF ダンジョンフラグ:(FLAG:현던전):4 == 2
+					CALL MESSAGE_WINDOW_D, "레미엘", "이제, 아마네는 이자・벨의 지배로부터 한층 더 해방되었습니다/완전하게 해방할 때까지 나머지 한 걸음입니다/당신에게 힘이 될만한 것을 여기에도 만들어 드릴테니 사용해 주세요"
+					CALL MESSAGE_WINDOW_D, "", "＞터미널이 나타났다"
+				ELSE
+					CALL MESSAGE_WINDOW_D, "레미엘", "이제, 아마네는 이자・벨의 지배로부터 완전히 해방되었습니다/자아, 지금이야말로 정신세계의 가장 깊은 곳으로 나아가, 이자・벨을 토벌합시다"
+				ENDIF
+			ELSE
+				CALL DUNGEON_TERMINAL
+				RETURN 1
+			ENDIF
+		ELSE
+			;---- EDIT 004 ADD START -------------------------
+			;新規作成
+			IF !ダンジョンフラグ:(FLAG:현던전):3
+				CALL MESSAGE_WINDOW_D, "천사", "주여…/저에게 악마를 물리칠 수 있는 힘을…！"
+				CALL MESSAGE_WINDOW_D, "", "＞천사 하우르바타트가 １체 나타났다！"
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				CALL SET_ENEMY,9,[[キャラ:하우르바타트]],36,0,1
+				CALL SET_ENEMY_D4_ST, (CHARANUM-1)
+				CFLAG:(CHARANUM-1):행동횟수 = 2
+				CALL BATTLE_START
+				CALL SHOW_FLOOR
+				CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+				FLAG:커맨드표시행수 = LINECOUNT
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+				CALL MESSAGE_WINDOW_D, "", "＞이자・벨의 목소리가 들려온다"
+				CALL MESSAGE_WINDOW_D, "이자・벨", "잘 해줬어/아마네를 지키는 녀석을 마저 없애버리면…/잠시만 기다려봐…"
+				CALL MESSAGE_WINDOW_D, "", "＞잠시후 눈 앞에 아마네가 나타났다…"
+				CALL RAPE, 3
+				SIF FLAG:던전내조교 == 1
+					RETURN 1
+				IF ダンジョンフラグ:(FLAG:현던전):4 == 1
+					CALL MESSAGE_WINDOW_D, "이자・벨", "지금 행동으로 아마네에 대한 지배력이 강해졌어/덕분에, 너를 도울 수 있게 된 거야/자아、이런건 어때？"
+					CALL MESSAGE_WINDOW_D, "", "＞터미널이 나타났다"
+					PRINTW 
+				ELSEIF ダンジョンフラグ:(FLAG:현던전):4 == 2
+					CALL MESSAGE_WINDOW_D, "이자・벨", "아마네를 완전하게 지배할 때까지 나머지 한 걸음/도와줄테니까, 최선을 다해줘"
+					CALL MESSAGE_WINDOW_D, "", "＞터미널이 나타났다"
+				ELSE
+					CALL MESSAGE_WINDOW_D, "이자・벨", "이제、아마네는 거의 완전하게 지배하게 되었어 그럼、정신세계의 가장 깊숙한 곳에 가서、레미엘을 죽여버려"
+				ENDIF
+			ELSEIF ダンジョンフラグ:(FLAG:현던전):3 == -1
+				CALL AMANE_TRAIN
+				RETURN RESULT
+			ELSE
+				CALL DUNGEON_TERMINAL
+				RETURN 1
+			ENDIF
+			;---- EDIT 004 ADD END ---------------------------
+		ENDIF
+ENDSELECT
+
+;==========================================================================================
+;精神世界レイプイベント
+;==========================================================================================
+
+@RAPE, ARG
+IF ダンジョンフラグ:(FLAG:현던전):4 == 0
+	CALL MESSAGE_WINDOW_D, "아마네", "아…/이것은…대체…/더구나 당신은？"
+	CALL MESSAGE_WINDOW_D, "이자・벨", "오래간만이네。아마네"
+	CALL MESSAGE_WINDOW_D, "아마네", "그 목소리는 이자・벨/대체 어디에서!？"
+	CALL MESSAGE_WINDOW_D, "이자・벨", "지금은 조금 여러가지 일이 있어서/네 앞에 얼굴을 내밀 수가 없어/아무튼 그 대신, 거기의 인간이 상대 해 줄테니까, 참아줬으면 해"
+	CALL MESSAGE_WINDOW_D, "아마네", "이자・벨…！"
+	CALL MESSAGE_WINDOW_D, "이자・벨", "인간、조금 전 이야기한 대로야/레미엘을 쓰러뜨리기 위해서는 아마네의 마음을 공격하지 않으면 안되니까/빠른 길은, 여기서 이 아마네를 죽이는 거야/분명히 아마네의 마음을 죽여 나가면, 레미엘을 만날 쯤에는 폐인 직전일 테니까"
+	IF FINDCHARA_B([[キャラ:아마네]]) == -1
+		CALL MESSAGE_WINDOW_D, "이자・벨", "부숴 버리는 것이 싫으면, 범해 주어도 괜찮아/들은 적이 있어. 네 본직은 조교사라며?/아마네가 부숴지는 것과 타락하는 것, 어느 쪽이든 즐거운 일이니까/어떻게 할지는 너에게 맡기겠어"
+		CALL INPUT_YN_D("죽인다", "범한다")
+	ELSE
+		RESULT = 0
+	ENDIF
+	IF RESULT == 0
+		CALL MESSAGE_WINDOW_D, "아마네", "그만둬 주세요…/악마 따위를, 따라서는 안됩니다/아직 시간이 있습니다/함께 이자・벨을 쓰러뜨립시다"
+		CALL INCREASE_LD, -8
+		CALL INCREASE_LC, -8
+		CALL MESSAGE_WINDOW_D, "아마네", "안 돼, 그만둬…꺄아아아아"
+		CALL MESSAGE_WINDOW_D, "", "＞아마네의 그림자를 살해했다"
+		CALL INCREASE_LD, -8
+		CALL INCREASE_LC, -8
+		ダンジョンフラグ:(FLAG:현던전):ARG = 1
+	ELSE
+		CALL MESSAGE_WINDOW_D, "아마네", "시、싫어…가까이 오지 말아줘요…！"
+		;引継ぎなんかの問題が絡んでくるのでマインドアマネとしてキャラを作ったあとに上書きしていく
+		;引き継ぎの場合は強制殺害にしてアマネ当人をチョクで使うように
+		CALL ADD_NEW_COMPANION, [[キャラ:아마네]], 100, 1
+		TARGET = GETCHARA([[キャラ:아마네]])
+		ダンジョンフラグ:(FLAG:현던전):5 = 1
+		FLAG:던전내조교 = 1
+		ダンジョンフラグ:(FLAG:현던전):ARG = -2
+	ENDIF
+ELSE
+	IF ダンジョンフラグ:(FLAG:현던전):5
+		CALL MESSAGE_WINDOW_D, "이자・벨", "그럼, 확실하게 귀여워해 줘/너무 심하게 하면 안돼/ 랄까나, 우후후"
+		TARGET = GETCHARA([[キャラ:아마네]])
+		CFLAG:자궁내피임결계 = 1
+		ダンジョンフラグ:(FLAG:현던전):5 = 1
+		FLAG:던전내조교 = 1
+		ダンジョンフラグ:(FLAG:현던전):ARG = -2
+	ELSE
+		CALL MESSAGE_WINDOW_D, "이자・벨", "그럼、빨리 해치워/너무 애태우면 불쌍하니까 말이야, 우후후"
+		CALL MESSAGE_WINDOW_D, "아마네", "당신도 사실은 알고 있을 것입니다…/이러한 일을 해도 좋을 리가 없다/라는 것을…/꺄아아악！"
+		CALL MESSAGE_WINDOW_D, "", "＞아마네의 그림자를 살해했다"
+		CALL INCREASE_LD, -8
+		CALL INCREASE_LC, -8
+		ダンジョンフラグ:(FLAG:현던전):ARG = 1
+	ENDIF
+ENDIF
+ダンジョンフラグ:(FLAG:현던전):4 += 1
+
+@TRAIN_DUNGEON_4
+IF ダンジョンフラグ:(FLAG:현던전):4 == 1
+	CALL MESSAGE_WINDOW_D, "이자・벨", "즐기던 건 벌써 끝이야?/일단 말해두지만 , 너무 하면 망가져버리니까 주의해줘/아무튼, 다른 마음의 그림자를 찾아보자"
+	CALL MESSAGE_WINDOW_D, "이자・벨", "나중에 한 번 돌아오는 것도 괜찮아/시간이 지나면, 이 그림자를 또 범할 수 있으니까"
+ELSEIF ダンジョンフラグ:(FLAG:현던전):8 - AMANE_TRAINCOUNT() <= 0  
+	CALL MESSAGE_WINDOW_D, "이자・벨", "그 정도로 해두라구、조금 쉬게 해주지 않으면 망가져 버릴거야"
+ELSE
+	CALL MESSAGE_WINDOW_D, "이자・벨", "즐기던 것은 벌써 끝이야?/그러면, 계속해서 노력해줘"
+ENDIF
+PRINTL 
+CALL INCREASE_LD, -4
+CALL INCREASE_LC, -4
+BASE:체력 = MAXBASE:체력
+BASE:기력 = MAXBASE:기력
+CFLAG:스트레스치 = 0
+CFLAG:자궁내피임결계 = 0
+CFLAG:이자리에없는플래그 = 1
+CALL SHOW_FLOOR
+CALL SHOW_NOW_FORMATION_P,0,2,,"探索中"
+FLAG:커맨드표시행수 = LINECOUNT
+IF ダンジョンフラグ:(FLAG:현던전):8 - AMANE_TRAINCOUNT() <= 0  
+	CALL MESSAGE_WINDOW_D, "", @"＞녹초가 된 아마네의 마음의 그림자를 방치하고/＞%MASTER는% 탐색을 재개했다"
+ELSE
+	CALL MESSAGE_WINDOW_D, "", @"＞아마네의 마음의 그림자는 거칠게 숨을 몰아쉬고 있지만/＞아직은 조교를 견뎌낼 수 있을 것 같다…"
+ENDIF
+PRINTFORMW 
+TARGET = -1
+
+@AMANE_TRAINCOUNT
+#FUNCTION
+RETURNF GROUPMATCH(-1,ダンジョンフラグ:(FLAG:현던전):1,ダンジョンフラグ:(FLAG:현던전):2,ダンジョンフラグ:(FLAG:현던전):3)
+	
+@AMANE_TRAIN
+IF ダンジョンフラグ:(FLAG:현던전):8 >= AMANE_TRAINCOUNT()
+	CALL MESSAGE_WINDOW_D, "", "＞아마네의 그림자가 있다…"
+	CALL MESSAGE_WINDOW_D, "이자・벨", "더 이상은 하지 않는 편이 좋겠어/뭐 시간을 두고 좀 쉬게 해준다면/또 즐겨도 괜찮으니까 참아"
+ELSE
+	CALL MESSAGE_WINDOW_D, "", "＞아마네의 그림자가 있다…/＞범합니까？"
+	CALL INPUT_YN_D
+	IF RESULT == 0
+		TARGET = GETCHARA([[キャラ:아마네]])
+		FLAG:던전내조교 = 1
+		ダンジョンフラグ:(FLAG:현던전):8++
+		RETURN 1
+	ENDIF
+ENDIF
+RETURN 0
+
+
+
+

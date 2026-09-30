@@ -1,0 +1,45 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+; スキル名
+@SKILL_NAME_全体治癒, ARG
+RESULTS = 全体治癒
+
+; 1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_全体治癒
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+; 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_全体治癒, ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+; 계승타입
+@SKILL_SUCCESSION_TYPE_全体治癒
+RETURN GET_SUCCESSION_NUM("자동효과")
+
+; スキル変化？用ランク
+@SKILL_RANK_全体治癒, ARG = -1
+RETURN 5
+
+; 説明文の表示
+@SKILL_EXPLAIN_全体治癒, ARG
+PRINTL 자동: 전투 승리 시 전투 참가 중일 경우, 참가 중인 아군의 HP를 25% 회복시킨다.
+
+@SKILL_ACTIONABLE_BATTLE_全体治癒, ARG
+RETURN 0
+
+@SKILL_BATTLE_END_全体治癒, ARG
+#DIM DYNAMIC LCOUNT
+SIF IS_BADSTATE(ARG, "DYING")
+	RETURN 0
+FOR LCOUNT, 1, 7
+	SIF !IS_TARGET_ABLE(POS(LCOUNT))
+		CONTINUE
+	CALL VAR_HP, POS(LCOUNT), MAX(MAXBASE:POS(LCOUNT):ＨＰ / 4, 1), "회복"
+NEXT
+
+@継承不能_全体治癒
+RETURN 1
+
+@味方専用_全体治癒,ARG
+RETURN 1

@@ -1,0 +1,173 @@
+﻿
+;スキル名
+@SKILL_NAME_3652,ARG
+RESULTS = 체이스세이버
+
+;　명중
+@SKILL_HITRATE_3652, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_3652, ARG
+RETURN 100
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3652,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3652,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_3652, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_3652,ARG
+RETURN 20
+
+;　複合相性
+@SKILL_TYPE_3652,ARG
+#LOCALSSIZE 5
+#LOCALSIZE 4
+SIF ARG < 0
+	RETURN GET_TYPE_NUM("不定")
+SIF SKILLGAGE_D_GET(ARG,3652) < 1 || ARG == FLAG:행동순1
+	RETURN ABL:ARG:공격상성
+RETURN ABL:ARG:공격상성, GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_3652
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_3652, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3652, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_3652,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3652,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3652, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3652
+RETURN GET_SUCCESSION_NUM("검격")
+;빙결
+
+;속도보정
+@SKILL_SPEED_3652, ARG = -1
+RETURN 3
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3652
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3652, ARG = -1
+RETURN 12
+
+
+
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+@SKILL_DAMAGE_EFFECT_3652, ARG, ARG:1, ARG:2
+SIF ARG:2 < -1
+	RETURN 0
+;チェイス相手の番号をHに保存
+CALL SKILLGAGE_H_SET, ARG, 3652 , ARG:1
+;Dに効果ターン数を保存
+;効果はこのターン(1ターン)のみ
+CALL SKILLGAGE_D_SET, ARG, 3652, 1
+;====================================================
+;トリガー発動条件
+;思ったような条件にしようとするとコツがいるので追撃スキルを作りたい場合は
+;一度資料フォルダ内の「追撃カウンタースキル解説」に目を通すことを推奨します
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_3652,ARG,ARG:1
+#DIM CHASE_T
+;自分ならNG
+SIF FLAG:행동순1 == ARG
+	RETURN 0
+;攻撃しているのが味方でないとNG
+SIF !IS_FRIEND(FLAG:행동순1, ARG)
+	RETURN 0
+;SIF ARG == ARG:1
+;	RETURN 0
+;チェイス効果が無いとNG
+SIF SKILLGAGE_D_GET(ARG,3652) < 1
+	RETURN 0
+CHASE_T = SKILLGAGE_H_GET(ARG,3652)
+;チェイス対象でないとNG
+SIF ARG:1 != CHASE_T
+	RETURN 0
+SIF !GET_CREC_ACT(FLAG:행동순1, ARG:1, "HIT", "검격")
+	RETURN 0
+RETURN 1, CPOS(ARG:1)
+;相手が死んでる、いないと
+;SIF CHASE_T < 0 || GET_STATE(CFLAG:CHASE_T:상태이상) == "DYING"
+;	RETURN 0
+;回避されるとNG
+;SIF !CFLAG:CHASE_T:회피실패
+;	RETURN 0
+;剣撃を受けてないとNG
+;受けフラグについては、CFLAG.CSV、RECEIVE_SETを参照
+;SIF !GETBIT(CFLAG:CHASE_T:受けフラグ,GET_TYPE_NUM("검격"))
+;	RETURN 0
+
+;;チェイス相手の位置をターゲットに
+;RESULT:1 = CPOS(CHASE_T)
+;RETURN 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+
+@ACTION_3652, ARG, ARG:1, ARG:2
+#LOCALSIZE 4
+IF SKILLGAGE_D_GET(ARG,3652) && ARG != FLAG:행동순1
+	;追撃時
+	TFLAG:필중 = 1
+	TFLAG:반사0데미지화 = 1
+	CALL ATTACK_SINGLE, ARG, POS(ARG:1), 3652
+	TFLAG:필중 = 0
+	TFLAG:반사0데미지화 = 0
+ELSE
+	;通常時
+	CALL ATTACK_SINGLE, ARG, POS(ARG:1),3652
+ENDIF
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3652, ARG
+PRINTL 적 1체에 통상 공격 상성의 소 데미지
+PRINTL 그 후, 아군의 검격 상성 공격이 공격받은 적에게 적중하면 추격하게 된다
+PRINTL 추격은 적중한 상성과의 복합속성이 된다
+
+
+;とくにない
+@継承不能_3652
+RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3652,ARG
+RETURN 1
+;とくにない

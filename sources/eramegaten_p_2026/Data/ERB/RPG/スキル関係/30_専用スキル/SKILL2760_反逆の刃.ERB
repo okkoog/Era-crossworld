@@ -1,0 +1,165 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILLxxxx_YYYY.csv
+;	Facility	:SKILL:2073 (반역의칼날)。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2020/09/18		木綿豆腐				新規作成
+;	002		2026/06/27		epizo					スキルは魔法だが解説が物理ダメージになっていた不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;-------------------------------------------------------------------------------
+; [メモ]
+; Ｐ５Ｒ　明智最終ペルソナ・ヘリワード専用スキル
+; レバ剣同様の耐性・結界・防御破壊（即ち実質万能）の単体攻撃版……
+; に加えて相手の剣撃耐性が高いほど威力が上がるというギミック
+; 基礎攻撃力４５０（等倍）～最大値６５０（剣撃反射・吸収）
+; 原典では『対象がダウン状態だと威力上昇』というスキルであり捏造甚だしいですが
+; このスキルのためだけにCFLAG:被ＣＯＯＰ的なのを増設する気にはなれなかったのです
+;
+; 特殊な処理が特殊すぎるので原作に寄せる形で変更。(20260113)
+;-------------------------------------------------------------------------------
+
+;スキル名
+@SKILL_NAME_2760,ARG
+RESULTS = 반역의칼날
+
+;　명중
+@SKILL_HITRATE_2760, ARG
+RETURN 120
+
+;　威力
+@SKILL_POWER_2760, ARG
+RETURN 480
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_2760, ARG
+RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2760,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2760,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2760, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2760,ARG
+RETURN 50
+
+;　相性
+@SKILL_TYPE_2760,ARG
+RETURN GET_TYPE_NUM("만능")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2760
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2760, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2760, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2760,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2760,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2760, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2760
+RETURN GET_SUCCESSION_NUM("만능")
+
+;속도보정
+@SKILL_SPEED_2760, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2760
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2760, ARG = -1
+RETURN 15
+
+@継承不能_2760
+RETURN 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2760, ARG, ARG:1, ARG:2
+CALL ATTACK_SKILL, ARG, ARG:1, ARG:2
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_2760, ARG
+PRINTL 온갖 존재를 파괴하는 마검의 힘을 해방해、적 １체를 베어가른다。
+PRINTL 만능 상성으로 특대 마법데미지。
+PRINTL 공격 대상이 배드 스테이터스로 인해 행동불능일 때、데미지가 크게 증가한다。
+
+
+;だめです
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2760,ARG
+RETURN 1
+;とくにない
+
+
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_2760, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			IF CFLAG:L_P:입력행동 == 2760 && !ACTIONABLE_CHARA_F(L_TARGET)
+				RESULTS = 다운 특공
+				RETURN 50
+			ENDIF
+	ENDSELECT
+;自分が防御側
+ELSE
+ENDIF
+RETURN 0

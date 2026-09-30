@@ -1,0 +1,434 @@
+﻿;2020/xx/xx		001	マリーちゃんの中の人		新規作成
+;2020/08/20		002	kamedakeisuke(ﾟдﾟ)			バグってたので直した
+;2021/05/17		003	Schrott						最大威力300のハズが倍々化していたバグの修正、攻撃属性の複合化、アイドル経験によるキャップアップ機能追加。説明の変更。
+;2021/05/20		004	kamedakeisuke(ﾟдﾟ)			せっかくなのでいろいろ弄らせて頂いた。
+;2022/10/25 	005 kuuzya									@SKILL_POWER_4940: 威力を上方修正, LOCALを排除
+;																					@SKILL_COST_4940: コストを相性数で判断するように変更
+;																					@SKILL_TYPE_4940: 誤ってあなたを参照していたのを修正, 相性の追加条件を緩和, 最大相性数増加
+;																					@SKILL_EXPLAIN_4940, ARG: 説明文が効果と食い違っていたのを修正, LOCALを排除
+;																					@SKILL_TYPE_4940_舞台少女相性: 関数切り出しで新設
+;2023/07/15 	006 P(bazzile)					参加者がいない場合の表示で一部落ちる不具合を修正
+
+;天堂真矢と西條 クロディーヌ限定リンケージ
+;手を繋いだ二人の連携によるコンビネーションスピンからの大回転斬り。続いて円形の斬撃。
+;真矢＆クロディーヌスタイリッシュ決めポーズ。
+;相手は死ぬ。アイエエエエ！
+
+;--- 004 START ---
+;という内容だったんですが
+;せっかくなので舞台少女すべてに拡張し、
+;いろいろ大改造いたしました。
+;--- 004 END ---
+
+;スキル名
+@SKILL_NAME_4940, ARG
+RESULTS = The Show Must Go On
+;　명중
+@SKILL_HITRATE_4940, ARG
+;天軍の剣相当
+RETURN 130
+
+;　威力
+@SKILL_POWER_4940, 発動者
+;威力キャップの目安をアイドルEDとする
+;005 1周目50日で威力キャップ到達はすこし難しいが威力強化
+#DIM 発動者
+#DIM 参加者
+#DIM 威力
+#DIM CONST 威力下限 = 100
+
+;発動者,参加者が決定していない場合は威力下限を返す
+SIF 発動者 < 0 || CFLAG:発動者:링케이지참가자1 < 0
+	RETURN 威力下限
+
+威力 = 威力下限
+参加者 = CFLAG:発動者:링케이지참가자1
+;例：真矢クロ初期値の場合、最低歌唱技能Lv3+3.合計6*10で威力60
+威力 += (ABL:発動者:가창기능 + ABL:参加者:가창기능)*10
+
+;例：真矢クロ初期値の場合、ライブ経験75+150.合計225/5で45　上と足して105
+威力 += (EXP:発動者:라이브경험 + EXP:参加者:라이브경험)/5
+
+;舞台少女の再演。舞台少女は一人では輝けません。舞台を共に作り上げる仲間。そして、舞台に熱狂する人々の熱意こそが彼女達の力の源なのです
+;体力を強化＆大劇場確保しておけば一瞬で１００ぐらいになる（人気　by古代の生みの親
+;例：真矢クロ初期値の場合、人気0のままなら威力100+105=205
+;　　　　　　　　　　　　　100ずつ貯めれば205+100=305
+;　　　　　　　　　　　　　アイドルはファンの力で輝くってハッキリわかります
+威力 += (CFLAG:発動者:아이돌인기 + CFLAG:参加者:아이돌인기)/2
+
+;威力上限の制限を緩和, アイドル人気は負も取るのでほぼ達成しないが下限を取る
+RETURN LIMIT(威力, 威力下限, 400 + MIN(100, (CFLAG:発動者:아이돌인기 + CFLAG:参加者:아이돌인기)/2))
+
+;--- 004 START ---
+;歌唱技能により上下する。暫定で200/300を上限とする
+;Schrott：上限と下限が間違えていたのとLOCAL:3のリセットが無く倍々ゲーム化していたので修正。
+;最低威力保証100を追加。ついでにアイドル人気が両方とも300以上の場合天井を上昇
+;IF CFLAG:発動者:아이돌인기 >= 300 && CFLAG:参加者:아이돌인기 >= 300
+;	RETURN LIMIT(威力, 威力下限, 300)
+;ELSE
+;	RETURN LIMIT(威力, 威力下限, 200)
+;ENDIF
+;--- 004 END ---
+
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_4940,ARG
+RETURN 2
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_4940,ARG
+RETURN 2
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_4940, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;コストの量
+;005変更 相性関数の変更に合わせて相性数依存に変更
+;;;相性数に応じてコスト上昇する
+@SKILL_COST_4940, 発動者
+#DIM 発動者
+#DIM 発動相性数
+#DIM CONST 最大相性数 = 4
+#DIM チェック中相性
+SIF 発動者 < 0 || スキル属性表示中
+	RETURN 8
+
+VARSET RESULT, -1
+CALL SKILL_TYPE_4940(発動者)
+発動相性数 = 1
+;@SKILL_TYPE_4940は第四返り値まで第一相性で初期化するので第一相性と異なるかだけチェック
+;万能属性付与時はバランス調整のため最重量コスト
+FOR チェック中相性, 1, 最大相性数
+	SIF RESULT:チェック中相性 != -1 && RESULT:チェック中相性 != RESULT:0
+		発動相性数 ++
+	IF RESULT:チェック中相性 == GET_TYPE_NUM("만능")
+		発動相性数 = 最大相性数
+		BREAK
+	ENDIF
+NEXT
+
+SELECTCASE 発動相性数
+	CASE 1
+		RETURN 8
+	CASE 2
+		RETURN 12
+	CASE 3
+		RETURN 20
+	CASE 4
+		RETURN 30
+	CASEELSE
+		;005 ここに来ることはないが将来の拡張のために未調整だが設置
+		RETURN 発動相性数 * 10 - 30;= 10*(発動相性数 - 3) + 20
+ENDSELECT
+;--- 004 START ---
+;IF CFLAG:ARG:아이돌인기 >= 200
+;	RETURN 20
+;ELSEIF CFLAG:ARG:아이돌인기 >= 100
+;	RETURN 12
+;ELSE
+;	RETURN 8
+;ENDIF
+;--- 004 END ---
+
+;　相性
+;　複合相性
+;;;発動者とリンケージ参加者の能力に依存して1から4種類の相性をもつ
+;;;常に4種類の返り値を返す
+;;;相性追加条件を満たさない場合第二返り値以降は第一相性を返す
+;;;発動者が未確定時やスキル属性表示中はデフォルト値として剣撃1種類のみ返す
+@SKILL_TYPE_4940, 発動者
+#DIM 発動者
+#DIM 参加者
+;Schrott：複合でいいじゃない？
+;最大で4相性複合
+#DIMS スキル相性, 4
+
+SIF 発動者 < 0 || スキル属性表示中
+	RETURN GET_TYPE_NUM("검격")
+
+;;--- 004 START ---
+;発動者で基本相性変更
+;これは手持ちの武器で
+SELECTCASE NO:発動者
+	CASE [[キャラ:카렌_무대소녀]]
+		VARSET スキル相性, "검격"
+	CASE [[キャラ:히카리]]
+		VARSET スキル相性, "검격"
+	CASE [[キャラ:마히루]]
+		VARSET スキル相性, "타격"
+	CASE [[キャラ:쥰나]]
+		VARSET スキル相性, "비구"
+	CASE [[キャラ:후타바_무대소녀]]
+		VARSET スキル相性, "검격"
+	CASE [[キャラ:카오루코]]
+		VARSET スキル相性, "검격"
+	CASE [[キャラ:나나]]
+		;でぇばは戦技で
+		VARSET スキル相性, "전술"
+	CASE [[キャラ:마야_무대소녀]]
+		VARSET スキル相性, "검격"
+	CASE [[キャラ:클로딘]]
+		VARSET スキル相性, "검격"
+	CASEELSE
+		VARSET スキル相性, "검격"
+ENDSELECT
+
+;発動者がアイドル人気100以上（人気取得）で相性追加
+;005変更 発動者の歌唱技能5以上で相性追加
+IF ABL:発動者:가창기능 >= 5
+	;発動者で追加相性変更
+	スキル相性:1 '= SKILL_TYPE_4940_舞台少女相性(発動者)
+ENDIF
+
+;005追加 参加者も参照して相性追加
+参加者 = CFLAG:発動者:링케이지참가자1
+IF 参加者 >= 0 && ABL:参加者:가창기능 >= 5
+	スキル相性:2 '= SKILL_TYPE_4940_舞台少女相性(参加者)
+ENDIF
+
+;発動者がアイドル人気200以上で万能追加
+IF CFLAG:発動者:아이돌인기 >= 200
+	スキル相性:3 = 만능
+ENDIF
+RETURN GET_TYPE_NUM(スキル相性), GET_TYPE_NUM(スキル相性:1), GET_TYPE_NUM(スキル相性:2), GET_TYPE_NUM(スキル相性:3)
+
+;FOR LOCAL:1, 1, 4
+;	;判定用に数値を仕舞う。反射は-200扱い
+;	LOCAL:3 = MAXBASE:LOCAL:(LOCALS:(LOCAL:1)) == 999 ? -200 # MAXBASE:LOCAL:(LOCALS:(LOCAL:1))
+;	LOCAL:3 = !(HAVE_SKILL(ARG,[[스킬:영세라이도우]]) || HAVE_SKILL(ARG,2947)) && CFLAG:LOCAL:(LOCALS:(LOCAL:1)+"무효화횟수") ? -5 # LOCAL:3
+;	LOCAL:3 = CFLAG:LOCAL:(LOCALS:(LOCAL:1)+"가드킬") && LOCAL:3 < 100 ? 100 # LOCAL:3
+;	SELECTCASE LOCAL:1
+;		CASE 1
+;			LOCAL:3 = CFLAG:LOCAL:물리반사플래그 ? -200 # LOCAL:3
+;		CASE 1 TO 3
+;			LOCAL:3 = CFLAG:LOCAL:마법반사플래그 ? -200 # LOCAL:3
+;		CASEELSE
+;	ENDSELECT
+;	IF LOCAL:3 > LOCAL:2
+;		LOCAL:2 = LOCAL:3
+;		LOCALS = %LOCALS:(LOCAL:1)%
+;	ENDIF
+;NEXT
+;PRINT 属性相性：
+;PRINTS LOCALS
+;PRINTL ！
+;RETURN GET_TYPE_NUM(LOCALS)
+;--- 004 END ---
+
+;;;005追加 複数回使うので関数化
+;;;相性はスタリラちゃんの星４【무대소녀】シリーズを見ながらそれっぽいものを（被る場合はまた考える）
+@SKILL_TYPE_4940_舞台少女相性, 対象
+#FUNCTIONS
+#DIM 対象
+SELECTCASE NO:対象
+	CASE [[キャラ:카렌_무대소녀]]
+		;花
+		RETURNF "핵열"
+	CASE [[キャラ:히카리]]
+		;月
+		RETURNF "정신"
+	CASE [[キャラ:마히루]]
+		;花……は被るので地属性で
+		RETURNF "지변"
+	CASE [[キャラ:쥰나]]
+		;雪
+		RETURNF "빙결"
+	CASE [[キャラ:후타바_무대소녀]]
+		;宙
+		RETURNF "중력"
+	CASE [[キャラ:카오루코]]
+		;風
+		RETURNF "질풍"
+	CASE [[キャラ:나나]]
+		;雲……雲ってなんだ？　達人なので微妙な属性に
+		RETURNF "주살"
+	CASE [[キャラ:마야_무대소녀]]
+		;月　達人なので微妙な属性に
+		RETURNF "파마"
+	CASE [[キャラ:클로딘]]
+		;雲……雲ってなんだ？（二度目）
+		RETURNF "전격"
+	CASEELSE
+		;それ以外（バグ抑制）は……暫定的に神経でも入れておこうか（他と被らないし）
+		RETURNF "신경"
+ENDSELECT
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_4940
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_4940, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_4940, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_4940, ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_4940, ARG
+RETURN GET_SPHERE_NUM("일렬")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_4940, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_4940
+RETURN GET_SUCCESSION_NUM("검격")
+
+;속도보정
+@SKILL_SPEED_4940, ARG = -1
+RETURN 30
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_4940
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_4940, ARG = -1
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_4940, ARG, ARG:1, ARG:2
+CALL ATTACK_FIELD, ARG, ARG:1, 4940
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_4940, ARG
+#DIM 発動者未決定
+発動者未決定 = 0
+IF -1 < ARG && ARG < CHARANUM
+	SELECTCASE NO:ARG
+		CASE [[キャラ:카렌_무대소녀]]
+			SETCOLOR 0xff0033
+		CASE [[キャラ:히카리]]
+			SETCOLOR 0x5687e6
+		CASE [[キャラ:마히루]]
+			SETCOLOR 0x56b78e
+		CASE [[キャラ:쥰나]]
+			SETCOLOR 0x8ac4ec
+		CASE [[キャラ:후타바_무대소녀]]
+			SETCOLOR 0x815ca1
+		CASE [[キャラ:카오루코]]
+			SETCOLOR 0xdc7b8c
+		CASE [[キャラ:나나]]
+			SETCOLOR 0xfdca57
+		CASE [[キャラ:마야_무대소녀]]
+			SETCOLOR 0xffffff
+		CASE [[キャラ:클로딘]]
+			SETCOLOR 0xff8e48
+		CASEELSE
+			発動者未決定 = 1
+	ENDSELECT
+	IF 発動者未決定
+		PRINT 발동자·가창 기능에 따라 상성이 변화한다
+	ELSE
+		CALL GET_SKILL_PROP, "SKILL_TYPE", 4940, U
+		PRINTFORM %GET_TYPE(RESULT:0)%
+		SIF RESULT:0 != RESULT:1
+			PRINTFORM ・%GET_TYPE(RESULT:1)%
+		SIF RESULT:0 != RESULT:2
+			PRINTFORM ・%GET_TYPE(RESULT:2)%
+		SIF RESULT:0 != RESULT:3
+			PRINTFORM ・%GET_TYPE(RESULT:3)%
+		SIF RESULT:0 != RESULT:1 || RESULT:0 != RESULT:2 || RESULT:0 != RESULT:3
+			PRINT 複合
+	ENDIF
+ENDIF
+RESETCOLOR
+;005TODO 説明文変更
+PRINTL 2회 공격, 고속·고명중. 성능은 가창 기능·라이브 경험·아이돌 인기에 의존
+PRINTL 양자의 아이돌 인기에 따라 최대 위력 상승
+
+;リンケージくんの仕様上数行にわたると表示枠を圧迫するので申し訳ないが説明文変更
+;勿体ないのでコメントアウトで残しておく
+;PRINTL 敵一列に剣撃相性＋疾風相性のダメージ
+;PRINTL 
+;PRINTL 【무대소녀 天堂真矢】と【西條 クロディーヌ】限定リンケージ
+;PRINTL ──舞台少女としての経験により威力が上昇します
+;PRINTL 
+;PRINTL 剣の輪舞。二人の息の合ったコンビネーションスピンから大回転斬り。
+;PRINTL 続いて円形の斬撃が周囲を薙ぎ払う。
+;PRINTL 真矢＆クロディーヌ。スタイリッシュ決めポーズ。
+;PRINTL これらの現象は奇跡や魔法ではなく、すべて概念である。
+;PRINTL 切られたと錯覚した者は切られ、斬撃を受けたと思うものは吹き飛ばされる。
+;PRINTL 舞台少女の持つキラめきは見る者を魅了し、現実を改変する。
+
+
+;継承に必要な部位
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_4940, ARG
+CALL CHECK_COST,ARG,4940
+SIF RESULT == 0
+	RETURN 0
+RETURN 1
+;とくにない
+
+
+;=====================================================
+;リンケージ設定
+;=====================================================
+@LINKAGE_4940
+RETURN 1
+
+@参加人数_4940
+RETURN 1
+
+@参加条件表示_4940, ARG
+SELECTCASE ARG
+	CASE 1
+		PRINTFORM 種族名：【무대소녀】
+	CASE 2
+		PRINTFORM 種族名：【무대소녀】
+ENDSELECT
+
+@発動者条件_4940, ARG
+;舞台少女である
+SIF CSTR:ARG:종족명 == "무대소녀"
+	RETURN 1
+RETURN 0
+
+
+@参加者条件_4940, ARG, ARG:1
+SIF CPOS(ARG) < 1 || CPOS(ARG) > 6
+	RETURN 0
+CALL CHECK_COST_LINCAGE, ARG, 4940, ARG:1
+SIF RESULT == 0
+	RETURN 0
+SELECTCASE ARG:1
+	CASE 1
+		SIF CSTR:ARG:종족명 == "무대소녀"
+			RETURN 1
+		RETURN 0
+ENDSELECT
+
+@リンケージ能力参照者_4940, ARG
+	SIF FLAG:공격횟수 == 1
+		RETURN 1
+	RETURN 0
+
+@リンケージコストタイプ_4940, ARG
+SELECTCASE ARG
+	CASE 1
+		RETURN 3
+ENDSELECT
+@リンケージコスト_4940, ARG
+SELECTCASE ARG
+	CASE 1
+		CALL GET_SKILL_PROP, "SKILL_COST", 4940, U
+		RESULT = RESULT/2
+		RETURN RESULT
+ENDSELECT

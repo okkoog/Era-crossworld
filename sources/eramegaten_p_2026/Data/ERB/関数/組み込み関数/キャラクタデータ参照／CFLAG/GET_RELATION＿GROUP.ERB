@@ -1,0 +1,566 @@
+﻿;========================================
+;相性判定関数
+;TARGETのグループARGSにおけるARG:1（PLAYER）→ARG（TARGET）に対する相性を返す
+;
+;ARG:2 はグループ関係取得用
+;========================================
+@GET_RELATION_GROUP(ARG = -1, ARG:1 = -1 , ARGS, ARG:2 = 0)
+#FUNCTION
+#DIMS L_最高
+#DIMS L_抜群
+#DIMS L_良好
+#DIMS L_不良
+#DIMS L_最悪
+VARSET RESULTS_F, "", 0, 5
+L_最高 = 
+L_抜群 = 
+L_良好 = 
+L_不良 = 
+L_最悪 = 
+SIF ARG == -1
+	ARG = TARGET
+SIF ARG:1 == -1
+	ARG:1 = PLAYER
+SELECTCASE ARGS
+	CASE "高天原"
+		IF ARG:2
+			L_最高 = イザナミ/イザナギ/アマテラス
+			L_抜群 = 【高天原】
+			L_良好 = 
+			L_不良 = 【豊葦原】
+			L_最悪 = スサノオ
+		ELSE
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "イザナミ"
+				RETURNF 200
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "イザナギ"
+				RETURNF 200
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "アマテラス"
+				RETURNF 200
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "スサノオ"
+				RETURNF 50
+			SIF IS_RELATION_GROUP(ARG:1, "高天原")
+				RETURNF 150
+			SIF IS_RELATION_GROUP(ARG:1, "豊葦原")
+				RETURNF 75
+		ENDIF
+	CASE "豊葦原"
+		IF ARG:2
+			L_最高 = イザナミ/イザナギ/スサノオ
+			L_抜群 = 【豊葦原】
+			L_良好 = 
+			L_不良 = 【高天原】
+			L_最悪 = アマテラス
+		ELSE
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "イザナミ"
+				RETURNF 200
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "イザナギ"
+				RETURNF 200
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "スサノオ"
+				RETURNF 200
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "アマテラス"
+				RETURNF 50
+			SIF IS_RELATION_GROUP(ARG:1, "豊葦原")
+				RETURNF 150
+			SIF IS_RELATION_GROUP(ARG:1, "高天原")
+				RETURNF 75
+		ENDIF
+	CASE "ヘブライ天使"
+		IF ARG:2
+			L_最高 = YHVH
+			L_抜群 = 【上位ヘブライ天使】/【聖(묵시록)】
+			L_良好 = 【下位ヘブライ天使】/【メシア教】
+			L_不良 = 【ソロモン72柱】/【魔(ヘブライ)】/【ガイア教】
+			L_最悪 = ルシファー
+		ELSE
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "YHVH"
+				RETURNF 200
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "ルシファー"
+				RETURNF 50
+			IF IS_RELATION_GROUP(ARG:1, "ヘブライ天使")
+				;天使は自分より上から抜群、下から良好
+				IF CSVBASE(NO:ARG, GETNUM(BASE, "LV"), 0) < CSVBASE(NO:(ARG:1), GETNUM(BASE, "LV"), 0)
+					RETURNF 150
+				ELSE
+					RETURNF 125
+				ENDIF
+			ENDIF
+			;上司的存在になるはず…？
+			SIF IS_RELATION_GROUP(ARG:1, "聖(묵시록)")
+				RETURNF 150
+			SIF IS_RELATION_GROUP(ARG:1, "魔(ヘブライ)")
+				RETURNF 75
+			SIF IS_RELATION_GROUP(ARG:1, "魔(묵시록)")
+				RETURNF 75
+			SIF IS_RELATION_GROUP(ARG:1, "ソロモン72柱")
+				RETURNF 75
+			SIF IS_RELATION_GROUP(ARG:1, "ガイア教")
+				RETURNF 75
+		ENDIF
+	CASE "ソロモン72柱"
+		IF ARG:2
+			L_最高 = 
+			L_抜群 = 
+			L_良好 = 【ソロモン72柱】/【魔(ヘブライ)】/【魔/묵시록】
+			L_不良 = 【ヘブライ天使】
+			L_最悪 = YHVH
+		ELSE
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "YHVH"
+				RETURNF 50
+			SIF IS_RELATION_GROUP(ARG:1, "魔(ヘブライ)")
+				RETURNF 125
+			SIF IS_RELATION_GROUP(ARG:1, "魔(묵시록)")
+				RETURNF 125
+			SIF IS_RELATION_GROUP(ARG:1, "ソロモン72柱")
+				RETURNF 125
+			SIF IS_RELATION_GROUP(ARG:1, "ヘブライ天使")
+				RETURNF 75
+		ENDIF
+	CASE "魔(ヘブライ)"
+		IF ARG:2
+			L_最高 = 
+			L_抜群 = 
+			L_良好 = 【ソロモン72柱】/【魔(ヘブライ)】/【魔/묵시록】
+			L_不良 = 【ヘブライ天使】
+			L_最悪 = YHVH
+		ELSE
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "YHVH"
+				RETURNF 50
+			SIF IS_RELATION_GROUP(ARG:1, "魔(ヘブライ)")
+				RETURNF 125
+			SIF IS_RELATION_GROUP(ARG:1, "魔(묵시록)")
+				RETURNF 125
+			SIF IS_RELATION_GROUP(ARG:1, "ソロモン72柱")
+				RETURNF 125
+			SIF IS_RELATION_GROUP(ARG:1, "ヘブライ天使")
+				RETURNF 75
+		ENDIF
+	CASE "魔(묵시록)"
+		IF ARG:2
+			L_最高 = 
+			L_抜群 = 
+			L_良好 = 【ソロモン72柱】/【魔(ヘブライ)】/【魔/묵시록】
+			L_不良 = 【ヘブライ天使】
+			L_最悪 = YHVH
+		ELSE
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "YHVH"
+				RETURNF 50
+			SIF IS_RELATION_GROUP(ARG:1, "魔(ヘブライ)")
+				RETURNF 125
+			SIF IS_RELATION_GROUP(ARG:1, "魔(묵시록)")
+				RETURNF 125
+			SIF IS_RELATION_GROUP(ARG:1, "ソロモン72柱")
+				RETURNF 125
+			SIF IS_RELATION_GROUP(ARG:1, "ヘブライ天使")
+				RETURNF 75
+		ENDIF
+
+	;争い合うグループなので
+	CASE "ベル神"
+		IF ARG:2
+			L_最高 = 
+			L_抜群 = 
+			L_良好 = 
+			L_不良 = 
+			L_最悪 = 【ベル神】
+		ELSE
+			;自分自身を弾いておく
+			SIF NO:ARG == NO:(ARG:1)
+				RETURNF 100
+			SIF IS_RELATION_GROUP(ARG:1, "ベル神")
+				RETURNF 50
+		ENDIF
+	CASE "メシア教"
+		IF ARG:2
+			L_最高 = YHVH
+			L_抜群 = 【ヘブライ天使】
+			L_良好 = 【メシア教】
+			L_不良 = 【ソロモン72柱】/【魔(ヘブライ)】
+			L_最悪 = 【ガイア教】
+		ELSE
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "YHVH"
+				RETURNF 200
+			SIF IS_RELATION_GROUP(ARG:1, "ヘブライ天使")
+				RETURNF 150
+			SIF IS_RELATION_GROUP(ARG:1, "メシア教")
+				RETURNF 125
+			SIF IS_RELATION_GROUP(ARG:1, "魔(ヘブライ)")
+				RETURNF 75
+			SIF IS_RELATION_GROUP(ARG:1, "ソロモン72柱")
+				RETURNF 75
+			SIF IS_RELATION_GROUP(ARG:1, "ガイア教")
+				RETURNF 50
+		ENDIF
+	CASE "ガイア教"
+		IF ARG:2
+			L_最高 = YHVH
+			L_抜群 = 【ガイア教】
+			L_良好 = 
+			L_不良 = 【メシア教】
+			L_最悪 = 【ヘブライ天使】
+		ELSE
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "YHVH"
+				RETURNF 50
+			SIF IS_RELATION_GROUP(ARG:1, "ヘブライ天使")
+				RETURNF 50
+			SIF IS_RELATION_GROUP(ARG:1, "メシア教")
+				RETURNF 75
+			SIF IS_RELATION_GROUP(ARG:1, "ガイア教")
+				RETURNF 150
+		ENDIF
+	CASE "アムシャ・スプンタ"
+		IF ARG:2
+			L_最高 = アフラマズダ
+			L_抜群 = 【アムシャ・スプンタ】/ズルワーン
+			L_良好 = ミトラス/ミトラ菩薩/ハールート/マールート
+			L_不良 = 【ダエーワ】
+			L_最悪 = アンリ・マンユ
+		ELSE
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "アフラマズダ"
+				RETURNF 200
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "ズルワーン")
+				RETURNF 150
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "ミトラス", "ミトラ菩薩", "ハールート", "マールート")
+				RETURNF 125
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "アンリ・マンユ")
+				RETURNF 50
+			SIF IS_RELATION_GROUP(ARG:1, "アムシャ・スプンタ")
+				RETURNF 150
+			SIF IS_RELATION_GROUP(ARG:1, "ダエーワ")
+				RETURNF 75
+		ENDIF
+	CASE "ダエーワ"
+		IF ARG:2
+			L_最高 = アンリ・マンユ
+			L_抜群 = ズルワーン/【ダエーワ】
+			L_良好 = 
+			L_不良 = ミトラス/ミトラ菩薩/ハールート/マールート/【アムシャ・スプンタ】
+			L_最悪 = アフラマズダ
+		ELSE
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "アンリ・マンユ")
+				RETURNF 200
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "ズルワーン")
+				RETURNF 150
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "ミトラス", "ミトラ菩薩", "ハールート", "マールート")
+				RETURNF 75
+			SIF IS_RELATION_GROUP(ARG:1, "ダエーワ")
+				RETURNF 150
+			SIF IS_RELATION_GROUP(ARG:1, "アムシャ・スプンタ")
+				RETURNF 75
+		ENDIF
+	CASE "デーヴァ神族"
+		IF ARG:2
+			L_最高 = 
+			L_抜群 = 
+			L_良好 = 【デーヴァ神族】
+			L_不良 = 【アスラ神族】/【ラクシャーサ族】
+			L_最悪 = アスラおう/ヴィローシャナ/ラーヴァナ
+		ELSE
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "")
+				RETURNF 200
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "")
+				RETURNF 150
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "", "", "", "")
+				RETURNF 75
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "アスラおう", "ヴィローシャナ", "ラーヴァナ")
+				RETURNF 50
+			SIF IS_RELATION_GROUP(ARG:1, "デーヴァ神族")
+				RETURNF 125
+			SIF IS_RELATION_GROUP(ARG:1, "アスラ神族")
+				RETURNF 75
+			SIF IS_RELATION_GROUP(ARG:1, "ラクシャーサ族")
+				RETURNF 75
+		ENDIF
+	CASE "アスラ神族"
+		IF ARG:2
+			L_最高 = アスラおう/ヴィローシャナ
+			L_抜群 = アフラマズダ/【アスラ神族】
+			L_良好 = 
+			L_不良 = 【デーヴァ神族】
+			L_最悪 = ヴィシュヌ/シヴァ/ブラフマー
+		ELSE
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "アスラおう", "ヴィローシャナ")
+				RETURNF 200
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "アフラマズダ")
+				RETURNF 150
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "", "", "", "")
+				RETURNF 75
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "ヴィシュヌ", "シヴァ", "ブラフマー")
+				RETURNF 50
+			SIF IS_RELATION_GROUP(ARG:1, "アスラ神族")
+				RETURNF 150
+			SIF IS_RELATION_GROUP(ARG:1, "デーヴァ神族")
+				RETURNF 75
+		ENDIF
+	CASE "ラクシャーサ族"
+		IF ARG:2
+			L_最高 = ラーヴァナ
+			L_抜群 = アフラマズダ/【アスラ神族】
+			L_良好 = 
+			L_不良 = 【デーヴァ神族】
+			L_最悪 = ヴィシュヌ/シヴァ/ブラフマー
+		ELSE
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "ラーヴァナ")
+				RETURNF 200
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "", "", "", "")
+				RETURNF 75
+			SIF IS_RELATION_GROUP(ARG:1, "ラクシャーサ族")
+				RETURNF 150
+			SIF IS_RELATION_GROUP(ARG:1, "デーヴァ神族")
+				RETURNF 75
+		ENDIF
+	CASE "ナーガ族"
+		IF ARG:2
+			L_最高 = 
+			L_抜群 = コウモクテン/【ナーガ族】
+			L_良好 = ドゥルガー/【仏】
+			L_不良 = 
+			L_最悪 = ガルーダ/ビシャモンテン
+		ELSE
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "コウモクテン")
+				RETURNF 150
+			SIF GROUPMATCH(CSVCALLNAME(NO:(ARG:1), 0), "ビシャモンテン", "ガルーダ")
+				RETURNF 50
+			SIF IS_RELATION_GROUP(ARG:1, "ナーガ族")
+				RETURNF 150
+			SIF IS_RELATION_GROUP(ARG:1, "仏")
+				RETURNF 125
+		ENDIF
+
+	CASE "アスガルド"
+		IF ARG:2
+			L_最高 = オーディン
+			L_抜群 = 【アスガルド】
+			L_良好 = 
+			L_不良 = アングルボダ/【라그나로크】
+			L_最悪 = ロキ
+		ELSE
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "オーディン"
+				RETURNF 200
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "アングルボダ"
+				RETURNF 75
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "ロキ"
+				RETURNF 50
+			SIF IS_RELATION_GROUP(ARG:1, "アスガルド")
+				RETURNF 150
+			SIF IS_RELATION_GROUP(ARG:1, "라그나로크")
+				RETURNF 75
+		ENDIF
+	CASE "라그나로크"
+		IF ARG:2
+			L_最高 = ロキ
+			L_抜群 = アングルボダ/【라그나로크】
+			L_良好 = 
+			L_不良 = 【アスガルド】
+			L_最悪 = オーディン
+		ELSE
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "ロキ"
+				RETURNF 200
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "アングルボダ"
+				RETURNF 150
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "オーディン"
+				RETURNF 50
+			SIF IS_RELATION_GROUP(ARG:1, "라그나로크")
+				RETURNF 150
+			SIF IS_RELATION_GROUP(ARG:1, "アスガルド")
+				RETURNF 75
+		ENDIF
+	;実際は親族関係が異様に多いのでそれで表示が壊れるのと数が出るのでデフォルト良好に
+	CASE "オリュンポス"
+		IF ARG:2
+			L_最高 = 
+			L_抜群 = ゼウス
+			L_良好 = 【オリュンポス】
+			L_不良 = 【ティターン族】
+			L_最悪 = 
+		ELSE
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "ゼウス"
+				RETURNF 150
+			SIF IS_RELATION_GROUP(ARG:1, "オリュンポス")
+				RETURNF 125
+			SIF IS_RELATION_GROUP(ARG:1, "ティターン族")
+				RETURNF 75
+		ENDIF
+	CASE "ティターン族"
+		IF ARG:2
+			L_最高 = 
+			L_抜群 = 【ティターン族】
+			L_良好 = 
+			L_不良 = 【オリュンポス】
+			L_最悪 = ゼウス
+		ELSE
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "ゼウス"
+				RETURNF 50
+			SIF IS_RELATION_GROUP(ARG:1, "ティターン族")
+				RETURNF 125
+			SIF IS_RELATION_GROUP(ARG:1, "オリュンポス")
+				RETURNF 75
+		ENDIF
+	CASE "仏"
+		IF ARG:2
+			L_最高 = 
+			L_抜群 = 【仏】
+			L_良好 = 
+			L_不良 = 【魔(仏教)】
+			L_最悪 = 
+		ELSE
+			SIF IS_RELATION_GROUP(ARG:1, "仏")
+				RETURNF 150
+			SIF IS_RELATION_GROUP(ARG:1, "魔(仏教)")
+				RETURNF 75
+		ENDIF
+	CASE "魔(仏教)"
+		IF ARG:2
+			L_最高 = 
+			L_抜群 = 【魔(仏教)】
+			L_良好 = 
+			L_不良 = 【仏】
+			L_最悪 = 
+		ELSE
+			SIF IS_RELATION_GROUP(ARG:1, "魔(仏教)")
+				RETURNF 150
+			SIF IS_RELATION_GROUP(ARG:1, "仏")
+				RETURNF 75
+		ENDIF
+	CASE "猫"
+		IF ARG:2
+			L_最高 = 
+			L_抜群 = 【猫】
+			L_良好 = 
+			L_不良 = 【犬】
+			L_最悪 = 
+		ELSE
+			SIF IS_RELATION_GROUP(ARG:1, "猫")
+				RETURNF 150
+			SIF IS_RELATION_GROUP(ARG:1, "犬")
+				RETURNF 75
+		ENDIF
+	CASE "犬"
+		IF ARG:2
+			L_最高 = 
+			L_抜群 = 【自分より強い犬】
+			L_良好 = 【自分より弱い犬】
+			L_不良 = 【猿】
+			L_最悪 = 
+		ELSE
+			IF IS_RELATION_GROUP(ARG:1, "犬")
+				;犬は自分より上から抜群、下から良好
+				IF CSVBASE(NO:ARG, GETNUM(BASE, "LV"), 0) < CSVBASE(NO:(ARG:1), GETNUM(BASE, "LV"), 0)
+					RETURNF 150
+				ELSE
+					RETURNF 125
+				ENDIF
+			ENDIF
+			SIF IS_RELATION_GROUP(ARG:1, "猿")
+				RETURNF 75
+		ENDIF
+	CASE "猿"
+		IF ARG:2
+			L_最高 = 
+			L_抜群 = 【猿】
+			L_良好 = 
+			L_不良 = 【犬】
+			L_最悪 = 
+		ELSE
+			SIF IS_RELATION_GROUP(ARG:1, "猿")
+				RETURNF 150
+			SIF IS_RELATION_GROUP(ARG:1, "犬")
+				RETURNF 75
+		ENDIF
+	;エリンはマイナスがなくて数も多いのでとりあえず125に
+	CASE "エリン"
+		IF ARG:2
+			L_良好 = 【エリン】
+		ELSE
+			SIF IS_RELATION_GROUP(ARG:1, "エリン")
+				RETURNF 125
+		ENDIF
+	CASE "ジャックシリーズ"
+		IF ARG:2
+			L_最高 = 
+			L_抜群 = キングフロスト
+			L_良好 = 【ジャックシリーズ】
+			L_不良 = 
+			L_最悪 = 
+		ELSE
+			RESULTS_F:1 = キングフロスト
+			RESULTS_F:2 = 【ジャックシリーズ】
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "キングフロスト"
+				RETURNF 150
+			SIF IS_RELATION_GROUP(ARG:1, "ジャックシリーズ")
+				RETURNF 125
+		ENDIF
+	CASE "흡혈귀"
+		IF ARG:2
+			L_最高 = 
+			L_抜群 = 
+			L_良好 = 흡혈귀
+			L_不良 = クルースニク
+			L_最悪 = 
+		ELSE
+			SIF CSVCALLNAME(NO:(ARG:1), 0) == "クルースニク"
+				RETURNF 75
+			SIF IS_RELATION_GROUP(ARG:1, "흡혈귀")
+				RETURNF 125
+		ENDIF
+	;未定義は一律で同族のよしみをつける
+	CASEELSE
+		IF ARG:2
+			L_良好 = 【%ARGS%】
+		ELSE
+			SIF IS_RELATION_GROUP(ARG:1, ARGS)
+				RETURNF 125
+		ENDIF
+ENDSELECT
+IF ARG:2
+	RESULTS_F:0 = %L_最高%
+	RESULTS_F:1 = %L_抜群%
+	RESULTS_F:2 = %L_良好%
+	RESULTS_F:3 = %L_不良%
+	RESULTS_F:4 = %L_最悪%
+	RETURNF MATCH(RESULTS_F, "", 0, 5) != 5
+ELSE
+	RETURNF 100
+ENDIF
+
+;豊葦原                  高天原                  
+;オリュンポス            ローマ神                ニンフ                  
+;道(タオ)                山海経                  西遊記                  四凶                    五神                    
+
+;デーヴァ神族            アスラ神族              ナーガ族                ラクシャーサ族          ヤクシャ族              
+;マヤ族                  ランカー島               
+
+;ヘブライ天使            ソロモン72柱            魔(ヘブライ)            ベル神                  メシア教                ガイア教                
+;聖(묵시록)              魔(묵시록)              
+
+;イスラム天使            イスラム                
+;仏                      魔(仏教)                
+
+;カナン                  メソポタミア            
+;
+;ケルト                  エリン                  ダーナ神族              フォモール族            
+
+;アスガルド              라그나로크              ティターン族            世界樹の住人            ヨトゥン                
+
+;アムシャ・スプンタ      ダエーワ        
+
+;アステカ                ポリネシア              エジプト                イヌイット              北アメリカ              
+;沖縄                    スラブ                  アイヌ                  ブードゥー             
+;ヒッタイト              ゲルマン                イギリス                フランス                スペイン               
+
+;ジャックシリーズ        妖精の森                
+;物の怪                  天狗                    鬼                        
+;흡혈귀                  좀비                  
+;犬                      猫                      キツネ                  猿                      
+;
+;都市伝説                TDL                     地球外生命体            極道                    旧軍                    
+;チェックメン            マニトゥネット          퍼스널트루퍼    四大精霊                四魂                    
+;マネカタ                インカ                  外なる神                旧支配者                グノーシス主義          
+;セプテントリオン        トリアングルム              
+;シャドウ                七つの大罪              
+;シャドウ(魔術師)        シャドウ(女教皇)        シャドウ(恋愛)          
+;シャドウ(隠者)          シャドウ(女帝)          シャドウ(法王)          
+;シャドウ(運命)          シャドウ(剛毅)          シャドウ(刑死者)        
+;シャドウ(正義)          シャドウ(皇帝)          シャドウ(戦車)          
+;SEBEC                   仮面党                  ナチス                  天道連                  新世塾                  
+;ジプス                  ファントム・ソサエティ    
+;退魔生徒会              

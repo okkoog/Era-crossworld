@@ -1,0 +1,177 @@
+﻿;-------------------------------------------------
+;카테터
+;道具使用コマンド、レベル2
+;-------------------------------------------------
+@COMNAME158
+IF TEQUIP:43 == 1
+	RESULTS = 카테터 해제
+ELSE
+	RESULTS = 카테터
+ENDIF
+@ACT_COM158
+;-------------------------------------------------
+;特殊派生処理
+;-------------------------------------------------
+IF TEQUIP:촉수
+	PRINTL 촉수페니스자극
+	TSTR:0 = 촉수페니스자극
+	SELECTCOM = 169
+ELSE
+	PRINTL 카테터
+	TSTR:0 = 카테터
+ENDIF
+;CALL KOJO_MESSAGE_COM
+
+;着脱の処理
+IF TEQUIP:43 == 0
+	TEQUIP:43 = 1
+ELSE
+	TEQUIP:43 = 0
+ENDIF
+
+;調教者→調教対象
+TFLAG:28 = 2
+
+TEQUIP:27 = 1
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、気力
+DOWNBASE:TARGET:체력 += 150
+DOWNBASE:TARGET:기력 += 370
+
+SOURCE:TARGET:도구쾌Ｃ = 500
+SOURCE:TARGET:아픔 = 1000
+SOURCE:TARGET:노출 = 200
+SOURCE:TARGET:굴종 = 600
+SOURCE:TARGET:일탈 = 900
+SOURCE:TARGET:반감 = 900
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;抑圧、抵抗持ちには、抑鬱ソース追加
+SIF TALENT:억압 || TALENT:저항
+	SOURCE:TARGET:울굴 += 30
+
+;フィストなど大きな苦痛は先に処理しておく
+;EXP:尿道経験をみる
+A = 750
+B = 600
+IF EXP:7 < EXPLV:1
+	TIMES A , 3.00
+	TIMES B , 4.00
+ELSEIF EXP:7 < EXPLV:2
+	TIMES A , 2.50
+	TIMES B , 3.50
+ELSEIF EXP:7 < EXPLV:3
+	TIMES A , 2.40
+	TIMES B , 3.00
+ELSEIF EXP:7 < EXPLV:4
+	TIMES A , 2.00
+	TIMES B , 2.50
+ELSEIF EXP:7 < EXPLV:5
+	TIMES A , 1.80
+	TIMES B , 2.00
+ELSEIF EXP:7 >= EXPLV:5
+	TIMES A , 1.60
+	TIMES B , 1.50
+ENDIF
+
+;PALAM:潤滑をみる
+IF PALAM:윤활 < PALAMLV:1
+	TIMES A , 3.00
+	TIMES B , 2.00
+ELSEIF PALAM:윤활 < PALAMLV:2
+	TIMES A , 2.50
+	TIMES B , 1.50
+ELSEIF PALAM:윤활 < PALAMLV:3
+	TIMES A , 2.00
+	TIMES B , 1.20
+ELSEIF PALAM:윤활 < PALAMLV:4
+	TIMES A , 1.50
+ELSEIF PALAM:윤활 >= PALAMLV:4
+	TIMES A , 1.00
+ENDIF
+SOURCE:TARGET:아픔 += A
+SOURCE:TARGET:반감 += B
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;触手ペニス責めなら、触手体液がペニスに付く
+SIF TEQUIP:촉수
+	CALL SET_STAIN("페니스", "粘液", TARGET)
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+;요도경험
+;PRINTFORML %EXPNAME:7%＋２
+CALL ADDS_EXP("요도경험", 2, TARGET)
+
+
+;レズ・ＢＬ経験
+A = 1
+IF IS_LESBIAN(TARGET,PLAYER)
+	CALL ADDS_EXP("레즈경험", A, TARGET)
+	CALL ADDS_EXP("레즈경험", A, PLAYER)
+ELSEIF IS_GAY(TARGET,PLAYER)
+	CALL ADDS_EXP("ＢＬ경험", A, TARGET)
+	CALL ADDS_EXP("ＢＬ경험", A, PLAYER)
+ENDIF
+
+CALL ADDS_ABNORMAL_EXP("尿道初体験", TARGET)
+
+;触手召喚時、触手経験のリセットをする
+SIF TEQUIP:촉수 == 1
+	T = 0
+
+;依存度ベクトル
+TFLAG:33 = 1
+
+
+RETURN 1
+
+;-------------------------------------------------
+;装着継続の処理
+;-------------------------------------------------
+@EQUIP_COM158
+;カテーテル装備中
+IF TEQUIP:촉수
+	PRINTL ＜촉수페니스괴롭힘 중＞
+ELSE
+	PRINTL ＜카테터 장착 중＞
+ENDIF
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+DOWNBASE:TARGET:체력 += 5
+DOWNBASE:TARGET:기력 += 20
+
+SOURCE:TARGET:도구쾌Ｃ += 100
+SOURCE:TARGET:노출 += 10
+SOURCE:TARGET:일탈 += 15
+SOURCE:TARGET:반감 += 15
+
+
+;-------------------------------------------------
+;経験の処理
+;-------------------------------------------------
+;触手経験加算
+SIF TEQUIP:촉수 == 1
+	CALL ADDS_EXP("촉수경험", 1, TARGET)
+;	T += 1
+
+
+RETURN 1
+
+;===================================================
+;調教タイプ
+;===================================================
+@COMTYPE_158
+RETURN COMTYPE("ハード系")
+
+

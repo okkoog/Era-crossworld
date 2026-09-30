@@ -1,0 +1,168 @@
+﻿;スキル名
+@SKILL_NAME_ホーネットビット,ARG
+RESULTS = 호넷비트
+SIF FLAG:총공격중
+	TSTR:스킬메시지행동자 '= "閃刀姫トークン"
+
+;　명중
+@SKILL_HITRATE_ホーネットビット, ARG
+RETURN 100
+
+;　威力(通常攻撃を100%とした倍率となる)
+@SKILL_POWER_ホーネットビット, ARG
+RETURN 100
+
+;基礎クリティカル率(標準は5。乗算されるので10になると200%になる)
+@SKILL_CRITICAL_RATE_ホーネットビット, ARG
+RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ホーネットビット,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ホーネットビット,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ホーネットビット, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+
+;　コストの量
+@SKILL_COST_ホーネットビット,ARG
+RETURN 15
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ホーネットビット
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ホーネットビット, ARG
+SIF FLAG:총공격중
+	RETURN GET_SKILL_TARGET_NUM("적")
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　範囲　単体　一列　全体　敵味方全体　縦列
+@SKILL_SPHERE_ホーネットビット,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　相性
+@SKILL_TYPE_ホーネットビット,ARG
+RETURN GET_TYPE_NUM("비구")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ホーネットビット, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ホーネットビット, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_ホーネットビット
+RETURN GET_SUCCESSION_NUM("방어")
+
+;속도보정
+@SKILL_SPEED_ホーネットビット, ARG = -1
+RETURN 0
+
+;スキルランク
+;スキルの習得時の必要ＭＡＧの算出に主に用いられる
+;また、習得・所持スキルはこのランクの5倍のレベルを基準として設定する。
+@SKILL_RANK_ホーネットビット, ARG = -1
+RETURN 5
+
+;====================================================
+;スキル及び行動の実行
+;ARG = スキルの使用者
+;ARG:1 = スキルの使用対象
+;ARG:2 = スキルの番号
+;====================================================
+@ACTION_ホーネットビット, ARG, ARG:1, ARG:2
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_POS = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+IF FLAG:총공격중
+	TFLAG:반사0데미지화 = 1
+	CALL ATTACK_SKILL,ARG,ARG:1,ARG:2
+	TFLAG:반사0데미지화 = 0
+ELSE
+	IF GET_COUNT_閃刀カウンター(ARG) >= 3
+		CALL SKILL_SET_HPバリア, POS(ARG:1), 300 * GET_BASEHEAL_IN_CALC(MAXBASE:ARG:공격, MAXBASE:ARG:공격) / 100, "閃刀姫トークン・攻"
+	ELSE
+		;ディアラマ相当
+		CALL SKILL_SET_HPバリア, POS(ARG:1), 200 * GET_BASEHEAL_IN_CALC(MAXBASE:ARG:공격, MAXBASE:ARG:공격) / 100, "閃刀姫トークン"
+	ENDIF
+	CALL PUSH_CEMETERY_閃刀魔法, ARG, "ホーネットビット"
+	WAIT
+	;連続行動
+	IF GET_RPG_CFLAG_BTL(ARG, "エリアゼロ") == FLAG:경과턴수 + 1
+		CALL SHUFFLE_ARRAY_INT, L_POS
+		FOR LCOUNT, 0, 16
+			L_CHARA = POS(L_POS:LCOUNT)
+			SIF !IS_TARGET_ABLE(L_CHARA)
+				CONTINUE
+			SIF !IS_FRIEND(ARG, L_CHARA)
+				CONTINUE
+			SIF CSTR:L_CHARA:HP배리어명 == "閃刀姫トークン"
+				CONTINUE
+			SIF CSTR:L_CHARA:HP배리어명 == "閃刀姫トークン・攻"
+				CONTINUE
+			CFLAG:ARG:타겟 = L_POS:LCOUNT
+			BREAK
+		NEXT
+	ENDIF
+ENDIF
+@DISPLAY_COMMAND_P_ホーネットビット, ARG
+#DIM DYNAMIC LCOUNT
+FOR LCOUNT, CFLAG:ARG:PT플래그 ? 1 # 7, CFLAG:ARG:PT플래그 ? 7 # 17
+	SIF !IS_TARGET_ABLE(POS(LCOUNT))
+		CONTINUE
+	SIF CSTR:POS(LCOUNT):HP배리어명 != "閃刀姫トークン" && CSTR:POS(LCOUNT):HP배리어명 != "閃刀姫トークン・攻"
+		CONTINUE
+	SIF !CFLAG:POS(LCOUNT):HP배리어
+		CONTINUE
+	SIF RESULTS != ""
+		RESULTS += "<br>"
+	RESULTS += @"%CSTR:POS(LCOUNT):HP배리어명%[{CFLAG:POS(LCOUNT):HP배리어}] >>> [POS.{LCOUNT,2}]"
+NEXT
+SIF RESULTS == ""
+	RETURN 0
+RETURN 3
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;　 説明文の表示
+@SKILL_EXPLAIN_ホーネットビット, ARG
+PRINTL 【閃刀魔法】
+PRINTL 아군 1명을 지정해 섬도희 토큰을 소환하여, 대상 대신 데미지를 받게 한다.
+PRINTL 섬도희 토큰의 HP는 자신의 공격력에 비례하여 증가한다.
+PRINTL 스킬 발동 후 섬도 카운터를 1개 얻는다.
+PRINTL
+PRINTL 〈강화 효과〉 섬도 카운터가 3개 이상 있을 경우,
+PRINTL 섬도희 토큰 대신 섬도희 토큰・공을 소환한다.
+PRINTL 필드에 섬도희 토큰・공이 존재할 경우, 자신이 행동할 때마다 이하의 연동효과가 발동한다.
+PRINTL 「랜덤 적 1체에게 비구 속성의 물리 데미지를 가한다.」
+PRINTL 강화 효과 발동 후 섬도 카운터를 얻는 대신 3개 제거한다.
+PRINTL
+PRINTL 이 스킬은 전투 중 1회만 사용 가능.
+
+;ターゲット条件
+@SKILL_TARGETABLE_ホーネットビット,ARG, ARG:1
+SIF !IS_FRIEND(ARG, ARG:1)
+	RETURN 0
+RETURN 1
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ホーネットビット,ARG
+RESULTS = 스킬 사용 완료
+SIF !IS_USEABLE_閃刀魔法(ARG, "ホーネットビット")
+	RETURN 0
+RETURN 1
+
+@リンク不能_ホーネットビット
+RETURN 1
+
+@SKILL_TAG_ホーネットビット
+RESULTS = 閃刀魔法

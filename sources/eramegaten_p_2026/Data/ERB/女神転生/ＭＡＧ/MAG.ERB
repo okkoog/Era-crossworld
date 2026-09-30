@@ -1,0 +1,3600 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:MAG.ERB
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		XXXX/XX/XX		------					新規作成
+;	002		2019/09/26		空気 					ショップ画面・調教画面の顔グラを個別に選択できるように
+;	003		2020/02/02		木綿豆腐 				데빌시프터/식노/悪魔憑きは悪魔変身時の画面の顔グラを設定できるように
+;	004		2020/06/07		Jガン					顔グラ変更を一新、64種類まで設定できるように
+;	005		2020/06/19		JK好き					武器修練の表示条件が誤っているのを修正
+;	006		2020/07/31		スパロボガスキー		スキル強化者によりスキル名・解説文が変わる処理追記に対応
+;	007		2020/08/08		kamedakeisuke(ﾟдﾟ)		達人シフターは初期リンク悪魔のスキルも編集できないように
+;	008		2020/08/26		MkjX					陥落履歴により耐性強化を更に追加で可能に
+;	009		2020/08/20		Jガン					特殊変身顔グラ追加
+;	010		2020/09/07		Jガン					ペルソナ使いのペルソナを仲魔強化から行えるように、喰奴のスキル変化と追加時の必要MAGを10倍から5倍に
+;	011		2020/08/20		Schrott 				特殊変身顔グラ変更の項目にRabi-RibiMOD（ノア）の記述を追加。
+;	012		2020/12/02		Jガン					顔グラ変更条件の変更、関数追加、選択できる顔グラを制限含めて99までに
+;	013		2021/02/07		Rsp暇人					MAG表示にカンマ区切りを導入
+;	014		2021/02/20		亜人いいよね			悪魔用陥落ボーナス強化の追加
+;	015		2021/04/07		Jガン					スキルロック処理追加(「スキルロック」で検索すると変更場所がわかります)
+;	016		2022/05/22		Collared				外見固定処理追加
+;	017		2022/06/07		Collared				UI整理プロジェクトにより配置変更
+;	018		2022/08/19		JK好き					@MAG_LEARN_SKILL デビルシフター変身後が習得済みのスキルをスキルカードで追加習得出来た問題を修正
+;	019		2022/09/17		kamedakeisuke			Aion式召喚術まわりの仕様を追加
+;	020		2023/02/28		JK好き					@顔グラ変更 ARGが省略されてTARGETを見ていた部分を修正
+;	021		2022/11/25		P(bazzile)				スキルによる相性変化の導入にあわせて相性強化の条件を調整
+;													特殊顔グラの仕様変更にあわせて設定処理を削除
+;													独自の顔グラテーブル選択を可能にするための処理を追加
+;													顔グラの設定部分の構文を整理
+;	022		2022/12/24		P(bazzile)				強化のUIと処理をリファクタリング
+;	023		2023/03/01		P(bazzile)				基本能力の強化の必要値の計算関数と実消費でずれがあったのを修正
+;													造魔を強化しようとするとエラー落ちしていたのを修正
+;	024		2023/03/05		P(bazzile)				スキルのランクアップでMAGを消費しない不具合を修正
+;	025		2023/04/28		P(bazzile)				攻撃の射程強化と範囲強化からレベルによる係数の補正が消えていた不具合を修正
+;													ダンジョン内から能力値強化が呼び出された際の表示を調整
+;	026		2023/05/19		P(bazzile)				射程の強化に必要なMAGのチェックの不備を修正
+;	027		2023/05/23		P(bazzile)				攻撃相性の強化時に表記がずれる不具合を修正
+;													陥落の悪魔の習得とペルソナ使いのタイプ変更ができなくなっていた不具合を修正
+;													陥落の悪魔の取得条件を若干変更
+;													覚醒スキルを再習得の候補から外すように変更
+;													選択不能な選択肢の条件のポップアップができていなかったのを修正
+;													直入力で選択できない選択肢を選べていた不具合を修正
+;	028		2023/05/26		P(bazzile)				喰奴が変身時にスキル操作ができなくなっていた不具合を修正
+;													喰奴のスキル操作条件を調整
+;													悪魔変身が可能なロールのスキル習得の処理ミスを修正
+;													造魔がスキル消去とランクアップできなくなっていた不具合を修正
+;													MAG強化の選択でほんらい選べない選択肢を直入力で選べてしまった不具合を修正
+;	029		2023/06/16		P(bazzile)				覚醒スキル習得を追加
+;	030		2023/06/26		P(bazzile)				変身悪魔を持つキャラの人間時のスキルが削除できなかった不具合を修正
+;	031		2023/07/01		P(bazzile)				スキル再習得時に不正な数値を入力することで落ちる不具合を修正
+;	032		2023/07/05		P(bazzile)				スキルカード抽出を追加
+;													キャラクターの表示に忠誠度を追加し、変身形態の表示位置を調整
+;	033		2023/07/09		P(bazzile)				MAGが0となったときの表示が空行になっていた不具合を修正
+;													合体によるMAGの引き継ぎ形式を変更して、MAG強化に振られていた分から無償振りできるように
+;	034		2023/07/15		P(bazzile)				デビルシフターの耐性強化時に追加で耐性を強化する際に耐性の表示が乱れる不具合を修正
+;													造魔レベルアップのMAGの消費をCONTROL_MAGを経由するようにへんこう
+;	035		2023/08/06		P(bazzile)				再習得可能なスキルの判定の一部処理を新関数を通す形に変更
+;	036		2023/08/25		P(bazzile)				再習得を選択時に[1]のスキルが選択不能だった不具合を修正
+;	037		2023/09/02		P(bazzile)				造魔のレベルアップ時に必要コストを減算するのではなく、加算していた不具合を修正
+;	038		2023/08/27		P(bazzile)				スキル入れ替えを実装
+;													スキルの操作枠の変更が関数をちゃんと通していなかったので修正
+;	039		2023/08/29		P(bazzile)				顔グラ設定でキャラ個別に汎用アイコンを指定できるように変更
+;													顔グラ周りの処理をリファクタリング
+;	040		2023/09/23		P(bazzile)				非戦闘員の基本ステータスの強化をできないように修正
+;			2023/09/23		P(bazzile)				魔装術でキャラ削除が発生するとエラーを引き起こす場合がある不具合を修正
+;	041		2023/10/15		P(bazzile)				通常攻撃強化の際に表示が異常になっていた部分を修正
+;	042		2023/10/24		P(bazzile)				顔グラ変更の際の表示がずれていた不具合を修正
+;	043		2023/12/25								ソートが効かない不具合と能力強化画面でエラー落ちする不具合を修正
+;	044		2024/02/20		P(bazzile)				喰奴が人間態でスキルを習得する際にマントラ習得状況に影響を受け、また影響を与える不具合を修正
+;	045		2024/02/25		P(bazzile)				スキル消去と再習得ができなくなっていた不具合を修正
+;	046		2024/03/09		P(bazzile)				無償MAG強化の回数を持っているとMAG強化ができなかった不具合を修正
+;	047		2024/03/30		P(bazzile)				顔グラを指定する際に個別で鬼/種族を指定するのがうまくいかないケースがあった不具合を修正
+;	048		2024/05/31		P(bazzile)				スキルのランクアップツリーが３の倍数の時、不要な改行が発生する不具合を修正
+;	049		2024/06/08		P(bazzile)				防御相性強化のUIを変更(TETUさんから提供してもらいました)
+;	050		2024/06/09		P(bazzile)				アイコンを選択する際の数字部分にボタンが作られていなかった不具合を修正
+;	051		2024/07/09		P(bazzile)				スキル再習得でページの変更が正しく実行されなかった不具合を修正
+;													スキル再習得で削除不能スキルがあると表示が崩れる不具合を修正
+;	052		2024/09/22		P(bazzile)				デビルシフター・アウトサイダーのスキルランクアップが正しく実行されないケースがある不具合を修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;P
+;	001		2024/05/17		P(bazzile)				合一神用の強化処理を追加
+;	002		2024/05/30		P(bazzile)				陥落ボーナスがONだと悪魔の強化で落ちる不具合を修正
+;	003		2024/05/28		P(bazzile)				顔グラ関数の処理を一新
+;													肥大化したコメントアウト処理を削除
+;	004		2024/07/25		P(bazzile)				陥落ボーナスセットを削除
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+@SHOPCOMABLE_111
+SIF !IS_USEABLE_SHOPCOM
+	RETURN 0
+RESULT:1 = 1
+RESULTS = 동료마강화
+RETURN 1
+
+@SHOP_COM_111, ARG
+#LOCALSIZE 5
+LOCAL:4 = RESULT
+$INPUT_LOOP
+;CALL INPUT_CHARA_LIST("ＭＡＧを使って強化するキャラを選んでください", "CASTING_SHOP_COM_111")
+{
+CALL INPUT_CHARA_LIST
+	, "FUNC_PROPSET_LIST_BATTLE"
+	, "MAG를 사용해 강화할 캐릭터를 선택해주세요"
+	, "CASTING_SHOP_COM_111" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "L_CANCELS"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+IF RESULT != 1000
+	CALL ENHANCE(RESULT, A)
+	GOTO INPUT_LOOP
+ENDIF
+RETURN LOCAL:4
+
+@CASTING_SHOP_COM_111(ARG)
+SIF IS_RENTING(ARG) || CFLAG:ARG:이자리에없는플래그 || CFLAG:ARG:필터링플래그
+	RETURN 0
+RETURN 1
+
+@MAG_ENHANCE_INFO_CHARA, ARG, ARG:1
+#DIM LCOUNT
+#DIM TEMP,2
+#DIMS TEMPS
+#DIMS L_COLOR			;色、HTML_PRINT想定なので文字列で保存
+#DIM BASEBARLENS = 1600	;体力・気力・MAGのバーの長さ
+#DIMS INFO_CHARA, 6		;キャラクター情報の中身
+;------------------------------------------------------
+;選択中のキャラの表示
+;------------------------------------------------------
+DRAWLINE
+VARSET INFO_CHARA
+IF G_OPT_USE_ICON == "사용안함"
+	INFO_CHARA:0 += " " * 14
+ELSE
+	INFO_CHARA:0 += GET_FACE_BY_CHARA_AS_HTML(ARG, 600) +  " " * 2
+ENDIF
+FOR LCOUNT, 1, 6
+	INFO_CHARA:LCOUNT += " " * 14
+NEXT
+;---- EDIT 032 MOD START -------------------------
+INFO_CHARA:0 += @"%CALLNAME:ARG, 21, LEFT%"
+IF GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+	INFO_CHARA:0 += "형태　:"
+	INFO_CHARA:0 += @"<font color = '%TOSTR_HTML(!ARG:1 ? COLOR("aqua") # color("デフォルト"))%'>"+ "<button value = '90'>" + "[90] 인간형태"  + "</button>" + "</font>　"
+	INFO_CHARA:0 +=  @"<font color = '%TOSTR_HTML(ARG:1 ? COLOR("aqua") # color("デフォルト"))%'>" + "<button value = '91'>" + "[91] 변신형태"  + "</button>" + "</font>"
+ELSE
+	INFO_CHARA:0 += " " * 35
+ENDIF
+INFO_CHARA:1 += @"%"ＬＶ　:" + TOSTR(BASE:ARG:LV), 24 + 32, LEFT%"
+VARS BASE_TABLE, 4
+VARS COLOR_TABLE, 4
+VARI STOCK_VALUE
+VARI MAX_VALUE
+
+BASE_TABLE '= "체력", "기력", "ＭＡＧ", "충성도"
+COLOR_TABLE '= "赤", "緑", "紫", "青緑"
+
+FOR LCOUNT, 0, 4
+	TEMPS '= BASE_TABLE:LCOUNT
+	L_COLOR '= COLOR_TABLE:LCOUNT
+	SELECTCASE TEMPS
+		CASE "ＭＡＧ"
+			STOCK_VALUE = GET_CHARA_STOCK_MAG(ARG)
+			MAX_VALUE = GET_CHARA_MAXMAG(ARG)
+		CASEELSE
+			STOCK_VALUE = BASE:ARG:TEMPS
+			MAX_VALUE = MAXBASE:ARG:TEMPS
+	ENDSELECT
+	IF TEMPS != "충성도"
+		TEMP = (STOCK_VALUE * BASEBARLENS / MAX_VALUE) + ((STOCK_VALUE * BASEBARLENS % MAX_VALUE) > 0) 
+	ELSE
+		TEMP = (MIN(STOCK_VALUE, 10000) * BASEBARLENS / 10000) + ((MIN(STOCK_VALUE, 10000) * BASEBARLENS % 10000) > 0) 
+	ENDIF
+	INFO_CHARA:(LCOUNT+2) += @"%MAG_T(TEMPS), 6, LEFT%:" 
+	;バーの長さを0にしてしまうと正しく表示されなくなるので
+	SIF TEMP > 0
+		INFO_CHARA:(LCOUNT+2) += @"<shape type = 'rect' param = '0, 25, {TEMP}, 50' color = '%TOSTR_HTML(BARCOLORSET(L_COLOR))%'>"
+	;バーセットから数値を取れない場合があるので
+	CALLFORMF BARCOLORSET(L_COLOR)
+	SIF BASEBARLENS - TEMP > 0
+		INFO_CHARA:(LCOUNT+2) += @"<shape type = 'rect' param = '0, 25, {BASEBARLENS - TEMP}, 50' color = '%TOSTR_HTML(RESULT:1)%'>"
+	IF TEMPS != "충성도"
+		INFO_CHARA:(LCOUNT+2) += "(" + @"%ADD_KMGT(STOCK_VALUE, 9)%" + "/" + @"%ADD_KMGT(MAX_VALUE), 5%" + ")"
+	ELSE
+		INFO_CHARA:(LCOUNT+2) += "(" + @"%ADD_KMGT(STOCK_VALUE, 15)%" + ")"
+	ENDIF
+NEXT
+;---- EDIT 032 MOD END ---------------------------
+
+FOR LCOUNT, 0, 6
+	TEMP = CFLAG:ARG:@"%GET_BASESTATUS(LCOUNT + 1)%강화횟수"
+	TEMP:1 = BASE:ARG:GET_BASESTATUS(LCOUNT + 1)
+	INFO_CHARA:LCOUNT += " " * 6 + @"%GET_BASESTATUS(LCOUNT + 1), 4, LEFT%" + "(" + @"{TEMP:1, 3}" + " + "  + @"{TEMP, 3}" + ")"
+	TEMP = TEMP / 3 + (TEMP % 3 > 0)
+	INFO_CHARA:LCOUNT += UNICODE(0x258B) * MIN(TEMP, 31)
+	INFO_CHARA:LCOUNT += " " * MAX(31 - TEMP, 0)
+NEXT
+FOR LCOUNT, 0, 6
+	HTML_PRINT INFO_CHARA:LCOUNT
+NEXT
+DRAWLINE
+;-------------------------------------------------
+;MAG強化
+;
+;ARG:0 = 強化するキャラの登録番号
+;ARG:1 = リストの登録人数。リストはQ配列に入っている
+;-------------------------------------------------
+@ENHANCE(ARG, ARG:1)
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC TEMP
+#DIMS DYNAMIC TEMPS
+#DIM DYNAMIC STOCK_CHARA_ID		;なんらかの理由で登録番号がずれる可能性があるので保持しておく
+#DIM DYNAMIC LINE				;行数の保持
+#DIM DYNAMIC LIST_NO			;リストの何番目のキャラを表示しているか
+#DIM DYNAMIC LIST_NUM			;リストの登録人数
+#DIM DYNAMIC LIST_CHARA			;右リストの表示作成中のキャラ登録番号
+#DIM DYNAMIC LIST_PAGE			;右リストのページ数
+#DIMS DYNAMIC SHOW_LINE			;行の表示内容。HTML_PRINT出力用
+#DIM DYNAMIC SHOW_NUM			;メイン部分の表示行数
+#DIM DYNAMIC LVUP_COST
+#DIM DYNAMIC 装備補正変更コスト
+#DIMS DYNAMIC ABLE_LIST			;選択可能な選択肢をリストにして保存する
+#DIMS DYNAMIC UNABLE_LIST		;選択不可能な選択肢をリストにして保存する。このリストのはいった選択肢はグレー表示で表示される。
+#DIMS DYNAMIC BLANK_SKILL		;空きスキルの場所を記録する
+#DIM DYNAMIC HAVE_SKILL_NUM		;所持スキル数
+#DIM DYNAMIC AWAKE_SKILL
+#DIM DYNAMIC STOCK_RESULT
+#DIM DYNAMIC STOCK_REDRAW
+#DIMS DYNAMIC SELECT_TRANS		;悪魔変身の状態　通常形態と変身形態の2種がはいる
+#DIMS DYNAMIC SELECT_LIST, 45	;選択肢の定義
+#DIMS DYNAMIC L_TITLE, 45		;ツールチップの内容
+#DIMS DYNAMIC L_COLOR			;色、HTML_PRINT想定なので文字列で保存
+#DIMS DYNAMIC SELECT_COMMENT, 45;選択肢に付随するコメント
+#DIMS DYNAMIC SIDE_LIST, 35		;右リストの中身
+#DIM CONST ROLE_SELECT_START = 30
+#DIM CONST ROLE_SELECT_END = 40
+#DIM CONST CHARA_SELECT_START = 40
+#DIM CONST CHARA_SELECT_END = 45
+STOCK_RESULT = RESULT
+STOCK_REDRAW = CURRENTREDRAW()
+REDRAW 0
+
+STOCK_CHARA_ID = CFLAG:ARG:실제가입시간
+;LIST_NUM = ARG:1
+
+;---- EDIT P 001 MOD START -------------------------
+;---- EDIT 039 MOD START -------------------------
+;選択肢のリスト化
+SELECT_LIST:1 = 基本能力強化
+SELECT_LIST:2 = 香使用強化
+SELECT_LIST:3 = ステータスリセット
+SELECT_LIST:4 = スキルランクアップ
+SELECT_LIST:5 = スキル消去
+SELECT_LIST:6 = スキル抽出
+SELECT_LIST:7 = スキル習得
+SELECT_LIST:8 = スキル再習得
+SELECT_LIST:9 = 覚醒スキル習得
+SELECT_LIST:10 = 固有スキル習得
+SELECT_LIST:11 = 写せ身の極意
+
+SELECT_LIST:12 = 攻撃性能強化
+SELECT_LIST:13 = 耐性強化
+SELECT_LIST:14 = 神格習合
+
+SELECT_LIST:15 = 体力気力強化
+
+SELECT_LIST:16 = 造魔レベルアップ
+SELECT_LIST:17 = スキルセット
+SELECT_LIST:18 = ステータスセット
+SELECT_LIST:19 = マントラ取得
+
+SELECT_LIST:20 = 장비강화
+SELECT_LIST:21 = 装備能力補正変更
+SELECT_LIST:22 = 武器修練
+SELECT_LIST:28 = 触手エネルギー注入
+SELECT_LIST:29 = ＭＡＧ充填
+
+;SELECT_LIST:30 ~ :ロール追加
+;SELECT_LIST:40 ~ :キャラ追加
+;---- EDIT 039 MOD END ---------------------------
+;---- EDIT P 001 MOD END ---------------------------
+SELECT_LIST:39 = 顔グラ変更
+
+SHOW_NUM = VARSIZE("SIDE_LIST") - 2
+;表示調整
+FOR LCOUNT, 0, 60
+	PRINTL 
+NEXT
+LINE = LINECOUNT
+CALL TRANS_DEVIL, ARG, 0, "変身解除"
+;---- EDIT 028 ADD START -------------------------
+;最初に所持スキルを更新しておく
+CALL FIX_CHARA_TRANS_SKILL, ARG
+;---- EDIT 028 ADD END ---------------------------
+$START
+
+;キャラ登録番号がずれてないかチェック
+SIF FINDCHARA_TIMEID(STOCK_CHARA_ID) < 0
+	RETURN 0
+ARG = FINDCHARA_TIMEID(STOCK_CHARA_ID)
+
+;---- EDIT 040 ADD START -------------------------
+;サイドのリストの表示用にキャラリストを作る(何らかの理由でキャラの増減が発生する場合も踏まえて毎回作り直す)
+VARSET Q, -1
+FOR LCOUNT, 0, CHARANUM
+	CALL CASTING_SHOP_COM_111, LCOUNT
+	SIF !RESULT
+		CONTINUE
+	Q:FINDELEMENT(Q, -1) = LCOUNT
+NEXT
+;リストの登録内容数
+LIST_NUM = FINDELEMENT(Q, -1)
+;---- EDIT 040 ADD END ---------------------------
+;---- EDIT 043 ADD START -------------------------
+;リストのソートを実行
+CALL SORT_MAG_ENHANCE, LIST_NUM
+;---- EDIT 043 ADD END ---------------------------
+
+;ステータス同期
+CALL SYNC_STATUS, ARG
+CLEARLINE LINECOUNT - LINE
+
+LIST_NO = FINDELEMENT(Q, ARG, 0, LIST_NUM)
+
+;中身が空のときと悪魔変身が出来ないロールは通常形態に戻す
+SIF !GET_ROLE_PROP("CAN_USE_TRANS", ARG) || SELECT_TRANS == ""
+	SELECT_TRANS = 通常形態
+VARSET SELECT_COMMENT
+
+;スキル解説用にUにキャラ登録番号を入れておく
+U = ARG
+;------------------------------------------------------
+;右サイドのキャラ表を作成
+;変数に格納して実際の出力はあとなので先に処理できる
+;------------------------------------------------------
+VARSET SIDE_LIST
+SIDE_LIST:0 = %"┏" + "━" * 22 + "┓"%
+FOR LCOUNT, 1, SHOW_NUM + 1
+	SIDE_LIST:LCOUNT = ┃
+	IF (LCOUNT + LIST_PAGE * SHOW_NUM) <= LIST_NUM
+		LIST_CHARA = Q:(LIST_PAGE * SHOW_NUM + LCOUNT - 1)
+		L_COLOR = %TOSTR_HTML(LIST_CHARA == ARG ? COLOR("aqua") # COLOR("デフォルト"))%
+		SIDE_LIST:LCOUNT += @"<button value = '{1000 + LCOUNT + LIST_PAGE * SHOW_NUM - 1}'>" + @"<font color = '%L_COLOR%'>" + @"[{1000 + LCOUNT + LIST_PAGE * SHOW_NUM - 1}] " + @"%S_NAME(LIST_CHARA, 18, 2), 20, LEFT%" + "</font></button>"
+		SIDE_LIST:LCOUNT += " MAG:"
+		;バーをくっつける
+		VARI L_LENS
+		L_LENS = 600 * GET_CHARA_STOCK_MAG(LIST_CHARA) / GET_CHARA_MAXMAG(LIST_CHARA)
+		SIF L_LENS < 600
+			SIDE_LIST:LCOUNT += @"<shape type = 'rect' param = '0, 70, {600 - L_LENS}, 30' color = '%TOSTR_HTML(GETBGCOLOR())%'>"
+		SIF L_LENS > 0
+			SIDE_LIST:LCOUNT += @"<shape type = 'rect' param = '0, 70, {L_LENS}, 30' color = '%TOSTR_HTML(BARCOLORSET("紫"))%'>"
+		;バーの分だけ手前にずらしてかぶせる
+		SIDE_LIST:LCOUNT += "<div xpos = '-600'>" + @"%ADD_KMGT(GET_CHARA_STOCK_MAG(LIST_CHARA), 12), 12%" + "┃" + "</div>"
+	ELSE
+		SIDE_LIST:LCOUNT += " " * 44 + "┃"
+	ENDIF
+NEXT
+SIDE_LIST:(VARSIZE("SIDE_LIST") - 1) += "┗"
+SIDE_LIST:(VARSIZE("SIDE_LIST") - 1) += "<button value = '-'>" + "[-] " + "</button>"
+SIDE_LIST:(VARSIZE("SIDE_LIST") - 1) += @"Page.{LIST_PAGE, 3}"
+SIDE_LIST:(VARSIZE("SIDE_LIST") - 1) += "<button value = '+'>" + " [+]" + "</button>"
+SIDE_LIST:(VARSIZE("SIDE_LIST") - 1) += "━" * 14 + "┛"
+
+;------------------------------------------------------
+;選択中のキャラの表示
+;------------------------------------------------------
+CALL MAG_ENHANCE_INFO_CHARA, ARG, SELECT_TRANS == "変身形態"
+
+;--------------------------------------------
+;左のメイン選択肢
+;表示条件を満たしているものを判定して、ABLE_LISTにいれる
+;さらに表示はできるが実行できないものをUNABLE_LISTにいれる(灰色で表示する)
+;--------------------------------------------
+ABLE_LIST = /
+UNABLE_LIST = /
+;---- EDIT 046 MOD START -------------------------
+;---- EDIT 040 MOD START -------------------------
+
+;個別強化の内容更新のために関数を通しておく
+RESULT_F = 0
+SIF EXISTFUNCTION(@"MAG_CALC_ENHANCE_BASE_CHARA_{NO:ARG}")
+	CALLFORMF MAG_CALC_ENHANCE_BASE_CHARA_{NO:ARG}, ARG, 1, 0
+RESULT_F = 0
+
+IF GET_ROLE_PROP("MAG_CALC_ENHANCE_BASE_VALUE", ARG) >= 0
+	ABLE_LIST += "基本能力強化/"
+	;---- EDIT 033 MOD START -------------------------
+	IF COUNT_FREE_MAG_ENHANCE_BASE(ARG)
+		SELECT_COMMENT:FINDELEMENT(SELECT_LIST, "基本能力強化") = 필요ＭＡＧ：0({COUNT_FREE_MAG_ENHANCE_BASE(ARG)}회 까지)
+	ELSE
+		IF CFLAG:ARG:베어내기플래그
+			SELECT_COMMENT:FINDELEMENT(SELECT_LIST, "基本能力強化") = ＭＡＧ강화 제한중
+		ELSEIF MAG_CALC_ENHANCE_BASE(ARG) < 0
+			SELECT_COMMENT:FINDELEMENT(SELECT_LIST, "基本能力強化") = 강화상한
+		ELSE
+			SELECT_COMMENT:FINDELEMENT(SELECT_LIST, "基本能力強化") = 필요ＭＡＧ：%TOSTR(MAG_CALC_ENHANCE_BASE(ARG), "###,0"), 8%
+		ENDIF
+	ENDIF
+	;---- EDIT 033 MOD END ---------------------------
+ENDIF
+
+ABLE_LIST += "香使用強化/"
+;--------------------------------------------
+;ステータスリセット
+;--------------------------------------------
+ABLE_LIST += "ステータスリセット/"
+SELECT_COMMENT:FINDELEMENT(SELECT_LIST, "ステータスリセット") = 필요 마카：1000
+SIF MONEY:1 < 1000
+	UNABLE_LIST += "ステータスリセット/"
+
+;--------------------------------------------
+;スキル操作
+;달인 = 3種とも使用不可
+;조마 = 習得のみ不可
+;--------------------------------------------
+;空きスキルの確定
+TEMP = CHANGEABLE_SKILLCOUNT(ARG, , SELECT_TRANS)
+IF SELECT_TRANS == "変身形態"
+	TEMPS = 초기변신악마스킬
+ELSE
+	TEMPS = 스킬
+ENDIF
+
+BLANK_SKILL = 
+HAVE_SKILL_NUM = 0
+
+;---- EDIT 028 MOD START -------------------------
+FOR LCOUNT, 1, TEMP + 1
+	;スキルを所持している
+	IF ABL:ARG:@"%TEMPS%{LCOUNT}" > 0
+		HAVE_SKILL_NUM++
+	ELSE
+		;スキル枠があいている
+		IF ABL:ARG:@"%TEMPS%{LCOUNT}" == 0
+			;空きスキルを指定
+			SIF BLANK_SKILL == ""
+				BLANK_SKILL = %TEMPS%{LCOUNT}
+		ENDIF
+	ENDIF
+NEXT
+
+SIF GET_ROLE_PROP("CAN_USE_SKILLRANKUP", ARG, , SELECT_TRANS)
+	ABLE_LIST += "スキルランクアップ/"
+
+;---- EDIT 044 MOD START -------------------------
+SIF GET_ROLE_PROP("CAN_USE_SKILLDELETE", ARG, , SELECT_TRANS) && GET_ROLE_PROP("CAN_USE_MANTRA", ARG, , SELECT_TRANS) != 2
+	ABLE_LIST += "スキル消去/"
+;---- EDIT 044 MOD END ---------------------------
+;---- EDIT 032 ADD START -------------------------
+SIF GET_ROLE_PROP("CAN_MAKE_SKILLCARD", ARG:0)
+	ABLE_LIST += "スキル抽出/"
+;---- EDIT 032 ADD END ---------------------------
+;---- EDIT 032 MOD START -------------------------
+;所持スキルがない
+IF TALENT:ARG:전력상실
+	L_TITLE:FINDELEMENT(SELECT_LIST, "スキルランクアップ") = 전력상실
+	L_TITLE:FINDELEMENT(SELECT_LIST, "スキル消去") = 전력상실
+	L_TITLE:FINDELEMENT(SELECT_LIST, "スキル抽出") = 전력상실
+	UNABLE_LIST += "スキルランクアップ/スキル消去/スキル抽出/"
+ELSEIF HAVE_SKILL_NUM == 0
+	L_TITLE:FINDELEMENT(SELECT_LIST, "スキルランクアップ") = 스킬미보유
+	L_TITLE:FINDELEMENT(SELECT_LIST, "スキル消去") = 스킬미보유
+	L_TITLE:FINDELEMENT(SELECT_LIST, "スキル抽出") = 스킬미보유
+	UNABLE_LIST += "スキルランクアップ/スキル消去/スキル抽出/"
+ELSE
+	IF GET_CHARA_LOYALTY(ARG) < GET_LOYALTY_FOR_MAKE_SKILLCARD(ARG, "必要")
+		L_TITLE:FINDELEMENT(SELECT_LIST, "スキル抽出") = 충성도부족
+		UNABLE_LIST += "スキル抽出/"
+	ELSE
+		SELECT_COMMENT:FINDELEMENT(SELECT_LIST, "スキル抽出") = 충성도 {GET_LOYALTY_FOR_MAKE_SKILLCARD(ARG, "消費")}소비
+	ENDIF
+ENDIF
+;---- EDIT 032 MOD END ---------------------------
+;スキル操作ランクをチェック / あるいはマントラ持ちなら操作できる
+;---- EDIT 044 MOD START -------------------------
+IF GET_SKILL_CHANGEABLE_RANK(ARG, SELECT_TRANS) || GET_ROLE_PROP("CAN_USE_MANTRA", ARG, , SELECT_TRANS) == 2
+	IF TEMP && GET_ROLE_PROP("CAN_USE_SKILLCARD", ARG, , SELECT_TRANS) || GET_ROLE_PROP("CAN_USE_MANTRA", ARG, , SELECT_TRANS) == 2
+		ABLE_LIST += "スキル習得/"
+		IF TALENT:ARG:전력상실
+			L_TITLE:FINDELEMENT(SELECT_LIST, "スキル習得") = 전력상실
+			UNABLE_LIST += "スキル習得/"
+		ENDIF
+		;マントラは所持数上限の影響を受けないが再習得不能(スキルセットから可能なので)
+		IF GET_ROLE_PROP("CAN_USE_MANTRA", ARG, , SELECT_TRANS) != 2 && !TALENT:ARG:전력상실
+			SIF C_LEARNED_SKILLS:ARG:(SELECT_TRANS == "変身形態") != ""
+				ABLE_LIST += "スキル再習得/"
+		ENDIF
+	ENDIF
+ELSE
+	;---- EDIT 038 MOD START -------------------------
+	SIF (STRCOUNT(C_LEARNED_SKILLS:ARG:(SELECT_TRANS == "変身形態"), "/") > CHANGEABLE_SKILLCOUNT(ARG, , SELECT_TRANS)) && !TALENT:ARG:페르소나구사자
+		ABLE_LIST += "スキル再習得/"
+	;---- EDIT 038 MOD END ---------------------------
+ENDIF
+
+;固有スキルの習得状況を修正したうえで存在が確認したら追加
+CALL FIX_SPECIAL_LEARN_SKILL, ARG, SELECT_TRANS
+SIF RESULT
+	ABLE_LIST += "固有スキル習得/"
+
+;---- EDIT 044 MOD END ---------------------------
+;---- EDIT 039 ADD START -------------------------
+CALL GET_AW_SKILLNUM_BY_CSV, ARG
+AWAKE_SKILL = RESULT
+TRYCCALLFORM SKILL_NAME_AW_{AWAKE_SKILL}, ARG
+	IF !HAVE_SKILL(ARG, SKILL_NUM_F("각성스킬"))
+		ABLE_LIST += "覚醒スキル習得/"
+		SELECT_COMMENT:FINDELEMENT(SELECT_LIST, "覚醒スキル習得") = 충성도5000소비
+		IF GET_CHARA_LOYALTY(ARG) < 5000
+			IF 陥落(ARG)
+				L_TITLE:FINDELEMENT(SELECT_LIST, "覚醒スキル習得") = 충성도부족
+			ELSE
+				L_TITLE:FINDELEMENT(SELECT_LIST, "覚醒スキル習得") = 충성도부족(※조교를 통한 함락으로도 습득 가능합니다)
+			ENDIF
+			UNABLE_LIST += "覚醒スキル習得/"
+		ENDIF
+	ENDIF
+CATCH
+ENDCATCH
+;---- EDIT 039 ADD END ---------------------------
+;---- EDIT P 001 ADD START -------------------------
+IF GET_ROLE_PROP("CAN_USE_PORTRAIT", ARG, , SELECT_TRANS)
+	ABLE_LIST += "写せ身の極意/"
+	UNABLE_LIST += "写せ身の極意/"
+	L_TITLE:FINDELEMENT(SELECT_LIST, "写せ身の極意") = 未実装
+ENDIF
+;---- EDIT P 001 ADD END ---------------------------
+
+
+;---- EDIT 028 MOD END ---------------------------
+;--------------------------------------------
+;基本能力・ベース能力強化
+;--------------------------------------------
+ABLE_LIST += "体力気力強化/"
+SELECT_COMMENT:FINDELEMENT(SELECT_LIST, "体力気力強化") = 최대체력{MAXBASE:ARG:체력,8,RIGHT}　최대기력{MAXBASE:ARG:기력,8,RIGHT}
+SIF GET_ROLE_PROP("CAN_USE_MAG_ATTACK", ARG, , SELECT_TRANS) && !(GET_ROLE_PROP("CAN_USE_EQUIP", ARG, , SELECT_TRANS) == 2 && BATTLE_SETTING_IS_EQUIPTHEORY() == 0)
+	ABLE_LIST += "攻撃性能強化/"
+SIF GET_ROLE_PROP("CAN_USE_MAG_TYPE", ARG, , SELECT_TRANS)
+	ABLE_LIST += "耐性強化/"
+
+;---- EDIT P 001 ADD START -------------------------
+IF GET_ROLE_PROP("CAN_USE_PORTRAIT", ARG, , SELECT_TRANS)
+	ABLE_LIST += "神格習合/"
+ENDIF
+;---- EDIT P 001 ADD END ---------------------------
+
+IF GET_ROLE_PROP("NEXT_EXP", ARG, , SELECT_TRANS) < 0
+	ABLE_LIST += "造魔レベルアップ/"
+	LVUP_COST = MAX(1, 2 * (BASE:ARG:LV - 1) * BASE:ARG:LV * (BASE:ARG:LV + 1))
+	;主人とのレベル差補正
+	FOR LOCAL, 0, MAX(0, BASE:ARG:LV - BASE:MASTER:LV)
+		TIMES LVUP_COST, 1.20
+	NEXT
+	SELECT_COMMENT:FINDELEMENT(SELECT_LIST, "造魔レベルアップ") = 현재LV：{BASE:ARG:LV, 3} / 必要ＭＡＧ：%TOSTR(LVUP_COST, "###,0"), 8%
+	IF GET_CHARA_STOCK_MAG(ARG) <= LVUP_COST
+		UNABLE_LIST += "造魔レベルアップ/"
+		L_TITLE:FINDELEMENT(SELECT_LIST, "造魔レベルアップ") = ＭＡＧ不足
+	ENDIF
+ENDIF
+
+;--------------------------------------------
+;만트라
+;--------------------------------------------
+;---- EDIT 044 MOD START -------------------------
+IF GET_ROLE_PROP("CAN_USE_MANTRA", ARG, , SELECT_TRANS) == 2
+	SIF GETBIT(FLAG:만트라개방도, 1)
+		ABLE_LIST += "スキルセット/ステータスセット/"
+	SETBIT FLAG:만트라개방도, 0	;シナリオ進行による制限が実装されるまでの仮措置
+	SIF FLAG:만트라개방도
+		ABLE_LIST += "マントラ取得/"
+ENDIF
+;---- EDIT 044 MOD END ---------------------------
+;--------------------------------------------
+;その他強化
+;--------------------------------------------
+IF GET_ROLE_PROP("CAN_USE_EQUIP", ARG, , SELECT_TRANS)
+	SIF FLAG:마정장비해금
+		ABLE_LIST += "장비강화/"
+	IF FLAG:장비능력보정변경해금 && BASE:ARG:LV > 80
+		ABLE_LIST += "装備能力補正変更/"
+		装備補正変更コスト = GET_CHARA_MAXMAG(ARG) * MIN(5, CFLAG:ARG:장비보정변경횟수) / 10
+		SELECT_COMMENT:FINDELEMENT(SELECT_LIST, "装備能力補正変更") = 必要ＭＡＧ：%TOSTR(装備補正変更コスト, "###,0"), 8%
+	ENDIF
+ENDIF
+
+SIF GET_ROLE_PROP("CAN_USE_WEAPON_MASTERY", ARG, , SELECT_TRANS)
+	ABLE_LIST += "武器修練/"
+IF TALENT:ARG:전력상실
+	L_TITLE:FINDELEMENT(SELECT_LIST, "武器修練") = 전력상실
+	UNABLE_LIST += "武器修練/"
+ENDIF
+SIF IS_HUMAN(ARG) && TALENT:ARG:페르소나구사자 && TALENT:ARG:비전투원 == 0 && !TALENT:ARG:전력상실
+	ABLE_LIST += "ペルソナ関連/"
+
+FOR LCOUNT, ROLE_SELECT_START, ROLE_SELECT_END
+	RESULT = 0
+	RESULTS '= "", ""
+	TRYCCALLFORM ROLE_ENHANCE_%CSTR:ARG:롤%, LCOUNT - ROLE_SELECT_START, ARG, SELECT_TRANS
+		SIF !RESULT
+			CONTINUE
+		SELECT_LIST:LCOUNT '= RESULTS
+		ABLE_LIST += RESULTS + "/"
+		IF RESULT < 0
+			UNABLE_LIST += RESULTS + "/"
+			L_TITLE:LCOUNT '= RESULTS:1
+		ENDIF
+	CATCH
+		BREAK
+	ENDCATCH
+NEXT
+
+FOR LCOUNT, CHARA_SELECT_START, CHARA_SELECT_END
+	RESULT = 0
+	RESULTS '= "", ""
+	TRYCCALLFORM CHARA_ENHANCE_{NO:ARG}, LCOUNT - CHARA_SELECT_START, ARG, SELECT_TRANS
+		SIF !RESULT
+			CONTINUE
+		SELECT_LIST:LCOUNT '= RESULTS
+		ABLE_LIST += RESULTS + "/"
+		IF RESULT < 0
+			UNABLE_LIST += RESULTS + "/"
+			L_TITLE:LCOUNT '= RESULTS:1
+		ENDIF
+	CATCH
+		BREAK
+	ENDCATCH
+NEXT
+
+;--------------------------------------------
+;顔グラ指定
+;--------------------------------------------
+ABLE_LIST += "顔グラ変更/"
+
+IF FLAG:촉수레벨 > 0 && FLAG:촉수신사각성 > 0
+	SIF FLAG:촉수에너지 == 0 || BASE:ARG:ＭＡＧ == MAXBASE:ARG:ＭＡＧ
+		UNABLE_LIST += "触手エネルギー注入" + "/"
+	ABLE_LIST += "触手エネルギー注入/"
+	SELECT_COMMENT:FINDELEMENT(SELECT_LIST, "触手エネルギー注入") = 에너지　{FLAG:촉수에너지}F
+ENDIF
+SIF IS_DEBUG
+	ABLE_LIST += "ＭＡＧ充填/"
+
+;--------------------------------------------
+;描画
+;--------------------------------------------
+;LCOUNT:1で左側をいくつ描写したかカウントする
+LCOUNT:1 = 1
+
+HTML_PRINT "┏" + "━" * 35 + "┓" + " " + SIDE_LIST:0
+FOR LCOUNT, 0, VARSIZE("SELECT_LIST")
+	SIF !STRCOUNT(ABLE_LIST, "/" + SELECT_LIST:LCOUNT + "/")
+		CONTINUE
+	L_COLOR '= TOSTR_HTML(STRCOUNT(UNABLE_LIST, "/" + SELECT_LIST:LCOUNT + "/") ? COLOR("DARK-GRAY") # COLOR("デフォルト"))
+	;---- EDIT 038 MOD START -------------------------
+	TEMPS = %SELECT_LIST:LCOUNT%
+	SELECTCASE TEMPS
+		CASE "スキル再習得"
+			SIF !(GET_SKILL_CHANGEABLE_RANK(ARG, SELECT_TRANS) || GET_ROLE_PROP("CAN_USE_MANTRA", ARG, , SELECT_TRANS) == 2)
+				TEMPS = スキル入れ替え
+	ENDSELECT
+	SHOW_LINE = [{LCOUNT, 2}] %MAG_T(TEMPS), 25, LEFT%%SELECT_COMMENT:LCOUNT, 40, LEFT%
+	;SHOW_LINE = [{LCOUNT, 2}] %SELECT_LIST:LCOUNT, 25, LEFT%%SELECT_COMMENT:LCOUNT, 40, LEFT%
+	;---- EDIT 038 MOD END ---------------------------
+	SHOW_LINE = <font color = '%L_COLOR%'>%SHOW_LINE%</font>
+	;---- EDIT 027 MOD START -------------------------
+	IF COUNT_SPLIT(UNABLE_LIST, "/", SELECT_LIST:LCOUNT)
+		SHOW_LINE = <button value = '{LCOUNT}' title = '%L_TITLE:LCOUNT%'>%SHOW_LINE%</button>
+	ELSE
+		SHOW_LINE = <button value = '{LCOUNT}'>%SHOW_LINE%</button>
+	ENDIF
+	;---- EDIT 027 MOD END ---------------------------
+	SHOW_LINE '= "┃" + SHOW_LINE + "┃" + " "
+	SHOW_LINE += SIDE_LIST:(LCOUNT:1)
+	HTML_PRINT SHOW_LINE
+	LCOUNT:1++
+NEXT
+LCOUNT:1--
+WHILE LCOUNT:1++ < SHOW_NUM
+	HTML_PRINT "┃" + " " * 70 + "┃" + " " + SIDE_LIST:(LCOUNT:1)
+WEND
+HTML_PRINT "┗" + "━" * 35 + "┛" + " " + SIDE_LIST:(VARSIZE("SIDE_LIST") - 1)
+DRAWLINE
+PRINTFORMLC [107] 이전캐릭터
+PRINTFORMLC [100] 돌아간다
+PRINTFORMLC [109] 다음캐릭터
+PRINTFORMLC [200] 정렬 [%AUTO_SPLIT("통상/MAG/MAG\%/LV", "/", MAG_ENHANCE_SORT), 4, LEFT%]
+INPUTS
+SELECTCASE RESULTS
+	CASE "90"
+		SIF GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+			SELECT_TRANS = 通常形態
+	CASE "91"
+		SIF GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+			SELECT_TRANS = 変身形態
+	CASE "100"
+		REDRAW STOCK_REDRAW
+		RETURN STOCK_RESULT
+	CASE "107"
+		LIST_NO = LIST_NO > 0 ? LIST_NO - 1 # LIST_NUM - 1
+		;---- EDIT 040 ADD START -------------------------
+		STOCK_CHARA_ID = CFLAG:(Q:LIST_NO):실제가입시간
+		;---- EDIT 040 ADD END ---------------------------
+		ARG = Q:LIST_NO
+		LIST_PAGE = LIST_NO / SHOW_NUM
+	CASE "109"
+		LIST_NO = LIST_NO < LIST_NUM -1 ? LIST_NO + 1 # 0
+		;---- EDIT 040 ADD START -------------------------
+		STOCK_CHARA_ID = CFLAG:(Q:LIST_NO):실제가입시간
+		;---- EDIT 040 ADD END ---------------------------
+		ARG = Q:LIST_NO
+		LIST_PAGE = LIST_NO / SHOW_NUM
+	CASE "+"
+		LIST_PAGE = MIN(LIST_PAGE + 1, (LIST_NUM -1) / SHOW_NUM)
+	CASE "-"
+		LIST_PAGE = MAX(LIST_PAGE - 1, 0)
+	;SORT
+	CASE "200"
+		MAG_ENHANCE_SORT = (MAG_ENHANCE_SORT + 1) % 4
+		SAVEGLOBAL
+		CALL SORT_MAG_ENHANCE, LIST_NUM
+		;リスト位置の取り直し
+		LIST_NO = FINDELEMENT(Q, ARG, 0, LIST_NUM)
+		LIST_PAGE = LIST_NO / SHOW_NUM
+	CASEELSE
+		SIF RESULTS != "0" && TOINT(RESULTS) == 0
+			GOTO START
+		TEMP = TOINT(RESULTS)
+		;リストからのキャラ指定
+		IF INRANGE(TEMP, 1000, 1000 + LIST_NUM - 1)
+			ARG = Q:(TEMP - 1000)
+			;---- EDIT 040 ADD START -------------------------
+			STOCK_CHARA_ID = CFLAG:(Q:(TEMP - 1000)):실제가입시간
+			;---- EDIT 040 ADD END ---------------------------
+			;リスト位置の取り直し
+			LIST_NO = FINDELEMENT(Q, ARG, 0, LIST_NUM)
+			LIST_PAGE = LIST_NO / SHOW_NUM
+			GOTO START
+		ENDIF
+		;個別部分用に表示を整える
+		CLEARLINE LINECOUNT - LINE
+		MAG_ENHANCE_LINE = LINECOUNT + 2 + 6 + VARSIZE("SIDE_LIST")
+
+		SIF !INRANGE(TEMP, 0, VARSIZE("SELECT_LIST")-1)
+			GOTO START
+		;---- EDIT 028 ADD START -------------------------
+		SIF !COUNT_SPLIT(ABLE_LIST, "/", SELECT_LIST:TEMP)
+			GOTO START
+		;---- EDIT 028 ADD END ---------------------------
+		;---- EDIT 027 ADD START -------------------------
+		SIF COUNT_SPLIT(UNABLE_LIST, "/", SELECT_LIST:TEMP)
+			GOTO START
+		;---- EDIT 027 ADD END ---------------------------
+		SELECTCASE SELECT_LIST:TEMP
+			CASE "基本能力強化"
+				CALL ENHANCE_BASE, ARG
+			CASE "香使用強化"
+				CALL ENHANCE_BASE_BY_INCENSE, ARG
+			CASE "ステータスリセット"
+				CALL STATUS_RESET, ARG
+			CASE "スキルランクアップ"
+				CALL MAG_SKILL_RANKUP, ARG, SELECT_TRANS == "変身形態"
+			CASE "スキル消去"
+				CALL MAG_SKILL_DELETE, ARG, SELECT_TRANS == "変身形態"
+			;---- EDIT 032 ADD START -------------------------
+			CASE "スキル抽出"
+				CALL MAG_MAKE_SKILLCARD, ARG, SELECT_TRANS == "変身形態"
+			;---- EDIT 032 ADD END ---------------------------
+			CASE "スキル習得"
+				CALL MAG_LEARN_SKILL, ARG, SELECT_TRANS == "変身形態", BLANK_SKILL
+			CASE "スキル再習得"	
+				;---- EDIT 044 MOD START -------------------------
+				;---- EDIT 038 MOD START -------------------------
+				IF GET_SKILL_CHANGEABLE_RANK(ARG, SELECT_TRANS) || GET_ROLE_PROP("CAN_USE_MANTRA", ARG, , SELECT_TRANS) == 2
+					CALL MAG_REMEMBER_SKILL, ARG, SELECT_TRANS == "変身形態", BLANK_SKILL
+				;達人はスキル入れ替えにする
+				ELSE
+					CALL MAG_REPLACE_SKILL, ARG, SELECT_TRANS
+				ENDIF
+				;---- EDIT 038 MOD END ---------------------------
+				;---- EDIT 044 MOD END ---------------------------
+			CASE "覚醒スキル習得"
+				CALL MAG_LEARN_AWAKE_SKILL, ARG, SELECT_TRANS == "変身形態", BLANK_SKILL
+			CASE "固有スキル習得"
+				CALL MAG_LEARN_SPECIAL_SKILL, ARG, SELECT_TRANS
+			;---- EDIT 001 ADD START -------------------------
+			CASE "写せ身の極意"
+				CALL MAG_LEARN_SKILL_BY_PORTRATE, ARG, SELECT_TRANS
+			;---- EDIT 001 ADD END ---------------------------
+			CASE "攻撃性能強化"
+				CALL MAG_ENHANCE_ATTACK, ARG, SELECT_TRANS == "変身形態"
+			CASE "耐性強化"
+				CALL MAG_ENHANCE_DEFTYPE, ARG
+			;---- EDIT 001 ADD START -------------------------
+			CASE "神格習合"
+				CALL MAG_ENHANCE_DEFTYPE_BY_PORTRATE, ARG, SELECT_TRANS
+			;---- EDIT 001 ADD END ---------------------------
+			CASE "体力気力強化"
+				CALL MAG_GROWTH, ARG
+			CASE "造魔レベルアップ"
+				CALL MAG_ENHANCE_INFO_CHARA, U, SELECT_TRANS == "変身形態"
+				IF GET_CHARA_STOCK_MAG(ARG) >= LVUP_COST
+					PRINTFORML %NAME:ARG%의 레벨이 1 올랐습니다 (현재 LV: {++BASE:ARG:LV})
+					WHILE MAG_ENHANCE_LINE + 2 > LINECOUNT
+						PRINTL 
+					WEND
+					WAIT
+					CALL CONTROL_MAG, ARG, -LVUP_COST
+					CALL EVENT_LEVELUP, ARG, 1
+					TRYCALLFORM EVENT_LEVELUP_{NO:ARG}, 1
+					CALL SYNC_STATUS, ARG
+				ELSE
+					PRINTFORML 필요 MAG가 부족합니다
+					WHILE MAG_ENHANCE_LINE + 2 > LINECOUNT
+						PRINTL 
+					WEND
+					WAIT
+				ENDIF
+			CASE "スキルセット"
+				CALL SET_MANTRA_SKILL, ARG
+			CASE "ステータスセット"
+				CALL MANTRA_BASESTATUS, ARG
+			CASE "マントラ取得"
+				CALL DOWNLOAD_MANTRA, , ,ARG
+			CASE "장비강화"
+				CALL 장비강화 ,ARG
+			CASE "装備能力補正変更"
+				IF GET_CHARA_STOCK_MAG(ARG) >= 装備補正変更コスト
+					CALL 装備能力補正変更 ,ARG
+					SIF RESULT == 1
+						CALL CONTROL_MAG, ARG, -装備補正変更コスト
+				ELSE
+					PRINTFORMW 필요 MAG가 부족합니다
+				ENDIF
+			CASE "武器修練"
+				CALL 武器修練,ARG
+			CASE "顔グラ変更"
+				CALL 顔グラ変更,ARG
+			CASE "ＭＡＧ充填"
+				BASE:ARG:ＭＡＧ = MAXBASE:ARG:ＭＡＧ
+			CASE "触手エネルギー注入"
+				CALL TENTACLE_LABORATORY_MAG, ARG
+			CASEELSE
+				IF INRANGE(FINDELEMENT(SELECT_LIST, SELECT_LIST:TEMP, , , 0), ROLE_SELECT_START, ROLE_SELECT_END - 1)
+					CALLFORM ENHANCE_%CSTR:ARG:롤%_%SELECT_LIST:TEMP%, ARG, SELECT_TRANS
+				ENDIF
+				IF INRANGE(FINDELEMENT(SELECT_LIST, SELECT_LIST:TEMP, , , 0), CHARA_SELECT_START, CHARA_SELECT_END - 1)
+					CALLFORM ENHANCE_{NO:ARG}_%SELECT_LIST:TEMP%, ARG, SELECT_TRANS
+				ENDIF
+		ENDSELECT
+ENDSELECT
+GOTO START
+
+;---- EDIT 023 MOD START -------------------------
+;===================================================
+;基本能力強化
+;基本計算式
+;250 * (n / 3 + 1) * (n / 3 + 2) * CP補正 * MASTER補正 * ロール補正
+;
+;n = 능력강화횟수
+;CP補正 = 900 + MAXBASE:CP / 1000
+;MASTER補正 = 100
+;===================================================
+@ENHANCE_BASE,ARG
+#DIM DYNAMIC ＣＰ보정
+#DIM DYNAMIC LINE, 3
+#DIMS DYNAMIC L_MES
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_COST, 3
+#DIM DYNAMIC INPUT_KEY, 100
+LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - LINE
+CALL MAG_ENHANCE_INFO_CHARA, U
+LINE:1 = LINECOUNT
+
+IF CFLAG:ARG:베어내기플래그 && !COUNT_FREE_MAG_ENHANCE_BASE(ARG)
+	PRINTFORML 계승으로 인해 MAG 강화의 상한이 제한되어 있습니다.
+	PRINTFORML 이로 인해 MAG 강화가 효과를 발휘하는 양이 LV에 따라 변화합니다.
+	PRINTFORML 현재 LV에 따른 MAG 강화 횟수를 초과하는 강화 횟수를 잃는 것으로 제한을 해제할 수 있습니다.
+	PRINTFORML 제한을 해제하시겠습니까?
+	PRINTL 
+	PRINTL [1] 해제한다
+	PRINTL [0] 돌아간다
+	;---- EDIT 025 ADD START -------------------------
+	IF MAG_ENHANCE_LINE < 0
+		LINE:2 = LINECOUNT
+	ELSE
+		CALL PRINT_SPACE_ENHANCE
+	ENDIF
+	DRAWLINE
+	PRINTL [0] 돌아간다
+	CALL INPUTINT, 0, 1
+	IF RESULT == 1
+		CFLAG:ARG:능력강화횟수 = BASE:ARG:LV * 3 / 2 + 18
+		FOR LCOUNT, 1, BASESTATUSNUM
+			CFLAG:ARG:(GET_BASESTATUS(LCOUNT) + "강화횟수") = 0
+		NEXT
+		L_MES = %NAME:ARG%のステータス制限が解除された！
+		CFLAG:ARG:베어내기플래그 = 0
+	ELSE
+		RETURN 0
+	ENDIF
+ELSE
+	VARSET INPUT_KEY
+	INPUT_KEY:0 = 1
+	;能力ＵＰに必要な値を計算
+	L_COST = MAG_CALC_ENHANCE_BASE(ARG), 0, 0
+	FOR LCOUNT, 0, 5
+		L_COST:1 += MAG_CALC_ENHANCE_BASE(ARG, LCOUNT)
+	NEXT
+	FOR LCOUNT, 0, 10
+		L_COST:2 += MAG_CALC_ENHANCE_BASE(ARG, LCOUNT)
+	NEXT
+	IF COUNT_FREE_MAG_ENHANCE_BASE(ARG)
+		PRINTFORML 어느 능력을 강화하시겠습니까？　　({COUNT_FREE_MAG_ENHANCE_BASE(ARG)}회 까지 무상 강화 가능)
+	ELSE
+		IF L_COST < 0
+			PRINTFORML 현재 가능한 강화 상한에 도달했습니다
+		ELSE
+			PRINTFORML 어느 능력을 강화하시겠습니까？　　(현재ＭＡＧ：%TOSTR(GET_CHARA_STOCK_MAG(ARG), "###,0")%)
+		ENDIF
+	ENDIF
+	VARI L_BUTTON_NUM
+	FOR LCOUNT:1, 0, 3
+		PRINTFORM <%AUTO_SPLIT(" +1/ +5/+10", "/", LCOUNT:1)%> 
+		SIF L_COST:(LCOUNT:1) >= 0
+			PRINTFORM <필요ＭＡＧ:%TOSTR(L_COST:(LCOUNT:1), "###,0"), STRLENS(TOSTR(LOCAL:5, "###,0"))%>
+		PRINTL 
+
+		FOR LCOUNT,1,7
+			L_BUTTON_NUM = LCOUNT + LCOUNT:1 * 10
+			SETCOLOR COLOR("デフォルト")
+			INPUT_KEY:L_BUTTON_NUM = 1
+			SIF GET_CHARA_STOCK_MAG(ARG) < L_COST:(LCOUNT:1)
+				INPUT_KEY:L_BUTTON_NUM = 0
+			SIF L_COST:(LCOUNT:1) < 0
+				INPUT_KEY:L_BUTTON_NUM = 0
+			SIF INPUT_KEY:L_BUTTON_NUM == 0
+				SETCOLOR COLOR("DARK-GRAY")
+			PRINTFORML [{L_BUTTON_NUM, 2}] %GET_BASESTATUS(LCOUNT),5% {BASE:ARG:(GET_BASESTATUS(LCOUNT)),4} + {CFLAG:ARG:(GET_BASESTATUS(LCOUNT) + "강화횟수"),4}
+			RESETCOLOR
+		NEXT
+	NEXT
+	;---- EDIT 025 ADD START -------------------------
+	IF MAG_ENHANCE_LINE < 0
+		LINE:2 = LINECOUNT
+	ELSE
+		CALL PRINT_SPACE_ENHANCE
+	ENDIF
+	;---- EDIT 025 ADD END ---------------------------
+	DRAWLINE
+	PRINTL [0] 돌아간다
+	CALL INPUT_ARRAY, INPUT_KEY
+	IF RESULT == 0
+		RETURN 0
+	ELSE
+		SELECTCASE RESULT / 10
+			CASE 0
+				IF GET_CHARA_STOCK_MAG(ARG) < L_COST:0
+					L_MES = MAGが足りない！
+				ELSE
+					L_MES = %NAME:ARG%の%GET_BASESTATUS(RESULT % 10)%が1上がった
+					CFLAG:ARG:(GET_BASESTATUS(RESULT % 10) + "강화횟수") += 1
+					CALL CONTROL_MAG,ARG,-L_COST:0
+					CFLAG:ARG:강화사용ＭＡＧ += L_COST:0
+				ENDIF
+			CASE 1
+				IF GET_CHARA_STOCK_MAG(ARG) < L_COST:1
+					L_MES = MAGが足りない！
+				ELSE
+					L_MES = %NAME:ARG%の%GET_BASESTATUS(RESULT % 10)%が5上がった
+					CFLAG:ARG:(GET_BASESTATUS(RESULT % 10) + "강화횟수") += 5
+					CALL CONTROL_MAG,ARG,-L_COST:1
+					CFLAG:ARG:강화사용ＭＡＧ += L_COST:1
+				ENDIF
+			CASE 2
+				IF GET_CHARA_STOCK_MAG(ARG) < L_COST:2
+					L_MES = MAGが足りない！
+				ELSE
+					L_MES = %NAME:ARG%の%GET_BASESTATUS(RESULT % 10)%が10上がった
+					CFLAG:ARG:(GET_BASESTATUS(RESULT % 10) + "강화횟수") += 10
+					CALL CONTROL_MAG,ARG,-L_COST:2
+					CFLAG:ARG:강화사용ＭＡＧ += L_COST:2
+				ENDIF
+		ENDSELECT
+	ENDIF
+ENDIF
+;能力強化回数は実際に振られてる数から取る
+;強化回数だけ多い＝無償中はカウントが増えない
+VARI STOCK_STAT_SUM = CFLAG:ARG:능력강화횟수
+CFLAG:ARG:능력강화횟수 = MAX(SUMARRAY(CFLAG:ARG:0, GETNUM(CFLAG, "힘강화횟수"), GETNUM(CFLAG, "운강화횟수")+1), CFLAG:ARG:능력강화횟수)
+
+CALL SYNC_STATUS,ARG
+CLEARLINE LINECOUNT - LINE:1
+PRINTFORML %L_MES%
+
+VARI ADD_MASTER_STAT
+ADD_MASTER_STAT = MIN(CFLAG:ARG:능력강화횟수 - STOCK_STAT_SUM, CFLAG:ARG:능력강화횟수 - CFLAG:MASTER:능력강화횟수)
+IF ADD_MASTER_STAT > 0
+	PRINTFORML 
+	PRINTFORML 추가로 %CALLNAME:MASTER%의 능력 강화 횟수가 {ADD_MASTER_STAT}회 늘어났다.
+	CFLAG:MASTER:능력강화횟수 += ADD_MASTER_STAT
+ENDIF
+;---- EDIT 025 ADD START -------------------------
+IF MAG_ENHANCE_LINE < 0
+	WHILE LINECOUNT < LINE:2
+		PRINTL 
+	WEND
+ELSE
+	CALL PRINT_SPACE_ENHANCE
+ENDIF
+;---- EDIT 025 ADD END ---------------------------
+DRAWLINE
+PRINTL [0] 돌아간다
+WAIT
+GOTO START
+;---- EDIT 023 MOD END ---------------------------
+
+;===================================================
+;主に新規加入キャラにMAG強化を与える関数
+;MAG強化の総量はLVごとの基準値に対する100分率で指定する
+;===================================================
+@SET_ENHANCE_BASE_FOR_NEW_CHARA, L_CHARA, L_AMOUNT = 50
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_AMOUNT
+;基本ステータスの33%が最大値
+VARI SUM_ADD_STAT = (BASE:L_CHARA:LV * 3 / 2 + 18) * L_AMOUNT / 100
+VARI CSV_STAT, 7
+;MAG強化が実施されている数だけひいていく。またCSV比率を取っておく
+FOR LCOUNT, 1, BASESTATUSNUM
+	SUM_ADD_STAT -= CFLAG:L_CHARA:(GET_BASESTATUS(LCOUNT) + "강화횟수")
+	CSV_STAT:LCOUNT = CSVBASE(NO:L_CHARA, GETNUM(BASE, GET_BASESTATUS(LCOUNT)))
+NEXT
+SIF SUMARRAY(CSV_STAT) == 0
+	VARSET CSV_STAT, 1, 1, BASESTATUSNUM
+;CSVの比率にあわせて割り振っていく
+IF SUM_ADD_STAT > 0
+	VARI ADD_STAT, 7
+	FOR LCOUNT, 1, BASESTATUSNUM
+		ADD_STAT:LCOUNT = SUM_ADD_STAT * CSV_STAT:LCOUNT / SUMARRAY(CSV_STAT)
+		ADD_STAT:LCOUNT = SUM_ADD_STAT * CSV_STAT:LCOUNT / SUMARRAY(CSV_STAT)
+	NEXT
+	;端数調整
+	WHILE SUM_ADD_STAT != SUMARRAY(ADD_STAT)
+		IF SUM_ADD_STAT > SUMARRAY(ADD_STAT)
+			ADD_STAT:FINDELEMENT(ADD_STAT, MINARRAY(ADD_STAT, 1, BASESTATUSNUM), 1, BASESTATUSNUM) += 1
+		ELSE
+			ADD_STAT:FINDELEMENT(ADD_STAT, MAXARRAY(ADD_STAT, 1, BASESTATUSNUM), 1, BASESTATUSNUM) -= 1
+		ENDIF
+	WEND
+	FOR LCOUNT, 1, BASESTATUSNUM
+		CFLAG:L_CHARA:(GET_BASESTATUS(LCOUNT) + "강화횟수") += ADD_STAT:LCOUNT
+	NEXT
+ENDIF
+CFLAG:L_CHARA:능력강화횟수 = 0
+FOR LCOUNT, 1, BASESTATUSNUM
+	CFLAG:L_CHARA:능력강화횟수 += CFLAG:L_CHARA:(GET_BASESTATUS(LCOUNT) + "강화횟수")
+NEXT
+
+;===================================================
+;香使用
+;===================================================
+@ENHANCE_BASE_BY_INCENSE, ARG
+#DIM LINE, 3
+#DIMS L_MES
+#DIM LCOUNT, 2
+#DIM CONST CNT_ENHANCE_TABLE = 1, 5, 10
+#DIM CNT_ENHANCE
+#DIMS L_STAT
+LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - LINE
+CALL MAG_ENHANCE_INFO_CHARA, U
+LINE:1 = LINECOUNT
+PRINTFORML 어느 능력을 강화하시겠습니까？　　(소지마카：%TOSTR(MONEY:1, "###,0")%)
+PRINTFORML (※향의 부족분은 10000마카를 소모해 강화할 수 있습니다)
+VARI NEED_MACCA
+FOR LCOUNT:1, 0, 3
+	PRINTFORML <%AUTO_SPLIT(" +1/ +5/+10", "/", LCOUNT:1)%>
+	FOR LCOUNT,1,7
+		NEED_MACCA = MAX((CNT_ENHANCE_TABLE:(LCOUNT:1) - ITEM:@"%GET_BASESTATUS(LCOUNT)%의향") * 10000, 0)
+		SETCOLOR MONEY:1 >= NEED_MACCA ? COLOR("デフォルト") # COLOR("DARK-GRAY")	
+		PRINTFORM [{LCOUNT + LCOUNT:1 * 10, 2}] %GET_BASESTATUS(LCOUNT),5% {BASE:ARG:GET_BASESTATUS(LCOUNT), 3}
+		IF NEED_MACCA
+			PRINTFORML (필요마카:{NEED_MACCA})
+		ELSE
+			PRINTFORML (향소지수:{ITEM:@"%GET_BASESTATUS(LCOUNT)%의향"})
+		ENDIF
+	NEXT
+	RESETCOLOR
+NEXT
+;---- EDIT 025 ADD START -------------------------
+IF MAG_ENHANCE_LINE < 0
+	LINE:2 = LINECOUNT
+ELSE
+	CALL PRINT_SPACE_ENHANCE
+ENDIF
+;---- EDIT 025 ADD END ---------------------------
+DRAWLINE
+PRINTL [0] 돌아간다
+INPUT
+IF RESULT == 0
+	RETURN 0
+ELSEIF INRANGE(RESULT % 10, 1, 7)
+	CLEARLINE LINECOUNT - LINE:1
+	L_STAT '= GET_BASESTATUS(RESULT % 10)
+	CNT_ENHANCE = CNT_ENHANCE_TABLE:(RESULT / 10)
+	NEED_MACCA = MAX((CNT_ENHANCE - ITEM:@"%L_STAT%의향") * 10000, 0)
+	IF NEED_MACCA == 0
+		ITEM:@"%L_STAT%의향" -= CNT_ENHANCE
+	ELSE
+		IF MONEY:1 >= NEED_MACCA
+			MONEY:1 -= NEED_MACCA
+			ITEM:@"%L_STAT%의향" = 0
+		ELSE
+			GOTO START
+		ENDIF
+	ENDIF
+	BASE:ARG:L_STAT += CNT_ENHANCE
+	CFLAG:ARG:@"향사용횟수_%L_STAT%" += CNT_ENHANCE
+	PRINTFORML %CALLNAME:ARG%의 %조사처리(L_STAT,"이")% {CNT_ENHANCE} 올랐다！
+	CALL SYNC_STATUS,ARG
+	IF MAG_ENHANCE_LINE < 0
+		WHILE LINECOUNT < LINE:2
+			PRINTL 
+		WEND
+	ELSE
+		CALL PRINT_SPACE_ENHANCE
+	ENDIF
+	DRAWLINE
+	PRINTW [0] 돌아간다
+ENDIF
+GOTO START
+;===================================================
+;スキルランクアップ
+;===================================================
+@MAG_SKILL_RANKUP,ARG,ARG:1
+#DIM LCOUNT, 2
+#DIM LINE, 2
+#DIM L_RESULT
+#DIM L_SKILLCOUNT, 1
+#DIM 必要ＭＡＧ , 10
+#DIM ＣＰ보정, 1
+#DIM IS_TRANS
+#DIMS TRANS_MODE
+#DIM L_SHOWNUM
+#DIMS L_SKILL_TYPE
+#DIM L_SKILL, 5
+#DIMS L_SKILLS
+#DIM RANKUP_NUM, 21
+#DIM SKILL_RANK
+
+IS_TRANS = ARG:1
+;---- EDIT 044 ADD START -------------------------
+TRANS_MODE = \@IS_TRANS ? 変身形態 # 通常形態\@
+;---- EDIT 044 ADD END ---------------------------
+L_SKILLCOUNT = CHANGEABLE_SKILLCOUNT(ARG, , \@IS_TRANS ? 変身形態 # 通常形態\@)
+
+LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - LINE
+CALL MAG_ENHANCE_INFO_CHARA, U
+;---- EDIT 013 MOD START -------------------------
+PRINTFORML □스킬 랭크업　　(현재ＭＡＧ：%TOSTR(GET_CHARA_STOCK_MAG(ARG), "###,0")%)
+;---- EDIT 013 MOD END -------------------------
+DRAWLINE
+LINE:1 = LINECOUNT
+IF GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+	L_SKILL_TYPE = \@IS_TRANS ? 초기변신악마스킬 # 인간시스킬\@
+ELSE
+	L_SKILL_TYPE = 스킬
+ENDIF
+VARSET RANKUP_NUM
+FOR LCOUNT, 0, L_SKILLCOUNT
+	L_SKILL = ABL:ARG:@"%L_SKILL_TYPE%{LCOUNT+1}"
+	IF L_SKILL > 0
+		RESULT = 0
+		CALL GET_SKILL_PROP, "SKILL_RANKUP", L_SKILL, ARG
+		RANKUP_NUM:(LCOUNT+1) = RESULT
+		SIF RESULT == 0
+			SETCOLOR 0x404040
+		CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL,ARG
+		PRINTFORM 　[{LCOUNT+1, 2}] %RESULTS, 20,LEFT%
+		;---- EDIT 048 MOD START -------------------------
+		IF RANKUP_NUM:(LCOUNT+1)
+			PRINT 　>>>　
+			FOR LCOUNT:1, 1, 1 + RANKUP_NUM:(LCOUNT+1)
+				IF LOCAL:1 > 0 && LCOUNT:1 % 3 == 1
+					PRINTL 
+					PRINTFORM %" " * (2 + 4 + 1 + 20 + 2 + 3 + 2)%
+				ENDIF
+				PRINTFORM %"[" + SKILL_NAME_F(D:(LCOUNT:1)) + "]", 24,LEFT%
+			NEXT
+		ENDIF
+		;---- EDIT 048 MOD END ---------------------------
+		SIF !LINEISEMPTY()
+			PRINTL 
+		RESETCOLOR
+	ENDIF
+NEXT
+CALL PRINT_SPACE_ENHANCE
+DRAWLINE
+PRINTL [0] 돌아간다
+
+INPUT
+L_RESULT = RESULT
+$INPUT_LOOP
+CLEARLINE LINECOUNT - LINE:1
+IF L_RESULT == 0
+	RETURN 0
+ELSEIF L_RESULT < 1 || L_RESULT > L_SKILLCOUNT
+	GOTO START
+ELSEIF !RANKUP_NUM:L_RESULT
+	PRINTL 랭크업할 수 없는 스킬입니다。
+	CALL PRINT_SPACE_ENHANCE
+	DRAWLINE
+	PRINTW [0] 돌아간다
+	GOTO START
+ELSE
+	VARSET D,-1
+	L_SKILLS = %L_SKILL_TYPE%{L_RESULT}
+	L_SKILL = ABL:ARG:L_SKILLS
+	VARSET E, -1
+	VARSET F, 100 * 100 * 100 * 100 * 100
+	CALL SET_RANKUP_TREE, L_SKILL, ARG, IS_TRANS
+	DRAWLINE
+	LCOUNT = 0
+	L_SHOWNUM = LINELENS() / 42
+	WHILE E:LCOUNT >= 0
+		SETCOLOR GET_CHARA_STOCK_MAG(ARG) < F:LCOUNT ? COLOR("DARK-GRAY") # GETDEFCOLOR()
+		PRINTFORM [{LCOUNT+1, 2}] %SKILL_NAME_F(E:LCOUNT), 20, LEFT%%TOSTR(F:LCOUNT, "###,0"), 12%MAG　
+		SIF LCOUNT % L_SHOWNUM == (L_SHOWNUM - 1)
+			PRINTL 
+		LCOUNT++
+	WEND
+	RESETCOLOR
+	SIF !LINEISEMPTY()
+		PRINTL 
+	CALL PRINT_SPACE_ENHANCE
+	DRAWLINE
+	PRINTL [0] 돌아간다
+	INPUT
+	CLEARLINE LINECOUNT - LINE:1
+	IF RESULT == 0
+		GOTO START
+	ELSEIF INRANGE(RESULT - 1,0, VARSIZE("E")) || E:RESULT > 0
+		RESULT--
+		L_SKILL = E:RESULT
+		;---- EDIT 044 MOD START -------------------------
+		IF CHECK_SKILL(ARG,L_SKILL) > 0 || (GET_ROLE_PROP("CAN_USE_MANTRA", ARG, , TRANS_MODE) == 2 && CDFLAG:ARG:식노습득스킬:L_SKILL)
+			PRINTL 이미 습득한 스킬입니다。
+			CALL PRINT_SPACE_ENHANCE
+			DRAWLINE
+			PRINTW [0] 돌아간다
+			GOTO INPUT_LOOP
+		ENDIF
+		;---- EDIT 044 MOD END ---------------------------
+		必要ＭＡＧ = F:RESULT
+		IF GET_CHARA_STOCK_MAG(ARG) < 必要ＭＡＧ
+			SIF F:RESULT == 100 * 100 * 100 * 100 * 100
+				GOTO INPUT_LOOP
+			PRINTL ＭＡＧ가 부족합니다
+			CALL PRINT_SPACE_ENHANCE
+			DRAWLINE
+			PRINTW [0] 돌아간다
+			GOTO INPUT_LOOP
+		ENDIF
+		CLEARLINE LINECOUNT - LINE:1
+		SIF FLAG:스킬속성표시설정 == 1
+			CALL SKILL_EXPLAIN_PERFORMANCE, L_SKILL, ARG
+		CALL GET_SKILL_PROP, "SKILL_EXPLAIN", L_SKILL, ARG
+		DRAWLINE
+		PRINTL 괜찮겠습니까？
+		PRINTFORML [0] Yes
+		PRINTFORML [1] No
+		CALL PRINT_SPACE_ENHANCE
+		DRAWLINE
+		PRINTL
+		INPUT
+		SELECTCASE RESULT
+			CASE 0
+				CLEARLINE LINECOUNT - LINE:1
+				CALL CONTROL_MAG, ARG, -必要ＭＡＧ
+				CALL GET_SKILL_PROP, "SKILL_NAME", ABL:ARG:L_SKILLS, ARG
+				PRINTFORM %조사처리(NAME:ARG,"는")% 순간적인 번뜩임으로 %조사처리(RESULTS,"를")%
+				;---- EDIT 044 MOD START -------------------------
+				SIF GET_ROLE_PROP("CAN_USE_MANTRA", ARG, , TRANS_MODE) == 2
+					CALL PUSH_LEARNED_MANTRA_SKILLLIST, ARG, L_SKILL
+				;---- EDIT 044 MOD END ---------------------------
+				CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, ARG
+				PRINTFORML %조사처리(RESULTS,"로")% 랭크업시켰다！
+				CALL PRINT_SPACE_ENHANCE
+				DRAWLINE
+				PRINTL 
+				WAIT
+				CALL DEL_FRIEND_HAVE_SKILL, ARG, , \@IS_TRANS ? 変身形態 # 通常形態\@, L_RESULT
+				CALL SET_FRIEND_HAVE_SKILL, ARG, L_SKILL, \@IS_TRANS ? 変身形態 # 通常形態\@, L_RESULT
+				CALL SYNC_STATUS,ARG
+				CALL HEALTH_CHARA,ARG
+			CASEELSE
+				GOTO INPUT_LOOP
+		ENDSELECT
+	ELSE
+		GOTO INPUT_LOOP
+	ENDIF
+ENDIF
+GOTO START
+
+
+;===================================================
+;ランクアップのツリー表示 & 必要MAG取得関数
+;
+;起点のスキルとスキルの持ち主を設定して呼び出したら再帰で自分を呼び出し続ける
+;以下の配列を使うので注意
+;D:各スキルのランクアップ候補を取得するのに使う
+;E:最終的なランクアップ候補を格納
+;F:各ランクアップ候補の必要MAGを格納
+;
+;ランクアップコストは基本的に1→4→10と1→10のように経路が違っても端数計算がずれるくらいの違いしかないのですが
+;経由スキルに相性が違うものが混ざるなどで一部だけ補正がかかるような措置が入ると結果が大きく変わるので、
+;いちおうそこらへんが発生することも見込んで1→4+4+10のように経由を含めて算出する形にしてあります
+;===================================================
+@SET_RANKUP_TREE, L_SKILL, ARG, IS_TRANS, L_TIER, L_NUM, L_COST
+#DIM DYNAMIC L_SKILL, 2
+#DIM DYNAMIC LCOUNT
+#DIM IS_TRANS
+#DIMS L_TRANS
+#DIM DYNAMIC L_TIER;ツリー深度
+#DIM L_BLANK;空白の個数
+#DIM L_SHOWNUM;一行あたりの表示数
+#DIM DYNAMIC L_COST;必要コスト
+#DIM DYNAMIC L_NUM;何本目のツリーか
+#DIM TEMP
+L_SHOWNUM = LINELENS() / 26
+L_TRANS = \@IS_TRANS ? 変身形態 # 通常形態\@
+SIF L_TIER == L_SHOWNUM
+	PRINTFORML 　→　
+;深度が表示数を超えたら空白が必要になる
+L_BLANK = L_TIER >= L_SHOWNUM ? L_TIER - 4 # L_TIER
+SIF L_NUM > 1 || L_TIER == L_SHOWNUM
+	PRINTFORM %" " * 20 * L_BLANK + " " * 6 * MAX(L_BLANK -1, 0)%
+IF L_BLANK > 0
+	IF L_TIER == L_SHOWNUM
+		PRINTFORM 　　　
+	ELSE
+		PRINTFORM 　→　
+	ENDIF
+ENDIF
+PRINTFORM %"[" + SKILL_NAME_F(L_SKILL) + "]", 20, LEFT%
+FOR LCOUNT, 1, 10
+	RESULT = 0
+	CALL GET_SKILL_PROP, "SKILL_RANKUP", L_SKILL, ARG
+	IF RESULT < LCOUNT
+		SIF !LINEISEMPTY()
+			PRINTL 
+		BREAK
+	ENDIF
+	L_SKILL:1 = D:LCOUNT
+	IF !GET_ROLE_PROP("CAN_USE_MANTRA", ARG, , L_TRANS) || !L_TIER
+		CALL GET_SKILL_PROP, "SKILL_RANK", L_SKILL:1, ARG
+		TEMP = POWER(RESULT,3)
+		CALL GET_SKILL_PROP, "SKILL_RANK", L_SKILL, ARG
+		TEMP -= POWER(RESULT,3)
+		TEMP *= 200
+		CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", D:LCOUNT, ARG
+		SIF TALENT:ARG:GET_SUCCESSION(RESULT) == 0
+			TEMP *= 2
+		CALL HAVE_SKILL_SUCCESSION_BODY, ARG, D:LCOUNT
+		SIF RESULT
+			TEMP /= 2
+		;喰奴はMAG量5倍
+		SIF GET_ROLE_PROP("CAN_USE_MANTRA", ARG, , L_TRANS)
+			TEMP *= 5
+		TEMP = TEMP * ＭＡＧ強化ＣＰ補正(ARG) / 1000
+		TEMP += L_COST
+		SIF FINDELEMENT(E, L_SKILL:1) < 0
+			E:FINDELEMENT(E, -1) = L_SKILL:1
+		F:FINDELEMENT(E, L_SKILL:1) = MIN(TEMP, F:FINDELEMENT(E, L_SKILL:1))
+	ENDIF
+	CALL SET_RANKUP_TREE, L_SKILL:1, ARG, IS_TRANS, L_TIER + 1, LCOUNT, TEMP
+NEXT
+
+;===================================================
+;スキル変異
+;
+;2022/12時点で未使用
+;===================================================
+@MAG_SKILL_MUTATION,ARG, ARG:1
+#DIM LCOUNT, 2
+#DIM LINE, 2
+#DIMS L_MES
+#DIM L_RESULT
+#DIM L_SKILLCOUNT, 1
+#DIM DEL_COST , 21
+#DIM L_HAVE_SKILL, 21
+#DIM ＣＰ보정, 1
+#DIM IS_TRANS
+#DIMS TRANS_MODE
+#DIMS L_SKILL_TYPE
+#DIM L_SKILL
+#DIMS L_SKILLS
+#DIM L_RANK
+#DIM L_CNT
+#DIM SKILL_RANK
+
+IS_TRANS = ARG:1
+;---- EDIT 044 ADD START -------------------------
+TRANS_MODE = \@IS_TRANS ? 変身形態 # 通常形態\@
+;---- EDIT 044 ADD END ---------------------------
+L_SKILLCOUNT = CHANGEABLE_SKILLCOUNT(ARG, , \@IS_TRANS ? 変身形態 # 通常形態\@)
+
+LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - LINE
+CALL MAG_ENHANCE_INFO_CHARA, U
+;---- EDIT 013 MOD START -------------------------
+PRINTFORML □스킬 변이　　(현재 ＭＡＧ：%TOSTR(GET_CHARA_STOCK_MAG(ARG), "###,0")%)
+;---- EDIT 013 MOD END -------------------------
+DRAWLINE
+PRINTL 어느 스킬을 변이시키겠습니까?
+LINE:1 = LINECOUNT
+IF GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+	L_SKILL_TYPE = \@IS_TRANS ? 초기변신악마스킬 # 인간시스킬\@
+ELSE
+	L_SKILL_TYPE = 스킬
+ENDIF
+VARSET DEL_COST
+VARSET L_HAVE_SKILL, -1
+FOR LCOUNT, 0, L_SKILLCOUNT
+	L_SKILL = ABL:ARG:@"%L_SKILL_TYPE%{LCOUNT}"
+	IF L_SKILL > 0
+		L_HAVE_SKILL:LCOUNT = L_SKILL
+		;削除不能属性をチェック
+		CALL GET_SKILL_PROP, "SKILL_DEL_UNABLE", L_SKILL, ARG
+		SIF RESULT
+			DEL_COST:(LCOUNT + 1) = -1
+		;コスト計算
+		IF DEL_COST:(LCOUNT + 1) >= 0
+			CALL GET_SKILL_PROP, "SKILL_RANK",L_SKILL, ARG
+			DEL_COST:(LCOUNT + 1) = POWER(RESULT,3) * 500
+			;---- EDIT 044 MOD START -------------------------
+			;喰奴はMAG量5倍
+			SIF GET_ROLE_PROP("CAN_USE_MANTRA", ARG, , TRANS_MODE) == 2
+				DEL_COST:(LCOUNT + 1) = 0
+			;---- EDIT 044 MOD END ---------------------------
+		ENDIF
+		CALL PRINT_COLOR, @"　[{LCOUNT+1, 2}] %SKILL_NAME_F(L_SKILL),20,LEFT%", INRANGE(DEL_COST:(LCOUNT + 1), 1, GET_CHARA_STOCK_MAG(ARG))
+		IF DEL_COST:(LCOUNT + 1) < 0
+			PRINTFORML 변이 불가 스킬
+		ELSE
+			CALL PRINT_COLOR, @"必要ＭＡＧ:%TOSTR(DEL_COST:(LCOUNT + 1), "X.XXX"), 8%", INRANGE(DEL_COST:(LCOUNT + 1), 1, GET_CHARA_STOCK_MAG(ARG)), "L"
+		ENDIF
+	ENDIF
+NEXT
+CALL PRINT_SPACE_ENHANCE
+DRAWLINE
+PRINTL [0] 돌아간다
+
+$INPUT_LOOP
+INPUT
+CLEARLINE LINECOUNT - LINE:1
+L_RESULT = RESULT
+IF L_RESULT == 0
+	RETURN 0
+ELSEIF !INRANGE(L_RESULT, 1, L_SKILLCOUNT)
+	GOTO START
+ELSEIF !DEL_COST:L_RESULT
+	GOTO START
+ELSEIF DEL_COST:L_RESULT == -1
+	L_MES = 変異出来ないスキルです。
+ELSEIF GET_CHARA_STOCK_MAG(ARG) < DEL_COST:L_RESULT
+	L_MES = ＭＡＧ가 부족합니다
+ELSE
+	L_SKILLS = %L_SKILL_TYPE%{RESULT}
+	L_SKILL = ABL:ARG:L_SKILLS
+	
+	;変異候補リスト作成
+	VARSET D,-1
+	CALL GET_SKILL_PROP, "SKILL_RANK", L_SKILL, ARG
+	L_RANK = RESULT
+	L_CNT = 0
+	FOR LCOUNT,1,SKILLNUM
+		RESULT = 0
+		CALL GET_SKILL_PROP, "SKILL_RANK", LCOUNT, -1
+		;変位可能ななランク内におさまっているか
+		SIF !INRANGE(RESULT, 1, 15)
+			CONTINUE
+		;変異はスキルランク±1から選定される
+		SIF !INRANGE(RESULT, L_RANK -1, L_RANK + 1)
+			CONTINUE
+		;所持しているスキルははじく
+		SIF MATCH(L_HAVE_SKILL, LCOUNT)
+			CONTINUE
+		D:L_CNT = LCOUNT
+		L_CNT++
+	NEXT
+	IF L_CNT == 0
+		L_MES = ………失敗した
+	ELSE
+		CALL CONTROL_MAG,ARG, -DEL_COST:L_RESULT
+		L_MES = %ARG는% %SKILL_NAME_F(L_SKILL)%を忘れ、
+		L_SKILL = D:(RAND:L_CNT)
+		ABL:ARG:L_SKILLS = L_SKILL
+		;---- EDIT 044 MOD START -------------------------
+		SIF GET_ROLE_PROP("CAN_USE_MANTRA", ARG, , TRANS_MODE) == 2
+			CALL PUSH_LEARNED_MANTRA_SKILLLIST, ARG, L_SKILL
+		;---- EDIT 044 MOD END ---------------------------
+		L_MES += SKILL_NAME_F(L_SKILL) + "を습득했다！"
+		;変身・リンク関係のスキルを所持スキルに反映
+		CALL FIX_CHARA_TRANS_SKILL, ARG
+		CALL SYNC_STATUS,ARG
+		CALL HEALTH_CHARA,ARG
+	ENDIF
+ENDIF
+PRINTFORML %L_MES%
+CALL PRINT_SPACE_ENHANCE
+DRAWLINE
+PRINTW [0] 돌아간다
+GOTO START
+
+;===================================================
+;スキル習得
+;===================================================
+@MAG_LEARN_SKILL, ARG, ARG:1, ARGS
+#DIM LCOUNT, 2
+#DIM LINE, 2
+#DIMS L_MES
+#DIM L_RESULT
+#DIM L_SKILLCOUNT, 1
+#DIM DEL_COST , 21
+#DIM L_HAVE_SKILL, 21
+#DIM ＣＰ보정, 1
+#DIM IS_TRANS
+#DIMS TRANS_MODE
+#DIMS L_SKILL_TYPE
+#DIM L_SKILL
+#DIMS L_SKILLS
+#DIM L_RANK
+#DIM L_COST
+#DIM L_CNT
+#DIM CAN_LEARN_SUCCESSION, SUCCESSIONNUM
+#DIM SKILL_RANK
+#DIM SHOW_SUCCESSION
+#DIM L_PAGE
+#DIM L_PAGE_MAX
+#DIM SHOWLINENUM
+
+IS_TRANS = ARG:1
+TRANS_MODE = \@IS_TRANS ? 変身形態 # 通常形態\@
+L_SKILLCOUNT = GET_ROLE_PROP("CHANGEABLE_SKILLCOUNT", ARG, , TRANS_MODE)
+
+LINE = LINECOUNT
+L_PAGE = 0
+SHOW_SUCCESSION = -1
+$START
+CLEARLINE LINECOUNT - LINE
+CALL MAG_ENHANCE_INFO_CHARA, U, IS_TRANS
+PRINTL □스킬 습득
+LINE:1 = LINECOUNT
+;---- EDIT 049 MOD START -------------------------
+SHOWLINENUM = MAG_ENHANCE_LINE - LINE:1 -2 -5
+IF SHOW_SUCCESSION >= 0
+	CALL スキルカード在庫確認(SHOW_SUCCESSION, ARG, , IS_TRANS)
+	IF RESULT
+		L_PAGE_MAX = RESULT / (SHOWLINENUM * 3)
+		FOR LCOUNT:1, 0, SHOWLINENUM
+			FOR LCOUNT, 0, 3
+				L_SKILL = HAVE_SKILLCARD_LIST:(LCOUNT:1 * 3 + LCOUNT + L_PAGE * SHOWLINENUM * 3)
+				SIF !L_SKILL
+					CONTINUE
+				SIF !ITEM:(10000 + L_SKILL)
+					CONTINUE
+				;---- EDIT 044 MOD START -------------------------
+				SIF CDFLAG:ARG:식노습득스킬:L_SKILL && GET_ROLE_PROP("CAN_USE_MANTRA", ARG, , TRANS_MODE) == 2
+					SETCOLOR COLOR("DARK-GRAY")
+				;---- EDIT 044 MOD END ---------------------------
+				CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, ARG
+				PRINTFORM [{L_SKILL, 4}] %RESULTS, 22, LEFT% × {ITEM:(10000 + L_SKILL), 3}　
+				;---- EDIT 028 ADD START -------------------------
+				RESETCOLOR
+				;---- EDIT 028 ADD END ---------------------------
+			NEXT
+			PRINTFORML 
+		NEXT
+		DRAWLINE
+		SIF !L_PAGE_MAX
+			SETCOLOR COLOR("DARK-GRAY")
+		PRINTFORM %" " * 20%
+		PRINTBUTTON "[-] 이전페이지", "-"
+		PRINTFORM %" " * 16%<Page.{L_PAGE}>%" " * 14%
+		PRINTBUTTON "[+] 다음페이지", "+"
+		RESETCOLOR
+		SIF !LINEISEMPTY()
+			PRINTL 
+	ENDIF
+ELSE
+	CALL PRINT_SPACE_ENHANCE
+	CLEARLINE 5
+ENDIF
+;---- EDIT 049 MOD END ---------------------------
+DRAWLINE
+CALL スキルカード在庫確認(, ARG, , IS_TRANS)
+FOR LCOUNT, 0, 21
+	SIF FLAG:SHOP커맨드 == [[ショップ:동료마강화]] && !相性素質チェック_F(ARG, LCOUNT, TRANS_MODE)
+		SETCOLOR 0xDDDDDD
+	SIF (FLAG:SHOP커맨드 == [[ショップ:벨벳룸]] || FLAG:SHOP커맨드 == [[ショップ:탐색]]) && !相性素質チェック_F(ARG, LCOUNT, TRANS_MODE)
+		SETCOLOR STRFLAG_EV("初期ペルソナスキル習得", 0, [[이벤트:페르소나]]) ? 0xDDDDDD # 0x404040
+	SIF !Z:LCOUNT	;使えるカードが無い系統は暗く表示
+		SETCOLOR 0x606060
+	;選択中の素質を表示
+	SIF LCOUNT == SHOW_SUCCESSION
+		SETCOLOR COLOR("aqua")
+	PRINTBUTTON @"[%"s" + TOSTR(LCOUNT), 3%] %GET_SUCCESSION(LCOUNT)%", "s" + TOSTR(LCOUNT)
+	IF GET_SKILL_CHANGEABLE_RANK(ARG, TRANS_MODE) == 2
+		PRINTFORM 　\@ 相性素質チェック_F(ARG, LCOUNT, TRANS_MODE) ? ○ # × \@　
+	ELSEIF GET_SKILL_CHANGEABLE_RANK(ARG, TRANS_MODE) == 1
+		PRINTFORM 　×　
+	ELSEIF FLAG:SHOP커맨드 == [[ショップ:동료마강화]]
+		PRINTFORM 　\@ 相性素質チェック_F(ARG, LCOUNT, TRANS_MODE) ? ○ # △ \@　
+	ELSEIF (FLAG:SHOP커맨드 == [[ショップ:벨벳룸]] || FLAG:SHOP커맨드 == [[ショップ:탐색]])
+		IF STRFLAG_EV("初期ペルソナスキル習得", 0, [[이벤트:페르소나]])
+			PRINTFORM 　\@ 相性素質チェック_F(ARG, LCOUNT, TRANS_MODE) ? ○ # △ \@　
+		ELSE
+			PRINTFORM 　\@ 相性素質チェック_F(ARG, LCOUNT, TRANS_MODE) ? ○ # × \@　
+		ENDIF
+	ELSE	
+		PRINTFORM 　　
+	ENDIF
+	PRINT 　
+	SIF LCOUNT % 6 == 5
+		PRINTL 
+	RESETCOLOR
+NEXT
+IF SHOW_SUCCESSION == 22
+	SETCOLOR COLOR("aqua")
+ELSE
+	SETCOLOR Z:22 ? GETDEFCOLOR() # 0x606060
+ENDIF
+PRINTBUTTON "[s22] 자동효과　　", "s22"
+IF SHOW_SUCCESSION == 23
+	SETCOLOR COLOR("aqua")
+ELSE
+	SETCOLOR Z:23 ? GETDEFCOLOR() # 0x606060
+ENDIF
+PRINTBUTTON "[s23] 레어　　　", "s23"
+SIF !LINEISEMPTY()
+	PRINTL 
+RESETCOLOR
+DRAWLINE
+PRINTL [0] 돌아간다
+INPUTS
+IF RESULTS == "-"
+	L_PAGE = L_PAGE ? L_PAGE -1 # L_PAGE_MAX
+	GOTO START
+ENDIF
+IF RESULTS == "+"
+	L_PAGE = L_PAGE < L_PAGE_MAX ? L_PAGE + 1 # 0
+	GOTO START
+ENDIF
+IF SUBSTRING(RESULTS, 0, 1) == "s"
+	IF RESULTS == "s0"
+		IF Z:0
+			SHOW_SUCCESSION = 0
+			L_PAGE = 0
+		ENDIF
+	ELSE
+		RESULT = TOINT(SUBSTRING(RESULTS, 1))
+		IF INRANGE(RESULT, 1, 23)
+			IF Z:RESULT
+				SHOW_SUCCESSION = RESULT
+				L_PAGE = 0
+			ENDIF
+		ENDIF		
+	ENDIF
+	GOTO START
+ENDIF
+SIF RESULTS == "0"
+	RETURN 0
+L_SKILL = TOINT(RESULTS)
+SIF L_SKILL <= 0
+	GOTO START
+SIF !MATCH(HAVE_SKILLCARD_LIST, L_SKILL)
+	GOTO START
+$INPUT_LOOP
+CLEARLINE LINECOUNT - LINE:1
+DRAWLINE
+
+;コストを計算
+CALL GET_SKILL_PROP, "SKILL_RANK", L_SKILL, ARG
+L_RANK = RESULT
+L_COST = POWER(RESULT,3)*150 * ＭＡＧ強化ＣＰ補正(ARG) / 1000
+;---- EDIT 044 MOD START -------------------------
+;喰奴はMAG量5倍
+SIF GET_ROLE_PROP("CAN_USE_MANTRA", ARG, , TRANS_MODE) == 2
+	L_COST *= 5
+;---- EDIT 044 MOD END ---------------------------
+CALL GET_SKILL_PROP, "継承不能", L_SKILL, ARG
+SIF RESULT
+	L_COST *= 3
+
+CALL GET_SKILL_PROP, "SKILL_SUCCESSION_TYPE", L_SKILL, ARG
+SIF TALENT:ARG:GET_SUCCESSION(RESULT) == 0
+	L_COST *= 2
+CALL HAVE_SKILL_SUCCESSION_BODY, ARG, L_SKILL
+SIF RESULT
+	L_COST /= 2
+
+CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, ARG
+PRINTFORML □%RESULTS%
+SIF FLAG:스킬속성표시설정 == 1
+	CALL SKILL_EXPLAIN_PERFORMANCE, L_SKILL, ARG
+CALL GET_SKILL_PROP, "SKILL_EXPLAIN", L_SKILL, ARG
+;---- EDIT 013 MOD START -------------------------
+PRINTFORML 스킬 랭크:{L_RANK,2}
+PRINTFORML 필요 ＭＡＧ　:%TOSTR(L_COST, "###,0"), 8%　
+DRAWLINE
+PRINTFORML %CALLNAME:ARG,20,LEFT%(현재ＭＡＧ：%TOSTR(GET_CHARA_STOCK_MAG(ARG), "###,0")%)
+;---- EDIT 013 MOD END -------------------------
+IF CDFLAG:ARG:식노습득스킬:L_SKILL && GET_ROLE_PROP("CAN_USE_MANTRA", ARG, , TRANS_MODE) == 2
+	PRINTFORML 이미 습득한 스킬입니다.
+ELSEIF L_COST > GET_CHARA_STOCK_MAG(ARG)
+	PRINTFORML ＭＡＧ가 부족합니다
+ELSE
+	PRINTL 습득하시겠습니까？
+	PRINTBUTTON "[0] Yes" + " " * 20, 0
+	PRINTL 
+	PRINTBUTTON "[1] No" + " " * 20, 1
+	PRINTL 
+	CALL PRINT_SPACE_ENHANCE
+	DRAWLINE
+	PRINTL 
+	INPUT
+	SELECTCASE RESULT
+		CASE 0
+			CLEARLINE LINECOUNT - LINE:1
+			;ABL:ARG:ARGS = L_SKILL
+			;喰奴は習得スキル追加
+			;---- EDIT 028 MOD START -------------------------
+			IF GET_ROLE_PROP("CHANGEABLE_SKILLCOUNT", ARG, , TRANS_MODE)
+				IF GET_ROLE_PROP("CAN_USE_MANTRA", ARG, , TRANS_MODE) == 2
+					CALL PUSH_LEARNED_MANTRA_SKILLLIST, ARG, L_SKILL
+					;スキル欄に空きがあるならそのままセット
+					SIF ARGS != ""
+						CALL SET_FRIEND_HAVE_SKILL, ARG, L_SKILL, TRANS_MODE
+				ELSE
+					IF ARGS != ""
+						CALL SET_FRIEND_HAVE_SKILL, ARG, L_SKILL, TRANS_MODE
+					ELSE
+						CALL LEARN_SKILL,ARG,L_SKILL,IS_TRANS, "習得スキル登録なし"
+						SIF !RESULT
+							RETURN 0
+					ENDIF
+				ENDIF
+			ELSE
+				CALL SET_FRIEND_HAVE_SKILL, ARG, L_SKILL, TRANS_MODE
+			ENDIF 
+			;---- EDIT 028 MOD END ---------------------------
+			CALL CONTROL_MAG , ARG , -L_COST
+			CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, ARG
+			PRINTFORML %ARG는% %조사처리(RESULTS,"를")% 습득했다
+			CALL PRINT_SPACE_ENHANCE
+			DRAWLINE
+			PRINTL 
+			WAIT
+			ITEM:(10000+L_SKILL) -= 1
+			CALL SP_SKILL_CHECK,L_SKILL
+			;特殊スキルだとスキルロック
+			IF RESULT
+				IF IS_TRANS
+					SETBIT CFLAG:ARG:악마변신스킬잠금설정,HAVE_SKILL(ARG,L_SKILL,1)
+				ELSE
+					SETBIT CFLAG:ARG:스킬잠금설정,HAVE_SKILL(ARG,L_SKILL,1)
+				ENDIF
+			ENDIF
+			;変身・リンク関係のスキルを所持スキルに反映
+			;CALL FIX_CHARA_TRANS_SKILL, ARG
+			CALL SYNC_STATUS,ARG
+			CALL HEALTH_CHARA,ARG
+			RETURN 1
+		CASE 1
+			GOTO START
+		CASEELSE
+			GOTO INPUT_LOOP
+	ENDSELECT
+ENDIF
+CALL PRINT_SPACE_ENHANCE
+DRAWLINE
+PRINTW [0] 돌아간다
+GOTO START
+
+;---- EDIT 032 ADD START -------------------------
+;===================================================
+;スキル抽出
+;===================================================
+@MAG_MAKE_SKILLCARD, ARG, IS_TRANS
+#DIM LINE, 3
+#DIM LCOUNT
+#DIM L_SKILL
+#DIM L_RESULT
+#DIM IS_TRANS
+#DIMS TRANS_MODE
+#DIMS L_SKILL_NAME
+#DIM CAN_NOT_MAKE_SKILLCARD, HAVEABLE_SKILLNUM
+TRANS_MODE = \@IS_TRANS ? 変身形態 # 通常形態\@
+LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - LINE
+CALL MAG_ENHANCE_INFO_CHARA, U, IS_TRANS
+LINE:1 = LINECOUNT
+PRINTFORML □스킬 추출　　　소비 충성도:{GET_LOYALTY_FOR_MAKE_SKILLCARD(ARG, "消費")} / 충성도:{GET_CHARA_LOYALTY(ARG)}
+CALL MAKE_SKILLCARD_LIST, ARG, TRANS_MODE, CAN_NOT_MAKE_SKILLCARD
+CALL PRINT_SPACE_ENHANCE
+DRAWLINE
+PRINTL [ 0] 돌아간다　[99] 스킬 잠금 설정
+INPUT
+L_RESULT = RESULT
+SELECTCASE L_RESULT
+	CASE 0
+		RETURN 0
+	CASE 99
+		CALL SKILL_ROCK_SETTING, ARG, IS_TRANS
+		GOTO START
+ENDSELECT
+SIF !INRANGE(RESULT, 1, HAVEABLE_SKILLNUM + 1)
+	GOTO START
+SIF CAN_NOT_MAKE_SKILLCARD:(L_RESULT - 1)
+	GOTO START
+IF TRANS_MODE == "変身形態"
+	L_SKILL = ABL:ARG:@"초기변신악마스킬{L_RESULT}"
+ELSE
+	L_SKILL = ABL:ARG:@"스킬{L_RESULT}"
+ENDIF
+TRYCCALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, ARG
+	L_SKILL_NAME = %RESULTS%
+CATCH
+	GOTO START
+ENDCATCH
+CLEARLINE LINECOUNT - LINE:1
+PRINTFORML □%L_SKILL_NAME%
+SIF FLAG:스킬속성표시설정 == 1
+	CALL SKILL_EXPLAIN_PERFORMANCE, L_SKILL, ARG
+CALL GET_SKILL_PROP, "SKILL_EXPLAIN", L_SKILL, ARG
+PRINTL 
+DRAWLINE
+PRINTFORML %L_SKILL_NAME%을(를) 스킬카드로 추출합니다. 괜찮겠습니까?
+PRINTBUTTON "[0] Yes" + " " * 20, 0
+PRINTL 
+PRINTBUTTON "[1] No" + " " * 20, 1
+PRINTL 
+CALL PRINT_SPACE_ENHANCE
+DRAWLINE
+PRINTL 
+CALL INPUTINT, 0, 1
+SELECTCASE RESULT
+	CASE 0
+		CLEARLINE LINECOUNT - LINE:1
+		PRINTFORML %CALLNAME:ARG%에게서 %L_SKILL_NAME%의 스킬카드를 추출했다.
+		CALL PRINT_SPACE_ENHANCE
+		DRAWLINE
+		PRINTL 
+		WAIT
+		CALL CONTROL_LOYALTY, ARG, -GET_LOYALTY_FOR_MAKE_SKILLCARD(ARG, "消費")
+		CFLAG:ARG:스킬추출횟수 += 1
+		CALL GET_ITEM, 10000 + L_SKILL, 1
+		CALL DEL_FRIEND_HAVE_SKILL, ARG, , TRANS_MODE, L_RESULT
+		SIF GET_CHARA_LOYALTY(ARG) > GET_LOYALTY_FOR_MAKE_SKILLCARD(ARG, "必要")
+			GOTO START
+		RETURN 1
+	CASE 1
+		GOTO START
+ENDSELECT
+;---- EDIT 032 ADD END ---------------------------
+;===================================================
+;スキル再習得
+;===================================================
+@MAG_REMEMBER_SKILL, ARG, ARG:1, ARGS
+#DIM LCOUNT, 2
+#DIM LINE, 3
+#DIMS L_MES
+#DIM L_RESULT
+#DIM L_SKILLCOUNT, 1
+#DIMS LEARNED_SKILL, 100
+#DIM L_HAVE_SKILL, 21
+#DIM IS_TRANS
+#DIM L_SKILL
+#DIMS L_SKILLS
+#DIM L_RANK, 100
+#DIM L_COST, 100
+#DIM REMEMBER_NOT_ABLE, 100
+#DIMS L_TITLE
+#DIM L_CNT
+#DIM CAN_LEARN_SUCCESSION, SUCCESSIONNUM
+#DIM LISTNUM
+#DIM L_PAGE
+#DIM L_PAGE_MAX
+#DIM SHOWLINENUM
+
+IS_TRANS = ARG:1
+L_SKILLCOUNT = CHANGEABLE_SKILLCOUNT(ARG, , \@IS_TRANS ? 変身形態 # 通常形態\@)
+
+VARSET LEARNED_SKILL
+FOR LCOUNT, 0, STRCOUNT(C_LEARNED_SKILLS:ARG:IS_TRANS, "/") + 1
+	L_SKILLS = %AUTO_SPLIT(C_LEARNED_SKILLS:ARG:IS_TRANS, "/", LCOUNT)%
+	SIF L_SKILLS == ""
+		CONTINUE
+	CALL GETS_SKILL_PROP, "敵専用", L_SKILLS, ARG
+	SIF RESULT == 1
+		CONTINUE
+	CALL GETS_SKILL_PROP, "ロール専用", L_SKILLS, ARG
+	IF RESULT == 1
+		IF !COUNT_SPLIT(GETS_ROLE_PROP("CAN_USE_SPECIAL_SKILL", ARG), "/", RESULTS)
+			CALL GETS_SKILL_PROP, "置換スキル", L_SKILLS, ARG
+			SIF !RESULT
+				CONTINUE
+			L_SKILLS = {RESULT}
+		ENDIF
+	ENDIF
+	;---- EDIT 035 MOD END ---------------------------
+	;---- EDIT 027 ADD START -------------------------
+	SIF L_SKILLS == "[[스킬:각성스킬]]"
+		CONTINUE
+	;---- EDIT 027 ADD END ---------------------------
+	;いちおう重複チェック
+	SIF MATCH(LEARNED_SKILL, L_SKILLS)
+		CONTINUE
+	LEARNED_SKILL:LCOUNT = %L_SKILLS%
+	;ランク判定
+	CALL GETS_SKILL_PROP, "SKILL_RANK", L_SKILLS, ARG
+	L_RANK:LCOUNT = INRANGE(RESULT, 1, 15) ? RESULT # 15
+
+	L_COST:LCOUNT = POWER(MIN(L_RANK:LCOUNT),3)*150 * ＭＡＧ強化ＣＰ補正(ARG) / 1000
+	;コストは常に3倍(スキルカード習得より高くなる)
+	L_COST:LCOUNT *= 3
+NEXT
+LINE = LINECOUNT
+L_PAGE = 0
+$START
+CLEARLINE LINECOUNT - LINE
+CALL MAG_ENHANCE_INFO_CHARA, U, IS_TRANS
+PRINTL □스킬 재습득
+
+LINE:1 = LINECOUNT
+SHOWLINENUM = MAG_ENHANCE_LINE - LINE:1 - 1
+L_PAGE_MAX = 0
+;---- EDIT 051 MOD START -------------------------
+WHILE LEARNED_SKILL:((L_PAGE_MAX + 1) * SHOWLINENUM) != ""
+	L_PAGE_MAX++
+WEND
+;---- EDIT 051 MOD END ---------------------------
+
+VARSET REMEMBER_NOT_ABLE
+FOR LCOUNT, 0, SHOWLINENUM
+	LISTNUM = LCOUNT + L_PAGE * SHOWLINENUM
+	SIF LEARNED_SKILL:LISTNUM ==  ""
+		CONTINUE
+	IF L_COST:LISTNUM > GET_CHARA_STOCK_MAG(ARG)
+		REMEMBER_NOT_ABLE:LISTNUM = 1
+		L_TITLE = ＭＡＧ不足
+	ELSE
+		IF TOINT(LEARNED_SKILL:LISTNUM) == 0
+			IF HAVE_PU_SKILL(ARG, LEARNED_SKILL:LISTNUM)
+				REMEMBER_NOT_ABLE:LISTNUM = 1
+				L_TITLE = 所持済み
+			ENDIF
+		ELSE
+			IF HAVE_SKILL(ARG, TOINT(LEARNED_SKILL:LISTNUM) )
+				REMEMBER_NOT_ABLE:LISTNUM = 1
+				L_TITLE = 所持済み
+			ELSE
+				L_TITLE = 
+			ENDIF
+		ENDIF
+	ENDIF
+	CALL GETS_SKILL_PROP, "SKILL_NAME", LEARNED_SKILL:LISTNUM, ARG
+	HTML_PRINT @"<button value = '{LISTNUM + 1}' title = '%L_TITLE%'>" + @"<font color = '%TOSTR_HTML(REMEMBER_NOT_ABLE:LISTNUM ? COLOR("DARK-GRAY") # GETDEFCOLOR())%'>" + @"[{LISTNUM + 1, 2}] %RESULTS, SKILLNAMELENS:1, LEFT%%TOSTR(L_COST:LISTNUM, "###,0") + "ＭＡＧ", 15%" +"</font>" + "</button>"
+NEXT
+WHILE LINECOUNT < LINE:1 + SHOWLINENUM + 1
+	PRINTL 
+WEND
+RESETCOLOR
+IF LEARNED_SKILL:SHOWLINENUM != ""
+	PRINTBUTTON "[-] 이전페이지", "-"
+	PRINTFORM %" "* 5%Page.{L_PAGE}%" " * 5%
+	PRINTBUTTON "[+] 다음페이지", "+"
+	PRINTL 
+ENDIF
+CALL PRINT_SPACE_ENHANCE
+DRAWLINE
+PRINTL [0] 돌아간다
+INPUTS
+IF RESULTS == "-"
+	L_PAGE = L_PAGE ? L_PAGE -1 # L_PAGE_MAX
+	GOTO START
+ENDIF
+IF RESULTS == "+"
+	L_PAGE = L_PAGE < L_PAGE_MAX ? L_PAGE + 1 # 0
+	GOTO START
+ENDIF
+SIF RESULTS == "0"
+	RETURN 0
+;---- EDIT 031 MOD START -------------------------
+;数値化
+SIF !ISNUMERIC(RESULTS)
+	GOTO START
+LISTNUM = TOINT(RESULTS) - 1
+;値域外
+;SIF !INRANGE(LISTNUM, 1, VARSIZE("LEARNED_SKILL"))
+;---- EDIT 036 MOD START -------------------------
+SIF !INRANGE(LISTNUM, 0, VARSIZE("LEARNED_SKILL"))
+	GOTO START
+;---- EDIT 036 MOD END ---------------------------
+L_SKILLS = %LEARNED_SKILL:LISTNUM%
+$INPUT_LOOP
+CLEARLINE LINECOUNT - LINE:1
+DRAWLINE
+
+CALL GETS_SKILL_PROP, "SKILL_NAME", L_SKILLS, ARG
+SIF RESULTS == ""
+	GOTO START
+;---- EDIT 031 MOD END ---------------------------
+PRINTFORML □%RESULTS%
+PRINTFORML 스킬 랭크:{L_RANK:LISTNUM,2}
+PRINTFORML 필요ＭＡＧ　:%TOSTR(L_COST:LISTNUM, "###,0"), 8%　
+LINE:2 = LINECOUNT
+;所持していない専用スキルは表示できないので削る
+IF FLAG:스킬속성표시설정 == 1
+	IF ISNUMERIC(L_SKILLS)
+		CALL SKILL_EXPLAIN_PERFORMANCE, TOINT(L_SKILLS), ARG
+	ELSE
+		CSTR:ARG:비소지스킬 '= L_SKILLS
+		CALL SKILL_EXPLAIN_PERFORMANCE, [[스킬:비소지스킬]], ARG
+		CSTR:ARG:비소지스킬 '= ""
+	ENDIF
+ENDIF
+CALL GETS_SKILL_PROP, "SKILL_EXPLAIN", L_SKILLS, ARG
+WHILE LINECOUNT < LINE:2 + 3
+	PRINTL 
+WEND
+DRAWLINE
+PRINTFORML %CALLNAME:ARG,20,LEFT%(현재ＭＡＧ：%TOSTR(GET_CHARA_STOCK_MAG(ARG), "###,0")%)
+IF REMEMBER_NOT_ABLE:LISTNUM
+	PRINTFORML 재습득할 수 없습니다。
+ELSE
+	PRINTL 습득하시겠습니까？
+	PRINTBUTTON "[0] Yes" + " " * 20, 0
+	PRINTL 
+	PRINTBUTTON "[1] No" + " " * 20, 1
+	PRINTL 
+	CALL PRINT_SPACE_ENHANCE
+	DRAWLINE
+	PRINTL 
+	INPUT
+	SELECTCASE RESULT
+		CASE 0
+			CLEARLINE LINECOUNT - LINE:1
+			IF TOINT(L_SKILLS) == 0 
+				CALL LEARN_PU_SKILL, ARG, L_SKILLS, IS_TRANS, "NOMES"
+			ELSE
+				CALL LEARN_SKILL, ARG, TOINT(L_SKILLS), IS_TRANS, "NOMES"
+			ENDIF
+			SIF !RESULT
+				RETURN 0
+			CALL CONTROL_MAG , ARG , -L_COST:LISTNUM
+			CALL GETS_SKILL_PROP, "SKILL_NAME", L_SKILLS, ARG
+			PRINTFORML %ARG는% %조사처리(RESULTS,"를")% 습득했다
+			CALL PRINT_SPACE_ENHANCE
+			DRAWLINE
+			PRINTL 
+			WAIT
+			;変身・リンク関係のスキルを所持スキルに反映
+			CALL FIX_CHARA_TRANS_SKILL, ARG
+			CALL SYNC_STATUS,ARG
+			CALL HEALTH_CHARA,ARG
+			RETURN 1
+		CASE 1
+			GOTO START
+		CASEELSE
+			GOTO INPUT_LOOP
+	ENDSELECT
+ENDIF
+CALL PRINT_SPACE_ENHANCE
+DRAWLINE
+PRINTW [0] 돌아간다
+GOTO START
+
+;---- EDIT 038 ADD START -------------------------
+@MAG_REPLACE_SKILL, ARG, SELECT_TRANS
+#DIM LCOUNT, 2
+#DIM LINE, 2
+#DIM L_SKILL
+#DIMS L_SKILLS
+#DIMS L_SKILL_TYPE
+#DIM L_SKILLCOUNT
+#DIM LAST_CLICK
+#DIM HAVE_SKILL_LIST, 100
+#DIM HAVE_SKILL_DELNOTABLE, 100
+#DIMS SKILL_LIST, 100
+#DIM IS_TRANS
+#DIMS SELECT_TRANS
+#DIMS SHOW_LINE
+#DIM TEMPNUM
+#DIMS TEMPS
+VARSET HAVE_SKILL_LIST
+VARSET HAVE_SKILL_DELNOTABLE
+VARSET SKILL_LIST
+LAST_CLICK = 0
+
+IS_TRANS = SELECT_TRANS == "変身形態"
+L_SKILLCOUNT = GET_ROLE_PROP("CHANGEABLE_SKILLCOUNT", ARG, , SELECT_TRANS)
+IF GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+	L_SKILL_TYPE = \@IS_TRANS ? 초기변신악마스킬 # 인간시스킬\@
+ELSE
+	L_SKILL_TYPE = 스킬
+ENDIF
+;所持スキルを登録
+FOR LCOUNT, 0, L_SKILLCOUNT
+	L_SKILL = ABL:ARG:(L_SKILL_TYPE + TOSTR(LCOUNT + 1))
+	IF IS_PU_SKILLNUM(L_SKILL)
+		L_SKILLS = %CSTR:ARG:("전용기" + TOSTR(L_SKILL - [[스킬:전용기1]] + 1))%
+	ELSE
+		L_SKILLS = %TOSTR(L_SKILL)%
+	ENDIF
+	HAVE_SKILL_LIST:LCOUNT = 1
+	SKILL_LIST:LCOUNT = %L_SKILLS%
+	;削除不能属性
+	CALL GETS_SKILL_PROP, "SKILL_DEL_UNABLE", L_SKILLS, ARG
+	SIF RESULT
+		HAVE_SKILL_DELNOTABLE:LCOUNT = 1
+NEXT
+FOR LCOUNT, 0, STRCOUNT(C_LEARNED_SKILLS:ARG:IS_TRANS, "/") + 1
+	L_SKILLS = %AUTO_SPLIT(C_LEARNED_SKILLS:ARG:IS_TRANS, "/", LCOUNT)%
+	SIF L_SKILLS == ""
+		CONTINUE
+	CALL GETS_SKILL_PROP, "敵専用", L_SKILLS, ARG
+	SIF RESULT == 1
+		CONTINUE
+	CALL GETS_SKILL_PROP, "ロール専用", L_SKILLS, ARG
+	IF RESULT == 1
+		IF !COUNT_SPLIT(GETS_ROLE_PROP("CAN_USE_SPECIAL_SKILL", ARG, SELECT_TRANS), "/", RESULTS)
+			CALL GETS_SKILL_PROP, "置換スキル", L_SKILLS, ARG
+			SIF !RESULT
+				CONTINUE
+			L_SKILLS = {RESULT}
+		ENDIF
+	ENDIF
+	SIF MATCH(SKILL_LIST, L_SKILLS)
+		CONTINUE
+	SKILL_LIST:FINDELEMENT(SKILL_LIST, "", , , 1) = %L_SKILLS%
+NEXT
+LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - LINE
+CALL MAG_ENHANCE_INFO_CHARA, U, IS_TRANS
+PRINTFORML □스킬 교체({MATCH(HAVE_SKILL_LIST, 1),2} / {L_SKILLCOUNT,2})
+FOR LCOUNT:1, 0, 15
+	SHOW_LINE = 
+	FOR LCOUNT, 0, 3
+		TEMPNUM = LCOUNT * 15 + LCOUNT:1
+		SIF SKILL_LIST:TEMPNUM == ""
+			BREAK
+		IF ISNUMERIC(SKILL_LIST:TEMPNUM)
+			CALL GETS_SKILL_PROP, "SKILL_NAME", SKILL_LIST:TEMPNUM, ARG
+			TEMPS = [{TEMPNUM + 1, 2}] %RESULTS, SKILLNAMELENS, LEFT%
+		ELSE
+			TEMPS = [{TEMPNUM + 1, 2}] %SKILL_LIST:TEMPNUM, SKILLNAMELENS, LEFT%
+		ENDIF
+		CALL GET_SKILL_EXPLAIN_TOOLTIP, , ARG, SKILL_LIST:TEMPNUM
+		TEMPS = %SET_BUTTON_TAG(TEMPS, TOSTR(TEMPNUM + 1), RESULTS)%
+		SIF HAVE_SKILL_LIST:TEMPNUM
+			TEMPS = %SET_COLOR_TAG(TEMPS, "aqua")%
+		SHOW_LINE += TEMPS
+		;---- EDIT 051 MOD START -------------------------
+		IF HAVE_SKILL_DELNOTABLE:TEMPNUM
+			SHOW_LINE += "<削除不能>"
+		ELSE
+			SHOW_LINE += " " * 10
+		ENDIF
+		;---- EDIT 051 MOD END ---------------------------
+	NEXT
+	HTML_PRINT SHOW_LINE
+NEXT
+DRAWLINE
+
+L_SKILLS = %SKILL_LIST:LAST_CLICK%
+IF ISNUMERIC(SKILL_LIST:LAST_CLICK)
+	CALL GETS_SKILL_PROP, "SKILL_NAME", SKILL_LIST:LAST_CLICK, ARG
+	TEMPS = %RESULTS%
+ELSE
+	TEMPS = %L_SKILLS%
+ENDIF
+PRINTFORML □%TEMPS%
+LINE:1 = LINECOUNT
+;高さ合わせが激烈に死ぬのでここではオミット
+;SIF FLAG:스킬속성표시설정 == 1 && ISNUMERIC(L_SKILLS)
+;	CALL SKILL_EXPLAIN_PERFORMANCE, TOINT(L_SKILLS), ARG
+CALL GETS_SKILL_PROP, "SKILL_EXPLAIN", L_SKILLS, ARG
+WHILE LINECOUNT < LINE:1 + 3
+	PRINTL 
+WEND
+CALL PRINT_SPACE_ENHANCE
+DRAWLINE
+SIF MATCH(HAVE_SKILL_LIST, 1) != L_SKILLCOUNT
+	SETCOLOR COLOR("gray")
+PRINTL [0] 돌아간다
+RESETCOLOR
+INPUT
+IF RESULT == 0 && MATCH(HAVE_SKILL_LIST, 1) == L_SKILLCOUNT
+	SKIPDISP 1
+	;一旦スキルをすべて消す
+	FOR LCOUNT, 1, L_SKILLCOUNT + 1
+		CALL DEL_FRIEND_HAVE_SKILL, ARG, , SELECT_TRANS, LCOUNT
+	NEXT
+	;全て習得させる
+	FOR LCOUNT, 0, VARSIZE("SKILL_LIST")
+		SIF !HAVE_SKILL_LIST:LCOUNT
+			CONTINUE
+		IF ISNUMERIC(SKILL_LIST:LCOUNT)
+			CALL LEARN_SKILL, ARG, TOINT(SKILL_LIST:LCOUNT), IS_TRANS
+		ELSE
+			CALL LEARN_PU_SKILL, ARG, SKILL_LIST:LCOUNT, IS_TRANS
+		ENDIF
+	NEXT
+	SKIPDISP 0
+	RETURN 1
+ELSE
+	IF INRANGE(RESULT, 1, VARSIZE("SKILL_LIST") + 1)
+		RESULT--
+		LAST_CLICK = RESULT
+		SIF SKILL_LIST:RESULT == ""
+			GOTO START
+		SIF HAVE_SKILL_DELNOTABLE:RESULT
+			GOTO START
+		HAVE_SKILL_LIST:RESULT = !HAVE_SKILL_LIST:RESULT
+
+	ENDIF
+ENDIF
+GOTO START
+;---- EDIT 038 ADD END ---------------------------
+;---- EDIT 029 ADD START -------------------------
+;===================================================
+;覚醒スキル習得
+;CSVで定義されているものを忠誠度5000で習得できる
+;===================================================
+@MAG_LEARN_AWAKE_SKILL, ARG, ARG:1, ARGS
+#DIM LCOUNT, 2
+#DIM LINE, 1
+#DIM IS_TRANS
+#DIM L_SKILL
+#DIMS SKILL_NAME
+
+LINE = LINECOUNT
+IS_TRANS = ARG:1
+
+LINE = LINECOUNT
+CALL GET_AW_SKILLNUM_BY_CSV, ARG
+L_SKILL = RESULT
+CALLFORM SKILL_NAME_AW_{L_SKILL}, ARG
+SKILL_NAME = %RESULTS%
+CALL MAG_ENHANCE_INFO_CHARA, U, IS_TRANS
+PRINTFORML □%SKILL_NAME%
+DRAWLINE
+CALLFORM SKILL_EXPLAIN_AW_{L_SKILL}
+DRAWLINE
+LINE = LINECOUNT
+PRINTFORML 충성도 5000을 소비하여 각성 스킬을 습득할 수 있습니다.
+SIF !陥落(ARG)
+	PRINTFORML ※ 각성 스킬은 조교를 통해 %CALLNAME:ARG%을(를) 함락시키는 것으로도 습득 가능합니다.
+PRINTL 
+PRINTL 습득하시겠습니까？
+PRINTBUTTON "[0] Yes" + " " * 20, 0
+PRINTL 
+PRINTBUTTON "[1] No" + " " * 20, 1
+PRINTL 
+CALL PRINT_SPACE_ENHANCE
+DRAWLINE
+PRINTL 
+CALL INPUTINT, 0, 1
+IF RESULT == 1
+	RETURN 0
+ELSE
+	CLEARLINE LINECOUNT - LINE
+	IF ARGS != ""
+		PRINTFORML %ARG는% %조사처리(SKILL_NAME,"을")% 습득했다
+		CALL PRINT_SPACE_ENHANCE
+		DRAWLINE
+		PRINTL 
+		WAIT
+		CALL CONTROL_LOYALTY, ARG, -5000
+		CALL SET_FRIEND_HAVE_SKILL, ARG, SKILL_NUM_F("각성스킬"), \@IS_TRANS ? 変身形態 # 通常形態\@
+		ABL:ARG:각성스킬 = L_SKILL
+	ELSE
+		VARI STOCK_覚醒スキル = ABL:ARG:각성스킬
+		ABL:ARG:각성스킬 = L_SKILL
+		CALL LEARN_SKILL, ARG, SKILL_NUM_F("각성스킬"),IS_TRANS
+		IF RESULT
+			CALL CONTROL_LOYALTY, ARG, -5000
+		ELSE
+			ABL:ARG:각성스킬 = STOCK_覚醒スキル
+		ENDIF
+	ENDIF
+	RETURN 1
+ENDIF
+;---- EDIT 029 ADD END ---------------------------
+;===================================================
+;スキル再習得
+;===================================================
+@MAG_LEARN_SPECIAL_SKILL, ARG, SELECT_TRANS
+#DIM DYNAMIC LCOUNT, 2
+#DIMS DYNAMIC SELECT_TRANS
+#DIM DYNAMIC LINE, 3
+#DIMS DYNAMIC L_MES
+#DIM DYNAMIC L_RESULT
+#DIM DYNAMIC L_SKILLCOUNT, 1
+#DIMS DYNAMIC LEARN_SKILL, 100
+#DIM DYNAMIC L_HAVE_SKILL, 21
+#DIM DYNAMIC IS_TRANS
+#DIM DYNAMIC L_SKILL
+#DIMS DYNAMIC L_SKILLS
+#DIMS DYNAMIC CSTR_ELEMENT
+#DIM DYNAMIC L_RANK, 100
+#DIM DYNAMIC L_COST, 100
+#DIM DYNAMIC REMEMBER_NOT_ABLE, 100
+#DIMS DYNAMIC L_TITLE
+#DIM DYNAMIC L_CNT
+#DIM DYNAMIC CAN_LEARN_SUCCESSION, SUCCESSIONNUM
+#DIM DYNAMIC LISTNUM
+#DIM DYNAMIC L_PAGE
+#DIM DYNAMIC L_PAGE_MAX
+#DIM DYNAMIC SHOWLINENUM
+
+L_SKILLCOUNT = CHANGEABLE_SKILLCOUNT(ARG, , \@IS_TRANS ? 変身形態 # 通常形態\@)
+IF SELECT_TRANS == "通常形態"
+	CSTR_ELEMENT = MAG습득스킬리스트
+ELSE
+	CSTR_ELEMENT = 초기변신악마MAG스킬습득리스트
+ENDIF
+
+VARSET LEARN_SKILL
+SPLIT CSTR:ARG:CSTR_ELEMENT, "/", LEARN_SKILL
+FOR LCOUNT, 0, RESULT
+	L_SKILLS '= LEARN_SKILL:LCOUNT
+	SIF L_SKILLS == ""
+		CONTINUE
+	;ランク判定とコスト計算
+	CALL GETS_SKILL_PROP, "SKILL_RANK", L_SKILLS, ARG
+	L_RANK:LCOUNT = INRANGE(RESULT, 1, 15) ? RESULT # 15
+	L_COST:LCOUNT = POWER(MIN(L_RANK:LCOUNT),3)*150 * ＭＡＧ強化ＣＰ補正(ARG) / 1000
+NEXT
+LINE = LINECOUNT
+L_PAGE = 0
+$START
+CLEARLINE LINECOUNT - LINE
+CALL MAG_ENHANCE_INFO_CHARA, U, IS_TRANS
+PRINTL □고유 스킬 습득
+
+LINE:1 = LINECOUNT
+SHOWLINENUM = MAG_ENHANCE_LINE - LINE:1 - 1
+L_PAGE_MAX = 0
+;---- EDIT 051 MOD START -------------------------
+WHILE LEARN_SKILL:((L_PAGE_MAX + 1) * SHOWLINENUM) != ""
+	L_PAGE_MAX++
+WEND
+;---- EDIT 051 MOD END ---------------------------
+
+VARSET REMEMBER_NOT_ABLE
+FOR LCOUNT, 0, SHOWLINENUM
+	LISTNUM = LCOUNT + L_PAGE * SHOWLINENUM
+	SIF LEARN_SKILL:LISTNUM ==  ""
+		CONTINUE
+	IF L_COST:LISTNUM > GET_CHARA_STOCK_MAG(ARG)
+		REMEMBER_NOT_ABLE:LISTNUM = 1
+		L_TITLE = ＭＡＧ不足
+	ELSE
+		IF TOINT(LEARN_SKILL:LISTNUM) == 0
+			IF HAVE_PU_SKILL(ARG, LEARN_SKILL:LISTNUM)
+				REMEMBER_NOT_ABLE:LISTNUM = 1
+				L_TITLE = 所持済み
+			ENDIF
+		ELSE
+			IF HAVE_SKILL(ARG, TOINT(LEARN_SKILL:LISTNUM) )
+				REMEMBER_NOT_ABLE:LISTNUM = 1
+				L_TITLE = 所持済み
+			ELSE
+				L_TITLE = 
+			ENDIF
+		ENDIF
+	ENDIF
+	CALL GETS_SKILL_PROP, "SKILL_NAME", LEARN_SKILL:LISTNUM, ARG
+	HTML_PRINT @"<button value = '{LISTNUM + 1}' title = '%L_TITLE%'>" + @"<font color = '%TOSTR_HTML(REMEMBER_NOT_ABLE:LISTNUM ? COLOR("DARK-GRAY") # GETDEFCOLOR())%'>" + @"[{LISTNUM + 1, 2}] %RESULTS, SKILLNAMELENS:1, LEFT%%TOSTR(L_COST:LISTNUM, "###,0") + "ＭＡＧ", 15%" +"</font>" + "</button>"
+NEXT
+WHILE LINECOUNT < LINE:1 + SHOWLINENUM + 1
+	PRINTL 
+WEND
+RESETCOLOR
+IF LEARN_SKILL:SHOWLINENUM != ""
+	PRINTBUTTON "[-] 이전페이지", "-"
+	PRINTFORM %" "* 5%Page.{L_PAGE}%" " * 5%
+	PRINTBUTTON "[+] 다음페이지", "+"
+	PRINTL 
+ENDIF
+CALL PRINT_SPACE_ENHANCE
+DRAWLINE
+PRINTL [0] 돌아간다
+INPUTS
+IF RESULTS == "-"
+	L_PAGE = L_PAGE ? L_PAGE -1 # L_PAGE_MAX
+	GOTO START
+ENDIF
+IF RESULTS == "+"
+	L_PAGE = L_PAGE < L_PAGE_MAX ? L_PAGE + 1 # 0
+	GOTO START
+ENDIF
+SIF RESULTS == "0"
+	RETURN 0
+;---- EDIT 031 MOD START -------------------------
+;数値化
+SIF !ISNUMERIC(RESULTS)
+	GOTO START
+LISTNUM = TOINT(RESULTS) - 1
+;値域外
+SIF !INRANGE(LISTNUM, 0, VARSIZE("LEARN_SKILL"))
+	GOTO START
+L_SKILLS = %LEARN_SKILL:LISTNUM%
+$INPUT_LOOP
+CLEARLINE LINECOUNT - LINE:1
+DRAWLINE
+
+CALL GETS_SKILL_PROP, "SKILL_NAME", L_SKILLS, ARG
+SIF RESULTS == ""
+	GOTO START
+;---- EDIT 031 MOD END ---------------------------
+PRINTFORML □%RESULTS%
+PRINTFORML 스킬 랭크:{L_RANK:LISTNUM,2}
+PRINTFORML 필요ＭＡＧ　:%TOSTR(L_COST:LISTNUM, "###,0"), 8%　
+LINE:2 = LINECOUNT
+;所持していない専用スキルは表示できないので削る
+IF FLAG:스킬속성표시설정 == 1
+	IF ISNUMERIC(L_SKILLS)
+		CALL SKILL_EXPLAIN_PERFORMANCE, TOINT(L_SKILLS), ARG
+	ELSE
+		CSTR:ARG:비소지스킬 '= L_SKILLS
+		CALL SKILL_EXPLAIN_PERFORMANCE, [[스킬:비소지스킬]], ARG
+		CSTR:ARG:비소지스킬 '= ""
+	ENDIF
+ENDIF
+CALL GETS_SKILL_PROP, "SKILL_EXPLAIN", L_SKILLS, ARG
+WHILE LINECOUNT < LINE:2 + 3
+	PRINTL 
+WEND
+DRAWLINE
+PRINTFORML %CALLNAME:ARG,20,LEFT%(현재ＭＡＧ：%TOSTR(GET_CHARA_STOCK_MAG(ARG), "###,0")%)
+IF REMEMBER_NOT_ABLE:LISTNUM
+	PRINTFORML 습득할 수 없습니다。
+ELSE
+	PRINTL 습득하시겠습니까？
+	PRINTBUTTON "[0] Yes" + " " * 20, 0
+	PRINTL 
+	PRINTBUTTON "[1] No" + " " * 20, 1
+	PRINTL 
+	CALL PRINT_SPACE_ENHANCE
+	DRAWLINE
+	PRINTL 
+	INPUT
+	SELECTCASE RESULT
+		CASE 0
+			CLEARLINE LINECOUNT - LINE:1
+			IF TOINT(L_SKILLS) == 0
+				IF FINDELEMENT(CSTR:ARG:0, "", GETNUM(CSTR, "전용기1"), GETNUM(CSTR, "전용기1") + PU_NUM(), 1) < 0
+					CALL MESSAGE_POPUP, "전용 스킬 슬롯이 가득 찼습니다. 먼저 삭제할 전용 스킬을 선택해주세요"
+					CALL MAG_SKILL_DELETE, ARG, IS_TRANS
+				ENDIF
+				CALL LEARN_PU_SKILL, ARG, L_SKILLS, IS_TRANS, "NOMES"
+			ELSE
+				CALL LEARN_SKILL, ARG, TOINT(L_SKILLS), IS_TRANS, "NOMES"
+			ENDIF
+			SIF !RESULT
+				RETURN 0
+			CALL CONTROL_MAG , ARG , -L_COST:LISTNUM
+			CALL GETS_SKILL_PROP, "SKILL_NAME", L_SKILLS, ARG,
+			PRINTFORML %ARG는% %조사처리(RESULTS,"를")% 습득했다
+			CSTR:ARG:CSTR_ELEMENT '= DEL_SPLIT(CSTR:ARG:CSTR_ELEMENT, "/", L_SKILLS)
+			CALL PRINT_SPACE_ENHANCE
+			DRAWLINE
+			PRINTL 
+			WAIT
+			;変身・リンク関係のスキルを所持スキルに反映
+			CALL FIX_CHARA_TRANS_SKILL, ARG
+			CALL SYNC_STATUS,ARG
+			CALL HEALTH_CHARA,ARG
+			CLEARLINE LINECOUNT - LINE
+			SIF CSTR:ARG:CSTR_ELEMENT == ""
+				RETURN 1
+			RESTART
+		CASE 1
+			GOTO START
+		CASEELSE
+			GOTO INPUT_LOOP
+	ENDSELECT
+ENDIF
+CALL PRINT_SPACE_ENHANCE
+DRAWLINE
+PRINTW [0] 돌아간다
+GOTO START
+
+;======================================
+;スキル消去
+;======================================
+@MAG_SKILL_DELETE,ARG,ARG:1
+#DIM LCOUNT, 2
+#DIM LINE, 2
+#DIM L_RESULT
+#DIM L_SKILLCOUNT, 1
+#DIM IS_TRANS
+#DIM L_COST, 21
+#DIM ＣＰ보정, 1
+#DIMS L_SKILL_TYPE
+#DIM L_SKILL
+#DIMS L_SKILLS
+#DIMS LOCKS , 1
+
+IS_TRANS = ARG:1
+IF IS_TRANS
+	LOCKS = 악마변신스킬잠금설정
+ELSE
+	LOCKS = 스킬잠금설정
+ENDIF
+IF GET_ROLE_PROP("CAN_USE_TRANS", ARG)
+	L_SKILL_TYPE = \@IS_TRANS ? 초기변신악마스킬 # 인간시스킬\@
+ELSE
+	L_SKILL_TYPE = 스킬
+ENDIF
+L_SKILLCOUNT = CHANGEABLE_SKILLCOUNT(ARG, , \@IS_TRANS ? 変身形態 # 通常形態\@)
+
+LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - LINE
+CALL MAG_ENHANCE_INFO_CHARA, U, IS_TRANS
+
+;---- EDIT 013 MOD START -------------------------
+PRINTFORML □스킬 소거　　(현재ＭＡＧ：%TOSTR(GET_CHARA_STOCK_MAG(ARG), "###,0")%)
+;---- EDIT 013 MOD END -------------------------
+DRAWLINE
+LINE:1 = LINECOUNT
+
+ＣＰ보정 = ＭＡＧ強化ＣＰ補正(ARG)
+VARSET L_COST
+FOR LCOUNT, 1, L_SKILLCOUNT + 1
+	L_SKILL = ABL:ARG:@"%L_SKILL_TYPE%{LCOUNT}"
+	SIF !L_SKILL
+		CONTINUE
+	;ロック
+	SIF GETBIT(CFLAG:ARG:LOCKS, LCOUNT)
+		L_COST:LCOUNT = -1
+	;削除不能属性
+	CALL GET_SKILL_PROP, "SKILL_DEL_UNABLE", L_SKILL, ARG
+	SIF RESULT
+		L_COST:LCOUNT = -2
+	SIF !INRANGE(L_COST:LCOUNT, 0, GET_CHARA_STOCK_MAG(ARG))
+		SETCOLOR COLOR("暗灰色")
+	CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL,ARG
+	PRINTFORM 　[{LCOUNT,2}]%RESULTS,22,LEFT% 
+	SELECTCASE L_COST:LCOUNT
+		CASE -1
+			PRINTFORML %"잠금 중", 11+3%
+		CASE -2
+			PRINTFORML %"삭제 불가", 11+3%
+		CASEELSE
+			;PRINTFORML %TOSTR(L_COST:LCOUNT, "###,0"), 11%MAG
+			PRINTL 
+	ENDSELECT
+	RESETCOLOR
+NEXT
+CALL PRINT_SPACE_ENHANCE
+DRAWLINE
+PRINTL [0] 돌아간다　[99]스킬잠금설정
+
+INPUT
+L_RESULT = RESULT
+$INPUT_LOOP
+IF L_RESULT == 0
+	RETURN 0
+ELSEIF L_RESULT == 99
+	;스킬잠금설정
+	CALL SKILL_ROCK_SETTING, ARG, ARG:1
+	;CALL SKILL_ROCK_SETTING, ARG, LOCKS == "악마변신스킬잠금설정" ? 1 # 0
+	GOTO START
+ELSEIF !INRANGE(L_RESULT, 1, L_SKILLCOUNT)
+	GOTO START
+;ELSEIF !L_COST:L_RESULT
+;	GOTO START
+ELSEIF L_COST:L_RESULT == -1
+	PRINTL 잠겨있는 스킬입니다
+ELSEIF L_COST:L_RESULT == -2
+	PRINTL 삭제할 수 없는 스킬입니다
+ELSEIF L_COST:L_RESULT >= 0
+	L_SKILL = ABL:ARG:@"%L_SKILL_TYPE%{L_RESULT}"
+	CLEARLINE LINECOUNT - LINE:1
+	CALL GET_SKILL_PROP, "SKILL_NAME", L_SKILL, ARG
+	PRINTFORML □%RESULTS%
+	SIF FLAG:스킬속성표시설정 == 1
+		CALL SKILL_EXPLAIN_PERFORMANCE, L_SKILL, ARG
+	CALL GET_SKILL_PROP, "SKILL_EXPLAIN", L_SKILL, ARG
+	DRAWLINE
+	;IF GET_CHARA_STOCK_MAG(ARG) < L_COST:L_RESULT
+	;	PRINTL ＭＡＧ가 부족합니다
+	;ELSE
+		PRINTL 소거하시겠습니까？
+		PRINTBUTTON "[0] Yes" + " " * 20, 0
+		PRINTL 
+		PRINTBUTTON "[1] No" + " " * 20, 1
+		PRINTL 
+		CALL PRINT_SPACE_ENHANCE
+		DRAWLINE
+		PRINTL 
+		$INPUT_LOOP2
+		INPUT
+		IF RESULT == 0
+			CLEARLINE LINECOUNT - LINE:1
+			;CALL CONTROL_MAG,ARG, -L_COST:L_RESULT
+			PRINTFORML %ARG는% %조사처리(SKILL_NAME_F(L_SKILL),"을")% 잊었다。
+			CALL PRINT_SPACE_ENHANCE
+			DRAWLINE
+			PRINTL 
+			WAIT
+			;---- EDIT 030 MOD START -------------------------
+			CALL DEL_FRIEND_HAVE_SKILL, ARG, , \@IS_TRANS ? 変身形態 # 通常形態\@, L_RESULT
+			;ABL:ARG:@"%L_SKILL_TYPE%{L_RESULT}" = 0
+			;対象キャラが悪魔で装備知識スキルが削除対象で装備知識スキル系をまったく所持していない場合は装備を解除する
+			CALL SKILL_EQUIPTHEORY_DEL_SKILL, ARG, LOCAL:1
+			;変身・リンク関係のスキルを所持スキルに反映
+			;CALL FIX_CHARA_TRANS_SKILL, ARG
+			;---- EDIT 030 MOD END ---------------------------
+			CALL SYNC_STATUS,ARG
+			CALL HEALTH_CHARA,ARG
+		ELSEIF RESULT == 1
+			GOTO START
+		ELSE
+			GOTO INPUT_LOOP
+		ENDIF
+	;ENDIF
+ELSE
+	GOTO START
+ENDIF
+GOTO START
+
+;===================================================
+;通常攻撃カスタマイズ
+;ARG 	キャラの登録番号
+;ARGS	通常形態/変身形態の指定
+;===================================================
+@MAG_ENHANCE_ATTACK, ARG, ARG:1
+#LOCALSIZE 6
+#DIM LCOUNT, 2
+#DIM LINE, 2
+#DIM 必要ＭＡＧ基本値, 1
+#DIM 必要ＭＡＧ, 20
+#DIM L_射程
+#DIM L_範囲
+#DIM L_相性
+#DIM CSV_相性
+#DIMS L_TALENT
+#DIM L_RESULT
+#DIMS INPUT_ABLE
+#DIMS CONST 射程名補足 = "", "（후열에서 공격 가능）","（후열에서 공격 가능）", "（후열에서 공격 가능、적 후열 공격 가능）"
+#DIM IS_TRANS
+IS_TRANS = ARG:1
+LINE = LINECOUNT
+$START
+CLEARLINE LINECOUNT - LINE
+CALL MAG_ENHANCE_INFO_CHARA, U, ARG:1
+LINE:1 = LINECOUNT
+IF IS_TRANS
+	L_射程 = ABL:ARG:초기링크악마사거리
+	L_範囲 = ABL:ARG:초기링크악마공격범위
+	L_相性 = ABL:ARG:초기링크악마공격상성
+ELSE
+	L_射程 = ABL:ARG:사거리
+	L_範囲 = ABL:ARG:공격범위
+	L_相性 = ABL:ARG:공격상성
+ENDIF
+;---- EDIT 013 MOD START -------------------------
+PRINTFORML □통상공격성능 변경　　(현재ＭＡＧ：%TOSTR(GET_CHARA_STOCK_MAG(ARG), "###,0")%)
+;---- EDIT 013 MOD END -------------------------
+DRAWLINE
+PRINTL 무엇을 변화시키시겠습니까？
+PRINTFORML [1]사거리　　 （%EQ_射程名称(L_射程)%）
+PRINTFORML [2]공격범위 （%GET_SPHERE(L_範囲)%）
+PRINTFORML [3]상성　　 （%GET_TYPE(L_相性)%）
+PRINTL [4]초기화
+CALL PRINT_SPACE_ENHANCE
+DRAWLINE
+PRINTL [0] 돌아간다
+必要ＭＡＧ基本値 = POWER(CSVBASE(NO:ARG, GETNUM(BASE, "LV"), 0), 2) * (ABL:ARG:종족 == 36 ? 905/1000 # 1)
+INPUT
+L_RESULT = RESULT
+$INPUT_LOOP
+CLEARLINE LINECOUNT - LINE:1
+SELECTCASE L_RESULT
+	CASE 0
+		RETURN 0
+	CASE 1
+		$PRINT_RANGE
+		VARSET 必要ＭＡＧ
+		必要ＭＡＧ:1 = 50, 250, 500
+		;사거리
+		;DRAWLINE;DEL 041
+		INPUT_ABLE = 0
+		FOR LCOUNT, 1, 4
+			;---- EDIT 025 ADD START -------------------------
+			必要ＭＡＧ:LCOUNT *= 必要ＭＡＧ基本値
+			;---- EDIT 025 ADD END ---------------------------
+			SIF L_射程 == LCOUNT
+				CONTINUE
+			IF GET_CHARA_STOCK_MAG(ARG) < 必要ＭＡＧ:LCOUNT
+				SETCOLOR COLOR("DARK-GRAY")
+			ELSE
+				INPUT_ABLE += "/" + TOSTR(LCOUNT)
+			ENDIF
+			PRINTFORML [{LCOUNT}] %EQ_射程名称(LCOUNT)% %射程名補足:LCOUNT, 38, LEFT%%TOSTR(必要ＭＡＧ:LCOUNT, "###,0"), 8%ＭＡＧ
+			RESETCOLOR
+		NEXT
+		PRINTFORML ※사거리가 길수록 명중률이 낮아집니다
+		CALL PRINT_SPACE_ENHANCE
+		DRAWLINE
+		PRINTL [0] 돌아간다
+		INPUT
+		VARI L_RESULT = RESULT
+		CLEARLINE LINECOUNT- LINE:1
+		SIF !STRCOUNT(INPUT_ABLE, TOSTR(RESULT))
+			GOTO INPUT_LOOP
+		SELECTCASE L_RESULT
+			CASE 0
+				GOTO START
+			CASEELSE
+				CALL CONTROL_MAG, ARG, -必要ＭＡＧ:L_RESULT
+				IF IS_TRANS
+					ABL:ARG:초기링크악마사거리= L_RESULT
+				ELSE
+					ABL:ARG:사거리= L_RESULT
+				ENDIF
+				CLEARLINE LINECOUNT - LINE:1
+				PRINTFORML %CALLNAME:U%의 사거리는 %EQ_射程名称(L_RESULT)%로 변화했다
+				CALL PRINT_SPACE_ENHANCE
+				DRAWLINE
+				PRINTL [0] 돌아간다
+				WAIT
+		ENDSELECT
+		GOTO START
+	CASE 2
+		VARSET 必要ＭＡＧ
+		;사거리
+		;DRAWLINE;DEL 041
+		INPUT_ABLE = 0
+		必要ＭＡＧ:1 = 10, 500, 2500
+		FOR LCOUNT, 1, 4
+			;---- EDIT 025 ADD START -------------------------
+			必要ＭＡＧ:LCOUNT *= 必要ＭＡＧ基本値
+			;---- EDIT 025 ADD END ---------------------------
+			SIF LCOUNT == L_範囲
+				CONTINUE
+			IF (GET_CHARA_STOCK_MAG(ARG) < 必要ＭＡＧ:LCOUNT) || (LCOUNT == 3 && L_射程 < 3)
+				SETCOLOR COLOR("DARK-GRAY")
+			ELSE
+				INPUT_ABLE += "/" + TOSTR(LCOUNT)
+			ENDIF
+			PRINTFORML [{LCOUNT}] %GET_SPHERE(LCOUNT), 8, LEFT%%TOSTR(必要ＭＡＧ:LCOUNT, "###,0"), 8%ＭＡＧ
+			RESETCOLOR
+		NEXT
+		PRINTFORML ※공격범위가 넓을수록 위력이 감소삽니다
+		PRINTFORML ※범위를 전체로 하려면 사거리가 Ｌ일 필요가 있습니다
+		CALL PRINT_SPACE_ENHANCE
+		DRAWLINE
+		PRINTL [0] 돌아간다
+		;LINE:1 = LINECOUNT;DEL 041
+		INPUT
+		VARI L_RESULT = RESULT
+		CLEARLINE LINECOUNT- LINE:1
+		SIF !STRCOUNT(INPUT_ABLE, TOSTR(RESULT))
+			GOTO INPUT_LOOP
+		SELECTCASE L_RESULT
+			CASE 0
+				GOTO START
+			CASEELSE
+				CALL CONTROL_MAG, ARG, -必要ＭＡＧ:L_RESULT
+				IF IS_TRANS
+					ABL:ARG:초기링크악마공격범위= L_RESULT
+				ELSE
+					ABL:ARG:공격범위= L_RESULT
+				ENDIF
+				CLEARLINE LINECOUNT - LINE:1
+				PRINTFORML %CALLNAME:U%의 공격범위를 %GET_SPHERE(L_RESULT)%로 변경했습니다
+				CALL PRINT_SPACE_ENHANCE
+				DRAWLINE
+				PRINTL [0] 돌아간다
+				WAIT
+		ENDSELECT
+		GOTO START
+	CASE 3
+		;相性
+		INPUT_ABLE = 0
+		IF IS_TRANS
+			CSV_相性 = CSVABL(CFLAG:ARG:초기링크악마, GETNUM(ABL, "공격상성"), 0)
+		ELSE
+			CSV_相性 = CSVABL(NO:ARG, GETNUM(ABL, "공격상성"), 0)
+		ENDIF
+		;必要MAGの設定
+		FOR LCOUNT, 1, 5
+			必要ＭＡＧ:LCOUNT = 100 * 必要ＭＡＧ基本値 * 2
+			;割引素質　いずれかがある場合、半額になる。というか正確にはいずれもないと２倍になる
+			L_TALENT = %AUTO_SPLIT("무기/사격무기/팔_발/갈퀴_날개_갈퀴발_꼬리/", "/", LCOUNT -1)%
+			IF IS_TRANS
+				FOR LCOUNT:1, 0, STRCOUNT(L_TALENT, "_") + 1
+					SIF !CSVTALENT(CFLAG:ARG:초기링크악마, GETNUM(TALENT, AUTO_SPLIT(L_TALENT, "_", LCOUNT:1 )))
+						CONTINUE
+					必要ＭＡＧ:LCOUNT /= 2
+					BREAK
+				NEXT
+			ELSE
+				FOR LCOUNT:1, 0, STRCOUNT(L_TALENT, "_") + 1
+					SIF !TALENT:ARG:AUTO_SPLIT(L_TALENT, "_", LCOUNT:1)
+						CONTINUE
+					必要ＭＡＧ:LCOUNT /= 2
+					BREAK
+				NEXT
+			ENDIF
+		NEXT
+		必要ＭＡＧ:5 = 100 * 必要ＭＡＧ基本値 * 2
+
+		;選択肢の表示
+		FOR LCOUNT, 1, 5
+			SIF L_相性 == (LCOUNT - 1)
+				CONTINUE
+			IF (GET_CHARA_STOCK_MAG(ARG) < 必要ＭＡＧ:LCOUNT)
+				SETCOLOR COLOR("DARK-GRAY")
+			ELSE
+				INPUT_ABLE += "/" + TOSTR(LCOUNT)
+			ENDIF
+			PRINTFORML [{LCOUNT}] %GET_TYPE(LCOUNT - 1), 8, LEFT%%TOSTR(必要ＭＡＧ:LCOUNT, "###,0"),10%ＭＡＧ
+			RESETCOLOR
+		NEXT
+		IF CSV_相性 > 3 && L_相性 != CSV_相性
+			IF (GET_CHARA_STOCK_MAG(ARG) < 必要ＭＡＧ:LCOUNT)
+				SETCOLOR COLOR("DARK-GRAY")
+			ELSE
+				INPUT_ABLE += "/" + "5"
+			ENDIF
+			PRINTFORML [{LCOUNT}] %GET_TYPE(CSV_相性), 8, LEFT%%TOSTR(必要ＭＡＧ:5, "###,0"),10%ＭＡＧ
+			RESETCOLOR
+		ENDIF
+		CALL PRINT_SPACE_ENHANCE
+		DRAWLINE
+		PRINTL [0] 돌아간다
+		INPUT
+		VARI L_RESULT = RESULT
+		CLEARLINE LINECOUNT- LINE:1
+		SIF !STRCOUNT(INPUT_ABLE, TOSTR(L_RESULT))
+			GOTO INPUT_LOOP
+		SELECTCASE L_RESULT
+			CASE 0
+				GOTO START
+			CASEELSE
+				CALL CONTROL_MAG, ARG, -必要ＭＡＧ:L_RESULT
+				IF IS_TRANS
+					IF L_RESULT == 5
+						ABL:ARG:초기링크악마공격상성 = CSV_相性
+					ELSE
+						ABL:ARG:초기링크악마공격상성 = L_RESULT - 1
+					ENDIF
+				ELSE
+					IF L_RESULT == 5
+						ABL:ARG:공격상성= CSV_相性
+					ELSE
+						ABL:ARG:공격상성= L_RESULT - 1
+					ENDIF
+				ENDIF
+				CLEARLINE LINECOUNT - LINE:1
+				;---- EDIT 027 MOD START -------------------------
+				PRINTFORML %CALLNAME:U%의 통상공격의 상성을 %조사처리(GET_TYPE(L_RESULT == 5 ? CSV_相性 # L_RESULT - 1),"로")% 변경했습니다
+				;---- EDIT 027 MOD END ---------------------------
+				CALL PRINT_SPACE_ENHANCE
+				DRAWLINE
+				PRINTL [0] 돌아간다
+				WAIT
+		ENDSELECT
+		GOTO START
+	CASE 4
+		PRINTL 성능 설정을 초기화하시겠습니까？　（변경에 사용되는 ＭＡＧ는 반환되지 않습니다！）
+		CALL PRINT_SPACE_ENHANCE
+		CALL INPUT_YN
+		SIF RESULT
+			GOTO START
+		IF IS_TRANS
+			ABL:ARG:초기링크악마사거리 = CSVABL(CFLAG:ARG:초기링크악마, GETNUM(ABL, "사거리"), 0)
+			ABL:ARG:초기링크악마공격범위 = CSVABL(CFLAG:ARG:초기링크악마, GETNUM(ABL, "공격범위"), 0)
+			ABL:ARG:초기링크악마공격상성 = CSVABL(CFLAG:ARG:초기링크악마, GETNUM(ABL, "공격상성"), 0)
+		ELSE
+			ABL:ARG:사거리 = CSVABL(NO:ARG, GETNUM(ABL, "사거리"), 0)
+			ABL:ARG:공격범위 = CSVABL(NO:ARG, GETNUM(ABL, "공격범위"), 0)
+			ABL:ARG:공격상성 = CSVABL(NO:ARG, GETNUM(ABL, "공격상성"), 0)
+		ENDIF
+		CLEARLINE LINECOUNT - LINE:1
+		PRINTFORML %CALLNAME:U%의 통상공격은 초기화되었습니다
+		CALL PRINT_SPACE_ENHANCE
+		DRAWLINE
+		PRINTL [0] 돌아간다
+		WAIT
+ENDSELECT
+GOTO START
+
+;---- EDIT 049 MOD START -------------------------
+;===================================================
+;耐性変更
+;===================================================
+@MAG_ENHANCE_DEFTYPE,ARG
+#DIM LCOUNT
+#DIM LCOLOR
+#DIM LLINK
+#DIM LLOCK
+#DIM LTRANCE
+#DIM 選択
+#DIM 条件確認, 5
+#LOCALSIZE 3
+LCOLOR = GETCOLOR()
+選択 = -1
+$START
+FOR LCOUNT, 0, 5
+	条件確認:LCOUNT = IS_MAG_ENHANCE_DEFTYPE(ARG, LCOUNT)
+	SIF 選択 == -1 && 条件確認:LCOUNT > 0
+		選択 = LCOUNT
+NEXT
+DRAWLINE
+IF 選択 == -1
+	PRINTFORML □내성 확인
+ELSE
+	;---- EDIT 013 MOD START -------------------------
+	PRINTFORML □내성 강화　　(현재 ＭＡＧ：%TOSTR(GET_CHARA_STOCK_MAG(ARG), "###,0")%)
+	;---- EDIT 013 MOD END -------------------------
+ENDIF
+;IF TALENT:ARG:데빌시프터 || TALENT:ARG:아웃사이더 || TALENT:ARG:식노
+IF GET_ROLE_PROP("CAN_USE_TRANS", ARG) && STRCOUNT(GETS_ROLE_PROP("TRANS_STATUS", ARG, , "変身形態"), "防御相性")
+	RESULTS = %CSTR:ARG:롤%
+	TRYCCALLFORM ROLE_EXPLAIN_NAME_%CSTR:ARG:롤%, ARG
+	CATCH
+		RESULTS = %CSTR:ARG:롤%
+	ENDCATCH
+	IF GET_ROLE_PROP("CAN_USE_MANTRA", ARG)
+		IF ARG == MASTER
+			PRINTFORML 　※ %AUTO_SPLIT(RESULTS, "/", 1)%인 당신은 내성을 1개만 강화할 수 있습니다
+		ELSE
+			PRINTFORML 　※ 계약한 %AUTO_SPLIT(RESULTS, "/", 1)%은(는) 내성을 1개만 강화할 수 있습니다
+		ENDIF
+	ELSEIF GET_ROLE_PROP("CAN_USE_LINK", ARG)
+		PRINTFORML 　※ %AUTO_SPLIT(RESULTS, "/", 1)%은(는) 초기 변신 악마의 내성을 강화할 수 있습니다
+	ELSE
+		PRINTFORML 　※ %AUTO_SPLIT(RESULTS, "/", 1)%은(는) 변신 악마의 내성을 강화할 수 있습니다
+	ENDIF
+	;SIF TALENT:ARG:데빌시프터
+	;	PRINTL 　※デビルシフターは初期変身悪魔の耐性を強化することが出来ます
+	;SIF TALENT:ARG:아웃사이더
+	;	PRINTL 　※アウトサイダーは変身悪魔の耐性を強化することが出来ます
+	;SIF (계약(ARG) || ARG == MASTER) && TALENT:ARG:식노 == 1
+	;	PRINTL 　※契約した喰奴または喰奴あなたは耐性を１つだけ強化することが出来ます
+	;---- EDIT 034 MOD START -------------------------
+	;一度変身を解除し、あらためて初期悪魔に変身させる(=MAXBASEの値を習得させる)
+	IF !LLOCK	;RESTART対策のロック
+		LLINK   = CFLAG:ARG:링크캐릭터실제가입시간0	;リンク先を保存
+		LTRANCE = CFLAG:ARG:악마변신	;変身していたかを保存。今の仕様だとしてないはずだけど念のため
+		CALL TRANS_DEVIL, ARG, 0, "変身解除"
+		;SIF LLINK >= 0 && LTRANCE	;初期変身悪魔以外に変身していた場合はまず変身解除
+		;	CALL TRANS_DEVIL(ARG)
+		CFLAG:ARG:링크캐릭터실제가입시간0= 0	;リンク先を初期変身悪魔に
+		CALL TRANS_DEVIL, ARG, 0
+		;SIF LLINK < 0 !& LTRANCE	;元々初期変身悪魔に変身していた場合以外はここで初期変身悪魔に変身
+		;	CALL TRANS_DEVIL(ARG)
+		LLOCK = 1
+	ENDIF
+	;---- EDIT 034 MOD END ---------------------------
+ENDIF
+DRAWLINE
+PRINTFORML %CALLNAME:ARG, 20, LEFT%
+
+;変更済み相性の表示
+FOR LCOUNT, 0, 5
+	SELECTCASE LCOUNT
+		CASE 0
+			LOCAL:1 = CFLAG:ARG:변경상성1 - 1
+			LOCAL:2 = CFLAG:ARG:변경상성치1
+		CASE 1
+			LOCAL:1 = CFLAG:ARG:추가변경상성1 - 1
+			LOCAL:2 = CFLAG:ARG:추가변경상성치1
+		CASE 2
+			LOCAL:1 = CFLAG:ARG:추가변경상성2 - 1
+			LOCAL:2 = CFLAG:ARG:추가변경상성치2
+		CASE 3
+			LOCAL:1 = CFLAG:ARG:추가변경상성3 - 1
+			LOCAL:2 = CFLAG:ARG:추가변경상성치3
+		CASE 4
+			LOCAL:1 = CFLAG:ARG:추가변경상성4 - 1
+			LOCAL:2 = CFLAG:ARG:추가변경상성치4
+	ENDSELECT
+	IF 選択 == LCOUNT
+		PRINTFORM [--]
+	ELSEIF 条件確認:LCOUNT == -1
+		PRINTFORM [×]
+	ELSEIF 条件確認:LCOUNT
+		PRINTBUTTON "[" + TOSTR(LCOUNT + 50) + "]", 50 + LCOUNT
+	ENDIF
+	IF 条件確認:LCOUNT == 1
+		SELECTCASE LCOUNT
+			CASE 0
+				PRINTFORML 상성을 1개 선택하여 변경할 수 있습니다
+			CASE 1
+				PRINTFORML 계약한 동료마 또는 악마인 당신은 추가로 하나 더 상성을 변경할 수 있습니다 (소비 MAG 통상의 10배)
+			CASE 2
+				PRINTFORML 함락이력(친애)을 가진 동료마는 추가로 하나 더 상성을 변경할 수 있습니다 (소비 MAG 통상의 10배)
+			CASE 3
+				PRINTFORML 함락이력(창부)을 가진 동료마는 추가로 하나 더 상성을 변경할 수 있습니다 (소비 MAG 통상의 10배)
+			CASE 4
+				PRINTFORML 함락이력(예속)을 가진 동료마는 추가로 하나 더 상성을 변경할 수 있습니다 (소비 MAG 통상의 10배)
+		ENDSELECT
+	ELSEIF 条件確認:LCOUNT
+		PRINTFORM 강화 중인 상성：%GET_TYPE(LOCAL:1) % 
+		CALL SET_AISYOU_COLOR(LOCAL:2)
+		PRINTFORM \@ LOCAL:2 < 0 ? 흡 # 　 \@\@ LOCAL:2 != 999 ? {ABS(LOCAL:2), 3}％ # %" "%반사 \@
+		SETCOLOR LCOLOR
+		SELECTCASE LCOUNT
+			CASE 1
+				PRINTFORM ：계약에 의한 추가
+			CASE 2
+				PRINTFORM ：함락이력(친애)에 의한 추가
+			CASE 3
+				PRINTFORM ：함락이력(창부)에 의한 추가
+			CASE 4
+				PRINTFORM ：함락이력(예속)에 의한 추가
+		ENDSELECT
+		PRINTL
+	ENDIF
+NEXT
+DRAWLINE
+
+;変更する相性の選択
+SIF 選択 >= 0
+	PRINTL 어느 상성을 변경하시겠습니까?
+FOR LCOUNT, 0, TYPENUM
+	IF 選択 >= 0
+		IF LCOUNT < TYPENUM - 1
+			PRINTFORM [{LCOUNT, 2}]
+		ELSE
+			PRINTPLAINFORM %"    "%
+		ENDIF
+	ENDIF
+	PRINTFORM %GET_TYPE(LCOUNT)% 
+	CALL SET_AISYOU_COLOR(MAXBASE:ARG:(GET_TYPE(LCOUNT)))
+	PRINTFORM \@ MAXBASE:ARG:(GET_TYPE(LCOUNT)) < 0 ? 흡 # 　 \@
+	PRINTFORM \@ MAXBASE:ARG:(GET_TYPE(LCOUNT)) != 999 ? {ABS(MAXBASE:ARG:(GET_TYPE(LCOUNT))), 3}％ # %" "%반사 \@　
+	PRINTFORM \@ LCOUNT % 6 == 5 ? \n # \@
+	SETCOLOR LCOLOR
+NEXT
+PRINTL 
+IF GROUPMATCH(0, CFLAG:ARG:변경상성1, CFLAG:ARG:추가변경상성1, CFLAG:ARG:추가변경상성2, CFLAG:ARG:추가변경상성3, CFLAG:ARG:추가변경상성4) != 5
+	PRINTL [100] 돌아간다　　　[200] 리셋
+ELSE
+	PRINTL [100] 돌아간다
+ENDIF
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	IF LLOCK
+		SIF LLINK < 0 !& LTRANCE		;元々初期変身悪魔に変身していた場合以外はまず変身解除
+			CALL TRANS_DEVIL(ARG)
+		CFLAG:ARG:링크캐릭터실제가입시간0 = LLINK	;リンク先を戻す
+		SIF LLINK >= 0 && LTRANCE		;初期変身悪魔以外に変身していた場合はここで変身
+			CALL TRANS_DEVIL(ARG)
+		LLOCK = 0
+	ENDIF
+	RETURN 0
+ELSEIF INRANGE(RESULT, 50, 54) && 選択 != RESULT - 50 && 条件確認:(RESULT - 50) > 0
+	選択 = RESULT - 50
+	GOTO START
+ELSEIF RESULT == 200 && GROUPMATCH(0, CFLAG:ARG:변경상성1, CFLAG:ARG:추가변경상성1, CFLAG:ARG:추가변경상성2, CFLAG:ARG:추가변경상성3, CFLAG:ARG:추가변경상성4) != 5
+	PRINTL 소비한 MAG는 되돌아오지 않습니다.
+	SIF GROUPMATCH(-1, 条件確認:0, 条件確認:1, 条件確認:2, 条件確認:3, 条件確認:4)
+		PRINTL 또한, 현재 변경 조건을 만족하지 않는 상성 변경이 있어, 바로 되돌릴 수 없을 가능성이 있습니다.
+	PRINTL 리셋하시겠습니까?
+	CALL INPUT_YN, "리셋한다", "리셋하지 않는다"
+	IF RESULT == 0
+		CALL RESET_MAG_ENHANCE_DEFTYPE,ARG
+		CALL SYNC_STATUS,ARG
+		CALL HEALTH_CHARA,ARG
+	ENDIF
+	RESTART
+ELSEIF RESULT < 0 || RESULT >= TYPENUM-1 || 選択 < 0
+	GOTO INPUT_LOOP
+;---- EDIT 020 ADD START -------------------------
+;上位の相性変更が発動中
+ELSEIF GETBIT(CFLAG:ARG:MAG상성변경불가, RESULT)
+	PRINTW 특수한 상성 변경이 적용되어 있어 상성을 변경할 수 없습니다.
+	LOCAL:1 = RESULT
+	IF GROUPMATCH(LOCAL:1+1, CFLAG:ARG:변경상성1, CFLAG:ARG:추가변경상성1, CFLAG:ARG:추가변경상성2, CFLAG:ARG:추가변경상성3, CFLAG:ARG:추가변경상성4)
+		PRINTL 이미 이 상성에 적용된 변경을 리셋하시겠습니까? (※ 소비한 MAG는 되돌아오지 않습니다)
+		CALL INPUT_YN, "리셋한다", "리셋하지 않는다"
+		IF !RESULT
+			IF CFLAG:ARG:변경상성1 == (LOCAL:1 + 1)
+				CFLAG:ARG:변경상성1 = 0
+				CFLAG:ARG:변경상성치1 = 0
+			ELSE
+				FOR LCOUNT, 1, 5
+					SIF CFLAG:ARG:@"추가변경상성{LCOUNT}" != (LOCAL:1 + 1)
+						CONTINUE
+					CFLAG:ARG:@"추가변경상성{LCOUNT}" = 0
+					CFLAG:ARG:@"추가변경상성치{LCOUNT}" = 0
+				NEXT
+			ENDIF
+			CALL SYNC_STATUS,ARG
+			CALL HEALTH_CHARA,ARG
+			PRINTFORMW 상성 변경을 리셋했습니다.
+		ENDIF
+	ENDIF
+	RESTART
+ENDIF
+;---- EDIT 020 ADD END ---------------------------
+LOCAL:1 = RESULT
+DRAWLINE
+
+;相性変更の消費MAG計算
+PRINTFORML %GET_TYPE(LOCAL:1)%의 방어상성을 어떻게 하시겠습니까?
+PRINTFORM 현재：\@(MAXBASE:ARG:(GET_TYPE(LOCAL:1)) < 0) ? 흡 # 　\@
+PRINTFORM \@ ((MAXBASE:ARG:(GET_TYPE(LOCAL:1)) != 999)) ? {ABS(MAXBASE:ARG:(GET_TYPE(LOCAL:1))),4}％ # %" " *2%반사 \@
+
+;PRINTFORM 현재：
+;IF MAXBASE:ARG:GET_TYPE(LOCAL:1) == 999
+;	PRINTFORML 反射
+;ELSEIF MAXBASE:ARG:GET_TYPE(LOCAL:1) == 0
+;	PRINTFORML 無効
+;ELSE
+;	PRINTFORML {MAXBASE:ARG:GET_TYPE(LOCAL:1)}％
+;ENDIF
+
+PRINTL
+;---- EDIT 013 MOD START -------------------------
+IF 選択 == 0
+	LOCAL = 50 * BASE:ARG:CP
+ELSE
+	LOCAL = 500 * BASE:ARG:CP
+ENDIF
+SIF MAXBASE:ARG:GET_TYPE(LOCAL:1) > 100 && MAXBASE:ARG:GET_TYPE(LOCAL:1) != 999
+	PRINTFORML [1] 통상 필요 ＭＡＧ：%TOSTR(LOCAL, "###,0")%
+SIF MAXBASE:ARG:GET_TYPE(LOCAL:1) > 50 && MAXBASE:ARG:GET_TYPE(LOCAL:1) != 999
+	PRINTFORML [2] 반감 필요 ＭＡＧ：%TOSTR(10*LOCAL, "###,0")%
+SIF MAXBASE:ARG:GET_TYPE(LOCAL:1) != 0
+	PRINTFORML [3] 무효 필요 ＭＡＧ：%TOSTR(50*LOCAL, "###,0")%
+SIF MAXBASE:ARG:GET_TYPE(LOCAL:1) >= 0
+	PRINTFORML [4] 흡수 필요 ＭＡＧ：%TOSTR(100*LOCAL, "###,0")%
+SIF MAXBASE:ARG:GET_TYPE(LOCAL:1) != 999
+	PRINTFORML [5] 반사 필요 ＭＡＧ：%TOSTR(100*LOCAL, "###,0")%
+;---- EDIT 013 MOD END -------------------------
+DRAWLINE
+PRINTL [0] 돌아간다
+$INPUT_LOOP_2
+INPUT
+
+IF RESULT == 0
+	GOTO START
+ELSEIF RESULT == 1 && MAXBASE:ARG:GET_TYPE(LOCAL:1) > 100 && MAXBASE:ARG:GET_TYPE(LOCAL:1) != 999 && GET_CHARA_STOCK_MAG(ARG) >= LOCAL
+	LOCAL:2 = 100
+	CALL CONTROL_MAG, ARG, -LOCAL
+ELSEIF RESULT == 2 && MAXBASE:ARG:GET_TYPE(LOCAL:1) > 50 && MAXBASE:ARG:GET_TYPE(LOCAL:1) != 999 && GET_CHARA_STOCK_MAG(ARG) >= 10*LOCAL
+	LOCAL:2 = 50
+	CALL CONTROL_MAG, ARG, -10*LOCAL
+ELSEIF RESULT == 3 && MAXBASE:ARG:GET_TYPE(LOCAL:1) != 0 && GET_CHARA_STOCK_MAG(ARG) >= 50*LOCAL
+	LOCAL:2 = 0
+	CALL CONTROL_MAG, ARG, -50*LOCAL
+ELSEIF RESULT == 4 && MAXBASE:ARG:GET_TYPE(LOCAL:1) >= 0 && GET_CHARA_STOCK_MAG(ARG) >= 100*LOCAL
+	LOCAL:2 = -50
+	CALL CONTROL_MAG, ARG, -100*LOCAL
+ELSEIF RESULT == 5 && MAXBASE:ARG:GET_TYPE(LOCAL:1) != 999 && GET_CHARA_STOCK_MAG(ARG) >= 100*LOCAL
+	LOCAL:2 = 999
+	CALL CONTROL_MAG, ARG, -100*LOCAL
+ELSE
+	GOTO INPUT_LOOP_2
+ENDIF
+SELECTCASE 選択
+	CASE 0
+		CFLAG:ARG:변경상성1 = LOCAL:1+1
+		CFLAG:ARG:변경상성치1 = LOCAL:2
+	CASE 1
+		CFLAG:ARG:추가변경상성1 = LOCAL:1+1
+		CFLAG:ARG:추가변경상성치1 = LOCAL:2
+	CASE 2
+		CFLAG:ARG:추가변경상성2 = LOCAL:1+1
+		CFLAG:ARG:추가변경상성치2 = LOCAL:2
+	CASE 3
+		CFLAG:ARG:추가변경상성3 = LOCAL:1+1
+		CFLAG:ARG:추가변경상성치3 = LOCAL:2
+	CASE 4
+		CFLAG:ARG:추가변경상성4 = LOCAL:1+1
+		CFLAG:ARG:추가변경상성치4 = LOCAL:2
+ENDSELECT
+
+CALL SYNC_STATUS,ARG
+GOTO START
+
+@RESET_MAG_ENHANCE_DEFTYPE,ARG
+CFLAG:ARG:변경상성1 = 0
+CFLAG:ARG:변경상성치1 = 0
+CFLAG:ARG:변경상성2 = 0
+CFLAG:ARG:변경상성치2 = 0
+CFLAG:ARG:추가변경상성1 = 0
+CFLAG:ARG:추가변경상성치1 = 0
+CFLAG:ARG:추가변경상성2 = 0
+CFLAG:ARG:추가변경상성치2 = 0
+CFLAG:ARG:추가변경상성3 = 0
+CFLAG:ARG:추가변경상성치3 = 0
+CFLAG:ARG:추가변경상성4 = 0
+CFLAG:ARG:추가변경상성치4 = 0
+@IS_MAG_ENHANCE_DEFTYPE(ARG, ARG:1)
+#FUNCTION
+#DIM 변경상성
+#DIM 変更可能判定
+SELECTCASE ARG:1
+	CASE 0
+		변경상성 = CFLAG:ARG:변경상성1
+		変更可能判定 = TALENT:ARG:식노 == 0 || (계약(ARG) || ARG == MASTER) == 1
+	CASE 1
+		변경상성 = CFLAG:ARG:추가변경상성1
+		変更可能判定 = TALENT:ARG:식노 == 0 && (계약(ARG) || ARG == MASTER) == 1
+	CASE 2
+		변경상성 = CFLAG:ARG:추가변경상성2
+		変更可能判定 = TALENT:ARG:("함락내역(친애)")
+	CASE 3
+		변경상성 = CFLAG:ARG:추가변경상성3
+		変更可能判定 = TALENT:ARG:("함락내역(창부)")
+	CASE 4
+		변경상성 = CFLAG:ARG:추가변경상성4
+		変更可能判定 = TALENT:ARG:("함락내역(예속)")
+	CASEELSE
+		RETURNF 0
+ENDSELECT
+IF 変更可能判定
+	IF 변경상성
+		RETURNF 2
+	ELSE
+		RETURNF 1
+	ENDIF
+ELSE
+	IF 변경상성
+		RETURNF -1
+	ELSE
+		RETURNF 0
+	ENDIF
+ENDIF
+;---- EDIT 049 MOD END ---------------------------
+
+@MAG_GROWTH,ARG
+#DIM DYNAMIC MAG_COST, 2, 10
+#DIM DYNAMIC COST_LENGTH, 2
+#DIM DYNAMIC LINE
+#DIM DYNAMIC L_COUNT
+#DIM DYNAMIC UP_VALUE
+#DIM DYNAMIC TENTACLE_RATE
+#DIM DYNAMIC TENTACLE_FLAG
+#DIM DYNAMIC TENTACLE_COST
+LINE = LINECOUNT
+;触手のＭＡＧ譲渡倍率を変数に保存（ＭＡＧ譲渡が使用できない場合は0）
+TENTACLE_RATE = TENTACLE_LABORATORY_MAG_RATE()
+IF TENTACLE_RATE > 0
+	;対象者がＭＡＧ譲渡のリストに出てこない場合は倍率を0に変更
+	CALL CASTING_TENTACLE_LABORATORY_MAG(ARG)
+	SIF RESULT == 0
+		TENTACLE_RATE = 0
+ENDIF
+DRAWLINE
+PRINTL □체력・기력강화
+DRAWLINE
+;---- EDIT 013 MOD START -------------------------
+IF TENTACLE_FLAG
+	PRINTFORML ＜촉수레벨보정{TENTACLE_RATE}배　에너지{FLAG:촉수에너지}F＞
+	PRINTFORML %NAME:ARG,20,LEFT%(ＭＡＧ：%TOSTR(GET_CHARA_STOCK_MAG(ARG), "###,0")%/%TOSTR(GET_CHARA_MAXMAG(ARG), "###,0")%)
+ELSE
+	PRINTFORML %NAME:ARG,20,LEFT%(현재ＭＡＧ：%TOSTR(GET_CHARA_STOCK_MAG(ARG), "###,0")%)
+ENDIF
+PRINTL 어느 쪽을 강화하시겠습니까？
+
+;체력(0)と気力(1)の+100～+1000までのコストを変数に保存
+FOR L_COUNT,0,10
+	MAG_COST:0:L_COUNT = MAG_GROWTH_COST(ARG, 0, MAXBASE:ARG:체력 + L_COUNT * 100)
+	MAG_COST:1:L_COUNT = MAG_GROWTH_COST(ARG, 1, MAXBASE:ARG:기력 + L_COUNT * 100)
+	IF L_COUNT != 0
+		MAG_COST:0:L_COUNT += MAG_COST:0:(L_COUNT - 1)
+		MAG_COST:1:L_COUNT += MAG_COST:1:(L_COUNT - 1)
+	ENDIF
+NEXT
+
+;表示が崩れないように文字数を計算
+COST_LENGTH:0 = MAX(7, STRLENS(TOSTR(MAG_COST:0:9, "###,0")))
+COST_LENGTH:1 = MAX(7, STRLENS(TOSTR(MAG_COST:1:9, "###,0")))
+PRINTFORML %@"체력 (현재의최대치:{MAXBASE:ARG:체력})", 20 + COST_LENGTH:0, LEFT%  기력 (현재의최대치:{MAXBASE:ARG:기력})
+
+FOR L_COUNT,0,10
+	;触手エネルギー使用可能時は使用する触手エネルギーを計算する
+	SIF TENTACLE_FLAG
+		TENTACLE_COST = ((MAG_COST:0:L_COUNT - GET_CHARA_STOCK_MAG(ARG)) + TENTACLE_RATE - 1) / TENTACLE_RATE
+	;ＭＡＧが足りないかつ、触手エネルギーが使用不可・コストがＭＡＧ上限を上回る・触手エネルギー不足のいずれかで上昇不可能とする
+	SIF GET_CHARA_STOCK_MAG(ARG) < MAG_COST:0:L_COUNT && (!TENTACLE_FLAG || GET_CHARA_MAXMAG(ARG) < MAG_COST:0:L_COUNT || FLAG:촉수에너지 < TENTACLE_COST)
+		SETCOLOR 0x404040
+	PRINTFORM   [{L_COUNT+1,2}]%"+" + TOSTR(L_COUNT+1) + "00", 5% / %TOSTR(MAG_COST:0:L_COUNT, "###,0"),COST_LENGTH:0,RIGHT%MAG     
+	RESETCOLOR
+	SIF TENTACLE_FLAG
+		TENTACLE_COST = ((MAG_COST:1:L_COUNT - GET_CHARA_STOCK_MAG(ARG)) + TENTACLE_RATE - 1) / TENTACLE_RATE
+	SIF GET_CHARA_STOCK_MAG(ARG) < MAG_COST:1:L_COUNT && (!TENTACLE_FLAG || GET_CHARA_MAXMAG(ARG) < MAG_COST:1:L_COUNT || FLAG:촉수에너지 < TENTACLE_COST)
+		SETCOLOR 0x404040
+	PRINTFORML   [{L_COUNT+11,2}]%"+" + TOSTR(L_COUNT+1) + "00", 5% / %TOSTR(MAG_COST:1:L_COUNT, "###,0"),COST_LENGTH:1,RIGHT%MAG
+	RESETCOLOR
+NEXT
+
+;---- EDIT 013 MOD END -------------------------
+DRAWLINE
+PRINT [0] 돌아간다
+;倍率が0ではない＝触手によるＭＡＧ譲渡が可能な場合のみ表示
+SIF TENTACLE_RATE > 0
+	PRINTFORM      [100]촉수에너지로 부족한 ＭＡＧ를 보충한다[\@ TENTACLE_FLAG ? ON # OFF\@]
+PRINTL
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	RETURN 0
+ELSEIF INRANGE(RESULT, 1, 10)
+	UP_VALUE = RESULT
+	IF GET_CHARA_STOCK_MAG(ARG) < MAG_COST:0:(UP_VALUE - 1)
+		IF TENTACLE_FLAG
+			IF GET_CHARA_MAXMAG(ARG) < MAG_COST:0:(UP_VALUE - 1)
+				PRINTW ＭＡＧ 상한이 부족합니다
+				CLEARLINE 2
+				GOTO INPUT_LOOP
+			ENDIF
+			TENTACLE_COST = ((MAG_COST:0:(UP_VALUE - 1) - GET_CHARA_STOCK_MAG(ARG)) + TENTACLE_RATE - 1) / TENTACLE_RATE
+			IF FLAG:촉수에너지 < TENTACLE_COST
+				PRINTW 에너지가 부족합니다
+				CLEARLINE 2
+				GOTO INPUT_LOOP
+			ENDIF
+			CALL CONTROL_MAG,ARG,TENTACLE_COST * TENTACLE_RATE
+			FLAG:촉수에너지 -= TENTACLE_COST
+		ELSE
+			PRINTW ＭＡＧ가 부족합니다
+			CLEARLINE 2
+			GOTO INPUT_LOOP
+		ENDIF
+	ENDIF
+	SIF BASE:ARG:체력 == MAXBASE:ARG:체력
+		BASE:ARG:체력 += UP_VALUE * 100
+	MAXBASE:ARG:체력 += UP_VALUE * 100
+	CALL CONTROL_MAG,ARG,-MAG_COST:0:(UP_VALUE - 1)
+	PRINTFORMW %NAME:ARG%의 체력이 {MAXBASE:ARG:체력}으로 되었습니다
+ELSEIF INRANGE(RESULT, 11, 20)
+	UP_VALUE = RESULT - 10
+	IF GET_CHARA_STOCK_MAG(ARG) < MAG_COST:1:(UP_VALUE - 1)
+		IF TENTACLE_FLAG
+			IF GET_CHARA_MAXMAG(ARG) < MAG_COST:1:(UP_VALUE - 1)
+				PRINTW ＭＡＧ 상한이 부족합니다
+				CLEARLINE 2
+				GOTO INPUT_LOOP
+			ENDIF
+			TENTACLE_COST = ((MAG_COST:1:(UP_VALUE - 1) - GET_CHARA_STOCK_MAG(ARG)) + TENTACLE_RATE - 1) / TENTACLE_RATE
+			IF FLAG:촉수에너지 < TENTACLE_COST
+				PRINTW 에너지가 부족합니다
+				CLEARLINE 2
+				GOTO INPUT_LOOP
+			ENDIF
+			CALL CONTROL_MAG,ARG,TENTACLE_COST * TENTACLE_RATE
+			FLAG:촉수에너지 -= TENTACLE_COST
+		ELSE
+			PRINTW ＭＡＧ가 부족합니다
+			CLEARLINE 2
+			GOTO INPUT_LOOP
+		ENDIF
+	ENDIF
+	SIF BASE:ARG:기력 == MAXBASE:ARG:기력
+		BASE:ARG:기력 += UP_VALUE * 100
+	MAXBASE:ARG:기력 += UP_VALUE * 100
+	CALL CONTROL_MAG,ARG,-MAG_COST:1:(UP_VALUE - 1)
+	PRINTFORMW %NAME:ARG%의 기력이 {MAXBASE:ARG:기력}으로 되었습니다
+ELSEIF RESULT == 100 && TENTACLE_RATE > 0
+	TENTACLE_FLAG = !TENTACLE_FLAG
+ELSE
+	CLEARLINE 1
+	GOTO INPUT_LOOP
+ENDIF
+CLEARLINE LINECOUNT - LINE
+RESTART
+
+@MAG_GROWTH_COST, ARG, ARG:1, ARG:2
+#FUNCTION
+#DIM DYNAMIC COST
+;ARG		対象キャラクター
+;ARG:1		0=체력 1=기력
+;ARG:2		上昇元の値
+COST = POWER(ARG:2/100,2)*(5+ARG:2/500+ARG:2/3000*5)
+SIF ARG == MASTER
+	COST *= 2
+SIF ARG:1 == 1
+	COST *= 2
+RETURNF COST
+
+;---- EDIT 039 MOD START -------------------------
+;---- EDIT 002 MOD START -------------------------
+@ＭＡＧ強化ＣＰ補正(ARG)
+#FUNCTION
+RETURNF MIN((ABL:ARG:종족 == 36 ? 905 # 900+MAXBASE:ARG:CP), 1100)
+
+
+@スキル変更可能確かめ(ARG)
+#FUNCTION
+;人間時のみだと　1
+;変身後のみだと　2
+;両方とも可だと　3　を返す
+LOCAL:0 = 0
+LOCAL:1 = 0
+
+SIF (TALENT:ARG:이능자 || ABL:ARG:종족 != 0 || TALENT:ARG:아웃사이더) && !TALENT:ARG:달인 && !TALENT:ARG:페르소나구사자
+	LOCAL:0 = 1
+SIF TALENT:ARG:데빌시프터 || TALENT:ARG:식노 || TALENT:ARG:아웃사이더
+	LOCAL:1 = 2
+
+RETURNF LOCAL:0 + LOCAL:1
+
+;ステータスアップの必要MAG取得
+@MAG_CALC_ENHANCE_BASE, ARG, ARG:1, ARG:2 = 0
+#FUNCTION
+#DIM DYNAMIC L_VALUE
+#DIM DYNAMIC L_STAT
+IF EXISTFUNCTION(@"MAG_CALC_ENHANCE_BASE_CHARA_{NO:ARG}")
+	RESULT_F = -1
+	CALLFORMF MAG_CALC_ENHANCE_BASE_CHARA_{NO:ARG}, ARG, ARG:1, ARG:2
+	RETURNF RESULT_F
+;MASTERは無償回数がある時のみ
+ELSEIF ARG == MASTER
+	SIF COUNT_FREE_MAG_ENHANCE_BASE(ARG) > ARG:1
+		RETURNF 0
+	RETURNF -1
+;係数0は独自がない場合は通らない
+ELSEIF GET_ROLE_PROP("MAG_CALC_ENHANCE_BASE_VALUE", ARG) == 0
+	RETURNF -1
+ELSE
+	;---- EDIT 033 ADD START -------------------------
+	;直接指定
+	IF ARG:2 > 0
+		L_STAT = ARG:2
+	ELSE
+		;無償なら0
+		SIF COUNT_FREE_MAG_ENHANCE_BASE(ARG) > ARG:1
+			RETURNF 0
+		L_STAT = CFLAG:ARG:능력강화횟수 + ARG:1
+	ENDIF
+	;---- EDIT 033 ADD END ---------------------------
+	;L_VALUE = FLAG:전투난이도 > 3 ? 100 # 250
+	L_VALUE = 250
+	L_VALUE *= (L_STAT / 3 + 1)
+	L_VALUE *= (L_STAT / 3 + 2)
+	L_VALUE = L_VALUE * ＭＡＧ強化ＣＰ補正(ARG) / 1000
+	L_VALUE = L_VALUE * ABS(GET_ROLE_PROP("MAG_CALC_ENHANCE_BASE_VALUE", ARG)) / 100
+	L_VALUE = L_VALUE * ABS(GET_ROLE_PROP("MAG_CALC_ENHANCE_BASE_VALUE", ARG)) / 100
+	RETURNF L_VALUE
+ENDIF
+;---- EDIT 033 ADD START -------------------------
+;-------------------------------------------
+;無償振りできる回数の計算
+;実際に振ってある数値が能力回数に達するまでは無償で振れる
+;-------------------------------------------
+;---- EDIT 033 ADD END ---------------------------
+@COUNT_FREE_MAG_ENHANCE_BASE, ARG
+#FUNCTION
+RETURNF MAX(CFLAG:ARG:능력강화횟수 - SUMARRAY(CFLAG:ARG:0, GETNUM(CFLAG, "힘강화횟수"), GETNUM(CFLAG, "운강화횟수")+1), 0)
+;ARG = リストの登録者数
+@SORT_MAG_ENHANCE, ARG
+#DIM LCOUNT
+FOR LCOUNT, 0, ARG
+	SELECTCASE MAG_ENHANCE_SORT
+		CASE 0
+			ARRAYSORT Q, FORWARD, 0, ARG
+			RETURN 0
+		;MAG所持量
+		CASE 1
+			Q:LCOUNT += GET_CHARA_STOCK_MAG(Q:LCOUNT) * 1000
+		;MAG所持割合
+		CASE 2
+			Q:LCOUNT += (GET_CHARA_STOCK_MAG(Q:LCOUNT) * 1000 / GET_CHARA_MAXMAG(Q:LCOUNT)) * 1000
+		;LV
+		CASE 3
+			Q:LCOUNT += BASE:(Q:LCOUNT):LV * 1000
+	ENDSELECT
+NEXT
+
+ARRAYSORT Q, BACK, 0, ARG
+
+FOR LCOUNT, 0, ARG
+	Q:LCOUNT %= 1000
+NEXT
+RETURN 0
+
+@STATUS_RESET, ARG
+#DIM DYNAMIC LINE, 3
+#DIM DYNAMIC LCOUNT, 2
+#DIM DYNAMIC L_RESULT
+#DIM DYNAMIC SUM_BONUS_STAT
+LINE = LINECOUNT
+$START
+VARSET SUM_BONUS_STAT
+CLEARLINE LINECOUNT - LINE
+CALL MAG_ENHANCE_INFO_CHARA, ARG
+LINE:1 = LINECOUNT
+PRINTFORML 리셋할 항목을 선택해주세요
+PRINTFORML 필요 마카:1000　　　소지 마카:{MONEY:1}
+PRINTFORML [0] 기본 스탯
+PRINTFORML [1] ＭＡＧ 강화
+CALL PRINT_SPACE_ENHANCE
+DRAWLINE
+PRINTL [9] 돌아간다
+CALL INPUTINT, 9, 0, 1
+L_RESULT = RESULT
+SELECTCASE L_RESULT
+	CASE 9
+		RETURN 1
+	CASE 0
+		CLEARLINE LINECOUNT- LINE:1
+		PRINTFORML 1000 마카를 소비하여 기본 스탯을 리셋하고
+		PRINTFORML 다시 분배할 수 있습니다.
+		PRINTFORML 정말로 리셋하시겠습니까?
+		PRINTL [0] 네
+		PRINTL [1] 아니오
+		CALL PRINT_SPACE_ENHANCE
+		DRAWLINE
+		PRINTL [9] 돌아간다
+		CALL INPUTINT, 0, 1
+		CLEARLINE LINECOUNT- LINE:1
+		IF RESULT == 0
+			;標準値との差分をとりつつステータスを修正
+			FOR LCOUNT, 1, 7
+				;自由ふりに使えるポイントを計算する
+				SUM_BONUS_STAT += BASE:ARG:GET_BASESTATUS(LCOUNT)
+				SUM_BONUS_STAT -= 1
+				;香で増えた分はひいておく
+				SUM_BONUS_STAT -= CFLAG:ARG:@"향사용횟수_%GET_BASESTATUS(LCOUNT)%"
+				;ステータスを1に下げ、香強化分を振り込む
+				BASE:ARG:GET_BASESTATUS(LCOUNT) = 1
+				BASE:ARG:GET_BASESTATUS(LCOUNT) += CFLAG:ARG:@"향사용횟수_%GET_BASESTATUS(LCOUNT)%"
+			NEXT
+			IF FLAG:레벨업시인터페이스설정 == 1
+				CALLFORM STATUS_BONUS_1,ARG, MAX(SUM_BONUS_STAT, 0)
+			ELSE
+				CALLFORM STATUS_BONUS_0,ARG, MAX(SUM_BONUS_STAT, 0)
+			ENDIF
+			MONEY:1 -= 1000
+		ENDIF
+	CASE 1
+		CLEARLINE LINECOUNT- LINE:1
+		PRINTFORML 1000 마카를 소비하여 MAG 강화를 적용한 스탯을 리셋하고
+		PRINTFORML 다시 분배할 수 있습니다.
+		PRINTFORML 정말로 리셋하시겠습니까?
+		PRINTL [0] 네
+		PRINTL [1] 아니오
+		CALL PRINT_SPACE_ENHANCE
+		DRAWLINE
+		PRINTL [9] 돌아간다
+		CALL INPUTINT, 0, 1
+		CLEARLINE LINECOUNT- LINE:1
+		IF RESULT == 0
+			;標準値との差分をとりつつステータスを修正
+			FOR LCOUNT, 1, 7
+				;自由ふりに使えるポイントを計算する
+				SUM_BONUS_STAT += CFLAG:ARG:@"%GET_BASESTATUS(LCOUNT)%강화횟수"
+				CFLAG:ARG:@"%GET_BASESTATUS(LCOUNT)%강화횟수" = 0
+			NEXT
+			MONEY:1 -= 1000
+			PRINTFORML MAG 강화를 리셋했습니다.
+			PRINTFORML 리셋한 능력치는 무상 강화가 가능한 포인트로 축적되므로
+			PRINTFORML 다시 MAG 강화를 실행하여 유효화해주세요.
+			CALL PRINT_SPACE_ENHANCE
+			DRAWLINE
+			PRINTW [9] 돌아간다
+		ENDIF
+ENDSELECT
+IF MONEY:1 < 1000
+	PRINTFORML 리셋에 필요한 마카가 부족합니다.
+	PRINTFORMW 스탯 리셋을 종료합니다.
+	RETURN 1
+ENDIF
+GOTO START
+@PRINT_SPACE_ENHANCE
+WHILE MAG_ENHANCE_LINE > LINECOUNT
+	PRINTL 
+WEND

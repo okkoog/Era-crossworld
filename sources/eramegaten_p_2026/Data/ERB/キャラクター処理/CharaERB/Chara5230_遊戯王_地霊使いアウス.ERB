@@ -1,0 +1,146 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5230_遊戯王_地霊使いアウス.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/10/27		P(bazzile)				新規作成
+;	002		2025/07/31		epizo					画像パターン追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:아우스]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("アウス_FACE_0")
+			RETURNF ""
+		SIF !SPRITECREATED("アウス_FACE_1")
+			RETURNF ""
+		SIF !SPRITECREATED("アウス_FACE_2")
+			RETURNF ""
+		SIF !SPRITECREATED("アウス_FACE_3")
+			RETURNF ""
+		SIF !SPRITECREATED("アウス_FACE_4")
+			RETURNF ""
+		SIF !SPRITECREATED("アウス_FACE_5")
+			RETURNF ""
+		SIF !SPRITECREATED("アウス_FACE_6")
+			RETURNF ""
+		SIF !SPRITECREATED("アウス_FACE_7")
+			RETURNF ""
+		SIF !SPRITECREATED("アウス_FACE_EX_0")
+			RETURNF ""
+		SIF !SPRITECREATED("アウス_FACE_EX_1")
+			RETURNF ""
+		SIF !SPRITECREATED("アウス_FACE_EX_2")
+			RETURNF ""
+		SIF !SPRITECREATED("アウス_FACE_EX_3")
+			RETURNF ""
+		RESULTS_F = 新型
+		CALLF DISPOSE_SPRITE_FORCE_F, TEMP_GID_START, "アウス新型"
+		GCREATE TEMP_GID_START, 360, 360
+		GDRAWSPRITE TEMP_GID_START, "アウス_FACE_0", 0, 0, 180, 180
+		GDRAWSPRITE TEMP_GID_START, "アウス_FACE_2", 180, 0, 180, 180
+		GDRAWSPRITE TEMP_GID_START, "アウス_FACE_4", 0, 180, 180, 180
+		GDRAWSPRITE TEMP_GID_START, "アウス_FACE_6", 180, 180, 180, 180
+		SPRITECREATE "アウス新型", TEMP_GID_START
+		RESULTS_F:2 = アウス新型
+		RESULTS_F:1 = アウス_FACE_0
+	CASE 1
+		;画像チェック
+		SIF !SPRITECREATED("アウス_FACE_8")
+			RETURNF ""
+		SIF !SPRITECREATED("アウス_FACE_9")
+			RETURNF ""
+		RESULTS_F = デフォルト
+		RESULTS_F:1 = アウス_FACE_8
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:아우스]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "新型"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+				CALLF 陥落(L_CHARA)
+				IF RESULTS == "연모"
+					RESULTS_F = アウス_FACE_3
+				ELSEIF RESULTS == "음란"
+					RESULTS_F = アウス_FACE_5
+				ELSEIF RESULTS == "복종"
+					RESULTS_F = アウス_FACE_7
+				ELSEIF RESULTS == "신뢰"
+					RESULTS_F = アウス_FACE_1
+				ELSE
+					RESULTS_F = アウス_FACE_1
+				ENDIF
+			CASEELSE
+				SELECTCASE L_SITUATION:1
+					;戦闘不能になった時
+					CASE "DYING"
+						RESULTS_F = アウス_FACE_EX_0
+					;魅了にされた時
+					CASE "CHARM"
+						RESULTS_F = アウス_FACE_EX_1
+					;睡眠にされた時
+					CASE "SLEEP" 
+						RESULTS_F = アウス_FACE_EX_2
+					;上記以外の状態異常の時
+					CASE "STONE", "FLY", "PALYZE", "BRAND", "CURSE", "FLAME", "BOMB", "POISON", "CLOSE", "BIND", "SLIP", "FREEZE", "PANIC", "SHOCK", "HAPPY"
+						RESULTS_F = アウス_FACE_EX_3
+					;通常時
+				CASEELSE
+					CALLF 陥落(L_CHARA)
+					IF RESULTS == "연모"
+						RESULTS_F = アウス_FACE_2
+					ELSEIF RESULTS == "음란"
+						RESULTS_F = アウス_FACE_4
+					ELSEIF RESULTS == "복종"
+						RESULTS_F = アウス_FACE_6
+					ELSEIF RESULTS == "신뢰"
+						RESULTS_F = アウス_FACE_2
+					ELSE
+						RESULTS_F = アウス_FACE_0
+					ENDIF
+				ENDSELECT
+				;HPが25%未満だとDYINGまでこれに固定する
+				IF 現HP割合(L_CHARA) < 25
+					RESULTS_F = アウス_FACE_EX_0
+				ENDIF
+		ENDSELECT
+	CASE "デフォルト"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+				RESULTS_F = アウス_FACE_9
+			CASEELSE
+				IF IS_BADSTATE(L_CHARA, "CHARM")
+					RESULTS_F = アウス_FACE_9
+				ELSE
+					RESULTS_F = アウス_FACE_8
+				ENDIF
+		ENDSELECT
+	CASEELSE
+ENDSELECT

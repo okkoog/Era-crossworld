@@ -1,0 +1,138 @@
+﻿;ジャスティスショットの改変　仲魔をCOMPに戻すのは無しに
+;スキル名
+@SKILL_NAME_58,ARG
+RESULTS = 길로틴페이크
+
+;　명중
+@SKILL_HITRATE_58, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_58, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_58,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_58,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_58, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_58,ARG
+RETURN 15
+
+;　相性
+@SKILL_TYPE_58,ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_58
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_58, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_58, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_58,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_58,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_58, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_58
+RETURN GET_SUCCESSION_NUM("검격")
+
+@継承不能_58
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_58, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_58
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_58, ARG = -1
+RETURN 13
+
+@SKILL_RANKUP_58
+;ランクアップ先は二つ
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_58, ARG, ARG:1, ARG:2
+LOCAL = POS(ARG:1)
+PRINTFORM TARGET:[{CPOS(LOCAL),2}] %CALLNAME:LOCAL,20,LEFT%　>>>>>>　
+IF MAXBASE:LOCAL:검격 <= 0 || MAXBASE:LOCAL:DYING <= -100 || MAXBASE:LOCAL:검격 == 999 || CFLAG:LOCAL:물리반사플래그
+	PRINTW BLOCK
+	RETURN 0
+ENDIF
+
+LOCALS = 검격무효화횟수
+IF CFLAG:LOCAL:LOCALS
+	PRINTW BLOCK
+	CFLAG:LOCAL:검격피탄 = 1
+	RETURN 0
+ENDIF
+;ボスには効かない
+IF CFLAG:LOCAL:보스플래그
+	PRINTW BLOCK
+	RETURN 0
+ENDIF
+
+;防御中はバッドステータスにかからない
+IF CFLAG:LOCAL:방어플래그 == 1
+	PRINTW GUARD
+	RETURN 0
+ENDIF
+LOCAL:1 = 60 * (100 - MAXBASE:ARG:(GET_BASESTATUS(6)) + MAXBASE:LOCAL:(GET_BASESTATUS(6))) / 100
+;うーん、一応即死ではないしなぁ
+;LOCAL:1 *= 100+MAXBASE:LOCAL:DYING
+;LOCAL:1 /= 100
+
+IF LOCAL:1 < RAND:100
+	PRINTW MISS
+	RETURN 0
+ENDIF
+PRINTFORMW {BASE:LOCAL:ＨＰ - 1}데미지
+BASE:LOCAL:ＨＰ = 1
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_58, ARG
+PRINTL 적의 HP를 1로 만든다。
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_58,ARG
+RETURN 1
+;とくにない
+

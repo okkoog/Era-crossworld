@@ -1,0 +1,149 @@
+﻿;更新履歴
+;001	2025/01/20		テキーラ				新規作成
+
+;スキル名
+@SKILL_NAME_★男殺し,ARG
+RESULTS = ★남성 킬러
+
+;　명중
+@SKILL_HITRATE_★男殺し, ARG
+RETURN 140
+
+;　威力
+@SKILL_POWER_★男殺し, ARG
+RETURN 400
+
+;;クリティカル率
+@SKILL_CRITICAL_RATE_★男殺し, ARG
+RETURN 5
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_★男殺し,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_★男殺し,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_★男殺し, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_★男殺し,ARG
+RETURN 32
+
+;　相性
+@SKILL_TYPE_★男殺し,ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_★男殺し
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_★男殺し,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_★男殺し,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_★男殺し,ARG
+RETURN 2
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_★男殺し,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復
+@SKILL_EFECT_★男殺し,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_★男殺し,ARG
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_★男殺し, ARG = -1
+RETURN 12
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_★男殺し
+RETURN 0
+
+@SKILL_RANK_★男殺し, ARG = -1
+RETURN 12
+
+@継承不能_★男殺し
+RETURN 2
+
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_★男殺し, ARG = -1, ARG:1 = -1
+IF IS_MALE(ARG:1)
+	RETURN 2
+ELSE
+	RETURN 0
+ENDIF
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_★男殺し,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+CALL ATTACK_SKILL,ARG,ARG:1,SKILL_NUM;1
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_★男殺し,ARG
+PRINTL 적 단체에 고명중, 특대 데미지의 검격 상성 공격을 가한다. 재빠르게 실행하기 쉽고 후열 사용 가능.
+PRINTL 공격 대상이 남성일 경우 내성, 무효를 무시하고 위력 상승.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_★男殺し,ARG
+RETURN 1
+;====================================================
+;ダメージ計算時の追加補正
+;
+;戻り値
+;RESULT:0 = スキルの持ち主に与える補正
+;====================================================
+@SKILL_PASSIVE_BTL_EFFECT_★男殺し, ARGS, L_P, L_ACTOR, L_TARGET, L_相性名, L_相性値, L_ダメージタイプ, L_攻撃タイプ, L_ステート名, L_CRT, SKILL_NUM, GIVE_EFFECT_CHARA
+#DIM L_P;スキルの持ち主=自分
+#DIM L_ACTOR;攻撃者(どちらかは自分になる)
+#DIM L_TARGET;攻撃対象(どちらかは自分になる)
+#DIM SKILL_NUM;スキル番号(専用技用)
+#DIMS L_相性名;ダメージ計算に使用されている相性の名称
+#DIM L_相性値;相性の倍率(999が反射のあれ)
+#DIMS L_ダメージタイプ;物理/魔法
+#DIMS L_攻撃タイプ;物理/魔法/총/アイテム/割合
+#DIMS L_ステート名;バステの名称
+#DIM L_CRT;0 = クリティカルしてない/1=クリティカルしている
+#DIM GIVE_EFFECT_CHARA;他のキャラが持っているスキルの効果を受けている場合、その持ち主を示す
+
+;自分が攻撃側
+IF L_P == L_ACTOR
+	SELECTCASE ARGS
+		;気合などと加算の枠。他に下限要素がなければ100%±X%になる
+		CASE "ダメージ補正加算"
+			IF IS_PU_SKILL_入力行動(L_P, "★男殺し") && IS_MALE(L_TARGET)
+				RESULTS = 男性特攻
+				RETURN 30
+			ENDIF
+	ENDSELECT
+;自分が防御側
+ELSE
+ENDIF
+RETURN 0

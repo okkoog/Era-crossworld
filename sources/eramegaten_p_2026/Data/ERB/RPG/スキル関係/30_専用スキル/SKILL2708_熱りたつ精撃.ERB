@@ -1,0 +1,151 @@
+﻿
+;スキル名
+@SKILL_NAME_2708,ARG
+;#LOCALSSIZE 1
+;#LOCALSIZE 9
+;#DIM LCOUNT,2
+;#DIM L_T
+
+IF FLAG:행동순1 > -1 && FLAG:행동순1 == ARG && INRANGE(CFLAG:ARG:타겟, 1, 16) && POS(CFLAG:ARG:타겟) >= 0
+	CFLAG:ARG:분노약점부여 = 0
+	SETBIT CFLAG:ARG:분노약점부여, GET_TYPE_NUM("지변")
+	SETBIT CFLAG:ARG:분노약점부여, GET_TYPE_NUM("수격")
+	SETBIT CFLAG:ARG:분노약점부여, GET_TYPE_NUM("질풍")
+	CALL BTL_CALC_AISYOU, ARG, POS(CFLAG:ARG:타겟), 2708
+	;適用された属性は弱点付与から外れる
+	CLEARBIT CFLAG:ARG:분노약점부여, RESULT:1
+	SELECTCASE GET_TYPE(RESULT:1)
+		CASE "지변"
+			RESULTS = 분노의토사
+		CASE "수격"	
+			RESULTS = 분노의호우
+		CASE "질풍"
+			RESULTS = 분노의선풍
+	ENDSELECT
+ELSE
+	RESULTS = 분노의정격
+ENDIF
+
+;　명중
+@SKILL_HITRATE_2708, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2708, ARG
+RETURN 600
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2708,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2708,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2708, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2708,ARG
+RETURN 50
+
+;　相性
+@SKILL_TYPE_2708, ARG
+SIF ARG >= 0
+	RETURN GET_TYPE_NUM("지변"), GET_TYPE_NUM("수격"), GET_TYPE_NUM("질풍")
+RETURN GET_TYPE_NUM("不定")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2708
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2708, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2708, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2708,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2708,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2708, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2708
+RETURN GET_SUCCESSION_NUM("계통없음")
+@継承不能_2708
+RETURN 1
+;継承不可
+
+;속도보정
+@SKILL_SPEED_2708, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2708
+RETURN 0
+
+;スキル変化？用ランク,もちろん不可
+@SKILL_RANK_2708, ARG = -1
+RETURN 15
+
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_2708,ARG
+RETURN 0
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_2708,ARG
+RETURN 0
+
+@SKILL_ADDTIONAL_BASE_RATE_2708,ARG
+RETURN 0
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_2708,ARG
+RETURN 0
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2708, ARG, ARG:1, ARG:2
+#LOCALSSIZE 1
+#LOCALSIZE 1
+
+LOCAL = POS(ARG:1)
+CALL ATTACK_SINGLE,ARG,LOCAL,2708
+
+CALL SYNC_STATUS(ARG)
+FOR LOCAL, 0, 17
+	SIF GETBIT(CFLAG:ARG:분노약점부여,LOCAL)
+		PRINTFORML %CALLNAME:ARG%의 %조사처리(GET_TYPE(LOCAL),"가")% 약점으로 변화했다
+NEXT
+WAIT
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2708, ARG
+PRINTL 지변、수젹、질풍 중、상대에게 가장 유리한 상성으로 １체 공격한다
+PRINTL 속성에 따라 이름이 변하고、내성이 변한다
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2708,ARG
+RETURN 1
+;とくにない
+

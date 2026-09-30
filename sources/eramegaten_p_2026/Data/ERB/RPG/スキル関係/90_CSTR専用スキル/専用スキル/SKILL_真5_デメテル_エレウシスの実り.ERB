@@ -1,0 +1,133 @@
+﻿;「エレウシスの実り」　最大HPを超えて回復するスキル。
+;Hゲージによる戦闘中の使用制限を撤廃
+;⇒悪魔を入れ替えする運用の場合、２回以上使えたほうが都合がよく、MP消費量で重さは担保済みのため
+
+;スキル名
+@SKILL_NAME_エレウシスの実り,ARG
+RESULTS = 엘레우시스의 결실
+
+;　명중
+@SKILL_HITRATE_エレウシスの実り, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_エレウシスの実り, ARG
+RETURN 1000
+
+;;クリティカル率
+;@SKILL_CRITICAL_RATE_エレウシスの実り, ARG
+;RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_エレウシスの実り, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_エレウシスの実り,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_エレウシスの実り,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_エレウシスの実り,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_エレウシスの実り,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_エレウシスの実り, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_エレウシスの実り,ARG
+RETURN 150
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_エレウシスの実り
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_エレウシスの実り,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+@SKILL_HEAL_TYPE_エレウシスの実り, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("割合")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_エレウシスの実り,ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_エレウシスの実り,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_エレウシスの実り,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_エレウシスの実り,ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_エレウシスの実り
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_エレウシスの実り, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_エレウシスの実り
+RETURN 0
+
+;没
+;@SKILL_RANK_エレウシスの実り, ARG = -1
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_エレウシスの実り,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+#DIM LCOUNT
+#DIM L_T
+#DIM エレウシスカウント
+エレウシスカウント = PU_SKILLNUM_GET(ARG,"エレウシスの実り")
+FOR LCOUNT, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1) + 1
+	L_T = POS(LCOUNT)
+	SIF L_T < 0
+		CONTINUE
+	SIF IS_BADSTATE(L_T, "DYING")
+		CONTINUE
+	CFLAG:L_T:최대HP증가 = MAX(33, CFLAG:L_T:최대HP증가)
+	;CFLAG:L_T:ＨＰ보정 = MAX(MAXBASE:L_T:ＨＰ / 3, CFLAG:L_T:ＨＰ보정)
+	CALL SYNC_STATUS, L_T
+NEXT
+CALL HEAL_FIELD, ARG, ARG:1, SKILL_NUM, , , "最大HPアップ"
+
+;　説明文の表示
+@SKILL_EXPLAIN_エレウシスの実り,ARG
+PRINTL 『엘레우시스의 결실』
+PRINT 전투 종료 시까지 모든 아군의 HP 보정(최대 HP)을 33% 상승시키고 HP를 전회복한다.
+;SETCOLOR 0xff0000
+;		PRINTL 使用制限：１戦闘１回まで。
+;RESETCOLOR
+PRINTL 다른 『HP 보정을 부여하는 스킬』과의 중복은 불가.
+PRINTL 33%보다 높은 HP 보정이 있을 경우 효과는 없다.
+PRINTL 
+PRINTL 그러모은 풍요의 힘을 구사하여 일시적으로 한계를 초월한 활력을 부여한다.
+;PRINTL 与え過ぎると爆発するので、二度打ちしないようセーブしている……かもしれない。
+PRINTL 여신 데메테르의 스킬 (CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_エレウシスの実り,ARG
+RETURN 1

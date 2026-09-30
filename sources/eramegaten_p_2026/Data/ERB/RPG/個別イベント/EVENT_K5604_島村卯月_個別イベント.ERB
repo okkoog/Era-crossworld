@@ -1,0 +1,167 @@
+﻿;-------------------------------------------------
+;しまむー個別イベント。強化イベントも兼ねてます。
+;-------------------------------------------------
+@INDIVIDUAL_EVENT_K5604, ARG, ARG:1 = 0, ARG:2 = -1
+;ARG:0　キャラ番号
+;ARG:1　関数種類　1,開放条件　2,타이틀　3,이벤트
+;ARG:2　イベント番号（0～63まで）
+
+;リストにキャラを表示する条件
+IF ARG:1 == 0
+	;イベント0で全部終了
+	SIF GETBIT(CFLAG:ARG:개별이벤트읽음, 0)
+		RETURN 0
+	RETURN 1
+ENDIF
+
+SELECTCASE ARG:2
+CASE 0
+	;解放条件
+	IF ARG:1 == 1
+		;スパロボネタに入るのでPTパッチのEXがOFFになってると発生しないぞ！
+		;つかサイバスターの整備ってPTのパーツ使ってもOKなんだよね。どうでもいいけど。
+		SIF !GETS_USEABLE_EXTRA_TITLE("スパロボ")
+			RETURN 0
+		;下位の陥落でいいけど、お熱入れちゃったときのために親愛以降も残しておく。
+		IF TALENT:ARG:연모 == 1 || TALENT:ARG:음란 == 1 || TALENT:ARG:복종 == 1 || TALENT:ARG:신뢰 == 1 || TALENT:ARG:친애 == 1 || TALENT:ARG:창부 == 1 || TALENT:ARG:예속 == 1 || TALENT:ARG:동료 == 1
+		;パットちゃん未加入でも起きねぇようにするぞぉー！
+		;KAMEさんアドバイスありがとうございました。
+			IF イベントフラグ:43:3 == 1
+		;あなたのレベル30以上で発生にしてみる
+				IF BASE:MASTER:LV > 29
+		;フゥハハハー！！間違って訓練しちゃったり、義体化しても発生しないぜ！
+		;ま、まぁこのイベントで消えるけど。
+					IF TALENT:ARG:비전투원 == 1 
+						RETURN 1
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDIF
+
+	ELSEIF ARG:1 == 2
+	;타이틀
+		IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			;このタイトル…アカンかな？
+			RESULTS = 「전사여, 일어서라 ~우즈키와 사이버스터~」
+		ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			RESULTS = (해방 조건 힌트：우선 우즈키를 함락시키자。그리고 퍼스널 트루퍼와의 만남을 경험하고、마장기신과 만난 적이 있을 법한 사람과 만나두자)
+		ENDIF
+	;이벤트
+	ELSEIF ARG:1 == 3
+		PRINTFORMW 만남이야 어쨌든、그녀에게는 싸울 힘이 없다。
+		PRINTFORMW 「시마무라 우즈키」… 그녀는 그저 평범한 아이돌이다。
+		PRINTFORMW 그녀는 서머너로서의 소질도 없고、페르소나 구사자도 아니며、이능력도 없고、싸우는 법도 모르는 지극히 평범한 일반인이다。
+		PRINTFORMW 즉、악마와 대치한다 한들 순식간에 쓰러져、그 몸을 악마에게 유린당할 뿐이리라。
+		PRINTFORMW 운이 좋다면 몸과 마음에 깊은 상처를 남긴 채 살아남겠지만、때로는 덤으로 악마의 아이를 임신하게 될지도 모른다。
+		PRINTFORMW 하지만、운이 나쁘다면 악마의 피와 살이 될 터이고、심하면 자신의 영혼마저 악마에게 먹혀 악마로서 살아갈 수밖에 없으리라。
+		PRINTFORMW …그녀는 자신에 대해…
+		IF TALENT:복종 == 1 || TALENT:예속 == 1
+			PRINTFORMW 완전히 복종하고 있어、명령하면 근처에 굴러다니는 쇠파이프라도 들고 싸우겠지。
+		ELSEIF TALENT:신뢰 == 1 || TALENT:동료 == 1
+			PRINTFORMW 극도의 신뢰 관계를 맺고 있다。무슨 일이 생기면 무리를 할지도 모른다。
+		ELSEIF TALENT:음란 == 1 || TALENT:창부 == 1
+			PRINTFORMW …아니、그녀는 자신의 창부다。그 이상도 이하도 아니다… 그래야 한다。
+		ELSE
+			PRINTFORMW 연인이나 다름없는 관계를 맺고 있다。「사랑의 힘」으로 무모한 짓을 할 것 같은 기분도 든다
+		ENDIF
+		PRINTFORMW 하지만、자신의 사무소에 있는 이상、어떤 식으로든 자위 수단은 쥐여주고 싶지만……
+		PRINTFORML 
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		PRINTFORML 
+		PRINTFORMW ………그런 생각을 고물상 안에서 멍하니 하고 있자니 기묘한 잡동사니를 발견했다。
+		PRINTFORMW 스마트워치 형태의 COMP일까? 제법 말끔하지만、손에 쥐어보고 알게 된 것은 이것이 틀림없는 고물에 불과하다는 점이다。
+		PRINTFORML 
+		PRINTFORMW 손에 들고 살펴보고 있자、고물상 주인이 말을 걸어왔다。
+		PRINTFORMW 점주「그 잡동사니를 원하나? 뭐、이런 쓰레기 따위 흔히 굴러다니니、공짜로 가져가게」
+		PRINTFORMW 　　「조만간 처분할 물건이라 이쪽으로서도 고마운 일이지」
+		PRINTFORML 
+		PRINTFORMW ………공짜로 스마트워치형 고물을 손에 넣었다。이런 잡동사니라도、무언가의 재료로는 쓸 수 있겠지。
+		PRINTFORML 
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		PRINTFORML 
+		PRINTFORMW 사무소로 돌아왔다。사 온 짐을 일단 테이블에 올려두고 정리한다。
+		PRINTFORMW 그렇다 해도 사 온 것은 무기 유지보수용 소모품과 그 스마트워치형 고물뿐이다。
+		PRINTFORMW 사 온 물건들을 정리하고 있자니 불쑥 우즈키가 다가왔다。
+		PRINTFORML 
+		PRINTFORMW 우즈키「아、다녀오셨어요。…저기、이 시계는 뭔가요?」
+		PRINTFORMW 우즈키는 스마트워치형 고물을 집어 들고、스위치를 누르거나 흔들어보며 움직이지 않는지 시험해보고 있다。
+		PRINTFORMW 이걸로 작동한다면 그야말로…
+		PRINTFORMW 우즈키「앗、작동했어요！ …그렇지만、이상한 문구가 뜨네요」
+		PRINTFORMW 화면에는 「SHOUT NOW TO 「call Cybaster」」라고 표시되어 있다。
+		PRINTFORMW 문맥으로 보아 괄호 부분의 단어…를 외치면 되는 것일까?
+		PRINTFORMW 기동 음성인식 치고는 왠지 모르게 부끄러운 기분이 들지 않는 것도 아니다。
+		PRINTFORMW 우즈키「으음… 「콜 사이버스터」…인가요? 이 단어는」
+		PRINTFORMW 　　「이 단어를 외치라는 건가요?」
+		PRINTFORMW 　　「………콜！ 사이버스터！！」
+		PRINTFORMW …………
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		PRINTFORMW 일순 어색해질 법한 정적이 흐른 뒤、우즈키가 빛에 휩싸인다。
+		PRINTFORMW 빛에 휩싸인 우즈키에게 갑주와 같은 실루엣이 겹쳐져 간다。
+		PRINTFORMW 빛이 걷히자 그곳에는 날갯짓하는 새처럼 청명하고、신처럼 장엄하며
+		PRINTFORMW 그리고 무엇보다 오점 없는 순백과도 같은 아름다움을 지닌、미술품으로 보아도 엄청난 가치가 매겨질 법한 갑주가 나타났다。
+		PRINTFORML 
+		PRINTFORMW 우즈키「저기……… 왠지 대단한 일이 되어버렸네요…」
+		PRINTFORMW 눈앞의 갑주 기사에게서 우즈키의 목소리가 들린다。아무래도 그 잡동사니는 이런 장비의 전송 장치였던 모양이다。
+		PRINTFORMW …비슷한 걸 꼽자면 페더맨 계열일까? 그런 특촬물 히어로 장비 중에 이런 게 있을 법하다。
+		PRINTFORMW 우선 우즈키에게 갑주 안에서 나오라고 지시한다。
+		PRINTFORMW 푸슉 하는 소리를 내며 갑주의 흉부가 열리고、그곳에서 우즈키가 나온다。
+		PRINTFORMW 흉부 안쪽에는 모니터가 있어、「사이버스터」라는 기체 명칭과 우즈키를 탑승자로 등록했다는 취지의 문장이 표시되어 있다
+		PRINTFORMW 우즈키「저기 그게… 열 때 그렇게 하지 않으면 안 열린다고 적혀 있어서… 그…」
+		PRINTFORMW ………어쩔 수 없다。그렇게 하지 않으면 나올 수 없었다면야。…자、이제 어쩐다? 이 「사이버스터」를 방치하는 것도 아깝다。
+		PRINTFORMW 이걸 걸치면 우즈키도 싸울 수는 있다。그렇다면…… 그래、특훈이다。벼락치기가 되겠지만、일단 전투 기술을 익히게 하자。
+		PRINTFORMW 물론、이 「사이버스터」를 착용한 채로… 말이다。
+		PRINTFORMW 우즈키「엣!? 지금부터 특훈인가요!? ……네! 시마무라 우즈키, 열심히 하겠습니다!!」
+		PRINTFORML 
+		PRINTFORMW …………
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		PRINTFORML 
+		PRINTFORMW 특훈을 통해 시마무라 우즈키가 전투 요원이 되었습니다！
+		PRINTFORMW 특훈 중에 요령을 터득했는지 우즈키는 『석세서』 기능을 취득했습니다。
+		PRINTFORML 
+		CFLAG:ARG:이벤트가입 = 1
+		CALL SET_BASE_5604, ARG, 1
+		CALL SET_BTL_TALENT_5604, ARG, 1
+		CALL CLEAR_ALL_SKILL, ARG
+		CALL SET_LEARN_SKILL_5604, ARG, 1
+		RETURN 1
+	ENDIF
+;CASE 1
+	;解放条件
+	;IF ARG:1 == 1
+		;前イベント既読後
+		;SIF GETBIT(CFLAG:CAST:개별이벤트읽음,0)
+		;	RETURN 1
+	;ELSEIF ARG:1 == 2
+	;타이틀
+		;IF GETBIT(CFLAG:ARG:개별이벤트개방,ARG:2)
+			;타이틀
+			;RESULTS = 
+		;ELSE
+			;未開放時のタイトル（解放条件を入れておく）
+			;RESULTS = (%CALLNAME:ARG%がサイバスターの力を得てからどれぐらいのレベルに？)
+		;ENDIF
+	;이벤트
+	;ELSEIF ARG:1 == 3
+		
+		
+		
+		
+		;好感度以外は後に上昇値が表示される
+		;CFLAG:ARG:(MASTER + 2100) += (好感度)
+		;TCVAR:ARG:획득의존도 += 
+		;TCVAR:ARG:획득충성도 += 
+		;CALL ADDS_EXP("○○経験", 1, ARG)
+		;RETURN 1
+	;ENDIF
+ENDSELECT
+RETURN 0

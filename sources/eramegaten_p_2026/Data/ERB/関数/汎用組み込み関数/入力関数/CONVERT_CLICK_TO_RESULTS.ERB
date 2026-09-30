@@ -1,0 +1,48 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:CONVERT_CLICK_TO_RESULTS
+;	Facility	:マウスクリックの結果に応じて、RESULTSを変更する
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/05/25		P(bazzile)				新規作成
+;	002		2024/05/31		P(bazzile)				絶対座標版の呼び出し関数も作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;======================================================
+@CONVERT_CLICK_TO_RESULTS, BASE_START_LINE, BUTTON_COORD, BUTTON_VALUE, IS_ABSOLUTE
+#DIM DYNAMIC BASE_START_LINE	;Y座標の計算の基準になる行数
+#DIM REF BUTTON_COORD, 0, 0		;ボタンの座標定義
+#DIMS REF BUTTON_VALUE, 0		;ボタンの中身
+#DIM DYNAMIC IS_ABSOLUTE
+SELECTCASE RESULT:1
+	CASE 0x100000, 0x200000
+		VARI L_X_COORD = RESULT:2 * 100 / GETCONFIG("フォントサイズ")
+		VARI L_Y_COORD = RESULT:3 * 100 / GETCONFIG("フォントサイズ")
+		;基準行からの変換方式(相対基準)でボタンを作ってた場合は下方からの座標に変換する
+		SIF !IS_ABSOLUTE
+			L_Y_COORD +=  + (LINECOUNT - BASE_START_LINE) * 100
+		VARI LCOUNT
+		RESULTS = 
+		FOR LCOUNT, 0, VARSIZE("BUTTON_COORD", 0)
+			SIF !INRANGE(L_X_COORD, BUTTON_COORD:LCOUNT:0, BUTTON_COORD:LCOUNT:1)
+				CONTINUE
+			SIF !INRANGE(L_Y_COORD, BUTTON_COORD:LCOUNT:2, BUTTON_COORD:LCOUNT:3)
+				CONTINUE
+			RESULTS '= BUTTON_VALUE:LCOUNT
+			BREAK
+		NEXT
+	;サイドボタン1
+	CASE 0x1000000
+	;サイドボタン2
+		RESULTS '= "9"
+	CASE 0x800000
+		RESULTS '= "3"
+ENDSELECT
+
+@CONVERT_CLICK_TO_RESULTS_ABSOLUTE, BUTTON_COORD, BUTTON_VALUE
+#DIM REF BUTTON_COORD, 0, 0		;ボタンの座標定義
+#DIMS REF BUTTON_VALUE, 0		;ボタンの中身
+CALL CONVERT_CLICK_TO_RESULTS, , BUTTON_COORD, BUTTON_VALUE, 1

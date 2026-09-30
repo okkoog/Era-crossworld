@@ -1,0 +1,198 @@
+﻿;팔척뛰기, ペルソナヨシツネ専用
+;20230601	NEO			凪ちゃんのクライマックスアクト化
+;						ハッソウ・ビート：単体へ威力150＊８段攻撃、CTが高く、発動が*非常に*早い
+
+;スキル名
+@SKILL_NAME_61, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"真・ヨシツネ見参")
+IF 0
+;「真・ヨシツネ見参」展開時
+ELSEIF SKILLGAGE_D_GET(ARG, SKILL_NUM)
+	RESULTS = HASSO・BEAT
+ELSEIF SKILL_CHANGE(ARG, [[キャラ:버서커]])
+	RESULTS = 사살백두
+ELSE
+	RESULTS = 팔척뛰기
+ENDIF
+;　명중
+@SKILL_HITRATE_61, ARG
+RETURN 90
+
+;　威力
+@SKILL_POWER_61, ARG
+#DIM SKILL_NUM
+SIF ARG == -1
+	RETURN 100
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"真・ヨシツネ見参")
+IF 0
+;「真・ヨシツネ見参」展開時
+ELSEIF SKILLGAGE_D_GET(ARG, SKILL_NUM)
+	RETURN 150
+;ボス使用時のみ威力150
+ELSEIF CFLAG:ARG:보스플래그
+	RETURN 150
+ELSE
+	RETURN 100
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_61, ARG
+RETURN 8
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_61, ARG
+RETURN 8
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_61, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_61, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"真・ヨシツネ見参")
+IF 0
+;「真・ヨシツネ見参」展開時
+ELSEIF SKILLGAGE_D_GET(ARG, SKILL_NUM)
+	;アクト時は消費ゼロで
+	RETURN 0
+ELSE
+	RETURN 50
+ENDIF
+
+;　相性
+@SKILL_TYPE_61, ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_61
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;クリティカル率
+@SKILL_CRITICAL_RATE_61, ARG
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"真・ヨシツネ見参")
+IF 0
+;「真・ヨシツネ見参」展開時
+ELSEIF SKILLGAGE_D_GET(ARG, SKILL_NUM)
+	RETURN 25
+ELSE
+	;デフォ値を明示的に返す
+	RETURN 5
+ENDIF
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_61, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_61, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_61, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_61, ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_61, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_61
+RETURN GET_SUCCESSION_NUM("검격")
+
+@継承不能_61
+RETURN 1
+
+;속도보정
+@SKILL_SPEED_61, ARG = -1
+#DIM SKILL_NUM
+SIF ARG == -1
+	RETURN 0
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"真・ヨシツネ見参")
+IF 0
+;「真・ヨシツネ見参」展開時
+;馬鹿の数字
+ELSEIF SKILLGAGE_D_GET(ARG, SKILL_NUM)
+	RETURN 500
+ELSE
+	RETURN 0
+ENDIF
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_61
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_61, ARG = -1
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_61, ARG, ARG:1, ARG:2
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET(ARG,"真・ヨシツネ見参")
+IF 0
+;「真・ヨシツネ見参」展開時
+ELSEIF SKILLGAGE_D_GET(ARG, SKILL_NUM)
+	;凪が使用し、味方の場合
+	IF SKILL_CHANGE(ARG, [[キャラ:나기]]) && CFLAG:(ARG):PT플래그 != 0
+		;自身に攻撃・命中・CT強化をかけてから殴る
+		CALL SKILL_SET_カジャンダ, ARG, ARG, "공격_명중", 8, "단체", "NOMES"
+		CALL SKILL_SET_カジャンダ, ARG, ARG, "크리티컬", 4, "단체", "NOMES"
+		;CFLAG:ARG:회피강화 = MIN(32, CFLAG:ARG:공격강화 + 8)
+		;CFLAG:ARG:명중강화 = MIN(32, CFLAG:ARG:명중강화 + 8)
+		;CFLAG:ARG:크리티컬강화 = MIN(8, CFLAG:ARG:크리티컬강화 + 4)
+	ENDIF
+	CALL ATTACK_RAND, ARG, ARG:1, 61
+	;クライマックスアクｔ……真・ヨシツネ見参の終了
+	CALL SKILLGAGE_D_SET, ARG, SKILL_NUM, -1
+
+ELSEIF CFLAG:ARG:보스플래그
+	CALL ATTACK_FIELD, ARG, ARG:1, 61
+ELSE
+	CALL ATTACK_RAND, ARG, ARG:1, 61
+ENDIF
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_61, ARG
+#DIM SKILL_NUM
+;凪（真・ヨシツネ見参の場合）
+IF ARG > 0 && ARG < CHARANUM && NO:ARG == [[キャラ:나기]] 
+	SKILL_NUM = PU_SKILLNUM_GET(ARG,"真・ヨシツネ見参")
+
+	IF SKILLGAGE_D_GET(ARG, SKILL_NUM) > 0
+		PRINTL 적 복수체에게 검격 상성으로 중 데미지 물리공격을 8회 행한다.
+		PRINTL 공격 전에 자신에게 공격, 명중, 크리티컬률 강화를 부여한다.
+		PRINTL 고크리티컬. 발생이 *매우* 빠르다.
+		PRINTL  
+		PRINTL 사용하면 『진·요시츠네 등장』이 종료된다.
+	ELSE
+		PRINTL 적 복수체에 검격 상성으로 소 데미지를 8회 준다
+	ENDIF
+ELSE
+	PRINTL 적 복수체에 검격 상성으로 소 데미지를 8회 준다
+ENDIF
+;継承に必要な部位
+@継承部位_61, ARG
+RESULTS = 무기
+RETURN 1
+;무기
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_61, ARG
+RETURN 1
+;とくにない
+

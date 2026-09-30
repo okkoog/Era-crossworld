@@ -1,0 +1,830 @@
+; EVENT_16_AI.ERB
+; 全能のバランサーとマーガレットの戦闘AIを記述しています
+
+; 全能のバランサーの思考パターン
+; コンセントレイトと6種の単体属性魔法、メギドラオンを繰り返す。1moreはコンセントレイト固定
+; 魔力が高いためHP3桁程度では弱点でなくても即死するくらいには痛い。運が低いのでよく外れるが……
+; 基本的に単体魔法で弱点狙い。魔法反射がかかっている場合、33%でメギドラオン、HPが30%を切ると確実にメギドラオン
+; HPが30%を切ると魔法反射がかかっていなくてもメギドラオンが混ざる
+; クリティカルの出方次第で1ターンでも倒せるが下手に削って生き残ってしまうとコンセメギドがとんでくる
+; ところでバランサーの攻撃時のぶるるるるって声なんか異様にかわいくないですかね？
+@SET_ACTION_全能バランサ, ARG
+; 初期化
+VARSET LOCAL, 0
+; 1moreかコンセントレイト未実行ならコンセントレイト
+IF CFLAG:ARG:１moreフラグ == 2 || CFLAG:ARG:集中フラグ == 0
+	CALL EVENT_16_SET_ACTION, ARG, [[スキル:コンセントレイト]]
+	RETURN 0
+; それ以外
+ELSE
+	; HPが5割を切ってるなら1/7でメギドラオンセット
+	IF 現HP割合(ARG) < 50 && RAND:7 == 0
+		CALL EVENT_16_SET_ACTION, ARG, [[スキル:メギドラオン]]
+		RETURN 0
+	ENDIF
+	; キャラ走査
+	FOR LOCAL:3, 1, 7
+		LOCAL = POS(LOCAL:3)
+		; 空ポジションかDYINGなら次
+		SIF LOCAL < 0 || GET_STATE(CFLAG:LOCAL:ステート) == "DYING"
+			CONTINUE
+		; 魔法反射状態なら一定確率でメギドラオンセットしてキャラ走査終了
+		; 気づいてしまったけど反射の持続1ターンだしもしかしてこれ意味がな……
+		IF CFLAG:LOCAL:魔法反射フラグ > 0 && (現HP割合(ARG) < 30 || (現HP割合(ARG) < 70 && RAND:3 == 0))
+			CALL EVENT_16_SET_ACTION, ARG, [[スキル:メギドラオン]]
+			BREAK
+		ENDIF
+		; 既に行動が入力されている場合は1/3でキャラ走査終了
+		SIF CFLAG:ARG:入力行動 >= 0 && RAND:3 == 0
+			BREAK
+		; 耐性走査
+		FOR LOCAL:4, 40, 59
+			SELECTCASE LOCAL:4
+				; 火炎
+				CASE 44
+					; 弱点でなければ次
+					SIF CHECK_WEAKNESS(MAXBASE:LOCAL:(LOCAL:4)) < 0
+						CONTINUE
+					; 既に行動が入力されている場合は1/3で耐性走査終了
+					SIF CFLAG:ARG:入力行動 > 0 && RAND:3 == 0
+						BREAK
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:アギダイン]], LOCAL:3
+				; 氷結
+				CASE 45
+					; 弱点でなければ次
+					SIF CHECK_WEAKNESS(MAXBASE:LOCAL:(LOCAL:4)) < 0
+						CONTINUE
+					; 既に行動が入力されている場合は1/3で耐性走査終了
+					SIF CFLAG:ARG:入力行動 > 0 && RAND:3 == 0
+						BREAK
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:ブフダイン]], LOCAL:3
+				; 電撃
+				CASE 46
+					; 弱点でなければ次
+					SIF CHECK_WEAKNESS(MAXBASE:LOCAL:(LOCAL:4)) < 0
+						CONTINUE
+					; 既に行動が入力されている場合は1/3で耐性走査終了
+					SIF CFLAG:ARG:入力行動 > 0 && RAND:3 == 0
+						BREAK
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:ジオダイン]], LOCAL:3
+				; 地変
+				CASE 52
+					; 弱点でなければ次
+					SIF CHECK_WEAKNESS(MAXBASE:LOCAL:(LOCAL:4)) < 0
+						CONTINUE
+					; 既に行動が入力されている場合は1/3で耐性走査終了
+					SIF CFLAG:ARG:入力行動 > 0 && RAND:3 == 0
+						BREAK
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:マグダイン]], LOCAL:3
+				; 水撃
+				CASE 53
+					; 弱点でなければ次
+					SIF CHECK_WEAKNESS(MAXBASE:LOCAL:(LOCAL:4)) < 0
+						CONTINUE
+					; 既に行動が入力されている場合は1/3で耐性走査終了
+					SIF CFLAG:ARG:入力行動 > 0 && RAND:3 == 0
+						BREAK
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:アクアダイン]], LOCAL:3
+				; 疾風
+				CASE 54
+					; 弱点でなければ次
+					SIF CHECK_WEAKNESS(MAXBASE:LOCAL:(LOCAL:4)) < 0
+						CONTINUE
+					; 既に行動が入力されている場合は1/3で耐性走査終了
+					SIF CFLAG:ARG:入力行動 > 0 && RAND:3 == 0
+						BREAK
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:ガルダイン]], LOCAL:3
+			ENDSELECT
+		NEXT
+	NEXT
+	; ここまで来て属性魔法がセットされていない場合はランダム対象で属性魔法を使う
+	SIF CFLAG:ARG:入力行動 > 0
+		RETURN 0
+	SELECTCASE RAND:6
+		CASE 0
+			CALL EVENT_16_SET_ACTION, ARG, [[スキル:アギダイン]]
+		CASE 1
+			CALL EVENT_16_SET_ACTION, ARG, [[スキル:ブフダイン]]
+		CASE 2
+			CALL EVENT_16_SET_ACTION, ARG, [[スキル:ジオダイン]]
+		CASE 3
+			CALL EVENT_16_SET_ACTION, ARG, [[スキル:マグダイン]]
+		CASE 4
+			CALL EVENT_16_SET_ACTION, ARG, [[スキル:アクアダイン]]
+		CASE 5
+			CALL EVENT_16_SET_ACTION, ARG, [[スキル:ガルダイン]]
+	ENDSELECT
+ENDIF
+
+; マーガレットの思考パターン
+; ・第一段階 HP75%まで
+;   ペルソナをつけずにアタックのみ
+; ・第二段階 HP50%まで
+;   ターン数に応じたペルソナにつけかえて攻撃
+; ・第三段階 初めてHP50%未満
+;   始めのターンでペルソナをルシフェルにしてメギドラオン、
+;   次のターンでペルソナをアルダーにしてディアラハン
+; ・第四段階 第三段階以降HP75%まで
+;   ペルソナをアルダーにしてアタックのみ
+; ・第五段階 第三段階以降HP50%まで
+;   ターン数に応じたペルソナにつけかえて攻撃
+; ・第六段階 第三段階以降HP50%未満
+;   ターン数に応じたペルソナにつけかえて攻撃
+; ・特殊行動 50ターン毎
+;   全ての段階の行動より優先してオベロンで即死威力のメギドラオンを放つ
+;
+; P4仕様を基にしたAIなんでパターン完全固定、無効も反射も吸収もバステも知ったこっちゃない火力ごり押しキャラ
+; (仕込みを終えた)ペルソナ使いが圧倒的に有利。メギドラオンで落ちなければ完全にパターンで撃破できる
+; 異能者は微妙だが純サマナーはほぼ必須
+; 召喚コストを気にしないのであれば育て上げた悪魔が一番手っ取り早い
+; 全員恋慕か服従でないと生き残ってもがめおべあな可能性有り
+;
+; 開幕Lランダマイザを推奨。時間経過で効果終わらないって素晴らしいね
+; できないならタルンダ,ラクカジャ重ね掛けは必須。余裕があればスクカジャ,スクンダも
+; 1moreを取ると基本的に強化弱体、もしくはその消去を行うのでクリティカルは仕方ないとしても弱点は必ず防ぐ事
+;
+; 基本が全体特大ダメージなので攻撃属性が弱点なら必ずガード
+; ロキ(氷結)はほぼ凍らされるため、マーガレットより遅くて耐性以下ならガードが無難
+; オオクニヌシ(電撃)はDYING付き列攻撃で最悪の場合は一列総崩れなので即死対策してないならこれもガードが無難
+; 他の攻撃は耐えられるキャラなら攻めていく
+; 難易度ノーマルである限りHP4桁あれば弱点でない限り基本的に耐えられる
+; いや、威力150以上のスキル(デッドリーバーンなど)だと堕ちるかもしれないが……
+;
+; HPが15000以上と非常にタフだが原作と違って弱点があるのでそれを突くことで削るのは容易
+; 逆に一部以外はコーチングを持っているためクリティカルでCOOP取る方が難しい
+; 疾風弱点が他の属性弱点より多いので用意しておくといいだろう
+; 耐性以上の相性が多いがジオ系ブフ系でSHOCK,FREEZEで行動自体を潰すことを狙うのも有り(要マーガレットより早い行動)
+;
+; ぶっちゃけ強くしたいなら無効反射吸収を見つけ次第即死メギドラオンするだけでいいのよね……
+; 高レベル悪魔がほとんど使い物にならなくなっちゃうけど
+; もしくはP3Pに似せたAIを実装するか
+; このまま強くするなら現状乱数で決めている行動を属性相性見て決めるようにするとか
+@SET_ACTION_マーガレット, ARG
+IF FLAG:経過ターン数 == 0
+	CALL EVENT_16_PCHANGE, ARG, 0, 1
+	SETCOLOR 0xff0033
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃戦いの熱と緊張感が、体を満たしていく……　　┃
+	PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃さあ、始めましょう。　　　　　　　　　　　　┃
+	PRINTL ┃私を失望させないでちょうだい！　　　　　　　┃
+	PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+	PRINTL 
+	CUSTOMDRAWLINE =
+	PRINTL 
+	CALL EVENT_16_SET_ACTION, ARG, [[スキル:ＡＴＴＡＣＫ]]
+ELSEIF (FLAG:経過ターン数 % 50) == 0
+	CALL EVENT_16_MESSAGE_G
+	CALL EVENT_16_PCHANGE, ARG, 5, ((イベントフラグ:16:0 % 10) == 5)
+	CALL EVENT_16_SET_ACTION, ARG, [[スキル:メギドラオン]]
+ELSEIF 現HP割合(ARG) >= 75
+	IF (イベントフラグ:16:0 / 10) < 3
+		CALL EVENT_16_PCHANGE, ARG, 0, ((イベントフラグ:16:0 % 10) == 0)
+	ELSE
+		CALL EVENT_16_PCHANGE, ARG, 6, ((イベントフラグ:16:0 % 10) == 6)
+	ENDIF
+	IF CFLAG:ARG:１moreフラグ == 0 || (イベントフラグ:16:0 / 10) < 3
+		CALL EVENT_16_SET_ACTION, ARG, [[スキル:ＡＴＴＡＣＫ]]
+	ELSE
+		CALL EVENT_16_SET_ACTION, ARG, [[スキル:ランダマイザ]]
+	ENDIF
+ELSEIF 現HP割合(ARG) >= 50
+	IF (イベントフラグ:16:0 / 10) == 0
+		SETCOLOR 0xff0033
+		PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+		PRINTL ┃今のうちに言っておくわ。　　　　　　　　　　┃
+		PRINTL ┃私を気遣う心は捨てなさい。　　　　　　　　　┃
+		PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　┃
+		PRINTW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+		PRINTL 
+		PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+		PRINTL ┃殺す気で挑むことこそ敬意。　　　　　　　　　┃
+		PRINTL ┃手加減は侮辱よ。　　　　　　　　　　　　　　┃
+		PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　┃
+		PRINTW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+		RESETCOLOR
+		PRINTL 
+		CUSTOMDRAWLINE =
+		PRINTL 
+		LOCAL = イベントフラグ:16:0 % 10
+		イベントフラグ:16:0 = 10 + LOCAL
+	ENDIF
+	SELECTCASE FLAG:経過ターン数 % 6
+		CASE 0
+			CALL EVENT_16_MESSAGE_G
+			CALL EVENT_16_PCHANGE, ARG, 1, ((イベントフラグ:16:0 % 10) == 1)
+			IF CFLAG:ARG:１moreフラグ == 0
+				IF RAND:2 == 0 && (イベントフラグ:16:0 / 10) == 3
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:デッドリーバーン]]
+				ELSE
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:フレイダイン]]
+				ENDIF
+			ELSE
+				CALL EVENT_16_SET_ACTION, ARG, [[スキル:ヒートライザ]]
+			ENDIF
+		CASE 1
+			CALL EVENT_16_MESSAGE_G
+			CALL EVENT_16_PCHANGE, ARG, 2, ((イベントフラグ:16:0 % 10) == 2)
+			IF CFLAG:ARG:１moreフラグ == 0
+				IF RAND:2 == 0 && (イベントフラグ:16:0 / 10) == 3
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:アクアリータイド]]
+				ELSE
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:ニブルヘイム]]
+				ENDIF
+			ELSE
+				CALL EVENT_16_SET_ACTION, ARG, [[スキル:ランダマイザ]]
+			ENDIF
+		CASE 2
+			CALL EVENT_16_MESSAGE_G
+			CALL EVENT_16_PCHANGE, ARG, 3, ((イベントフラグ:16:0 % 10) == 3)
+			IF CFLAG:ARG:１moreフラグ == 0
+				IF RAND:2 == 0 && (イベントフラグ:16:0 / 10) == 3
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:雷震王母の蹴り]]
+				ELSE
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:破戒の稲妻]]
+				ENDIF
+			ELSE
+				IF CFLAG:ARG:攻撃強化 < 0 || CFLAG:ARG:魔法威力強化 < 0 || CFLAG:ARG:命中強化 < 0 || CFLAG:ARG:回避強化 < 0 || CFLAG:ARG:防御強化 < 0
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:デ・クンダ]]
+				ELSE
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:デ・カジャ]]
+				ENDIF
+			ENDIF
+		CASE 3
+			CALL EVENT_16_MESSAGE_G
+			CALL EVENT_16_PCHANGE, ARG, 4, ((イベントフラグ:16:0 % 10) == 4)
+			IF CFLAG:ARG:１moreフラグ == 0
+				IF RAND:3 == 0 && (イベントフラグ:16:0 / 10) == 3
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:デスバウンド]]
+				ELSE
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:旋風陣]]
+				ENDIF
+			ELSE
+				CALL EVENT_16_SET_ACTION, ARG, [[スキル:レボリューション]]
+			ENDIF
+		CASE 4
+			CALL EVENT_16_MESSAGE_G
+			CALL EVENT_16_PCHANGE, ARG, 5, ((イベントフラグ:16:0 % 10) == 5)
+			CALL EVENT_16_SET_ACTION, ARG, [[スキル:コンセントレイト]]
+		CASE 5
+			CALL EVENT_16_MESSAGE_G
+			CALL EVENT_16_PCHANGE, ARG, 6, ((イベントフラグ:16:0 % 10) == 6)
+			IF CFLAG:ARG:１moreフラグ == 0
+				CALL EVENT_16_SET_ACTION, ARG, [[スキル:メギドラオン]]
+			ELSE
+				CALL EVENT_16_SET_ACTION, ARG, [[スキル:ヒートライザ]]
+			ENDIF
+	ENDSELECT
+ELSEIF (イベントフラグ:16:0 / 10) < 3
+	CFLAG:ARG:行動回数 = 1
+	LOCAL = イベントフラグ:16:0 / 10
+	LOCAL:1 = イベントフラグ:16:0 % 10
+	IF LOCAL <= 1
+		SETCOLOR 0xff0033
+		PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+		PRINTL ┃フゥ……この高揚感……　　　　　　　　　　　┃
+		PRINTL ┃いつ以来かしら。　　　　　　　　　　　　　　┃
+		PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　┃
+		PRINTW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+		PRINTL 
+		PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+		PRINTL ┃悪く思わないで……　　　　　　　　　　　　　┃
+		PRINTL ┃ますます貴方を倒したくなってきたわ！　　　　┃
+		PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　┃
+		PRINTW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+		RESETCOLOR
+		PRINTL 
+		CUSTOMDRAWLINE =
+		PRINTL 
+		IF LOCAL < 1
+			イベントフラグ:16:0 = 10 + LOCAL:1
+			LOCAL = 1
+		ENDIF
+	ENDIF
+	IF LOCAL >= 2
+		CALL EVENT_16_PCHANGE, ARG, 6, (LOCAL:1 == 6)
+		CALL EVENT_16_SET_ACTION, ARG, [[スキル:ディアラハン]]
+	ELSE
+		CALL EVENT_16_PCHANGE, ARG, 7, (LOCAL:1 == 7)
+		CALL EVENT_16_SET_ACTION, ARG, [[スキル:メギドラオン]]
+	ENDIF
+	イベントフラグ:16:0 = (LOCAL + 1) * 10 + LOCAL:1
+ELSE
+	IF (イベントフラグ:16:0 / 10) == 3
+		SETCOLOR 0xff0033
+		PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+		PRINTL ┃ハァ。ハァ……最高よ。エリザベスでも　　　　┃
+		PRINTL ┃ここまで私を追い詰めたことはないわ。　　　　┃
+		PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　┃
+		PRINTW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+		PRINTL 
+		PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+		PRINTL ┃さあ、今こそ見せてちょうだい……　　　　　　┃
+		PRINTL ┃戦いの、その先にあるものを……！　　　　　　┃
+		PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　┃
+		PRINTW ┗━━━━━━━━━━━━━━━━━━━━━━┛
+		RESETCOLOR
+		PRINTL 
+		CUSTOMDRAWLINE =
+		PRINTL 
+		LOCAL = イベントフラグ:16:0 % 10
+		イベントフラグ:16:0 = 40 + LOCAL
+	ENDIF
+	SELECTCASE FLAG:経過ターン数 % 6
+		CASE 0
+			CFLAG:ARG:行動回数 = 1
+			CALL EVENT_16_MESSAGE_G
+			CALL EVENT_16_PCHANGE, ARG, 1, ((イベントフラグ:16:0 % 10) == 1)
+			IF CFLAG:ARG:１moreフラグ == 0
+				IF RAND:2 == 0
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:デッドリーバーン]]
+				ELSE
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:フレイダイン]]
+				ENDIF
+			ELSE
+				; 自己強化が一定以下ならヒートライザ。それ以外なら攻撃
+				IF CFLAG:ARG:攻撃強化 < 8 || CFLAG:ARG:魔法威力強化 < 8 || CFLAG:ARG:命中強化 < 8 || CFLAG:ARG:回避強化 < 8 || CFLAG:ARG:防御強化 < 8
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:ヒートライザ]]
+				ELSE
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:アカシャアーツ]]
+				ENDIF
+			ENDIF
+		CASE 1
+			CFLAG:ARG:行動回数 = 1
+			CALL EVENT_16_MESSAGE_G
+			CALL EVENT_16_PCHANGE, ARG, 2, ((イベントフラグ:16:0 % 10) == 2)
+			IF CFLAG:ARG:１moreフラグ == 0
+				IF RAND:2 == 0
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:アクアリータイド]]
+				ELSE
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:ニブルヘイム]]
+				ENDIF
+			ELSE
+				CALL EVENT_16_SET_ACTION, ARG, [[スキル:ランダマイザ]]
+			ENDIF
+		CASE 2
+			CFLAG:ARG:行動回数 = 2
+			CALL EVENT_16_MESSAGE_G
+			CALL EVENT_16_PCHANGE, ARG, 3, ((イベントフラグ:16:0 % 10) == 3)
+			IF CFLAG:ARG:１moreフラグ == 0
+				IF RAND:2 == 0
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:雷震王母の蹴り]]
+				ELSE
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:破戒の稲妻]]
+				ENDIF
+			ELSE
+				IF RAND:4 == 0
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:利剣乱舞]]
+				ELSE
+					IF CFLAG:ARG:攻撃強化 < 0 || CFLAG:ARG:魔法威力強化 < 0 || CFLAG:ARG:命中強化 < 0 || CFLAG:ARG:回避強化 < 0 || CFLAG:ARG:防御強化 < 0
+						CALL EVENT_16_SET_ACTION, ARG, [[スキル:デ・クンダ]]
+					ELSE
+						CALL EVENT_16_SET_ACTION, ARG, [[スキル:デ・カジャ]]
+					ENDIF
+				ENDIF
+			ENDIF
+		CASE 3
+			CFLAG:ARG:行動回数 = 2
+			CALL EVENT_16_MESSAGE_G
+			CALL EVENT_16_PCHANGE, ARG, 4, ((イベントフラグ:16:0 % 10) == 4)
+			IF CFLAG:ARG:１moreフラグ == 0
+				IF RAND:3 == 0
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:デスバウンド]]
+				ELSE
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:旋風陣]]
+				ENDIF
+			ELSE
+				CALL EVENT_16_SET_ACTION, ARG, [[スキル:レボリューション]]
+			ENDIF
+		CASE 4
+			CFLAG:ARG:行動回数 = 1
+			CALL EVENT_16_MESSAGE_G
+			CALL EVENT_16_PCHANGE, ARG, 5, ((イベントフラグ:16:0 % 10) == 5)
+			CALL EVENT_16_SET_ACTION, ARG, [[スキル:気合]]
+		CASE 5
+			; 行動回数は戦闘難易度に依存。高難易度では容赦なく前衛を潰しに来る
+			; うっかり反射したりするとみじめになるほど吸収して回復
+			CFLAG:ARG:行動回数 = 3 + (FLAG:戦闘難易度 - 4 > 0 ? FLAG:戦闘難易度 - 4 # 0)
+			CALL EVENT_16_MESSAGE_G
+			CALL EVENT_16_PCHANGE, ARG, 8, ((イベントフラグ:16:0 % 10) == 8)
+			IF CFLAG:ARG:気合フラグ == 0
+				CALL EVENT_16_SET_ACTION, ARG, [[スキル:気合]]
+			ELSEIF CFLAG:ARG:１moreフラグ == 0
+				CALL EVENT_16_SET_ACTION, ARG, [[スキル:ヨシツネ見参]]
+			ELSE
+				; 自己強化が一定以下ならヒートライザ。それ以外ならランダマイザ
+				IF CFLAG:ARG:攻撃強化 < 8 || CFLAG:ARG:魔法威力強化 < 8 || CFLAG:ARG:命中強化 < 8 || CFLAG:ARG:回避強化 < 8 || CFLAG:ARG:防御強化 < 8
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:ヒートライザ]]
+				ELSE
+					CALL EVENT_16_SET_ACTION, ARG, [[スキル:ランダマイザ]]
+				ENDIF
+			ENDIF
+	ENDSELECT
+ENDIF
+
+; 切り出しとく
+; ステータスが変化しスキルがセットされる
+@EVENT_16_PCHANGE, ARG, ARG:1, ARG:2 = 0
+SIF (イベントフラグ:16:0 % 10) == ARG:1
+	RETURN 0
+LOCAL = イベントフラグ:16:0 / 10
+SELECTCASE ARG:1
+	CASE 0
+		; ペルソナ無し
+		; 第一段階のみ
+		LOCALS = P・チェンジ
+		CALL EVENT_16_SET_BASE_ST, ARG
+		CALL EVENT_16_CLEAR_SKILL, ARG
+		BASE:ARG:剣撃 = 100
+		BASE:ARG:飛具 = 100
+		BASE:ARG:打撃 = 100
+		BASE:ARG:戦技 = 100
+		BASE:ARG:火炎 = 100
+		BASE:ARG:氷結 = 100
+		BASE:ARG:電撃 = 100
+		BASE:ARG:衝撃 = 100
+		BASE:ARG:神経 = 100
+		BASE:ARG:精神 = 100
+		BASE:ARG:破魔 = 0
+		BASE:ARG:呪殺 = 100
+		BASE:ARG:地変 = 100
+		BASE:ARG:水撃 = 100
+		BASE:ARG:疾風 = 100
+		BASE:ARG:重力 = 100
+		BASE:ARG:核熱 = 100
+		BASE:ARG:万能 = 100
+		BASE:ARG:サイコ = 100
+		CALL SYNC_STATUS, ARG
+		イベントフラグ:16:0 = LOCAL * 10
+	CASE 1
+		; 剛毅 ジークフリード
+		; (投槍で殺された伝承より)飛具が通るがハイパーカウンタ持ち
+		; メルトダウンあるけどリンケージかぁ……使わせ方が分からない
+		LOCALS = P・チェンジ(剛毅 ジークフリード)
+		CALL EVENT_16_SET_BASE_ST, ARG
+		CALL EVENT_16_CLEAR_SKILL, ARG
+		BASE:ARG:力 += 20
+		BASE:ARG:耐力 += 20
+		ABL:ARG:スキル1 = [[スキル:フレイダイン]]
+		ABL:ARG:スキル2 = [[スキル:デッドリーバーン]]
+		ABL:ARG:スキル3 = [[スキル:アカシャアーツ]]
+		ABL:ARG:スキル4 = [[スキル:ヒートライザ]]
+		ABL:ARG:スキル5 = [[スキル:アドバイス]]
+		ABL:ARG:スキル6 = [[スキル:コーチング]]
+		ABL:ARG:スキル7 = [[スキル:ハイパーカウンタ]]
+		BASE:ARG:剣撃 = 0
+		BASE:ARG:飛具 = 112
+		BASE:ARG:打撃 = 0
+		BASE:ARG:戦技 = 0
+		BASE:ARG:火炎 = -100
+		BASE:ARG:氷結 = 50
+		BASE:ARG:電撃 = 75
+		BASE:ARG:衝撃 = 125
+		BASE:ARG:神経 = 100
+		BASE:ARG:精神 = 100
+		BASE:ARG:破魔 = 0
+		BASE:ARG:呪殺 = 125
+		BASE:ARG:地変 = 75
+		BASE:ARG:水撃 = 75
+		BASE:ARG:疾風 = 150
+		BASE:ARG:重力 = 75
+		BASE:ARG:核熱 = -100
+		BASE:ARG:万能 = 25
+		BASE:ARG:サイコ = 100
+		CALL SYNC_STATUS, ARG
+		イベントフラグ:16:0 = LOCAL * 10 + 1
+	CASE 2
+		; 愚者 ロキ
+		; ニブルヘイム異様に凍って強いぜ……
+		LOCALS = P・チェンジ(愚者 ロキ)
+		CALL EVENT_16_SET_BASE_ST, ARG
+		CALL EVENT_16_CLEAR_SKILL, ARG
+		BASE:ARG:知恵 += 20
+		BASE:ARG:魔力 += 10
+		BASE:ARG:速さ += 10
+		ABL:ARG:スキル1 = [[スキル:ニブルヘイム]]
+		ABL:ARG:スキル2 = [[スキル:アクアリータイド]]
+		ABL:ARG:スキル3 = [[スキル:ランダマイザ]]
+		ABL:ARG:スキル4 = [[スキル:アドバイス]]
+		ABL:ARG:スキル5 = [[スキル:コーチング]]
+		ABL:ARG:スキル6 = [[スキル:ハイパーカウンタ]]
+		BASE:ARG:剣撃 = 75
+		BASE:ARG:飛具 = 75
+		BASE:ARG:打撃 = 75
+		BASE:ARG:戦技 = 75
+		BASE:ARG:火炎 = 150
+		BASE:ARG:氷結 = -100
+		BASE:ARG:電撃 = 50
+		BASE:ARG:衝撃 = 50
+		BASE:ARG:神経 = 50
+		BASE:ARG:精神 = 0
+		BASE:ARG:破魔 = 125
+		BASE:ARG:呪殺 = 0
+		BASE:ARG:地変 = 50
+		BASE:ARG:水撃 = -100
+		BASE:ARG:疾風 = 50
+		BASE:ARG:重力 = 50
+		BASE:ARG:核熱 = 200
+		BASE:ARG:万能 = 25
+		BASE:ARG:サイコ = 80
+		CALL SYNC_STATUS, ARG
+		イベントフラグ:16:0 = LOCAL * 10 + 2
+	CASE 3
+		; 皇帝 オオクニヌシ
+		; 耐性は普通だけどうっかり蹴りでクリティカル取られてデカジャデクンダを使われがち
+		LOCALS = P・チェンジ(皇帝 オオクニヌシ)
+		CALL EVENT_16_SET_BASE_ST, ARG
+		CALL EVENT_16_CLEAR_SKILL, ARG
+		BASE:ARG:力 += 20
+		BASE:ARG:知恵 += 5
+		BASE:ARG:耐力 += 5
+		BASE:ARG:運 += 10
+		ABL:ARG:スキル1 = [[スキル:破戒の稲妻]]
+		ABL:ARG:スキル2 = [[スキル:雷震王母の蹴り]]
+		ABL:ARG:スキル3 = [[スキル:利剣乱舞]]
+		ABL:ARG:スキル4 = [[スキル:デ・カジャ]]
+		ABL:ARG:スキル5 = [[スキル:デ・クンダ]]
+		ABL:ARG:スキル6 = [[スキル:アドバイス]]
+		ABL:ARG:スキル7 = [[スキル:コーチング]]
+		ABL:ARG:スキル8 = [[スキル:ハイパーカウンタ]]
+		BASE:ARG:剣撃 = 75
+		BASE:ARG:飛具 = 100
+		BASE:ARG:打撃 = 75
+		BASE:ARG:戦技 = 100
+		BASE:ARG:火炎 = 0
+		BASE:ARG:氷結 = 125
+		BASE:ARG:電撃 = 999
+		BASE:ARG:衝撃 = 125
+		BASE:ARG:神経 = 100
+		BASE:ARG:精神 = 100
+		BASE:ARG:破魔 = 0
+		BASE:ARG:呪殺 = 0
+		BASE:ARG:地変 = 75
+		BASE:ARG:水撃 = 100
+		BASE:ARG:疾風 = 150
+		BASE:ARG:重力 = 75
+		BASE:ARG:核熱 = 50
+		BASE:ARG:万能 = 25
+		BASE:ARG:サイコ = 80
+		CALL SYNC_STATUS, ARG
+		イベントフラグ:16:0 = LOCAL * 10 + 3
+	CASE 4
+		; 塔 クー・フーリン
+		; 衝撃属性の全体特大ダメージスキルってないんだよなあ
+		LOCALS = P・チェンジ(塔 クー・フーリン)
+		CALL EVENT_16_SET_BASE_ST, ARG
+		CALL EVENT_16_CLEAR_SKILL, ARG
+		BASE:ARG:力 += 10
+		BASE:ARG:知恵 += 10
+		BASE:ARG:魔力 += 10
+		BASE:ARG:速さ += 10
+		ABL:ARG:スキル1 = [[スキル:旋風陣]]
+		ABL:ARG:スキル2 = [[スキル:デスバウンド]]
+		ABL:ARG:スキル3 = [[スキル:レボリューション]]
+		ABL:ARG:スキル4 = [[スキル:アドバイス]]
+		ABL:ARG:スキル5 = [[スキル:コーチング]]
+		ABL:ARG:スキル6 = [[スキル:ハイパーカウンタ]]
+		BASE:ARG:剣撃 = -50
+		BASE:ARG:飛具 = 75
+		BASE:ARG:打撃 = 50
+		BASE:ARG:戦技 = 50
+		BASE:ARG:火炎 = 100
+		BASE:ARG:氷結 = 100
+		BASE:ARG:電撃 = 0
+		BASE:ARG:衝撃 = 999
+		BASE:ARG:神経 = 50
+		BASE:ARG:精神 = 150
+		BASE:ARG:破魔 = 0
+		BASE:ARG:呪殺 = 125
+		BASE:ARG:地変 = 125
+		BASE:ARG:水撃 = 100
+		BASE:ARG:疾風 = 999
+		BASE:ARG:重力 = 125
+		BASE:ARG:核熱 = 100
+		BASE:ARG:万能 = 25
+		BASE:ARG:サイコ = 100
+		CALL SYNC_STATUS, ARG
+		イベントフラグ:16:0 = LOCAL * 10 + 4
+	CASE 5
+		; 皇帝 オベロン
+		; 万能以外を全無効
+		LOCALS = P・チェンジ(皇帝 オベロン)
+		CALL EVENT_16_SET_BASE_ST, ARG
+		CALL EVENT_16_CLEAR_SKILL, ARG
+		BASE:ARG:魔力 += 512
+		ABL:ARG:スキル1 = [[スキル:メギドラオン]]
+		ABL:ARG:スキル2 = [[スキル:気合]]
+		ABL:ARG:スキル3 = [[スキル:コンセントレイト]]
+		BASE:ARG:剣撃 = 0
+		BASE:ARG:飛具 = 0
+		BASE:ARG:打撃 = 0
+		BASE:ARG:戦技 = 0
+		BASE:ARG:火炎 = 0
+		BASE:ARG:氷結 = 0
+		BASE:ARG:電撃 = 0
+		BASE:ARG:衝撃 = 0
+		BASE:ARG:神経 = 0
+		BASE:ARG:精神 = 0
+		BASE:ARG:破魔 = 0
+		BASE:ARG:呪殺 = 0
+		BASE:ARG:地変 = 0
+		BASE:ARG:水撃 = 0
+		BASE:ARG:疾風 = 0
+		BASE:ARG:重力 = 0
+		BASE:ARG:核熱 = 0
+		BASE:ARG:万能 = 100
+		BASE:ARG:サイコ = 0
+		CALL SYNC_STATUS, ARG
+		イベントフラグ:16:0 = LOCAL * 10 + 5
+	CASE 6
+		; 審判 アルダー
+		; 全耐性。ただし万能耐性は他より低い
+		LOCALS = P・チェンジ(審判 アルダー)
+		CALL EVENT_16_SET_BASE_ST, ARG
+		CALL EVENT_16_CLEAR_SKILL, ARG
+		BASE:ARG:知恵 += 15
+		BASE:ARG:魔力 += 10
+		BASE:ARG:運 += 15
+		ABL:ARG:スキル1 = [[スキル:メギドラオン]]
+		ABL:ARG:スキル2 = [[スキル:ディアラハン]]
+		ABL:ARG:スキル3 = [[スキル:ランダマイザ]]
+		ABL:ARG:スキル4 = [[スキル:ヒートライザ]]
+		ABL:ARG:スキル5 = [[スキル:アドバイス]]
+		ABL:ARG:スキル6 = [[スキル:コーチング]]
+		BASE:ARG:剣撃 = 25
+		BASE:ARG:飛具 = 25
+		BASE:ARG:打撃 = 25
+		BASE:ARG:戦技 = 25
+		BASE:ARG:火炎 = 50
+		BASE:ARG:氷結 = 50
+		BASE:ARG:電撃 = 50
+		BASE:ARG:衝撃 = 75
+		BASE:ARG:神経 = 25
+		BASE:ARG:精神 = 25
+		BASE:ARG:破魔 = 0
+		BASE:ARG:呪殺 = 0
+		BASE:ARG:地変 = 75
+		BASE:ARG:水撃 = 75
+		BASE:ARG:疾風 = 50
+		BASE:ARG:重力 = 75
+		BASE:ARG:核熱 = 75
+		BASE:ARG:万能 = 50
+		BASE:ARG:サイコ = 50
+		CALL SYNC_STATUS, ARG
+		イベントフラグ:16:0 = LOCAL * 10 + 6
+	CASE 7
+		; 星 ルシフェル
+		; 物理と万能、神経精神破魔呪殺以外の属性を吸収
+		; 明けの明星作るのがめんどくさいのでメギドラオンにしておく
+		LOCALS = P・チェンジ(星 ルシフェル)
+		CALL EVENT_16_SET_BASE_ST, ARG
+		CALL EVENT_16_CLEAR_SKILL, ARG
+		BASE:ARG:知恵 += 10
+		BASE:ARG:魔力 += 20
+		BASE:ARG:運 += 10
+		ABL:ARG:スキル1 = [[スキル:メギドラオン]]
+		ABL:ARG:スキル2 = [[スキル:アドバイス]]
+		ABL:ARG:スキル3 = [[スキル:コーチング]]
+		BASE:ARG:剣撃 = 100
+		BASE:ARG:飛具 = 100
+		BASE:ARG:打撃 = 100
+		BASE:ARG:戦技 = 100
+		BASE:ARG:火炎 = -50
+		BASE:ARG:氷結 = -50
+		BASE:ARG:電撃 = -50
+		BASE:ARG:衝撃 = -50
+		BASE:ARG:神経 = 0
+		BASE:ARG:精神 = 0
+		BASE:ARG:破魔 = 0
+		BASE:ARG:呪殺 = 0
+		BASE:ARG:地変 = -50
+		BASE:ARG:水撃 = -50
+		BASE:ARG:疾風 = -50
+		BASE:ARG:重力 = -50
+		BASE:ARG:核熱 = -50
+		BASE:ARG:万能 = 25
+		BASE:ARG:サイコ = 50
+		CALL SYNC_STATUS, ARG
+		イベントフラグ:16:0 = LOCAL * 10 + 7
+	CASE 8
+		; 塔 ヨシツネ
+		; 物理吸収弱点無し
+		; ヨシツネ見参は単体攻撃なのでマーガレットを3回行動させる
+		; (前ターンオベロン気合->)ヨシツネ見参->気合->ヨシツネ見参
+		LOCALS = P・チェンジ(塔 ヨシツネ)
+		CALL EVENT_16_SET_BASE_ST, ARG
+		CALL EVENT_16_CLEAR_SKILL, ARG
+		BASE:ARG:力 += 40
+		ABL:ARG:スキル1 = [[スキル:ヨシツネ見参]]
+		ABL:ARG:スキル2 = [[スキル:気合]]
+		ABL:ARG:スキル3 = [[スキル:ランダマイザ]]
+		ABL:ARG:スキル4 = [[スキル:ヒートライザ]]
+		ABL:ARG:スキル5 = [[スキル:アドバイス]]
+		ABL:ARG:スキル6 = [[スキル:コーチング]]
+		BASE:ARG:剣撃 = -100
+		BASE:ARG:飛具 = -100
+		BASE:ARG:打撃 = -100
+		BASE:ARG:戦技 = -100
+		BASE:ARG:火炎 = 25
+		BASE:ARG:氷結 = 100
+		BASE:ARG:電撃 = 999
+		BASE:ARG:衝撃 = 75
+		BASE:ARG:神経 = 50
+		BASE:ARG:精神 = 50
+		BASE:ARG:破魔 = 999
+		BASE:ARG:呪殺 = 0
+		BASE:ARG:地変 = 100
+		BASE:ARG:水撃 = 75
+		BASE:ARG:疾風 = 100
+		BASE:ARG:重力 = 100
+		BASE:ARG:核熱 = 50
+		BASE:ARG:万能 = 25
+		BASE:ARG:サイコ = 50
+		CALL SYNC_STATUS, ARG
+		イベントフラグ:16:0 = LOCAL * 10 + 8
+ENDSELECT
+; 変更ペルソナが表示される
+; ぶっちゃけターン数覚えるのしんどいです
+IF ARG:2 == 0
+	CUSTOMDRAWLINE =
+	SETCOLOR 0xff0033
+	PRINTFORML ┏>CHARA━━━━━━━━━━┓　┏>ACT━━━━━━━━━━━━━━━━━━┓
+	PRINTFORM ┃[{CFLAG:ARG:ポジション,2}] %CALLNAME:ARG,21,LEFT%┃　┃
+	PRINTFORML %LOCALS + "",40,LEFT%┃
+	PRINTFORMW ┗━━━━━━━━━━━━━┛　┗━━━━━━━━━━━━━━━━━━━━┛
+	RESETCOLOR
+ENDIF
+RETURN 0
+
+; 行動セット
+@EVENT_16_SET_ACTION, ARG, ARG:1, ARG:2 = -1
+; MP全快。汚いなさすがボスきたない
+SIF BASE:ARG:ＭＰ < MAXBASE:ARG:ＭＰ
+	BASE:ARG:ＭＰ = MAXBASE:ARG:ＭＰ
+CFLAG:ARG:入力行動 = ARG:1
+IF ARG:2 == -1
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:入力行動
+ELSE
+	CFLAG:ARG:ターゲット = ARG:2
+ENDIF
+CALL CHECK_ACTIONABLE, ARG, CFLAG:ARG:入力行動
+IF RESULT != 1 && CHECK_SKILL(ARG, CFLAG:ARG:入力行動) == 0
+	CFLAG:ARG:入力行動 = [[スキル:ＡＴＴＡＣＫ]]
+	CALL RANDOM_TARGET, ARG, CFLAG:ARG:入力行動
+ENDIF
+RETURN 0
+
+; 戦闘難易度で基礎能力が上がる
+; 難易度を求めている人には難易度を
+; 最高難易度で64,48,64,48,32,32。ヨシツネだと力104で気合つき見参
+@EVENT_16_SET_BASE_ST, ARG
+LOCAL:1 = FLAG:戦闘難易度 - 3 > 0 ? 120 + (FLAG:戦闘難易度 - 3) * 20 # 100
+BASE:ARG:力 = 40 * LOCAL:1 / 100
+BASE:ARG:知恵 = 30 * LOCAL:1 / 100
+BASE:ARG:魔力 = 40 * LOCAL:1 / 100
+BASE:ARG:耐力 = 30 * LOCAL:1 / 100
+BASE:ARG:速さ = 20 * LOCAL:1 / 100
+BASE:ARG:運 = 20 * LOCAL:1 / 100
+RETURN 0
+
+; 全スキルを消去
+@EVENT_16_CLEAR_SKILL, ARG
+FOR LOCAL, 0, 8
+	ABL:ARG:(60+LOCAL) = -1
+NEXT
+RETURN 0
+
+; ほんまベルベットルームの従者はドＳやでぇ……
+@EVENT_16_MESSAGE_G
+SETCOLOR 0xff0033
+PRINTL 
+IF RAND:3 == 0
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃倒れちゃダメよ……？　　　　　　　　　　　　┃
+	PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━┛
+ELSEIF RAND:2 == 0
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃受けなさい！　　　　　　　　　　　　　　　　┃
+	PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━┛
+ELSE
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃見ていなさい！　　　　　　　　　　　　　　　┃
+	PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTL ┃　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━┛
+ENDIF
+PRINTL 
+CUSTOMDRAWLINE =
+PRINTL 
+RESETCOLOR
+RETURN 0

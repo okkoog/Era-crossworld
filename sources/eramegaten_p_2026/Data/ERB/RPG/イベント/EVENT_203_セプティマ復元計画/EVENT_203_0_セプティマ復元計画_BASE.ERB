@@ -1,0 +1,37 @@
+﻿;====================
+;イベント名称
+;====================
+@GET_EVENT_NAME_203
+#FUNCTIONS
+RESULTS_F '= "셉티마복원계획"
+RETURNF RESULTS_F
+
+;====================
+;条件
+;====================
+@PLAYABLE_EVENT_203
+RESULTS = (EX:하얀강철의X) 셉티마 복원 계획, 시동
+SIF !IS_JOINABLE_BATTLE_BY_CSV([[キャラ:아큐라_X]])
+	RETURN 0
+SIF !GETS_USEABLE_EXTRA_TITLE("白き鋼鉄のX")
+	RETURN 0
+TRYCCALLFORM PLAYABLE_EVENT_203_{FLAG_セプティマ復元計画_進行度 + 1}
+	RETURN RESULT
+CATCH
+	RETURN 1
+ENDCATCH
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_203
+CALLFORM SHOPCOM_EVENT_203_{FLAG_セプティマ復元計画_進行度 + 1}
+SIF !RESULT
+	RETURN 0
+CALL RESET_ANNOUNCE_FLAG
+
+@PICTURENAME_TABLE_EVENT_203, ARG
+#FUNCTIONS
+SELECTCASE ARG
+	CASE 0
+		RESULTS_F '= "スメラギのエムブレム"
+ENDSELECT

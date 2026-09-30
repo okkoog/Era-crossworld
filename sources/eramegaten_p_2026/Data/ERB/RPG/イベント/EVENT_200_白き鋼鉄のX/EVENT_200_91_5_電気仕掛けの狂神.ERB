@@ -1,0 +1,543 @@
+﻿;=============================================
+;EVENT_200_5_電気仕掛けの狂神
+;アシモフ
+;=============================================
+@SET_ACTION_サンダーストーム, ARG
+CFLAG:ARG:비구여데미지보정 = 0
+IF 現HP割合(ARG) < 34 && TFLAG:435 == 0
+	CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ヴォルティックチェーン")
+	TFLAG:435 = FLAG:경과턴수 + 1
+ELSEIF CFLAG:ARG:１more플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:컨센트레이트]]
+ELSE
+	IF 現HP割合(ARG) > 33
+		IF CFLAG:ARG:행동한횟수 == 0
+			;생각보다 대미지가 나오지 않아서
+			CFLAG:ARG:비구여데미지보정 = 100
+			IF RAND:2
+				EQUIP:ARG:총 = GETNUM(ITEM, "대전차화승총")
+			ELSE
+				EQUIP:ARG:총 = GETNUM(ITEM, "수류탄")
+			ENDIF
+			CALL SET_ACTION_SKILL, ARG, [[스킬:ＧＵＮ]]
+		ELSE
+			SELECTCASE FLAG:경과턴수 % 4
+				CASE 0
+					CALL SET_ACTION_SKILL, ARG, [[스킬:집뢰격]]
+				CASE 1
+					CALL SET_ACTION_SKILL, ARG, [[스킬:암흑의뇌광]]
+				CASE 2
+					CALL SET_ACTION_SKILL, ARG, [[스킬:원샷킬]]
+				CASEELSE
+					CALL SET_ACTION_SKILL, ARG, [[스킬:썬더피스트]]
+			ENDSELECT
+		ENDIF
+	ELSE
+		IF CFLAG:ARG:행동한횟수 == 0
+			SELECTCASE (FLAG:경과턴수 - TFLAG:435 - 1) % 4
+				;건볼트 흔한 패턴: HP가 1/3 이하로 떨어지면 SP스킬 사용 4턴에 1번씩 날아온다
+				CASE 0
+					CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ヴォルティックチェーン")
+				CASE 1
+					CALL SET_ACTION_SKILL, ARG, [[스킬:썬더피스트]]
+				CASE 2
+					CALL SET_ACTION_SKILL, ARG, [[스킬:저스티스샷]]
+				CASEELSE
+					CALL SET_ACTION_SKILL, ARG, [[스킬:전격가드브레이크]]
+			ENDSELECT
+		ELSE
+			SELECTCASE (FLAG:경과턴수 - TFLAG:435 - 1) % 4
+				CASE 0
+					CALL SET_ACTION_SKILL, ARG, [[스킬:방전]]
+				CASE 1
+					CALL SET_ACTION_SKILL, ARG, [[스킬:나루카미]]
+				CASE 2
+					CALL SET_ACTION_SKILL, ARG, [[스킬:저스티스샷]]
+				CASEELSE
+					CALL SET_ACTION_SKILL, ARG, [[스킬:썬더피스트]]
+			ENDSELECT
+		ENDIF
+	ENDIF
+ENDIF
+
+@EVENT_BATTLE_TURNSTART_EVENT_200_5_電気仕掛けの狂神1
+#DIM 進行度
+#DIM GV
+GV = GETCHARA([[キャラ:GV]])
+IF GV < 0 || CPOS(GV) == 0
+	進行度 = 30
+ELSE
+	SIF IS_BADSTATE(GV, "DYING")
+		RETURN 0
+ENDIF
+CALL VARSET_KOJO_RPG_FLAG
+SELECTCASE 進行度
+	CASE 0
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 유감이로군, GV……
+		BTL_KOJO_RESULTS:1 = 다시 한 번 이 손으로 네놈을 딜리트해야만 하다니
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("アシモフ")
+		
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 안타깝지만, 여기 있는 난 죽지 않았어
+		BTL_KOJO_RESULTS:1 = 죽은 것은…… 네 녀석 쪽이다, 아시모프
+		CALL PRINT_KOJO_RPG_MESSAGE, , GV
+		進行度 = 10
+		RESETCOLOR
+	CASE 10
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 어째서냐…… 아시모프
+		BTL_KOJO_RESULTS:1 = 어째서 버터플라이 이펙트 따위를 만든 거지
+		CALL PRINT_KOJO_RPG_MESSAGE, , GV
+
+		TSTR:전투구상캐릭터화상어드레스 '= GET_FACE_BY_CHARA(GV, "SPスキル")
+		BTL_KOJO_RESULTS:0 = 네놈이 증오했던 스메라기와 똑같은 짓을,
+		BTL_KOJO_RESULTS:1 = 어째서 저지르고 있는 거냐! 대답해라, 아시모프!!
+		CALL PRINT_KOJO_RPG_MESSAGE, , GV
+
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 어째서냐고? 우문이로군, GV
+		BTL_KOJO_RESULTS:1 = 다름 아닌 네놈이 깨닫게 해준 일이다
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("アシモフ")
+		進行度 = 20
+		RESETCOLOR
+	CASE 20
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = 네놈이 시안을 데리고 탈주했던 바로 그때 깨달은 것이다
+		BTL_KOJO_RESULTS:1 = 그저 기계에 연결해 두기만 해선 놓쳐버리고 만다는 것을
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("アシモフ")
+
+		BTL_KOJO_RESULTS:0 = 버터플라이 이펙트는 사이버 디바를 놓치지 않는 우리이자
+		BTL_KOJO_RESULTS:1 = 외부의 위협으로부터 보호하는, 이상적인 크레이들인 것이다
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("アシモフ")
+		
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 그런 이유로 그런 짓을 겪게 했다는 거야!?
+		BTL_KOJO_RESULTS:1 = 제정신이 아니야……!
+		CALL PRINT_KOJO_RPG_MESSAGE, , GV
+		進行度 = 30
+		RESETCOLOR
+ENDSELECT
+IF 進行度 == 30
+	CFLAG:GET_ENEMY("アシモフ"):물리피데미지보정 = 0
+	CFLAG:GET_ENEMY("アシモフ"):마법피데미지보정 = 0
+	CFLAG:GET_ENEMY("アシモフ"):비구여데미지보정 = 0
+	CFLAG:GET_ENEMY("アシモフ"):타격여데미지보정 = 0
+	CFLAG:GET_ENEMY("アシモフ"):전격여데미지보정 = 0
+ENDIF
+
+@SET_ACTION_アヴァランシェブレイクダウン, ARG
+;건볼트 흔한 패턴: HP가 1/3 이하로 떨어지면 SP스킬 사용
+IF 現HP割合(ARG) < 34 && TFLAG:435 == 0
+	CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ヴォルティックチェーンメテオ")
+	TFLAG:435 = FLAG:경과턴수 + 1
+ELSEIF CFLAG:ARG:１more플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:스마일차지]]
+ELSE
+	IF 現HP割合(ARG) > 33
+		IF CFLAG:ARG:행동한횟수 == 0
+			SELECTCASE FLAG:경과턴수 % 6
+				CASE 0
+					CALL SET_ACTION_SKILL, ARG, [[스킬:전격가드브레이크]]
+				CASE 1
+					CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+				CASE 2
+					CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ライトニングスフィア")
+				CASE 3
+					CALL SET_ACTION_SKILL, ARG, [[스킬:심판의천둥]]
+				CASE 4
+					CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "スパークカリバー")
+				CASEELSE
+					CALL SET_ACTION_SKILL, ARG, [[스킬:심판의천둥]]
+			ENDSELECT
+		ELSEIF CFLAG:ARG:행동한횟수 == 1
+			IF COUNT_カジャンダ_OR_LESS(ARG, -1) > 3
+				CALL SET_ACTION_SKILL, ARG, [[스킬:이니셜라이즈]]
+			ELSE
+				SELECTCASE FLAG:경과턴수 % 3
+					CASE 0
+						CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ライトニングスフィア")
+					CASE 1
+						CALL SET_ACTION_SKILL, ARG, [[스킬:랜더마이저]]
+					CASEELSE
+						CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "スパークカリバー")
+				ENDSELECT
+			ENDIF
+		ELSE
+			SELECTCASE FLAG:경과턴수 % 4
+				CASE 0
+					CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+				CASE 1
+					CALL SET_ACTION_SKILL, ARG, [[스킬:심판의천둥]]
+				CASE 2
+					CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ライトニングスフィア")
+				CASEELSE
+					CALL SET_ACTION_SKILL, ARG, [[스킬:랜더마이저]]
+			ENDSELECT
+		ENDIF
+	ELSE
+		IF CFLAG:ARG:행동한횟수 == 0
+			SELECTCASE (FLAG:경과턴수 - TFLAG:435 - 1) % 10
+				;건볼트 흔한 패턴: HP가 1/3 이하로 떨어지면 SP스킬 사용 10턴에 1번씩 날아온다
+				CASE 0
+					CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ヴォルティックチェーンメテオ")
+				CASE 1
+					CALL SET_ACTION_SKILL, ARG, [[스킬:심판의천둥]]
+				CASE 2
+					CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+				CASE 3
+					CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "スパークカリバー")
+				CASE 4
+					CALL SET_ACTION_SKILL, ARG, [[스킬:대방전]]
+				CASE 5
+					CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ライトニングスフィア")
+				CASE 6
+					CALL SET_ACTION_SKILL, ARG, [[스킬:엘・지하드]]
+				CASE 7
+					CALL SET_ACTION_SKILL, ARG, [[스킬:히트라이저]]
+				CASE 8
+					CALL SET_ACTION_SKILL, ARG, [[스킬:엘・지하드]]
+				CASEELSE
+					CALL SET_ACTION_SKILL, ARG, [[스킬:전격가드브레이크]]
+			ENDSELECT
+		ELSEIF CFLAG:ARG:행동한횟수 == 1
+			IF COUNT_カジャンダ_OR_LESS(ARG, -1) > 3
+				CALL SET_ACTION_SKILL, ARG, [[스킬:이니셜라이즈]]
+			ELSE
+				;랜덤한 아군 한 명의 카쟈 단계를 확인
+				IF COUNT_カジャンダ_OR_MORE(GET_RANDOM_FRIEND(), 12) > 3
+					CALL SET_ACTION_SKILL, ARG, [[스킬:데・카쟈]]
+				ELSE
+					SELECTCASE (FLAG:경과턴수 - TFLAG:435 - 1) % 4
+						CASE 0
+							CALL SET_ACTION_SKILL, ARG, [[스킬:랜더마이저]]
+						CASE 1
+							CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ライトニングスフィア")
+						CASE 2
+							CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "スパークカリバー")
+						CASEELSE
+							CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ライトニングスフィア")
+					ENDSELECT
+				ENDIF
+			ENDIF
+		ELSE
+			IF IS_BADSTATE_FRIEND("SHOCK") > 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:나이스・샷]]
+			ELSE
+				SELECTCASE (FLAG:경과턴수 - TFLAG:435 - 1) % 4
+					CASE  0
+						CALL SET_ACTION_SKILL, ARG, [[스킬:랜더마이저]]
+					CASE  1
+						CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "スパークカリバー")
+					CASE  2
+						CALL SET_ACTION_SKILL, ARG, [[스킬:대방전]]
+					CASEELSE
+						CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ライトニングスフィア")
+				ENDSELECT
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+
+;데마젤 전 전용 라이브 노벨
+;AB 즉 Armed Blue……가 아니라 AvalancheBreakdown
+;애벌랜치 브레이크다운은 「자유 전자가 전계에서 가속되어 충돌 전리를 일으키는 과정이 반복적으로 발생하여 대전류가 흐르는 현상」 위키피디아에서 복사
+@EVENT_BATTLE_TURNSTART_EVENT_200_5_電気仕掛けの狂神2
+#DIM 進行度
+#DIM COPEN
+#DIM GV
+SIF 進行度 == 99
+	RETURN 0
+SELECTCASE 進行度
+	CASE 0
+		GV = GETCHARA([[キャラ:GV]])
+		IF GV > 0 && CFLAG:GV:PT플래그 == 2
+			IF CFLAG:GV:상태이상 != GET_STATE_NUM("DYING")
+			ELSE
+				RETURN 0
+			ENDIF
+		ELSE
+		ENDIF
+		SETCOLOR COLOR("ENEMY")
+		BTL_KOJO_RESULTS:0 = GV　네놈이라면　알　터이다
+		BTL_KOJO_RESULTS:1 = 이　모습이야말로　뇌격　능력자로서　가장　순화된　궁극의　모습이라는　것을
+		CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("デマーゼル")
+		
+		SETCOLOR COLOR("FRIEND")
+		BTL_KOJO_RESULTS:0 = 뭐가 순화냐, 뭐가 궁극이냐…… 그저 끔찍할 뿐이잖아
+		CALL PRINT_KOJO_RPG_MESSAGE, , GV
+		
+		BTL_KOJO_RESULTS:0 = 그런 모습이 되어서까지, 증오를 계속 흩뿌리다니……!
+		BTL_KOJO_RESULTS:1 = 그것이 정말로 네가 하고 싶었던 일이었던 거냐, 아시모프!
+		TSTR:전투구상캐릭터화상어드레스 '= GET_FACE_BY_CHARA(GV, "SPスキル")
+		CALL PRINT_KOJO_RPG_MESSAGE, , GV
+		
+		進行度 = 10
+		RESETCOLOR
+	CASE 10
+		COPEN = GETCHARA([[キャラ:아큐라_X]])
+		IF COPEN > 0 && CFLAG:COPEN:상태이상 != GET_STATE_NUM("DYING")
+			SETCOLOR COLOR("FRIEND")
+			BTL_KOJO_RESULTS:0 = 소용없다, 건볼트. 놈에게 네 말은 통하지 않아
+			BTL_KOJO_RESULTS:1 = 백 년 이상의 세월이, 놈의 전자두뇌를 미쳐 날뛰게 만들었다
+			CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+			
+			BTL_KOJO_RESULTS:0 = 놈은 이제, 생전《아시모프》의 유지만이 뒤틀려
+			BTL_KOJO_RESULTS:1 = 세계에 줄곧 남겨진, 원령이나 다름없다
+			CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+			
+			SETCOLOR COLOR("ENEMY")
+			BTL_KOJO_RESULTS:0 = 참견하지　마라　올드에이지의　유물이여
+			BTL_KOJO_RESULTS:1 = 내가　보유한　의식은　완벽히　아시모프의　것과　동일《이퀄》이다
+			CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("デマーゼル")
+			
+			進行度 = 20
+			RESETCOLOR
+		ENDIF
+	CASE 20
+		COPEN = GETCHARA([[キャラ:아큐라_X]])
+		IF COPEN > 0 && CFLAG:COPEN:상태이상 != GET_STATE_NUM("DYING")
+			SETCOLOR COLOR("ENEMY")
+			BTL_KOJO_RESULTS:0 = 나의　바람은　무능력자를　배제한　능력자만의　왕국
+			BTL_KOJO_RESULTS:1 = GV　네놈을　딜리트했을　때와　아무것도　변하지　않았다
+			CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("デマーゼル")
+			
+			SETCOLOR COLOR("FRIEND")
+			BTL_KOJO_RESULTS:0 = 틀렸군. 네놈은 능력자의 수호 따위 관심도 없지
+			BTL_KOJO_RESULTS:1 = 그저, 무능력자를 원망하고 있을 뿐이다
+			CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+			
+			BTL_KOJO_RESULTS:0 = 그렇지 않고서야―― 버터플라이 이펙트 따위를 만들었을 리가 없어
+			CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+			
+			進行度 = 30
+			RESETCOLOR
+		ENDIF
+	CASE 30
+		COPEN = GETCHARA([[キャラ:아큐라_X]])
+		IF COPEN > 0 && CFLAG:COPEN:상태이상 != GET_STATE_NUM("DYING")
+			SETCOLOR COLOR("ENEMY")
+			BTL_KOJO_RESULTS:0 = 닥쳐라……　네놈만　없었어도　그때　숨통을　끊어놓았더라면……
+			BTL_KOJO_RESULTS:1 = 이　리트라이의　끝에　네놈을　지옥《데드엔드》로　끌고　가주마!
+			CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("デマーゼル")
+			
+			SETCOLOR COLOR("FRIEND")
+			BTL_KOJO_RESULTS:0 = 리트라이라고……?
+			BTL_KOJO_RESULTS:1 = 다시 하길 바란다면, 그때와 똑같은 말을 퍼부어 주마
+			CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+			
+			BTL_KOJO_RESULTS:0 = 네놈 같은 괴물에게, 인간 세상을 살아갈 자격은 없다!
+			BTL_KOJO_RESULTS:1 = 그 망집…… 내가 토멸한다ッ!!
+			TSTR:전투구상캐릭터화상어드레스 '= "アキュラ_X_" + CONVERT_FACE_ADDRESS_アキュラ("最終決戦仕様_SPスキル")
+			CALL PRINT_KOJO_RPG_MESSAGE, , COPEN
+			
+			IF CFLAG:GV:PT플래그 == 2
+				進行度 = 40
+			ELSE
+				進行度 = 99
+				CFLAG:(CHARANUM-1):물리피데미지보정 = 0
+				CFLAG:(CHARANUM-1):마법피데미지보정 = 0
+				CFLAG:(CHARANUM-1):검격여데미지보정 = 0
+				CFLAG:(CHARANUM-1):전격여데미지보정 = 0
+				CFLAG:(CHARANUM-1):만능여데미지보정 = 0
+			ENDIF
+			RESETCOLOR
+		ENDIF
+	CASE 40
+		GV = GETCHARA([[キャラ:GV]])
+		IF GV > 0 && CFLAG:GV:상태이상 != GET_STATE_NUM("DYING")
+			SETCOLOR COLOR("FRIEND")
+			BTL_KOJO_RESULTS:0 = 아시모프…… 난 다시 한 번, 널 죽이겠어
+			BTL_KOJO_RESULTS:1 = 시안뿐만이 아니야, 수많은 인생을 미쳐 날뛰게 만든 너만은 용서할 수 없어
+			CALL PRINT_KOJO_RPG_MESSAGE, , GV
+			
+			BTL_KOJO_RESULTS:0 = 내가 살해당해 세계가 크게 뒤틀려버린 거라면
+			BTL_KOJO_RESULTS:1 = 그 책임은 내게 있어!
+			TSTR:전투구상캐릭터화상어드레스 '= GET_FACE_BY_CHARA(GV, "SPスキル")
+			CALL PRINT_KOJO_RPG_MESSAGE, , GV
+			
+			SETCOLOR COLOR("ENEMY")
+			BTL_KOJO_RESULTS:0 = 더　이상의　디스커션은　시간　낭비인가
+			BTL_KOJO_RESULTS:1 = 좋다……　결판을　내도록　하지!
+			CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("デマーゼル")
+			
+			進行度 = 50
+			RESETCOLOR
+		ENDIF
+	CASE 50
+		GV = GETCHARA([[キャラ:GV]])
+		IF GV > 0 && CFLAG:GV:상태이상 != GET_STATE_NUM("DYING")
+			SETCOLOR COLOR("ENEMY")
+			BTL_KOJO_RESULTS:0 = 용솟음쳐라　암드 블루……
+			BTL_KOJO_RESULTS:1 = 인간의　모습에　집착하는　올드에이저 놈들을　쳐부숴라……!
+			CALL PRINT_KOJO_RPG_MESSAGE, , GET_ENEMY("デマーゼル")
+			
+			SETCOLOR COLOR("FRIEND")
+			BTL_KOJO_RESULTS:0 = 용솟음쳐라! 푸른 뇌정이여《암드 블루》!!
+			BTL_KOJO_RESULTS:1 = 미쳐 날뛰는 뇌정에 종언을 고하는 뇌광《빛》이 되어라ッ!!
+			TSTR:전투구상캐릭터화상어드레스 '= GET_FACE_BY_CHARA(GV, "SPスキル")
+			CALL PRINT_KOJO_RPG_MESSAGE, , GV
+			
+			進行度 = 99
+			CFLAG:(CHARANUM-1):물리피데미지보정 = 0
+			CFLAG:(CHARANUM-1):마법피데미지보정 = 0
+			CFLAG:(CHARANUM-1):검격여데미지보정 = 0
+			CFLAG:(CHARANUM-1):전격여데미지보정 = 0
+			CFLAG:(CHARANUM-1):만능여데미지보정 = 0
+			RESETCOLOR
+		ENDIF
+ENDSELECT
+
+;데마젤・적대 시 구상
+@KOJO_ENEMY_BATTLE_MESSAGE_K[[キャラ:데머즐]], ARG, ARG:1 = 0
+;-------------------------------------------------
+;특정 스킬
+;-------------------------------------------------
+;이것은 통상 공격
+IF CFLAG:ARG:입력행동 == 0
+	IF CFLAG:ARG:800 == 99
+		BTL_KOJO_RESULTS:0 = 딜리트다ッ!
+	ELSE
+		BTL_KOJO_RESULTS:0 = 핫!
+	ENDIF
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:ＧＵＮ]]
+	IF EQUIP:ARG:총 == GETNUM(ITEM, "대전차화승총")
+		BTL_KOJO_RESULTS:0 = 이터! 놓치지 않는다!
+	ELSE
+		BTL_KOJO_RESULTS:0 = 스로인!
+	ENDIF
+;-------------------------------------------------
+;범용 스킬
+;-------------------------------------------------
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:비구가드브레이크]] || CFLAG:ARG:입력행동 == [[스킬:전격가드브레이크]]
+	IF CFLAG:ARG:800 == 99
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 나의　뇌격은　그　정도의　방어　따윈　손쉽게　꿰뚫는다
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 막아보겠다는　생각은　버려라
+		ELSE
+			BTL_KOJO_RESULTS:0 = 용솟음쳐라　암드 블루……
+			BTL_KOJO_RESULTS:1 = 청정한　푸른　벼락으로　정화하노라ッ!!
+		ENDIF
+	ELSE
+		IF RAND:3 == 0
+			BTL_KOJO_RESULTS:0 = 어설픈 택틱스군
+		ELSEIF RAND:2 == 0
+			BTL_KOJO_RESULTS:0 = 어린애 속임수에 불과하다
+		ELSE
+			BTL_KOJO_RESULTS:0 = 고작 그 정도인가?
+		ENDIF
+	ENDIF
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:방전]]
+	IF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 스파킹!
+	ELSE
+		BTL_KOJO_RESULTS:0 = 용솟음쳐라, 암드 블루……!
+	ENDIF
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:나루카미]]
+	IF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 한꺼번에 딜리트다ッ
+	ELSE
+		BTL_KOJO_RESULTS:0 = 용솟음쳐라, 암드 블루……!
+	ENDIF
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:저스티스샷]]
+	BTL_KOJO_RESULTS:0 = 나의 정의 앞에 흩어져라ッ
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:썬더피스트]]
+	IF RAND:10 == 0
+		BTL_KOJO_RESULTS:0 = 차탄야라 쿠샨쿠ッ!
+	ELSE
+		BTL_KOJO_RESULTS:0 = 피니시다!
+	ENDIF
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:집뢰격]]
+	IF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 떨어져라, 썬더!
+	ELSE
+		BTL_KOJO_RESULTS:0 = 용솟음쳐라, 암드 블루……!
+	ENDIF
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:암흑의뇌광]]
+	IF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 배니시다!
+	ELSE
+		BTL_KOJO_RESULTS:0 = 용솟음쳐라, 암드 블루……!
+	ENDIF
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:원샷킬]]
+	BTL_KOJO_RESULTS:0 = 아스타 라 비스타《작별이다》
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:컨센트레이트]]
+	BTL_KOJO_RESULTS:0 = 차지!
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:스마일차지]]
+	BTL_KOJO_RESULTS:0 = 차징 업……!
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:엘・지하드]]
+	IF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 끄오오오오오……! 썬더!
+	ELSE
+		BTL_KOJO_RESULTS:0 = 용솟음쳐라　암드 블루……
+	ENDIF
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:나이스・샷]]
+	BTL_KOJO_RESULTS:0 = 데드엔드다ッ!
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:히트라이저]]
+	BTL_KOJO_RESULTS:0 = 차징……!
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:대방전]]
+	BTL_KOJO_RESULTS:0 = 딜리트다…… 하앗!
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:랜더마이저]]
+	BTL_KOJO_RESULTS:0 = 브레이크다운!
+ELSEIF CFLAG:ARG:입력행동 == [[스킬:심판의천둥]]
+	IF RAND:4 == 0
+		BTL_KOJO_RESULTS:0 = 끓어오르는　뇌화는　신념의　인도……
+	ELSEIF RAND:3 == 0
+		BTL_KOJO_RESULTS:0 = 메아리치는　뇌음은　인과의　증표……
+	ELSEIF RAND:2 == 0
+		BTL_KOJO_RESULTS:0 = 찢어발기는　뇌전이야말로　만상의　섭리……!
+	ELSE
+		BTL_KOJO_RESULTS:0 = 용솟음쳐라　암드 블루……
+	ENDIF
+ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG, "ヴォルティックチェーン")
+	BTL_KOJO_RESULTS:0 = 받아라……!
+	CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+
+	ALIGNMENT RIGHT
+	RESETCOLOR
+	PRINTFORML 　　　　Fear the azure creed　　　　　　　　　　　　　　 
+	PRINTFORML 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+	PRINTFORML
+	PRINTFORML 　　Its thunderous voice the alpha and　　　　　　　　　 
+	SETCOLOR 0xe8307c
+	PRINTFORML 　　　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　
+	RESETCOLOR
+	PRINTFORML
+	PRINTFORML 　　　　Omega of all things　　　　　　　　　　　　　　　
+	PRINTFORMW 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+	ALIGNMENT LEFT
+
+	SETCOLOR COLOR("ENEMY")
+	BTL_KOJO_RESULTS:0 = 볼틱 체인!
+ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG, "ヴォルティックチェーンメテオ")
+	BTL_KOJO_RESULTS:0 = 단죄를　내린다……!
+	CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+	
+	ALIGNMENT RIGHT
+	RESETCOLOR
+	PRINTFORML 　　　　Fear the azure creed　　　　　　　　　　　　　　 
+	PRINTFORML 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+	PRINTFORML
+	PRINTFORML 　　Its roaring thunder the　　　　　　　　　　　　　　　
+	SETCOLOR 0xe8307c
+	PRINTFORML 　　　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　
+	RESETCOLOR
+	PRINTFORML
+	PRINTFORML 　　　　Final judgment of all things　　　　　　　　　　 
+	PRINTFORMW 　　　 ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣　　　　　　　
+	ALIGNMENT LEFT
+
+	SETCOLOR COLOR("ENEMY")
+	BTL_KOJO_RESULTS:0 = 볼틱 체인 메테오!
+	CALL PRINT_KOJO_RPG_MESSAGE, , ARG
+	TFLAG:전투구상직접출력 = 1
+ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG, "ライトニングスフィア")
+	BTL_KOJO_RESULTS:0 = 흩뿌려져라! 만다라―!
+	TFLAG:대화형틀없음 = 1
+	BTL_KOJO_REACT_RESULTS:0 = ＞뇌구가 나선 궤도를 그리며 방사되었다!
+ELSEIF CFLAG:ARG:입력행동 == PU_SKILLNUM_GET(ARG, "スパークカリバー")
+	BTL_KOJO_RESULTS:0 = 받아라 성검!
+	TFLAG:대화형틀없음 = 1
+	BTL_KOJO_REACT_RESULTS:0 = ＞소환된 세 자루의 성검이 쇄도한다!
+ENDIF

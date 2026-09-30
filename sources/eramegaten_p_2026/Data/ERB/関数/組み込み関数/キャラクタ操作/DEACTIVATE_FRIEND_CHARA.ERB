@@ -1,0 +1,50 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;	
+;	test Module	:DEACTIVATE_FRIEND_CHARA
+;	Facility	:味方にを不在にする場合にフラグをたてて各ポジションから外す処理
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/10/11		P(bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@DEACTIVATE_FRIEND_CHARA, L_CHARA, L_OPT = "この場に居ない"
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_OPT
+SIF L_OPT == "この場に居ない"
+	CFLAG:L_CHARA:이자리에없는플래그 = 1
+
+SIF CPOS(L_CHARA)
+	CALL REMOVE_POSITION, CPOS(L_CHARA)
+
+;デビルシフター関連
+SIF CFLAG:L_CHARA:링크캐릭터실제가입시간0 > 0
+	CALL REMOVE_LINK_DEVIL, L_CHARA
+SIF CFLAG:L_CHARA:피링크캐릭터실제가입시간 > 0
+	CALL REMOVE_LINK_DEVIL, FINDCHARA_TIMEID(CFLAG:L_CHARA:피링크캐릭터실제가입시간)
+
+;フォーメーション再読み込み
+CALL REFRESH_POS
+;LEADERスキルの振り直し
+CALL SET_LEADER_SKILL
+
+FOR LCOUNT, 0, 4
+	SIF TARGET:LCOUNT == L_CHARA
+		TARGET:LCOUNT = -1
+	SIF LCOUNT == 3
+		CONTINUE
+	SIF ASSI:LCOUNT == L_CHARA
+		ASSI:LCOUNT = -1
+NEXT
+SIF NAVIGATOR == L_CHARA
+	NAVIGATOR = -1
+
+CFLAG:L_CHARA:노역플래그 = 0
+IF CFLAG:L_CHARA:극장출연순서 != 0
+	DE:(49+(CFLAG:L_CHARA:극장출연순서)):(CFLAG:L_CHARA:노역점포-1) = -1
+	DE:(59+(CFLAG:L_CHARA:극장출연순서)):(CFLAG:L_CHARA:노역점포-1) = -1
+	CFLAG:L_CHARA:극장출연순서 = 0
+	CFLAG:L_CHARA:노역점포 = 0
+ENDIF

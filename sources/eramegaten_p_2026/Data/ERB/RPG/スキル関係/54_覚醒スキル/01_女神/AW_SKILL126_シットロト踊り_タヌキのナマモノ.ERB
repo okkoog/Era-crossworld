@@ -1,0 +1,86 @@
+﻿;スキル名
+@SKILL_NAME_AW_126,ARG
+RESULTS = 시트로토 춤
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_AW_126, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_AW_126,ARG
+RETURN 50
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_AW_126
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_AW_126, ARG
+RETURN GET_SKILL_TARGET_NUM("특수")
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_AW_126,ARG
+RETURN GET_SPHERE_NUM("적아군전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_AW_126, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_AW_126
+RETURN GET_SUCCESSION_NUM("지원")
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_AW_126
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_AW_126, ARG = -1
+RETURN 1
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_AW_126, ARG, ARG:1, ARG:2
+#DIM DYNAMIC LCOUNT
+#DIMS DYNAMIC UP_TABLE = "공격", "방어", "마법효과", "마법위력", "命中率", "回避率"
+#DIMS DYNAMIC DOWN_TABLE = "공격", "방어", "마법효과", "마법위력", "命中率", "回避率"
+#DIMS DYNAMIC L_UP
+#DIMS DYNAMIC L_DOWN
+#DIM DYNAMIC L_NUM, 2
+CALL SHUFFLE_ARRAY_STR, UP_TABLE
+CALL SHUFFLE_ARRAY_STR, DOWN_TABLE
+FOR LCOUNT, 0, RAND:4
+	L_UP += UP_TABLE:LCOUNT
+NEXT
+FOR LCOUNT, 0, RAND:4
+	L_DOWN += DOWN_TABLE:LCOUNT
+NEXT
+IF L_UP == "" && L_DOWN == ""
+	PRINTFORML 아무 일도 일어나지 않았다…
+ELSE
+	SIF L_UP != ""
+		CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ? 19 # 22, L_UP, 4, "範囲", "NOWAIT"
+	SIF L_DOWN != ""
+		CALL SKILL_SET_カジャンダ, ARG, CFLAG:ARG:PT플래그 ? 22 # 19, L_DOWN, -4, "範囲", "NOWAIT"
+ENDIF
+WAIT
+RETURN 1
+
+;　 説明文の表示
+@SKILL_EXPLAIN_AW_126, ARG
+PRINTL 너구리 날것의 각성 스킬.
+PRINTL 절호조인 고치 무로토시 명물 시트로토 춤의 흥겨움으로,
+PRINTL 아군의 무작위 능력을 최대 3개까지 상승, 적의 무작위 능력을 최대 3개까지 저하시킨다.
+PRINTL 음바바음바음바 메랏사 메랏사
+
+@SKILL_EXPLAIN_TOOLTIP_AW_126, ARG
+RESULTS   = 너구리 날것의 각성 스킬
+RESULTS:1 = 절호조인 고치 무로토시 명물 시트로토 춤의 흥겨움으로,
+RESULTS:2 = 아군의 무작위 능력을 최대 3개까지 상승, 적의 무작위 능력을 최대 3개까지 저하시킨다.
+RESULTS:3 = 음바바음바음바 메랏사 메랏사
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_AW_126,ARG
+RETURN 1

@@ -1,0 +1,139 @@
+﻿;====================================================
+;ゴトウ専用スキル『진・천경지폭단』
+;====================================================
+;会心の覇気と併用前提の超絶クソ命中、実に3である
+;会心の覇気または気合い中だと貫通する(気合い中だけだと当たらないと思うけど)
+;威力は上昇していないが、クリティカル率が爆上がりしている
+;こっそり射程も伸びている(縮地)(ｼｷｿｸｾﾞｸｳ)
+;====================================================
+
+;スキル名
+@SKILL_NAME_2711,ARG
+RESULTS = 진・천경지폭단
+
+;　명중
+@SKILL_HITRATE_2711, ARG
+;クソオブクソ命中、これ以下の命中補正はあるまい
+RETURN 3
+
+;　威力
+@SKILL_POWER_2711, ARG
+RETURN 680
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2711,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2711,ARG
+RETURN 1
+
+;超高クリティカル
+@SKILL_CRITICAL_RATE_2711, ARG
+RETURN 50
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2711, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2711,ARG
+RETURN 30
+
+;　相性
+@SKILL_TYPE_2711,ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2711
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2711, ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2711, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2711,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2711,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2711, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2711
+RETURN GET_SUCCESSION_NUM("검격")
+;검격
+
+;속도보정
+@SKILL_SPEED_2711, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2711
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2711, ARG = -1
+RETURN 15
+
+@継承不能_2711
+RETURN 2
+
+;====================================================
+;スキルの貫通強度
+;1 - 耐性(1~99%)を100%にする。2022年10月時点では存在しない
+;2 - 1に加えて、無効に対応する。eratenの貫通はデフォルトではこれ
+;3 - 2に加えて、吸収に対応する。本家のデフォルトはこれだけど最近は反射もいれてんのが多い。
+;4 - 3に加えて、反射に対応する。最近の本家の流行り。わかりやすい。
+;====================================================
+@SKILL_PENETRATION_RANK_2711, ARG = -1, ARG:1 = -1
+SIF ARG < 0
+	RETURN 0
+;剣撃素質を持っていて컨센트레이트 상태일 시、貫通になる。
+SIF !相性素質チェック_F(ARG, GET_SUCCESSION_NUM("검격"))
+	RETURN 0
+SIF !(CFLAG:ARG:気合フラグ > 0 || CFLAG:ARG:회심의패기플래그 > 0)
+	RETURN 0
+RETURN 4
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2711, ARG, ARG:1, ARG:2
+LOCAL = POS(ARG:1)
+CALL ATTACK_SINGLE,ARG,LOCAL,2711
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2711, ARG
+PRINTL 적 １체에 검격 상성의 특대 데미지。크리티컬률이 높지만、명중률이＊지극히＊낮다。
+PRINTL 검격 소질에 더해 、회심의패기 혹은 기합 상태일 때 모든 내성과 내성강화 효과를 관통하는 효과를 얻는다。
+PRINTL 초인 고토우가 개안한 비검
+
+;継承に必要な部位
+@継承部位_2711,ARG
+RESULTS = 무기
+RETURN 1
+;무기
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2711,ARG
+RETURN 1
+;とくにない
+

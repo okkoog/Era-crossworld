@@ -1,0 +1,165 @@
+﻿;--------------------------------------------------------
+;人修羅プレゼント
+;--------------------------------------------------------
+;人修羅の暫定的な取得イベント
+;====================
+;条件
+;====================
+@GET_EVENT_NAME_38
+#FUNCTIONS
+RESULTS_F '= "수수께끼의 소년에게서 온 선물"
+RETURNF RESULTS_F
+
+@PLAYABLE_EVENT_38
+#DIM LCOUNT
+IF イベントフラグ:38:0 == 0
+;	SIF !(FLAG:DEBUG)
+;		RETURN 0
+	IF FLAG:DEBUG
+		;デバッグ
+		RESULTS = 금발 소년의 프레젠트
+		RETURN 1
+	;ELSEIF FLAG:조직공헌도 >= 10000 && DAY == 1 && TIME < 1
+	ELSEIF FLAG:조직공헌도 >= 10000 && DAY == 1 && !FLAG:첫탐색종료
+		;何もいらない選択後、マッカとお金を初手で即納金につぎ込んだ場合のみ特に可能な隠しルート
+		;二週目？知らんね
+		RESULTS = 금발 소년의 프레젠트
+		RETURN 1
+	ELSEIF FLAG:조직공헌도 >= 100000 && (DAY <= 10 || DAY > 50 || FLAG:5 == 9)
+		;一定の名声があり、１０日以内か５０日より後またはクリア済みである
+		RESULTS = 금발 소년의 프레젠트
+		RETURN 1
+	ENDIF
+	RETURN 0
+ELSEIF イベントフラグ:38:0 == 1 && DAY <= 50
+	;条件１、５０日以内かつアマラ深界(とカグツチ塔?)クリア
+	SIF DAY > 50 ;|| ダンジョンフラグ:68:1 == 1 || ダンジョンフラグ:34:8 > 0
+		RETURN 0
+
+	;条件２、マサカドゥス以外のマガタマ制覇
+	FOR LOCAL,0,24,1
+		SIF ITEM:(8200+LOCAL) < 1
+			RETURN 0
+	NEXT
+
+	;条件３、人修羅がPTにいて陥落済み
+	FOR LCOUNT, 0, CHARANUM
+		IF NO:LCOUNT == [[キャラ:인수라F]] || NO:LCOUNT == [[キャラ:인수라M]]
+			IF TALENT:LCOUNT:3 == 1 || TALENT:LCOUNT:4 == 1 || TALENT:LCOUNT:5 == 1 || TALENT:LCOUNT:6 == 1 || TALENT:LCOUNT:7 == 1 || TALENT:LCOUNT:8 == 1
+				BREAK
+			ELSE
+				RETURN 0
+			ENDIF
+		ENDIF
+	NEXT
+	IF LCOUNT == CHARANUM
+		RETURN 0
+	ENDIF
+
+	RETURN 0
+
+	;突破した場合、真３出現？
+	;RESULTS = 大いなる闇
+	RETURN 1
+ENDIF
+
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_38
+#LOCALSIZE 1
+#LOCALSSIZE 1
+
+IF イベントフラグ:38:0 == 0
+	;閣下のキャラがイメージと違っても気にしないでください
+
+	PRINTFORML 
+	PRINTFORMW %CALLNAME:MASTER%의 면전에, 갑자기 한 명의 금발소년이 찾아왔다.
+	PRINTFORML 
+	IF TALENT:MASTER:남자
+		PRINTFORMW 「안녕, %CALLNAME:MASTER% 군이구나?」
+	ELSE
+		PRINTFORMW 「안녕, %CALLNAME:MASTER% 양이야?」
+		;ドーモ、ルイ＝サイファーデス。天使滅ぶべし。
+	ENDIF
+	PRINTFORMW 「처음 뵙겠어요, 나는 이탈리아의 루이 가라는 명가의 장남이야」
+	PRINTFORMW 「너의 소문은 듣고 있어, 어떤 마계를 공략해줬으면」
+	PRINTFORMW 「“아마라 심계”라고 불리는, 투쟁에 몰두하는 수라가 사는 마계야」
+	;どちらも加入不能(=所持している)
+	IF !CAN_ADD_NEW_COMPANION([[キャラ:인수라F]]) && !CAN_ADD_NEW_COMPANION([[キャラ:인수라M]])
+		PRINTFORMW 「그렇다 해도 이제 와서 새삼 할 이야기도 없을 테고, 보수의 선불도 필요 없겠지」
+		PRINTFORML 
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		PRINTFORML 
+		PRINTFORMW 금발 소년은 “아마라 심계” 터미널 링크를 두고 돌아갔다.
+	ELSE
+		PRINTFORMW 「보수는, 선불로 정말 진귀한 마인을 1명를 제공할게」
+		PRINTFORMW 「이 아이는, “곡옥”이라는 플러그인에서 능력을 이끌어낼 수 있는 특수 악마다」
+		PRINTFORMW 「그에게 이미 하나의 곡옥을 전달했으나, 곡옥에는 그밖에도 여러가지 종류가 있는 듯해」
+		PRINTFORML 「하지만, 부디 다른 사람에게는 전달하지 말아줘, 
+		PRINTFORMW 　적성이 없는 인간이나 악마에게 곡옥을 준 경우, 분명히 폭주해버리는 걸」
+		PRINTFORML 「곡옥에는 다양한 종류가 있지만, 그 것에 대해서는
+		PRINTFORMW 　그런 폭주하는 악마나 강한 악마가 소지하고 있는 경우가 많아」
+		PRINTFORMW 「이야기는 끝이다」
+		PRINTFORMW 「그래도 조교사라면, 그대로 팔아치워 버리는 것일까?」
+		PRINTFORML 
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		PRINTFORML 
+		PRINTFORMW 금발 소년은 한 명의 마인과, “아마라 심계” 터미널 링크를 두고 돌아갔다.
+		;どちらも入手できる場合は選べる
+		IF CAN_ADD_NEW_COMPANION([[キャラ:인수라F]]) && CAN_ADD_NEW_COMPANION([[キャラ:인수라M]])
+			PRINTFORML 그런데, 이 마인은……
+			PRINTFORML [0] 남자아이
+			PRINTFORML [1] 여자아이
+			CALL INPUTINT(0,1)
+		ELSE
+			IF CAN_ADD_NEW_COMPANION([[キャラ:인수라M]])
+				RESULT = 0
+			ELSE
+				RESULT = 1
+			ENDIF
+		ENDIF
+		IF RESULT == 0
+			CALL ADD_NEW_COMPANION, [[キャラ:인수라M]], 500, 1
+			ITEM:플러그인／곡옥마로가레 = 1
+		ELSE
+			CALL ADD_NEW_COMPANION, [[キャラ:인수라F]], 500, 1
+			ITEM:플러그인／곡옥안고 = 1
+		ENDIF
+		SIF RESULT
+			CALL SET_TALENT_PARTY_JOINABLE, (RESULT:1), "参加可能"
+		PRINTFORMW ＞마인　인수라　를 손에 넣었다
+		PRINTFORML [인수라]는 기본적으로 악마 이지만, 곡옥 이라는 플러그인을 장비하는 것으로
+		PRINTFORMW 스킬을 배우거나, 능력치에 큰 변화를 얻을 수 있습니다.
+		PRINTFORML 
+	ENDIF
+	イベントフラグ:38:0 = 1
+	闘技場フラグ:90:0 = 1
+	RETURN 1
+ELSEIF DAY <= 50
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORMW ＞무서운 악마의 기색이 점점 느껴집니다
+	PRINTFORML 
+	PRINTFORMW ＞여기에 머물러 있습니까?
+	PRINTFORML 
+	CALL INPUT_YN
+	LOCAL = RESULT
+	IF LOCAL == 0
+	ELSEIF LOCAL == 1
+		RETURN 0
+	ENDIF
+	PRINTFORML 
+	PRINTFORML 
+	PRINTFORMW ………
+	PRINTFORMW ……
+	PRINTFORMW …
+	PRINTFORML 
+	PRINTFORMW %CALLNAME:MASTER%은(는), 문득 정신을 차려보니 어딘가
+	RETURN 1
+ELSEIF DAY > 50
+ENDIF

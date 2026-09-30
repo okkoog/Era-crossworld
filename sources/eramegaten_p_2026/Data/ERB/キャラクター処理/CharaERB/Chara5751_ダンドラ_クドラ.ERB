@@ -1,0 +1,60 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5751_クドラ_だんどら.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2022/11/23		P(bazzile)				新規作成
+;	002		2024/06/08		P(bazzile)				仕様変更にあわせて改定
+;
+;	Comment
+;	固有スキルを起動することで顔グラが変化する。
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:쿠도라_단도라]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("クドラ_だんどら_FACE_0")
+			RETURNF ""
+		SIF !SPRITECREATED("クドラ_だんどら_FACE_EX_0")
+			RETURNF ""
+		RESULTS_F = ドラゴンインストール変身
+		;アイコン設定時の表示に使うアイコン
+		RESULTS_F:1 = クドラ_だんどら_FACE_0
+	CASEELSE
+		RETURNF ""
+ENDSELECT
+
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:쿠도라_단도라]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "ドラゴンインストール変身"
+		IF TFLAG:전투중 && HAVE_PU_SKILL(L_CHARA, "Ｄ・いんすとーる") && PU_SKILLGAGE_D_GET(L_CHARA, "Ｄ・いんすとーる")
+			RESULTS_F = クドラ_だんどら_FACE_EX_0
+		ELSE
+			RESULTS_F = クドラ_だんどら_FACE_0
+		ENDIF
+	CASEELSE
+ENDSELECT

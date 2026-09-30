@@ -1,0 +1,116 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:画像フィルタ.ERB
+;	Facility	:フィルターとして使用する画像を宣言・取得する関数群
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/06/30		一ノ瀬				    新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;ウィンドウなどにかぶせるための、非選択時は透明で、選択時は選択フィルタに変わるフィルタ画像
+;基本的にボタンとして使用することを想定している。
+@透明選択フィルタ , width = -1 , height = -1
+#FUNCTIONS
+#DIM DYNAMIC width
+#DIM DYNAMIC height
+RETURNF @"<img src='%透明フィルタ()%' srcb='%選択フィルタ()%' width='{width}' height='{height}'>"
+
+;領域ボタン用の透明なフィルタ
+;IDは100万飛んで1
+@透明フィルタ , width = -1 , height = -1
+#FUNCTIONS
+#LOCALSIZE 1
+#DIM DYNAMIC width
+#DIM DYNAMIC height
+#DIM DYNAMIC L_GID = FILTER_GID +1
+IF LOCAL == 0
+	GCREATE L_GID , 100 , 100
+	GCLEAR L_GID , 0x00FFFFFF
+	SPRITECREATE "CLEAR_FILTER" , L_GID 
+	LOCAL ++
+ENDIF
+SIF width == -1 && height == -1
+	RETURNF "CLEAR_FILTER"
+RETURNF @"<img src='CLEAR_FILTER' width='{width}' height='{height}'>"
+
+
+;選択領域用の半透明なフィルタ
+;IDは100万飛んで2
+@選択フィルタ , width = -1 , height = -1
+#FUNCTIONS
+#LOCALSIZE 1
+#DIM DYNAMIC width
+#DIM DYNAMIC height
+#DIM DYNAMIC L_GID = FILTER_GID +2
+IF LOCAL == 0
+	GCREATE L_GID , 100 , 100
+	GCLEAR L_GID , 0x50909090
+	SPRITECREATE "SELECT_FILTER" , L_GID 
+	LOCAL ++
+ENDIF
+SIF width == -1 && height == -1
+	RETURNF "SELECT_FILTER"
+RETURNF @"<img src='SELECT_FILTER' width='{width}' height='{height}'>"
+
+;グレーアウト領域用の半透明なフィルタ
+;IDは100万飛んで3
+@不可フィルタ , width = -1 , height = -1
+#FUNCTIONS
+#LOCALSIZE 1
+#DIM DYNAMIC width
+#DIM DYNAMIC height
+#DIM DYNAMIC L_GID = FILTER_GID +3
+IF LOCAL == 0
+	GCREATE L_GID , 100 , 100
+	GCLEAR L_GID , 0x95000000
+	SPRITECREATE "GLAYOUT_FILTER" , L_GID 
+	LOCAL ++
+ENDIF
+SIF width == -1 && height == -1
+	RETURNF "GLAYOUT_FILTER"
+RETURNF @"<img src='GLAYOUT_FILTER' width='{width}' height='{height}'>"
+
+;アニメーションスプライト版
+@点滅選択フィルタ , width = 100 , height = 100
+#FUNCTIONS
+#LOCALSIZE 1
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC width
+#DIM DYNAMIC height
+#DIM DYNAMIC L_GID = FILTER_GID +10
+IF LOCAL == 0
+	SPRITEANIMECREATE "BLINK_FILTER" , 100 , 100
+	FOR LCOUNT , 0 , 20
+		GCREATE L_GID+LCOUNT , 100 , 100
+		GCLEAR L_GID+LCOUNT , 透明度変更(100-(ABS(LCOUNT-11)*5) , 0x909090)
+		GSETBRUSH L_GID+LCOUNT , 0xFFFFFFFF
+		GSETFONT L_GID+LCOUNT , "ＭＳ 明朝" , 10 
+		GDRAWTEXT L_GID+LCOUNT , TOSTR(LCOUNT) + "：" + TOSTR(100-(ABS(LCOUNT-11)*5)) + "％" , 20 , 20
+		SPRITEANIMEADDFRAME "BLINK_FILTER" , L_GID+LCOUNT , 0 , 0 , 100 , 100 , 0 , 0 , 50
+		SIF RESULT == 0
+			THROW hogehoge
+	NEXT
+	LOCAL++
+	SETANIMETIMER 1
+ENDIF
+RETURNF @"<img src='%透明フィルタ()%' srcb='BLINK_FILTER' width='{width}' height='{height}'>"
+;RETURNF @"<img src='BLINK_FILTER' width='{width}' height='{height}'>"
+
+@メッセージフェードフィルタ , L_透明度 , L_色 , width , height
+#FUNCTIONS
+#DIM DYNAMIC L_透明度
+#DIM DYNAMIC L_色
+#DIM DYNAMIC width
+#DIM DYNAMIC height
+#DIM DYNAMIC L_GID = FILTER_GID +30
+
+GCREATE L_GID , 100 , 100
+GCLEAR L_GID , 透明度変更(L_透明度 , L_色)
+SPRITECREATE "MESSAGEFADE_FILTER" , L_GID 
+SIF width == -1 && height == -1
+	RETURNF "MESSAGEFADE_FILTER"
+RETURNF @"<img src='MESSAGEFADE_FILTER' width='{width}' height='{height}'>"

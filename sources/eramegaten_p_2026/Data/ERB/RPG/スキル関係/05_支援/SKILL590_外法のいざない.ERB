@@ -1,0 +1,167 @@
+﻿;220927		NEO		SH2より「외법의유혹」：아군의 カジャンダを逆転させる
+;					カジャは+8、ンダは-4までなので、反転するときは数値そのままではない（+5→-2、-3→+6）
+;					使いどころがめんどくさいが使いようによってはデクンダよりずっと強いので、消費は重い調整
+;					（SH2では消費は37、マハラギダインが45、ウォークライが38とかそのくらいなのでそこまで重くない）
+
+;スキル名
+@SKILL_NAME_590,ARG
+	RESULTS = 외법의유혹
+
+;　명중
+@SKILL_HITRATE_590, ARG
+	RETURN 100
+
+;　威力
+@SKILL_POWER_590, ARG
+	RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_590,ARG
+	RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_590,ARG
+	RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_590, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+
+;　コストの量
+@SKILL_COST_590,ARG
+	RETURN 50
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_590
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_590, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_590,ARG
+	RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_590,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_590, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_590
+RETURN GET_SUCCESSION_NUM("지원")	;지원
+
+;속도보정
+@SKILL_SPEED_590, ARG = -1
+	RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_590
+	RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_590, ARG = -1
+	RETURN 13
+
+;-----------------------------
+;- 追加効果処理
+;-----------------------------
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_590,ARG
+	RETURN 0
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_590,ARG
+	RETURN 0
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_590,ARG
+	RETURN 0
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_590,ARG
+	RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_590, ARG, ARG:1, ARG:2
+#LOCALSIZE 3
+#DIM CAST_START
+#DIM CAST_END
+#DIM CAST_TARGET
+#DIM TARGET_BUFF
+#DIM BUFF_TEMP
+;コストを支払う
+;CALL PAY_COST,ARG,501
+
+	IF CFLAG:(ARG):PT플래그 == 0
+		CAST_START = 7
+		CAST_END = 17
+	ELSE
+		CAST_START = 1
+		CAST_END = 7
+	ENDIF
+
+	FOR CAST_TARGET, CAST_START, CAST_END
+		SIF !IS_TARGET_ABLE(POS(CAST_TARGET))
+			CONTINUE
+		;通常のカジャンダ範囲まで見る
+		FOR TARGET_BUFF, GETNUM(CFLAG,"공격강화"), GETNUM(CFLAG,"마법효과강화")+1
+			;強弱をともに８段階にしたので難しいことを考える必要がなく
+			CFLAG:POS(CAST_TARGET):TARGET_BUFF *= -1
+			CALL PRINT_HIT_MESSAGE, POS(CAST_TARGET), "강화・약화가 반전했다！"
+			;一時変数に保存
+			;BUFF_TEMP = CFLAG:POS(CAST_TARGET):TARGET_BUFF
+			;;カジャンダは内部的には１段階４なので、いったん÷4しておく
+			;;（カジャンダの段階が奇数だと、「半分カジャ」が発生してしまうため）（まあ問題もないっちゃないのだが……）
+			;;ちなみに変数は基本小数点を持てないので、+5は切り捨てが発生して-2になる
+			;BUFF_TEMP /= 4
+			;カジャ状態の場合、半分にしてひっくり返す（+5→+2.5、少数切り捨てで+2→-2）
+			;IF BUFF_TEMP > 0
+			;	BUFF_TEMP /= 2
+			;	BUFF_TEMP *= -1
+			;;ンダ状態の場合、倍にしてひっくり返す（-2→+4）
+			;ELSE
+			;	BUFF_TEMP *= 2
+			;	BUFF_TEMP *= -1
+			;ENDIF
+			;;元に戻す
+			;BUFF_TEMP *= 4
+;
+			;;-16～+32の範疇に収まるようにセット
+			;CFLAG:POS(CAST_TARGET):TARGET_BUFF = LIMIT(BUFF_TEMP, -16, 32)
+		NEXT
+	NEXT
+	WAIT
+	;PRINTFORMW \@ CFLAG:ARG:PT플래그 == 0 ? 敵 # 味方 \@の強化・弱化が反転した！
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_590, ARG
+	PRINTL 아군 전체의 능력 상승 효과와 능력 저하 효과를 반전시킨다。
+
+@SKILL_EXPLAIN_TOOLTIP_590, ARG
+	RESULTS = 아군 전체의 능력 상승 효과와 능력 저하 효과를 반전시킨다。
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_590,ARG
+	RETURN 1
+	;とくにない
+

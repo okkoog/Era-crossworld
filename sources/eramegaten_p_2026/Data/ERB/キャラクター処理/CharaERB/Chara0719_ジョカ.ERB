@@ -1,0 +1,127 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara719_ジョカ.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/05/27		TadanoHitonari				新規作成
+;	002		2025/06/26		TadanoHitonari				陥落パターンを加筆修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:여와]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("ジョカ_FACE_1")
+			RETURNF ""
+		SIF !SPRITECREATED("ジョカ_FACE_2")
+			RETURNF ""
+		SIF !SPRITECREATED("ジョカ_FACE_3")
+			RETURNF ""	
+		SIF !SPRITECREATED("ジョカ_FACE_4")
+			RETURNF ""
+		SIF !SPRITECREATED("ジョカ_FACE_5")
+			RETURNF ""
+		SIF !SPRITECREATED("ジョカ_FACE_6")
+			RETURNF ""
+		SIF !SPRITECREATED("ジョカ_FACE_7")
+			RETURNF ""
+		SIF !SPRITECREATED("ジョカ_FACE_EX_0")
+			RETURNF ""
+		SIF !SPRITECREATED("ジョカ_FACE_EX_1")
+			RETURNF ""
+		SIF !SPRITECREATED("ジョカ_FACE_EX_2")
+			RETURNF ""
+		SIF !SPRITECREATED("ジョカ_FACE_EX_3")
+			RETURNF ""
+		SIF !SPRITECREATED("ジョカ_FACE_EX_4")
+			RETURNF ""
+		SIF !SPRITECREATED("ジョカ_FACE_EX_5")
+			RETURNF ""
+		SIF !SPRITECREATED("ジョカ_FACE_EX_6")
+			RETURNF ""
+		SIF !SPRITECREATED("ジョカ_FACE_EX_7")
+			RETURNF ""		
+		RESULTS_F = デフォルト
+		RESULTS_F:1 = ジョカ_FACE_4
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:여와]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "デフォルト"
+		SELECTCASE L_SITUATION
+			CASE "調教"
+				IF 陥落(L_CHARA)
+					SELECTCASE RESULTS
+						CASE "연모"
+							RESULTS_F = ジョカ_FACE_EX_5
+						CASE "음란"
+							RESULTS_F = ジョカ_FACE_EX_6
+						CASE "복종"
+							RESULTS_F = ジョカ_FACE_EX_7
+					ENDSELECT
+				ELSE
+					RESULTS_F = ジョカ_FACE_5
+				ENDIF
+			CASEELSE
+				SELECTCASE L_SITUATION:1
+					;戦闘不能になった時
+					CASE "DYING"
+						RESULTS_F = ジョカ_FACE_EX_0
+					;魅了、混乱、ハッピーにされた時
+					CASE "CHARM", "PANIC", "HAPPY"
+						RESULTS_F = ジョカ_FACE_EX_1
+					;石化にされた時
+					CASE "STONE"
+						RESULTS_F = ジョカ_FACE_EX_2
+					;眠りにされた時
+					CASE "SLEEP"
+						RESULTS_F = ジョカ_FACE_EX_3
+					;上記以外の状態異常の時
+					CASE "FLY", "PALYZE", "BRAND", "CURSE", "FLAME", "BOMB", "POISON", "CLOSE", "BIND", "SLIP", "FREEZE", "SHOCK", 
+						RESULTS_F = ジョカ_FACE_EX_4
+						;通常時
+						CASEELSE
+							IF 陥落(L_CHARA)
+								SELECTCASE RESULTS
+									CASE "연모"
+										RESULTS_F = ジョカ_FACE_7
+									CASE "음란"
+										RESULTS_F = ジョカ_FACE_4
+									CASE "복종"
+										RESULTS_F = ジョカ_FACE_1
+									CASE "신뢰"
+										RESULTS_F = ジョカ_FACE_2
+								ENDSELECT
+							ELSE
+								;未陥落
+								RESULTS_F = ジョカ_FACE_1
+							ENDIF
+					ENDSELECT
+			ENDSELECT
+	CASEELSE
+ENDSELECT

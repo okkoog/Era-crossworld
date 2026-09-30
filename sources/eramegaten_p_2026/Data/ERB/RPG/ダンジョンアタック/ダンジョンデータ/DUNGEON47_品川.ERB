@@ -1,0 +1,1469 @@
+﻿
+;=======================================================================
+;시나가와
+;0,ダンジョン攻略条件フラグ,数値によって出現する敵の強さに補正が与えられる
+;
+;1,ハニエルイベントフラグ	 -1,ハニエル撃破, 1,エキドナ依頼保留		2,エキドナ依頼受諾		3,カテドラル保留		4,カテドラル受諾
+;2,ハニエル友好
+;
+;10, 初回
+;11, 説教
+;ダンジョンフラグ:47:1 = 1.エキドナ討伐を断った
+;ダンジョンフラグ:47:2 = 1.エキドナ討伐承諾
+;ダンジョンフラグ:47:10-19 = 1.メシア教徒
+;ダンジョンフラグ:47:20 = 1.ロウヒーロー　2.エキドナ討伐進行中
+;ダンジョンフラグ:47:21 = 1.守護者アールマティ
+;
+;ダンジョンフラグ:20:0 = 1.ギンザの鍵
+
+;ダンジョンナンバー47
+;=======================================================================
+
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX								新規作成
+;	002		2019/04/22								メシアン系エネミー追加
+;	003		2020/08/20								アイテム関連とカテドラル関連を変更
+;	004		2023/06/19		P(bazzile)				壁に落ちてしまう落とし穴を修正
+;													推奨レベルを敵レベルに合わせて変動するように修正
+;													雑魚敵のメイガスだけダンジョンの攻略条件フラグによるレベル補正を受けていなかった不具合を修正
+;	005		2024/02/19		P(bazzile)				ハニエルから依頼を受けた際にカテドラルのフラグが立たないケースがあった不具合を修正
+;=======================================================================
+;攻略条件
+;=======================================================================
+@PREREQUISITE_DUNGEON_47
+SIF ダンジョンフラグ:[[ダンジョン:시나가와]]:0
+	RETURN 1
+RETURN 0
+
+
+
+
+;=======================================================================
+;ダンジョン名
+;=======================================================================
+@GET_DUNGEON_NAME_47
+#FUNCTIONS
+RESULTS_F = 品川
+
+
+;=======================================================================
+;フロア名表示
+;=======================================================================
+@FLOORNAME_47
+PRINT 시나가와
+SELECTCASE FLAG:현M
+	CASE 0
+		PRINTL   １Ｆ
+	CASE 1
+		PRINTL   ２Ｆ
+	CASE 2
+		PRINTL   ３Ｆ
+	CASE 3
+		PRINTL   ４Ｆ
+	CASEELSE
+		PRINTL
+ENDSELECT
+
+;=======================================================================
+;ターミナルマップ
+;RESULT:X = 1で階層Mのマップのターミナルを登録できる
+;登録されたターミナル同士は相互で移動が可能になり、スタート地点から選べるようになる
+;
+;RESULTS:100は入り口の名称。入り口のままでいいなら定義する必要はない
+;=======================================================================
+@TERMINAL_MAP_47, IS_START
+#DIM DYNAMIC IS_START
+RESULT:2 = 1
+RESULTS:2 '= "터미널"
+RETURN RESULT
+;=======================================================================
+;スタート地点入力
+;=======================================================================
+@START_DUNGEON_47,ARG
+FLAG:현M = 0
+FLAG:현X = 20
+FLAG:현Y = 17
+;CALL AUTOMAP
+
+;=======================================================================
+;スタート時イベント
+;=======================================================================
+@EVENT_DUNGEON_START_47
+IF ダンジョンフラグ:47:10++ == 0
+	CALL MESSAGE_WINDOW_D, "", @"＞시나가와를 방문한 %CALLNAME:MASTER%의 앞을 거대한 교회가 막아선다/＞이 대교회야말로 시나가와를/＞메시아교도의 성지로 자리매김하게 하고 있는 것이다/＞그리고 이 대교회에는 메시아교의 간부 중 하나 대천사 하니엘이 있다고 한다"
+ENDIF
+
+
+;=======================================================================
+;フロアデータ
+;=======================================================================
+@MAKE_FLOOR_47
+SELECTCASE FLAG:현M
+	CASE 0
+		FLAG:최대X = 39
+		FLAG:최대Y = 19 
+								;0000000000111111111122222222223333333333
+;								;0123456789012345678901234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"                                       "
+		CALL MAKE_FLOOR_LINE, 1," 111 111111111 1211 111 11111 111 1111 "
+		CALL MAKE_FLOOR_LINE, 2," 1   1     H 1 6  1 1     2 111 1 1  1 "
+		CALL MAKE_FLOOR_LINE, 3," 121 H 3 1 1 1    2 111H111     111  H "
+		CALL MAKE_FLOOR_LINE, 4,"   1 1 2 2 1 11111111       121   1  1 "
+		CALL MAKE_FLOOR_LINE, 5," 121 1111111        1 11211 1   121  1 "
+		CALL MAKE_FLOOR_LINE, 6," 1 H1         11111 2 11  1181H11 1  H "
+		CALL MAKE_FLOOR_LINE, 7," 1  11 11111  1   1 1                1 "
+		CALL MAKE_FLOOR_LINE, 8," 1   1 1   1  2   1    1   8   1     1 "
+		CALL MAKE_FLOOR_LINE, 9," 111 111 4 1  1 821   111 111 111 1  H "
+		CALL MAKE_FLOOR_LINE,10,"   1   1 2 1  1        2   2   2  2  1 "
+		CALL MAKE_FLOOR_LINE,11," 321 8 1111111111111111111111111111111 "
+		CALL MAKE_FLOOR_LINE,12,"     2   2                             "
+		CALL MAKE_FLOOR_LINE,13," 11111H1111111111111111111111181111111 "
+		CALL MAKE_FLOOR_LINE,14," 1   1   1       1  1   2   2   2 1  1 "
+		CALL MAKE_FLOOR_LINE,15," 1 8 1 3 1 1 1 1 1  1 8 1 8 1 1 1 1  1 "
+		CALL MAKE_FLOOR_LINE,16," 1 2 1 2 1 2 1 2 1  1 2   2   2   1  1 "
+		CALL MAKE_FLOOR_LINE,17," 11111111111181111  111111111111111  8 "
+		CALL MAKE_FLOOR_LINE,18,"                    4                  "
+
+
+
+	CASE 1
+		FLAG:최대X = 37
+		FLAG:최대Y = 17 
+								;0000000000111111111122222222223333333
+;								;0123456789012345678901234567890123456
+		CALL MAKE_FLOOR_LINE, 0,"                                     "
+		CALL MAKE_FLOOR_LINE, 1," B21121121 7211211 1121126   112112C "
+		CALL MAKE_FLOOR_LINE, 2,"         1       2 2         2       "
+		CALL MAKE_FLOOR_LINE, 3," 11111111111111111111111111111111111 "
+		CALL MAKE_FLOOR_LINE, 4," 1   1   1   1   1 1   1   1   1   1 "
+		CALL MAKE_FLOOR_LINE, 5," 1 3 1 b 1 P 1 P 1 1 c 1 P 1 3 1 b 1 "
+		CALL MAKE_FLOOR_LINE, 6," 1 2 1 2 1 2 1 2 1 1 2 1 2 1 2 1 2 1 "
+		CALL MAKE_FLOOR_LINE, 7," 11111111111111111111111111111111111 "
+		CALL MAKE_FLOOR_LINE, 8," 1   1   1   1   1 1   1   1   1   1 "
+		CALL MAKE_FLOOR_LINE, 9," 1 3 1 P 1 a 1 3 1 1 3 1 3 1 c 1 3 1 "
+		CALL MAKE_FLOOR_LINE,10," 1 2 1 2 1 2 1 2 1 1 2 1 2 1 2 1 2 1 "
+		CALL MAKE_FLOOR_LINE,11," 111111111111b2A2c111111111111111111 "
+		CALL MAKE_FLOOR_LINE,12," 1   1   1   1 2 1 1   1   1   1   1 "
+		CALL MAKE_FLOOR_LINE,13," 1 b 1 b 1 3 1 3 1 1 b 1 c 1 P 1 c 1 "
+		CALL MAKE_FLOOR_LINE,14," 1 2 1 2 1 2 1   1 1 2 1 2 1 2 1 2 1 "
+		CALL MAKE_FLOOR_LINE,15," 11111111111111111111111111111111111 "
+		CALL MAKE_FLOOR_LINE,16,"                                     "
+		
+	CASE 2
+	;品川3階
+		FLAG:최대X = 20 
+		FLAG:최대Y = 19 
+
+;								;01234567890123456789
+		CALL MAKE_FLOOR_LINE, 0,"                    "
+		CALL MAKE_FLOOR_LINE, 1," 1 6211111111127 1  "
+		CALL MAKE_FLOOR_LINE, 2," 1       2       1  "
+		CALL MAKE_FLOOR_LINE, 3," 11111111111111111  "
+		CALL MAKE_FLOOR_LINE, 4," 1          2 2  1  "
+		CALL MAKE_FLOOR_LINE, 5," 121G11     1 1  1  "
+		CALL MAKE_FLOOR_LINE, 6," 1          1 G  1  "
+		CALL MAKE_FLOOR_LINE, 7," 121111  1  1 1  1  "
+		CALL MAKE_FLOOR_LINE, 8," 1      141 1 1  1  "
+		CALL MAKE_FLOOR_LINE, 9," 1       1       1  "
+		CALL MAKE_FLOOR_LINE,10," 1       G       1  "
+		CALL MAKE_FLOOR_LINE,11," 1     TG111111121  "
+		CALL MAKE_FLOOR_LINE,12," 1 1 1           1  "
+		CALL MAKE_FLOOR_LINE,13," 1 1 1      111121  "
+		CALL MAKE_FLOOR_LINE,14," 1 G 1           1  "
+		CALL MAKE_FLOOR_LINE,15," 1 1 1      11G121  "
+		CALL MAKE_FLOOR_LINE,16," 1 2 2           1  "
+		CALL MAKE_FLOOR_LINE,17," 11111111111111111  "
+		CALL MAKE_FLOOR_LINE,18,"                    "
+
+
+	CASE 3
+	;品川4
+		FLAG:최대X = 15 
+		FLAG:최대Y = 17 
+
+;								;012345678901234
+		CALL MAKE_FLOOR_LINE, 0,"               "
+		CALL MAKE_FLOOR_LINE, 1," 127 1 1 1 a21 "
+		CALL MAKE_FLOOR_LINE, 2," 1   1 2 1   1 "
+		CALL MAKE_FLOOR_LINE, 3," 1111111111111 "
+		CALL MAKE_FLOOR_LINE, 4,"     1 2 1     "
+		CALL MAKE_FLOOR_LINE, 5," M1B 1 c 1 C1M "
+		CALL MAKE_FLOOR_LINE, 6," 2   1   1   2 "
+		CALL MAKE_FLOOR_LINE, 7," 11111 3 11111 "
+		CALL MAKE_FLOOR_LINE, 8," 1     2     1 "
+		CALL MAKE_FLOOR_LINE, 9," 12b21111A d21 "
+		CALL MAKE_FLOOR_LINE,10," 1     2     1 "
+		CALL MAKE_FLOOR_LINE,11," 11111 3 11111 "
+		CALL MAKE_FLOOR_LINE,12," 2   1   1   2 "
+		CALL MAKE_FLOOR_LINE,13," M1E 1 e 1 D1M "
+		CALL MAKE_FLOOR_LINE,14,"     1 2 1     "
+		CALL MAKE_FLOOR_LINE,15," 1111111111111 "
+		CALL MAKE_FLOOR_LINE,16,"               "
+	CASEELSE
+
+ENDSELECT
+;=======================================================================
+;タイル調整
+;=======================================================================
+@MAKE_FLOOR_LINE_COMMON_47, ARG, ARG:1, ARG:2
+#LOCALSIZE 30
+;LOCAL:3 宝箱 ダンジョンフラグ:75~99
+;LOCAL:4 이벤트
+;LOCAL:8 メッセンジャー
+;(0/0)でLOCALを消去
+SIF ARG:1 == 0 && ARG:2 == 0
+	VARSET LOCAL
+IF ARG == 3
+	IF GETBIT(ダンジョンフラグ:47:(FLAG:현M+75), LOCAL:3)
+		DA:(ARG:1):(ARG:2) = 1
+	ELSE
+		DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:3 * 10 + 3
+	ENDIF
+	LOCAL:3++
+ENDIF
+;イベント扉
+IF ARG == 12
+	DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:2 * 10 + 2
+	LOCAL:2++
+ENDIF
+IF ARG == 4
+	DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:4 * 10 + 4
+	LOCAL:4++
+	SELECTCASE DA:(ARG:1):(ARG:2) / 10
+		;ハニエル
+		CASE 200
+			SIF ダンジョンフラグ:(FLAG:현던전):1 == -1
+				DA:(ARG:1):(ARG:2) = 1
+	ENDSELECT
+ENDIF
+IF ARG == 6
+	DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:6 * 100 + 6
+	LOCAL:6++
+ENDIF
+IF ARG == 7
+	DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:7 * 100 + 7
+	LOCAL:7++
+ENDIF
+IF ARG == 8
+	DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:8 * 10 + 8
+	LOCAL:8++
+	SELECTCASE DA:(ARG:1):(ARG:2) / 10
+	ENDSELECT
+ENDIF
+IF ARG == 9
+	DA:(ARG:1):(ARG:2) = FLAG:현M *1000 + LOCAL:9 * 10 + 9
+	LOCAL:9++
+	SELECTCASE DA:(ARG:1):(ARG:2) / 10
+	ENDSELECT
+ENDIF
+
+;=======================================================================
+;指定したマスに進入可能か
+;=======================================================================
+@CAN_ENTER_47,ARG,ARG:1
+IF DA:ARG:(ARG:1) % 10 == 2 && DA:ARG:(ARG:1) != 2
+	CALL DOOR_47, ARG, ARG:1
+	RETURN RESULT
+ELSE
+	CALL CAN_ENTER,ARG,ARG:1
+	RETURN RESULT
+ENDIF
+
+;=======================================================================
+;タイル定義
+;=======================================================================
+@DEFINE_TILES_47, ARGS, ARG, ARG:1
+SELECTCASE ARGS
+	;イベント扉
+	CASE "G"
+		RETURN 12
+	;落とし穴
+	CASE "P"
+		RETURN 15
+	;ダメージ罠はMASTERがLAWの時は設置されない
+	;HP罠
+	CASE "H"
+		IF ABL:MASTER:속성LC == 1
+			RETURN 1
+		ELSE
+			RETURN 25
+		ENDIF
+	;MP罠
+	CASE "M"
+		IF ABL:MASTER:속성LC == 1
+			RETURN 1
+		ELSE
+			RETURN 35
+		ENDIF
+	CASE "a"
+		RETURN 16
+	CASE "A"
+		RETURN 17
+	CASE "b"
+		RETURN 26
+	CASE "B"
+		RETURN 27
+	CASE "c"
+		RETURN 36
+	CASE "C"
+		RETURN 37
+	CASE "d"
+		RETURN 46
+	CASE "D"
+		RETURN 47
+	CASE "e"
+		RETURN 56
+	CASE "E"
+		RETURN 57
+ENDSELECT
+
+;=======================================================================
+;[5]調べる　実行時のイベント
+;=======================================================================
+@EVENT_CHECK_DUNGEON_47
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 10
+	;========
+	;宝の処理
+	;========
+	CASE 3
+		CALL TREASURE_47
+		RETURN 1
+	;==========
+	;イベントの処理
+	;==========
+	CASE 4
+		CALL EVENT_47
+		RETURN 1
+	;=======
+	;階段
+	;=======
+	CASE 6, 7
+		CALL WORP_47
+		RETURN 1
+	;=======
+	;メッセンジャー
+	;=======
+	CASE 8
+		CALL MESSENGER_47
+		RETURN 1
+	CASEELSE
+		CALL MESSAGE_WINDOW_D, "", "아무것도 없는 것 같다"
+		RETURN 1
+ENDSELECT
+RETURN 1
+
+;=======================================================================
+;タイル進入時のイベント
+;=======================================================================
+@EVENT_ENTER_DUNGEON_47,ARG
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 10
+	;==========
+	;扉の処理
+	;==========
+	CASE 2
+		CALL DUNGEON_DOOR,ARG
+		RETURN RESULT
+	;========
+	;宝の処理
+	;========
+	CASE 3
+		CALL TREASURE_47
+		RETURN 1
+	;==========
+	;イベントの処理
+	;==========
+	CASE 4
+		CALL EVENT_47, ARG
+		RETURN 1
+	;==========
+	;トラップの処理
+	;==========
+	CASE 5
+		CALL TRAP_47
+		RETURN RESULT
+	;=======
+	;階段
+	;=======
+	CASE 6, 7
+		CALL WORP_47
+		RETURN 1
+	;=======
+	;メッセンジャー
+	;=======
+	CASE 8
+		CALL MESSENGER_47, ARG
+		RETURN 1
+	CASEELSE
+		RETURN 0
+ENDSELECT
+RETURN 1
+
+;=======================================================================
+;扉イベント
+;=======================================================================
+@DOOR_47, ARG, ARG:1
+SELECTCASE DA:ARG:(ARG:1) / 10
+	;原作でジーザスシリーズがあった扉
+	CASE 200, 201, 204, 205
+		CALL MESSAGE_WINDOW_D, "", "＞문은 봉인되어 있다"
+		RETURN 0
+	;ロウヒーローの部屋
+	CASE 202
+		SIF FLAG:현Y == 9
+			RETURN 1
+		CALL MESSAGE_WINDOW_D, "", "커다란 문 주위에는/천사가 성자의 탄생을 축복하고 있는 의장(意匠)이 모여있다/문을 열까？"
+		CALL INPUT_YN_D
+		SIF RESULT
+			RETURN 0
+	CASE 203
+		;ハニエルが生存していて友好的でない場合は扉が開かない(=ターミナルが使えない)
+		IF ダンジョンフラグ:(FLAG:현던전):1 >= 0 && !ダンジョンフラグ:(FLAG:현던전):2
+			CALL MESSAGE_WINDOW_D, "", "＞문은 닫혀있다"
+			RETURN 0
+		ENDIF
+ENDSELECT
+RETURN 1
+;=======================================================================
+;罠
+;=======================================================================
+@TILE_MARK_COMMON_47_5, ARG, ARG:1, ARG:2
+SELECTCASE ARG / 10
+	;落とし穴(P)
+	CASE 1
+		RESULTS = \@GET_FLOOR_ANALYZE_T(ARG:1, ARG:2) == 2 ?　#□\@
+	CASEELSE
+		RESULTS = \@GET_FLOOR_ANALYZE_T(ARG:1, ARG:2) == 2 ?罠#□\@
+ENDSELECT
+@TRAP_47
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	;落とし穴
+	CASE 1
+		CALL MESSAGE_WINDOW_D, "", "＞함정이다！"
+		TWAIT 1000, 1
+		;---- EDIT 004 ADD START -------------------------
+		;この落とし穴だけ真下に落とすと壁の落ちてしまうのでずらす
+		IF FLAG:현X == 15 && FLAG:현Y == 5
+			CALL DUNGEON_WORP, FLAG:현M-1, 15,  4
+		ELSE
+			CALL DUNGEON_WORP, FLAG:현M-1, FLAG:현X,  FLAG:현Y
+		ENDIF
+		;---- EDIT 004 ADD END ---------------------------
+	;HPダメージ(H)
+	CASE 2
+		CALL DUNGEON_TRAP_HP, 10 + RAND:11
+	;MPダメージ(M)
+	CASE 3
+		CALL DUNGEON_TRAP_MP, 10 + RAND:11
+ENDSELECT
+RETURN 1
+
+
+;=======================================================================
+;ワープゾーン
+;=======================================================================
+@TILE_MARK_COMMON_47_6, ARG, ARG:1, ARG:2
+SELECTCASE ARG % 100
+	CASE 6
+		RESULTS = 昇
+	CASEELSE
+		RESULTS = □
+ENDSELECT
+@TILE_MARK_COMMON_47_7, ARG, ARG:1, ARG:2
+SELECTCASE ARG % 100
+	CASE 7
+		RESULTS = 降
+	CASEELSE
+		RESULTS = □
+ENDSELECT
+@WORP_47
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) % 100
+	CASE 6
+		CALL DUNGEON_UPSTAIRS_ID, FLAG:현M+1, DA:(FLAG:현X):(FLAG:현Y)+1001
+	CASE 7
+		CALL DUNGEON_DOWNSTAIRS_ID, FLAG:현M-1, DA:(FLAG:현X):(FLAG:현Y)-1001
+	CASEELSE
+		IF DA:(FLAG:현X):(FLAG:현Y) % 10 == 6
+			CALL MESSAGE_WINDOW_D, "", "＞워프 존이다！"
+			CALL SHOW_PICTURE, "EMPTY"
+			CALL DUNGEON_WORP_ID, FLAG:현M, DA:(FLAG:현X):(FLAG:현Y)+1, 1
+		ENDIF
+ENDSELECT
+
+;=======================================================================
+;イベントまとめ
+;=======================================================================
+@TILE_MARK_COMMON_47_4, ARG, ARG:1, ARG:2
+SELECTCASE ARG / 10
+	CASE 1
+		RESULTS = 出
+	CASEELSE
+		RESULTS = ！
+ENDSELECT
+@EVENT_47, ARG
+LOCAL = 0
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 0
+		CALL MESSAGE_WINDOW_D, "", "＞늠름한 청년의 상이 있다/＞상에는 구세주의 상이라고 제목이 새겨져있다"
+	CASE 1
+		CALL DUNGEON_EXIT
+	CASE 200
+		LOCAL = 0
+		SELECTCASE ダンジョンフラグ:(FLAG:현던전):1
+			;初会話
+			CASE 0
+				ダンジョンフラグ:(FLAG:현던전):1 = 1
+				CALL MESSAGE_WINDOW_D, "", "＞방 안에는 법의를 걸친 청년이 있었다"
+				CALL MESSAGE_WINDOW_D, "청년", "안녕하세요/당신은……메시아교도가 아닌 것 같다/게다가、아마도 악마술사인 것 같군요？"
+				CALL MESSAGE_WINDOW_D, "청년", "앗차、그렇게 경계하지 말아주세요/저도 옛날에는 메시아교를 믿지 않았고/악마술사로서 이 도쿄에서 싸우다/악마의 손에 걸려 목숨을 잃었습니다"
+				CALL MESSAGE_WINDOW_D, "청년", "하지만、신께서는 저의 힘을 눈여겨 보시고/저를 부활시키셨습니다/즉 악마술사의 힘도 신을 위해 바쳐지는 것입니다"
+				IF SAVESTR:로우히어로NAME == ""
+					CALL MESSAGE_WINDOW_D, "청년", "……미안합니다/자기소개도 아직이었네요/저는……"
+					$YOSIO_LOOP
+					CALL MESSAGE_WINDOW_D, "", "＞메시아교의 구세주 로우히로의 이름을 입력해 주십시오"
+					INPUTS
+					SIF RESULTS == ""
+						RESULTS = 요시오
+					SAVESTR:로우히어로NAME = %RESULTS%
+					CALL MESSAGE_WINDOW_D, "", @"「%RESULTS%」로 좋습니까？"
+					CALL INPUT_YN_D
+					SIF RESULT
+						GOTO YOSIO_LOOP
+					$YOSIO_LOOP1
+					CALL MESSAGE_WINDOW_D, "", "＞메시아교의 구세주 로우히로의 애칭을 입력해 주십시오"
+					INPUTS
+					SIF RESULTS == ""
+						RESULTS = 요시오
+					SAVESTR:로우히어로CALLNAME = %RESULTS%
+					CALL MESSAGE_WINDOW_D, "", @"「%RESULTS%」로 좋습니까？"
+					CALL INPUT_YN_D
+					SIF RESULT
+						GOTO YOSIO_LOOP1
+					CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, @"%SAVESTR:로우히어로CALLNAME%입니다/잘 부탁드립니다"
+				ENDIF
+				;ハニエル討伐依頼を受けてるか極端なカオス
+				IF ダンジョンフラグ:[[ダンジョン:T.D.L.]]:1 == 2 || CFLAG:MASTER:질혼치 < 44
+					CALL MESSAGE_WINDOW_D, "목소리", @"%SAVESTR:로우히어로CALLNAME%여……기다리거라……"
+					CALL MESSAGE_WINDOW_D, "", "＞하늘에서 목소리가 울리며、천사가 훨훨 내려왔다…"
+					CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "하니엘님！"
+					CALL MESSAGE_WINDOW_D, "하니엘", "보고 있자니 알겠노라/이 자의 영혼은 이미/뿌리까지 카오스에 물들어있다/설득은 소용없을 것 같다…"
+					CALL MESSAGE_WINDOW_D, "하니엘", "사악한 악마술사여/이 천사 하니엘 몸소/지옥으로 보내주마！"
+					LOCAL = 1
+				ELSE
+					CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "부활한 저는/천년왕국에 대해/들었습니다/지상에 평화를 가져다 줄 천년왕국……"
+					CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "저는 결심했습니다/천년왕국 실현을 위해/구세주로서 싸울 것을"
+					CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "하지만、악마의 수가/너무 많아서/저 한 사람의 힘으로는/감당할 수 없습니다"
+					;すでにエキドナを倒している場合
+					IF ダンジョンフラグ:[[ダンジョン:T.D.L.]]:1 == -1
+						CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "당신이 에키드나를/쓰러뜨려 주셨다는 것은 이미 들었습니다/하니엘님！/에키드나를 퇴치해주신 분이 오셨습니다！"
+						CALL MESSAGE_WINDOW_D, "", @"＞%SAVESTR:로우히어로CALLNAME%가 외치자/천사가 훨훨 내려왔다…"
+						CALL MESSAGE_WINDOW_D, "하니엘", "잘했다/인간의 아이여/일단 이것을 받거라"
+						CALL MESSAGE_WINDOW_D, "", "＞￥300000을 손에 넣었다"
+						MONEY:0 += 300000
+						CALL MESSAGE_WINDOW_D, "하니엘", "앞으로도/신을 위해、천년왕국을 위해/힘을 다해주게/좋은가？"
+						CALL INPUT_SELECT_D, @"[0] 힘을 빌려준다/[1] 거절한다%\@CFLAG:MASTER:질혼치 < 170?/[2] 싸움을 건다#\@%"
+						IF RESULT == 0
+							LOCAL = 20
+						ELSEIF RESULT == 1
+							LOCAL = 21
+						ELSE
+							CALL MESSAGE_WINDOW_D, "하니엘", "어찌 신께 거스르겠다고 말하는가！/그렇다면 이 천사 하니엘 몸소/지옥으로 보내주마！"
+							LOCAL = 1
+						ENDIF
+					ELSE
+						CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "아무래도 당신에게도 역시 큰 힘이 있는 듯/그런 당신에게 부탁이 있습니다"
+						CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "도쿄 데스티니 랜드에 자리잡은 사신 에키드나가/카테드랄의 건설을 방해하고/파괴하려고 하고 있습니다/사신 에키드나를 쓰러뜨리고 와주시지 않겠습니까"
+						CALL INPUT_SELECT_D, @"[0] 맡는다/[1] 거절한다%\@CFLAG:MASTER:질혼치 < 170?/[2] 싸움을 건다#\@%%\@(ダンジョンフラグ:20:6 && !ダンジョンフラグ:20:0) ?/[3] 긴자대지하도의 문을 열어달라고 한다#\@%"
+						IF RESULT == 0
+							LOCAL = 10
+						ELSEIF RESULT == 1
+							LOCAL = 11
+						ELSEIF RESULT == 2
+							CALL MESSAGE_WINDOW_D, "목소리", @"%SAVESTR:로우히어로CALLNAME%여……/설득은 소용없을 것 같구나……"
+							CALL MESSAGE_WINDOW_D, "", "＞하늘에서 목소리가 울리며、천사가 훨훨 내려왔다…"
+							CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "하니엘님！"
+							CALL MESSAGE_WINDOW_D, "하니엘", "사악한 악마술사여/이 천사 하니엘 몸소/지옥으로 보내주마！"
+							LOCAL = 1
+						ELSE
+							LOCAL = 9
+						ENDIF
+					ENDIF
+				ENDIF
+			;エキドナ保留中
+			CASE 1
+				;すでにエキドナを倒している場合
+				IF ダンジョンフラグ:[[ダンジョン:T.D.L.]]:1 == -1
+					CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "에키드나를 쓰러뜨리셨군요/하니엘님！/역시、해주셨습니다！"
+					CALL MESSAGE_WINDOW_D, "", @"＞%SAVESTR:로우히어로CALLNAME%가 외치자/천사가 훨훨 내려왔다…"
+					CALL MESSAGE_WINDOW_D, "하니엘", "잘했다/인간의 아이여/일단 이것을 받거라"
+					CALL MESSAGE_WINDOW_D, "", "＞￥300000을 손에 넣었다"
+					MONEY:0 += 300000
+					CALL MESSAGE_WINDOW_D, "하니엘", "앞으로도/신을 위해、천년왕국을 위해/힘을 다해주게/좋은가？"
+					CALL INPUT_SELECT_D, @"[0] 힘을 빌려준다/[1] 거절한다%\@CFLAG:MASTER:질혼치 < 170?/[2] 싸움을 건다#\@%"
+					IF RESULT == 0
+						LOCAL = 20
+					ELSEIF RESULT == 1
+						LOCAL = 21
+					ELSE
+						CALL MESSAGE_WINDOW_D, "하니엘", "어찌 신께 거스르겠다고 말하는가！/그렇다면 이 천사 하니엘 몸소/지옥으로 보내주마！"
+						LOCAL = 1
+					ENDIF
+				ELSE
+					CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "와주셨습니까/그렇다는 건 사신 에키드나와 싸울 결심을 하신 거군요？"
+					CALL INPUT_SELECT_D, @"[0] 맡는다/[1] 거절한다%\@CFLAG:MASTER:질혼치 < 170?/[2] 싸움을 건다#\@%%\@(ダンジョンフラグ:20:6 && !ダンジョンフラグ:20:0) ?/[3] 긴자대지하도의 문을 열어달라고 한다#\@%"
+					IF RESULT == 0
+						LOCAL = 10
+					ELSEIF RESULT == 1
+						LOCAL = 11
+					ELSEIF RESULT == 2
+						CALL MESSAGE_WINDOW_D, "목소리", @"%SAVESTR:로우히어로CALLNAME%여……/설득은 소용없을 것 같구나……"
+						CALL MESSAGE_WINDOW_D, "", "＞하늘에서 목소리가 울리며、천사가 훨훨 내려왔다…"
+						CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "하니엘님！"
+						CALL MESSAGE_WINDOW_D, "하니엘", "사악한 악마술사여/이 천사 하니엘몸소/지옥으로 보내주마！"
+						LOCAL = 1
+					ELSE
+						LOCAL = 9
+					ENDIF
+				ENDIF
+			;エキドナ承諾
+			CASE 2
+				;すでにエキドナを倒している場合
+				IF ダンジョンフラグ:[[ダンジョン:T.D.L.]]:1 == -1
+					CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "에키드나를 쓰러뜨리셨군요/하니엘님！/그때의 악마술사분이 해주셨습니다！"
+					CALL MESSAGE_WINDOW_D, "", @"＞%SAVESTR:로우히어로CALLNAME%가 외치자/천사가 훨훨 내려왔다…"
+					CALL MESSAGE_WINDOW_D, "하니엘", "잘했다/인간의 아이여/일단 이것을 받거라"
+					CALL MESSAGE_WINDOW_D, "", "＞￥300000을 손에 넣었다"
+					MONEY:0 += 300000
+					CALL MESSAGE_WINDOW_D, "하니엘", "앞으로도/신을 위해、천년왕국을 위해/힘을 다해주게/좋은가？"
+					CALL INPUT_SELECT_D, @"[0] 힘을 빌려준다/[1] 거절한다%\@CFLAG:MASTER:질혼치 < 170?/[2] 싸움을 건다#\@%"
+					IF RESULT == 0
+						LOCAL = 20
+					ELSEIF RESULT == 1
+						LOCAL = 21
+					ELSE
+						CALL MESSAGE_WINDOW_D, "하니엘", "어찌 신께 거스르겠다고 말하는가！/그렇다면 이 천사 하니엘 몸소/지옥으로 보내주마！"
+						LOCAL = 1
+					ENDIF
+				ELSE
+					CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "빨리 에키드나를 쓰러뜨려주세요/카테드랄이 파괴되면/돌이킬 수 없는 일이 됩니다"
+				ENDIF
+			;カテドラル防衛保留
+			CASE 3
+				CALL MESSAGE_WINDOW_D, "하니엘", "인간의 아이여/신을 위해、천년왕국을 위해/힘을 다할지어다/좋은가？"
+				CALL INPUT_SELECT_D, @"[0] 힘을 빌려준다/[1] 거절한다%\@CFLAG:MASTER:질혼치 < 170?/[2] 싸움을 건다#\@%"
+				IF RESULT == 0
+					LOCAL = 20
+				ELSEIF RESULT == 1
+					LOCAL = 21
+				ELSE
+					CALL MESSAGE_WINDOW_D, "하니엘", "어찌 신께 거스르겠다고 말하는가！/그렇다면 이 천사 하니엘 몸소/지옥으로 보내주마！"
+					LOCAL = 1
+				ENDIF
+			;カテドラル侵攻受諾
+			CASE 4
+				CALL MESSAGE_WINDOW_D, "하니엘", "서둘러 카테드랄로 향할지어다/가이아교도의 마음대로 하게 해서는 안될 것이다"
+		ENDSELECT
+		;前ブロックでのLOCALの内容で分岐する
+		SELECTCASE LOCAL
+			;전투이벤트
+			CASE 1
+				FLAG:도주불가플래그 = 1
+				FLAG:회화불능플래그 = 1
+				FLAG:선제기습취소 = 1
+				CALL SET_HANIEL
+				CALL MESSAGE_WINDOW_D, "", "＞천사 하니엘이 １체 나타났다！"
+				CALL BATTLE_START
+				FLAG:도주불가플래그 = 0
+				FLAG:회화불능플래그 = 0
+				FLAG:선제기습취소 = 0
+				CALL MESSAGE_WINDOW_D, "", "＞천사 하니엘은 힘이 다했다"
+				CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "무슨 짓을……/하니엘님을 쓰러뜨려버리다니/당신은 힘을/잘못 사용하고 있습니다"
+				CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "이대로는/언젠가 파멸한다고요"
+				CALL MESSAGE_WINDOW_D, , @"%SAVESTR:로우히어로CALLNAME%는 떠났다"
+				;品川友好フラグ
+				ダンジョンフラグ:(FLAG:현던전):2 = 0
+				;品川進行フラグ
+				ダンジョンフラグ:(FLAG:현던전):1 = -1
+			CASE 9
+				CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "카테드랄에 가고 싶으십니까？/그렇다면 일단은 사신 에키드나를 쓰러뜨려주세요/그렇게 하시면 하니엘님께서/분명히 소원을 들어주실거예요"
+				CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "사신 에키드나를 쓰러뜨릴 역할/맡아주실거죠？"
+				CALL INPUT_YN_D
+				IF RESULT == 0
+					GOTO YES
+				ELSE
+					GOTO NO
+				ENDIF
+			CASE 10
+				$YES
+				CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "그렇습니까/맡아주시는 겁니까/감사합니다"
+				CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "당신은 아직/악마에게 혼을/팔아 넘기지 않으셨군요"
+				CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "그렇다면 이것을 가지고 가주세요/분명 도움이 될 것입니다"
+				;----- 003 ADD  ------- ロウじゃなくても承諾すればもらえるように
+				;CALL MESSAGE_WINDOW_D, "", @"＞￥100000を手に入れた%\@ABL:MASTER:속성LC == 1 ? /＞ソニックブレードを手に入れた/＞法の衣を手に入れた #\@%"
+				CALL MESSAGE_WINDOW_D, "", "＞￥100000을 손에 넣었다/＞소닉블레이드을 손에 넣었다/＞법의를 손에 넣었다%"
+				MONEY += 100000
+				;ロウのときはソニックブレードと法の衣もついてくる
+				;IF ABL:MASTER:속성LC == 1
+					CALL GET_ITEMS, "소닉블레이드", 1
+					CALL GET_ITEMS, "법의옷", 1
+				;ENDIF
+				ダンジョンフラグ:(FLAG:현던전):1 = 2
+				;---- EDIT 005 ADD START -------------------------
+				ダンジョンフラグ:(FLAG:현던전):2 = 1
+				;---- EDIT 005 ADD END ---------------------------
+				CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "그럼 부탁했다구요"
+			;에키드나拒否
+			CASE 11
+				$NO
+				CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "그렇습니까……/마음이 바뀌시면/다시 여기로 와주세요"
+				ダンジョンフラグ:(FLAG:현던전):1 = 1
+			;カテドラル防衛受諾
+			CASE 20
+				;----- 003 ADD  ------- ギンザを通らなくてもカテドラルに行けるように
+				;CALL MESSAGE_WINDOW_D, "ハニエル", "ではカテドラルへ行くが良い/ギンザの地下に行くがよい"
+				CALL MESSAGE_WINDOW_D, "하니엘", "그럼 카테드랄로 가도록 하거라/우리에게 협력한다면 긴자의 지하를 통할 필요가 없겠지"
+				CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "잘됐네요/하니엘님도 기뻐하십니다"
+				;ロウの場合はここでジーザスヘルムをもらえる
+				IF ABL:MASTER:속성LC == 1
+					CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "지금의 당신이라면 이것을 사용할 수 있겠지요/가지고 가주세요"
+					CALL MESSAGE_WINDOW_D, "", "＞지저스헬름을 손에 넣었다"
+					CALL GET_ITEMS, "지저스헬름", 1
+				ENDIF
+				CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "그럼 또 만나요"
+				;品川友好フラグ
+				ダンジョンフラグ:(FLAG:현던전):2 = 1
+				;品川進行フラグ
+				ダンジョンフラグ:(FLAG:현던전):1 = 4
+				ダンジョンフラグ:20:0 |= 1
+			;カテドラル防衛拒否
+			CASE 21
+				CALL MESSAGE_WINDOW_D, "하니엘", "신을 위해 싸우는 것을 거부하는 것인가？/그러한 일이 용서될거라 생각하는가！"
+				CALL MESSAGE_WINDOW_D, SAVESTR:로우히어로CALLNAME, "하니엘님、기다려주세요/이 사람은 아직 자신의 운명을 깨닫지 못했을 뿐일 겁니다/곧 신을 위해 싸우지 않으면 안된다는 것을 깨달을 겁니다"
+				CALL MESSAGE_WINDOW_D, "하니엘", "………/괜찮겠지/조금 생각할 시간을 주겠다/자신의 의무를 깨닫는다면 다시 오도록 하거라"
+				ダンジョンフラグ:(FLAG:현던전):1 = 3
+		ENDSELECT
+ENDSELECT
+;イベント後はMAP生成を行い、タイルを更新しておく
+CALL MAKE_FLOOR, FLAG:현던전
+@TILE_MARK_COMMON_47_8, ARG, ARG:1, ARG:2
+SETCOLOR 0x00ff00
+RESULTS = ｍ
+@MESSENGER_47, ARG
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 0
+		SIF ARG
+			RETURN 0
+		CALL MESSAGE_WINDOW_D, "메시아교도", "우리들의 손으로 악마를 멸해/이 나라를 구원하지 않으면 안돼/그걸 위해서는 어떤 희생도 마다하지 않으면 안되는 거야"
+	CASE 1
+		CALL MESSAGE_WINDOW_D, "템플나이트", "신입인가？/못보던 얼굴이군/조만간 방위거점을 카테드랄로 옮길 것 같다/그곳이 최후의 결전의 땅이 되겠지"
+	CASE 2
+		CALL MESSAGE_WINDOW_D, "메시아교도", "마침내 신께서 메시아를 보내주셨습니다/고통스러워하는 저희들을 보시고/구원의 손길을 내미신 겁니다"
+	CASE 3
+		IF ダンジョンフラグ:(FLAG:현던전):1 == -1
+			CALL MESSAGE_WINDOW_D, "메시아교도", "슬픈 소식이예요/대천사 하니엘님께서 쓰러져 버리셨습니다/하니엘님을 건드린 것은 사악한 악마술사라던가"
+			CALL MESSAGE_WINDOW_D, "메시아교도", "이 무슨 끔찍한 짓을 저지른 걸까요/악마술사에게 천벌이 있기를"
+		;エキドナ撃破済み
+		ELSEIF ダンジョンフラグ:[[ダンジョン:T.D.L.]]:1 == -1
+			CALL MESSAGE_WINDOW_D, "메시아교도", "도쿄의 동쪽에 자리잡고 있던/사신 에키드나가 퇴치되었습니다/해낸 것은 구세주라던가/신께서도 기뻐하시겠지요"
+		ELSE
+			CALL MESSAGE_WINDOW_D, "메시아교도", "도쿄의 동쪽에 에키드나라는 이름의 사신이/자리잡고 있어서 곤란합니다"
+		ENDIF
+	CASE 4
+		SIF ARG
+			RETURN 0
+		CALL MESSAGE_WINDOW_D, "메시아교도", "카테드랄만 완성되면/악마들도 가이아교도들도/무서워 할거야"
+	CASE 5
+		CALL MESSAGE_WINDOW_D, "메시아교도", "여기 시나가와에는 구세주님을 본뜬 상이 있습니다/구세주님은 자신의 목숨을 돌보지 않고 사람들을 구해/한 번 신의 곁으로 불러들여졌습니다"
+		CALL MESSAGE_WINDOW_D, "메시아교도", "그리고 구세주로서 되살아나/이 땅으로 다시 보내지신 겁니다"		
+	CASE 6
+		;説法　主人だけでなく仲魔のALIも変動する
+		CALL MESSAGE_WINDOW_D, "메시아교 신부", "몸도 마음도 신께 바치는 것입니다/신께서는 지금 믿는 자들의 힘을 바라고 계십니다"
+		IF ダンジョンフラグ:(FLAG:현던전):11++ == 0
+			CALL MESSAGE_WINDOW_D, "", "＞계속 설교를 듣습니까？"
+			CALL INPUT_YN_D
+			SIF RESULT
+				RETURN 0
+			CALL INCREASE_LC, 1
+			FOR LOCAL, 1, 7
+				;主人はとばす
+				SIF POS(LOCAL) == MASTER
+					CONTINUE
+				;存在しない場所はとばす
+				SIF POS(LOCAL) < 0
+					CONTINUE
+				;行動不能なキャラは除外
+				SIF !INPUTABLEF_CHARA(POS(LOCAL))
+					CONTINUE
+				CALL CHANGE_CHARA_LC, POS(LOCAL), 255, 4
+			NEXT
+			CALL MESSAGE_WINDOW_D, "메시아교 신부", "카테드랄을 완성시키기 위해/모두의 힘을 신께 드리는 것입니다/신을 위해 움직일 때는 지금입니다"
+			CALL MESSAGE_WINDOW_D, "", "＞계속 설교를 듣습니까？"
+			CALL INPUT_YN_D
+			SIF RESULT
+				RETURN 0
+			;説教は主人が1、仲魔が4だけLAWに寄る
+			CALL INCREASE_LC, 1
+			FOR LOCAL, 1, 7
+				;主人はとばす
+				SIF POS(LOCAL) == MASTER
+					CONTINUE
+				;存在しない場所はとばす
+				SIF POS(LOCAL) < 0
+					CONTINUE
+				;行動不能なキャラは除外
+				SIF !INPUTABLEF_CHARA(POS(LOCAL))
+					CONTINUE
+				CALL CHANGE_CHARA_LC, POS(LOCAL), 255, 4
+			NEXT
+			CALL MESSAGE_WINDOW_D, "메시아교 신부", "카테드랄이 완성되면/신께서 그곳에 임하셔서/천년왕국이 시작의 때를 맞이하지요"
+			CALL MESSAGE_WINDOW_D, "메시아교 신부", "그리고 신께 힘을 바친 자는/반드시 신께 보답받을 것입니다"
+			CALL MESSAGE_WINDOW_D, "", "＞계속 설교를 듣습니까？"
+			CALL INPUT_YN_D
+			SIF RESULT
+				RETURN 0
+			CALL INCREASE_LC, 1
+			FOR LOCAL, 1, 7
+				;主人はとばす
+				SIF POS(LOCAL) == MASTER
+					CONTINUE
+				;存在しない場所はとばす
+				SIF POS(LOCAL) < 0
+					CONTINUE
+				;行動不能なキャラは除外
+				SIF !INPUTABLEF_CHARA(POS(LOCAL))
+					CONTINUE
+				CALL CHANGE_CHARA_LC, POS(LOCAL), 255, 4
+			NEXT
+			CALL MESSAGE_WINDOW_D, "메시아교 신부", "자아、카테드랄을 향하여/함께 땀을 흘립시다！"
+		ENDIF
+	CASE 7
+		CALL MESSAGE_WINDOW_D, "여자", "제 남편이 카테드랄에 가서/돌아오지 않아요/남편의 안부가 걱정이어서/"
+	CASE 8
+		SIF ARG
+			RETURN 0
+		CALL MESSAGE_WINDOW_D, "템플나이트", "이케부쿠로의 만트라군이 드디어 움직인다는 소문이 돌고 있다/가이아교도에게 협력해 신께 원수진 일당이다/이 거리는 안전하지만 도시 밖으로 나가지 말도록"
+	CASE 9
+		CALL MESSAGE_WINDOW_D, "노인", "현재의 도쿄는 제대로 다닐 수가 없어/그 때문에 터미널을 쓰는 거지만…/여러 무리가 자기를 위해 독차지하고 있는 탓에/이동조차 마음대로 못하다니 딱하구나…"
+	CASEELSE
+ENDSELECT
+RETURN 1
+;=======================================================================
+;宝箱まとめ
+;=======================================================================
+@TREASURE_47
+#LOCALSIZE 1
+#LOCALSSIZE 3
+;個数,-1のとき、魔貨・0の時、\となる
+LOCAL = 1
+;IDは現M*100＋X個目の宝箱の法則でふられている
+SELECTCASE DA:(FLAG:현X):(FLAG:현Y) / 10
+	CASE 0
+		LOCALS = 디스포이즌
+		LOCAL = 2
+	CASE 1
+		LOCALS = 마석
+		LOCAL = 2
+	CASE 2
+		LOCALS = 보옥
+		LOCAL = 1
+	CASE 100
+		LOCALS = MAG
+		LOCAL = 30000
+	CASE 101
+		LOCALS = ＨＰ
+		LOCAL = 25
+	CASE 102
+		LOCALS = 은의마니샤
+		LOCAL = 1
+	CASE 103
+		LOCALS = 반혼향
+		LOCAL = 1
+	CASE 104
+		LOCALS = 魔貨
+		LOCAL = 200
+	CASE 105
+		LOCALS = ＨＰ
+		LOCAL = 25
+	CASE 106
+		LOCALS = ＨＰ
+		LOCAL = 25
+	CASE 107
+		LOCALS = 시아귀미
+		LOCAL = 1
+	CASE 108
+		LOCALS = 네이팜탄
+		LOCAL = 2
+	CASE 300
+		LOCALS = 시아귀미
+		LOCAL = 1
+	CASE 301
+		LOCALS = 지혜의향
+		LOCAL = 1
+	CASE 302
+		LOCALS = 마력의향
+		LOCAL = 1
+ENDSELECT
+IF LOCALS == "￥"
+	CALL GET_TREASURE_MONEY, 0, LOCAL, FLAG:현던전, FLAG:현M + 75, (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+ELSEIF LOCALS == "魔貨"
+	CALL GET_TREASURE_MONEY, 1, LOCAL, FLAG:현던전, FLAG:현M + 75, (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+ELSEIF LOCALS == "MAG" || LOCALS == "ＭＡＧ"
+	CALL GET_TREASURE_MAG, 0, LOCAL, FLAG:현던전, FLAG:현M + 75, (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+ELSEIF LOCALS == "ＨＰ" || LOCALS == "ＭＰ" || LOCALS == "POISON" || LOCALS == "PALYZE"
+	;LOCALS:1 종류 LOCAL ダメージ量or確率 LOCALS:2 相性
+	CALL GET_TREASURE_TRAP, LOCALS, LOCAL, GET_TYPE_NUM(LOCALS:1), FLAG:현던전, FLAG:현M + 75, (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+ELSE
+	IF GETNUM(ITEM, LOCALS) == -1
+		PRINTL ＞아이템명의 지정이 잘못되었습니다
+		PRINTW ＞아이템의 취득 처리를 중단합니다
+	ELSE
+		CALL GET_TREASURE, GETNUM(ITEM, LOCALS), LOCAL , FLAG:현던전, FLAG:현M + 75, (DA:(FLAG:현X):(FLAG:현Y) / 10) % 100
+	ENDIF
+ENDIF
+
+;=======================================================================
+;인카운트율
+;=======================================================================
+@ENCOUNT_RATE_47
+FLAG:인카운트율 = ダンジョンフラグ:(FLAG:현던전):2 ? 0 # MAX((FLAG:미조우걸음수 - 5) * 5, 0)
+;=======================================================================
+;必要レベル目安
+;推奨LV 雑魚最低LV 雑魚最高LV ボスLV 
+;=======================================================================
+@GET_DUNGEON_LV_47
+;---- EDIT 004 MOD START -------------------------
+;RETURN 46, 43, 49, 56
+RETURN 25 + ダンジョンフラグ:47:0 * 7, 25 + ダンジョンフラグ:47:0 * 7, 34 + ダンジョンフラグ:47:0 * 7, 56
+;---- EDIT 004 MOD END ---------------------------
+
+;=======================================================================
+;エンカウント処理
+;=======================================================================
+@CHECK_ENCOUNT_47
+;友好フラグが立っているときはエンカウントしない
+SIF ダンジョンフラグ:(FLAG:현던전):2
+	RETURN 0
+IF RAND:100 < FLAG:인카운트율
+	RETURN 1
+ELSE
+	FLAG:미조우걸음수 += 1
+	RETURN 0
+ENDIF
+;=======================================================================
+;敵の種族の種類数
+;=======================================================================
+@CLASS_NUM_47
+SELECTCASE ダンジョンフラグ:(FLAG:현던전):0
+	CASE 1
+		RETURN CLASS_NUM_COMMON("中級")
+	CASE 2
+		RETURN CLASS_NUM_COMMON("上級")
+	CASE 3,4
+		RETURN CLASS_NUM_COMMON("最上級")
+ENDSELECT
+;=======================================================================
+;敵の総数
+;ARGは出現する敵の種類です
+;=======================================================================
+@ENEMY_NUM_47, ARG
+SELECTCASE ダンジョンフラグ:(FLAG:현던전):0
+	CASE 1
+		RETURN CLASS_NUM_COMMON("中級")
+	CASE 2
+		RETURN CLASS_NUM_COMMON("上級")
+	CASE 3,4
+		RETURN CLASS_NUM_COMMON("最上級")
+ENDSELECT
+;=======================================================================
+;敵の種類
+;=======================================================================
+@ENEMY_47, ARG
+;---- EDIT 004 MOD START -------------------------
+SELECTCASE RAND:100
+	CASE IS < 10
+		RETURN [[キャラ:라비]], 25 + RAND:2 * 3 + ダンジョンフラグ:(FLAG:현던전):0 * 7
+	CASE IS < 20
+		RETURN [[キャラ:메이거스]], 38 + RAND:2 * 3+ ダンジョンフラグ:(FLAG:현던전):0 * 7
+	CASE IS < 30
+		RETURN [[キャラ:템플나이트_여성]], 27 + RAND:2 * 3 + ダンジョンフラグ:(FLAG:현던전):0 * 7
+	CASE IS < 40
+		RETURN [[キャラ:템플나이트]], 29 + RAND:2 * 3 + ダンジョンフラグ:(FLAG:현던전):0 * 7
+	;狂信者は2枠で出やすい
+	CASE IS < 55
+		RETURN [[キャラ:광신자]], 25 + RAND:2 * 3 + ダンジョンフラグ:(FLAG:현던전):0 * 7
+	CASE IS < 70
+		RETURN [[キャラ:광신자]], 25 + RAND:2 * 3 + ダンジョンフラグ:(FLAG:현던전):0 * 7
+	CASEELSE
+		IF !RAND:3
+			RETURN [[キャラ:하우르바타트]], 25 + RAND:2 * 3 + ダンジョンフラグ:(FLAG:현던전):0 * 7
+		ELSEIF RAND:2
+			RETURN [[キャラ:아무르타트]], 28 + RAND:2 * 3 + ダンジョンフラグ:(FLAG:현던전):0 * 7
+		ELSE
+			RETURN [[キャラ:프린시펄리티]], 26 + RAND:2 * 3 + ダンジョンフラグ:(FLAG:현던전):0 * 7
+		ENDIF
+ENDSELECT
+;---- EDIT 004 MOD END ---------------------------
+
+@SET_ENEMY_STATUS_47, ARG
+SELECTCASE NO:ARG
+	CASE [[キャラ:템플나이트]]
+		;デフォはザンマ・マカジャマ・連続撃ち・回し蹴り
+		SELECTCASE ダンジョンフラグ:(FLAG:현던전):0
+			CASE 2
+				ABL:ARG:스킬1 = [[스킬:잔다인]]
+				ABL:ARG:스킬4 = [[스킬:강절단]]
+			CASE 3
+				ABL:ARG:스킬1 = [[스킬:잔다인]]
+				ABL:ARG:스킬4 = [[스킬:트윈슬래시]]
+			CASE 4
+				ABL:ARG:스킬1 = [[스킬:잔다인]]
+				ABL:ARG:스킬4 = [[스킬:데스바운드]]
+		ENDSELECT
+	CASE [[キャラ:광신자]]
+		;デフォはメディア・ショートジャブ
+		SELECTCASE ダンジョンフラグ:(FLAG:현던전):0
+			CASE 2
+				ABL:ARG:스킬1 = [[스킬:메・디아라마]]
+				ABL:ARG:스킬3 = [[스킬:마구날뛰기]]
+			CASE 3
+				ABL:ARG:스킬1 = [[스킬:메・디아라마]]
+				ABL:ARG:스킬3 = [[스킬:자폭]]
+			CASE 4
+				ABL:ARG:스킬1 = [[스킬:메・디아라마]]
+				ABL:ARG:스킬3 = [[스킬:옥쇄파]]
+		ENDSELECT
+	CASE [[キャラ:라비]]
+		;デフォはジオンガ・ハンマ・連続撃ち・マリンカリン・テンタラフー
+		SELECTCASE ダンジョンフラグ:(FLAG:현던전):0
+			CASE 3
+				ABL:ARG:스킬1 = [[스킬:지오다인]]
+				ABL:ARG:스킬2 = [[스킬:하마온]]
+			CASE 4
+				ABL:ARG:스킬1 = [[스킬:파계의번개]]
+				ABL:ARG:스킬2 = [[스킬:하마온]]
+		ENDSELECT
+	CASE 3128
+		;テンプル♀　デフォはザンマ・シバブー・連続撃ち・回し蹴り
+		SELECTCASE ダンジョンフラグ:(FLAG:현던전):0
+			CASE 2
+				ABL:ARG:스킬1 = [[스킬:잔다인]]
+				ABL:ARG:스킬2 = [[스킬:디아라마]]
+			CASE 3
+				ABL:ARG:스킬1 = [[스킬:잔다인]]
+				ABL:ARG:스킬2 = [[스킬:마카라칸]]
+			CASE 4
+				ABL:ARG:스킬1 = [[스킬:잔다인]]
+				ABL:ARG:스킬2 = [[스킬:테트라칸]]
+		ENDSELECT
+ENDSELECT
+;=======================================================================
+;輪姦参加悪魔
+;=======================================================================
+@DUNGEON_RAPE_DEVIL_47
+;ランダムにどの悪魔が出るか決定
+;RETURN CSV番号 , 人数 , レベル
+SELECTCASE RAND:3
+	CASE 0
+		RETURN [[キャラ:광신자]] , 3 + RAND:10 , 25 + RAND:2 * 3 + ダンジョンフラグ:(FLAG:현던전):0 * 7
+	CASE 1
+		RETURN [[キャラ:템플나이트]] , 3 + RAND:10 , 29 + RAND:2 * 3 + ダンジョンフラグ:(FLAG:현던전):0 * 7
+	CASE 2
+		SELECTCASE  ダンジョンフラグ:(FLAG:현던전):0
+			CASE 1
+				RETURN [[キャラ:프린시펄리티]] , 3 + RAND:10 , 31 + ダンジョンフラグ:(FLAG:현던전):0 * 7
+			CASE 2,3
+				RETURN [[キャラ:파워]] , 3 + RAND:10 , 31 + ダンジョンフラグ:(FLAG:현던전):0 * 7
+			CASE 4
+				RETURN [[キャラ:도미니온]] , 3 + RAND:10 , 31 + ダンジョンフラグ:(FLAG:현던전):0 * 7
+		ENDSELECT
+ENDSELECT
+
+@SET_HANIEL
+CALL SET_ENEMY, 9, [[キャラ:하니엘]],56,0,1
+ABL:(CHARANUM-1):스킬1 = 2002
+ABL:(CHARANUM-1):스킬4 = 402
+CFLAG:(CHARANUM-1):행동횟수 = 2
+CFLAG:(CHARANUM-1):ＨＰ보정 += 2000
+CFLAG:(CHARANUM-1):ＭＰ보정 += 9000
+
+;=======================================================================
+;スタート時イベント
+;=======================================================================
+;@EVENT_DUNGEON_START_47
+;IF ダンジョンフラグ:47:10 == 0
+;	IF FINDCHARA_B([[キャラ:베스]],1) == 2 && (TALENT:(RESULT:1):연모 || TALENT:(RESULT:1):친애)
+;		PRINTFORMW 「ここ品川はメシア教の本拠地なの」
+;		PRINTFORMW 「この地を束ねるのが大天使ハニエル様よ」
+;		PRINTFORMW 「とても強く神の威光を体現する天使様だと私は聞いているわ」
+;	ENDIF
+;	PRINTFORML 
+;	IF ダンジョンフラグ:46:2 == 1
+;		PRINTFORM 新宿のパズスの言葉に導かれ
+;	ELSEIF ダンジョンフラグ:46:90 == 1
+;		PRINTFORM 新宿のヒロコの言葉に導かれ
+;	ENDIF
+;	PRINTFORMW あなたはメシア教の本拠地品川を訪れた
+;	IF ダンジョンフラグ:20:6 == 1
+;		PRINTFORMW そして、ギンザ大地下道で得たカテドラルへの鍵を握るという悪魔の情報
+;		PRINTFORMW ここ品川にカテドラルへの鍵の一つであるハニエルがいるらしい
+;	ENDIF
+;	PRINTFORMW 為さねばならない事は多いが、メシア教はファントム・ソサエティに対してけして好意的ではない
+;	PRINTFORMW 不用意にメシア教を刺激をする事は組織そのものに対しても不利益になる
+;	PRINTFORMW 準備は万全だろうか？
+;	PRINTFORMW 慎重を期すに越したことはないのだから…
+;	ダンジョンフラグ:47:10 = 1
+;
+;エキドナ討伐を受けている
+;ELSEIF ダンジョンフラグ:47:20 == 1
+;	ダンジョンフラグ:47:20 = 2
+;ENDIF
+;;=======================================================================
+;;イベントまとめ
+;;=======================================================================
+;@EVENTING_CALLING_47
+;SELECTCASE FLAG:현M
+;	CASE 0
+;		IF FLAG:현X == 7 && FLAG:현Y == 15 && ダンジョンフラグ:47:10 == 0
+;			PRINTFORML ＞メシア教徒がいる
+;			IF RAND:2 == 0
+;				PRINTFORML 「我々の手で悪魔を滅ぼしこの国を救わねばならない」
+;				PRINTFORMW 「その為にはどんな犠牲も惜しんではならないのだ」
+;			ELSE
+;				PRINTFORML 「やがて神による裁きの火が世界を焼くだろう」
+;				PRINTFORMW 「選ばれしメシア教徒だけが生き残れるのだ」
+;			ENDIF
+;			;ダンジョンフラグ:47:10 = 1
+;
+;		ELSEIF FLAG:현X == 9 && FLAG:현Y == 9 && ダンジョンフラグ:47:11 == 0
+;			PRINTFORML ＞凛々しい青年の像がある
+;		IF FINDCHARA_B([[キャラ:베스]],1) == 2 && (TALENT:(RESULT:1):연모 || TALENT:(RESULT:1):친애) && ダンジョンフラグ:47:11 == 0
+;				PRINTFORMW 「これは救世主の像よ」
+;				IF TALENT:MASTER:140 == 1 && TALENT:MASTER:147 == 0
+;					PRINTFORMW 「貴方に似ていないかしら？」
+;				ELSE
+;					PRINTFORMW 「貴方に似てはいないけれど、貴方こそが本物の救世主よ」
+;				ENDIF
+;				;ダンジョンフラグ:47:11 = 1
+;			ELSE
+;				PRINTFORMW 救世主の像と題名が彫られている
+;			ENDIF
+;			;ダンジョンフラグ:47:11 = 1
+;
+;		ELSEIF FLAG:현X == 13 && FLAG:현Y == 17 && ダンジョンフラグ:47:12 == 0
+;			PRINTFORML ＞テンプルナイトがいる
+;			IF FINDCHARA_B([[キャラ:베스]],0) == 2 || FINDCHARA_B([[キャラ:베스]],1) == 2 && ダンジョンフラグ:47:12 == 0
+;				PRINTFORML 「新入りか？　見かけない顔だな」
+;				PRINTFORMW 「近いうちに防衛拠点をカテドラルへ移すそうだ」
+;				PRINTFORMW 「そこが最後の決戦の地になるだろう」
+;				;ダンジョンフラグ:47:12 = 1
+;			ELSE
+;				PRINTFORML 「池袋のマントラ軍がいよいよ動くと言う噂が流れている」
+;				PRINTFORMW 「この街は安全だが町の外に出ないようにな」
+;			ENDIF
+;			;ダンジョンフラグ:47:12 = 1
+;
+;		ELSEIF FLAG:현X == 16 && FLAG:현Y == 9 && ダンジョンフラグ:47:13 == 0
+;			PRINTFORML ＞メシア教のシスターがいる
+;			IF FINDCHARA_B([[キャラ:베스]],0) == 2 || FINDCHARA_B([[キャラ:베스]],1) == 2 && ダンジョンフラグ:47:13 == 0
+;				PRINTFORML 「神に選ばれた者はセンターに行く権利を得ます」
+;				PRINTFORMW 「やがて来る審判の日を生き残れるのはセンター市民だけになるでしょう」
+;				;ダンジョンフラグ:47:13 = 1
+;			ELSE
+;				PRINTFORML 「神は我々を見ています」
+;				PRINTFORMW 「日々の行動の積み重ねが貴方の未来を決めるでしょう」
+;			ENDIF
+;			;ダンジョンフラグ:47:13 = 1
+;		ENDIF
+;
+;	CASE 1
+;		IF FLAG:현X == 8 && FLAG:현Y == 8 && ダンジョンフラグ:47:14 == 0
+;			PRINTFORML ＞メシア教の司祭がいる
+;			IF RAND:2 == 0
+;				PRINTFORML 「いいですか」
+;				PRINTFORMW 「殴っていいのはガイア教徒と悪魔だけです」
+;				PRINTFORMW 「息の根が絶えるまで彼等を許してはいけません」
+;			ELSE
+;				PRINTFORML 「かつて…魔王を倒し救世主となった男がいました」
+;				PRINTFORMW 「ですが、驕れる彼は神をも恐れず主たる神に刃を向けました」
+;				PRINTFORMW 「やがて天命を向かえた彼の魂は転生する事を許されず永遠に彷徨う魂となったそうです」
+;				PRINTFORMW 「神に逆らう事は永遠の罪を背負うと言う事、貴方も神に従いなさい」
+;			ENDIF
+;			CALL INCREASE_LC,1
+;			;ダンジョンフラグ:47:14 = 1
+;
+;		ELSEIF FLAG:현X == 11 && FLAG:현Y == 13 && ダンジョンフラグ:47:15 == 0
+;			PRINTFORML ＞若者がいる
+;			IF RAND:2 == 0
+;				PRINTFORML 「闘技場でチャンピオンになればセンターに行く資格を貰えるんだってさ」
+;				PRINTFORMW 「あんたも腕に覚えがあるなら挑戦してみたらどうだい？」
+;			ELSE
+;				PRINTFORML 「ＴＤＬは知ってるかい？」
+;				PRINTFORMW 「アトラクションが沢山あるアミューズメントパークだったんだけどな」
+;				PRINTFORMW 「最近では悪魔が住み着いてしまって近寄れなくなっちまってるよ」
+;			ENDIF
+;			;ダンジョンフラグ:47:15 = 1
+;
+;		ELSEIF FLAG:현X == 7 && FLAG:현Y == 15 && ダンジョンフラグ:47:16 == 0
+;			PRINTFORML ＞老人がいる
+;			IF RAND:2 == 0
+;				PRINTFORMW 「大戦前に東京に張り巡らされた地下道は様々な場所に繋がっておる」
+;			ELSE
+;				PRINTFORML 「如何なる道を歩むにせよ、争いの生む結果は争いでしかない」
+;				PRINTFORMW 「復讐が復讐を生む、その連鎖に身をおけば人はやがて修羅になってしまうのじゃよ」
+;			ENDIF
+;			;ダンジョンフラグ:47:16 = 1
+;
+;		ELSEIF FLAG:현X == 3 && FLAG:현Y == 15 && ダンジョンフラグ:47:17 == 0
+;			PRINTFORML ＞メシア教会
+;			PRINTFORMW 「迷える子羊よ、どうなさいましたか？」
+;			PRINTL
+;			IF MONEY:1 >= 500
+;				PRINTL [0] 寄付する（一口500魔貨）
+;				;PRINTL [1] 寄付する（一口1000魔貨）
+;			ENDIF
+;			PRINTL [100] 教会を出る
+;			$INPUT_LOOP1
+;			INPUT
+;			IF RESULT == 0
+;				PRINTFORML 「ありがとうございます」
+;				PRINTFORMW 「あなたにも神のご加護のあらんことを」
+;				MONEY:1 -= 500
+;				FOR LOCAL, 0, CHARANUM
+;					CALL HEALTH_CHARA, LOCAL
+;				NEXT
+;			;ELSEIF RESULT == 1
+;			;	PRINTFORMW あなたは特別なサービスを受けた
+;			ELSEIF RESULT == 100
+;				RETURN -1
+;			ELSE
+;				GOTO INPUT_LOOP1
+;			ENDIF
+;			;ダンジョンフラグ:47:17 = 1
+;
+;		ELSEIF FLAG:현X == 18 && FLAG:현Y == 17 && ダンジョンフラグ:47:18 == 0
+;			PRINTFORML ＞少女がいる
+;			PRINTFORMW 「ねぇねぇ知ってる？」
+;			IF FINDCHARA_B([[キャラ:리세]],0) == 2 || FINDCHARA_B([[キャラ:리세]],1) == 2 && ダンジョンフラグ:47:18 == 0
+;				PRINTFORML 「アイドルのりせちーが突然引退したらしいよ」
+;				PRINTFORMW 「でも、引退後本人を誰も見たことがないんだって」
+;				PRINTFORML 「事件に巻き込まれたんじゃないかって噂だよ」
+;				PRINTFORMW 「あれ…お姉ちゃん、何処かで見たような…」
+;				;ダンジョンフラグ:47:18 = 1
+;			ELSE
+;				IF RAND:2 == 0
+;					PRINTFORML 「アイドルのりせちーが突然引退したらしいよ」
+;					PRINTFORMW 「でも、引退後本人を誰も見たことがないんだって」
+;					PRINTFORMW 「事件に巻き込まれたんじゃないかって噂だよ」
+;					;ダンジョンフラグ:47:18 = 1
+;				ELSE
+;					PRINTFORML 「この近くにね」
+;					PRINTFORMW 「四天王の祠があるんだって」
+;					PRINTFORMW 「四天王って強いのかな？」
+;				ENDIF
+;			ENDIF
+;			;ダンジョンフラグ:47:18 = 1
+;
+;		ELSEIF FLAG:현X == 9 && FLAG:현Y == 6 && ダンジョンフラグ:47:19 == 0
+;			PRINTFORML ＞テンプルナイトがいる
+;			IF RAND:2 == 0
+;				PRINTFORML 「いよいよ、ガイア教との決戦が近い」
+;				PRINTFORMW 「ここ品川にもメシア教の総戦力が集結しつつあるよ」
+;			ELSE
+;				PRINTFORML 「悪魔が此方の世界に来るように」
+;				PRINTFORMW 「人間が魔界に行く方法と言うのがあるらしい」
+;			ENDIF
+;			;ダンジョンフラグ:47:19 = 1
+;
+;		ENDIF
+;	CASE 2
+;		IF FLAG:현X == 11 && FLAG:현Y == 9 && ダンジョンフラグ:47:21 == 0
+;			PRINTFORML ＞部屋には天使が話しかけてきた
+;			IF FINDCHARA_B([[キャラ:베스]],1) == 2 && (TALENT:(RESULT:1):연모 || TALENT:(RESULT:1):친애)
+;				PRINTFORMW 「人の子よ、何ゆえにこの地を訪れたのですか？」
+;				PRINTFORML 
+;				PRINTFORMW ベスが事情を説明した
+;				PRINTFORMW 「なるほど…それならば」
+;				PRINTFORMW 「私が貴方の邪魔をする理由はありません」
+;				CALL DUNGEON_WORP,2,15,11
+;			ELSEIF FINDCHARA_B([[キャラ:나오토]],1) == 2 && (TALENT:(RESULT:1):연모 || TALENT:(RESULT:1):친애)
+;				PRINTFORMW 「人の子よ、何ゆえにこの地を訪れたのですか？」
+;				PRINTFORML 
+;				PRINTFORMW あなたに代わり直斗が事情を説明した
+;				PRINTFORMW 「なるほど…あの御方の御心を受けて行動しておられるのですね」
+;				PRINTFORMW 「ガブリエル様に宜しくお伝えください」
+;				CALL DUNGEON_WORP,2,15,11
+;			ELSE
+;				PRINTFORMW 「ここは神聖なる地」
+;				PRINTFORMW 「早々に立ち去りなさい」
+;				PRINTL
+;				PRINTL [0] 네
+;				PRINTL [1] 아니오
+;				$INPUT_LOOP3
+;				INPUT
+;				IF RESULT == 0
+;					PRINTFORML 
+;					PRINTFORML 「解ればよいのです」
+;					PRINTFORMW ＞あなたは部屋を出た
+;					FLAG:현Y = 11
+;				ELSEIF RESULT == 1
+;					PRINTL 
+;					PRINTW 「従わぬと言うのならば身の程を教えてあげましょう」
+;					PRINTL 
+;					PRINTL 천사 アールマティが１体現れた！
+;					PRINTW 
+;					CUSTOMDRAWLINE =
+;					WAIT
+;					FLAG:도주불가플래그 = 1
+;					FLAG:회화불능플래그 = 1
+;					FLAG:선제기습취소 = 1
+;					CALL SET_ENEMY, 9, [[キャラ:알마티]],57,0,0
+;					CFLAG:(CHARANUM-1):ＨＰ보정 += 500
+;					ABL:(CHARANUM-1):스킬1 = 2002
+;					ABL:(CHARANUM-1):스킬5 = 10
+;					CALL SYNC_STATUS,(CHARANUM-1)
+;					CALL HEALTH_CHARA,(CHARANUM-1)
+;					CALL BATTLE_START
+;					FLAG:도주불가플래그 = 0
+;					FLAG:회화불능플래그 = 0
+;					FLAG:선제기습취소 = 0
+;					CUSTOMDRAWLINE =
+;					CALL DUNGEON_WORP,2,15,11
+;				ELSE
+;					GOTO INPUT_LOOP3
+;				ENDIF
+;			ENDIF
+;			ダンジョンフラグ:47:21 = 1
+;		ENDIF
+;	CASE 4
+;		IF FLAG:현X == 9 && FLAG:현Y == 8 && ダンジョンフラグ:47:20 == 0 && (ダンジョンフラグ:45:10 == 7 || ダンジョンフラグ:45:41 == 2)
+;			CUSTOMDRAWLINE =
+;			PRINTW 部屋の中には法衣をまとった大司教が待っていた
+;			PRINTW 「救世主よ、報われぬ少女の魂を救う為とは言え悪魔と手を組むとは愚かな…」
+;			PRINTW 「救うべきものを選ぶのは非情に見えるかもしれませんが」
+;			PRINTW 「悪魔と手を組んだあなたは救世主として間違っている」
+;			PRINTW 「神の裁きを受けなさい」
+;			GOTO HANIERU_01
+;
+;		ELSEIF FLAG:현X == 9 && FLAG:현Y == 8 && ダンジョンフラグ:47:20 == 0
+;			CUSTOMDRAWLINE =
+;			PRINTW 部屋の中には法衣をまとった青年が待っていた
+;			PRINTW 「あなたが救世主ですね」
+;			PRINTW 「僕の名はロウヒーロー、神の力によって命を救われたものです」
+;			PRINTW 「あなたに一つ、お願いがあります……」
+;			PRINTW 「ここ品川に近いＴＤＬに邪龍エキドナが住み着きました」
+;			PRINTW 「討伐してはいただけませんか？」
+;			IF FINDCHARA_B([[キャラ:베스]],1) == 2 && (TALENT:(RESULT:1):연모 || TALENT:(RESULT:1):친애) && ダンジョンフラグ:46:2 == 0
+;				;ベス、あいつは人の話を聞かない奴だったのでＤ/Ｌに足を踏み入れる
+;				PRINTFORML 『ロウヒーロー様…討伐はお引き受けします』
+;				PRINTFORML 『ですが、その前に私のお話を聞いてください』
+;				PRINTFORMW ＞ベスは新宿大聖堂での顛末を語った
+;				;茶番劇　善処するとは言ったがその期日までは指定していない
+;				;メシア教がその気になればICBMが落ちたあと、30年後でも可能だという事！！
+;				PRINTFORML 
+;				PRINTFORML 「なるほど…その様な事が」
+;				PRINTFORML 「解りました、すぐに調べさせて止めさせる様に善処しましょう」
+;				PRINTFORMW ロウヒーローはベスの言葉に強く頷いた
+;				PRINTFORML 『ありがとうございます』
+;				PRINTFORMW 『救世主様…パズスは間違っていましたが、私はメシア教の全てが道を過っているとは思えません』
+;				PRINTFORMW 『どうかお力を貸してはいただけませんか？』
+;			ENDIF
+;			PRINTL
+;			PRINTL [0] 네
+;			PRINTL [1] 아니오
+;			$INPUT_LOOP2
+;			INPUT
+;			IF RESULT == 0
+;				PRINTFORML 「やはりあなたは救世主の様だ」
+;				SIF FINDCHARA_B([[キャラ:베스]],1) == 2 && (TALENT:(RESULT:1):연모 || TALENT:(RESULT:1):친애)
+;					PRINTFORMW 『ありがとうございます、救世主様』
+;				PRINTFORML 「邪龍エキドナは強力な悪魔です」
+;				PRINTFORMW 「大天使ハニエルがあなたの力となりましょう」
+;				PRINTFORMW 「然るべき手段でお呼びください」
+;				FLAG:10309 = 1
+;				ダンジョンフラグ:47:2 = 1
+;				;銀座フラグ
+;				ダンジョンフラグ:20:0 = 1
+;				;他ルートが決まるまでは無効処理の方が良いような…
+;				;あいつは人の話を聞かない奴だったのでＤ/Ｌ決定
+;				;新宿二箇所でこの世界のLAW勢力が頭おかしいのは見せているつもり…描写が足りないか？
+;				FLAG:속성고정LD = 3
+;				FLAG:속성고정LC = 1
+;				FOR LOCAL, 0, CHARANUM
+;					CALL HEALTH_CHARA, LOCAL
+;				NEXT
+;			ELSEIF RESULT == 1
+;				PRINTL 「そうですか、残念です」
+;				PRINTW 「やはり…貴方は真の救世主ではないようだ」
+;				PRINTL 
+;				PRINTL 『偽りの救世主は裁かれねばなりません』
+;				PRINTW  天から声が響き沢山の羽を持つ天使が舞い降りて来た
+;				PRINTL 
+;				PRINTL 「後は任せました…僕はカテドラルに向かいます」
+;				PRINTW ＞ロウヒーローは天使に声をかけ部屋を後にしようとした
+;				PRINTL 
+;				PRINTL 追いかけようとするあなたの行く手を天使が阻む
+;				PRINTW 『神の裁きを受けなさい』
+;				
+;				$HANIERU_01
+;				PRINTL 
+;				PRINTL 大天使 ハニエルが１体現れた！
+;				PRINTW 
+;				CUSTOMDRAWLINE =
+;				WAIT
+;				FLAG:도주불가플래그 = 1
+;				FLAG:회화불능플래그 = 1
+;				FLAG:선제기습취소 = 1
+;				CALL SET_ENEMY, 9, [[キャラ:하니엘]],56,0,1
+;				ABL:(CHARANUM-1):스킬1 = 2002
+;				ABL:(CHARANUM-1):스킬4 = 402
+;				CFLAG:(CHARANUM-1):행동횟수 = 2
+;				CFLAG:(CHARANUM-1):ＨＰ보정 += 2000
+;				CFLAG:(CHARANUM-1):ＭＰ보정 += 9000
+;				CALL SYNC_STATUS,(CHARANUM-1)
+;				CALL HEALTH_CHARA,(CHARANUM-1)
+;				CALL BATTLE_START
+;				FLAG:도주불가플래그 = 0
+;				FLAG:회화불능플래그 = 0
+;				FLAG:선제기습취소 = 0
+;				PRINTL 『呪われよ、修羅の道を歩む人の子よ…』 
+;				PRINTW 大天使 ハニエルは倒れた…
+;				CUSTOMDRAWLINE =
+;				;D/Cに大きく傾く、エキドナの依頼を受けたらD/C決定にするか？
+;				;ただし、現状だとL/Nアマテラス、D/Lハニエル、D/C人修羅君に俺はなるエキドナルート以外選べない悲劇が生まれるので他のルートも用意したい
+;				CALL INCREASE_LD, -50
+;				CALL INCREASE_LC, -50
+;				ダンジョンフラグ:47:0 = 1
+;				ダンジョンフラグ:47:1 = 1
+;			ELSE
+;				GOTO INPUT_LOOP2
+;			ENDIF
+;			IF ダンジョンフラグ:47:2 == 1
+;				PRINTFORML 
+;				PRINTFORM メシア教団からエキドナ討伐の報酬の前払いとして
+;				;新宿でパズスを仲魔にした　新宿の報酬未払い分も含めて高めにする
+;				IF ダンジョンフラグ:46:2 == 1
+;					PRINTFORMW  \150000が振り込まれた
+;					MONEY += 150000
+;				ELSE
+;					PRINTFORMW  \25000が振り込まれた
+;					MONEY += 25000
+;				ENDIF
+;			ELSEIF ダンジョンフラグ:47:1 == 1
+;				PRINTFORMW 大天使ハニエルを倒した事でメシア教から指名手配を受けた
+;				PRINTFORMW これで品川には近づけなくなった
+;				PRINTFORML 
+;				PRINTFORMW ＞ハニエルを倒した事でガイア教から賞金\100000が振り込まれた
+;				MONEY += 100000
+;				FLAG:탈출 = 1
+;			ENDIF
+;			ダンジョンフラグ:47:20 = 1
+;		
+;		ELSEIF FLAG:현X == 9 && FLAG:현Y == 8 && ダンジョンフラグ:47:20 == 2
+;			PRINTFORML ＞メシア教の大司教がいる
+;			PRINTFORMW 「エキドナを討伐してくるのです、救世主よ」
+;			;ダンジョンフラグ:47:20 = 3
+;		ENDIF
+;
+;	CASEELSE
+;	ENDSELECT
+;	RETURN 1
+;RETURN 0

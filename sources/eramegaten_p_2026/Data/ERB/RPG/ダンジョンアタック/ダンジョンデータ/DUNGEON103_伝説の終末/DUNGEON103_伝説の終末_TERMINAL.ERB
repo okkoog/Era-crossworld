@@ -1,0 +1,160 @@
+﻿
+;=======================================================================
+;ターミナル（疑似）イベント
+;=======================================================================
+@EVENT_DUNGEON_TERMINAL_103
+CUSTOMDRAWLINE =
+PRINTL ＞신성한 힘이 느껴지는 거대한 크리스탈이 있다。
+PRINTL 
+PRINTL [1]세이브
+PRINTL [2]인스톨 소프트 변경
+PRINTL [3]탐색을 중단
+PRINTL [4]동료 교체
+DRAWLINE
+PRINTL [0]아무것도안한다
+
+CALL INPUTINT,0,1,2,3,4
+
+SELECTCASE RESULT
+	CASE 0
+		RETURN 1
+	CASE 1
+		CALL TITLE_SAVEGAME
+	CASE 2
+		CALL SETUP_SOFT
+	CASE 3 
+		CALL DUNGEON_EXIT_EVENT_103
+		RETURN 1
+	CASE 4 
+		CALL RECONSTRUCTION_DUNGEON_103
+ENDSELECT
+RESTART
+
+@DUNGEON_EXIT_EVENT_103
+PRINTL 탐색을 중단하고 귀환하겠습니까？ 
+CALL INPUT_YN,"Yes","No"
+IF RESULT == 0
+	FLAG:탈출 = 1
+	FLAG:회화불능플래그 = 0
+	FLAG:탈출스킬금지 = 0
+	SELECTCASE FLAG:현M
+		CASE 9
+			ダンジョンフラグ:(FLAG:현던전):5 = 1
+		CASE 10
+			ダンジョンフラグ:(FLAG:현던전):5 = 2
+		CASE 11
+			ダンジョンフラグ:(FLAG:현던전):5 = 3
+	ENDSELECT
+	CALL 全ゲスト削除
+	RETURN 1
+ELSEIF RESULT == 1
+	RETURN 0
+ENDIF
+
+
+;==================================
+;仲間再構成
+;==================================
+@RECONSTRUCTION_DUNGEON_103
+IF GET_SUMMONER_MLV() > 1
+	PRINTL [1]소환/편입（게스트와 COMP 내의 악마만 불러낼 수 있습니다）
+ELSE
+	PRINTL [1]소환/편입（게스트만 불러낼 수 있습니다）
+ENDIF
+PRINTL [2]귀환/제외
+PRINTL [1000]아무것도안한다
+$INPUT_LOOP
+INPUT
+IF RESULT != 1 && RESULT != 2 && RESULT != 1000
+	GOTO INPUT_LOOP 
+ELSEIF RESULT == 1
+	CALL RECONSTRUCT_PARTNER_DUNGEON_103
+ELSEIF RESULT == 2
+	CALL REMOVE_PARTNER
+ELSEIF RESULT == 1000
+	RETURN 1
+ENDIF
+;==================================
+;仲間入れ替え
+;==================================
+@RECONSTRUCT_PARTNER_DUNGEON_103
+PRINTL
+CALL SHOW_NOW_FORMATION_P,0,2, 3
+PRINTC [1000] - 돌아간다
+PRINTL
+DRAWLINE
+PRINTL 어디에 배치할까？
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT < 7 && 0 < RESULT
+	LOCAL = RESULT
+	$INPUT_LOOP2
+	CALL CHOOSE_PARTNER_DUNGEON_103
+	LOCAL:1 = RESULT
+	IF RESULT == 1000
+		RESTART
+	ELSE
+		CALL INSERT_PARTNER,LOCAL,LOCAL:1
+		IF RESULT > -1
+			SELECTCASE FLAG:SHOP커맨드
+				CASE [[ショップ:탐색]],[[ショップ:콜로세움참가]],[[ショップ:이벤트]],[[ショップ:의뢰청부]]
+					IF CFLAG:(LOCAL:1):PT플래그 > 0 && ABL:(LOCAL:1):종족 != 0
+						CALL CONTROL_MAG, MASTER, -MAXBASE:(LOCAL:1):￥
+					ENDIF
+			ENDSELECT
+		ENDIF
+	ENDIF
+
+	RESTART
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+CALL REFRESH_FORMATION
+
+;==================================
+;仲間を表示
+;==================================
+@CHOOSE_PARTNER_DUNGEON_103
+#DIMS DYNAMIC L_MESSAGE
+L_MESSAGE = 누구를 불러낼까？
+{
+CALL INPUT_CHARA_LIST
+	, "FUNC_PROPSET_LIST_BATTLE"
+	, L_MESSAGE
+	, "CASTING_CHOOSE_PARTNER_DUNGEON_103" 
+	, "SHOW_ADD_UP_FUNCTION"
+	, "SHOW_ADD_DOWN_FUNCTION"
+	, "ADD_SELECT_FUNCTION"
+	, "그만둔다"
+	, "FUNC_CUSTOM_TITLE"
+	, "FUNC_CUSTOM_COLOR"
+	, -1
+}
+IF RESULT == 1000
+	RETURN 1000
+ELSE
+	IF ABL:RESULT:종족 != 0 && GET_CHARA_STOCK_MAG(MASTER) < MAXBASE:RESULT:￥
+		PRINTW MAG가 부족합니다
+		CLEARLINE 2
+		RESTART
+	ENDIF
+	RETURN RESULT
+ENDIF
+
+@CASTING_CHOOSE_PARTNER_DUNGEON_103(ARG:0)
+SIF CFLAG:(ARG:0):PT플래그 != 1
+	RETURN 0
+;COMPに入らない控えの味方で、KEキャラでもデスポリュカでもないキャラは除外
+SIF !IS_JOINABLE_BATTLE(ARG:0) && !(GROUPMATCH(NO:(ARG:0), [[キャラ:데스포르카_DR]],  [[キャラ:아벤트_KE]], [[キャラ:빌로우_KE]], [[キャラ:브루_KE]], [[キャラ:레스터_KE]], [[キャラ:사미다레_KE]], [[キャラ:스티아라_KE]], [[キャラ:귀네_KE]], [[キャラ:게오루이스_KE]]))
+	RETURN 0
+;サマナーが居なければCOMPに入るキャラも除外
+SIF GET_SUMMONER_MLV() <= 0 && GET_ROLE_PROP("CAN_PUT_IN_COMP", ARG:0)
+	RETURN 0
+;フィルタリングされてるキャラは除外
+SIF CFLAG:(ARG:0):필터링플래그
+	RETURN 0
+RETURN 1

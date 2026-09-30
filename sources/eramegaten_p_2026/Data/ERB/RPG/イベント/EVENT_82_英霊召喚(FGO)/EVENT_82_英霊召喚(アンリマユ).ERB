@@ -1,0 +1,388 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_82_英霊召喚(アンリマユ).ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author		Reason
+;	000		20XX/XX/XX		----		テンプレ
+;	001		2022/05/23		takaya		作成
+;	002		2022/08/25		SUIHOU		FGO_SUMMON_SACRIFICE_3を追加
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;有志が当テンプレを埋める+鯖CSVを用意すればイベントを作れるように準備
+;3についてはイベントファイル内にある召喚実験リスト.ERH内の
+;「鯖リスト」と「EXリスト」を参照願います
+;(また、後の人のために使用した番号とキャラ名を追記してくだされば助かります)
+;
+;EVENT_82_英霊召喚(FGO).ERBについては基本追記せず、テンプレ内で処理願います
+;
+;Fate用とその他作品用で関数を分けておりますので、適宣使い分けてください
+;
+;イベントフラグ:82:5の30番台をアンリマユ関係で使用しています
+
+;====================
+;召喚イベント条件
+;====================
+@FGO_SUMMON_CHECK_3
+#DIM 生贄
+
+;■召喚可否条件をここに記載することで読み込んでくれます■
+;※召喚はイベントフラグ:82:1が必ず4以上から。
+
+IF イベントフラグ:82:1 > 3
+	IF GETCHARA([[キャラ:앙리마유]]) > 0
+		RESULTS = 이 세상 모든 악……?(앙리마유)
+		RESULTS:1 = 필요 촉매：마왕 앙리・만유(함락됨)　앙리마유 가입 완료
+		RETURN 0
+	ELSEIF GETCHARA([[キャラ:앙리・만유]]) > 0
+		IF !陥落(GETCHARA([[キャラ:앙리・만유]]))
+			RESULTS = 이 세상 모든 악……?(앙리마유)
+			RESULTS:1 = 필요 촉매：마왕 앙리・만유(함락됨)　미함락
+			RETURN 0
+		ELSE
+			RESULTS = 이 세상 모든 악……?(앙리마유)
+			RESULTS:1 = 필요 촉매：마왕 앙리・만유(함락됨)　앙리마유 미가입
+			RETURN 1
+		ENDIF
+	ELSE
+		RESULTS = 이 세상 모든 악……?(앙리마유)
+		RESULTS:1 = 필요 촉매：마왕 앙리・만유(함락됨)　미소지
+		RETURN 0
+	ENDIF
+ELSE
+	;そもこれが出ることはないはずだけど、確認用に一応記載
+	RESULTS = 최초 소환 이벤트 미소화
+	RETURN 0
+ENDIF
+
+;※RETURN 1　で鯖リストのBITがオンになるようにしているため、必ずRETURNを記入してください
+
+
+;---- EDIT 002 ADD START ---------------------------
+;====================
+;生贄可否の条件確認
+;====================
+@FGO_SUMMON_SACRIFICE_3(ARG:0)
+	;魔王アンリ・マンユ以外は不可
+	SIF NO:ARG != [[キャラ:앙리・만유]]
+		RETURN 0
+	;未陥落は対象外
+	SIF !陥落(ARG)
+		RETURN 0
+	SIF !FGO_SUMMON_SACRIFIE_COMMON(ARG)
+		RETURN 0
+	RETURN 1
+;---- EDIT 002 ADD END -----------------------------
+
+
+;====================
+;アンリマンユ召喚
+;====================
+@FGO_SUMMON_3
+#DIM 対象
+#DIM L_COUNT
+;■イベント本文を記載■
+
+	対象 = [[キャラ:앙리・만유]]
+	;バトルイベント識別のためにイベントフラグを特定値に設定
+	イベントフラグ:82:5 = 30
+	PRINTFORML  「자, 소환술은 다음 단계로!
+	PRINTFORMW  　――우리들의 연구 성과를 보여주도록 하지」
+	PRINTFORML  
+	PRINT  「자, 마음 단단히 먹게나
+	PRINTFORM \@ TALENT:MASTER:서머너 > 0 ? 서머너 # 전사 \@ %CALLNAME:MASTER%.
+	PRINTFORMW  　이것이 새로운 소환 기술, 그 발전이다――――읏읏읏」
+;---- EDIT 002 ADD START ---------------------------
+	;イベント本文を呼び出す前に削除処理をするように変更
+	;キャラリストの下から順にキャラ検索
+	;該当するキャラを発見した場合、それを削除する
+	;FOR L_COUNT,CHARANUM,-1,-1
+	;	IF L_COUNT == GETCHARA([[キャラ:앙리・만유]])
+	;		SIF !陥落(L_COUNT)
+	;			CONTINUE
+	;		CALL キャラ削除, L_COUNT
+	;		BREAK
+	;	ENDIF
+	;NEXT
+;---- EDIT 002 ADD END -----------------------------
+	CALL 疑似的画面クリア
+	TWAIT 500,1
+	PRINTFORML  
+	PRINTFORML  
+	;■以下、召喚イベント本文をどうぞ■
+	PRINTFORML  ＞ 당신이 상상했던 것보다도 마법진이 희미한 빛을 내뿜더니, 넘쳐나던 마력이 일찌감치 잦아들기 시작한다
+	PRINTFORML  　빛이 잦아들자 그곳에는 흑발에 갈색 피부를 지닌 반라의 소년이 있었다
+	PRINTFORML 　 이마에 붉은 넝마를 두르고 상반신은 알몸, 하반신에도 붉은 넝마를 걸치고 있다
+	PRINTFORMW  　알몸의 상반신에는 복잡한 문양이 문신처럼 새겨져 있으며, 그 문양은 끊임없이 꿈틀꿈틀 움직이고 있었다
+	PRINTFORML 
+	PRINTFORML  「――뭐야~? 또 그 호랑이 성배? 아니면 몰래카메라? 엣, 아니야?　
+	PRINTFORMW  　……아차~. 아아, 난 모~르겠다」
+	PRINTFORML 
+	PRINTFORML  ＞ 소년은 두리번거리며 주위를 둘러보더니, 잠시 후 상황을 파악하고는 이마에 한 손을 얹고 하늘을 우러러보았다
+	PRINTFORML  　무슨 문제라도 있는 것일까?　
+	PRINTFORML  　확실히 묘한 문양이 새겨진 상반신은 알몸이고, 하반신도 허리천과 발목에 감긴 붕대 같은 것뿐이라는,
+	PRINTFORMW  　그런 거시기한 차림새가 신경 쓰이긴 한다
+	PRINTFORML 
+	PRINTFORML  「아니아니아니! 문제고 자시고, 문제투성이거든?!
+	PRINTFORMW  　당신, 혹시가 아니라 앙리・만유를 제물로 바쳐버린 각이지 이거?」
+	PRINTFORML 
+	PRINTFORML  ＞ 제물이 되어 이미 소멸한 앙리・만유의 잔재라도 감지한 것일까
+	PRINTFORML  　그렇게 말하는 소년에게 긍정의 대답을 돌려주자, 더욱 당혹스럽다는 표정을 짓는다
+	PRINTFORML  　혹시 이 소년은 앙리・만유와는 상관없는 존재인 것일까?
+	PRINTFORMW  　소환 실패라는 글자가 머릿속에 떠오른 당신이었지만, 눈앞의 소년은 부정의 말을 입에 담았다
+	PRINTFORML 
+	PRINTFORML  「성공이지만 실패, 실패지만 성공이랄까~?
+	PRINTFORML  　난 앙리마유. 이 세상 모든 악……의 가짜!
+	PRINTFORMW  　최약 영령의 이름을 독차지하는 서번트란 말씀이지!」
+	PRINTFORML 
+	PRINTFORML  ＞ 씩, 하고 웃음을 띠며 자학적인 자기소개를 하는 앙리마유
+	PRINTFORML  　하지만 제물로 바친 것은 틀림없는 진짜배기 앙리・만유였을 터다
+	PRINTFORMW  　그런데 어째서 가짜를 자칭하는 그가 나타난 것일까
+	PRINTFORML 
+	PRINTFORML  「으~음, 이건 내 대충 때려 맞힌 추측이긴 한데 말이지.
+	PRINTFORML  　좌에 등록되어 있고 앙리・만유에 인연이 있는 녀석이 나밖에 없었거나,
+	PRINTFORMW  　이 소환 시스템에 진짜 악신을 서번트로서 제어할 성능이 없었던 거 아냐?」
+	PRINTFORML 
+	PRINTFORML  ＞ 과연
+	PRINTFORML  　확실히 조로아스터교 악신의 정점인 마왕 앙리・만유는 고레벨의 악마다
+	PRINTFORMW  　그의 말대로 이 소환 의식으로는 제어 불가능했을 가능성이 높다
+	PRINTFORML  
+	PRINTFORML  「그렇다 쳐도 진짜 악신 앙리・만유의 낭비라니.
+	PRINTFORMW  　아인츠베른이 울고 가겠네, 이거!」
+	PRINTFORML 
+	PRINTFORML  ＞ 아인츠베른…… 분명 서유럽에 있는 연금술 명문 가문이었던가?
+	PRINTFORMW  　그 가문이 앙리마유와 어떤 관계가 있는지는 모르겠지만……
+	PRINTFORML  
+	PRINTFORML  「뭐! 그런 고로 초대 어벤저이자 최약의 영령, 나, 강림!
+	PRINTFORMW  　메타 발언 같다고? ……신경 쓰지 마, 신경 쓰지 마!」
+	PRINTFORML 
+	PRINTFORML  ＞ 어벤저
+	PRINTFORML  　이전에 들었던 설명에 있던 7개의 기본 클래스는 아니지만, 그것도 변칙적인 것일까?
+	PRINTFORMW  　뭐 자칭 최약이라 말하곤 있어도, 영령의 좌에 등록된 존재라면 강력한 전력이 되어줄 것이다
+	PRINTFORML 
+	PRINTFORML  「그보다 왜 또 이 모습인 걸까나~. 나도 모르겠네…….
+	PRINTFORMW  　엣? 설마 그 이상한 성배 탓에 영기까지 맛이 가버린 느낌?」
+	PRINTFORML 
+	PRINTFORML  ＞ 뒤통수에 깍지를 끼고 어딘가 의아한 표정을 짓고 있는 앙리마유에게
+	PRINTFORMW  　전력으로서 기대하고 있다고 전하자, 그는 순간 눈을 크게 뜨더니 힘차게 고개를 가로저었다
+	PRINTFORML  
+	PRINTFORML  「……전력?
+	PRINTFORML  　아니아니! 나 진짜로 약하다니까. 이거 레알.
+	PRINTFORMW  　시험해 볼래? 가능하면 난 추천하고 싶지 않지만」
+	PRINTFORML  
+	$INPUT_LOOP1
+	PRINTFORML [0] 싸워서 시험해 본다
+	PRINTFORML [1] 그만둔다
+	INPUT
+	SELECTCASE RESULT
+		CASE 0
+			PRINTFORML  
+			PRINTFORML  「진짜냐~.
+			PRINTFORMW  　……뭐, 싸워보면 내 실력, 납득해 주려나~?」
+			PRINTFORML 
+			PRINTFORMW  ＞ 앙리마유가 그렇게 말하자, 양손에 기괴한 칼날 형태를 띤 단검이 한 자루씩 나타난다.
+			PRINTFORML 
+			PRINTFORMW  「그럼~, 갑니다요~」
+			PRINTFORML 
+			PRINTFORML 
+			PRINTFORMW  ＞ 영령 앙리마유가 마지못해 전투 태세에 들어갔다!
+			PRINTFORML 
+
+			FLAG:도주불가플래그 = 1
+			FLAG:회화불능플래그 = 1
+			FLAG:선제기습취소 = 1
+	
+			CALL SET_ENEMY,9,[[キャラ:앙리마유]],50,1,3
+			CFLAG:(CHARANUM-1):행동횟수 = 1
+			CFLAG:(CHARANUM-1):ＨＰ보정 = (MAXBASE:(CHARANUM-1):ＨＰ / 2)
+			CFLAG:(CHARANUM-1):ＭＰ보정 += 99999
+	
+			BASE:(CHARANUM-1):힘 += 3
+			BASE:(CHARANUM-1):내구 += 2
+			BASE:(CHARANUM-1):속도 += 5
+	
+			ABL:(CHARANUM-1):스킬3 = 0
+			ABL:(CHARANUM-1):스킬9 = [[스킬:2억4천만의악]]
+			ABL:(CHARANUM-1):스킬10 = 3909
+			CSTR:(CHARANUM-1):전용기7 = この世全ての悪
+			ABL:(CHARANUM-1):스킬11 = 3910
+			CSTR:(CHARANUM-1):전용기7 = 最後の欠片
+	
+			CSTR:(CHARANUM-1):사고패턴 = この世全ての悪
+	
+	
+			CALL SYNC_STATUS,(CHARANUM-1)
+			CALL HEALTH_CHARA,(CHARANUM-1)
+			CALL BATTLE_START
+
+			PRINTFORML  
+			PRINTFORMW  「기어올라서 죄송함다―――!!」
+			PRINTFORML  
+			PRINTFORML 　＞ 전투가 끝나자 앙리마유가 엎드려 빌 듯한 기세로 사죄의 비명을 질렀다
+			PRINTFORML  　그의 힘이 갑자기 넘쳐흘렀던 일 때문일까?
+			PRINTFORMW  　전투 초반에 묘한 힘의 흐름이 분명 느껴지긴 했지만……
+			PRINTFORML 
+			PRINTFORML  「아니~. 변명을 좀 하자면,
+			PRINTFORML  　어쩐지 갑자기 마력이 왈칵 흘러들어와선 당신을 죽여야 해! 라는 기분이 들어버려서 말이지~.
+			PRINTFORMW  　세계도 참 너무한 짓을 한단 말이지」
+			PRINTFORML 
+			PRINTFORML  「히히, 뭐 내 탓은 아니니까 너그럽게 넘어가 주면 좋겠는데 말야~!
+			PRINTFORML  　……농담이고.
+			PRINTFORMW  　그런 고로, 앞으로도 잘 부탁해(CONGOTO MO YOROSHIKU)~」
+			PRINTFORML 
+			PRINTFORMW  ＞ 영령 앙리마유가 동료마가 되었다!
+			PRINTFORML  
+			CALL ADD_NEW_COMPANION, [[キャラ:앙리마유]], 1000
+			;バトルイベント識別に使ったイベントフラグを片付け
+			イベントフラグ:82:5 = 0
+		CASE 1
+			PRINTFORML  
+			PRINTFORML  「세이프!
+			PRINTFORMW  　뭐 내 실력을 보고 싶다면, 조만간 전투에라도 내보내 보면 알게 될 거야~」
+			PRINTFORML 
+			PRINTFORML  ＞ 어차피 기회는 있고 지금 당장이 아니어도 상관없겠지
+			PRINTFORMW  　그렇게 말하자 앙리마유는 과장된 손짓을 해 보이며 안도하는 표정을 지었다
+			PRINTFORML 
+			PRINTFORMW  「그런 고로, 앞으로도 잘 부탁해(CONGOTO MO YOROSHIKU)~」
+			PRINTFORML  
+			PRINTFORMW  ＞ 영령 앙리마유가 동료마가 되었다!
+			PRINTFORML  
+			CALL ADD_NEW_COMPANION, [[キャラ:앙리마유]], 1000
+			;バトルイベント識別に使ったイベントフラグを片付け
+			イベントフラグ:82:5 = 0
+		CASEELSE
+			GOTO INPUT_LOOP1
+	ENDSELECT
+	PRINTFORML  
+
+
+
+
+	
+;--------------------
+;バトル設定
+;--------------------
+;戦闘開始時のイベント発生
+;サンプル：初手ノウブル・ファンタズムゲージMAX、気合フラグオン
+@EVENT_BATTLE_START_EVENT82_3
+#DIM SKILL_NUM
+SKILL_NUM = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+
+IF イベントフラグ:82:5 == 30
+	PRINTFORML  
+	CUSTOMDRAWLINE =
+	PRINTFORML  
+	SETCOLOR COLOR("YELLOW")
+	PRINTFORMW  ＞  역할을 마쳤을 마법진에서 마그네타이트가 뿜어져 나와 영령에게 공급되어 간다!
+	RESETCOLOR
+	PRINTFORML  
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃엣? 어라~? 그래? 그렇게 나와버려~?　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃솔직히 할 마음 별로 없었는데, 　　　　　　　　　　　┃
+	PRINTL ┃이 몸한테도 이렇게 마력을 줘버리면 말야~!　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃최약 영령한테도 내 시대가 왔다아~! 라는 느낌?　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃히히, 만에 하나라도 없겠지만 죽더라도 용서해 줘~?　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	;魔力放出状態に強制移行
+	CALL SKILLGAGE_F_SET,(CHARANUM-1),SKILL_NUM,100
+	CALL PRINT_ACT_MESSAGE, CHARANUM-1, SKILL_NUM
+	CALL ACTION_ノウブル・ファンタズム,(CHARANUM-1)
+	CFLAG:(CHARANUM-1):気合フラグ = 1
+	イベントフラグ:82:5 = 31
+ENDIF
+
+;---------------------------------------------------
+@EVENT_BATTLE_TURNEND_EVENT82_3
+;---------------------------------------------------
+#DIM SKILL_NUM
+
+SKILL_NUM = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+
+IF イベントフラグ:82:5 == 32 && 現HP割合(CHARANUM-1) < 50
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃――――아야야야　　　　　　　　　　　　　　　　　　　┃
+	PRINTL ┃역시 허약해빠졌구만, 나란 놈은――!　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃젠장~, 이대로 끝나는 것도 좀 거시기하니　　　　　　┃
+	PRINTL ┃진심 한번 내본다아~!　　　　　　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTL
+	PRINTW ＞영령 앙리마유의 상반신 문양이 푸르고 기괴하게 빛나기 시작했다!
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃자~ 어디, 화려하게 당해볼까나~!　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	ABL:(CHARANUM-1):스킬3 = 3906
+	CSTR:(CHARANUM-1):전용기3 = 偽り写し記す万象
+	CALL VAR_HP,(CHARANUM-1),MAX(MAXBASE:(CHARANUM-1):ＨＰ,1),"회복"
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	CALL SKILLGAGE_D_SET,(CHARANUM-1),SKILL_NUM,5
+	イベントフラグ:82:5 = 33
+ELSEIF イベントフラグ:82:5 == 31 && 現HP割合(CHARANUM-1) < 80
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃거봐, 내가 말했잖아~! 나 약하다고!　　　　　　　　　┃
+	PRINTL ┃어쩔 수 없으니 기합 빡 넣고 가본다아~!　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	CFLAG:(CHARANUM-1):행동횟수 = 2
+	イベントフラグ:82:5 = 32
+ELSE
+ENDIF
+
+;--------------------
+;思考パターン設定
+;--------------------
+@SET_ACTION_この世全ての悪, ARG
+#DIM SKILL_NUM,2
+
+SKILL_NUM:0 = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+SKILL_NUM:1 = PU_SKILLNUM_GET((CHARANUM-1),"偽り写し記す万象")
+
+SELECTCASE イベントフラグ:82:5
+	CASE 33
+		IF CFLAG:(CHARANUM-1):행동한횟수 == 0
+			CALL SET_ACTION_SKILL, (CHARANUM-1), (SKILL_NUM:1)
+		ELSE
+			SELECTCASE RAND:3
+				CASE 0
+					CALL SET_ACTION_SKILL, (CHARANUM-1), 3907
+				CASE 1
+					CALL SET_ACTION_SKILL, (CHARANUM-1), 3908
+				CASE 2
+					CALL SET_ACTION_SKILL, (CHARANUM-1), [[스킬:트윈슬래시]]
+			ENDSELECT
+		ENDIF
+	CASEELSE
+		SELECTCASE RAND:3
+			CASE 0
+				CALL SET_ACTION_SKILL, (CHARANUM-1), 3907
+			CASE 1
+				CALL SET_ACTION_SKILL, (CHARANUM-1), 3908
+			CASE 2
+				CALL SET_ACTION_SKILL, (CHARANUM-1), [[스킬:트윈슬래시]]
+		ENDSELECT
+ENDSELECT
+
+
+

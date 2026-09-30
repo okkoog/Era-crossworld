@@ -1,0 +1,197 @@
+﻿;筆洗。
+;アンジュにしては珍しく攻撃的なスキル、として設計。……相手に合わせる＝俊敏さ＝回避力分を攻撃力に加算してしまおう。
+
+
+;スキル名
+@SKILL_NAME_筆洗,ARG
+RESULTS = 筆洗
+
+;　명중
+@SKILL_HITRATE_筆洗, ARG
+RETURN 500
+
+;　威力
+@SKILL_POWER_筆洗, ARG
+RETURN 250
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_筆洗, ARG
+RETURN 5
+
+;;　吸収率
+;@SKILL_HP_ABSORBER_筆洗, ARG
+;RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_筆洗,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_筆洗,ARG
+RETURN 1
+
+;;一体辺りの最大ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MAXATK_PER_筆洗,ARG
+;RETURN 1
+
+;;一体辺りの最低ＨＩＴ数
+;;※ランダム攻撃系に使う
+;@SKILL_MINATK_PER_筆洗,ARG
+;RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_筆洗, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_筆洗,ARG
+RETURN 30
+;３０ぐらい
+
+
+;　相性
+@SKILL_TYPE_筆洗,ARG
+RETURN GET_TYPE_NUM("비구")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_筆洗
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_筆洗,ARG
+RETURN GET_ダメージタイプ_NUM("物理")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_筆洗,ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_筆洗,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_筆洗,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_筆洗,ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+;@SKILL_SUCCESSION_TYPE_筆洗
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_筆洗, ARG = -1
+RETURN 20
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_筆洗
+RETURN 0
+
+;没
+;@SKILL_RANK_筆洗, ARG = -1
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_筆洗,ARG
+;RETURN GET_STATE_NUM("SLIP")
+RETURN 0
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_筆洗,ARG
+;RETURN GET_TYPE_NUM("검격")
+RETURN 0
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_筆洗,ARG
+RETURN 0
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_筆洗,ARG
+RETURN 0
+
+;;拡散攻撃用追加処理
+;;ブレスなどの拡散攻撃に使う
+;@SKILL_SPREAD_筆洗,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;====================================================
+;@SKILL_TRIGGER_ACTIONABLE_筆洗,ARG,ARG:1
+;RETURN 0
+
+;====================================================
+;カウンター発動条件
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_筆洗,ARG,ARG:1
+;RETURN RESULT
+
+;====================================================
+;ダメージ発動時
+;====================================================
+;@SKILL_DAMAGE_EFFECT_筆洗,ARG,ARG:1
+
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_筆洗,ARG,ARG:1
+
+;====================================================
+;独自のカジャ処理
+;ARG		攻撃側のキャラ登録番号
+;ARG:1		防御側のキャラ登録番号
+;RESULT 	= 強化値
+;RESULT:1	= 基準値	(基準値 + x) / 基準値 あるいは　(基準値 * 2 - x) /基準値 * 2倍になる
+;			　デフォは基準値32で、最大で(32 + 32) / 32 or (64 - 32) / 64倍になる
+;====================================================
+@SKILL_CALC_BUFF_筆洗, ARGS, ARG, ARG:1
+SELECTCASE ARGS
+	CASE "ATK"
+		RETURN LIMIT(CFLAG:ARG:공격강화 + CFLAG:ARG:회피강화, -48, 64), 32
+ENDSELECT
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_筆洗,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+;CFLAG:ARG:공격강화 += CFLAG:ARG:회피강화
+
+CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+
+;CFLAG:ARG:공격강화 -= CFLAG:ARG:회피강화
+
+;CALL ATTACK_SINGLE,ARG,POS(ARG:1),SKILL_NUM;	単体攻撃
+;CALL ATTACK_FIELD,ARG,ARG:1,SKILL_NUM;			範囲攻撃(列、全体)
+;CALL ATTACK_SPREAD,ARG,ARG:1,SKILL_NUM;		拡散攻撃
+;CALL ATTACK_RAND,ARG,ARG:1,SKILL_NUM;			ランダム攻撃
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+
+
+
+
+;　説明文の表示
+@SKILL_EXPLAIN_筆洗,ARG
+PRINTL 『筆洗』
+PRINTL 적 단체에 비구 속성 중위력의 물리 공격을 1회 가한다. 초고명중.
+PRINTL 이 공격에는 『회피강화』 분의 강화치가 『공격강화』에 일시적으로 가산된다.
+PRINTL 각 전용 기능은 TP 게이지(DR)를 추가로 10 플러스하는 효과를 지닌다.
+PRINTL 
+PRINTL 레이스 기사의 창술 중 하나. 적의 움직임에 맞춰 흐르듯 내지르는 날카로운 찌르기.
+PRINTL 노예기사 앙주의 창술 기능(CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_筆洗,ARG
+RETURN 1
+;CALL SKILLGAGE_H_ADD,ARG,PU_SKILLNUM_GET(ARG,"筆洗"),0

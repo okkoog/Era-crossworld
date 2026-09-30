@@ -1,0 +1,168 @@
+﻿;コマンダースキル：クロックアップのスキル版
+;Dゲージを利用したクールタイム制スキルとして設定。
+
+;スキル名
+@SKILL_NAME_3692,ARG
+RESULTS = 딥마인드
+
+;　명중
+@SKILL_HITRATE_3692, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_3692, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_3692,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_3692,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+;　※4:ターン経過　もあるが、通常スキルでは機能しないっぽいので使わないこと
+@SKILL_COSTTYPE_3692, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;MP
+
+;　コストの量
+@SKILL_COST_3692,ARG
+RETURN 40
+
+
+;　1EXTRAか 2MAGICか
+@SKILL_DECIDE_TYPE_3692
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_3692, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_3692,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_3692,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_3692, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_3692
+RETURN GET_SUCCESSION_NUM("정신")
+;精神（このスキルはあえて支援ではなく精神に）
+
+;속도보정
+@SKILL_SPEED_3692, ARG = -1
+;スキルの特性上、絶対に最初に動くようにする必要がある
+RETURN 99999
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_3692
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_3692, ARG = -1
+RETURN 8
+
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_3692, ARG, ARG:1, ARG:2
+;連続行動処理
+CALL PRINT_HIT_MESSAGE, POS(ARG:1), "連続行動！", "w"
+CFLAG:POS(ARG:1):연속행동발생률 += 100
+
+;ゲージ（クールタイム）の処理
+;1ターンぶんが使ったそのターンで消費されるので、待たせたいターン数+1で設定。
+CALL SKILLGAGE_D_SET(ARG, 3692, 6)
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_3692, ARG
+PRINTFORML 아군 단체를 연속 행동시킨다. 1회 발동당 5턴의 쿨타임이 소요된다.
+PRINTFORML 텔레파시로 대상의 정신에 간섭해 심신을 최고 효율로 강제 가동시키는 아이네의 특기.
+
+
+;戦闘中、キャラクターにカーソルを載せた時のポップアップ
+@SKILL_BATTLE_MAIN_TOOLTIP_3692, ARG, ARG:1
+RESULTS = □딥마인드
+IF SKILLGAGE_D_GET(ARG,3692)
+	RESULTS:1 =　필요 턴 수:{SKILLGAGE_D_GET(ARG,3692)}
+ELSE
+	RESULTS:1 = 　READY
+ENDIF
+
+
+;スキルにカーソルを合わせた時のポップアップ
+@SKILL_EXPLAIN_TOOLTIP_3692, ARG = -1
+;キャラ番号を取得していないときの処理
+IF ARG < 0
+	RESULTS = 딥마인드:필요 쿨타임：５
+;それ以外
+ELSE
+	IF SKILLGAGE_D_GET(ARG,3692)
+		RESULTS = 딥마인드:필요 쿨타임：%TOFULL(TOSTR(RESULT))%
+	ELSE
+		RESULTS = 딥마인드:ＲＥＡＤＹ
+	ENDIF
+ENDIF
+RESULTS:1 = 아군 단체를 연속 행동시킨다.
+
+
+;戦闘中など、キャラクターの下に表示されるインフォメーション（RESULTS）と
+;インフォメーションにカーソルを合わせた時のポップアップ（RESULTS:1）
+@SKILL_EX_DISPLAY_3692, ARG, ARGS
+#DIMS 最終的に返す文字列
+#DIM LCOUNT
+
+IF SKILLGAGE_D_GET(ARG,3692)
+	;【ESP】・・・・・　と表示される。CTが消費されるごとに・が■になる。最大CT5ターンまで対応。
+	最終的に返す文字列 = 【ESP】
+	FOR LCOUNT, 1, 6
+		IF (6 - SKILLGAGE_D_GET(ARG,3692)) <= LCOUNT
+			最終的に返す文字列 += "・"
+		ELSE
+			最終的に返す文字列 += "■"
+		ENDIF
+	NEXT
+	RESULTS = %最終的に返す文字列%
+	RESULTS:1 = 데프마인드: 필요 쿨타임
+ELSE
+	RESULTS = 【ESP】発動可能！
+	RESULTS:1 = 딥마인드:ＲＥＡＤＹ
+ENDIF
+RETURN 1
+
+
+
+
+;継承不能
+@継承不能_3692
+RETURN 2
+;変なスキルなので継承不能にしておく
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_3692,ARG
+SIF SKILLGAGE_D_GET(ARG,3692)
+	RETURN 0
+RETURN 1
+;クールタイムが残っていると使用不可
+

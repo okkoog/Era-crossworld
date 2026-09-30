@@ -1,0 +1,206 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:プログラム応答なし…
+;	Facility	:銀狼専用スキル
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2023/9/17		軽木        			新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;スキル名
+@SKILL_NAME_プログラム応答なし…,ARG
+RESULTS = プログラム応答なし…
+
+;　명중
+@SKILL_HITRATE_プログラム応答なし…, ARG
+RETURN 999
+
+;　威力
+@SKILL_POWER_プログラム応答なし…, ARG
+RETURN 0
+
+;クリティカル率
+@SKILL_CRITICAL_RATE_プログラム応答なし…, ARG
+RETURN 0
+
+;　吸収率
+@SKILL_HP_ABSORBER_プログラム応答なし…, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_プログラム応答なし…,ARG
+RETURN 0
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_プログラム応答なし…,ARG
+RETURN 0
+;一体辺りの最大ＨＩＴ数
+;※ランダム攻撃系に使う
+@SKILL_MAXATK_PER_プログラム応答なし…,ARG
+RETURN 0
+
+;一体辺りの最低ＨＩＴ数
+;※ランダム攻撃系に使う
+@SKILL_MINATK_PER_プログラム応答なし…,ARG
+RETURN 0
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_プログラム応答なし…, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("無消費")
+
+;　コストの量
+@SKILL_COST_プログラム応答なし…,ARG
+RETURN 0
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_プログラム応答なし…
+RETURN GET_SKILL_DECIDE_TYPE_NUM("未指定")
+
+;スキルを所持ししていることによるパッシブ効果
+@SKILL_PASSIVE_ADD_PENETRATION_RANK_プログラム応答なし…, L_P, L_T, SKILL_NUM, L_ダメージタイプ, L_攻撃タイプ, L_相性, GIVE_EFFECT_CHARA
+#DIM L_P
+#DIM L_T
+#DIM SKILL_NUM
+#DIM L_ダメージタイプ
+#DIM L_攻撃タイプ
+#DIM L_相性
+#DIM GIVE_EFFECT_CHARA
+RETURN 0
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_プログラム応答なし…,ARG
+RETURN 0
+
+;　사거리
+@SKILL_RANGE_プログラム応答なし…,ARG
+RETURN 0
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_プログラム応答なし…,ARG
+RETURN 0
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_プログラム応答なし…,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+;계승타입
+;@SKILL_SUCCESSION_TYPE_プログラム応答なし…
+;RETURN 23
+;검격
+
+;속도보정
+@SKILL_SPEED_プログラム応答なし…, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_プログラム応答なし…
+RETURN 0
+
+;没
+;@SKILL_RANK_プログラム応答なし…, ARG = -1
+
+
+;拡散スキルの拡散距離定義関数(このような感じで数値を増やすことで増えていく)
+;1 　　　　　2 　　　　
+;□□◆□□　□◆◆◆□
+;□◆★◆□　◆◆★◆◆
+;@SKILL_SPREAD_プログラム応答なし…,ARG
+;RETURN 0
+
+;====================================================
+;トリガー発動条件
+;
+;詳しい仕様については資料フォルダの解説を参照してください
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_プログラム応答なし…,ARG,ARG:1
+;行動者と味方同士でなければ死
+SIF !IS_FRIEND(FLAG:행동순1, ARG)
+	RETURN 0
+;対象と敵同士でなければ死
+SIF IS_FRIEND(ARG, ARG:1)
+	RETURN 0
+SIF HAVE_SKILL(ARG, PU_SKILLNUM_GET(ARG,"作成")) && GET_CREC_ACT(FLAG:행동순1, ARG:1, "WEAK")
+	RETURN 1, CPOS(ARG:1)
+;以降は本人のみ
+SIF FLAG:행동순1 != ARG
+	RETURN 0
+;専用スキル以外では発動しない
+SIF CFLAG:ARG:입력행동 != PU_SKILLNUM_GET(ARG,"システム警告") && CFLAG:ARG:입력행동 != PU_SKILLNUM_GET(ARG,"変更を許可しますか？")  && CFLAG:ARG:입력행동 != PU_SKILLNUM_GET(ARG,"アカウントがBANされた")
+	RETURN 0
+;あたってないと発動しない
+SIF !GET_CREC_ACT(FLAG:행동순1, ARG:1, "HIT")
+	RETURN 0
+;ターゲットが不在だと発動しない
+SIF CFLAG:ARG:타겟 < 1
+	RETURN 0
+RETURN 1, CFLAG:ARG:타겟
+
+;====================================================
+;カウンター発動条件
+;ARG 		このスキルの持ち主
+;ARG;1 		攻撃してきている相手
+;0 	カウンターが成立したかどうか
+;0:1	カウンターする相手のターゲット番号(ポジションなのでCPOSで返すか、あるいは範囲なら19などで返す)
+;0;1は指定なしなら敵の生存判定・存在判定を行わずにACTIONを実行する
+;====================================================
+;@SKILL_COUNTER_ACTIONABLE_プログラム応答なし…,ARG,ARG:1
+;RETURN 0
+
+
+;====================================================
+;ダメージ発動時
+;ARG:2　1: 弱点攻撃	0:100%	-1:耐性	-2;無効	-3:吸収	-4:反射
+;====================================================
+;@SKILL_DAMAGE_EFFECT_プログラム応答なし…,ARG,ARG:1,ARG:2
+;====================================================
+;行動によるスキルゲージ操作
+;====================================================
+;@SKILLGAGE_CHARGE_プログラム応答なし…,ARG,ARG:1
+;RETURN 0
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_プログラム応答なし…,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+$LP
+SIF -32 >= CFLAG:POS(ARG:1):(GET_BATTLESTATUS(0) + "강화") && -32 >= CFLAG:POS(ARG:1):(GET_BATTLESTATUS(4) + "강화") && -32 >= CFLAG:POS(ARG:1):(GET_BATTLESTATUS(1) + "강화") && -32 >= CFLAG:POS(ARG:1):(GET_BATTLESTATUS(3) + "강화") && -32 >= CFLAG:POS(ARG:1):(GET_BATTLESTATUS(2) + "강화") && -32 >= CFLAG:POS(ARG:1):(GET_BATTLESTATUS(5) + "강화")
+	RETURN 0
+SELECTCASE RAND:6
+	CASE 0
+		SIF -32 >= CFLAG:POS(ARG:1):(GET_BATTLESTATUS(0) + "강화")
+			GOTO LP
+		CALL SKILL_SET_カジャンダ, ARG, POS(ARG:1), "공격", -4 , "단체"
+	CASE 1
+		SIF	-32 >= CFLAG:POS(ARG:1):(GET_BATTLESTATUS(1) + "강화")
+			GOTO LP
+		CALL SKILL_SET_カジャンダ, ARG, POS(ARG:1), "명중", -4 , "단체"
+	CASE 2
+		SIF	-32 >= CFLAG:POS(ARG:1):(GET_BATTLESTATUS(2) + "강화")
+			GOTO LP
+		CALL SKILL_SET_カジャンダ, ARG, POS(ARG:1), "방어", -4 , "단체"
+	CASE 3
+		SIF -32 >= CFLAG:POS(ARG:1):(GET_BATTLESTATUS(4) + "강화")
+			GOTO LP
+		CALL SKILL_SET_カジャンダ, ARG, POS(ARG:1), "마법위력", -4 , "단체"
+	CASE 4
+		SIF -32 >= CFLAG:POS(ARG:1):(GET_BATTLESTATUS(3) + "강화")
+			GOTO LP
+		CALL SKILL_SET_カジャンダ, ARG, POS(ARG:1), "회피", -4 , "단체"
+	CASE 5
+		SIF -32 >= CFLAG:POS(ARG:1):(GET_BATTLESTATUS(5) + "강화")
+			GOTO LP
+		CALL SKILL_SET_カジャンダ, ARG, POS(ARG:1), "마법효과", -4 , "단체"
+ENDSELECT
+;====================================================
+;実行内容ここまで
+;====================================================
+;　説明文の表示
+@SKILL_EXPLAIN_プログラム応答なし…,ARG
+PRINTL 専用スキルによる攻撃後、ランダムな２種類の能力を低下させる。
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_プログラム応答なし…,ARG
+RETURN 0

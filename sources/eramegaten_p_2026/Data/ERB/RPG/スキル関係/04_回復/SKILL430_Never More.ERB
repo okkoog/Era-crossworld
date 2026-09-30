@@ -1,0 +1,143 @@
+﻿;達人あなた、とくにディーヴァ専用に作られたスキル。取扱注意
+
+;スキル名
+@SKILL_NAME_430,ARG
+RESULTS = Never More
+
+;　명중
+@SKILL_HITRATE_430, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_430, ARG
+RETURN 1000
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_430,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_430,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_430, ARG, ARG:1
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_430, ARG
+SIF ARG == -1
+    RETURN 100
+IF ABL:ARG:가창기능 == 0
+    RETURN 100
+ELSEIF ABL:ARG:가창기능 == 1
+    RETURN 100
+ELSEIF ABL:ARG:가창기능 == 2
+    RETURN 100
+ELSEIF ABL:ARG:가창기능 == 3
+    RETURN 100
+ELSEIF ABL:ARG:가창기능 == 4
+    RETURN 95
+ELSEIF ABL:ARG:가창기능 == 5
+    RETURN 90
+ELSEIF ABL:ARG:가창기능 == 6
+    RETURN 90
+ELSEIF ABL:ARG:가창기능 == 7
+    RETURN 85
+ELSEIF ABL:ARG:가창기능 == 8
+    RETURN 85
+ELSEIF ABL:ARG:가창기능 == 9
+    RETURN 85
+ELSE
+    RETURN 80
+ENDIF
+    RETURN 100
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_430
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+@SKILL_HEAL_TYPE_430, ARG
+RETURN GET_SKILL_HEAL_TYPE_NUM("割合")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_430, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_430,ARG
+RETURN 1
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_430,ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_430, ARG
+RETURN GET_SKILL_EFFECT_NUM("회복")
+
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_430
+RETURN GET_SUCCESSION_NUM("회복")
+;속도보정
+@SKILL_SPEED_430, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_430
+RETURN 1
+
+;スキル変化？用ランク
+@SKILL_RANK_430, ARG = -1
+RETURN 22
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_430, ARG, ARG:1, ARG:2
+CALL HEAL_FIELD, ARG, ARG:1, 430
+
+;何のバッドステータスを治せるか
+@SKILL_CURE_STATE_430, ARG
+SELECTCASE GET_STATE(ARG)
+	CASE "FLY","GOOD","DYING","ORGY","HEAT"
+		RETURN 0
+	CASEELSE
+		RETURN 1
+ENDSELECT
+
+
+;====================================================
+;戦闘中以外での実行
+;====================================================
+@ACTION_FIELD_430,ARG,ARG:1,ARG:2
+CALL HEAL_FIELD, ARG, ARG:1, 430
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_430, ARG
+PRINTL 소중한 동료마를 생각하는 노래。아군 전체를 완전 회복하고 DYING 이외의 상태이상을 치료한다。가창기능에 따라 코스트가 감소한다。
+
+@SKILL_EXPLAIN_TOOLTIP_430, ARG
+RESULTS = 소중한 동료마를 생각하는 노래。아군 전체를 완전 회복하고 DYING 이외의 상태이상을 치료한다。가창기능에 따라 코스트가 감소한다。
+
+
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_430,ARG
+CALL CHECK_COST,ARG,430
+SIF RESULT == 0
+	RETURN 0
+RETURN 1
+;とくにない
+
+@ロール専用_430
+RESULTS = 달인
+RETURN 1

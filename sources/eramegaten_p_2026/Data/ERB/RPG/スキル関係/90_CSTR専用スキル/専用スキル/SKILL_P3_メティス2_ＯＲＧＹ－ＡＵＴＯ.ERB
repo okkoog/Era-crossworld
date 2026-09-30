@@ -1,0 +1,140 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SKILLメティス2_ＯＲＧＹ－ＡＵＴＯ.ERB
+;	Facility	:戦闘開始時に自動でオルギアを発動するコマンドを追加する
+;	Requirements:キャラクター独自変数RPG_CFLAG_DUNGEONにORGY_AUTO_ENABLEを定義すること
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/03/29		ささ狂					SKILL専用技テンプレ.ERBから作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;-------------------------------------------------
+
+;スキル名
+@SKILL_NAME_ＯＲＧＹ－ＡＵＴＯ,ARG
+RESULTS = ＯＲＧＹ－ＡＵＴＯ
+
+;　명중
+@SKILL_HITRATE_ＯＲＧＹ－ＡＵＴＯ, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_ＯＲＧＹ－ＡＵＴＯ, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ＯＲＧＹ－ＡＵＴＯ,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ＯＲＧＹ－ＡＵＴＯ,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ＯＲＧＹ－ＡＵＴＯ, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ＯＲＧＹ－ＡＵＴＯ,ARG
+RETURN 0
+
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ＯＲＧＹ－ＡＵＴＯ
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ＯＲＧＹ－ＡＵＴＯ,ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;攻撃手段
+@SKILL_ATTACKTYPE_ＯＲＧＹ－ＡＵＴＯ, ARG
+RETURN GET_攻撃タイプ_NUM("魔法")
+
+;スキルの貫通強度
+@SKILL_PENETRATION_RANK_ＯＲＧＹ－ＡＵＴＯ, ARG = -1, ARG:1 = -1
+RETURN 0
+
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ＯＲＧＹ－ＡＵＴＯ,ARG
+RETURN GET_SKILL_TARGET_NUM("자신")
+
+;　사거리
+@SKILL_RANGE_ＯＲＧＹ－ＡＵＴＯ,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ＯＲＧＹ－ＡＵＴＯ,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ＯＲＧＹ－ＡＵＴＯ,ARG
+RETURN GET_SKILL_EFFECT_NUM("자동효과")
+
+;속도보정
+@SKILL_SPEED_ＯＲＧＹ－ＡＵＴＯ, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ＯＲＧＹ－ＡＵＴＯ
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ＯＲＧＹ－ＡＵＴＯ,ARG,ARG:1,SKILL_NUM
+#DIM SKILL_NUM
+
+;====================================================
+;追加コマンド(一番下)
+;====================================================
+@SKILL_SPECIAL_COMMAND_ＯＲＧＹ－ＡＵＴＯ,ARG,LOCAL,SKILL_NUM
+#DIM SKILL_NUM
+#DIM MODIFIED_SKILL_NUM
+#LOCALSIZE 1
+MODIFIED_SKILL_NUM = 10000 + SKILL_NUM
+REPEAT LOCAL
+	SIF C:(COUNT+1) == MODIFIED_SKILL_NUM
+		RETURN LOCAL
+REND
+C:COUNT = MODIFIED_SKILL_NUM
+IF COUNT == LOCAL
+	PRINTFORML [{LOCAL}] ＯＲＧＹ－ＡＵＴＯ
+	LOCAL++
+ENDIF
+RETURN LOCAL
+
+;====================================================
+;コマンド実行
+;====================================================
+@INPUT_COM_ＯＲＧＹ－ＡＵＴＯ,ARG
+PRINTL 평소대로 오르기아를 발동하는 것에 더해, 다음 이후 보스전 이외의 전투 개시 시에
+PRINTL 자동적으로 오르기아를 발동하도록 설정합니다.
+PRINTL 이 설정은 던전 탐색 종료까지 지속되지만 전투 개시 시에 해제할 수도 있습니다.
+PRINTL 
+PRINTL ORGY-AUTO를 설정합니다. 괜찮겠습니까?
+PRINTL [0] 네
+PRINTL [1] 아니오
+ONEINPUTS 0
+SIF RESULTS == "1"
+	RETURN -1
+
+CALL SET_RPG_CFLAG_DUNGEON, ARG, "ORGY_AUTO_ENABLE", 1
+
+CALL INPUT_COM_14556, ARG
+RETURN RESULT
+;;-1 再びコマンド選択へ
+;; 1 キャラ選択へ
+
+;　説明文の表示
+@SKILL_EXPLAIN_ＯＲＧＹ－ＡＵＴＯ,ARG
+PRINTL ＯＲＧＹ－ＡＵＴＯ
+PRINTL 전투 개시 시 자동으로 오르기아를 발동하는 옵션 커맨드를 추가한다.
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ORGYAUTO,ARG
+RETURN 0

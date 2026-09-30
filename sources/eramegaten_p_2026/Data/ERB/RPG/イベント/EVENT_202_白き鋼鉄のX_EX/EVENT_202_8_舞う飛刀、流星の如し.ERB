@@ -1,0 +1,146 @@
+﻿;====================
+;条件
+;====================
+@EVENT_TITLE_202_8
+RESULTS '= "춤추는 비도, 유성과 같이"
+
+@EVENT_EXPLAIN_202_8
+RESULTS:0 '= "보수: 슬러그 획득"
+IF GETCHARA([[キャラ:슬러그_X2]]) >= 0
+	RESULTS:1 '= "　　 ※보수 소지 중"
+ELSE
+	RESULTS:1 '= "　　 ※보수를 수령하려면 도리 카드몬이 필요"
+ENDIF
+
+@PLAYABLE_EVENT_202_8
+SIF !GETBIT(FLAG:발견ED2, 11)
+	RETURN 0
+RETURN 1
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_202_8
+PRINTFORML ………
+PRINTFORML ……
+PRINTFORMW …
+PRINTFORMW 그레이브 필러　우주 블록 최심부――
+PRINTFORML 이 블록에서 유일하게 일반 중력이 작용하는 공간. 여기가 우주 블록 중추.
+PRINTFORMW 안쪽에 우뚝 솟은 거대한 장치는, 어쩌면 중력을 제어하고 있는지도 모른다.
+PRINTFORML 　
+PRINTFORMW 「침입자 확인. 신속하게 배제한다」
+PRINTFORML 　
+PRINTFORML 슬러그는 모습을 숨기지 않고, 일부러 이쪽을 기다리고 있었다.
+PRINTFORMW 이전에 기습이 통하지 않았기에, 정면에서 맞아 싸우기로 한 것이리라.
+PRINTFORML 　
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:슬러그_X2]]), [[キャラ:슬러그_X2]]
+PRINTFORMW 「저항은 무의미하다. 적은 즉시 양단한다」
+CLEARLINE 7
+PRINTFORML 「저항은 무의미하다. 적은 즉시 양단한다」
+PRINTFORML 　
+PRINTFORMW 워커　슬러그가　1체 나타났다!
+
+FLAG:도주불가플래그 = 1
+FLAG:회화불능플래그 = 1
+FLAG:선제기습취소 = 1
+
+CALL SET_BOSS_ENEMY_EVENT_202, "スラグ"
+CALL BATTLE_START
+FLAG:도주불가플래그 = 0
+FLAG:회화불능플래그 = 0
+FLAG:선제기습취소 = 0
+
+SIF FLAG:패배플래그
+	RETURN 0
+
+CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:슬러그_X2]]), [[キャラ:슬러그_X2]]
+PRINTFORMW 「임무, 실패……」
+CLEARLINE 7
+PRINTFORML 「임무, 실패……」
+PRINTFORML 　
+PRINTFORML 두 동강 난 슬러그에게서, 사방팔방으로 흩날리는 Pix.
+IF GETCHARA([[キャラ:슬러그_X2]]) > 0 || ITEM:도리・카드몬 == 0
+	PRINTFORML 외각이 소실되고, 소체가 드러나자, 내부에서 섬광이 번쩍이더니――대폭발.
+	PRINTFORMW 부러진 부메랑과 함께, 처형자의 흔적은 사라지는 것이었다.
+ELSE
+	PRINTFORML 이대로 방치하면, 머지않아 소체가 드러나 대폭발할 것이다.
+	PRINTFORML 과연, 도리 카드몬을 써야 할까?
+	CALL INPUT_YN, "예", "아니오"
+	IF RESULT == 0
+		PRINTFORML %CALLNAME:MASTER%은(는) 재빠르게 도리 카드몬을 집어던져,
+		PRINTFORML 소체의 대용품으로서 주위에 흩날린 Pix를 남김없이 흡수시켜 간다.
+		PRINTFORMW ……그렇게 완성된 것은, 악마로 다시 태어난 슬러그의 모습이었다.
+		PRINTFORML 　
+		CALL PRINT_FACE_BY_CHARA, GETCHARA([[キャラ:슬러그_X2]]), [[キャラ:슬러그_X2]]
+		PRINTFORMW 「재기동, 확인…… 상황, 파악」
+		CLEARLINE 7
+		PRINTFORML 「재기동, 확인…… 상황, 파악」
+		PRINTFORML 　
+		PRINTFORML 딱히 동요하는 기색도 없는 듯하여, 능숙하게 계약을 진행하여――
+		PRINTFORMW 마침내 슬러그는 %CALLNAME:MASTER%의 악마가 되는 것이었다.
+		PRINTFORML 　
+		PRINTFORMW ＞슬러그가 동료마가 되었다.
+		ITEM:도리・카드몬 -= 1
+		CALL ADD_NEW_COMPANION, [[キャラ:슬러그_X2]], 0
+	ELSE
+		PRINTFORML %CALLNAME:MASTER%은(는) 도리 카드몬을 쓰지 않기로 하고, 전말을 지켜보기로 했다.
+		PRINTFORML 외각이 소실되고, 소체가 드러나자, 내부에서 섬광이 번쩍이더니――대폭발.
+		PRINTFORMW 뒤에는 잔불조차 남지 않는 것이었다.
+	ENDIF
+ENDIF
+CUSTOMDRAWLINE =
+RETURN 1
+
+@SET_ACTION_ツインミーティアバースト2, ARG
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIM SKILL_NUM
+#DIM ターン保存
+IF CFLAG:ARG:１more플래그 > 0
+	CALL SET_ACTION_SKILL, ARG, [[스킬:회심의패기]]
+ELSEIF CFLAG:ARG:행동한횟수 == 0
+	;ガンヴォルトあるある：HPが1/3切ったらSPスキル使う　5Tに1回打ってくるぞ
+	IF CFLAG:ARG:800 && PU_SKILLGAGE_D_GET(ARG, "ＳＰスキル") == 0
+		CALL SET_ACTION_SKILL, ARG, PU_SKILLNUM_GET(ARG, "ＳＰスキル")
+	ELSE
+		SELECTCASE RAND:4
+			CASE 0
+				CALL SET_ACTION_SKILL, ARG, [[스킬:포그브레스]]
+			CASE 1
+				CALL SET_ACTION_SKILL, ARG, [[스킬:브레이브스텝]]
+			CASE 2
+				CALL SET_ACTION_SKILL, ARG, [[스킬:전용기2]]
+			CASEELSE
+				IF FLAG:월령 == 0
+					CALL SET_ACTION_SKILL, ARG, [[스킬:어둠속의기습]]
+				ELSE
+					CALL SET_ACTION_SKILL, ARG, [[스킬:갑옷관통]]
+				ENDIF
+		ENDSELECT
+	ENDIF
+ELSE
+	SELECTCASE RAND:4
+		CASE 0
+			CALL SET_ACTION_SKILL, ARG, [[스킬:오의일섬]]
+		CASE 1
+			CALL SET_ACTION_SKILL, ARG, [[스킬:블레이드댄스]]
+		CASE 2
+			CALL SET_ACTION_SKILL, ARG, [[스킬:포그브레스]]
+		CASEELSE
+			CALL SET_ACTION_SKILL, ARG, [[스킬:베놈재퍼]]
+	ENDSELECT
+ENDIF
+
+@CHANGE_ACTION_ツインミーティアバースト2, ARG
+CALL CHANGE_ACTION_ツインミーティアバースト, ARG
+
+@EVENT_BATTLE_DYING_ツインミーティアバースト2, L_T, L_P, L_SKIP
+#DIM DYNAMIC L_T
+#DIM DYNAMIC L_P
+#DIM DYNAMIC L_SKIP
+CALL EVENT_BATTLE_DYING_EVENT_201_2_8_スラグ, L_T, L_P, L_SKIP
+
+@EVENT_BATTLE_ACTEND_ツインミーティアバースト2
+CALL EVENT_BATTLE_ACTEND_EVENT_201_2_8_スラグ
+
+@EVENT_BATTLE_LOSE_ツインミーティアバースト2
+RETURN 1

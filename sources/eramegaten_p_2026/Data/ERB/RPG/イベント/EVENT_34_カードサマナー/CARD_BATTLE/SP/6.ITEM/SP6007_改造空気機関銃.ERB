@@ -1,0 +1,64 @@
+﻿;잔/1/0/
+;特技名
+@CGSP_NAME_6007, ARGS, ARG
+RESULTS = 改造空気機関銃
+
+;　コストの量
+@CGSP_COST_6007, ARGS, ARG
+RETURN 5
+
+;　타겟(選択するかしないか)
+@CGSP_TARGET_6007, ARGS, ARG
+RETURN 0
+;0-無し　　　1-味方1体　2-味方1体(自身含む)　3-敵1体　4-敵1体(サマナー含む)
+;5-敵味方1体　6-サマナーどちらか
+;自動発動なので0
+
+;　発動タイミング
+@CGSP_TIMING_6007, ARGS, ARG
+RETURN 0
+;0-アクティブ　1-味方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　2-相手ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　3-両方ﾌﾟﾘｰﾍﾟｱﾌｪｲｽﾞ　4-召喚時
+
+;====================================================
+;特技発動
+;====================================================
+@CGSP_ACTION_6007, ARGS, ARG, ARG:1
+IF (ARG % 20) == CS1_ONESELF
+	LOCAL:1 = CBF_ENEMY_POS1
+	LOCAL:2 = CBF_ENEMY_POS6 + 1
+ELSE
+	LOCAL:1 = CBF_ALLY_POS1
+	LOCAL:2 = CBF_ALLY_POS6 + 1
+ENDIF
+FOR LOCAL, LOCAL:1, LOCAL:2
+	SIF FIELD_DEMON_DATE_V:LOCAL:CBV_B_AP + FIELD_DEMON_DATE_V:LOCAL:CBV_B_HP < 5
+		CALL SP_DAMAGE, LOCAL, 2, ARG
+NEXT
+
+
+;====================================================
+;実行内容ここまで
+;====================================================
+;発動後どうなるか
+@CGSP_ACTION_AFTER_6007, ARGS, ARG, ARG:1
+RETURN 0
+;0-何もなし　1-フリーズ状態　2-山札に戻る　3-即死する
+
+;　 説明文の表示
+@CGSP_EXPLAIN_6007, ARGS, ARG
+RESULTS = 基礎APと基礎HPの合計が4以下の全ての敵ナカマに2Pのダメージをあたえる。『改造したエアマシンガン。威力が弱く強い敵には傷をつけられない。』
+
+
+;　スキルタイプ
+;　主にこのターンパワーアップとアギとかのダメージ系で使用
+;　それ以外は省略
+;　1(アギとかのダメージ魔法系は1),ダメージ,範囲1体は1、全体は2
+@CGSP_TYPE_6007, ARGS, ARG
+RESULTS = 弱者+2
+RETURN 1, 0, 2
+
+;使用条件
+;特になければ省略してOK
+;@SKILL_SPECIAL_ACTIONABLE_6007,ARG
+;RETURN 1
+;とくにない

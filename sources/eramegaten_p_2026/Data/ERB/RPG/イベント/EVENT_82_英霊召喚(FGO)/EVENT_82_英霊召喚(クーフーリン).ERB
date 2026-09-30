@@ -1,0 +1,425 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:EVENT_82_英霊召喚(クーフーリン).ERB
+;	Facility	:
+;
+;	Licence		:ライセンスフリー
+;
+;	Modification Data:
+;
+;	Edit	Date			Author		Reason
+;	000		20XX/XX/XX		----		テンプレ
+;	001		2021/04/18		SUIHOU		作成
+;	002		2021/06/29		SUIHOU		再召喚用の処理を作成
+;	003		2021/07/09		しゃけ		鯖毎にバトルイベントを分岐する処理に対応して修正
+;	004		2022/08/24		SUIHOU		FGO_SUMMON_SACRIFICE_0を追加
+;	005		2022/11/16		P(bazzile)	刺し穿つ刺棘の槍の名称を刺し穿つ死棘の槍に変更
+;	006		2023/01/07		SUIHOU		戦闘中のバグを修正
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;---- EDIT 002 ADD START ---------------------------
+;====================
+;召喚イベント条件
+;====================
+@FGO_SUMMON_CHECK_0
+#DIM 生贄
+
+;再召喚はイベントフラグ:82:1が4以上
+IF イベントフラグ:82:1 > 3
+	IF GETCHARA([[キャラ:쿠훌린_창]]) > 0
+		RESULTS = 빛의 아들 재강림(쿠훌린)
+		RESULTS:1 = 필요 촉매：영웅 쿠・훌린(함락완)　쿠훌린(창) 가입 완료
+		RETURN 0
+	ELSEIF GETCHARA([[キャラ:쿠・훌린]]) > 0
+		IF !陥落(GETCHARA([[キャラ:쿠・훌린]]))
+			RESULTS = 빛의 아들 재강림(쿠훌린)
+			RESULTS:1 = 필요 촉매：영웅 쿠・훌린(함락완)　미함락
+			RETURN 0
+		ELSE
+			RESULTS = 빛의 아들 재강림(쿠훌린)
+			RESULTS:1 = 필요 촉매：영웅 쿠・훌린(함락완)　쿠훌린(창) 미가입
+			RETURN 1
+		ENDIF
+	ELSE
+		RESULTS = 빛의 아들 재강림(쿠훌린)
+		RESULTS:1 = 필요 촉매：영웅 쿠・훌린(함락완)　미소지
+		RETURN 0
+	ENDIF
+ELSE
+	RESULTS = 초회 미소환
+	RETURN 0
+ENDIF
+;---- EDIT 002 ADD END -----------------------------
+
+
+;---- EDIT 004 ADD START ---------------------------
+;====================
+;生贄可否の条件確認
+;====================
+@FGO_SUMMON_SACRIFICE_0(ARG:0)
+	;英雄クー・フーリン以外は不可
+	SIF NO:ARG != [[キャラ:쿠・훌린]]
+		RETURN 0
+	;未陥落は対象外
+	SIF !陥落(ARG)
+		RETURN 0
+	SIF !FGO_SUMMON_SACRIFIE_COMMON(ARG)
+		RETURN 0
+	RETURN 1
+;---- EDIT 004 ADD END -----------------------------
+
+
+;====================
+;ランサー召喚
+;====================
+@FGO_SUMMON_0
+#DIM 対象
+
+	対象 = [[キャラ:쿠훌린_창]]
+	IF イベントフラグ:82:1 > 3
+		;---- EDIT 002 ADD START ---------------------------
+		PRINTFORML  「자、소환술은 다음 스테이지로
+		PRINTFORMW  　――우리들의 연구 성과를 보시죠」
+		PRINTFORML  
+		PRINT  「자、준비하세요
+		IF TALENT:MASTER:서머너
+			PRINTFORML  서머너 %CALLNAME:MASTER%。　
+		ELSE
+			PRINTFORML  전사 %CALLNAME:MASTER%。　
+		ENDIF
+		PRINTFORMW  　이것이 새로운 소환 기술、그 발전입니다――――아앗」
+		CALL 疑似的画面クリア
+		TWAIT 500,1
+		PRINTFORML  
+		PRINTFORML  「여어、너가 나의 마스터냐――――아니、기달려봐。
+		PRINTFORMW  　너、언젠가 나랑 만난적 있잖아？」
+		PRINTFORML  
+		PRINTFORMW  ＞ 다시 나타난 푸른 창병은、%CALLNAME:MASTER%를 보자 그렇게 말했다
+		PRINTFORMW  　 분명히 예전의 그와 연속되어 있는 것은 아닌 것 같은데、이것도 영령소환의 특수성 이란것일까
+		PRINTFORML  
+		PRINTFORMW  ＞ %CALLNAME:MASTER%는、남자의 질문에 이것저것 대답했다
+		PRINTFORML  
+		PRINTFORML  
+		PRINTFORMW  「헤에、예전에 똑같이 나를 소환한 적이 있다、라」
+		PRINTFORML  
+		PRINTFORML  ＞ 대답을 듣는 순간、남자는 육식동물이 송곳니를 드러낸 것 같은 착각을 불러일으킬 정도로 사나운 미소를 지었고
+		PRINTFORMW  　 이에 화답하듯、역할을 마쳤을 마법진에서 다시 마그네타이트가 쏟아져 나오기 시작했다
+		PRINTFORML  
+		PRINTFORMW  　 과거의 반성은 어디갔느냐、라고 연구원들을 둘러봐도、눈을 반짝이며 무언가 측량 장비를 움직이는데 열중하는 눈치다
+		PRINTFORMW  　 그 어떤 의미에서는 강인한 모습에、영령조차도 쓴웃음을 지을 수밖에 없었다
+		PRINTFORML  
+		PRINTFORML  
+		PRINTFORMW  「뭐랄까……너도 너로 고생하고있네。
+		PRINTFORMW  　뭐、일부러 영령 소환을 할 정도야。　너도 별종인게 틀림없지만」
+		PRINTFORML  
+		PRINTFORML  
+		PRINTFORML  ＞ 어이없다는 듯이 미소를 지으면서도、영령 쿠훌린은 전사로서 방심하지 않고 자세를 취했다
+		PRINTFORMW  　 언제든 %CALLNAME:MASTER%를 뚫고 나갈 준비가 되어 있다
+		PRINTFORML  
+		;---- EDIT 002 ADD END -----------------------------
+	ELSE
+		CALL 疑似的画面クリア
+		TWAIT 500,1
+		PRINTFORML  
+		PRINTFORMW  「여어、너가 나의 마스터냐？」
+		PRINTFORML  
+		PRINTFORML  ＞ 순간、마법진에서 마력이 빛의 줄기가 되어 달려와 사라져간다
+		PRINTFORMW  　 모두가 눈을 보호하기 위해 빛을 차단하고、다음 순간에는 한 남자가 홀로 서서 %CALLNAME:MASTER%에게 질문을 던지고 있다
+		PRINTFORML  
+		PRINTFORML  
+		PRINTFORMW  ＞ 그것은、민첩한 육식동물을 연상시키는 남자였다
+		PRINTFORMW  　 전신에 달라붙는 파란색 의상에、최소한의 급소를 보호하기 위한 경갑
+		PRINTFORMW  　 앞머리를 짧게 자르고、뒷머리를 꼬리처럼 묶고있다
+		PRINTFORML  
+		PRINTFORML  　 그리고 무엇보다도、그 내재된 엄청난 마력으로 주위를 위압하는 주창
+		PRINTFORMW  　 마치 생물처럼 맥박이 뛰는듯한 착각을 불러일으키는 그것은、그 영웅의 대명사라 해도 과언이 아닐것이다
+		PRINTFORML  
+		PRINTFORML  
+		PRINTFORMW  ＞ %CALLNAME:MASTER%는、남자의 질문에 이것 저것 대답했다
+		PRINTFORML  
+		PRINTFORML  
+		PRINTFORML  「아~……뭐, 그렇겠지
+		PRINTFORMW  　여기 있는 녀석들을 보면、그렇겠지」
+		PRINTFORML  
+		PRINTFORML  「랜서 서번트、쿠훌린이다
+		PRINTFORMW  　이 인연이 길어질지는 너에게 달려있지만、잘 부탁해」
+		PRINTFORML  
+		IF TALENT:MASTER:남자
+			PRINTFORMW  ＞ 남자는 자칭하면서、%CALLNAME:MASTER%를 바라보며 겁 없이 웃고 있다
+			PRINTFORML  
+			PRINTFORML  
+			PRINTFORML  「아첨하는 놈이라고는 할 수 없는 놈인것 같지만――아무튼 말이、다。
+			PRINTFORMW  　아무 조건도 없이 소환했어。　네놈이 나를 거느리기에 적합한지、시험받을 각오는 되어있지？」
+		ELSE
+			PRINTFORMW  ＞ 남자는 뒷머리를 긁적이며、뭔가 싫어하는 야채가 식탁에 올라온 것 같은 표정을 짓고 있다
+			PRINTFORMW  　 %CALLNAME:MASTER%는 쿠훌린에게、무슨 불편함이 있는지 물어봤다
+			PRINTFORML  
+			PRINTFORML  
+			PRINTFORMW  「어？　아～……아니。　네가 잘못한 건 아니지、만」
+			PRINTFORML  
+			PRINTFORMW  ＞ 그렇게 말하면서도、남자는 %CALLNAME:MASTER%에게서 아는 사람과 같은 기운이 느껴진다고、털어놓았다
+			IF TALENT:MASTER:음란 || TALENT:MASTER:창부
+				PRINTFORMW  　 아는 사람、아마도 거북한 여자――켈트 신화에서 인연이 깊은 코노트의 여왕 메이브를 말하는 것일까
+			ELSE
+				PRINTFORMW  　 아는 사람、아마도 거북한 여자――그의 스승이기도 한、그림자 나라의 여왕 스카사하를 말하는 것일까
+			ENDIF
+			PRINTFORML  
+			PRINTFORML  
+			PRINTFORMW  「뭐、거긴 괜찮아。　만약 앞으로의 계획이 있다면 그때 이야기 해도 좋지만……그것보다도、말이야」
+			PRINTFORML  
+			PRINTFORMW  「넌 아무런 조건 없이 나를 불렀어。　그리고 날 사역하고 싶지
+			PRINTFORMW  　라면 앞으로 어떻게 해야 할지――모르겠지？」
+		ENDIF
+		PRINTFORML  
+		PRINTFORML  ＞ 뒤에서、마치 방금 깨달았다는 듯이 기술자들이 목소리를 높이는 것을 뒤로 하고
+		PRINTFORMW  　 %CALLNAME:MASTER%는 미리 배치해둔 중마들과 함께 영령과 대치한다
+		PRINTFORML  
+		PRINTFORML  
+		PRINTFORMW  「핫――좋네。　먼저 겁없이 내 앞에 서는 배짱은 합격이야」
+		PRINTFORML  
+	ENDIF
+	PRINTFORML  「자、한번 즐기고 갈까
+	PRINTFORMW  　가감은 안 해、죽어도 원망하지 마라！」
+	PRINTFORML  
+	PRINTFORMW  ＞ 영령 쿠훌린이 나타났다！
+	PRINTFORML  
+	
+	FLAG:도주불가플래그 = 1
+	FLAG:회화불능플래그 = 1
+	FLAG:선제기습취소 = 1
+	
+	CALL SET_ENEMY,9,[[キャラ:쿠훌린_창]],50,1,3
+	CFLAG:(CHARANUM-1):행동횟수 = 1
+	CFLAG:(CHARANUM-1):ＨＰ보정 = (MAXBASE:(CHARANUM-1):ＨＰ / 2)
+	CFLAG:(CHARANUM-1):ＭＰ보정 += 99999
+	
+	BASE:(CHARANUM-1):힘 += 3
+	BASE:(CHARANUM-1):내구 += 2
+	BASE:(CHARANUM-1):속도 += 5
+	
+	ABL:(CHARANUM-1):스킬3 = 0
+	ABL:(CHARANUM-1):스킬4 = 0
+	ABL:(CHARANUM-1):스킬9 = [[스킬:닷지카운터]]
+	ABL:(CHARANUM-1):스킬10 = [[스킬:기합]]
+	ABL:(CHARANUM-1):스킬11 = 3910
+	CSTR:(CHARANUM-1):전용기7 = 仕切り直し
+	ABL:(CHARANUM-1):스킬12 = 3911
+	CSTR:(CHARANUM-1):전용기8 = 四枝の浅瀬
+	
+	CSTR:(CHARANUM-1):사고패턴 = 光の御子
+	
+	
+	CALL SYNC_STATUS,(CHARANUM-1)
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	CALL BATTLE_START
+	
+	PRINTFORML  
+	PRINTFORMW  「아니 안되겠네。　너네가 해라、악당 치고는 아깝네」
+	PRINTFORML  
+	PRINTFORML  결판이 난 후、그렇게 말하고 남자는 득이양양하게 웃고있다
+	PRINTFORMW  거기에 방금전까지의 살기는 온데간데 없고、그 태도도 마치 오랜 친구와 이야기 하는 것처럼 누그러져 있었다
+	PRINTFORML  
+	PRINTFORML  
+	PRINTFORMW  「아？　무슨 여우에 홀린것같은 표정을 짓고있어
+	PRINTFORMW  　……아아、서로 죽고 죽인 직후인데말이야」
+	PRINTFORML  
+	PRINTFORML  「뭐야、결판이 나면 거기서 끝이잖아
+	PRINTFORMW  　서로가 서로를 위한 것이 아니라면 더더욱 그렇지」
+	PRINTFORML  
+	PRINTFORMW  하물며、이번에는 멋없는 짓도 하셨고。라고 영령은 기분 나쁜 듯이 코를 킁킁거렸다
+	PRINTFORML  
+	PRINTFORML  
+	PRINTFORML  「나는 마스터가 예상 이상의 전사라는 것을 알게 되어 만족
+	PRINTFORMW  　너도 호출한 서번트가 기대와는 어긋나지 않는다는 것은 알았을텐데――」
+	PRINTFORML  
+	$INPUT_LOOP1
+	PRINTFORML [0] 물론이다
+	PRINTFORML [1] 아직 멀었네
+	INPUT
+	SELECTCASE RESULT
+		CASE 0
+			PRINTFORML  
+			PRINTFORML  「그렇지？　하지만 뭐、너희들에게는 져버렸으니
+			PRINTFORMW  　말뿐인 녀석이 아니라는걸、앞으로의 싸움에서 증명해보이겠어」
+		CASE 1
+			PRINTFORML  
+			PRINTFORMW  「카아～앗、말해주잖아！」
+			PRINTFORML  
+			PRINTFORML  「뭐 괜찮아、지켜봐라 마스터
+			PRINTFORMW  　네가 소환한 서번트가 얼마나 대단한지、앞으로의 전투에서 증명해 보여주겠어」
+		CASEELSE
+			GOTO INPUT_LOOP1
+	ENDSELECT
+	PRINTFORML  
+	PRINTFORML  
+	PRINTFORMW  남자는 그렇게 선언하고、술은 없냐고 메리에게 말을 걸러 갔다가――직후 두 매드에게 붙잡혔다
+	PRINTFORMW  참 자유분방한 남자인데、그게 켈트족 전사의 기풍이라는 것일까
+	PRINTFORML  
+	PRINTFORML  「야, 마스터~! 이 녀석들 조사다 실험이다 뭔가 무서운 눈빛으로 쳐다보고 있잖아
+	PRINTFORMW  　얌마、뭘 좋은 느낌에 젖으려고 해。　얘네들 어떻게 좀 해줘！」
+	PRINTFORML  
+	PRINTFORML  
+	PRINTFORMW  ……일단 이번 소환실험은 대성공으로 끝났고、%CALLNAME:MASTER%의 전력도 기대대로 보충되었다
+	PRINTFORMW  지만 이것이 끝이라고는 생각되지 않는다
+	PRINTFORMW  그 매드의 텐션으로 보아、제2 제3의 실험이 이루어질 것이다
+	PRINTFORML  
+	PRINTFORML  그때、%CALLNAME:MASTER%가 또 불리는지。　다음에는 뭘 소환하려고 시도할지 모르겠지만
+	PRINTFORMW  %CALLNAME:MASTER%는 일단 해낸 감과 함께、영웅의 비명을 뒤로 한 채 승리의 미주를 메리로부터 받는 것이었다……
+	PRINTFORML  
+	PRINTFORML  
+	PRINTFORMW  ＞ 영령 쿠훌린(창) 이 동료마가 되었다！
+	PRINTFORML  
+	CALL ADD_NEW_COMPANION, [[キャラ:쿠훌린_창]], 1000
+	イベントフラグ:82:1 = 4
+	;再戦のときのためにフラグをリセットしておく
+	イベントフラグ:82:5 = 0
+	
+;--------------------
+;バトル設定
+;--------------------
+;---- EDIT 003 ADD START ---------------------------
+@EVENT_BATTLE_START_EVENT82_0
+;---- EDIT 003 ADD END ---------------------------
+#DIM SKILL_NUM
+
+SKILL_NUM = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+
+IF イベントフラグ:82:5 == 0
+	PRINTFORML  
+	CUSTOMDRAWLINE =
+	PRINTFORML  
+	SETCOLOR COLOR("YELLOW")
+	PRINTFORMW  ＞ 역할을 다한 마법진에서 마그네타이트가 쏟아져、영령에게 공급되어 간다！
+	RESETCOLOR
+	PRINTFORML  
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃이녀석은……칫、그런건가。　가슴이 아플지경이다┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃야、마스터。　세상이 너랑 같이 있으면 불편하단다┃
+	PRINTL ┃너、고지식한 줄 알았는데 무슨짓을 한 거야？┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃뭐、괜찮아。　결국 할 일은 변함없어┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃미안하지만、전력으로 죽이러간다┃
+	PRINTL ┃세상을 내려놓고、나에게 너의 기량을 보여달라고――――！┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	;魔力放出状態に強制移行
+	CALL SKILLGAGE_F_SET,(CHARANUM-1),SKILL_NUM,100
+	CALL PRINT_ACT_MESSAGE, CHARANUM-1, SKILL_NUM
+	CALL ACTION_ノウブル・ファンタズム,(CHARANUM-1)
+	CFLAG:(CHARANUM-1):気合フラグ = 1
+	イベントフラグ:82:5 = 1
+ENDIF
+
+;---- EDIT 003 ADD START ---------------------------
+@EVENT_BATTLE_TURNEND_EVENT82_0
+;---- EDIT 003 ADD END ---------------------------
+#DIM SKILL_NUM
+
+SKILL_NUM = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+
+IF イベントフラグ:82:5 == 2 && 現HP割合(CHARANUM-1) < 50
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃――――훌륭하다。　　　　　　　　　　　　　　　　　　　　　　┃
+	PRINTL ┃아무래도、내가 너희들을 얕잡아보고 있었던 모양이야　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTL
+	PRINTW ＞ 영령 쿠훌린　의 창에 마력이 집중되어、주홍빛을 발하기 시작했다！
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃전사들이여、지금까지의 결례를 사과한다　　　　　　　　　　　　　　┃
+	PRINTL ┃그러므로 내 필살의 일격으로、너희에 대한 경의를 표한다　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃그 마음、받아라――――！　　　　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	;---- EDIT 006 ADD START ---------------------------
+	;ABL:(CHARANUM-1):스킬3 = 3906
+	;CSTR:(CHARANUM-1):전용기3 = 刺し穿つ死棘の槍;EDIT 005
+	;ABL:(CHARANUM-1):스킬4 = 3907
+	;CSTR:(CHARANUM-1):전용기4 = 突き穿つ死翔の槍
+	;---- EDIT 006 ADD END -----------------------------
+	CALL VAR_HP,(CHARANUM-1),MAX(MAXBASE:(CHARANUM-1):ＨＰ,1),"회복"
+	CALL HEALTH_CHARA,(CHARANUM-1)
+	CALL SKILLGAGE_D_SET,(CHARANUM-1),SKILL_NUM,5
+	イベントフラグ:82:5 = 3
+ELSEIF イベントフラグ:82:5 == 1 && 現HP割合(CHARANUM-1) < 80
+	CUSTOMDRAWLINE =
+	PRINTL 
+	PRINTL ┏>MESSAGE━━━━━━━━━━━━━━━━━━━━━━━━━┓
+	PRINTL ┃핫！　좋네、그래야 재미있지않겠어　　　　　　　┃
+	PRINTL ┃자、기어 업해 나가자 세계의 적　　　　　　　　　　　　　┃
+	PRINTL ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+	PRINTW
+	CFLAG:(CHARANUM-1):행동횟수 = 2
+	イベントフラグ:82:5 = 2
+ELSE
+ENDIF
+
+;敵の体力回復
+SETCOLOR COLOR("YELLOW")
+PRINTW ＞ 영령 쿠훌린　에게 마그네타이트가 모여간다！
+RESETCOLOR
+CALL VAR_HP,(CHARANUM-1),MAX(MAXBASE:(CHARANUM-1):ＨＰ/20,1),"회복"
+CFLAG:(CHARANUM-1):気合フラグ = 1
+IF SKILLGAGE_D_GET((CHARANUM-1),SKILL_NUM) == 0
+	CALL PRINT_ACT_MESSAGE, CHARANUM-1, SKILL_NUM
+	CALL ACTION_ノウブル・ファンタズム,(CHARANUM-1)
+ENDIF
+
+;--------------------
+;思考パターン設定
+;--------------------
+@SET_ACTION_光の御子, ARG
+#DIM SKILL_NUM
+#DIM SKILL_NUM2
+#DIM SKILL_NUM3
+
+SKILL_NUM = PU_SKILLNUM_GET((CHARANUM-1),"ノウブル・ファンタズム")
+SKILL_NUM2 = PU_SKILLNUM_GET((CHARANUM-1),"刺し穿つ死棘の槍")
+SKILL_NUM3 = PU_SKILLNUM_GET((CHARANUM-1),"突き穿つ死翔の槍")
+
+SELECTCASE イベントフラグ:82:5
+	CASE 4
+		IF RAND:2 == 0
+			IF RAND:100 < 50
+				CALL SET_ACTION_SKILL, (CHARANUM-1), (SKILL_NUM3)
+			ELSE
+				CALL SET_ACTION_SKILL, (CHARANUM-1), (SKILL_NUM2)
+			ENDIF
+		ELSE
+			IF RAND:100 < 50
+				CALL SET_ACTION_SKILL, (CHARANUM-1), [[스킬:백열찌르기]]
+			ELSE
+				CALL SET_ACTION_SKILL, (CHARANUM-1), [[스킬:자벨린레인]]
+			ENDIF
+		ENDIF
+	CASE 3
+		IF CFLAG:(CHARANUM-1):행동한횟수 == 0
+			CALL SET_ACTION_SKILL, (CHARANUM-1), (SKILL_NUM3)
+			イベントフラグ:82:5 = 4
+		ELSE
+			IF RAND:2 == 0
+				CALL SET_ACTION_SKILL, (CHARANUM-1), [[스킬:백열찌르기]]
+			ELSE
+				CALL SET_ACTION_SKILL, (CHARANUM-1), [[스킬:자벨린레인]]
+			ENDIF
+		ENDIF
+	CASEELSE
+		IF RAND:2 == 0
+			CALL SET_ACTION_SKILL, (CHARANUM-1), [[스킬:백열찌르기]]
+		ELSE
+			CALL SET_ACTION_SKILL, (CHARANUM-1), [[스킬:자벨린레인]]
+		ENDIF
+ENDSELECT
+

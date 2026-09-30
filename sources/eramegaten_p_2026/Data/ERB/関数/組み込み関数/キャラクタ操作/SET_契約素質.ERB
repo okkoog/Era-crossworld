@@ -1,0 +1,57 @@
+﻿@SET_契約素質, L_CHARA, ARGS, IS_FORCE
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC IS_FORCE
+SELECTCASE ARGS
+	CASE "아내", "남편", "妻・夫"
+		SIF !IS_FORCE && !TALENT:L_CHARA:친애
+			THROW 조건을 만족하지 않은 캐릭터에게 계약 소질을 부여하려 하고 있습니다.
+		IF TALENT:L_CHARA:남자
+			TALENT:L_CHARA:남편 = 1
+		ELSE
+			TALENT:L_CHARA:아내 = 1
+		ENDIF
+		TALENT:L_CHARA:친애 = 1
+		CALL 陥落人数加算, L_CHARA, "연모"
+	CASE "음마"
+		SIF !IS_FORCE && !TALENT:L_CHARA:창부
+			THROW 조건을 만족하지 않은 캐릭터에게 계약 소질을 부여하려 하고 있습니다.
+		TALENT:L_CHARA:음마 = 1
+		TALENT:L_CHARA:창부 = 1
+		CALL 陥落人数加算, L_CHARA, "음란"
+	CASE "노리개"
+		SIF !IS_FORCE && !TALENT:L_CHARA:예속
+			THROW 조건을 만족하지 않은 캐릭터에게 계약 소질을 부여하려 하고 있습니다.
+		TALENT:L_CHARA:노리개 = 1
+		TALENT:L_CHARA:예속 = 1
+		CALL 陥落人数加算, L_CHARA, "복종"
+	CASE "맹우"
+		SIF !IS_FORCE && !TALENT:L_CHARA:동료
+			THROW 조건을 만족하지 않은 캐릭터에게 계약 소질을 부여하려 하고 있습니다.
+		TALENT:L_CHARA:맹우 = 1
+		TALENT:L_CHARA:동료 = 1
+		CALL 陥落人数加算, L_CHARA, "신뢰"
+	CASEELSE
+		THROW [%ARGS%]가 비정상입니다!
+ENDSELECT
+;強制変化の場合の素質の処理
+IF ARGS != "아내" && ARGS != "남편" && ARGS != "妻・夫"
+	TALENT:L_CHARA:친애 = 0
+	TALENT:L_CHARA:아내 = 0
+	TALENT:L_CHARA:남편 = 0
+ENDIF
+IF ARGS != "음마"
+	TALENT:L_CHARA:창부 = 0
+	TALENT:L_CHARA:음마 = 0
+ENDIF
+IF ARGS != "노리개"
+	TALENT:L_CHARA:예속 = 0
+	TALENT:L_CHARA:노리개 = 0
+ENDIF
+IF ARGS != "맹우"
+	TALENT:L_CHARA:동료 = 0
+	TALENT:L_CHARA:맹우 = 0
+ENDIF
+TALENT:L_CHARA:연모 = 0
+TALENT:L_CHARA:음란 = 0
+TALENT:L_CHARA:복종 = 0
+TALENT:L_CHARA:신뢰 = 0

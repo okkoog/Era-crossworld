@@ -1,0 +1,179 @@
+﻿;スキル名
+@SKILL_NAME_2756,ARG
+RESULTS = 파사의홍염
+
+;　명중
+@SKILL_HITRATE_2756, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_2756, ARG
+RETURN 300
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_2756,ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_2756,ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_2756, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_2756,ARG
+RETURN 20
+
+;　相性
+@SKILL_TYPE_2756,ARG
+RETURN GET_TYPE_NUM("화염")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_2756
+RETURN GET_SKILL_DECIDE_TYPE_NUM("MA")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_2756, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_2756, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_2756,ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_2756,ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_2756, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;계승타입
+@SKILL_SUCCESSION_TYPE_2756
+RETURN GET_SUCCESSION_NUM("화염")
+
+;속도보정
+@SKILL_SPEED_2756, ARG = -1
+RETURN 0
+
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_2756
+RETURN 0
+
+;スキル変化？用ランク
+@SKILL_RANK_2756, ARG = -1
+RETURN 8
+
+@継承不能_2756
+RETURN 1
+
+;テンプレート用、追加効果シリーズ
+;追加効果ステータス
+@SKILL_ADDTIONAL_STATE_2756,ARG
+RETURN GET_STATE_NUM("CLOSE")
+
+;추가효과상성
+@SKILL_ADDTIONAL_TYPE_2756,ARG
+RETURN GET_TYPE_NUM("신경")
+
+;追加効果基本付与確率
+@SKILL_ADDTIONAL_BASE_RATE_2756,ARG
+RETURN 50
+
+;追加効果付与確率上限
+@SKILL_ADDTIONAL_MAX_RATE_2756,ARG
+RETURN 95
+
+;====================================================
+;追撃発動条件
+;ARG			このスキルの持ち主
+;ARG:1			攻撃者のキャラ番号
+
+;RESULT			1 = 反撃成立。ただし実行までの間に行動者が行動不能になった場合は不発する
+;RESULT:1		反撃対象のPOS(ACTION_XXXのARG:1に送られる)。システム側で敵の生存・存在判定による不発判定をおこなうが、RESULT:1が0の場合は相手の状態に関わらず判定を通す
+;RESULT:2		-1 = デフォルトのスキル名表示を省く
+;====================================================
+@SKILL_TRIGGER_ACTIONABLE_2756,ARG,ARG:1
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+SIF ARG != FLAG:행동순1
+	RETURN 0
+SIF IS_FRIEND(ARG, ARG:1)
+	RETURN 0
+SIF CFLAG:ARG:입력행동 != 2756
+	RETURN 0
+SIF !GET_CREC_ACT(ARG, ARG:1, "HIT")
+	RETURN 0
+FOR LCOUNT, 1, 17
+	L_CHARA = POS(LCOUNT)
+	SIF !IS_TARGET_ABLE(L_CHARA)
+		CONTINUE
+	SIF !IS_FRIEND(ARG, L_CHARA)
+		CONTINUE
+	CALL SKILL_CURE_STATE_2756, CFLAG:L_CHARA:상태이상
+	SIF !RESULT
+		CONTINUE
+	RETURN 1, CPOS(ARG)
+NEXT
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_2756, ARG, ARG:1, ARG:2
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC POS_TABLE = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+IF FLAG:총공격중
+	CALL SHUFFLE_ARRAY_INT, POS_TABLE
+	FOR LCOUNT, 0, VARSIZE("POS_TABLE")
+		L_CHARA = POS(POS_TABLE:LCOUNT)
+		SIF !IS_TARGET_ABLE(L_CHARA)
+			CONTINUE
+		SIF !IS_FRIEND(ARG, L_CHARA)
+			CONTINUE
+		CALL SKILL_CURE_STATE_2756, CFLAG:L_CHARA:상태이상
+		SIF !RESULT
+			CONTINUE
+		CALL CURE_STATE_SINGLE,ARG, L_CHARA, 2756
+		BREAK
+	NEXT
+ELSE
+	CALL ATTACK_SKILL,ARG,ARG:1,ARG:2
+ENDIF
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_2756, ARG
+PRINTL 적 １체에 화염 상성으로 대 데미지를 주고、확률로 CLOSE를 부착한다。
+PRINTL 이 스킬에 의한 공격이 성공했을 경우、상태이상에 걸린 아군이 있을 시、이하의 연동효과가 발동한다。
+PRINTL 「랜덤한 아군 한 명의 FLY,DYING,ORGY,HEAT 이외의 상태이상을 회복한다。」
+
+@SKILL_EXPLAIN_TOOLTIP_2756, ARG
+RESULTS:0 = 적 １체에 화염 상성으로 대 데미지를 주고、확률로 CLOSE를 부착한다。
+RESULTS:1 = 공격 성공시、상태이상에 걸린 아군이 있을 시、이하의 연동효과가 발동한다。
+RESULTS:2 = 「랜덤한 아군 한 명의 FLY,DYING,ORGY,HEAT 이외의 상태이상을 회복한다。」
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_2756,ARG
+RETURN 1
+;とくにない
+
+;何のバッドステータスを治せるか
+@SKILL_CURE_STATE_2756,ARG
+SELECTCASE GET_STATE(ARG)
+	CASE "FLY","GOOD","DYING","ORGY","HEAT"
+		RETURN 0
+	CASEELSE
+		RETURN 1
+ENDSELECT
+

@@ -1,0 +1,259 @@
+﻿;スキル名
+@SKILL_NAME_ライトニングスフィア, ARG
+IF SKILL_CHANGE(ARG, [[キャラ:데머즐]])
+	RESULTS = 라이트닝 만다라
+ELSE
+	RESULTS = LIGHTNING SPHERE
+ENDIF
+
+;　명중
+@SKILL_HITRATE_ライトニングスフィア, ARG
+RETURN 150
+
+;　威力
+@SKILL_POWER_ライトニングスフィア, ARG
+IF SKILL_CHANGE(ARG, [[キャラ:데머즐]])
+	RETURN 150
+ELSE
+	SIF FLAG:확산플래그
+		RETURN 175
+	SIF CFLAG:ARG:고유게이지D1
+		RETURN 155
+	RETURN 300
+ENDIF
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_ライトニングスフィア, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_ライトニングスフィア, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_ライトニングスフィア, ARG
+RETURN GET_SKILL_COST_TYPE_NUM("MP")
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_ライトニングスフィア, ARG
+SIF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정")
+	RETURN 15
+RETURN 10
+
+;　相性
+@SKILL_TYPE_ライトニングスフィア, ARG
+RETURN GET_TYPE_NUM("전격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_ライトニングスフィア
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_ライトニングスフィア, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_ライトニングスフィア, ARG
+RETURN GET_SKILL_TARGET_NUM("적")
+
+;　사거리
+@SKILL_RANGE_ライトニングスフィア, ARG
+#DIM DIVA_F
+#DIM DIVA_H
+IF SKILL_CHANGE(ARG, [[キャラ:데머즐]])
+	RETURN 1
+ELSEIF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정")
+	SIF CFLAG:ARG:気合フラグ > 0
+		RETURN 3
+	RETURN 2
+ELSE
+	DIVA_F = SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]])
+	DIVA_H = SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]])
+	SIF DIVA_F == 1 || DIVA_H == 1
+		RETURN 2
+	RETURN 1
+ENDIF
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_ライトニングスフィア, ARG
+RETURN GET_SPHERE_NUM("단체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_ライトニングスフィア, ARG
+RETURN GET_SKILL_EFFECT_NUM("공격")
+
+;속도보정
+@SKILL_SPEED_ライトニングスフィア, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_ライトニングスフィア
+RETURN 0
+
+
+;拡散攻撃用追加処理
+@SKILL_SPREAD_ライトニングスフィア, ARG
+SIF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정") && CFLAG:ARG:気合フラグ > 0
+	RETURN 3
+RETURN 2
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_ライトニングスフィア, ARG, ARG:1, SKILL_NUM
+#LOCALSSIZE 1
+#DIM SKILL_NUM
+#DIM DIVA_F
+#DIM DIVA_H
+#DIM ループ用
+#DIM ボス殺したフラグ
+#DIM ボス検索配列, 17
+
+DIVA_F = SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]])
+DIVA_H = SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]])
+
+IF SKILL_CHANGE(ARG, [[キャラ:데머즐]])
+	CALL ATTACK_SPREAD, ARG, ARG:1, SKILL_NUM
+ELSE
+	;アキュラくんみたいにSKILL FINISH出そうと思ったけど25%の確率でクードスリセットしなくなったので整合性ががが
+	;ひとまずコメントアウト
+	;IF CFLAG:ARG:PT플래그 > 0
+	;	ボス殺したフラグ = 0
+	;	VARSET ボス検索配列, 0
+	;	IF CFLAG:ARG:PT플래그 > 0
+	;		FOR ループ用, 7, 17
+	;			LOCALS = 포지션{ループ用}
+	;			SIF FLAG:LOCALS == -1
+	;				CONTINUE
+	;			SIF GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) == "DYING"
+	;				CONTINUE
+	;			;生きてるボスの位置を記録
+	;			SIF CFLAG:(FLAG:LOCALS):보스플래그 == 1
+	;				ボス検索配列:ループ用 = 1
+	;		NEXT
+	;	ENDIF
+	;ENDIF
+	
+	IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정")
+		CFLAG:ARG:고유게이지D1 = 1
+		CALL ATTACK_SINGLE, ARG, POS(ARG:1), SKILL_NUM
+		IF POS(ARG:1) >= 0
+			IF CFLAG:ARG:気合フラグ > 0
+				TRYCALLFORM BATTLE_MESSAGE_K5357_SP, ARG, "ライトニングスフィア2"
+			ELSE
+				TRYCALLFORM BATTLE_MESSAGE_K5357_SP, ARG, "ライトニングスフィア"
+			ENDIF
+			PRINTW ＞뇌구가 주위로 발사되었다!
+			CALL ATTACK_SPREAD, ARG, ARG:1, SKILL_NUM
+			CFLAG:ARG:気合フラグ = 0
+		ENDIF
+		CFLAG:ARG:고유게이지D1 = 0
+	ELSEIF DIVA_F == 1 || DIVA_H == 1
+		CFLAG:ARG:고유게이지D1 = 1
+		CALL ATTACK_SINGLE, ARG, POS(ARG:1), SKILL_NUM
+		IF POS(ARG:1) >= 0
+			TRYCALLFORM BATTLE_MESSAGE_K5357_SP, ARG, "ライトニングスフィア"
+			PRINTW ＞뇌구가 주위로 발사되었다!
+			CALL ATTACK_SPREAD, ARG, ARG:1, SKILL_NUM
+		ENDIF
+		CFLAG:ARG:고유게이지D1 = 0
+	ELSE
+		CALL ATTACK_SINGLE, ARG, POS(ARG:1), SKILL_NUM
+	ENDIF
+	
+	;IF CFLAG:ARG:PT플래그 > 0
+	;	FOR ループ用, 7, 17
+	;		;攻撃前に生きてたボスの場所じゃないなら飛ばすぞ
+	;		SIF ボス検索配列:ループ用 == 0
+	;			CONTINUE
+	;		LOCALS = 포지션{ループ用}
+	;		;この攻撃でボスが死んだら
+	;		IF FLAG:LOCALS == -1
+	;			ボス殺したフラグ += 1
+	;		ELSEIF GET_STATE(CFLAG:(FLAG:LOCALS):상태이상) == "DYING"
+	;			ボス殺したフラグ += 1
+	;		ENDIF
+	;	NEXT
+	;	SIF ボス殺したフラグ > 0
+	;		PRINTFORMW SKILL FINISH　Kudos + 1000
+	;ENDIF
+ENDIF
+
+IF CFLAG:ARG:PT플래그 > 0
+	LOCAL = RAND:4
+	IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정") && LOCAL == 0
+	ELSE
+		;IF ボス殺したフラグ > 0
+		;	SIF SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]]) == 0
+		;		CALL SKILLGAGE_F_SET, ARG, [[스킬:뇌격린]], 1
+		;ENDIF
+		;SONG OF DIVA/藍の運命終了
+		CALL SKILLGAGE_F_SET, ARG, [[스킬:SONG OF DIVA]], 0
+		;クードス没収
+		SIF SKILLGAGE_F_GET(ARG, [[스킬:뇌격린]]) > 0
+			PRINTFORML ＞%CALLNAME:ARG%의 쿠도스가 리셋되었다!
+		CALL SKILLGAGE_F_SET, ARG, [[스킬:뇌격린]], 0
+		;SP1消費=ゲージDを4加算
+		CALL SKILLGAGE_D_ADD, ARG, [[스킬:뇌격린]], 4
+	ENDIF
+	CALL SKILLGAGE_D_SET, ARG, SKILL_NUM, 2
+ENDIF
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　説明文の表示
+@SKILL_EXPLAIN_ライトニングスフィア, ARG
+#DIM DIVA_F
+#DIM DIVA_H
+DIVA_F = SKILLGAGE_F_GET(ARG, [[스킬:SONG OF DIVA]])
+DIVA_H = SKILLGAGE_H_GET(ARG, [[스킬:SONG OF DIVA]])
+PRINTFORML 전방에 뇌구를 발생시키는 %CALLNAME:ARG%의 SP 스킬.
+PRINTL 　
+IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정")
+	PRINTL 적 단체와 주위에 전격 상성으로 대데미지를 준다. 후열 사용 가능.
+	IF CFLAG:ARG:気合フラグ > 0
+		;シュート！　マンダラー！化
+		SETCOLOR 0x144ff4
+		PRINTL 気合状態　射程拡大：Ｌ／拡散範囲：３
+		RESETCOLOR
+	ENDIF
+ELSE
+	PRINTL 적 단체에 전격 상성으로 대데미지를 준다. 후열 사용 불가.
+	;マンダラー！化
+	IF DIVA_H == 1
+		SETCOLOR 0x1d9eff
+		PRINTL SONG OF DIVA 발동 중: 후열 사용이 가능해지며, 뇌구를 발사하여 공격이 확산된다.
+		RESETCOLOR
+	ELSEIF DIVA_F == 1
+		SETCOLOR 0x3f60a9
+		PRINTL SONG OF DIVA 발동 중: 후열 사용이 가능해지며, 뇌구를 발사하여 공격이 확산된다.
+		RESETCOLOR
+	ENDIF
+ENDIF
+PRINTL 단 사용 후에는 쿠도스가 0이 되며, 재사용까지 2턴의 쿨타임이 필요하다.
+PRINTL MP와는 별개로 SP를 1 소비한다.
+PRINTL ※SP는 4턴에 1 회복되며, 전투 종료 후에 완전 회복된다.
+PRINTL ※스킬 「뇌격린」을 소지하지 않은 경우 사용 불가.
+IF ARG >=0 && IS_CHARA_EQUIPED(ARG, "벽색의뇌정")
+	SETCOLOR 0x144ff4
+	PRINTL 번개의 렌즈 장비 중 25% 확률로 쿠도스·SP 소비를 회피
+	PRINTL 　　　　　　　　　　기합 상태일 경우 사거리가 L로, 확산 범위가 확대된다
+	RESETCOLOR
+ENDIF
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_ライトニングスフィア, ARG
+#DIM SKILL_NUM
+IF CFLAG:ARG:PT플래그 > 0
+	SKILL_NUM = PU_SKILLNUM_GET(ARG, "ライトニングスフィア")
+	SIF SKILLGAGE_D_GET(ARG, SKILL_NUM)
+		RETURN 0
+	SIF !HAVE_SKILL(ARG, [[스킬:뇌격린]])
+		RETURN 0
+	SIF SKILLGAGE_D_GET(ARG, [[스킬:뇌격린]]) > 8
+		RETURN 0
+	RETURN 1
+ELSE
+	RETURN 1
+ENDIF
+

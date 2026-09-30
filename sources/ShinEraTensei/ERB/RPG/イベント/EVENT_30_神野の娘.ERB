@@ -1,0 +1,99 @@
+
+
+;====================
+;条件
+;====================
+@PLAYABLE_EVENT_30
+IF 依頼フラグ:11:0 == 1 && イベントフラグ:30:0 == 0
+	RESULTS = 神野の娘
+	RETURN 1
+ENDIF
+RETURN 0
+
+
+;====================
+;内容
+;====================
+@SHOPCOM_EVENT_30
+CUSTOMDRAWLINE =
+PRINTL 少女：
+PRINTW 「探偵さんですか？ 探偵さんですよね？ 探偵さんの事務所ですよね、ここ」
+PRINTL
+PRINTFORMW ＞その日、突然%CALLNAME:MASTER%の事務所に大きな荷物を背負った小柄な少女が転がり込んできた
+PRINTL
+PRINTL 少女：
+PRINTW 「ボク、神野古代といいます。行方不明になったとーちゃんを探してほしいんです」
+PRINTW 「色んな仕事引き受けてくれる探偵さんの事務所だって聞いてここに来たんですけど……」
+PRINTL
+PRINTW ＞早口で畳み掛けるように話す少女は、神野祐二の資料にあった一人娘で間違い無さそうだ。
+PRINTW ＞情報によると、女神に変身する能力を持っているとの事だが……
+PRINTL
+PRINTL [1]探偵のフリをして、少女の依頼を引き受ける [2]探偵ではないと断る
+PRINTL [3]捕える
+
+CALL INPUTINT,1,2,3
+
+IF RESULT == 1
+	PRINTL 古代：
+	PRINTW 「本当ですか！？ ありがとうございます！」
+	PRINTW 「あ、でもボク、依頼料にできるようなモノ持ち合わせてなくって……」
+	PRINTW 「体で払っちゃいます！」
+	PRINTW 「荒事だったら得意です！ 探偵さんのお仕事のお手伝いやります！ 何でも言ってください！」
+	PRINTL
+	PRINTW ＞神野古代が仲魔になった
+
+	CALL EVENT_30_ADD_KOSHIRO
+	SIF RESULT == 1
+		CFLAG:(RESULT:1):戦闘参加不可能 = -1
+	イベントフラグ:30:0 = 1
+ELSEIF RESULT == 2
+	PRINTL 古代：
+	PRINTW 「あ、あれ……そうなんですか？」
+	PRINTW 「うーん、確かにあの人はここの探偵に頼めば良いって言ってたはずなんだけど……」
+	PRINTW 「……ごめんなさい、ボクの勘違いだったみたいです。突然押しかけて、すいませんでした」
+	PRINTL
+	PRINTW 少女は肩を落として去っていった……
+	イベントフラグ:30:0 = 2
+ELSE
+	PRINTW ＞落ち着くように言うと、睡眠薬入りのコーヒーを差し出した……
+	PRINTL
+	PRINTL 古代：
+	PRINTW 「あ、ありがとうございます。……ごめんなさい、ちょっと混乱してて」
+	PRINTW 「今まで色んな事があったけど、とーちゃん…が、ボク、置いて…」
+	PRINTW 「あ…れ……？ なんか、すごく……」
+	PRINTL
+	PRINTW ＞疲れもあったのだろうか、少女は程なく眠りに落ちた
+	PRINTW ＞無垢な少女が、無防備に寝顔を晒している……
+	PRINTL
+	PRINTW ＞神野古代を手に入れた
+	CALL EVENT_30_ADD_KOSHIRO
+	イベントフラグ:30:0 = 3
+ENDIF
+
+CUSTOMDRAWLINE =
+WAIT
+
+
+FOR LOCAL,0,CHARANUM
+	CALL HEALTH_CHARA,LOCAL
+NEXT
+
+@EVENT_30_ADD_KOSHIRO
+CALL ADD_NEW_COMPANION,4559,0
+IF RESULT == 1
+	PRINTL ※デビルシフターである古代が加入しました
+	PRINTL 　彼女は人間として剣や銃を扱う他、女神アリアンフロッドに変身してその力を使うことができます。
+	PRINTL 　ダンジョン移動中や邪教の館では、変身する悪魔を他の仲魔に変更する事が出来ます。
+	PRINTL 　変身先に指定した仲魔も通常通り調教や戦闘が出来ますが、
+	PRINTW 　彼女が変身すると変身先の悪魔はパーティから外れ、変身を解除するまで召喚できなくなります。
+	BASE:(RESULT:1):LV += 10
+	BASE:(RESULT:1):力 += 1
+	BASE:(RESULT:1):知恵 += 2
+	BASE:(RESULT:1):魔力 += 1
+	BASE:(RESULT:1):耐力 += 1
+	BASE:(RESULT:1):速さ += 1
+	BASE:(RESULT:1):運 += 9
+	BASE:(RESULT:1):ＥＸＰ = 5*(14)*(15)*(16)/3
+ENDIF
+RETURN RESULT
+

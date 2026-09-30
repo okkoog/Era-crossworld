@@ -1,0 +1,1114 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:SELF.ERB
+;	Facility	:奴隷からの奉仕などのイベント
+;
+;	
+;	Licence		:ライセンスフリー
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新規作成
+;	002		2022/02/23		JK好き					ヘッダー新規作成、処理を整理統合、マジックナンバーを整理、朝Vレイプ・調教後セックス(逆転)追加
+;	003		2022/03/12		JK好き					受け側男、攻め側女時の就寝時素股イベントで精液経験が受け側にも加算される問題を修正
+;													調教後セックス(逆転)時に存在しない経験を与えてエラー落ちする問題を修正
+;													調教後助手プレイ時に存在しない経験を与えてエラー落ちする問題を修正
+;	004		2022/09/01		JK好き					全体的にヤリチンと挿入経験を使うべき箇所を修正
+;	005		2022/09/10		JK好き					朝イベントと調教後イベントの中身を別ファイルに分離
+;	006		2024/02/18		d5991					内部の整理とV・Aセックスイベントで[음마]があると獲得する珠と経験が増加するように
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;-------------------------------------------------
+;夜終了時及び朝に起こるイベント ターゲット選択
+;-------------------------------------------------
+@EVENT_NIGHT_SELF
+#DIM 夜這いリスト , MAX_PLAYER_CHARA
+#DIM 夜這い可能人数 , 1
+#DIM LCOUNT
+
+;キャラ登録数が1以下の時は引き返す
+SIF CHARANUM <= 1
+	RETURN 1
+VARSET 夜這いリスト , -1
+夜這い可能人数 = 0
+B = 0
+FOR LCOUNT, 0, CHARANUM
+	;主人ならスキップ
+	SIF LCOUNT == MASTER
+		CONTINUE
+	SIF CFLAG:LCOUNT:요바이불허가
+		CONTINUE
+	;対象がその場にいないなら除外
+	SIF CFLAG:LCOUNT:이자리에없는플래그 == 1
+		CONTINUE
+	SIF CFLAG:LCOUNT:전투이외불능
+		RETURN 0
+	;レンタル中は除外
+	SIF IS_RENTING(LCOUNT)
+		CONTINUE
+	;上司に連れて行かれると除外
+	SIF CFLAG:LCOUNT:상사내습 == 1
+		CONTINUE
+	;体力が500以下なら除外
+	SIF BASE:LCOUNT:체력 <= 500
+		CONTINUE
+	;反発刻印がある場合は除外
+	SIF MARK:LCOUNT:반발각인 >= 1
+		CONTINUE
+	;陥落素質が無い場合は除外
+	SIF 陥落(LCOUNT) == 0
+		CONTINUE
+	;信頼系陥落素質の場合は除外
+	SIF 신뢰(LCOUNT) || 동료(LCOUNT)
+		CONTINUE
+	;他の所に行ってる伽羅は除外
+	SIF CFLAG:LCOUNT:ＮＴＲ요바이
+		CONTINUE
+	;最も好感度の高いキャラのIDが0未満である場合は除外
+	SIF FAVORITE_1_ID(LCOUNT) < 0
+		CONTINUE
+	夜這いリスト:夜這い可能人数 = LCOUNT
+	夜這い可能人数 += 1
+NEXT
+IF 夜這い可能人数 == 0
+	B = -1
+	RETURN 1
+ENDIF
+
+;まず、メインキャラを選ぶ
+B = 0
+
+;Bにランダム選択されたキャラのキャラ登録番号を入れる・0の時はやり直し
+$REPLAY0
+B = 夜這いリスト:(RAND:夜這い可能人数)
+;対象判定,Bが行動者,Eが被害者,Gが判定用
+E = FAVORITE_1(B)
+;FOR G, 0, CHARANUM
+;	SIF CFLAG:B:(CFLAG:G:캐릭터고유번호+2000) > CFLAG:B:(CFLAG:E:캐릭터고유번호+2000)
+;	E = G
+;NEXT
+;対象の好感度が行動者より主人が高かった場合夜這い無し
+SIF E != MASTER && FAVORITE(E,MASTER)  > FAVORITE(E,B)
+	RETURN 1
+;対象が射精ができる場合
+IF HAVE_PENIS(E)
+	Y = 1
+;できない場合
+ELSE
+	Y = 0
+ENDIF
+
+;相手が主人の場合は構ったフラグ
+IF FLAG:ＮＴＲ기능
+	SIF E == MASTER
+		CFLAG:B:신경썼다플래그 = 1
+ENDIF
+
+;-------------------------------------------------
+;夜終了時に起こるイベント
+;-------------------------------------------------
+
+;7種8パターン
+;対象C 相手V
+;対象C 相手A
+;対象V 相手C
+;対象A 相手C
+;両者C（素）・両者C（貝）
+;자위
+;一緒に寝る
+
+;7つの組み合わせ
+;対象（男）*相手（男）
+	;対象C 相手A
+	;対象A 相手C
+;対象（男）*相手（フタ）
+	;対象C 相手V
+	;対象C 相手A
+	;対象A 相手C
+	;両者C（素）
+;対象（フタ）*相手（男）
+	;対象C 相手A
+	;対象V 相手C
+	;対象A 相手C
+	;両者C（素）
+;対象（フタ）*相手（フタ）
+	;対象C 相手V
+	;対象C 相手A
+	;対象V 相手C
+	;対象A 相手C
+	;両者C（素）
+;対象（女）*相手（男・フタ）
+	;対象V 相手C
+	;対象A 相手C
+	;両者C（素）
+;対象（男・フタ）*相手（女）
+	;対象C 相手V
+	;対象C 相手A
+	;両者C（素）
+;対象（女）*相手（女）
+	;両者C（貝）
+;※自慰は条件無し、一緒に寝るは性別の条件無し
+
+;ランダムに発生するかとチェックし、実行不可ならば再度チェック
+;当たり7ハズレ2。実行可能に当たる前にハズレに当たったら終了
+;ただし、上位の陥落素質があれば必ず発生
+
+LOCAL = TARGET
+TARGET = B
+
+$LOOP_N
+IF TALENT:B:친애 || TALENT:B:창부 || TALENT:B:예속
+	R = RAND:7
+ELSE
+	R = RAND:9
+ENDIF
+
+IF R == 0
+	;対象C 相手V（処女及び再生処女を持たず、V感覚2以上、欲望3以上で男でない、対象が男もしくはフタナリ場合）
+	IF TALENT:B:처녀 == 0 && TALENT:B:재생처녀 == 0 && ABL:B:Ｖ감각 >= 2 && ABL:B:욕망 >= 3 && Y == 1 && !IS_MALE(B)
+		CALL SELF_NIGHT6
+	ELSE
+		GOTO LOOP_N
+	ENDIF
+ELSEIF R == 1
+	;対象C 相手A（A感覚3以上、欲望4以上、対象が男もしくはフタナリ場合）
+	IF ABL:B:Ａ감각 >= 3 && ABL:B:욕망 >= 4 && Y == 1
+		CALL SELF_NIGHT31
+	ELSE
+		GOTO LOOP_N
+	ENDIF
+ELSEIF R == 2
+	;対象V 相手C（対象が処女及び再生処女を持たず男でない、ターゲットのＣ感覚3以上、欲望3以上で男もしくはフタナリの場合）
+	IF TALENT:E:처녀 == 0 && TALENT:E:재생처녀 == 0 && IS_MALE(E) == 0 && ABL:B:Ｃ감각 >= 3 && ABL:B:욕망 >= 3 && HAVE_PENIS(B)
+		CALL SELF_NIGHT32
+	ELSE
+		GOTO LOOP_N
+	ENDIF
+ELSEIF R == 3
+	;対象A 相手C（対象のA感覚3以上、ターゲットのＣ感覚3以上、欲望4以上で男もしくはフタナリの場合）
+	IF ABL:E:Ａ감각 >= 3 && ABL:B:Ｃ감각 >= 3 && ABL:B:욕망 >= 4 && HAVE_PENIS(B)
+		CALL SELF_NIGHT33
+	ELSE
+		GOTO LOOP_N
+	ENDIF
+ELSEIF R == 4
+	;（両者C（素股）・両者C（貝合わせ））（どちらか片方でも男でない場合）
+	IF !IS_MALE(E) || !IS_MALE(B)
+		CALL SELF_NIGHT34
+	ELSE
+		GOTO LOOP_N
+	ENDIF
+ELSEIF R == 5
+	;夜自慰
+	CALL SELF_NIGHT35
+ELSEIF R == 6
+	;一緒に寝る(恋慕または親愛が必要)
+	IF TALENT:B:연모 || TALENT:B:친애
+		CALL SELF_NIGHT36
+	ELSE
+		GOTO LOOP_N
+	ENDIF
+ELSE
+	TARGET = LOCAL
+	RETURN 0
+ENDIF
+TARGET = LOCAL
+
+;-------------------------------------------------
+;夜イベント ソースの計算
+;-------------------------------------------------
+;夜這い（対象C 相手V）
+;-------------------------------------------------
+@SELF_NIGHT6
+DRAWLINE
+
+;욕망
+IF ABL:B:욕망 <= 2
+	A = 1
+ELSEIF ABL:B:욕망 <= 4
+	A = 2
+ELSEIF ABL:B:욕망 <= 7
+	A = 3
+ELSEIF ABL:B:욕망 <= 10
+	A = 4
+ELSE
+	A = 4 + (ABL:B:욕망 - 10) / 4
+ENDIF
+
+;Ｖ감각
+IF ABL:B:Ｖ감각 <= 2
+	A += 1
+ELSEIF ABL:B:Ｖ감각 <= 4
+	A += 2
+ELSEIF ABL:B:Ｖ감각 <= 7
+	A += 3
+ELSEIF ABL:B:Ｖ감각 <= 10
+	A += 4
+ELSE
+	A += 4 + (ABL:B:Ｖ감각 - 10) / 3
+ENDIF
+
+;Ｃ感覚（対象）
+IF ABL:E:Ｃ감각 <= 2
+	A += 1
+ELSEIF ABL:E:Ｃ감각 <= 4
+	A += 2
+ELSEIF ABL:E:Ｃ감각 <= 7
+	A += 3
+ELSEIF ABL:E:Ｃ감각 <= 10
+	A += 4
+ELSE
+	A += 4 + (ABL:E:Ｃ감각 - 10) / 3
+ENDIF
+
+;정액중독
+IF ABL:B:정액중독 <= 1
+	A += 1
+ELSEIF ABL:B:정액중독 <= 2
+	A += 2
+ELSEIF ABL:B:정액중독 <= 5
+	A += 3
+ELSEIF ABL:B:정액중독 <= 7
+	A += 4
+ELSEIF ABL:B:정액중독 <= 10
+	A += 5
+ELSE
+	A += 5 + (ABL:B:정액중독 - 10) / 4
+ENDIF
+
+;섹스중독
+IF ABL:B:섹스중독 <= 1
+	A += 1
+ELSEIF ABL:B:섹스중독 <= 2
+	A += 2
+ELSEIF ABL:B:섹스중독 <= 4
+	A += 3
+ELSEIF ABL:B:섹스중독 <= 6
+	A += 4
+ELSEIF ABL:B:섹스중독 <= 8
+	A += 5
+ELSEIF ABL:B:섹스중독 <= 10
+	A += 6
+ELSE
+	A += 6 + (ABL:B:섹스중독 - 10) / 3
+ENDIF
+
+;창부
+SIF TALENT:B:창부
+	A += 1
+
+;음마
+SIF TALENT:B:음마
+	A += 1
+
+;섹스광
+SIF TALENT:B:섹스광
+	A += 2
+
+;Ｖ민감
+SIF TALENT:B:Ｖ민감
+	A += 1
+
+;헌신적
+SIF TALENT:B:헌신적
+	A += 1
+
+;獰猛もしくは狡猾
+SIF TALENT:B:영맹 || TALENT:B:교활
+	A += 1
+
+SIF A == 0
+	A = 1
+
+IF IS_LESBIAN(B,E)
+	CALL ADDS_EXP("레즈경험", A, B)
+	CALL ADDS_EXP("레즈경험", A, E)
+ENDIF
+
+IF HAVE_PENIS(B)
+	CALL ADDS_EXP("사정경험", A/2, B)
+ENDIF
+
+IF CFLAG:B:노예의질내사정에의한임신판정 > 1 && CFLAG:B:자궁내피임결계 == 0
+	CALL ADDS_EXP("질사경험", A/2, E)
+	CFLAG:B:노예의질내사정에의한임신판정 += A/2
+ENDIF
+
+CALL ADDS_EXP("사정경험", A/2, E)
+CALL ADDS_EXP("Ｖ경험", A/2, B)
+CALL ADDS_EXP("절정경험", A/4, B)
+CALL ADDS_EXP("절정경험", A/4, E)
+CALL ADDS_EXP("성교경험", A/2, B)
+CALL ADDS_EXP("삽입경험", A/2, E)
+CALL ADDS_EXP("정액경험", A/2, B)
+GOTJUEL:B:쾌Ｖ += A*100
+GOTJUEL:B:복종 += A*60
+GOTJUEL:B:굴복 += A*40
+GOTJUEL:B:습득 += A*40
+TFLAG:13 = 9
+CALL KOJO_MESSAGE_EVENT
+PRINTFORML ---%CALLNAME:B%---
+CALL SHOW_ADD_EXP(B, "単純")
+CALL SHOW_JUEL_CHECK, B
+PRINTFORML ---%CALLNAME:E%---
+CALL SHOW_ADD_EXP(E, "単純")
+CALL SHOW_JUEL_CHECK, E
+PRINTFORMW {A/2}회의 행위 후, 마음을 통한 두 사람은 이어진 채 서로 끌어안고 깊은 잠에 빠져들었다……
+
+DRAWLINE
+
+RETURN 0
+
+;-------------------------------------------------
+;夜這い（対象C 相手A）
+;-------------------------------------------------
+@SELF_NIGHT31
+DRAWLINE
+
+;욕망
+IF ABL:B:욕망 <= 2
+	A = 1
+ELSEIF ABL:B:욕망 <= 4
+	A = 2
+ELSEIF ABL:B:욕망 <= 7
+	A = 3
+ELSEIF ABL:B:욕망 <= 10
+	A = 4
+ELSE
+	A = 4 + (ABL:B:욕망 - 10) / 4
+ENDIF
+
+;Ａ감각
+IF ABL:B:Ａ감각 <= 2
+	A += 1
+ELSEIF ABL:B:Ａ감각 <= 4
+	A += 2
+ELSEIF ABL:B:Ａ감각 <= 7
+	A += 3
+ELSEIF ABL:B:Ａ감각 <= 10
+	A += 4
+ELSE
+	A += 4 + (ABL:B:Ａ감각 - 10) / 3
+ENDIF
+
+;Ｃ感覚（対象）
+IF ABL:E:Ｃ감각 <= 2
+	A += 1
+ELSEIF ABL:E:Ｃ감각 <= 4
+	A += 2
+ELSEIF ABL:E:Ｃ감각 <= 7
+	A += 3
+ELSEIF ABL:E:Ｃ감각 <= 10
+	A += 4
+ELSE
+	A += 4 + (ABL:E:Ｃ감각 - 10) / 3
+ENDIF
+
+;정액중독
+IF ABL:B:정액중독 <= 1
+	A += 1
+ELSEIF ABL:B:정액중독 <= 2
+	A += 2
+ELSEIF ABL:B:정액중독 <= 5
+	A += 3
+ELSEIF ABL:B:정액중독 <= 7
+	A += 4
+ELSEIF ABL:B:정액중독 <= 10
+	A += 5
+ELSE
+	A += 5 + (ABL:B:정액중독 - 10) / 3
+ENDIF
+
+;섹스중독
+IF ABL:B:섹스중독 <= 1
+	A += 1
+ELSEIF ABL:B:섹스중독 <= 2
+	A += 2
+ELSEIF ABL:B:섹스중독 <= 4
+	A += 3
+ELSEIF ABL:B:섹스중독 <= 6
+	A += 4
+ELSEIF ABL:B:섹스중독 <= 8
+	A += 5
+ELSEIF ABL:B:섹스중독 <= 10
+	A += 6
+ELSE
+	A += 6 + (ABL:B:섹스중독 - 10) / 3
+ENDIF
+
+;창부
+SIF TALENT:B:창부
+	A += 1
+
+;음마
+SIF TALENT:B:음마
+	A += 1
+
+;헌신적
+SIF TALENT:B:헌신적
+	A += 1
+
+;애널광
+SIF TALENT:B:애널광
+	A += 2
+
+;Ａ민감
+SIF TALENT:B:Ａ민감
+	A += 1
+
+;獰猛もしくは狡猾
+SIF TALENT:B:영맹 || TALENT:B:교활
+	A += 1
+
+SIF A == 0
+	A = 1
+
+IF IS_LESBIAN(B,E)
+	CALL ADDS_EXP("레즈경험", A, B)
+	CALL ADDS_EXP("레즈경험", A, E)
+ELSEIF IS_GAY(B,E)
+	CALL ADDS_EXP("ＢＬ경험", A, B)
+	CALL ADDS_EXP("ＢＬ경험", A, E)
+ENDIF
+
+CALL ADDS_EXP("사정경험", A/2, E)
+
+IF HAVE_PENIS(B)
+	CALL ADDS_EXP("사정경험", A/2, B)
+ENDIF
+
+CALL ADDS_EXP("Ａ경험", A/2, B)
+CALL ADDS_EXP("절정경험", A/4, B)
+CALL ADDS_EXP("절정경험", A/4, E)
+CALL ADDS_EXP("성교경험", A/2, B)
+CALL ADDS_EXP("삽입경험", A/2, E)
+CALL ADDS_EXP("정액경험", A/2, B)
+GOTJUEL:B:쾌Ａ += A*100
+GOTJUEL:B:복종 += A*70
+GOTJUEL:B:굴복 += A*30
+GOTJUEL:B:습득 += A*40
+TFLAG:13 = 31
+CALL KOJO_MESSAGE_EVENT
+PRINTFORML ---%CALLNAME:B%---
+CALL SHOW_ADD_EXP(B, "単純")
+CALL SHOW_JUEL_CHECK, B
+PRINTFORML ---%CALLNAME:E%---
+CALL SHOW_ADD_EXP(E, "単純")
+CALL SHOW_JUEL_CHECK, E
+PRINTFORMW {A/2}회의 행위 후, 그대로 당신의 가슴 위에서 잠들어 버렸다……
+
+DRAWLINE
+
+RETURN 0
+
+;-------------------------------------------------
+;夜這い（対象V 相手C）
+;-------------------------------------------------
+@SELF_NIGHT32
+DRAWLINE
+
+;욕망
+IF ABL:B:욕망 <= 2
+	A = 2
+ELSEIF ABL:B:욕망 <= 4
+	A = 3
+ELSEIF ABL:B:욕망 <= 7
+	A = 4
+ELSEIF ABL:B:욕망 <= 10
+	A = 5
+ELSE
+	A = 5 + (ABL:B:욕망 - 10) / 4
+ENDIF
+
+;Ｃ감각
+IF ABL:B:Ｃ감각 <= 2
+	A += 2
+ELSEIF ABL:B:Ｃ감각 <= 4
+	A += 3
+ELSEIF ABL:B:Ｃ감각 <= 7
+	A += 4
+ELSEIF ABL:B:Ｃ감각 <= 10
+	A += 5
+ELSE
+	A += 5 + (ABL:B:Ｃ감각 - 10) / 3
+ENDIF
+
+;Ｖ感覚（対象）
+IF ABL:E:Ｖ감각 <= 2
+	A += 1
+ELSEIF ABL:E:Ｖ감각 <= 4
+	A += 2
+ELSEIF ABL:E:Ｖ감각 <= 7
+	A += 3
+ELSEIF ABL:E:Ｖ감각 <= 10
+	A += 4
+ELSE
+	A += 4 + (ABL:E:Ｖ감각 - 10) / 3
+ENDIF
+
+;섹스중독
+IF ABL:B:섹스중독 <= 1
+	A += 1
+ELSEIF ABL:B:섹스중독 <= 2
+	A += 2
+ELSEIF ABL:B:섹스중독 <= 4
+	A += 3
+ELSEIF ABL:B:섹스중독 <= 6
+	A += 4
+ELSEIF ABL:B:섹스중독 <= 8
+	A += 5
+ELSEIF ABL:B:섹스중독 <= 10
+	A += 6
+ELSE
+	A += 6 + (ABL:B:섹스중독 - 10) / 3
+ENDIF
+
+;창놈
+SIF TALENT:B:창놈
+	A += 2
+
+;Ｃ민감
+SIF TALENT:B:Ｃ민감
+	A += 1
+
+;獰猛もしくは残虐
+SIF TALENT:B:영맹 || TALENT:B:잔학
+	A += 1
+
+SIF A == 0
+	A = 1
+
+IF IS_LESBIAN(B,E)
+	CALL ADDS_EXP("레즈경험", A, B)
+	CALL ADDS_EXP("레즈경험", A, E)
+ELSEIF IS_GAY(B,E)
+	CALL ADDS_EXP("ＢＬ경험", A, B)
+	CALL ADDS_EXP("ＢＬ경험", A, E)
+ENDIF
+
+CALL ADDS_EXP("사정경험", A/2, B)
+
+IF HAVE_PENIS(E)
+	CALL ADDS_EXP("사정경험", A/2, E)
+ENDIF
+
+IF CFLAG:E:노예의질내사정에의한임신판정 > 1 && CFLAG:E:자궁내피임결계 == 0
+	CALL ADDS_EXP("질사경험", A/2, E)
+	CFLAG:E:노예의질내사정에의한임신판정 += A/2
+ENDIF
+
+CALL ADDS_EXP("Ｖ경험", A/2, E)
+CALL ADDS_EXP("절정경험", A/4, B)
+CALL ADDS_EXP("절정경험", A/4, E)
+CALL ADDS_EXP("삽입경험", A/2, B)
+CALL ADDS_EXP("성교경험", A/2, E)
+GOTJUEL:B:쾌Ｃ += A*100
+GOTJUEL:B:복종 += A*50
+GOTJUEL:B:욕정 += A*60
+GOTJUEL:B:습득 += A*40
+TFLAG:13 = 32
+CALL KOJO_MESSAGE_EVENT
+PRINTFORML ---%CALLNAME:B%---
+CALL SHOW_ADD_EXP(B, "単純")
+CALL SHOW_JUEL_CHECK, B
+PRINTFORML ---%CALLNAME:E%---
+CALL SHOW_ADD_EXP(E, "単純")
+CALL SHOW_JUEL_CHECK, E
+PRINTFORMW %조사처리(CALLNAME:B, "는")% 질 내에 {A/2}회 정액을 쏟아내고는, 두 사람이 얽힌 채 잠에 빠져들었다……
+
+DRAWLINE
+
+RETURN 0
+
+;-------------------------------------------------
+;夜這い（対象A 相手C）
+;-------------------------------------------------
+@SELF_NIGHT33
+DRAWLINE
+
+;욕망
+IF ABL:B:욕망 <= 2
+	A = 2
+ELSEIF ABL:B:욕망 <= 4
+	A = 3
+ELSEIF ABL:B:욕망 <= 7
+	A = 4
+ELSEIF ABL:B:욕망 <= 10
+	A = 5
+ELSE
+	A = 5 + (ABL:B:욕망 - 10) / 4
+ENDIF
+
+;Ｃ감각
+IF ABL:B:Ｃ감각 <= 2
+	A += 2
+ELSEIF ABL:B:Ｃ감각 <= 4
+	A += 3
+ELSEIF ABL:B:Ｃ감각 <= 7
+	A += 4
+ELSEIF ABL:B:Ｃ감각 <= 10
+	A += 5
+ELSE
+	A += 5 + (ABL:B:Ｃ감각 - 10) / 3
+ENDIF
+
+;Ａ感覚（対象）
+IF ABL:E:Ａ감각 <= 2
+	A += 1
+ELSEIF ABL:E:Ａ감각 <= 4
+	A += 2
+ELSEIF ABL:E:Ａ감각 <= 7
+	A += 3
+ELSEIF ABL:E:Ａ감각 <= 10
+	A += 4
+ELSE
+	A += 4 + (ABL:E:Ａ감각 - 10) / 3
+ENDIF
+
+;섹스중독
+IF ABL:B:섹스중독 <= 1
+	A += 1
+ELSEIF ABL:B:섹스중독 <= 2
+	A += 2
+ELSEIF ABL:B:섹스중독 <= 4
+	A += 3
+ELSEIF ABL:B:섹스중독 <= 6
+	A += 4
+ELSEIF ABL:B:섹스중독 <= 8
+	A += 5
+ELSEIF ABL:B:섹스중독 <= 10
+	A += 6
+ELSE
+	A += 6 + (ABL:B:섹스중독 - 10) / 3
+ENDIF
+
+;창놈
+SIF TALENT:B:창놈
+	A += 2
+
+;Ｃ민감
+SIF TALENT:B:Ｃ민감
+	A += 1
+
+;獰猛もしくは残虐
+SIF TALENT:B:영맹 || TALENT:B:잔학
+	A += 1
+
+SIF A == 0
+	A = 1
+
+IF IS_LESBIAN(B,E)
+	CALL ADDS_EXP("레즈경험", A, B)
+	CALL ADDS_EXP("레즈경험", A, E)
+ELSEIF IS_GAY(B,E)
+	CALL ADDS_EXP("ＢＬ경험", A, B)
+	CALL ADDS_EXP("ＢＬ경험", A, E)
+ENDIF
+
+CALL ADDS_EXP("사정경험", A/2, B)
+
+IF HAVE_PENIS(E)
+	CALL ADDS_EXP("사정경험", A/2, E)
+ENDIF
+
+CALL ADDS_EXP("Ａ경험", A/2, E)
+CALL ADDS_EXP("절정경험", A/4, B)
+CALL ADDS_EXP("절정경험", A/4, E)
+CALL ADDS_EXP("삽입경험", A/2, B)
+CALL ADDS_EXP("성교경험", A/2, E)
+GOTJUEL:B:쾌Ｃ += A*100
+GOTJUEL:B:복종 += A*40
+GOTJUEL:B:욕정 += A*70
+GOTJUEL:B:습득 += A*40
+TFLAG:13 = 33
+CALL KOJO_MESSAGE_EVENT
+PRINTFORML ---%CALLNAME:B%---
+CALL SHOW_ADD_EXP(B, "単純")
+CALL SHOW_JUEL_CHECK, B
+PRINTFORML ---%CALLNAME:E%---
+CALL SHOW_ADD_EXP(E, "単純")
+CALL SHOW_JUEL_CHECK, E
+PRINTFORMW %CALLNAME:E%의 장내에 {A/2}회 정액을 쏟아내고는, 만족하며 잠에 빠져들었다……
+
+DRAWLINE
+
+RETURN 0
+
+;-------------------------------------------------
+;夜這い（両者C（素股）・両者C（貝合わせ））
+;-------------------------------------------------
+@SELF_NIGHT34
+DRAWLINE
+
+;욕망
+IF ABL:B:욕망 <= 2
+	A = 2
+ELSEIF ABL:B:욕망 <= 4
+	A = 3
+ELSEIF ABL:B:욕망 <= 7
+	A = 4
+ELSEIF ABL:B:욕망 <= 10
+	A = 5
+ELSE
+	A = 5 + (ABL:B:욕망 - 10) / 4
+ENDIF
+
+;봉사정신
+IF ABL:B:봉사정신 <= 2
+	A += 1
+ELSEIF ABL:B:봉사정신 <= 4
+	A += 2
+ELSEIF ABL:B:봉사정신 <= 7
+	A += 3
+ELSEIF ABL:B:봉사정신 <= 10
+	A += 4
+ELSE
+	A += 4 + (ABL:B:봉사정신 - 10) / 3
+ENDIF
+
+;Ｃ감각
+IF ABL:B:Ｃ감각 <= 2
+	A += 2
+ELSEIF ABL:B:Ｃ감각 <= 4
+	A += 3
+ELSEIF ABL:B:Ｃ감각 <= 7
+	A += 4
+ELSEIF ABL:B:Ｃ감각 <= 10
+	A += 5
+ELSE
+	A += 5 + (ABL:B:Ｃ감각 - 10) / 3
+ENDIF
+
+;Ｃ感覚（対象）
+IF ABL:E:Ｃ감각 <= 2
+	A += 1
+ELSEIF ABL:E:Ｃ감각 <= 4
+	A += 2
+ELSEIF ABL:E:Ｃ감각 <= 7
+	A += 3
+ELSEIF ABL:E:Ｃ감각 <= 10
+	A += 4
+ELSE
+	A += 4 + (ABL:E:Ｃ감각 - 10) / 3
+ENDIF
+
+;자위광
+SIF TALENT:B:자위광
+	A += 2
+
+;Ｃ민감
+SIF TALENT:B:Ｃ민감
+	A += 1
+
+SIF A == 0
+	A = 1
+
+IF IS_LESBIAN(B,E)
+	CALL ADDS_EXP("레즈경험", A, B)
+	CALL ADDS_EXP("레즈경험", A, E)
+ELSEIF IS_GAY(B,E)
+	CALL ADDS_EXP("ＢＬ경험", A, B)
+	CALL ADDS_EXP("ＢＬ경험", A, E)
+ENDIF
+
+IF HAVE_PENIS(E)
+	CALL ADDS_EXP("사정경험", A/2, E)
+	CALL ADDS_EXP("정액경험", A, B)
+ENDIF
+IF HAVE_PENIS(B)
+	CALL ADDS_EXP("사정경험", A/2, B)
+	CALL ADDS_EXP("정액경험", A, E)
+ENDIF
+
+CALL ADDS_EXP("절정경험", A/4, B)
+CALL ADDS_EXP("절정경험", A/4, E)
+GOTJUEL:B:쾌Ｃ += A*100
+GOTJUEL:B:복종 += A*50
+GOTJUEL:B:욕정 += A*50
+GOTJUEL:B:습득 += A*40
+TFLAG:13 = 34
+CALL KOJO_MESSAGE_EVENT
+PRINTFORML ---%CALLNAME:B%---
+CALL SHOW_ADD_EXP(B, "単純")
+CALL SHOW_JUEL_CHECK, B
+PRINTFORML ---%CALLNAME:E%---
+CALL SHOW_ADD_EXP(E, "単純")
+CALL SHOW_JUEL_CHECK, E
+PRINTFORMW 그 후, 두 사람은 서로 끌어안은 채 깊은 잠에 빠져들었다……
+
+DRAWLINE
+
+RETURN 0
+
+;-------------------------------------------------
+;夜自慰
+;-------------------------------------------------
+@SELF_NIGHT35
+DRAWLINE
+
+;욕망
+IF ABL:B:욕망 <= 2
+	A = 1
+ELSEIF ABL:B:욕망 <= 4
+	A = 2
+ELSEIF ABL:B:욕망 <= 7
+	A = 3
+ELSEIF ABL:B:욕망 <= 10
+	A = 4
+ELSE
+	A = 4 + (ABL:B:욕망 - 10) / 4
+ENDIF
+
+;노출증
+IF ABL:B:노출증 <= 2
+	A += 1
+ELSEIF ABL:B:노출증 <= 4
+	A += 2
+ELSEIF ABL:B:노출증 <= 7
+	A += 3
+ELSEIF ABL:B:노출증 <= 10
+	A += 4
+ELSE
+	A += 4 + (ABL:B:노출증 - 10) / 4
+ENDIF
+
+;자위중독
+IF ABL:B:자위중독 <= 2
+	A += 2
+ELSEIF ABL:B:자위중독 <= 4
+	A += 3
+ELSEIF ABL:B:자위중독 <= 7
+	A += 4
+ELSEIF ABL:B:자위중독 <= 10
+	A += 5
+ELSE
+	A += 5 + (ABL:B:자위중독 - 10) / 4
+ENDIF
+
+;자위하기쉬움
+SIF TALENT:B:자위하기쉬움
+	A += 2
+
+;自慰狂い（Cだと重複するので他より弱く）
+SIF TALENT:B:자위광
+	A += 1
+
+;CVAB判定
+$LOOP_N_M
+IF TALENT:B:남자
+	R = RAND:3
+ELSE
+	R = RAND:4
+ENDIF
+
+IF R == 0
+	;C判定
+	;Ｃ감각
+	IF ABL:B:Ｃ감각 <= 2
+		A += 1
+	ELSEIF ABL:B:Ｃ감각 <= 4
+		A += 2
+	ELSEIF ABL:B:Ｃ감각 <= 7
+		A += 3
+	ELSEIF ABL:B:Ｃ감각 <= 10
+		A += 4
+	ELSE
+		A += 4 + (ABL:B:Ｃ감각 - 10) / 3
+	ENDIF
+	;자위광
+	SIF TALENT:B:자위광
+		A += 2
+	;Ｃ민감
+	SIF TALENT:B:Ｃ민감
+		A += 1
+	SIF A == 0
+		A = 1
+	IF HAVE_PENIS(B)
+		CALL ADDS_EXP("사정경험", A/2, B)
+		IF ABL:B:노출증 >= 5
+			;BUKKAKE
+			CALL ADDS_EXP("정액경험", A/2, E)
+		ENDIF
+	ENDIF
+	GOTJUEL:B:쾌Ｃ += A*60
+ELSEIF R == 1
+	;A判定（A感覚2以上）
+	IF  ABL:B:Ａ감각 >= 2
+		;Ａ감각
+		IF ABL:B:Ａ감각 <= 2
+			A += 1
+		ELSEIF ABL:B:Ａ감각 <= 4
+			A += 2
+		ELSEIF ABL:B:Ａ감각 <= 7
+			A += 3
+		ELSEIF ABL:B:Ａ감각 <= 10
+			A += 4
+		ELSE
+			A += 4 + (ABL:B:Ａ감각 - 10) / 3
+		ENDIF
+		;애널광
+		SIF TALENT:B:애널광
+			A += 2
+		;Ａ민감
+		SIF TALENT:B:Ａ민감
+			A += 1
+		SIF A == 0
+			A = 1
+		CALL ADDS_EXP("Ａ경험", A/2, B)
+		GOTJUEL:B:쾌Ａ += A*60
+	ELSE
+		GOTO LOOP_N_M
+	ENDIF
+ELSEIF R == 2
+	;B判定
+	;Ｂ감각
+	IF ABL:B:Ｂ감각 <= 2
+		A += 1
+	ELSEIF ABL:B:Ｂ감각 <= 4
+		A += 2
+	ELSEIF ABL:B:Ｂ감각 <= 7
+		A += 3
+	ELSEIF ABL:B:Ｂ감각 <= 10
+		A += 4
+	ELSE
+		A += 4 + (ABL:B:Ｂ감각 - 10) / 3
+	ENDIF
+	;음유
+	SIF TALENT:B:음유
+		A += 2
+	;Ｂ민감
+	SIF TALENT:B:Ｂ민감
+		A += 1
+	SIF A == 0
+		A = 1
+	IF TALENT:B:모유체질
+		CALL ADDS_EXP("분유경험", A/2, B)
+	ENDIF
+	GOTJUEL:B:쾌Ｂ += A*60
+ELSEIF R == 3
+	;V判定（処女及び再生処女を持っていない）
+	IF TALENT:B:처녀 == 0 && TALENT:B:재생처녀 == 0
+		;Ｖ감각
+		IF ABL:B:Ｖ감각 <= 2
+			A += 1
+		ELSEIF ABL:B:Ｖ감각 <= 4
+			A += 2
+		ELSEIF ABL:B:Ｖ감각 <= 7
+			A += 3
+		ELSEIF ABL:B:Ｖ감각 <= 10
+			A += 4
+		ELSE
+			A += 4 + (ABL:B:Ｖ감각 - 10) / 3
+		ENDIF
+		;섹스광
+		SIF TALENT:B:섹스광
+			A += 2
+		;Ｖ민감
+		SIF TALENT:B:Ｖ민감
+			A += 1
+		SIF A == 0
+			A = 1
+		CALL ADDS_EXP("Ｖ경험", A/2, B)
+		GOTJUEL:B:쾌Ｖ += A*60
+	ELSE
+		GOTO LOOP_N_M
+	ENDIF
+ENDIF
+
+CALL ADDS_EXP("절정경험", A/4, B)
+CALL ADDS_EXP("자위경험", A/2, B)
+GOTJUEL:B:욕정 += A*50
+GOTJUEL:B:굴복 += A*30
+GOTJUEL:B:습득 += A*40
+GOTJUEL:B:치정 += A*30
+TFLAG:13 = 35
+CALL KOJO_MESSAGE_EVENT
+PRINTFORML ---%CALLNAME:B%---
+CALL SHOW_ADD_EXP(B, "単純")
+CALL SHOW_JUEL_CHECK, B
+PRINTFORML ---%CALLNAME:E%---
+CALL SHOW_ADD_EXP(E, "単純")
+CALL SHOW_JUEL_CHECK, E
+PRINTFORMW 행위가 끝나자, %조사처리(CALLNAME:B, "는")% 작게 한숨을 내쉬며 잠에 빠져들었다
+
+DRAWLINE
+
+RETURN 0
+
+;-------------------------------------------------
+;一緒に寝る
+;-------------------------------------------------
+@SELF_NIGHT36
+DRAWLINE
+
+;순종
+IF ABL:B:순종 <= 6
+	A = 3
+ELSEIF ABL:B:순종 <= 8
+	A = 4
+ELSEIF ABL:B:순종 <= 10
+	A = 5
+ELSE
+	A = 5 + (ABL:B:순종 - 10) / 4
+ENDIF
+
+;봉사정신
+IF ABL:B:봉사정신 <= 6
+	A += 4
+ELSEIF ABL:B:봉사정신 <= 8
+	A += 5
+ELSEIF ABL:B:봉사정신 <= 10
+	A += 6
+ELSE
+	A += 6 + (ABL:B:봉사정신 - 10) / 3
+ENDIF
+
+;친애
+SIF TALENT:B:친애
+	A += 1
+
+;幼児／幼児退行または幼稚
+SIF TALENT:B:유아／유아퇴행 || TALENT:B:유치
+	A += 2
+
+;妻または夫
+SIF TALENT:B:아내 || TALENT:B:남편
+	A += 1
+
+;아이
+SIF TALENT:B:아이
+	A += 2
+
+;우애
+SIF TALENT:B:우애
+	A += 1
+
+SIF A == 0
+	A = 1
+
+CALL ADDS_EXP("애정경험", A/4, B)
+CALL ADDS_EXP("애정경험", A/4, E)
+
+;幼児／幼児退行または幼稚且つ対象が歌唱技能3以上
+IF (TALENT:B:유아／유아퇴행 || TALENT:B:유치) && ABL:E:가창기능 >= 3
+	CALL ADDS_EXP("가창경험", A/5, E)
+ENDIF
+
+GOTJUEL:B:복종 += A*100
+TFLAG:13 = 36
+CALL KOJO_MESSAGE_EVENT
+PRINTFORML ---%CALLNAME:B%---
+CALL SHOW_ADD_EXP(B, "単純")
+CALL SHOW_JUEL_CHECK, B
+PRINTFORML ---%CALLNAME:E%---
+CALL SHOW_ADD_EXP(E, "単純")
+CALL SHOW_JUEL_CHECK, E
+IF TALENT:B:유아／유아퇴행 || TALENT:B:유치
+	PRINTFORMW %조사처리(CALLNAME:B, "는")% 평온한 표정으로 새근새근 숨소리를 내며 자고 있다
+ELSE
+	PRINTFORMW %조사처리(CALLNAME:B, "는")% 작게 잘 자라는 인사를 건네고 잠에 빠져들었다
+ENDIF
+
+DRAWLINE
+
+RETURN 0
+

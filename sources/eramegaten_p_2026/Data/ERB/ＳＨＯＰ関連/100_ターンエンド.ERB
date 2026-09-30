@@ -1,0 +1,497 @@
+﻿;=================================================
+;턴엔드
+;=================================================
+@SHOPCOMABLE_100
+SIF !IS_USEABLE_SHOPCOM
+	RETURN 0
+RESULT:1 = 1
+RESULTS = 턴엔드
+RETURN 1
+
+@SHOP_COM_100, IS_CLICK
+#DIM DYNAMIC IS_CLICK
+IF IS_CLICK
+	CLEARLINE 1
+	CALL INPUT_YN_POPUP, , , "턴을 종료해도 괜찮으시겠습니까？"
+	SIF RESULT
+		RETURN 0
+ENDIF
+
+FLAG:턴이행시 = 1
+BEGIN TURNEND
+RETURN 1
+
+@EVENT_TURN_END
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC STOCK_TARGET
+STOCK_TARGET = TARGET
+;-------------------------------------------------
+;労役、ＮＴＲイベント呼び出し
+;-------------------------------------------------
+;労役の結果を呼び出し
+FOR LOCAL,0,CHARANUM
+	SIF CFLAG:LOCAL:이자리에없는플래그
+		CONTINUE
+	;---- EDIT 018 ADD -------------------------------
+	CFLAG:LOCAL:교류끝플래그 = 0
+	;レンタル
+	;---- EDIT 001 MOD START -------------------------
+	;ここはIS_RENTINGで見ちゃいけないので注意
+	IF CFLAG:LOCAL:노역플래그 == 3
+		;レンタル待機状態フラグがある場合はそれを折って実際にレンタルされた状態にする
+		IF CFLAG:LOCAL:17
+			CFLAG:LOCAL:17 = 0
+			SIF CPOS(LOCAL) > 0
+				CALL REMOVE_POSITION,CPOS(LOCAL)
+			PRINTFORMW %CALLNAME:LOCAL%을(를) 렌탈처에 파견했다
+		ELSE
+			SIF IS_RENTING(LOCAL)
+				CALL RETURN_SLAVE,LOCAL
+		ENDIF
+	ENDIF
+	;식당
+	SIF CFLAG:LOCAL:노역플래그 == 1
+		CALL END_RESTRANT,LOCAL
+	;売春
+	SIF CFLAG:LOCAL:노역플래그 == 2
+		CALL END_PROSTITUTION,LOCAL
+	;道場
+	SIF CFLAG:LOCAL:노역플래그 == 6
+		CALL END_DOJO,LOCAL
+	;依頼
+	SIF CFLAG:LOCAL:노역플래그 == 7 || CFLAG:LOCAL:노역플래그 == 8 || CFLAG:LOCAL:노역플래그 == 9
+		CALL END_IRAI,LOCAL
+NEXT
+;店舗経営
+FOR LOCAL,0,10
+	IF DE:0:LOCAL > 0
+		CALL 店舗日報,LOCAL
+	ENDIF
+NEXT
+FOR LCOUNT, 0, CHARANUM
+	;体力500未満で店舗労役しているキャラは外す
+	IF BASE:LCOUNT:체력 < 500 && CFLAG:LCOUNT:노역플래그 > 9 && CFLAG:LCOUNT:노역플래그 != 3
+		CFLAG:LCOUNT:노역플래그 = 0
+		IF CFLAG:LCOUNT:극장출연순서 != 0
+			DE:(49+(CFLAG:LCOUNT:극장출연순서)):(CFLAG:LCOUNT:노역점포-1) = -1
+			DE:(59+(CFLAG:LCOUNT:극장출연순서)):(CFLAG:LCOUNT:노역점포-1) = -1
+			CFLAG:LCOUNT:노역플래그 = 0
+			CFLAG:LCOUNT:극장출연순서 = 0
+			CFLAG:LCOUNT:노역점포 = 0
+		ENDIF
+	ENDIF
+	IF CFLAG:LCOUNT:10 >= 100 && TALENT:LCOUNT:붕괴 == 0 && LCOUNT != MASTER
+		LOCAL = TARGET
+		TARGET = LCOUNT
+		CALL COLLAPSE_MIND_TRAIN
+		TARGET = LOCAL
+	ENDIF
+NEXT
+;NTRイベント呼び出し
+IF FLAG:ＮＴＲ기능
+	FOR LOCAL,1,CHARANUM
+		SIF CFLAG:LOCAL:이자리에없는플래그 == 1
+			CONTINUE
+		SIF CFLAG:LOCAL:전투이외불능
+			CONTINUE
+		IF CFLAG:LOCAL:신경썼다플래그 == 0
+			CFLAG:LOCAL:방치일수 ++
+			IF CDFLAG:LOCAL:캐릭터간호감도:100 > 0
+				CDFLAG:LOCAL:캐릭터간호감도:100 -= CFLAG:LOCAL:방치일수*2
+				SIF CDFLAG:LOCAL:캐릭터간호감도:100 < 0
+					CDFLAG:LOCAL:캐릭터간호감도:100 = 0
+			ELSE
+				CDFLAG:LOCAL:캐릭터간호감도:100 += CFLAG:LOCAL:방치일수*2
+				SIF CDFLAG:LOCAL:캐릭터간호감도:100 > 0
+					CDFLAG:LOCAL:캐릭터간호감도:100 = 0
+			ENDIF
+		ELSE
+			CFLAG:LOCAL:방치일수 = 0
+			CFLAG:LOCAL:신경썼다플래그 = 0
+		ENDIF
+		CALL NTR_CHECK , LOCAL , 1
+	NEXT
+	;ＮＴＲキャラがどこかへ出かける
+	CALL EVENT_NTR_SELF
+	SIF GETBIT(FLAG:ＮＴＲ기능 , 7)
+		CALL NTR_HOUMONNHANNBAI
+	;上司イベント
+	FOR LCOUNT, 0, CHARANUM
+		SIF CFLAG:LCOUNT:상사내습 > 0
+			;女を渡した場合の夜or呼び出された夜
+			CALL NTR_JOUSHI_1(LCOUNT)
+	NEXT
+ENDIF
+;ハードＮＴＲペナルティ
+IF FLAG:ＮＴＲ하드모드
+	FOR LOCAL,1,CHARANUM
+		IF CFLAG:LOCAL:현ＮＴＲ진행도 > 9 && (TALENT:LOCAL:ＮＴＲ == 1 || TALENT:LOCAL:ＮＴＲ == 3)
+			DRAWLINE
+			IF TALENT:LOCAL:ＮＴＲ == 1
+				PRINTFORMW %CALLNAME:LOCAL%은(는) %NTRNAME(CFLAG:LOCAL:함락캐릭터)% 이외에게 안기는 것에 저항감을 품고 있는 듯하다
+			ELSEIF TALENT:LOCAL:ＮＴＲ == 3
+				PRINTFORMW %CALLNAME:LOCAL%은(는) %NTRNAME(CFLAG:LOCAL:함락캐릭터)%에게 %CALLNAME:MASTER%에게 몸을 허락하지 말라고 명령받은 듯하다
+			ENDIF
+			PRINTFORMW 
+			IF TALENT:LOCAL:저항 == 0
+				TALENT:LOCAL:저항 = 1
+				PRINTFORML %CALLNAME:LOCAL%은(는)【저항】을 얻었다
+			ENDIF
+			IF ABL:LOCAL:순종 > 0
+				ABL:LOCAL:순종 = 0
+				PRINTFORML %CALLNAME:LOCAL%의 순종이 0이 되었다
+			ENDIF
+			IF MARK:LOCAL:반발각인 < 3
+				MARK:LOCAL:반발각인 = 3
+				JUEL:LOCAL:복종 = 0
+				JUEL:LOCAL:굴복 = 0
+				PRINTFORMW 공순의 구슬이 0이 되었다
+				PRINTFORMW 굴복의 구슬이 0이 되었다
+				PRINTFORMW %CALLNAME:LOCAL%의 반발각인이 3이 되었다
+			ENDIF
+			JUEL:LOCAL:부정 += CFLAG:LOCAL:현ＮＴＲ진행도 * 50
+			PRINTFORMW 부정의 구슬 + {CFLAG:LOCAL:현ＮＴＲ진행도 * 50}
+			DRAWLINE
+		ELSEIF CFLAG:LOCAL:현ＮＴＲ진행도 > 9 &&TALENT:LOCAL:ＮＴＲ == 2
+			IF TALENT:LOCAL:즉각함락 == 0
+				TALENT:LOCAL:즉각함락 = 1
+				DRAWLINE
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 사소한 쾌락으로도 타락해 버리는 듯하다
+				PRINTFORML 	
+				PRINTFORMW %CALLNAME:LOCAL%은(는) 【즉각함락】을 취득했다
+				DRAWLINE
+			ENDIF
+		ENDIF
+	NEXT
+	SIF GETBIT(FLAG:ＮＴＲ기능 , 8)
+		CALL TUMARATI_1
+	CALL NTR_AVACTRESS
+ENDIF
+
+;---- EDIT 037 MOD START ---------------------
+FOR LCOUNT, 0, CHARANUM
+	;霊媒体質によるMAG取得
+	SIF TALENT:LCOUNT:영매체질
+		CALL CONTROL_MAG , LCOUNT , GET_CHARA_STOCK_MAG(LCOUNT)* (10 - !TALENT:LCOUNT:비전투원 * 9) / 100
+
+	;子宮収縮
+	IF !TALENT:LCOUNT:임신
+		LOCAL = CFLAG:LCOUNT:자궁최대용량
+		CFLAG:LCOUNT:자궁최대용량 = 0
+		CALL 子宮最大容量初期設定,LCOUNT
+		IF LOCAL > CFLAG:LCOUNT:자궁최대용량
+			CFLAG:LCOUNT:자궁최대용량 = MAX((LOCAL - CFLAG:LCOUNT:자궁최대용량)*9/10 + CFLAG:LCOUNT:자궁최대용량, CFLAG:LCOUNT:자궁현재용량)
+		ENDIF
+	ENDIF
+NEXT
+;---- EDIT 037 MOD END ---------------------
+
+;日付変更時のイベント呼び出し
+CALL EVENT_NIGHT_SELF
+LOCAL = B
+CALL EVENT_NEXTDAY
+;-------------------------------------------------
+;フラグ処理
+;-------------------------------------------------
+FLAG:조교실행완료횟수 = 0
+FLAG:던전탐색완료 = 0
+FLAG:지정던전 = -1
+FLAG:콜로세움참가완료 = 0
+
+FLAG:교류플래그 = 0
+
+;---- EDIT 003 ADD START -------------------------
+;日付変更時の処理に移動
+SIF FLAG:트리슈의샘이용횟수 > 0
+	FLAG:트리슈의샘이용횟수 = 1
+SIF FLAG:트리슈조교 >= 0
+	FLAG:트리슈조교 = 0
+SIF FLAG:트리슈조교 == -1
+	FLAG:트리슈조교 = -2
+;---- EDIT 003 ADD START -------------------------
+FOR LCOUNT, 1, DUNGEONNUM
+	SIF ANNOUNCE_DUNGEON_APPEARED:LCOUNT == 3
+		ANNOUNCE_DUNGEON_APPEARED:LCOUNT = 4
+NEXT
+FOR LCOUNT, 1, COLOSSEUMNUM
+	SIF ANNOUNCE_COLOSSEUM_APPEARED:LCOUNT == 3
+		ANNOUNCE_COLOSSEUM_APPEARED:LCOUNT = 4
+NEXT
+FOR LCOUNT, 1, REQUESTNUM
+	SIF ANNOUNCE_REQUEST_APPEARED:LCOUNT == 3
+		ANNOUNCE_REQUEST_APPEARED:LCOUNT = 4
+NEXT
+FOR LCOUNT, 1, EVENTNUM
+	SIF ANNOUNCE_EVENT_APPEARED:LCOUNT == 3
+		ANNOUNCE_EVENT_APPEARED:LCOUNT = 4
+NEXT
+DAY++
+PRINTW 턴이 종료되었다…
+;PRINTW 一日が終わった……
+;PRINTFORML 
+; 魔貨レート変動設定が有効
+IF SETTING_IS_MAKKA_RATE()
+	;魔貨レート設定
+	;1の数値を3に移動させて前に押し出し、3を新たに設定する
+	SWAP FLAG:마카환율1, FLAG:마카환율2
+	SWAP FLAG:마카환율2, FLAG:마카환율3
+	FLAG:마카환율3 = 1+RAND:100
+ENDIF
+; 幹部エンド迎えてるなら
+IF GETBIT(FLAG:발견ED,0)
+	PRINTFORML 팬텀에게서 급료가 입금되었습니다
+	;PRINTFORML ￥{FLAG:조직공헌도 + FLAG:명성 * 1000}が届きました
+	PRINTFORML ￥{SQRT(FLAG:조직공헌도) * 3 + SQRT(FLAG:명성) * 11}이 도착했습니다
+	MONEY += SQRT(FLAG:조직공헌도) * 3 + SQRT(FLAG:명성) * 11
+	SELECTCASE RAND:20
+		CASE 0
+			PRINTFORML 힘의 향을 1개 손에 넣었습니다
+			ITEM:힘의향 += 1
+		CASE 1
+			PRINTFORML 지혜의 향을 1개 손에 넣었습니다
+			ITEM:지혜의향 += 1
+		CASE 2
+			PRINTFORML 마력의 향을 1개 손에 넣었습니다
+			ITEM:마력의향 += 1
+		CASE 3
+			PRINTFORML 내구의 향을 1개 손에 넣었습니다
+			ITEM:내구의향 += 1
+		CASE 4
+			PRINTFORML 속도의 향을 1개 손에 넣었습니다
+			ITEM:속도의향 += 1
+		CASE 5
+			PRINTFORML 운의 향을 1개 손에 넣었습니다
+			ITEM:운의향 += 1
+	ENDSELECT
+	PRINTW
+	PRINTFORML 
+ENDIF
+;陥落数によるペルソナ進化フラグ
+IF  FLAG:연모인수 + FLAG:음란인수 + FLAG:복종인수 + FLAG:신뢰인수 >=10 && CFLAG:MASTER:페르소나강화플래그 == 0 && TALENT:MASTER:페르소나구사자 == 1 && ABL:MASTER:초기페르소나2 >= 1
+	PRINTFORML  
+	PRINTFORML ……많은 노예들을 타락시킨 덕분에 %CALLNAME:MASTER%의 페르소나가 변화하려 하고 있다。
+	PRINTFORML  
+	CFLAG:MASTER:페르소나강화플래그 += 1
+ENDIF
+
+;ランダム依頼のデイリーイベントを実施(2021/02/24)
+SIF GET_USEABLE_EXTRA_TITLE() && !(依頼フラグ:[[依頼:랜덤의뢰]]:8 == 0 && 依頼フラグ:[[依頼:랜덤의뢰]]:9 == 0)
+	;EXTRAイベントがON、かつランダム依頼を初回実行済みの場合のみデイリーイベントを発生させる。
+	CALL DAIRY_EVENT_REQUEST_108
+CALL DO_称号取得判定_AT_ターンエンド
+;バッドエンドの判定
+;SIF DAY > DAY:1 && FLAG:5 == 0 && MONEY < MONEY:2 && FLAG:조교난이도 > 1
+;	CALL BADENDING_1
+;SIF DAY > DAY:1 && FLAG:5 == 0 && FLAG:조교난이도 > 1
+;	CALL SHOP_COM_555
+;SIF MONEY < 0
+;	CALL BADENDING_2
+;エンディング条件達成＆エンディング
+;---- EDIT 008 MOD START ---------------------
+;IF FLAG:5 < 9 
+;---- EDIT 008 MOD END   ---------------------
+IF FLAG:5 < 9 && DAY < 51
+	CALL CHECK_ENDING
+	SIF RESULT == 1
+		BEGIN SHOP
+ENDIF
+;RETURN 1
+
+;---------------------------------------------------------------------------
+;エンディング判定
+;---------------------------------------------------------------------------
+;所属組織・ファントム・ソサエティで組織貢献度一定以上かつ未クリアでファントムEND
+;便器か性欲処理係出身で売春か便器としての人気や経験が高いとファントムのアイドルEND
+;悪名一定以上かつ未クリアで調教師END
+;未クリア + 一定以上の人気のある食堂経営でレストランオーナーEND
+;未クリア + 主人の料理LV10 + 料理人気一定以上 + 一定以上の人気のある食堂経営でシェフEND
+;未クリア + 娼館の人気一定以上で女衒END
+;未クリア + 主人の技巧10 + 売春人気一定以上 + 娼館の人気一定以上で夜の王or女王END
+;未クリア + 主人の技巧10 + 売春人気一定以上 + 娼館未経営で流浪の娼婦END
+;未クリア + 欲望10 + 매춘경험+便器経験が一定以上で淫売END
+;未クリア + 欲望or奉仕精神10 + 便器経験一定以上でボランティアEND
+;未クリア + 欲望or奉仕精神10 + 便器人気一定以上でトイレのアイドルとか公園のアイドルEND
+
+
+;戦闘相手決定…は一日の開始時に1週間先まで決める
+CALL SELECT_COLOSSEUM_RANDOMBATTLE
+
+;日数の加算
+;DAY += 1
+
+;-----------------------------------------------------------------------------
+;朝になった時のイベント呼び出し
+;-----------------------------------------------------------------------------
+CALL EVENT_NEWDAY
+B = LOCAL
+CALL MOON
+CALL EVENT_NEWDAY_SELF
+CALL NTRJOUSHI
+CVARSET CFLAG , GETNUM(CFLAG,"ＮＴＲ요바이") , 0
+
+;ジャンクポイント貢献度の5％貰う
+IF FLAG:조직공헌도 > 19
+	MONEY:4 += FLAG:조직공헌도 / 20
+	PRINTFORML JP{FLAG:조직공헌도 / 20} 손에 넣었다
+ENDIF
+
+FLAG:턴이행시 = 0
+
+;-------------------------------------------------
+;何らかの原因でTARGETがいかれることがあるので応急処置として復元措置を入れる
+;-------------------------------------------------
+TARGET = STOCK_TARGET
+
+IF GETCONFIG("オートセーブを行なう")
+	;オートセーブ
+	SAVEDATA 220 + GLOBAL:2, DISP_SAVETEXT()
+	IF GLOBAL:3 != DAY
+		GLOBAL:3 = DAY
+		SIF ++GLOBAL:2 == 20
+			GLOBAL:2 = 0
+	ENDIF
+	SAVEGLOBAL
+ENDIF
+@FHASEEND_HEALTH
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC HEAL_PHYSICAL
+#DIM DYNAMIC EX_HEAL_PHYSICAL
+
+;治療もちの人数カウント
+FOR L_CHARA, 0, CHARANUM
+	SIF !(L_CHARA == MASTER || 陥落(L_CHARA) || CFLAG:L_CHARA:매각가능 >= 2)
+		CONTINUE
+	IF TALENT:L_CHARA:치료
+		IF EX_HEAL_PHYSICAL == 0
+			EX_HEAL_PHYSICAL = 50
+		ELSE
+			EX_HEAL_PHYSICAL += 10
+		ENDIF
+	ENDIF
+NEXT
+;一応上限をきっておく
+EX_HEAL_PHYSICAL = LIMIT(EX_HEAL_PHYSICAL, 0, 1000)
+
+FOR L_CHARA, 0, CHARANUM
+	CALL HEALTH_CHARA,L_CHARA
+	;ストレス加算処理
+	IF BASE:L_CHARA:1 < MAXBASE:L_CHARA:1
+		;10*消費気力の割合上昇
+		CFLAG:L_CHARA:스트레스치 += 10*(MAXBASE:L_CHARA:기력 - BASE:L_CHARA:기력) / MAXBASE:L_CHARA:기력 / (1+陥落(L_CHARA))
+		;25*消費体力の割合上昇
+		CFLAG:L_CHARA:스트레스치 += 20*(MAXBASE:L_CHARA:체력 - BASE:L_CHARA:체력) / MAXBASE:L_CHARA:체력 / (1+陥落(L_CHARA))
+	ENDIF
+
+	;恋慕ルートキャラは自分以外が調教対象だとストレスが加算
+	SIF (TALENT:L_CHARA:연모 || TALENT:L_CHARA:친애) && TARGET != L_CHARA && TARGET > -1
+		CFLAG:L_CHARA:스트레스치 += 陥落(L_CHARA)
+
+	;気力の回復
+	BASE:L_CHARA:기력 = MAXBASE:L_CHARA:기력
+
+	;レンタル中のキャラは体力回復処理無し
+	SIF IS_RENTING(L_CHARA)
+		GOTO SKIP_HEAL
+
+	;体力回復停止処理
+	IF CFLAG:L_CHARA:체력회복정지플래그 > 0
+		CFLAG:L_CHARA:체력회복정지플래그 -= 1
+		GOTO SKIP_HEAL
+	ENDIF
+
+	IF FLAG:휴식플래그
+		HEAL_PHYSICAL = MAXBASE:L_CHARA:체력 * 30 / 100
+	ELSE
+		;基本回復量は8%
+		;ターンエンド回復は20%
+		IF FLAG:턴이행시
+			;労役中は回復量を低下させる。
+			IF CFLAG:L_CHARA:노역플래그
+				HEAL_PHYSICAL = MAXBASE:L_CHARA:체력 * 10 / 100
+			ELSE
+				HEAL_PHYSICAL = MAXBASE:L_CHARA:체력 * 20 / 100
+			ENDIF
+			;調教回数が残されたままターンエンドする場合はまとめて消化する
+			HEAL_PHYSICAL += MAXBASE:L_CHARA:체력 * 30 * GET_TRAINABLE_NUM() / 100
+		ELSE
+			;調教以外のフェイズ送りが多数あるのでターゲット差別をオミット
+			HEAL_PHYSICAL = MAXBASE:L_CHARA:체력 * 12 / 100
+			;HEAL_PHYSICAL = MAXBASE:L_CHARA:체력 * 8 / 100
+			;ターゲット以外は追加で回復する
+			;SIF TARGET != L_CHARA
+			;	HEAL_PHYSICAL += MAX(MAXBASE:L_CHARA:체력 * 4 / 100, 110)
+		ENDIF
+	ENDIF
+	;体力の回復夜の調教後は夜の休みが入るので回復大きい）(昼の調教後は昼休憩を挟むので少し大きい)
+	;IF TIME == 3
+	;	;霊媒体質はここでＭＡＧが貯まる
+	;	SIF TALENT:L_CHARA:영매체질
+	;		CALL CONTROL_MAG , L_CHARA , (GET_CHARA_STOCK_MAG(L_CHARA)* 10 - !TALENT:L_CHARA:비전투원 * 9) / 100
+	;	LOCAL = MAXBASE:L_CHARA:체력 / 5
+	;ELSEIF TIME == 1
+	;	LOCAL = MAXBASE:L_CHARA:체력 / 10
+	;ELSE
+	;	LOCAL = MAXBASE:L_CHARA:체력 / 15
+	;ENDIF
+
+
+	;回復早い、回復遅い、蓬莱人
+	IF TALENT:L_CHARA:봉래인
+		TIMES HEAL_PHYSICAL, 1.80
+	ELSEIF TALENT:L_CHARA:회복빠름
+		TIMES HEAL_PHYSICAL, 1.50
+	ELSEIF TALENT:L_CHARA:회복느림
+		TIMES HEAL_PHYSICAL, 0.75
+	ENDIF
+
+	;日光浴、月光浴、吸血鬼
+	;IF TIME < 2
+	;	SIF TALENT:L_CHARA:일광욕
+	;		LOCAL += 100
+	;ELSE
+	;	SIF TALENT:L_CHARA:흡혈귀
+	;		TIMES LOCAL , 1.50
+	;	SIF TALENT:L_CHARA:월광욕
+	;		LOCAL += 100
+	;ENDIF
+
+	;치료
+	;IF ASSI >= 0
+	;	SIF TALENT:ASSI:치료
+	;		HEAL_PHYSICAL += 150
+	;ENDIF
+
+	;治療による体力回復を実行
+	HEAL_PHYSICAL += EX_HEAL_PHYSICAL
+
+	;休憩フラグ（休憩フラグが経っている、もしくは調教対象でない）
+	;IF FLAG:휴식플래그 || TARGET != L_CHARA
+	;	LOCAL += 100
+	;ENDIF
+
+	;ショップで休憩を選択時
+	;IF FLAG:휴식플래그 >= 2
+	;	TIMES LOCAL , 2.00
+	;ENDIF
+
+	BASE:L_CHARA:체력 += HEAL_PHYSICAL
+	SIF BASE:L_CHARA:체력 > MAXBASE:L_CHARA:체력
+		BASE:L_CHARA:체력 = MAXBASE:L_CHARA:체력
+
+	$SKIP_HEAL
+
+	;崩壊判定
+	IF CFLAG:L_CHARA:스트레스치 >= 100 && TALENT:L_CHARA:붕괴 == 0 && L_CHARA != MASTER
+		LOCAL = TARGET
+		TARGET = L_CHARA
+		CALL COLLAPSE_MIND_TRAIN
+		TARGET = LOCAL
+	ENDIF
+
+	;ストレス回復処理
+	SIF !CFLAG:L_CHARA:체력회복정지플래그
+		CFLAG:L_CHARA:스트레스치 -= ((FLAG:휴식플래그 > 0) + 1)  * MAX(3,CFLAG:L_CHARA:스트레스치 / 8)
+
+	;ストレス値が0未満の場合は0にする
+	CFLAG:L_CHARA:스트레스치 = MAX(0,CFLAG:L_CHARA:스트레스치)
+NEXT

@@ -1,0 +1,66 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara307_レミエル.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2025/06/23		P(bazzile)				新規作成
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;--------------------------------------------------
+;イベントフラグ
+;1 = 精神世界加入
+;--------------------------------------------------
+;ARG:0	キャラ登録番号
+;以下は元のADD_NEW_COMPANIONの引数を引き継ぐ
+;ARG:1 충성도
+;ARG:2 イベントフラグ(通常の他-1のとき、合体時の一時表示に作成された悪魔であることを示す)
+;ARG:3 真:全書利用時に一時的に仲魔に加える処理であることを示す。所持数警告や加入キャンセルを無効にする
+;ARG:4 真:加入後、人間化する場合に使用。これ使わないと、容量MAX時に加入させた時、人間なのにストレージにいる扱いになります
+;ARG:5 真:加入後、Lvを任意に設定する場合に使用。指定しない場合は通常の初期LVが適応されます
+@ADD_NEW_COMPANION_[[キャラ:레미엘]], ARG, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5
+CALL SET_BASE_[[キャラ:레미엘]], ARG, ARG:2
+IF ARG:2 == 1
+	;ある程度戦力にしやすくするためにMAG強化を与える
+	CALL SET_ENHANCE_BASE_FOR_NEW_CHARA, ARG, 50
+	;スキル初期化
+	CALL CLEAR_ALL_SKILL, ARG
+	CALL CLEAR_LEARNED_SKILL_ALL, ARG
+ENDIF
+CALL SET_LEARN_SKILL_[[キャラ:레미엘]], ARG, ARG:2
+
+@SHOP_NEWGAME_INITCHARA_[[キャラ:레미엘]], ARG
+CALL SET_LEARN_SKILL_[[キャラ:레미엘]], ARG, CFLAG:ARG:이벤트가입
+
+;Data\ERB\RPG\ダンジョンアタック\ダンジョンデータ\DUNGEON4_精神世界\DUNGEON4_精神世界_EVENT.ERB
+;ARG:1はイベントフラグ
+@SET_BASE_[[キャラ:레미엘]], ARG, ARG:1
+#DIM DYNAMIC LCOUNT
+SELECTCASE ARG:1
+	CASE 1
+		ABL:ARG:수태아이템 = GETNUM(ITEM, "스킬카드【천사의혈배】")
+ENDSELECT
+
+@SET_LEARN_SKILL_[[キャラ:레미엘]], ARG, ARG:1
+#DIM LCOUNT
+IF ARG:1 == 1
+	CALL CLEAR_ALL_LEARN_SKILL, ARG
+	CALL SET_LEARN_SKILL, ARG, "하마온", 1
+	CALL SET_LEARN_SKILL, ARG, "리캄", 1
+	CALL SET_LEARN_SKILL, ARG, "천사의혈배", 1
+
+	CALL SET_LEARN_SKILL, ARG, "자애의기도", 36
+	CALL SET_LEARN_SKILL, ARG, "라이트마", 37
+	CALL SET_LEARN_SKILL, ARG, "성스러운가호", 39
+	CALL SET_LEARN_SKILL, ARG, "빛의심판", 42
+	CALL SET_LEARN_SKILL, ARG, "디아라한",45
+	CALL SET_LEARN_SKILL, ARG, "암리타",48
+	CALL SET_LEARN_SKILL, ARG, "하마다인",50
+	CALL SET_LEARN_SKILL, ARG, "테트라칸",53
+ENDIF

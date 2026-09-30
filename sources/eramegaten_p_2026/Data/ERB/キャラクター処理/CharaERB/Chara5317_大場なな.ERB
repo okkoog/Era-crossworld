@@ -1,0 +1,208 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:Chara5317_大場なな.ERB
+;	Facility	:ERB上から独自の変更をキャラクターに与える
+;				:与えられる補正自体はスキルでパッシブの補正として持たさられるものなので原理的にはスキル枠を消費しないスキル
+;				;あるいはスキル削除が通用しないスキルとなる。あえて排除しない場合、ペルソナ・リンク悪魔として利用しているときにも呼ばれるのに注意
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2023/02/05		P(bazzile)				新規作成
+;	002		2023/10/02		P(bazzile)				初日判定で加入したときようの処理を追加(スキルの追加に対してメッセージを出さない)
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@SET_BASE_[[キャラ:나나]], ARG, ARG:1
+IF ARG:1 == 1 || ARG:1 == 2
+	CFLAG:ARG:이벤트가입 = 1
+	CFLAG:ARG:초기링크악마 = [[キャラ:『무대소녀』나나]]
+	ABL:ARG:초기링크악마공격상성 = CSVABL(CFLAG:ARG:초기링크악마, GETNUM(ABL, "공격상성"))
+
+	CSTR:ARG:롤설명2 = 톱스타/다시 한번 다시 태어난 거야、그날、무대소녀로서。
+
+ENDIF
+
+@SET_BTL_TALENT_[[キャラ:나나]], ARG, ARG:1
+SELECTCASE ARG:1
+	CASE 1, 2
+		CALL CHANGE_ROLE, ARG, "무대소녀_1/달인_1/톱스타_1", "공격의심득_3/마술의소양_3/석세서_1"
+ENDSELECT
+
+@SET_LEARN_SKILL_[[キャラ:나나]], ARG, ARG:1
+IF ARG:1 == 1 || ARG:1 == 2
+	CALL SET_LEARN_SKILL, ARG, "CSTR専用スキル/呼応の斬撃", 1, "変身形態", \@ARG:1 == 1 ? メッセージ表示 # メッセージ非表示\@
+	CALL SET_LEARN_SKILL, ARG, "CSTR専用スキル/皆殺しのレヴュー", 1, "変身形態", \@ARG:1 == 1 ? メッセージ表示 # メッセージ非表示\@
+	CALL SET_LEARN_SKILL, ARG, "기합", 1, "変身形態", \@ARG:1 == 1 ? メッセージ表示 # メッセージ非表示\@
+	CALL SET_LEARN_SKILL, ARG, "서드아이", 1, "変身形態", \@ARG:1 == 1 ? メッセージ表示 # メッセージ非表示\@
+	CALL SET_LEARN_SKILL, ARG, "불굴의투지", 1, "変身形態", \@ARG:1 == 1 ? メッセージ表示 # メッセージ非表示\@
+	CALL SET_LEARN_SKILL, ARG, "결단", 1, "変身形態", \@ARG:1 == 1 ? メッセージ表示 # メッセージ非表示\@
+	CALL SET_LEARN_SKILL, ARG, "닷지카운터", 1, "変身形態", \@ARG:1 == 1 ? メッセージ表示 # メッセージ非表示\@
+	CALL SET_LEARN_SKILL, ARG, "데스카운터", 1, "変身形態", \@ARG:1 == 1 ? メッセージ表示 # メッセージ非表示\@
+ENDIF
+
+;---- EDIT 003 MOD END ---------------------------
+;--------------------------------------------------
+;顔グラのパターン名を定義する関数
+;--------------------------------------------------
+@DEFINE_FACE_PATTERN_CHARA_[[キャラ:나나]], L_CHARA = -1, L_NO
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIM DYNAMIC L_NO
+#DIMS DYNAMIC L_PATTERN
+SELECTCASE L_NO
+	CASE 0
+		;画像チェック
+		SIF !SPRITECREATED("なな_FACE_0")
+			RETURNF ""
+		SIF !SPRITECREATED("なな_FACE_EX_0")
+			RETURNF ""
+		SIF !SPRITECREATED("なな_FACE_1")
+			RETURNF ""
+		SIF !SPRITECREATED("なな_FACE_2")
+			RETURNF ""
+		RESULTS_F = デフォルト
+		CALLF DISPOSE_SPRITE_FORCE_F, TEMP_GID_START, "なな_デフォルト"
+		;アイコン設定時の表示に使うアイコン
+		IF L_CHARA >= 0 && CSTR:L_CHARA:롤 == "舞台少女_トップスタァ_EX"
+			GCREATE TEMP_GID_START, 360, 360
+			GDRAWSPRITE TEMP_GID_START, "なな_FACE_1", 0, 0, 180, 180
+			GDRAWSPRITE TEMP_GID_START, "なな_FACE_2", 180, 0, 180, 180
+			GDRAWSPRITE TEMP_GID_START, "なな_FACE_0", 0, 180, 180, 180
+			GDRAWSPRITE TEMP_GID_START, "なな_FACE_EX_0", 180, 180, 180, 180
+			SPRITECREATE "なな_デフォルト", TEMP_GID_START
+		ELSE
+			GCREATE TEMP_GID_START, 360, 360
+			GDRAWSPRITE TEMP_GID_START, "なな_FACE_1", 0, 0, 180, 180
+			GDRAWSPRITE TEMP_GID_START, "なな_FACE_2", 180, 0, 180, 180
+			GDRAWSPRITE TEMP_GID_START, "なな_FACE_0", 0, 180, 180, 180
+			SPRITECREATE "なな_デフォルト", TEMP_GID_START
+		ENDIF
+		RESULTS_F:1 = なな_FACE_1
+		RESULTS_F:2 = なな_デフォルト
+	CASEELSE
+		RESULTS_F = 
+ENDSELECT
+
+;--------------------------------------------------
+;顔グラを指定する関数
+;画像のアドレスはRESOURCEフォルダをみてください
+;--------------------------------------------------
+@FACE_PATTERN_CHARA_[[キャラ:나나]], L_CHARA, L_PATTERN, L_SITUATION, L_SITUATION:1
+#FUNCTIONS
+#DIM DYNAMIC L_CHARA
+#DIMS DYNAMIC L_PATTERN
+#DIMS DYNAMIC L_SITUATION, 2
+SIF L_PATTERN == ""
+	L_PATTERN = %CSTR:L_CHARA:아이콘패턴%
+SELECTCASE L_PATTERN
+	CASE "デフォルト"
+		SELECTCASE L_SITUATION
+			CASE "戦闘口上"
+				RESULTS_F = なな_FACE_1
+			CASE "調教"
+				RESULTS_F = なな_FACE_2
+			CASEELSE
+				IF STRCOUNT(CSTR:L_CHARA:롤, "舞台少女") && GET_ROLE_CFLAG_DUNGEON(L_CHARA, "클라이맥스레뷰지속시간")
+					IF CFLAG:L_CHARA:악마변신
+						RESULTS_F = なな_FACE_EX_2
+					ELSE
+						RESULTS_F = なな_FACE_EX_1
+					ENDIF
+				ELSE
+					IF CFLAG:L_CHARA:악마변신
+						RESULTS_F = なな_FACE_EX_0
+					ELSE
+						RESULTS_F = なな_FACE_0
+					ENDIF
+				ENDIF
+		ENDSELECT
+	CASEELSE
+ENDSELECT
+
+;--------------------------------------------------
+;キャラクター独自変数名称定義関数
+;-------------------------------------------------
+@RPG_CFLAG_NAME_[[キャラ:나나]], ARGS, ARG
+#FUNCTIONS
+SELECTCASE ARGS
+	;---------------------------------------------
+	;RPG_CFLAG_EV
+	;周回時にリセットされる数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_EV
+	;周回時にリセットされる文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_EV"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CFLAG_TAKEOVER
+	;周回時にリセットされない数値型変数です
+	;---------------------------------------------
+	CASE "RPG_CFLAG_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_TAKEOVER
+	;周回時にリセットされない文字列型変数です
+	;---------------------------------------------
+	CASE "RPG_CSTR_TAKEOVER"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる数値型変数です
+	;スキルゲージHとほぼ互換です。基本的にはゲージHが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_BTL
+	;戦闘開始毎にリセットされる文字列型変数です
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_BTL"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる数値型変数
+	;スキルゲージFとほぼ互換です。基本的にはゲージFが足りない時ようですが複数の種類のスキルから参照させる
+	;というかゲージとしてつかってなくない？といった場合はこちらのほうがすっきりするかもしれません
+	;--------------------------------------------
+	CASE "RPG_CFLAG_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+	;---------------------------------------------
+	;RPG_CSTR_DUNGEON
+	;ショップ画面に戻る度にリセットされる文字列型変数
+	;文字列保存はスキル側にはないのであえて文字列をつかいたいなら
+	;--------------------------------------------
+	CASE "RPG_CSTR_DUNGEON"
+		SELECTCASE ARG
+			CASE 0
+				RESULTS = 
+		ENDSELECT
+ENDSELECT
+RETURNF RESULTS

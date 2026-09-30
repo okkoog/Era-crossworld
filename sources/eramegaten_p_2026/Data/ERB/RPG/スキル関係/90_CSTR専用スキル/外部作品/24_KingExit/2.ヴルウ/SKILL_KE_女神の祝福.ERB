@@ -1,0 +1,126 @@
+﻿;通常攻撃
+;スキルのテンプレートになっています
+
+;スキル名
+@SKILL_NAME_KE_女神の祝福, ARG
+RESULTS = 여신의 축복
+
+;　명중
+@SKILL_HITRATE_KE_女神の祝福, ARG
+RETURN 100
+
+;　威力
+@SKILL_POWER_KE_女神の祝福, ARG
+RETURN 0
+
+;　최저공격횟수
+@SKILL_MINATTACKNUMBER_KE_女神の祝福, ARG
+RETURN 1
+
+;　최대공격횟수
+@SKILL_MAXATTACKNUMBER_KE_女神の祝福, ARG
+RETURN 1
+
+;　ＨＰ2を支払うかＭＰ3を支払うか
+@SKILL_COSTTYPE_KE_女神の祝福, ARG
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 60
+	RETURN 1
+RETURN 3
+;消費なし＝1
+
+;　コストの量
+@SKILL_COST_KE_女神の祝福, ARG
+IF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 60
+	RESULTS = %" 60ＴＰ"%
+	RETURN 0
+ENDIF
+RETURN 5
+
+;　相性
+@SKILL_TYPE_KE_女神の祝福, ARG
+RETURN GET_TYPE_NUM("검격")
+
+;　1EXTRAか2MAGICか
+@SKILL_DECIDE_TYPE_KE_女神の祝福
+RETURN GET_SKILL_DECIDE_TYPE_NUM("EX")
+
+;　1物理ダメージで計算するか2魔法ダメージで計算するか
+@SKILL_DAMAGETYPE_KE_女神の祝福, ARG
+RETURN GET_ダメージタイプ_NUM("魔法")
+
+;　対象が1敵か2味方か3場全体か4特殊か
+@SKILL_TARGET_KE_女神の祝福, ARG
+RETURN GET_SKILL_TARGET_NUM("아군")
+
+;　사거리
+@SKILL_RANGE_KE_女神の祝福, ARG
+RETURN 3
+
+;　範囲　1単体　21列　3全体　4　敵味方全体
+@SKILL_SPHERE_KE_女神の祝福, ARG
+RETURN GET_SPHERE_NUM("전체")
+
+;　 効果のタイプ　1攻撃、2回復、3状態変化、4特殊、5状態回復、6自動効果
+@SKILL_EFECT_KE_女神の祝福, ARG
+RETURN GET_SKILL_EFFECT_NUM("특수")
+
+;속도보정
+@SKILL_SPEED_KE_女神の祝福, ARG = -1
+RETURN 0
+
+;戦闘時以外に使用できるか
+@SKILL_ACTIONABLE_FIELD_KE_女神の祝福
+RETURN 0
+
+
+;====================================================
+;スキル及び行動の実行
+;====================================================
+@ACTION_KE_女神の祝福, ARG, ARG:1, SKILL_NUM
+#LOCALSIZE 4
+#DIM SKILL_NUM
+
+;ゲージ再回収できる様に起動前にTP60消費。
+CALL SET_RPG_CFLAG_DUNGEON, ARG, "KE_TPゲージ", 60, "-="
+
+FOR LOCAL, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1) + 1
+	SIF POS(LOCAL) < 0 || IS_BADSTATE(POS(LOCAL), "DYING")
+		CONTINUE
+
+	LOCAL:1 = MAX(LOCAL:1, STRLENS(CALLNAME:POS(LOCAL)))
+NEXT
+FOR LOCAL, GET_POS_MIN(ARG:1), GET_POS_MAX(ARG:1) + 1
+	SIF POS(LOCAL) < 0 || IS_BADSTATE(POS(LOCAL), "DYING")
+		CONTINUE
+
+	IF CFLAG:POS(LOCAL):("방어강화") >= 8
+		PRINTFORML 　　TARGET:[{LOCAL},2] %CALLNAME:POS(LOCAL), LOCAL:1, LEFT% >>>>> 이미 이 스킬의 한계까지 강화되어 있다!
+	ELSE
+		CALL SKILL_SET_カジャンダ, ARG, POS(LOCAL), "방어", 8, "단체", "", "", 8
+	ENDIF
+NEXT
+
+;====================================================
+;実行内容ここまで
+;====================================================
+
+;　 説明文の表示
+@SKILL_EXPLAIN_KE_女神の祝福, ARG
+PRINTL 
+PRINTL 아군에게 축복을 내린다.
+PRINTL 아군 전체의 방어를 2단계까지 강화한다.
+PRINTL 
+PRINTL 강철승려 브루의 스킬(CSTR 전용)
+
+;使用条件
+@SKILL_SPECIAL_ACTIONABLE_KE_女神の祝福, ARG
+;ゲージが60以上のときのみ
+SIF GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 60
+	RETURN 0
+RETURN 1
+
+@SKILL_EXPLAIN_TOOLTIP_KE_女神の祝福, ARG
+RESULTS:0 = 아군 전체의 방어를 2단계까지 강화한다.
+RESULTS:1 = TP消費 60
+SIF ARG >= 0 && GET_RPG_CFLAG_DUNGEON(ARG, "KE_TPゲージ") < 60
+	RESULTS:1 = %RESULTS:1%(不足)

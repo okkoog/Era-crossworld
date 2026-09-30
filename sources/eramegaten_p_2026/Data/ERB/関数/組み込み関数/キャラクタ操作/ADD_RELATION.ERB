@@ -1,0 +1,33 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;	
+;	test Module	:ADD_RELATION
+;	Facility	:キャラクタ個別の相性を追加する。
+;				　L_CHARAがL_CHARA:1によって調教される場合にボーナスを受けるようになる。
+;				 つまり相性値は単独で設定した場合一方的に効果を受けるだけなのには注意されたし
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		2024/10/11		P(bazzile)				新規作成
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+@ADD_RELATION, L_CHARA, L_CHARA:1, L_RELATION
+#DIM DYNAMIC LCOUNT
+#DIM DYNAMIC L_CHARA,2
+#DIM DYNAMIC L_RELATION
+SIF !GROUPMATCH(L_RELATION, 50, 75, 125, 150, 200)
+	THROW 상성 수치가 규정치가 아닙니다
+FOR LCOUNT, 1, 21
+	IF CFLAG:L_CHARA:@"캐릭터상성{LCOUNT}" == CFLAG:(L_CHARA:1):실제가입시간
+		CFLAG:L_CHARA:@"캐릭터상성치{LCOUNT}" = L_RELATION
+		RETURN 1
+	ENDIF
+NEXT
+FOR LCOUNT, 1, 21
+	SIF CFLAG:L_CHARA:@"캐릭터상성{LCOUNT}" > 0
+		CONTINUE
+	CFLAG:L_CHARA:@"캐릭터상성{LCOUNT}" = CFLAG:(L_CHARA:1):실제가입시간
+	CFLAG:L_CHARA:@"캐릭터상성치{LCOUNT}" = L_RELATION
+	RETURN 1
+NEXT
+RETURN 0
