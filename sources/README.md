@@ -1,12 +1,14 @@
 # 원본 소스 보존
 
-현재 erauma와 eramegaten P판의 ZIP 해제본을 별도 디렉터리에 보존하고 있습니다. 기존 저장소의 `docs/`, `game/`, `dev/`, `test/` 등은 변경하지 않았습니다.
+현재 erauma와 eramegaten P판의 ZIP 해제본, P판의 추가 리소스 ZIP 해제본을 보존하고 있습니다. 기존 저장소의 `docs/`, `game/`, `dev/`, `test/` 등은 변경하지 않았습니다.
 
 | 원본 ZIP | 저장 경로 | 파일 수 | 압축 해제 바이트 | 제외 파일 수 |
 |---|---|---:|---:|---:|
 | `erauma-master.zip` | `sources/erauma/` | 4649 | 70184905 | 0 |
 | `ShinEraTensei.zip` | `sources/ShinEraTensei/` | 3743 | 39352382 | 0 |
 | `4. eramegaten_p_(2026) (AI) 0926 2차 수정 (2).zip` | `sources/eramegaten_p_2026/` | 11950 | 290690363 | 0 |
+
+| `resources.zip` | `sources/eramegaten_p_2026/Data/resources/` | 6888 | 296603727 | 0 |
 
 ## 보존 방법
 
@@ -22,5 +24,9 @@
 
 ## 삭제 이력
 
-사용자 요청에 따라 버전 간 혼동을 방지하기 위해 sources/ShinEraTensei/의 3,743개 파일을 삭제했습니다. 원본 ZIP은 변경하지 않았으며, 이전 보존 커밋 7da777de8f7721d209ee7a8bfe78bb302ecba76d에서 복구할 수 있습니다. manifest의 archives에는 현재 보존 중인 두 묶음만 포함하고, 삭제 내역은 removed_archives에 기록합니다.
+사용자 요청에 따라 버전 간 혼동을 방지하기 위해 sources/ShinEraTensei/의 3,743개 파일을 삭제했습니다. 원본 ZIP은 변경하지 않았으며, 이전 보존 커밋 7da777de8f7721d209ee7a8bfe78bb302ecba76d에서 복구할 수 있습니다. manifest의 archives에는 현재 보존 중인 묶음만 포함하고, 삭제 내역은 removed_archives에 기록합니다.
 
+
+## P판 추가 리소스
+
+사용자가 제공한 resources.zip의 전체 파일을 P판의 Data/resources/에 추가했습니다. ZIP에 resources/ 상위 폴더가 없어 게임의 리소스 경로에 맞추어 배치했습니다. 기존 파일 덮어쓰기 및 제외 파일은 없습니다. 프로젝트의 .gitignore가 이 경로를 제외하지만, 보존 요청에 따라 명시적으로 Git에 포함했습니다. 파일 바이트와 Git blob 해시를 검증했으며 게임 실행 검증은 수행하지 않았습니다.
