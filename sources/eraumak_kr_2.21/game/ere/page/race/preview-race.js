@@ -1,0 +1,806 @@
+const era = require('#/era-electron');
+
+const { get_sex_acceptable } = require('#/system/ero/sys-calc-ero-status');
+
+const print_race_track_chart = require('#/page/race/race-track-chart');
+
+const { get_chara_talk } = require('#/utils/chara-talk-factory');
+
+const {
+  adaptability_colors,
+  el_danger_color,
+  el_success_color,
+  el_warning_color,
+  motivation_colors,
+} = require('#/data/color-const');
+const { attr_colors } = require('#/data/const.json');
+const date_indicator = require('#/data/date-indicator');
+const { item_enum, item_names } = require('#/data/ero/item-const');
+const { vp_status_enum } = require('#/data/ero/status-const');
+const {
+  get_adaptability_rank,
+  get_attr_rank,
+  get_rank_level,
+} = require('#/data/info-generator');
+const RaceInfo = require('#/data/race/model/race-info');
+const {
+  adaptability_names,
+  attr_names,
+  motivation_names,
+} = require('#/data/train-const');
+
+const pop_mark = ['➖', '◎', '◯', '▲', '△', '△'];
+
+/** @param {PseudoUma} chara */
+function generate_attribute_info(chara) {
+  const ret = [];
+  chara.attrs.forEach((_val, index) => {
+    const value = Math.floor(_val);
+    const attr_buff_list = chara.attr_buffs[index];
+    const rank = get_attr_rank(value);
+    const rank_color = adaptability_colors[get_rank_level(rank)];
+    ret.push(
+      {
+        config: {
+          align: 'center',
+          width: 4,
+          color: attr_colors[attr_names[index]],
+          fontWeight: 'bold',
+        },
+        content: attr_names[index],
+        type: 'text',
+      },
+      {
+        config: {
+          color: rank_color,
+          fontWeight: 'bold',
+          width: 8,
+        },
+        content: [
+          {
+            content: `${value.toLocaleString()} (${rank})`,
+            title: attr_buff_list.length
+              ? `${value.toLocaleString()}=${Math.floor(
+                  era.get(`base:${chara.index_chara}:${attr_names[index]}`),
+                )}(기초)${attr_buff_list.join('')}`
+              : void 0,
+          },
+        ],
+        type: 'text',
+      },
+    );
+  });
+  return ret;
+}
+
+/**
+ * @param {RaceInfo} info
+ * @param {PseudoUma[]} team_list
+ * @param {PseudoUma[]} contestants
+ * @param {boolean} [is_grand_live=false]
+ */
+async function preview_race(
+  info,
+  team_list,
+  contestants,
+  is_grand_live = false,
+) {
+  const item_inf = era.get('flag:아이템영향');
+  await era.clear();
+  era.drawLine();
+  const race_header = [
+    {
+      config: { align: 'center' },
+      content: [...date_indicator(), ' ', info.daytime ? '밤' : '아침'],
+      type: 'text',
+    },
+    {
+      config: { align: 'center' },
+      content: `${info.track > 0 ? RaceInfo.track_names[info.track] : '훈련장'} ${adaptability_names[
+        info.ground
+      ].substring(0, 1)} ${info.span.toLocaleString()}m (${adaptability_names[
+        info.distance + 2
+      ].substring(
+        0,
+        1,
+      )}) ${RaceInfo.rotation_names[info.rotation]} · ${RaceInfo.weather_names[info.weather]} ${
+        RaceInfo.mess_names[info.mess]
+      }`,
+      type: 'text',
+    },
+    {
+      config: {
+        align: 'center',
+        fontSize: '1.5rem',
+      },
+      content: [info.get_colored_name_with_class(), is_grand_live ? ' 🎤' : ''],
+      type: 'text',
+    },
+  ];
+  for (const header_line of race_header) {
+    await era.printAndWait(header_line.content, header_line.config);
+  }
+  await era.clear();
+  const skill_buffer = [];
+  const item_chara = team_list.filter((e) => {
+    const { index_chara: cid } = e;
+    if (!cid) {
+      return true;
+    }
+    if (
+      cid > 0 &&
+      !e.legend &&
+      era.get(`exp:${cid}:성관계횟수`) > era.get(`exp:${cid}:수면간횟수`)
+    ) {
+      if (era.get(`love:${cid}`) >= 50 && get_sex_acceptable(cid) > 0) {
+        return true;
+      }
+      const mark_check = Math.max(
+        era.get(`mark:${cid}:음문`) ||
+          era.get(`mark:${cid}:쾌락`) -
+            Math.max(era.get(`mark:${cid}:고통`), era.get(`mark:${cid}:수치`)),
+        era.get(`mark:${cid}:순종`) - era.get(`mark:${cid}:반발`),
+      );
+      if (
+        mark_check === 3 ||
+        (mark_check > 0 && mark_check / 3 > Math.random())
+      ) {
+        return true;
+      }
+    }
+    return false;
+  });
+  let flag_prepare_race = true;
+  let cur_chara = team_list[0];
+  let uma_index = contestants.indexOf(cur_chara);
+  let attribute_info = generate_attribute_info(cur_chara);
+  let strategy_ability = cur_chara.adapt_style_list.map(get_adaptability_rank);
+  let flag_print = true;
+  cur_chara.list_skill.forEach((s) =>
+    skill_buffer.push(...s.data.get_colored_name(cur_chara)),
+  );
+  while (flag_prepare_race) {
+    era.setVerticalAlign('middle');
+    const line_num = (flag_print ? era.printInColRows : era.replaceInColRows)(
+      [{ type: 'divider' }, ...race_header, { type: 'divider' }],
+      {
+        columns: [
+          {
+            accelerator:
+              ((uma_index + contestants.length - 1) % contestants.length) + 1,
+            config: { align: 'center' },
+            content: `이전 페이지\n${contestants.at(uma_index - 1).name}`,
+            type: 'button',
+          },
+        ],
+        config: { width: 3 },
+      },
+      {
+        columns: [
+          {
+            names: cur_chara.image,
+            type: 'image.whole',
+          },
+          {
+            config: {
+              align: 'center',
+              color: cur_chara.color,
+              fontSize: '1.25rem',
+            },
+            content: cur_chara.name,
+            type: 'text',
+          },
+        ],
+        config: { width: 8 },
+      },
+      {
+        columns: [
+          {
+            config: { align: 'center' },
+            content: [
+              {
+                color:
+                  adaptability_colors[get_rank_level(cur_chara.score_rank)],
+                content: cur_chara.score_rank,
+                fontWeight: 'bold',
+              },
+              { isDivider: true },
+              '컨디션：',
+              {
+                color: motivation_colors[cur_chara.motivation + 2],
+                content: motivation_names[cur_chara.motivation + 2],
+              },
+              { isDivider: true },
+              '제 ',
+              cur_chara.pop[0],
+              ' 인기 ',
+              cur_chara.pop
+                .slice(1)
+                .map((e) => pop_mark[e])
+                .join(' '),
+            ],
+            type: 'text',
+          },
+          { config: { content: '기초 능력치' }, type: 'divider' },
+          ...attribute_info,
+          { config: { content: '레이스 능력' }, type: 'divider' },
+          {
+            config: { align: 'center', width: 12 },
+            content: [
+              `${adaptability_names[info.ground]}적성：`,
+              {
+                color: adaptability_colors[cur_chara.adapts.ground],
+                content: get_adaptability_rank(cur_chara.adapts.ground),
+                fontWeight: 'bold',
+                title:
+                  cur_chara.ground_buffs.length > 0
+                    ? `${get_adaptability_rank(cur_chara.adapts.ground)}=${get_adaptability_rank(
+                        era.get(
+                          `cflag:${cur_chara.index_chara}:${adaptability_names[info.ground]}적성`,
+                        ),
+                      )}(기초)${cur_chara.ground_buffs.join('')}`
+                    : void 0,
+              },
+            ],
+            type: 'text',
+          },
+          {
+            config: { align: 'center', width: 12 },
+            content: [
+              `${adaptability_names[info.distance + 2]}적성：`,
+              {
+                color: adaptability_colors[cur_chara.adapts.distance],
+                content: get_adaptability_rank(cur_chara.adapts.distance),
+                fontWeight: 'bold',
+                title:
+                  cur_chara.dis_buffs.length > 0
+                    ? `${get_adaptability_rank(cur_chara.adapts.distance)}=${get_adaptability_rank(
+                        era.get(
+                          `cflag:${cur_chara.index_chara}:${adaptability_names[2 + info.distance]}적성`,
+                        ),
+                      )}(기초)${cur_chara.dis_buffs.join('')}`
+                    : void 0,
+              },
+            ],
+            type: 'text',
+          },
+          { config: { content: '레이스 전략' }, type: 'divider' },
+          ...new Array(4).fill(0).map((_, i) =>
+            team_list.indexOf(cur_chara) !== -1
+              ? {
+                  accelerator: 21 + i,
+                  config: {
+                    align: 'center',
+                    buttonType: cur_chara.style === i ? 'warning' : 'info',
+                    width: 6,
+                  },
+                  content: `${adaptability_names[6 + i].substring(0, 2)} ${strategy_ability[i]}`,
+                  type: 'button',
+                }
+              : {
+                  config: {
+                    align: 'center',
+                    width: 6,
+                    ...(cur_chara.style === i
+                      ? { color: el_warning_color, fontWeight: 'bold' }
+                      : {}),
+                  },
+                  content: `${adaptability_names[6 + i].substring(0, 2)} ${strategy_ability[i]}`,
+                  type: 'text',
+                },
+          ),
+          { config: { content: '습득완료기술' }, type: 'divider' },
+          {
+            config: { align: 'center' },
+            content: skill_buffer,
+            type: 'text',
+          },
+        ],
+        config: { width: 10 },
+      },
+      {
+        columns: [
+          {
+            accelerator: ((uma_index + 1) % contestants.length) + 1,
+            config: { align: 'center', disableWarning: true },
+            content: `다음 페이지\n${contestants[(uma_index + 1) % contestants.length].name}`,
+            type: 'button',
+          },
+        ],
+        config: { width: 3 },
+      },
+      {
+        columns: [
+          { type: 'divider' },
+          ...contestants.map((uma, i) => ({
+            accelerator: i + 1,
+            config: {
+              align: 'center',
+              buttonType: uma.legend
+                ? 'danger'
+                : team_list.indexOf(uma) !== -1
+                  ? 'success'
+                  : 'warning',
+              disabled: uma.index_chara === cur_chara.index_chara,
+              disableWarning: true,
+              width: 4,
+            },
+            content: `${uma.name} ${adaptability_names[6 + uma.style].substring(
+              0,
+              2,
+            )}`,
+            type: 'button',
+          })),
+          {
+            config: { align: 'center' },
+            content: [
+              '* 참가 우마무스메는 레인 번호 순서대로 낮은 번호부터 높은 번호 순으로 표시되며, 팀원은 ',
+              { color: el_success_color, content: '녹색' },
+              ', 강적은 ',
+              { color: el_danger_color, content: '빨강' },
+              '으로 표시됩니다',
+            ],
+            type: 'text',
+          },
+          { type: 'divider' },
+          {
+            accelerator: 100,
+            config: { width: 8, align: 'center' },
+            content: '출주!',
+            type: 'button',
+          },
+          {
+            accelerator: 110,
+            config: { width: 8, align: 'center' },
+            content: '경기장 정보',
+            type: 'button',
+          },
+          {
+            accelerator: 120,
+            config: {
+              align: 'center',
+              disabled: item_chara.length === 0,
+              width: 8,
+            },
+            content: '장난감 사용',
+            type: 'button',
+          },
+        ],
+        config: { horizontalAlign: 'center' },
+      },
+    );
+    flag_print = false;
+    era.setVerticalAlign('top');
+    const ret = await era.input({ hideInput: true });
+    if (ret === 100) {
+      await era.clear();
+      flag_prepare_race = false;
+    } else if (ret === 110) {
+      await era.clear((await print_race_track_chart(info)) - line_num);
+    } else if (ret === 120) {
+      const curr = era.getLineCount();
+      era.drawLine();
+      let flag = true;
+      let index = 0;
+      let chara = get_chara_talk(item_chara[index].index_chara);
+      while (flag) {
+        await era.clear(era.getLineCount() - curr - 1);
+        era.print([chara.get_colored_full_name(), ' 장난감: ']);
+        const b_item = era.get(`equip:${chara.id}:가슴`);
+        if (chara.sex_code !== 1) {
+          era.printMultiColumns([
+            { config: { width: 2 }, content: '유두', type: 'text' },
+            {
+              accelerator: 1,
+              config: {
+                disabled: !b_item && era.get('item:바이브레이터') < 2,
+                width: 22,
+              },
+              content: b_item > 0 ? item_names[b_item] : '없음',
+              type: 'button',
+            },
+          ]);
+        }
+        const p_item = era.get(`equip:${chara.id}:음경`);
+        const c_item = era.get(`equip:${chara.id}:음핵`);
+        if (
+          chara.sex_code > 0 ||
+          item_chara[index].ero.main.at(-1) === 'penis'
+        ) {
+          era.printMultiColumns([
+            { config: { width: 2 }, content: '육봉', type: 'text' },
+            {
+              accelerator: 2,
+              config: {
+                disabled: !p_item && era.get('item:오나홀') < 1,
+                width: 22,
+              },
+              content: p_item > 0 ? item_names[p_item] : '없음',
+              type: 'button',
+            },
+          ]);
+        } else {
+          era.printMultiColumns([
+            { config: { width: 2 }, content: '阴核', type: 'text' },
+            {
+              accelerator: 3,
+              config: {
+                disabled:
+                  !c_item &&
+                  era.get('item:바이브레이터') < 1 &&
+                  era.get('item:클립') < 1,
+                width: 22,
+              },
+              content: c_item > 0 ? item_names[c_item] : '없음',
+              type: 'button',
+            },
+          ]);
+        }
+        const v_item = era.get(`equip:${chara.id}:질구`);
+        if (chara.sex_code !== 1) {
+          era.printMultiColumns([
+            { config: { width: 2 }, content: '보지', type: 'text' },
+            {
+              accelerator: 4,
+              config: {
+                disabled:
+                  !v_item &&
+                  era.get('item:바이브레이터') < 1 &&
+                  era.get('item:딜도') < 1,
+                width: 22,
+              },
+              content: v_item > 0 ? item_names[v_item] : '없음',
+              type: 'button',
+            },
+          ]);
+        }
+        const a_item = era.get(`equip:${chara.id}:항문`);
+        era.printMultiColumns([
+          { config: { width: 2 }, content: '屁穴', type: 'text' },
+          {
+            accelerator: 5,
+            config: {
+              disabled:
+                !a_item &&
+                era.get('item:딜도') < 1 &&
+                era.get('item:애널플러그') < 1 &&
+                era.get('item:애널비즈') < 1,
+              width: 22,
+            },
+            content: a_item > 0 ? item_names[a_item] : '없음',
+            type: 'button',
+          },
+        ]);
+        if (item_chara.length > 1) {
+          era.printButton(`이전 페이지 ${item_chara[index - 1]?.name ?? '-'}`, 10, {
+            disabled: index === 0,
+          });
+          era.printButton(`다음 페이지 ${item_chara[index + 1]?.name ?? '-'}`, 11, {
+            disabled: index === item_chara.length - 1,
+          });
+        }
+        era.printButton('종료', 99);
+        let ret = await era.input();
+        switch (ret) {
+          case 1:
+            era.printMultiColumns([
+              {
+                config: {
+                  content: `${chara.get_full_name()}의 유두용 장난감`,
+                  width: 12,
+                },
+                type: 'divider',
+              },
+              { content: [], type: 'text' },
+              { config: { width: 2 }, content: '바이브레이터', type: 'text' },
+              {
+                accelerator: 1,
+                config: { width: 4 },
+                content: b_item === item_enum.love_eggs ? '해제' : '착용',
+                type: 'button',
+              },
+              {
+                config: { width: 18 },
+                content: [
+                  '현재 ',
+                  era.get('item:바이브레이터').toLocaleString(),
+                  ' 개',
+                ],
+                type: 'text',
+              },
+              { accelerator: 9, content: '돌아가기', type: 'button' },
+            ]);
+            if ((await era.input()) !== 9) {
+              if (b_item === item_enum.love_eggs) {
+                era.set(`equip:${chara.id}:가슴`, 0);
+                era.add('item:바이브레이터', 2);
+              } else {
+                era.set(`equip:${chara.id}:가슴`, item_enum.love_eggs);
+                era.add('item:바이브레이터', -2);
+              }
+            }
+            break;
+          case 2:
+            era.printMultiColumns([
+              {
+                config: {
+                  content: `${chara.get_full_name()}의 자지용 장난감`,
+                  width: 12,
+                },
+                type: 'divider',
+              },
+              { content: [], type: 'text' },
+              { config: { width: 2 }, content: '오나홀', type: 'text' },
+              {
+                accelerator: 1,
+                config: { width: 4 },
+                content:
+                  p_item === item_enum.artificial_virgin ? '해제' : '착용',
+                type: 'button',
+              },
+              {
+                config: { width: 18 },
+                content: [
+                  '현재 ',
+                  era.get('item:오나홀').toLocaleString(),
+                  ' 개',
+                ],
+                type: 'text',
+              },
+              { accelerator: 9, content: '돌아가기', type: 'button' },
+            ]);
+            if ((await era.input()) !== 9) {
+              if (p_item === item_enum.artificial_virgin) {
+                era.set(`equip:${chara.id}:음경`, 0);
+                era.add('item:오나홀', 1);
+              } else {
+                era.set(`equip:${chara.id}:음경`, item_enum.artificial_virgin);
+                era.add('item:오나홀', -1);
+              }
+            }
+            break;
+          case 3:
+            era.printMultiColumns([
+              {
+                config: {
+                  content: `为 ${chara.get_full_name()}의 클리용 장난감`,
+                  width: 12,
+                },
+                type: 'divider',
+              },
+              { content: [], type: 'text' },
+              ...[item_enum.clamps, item_enum.love_eggs].reduce((p, c) => {
+                const count = era.get(`item:${item_names[c]}`);
+                p.push(
+                  {
+                    config: { width: 2 },
+                    content: item_names[c],
+                    type: 'text',
+                  },
+                  {
+                    accelerator: c,
+                    config: {
+                      disabled: c_item !== c && count < 1,
+                      width: 4,
+                    },
+                    content: c_item === c ? '해제' : '착용',
+                    type: 'button',
+                  },
+                  {
+                    config: { width: 18 },
+                    content: ['현재 ', count.toLocaleString(), ' 개'],
+                    type: 'text',
+                  },
+                );
+                return p;
+              }, []),
+              { accelerator: 9, content: '돌아가기', type: 'button' },
+            ]);
+            ret = await era.input();
+            if (ret !== 9) {
+              if (c_item === ret) {
+                era.set(`equip:${chara.id}:음핵`, 0);
+                era.add(`item:${item_names[ret]}`, 1);
+              } else {
+                era.set(`equip:${chara.id}:음핵`, ret);
+                if (c_item > 0) {
+                  era.add(`item:${item_names[c_item]}`, 1);
+                }
+                era.add(`item:${item_names[ret]}`, -1);
+              }
+            }
+            break;
+          case 4:
+            era.printMultiColumns([
+              {
+                config: {
+                  content: `为 ${chara.get_full_name()}의 보지용 장난감`,
+                  width: 12,
+                },
+                type: 'divider',
+              },
+              { content: [], type: 'text' },
+              ...[item_enum.love_eggs, item_enum.dildo].reduce((p, c) => {
+                const check =
+                  c === item_enum.dildo &&
+                  era.get(`talent:${chara.id}:처녀`) !== vp_status_enum.no;
+                const count = era.get(`item:${item_names[c]}`);
+                p.push(
+                  {
+                    config: { width: 2 },
+                    content: item_names[c],
+                    type: 'text',
+                  },
+                  {
+                    accelerator: c,
+                    config: {
+                      disabled: check || (v_item !== c && count < 1),
+                      title: check ? '아직 처녀다!' : void 0,
+                      width: 4,
+                    },
+                    content: v_item === c ? '해제' : '착용',
+                    type: 'button',
+                  },
+                  {
+                    config: { width: 18 },
+                    content: ['현재 ', count.toLocaleString(), ' 개'],
+                    type: 'text',
+                  },
+                );
+                return p;
+              }, []),
+              { accelerator: 9, content: '돌아가기', type: 'button' },
+            ]);
+            ret = await era.input();
+            if (ret !== 9) {
+              if (v_item === ret) {
+                era.set(`equip:${chara.id}:질구`, 0);
+                era.add(`item:${item_names[ret]}`, 1);
+              } else {
+                era.set(`equip:${chara.id}:질구`, ret);
+                if (v_item > 0) {
+                  era.add(`item:${item_names[v_item]}`, 1);
+                }
+                era.add(`item:${item_names[ret]}`, -1);
+              }
+            }
+            break;
+          case 5:
+            era.printMultiColumns([
+              {
+                config: {
+                  content: `${chara.get_full_name()}의 뒷구멍용 장난감`,
+                  width: 12,
+                },
+                type: 'divider',
+              },
+              { content: [], type: 'text' },
+              ...[
+                item_enum.dildo,
+                item_enum.butt_plug,
+                item_enum.anal_beads,
+              ].reduce((p, c, i) => {
+                const check = era.get(`exp:${chara.id}:애널횟수`) < 10 - i * 5;
+                const count = era.get(`item:${item_names[c]}`);
+                p.push(
+                  {
+                    config: { width: 2 },
+                    content: item_names[c],
+                    type: 'text',
+                  },
+                  {
+                    accelerator: c,
+                    config: {
+                      disabled: check || (a_item !== c && count < 1),
+                      title: check ? '항문 경험이 부족하다!' : void 0,
+                      width: 4,
+                    },
+                    content: a_item === c ? '해제' : '착용',
+                    type: 'button',
+                  },
+                  {
+                    config: { width: 18 },
+                    content: ['현재 ', count.toLocaleString(), ' 개'],
+                    type: 'text',
+                  },
+                );
+                return p;
+              }, []),
+              { accelerator: 9, content: '돌아가기', type: 'button' },
+            ]);
+            ret = await era.input();
+            if (ret !== 9) {
+              if (a_item === ret) {
+                era.set(`equip:${chara.id}:항문`, 0);
+                era.add(`item:${item_names[ret]}`, 1);
+              } else {
+                era.set(`equip:${chara.id}:항문`, ret);
+                if (a_item > 0) {
+                  era.add(`item:${item_names[a_item]}`, 1);
+                }
+                era.add(`item:${item_names[ret]}`, -1);
+              }
+            }
+            break;
+          case 10:
+            chara = get_chara_talk(item_chara[--index].index_chara);
+            break;
+          case 11:
+            chara = get_chara_talk(item_chara[++index].index_chara);
+            break;
+          case 99:
+            flag = false;
+        }
+      }
+      await era.clear(era.getLineCount() - curr);
+      item_chara.forEach((u) => {
+        const { index_chara: cid } = u;
+        const o_has_item = u.race.conditionParams.item;
+        u.ero.item.breast = era.get(`equip:${cid}:가슴`);
+        u.ero.item.penis = era.get(`equip:${cid}:음경`);
+        u.ero.item.clitoris = era.get(`equip:${cid}:음핵`);
+        u.ero.item.virgin = era.get(`equip:${cid}:질구`);
+        u.ero.item.anal = era.get(`equip:${cid}:항문`);
+        u.race.conditionParams.item = +Object.values(u.ero.item).reduce(
+          (p, c) => p || c > 0,
+          false,
+        );
+        if (o_has_item === u.race.conditionParams.item) {
+          return;
+        }
+        const ero_skill_level = u.list_skill.find(
+          (s) => s.data.group_id === 66005,
+        )?.data?.group_level;
+        const buff_length = u.attr_buffs[0].length;
+        if (ero_skill_level === 2) {
+          const has_buff =
+            u.attr_buffs[0].findIndex((b) => b.endsWith('[기쁨과 축복]')) !== -1;
+          if (u.race.conditionParams.item === 1 && !has_buff) {
+            u.attr_buffs.forEach((l) => l.push('+10%[기쁨과 축복]'));
+          } else if (!u.race.conditionParams.item && has_buff) {
+            u.attr_buffs = u.attr_buffs.map((l) =>
+              l.filter((b) => b !== '+10%[기쁨과 축복]'),
+            );
+          }
+        } else if (era.get('flag:아이템영향') !== 0 && ero_skill_level !== 1) {
+          const has_debuff =
+            u.attr_buffs[0].findIndex((b) => b.endsWith('[장난감]')) !== -1;
+          if (u.race.conditionParams.item === 1 && !has_debuff) {
+            u.attr_buffs.forEach((l) => l.push(`${item_inf}%[장난감]`));
+          } else if (!u.race.conditionParams.item && has_debuff) {
+            u.attr_buffs = u.attr_buffs.map((l) =>
+              l.filter((b) => b !== `${item_inf}%[장난감]`),
+            );
+          }
+        }
+        if (u === cur_chara && o_has_item !== u.race.conditionParams.item) {
+          skill_buffer.splice(0);
+          cur_chara.list_skill.forEach((s) =>
+            skill_buffer.push(...s.data.get_colored_name(cur_chara)),
+          );
+        }
+        if (buff_length !== u.attr_buffs[0].length) {
+          u.calc_attrs();
+          if (u === cur_chara) {
+            attribute_info = generate_attribute_info(cur_chara);
+          }
+        }
+      });
+    } else if (ret >= 21) {
+      cur_chara.style = era.set(
+        `cflag:${cur_chara.index_chara}:각질`,
+        ret - 21,
+      );
+    } else if (ret <= 20) {
+      cur_chara = contestants[(uma_index = ret - 1)];
+      attribute_info = generate_attribute_info(cur_chara);
+      strategy_ability = cur_chara.adapt_style_list.map(get_adaptability_rank);
+      skill_buffer.splice(0);
+      cur_chara.list_skill.forEach((s) =>
+        skill_buffer.push(...s.data.get_colored_name(cur_chara)),
+      );
+    }
+  }
+}
+
+module.exports = preview_race;

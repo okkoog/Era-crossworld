@@ -1,0 +1,60 @@
+const era = require('#/era-electron');
+
+const { sys_get_callname } = require('#/system/sys-calc-chara-others');
+
+const { get_chara_color } = require('#/data/chara-colors');
+const { get_trainer_title } = require('#/data/info-generator');
+
+/**
+ * @param {number} cid
+ * @param {Record<string,boolean>} options
+ * @returns {Record<string,string|number|boolean>}
+ */
+function generate_dictionary(
+  cid,
+  options = {
+    call: false,
+    child: false,
+    sir: false,
+    teen: false,
+    title: false,
+    uma: false,
+    your_name: false,
+    your_sex: false,
+  },
+) {
+  const ret = { id: cid };
+  ret.CHARA = era.get(`callname:${cid}:-2`);
+  ret.COLOR = get_chara_color(cid);
+  ret.YOU = era.get('callname:0:-2');
+  // CFLAGNAME:0 = 성별
+  const sex = era.get(`cflag:${cid}:0`) === 1;
+  ret.SEX = sex ? '그' : '그녀';
+  if (options.call) {
+    ret.CALLNAME = sys_get_callname(cid, 0);
+  }
+  if (options.child) {
+    ret.CHILD = sex ? '남자아이' : '여자아이';
+  }
+  if (options.teen) {
+    ret.TEEN = sex ? '소년' : '소녀';
+  }
+  if (options.title) {
+    ret.TITLE = get_trainer_title().substring(0, 2);
+  }
+  if (options.uma) {
+    ret.UMA = sex ? '우마무스코' : '우마무스메';
+  }
+  if (options.your_name) {
+    ret.YOURNAME = era.get('callname:0:-1');
+  }
+  if (options.your_sex) {
+    ret.YOURSEX = era.get('cflag:0:0') === 1 ? '그' : '그녀';
+  }
+  if (options.sir) {
+    ret.SIR = era.get('cflag:0:0') === 1 ? ' 선생님' : ' 씨';
+  }
+  return ret;
+}
+
+module.exports = generate_dictionary;

@@ -1,0 +1,293 @@
+const era = require('#/era-electron');
+
+const {
+  get_skill_price,
+  get_talent_price,
+} = require('#/system/ero/sys-get-juel-price');
+
+const select_yes_or_no = require('#/page/components/select-yes-or-no');
+
+const CharaTalk = require('#/utils/chara-talk');
+const { get_chara_talk } = require('#/utils/chara-talk-factory');
+const get_color = require('#/utils/gradient-color');
+
+const { buff_colors } = require('#/data/color-const');
+const { mark_colors } = require('#/data/const.json');
+const {
+  base_skill_limit,
+  talent_button_names_and_check_dict,
+} = require('#/data/ero/juel-const');
+const { trained_talent_names } = require('#/data/ero/status-const');
+const extra_base = require('#/data/extra-base');
+
+/**
+ * @param {Record<string,number>} p_dict
+ * @returns {string}
+ */
+function get_price_title(p_dict) {
+  return (
+    '需要：' +
+    Object.entries(p_dict)
+      .map(([k, n]) => `${k}×${n.toLocaleString()}`)
+      .join('＋')
+  );
+}
+
+module.exports = {
+  /**
+   * @param {number} ret
+   * @param {{tab:number,flag:boolean}} pointer
+   */
+  default_handler(ret, pointer) {
+    if (ret === 999) {
+      pointer.flag = false;
+    } else {
+      pointer.tab = ret - 990;
+    }
+  },
+  /**
+   * @param {number} chara_id
+   * @param {string} mark_name
+   * @param {number} _level
+   * @returns {TextObject}
+   */
+  get_mark_cols(chara_id, mark_name, _level) {
+    const level = Number(_level) || era.get(`mark:${chara_id}:${mark_name}`);
+    return {
+      config: {
+        align: 'center',
+        color: mark_colors[mark_name],
+        width: 4,
+      },
+      content: [
+        `${mark_name} Lv.${level} `,
+        {
+          content: new Array(level).fill('★').join(''),
+          color: get_color(undefined, mark_colors[mark_name], level / 3),
+        },
+        {
+          content: new Array(3 - level).fill('☆').join(''),
+        },
+      ],
+      type: 'text',
+    };
+  },
+  /**
+   * @param {number} cid
+   * @param {number} acc
+   * @param {string} skill_name
+   * @param {Record<string,number>} skill_dict
+   * @param {Record<string,number>} juel_dict
+   */
+  get_skill_buttons(cid, acc, skill_name, skill_dict, juel_dict) {
+    let limit = base_skill_limit * (1 + (!cid && extra_base.skill));
+    const level = era.get(`abl:${cid}:${skill_name}`);
+    skill_dict[skill_name] = level;
+    const u_price = get_skill_price(cid, skill_name, level + 1);
+    const d_price = get_skill_price(cid, skill_name, level);
+    return [
+      {
+        accelerator: acc,
+        config: { width: 4 },
+        content: `${skill_name} Lv.${level}`,
+        type: 'button',
+      },
+      {
+        accelerator: acc + 100,
+        config: {
+          disabled:
+            level >= limit ||
+            Object.entries(u_price).findIndex(([j, n]) => n > juel_dict[j]) !==
+              -1,
+          width: 2,
+          title: level >= limit ? void 0 : get_price_title(u_price),
+        },
+        content: '↑',
+        type: 'button',
+      },
+      {
+        accelerator: acc + 200,
+        config: {
+          disabled:
+            level <= 0 ||
+            Object.entries(d_price).findIndex(([j, n]) => n > juel_dict[j]) !==
+              -1,
+          width: 2,
+          title: level <= 0 ? void 0 : get_price_title(d_price),
+        },
+        content: '↓',
+        type: 'button',
+      },
+    ];
+  },
+  /**
+   * @param {number} cid
+   * @param {number} acc
+   * @param {string} t_name
+   * @param {number} cond
+   * @param {Record<string,number>} t_dict
+   * @param {Record<string,number>} j_dict
+   */
+  get_talent_buttons(cid, acc, t_name, cond, t_dict, j_dict) {
+    let level = t_dict[t_name];
+    if (level === undefined) {
+      level = t_dict[t_name] = era.get(`talent:${cid}:${t_name}`);
+    }
+    const talent_bnc =
+      acc < 7
+        ? talent_button_names_and_check_dict.trained
+        : acc < 10
+          ? talent_button_names_and_check_dict.sm
+          : talent_button_names_and_check_dict.poisoned;
+    return [
+      {
+        accelerator: acc,
+        config: { width: 4 },
+        content: trained_talent_names[t_name]
+          ? trained_talent_names[t_name][level]
+          : `${t_name} [${level ? 'YES' : 'NO'}]`,
+        type: 'button',
+      },
+      {
+        accelerator: acc + 100,
+        config: {
+          disabled:
+            level === talent_bnc.max ||
+            Object.entries(
+              get_talent_price(cid, t_name, talent_bnc.up_delta[level]),
+            ).findIndex((e) => e[1] > j_dict[e[0]]) !== -1 ||
+            cond < (talent_bnc.metrics[level] || 0) ||
+            (acc < 7 &&
+              level === 1 &&
+              t_dict.slave_run >= era.get(`talent:${cid}:조교도`)),
+          width: 4,
+        },
+        content: talent_bnc.up,
+        type: 'button',
+      },
+      {
+        accelerator: acc + 200,
+        config: {
+          disabled:
+            level === talent_bnc.min ||
+            Object.entries(
+              get_talent_price(cid, t_name, talent_bnc.down_delta[level]),
+            ).findIndex((e) => e[1] > j_dict[e[0]]) !== -1,
+          width: 4,
+        },
+        content: talent_bnc.down,
+        type: 'button',
+      },
+    ];
+  },
+  /**
+   * @param {number} chara_id
+   * @param {Record<string,number>} price_dict
+   * @param {Record<string,number>} origin_dict
+   */
+  pay_juels(chara_id, price_dict, origin_dict) {
+    Object.keys(price_dict).forEach((e) => {
+      if (origin_dict[e] >= price_dict[e]) {
+        era.add(`juel:${chara_id}:${e}`, -price_dict[e]);
+      } else {
+        era.set(`juel:${chara_id}:${e}`, 0);
+        era.add(`juel:0:${e}`, -(price_dict[e] - origin_dict[e]) * 2);
+      }
+    });
+  },
+  /**
+   * @param {number} chara_id
+   * @param {number} tab_pointer
+   */
+  print_footer(chara_id, tab_pointer) {
+    const mark = era.get(`mark:${chara_id}:음문`);
+    era.drawLine();
+    era.printMultiColumns(
+      [
+        ...[
+          {
+            accelerator: 990,
+            content: '능력 학습',
+            type: 'button',
+          },
+          {
+            accelerator: 991,
+            content: '특성 획득',
+            type: 'button',
+          },
+          {
+            accelerator: 992,
+            config: { disabled: !chara_id && !mark },
+            content: mark ? '각인 설정' : '각인 제거',
+            type: 'button',
+          },
+          {
+            accelerator: 993,
+            config: { disabled: !chara_id },
+            content: chara_id ? '인자 보충' : '',
+            type: chara_id ? 'button' : 'text',
+          },
+        ].map((e) => {
+          e.config = e.config || {};
+          e.config.buttonType =
+            e.accelerator - 990 === tab_pointer ? 'warning' : 'info';
+          return e;
+        }),
+        {
+          accelerator: 999,
+          config: { align: 'right', offset: 4 },
+          content: '조정 완료',
+          type: 'button',
+        },
+      ].map((e) => {
+        e.config.width = 4;
+        return e;
+      }),
+    );
+  },
+  /**
+   * @param {number} cid
+   * @param {Record<string,number>} price_dict
+   * @param {Record<string,number>} origin_dict
+   * @returns {Promise<boolean>}
+   */
+  async print_price_and_confirm(cid, price_dict, origin_dict) {
+    const chara_talk = get_chara_talk(cid);
+    Object.keys(price_dict).forEach((juel_name) => {
+      const buffer = [
+        `${juel_name.substring(0, 2)}인자：`,
+        {
+          content: `${
+            price_dict[juel_name] > origin_dict[juel_name]
+              ? origin_dict[juel_name].toLocaleString()
+              : price_dict[juel_name].toLocaleString()
+          }/${origin_dict[juel_name].toLocaleString()}`,
+          color: buff_colors[2],
+        },
+        ' (',
+        { content: chara_talk.name, color: chara_talk.color },
+        ')',
+      ];
+      if (price_dict[juel_name] > origin_dict[juel_name]) {
+        buffer.push(
+          ' + ',
+          {
+            content: `${(
+              (price_dict[juel_name] - origin_dict[juel_name]) *
+              2
+            ).toLocaleString()}/${era
+              .get(`juel:0:${juel_name}`)
+              .toLocaleString()}`,
+            color: buff_colors[2],
+          },
+          ` (${CharaTalk.me.name})`,
+        );
+      }
+      era.print(buffer, {
+        offset: 1,
+        width: 23,
+      });
+    });
+    return await select_yes_or_no('', '예', '아니오');
+  },
+};

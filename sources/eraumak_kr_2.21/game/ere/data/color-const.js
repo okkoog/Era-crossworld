@@ -1,0 +1,27 @@
+module.exports = {
+  adaptability_colors: [
+    '#c6c5c5',
+    '#aa9bf7',
+    '#d67af4',
+    '#6bc3ff',
+    '#83d86a',
+    '#ff82a8',
+    '#ff9548',
+    '#eeb93f',
+    '#f8c7ff',
+  ],
+  attr_change_colors: { down: '#ff7744', up: '#98fb98' },
+  buff_colors: ['#34a5ff', '#f9a048', '#ff69b4', '#ff7373'],
+  celebration_color: '#ff8686',
+  el_danger_color: '#f56c6c',
+  el_success_color: '#67c23a',
+  el_warning_color: '#e6a23c',
+  money_color: '#ffd700',
+  motivation_colors: ['#ce7cff', '#34a5ff', '#9f9f9f', '#f9a048', '#fe809c'],
+  palam_colors: {
+    notifications: ['#ffc0cb', '#ee82ee'],
+    progress: ['#b05a76', '#cf00cf'],
+  },
+  sex_colors: ['#fff0f5', '#ffb6c1', '#cd5555'],
+  skin_colors: ['#ffecd9', '#ffe7cb', '#ffd0ad', '#f5b871'],
+};

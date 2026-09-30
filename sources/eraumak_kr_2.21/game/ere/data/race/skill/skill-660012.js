@@ -1,0 +1,79 @@
+const UmaEroSkill = require('#/data/race/model/ero-skill');
+const UmaSkill = require('#/data/race/model/uma-skill');
+
+module.exports = new UmaEroSkill(
+  660012,
+  '절정의 교성',
+  '절정했을 때 자신의 속도를 약간 낮추고, 뒤에 있는 우마무스메 최대 5명의 속도를 감소시키며, 앞에 있는 우마무스메 최대 5명을 초조하게 만든다',
+  66001,
+  2,
+  UmaSkill.get_skill_color(
+    UmaSkill.skill_name_enum.control,
+    UmaSkill.skill_border_enum.ero_advanced,
+  ),
+  1,
+  [() => true, () => true],
+  [(args) => args.orgasm === 1, () => false],
+  [3, 0],
+  [30, 0],
+  [
+    UmaSkill.ability_time_usage_enum.normal,
+    UmaSkill.ability_time_usage_enum.normal,
+  ],
+  [
+    [
+      UmaSkill.ability_type_enum.CurrentSpeed,
+      UmaSkill.ability_type_enum.CurrentSpeed,
+      UmaSkill.ability_type_enum.TemptationEndTime,
+    ],
+    [
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+    ],
+  ],
+  [
+    [
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+    [
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+  ],
+  [
+    [-0.05, -0.35, 5],
+    [0, 0, 0],
+  ],
+  [
+    [
+      UmaSkill.target_type_enum.Self,
+      UmaSkill.target_type_enum.SelfBehind,
+      UmaSkill.target_type_enum.All,
+    ],
+    [
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+    ],
+  ],
+  [
+    [5, 0, 0],
+    [0, 0, 0],
+  ],
+  [0, 0],
+  [0, 0],
+  0,
+  166,
+  false,
+  false,
+  [],
+  [
+    UmaSkill.ability_tag_enum.currentSpeed,
+    UmaSkill.ability_tag_enum.temp,
+    UmaSkill.ability_tag_enum.ero,
+  ],
+);

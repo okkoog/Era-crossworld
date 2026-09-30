@@ -1,0 +1,12 @@
+const InmonPlugin = require('#/data/ero/inmon-plugin');
+
+module.exports = new InmonPlugin(
+  10723,
+  '질구 불감Ⅲ',
+  107,
+  3,
+  16,
+  '질구 쾌감 획득-80%.',
+  (args) => args.sex !== 1,
+  980,
+);

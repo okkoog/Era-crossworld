@@ -1,0 +1,544 @@
+const era = require('#/era-electron');
+
+const { sys_check_yandere } = require('#/system/chara/sys-calc-cheat');
+const sys_change_tired = require('#/system/chara/sys-change-tired');
+const sys_check_npc_working = require('#/system/chara/sys-check-npc-working');
+const {
+  check_pregnant_unprotect,
+} = require('#/system/ero/sys-calc-ero-status');
+const {
+  sys_change_attr_and_print,
+  sys_change_pressure,
+  sys_get_billings,
+  sys_reg_race,
+} = require('#/system/sys-calc-base-cflag');
+const { sys_change_fame } = require('#/system/sys-calc-flag');
+
+const MejiroCity = require('#/page/mejiro/mejiro-common');
+
+const CustomizedEdu = require('#/event/edu/edu-common');
+const { get_custom_mec } = require('#/event/mec/mec-factory');
+
+const { get_chara_talk } = require('#/utils/chara-talk-factory');
+const { sort_list } = require('#/utils/list-utils');
+const { get_random_value } = require('#/utils/value-utils');
+
+const {
+  adaptability_colors,
+  celebration_color,
+} = require('#/data/color-const');
+const CharaInmon = require('#/data/ero/chara-inmon');
+const { slavery_enum } = require('#/data/ero/mark-const');
+const MyEduMarks = require('#/data/event/edu-event-marks/edu-event-marks-0');
+const MayLifeMarks = require('#/data/event/life-event-marks/life-event-marks-343');
+const loc_characters = require('#/data/event/loc-characters');
+const recruit_flags = require('#/data/event/recruit-flags');
+const yandere_list = require('#/data/event/yandere-list');
+const { get_celebration } = require('#/data/info-generator');
+const { location_enum } = require('#/data/locations');
+const { expedition_weeks } = require('#/data/move-const');
+const { class_enum, track_enum } = require('#/data/race/model/race-info');
+const { race_infos } = require('#/data/race/race-const');
+const {
+  foreign_race_list,
+  track2location,
+} = require('#/data/race/race-location');
+
+const track2race = {
+  [track_enum.meydan]: {
+    color: adaptability_colors.at(-2 - class_enum.G1),
+    content: '두바이 월드컵 미팅',
+    fontWeight: 'bold',
+  },
+  [track_enum.shatin]: {
+    color: adaptability_colors.at(-2 - class_enum.G1),
+    content: '홍콩 국제 레이스',
+    fontWeight: 'bold',
+  },
+};
+
+/**
+ * @param {number} chara_id
+ * @param {string} language
+ * @param {number} loc
+ * @param {boolean} before_race
+ */
+function handle_foreign_debuff(chara_id, language, loc, before_race) {
+  sys_change_attr_and_print(chara_id, '체력', -200);
+  sys_change_attr_and_print(chara_id, '기력', -500);
+  sys_change_tired(chara_id, 2);
+  era.set(
+    `status:${chara_id}:언어장벽`,
+    Math.max(
+      5 -
+        era.get(`abl:${chara_id}:${language}어`) +
+        era.get(`talent:${chara_id}:사교태도`),
+      0,
+    ),
+  );
+  get_custom_mec(chara_id).set_foreign_debuff(before_race, loc);
+}
+
+/**
+ * @param {number} cur_round
+ * @param {number[]} in_team_list
+ */
+async function check_new_activities(cur_round, in_team_list) {
+  era.drawLine();
+  const celebration = get_celebration(cur_round);
+  if (celebration && era.get('flag:현재턴수') > 1) {
+    era.print([
+      '【이번 주는 ',
+      { content: celebration, color: celebration_color },
+      '(이)다. 팀원들의 활동 중 당신이 주목해야 할 일이 있을지도 모른다】',
+    ]);
+    era.set('cflag:0:축제이벤트표시', 0);
+    if (celebration === '축제') {
+      in_team_list.forEach((cid) =>
+        era.set(
+          `cflag:${cid}:축제이벤트표시`,
+          +(
+            era.get(`cflag:${cid}:위치`) === location_enum.beach &&
+            (!era.get(`cflag:${cid}:종족`) ||
+              era.get(`cflag:${cid}:육성턴수합산`) > 47 ||
+              era.get(`love:${cid}`) >= 60)
+          ),
+        ),
+      );
+    } else {
+      in_team_list.forEach((cid) =>
+        era.set(
+          `cflag:${cid}:축제이벤트표시`,
+          +(
+            !era.get(`cflag:${cid}:종족`) ||
+            era.get(`cflag:${cid}:육성턴수합산`) > 47 ||
+            era.get(`love:${cid}`) >= 60
+          ),
+        ),
+      );
+    }
+  } else {
+    in_team_list.forEach((id) => era.set(`cflag:${id}:축제이벤트표시`, 0));
+  }
+  if (
+    era.get('flag:현재코인') > 0 &&
+    era.get('flag:현재코인') +
+      sys_get_billings().reduce((p, c) => p + c.repay, 0) <=
+      0
+  ) {
+    era.print(['【', get_chara_talk(0).get_colored_name(), ' 即将破产!】']);
+  }
+  /** @type {Record<string,{no_hurt:boolean,no_preg:boolean}>} */
+  const in_team_status_dict = {};
+  [0, ...in_team_list].forEach((id) => {
+    const registered_race = sys_reg_race(id).curr;
+    if (registered_race.week === cur_round) {
+      era.print([
+        '【이번 주는 ',
+        get_chara_talk(id).get_colored_name(),
+        '의 레이스 ',
+        race_infos[registered_race.race].get_colored_name_with_class(),
+        '이(가) 열린다】',
+      ]);
+    }
+    in_team_status_dict[id] = {
+      no_hurt: !era.get(`status:${id}:부상`),
+      no_preg:
+        check_pregnant_unprotect(id) &&
+        era.get(`cflag:${id}:임신주수`) <
+          (CharaInmon.get(id).slave === slavery_enum.pregnant ? 30 : 33),
+    };
+  });
+  const event_weeks = (cur_round - 1) % 48 || 48,
+    curr_race_list = {};
+  foreign_race_list.forEach((race) => {
+    const { date, track } = race_infos[race];
+    if (event_weeks === date - expedition_weeks) {
+      curr_race_list[`${track}_1`] = [race, true];
+    } else if (event_weeks === date) {
+      curr_race_list[`${track}_0`] = [race, false];
+    }
+  });
+  for (const entry of Object.values(curr_race_list)) {
+    const race = entry[0];
+    const info = race_infos[race];
+    const location = track2location[info.track];
+    const race_colored_name =
+      track2race[info.track] || info.get_colored_name_with_class();
+    if (entry[1]) {
+      // 远征开始
+      let foreign_list = in_team_list.filter((e) => {
+        return (
+          race_infos[sys_reg_race(e).curr.race]?.track ===
+          race_infos[race].track
+        );
+      });
+      const punish_list = [];
+      foreign_list = foreign_list.filter((id) => {
+        if (
+          in_team_status_dict[id].no_preg &&
+          in_team_status_dict[id].no_hurt
+        ) {
+          return true;
+        }
+        punish_list.push(id);
+        return false;
+      });
+      era.print([
+        '【',
+        race_colored_name,
+        '이(가) 곧 개최될 예정이며, 참가자들은 원정길에 올랐다】',
+      ]);
+      if (
+        (era.get('cflag:343:모집상태') !== recruit_flags.yes ||
+          (era.get('cflag:343:임신단계') & 0b100001) > 0) &&
+        location.loc === location_enum.paris &&
+        !era.get('cflag:343:위치')
+      ) {
+        era.set('cflag:343:위치', location.loc);
+      }
+      if (foreign_list.length) {
+        era.printMultiColumns([
+          {
+            content: [
+              get_chara_talk(0).get_colored_name(),
+              '의 팀원 중 이하의 인물들이 이 레이스에 참가 신청했습니다:',
+            ],
+            type: 'text',
+          },
+          ...foreign_list.map((id) => {
+            const chara = get_chara_talk(id);
+            handle_foreign_debuff(id, location.lan, location.loc, true);
+            sys_change_pressure(id, get_random_value(2000, 3000));
+            return {
+              config: { align: 'center', width: 3 },
+              content: [chara.get_colored_name()],
+              type: 'text',
+            };
+          }),
+        ]);
+      }
+      const me_in_race =
+        era.get('cflag:0:종족') &&
+        race_infos[sys_reg_race(0).curr.race]?.track === race_infos[race].track;
+      let temp =
+        era.get('flag:현재위치') === location_enum.basement ||
+        era.get('cflag:0:임신주수') >=
+          (CharaInmon.get(0).slave === slavery_enum.pregnant ? 30 : 33) ||
+        (!foreign_list.length && !me_in_race);
+      if (!temp) {
+        era.printMultiColumns([
+          {
+            content: [
+              race_colored_name,
+              ' 원정에 ',
+              me_in_race ? '' : '같이 ',
+              '참가 ',
+              '하시겠습니까?',
+            ],
+            type: 'text',
+          },
+          ...['예', '아니오'].map((e, i) => {
+            return {
+              content: e,
+              type: 'button',
+              accelerator: i * 100,
+              config: { width: 12, align: 'center' },
+            };
+          }),
+        ]);
+        temp = await era.input();
+      }
+      if (!temp) {
+        handle_foreign_debuff(0, location.lan, location.loc, false);
+        era.set('flag:현재위치', location.loc);
+        foreign_list.forEach((id) => sys_change_pressure(id, -1000));
+        foreign_list.push(0);
+        if (
+          foreign_list.indexOf(343) === -1 &&
+          era.get('cflag:343:모집상태') === recruit_flags.yes &&
+          era.get('cflag:343:임신주수') <
+            (CharaInmon.get(343).slave === slavery_enum.pregnant ? 30 : 33)
+        ) {
+          foreign_list.push(343);
+        }
+      } else if (me_in_race) {
+        punish_list.push(0);
+      }
+      if (punish_list.length) {
+        era.printMultiColumns([
+          { content: '这些选手的缺席让舆论界流言四起：', type: 'text' },
+          ...punish_list.map((chara_id) => {
+            const tmp = sys_reg_race(chara_id);
+            tmp.curr.race = tmp.last.race = -1;
+            tmp.curr.week = tmp.last.week = -1;
+            sys_change_pressure(chara_id, get_random_value(3000, 4000));
+            return {
+              config: { align: 'center', width: 3 },
+              content: [get_chara_talk(chara_id).get_colored_name()],
+              type: 'text',
+            };
+          }),
+        ]);
+        sys_change_fame(-25 - 25 * punish_list.length);
+      }
+      foreign_list.forEach((id) => era.set(`cflag:${id}:위치`, location.loc));
+      if (era.get('cflag:343:모집상태') === recruit_flags.yes) {
+        let { buff } = new MayLifeMarks();
+        buff += 1;
+        foreign_list.forEach((id) => {
+          ['언어장벽', '현지적응실패', '원정레이스'].forEach((s) =>
+            era.set(
+              `status:${id}:${s}`,
+              Math.ceil(Math.max(era.get(`status:${id}:${s}`) - 1, 0) / buff),
+            ),
+          );
+        });
+      }
+    } else {
+      // 远征结束
+      era.print([
+        '【',
+        ...(era.get('cflag:0:위치') === location.loc
+          ? []
+          : [race_colored_name, '에 원정 갔던 대원들이 ']),
+        '트레센으로 돌아왔다】',
+      ]);
+      in_team_list.forEach((id) => {
+        if (era.get(`cflag:${id}:위치`) === location.loc) {
+          sys_change_attr_and_print(id, '체력', -100);
+          sys_change_attr_and_print(id, '기력', -600);
+          era.set(`status:${id}:언어장벽`, 0);
+          era.set(`status:${id}:현지적응실패`, 0);
+          era.set(`status:${id}:원정레이스`, 0);
+          sys_change_tired(id, 1);
+          era.set(`cflag:${id}:위치`, 0);
+        }
+      });
+      if (era.get('cflag:0:위치') === location.loc) {
+        era.set('flag:현재위치', location_enum.office);
+        sys_change_attr_and_print(0, '체력', -100);
+        sys_change_attr_and_print(0, '기력', -600);
+        era.set('status:0:언어장벽', 0);
+        era.set('status:0:현지적응실패', 0);
+        era.set('status:0:원정레이스', 0);
+        sys_change_tired(0, 1);
+        era.set('cflag:0:위치', 0);
+      }
+      if (era.get('cflag:343:위치') === location.loc) {
+        era.set('cflag:343:위치', 0);
+      }
+    }
+  }
+  if (event_weeks === 29 - 1) {
+    // 夏合宿
+    const beach_group = in_team_list.filter((id) => {
+      const edu_weeks = era.get(`cflag:${id}:육성턴수합산`);
+      const flag =
+        era.get(`cflag:${id}:성장단계`) >= 2 &&
+        in_team_status_dict[id].no_hurt &&
+        in_team_status_dict[id].no_preg &&
+        edu_weeks < 3 * 48 &&
+        edu_weeks > 48;
+      flag && era.set(`cflag:${id}:위치`, location_enum.beach);
+      return flag;
+    });
+    era.print('【매년 열리는 여름 합숙이 이번 주부터 시작된다.】');
+    beach_group.length &&
+      era.printMultiColumns([
+        {
+          content: [
+            '올해  ',
+            get_chara_talk(0).get_colored_name(),
+            '의 팀에서 다음 캐릭터가 여름 합숙에 참가할 수 있다:',
+          ],
+          type: 'text',
+        },
+        ...beach_group.map((chara_id) => {
+          const chara = get_chara_talk(chara_id);
+          sys_change_attr_and_print(chara_id, '체력', -10);
+          sys_change_attr_and_print(chara_id, '기력', -400);
+          return {
+            config: { align: 'center', width: 3 },
+            content: [chara.get_colored_name()],
+            type: 'text',
+          };
+        }),
+      ]);
+    // temp大于0是不参加夏合宿，所以这里判断的是不能参加夏合宿的情况
+    let temp =
+      // 地下室就只能错过夏合宿了
+      era.get('flag:현재위치') === location_enum.basement ||
+      !in_team_status_dict[0].no_preg ||
+      // 要么队伍里有人要参加夏合宿，要么就是自己参加夏合宿
+      (!beach_group.length && !era.get('cflag:0:종족'));
+    // 条件允许，弹选项让玩家选参加不参加
+    if (!temp) {
+      era.printMultiColumns([
+        {
+          content: `${beach_group.length ? '같이' : ''} 합숙에 참가하겠습니까?`,
+          type: 'text',
+        },
+        ...['예', '아니오'].map((e, i) => {
+          return {
+            content: e,
+            type: 'button',
+            accelerator: i * 100,
+            config: { width: 12, align: 'center' },
+          };
+        }),
+      ]);
+      temp = await era.input();
+    }
+    if (!temp) {
+      era.set('cflag:0:위치', era.set('flag:현재위치', location_enum.beach));
+    }
+    const follow_group = in_team_list.filter((id) => {
+      const race = era.get(`cflag:${id}:종족`),
+        flag =
+          era.get(`cflag:${id}:위치`) !== location_enum.beach &&
+          in_team_status_dict[id].no_hurt &&
+          in_team_status_dict[id].no_preg &&
+          // 和主控到达一定关系会跟着去
+          ((!temp &&
+            (era.get(`cflag:${id}:명예의전당`) || !race) &&
+            era.get(`love:${id}`) >= 80) ||
+            // 或者就是小孩跟着妈妈移动
+            (era.get(`cflag:${id}:성장단계`) < 2 &&
+              era.get(`cflag:${era.get(`cflag:${id}:모계캐릭`)}:위치`) ===
+                location_enum.beach));
+      flag && era.set(`cflag:${id}:위치`, location_enum.beach);
+      return flag;
+    });
+    if (!temp) {
+      follow_group.unshift(0);
+      CustomizedEdu.common_event_count = 1;
+    } else {
+      CustomizedEdu.common_event_count = 0;
+    }
+    if (follow_group.length) {
+      era.printMultiColumns([
+        { content: '올해는 다음 인원이 여름 합숙에 참가할 예정입니다:', type: 'text' },
+        ...follow_group.map((id) => {
+          const chara = get_chara_talk(id);
+          sys_change_attr_and_print(id, '체력', -10);
+          sys_change_attr_and_print(id, '기력', -400);
+          return {
+            config: { align: 'center', width: 3 },
+            content: [chara.get_colored_name()],
+            type: 'text',
+          };
+        }),
+      ]);
+    }
+  } else if (event_weeks === 33 - 1) {
+    // 夏合宿结束
+    era.print([
+      '【',
+      era.get('cflag:0:위치') ? '' : '여름 합숙에 참가했던 인원들이 ',
+      '트레센으로 돌아왔다】',
+    ]);
+    in_team_list.forEach((id) => {
+      if (era.get(`cflag:${id}:위치`)) {
+        sys_change_attr_and_print(id, '체력', -10);
+        sys_change_attr_and_print(id, '기력', -400);
+        era.set(`cflag:${id}:위치`, 0);
+      }
+    });
+    if (era.get('cflag:0:위치')) {
+      era.set('flag:현재위치', location_enum.office);
+      sys_change_attr_and_print(0, '체력', -10);
+      sys_change_attr_and_print(0, '기력', -400);
+      era.set('cflag:0:위치', 0);
+    }
+  }
+
+  // 特殊NPC是否会出现在地点
+  let chairman = 0;
+  if (
+    era.get('cflag:302:육성턴수합산') < 3 * 48 ||
+    (era.get('flag:현재월') > 3 &&
+      (Math.random() < 0.2 || (era.get('cflag:302:임신단계') & 0b100001) > 0))
+  ) {
+    if (
+      !(era.get('cflag:306:육성턴수합산') < 3 * 48) &&
+      (era.get('cflag:306:임신단계') & 0b100001) === 0
+    ) {
+      chairman = 306;
+    }
+  } else {
+    chairman = 302;
+  }
+  loc_characters.set(location_enum.chairman, [chairman]);
+  loc_characters.set(location_enum.trainer, [
+    sys_check_npc_working(304) ? 304 : 0,
+    chairman !== 306 && sys_check_npc_working(306) ? 306 : 0,
+  ]);
+  loc_characters.set(location_enum.clinic, [
+    sys_check_npc_working(305) ? 305 : 0,
+  ]);
+  loc_characters.set(location_enum.visitor, [
+    era.get('love:303') >= 25 && sys_check_npc_working(303) ? 303 : 0,
+    era.get('flag:현재턴수') > 40 &&
+    (era.get('love:308') >= 25 || era.get('flag:현재턴수') % 48 === 40) &&
+    sys_check_npc_working(308)
+      ? 308
+      : 0,
+    !era.get('cflag:343:위치') &&
+    era.get('flag:현재턴수') > 12 &&
+    era.get('love:343') >= 40 &&
+    sys_check_npc_working(343)
+      ? 343
+      : 0,
+  ]);
+  [204, 346, 347, 348].forEach((e) => {
+    if (era.get(`cflag:${e}:모집상태`) !== 0 && sys_check_npc_working(e)) {
+      loc_characters.get(location_enum.visitor).push(e);
+    }
+  });
+
+  const uaf_list = [];
+  if (
+    era.get('cflag:207:모집상태') === recruit_flags.yes ||
+    era.get('cflag:344:모집상태') === recruit_flags.yes ||
+    Math.random() < 0.2
+  ) {
+    uaf_list.push(207, 344);
+  }
+
+  loc_characters
+    .get(location_enum.visitor)
+    .push(
+      ...uaf_list.filter(
+        (e) =>
+          !(era.get(`cflag:${e}:육성턴수합산`) < 3 * 48) &&
+          sys_check_npc_working(e),
+      ),
+    );
+
+  [345, 349].forEach((cid) => {
+    if (
+      sys_check_npc_working(cid) &&
+      (era.get(`cflag:${cid}:모집상태`) === recruit_flags.yes ||
+        era.get(`love:${cid}`) >= 30 ||
+        Math.random() < 0.5)
+    ) {
+      loc_characters.get(location_enum.visitor).push(cid);
+    }
+  });
+  loc_characters.set(
+    location_enum.visitor,
+    sort_list(loc_characters.get(location_enum.visitor), (e) => e, true),
+  );
+  yandere_list.set(
+    in_team_list.filter((e) => sys_check_yandere(e, (y) => y > 0)),
+  );
+
+  const my_edu_marks = new MyEduMarks();
+  if (my_edu_marks.we_are_one > 0) {
+    my_edu_marks.we_are_one--;
+  }
+  await MejiroCity.instance().next_week();
+}
+
+module.exports = check_new_activities;

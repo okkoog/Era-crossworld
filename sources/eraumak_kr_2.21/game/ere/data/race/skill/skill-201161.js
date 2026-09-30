@@ -1,0 +1,77 @@
+const UmaSkill = require('#/data/race/model/uma-skill');
+
+module.exports = new UmaSkill(
+  201161,
+  '매혹적인 속삭임',
+  '레이스 중반에 바로 앞의 우마무스메를 당황하게 만든다',
+  20116,
+  2,
+  25,
+  508,
+  [() => true, () => true],
+  [
+    (args) =>
+      args.distance_type === 3 &&
+      args.phase === 1 &&
+      args.blocked_front_continuetime >= 1,
+    () => false,
+  ],
+  [0, 0],
+  [500, 0],
+  [
+    UmaSkill.ability_time_usage_enum.normal,
+    UmaSkill.ability_time_usage_enum.normal,
+  ],
+  [
+    [
+      UmaSkill.ability_type_enum.HpRate,
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+    ],
+    [
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+    ],
+  ],
+  [
+    [
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+    [
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+  ],
+  [
+    [-0.03, 0, 0],
+    [0, 0, 0],
+  ],
+  [
+    [
+      UmaSkill.target_type_enum.SelfInfront,
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+    ],
+    [
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+    ],
+  ],
+  [
+    [18, 0, 0],
+    [0, 0, 0],
+  ],
+  [2, 5],
+  [30, 30],
+  1,
+  160,
+  false,
+  false,
+  [4],
+  [UmaSkill.ability_tag_enum.hpRate],
+);

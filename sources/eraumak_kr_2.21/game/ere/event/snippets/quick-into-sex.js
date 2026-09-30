@@ -1,0 +1,31 @@
+const era = require('#/era-electron');
+
+const {
+  begin_and_init_ero,
+  end_ero_and_show_result,
+} = require('#/system/ero/sys-prepare-ero');
+
+const print_ero_page = require('#/page/page-ero');
+
+const MyEduMarks = require('#/data/event/edu-event-marks/edu-event-marks-0');
+
+/**
+ * @param {number} cid
+ * @param {number} master
+ * @param {boolean} is_rape
+ */
+async function quick_into_sex(cid, master = 0, is_rape = false) {
+  const my_marks = new MyEduMarks();
+  if (era.get('flag:현재레이스') > 0 && my_marks.we_are_one === 0) {
+    my_marks.we_are_one = 1;
+  }
+  begin_and_init_ero(0, cid);
+  era.set('tflag:주도권', master);
+  if (is_rape) {
+    era.set('tflag:강간', master);
+  }
+  await print_ero_page(cid, true);
+  await end_ero_and_show_result(true);
+}
+
+module.exports = quick_into_sex;

@@ -1,0 +1,82 @@
+const UmaSkill = require('#/data/race/model/uma-skill');
+
+module.exports = new UmaSkill(
+  210331,
+  '식사의 비법',
+  '레이스 중반에 약간 앞으로 나간다. 파워가 더욱 높으면 다소 앞으로 나간다',
+  21033,
+  1,
+  16,
+  217,
+  [() => true, () => true],
+  [
+    (args) =>
+      (args.distance_type === 1 &&
+        args.phase_random === 1 &&
+        args.base_power >= 1200) ||
+      (args.distance_type === 2 &&
+        args.phase_random === 1 &&
+        args.base_power >= 1200),
+    (args) =>
+      (args.distance_type === 1 && args.phase_random === 1) ||
+      (args.distance_type === 2 && args.phase_random === 1),
+  ],
+  [1.2, 1.2],
+  [500, 500],
+  [
+    UmaSkill.ability_time_usage_enum.normal,
+    UmaSkill.ability_time_usage_enum.normal,
+  ],
+  [
+    [
+      UmaSkill.ability_type_enum.CurrentSpeedWithNaturalDeceleration,
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+    ],
+    [
+      UmaSkill.ability_type_enum.CurrentSpeedWithNaturalDeceleration,
+      UmaSkill.ability_type_enum.no,
+      UmaSkill.ability_type_enum.no,
+    ],
+  ],
+  [
+    [
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+    [
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+      UmaSkill.ability_usage_enum.Direct,
+    ],
+  ],
+  [
+    [0.25, 0, 0],
+    [0.15, 0, 0],
+  ],
+  [
+    [
+      UmaSkill.target_type_enum.Self,
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+    ],
+    [
+      UmaSkill.target_type_enum.Self,
+      UmaSkill.target_type_enum.no,
+      UmaSkill.target_type_enum.no,
+    ],
+  ],
+  [
+    [0, 0, 0],
+    [0, 0, 0],
+  ],
+  [3, 0],
+  [30, 0],
+  1,
+  170,
+  false,
+  false,
+  [2, 3],
+  [UmaSkill.ability_tag_enum.currentSpeed],
+);
