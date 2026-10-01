@@ -1434,4 +1434,13 @@ module.exports = class extends I18nSkills {
   114301111 = 'Chain of Hearts';
   114301211 = '암야의 등불';
 
+  100281 = 'I\'M☆FULL☆SPEED!!';
+  100421 = '『I\'m possible』';
+  100901 = 'Queen\'s Rebirth';
+  110091 = 'Queen\'s Lumination';
+  120101 = 'Have S\'more Love!';
+  900281 = 'I\'M☆FULL☆SPEED!!';
+  900421 = '『I\'m possible』';
+  900901 = 'Queen\'s Rebirth';
+
 };
