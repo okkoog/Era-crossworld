@@ -10,42 +10,42 @@ good_morning:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「좋은 아침이에요, %CALLNAME%. 함께 식당에서 아침 먹고 트레이닝하러 가볼까요.」
+            - 「おはようございますわ、%CALLNAME%。食堂で朝食をいただいてから、一緒に練習いたしましょう。」
     - random: true
       lines:
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「평안하신가요! 오늘도 저희 사이의 계약이 처음 시작되었을 때의 열정을 유지해 봐요.」
+            - 「ごきげんよう！ 今日も、契約を結んだあの日の熱意を忘れずにまいりましょう。」
     - random: true
       lines:
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「평안하시길. 오늘도 우아한 하루를 보내도록 해요.」
+            - 「ごきげんよう。今日も優雅な一日を過ごしましょうね。」
     - random: true
       lines:
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「메지로 가문의 숙원을 위해서라면, 무엇을 해야 하든 마다하지 않겠어요.」
+            - 「メジロ家の悲願のためなら、何をせよと仰せられても厭いませんわ。」
     - random: true
       lines:
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「몸가짐은 하루의 기본이죠. 자는 모습이 낮까지 남아있지 않도록 매일 아침 정성 들여 용모를 가꾼답니다.」
+            - 「身だしなみは一日の基本ですわ。寝癖を昼まで残さぬよう、毎朝きちんと整えておりますの。」
     - random: true
       lines:
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「좋은 아침이에요. 멋진 하루를 보내기 위해 기운을 내 볼까요.」
+            - 「おはようございますわ。素敵な一日にするため、気を引き締めてまいりましょう。」
     # STATUSNAME:1 = 徹夜
     - if: era.get('status:13:1') > 0
       random: true
@@ -54,7 +54,7 @@ good_morning:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「메지로 가문의 %UMA%면서 밤을 새우느라 지각할 뻔하다니, 정말 부끄러운 일이네요.」
+            - 「メジロ家の%UMA%でありながら徹夜で遅刻しそうになるなんて……恥ずかしいですわ。」
     - if: era.get('status:13:1') > 0
       random: true
       lines:
@@ -62,7 +62,7 @@ good_morning:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「하암~ 그러고 보니 어제 그 야구 경기 정말 대단했죠…… 아, 아무 말도 안 했어요! 정말로요!」
+            - 「ふあぁ……昨日の野球、本当に素晴らしかったですわ……わたくし、何も申しておりませんっ！ 本当に何も！」
     - if: era.get('status:13:1') > 0
       random: true
       lines:
@@ -70,7 +70,7 @@ good_morning:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「정말 죄송해요. 어제 제시간에 잠들긴 했습니다만, 골드 쉽 씨가 나오는 악몽을 꾸는 바람에…… 생각만 해도 소름이 돋네요……」
+            - 「大変申し訳ありません。昨夜は定時に休みましたのに、ゴールドシップの悪夢を見てしまって……思い出しただけで悪寒が……」
 
 select:
   sync: true
@@ -84,7 +84,7 @@ select:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「오늘의 저도 메지로 가문의 영광을 이어가기 위해 노력하고 있답니다.」
+            - 「今日のわたくしも、メジロ家の栄光を継ぐために励んでおりますわ。」
     - if: era.get('status:13:10') === 0 && era.get('status:13:39') === 0
       random: true
       lines:
@@ -92,7 +92,7 @@ select:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「오늘 트레이닝도 잘 부탁드려요, %CALLNAME%.」
+            - 「今日のトレーニングも、どうぞよろしくお願いいたしますわ、%CALLNAME%。」
     - if: era.get('status:13:10') === 0 && era.get('status:13:39') === 0
       random: true
       lines:
@@ -100,12 +100,12 @@ select:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「저를 찾으셨나요, %CALLNAME%?」
+            - 「わたくしをお探しですの、%CALLNAME%？」
     - if: era.get('status:13:10') > 0 || era.get('status:13:39') > 0
       random: true
       lines:
-        - 「잠들었네……」
-        - 트레이닝실에서 깊이 잠든 맥퀸을 바라보며, %YOU%의 마음은 조금 복잡해졌다.
+        - 「眠っている……」
+        - トレーナー室で眠るマックイーンを見て、%YOU%の気持ちは少し複雑だった。
 
 good_night:
   sync: true
@@ -114,20 +114,20 @@ good_night:
       lines:
         - if: era.get('status:13:39') === 0
           content: 「정말, 무리하기는……」
-        - %YOU%은(는) 기력을 모두 소진해버린 맥퀸을 공주님 안기 자세로 조금 힘들게 들어 올려 기숙사 건물 아래까지 데려다주었다.
+        - %YOU%は少し苦労しながら、気力を使い果たしたマックイーンをお姫様抱っこで寮の下まで運んだ。
+        - %트레이너%은(는) 기력을 모두 소진해버린 맥퀸을 공주님 안기 자세로 조금 힘들게 들어 올려 기숙사 건물 아래까지 데려다주었다.
         - 「어쨌든 이녀석을 방까지 데려다주는 건 부탁할게.」
-        - 사감은 고개를 끄덕이며 조심스럽게 맥퀸을 건네받았다.
-        - 짐을 내려놓은 %YOU%은(는) 숨을 크게 들이마시고는, 불이 환하게 켜진 학생 기숙사를 뒤로한 채 자신의 숙소로 발걸음을 돌렸다.
+        - 荷を下ろした%YOU%は深く息を吸い、明かりのついた学生寮を見てから、自分の宿舎へ戻った。
     - if: era.get('status:13:10') === 0 && era.get('status:13:39') === 0
       lines:
         - color: %COLOR%
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「수고하셨어요, %CALLNAME%. 내일 봬요!」
-        - 드디어 하루를 마친 %YOU%은(는) 기숙사 건물 입구 앞에 서서 맥퀸이 기숙사로 들어가는 것을 배웅했다.
-        - %YOU%은(는) 손을 흔드는 메지로 맥퀸을 보며 미소와 함께 같이 손을 흔들어 주었다.
-        - 메지로 맥퀸이 건물로 들어가 더 이상 모습이 보이지 않게 되어서야 %YOU%은(는) 몸을 돌려 자신의 숙소로 향했다.
+            - 「お疲れ様ですわ、%CALLNAME%。また明日！」
+        - ようやく終わった一日、%YOU%は寮の玄関の外に立ち、マックイーンが寮へ戻るのを見送った。
+        - 手を振るメジロマックイーンに、%YOU%も微笑んで同じ仕草を返す。
+        - マックイーンが階上へ上がり、姿が見えなくなってから、%YOU%は振り返って自分の宿舎へ戻った。
 
 
 talk:
@@ -139,7 +139,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「지금은 컨디션이 최고예요. 이것이야말로 메지로 가문의 %UMA%인 저다운 모습이죠!」
+          - 「今の調子は絶好調ですわ。これぞメジロ家の%UMA%たるわたくしの姿！」
   - if: era.get('cflag:13:40') === 2
     random: true
     lines:
@@ -147,7 +147,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「오늘은 활력이 넘치는군요. 자, %CALLNAME%, 어떤 강도의 트레이닝이라도 전부 받아들이겠어요!」
+          - 「今日は活力に満ちておりますわ。さあ、%CALLNAME%、どれほどの強度でもお受けいたします！」
   - if: era.get('cflag:13:40') === 1
     random: true
     lines:
@@ -155,7 +155,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「%CALLNAME%, 오늘 어떤 트레이닝이 있나요? 평소보다 더 빠른 속도로 완수하는 모습을 보여드릴게요.」
+          - 「%CALLNAME%、今日はどのようなトレーニングですの？ いつもの速度より早く仕上げてみせますわ。」
   - if: era.get('cflag:13:40') === 1
     random: true
     lines:
@@ -163,7 +163,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「평소보다 컨디션이 좋은 것 같아요.」
+          - 「調子は、いつもより良い気がいたしますわ。」
   - if: era.get('cflag:13:40') === 0
     random: true
     lines:
@@ -171,7 +171,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「자, %CALLNAME%, 무엇부터 시작하면 될까요?」
+          - 「さあ、%CALLNAME%、何から始めましょうか？」
   - if: era.get('cflag:13:40') === 0
     random: true
     lines:
@@ -179,7 +179,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「오늘도 열심히 트레이닝에 임하겠어요, %CALLNAME%.」
+          - 「今日も精一杯トレーニングいたしますわ、%CALLNAME%。」
   - if: era.get('cflag:13:40') === -1
     random: true
     lines:
@@ -187,7 +187,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「죄송해요, %CALLNAME%. 오늘은 집중력이 조금 떨어지네요……」
+          - 「申し訳ありません、%CALLNAME%。今日は少し集中が……」
   - if: era.get('cflag:13:40') === -1
     random: true
     lines:
@@ -195,7 +195,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「우우, 오늘은 왠지 의욕이 생기지 않아요……」
+          - 「うぅ……今日はどうにも気が乗らないのですわ……」
   - if: era.get('cflag:13:40') === -2
     random: true
     lines:
@@ -203,7 +203,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「의욕을 내야 한다는 건 알지만, 몸이 따라주질 않는 것 같아요……」
+          - 「前向きでいねばならぬのはわかっておりますのに、身体がついてまいりませんわ……」
   - if: era.get('cflag:13:40') === -2
     random: true
     lines:
@@ -211,14 +211,14 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「메지로 가문의 %UMA%가, 이런 일로 쓰러질 리가……」
+          - 「メジロ家の%UMA%が、これしきで倒れるものですか……」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「메지로 저택은 매우 넓어서, 어릴 적에는 길을 찾기 위해 인형으로 표시를 해두곤 했답니다.」
+          - 「メジロ家は広いものですから、幼い頃は道を覚えるのに人形を置いて目印にしていたのですわ。」
   # CFLAGNAME:66 = 募集状態
   - if: era.get('cflag:7:66') === 1
     random: true
@@ -227,7 +227,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「%麦昆称呼船%는…… 왠지 모르게 우연히 알게 된 이후로 계속 저를 쫓아다니고 있어요.」
+          - 「%CALL_7%……なぜか、偶然知り合って以来ずっと纏わりつかれておりますの。」
   - if: era.get('cflag:63:66') === 1
     random: true
     lines:
@@ -235,14 +235,14 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「%麦昆称呼狄杜%가 겉보기엔 저렇게 엄격해 보여도, 사실은 아주 다정한 분이랍니다.」
+          - 「%CALL_63%は表面こそ厳粛ですけれど、本当はとても優しい方ですわ。」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「다음에 기회가 된다면 티타임을 즐기러 오시지 않겠나요? 메지로 가문의 방식대로 대접해 드릴게요.」
+          - 「今度、たまに午後のお茶においでになりません？ メジロ家流でもてなしますわ。」
   - if: d.check === 1
     random: true
     lines:
@@ -250,7 +250,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「다음에 같이 야구 경기를 보러 가지 않으실래요? 저의 그 품위없는 행동을 너그럽게 봐주실 수 있다면 말이죠……」
+          - 「今度、一緒に野球を観に行きませんこと？ わたくしの醜態を許してくださるのでしたら……」
   - if: d.check === 1
     random: true
     lines:
@@ -258,7 +258,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「우리 메지로 가문의 %UMA%들은 사적으로 각자 다양한 취미를 가지고 있으니, 그리 대단한 일은 아니랍니다.」
+          - 「わたくしたちメジロ家の%UMA%も、裏ではそれぞれ趣味を持っておりますの。大したことではございませんわ。」
 
 office_gift:
   - random: true
@@ -267,14 +267,14 @@ office_gift:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「이것을 제게 주시는 건가요? 정말 감사합니다. 메지로 가문의 너그러움을 보여줄 수 있는 답례를 꼭 준비해야겠어요……」
+          - 「わたくしへの贈り物、ですの？ 誠にありがとうございます。メジロ家の器量を示すお返しをしなければ……」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「%CALLNAME%이 주신 선물, 소중히 간직할게요.」
+          - 「%CALLNAME%からいただいた贈り物は、大切にいたしますわ。」
 
 o_c_pray:
   - random: true
@@ -355,8 +355,8 @@ o_s_drawing:
         content: %CHARA%
       - 「自分が強運だと想像できれば、良いものが当たるはずですわ。」
   - %YOU%から抽選券を受け取ったマックイーンは、期待を込めて回し始めた。
-  - ぐるぐるぐる……
-  - 盤の中の小球が落ちるまで、マックイーンの手は止まらない。
+  - %트레이너%의 손에서 추첨권을 건네받은 맥퀸은 기대로 가득 찬 눈빛으로 추첨기를 돌렸다.
+  - 드르륵, 드르륵……
   - if: d.hot_spring === 1
     random: true
     lines:
@@ -368,7 +368,7 @@ o_s_drawing:
           - 「%CALLNAME%、温泉旅行券が当たりましたわ！」
       -
       - acc: 1
-        content: 「おめでとう！」
+        content: 「축하해!」
       -
       - color: %COLOR%
         content:
@@ -382,7 +382,7 @@ o_s_drawing:
           - 「それで、いつこの券を使いましょうか？ 期限はないようですわよ？」
       -
       - acc: 1
-        content: 「マックイーンが卒業してからの息抜き、というのはどうだ？」
+        content: 「맥퀸의 졸업 선물로 써보는 건 어때?」
       -
       - color: %COLOR%
         content:
@@ -395,7 +395,7 @@ o_s_ktv:
   - random: true
     lines:
       - 勝利者ステージの練習のため、%YOU%とマックイーンはカラオケへ来た。
-      - 「やっぱりマックイーンの声は天の声だな。」
+      - 위닝 라이브 연습을 위해, %트레이너%과 맥퀸은 카라오케를 찾았다.
       - 歌い終えたマックイーンを見て、%YOU%は思わず父親のような笑顔を浮かべた。
   # CFLAGNAME:57 = 拡張変数
   - if: era.get('cflag:13:57')?.love_40 === 2
@@ -407,12 +407,12 @@ o_s_ktv:
             content: %CHARA%
           - 「打ち込めーYATAKA！！」
       - 長く我慢していたマックイーンが、好きな球団の応援歌を全力で歌うのを、%YOU%は後ろから見ていた。
-      - まあ……滅多に見られない、子供のようなマックイーンの姿だ。それだけでも価値がある。
+      - %트레이너%은(는) 뒤에서 그동안 참아왔던 갈증을 해소하듯 좋아하는 야구팀 응원가를 열창하는 맥퀸의 모습을 지켜보았다.
   - if: era.get('love:13') > 75
     random: true
     lines:
-      - 「風走らせたあの子に～♫」
-      - 「やや熱い視線～♫」
+      - 「바람을 몰던 그 아이에게~ ♫」
+      - 「조금 뜨거운 시선~ ♫」
       - なぜか、マックイーンとあの関係になってから、この二行を%YOU%が歌うと、いつも熱を帯びてしまう。
   - if: era.get('love:13') >= 75
     random: true
@@ -427,8 +427,8 @@ o_s_ktv:
           - fontWeight: bold
             content: %CHARA%
           - 「少しずつ進めばいいよ～♫」
-      - 軽やかな伴奏と、マックイーンの優しい声が溶け合う。
-      - 何とも言えないほど、心地よい。
+      - 경쾌한 반주와 맥퀸의 부드러운 목소리가 하나로 어우러졌다.
+      - 실로 더할 나위 없는 즐거움이었다.
 
 o_s_movie:
   - random: true
@@ -583,7 +583,7 @@ s_r_lunch:
           - fontWeight: bold
             content: %CHARA%
           - 「%CALLNAME%、あーん」
-      - あの一線を越えてから、食事の時間まで、いつの間にかゆっくりになっている。
+      - 그 관계를 넘어선 이후로, 어느덧 식사 시간조차 느긋하게 흐르게 되었다.
       - マックイーンが一匙ずつ%YOU%に食べさせてくれるせいだろう。
       - 慣れてきた%YOU%も、微笑んでその世話を受けている。
 
@@ -594,7 +594,7 @@ office_cook:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「으음, 전 파르페를 먹고 싶다구요.」
+          - 「むぅ、パフェが食べたいですわ。」
   - random: true
     lines:
       - color: %COLOR%
@@ -609,31 +609,31 @@ office_cook:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「일전에 고용인분에게 요리 기술을 조금 배워왔답니다. 그래서 오늘은 제가 직접 만든 도시락을 가져왔는데, 한번 드셔보실래요?」
+          - 「先日、使用人に料理のコツを教えていただきましたので、今日はわたくしが作った弁当を持ってまいりました。召し上がります？」
 
 office_study:
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「메지로 가문의 %UMA%라고 해서 모든 걸 다 알고 있는 건 아니랍니다.」
+      - 「メジロ家の%UMA%でも、何もかもわかるわけではございませんわ。」
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「그러니 %CALLNAME%, 저를 지도해 주세요.」
+      - 「ですから%CALLNAME%、ご指導をお願いいたしますわ。」
 
 office_rest:
   - random: true
     lines:
       - 잠깐 피곤해서 눈을 붙였을 뿐인데 그만 잠이 들어버리고 말았다.
-      - 어깨에 닿는 이질적인 느낌에 %YOU%이 옆을 돌아보니, 메지로 맥퀸이 곤히 잠들어 있었다.
-      - 결국 %YOU%은(는) 차마 깨우지 못하고 그 상태로 몇 분을 더 머물렀다.
+      - 肩の違和感に気づいた%YOU%が隣を見ると、眠っているメジロマックイーンがいた。
+      - それで%YOU%は、また数分間、そのままでいた。
   - random: true
     lines:
       - 「조심…… 움직이지 마, 그래……」
-      - %YOU%은(는) 무릎 위에서 얼굴이 붉어진 맥퀸은 아랑곳하지 않고, 면봉으로 %SEX%의 귀를 파주었다.
-      - 다만 인간의 귀와 비교했을 때, 우마무스메의 귀가 주는 감촉은 조금 기묘했다……
+      - %YOU%は膝の上のマックイーンが赤くなる頬を気にせず、綿棒で%SEX%の耳を掻いた。
+      - %트레이너%은(는) 무릎 위에서 얼굴이 붉어진 맥퀸은 아랑곳하지 않고, 면봉으로 %그녀%의 귀를 파주었다.
   - if: era.get('love:13') >= 41
     random: true
     lines:
@@ -641,7 +641,7 @@ office_rest:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「야구 경기 녹화 테이프를 가져왔어요. 같이 야구 중계를 보지 않으실래요?」
+          - 「野球の試合の録画を持ってまいりましたわ。ご覧になりません？」
   - if: era.get('love:13') >= 75
     random: true
     lines:
@@ -649,13 +649,13 @@ office_rest:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「제 무릎베개가 좋으신가요? %CALLNAME%만 좋으시다면 언제든 이렇게 해드릴 수 있답니다.」
+          - 「わたくしの膝枕、お気に召します？ %CALLNAME%がお好きなら、いつでもこういたしますわ。」
   - if: era.get('love:13') >= 75
     random: true
     lines:
       - 「맥퀸, 이리 와서 한번 안아보자.」
-      - 맥퀸의 허락을 받은 후, %YOU%은(는) 맥퀸의 몸을 꽉 끌어안으며 %SEX%의 머리카락에서 나는 향기를 탐욕스럽게 들이마셨다.
-      - 친밀한 담당과 이렇게 붙어있는 것보다 더 행복한 일은 없을 것이다.
+      - 承諾を得て、%YOU%はマックイーンの身体をきつく抱き、%SEX%の髪の香りを欲深く吸い込んだ。
+      - 맥퀸의 허락을 받은 후, %트레이너%은(는) 맥퀸의 몸을 꽉 끌어안으며 %그녀%의 머리카락에서 나는 향기를 탐욕스럽게 들이마셨다.
 
 office_game:
   - random: true
@@ -664,16 +664,16 @@ office_game:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「세상에, 괴물의 패턴을 완전히 꿰뚫고 계시네요. 마치 손바닥 위에서 가지고 노는 것 같아요. 정말 대단해요!」
-      - %YOU%의 능숙한 조작 실력을 본 곁의 맥퀸은 놀라움에 입을 다물지 못했다.
+          - 「魔物の技をすべて見破って、掌の上で転がすように……本当にすごいですわ。」
+      - %YOU%の巧みな操作に、隣のマックイーンは口を押さえて驚いていた。
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「저희의 일심동체를 시험하는 이런 게임이라면, 반드시 클리어해 보이겠어요.」
-      - 익숙하지 않은 솜씨의 맥퀸이었지만 열심히 컨트롤러를 조작하며 %YOU%과 함께 2인용 게임에 열중했다.
+          - 「一心同体を試されるようなゲームですもの、必ずクリアいたしますわ。」
+      - 不慣れなマックイーンはコントローラーに慣れようとしながら、%YOU%と二人用のゲームをしていた。
 
 # ジュニア級
 birthday1:
