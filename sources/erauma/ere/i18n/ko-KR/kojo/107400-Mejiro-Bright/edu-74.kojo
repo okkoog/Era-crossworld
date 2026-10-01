@@ -242,7 +242,7 @@ mejiro_tea:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「저 말이죠, 맥퀸 님의 달리기를 무척 좋아한답니다아.」
+        - 「私、%CALL_13%の走りがとても好きなのです。」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -268,7 +268,7 @@ mejiro_tea:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「후훗, 언니의 달리기 방식도 무척 좋아한답니다아?」
+        - 「ふふ、%CALL_27%の走り方も、とても好きですわよ？」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -424,7 +424,7 @@ begin_race_end:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「%CALL_27% 언니…… %CALLNAME%……」
+      - 「%CALL_27%…… %CALLNAME%……」
   - color: %COLOR%
     content:
       - fontWeight: bold
@@ -462,7 +462,7 @@ inherit:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「%CALL_27% 언니?」
+        - 「%CALL_27%？」
     - acc: 1
       content: 「해두고 싶은 말이라니?」
     - color: %R_COLOR%
@@ -578,19 +578,19 @@ inherit:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「언니라면 분명…… 제게 어떤 특정 레이스에 나가달라는 식의 부탁을 하셨겠지요.」
+        - 「%CALL_27%でしたら…… 私に、どこかのレースへ出てほしい、というようなことでしょう？」
     - acc: 1
       content: 「라이언에 대해 참 잘 아네.」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「언니가 뛰었던 레이스는 단 하나도 빠짐없이 전부 기억하고 있답니다~」
+        - 「%CALL_27%のレースは、どれも覚えていますわよ～」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「그도 그럴 게, 언니는…… 제가 세상에서 가장 사랑하는 가족이니까요.」
+        - 「だって%CALL_27%は…… いちばん好きな家族ですもの。」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -1148,7 +1148,7 @@ kiku_sho:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「맥퀸 님께서도 그 시절에 이런 환경 속에서 출주하셨던 거군요.」
+      - 「%CALL_13%も、あのときはこんな空気のなかで出走されたのですわね。」
   - color: %COLOR%
     content:
       - fontWeight: bold
@@ -1191,17 +1191,17 @@ kiku_sho_win:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「ふ、ふ……」
+      - 「후우, 후우……」
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「私…… できましたわよ？」
+      - 「저…… 해냈어요.」
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「%CALL_13%のように、きれいな勝ちですわよ？」
+      - 「%CALL_13%님처럼 멋지게 승리했답니다.」
   - color: %COLOR%
     content: ゴールに立ち、置き場のない手が胸に当てられ、息とともに上下する。
   - color: %COLOR%
@@ -1215,14 +1215,14 @@ kiku_sho_win:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「%CALLNAME%のおかげですわ……」
+      - 「전부 %CALLNAME% 덕분이에요……」
   - color: %COLOR%
     content: 胸の鼓動が止まらず、押し続けている。
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「胸が…… 止まりませんわ……」
+      - 「마음속이…… 가라앉지를 않네요……」
   - color: %COLOR%
     content:
       - fontWeight: bold
@@ -1233,30 +1233,30 @@ kiku_sho_win:
   - if: era.get('love:74') >= 50
     lines:
       - color: %COLOR%
-        content: レースが終わってずいぶん経っても、胸の鼓動は止まらない。
+        content: 레이스가 끝난 지 한참이 지났음에도 가슴속의 고동은 멈추지 않는다.
       - color: %COLOR%
-        content: 胸の鼓動は、まだ続いている。
-      - color: %COLOR%
-        content:
-          - fontWeight: bold
-            content: %CHARA%
-          - 「あら……」
+        content: 가슴속의 울림이 여전히 이어지고 있다.
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「この感じは？」
-      - color: %COLOR%
-        content: 疲れた体に微妙な焦りが浮かび、すぐ消える。
+          - 「어머나……」
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「どうして、ですの？」
+          - 「이 느낌은 무엇일까요?」
       - color: %COLOR%
-        content: 困惑して小さく首を傾げ、自分の胸を見る。
+        content: 피로한 몸 위로 미묘한 조급함이 잠시 피어올랐으나, 이내 다시 사라진다.
       - color: %COLOR%
-        content: 当然、見ているだけでは何もわからない。
+        content:
+          - fontWeight: bold
+            content: %CHARA%
+          - 「왜 이럴까요?」
+      - color: %COLOR%
+        content: 의아한 듯 고개를 살짝 갸웃거리며 자신의 가슴팍을 내려다본다.
+      - color: %COLOR%
+        content: 당연히, 그저 바라보는 것만으로는 아무것도 알아낼 수 없다.
 
 # 菊花賞敗北
 kiku_sho_lose:
@@ -1264,7 +1264,7 @@ kiku_sho_lose:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「……負けました。」
+      - 「……지고 말았네요.」
   - color: %COLOR%
     content: ゴールに立ち、自分の着順を見る。
   - color: %COLOR%
@@ -1273,17 +1273,17 @@ kiku_sho_lose:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「スタミナが、まったく足りませんわ。」
+      - 「스태미나가 완전히 부족했나 봐요.」
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「私もメジロ家の一員なのに、こんな失態を……」
+      - 「저 역시 메지로가의 일원인데도 이렇게 보기 흉한 모습을 보이다니……」
   - color: %COLOR%
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「ごめんなさい…… %CALLNAME%。」
+      - 「죄송해요…… %CALLNAME%.」
 
 # ステイヤーズステークス
 stay_sta:
@@ -1476,7 +1476,7 @@ tenn_spr:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「맥퀸 님……라이언 언니……」
+      - 「%CALL_13%…… %CALL_27%……」
   - color: %P_COLOR%
     content:
       - fontWeight: bold
@@ -1491,7 +1491,7 @@ tenn_spr:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「파머 님…… 네, 잘 알겠습니다!」
+      - 「%CALL_64%…… ええ、わかりました！」
   - 세 사람의 따뜻한 시선 속에서 %CHARA%는 다시금 양손을 움켜쥔다.
   - 레이스를 향한 투지를 불태우며, 이 모든 과정을 지켜보던 %YOU%을(를) 향해 고개를 가볍게 끄덕인다.
   - color: %COLOR%
@@ -1957,7 +1957,7 @@ arim_kin_win:
             content: %CHARA%
           - 「후~ 아~」
       - 椅子がもう少し低くなければ、いまごろ %CHARA% の小さな脚は揺れていただろう。
-      - 머리 정돈이 완전히 끝날 때까지 얌전히 맡기던 고개를 마침내 부드럽게 돌린다.
+      - 의자가 조금만 더 높았더라면, 분명 지금쯤 기분 좋게 다리를 허공에 대고 흔들었을 것이다.
       - color: %COLOR%
         content:
           - fontWeight: bold
@@ -1981,57 +1981,57 @@ arim_kin_win:
           - fontWeight: bold
             content: %CHARA%
           - 「그렇다면…… %CALLNAME%께서는 이후에 저와 함께 돌아가 주실 건가요?」
-      - 잘게 떨리는 가슴의 움직임이 점차 빨라지고, 사방이 고요한 공간 속에서 숨 가쁜 심장 소리가 선명하게 울려 퍼지는 듯하다.
-      - 승리를 거둔 %CHARA%를 위한 축하 파티를 준비하러 이미 연회장으로 떠난 자매들은 지금 이 순간 결코 돌아오지 않을 터였다——
+      - 「저…… 대단히 드문 일입니다만, 지금은 조금 서두르고 싶어졌답니다~」
+      - 勝った %CHARA% の晩餐の準備へ会場へ向かった姉妹たちは、いまは現れない——
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「저…… 대단히 드문 일입니다만, 지금은 조금 서두르고 싶어졌답니다~」
+          - 「저답지 않나요……」
       - acc: 1
         key: sex
-        content: 「너답지 않네, 돌아가서 마저 얘기할까?」（애정도+5）
+        content: 「らしくないな。帰ってからにしよう？」（恋慕+5）
         lines:
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「저답지 않나요……」
+              - 「らしくない、ですの……」
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「후훗~ %CALLNAME%께서도 이렇게 느긋하게 흘러가는 편을 무척 좋아하시는군요~」
+              - 「ふふ～ %CALLNAME%、あなたものんびりがお好きですわね～」
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「……그렇다면 저는 언제까지고 %CALLNAME%을 기다리겠어요.」
-          - 평소와 다름없는 온화한 미소를 띤 채 기품 있게 자리에서 일어나 %YOU%의 눈앞까지 조용히 걸어온다.
-          - 그리고 %YOU%의 뺨 위에 향긋한 온기가 감도는 흔적을 부드럽게 남긴다——
+              - 「……では、私は%CALLNAME%を待ち続けますわ。」
+          - いつものと変わらない笑顔のまま、端正に立ち上がり、ゆっくり %YOU% の前まで来る。
+          - そっと %YOU% の顔に、清らかな香りの印を残す——
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「부디 이 일을 서둘러 일정에 올려주시길 바랄게요~」
+              - 「どうか、これを予定に入れてくださいまし～」
       - acc: 2
-        content: 「그렇게까지 말한다면 곁에 있어 줄게……」
+        content: 「珍しいなら、付き合うよ……」
         lines:
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「기쁩니다~」
-          - 금방이라도 날아갈 듯 가냘픈 목소리를 내며 사뿐사뿐 자리에서 일어난다.
-          - 이윽고 말랑한 뺨을 %YOU%의 품에 파고들며 온전히 전해지는 %YOU%의 온기를 탐닉한다.
+              - 「ええ～」
+          - 「부디 이 일을 서둘러 일정에 올려주시길 바랄게요~」
+          - 肉付きのいい頬が %YOU% の胸に埋まり、%YOU% の感触を味わっている。
           - color: %COLOR%
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「지체할 것 없이 곧바로……」
-          - 가느다란 손가락으로 승부복의 깃을 살포시 당겨 새하얀 속옷을 드러낸다.
-          - 이내 자유로워진 다른 한 손으로 %YOU%의 손을 다정하게 이끌어 자신의 가슴팍 위에 부드럽게 올려놓는다.
-          - 따스하면서도 말랑한 속살이 %YOU%의 손바닥 안에 가득히 거머쥐어진다.
+              - 「急がば回れ、ではなく……」
+          - 「기쁩니다~」
+          - 空いたもう一方の手が、%YOU% の掌をゆっくり自分の胸へ置く。
+          - 温かく柔らかい肉体を、%YOU% の手がしっかりと掴む。
           - color: %COLOR%
             content:
               - fontWeight: bold
@@ -2041,7 +2041,7 @@ arim_kin_win:
             content:
               - fontWeight: bold
                 content: %CHARA%
-              - 「부디…… 조금만 서둘러서 해 주세요~」
+              - 「どうか…… 急いで～ してくださいまし～」
           # 馬跳び
 
 arim_kin_sex:
@@ -2467,7 +2467,7 @@ wish:
   title: 소원
   lines:
     - 自分の席に座り直したとき、%YOU% は長く息を吐く。
-    - 이번 온천 여행의 추억은 무척 즐거웠으나, 아무리 돌이켜봐도 지나칠 정도로…… 철저한 계획하에 움직였다는 인상을 지울 수 없다.
+    - 자신의 집무실 의자에 깊숙이 몸을 묻으며, %YOU는 길게 안도의 한숨을 내쉰다.
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -2558,50 +2558,50 @@ wish:
 # week_start
 # 愛欲以上、トレーニング不足
 where_is_time:
-  title: 時間は……どこへ？
+  title: 시간은…… 어디로 사라진 걸까요?
   lines:
-    - 中庭のベンチで、%CHARA% はひとり静かな時間を味わっている。
-    - どれだけ経ったかわからないころ、%YOU% がやっと中庭を見つけた。
+    - 학원 안뜰의 벤치에 앉아, %CHARA%는 홀로 고요하고 평화로운 시간을 만끽하고 있다.
+    - 어느덧 시간이 얼마나 흘렀는지 모를 무렵이 되어서야 %YOU%은(는) 겨우 안뜰 한구석에서 그녀를 찾아낸다.
     - acc: 1
-      content: 「……ブライト？」
-    - %YOU% の声を聞き、%CHARA% は少し呆けて振り返り、後ろを見る。
+      content: 「……브라이트?」
+    - %YOU%의 목소리를 들은 %CHARA%가 다소 멍한 표정으로 고개를 돌려 등 뒤를 바라본다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「あ、%CALLNAME%～」
+        - 「아, %CALLNAME%~」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「いつ、こちらへいらっしゃいましたの？」
+        - 「언제 이곳까지 찾아오신 건가요?」
     - acc: 1
-      content: 「今、やっと見つけた」
+      content: 「방금 막 찾아냈어.」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「今…… という意味は？」
-    - 何かに気づいた %CHARA% はゆっくり視線を上げ、周囲を少し見渡す。
-    - 陽の方向は真上から西へ移っており、午後の時間がもう逃げている。
+        - 「방금 전…… 이라는 말씀은?」
+    - 무언가 위기감을 감지한 %CHARA%가 천천히 시선을 들어 주변의 풍경을 부드럽게 훑어본다.
+    - 정수리를 곧게 내리쬐던 태양은 어느덧 서쪽 하늘을 향해 크게 기울어 있었고, 이는 황금 같은 오후 시간이 통째로 흘러가 버렸음을 의미했다.
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「え……」
+        - 「어머나……」
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「ごめんなさい、%CALLNAME%、私が……」
+        - 「대단히 죄송합니다, %CALLNAME%. 제가 이런 실수를……」
     - acc: 1
-      content: 「構わないよ」
-    - 伏せた %CHARA% の耳とは違い、%YOU% は笑って手を伸ばし、丸い頭を何度か撫でる。
+      content: 「괜찮아, 신경 쓰지 마.」
+    - 시무룩해진 탓에 축 늘어진 %CHARA%의 귀와는 대조적으로, %YOU%은(는) 그저 미소를 지으며 그녀의 동글동글한 머리를 다정하게 몇 번 쓰다듬어 줄 뿐이다.
     - acc: 1
-      content: 「見つけられなかった俺にも責任がある」
+      content: 「제때 너를 찾아내지 못한 내게도 책임이 있으니까.」
     -
     - acc: 1
-      content: 「今日はこれで過ごしても、悪くない」
+      content: 「가끔은 오늘처럼 평화롭게 하루를 보내는 것도 나쁘지 않네.」
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -2611,13 +2611,13 @@ where_is_time:
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「はい！」
+        - 「네, 알겠습니다!」
     - 柔らかい耳が軽く跳ね、%YOU% が%CHARA%の頭に置いた手を挟む。
     - color: %COLOR%
       content:
         - fontWeight: bold
           content: %CHARA%
-        - 「一緒に、のんびりこの時間を過ごしましょう、%CALLNAME%～」
+        - 「그럼 이왕 이렇게 된 거, 저와 함께 아주 느긋하게 이 시간을 즐기도록 해요, %CALLNAME%~」
     # スタミナ+10、賢さ+10
 
 # week_start
@@ -2626,7 +2626,7 @@ sleep:
   title: 자, 편안하게 숙면을 취하도록 해요
   lines:
     - 眠気の強い平日のあと、%YOU% はやっと退勤の時間を迎える。
-    - 昨夜の徹夜がいまの精神を攻撃し、椅子で眠ってしまいそうになり、体を支えて目の前のトレーニング案を見続けるしかない。
+    - 유독 피로감이 엄습하던 어느 근무일의 일과가 마침내 종료되는 시간이 찾아온다.
     - color: %COLOR%
       content:
         - fontWeight: bold
@@ -2665,7 +2665,7 @@ sleep:
     - acc: 1
       content: 「브라이트……」
     - ぼんやりした %YOU% は後ろの柔らかさを味わい、強い眠気が眼前へ押し寄せる。
-    - 눈꺼풀이 천근만근 무거워지더니, 이내 시야가 완전히 암전된다……
+    - 가물거리는 의식 속에서 등 뒤로부터 전해지는 안락하고 포근한 부드러움에 몸을 맡기자, 억누를 수 없을 정도로 강력한 수마가 눈앞을 뒤덮는다.
     - color: %COLOR%
       content:
         - fontWeight: bold
