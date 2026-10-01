@@ -2,6 +2,7 @@ param(
     [string]$OutputRoot,
     [string]$RuntimePath,
     [string]$PackageName,
+    [string]$ResourceRoot,
     [string]$NuGetRoot
 )
 $ErrorActionPreference='Stop'
@@ -79,16 +80,38 @@ Copy-PackageTree (Join-Path $repoPath 'sources\erauma\ere') 'game\erauma\ere'
 Copy-PackageFile (Join-Path $repoPath 'sources\erauma\build\static.json') 'game\erauma\build\static.json'
 Copy-PackageFile (Join-Path $repoPath 'sources\erauma\LICENSE') 'game\erauma\LICENSE'
 Copy-PackageFile (Join-Path $repoPath 'sources\erauma\package.json') 'game\erauma\package.json'
+if (!$ResourceRoot) {
+    $installed=Join-Path $portPath 'artifacts\resources'
+    if (Test-Path -LiteralPath (Join-Path $installed 'res')) { $ResourceRoot=$installed }
+}
+if ($ResourceRoot) {
+    $resourcePath=(Resolve-Path -LiteralPath $ResourceRoot).Path
+    if (Test-Path -LiteralPath (Join-Path $resourcePath 'res')) { $resourcePath=Join-Path $resourcePath 'res' }
+    Copy-PackageTree $resourcePath 'game\res'
+    if (Test-Path -LiteralPath (Join-Path $ResourceRoot 'resource-install.json')) {
+        $installation=Get-Content -LiteralPath (Join-Path $ResourceRoot 'resource-install.json') -Raw | ConvertFrom-Json
+        $provenance=@{version=$installation.version;officialUrl=$installation.officialUrl;archiveSha256=$installation.archiveSha256;installedFiles=$installation.installedFiles;expandedBytes=$installation.expandedBytes;skipped=$installation.skipped}
+        [IO.File]::WriteAllText((Join-Path $packageRoot 'resource-provenance.json'),($provenance | ConvertTo-Json -Depth 8),[Text.UTF8Encoding]::new($false))
+    }
+}
 Copy-PackageTree (Join-Path $portPath 'third_party\ere') 'game\engine'
 Copy-PackageTree (Join-Path $portPath 'artifacts\kojo') 'game\kojo'
+[IO.Directory]::CreateDirectory((Join-Path $packageRoot 'game\language-packs')) | Out-Null
 foreach ($sourceFolder in @('compatibility','plugin','bootstrap','tests','tools')) {
-    Copy-PackageTree (Join-Path $portPath $sourceFolder) ('adapter-source\'+$sourceFolder) @('.cs','.js','.csproj','.erb','.ps1','.cjs','.py','.md')
+    Copy-PackageTree (Join-Path $portPath $sourceFolder) ('adapter-source\'+$sourceFolder) @('.cs','.js','.csproj','.erb','.ps1','.cjs','.py','.md','.json','.csv','.config')
 }
 Copy-PackageFile (Join-Path $portPath 'README.md') 'adapter-source\README.md'
 Copy-PackageTree (Join-Path $portPath 'packaging') 'adapter-source\packaging'
-foreach ($document in @('ERAUMA_ENGINE_DEPENDENCIES.md','ERAUMA_COMPATIBILITY_API.md','ERAUMA_PORTING_STATUS.md','ERAUMA_KNOWN_ISSUES.md','API_USAGE.md')) {
+foreach ($document in @('ERAUMA_ENGINE_DEPENDENCIES.md','ERAUMA_COMPATIBILITY_API.md','ERAUMA_PORTING_STATUS.md','ERAUMA_KNOWN_ISSUES.md','API_USAGE.md','ERAUMA_UI_STATUS.md','ERAUMA_SECOND_WORK_ORDER.md')) {
     Copy-PackageFile (Join-Path $portPath ('docs\'+$document)) ('docs\'+$document)
     Copy-PackageFile (Join-Path $portPath ('docs\'+$document)) ('adapter-source\docs\'+$document)
+}
+# Reviewed summaries and software-canvas examples are deliverables; raw runtime
+# reports and user/test saves remain excluded by the runtime allowlist above.
+$evidenceRoot=Join-Path $portPath 'docs\evidence\0.3'
+if (Test-Path -LiteralPath $evidenceRoot) {
+    Copy-PackageTree $evidenceRoot 'docs\evidence\0.3' @('.md','.json','.png')
+    Copy-PackageTree $evidenceRoot 'adapter-source\docs\evidence\0.3' @('.md','.json','.png')
 }
 Copy-PackageTree (Join-Path $reference 'LICENSE') 'licenses\Emuera'
 Copy-PackageTree (Join-Path $portPath 'packaging\licenses') 'licenses'
@@ -97,7 +120,7 @@ foreach ($spec in $packageSpecs) {
 }
 Copy-PackageFile (Join-Path $portPath 'packaging\README_PORTABLE.md') 'README.md'
 Copy-PackageFile (Join-Path $portPath 'packaging\THIRD_PARTY_NOTICES.md') 'THIRD_PARTY_NOTICES.md'
-$paths=@{source='game/erauma';engine='game/engine';kojo='game/kojo'}
+$paths=@{source='game/erauma';engine='game/engine';kojo='game/kojo';resources='game';languages='game/language-packs'}
 [IO.File]::WriteAllText((Join-Path $packageRoot 'game-paths.json'),($paths | ConvertTo-Json),[Text.UTF8Encoding]::new($false))
 
 $manifestFiles=@(Get-ChildItem -LiteralPath $packageRoot -Recurse -File -Force | Sort-Object FullName | ForEach-Object {
@@ -110,7 +133,8 @@ $manifest=@{
     sourceStatus='Package reflects current local files; file hashes are authoritative, including uncommitted adapter changes.'
     requirements=@('Windows x64','.NET 10 Windows Desktop Runtime');gameExecutionNeedsNode=$false;gameExecutionNeedsElectron=$false
     paths=$paths;runtimeExeSha256=$referenceHash;nuget=@{Jint='4.16.4';Acornima='1.7.0'}
-    excludedPolicy=@('User saves and sav-game/','Verification results/ and checkpoints','All .env files','Git metadata','node_modules/','build bin/ and obj/','Original Electron engine/common/res submodules and optional multimedia','Verification probe.js and automatic ERB')
+    resourcePackIncluded=[bool]$ResourceRoot
+    excludedPolicy=@('User saves and sav-game/','Raw runtime results/ and checkpoints','All .env files','Git metadata','node_modules/','build bin/ and obj/','Original Electron engine/common submodules','Verification probe.js and automatic ERB')
     excludedFiles=@($exclusions | Sort-Object -Unique);files=$manifestFiles
 }
 [IO.File]::WriteAllText((Join-Path $packageRoot 'package-manifest.json'),($manifest | ConvertTo-Json -Depth 8),[Text.UTF8Encoding]::new($false))

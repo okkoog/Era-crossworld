@@ -8,7 +8,11 @@ This package executes the archived erauma JavaScript through an Emuera C# plugin
 - Era API source: https://gitgud.io/umaera/engine/era-electron , commit `f77416674ad7370f0b8f20f1a47aa6e27a1dcbc1`. The five reused JavaScript files and GPL-2.0 license are in `game/engine/`. See its `UPSTREAM.md` for the exact scope. This is a pinned inspection commit because the uploaded ZIP does not supply the original submodule gitlink commit.
 - kojo generation: https://gitgud.io/umaera/engine/kojo-loader , commit `a3538cb410d31fa6c5c7827aff01c96021526646`, and YAMLJS 0.3.0 (build time only). Generated modules in `game/kojo/` come from the archived original `.kojo` sources included under `game/erauma/ere/`. The compiler and YAMLJS are not runtime dependencies and are not bundled as runtime libraries. The archived game and Era API licenses remain in their source directories.
 
-## Emuera
+## Official resource pack
+
+`game/res/` contains the original assets from the UmaERA team's official `uma-resource` repository, tag `20260923`, commit `db8aab4015bc137ab02af1dd940e35ab84bd1f22`: https://gitgud.io/umaera/data/uma-resource. The original `资源包注意事项.txt` and CSV mapping files are retained. `resource-provenance.json` records the official archive URL, SHA256 and excluded development files. The adapter does not replace the notices or claim ownership of these game assets.
+
+## Emuera executable
 
 `Emuera.exe` has the same bytes as the repository's existing `test/ERA_CrossWorld_Runtime_Test_0.4.3/Emuera.NET 1824+v24+EMv18+EEv56.exe`. Its SHA256 is recorded in `package-manifest.json`. Its original author and modification notices are retained in `licenses/Emuera/` with the original Emuera, Emuera.NET, ImageProcessor and LibWebp license files.
 

@@ -2,6 +2,7 @@ using EraUma.Compatibility;
 using System.Diagnostics;
 using System.Text.Json;
 var directory=Path.Combine(Path.GetTempPath(),"erauma-probe-"+Guid.NewGuid());
+if(args.Length>=4&&args[0]=="--ui"){UiVerification.Run(args[1],args[2],args[3]);return;}
 if(args.Length>=3&&args[0]=="--driver"){Driver.Run(args[1],args[2],args.Length>3?args[3]:null);return;}
 if(args.Length>=6&&args[0]=="--scenario"){
     Console.WriteLine(VerificationScenario.Run(args[1],args[2],args[3],args[4],args[5],args.Length>6&&args[6]=="restore"));return;
@@ -12,9 +13,9 @@ if(args.Length>=3&&args[0]=="--api"){
     session.LoadGame(args[1],args[2],start:false);
     session.Start("era.print('first');era.printMultiColumns([{type:'text',content:'second'},{type:'button',content:'old',accelerator:8}]);await era.clear(1);");
     Check(session.State=="done"&&session.EvaluateJson("era.getLineCount()")=="1","partial clear counts a multi-column row as one logical line");
-    Check(session.Drain().Last().Text=="first","partial clear retains preceding text");
+    Check(session.Drain().Last(e=>e.Kind=="line").Text=="first","partial clear retains preceding text");
     session.Start("era.replaceText('replacement');await era.clear(0);");
-    Check(session.EvaluateJson("era.getLineCount()")=="1"&&session.Drain().Last().Text=="replacement","replace updates final row; clear zero retains it");
+    Check(session.EvaluateJson("era.getLineCount()")=="1"&&session.Drain().Last(e=>e.Kind=="line").Text=="replacement","replace updates final row; clear zero retains it");
     session.Execute("var selection=-1,freeText=null;");
     session.Start("era.printButton('allowed',4);selection=await era.input();era.print('next');freeText=await era.input();");
     session.Drain();session.Resume("9");
@@ -29,7 +30,7 @@ if(args.Length>=3&&args[0]=="--api"){
     session.Start("await era.clear();era.allowWait=false;await era.waitAnyKey();");
     Check(session.State=="done"&&session.EvaluateJson("era.getLineCount()")=="0","empty waitAnyKey and full clear semantics");
     session.Start("era.print('top');era.setToBottom();await era.clear(1);");
-    Check(session.EvaluateJson("era.getLineCount()")=="1"&&session.Drain().Last().Text=="top","setToBottom adds a logical row");
+    Check(session.EvaluateJson("era.getLineCount()")=="1"&&session.Drain().Last(e=>e.Kind=="line").Text=="top","setToBottom adds a logical row");
     session.Execute("var obsolete=false,replaced=false;");
     session.Start("era.input({any:true,useRule:false,hideInput:true}).then(()=>obsolete=true);await era.delay(5);await era.input({any:true,useRule:false});replaced=true;");
     session.Resume("");

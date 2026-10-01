@@ -83,10 +83,13 @@ function __resume(text) {
   if(!__pending) throw new Error('No pending input');
   if(__inputConfig.game&&!__inputConfig.any&&text===''){
     if(__inputConfig.options?.length===1)text=String(__inputConfig.options[0]);
-    else {__emit('line','Enter a value or choose a button.',0);return;}
+    else {__feedback(__inputMessage('choice'));return;}
   }
-  if(__inputRule && !__inputRule.test(text)){__emit('line','Input does not match the required pattern.',0);return;}
-  if(__inputConfig.game && !__inputRule && __inputConfig.useRule!==false && __inputConfig.options?.length && !__inputConfig.options.includes(Number(text))){__emit('line','Choose an enabled button value.',0);return;}
+  if(__inputRule && !__inputRule.test(text)){
+    if(__inputConfig.game)__feedback(__inputMessage('pattern'));else __emit('line','Input does not match the required pattern.',0);
+    return;
+  }
+  if(__inputConfig.game && !__inputRule && __inputConfig.useRule!==false && __inputConfig.options?.length && !__inputConfig.options.includes(Number(text))){__feedback(__inputMessage('choice'));return;}
   __inputRule=null;
   const resolve=__pending; __pending=null; __state='running';
   const number=Number(text);

@@ -17,6 +17,7 @@ public sealed class Session
     string? hostError;
     long timerOffset;
     bool gameLoaded;
+    public ResourceCatalogReport? Resources { get; private set; }
     public Session(string saveDirectory, Func<long> readGlobal, Action<long> writeGlobal, bool gameProfile=false)
     {
         this.saveDirectory = Path.GetFullPath(saveDirectory);
@@ -75,19 +76,27 @@ public sealed class Session
     }
     public string EvaluateJson(string expression) => engine.Evaluate("JSON.stringify("+expression+")").AsString();
     public void Execute(string script) { engine.Execute(script);engine.Advanced.ProcessTasks(); }
-    public void LoadGame(string sourceDirectory, string engineDirectory, string? generatedDirectory=null, bool start=true)
+    public void LoadGame(string sourceDirectory, string engineDirectory, string? generatedDirectory=null, bool start=true,
+        string? resourceRoot=null, string? httpCacheDirectory=null, bool downloadHttp=false, string? languagePackDirectory=null, bool presentationDelays=false)
     {
         var source=Path.GetFullPath(sourceDirectory);
         var upstream=Path.GetFullPath(engineDirectory);
         var generated=Path.GetFullPath(generatedDirectory??Path.Combine(upstream,"..","..","artifacts","kojo"));
+        var languagePacks=Path.GetFullPath(languagePackDirectory??Path.Combine(source,"language-packs"));
+        var extraLanguages=Directory.Exists(languagePacks)?Directory.GetDirectories(languagePacks)
+            .Where(p=>File.Exists(Path.Combine(p,"entry.js")))
+            .Select(Path.GetFileName).Where(p=>p is not null && System.Text.RegularExpressions.Regex.IsMatch(p,"^[a-z]{2}-[A-Z]{2}$")).ToArray():[];
+        engine.SetValue("__languagePacks",JsonSerializer.Serialize(extraLanguages));
+        engine.SetValue("__presentationDelays",presentationDelays);
         engine.SetValue("__source", new Func<string,string>(id=> {
-            var root=id.StartsWith("engine/")?upstream:(id.EndsWith(".kojo.js")?generated:Path.Combine(source,"ere"));
-            var relative=id.StartsWith("engine/")?id[7..]:id;
+            var root=id.StartsWith("language-packs/")?languagePacks:(id.StartsWith("engine/")?upstream:(id.EndsWith(".kojo.js")?generated:Path.Combine(source,"ere")));
+            var relative=id.StartsWith("language-packs/")?id[15..]:(id.StartsWith("engine/")?id[7..]:id);
             var path=Path.GetFullPath(Path.Combine(root,relative));
             if(!path.StartsWith(root+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase)) throw new IOException("Module outside source root");
             return File.ReadAllText(path);
         }));
-        engine.Execute("var __tables="+File.ReadAllText(Path.Combine(source,"build","static.json"))+";");
+        Resources=ResourceCatalog.Load(source,resourceRoot,httpCacheDirectory,downloadHttp);
+        engine.Execute("var __tables="+File.ReadAllText(Path.Combine(source,"build","static.json"))+";var __resources="+Resources.Json+";");
         using var stream=Assembly.GetExecutingAssembly().GetManifestResourceStream("EraUma.Compatibility.game-host.js")!;
         using var reader=new StreamReader(stream);
         Execute(reader.ReadToEnd());
