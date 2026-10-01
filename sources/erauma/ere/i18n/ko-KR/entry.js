@@ -835,4 +835,7 @@ module.exports = class extends require('#/i18n/ja-JP/entry') {
   gene = new (require('#/i18n/ko-KR/race/genes'))();
   gene_desc = new (require('#/i18n/ko-KR/race/gene-desc'))();
   mob = require('#/i18n/ko-KR/race/uma-mob.json');
+
+  kojo = new (require('#/i18n/ko-KR/kojo/entry'))();
+  timon = new (require('#/i18n/ko-KR/timon/entry'))();
 };
