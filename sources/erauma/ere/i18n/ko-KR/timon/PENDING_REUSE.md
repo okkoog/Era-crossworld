@@ -55,6 +55,33 @@ Pending storage keys (no sufficiently reliable 2.21 Korean match was reused):
 - `make_pubic_hair_longer`
 - `make_pubic_hair_shorter`
 
+### `others/ending.js`
+
+Source reference:
+- `sources/eraumak_kr_2.21/game/ere/page/components/game-over.js`
+
+Current 3.113 ending keys: **11**
+
+Reused Korean overrides in this pass: **7**
+- `loser`
+- `hentai`
+- `punishment1`
+- `punishment2`
+- `get_basement_ending_confirm`
+- `bt_confirm_yes`
+- `bt_confirm_no`
+
+Also reused from the same 2.21 source into `ko-KR/timon/entry.js`:
+- `ed_saying_01` through `ed_saying_13`
+
+Pending ending keys (3.113 structure/text no longer matched closely enough for direct reuse):
+- `slave_end`
+- `crazy_fan_end`
+- `basement_end`
+- `punishment3`
+
+The Korean ending object inherits from `ja-JP/timon/others/ending`, so pending keys continue through Japanese fallback.
+
 ## Reuse candidates still requiring structural matching
 
 ### `sex/*`
@@ -153,7 +180,6 @@ fallback and review separately.
 
 ## Other Timon modules not yet classified in detail
 
-- `others/ending.js`
 - `others/race.js`
 - `others/others.js`
 - `others/random.js`
