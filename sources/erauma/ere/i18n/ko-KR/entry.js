@@ -822,6 +822,7 @@ module.exports = class extends require('#/i18n/ja-JP/entry') {
 
   race = new (require('#/i18n/ko-KR/race/races'))();
   skill = new (require('#/i18n/ko-KR/race/skills'))();
+  skill_desc = new (require('#/i18n/ko-KR/race/skill-desc'))();
   clothe = new (require('#/i18n/ko-KR/race/clothes'))();
   inherit_shop = new (require('#/i18n/ko-KR/race/inherit'))();
   gene = new (require('#/i18n/ko-KR/race/genes'))();
