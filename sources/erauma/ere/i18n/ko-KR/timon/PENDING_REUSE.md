@@ -228,3 +228,32 @@ sources and therefore remains on Japanese fallback.
 - `others/random.js`
   - Current module is ~85k characters and collects many random-event scenes.
     It must be split by scene/function before matching to 2.21 sources.
+
+### `others/tachyon-shop.js`
+
+2.21 source:
+- `sources/eraumak_kr_2.21/game/ere/event/shop/tachyon-shop.js`
+
+Current 3.113 scene functions: **13**
+
+Reused Korean scene functions: **13 (partial text reuse where structure changed)**
+
+Pending UI strings with no safe direct 2.21 structural reuse:
+- `start_first`: `相手の名前を入力：`
+  - New explicit input prompt in the current split; no corresponding 2.21 UI call.
+- `start_first`: ` はがっかりしてため息をつき、白衣の内側を探り始めた`
+  - The old Korean scene split this sentence around an explicit `tachyon.sex` insertion,
+    while 3.113 merged it into one literal. It was intentionally left on the
+    current Japanese text rather than synthesizing a new Korean sentence.
+
+All other user-facing strings in the 13 current scene functions were matched
+to existing 2.21 Korean text. Control/input match strings are preserved from
+the current 3.113 source and are not counted as untranslated UI text.
+
+### Next direct reuse candidate after tachyon shop
+
+- `others/pregnant-slave.js`
+  - Direct 2.21 sources:
+    `sources/eraumak_kr_2.21/game/ere/event/others/punish-pregnant-slave.js`
+    and `as-pregnant-slave.kojo`
+  - Requires scene-by-scene matching; do not positional bulk-copy.
