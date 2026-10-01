@@ -815,6 +815,10 @@ module.exports = class extends require('#/i18n/ja-JP/entry') {
   tb_stain = new (require('#/i18n/ko-KR/table/stain'))();
   tb_status = new (require('#/i18n/ko-KR/table/status'))();
   tb_talent = new (require('#/i18n/ko-KR/table/talent'))();
+  abl_desc = new (require('#/i18n/ko-KR/table/abl-desc'))();
+  item_desc = new (require('#/i18n/ko-KR/table/item-desc'))();
+  status_desc = new (require('#/i18n/ko-KR/table/status-desc'))();
+  talent_desc = new (require('#/i18n/ko-KR/table/talent-desc'))();
 
   race = new (require('#/i18n/ko-KR/race/races'))();
   skill = new (require('#/i18n/ko-KR/race/skills'))();
