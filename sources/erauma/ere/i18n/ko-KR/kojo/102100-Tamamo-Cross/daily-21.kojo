@@ -401,21 +401,21 @@ s_r_lunch:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「ちびどもの分作るときに、ついでに作ったんや……食べてみ？」
+          - 「이거 동생들 밥 해주믄서 겸사겸사 만든 기거든…… 함 무볼래?」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「さすがやな、めっちゃ美味い！」
+          - 「역시 니네, 억수로 맛있다!」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「なあ%CALLNAME%、わしにおかず盛りすぎちゃうか。」
+          - 「근데 %CALLNAME%, 니 내한테 반찬 너무 많이 주는 거 아이가.」
 
 office_cook:
   - random: true
