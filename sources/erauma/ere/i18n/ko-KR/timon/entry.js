@@ -11,6 +11,7 @@ module.exports = class extends JaTimon {
   ending = proxy_kojo_js(require('#/i18n/ko-KR/timon/others/ending'));
   storage = proxy_kojo_js(require('#/i18n/ko-KR/timon/others/storage'));
   god_shop = proxy_kojo_js(require('#/i18n/ko-KR/timon/others/god-shop'));
+  race = proxy_kojo_js(require('#/i18n/ko-KR/timon/others/race'));
 
   ed_saying_01 =
     '좁은 방 안에서 붉은 입술이 대나무와 어우러져 은혜를 나누네. —— 타카스기 신사쿠';
