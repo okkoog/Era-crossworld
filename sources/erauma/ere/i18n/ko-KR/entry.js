@@ -803,6 +803,9 @@ module.exports = class extends require('#/i18n/ja-JP/entry') {
   new_game = new (require('#/i18n/ko-KR/new-game'))();
   location = new (require('#/i18n/ko-KR/location'))();
   vehicle = new (require('#/i18n/ko-KR/vehicle'))();
+  note = new (require('#/i18n/ko-KR/notes'))();
+  achievement = new (require('#/i18n/ko-KR/achieve'))();
+  achieve_desc = new (require('#/i18n/ko-KR/achieve-desc'))();
 
   tb_abl = new (require('#/i18n/ko-KR/table/abl'))();
   tb_exp = new (require('#/i18n/ko-KR/table/exp'))();
