@@ -77,12 +77,54 @@ and must be matched by function/scene before reuse.
 
 ### `others/god-shop.js`
 
-2.21 source:
+Source reference:
 - `sources/eraumak_kr_2.21/game/ere/page/page-god-shop.js`
 
-A large amount of Korean text exists and the control flow is recognizably
-related, but the 3.113 version extracted the text into many i18n functions.
-Manual structural matching is still required.
+Current 3.113 keys: **35**
+
+Reused Korean overrides in this pass: **12**
+
+Reused:
+- `get_chara_react`
+- `start`
+- `bt_pray_honour_buff`
+- `bt_pray_money_buff`
+- `bt_pray_money`
+- `bt_pray_your_power`
+- `get_bt_pray_over_limit`
+- `bt_pray_self_over_limit`
+- `get_bt_pray_heal`
+- `bt_pray_self_heal`
+- `pray_honour_buff`
+- `pray_money_buff`
+
+Pending god-shop keys (no sufficiently reliable 2.21 Korean structural match reused yet):
+- `pray_money`
+- `pray_your_power`
+- `pray_over_limit`
+- `pray_heal`
+- `pray_heal_no_need`
+- `common_start_pray`
+- `common_finish_pray`
+- `common_pray_your_power`
+- `common_pray_peace`
+- `leave`
+- `start_with_no_god`
+- `handle_pray_honour_buff`
+- `handle_pray_money_buff`
+- `handle_pray_your_power`
+- `handle_pray_over_limit`
+- `handle_pray_end`
+- `borrow_money`
+- `bt_pray`
+- `pray_select`
+- `select_target`
+- `no_targets`
+- `get_target_entry_over_limit`
+- `get_target_entry_heal`
+
+The Korean object inherits from `ja-JP/timon/others/god-shop`, so these
+pending keys continue to work through Japanese fallback.
 
 ### `mejiro/cum.js`
 
