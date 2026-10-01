@@ -9,7 +9,7 @@ public sealed class PluginManifest : PluginManifestAbstract
     public PluginManifest() { methods.Add(new Bridge()); }
     public override string PluginName => "EraUma Emuera.NET";
     public override string PluginDescription => "Standalone original eraUma game through a managed JavaScript bridge.";
-    public override string PluginVersion => "0.3.0";
+    public override string PluginVersion => "0.3.1";
     public override string PluginAuthor => "ERA CrossWorld";
 }
 public sealed class Bridge : IPluginMethod
@@ -21,6 +21,8 @@ public sealed class Bridge : IPluginMethod
     NativeImages? images;
     NativeAudio? audio;
     int tailPadding;
+    long renderedLineCount=-1;
+    int discardedInputEchoLines;
     readonly List<NativeRow> nativeRows=[];
     int fullFrames,partialFrames,preservedLines;
     int frameWidth,frameHeight;
@@ -58,6 +60,9 @@ public sealed class Bridge : IPluginMethod
         {
             switch(args[0].strValue)
             {
+                case "input-kind":
+                    args[2].intValue=session?.WaitingForContinue==true?1:0;
+                    args[3].strValue="";return;
                 case "start":
                     session=new Session(Path.Combine(root,"sav"),()=>api.GetIntVar("GLOBAL",0),x=>api.SetIntVar("GLOBAL",x,0));
                     session.Start(File.ReadAllText(Path.Combine(root,"probe.js")));break;
@@ -164,7 +169,7 @@ public sealed class Bridge : IPluginMethod
                     File.WriteAllText(Path.Combine(root,"results","runtime.json"),JsonSerializer.Serialize(new {
                         state=session?.State,error=session?.Error,bridgeError=lastActionError,diagnostics=session?.Diagnostics,global0=api.GetIntVar("GLOBAL",0),erbVerdict=args[1].strValue,lastButtons,
                         resources=session?.Resources,imageWarnings=images.Warnings,audioWarnings=audio.Warnings,audioOutput=audio.OutputDevice,nativeImages=images.RegisteredCount,urlButtons=urls,
-                        redraw=new{fullFrames,partialFrames,preservedLines},
+                        redraw=new{fullFrames,partialFrames,preservedLines,discardedInputEchoLines},
                         lastOpenedUrl,
                         engine=typeof(PluginManager).Assembly.FullName,jsRuntime=typeof(Jint.Engine).Assembly.FullName,
                         mode=File.Exists(Path.Combine(root,"verification-mode.txt"))?File.ReadAllText(Path.Combine(root,"verification-mode.txt")):"automatic test"
@@ -177,6 +182,18 @@ public sealed class Bridge : IPluginMethod
               var renderer=new UiRenderer(api,images.Resolve,RegisterUrl);
               bool inRow=false;
               var console=NativeImages.EngineConsole();
+              // INPUTS/TINPUTS prints the accepted native input after our frame.
+              // Those echo lines are not part of the original game's logical rows.
+              // Remove them before removing padding or calculating a retained prefix.
+              // Otherwise each real input leaves an old image/button row behind.
+              if(items.Count>0&&renderedLineCount>=0){
+                long actual=(long)console.GetType().GetProperty("LineCount")!.GetValue(console)!;
+                if(actual>renderedLineCount){
+                  int extra=checked((int)(actual-renderedLineCount));
+                  console.GetType().GetMethod("deleteLine")!.Invoke(console,[extra]);
+                  discardedInputEchoLines+=extra;
+                }else if(actual<renderedLineCount){nativeRows.Clear();tailPadding=0;}
+              }
               if(items.Count>0&&tailPadding>0){console.GetType().GetMethod("deleteLine")!.Invoke(console,[tailPadding]);tailPadding=0;}
               var newRows=new List<NativeRow>();
               int viewWidth=(int)console.GetType().GetProperty("ClientWidth")!.GetValue(console)!;
@@ -228,6 +245,7 @@ public sealed class Bridge : IPluginMethod
                 for(int n=0;n<tailPadding;n++)api.PrintNewLine();
                 api.FlushConsole();
               }
+              if(items.Count>0)renderedLineCount=(long)console.GetType().GetProperty("LineCount")!.GetValue(console)!;
               void PrintRow(OutputEvent item,Action draw){
                 int index=rowIndex++;
                 if(replace&&index<preserve)return;

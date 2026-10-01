@@ -1,23 +1,38 @@
 @SYSTEM_TITLE
 #DIM STATE
+#DIM INPUT_KIND
 #DIMS MESSAGE
 #DIMS INPUT_TEXT
 CALLSHARP EraUmaBridge("game","",STATE,MESSAGE)
 WHILE STATE == 1 || STATE == 3 || STATE == 4
+    CALLSHARP EraUmaBridge("input-kind","",INPUT_KIND,MESSAGE)
     IF STATE == 3
         AWAIT 50
         CALLSHARP EraUmaBridge("tick","",STATE,MESSAGE)
     ELSEIF STATE == 4
-        TINPUTS 50,"",0,""
+        IF INPUT_KIND == 1
+            TWAIT 50,0
+        ELSE
+            TINPUTS 50,"",0,""
+        ENDIF
         IF ISTIMEOUT
             CALLSHARP EraUmaBridge("tick","",STATE,MESSAGE)
         ELSE
-            INPUT_TEXT = %RESULTS%
+            IF INPUT_KIND == 1
+                INPUT_TEXT =
+            ELSE
+                INPUT_TEXT = %RESULTS%
+            ENDIF
             CALLSHARP EraUmaBridge("resume",INPUT_TEXT,STATE,MESSAGE)
         ENDIF
     ELSE
-        INPUTS
-        INPUT_TEXT = %RESULTS%
+        IF INPUT_KIND == 1
+            WAIT
+            INPUT_TEXT =
+        ELSE
+            INPUTS
+            INPUT_TEXT = %RESULTS%
+        ENDIF
         CALLSHARP EraUmaBridge("resume",INPUT_TEXT,STATE,MESSAGE)
     ENDIF
 WEND

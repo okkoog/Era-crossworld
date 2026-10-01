@@ -36,7 +36,16 @@ static class UiVerification
         game.Resume("7");Check(game.State=="done","Original numeric choice resumes the pending game input");
         game.Start("await era.input({any:true});");frame=game.Drain();
         using(var row=JsonDocument.Parse(frame.First(e=>e.Kind=="row-start").Text))Check(row.RootElement.GetProperty("inactive").GetBoolean(),"Old choice rows become inactive at the next input boundary");
+        Check(game.WaitingForContinue,"Narrative input without active choices accepts click-to-continue");
         game.Resume("");
+        game.Start("await era.clear();era.printButton('choice',9);await era.input({any:true});");game.Drain();
+        Check(!game.WaitingForContinue,"An active numeric choice remains a value input even when any is allowed");game.Resume("9");
+        game.Start("await era.clear();era.print('name');await era.input({rule:'.+'});");game.Drain();
+        Check(!game.WaitingForContinue,"Free text entry is not replaced by a click-to-continue wait");game.Resume("Trainer");
+        game.Start("await era.clear();era.print('name');await era.input({any:true,rule:'.+'});");game.Drain();
+        Check(!game.WaitingForContinue,"Any-key input with an active rule keeps value entry");game.Resume("Trainer");
+        game.Start("await era.clear();era.print([{content:'resource',url:'https://umaera.gitgud.site/data/uma-resource/full.html'}]);await era.input({any:true});");game.Drain();
+        Check(!game.WaitingForContinue,"A current URL keeps native value input so the link stays clickable");game.Resume("");
         game.Start("await era.clear();era.printLineChart({data:{labels:[0,1,2],datasets:[{label:'race',data:['4.00','9.00','2.00']}]},options:{}});await era.input({any:true});");
         Check(game.State=="input"&&game.Error=="","Chart output starts normally: "+game.Error);
         frame=game.Drain();

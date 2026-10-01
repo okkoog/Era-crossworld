@@ -166,6 +166,16 @@ __game.api=original;
 Object.values(__tables.static.global||{}).forEach(k=>__game.global[k]=0);
 original.resetData();
 function __currentButtons(){return [...new Set(__screen.flat().filter(e=>e[0]==='button'&&e[3]===__buttonEpoch).map(e=>e[2]))];}
+function __inputUsesContinue(){
+  if(!__inputConfig.any||__inputRule||__currentButtons().length)return false;
+  function hasUrl(value){
+    if(!value||typeof value!=='object')return false;
+    if(Array.isArray(value))return value.some(hasUrl);
+    return typeof value.url==='string'&&value.url.length>0||Object.values(value).some(hasUrl);
+  }
+  // A value wait must remain active when a current row contains a URL or choice.
+  return !__screen.some(group=>group.epoch===__buttonEpoch&&hasUrl(group.layout));
+}
 original.input=async function(config={}){
   __inputFeedback='';
   __redraw();

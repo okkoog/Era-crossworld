@@ -108,10 +108,13 @@ foreach ($document in @('ERAUMA_ENGINE_DEPENDENCIES.md','ERAUMA_COMPATIBILITY_AP
 }
 # Reviewed summaries and software-canvas examples are deliverables; raw runtime
 # reports and user/test saves remain excluded by the runtime allowlist above.
-$evidenceRoot=Join-Path $portPath 'docs\evidence\0.3'
-if (Test-Path -LiteralPath $evidenceRoot) {
-    Copy-PackageTree $evidenceRoot 'docs\evidence\0.3' @('.md','.json','.png')
-    Copy-PackageTree $evidenceRoot 'adapter-source\docs\evidence\0.3' @('.md','.json','.png')
+foreach($evidenceVersion in @('0.3','0.3.1')) {
+    $evidenceRelative='docs\evidence\'+$evidenceVersion
+    $evidenceRoot=Join-Path $portPath $evidenceRelative
+    if (Test-Path -LiteralPath $evidenceRoot) {
+        Copy-PackageTree $evidenceRoot $evidenceRelative @('.md','.json','.png')
+        Copy-PackageTree $evidenceRoot ('adapter-source\'+$evidenceRelative) @('.md','.json','.png')
+    }
 }
 Copy-PackageTree (Join-Path $reference 'LICENSE') 'licenses\Emuera'
 Copy-PackageTree (Join-Path $portPath 'packaging\licenses') 'licenses'

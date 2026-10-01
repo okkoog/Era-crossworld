@@ -66,6 +66,7 @@ public sealed class Session
     }
     public void AdvanceTimers(long milliseconds) { if(milliseconds<0)throw new ArgumentOutOfRangeException(nameof(milliseconds));timerOffset=checked(timerOffset+milliseconds);Pump(); }
     public bool HasTimers => engine.Evaluate("__timers.size>0").AsBoolean();
+    public bool WaitingForContinue => gameLoaded&&State=="input"&&engine.Evaluate("__inputUsesContinue()").AsBoolean();
     public IReadOnlyList<OutputEvent> Diagnostics => diagnostics.ToArray();
     void Run(Action action) { try { action(); engine.Advanced.ProcessTasks(); } catch(Exception error) { hostError=error.ToString(); } }
     public string State {get { if(hostError is not null)return "error";var state=engine.Evaluate("__state").AsString();return state=="running"&&HasTimers?"timer":state; }}
