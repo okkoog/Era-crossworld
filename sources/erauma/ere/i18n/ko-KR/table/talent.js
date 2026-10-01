@@ -126,4 +126,10 @@ module.exports = class extends require('#/i18n/ja-JP/table/talent') {
   sens64 = '질구 감도';
   sens65 = '엉덩이 감도';
   sens66 = '음경 감도';
+  no_yand = '전·병듦';
+  re_yand = '병듦?';
+  br_micro = '빈유';
+  br_big = '거유';
+  br_huge = '폭유';
+
 };
