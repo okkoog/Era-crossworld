@@ -798,6 +798,7 @@ module.exports = class extends require('#/i18n/ja-JP/entry') {
   title = new (require('#/i18n/ko-KR/chara/titles'))();
   title_desc = new (require('#/i18n/ko-KR/chara/title-desc'))();
   feature = new (require('#/i18n/ko-KR/chara/feature'))();
+  detail = new (require('#/i18n/ko-KR/chara/detail'))();
 
   new_game = new (require('#/i18n/ko-KR/new-game'))();
   location = new (require('#/i18n/ko-KR/location'))();
