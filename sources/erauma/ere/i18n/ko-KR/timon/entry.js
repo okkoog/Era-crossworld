@@ -12,6 +12,9 @@ module.exports = class extends JaTimon {
   storage = proxy_kojo_js(require('#/i18n/ko-KR/timon/others/storage'));
   god_shop = proxy_kojo_js(require('#/i18n/ko-KR/timon/others/god-shop'));
   race = proxy_kojo_js(require('#/i18n/ko-KR/timon/others/race'));
+  pregnant_slave = proxy_kojo_js(
+    require('#/i18n/ko-KR/timon/others/pregnant-slave'),
+  );
   tachyon_shop = proxy_kojo_js(
     require('#/i18n/ko-KR/timon/others/tachyon-shop'),
   );
