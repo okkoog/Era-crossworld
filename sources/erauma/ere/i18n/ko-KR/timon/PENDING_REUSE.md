@@ -257,3 +257,69 @@ the current 3.113 source and are not counted as untranslated UI text.
     `sources/eraumak_kr_2.21/game/ere/event/others/punish-pregnant-slave.js`
     and `as-pregnant-slave.kojo`
   - Requires scene-by-scene matching; do not positional bulk-copy.
+
+### `others/pregnant-slave.js`
+
+2.21 source references:
+- `sources/eraumak_kr_2.21/game/ere/event/others/punish-pregnant-slave.js`
+- `sources/eraumak_kr_2.21/game/ere/event/others/as-pregnant-slave.kojo`
+
+Current 3.113 scene functions: **15**
+
+Reused Korean scenes in this pass:
+- `work`: **full reuse**
+  - Current output calls: 26
+  - All 26 were matched to the 25 old Korean template lines.
+  - One old line was split into two current `print` calls and was reused without changing its Korean wording.
+- `punish_first`: **partial reuse**
+  - 49 current output calls were safely matched to the old first-punishment branch.
+- `punish`: **partial reuse**
+  - 47 current output calls were safely matched to the old repeat-punishment branch.
+
+Pending Japanese fallback inside the reused punishment scenes:
+- `punish_first`
+  - the post-Yayoi/Tazuna arrival sentence whose dynamic-name split changed
+  - the new `degeneration_to_evil` choice labels
+  - the two degeneration-dependent self-perception variants
+  - the sentence whose subject/object split no longer matches the old Korean call
+  - one body-description call whose dynamic segmentation changed
+  - the final inmon-change notification extracted in 3.113
+- `punish`
+  - the sentence about receiving help from the assigned character/students/teachers whose name insertion was removed in 3.113
+  - the new `degeneration_to_evil` choice labels
+  - the new degeneration-dependent explanatory block
+  - one familiar-body-description call whose dynamic segmentation changed
+  - the final inmon-change notification extracted in 3.113
+
+Current Japanese literal fragments left in the Korean override file after safe reuse: **26**.
+
+Current scenes still entirely on Japanese fallback because no direct match was confirmed in the two checked 2.21 sources:
+- `office_study`
+- `s_a_tree_hollow`
+- `s_a_dating`
+- `school_rooftop`
+- `race_start`
+- `oyakodon`
+- `be_awake_as_slave`
+- `morning_duty`
+- `report_preg_duty`
+- `have_baby_in_sleep`
+- `have_baby_after_raped`
+- `have_baby_dedicate`
+
+The Korean module inherits from `ja-JP/timon/others/pregnant-slave`, so all pending
+strings and scenes remain functional through Japanese fallback.
+
+### Next reuse candidates after pregnant slave
+
+- `mejiro/cum.js`
+  - Existing 2.21 Korean sources are already identified, but function/property
+    names changed and require structural matching.
+- `sex/*`
+  - Large existing Korean source area under `game/ere/event/ero/`.
+  - Continue only by function/scene matching; do not positional bulk-copy.
+- `others/others.js`
+  - Needs source-area decomposition before reuse.
+- `others/random.js`
+  - Needs scene/function decomposition before reuse.
+
