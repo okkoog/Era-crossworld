@@ -105,4 +105,19 @@ module.exports = class extends require('#/i18n/ja-JP/table/status') {
   r_p_late = '임신 후기';
   r_item_buff = '쾌락의 축복';
   r_item_debuff = '성인용품';
+  buff207 = '엘피의 도움';
+  buff301 = '타즈나의 도움';
+  buff305 = '침구 요양';
+  buff303 = '에츠코의 도움';
+  buff340 = '여신의 소망';
+  buff341 = '여신의 사랑';
+  buff342 = '여신의 신뢰';
+  buff343 = '사타케의 도움';
+  buff344 = '료카의 도움';
+  buff345 = '빛의 도움';
+  buff346 = '전설의 격려';
+  buff347 = '선구의 격려';
+  buff348 = '아이돌의 격려';
+  cum = '부르는 소리';
+
 };
