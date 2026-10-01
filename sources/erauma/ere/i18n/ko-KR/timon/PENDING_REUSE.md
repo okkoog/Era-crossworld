@@ -187,3 +187,44 @@ fallback and review separately.
 - `mejiro/cum.js`
 - remaining Timon modules not yet wired from `ko-KR/timon/entry.js`
 
+### `others/race.js`
+
+2.21 source references:
+- `sources/eraumak_kr_2.21/game/ere/system/race/sub-simulate-ero.js`
+- `sources/eraumak_kr_2.21/game/ere/system/race/sub-simulate-report.js`
+- `sources/eraumak_kr_2.21/game/ere/system/race/sys-simulate-race.js`
+- `sources/eraumak_kr_2.21/game/ere/system/race/sys-check-titles-after-race.js`
+
+Current 3.113 keys: **67**
+
+Reused Korean overrides: **66**
+
+Pending race key:
+- `full_speed_push_reports`
+
+This key has no corresponding 2.21 Korean text in the matched race simulator
+sources and therefore remains on Japanese fallback.
+
+### Next direct reuse candidates
+
+- `others/tachyon-shop.js`
+  - Direct 2.21 source confirmed:
+    `sources/eraumak_kr_2.21/game/ere/event/shop/tachyon-shop.js`
+  - Current file has 13 top-level scene functions. Structural matching is
+    straightforward, but no bulk copy was done in this pass.
+
+- `others/pregnant-slave.js`
+  - Direct 2.21 sources confirmed:
+    `sources/eraumak_kr_2.21/game/ere/event/others/punish-pregnant-slave.js`
+    and `as-pregnant-slave.kojo`
+  - Current file is much larger than a single old source and requires
+    scene-by-scene matching.
+
+### Still requires source-area decomposition
+
+- `others/others.js`
+  - Current module combines miscellaneous scenes from multiple old source
+    areas; no safe single-file positional reuse should be attempted.
+- `others/random.js`
+  - Current module is ~85k characters and collects many random-event scenes.
+    It must be split by scene/function before matching to 2.21 sources.
