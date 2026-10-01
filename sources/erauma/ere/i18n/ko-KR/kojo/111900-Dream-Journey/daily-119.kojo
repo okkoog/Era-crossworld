@@ -32,7 +32,7 @@ good_morning:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「私たちの『旅』は、まだ長いのですから。」
+            - 「잊지 마세요, 우리의 『여정』은 아직 꽤나 길게 남아있다는 것을요.」
     - random: true
       if: era.get('base:0:0') < era.get('maxbase:0:0') * 0.45
       lines:
@@ -45,7 +45,7 @@ good_morning:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「……では、せめてコーヒーを淹れましょうか？」
+            - 「……그럼, 적어도 커피라도 한 잔 타드릴게요.」
     - random: true
       if: era.get('base:0:0') < era.get('maxbase:0:0') * 0.45
       lines:
@@ -59,7 +59,7 @@ good_morning:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「あなたの苦労を、すべて分け負うことはできません……でも、癒す機会だけは、私にください。」
+            - 「당신의 수고를 제가 온전히 나누어 짊어질 수는 없겠지만…… 적어도 당신을 치유할 기회는 제게 주세요.」
     # 体力が高い
     - random: true
       if: era.get('base:0:0') >= era.get('maxbase:0:0') * 0.45
@@ -73,7 +73,7 @@ good_morning:
           content:
             - fontWeight: bold
               content: %CHARA%
-            - 「今日の『旅』も、きっと風もなく雨もないでしょう。」
+            - 「오늘의 『여정』도, 분명 비바람 하나 없이 평온하겠죠.」
     - random: true
       if: era.get('base:0:0') >= era.get('maxbase:0:0') * 0.45
       lines:
@@ -116,10 +116,10 @@ end_talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「%CALLNAME%, 이제 아시겠나요? 이것이 맹신이 낳은 결과랍니다…… 푹 쉬세요, 모든 건 제가 다 알아서 처리해 두고 당신이 돌아오길 기다릴 테니까요.」
+          - 「%CALLNAME%、わかりましたか？これが盲信の結末です……ゆっくり休んでください。戻るまで、私があとのことは整えておきます。」
       - if: era.get('love:119') >= 75
         color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「%CALLNAME%, 이제 아시겠나요? 이것이 맹신이 낳은 결과랍니다…… 하지만, 당신이 이대로 포기할 리 없겠죠? 환영 파티를 준비해 두었으니, 언제든 돌아오시는 걸 환영할게요.」
+          - 「%CALLNAME%、わかりましたか？これが盲信の結末です……でも、あなたはここで諦めたりしないでしょう？おもてなしは用意してあります。いつでも、お帰りを待っています。」
