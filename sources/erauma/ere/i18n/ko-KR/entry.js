@@ -795,6 +795,7 @@ module.exports = class extends require('#/i18n/ja-JP/entry') {
   ui_load_remove_success_template = '%NO%번 슬롯을 삭제했다';
 
   name = new (require('#/i18n/ko-KR/chara/names'))();
+  title = new (require('#/i18n/ko-KR/chara/titles'))();
 
   new_game = new (require('#/i18n/ko-KR/new-game'))();
   location = new (require('#/i18n/ko-KR/location'))();
