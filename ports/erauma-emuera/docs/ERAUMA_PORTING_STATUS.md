@@ -1,10 +1,34 @@
-# 이식 현황 — 2026-10-01, 포트 0.3.1
+# 이식 현황 — 2026-10-01, 포트 0.3.2
 
 원본 era말딸을 관리형 JavaScript 실행기로 Emuera.NET에 연결하는 게임 실행용 호환판이다. 원본 `sources/erauma`와 기존 `docs/`, `game/`, `dev/`, `test/`는 변경하지 않았다. CrossWorld.Core 공용 인물·세계 통합은 이번 범위에 포함하지 않는다.
 
 실행 기준은 **EraUma v3.113 (ryuki)**와 공식 **res 20260923**이다. 46종의 게임 사용 Era API는 원본 API 구현과 호스트로 처리한다. 원본 게임 CommonJS와 데이터 표를 읽고 322개 kojo를 원본 컴파일러로 생성하며, 게임 실행에는 EraElectron과 Node.js가 필요하지 않다. 단독 실행 구조와 선정한 게임 경로의 검증을 유지하고 0.3에서 화면·그림·음향 연결을 추가했다. **새 UI의 전체 직접 플레이는 아직 미확인**이다.
 
-## 0.3.1 수정 상태
+## 0.3.2 레이스 화면 갱신 수정 — 자동 검사 PASS
+
+사용자는 0.3.1이 이전보다 부드러워졌다고 보고했지만 레이스 화면 전체가 주기적으로 사라지는 깜빡임은 영상에서 확인됐다. 60fps·310프레임·5.1667초 중 빈 화면은 114프레임(36.8%)·45구간이며, 각 구간은 약 17–67ms다. 이 결과는 이전 그림이 계속 남는 화면 중첩과 구별한다.
+
+실행기는 이미 double buffering을 사용한다. `api.ClearDisplay` (`EmueraConsole.ClearDisplay`)가 모든 행과 여백을 재출력하기 전에 강제 paint를 수행해 빈 canvas를 노출한 것이 원인이다. 0.3.2의 `NativeFrameUpdate`는 엔진의 `console.SetRedraw(0)` 플래그와 managed `PictureBox.Paint` 처리로 갱신 중 이전 완성 bitmap을 유지한다. 마지막에 handler와 엔진 갱신 상태를 복원하고 완성 프레임을 강제 출력한다. 일반 버튼·스크롤은 갱신 범위 밖에서 native 경로를 유지한다.
+
+| 검증 | 현재 결과 | 범위 |
+|---|---|---|
+| 0.3.1 사용자 레이스 영상 | 깜빡임 확인 | 전체 canvas가 비는 45구간·114/310프레임, 지속 중첩과 구별 |
+| `Test-FramePaint.ps1` | PASS (관리형 Paint 검사) | 대조는 7회 전환의 중간 그림 165회로 예상 FAIL, 수정판은 0회. 모든 최종 그림 변경·타이머 진행·handler 2→2·이후 새로고침 3회 복원 |
+| 실제 입력 출력·행 소유권 | PASS | 4프레임의 미관리 행 0 |
+| 일반 게임 입력 루프 | PASS | 7단계와 타이머 tick 1회 |
+| 실제 원본 canvas | PASS | 23개 화면·전체 갱신 26회·부분 갱신 27회·205행 보존·경고 0 |
+| 실제 실행기 7단계 회귀 | PASS | 실시간 타이머·레이스·저장·새 프로세스 복원·정상 종료 포함 |
+| 원본 레이스 연속 Paint 갱신 | PASS (자동 검사) | 20회 전환·native Paint 40회·중간 그림 0·모든 최종 그림 변경·handler 2→2·이후 새로고침 3회 복원 |
+| 호스트 기본·API·저장·플레이·UI 회귀 | PASS | 최종 코드에서 10개·21개·10개·46개·21개 |
+| 0.3.2 배포 구성 이동 | PASS (자동 preflight) | 공백 경로에서 23화면·레이스 20회 갱신, 같은 DLL·게임 파일의 해시 확인. ZIP 생성 검증은 별도 |
+| 수정 후 사람이 수행하는 전체 시나리오 | 미확인 | 레이스 → 저장 → 완전 종료 → 재실행 → 로드 → 후속 행동 포함 |
+| 실제 음악 청취 | 미확인 | 음량 0 자동 시험과 구별 |
+
+명령은 `./ports/erauma-emuera/tools/Test-FramePaint.ps1`이다. 대조는 `outputs/frame-paint-6b0c25c1/summary.json`, 수정판은 `outputs/frame-paint-6134aec5/summary.json`에 기록했다. 정확한 배포 실행기의 Paint callback과 native/수정된 `PictureBox.OnPaint` delegate 연결을 시험 bitmap에 기록한 검사다. 전체·부분·추가 출력·표시 지연을 포함한 7회 전환을 확인했다. PNG 기록이 callback을 늦추므로 165회는 실제 화면 fps나 사용자 영상의 빈 프레임 수가 아니다. 데스크톱 캡처·OS 입력·사람의 직접 플레이와 구별하고 수정 후 전체 직접 시나리오는 미확인으로 유지한다.
+
+`Test-FramePaint.ps1 -OriginalRace`의 원본 레이스 결과는 `outputs/frame-paint-9860cf1a/summary.json`이다. 500ms 가상 시간 전진은 격리한 fixture 시험에만 사용한다. 별도 실제 실행기 7단계의 타이머는 실제 경과 시간으로 통과했다. 확정 보고서는 [0.3.2 검증 근거](evidence/0.3.2/README.md)에 모았으며 배포 구성 이동 검사도 PASS했으며 전체 직접 플레이·실제 음악 청취가 남아 있다.
+
+## 0.3.1 수정과 자동 검증의 역사적 근거
 
 **0.3.0의 사용자 직접 시험은 실패했다.** 대사는 빈 화면 클릭으로 진행되지 않고 Enter만 반응했으며, 선택할 때 이전 그림·버튼이 겹쳐 남아 레이스 전에 시험을 중단했다. 자동 canvas 시험이 실제 입력 출력을 통과하지 않아 놓친 결함이다.
 
@@ -40,7 +64,7 @@
 
 화면 검증은 고정 실행기의 실제 renderer와 canvas 출력에 대한 자동 검사다. 바탕화면 캡처·직접 클릭·음향 청취를 대신하지 않는다. 새 UI 기능별 구현 수준과 의뢰 항목의 남은 조건은 [UI 현황](ERAUMA_UI_STATUS.md), [재작업 기준](ERAUMA_SECOND_WORK_ORDER.md)에 있다.
 
-일반 게임은 표시 지연을 실제 타이머로 처리해 레이스 재생을 단계별로 갱신한다. 빠른 호스트 회귀와 canvas 검증의 가상 시간 전진은 시험 전용이다. 원본 레이스가 전달하는 숫자 문자열을 포함해 그래프의 전체 계열을 출력한다. 0.3 확정 증거의 보관 위치는 `docs/evidence/0.3/`이며 아래 0.2 기록과 구별한다. 현재 canvas 보고서는 `artifacts/runtime-UiScreens-fce0e490/results/ui-summary.json`과 `artifacts/runtime-UiScreens-9717a264/results/ui-summary.json`, 최신 native 음향 보고서는 작업 폴더의 `outputs/native-ui-audio-0027b902/native-ui-summary.json`이다. 최종 회귀와 음향 시험의 플러그인 DLL SHA256은 `A2CD368A8073B05122C005C289D39F07238B9F2ABA4771DA4C4AB97D823F5F25`로 같다. 자원 포함 ZIP의 이동 실행 근거는 `docs/evidence/0.3/package-relocation-preflight.json`에 있으며 같은 플러그인·원본 게임·공식 자원을 사용했다.
+일반 게임은 표시 지연을 실제 타이머로 처리해 레이스 재생을 단계별로 갱신한다. 빠른 호스트 회귀와 canvas 검증의 가상 시간 전진은 시험 전용이다. 원본 레이스가 전달하는 숫자 문자열을 포함해 그래프의 전체 계열을 출력한다. 0.3.0 확정 증거의 보관 위치는 `docs/evidence/0.3/`이며 아래 0.2 기록과 구별한다. 당시 canvas 보고서는 `artifacts/runtime-UiScreens-fce0e490/results/ui-summary.json`과 `artifacts/runtime-UiScreens-9717a264/results/ui-summary.json`, native 음향 보고서는 작업 폴더의 `outputs/native-ui-audio-0027b902/native-ui-summary.json`이다. 당시 최종 회귀와 음향 시험의 플러그인 DLL SHA256은 `A2CD368A8073B05122C005C289D39F07238B9F2ABA4771DA4C4AB97D823F5F25`로 같다. 자원 포함 ZIP의 이동 실행 근거는 `docs/evidence/0.3/package-relocation-preflight.json`에 있으며 같은 플러그인·원본 게임·공식 자원을 사용했다.
 
 ## 0.2의 역사적 검증 결과
 

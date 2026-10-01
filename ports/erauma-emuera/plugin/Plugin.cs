@@ -9,7 +9,7 @@ public sealed class PluginManifest : PluginManifestAbstract
     public PluginManifest() { methods.Add(new Bridge()); }
     public override string PluginName => "EraUma Emuera.NET";
     public override string PluginDescription => "Standalone original eraUma game through a managed JavaScript bridge.";
-    public override string PluginVersion => "0.3.1";
+    public override string PluginVersion => "0.3.2";
     public override string PluginAuthor => "ERA CrossWorld";
 }
 public sealed class Bridge : IPluginMethod
@@ -182,6 +182,7 @@ public sealed class Bridge : IPluginMethod
               var renderer=new UiRenderer(api,images.Resolve,RegisterUrl);
               bool inRow=false;
               var console=NativeImages.EngineConsole();
+              using var frame=items.Count>0?new NativeFrameUpdate(console):null;
               // INPUTS/TINPUTS prints the accepted native input after our frame.
               // Those echo lines are not part of the original game's logical rows.
               // Remove them before removing padding or calculating a retained prefix.

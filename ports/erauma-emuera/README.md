@@ -1,12 +1,24 @@
-# era말딸 Emuera.NET 호환판 0.3.1
+# era말딸 Emuera.NET 호환판 0.3.2
 
 보존된 `sources/erauma`의 JavaScript 게임을 Emuera.NET → CALLSHARP → C# → Jint로 실행한다. 게임 규칙을 ERB로 다시 작성하지 않고 원본 Era API의 데이터·캐릭터·육성·저장 처리를 재사용한다. **게임 실행에는 EraElectron, Node.js, 개발용 SDK가 필요하지 않다.** Windows x64와 .NET 10 Windows Desktop Runtime은 필요하다.
 
 이번 범위는 era말딸 단독 실행이다. CrossWorld 공용 캐릭터·세계 시간·게임 간 이동 및 세이브 공유는 포함하지 않는다. 원본 `sources/erauma`와 기존 `docs/`, `game/`, `dev/`, `test/`는 변경하지 않고 이 디렉터리에 연결 코드와 문서를 분리했다.
 
-실행 기준은 보존된 **EraUma v3.113 (ryuki)**와 공식 **res 20260923**이다. 0.3에서 원본의 24열 배치·버튼·서식·이미지·진행 막대·전체 계열 그래프와 공식 리소스를 연결했다. **0.3.0의 사용자 직접 시험은 실패했다.** 빈 화면 클릭으로 대사가 진행되지 않고 선택할 때 이전 그림·버튼이 겹쳐 남아 레이스 이전에 시험을 중단했다. 0.3.1은 이 두 문제의 수정판이며, 수정 후 전체 직접 플레이는 아직 미확인이다. 자동 검증을 직접 플레이 결과로 취급하거나 재작업 전체를 완료로 판정하지 않는다. 세부 상태는 [이식 현황](docs/ERAUMA_PORTING_STATUS.md), [UI·리소스 현황](docs/ERAUMA_UI_STATUS.md)에 있다.
+실행 기준은 보존된 **EraUma v3.113 (ryuki)**와 공식 **res 20260923**이다. 0.3에서 원본의 24열 배치·버튼·서식·이미지·진행 막대·전체 계열 그래프와 공식 리소스를 연결했다. **0.3.0의 사용자 직접 시험은 실패했다.** 빈 화면 클릭으로 대사가 진행되지 않고 선택할 때 이전 그림·버튼이 겹쳐 남아 레이스 이전에 시험을 중단했다. 0.3.1은 이 두 문제를 수정했고 사용자는 이전보다 부드러워졌다고 보고했지만 레이스 화면 깜빡임이 영상에서 확인됐다. 0.3.2는 화면 교체 중 빈 프레임을 노출하는 갱신 순서를 수정하는 버전이며 새 Paint 자동 검사를 통과했다. 전체 직접 플레이와 실제 음악 청취는 아직 미확인이다. 자동 검증을 직접 플레이 결과로 취급하거나 재작업 전체를 완료로 판정하지 않는다. 세부 상태는 [이식 현황](docs/ERAUMA_PORTING_STATUS.md), [UI·리소스 현황](docs/ERAUMA_UI_STATUS.md)에 있다.
 
-## 0.3.1 입력·화면 수정
+## 0.3.2 레이스 화면 갱신 수정 — 자동 검사 PASS
+
+사용자의 0.3.1 영상은 60fps·310프레임·5.1667초다. 화면 전체가 주기적으로 사라지는 구간 45회, 빈 화면 114프레임(36.8%)을 확인했다. 각 구간은 약 17–67ms이며 이전 그림이 계속 겹쳐 남는 현상과는 다른 화면 갱신 결함이다.
+
+실행기의 화면은 이미 double buffering을 사용한다. `api.ClearDisplay` (`EmueraConsole.ClearDisplay`)가 모든 행과 위쪽 여백을 다시 출력하기 전에 강제 paint를 수행해 빈 canvas를 노출한 것이 원인이다. 0.3.2의 `NativeFrameUpdate`는 엔진의 `console.SetRedraw(0)` 플래그와 managed `PictureBox.Paint` 처리를 함께 사용해 행 삭제·출력·여백 조정 동안 이전 완성 bitmap을 유지한다. 갱신을 마친 뒤 handler와 엔진 갱신 상태를 복원하고 완성된 프레임을 한 번 강제 출력한다. 일반 버튼 처리와 스크롤은 이 갱신 묶음 밖에서 기존 native 경로로 처리한다.
+
+`Test-FramePaint.ps1`은 정확한 배포 실행기의 Paint callback과 native/수정된 `PictureBox.OnPaint` delegate 연결을 시험 bitmap에 기록한다. 0.3.1 대조는 7회 전환에서 중간 그림 165회로 예상 FAIL했고(`outputs/frame-paint-6b0c25c1/summary.json`), 수정판은 전체·부분·추가 출력과 표시 지연을 포함한 같은 7회 전환에서 중간 그림 0회로 PASS했다(`outputs/frame-paint-6134aec5/summary.json`). 모든 최종 그림이 바뀌고 타이머가 진행됐으며 handler 수 2→2(원래 native+시험 observer), 이후 새로고침 3회의 정상 처리를 확인했다. PNG 기록이 callback을 늦추므로 165회는 실제 화면 fps나 사용자 영상의 빈 프레임 수가 아니다. 데스크톱 캡처·OS 입력·사람의 직접 검증도 아니다.
+
+원본 레이스의 연속 20회 갱신도 중간 그림 0회·모든 최종 그림 변경·native Paint 40회·handler 2→2·이후 새로고침 3회 복원으로 PASS했다(`outputs/frame-paint-9860cf1a/summary.json`). 이 경로의 500ms 가상 시간 전진은 격리한 fixture 시험에만 사용한다. 실제 실행기 7단계의 타이머 검사는 실제 경과 시간으로 PASS했다.
+
+0.3.2 호스트는 기본 10개·API 21개·저장 10개·플레이 46개·UI 21개를 통과했다. 실제 입력 출력 4프레임의 미관리 행 0, 일반 게임 입력 루프 7단계와 타이머 tick 1회, 실제 원본 canvas 23개(전체 갱신 26회·부분 27회·205행 보존·경고 0), 실제 실행기 7단계 회귀도 PASS다. [0.3.2 검증 근거](docs/evidence/0.3.2/README.md)에 대조·수정·원본 레이스 결과를 모았다. 같은 배포 구성의 공백 경로 이동 검사에서 원본 화면 23개와 레이스 연속 갱신 20회가 PASS했다. ZIP의 개별 파일 해시는 `package-manifest.json`과 생성 검증 보고서로 확인한다. 레이스 → 저장 → 완전 종료 → 재실행 → 로드 → 후속 행동의 사람 직접 검증과 실제 음악 청취는 별도로 남아 있다.
+
+## 0.3.1 입력·화면 수정의 역사적 근거
 
 선택지가 없는 대사 진행은 `WAIT`/`TWAIT`로 분리해 빈 화면 클릭과 Enter를 받는다. 번호 선택·자유 문자열·입력 규칙이 있는 대기·현재 URL은 `INPUTS`/`TINPUTS`를 유지한다. 화면을 갱신하기 전에 실행기가 입력값을 출력한 줄을 제거해 기존 그림·버튼이 겹쳐 남는 문제를 수정했다. 원본 게임의 입력 표시 설정은 유지한다.
 
@@ -83,11 +95,14 @@ dotnet run --project ports/erauma-emuera/tests -c Release -- --scenario sources/
 ./ports/erauma-emuera/tools/Test-GameUi.ps1 -NoResources
 ./ports/erauma-emuera/tools/Test-InputEcho.ps1
 ./ports/erauma-emuera/tools/Test-ContinueInput.ps1
+# 0.3.2 Paint callback 검사: 직접 플레이와 구별
+./ports/erauma-emuera/tools/Test-FramePaint.ps1
+./ports/erauma-emuera/tools/Test-FramePaint.ps1 -OriginalRace
 ```
 
 호스트 시험은 숫자·문자열·객체, 입력 중단과 재개, 화면 교체·부분 삭제, 선택지 유효성, 입력 교체, 타이머, 진단 메시지, 원본 JSON/gzip 저장을 검사한다. `--scenario`는 원본 메뉴에서 만든 시험 저장을 격리한 폴더에 복사하고 훈련·레이스·저장·로드 메뉴와 이후 행동을 재현한다. 시험 안에서만 난수를 고정하며 일반 게임의 난수는 유지한다.
 
-0.3.0에서 확인된 호스트 결과는 기본 10개·API 21개·저장 10개·플레이 46개·UI 16개, 시나리오 20개·별도 프로세스 복원 5개 PASS다. `--ui`는 공식 자원 매핑·자원 없는 fallback·독립 언어팩 선택·원본 열 geometry·입력 세대·전체 그래프 점 전달·실제 표시 지연 타이머를 검사한다. 시험용 `ko-KR` 확장은 격리한 임시 폴더에만 만들며 배포 번역팩으로 포함하지 않는다. `Test-NativeUi.ps1`은 실제 실행기의 renderer·hit ID·진행 막대 픽셀과 음량 0에서의 오디오 생명주기·재시작 없는 음량 변경을 검사한다. 최신 native 결과는 `outputs/native-ui-audio-0027b902/native-ui-summary.json`에 기록됐다.
+0.3.0에서 확인된 호스트 결과는 기본 10개·API 21개·저장 10개·플레이 46개·UI 16개, 시나리오 20개·별도 프로세스 복원 5개 PASS다. `--ui`는 공식 자원 매핑·자원 없는 fallback·독립 언어팩 선택·원본 열 geometry·입력 세대·전체 그래프 점 전달·실제 표시 지연 타이머를 검사한다. 시험용 `ko-KR` 확장은 격리한 임시 폴더에만 만들며 배포 번역팩으로 포함하지 않는다. `Test-NativeUi.ps1`은 실제 실행기의 renderer·hit ID·진행 막대 픽셀과 음량 0에서의 오디오 생명주기·재시작 없는 음량 변경을 검사한다. 0.3.0의 native 결과는 `outputs/native-ui-audio-0027b902/native-ui-summary.json`에 기록됐다.
 
 `Test-GameUi.ps1`은 격리한 시험 저장으로 원본 메뉴를 실행하고 실제 엔진 canvas·layout을 기록한다. 다음 수치는 0.3.0 결과이며 실제 입력 출력을 우회한 화면 검사다. 자원 있음·없음 양쪽에서 새 게임과 레이스 재생 프레임을 포함한 23개 화면을 통과했다. `runtime-UiScreens-fce0e490`은 전체 갱신 27회·부분 갱신 27회·205행 보존, `runtime-UiScreens-9717a264`는 전체 갱신 26회·부분 갱신 27회·205행 보존이다. 공식 리소스 URL의 shell 브라우저 실행도 자동 검사에서 PASS이며 사람이 URL 버튼을 직접 클릭해 여는 시험은 미확인이다. 이 스크립트들의 자동 실행과 가상 시간 전진은 사람이 직접 플레이한 결과가 아니다. 코드 동결 후 같은 플러그인 DLL로 최종 호스트·실제 Emuera 7단계 회귀도 PASS했다. 공식 자원 포함 ZIP을 공백이 있는 별도 폴더에 풀어 7단계 회귀·23개 화면을 다시 통과했다. ZIP 전체 파일 해시·상대 경로·사용자 저장 미포함도 확인했다. 요약과 화면 예시는 [0.3 검증 근거](docs/evidence/0.3/README.md)에 있다.
 

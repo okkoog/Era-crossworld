@@ -1,6 +1,6 @@
 # 호환 API와 실행 방식
 
-기록일: 2026-10-01, 포트 0.3.1. 원본 게임에서 사용하는 Era API 46종을 원본 API 구현과 호스트 연결로 처리한다. 데이터·캐릭터·육성·저장 계산은 보존된 v3.113 JavaScript에 맡기고 화면·입력·파일·타이머·자원·종료를 Emuera.NET에 연결한다. API 연결의 존재와 원본 표현의 완전 재현은 구별하며 [UI·리소스 현황](ERAUMA_UI_STATUS.md)에 기능별 검증 범위를 기록한다. 전체 호출 목록은 [API_USAGE.md](API_USAGE.md)에 있다.
+기록일: 2026-10-01, 포트 0.3.2. 원본 게임에서 사용하는 Era API 46종을 원본 API 구현과 호스트 연결로 처리한다. 데이터·캐릭터·육성·저장 계산은 보존된 v3.113 JavaScript에 맡기고 화면·입력·파일·타이머·자원·종료를 Emuera.NET에 연결한다. API 연결의 존재와 원본 표현의 완전 재현은 구별하며 [UI·리소스 현황](ERAUMA_UI_STATUS.md)에 기능별 검증 범위를 기록한다. 전체 호출 목록은 [API_USAGE.md](API_USAGE.md)에 있다.
 
 ## CALLSHARP와 상태
 
@@ -63,13 +63,25 @@ Electron의 Shift/연속 진행 키와 UI 자동 넘김은 재현하지 않는�
 
 실제 `INPUTS`/`TINPUTS`는 제출된 값을 native 논리 줄로 출력한다. 이 줄은 원본 게임 화면의 논리 행에 포함되지 않으므로 0.3.1은 마지막 출력 뒤의 native 행 수 차이를 제거한 다음 여백과 교체할 행을 삭제한다. 원본 게임이 자체 설정에 따라 출력하는 입력값은 유지한다. 0.3.0은 이 실행기 출력 줄을 계산하지 않아 입력마다 이전 그림·버튼의 행이 남았고 사용자 직접 시험이 실패했다. 실제 모집 화면 입력 회귀는 수정 전 미관리 줄 `[0,1,2,3]`, 수정 후 `[0,0,0,0]`을 확인해 PASS했다.
 
+0.3.1 사용자 영상에서는 이전보다 부드러워졌다는 피드백과 함께 레이스 canvas 전체가 주기적으로 사라지는 문제가 확인됐다. 60fps·310프레임·5.1667초 중 빈 화면 114프레임(36.8%)·45구간, 구간당 약 17–67ms다. 이는 이전 그림이 계속 남는 중첩 현상과 다른 paint 순서 문제다. 실행기는 이미 double buffering을 사용하며 `api.ClearDisplay` (`EmueraConsole.ClearDisplay`)가 모든 행과 여백의 재출력 전에 강제 paint를 수행하는 것이 원인이다.
+
+0.3.2의 `NativeFrameUpdate` 수정은 행 삭제·출력·여백 조정을 하나의 갱신 범위로 묶는다. 엔진의 `console.SetRedraw(0)` 플래그와 managed `PictureBox.Paint` 처리가 함께 이전 완성 bitmap을 유지한다. 범위를 마치면 handler와 엔진 갱신 상태를 복원하고 완성된 프레임을 강제 출력한다. 일반 버튼·스크롤 처리는 이 범위 밖의 native 경로를 유지한다. 중간 paint 억제·최종 프레임·갱신 복원은 아래 자동 검사에서 통과했으며 전체 직접 플레이는 별도다.
+
 일반 게임은 `presentationDelays:true`로 시작해 표시용 `era.delay()`도 실제 타이머 Promise로 대기한다. 레이스 재생의 연속 프레임을 즉시 끝내지 않고 단계별로 출력·부분 갱신한다. `setTimeout()`의 늦은 선택지도 실제 경과 시간을 유지한다. 일부 이벤트가 10초 뒤 선택지를 추가하므로 타이머를 즉시 실행하면 선택 가능한 내용이 달라지기 때문이다. 타이머는 대기 중에도 ERB가 50ms마다 확인한다. 콜백이 출력을 바꿨을 때만 다시 출력하고 매 확인마다 화면을 다시 그리지는 않는다.
 
 빠른 호스트 회귀는 `presentationDelays:false`가 기본이며 표시 지연을 생략한다. 화면 시험의 `skip-text`·`ui-return-main`·`ui-advance`는 시험용 가상 시간 전진을 사용한다. 실제 사용자용 `Game.ERB`는 이 동작을 사용하지 않고 `AWAIT 50`·`TINPUTS 50`·`TWAIT 50,0`과 `tick`으로 실제 시간을 처리한다.
 
 0.3.0의 무인 실행기 타이머 시험은 숨겨진 Windows 창의 `TINPUTS` 타이머가 화면 다시 그리기에 의존하는 점을 피하려고 `AWAIT 50`과 `tick`으로 실제 경과 시간과 늦게 추가된 버튼을 검사했다. 현재 일반 게임은 `TINPUTS 50` 또는 `TWAIT 50,0`을 사용한다. 기존 `AWAIT` 시험을 실제 타이머 입력 조작 검증으로 계산하지 않는다. 0.3.1 입력 루프의 별도 관리형 검사는 아래에 기록한다.
 
-## 0.3.1 입력·화면 회귀
+## 0.3.2 화면 교체 검사 — PASS와 검증 범위
+
+명령은 `./ports/erauma-emuera/tools/Test-FramePaint.ps1`이다. 정확한 배포 실행기의 Paint callback과 native/수정된 `PictureBox.OnPaint` delegate 연결을 시험 소유 bitmap에 기록한다. 0.3.1 대조 `outputs/frame-paint-6b0c25c1/summary.json`은 7회 전환의 중간 그림 165회로 예상 FAIL, 수정판 `outputs/frame-paint-6134aec5/summary.json`은 전체·부분·추가 출력·표시 지연을 포함한 같은 7회 전환의 중간 그림 0회로 PASS다. 모든 최종 그림이 바뀌었고 `timerAdvanced:true`, handler 수 2→2(원래 native+시험 observer), 이후 새로고침 3회의 복원을 확인했다. PNG 기록이 callback을 늦추므로 165회는 실제 화면 fps나 사용자 영상의 빈 프레임 수가 아니다. 이 시험은 데스크톱 캡처·OS 입력·사람의 직접 플레이가 아니다.
+
+원본 레이스 연속 20회 갱신도 중간 그림 0회·모든 최종 그림 변경·native Paint 40회·handler 2→2·이후 새로고침 3회 복원으로 PASS했다(`outputs/frame-paint-9860cf1a/summary.json`). 재현 명령은 `./ports/erauma-emuera/tools/Test-FramePaint.ps1 -OriginalRace`다. 이 경로는 격리한 fixture 시험에서 500ms 가상 시간 전진을 사용한다. 별도 실제 실행기 7단계의 타이머 검사는 실제 경과 시간으로 PASS했다.
+
+0.3.2는 호스트 기본 10개·API 21개·저장 10개·플레이 46개·UI 21개, 실제 입력 출력 4프레임의 미관리 행 0, 입력 루프 7단계와 타이머 tick 1회, 실제 원본 canvas 23개(전체 26회·부분 27회·205행 보존·경고 0), 실제 실행기 7단계 회귀를 통과했다. 확정 근거는 `evidence/0.3.2/README.md`에 있다. 같은 배포 구성의 공백 경로 이동 검사(23화면·레이스 20회)는 PASS이며 레이스·저장·완전 종료·재실행·로드·후속 행동의 직접 플레이와 실제 음악 청취도 미확인이다.
+
+## 0.3.1 입력·화면 회귀의 역사적 근거
 
 사용자의 0.3.0 직접 시험은 빈 클릭 진행 불가·선택 후 그림/버튼 중첩으로 실패했고 레이스 전에 중단됐다. 0.3.1의 21개 호스트 UI 회귀와 실제 모집 화면의 `INPUTS` 회귀는 PASS다. 모집 화면의 미관리 native 줄은 수정 전 `[0,1,2,3]`에서 수정 후 `[0,0,0,0]`으로 유지되며 양쪽 입력 출력은 `[1,1,1]`줄이다.
 
@@ -83,7 +95,7 @@ Electron의 Shift/연속 진행 키와 UI 자동 넘김은 재현하지 않는�
 
 `NativeCharts.cs`는 원본 dataset의 모든 유효한 점을 곡선으로 연결하고 축·범례를 그린다. 원본 레이스의 `toFixed` 숫자 문자열도 읽으며 단계형 계열은 계단식으로 연결한다. 1차판의 요약 수치·최대 9개 표본만으로 끝내는 구현을 교체했다. Chart.js의 mouseover·주석은 미구현이다.
 
-`NativeAudio.cs`는 고정 실행기의 Sound를 호출하고 NAudio mixer 또는 Windows Media Player 연결에서 재생·반복·음량·일시정지·재개·종료를 처리한다. 배포 기준의 정확한 실행기는 SoundMixer가 없는 Windows Media Player 변형이다. 최신 native 시험 `outputs/native-ui-audio-0027b902/native-ui-summary.json`은 재생 위치 증가·일시정지 위치 유지·재개·반복 경계 264.76초→약 0.472초·Dispose와 backend 오류 0·경고 0을 확인했다. 재생·일시정지·반복 일시정지 상태에서 음량 설정을 즉시 적용해도 같은 Sound 인스턴스와 위치·일시정지·반복 상태를 유지하며 재생을 다시 시작하지 않는 검사도 PASS다. 시험 음량은 0이며 실제 청취는 미확인이다. 게임 상황별 모든 전환과 fade의 미구현은 [현황](ERAUMA_UI_STATUS.md)에 구별한다.
+`NativeAudio.cs`는 고정 실행기의 Sound를 호출하고 NAudio mixer 또는 Windows Media Player 연결에서 재생·반복·음량·일시정지·재개·종료를 처리한다. 배포 기준의 정확한 실행기는 SoundMixer가 없는 Windows Media Player 변형이다. 0.3.0 native 시험 `outputs/native-ui-audio-0027b902/native-ui-summary.json`은 재생 위치 증가·일시정지 위치 유지·재개·반복 경계 264.76초→약 0.472초·Dispose와 backend 오류 0·경고 0을 확인했다. 재생·일시정지·반복 일시정지 상태에서 음량 설정을 즉시 적용해도 같은 Sound 인스턴스와 위치·일시정지·반복 상태를 유지하며 재생을 다시 시작하지 않는 검사도 PASS다. 시험 음량은 0이며 실제 청취는 미확인이다. 게임 상황별 모든 전환과 fade의 미구현은 [현황](ERAUMA_UI_STATUS.md)에 구별한다.
 
 원본 URL 객체는 게임 번호와 분리된 음수 버튼 ID(첫 ID `-900000`)를 받는다. HTTP(S)와 자격 정보 없는 주소만 연결하고 클릭하면 기본 브라우저를 연 뒤 게임의 입력 대기를 유지한다. native hit 영역과 원본 공식 리소스 URL `https://umaera.gitgud.site/data/uma-resource/full.html`의 shell 브라우저 실행은 자동 검사에서 PASS다. 사람이 화면의 URL 버튼을 직접 클릭해 브라우저를 열고 복귀하는 시험은 미확인이다.
 

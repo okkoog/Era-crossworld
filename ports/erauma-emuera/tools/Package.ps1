@@ -108,7 +108,7 @@ foreach ($document in @('ERAUMA_ENGINE_DEPENDENCIES.md','ERAUMA_COMPATIBILITY_AP
 }
 # Reviewed summaries and software-canvas examples are deliverables; raw runtime
 # reports and user/test saves remain excluded by the runtime allowlist above.
-foreach($evidenceVersion in @('0.3','0.3.1')) {
+foreach($evidenceVersion in @('0.3','0.3.1','0.3.2')) {
     $evidenceRelative='docs\evidence\'+$evidenceVersion
     $evidenceRoot=Join-Path $portPath $evidenceRelative
     if (Test-Path -LiteralPath $evidenceRoot) {
