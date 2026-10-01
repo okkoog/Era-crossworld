@@ -820,6 +820,13 @@ module.exports = class extends require('#/i18n/ja-JP/entry') {
   status_desc = new (require('#/i18n/ko-KR/table/status-desc'))();
   talent_desc = new (require('#/i18n/ko-KR/table/talent-desc'))();
 
+  sex = new (require('#/i18n/ko-KR/sex/main'))();
+  train_action = new (require('#/i18n/ko-KR/sex/actions'))();
+  body_part = new (require('#/i18n/ko-KR/sex/parts'))();
+  jewel_shop = new (require('#/i18n/ko-KR/sex/shop'))();
+  inmon = new (require('#/i18n/ko-KR/sex/inmons'))();
+  inmon_desc = new (require('#/i18n/ko-KR/sex/inmon-desc'))();
+
   race = new (require('#/i18n/ko-KR/race/races'))();
   skill = new (require('#/i18n/ko-KR/race/skills'))();
   skill_desc = new (require('#/i18n/ko-KR/race/skill-desc'))();
