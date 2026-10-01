@@ -8,4 +8,5 @@ module.exports = class extends JaTimon {
   love = proxy_kojo_js(require('#/i18n/ko-KR/timon/love'));
   basement = proxy_kojo_js(require('#/i18n/ko-KR/timon/base'));
   game_guides = proxy_kojo_js(require('#/i18n/ko-KR/timon/guides/game'));
+  storage = proxy_kojo_js(require('#/i18n/ko-KR/timon/others/storage'));
 };
