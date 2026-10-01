@@ -1443,4 +1443,13 @@ module.exports = class extends I18nSkills {
   900421 = '『I\'m possible』';
   900901 = 'Queen\'s Rebirth';
 
+  t_speed = '스피드';
+  t_stamina = '스태미나';
+  t_power = '파워';
+  t_guts = '근성';
+  t_wiz = '지능';
+  t_startDash = '게이트';
+  t_visible = '시야';
+  t_accel = '가속력';
+
 };
