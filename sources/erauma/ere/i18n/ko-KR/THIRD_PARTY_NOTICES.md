@@ -32,3 +32,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+## linanegi/linanegi.github.io terminology reference
+
+Short Korean spellings for race mob proper names in `race/uma-mob.json` were
+checked against the public `umamusume/umatrans.txt` terminology list.
+
+- Repository: https://github.com/linanegi/linanegi.github.io
+- Source file: `umamusume/umatrans.txt`
+- Scope: 813 current EraUma 3.113 mob names with exact Japanese-name matches.
+- The source repository did not expose an explicit license file when checked.
+- No prose, code, or skill descriptions were imported; this reference is limited
+  to short proper-name transliterations. Newer unmatched names use locally
+  generated Korean phonetic transliterations.
