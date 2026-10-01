@@ -219,7 +219,7 @@ select:
                 - ソファで眠るアルダンは、麗しく静かな一枚の絵のようで、%YOU%の動きまで優しくなる。
             - if: era.get('cflag:71:48') >= 3 * 48
               lines:
-                - 疲れたメジロアルダンが、小さくあくびをした。
+                - 피곤해진 메지로 아르당이 작은 하품을 했다.
         - if: era.get('love:71') >= 75
           lines:
             - if: era.get('cflag:71:48') < 3 * 48
@@ -227,7 +227,7 @@ select:
                 - 疲れすぎて%YOU%に凭れて眠るアルダンは、居場所を見つけた小鳥のようだ。
             - if: era.get('cflag:71:48') >= 3 * 48
               lines:
-                - アルダンは休憩室のベッドで、安心して眠っている。
+                - 아르당은 휴게실 침대에서 편안하게 잠들어 있다.
 
 select_in_birthday:
   # 今日はトレーナーの誕生日
@@ -253,7 +253,7 @@ office_study:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「과연 %CALLNAME%이셔요. 이토록 명쾌하고 간단하게 설명해 주시다니, 분명 보이지 않는 곳에서 커다란 노력을 기울이셨겠지요.」
+      - 「さすがは%CALLNAME%。こんなにわかりやすく説明できるなんて、きっとたくさん努力されてきたのでしょうね。」
 
 talk:
   # CFLAGNAME:40 = 干劲
@@ -264,7 +264,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「어째서일까요, 지금이라면 어디까지든 달릴 수 있을 것만 같은…… 아니, 달리고 싶어요. 제 한계를 뛰어넘어 보고 싶답니다……!」
+          - 「なぜか、今ならどこへでも走っていけそう……いいえ、走りたいんです。自分の限界を超えて……！」
   - if: era.get('cflag:71:40') === 2
     random: true
     lines:
@@ -272,7 +272,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「1분, 1초, 단 한 순간…… 지극히 찰나의 시간에도 정신을 집중할 수 있을 것만 같아요. 그렇다면, 분명……」
+          - 「一分、一秒、一瞬……細かな時間に集中できそうな気がします。これなら、きっと……」
   - if: era.get('cflag:71:40') === 1
     random: true
     lines:
@@ -280,7 +280,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「하나, 둘, 셋…… 후우. 체온, 심박수, 근육 상태 모두 좋습니다. 자, 오늘은 무얼 할까요?」
+          - 「いち、に、さん……ふう。体温も、心拍も、筋肉の調子もいい。では、今日は何をしましょうか？」
   - if: era.get('cflag:71:40') === 1
     random: true
     lines:
@@ -288,7 +288,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「다리 상태가 최상이에요. 온 힘을 다해 트레이닝에 임할 수 있겠어요…… 그것만으로도 무척 가슴이 벅차오르네요.」
+          - 「脚の調子が最高です。全力でトレーニングできます……それだけで、とても痛快ですね。」
   - if: era.get('cflag:71:40') === 0
     random: true
     lines:
@@ -296,7 +296,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「평범하고 아무 일도 없는 날이 제게는 최고의 날이랍니다…… 하지만 『지금』은 더 높은 경지를 향해 나아가야겠지요.」
+          - 「何もない一日は、私にとっていちばんの一日……でも『いま』は、もっと高いところへ進まないと。」
   - if: era.get('cflag:71:40') === 0
     random: true
     lines:
@@ -304,7 +304,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「눈앞의 한순간 한순간을 소중히 여기며…… 정성껏 신중하게 트레이닝에 임하도록 해요.」
+          - 「目の前の一瞬を大切に……丁寧に、心を込めてトレーニングしましょう。」
   - if: era.get('cflag:71:40') === -1
     random: true
     lines:
@@ -312,7 +312,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「발걸음이 무겁네요…… 하지만 그렇다고 낙담해선 안 되겠지요. 제 자신을 믿어야 해요…… 여태껏 쌓아 올린 수행을요.」
+          - 「足が重い……でも、それで落ち込むわけにはいきません。自分を信じる……積み重ねてきた修練を。」
   - if: era.get('cflag:71:40') === -1
     random: true
     lines:
@@ -320,7 +320,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「후우…… 살다 보면 이런 날도 있는 법이지요. 조급해하지 말고…… 차라도 한 잔 마시며 기분 전환을 해 볼까요?」
+          - 「ふう……こういう日もありますね。焦らず……お茶を一杯飲んで、力を抜きましょうか？」
   - if: era.get('cflag:71:40') === -2
     random: true
     lines:
@@ -328,7 +328,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「%CALLNAME%…… 오늘의 전반적인 컨디션을 고려해 보았을 때…… 조정을 거치는 편이 좋을 것 같아요…… 트레이닝 메뉴를요……」
+          - 「%CALLNAME%……今日の全体を考えると……メニューを、少し調整したほうが……いいかもしれません……」
   - if: era.get('cflag:71:40') === -2
     random: true
     lines:
@@ -336,28 +336,28 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「지금의 저는 살아온 증거를 남길 수 있을까요…… 아니요, 결코 조급해해선 안 돼요. 심호흡을…… 마음을 가라앉히고, 깊게 숨을 들이쉬고……」
+          - 「今の私は、生きた証を残せるでしょうか……いいえ、焦ってはいけません。深呼吸……落ち着いて、深呼吸……」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「유모 할머니께서 직접 가르쳐 주신 수제 과자를 구워 왔어요. 그 따스한 풍미를 당신도 느껴보셨으면 좋겠네요.」
+          - 「お屋敷のおばあさまから直伝の手作りお菓子を持ってきました。あの温かな味を、感じていただけたら嬉しいです。」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「병원에 입원해 있을 때 꿈꾸었던 그 의상…… 지금 이렇게 몸에 걸치고 있다니…… 그 시절의 저에게 보여주고 싶을 정도예요.」
+          - 「入院していたころに夢見た勝負服……今こうして着ている……あの日の私に、見せてあげたいです。」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「가슴팍의 브로치는 아버님께서 선물해 주신 목걸이를 참고해서 디자인한 것이랍니다…… 만지고 있으면 마음이 차분해져요.」
+          - 「胸のブローチは、父がくれたネックレスを参考にしています……触れていると、安心するんです。」
   # CFLAGNAME:66 = 招募状态
   - if: era.get('cflag:69:66') === 1
     random: true
@@ -366,7 +366,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「매일 아침 %阿尔丹称呼千代王%를 깨우는 평범한 나날들…… 제게는 더없이 행복한 시간이에요.」
+          - 「毎朝%CALL_69%を起こす、そんな平凡な日常……私にとっても、幸せな時間です。」
   - if: era.get('cflag:64:66') === 1
     random: true
     lines:
@@ -374,7 +374,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「조금 전에 해바라기 꽃다발을 안고 있는 %阿尔丹称呼善信%를 만났답니다…… %SEX%의 미소는 정말 해바라기를 쏙 빼닮았어요🎵」
+          - 「さっき、ひまわりの花束を抱えた🎵%CALL_64%に会いました……%SEX%の笑顔は、ひまわりそのものです🎵」
   - if: era.get('cflag:86:66') === 1
     random: true
     lines:
@@ -382,7 +382,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「얼마 전 %阿尔丹称呼高峰%의 어릴 적 사진을 발견했어요. 어린 나이에도 무척 기품 있고 아름다워서…… 정말 눈이 부시더군요.」
+          - 「先日、%CALL_86%の子どものころの写真を見つけました。小さなころからあんなに美しくて……本当に眩しいです。」
   - if: era.get('cflag:21:66') === 1
     random: true
     lines:
@@ -390,7 +390,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「그거 아시나요? %阿尔丹称呼玉藻十字%의 대화 방식은…… 세상사는 인정을 엿볼 수 있어서, 마치 라쿠고를 감상하는 기분이 든답니다.」
+          - 「ご存知ですか？ %CALL_21%の交渉の仕方……そこから人情の機微が見えます。まるで落語を観ているようです。」
   - if: era.get('cflag:69:66') === 1
     random: true
     lines:
@@ -398,7 +398,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「매일 아침 %阿尔丹称呼千代王%를 깨우는 평범한 나날들…… 제게는 더없이 행복한 시간이에요.」
+          - 「毎朝%CALL_69%を起こす、そんな平凡な日常……私にとっても、幸せな時間です。」
   - if: era.get('cflag:72:66') === 1
     random: true
     lines:
@@ -406,7 +406,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「%阿尔丹称呼八重无敌%는 참 아름답네요, 라는 말을 꺼냈더니…… 후훗, 두 동급생의 뺨이 벚꽃처럼 붉게 물들었지 뭐예요.」
+          - 「%CALL_72%は綺麗ですね。そうは言っても……ふふ、お友だちのおふたり、もう桜色に頬を染めていますよ。」
   - if: era.get('cflag:6:66') === 1
     random: true
     lines:
@@ -414,7 +414,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「%阿尔丹称呼小栗帽% 씨가 음식을 먹는 모습은 저도 모르게 넋을 잃고 보게 돼요. 덕분에 저도 평소보다 조금 더 먹게 된답니다.」
+          - 「%CALL_6%が食べる姿は、つい見入ってしまいます。おかげで、私も少し多く食べてしまいました。」
   - if: era.get('cflag:32:66') === 1
     random: true
     lines:
@@ -422,7 +422,7 @@ talk:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「%阿尔丹称呼速子% 씨와 함께 밤의 다회를 열었습니다만, 홍차가 빛을 내뿜어서…… 후훗, 참으로 신기한 경험이었답니다🎵」
+          - 「%CALL_32%と夜のお茶会をしたことがあります。紅茶が光るんです……ふふ、驚く体験でした🎵」
 
 office_gift:
   - random: true
@@ -431,14 +431,14 @@ office_gift:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「선물해 주셔서 감사합니다. 조만간 정성 어린 보답을 준비할 테니 기대를 품고 기다려 주세요🎵」
+          - 「贈り物、ありがとうございます。数日うちに、お返しを用意します。楽しみにしていてくださいね🎵」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「제게 주시는 선물인가요? 고맙습니다, 소중히 간직할게요.」
+          - 「私への贈り物ですか？ ありがとう。大切にします。」
 
 office_cook:
   - random: true
@@ -447,14 +447,14 @@ office_cook:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「후훗, 이렇게 함께 요리를 하니 무척 신기하고 즐거운 기분이 드네요.」
+          - 「ふふ、こうして一緒にお料理すると、とても不思議な気分です。」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「%CALLNAME%께서는 중국 요리도 다루실 줄 아는군요? 나중에 제게도 가르쳐 주실 수 있나요?」
+          - 「%CALLNAME%は中華料理もされるんですか？ あとで教えていただけますか？」
   - if: era.get('love:71') >= 75
     random: true
     lines:
@@ -462,13 +462,13 @@ office_cook:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「어머나…… 저와 제 사랑의 호흡이 벌써 이렇게나 잘 맞다니, 마치 수십 년을 함께 산 노부부 같네요, 후훗🎵」
+          - 「あら～ 大好きなあなたと、もうこんなに息が合うなんて。何十年もの夫婦みたいですね。ふふ🎵」
 
 office_rest:
   - random: true
     lines:
-      - 밀려오는 가벼운 졸음에 잠시 휴식을 취하려던 것이 그만 깊은 잠으로 이어지고 말았다.
-      - 번뜩 고개를 들어보니 아르당 역시 소파에 기대어 잠들어 있었다.
+      - %당신%은(는) 낚싯대를 꺼내 강물에 던지고 물고기가 입질하기를 기다렸고, 메지로 아르당은 그 곁에 앉아 조용히 동행해 주었다.
+      - 顔を上げると、アルダンもソファで眠っている。
       - %YOU%は上着をそっと%SEX%にかけ、風邪をひかないようにする。
   - if: era.get('love:71') >= 75
     random: true
@@ -477,7 +477,7 @@ office_rest:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「어떠신가요? 제 사랑, 시원하셔요?」
+          - 「いかがですか？ 大好きなあなた、気持ちいいですか？」
       - %YOU%はアルダンの膝に横たわり、%SEX%は綿棒で%YOU%の耳を掃除している。
       - 頭に感じる柔らかさと、%SEX%から漂う淡い香りが、%YOU%の神経を刺激する。
       - %SEX%は%YOU%の困りを察すると、悪戯っぽく笑って綿棒を外し、%YOU%の耳にそっと息を吹きかけた。
@@ -489,7 +489,7 @@ office_game:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「세상에, 그런 공략 방법도 있었군요? 정말 대단하셔요.」
+          - 「そんな方法もあるんですか？ すごい。」
       - %YOU%のふと思いついたやり方がうまくいき、隣のアルダンは感嘆している。
   - random: true
     lines:
@@ -497,7 +497,7 @@ office_game:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「왠지 모르게 %CALLNAME%과는 호흡이 참 잘 맞는 것 같아요. 이런 감각, 무척 근사하네요.」
+          - 「%CALLNAME%と息が合う気がします。この感じ、とてもいいですね。」
       - ゲームにあまり触れてこなかったアルダンが、%YOU%と協力プレイをしているのに、意外と息が合う。
 
 s_a_tree_hollow:
@@ -548,7 +548,7 @@ s_r_lunch:
           - 「大好きなあなた、あーん——」
       - 関係を越えてから、ふたりは互いに食べさせるようになった。
       - 食事の時間は以前より少し長くなった。
-      - それでも、ふたりともこの時間を大切にしている。
+      - 아르당은 %당신%의 팔에 슬며시 팔짱을 끼며 행복한 미소를 지었다.
 
 o_r_fishing:
   - random: true
@@ -608,7 +608,7 @@ o_s_ktv:
     content:
       - fontWeight: bold
         content: %CHARA%
-      - 「蒼穹を越え、夢は掌に。命のように燃えて、輝け～🎵」
+      - 당신의 긴장을 알아챈 듯, 아르당은 장난기 어린 목소리로 물어보며 팔짱을 더욱 단단히 조여왔다.
   - %SEX%の美しく柔らかい声に、%YOU%はつい浸り、時間を忘れていく。
 
 o_s_movie:
@@ -700,7 +700,7 @@ o_s_dating:
           - fontWeight: bold
             content: %CHARA%
           - 「ふふ～ 大好きなあなた🎵 緊張していますか？」
-      - 緊張に気づいたのか、アルダンは悪戯っぽく聞いてから、さらに強く抱きついてきた。
+      - %당신%은(는) 아르당의 무릎을 베고 누웠고, %그녀%는 면봉으로 %당신%의 귀를 조심스레 파주고 있었다.
 
 o_s_shopping:
   - random: true
@@ -710,7 +710,7 @@ o_s_shopping:
           - fontWeight: bold
             content: %CHARA%
           - 「私のこの装い、いかがでしょう？ %CALLNAME%。」
-      - 着替えたアルダンは前へ出て、優雅な立ち姿のまま尋ねる。
+      - %당신%의 기발하고 엉뚱한 아이디어가 기대 이상의 훌륭한 성과를 거두자, 곁에 있던 아르당은 감탄을 금치 못했다.
   - random: true
     lines:
       - color: %COLOR%
