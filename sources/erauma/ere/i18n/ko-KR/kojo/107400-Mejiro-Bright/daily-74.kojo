@@ -336,14 +336,14 @@ s_r_lunch:
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「%CALLNAME%～ お昼ですわよ～」
+          - 「%CALLNAME%～ 점심시간이에요～」
   - random: true
     lines:
       - color: %COLOR%
         content:
           - fontWeight: bold
             content: %CHARA%
-          - 「のんびり作れるお料理なら、私にもできますわよ～」
+          - 「시간을 들이고 공을 들여서 느긋하게 만들 수 있는 요리라면, 저라도 해낼 수 있답니다～」
 
 o_r_walk:
   - color: %COLOR%
