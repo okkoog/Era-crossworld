@@ -440,7 +440,7 @@ functions remain functional through Japanese fallback.
 - `normal-communications.js`
 - `normal-orgy.js`
 - `normal-sm.js`
-- `normal-items.js` (structure checked; no item overrides reused yet)
+- `normal-items.js` (14 current split functions safely reused)
 
 Current 3.113 action-description functions: **162**
 
@@ -465,12 +465,6 @@ Known pending from the checked groups:
     simplified description; no Korean text was synthesized
 - `sleep`
   - no direct normal-communication handler in the checked 2.21 source
-- item/action functions
-  - 2.21 grouped `use_item`, medicine/self use, lubricant/self use, and
-    item removal into handlers driven by `extra_flag`
-  - 3.113 splits these into multiple explicit functions, so reuse requires
-    function-by-function structural matching rather than bulk conversion
-
 Newly classified and reused in this pass:
 - `normal-making-outs.js`: **65 / 65** current matching functions safely reused
   - exact current/old signatures were reused directly
