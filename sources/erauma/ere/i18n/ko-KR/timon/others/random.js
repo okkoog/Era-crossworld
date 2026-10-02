@@ -1810,4 +1810,84 @@ module.exports = {
     f.title = '가면(?)라이더!';
     return f;
   })(),
+
+  sr_strange_lunch: (() => {
+    /**
+     * @author KUN
+     * @param {CharaTalk} chara
+     * @param {CharaTalk} you
+     * @param {PrintedSpan} callname
+     */
+    const f = async (chara, you, callname) => {
+      const ret = [];
+      await printAndWait([
+        '점심시간이 되자, ',
+        you.get_colored_name(),
+        '과(와) ',
+        chara.get_colored_name(),
+        '은(는) 약속이라도 한 듯 옥상으로 향했다.',
+      ]);
+      await printAndWait([
+        '어째서인지 오늘 ',
+        chara.get_colored_name(),
+        '이(가) 챙겨온 도시락은 평소보다 유난히 화려했다.',
+      ]);
+      println();
+      await chara.say_and_wait([callname, ', 맛이 어떤지 한번 먹어봐.']);
+      await chara.say_and_wait('나름 야심작이라구～');
+      println();
+      await printAndWait([
+        you.get_colored_name(),
+        '은(는) 도시락을 건네받아 아무 의심 없이 식사를 시작했다.',
+      ]);
+      await printAndWait([
+        '맛있게 몇 입 먹고 나니, 몸이 점차 뜨거워지는 것이 느껴진다……',
+      ]);
+      println();
+      await printAndWait([
+        you.get_colored_name(),
+        '이(가) 이상함을 느끼고 곁에 있는 ',
+        chara.get_colored_name(),
+        '을(를) 돌아보자, 그녀 역시 얼굴을 붉히고 있었다.',
+      ]);
+      await printAndWait([
+        you.get_colored_name(),
+        '이(가) 무언가 물어보려던 찰나, 강렬한 입맞춤에 가로막혀 말이 끊기고 말았다.',
+      ]);
+      println();
+      await printAndWait(['입술이 떨어지는 순간, 입가에 길게 은색 실이 이어졌다.']);
+      printButton('「이건 어쩔 수 없겠네……」', 1);
+      printButton('「나는 스승이다! 강철의 의지 발동!」', 2);
+      ret.push(await input());
+      if (ret[0] === 1) {
+        await printAndWait([
+          '옥상이라는 장소에도 불구하고, ',
+          you.get_colored_name(),
+          '과(와) ',
+          chara.get_colored_name(),
+          '은(는) 끊임없이 서로를 갈구했다.',
+        ]);
+        await printAndWait([
+          '하지만 점심시간이라는 사실을 깨달은 ',
+          you.get_colored_name(),
+          '은(는) 잡념을 떨치고 ',
+          chara.get_colored_name(),
+          '의 어깨를 붙잡았다……',
+        ]);
+      } else {
+        await printAndWait([
+          you.get_colored_name(),
+          '은(는) 세차게 고개를 저어 의지를 다잡고, 즉시 손에 든 도시락을 갈무리했다.',
+        ]);
+        await printAndWait([
+          chara.get_colored_name(),
+          '을(를) 남겨둔 채, 마치 도망이라도 치듯 서둘러 옥상을 떠났다……',
+        ]);
+      }
+      return ret;
+    };
+    f.title = '묘한 점심 식사';
+    return f;
+  })(),
+
 };
