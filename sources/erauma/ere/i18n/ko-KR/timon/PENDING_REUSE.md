@@ -444,7 +444,7 @@ functions remain functional through Japanese fallback.
 
 Current 3.113 action-description functions: **162**
 
-Safely reused Korean overrides so far: **146**
+Safely reused Korean overrides so far: **160**
 
 Reused groups:
 - common communication/control: **10**
@@ -457,7 +457,7 @@ Reused groups:
   - the 2.21 combined normal/hard handlers were safely split into the current
     separate functions without changing the existing Korean wording
 
-Pending Japanese fallback: **16 functions**
+Pending Japanese fallback: **2 functions**
 
 Known pending from the checked groups:
 - `relax`
@@ -483,23 +483,15 @@ Newly classified and reused in this pass:
   - old `hook.arg` branches map directly to current `is_first`
   - no new Korean prose was synthesized
 
+Newly classified and reused in this pass:
+- `normal-items.js`: **14 / 14** current split item functions safely reused
+  - old self/other branches were mapped to current explicit self/other functions
+  - old `use_item` branches were mapped to current effect/equip/stunner/mirror functions
+  - no new Korean prose was synthesized
+
 Remaining Japanese fallback functions after this pass:
 - `relax`
 - `sleep`
-- `use_lubricating_fluid`
-- `use_lubricating_fluid_self`
-- `use_medicine`
-- `use_medicine_self`
-- `condom`
-- `other_condom`
-- `item_effect`
-- `equip_item`
-- `equip_other_item`
-- `use_electric_stunner`
-- `use_mirror`
-- `take_off_mirror`
-- `take_off_item`
-- `take_off_item_self`
 
 The Korean module spreads `ja-JP/timon/sex/act-desc-common` first, so every
 pending function remains functional through Japanese fallback.
