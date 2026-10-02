@@ -1544,4 +1544,113 @@ module.exports = {
     return f;
   })(),
 
+
+  shadow_minoru: (() => {
+    /**
+     * @author 雞雞
+     * @param {CharaTalk} minoru 駿川たづな / ハーベストタイム
+     * @param {CharaTalk} taiki タイキシャトル
+     * @param {CharaTalk} you プレイヤー
+     * @param {boolean} know_minoru 駿川たづなの正体を知っているか
+     */
+    const f = async (minoru, taiki, you, know_minoru) => {
+      if (know_minoru) {
+        await printAndWait([
+          you.get_colored_name(),
+          '은(는) 멀리서 두 개의 초록색 실루엣이 점점 가까워지는 것이 보였다. 알고 보니 ',
+          taiki.get_colored_name(),
+          '이 알 수 없는 이유로 ',
+          minoru.get_colored_name(),
+          '에게 쫒기고 있는 것이었다...여전하구나!',
+        ]);
+      } else {
+        await printAndWait([
+          you.get_colored_name(),
+          '은(는) 멀리서 두 개의 초록색 실루엣이 점점 가까워지는 것이 보였다. 알고 보니 ',
+          taiki.get_colored_name(),
+          '이 알 수 없는 이유로 ',
+          minoru.get_colored_name(),
+          '에게 쫓기고 있는 것이었다…… 말이 나온 김에, 도대체 어떻게 인간이 ',
+          taiki.uma_sex_title,
+          '의 속도를 따라잡을 수 있는 걸까?',
+        ]);
+      }
+      printButton('「천천히 가! 다치면 안돼!」', 1);
+      await input();
+      await printAndWait([
+        '앞에 가던 ',
+        taiki.get_colored_name(),
+        '이 서서히 속도를 줄이자 초록색 옷을 입은 비서가 서둘러 ',
+        you.get_colored_name(),
+        '에게 감사를 표했다. 오늘도 착한 일 하나 했다!',
+      ]);
+    };
+    f.title = '초록색 실루엣';
+    return f;
+  })(),
+
+  chairman_annoyance1: (() => {
+    /**
+     * @author 雞雞
+     * @param {CharaTalk} taste 秋川やよい / ノーザンテースト
+     */
+    const f = async (taste) => {
+      await printAndWait([
+        '학원 이사장 ',
+        taste.get_colored_actual_name(),
+        '가 고민에 빠져 있다. 재정 문제 때문인데, 또 다시 트레센의 예산이 초과되고 말았다——!!',
+      ]);
+      await printAndWait(
+        '지금 이 주황머리 꼬마는 초록색 비서의 질책에 벌벌 떨고 있다…… 하지만 무시할 수 없는 재정 문제를 도대체 어떻게 해결해야 할까?',
+      );
+      printButton(
+        '「수입 증대와 지출 절감이다. 내 급여를 먼저 삭감해!」（부채+40, 현재 육성중인 우마무스메의 스킬포인트+10)',
+        1,
+      );
+      printButton('「별로 할 건 없네……」', 2);
+      const ret = await input();
+      if (ret === 1) {
+        await printAndWait('좋은 일을 한 것 같다!');
+        await printAndWait('..하지만 이번 달은 컵라면으로 버텨야 할지도.');
+      } else {
+        await printAndWait('딱히 할 수 있는 건 없는 것 같다.');
+      }
+      return [ret];
+    };
+    f.title = '%TEEN% 이사장의 고민 1';
+    return f;
+  })(),
+
+  chairman_annoyance2: (() => {
+    /**
+     * @author 雞雞
+     * @param {CharaTalk} taste 秋川やよい / ノーザンテースト
+     */
+    const f = async (taste) => {
+      await printAndWait([
+        '학원 이사장 ',
+        taste.get_colored_actual_name(),
+        '의 고양이가 실종되었다! 고양이가 없어져 우울해하는 이사장 때문에 트레센의 운영 효율도 크게 떨어져 버렸다!',
+      ]);
+      printButton(
+        '「모든 인력을 동원해서 반드시 고양이를 찾아내야 돼!」（기력-50，호감+40～60）',
+        1,
+      );
+      printButton('「그래서?」', 2);
+      const ret = await input();
+      if (ret === 1) {
+        await printAndWait([
+          '고양이를 찾은 후 ',
+          taste.get_colored_name(),
+          '은 매우 기뻐했고 트레센도 다시 정상적으로 돌아왔다.',
+        ]);
+      } else {
+        await printAndWait('별 거 아닌 것 같은데...애초에 이사장님 평소에 일 하시기는 하나?');
+      }
+      return [ret];
+    };
+    f.title = '%TEEN% 이사장의 고민 2';
+    return f;
+  })(),
+
 };
