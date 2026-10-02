@@ -990,3 +990,36 @@ Other current random scenes still require source matching and remain on Japanese
 - `justice`
 
 The Korean module spreads the current Japanese `others/random` object first, so every untouched or partially unmatched scene remains functional through Japanese fallback. No fresh Korean prose was synthesized.
+
+### `others/random.js` — second matched batch
+
+2.21 source references:
+- `sources/eraumak_kr_2.21/game/ere/event/edu/edu-events-0/privacy.js`
+- `sources/eraumak_kr_2.21/game/ere/event/edu/edu-events-0/strange-day.js`
+
+Additional current 3.113 scene overrides added in this batch: **2**
+- `privacy_3`
+- `strange_day2`
+
+`privacy_3`:
+- Current output/action calls: **50**
+- Safely reused Korean calls: **49**
+- One changed final farewell output remains Japanese because 3.113 inserted an additional dynamic `chara.sex` fragment and the old Korean sentence cannot be split 1:1 without writing new Korean prose.
+- The event title reuses the existing 2.21 Korean title.
+
+`strange_day2`:
+- Current output/action calls: **118**
+- Old 2.21 output/action calls: **114**
+- Structural sequence alignment matched **113** old calls 1:1 to current calls, and those existing Korean strings were reused.
+- Current calls intentionally left Japanese:
+  - the early sentence whose dynamic-name placement changed from two old literal fragments to one current fragment
+  - toilet choice `する`
+  - toilet choice `やめておく`
+  - street encounter choice `逃げる`
+  - street encounter choice `冷静に対応する`
+- The event title reuses the existing 2.21 Korean title.
+
+No new Korean prose was synthesized. Both overrides preserve the current 3.113
+control flow and dynamic expressions; only directly matched 2.21 Korean output
+text was substituted.
+
