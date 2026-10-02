@@ -1,4 +1,9 @@
 const era = require('#/era-electron');
+
+const { get_random_entry } = require('#/utils/list-utils');
+const { buff_colors } = require('#/data/color-const');
+const { medicine_enum } = require('#/data/ero/item-const');
+const { motion_enum, towards_enum } = require('#/data/ero/part-const');
 const JaEroCommon = require('#/i18n/ja-JP/timon/sex/ero-common');
 
 module.exports = {
@@ -985,4 +990,291 @@ module.exports = {
         '아름다운 몸이 페니스의 충돌에 맞춰 웅크러들고, 목구멍에서는 탁한 신음만이 새어 나온다. 오직 지척에 있는 자궁만이 뜨겁게 달아오를 뿐이다.',
       );
     },
+
+  async ask_double_blow_job(attacker, defender, supporter, is_first, a_penis) {
+    if (is_first) {
+      await attacker.print_and_wait([
+        attacker.get_colored_name(), '이(가) 다리를 벌리자 ', a_penis,
+        ' 크기의 성기가 당당하게 고개를 쳐들었고, ', defender.get_colored_name(),
+        ' 와(과) ', supporter.get_colored_name(), ' 은(는) ', attacker.get_colored_name(),
+        '의 신호에 맞춰 입을 벌리고 다가갔다……',
+      ]);
+    } else {
+      await attacker.print_and_wait([
+        attacker.get_colored_name(), '의 지시에 따라 ', defender.get_colored_name(),
+        ' 와(과) ', supporter.get_colored_name(),
+        ' 은(는) 번갈아 가며 성기를 입으로 봉사하고 있다……',
+      ]);
+    }
+  },
+
+  async ask_double_fuck(attacker, defender, supporter, is_first, d_penis, s_penis) {
+    const buffer = [];
+    if (is_first) {
+      buffer.push(
+        async () => {
+          await attacker.print_and_wait([
+            attacker.get_colored_name(), ' 은(는) 다리를 크게 벌려 ',
+            defender.get_colored_name(), ' 와(과) ', supporter.get_colored_name(),
+            '에게 보지를 보여주며, 두 사람의 빳빳한 성기를 보며 입술을 핥았다.',
+          ]);
+          await attacker.print_and_wait([
+            attacker.get_colored_name(), '의 노골적인 유혹에 ',
+            defender.get_colored_name(), ' 와(과) ', supporter.get_colored_name(),
+            ' 은(는) 참지 못하고 ', attacker.get_colored_name(),
+            '에게 달려들어 유혹적인 보지에 번갈아 가며 추삽질을 시작했다……',
+          ]);
+        },
+        async () => {
+          const motion = era.get(`tcvar:${attacker}:体位`) === motion_enum.rev;
+          const towards = era.get(`tcvar:${attacker}:朝向`) === towards_enum.right;
+          await attacker.print_and_wait([
+            attacker.get_colored_name(),
+            (motion ^ towards) > 0 ? '이(가) 다리를 벌리고' : '이(가) 엎드린 채로',
+            ' 엉덩이를 흔들며, ', defender.get_colored_name(), ' 와(과) ',
+            supporter.get_colored_name(), '에게 교대로 자신의 깊은 곳을 유린해달라고 청했다.',
+          ]);
+        },
+      );
+    } else {
+      buffer.push(
+        async () => {
+          await attacker.print_and_wait([
+            attacker.get_colored_name(), ' 은(는) ', defender.get_colored_name(),
+            ' 와(과) ', supporter.get_colored_name(), ' 사이에 끼어, ',
+            ...(d_penis === s_penis ? ['두 자루의 ', d_penis, ' 모양'] : [d_penis, ' 와(과) ', s_penis, ' ']),
+            '의 성기를 번갈아 가며 음탕한 보지로 삼켜내고 있다.',
+          ]);
+          await attacker.print_and_wait([
+            '애액이 세 사람의 하반신을 엉망진창으로 적셨고, 간간이 ',
+            attacker.get_colored_name(), '의 교성이 울려 퍼졌다……',
+          ]);
+        },
+        async () => {
+          await attacker.print_and_wait([
+            defender.get_colored_name(), ' 와(과) ', supporter.get_colored_name(),
+            '의 서로 다른 성기와 삽입 방식,',
+          ]);
+          await attacker.print_and_wait('그리고 자신이 두 사람에게 연달아 범해지고 있다는 배덕감이,');
+          await attacker.print_and_wait([
+            attacker.get_colored_name(), '에게 삽입될 때마다 평소와는 다른 비정상적인 쾌감을 안겨주었다.',
+          ]);
+        },
+      );
+    }
+    await get_random_entry(buffer)();
+  },
+
+  async ask_double_penetration(attacker, defender, supporter, is_first) {
+    if (is_first) {
+      await attacker.print_and_wait([
+        attacker.get_colored_name(), ' 은(는) 기승위로 ', defender.get_colored_name(),
+        ' 를 보지 깊숙이 받아들인 뒤, ', supporter.get_colored_name(),
+        '에게 자신의 항문에도 삽입해달라고 신호를 보냈다……',
+      ]);
+    } else {
+      await attacker.print_and_wait([
+        defender.get_colored_name(), ' 와(과) ', supporter.get_colored_name(),
+        ' 은(는) 함께 ', attacker.get_colored_name(), '의 앞뒤 구멍을 끊임없이 공격하고 있다.',
+      ]);
+      await attacker.print_and_wait('이중의 쾌감과 동시에 두 사람에게 범해지고 있다는 배덕감이,');
+      await attacker.print_and_wait([
+        attacker.get_colored_name(), ' 로 하여금 삽입될 때마다 절로 비명을 지르게 만들었다……',
+      ]);
+    }
+  },
+
+  async ask_spit_roast(attacker, defender, supporter, is_first, is_vagina = true) {
+    const part_name = is_vagina ? '보지' : '애널';
+    if (is_first) {
+      const motion = era.get(`tcvar:${attacker}:体位`) === motion_enum.rev;
+      const towards = era.get(`tcvar:${attacker}:朝向`) === towards_enum.right;
+      await attacker.print_and_wait([
+        attacker.get_colored_name(),
+        (motion ^ towards) > 0 ? '이(가) 다리를 벌리고' : '이(가) 엎드린 채로',
+        ' 엉덩이를 흔들며, ', defender.get_colored_name(), '에게 자신의 ',
+        part_name, '을(를) 삽입해달라고 조르면서, 탐욕스럽게 ',
+        supporter.get_colored_name(), '의 성기를 입에 물었다……',
+      ]);
+    } else {
+      await attacker.print_and_wait([
+        defender.get_colored_name(), ' 와(과) ', supporter.get_colored_name(),
+        ' 은(는) 함께 ', attacker.get_colored_name(), '의 입과 ', part_name,
+        '을(를) 끊임없이 공격하고 있다……',
+      ]);
+      await attacker.print_and_wait([
+        '아래에서 느껴지는 쾌감과 입안을 가득 채운 성기의 숨 막히는 충격에 ',
+        attacker.get_colored_name(), '의 뇌 속은 이미 성기 생각밖에 남지 않게 되었다……',
+      ]);
+    }
+  },
+
+  async fuck_69(attacker, defender, supporter, is_first, d_has_penis, s_has_penis) {
+    if (is_first) {
+      await attacker.print_and_wait([
+        defender.get_colored_name(), ' 은(는) 침대에 누워 ', supporter.get_colored_name(),
+        ' 와(과) 서로의 ',
+        d_has_penis ? (s_has_penis ? '성기' : '성기와 보지') : (s_has_penis ? '보지와 성기' : '보지'),
+        '을(를) 핥고 있으며,',
+      ]);
+      await attacker.print_and_wait([
+        attacker.get_colored_name(), ' 은(는) 흥분해서 부풀어 오른 성기를 참지 못하고 ',
+        defender.get_colored_name(), '의 보지에 처박았다……',
+      ]);
+    } else {
+      await attacker.print_and_wait([
+        defender.get_colored_name(), '의 보지에서 튀긴 애액이, ',
+        supporter.get_colored_name(), '이(가) 열심히 ', attacker.get_colored_name(),
+        '의 성기가 삽입되는 곳을 핥고 있는 얼굴을 적셨다.',
+      ]);
+      await attacker.print_and_wait([
+        supporter.get_colored_name(), ' 역시 ', defender.get_colored_name(),
+        '의 입에 봉사 받으며 가냘픈 신음을 내뱉고 있다……',
+      ]);
+    }
+  },
+
+  async double_fuck(attacker, defender, supporter, is_first) {
+    if (is_first) {
+      await defender.print_and_wait([
+        defender.get_colored_name(), ' 은(는) ', attacker.get_colored_name(),
+        ' 와(과) ', supporter.get_colored_name(), '에게 억눌렸다.',
+      ]);
+      await defender.print_and_wait(['두 사람은 ', defender.get_colored_name(), '의 기분은 안중에도 없다는 듯,']);
+      await defender.print_and_wait([
+        '그저 번갈아 가며 흥분으로 곧게 선 성기를 ', defender.get_colored_name(),
+        '의 보지에 쑤셔 넣고 격렬하게 추삽질했다……',
+      ]);
+    } else {
+      await defender.print_and_wait([
+        defender.get_colored_name(), ' 은(는) 끊임없이 ', attacker.get_colored_name(),
+        ' 와(과) ', supporter.get_colored_name(), '의 성기에 번갈아 침범당하고 있다.',
+      ]);
+      await defender.print_and_wait('두 사람 중 한쪽이 조금이라도 피로를 느끼면 바로 교대를 반복했고,');
+      await defender.print_and_wait([
+        '오직 ', defender.get_colored_name(), '의 애액으로 범벅이 된 보지만이 쉴 틈 없이 유린당해,',
+      ]);
+      await defender.print_and_wait('이제 의식마저 아득해지려 하고 있었다……');
+    }
+  },
+
+  async double_penetration(attacker, defender, supporter, is_first) {
+    if (is_first) {
+      await defender.print_and_wait([
+        defender.get_colored_name(), ' 은(는) ', attacker.get_colored_name(), '의 위로 끌려가 보지에 삽입당했고,',
+      ]);
+      await defender.print_and_wait([
+        supporter.get_colored_name(), ' 역시 동시에 ', defender.get_colored_name(), '의 항문에 성기를 집어넣었다……',
+      ]);
+    } else {
+      await defender.print_and_wait([
+        attacker.get_colored_name(), ' 와(과) ', supporter.get_colored_name(),
+        ' 은(는) 함께 ', defender.get_colored_name(), '의 앞뒤 구멍을 계속해서 공격하고 있다.',
+      ]);
+      await defender.print_and_wait('이중의 쾌감과 동시에 두 사람에게 범해지고 있다는 배덕감에,');
+      await defender.print_and_wait([
+        defender.get_colored_name(), ' 은(는) 삽입이 반복될 때마다 비명을 지르며 흐느꼈다……',
+      ]);
+    }
+  },
+
+  async spit_roast(attacker, defender, supporter, is_first, is_vagina = true) {
+    const part_name = is_vagina ? '보지' : '애널';
+    if (is_first) {
+      await defender.print_and_wait([
+        defender.get_colored_name(), ' 은(는) ', attacker.get_colored_name(),
+        ' 와(과) ', supporter.get_colored_name(), '에게 단번에 붙잡혔다.',
+      ]);
+      await defender.print_and_wait(['두 사람은 ', defender.get_colored_name(), '의 기분은 전혀 고려하지 않은 채,']);
+      await defender.print_and_wait([
+        '그저 앞뒤에서 흥분으로 빳빳하게 일어선 성기를 ', defender.get_colored_name(),
+        '의 ', part_name, '와 입속에 찔러넣고 격렬하게 추삽질하기 시작했다……',
+      ]);
+    } else {
+      await defender.print_and_wait([
+        attacker.get_colored_name(), ' 와(과) ', supporter.get_colored_name(),
+        ' 은(는) 함께 끊임없이 ', defender.get_colored_name(), '의 ', part_name, '와 입을 유린하고 있다.',
+      ]);
+      await defender.print_and_wait([
+        '아래에서 느껴지는 쾌감과 입안의 성기가 주는 숨 막히는 충격 때문에 ',
+        defender.get_colored_name(), '의 머릿속은 이미 성기로 가득 차 버렸다……',
+      ]);
+    }
+  },
+
+  async insult(attacker, defender) {
+    const buffer = [];
+    if (era.get('tflag:强奸') === defender.id) {
+      buffer.push(() => attacker.say_and_wait('쓰레기! 강간범! 죽어버려!'));
+    }
+    if (era.get(`talent:${attacker.id}:小恶魔`)) {
+      buffer.push(() => attacker.say_and_wait('허접~ 허접~'));
+    }
+    if (era.get(`talent:${attacker.id}:抖S`)) {
+      buffer.push(() => attacker.say_and_wait([
+        '멍청이! 무능한 ', defender.sex_slave_title, '! 박히고 싶어 안달 난 변태 자식!',
+      ]));
+    }
+    if (buffer.length === 0) {
+      buffer.push(() => attacker.say_and_wait([
+        '그렇게 매도당하고 싶은 거냐, ', defender.sex_slave_title, '?',
+      ]));
+    }
+    await get_random_entry(buffer)();
+  },
+
+  async hit_face_by_penis(attacker, defender, a_call_d, d_call_a) {
+    if (attacker.id > 0) {
+      await defender.print_and_wait([
+        d_call_a, '에게 머리카락을 붙잡혔다. 자신의 힘으로는 도저히 저항할 수 없음을 깨닫고, ',
+        d_call_a, '의 가랑이 사이에서 흉하게 고개를 치켜든 페니스를 바라보며 ',
+        defender.get_colored_name(), '은(는) 불길한 예감이 들기 시작했다.',
+      ]);
+      await attacker.say_and_wait([a_call_d, '~ 내 냄새를 똑똑히 기억해 두라고~']);
+      await defender.print_and_wait([
+        '저항하지 못한 채 뺨을 때리는 듯한 감촉이 전해졌고, ', d_call_a,
+        '의 페니스에서 풍기는 지독한 냄새에 ', defender.get_colored_name(),
+        '은(는) 자신도 모르게 굴복하고 싶어졌다.',
+      ]);
+      await defender.print_and_wait([
+        '얼굴에 ', d_call_a, '의 성기 자국을 남긴 채, ', defender.get_colored_name(),
+        '은(는) 얼굴을 치켜들고 다음 매가 날아오기를 기다리고 있다.',
+      ]);
+    } else {
+      await attacker.print_and_wait([
+        a_call_d, '의 머리카락을 쥐고, ', attacker.get_colored_name(),
+        '은(는) 강압적으로 자신의 성기를 ', defender.sex, '의 얼굴에 들이밀었다. 자신의 성기에 유린당하는 ',
+        defender.sex, '의 얼굴을 보며 ', attacker.get_colored_name(), '은(는) 미소를 지었다.',
+      ]);
+      await defender.say_and_wait('으으윽...!!!');
+      await attacker.print_and_wait([
+        '수컷의 냄새가 물씬 풍기는 페니스에 ', a_call_d, '의 코가 쉴 새 없이 움찔거렸다. ',
+        attacker.get_colored_name(), '이(가) ', a_call_d,
+        '의 머리카락을 잡고 허리를 흔들기 시작하자, 성기와 ', a_call_d,
+        '의 매끄러운 뺨이 부딪히며 음란한 소리를 내었고, ', a_call_d,
+        '의 눈동자 또한 몽롱하게 풀리기 시작했다.',
+      ]);
+    }
+  },
+
+  async use_medicine(chara, item) {
+    switch (item) {
+      case medicine_enum.fron_k:
+      case medicine_enum.fron_p:
+        if (chara.sex_code === 0) {
+          await era.printAndWait([chara.get_colored_name(), '에게 사나운 거근이 생겼다!'], { color: buff_colors[2] });
+        } else {
+          await era.printAndWait([chara.get_colored_name(), '의 육봉이 더 굵어졌다……']);
+        }
+      // eslint-disable-next-line no-fallthrough
+      case medicine_enum.uma_z:
+        if (!era.get(`tcvar:${chara.id}:发情`)) {
+          await era.printAndWait([chara.get_colored_name(), '은(는) 점점 흥분되기 시작헸다……'], { color: buff_colors[2] });
+        }
+        break;
+      case medicine_enum.drug_m:
+        await era.printAndWait([chara.get_colored_name(), '의 가슴에서 모유가 흘러나오기 시작했다……'], { color: buff_colors[2] });
+    }
+  },
+
 };
