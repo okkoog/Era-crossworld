@@ -1303,3 +1303,36 @@ Next bounded investigation: `we_are_one` and `justice`. Leave uncertain
 segments on Japanese fallback. Do not begin a general i18n retranslation or
 Kojo bulk pass.
 
+### `others/random.js` — ninth/final classification batch (2026-10-02)
+
+Scope: `we_are_one` and `justice` only. No fresh Korean prose was written.
+
+#### `we_are_one`
+No sufficiently reliable direct 2.21 scene match was confirmed.
+Checked the generic 2.21 daily/edu/love common sources and their common/snippet
+areas. The only `Mr.E.` marker found in the checked generic daily source belongs
+to an unrelated shrine-lottery branch; no matching reward/bride/sofa/towel scene
+was found. The scene remains on the current Japanese fallback.
+
+#### `justice`
+No sufficiently reliable direct 2.21 scene match was confirmed.
+The checked generic daily/edu/love common sources and daily/love snippet areas
+do not contain the current chased-trainer / Tazuna-threat / 100-UmaCoin scene.
+The basement text found in 2.21 `daily-common.js` is the unrelated basement
+ending, so it was not reused. The scene remains on the current Japanese fallback.
+
+Validation: **PASS**.
+- `random.js` JS syntax: ok.
+- Current random scenes: **38**.
+- Korean overrides: **20**.
+- Entire-scene fallbacks: **18**.
+- All 38 current random scenes have now received a reuse/classification pass.
+- No new Korean prose was synthesized in this batch.
+
+Detailed machine-readable record:
+[REUSE_RANDOM_BATCH_09.json](REUSE_RANDOM_BATCH_09.json).
+
+Remaining scenes awaiting a first detailed source match in `others/random.js`: **none**.
+
+Next bounded investigation: move to the next Timon module that still contains
+unclassified Japanese fallback. Do not begin fresh translation or a Kojo bulk pass.
