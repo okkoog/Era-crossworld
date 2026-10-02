@@ -1336,3 +1336,76 @@ Remaining scenes awaiting a first detailed source match in `others/random.js`: *
 
 Next bounded investigation: move to the next Timon module that still contains
 unclassified Japanese fallback. Do not begin fresh translation or a Kojo bulk pass.
+
+### `others/others.js` — first detailed classification batch (2026-10-02)
+
+Scope: 16 previously pending keys, from the URA award block through the first
+premium-draw filter label. Existing 2.21 Korean text was reused only when a
+direct current-scene match could be established. No fresh Korean prose was
+written.
+
+#### URA award block — 4 keys
+Checked:
+- `system/sys-next-week.js`
+- `page/page-report-race.js`
+- `page/race/page-race-result.js`
+- the 2.21 `event/others/` tree
+
+The 2.21 year rollover handles salary and year-end bonus, but the checked
+sources contain no current-style URA annual award ceremony or the current
+trainer/Uma annual-stat display. Therefore:
+- `ura_reward`
+- `ur_alternative_reporter`
+- `get_ur_trainer_reward`
+- `get_ur_uma_reward`
+
+remain on Japanese fallback.
+
+#### Repeat-training / dream block — 7 keys
+Checked:
+- `page/page-inherit.js`
+- `page/homepage/office.js`
+- `system/global/sys-calc-achievement.js`
+
+EraUmaK 2.21 already has the concept of repeated training, including repeat-
+training achievements and office-state handling. However, the current 3.113
+Three-Goddesses / dream scene and its selection UI are not present in the
+checked 2.21 flow. Therefore the following remain on Japanese fallback:
+- `sc_event_name`
+- `get_sc_buttons`
+- `sc_event_former`
+- `sc_limit_template`
+- `sc_name_template`
+- `sc_name_inherited_template`
+- `sc_event_latter`
+
+#### Premium-draw opening block — 5 keys
+Checked:
+- `page/page-recruit-rand.js`
+- `system/flag/sys-get-star-premium-draw.js`
+
+2.21 already stores the premium-draw target and has Korean recruitment UI, but
+the current chairman dialogue and the split premium-draw selection/filter UI do
+not have a direct matching Korean block. Therefore these remain on Japanese
+fallback:
+- `star_drew_limited`
+- `star_drew_wrong_date`
+- `star_drew_intro`
+- `star_drew_options`
+- `star_drew_filter_template`
+
+Validation: **PASS**.
+- `others/others.js` JS syntax: ok.
+- Keys detailed-classified in this batch: **16**.
+- Newly reused Korean keys: **0**.
+- Fresh Korean prose written: **0**.
+- `others/others.js` itself was not modified.
+- Previously pending keys still awaiting this workflow's first detailed source
+  match: **33**.
+
+Detailed machine-readable record:
+[REUSE_OTHERS_BATCH_01.json](REUSE_OTHERS_BATCH_01.json).
+
+Next bounded investigation starts with
+`star_drew_filter_kojo_template` and continues through the remaining
+premium-draw UI before moving to the investment block.
