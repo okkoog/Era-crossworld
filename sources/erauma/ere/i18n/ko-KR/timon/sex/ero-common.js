@@ -729,4 +729,260 @@ module.exports = {
     }
   },
 
+
+  async missionary(attacker, defender, d_call_a, is_anal_sex = false) {
+      await defender.print_and_wait(
+        '어쩌면 이것이…… 서로의 체온을 가장 잘 느낄 수 있는 자세일지도 모르겠네요.',
+      );
+      if (is_anal_sex) {
+        await defender.say_and_wait(
+          '하지만, 그런 구멍의 온도까지 기억하고 싶은 건가요…❤️',
+          true,
+        );
+      }
+      await defender.print_and_wait([
+        '소위 정상위, 혹은 선교사 자세라 불리는 이 자세는, 엉겨 붙은 두 사람의 정면에서 바라보면 마치 ',
+        d_call_a,
+        '이(가) 품 안에 파고들어 모유를 마시는 듯한 모습과도 같다.',
+      ]);
+      await defender.print_and_wait([
+        d_call_a,
+        '의 몸이 ',
+        defender.get_colored_name(),
+        '의 몸을 덮었고, 단단한 페니스가 가차 없이 보지 안으로 파고든다. ',
+        defender.get_colored_name(),
+        '의 길고 매끄러운 다리는 다소 볼품없는 모양새로 ',
+        d_call_a,
+        '의 허리 양옆으로 뻗어 나가, 발바닥이 하늘을 향한 채 빳빳하게 굳어버렸다……',
+      ]);
+      await defender.print_and_wait('뜨거워…… 너무 뜨거워……');
+      await defender.print_and_wait('……너무 뜨거워❤️');
+    },
+
+  async doggy_style(attacker, defender, is_anal_sex = false) {
+      await attacker.print_and_wait('마치 강아지처럼……');
+      await attacker.print_and_wait(
+        '그 다리…… 앞발 끝을 바짝 세운 채 무릎을 굽히고, 젖은 허리를 높게 치켜든 그 다리……',
+      );
+      await attacker.print_and_wait(
+        '그 위에서 지탱되고 있는 것은…… 강아지처럼 무의식적으로 흔들리고 있는 엉덩이다.',
+      );
+      await attacker.print_and_wait([
+        '선정적인 자세로 깔려 있는 ',
+        defender.race > 0 ? '귀 ' : '',
+        defender.adult_sex_title,
+        ', 몸의 떨림이 멈추지 않아, 보는 것만으로도 마른 입술을 축이고 싶게 만든다. 페니스의 미약이 되어버린 그녀를 보며, 뒤에서 거친 숨을 내뱉는 ',
+        attacker.get_colored_name(),
+        '은(는) 고환까지 통째로 집어넣을 듯 달려들었다.',
+      ]);
+      if (is_anal_sex) {
+        await attacker.print_and_wait(
+          '……어라, 이런 식이면 엉덩이로 불알까지 짜낼 수 있겠는데.',
+        );
+        await attacker.print_and_wait('이건 뭐 질 나쁜 농담도 아니고 말이지.');
+      }
+    },
+
+  async sitting(attacker, defender, d_call_a, is_vagina = true) {
+      await defender.print_and_wait('예상보다 훨씬 더 부끄러워……');
+      await defender.print_and_wait(
+        (is_vagina ? '보지' : '엉덩이') +
+          '가 격렬하게 유린당하는 와중에, 뚫어지게 쳐다봐지다니……❤️',
+      );
+      await defender.print_and_wait([
+        '심술궂은 페니스 때문에 온몸에 힘이 빠져 흐물흐물해졌음에도, ',
+        d_call_a,
+        '의 시선을 받으니 억지로라도 허리를 꼿꼿이 세우게 된다.',
+      ]);
+      await defender.print_and_wait(
+        '미소를 머금은 그 시선이 붉게 달아오른 얼굴 위를…… ' +
+          (defender.sex_code - 1 ? '출렁이는 부드러운 가슴 위를…… ' : '') +
+          '페니스의 형태가 비쳐 보이는 아랫배 위를… 탐욕스럽게 훑고 지나간다……',
+      );
+      await defender.print_and_wait('설마 아직도 부족한 건가요——');
+    },
+
+  async hug_sitting(attacker, defender, d_call_a, is_anal_sex = false) {
+      await defender.print_and_wait('시선을 피하기 위해 선택한 자세.');
+      await defender.print_and_wait('하지만 결국 계속 쳐다보고 있잖아요——');
+      await defender.print_and_wait([
+        '몸을 뒤로 젖힌 채 양손으로 바닥을 짚고 지탱하며, ',
+        defender.get_colored_name(),
+        '은(는) 페니스를 삼키고 내뱉는 엉덩이를 무의식적으로 흔든다.',
+      ]);
+      await defender.print_and_wait([
+        '그러다 문득 뒤에서 느껴지는 ',
+        attacker.get_colored_name(),
+        '의 뜨거운 시선이 다시 그곳에 집중된 것을 발견한다…… 정작 ',
+        d_call_a,
+        '에게 보이지 않는 얼굴은, 이미 쾌락에 녹아버린 저질스러운 표정을 짓고 있다.',
+      ]);
+      if (is_anal_sex) {
+        await defender.print_and_wait(
+          '위험해❤️ 왜 하필 페니스에게 괴롭힘당하는 게 그곳인 거야……',
+        );
+      }
+    },
+
+  async standing(attacker, defender, a_call_d, is_anal_sex = false) {
+      await attacker.print_and_wait('다른 자세보다 더 자궁 깊숙이 닿는 것 같아.');
+      await attacker.print_and_wait([
+        '무의식적으로 깊은 숨을 내뱉으며, ',
+        attacker.get_colored_name(),
+        '은(는) 한쪽 다리를 머리 높이까지 치켜든 ',
+        a_call_d,
+        ' 와 몸을 바짝 밀착시켰다.',
+      ]);
+      await attacker.print_and_wait([
+        '팽팽하게 부풀어 오른 고환이 질 입구에 밀착되었고, 페니스 모양대로 불룩해진 아랫배 또한 ',
+        attacker.get_colored_name(),
+        '의 아랫배와 빈틈없이 맞닿았다.',
+      ]);
+      await defender.say_and_wait('후우…… 하아……❤️');
+      if (is_anal_sex) {
+        await defender.say_and_wait('분명히…… 보지와는 다른 곳일 텐데❤️', true);
+        await defender.say_and_wait('어째서……❤️', true);
+      }
+      await attacker.print_and_wait(
+        '지나치게 가까운 거리 덕분에, 두 사람이 아랫배를 들썩이며 내뱉는 모든 숨결이 이 성애의 풍미를 더하는 양념이 되었다.',
+      );
+    },
+
+  async hug_standing(attacker, defender, is_anal_sex = false) {
+      await attacker.print_and_wait('허리가 금방 꺾여버렸어.');
+      await attacker.print_and_wait(
+        '분명 ' +
+          (defender.race > 0 ? defender.uma_sex_title : '어른') +
+          '임에도 불구하고, 스스로 두 발로 서 있을 능력조차 잃은 채 무언가에 매달려 엉덩이를 치켜들어야만 겨우 서 있을 수 있는 비참한 꼴이 되었다.',
+      );
+      await attacker.print_and_wait(
+        '레이스나 트레이닝과는 전혀 상관없는 안짱다리로 버티고 서서, 앞발 끝에 실린 과도한 체중 때문에 바닥에 파묻힐 듯하면서도, 페니스의 삽입에 맞춰 뒤꿈치는 높게 들썩인다.',
+      );
+      await attacker.print_and_wait(
+        '마치 자발적으로 페니스 아래에 굴복하는 듯한 형국이다. ' +
+          (is_anal_sex ? '항문' : '보지') +
+          '의 주인은 무릎을 앞으로 내밀고, 연약한 안짱다리 자세 때문에 페니스가 깊숙이 박힐 때마다 양 무릎이 서로 맞닿을 정도로 땀에 젖은 몸을 휘청거리고 있다……',
+      );
+      if (is_anal_sex) {
+        await defender.say_and_wait(
+          '이러면 안 되는데…… 하지만, 이런 자세에…… 페니스에 유린당하고 있는 항문이라니…… 너무 위험해……',
+          true,
+        );
+      }
+    },
+
+  async suspended_congress(attacker, defender, d_call_a, is_anal_sex = false) {
+      await defender.print_and_wait('도망칠 수 없어……');
+      await defender.print_and_wait('이 자세가 된 순간부터, 도망칠 곳은 없다.');
+      await defender.print_and_wait([
+        '몸이 높게 들려 올려진 채, ',
+        d_call_a,
+        '이(가) 엉덩이를 받치고 페니스 위에 꽂아 넣었다.',
+      ]);
+      if (is_anal_sex) {
+        await defender.print_and_wait(
+          '수치스러운 항문이 강제로 페니스 케이스가 되어버렸다…… 하지만 그게 끝이 아니다……',
+        );
+      }
+      await defender.print_and_wait([
+        d_call_a,
+        '의 허리 양옆으로 벌어진 두 다리에게 남은 자유라고는 허리를 감싸 안을지 말지뿐이다. 그리고 몸이 페니스 아래로 완전히 떨어지지 않게 하기 위해, 양손 또한 ',
+        d_call_a,
+        ' 를 꽉 껴안는 것 외에는 선택지가 없다.',
+      ]);
+      await defender.print_and_wait([
+        d_call_a,
+        '의 허리를 타고 아래로 흘러내릴까…… 반드시…… 그러겠지❤️',
+      ]);
+    },
+
+  async hug_suspended_congress(
+      attacker,
+      defender,
+      d_call_a,
+      is_anal_sex = false,
+    ) {
+      await defender.print_and_wait('도망칠 수 없어……');
+      await defender.print_and_wait('이 자세가 된 순간부터, 도망칠 곳은 없다.');
+      await defender.print_and_wait([
+        '몸이 높게 들려 올려진 채, ',
+        d_call_a,
+        '이(가) 엉덩이를 받치고 페니스 위에 꽂아 넣었다.',
+      ]);
+      if (is_anal_sex) {
+        await defender.print_and_wait(
+          '수치스러운 항문이 강제로 페니스 케이스가 되어버렸다…… 하지만 그게 끝이 아니다……',
+        );
+      }
+      await defender.print_and_wait([
+        d_call_a,
+        '의 허리 양옆으로 벌어진 두 다리에게 남은 자유라고는 허리를 감싸 안을지 말지뿐이다. 그리고 몸이 페니스 아래로 완전히 떨어지지 않게 하기 위해, 양손 또한 ',
+        d_call_a,
+        ' 를 꽉 껴안는 것 외에는 선택지가 없다.',
+      ]);
+      await defender.print_and_wait([
+        d_call_a,
+        '의 허리를 타고 아래로 흘러내릴까…… 반드시…… 그러겠지❤️',
+      ]);
+      await defender.print_and_wait([
+        '하아…… 하필 지금 ',
+        d_call_a,
+        '의 표정이 보이질 않아.',
+      ]);
+      await defender.print_and_wait([
+        '거친 숨소리 속에 의식은 점점 몽롱해지고, ',
+        d_call_a,
+        ' 를 등진 ',
+        defender.get_colored_name(),
+        '은(는) 점차 허리를 굽히며, 무너져가는 표정을 흩날리는 머리카락 그림자 속에 숨겼다.',
+      ]);
+      await defender.say_and_wait('하아……❤️');
+    },
+
+  async ask_cowgirl(attacker, defender, d_call_a, is_anal_sex = false) {
+      await defender.print_and_wait('집어삼켰어……');
+      await defender.print_and_wait([
+        '평소처럼 누워있는 ',
+        d_call_a,
+        '과(와) 손가락을 맞물려 깍지를 낀 채, 매끄럽고 탄력 있는 다리를 아래로 깊게 굽혀, 구멍을 요리조리 비비며 페니스의 커다란 귀두를 받아들일 틈을 찾는다……',
+      ]);
+      await defender.print_and_wait([
+        '자신이 직접 올라타라니…… ',
+        d_call_a,
+        '은(는) 정말 심술쟁이야……',
+      ]);
+      if (is_anal_sex) {
+        await defender.say_and_wait('게다가, 항문으로 하라니……', true);
+      }
+      await attacker.say_and_wait('허리도 좀 흔들어봐.');
+      await defender.print_and_wait([
+        '이번에는 ',
+        defender.get_colored_name(),
+        '의 느릿느릿한 동작을 기다릴 필요가 없다. 그저 좁은 질 내벽에 박힌 페니스가 민감한 곳을 살짝 찔러주는 것만으로도, ',
+        defender.get_colored_name(),
+        '의 허리는 마치 태엽이 감긴 것처럼 쉴 새 없이 ',
+        d_call_a,
+        '의 눈앞에서 춤추기 시작한다……',
+      ]);
+    },
+
+  async stimulate_g_spot(attacker, defender, a_call_d) {
+      await attacker.print_and_wait('더 깊게.');
+      await defender.say_and_wait('아윽——');
+      await attacker.print_and_wait([
+        a_call_d,
+        '이(가) 거의 ',
+        attacker.get_colored_name(),
+        '의 몸속으로 파고들 기세다. 만족을 모르는 ',
+        attacker.get_colored_name(),
+        '은(는) 0의 거리조차 가차 없이 돌파하며, 가랑이 사이의 페니스를 치켜든 허리에 맞춰 단단하게 밀어 넣는다. 소녀의 입술, 보지, 자궁이 모두 그 감각에 도취되어 신음을 내지른다……',
+      ]);
+      await defender.say_and_wait('우오오오오오오오옷————❤️❤️');
+      await attacker.print_and_wait(
+        '소위 G스팟이라는 것은 이런 것이다. 그전까지 어떤 소녀였든, 상냥했든 활기찼든 상관없다. 수컷의 냄새가 물씬 풍기는 단단한 페니스가 그곳의 살점을 짓이기며 파고드는 순간, 한순간에 성교에 미쳐버린 저질스러운 암컷으로 타락하고 만다.',
+      );
+      await attacker.print_and_wait(
+        '아름다운 몸이 페니스의 충돌에 맞춰 웅크러들고, 목구멍에서는 탁한 신음만이 새어 나온다. 오직 지척에 있는 자궁만이 뜨겁게 달아오를 뿐이다.',
+      );
+    },
 };
