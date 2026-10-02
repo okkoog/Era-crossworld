@@ -380,3 +380,56 @@ strings and scenes remain functional through Japanese fallback.
 - `others/random.js`
   - Needs scene/function decomposition before reuse.
 
+### `sex/act-desc-rape.js`
+
+2.21 source references:
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/action-descriptions/rape-communications.js`
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/action-descriptions/rape-making-outs.js`
+
+Current 3.113 action-description functions: **14**
+
+Safely reused Korean overrides: **13**
+
+Pending Japanese fallback:
+- `force_hand_and_blow_job`
+  - 2.21 used one defender-name insertion in the continuation line, while 3.113
+    splits the same sentence around two defender-name insertions. No new Korean
+    wording was synthesized.
+
+### `sex/act-desc-sleep.js`
+
+2.21 source references:
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/action-descriptions/sleep-communications.js`
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/action-descriptions/sleep-making-outs.js`
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/action-descriptions/sleep-fucking.js`
+
+Current 3.113 action-description functions: **39**
+
+Safely reused Korean overrides: **31**
+
+Pending Japanese fallback because 2.21 grouped paired vaginal/anal actions into
+single handlers while 3.113 split them into separate functions:
+- `missionary`
+- `missionary_anal_sex`
+- `doggy_style`
+- `doggy_style_anal_sex`
+- `cowgirl`
+- `cowgirl_anal_sex`
+- `stimulate_glans_by_virgin`
+- `stimulate_glans_by_anal`
+
+Both Korean modules spread the current Japanese objects first, so all pending
+functions remain functional through Japanese fallback.
+
+### Next sex reuse candidates
+
+- `sex/act-desc-common.js`
+  - Direct 2.21 sources exist under
+    `game/ere/event/ero/common/action-descriptions/normal-*.js`.
+  - Large file; process by function group rather than positional bulk-copy.
+- `sex/system.js`
+  - Existing 2.21 Korean text is distributed across common/result/interface
+    files. Requires structural matching by function/key.
+- `sex/ero-rape.js`, `sex/ero-sleep.js`, `sex/ero-common.js`
+  - Existing Korean scene material is present, but these are substantially
+    larger and should be handled in separate chunks.
