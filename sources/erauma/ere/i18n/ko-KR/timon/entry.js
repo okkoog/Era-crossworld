@@ -35,6 +35,10 @@ module.exports = class extends JaTimon {
     require('#/i18n/ko-KR/timon/sex/act-desc-sleep'),
   );
 
+  daily_child = proxy_kojo_js(require('#/i18n/ko-KR/timon/child/daily'));
+  /** @type {KojoFile} */
+  cum_events = require('#/i18n/ko-KR/timon/mejiro/cum-events.kojo');
+
   ed_saying_01 =
     '좁은 방 안에서 붉은 입술이 대나무와 어우러져 은혜를 나누네. —— 타카스기 신사쿠';
   ed_saying_02 =
