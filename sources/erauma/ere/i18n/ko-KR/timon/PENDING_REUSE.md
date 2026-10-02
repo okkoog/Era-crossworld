@@ -686,32 +686,33 @@ The Korean module spreads the current Japanese `sex/ero-sleep` object first, so 
 
 ### `sex/ero-common.js`
 
-2.21 source references checked in this pass:
+2.21 source references checked so far:
 - `sources/eraumak_kr_2.21/game/ere/event/ero/common/normal/communications.js`
 - `sources/eraumak_kr_2.21/game/ere/event/ero/common/normal/making-outs-1.js`
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/normal/making-outs-2.js`
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/normal/making-outs-final.js`
 
 Current 3.113 top-level scene functions: **95**
 
-Safely reused Korean scene functions in this pass: **15**
+Safely reused Korean scene functions so far: **25**
 
-Reused:
-- `kiss`
-- `french_kiss`
-- `lure`
-- `talk`
-- `switch`
-- `gargle`
-- `wipe_body`
-- `pet_ear`
-- `pull_ear`
-- `pet_clitoris`
-- `finger_fuck`
-- `stimulate_g_spot_by_finger`
-- `pet_anal`
-- `prepare_anal`
-- `pet_tail`
+Newly reused in this pass:
+- `hand_job`
+- `tit_job`
+- `tit_and_blow_job`
+- `suck_nipple`
+- `bite_nipple`
+- `ask_milk_and_hand_job`
+- `non_penetrative`
+- `armpit_intercourse`
+- `foot_job`
+- `tail_job`
 
-Pending Japanese fallback: **80 functions**
+These 10 functions keep the current 3.113 control/signature structure while
+reusing only Korean prose already present in EraUmaK 2.21. No new Korean prose
+was synthesized.
+
+Pending Japanese fallback: **70 functions**
 - `after_refused`
 - `resist`
 - `pet_breast_from_back`
@@ -733,32 +734,22 @@ Pending Japanese fallback: **80 functions**
 - `deep_blow_job`
 - `ask_deep_blow_job`
 - `force_deep_blow_job`
-- `hand_job`
 - `ask_hand_job`
 - `force_hand_job`
 - `hand_and_blow_job`
 - `ask_hand_and_blow_job`
 - `force_hand_and_blow_job`
-- `tit_job`
 - `ask_tit_job`
 - `fuck_tit`
-- `tit_and_blow_job`
 - `ask_tit_and_blow_job`
 - `fuck_tit_and_mouth`
-- `suck_nipple`
-- `bite_nipple`
-- `ask_milk_and_hand_job`
 - `milk_and_hand_job`
-- `non_penetrative`
 - `ask_non_penetrative`
 - `sixty_nine`
-- `armpit_intercourse`
 - `ask_armpit_intercourse`
 - `force_armpit_intercourse`
-- `foot_job`
 - `ask_foot_job`
 - `force_foot_job`
-- `tail_job`
 - `ask_tail_job`
 - `force_tail_job`
 - `hair_fuck`
@@ -793,5 +784,6 @@ Pending Japanese fallback: **80 functions**
 - `spit_roast`
 - `use_medicine`
 
-The Korean module spreads the current Japanese `sex/ero-common` object first, so all pending functions remain functional through Japanese fallback. No new Korean prose was synthesized; only existing 2.21 Korean wording was adapted to the current argument/property layout.
+The Korean module spreads the current Japanese `sex/ero-common` object first,
+so every pending function remains functional through Japanese fallback.
 
