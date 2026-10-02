@@ -979,7 +979,6 @@ Other current random scenes still require source matching and remain on Japanese
 - `sr_strange_lunch`
 - `breakfast`
 - `or_riverside_walk`
-- `os_is_movie_right`
 - `wind_welcome`
 - `we_are_one`
 - `chocolate`
@@ -1023,3 +1022,36 @@ No new Korean prose was synthesized. Both overrides preserve the current 3.113
 control flow and dynamic expressions; only directly matched 2.21 Korean output
 text was substituted.
 
+### `others/random.js` — third matched batch
+
+2.21 source reference:
+- `sources/eraumak_kr_2.21/game/ere/event/daily/common/out-shopping.js`
+
+Additional current 3.113 scene override added in this batch: **1**
+- `os_is_movie_right`
+
+`os_is_movie_right`:
+- The current 3.113 scene is the extracted special movie branch from the old
+  common shopping-outing handler.
+- The scene text and choices have a direct Korean match in the 2.21 source.
+- The current `callname` parameter replaces the old
+  `sys_get_colored_callname(...)` lookup without changing the Korean prose.
+- The current return-value structure is preserved.
+- **Full user-facing text reuse**; no new Korean prose was synthesized.
+
+Checked in the same pass but left on Japanese fallback because no sufficiently
+reliable direct 2.21 scene match was found in the relevant source areas:
+- `or_riverside_walk`
+  - checked old river outing/common river sources; the scene content is different.
+- `nice_weekend`
+  - the current Agnes Digital / Mejiro Dober scene has no corresponding 2.21
+    character-event directory/text block in the checked snapshot.
+- `chocolate`
+  - the current Air Shakur / Transcend / Dream Journey event has no matching
+    2.21 character-event source in the checked snapshot.
+- `big_sale`
+  - checked the old common shopping-outing handler; it does not contain this
+    vegetable-sale event.
+
+The Korean module continues to spread the current Japanese `others/random`
+object first, so all four unmatched scenes remain functional through fallback.
