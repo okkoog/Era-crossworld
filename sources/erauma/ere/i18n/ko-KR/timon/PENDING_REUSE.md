@@ -1124,3 +1124,22 @@ Checked in the same pass but no sufficiently reliable direct 2.21 scene match wa
 
 These unmatched scenes remain on Japanese fallback.
 
+
+Additional generic-source checks in this batch:
+- \`custom\`
+- \`bankruptcy\`
+- \`reject\`
+- \`work_over\`
+- \`sick\`
+
+Checked 2.21 common/init/queue sources:
+- \`event/init/customized-init.js\`
+- \`event/daily/daily-common.js\`
+- \`event/daily/daily-0.js\`
+- \`event/edu/edu-common.js\`
+- \`event/queue.js\`
+- \`event/basement-queue.js\`
+
+No sufficiently reliable 1:1 Korean scene match was found in those checked
+sources, so these scenes remain on Japanese fallback.
+
