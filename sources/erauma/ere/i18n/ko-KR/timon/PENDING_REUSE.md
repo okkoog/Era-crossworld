@@ -74,13 +74,27 @@ Reused Korean overrides in this pass: **7**
 Also reused from the same 2.21 source into `ko-KR/timon/entry.js`:
 - `ed_saying_01` through `ed_saying_13`
 
-Pending ending keys (3.113 structure/text no longer matched closely enough for direct reuse):
-- `slave_end`
-- `crazy_fan_end`
-- `basement_end`
-- `punishment3`
+Ending fallback classification is now complete.
 
-The Korean ending object inherits from `ja-JP/timon/others/ending`, so pending keys continue through Japanese fallback.
+Checked the four previously pending keys against their 2.21 Korean sources:
+- `slave_end`: no direct generic match; the old Korean scene is Tachyon-specific.
+- `crazy_fan_end`: no direct generic match; the old Korean scenes are character-specific.
+- `basement_end`: no direct generic match; the checked old Korean scene is Urara-specific.
+- `punishment3`: **partial direct reuse added** from the old common game-over flow.
+
+For `punishment3`, all directly matching 2.21 Korean narration was reused. The
+single outcome sentence introduced by the new 3.113 `sex_code == 0` branch has
+no old Korean counterpart and remains Japanese.
+
+Classification record:
+- `REUSE_ENDING_BATCH_01.json`
+
+Result:
+- current ending keys: **11**;
+- Korean overrides: **8** (including partial `punishment3`);
+- full-key Japanese fallbacks: **3**;
+- additional untranslated fragment: **1 sentence** inside `punishment3`;
+- unclassified reuse candidates: **0**.
 
 ## Reuse candidates still requiring structural matching
 
@@ -281,11 +295,21 @@ Current 3.113 keys: **67**
 
 Reused Korean overrides: **66**
 
-Pending race key:
-- `full_speed_push_reports`
+Race fallback classification is complete.
 
-This key has no corresponding 2.21 Korean text in the matched race simulator
-sources and therefore remains on Japanese fallback.
+The sole remaining key, `full_speed_push_reports`, was rechecked against the
+matched 2.21 race simulator sources. The old Korean build contains ordinary
+last-spurt and acceleration reports, but no direct three-variant counterpart for
+this new 3.113 block. It therefore remains on Japanese fallback.
+
+Classification record:
+- `REUSE_RACE_RESIDUAL_01.json`
+
+Result:
+- current race keys: **67**;
+- Korean overrides: **66**;
+- classified Japanese fallbacks: **1**;
+- unclassified reuse candidates: **0**.
 
 ### Next direct reuse candidates
 
