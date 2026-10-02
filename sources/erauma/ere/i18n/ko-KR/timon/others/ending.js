@@ -186,6 +186,79 @@ ko.punishment2 = async (you, date, uma, they) => {
   );
 };
 
+ko.punishment3 = async (you, uma, they) => {
+  era.setOffset(6);
+  era.setWidth(12);
+  await you.say_as_unknown_and_wait(
+    '당신이 이 지경까지 타락할 줄은 몰랐다.',
+  );
+  await you.say_as_unknown_and_wait(
+    '당신의 손에는 한때 바닥에서 지상으로 기어 올라올 수 있는 밧줄이 쥐어져 있었다.',
+  );
+  await you.say_as_unknown_and_wait(
+    '하지만 당신은 그 구명줄을 제 손으로 버리고 말았다.',
+  );
+  await you.say_as_unknown_and_wait(
+    '이제 와서 생각해보면, 당신이 일부러 방임하여 모든 것을 돌이킬 수 없게 만든 게 아닌가 의심스러울 정도다.',
+  );
+  await you.say_as_unknown_and_wait(
+    '당신에게 인권을 지킬 기회는 이미 수없이 주어졌었다.',
+  );
+  await you.say_as_unknown_and_wait(
+    '뭐, 지금의 당신에겐 들리지도 않겠지만.',
+  );
+  await you.say_as_unknown_and_wait([
+    '그럼 안녕히, ',
+    you.get_colored_actual_name(),
+    '.',
+  ]);
+  await you.say_as_unknown_and_wait([
+    {
+      color: '#ff7373',
+      content: 'GAME OVER',
+      fontWeight: 'bold',
+    },
+  ]);
+  era.setWidth(24);
+  era.setOffset(0);
+  era.println();
+  await era.printAndWait([
+    '번식용 우마무스메, 그것이 ',
+    you.get_colored_name(),
+    '의 말로입니다.',
+  ]);
+  await era.printAndWait(
+    '과거의 야망은 바람에 흩날리고, 한때의 이상은 무참히 부서졌습니다.',
+  );
+  if (you.sex_code > 0) {
+    await era.printAndWait([
+      '이제부터 ',
+      you.get_colored_name(),
+      '의 책무는 짧은 육봉으로 고귀한 ',
+      uma,
+      '들을 기쁘게 하고, 열등한 구멍으로 신성한 인자를 받아들여 그녀들의 우수한 후세를 잉태하는 것뿐입니다!',
+    ]);
+  } else {
+    await era.printAndWait([
+      'これからの ',
+      you.get_colored_name(),
+      ' の務めは、劣った穴で神聖な因子を受け、',
+      they,
+      'との優れた子孫を産むことだ！',
+    ]);
+  }
+  await era.printAndWait([
+    '비록 인권은 ',
+    you.get_colored_name(),
+    '에게서 멀리 떠나갔지만, 부디 씨받이로서 정진해주시길 바랍니다.',
+  ]);
+  await era.printAndWait([
+    '운이 좋다면, 어쩌면 ',
+    you.get_colored_name(),
+    '도 자식 덕에 귀한 몸이 될지도 모르니까요!',
+  ]);
+};
+
 ko.get_basement_ending_confirm = (you) => [
   you.get_colored_name(),
   '은(는) 지하실에서 결말을 맞이했다……',
