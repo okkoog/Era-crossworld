@@ -967,7 +967,6 @@ Other current random scenes still require source matching and remain on Japanese
 - `av_meteor`
 - `custom`
 - `ts_sex`
-- `drug_notice`
 - `gs_carrot`
 - `trainer_race`
 - `bankruptcy`
@@ -1055,3 +1054,34 @@ reliable direct 2.21 scene match was found in the relevant source areas:
 
 The Korean module continues to spread the current Japanese `others/random`
 object first, so all four unmatched scenes remain functional through fallback.
+
+### `others/random.js` — fourth matched batch
+
+2.21 source reference:
+- `sources/eraumak_kr_2.21/game/ere/event/edu/edu-events-32/week-start-12.js`
+
+Additional current 3.113 scene override added in this batch: **1**
+- `drug_notice`
+
+`drug_notice`:
+- The old 2.21 scene is registered as `handlers.drug_notice` with the Korean
+  event title `학원 통지・약물 살포`.
+- Current 3.113 moved random effect selection outside the text function and
+  passes `effect` as an argument; that current control structure was preserved.
+- The old 2.21 single dynamic effect description was expanded in current 3.113
+  into four explicit branches. Each branch reuses the corresponding existing
+  Korean wording from the old `effects` array plus its existing sentence
+  frame; no new Korean meaning was introduced.
+- Announcement, choices, result messages, and Tachyon reaction text all reuse
+  the existing 2.21 Korean scene wording.
+
+Additional source checks in this pass:
+- `av_meteor`: no 2.21 `edu-events-33` directory exists in the snapshot.
+- `gs_carrot`: the checked 2.21 Gold Ship event directory contains only
+  race-end/week-start material; no matching radish scene was found.
+- `fishing`: no 2.21 Seiun Sky daily-event directory matching this standalone
+  random scene was found.
+- `all_round_meek`: no direct Happy Meek random-event source was confirmed.
+- `trainer_race`: no direct 2.21 trainer-poster race scene was confirmed.
+
+These unmatched scenes remain on Japanese fallback.
