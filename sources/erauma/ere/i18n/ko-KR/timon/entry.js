@@ -22,6 +22,7 @@ module.exports = class extends JaTimon {
   ero_c = proxy_kojo_js(require('#/i18n/ko-KR/timon/sex/ero-common'));
   ero_r = proxy_kojo_js(require('#/i18n/ko-KR/timon/sex/ero-rape'));
   ero_s = proxy_kojo_js(require('#/i18n/ko-KR/timon/sex/ero-sleep'));
+  ero_o = proxy_kojo_js(require('#/i18n/ko-KR/timon/sex/ero-others'));
   ero_sys = proxy_kojo_js(require('#/i18n/ko-KR/timon/sex/system'));
   act_desc_c = proxy_kojo_js(
     require('#/i18n/ko-KR/timon/sex/act-desc-common'),
