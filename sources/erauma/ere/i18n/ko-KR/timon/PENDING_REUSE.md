@@ -926,3 +926,67 @@ Pending untranslated UI:
 The Korean file keeps the current 3.113 event structure and placeholders
 (`%YOU%`, `%CHARA%`, `%SEX%`, `%TEEN%`, `%REWARD%`) while replacing only
 directly matched output text.
+
+### `others/random.js` — first matched batch
+
+2.21 source references:
+- `sources/eraumak_kr_2.21/game/ere/event/edu/edu-events-0/privacy.js`
+- `sources/eraumak_kr_2.21/game/ere/event/edu/edu-events-0/strange-day.js`
+- `sources/eraumak_kr_2.21/game/ere/event/others/morning-sex.js`
+
+Current 3.113 random scenes: **38**
+
+Korean overrides added/wired in this batch: **6 scenes**
+
+Fully reused user-facing text:
+- `privacy_1`
+- `privacy_2_2`
+- `mr_naked_apron`
+- `mr_blowjob`
+
+Partially reused:
+- `privacy_2_1`
+  - The current scene split one old Korean sentence into two new literal fragments.
+  - Those two current fragments remain Japanese rather than synthesizing new Korean wording.
+- `strange_day`
+  - Korean text was reused only for segments bounded by unchanged emoticon/control anchors where the old/current literal counts matched.
+  - The changed transition around reaching/understanding the laboratory remains Japanese fallback text.
+  - Emoticons containing Japanese glyphs are not counted as untranslated prose.
+
+Not yet reused from the same confirmed source area:
+- `privacy_3`
+- `strange_day2`
+
+Other current random scenes still require source matching and remain on Japanese fallback:
+- `god_coin`
+- `all_round_meek`
+- `experiment`
+- `shadow_minoru`
+- `chairman_annoyance1`
+- `chairman_annoyance2`
+- `av_meteor`
+- `custom`
+- `ts_sex`
+- `drug_notice`
+- `gs_carrot`
+- `trainer_race`
+- `bankruptcy`
+- `reject`
+- `work_over`
+- `sick`
+- `fishing`
+- `ts_shower`
+- `sr_strange_lunch`
+- `breakfast`
+- `or_riverside_walk`
+- `os_is_movie_right`
+- `wind_welcome`
+- `we_are_one`
+- `chocolate`
+- `sakura_regret`
+- `nice_weekend`
+- `kamen_rider`
+- `big_sale`
+- `justice`
+
+The Korean module spreads the current Japanese `others/random` object first, so every untouched or partially unmatched scene remains functional through Japanese fallback. No fresh Korean prose was synthesized.
