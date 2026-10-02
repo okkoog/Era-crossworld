@@ -262,4 +262,154 @@ module.exports = {
     f.title = '모닝 펠라';
     return f;
   })(),
+  strange_day: (() => {
+    /**
+     * @author 念来过倒要你
+     * @param {CharaTalk} you プレイヤー
+     * @param {CharaTalk} chara 巻き込まれた担当。アグネスタキオンの場合あり
+     * @param {CharaTalk|false} tachyon アグネスタキオン。chara がアグネスタキオンなら false
+     * @param {CharaTalk|false} minoru 駿川たづな / ハーベストタイム。chara がその場合は false
+     * @param {CharaTalk|false} doto メイショウドトウ。chara がその場合は false
+     * @param {CharaTalk|false} maya マヤノトップガン。chara がその場合は false
+     * @param {CharaTalk|false} sky セイウンスカイ。chara がその場合は false
+     */
+    const f = async (you, chara, tachyon, minoru, doto, maya, sky) => {
+      await printAndWait([
+        '아침, ',
+        you.get_colored_name(),
+        '은(는) 뭔가 좀 이싱하다는 느낌이 들었지만 그래도 행복한 하루를 맞이했다. ',
+      ]);
+      await you.say_and_wait('(ง •̀_•́)ง');
+      await printAndWait([
+        you.get_colored_name(),
+        ' 은(는) 별다른 생각 없이 세수를 마치고 집을 나섰다.',
+      ]);
+      println();
+      if (minoru) {
+        await minoru.say_and_wait('Y(^_^)Y');
+        await printAndWait([
+          minoru.sex,
+          '는 여전히 학원 정문에서 모든 사람을 반기고 있다.',
+        ]);
+        println();
+      }
+      await you.say_and_wait('……?', true);
+      await you.say_and_wait('눈_눈');
+      await printAndWait([
+        you.get_colored_name(),
+        '은(는) 뭔가 이상한 기분이 들었지만 뭐라 표현할 수가 없었다.',
+      ]);
+      println();
+      if (doto) {
+        await doto.say_and_wait('(๑•́ωก̀๑)');
+        await printAndWait([doto.sex, '는 왜 또 울고 있는 걸까?']);
+        println();
+      }
+      if (maya) {
+        await maya.say_and_wait('(～0～)');
+        await printAndWait('이 녀석 또 밤을 세웠나 보군.');
+        println();
+      }
+      if (sky) {
+        await sky.say_and_wait('<(*ΦωΦ*)>');
+        await printAndWait('...이게 다 무슨 표정이지?');
+        println();
+      }
+      await you.say_and_wait('……!', true);
+      await you.say_and_wait('(#ﾟДﾟ)');
+      await printAndWait([
+        you.get_colored_name(),
+        '은(는) 드디어 눈치챘다. 오는 내내 말 한 마디도 듣지 못했지만 이상하게도 이모티콘들이 머리에 떠오른다.',
+      ]);
+      await you.say_and_wait('……', true);
+      await you.say_and_wait('(#`皿´)');
+      println();
+      if (tachyon) {
+        await printAndWait('머릿속에 항상 실험복을 입고 있는 어떤 악덕 상인이 떠오른다.');
+        await you.say_and_wait('(‡▼益▼)');
+        await printAndWait([
+          '또 ',
+          tachyon.sex,
+          '의 실험인가. ',
+          you.get_colored_name(),
+          '은(는) ',
+          tachyon.sex,
+          '를 찾으러 떠날 계획이다.',
+        ]);
+        println();
+        await chara.say_and_wait('(｢･ω･)｢嘿');
+        printButton('「(｢･ω･)｢嘿」', 1);
+        printButton('「ヾ(＾。^*)」', 2);
+        await input();
+        await chara.say_and_wait('( •᷄ὤ•᷅)?');
+        await printAndWait([
+          '아무래도 ',
+          you.get_colored_name(),
+          '이(가) 뭘 하는지 이해하지 못하는 듯 하다',
+        ]);
+        await printAndWait([
+          you.get_colored_name(),
+          '은(는) ',
+          chara.get_colored_name(),
+          '에게 손을 내밀었다.',
+        ]);
+        await chara.say_and_wait('(⁄ ⁄•⁄ω⁄•⁄ ⁄)');
+        printButton(`${target.sex}에게 현재 상황을 설명한다.`, 1);
+        await input();
+        await you.say_and_wait('(´ﾟωﾟ｀)');
+        await you.say_and_wait('⁽⁽◝( •௰• )◜⁾⁾');
+        await you.say_and_wait('₍₍◞( •௰• )◟₎₎');
+        await printAndWait('한동한 신나게 춤을 췄다.');
+        await you.say_and_wait('╮（╯＿╰）╭');
+        println();
+        await chara.say_and_wait('【•】_【•】');
+        await chara.say_and_wait('(ノ=Д=)ノ┻━┻');
+        println();
+        await printAndWait([
+          'しばらくして、',
+          chara.sex,
+          'はやっと意味を理解し、',
+          you.get_colored_name(),
+          ' に付き合ってくれた。',
+        ]);
+        drawLine();
+        await printAndWait(['すぐに', tachyon.sex, 'の研究室へ着いた。']);
+        await tachyon.say_and_wait('(¦3[▓▓]');
+        await you.say_and_wait('(ノಠ∩ಠ)ノ彡(o°o)');
+        await tachyon.say_and_wait('Σ(っ °Д °;)っ');
+        await chara.say_and_wait('(ಡωಡ)');
+        drawLine({ content: '한참 동안 설명한 후' });
+        await tachyon.say_and_wait('(//▽//)');
+        await tachyon.say_and_wait('～(￣▽￣～)～');
+        await printAndWait([
+          '마지막으로 ',
+          you.get_colored_name(),
+          '의 감정을 기록한 후 해독제와 보상을 주었다.',
+        ]);
+      } else {
+        await printAndWait([
+          you.get_colored_name(),
+          '은(는) 매일 실험을 하던 담당 우마무스메를 떠올렸다.',
+        ]);
+        await you.say_and_wait('(๑•ี_เ•ี๑)');
+        drawLine();
+        await printAndWait([
+          you.get_colored_name(),
+          '은(는) 익숙한 발걸음으로 ',
+          chara.sex,
+          '의 실험실로 향했다.',
+        ]);
+        await chara.say_and_wait('⊙▽⊙');
+        await you.say_and_wait('(^_^)');
+        await chara.say_and_wait('Σ(っ °Д °;)っ');
+        await printAndWait('우마 TV, 지금 여기에 개국!');
+        await chara.say_as_unknown_and_wait('嗷(∩∀°╭嗷∀∀嗷∀∀°)嗷嗷');
+        drawLine({ content: '(톰 선생님 성우 감사드립니다)' });
+        await chara.say_and_wait('≥﹏≤');
+        await you.say_and_wait('╮（﹀＿﹀）╭');
+      }
+    };
+    f.title = '웃긴 날 (이상한 날）';
+    return f;
+  })(),
 };
