@@ -607,3 +607,52 @@ Pending Japanese fallback: **91 keys/functions**
 The Korean module spreads the current Japanese `sex/system` object first, so
 all pending keys/functions remain functional through Japanese fallback.
 
+### `sex/ero-rape.js`
+
+2.21 source references:
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/rape/communications.js`
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/rape/making-outs.js`
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/rape/fucking.js`
+
+Current 3.113 top-level scene functions: **33**
+
+Safely reused Korean scene functions in this pass: **17**
+
+Reused:
+- `kiss`
+- `french_kiss`
+- `pet_ear`
+- `pet_breast`
+- `pet_clitoris`
+- `stimulate_g_spot_by_finger`
+- `pet_tail`
+- `pull_tail`
+- `cunnilingus`
+- `ask_blow_job`
+- `bite_nipple`
+- `missionary`
+- `hug_sitting`
+- `hug_standing`
+- `suspended_congress`
+- `hug_suspended_congress`
+- `stimulate_g_spot`
+
+Pending Japanese fallback because the current call/string structure no longer matches the 2.21 scene closely enough for direct reuse:
+- `pull_ear`
+- `pet_nipple`
+- `finger_fuck`
+- `pet_leg`
+- `suck_virgin`
+- `force_blow_job`
+- `ask_deep_blow_job`
+- `force_deep_blow_job`
+- `ask_or_force_hand_job`
+- `ask_tit_job`
+- `ask_or_force_tit_and_blow_job`
+- `doggy_style`
+- `sitting`
+- `standing`
+- `ask_cowgirl`
+- `continue_fucking`
+
+The Korean module spreads the current Japanese `sex/ero-rape` object first, so all pending functions remain functional through Japanese fallback. No new Korean prose was synthesized.
