@@ -407,4 +407,155 @@ module.exports = {
       '의 입과 애널을 박아대고 있다】',
     ]);
   },
+
+  async insult(attacker, defender) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      ' 이(가) ',
+      defender.get_colored_name(),
+      '을(를) 매도했다】',
+    ]);
+  },
+
+  async ask_insult(attacker, defender, is_first) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '이(가) ',
+      defender.get_colored_name(),
+      ' 에게 ',
+      is_first ? '' : '계속해서 ',
+      '자신을 매도해달라고 요청했다】',
+    ]);
+  },
+
+  async hit_anal(attacker, defender) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '이(가) ',
+      defender.get_colored_name(),
+      '의 엉덩이를 때렸다】',
+    ]);
+  },
+
+  async hit_anal_hard(attacker, defender) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '이(가) 힘껏 ',
+      defender.get_colored_name(),
+      '의 엉덩이를 때렸다】',
+    ]);
+  },
+
+  async ask_hit_anal(attacker, defender, is_first) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '이(가) ',
+      defender.get_colored_name(),
+      ' 에게 ',
+      is_first ? '' : '계속해서 ',
+      '자신의 엉덩이를 때려달라고 요청했다】',
+    ]);
+  },
+
+  async hit_breast(attacker, defender) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '이(가) ',
+      defender.get_colored_name(),
+      '의 가슴을 때렸다】',
+    ]);
+  },
+
+  async hit_breast_hard(attacker, defender) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '이(가) 힘껏 ',
+      defender.get_colored_name(),
+      '의 가슴을 때렸다】',
+    ]);
+  },
+
+  async ask_hit_breast(attacker, defender, is_first) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '이(가) ',
+      defender.get_colored_name(),
+      ' 에게 ',
+      is_first ? '' : '계속해서 ',
+      '자신의 가슴을 때려달라고 요청했다】',
+    ]);
+  },
+
+  async hit_face(attacker, defender) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '이(가) ',
+      defender.get_colored_name(),
+      '의 뺨을 후려갈겼다】',
+    ]);
+  },
+
+  async hit_face_hard(attacker, defender) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '이(가) ',
+      defender.get_colored_name(),
+      '의 뺨을 힘껏 후려갈겼다】',
+    ]);
+  },
+
+  async hit_face_by_penis(attacker, defender) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '이(가) 육봉으로 ',
+      defender.get_colored_name(),
+      '의 뺨을 때렸다】',
+    ]);
+  },
+
+  async ask_hit_face(attacker, defender, is_first) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '이(가) ',
+      defender.get_colored_name(),
+      ' 에게 ',
+      is_first ? '' : '다시 계속해서 ',
+      '자신의 뺨을 때려달라고 요청했다】',
+    ]);
+  },
+
+  async virgin_foot_job(attacker, defender) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '이(가) ',
+      defender.get_colored_name(),
+      '의 음부를 짓밟았다】',
+    ]);
+  },
+
+  async ask_virgin_foot_job(attacker, defender, is_first) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '이(가) ',
+      defender.get_colored_name(),
+      ' 에게 ',
+      is_first ? '' : '계속해서 ',
+      '자신의 음부를 짓밟아달라고 요청했다】',
+    ]);
+  },
+
 };
