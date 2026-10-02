@@ -732,15 +732,10 @@ already present in EraUmaK 2.21 was reused; no new Korean prose was synthesized.
 Pending Japanese fallback: **37 functions**
 - `after_refused`
 - `resist`
-- `pet_breast`
 - `pet_nipple`
 - `prepare_virgin_uma`
 - `pet_leg`
 - `pull_tail`
-- `cunnilingus`
-- `suck_virgin`
-- `ask_blow_job`
-- `force_blow_job`
 - `deep_blow_job`
 - `ask_deep_blow_job`
 - `force_deep_blow_job`
