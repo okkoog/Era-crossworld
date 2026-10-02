@@ -698,7 +698,7 @@ The Korean module spreads the current Japanese `sex/ero-sleep` object first, so 
 
 Current 3.113 top-level scene functions: **95**
 
-Safely reused Korean scene functions so far: **35**
+Safely reused Korean scene functions so far: **46**
 
 Newly reused in this pass from `normal/fucking.js`: **10**
 - `missionary`
@@ -716,7 +716,15 @@ These functions keep the current 3.113 signatures and control structure while
 reusing only Korean prose already present in EraUmaK 2.21. No new Korean prose
 was synthesized.
 
-Pending Japanese fallback: **60 functions**
+
+Newly reused in this pass from `normal/orgy.js`, `normal/sm.js`, and `normal/items.js`: **11**
+- group/three-person scenes: `ask_double_blow_job`, `ask_double_fuck`, `ask_double_penetration`, `ask_spit_roast`, `fuck_69`, `double_fuck`, `double_penetration`, `spit_roast`
+- SM scenes: `insult`, `hit_face_by_penis`
+- item scene: `use_medicine`
+
+These overrides preserve the current 3.113 function signatures/control flow while reusing only Korean prose already present in EraUmaK 2.21. No new Korean prose was synthesized.
+
+Pending Japanese fallback: **49 functions**
 - `after_refused`
 - `resist`
 - `pet_breast_from_back`
@@ -766,17 +774,6 @@ Pending Japanese fallback: **60 functions**
 - `stimulate_glans_by_hole`
 - `ask_stimulate_hole`
 - `continue_fucking`
-- `insult`
-- `hit_face_by_penis`
-- `ask_double_blow_job`
-- `ask_double_fuck`
-- `ask_double_penetration`
-- `ask_spit_roast`
-- `fuck_69`
-- `double_fuck`
-- `double_penetration`
-- `spit_roast`
-- `use_medicine`
 
 The Korean module spreads `ja-JP/timon/sex/ero-common` first, so every
 pending function remains functional through Japanese fallback.
