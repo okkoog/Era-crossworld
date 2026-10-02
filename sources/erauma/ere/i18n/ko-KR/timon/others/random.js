@@ -1653,4 +1653,161 @@ module.exports = {
     return f;
   })(),
 
+
+  god_coin: (() => {
+    /**
+     * @author イーウィヤ
+     * @param {CharaTalk} _ 無意味な引数だが残す必要あり
+     * @param {number} dice 祈りのダイス。0-1 の小数で、小さいほど良い
+     * @param {number|undefined} god ランダムな女神の ID（その女神の好感が当たった場合）。全員が受肉済みなら undefined
+     */
+    const f = async (_, dice, god) => {
+      await printAndWait('동전이나 하나 던져서 소원을 빌어 볼까...');
+      if (dice < 0.4 && god) {
+        await printAndWait(
+          '이건...환청? 왠지 모르게 친근하고 신뢰가 가는 목소리가 들리네...',
+        );
+        const color = get_chara_color(god);
+        switch (god) {
+          case 340:
+            await printAndWait('열정적인, 붉은 목소리……', {
+              color,
+            });
+            break;
+          case 341:
+            await printAndWait('포용적인, 푸른 목소리……', {
+              color,
+            });
+            break;
+          case 342:
+            await printAndWait('엄격한, 노란 목소리……', {
+              color,
+            });
+        }
+      } else if (dice < 0.7) {
+        await printAndWait('아…… 이거 어쩌면 될지도……?');
+        await printAndWait(
+          '하지만 그렇게 말은 해도…… 딱히 떠오르는 건 없는데, 곰곰이 생각해보니 뭔가 깨달은 것 같기도 하고……',
+        );
+      } else if (dice < 0.9) {
+        await printAndWait('역시 아무 일도 일어나지 않았다……');
+      } else {
+        await printAndWait('줍는 순간 두 개가 되었다!');
+      }
+    };
+    f.title = '세 여신상의 소원의 우물';
+    return f;
+  })(),
+
+  breakfast: (() => {
+    /**
+     * @author 幽白書
+     * @param {CharaTalk} chara プレイヤーの乳を飲むキャラ
+     * @param {CharaTalk} you プレイヤー
+     */
+    const f = async (chara, you) => {
+      await printAndWait([
+        'トレーナー室へ入ると、',
+        you.get_colored_name(),
+        ' は朝食を終えた ',
+        chara.get_colored_name(),
+        ' が牛乳を飲んでいるところを見た。',
+      ]);
+      await printAndWait('그 우유 병의 포장…… 왠지 낯익은데……');
+      await printAndWait([
+        '그리고 ',
+        chara.get_colored_name(),
+        '의 눈빛이 왠지 모르게 좀 이상하다……',
+      ]);
+      await printAndWait('……분명 착각이겠지.');
+    };
+    f.title = '「아침 식사」';
+    return f;
+  })(),
+
+  wind_welcome: (() => {
+    /**
+     * @author Mr.E.
+     * @param {CharaTalk} you プレイヤー
+     * @param {boolean} race_week 今週にレースがあり、未受肉の三女神がいるか
+     */
+    const f = async (you, race_week) => {
+      await printAndWait([
+        you.get_colored_name(),
+        '의 몸 옆을 스치는 산들바람이 운동장 잔디의 상쾌한 향기를 실어 온다.',
+      ]);
+      printButton('「오늘 날씨 정말 좋네」(담당 우마무스메의 컨디션+1)', 1);
+      if (race_week) {
+        printButton(
+          '「오늘 레이스도 순조롭게 진행되길」(??? 호감도+50)',
+          2,
+        );
+      }
+      return [await input()];
+    };
+    f.title = '바람이 찾아오다';
+    return f;
+  })(),
+
+  kamen_rider: (() => {
+    /**
+     * @author Mr.E.
+     * @param {CharaTalk} you プレイヤー
+     * @param {boolean} no_ero_item 性玩具を持っていないか
+     */
+    const f = async (you, no_ero_item) => {
+      const ret = [];
+      await printAndWait(['상점가를 지나가다 보니, 한 가게에서 이벤트를 하고 있는 것을 발견했다:']);
+      await printAndWait(['「가면라이더 흉내 내기, 따뜻한 마음 전하기～」']);
+      await printAndWait([
+        '가게 주인은 이 행사가 아이들에게 따뜻한 마음을 전하기 위해 마련된 것이라고 설명했지만, 옷은 충분해도 인력이 부족하다고 했다.',
+      ]);
+      await printAndWait([
+        '그는 이렇게 해서 아이들의 생활이 더욱 풍요로워지기를 바란다고 한다.',
+      ]);
+      await printAndWait([
+        '참가하면, 맞는 가면라이더 의상을 입어볼 수도 있다.',
+      ]);
+      printButton('「시간도 남으니 한번 참가해 볼까.」', 1);
+      printButton('「아, 됐어. 이런 시끌벅적한 행사는 내 스타일이 아니야.」', 2);
+      ret.push(await input());
+      if (ret[0] === 1) {
+        await printAndWait([
+          '店主は ',
+          you.get_colored_name(),
+          ' の協力に礼を言い、更衣室へ案内し、好きな一着を選ばせた——',
+        ]);
+        printButton('「당근맨!」（명성+15）', 1);
+        printButton('「마법소녀!(가면라이더 버전)」（우마코인+25）', 2);
+        printButton(
+          '「???一좀 이상한 옷」（명성+20，일부 담당 우마무스메의 컨디션+1）',
+          3,
+          { disabled: no_ero_item },
+        );
+        ret.push(await input());
+        switch (ret[1]) {
+          case 1:
+            await printAndWait([
+              '대호평이었다! 왠지 낯익은 학생들도 보이는 것 같은데?!',
+            ]);
+            break;
+          case 2:
+            await printAndWait([
+              '반응이 아주 좋다! 비록 이 옷은 입기가 꽤 힘들지만……',
+            ]);
+            break;
+          case 3:
+            await printAndWait([
+              '점원의 도움으로 타이트한 옷과 몇 조각의 이상한 천을 입었는데, 속옷처럼 보이는 그 천이 알고 보니 얼굴을 가리는 것뿐이라니?',
+            ]);
+            await printAndWait([
+              '가게 마스코트로서의 효과는 좋지만, 뭔가 잃어버린 것 같은 기분이 든다……',
+            ]);
+        }
+      }
+      return ret;
+    };
+    f.title = '가면(?)라이더!';
+    return f;
+  })(),
 };

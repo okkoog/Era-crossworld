@@ -1143,3 +1143,70 @@ Checked 2.21 common/init/queue sources:
 No sufficiently reliable 1:1 Korean scene match was found in those checked
 sources, so these scenes remain on Japanese fallback.
 
+### `others/random.js` — sixth matched batch (2026-10-02)
+
+GitHub base: `erauma-ko` at
+`6cee5523f758e48cf6c2901cbfbdf684896d5585`.
+This is one bounded reuse/classification batch, not a fresh translation or
+completion of all Timon/Kojo work.
+
+2.21 source references:
+- `sources/eraumak_kr_2.21/game/ere/event/edu/edu-0.js`
+  - `god_coin(me)`, `breakfast(...)`, `wind_welcome(me)`
+- `sources/eraumak_kr_2.21/game/ere/event/daily/daily-0.js`
+  - `out_shopping(hook)`, its `my_marks.kamen_rider` event branch
+
+Additional current 3.113 scene overrides: **4**.
+Reused existing Korean string literals: **34**, including **4 event titles**.
+
+| Scene | Existing Korean reuse | Current Japanese kept |
+|---|---|---|
+| `god_coin` | All 9 output calls and title; dice branches and goddess color cases directly match the old method | None |
+| `breakfast` | 3 of 4 output calls and title (5 string literals) | Entire first arrival/breakfast output call |
+| `wind_welcome` | All narrative/choice text and title (4 string literals) | None |
+| `kamen_rider` | 14 of 15 output/choice calls and title (15 string literals) | Entire changing-room invitation output call |
+
+No new Korean prose was synthesized. The current 3.113 signatures, arrays,
+dynamic expression positions/order, return values, branches, color options,
+`race_week` guard and `no_ero_item` disabled flag are preserved.
+Old effect calculations, character selection and event scheduling are not copied.
+
+Precisely classified partial fallback:
+- `breakfast`: the old arrival sentence starts with the player name and
+  contains two Korean literal fragments. The current call adds a leading
+  literal before the name and distributes the arrival/breakfast meaning over
+  three fragments. Reusing it would require newly composed/split Korean text,
+  so all three current Japanese fragments remain together.
+- `kamen_rider`: the old changing-room invitation inserts the player name
+  three times; the current call inserts it once. The current two Japanese
+  literal fragments remain together rather than joining old Korean fragments.
+
+Validation: **PASS**.
+- JS syntax and current AST structure/control flow/dynamic expressions checked.
+- Every replacement literal exists verbatim in its identified 2.21 method.
+- Previous 13 overrides and GENERATED regions are unchanged.
+- All 38 exported scene keys remain; 21 untouched scenes still use the same
+  Japanese fallback functions.
+- 15 isolated mocked-output branch cases preserve calls, choices, disabled
+  flags, dynamic values and return results.
+- 109 checks in total. These are scoped static/isolated module checks, not
+  whole-game or human-play validation.
+
+Per-string old/current locations, source hashes, partial fallback counts and
+validation summary: [REUSE_RANDOM_BATCH_06.json](REUSE_RANDOM_BATCH_06.json).
+
+Current random-module status after this batch:
+- Current Japanese scenes: **38**.
+- Korean scene overrides: **17** (includes partial overrides; not 17 fully
+  translated scenes).
+- Entire scene fallback: **21**.
+- Previously reviewed unmatched scenes retain their existing conclusions;
+  no broad re-investigation was performed.
+- Six scenes still awaiting this workflow's first detailed source match:
+  `ts_sex`, `ts_shower`, `sr_strange_lunch`, `we_are_one`,
+  `sakura_regret`, `justice`.
+
+Next bounded investigation: `sr_strange_lunch` and `sakura_regret`,
+by their matching 2.21 character/event handlers. Leave uncertain segments on
+Japanese fallback. Do not begin a general i18n retranslation or Kojo bulk pass.
+
