@@ -1277,4 +1277,374 @@ module.exports = {
     }
   },
 
+
+  async pet_breast_from_back(attacker, defender, a_call_d) {
+    await attacker.print_and_wait([
+      a_call_d,
+      '이(가) 보여주는 나약한 모습에 조금의 동정이나 만족도 느끼지 못한 채, 쉽게 만족할 줄 모르는 ',
+      attacker.get_colored_name(),
+      '은(는) 그저 사과가 떨어지듯 아래로 툭 불거진 모양의 아름다운 가슴으로 양손을 더 깊숙이 뻗었다.',
+    ]);
+    await defender.say_and_wait('하아……');
+    await attacker.print_and_wait([
+      attacker.get_colored_name(),
+      '은(는) 풍만한 가슴 살을 거머쥔 다섯 손가락에 더욱 힘을 주어, ',
+      a_call_d,
+      ' 자신의 부드러움을 오직 자신만이 좋아하는 모양으로 제멋대로 바꾸어버렸다.',
+    ]);
+  },
+
+  async pet_breast_first(attacker, defender, a_call_d) {
+    if (era.get(`cflag:${defender.id}:成长阶段`) < 5) {
+      await attacker.print_and_wait([
+        defender.teen_sex_title,
+        '의 부드러움이…… 지금 자신의 손바닥 안으로 떨어졌다.',
+      ]);
+    } else {
+      await attacker.print_and_wait(
+        '유혹적인 부드러움이…… 지금 자신의 손바닥 안으로 떨어졌다.',
+      );
+    }
+    await attacker.print_and_wait(
+      '참을 수 없는 손가락 끝이 저절로 움직이기 시작했다. 하루빨리 눈앞의 부드러운 살결에 지문을 새기고, 자신에게 더 어울리는 모양으로 만들고 싶어 안달이 났다.',
+    );
+    await defender.say_and_wait('으으……');
+    await attacker.print_and_wait([
+      a_call_d,
+      '의 몸이 자신의 손가락을 따라 흔들리며 묘한 소리를 내고 있다…… 하아, 인정할 수밖에 없군. 이 감각은 멈추고 싶지 않을 정도로 환상적이야……',
+    ]);
+  },
+
+  async pet_breast(attacker, defender, a_call_d, d_call_a) {
+    await defender.say_and_wait([d_call_a, '……']);
+    await attacker.print_and_wait([
+      '아, 이쪽도 슬슬 느껴지는군…… 눈앞의 ',
+      a_call_d,
+      '의 몸이, 자신의 손길에 긴장하고 있으며, 또한 자신의 손길에 외로워하고 있다는 것을……',
+    ]);
+    await defender.say_and_wait([d_call_a, '……']);
+    await attacker.print_and_wait('하지만, 역시 조금 더 제멋대로 굴고 싶어.');
+  },
+
+  async cunnilingus(attacker, defender, is_first, a_call_d) {
+    if (is_first) {
+      await attacker.say_and_wait('으으으으————');
+      await attacker.print_and_wait(
+        '그것을 입에 담지 않을 이유가 없다. 눈앞에서 음란한 암컷의 냄새를 풍기며 충혈된 클리토리스를 보호막에서 끄집어낸 뒤, 그것을 외롭게 내버려 둔 채 떨게 놔둘 이유 따위는 없다.',
+      );
+      await attacker.print_and_wait([
+        '그래서 ',
+        attacker.get_colored_name(),
+        '은(는) 몸을 깊게 숙여, ',
+        a_call_d,
+        '의 넓게 벌어진 가랑이 사이로 머리를 묻었다.',
+      ]);
+      await attacker.print_and_wait('반사적으로 오므린 허벅지 사이가 떨리고 있다.');
+      await attacker.print_and_wait('이쪽의 허리를 감싼 무릎이 떨리고 있다.');
+      await attacker.print_and_wait('허리 뒤로 돌린 두 발이 떨리고 있다.');
+      await attacker.print_and_wait('아…… 왜 갑자기 이렇게 된 걸까……');
+      await attacker.print_and_wait(
+        '설마 혀끝에 닿아 점점 더 젖어가는 이 작은 돌기 때문은 아니겠지.',
+      );
+    } else {
+      await attacker.print_and_wait('혀끝으로 가볍게 건드린다.');
+      await attacker.print_and_wait('빨아올려 세운다.');
+      await attacker.print_and_wait('살짝 숨을 불어넣는다.');
+      await attacker.print_and_wait('조금 고민되는군……');
+      await attacker.print_and_wait([
+        '눈앞의 클리토리스를 어떤 방식으로 자극하든, 앞에 있는 ',
+        a_call_d,
+        '이(가) 똑같이 쾌락 속에서 떨고 있다면, 어떤 것을 더 좋아하는지 알 수 없지 않은가.',
+      ]);
+    }
+  },
+
+  async ask_cunnilingus(attacker, defender, is_first, d_call_a) {
+    if (is_first) {
+      await attacker.say_and_wait('부탁해……');
+      await defender.print_and_wait([
+        '비록 아직 부끄러움이 남아있지만, 앞에 있는 ',
+        d_call_a,
+        '은(는) 스스로 양손을 사용해 떨리는 두 다리를 이쪽으로 벌렸다.',
+      ]);
+      await defender.say_and_wait('으으으으————');
+      await defender.print_and_wait(
+        '그것을 입에 담지 않을 이유가 없다. 눈앞에서 음란한 암컷의 냄새를 풍기며 충혈된 클리토리스를 보호막에서 끄집어낸 뒤, 그것을 외롭게 내버려 둔 채 떨게 놔둘 이유 따위는 없다.',
+      );
+      await defender.print_and_wait([
+        '그래서 ',
+        defender.get_colored_name(),
+        '은(는) 몸을 깊게 숙여, ',
+        d_call_a,
+        '의 넓게 벌어진 가랑이 사이로 머리를 묻었다.',
+      ]);
+      await defender.print_and_wait('반사적으로 오므린 허벅지 사이가 떨리고 있다.');
+      await defender.print_and_wait('이쪽의 허리를 감싼 무릎이 떨리고 있다.');
+      await defender.print_and_wait('허리 뒤로 돌린 두 발이 떨리고 있다.');
+      await defender.print_and_wait('아…… 왜 갑자기 이렇게 된 걸까……');
+      await defender.print_and_wait(
+        '설마 혀끝에 닿아 점점 더 젖어가는 이 작은 돌기 때문은 아니겠지.',
+      );
+    } else {
+      await defender.print_and_wait('혀끝으로 가볍게 건드린다.');
+      await defender.print_and_wait('빨아올려 세운다.');
+      await defender.print_and_wait('살짝 숨을 불어넣는다.');
+      await defender.print_and_wait('조금 고민되는군……');
+      await defender.print_and_wait([
+        '눈앞의 클리토리스를 어떤 방식으로 자극하든, 앞에 있는 ',
+        d_call_a,
+        '이(가) 똑같이 쾌락 속에서 떨고 있다면, 어떤 것을 더 좋아하는지 알 수 없지 않은가.',
+      ]);
+    }
+  },
+
+  async force_cunnilingus(attacker, defender, is_first, d_call_a) {
+    if (is_first) {
+      await attacker.say_and_wait('부탁할게~');
+      await defender.print_and_wait([
+        '주도적으로 다리를 벌린 ',
+        d_call_a,
+        '이(가) 기대 섞인 눈빛으로 자신의 아래에 있는 담당을 바라보며, 시선을 회피하는 ',
+        defender.get_colored_name(),
+        '의 머리를 손으로 눌러 내렸다.',
+      ]);
+      await defender.say_and_wait('으으으으————');
+      await defender.print_and_wait(
+        '그것을 입에 담지 않을 이유가 없다. 눈앞에서 음란한 암컷의 냄새를 풍기며 충혈된 클리토리스를 보호막에서 끄집어낸 뒤, 그것을 외롭게 내버려 둔 채 떨게 놔둘 이유 따위는 없다.',
+      );
+      await defender.print_and_wait([
+        '그래서 ',
+        defender.get_colored_name(),
+        '은(는) 몸을 깊게 숙여, ',
+        d_call_a,
+        '의 넓게 벌어진 가랑이 사이로 머리를 묻었다.',
+      ]);
+      await attacker.say_and_wait('하아❤️');
+      await defender.print_and_wait(
+        '민망한 요구를 한 쪽이면서, 지금은 정신없이 몸을 흔들고 있다……',
+      );
+      await defender.print_and_wait('반사적으로 오므린 허벅지 사이가 떨리고 있다.');
+      await defender.print_and_wait('이쪽의 허리를 감싼 무릎이 떨리고 있다.');
+      await defender.print_and_wait('허리 뒤로 돌린 두 발이 떨리고 있다.');
+      await defender.print_and_wait('아…… 왜 갑자기 이렇게 된 걸까……');
+      await defender.print_and_wait(
+        '설마 혀끝에 닿아 점점 더 젖어가는 이 작은 돌기 때문은 아니겠지.',
+      );
+    } else {
+      await defender.print_and_wait('혀끝으로 가볍게 건드린다.');
+      await defender.print_and_wait('빨아올려 세운다.');
+      await defender.print_and_wait('살짝 숨을 불어넣는다.');
+      await defender.print_and_wait('조금 고민되는군……');
+      await defender.print_and_wait([
+        '눈앞의 클리토리스를 어떤 방식으로 자극하든, 앞에 있는 ',
+        d_call_a,
+        '이(가) 똑같이 쾌락 속에서 떨고 있다면, 어떤 것을 더 좋아하는지 알 수 없지 않은가.',
+      ]);
+    }
+  },
+
+  async suck_virgin(attacker, defender, is_first) {
+    if (is_first) {
+      await attacker.print_and_wait(
+        '심장 박동을 빠르게 만드는 냄새…… 혀끝에서 온몸으로 녹아드는 새콤달콤하고 비릿한 맛……',
+      );
+      await attacker.print_and_wait(
+        '혀로 음부를 핥는 이 애매한 연결 자세 속에서, 과연 어느 쪽이 먼저 가버리는 걸까……',
+      );
+      await attacker.print_and_wait('부드러움과 부드러움의 대결.');
+      await attacker.print_and_wait(
+        '휘파람을 불 듯 오므린 입술 모양으로 질구 안쪽을 향해 강제로 말려 들어가 천천히 나아가는 혀와, 따뜻한 자극에 대응해 서투르게 꿈틀대며 맞서는 구멍……',
+      );
+      await attacker.print_and_wait('어느 쪽도 쉽게 물러날 수 없는 이유가 있다……');
+    } else {
+      await attacker.print_and_wait('슬슬 다른 일을 해도 좋겠군.');
+      await attacker.print_and_wait(
+        '처음에 어떻게 한 줄 좁은 틈처럼 청순한 형태를 유지했는지 기억나지 않을 정도로, 계속되는 혀의 애무에 안팎으로 흠뻑 젖어버린 구멍은 이제 밖으로 뒤집힌 채 파르르 떨리고 있다……',
+      );
+      await attacker.print_and_wait(
+        '그리고 그 나쁜 아이의 허리를 꽉 조이고 있던 두 다리도, 어느샌가 힘이 풀려 발레리나처럼 발끝만 높게 세운 모양새로 남았다.',
+      );
+    }
+  },
+
+  async ask_suck_virgin(attacker, defender, is_first, d_call_a) {
+    if (is_first) {
+      await defender.say_and_wait('하아……');
+      await defender.print_and_wait([
+        d_call_a,
+        '이(가) 지금 자신의 눈앞에서 손가락으로 분홍빛 비순을 벌리고 있다. 그렇다면 이쪽에서 무엇을 해야 할지는 불 보듯 뻔한 일이다……',
+      ]);
+      await defender.print_and_wait(
+        '심장 박동을 빠르게 만드는 냄새…… 혀끝에서 온몸으로 녹아드는 새콤달콤하고 비릿한 맛……',
+      );
+      await defender.print_and_wait(
+        '혀로 음부를 핥는 이 애매한 연결 자세 속에서, 과연 어느 쪽이 먼저 가버리는 걸까……',
+      );
+      await defender.print_and_wait('부드러움과 부드러움의 대결.');
+      await defender.print_and_wait(
+        '휘파람을 불 듯 오므린 입술 모양으로 질구 안쪽을 향해 강제로 말려 들어가 천천히 나아가는 혀와, 따뜻한 자극에 대응해 서투르게 꿈틀대며 맞서는 구멍……',
+      );
+      await defender.print_and_wait('어느 쪽도 쉽게 물러날 수 없는 이유가 있다……');
+    } else {
+      await defender.print_and_wait(
+        '그만하라는 요청이 좀처럼 들리지 않기에, 이쪽의 혀도 중도에 멈출 이유가 없다.',
+      );
+      await defender.print_and_wait('하지만……');
+      await defender.print_and_wait('슬슬 다른 일을 해도 좋겠군.');
+      await defender.print_and_wait(
+        '처음에 어떻게 한 줄 좁은 틈처럼 청순한 형태를 유지했는지 기억나지 않을 정도로, 계속되는 혀의 애무에 안팎으로 흠뻑 젖어버린 구멍은 이제 밖으로 뒤집힌 채 파르르 떨리고 있다……',
+      );
+      await defender.print_and_wait(
+        '그리고 그 나쁜 아이의 허리를 꽉 조이고 있던 두 다리도, 어느샌가 힘이 풀려 발레리나처럼 발끝만 높게 세운 모양새로 남았다.',
+      );
+    }
+  },
+
+  async force_suck_virgin(attacker, defender, is_first, d_call_a) {
+    if (is_first) {
+      await defender.say_and_wait('으으—');
+      await defender.print_and_wait(
+        '강제로 머리가 눌렸고, 비명을 지르며 벌리려던 입술은 그대로 노골적인 보지와 맞닥뜨렸다.',
+      );
+      await defender.print_and_wait(
+        '심장 박동을 빠르게 만드는 냄새…… 혀끝에서 온몸으로 녹아드는 새콤달콤하고 비릿한 맛……',
+      );
+      await defender.print_and_wait(
+        '혀로 음부를 핥는 이 애매한 연결 자세 속에서, 과연 어느 쪽이 먼저 가버리는 걸까……',
+      );
+      await defender.print_and_wait('부드러움과 부드러움의 대결.');
+      await defender.print_and_wait(
+        '휘파람을 불 듯 오므린 입술 모양으로 질구 안쪽을 향해 강제로 말려 들어가 천천히 나아가는 혀와, 따뜻한 자극에 대응해 서투르게 꿈틀대며 맞서는 구멍……',
+      );
+      await defender.print_and_wait('어느 쪽도 쉽게 물러날 수 없는 이유가 있다……');
+    } else {
+      await attacker.say_and_wait('하아~');
+      await defender.print_and_wait([
+        '만족스러웠는지, 시원한 맥주라도 들이킨 것처럼 ',
+        d_call_a,
+        '이(가) 상쾌한 숨을 내뱉었다.',
+      ]);
+      await defender.print_and_wait('슬슬 다른 일을 해도 좋겠군.');
+      await defender.print_and_wait(
+        '처음에 어떻게 한 줄 좁은 틈처럼 청순한 형태를 유지했는지 기억나지 않을 정도로, 계속되는 혀의 애무에 안팎으로 흠뻑 젖어버린 구멍은 이제 밖으로 뒤집힌 채 파르르 떨리고 있다……',
+      );
+      await defender.print_and_wait(
+        '그리고 그 나쁜 아이의 허리를 꽉 조이고 있던 두 다리도, 어느샌가 힘이 풀려 발레리나처럼 발끝만 높게 세운 모양새로 남았다.',
+      );
+    }
+  },
+
+  async blow_job(attacker, defender, is_first) {
+    if (is_first) {
+      await defender.say_and_wait(
+        '눈앞의 광경을 보니, 정말이지 죄책감이 울컥 솟구치는군요……',
+        true,
+      );
+      if (attacker.race > 0 && attacker.sex_code !== 1) {
+        await attacker.print_and_wait(
+          '우마무스메와 페니스, 거의 접점이 존재하지 않던 이 두 단어가 지금 이 순간 끈적하게 이어져 있다……',
+        );
+      }
+      await attacker.print_and_wait(
+        '자신의 입술이 페니스에 의해 강제로 벌어지고, 원래는 영양분을 섭취해야 할 자리에 딱딱하게 발기한 불길한 녀석이 자리 잡아, 몸을 이상하게 만드는 저질스러운 냄새를 제멋대로 풍기고 있다.',
+      );
+      await attacker.print_and_wait('웅크린 몸이 떨리기 시작했다…… 어째서일까……');
+      await attacker.print_and_wait('이런 일, 역시 좀 이상한 걸까……?');
+    } else {
+      await attacker.say_and_wait('츄릅, 츄르릅~~');
+      await attacker.print_and_wait('어느샌가 조금 더 능숙해졌다……');
+      await attacker.print_and_wait(
+        '고개를 약간 들어 올리면 눈앞의 페니스를 더 깊숙이 머금울 수 있다……',
+      );
+      await attacker.print_and_wait(
+        '눌린 혀로 측면을 살짝 핥으면, 기분 좋은 듯 파르르 떨린다.',
+      );
+      await attacker.print_and_wait('입술을 좀 더 활용해 본다면…… 쪽……');
+      await attacker.print_and_wait(
+        '콜록, 콜록…… 밀려 들어오는 진하고 부끄러운 냄새에 머릿속이 어질어질해진다……',
+      );
+    }
+  },
+
+  async ask_blow_job(attacker, defender, is_first, d_call_a) {
+    if (is_first) {
+      await attacker.say_and_wait('부탁이야—');
+      await defender.print_and_wait([
+        '앞에 있는 ',
+        d_call_a,
+        '이(가) 갑자기 얼굴이 붉어질 만한 말을 꺼냈다.',
+      ]);
+      await defender.print_and_wait(
+        '갑자기 이런 요구를 하다니, 거절당하고 걷어차여도 할 말 없다고……',
+      );
+      await attacker.say_and_wait(
+        '눈앞의 광경을 보니, 정말이지 죄책감이 울컥 솟구치는군요……',
+        true,
+      );
+      if (defender.race > 0 && defender.sex_code !== 1) {
+        await defender.print_and_wait(
+          '우마무스메와 페니스, 거의 접점이 존재하지 않던 이 두 단어가 지금 이 순간 끈적하게 이어져 있다……',
+        );
+      }
+      await defender.print_and_wait(
+        '자신의 입술이 페니스에 의해 강제로 벌어지고, 원래는 영양분을 섭취해야 할 자리에 딱딱하게 발기한 불길한 녀석이 자리 잡아, 몸을 이상하게 만드는 저질스러운 냄새를 제멋대로 풍기고 있다.',
+      );
+      await defender.print_and_wait('웅크린 몸이 떨리기 시작했다…… 어째서일까……');
+      await defender.print_and_wait('이런 일, 역시 좀 이상한 걸까……?');
+    } else {
+      await defender.print_and_wait('같은 요구를 몇 번이고 반복하는 건 너무 반칙인데……');
+      await defender.say_and_wait('츄릅, 츄르릅~~');
+      await defender.print_and_wait('어느샌가 조금 더 능숙해졌다……');
+      await defender.print_and_wait(
+        '고개를 약간 들어 올리면 눈앞의 페니스를 더 깊숙이 머금울 수 있다……',
+      );
+      await defender.print_and_wait(
+        '눌린 혀로 측면을 살짝 핥으면, 기분 좋은 듯 파르르 떨린다.',
+      );
+      await defender.print_and_wait('입술을 좀 더 활용해 본다면…… 쪽……');
+      await defender.print_and_wait(
+        '콜록, 콜록…… 밀려 들어오는 진하고 부끄러운 냄새에 머릿속이 어질어질해진다……',
+      );
+    }
+  },
+
+  async force_blow_job(attacker, defender, is_first) {
+    if (is_first) {
+      await attacker.say_and_wait('입 벌려.');
+      await defender.print_and_wait(
+        '저항하면 소용이 있을지도 모른다고 생각했지만, 몸은 조금씩 그 손에 눌려 아래로 내려가고 있다……',
+      );
+      await defender.say_and_wait('으으……');
+      await attacker.say_and_wait(
+        '눈앞의 광경을 보니, 정말이지 죄책감이 울컥 솟구치는군요……',
+        true,
+      );
+      if (defender.race > 0 && defender.sex_code !== 1) {
+        await defender.print_and_wait(
+          '우마무스메와 페니스, 거의 접점이 존재하지 않던 이 두 단어가 지금 이 순간 끈적하게 이어져 있다……',
+        );
+      }
+      await defender.print_and_wait(
+        '자신의 입술이 페니스에 의해 강제로 벌어지고, 원래는 영양분을 섭취해야 할 자리에 딱딱하게 발기한 불길한 녀석이 자리 잡아, 몸을 이상하게 만드는 저질스러운 냄새를 제멋대로 풍기고 있다.',
+      );
+      await defender.print_and_wait('웅크린 몸이 떨리기 시작했다…… 어째서일까……');
+      await defender.print_and_wait('이런 일, 역시 좀 이상한 걸까……?');
+    } else {
+      await defender.say_and_wait('하아……', true);
+      await defender.say_and_wait('더…… 계속할 건가요……', true);
+      await defender.say_and_wait('츄릅, 츄르릅~~');
+      await defender.print_and_wait('어느샌가 조금 더 능숙해졌다……');
+      await defender.print_and_wait(
+        '고개를 약간 들어 올리면 눈앞의 페니스를 더 깊숙이 머금울 수 있다……',
+      );
+      await defender.print_and_wait(
+        '눌린 혀로 측면을 살짝 핥으면, 기분 좋은 듯 파르르 떨린다.',
+      );
+      await defender.print_and_wait('입술을 좀 더 활용해 본다면…… 쪽……');
+      await defender.print_and_wait(
+        '콜록, 콜록…… 밀려 들어오는 진하고 부끄러운 냄새에 머릿속이 어질어질해진다……',
+      );
+    }
+  },
+
 };
