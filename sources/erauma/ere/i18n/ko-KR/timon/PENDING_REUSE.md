@@ -444,7 +444,7 @@ functions remain functional through Japanese fallback.
 
 Current 3.113 action-description functions: **162**
 
-Safely reused Korean overrides so far: **47**
+Safely reused Korean overrides so far: **112**
 
 Reused groups:
 - common communication/control: **10**
@@ -457,7 +457,7 @@ Reused groups:
   - the 2.21 combined normal/hard handlers were safely split into the current
     separate functions without changing the existing Korean wording
 
-Pending Japanese fallback: **115 functions**
+Pending Japanese fallback: **50 functions**
 
 Known pending from the checked groups:
 - `relax`
@@ -471,8 +471,13 @@ Known pending from the checked groups:
   - 3.113 splits these into multiple explicit functions, so reuse requires
     function-by-function structural matching rather than bulk conversion
 
+Newly classified and reused in this pass:
+- `normal-making-outs.js`: **65 / 65** current matching functions safely reused
+  - exact current/old signatures were reused directly
+  - old `hook.arg` branches were reused only where they map 1:1 to current `is_first`
+  - no new Korean prose was synthesized
+
 Still to classify inside this same file:
-- `normal-making-outs.js`
 - `normal-fucking.js`
 
 The Korean module spreads `ja-JP/timon/sex/act-desc-common` first, so every
