@@ -656,3 +656,30 @@ Pending Japanese fallback because the current call/string structure no longer ma
 - `continue_fucking`
 
 The Korean module spreads the current Japanese `sex/ero-rape` object first, so all pending functions remain functional through Japanese fallback. No new Korean prose was synthesized.
+
+### `sex/ero-sleep.js`
+
+2.21 source references:
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/sleep/communications.js`
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/sleep/making-outs.js`
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/sleep/fucking.js`
+
+Current 3.113 top-level scene functions: **36**
+
+Safely reused Korean scene functions in this pass: **24**
+
+Pending Japanese fallback because the current output-call/string structure no longer matches the 2.21 scene closely enough for direct reuse:
+- `pet_nipple`
+- `stimulate_g_spot_by_finger`
+- `pet_leg`
+- `pull_tail`
+- `hand_and_blow_job`
+- `fuck_tit`
+- `suck_nipple`
+- `force_foot_job`
+- `tail_job`
+- `missionary`
+- `stimulate_womb`
+- `stimulate_glans_by_hole`
+
+The Korean module spreads the current Japanese `sex/ero-sleep` object first, so all pending functions remain functional through Japanese fallback. No new Korean prose was synthesized.
