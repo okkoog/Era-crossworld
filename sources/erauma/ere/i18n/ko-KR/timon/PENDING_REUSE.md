@@ -622,13 +622,10 @@ Reused:
 - `kiss`
 - `french_kiss`
 - `pet_ear`
-- `pet_breast`
 - `pet_clitoris`
 - `stimulate_g_spot_by_finger`
 - `pet_tail`
 - `pull_tail`
-- `cunnilingus`
-- `ask_blow_job`
 - `bite_nipple`
 - `missionary`
 - `hug_sitting`
@@ -642,8 +639,6 @@ Pending Japanese fallback because the current call/string structure no longer ma
 - `pet_nipple`
 - `finger_fuck`
 - `pet_leg`
-- `suck_virgin`
-- `force_blow_job`
 - `ask_deep_blow_job`
 - `force_deep_blow_job`
 - `ask_or_force_hand_job`
@@ -698,7 +693,7 @@ The Korean module spreads the current Japanese `sex/ero-sleep` object first, so 
 
 Current 3.113 top-level scene functions: **95**
 
-Safely reused Korean scene functions so far: **46**
+Safely reused Korean scene functions so far: **58**
 
 Newly reused in this pass from `normal/fucking.js`: **10**
 - `missionary`
@@ -724,23 +719,26 @@ Newly reused in this pass from `normal/orgy.js`, `normal/sm.js`, and `normal/ite
 
 These overrides preserve the current 3.113 function signatures/control flow while reusing only Korean prose already present in EraUmaK 2.21. No new Korean prose was synthesized.
 
-Pending Japanese fallback: **49 functions**
+
+Newly reused in this pass from `normal/making-outs-1.js`: **12**
+- breast scenes: `pet_breast_from_back`, `pet_breast_first`, `pet_breast`
+- cunnilingus scenes: `cunnilingus`, `ask_cunnilingus`, `force_cunnilingus`
+- vaginal oral scenes: `suck_virgin`, `ask_suck_virgin`, `force_suck_virgin`
+- oral penis scenes: `blow_job`, `ask_blow_job`, `force_blow_job`
+
+The current 3.113 signatures and branching are preserved. Only Korean prose
+already present in EraUmaK 2.21 was reused; no new Korean prose was synthesized.
+
+Pending Japanese fallback: **37 functions**
 - `after_refused`
 - `resist`
-- `pet_breast_from_back`
-- `pet_breast_first`
 - `pet_breast`
 - `pet_nipple`
 - `prepare_virgin_uma`
 - `pet_leg`
 - `pull_tail`
 - `cunnilingus`
-- `ask_cunnilingus`
-- `force_cunnilingus`
 - `suck_virgin`
-- `ask_suck_virgin`
-- `force_suck_virgin`
-- `blow_job`
 - `ask_blow_job`
 - `force_blow_job`
 - `deep_blow_job`
