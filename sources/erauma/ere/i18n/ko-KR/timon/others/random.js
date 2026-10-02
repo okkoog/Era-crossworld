@@ -1461,4 +1461,87 @@ module.exports = {
     return f;
   })(),
 
+  drug_notice: (() => {
+    /**
+     * @author 雞雞
+     * @param {CharaTalk} tachyon アグネスタキオン
+     * @param {CharaTalk} you プレイヤー
+     * @param {number} effect 効果 0-トレーニング上手バフ、1-健康茶、2-母乳薬、3-性欲上昇
+     */
+    const f = async (tachyon, you, effect) => {
+      await printAndWait(
+        [
+          '【학원에서 알립니다—— 방금 ',
+          tachyon.get_colored_name(),
+          '이 운동장에 실수로 살포한 약품의 정체가 아직 밝혀지지 않았으니, 트레이너 여러분께서는 가급적 운동장을 사용한 훈련을 삼가 주시기 바랍니다.】',
+        ],
+        { fontSize: '1.5rem' },
+      );
+      let ask_tachyon = false;
+      while (true) {
+        printButton('（별일 없겠지?）（랜덤 효과）', 1);
+        printButton('통지까지 했으니 뭐……（효과 무효화）', 2);
+        if (!ask_tachyon && get('cflag:32:招募状态') === 1) {
+          printButton('「타키온…… 이 녀석!」', 3);
+        }
+        switch (await input()) {
+          case 1:
+            switch (effect) {
+              case 0:
+                await printAndWait(
+                  '팀 멤버들의 훈련이 더 원활해졌다…….',
+                );
+                break;
+              case 1:
+                await printAndWait(
+                  '팀 멤버들의 이번 주 다이어트 효과가 더 좋아질 것이다…….',
+                );
+                break;
+              case 2:
+                await printAndWait('팀 멤버들이 모유를 흘리기 시작했다…….');
+                break;
+              case 3:
+                await printAndWait('팀 멤버들의 성욕이 상승했다…….');
+            }
+            return [1];
+          case 2:
+            return [2];
+          case 3:
+            await printAndWait([
+              you.get_colored_name(),
+              '의 추궁에, ',
+              tachyon.get_colored_name(),
+              '은 ',
+              tachyon.sex,
+              '가 살포한 약물이 대략 어떤 효과를 내는지 자백했다——',
+            ]);
+            switch (effect) {
+              case 0:
+                await tachyon.say_and_wait(
+                  '간단히 말하자면 사람을 훈련에 더 쉽게 집중하게 만드는 약이라네…….',
+                );
+                break;
+              case 1:
+                await tachyon.say_and_wait(
+                  '간단히 말하자면 사람을 칼로리를 빠르게 소모하게 만드는 약이라네…….',
+                );
+                break;
+              case 2:
+                await tachyon.say_and_wait(
+                  '간단히 말하자면 우마무스메에게 모유가 나오게 하는 약이라네…….',
+                );
+                break;
+              case 3:
+                await tachyon.say_and_wait(
+                  '간단히 말하자면 사람을 이성을 살짝 약화시키는 약이라네…….',
+                );
+            }
+            ask_tachyon = true;
+        }
+      }
+    };
+    f.title = '학원 통지・약물 살포';
+    return f;
+  })(),
+
 };
