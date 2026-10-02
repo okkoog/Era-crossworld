@@ -683,3 +683,115 @@ Pending Japanese fallback because the current output-call/string structure no lo
 - `stimulate_glans_by_hole`
 
 The Korean module spreads the current Japanese `sex/ero-sleep` object first, so all pending functions remain functional through Japanese fallback. No new Korean prose was synthesized.
+
+### `sex/ero-common.js`
+
+2.21 source references checked in this pass:
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/normal/communications.js`
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/normal/making-outs-1.js`
+
+Current 3.113 top-level scene functions: **95**
+
+Safely reused Korean scene functions in this pass: **15**
+
+Reused:
+- `kiss`
+- `french_kiss`
+- `lure`
+- `talk`
+- `switch`
+- `gargle`
+- `wipe_body`
+- `pet_ear`
+- `pull_ear`
+- `pet_clitoris`
+- `finger_fuck`
+- `stimulate_g_spot_by_finger`
+- `pet_anal`
+- `prepare_anal`
+- `pet_tail`
+
+Pending Japanese fallback: **80 functions**
+- `after_refused`
+- `resist`
+- `pet_breast_from_back`
+- `pet_breast_first`
+- `pet_breast`
+- `pet_nipple`
+- `prepare_virgin_uma`
+- `pet_leg`
+- `pull_tail`
+- `cunnilingus`
+- `ask_cunnilingus`
+- `force_cunnilingus`
+- `suck_virgin`
+- `ask_suck_virgin`
+- `force_suck_virgin`
+- `blow_job`
+- `ask_blow_job`
+- `force_blow_job`
+- `deep_blow_job`
+- `ask_deep_blow_job`
+- `force_deep_blow_job`
+- `hand_job`
+- `ask_hand_job`
+- `force_hand_job`
+- `hand_and_blow_job`
+- `ask_hand_and_blow_job`
+- `force_hand_and_blow_job`
+- `tit_job`
+- `ask_tit_job`
+- `fuck_tit`
+- `tit_and_blow_job`
+- `ask_tit_and_blow_job`
+- `fuck_tit_and_mouth`
+- `suck_nipple`
+- `bite_nipple`
+- `ask_milk_and_hand_job`
+- `milk_and_hand_job`
+- `non_penetrative`
+- `ask_non_penetrative`
+- `sixty_nine`
+- `armpit_intercourse`
+- `ask_armpit_intercourse`
+- `force_armpit_intercourse`
+- `foot_job`
+- `ask_foot_job`
+- `force_foot_job`
+- `tail_job`
+- `ask_tail_job`
+- `force_tail_job`
+- `hair_fuck`
+- `ask_hair_fuck`
+- `force_hair_fuck`
+- `missionary`
+- `doggy_style`
+- `sitting`
+- `hug_sitting`
+- `standing`
+- `hug_standing`
+- `suspended_congress`
+- `hug_suspended_congress`
+- `ask_cowgirl`
+- `ask_stimulate_glans_by_hole`
+- `stimulate_g_spot`
+- `stimulate_womb`
+- `ask_fuck`
+- `cowgirl`
+- `stimulate_glans_by_hole`
+- `ask_stimulate_hole`
+- `continue_fucking`
+- `insult`
+- `hit_face_by_penis`
+- `ask_double_blow_job`
+- `ask_double_fuck`
+- `ask_double_penetration`
+- `ask_spit_roast`
+- `fuck_69`
+- `double_fuck`
+- `double_penetration`
+- `spit_roast`
+- `use_medicine`
+
+The Korean module spreads the current Japanese `sex/ero-common` object first, so all pending functions remain functional through Japanese fallback. No new Korean prose was synthesized; only existing 2.21 Korean wording was adapted to the current argument/property layout.
+
