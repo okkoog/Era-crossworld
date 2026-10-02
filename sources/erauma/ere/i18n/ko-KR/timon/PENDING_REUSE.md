@@ -1255,3 +1255,51 @@ Remaining scenes never given a first detailed source match by this workflow:
 
 Next bounded investigation: `ts_sex` and `ts_shower`.
 
+### `others/random.js` — eighth matched batch (2026-10-02)
+
+Scope: `ts_sex` and `ts_shower` only. Existing 2.21 Korean text was reused
+only where the current 3.113 scene directly matched. No fresh Korean prose was
+written.
+
+#### `ts_sex`
+- Direct source: `sources/eraumak_kr_2.21/game/ere/event/edu/edu-common.js`,
+  lines 693–715.
+- Same author (`雞雞`), same post-training arousal scene, same two choices
+  and same result values.
+- Existing Korean title `트레이닝 후 성욕 고조` and all compatible Korean
+  literals were reused.
+- Current 3.113 function signature and return-array structure are preserved.
+
+#### `ts_shower`
+- Direct source: `sources/eraumak_kr_2.21/game/ere/event/edu/edu-common.js`,
+  lines 761–815.
+- Same author (`幽白書`), same shower-room encounter, same choices and
+  consent/no-consent branches.
+- All directly compatible 2.21 Korean literals were reused, including title
+  `샤워실 안에서`.
+- One current 3.113 literal remains on Japanese fallback:
+  `互いに背中を流し合った。`
+- Reason: the 2.21 equivalent is coupled to the dynamic
+  `me.get_couple_title()` expression and only supplies the fragment
+  `은 서로 등을 밀어 주었다.`. Reusing it verbatim would change the current
+  3.113 expression structure, so it was not rewritten.
+
+Validation: **PASS**.
+- `random.js` JS syntax: OK.
+- **42** Hangul-containing literals across the two new overrides were checked
+  against the identified 2.21 source; missing source literals: **0**.
+- Current random scenes: **38**.
+- Korean overrides: **20**.
+- Entire-scene fallbacks: **18**.
+- No new Korean prose was synthesized.
+
+Detailed machine-readable record:
+[REUSE_RANDOM_BATCH_08.json](REUSE_RANDOM_BATCH_08.json).
+
+Remaining scenes never given a first detailed source match by this workflow:
+`we_are_one`, `justice`.
+
+Next bounded investigation: `we_are_one` and `justice`. Leave uncertain
+segments on Japanese fallback. Do not begin a general i18n retranslation or
+Kojo bulk pass.
+
