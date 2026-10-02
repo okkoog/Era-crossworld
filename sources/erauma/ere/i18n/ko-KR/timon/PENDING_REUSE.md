@@ -238,7 +238,6 @@ fallback and review separately.
 ## Other Timon modules not yet classified in detail
 
 - `others/race.js`
-- `others/others.js`
 - `others/random.js`
 - `guides/base.js`
 - `mejiro/cum.js`
@@ -279,9 +278,6 @@ sources and therefore remains on Japanese fallback.
 
 ### Still requires source-area decomposition
 
-- `others/others.js`
-  - Current module combines miscellaneous scenes from multiple old source
-    areas; no safe single-file positional reuse should be attempted.
 - `others/random.js`
   - Current module is ~85k characters and collects many random-event scenes.
     It must be split by scene/function before matching to 2.21 sources.
@@ -799,3 +795,84 @@ Pending Japanese fallback:
   - Existing 2.21 Korean text is present, but current 3.113 added anti-condom branches and changed several conditional splits. It was left on Japanese fallback rather than synthesizing Korean text.
 
 The Korean module spreads the current Japanese `sex/ero-others` object first, so the pending function remains functional through Japanese fallback. No fresh Korean prose was created.
+
+### `others/others.js`
+
+2.21 source references checked:
+- `sources/eraumak_kr_2.21/game/ere/page/page-trainer-office.js`
+- `sources/eraumak_kr_2.21/game/ere/event/others/anniversary.js`
+- `sources/eraumak_kr_2.21/game/ere/event/others/anniversary.kojo`
+- `sources/eraumak_kr_2.21/game/ere/page/page-recruit-rand.js`
+- `sources/eraumak_kr_2.21/game/ere/system/flag/sys-get-star-premium-draw.js`
+
+Current 3.113 top-level keys/functions: **55**
+
+Safely reused Korean overrides: **6**
+- `welcome_trainer_office`
+- `TEN`
+- `TWENTY`
+- `THIRTY`
+- `FORTY`
+- `FIFTY`
+
+The office greeting was matched directly to the 2.21 trainer-office first-visit
+scene. The five anniversary scenes were matched directly to the 2.21
+`anniversary.kojo` text. Only existing Korean wording was reused; no new Korean
+prose was synthesized.
+
+Pending Japanese fallback: **49**
+- `ura_reward`
+- `ur_alternative_reporter`
+- `get_ur_trainer_reward`
+- `get_ur_uma_reward`
+- `sc_event_name`
+- `get_sc_buttons`
+- `sc_event_former`
+- `sc_limit_template`
+- `sc_name_template`
+- `sc_name_inherited_template`
+- `sc_event_latter`
+- `star_drew_limited`
+- `star_drew_wrong_date`
+- `star_drew_intro`
+- `star_drew_options`
+- `star_drew_filter_template`
+- `star_drew_filter_kojo_template`
+- `star_drew_filter_image`
+- `star_drew_bt_filter_kojo_r`
+- `star_drew_bt_filter_kojo_d`
+- `star_drew_bt_filter_kojo_ed`
+- `star_drew_bt_filter_kojo_l`
+- `star_drew_bt_filter_kojo_er`
+- `star_drew_bt_filter_kojo_b`
+- `star_drew_bt_filter_image`
+- `sd_f_title_kojo_r`
+- `sd_f_title_kojo_d`
+- `sd_f_title_kojo_ed`
+- `sd_f_title_kojo_l`
+- `sd_f_title_kojo_er`
+- `sd_f_title_kojo_b`
+- `sd_f_title_image`
+- `get_star_drew_selected`
+- `star_drew_all_chara`
+- `star_drew_other_chara`
+- `star_drew_chara_name_input`
+- `star_drew_chara_id_input`
+- `star_drew_duplicate`
+- `star_drew_no_one`
+- `star_drew`
+- `grand_live_header`
+- `fund_reject`
+- `fund_summary`
+- `bt_fund`
+- `bt_ransom`
+- `fund_confirm`
+- `fund_result`
+- `get_ransom_confirm`
+- `ransom_result`
+
+No sufficiently reliable direct 2.21 structural match was confirmed for these
+49 entries in the checked source areas, so they remain on Japanese fallback.
+
+The Korean module spreads the current Japanese `others/others` object first,
+so every pending key/function remains functional through Japanese fallback.
