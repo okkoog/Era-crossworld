@@ -19,6 +19,7 @@ module.exports = class extends JaTimon {
   tachyon_shop = proxy_kojo_js(
     require('#/i18n/ko-KR/timon/others/tachyon-shop'),
   );
+  ero_r = proxy_kojo_js(require('#/i18n/ko-KR/timon/sex/ero-rape'));
   ero_sys = proxy_kojo_js(require('#/i18n/ko-KR/timon/sex/system'));
   act_desc_c = proxy_kojo_js(
     require('#/i18n/ko-KR/timon/sex/act-desc-common'),
