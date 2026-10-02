@@ -1210,3 +1210,48 @@ Next bounded investigation: `sr_strange_lunch` and `sakura_regret`,
 by their matching 2.21 character/event handlers. Leave uncertain segments on
 Japanese fallback. Do not begin a general i18n retranslation or Kojo bulk pass.
 
+### `others/random.js` — seventh matched batch (2026-10-02)
+
+Scope: `sr_strange_lunch` and `sakura_regret` only. Existing 2.21 Korean
+text was reused only where the current 3.113 scene directly matched.
+
+#### `sr_strange_lunch`
+- Direct source: `sources/eraumak_kr_2.21/game/ere/event/daily/daily-common.js`,
+  lines 611–676.
+- Both versions retain `@author KUN`, the rooftop/lunch scene, the same
+  dialogue order, two choices and the same two result branches.
+- Reused **24 Korean string literals**, including title
+  `묘한 점심 식사`.
+- Current 3.113 parameters, return array and control flow are preserved.
+- No old gameplay side effects (`우마뾰이Z`, lust change, quick sex entry)
+  were copied into the i18n module.
+
+#### `sakura_regret`
+No sufficiently reliable direct 2.21 scene match was confirmed.
+Checked:
+- `event/love/snippets/punish-rejecting-love.js`
+- `event/love/love-common.js`
+- `event/daily/daily-common.js`
+- the 2.21 edu/daily/love character-event tree for the current Sakura-family
+  character IDs (41 / 69 / 76 / 126); those current character-specific event
+  directories are not present in the 2.21 tree.
+
+Therefore `sakura_regret` remains on the current Japanese fallback. No Korean
+prose was synthesized.
+
+Validation: **PASS**.
+- `random.js` JS syntax: OK.
+- Every Korean literal used by the new `sr_strange_lunch` override exists
+  verbatim in the identified 2.21 source.
+- Current random scenes: **38**.
+- Korean overrides: **18**.
+- Entire-scene fallbacks: **20**.
+
+Detailed machine-readable record:
+[REUSE_RANDOM_BATCH_07.json](REUSE_RANDOM_BATCH_07.json).
+
+Remaining scenes never given a first detailed source match by this workflow:
+`ts_sex`, `ts_shower`, `we_are_one`, `justice`.
+
+Next bounded investigation: `ts_sex` and `ts_shower`.
+
