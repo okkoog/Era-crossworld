@@ -1,6 +1,9 @@
 const JaKojo = require('#/i18n/ja-JP/kojo/entry');
 
 module.exports = class extends JaKojo {
+  17 = new (require('#/i18n/ko-KR/kojo/101700-Symboli-Rudolf/entry'))();
+  3 = new (require('#/i18n/ko-KR/kojo/100300-Tokai-Teio/entry'))();
+  1 = new (require('#/i18n/ko-KR/kojo/100100-Special-Week/entry'))();
   4 = new (require('#/i18n/ko-KR/kojo/100400-Maruzensky/entry'))();
   7 = new (require('#/i18n/ko-KR/kojo/100700-Gold-Ship/entry'))();
   2 = new (require('#/i18n/ko-KR/kojo/100200-Silence-Suzuka/entry'))();
