@@ -190,7 +190,7 @@ module.exports = {
         '지금 이 순간, 내 처분만을 기다리는 무방비한 몸을 마주하며.',
       );
       await attacker.print_and_wait(
-        `すべきことは、呼吸に合わせて浅く上下する狭い隙間の秘部を見飽きてから、両手の指先に少し力を入れ、${defender.sex}をさらに妖しく濡れた形へ開かせることだけだ。`,
+        `해야 할 일은 그저, 호흡에 따라 얕게 일렁이는 좁은 틈새의 비소를 충분히 감상한 뒤, 손가락 끝에 힘을 주어 ${defender.sex}을(를) 더욱 요염하고 축축한 모양으로 피어나게 만드는 것뿐이다.`,
       );
     },
   async pet_anal(attacker, defender, is_first, a_call_d) {
@@ -433,7 +433,7 @@ module.exports = {
       ]);
       await attacker.print_and_wait('에…… 그래?……');
       await attacker.print_and_wait(
-        `歯を優しく使い、敏感な乳首のまわりに不揃いの赤い痕を残す……ついでに、懐の${defender.teen_sex_title}の体を絶えず震わせる……`,
+        `살살 치아를 놀려 민감한 유두 주변에 울긋불긋한 흔적을 남기며…… 품 안의 ${defender.teen_sex_title} 몸이 끊임없이 떨리게 만든다……`,
       );
       await attacker.print_and_wait([
         '아마 이쪽의 다음 목표를 눈치챈 거겠지. 유두가 혀에 꼼꼼히 핥아지며 미끈거리는 순간, ',
