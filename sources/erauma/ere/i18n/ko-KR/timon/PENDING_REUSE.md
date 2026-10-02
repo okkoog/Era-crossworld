@@ -433,3 +433,47 @@ functions remain functional through Japanese fallback.
 - `sex/ero-rape.js`, `sex/ero-sleep.js`, `sex/ero-common.js`
   - Existing Korean scene material is present, but these are substantially
     larger and should be handled in separate chunks.
+
+### `sex/act-desc-common.js`
+
+2.21 source references checked in this pass:
+- `normal-communications.js`
+- `normal-orgy.js`
+- `normal-sm.js`
+- `normal-items.js` (structure checked; no item overrides reused yet)
+
+Current 3.113 action-description functions: **162**
+
+Safely reused Korean overrides so far: **47**
+
+Reused groups:
+- common communication/control: **10**
+  - `go_on`, `kiss`, `french_kiss`, `lure`, `talk`
+  - `passive_switch`, `active_switch`, `resist`, `gargle`, `wipe_body`
+- group/three-person actions: **23**
+  - all current functions corresponding to the matched 2.21 `normal-orgy.js` handlers,
+    including the now-split vaginal/anal spit-roast variants
+- SM actions: **14**
+  - the 2.21 combined normal/hard handlers were safely split into the current
+    separate functions without changing the existing Korean wording
+
+Pending Japanese fallback: **115 functions**
+
+Known pending from the checked groups:
+- `relax`
+  - 2.21 branches on awake/exhausted state while current 3.113 has a single
+    simplified description; no Korean text was synthesized
+- `sleep`
+  - no direct normal-communication handler in the checked 2.21 source
+- item/action functions
+  - 2.21 grouped `use_item`, medicine/self use, lubricant/self use, and
+    item removal into handlers driven by `extra_flag`
+  - 3.113 splits these into multiple explicit functions, so reuse requires
+    function-by-function structural matching rather than bulk conversion
+
+Still to classify inside this same file:
+- `normal-making-outs.js`
+- `normal-fucking.js`
+
+The Korean module spreads `ja-JP/timon/sex/act-desc-common` first, so every
+pending function remains functional through Japanese fallback.
