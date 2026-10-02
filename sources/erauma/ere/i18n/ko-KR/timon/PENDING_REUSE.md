@@ -155,12 +155,69 @@ pending keys continue to work through Japanese fallback.
 
 ### `mejiro/cum.js`
 
-2.21 source:
+2.21 source references:
 - `sources/eraumak_kr_2.21/game/ere/event/others/mejiro-kindness/mejiro-events.js`
 - `sources/eraumak_kr_2.21/game/ere/event/others/mejiro-kindness/cum-shop.js`
 
-Korean text exists, but the current i18n function/property names no longer
-match the 2.21 implementation directly. Do not bulk-copy by position.
+Current 3.113 top-level keys/functions: **111**
+
+Safely reused Korean overrides in this pass: **73**
+
+Reused area:
+- Mejiro City street/shop UI
+- beauty salon labels and unchanged limit/warning messages
+- hospital labels and dialogue
+- massage shop labels and result text
+- library labels and dialogue
+- prize shop labels and grand-prize dialogue
+- newspaper UI/dialogue
+- bank UI/dialogue
+- city hall dialogue
+- leaving-the-city notification
+
+Pending keys/functions left on Japanese fallback because the 2.21 structure or
+meaning changed enough that direct reuse was not reliable:
+- `calling_tip`
+- `calling_buttons`
+- `calling_not_chara_tip`
+- `calling_god_tip`
+- `come_limited`
+- `get_header`
+- `bt_slow_forward`
+- `bt_normal_forward`
+- `bt_fast_forward`
+- `bt_slow_search`
+- `bt_normal_search`
+- `bt_fast_search`
+- `bt_rest`
+- `bt_surrender`
+- `city_upgrade_max`
+- `city_bs_height_up_template`
+- `city_bs_height_down_template`
+- `city_bs_boob_up_template`
+- `city_bs_boob_down_template`
+- `city_bs_penis_bigger_man_template`
+- `city_bs_penis_bigger_woman_template`
+- `city_bs_penis_smaller_man_template`
+- `city_bs_penis_smaller_futa_template`
+- `city_bs_ero_deeper`
+- `city_bs_ero_deeper_limit_tip`
+- `city_bs_ero_shallower`
+- `city_bs_ero_shallower_limit_tip`
+- `city_bs_skin_shallower_template`
+- `city_bs_skin_deeper_template`
+- `city_bs_uma_template`
+- `city_mg_trained_talent_template`
+- `come_in_mejiro_city`
+- `misty_notify`
+- `get_misty_info`
+- `fail_to_escape`
+- `leave_misty`
+- `notify_misty`
+- `notify_called`
+
+The Korean module spreads the current Japanese object first, so all 38 pending
+keys/functions remain functional through Japanese fallback.
 
 ## No direct 2.21 reuse match found in this pass
 
