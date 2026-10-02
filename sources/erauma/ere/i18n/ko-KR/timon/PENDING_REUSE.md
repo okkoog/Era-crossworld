@@ -1463,3 +1463,25 @@ Next bounded investigation starts with `get_star_drew_selected`, covers the
 remaining premium-draw selection/result UI, then continues into the investment
 block only while staying inside the established batch size.
 
+### `others/others.js` reuse classification complete
+
+Final batch checked the remaining **17** unresolved keys:
+
+- premium-draw selection/confirmation: 8
+- Grand Live next-year header: 1
+- investment/redemption UI and dialogue: 8
+
+Safely reused Korean overrides in this final batch: **0**.
+
+No direct 2.21 Korean text matched these current 3.113 strings closely enough for
+literal reuse, so all 17 remain on Japanese fallback. No fresh Korean prose was
+created.
+
+Classification record:
+- `REUSE_OTHERS_BATCH_03.json`
+
+Result:
+- all **49** previously missing keys in `others/others.js` have now been classified
+  across batches 1–3;
+- the six Korean overrides already present in the module remain unchanged;
+- **unclassified reuse candidates: 0** for this module.
