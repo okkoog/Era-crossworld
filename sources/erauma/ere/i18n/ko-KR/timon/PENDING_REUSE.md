@@ -691,28 +691,32 @@ The Korean module spreads the current Japanese `sex/ero-sleep` object first, so 
 - `sources/eraumak_kr_2.21/game/ere/event/ero/common/normal/making-outs-1.js`
 - `sources/eraumak_kr_2.21/game/ere/event/ero/common/normal/making-outs-2.js`
 - `sources/eraumak_kr_2.21/game/ere/event/ero/common/normal/making-outs-final.js`
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/normal/fucking.js`
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/normal/orgy.js`
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/normal/sm.js`
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/normal/items.js`
 
 Current 3.113 top-level scene functions: **95**
 
-Safely reused Korean scene functions so far: **25**
+Safely reused Korean scene functions so far: **35**
 
-Newly reused in this pass:
-- `hand_job`
-- `tit_job`
-- `tit_and_blow_job`
-- `suck_nipple`
-- `bite_nipple`
-- `ask_milk_and_hand_job`
-- `non_penetrative`
-- `armpit_intercourse`
-- `foot_job`
-- `tail_job`
+Newly reused in this pass from `normal/fucking.js`: **10**
+- `missionary`
+- `doggy_style`
+- `sitting`
+- `hug_sitting`
+- `standing`
+- `hug_standing`
+- `suspended_congress`
+- `hug_suspended_congress`
+- `ask_cowgirl`
+- `stimulate_g_spot`
 
-These 10 functions keep the current 3.113 control/signature structure while
+These functions keep the current 3.113 signatures and control structure while
 reusing only Korean prose already present in EraUmaK 2.21. No new Korean prose
 was synthesized.
 
-Pending Japanese fallback: **70 functions**
+Pending Japanese fallback: **60 functions**
 - `after_refused`
 - `resist`
 - `pet_breast_from_back`
@@ -755,17 +759,7 @@ Pending Japanese fallback: **70 functions**
 - `hair_fuck`
 - `ask_hair_fuck`
 - `force_hair_fuck`
-- `missionary`
-- `doggy_style`
-- `sitting`
-- `hug_sitting`
-- `standing`
-- `hug_standing`
-- `suspended_congress`
-- `hug_suspended_congress`
-- `ask_cowgirl`
 - `ask_stimulate_glans_by_hole`
-- `stimulate_g_spot`
 - `stimulate_womb`
 - `ask_fuck`
 - `cowgirl`
@@ -784,6 +778,6 @@ Pending Japanese fallback: **70 functions**
 - `spit_roast`
 - `use_medicine`
 
-The Korean module spreads the current Japanese `sex/ero-common` object first,
-so every pending function remains functional through Japanese fallback.
+The Korean module spreads `ja-JP/timon/sex/ero-common` first, so every
+pending function remains functional through Japanese fallback.
 
