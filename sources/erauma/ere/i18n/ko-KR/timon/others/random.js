@@ -1890,4 +1890,86 @@ module.exports = {
     return f;
   })(),
 
+
+  ts_sex: (() => {
+    /**
+     * @author 雞雞
+     * @param {CharaTalk} chara
+     */
+    const f = async (chara) => {
+      await printAndWait([
+        '트레이닝이 끝난 후, ',
+        chara.get_colored_name(),
+        '의 모습이 좀 이상한 것 같다...',
+      ]);
+      await printAndWait(
+        '얼굴이 붉게 달아올라, 두 다리 사이로 흘러내리는 정체불명의 액체가 땀과 섞여 음란한 냄새를 풍기고 있다.',
+      );
+      printButton('「이것도 트레이너의 의무니까...」', 1);
+      printButton('「빨리 보건실로 가자!」', 2);
+      const ret = await input();
+      return [ret];
+    };
+    f.title = '트레이닝 후 성욕 고조';
+    return f;
+  })(),
+
+  ts_shower: (() => {
+    /**
+     * @author 幽白書
+     * @param {CharaTalk} chara キャラ
+     * @param {CharaTalk} you プレイヤー
+     * @param {boolean} want_sex 相手が性行為に同意するか
+     */
+    const f = async (chara, you, want_sex) => {
+      const ret = [];
+      await printAndWait([
+        '음? ',
+        chara.get_colored_name(),
+        '은(는) 아직 안 왔나?',
+      ]);
+      await printAndWait('그럼 이 기회에 먼저 샤워나 할까!');
+      println();
+      await printAndWait([
+        '문을 여니 눈앞에 알몸인 ',
+        chara.get_colored_name(),
+        '이(가) 들어왔다...',
+      ]);
+      printButton('「오, 같이 목욕할래?」', 1);
+      printButton('「방해해서 미안!」', 2);
+      ret.push(await input());
+      if (ret[0] === 1) {
+        if (want_sex) {
+          await printAndWait('흥미진진한 모습으로 승낙해 주었다.');
+          await printAndWait('互いに背中を流し合った。');
+          await printAndWait([
+            '목욕을 마친 후 ',
+            chara.sex,
+            '는 ',
+            you.get_colored_name(),
+            '을(를) 다소 아쉬운 눈빛으로 바라봤다...',
+          ]);
+        } else {
+          await chara.say_and_wait('바보. 뭔 소리 하는거야!');
+          await printAndWait([you.get_colored_name(), '은(는) 쫒겨났다...']);
+        }
+      } else {
+        await you.say_and_wait('방해해서 미안!');
+        await printAndWait([
+          you.get_colored_name(),
+          '은(는) 큰 소리로 외치고 밖으로 뛰쳐나갔다.',
+        ]);
+        await printAndWait([
+          '얼마 뒤, 샤워를 마친 ',
+          chara.get_colored_name(),
+          '이(가) 얼굴을 붉히며 걸어나왔다.',
+        ]);
+      }
+      return ret;
+    };
+    f.title = '샤워실 안에서';
+    return f;
+  })(),
+
+
 };
