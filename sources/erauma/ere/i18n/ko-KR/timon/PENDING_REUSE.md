@@ -489,3 +489,121 @@ Remaining Japanese fallback functions after this pass:
 
 The Korean module spreads `ja-JP/timon/sex/act-desc-common` first, so every
 pending function remains functional through Japanese fallback.
+
+### `sex/system.js`
+
+2.21 source references checked:
+- `sources/eraumak_kr_2.21/game/ere/page/page-ero.js`
+- `sources/eraumak_kr_2.21/game/ere/system/ero/sys-prepare-ero.js`
+- `sources/eraumak_kr_2.21/game/ere/system/ero/sys-calc-orgasm.js`
+- `sources/eraumak_kr_2.21/game/ere/system/ero/sys-handle-ero-act.js`
+- `sources/eraumak_kr_2.21/game/ere/event/ero/ero-common.js`
+
+Current 3.113 top-level keys/functions: **95**
+
+Safely reused Korean overrides in this pass: **4**
+- `get_milk_ml`
+- `get_milk_item`
+- `get_your_milk_info`
+- `ero_report`
+
+The three milking result helpers reuse only wording already present in the old
+`print_milking()` block. `ero_report` reuses the old Korean reporter dialogue
+verbatim. No new Korean prose was synthesized.
+
+Pending Japanese fallback: **91 keys/functions**
+- `bt_back_home`
+- `bt_rape_play`
+- `bt_use_medicine`
+- `get_want_sex_as_lover`
+- `get_want_sex_as_slave`
+- `choose_who_to_rape`
+- `use_medicine_header`
+- `no_medicine_notification`
+- `use_super_uma_z`
+- `use_uma_s`
+- `get_want_sex_as_master_by_pleasure`
+- `get_want_sex_as_master_by_meek`
+- `bt_start_train`
+- `bt_train_back_home`
+- `get_want_sex_as_raper`
+- `bt_rape`
+- `bt_drug`
+- `rape`
+- `drug`
+- `after_rape_by_super_uma_z`
+- `get_want_sex_sleep`
+- `bt_rape_in_sleeping`
+- `lub_select_target`
+- `select_entry_template`
+- `get_lub_give_up`
+- `lub_no_parts`
+- `get_lub_select_part`
+- `get_lub_confirm`
+- `med_no_medicines`
+- `med_select_target`
+- `get_med_give_up`
+- `get_med_no_medicines_for_chara`
+- `med_no_medicines_for_you`
+- `get_med_select_medicine`
+- `med_select_medicine_for_you`
+- `get_med_confirm_for_chara`
+- `get_med_confirm_for_you`
+- `get_med_give_up_medicine`
+- `itm_no_items`
+- `itm_select_item`
+- `get_itm_select_part`
+- `itm_no_parts`
+- `get_itm_confirm_with_part`
+- `get_itm_confirm_without_part`
+- `get_itm_give_up_item`
+- `itm_take_off_select_target`
+- `get_itm_give_up_take_off`
+- `get_itm_no_item_to_take_off`
+- `itm_take_off_select_item`
+- `itm_take_off_select_entry_template`
+- `itm_take_off_mirror_confirm`
+- `get_itm_take_off_confirm`
+- `get_itm_take_off_give_up`
+- `get_change_master_info`
+- `get_escape_info`
+- `orgasm`
+- `orgasm_template`
+- `get_chara_total_orgasm`
+- `get_chara_part_orgasm`
+- `get_chara_spirit_orgasm`
+- `get_chara_have_liquid`
+- `liquid_amount_template`
+- `get_chara_cum_on_face`
+- `get_chara_cum_in_condom`
+- `get_chara_cum_in_artificial_vagina`
+- `get_chara_cum_in_part`
+- `get_chara_cum`
+- `cum_in_anal`
+- `cum_in_body`
+- `cum_in_breast`
+- `cum_in_clitoris`
+- `cum_in_foot`
+- `cum_in_hand`
+- `cum_in_mouth`
+- `cum_in_penis`
+- `cum_in_virgin`
+- `get_milk_info`
+- `get_squirt_info`
+- `unsatisfied_mouth`
+- `unsatisfied_nipple`
+- `unsatisfied_hidden_nipple`
+- `unsatisfied_body`
+- `unsatisfied_penis`
+- `unsatisfied_clitoris`
+- `unsatisfied_vagina`
+- `unsatisfied_sadism`
+- `unsatisfied_sadism_zero_stamina`
+- `unsatisfied_masochism`
+- `unsatisfied_masochism_zero_stamina`
+- `unsatisfied_lose_virgin_p`
+- `unsatisfied_lose_virgin_v`
+
+The Korean module spreads the current Japanese `sex/system` object first, so
+all pending keys/functions remain functional through Japanese fallback.
+
