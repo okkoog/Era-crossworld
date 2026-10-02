@@ -2422,4 +2422,177 @@ module.exports = {
     );
   },
 
+
+
+  // Reused from EraUmaK 2.21 normal-items.js
+  async use_lubricating_fluid(attacker, defender, part) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '은(는) 윤활액을 ',
+      defender.get_colored_name(),
+      '의 ',
+      part,
+      '에 발랐다】',
+    ]);
+  },
+
+  async use_lubricating_fluid_self(attacker, _, part) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '은(는) 윤활액을 ',
+      { color: attacker.color, content: '자신' },
+      '의 ',
+      part,
+      '에 발랐다】',
+    ]);
+  },
+
+  async use_medicine(attacker, defender, medicine) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '은(는) ',
+      defender.get_colored_name(),
+      '에게 ',
+      medicine,
+      '을(를) 먹였다】',
+    ]);
+  },
+
+  async use_medicine_self(attacker, _, medicine) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '은(는) ',
+      medicine,
+      '을(를) 복용했다】',
+    ]);
+  },
+
+  async condom(attacker) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '은(는) ',
+      { color: attacker.color, content: '자신' },
+      '의 육봉에 ',
+      { color: attacker.color, content: '콘돔' },
+      '을 씌웠다】',
+    ]);
+  },
+
+  async other_condom(attacker, defender) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '은(는) ',
+      defender.get_colored_name(),
+      '의 육봉에 ',
+      { color: attacker.color, content: '콘돔' },
+      '을 씌웠다】',
+    ]);
+  },
+
+  async item_effect(attacker, defender, part, verb, item) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '의 ',
+      verb,
+      ' 한',
+      item,
+      '이(가) 계속해서 ',
+      defender.get_colored_name(),
+      '의 ',
+      part,
+      '을(를) 자극하고 있다】',
+    ]);
+  },
+
+  async equip_item(attacker, defender, part, verb, item) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '은(는) ',
+      defender.get_colored_name(),
+      '의 ',
+      part,
+      '에 ',
+      item,
+      '을(를) ',
+      verb,
+      '했다】',
+    ]);
+  },
+
+  async equip_other_item(attacker, defender, item) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '은(는) ',
+      defender.get_colored_name(),
+      '에게 ',
+      item,
+      '을(를) 착용시켰다】',
+    ]);
+  },
+
+  async use_electric_stunner(attacker, defender, part) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '은(는) ',
+      defender.get_colored_name(),
+      '의 ',
+      part,
+      '에 전기 충격을 가했다】',
+    ]);
+  },
+
+  async use_mirror(attacker) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '은(는) 전신 거울을 세웠다】',
+    ]);
+  },
+
+  async take_off_mirror(attacker) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '은(는) 전신 거울을 치웠다】',
+    ]);
+  },
+
+  async take_off_item(attacker, defender, part, item) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '은(는) ',
+      defender.get_colored_name(),
+      '의 ',
+      part,
+      '에서 ',
+      item,
+      '을(를) 제거했다】',
+    ]);
+  },
+
+  async take_off_item_self(attacker, part, item) {
+    await printAndWait([
+      '【',
+      attacker.get_colored_name(),
+      '은(는) ',
+      { color: attacker.color, content: '자신' },
+      '의 ',
+      part,
+      '에서 ',
+      item,
+      '을(를) 제거했다】',
+    ]);
+  },
+
 };
