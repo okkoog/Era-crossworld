@@ -30,30 +30,30 @@ Reused Korean overrides: **33**
 The Korean object inherits from `ja-JP/timon/others/storage`, so unmatched
 keys keep working through Japanese fallback.
 
-Pending storage keys (no sufficiently reliable 2.21 Korean match was reused):
+Storage fallback classification is now complete.
 
-- `single_vehicle_canceled`
-- `multiple_vehicle_canceled`
-- `glass_have_lens_template`
-- `glass_equip_confirm_template`
-- `glass_lens_broken_template`
-- `before_ero_item_common_description`
-- `drop_confirm_template`
-- `drop_quilt`
-- `drop_family_uma_s`
-- `use_inmon_item`
-- `get_chara_use_medicine`
-- `get_chara_use_milk_medicine`
-- `anti_condom_for_man`
-- `anti_condom_duplicate`
-- `anti_condom_confirm`
-- `use_anti_condom`
-- `get_sell_milk_confirm`
-- `get_sell_milk_result`
-- `make_armpit_hair_longer`
-- `make_armpit_hair_shorter`
-- `make_pubic_hair_longer`
-- `make_pubic_hair_shorter`
+The remaining **22** current 3.113 storage keys were checked against the
+corresponding 2.21 storage handlers. Safely reusable Korean overrides found in
+this classification pass: **0**.
+
+Reason by group:
+- vehicle cancellation: matching 2.21 output is Chinese;
+- glasses/lens residual UI: current generic state split does not have a direct
+  Korean 2.21 equivalent;
+- pre-use/discard, inmon/medicine, condom-dissolver, milk-sale, and hair-care
+  residual text: matching 2.21 output is Chinese or mixed Chinese/Korean rather
+  than a complete reusable Korean sentence.
+
+No fresh Korean prose was created. All 22 remain on Japanese fallback.
+
+Classification record:
+- `REUSE_STORAGE_BATCH_01.json`
+
+Result:
+- current 3.113 storage keys: **55**;
+- existing Korean overrides: **33**;
+- classified Japanese fallbacks: **22**;
+- unclassified reuse candidates: **0**.
 
 ### `others/ending.js`
 
