@@ -62,10 +62,10 @@ public sealed class ContinueInputProbe:IPluginMethod {
      game=new Session(Path.Combine(root,"sav-probe"),()=>0,_=>{},true);
      game.LoadGame(p["source"],p["engine"],p["kojo"],start:false,resourceRoot:p["resources"],presentationDelays:true);
      typeof(Bridge).GetField("session",Flags)!.SetValue(bridge,game);
-     game.Execute("var __probeStage=0,__probeResults=[];");
+     game.Execute("var __probeStage=0,__probeResults=[],__probeTimerFirings=0;");
      game.Start("""
       await era.clear();era.print('Narrative click');await era.input({any:true});__probeResults.push('continue');
-      __probeStage=1;era.print('Timed narrative click');var timer=setTimeout(()=>{},10000);await era.input({any:true});clearTimeout(timer);__probeResults.push('timed');
+      __probeStage=1;era.print('Timed narrative click');var timer=setTimeout(function pulse(){__probeTimerFirings++;timer=setTimeout(pulse,100);},100);await era.input({any:true});clearTimeout(timer);__probeResults.push('timed');
       __probeStage=2;await era.clear();era.printButton('Choose seven',7);var value=await era.input();if(value!==7)throw Error('Wrong numeric choice');__probeResults.push(value);
       __probeStage=3;await era.clear();era.print('Name');value=await era.input({rule:'.+'});if(value!=='Trainer')throw Error('Wrong name');__probeResults.push(value);
       __probeStage=4;await era.clear();era.printButton('Any with choice',8);value=await era.input({any:true});if(value!==8)throw Error('Any discarded active choice');__probeResults.push(value);
@@ -84,8 +84,9 @@ public sealed class ContinueInputProbe:IPluginMethod {
      accepted.Add(previous);return;
     case "finish":
      timer?.Dispose();
-     bool pass=negativePassed&&accepted.SequenceEqual(Enumerable.Range(0,7))&&timedPolls>=1&&game!.State=="done"&&game.Error=="";
-     File.WriteAllText(Path.Combine(root,"continue-input.json"),JsonSerializer.Serialize(new{pass,negativePassed,timedPolls,accepted,results=JsonDocument.Parse(game!.EvaluateJson("__probeResults")).RootElement.Clone(),observations,scope="Production Game.ERB loop with original host and owned MainWindow/EmueraConsole managed methods; no OS input, desktop capture or human play"},new JsonSerializerOptions{WriteIndented=true}));
+     int timerFirings=int.Parse(game!.EvaluateJson("__probeTimerFirings"));
+     bool pass=negativePassed&&accepted.SequenceEqual(Enumerable.Range(0,7))&&timedPolls>=1&&timerFirings>=1&&game!.State=="done"&&game.Error=="";
+     File.WriteAllText(Path.Combine(root,"continue-input.json"),JsonSerializer.Serialize(new{pass,negativePassed,timedPolls,timerFirings,accepted,results=JsonDocument.Parse(game!.EvaluateJson("__probeResults")).RootElement.Clone(),observations,scope="Production Game.ERB loop with original host and owned MainWindow/EmueraConsole managed methods; actual 100ms timer deadline before the click, no OS input, desktop capture or human play"},new JsonSerializerOptions{WriteIndented=true}));
      a[2].intValue=pass?1:-1;return;
    }
    bridge.Execute(a);

@@ -178,6 +178,15 @@ public sealed class FramePaintProbe:IPluginMethod {
     if(game.State!="timer"||!game.HasTimers)throw new Exception("Original presentation delay did not suspend");
     Measure("timer-complete",()=>{game.AdvanceTimers(1100);Action("tick");});
     if(game.State!="input"||!game.EvaluateJson("__screen").Contains("Timer completed"))throw new Exception("Original presentation delay did not complete");
+    // Backlog rendering bypasses REDRAW=0 in the pinned engine. Its retained
+    // bitmap fallback must still guard both full and partial replacement.
+    StartScene();
+    var scroll=(ScrollBar)Get(window,"ScrollBar")!;
+    scroll.Value=Math.Max(scroll.Minimum,scroll.Maximum-2);
+    if(scroll.Value==scroll.Maximum)throw new Exception("Backlog fixture did not scroll");
+    Measure("backlog-full",()=>Action("resume"));
+    scroll.Value=Math.Max(scroll.Minimum,scroll.Maximum-2);
+    Measure("backlog-partial",()=>Action("resume"));
    }
   }finally{Set(console,"msPerFrame",previousMs);Set(console,"state",previousState);}
   var handlersAfter=PaintHandlers();

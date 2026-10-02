@@ -1,4 +1,4 @@
-# era말딸 Emuera.NET 호환판 0.3.2
+# era말딸 Emuera.NET 호환판 0.3.3
 
 보존된 `sources/erauma`의 JavaScript 게임을 Emuera.NET → CALLSHARP → C# → Jint로 실행한다. 게임 규칙을 ERB로 다시 작성하지 않고 원본 Era API의 데이터·캐릭터·육성·저장 처리를 재사용한다. **게임 실행에는 EraElectron, Node.js, 개발용 SDK가 필요하지 않다.** Windows x64와 .NET 10 Windows Desktop Runtime은 필요하다.
 
@@ -6,7 +6,19 @@
 
 실행 기준은 보존된 **EraUma v3.113 (ryuki)**와 공식 **res 20260923**이다. 0.3에서 원본의 24열 배치·버튼·서식·이미지·진행 막대·전체 계열 그래프와 공식 리소스를 연결했다. **0.3.0의 사용자 직접 시험은 실패했다.** 빈 화면 클릭으로 대사가 진행되지 않고 선택할 때 이전 그림·버튼이 겹쳐 남아 레이스 이전에 시험을 중단했다. 0.3.1은 이 두 문제를 수정했고 사용자는 이전보다 부드러워졌다고 보고했지만 레이스 화면 깜빡임이 영상에서 확인됐다. 0.3.2는 화면 교체 중 빈 프레임을 노출하는 갱신 순서를 수정하는 버전이며 새 Paint 자동 검사를 통과했다. 전체 직접 플레이와 실제 음악 청취는 아직 미확인이다. 자동 검증을 직접 플레이 결과로 취급하거나 재작업 전체를 완료로 판정하지 않는다. 세부 상태는 [이식 현황](docs/ERAUMA_PORTING_STATUS.md), [UI·리소스 현황](docs/ERAUMA_UI_STATUS.md)에 있다.
 
-## 0.3.2 레이스 화면 갱신 수정 — 자동 검사 PASS
+## 0.3.3 레이스 FPS 개선 — 갱신 비용 비교 PASS
+
+기록일: 2026-10-02. 사용자는 **0.3.2에서 깜빡임 수정은 성공했지만 FPS가 낮아졌다**고 확인했고 FPS 개선을 승인했다. 0.3.3은 완성 화면을 한 번 출력하도록 갱신 비용을 줄이는 버전이다. 게임 규칙과 저장 버전 숫자 `3`은 유지한다.
+
+`NativeFrameUpdate.ClearDisplay`는 고정 실행기의 화면 자료 리셋을 그대로 수행하고 마지막의 강제 `window.Refresh`만 생략한다. 행·여백이 완성되면 한 번 commit한다. 정상 경로에서는 이전 canvas snapshot을 만들지 않으며 paint가 밀린 경우에는 기존 bitmap gate를 fallback으로 사용한다. sprite 128슬롯 재사용·현재/보존 행과 배경 pin·삭제된 handle 검사, 텍스트 크기·font 캐시, 빈 cell의 geometry를 유지한 불필요한 div 생략과 같은 `buttonEpoch`의 중복 `__redraw` 생략도 적용한다. 대기 시간은 원본 다음 deadline까지의 남은 시간을 사용하고 양수 대기는 최소 1ms로 유지한다.
+
+같은 원본 레이스의 30개 표본·8회 warmup에서 갱신 시간 중앙값은 **196.78ms → 48.93ms(4.02배 개선)**, p95는 225.87ms → 58.85ms로 줄었다. 갱신 객체 생성 시간은 113.85ms → 0.0216ms다. 비교 보고서는 `outputs/race-performance-0.3.3-comparison.json`, 대조·후보 보고서는 `outputs/frame-paint-725910d4/summary.json`과 `outputs/frame-paint-b06e86dd/summary.json`이다.
+
+별도 4배속 원본 레이스의 숨긴 시험 창에서는 3.37 → 8.74 commits/s를 관찰했다. 이 측정은 이전 50프레임·이번 38프레임으로 표본 수가 다르며 이번 정상 구간 프레임 간격 중앙값은 110.66ms다. **이 수치는 실제 사용자 FPS나 60fps 달성을 뜻하지 않는다.** 남은 HTML parse 15.84ms·native commit 29.01ms와 입력 대기 진입 시 추가 Paint가 있으며 레이스 프레임 보간은 미구현이다.
+
+backlog 2개를 포함한 총 9회 Paint 전환이 중간 그림 0·handler 2→2·후속 새로고침 3회 복원으로 PASS했다(`outputs/frame-paint-0719d439`). 일반 7회는 프레임당 Paint 1회, backlog-full은 1회·backlog-partial은 2회다. 타이머 22개·API 21개·기본 10개도 PASS다(`outputs/adaptive-timer-1790897678741`). 이미지 캐시 21개는 누적 이미지 720개·128슬롯 교체·native unload·삭제된 sprite·배경 크기 변경을 통과했다. 입력 출력 4프레임의 미관리 행은 `[0,0,0,0]`으로 PASS했고(`outputs/input-echo-679f186c`), 일반 게임 입력 루프 7단계도 실제 100ms callback 2회·타이머 polling 3회로 PASS했다(`outputs/continue-input-66b6a031/runtime/continue-input.json`). 원본 canvas 23개는 전체 갱신 26회·부분 27회·205행 보존·경고 0으로 PASS했다(`artifacts/runtime-UiScreens-9fcdc744`). 배포 Compatibility DLL과 같은 SHA의 읽기 복사본으로 호스트 6모드·130검사가 PASS했고(`outputs/host-regression-0.3.3-1790905951267/host-regression-summary.json`), 실제 실행기 7단계도 PASS다(`outputs/native-regression-0.3.3-54a599ed`). 같은 배포 구성의 공백 경로 이동 검사에서 원본 23화면·레이스 20회 갱신도 PASS했으며 전체 사람 직접 플레이·실제 음악 청취는 미확인이다. 검토용 결과는 `docs/evidence/0.3.3/`에 보존한다. 아래 0.3.2 결과는 해당 버전의 역사적 근거로 구별한다.
+
+## 0.3.2 레이스 화면 갱신 수정의 역사적 근거
 
 사용자의 0.3.1 영상은 60fps·310프레임·5.1667초다. 화면 전체가 주기적으로 사라지는 구간 45회, 빈 화면 114프레임(36.8%)을 확인했다. 각 구간은 약 17–67ms이며 이전 그림이 계속 겹쳐 남는 현상과는 다른 화면 갱신 결함이다.
 

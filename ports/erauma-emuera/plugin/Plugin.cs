@@ -9,7 +9,7 @@ public sealed class PluginManifest : PluginManifestAbstract
     public PluginManifest() { methods.Add(new Bridge()); }
     public override string PluginName => "EraUma Emuera.NET";
     public override string PluginDescription => "Standalone original eraUma game through a managed JavaScript bridge.";
-    public override string PluginVersion => "0.3.2";
+    public override string PluginVersion => "0.3.3";
     public override string PluginAuthor => "ERA CrossWorld";
 }
 public sealed class Bridge : IPluginMethod
@@ -20,6 +20,7 @@ public sealed class Bridge : IPluginMethod
     long nextUrl=-900000;
     NativeImages? images;
     NativeAudio? audio;
+    UiRenderer? uiRenderer;
     int tailPadding;
     long renderedLineCount=-1;
     int discardedInputEchoLines;
@@ -62,6 +63,9 @@ public sealed class Bridge : IPluginMethod
             {
                 case "input-kind":
                     args[2].intValue=session?.WaitingForContinue==true?1:0;
+                    args[3].strValue="";return;
+                case "timer-delay":
+                    args[2].intValue=session?.NextTimerDelayMilliseconds??50;
                     args[3].strValue="";return;
                 case "start":
                     session=new Session(Path.Combine(root,"sav"),()=>api.GetIntVar("GLOBAL",0),x=>api.SetIntVar("GLOBAL",x,0));
@@ -108,7 +112,7 @@ public sealed class Bridge : IPluginMethod
                 case "exit":
                     if(session?.State is "input" or "timer")throw new InvalidOperationException("Finish the game session before exiting");
                     var ui=SynchronizationContext.Current??throw new InvalidOperationException("Emuera UI context is unavailable");
-                    audio.Dispose();images.Dispose();
+                    audio.Dispose();images.Dispose();uiRenderer?.Dispose();
                     ui.Post(_=>System.Windows.Forms.Application.ExitThread(),null);break;
                 case "skip-text":
                     for(var n=0;n<300;n++) {
@@ -179,7 +183,7 @@ public sealed class Bridge : IPluginMethod
             Render(session?.Drain()??Array.Empty<OutputEvent>());
             void Render(IReadOnlyList<OutputEvent> items)
             {
-              var renderer=new UiRenderer(api,images.Resolve,RegisterUrl);
+              var renderer=uiRenderer??=new UiRenderer(api,images.Resolve,RegisterUrl);
               bool inRow=false;
               var console=NativeImages.EngineConsole();
               using var frame=items.Count>0?new NativeFrameUpdate(console):null;
@@ -222,8 +226,10 @@ public sealed class Bridge : IPluginMethod
                 }else fullFrames++;
               }
               if(items.Count>0)lastButtons=items.Where(x=>x.Kind=="button").Select(x=>x.Button).ToArray();
+              if(items.Count>0)images.BeginUpdate(preserve>0||!replace);
+              try {
               foreach(var item in items) {
-                if(item.Kind=="clear") {if(preserve==0){api.ClearDisplay();images.Clear();urls.Clear();nextUrl=-900000;}inRow=false;}
+                if(item.Kind=="clear") {if(preserve==0){frame!.ClearDisplay();urls.Clear();nextUrl=-900000;}inRow=false;}
                 else if(item.Kind=="row-start") {PrintRow(item,()=>renderer.Render(item.Text));inRow=true;}
                 else if(item.Kind=="row-end")inRow=false;
                 else if(inRow)continue;
@@ -247,6 +253,7 @@ public sealed class Bridge : IPluginMethod
                 api.FlushConsole();
               }
               if(items.Count>0)renderedLineCount=(long)console.GetType().GetProperty("LineCount")!.GetValue(console)!;
+              } finally {if(items.Count>0)images.EndUpdate();}
               void PrintRow(OutputEvent item,Action draw){
                 int index=rowIndex++;
                 if(replace&&index<preserve)return;
@@ -254,16 +261,16 @@ public sealed class Bridge : IPluginMethod
                 draw();api.FlushConsole();
                 if(replace&&index<newRows.Count)newRows[index]=newRows[index] with{Lines=checked((int)((long)console.GetType().GetProperty("LineCount")!.GetValue(console)!-before))};
               }
-              long RegisterUrl(string value){
-                if(!Uri.TryCreate(value,UriKind.Absolute,out var uri)||uri.Scheme is not ("http" or "https")||!string.IsNullOrEmpty(uri.UserInfo))return 0;
-                var existing=urls.FirstOrDefault(x=>x.Value==uri.AbsoluteUri);
-                if(existing.Key!=0)return existing.Key;
-                var id=nextUrl--;urls[id]=uri.AbsoluteUri;return id;
-              }
             }
             args[2].intValue=session?.State switch {"input"=>session.HasTimers?4:1,"timer"=>3,"done"=>2,"error"=>-1,_=>0};
             args[3].strValue=session?.Error??"";
         }
         catch(Exception error) {lastActionError=error.ToString();args[2].intValue=-1;args[3].strValue=lastActionError;}
+    }
+    long RegisterUrl(string value){
+        if(!Uri.TryCreate(value,UriKind.Absolute,out var uri)||uri.Scheme is not ("http" or "https")||!string.IsNullOrEmpty(uri.UserInfo))return 0;
+        var existing=urls.FirstOrDefault(x=>x.Value==uri.AbsoluteUri);
+        if(existing.Key!=0)return existing.Key;
+        var id=nextUrl--;urls[id]=uri.AbsoluteUri;return id;
     }
 }

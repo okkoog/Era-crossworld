@@ -2,6 +2,11 @@ using EraUma.Compatibility;
 using System.Diagnostics;
 using System.Text.Json;
 var directory=Path.Combine(Path.GetTempPath(),"erauma-probe-"+Guid.NewGuid());
+if(args.Length>=3&&args[0]=="--timers"){
+    try{TimerVerification.Run(args[1],args[2]);}
+    catch(Exception error){Console.WriteLine(error);Environment.ExitCode=1;}
+    return;
+}
 if(args.Length>=4&&args[0]=="--ui"){UiVerification.Run(args[1],args[2],args[3]);return;}
 if(args.Length>=3&&args[0]=="--driver"){Driver.Run(args[1],args[2],args.Length>3?args[3]:null);return;}
 if(args.Length>=6&&args[0]=="--scenario"){

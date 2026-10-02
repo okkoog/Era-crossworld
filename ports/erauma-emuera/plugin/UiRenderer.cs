@@ -12,12 +12,14 @@ using MinorShift.Emuera.Runtime.Utils.PluginSystem;
 namespace EraUma.Plugin;
 
 /// <summary>Translates the original 24-column UI into the pinned engine's HTML dialect.</summary>
-public sealed class UiRenderer
+public sealed class UiRenderer : IDisposable
 {
     readonly PluginManager api;
     readonly Func<JsonElement,int,int,string?> resolveSprite;
     readonly Func<string,long> registerUrl;
     readonly List<UiCell> cells=[];
+    readonly Dictionary<(string Text,int Width,int Size,int LineHeight,string Font),int> measurements=new();
+    readonly Dictionary<(string Name,int Size),Font> measureFonts=new();
     int fontSize=18,lineHeight=26,defaultWidth=24,defaultOffset;
     string fontName="Malgun Gothic";
     public UiLayout? LastLayout {get;private set;}
@@ -164,18 +166,27 @@ public sealed class UiRenderer
                 if(disabled)accelerator=null;
                 align=Alignment(Text(settings,"inTextAlign","center"));
             }
-            height=Measure(text,width,MaximumFontSize(Property(item,"content"),settings));
+            int maximumSize=MaximumFontSize(Property(item,"content"),settings);
+            height=Measure(text,width,maximumSize);
             // HTML font tags cannot change size in this engine. Rasterize only styled text,
             // keeping every interactive label as a real native button or hyperlink.
-            if(!button&&MaximumFontSize(Property(item,"content"),settings)!=fontSize&&
+            if(!button&&text.Length>0&&maximumSize!=fontSize&&
                 !body.Contains("<button")&&resolveSprite.Target is NativeImages nativeImages)
             {
-                using var bitmap=RichBitmap(Property(item,"content"),settings,width);
-                sprite=nativeImages.Register(bitmap,"richtext:"+item.GetRawText()+":"+width+":"+fontSize);
-                height=bitmap.Height+4;
-                body="<img src='"+Escape(sprite)+"' width='"+bitmap.Width+"px' height='"+bitmap.Height+"px'>";
+                string key="richtext:"+item.GetRawText()+":"+JsonSerializer.Serialize(settings)+":"+width+":"+fontSize+":"+lineHeight+":"+fontName;
+                if(!nativeImages.TryGetRegistered(key,out sprite,out var bitmapSize)){
+                    using var bitmap=RichBitmap(Property(item,"content"),settings,width);
+                    sprite=nativeImages.Register(bitmap,key);bitmapSize=bitmap.Size;
+                }
+                height=bitmapSize.Height+4;
+                body="<img src='"+Escape(sprite)+"' width='"+bitmapSize.Width+"px' height='"+bitmapSize.Height+"px'>";
             }
             if(Number(settings,"height",0)>0)height=Math.Max(height,Number(settings,"height",0));
+        }
+        // Empty grid cells reserve their full layout space without adding native
+        // escaped divs. Interactive/tooltip cells still need native hit boxes.
+        if(type=="text"&&text.Length==0&&sprite is null&&!body.Contains("<button")&&!body.Contains("<nonbutton")){
+            cells.Add(new(type,x,y,width,height,text,accelerator,sprite));return height;
         }
         body="<font color='"+color+"'>"+body+"</font>";
         Div(html,x,y,width,height,null,"<p align='"+align+"'>"+body+"</p>",0);
@@ -194,8 +205,7 @@ public sealed class UiRenderer
             if((w<=0||h<=0)&&File.Exists(Text(image,"src")))
             {
                 // The public image helper supports both native PNG and the engine's WebP decoder.
-                var loader=typeof(PluginManager).Assembly.GetType("MinorShift.Emuera.UI.Game.Image.ImgUtils");
-                try{using var bitmap=loader?.GetMethod("LoadImage",BindingFlags.Static|BindingFlags.Public|BindingFlags.NonPublic)?.Invoke(null,[Text(image,"src")]) as Bitmap;if(bitmap!=null){w=bitmap.Width;h=bitmap.Height;}}catch{ }
+                if(resolveSprite.Target is NativeImages nativeImages&&nativeImages.TryGetSize(Text(image,"src"),out var size)){w=size.Width;h=size.Height;}
             }
             naturalWidth=Math.Max(naturalWidth,w+Number(image,"posX",0));naturalHeight=Math.Max(naturalHeight,h+Number(image,"posY",0));
         }
@@ -204,11 +214,19 @@ public sealed class UiRenderer
     int Measure(string text,int width,int requestedSize)
     {
         if(string.IsNullOrEmpty(text))return lineHeight;
-        using var font=new Font(fontName,requestedSize,FontStyle.Regular,GraphicsUnit.Pixel);
+        var key=(text,width,requestedSize,lineHeight,fontName);
+        if(measurements.TryGetValue(key,out var cached))return cached;
+        if(!measureFonts.TryGetValue((fontName,requestedSize),out var font)){
+            if(measureFonts.Count>=32){foreach(var old in measureFonts.Values)old.Dispose();measureFonts.Clear();}
+            font=new Font(fontName,requestedSize,FontStyle.Regular,GraphicsUnit.Pixel);measureFonts[(fontName,requestedSize)]=font;
+        }
         var measured=TextRenderer.MeasureText(text,font,new Size(Math.Max(1,width-6),32767),TextFormatFlags.WordBreak|TextFormatFlags.NoPadding|TextFormatFlags.NoPrefix);
         int physical=Math.Max(1,(int)Math.Ceiling(measured.Height/(double)font.Height));
-        return Math.Max(lineHeight,physical*Math.Max(lineHeight,font.Height)+2);
+        int height=Math.Max(lineHeight,physical*Math.Max(lineHeight,font.Height)+2);
+        if(measurements.Count>=2048)measurements.Clear();
+        measurements[key]=height;return height;
     }
+    public void Dispose(){foreach(var font in measureFonts.Values)font.Dispose();measureFonts.Clear();measurements.Clear();}
     int MaximumFontSize(JsonElement content,Dictionary<string,JsonElement> settings)
     {
         int largest=FontPixels(settings);

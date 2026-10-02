@@ -17,6 +17,7 @@ public sealed class Session
     string? hostError;
     long timerOffset;
     bool gameLoaded;
+    long? outputFrameButtonEpoch;
     public ResourceCatalogReport? Resources { get; private set; }
     public Session(string saveDirectory, Func<long> readGlobal, Action<long> writeGlobal, bool gameProfile=false)
     {
@@ -25,7 +26,10 @@ public sealed class Session
         engine.SetValue("__emit", new Action<string,string,double>((kind,text,id) => {
             var item=new OutputEvent(kind,text,checked((long)id));
             if(kind=="diagnostic"){diagnostics.Add(item);if(diagnostics.Count>128)diagnostics.RemoveAt(0);}
-            if(kind=="clear"){output.Clear();output.Enqueue(item);foreach(var warning in diagnostics)output.Enqueue(warning);}
+            if(kind=="clear"){
+                output.Clear();output.Enqueue(item);foreach(var warning in diagnostics)output.Enqueue(warning);
+                outputFrameButtonEpoch=gameLoaded?checked((long)engine.GetValue("__buttonEpoch").AsNumber()):null;
+            }
             else output.Enqueue(item);
         }));
         engine.SetValue("__readGlobal", readGlobal);
@@ -62,10 +66,14 @@ public sealed class Session
         Run(()=>engine.Invoke("__pumpTimers"));
         // Emuera gives newly printed buttons a new input generation. Refresh all active
         // choices together after a timer changes the screen so earlier choices stay clickable.
-        if(gameLoaded&&output.Count>0)Run(()=>engine.Invoke("__redraw"));
+        // Replacement rows already emit a complete frame. Serialize it again only
+        // for append-only output or when a resumed input changed the choice epoch.
+        if(gameLoaded&&output.Count>0&&outputFrameButtonEpoch!=checked((long)engine.GetValue("__buttonEpoch").AsNumber()))
+            Run(()=>engine.Invoke("__redraw"));
     }
     public void AdvanceTimers(long milliseconds) { if(milliseconds<0)throw new ArgumentOutOfRangeException(nameof(milliseconds));timerOffset=checked(timerOffset+milliseconds);Pump(); }
     public bool HasTimers => engine.Evaluate("__timers.size>0").AsBoolean();
+    public long NextTimerDelayMilliseconds => checked((long)engine.Invoke("__nextTimerDelay").AsNumber());
     public bool WaitingForContinue => gameLoaded&&State=="input"&&engine.Evaluate("__inputUsesContinue()").AsBoolean();
     public IReadOnlyList<OutputEvent> Diagnostics => diagnostics.ToArray();
     void Run(Action action) { try { action(); engine.Advanced.ProcessTasks(); } catch(Exception error) { hostError=error.ToString(); } }
@@ -73,7 +81,7 @@ public sealed class Session
     public string Error => hostError ?? engine.Evaluate("__error").AsString();
     public IReadOnlyList<OutputEvent> Drain()
     {
-        var items = output.ToArray(); output.Clear(); return items;
+        var items = output.ToArray(); output.Clear();outputFrameButtonEpoch=null; return items;
     }
     public string EvaluateJson(string expression) => engine.Evaluate("JSON.stringify("+expression+")").AsString();
     public void Execute(string script) { engine.Execute(script);engine.Advanced.ProcessTasks(); }

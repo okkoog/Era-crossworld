@@ -1,10 +1,36 @@
-# 이식 현황 — 2026-10-01, 포트 0.3.2
+# 이식 현황 — 2026-10-02, 포트 0.3.3
 
 원본 era말딸을 관리형 JavaScript 실행기로 Emuera.NET에 연결하는 게임 실행용 호환판이다. 원본 `sources/erauma`와 기존 `docs/`, `game/`, `dev/`, `test/`는 변경하지 않았다. CrossWorld.Core 공용 인물·세계 통합은 이번 범위에 포함하지 않는다.
 
 실행 기준은 **EraUma v3.113 (ryuki)**와 공식 **res 20260923**이다. 46종의 게임 사용 Era API는 원본 API 구현과 호스트로 처리한다. 원본 게임 CommonJS와 데이터 표를 읽고 322개 kojo를 원본 컴파일러로 생성하며, 게임 실행에는 EraElectron과 Node.js가 필요하지 않다. 단독 실행 구조와 선정한 게임 경로의 검증을 유지하고 0.3에서 화면·그림·음향 연결을 추가했다. **새 UI의 전체 직접 플레이는 아직 미확인**이다.
 
-## 0.3.2 레이스 화면 갱신 수정 — 자동 검사 PASS
+## 0.3.3 FPS 개선의 현재 검증
+
+사용자는 0.3.2의 깜빡임 수정은 성공했지만 FPS가 낮아졌다고 확인했고 FPS 개선을 승인했다. 0.3.3은 고정 실행기의 `ClearDisplay` 자료 리셋을 유지하면서 마지막 강제 `window.Refresh`를 생략하고 완성된 프레임을 한 번 commit한다. 정상 경로에서는 이전 canvas snapshot을 만들지 않고 과거 출력을 스크롤하여 보는 상태에서는 기존 bitmap gate로 돌아간다. 게임 규칙·저장 버전 숫자 `3`을 유지하며 원본 다음 deadline에 맞춰 대기하고 양수 대기는 최소 1ms로 둔다.
+
+sprite 128슬롯 재사용은 전체 교체에도 적용하며 현재/보존 행·배경을 pin하고 삭제된 handle을 검사한다. 텍스트 크기·font 캐시와 빈 cell의 geometry를 유지한 div 생략, 같은 `buttonEpoch`의 중복 `__redraw` 생략으로 출력 비용을 줄인다.
+
+| 검증 | 현재 결과 | 범위 |
+|---|---|---|
+| 0.3.2 사용자 피드백 | 깜빡임 수정 성공·FPS 저하 확인 | 전체 직접 플레이 완료와 구별 |
+| 0.3.3 Paint 전환 | PASS: backlog 2개 포함 총 9회 | 중간 그림 0·handler 2→2·후속 새로고침 3회 복원. 일반 7회는 각 Paint 1회, backlog-full 1회·backlog-partial 2회. `outputs/frame-paint-0719d439` |
+| 타이머·API·기본 호스트 | PASS | 22개·21개·10개. `outputs/adaptive-timer-1790897678741` |
+| 이미지 캐시 | PASS: 21개 | 누적 이미지 720개·128슬롯 교체·native unload·삭제된 sprite·배경 크기 변경 |
+| 입력 출력·일반 게임 입력 루프 | PASS | 4프레임 미관리 행 `[0,0,0,0]` (`outputs/input-echo-679f186c`); 7단계·타이머 polling 3회·실제 100ms callback 2회 (`outputs/continue-input-66b6a031/runtime/continue-input.json`) |
+| 원본 canvas | PASS: 23개 | 전체 갱신 26회·부분 27회·205행 보존·경고 0. `artifacts/runtime-UiScreens-9fcdc744` |
+| 0.3.2 대비 갱신 비용 비교 | PASS | 같은 원본 레이스 30개 표본·8회 warmup. 중앙값 196.78→48.93ms(4.02배), p95 225.87→58.85ms, 객체 생성 113.85→0.0216ms |
+| 4배속 원본 레이스의 숨긴 시험 창 | 관찰값 확정 | 3.37→8.74 commits/s. 이전 50·이번 38프레임으로 표본 수가 다름. 이번 정상 구간 간격 중앙값 110.66ms |
+| 실제 사용자 FPS·60fps 달성 | 미확인 | 시험 commit 수와 구별. 레이스 프레임 보간 미구현 |
+| 최종 호스트 회귀 | PASS: 6모드·130검사 | 배포 Compatibility DLL과 같은 SHA의 읽기 복사본 사용. `outputs/host-regression-0.3.3-1790905951267/host-regression-summary.json` |
+| 실제 실행기 회귀 | PASS: 7단계 | `outputs/native-regression-0.3.3-54a599ed`의 모든 phase 통과 |
+| 0.3.3 배포 구성 이동 | PASS (자동 preflight) | 공백 경로에서 원본 23화면·레이스 20회 갱신, 같은 DLL·게임 파일의 해시 확인. ZIP 생성 검증은 별도 |
+| 사람의 전체 직접 플레이·실제 음악 청취 | 미확인 | 레이스·저장·완전 종료·재실행·로드·후속 행동 포함 |
+
+현재 Paint 결과는 실행기 callback을 시험 bitmap에 기록한 자동 검사다. 실제 FPS나 데스크톱 캡처·OS 입력·사람의 전체 직접 플레이로 취급하지 않는다. 성능 비교 보고서는 `outputs/race-performance-0.3.3-comparison.json`, 대조·후보는 `outputs/frame-paint-725910d4/summary.json`과 `outputs/frame-paint-b06e86dd/summary.json`이다. 검토용 `evidence/0.3.3/`에는 `performance-comparison.json`·`performance-before.json`·`performance-after.json`과 Paint·캐시·입력·원본 canvas 결과를 구별해 보존한다. 최종 호스트 검사의 Compatibility DLL SHA256은 `8A2DF0290A5A5268FCBAE43FC5C473D707A3793D4CE0AB05722A30CA29FE19BF`다. 남은 처리 비용은 HTML parse 15.84ms·native commit 29.01ms이며 입력 대기 진입 시 추가 Paint가 있다. 배포 구성 이동은 evidence/0.3.3/package-relocation-preflight.json에 기록했고 ZIP 생성 검증은 ZIP 옆 보고서에서 별도로 확인한다.
+
+입력 루프의 초기 fixture는 10초 타이머·160ms 클릭으로 기존 50ms polling을 전제했다. 0.3.3은 실제 deadline으로 대기하므로 fixture를 실제 100ms 타이머와 반복 polling으로 보완해 7단계·실제 callback 진행을 확인했다. 기존 입력·타이머 판정 조건을 낮춘 검사가 아니다.
+
+## 0.3.2 레이스 화면 갱신 수정의 역사적 근거
 
 사용자는 0.3.1이 이전보다 부드러워졌다고 보고했지만 레이스 화면 전체가 주기적으로 사라지는 깜빡임은 영상에서 확인됐다. 60fps·310프레임·5.1667초 중 빈 화면은 114프레임(36.8%)·45구간이며, 각 구간은 약 17–67ms다. 이 결과는 이전 그림이 계속 남는 화면 중첩과 구별한다.
 

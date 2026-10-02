@@ -11,6 +11,14 @@ function setTimeout(callback,milliseconds=0,...args){
   return id;
 }
 function clearTimeout(id){__timers.delete(id);}
+function __nextTimerDelay(){
+  if(!__timers.size)return 50;
+  let due=Infinity;
+  for(const timer of __timers.values())due=Math.min(due,timer.due);
+  // A zero native timed wait means an indefinite input wait. Overdue timers need
+  // a positive wake-up, while fractional original delays must not fire early.
+  return Math.max(1,Math.min(2147483647,Math.ceil(due-__now())));
+}
 function __pumpTimers(){
   const due=[...__timers.entries()].filter(([,timer])=>timer.due<=__now()).sort((a,b)=>a[1].due-b[1].due||a[0]-b[0]);
   for(const [id,timer] of due){if(__timers.delete(id))timer.callback(...timer.args);}

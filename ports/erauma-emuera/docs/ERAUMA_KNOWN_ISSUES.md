@@ -1,8 +1,20 @@
 # 원본과의 차이와 검증 제한
 
-기록일: 2026-10-01, 포트 0.3.2. 이번 호환판은 보존된 EraUma v3.113 (ryuki) JavaScript를 Emuera.NET에서 단독으로 실행한다. 게임 규칙을 바꾸거나 원본을 ERB로 다시 작성하지 않았다. **0.3.0 직접 시험 실패와 0.3.1 레이스 화면 깜빡임이 확인됐으며 0.3.2 수정 후 전체 직접 플레이는 아직 미확인**이다. 아래 차이와 검증 범위를 유지보수 시 함께 확인한다.
+기록일: 2026-10-02, 포트 0.3.3. 이번 호환판은 보존된 EraUma v3.113 (ryuki) JavaScript를 Emuera.NET에서 단독으로 실행한다. 게임 규칙을 바꾸거나 원본을 ERB로 다시 작성하지 않았다. **사용자는 0.3.2의 깜빡임 수정 성공과 FPS 저하를 확인했으며 0.3.3의 전체 직접 플레이는 아직 미확인**이다. 이전 직접 실패·자동 근거를 보존하고 아래 차이와 검증 범위를 함께 확인한다.
 
-## 0.3.1 레이스 깜빡임과 0.3.2 수정의 자동 검증
+## 0.3.3 FPS 개선과 검증 제한
+
+0.3.3은 `NativeFrameUpdate.ClearDisplay`에서 고정 실행기의 clip history·display list·HTML/escaped 자료·카운터·스크롤 리셋을 유지하고 마지막 강제 `window.Refresh`만 생략한다. 완성 프레임을 한 번 commit하며 정상 경로의 이전 canvas snapshot은 생략한다. 과거 출력을 스크롤하여 보는 상태에서는 기존 bitmap gate를 fallback으로 사용한다. 원본 게임 규칙과 저장 버전 숫자 `3`을 유지한다.
+
+sprite 캐시의 128슬롯 재사용·현재/보존 행과 배경 pin·삭제된 handle 검사, 텍스트 크기·font 캐시, 빈 cell의 geometry를 유지한 div 생략과 같은 `buttonEpoch`의 중복 `__redraw` 생략을 적용한다. 원본 다음 deadline까지 대기하되 양수 대기는 최소 1ms다. backlog 2개를 포함한 Paint 9회는 중간 그림 0·handler 2→2·후속 새로고침 3회 복원으로 PASS다. 일반 7회는 각 Paint 1회, backlog-full은 1회·backlog-partial은 2회다(`outputs/frame-paint-0719d439`). 타이머 22개·API 21개·기본 10개도 PASS다(`outputs/adaptive-timer-1790897678741`). 이미지 캐시 21개, 입력 출력 4프레임의 미관리 행 `[0,0,0,0]` (`outputs/input-echo-679f186c`), 일반 게임 입력 루프 7단계·타이머 polling 3회·실제 100ms callback 2회와 원본 canvas 23개(전체 26회·부분 27회·205행 보존·경고 0, `artifacts/runtime-UiScreens-9fcdc744`)도 PASS다.
+
+같은 원본 레이스 30개 표본·8회 warmup의 갱신 비용 비교는 중앙값 196.78→48.93ms(4.02배)·p95 225.87→58.85ms·객체 생성 113.85→0.0216ms로 PASS다. 별도 4배속 레이스의 숨긴 시험 창에서는 이전 50·이번 38프레임으로 표본 수가 다른 조건에서 3.37→8.74 commits/s를 관찰했고 이번 정상 구간 간격 중앙값은 110.66ms다. 비교 보고서는 `outputs/race-performance-0.3.3-comparison.json`, 대조·후보는 `outputs/frame-paint-725910d4/summary.json`과 `outputs/frame-paint-b06e86dd/summary.json`이다.
+
+배포 Compatibility DLL과 같은 SHA의 읽기 복사본으로 호스트 6모드·130검사가 PASS했고(`outputs/host-regression-0.3.3-1790905951267/host-regression-summary.json`), 실제 실행기 7단계의 모든 phase도 PASS다(`outputs/native-regression-0.3.3-54a599ed`). 입력 루프의 최종 보고서는 `outputs/continue-input-66b6a031/runtime/continue-input.json`이며 검토용 결과는 `evidence/0.3.3/`에 보존한다. 같은 배포 구성의 공백 경로 이동 검사에서 원본 23화면·레이스 20회 갱신도 PASS다. 근거는 evidence/0.3.3/package-relocation-preflight.json에 있다.
+
+**실제 사용자 FPS·60fps 달성·사람의 전체 직접 플레이·실제 음악 청취는 미확인**이다. HTML parse 15.84ms·native commit 29.01ms와 입력 대기 진입 시 추가 Paint가 남아 있고 레이스 프레임 보간은 미구현이다. Paint callback을 시험 bitmap에 기록한 PASS는 실제 화면 fps나 데스크톱 캡처·사람의 직접 플레이 결과가 아니다. 사용자의 0.3.2 깜빡임 수정 성공 피드백도 전체 직접 플레이나 실제 음악 청취의 완료 근거로 확대하지 않는다.
+
+## 0.3.1 깜빡임과 0.3.2 수정의 역사적 근거
 
 사용자는 0.3.1이 이전보다 부드러워졌다고 보고했지만 레이스 화면은 계속 깜빡였다. 60fps·310프레임·5.1667초 영상에서 canvas 전체가 비는 구간 45회·114프레임(36.8%)을 확인했고 각 구간은 약 17–67ms였다. 이전 그림이 계속 남는 중첩 현상이 아니라 완성 화면 사이에 빈 화면이 노출되는 결함이다.
 
@@ -41,7 +53,7 @@
 | 제자리 화면 교체 | 같은 정적 선두 행 보존, 이후 행과 버튼 행 교체. 0.3.2 Paint 검사에서 7회 전환의 중간 그림 0·정상 복원 PASS | 0.3.1 영상의 빈 canvas 깜빡임 확인; 수정 후 직접 확인과 scroll 위치 검증 대기 |
 | URL 객체 | 밑줄 native 버튼과 공식 리소스 URL의 shell 브라우저 실행 자동 검사 PASS | 사람이 버튼을 직접 클릭해 브라우저 열기·복귀하는 시험과 다른 URL의 직접 확인은 미확인 |
 
-일반 게임의 `era.delay()`와 `setTimeout` 지연 선택지는 실제 경과 시간을 유지한다. `Game.ERB`는 `AWAIT`/`TINPUTS`/`TWAIT` 50ms와 `tick`으로 표시·선택지 타이머를 처리한다. `skip-text`·`ui-return-main`·`ui-advance`와 가상 시간 전진은 자동 검증에서만 사용한다. 원본의 규칙·데이터 처리는 원본 Era API와 게임 모듈을 재사용한다.
+일반 게임의 `era.delay()`와 `setTimeout` 지연 선택지는 실제 경과 시간을 유지한다. 0.3.2의 `Game.ERB`는 `AWAIT`/`TINPUTS`/`TWAIT` 50ms와 `tick`을 사용했고 0.3.3은 원본 다음 deadline까지 남은 시간으로 대기하며 양수 대기는 최소 1ms다. `skip-text`·`ui-return-main`·`ui-advance`와 가상 시간 전진은 자동 검증에서만 사용한다. 원본의 규칙·데이터 처리는 원본 Era API와 게임 모듈을 재사용한다.
 
 ## 확인한 입력과 오류 처리
 

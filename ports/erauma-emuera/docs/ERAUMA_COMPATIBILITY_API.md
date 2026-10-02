@@ -1,6 +1,18 @@
 # 호환 API와 실행 방식
 
-기록일: 2026-10-01, 포트 0.3.2. 원본 게임에서 사용하는 Era API 46종을 원본 API 구현과 호스트 연결로 처리한다. 데이터·캐릭터·육성·저장 계산은 보존된 v3.113 JavaScript에 맡기고 화면·입력·파일·타이머·자원·종료를 Emuera.NET에 연결한다. API 연결의 존재와 원본 표현의 완전 재현은 구별하며 [UI·리소스 현황](ERAUMA_UI_STATUS.md)에 기능별 검증 범위를 기록한다. 전체 호출 목록은 [API_USAGE.md](API_USAGE.md)에 있다.
+기록일: 2026-10-02, 포트 0.3.3. 원본 게임에서 사용하는 Era API 46종을 원본 API 구현과 호스트 연결로 처리한다. 데이터·캐릭터·육성·저장 계산은 보존된 v3.113 JavaScript에 맡기고 화면·입력·파일·타이머·자원·종료를 Emuera.NET에 연결한다. API 연결의 존재와 원본 표현의 완전 재현은 구별하며 [UI·리소스 현황](ERAUMA_UI_STATUS.md)에 기능별 검증 범위를 기록한다. 전체 호출 목록은 [API_USAGE.md](API_USAGE.md)에 있다.
+
+## 0.3.3 갱신·캐시·대기 최적화
+
+사용자는 0.3.2에서 깜빡임 수정 성공과 FPS 저하를 확인했다. 0.3.3의 `NativeFrameUpdate.ClearDisplay`는 고정 실행기의 clip history·display list·HTML/escaped 자료·카운터·스크롤 리셋을 동일하게 수행하고 끝의 강제 `window.Refresh`만 생략한다. 행·여백이 완성된 뒤 프레임을 한 번 commit한다. 정상 경로는 이전 canvas snapshot을 만들지 않으며 과거 출력을 스크롤하여 보는 상태에서는 기존 bitmap gate fallback을 유지한다. 게임 규칙과 저장 버전 숫자 `3`은 바꾸지 않는다.
+
+sprite 캐시는 128슬롯으로 제한하고 전체 화면 교체에도 재사용한다. 현재/보존 행·배경의 sprite를 pin하며 삭제된 handle은 확인해 다시 생성한다. 텍스트 크기·font 캐시를 재사용하고 빈 cell은 폭·offset·배치 geometry를 유지하면서 div만 생략한다. `Session`은 같은 `buttonEpoch`에서 중복 `__redraw`를 생략하며 새 입력 세대의 버튼 갱신은 유지한다. 대기는 원본 다음 timer deadline까지 남은 시간을 사용하며 양수 대기는 최소 1ms다.
+
+backlog 2개를 포함한 Paint 9회 전환은 중간 그림 0·handler 2→2·후속 새로고침 3회 복원으로 PASS다(`outputs/frame-paint-0719d439`). 일반 7회는 프레임당 Paint 1회, backlog-full은 1회·backlog-partial은 2회다. 타이머 22개·API 21개·기본 10개도 PASS다(`outputs/adaptive-timer-1790897678741`). 이미지 캐시 21개는 누적 이미지 720개·128슬롯 교체·native unload·삭제된 sprite·배경 크기 변경을 검사했다. 입력 출력 4프레임의 미관리 행 `[0,0,0,0]` (`outputs/input-echo-679f186c`), 일반 게임 입력 루프 7단계·타이머 polling 3회·실제 100ms callback 2회와 원본 canvas 23개(전체 26회·부분 27회·205행 보존·경고 0, `artifacts/runtime-UiScreens-9fcdc744`)도 PASS다.
+
+같은 원본 레이스의 30개 표본·8회 warmup에서 갱신 시간 중앙값은 196.78→48.93ms(4.02배), p95는 225.87→58.85ms, 객체 생성은 113.85→0.0216ms로 줄었다. 별도 4배속 레이스의 숨긴 시험 창에서는 이전 50·이번 38프레임으로 표본 수가 다른 조건에서 3.37→8.74 commits/s를 관찰했고 이번 정상 구간 간격 중앙값은 110.66ms다. HTML parse 15.84ms·native commit 29.01ms와 입력 대기 진입 시 추가 Paint가 남아 있으며 레이스 프레임 보간은 미구현이다. 비교 보고서는 `outputs/race-performance-0.3.3-comparison.json`, 대조·후보는 `outputs/frame-paint-725910d4/summary.json`과 `outputs/frame-paint-b06e86dd/summary.json`이다.
+
+배포 Compatibility DLL과 같은 SHA의 읽기 복사본으로 호스트 6모드·130검사가 PASS했고(`outputs/host-regression-0.3.3-1790905951267/host-regression-summary.json`), 실제 실행기 7단계의 모든 phase도 PASS다(`outputs/native-regression-0.3.3-54a599ed`). 입력 루프의 최종 보고서는 `outputs/continue-input-66b6a031/runtime/continue-input.json`이며 검토용 결과는 `evidence/0.3.3/`에 보존한다. 같은 배포 구성의 공백 경로 이동 검사에서 원본 23화면·레이스 20회 갱신도 PASS다. 근거는 evidence/0.3.3/package-relocation-preflight.json에 있다. 이는 실행기 callback·호스트·숨긴 시험 창의 검사이며 실제 사용자 FPS나 60fps 달성을 뜻하지 않는다. 전체 사람 직접 플레이·실제 음악 청취도 미확인이다. 아래 0.3.2 결과는 역사적 근거로 보존한다.
 
 ## CALLSHARP와 상태
 
@@ -11,8 +23,8 @@ ERB는 `EraUmaBridge(action,input,state,message)`를 호출한다. 입력은 문
 | 상태 | 의미 | 게임 부트스트랩 처리 |
 |---|---|---|
 | `1` | 입력 대기, 타이머 없음 | `input-kind=1`이면 `WAIT` → 빈 문자열 `resume`, 그 외 `INPUTS` → 입력값 `resume` |
-| `4` | 입력 대기, 타이머 있음 | 50ms 단위 `TWAIT` 또는 `TINPUTS`; 시간 초과 시 `tick`, 제출 시 대사는 빈 문자열·값 입력은 입력값으로 `resume` |
-| `3` | 입력 외 타이머 대기 | 50ms `AWAIT` → `tick` |
+| `4` | 입력 대기, 타이머 있음 | 원본 다음 deadline까지의 `TWAIT` 또는 `TINPUTS`(양수 최소 1ms); 시간 초과 시 `tick`, 제출 시 대사는 빈 문자열·값 입력은 입력값으로 `resume` |
+| `3` | 입력 외 타이머 대기 | 원본 다음 deadline까지 `AWAIT`(양수 최소 1ms) → `tick` |
 | `2` | 정상 완료 | 마지막 안내 후 bridge `exit`와 ERB `QUIT` |
 | `-1` | 호스트·미처리 JS 오류 | 오류 메시지 표시 후 종료 안내 |
 | `0` | 위 상태 외 | 오류·완료 안내로 이동 |
@@ -67,13 +79,13 @@ Electron의 Shift/연속 진행 키와 UI 자동 넘김은 재현하지 않는�
 
 0.3.2의 `NativeFrameUpdate` 수정은 행 삭제·출력·여백 조정을 하나의 갱신 범위로 묶는다. 엔진의 `console.SetRedraw(0)` 플래그와 managed `PictureBox.Paint` 처리가 함께 이전 완성 bitmap을 유지한다. 범위를 마치면 handler와 엔진 갱신 상태를 복원하고 완성된 프레임을 강제 출력한다. 일반 버튼·스크롤 처리는 이 범위 밖의 native 경로를 유지한다. 중간 paint 억제·최종 프레임·갱신 복원은 아래 자동 검사에서 통과했으며 전체 직접 플레이는 별도다.
 
-일반 게임은 `presentationDelays:true`로 시작해 표시용 `era.delay()`도 실제 타이머 Promise로 대기한다. 레이스 재생의 연속 프레임을 즉시 끝내지 않고 단계별로 출력·부분 갱신한다. `setTimeout()`의 늦은 선택지도 실제 경과 시간을 유지한다. 일부 이벤트가 10초 뒤 선택지를 추가하므로 타이머를 즉시 실행하면 선택 가능한 내용이 달라지기 때문이다. 타이머는 대기 중에도 ERB가 50ms마다 확인한다. 콜백이 출력을 바꿨을 때만 다시 출력하고 매 확인마다 화면을 다시 그리지는 않는다.
+일반 게임은 `presentationDelays:true`로 시작해 표시용 `era.delay()`도 실제 타이머 Promise로 대기한다. 레이스 재생의 연속 프레임을 즉시 끝내지 않고 단계별로 출력·부분 갱신한다. `setTimeout()`의 늦은 선택지도 실제 경과 시간을 유지한다. 일부 이벤트가 10초 뒤 선택지를 추가하므로 타이머를 즉시 실행하면 선택 가능한 내용이 달라지기 때문이다. 0.3.3은 원본 다음 deadline까지 남은 시간으로 ERB 대기를 정하고 양수 대기는 최소 1ms로 유지한다. 콜백이 출력을 바꿨을 때만 다시 출력하며 매 확인마다 화면을 다시 그리지 않는다.
 
-빠른 호스트 회귀는 `presentationDelays:false`가 기본이며 표시 지연을 생략한다. 화면 시험의 `skip-text`·`ui-return-main`·`ui-advance`는 시험용 가상 시간 전진을 사용한다. 실제 사용자용 `Game.ERB`는 이 동작을 사용하지 않고 `AWAIT 50`·`TINPUTS 50`·`TWAIT 50,0`과 `tick`으로 실제 시간을 처리한다.
+빠른 호스트 회귀는 `presentationDelays:false`가 기본이며 표시 지연을 생략한다. 화면 시험의 `skip-text`·`ui-return-main`·`ui-advance`는 시험용 가상 시간 전진을 사용한다. 실제 사용자용 `Game.ERB`는 가상 시간 전진을 사용하지 않는다. 0.3.2는 `AWAIT 50`·`TINPUTS 50`·`TWAIT 50,0`과 `tick`을 사용했고 0.3.3은 원본 다음 deadline까지의 대기로 실제 시간을 처리한다.
 
-0.3.0의 무인 실행기 타이머 시험은 숨겨진 Windows 창의 `TINPUTS` 타이머가 화면 다시 그리기에 의존하는 점을 피하려고 `AWAIT 50`과 `tick`으로 실제 경과 시간과 늦게 추가된 버튼을 검사했다. 현재 일반 게임은 `TINPUTS 50` 또는 `TWAIT 50,0`을 사용한다. 기존 `AWAIT` 시험을 실제 타이머 입력 조작 검증으로 계산하지 않는다. 0.3.1 입력 루프의 별도 관리형 검사는 아래에 기록한다.
+0.3.0의 무인 실행기 타이머 시험은 숨겨진 Windows 창의 `TINPUTS` 타이머가 화면 다시 그리기에 의존하는 점을 피하려고 `AWAIT 50`과 `tick`으로 실제 경과 시간과 늦게 추가된 버튼을 검사했다. 0.3.2 일반 게임은 `TINPUTS 50` 또는 `TWAIT 50,0`을 사용했다. 기존 `AWAIT` 시험을 실제 타이머 입력 조작 검증으로 계산하지 않는다. 0.3.1 입력 루프의 별도 관리형 검사는 아래에 기록한다.
 
-## 0.3.2 화면 교체 검사 — PASS와 검증 범위
+## 0.3.2 화면 교체 검사의 역사적 근거
 
 명령은 `./ports/erauma-emuera/tools/Test-FramePaint.ps1`이다. 정확한 배포 실행기의 Paint callback과 native/수정된 `PictureBox.OnPaint` delegate 연결을 시험 소유 bitmap에 기록한다. 0.3.1 대조 `outputs/frame-paint-6b0c25c1/summary.json`은 7회 전환의 중간 그림 165회로 예상 FAIL, 수정판 `outputs/frame-paint-6134aec5/summary.json`은 전체·부분·추가 출력·표시 지연을 포함한 같은 7회 전환의 중간 그림 0회로 PASS다. 모든 최종 그림이 바뀌었고 `timerAdvanced:true`, handler 수 2→2(원래 native+시험 observer), 이후 새로고침 3회의 복원을 확인했다. PNG 기록이 callback을 늦추므로 165회는 실제 화면 fps나 사용자 영상의 빈 프레임 수가 아니다. 이 시험은 데스크톱 캡처·OS 입력·사람의 직접 플레이가 아니다.
 
