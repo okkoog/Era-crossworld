@@ -227,21 +227,47 @@ The current basement guide did not have a direct matching Korean text block in
 the checked 2.21 `game-guides.js` source. Treat as untranslated until a
 reliable source match is found.
 
-## Excluded from automatic reuse in this pass
+## Child module reuse status
 
 ### `child/daily.js`
+
+2.21 source:
+- `sources/eraumak_kr_2.21/game/ere/event/daily/daily-child.js`
+
+Current 3.113 functions: **11**
+
+Safely reused non-sexual Korean overrides: **9**
+- `select_0`
+- `select_1`
+- `select_2`
+- `talk_0`
+- `talk_1`
+- `growth_0`
+- `growth_1`
+- `growth_2`
+- `load_talk`
+
+Pending Japanese fallback: **2**
+- `talk_2`
+- `talk_estrus`
+
+Those two functions were intentionally not translated in this reuse workflow.
+The Korean module spreads the current Japanese object first, so they remain
+functional through fallback.
+
 ### `child/ero.js`
 
-These files were not auto-reused in this pass. Keep the current Japanese
-fallback and review separately.
+No Korean override is wired. This module remains entirely on Japanese fallback
+and is excluded from the reuse workflow.
 
-## Other Timon modules not yet classified in detail
+## Remaining Timon modules not fully resolved
 
-- `others/race.js`
 - `others/random.js`
+  - Still requires scene/function decomposition before reuse.
 - `guides/base.js`
-- `mejiro/cum.js`
-- remaining Timon modules not yet wired from `ko-KR/timon/entry.js`
+  - Already checked; no reliable direct 2.21 Korean match was found.
+- `child/ero.js`
+  - Remains entirely on Japanese fallback and is excluded from reuse.
 
 ### `others/race.js`
 
@@ -876,3 +902,27 @@ No sufficiently reliable direct 2.21 structural match was confirmed for these
 
 The Korean module spreads the current Japanese `others/others` object first,
 so every pending key/function remains functional through Japanese fallback.
+
+
+### `mejiro/cum-events.kojo`
+
+2.21 source references:
+- `sources/eraumak_kr_2.21/game/ere/event/others/mejiro-kindness/good-events.kojo`
+- `sources/eraumak_kr_2.21/game/ere/event/others/mejiro-kindness/normal-events.kojo`
+- `sources/eraumak_kr_2.21/game/ere/event/others/mejiro-kindness/bad-events.kojo`
+
+Current 3.113 events: **24**
+
+Safely reused Korean output lines: **192**
+
+Structural result:
+- **23 / 24** events have the same number of output/content leaves as the 2.21 source and were reused by event order.
+- `g_water` was split into three action-specific branches in 3.113. Only the four directly matching old Korean lines were reused.
+
+Pending untranslated UI:
+- **24 event titles** added by the current 3.113 format
+- **3 `g_water` action-specific lines** that have no 1:1 old Korean source line
+
+The Korean file keeps the current 3.113 event structure and placeholders
+(`%YOU%`, `%CHARA%`, `%SEX%`, `%TEEN%`, `%REWARD%`) while replacing only
+directly matched output text.
