@@ -19,6 +19,12 @@ module.exports = class extends JaTimon {
   tachyon_shop = proxy_kojo_js(
     require('#/i18n/ko-KR/timon/others/tachyon-shop'),
   );
+  act_desc_r = proxy_kojo_js(
+    require('#/i18n/ko-KR/timon/sex/act-desc-rape'),
+  );
+  act_desc_s = proxy_kojo_js(
+    require('#/i18n/ko-KR/timon/sex/act-desc-sleep'),
+  );
 
   ed_saying_01 =
     '좁은 방 안에서 붉은 입술이 대나무와 어우러져 은혜를 나누네. —— 타카스기 신사쿠';
