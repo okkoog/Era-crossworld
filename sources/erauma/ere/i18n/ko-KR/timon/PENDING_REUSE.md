@@ -1409,3 +1409,57 @@ Detailed machine-readable record:
 Next bounded investigation starts with
 `star_drew_filter_kojo_template` and continues through the remaining
 premium-draw UI before moving to the investment block.
+
+### `others/others.js` — second detailed classification batch (2026-10-02)
+
+Scope: 16 previously pending keys, from `star_drew_filter_kojo_template` through
+`sd_f_title_image`. Existing 2.21 Korean text was reused only when a direct
+current-scene match could be established. No fresh Korean prose was written.
+
+#### Premium-draw filter UI — 16 keys
+Checked:
+- `page/page-recruit-rand.js`
+- `system/flag/sys-get-star-premium-draw.js`
+- the 2.21 `event/rec/`, `daily/`, `edu/`, `love/`, `ero/`, and
+  `basement/` trees
+
+EraUmaK 2.21 already has the underlying dedicated-event categories, and its
+recruitment screen includes a generic Korean note for characters with dedicated
+kojo. However, it does not contain the current 3.113 premium-draw filter screen:
+there is no direct Korean block for the category filter buttons, category
+descriptions, or the dedicated-training-image filter.
+
+Therefore these remain on Japanese fallback:
+- `star_drew_filter_kojo_template`
+- `star_drew_filter_image`
+- `star_drew_bt_filter_kojo_r`
+- `star_drew_bt_filter_kojo_d`
+- `star_drew_bt_filter_kojo_ed`
+- `star_drew_bt_filter_kojo_l`
+- `star_drew_bt_filter_kojo_er`
+- `star_drew_bt_filter_kojo_b`
+- `star_drew_bt_filter_image`
+- `sd_f_title_kojo_r`
+- `sd_f_title_kojo_d`
+- `sd_f_title_kojo_ed`
+- `sd_f_title_kojo_l`
+- `sd_f_title_kojo_er`
+- `sd_f_title_kojo_b`
+- `sd_f_title_image`
+
+Validation: **PASS**.
+- `others/others.js` JS syntax: ok.
+- Keys detailed-classified in this batch: **16**.
+- Newly reused Korean keys: **0**.
+- Fresh Korean prose written: **0**.
+- `others/others.js` itself was not modified.
+- Previously pending keys still awaiting this workflow's first detailed source
+  match: **17**.
+
+Detailed machine-readable record:
+[REUSE_OTHERS_BATCH_02.json](REUSE_OTHERS_BATCH_02.json).
+
+Next bounded investigation starts with `get_star_drew_selected`, covers the
+remaining premium-draw selection/result UI, then continues into the investment
+block only while staying inside the established batch size.
+
