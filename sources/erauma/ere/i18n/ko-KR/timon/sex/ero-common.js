@@ -358,4 +358,375 @@ module.exports = {
       '마치 그렇게 꾸짖는 듯, 들어 올리려던 손이 꼬리에 꽉 붙잡혀 꼼짝도 할 수 없게 되었다.',
     );
   },
+
+  async hand_job(attacker, defender, is_first) {
+    if (is_first) {
+      await attacker.say_and_wait('으음——');
+      await attacker.print_and_wait([
+        '그 뜨거운 온도에 놀란 듯, ',
+        attacker.get_colored_name(),
+        '이(가) 성기를 쥐려던 손이 본능적으로 뒤로 움찔했다. 그러고 나서야 겨울날 이불 속으로 발을 밀어 넣듯 조금씩 다시 다가간다.',
+      ]);
+      await attacker.print_and_wait(
+        '분명 꽤 흉악하고…… 여자아이의 아랫배를 욱신거리게 만드는 모양인데……',
+      );
+      await attacker.print_and_wait(
+        '하지만…… 손가락으로 감싸 쥐고 가볍게 흔들자 쿠퍼액을 흘리며 손가락 사이에서 춤추는 모습은… 조금 귀여울지도.',
+      );
+      await attacker.say_and_wait('하아…… 하아…… 으음——');
+      await attacker.print_and_wait('그 기분을 이해할 수 있게 되었다……');
+    } else {
+      await attacker.print_and_wait('정말 이런 것만으로 괜찮은 걸까……');
+      await attacker.print_and_wait([
+        attacker.child_sex_title,
+        '의 손에 쥐여 흔들리는 것만으로 만족하는 거야……?',
+      ]);
+      await attacker.print_and_wait('……');
+      await attacker.print_and_wait('정말로…… 다른 하고 싶은 일은 없는 거야……?');
+    }
+  },
+
+  async tit_job(attacker, defender, is_first, a_call_d, d_call_a) {
+    if (is_first) {
+      await defender.print_and_wait('멋지다고 생각하지 않아?');
+      await defender.print_and_wait([
+        '이 ',
+        d_call_a,
+        '이(가) 내 아래에 엎드려, 소녀만의 부드러운 가슴으로 뜨거운 성기를 감싸 쥐고 있는 모습 말이야……',
+      ]);
+      await attacker.say_and_wait('으응……');
+      await defender.print_and_wait(
+        '제대로 전해지는 모양이네. 성기 귀두 끝에서 피어오르는, 애욕이 가득 담긴 뜨거운 열기가.',
+      );
+      await defender.print_and_wait([
+        '손을 뻗어 아래에 있는 ',
+        d_call_a,
+        '의 고개를 들어 올렸다.',
+      ]);
+      await defender.print_and_wait('음, 아주 맛있게 익은 표정이 되었네.');
+    } else {
+      await attacker.say_and_wait('……');
+      await attacker.print_and_wait([
+        '전해져 온다. ',
+        a_call_d,
+        '의 허리가 뒤로 젖혀지는 것이.',
+      ]);
+      if (attacker.race > 0) {
+        await attacker.print_and_wait(
+          '예민한 귀가 위에서 뿜어져 나오는 거친 콧김에 후우후우 흔들리고 있다.',
+        );
+      }
+      await attacker.print_and_wait(
+        '부드러움에 감싸인 성기 역시, 보지를 간단히 떨게 만들 수 있을 정도로 빳빳하게 곤두섰다.',
+      );
+      await attacker.print_and_wait(
+        '무슨 생각을 한 걸까, 심장이 쿵쿵 뛴다. 하지만 이것도 그저 「장님 코끼리 만지기」 같은 거겠지……',
+      );
+      await attacker.print_and_wait([
+        '그리하여 ',
+        attacker.get_colored_name(),
+        '은(는) 고개를 위로 들었다.',
+      ]);
+      await attacker.print_and_wait('역시, 짐승 같은 표정이야……');
+    }
+  },
+
+  async tit_and_blow_job(attacker, defender, is_first, a_call_d) {
+    if (is_first) {
+      await attacker.print_and_wait('정말이지…… 가슴이 그렇게 좋은 거야……?');
+      await attacker.print_and_wait(
+        '정말 디저트 위의 생크림처럼 어디에 묻혀도 맛있다고 생각하는 것 같네……',
+      );
+      await attacker.say_and_wait('낼름, 츄릅, 츄릅……');
+      await attacker.print_and_wait([
+        '성기 기둥에 떨어진 쿠퍼액 때문에 가슴 살결이 미끈거리고 번들거렸지만, ',
+        attacker.get_colored_name(),
+        '은(는) 고생하는 가슴보다는 가장 뜨겁고 팽팽해진 귀두를 양손으로 정성스레 입안으로 모셨다.',
+      ]);
+      await attacker.say_and_wait('으응……');
+      await attacker.print_and_wait(
+        '혀가 마음대로 움직이지 않기 시작했지만, 입에 닿은 귀두가 조금이라도 외로움을 느끼는 게 싫어 유두를 모아 성기를 모시는 손길을 멈출 수 없었다……',
+      );
+    } else {
+      await attacker.say_and_wait('츄릅, 낼름……');
+      await attacker.print_and_wait(
+        '몇 번을 맛봐도 이걸 맛있다고 하기는 어려울 텐데…… 비릿하면서도 음란한 맛이 뇌까지 직접 전해진다……',
+      );
+      await attacker.print_and_wait('하지만……');
+      await attacker.print_and_wait('하지만…………');
+      await attacker.print_and_wait('하지만………………');
+      await attacker.say_and_wait(
+        ['왜 멈추지 않는 걸까…… 나도, ', a_call_d, ' 도……'],
+        true,
+      );
+    }
+  },
+
+  async suck_nipple(attacker, defender, a_call_d) {
+    if (Math.random() < 0.5) {
+      await attacker.say_and_wait('츄릅——');
+      await attacker.print_and_wait(
+        '눈앞의 하얀 살결과 붉은 점이 본능적으로 피하려 하지만, 혀는 그렇게 쉽게 만족할 수 있는 게 아니다.',
+      );
+      await attacker.print_and_wait([
+        defender.teen_sex_title,
+        '의 부드러운 가슴이 좌우로 달아나 보지만, 결국 체념한 듯 혀끝에 얌전히 머물렀다.',
+      ]);
+      await attacker.say_and_wait('쫍——');
+      await attacker.print_and_wait(
+        '점차 혀끝에서 열을 내뿜던 붉은 점이 딱딱하게 곤두서는 실감이 전해졌고, 조심스레 치아 사이에 그 살덩이를 물고는 쭈욱 빨아올렸다——',
+      );
+      await defender.say_and_wait('으응——!');
+      await attacker.print_and_wait([
+        a_call_d,
+        '의 몸무게가 순식간에 묵직하게 이쪽으로 쏠렸다.',
+      ]);
+      await attacker.print_and_wait('아마 다리에 힘이 풀린 모양이다.');
+    } else {
+      await attacker.print_and_wait('부끄럽지 않아?');
+      await attacker.print_and_wait([
+        '무릎베개 서비스를 받으며, ',
+        era.get(`talent:${defender.id}:泌乳`) > 0 ? '모유가 배어 나오는' : '하얀',
+        ' 가슴을 내밀고 있는 거 말이야.',
+      ]);
+      await attacker.print_and_wait(
+        '게다가 나 때문인지, 요염하게 물든 유두는 빨기 좋게 길쭉하고 퉁퉁하게 부어올랐는데……',
+      );
+      await attacker.print_and_wait('……정말로 부끄럽지 않은 거야?');
+      await attacker.print_and_wait('전혀 그렇지 않다는 듯.');
+      await attacker.print_and_wait(
+        '기분 좋게 눈을 가늘게 뜨고, 입을 벌려 그 붉은 돌기를 머금고는 빨아올렸다.',
+      );
+      if (era.get(`talent:${defender.id}:泌乳`) > 0) {
+        await attacker.print_and_wait('「퓨븃, 퓨뷰븃——」');
+        await attacker.print_and_wait([
+          '보이지는 않지만 머릿속은 이미, 처음으로 젖이 뿜어져 나왔을 때의 ',
+          a_call_d,
+          '의 수치심 섞인 표정과, 하얀 가슴에서 뿜어져 나와 시선을 뗄 수 없게 만들었던 가느다랗고 아름다운 포물선으로 가득 찼다……',
+        ]);
+        await attacker.print_and_wait('게다가 조금 달콤하다.');
+      }
+    }
+  },
+
+  async bite_nipple(attacker, defender, a_call_d) {
+    await attacker.print_and_wait([
+      '치아 사이에 딱딱해진 유두를 머금은 순간, 품 안의 ',
+      a_call_d,
+      '의 몸이 단번에 굳어졌다.',
+    ]);
+    await attacker.print_and_wait('에헤… 그런가……');
+    await attacker.print_and_wait([
+      '치아를 살짝 세워 예민한 유두 주위에 울긋불긋한 자국을 남기자… 품 안의 ',
+      defender.teen_sex_title,
+      '의 몸이 끊임없이 떨린다……',
+    ]);
+    await attacker.print_and_wait([
+      '다음 목표를 눈치챈 걸까, 혀가 유두를 세밀하게 핥으며 적시는 순간, ',
+      defender.get_colored_name(),
+      '은(는) 양손을 뻗어 ',
+      attacker.get_colored_name(),
+      '의 허리를 껴안았다……',
+    ]);
+    await defender.say_and_wait('으으——');
+    await attacker.print_and_wait('귀여워.');
+    await attacker.print_and_wait([
+      '품 안의 ',
+      a_call_d,
+      ' 뿐만 아니라, 빨갛게 부어오른 자국이 가득한 유두도 마찬가지다.',
+    ]);
+  },
+
+  async ask_milk_and_hand_job(
+    attacker,
+    defender,
+    is_first,
+    a_call_d,
+    d_call_a,
+  ) {
+    if (is_first) {
+      await attacker.print_and_wait([
+        '눈앞이 온통 ',
+        a_call_d,
+        '의 새하얀 피부와 가슴으로 가득해, 분명 맛있을 게 틀림없는 지금의 표정을 볼 수 없다는 게 아쉽다.',
+      ]);
+      await attacker.print_and_wait([
+        '혀끝에서 희롱당하며 춤추는 유두조차 한순간 허무하게 느껴졌지만, ',
+        attacker.get_colored_name(),
+        '은(는) 곧바로 새로운 즐거움을 찾아냈다.',
+      ]);
+      await attacker.print_and_wait('대체 어떤 표정을 짓고 있을까.');
+      await attacker.print_and_wait([
+        '유두를 빨리는',
+        era.get(`talent:${defender.id}:泌乳`) > 0 ? '(모유가 나오는)' : '',
+        ' 쾌감에 휩쓸려 하류의 저편으로 가라앉는 듯한 실신 직전의 표정일까…… 손바닥 안에서 꿈틀대는 뜨거운 성기에 어찌할 바를 몰라 하는 부끄러운 표정일까…… 아니면, 이미 완전히 빠져버린 음란한 향락의 표정일까……',
+      ]);
+      await defender.say_and_wait('에!?');
+      await attacker.print_and_wait([
+        '정답을 알 수 없는 질문이었지만, ',
+        attacker.get_colored_name(),
+        '의 손가락 사이로 간신히 감싸진 성기는 갑자기 평소보다 더욱 빳빳하게 곤두섰다.',
+      ]);
+    } else {
+      await defender.print_and_wait('이런 자신을 기뻐해야 할지 모르겠다……');
+      await defender.print_and_wait([
+        '빨리고 있는 ',
+        era.get(`talent:${attacker.id}:泌乳`) > 0 ? '젖이 배어 나오는 ' : '',
+        '유두 옆으로, 혀의 움직임을 통해 겨우 ',
+        d_call_a,
+        '의 표정이 어렴풋이 보인다.',
+      ]);
+      await defender.print_and_wait(
+        '손바닥에 전해지는 성기의 뜨거운 온도와 불거진 핏줄을 통해, 지금 그곳이 어떤 모습일지 머릿속에 그려본다.',
+      );
+      await defender.print_and_wait('하아… 부디 책임져주세요……');
+    }
+  },
+
+  async non_penetrative(attacker, defender, is_first, a_call_d, d_call_a) {
+    if (is_first) {
+      await defender.print_and_wait('정말로 들어가 버렸어.');
+      await defender.print_and_wait([
+        '육봉을…… ',
+        d_call_a,
+        '의 오므린 허벅지 살 사이에 삽입한다.',
+      ]);
+      await defender.print_and_wait('부드럽고, 따뜻하고, 최고야, 최고, 최고야……');
+      await defender.print_and_wait('살짝 엇갈린 두 다리는 부끄러워하고 있는 거겠지……');
+      await defender.print_and_wait(
+        '단순히 부드러울 뿐만 아니라, 평소 단련된 성과인지 육봉이 단단하게 지탱되고 있다.',
+      );
+      await defender.print_and_wait([
+        '마치 발정 난 원숭이처럼,',
+        defender.get_colored_name(),
+        '의 육봉이 열광적으로 ',
+        d_call_a,
+        '의 가랑이 사이를 앞뒤로 문지르고 있다.',
+      ]);
+    } else {
+      await defender.print_and_wait('매끈매끈하고 반짝반짝하게 변해버렸어.');
+      await defender.print_and_wait('어느 정도 숙련되어 버렸어.');
+      await defender.print_and_wait('얌전하게 참을 수 없게 되어버렸어.');
+      await defender.print_and_wait('조금…… 외로워진 걸까……');
+      await attacker.say_and_wait([a_call_d, '……']);
+      await defender.print_and_wait('눈빛도…… 촉촉하게 젖어 있어……');
+      await defender.print_and_wait('다리를 이런 식으로 사용당하면 역시 이렇게 되어버리는구나.');
+    }
+  },
+
+  async armpit_intercourse(attacker, defender, is_first, d_call_a) {
+    if (is_first) {
+      await defender.print_and_wait('최악이야.');
+      await defender.print_and_wait([
+        '앞에서 손을 높게 치켜든 ',
+        d_call_a,
+        '의 부끄러운 듯 떨리는 엉덩이에서 그런 불평이 읽혀온다.',
+      ]);
+      await defender.print_and_wait('하지만 이건 어쩔 수 없는 일이다.');
+      await attacker.say_and_wait('으으—');
+      await defender.print_and_wait([
+        d_call_a,
+        '의 겨드랑이가, 지금 육봉의 거대한 귀두에 닦여지고 있다.',
+      ]);
+      await defender.print_and_wait(
+        '열기가 오르는 겨드랑이 살이 삽입에 따라 비색으로 물들어가며, 마치 정말 성적인 색기 어린 기관으로 변해버린 것 같다……',
+      );
+      await defender.print_and_wait([
+        '이것을 완전히 당연한 일로 받아들이지는 못한 채,',
+        defender.get_colored_name(),
+        '의 동작에는 약간의 망설임이 섞여 있다……',
+      ]);
+      await defender.print_and_wait([
+        '……망설이면서도 육봉으로 등을 돌린 채 서 있는 ',
+        d_call_a,
+        '의 겨드랑이 구멍을 비비며 삽입을 이어간다……',
+      ]);
+    } else {
+      await attacker.print_and_wait('기분이…… 조금 이상해져……');
+      await attacker.print_and_wait('겨드랑이가, 원래 이런 걸 하기 위한 기관이었나……');
+      await attacker.print_and_wait('게다가, 원래 이런 촉감을 느낄 수 있는 거였어……?');
+      await attacker.print_and_wait([
+        '육봉에 침범당하며 확실하게 무언가가 변해가고 있는 듯, 얼굴이 붉게 달아오른 ',
+        attacker.get_colored_name(),
+        '이(가) 불안해하면서도 이미 미끈미끈하게 익숙해진 육봉님을 모시고 있다.',
+      ]);
+    }
+  },
+
+  async foot_job(attacker, defender, is_first, d_call_a) {
+    if (is_first) {
+      await defender.print_and_wait('미소 짓게 되겠지.');
+      await defender.print_and_wait([
+        '언제나 ',
+        attacker.get_colored_name(),
+        '이(가) ',
+        defender.race > 0 ? '경기장을 달리던 그 두 발로 ' : '',
+        '눈앞의 육봉을 밟았을 때, 그 나쁜 녀석이 흥분해서 오히려 발바닥을 밀어 올리고 있다는 걸 알게 되면 분명 미소 짓게 될 것이다.',
+      ]);
+      await defender.print_and_wait(
+        '저속한 것을 보았을 때의 혐오와 경멸 섞인 미소…… 취향이 이상한 연인에게 보여주는 흥미로운 포용의 미소…… 천진난만하게 그저 이것이 재밌어서 짓는 미소……',
+      );
+      await defender.print_and_wait([
+        '앞에 있는 ',
+        d_call_a,
+        '은(는) 어느 쪽일까… 어쨌든 육봉을 더욱 흥분하게 만드는 쪽이겠지.',
+      ]);
+    } else {
+      await defender.print_and_wait('아마 눈치챘을 것이다.');
+      await defender.print_and_wait('자신의 발바닥을 침범하고 있는 이 육봉이 결코 약한 물건이 아니라는 것을.');
+      await defender.print_and_wait([
+        d_call_a,
+        '이(가) 육봉을 짓밟는 동작이 훨씬 자연스러워졌다.',
+      ]);
+      await defender.print_and_wait([
+        '마치 ',
+        defender.get_colored_name(),
+        '의 육봉을 발바닥 아래에 두는 것이 타고난 재능인 것처럼.',
+      ]);
+      await defender.print_and_wait('쓰읍……');
+      await defender.print_and_wait([
+        '그저 상상하는 것만으로,',
+        defender.get_colored_name(),
+        '은(는) 또다시 아랫배가 뜨거워지는 것을 느꼈다.',
+      ]);
+    }
+  },
+
+  async tail_job(attacker, defender, is_first, d_call_a) {
+    if (is_first) {
+      await defender.print_and_wait('유연해……');
+      await defender.print_and_wait([
+        '요구를 제안한 ',
+        defender.get_colored_name(),
+        '조차 예상치 못한 기민함으로, 구불구불한 털의 꼬리가 육봉을 휘감았다.',
+      ]);
+      await defender.print_and_wait('이 각도에서 보이는 엉덩이도 각별한 풍미가 있다.');
+      if (attacker.sex_code !== 1) {
+        await defender.print_and_wait([
+          '길다란 꼬리에 어쩔 수 없이 배어든 여자아이의 냄새가 은은하게 느껴지자, ',
+          defender.get_colored_name(),
+          '의 육봉은 유례없을 정도로 흥분하고 있다.',
+        ]);
+      }
+      await attacker.say_and_wait('……');
+      await defender.print_and_wait([
+        '……그리고 이 폭발적인 열기를 느꼈는지, 등을 돌린 ',
+        d_call_a,
+        '은(는) 붉게 물든 귀의 움직임마저 사랑스럽게 느껴진다.',
+      ]);
+    } else {
+      await defender.print_and_wait('동작이 거칠어지고 있다…… 혹은 숙련되었다고 해야 할까.');
+      await defender.print_and_wait(
+        '꼬리가 음란한 애액으로 끈적하게 젖은 뒤, 털을 반짝이게 만드는 이 보양품으로부터 무언가를 깨달은 모양이다.',
+      );
+      await defender.print_and_wait('예를 들면, 이 육봉이 좋아하는 휘감는 강도라던가.');
+      await defender.print_and_wait('예를 들면, 이 육봉이 자극받으면 바르르 떨리는 위치라던가.');
+      if (attacker.sex_code !== 1) {
+        await defender.print_and_wait(
+          '예를 들면, 꼬리 아래의 보지에도 더 많고…… 더 격렬한 것이 필요한지 어떤지 같은 것들 말이다.',
+        );
+      }
+    }
+  },
+
 };
