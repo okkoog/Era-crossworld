@@ -771,3 +771,31 @@ Pending Japanese fallback: **37 functions**
 The Korean module spreads `ja-JP/timon/sex/ero-common` first, so every
 pending function remains functional through Japanese fallback.
 
+### `sex/ero-others.js`
+
+2.21 source references:
+- `sources/eraumak_kr_2.21/game/ere/event/ero/ero-common.js`
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/pregnant-report-in-love.js`
+- `sources/eraumak_kr_2.21/game/ere/event/ero/common/cum-in-womb.js`
+
+Current 3.113 top-level keys/functions: **36**
+
+Safely reused Korean overrides in this pass: **35**
+
+Reused areas:
+- 3P join/accept/force/reject
+- erection, lubrication, wound, virginity-loss notifications
+- orgasm-denial UI/result
+- zero-stamina / lost-mind messages
+- pleasure/meek/pain/shame/hate/inmon mark notifications
+- immediate pregnancy notification
+- pregnancy report (love / non-love)
+- childbirth report
+- shop start/end reactions
+- first/second/repeated betrayal reactions
+
+Pending Japanese fallback:
+- `cum_in_womb`
+  - Existing 2.21 Korean text is present, but current 3.113 added anti-condom branches and changed several conditional splits. It was left on Japanese fallback rather than synthesizing Korean text.
+
+The Korean module spreads the current Japanese `sex/ero-others` object first, so the pending function remains functional through Japanese fallback. No fresh Korean prose was created.
