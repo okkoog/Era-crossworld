@@ -1085,3 +1085,42 @@ Additional source checks in this pass:
 - `trainer_race`: no direct 2.21 trainer-poster race scene was confirmed.
 
 These unmatched scenes remain on Japanese fallback.
+
+### \`others/random.js\` — fifth matched batch
+
+2.21 source references:
+- \`sources/eraumak_kr_2.21/game/ere/event/edu/edu-301.js\`
+- \`sources/eraumak_kr_2.21/game/ere/event/edu/edu-302.js\`
+
+Additional current 3.113 scene overrides added in this batch: **3**
+- \`shadow_minoru\`
+- \`chairman_annoyance1\`
+- \`chairman_annoyance2\`
+
+\`shadow_minoru\`:
+- Directly matches the 2.21 \`CustomizedEdu.shadow()\` scene for Hayakawa Tazuna.
+- Current 3.113 parameters/control flow are preserved.
+- Existing Korean event title, choice, and both identity-known/unknown branches were reused.
+- No new Korean prose was synthesized.
+
+\`chairman_annoyance1\` / \`chairman_annoyance2\`:
+- Directly match the 2.21 \`CustomizedEdu.annoyance1()\` and \`annoyance2()\`
+  scenes for Akikawa Yayoi.
+- Current 3.113 return-value structure is preserved.
+- Existing Korean dialogue/choices/results were reused.
+- The current \`%TEEN%\` title placeholder is preserved while reusing the old Korean
+  title wording.
+
+Checked in the same pass but no sufficiently reliable direct 2.21 scene match was found:
+- \`all_round_meek\`
+  - checked the 2.21 Happy Meek / Kiryuin education entry points
+    (\`edu-201.js\`, \`edu-304.js\`); no matching training-secret scene was present.
+- \`trainer_race\`
+  - checked the 2.21 Kiryuin education entry point (\`edu-304.js\`); no matching
+    poster/trainer-race scene was present.
+- \`experiment\`
+  - checked the 2.21 Manhattan Cafe event area (\`edu-events-25/*\`); no direct
+    abandoned-science-room scene match was confirmed.
+
+These unmatched scenes remain on Japanese fallback.
+
