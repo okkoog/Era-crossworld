@@ -3,7 +3,10 @@ param(
     [string]$RuntimePath,
     [string]$PackageName,
     [string]$ResourceRoot,
-    [string]$NuGetRoot
+    [string]$NuGetRoot,
+    [string]$KoreanSourceRepository,
+    [string]$KoreanSourceCommit,
+    [string]$KoreanKojoRoot
 )
 $ErrorActionPreference='Stop'
 Set-StrictMode -Version Latest
@@ -22,6 +25,49 @@ $OutputRoot=[IO.Path]::GetFullPath($OutputRoot)
 $packageRoot=Join-Path $OutputRoot $PackageName
 $archivePath=Join-Path $OutputRoot ($PackageName+'.zip')
 if ((Test-Path -LiteralPath $packageRoot) -or (Test-Path -LiteralPath $archivePath)) { throw 'Output already exists. Choose a fresh PackageName; existing files are never removed.' }
+
+$koreanRequested=([bool]$KoreanSourceRepository -or [bool]$KoreanSourceCommit -or [bool]$KoreanKojoRoot)
+$koreanProvenance=$null
+if ($koreanRequested) {
+    if (!$KoreanSourceRepository -or !$KoreanSourceCommit -or !$KoreanKojoRoot) { throw 'KoreanSourceRepository, KoreanSourceCommit and KoreanKojoRoot must be supplied together.' }
+    if ($KoreanSourceCommit -notmatch '^[0-9a-fA-F]{40}$') { throw 'KoreanSourceCommit must be a full Git commit SHA.' }
+    $KoreanSourceRepository=(Resolve-Path -LiteralPath $KoreanSourceRepository).Path
+    $KoreanKojoRoot=(Resolve-Path -LiteralPath $KoreanKojoRoot).Path
+    $koreanHead=git -C $KoreanSourceRepository rev-parse HEAD
+    if ($LASTEXITCODE -ne 0 -or $koreanHead.Trim() -ne $KoreanSourceCommit) { throw 'Korean source HEAD does not match KoreanSourceCommit.' }
+    $koreanScope=@('sources/erauma/ere/i18n/ko-KR','sources/erauma/package.json')
+    $koreanStatus=git -C $KoreanSourceRepository status --porcelain --untracked-files=all -- $koreanScope
+    if ($LASTEXITCODE -ne 0 -or $koreanStatus) { throw 'Korean source files must be clean at the recorded commit.' }
+    $baseScope=@('sources/erauma/ere',':!sources/erauma/ere/i18n/ko-KR',':!sources/erauma/ere/i18n/selector.js')
+    git -C $repoPath diff --quiet HEAD $KoreanSourceCommit -- $baseScope
+    if ($LASTEXITCODE -ne 0) { throw 'Korean source changes game files outside the Korean language pack and language selector.' }
+    git -C $repoPath diff --quiet HEAD -- 'sources/erauma/ere' ':!sources/erauma/ere/i18n/ko-KR' 'sources/erauma/package.json'
+    if ($LASTEXITCODE -ne 0) { throw 'Base game files must match the current repository commit.' }
+    $koreanSourcePath=Join-Path $KoreanSourceRepository 'sources\erauma\ere\i18n\ko-KR'
+    if (!(Test-Path -LiteralPath (Join-Path $koreanSourcePath 'entry.js'))) { throw 'Korean source is missing ere/i18n/ko-KR/entry.js.' }
+    $baseSourcePackage=Get-Content -LiteralPath (Join-Path $repoPath 'sources\erauma\package.json') -Raw | ConvertFrom-Json
+    $koreanSourcePackage=Get-Content -LiteralPath (Join-Path $KoreanSourceRepository 'sources\erauma\package.json') -Raw | ConvertFrom-Json
+    if ($baseSourcePackage.version -ne $koreanSourcePackage.version) { throw 'Korean language pack and base game source versions differ.' }
+    $koreanCompiledPath=Join-Path $KoreanKojoRoot 'i18n\ko-KR'
+    if (!(Test-Path -LiteralPath $koreanCompiledPath)) { throw 'KoreanKojoRoot is missing i18n/ko-KR.' }
+    $koreanKojoFiles=@(Get-ChildItem -LiteralPath $koreanSourcePath -Recurse -File -Force -Filter '*.kojo')
+    $koreanCompiledFiles=@(Get-ChildItem -LiteralPath $koreanCompiledPath -Recurse -File -Force -Filter '*.kojo.js')
+    if ($koreanKojoFiles.Count -ne 31 -or $koreanCompiledFiles.Count -ne $koreanKojoFiles.Count) { throw 'Korean source and compiled Kojo must each contain the reviewed 31 files.' }
+    foreach ($sourceKojo in $koreanKojoFiles) {
+        $relative=$sourceKojo.FullName.Substring($koreanSourcePath.Length+1)
+        if (!(Test-Path -LiteralPath (Join-Path $koreanCompiledPath ($relative+'.js')) -PathType Leaf)) { throw "Missing compiled Korean Kojo: $relative" }
+    }
+    $koreanProvenance=@{
+        format='erauma-emuera-language-provenance-v1';distributionVersion='0.3.3-ko1';baseRuntimeVersion='0.3.3'
+        language='ko-KR';sourceRepository='okkoog/Era-crossworld';sourceCommit=$koreanHead.Trim()
+        sourcePath='sources/erauma/ere/i18n/ko-KR';sourceVersion=$koreanSourcePackage.version
+        sourceFiles=@(Get-ChildItem -LiteralPath $koreanSourcePath -Recurse -File -Force).Count
+        sourceKojoFiles=$koreanKojoFiles.Count;compiledKojoFiles=$koreanCompiledFiles.Count
+        entryPath='game/language-packs/ko-KR/entry.js';packagedSourcePath='game/erauma/ere/i18n/ko-KR';packagedKojoPath='game/kojo/i18n/ko-KR'
+        fallbackPolicy='Existing Korean translations and reviewed text reuse are included; untranslated scenes and unmatched output calls retain Japanese fallback.'
+        gameSelectorPolicy='The base game language selector is unchanged; the runtime loads the Korean language pack wrapper.'
+    }
+}
 
 $reference=Join-Path $repoPath 'test\ERA_CrossWorld_Runtime_Test_0.4.3'
 $referenceExe=Join-Path $reference 'Emuera.NET 1824+v24+EMv18+EEv56.exe'
@@ -54,11 +100,12 @@ function Copy-PackageFile([string]$Source,[string]$Destination) {
     [IO.Directory]::CreateDirectory((Split-Path $target)) | Out-Null
     [IO.File]::Copy($item.FullName,$target,$false)
 }
-function Copy-PackageTree([string]$Source,[string]$Destination,[string[]]$Extensions=@()) {
+function Copy-PackageTree([string]$Source,[string]$Destination,[string[]]$Extensions=@(),[string[]]$ExcludedSubtrees=@()) {
     $sourceRoot=(Resolve-Path -LiteralPath $Source).Path.TrimEnd('\','/')
     if ((Get-Item -LiteralPath $sourceRoot -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Links are not copied: $Source" }
     foreach ($item in Get-ChildItem -LiteralPath $sourceRoot -Force -Recurse) {
         $relative=$item.FullName.Substring($sourceRoot.Length+1).Replace('\','/')
+        if (@($ExcludedSubtrees | Where-Object { $relative -eq $_ -or $relative.StartsWith($_+'/',[StringComparison]::OrdinalIgnoreCase) }).Count -gt 0) { continue }
         if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Links are not copied: $($item.FullName)" }
         if ($item.PSIsContainer) { continue }
         if ($relative -match '(^|/)(\.git|node_modules|bin|obj|artifacts|results|sav|saves)(/|$)' -or $item.Name -match '^\.env($|\.)|\.sav$') {
@@ -73,13 +120,24 @@ function Copy-PackageTree([string]$Source,[string]$Destination,[string[]]$Extens
 # Runtime allowlist: user saves, reports and automatic-test checkpoints never enter the package.
 Copy-PackageFile $runtimeExe 'Emuera.exe'
 Copy-PackageTree (Join-Path $RuntimePath 'CSV') 'CSV'
+if ($koreanRequested) {
+    $gamebasePath=Join-Path $packageRoot 'CSV\Gamebase.csv'
+    $gamebase=[IO.File]::ReadAllText($gamebasePath)
+    $gamebase=[regex]::Replace($gamebase,'(?m)^バージョン名,.*$','バージョン名,eraUma Emuera.NET 0.3.3-ko1')
+    $gamebase=[regex]::Replace($gamebase,'(?m)^タイトル,.*$','タイトル,[0.3.3-ko1] era말딸 — 한국어 재사용팩')
+    [IO.File]::WriteAllText($gamebasePath,$gamebase,[Text.UTF8Encoding]::new($false))
+}
 Copy-PackageTree (Join-Path $RuntimePath 'ERB') 'ERB'
 foreach ($pluginFile in $pluginFiles) { Copy-PackageFile (Join-Path $RuntimePath ('Plugins\'+$pluginFile)) ('Plugins\'+$pluginFile) }
 Copy-PackageFile (Join-Path $RuntimePath 'pluginsAware.txt') 'pluginsAware.txt'
-Copy-PackageTree (Join-Path $repoPath 'sources\erauma\ere') 'game\erauma\ere'
+if ($koreanRequested) { Copy-PackageTree (Join-Path $repoPath 'sources\erauma\ere') 'game\erauma\ere' @() @('i18n/ko-KR') }
+else { Copy-PackageTree (Join-Path $repoPath 'sources\erauma\ere') 'game\erauma\ere' }
 Copy-PackageFile (Join-Path $repoPath 'sources\erauma\build\static.json') 'game\erauma\build\static.json'
 Copy-PackageFile (Join-Path $repoPath 'sources\erauma\LICENSE') 'game\erauma\LICENSE'
 Copy-PackageFile (Join-Path $repoPath 'sources\erauma\package.json') 'game\erauma\package.json'
+if ($koreanRequested) {
+    Copy-PackageTree $koreanSourcePath 'game\erauma\ere\i18n\ko-KR'
+}
 if (!$ResourceRoot) {
     $installed=Join-Path $portPath 'artifacts\resources'
     if (Test-Path -LiteralPath (Join-Path $installed 'res')) { $ResourceRoot=$installed }
@@ -95,20 +153,31 @@ if ($ResourceRoot) {
     }
 }
 Copy-PackageTree (Join-Path $portPath 'third_party\ere') 'game\engine'
-Copy-PackageTree (Join-Path $portPath 'artifacts\kojo') 'game\kojo'
+if ($koreanRequested) { Copy-PackageTree (Join-Path $portPath 'artifacts\kojo') 'game\kojo' @() @('i18n/ko-KR') }
+else { Copy-PackageTree (Join-Path $portPath 'artifacts\kojo') 'game\kojo' }
 [IO.Directory]::CreateDirectory((Join-Path $packageRoot 'game\language-packs')) | Out-Null
+if ($koreanRequested) {
+    foreach ($compiledKojo in $koreanCompiledFiles) {
+        $relative=$compiledKojo.FullName.Substring($koreanCompiledPath.Length+1)
+        Copy-PackageFile $compiledKojo.FullName (Join-Path 'game\kojo\i18n\ko-KR' $relative)
+    }
+    $koreanEntryPath=Join-Path $packageRoot $koreanProvenance.entryPath
+    [IO.Directory]::CreateDirectory((Split-Path $koreanEntryPath)) | Out-Null
+    [IO.File]::WriteAllText($koreanEntryPath,"module.exports = require('#/i18n/ko-KR/entry');`n",[Text.UTF8Encoding]::new($false))
+    [IO.File]::WriteAllText((Join-Path $packageRoot 'language-provenance.json'),($koreanProvenance | ConvertTo-Json -Depth 8),[Text.UTF8Encoding]::new($false))
+}
 foreach ($sourceFolder in @('compatibility','plugin','bootstrap','tests','tools')) {
     Copy-PackageTree (Join-Path $portPath $sourceFolder) ('adapter-source\'+$sourceFolder) @('.cs','.js','.csproj','.erb','.ps1','.cjs','.py','.md','.json','.csv','.config')
 }
 Copy-PackageFile (Join-Path $portPath 'README.md') 'adapter-source\README.md'
 Copy-PackageTree (Join-Path $portPath 'packaging') 'adapter-source\packaging'
-foreach ($document in @('ERAUMA_ENGINE_DEPENDENCIES.md','ERAUMA_COMPATIBILITY_API.md','ERAUMA_PORTING_STATUS.md','ERAUMA_KNOWN_ISSUES.md','API_USAGE.md','ERAUMA_UI_STATUS.md','ERAUMA_SECOND_WORK_ORDER.md')) {
+foreach ($document in @('ERAUMA_ENGINE_DEPENDENCIES.md','ERAUMA_COMPATIBILITY_API.md','ERAUMA_PORTING_STATUS.md','ERAUMA_KNOWN_ISSUES.md','API_USAGE.md','ERAUMA_UI_STATUS.md','ERAUMA_SECOND_WORK_ORDER.md','ERAUMA_KOREAN_PACK.md')) {
     Copy-PackageFile (Join-Path $portPath ('docs\'+$document)) ('docs\'+$document)
     Copy-PackageFile (Join-Path $portPath ('docs\'+$document)) ('adapter-source\docs\'+$document)
 }
 # Reviewed summaries and software-canvas examples are deliverables; raw runtime
 # reports and user/test saves remain excluded by the runtime allowlist above.
-foreach($evidenceVersion in @('0.3','0.3.1','0.3.2','0.3.3')) {
+foreach($evidenceVersion in @('0.3','0.3.1','0.3.2','0.3.3','0.3.3-ko1')) {
     $evidenceRelative='docs\evidence\'+$evidenceVersion
     $evidenceRoot=Join-Path $portPath $evidenceRelative
     if (Test-Path -LiteralPath $evidenceRoot) {
@@ -140,6 +209,7 @@ $manifest=@{
     excludedPolicy=@('User saves and sav-game/','Raw runtime results/ and checkpoints','All .env files','Git metadata','node_modules/','build bin/ and obj/','Original Electron engine/common submodules','Verification probe.js and automatic ERB')
     excludedFiles=@($exclusions | Sort-Object -Unique);files=$manifestFiles
 }
+if ($koreanRequested) { $manifest.languagePack=$koreanProvenance }
 [IO.File]::WriteAllText((Join-Path $packageRoot 'package-manifest.json'),($manifest | ConvertTo-Json -Depth 8),[Text.UTF8Encoding]::new($false))
 $manifestItem=Get-Item -LiteralPath (Join-Path $packageRoot 'package-manifest.json')
 $zipFiles=@($manifestFiles)+@(@{path='package-manifest.json';bytes=$manifestItem.Length;sha256=(Get-FileHash -LiteralPath $manifestItem.FullName -Algorithm SHA256).Hash})
