@@ -1289,4 +1289,176 @@ module.exports = {
     return f;
   })(),
 
+  os_is_movie_right: (() => {
+    /**
+     * @author KUN
+     * @param {CharaTalk} chara キャラ
+     * @param {CharaTalk} you プレイヤー
+     * @param {PrintedSpan} callname キャラからプレイヤーへの呼び方
+     */
+    const f = async (chara, you, callname) => {
+      const ret = [];
+      await printAndWait([
+        '원래는 ',
+        chara.get_colored_name(),
+        '과(와) 함께 상점가를 가볍게 둘러보려 했지만, 뜻밖의 홍보물을 발견했다.',
+      ]);
+      println();
+      await you.say_as_passer_by_and_wait('홍보물', [
+        chara.uma_sex_title,
+        '의 성장 과정을 완벽하게 담아낸 신작!',
+      ]);
+      println();
+      await printAndWait([
+        '소문은 듣지 못했지만, ',
+        you.get_colored_name(),
+        '과(와) ',
+        chara.get_colored_name(),
+        '은(는) 호기심에 표를 사서 입장했다.',
+      ]);
+      await printAndWait(
+        '상영관에 앉아 불이 꺼지고 이야기가 시작되기를 약간의 기대감을 안고 기다렸다.',
+      );
+      await printAndWait(
+        '스크린의 화면은 확실히 신작다운 퀄리티였지만, 성장 과정은 다소 의외였다.',
+      );
+      println();
+      await you.say_as_passer_by_and_wait(
+        '배우',
+        '트레이너, 당신 덕분이에요……',
+      );
+      await you.say_as_passer_by_and_wait(
+        '배우',
+        '전부 트레이너 덕분에, 지금의 제가……',
+      );
+      println();
+      await printAndWait([
+        '스크린의 과장된 장면에 ',
+        you.get_colored_name(),
+        '은(는) 묘한 위화감을 느꼈다.',
+      ]);
+      await printAndWait('이게 정말 성장 과정이라고?');
+      println();
+      await printAndWait([
+        '뭔가 잘못됐음을 깨달은 ',
+        you.get_colored_name(),
+        '은(는) 고개를 돌려 ',
+        chara.get_colored_name(),
+        '에게 남은 부분은 그만 보자고 말하려 했다.',
+      ]);
+      println();
+      await chara.say_and_wait('……');
+      println();
+      await printAndWait('팔 위로 따스한 감촉이 전해졌다.');
+      await printAndWait([
+        '곁에 앉아있던 ',
+        chara.get_colored_name(),
+        '이(가) 살며시 ',
+        you.get_colored_name(),
+        '의 손을 잡았다.',
+      ]);
+      println();
+      await chara.say_and_wait('……갈 건가요?');
+      println();
+      await printAndWait([
+        '어두운 상영관 안에서, 오직 ',
+        chara.get_colored_name(),
+        '의 얼굴만이 유독 뚜렷하게 보였다.',
+      ]);
+      await printAndWait([
+        '두 손이 ',
+        you.get_colored_name(),
+        '의 팔에 포개진 채, 살며시 어깨에 기대어 왔다.',
+      ]);
+      println();
+      await printAndWait(
+        '화면은 두 사람의 마음속에서 더 이상 중요하지 않았고, 시선은 서로에게 단단히 얽매였다.',
+      );
+      await printAndWait(
+        '스크린의 희미한 빛이 서로의 얼굴을 비추며, 눈동자에 빛을 굴절시켰다.',
+      );
+      println();
+      await chara.say_and_wait([callname, '……']);
+      await chara.say_and_wait('저……');
+      await you.say_as_passer_by_and_wait('배우', '당신을 좋아해요!');
+      println();
+      await printAndWait(
+        '영화가 클라이맥스에 달하며, 두 사람이 하려던 행동을 끊어버렸다.',
+      );
+      await printAndWait([
+        '소리가 ',
+        you.get_colored_name(),
+        '과(와) ',
+        chara.get_colored_name(),
+        ' 사이를 덮쳤고, 얽힌 시선에는 약간의 어색함이 섞여 있었다.',
+      ]);
+      printButton('「일단…… 진정하자」（컨디션 상승, 호감도+10）', 1);
+      printButton('「우리…… 같이 어디 좀 갈까」（컨디션  대폭 상승, 연모+1）', 2);
+      ret.push(await input());
+      if (ret[0] === 1) {
+        await printAndWait(
+          '영화는 점차 결말을 향해 갔고, 조명도 때맞춰 켜졌다.',
+        );
+        await printAndWait([
+          '밝은 빛이 ',
+          you.get_colored_name(),
+          '의 어색한 얼굴을 비추자 ',
+          you.get_colored_name(),
+          '도 헛기침을 가볍게 했다.',
+        ]);
+        println();
+        await chara.say_and_wait('……네.');
+        println();
+        await printAndWait([
+          '여전히 맞닿아 있던 손이 ',
+          you.get_colored_name(),
+          '을(를) 쥐더니, 이내 함께 자리에서 일어났다.',
+        ]);
+        await printAndWait([
+          '조금은 아쉬운 기색이었지만 얌전히 일어나 ',
+          you.get_colored_name(),
+          '의 뒤를 따랐다.',
+        ]);
+      } else {
+        await printAndWait([
+          '영화의 클라이맥스 속에서도, ',
+          you.get_colored_name(),
+          '은(는) 그 사이에서 간신히 목소리를 냈다.',
+        ]);
+        await printAndWait([
+          '분위기에 휩쓸려 소리친 ',
+          chara.get_colored_name(),
+          '은(는) 흠칫 놀라며, 즉시 뒤로 몸을 움츠렸다.',
+        ]);
+        await printAndWait([
+          '반대로, ',
+          you.get_colored_name(),
+          '의 얼굴은 부드러워지며, 천천히 앞으로 다가갔다.',
+        ]);
+        await printAndWait([
+          '입술이 겹쳐지며, ',
+          chara.get_colored_name(),
+          '의 놀라움과 수줍음을 모두 마음속으로 밀어 넣은 채, 행복감을 만끽했다.',
+        ]);
+        println();
+        await printAndWait([
+          you.get_colored_name(),
+          '은(는) ',
+          chara.get_colored_name(),
+          '의 손을 잡고 조용히 상영관을 빠져나왔다.',
+        ]);
+        await printAndWait([
+          '온통 새빨개진 얼굴을 한 ',
+          chara.get_colored_name(),
+          '을(를) 데리고, 눈앞의 러브호텔을 바라보며 천천히 ',
+          chara.sex,
+          '의 어깨를 감싸 안고 들어갔다……',
+        ]);
+      }
+      return ret;
+    };
+    f.title = '이 영화 맞나?';
+    return f;
+  })(),
+
 };
