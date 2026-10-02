@@ -19,4 +19,5 @@ module.exports = class extends JaKojo {
   119 = new (require('#/i18n/ko-KR/kojo/111900-Dream-Journey/entry'))();
   30 = new (require('#/i18n/ko-KR/kojo/103000-Rice-Shower/entry'))();
   32 = new (require('#/i18n/ko-KR/kojo/103200-Agnes-Tachyon/entry'))();
+  46 = new (require('#/i18n/ko-KR/kojo/104600-Smart-Falcon/entry'))();
 };
