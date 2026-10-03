@@ -260,6 +260,55 @@ module.exports = {
     orgasm,
   ],
 
+  // Reused from EraUmaK 2.21 sub-calc-ero-orgasm/update-orgasms.js.
+  get_chara_cum_on_face: (chara, targets, semen) => [
+    chara.get_colored_name(),
+    ' 이(가) ',
+    ...targets,
+    ' 의 얼굴에 ',
+    semen,
+    '의 정액을 사정했다!',
+  ],
+  get_chara_cum_in_condom: (chara, semen) => [
+    chara.get_colored_name(),
+    ' 이(가) 콘돔 안에 ',
+    semen,
+    '의 정액을 사정했다!',
+  ],
+  get_chara_cum_in_artificial_vagina: (chara, item, semen) => [
+    chara.get_colored_name(),
+    ' 이(가) ',
+    item,
+    ' 안에 ',
+    semen,
+    '의 정액을 사정했다!',
+  ],
+  get_chara_cum_in_part: (chara, target, part, semen) => [
+    chara.get_colored_name(),
+    ' 이(가) ',
+    target.get_colored_name(),
+    ' 의 ',
+    part,
+    ' ',
+    semen,
+    '의 정액을 사정했다!',
+  ],
+  get_chara_cum: (chara, semen) => [
+    chara.get_colored_name(),
+    ' 이(가) ',
+    semen,
+    '의 정액을 사정했다!',
+  ],
+  cum_in_anal: '애널 안에',
+  cum_in_body: '몸 위에',
+  cum_in_breast: '가슴 안에',
+  cum_in_clitoris: '음핵 위에',
+  cum_in_foot: '발 위에',
+  cum_in_hand: '손 안에',
+  cum_in_mouth: '입안에',
+  cum_in_penis: '자지 위에',
+  cum_in_virgin: '보지 안에',
+
   // Reused from EraUmaK 2.21 page-ero.js print_milking().
   get_milk_ml: (amount, item) => [
     '착유기로 우유를 짜서 모았다: ',
