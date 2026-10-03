@@ -79,6 +79,16 @@ public sealed class KoreanNativeProbe:IPluginMethod {
   if(a[3].strValue!="")throw new Exception("Bridge returned error: "+a[3].strValue);
  }
  string StringValue(string expression)=>JsonSerializer.Deserialize<string>(Game.EvaluateJson(expression))!;
+ long[] CurrentChoices()=>JsonSerializer.Deserialize<long[]>(Game.EvaluateJson("__screen.flat().filter(e=>e[0]==='button'&&e[3]===__buttonEpoch).map(e=>e[2])"))!;
+ void SettleNarrative(string stage){
+  for(int step=0;step<300;step++){
+   if(Game.State=="input"&&!Game.WaitingForContinue){Check(Game.Error=="",stage+": original narrative settles without errors");return;}
+   if(Game.State=="timer")Action("ui-advance");
+   else if(Game.State=="input"&&Game.WaitingForContinue)Action("resume","");
+   else throw new Exception(stage+": unexpected production session state "+Game.State+" "+Game.Error);
+  }
+  throw new Exception(stage+": original narrative exceeds 300 bounded advances");
+ }
  sealed record NativeButton(long Id,string Text,long Generation,int Width);
  NativeButton[] NativeButtons(){
   var found=new List<NativeButton>();
@@ -151,9 +161,24 @@ public sealed class KoreanNativeProbe:IPluginMethod {
    Action("resume","Trainer");
    Check(Game.State=="input"&&NativeButtons().Any(b=>b.Id==1),"Original name entry advances to native character-setting choices");
    Check(NativeText().Contains(StringValue("__require('i18n/selector').i18n().new_game.intro_select_sex")),"Character-setting prompt renders Korean text");Capture("korean-new-game-character");
+   Action("resume","1");Action("resume","1");Action("resume","0");
+   Check(Game.State=="input"&&CurrentChoices().Contains(2),"Original settings advance to the default-appearance choice");
+   Action("resume","2");
+   var confirmationIds=new long[]{1,2,3,4,99};
+   Check(Game.State=="input"&&Game.Error==""&&confirmationIds.All(id=>CurrentChoices().Contains(id)),"Default appearance reaches all original confirmation actions without get_hair_color failure");
+   Check(confirmationIds.All(id=>NativeButtons().Any(b=>b.Id==id&&b.Width>0)),"Default-appearance confirmation actions have actual native button widths");
+   Check(NativeText().Contains(StringValue("__require('i18n/selector').i18n().new_game.cus_final_header")),"Default-appearance confirmation renders its current-language header");
+   Capture("korean-new-game-default-confirmation");
+   Action("resume","1");SettleNarrative("New-game introduction");
+   Check(Game.State=="input"&&CurrentChoices().Contains(205)&&CurrentChoices().Contains(405),"Confirmed Korean new game reaches the original homepage actions");
+   Check(NativeButtons().Any(b=>b.Id==205&&b.Width>0),"Homepage rest action has a native button");
+   Capture("korean-new-game-homepage");
+   Action("resume","205");SettleNarrative("Neutral rest action");
+   Check(Game.State=="input"&&Game.Error==""&&CurrentChoices().Contains(205)&&CurrentChoices().Contains(405),"Neutral rest action returns to the original homepage without runtime errors");
+   Capture("korean-new-game-after-rest");
    var binaries=new Dictionary<string,string>();
    foreach(var name in new[]{"EraUma.Plugin.dll","EraUma.Compatibility.dll","Jint.dll","Acornima.dll"})binaries[name]=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(Path.Combine(root,"Plugins",name))));
-   File.WriteAllText(Path.Combine(root,"korean-native.json"),JsonSerializer.Serialize(new{pass=true,scope="Actual distributed Emuera with unchanged production Bridge: original language-menu selection, persisted Korean locale restoration, title/new-game native button/text parts and managed canvas PNG. Isolated saves; no desktop capture, OS input or human play.",checks,screens,state=Game.State,error=Game.Error,engine=typeof(PluginManager).Assembly.FullName,loadedPlugin=typeof(Bridge).Assembly.Location,loadedCompatibility=typeof(Session).Assembly.Location,binaries},new JsonSerializerOptions{WriteIndented=true}));
+   File.WriteAllText(Path.Combine(root,"korean-native.json"),JsonSerializer.Serialize(new{pass=true,scope="Actual distributed Emuera with production Bridge: original language-menu selection, persisted Korean locale restoration, full default-appearance new-game route through confirmation and homepage, neutral rest action, native button/text parts and managed canvas PNG. Isolated saves; no desktop capture, OS input or human play.",checks,screens,state=Game.State,error=Game.Error,engine=typeof(PluginManager).Assembly.FullName,loadedPlugin=typeof(Bridge).Assembly.Location,loadedCompatibility=typeof(Session).Assembly.Location,binaries},new JsonSerializerOptions{WriteIndented=true}));
   }finally{DisposeBridge();Set(console,"state",previousState);}
  }
  public void Execute(PluginMethodParameter[] a){

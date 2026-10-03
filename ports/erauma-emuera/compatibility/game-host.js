@@ -26,18 +26,24 @@ function __require(name,parent='') {
     else new Function('module','exports','require',code)(module,module.exports,n=>__require(n,id));
     if(id==='i18n/selector.js'){
       const base=module.exports,extra=Object.create(null);let selected=null;
-      for(const language of JSON.parse(__languagePacks)){
-        if(base.lans().includes(language))continue;
+      const extraLanguages=JSON.parse(__languagePacks).filter(language=>!base.lans().includes(language));
+      // Register names now, but load entries only when used. Loading a new pack
+      // while the selector's callers are still importing can retain unfinished
+      // CommonJS exports (notably info-generator -> extended-def -> selector).
+      function loadExtra(language){
+        if(!extraLanguages.includes(language))return undefined;
+        if(Object.prototype.hasOwnProperty.call(extra,language))return extra[language];
         const exported=__require('language-packs/'+language+'/entry');
         const entry=typeof exported==='function'?new exported():exported;
         if(!entry||typeof entry!=='object')throw Error('Invalid language pack: '+language);
         extra[language]=entry;
+        return entry;
       }
       module.exports={...base,
-        i18n:(language=selected||base.lan())=>extra[language]||base.i18n(language),
-        lan:()=>selected||base.lan(),lans:()=>[...base.lans(),...Object.keys(extra)],
-        set_lan(language){if(extra[language])selected=language;else {base.set_lan(language);selected=null;}},
-        __(key,fallback=key){if(!selected)return base.__(key,fallback);let value=extra[selected];for(const part of (key||'').split('.')){value=value?.[part];if(value===undefined)return typeof fallback==='function'?fallback():fallback;}return String(value);}
+        i18n:(language=selected||base.lan())=>loadExtra(language)||base.i18n(language),
+        lan:()=>selected||base.lan(),lans:()=>[...base.lans(),...extraLanguages],
+        set_lan(language){if(extraLanguages.includes(language))selected=language;else {base.set_lan(language);selected=null;}},
+        __(key,fallback=key){if(!selected)return base.__(key,fallback);let value=loadExtra(selected);for(const part of (key||'').split('.')){value=value?.[part];if(value===undefined)return typeof fallback==='function'?fallback():fallback;}return String(value);}
       };
     }
     return module.exports;

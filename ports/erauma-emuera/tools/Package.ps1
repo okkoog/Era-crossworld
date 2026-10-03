@@ -6,7 +6,8 @@ param(
     [string]$NuGetRoot,
     [string]$KoreanSourceRepository,
     [string]$KoreanSourceCommit,
-    [string]$KoreanKojoRoot
+    [string]$KoreanKojoRoot,
+    [ValidateSet('0.3.3-ko1','0.3.3-ko2')][string]$KoreanDistributionVersion='0.3.3-ko2'
 )
 $ErrorActionPreference='Stop'
 Set-StrictMode -Version Latest
@@ -58,7 +59,7 @@ if ($koreanRequested) {
         if (!(Test-Path -LiteralPath (Join-Path $koreanCompiledPath ($relative+'.js')) -PathType Leaf)) { throw "Missing compiled Korean Kojo: $relative" }
     }
     $koreanProvenance=@{
-        format='erauma-emuera-language-provenance-v1';distributionVersion='0.3.3-ko1';baseRuntimeVersion='0.3.3'
+        format='erauma-emuera-language-provenance-v1';distributionVersion=$KoreanDistributionVersion;baseRuntimeVersion='0.3.3'
         language='ko-KR';sourceRepository='okkoog/Era-crossworld';sourceCommit=$koreanHead.Trim()
         sourcePath='sources/erauma/ere/i18n/ko-KR';sourceVersion=$koreanSourcePackage.version
         sourceFiles=@(Get-ChildItem -LiteralPath $koreanSourcePath -Recurse -File -Force).Count
@@ -123,8 +124,8 @@ Copy-PackageTree (Join-Path $RuntimePath 'CSV') 'CSV'
 if ($koreanRequested) {
     $gamebasePath=Join-Path $packageRoot 'CSV\Gamebase.csv'
     $gamebase=[IO.File]::ReadAllText($gamebasePath)
-    $gamebase=[regex]::Replace($gamebase,'(?m)^バージョン名,.*$','バージョン名,eraUma Emuera.NET 0.3.3-ko1')
-    $gamebase=[regex]::Replace($gamebase,'(?m)^タイトル,.*$','タイトル,[0.3.3-ko1] era말딸 — 한국어 재사용팩')
+    $gamebase=[regex]::Replace($gamebase,'(?m)^バージョン名,.*$',('バージョン名,eraUma Emuera.NET '+$KoreanDistributionVersion))
+    $gamebase=[regex]::Replace($gamebase,'(?m)^タイトル,.*$',('タイトル,['+$KoreanDistributionVersion+'] era말딸 — 한국어 재사용팩'))
     [IO.File]::WriteAllText($gamebasePath,$gamebase,[Text.UTF8Encoding]::new($false))
 }
 Copy-PackageTree (Join-Path $RuntimePath 'ERB') 'ERB'
@@ -177,7 +178,7 @@ foreach ($document in @('ERAUMA_ENGINE_DEPENDENCIES.md','ERAUMA_COMPATIBILITY_AP
 }
 # Reviewed summaries and software-canvas examples are deliverables; raw runtime
 # reports and user/test saves remain excluded by the runtime allowlist above.
-foreach($evidenceVersion in @('0.3','0.3.1','0.3.2','0.3.3','0.3.3-ko1')) {
+foreach($evidenceVersion in @('0.3','0.3.1','0.3.2','0.3.3','0.3.3-ko1','0.3.3-ko2')) {
     $evidenceRelative='docs\evidence\'+$evidenceVersion
     $evidenceRoot=Join-Path $portPath $evidenceRelative
     if (Test-Path -LiteralPath $evidenceRoot) {

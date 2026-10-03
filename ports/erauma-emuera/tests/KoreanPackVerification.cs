@@ -36,6 +36,7 @@ static class KoreanPackVerification
 
         var save = Path.Combine(reportDirectory, "isolated-saves");
         var main = Load(save, true);
+        Check(main.EvaluateJson("!!__cache['i18n/ko-KR/entry.js']") == "false", "Extra locale registration does not construct Korean during original module imports");
         main.Drain();
         Resume(main, "1");
         main.Drain();
@@ -53,7 +54,79 @@ static class KoreanPackVerification
         var restored = Load(save, true);
         Check(restored.EvaluateJson("__require('i18n/selector').lan()") == "\"ko-KR\"", "Fresh session restores the saved Korean locale");
         Check(Text(restored.Drain()).Contains("면책 사항"), "Fresh-session disclaimer uses Korean");
+        Resume(restored, "1");
+        restored.Drain();
+        Resume(restored, "1");
+        restored.Drain();
+        Resume(restored, "Trainer");
+        restored.Drain();
+        Resume(restored, "1");
+        restored.Drain();
+        Resume(restored, "1");
+        restored.Drain();
+        Resume(restored, "0");
+        restored.Drain();
+        Resume(restored, "2");
+        frame = restored.Drain();
+        Check(frame.Any(e => e.Kind == "button" && e.Button == 1), "Default appearance reaches its confirmation screen");
+        Resume(restored, "2");
+        restored.Drain();
+        Resume(restored, "3");
+        restored.Drain();
+        Resume(restored, "1");
+        frame = restored.Drain();
+        void ReachMenu(Session game, ref IReadOnlyList<OutputEvent> output)
+        {
+            int count = 0;
+            while (game.State == "input" && !output.Any(e => e.Kind == "button") && count++ < 300)
+            {
+                Resume(game, "");
+                output = game.Drain();
+            }
+            Check(game.State == "input" && output.Any(e => e.Kind == "button" && e.Button == 205), "Full new game reaches the original neutral-action menu");
+        }
+        ReachMenu(restored, ref frame);
+        var beforeRest = restored.EvaluateJson("__game.data");
+        Resume(restored, "205");
+        frame = restored.Drain();
+        ReachMenu(restored, ref frame);
+        Check(restored.EvaluateJson("__game.data") != beforeRest, "Original neutral rest action updates game state in Korean");
+        restored.Execute("var __saved=false;era.saveData(6,'Korean new-game regression').then(ok=>__saved=ok);");
+        Check(restored.EvaluateJson("__saved") == "true", "Korean new game saves through original save API");
+        var checkpoint = restored.EvaluateJson("__game.data");
+        var fresh = Load(save, false);
+        fresh.Start("if(!await era.loadData(6))throw Error('Korean checkpoint load failed');");
+        Check(fresh.State == "done" && fresh.EvaluateJson("__game.data") == checkpoint, "New session restores the complete Korean game checkpoint");
+        fresh.Quit();
         restored.Quit();
+
+        void AppearanceBranch(string appearance)
+        {
+            var branch = Load(Path.Combine(reportDirectory, "appearance-" + appearance), true);
+            branch.Drain();
+            foreach (var value in new[] { "1", "7", "5", "1", "Trainer", "1", "1", "0", appearance })
+            {
+                Resume(branch, value);
+                frame = branch.Drain();
+            }
+            if (appearance == "3")
+            {
+                Check(frame.Any(e => e.Kind == "button" && e.Button == 0) && frame.Any(e => e.Kind == "button" && e.Button == 1) && frame.Any(e => e.Kind == "button" && e.Button == 99), "Manual appearance renders the hair editing table");
+                foreach (var value in new[] { "1", "0", "99", "99" })
+                {
+                    Resume(branch, value);
+                    frame = branch.Drain();
+                }
+                // Male creation bypasses the breast-size page; accept default size.
+                Resume(branch, "3");
+                frame = branch.Drain();
+            }
+            Check(branch.State == "input" && frame.Any(e => e.Kind == "button" && e.Button == 1) && frame.Any(e => e.Kind == "button" && e.Button == 4), "Appearance branch " + appearance + " reaches final confirmation");
+            Check(branch.EvaluateJson("typeof __require('i18n/extended-def').feature.get_hair_color") == "\"function\"", "Appearance branch " + appearance + " retains initialized shared hair helpers");
+            branch.Quit();
+        }
+        AppearanceBranch("1");
+        AppearanceBranch("3");
 
         var scenes = Load(Path.Combine(reportDirectory, "isolated-scenes"), false);
         scenes.Execute("var selector=__require('i18n/selector');selector.set_lan('ko-KR');__game.global[3]='ko-KR';var random=__require('i18n/ko-KR/timon/others/random'),jp=__require('i18n/ja-JP/timon/others/random'),__eventResult=null;var trainer={get_colored_name:()=>({content:'Trainer',color:'#12abcd'})},chara={get_colored_name:()=>({content:'Chara',color:'#ef1234'})};");
@@ -109,7 +182,7 @@ static class KoreanPackVerification
         Scene("rider-disabled", "kamen_rider(trainer,true)", ["1", "2"], "[1,2]", ["반응이 아주 좋다! 비록 이 옷은 입기가 꽤 힘들지만……"], true);
         Check(scenes.Diagnostics.Count == 0, "Language initialization and all scenes produce no missing-module diagnostics");
         scenes.Quit();
-        var summary = new { pass = true, date = "2026-10-02", scope = "Exact shipped Jint DLL: production locale selection and restart persistence; four changed scenes in 15 isolated branch cases, Japanese fallback and returns. Not human play or FPS measurement.", checks, branchReports };
+        var summary = new { pass = true, date = "2026-10-02", scope = "Exact shipped Jint DLL: production locale selection/restart, lazy locale initialization, default/random/manual appearance and rerolls, full new-game/neutral rest/save/fresh-session load, four changed scenes in 15 isolated branch cases with Japanese fallback. Not human play or FPS measurement.", checks, branchReports };
         var json = JsonSerializer.Serialize(summary, new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
         File.WriteAllText(Path.Combine(reportDirectory, "korean-pack-summary.json"), json);
         Console.WriteLine(JsonSerializer.Serialize(new { pass = true, checks = checks.Count, branchCases = branchReports.Count, report = Path.Combine(reportDirectory, "korean-pack-summary.json") }));
