@@ -229,6 +229,37 @@ module.exports = {
     ' 착용시키겠습니까?',
   ],
 
+  // Reused from EraUmaK 2.21 ero-act-handler/change-master.js.
+  get_change_master_info: (chara) => [
+    chara.get_colored_name(),
+    ' 은(는) 주도권을 잡았다...',
+  ],
+
+  // Reused from EraUmaK 2.21 sub-calc-ero-orgasm/update-orgasms.js.
+  orgasm: '절정했다',
+  orgasm_template: '%TIME%중 절정이 발생했다',
+
+  get_chara_total_orgasm: (chara, orgasm) => [
+    chara.get_colored_name(),
+    ' 에게 ',
+    orgasm,
+    '이 발생했다!',
+  ],
+  get_chara_part_orgasm: (chara, part, orgasm) => [
+    chara.get_colored_name(),
+    '의 ',
+    part,
+    '가 ',
+    orgasm,
+  ],
+  get_chara_spirit_orgasm: (chara, cause, orgasm) => [
+    chara.get_colored_name(),
+    ' 이(가) ',
+    cause,
+    ' 로 인해 ',
+    orgasm,
+  ],
+
   // Reused from EraUmaK 2.21 page-ero.js print_milking().
   get_milk_ml: (amount, item) => [
     '착유기로 우유를 짜서 모았다: ',
