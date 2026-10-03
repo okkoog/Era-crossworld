@@ -1719,3 +1719,59 @@ Reuse code commit:
 Next bounded starting point:
 - `liquid_amount_template`
 
+### `sex/system.js` bounded reuse batch 05
+
+2.21 direct source checked:
+- `sources/eraumak_kr_2.21/game/ere/system/ero/sub-calc-ero-orgasm/update-orgasms.js`
+
+Current 3.113 call site also checked:
+- `sources/erauma/ere/system/ero/sub-calc-ero-orgasm/update-orgasms.js`
+
+This batch covered **15** current keys/functions from
+`liquid_amount_template` through `cum_in_virgin`.
+
+Safely reused Korean overrides: **14**
+- `get_chara_cum_on_face`
+- `get_chara_cum_in_condom`
+- `get_chara_cum_in_artificial_vagina`
+- `get_chara_cum_in_part`
+- `get_chara_cum`
+- `cum_in_anal`
+- `cum_in_body`
+- `cum_in_breast`
+- `cum_in_clitoris`
+- `cum_in_foot`
+- `cum_in_hand`
+- `cum_in_mouth`
+- `cum_in_penis`
+- `cum_in_virgin`
+
+The five current ejaculation-report helpers map directly onto the old 2.21
+Korean report arrays, and the nine current `cum_in_*` values map directly onto
+the old Korean `cum_loc_desc` values. The current 3.113 function signatures and
+dynamic insertion points were preserved.
+
+Classified fallback in this batch: **1**
+- `liquid_amount_template` — `%AMOUNT%ml` is language-neutral. The old 2.21
+  output also appends `ml` directly to the numeric amount, so no Korean prose
+  override is necessary.
+
+Current `sex/system.js` status after this batch:
+- current 3.113 top-level keys/functions: **95**
+- Korean overrides: **54**
+- Japanese fallback: **41**
+- fallback already classified by batches 02-05: **26**
+- still-unclassified fallback: **15**
+- JS syntax: **ok**
+- current 3.113 structure preserved: **yes**
+- fresh Korean prose written: **false**
+
+Classification record:
+- `REUSE_SYSTEM_BATCH_05.json`
+
+Reuse code commit:
+- `8fa011486c31464b266af8f947ecc21fcc59db96`
+
+Next bounded starting point:
+- `get_milk_info`
+
