@@ -31,4 +31,9 @@ module.exports = class extends JaKojo {
 
   304 = new (require('#/i18n/ko-KR/kojo/900400-Kiryuin-Aoi/entry'))();
 
+  306 = new (require('#/i18n/ko-KR/kojo/900600-Kashimoto-Riko/entry'))();
+  308 = new (require('#/i18n/ko-KR/kojo/900800-Light-Hello/entry'))();
+  340 = new (require('#/i18n/ko-KR/kojo/904000-Darley-Arabian/entry'))();
+  341 = new (require('#/i18n/ko-KR/kojo/904100-Godolphin-Barb/entry'))();
+  342 = new (require('#/i18n/ko-KR/kojo/904200-Byerley-Turk/entry'))();
 };
