@@ -1954,3 +1954,55 @@ Reuse code commit:
 Next bounded starting point:
 - `misty_notify`
 
+### `mejiro/cum.js` residual batch 03 — classification complete
+
+2.21 source checked:
+- `sources/eraumak_kr_2.21/game/ere/page/mejiro/call-of-mejiro.js`
+
+Current 3.113 call site was checked in:
+- `sources/erauma/ere/page/mejiro/call-of-mejiro.js`
+
+This final batch resolved the remaining **6** previously-unclassified functions:
+- `misty_notify`
+- `get_misty_info`
+- `fail_to_escape`
+- `leave_misty`
+- `notify_misty`
+- `notify_called`
+
+Fully reused from existing 2.21 Korean text: **5**
+- `misty_notify`
+- `get_misty_info`
+- `fail_to_escape`
+- `notify_misty`
+- `notify_called`
+
+Partially reused: **1**
+- `leave_misty`
+  - success branch and the first/final failure reports reuse the old Korean text.
+  - the middle failure report remains the current Japanese literal because 2.21
+    inserted `me.get_couple_title()` there, while 3.113 removed that dynamic
+    insertion and replaced it with fixed `ふたり`. No Korean sentence was
+    synthesized to bridge that structural change.
+
+Current `mejiro/cum.js` status after residual batches 01-03:
+- current 3.113 top-level keys/functions: **111**
+- Korean override keys/functions: **96**
+- inherited Japanese fallback keys: **15**
+- all 15 inherited fallbacks already classified as no-safe-direct-reuse in batches 01-02
+- Japanese literal fragments intentionally retained inside partial overrides: **1**
+- still-unclassified residuals: **0**
+- JS syntax: **ok**
+- current 3.113 structure preserved: **yes**
+- fresh Korean prose written: **false**
+- **mejiro/cum.js reuse classification: complete**
+
+Classification record:
+- `REUSE_MEJIRO_CUM_RESIDUAL_03.json`
+
+Reuse code commit:
+- `03cae036e910549de2a45864bf76daa4d334a2cf`
+
+Next bounded starting point:
+- none for `mejiro/cum.js`; move to the next Timon module with unclassified Japanese fallback.
+
