@@ -1775,3 +1775,66 @@ Reuse code commit:
 Next bounded starting point:
 - `get_milk_info`
 
+### `sex/system.js` bounded reuse batch 06
+
+2.21 direct sources checked:
+- `sources/eraumak_kr_2.21/game/ere/system/ero/sub-calc-ero-orgasm/update-orgasms.js`
+- `sources/eraumak_kr_2.21/game/ere/system/ero/sub-begin-and-end/get-ex-result-in-the-end.js`
+- `sources/eraumak_kr_2.21/game/ere/data/ero/item-const.js`
+
+Current 3.113 call/branch structure also checked in the matching orgasm and
+end-of-training result modules.
+
+This batch resolved the **15 previously-unclassified** tail keys from
+`get_milk_info` through `unsatisfied_lose_virgin_v`. Four intervening keys
+(`get_milk_ml`, `get_milk_item`, `get_your_milk_info`, `ero_report`) were
+already Korean overrides from earlier passes and were not reprocessed.
+
+Safely reused Korean overrides: **7**
+- `get_milk_info`
+- `get_squirt_info`
+- `unsatisfied_mouth`
+- `unsatisfied_body`
+- `unsatisfied_penis`
+- `unsatisfied_clitoris`
+- `unsatisfied_vagina`
+
+The milk/squirt helpers preserve the current 3.113 function signatures,
+branches, enum cases and dynamic insertion points while reusing only Korean
+literals already present in 2.21. The `착유기` item name was verified in the
+2.21 item table.
+
+Classified Japanese fallback in this batch: **8**
+- `unsatisfied_nipple`
+- `unsatisfied_hidden_nipple`
+- `unsatisfied_sadism`
+- `unsatisfied_sadism_zero_stamina`
+- `unsatisfied_masochism`
+- `unsatisfied_masochism_zero_stamina`
+- `unsatisfied_lose_virgin_p`
+- `unsatisfied_lose_virgin_v`
+
+The nipple and spirit lines were dynamically assembled from shared fragments in
+2.21 but are standalone/reworked strings in 3.113; converting them would require
+combining/splitting old Korean text. The two virginity-loss residuals also have
+changed/expanded 3.113 wording, so the shorter old Korean lines were not reused.
+
+Current `sex/system.js` status after this batch:
+- current 3.113 top-level keys/functions: **95**
+- Korean overrides: **61**
+- classified Japanese/inherited fallback: **34**
+- still-unclassified fallback: **0**
+- JS syntax: **ok**
+- current 3.113 structure preserved: **yes**
+- fresh Korean prose written: **false**
+- **system.js reuse classification: complete**
+
+Classification record:
+- `REUSE_SYSTEM_BATCH_06.json`
+
+Reuse code commit:
+- `e92045dfd31b09051c48788e266a724849b6e784`
+
+Next bounded starting point:
+- none for `sex/system.js`; this module is fully classified.
+
