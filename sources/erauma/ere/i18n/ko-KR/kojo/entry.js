@@ -25,4 +25,10 @@ module.exports = class extends JaKojo {
   201 = new (require('#/i18n/ko-KR/kojo/200100-Happy-Meek/entry'))();
   205 = new (require('#/i18n/ko-KR/kojo/200500-Treve/entry'))();
 
+  400 = new (require('#/i18n/ko-KR/kojo/400000-Sunday-Silence/entry'))();
+
+  303 = new (require('#/i18n/ko-KR/kojo/900300-Otonashi-Etsuko/entry'))();
+
+  304 = new (require('#/i18n/ko-KR/kojo/900400-Kiryuin-Aoi/entry'))();
+
 };
