@@ -1894,3 +1894,63 @@ Reuse code commit:
 Next bounded starting point:
 - `city_bs_height_down_template`
 
+### `mejiro/cum.js` residual batch 02
+
+2.21 sources checked:
+- `sources/eraumak_kr_2.21/game/ere/event/others/mejiro-kindness/cum-shop.js`
+- `sources/eraumak_kr_2.21/game/ere/page/mejiro/call-of-mejiro.js`
+
+Current 3.113 Mejiro shop/call sites were also checked to preserve the exact
+placeholder meanings, costs and dynamic branches.
+
+This batch covered the next **16** residual keys from
+`city_bs_height_down_template` through `come_in_mejiro_city`.
+
+Safely reused Korean overrides: **5**
+- `city_bs_penis_bigger_man_template`
+- `city_bs_penis_smaller_man_template`
+- `city_bs_penis_smaller_futa_template`
+- `city_bs_uma_template`
+- `come_in_mejiro_city`
+
+The three penis-size templates retain the same costs/current-size insertion as
+2.21. The Uma conversion keeps the same dynamic Uma title between the existing
+Korean prefix/suffix, and the city-entry scene has the same two character-name
+insertions and sentence structure.
+
+Classified Japanese fallback in this batch: **11**
+- `city_bs_height_down_template` — 2.21 shows current height, while 3.113 shows
+  target height.
+- `city_bs_boob_up_template`, `city_bs_boob_down_template` — 3.113 explicitly
+  adds the `Cup` unit that the old display did not contain.
+- `city_bs_penis_bigger_woman_template` — displayed cost changed from 15 in
+  2.21 to 10 in current 3.113.
+- `city_bs_ero_deeper`, `city_bs_ero_deeper_limit_tip`,
+  `city_bs_ero_shallower`, `city_bs_ero_shallower_limit_tip` — old text
+  dynamically names penis/clitoris, while 3.113 generalized these labels to the
+  genital area.
+- `city_bs_skin_shallower_template`, `city_bs_skin_deeper_template` — the
+  matched 2.21 button strings are Korean/Chinese-mixed, not complete Korean text.
+- `city_mg_trained_talent_template` — old text embeds the character name and
+  constructs the price block inline; current 3.113 removed that name and uses a
+  generalized `%PRICE%` suffix.
+
+Current `mejiro/cum.js` status after this batch:
+- current 3.113 top-level keys/functions: **111**
+- Korean overrides: **90**
+- Japanese/inherited fallback: **21**
+- residual fallbacks classified in detail: **15**
+- still-unclassified residuals: **6**
+- JS syntax: **ok**
+- current 3.113 structure preserved: **yes**
+- fresh Korean prose written: **false**
+
+Classification record:
+- `REUSE_MEJIRO_CUM_RESIDUAL_02.json`
+
+Reuse code commit:
+- `0b9db08260af53abd49c57424a4326d7747bea3d`
+
+Next bounded starting point:
+- `misty_notify`
+
