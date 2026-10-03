@@ -9,6 +9,22 @@ const JaCum = require('#/i18n/ja-JP/timon/mejiro/cum');
 module.exports = {
   ...JaCum,
 
+  // Reused from EraUmaK 2.21 page/mejiro/call-of-mejiro.js.
+  calling_tip: '메지로가 부르고 있다……',
+  calling_not_chara_tip: '메지로는 이 사람을 부르지 않았다……',
+  calling_god_tip:
+    '메지로는 세 여신 아래에 있지 않을지 몰라도, 결코 그 위에 있지는 않다……',
+  come_limited: '이번 주에는 메지로 시티를 찾을 수 없다……',
+
+  bt_slow_forward: '신중하게 전진 (위험도 낮음, 성욕+++, 체력--)',
+  bt_normal_forward: '평범하게 전진 (위험도 보통, 성욕++, 체력--)',
+  bt_fast_forward: '대담하게 전진 (위험도 높음, 성욕+, 체력--)',
+  bt_slow_search: '자세히 수색 (위험도 낮음, 성욕++, 체력---)',
+  bt_normal_search: '평범하게 수색 (위험도 보통, 성욕++, 체력--)',
+  bt_fast_search: '대충 수색 (위험도 높음, 성욕++, 체력-)',
+  bt_rest: '멈춰서 휴식 (성욕++, 체력+)',
+  bt_surrender: '저항을 포기한다 (일심동체❤️)',
+
   money_header_template: '현재「은총」：%MONEY%',
   print_city_info(chara, you) {
     print([
