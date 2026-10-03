@@ -1,4 +1,5 @@
 const {
+  get,
   input,
   print,
   printAndWait,
@@ -10,6 +11,174 @@ module.exports = {
   ...JaCum,
 
   // Reused from EraUmaK 2.21 page/mejiro/call-of-mejiro.js.
+  async misty_notify() {
+    await printAndWait('……갑자기 안개가 당신들을 삼켰다……');
+  },
+
+  get_misty_info(chara, you, progress) {
+    const ret = [];
+    const lust = Math.max(get('base:0:性欲'), get(`base:${chara.id}:性欲`));
+    ret.push([
+      you.get_colored_name(),
+      '과(와) ',
+      chara.get_colored_name(),
+      '은(는) 안개가 자욱한 거리에 서 있다……',
+    ]);
+    if (lust >= 7500) {
+      ret.push(
+        '주변에는 쌍을 이루어 음탕하게 즐기는 무리들로 가득하며, 방탕한 신음과 육체가 부딪히는 소리, 분출되는 물소리가 온 공간을 채우고 있다.',
+      );
+    } else if (lust >= 5000) {
+      ret.push(
+        '주변에는 얼굴이 흐릿한 연인들이 애무하며 몸을 흔들고 있고, 낮은 신음과 물소리가 끊이지 않는다.',
+      );
+    } else if (lust >= 4000) {
+      ret.push(
+        '주변에는 얼굴이 흐릿한 느긋한 커플들이 서로를 더듬으며 장난치고 있고, 가끔 신음과 끈적한 물소리가 들려온다.',
+      );
+    } else if (lust >= 3000) {
+      ret.push(
+        '주변에는 쌍을 이룬 파트너들이 서로 포옹하고 입을 맞추며, 가끔씩 속삭이는 사랑의 소리가 들린다.',
+      );
+    } else if (lust >= 2000) {
+      ret.push(
+        '주변에는 그림자 같은 여행객들이 쌍을 지어 지나가며, 가끔 모호한 속삭임이 들린다.',
+      );
+    }
+    if (progress === 1) {
+      ret.push(
+        '앞쪽의 안개가 걷히기 시작하며, 밝고 깨끗한 거리가 보이기 시작한다.',
+      );
+    } else if (progress >= 0.66) {
+      ret.push(
+        '앞쪽의 안개가 조금 옅어졌고, 구름 사이로 햇살이 점점이 내리쬐고 있다.',
+      );
+    } else if (progress >= 0.33) {
+      ret.push(
+        '온 길은 이제 보이지 않는다. 오직 앞으로 나아갈 수밖에 없는 것 같다.',
+      );
+    } else if (progress === 0) {
+      ret.push(
+        '한 줄기 큰 길이 앞으로 곧게 뻗어 있지만, 어디로 이어지는지는 알 수 없다. 온 길에는 몽환적인 잿빛만이 남았다.',
+      );
+    }
+    return ret;
+  },
+
+  async fail_to_escape(chara, you) {
+    const ret = [];
+    await printAndWait([
+      you.get_colored_name(),
+      '과(와) ',
+      chara.get_colored_name(),
+      '은(는) 안개에 완전히 포위되었다……',
+    ]);
+    await printAndWait(
+      '시야는 온통 안개뿐이며, 광기 어린 정사를 나누는 연인들의 모습뿐이다. 그들의 얼굴은 어렴풋이 당신들의 그림자를 닮아 있다.',
+    );
+    await printAndWait(
+      '교접하는 소리가 다른 모든 소리를 덮어버리고, 숨 쉬는 공기 중에는 음란한 체취가 가득하다……',
+    );
+    if (get('base:0:性欲') >= 9000) {
+      await printAndWait([
+        you.get_colored_name(),
+        '은(는) 뇌 속에서 피가 요동치는 소리를 들었다. 억눌렀던 이성은 음란한 망상의 공격 앞에 산산이 조각났다……',
+      ]);
+      await printAndWait([
+        '곁에 있는 ',
+        chara.get_colored_name(),
+        ' 역시 뺨을 붉게 물들이고 다리를 꼬고 있는 것을 보며, ',
+        you.get_colored_name(),
+        '은(는) 결국 욕망이 자신을 지배하도록 내버려 두었다……',
+      ]);
+    } else {
+      printButton('빠져든다 (「은총」+10)', 1);
+      printButton('냉정을 유지하려 애쓴다 (체력&기력+50%)', 2);
+      ret.push(await input());
+      if (ret[0] === 1) {
+        await printAndWait([
+          you.get_colored_name(),
+          '이(가) ',
+          chara.get_colored_name(),
+          '을(를) 바라보자, 그 눈동자 속에 욕망의 물결이 일렁인다……',
+        ]);
+        await printAndWait([
+          you.get_colored_name(),
+          '은(는) 스스로 욕망의 수렁에 발을 들였다.',
+        ]);
+        await printAndWait([
+          chara.sex,
+          '와 함께 끝없이 추락하고, 또 추락한다……',
+        ]);
+      } else {
+        await printAndWait([
+          you.get_colored_name(),
+          '이(가) ',
+          chara.get_colored_name(),
+          '을(를) 바라보자, 그 눈동자 속에 욕망의 물결이 일렁인다……',
+        ]);
+        await printAndWait([
+          you.get_colored_name(),
+          '은(는) 당황하며 욕망의 수렁에서 벗어나려 발을 떼려 하지만,',
+        ]);
+        await printAndWait(
+          '발걸음은 점점 더 깊이 빠져들 뿐이었고, 결국 추락하고 말았다……',
+        );
+      }
+    }
+    return ret;
+  },
+
+  // Partial reuse: the changed middle failure line stays on the current Japanese text.
+  async leave_misty(chara, you, vehicle, success) {
+    if (success) {
+      if (typeof vehicle === 'string') {
+        await printAndWait([
+          you.get_colored_name(),
+          '과(와) ',
+          chara.get_colored_name(),
+          '은(는) 안개를 벗어났고, ',
+          vehicle,
+          ' 옆에 있다는 사실을 깨달았다.',
+        ]);
+      } else {
+        await printAndWait([
+          you.get_colored_name(),
+          '과(와) ',
+          chara.get_colored_name(),
+          '은(는) 안개를 벗어났고, 버스 옆에 있다는 사실을 깨달았다.',
+        ]);
+      }
+    } else {
+      await printAndWait([
+        you.get_colored_name(),
+        '이(가) 정신을 차렸을 때, 이미 메지로 시티 밖의 벤치에 있었고 곁에는 잠든 ',
+        chara.get_colored_name(),
+        '이(가) 있었다.',
+      ]);
+      await printAndWait([
+        chara.sex,
+        'が目覚めたあと、ふたりはどこからともなく聞こえる満ち足りた笑い声のなか、メジロシティを離れた……',
+      ]);
+      await printAndWait([
+        '……하지만 그날 이후로, ',
+        chara.get_colored_name(),
+        '은(는) 가끔 실체가 없는 속삭임을 듣게 되었다……',
+      ]);
+    }
+  },
+
+  async notify_misty() {
+    await printAndWait('메지로 시티가 다시 안개에 휩싸였다……');
+  },
+
+  async notify_called(chara) {
+    await printAndWait([
+      chara.get_colored_name(),
+      '은(는) 귓가의 속삭임 속에서 메지로의 부름을 들었다……',
+    ]);
+  },
+
   calling_tip: '메지로가 부르고 있다……',
   calling_not_chara_tip: '메지로는 이 사람을 부르지 않았다……',
   calling_god_tip:
