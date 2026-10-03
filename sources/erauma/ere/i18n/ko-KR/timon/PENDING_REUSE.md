@@ -1509,3 +1509,56 @@ Result:
   across batches 1–3;
 - the six Korean overrides already present in the module remain unchanged;
 - **unclassified reuse candidates: 0** for this module.
+
+### `others/god-shop.js` — residual classification complete (2026-10-03)
+
+2.21 source:
+- `sources/eraumak_kr_2.21/game/ere/page/page-god-shop.js`
+
+This bounded pass classified all **23** previously pending current 3.113 keys.
+No fresh Korean prose was written.
+
+Newly touched keys/functions: **10**
+- fully reused from existing 2.21 Korean text: **5**
+  - `pray_heal`
+  - `common_finish_pray`
+  - `common_pray_your_power`
+  - `common_pray_peace`
+  - `start_with_no_god`
+- partially reused, with changed/new fragments left Japanese: **5**
+  - `pray_money`
+  - `pray_your_power`
+  - `pray_over_limit`
+  - `common_start_pray`
+  - `leave`
+
+Still entirely on Japanese fallback: **13**
+- `pray_heal_no_need`
+- `handle_pray_honour_buff`
+- `handle_pray_money_buff`
+- `handle_pray_your_power`
+- `handle_pray_over_limit`
+- `handle_pray_end`
+- `borrow_money`
+- `bt_pray`
+- `pray_select`
+- `select_target`
+- `no_targets`
+- `get_target_entry_over_limit`
+- `get_target_entry_heal`
+
+These 13 are new/split 3.113 physical-goddess UI, target-selection/healing
+flows, or differ in values/dynamic structure from the old monolithic 2.21
+god-shop. No sufficiently reliable 1:1 Korean literal mapping was found.
+
+Result:
+- current god-shop keys: **35**
+- Korean overrides after this pass: **22**
+- entirely Japanese fallback keys: **13**
+- unclassified reuse candidates: **0**
+- inserted Korean literals were checked against the identified 2.21 source
+- JS syntax: **PASS**
+
+Detailed record:
+[REUSE_GOD_SHOP_RESIDUAL_01.json](REUSE_GOD_SHOP_RESIDUAL_01.json).
+
