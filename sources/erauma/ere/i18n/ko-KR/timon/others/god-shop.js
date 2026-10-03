@@ -180,4 +180,242 @@ ko.pray_money_buff = async (you, finish_cb) => {
   return ret;
 };
 
+
+ko.pray_your_power = async (
+  you,
+  god,
+  uma,
+  disabled_list,
+  random_select,
+  pray_cb,
+  finish_cb,
+) => {
+  print('（어떤 부분을 개선해야 할까?）');
+  print('머릿속에 이런 의문이 떠올랐다...');
+  printButton('スピード（+80）', 0, { disabled: disabled_list[0] });
+  printButton('スタミナ（+80）', 1, { disabled: disabled_list[1] });
+  printButton('パワー（+80）', 2, { disabled: disabled_list[2] });
+  printButton('根性（+80）', 3, { disabled: disabled_list[3] });
+  printButton('賢さ（+80）', 4, { disabled: disabled_list[4] });
+  printButton('아마 전부……（무작위 능력치+100）', 5);
+  printButton('더 이상 강해질 필요는 없을지도……', 99);
+  const ret = [await input(), 0];
+  ret[1] = ret[0];
+  if (ret[0] <= 5) {
+    switch (ret[0]) {
+      case 0:
+        await printAndWait([
+          '조깅하는 담당 ',
+          uma,
+          '와 나란히 걸으며 지도해 주는 것을 상상했다……',
+        ]);
+        break;
+      case 1:
+        await printAndWait([
+          '지치지 않고 담당 ',
+          uma,
+          '를 가르치는 모습을 상상했다……',
+        ]);
+        break;
+      case 2:
+        await printAndWait([
+          '자신의 담당 ',
+          uma,
+          '의 줄다리기 대회 우승을 돕는 모습을 상상했다……',
+        ]);
+        break;
+      case 3:
+        await printAndWait([
+          '목이 터져라 담당',
+          uma,
+          '를 응원하는 모습을 상상했다……',
+        ]);
+        break;
+      case 4:
+        await printAndWait([
+          '담당 ',
+          uma,
+          '를 위해 완벽한 트레이닝 계획을 짜는 것을 상상했다……',
+        ]);
+        break;
+      case 5:
+        await printAndWait([
+          '머릿속에 담당 ',
+          uma,
+          '가 자신을 위로하는 모습이 스쳐 지나갔다……',
+        ]);
+        ret[1] = random_select;
+    }
+    await pray_cb();
+    println();
+    await finish_cb();
+    switch (ret[1]) {
+      case 0:
+        await printAndWait([
+          '따뜻한 여운이 여전히 머릿속에 남은 ',
+          you.get_colored_name(),
+          '은(는) 몸이 더 가벼워지는 것을 느꼈다……',
+        ]);
+        break;
+      case 1:
+        await printAndWait([
+          '따뜻한 여운이 여전히 머릿속에 남은 ',
+          you.get_colored_name(),
+          '은(는) 호흡이 더 차분해지는 것을 느꼈다……',
+        ]);
+        break;
+      case 2:
+        await printAndWait([
+          '따뜻한 여운이 여전히 머릿속에 남은 ',
+          you.get_colored_name(),
+          '은(는) 근육이 더 단단해진 것을 느꼈다……',
+        ]);
+        break;
+      case 3:
+        await printAndWait([
+          '따뜻한 여운이 여전히 머릿속에 남은 ',
+          you.get_colored_name(),
+          '은(는) 마음 속에서 뜨거운 열기가 솟구치는 것을 느꼈다……',
+        ]);
+        break;
+      case 4:
+        await printAndWait([
+          '따뜻한 여운이 여전히 머릿속에 남은',
+          you.get_colored_name(),
+          '은(는)  머릿속이 유난히 맑아지는 것을 느꼈다……',
+        ]);
+    }
+  } else {
+    await god.say_as_unknown_and_wait('これからも、頑張れ……');
+    await printAndWait('그런 목소리가 들리는 것 같다.');
+    println();
+    await finish_cb();
+    await printAndWait('세 여신상은 여전히 고요하게 서있다……');
+  }
+  return ret;
+};
+
+ko.pray_heal = async (chara, god, you, uma, chara_react, finish_cb) => {
+  print([
+    '（역시, 가장 바라는 건……)',
+    { isBr: true },
+    you.get_colored_name(),
+    '은(는) ',
+    chara.get_colored_name(),
+    '을(를) 걱정하며 건강을 떠올렸다.',
+  ]);
+  printButton('만약, 기도가 소용이 있다면……', 1);
+  printButton('기도보다는, 역시 다른 노력이 더 필요하겠지……', 2);
+  const ret = await input();
+  if (ret === 1) {
+    await printAndWait([
+      chara.get_colored_name(),
+      '가 다시 건강하고 활기차게 변해가는 모습을 그렸다……',
+    ]);
+    await printAndWait([
+      '기도를 마친 후 ',
+      you.get_colored_name(),
+      '은(는) 눈을 떴다.',
+    ]);
+    println();
+    if (chara.id > 0) {
+      await printAndWait([
+        '활력이 넘치는 몸을 느끼며 ',
+        you.get_colored_name(),
+        '은(는) 세 여신상 앞에 온 목적이 무엇인지 문득 의문이 들었다.',
+      ]);
+    } else {
+      await printAndWait(chara_react);
+      println();
+      await printAndWait([
+        '방금 활력이 넘치는 ',
+        chara.get_colored_name(),
+        '과(와) 함께 세 여신상 앞에 온 ',
+        you.get_colored_name(),
+        '은(는) 도대체 뭘 하러 온 걸까?',
+      ]);
+      await printAndWait([
+        you.get_colored_name(),
+        '은(는) 다음에 할 일을 고민해 봤다.',
+      ]);
+    }
+  } else {
+    await printAndWait([
+      chara.get_colored_name(),
+      '이(가) 휴식을 취한 후 상태가 점점 회복되는 모습을 상상했다……',
+    ]);
+    println();
+    await god.say_as_unknown_and_wait('너라면…… 해낼 수 있어……');
+    await printAndWait('이런 소리가 들린 것 같다.');
+    println();
+    await finish_cb();
+    println();
+    await printAndWait('세 여신상은 여전히 고요히 서 있다……');
+  }
+  return ret;
+};
+
+ko.common_start_pray = (chara, you) => {
+  if (chara.id > 0) {
+    print([
+      you.get_colored_name(),
+      '의 지시에 따라,',
+      chara.get_colored_name(),
+      '은(는) 함께 눈을 감고, 세 여신상 앞에서 조용히 기도를 올리고 있다……',
+    ]);
+  } else {
+    print([
+      you.get_colored_name(),
+      ' はひとり、三女神像の前で静かに祈った……',
+    ]);
+  }
+};
+
+ko.common_finish_pray = async (chara, you) => {
+  if (chara.id > 0) {
+    await printAndWait([
+      '기도를 마친 후 ',
+      you.get_colored_name(),
+      '과(와) 곁에 있던 ',
+      chara.get_colored_name(),
+      '은(는) 동시에 눈을 떴다.',
+    ]);
+  } else {
+    await printAndWait([
+      '기도를 마친 후 ',
+      you.get_colored_name(),
+      '은(는) 천천히 눈을 떴다.',
+    ]);
+  }
+};
+
+ko.common_pray_your_power = async (you) => {
+  await printAndWait([
+    '어둠 속에서 희미한 빛이 일렁이며, 서서히 ',
+    you.get_colored_name(),
+    '의 몸속으로 흘러들어갔다!',
+  ]);
+};
+
+ko.common_pray_peace = async () => {
+  await printAndWait('트레센 학원의 평안을 기원했다');
+};
+
+ko.start_with_no_god = async (you, god) => {
+  await printAndWait('세 여신상이 고요히 서 있다...');
+  if (typeof god === 'object') {
+    await printAndWait([
+      you.get_colored_name(),
+      ' 갑자기 뒤에서 누군가 말을 거는 소리가 들려...',
+    ]);
+    await printAndWait([
+      '뒤를 돌아보니 ',
+      god.get_colored_name(),
+      '이(가) 어느새 ',
+      you.get_colored_name(),
+      '의 뒤에 서 있었다...',
+    ]);
+  }
+};
+
 module.exports = ko;
