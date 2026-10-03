@@ -194,6 +194,41 @@ module.exports = {
     ]);
   },
 
+  // Reused from EraUmaK 2.21 ero-act-handler/use-ero-medicine.js.
+  med_no_medicines: '사용 가능한 약이 없다……',
+  med_select_target: '누구에게 약을 먹일까?',
+
+  get_med_select_medicine: (chara) => [
+    chara.get_colored_name(),
+    '에게 어떤 약을 먹일까?',
+  ],
+  med_select_medicine_for_you: '어떤 약을 사용할까?',
+  get_med_confirm_for_chara: (chara, item) => [
+    chara.get_colored_name(),
+    '에게 ',
+    item,
+    '을(를) 사용할까?',
+  ],
+  get_med_confirm_for_you: (item) => [item, '을(를) 사용할까?'],
+
+  // Reused from EraUmaK 2.21 ero-act-handler/use-ero-item.js.
+  itm_no_items: '사용할 장난감이 없다……',
+  itm_select_item: '어떤 장난감을 착용시킬까?',
+  get_itm_confirm_with_part: (chara, item, part) => [
+    chara.get_colored_name(),
+    '의 ',
+    part,
+    '에게 ',
+    item,
+    ' 착용시키겠습니까?',
+  ],
+  get_itm_confirm_without_part: (chara, item) => [
+    chara.get_colored_name(),
+    '에게 ',
+    item,
+    ' 착용시키겠습니까?',
+  ],
+
   // Reused from EraUmaK 2.21 page-ero.js print_milking().
   get_milk_ml: (amount, item) => [
     '착유기로 우유를 짜서 모았다: ',
