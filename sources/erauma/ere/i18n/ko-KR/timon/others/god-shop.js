@@ -493,4 +493,100 @@ ko.pray_over_limit = async (chara, you, uma, limited, cost) => {
   return ret;
 };
 
+
+ko.pray_money = async (you, uma, finish_cb) => {
+  print(
+    '（では、だいたいいくらくらい欲しい？）\n頭の中に、突然そんな問いが浮かぶ……',
+  );
+  const honour = get('flag:当前声望');
+  printButton('250 ウマコインでいい……（50 名声）', 1, {
+    disabled: honour <= 50,
+  });
+  printButton('500 ウマコインでいい……（100 名声）', 2, {
+    disabled: honour <= 100,
+  });
+  printButton('750 ウマコインでいい……（150 名声）', 3, {
+    disabled: honour <= 150,
+  });
+  printButton('1,000 ウマコインでいい……（200 名声）', 4, {
+    disabled: honour <= 200,
+  });
+  printButton('やめておく', 99);
+  const ret = await input();
+  switch (ret) {
+    case 1:
+    case 2:
+      await printAndWait([
+        you.get_colored_name(),
+        ' は、手にした金で',
+        uma,
+        'にトレーニング機材を買う光景を思い浮かべる……',
+      ]);
+      await finish_cb();
+      println();
+      await printAndWait([
+        'ほどなく、',
+        you.get_colored_name(),
+        ' は学園から連絡を受けた。指導の仕方が怪我につながりかねない、とのことだった。',
+      ]);
+      await printAndWait([
+        '続けて ',
+        (250 * ret).toString(),
+        ' ウマコインが送られ、トレーニング方針を改めるよう求められた……',
+      ]);
+      break;
+    case 3:
+    case 4:
+      await printAndWait([
+        you.get_colored_name(),
+        '은(는) 돈의 바다를 거니는 모습을 머릿속으로 그렸다...',
+      ]);
+      await finish_cb();
+      println();
+      await printAndWait([
+        'ほどなく、',
+        you.get_colored_name(),
+        ' は学園から特別手当として ',
+        (250 * ret).toString(),
+        ' ウマコインを受け取った。',
+      ]);
+      await printAndWait([
+        'ただし、トレセン学園のトレーナーとして、これ以上おかしな噂を立てないこと、が条件らしい……',
+      ]);
+  }
+  return ret;
+};
+
+ko.leave = async (chara, you, has_prayed) => {
+  if (chara.id > 0) {
+    if (has_prayed) {
+      await printAndWait([
+        chara.get_colored_name(),
+        ' と ',
+        you.get_colored_name(),
+        ' は一緒に三女神像を離れた。',
+      ]);
+    } else {
+      await printAndWait([
+        '세 여신상 앞에서 간단히 경의를 표한 뒤 ',
+        chara.get_colored_name(),
+        '과(와) ',
+        you.get_colored_name(),
+        '은(는) 함께 세 여신상을 떠났다.',
+      ]);
+    }
+  } else if (has_prayed) {
+    await printAndWait([
+      you.get_colored_name(),
+      ' は振り返り、トレーナールームのほうへ向かった。',
+    ]);
+  } else {
+    await printAndWait([
+      '三女神像に軽く礼拝してから、',
+      you.get_colored_name(),
+      ' は振り返り、トレーナールームのほうへ向かった。',
+    ]);
+  }
+};
+
 module.exports = ko;
