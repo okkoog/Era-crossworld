@@ -22,4 +22,7 @@ module.exports = class extends JaKojo {
   46 = new (require('#/i18n/ko-KR/kojo/104600-Smart-Falcon/entry'))();
   60 = new (require('#/i18n/ko-KR/kojo/106000-Nice-Nature/entry'))();
   68 = new (require('#/i18n/ko-KR/kojo/106800-Kitasan-Black/entry'))();
+  201 = new (require('#/i18n/ko-KR/kojo/200100-Happy-Meek/entry'))();
+  205 = new (require('#/i18n/ko-KR/kojo/200500-Treve/entry'))();
+
 };
