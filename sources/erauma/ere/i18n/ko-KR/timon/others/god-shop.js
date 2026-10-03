@@ -418,4 +418,79 @@ ko.start_with_no_god = async (you, god) => {
   }
 };
 
+
+ko.pray_over_limit = async (chara, you, uma, limited, cost) => {
+  print([
+    '（',
+    limited,
+    ' 項目もの能力が極まった ',
+    chara.get_colored_name(),
+    ' に、さらに限界を求めるのか？）',
+    { isBr: 1 },
+    '頭の中に、そんな問いが浮かぶ……',
+  ]);
+  printButton(`同意する（${cost} 名声、トレーニング補正-10%）`, 1);
+  printButton('もう少し、歩みを緩めてもいい', 2);
+  const ret = await input();
+  if (ret === 1) {
+    if (chara.id > 0) {
+      await printAndWait([
+        '곁에서 ',
+        chara.uma_sex_title,
+        '가 선배들을 끊임없이 뛰어넘고, 경기장에서 기록을 경신하는 모습을 상상했다...',
+      ]);
+      await printAndWait([
+        '기도를 마친 후, 곁에 있던 ',
+        chara.get_colored_name(),
+        '과(와) 동시에 눈을 떴다.',
+      ]);
+      println();
+      await printAndWait([
+        '눈을 뜬 ',
+        you.get_colored_name(),
+        '은(는), 곁에 있는 ',
+        chara.get_colored_name(),
+        '에게서 드러나는 새로운 잠재력을 분명히 감지했다!',
+      ]);
+    } else {
+      await printAndWait(
+        '등불을 켜고 밤을 새워가며, 하나하나 새로운 훈련서를 작성하는 모습을 상상해 보았다……',
+      );
+      await printAndWait([
+        '어둠 속에서 희미한 빛이 솟아올라, 천천히 ',
+        you.get_colored_name(),
+        '의 몸 속으로 들어갔다!',
+      ]);
+      println();
+      await printAndWait('기도를 마친 후 천천히 눈을 뜨자...');
+      await printAndWait([
+        '따뜻한 여운이 여전히 머릿속에 남아 있는 ',
+        you.get_colored_name(),
+        '은(는) 자신이 한 단계 더 성장할 수 있다는 사실을 확신하게 되었다.',
+      ]);
+    }
+  } else if (chara.id > 0) {
+    await printAndWait([
+      '곁에 있는 ',
+      chara.get_colored_name(),
+      '이(가) 매일 성실하게 훈련하는 모습을 떠올렸다……',
+    ]);
+    await printAndWait([
+      '기도를 마친 후 ',
+      you.get_colored_name(),
+      '과(와) 곁에 있는 ',
+      chara.get_colored_name(),
+      '은(는) 동시에 눈을 떴다.',
+    ]);
+  } else {
+    await printAndWait([
+      '自分と',
+      uma,
+      'たちが過ごした数えきれない日々を思い出す……',
+    ]);
+    await printAndWait('祈りを終え、ゆっくりと目を開けた。');
+  }
+  return ret;
+};
+
 module.exports = ko;
