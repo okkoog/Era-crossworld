@@ -1666,3 +1666,56 @@ Reuse code commit:
 Next bounded starting point:
 - `itm_take_off_select_target`
 
+### `sex/system.js` bounded reuse batch 04
+
+2.21 direct sources checked:
+- `sources/eraumak_kr_2.21/game/ere/system/ero/ero-act-handler/take-off-ero-item.js`
+- `sources/eraumak_kr_2.21/game/ere/system/ero/ero-act-handler/change-master.js`
+- `sources/eraumak_kr_2.21/game/ere/system/ero/sys-handle-ero-act.js`
+- `sources/eraumak_kr_2.21/game/ere/system/ero/sub-calc-ero-orgasm/update-orgasms.js`
+
+This batch covered **16** current keys/functions from
+`itm_take_off_select_target` through `get_chara_have_liquid`.
+
+Safely reused Korean overrides: **6**
+- `get_change_master_info`
+- `orgasm`
+- `orgasm_template`
+- `get_chara_total_orgasm`
+- `get_chara_part_orgasm`
+- `get_chara_spirit_orgasm`
+
+Classified Japanese fallback in this batch: **10**
+- take-off-item UI: `itm_take_off_select_target`, `get_itm_give_up_take_off`,
+  `get_itm_no_item_to_take_off`, `itm_take_off_select_item`,
+  `itm_take_off_mirror_confirm`, `get_itm_take_off_confirm`,
+  `get_itm_take_off_give_up` — the matched 2.21 text is Chinese or
+  Chinese/Korean-mixed, not a complete reusable Korean sentence.
+- `itm_take_off_select_entry_template` — old code builds the same item/part
+  display dynamically; there is no Korean prose literal to reuse, so the
+  current language-neutral placeholder remains inherited.
+- `get_escape_info` — the matching 2.21 escape report is Chinese.
+- `get_chara_have_liquid` — old Korean liquid-only output uses location-specific
+  constructions such as `유두에서` / `보지에서`, while 3.113 generalized the
+  sentence into a part/change helper. Reusing it would require recomposition,
+  so the Japanese fallback remains.
+
+Current `sex/system.js` status after this batch:
+- current 3.113 top-level keys/functions: **95**
+- Korean overrides: **40**
+- Japanese fallback: **55**
+- fallback already classified by batches 02-04: **25**
+- still-unclassified fallback: **30**
+- JS syntax: **ok**
+- current 3.113 structure preserved: **yes**
+- fresh Korean prose written: **false**
+
+Classification record:
+- `REUSE_SYSTEM_BATCH_04.json`
+
+Reuse code commit:
+- `877055002a592d6b79d05352c1405ad11f80bcef`
+
+Next bounded starting point:
+- `liquid_amount_template`
+
