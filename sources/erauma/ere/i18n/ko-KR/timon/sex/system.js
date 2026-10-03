@@ -1,5 +1,9 @@
-const { input, printAndWait, printButton } = require('#/era-electron');
+const { get, input, printAndWait, printButton } = require('#/era-electron');
 const ja = require('#/i18n/ja-JP/timon/sex/system');
+
+const { buff_colors } = require('#/data/color-const');
+const { item_enum } = require('#/data/ero/item-const');
+const { part_enum } = require('#/data/ero/part-const');
 
 module.exports = {
   ...ja,
@@ -308,6 +312,89 @@ module.exports = {
   cum_in_mouth: '입안에',
   cum_in_penis: '자지 위에',
   cum_in_virgin: '보지 안에',
+
+  // Reused from EraUmaK 2.21 sub-calc-ero-orgasm/update-orgasms.js.
+  get_milk_info(cid, targets, part, amount, is_orgasm) {
+    const actions = [];
+    switch (part) {
+      case part_enum.mouth:
+        actions.push(' ', ...targets, ' 의 입안에 ');
+        break;
+      case part_enum.hand:
+        actions.push(' ', ...targets, ' 의 손가락 사이에 ');
+        break;
+      case item_enum.milk_pump:
+        actions.push(
+          ' ',
+          { content: '착유기', color: buff_colors[2] },
+          ' 안에 ',
+        );
+    }
+    if (get(`ex:${cid}:喷奶阻碍`) > 0) {
+      actions.push('기세 좋게 뿜어냈다 ');
+    } else if (is_orgasm) {
+      actions.push('뿜어냈다 ');
+    } else {
+      switch (part) {
+        case part_enum.mouth:
+        case part_enum.hand:
+        case part_enum.item:
+          actions.push('배어 나왔다 ');
+          break;
+        default:
+          actions.push('흘러나왔다 ');
+      }
+    }
+    actions.push(' ', amount, ' 의 모유');
+    return actions;
+  },
+
+  get_squirt_info(cid, targets, part, amount) {
+    const actions = [];
+    switch (part) {
+      case part_enum.mouth:
+        actions.push(' ', ...targets, ' 의 입안을 향해 ');
+        break;
+      case part_enum.hand:
+        actions.push(' ', ...targets, ' 의 손가락 사이에 ');
+        break;
+      case part_enum.foot:
+        actions.push(' ', ...targets, ' 의 발밑에 ');
+        break;
+      case part_enum.penis:
+        return [amount, ' 의 애액을 ', ...targets, ' 의 귀두에 쏟아부었다'];
+      case 100:
+        actions.push(' ', ...targets, ' 의 입술을 향해 ');
+        break;
+      case 101:
+        actions.push(' ', ...targets, ' 의 자지를 향해 ');
+    }
+    if (get(`nowex:${cid}:潮吹`) > 0) {
+      actions.push('뿜어냈다 ');
+    } else {
+      switch (part) {
+        case part_enum.mouth:
+        case 100:
+          actions.push('튀어 나왔다 ');
+          break;
+        default:
+          actions.push('흘러나왔다 ');
+      }
+    }
+    actions.push(' ', amount, ' 의 애액');
+    return actions;
+  },
+
+  // Reused from EraUmaK 2.21 sub-begin-and-end/get-ex-result-in-the-end.js.
+  unsatisfied_mouth:
+    '만족하지 못한 입술이 여전히 살짝 벌어진 채 무언가를 기대하는 듯하다……',
+  unsatisfied_body:
+    '충분히 사랑받지 못한 몸이 번들거리는 땀과 홍조를 띠고 있다……',
+  unsatisfied_penis:
+    '한계 직전의 페니스는 여전히 사정을 갈망하고 있다……',
+  unsatisfied_clitoris:
+    '완전히 부풀어 오른 붉은 클리토리스가 요염하면서도 고통스러워 보인다……',
+  unsatisfied_vagina: '달싹이는 보지가 연신 열기를 내뿜고 있다……',
 
   // Reused from EraUmaK 2.21 page-ero.js print_milking().
   get_milk_ml: (amount, item) => [
