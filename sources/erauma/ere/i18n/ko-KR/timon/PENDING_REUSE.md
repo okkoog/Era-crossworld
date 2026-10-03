@@ -1562,3 +1562,54 @@ Result:
 Detailed record:
 [REUSE_GOD_SHOP_RESIDUAL_01.json](REUSE_GOD_SHOP_RESIDUAL_01.json).
 
+### `sex/system.js` bounded reuse batch 02
+
+2.21 direct source:
+- `sources/eraumak_kr_2.21/game/ere/page/components/goto-sex.js`
+
+This batch covered the current invitation / consensual start / rape-play /
+medicine / refusal-flow section.
+
+Safely reused Korean overrides: **20**
+- `bt_back_home`
+- `bt_rape_play`
+- `bt_use_medicine`
+- `get_want_sex_as_lover`
+- `get_want_sex_as_slave`
+- `choose_who_to_rape`
+- `use_medicine_header`
+- `no_medicine_notification`
+- `use_super_uma_z`
+- `use_uma_s`
+- `get_want_sex_as_master_by_pleasure`
+- `get_want_sex_as_master_by_meek`
+- `bt_start_train`
+- `bt_train_back_home`
+- `get_want_sex_as_raper`
+- `bt_rape`
+- `bt_drug`
+- `rape`
+- `drug`
+- `after_rape_by_super_uma_z`
+
+Classified Japanese fallback: **2**
+- `get_want_sex_sleep`
+- `bt_rape_in_sleeping`
+
+The old 2.21 sleeping branch asks whether to have Uma-pyoi, while current
+3.113 explicitly frames the action as attacking the sleeping character.
+Because the wording/intent changed, the old Korean text was not substituted.
+
+Current `sex/system.js` status after this batch:
+- current 3.113 top-level keys/functions: **95**
+- Korean overrides: **24**
+- Japanese fallback: **71**
+- JS syntax: **ok**
+- fresh Korean prose written: **false**
+
+Classification record:
+- `REUSE_SYSTEM_BATCH_02.json`
+
+Next bounded starting point:
+- `lub_select_target`
+
