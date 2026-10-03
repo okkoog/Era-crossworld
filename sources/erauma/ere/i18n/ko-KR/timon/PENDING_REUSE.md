@@ -1613,3 +1613,56 @@ Classification record:
 Next bounded starting point:
 - `lub_select_target`
 
+### `sex/system.js` bounded reuse batch 03
+
+2.21 direct sources checked:
+- `sources/eraumak_kr_2.21/game/ere/system/ero/ero-act-handler/use-lubricating-fluid.js`
+- `sources/eraumak_kr_2.21/game/ere/system/ero/ero-act-handler/use-ero-medicine.js`
+- `sources/eraumak_kr_2.21/game/ere/system/ero/ero-act-handler/use-ero-item.js`
+
+This batch covered **23** current keys/functions from `lub_select_target` through
+`get_itm_give_up_item`.
+
+Safely reused Korean overrides: **10**
+- `med_no_medicines`
+- `med_select_target`
+- `get_med_select_medicine`
+- `med_select_medicine_for_you`
+- `get_med_confirm_for_chara`
+- `get_med_confirm_for_you`
+- `itm_no_items`
+- `itm_select_item`
+- `get_itm_confirm_with_part`
+- `get_itm_confirm_without_part`
+
+Classified Japanese fallback in this batch: **13**
+- lubrication UI: `lub_select_target`, `get_lub_give_up`, `lub_no_parts`,
+  `get_lub_select_part`, `get_lub_confirm` — the matched 2.21 handler text is
+  Chinese or Chinese/Korean-mixed, so no complete Korean sentence was reused.
+- `select_entry_template` — the old code builds the same item/count display
+  dynamically; there is no Korean prose literal to reuse, so the current
+  language-neutral placeholder remains inherited.
+- medicine residuals: `get_med_give_up`, `get_med_no_medicines_for_chara`,
+  `med_no_medicines_for_you`, `get_med_give_up_medicine` — matching 2.21
+  output is Chinese/mixed or segmented differently.
+- item residuals: `get_itm_select_part`, `itm_no_parts`,
+  `get_itm_give_up_item` — matching 2.21 output is Chinese/mixed and does not
+  provide a complete Korean sentence for direct reuse.
+
+Current `sex/system.js` status after this batch:
+- current 3.113 top-level keys/functions: **95**
+- Korean overrides: **34**
+- Japanese fallback: **61**
+- JS syntax: **ok**
+- current 3.113 structure preserved: **yes**
+- fresh Korean prose written: **false**
+
+Classification record:
+- `REUSE_SYSTEM_BATCH_03.json`
+
+Reuse code commit:
+- `c3b6a5d84100fc6d54f0d0879562f48afb7c46b4`
+
+Next bounded starting point:
+- `itm_take_off_select_target`
+
