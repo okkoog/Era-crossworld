@@ -25,6 +25,15 @@ module.exports = {
   bt_rest: '멈춰서 휴식 (성욕++, 체력+)',
   bt_surrender: '저항을 포기한다 (일심동체❤️)',
 
+  async come_in_mejiro_city(chara, you) {
+    await printAndWait([
+      you.get_colored_name(),
+      '과(와) ',
+      chara.get_colored_name(),
+      '은(는) 메지로 시티에 들어갔다……',
+    ]);
+  },
+
   money_header_template: '현재「은총」：%MONEY%',
   print_city_info(chara, you) {
     print([
@@ -52,6 +61,15 @@ module.exports = {
     '이 작업은 당신이 한 사소한 개조도 없앨 텐데, 괜찮으신가요?',
   city_bs_get_milk: '[모유체질] 획득（30「은총」）',
   city_bs_re_virgin: '처녀 회복（20「은총」）',
+  // Reused from EraUmaK 2.21 event/others/mejiro-kindness/cum-shop.js.
+  city_bs_penis_bigger_man_template:
+    '음경 확대（10「은총」，현재 %SIZE%）',
+  city_bs_penis_smaller_man_template:
+    '음경 축소（10「은총」，현재 %SIZE%）',
+  city_bs_penis_smaller_futa_template:
+    '여성화（15「은총」，현재 %SIZE%）',
+  city_bs_uma_template: '변환: %UMA%（100「은총」，되돌릴 수 없음!）',
+
   city_bs_penis_bigger_limit_tip: '더 이상 확대할 수 없습니다',
   city_bs_penis_smaller_male_limit_tip: '더 이상 축소할 수 없다',
   city_bs_penis_smaller_female_limit_tip: '원래 아무것도 없다',
