@@ -36,4 +36,5 @@ module.exports = class extends JaKojo {
   340 = new (require('#/i18n/ko-KR/kojo/904000-Darley-Arabian/entry'))();
   341 = new (require('#/i18n/ko-KR/kojo/904100-Godolphin-Barb/entry'))();
   342 = new (require('#/i18n/ko-KR/kojo/904200-Byerley-Turk/entry'))();
+  343 = new (require('#/i18n/ko-KR/kojo/904300-Satake-Mei/entry'))();
 };
