@@ -1838,3 +1838,59 @@ Reuse code commit:
 Next bounded starting point:
 - none for `sex/system.js`; this module is fully classified.
 
+### `mejiro/cum.js` residual batch 01
+
+2.21 direct sources checked:
+- `sources/eraumak_kr_2.21/game/ere/page/mejiro/call-of-mejiro.js`
+- `sources/eraumak_kr_2.21/game/ere/page/mejiro/mejiro-common.js`
+- `sources/eraumak_kr_2.21/game/ere/event/others/mejiro-kindness/cum-shop.js`
+
+This batch covered the first **16** residual keys from `calling_tip` through
+`city_bs_height_up_template`.
+
+Safely reused Korean overrides: **12**
+- `calling_tip`
+- `calling_not_chara_tip`
+- `calling_god_tip`
+- `come_limited`
+- `bt_slow_forward`
+- `bt_normal_forward`
+- `bt_fast_forward`
+- `bt_slow_search`
+- `bt_normal_search`
+- `bt_fast_search`
+- `bt_rest`
+- `bt_surrender`
+
+These correspond directly to the old 2.21 Mejiro-call location tips and mist
+exploration buttons.
+
+Classified Japanese fallback in this batch: **4**
+- `calling_buttons` — old Korean uses five button strings, while current 3.113
+  requires a six-element array; preserving the new shape would require splitting
+  the old Korean word.
+- `get_header` — old header hard-codes Mejiro City and uses a different dynamic
+  fragment layout; current 3.113 generalized the location argument.
+- `city_upgrade_max` — no standalone 2.21 Korean MAX label was found.
+- `city_bs_height_up_template` — old UI displays the **current** height, while
+  current 3.113 displays the **target** height, so the template meaning changed.
+
+Current `mejiro/cum.js` status after this batch:
+- current 3.113 top-level keys/functions: **111**
+- Korean overrides: **85**
+- Japanese/inherited fallback: **26**
+- residual fallbacks classified in detail: **4**
+- still-unclassified residuals: **22**
+- JS syntax: **ok**
+- current 3.113 structure preserved: **yes**
+- fresh Korean prose written: **false**
+
+Classification record:
+- `REUSE_MEJIRO_CUM_RESIDUAL_01.json`
+
+Reuse code commit:
+- `ef42f3ccf1ad41ff97c592d491433b27fc16e1bf`
+
+Next bounded starting point:
+- `city_bs_height_down_template`
+
