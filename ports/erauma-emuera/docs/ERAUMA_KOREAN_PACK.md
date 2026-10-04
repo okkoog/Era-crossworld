@@ -1,4 +1,24 @@
-# 0.3.3-ko2 한국어 번역 재사용팩
+# 0.3.3-ko3 한국어 번역 재사용팩과 외부 번역 이양
+
+현재 배포는 `erauma-ko`의 최신 판정 결과를 합격한 0.3.3 실행판에 반영한다. 이번 이양 작업에서는 기존 EraUmaK 2.21 한국어 문자열 358개를 추가 재사용했다. 일상 98개, 훈련 88개, 지하실 상태·구출 58개, 게임 안내 45개, 캐릭터 Daily/REC 69개다. 새로운 한국어 게임 문장은 작성하지 않았다. 앞서 완료한 일반 i18n과 기타 판정 결과도 함께 포함한다.
+
+각 문장은 현재 3.113 함수·분기·배열·반환값·이름 삽입 위치를 유지하며 교체했다. 문장 분할이나 동적 표현이 달라 그대로 옮길 수 없는 부분은 일본어를 유지한다. 기존 REC 판정은 다시 조사하지 않고 실제 적용 결과를 별도로 기록했다. 캐릭터 Daily의 남은 32개 모듈은 판정했으며 기존 REC 적용 대기 12개 중 안전한 문자열을 추가 적용했다. 부분 적용과 아직 구조를 맞춰야 하는 부분은 외부 이양 대상으로 남는다. 판정 완료는 완역을 의미하지 않는다.
+
+실행기 EXE와 네 DLL은 ko2와 같은 바이트를 사용한다. ko2의 한국어 초기화 오류 수정과 기존 화면·레이스 성능 개선을 그대로 포함한다. 사용자 저장은 ZIP에 넣지 않는다. 함께 준비한 플레이 폴더에는 이전 ko2의 저장을 복사하고 원본 저장의 해시와 수정 시각이 유지되는지 확인한다.
+
+## 미번역 파일과 나중에 합치기
+
+`translation-handoff/`는 실행 파일과 분리한 번역 작업용 데이터다. 같은 내용의 독립 ZIP도 제공한다. 모듈별 JSON의 `koreanText`만 외부 번역자가 채운다. 원문·ID·경로·문자열 위치·해시·placeholder 정보는 그대로 둔다. 부분 한국어 함수 안에 남은 일본어와 상속된 일본어를 모두 구별해 추출하며 원본 게임 파일을 삭제하거나 옮기지 않는다.
+
+원문 속 이름과 숫자가 들어가는 위치를 보존하기 위해 동적 표현의 앞뒤 문자열은 별개 슬롯이다. 표현을 합치거나 한 슬롯으로 옮기면 검증에서 거부된다. 검증기는 중복 ID, 원문 변경, 원본 커밋 변경, placeholder 손실과 재합치기 충돌을 확인한다. 합치기 미리보기는 검토용 차이 또는 적용 계획을 만들며 게임 파일을 자동으로 수정하지 않는다. 구조 변경이 필요한 상속 함수는 번역 후에도 별도 적용 검토가 필요하다.
+
+아동 성적 서술과 성인 범위를 확인할 수 없는 민감 함수는 이번 재사용·번역 추출에서 제외하고 경로·키·사유만 기록한다. 이는 기존 한국어가 없다는 판정과 다르다. 제외된 게임 본문은 이번 작업에서 수정하지 않았다.
+
+`language-provenance.json`은 실제 한국어 소스 커밋과 원문·생성 모듈 개수를 기록한다. `translation-handoff/manifest.json`은 같은 소스 커밋, 추출 수, 제외 수와 파일 해시를 기록한다. 새 배포는 `Package.ps1 -KoreanDistributionVersion 0.3.3-ko3 -TranslationHandoffRoot <검증한 번역 폴더>`로 생성한다. `tools/build-kojo.cjs`로 현재 한국어 `.kojo` 전체를 새 폴더에 컴파일하고 실제 파일 목록의 일대일 대응을 검사한다.
+
+상세 재사용 근거는 `game/erauma/ere/i18n/ko-KR/REUSE_HANDOFF_STATUS.json`과 새 배치 기록에 있다. 번역 도구 사용법은 번역 ZIP의 README에 있다. 현재 검증은 `docs/evidence/0.3.3-ko3/`에, 아래 ko2 내용은 역사적 기록으로 남긴다.
+
+## 0.3.3-ko2 기록
 
 합격한 `erauma-emuera-0.3.3-preview-44d6f865`의 화면 처리를 바탕으로 `erauma-ko` 브랜치의 한국어 언어팩을 함께 배포한다. 번역 소스 기준은 `9c1b98fb7b0ea0d44d8e83b2e8a2d9ad41675bf9`이다. 기존에 정리된 일반 i18n과 Timon/Kojo 일부, 재사용한 랜덤 이벤트 4개 장면의 문자열 34개를 포함한다. 완전한 한국어 번역판은 아니며 미대응 문장과 장면은 일본어 fallback을 유지한다.
 
@@ -27,7 +47,7 @@ ZIP 전체를 새 폴더에 압축 해제하고 그 폴더의 `Emuera.exe`를 �
 
 ```powershell
 node ports/erauma-emuera/tools/build-kojo.cjs ../Era-crossworld-erauma-ko/sources/erauma/ere/i18n/ko-KR ../../outputs/korean-generated/i18n/ko-KR ../erauma-deps/kojo-loader/src/parse-kojo.js ../erauma-deps/yamljs/package/lib/Yaml.js
-./ports/erauma-emuera/tools/Package.ps1 -PackageName erauma-emuera-0.3.3-ko2 -KoreanSourceRepository ../Era-crossworld-erauma-ko -KoreanSourceCommit 9c1b98fb7b0ea0d44d8e83b2e8a2d9ad41675bf9 -KoreanKojoRoot ../../outputs/korean-generated
+./ports/erauma-emuera/tools/Package.ps1 -PackageName erauma-emuera-0.3.3-ko2 -KoreanDistributionVersion 0.3.3-ko2 -KoreanSourceRepository ../Era-crossworld-erauma-ko -KoreanSourceCommit 9c1b98fb7b0ea0d44d8e83b2e8a2d9ad41675bf9 -KoreanKojoRoot ../../outputs/korean-generated
 ./ports/erauma-emuera/tools/Test-KoreanPack.ps1 -RuntimePath ../../outputs/erauma-emuera-0.3.3-ko2
 ./ports/erauma-emuera/tools/Test-KoreanNative.ps1 -RuntimePath ../../outputs/erauma-emuera-0.3.3-ko2
 ```

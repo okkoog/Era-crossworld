@@ -7,7 +7,8 @@ param(
     [string]$KoreanSourceRepository,
     [string]$KoreanSourceCommit,
     [string]$KoreanKojoRoot,
-    [ValidateSet('0.3.3-ko1','0.3.3-ko2')][string]$KoreanDistributionVersion='0.3.3-ko2'
+    [ValidateSet('0.3.3-ko1','0.3.3-ko2','0.3.3-ko3')][string]$KoreanDistributionVersion='0.3.3-ko3',
+    [string]$TranslationHandoffRoot
 )
 $ErrorActionPreference='Stop'
 Set-StrictMode -Version Latest
@@ -27,8 +28,113 @@ $packageRoot=Join-Path $OutputRoot $PackageName
 $archivePath=Join-Path $OutputRoot ($PackageName+'.zip')
 if ((Test-Path -LiteralPath $packageRoot) -or (Test-Path -LiteralPath $archivePath)) { throw 'Output already exists. Choose a fresh PackageName; existing files are never removed.' }
 
+function Assert-PackageRelativePath([string]$Path) {
+    if (!$Path -or [IO.Path]::IsPathRooted($Path) -or $Path -match '[\\<>:"|?*]' -or @($Path.Split('/') | Where-Object { !$_ -or $_ -eq '.' -or $_ -eq '..' -or $_ -match '[. ]$' }).Count -gt 0) {
+        throw "Unsafe relative package path: $Path"
+    }
+}
+function Get-PackageTreeInventory([string]$Root,[string]$Suffix='') {
+    $rootPath=(Resolve-Path -LiteralPath $Root).Path.TrimEnd('\','/')
+    if ((Get-Item -LiteralPath $rootPath -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Links are not packaged: $Root" }
+    $inventory=[Collections.Generic.Dictionary[string,object]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach ($item in Get-ChildItem -LiteralPath $rootPath -Recurse -Force) {
+        if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Links are not packaged: $($item.FullName)" }
+        if ($item.PSIsContainer -or ($Suffix -and !$item.Name.EndsWith($Suffix,[StringComparison]::OrdinalIgnoreCase))) { continue }
+        $relative=$item.FullName.Substring($rootPath.Length+1).Replace('\','/')
+        Assert-PackageRelativePath $relative
+        if ($inventory.ContainsKey($relative)) { throw "Duplicate package file path: $relative" }
+        $inventory.Add($relative,@{path=$relative;fullName=$item.FullName;bytes=$item.Length;sha256=(Get-FileHash -LiteralPath $item.FullName -Algorithm SHA256).Hash})
+    }
+    return ,$inventory
+}
+function Assert-KoreanKojoCompilation([string]$SourceRoot,[string]$CompiledRoot) {
+    $sources=Get-PackageTreeInventory $SourceRoot '.kojo'
+    $compiled=Get-PackageTreeInventory $CompiledRoot '.kojo.js'
+    if ($sources.Count -ne $compiled.Count) { throw 'Korean source and compiled Kojo file counts differ.' }
+    $records=@(foreach ($relative in @($sources.Keys | Sort-Object)) {
+        $generated=$relative+'.js'
+        if (!$compiled.ContainsKey($generated)) { throw "Missing compiled Korean Kojo: $relative" }
+        @{source=$relative;sourceSha256=$sources[$relative].sha256;compiled=$generated;compiledSha256=$compiled[$generated].sha256}
+    })
+    # Equal counts plus one unique generated path for every source also rules out
+    # stale/unexpected generated files; the reviewed count comes from this commit.
+    return @{sourceFiles=$sources.Count;compiledFiles=$compiled.Count;mapping=$records;pathsUnique=$true;everySourceHasGeneratedFile=$true}
+}
+function Assert-TranslationHandoff([string]$Root,[string]$SourceRepository,[string]$SourceCommit) {
+    $inventory=Get-PackageTreeInventory $Root
+    if (!$inventory.ContainsKey('manifest.json')) { throw 'Translation handoff is missing manifest.json.' }
+    $bundle=Get-Content -LiteralPath $inventory['manifest.json'].fullName -Raw | ConvertFrom-Json
+    foreach ($property in @('schemaVersion','tool','sourceCommit','sourceWorkingTreeDirty','freshKoreanProseWritten','summary','files','sourceFiles','entryIntegrity','modules','exclusionsFile','classificationFile')) {
+        if (!$bundle.PSObject.Properties[$property]) { throw "Translation handoff manifest is missing $property." }
+    }
+    if ($bundle.schemaVersion -ne 1 -or $bundle.tool -ne 'erauma-translation-handoff') { throw 'Unsupported translation handoff manifest format.' }
+    if ($bundle.sourceCommit -ne $SourceCommit) { throw 'Translation handoff sourceCommit does not match KoreanSourceCommit.' }
+    if ($bundle.sourceWorkingTreeDirty -isnot [bool] -or $bundle.sourceWorkingTreeDirty -or $bundle.freshKoreanProseWritten -isnot [bool] -or $bundle.freshKoreanProseWritten) { throw 'Translation handoff must record clean sources without fresh Korean prose.' }
+    $listed=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach ($file in @($bundle.files)) {
+        if (!$file.PSObject.Properties['path'] -or !$file.PSObject.Properties['sha256']) { throw 'Translation handoff file record requires path and sha256.' }
+        Assert-PackageRelativePath $file.path
+        if ($file.path -eq 'manifest.json' -or !$listed.Add($file.path)) { throw "Duplicate/self-referential translation handoff file record: $($file.path)" }
+        if ($file.sha256 -notmatch '^[0-9a-fA-F]{64}$' -or !$inventory.ContainsKey($file.path) -or $inventory[$file.path].sha256 -ne $file.sha256) { throw "Translation handoff file hash differs: $($file.path)" }
+    }
+    if ($listed.Count -ne $inventory.Count-1) { throw 'Translation handoff manifest does not list every bundle file.' }
+    foreach ($relative in @($bundle.exclusionsFile,$bundle.classificationFile)) {
+        Assert-PackageRelativePath $relative
+        if (!$listed.Contains($relative)) { throw "Translation handoff metadata is not in the file manifest: $relative" }
+    }
+    $entryIds=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    foreach ($entry in @($bundle.entryIntegrity)) {
+        if (!$entry.PSObject.Properties['id'] -or !$entry.PSObject.Properties['sha256'] -or !$entry.id -or !$entryIds.Add($entry.id) -or $entry.sha256 -notmatch '^[0-9a-fA-F]{64}$') { throw 'Invalid or duplicate translation handoff entry integrity record.' }
+    }
+    $moduleNames=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    $modulePaths=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    $moduleEntryIds=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    foreach ($module in @($bundle.modules)) {
+        foreach ($property in @('module','path','slots')) {
+            if (!$module.PSObject.Properties[$property]) { throw "Translation handoff module record is missing $property." }
+        }
+        Assert-PackageRelativePath $module.path
+        if (!$moduleNames.Add($module.module) -or !$modulePaths.Add($module.path) -or !$listed.Contains($module.path)) { throw 'Translation handoff modules must have unique names and manifested paths.' }
+        $document=Get-Content -LiteralPath $inventory[$module.path].fullName -Raw | ConvertFrom-Json
+        foreach ($property in @('schemaVersion','tool','sourceCommit','module','freshKoreanProseWritten','entries')) {
+            if (!$document.PSObject.Properties[$property]) { throw "Translation handoff module document is missing $property." }
+        }
+        if ($document.schemaVersion -ne 1 -or $document.tool -ne $bundle.tool -or $document.sourceCommit -ne $SourceCommit -or $document.module -ne $module.module -or $document.freshKoreanProseWritten -isnot [bool] -or $document.freshKoreanProseWritten -or @($document.entries).Count -ne $module.slots) { throw "Translation handoff module metadata differs: $($module.path)" }
+        foreach ($entry in @($document.entries)) {
+            if (!$entry.PSObject.Properties['id'] -or !$entry.PSObject.Properties['koreanText'] -or !$entryIds.Contains($entry.id) -or !$moduleEntryIds.Add($entry.id) -or $entry.koreanText -isnot [string] -or $entry.koreanText -ne '') { throw 'Package translation handoff requires unique, unchanged blank translation slots.' }
+        }
+    }
+    if ($moduleEntryIds.Count -ne $entryIds.Count -or !$bundle.summary.PSObject.Properties['modules'] -or !$bundle.summary.PSObject.Properties['slots'] -or $bundle.summary.modules -ne $moduleNames.Count -or $bundle.summary.slots -ne $entryIds.Count) { throw 'Translation handoff module/entry totals differ from the manifest summary.' }
+    $sourcePaths=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach ($file in @($bundle.sourceFiles)) {
+        if (!$file.PSObject.Properties['path'] -or !$file.PSObject.Properties['sha256']) { throw 'Translation handoff source record requires path and sha256.' }
+        Assert-PackageRelativePath $file.path
+        if (!$sourcePaths.Add($file.path)) { throw "Duplicate translation handoff source path: $($file.path)" }
+        $sourceFile=Join-Path $SourceRepository $file.path
+        if ($file.sha256 -notmatch '^[0-9a-fA-F]{64}$' -or !(Test-Path -LiteralPath $sourceFile -PathType Leaf) -or (Get-FileHash -LiteralPath $sourceFile -Algorithm SHA256).Hash -ne $file.sha256) { throw "Translation handoff source hash differs: $($file.path)" }
+        if ((Get-Item -LiteralPath $sourceFile -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Translation handoff source is a link: $($file.path)" }
+    }
+    $orderedSources=@($sourcePaths | Sort-Object)
+    for ($start=0;$start -lt $orderedSources.Count;$start+=100) {
+        $last=[Math]::Min($start+99,$orderedSources.Count-1)
+        $batch=@($orderedSources[$start..$last])
+        git -C $SourceRepository ls-files --error-unmatch -- $batch | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw 'Translation handoff source files must be tracked at the recorded commit.' }
+        $sourceStatus=git -C $SourceRepository status --porcelain --untracked-files=all -- $batch
+        if ($LASTEXITCODE -ne 0 -or $sourceStatus) { throw 'Translation handoff source files must be clean at the recorded commit.' }
+    }
+    return @{
+        format='erauma-translation-handoff-provenance-v1';sourceCommit=$bundle.sourceCommit
+        packagedPath='translation-handoff';manifestPath='translation-handoff/manifest.json';manifestSha256=$inventory['manifest.json'].sha256
+        files=$inventory.Count;sourceFiles=$sourcePaths.Count;summary=$bundle.summary
+        allBundleFileHashesVerified=$true;allSourceFileHashesVerified=$true;pathsUnique=$true;sourceWorkingTreeDirty=$false;freshKoreanProseWritten=$false
+    }
+}
+
 $koreanRequested=([bool]$KoreanSourceRepository -or [bool]$KoreanSourceCommit -or [bool]$KoreanKojoRoot)
 $koreanProvenance=$null
+$translationHandoffProvenance=$null
+if ($TranslationHandoffRoot -and !$koreanRequested) { throw 'TranslationHandoffRoot requires the recorded Korean source repository, commit and compiled Kojo.' }
 if ($koreanRequested) {
     if (!$KoreanSourceRepository -or !$KoreanSourceCommit -or !$KoreanKojoRoot) { throw 'KoreanSourceRepository, KoreanSourceCommit and KoreanKojoRoot must be supplied together.' }
     if ($KoreanSourceCommit -notmatch '^[0-9a-fA-F]{40}$') { throw 'KoreanSourceCommit must be a full Git commit SHA.' }
@@ -53,20 +159,22 @@ if ($koreanRequested) {
     if (!(Test-Path -LiteralPath $koreanCompiledPath)) { throw 'KoreanKojoRoot is missing i18n/ko-KR.' }
     $koreanKojoFiles=@(Get-ChildItem -LiteralPath $koreanSourcePath -Recurse -File -Force -Filter '*.kojo')
     $koreanCompiledFiles=@(Get-ChildItem -LiteralPath $koreanCompiledPath -Recurse -File -Force -Filter '*.kojo.js')
-    if ($koreanKojoFiles.Count -ne 31 -or $koreanCompiledFiles.Count -ne $koreanKojoFiles.Count) { throw 'Korean source and compiled Kojo must each contain the reviewed 31 files.' }
-    foreach ($sourceKojo in $koreanKojoFiles) {
-        $relative=$sourceKojo.FullName.Substring($koreanSourcePath.Length+1)
-        if (!(Test-Path -LiteralPath (Join-Path $koreanCompiledPath ($relative+'.js')) -PathType Leaf)) { throw "Missing compiled Korean Kojo: $relative" }
-    }
+    $kojoCompilation=Assert-KoreanKojoCompilation $koreanSourcePath $koreanCompiledPath
     $koreanProvenance=@{
         format='erauma-emuera-language-provenance-v1';distributionVersion=$KoreanDistributionVersion;baseRuntimeVersion='0.3.3'
         language='ko-KR';sourceRepository='okkoog/Era-crossworld';sourceCommit=$koreanHead.Trim()
         sourcePath='sources/erauma/ere/i18n/ko-KR';sourceVersion=$koreanSourcePackage.version
         sourceFiles=@(Get-ChildItem -LiteralPath $koreanSourcePath -Recurse -File -Force).Count
         sourceKojoFiles=$koreanKojoFiles.Count;compiledKojoFiles=$koreanCompiledFiles.Count
+        kojoCompilation=$kojoCompilation
         entryPath='game/language-packs/ko-KR/entry.js';packagedSourcePath='game/erauma/ere/i18n/ko-KR';packagedKojoPath='game/kojo/i18n/ko-KR'
         fallbackPolicy='Existing Korean translations and reviewed text reuse are included; untranslated scenes and unmatched output calls retain Japanese fallback.'
         gameSelectorPolicy='The base game language selector is unchanged; the runtime loads the Korean language pack wrapper.'
+    }
+    if ($TranslationHandoffRoot) {
+        $TranslationHandoffRoot=(Resolve-Path -LiteralPath $TranslationHandoffRoot).Path
+        $translationHandoffProvenance=Assert-TranslationHandoff $TranslationHandoffRoot $KoreanSourceRepository $KoreanSourceCommit
+        $koreanProvenance.translationHandoff=$translationHandoffProvenance
     }
 }
 
@@ -139,6 +247,12 @@ Copy-PackageFile (Join-Path $repoPath 'sources\erauma\package.json') 'game\eraum
 if ($koreanRequested) {
     Copy-PackageTree $koreanSourcePath 'game\erauma\ere\i18n\ko-KR'
 }
+if ($TranslationHandoffRoot) {
+    $handoffFiles=Get-PackageTreeInventory $TranslationHandoffRoot
+    foreach ($relative in @($handoffFiles.Keys | Sort-Object)) {
+        Copy-PackageFile $handoffFiles[$relative].fullName (Join-Path 'translation-handoff' $relative)
+    }
+}
 if (!$ResourceRoot) {
     $installed=Join-Path $portPath 'artifacts\resources'
     if (Test-Path -LiteralPath (Join-Path $installed 'res')) { $ResourceRoot=$installed }
@@ -178,7 +292,7 @@ foreach ($document in @('ERAUMA_ENGINE_DEPENDENCIES.md','ERAUMA_COMPATIBILITY_AP
 }
 # Reviewed summaries and software-canvas examples are deliverables; raw runtime
 # reports and user/test saves remain excluded by the runtime allowlist above.
-foreach($evidenceVersion in @('0.3','0.3.1','0.3.2','0.3.3','0.3.3-ko1','0.3.3-ko2')) {
+foreach($evidenceVersion in @('0.3','0.3.1','0.3.2','0.3.3','0.3.3-ko1','0.3.3-ko2','0.3.3-ko3')) {
     $evidenceRelative='docs\evidence\'+$evidenceVersion
     $evidenceRoot=Join-Path $portPath $evidenceRelative
     if (Test-Path -LiteralPath $evidenceRoot) {
@@ -211,6 +325,7 @@ $manifest=@{
     excludedFiles=@($exclusions | Sort-Object -Unique);files=$manifestFiles
 }
 if ($koreanRequested) { $manifest.languagePack=$koreanProvenance }
+if ($TranslationHandoffRoot) { $manifest.translationHandoff=$translationHandoffProvenance }
 [IO.File]::WriteAllText((Join-Path $packageRoot 'package-manifest.json'),($manifest | ConvertTo-Json -Depth 8),[Text.UTF8Encoding]::new($false))
 $manifestItem=Get-Item -LiteralPath (Join-Path $packageRoot 'package-manifest.json')
 $zipFiles=@($manifestFiles)+@(@{path='package-manifest.json';bytes=$manifestItem.Length;sha256=(Get-FileHash -LiteralPath $manifestItem.FullName -Algorithm SHA256).Hash})

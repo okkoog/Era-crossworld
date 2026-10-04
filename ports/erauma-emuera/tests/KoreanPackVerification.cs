@@ -131,7 +131,7 @@ static class KoreanPackVerification
         var scenes = Load(Path.Combine(reportDirectory, "isolated-scenes"), false);
         scenes.Execute("var selector=__require('i18n/selector');selector.set_lan('ko-KR');__game.global[3]='ko-KR';var random=__require('i18n/ko-KR/timon/others/random'),jp=__require('i18n/ja-JP/timon/others/random'),__eventResult=null;var trainer={get_colored_name:()=>({content:'Trainer',color:'#12abcd'})},chara={get_colored_name:()=>({content:'Chara',color:'#ef1234'})};");
         Check(scenes.EvaluateJson("Object.keys(random).length") == "38", "All 38 current random-scene keys are retained");
-        Check(scenes.EvaluateJson("Object.keys(jp).filter(k=>random[k]===jp[k]).length") == "21", "Untouched 21 scenes retain Japanese function fallback");
+        Check(scenes.EvaluateJson("Object.keys(jp).filter(k=>random[k]===jp[k]).length") == "18", "The latest reviewed language source retains 18 inherited Japanese random scenes");
         Check(scenes.EvaluateJson("[random.god_coin.title,random.breakfast.title,random.wind_welcome.title,random.kamen_rider.title]") == "[\"세 여신상의 소원의 우물\",\"「아침 식사」\",\"바람이 찾아오다\",\"가면(?)라이더!\"]", "All four reused event titles load in Jint");
         var branchReports = new List<object>();
         void Scene(string name, string call, string[] choices, string? result, string[] expected, bool disabledThird = false)
@@ -180,9 +180,16 @@ static class KoreanPackVerification
         Scene("rider-magic", "kamen_rider(trainer,false)", ["1", "2"], "[1,2]", ["반응이 아주 좋다! 비록 이 옷은 입기가 꽤 힘들지만……"]);
         Scene("rider-mask", "kamen_rider(trainer,false)", ["1", "3"], "[1,3]", ["가게 마스코트로서의 효과는 좋지만, 뭔가 잃어버린 것 같은 기분이 든다……"]);
         Scene("rider-disabled", "kamen_rider(trainer,true)", ["1", "2"], "[1,2]", ["반응이 아주 좋다! 비록 이 옷은 입기가 꽤 힘들지만……"], true);
+        scenes.Execute("var baseKo=__require('i18n/ko-KR/timon/base'),eduKo=__require('i18n/ko-KR/timon/edu'),guideKo=__require('i18n/ko-KR/timon/guides/game');");
+        Check(scenes.EvaluateJson("baseKo.get_clock(9,0)") == "\"9 時정각\"", "New exact-hour reuse loads from the shipped Korean pack");
+        Check(scenes.EvaluateJson("baseKo.get_clock(13,5,true)") == "\"午後 1 時 5 分\"", "Structurally unmatched clock text retains the current Japanese template and dynamic values");
+        Check(scenes.EvaluateJson("typeof guideKo.school_chairman==='function'&&typeof eduKo.train==='function'") == "true", "Updated neutral guide and training modules initialize through the shipped loader");
+        scenes.Execute("var kojoKo=new (__require('i18n/ko-KR/kojo/entry'))(),kojoJa=new (__require('i18n/ja-JP/kojo/entry'))();function localeShape(v,d){d=d||0;if(v===null)return 'null';if(typeof v!=='object')return typeof v;if(d>5)return 'object';return Array.isArray(v)?v.map(x=>localeShape(x,d+1)):Object.keys(v).sort().map(k=>[k,localeShape(v[k],d+1)]);}");
+        Check(scenes.EvaluateJson("JSON.stringify(localeShape(kojoKo))===JSON.stringify(localeShape(kojoJa))") == "true", "Every shipped Korean character entry preserves the Japanese object, variant, method and array shape");
+        Check(scenes.EvaluateJson("typeof kojoKo[67][99].recruit") == "\"object\"", "Satono Diamond recruitment retains the original 67/99 variant path");
         Check(scenes.Diagnostics.Count == 0, "Language initialization and all scenes produce no missing-module diagnostics");
         scenes.Quit();
-        var summary = new { pass = true, date = "2026-10-02", scope = "Exact shipped Jint DLL: production locale selection/restart, lazy locale initialization, default/random/manual appearance and rerolls, full new-game/neutral rest/save/fresh-session load, four changed scenes in 15 isolated branch cases with Japanese fallback. Not human play or FPS measurement.", checks, branchReports };
+        var summary = new { pass = true, verifiedUtc = DateTime.UtcNow.ToString("o"), scope = "Exact shipped Jint DLL: production locale selection/restart, lazy locale initialization, default/random/manual appearance and rerolls, full new-game/neutral rest/save/fresh-session load, four reviewed scenes in 15 isolated branch cases with Japanese fallback, current random fallback count and new neutral clock reuse. Not human play or FPS measurement.", checks, branchReports };
         var json = JsonSerializer.Serialize(summary, new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
         File.WriteAllText(Path.Combine(reportDirectory, "korean-pack-summary.json"), json);
         Console.WriteLine(JsonSerializer.Serialize(new { pass = true, checks = checks.Count, branchCases = branchReports.Count, report = Path.Combine(reportDirectory, "korean-pack-summary.json") }));
