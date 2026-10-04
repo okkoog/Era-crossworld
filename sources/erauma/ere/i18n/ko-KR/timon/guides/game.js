@@ -14,9 +14,9 @@ module.exports = {
   async game_start(minoru, you, new_save) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' はこれから勤める学園へ足を運んだ。大門の前では、全身を翠の色合いでまとった',
-      minoru.sex_code === 1 ? '引き締まった人間の男性' : '美しい人間の女性',
-      'が静かに待っている。',
+      "이(가) 부임할 아카데미에 도착하니, 에메랄드 그린 톤의 옷을 입은 ",
+      minoru.sex_code === 1 ? "단정한 인간 남성" : "아름다운 인간 여성",
+      "이 교문 앞에서 기다리고 있었다.",
     ]);
     await era.printAndWait([
       you.get_colored_name(),
@@ -24,58 +24,58 @@ module.exports = {
     ]);
     era.println();
     if (!new_save) {
-      await minoru.say_as_unknown_and_wait('こんにちは、新……');
+      await minoru.say_as_unknown_and_wait("안녕하세요. 새...");
       era.println();
 
       await era.printAndWait([
-        'その',
+        "그 ",
         minoru.phy_sex_title,
-        'は ',
+        "은 ",
         you.get_colored_name(),
-        ' と目が合った瞬間、一瞬戸惑いを浮かべたが、すぐに我に返った。',
+        "과(와) 시선이 마주치자 순간 의아한 표정을 지었으나, 이내 정신을 차린 듯 했다.",
       ]);
     } else {
       await era.printAndWait([
-        'その',
+        "그 ",
         minoru.phy_sex_title,
-        'は ',
+        "은 ",
         you.get_colored_name(),
-        ' と目が合うなり、満面の笑みを見せた。',
+        "과(와) 시선이 마주치자 환하게 웃었다.",
       ]);
     }
     era.println();
 
     await minoru.say_as_unknown_and_wait([
-      'こんにちは。新任のトレーナー',
+      "안녕하세요. 새 트레이너 ",
       you.adult_sex_title,
-      '。',
+      ".",
     ]);
     await minoru.say_as_unknown_and_wait('理事長秘書の駿川たづなです。');
-    await minoru.say_and_wait('トレセン学園へようこそ。');
+    await minoru.say_and_wait("트레센 학원에 오신 것을 환영합니다.");
     await minoru.say_and_wait(
-      'いち早くお仕事に馴染んでいただけるよう、私からご案内とお手伝いをいたします。',
+      "업무에 더 빨리 적응하실 수 있도록 조언과 지원을 아끼지 않겠습니다.",
     );
 
     if (!new_save) {
       era.println();
 
-      await era.printAndWait([minoru.sex, 'は目を細め、続けた。']);
+      await era.printAndWait([minoru.sex, "은 눈을 가늘게 뜨며 말을 이어갔다."]);
       era.println();
 
       await minoru.say_and_wait(
-        'もっとも、ご経験は十分。すぐに順応していただけるでしょう。',
+        "하지만, 경험이 풍부하신 듯 하니 분명 금방 적응하시겠죠.",
       );
     }
     era.drawLine();
     await minoru.say_and_wait([
-      'トレーナーとして、まずは専属の',
+      "트레이너로서, 당연히 함께할 전속 ",
       minoru.uma_sex_title,
-      'を見つける必要があります。',
+      " 파트너를 찾으셔야 할 거예요.",
     ]);
     await minoru.say_and_wait(
-      'ちょうど、トレセンにも将来を嘱望される新しい顔が何人も入ってきました。',
+      "마침 트레센 학원에 잠재력 있는 유망주들이 꽤 많이 들어왔어요.",
     );
-    await minoru.say_and_wait('それでは、トレーニング場を見てみましょうか。');
+    await minoru.say_and_wait("그럼, 훈련장으로 같이 가 볼까요?");
   },
   /**
    * @param {CharaTalk} minoru 駿川たづな／豊穣の刻
@@ -147,57 +147,57 @@ module.exports = {
     era.drawLine();
     if (has_recruit) {
       await era.printAndWait([
-        '募集を無事に終え、',
+        "모집을 순조롭게 끝마친 ",
         you.get_colored_name(),
-        ' は新しい相棒と並んで ',
+        "은(는) 새로 결성한 파트너와 함께 ",
         minoru.get_colored_name(),
-        ' の前へ戻った。',
+        "의 앞으로 왔다.",
       ]);
       await minoru.say_and_wait([
-        'トレーナー',
+        "트레이너 ",
         you.adult_sex_title,
-        'は担当を見つけられたのですね。それでは……',
+        "님도 무사히 담당 우마무스메를 찾으셨군요. 그럼...",
       ]);
-      await era.printAndWait([minoru.get_colored_name(), ' は軽く一礼した。']);
+      await era.printAndWait([minoru.get_colored_name(), "가 살짝 고개를 숙였다."]);
       await minoru.say_and_wait(
         '駿川、トレーナーさんと担当の三年間が武運長久でありますよう、心よりお祈りいたします。',
       );
     } else {
       await era.printAndWait([
         you.get_colored_name(),
-        ' はふさわしい担当を見つけられず、ひとりで ',
+        "은(는) 적당한 파트너를 찾지 못한 채 혼자서 ",
         minoru.get_colored_name(),
-        ' のもとへ戻った。',
+        "의 앞으로 돌아왔다.",
       ]);
       await minoru.say_and_wait([
-        'トレーナー',
+        "트레이너 ",
         you.adult_sex_title,
-        '、よい相棒は見つかりましたか？',
+        "님, 적당한 파트너를 찾으셨나요?",
       ]);
-      era.printButton('「いい担当は、もうほかの人に取られてしまったよ」', 1);
-      era.printButton('「面目ない。誰も僕に興味がなかったみたいだ」', 2);
+      era.printButton("「적당한 파트너는 이미 다른 분께 배정되었어요.」", 1);
+      era.printButton("「부끄럽지만 아무도 저에게 관심이 없는 것 같아요.」", 2);
       if ((await era.input()) === 1) {
         await era.printAndWait([
           you.get_colored_name(),
-          ' はわざと両手を広げ、困りきった顔を作ってみせた。',
+          "은(는) 일부러 양손을 벌리며 매우 괴로워하는 표정을 지었다.",
         ]);
         await era.printAndWait(
-          '言葉の何割が本音で、何割が建前か。いまはそれほど大事ではない。',
+          "그것이 진실인지, 거짓인지는 그다지 중요하지 않을지도 모른다.",
         );
       } else {
         await era.printAndWait([
           you.get_colored_name(),
-          ' は決まり悪そうに両手を広げ、困りきった顔を見せた。',
+          "은(는) 약간 어색하게 양손을 펴며 매우 곤란해하는 표정을 지었다.",
         ]);
       }
       era.println();
 
-      await minoru.say_and_wait('そうですか……');
+      await minoru.say_and_wait("그렇군요...");
       await minoru.say_and_wait(
-        'では、しばらくしてからまた様子を見てみましょう。担当にふさわしい生徒と出会えるかもしれません。',
+        "그럼 잠시 후에 다시 와 보세요. 어쩌면 담당할 만한 학생을 찾을 수 있을지도 모르니까요.",
       );
       await minoru.say_and_wait(
-        'すでに目当てがいるなら、理事長にお願いしてみるのも一つの手です。',
+        "이미 마음에 둔 학생이 있으시다면 이사장님께 부탁해 보셔도 되겠네요.",
       );
       await era.printAndWait('ふたりはトレーニング場を離れた。');
     }
@@ -379,22 +379,22 @@ module.exports = {
    */
   async school_chairman(minoru, you, chairman) {
     await minoru.say_and_wait([
-      'こちらは本校理事長の執務室です。用事があれば、たいていここで ',
+      "여기는 본교 이사장님의 사무실입니다. 필요하시다면 보통 여기서",
       chairman,
-      ' にお会いできます。',
+      "을 만나실 수 있습니다.",
     ]);
     await minoru.say_and_wait([
-      '理事長とよい関係を築けば、トレーナー',
+      "이사장님과 좋은 관계를 맺으면 트레이너 ",
       you.adult_sex_title,
-      'の昇進にも少なからず助けになるかもしれませんよ。',
+      "님의 승진에 꽤 도움이 될 거예요.",
     ]);
     era.println();
 
     await era.printAndWait([
       minoru.get_colored_name(),
-      ' は ',
+      "가 ",
       you.get_colored_name(),
-      ' にウィンクした。',
+      "에게 윙크를 날렸다.",
     ]);
   },
   /**

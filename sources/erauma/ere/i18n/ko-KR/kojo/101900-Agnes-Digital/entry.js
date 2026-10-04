@@ -6,4 +6,5 @@ module.exports = class extends (
   recruit = proxy_kojo_js(
     require('#/i18n/ko-KR/kojo/101900-Agnes-Digital/rec-19.js'),
   );
+  daily = proxy_kojo_js(require('#/i18n/ko-KR/kojo/101900-Agnes-Digital/daily-19.js'));
 };

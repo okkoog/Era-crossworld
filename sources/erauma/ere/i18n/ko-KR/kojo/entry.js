@@ -37,4 +37,11 @@ module.exports = class extends JaKojo {
   341 = new (require('#/i18n/ko-KR/kojo/904100-Godolphin-Barb/entry'))();
   342 = new (require('#/i18n/ko-KR/kojo/904200-Byerley-Turk/entry'))();
   343 = new (require('#/i18n/ko-KR/kojo/904300-Satake-Mei/entry'))();
+  0 = new (require('#/i18n/ko-KR/kojo/1000-Player/entry'))();
+  25 = new (require('#/i18n/ko-KR/kojo/102500-Manhattan-Cafe/entry'))();
+  37 = new (require('#/i18n/ko-KR/kojo/103700-Eishin-Flash/entry'))();
+  85 = new (require('#/i18n/ko-KR/kojo/108500-Daiichi-Ruby/entry'))();
+  52 = new (require('#/i18n/ko-KR/kojo/105200-Haru-Urara/entry'))();
+  56 = new (require('#/i18n/ko-KR/kojo/105600-Matikanefukukitaru/entry'))();
+  67 = { 99: new (require('#/i18n/ko-KR/kojo/106799-Satono-Diamond/entry'))() };
 };

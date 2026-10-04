@@ -643,26 +643,26 @@ module.exports = {
   good_night_normal(chara, you, c_awake, y_awake) {
     if (c_awake && y_awake) {
       era.print([
-        '忙しい一日が終わり、',
+        '바쁜 하루가 끝나고, ',
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         chara.get_colored_name(),
-        ' を学生寮の入口まで送り、おやすみを交わしてそれぞれ帰った。',
+        '을(를) 기숙사 입구까지 데려다주고 서로 잘 자라고 인사를 나눈 뒤 각자 거처로 돌아갔다.',
       ]);
     } else if (y_awake) {
       era.print([
-        '気持ちよさそうに眠る ',
+        '깊이 잠든 ',
         chara.get_colored_name(),
-        ' を見て、',
+        '을(를) ',
         you.get_colored_name(),
-        ' はどうしても起こせなかった。仕方なく自分で学生寮まで送り届け、凝った肩を揉みながらトレーナー寮へ戻った。',
+        '은(는) 깨울 엄두가 나지 않아, 어쩔 수 없이 직접 기숙사까지 데려다주고 나서야 뻐근한 어깨를 주무르며 트레이너 숙소로 돌아왔다.',
       ]);
     } else {
       era.print([
         you.get_colored_name(),
-        ' は人事不省に眠っており、朦朧のなかで ',
+        '은(는) 깊은 잠에 빠져 의식을 잃은 채, 흐릿한 꿈속에서 ',
         chara.get_colored_name(),
-        ' の別れの声だけが聞こえた気がした。',
+        '의 작별 인사를 들은 듯 했다',
       ]);
     }
   },
@@ -843,21 +843,21 @@ module.exports = {
       '은(는) 트레이닝실에서 함께 게임을 즐기며 즐거운 시간을 보냈다.',
     ]);
   },
-  bm_money_message: 'いくら借りる？',
-  bm_time_message: 'いつまで借りる？',
+  bm_money_message: '얼마를 대출받을까?',
+  bm_time_message: '대출 기간은?',
   get_bm_confirm_message: (amount, time, repay) => [
-    '借入 ',
+    '대출 금액은',
     { ...get_abbr_number(amount), color: money_color },
-    ' ウマコイン。以降 ',
+    ' 우마코인, 이후 ',
     { content: time.toLocaleString(), color: buff_colors[3] },
-    ' 週間、毎週 ',
+    '주간 주당 상환액은 ',
     { ...get_abbr_number(repay), color: money_color },
-    ' ウマコインを返済。合計 ',
+    ' 우마코인，총 ',
     {
       ...get_abbr_number(repay * time),
       color: money_color,
     },
-    ' ウマコイン。受け入れる？',
+    ' 우마코인 입니다. 대출합니까?',
   ],
   /**
    * @param {CharaTalk} chara
@@ -867,11 +867,11 @@ module.exports = {
   async bm_confirm(chara, you, amount) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' は ',
+      '은(는) ',
       chara.get_colored_name(),
-      ' から ',
+      '에게 ',
       { content: amount.toLocaleString(), color: money_color },
-      ' ウマコインを借りた……',
+      ' 우마코인을 빌렸다……',
     ]);
   },
   /**
@@ -928,9 +928,9 @@ module.exports = {
   async o_r_fishing(chara, you) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' は ',
+      '과(와) ',
       chara.get_colored_name(),
-      ' と川辺で釣りをした。大漁でありますように。',
+      '은(는) 함께 강가에서 낚시를 하며 대어를 낚기를 고대했다.',
     ]);
   },
   /**
@@ -941,9 +941,9 @@ module.exports = {
   async o_r_walking(chara, you) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' は ',
+      '과(와) ',
       chara.get_colored_name(),
-      ' と川辺を散歩した。今日もいい気分だ。',
+      '은(는) 함께 강변을 산책했다. 오늘도 기분 좋은 하루다.',
     ]);
   },
   /**
@@ -1007,9 +1007,9 @@ module.exports = {
   async o_c_pray(chara, you, dice) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' は ',
+      '과(와) ',
       chara.get_colored_name(),
-      ' と神社で祈った。',
+      '은(는) 함께 신사에 참배하러 왔다.',
     ]);
     if (dice < 0.5) {
       await era.printAndWait([
@@ -1033,19 +1033,19 @@ module.exports = {
       await era.printAndWait('署名は未知の術式素材だった！');
     } else if (dice < 0.01) {
       await era.printAndWait([
-        '目の前に色とりどりの門が幻視され、急に気分がよくなった',
+        '눈앞에 갑자기 무지개 빛깔 게이트가 보이는 환상에 빠지며, 기분이 단숨에 고양되었다.',
       ]);
     } else if (dice < 0.02) {
       await era.printAndWait([
-        '一陣の風が吹き、',
+        '바람이 훅 불어오는 바람에 ',
         chara.get_colored_name(),
-        ' の体へ倒れ込んでしまった？！',
+        '의 몸 위로 넘어져 버렸다?!',
       ]);
     } else if (dice < 0.03 && chara.sex_code !== 1) {
       await era.printAndWait([
-        '一陣の風が吹き、隣の ',
+        '바람이 훅 불어오더니, 옆에 있던 ',
         chara.get_colored_name(),
-        ' のスカートがめくれた？！',
+        '의 스커트가 들춰져 버렸다?!',
       ]);
     } else {
       await era.printAndWait(['一陣の風が吹き、なんと 150 ウマコイン？！']);
@@ -1106,14 +1106,14 @@ module.exports = {
      */
     const f = async (chara, you) => {
       await era.printAndWait([
-        '新しい一年を迎え、',
+        '새로운 한 해를 맞이하여, ',
         you.get_colored_name(),
-        ' は ',
+        '과(와) ',
         chara.get_colored_name(),
-        ' とトレーナー室でしっかり祝った。',
+        '은(는) 트레이닝실에서 함께 즐거운 축하 파티를 열었다.',
       ]);
     };
-    f.title = '新年';
+    f.title = '새해';
     return f;
   })(),
   cl_valentine: (() => {
@@ -1136,7 +1136,7 @@ module.exports = {
         ' も嬉しくなった。',
       ]);
     };
-    f.title = 'バレンタインデー';
+    f.title = '발렌타인데이';
     return f;
   })(),
   cl_palace: (() => {
@@ -1147,9 +1147,9 @@ module.exports = {
      */
     const f = async (chara, you) => {
       await era.printAndWait([
-        '殿堂週は、走ることを志す',
+        '전당 주간은, 레이스를 지망하는 ',
         chara.uma_sex_title,
-        'たちにとって、最も大切な祭りのひとつだ。',
+        '들에게 있어 가장 중요한 축제 중 하나이다.',
       ]);
       // CFLAGNAME:47 = 殿堂
       switch (era.get(`cflag:${chara.id}:47`)) {
@@ -1163,9 +1163,9 @@ module.exports = {
           // CFLAGNAME:48 = 育成回合计时
           if (era.get(`cflag:${chara.id}:48`) === 143 + 9) {
             await era.printAndWait([
-              '時が来ると、',
+              '때가 되었다. ',
               chara.get_colored_name(),
-              ' は隠しきれない喜びと誇りを帯びて、舞台の中央へ歩いていった。',
+              '은(는) 감출 수 없는 기쁨과 자부심을 가득 안고 무대 중앙으로 걸어 나갔다.',
             ]);
           }
           await era.printAndWait([
@@ -1182,29 +1182,29 @@ module.exports = {
         case 1:
           await era.printAndWait([
             you.get_colored_name(),
-            ' と ',
+            '과(와) ',
             chara.get_colored_name(),
-            ' は並んでトレセン学園の大講堂へ向かい、行事に参加した。',
+            '은(는) 함께 트레센 학원의 대강당으로 향해 행사에 참여했다.',
           ]);
           await era.printAndWait([
             you.get_colored_name(),
-            ' の担当は、耳も尻尾も無意識に少し伏せ、あまり元気がなさそうだ。',
+            '의 담당은 귀와 꼬리가 무의식적으로 약간 처져 있어, 그리 기운이 넘쳐 보이지는 않았다.',
           ]);
           await era.printAndWait([
             you.get_colored_name(),
-            ' は ',
+            '은(는) ',
             chara.get_colored_name(),
-            ' を見て溜息をつき、そっと片手を',
+            '을(를) 바라보며 한숨을 내쉬고는, 조심스럽게 한쪽 손을 ',
             chara.sex,
-            'の肩に置いて支えた。その仕草で、',
+            '의 어깨에 얹어 부축하며 나아갔다. 덕분인지 ',
             chara.sex,
-            'も少し立ち直ったようだった。',
+            '도 조금은 기운을 차린 듯했다.',
           ]);
           await era.printAndWait([
             you.get_colored_name(),
-            ' と ',
+            '과(와) ',
             chara.get_colored_name(),
-            ' も力を尽くしたが、成績は殿堂入りには届かなかった。人生には、そういう遺憾もある。',
+            '도 최선을 다했지만, 성적이 전당에 입성하기에는 부족했다. 하지만 인생에는 늘 아쉬움이 남는 법이다.',
           ]);
           await era.printAndWait([
             '最後の勝者にはなれなかったが、祭りの空気に包まれ、気持ちはいくらか和らいだ。',
@@ -1220,40 +1220,40 @@ module.exports = {
             ]);
             await era.printAndWait([
               you.get_colored_name(),
-              ' と ',
+              '과(와) ',
               chara.get_colored_name(),
-              ' は会場へ入り、式の内容を丹念に記録した……時おり顔を上げて互いを見、また必要な情報へ沈んでいく。',
+              '은(는) 함께 행사장에 들어가 이번 기념식의 각종 내용을 진지하게 기록했다…… 때때로 서로를 쳐다보면서도, 다시 몰입하여 필요한 정보를 수집해 나갔다.',
             ]);
           } else {
             await era.printAndWait([
-              'この時期になると、トレセン学園では行事が開かれる。そのひとつが、数名の殿堂入り',
+              '이 시기가 되면 트레센 학원에서는 행사가 열리는데, 그중 하나는 전당에 입성한 몇 명의 ',
               chara.uma_sex_title,
-              'を招いて数日にわたる講演を行い、他の',
+              '들을 초청해 며칠 동안 강연을 열고, 다른 ',
               chara.uma_sex_title,
-              'やトレーナーたちへ経験を伝えることだ。',
+              '들과 트레이너들에게 경험을 전수하는 것이다.',
             ]);
             await era.printAndWait([
               you.get_colored_name(),
-              ' と ',
+              '과(와) ',
               chara.get_colored_name(),
-              ' は、慕って集まった人混みのあいだから、ようやく席を一つ確保して座った。',
+              '은(는) 명성을 듣고 찾아온 인파 속에서 어렵사리 자리를 잡아 앉았다.',
             ]);
             // CFLAGNAME:1 = 种族
             if (era.get(`cflag:${chara.id}:1`) > 0) {
               await era.printAndWait([
-                '壇上の',
+                '무대 위 ',
                 chara.uma_sex_title,
-                'の、静かに熱を帯びた声が響くと、',
+                '의 차분하면서도 열정적인 목소리가 울려 퍼지자, ',
                 you.get_colored_name(),
-                ' は ',
+                '은(는) ',
                 chara.get_colored_name(),
-                ' が背筋を伸ばし、瞳に憧れを浮かべているのに気づいた……',
+                '이(가) 허리를 곧게 펴고 앉아 동경 어린 눈빛을 빛내는 것을 발견했다……',
               ]);
             }
           }
       }
     };
-    f.title = '殿堂週';
+    f.title = '전당 주간';
     return f;
   })(),
   cl_fans: (() => {
@@ -1264,14 +1264,14 @@ module.exports = {
      */
     const f = async (chara, you) => {
       await era.printAndWait([
-        '四月のファン感謝祭で、',
+        '4월의 팬 대감사제에서, ',
         you.get_colored_name(),
-        ' は ',
+        '과(와) ',
         chara.get_colored_name(),
-        ' と一緒にファンへ芸を披露した。',
+        '은(는) 팬들을 위해 함께 장기 자랑을 선보였다.',
       ]);
     };
-    f.title = 'ファン感謝祭';
+    f.title = '팬 대감사제';
     return f;
   })(),
   cl_temple_fair: (() => {
@@ -1282,11 +1282,11 @@ module.exports = {
      */
     const f = async (chara, you) => {
       await era.printAndWait([
-        '縁日のあいだ、',
+        '축제 기간 동안, ',
         you.get_colored_name(),
-        ' は ',
+        '은(는) ',
         chara.get_colored_name(),
-        ' を誘い、夏合宿場のそばの市へ遊びに行くことにした。',
+        '을(를) 여름 합숙 장소 옆에 있는 시장에 함께 놀러 가자고 초대하기로 결정했다.',
       ]);
       if (era.get(`cflag:${chara.id}:65`) === 5) {
         if (era.get(`love:${chara.id}`) >= 50) {
@@ -1295,18 +1295,18 @@ module.exports = {
             'はすぐに承諾した。ふたりは大人の社畜の荷をいったん下ろし、一日とことん遊んだ……',
           ]);
         } else {
-          await chara.say_and_wait('デート？');
+          await chara.say_and_wait('데이트인가요?');
           await era.printAndWait([
             you.get_colored_name(),
-            ' は画面の通知を見て思わず微笑み、返信しようとしたところで新しいメッセージが飛び込んできた。',
+            '은(는) 화면의 메시지 알림을 보며 자기도 모르게 미소 지었고, 답장을 보내려던 찰나 새로운 메시지가 도착했다.',
           ]);
-          await chara.say_and_wait('じゃあ、それで決まり。');
+          await chara.say_and_wait('그럼 그렇게 정한 거예요.');
           await era.printAndWait([
-            '文字の下は、浴衣を着て少しだけ装った',
+            '문자 아래에는 유카타를 입고 예쁘게 꾸민 ',
             chara.sex,
-            'の自撮りだった。',
+            '의 셀카가 있었다. ',
             you.get_colored_name(),
-            ' は思わず息を止めた……',
+            '은(는) 자신도 모르게 숨을 들이켰다……',
           ]);
           await era.printAndWait('言うまでもなく、これはよい思い出になる。');
         }
@@ -1318,24 +1318,24 @@ module.exports = {
       } else {
         await era.printAndWait([
           chara.sex,
-          'は素早く ',
+          '는 즉시 ',
           you.get_colored_name(),
-          ' に返信した。',
+          '에게 답장을 보냈다. ',
           you.get_colored_name(),
-          ' が入口で先に待っていると、顔を上げた瞬間、新しい浴衣を着て念入りに装った',
+          '이(가) 입구에서 미리 기다리고 있자, 어느덧 새 유카타를 차려입고 정성껏 단장한 ',
           chara.sex,
-          'を見つけた。',
+          '의 모습이 눈에 들어왔다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' が反応するより先に、彼女はかすかに微笑み、',
+          '이(가) 반응하기도 전에, 그녀는 살며시 미소 지으며 ',
           you.get_colored_name(),
-          ' の腕を取って一緒に歩き出した……',
+          '의 팔짱을 끼고는 그대로 이끌었다……',
         ]);
         await era.printAndWait('ふたりは楽しい一日を過ごした。');
       }
     };
-    f.title = '縁日';
+    f.title = '축제';
     return f;
   })(),
   cl_halloween: (() => {
@@ -1346,46 +1346,46 @@ module.exports = {
      */
     const f = async (chara, you) => {
       if (era.get(`cflag:${chara.id}:65`) === 5) {
-        await era.printAndWait(['トレセンの祭事は、往々にして他所とは違う。']);
+        await era.printAndWait(['트레센의 축제 행사는 종종 다른 곳과는 사뭇 다르다.']);
         await era.printAndWait([
-          'たとえば今日……',
+          '예를 들어 오늘처럼…… ',
           you.get_colored_name(),
-          ' は隣で少し滑稽で不気味に装った',
+          '은(는) 곁에서 조금 우스꽝스럽고 기괴한 분장을 한 ',
           chara.sex,
-          'を見て、心の底で溜息をついた。',
+          '를 보며 속으로 한숨을 내쉬었다.',
         ]);
         await era.printAndWait(
-          '本来は子供が凝って着飾り、大人が家で飴を待てば足りる祭りだ。校内上層は「生徒と一体になる」などの理由で教職員にも仮装を勧め、外へ出て飴を配らせ、そのために半日の休みまで出した。',
+          '본래 아이들이 정성껏 분장하고 뛰놀면 어른들은 집에서 사탕을 나눠주며 기다리는 축제였을 터다. 하지만 학원 상층부에서 「학생들과 하나가 되자」는 등의 이유로 교직원들도 분장을 하고 나가 사탕을 나눠줄 것을 권장했고, 이를 위해 특별히 반차까지 주었다.',
         );
         await era.printAndWait(
-          'あるいは……ただ、遊びたい大人の口実かもしれない。',
+          '어쩌면…… 그저 몇몇 어른들이 놀고 싶어서 핑계를 만든 것일지도 모른다.',
         );
         await era.printAndWait([
           you.get_colored_name(),
-          ' がそう考えた瞬間、横から殺気を帯びた視線を感じ、慌てて頭を振って ',
+          '이(가) 그런 생각을 하던 찰나, 옆에서 살기 어린 시선이 느껴져 황급히 고개를 가로저으며 ',
           chara.get_colored_name(),
-          ' の歩幅に追いついた。',
+          '의 뒤를 바짝 따랐다.',
         ]);
-        await era.printAndWait('この夜は疲れるが、それでも面白い。');
+        await era.printAndWait('피곤한 밤이었지만, 나름대로 재미는 있었다.');
       } else {
         await era.printAndWait([
           you.get_colored_name(),
-          ' がくつろいでいると、扉が急に、急でもなく猛烈なノックで鳴った。',
+          '이(가) 휴식을 즐기고 있을 때, 갑자기 문에서 조급하지 않으면서도 격렬한 노크 소리가 들려왔다.',
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' はだいたい誰の仕業か分かっていた。扉を開け、奇妙な装いの ',
+          '은(는) 누구의 소행인지 대충 짐작이 갔기에, 문을 열고 기괴한 복장을 한 ',
           chara.get_colored_name(),
-          ' に驚いたふりをし、',
+          '에게 깜짝 놀란 척을 해주며 ',
           chara.sex,
-          'と一緒に飴をもらいに出た……',
+          '과(와) 함께 사탕을 받으러 밖으로 나갔다……',
         ]);
         await era.printAndWait(
-          '道中、おかしなものをいくつも見かけた気がする。',
+          '가는 길에 꽤나 희한한 것들을 많이 본 것 같다.',
         );
       }
     };
-    f.title = 'ハロウィン';
+    f.title = '할로윈';
     return f;
   })(),
   cl_christmas: (() => {
@@ -1403,7 +1403,7 @@ module.exports = {
         ' と一緒にサンタクロースに扮して祝った。はしゃぎすぎた気力を使い切るのは、夜になってからだった。',
       ]);
     };
-    f.title = 'クリスマス';
+    f.title = '크리스마스';
     return f;
   })(),
   /**
@@ -1414,11 +1414,11 @@ module.exports = {
   async birthday_remote(chara, you) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' は遠隔で ',
+      '이(가) 멀리서 ',
       chara.get_colored_name(),
-      ' に誕生日の祝福を送った',
+      '에게 생일 축하 메시지를 보냈다.',
     ]);
-    await era.printAndWait([chara.get_colored_name(), ' はとても喜んでいる。']);
+    await era.printAndWait([chara.get_colored_name(), '이(가) 무척 기뻐하는 것 같다.']);
   },
   /**
    * @author 阿格尼斯数码公司

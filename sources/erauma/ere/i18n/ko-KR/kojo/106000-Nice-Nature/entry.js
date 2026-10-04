@@ -6,4 +6,5 @@ module.exports = class extends (
   recruit = proxy_kojo_js(
     require('#/i18n/ko-KR/kojo/106000-Nice-Nature/rec-60.js'),
   );
+  daily = proxy_kojo_js(require('#/i18n/ko-KR/kojo/106000-Nice-Nature/daily-60.js'));
 };

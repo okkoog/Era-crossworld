@@ -45,7 +45,7 @@ module.exports = {
     if (minutes > 0) {
       p_minute = ` ${minutes} 分`;
     } else {
-      p_minute = 'ちょうど';
+      p_minute = "정각";
     }
     return `${p_hour} 時${p_minute}`;
   },
@@ -56,7 +56,7 @@ module.exports = {
   get_info_strike(chara) {
     return [
       chara.get_colored_name(),
-      ' はいま戻ってきたばかりだ。奇襲の好機かもしれない……',
+      "이(가) 방금 이곳으로 돌아왔다. 어쩌면 기습할 수 있는 절호의 기회일지도 모른다……",
     ];
   },
   /**
@@ -128,7 +128,7 @@ module.exports = {
     }
     ret.push('……');
     if (is_fix) {
-      ret.push('地下室を補強している……');
+      ret.push("현재 지하실을 보강하는 중이다……");
     }
     return ret;
   },
@@ -139,8 +139,8 @@ module.exports = {
   get_info_sleep: (chara) => [
     chara.get_colored_name(),
     // STATUSNAME:39 = 马跳S
-    era.get(`status:${chara.id}:39`) > 0 ? ' は深く' : ' は静かに',
-    '眠っている……',
+    era.get(`status:${chara.id}:39`) > 0 ? "이(가) 깊은 " : "이(가) 고요한 ",
+    "잠에 빠져 있다……",
   ],
   /**
    * @author 黑奴队长
@@ -162,9 +162,9 @@ module.exports = {
   welcome(chara, you) {
     if (LifeEventMarks.get_marks(0).b_start) {
       era.print([
-        'どれほどの時が経ったのか、',
+        "어느 정도의 시간이 흘렀을까, ",
         you.get_colored_name(),
-        ' は簡素な小ベッドの上で、ゆっくりと目を覚ました……',
+        "은(는) 간소한 침대 위에서 가느다랗게 의식을 되찾았다……",
       ]);
       era.print([
         '目の前は見知らぬ天井……と、微笑む ',
@@ -172,17 +172,17 @@ module.exports = {
         '。',
       ]);
       era.print([
-        'いま、',
+        "이제 ",
         you.get_colored_name(),
-        ' はこの愛の牢獄の囚人になった……そして ',
+        "은(는) 이 사랑의 감옥에 갇힌 죄수가 되었고…… ",
         chara.get_colored_name(),
-        ' が、唯一の看守だ……',
+        "은(는) 유일한 간수가 되었다……",
       ]);
     } else {
       era.print([
-        'どれほどの時が経ったのか、',
+        "어느 정도의 시간이 흘렀을까, ",
         you.get_colored_name(),
-        ' はゆっくりと目を覚ました……',
+        "은(는) 천천히 깨어났다……",
       ]);
       era.print([
         '目の前は、相変わらず見知らぬ天井……と、微笑む ',
@@ -430,22 +430,22 @@ module.exports = {
     const f = async (chara, you, owner) => {
       await era.printAndWait([
         chara.get_colored_name(),
-        ' は ',
+        "이(가) ",
         owner.get_colored_name(),
         ' が丹念に仕組んだ地下室へ踏み込んだが、最愛の ',
         you.get_colored_name(),
-        ' を救い出すことはできなかった……',
+        "을(를) 구출하는 데는 실패하였다……",
       ]);
       await era.printAndWait([
         you.get_colored_name(),
-        ' の絶望した視線のなか、',
+        "의 절망적인 시선 속에서, ",
         chara.get_colored_name(),
-        ' は ',
+        "은(는) ",
         owner.get_colored_name(),
-        ' に地下室から追い出された……',
+        "에 의해 지하실 밖으로 쫓겨나고 말았다……",
       ]);
     };
-    f.title = '功成りて垂れんとして成らず';
+    f.title = "마지막 순간의 실패";
     return f;
   })(),
   /**
@@ -456,14 +456,14 @@ module.exports = {
   async rescue_fail_sleep(chara, you) {
     await era.printAndWait([
       you.get_colored_name(),
-      ' は格闘の物音で目を覚ました。',
+      "은(는) 격렬한 격투 소리에 잠에서 깨어났다.",
     ]);
     await era.printAndWait([
-      '地下室は荒れ果てている。だが無傷の ',
+      "지하실 안은 엉망진창이었으나, 상처 하나 없는 ",
       chara.get_colored_name(),
-      ' は、なおも ',
+      "이(가) 여전히 ",
       you.get_colored_name(),
-      ' に微笑んでいる……',
+      "를 향해 미소 짓고 있었다……",
     ]);
   },
   rescue_sneak_success: (() => {
@@ -488,7 +488,7 @@ module.exports = {
       } else {
         await era.printAndWait([
           you.get_colored_name(),
-          ' は朦朧のなか、運ばれている感覚を覚えた。',
+          "은(는) 비몽사몽한 와중에 자신이 어디론가 옮겨지고 있다는 느낌을 받았다.",
         ]);
         await era.printAndWait([
           '目を覚ますと、すでにトレーナー室にいた。眼前では ',
@@ -497,7 +497,7 @@ module.exports = {
         ]);
       }
     };
-    f.title = '英雄、美を救う';
+    f.title = "영웅의 구출";
     return f;
   })(),
   rescue_sneak_prison: (() => {
@@ -521,26 +521,26 @@ module.exports = {
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' が日常へ戻れると思ったそのとき、',
+          "이(가) 일상으로 돌아갈 수 있다고 안도한 찰나, ",
           chara.get_colored_name(),
-          ' は ',
+          "은(는) ",
           you.get_colored_name(),
           ' を支えたまま別の場所へ連れていき、それから小さな音がした……',
         ]);
       } else {
         await era.printAndWait([
           you.get_colored_name(),
-          ' は朦朧のなか、運ばれている感覚を覚えた。',
+          "은(는) 비몽사몽한 와중에 자신이 어디론가 옮겨지고 있다는 느낌을 받았다.",
         ]);
         await era.printAndWait([
-          '目を覚ますと、まだ地下室にいた。間取りは以前と違い、眼前には微笑む ',
+          "눈을 뜨니 여전히 지하실이었으나, 구조가 이전과는 확연히 달랐다. 그리고 그 앞에는 미소 짓는 ",
           chara.get_colored_name(),
-          ' が立っている。',
+          "이(가) 서 있었다.",
         ]);
       }
-      await era.printAndWait('「カチッ」', { fontSize: '1.5rem' });
+      await era.printAndWait("「철컥」", { fontSize: '1.5rem' });
     };
-    f.title = '虎口を出たと思えば……';
+    f.title = "호랑이 굴을 벗어나니……";
     return f;
   })(),
   rescue_join: (() => {
@@ -555,35 +555,35 @@ module.exports = {
       if (awake) {
         await era.printAndWait([
           chara.get_colored_name(),
-          ' は ',
+          "이(가)  ",
           owner.get_colored_name(),
           ' が丹念に仕組んだ地下室へ踏み込み、',
           owner.get_colored_name(),
-          ' と対峙した。',
+          "과(와) 대치하였다.",
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' が乱闘になると思ったそのとき、',
+          "은(는) 큰 싸움이 벌어질 것이라 예상했으나, ",
           chara.couple_title,
-          'はなんと握手して和睦した……',
+          "은 놀랍게도 서로의 손을 맞잡고 타협하였다……",
         ]);
       } else {
         await era.printAndWait([
           you.get_colored_name(),
-          ' は朦朧から覚めると、地下室に自分と ',
+          "이(가) 몽롱한 의식 속에서 깨어났을 때, 지하실 안에는 자신과 ",
           owner.get_colored_name(),
-          ' 以外の第三の人物——',
+          "외에 제3의 인물인 ",
           chara.get_colored_name(),
-          ' がいるのに気づいた。',
+          "이(가) 함께 있는 것을 발견하였다.",
         ]);
       }
       await era.printAndWait([
-        'いま、この狭い地下室と、そのなかの ',
+        "이제 이 비좁은 지하실과 그 안에 갇힌 ",
         you.get_colored_name(),
-        ' には、主人がふたりいる……',
+        "에게는, 두 명의 주인이 생기고 말았다……",
       ]);
     };
-    f.title = '天に日が二つ';
+    f.title = "하늘 아래 두 개의 태양";
     return f;
   })(),
   rescue_battle_success: (() => {
@@ -598,24 +598,24 @@ module.exports = {
       if (awake) {
         await era.printAndWait([
           chara.get_colored_name(),
-          ' は ',
+          "이(가) ",
           owner.get_colored_name(),
           ' が丹念に仕組んだ地下室へ踏み込み、',
           owner.get_colored_name(),
-          ' を地に倒した……',
+          "을(를) 바닥에 쓰러뜨렸다……",
         ]);
         await era.printAndWait([
           owner.get_colored_name(),
-          ' の視線のなか、',
+          "의 시선이 머무는 가운데, ",
           chara.get_colored_name(),
-          ' は ',
+          "은(는) ",
           you.get_colored_name(),
-          ' を支えて悠々と去っていった……',
+          "을(를) 부축해 당당히 현장을 떠났다……",
         ]);
       } else {
         await era.printAndWait([
           you.get_colored_name(),
-          ' は朦朧のなか、運ばれている感覚を覚えた。',
+          "은(는) 의식이 흐릿한 가운데 운반되는 감각을 느꼈다.",
         ]);
         await era.printAndWait([
           '目を覚ますと、すでにトレーナー室にいた。眼前では、服に皺が寄っているが、なお微笑む ',
@@ -624,7 +624,7 @@ module.exports = {
         ]);
       }
     };
-    f.title = '英雄、美を救う';
+    f.title = "영웅의 구출";
     return f;
   })(),
   rescue_battle_prison: (() => {
@@ -639,34 +639,34 @@ module.exports = {
       if (awake) {
         await era.printAndWait([
           chara.get_colored_name(),
-          ' は ',
+          "이(가) ",
           owner.get_colored_name(),
           ' が丹念に仕組んだ地下室へ踏み込み、',
           owner.get_colored_name(),
-          ' を地に倒した……',
+          "을(를) 바닥에 쓰러뜨렸다……",
         ]);
         await era.printAndWait([
           you.get_colored_name(),
-          ' が日常へ戻れると思ったそのとき、',
+          "이(가) 일상으로 복귀할 수 있으리라 믿었던 순간, ",
           chara.get_colored_name(),
-          ' は ',
+          "은(는) ",
           you.get_colored_name(),
           ' を支えたまま別の場所へ連れていき、それから小さな音がした……',
         ]);
       } else {
         await era.printAndWait([
           you.get_colored_name(),
-          ' は朦朧のなか、運ばれている感覚を覚えた。',
+          "은(는) 의식이 흐릿한 가운데 운반되는 감각을 느꼈다.",
         ]);
         await era.printAndWait([
-          '目を覚ますと、まだ地下室にいた。間取りは以前と違い、眼前には服に皺が寄りつつも微笑む ',
+          "깨어보니 여전히 지하실이었으나 구조가 달랐고, 그곳에는 옷이 조금 구겨진 채 여전히 웃고 있는 ",
           chara.get_colored_name(),
-          ' が立っている……',
+          "이(가) 서 있었다……",
         ]);
       }
-      await era.printAndWait('「カチッ」', { fontSize: '1.5rem' });
+      await era.printAndWait("「철컥」", { fontSize: '1.5rem' });
     };
-    f.title = '虎口を出たと思えば……';
+    f.title = "호랑이 굴을 벗어나니……";
     return f;
   })(),
 };

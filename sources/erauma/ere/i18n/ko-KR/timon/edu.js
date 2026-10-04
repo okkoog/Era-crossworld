@@ -21,17 +21,17 @@ module.exports = {
     const ret = [];
     ret.push([
       chara.get_colored_name(),
-      '、生涯 ',
+      '의 생애, ',
       races,
-      ' 戦 ',
+      ' 전 ',
       wins,
-      ' 勝、総獲得賞金 ',
+      ' 승，총 상금 ',
       reward,
-      ' ウマコイン',
+      ' 우마코인',
     ]);
     if (race_names.length > 0) {
       ret.push([
-        '主な勝ち鞍：',
+        '주요 승리: ',
         ...join_list(race_names.slice(0, 5), ' '),
         race_names.length > 5 ? '……' : '',
       ]);
@@ -48,16 +48,16 @@ module.exports = {
      */
     const f = async (chara, you, result, title) => {
       await era.printAndWait(
-        `毎年一月、URAの${chara.uma_sex_title}殿堂は、引退したウマ娘の票選を始める。`,
+        `매년 1월, URA ${chara.uma_sex_title} 명예의 전당에서는 은퇴한 우마무스메들을 대상으로 투표를 시작한다.`,
       );
       era.println();
       await era.printAndWait(
-        `そして三月、生涯を全うし、厳正な票選を勝ち抜いた${chara.uma_sex_title}が殿堂入りを果たし、《顕彰${chara.uma_sex_title}》という最高の栄誉を受ける。`,
+        `그리고 3월이 되면, 레이스 커리어에서 큰 성과를 거둔 엄격한 투표를 통해 선발된 ${chara.uma_sex_title}는 명예의 전당에 헌액되며, 《현창${chara.uma_sex_title}》라는 최고의 영예를 얻게 된다.`,
       );
       era.println();
       await era.printAndWait([
         you.get_colored_name(),
-        ' の愛馬 ',
+        '의 우마무스메 ',
         chara.get_colored_name(),
         '——',
       ]);
@@ -67,13 +67,13 @@ module.exports = {
       }
       era.println();
       await era.printAndWait([
-        `${chara.sex}を模した銅像が除幕されるとともに、`,
+        `${chara.sex}를 모델로 한 동상이 세워지고, `,
         ...title,
         chara.get_colored_name(),
-        ' の伝説は、永遠に殿堂へ刻まれる……',
+        '의 전설은 영원히 전당에 남을 것이다...',
       ]);
     };
-    f.title = '殿堂の座へ';
+    f.title = '정상의 자리에 오르다';
     return f;
   })(),
   under_palace: (() => {
@@ -85,7 +85,7 @@ module.exports = {
      * @param {[]} title
      */
     const f = async (chara, you, result, title) => {
-      await era.printAndWait('残念ながら、殿堂入りは叶わなかった。');
+      await era.printAndWait('유감스럽게도 명예의 전당에 헌액되지 못했다.');
       era.println();
       await era.printAndWait(
         'それでも、力の限り積み上げた成果は誇りであり、後に続く者がその肩の上からさらに高い頂を目指せると信じている。',
@@ -98,10 +98,10 @@ module.exports = {
       await era.printAndWait([
         ...title,
         chara.get_colored_name(),
-        ' の物語は、これからも人々の口に残るだろう……',
+        '의 전설은 영원히 세상에 전해질 것이다...',
       ]);
     };
-    f.title = '殿堂の座の下で';
+    f.title = '명예의 전당 아래서';
     return f;
   })(),
   pl_future: (() => {
@@ -123,10 +123,10 @@ module.exports = {
           '慣れ親しんだトレーナー室で、ふたりは睦まじく身を寄せ合った。',
         );
         await era.printAndWait(
-          '恋人たちは幸せな二人きりの世界に浸り、俗世の雑事など虚空へ投げ捨てたかのように見える。',
+          '두 연인은 행복한 둘만의 세계에 푹 빠져, 세상의 잡다한 일들을 모두 허공으로 날려버린 듯하다.',
         );
         era.println();
-        await era.printAndWait('俺は世界の王だ！——ジャック・ドーソン', {
+        await era.printAndWait('나는 세상의 왕이다! - 잭 도슨', {
           align: 'center',
         });
       } else if (can_sex) {
@@ -143,15 +143,15 @@ module.exports = {
           '慣れ親しんだトレーナー室で、ふたりは楽しく語り合い、避けられない別れに胸を痛めた。',
         );
         await era.printAndWait(
-          '人生で出会える機会は少ない。失うかもしれないからこそ、今いる人を大切にするのだ。',
+          '인생에서 만남은 드문 일이며, 잃을 수도 있다는 사실 때문에 눈앞의 사람을 소중히 여기는 것이 그토록 중요한 것이다.',
         );
         era.println();
-        await era.printAndWait('一期一会の心は、ただ茶の相中に見ゆ。——千利休', {
+        await era.printAndWait('일기일회의 마음은, 오직 차의 모습에서만 볼 수 있다. - 센노 리큐', {
           align: 'center',
         });
       }
     };
-    f.title = 'それから、未来へ';
+    f.title = '그 후, 미래를 향해';
     return f;
   })(),
   /**
@@ -217,7 +217,7 @@ module.exports = {
    * @param {CharaTalk} chara
    */
   ts_info(chara) {
-    era.print([chara.get_colored_name(), ' のトレーニングは無事に終わった！']);
+    era.print([chara.get_colored_name(), '의 훈련이 무사히 끝났다!']);
   },
   ts_add: (() => {
     /**
@@ -229,29 +229,29 @@ module.exports = {
       const ret = [];
       await era.printAndWait([
         chara.get_colored_name(),
-        ' はまだ足りない様子だ。自主トレーニングをしたがっているのか？',
+        '은(는) 여운이 남은 것 같습니다，자율 트레이닝을 허가할까요?',
       ]);
-      era.printButton('許可する！', 1);
-      era.printButton('計画を超えてしまう……', 2);
+      era.printButton('허가!', 1);
+      era.printButton('이 이상의 트레이닝은 좀...', 2);
       ret.push(await era.input());
       if (ret[0] === 1) {
         await era.printAndWait([
           you.get_colored_name(),
-          ' は ',
+          '은(는) ',
           chara.get_colored_name(),
-          ` の自主トレーニングを黙認し、${chara.sex}のやる気を称えた`,
+          `의 자율 트레이닝을 허락했고 ${chara.sex}의 열정을 칭찬했다.`,
         ]);
       } else {
         await era.printAndWait([
           you.get_colored_name(),
-          ' は ',
+          '은(는) ',
           chara.get_colored_name(),
-          ' の自主トレーニングを止め、しっかり休むよう言い聞かせた',
+          '의 자율 트레이닝을 금지했고 푹 쉬라고 당부했다.',
         ]);
       }
       return ret;
     };
-    f.title = '熱血の追加トレーニング！';
+    f.title = '열혈의 추가 트레이닝!';
     return f;
   })(),
   /**
@@ -263,29 +263,29 @@ module.exports = {
   async tf_info(chara, attr, is_fumble) {
     if (attr === attr_enum.intelligence) {
       await era.printAndWait([
-        'まずい！',
+        '이런! ',
         chara.get_colored_name(),
-        ` が${is_fumble ? '気を失って' : '眠って'}しまった！`,
+        `은(는) ${is_fumble ? '기절했' : '잠들었'}다!`,
       ]);
     } else {
       const buffer = [];
       switch (attr) {
         case attr_enum.speed:
-          buffer.push('滑って転んだ', '地面に転がった', '力が尽きた');
+          buffer.push('미끄러졌다', '바닥에 넘어졌다', '기력이 다했다');
           break;
         case attr_enum.endurance:
-          buffer.push('足がつった');
+          buffer.push('경련이 일어났다');
           break;
         case attr_enum.strength:
-          buffer.push('泥が目に入った', '倒れた', 'サンドバッグに反撃された');
+          buffer.push('눈에 진흙이 들어갔다', '넘어졌다', '샌드백에 반격당했다');
           break;
         case attr_enum.toughness:
-          buffer.push('力が尽きた', '腰をやった', '転げ落ちた');
+          buffer.push('기력이 다했다', '허리를 삐었다', '굴러떨어졌다');
       }
       await era.printAndWait([
-        'まずい！',
+        '이런! ',
         chara.get_colored_name(),
-        ' が',
+        '은(는) ',
         get_random_entry(buffer),
         '！',
       ]);
@@ -300,17 +300,17 @@ module.exports = {
       const ret = [];
       await era.printAndWait([
         chara.get_colored_name(),
-        ' のトレーニングは失敗した……',
+        '은(는) 트레이닝에 실패했다...',
       ]);
       era.println();
-      era.print('どうする？');
+      era.print('어떻게 할까?');
       era.println();
-      era.printButton('「ここでしばらく休もう」', 1);
+      era.printButton('「일단 좀 쉬어가는 게 좋겠어.」', 1);
       era.printButton('「反省会だ！」', 2);
       ret.push(await era.input());
       return ret;
     };
-    f.title = 'トレーナー室にて……';
+    f.title = '트레이닝실에서...';
     return f;
   })(),
   train_fumble: (() => {
@@ -322,17 +322,17 @@ module.exports = {
       const ret = [];
       await era.printAndWait([
         chara.get_colored_name(),
-        ' のトレーニングは失敗した……',
+        '은(는) 트레이닝에 실패했다...',
       ]);
       era.println();
-      era.print('どうする？');
+      era.print('어떻게 할까?');
       era.println();
-      era.printButton('「しっかり休め！」', 1);
-      era.printButton('「根性で乗り越えろ！」', 2);
+      era.printButton('「충분히 쉬어야 해!」', 1);
+      era.printButton('「끈기로 극복하자!」', 2);
       ret.push(await era.input());
       return ret;
     };
-    f.title = '保健室にて……';
+    f.title = '보건실에서...';
     return f;
   })(),
   /**
@@ -377,12 +377,12 @@ module.exports = {
       ]);
     }
     if (is_success) {
-      await era.printAndWait('一夜漬け、効いた！');
+      await era.printAndWait('벼락치기인데 효과가 있었다!');
     } else {
       await era.printAndWait([
-        'まずい！',
+        '이런! ',
         chara.get_colored_name(),
-        ' が眠ってしまった！',
+        '은(는) 자고 있다!',
       ]);
     }
   },
@@ -391,7 +391,7 @@ module.exports = {
    * @param {PrintedSpan} language
    */
   fs_learn_language(chara, language) {
-    era.print([chara.get_colored_name(), ' は ', language, ' を覚えた！']);
+    era.print([chara.get_colored_name(), '은(는) ', language, '를 배웠다!']);
   },
   /**
    * @param {CharaTalk} chara
@@ -401,11 +401,11 @@ module.exports = {
   fs_update_language(chara, language, new_level) {
     era.print([
       chara.get_colored_name(),
-      ' の ',
+      '의 ',
       language,
-      ' がさらに上達し、いまは ',
+      ' 실력이 더 능숙해져 현재 ',
       new_level,
-      '！',
+      ' 이다!',
     ]);
   },
   /**
@@ -421,7 +421,7 @@ module.exports = {
     ]);
     await era.printAndWait([
       chara.get_colored_name(),
-      ' の体調は、少しずつ戻ってきたようだ！',
+      '의 체력이 서서히 회복되는 것 같다!',
     ]);
   },
   /**
@@ -437,7 +437,7 @@ module.exports = {
     ]);
     await era.printAndWait([
       chara.get_colored_name(),
-      ' は、現地の馬場の感触に少しずつ慣れてきたようだ！',
+      '은(는) 현지 경기장에 점점 익숙해지는 것 같다!',
     ]);
   },
   /**
@@ -456,7 +456,7 @@ module.exports = {
       loc_name,
       'を観光した……',
     ]);
-    await era.printAndWait('かなり使ったが、それでも元は取れた！');
+    await era.printAndWait('돈은 꽤 들었지만 그만한 가치가 있었다!');
   },
   race_start: (() => {
     /**
@@ -512,7 +512,7 @@ module.exports = {
         }
       }
     };
-    f.title = 'レースの前に';
+    f.title = '레이스 전에';
     return f;
   })(),
   race_end_item_win: (() => {
@@ -542,7 +542,7 @@ module.exports = {
         ' に、あとできちんと甘やかすと約束し、白昼の過ちだけは避けた。',
       ]);
     };
-    f.title = '高ぶった勝利';
+    f.title = '감정이 고조된 승리';
     return f;
   })(),
   race_end_item_lose: (() => {
@@ -567,7 +567,7 @@ module.exports = {
         ' は空気を読んで性玩具を止め、静かに声をかけた。',
       ]);
     };
-    f.title = '予想どおりの敗北';
+    f.title = '예상대로의 패배';
     return f;
   })(),
   race_end_win: (() => {
@@ -578,10 +578,10 @@ module.exports = {
      */
     const f = async (chara, you) => {
       await you.say_and_wait(
-        Math.random() < 0.5 ? '最高だ！' : 'もっと上を目指そう！',
+        Math.random() < 0.5 ? '대단해!' : '더 높은 목표를 향해 나아가자!',
       );
     };
-    f.title = 'レース勝利';
+    f.title = '레이스 승리';
     return f;
   })(),
   race_end_5: (() => {
@@ -593,11 +593,11 @@ module.exports = {
     const f = async (chara, you) => {
       await you.say_and_wait(
         Math.random() < 0.5
-          ? '今日の走りもよかった！'
-          : 'あいつらには絶対に負けられない！',
+          ? '오늘도 정말 잘했어!'
+          : '절대 저 녀석들에게 지지 말자!',
       );
     };
-    f.title = 'レース入着';
+    f.title = '레이스 입상';
     return f;
   })(),
   race_end_10: (() => {
@@ -609,11 +609,11 @@ module.exports = {
     const f = async (chara, you) => {
       await you.say_and_wait(
         Math.random() < 0.5
-          ? '次はもっとよくなる！'
-          : '落ち込んでいても始まらない！',
+          ? '다음 번에는 분명 더 잘할 거야!'
+          : '낙담해 봤자 소용없어!',
       );
     };
-    f.title = 'レース敗北';
+    f.title = '레이스 패배';
     return f;
   })(),
   race_end_lose: (() => {
@@ -625,11 +625,11 @@ module.exports = {
     const f = async (chara, you) => {
       await you.say_and_wait(
         Math.random() < 0.5
-          ? 'いつか絶対に勝つ！'
-          : 'このまま恥をかき続けるつもりか？',
+          ? '언젠가는 반드시 이길 거야!'
+          : '계속 이렇게 망신당하고 싶니?',
       );
     };
-    f.title = '次は負けない！';
+    f.title = '다음 번에는 절대 지지 않겠어!';
     return f;
   })(),
   summer_start: (() => {
@@ -640,14 +640,14 @@ module.exports = {
      */
     const f = async (chara, you) => {
       await era.printAndWait([
-        '夏といえば水着と海辺。もちろん、',
+        '여름 하면 수영복과 해변이다. 물론',
         chara.get_colored_name(),
-        ' と ',
+        '과(와) ',
         you.get_colored_name(),
-        ' は海で休みながらも、トレーニングは欠かさなかった。',
+        '은(는) 해변으로 휴가를 온 동시에 트레이닝도 소홀히 하지 않았다. ',
       ]);
     };
-    f.title = '夏合宿';
+    f.title = '여름 합숙';
     return f;
   })(),
 };

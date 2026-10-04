@@ -6,4 +6,5 @@ module.exports = class extends (
   recruit = proxy_kojo_js(
     require('#/i18n/ko-KR/kojo/400000-Sunday-Silence/rec-400.js'),
   );
+  daily = proxy_kojo_js(require('#/i18n/ko-KR/kojo/400000-Sunday-Silence/daily-400.js'));
 };
