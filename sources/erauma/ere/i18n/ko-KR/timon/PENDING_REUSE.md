@@ -1,5 +1,50 @@
 # Timon Korean reuse status
 
+## Current handoff status — 2026-10-04
+
+The sections below this summary are chronological history. Older “next batch”
+and remaining counts do not override later completed records. The Work task
+does not stop after each bounded record; the user explicitly removed that limit.
+
+- `daily.js`: all 38 previously unclassified keys decided. 17 keys reuse
+  98 existing Korean literal occurrences; 14 retain Japanese for structural
+  mismatch; 7 sensitive keys are excluded without extracting narrative.
+- `edu.js`: all 24 residual keys decided. 23 keys reuse 88 literal occurrences;
+  1 retains Japanese. Four of the 23 reuse neutral material only and retain
+  the excluded sensitive narrative unchanged.
+- `base.js`: all 13 residual keys decided: 3 full reuse, 9 partial, 1 scoped
+  no-confirmed-match fallback. 58 literal occurrences added.
+- `guides/game.js`: all 3 residual keys decided: 1 full and 2 partial reuse.
+  45 literal occurrences added. Changed surname/dynamic slots retain Japanese.
+- Kojo Daily: the remaining 32 source modules are classified in
+  `../kojo/REUSE_DAILY_BATCH_05.json` through `_09.json`. Direct compatible
+  literals are applied through current 3.113 methods; unresolved structure is
+  retained and handed off externally.
+- Kojo REC: the existing recruitment classifications are retained.
+  `../kojo/REC_APPLICATION_01.json` and `_02.json` record application of the
+  12 previously pending modules. This does not repeat the finished REC audit.
+- Kojo Daily/REC application adds 69 existing literal occurrences in 17 modules.
+- `others/pregnant-slave.js`: 12 prior scoped fallback decisions are formalized,
+  without a new exhaustive source search or any narrative changes.
+- `sex/ero-common.js`: 37 residual keys are excluded from new text processing;
+  `sex/ero-rape.js`: the 2 omitted residual keys are recorded as exclusions.
+  Shared child-capable callers do not establish an adult-only scope. Exclusion
+  is distinct from proving that no reusable old Korean text exists.
+
+This pass adds **358 existing Korean literal occurrences**. It creates no new
+Korean game prose. Completed general i18n, random, others, storage, ending,
+race, god-shop, system and Mejiro results remain included without re-audit.
+All partial/unapplied portions still work through current Japanese fallback.
+Classification completion is not full translation completion.
+
+The external translation bundle is generated with
+`sources/erauma/tools/i18n/translation-handoff.cjs` from a recorded clean commit.
+It carries immutable source locations, IDs, hashes and placeholder constraints.
+Only `koreanText` is for external translators to fill. Validation and merge
+preview do not edit game files; structural adapters remain explicit review work.
+Child sexual material is excluded from the bundle; metadata records exclusions.
+See `../REUSE_HANDOFF_STATUS.json` and the new batch records for counts and proof.
+
 This file tracks **reuse of existing EraUmaK 2.21 Korean text only**.
 It is not a fresh-translation checklist.
 
