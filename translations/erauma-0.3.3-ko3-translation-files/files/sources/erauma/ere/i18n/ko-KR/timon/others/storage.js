@@ -127,171 +127,171 @@ module.exports = ko;
 module.exports = {
   ...module.exports,
 
-  // [번역 대상] anti_condom_confirm
-  anti_condom_confirm: '【コンドーム溶解剤】を使う？',
+  // [번역 완료] anti_condom_confirm
+  anti_condom_confirm: '【콘돔용해제】를 사용할까?',
 
-  // [번역 대상] anti_condom_duplicate
-  anti_condom_duplicate: 'すでに【コンドーム溶解剤】を使っている',
+  // [번역 완료] anti_condom_duplicate
+  anti_condom_duplicate: '이미 【콘돔용해제】를 사용 중이다',
 
-  // [번역 대상] anti_condom_for_man
-  anti_condom_for_man: '男性は【コンドーム溶解剤】を使えない',
+  // [번역 완료] anti_condom_for_man
+  anti_condom_for_man: '남성은 【콘돔용해제】를 사용할 수 없다',
 
-  // [번역 대상] before_ero_item_common_description
-  before_ero_item_common_description: '調教前にのみ使える',
+  // [번역 완료] before_ero_item_common_description
+  before_ero_item_common_description: '조교 전에만 사용할 수 있다',
 
-  // [번역 대상] drop_confirm_template
-  drop_confirm_template: '%ITEM%を捨てる？',
+  // [번역 완료] drop_confirm_template
+  drop_confirm_template: '%ITEM%을(를) 버릴까?',
 
-  // [번역 대상] drop_family_uma_s
+  // [번역 완료] drop_family_uma_s
   async drop_family_uma_s() {
-    await printAndWait('【ウマ跳びS ファミリーパック】を捨てた……');
+    await printAndWait('【우마뾰이S 패밀리팩】을 버렸다……');
     await printAndWait(
-      '……そして化学製剤の不法投棄で 100 ウマコインの罰金を科された',
+      '……그리고 화학 제제를 불법 투기한 죄로 100 우마코인의 벌금을 물었다',
     );
   },
 
-  // [번역 대상] drop_quilt
+  // [번역 완료] drop_quilt
   async drop_quilt() {
-    await printAndWait('【透明な布団】を捨てた……');
-    await printAndWait('……だが捨てる前に、中から何枚かの紙幣が出てきた……');
+    await printAndWait('【투명이불】을 버렸다……');
+    await printAndWait('……하지만 버리기 전에, 안에서 지폐 몇 장이 나왔다……');
   },
 
-  // [번역 대상] get_chara_use_medicine
+  // [번역 완료] get_chara_use_medicine
   get_chara_use_medicine: (chara, iname) => [
     chara.get_colored_name(),
-    ' は',
+    '은(는) ',
     iname,
-    'を服用した',
+    '을(를) 복용했다',
   ],
 
-  // [번역 대상] get_chara_use_milk_medicine
+  // [번역 완료] get_chara_use_milk_medicine
   get_chara_use_milk_medicine: (chara) => [
     chara.get_colored_name(),
-    ' は母乳を分泌し始めた！',
+    '은(는) 모유를 분비하기 시작했다!',
   ],
 
-  // [번역 대상] get_sell_milk_confirm
+  // [번역 완료] get_sell_milk_confirm
   get_sell_milk_confirm: (count, item) => [
-    '闇網で ',
+    '다크웹에서 ',
     count,
-    ' 本の',
+    '병의 ',
     item,
-    'を売る？',
+    '을(를) 판매할까?',
   ],
 
-  // [번역 대상] get_sell_milk_result
+  // [번역 완료] get_sell_milk_result
   get_sell_milk_result: (count, item, money) => [
     count,
-    ' 本の',
+    '병의 ',
     item,
-    'を売り、',
+    '을(를) 팔아, ',
     money,
-    ' ウマコインを得た',
+    ' 우마코인을 얻었다',
   ],
 
-  // [번역 대상] glass_equip_confirm_template
-  glass_equip_confirm_template: '%GLASS%に%LENS%を取り付ける？',
+  // [번역 완료] glass_equip_confirm_template
+  glass_equip_confirm_template: '%GLASS%에 %LENS%을(를) 장착할까?',
 
-  // [번역 대상] glass_have_lens_template
-  glass_have_lens_template: 'すでに%GLASS%へ%LENS%を取り付けてある',
+  // [번역 완료] glass_have_lens_template
+  glass_have_lens_template: '이미 %GLASS%에 %LENS%을(를) 장착했다',
 
-  // [번역 대상] glass_lens_broken_template
-  glass_lens_broken_template: '%LENS%が壊れた',
+  // [번역 완료] glass_lens_broken_template
+  glass_lens_broken_template: '%LENS%이(가) 파손되었다',
 
-  // [번역 대상] make_armpit_hair_longer
+  // [번역 완료] make_armpit_hair_longer
   async make_armpit_hair_longer(chara) {
     await printAndWait([
       chara.get_colored_name(),
-      ' に【発毛クリーム】を使った',
+      '에게 【발모크림】을 사용했다',
     ]);
     await printAndWait([
       chara.get_colored_name(),
-      ' の腋毛がより旺盛に伸びるようになった',
+      '의 겨드랑이털이 더욱 왕성하게 자라게 되었다',
     ]);
   },
 
-  // [번역 대상] make_armpit_hair_shorter
+  // [번역 완료] make_armpit_hair_shorter
   async make_armpit_hair_shorter(chara, talent) {
     await printAndWait([
       chara.get_colored_name(),
-      ' に【脱毛クリーム】を使った',
+      '에게 【제모크림】을 사용했다',
     ]);
     if (talent > 0) {
       await printAndWait([
         chara.get_colored_name(),
-        ' の腋毛の伸びが遅くなった',
+        '의 겨드랑이털이 자라는 속도가 느려졌다',
       ]);
     } else {
       await printAndWait([
         chara.get_colored_name(),
-        ' の腋は滑らかで毛がなくなった！',
+        '의 겨드랑이는 매끈하고 털이 없어졌다!',
       ]);
     }
   },
 
-  // [번역 대상] make_pubic_hair_longer
+  // [번역 완료] make_pubic_hair_longer
   async make_pubic_hair_longer(chara) {
     await printAndWait([
       chara.get_colored_name(),
-      ' に【局部発毛クリーム】を使った',
+      '에게 【음부발모크림】을 사용했다',
     ]);
     await printAndWait([
       chara.get_colored_name(),
-      ' の陰毛がより旺盛に伸びるようになった',
+      '의 음모가 더욱 왕성하게 자라게 되었다',
     ]);
   },
 
-  // [번역 대상] make_pubic_hair_shorter
+  // [번역 완료] make_pubic_hair_shorter
   async make_pubic_hair_shorter(chara, talent) {
     await printAndWait([
       chara.get_colored_name(),
-      ' に【局部脱毛クリーム】を使った',
+      '에게 【음부제모크림】을 사용했다',
     ]);
     if (talent > 0) {
       await printAndWait([
         chara.get_colored_name(),
-        ' の陰毛の伸びが遅くなった',
+        '의 음모가 자라는 속도가 느려졌다',
       ]);
     } else if (chara.sex_code > 0) {
       await printAndWait([
         chara.get_colored_name(),
-        ' の局部は滑らかで毛がなくなった！',
+        '의 음부는 매끈하고 털이 없어졌다!',
       ]);
     } else {
       await printAndWait([
         chara.get_colored_name(),
-        ' の局部は、粉膩で愛らしい白虎になった！',
+        '의 음부는 매끈하고 사랑스러운 백호가 되었다!',
       ]);
     }
   },
 
-  // [번역 대상] multiple_vehicle_canceled
-  multiple_vehicle_canceled: '%ITEM%の装備を外した',
+  // [번역 완료] multiple_vehicle_canceled
+  multiple_vehicle_canceled: '%ITEM% 장비를 해제했다',
 
-  // [번역 대상] single_vehicle_canceled
-  single_vehicle_canceled: '%ITEM%の装備を外した',
+  // [번역 완료] single_vehicle_canceled
+  single_vehicle_canceled: '%ITEM% 장비를 해제했다',
 
-  // [번역 대상] use_anti_condom
+  // [번역 완료] use_anti_condom
   async use_anti_condom(you, iname) {
     await printAndWait([
       you.get_colored_name(),
-      ' は',
+      '은(는) ',
       iname,
-      'を数滴、陰唇のそばに垂らした',
+      '을(를) 몇 방울 음순 근처에 떨어뜨렸다',
     ]);
   },
 
-  // [번역 대상] use_inmon_item
+  // [번역 완료] use_inmon_item
   use_inmon_item(chara, iname) {
     print([
       chara.get_colored_name(),
-      ' に「お腹温め」の名目で',
+      '에게 「배를 따뜻하게 한다」는 명목으로 ',
       iname,
-      'を貼った……',
+      '을(를) 붙였다……',
     ]);
     print([
       chara.get_colored_name(),
-      ' の下腹に、複雑な模様の淫紋が浮かんだ……',
+      '의 아랫배에 복잡한 무늬의 음문이 떠올랐다……',
     ]);
   },
 };
