@@ -1,18 +1,18 @@
 // 최종 ko-KR 작업 파일: 남은 원문만 번역한 뒤 이 파일 자체를 동일 경로에 교체합니다.
 module.exports = class extends require("#/i18n/ja-JP/kojo/104400-Sweep-Tosho/entry") {
 
-  // [번역 대상] agreement
-  agreement = '大魔法使いの約束';
+  // [번역 완료] agreement
+  agreement = '대마법사의 약속';
 
-  // [번역 대상] agreement_desc
+  // [번역 완료] agreement_desc
   agreement_desc =
-    'どうやら大事な約束らしい。約束を守るため、やる気が上がっている。';
+    '아무래도 소중한 약속인 듯하다. 약속을 지키기 위해 의욕이 올라가 있다.';
 
-  // [번역 대상] cuckold
-  cuckold = '「魔法癖」';
+  // [번역 완료] cuckold
+  cuckold = '「마법 버릇」';
 
-  // [번역 대상] cuckold_desc
-  cuckold_desc = '「なんで、なんで魔法癖って呼んじゃいけないの！」';
+  // [번역 완료] cuckold_desc
+  cuckold_desc = '「왜, 왜 마법 버릇이라고 부르면 안 되는 거야!」';
 
   // 한국어 작업 모듈 연결: daily
   daily = require("#/i18n/ko-KR/kojo/104400-Sweep-Tosho/daily-44.kojo");
@@ -29,25 +29,25 @@ module.exports = class extends require("#/i18n/ja-JP/kojo/104400-Sweep-Tosho/ent
   // 한국어 작업 모듈 연결: recruit
   recruit = require("#/i18n/ko-KR/kojo/104400-Sweep-Tosho/rec-44.kojo");
 
-  // [번역 대상] report_eliz_cup_s
+  // [번역 완료] report_eliz_cup_s
   report_eliz_cup_s = (sweep) => [
     sweep,
     '！',
     sweep,
-    'です！',
-    '実力者たちを打ち破り、優勝！ 本当に強い！',
-    'この衝撃、もしかして本当に『魔法』！？',
+    '입니다!',
+    '실력자들을 꺾고 우승! 정말 강합니다!',
+    '이 충격, 설마 정말 『마법』인가요!?',
   ];
 
-  // [번역 대상] report_takz_kin_s
+  // [번역 완료] report_takz_kin_s
   report_takz_kin_s = (sweep) => [
     sweep,
     '、',
     sweep,
-    'ですか？！！！',
-    '強豪たちの壁を越えて、',
+    '인가요?!!!',
+    '강호들의 벽을 넘어,',
     sweep,
-    ' が宝塚記念を制しました！',
-    'この衝撃的な勝利こそ、『奇跡』の証明です！！',
+    '이(가) 다카라즈카 기념을 제패했습니다!',
+    '이 충격적인 승리야말로 『기적』의 증명입니다!!',
   ];
 };

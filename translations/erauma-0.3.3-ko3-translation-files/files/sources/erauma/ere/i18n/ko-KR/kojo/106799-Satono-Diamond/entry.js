@@ -10,9 +10,9 @@ module.exports = class extends require('#/i18n/ja-JP/kojo/106799-Satono-Diamond/
     require("#/i18n/ko-KR/kojo/106799-Satono-Diamond/edu-67-99.js"),
   );
 
-  // [번역 대상] notify_bs_event
+  // [번역 완료] notify_bs_event
   notify_bs_event = (daiya) => [
     daiya.get_colored_name(),
-    ' は外出を楽しみにしている……',
+    '은(는) 외출을 기대하고 있다……',
   ];
 };

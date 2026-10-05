@@ -4,73 +4,73 @@ module.exports = class extends require("#/i18n/ja-JP/kojo/105000-Narita-Taishin/
   // 한국어 작업 모듈 연결: daily
   daily = require("#/i18n/ko-KR/kojo/105000-Narita-Taishin/daily-50.kojo");
 
-  // [번역 대상] debuff
-  debuff = '肺出血';
+  // [번역 완료] debuff
+  debuff = '폐출혈';
 
-  // [번역 대상] debuff_desc
+  // [번역 완료] debuff_desc
   debuff_desc =
-    '体力・気力上限-300、やる気上限が2段階下がる。傷病が治ると自然に消える。';
+    '체력·기력 상한-300, 의욕 상한이 2단계 내려간다. 부상이 치료되면 자연스럽게 사라진다.';
 
   // 한국어 작업 모듈 연결: edu
   edu = require("#/i18n/ko-KR/kojo/105000-Narita-Taishin/edu-50.kojo");
 
-  // [번역 대상] frog
-  frog = '恍惚';
+  // [번역 완료] frog
+  frog = '황홀';
 
-  // [번역 대상] frog_desc
-  frog_desc = 'トレーニング効果-100%。レースに出走できない。';
+  // [번역 완료] frog_desc
+  frog_desc = '트레이닝 효과-100%. 레이스에 출주할 수 없다.';
 
   // 한국어 작업 모듈 연결: love
   love = ({ ...require("#/i18n/ja-JP/kojo/105000-Narita-Taishin/love-50.kojo"), ...require("#/i18n/ko-KR/kojo/105000-Narita-Taishin/love-50.kojo") });
 
-  // [번역 대상] new_goal
-  new_goal = '再起';
+  // [번역 완료] new_goal
+  new_goal = '재기';
 
-  // [번역 대상] new_goal_desc
-  new_goal_desc = 'トレーニング効果+10%。';
+  // [번역 완료] new_goal_desc
+  new_goal_desc = '트레이닝 효과+10%.';
 
-  // [번역 대상] notify_debuff
+  // [번역 완료] notify_debuff
   notify_debuff = (taishin, s_debuff) => [
     '【',
     taishin.get_colored_name(),
-    ' が ',
+    '이(가) ',
     s_debuff,
-    ' を発症した！】',
+    '을(를) 앓기 시작했다!】',
   ];
 
-  // [번역 대상] notify_love_event_50
+  // [번역 완료] notify_love_event_50
   notify_love_event_50 =
-    '（今はまだ早い。越境するようなことは、しない方がいい……）';
+    '(지금은 아직 이르다. 선을 넘는 일은 하지 않는 편이 좋아……)';
 
-  // [번역 대상] notify_remove_debuff
+  // [번역 완료] notify_remove_debuff
   notify_remove_debuff = (taishin, s_debuff) => [
     '【',
     taishin.get_colored_name(),
-    ' の ',
+    '의 ',
     s_debuff,
-    ' が治った】',
+    '이(가) 나았다】',
   ];
 
   // 한국어 작업 모듈 연결: recruit
   recruit = require("#/i18n/ko-KR/kojo/105000-Narita-Taishin/rec-50.kojo");
 
-  // [번역 대상] resist
-  resist = '冷たい拒絶';
+  // [번역 완료] resist
+  resist = '차가운 거절';
 
-  // [번역 대상] resist_desc
+  // [번역 완료] resist_desc
   resist_desc =
-    'いきなりの親密な接触は好まない。越境しない方がいい。だが、きっかけさえあれば……';
+    '갑작스러운 친밀한 접촉을 좋아하지 않는다. 선을 넘지 않는 편이 좋다. 하지만 계기만 있다면……';
 
-  // [번역 대상] swim_up
-  swim_up = '逆流して';
+  // [번역 완료] swim_up
+  swim_up = '거슬러 올라가며';
 
-  // [번역 대상] swim_up_desc
+  // [번역 완료] swim_up_desc
   swim_up_desc =
-    '見くびられたものだ！出走時、負けん気で全基礎能力の発揮が上がる。';
+    '얕보였군! 출주 시 승부욕으로 모든 기초 능력의 발휘가 상승한다.';
 
-  // [번역 대상] together
-  together = 'あなたと一緒';
+  // [번역 완료] together
+  together = '너와 함께';
 
-  // [번역 대상] together_desc
-  together_desc = 'トレーニング効果+5%。';
+  // [번역 완료] together_desc
+  together_desc = '트레이닝 효과+5%.';
 };
