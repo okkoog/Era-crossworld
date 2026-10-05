@@ -4,20 +4,20 @@
 # @author Claude (翻訳)
 
 # @author 黑奴队长（临时）
-# [번역 대상] rec_0
+# [번역 완료] rec_0
 rec_0:
-  title: 取材開始
+  title: 취재 개시
   lines:
-    - %TRACK%を後にするとき、%YOU% は記者風の%PHY%と、思いがけず行き会った。
+    - %TRACK%을(를) 떠나려던 때, %YOU%은(는) 기자처럼 보이는 %PHY%와(과) 뜻밖에 마주쳤다.
     - if: era.get('flag:初见URA颁奖') > 0
-      content: %YOU% は、毎年表彰を務めている %CHARA% だと気づいた。
-    - 彼女は自らを、記者の %CHARA_ACTUAL% だと名乗った。
-    - 軽く挨拶を交わすと、%YOU% のチームのこれからの活躍を楽しみにしている、と告げた。
+      content: %YOU%은(는) 매년 시상을 맡는 %CHARA%임을 알아차렸다.
+    - 그녀는 자신을 기자 %CHARA_ACTUAL%이라고 소개했다.
+    - 가볍게 인사를 나눈 뒤, %YOU%의 팀이 앞으로 활약할 모습을 기대하고 있다고 말했다.
 
 # @author 黑奴队长（临时）
-# [번역 대상] rec_1
+# [번역 완료] rec_1
 rec_1:
-  title: 専属記者
+  title: 전속 기자
   lines:
     - %YOU%은(는) 뜻밖에도 학원 정문에서 %CHARA%를 만났다.
     - %CHARA%와 인사를 나누고 %YOU%은(는) %CHARA%와 함께 걸었다.
